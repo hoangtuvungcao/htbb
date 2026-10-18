@@ -16,8 +16,8 @@ public class CreateCharScr extends Screen {
     int currentClazz;
     int selected;
     public TField tfChat;
-    public static final CharClassInfo[][] clazz = {new CharClassInfo[]{new CharClassInfo((byte) 0, "Kiếm Khách", "Nam", "Kiếm", "Mien Bac", "Kim", 3, 0), new CharClassInfo((byte) 0, "Kiếm Khách", "Nữ", "Kiếm", "Mien Bac", "Kim", 3, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 1, "Chiến Binh", "Nam", "Đại Đao", "Mien Bac", "Hỏa", 4, 0), new CharClassInfo((byte) 1, "Chiến Binh", "Nữ", "Đại Đao", "Mien Bac", "Hỏa", 4, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 2, "Pháp Sư", "Nam", "Đũa thần", "Mien Nam", "Thủy", 5, 0), new CharClassInfo((byte) 2, "Pháp Sư", "Nữ", "Đũa thần", "Mien Nam", "Thủy", 5, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 3, "Đấu sĩ", "Nam", "Rìu", "Mien Nam", "Thổ", 6, 0), new CharClassInfo((byte) 3, "Đấu sĩ", "Nữ", "Rìu", "Mien Nam", "Thổ", 6, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 4, "Cung Thủ", "Nam", "Cung", "Mien Bac", "Mộc", 7, 0), new CharClassInfo((byte) 4, "Cung Thủ", "Nữ", "Cung", "Mien Bac", "Mộc", 7, 0)}};
-    public static String[] hairName = {"Đầu đinh", "Tóc búi", "Tóc cột cao", "Tóc chéo", "Tóc xù", "Tóc ngang vai"};
+    public static final CharClassInfo[][] clazz = {new CharClassInfo[]{new CharClassInfo((byte) 0, "Dòng Charmander", "Nam", "Than lửa", "Mien Bac", "Lửa", 3, 0), new CharClassInfo((byte) 0, "Dòng Charmander", "Nữ", "Than lửa", "Mien Bac", "Lửa", 3, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 1, "Dòng Bulbasaur", "Nam", "Hạt giống thần", "Mien Bac", "Cỏ", 4, 0), new CharClassInfo((byte) 1, "Dòng Bulbasaur", "Nữ", "Hạt giống thần", "Mien Bac", "Cỏ", 4, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 2, "Dòng Eevee", "Nam", "Khăn lụa", "Mien Nam", "Thường", 5, 0), new CharClassInfo((byte) 2, "Dòng Eevee", "Nữ", "Khăn lụa", "Mien Nam", "Thường", 5, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 3, "Dòng Squirtle", "Nam", "Nước thần", "Mien Nam", "Nước", 6, 0), new CharClassInfo((byte) 3, "Dòng Squirtle", "Nữ", "Nước thần", "Mien Nam", "Nước", 6, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 4, "Dòng Pichu", "Nam", "Nam châm", "Mien Bac", "Điện", 7, 0), new CharClassInfo((byte) 4, "Dòng Pichu", "Nữ", "Nam châm", "Mien Bac", "Điện", 7, 0)}};
+    public static String[] hairName = {"Đầu đinh", "Lông búi", "Lông cột cao", "Lông chéo", "Lông xù", "Lông ngang vai"};
     static String[] gender = {"Nam", "Nữ"};
     public static int selectGender = 0;
     public static int selectNation = 0;
@@ -72,7 +72,7 @@ public class CreateCharScr extends Screen {
             @Override
             public void perform() {
                 if (CreateCharScr.this.tfChat.getText().trim().length() < 4 || CreateCharScr.this.tfChat.getText().trim().length() > 15) {
-                    GCanvas.startOKDlg("Tên nhân vật phải từ 4 đến 15 ký tự");
+                    GCanvas.startOKDlg("Tên Pokémon phải từ 4 đến 15 ký tự");
                 } else {
                     GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, CreateCharScr.clazz[CreateCharScr.this.currentClazz][CreateCharScr.selectGender].headID, CreateCharScr.selectGender, CreateCharScr.selectNation);
                     GCanvas.startWaitDlg("Xin chờ", true);
@@ -215,12 +215,12 @@ public class CreateCharScr extends Screen {
         CharClassInfo[][] charClassInfoArr = clazz;
         font.drawString(graphics, sb.append(charClassInfoArr[this.currentClazz][selectGender].name).toString(), i, i3, 0);
         Font.normalFont[0].drawString(graphics, "Giới tính: " + gender[selectGender], i, i2 - 38, 0);
-        Font.normalFont[0].drawString(graphics, "Tóc: " + hairName[charClassInfoArr[this.currentClazz][selectGender].headID], i, i2 - 16, 0);
+        Font.normalFont[0].drawString(graphics, "Lông: " + hairName[charClassInfoArr[this.currentClazz][selectGender].headID], i, i2 - 16, 0);
         Font font2 = Font.normalFont[0];
         StringBuilder sb2 = new StringBuilder("L.thổ: ");
         GameScr gameScr = GCanvas.gameScr;
         font2.drawString(graphics, sb2.append(GameScr.nameCountry[selectNation]).toString(), i, i2 + 6, 0);
-        Font.normalFont[0].drawString(graphics, "Ngũ hành: " + charClassInfoArr[this.currentClazz][selectGender].element, i, i2 + 28, 0);
+        Font.normalFont[0].drawString(graphics, "Hệ: " + charClassInfoArr[this.currentClazz][selectGender].element, i, i2 + 28, 0);
         this.ch.paintAvatar(graphics, (short) (GCanvas.hw - 65), (short) (GCanvas.hh + 10));
         if (this.ch.weaponType != -1 && this.ch.weaponStyle != -1 && this.ch.imgWpa != null) {
             graphics.drawImage(this.ch.imgWpa, (GCanvas.hw - 65) + this.ch.dxWear, GCanvas.hh + 10 + this.ch.dyWear + (this.ch.frame != 1 ? 0 : 1), 0);

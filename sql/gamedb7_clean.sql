@@ -23,9 +23,9 @@
 --    Đã kiểm tra: 0 dòng còn sót tên nhân vật cũ.
 --
 --  CÁCH IMPORT:
---    1. TẮT SERVER HẲN (KPAH2_patched.jar + loginServer).
---    2. Backup:  mysqldump -u root kpah_db > backup_truoc_import.sql
---    3. phpMyAdmin -> chọn ĐÚNG database kpah_db -> tab Import -> file này.
+--    1. TẮT SERVER HẲN (htbb-server.jar + loginServer).
+--    2. Backup:  mysqldump -u root htbb_db > backup_truoc_import.sql
+--    3. phpMyAdmin -> chọn ĐÚNG database htbb_db -> tab Import -> file này.
 --       File không có lệnh USE nên nó chạy vào DB nào bạn đang chọn.
 --       Chọn nhầm DB là toang, nhớ nhìn kỹ.
 --
@@ -35,7 +35,7 @@
 --       Bảng 5h_active giờ rỗng, mà sv.EnableAvtiveCheck=1 nên
 --       LoginHandler:297 chặn ngay từ màn đăng nhập. Chạy:
 --
---         INSERT INTO `kpah_db`.`5h_active` (`userID`,`username`,`time_end`)
+--         INSERT INTO `htbb_db`.`5h_active` (`userID`,`username`,`time_end`)
 --         SELECT `id`, `username`, '-1' FROM `account`.`team_user`;
 --
 --       Hoặc đơn giản hơn: sửa server.ini -> sv.EnableAvtiveCheck=0 rồi restart.
@@ -48,7 +48,7 @@
 --       sv.adminAccounts trong server.ini.
 --
 --  LƯU Ý: 2 stored procedure DeleteFromMatchingTables và DropMatchingTables
---  hardcode schema 'gamedb7' trong câu lệnh, nên chạy trên kpah_db sẽ không
+--  hardcode schema 'gamedb7' trong câu lệnh, nên chạy trên htbb_db sẽ không
 --  tác dụng gì. Vô hại, giữ lại cho giống bản gốc.
 -- ############################################################################
 
@@ -374,7 +374,7 @@ INSERT INTO `bad_word` (`id`, `word`) VALUES
 (156, 'adm'),
 (157, 'a.d'),
 (158, 'pua'),
-(159, 'kpah'),
+(159, 'htbb'),
 (160, 'gino'),
 (161, 'suc'),
 (162, 'vat'),

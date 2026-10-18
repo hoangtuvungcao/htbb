@@ -19,7 +19,7 @@ import data.DatabaseSuKien;
  * -------------------------------------------------------------------------------------
  *
  *  1. GOM THAY DOI ROI MOI KHOI DONG LAI (gomGiay, mac dinh 120s).
- *     kpah-game.service dat StartLimitBurst=5 / StartLimitIntervalSec=300: khoi dong qua
+ *     htbb-game.service dat StartLimitBurst=5 / StartLimitIntervalSec=300: khoi dong qua
  *     5 lan trong 300 giay thi systemd cho unit vao trang thai "failed" va KHONG BAT LAI
  *     NUA - server nam han cho toi khi co nguoi ssh vao. Bat 5 su kien lien tay ma moi
  *     lan mot lan khoi dong lai la dung ngay cai bay do. Nen moi thay doi deu doi han

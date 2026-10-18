@@ -208,15 +208,15 @@ public final class HeSinhThaiGame {
     // ================================================================== thoi gian / vung / thoi tiet
 
     static int homNay() {
-        return NangLuong.ngay(System.currentTimeMillis());
+        return NangLuong.ngay(com.htbb.pokemon.DongHo.bay());
     }
 
     static int gio() {
-        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        return com.htbb.pokemon.DongHo.lich().get(Calendar.HOUR_OF_DAY);
     }
 
     static int thang() {
-        return Calendar.getInstance().get(Calendar.MONTH) + 1;
+        return com.htbb.pokemon.DongHo.lich().get(Calendar.MONTH) + 1;
     }
 
     /** Ghi de thoi tiet (GM thu nghiem): vung -> thoi tiet, het khi sang ngay. */
@@ -314,7 +314,8 @@ public final class HeSinhThaiGame {
 
     static void baoTheGioi(final String s) {
         try {
-            real.Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(s));
+            // Gioi han + gop (bung phat / su kien sinh thai deu qua day): xem com.htbb.chongspam.ThongBaoGop.
+            com.htbb.chongspam.ThongBaoGop.dua("sinh_thai", s);
         } catch (final Exception e) {
             System.out.println("[HE SINH THAI] thong bao: " + e);
         }
@@ -491,7 +492,7 @@ public final class HeSinhThaiGame {
     }
 
     static void baoQuaiHiem(final Monster m, final int mapId) {
-        final long now = System.currentTimeMillis();
+        final long now = com.htbb.pokemon.DongHo.bay();
         final Long cu = LAN_BAO_HIEM.get(m.idTemplate);
         if (cu != null && now - cu < HeSinhThai.THONG_BAO_HIEM_CACH_MS) {
             return;
@@ -580,7 +581,7 @@ public final class HeSinhThaiGame {
                     final NhaTre.Trung t = deTrung(p, h);
                     if (t != null) {
                         h.trung.add(t);
-                        bao(p, "Nhà trẻ: " + SuuTamSinhThai.tenLoai(t.dex) + " vừa đẻ một quả trứng! (Hệ sinh thái > Nhà trẻ & trứng)");
+                        bao(p, "Nhà trẻ: " + SuuTamSinhThai.tenLoai(t.dex) + " vừa đẻ một quả trứng! (Xem ở Hệ sinh thái, mục Nhà trẻ và trứng.)");
                         doi = true;
                     }
                 } else if (h.buocNhaTre >= HeSinhThai.BUOC_DE_TRUNG) {
@@ -589,7 +590,7 @@ public final class HeSinhThaiGame {
             }
         }
         for (final NhaTre.Trung t : no) {
-            bao(p, "Trứng " + SuuTamSinhThai.tenLoai(t.dex) + " đã sẵn sàng nở! Mở Hệ sinh thái > Nhà trẻ & trứng để ấp nở.");
+            bao(p, "Trứng " + SuuTamSinhThai.tenLoai(t.dex) + " đã sẵn sàng nở! Vào Hệ sinh thái, mục Nhà trẻ và trứng để cho trứng nở.");
             doi = true;
         }
         return doi;
@@ -644,8 +645,8 @@ public final class HeSinhThaiGame {
             h.mocAlbum |= 1 << moc;
             h.themDanhHieu(SuuTamSinhThai.DANH_HIEU_ALBUM[moc]);
             phatThuong(p, "LUONGKHOA:" + SuuTamSinhThai.THUONG_MOC_ALBUM[moc], "moc album " + SuuTamSinhThai.MOC_ALBUM[moc]);
-            baoTheGioi(p.charname + " đạt mốc album " + SuuTamSinhThai.MOC_ALBUM[moc] + " ảnh - danh hiệu \""
-                    + SuuTamSinhThai.DANH_HIEU_ALBUM[moc] + "\"!");
+            baoTheGioi(p.charname + " đạt mốc album " + SuuTamSinhThai.MOC_ALBUM[moc] + " ảnh, nhận danh hiệu "
+                    + SuuTamSinhThai.DANH_HIEU_ALBUM[moc] + "!");
         }
     }
 
@@ -686,7 +687,7 @@ public final class HeSinhThaiGame {
             final int bac = VatLieuSinhThai.bacTheoCap(cap(p));
             h.them(VatLieuSinhThai.khoa(ma, bac), so);
             final int len = h.congExp(KyNangSong.TRONG_TROT, KyNangSong.expKhiLam(VatLieuSinhThai.giaPhanNghin(ma)) * 3);
-            bao(p, "Vườn berry: +" + so + " " + VatLieuSinhThai.ten(ma) + " vào túi sinh thái." + (len > 0
+            bao(p, "Vườn berry: +" + so + " " + VatLieuSinhThai.ten(ma) + " vào Túi sinh thái." + (len > 0
                     ? " Trồng trọt lên cấp " + len + "!" : ""));
             danhDau(p);
         } catch (final Exception e) {
@@ -759,6 +760,16 @@ public final class HeSinhThaiGame {
                     }
                 }
                 return true;
+            case "danhhieu": // GM thu nghiem: hst danhhieu <chi so trong HoSoSinhThai.DANH_HIEU>
+                if (a.length >= 2) {
+                    final HoSoSinhThai hd = hoSo(p);
+                    final int i = Integer.parseInt(a[1]);
+                    if (hd != null && i >= 0 && i < HoSoSinhThai.DANH_HIEU.length) {
+                        hd.themDanhHieu(HoSoSinhThai.DANH_HIEU[i]);
+                        danhDau(p);
+                    }
+                }
+                return true;
             case "xu": // GM thu nghiem: hst xu <so>
                 if (a.length >= 2) {
                     congXu(p, Math.min(100000000L, Long.parseLong(a[1])), "gm thu nghiem");
@@ -801,8 +812,8 @@ public final class HeSinhThaiGame {
         }
         try {
             luuTatCa();
-            if (System.currentTimeMillis() - lanInThongKe > 300000L) {
-                lanInThongKe = System.currentTimeMillis();
+            if (com.htbb.pokemon.DongHo.bay() - lanInThongKe > 300000L) {
+                lanInThongKe = com.htbb.pokemon.DongHo.bay();
                 System.out.println("[HE SINH THAI] thong ke: hoi sinh " + DEM_HOI_SINH.get() + ", doi loai " + DEM_THAY.get()
                         + ", hiem " + DEM_HIEM.get() + ", bung phat " + DEM_BUNG_PHAT.get() + ", ho so " + HO_SO.size());
             }
@@ -848,7 +859,7 @@ public final class HeSinhThaiGame {
             return;
         }
         bungPhat = new int[]{c[0], c[1], ngay, khung < 0 ? SinhThaiTheGioi.khungBungPhat(gio()) : khung};
-        baoTheGioi("BÙNG PHÁT! Đàn " + SuuTamSinhThai.tenLoai(dexTemplate(c[1])) + " tràn ra " + real.Map.getNameMap(c[0])
+        baoTheGioi("Bùng phát! Đàn " + SuuTamSinhThai.tenLoai(dexTemplate(c[1])) + " tràn ra " + real.Map.getNameMap(c[0])
                 + " trong 1 giờ tới - cơ hội nghiên cứu và chụp album!");
     }
 
@@ -892,7 +903,7 @@ public final class HeSinhThaiGame {
         static volatile int ngayLuot;
 
         static void nhip() {
-            final Calendar c = Calendar.getInstance();
+            final Calendar c = com.htbb.pokemon.DongHo.lich();
             final int g = c.get(Calendar.HOUR_OF_DAY);
             final int ph = c.get(Calendar.MINUTE);
             for (int i = 0; i < HeSinhThai.GIO_DO_VUI.length; i++) {
@@ -902,7 +913,7 @@ public final class HeSinhThaiGame {
                     batDau();
                 }
             }
-            if (dapAn != null && System.currentTimeMillis() > hetLuc) {
+            if (dapAn != null && com.htbb.pokemon.DongHo.bay() > hetLuc) {
                 baoTheGioi("Ai là Pokémon? Hết giờ! Đáp án: " + dapAn + ".");
                 dapAn = null;
             }
@@ -919,10 +930,10 @@ public final class HeSinhThaiGame {
                 return;
             }
             uv.sort((x, y) -> ((String) x[0]).compareTo((String) y[0]));
-            final Object[] q = uv.get(MiniGameSinhThai.chonCauHoi(homNay(), (int) (System.currentTimeMillis() / 60000L), uv.size()));
+            final Object[] q = uv.get(MiniGameSinhThai.chonCauHoi(homNay(), (int) (com.htbb.pokemon.DongHo.bay() / 60000L), uv.size()));
             dapAn = (String) q[0];
-            hetLuc = System.currentTimeMillis() + HeSinhThai.GIAY_TRA_LOI * 1000L;
-            baoTheGioi("AI LÀ POKÉMON? " + MiniGameSinhThai.goiY(dapAn, (Integer) q[1], (Integer) q[2])
+            hetLuc = com.htbb.pokemon.DongHo.bay() + HeSinhThai.GIAY_TRA_LOI * 1000L;
+            baoTheGioi("Ai là Pokémon? " + MiniGameSinhThai.goiY(dapAn, (Integer) q[1], (Integer) q[2])
                     + ". Gõ tên vào khung chat trong " + HeSinhThai.GIAY_TRA_LOI + " giây!");
         }
 
@@ -964,7 +975,7 @@ public final class HeSinhThaiGame {
         static volatile int ngayDua;
 
         static void nhip() {
-            final Calendar c = Calendar.getInstance();
+            final Calendar c = com.htbb.pokemon.DongHo.lich();
             final int g = c.get(Calendar.HOUR_OF_DAY);
             final int ph = c.get(Calendar.MINUTE);
             if (!dangKy && !dangChay && ngayDua != homNay() && g == HeSinhThai.GIO_DUA - 1
@@ -984,8 +995,8 @@ public final class HeSinhThaiGame {
                 return;
             }
             dangKy = true;
-            batDauLuc = System.currentTimeMillis() + (ngay ? 60000L : HeSinhThai.PHUT_DANG_KY_DUA * 60000L);
-            baoTheGioi("ĐUA POKÉMON: mở đăng ký! Gõ \"dua\" trong chat, rồi có mặt ở " + real.Map.getNameMap(MAP_DUA)
+            batDauLuc = com.htbb.pokemon.DongHo.bay() + (ngay ? 60000L : HeSinhThai.PHUT_DANG_KY_DUA * 60000L);
+            baoTheGioi("Đua Pokémon mở đăng ký! Gõ dua vào khung chat, rồi có mặt ở " + real.Map.getNameMap(MAP_DUA)
                     + " trước giờ xuất phát (" + (ngay ? "1 phút" : HeSinhThai.PHUT_DANG_KY_DUA + " phút") + ").");
         }
 
@@ -1012,20 +1023,20 @@ public final class HeSinhThaiGame {
                 return;
             }
             NGUOI.put(p.charDBID, new int[]{0, 0});
-            bao(p, "Đã đăng ký đua. Hãy tới " + real.Map.getNameMap(MAP_DUA) + "; khi xuất phát, chạy qua " + moc.length
+            bao(p, "Đã đăng ký đua. Hãy tới " + real.Map.getNameMap(MAP_DUA) + ". Khi xuất phát, chạy qua " + moc.length
                     + " mốc theo thứ tự (toạ độ ô): " + moTaMoc());
         }
 
         static String moTaMoc() {
             final StringBuilder b = new StringBuilder();
             for (int i = 0; i < moc.length; i++) {
-                b.append(i == 0 ? "" : " → ").append('(').append(moc[i][0]).append(',').append(moc[i][1]).append(')');
+                b.append(i == 0 ? "" : ", ").append('(').append(moc[i][0]).append(',').append(moc[i][1]).append(')');
             }
             return b.toString();
         }
 
         static void nhipNhanh() {
-            final long now = System.currentTimeMillis();
+            final long now = com.htbb.pokemon.DongHo.bay();
             if (dangKy && now >= batDauLuc) {
                 dangKy = false;
                 int coMat = 0;
@@ -1035,7 +1046,7 @@ public final class HeSinhThaiGame {
                         NGUOI.remove(id);
                     } else {
                         coMat++;
-                        bao(c, "XUẤT PHÁT! Mốc: " + moTaMoc());
+                        bao(c, "Xuất phát! Các mốc: " + moTaMoc());
                     }
                 }
                 if (coMat == 0) {
@@ -1043,7 +1054,7 @@ public final class HeSinhThaiGame {
                     return;
                 }
                 dangChay = true;
-                baoTheGioi("ĐUA POKÉMON xuất phát với " + coMat + " tay đua!");
+                baoTheGioi("Đua Pokémon xuất phát với " + coMat + " tay đua!");
             }
             if (!dangChay) {
                 return;
@@ -1087,9 +1098,9 @@ public final class HeSinhThaiGame {
             for (int i = 0; i < xong.size() && i < HeSinhThai.THUONG_DUA_LUONG_KHOA.length; i++) {
                 final int id = (Integer) xong.get(i)[0];
                 final Char c = timOnline(id);
-                final String ten = c != null ? c.charname : ("#" + id);
+                final String ten = c != null ? c.charname : "(vắng mặt)";
                 b.append(i == 0 ? "" : ", ").append(i + 1).append(". ").append(ten).append(" (")
-                        .append(((Integer) xong.get(i)[1]) / 10.0).append("s)");
+                        .append(((Integer) xong.get(i)[1]) / 10.0).append(" giây)");
                 if (c != null) {
                     phatThuong(c, "LUONGKHOA:" + HeSinhThai.THUONG_DUA_LUONG_KHOA[i], "dua hang " + (i + 1));
                     final HoSoSinhThai h = hoSo(c);
@@ -1133,7 +1144,7 @@ public final class HeSinhThaiGame {
         static final int THUONG_VO_DICH_LUONG_KHOA = 20;
 
         static void nhip() {
-            final Calendar c = Calendar.getInstance();
+            final Calendar c = com.htbb.pokemon.DongHo.lich();
             final int tuan = c.get(Calendar.YEAR) * 100 + c.get(Calendar.WEEK_OF_YEAR);
             if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY && c.get(Calendar.HOUR_OF_DAY) == 20 && tuanDaCongBo != tuan) {
                 tuanDaCongBo = tuan;
@@ -1166,16 +1177,19 @@ public final class HeSinhThaiGame {
             final StringBuilder b = new StringBuilder("Giải đấu tuần - vòng " + soVong + ": ");
             for (final int[] c : cap) {
                 v.add(new int[]{c[0], c[1], c[1] < 0 ? c[0] : 0});
-                b.append(ten(c[0])).append(" vs ").append(c[1] < 0 ? "(miễn đấu)" : ten(c[1])).append("; ");
+                b.append(ten(c[0])).append(" vs ").append(c[1] < 0 ? "(miễn đấu)" : ten(c[1])).append(", ");
             }
             vong = v;
-            baoTheGioi(b.append("Đấu tại Liên đấu (PvP).").toString());
+            if (b.toString().endsWith(", ")) {
+                b.setLength(b.length() - 2);
+            }
+            baoTheGioi(b.append(". Đấu tại Giải Liên minh (PvP).").toString());
             kiemXongVong();
         }
 
         static String ten(final int id) {
             final Char c = timOnline(id);
-            return c != null ? c.charname : "#" + id;
+            return c != null ? c.charname : "(vắng mặt)";
         }
 
         static synchronized boolean ketQua(final int thang, final int thua) {
@@ -1216,7 +1230,7 @@ public final class HeSinhThaiGame {
                         danhDau(c);
                     }
                 }
-                baoTheGioi("NHÀ VÔ ĐỊCH GIẢI TUẦN: " + ten(vd) + "!");
+                baoTheGioi("Nhà vô địch giải tuần: " + ten(vd) + "!");
                 return;
             }
             soVong++;
@@ -1231,7 +1245,7 @@ public final class HeSinhThaiGame {
             final StringBuilder b = new StringBuilder("Giải đấu tuần - vòng " + soVong + ":\n");
             for (final int[] c : v) {
                 b.append("- ").append(ten(c[0])).append(" vs ").append(c[1] < 0 ? "(miễn đấu)" : ten(c[1]))
-                        .append(c[2] == 0 ? "" : " -> " + ten(c[2])).append('\n');
+                        .append(c[2] == 0 ? "" : ": thắng " + ten(c[2])).append('\n');
             }
             return b.toString().trim();
         }
@@ -1269,7 +1283,11 @@ public final class HeSinhThaiGame {
             this.soNuoc = BanDoSinhThai.demNuoc(nuoc);
             this.ho = nuoc == null ? null : BanDoSinhThai.nhanHo(nuoc, w, h);
             this.kichThuocHo = ho == null ? new int[0] : BanDoSinhThai.kichThuocHo(ho);
+            this.diemCau = ho == null ? new ArrayList<int[]>() : BanDoSinhThai.diemCau(ho, diDuoc, w, h, 4);
         }
+
+        /** Diem cau (cung ket qua data_hst_ho_cau / diem_cau_ca.csv): {hoId, x, y}. */
+        final List<int[]> diemCau;
     }
 
     static final Map<Integer, BanDoPhanTich> BAN_DO = new ConcurrentHashMap<Integer, BanDoPhanTich>();

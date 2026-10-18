@@ -60,7 +60,7 @@ async function dangXuat() {
 
     <template v-if="logoutUser">
       <p class="mt-3 text-muted">
-        Bạn muốn kết thúc phiên đăng nhập trên website? Bằng hữu và hành trình vẫn chờ bạn trở lại.
+        Bạn muốn kết thúc phiên đăng nhập trên website? Bạn bè và hành trình vẫn chờ bạn trở lại.
       </p>
       <div class="mt-6 flex items-center gap-4 rounded-2xl border border-default bg-elevated/60 p-4">
         <span class="grid size-11 place-items-center rounded-full bg-primary/10 text-primary" aria-hidden="true">
@@ -100,7 +100,7 @@ async function dangXuat() {
         </UButton>
       </div>
       <p class="mt-6 text-center text-xs tracking-widest text-dimmed">
-        Một lời chào tạm biệt. Vạn hành trình phía trước.
+        Một lời chào tạm biệt. Còn nhiều hành trình phía trước.
       </p>
     </template>
   </SiteAuthShell>

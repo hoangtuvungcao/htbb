@@ -56,11 +56,11 @@ const khoiDau = POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)!).filter(Boolean)
       </li>
     </ul>
 
-    <WikiSection id="bang" title="Bảng khắc chế 18×18" lead="Hàng = hệ của chiêu tấn công, cột = hệ của Pokémon bị đánh. Rê chuột để dò hàng/cột, bấm tên hệ bên trái để giữ tô sáng một hàng.">
+    <WikiSection id="bang" title="Bảng khắc hệ 18×18" lead="Hàng = hệ của chiêu tấn công, cột = hệ của Pokémon bị đánh. Rê chuột để dò hàng/cột, bấm tên hệ bên trái để giữ tô sáng một hàng.">
       <div class="overflow-x-auto rounded-2xl glass p-2 sm:p-4" @mouseleave="hang = null; cot = null">
         <table class="mx-auto border-separate border-spacing-0.5 text-center text-xs">
           <caption class="sr-only">
-            Hệ số khắc chế trong game giữa 18 hệ
+            Hệ số khắc hệ trong game giữa 18 hệ
           </caption>
           <thead>
             <tr>

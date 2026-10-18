@@ -7,7 +7,7 @@ import java.util.Random;
 /**
  * Cai Tao Cai Trang (real/CaiTaoCaiTrang) - luat viet lai ngay 02/09/2026 theo mo ta cua
  * nguoi yeu cau. Phan luat la ham thuan nen goi THAT; phan noi vao Map/RealController/
- * CharChiSo can Char that nen quet van ban nguon, giong cach KiemTinhLuyenThanBinh da lam.
+ * CharChiSo can Char that nen quet van ban nguon, giong cach KiemTinhLuyenBaoVat da lam.
  *
  * Nhung cai de hong am tham ma test nay canh:
  *   - hai buoc (chon o type == 5, xac nhan o idpopup == 125) loc danh sach khac nhau ->
@@ -106,28 +106,28 @@ public final class KiemCaiTaoCaiTrang {
 
     private static void kiemTenHienThi() {
         // Anh xa ten theo gioi tinh cua chinh mon do (giu tu ban truoc).
-        Kiem.bang("797 Nghe Thuong (nu)", "Mị Nương Công Chúa", real.Item.tenTrangPhucSauTinhHoa(797));
-        Kiem.bang("798 Ngoc Nu (nu)", "Mị Nương Công Chúa", real.Item.tenTrangPhucSauTinhHoa(798));
-        Kiem.bang("799 Xich Cuoc (nam)", "Giáp Sơn Tinh Vương", real.Item.tenTrangPhucSauTinhHoa(799));
-        Kiem.bang("800 Kim Dong (nam)", "Giáp Sơn Tinh Vương", real.Item.tenTrangPhucSauTinhHoa(800));
-        Kiem.bang("801 Loi Cong (nam)", "Giáp Sơn Tinh Vương", real.Item.tenTrangPhucSauTinhHoa(801));
-        Kiem.bang("723 Hac Lang (nam)", "Giáp Sơn Tinh Vương", real.Item.tenTrangPhucSauTinhHoa(723));
-        Kiem.bang("724 Than Nu (nu)", "Mị Nương Công Chúa", real.Item.tenTrangPhucSauTinhHoa(724));
-        Kiem.bang("725 Bach Mi (nam)", "Giáp Sơn Tinh Vương", real.Item.tenTrangPhucSauTinhHoa(725));
-        Kiem.bang("726 Thuy Vu Hong Sam (nu)", "Mị Nương Công Chúa", real.Item.tenTrangPhucSauTinhHoa(726));
-        Kiem.bang("756 Lac Long Quan (nam)", "Giáp Sơn Tinh Vương", real.Item.tenTrangPhucSauTinhHoa(756));
-        Kiem.bang("757 Au Co (nu)", "Mị Nương Công Chúa", real.Item.tenTrangPhucSauTinhHoa(757));
+        Kiem.bang("797 Nghe Thuong (nu)", "Diancie", real.Item.tenTrangPhucSauTinhHoa(797));
+        Kiem.bang("798 Ngoc Nu (nu)", "Diancie", real.Item.tenTrangPhucSauTinhHoa(798));
+        Kiem.bang("799 Xich Cuoc (nam)", "Giáp Groudon", real.Item.tenTrangPhucSauTinhHoa(799));
+        Kiem.bang("800 Kim Dong (nam)", "Giáp Groudon", real.Item.tenTrangPhucSauTinhHoa(800));
+        Kiem.bang("801 Loi Cong (nam)", "Giáp Groudon", real.Item.tenTrangPhucSauTinhHoa(801));
+        Kiem.bang("723 Hac Lang (nam)", "Giáp Groudon", real.Item.tenTrangPhucSauTinhHoa(723));
+        Kiem.bang("724 Than Nu (nu)", "Diancie", real.Item.tenTrangPhucSauTinhHoa(724));
+        Kiem.bang("725 Bach Mi (nam)", "Giáp Groudon", real.Item.tenTrangPhucSauTinhHoa(725));
+        Kiem.bang("726 Thuy Vu Hong Sam (nu)", "Diancie", real.Item.tenTrangPhucSauTinhHoa(726));
+        Kiem.bang("756 Lac Long Quan (nam)", "Giáp Groudon", real.Item.tenTrangPhucSauTinhHoa(756));
+        Kiem.bang("757 Au Co (nu)", "Diancie", real.Item.tenTrangPhucSauTinhHoa(757));
         Kiem.dung("id 1 -> null", real.Item.tenTrangPhucSauTinhHoa(1) == null);
 
         // Ten hien thi: doi DONG DAU, giu mo ta phia sau. Cot name that cua 799 co dang nay.
         final String goc = "Áo Xích Cước\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%";
         Kiem.bang("CaiTao = 0 -> giu nguyen ten goc", goc, real.Item.tenHienThiSauCaiTao(goc, 799, 0));
         Kiem.bang("CaiTao = 3 -> doi ngay tu 1% (khong doi toi 10 nua), giu mo ta",
-                "Giáp Sơn Tinh Vương\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%",
+                "Giáp Groudon\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%",
                 real.Item.tenHienThiSauCaiTao(goc, 799, 3));
         Kiem.bang("CaiTao = 10 -> nhu 3, cung ten do", real.Item.tenHienThiSauCaiTao(goc, 799, 3),
                 real.Item.tenHienThiSauCaiTao(goc, 799, 10));
-        Kiem.bang("ten khong co mo ta -> chi con ten moi", "Mị Nương Công Chúa",
+        Kiem.bang("ten khong co mo ta -> chi con ten moi", "Diancie",
                 real.Item.tenHienThiSauCaiTao("Áo Nghê Thường", 797, 5));
         Kiem.bang("id ngoai nhom -> giu nguyen du CaiTao > 0", "Sơn Tinh\nTăng 50%",
                 real.Item.tenHienThiSauCaiTao("Sơn Tinh\nTăng 50%", 736, 5));
@@ -198,8 +198,10 @@ public final class KiemCaiTaoCaiTrang {
         Kiem.sai("khong con doi 500 luong o menu", rc.contains("Bạn cần 500 lượng để cải tạo cải trang"));
         Kiem.sai("khong con showTrangPhucTinhHoaList", rc.contains("showTrangPhucTinhHoaList"));
         Kiem.sai("khong con mang validItemIDs (luat da gom ve CaiTaoCaiTrang)", rc.contains("validItemIDs"));
-        final String case10 = doan(rc, "// cải tạo cải trang\n                        case 10:", "case 11:");
-        Kiem.dung("case 10 mo thang danh sach qua player.map.showCaiTaoMaterialList",
+        // 19/09/2026 menu NPC -8 chen "Doi ten nhan vat" o vi tri 8 (RequestNPCInfoHandler
+        // case -8) -> Cai Tao Cai Trang dich tu case 10 sang case 11 cua doCreateItem.
+        final String case10 = doan(rc, "// cải tạo cải trang\n                        case 11:", "case 12:");
+        Kiem.dung("case 11 mo thang danh sach qua player.map.showCaiTaoMaterialList",
                 case10.contains("player.map.showCaiTaoMaterialList(player);"));
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");

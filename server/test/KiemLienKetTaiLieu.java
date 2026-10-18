@@ -35,10 +35,9 @@ public final class KiemLienKetTaiLieu {
 
         final List<Path> tep = new ArrayList<Path>();
         themTep(tep, Paths.get("README.md"));
-        themThuMuc(tep, Paths.get("docs"));
-        themTep(tep, Paths.get("sql/README.md"));
-        themTep(tep, Paths.get("vps/win/README.md"));
-        themTep(tep, Paths.get("web/README.md"));
+        themThuMuc(tep, Paths.get("../docs"));
+        themTep(tep, Paths.get("../sql/README.md"));
+        themTep(tep, Paths.get("../vps/win/README.md"));
 
         Kiem.dung("tim thay tai lieu de kiem (tren 5 tep)", tep.size() > 5);
 

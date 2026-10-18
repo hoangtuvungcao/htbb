@@ -9,7 +9,19 @@ import javax.microedition.media.Manager;
 import javax.microedition.media.Player;
 
 public class FilePack {
+    /**
+     * Gói đang mở - CHỈ để tương thích. Trước đây mọi luồng dùng chung một biến tĩnh: luồng nạp
+     * (Res.LoadData) và luồng vẽ / mạng mở gói khác hoặc reset() xen giữa init -> getImg -> reset của
+     * nhau => NullPointerException / sai ảnh. Nay mỗi luồng giữ gói riêng (theoLuong); đọc qua hienTai().
+     */
     public static FilePack instance;
+    private static final java.util.Hashtable theoLuong = new java.util.Hashtable();
+
+    /** Gói đang mở của luồng hiện tại (luồng chưa init thì gói init gần nhất - như cũ). */
+    public static FilePack hienTai() {
+        Object o = theoLuong.get(Thread.currentThread());
+        return o != null ? (FilePack) o : instance;
+    }
     public String[] fname;
     private int[] fpos;
     private int[] flen;
@@ -44,10 +56,21 @@ public class FilePack {
     }
 
     public static void reset() {
-        if (instance != null) {
-            instance.close();
+        Object o = theoLuong.remove(Thread.currentThread());
+        if (o != null) {
+            ((FilePack) o).close();
+            synchronized (theoLuong) {
+                if (instance == o) {
+                    instance = null;
+                }
+            }
+        } else {
+            // luồng chưa init (mã cũ reset gói chung): chỉ bỏ biến tương thích
+            if (instance != null) {
+                instance.close();
+            }
+            instance = null;
         }
-        instance = null;
         System.gc();
     }
 
@@ -64,7 +87,6 @@ public class FilePack {
             openbyArray(array);
         }
         if (this.file == null) {
-            instance = null;
             return;
         }
         try {
@@ -95,15 +117,23 @@ public class FilePack {
     }
 
     public static Image getImg(String path) {
-        return instance.loadImage(new StringBuffer(String.valueOf(path)).append(".png").toString());
+        FilePack fp = hienTai();
+        return fp == null ? null : fp.loadImage(new StringBuffer(String.valueOf(path)).append(".png").toString());
+    }
+
+    private static void datHienTai(FilePack fp) {
+        theoLuong.put(Thread.currentThread(), fp);
+        synchronized (theoLuong) {
+            instance = fp;
+        }
     }
 
     public static void init(String path) {
-        instance = new FilePack(path, null);
+        datHienTai(new FilePack(path, null));
     }
 
     public static void initByArray(byte[] array) {
-        instance = new FilePack("", array);
+        datHienTai(new FilePack("", array));
     }
 
     private int encode(int i) {
@@ -135,7 +165,7 @@ public class FilePack {
     }
 
     public byte[] loadFile(String fileName) throws Exception {
-        for (int i = 0; i < this.nFile; i++) {
+        for (int i = 0; this.fname != null && i < this.nFile; i++) {
             if (this.fname[i].compareTo(fileName) == 0) {
                 byte[] bytes = new byte[this.flen[i]];
                 System.arraycopy(this.fullData, this.fpos[i], bytes, 0, this.flen[i]);
@@ -146,7 +176,7 @@ public class FilePack {
     }
 
     public Image loadImage(String fileName) {
-        for (int i = 0; i < this.nFile; i++) {
+        for (int i = 0; this.fname != null && i < this.nFile; i++) {
             if (this.fname[i].compareTo(fileName) == 0) {
                 return Image.createImage(this.fullData, this.fpos[i], this.flen[i]);
             }

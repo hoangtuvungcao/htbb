@@ -654,9 +654,13 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     protected void paint(Graphics g) {
+        game.render.screen.Font.nenSang = false;
         try {
             if (currentScreen != null) {
                 currentScreen.paint(g);
+            }
+            if (currentScreen == gameScr) {
+                game.pokemon.HopThoaiDuoi.ve(g);   // pokemon: hộp thoại NPC đáy màn
             }
             if (currentDialog != null) {
                 currentDialog.paint(g);

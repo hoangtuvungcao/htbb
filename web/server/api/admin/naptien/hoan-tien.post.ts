@@ -6,6 +6,9 @@
  */
 export default defineAdminHandler(async (event, admin) => {
   if (!(await napCoBang())) napThieuBang()
+  if (!(await chCo('nap.hoan_tien.thu_cong', false))) {
+    throw apiLoi(403, 'Hoàn tiền thủ công đang bị khoá (Cấu hình hệ thống → Nạp tiền → "Cho phép hoàn tiền thủ công").')
+  }
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
   const id = int(body?.id, 0)
   const lyDo = str(body?.ly_do).trim().slice(0, 200)

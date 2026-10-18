@@ -186,14 +186,14 @@ auth.method = "token"
 auth.token  = "DAN_CHUOI_GIONG_HET_BEN_frps.toml"
 
 [[proxies]]
-name        = "kpah-game"
+name        = "htbb-game"
 type        = "tcp"
 localIP     = "127.0.0.1"
 localPort   = 19129
 remotePort  = 19129
 
 [[proxies]]
-name        = "kpah-web"
+name        = "htbb-web"
 type        = "tcp"
 localIP     = "127.0.0.1"
 localPort   = 80
@@ -206,7 +206,7 @@ remotePort  = 80
 C:\frp\frpc.exe -c C:\frp\frpc.toml
 ```
 
-Thấy `start proxy success` cho cả `kpah-game` và `kpah-web` là thông.
+Thấy `start proxy success` cho cả `htbb-game` và `htbb-web` là thông.
 
 **Không cần tạo rule tường lửa trên máy nhà.** frpc kết nối tới game server qua loopback
 (`127.0.0.1`), mà Windows Firewall không chặn loopback. Cũng **không cần forward port
@@ -231,7 +231,7 @@ Không muốn cài NSSM thì dùng Task Scheduler, trigger *At startup*, chọn
 
 ### C1. IP đã sửa sẵn
 
-[ServerListScr.cs](../ClientUnity/Assets/Scripts/Game/ServerListScr.cs) dòng 36 đã là:
+[ServerListScr.cs](../client_pc_ios/ClientUnity/Assets/Scripts/Game/ServerListScr.cs) dòng 36 đã là:
 
 ```csharp
 public const string SERVER_HOST = "180.93.57.30";
@@ -245,7 +245,8 @@ public const string SERVER_HOST = "180.93.57.30";
 ### C2. File danh sách server — đã sửa sẵn cả hai nơi
 
 - `C:\xampp\htdocs\NQSH2.txt`
-- [web/server/NQSH2.txt](../web/server/NQSH2.txt) (`web/server.txt` là symlink trỏ tới đây)
+- Server thật trên VPS: biến `HTBB_SERVER_LIST` của HTBB-Web (`/server.txt`, xem
+  [HUONG_DAN_BUILD_VPS.md](HUONG_DAN_BUILD_VPS.md) PHẦN F) — web PHP cũ (`web/server/NQSH2.txt`) đã bỏ
 
 Nội dung, một dòng: `Server 1:180.93.57.30:19129:0`
 
@@ -319,9 +320,9 @@ Kiểm tra: `netstat -an | findstr 19129` trên máy nhà.
 **Người chơi bị "Vui lòng kích hoạt tài khoản"** — tài khoản chưa có dòng trong `5h_active`:
 
 ```sql
-INSERT INTO kpah_db.5h_active (userID, username, time_end)
+INSERT INTO htbb_db.5h_active (userID, username, time_end)
 SELECT id, username, UNIX_TIMESTAMP() + 2592000 FROM account.team_user
-WHERE id NOT IN (SELECT userID FROM kpah_db.5h_active);
+WHERE id NOT IN (SELECT userID FROM htbb_db.5h_active);
 ```
 
 Hoặc `server.ini` → `sv.EnableAvtiveCheck=0` rồi khởi động lại server.

@@ -70,6 +70,8 @@ public class Char extends LiveActor {
     /** Pet di theo dang Pokemon (lenh -94 POKE_PET), 0 = pet kieu cu. */
     public short pokePetDex;
     public boolean pokePetShiny;
+    /** Ngoai hinh trang bi (lenh -102 POKE_NGOAI_HINH): phu kien, vang sang, trang phuc. null = chua co. */
+    public game.pokemon.NgoaiHinhCua ngoaiHinh;
     /** 1,5 giay o 25 tick/giay (Unity: 75 tick o 50/giay). */
     public static final int POKE_TICK_TIEN_HOA = 38;
     public int attkPower;
@@ -627,8 +629,8 @@ public class Char extends LiveActor {
     }
 
     public static DataSkillEff getPartEff(short id) {
-        if (id == -1) {
-            return null;
+        if (id == -1 || game.pokemon.SinhThai.laDanhHieu(id)) {
+            return null;   // danh hiệu sinh thái: huy hiệu vẽ bằng code, không xin dữ liệu hiệu ứng
         }
         DataSkillEff ef = (DataSkillEff) ALL_PART_EFF.get(new StringBuffer(String.valueOf((int) id)).toString());
         if (ef == null) {
@@ -1353,7 +1355,18 @@ public class Char extends LiveActor {
             this.height = (short) (this.height + caoThu * 55 / 100);
         }
         // pokemon: chop trang + lac nhe khi trung don (HieuUngDanh)
-        PokeBody.paint(g, dexVe, this.pokeShiny, this.x + pokeLac(), yNguoi, this.dir, dongTac, tick, 100, doSang == 0 && pokeChop() ? 230 : doSang);
+        // ngoai hinh trang bi: lop sau (vong sang, vien, ao choang) -> than (trang phuc) -> lop truoc (mu, khan...)
+        int xThan = this.x + pokeLac();
+        boolean coNgoaiHinh = this.ngoaiHinh != null && this.state != 3 && dexVe == this.pokeDex
+                && (game.pokemon.NgoaiHinhVe.hien || this == Canvas.gameScr.mainChar);
+        if (coNgoaiHinh) {
+            game.pokemon.NgoaiHinhVe.veSau(g, this.ngoaiHinh, dexVe, this.pokeShiny, xThan, yNguoi, this.y, this.dir, dongTac, tick);
+        }
+        PokeBody.paint(g, dexVe, this.pokeShiny, xThan, yNguoi, this.dir, dongTac, tick, 100, doSang == 0 && pokeChop() ? 230 : doSang,
+                coNgoaiHinh ? this.ngoaiHinh.trangPhuc : 0);
+        if (coNgoaiHinh) {
+            game.pokemon.NgoaiHinhVe.veTruoc(g, this.ngoaiHinh, dexVe, this.pokeShiny, xThan, yNguoi, this.dir, dongTac, tick);
+        }
         if (this.comeHome) {
             g.setColor(0);
             g.fillRect(this.x - 16, this.y - 46, 32, 4);
@@ -1371,7 +1384,25 @@ public class Char extends LiveActor {
         if (this.pokeDex <= 0) {
             return false;
         }
-        return PokeBody.paint(g, this.pokeDex, this.pokeShiny, xp, yp, DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100);
+        return paintPokemonTinh(g, xp, yp, DOWN);
+    }
+
+    /** Nhu tren, them huong (the trang bi xoay Pokemon) + ngoai hinh trang bi. */
+    public boolean paintPokemonTinh(Graphics g, int xp, int yp, int huong) {
+        if (this.pokeDex <= 0) {
+            return false;
+        }
+        int t = Canvas.gameTick;
+        game.pokemon.NgoaiHinhCua n = this.ngoaiHinh;
+        if (n != null) {
+            game.pokemon.NgoaiHinhVe.veSau(g, n, this.pokeDex, this.pokeShiny, xp, yp, yp, huong, PokeDuLieu.DUNG, t);
+        }
+        boolean ok = PokeBody.paint(g, this.pokeDex, this.pokeShiny, xp, yp, huong, PokeDuLieu.DUNG, t, 100, 0,
+                n != null ? n.trangPhuc : 0);
+        if (ok && n != null) {
+            game.pokemon.NgoaiHinhVe.veTruoc(g, n, this.pokeDex, this.pokeShiny, xp, yp, huong, PokeDuLieu.DUNG, t);
+        }
+        return ok;
     }
 
     public void paintCharList(Graphics g) {
@@ -1546,6 +1577,10 @@ public class Char extends LiveActor {
             }
             if (this.nationID > -1 && this.idBoss == -1 && ((this.nationID != this.inCountry || this.ID == Canvas.gameScr.mainChar.ID) && (this.nationID != this.inCountry || this.ID == Canvas.gameScr.mainChar.ID))) {
                 g.drawRegion(Res.imgNation, 0, this.nationID * 11, 11, 11, 0, this.x + (this.wName / 2) + 9, ((this.y - this.height) - 12) + bb, 20);
+            }
+            int dhSinhThai = game.pokemon.SinhThai.danhHieuCua(this.listEffect);
+            if (dhSinhThai >= 0) {
+                game.pokemon.SinhThai.veDanhHieu(g, this.x, ((this.y - 42) + bb) - this.dyThanthu, dhSinhThai);
             }
             if (this.ID == Canvas.gameScr.mainChar.ID || this.nationID == Canvas.gameScr.mainChar.nationID || this.idBoss != -1) {
                 Font.smallFont.drawString(g, this.name, this.x + aa, ((this.y - 40) + bb) - this.dyThanthu, 2);

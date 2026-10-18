@@ -62,10 +62,12 @@ public class BaoTriDaily implements Runnable {
     /**
      * Dat gio bao tri tu server.ini (sv.gioBaoTri): "HH:MM" = co dinh, "tat" = khong tu tat may hang
      * ngay, trong/sai = ngau nhien 4:30-5:30 nhu cu. Goi tu TeamServer luc doc cau hinh. Unit systemd
-     * (vps/kpah-game.service, Restart=always) tu bat lai sau khi bao tri.
+     * (vps/htbb-game.service, Restart=always) tu bat lai sau khi bao tri.
      */
     public static void datGio(final String s) {
         if (s == null || s.trim().isEmpty()) {
+            // Goi lai luc dang chay (CauHinhTrungTam, sv.gioBaoTri doi thanh trong): bo "tat", giu gio dang co.
+            tatBaoTri = false;
             return;
         }
         final String v = s.trim();
@@ -83,6 +85,8 @@ public class BaoTriDaily implements Runnable {
             }
             maintenanceHour = h;
             maintenanceMinute = mi;
+            tatBaoTri = false;
+            daBaoTruoc = false;
             final int tongPhutCanhBao = (h * 60 + mi - 1 + 24 * 60) % (24 * 60);
             warnHour = tongPhutCanhBao / 60;
             warnMinute = tongPhutCanhBao % 60;
@@ -164,7 +168,7 @@ public class BaoTriDaily implements Runnable {
                     // SECURITY: disabled external heartbeat call that sent online count to a remote server (api.url).
                 }
                 // GD2: job dem cua thiet ke dai han (tat co: khong lam gi). Xem LauDaiJob.
-                LauDaiJob.nhip(d);
+                LauDaiJob.nhip(com.htbb.pokemon.DongHo.ngay()); // dong ho ao tren may thu (DongHo), gio that tren may that
                 if (d.getMinutes() == 0 && d.getSeconds() == 0) {
                     Database.instance.loadTangExp();
                     Database.instance.loadTangNap();

@@ -23,11 +23,11 @@ import java.nio.file.Files;
  */
 public final class TaoPetLanCapThap {
 
-    static final String MO_TA_49 = "map/d_effect/49";
+    static final String MO_TA_49 = "server/map/d_effect/49";
     /** {id nguon, 3 o dung lam khung, file dich}. */
     static final Object[][] VIEC = {
-        {"map/d_effect/67", new int[]{0, 1, 2}, "map/d_effect/67.pet"},
-        {"map/d_effect/68", new int[]{0, 1, 2}, "map/d_effect/68.pet"},
+        {"server/map/d_effect/67", new int[]{0, 1, 2}, "server/map/d_effect/67.pet"},
+        {"server/map/d_effect/68", new int[]{0, 1, 2}, "server/map/d_effect/68.pet"},
     };
 
     public static void main(final String[] args) throws IOException {

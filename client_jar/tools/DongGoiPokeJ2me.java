@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
 /**
  * Dong goi tai nguyen Pokemon cua ClientUnity (HTBB) thanh ban nhe cho jar J2ME (chay tren JDK).
  *
- *   java -cp out/tool DongGoiPokeJ2me &lt;htbb-client/pc/Assets&gt; &lt;j2me/res&gt;   (hoac HTBB/ClientUnity/Assets cu)
+ *   java -cp out/tool DongGoiPokeJ2me &lt;client_pc_ios/Assets&gt; &lt;client_jar/res&gt;   (hoac client_pc_ios/ClientUnity/Assets cu)
  *
  * Doc  Resources/poke/&lt;khoa&gt;_anh.bytes + _dl.bytes (atlas PNG + du lieu khung ban 2, muc 7.1),
  *      Resources/poke/&lt;khoa&gt;_cd.bytes, vt_*.bytes, Resources/poke_tile/*.bytes,
@@ -50,7 +50,7 @@ import javax.imageio.ImageIO;
  *    + res/pk/hu_*.png: khung cat sat hinh (o chung), bot khung (toi da TOI_DA_HU), PNG bang mau
  *    (alpha trong tRNS; qua 256 mau thi luong tu hoa median-cut).
  *
- * Ban NHE (doi so thu 3 = thu muc res nhe, vd j2me/res_nhe; build.sh GOI=nhe dung no) cho may that:
+ * Ban NHE (doi so thu 3 = thu muc res nhe, vd client_jar/res_nhe; build.sh GOI=nhe dung no) cho may that:
  *  - chi cac loai can thiet (docs/pokemon cua HTBB): dong nguoi choi, NPC (+ su kien), pet cu,
  *    pet_item (bang_thu), quai thuong cap &lt;= CAP_QUAI_NHE = 15 (cac map dau); bo shiny (tu dung ban
  *    thuong), bo thu cuoi / boss / quai cap cao (ve bang bong den);
@@ -74,7 +74,16 @@ public class DongGoiPokeJ2me {
 
     static final Cau DAY_DU = new Cau();
     static final Cau NHE = new Cau();
+    /**
+     * Ban day du, loai CHI la quai/boss (khong phai dong nguoi choi, NPC, pet, thu cuoi - nhin gan):
+     * it khung hon, danh xa dung chung anh danh gan (jar thuong &lt;= 5,5 MB).
+     */
+    static final Cau XA = new Cau();
+    static java.util.Set<String> loaiGan;
     static {
+        XA.toiDa = new int[]{3, 3, 4, 4, 2, 2};
+        XA.nguon = new int[]{0, 1, 2, 2, 4, 5};
+        XA.toiDaHu = 10;
         DAY_DU.toiDa = new int[]{4, 4, 6, 6, 2, 3};
         DAY_DU.toiDaHu = 10;
         NHE.toiDa = new int[]{2, 2, 3, 3, 1, 1};
@@ -96,7 +105,17 @@ public class DongGoiPokeJ2me {
     static int soKhoa = 0, soDungChung = 0, soPalette = 0, soArgb = 0;
 
     public static void main(String[] a) throws Exception {
+        if (a.length >= 3 && a[0].equals("--chi-neo")) {
+            chiNeo(new File(a[1]), new File(a[2]));
+            return;
+        }
         File assets = new File(a[0]);
+        try {
+            loaiGan = loaiGan(thuMucDocs(assets));
+            System.out.println("--- ban day du: " + loaiGan.size() + " loai nhin gan (du khung), con lai it khung");
+        } catch (IOException e) {
+            loaiGan = null;   // thieu docs: moi loai du khung nhu cu
+        }
         dongGoiHet(assets, new File(a[1]), DAY_DU);
         if (a.length > 2) {
             NHE.chiGiu = loaiNhe(thuMucDocs(assets));
@@ -116,7 +135,7 @@ public class DongGoiPokeJ2me {
 
     /**
      * docs/pokemon cua HTBB (bang loai cho ban nhe): bien HTBB_DOCS, hoac &lt;assets&gt;/../../docs/pokemon
-     * (assets = HTBB/ClientUnity/Assets), hoac &lt;assets&gt;/../../../HTBB/docs/pokemon (assets = htbb-client/pc/Assets
+     * (assets = client_pc_ios/ClientUnity/Assets), hoac &lt;assets&gt;/../../../docs/pokemon (assets = client_pc_ios/Assets
      * voi HTBB nam canh htbb-client).
      */
     static File thuMucDocs(File assets) {
@@ -125,7 +144,7 @@ public class DongGoiPokeJ2me {
             return new File(rieng);
         }
         File cu = new File(assets, "../../docs/pokemon");
-        return cu.isDirectory() ? cu : new File(assets, "../../../HTBB/docs/pokemon");
+        return cu.isDirectory() ? cu : new File(assets, "../../../docs/pokemon");
     }
 
     static void datLai() {
@@ -152,7 +171,10 @@ public class DongGoiPokeJ2me {
             if (t.endsWith("_dl.bytes") && !t.startsWith("hu_")) {
                 String khoa = t.substring(0, t.length() - "_dl.bytes".length());
                 if (c.chiGiu == null || c.chiGiu.contains(khoa)) {
+                    String goc = khoa.endsWith("s") ? khoa.substring(0, khoa.length() - 1) : khoa;
+                    cau = c == DAY_DU && loaiGan != null && !loaiGan.contains(goc) ? XA : c;
                     dongGoi(poke, pk, khoa, khoa, false);
+                    cau = c;
                 }
             }
         }
@@ -173,7 +195,9 @@ public class DongGoiPokeJ2me {
         }
         long hu = dongGoiHieuUng(poke, pk, c.toiDaHu);
         File poTile = new File(assets, "Resources/poke_tile");
-        for (String t : c == DAY_DU ? poTile.list() : new String[0]) {
+        // GIU_TILE=1: khong ghi lai res/pt (tile ban do do nhom ban do quan ly)
+        boolean ghiTile = c == DAY_DU && !"1".equals(System.getenv("GIU_TILE"));
+        for (String t : ghiTile ? poTile.list() : new String[0]) {
             if (t.endsWith(".bytes")) {
                 // giu nguyen tung byte: tile la anh 16 x (16n), ban jar doc bang Image.createImage
                 byte[] b = Files.readAllBytes(new File(poTile, t).toPath());
@@ -182,6 +206,9 @@ public class DongGoiPokeJ2me {
             }
         }
         long chu = ghiTuDien(tepTuDien(assets), new File(pk, "chu.bin"));
+        if (c != NHE) {
+            chepPhuKien(poke, pk);   // ban nhe: chi vang sang mau, khong phu kien
+        }
         System.out.println("khoa: " + soKhoa + ", anh dong tac: " + (soPalette + soArgb) + " (palette " + soPalette
                 + ", argb " + soArgb + "), dung chung anh: " + soDungChung);
         System.out.println("pixel: goc " + tongPxGoc + " -> " + tongPx);
@@ -305,6 +332,10 @@ public class DongGoiPokeJ2me {
         PokeDongTac dung = dl.layDongTac(PokeDuLieu.DUNG);
         o.writeShort(Math.max(0, Math.min(65535, dung.caoKhung / 2 + dung.dyChan[0])));
         byte[] kq = bo.toByteArray();
+        if (!bong && cau != NHE) {
+            // diem neo phu kien trang bi (ngoai hinh trang bi); ban nhe khong co: chi vang sang mau
+            kq = themNeo(poke, khoaNguon, kq, cau.nguon);
+        }
         // tu kiem: doc lai bang chinh PokeDuLieu cua jar
         PokeDuLieu lai = PokeDuLieu.doc(kq);
         if (lai == null || lai.dongTac.length != n || lai.caoTrenGoc != dung.caoKhung / 2 + dung.dyChan[0]) {
@@ -313,6 +344,117 @@ public class DongGoiPokeJ2me {
         Files.write(new File(pk, khoa + ".dl").toPath(), kq);
         tongDl += kq.length;
         soKhoa++;
+    }
+
+    /** Do dai phan .dl cua jar TOI HET caoTrenGoc (bo phan neo cu neu co). */
+    static int doDaiGoc(PokeDuLieu dl) {
+        int n = 2;
+        for (int i = 0; i < dl.dongTac.length; i++) {
+            n += 2 + 2 + 1 + dl.dongTac[i].soKhung + 2 + 2 + 8;
+        }
+        return n + 6 + 6 + 2;
+    }
+
+    /**
+     * Gan diem neo phu kien (Resources/poke/&lt;khoa&gt;_neo.bytes cua HTBB tools/pokemon/TinhNeoPoke.java) vao
+     * cuoi .dl cua jar: u8 'N' roi moi dong tac 4 huong x soKhung x 8 byte, CHI cac khung jar da giu (chonKhung
+     * voi toiDa = so khung jar). nguon[i] = dong tac goc cua dong tac i. Thieu/lech tep neo: tra lai .dl khong neo.
+     */
+    static byte[] themNeo(File poke, String khoaNguon, byte[] dlJar, int[] nguon) throws IOException {
+        PokeDuLieu dj = PokeDuLieu.doc(dlJar);
+        File f = new File(poke, khoaNguon + "_neo.bytes");
+        if (dj == null || !f.isFile()) {
+            return dlJar;
+        }
+        int goc = Math.min(dlJar.length, doDaiGoc(dj));
+        byte[] nb = Files.readAllBytes(f.toPath());
+        if (nb.length < 3 || nb[0] != 'N' || nb[1] != 1) {
+            return dlJar;
+        }
+        int n = nb[2] & 0xFF;
+        int[] vt = new int[n];
+        int[] soKhung = new int[n];
+        int p = 3;
+        for (int i = 0; i < n; i++) {
+            soKhung[i] = nb[p++] & 0xFF;
+            vt[i] = p;
+            p += 4 * soKhung[i] * 8;
+        }
+        if (p != nb.length) {
+            System.out.println("CANH BAO neo lech do dai: " + khoaNguon);
+            return dlJar;
+        }
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        bo.write(dlJar, 0, goc);
+        bo.write('N');
+        for (int i = 0; i < dj.dongTac.length; i++) {
+            int src = i < nguon.length && nguon[i] < n ? nguon[i] : i;
+            if (src >= n) {
+                return dlJar;
+            }
+            int sk = dj.dongTac[i].soKhung;
+            int[] giu = chonKhung(soKhung[src], sk, PokeDuLieu.laDongTacLap(i));
+            if (giu.length != sk) {
+                System.out.println("CANH BAO neo lech so khung: " + khoaNguon + " dong tac " + i);
+                return dlJar;
+            }
+            for (int h = 0; h < 4; h++) {
+                for (int k = 0; k < sk; k++) {
+                    bo.write(nb, vt[src] + (h * soKhung[src] + giu[k]) * 8, 8);
+                }
+            }
+        }
+        return bo.toByteArray();
+    }
+
+    /**
+     * Chi gan lai diem neo vao cac .dl DA CO trong &lt;res&gt;/pk (khong dong goi lai anh) + chep phukien.bin:
+     *   java DongGoiPokeJ2me --chi-neo &lt;assets&gt; &lt;res&gt;
+     * Dong tac goc suy tu .dl: danh xa dung chung anh danh gan -&gt; neo cua danh gan (ban XA), tuong tu guc nga.
+     */
+    static void chiNeo(File assets, File res) throws Exception {
+        File poke = new File(assets, "Resources/poke");
+        File pk = new File(res, "pk");
+        int so = 0, khong = 0;
+        for (String t : pk.list()) {
+            if (!t.endsWith(".dl") || t.equals("bong.dl")) {
+                continue;
+            }
+            String khoa = t.substring(0, t.length() - 3);
+            File f = new File(pk, t);
+            byte[] b = Files.readAllBytes(f.toPath());
+            PokeDuLieu dj = PokeDuLieu.doc(b);
+            if (dj == null) {
+                continue;
+            }
+            int[] nguon = {0, 1, 2, 3, 4, 5};
+            if (dj.anhDongTac[3] == dj.anhDongTac[2] && dj.dongTac.length > 3) {
+                nguon[3] = 2;
+            }
+            if (dj.anhDongTac[5] == dj.anhDongTac[4] && dj.dongTac.length > 5) {
+                nguon[5] = 4;
+            }
+            byte[] moi = themNeo(poke, khoa, b, nguon);
+            if (PokeDuLieu.doc(moi) == null || PokeDuLieu.doc(moi).caoTrenGoc != dj.caoTrenGoc) {
+                throw new IOException("doc lai hong: " + khoa);
+            }
+            Files.write(f.toPath(), moi);
+            if (PokeDuLieu.doc(moi).neo != null) {
+                so++;
+            } else {
+                khong++;
+            }
+        }
+        chepPhuKien(poke, pk);
+        System.out.println("neo: " + so + " .dl co neo, " + khong + " khong");
+    }
+
+    /** Phu kien trang bi (HTBB tools/pokemon/SinhPhuKien.java) -> res/pk/phukien.bin. */
+    static void chepPhuKien(File poke, File pk) throws IOException {
+        File f = new File(poke, "phukien.bytes");
+        if (f.isFile()) {
+            Files.copy(f.toPath(), new File(pk, "phukien.bin").toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /** Chon toi da toiDa khung trong soKhung, deu nhau; dong tac khong lap luon giu khung cuoi. */
@@ -471,6 +613,34 @@ public class DongGoiPokeJ2me {
     // ------------------------------------------------------------------ ban nhe, bong den
 
     /** Cac khoa loai cho ban nhe, doc tu docs/pokemon/*.csv cua HTBB. */
+    /** Loai nhin gan (giu du khung o ban day du): dong nguoi choi, NPC (+ su kien), pet, pet_item / thu cuoi. */
+    static java.util.Set<String> loaiGan(File docs) throws IOException {
+        java.util.Set<String> kq = new java.util.TreeSet<>();
+        for (Map<String, String> r : docCsv(new File(docs, "kiem_ke_sprite.csv"))) {
+            String dung = r.get("dung_cho");
+            if ("nguoi_choi".equals(dung) || "npc".equals(dung) || "npc_su_kien".equals(dung) || "pet_cu".equals(dung)) {
+                themDex(kq, r.get("dex"));
+            }
+        }
+        for (Map<String, String> r : docCsv(new File(docs, "bang_thu.csv"))) {
+            themDex(kq, r.get("dex"));
+        }
+        for (Map<String, String> r : docCsv(new File(docs, "bang_npc.csv"))) {
+            themDex(kq, r.get("dex"));
+        }
+        for (Map<String, String> r : docCsv(new File(docs, "bang_npc_su_kien.csv"))) {
+            themDex(kq, r.get("dex"));
+        }
+        for (Map<String, String> r : docCsv(new File(docs, "bang_pet_cu.csv"))) {
+            themDex(kq, r.get("dex"));
+        }
+        // dong tien hoa cua 5 Pokemon khoi dau (nguoi choi)
+        for (int d : new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 133, 134, 135, 136, 196, 197, 470, 471, 700, 172, 25, 26}) {
+            kq.add(String.format("%04d", d));
+        }
+        return kq;
+    }
+
     static java.util.Set<String> loaiNhe(File docs) throws IOException {
         java.util.Set<String> kq = new java.util.TreeSet<>();
         for (Map<String, String> r : docCsv(new File(docs, "kiem_ke_sprite.csv"))) {

@@ -2,7 +2,7 @@ package real;
 
 import java.util.Vector;
 
-// Tach tu lib/NQSH_5h.jar (19/09/2026) cung dot voi CharSell/ShopSellItem/GemSellEntry.
+// Tach tu lib/htbb-core.jar (19/09/2026) cung dot voi CharSell/ShopSellItem/GemSellEntry.
 public class SellerTemplate {
     public int idSeller;
     public byte[] typeItem;
@@ -32,12 +32,12 @@ public class SellerTemplate {
             return "Cửa hàng chỉ bán giáp";
         }
         if (this.kindSeller == 1) {
-            return "Cửa hàng chỉ bán vũ khí";
+            return "Cửa hàng chỉ bán đồ cầm tay";
         }
         if (this.idSeller == 2) {
-            return "Cửa hàng chỉ bán trang sức, trứng thú cưng, tụ hồn đan, huyết bổ đề, huyết linh thảo, sách kỹ năng pet và các vật phẩm khác: luyện kim dược, ngọc khảm...";
+            return "Cửa hàng chỉ bán trang sức, trứng thú cưng, Kẹo Poké, Bạc hà tính cách, Kẹo thú cưng, sách kỹ năng pet và các vật phẩm khác: luyện kim dược, ngọc khảm...";
         }
-        return "Cửa hàng chỉ bán trang sức, xa tiêu lệnh, lệnh bài trấn yêu và các vật phẩm khác: luyện kim dược, ngọc khảm,...";
+        return "Cửa hàng chỉ bán trang sức, vé xe giao hàng, vé Mê cung và các vật phẩm khác: luyện kim dược, ngọc khảm,...";
     }
 
     public Vector<CharSell> getListeUserShop(short shopID) {

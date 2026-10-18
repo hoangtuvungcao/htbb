@@ -65,12 +65,19 @@ public final class KiemTatCaiTrang {
         // cau UPDATE se sua NHAM NHAN VAT KHAC — hoac nem loi, ma nem loi o day nghia la
         // nhan vat bi khoa.
         //
-        // 05/09/2026: them cot isSkinThu (xem KiemSkinLinhThu) chen truoc charDBID, day
+        // 05/09/2026: them cot isSkinThu (xem KiemSkinThuCuoi) chen truoc charDBID, day
         // charDBID tu tham so 29 sang 30.
-        Kiem.dung("charDBID chuyen sang tham so 30", luu.contains("pre.setInt(30, p.charDBID)"));
-        Kiem.sai("khong con dat charDBID o tham so 27", luu.contains("pre.setInt(27, p.charDBID)"));
-        Kiem.sai("khong con dat charDBID o tham so 28", luu.contains("pre.setInt(28, p.charDBID)"));
-        Kiem.sai("khong con dat charDBID o tham so 29", luu.contains("pre.setInt(29, p.charDBID)"));
+        // 21/09/2026: them 3 cot kho_xu/kho_luong/kho_luong_khoa (Database.themCotKhoXuLuong,
+        // sql/them_cot_kho_xu_luong.sql) -> 30 sang 33. Thay vi chot cung mot con so (lan
+        // nao them cot cung phai sua test), DEM so "?" trong chinh cau UPDATE cua saveChar
+        // va doi charDBID phai dung o "?" cuoi cung (where id=?). Chi xet THAN saveChar:
+        // saveCharAuto co cau UPDATE ngan hon nen setInt(27, p.charDBID) o do la DUNG.
+        final int[] chiSo = chiSoCharDBIDSaveChar(luu);
+        Kiem.dung("tim thay cau UPDATE cua saveChar (co isSkinThu=?)", chiSo[0] > 0);
+        Kiem.bang("charDBID dat o tham so cuoi cua saveChar (= so dau ?)",
+                Integer.valueOf(chiSo[0]), Integer.valueOf(chiSo[1]));
+        Kiem.bang("saveChar chi dat charDBID dung 1 lan (khong con chi so cu 27/28/29/30)",
+                Integer.valueOf(1), Integer.valueOf(chiSo[2]));
 
         // ---- Nap lai luc dang nhap ----
         Kiem.dung("luc nap co doc cot isCT", db.contains("rs.getByte(\"isCT\")"));
@@ -102,8 +109,13 @@ public final class KiemTatCaiTrang {
         // Mac dinh phai la 0. Cac hang cu sau ALTER deu mang gia tri nay, ma ca hai cong
         // tac deu quy uoc 0 = DANG BAT — dung hanh vi tu truoc den gio. Dat mac dinh 1 thi
         // ngay khi may chu khoi dong, moi nguoi choi bi tat cai trang va tat canh.
+        // 21/09/2026 ham nay duoc tach thanh themCotNeuThieu(tenCot, kieuCot, moTa) de dung
+        // chung cho kho_xu (bigint) - chuoi ALTER gio ghep " " + kieuCot + " NOT NULL DEFAULT 0"
+        // nen khong con chuoi lien "int(11) NOT NULL DEFAULT 0". Kiem dung y nghia: cac cot
+        // cong tac di qua nhanh int(11), va nhanh ALTER cua tob_char mac dinh 0.
         Kiem.dung("cot moi mac dinh 0 (= dang bat, dung hanh vi cu)",
-                db.contains("int(11) NOT NULL DEFAULT 0"));
+                db.contains("themCotNeuThieu(tenCot, \"int(11)\", moTa)")
+                && db.contains("\" NOT NULL DEFAULT 0\");"));
         Kiem.dung("TeamServer goi ham do luc khoi dong",
                 server.contains("Database.instance.themCotCongTacHienThi()"));
 
@@ -137,6 +149,42 @@ public final class KiemTatCaiTrang {
         final int mocTryCanh = db.lastIndexOf("try {", mocCanh);
         Kiem.dung("doc isCanh nam trong try RIENG cua no",
                 mocCanh > 0 && mocTryCanh > mocDoc);
+    }
+
+    /**
+     * {so dau "?" trong cau UPDATE cua saveChar, chi so N cua pre.setInt(N, p.charDBID) trong
+     * than saveChar (lan dau), so lan dat charDBID trong than saveChar}. Dung chung voi
+     * KiemSkinThuCuoi.
+     */
+    static int[] chiSoCharDBIDSaveChar(final String luu) {
+        final int moc = luu.indexOf("isSkinThu=?");
+        if (moc < 0) {
+            return new int[]{0, -1, 0};
+        }
+        final int dauSql = luu.lastIndexOf("String sql = \"UPDATE tob_char SET", moc);
+        final int cuoiSql = luu.indexOf("where id=?\";", moc);
+        final int cuoiThan = luu.indexOf("pre.execute()", cuoiSql);
+        if (dauSql < 0 || cuoiSql < 0 || cuoiThan < 0) {
+            return new int[]{0, -1, 0};
+        }
+        int soDauHoi = 0;
+        for (int i = dauSql; i < cuoiSql + "where id=?".length(); i++) {
+            if (luu.charAt(i) == '?') {
+                soDauHoi++;
+            }
+        }
+        final java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("pre\\.setInt\\((\\d+), p\\.charDBID\\)")
+                .matcher(luu.substring(cuoiSql, cuoiThan));
+        int chiSo = -1;
+        int soLan = 0;
+        while (m.find()) {
+            if (chiSo < 0) {
+                chiSo = Integer.parseInt(m.group(1));
+            }
+            soLan++;
+        }
+        return new int[]{soDauHoi, chiSo, soLan};
     }
 
     private static String doc(final String duong) {

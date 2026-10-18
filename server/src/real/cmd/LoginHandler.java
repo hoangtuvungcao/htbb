@@ -86,7 +86,7 @@ public class LoginHandler implements ICommandHandler {
         LoginHandler.versionCode = 0;
         LoginHandler.versionTile = 0;
         LoginHandler.stopLogin = false;
-        LoginHandler.PORTION_NAME = new String[]{"Xu", "HP nhỏ", "HP vừa", "HP to", "MP nhỏ", "MP vừa", "MP to", "Bình tăng tốc thường", "Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng", "Nhân sâm", "Tiên dược thường: cộng 100k exp", "Tiên dược cao cấp: cộng 500k exp", "Tiên dược đặc biệt: cộng 1t exp", "Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc", "Khăn đỏ", "Khăn xanh", "Khăn vàng", "Khăn xanh lá", "Khăn tím", "Thổ địa phù", "Vé tàu", "HP đ.biệt vừa", "HP đ.biệt to", "MP đ.biệt vừa", "MP đ.biệt to", "Thuốc khôi phục tiềm năng", "Thuốc khôi phục", "Thần hành phù", "Thẻ cấm chat", "Phiếu công ích", "Thiên lý mã", "Kim bài", "Thẻ đấu trường", "Thẻ chiếm thành", "Xích thố", "Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi", "Tuần lộc", "Đầu đinh", "Tóc búi", "Tóc cột cao", "Tóc chéo", "Tóc xù", "Tóc ngang vai", "Tóc đinh so le", "Tóc so le", "Tóc thư sinh", "Tóc cài hoa", "Tóc bờm ngựa", "Tóc tiên đồng", "Tóc dựng đứng", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Bí ma", "Hộp may mắn", "Hắc Ngưu", "Mãnh hổ", "Sói xám", "Tiên Hạc", "Bạch mã", "Vé quay số", "Trứng phượng hoàng băng", "Trứng Hoả kỳ lân", "Trứng đương khang", "Túi nhặt ngọc", "Trứng bạch cốt", "Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi", "Vé quay số đặc biệt", "Mảnh bản đồ 1", "Thẻ liên hoa", "Hộp thần kỳ", "Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày", "Vé giờ vàng tăng 150% kinh nghiệm.", "Thẻ vận tiêu. Thêm một lượt vận tiêu khi sử dụng", "Tụ hồn đan. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.", "Thuốc cường hoá", "Thẻ triệu hồi", "Phượng hoàng", "Thẻ bài phong chức", "Nhẫn Bách niên giai lão 2%pt", "Nhẫn Vĩnh kết đồng tâm 4%pt", "Nhẫn Loan phụng hòa minh 7%pt", "Vé vào mỏ", "Thiệp cưới", "HP7k", "HP15k", "MP7k", "MP15k", "Lệnh bài đổi tiêu", "Phù phu thê", "Pháo hoa", "loa", "Rương vàng", "Rương bạc", "Lá vàng", "Dây thừng. Dùng để bắt thú nuôi", "Mảnh bản đồ 2", "Nhánh hoa hồng vàng", "Hoa hồng đỏ", "", "Bó hoa vàng", "Bó hoa đỏ", "Sách kỹ năng pet", "Thức ăn tươi", "Thức ăn khô", "Thức ăn tổng hợp", "Trứng Lân sư tử", "Lệnh bài đổi tiêu cao cấp", "Mảnh bản đồ 3", "Vé phượng hoàng.\nDùng quay số phượng hoàng", "Tiên đan\nHồi sinh bản thân.", "Thịt", "Trứng", "Đậu xanh", "Thuốc cường hóa siêu cấp", "Bánh dẻo", "Bánh nướng", "Hp chiến trường.\nHồi 10.000 hp", "Đoạn cốt.\nHồi 10.000 mp", "Thuốc cường hoá chiến trường", "Hỗn độn.\nTăng 20% giáp trong 90s", "Hỗn Nguyên.\nTăng 20% sát thương.", "Hoá công.\nTăng 50% sát thương boss.", "Hoả dược. Gây sát thương theo x10% nội lực bản thân lên toàn bộ mục tiêu trong bán kính 5m.", "Hộp bánh thập cẩm", "Hộp bánh đặc biệt", "Hạt mầm", "Nến", "Kẹo", "Bí ngô", "Hộp quà", "Hộp quà halloween", "Hộp quà tặng halloween", "Bột mỳ", "Hộp quà bí mật", "Sao vàng", "Dưa Hấu", "Kem", "Túi quà may mắn", "Gạo nếp", "Thịt mỡ", "Lá dong", "Bánh chưng", "Bánh tét", "Giấy", "Thuốc pháo", "Pháo hoa tết", "Lửa thường", "Lửa vừa", "Lửa to", "Bao lì xì", "Quả bóng bạc", "Quả bóng vàng","Cuồng Nộ"};
+        LoginHandler.PORTION_NAME = new String[]{"Xu", "HP nhỏ", "HP vừa", "HP to", "MP nhỏ", "MP vừa", "MP to", "Bình tăng tốc thường", "Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng", "Berry Razz vàng", "Kẹo kinh nghiệm thường: cộng 100k exp", "Kẹo kinh nghiệm cao cấp: cộng 500k exp", "Kẹo kinh nghiệm đặc biệt: cộng 1t exp", "Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc", "Khăn đỏ", "Khăn xanh", "Khăn vàng", "Khăn xanh lá", "Khăn tím", "Vé bay Pidgeot", "Vé tàu", "HP đ.biệt vừa", "HP đ.biệt to", "MP đ.biệt vừa", "MP đ.biệt to", "Thuốc khôi phục tiềm năng", "Thuốc khôi phục", "Vé bay Pidgeot", "Thẻ cấm chat", "Phiếu công ích", "Ponyta", "Huy hiệu lập đội", "Thẻ đấu trường", "Thẻ chiếm Gym", "Ponyta lửa", "Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi", "Tuần lộc", "Đầu đinh", "Lông búi", "Lông cột cao", "Lông chéo", "Lông xù", "Lông ngang vai", "Lông đinh so le", "Lông so le", "Lông gọn gàng", "Lông cài hoa", "Bờm Ponyta", "Lông Clefairy", "Lông dựng đứng", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Bí ma", "Hộp may mắn", "Machamp", "Arcanine", "Sói xám", "Pidgeot", "Rapidash", "Vé quay số", "Trứng Articuno", "Trứng Ponyta", "Trứng Piloswine", "Túi nhặt ngọc", "Trứng Spectrier", "Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi", "Vé quay số đặc biệt", "Mảnh bản đồ 1", "Thẻ liên hoa", "Hộp thần kỳ", "Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày", "Vé giờ vàng tăng 150% kinh nghiệm.", "Thẻ giao hàng. Thêm một lượt giao hàng khi sử dụng", "Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.", "Thuốc cường hoá", "Thẻ triệu hồi", "Moltres", "Thẻ phong chức", "Nhẫn Trái tim đồng 2%pt", "Nhẫn Trái tim bạc 4%pt", "Nhẫn Trái tim vàng 7%pt", "Vé vào mỏ", "Thiệp cưới", "HP7k", "HP15k", "MP7k", "MP15k", "Thẻ đổi hàng", "Vảy trái tim", "Pháo hoa", "loa", "Rương vàng", "Rương bạc", "Lá vàng", "Dây thừng. Dùng để bắt thú nuôi", "Mảnh bản đồ 2", "Nhánh hoa hồng vàng", "Hoa hồng đỏ", "", "Bó hoa vàng", "Bó hoa đỏ", "Sách kỹ năng pet", "Thức ăn tươi", "Thức ăn khô", "Thức ăn tổng hợp", "Trứng Suicune", "Thẻ đổi hàng cao cấp", "Mảnh bản đồ 3", "Vé Moltres.\nDùng quay số Moltres", "Cỏ hồi sinh\nHồi sinh bản thân.", "Thịt", "Trứng", "Đậu xanh", "Thuốc cường hóa siêu cấp", "Bánh dẻo", "Bánh nướng", "Hp chiến trường.\nHồi 10.000 hp", "Ether chiến trường.\nHồi 10.000 mp", "Thuốc cường hoá chiến trường", "Hỗn độn.\nTăng 20% giáp trong 90s", "X Tấn Công.\nTăng 20% sát thương.", "Thuốc săn trùm.\nTăng 50% sát thương boss.", "Bom lửa. Gây sát thương theo x10% năng lượng bản thân lên toàn bộ mục tiêu trong bán kính 5m.", "Hộp bánh thập cẩm", "Hộp bánh đặc biệt", "Hạt mầm", "Nến", "Kẹo", "Bí ngô", "Hộp quà", "Hộp quà halloween", "Hộp quà tặng halloween", "Bột mỳ", "Hộp quà bí mật", "Sao vàng", "Dưa Hấu", "Kem", "Túi quà may mắn", "Gạo nếp", "Thịt mỡ", "Lá dong", "Bánh chưng", "Bánh tét", "Giấy", "Thuốc pháo", "Pháo hoa tết", "Lửa thường", "Lửa vừa", "Lửa to", "Bao lì xì", "Quả bóng bạc", "Quả bóng vàng","Cuồng Nộ"};
         LoginHandler.KHAM_NAME = new String[]{"Tăng sức mạnh", "Tăng nhanh nhẹn", "Tăng tinh thần", "Tăng sức khoẻ", "Gây mù ", "Đóng băng ", "Trúng độc", "Gây choáng", "Hoá thạch", "Giảm tốc ", "Kháng giảm tốc", "Kháng trúng độc", "Kháng gây mù", "Kháng đóng băng", "Kháng gây choáng", "Kháng hoá thạch", "Tăng tỷ lệ x2 mỗi lần đánh", "Tăng tỷ lệ rớt bảo vật"};
        
         LoginHandler.passAdmin = "000000";
@@ -107,8 +107,8 @@ public class LoginHandler implements ICommandHandler {
                 msgLoginSuccess.dos.writeBoolean(potion.isTrade);
             }
             String[][] decript = null;
-            String[][] decript2 = {{"Dùng sức mạnh của sấm sét tấn công nhiều mục tiêu trong 1 phạm vi nhất định"}, {"Dùng sức mạnh của rồng lửa tấn công nhiều mục tiêu trong 1 phạm vi nhất định", "Vận nội kình tạo ra liệt hỏa phát tán ra xung quanh, đốt cháy bất kỳ đối tượng nào trên đường đi của liệt hỏa."}, {"Dùng sức mạnh của rồng nước tấn công nhiều mục tiêu trong 1 phạm vi nhất định"}, {"Tạo ra những cơn địa chấn tấn công nhiều mục tiêu trong phạm vi nhất định"}, {"Tẩm cực độc vào mũi tên và triệt hạ nhiều mục tiêu cùng lúc"}};
-            String[][] decript3 = {{"Dùng sức mạnh của sấm sét tấn công nhiều mục tiêu trong 1 phạm vi nhất định", " Dùng vũ khí làm cầu nối dẫn truyền sấm sét vào cơ thể đối thủ, tia sét sẽ di chuyển thành một chuỗi liên hoàn vào các đối tượng tập trung gần nhau.", "Vận kình lực tạo thành những thanh kiếm khổng lồ giáng từ trên trời xuống đối phương"}, {"Dùng sức mạnh của rồng lửa tấn công nhiều mục tiêu trong 1 phạm vi nhất định", "Vận nội kình tạo ra liệt hỏa phát tán ra xung quanh, đốt cháy bất kỳ đối tượng nào trên đường đi của liệt hỏa.", " Khuấy động bầu trời, tạo ra những cơn mưa sao băng trút xuống mặt đất"}, {"Dùng sức mạnh của rồng nước tấn công nhiều mục tiêu trong 1 phạm vi nhất định", " Vận nội kình vào hai tay đánh ra hai con rồng theo hình trôn ốc, tạo nên một lực công phá khủng khiếp.", " Gọi gió hô mưa rồi truyền vào đó một luồng hàn băng cực mạnh tạo nên những trận mưa băng khủng khiếp"}, {"Tạo ra những cơn địa chấn tấn công nhiều mục tiêu trong phạm vi nhất định", "Dùng búa tạo ra những trận mưa đá tảng tấn công tới tấp vào đối thủ.", "Giáng một búa mạnh xuống đất tạo nên những cột thạch nhũ lao lên khỏi mặt đất công kích đối phương"}, {"Tẩm cực độc vào mũi tên và triệt hạ nhiều mục tiêu cùng lúc", "Hất tung đối phương lên không trung và bắn liên hoàn năm mũi tên vào đối thủ dẫn đến tử vong.", "Mo ta skill moi"}};
+            String[][] decript2 = {{"Dùng sức mạnh của sấm sét tấn công nhiều mục tiêu trong 1 phạm vi nhất định"}, {"Dùng sức mạnh của rồng lửa tấn công nhiều mục tiêu trong 1 phạm vi nhất định", "Dồn năng lượng tạo ra liệt hỏa phát tán ra xung quanh, đốt cháy bất kỳ đối tượng nào trên đường đi của liệt hỏa."}, {"Dùng sức mạnh của rồng nước tấn công nhiều mục tiêu trong 1 phạm vi nhất định"}, {"Tạo ra những cơn địa chấn tấn công nhiều mục tiêu trong phạm vi nhất định"}, {"Tẩm cực độc vào mũi tên và triệt hạ nhiều mục tiêu cùng lúc"}};
+            String[][] decript3 = {{"Dùng sức mạnh của sấm sét tấn công nhiều mục tiêu trong 1 phạm vi nhất định", " Dùng đồ cầm tay làm cầu nối dẫn truyền sấm sét vào cơ thể đối thủ, tia sét sẽ di chuyển thành một chuỗi liên hoàn vào các đối tượng tập trung gần nhau.", "Dồn sức tạo thành những lưỡi năng lượng khổng lồ giáng từ trên trời xuống đối phương"}, {"Dùng sức mạnh của rồng lửa tấn công nhiều mục tiêu trong 1 phạm vi nhất định", "Dồn năng lượng tạo ra liệt hỏa phát tán ra xung quanh, đốt cháy bất kỳ đối tượng nào trên đường đi của liệt hỏa.", " Khuấy động bầu trời, tạo ra những cơn mưa sao băng trút xuống mặt đất"}, {"Dùng sức mạnh của rồng nước tấn công nhiều mục tiêu trong 1 phạm vi nhất định", " Dồn năng lượng vào hai tay đánh ra hai con rồng theo hình trôn ốc, tạo nên một lực công phá khủng khiếp.", " Gọi gió hô mưa rồi truyền vào đó một luồng hàn băng cực mạnh tạo nên những trận mưa băng khủng khiếp"}, {"Tạo ra những cơn địa chấn tấn công nhiều mục tiêu trong phạm vi nhất định", "Dùng búa tạo ra những trận mưa đá tảng tấn công tới tấp vào đối thủ.", "Giáng một búa mạnh xuống đất tạo nên những cột thạch nhũ lao lên khỏi mặt đất công kích đối phương"}, {"Tẩm cực độc vào mũi tên và triệt hạ nhiều mục tiêu cùng lúc", "Hất tung đối phương lên không trung và bắn liên hoàn năm mũi tên vào đối thủ dẫn đến tử vong.", "Mo ta skill moi"}};
         
             msgLoginSuccess.dos.writeByte(9);
             msgLoginSuccess.dos.writeByte(9);
@@ -287,7 +287,7 @@ public class LoginHandler implements ICommandHandler {
         } catch (final Exception exBan) {
         }
         if (TeamServer.banToiThieu > 0 && banClient >= 0 && banClient < TeamServer.banToiThieu) {
-            System.out.println("[CLIENT] tu choi ban cu " + banClient + " < " + TeamServer.banToiThieu + " user=" + uname);
+            com.htbb.log.Nhat.thongTin("CLIENT", "tu choi ban cu " + banClient + " < " + TeamServer.banToiThieu + " user=" + com.htbb.log.Nhat.sach(uname));
             session.sendMessage(MessageCreator.createServerAlertMessage(
                     "Phiên bản game đã cũ (" + banClient + "). Vui lòng tải bản mới tại " + TeamServer.linkTaiGame, ""));
             return;
@@ -301,8 +301,9 @@ public class LoginHandler implements ICommandHandler {
         // Mot dong moi lan dang nhap: biet nguoi choi dung client nao (J2ME / Unity / nen tang)
         // - can khi soi loi hien thi ma khong the tai hien (05/09/2026: nhay man hinh chi xay ra
         // voi client nem loi khi ve vung ngoai bien anh, tuc J2ME; Unity thi khong).
-        System.out.println("[CLIENT] " + uname + " ip=" + session.ip + " platf=" + platf
-                + " version=" + version + " ban=" + banClient + " agent=" + agent + " firmware=" + firmware
+        // uname/platf/version/agent do CLIENT gui len: lam sach (xuong dong gia mao dong log).
+        com.htbb.log.Nhat.thongTin("CLIENT", com.htbb.log.Nhat.sach(uname) + " ip=" + session.ip + " platf=" + com.htbb.log.Nhat.sach(platf)
+                + " version=" + com.htbb.log.Nhat.sach(version) + " ban=" + banClient + " agent=" + com.htbb.log.Nhat.sach(agent) + " firmware=" + firmware
                 + " w=" + session.w + " vsTile=" + session.vsTile);
         uname = uname.replace('\'', ' ');
         pwd = pwd.replace('\'', ' ');
@@ -360,7 +361,7 @@ public class LoginHandler implements ICommandHandler {
             message.cleanup();
             return;
         }
-        if (!Database.check_active(uname)) {
+        if (com.htbb.pokemon.ThanhVien.chanDangNhap(userID) && !Database.check_active(uname)) { // kich hoat: mac dinh KHONG chan dang nhap
             
             final Message i = new Message(2);
             i.dos.writeUTF(KichHoatTaiKhoan);
@@ -463,7 +464,7 @@ public class LoginHandler implements ICommandHandler {
                 m.cleanup();
                 return;
             }
-            if (!Database.check_active(s.username)) {
+            if (com.htbb.pokemon.ThanhVien.chanDangNhap(userID) && !Database.check_active(s.username)) { // kich hoat: mac dinh KHONG chan dang nhap
                 final Message i = new Message(2);
                 i.dos.writeUTF(KichHoatTaiKhoan);
                 s.sendMessage(i);
@@ -520,7 +521,7 @@ public class LoginHandler implements ICommandHandler {
                 m.cleanup();
                 return;
             }
-            if (!Database.check_active(s.username)) {
+            if (com.htbb.pokemon.ThanhVien.chanDangNhap(userID) && !Database.check_active(s.username)) { // kich hoat: mac dinh KHONG chan dang nhap
                 final Message i = new Message(2);
                 i.dos.writeUTF(KichHoatTaiKhoan);
                 s.sendMessage(i);
@@ -643,7 +644,7 @@ public class LoginHandler implements ICommandHandler {
                 for (int i = 0; i < 3; ++i) {
                     info = String.valueOf(info) + (Map.getTown[i] ? (String.valueOf(Map.nameCountry[i]) + ",") : "");
                 }
-                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("đang diễn ra sự kiện chiếm thành"));
+                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("đang diễn ra sự kiện chiếm Gym"));
             }
             p.typeFirmware = session.firmWare;
             p.setSizeScreen(session.w, session.h);
@@ -772,7 +773,7 @@ public class LoginHandler implements ICommandHandler {
                     session.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Đang diễn ra sự kiện săn Mãnh thú."));
                 }
                 if (p.myCountry > -1 && Map.nationBeAttack[p.myCountry] > -1) {
-                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(Map.nameCountry[Map.nationBeAttack[p.myCountry]]) + " sẽ tấn công lãnh thổ của bạn vào lúc 20h ngày " + Map.nationWar.get(Map.nationBeAttack[p.myCountry]).dayAttack));
+                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(Map.nameCountry[Map.nationBeAttack[p.myCountry]]) + " sẽ tấn công vùng của bạn vào lúc 20h ngày " + Map.nationWar.get(Map.nationBeAttack[p.myCountry]).dayAttack));
                 }
                 final String infoBoss = Map.getNameBossApear(p.inCountry);
                 if (!infoBoss.equals("")) {

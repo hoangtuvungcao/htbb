@@ -35,11 +35,11 @@ public final class GiftcodeAnToan {
 
     static boolean dangKhoa(final int userId) {
         final long[] s = SAI.get(Integer.valueOf(userId));
-        return s != null && s[1] > System.currentTimeMillis();
+        return s != null && s[1] > com.htbb.pokemon.DongHo.bay();
     }
 
     static void ghiSai(final int userId) {
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         final long[] s = SAI.computeIfAbsent(Integer.valueOf(userId), k -> new long[2]);
         synchronized (s) {
             s[0]++;
@@ -77,7 +77,7 @@ public final class GiftcodeAnToan {
         }
         // {phan_thuong, han(ms,0=khong), tong_luot, da_dung, cap_toi_thieu, bat}
         final long han = ((Long) dong[1]).longValue();
-        if (((Integer) dong[5]).intValue() != 1 || (han > 0L && han < System.currentTimeMillis())) {
+        if (((Integer) dong[5]).intValue() != 1 || (han > 0L && han < com.htbb.pokemon.DongHo.bay())) {
             ghiSai(p.userID);
             bao(p, "Mã quà tặng không tồn tại hoặc đã hết hạn.");
             return;
@@ -94,8 +94,19 @@ public final class GiftcodeAnToan {
             return;
         }
         final String thuong = GiftcodeAnToanLogic.chuanHoaThuong((String) dong[0]);
+        // danh sach trang vat pham (GiftcodeAnToanDuLieu): trang bi khong vuot cap nhan vat, khong do ban luong
+        final String loiVp = GiftcodeAnToanLogic.kiemVatPham(thuong, p.lvDetail.lv, id -> {
+            final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf(id));
+            return t == null ? -1 : t.level;
+        });
+        if (loiVp != null) {
+            bao(p, loiVp.contains("cao hơn cấp") ? "Mã này có trang bị cao hơn cấp của bạn, hãy lên cấp rồi nhập lại."
+                    : "Mã quà tặng đang bị khoá (phần thưởng không hợp lệ).");
+            System.out.println("[GIFTCODE] ma " + ma + " cho " + p.charname + ": " + loiVp);
+            return;
+        }
         final int giaTri = GiftcodeAnToanLogic.giaTri(thuong);
-        final int thang = GiftcodeLauDai.thang(System.currentTimeMillis());
+        final int thang = GiftcodeLauDai.thang(com.htbb.pokemon.DongHo.bay());
         final long daDungThang = DatabaseLauDai.tongGiftcodeThang(thang);
         if (daDungThang < 0L || daDungThang + giaTri > LauDai.so("giftcode.ngan_sach_thang", GiftcodeAnToanLogic.NGAN_SACH_THANG)) {
             bao(p, "Quà tặng tháng này đã hết, hẹn tháng sau.");

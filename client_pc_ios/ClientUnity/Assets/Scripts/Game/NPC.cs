@@ -14,10 +14,10 @@ public class NPC : Actor
 
 	public static readonly string[] NPCNAME = new string[32]
 	{
-		"Dì út HP", "Bà tám tạp hóa", "Hắc ngưu", "Thiết bì", "Lính gác", "Trưởng làng", "Phú ông", "Xa phu", "ông nội", "Anh bảy",
-		"Hoa tiêu", "Nhất giáp", "Nhị giáp", "Tam giáp", "Tứ giáp", "Ngũ giáp", "Nhất ngưu", "Nhị ngưu", "Tam ngưu", "Tứ ngưu",
-		"Ngũ ngưu", "Lâm tướng quân", "Nhật thương nhân", "Hỏa xích", "Bảo ngọc", "Trần thống lĩnh", "Kim hoa", "Giáp Sư", "Kiếm Sư", "Bội Châu",
-		"An Tâm", "Lộc Phát"
+		"Y tá Chansey", "Kecleon tạp hoá", "Machamp", "Bronzong", "Arcanine gác cổng", "Trưởng làng", "Persian", "Pidgeot (Bay)", "ông nội", "Kangaskhan",
+		"Hoa tiêu", "Golem 1", "Golem 2", "Golem 3", "Golem 4", "Golem 5", "Tauros 1", "Tauros 2", "Tauros 3", "Tauros 4",
+		"Tauros 5", "Blaziken", "Meowth thương nhân", "Torkoal", "Bảo ngọc", "Heracross", "Kim hoa", "Bronzong", "Farfetch'd", "Persian",
+		"An Tâm", "Meowth"
 	};
 
 	private static sbyte[] idImg = new sbyte[32]
@@ -112,7 +112,13 @@ public class NPC : Actor
 
 	public override void paint(MyGraphics g)
 	{
-		if (!paintPokemon(g))
+		int caoIcon = height;
+		if (paintPokemon(g))
+		{
+			// icon nhiem vu tren DAU sprite Pokemon (cao that) - giong Npc_Server
+			caoIcon = PokeBody.caoTrenChan(getPokeDex(), false, 100) + 4;
+		}
+		else
 		{
 			g.drawImage(img[1], x, y, MyGraphics.BOTTOM | MyGraphics.HCENTER);
 			if (img[0] != null)
@@ -123,7 +129,7 @@ public class NPC : Actor
 		Image imgQuest = GameScr.getImgQuest(type);
 		if (!imgQuest.Equals(Res.imgSelect))
 		{
-			g.drawImage(imgQuest, x, y - height - 5, MyGraphics.HCENTER | MyGraphics.BOTTOM);
+			g.drawImage(imgQuest, x, y - caoIcon - 5, MyGraphics.HCENTER | MyGraphics.BOTTOM);
 		}
 	}
 

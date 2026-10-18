@@ -11,7 +11,7 @@
 # Cac map khac client nhan tu server (goi 12) nen khong can chep.
 set -e
 HTBB=$(cd "$(dirname "$0")/../.." && pwd)
-J=${1:-$HTBB/../htbb-client/j2me}
+J=${1:-$HTBB/client_jar}
 RES="$J/res"
 [ -d "$RES" ] || { echo "khong thay $RES"; exit 1; }
 SAO="$J/.truoc_map_moi"
@@ -27,6 +27,6 @@ for t in t t_hang t_thanh; do
     cp "$HTBB/tools/pokemon/map_j2me/$t.type" "$RES/$t.type"
 done
 for f in t t_hang t_thanh t_small t_hang_s t_thanh_s; do
-    cp "$HTBB/map/pokemon_tile/$f.png" "$RES/pt/$f.png"
+    cp "$HTBB/server/map/pokemon_tile/$f.png" "$RES/pt/$f.png"
 done
 echo "da cai ban do + bo tile moi vao $RES (ban cu: $SAO)"

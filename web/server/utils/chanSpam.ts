@@ -1,5 +1,5 @@
 /**
- * CHẶN LÀM HÀNG LOẠT (bảng kpah_db.web_chan_spam), đếm theo IP + hành động.
+ * CHẶN LÀM HÀNG LOẠT (bảng htbb_db.web_chan_spam), đếm theo IP + hành động.
  *
  * Đây mới là chỗ giới hạn số lần: một script cứ gửi form lặp lại bao nhiêu lần
  * cũng được, chỉ bộ đếm theo IP mới chặn được nó.
@@ -55,6 +55,13 @@ export function traCho(khoa: string): void {
     if (ds.length) dangChay.set(khoa, ds)
     else dangChay.delete(khoa)
   }
+}
+
+/** Số lượt trong bộ nhớ dự phòng (khi thiếu bảng web_chan_spam) trong 1 giờ / 24 giờ qua. */
+export function demBoNho(khoa: string): { gio: number, ngay: number } {
+  const ds = boNho.get(khoa) ?? []
+  const bay = nowSec()
+  return { gio: ds.filter(t => t > bay - 3600).length, ngay: ds.filter(t => t > bay - HAN_GIU).length }
 }
 
 export async function ghiLanLam(event: H3Event, hanhDong: string): Promise<void> {

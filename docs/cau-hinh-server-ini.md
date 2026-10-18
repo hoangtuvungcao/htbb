@@ -6,17 +6,21 @@ chiếm thành, chống flood, quyền admin.
 Tài liệu này là bản tra cứu. Phần dựng server lần đầu xem
 [HUONG_DAN_BUILD_VPS.md](HUONG_DAN_BUILD_VPS.md).
 
+> **Từ 18/10/2026:** mọi khoá chỉnh được lúc chạy (và các cờ chế độ) quản lý ở trang web *Cấu hình hệ thống* —
+> thứ tự ưu tiên CSDL > `server.ini` > mặc định, áp dụng trong ≤ 10 giây hoặc khi khởi động lại.
+> Xem [cau-hinh-trung-tam.md](cau-hinh-trung-tam.md). `server.ini` vẫn là giá trị khởi tạo / dự phòng.
+
 ---
 
 ## 1. Cấu hình giờ **sinh ra từ pipeline** — sửa trên GitHub
 
 Nguồn duy nhất là [`vps/server.ini.tmpl`](../vps/server.ini.tmpl), **nằm trong git**. Mỗi
 lần deploy, [`vps/sinh-server-ini.sh`](../vps/sinh-server-ini.sh) dựng lại
-`/opt/kpah/server.ini` từ bản mẫu đó cộng với mật khẩu lấy từ GitHub Secrets.
+`/opt/htbb/server.ini` từ bản mẫu đó cộng với mật khẩu lấy từ GitHub Secrets.
 
 ```
 vps/server.ini.tmpl  ─┐
-                      ├─→ sinh-server-ini.sh ─→ /opt/kpah/server.ini ─→ khởi động lại
+                      ├─→ sinh-server-ini.sh ─→ /opt/htbb/server.ini ─→ khởi động lại
 GitHub Secrets  ──────┘        (kiểm tra rồi mới cài)
 ```
 
@@ -24,16 +28,16 @@ Nghĩa là:
 
 - **Sửa cấu hình = sửa `vps/server.ini.tmpl` rồi commit.** Sửa ngay trên web GitHub cũng
   được. Deploy tự chạy, tự khởi động lại nếu cấu hình thật sự đổi.
-- **Đừng sửa tay `/opt/kpah/server.ini` nữa** — lần deploy sau ghi đè.
+- **Đừng sửa tay `/opt/htbb/server.ini` nữa** — lần deploy sau ghi đè.
 - Mọi thay đổi cấu hình từ giờ đều có lịch sử git, xem được ai đổi gì, và `git revert` được.
 
-`/opt/kpah/server.ini` vẫn nằm trong `.gitignore` (nó chứa mật khẩu thật sau khi sinh ra).
+`/opt/htbb/server.ini` vẫn nằm trong `.gitignore` (nó chứa mật khẩu thật sau khi sinh ra).
 
 Hai file khác **không** đi qua pipeline này, vẫn phải sửa tay trên VPS:
 
 | Đường dẫn | Dùng cho |
 |---|---|
-| `/opt/kpah/loginServer/server.ini` | server đăng nhập |
+| `/opt/htbb/server/loginServer/server.ini` | server đăng nhập |
 | `HTBB\server.ini` (máy nhà) | server chạy thử ở nhà |
 
 ## 2. Đổi một thiết lập
@@ -45,13 +49,13 @@ Hai file khác **không** đi qua pipeline này, vẫn phải sửa tay trên VP
 Xem trước khi commit, chạy trên VPS (không cài gì, chỉ in ra khác biệt):
 
 ```bash
-sudo /opt/kpah/vps/sinh-server-ini.sh --thu
+sudo /opt/htbb/vps/sinh-server-ini.sh --thu
 ```
 
 **Bộ sinh không bao giờ cài một cấu hình hỏng.** Trước khi ghi đè nó kiểm: còn chỗ trống
 chưa thay không, đủ 20 khoá bắt buộc không, mật khẩu có còn là chuỗi mẫu không, và **thử kết
 nối CSDL thật**. Sai bất kỳ điều nào thì báo lỗi, giữ nguyên file đang chạy, không khởi động
-lại. Bản cũ được lưu vào `/opt/kpah/backup/server.ini.<ngày giờ>` (giữ 10 bản gần nhất).
+lại. Bản cũ được lưu vào `/opt/htbb/backup/server.ini.<ngày giờ>` (giữ 10 bản gần nhất).
 
 ### GitHub quản **toàn bộ** — không còn phải mở `server.ini`
 
@@ -97,12 +101,12 @@ Vẫn dùng được cho việc gấp, nhưng **lần deploy sau sẽ đặt l�
 | Cách | Khi nào dùng |
 |---|---|
 | Bảng `setting` trong game | đổi gấp tỉ lệ rơi / giờ chiếm thành giữa sự kiện |
-| Trang quản trị `/admin/cauhinh.php` | sửa từ xa, không cần SSH — xem bên dưới |
-| Sửa `/opt/kpah/server.ini` rồi gõ `setting` → `8` | chỉ với 26 khoá ở mục 4 |
+| Trang quản trị `/admin/cauhinh` | sửa từ xa, không cần SSH — xem bên dưới |
+| Sửa `/opt/htbb/server.ini` rồi gõ `setting` → `8` | chỉ với 26 khoá ở mục 4 |
 
-**Từ 09/09/2026, cả ba cách trên đọc/ghi CHUNG một bảng SQL `kpah_db.cau_hinh`** (khoá,
+**Từ 09/09/2026, cả ba cách trên đọc/ghi CHUNG một bảng SQL `htbb_db.cau_hinh`** (khoá,
 giá_trị, sửa_bởi, sửa_lúc) — không còn ghi thẳng vào `server.ini` nữa (xem
-[`server/CauHinh.java`](../src/server/CauHinh.java)). `server.ini` vẫn giữ 26 khoá này làm
+[`server/CauHinh.java`](../server/src/server/CauHinh.java)). `server.ini` vẫn giữ 26 khoá này làm
 **giá trị khởi tạo lần đầu** (chép một lần vào bảng lúc server khởi động nếu bảng còn thiếu
 dòng, `INSERT IGNORE` nên không ghi đè giá trị đã có); từ đó về sau bảng SQL mới là nguồn
 thật. Server tự đọc lại bảng này mỗi 10 giây, nên sửa trên trang web thì trong game áp dụng
@@ -125,7 +129,7 @@ Gõ `6` trước khi sửa là cách nhanh nhất để biết đang đặt bao 
 ## 4. Khoá nào nạp lại được, khoá nào phải khởi động lại
 
 Chỉ **32 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
-lần lúc bật máy** — sửa xong bắt buộc `systemctl restart kpah-game`.
+lần lúc bật máy** — sửa xong bắt buộc `systemctl restart htbb-game`.
 
 ```
 sv.tileXu   sv.tileLuong   sv.tileItemSuKien   sv.tilePotion   sv.tileNgoc   sv.tileItem
@@ -143,7 +147,7 @@ sv.expvantieu   sv.Luckyexp   sv.ExpQua
 
 ### Thưởng EXP phụ (vận tiêu / rương may mắn / cây ăn quả)
 
-Từ 11/09/2026, ba khoá dưới đây đổi ở **trang quản trị `/admin/cauhinh.php`** thay vì sửa
+Từ 11/09/2026, ba khoá dưới đây đổi ở **trang quản trị `/admin/cauhinh`** thay vì sửa
 tay `server.ini` + restart. Trước đó chúng đi qua `Byte.parseByte` bắt buộc trong
 `TeamServer.java` (thiếu dòng là ném lỗi khi khởi động); nay đọc qua `CauHinh.napLai()`
 với giá trị mặc định an toàn, xoá dòng trong `server.ini` cũng không sao.
@@ -159,7 +163,7 @@ với giá trị mặc định an toàn, xoá dòng trong `server.ini` cũng kh�
 Đổi trạng thái một sự kiện chỉ có hiệu lực **sau khi khởi động lại máy chủ** — bảng shop
 (`Map.loadShop` đặt SELL/NOT_SELL theo `Char.isSuKien*`), `Map.isSale` và danh sách NPC
 đều được dựng *một lần* lúc bật máy. Mặc định máy chủ tự lo việc đó, xem
-[`src/real/LichSuKien.java`](../src/real/LichSuKien.java).
+[`src/real/LichSuKien.java`](../server/src/real/LichSuKien.java).
 
 | Khoá | Mặc định | Ý nghĩa |
 |---|---|---|
@@ -167,7 +171,7 @@ với giá trị mặc định an toàn, xoá dòng trong `server.ini` cũng kh�
 | `sv.suKienGomGiay` | `120` | Đợi bao lâu không còn thay đổi nào nữa mới khởi động lại. Kẹp trong `30..3600`. |
 | `sv.suKienBaoTruocGiay` | `60` | Báo trong game bao lâu trước khi tắt. Kẹp trong `10..600`. |
 
-**Đừng hạ `sv.suKienGomGiay` xuống thấp.** `kpah-game.service` đặt `StartLimitBurst=5` /
+**Đừng hạ `sv.suKienGomGiay` xuống thấp.** `htbb-game.service` đặt `StartLimitBurst=5` /
 `StartLimitIntervalSec=300`: khởi động quá 5 lần trong 300 giây thì systemd cho unit vào
 trạng thái `failed` và **không bật lại nữa** — server nằm hẳn cho tới khi có người ssh vào.
 Việc gom chính là thứ giữ cho "bật liền 5 sự kiện" chỉ tốn một lần khởi động lại. Cùng lý
@@ -185,8 +189,8 @@ ghi vào CSDL.
 
 ### Sự kiện World Cup
 
-Cách bật chính thức [sự kiện bình chọn Messi – Ronaldo](../src/real/SuKienWorldCup.java)
-là hai dòng *World Cup* trên **trang quản trị `/admin/sukien.php`**. Ba khoá
+Cách bật chính thức [sự kiện bình chọn Messi – Ronaldo](../server/src/real/SuKienWorldCup.java)
+là hai dòng *World Cup* trên **trang quản trị `/admin/sukien`**. Ba khoá
 `sv.worldCup*` chỉ còn là **giá trị mặc định** cho hai cổng đó khi bảng `tob_su_kien` chưa
 có dòng tương ứng.
 
@@ -203,8 +207,8 @@ Chạy `sql/them_su_kien_world_cup.sql` **một lần** trước khi mở sự k
 cho dòng thuốc 108 (Hộp quà may mắn) và tạo hai bảng điểm.
 
 Cách tự kiểm chứng khi thêm khoá mới: khoá nào xuất hiện trong
-[`src/server/CauHinh.java`](../src/server/CauHinh.java) thì nạp lại được; khoá chỉ có trong
-[`src/server/TeamServer.java`](../src/server/TeamServer.java) thì phải khởi động lại.
+[`src/server/CauHinh.java`](../server/src/server/CauHinh.java) thì nạp lại được; khoá chỉ có trong
+[`src/server/TeamServer.java`](../server/src/server/TeamServer.java) thì phải khởi động lại.
 
 ## 5. Tỉ lệ rơi đồ (hay chỉnh nhất)
 
@@ -227,9 +231,9 @@ nhiêu**. Thấy "rơi ít lần nhưng mỗi lần quá nhiều xu" thì **tăn
 ## 5b. Tỉ lệ EXP quái thường (không dùng Boss)
 
 Từ 14/09/2026, chuyển từ hằng số hardcode (`Monster.PC_TILE_EXP_LV50` /
-`PC_TILE_EXP_DUOI_LV50`) sang bảng `cau_hinh`, sửa qua `/admin/cauhinh.php` không cần
+`PC_TILE_EXP_DUOI_LV50`) sang bảng `cau_hinh`, sửa qua `/admin/cauhinh` không cần
 restart. Cũng là **phần trăm so với bản gốc**, giống mục 5. Xem
-[`Monster.rcvXpSauGiam()`](../src/real/Monster.java).
+[`Monster.rcvXpSauGiam()`](../server/src/real/Monster.java).
 
 | Khoá | Mặc định | Áp dụng cho |
 |---|---|---|
@@ -241,9 +245,9 @@ Hai khoá **độc lập nhau** — đổi một cái không đụng tới cái 
 ## 5c. Tỉ lệ màu + EXP Vận Tiêu
 
 Từ 14/09/2026, chuyển từ mảng hardcode trong `Char.doInitMonter()` /
-`CharSuKien.doResponseTieu()` sang bảng `cau_hinh`, sửa qua `/admin/cauhinh.php`. Xem
-[`Char.java`](../src/real/Char.java) (các trường `TIEU_*`) và
-[`docs/skin-linh-thu.md`](skin-linh-thu.md) là ví dụ khác của cùng cơ chế "quản lý qua SQL".
+`CharSuKien.doResponseTieu()` sang bảng `cau_hinh`, sửa qua `/admin/cauhinh`. Xem
+[`Char.java`](../server/src/real/Char.java) (các trường `TIEU_*`) và
+[`docs/skin-thu-cuoi.md`](skin-thu-cuoi.md) là ví dụ khác của cùng cơ chế "quản lý qua SQL".
 
 | Khoá | Mặc định | Ý nghĩa |
 |---|---|---|
@@ -258,7 +262,7 @@ Sáu khoá đều là chuỗi **CSV** (phân cách bằng dấu phẩy, không c
 lượng phần tử (khác đúng 5 / 7 / 9 như bảng trên) hoặc không phải số thì server **âm thầm bỏ
 qua**, giữ nguyên giá trị đang chạy — không có dòng log báo lỗi. Lệnh chat `setting` → `6`
 (mục 3b) **không** hiện được các khoá này (chỉ hiện giờ chiếm thành + tỉ lệ rơi đồ) — sửa
-xong thì mở lại trang `/admin/cauhinh.php`, giá trị đọc thẳng từ CSDL sẽ phản ánh đúng những
+xong thì mở lại trang `/admin/cauhinh`, giá trị đọc thẳng từ CSDL sẽ phản ánh đúng những
 gì server đang dùng.
 
 ## 6. Chiếm thành
@@ -322,7 +326,7 @@ sv.nap_tien = 0
 Nạp tiền không lạm phát, không bán sức mạnh ([`pokemon/NAP_TIEN.md`](pokemon/NAP_TIEN.md)). **Phải
 khởi động lại**; mọi chỗ đọc qua `com.htbb.pokemon.NapTien.bat()`. Chỉ thật sự bật khi **cả**
 `sv.lau_dai=1` (thiếu thì server in cảnh báo và giữ tắt). Trước khi bật: chạy
-`sql/pokemon_nap_tien.sql`, web đặt `KPAH_NAP_BAT=true`, và **phải có giấy phép hình ảnh/IP**
+`sql/pokemon_nap_tien.sql`, web đặt `HTBB_NAP_BAT=true`, và **phải có giấy phép hình ảnh/IP**
 (`NAP_DA_CO_GIAY_PHEP=1` trên web để tắt cảnh báo). `0` hoặc thiếu dòng = y như trước.
 
 ## 7c. Thiết kế dài hạn (giai đoạn 2)
@@ -330,13 +334,18 @@ khởi động lại**; mọi chỗ đọc qua `com.htbb.pokemon.NapTien.bat()`.
 ```ini
 sv.lau_dai = 0
 sv.ngay_khai_truong =
+sv.tran_cap_theo_mua = 0
 ```
 
 Cờ của [`pokemon/KE_HOACH_LAU_DAI_GD2.md`](pokemon/KE_HOACH_LAU_DAI_GD2.md). **Phải khởi động lại**, mọi chỗ đọc
 qua `com.htbb.pokemon.LauDai.bat()`. `0` hoặc thiếu dòng = y như trước. `1` = kinh tế/EXP/nhiệm vụ/chiến đấu mới.
 **Bật/tắt hoàn toàn tự động**: lúc khởi động server tự chuyển EXP nhân vật sang bảng đúng với cờ (giữ cấp, giữ %),
 cả chiều tắt; tự trả nhiệm vụ chính và gỡ lịch sự kiện khi tắt (chi tiết: tài liệu kế hoạch, mục "Bật / tắt cờ").
-`sv.ngay_khai_truong` (yyyy-MM-dd, ngày 0 của trần cấp mùa 60 → 70 → 80 → 91) **không bắt buộc**: thiếu thì lần bật đầu
+`sv.tran_cap_theo_mua` (18/10/2026): `0` hoặc thiếu dòng = **không** trần cấp theo mùa — lên cấp chậm (năng lượng 90 phút/ngày)
++ vật phẩm tăng tốc chung trần, nội dung (Hoenn, chuỗi năm 2, huyền thoại, bậc đồ) mở theo cấp + cốt truyện; `1` = bật lại
+trần 60 → 70 → 80 → 91 → 95 → 100 theo ngày khai trương. Đổi cờ không chuyển EXP, nhân vật giữ cấp
+([`pokemon/THIET_KE_LAU_DAI.md`](pokemon/THIET_KE_LAU_DAI.md) mục 1.4, 1.8). Phải khởi động lại.
+`sv.ngay_khai_truong` (yyyy-MM-dd, ngày 0 của lịch sự kiện / mùa PvP / vé mùa, và của trần cấp mùa khi bật) **không bắt buộc**: thiếu thì lần bật đầu
 tiên tự ghi hôm nay vào `cau_hinh.lau_dai.ngay_khai_truong` và dùng lại về sau; đặt trong `server.ini` thì giá trị đó thắng.
 Số liệu chỉnh không cần build qua bảng `cau_hinh` bằng khoá của `data_kinh_te_lau_dai` (vd `thue.cho`).
 
@@ -346,7 +355,7 @@ Số liệu chỉnh không cần build qua bảng `cau_hinh` bằng khoá của 
 sv.gioBaoTri =
 ```
 
-`BaoTriDaily`: server tự thoát lúc bảo trì (systemd `Restart=always` trong `vps/kpah-game.service` bật lại).
+`BaoTriDaily`: server tự thoát lúc bảo trì (systemd `Restart=always` trong `vps/htbb-game.service` bật lại).
 Trống/thiếu = giờ ngẫu nhiên như cũ; `HH:MM` (vd `04:30`) = giờ cố định; `tat` = không tự bảo trì (cả cảnh báo).
 **Phải khởi động lại.**
 
@@ -362,6 +371,34 @@ bùng phát, câu cá, khảo cổ, vườn berry, nấu ăn/chế thuốc, nhà
 được nạp, như `sv.che_do_pokemon`). `0` hoặc thiếu dòng = y như trước. Trước khi bật: chạy
 `sql/pokemon_he_sinh_thai.sql` (bảng `tob_hst_*` server cũng tự tạo nếu thiếu).
 
+## 7f. Đăng ký tài khoản trong game
+
+```ini
+sv.dangKyTrongGame=1          # 0 = chỉ đăng ký trên web (client nhận hộp thông báo chỉ sang web)
+sv.dangKyTuKichHoat=web       # web = theo HTBB_AUTO_ACTIVATE của web | 1 = luôn kích hoạt 30 ngày | 0 = không
+sv.dangKyCsdlTaiKhoan=account # CSDL chứa team_user (giống HTBB_DB_ACCOUNT của web)
+sv.dangKyTreMs=800            # trả lời chậm (ms) chống bot
+```
+
+**Đường đi:** màn "Đăng ký" ở Menu màn đăng nhập (jar/APK: `DangKyScr.java`, PC: `DangKyScr.cs`) → lệnh 39
+dạng mới `"#dk2"` qua chính kết nối game → `real.cmd.DangKyTrongGame` trên server game. Không đi qua
+`CheckLoginSocket.jar` (jar đóng, chỉ kiểm mật khẩu) và không cần HTTP từ máy J2ME.
+
+**Một bộ quy tắc cho cả web lẫn game:** `HTBB-Web/shared/data/quy-tac-dang-ky.json` (độ dài, ký tự, tên quản
+trị cấm, từ ngữ cấm, hạn mức 3/giờ + 10/ngày mỗi IP, câu báo lỗi, bộ ca kiểm thử). Sửa tệp đó rồi chạy
+`cd HTBB-Web && node scripts/sinh-quy-tac-dang-ky-java.mjs` (sinh lại `src/data/QuyTacDangKyDuLieu.java`);
+`npm test` bên web và `test/KiemDangKyTrongGame.java` bên này so mã băm + chạy chung bộ ca nên quên là báo đỏ.
+
+**Chống spam:** đếm GỘP với web trong `htbb_db.web_chan_spam` (web `dang_ky`, game `dang_ky_game`, thêm bộ đếm
+theo mã máy `dang_ky_game_may`), câu hỏi tính nhẩm phải trả lời sau ≥ 2 giây và trong 5 phút, dùng một lần,
+tối đa 5 lần gửi mỗi phiên; máy bị cấm (`tob_cam_may`) không đăng ký được. Nhật ký: `sv.pathLog/dang_ky_game.log`.
+
+**Dòng CSDL y hệt web:** `account.team_user` với `PASSWORD()`, **`fromgame=0`** — `CheckLoginSocket.jar` trả cột
+`fromgame` về làm "region" và server chỉ cho vào khi region là 0/9, nên `fromgame` khác 0 là tài khoản không
+bao giờ đăng nhập được. Kích hoạt `5h_active` 30 ngày như `activateAccount()` của web; với `web` thì đọc khoá
+`cau_hinh.web.autoActivate` mà web tự ghi lúc khởi động (`server/plugins/cong-bo-tu-kich-hoat.ts`).
+Email không bắt buộc trong game (bắt buộc trên web) — người chơi thêm sau ở trang tài khoản.
+
 ## 8. Chống flood
 
 Đều **phải khởi động lại**. Số trong ngoặc là mặc định khi thiếu dòng.
@@ -376,13 +413,15 @@ bùng phát, câu cá, khảo cổ, vườn berry, nấu ăn/chế thuốc, nhà
 | `sv.reloginWaitSec` | phải chờ bao lâu mới vào lại sau khi thoát (0 = vào ngay) |
 | `sv.tranGoiThuong` | số gói tin **thường** tối đa của một kết nối trong 5 giây (300) |
 | `sv.tranGoiTaiNguyen` | số gói **tải tài nguyên** tối đa của một kết nối trong 5 giây (600) |
+| `sv.tranGoiTraCuu` | số gói **tra cứu** (lệnh `7` hỏi máu/vị trí quái) tối đa trong 5 giây, đếm riêng (600) — xem mục 12 |
+| `sv.tranGoiMienIp` | IP **không** bị đếm ngập gói, phân cách dấu phẩy (trống). **Chỉ** cho máy chạy bot tải; VPS để trống |
 | `limit.ccu` | số người online tối đa — **bắt buộc có**, không có mặc định |
 
 ### Hai ngưỡng `sv.tranGoi*` — vì sao máy nhà phải nâng lên
 
 Lệnh tải tài nguyên (`-47` ảnh nhân vật, `-48` quần áo, `-49` hiệu ứng, `-51` ảnh) được đếm
 **riêng** với hạn mức rộng hơn, vì lúc vào bản đồ mới chúng trả về một chùm hoàn toàn bình
-thường. Vượt ngưỡng là **cắt kết nối** ngay ([io/BoDemGoiTin.java](../src/io/BoDemGoiTin.java)).
+thường. Vượt ngưỡng là **cắt kết nối** ngay ([io/BoDemGoiTin.java](../server/src/io/BoDemGoiTin.java)).
 
 Hai số này được canh theo **độ trễ Internet**. Qua loopback (máy nhà tự chạy server để thử)
 không có độ trễ, nên một client vừa xoá cache tải ảnh nhanh hơn hẳn và chạm trần một cách hoàn
@@ -422,10 +461,10 @@ thêm vào `vps/server.ini.tmpl`. Phải khởi động lại, không nạp lạ
 Khoá này **chỉ** miễn phép kiểm "mật khẩu để trống". Nó không miễn phép thử kết nối thật,
 cũng không miễn phép kiểm chuỗi mẫu `DOI_MAT_KHAU_DB` — máy đặt `1` mà chưa bật MySQL thì
 vẫn chết ngay với lý do rõ ràng. VPS được bảo vệ ở ba lớp độc lập: bản mẫu ghim `0` và
-deploy **sinh lại** `/opt/kpah/server.ini` từ bản mẫu mỗi lần deploy;
+deploy **sinh lại** `/opt/htbb/server.ini` từ bản mẫu mỗi lần deploy;
 [`vps/sinh-server-ini.sh`](../vps/sinh-server-ini.sh) từ chối cài nếu giá trị khác `0`; và
 thiếu khoá thì mặc định là nghiêm ngặt. Xem `TeamServer.choPhepMatKhauTrong()` và
-[test/KiemMayDevCSDL.java](../test/KiemMayDevCSDL.java).
+[test/KiemMayDevCSDL.java](../server/test/KiemMayDevCSDL.java).
 
 ### `db.thamSoJdbc` — tham số thêm vào mọi URL JDBC
 
@@ -445,7 +484,7 @@ db.thamSoJdbc=useSSL=false
 Connector/J 5.1 in cảnh báo *Establishing SSL connection without server's identity
 verification…* mỗi lần mở kết nối (ngập log). Mọi câu SQL trong `src/` đã được viết lại để
 chạy **y hệt** trên cả MariaDB 10.4 lẫn NovaDB (ngày 16/10/2026,
-[test/KiemNovaDB.java](../test/KiemNovaDB.java) chặn các cú pháp sau quay lại):
+[test/KiemNovaDB.java](../server/test/KiemNovaDB.java) chặn các cú pháp sau quay lại):
 
 | Cú pháp MySQL NovaDB không chạy | Viết lại thành |
 |---|---|
@@ -476,7 +515,7 @@ chạy **y hệt** trên cả MariaDB 10.4 lẫn NovaDB (ngày 16/10/2026,
   tob_top_event giữ thêm UNIQUE(charname) bên cạnh khoá mới `idx_id_char` — vô hại vì
   tên nhân vật vốn duy nhất.
 * Chia số nguyên `7/2` = `3` (MariaDB `3.5000`) — hiện không câu SQL nào chia.
-* Login server `CheckLoginSocket.jar` và lớp chỉ có trong `lib/NQSH_5h.jar` không sửa
+* Login server `CheckLoginSocket.jar` và lớp chỉ có trong `lib/htbb-core.jar` không sửa
   được (xem báo cáo chuyển đổi).
 
 ## 10. Cạm bẫy
@@ -484,7 +523,7 @@ chạy **y hệt** trên cả MariaDB 10.4 lẫn NovaDB (ngày 16/10/2026,
 ### Sai một dòng là **bỏ qua mọi dòng bên dưới**
 
 Toàn bộ phần đọc cấu hình nằm trong **một khối `try`**
-([TeamServer.java:404](../src/server/TeamServer.java#L404)). Một khoá thiếu hoặc sai kiểu là
+([TeamServer.java:404](../server/src/server/TeamServer.java#L404)). Một khoá thiếu hoặc sai kiểu là
 ném lỗi ngay tại dòng đó, và **mọi dòng phía sau không được đọc** — nhưng server **vẫn khởi
 động**, chạy với cấu hình dở dang.
 
@@ -502,7 +541,7 @@ Load configuration file error!
 Nên **sau mỗi lần sửa, phải xem log**:
 
 ```bash
-journalctl -u kpah-game -n 50 | grep -i "configuration file error"
+journalctl -u htbb-game -n 50 | grep -i "configuration file error"
 ```
 
 Không thấy dòng nào là đã đọc trọn file.
@@ -534,10 +573,10 @@ Các khoá ở mục 4 và mục 8 (trừ `limit.ccu`) đều **có giá trị m
 
 ### `sv.isSuKien*` giờ chỉ còn là giá trị mặc định
 
-Từ 30/08/2026, chỗ bật/tắt sự kiện là **trang quản trị `/admin/sukien.php`** (bảng
+Từ 30/08/2026, chỗ bật/tắt sự kiện là **trang quản trị `/admin/sukien`** (bảng
 `tob_su_kien` trong CSDL), không phải file này. Mọi sự kiện đều bật được bất kỳ lúc nào —
 không còn mốc ngày ghi cứng nào trong mã nguồn nữa, xem
-[`src/real/SuKien.java`](../src/real/SuKien.java).
+[`src/real/SuKien.java`](../server/src/real/SuKien.java).
 
 Năm khoá `sv.isSuKien*` vẫn **bắt buộc phải có** (chúng đi qua `parseByte`, thiếu là ném
 lỗi và nuốt luôn mọi dòng cấu hình bên dưới — xem cạm bẫy ở đầu mục này), nhưng giá trị
@@ -567,7 +606,7 @@ thú mà không muốn ngập log cả server. Phải khởi động lại mới
 
 ### Chép đè bằng file mẫu — chuyện đã xảy ra 30/08/2026
 
-`/opt/kpah/server.ini` bị chép đè bằng `vps/server.ini.linux.example`, nên `db.password`
+`/opt/htbb/server.ini` bị chép đè bằng `vps/server.ini.linux.example`, nên `db.password`
 thành chuỗi mẫu `DOI_MAT_KHAU_DB`. Triệu chứng **không hề giống nguyên nhân**:
 
 ```
@@ -584,7 +623,7 @@ Giờ đã có hai lớp chặn:
 
 - `TeamServer.kiemTraCSDL()` thử kết nối **trước mọi lệnh chạm CSDL**; hỏng thì in một dòng
   nói rõ lý do rồi `System.exit(1)`, để systemd báo `failed` đúng sự thật.
-- `StartLimitBurst` trong [`vps/kpah-game.service`](../vps/kpah-game.service) để systemd
+- `StartLimitBurst` trong [`vps/htbb-game.service`](../vps/htbb-game.service) để systemd
   thôi bật lại vô hạn và để unit vào trạng thái `failed`.
 
 Và pipeline ở mục 1 làm việc chép đè kia thành vô nghĩa: file luôn được sinh lại từ bản mẫu.
@@ -601,16 +640,16 @@ nếu khác `0` — nên bản sinh ra cho VPS luôn nghiêm ngặt.
    mật khẩu thật (có phép kiểm chặn).
 2. **Đừng gửi nội dung file cho ai**, kể cả dán vào chat hỏi bài. Cần hỏi thì nói **tên
    khoá**, đừng kèm giá trị.
-3. **Đừng sửa tay `/opt/kpah/server.ini`.** Lần deploy sau ghi đè. Sửa `vps/server.ini.tmpl`.
+3. **Đừng sửa tay `/opt/htbb/server.ini`.** Lần deploy sau ghi đè. Sửa `vps/server.ini.tmpl`.
 
 ## 11. Sau khi sửa — kiểm lại
 
 ```bash
 # 1. Đọc trọn file chưa (không được có dòng nào)
-journalctl -u kpah-game -n 80 | grep -i "configuration file error"
+journalctl -u htbb-game -n 80 | grep -i "configuration file error"
 
 # 2. Server còn sống không
-systemctl status kpah-game --no-pager
+systemctl status htbb-game --no-pager
 
 # 3. Cổng còn nghe không
 ss -lntp | grep 19129
@@ -618,3 +657,120 @@ ss -lntp | grep 19129
 
 Trong game gõ `setting` → `6` để xem giá trị server **đang thực sự dùng** — đây là cách chắc
 chắn nhất, vì nó đọc từ bộ nhớ chứ không đọc lại file.
+
+## 12. Nhật ký (log) và chống spam khi đông người
+
+Tất cả các khoá dưới đây đều **có mặc định trong mã nguồn** (thiếu dòng = mặc định, không ném lỗi) và
+chỉ được đọc **lúc khởi động**. Trong `vps/server.ini.tmpl` chúng nằm ở dạng **dòng chú thích**
+`#khoa=giá_trị_mặc_định`: bỏ dấu `#` và sửa số là xong. Mã nguồn:
+[com/htbb/log/Nhat.java](../server/src/com/htbb/log/Nhat.java),
+[com/htbb/chongspam/ChongSpam.java](../server/src/com/htbb/chongspam/ChongSpam.java),
+[com/htbb/chongspam/ThongBaoGop.java](../server/src/com/htbb/chongspam/ThongBaoGop.java).
+
+### 12a. Nhật ký `sv.log.*`
+
+Mọi `System.out`/`System.err` cũ (kể cả `printStackTrace()` và dòng in từ `lib/htbb-core.jar`) giờ đi qua
+một bộ chặn dòng: phân loại theo tiền tố `[LOẠI]`, lọc theo mức, gộp dòng lặp, ghi **bất đồng bộ**
+(luồng game chỉ đẩy vào hàng đợi). stdout vẫn còn — systemd ghi vào `game.out` như cũ — chỉ là ít
+hơn nhiều. Mỗi dòng có giờ + chữ mức: `10-18 19:02:11.532 W [NGAP_GOI] ...` (E/W/I/D).
+
+| Khoá | Mặc định | Nghĩa |
+|---|---|---|
+| `sv.log.muc` | `THONG_TIN` | mức tối thiểu ra **stdout** (`LOI` / `CANH_BAO` / `THONG_TIN` / `GO_LOI`; nhận cả ERROR/WARN/INFO/DEBUG) |
+| `sv.log.mucTep` | = `sv.log.muc` | mức tối thiểu ghi **tệp** |
+| `sv.log.tat` | `GOI3,GOI5,GOI26,VKTT,SQL,LUU_CHAR` | loại bị **tắt hẳn** (chữ trong `[..]` đầu dòng; dấu cách thành `_`). Cứ 10 phút một dòng đếm số đã bỏ |
+| `sv.log.kiemToan` | `ADMIN,GM,NAP,NAP_TIEN,GIFTCODE,CAM,BAN,KINH_TE,KINHTE,CHONG_SPAM` | loại **kiểm toán**: không tắt được, luôn ghi nguyên vẹn vào tệp `kiem_toan-*.log` |
+| `sv.log.lapToiDa` | `5` | số dòng **cùng mẫu** (số → `#`, chuỗi `'..'` → `?`) được ghi mỗi cửa sổ; quá thì đếm, hết cửa sổ in **một** dòng `gop dong lap xN lan trong 60s` |
+| `sv.log.loaiToiDa` | `120` | trần chung mỗi **loại** mỗi cửa sổ (tên nhân vật khác nhau vẫn cùng loại). Dòng `LOI` không bị trần này chặn |
+| `sv.log.cuaSoGiay` | `60` | độ dài cửa sổ gộp |
+| `sv.log.cuaSoStackGiay` | `600` | stack trace của **cùng một lỗi** (lớp + mẫu thông điệp + khung đầu) chỉ in đầy đủ **một lần** trong khoảng này; các lần sau một dòng, cuối kỳ in số lần lặp |
+| `sv.log.hangDoi` | `50000` | sức chứa hàng đợi ghi; đầy thì bỏ dòng thường (đếm vào `nhatKy.mat` của `trang_thai.json`), dòng LOI chờ tối đa 50 ms |
+| `sv.log.tep` | `1` | `0` = không ghi tệp `may_chu-*.log` (tệp kiểm toán vẫn ghi) |
+| `sv.log.thuMuc` | `<sv.pathLog>/nhat_ky/` | thư mục tệp. **Đừng** đặt trùng `/opt/htbb/log/`: `vps/htbb-logrotate.conf` có glob `/opt/htbb/log/*.log` sẽ tranh xoay vòng |
+| `sv.log.tepToiDaMB` | `100` | dung lượng mỗi phần tệp; đầy sang `.1.log`, `.2.log`… |
+| `sv.log.soTepMoiNgay` | `5` | số phần tối đa mỗi ngày; hết thì **chỉ còn ghi dòng LOI** (đếm số bỏ, báo đầu tệp hôm sau) |
+| `sv.log.giuNgay` | `14` | xoá tệp `may_chu-*` cũ hơn chừng này ngày |
+| `sv.log.giuNgayKiemToan` | `90` | như trên cho `kiem_toan-*` |
+
+Phân loại dòng cũ: `[ABC DEF] ...` → loại `ABC_DEF`; câu SQL trần (`select/update/insert...`) → `SQL`
+mức `GO_LOI` (riêng `SQL ERROR...` và câu SQL kèm chữ lỗi → `SQL_LOI`, không bị tắt cùng `SQL`); `info VKTT` → `VKTT`; `SAVE CHARSELL`/`savechar` → `LUU_CHAR`; dòng chứa
+`exception/error/loi/lỗi/that bai` → `LOI` (stderr) hoặc `CANH_BAO` (stdout); stack trace gom thành
+**một khối** loại `STACK`.
+
+Đã gỡ hẳn: câu SQL `update tob_char_luong set nPK=... where charname='<tên>'` in ra cho **từng** nhân
+vật top PK (vừa rác vừa lộ tên, và còn ghép chuỗi tên vào SQL — nay dùng tham số), `info VKTT` mỗi
+lần gửi gói 3. Chuỗi do client gửi lên (tên tài khoản, nền tảng, phiên bản, chat admin) được làm sạch
+bằng `Nhat.sach()`: xuống dòng thành `\n` chữ, ký tự điều khiển/ESC thành `?` — không giả mạo được
+dòng log.
+
+**Nhật ký kiểm toán giữ nguyên chỗ cũ**: `AdminChat.txt`, `AdminChat_lenh47.txt`, `errorlog.txt`,
+bảng `saveOrtherLog` (nạp tiền, giftcode, nhận tiêu…) không đổi. `kiem_toan-*.log` là **bản thứ hai**,
+không gộp, không tắt được.
+
+Chỉ số trong `trang_thai.json`: `nhatKy.ghi / bo / loi / mat` (cộng dồn), `chatChan`, `thaoTacChan`.
+
+### 12b. Chống spam chat `sv.spam.*`
+
+Nhịp dạng `số/giây` (cửa sổ trượt). Admin (`isAdmin`) miễn. Kiểm trên nội dung **gốc**, trước bộ
+lọc từ xấu (bộ lọc cũ xoá dấu chấm nên `abc.com` thành `abccom` và lọt).
+
+| Khoá | Mặc định | Nghĩa |
+|---|---|---|
+| `sv.spam.bat` | `1` | `0` = tắt toàn bộ chống spam chat + thao tác |
+| `sv.spam.chat.gan` | `5/10` | chat thường (lệnh 27, người xung quanh) |
+| `sv.spam.chat.rieng` | `6/10` | tin riêng (lệnh -5) |
+| `sv.spam.chat.theGioi` | `1/30` | loa thế giới, mỗi người (cộng thêm `Char.LOA_COOLDOWN_MS`); bị chặn thì **không trừ loa** |
+| `sv.spam.theGioiToanServer` | `12/60` | trần **chung** kênh thế giới cho cả máy chủ (không tính vi phạm cho người gửi) |
+| `sv.spam.chat.doi` | `8/10` | dự phòng cho kênh tổ đội |
+| `sv.spam.chat.bang` | `8/10` | chat bang (lệnh bang mới + bảng tin bang — mỗi tin bảng là một lần ghi CSDL) |
+| `sv.spam.trungLapGiay` | `30` | cùng nội dung (chuẩn hoá: thường, bỏ dấu, bỏ ký tự lặp) trong chừng này giây = trùng lặp |
+| `sv.spam.chanQuangCao` | `1` | chặn link/quảng cáo: `http://`, `www.`, tên miền `.com/.net/.vn/.xyz…` (cả `abc (dot) com`, `abc chấm com`), zalo/fb/telegram/discord, số điện thoại VN, địa chỉ IP |
+| `sv.spam.quangCaoThem` | trống | thêm từ cấm quảng cáo, phân cách dấu phẩy (so khớp không dấu, không phân biệt hoa thường) |
+| `sv.spam.viPhamCam` | `4` | đủ chừng này điểm vi phạm thì **tự động cấm chat** (quá nhanh / trùng = 1 điểm, quảng cáo = 2) |
+| `sv.spam.viPhamQuenGiay` | `600` | điểm vi phạm về 0 sau chừng này giây sạch |
+| `sv.spam.camGiay` | `60,300,1800,7200` | thời gian cấm **tăng dần** theo bậc (1 → 5 → 30 → 120 phút) |
+| `sv.spam.bacQuenGio` | `24` | bậc cấm hạ về 0 sau chừng này giờ không bị cấm |
+| `sv.spam.baoCachGiay` | `5` | báo người bị chặn tối đa 1 lần / chừng này giây (không thì chính câu báo thành spam server→client) |
+
+Thay cho luật cũ: quá 5 tin/30 giây thì bỏ im lặng, 5 tin trong 5 giây thì **cấm thẳng 30 phút**
+không báo. Tin riêng bỏ luôn `Thread.sleep(5000)` từng ngủ **trên luồng đọc gói** của kết nối. Mỗi
+lần tự động cấm ghi một dòng kiểm toán `CHONG_SPAM`.
+
+### 12c. Chống spam thao tác `sv.spam.hd.*`
+
+Vượt nhịp thì **bỏ thao tác** (không cắt kết nối), báo "Thao tác quá nhanh" tối đa 1 lần/5 giây.
+
+| Khoá | Mặc định | Thao tác |
+|---|---|---|
+| `sv.spam.hd.moiDoi` | `4/10` | mời tổ đội (lệnh 49, kiểu 0) |
+| `sv.spam.hd.moiBang` | `4/10` | mời vào bang (lệnh -11) |
+| `sv.spam.hd.ketBan` | `4/10` | lời mời kết bạn (lệnh 101, kiểu 0) |
+| `sv.spam.hd.moiGiaoDich` | `4/10` | dự phòng — mời giao dịch đã có sẵn chờ 60 giây (`timeInviteTrade`) |
+| `sv.spam.hd.npc` | `25/5` | menu NPC (lệnh 53/55) |
+| `sv.spam.hd.raoBan` | `6/30` | rao bán chợ (lệnh 62/92) |
+| `sv.spam.hd.muaBan` | `25/5` | mua / bán cửa hàng (lệnh 24/28/95) |
+| `sv.spam.hd.dangKy` | `5/60` | dự phòng cho đăng ký; hạn mức IP 3/giờ 10/ngày của `DangKyTrongGame` vẫn áp |
+
+### 12d. Thông báo toàn máy chủ `sv.thongBao.*`
+
+"Chúc mừng X nhận được…", bùng phát sinh thái, boss thế giới xuất hiện: mỗi tin là **một gói cho mọi
+người online**; đông người thì chính đông người sinh nhiều tin (N người × N tin), client lại hiện
+từng tin 15–20 giây nên hàng đợi dồn hàng phút. Nay đi qua `ThongBaoGop.dua()`; tin **ưu tiên**
+(bảo trì, admin, giờ vàng, PK tự do, chiếm thành) vẫn gửi thẳng như cũ.
+
+| Khoá | Mặc định | Nghĩa |
+|---|---|---|
+| `sv.thongBao.bat` | `1` | `0` = gửi thẳng như trước |
+| `sv.thongBao.toiDa` / `sv.thongBao.cuaSoGiay` | `6` / `60` | tối đa 6 tin / 60 giây cho cả máy chủ |
+| `sv.thongBao.moiLoai` | `3` | trần riêng mỗi loại tin trong cùng cửa sổ (`nhan_thuong`, `sinh_thai`, `boss`) |
+| `sv.thongBao.trungLapGiay` | `120` | cùng nội dung trong chừng này giây thì bỏ |
+| `sv.thongBao.gopGiay` | `15` | tin vượt trần vào hàng chờ (tối đa 50); cứ chừng này giây gửi **một** tin gộp `tin 1 \| tin 2 (+N tin khác)` |
+
+### 12e. Ngập gói: lệnh tra cứu và máy chạy bot
+
+Đo bằng `tools/pokemon/kiem_tai/BotTai` (100 bot, 10 GM): bot GM quét id quái 0..399 bằng lệnh `7`
+trong ~2,4 giây, chạm trần 300 lệnh thường và sinh 67 dòng `NGAP GOI TIN` trong 10 phút. Client thật
+chỉ hỏi quái **đang thấy**, nên lệnh `7` (chỉ đọc, rẻ) giờ có ngân sách riêng `sv.tranGoiTraCuu`
+(600/5 s); lệnh thường giữ nguyên 300. Máy chạy bot tải có thể đặt `sv.tranGoiMienIp=127.0.0.1`
+trong `server.ini` **của máy đó** — VPS để trống.
+

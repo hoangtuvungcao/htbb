@@ -18,5 +18,5 @@ export default defineAdminHandler(async (event, admin) => {
   })
   if (kq.ketQua !== 'ok') throw apiLoi(409, `Không xác nhận được: ${kq.ketQua}`)
   await ghiNhatKy(event, 'xac_nhan_nap', don.ma_don, `đơn #${id} ${don.so_tien} đ, GD ${maGd}${ghiChu ? ` — ${ghiChu}` : ''}`)
-  return { ok: true, message: `Đã xác nhận đơn #${id}. Server game sẽ cộng khi nhân vật online.` }
+  return { ok: true, message: `Đã xác nhận đơn #${id}. Server game sẽ cộng khi Pokémon online.` }
 })

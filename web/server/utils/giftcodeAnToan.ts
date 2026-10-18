@@ -5,7 +5,13 @@
  *   Phần thưởng chỉ gồm: LUONGKHOA:n | GEM:id:n (luôn khoá) | ITEM:id:n (n ≤ 10, khoá).
  *   Giá trị mã = lượng khoá + số đá + 5 × số ITEM ≤ giftcode.gia_tri_toi_da (30).
  *   Ngân sách tháng: tổng gia_tri trong tob_giftcode_log của tháng ≤ giftcode.ngan_sach_thang (20 000).
+ *   Vật phẩm: danh sách trắng gcKiemVatPham (shared/data/giftcode-an-toan.json), server game kiểm lại theo cấp nhân vật.
  */
+import duLieuGiftcode from '../../shared/data/giftcode-an-toan.json'
+import { kiemVatPhamGiftcode, type DuLieuGiftcodeAnToan } from '../../shared/giftcode/kiem-vat-pham'
+
+export const GC_DU_LIEU = duLieuGiftcode as unknown as DuLieuGiftcodeAnToan
+
 export const GC_GIA_TRI_ITEM = 5
 export const GC_MAC_DINH = { giaTriToiDa: 30, nganSachThang: 20000, toiDaThang: 2 }
 
@@ -51,6 +57,22 @@ export function gcGiaTri(chuan: string): number {
     else if (t[0] === 'ITEM') v += GC_GIA_TRI_ITEM * Number(t[2])
   }
   return v
+}
+
+/**
+ * Danh sách trắng vật phẩm (shared/data/giftcode-an-toan.json, cùng luật với server game): tiêu hao / nguyên liệu /
+ * tín vật, trang bị thường có cấp ≤ cấp tối thiểu của mã, ngọc không bán bằng lượng. null = hợp lệ.
+ */
+export async function gcKiemVatPham(chuan: string, capToiThieu: number): Promise<string | null> {
+  const ids = chuan.split(',').filter(p => p.startsWith('ITEM:')).map(p => Number(p.split(':')[1]))
+  const cap: Record<number, number> = {}
+  if (ids.length > 0) {
+    const cho = ids.map(() => '?').join(',')
+    const rows = await q<{ id: number, level: number }>(dbGame(), `SELECT id, level FROM data_item WHERE id IN (${cho})`, ids)
+      .catch(() => [] as { id: number, level: number }[])
+    for (const r of rows) cap[Number(r.id)] = Number(r.level)
+  }
+  return kiemVatPhamGiftcode(GC_DU_LIEU, chuan, capToiThieu, id => cap[id] ?? -1)
 }
 
 /** Giới hạn đang dùng: cau_hinh (nếu có khoá) đè mặc định. */

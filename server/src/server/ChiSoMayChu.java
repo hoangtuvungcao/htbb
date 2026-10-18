@@ -51,12 +51,21 @@ public final class ChiSoMayChu implements Runnable {
 
     /** Goi tin client -> server da nhan (moi ket noi, ke ca truoc khi vao game). */
     public static final AtomicLong GOI_VAO = new AtomicLong();
+    /** Goi tin server -> client da xep hang gui (io.Session.Sender) - bang dieu khien tinh goi ra/giay. LongAdder: khong tranh chap giua cac luong game. */
+    public static final java.util.concurrent.atomic.LongAdder GOI_RA = new java.util.concurrent.atomic.LongAdder();
     /** Goi bi BO vi vuot nguong ngap (ket noi van giu). */
     public static final AtomicLong GOI_BO = new AtomicLong();
     /** Ket noi bi CAT vi ngap goi nang. */
     public static final AtomicLong CAT_NGAP = new AtomicLong();
     /** Ngoai le khi xu ly mot goi tin (processMessage nem ra). */
     public static final AtomicLong LOI_XU_LY = new AtomicLong();
+    /** Tin chat bi ChongSpam chan (qua nhanh / trung lap / quang cao / dang cam). Cong don. */
+    public static final AtomicLong CHAT_CHAN = new AtomicLong();
+    /** Thao tac bi ChongSpam chan (moi doi, ket ban, moi giao dich, NPC, rao ban...). Cong don. */
+    public static final AtomicLong THAO_TAC_CHAN = new AtomicLong();
+
+    /** So ket noi ranh it nhat trong pool CSDL chinh tu lan ghi mau truoc (Integer.MAX_VALUE = chua do). */
+    static final java.util.concurrent.atomic.AtomicInteger CSDL_RANH_MIN = new java.util.concurrent.atomic.AtomicInteger(Integer.MAX_VALUE);
 
     private static volatile boolean baoTri = false;
     private static volatile String cauBaoTri = CAU_BAO_TRI_MAC_DINH;
@@ -73,26 +82,73 @@ public final class ChiSoMayChu implements Runnable {
             return;
         }
         daChay = true;
+        // Ket noi CSDL ranh it nhat trong 30 s (lay mau 100 ms) -> dinh dung that = toi da - ranh it nhat.
+        // Dung de chinh db.maxco (docs/pokemon/TOI_UU_HIEU_NANG.md muc 4).
+        com.htbb.runtime.VongLapChung.henGio(new Runnable() {
+            @Override
+            public void run() {
+                final data.ConnPool p = Database.connPool;
+                if (p != null && p.pool != null) {
+                    final int r = p.pool.size();
+                    int cu;
+                    while (r < (cu = CSDL_RANH_MIN.get()) && !CSDL_RANH_MIN.compareAndSet(cu, r)) {
+                        // thu lai
+                    }
+                }
+            }
+        }, 100L);
         final Thread t = new Thread(new ChiSoMayChu());
         t.setName("CHI SO MAY CHU");
         t.setDaemon(true);
         t.start();
     }
 
+    // Bao tri bat tu trang quan tri (khoa cau_hinh bao_tri.bat / bao_tri.cau / bao_tri.cho - CauHinhTrungTam, ap
+    // dung <= 10 giay, KHONG can sv.chiSoMayChu hay quyen ghi thu muc game). Bat tep HOAC khoa = bao tri;
+    // danh sach duoc vao = hop cua hai noi.
+    private static volatile boolean baoTriCauHinh = false;
+    private static volatile String cauCauHinh = "";
+    private static volatile Set<String> choCauHinh = new CopyOnWriteArraySet<String>();
+
+    /** Goi tu com.htbb.cauhinh.ApDungMacDinh khi khoa bao_tri.* doi. */
+    public static void datBaoTriCauHinh(final boolean bat, final String cau, final List<String> cho) {
+        final Set<String> s = new CopyOnWriteArraySet<String>();
+        if (cho != null) {
+            for (final String t : cho) {
+                if (t != null && !t.trim().isEmpty()) {
+                    s.add(t.trim().toLowerCase());
+                }
+            }
+        }
+        choCauHinh = s;
+        cauCauHinh = cau == null ? "" : cau.trim();
+        if (bat != baoTriCauHinh) {
+            System.out.println("[BAO TRI] cau_hinh bao_tri.bat=" + (bat ? 1 : 0) + " -> " + (bat ? "CHAN dang nhap moi (tru " + s + ")" : "het bao tri theo cau hinh"));
+        }
+        baoTriCauHinh = bat;
+    }
+
     /** Dang bao tri va tai khoan nay KHONG nam trong danh sach "cho:" -> tu choi dang nhap. */
     public static boolean chanDangNhap(final String taiKhoan) {
-        if (!baoTri) {
+        if (!baoTri && !baoTriCauHinh) {
             return false;
         }
-        return taiKhoan == null || !choPhepKhiBaoTri.contains(taiKhoan.toLowerCase());
+        if (taiKhoan == null) {
+            return true;
+        }
+        final String t = taiKhoan.toLowerCase();
+        return !(choPhepKhiBaoTri.contains(t) || choCauHinh.contains(t));
     }
 
     public static boolean dangBaoTri() {
-        return baoTri;
+        return baoTri || baoTriCauHinh;
     }
 
     public static String cauBaoTri() {
-        return cauBaoTri;
+        if (baoTriCauHinh && !cauCauHinh.isEmpty()) {
+            return cauCauHinh;
+        }
+        return baoTri ? cauBaoTri : CAU_BAO_TRI_MAC_DINH;
     }
 
     @Override
@@ -199,6 +255,11 @@ public final class ChiSoMayChu implements Runnable {
         }
     }
 
+    static int csdlRanhVaXoa() {
+        final int r = CSDL_RANH_MIN.getAndSet(Integer.MAX_VALUE);
+        return r == Integer.MAX_VALUE ? -1 : r;
+    }
+
     static int cpuTienTrinh() {
         try {
             final java.lang.management.OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
@@ -228,7 +289,25 @@ public final class ChiSoMayChu implements Runnable {
                     + ",\"heapMb\":" + heapMb + ",\"heapToiDaMb\":" + heapMax
                     + ",\"thread\":" + thread + ",\"cpu\":" + cpu
                     + ",\"goiVao30s\":" + vao + ",\"goiBo30s\":" + bo + ",\"catNgap30s\":" + cat
-                    + ",\"loiXuLy30s\":" + loi + ",\"baoTri\":" + baoTri + "}\n";
+                    + ",\"loiXuLy30s\":" + loi + ",\"baoTri\":" + dangBaoTri()
+                    // Nhat ky + chong spam: so CONG DON tu luc chay (com.htbb.log.Nhat, ChongSpam).
+                    + ",\"nhatKy\":{\"ghi\":" + com.htbb.log.Nhat.DONG_GHI.get() + ",\"bo\":" + com.htbb.log.Nhat.DONG_BO.get()
+                    + ",\"loi\":" + com.htbb.log.Nhat.DONG_LOI.get() + ",\"mat\":" + com.htbb.log.Nhat.DONG_MAT.get() + "}"
+                    + ",\"chatChan\":" + CHAT_CHAN.get() + ",\"thaoTacChan\":" + THAO_TAC_CHAN.get()
+                    // Vong lap chung (VongLapChung) + pool CSDL + ket noi bi cat vi tran hang doi gui.
+                    + ",\"vongLap\":{\"nhip\":" + com.htbb.runtime.VongLapChung.SO_NHIP.get()
+                    + ",\"ranh\":" + com.htbb.runtime.VongLapChung.SO_NHIP_RANH.get()
+                    + ",\"lanGoiTin\":" + com.htbb.runtime.VongLapChung.SO_LAN.get() + "}"
+                    + ",\"csdl\":{\"ranhItNhat30s\":" + csdlRanhVaXoa()
+                    + ",\"ranhHienTai\":" + (Database.connPool == null ? -1 : Database.connPool.pool.size()) + "}"
+                    + ",\"catTranGui\":" + io.Session.CAT_TRAN_GUI.get()
+                    // Tu dong danh chinh thuc (real.TuDongGame): dang chay + cong don tu luc chay.
+                    + ",\"tuDong\":{\"dangChay\":" + real.TuDongGame.soDangChay() + ",\"bat\":" + real.TuDongGame.SO_LAN_BAT.get()
+                    + ",\"tuChoi\":" + real.TuDongGame.SO_LAN_TU_CHOI.get() + ",\"chan\":" + real.TuDongGame.SO_HANH_DONG_CHAN.get()
+                    + ",\"tatViPham\":" + real.TuDongGame.SO_TAT_VI_PHAM.get() + ",\"nghiVanNhip\":" + real.TuDongGame.SO_NGHI_VAN_NHIP.get() + "}"
+                    // Guc / hoi sinh (real.HoiSinhGame): so lan guc, nguon hoi sinh, xu / luong khoa dot, EXP mat (cong don).
+                    + ",\"hoiSinh\":" + real.HoiSinhGame.json()
+                    + "}\n";
             final java.nio.file.Path tam = Paths.get(TEP_TRANG_THAI + ".tmp");
             Files.write(tam, json.getBytes(StandardCharsets.UTF_8));
             Files.move(tam, Paths.get(TEP_TRANG_THAI), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -253,7 +332,7 @@ public final class ChiSoMayChu implements Runnable {
             ps.setLong(9, bo);
             ps.setInt(10, (int) Math.min(Integer.MAX_VALUE, cat));
             ps.setInt(11, (int) Math.min(Integer.MAX_VALUE, loi));
-            ps.setInt(12, baoTri ? 1 : 0);
+            ps.setInt(12, dangBaoTri() ? 1 : 0);
             ps.execute();
         } catch (final Exception e) {
             baoLoiMotLan(e);

@@ -2,26 +2,45 @@
 //   gradlew :pokemon:assembleDebug   [-PmayChu=host:cong] [-PhtbbBan=N] [-PxacThuc=1]
 //   gradlew :pokemon:assembleRelease [-PmayChu=host:cong] [-PhtbbKeyDir=...]
 //
-// - Code game: ../../j2me/src + ../../shared/mod, chép + vá tối thiểu bởi ../port-j2me.py lúc build (một nguồn
+// - Code game: ../../client_jar/src + ../../client_jar/shared/mod, chép + vá tối thiểu bởi ../port-j2me.py lúc build (một nguồn
 //   duy nhất với bản jar; không sửa tay code sinh ra trong build/generated).
 // - Lớp MIDP (javax.microedition.*) + Activity: src/main/java.
-// - Tài nguyên: ../../j2me/res (bản ĐẦY ĐỦ, không phải res_nhe) làm assets.
+// - Tài nguyên: ../../client_jar/res (bản ĐẦY ĐỦ, không phải res_nhe) làm assets.
 // - Server: bản debug mặc định nối server thử 10.0.2.2:19129 (máy chủ của máy ảo Android = 127.0.0.1 máy
-//   dev), tên "Thử nghiệm". -PmayChu=host:cong đổi server (cả release). Release không đặt mayChu = tải danh sách.
+//   dev), tên "Thử nghiệm". -PmayChu=host:cong (hoặc biến MAY_CHU) đổi server (cả release). Release BẮT BUỘC có
+//   máy chủ: -PmayChu / MAY_CHU / MAY_CHU_CHINH / MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf - thiếu là DỪNG
+//   (trước đây release tải danh sách server nqsh-h2.top). -Pnqsh=1 = bỏ kiểm (chỉ khi cố ý build kiểu cũ).
+// - Phiên bản: versionCode = -PhtbbBan hoặc BAN=, versionName = PHIEN_BAN= trong ../tools/phat-hanh/phien_ban.conf.
+// - Ghi công: client_jar/res/GHI_CONG.txt (vào assets cùng res; màn "Ghi công" trong game, sinh bởi client_jar/tools/sinh_ghi_cong.py).
 // - Xác thực -88 tắt (server Pokémon không có lệnh này); -PxacThuc=1 bật lại như XAC_THUC=1 của bản jar.
 plugins {
     id 'com.android.application'
 }
 
-def ban = (project.findProperty('htbbBan') ?: '1') as int
-def mayChu = project.findProperty('mayChu')
+// KHOA=giatri trong ../tools/phat-hanh/<tep> (dòng cuối thắng; không có = null)
+def docConf = { String tep, String khoa ->
+    def f = rootProject.file("../tools/phat-hanh/$tep")
+    def kq = null
+    if (f.exists()) {
+        f.eachLine('UTF-8') { dong ->
+            def d = dong.trim()
+            if (d.startsWith(khoa + '=')) kq = d.substring(khoa.length() + 1).trim().replace('"', '')
+        }
+    }
+    return kq ? kq : null
+}
+def ban = (project.findProperty('htbbBan') ?: docConf('phien_ban.conf', 'BAN') ?: '1') as int
+def phienBan = docConf('phien_ban.conf', 'PHIEN_BAN') ?: "1.$ban"
+def mayChu = project.findProperty('mayChu') ?: System.getenv('MAY_CHU')
+def mayChuRelease = mayChu ?: System.getenv('MAY_CHU_CHINH') ?: docConf('may_chu.conf', 'MAY_CHU_CHINH')
+def choPhepNqsh = (project.findProperty('nqsh') ?: System.getenv('NQSH') ?: '0').toString() == '1'
 def xacThuc = (project.findProperty('xacThuc') ?: '0').toString()
 def keyDir = project.findProperty('htbbKeyDir') ?: System.getenv('KEY_DIR')
 def khoa = new Properties()
 if (keyDir && file("$keyDir/key.properties").exists()) {
     file("$keyDir/key.properties").withInputStream { khoa.load(it) }
 }
-def j2me = rootProject.file('../j2me')
+def j2me = rootProject.file('../client_jar')
 def codeSinh = layout.buildDirectory.dir('generated/htbb-j2me/java')
 def tsDebug = layout.buildDirectory.dir('generated/htbb-thuoc-tinh/debug')
 def tsRelease = layout.buildDirectory.dir('generated/htbb-thuoc-tinh/release')
@@ -35,7 +54,7 @@ android {
         minSdk 26
         targetSdk 35
         versionCode ban
-        versionName "1.$ban"
+        versionName phienBan
     }
 
     signingConfigs {
@@ -70,9 +89,9 @@ android {
     sourceSets {
         main.java.srcDirs += codeSinh
         main.assets.srcDirs += new File(j2me, 'res')
-        // banner màn đăng nhập/chọn Pokémon (agent giao diện jar): nếu bản jar đóng gói thẳng từ shared/banner/res
-        // (thay vì chép vào j2me/res) thì APK lấy cùng thư mục đó; code vẽ banner nằm trong code jar nên tự có
-        def banner = rootProject.file('../shared/banner/res')
+        // key art HD chỉ cho APK (assets /bn/hd/: cảnh 880x400 + mây + khung + logo 240 px - client_jar/tools/tao_banner.py);
+        // Banner.java (code jar) thấy /bn/hd/nen.png thì vẽ đúng khung hình key art, jar J2ME không có -> dải lớp nhỏ
+        def banner = rootProject.file('../client_jar/shared/banner/res')
         if (banner.isDirectory()) main.assets.srcDirs += banner
         debug.assets.srcDirs += tsDebug
         release.assets.srcDirs += tsRelease
@@ -94,10 +113,10 @@ tasks.withType(JavaCompile).configureEach {
     options.deprecation = false
 }
 
-// j2me/src + shared/mod -> build/generated/htbb-j2me/java (port-j2me.py)
+// client_jar/src + client_jar/shared/mod -> build/generated/htbb-j2me/java (port-j2me.py)
 def portJ2me = tasks.register('portJ2me') {
     def vaoSrc = new File(j2me, 'src')
-    def vaoMod = rootProject.file('../shared/mod')
+    def vaoMod = rootProject.file('../client_jar/shared/mod')
     def script = rootProject.file('port-j2me.py')
     inputs.dir(vaoSrc)
     inputs.dir(vaoMod)
@@ -123,8 +142,13 @@ def thuocTinh = { String kieu, File ra ->
         int i = dong.indexOf(':')
         if (i > 0) p.setProperty(dong.substring(0, i).trim(), dong.substring(i + 1).trim())
     }
-    def mc = mayChu ?: (kieu == 'debug' ? '10.0.2.2:19129' : null)
+    def mc = kieu == 'debug' ? (mayChu ?: '10.0.2.2:19129') : mayChuRelease
     if (mc) p.setProperty('HTBB-May-Chu', mc.toString())
+    // như build.sh của jar: MIDlet-Version = phần số của phiên bản, HTBB-Phien-Ban / HTBB-Ban cho màn ghi công
+    def so = (phienBan =~ /^(\d+\.\d+(\.\d+)?)/)
+    if (so.find()) p.setProperty('MIDlet-Version', so.group(1))
+    p.setProperty('HTBB-Phien-Ban', phienBan.toString())
+    p.setProperty('HTBB-Ban', ban.toString())
     if (kieu == 'debug') p.setProperty('HTBB-Ban-Thu', '1')
     ra.mkdirs()
     new File(ra, 'htbb-app.properties').withWriter('UTF-8') { w -> p.store(w, 'Sinh boi Gradle (pokemon/build.gradle) - KHONG sua tay') }
@@ -132,13 +156,38 @@ def thuocTinh = { String kieu, File ra ->
 def thuocTinhDebug = tasks.register('thuocTinhDebug') {
     inputs.file(new File(j2me, 'MANIFEST.MF'))
     inputs.property('mayChu', (mayChu ?: '').toString())
+    inputs.property('phienBan', phienBan.toString())
+    inputs.property('ban', ban)
     outputs.dir(tsDebug)
     doLast { thuocTinh('debug', tsDebug.get().asFile) }
 }
 def thuocTinhRelease = tasks.register('thuocTinhRelease') {
     inputs.file(new File(j2me, 'MANIFEST.MF'))
-    inputs.property('mayChu', (mayChu ?: '').toString())
+    inputs.property('mayChu', (mayChuRelease ?: '').toString())
+    inputs.property('phienBan', phienBan.toString())
+    inputs.property('ban', ban)
     outputs.dir(tsRelease)
     doLast { thuocTinh('release', tsRelease.get().asFile) }
 }
 tasks.named('preBuild') { dependsOn portJ2me, thuocTinhDebug, thuocTinhRelease }
+
+// Bản phát hành phải gắn máy chủ production (không còn rơi về danh sách server NQSH-H2 cũ)
+def kiemMayChuRelease = tasks.register('kiemMayChuRelease') {
+    doLast {
+        def mc = (mayChuRelease ?: '').toString()
+        if (choPhepNqsh) {
+            if (!mc) logger.warn('CANH BAO: -Pnqsh=1 - APK release KHONG gan may chu, tai danh sach server cu')
+            return
+        }
+        if (!(mc ==~ /^[^:\s]+:\d+$/)) {
+            throw new GradleException("APK release can may chu production host:cong (hien tai: '$mc'). Dat -PmayChu=host:cong " +
+                "(build-pokemon.sh: MAY_CHU=host:cong), bien MAY_CHU_CHINH, hoac MAY_CHU_CHINH= trong tools/phat-hanh/may_chu.conf " +
+                "(cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf).")
+        }
+        if (mc.contains('nqsh-h2')) {
+            throw new GradleException("May chu '$mc' la server NQSH-H2 - khong build APK HTBB (dat -Pnqsh=1 neu co y)")
+        }
+        println "HTBB release: may chu $mc, phien ban $phienBan ($ban)"
+    }
+}
+tasks.matching { it.name == 'preReleaseBuild' }.configureEach { dependsOn kiemMayChuRelease }

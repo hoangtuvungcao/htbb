@@ -22,7 +22,7 @@ import urllib.request
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA = os.path.join(GOC, "docs", "pokemon", "bang_thu.csv")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_doi_ten_thu.sql")
-ANIMAL_JAVA = os.path.join(GOC, "src", "data", "Animal.java")
+ANIMAL_JAVA = os.path.join(GOC, "server", "src", "data", "Animal.java")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 TRACKER = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/tracker.json"
 

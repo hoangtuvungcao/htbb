@@ -630,7 +630,8 @@ public class Tilemap
 			idXaphu = 0;
 			break;
 		default:
-			mapName = string.Empty;
+			// vung Hoenn (nam 2, ban do moi chi co o server Pokemon): ten theo id
+			mapName = TenMapPokemon.tenHoenn(idmap);
 			break;
 		}
 		if (PokeBody.CHE_DO_POKEMON)

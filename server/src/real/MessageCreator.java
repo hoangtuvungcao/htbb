@@ -90,7 +90,7 @@ public class MessageCreator {
         SKILL_NAME = new String[][]{{"Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Múa kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa"}, {"Húc", "Roi dây leo", "Lá dao", "Bom bùn", "Tự vệ", "Sinh trưởng", "Bom hạt", "Bão lá", "Tia mặt trời"}, {"Húc", "Tấn công nhanh", "Cắn", "Sao băng", "Mong ước", "Nghỉ ngơi", "Phước lành hồi sinh", "Chia sẻ nỗi đau", "Đuôi sắt", "Bứt phá cuối cùng", "Tia phá hủy"}, {"Húc", "Súng nước", "Bong bóng", "Xoáy nước", "Phá mai", "Rút vào mai", "Đuôi nước", "Bơm nước", "Đại pháo nước"}, {"Tia lửa điện", "Sóng điện", "Cầu điện", "Tia chớp", "Nhanh nhẹn", "Nạp điện", "Lưới điện", "Sấm sét", "Đâm sầm điện"}};
         MessageCreator.nclone = 5;
         MessageCreator.ALL_ID_ITEM_NPC_SELL = null;
-        MessageCreator.nameTuBinh = new String[]{"Tứ bình", "Tứ nhạc", "Tứ khoái", "Tứ linh"};
+        MessageCreator.nameTuBinh = new String[]{"Bộ Berry", "Bộ Flute", "Bộ huy hiệu", "Bộ huyền thoại"};
 
         MessageCreator.id_eff_tool = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34};
 
@@ -500,10 +500,10 @@ public class MessageCreator {
                 // cat mot hieu ung thi hieu ung do khong ve duoc, con cat mot skin thi
                 // nguoi dang mac skin se CUOI HU KHONG — server da tat duong ngua co dien
                 // cho ho roi ma khong co du lieu frame de ve thay vao.
-                for (int i = 0; i < SkinLinhThu.SO_SKIN; ++i) {
+                for (int i = 0; i < SkinThuCuoi.SO_SKIN; ++i) {
                     final byte[] dl = DataGame.duLieuSkinThu(i);
                     if (dl != null) {
-                        idCoDuLieu.add(new int[]{SkinLinhThu.ID_ANH_BAN_DO + i});
+                        idCoDuLieu.add(new int[]{SkinThuCuoi.ID_ANH_BAN_DO + i});
                         duLieuEff.add(dl);
                     }
                 }
@@ -752,6 +752,9 @@ public class MessageCreator {
                 m.dos.writeByte(charData.nFrameVK);
             }
             m.dos.writeByte(DataGame.version);
+            // Che do Pokemon: khoi ngoai hinh (dex, shiny, phu kien) cho man chon Pokemon - sau byte version,
+            // client cu khong doc toi nen tuong thich nguoc (NgoaiHinhGame.ghiKhoiDanhSach)
+            NgoaiHinhGame.ghiKhoiDanhSach(m.dos, chars);
             chars.removeAll(chars);
             try {
                 items.removeAll(items);
@@ -1760,7 +1763,7 @@ public class MessageCreator {
                 // Skin linh thu: TAT duong ve "ngua co dien". Con thu skin duoc ve bang
                 // duong thu cuoi tool (idThutool o duoi), neu de nguyen userHorse thi
                 // client ve ca hai, con thu that va con skin chong len nhau.
-                if (SkinLinhThu.hienThi(ch)) {
+                if (SkinThuCuoi.hienThi(ch)) {
                     userHorse = 0;
                 }
 
@@ -1791,8 +1794,8 @@ public class MessageCreator {
                 }
                 // Cach di chuyen theo skin: con thu bay hay di bo do skin quyet dinh,
                 // khong con theo loai thu that nua.
-                if (SkinLinhThu.hienThi(ch)) {
-                    fly = (byte) SkinLinhThu.bay(ch);
+                if (SkinThuCuoi.hienThi(ch)) {
+                    fly = (byte) SkinThuCuoi.bay(ch);
                 }
                 m.dos.writeByte(fly);
                 m.dos.writeByte(idImgHorse);
@@ -1827,11 +1830,11 @@ public class MessageCreator {
                 indexdxy = ch.animalRide.getIndexDxy();
                 // Skin linh thu di dung duong nay: duong dang ve Rong Bang, Poro, Lan
                 // va hoa hinh. Chi doi id anh, con chi so cua con thu khong dong toi.
-                if (SkinLinhThu.hienThi(ch)) {
-                    idThutool = SkinLinhThu.idAnhBanDo(ch);
+                if (SkinThuCuoi.hienThi(ch)) {
+                    idThutool = SkinThuCuoi.idAnhBanDo(ch);
                     // Con thu that co the la ngua thuong (getIndexDxy tra -1 = khong bu
                     // toa do) nen phai dat lai, khong thi nguoi ngoi tut xuong sat dat.
-                    indexdxy = SkinLinhThu.indexDxy(ch);
+                    indexdxy = SkinThuCuoi.indexDxy(ch);
                 }
             }
             m.dos.writeShort(idThutool);
@@ -2054,7 +2057,7 @@ public class MessageCreator {
             }
 
             // Skin linh thu: tat duong ve "ngua co dien" — xem chu thich o createCharInfo.
-            if (SkinLinhThu.hienThi(p)) {
+            if (SkinThuCuoi.hienThi(p)) {
                 userHorse = 0;
             }
 
@@ -2100,8 +2103,8 @@ public class MessageCreator {
             }
 
             // Cach di chuyen theo skin — xem chu thich o createCharInfo.
-            if (SkinLinhThu.hienThi(p)) {
-                fly = (byte) SkinLinhThu.bay(p);
+            if (SkinThuCuoi.hienThi(p)) {
+                fly = (byte) SkinThuCuoi.bay(p);
             }
 
             m.dos.writeByte(fly);
@@ -2143,9 +2146,9 @@ public class MessageCreator {
             // Skin linh thu — goi thong tin cua chinh nhan vat minh. Xem chu thich o
             // createCharInfo, hai cho phai giong nhau khong thi minh va nguoi ben canh
             // nhin thay hai con thu khac nhau.
-            if (SkinLinhThu.hienThi(p)) {
-                idThutool = SkinLinhThu.idAnhBanDo(p);
-                indexdxy = SkinLinhThu.indexDxy(p);
+            if (SkinThuCuoi.hienThi(p)) {
+                idThutool = SkinThuCuoi.idAnhBanDo(p);
+                indexdxy = SkinThuCuoi.indexDxy(p);
             }
         }
         // CHAN DOAN linh thu: ghi lai server bao client ve anh nao. Doi chieu voi
@@ -2162,7 +2165,10 @@ public class MessageCreator {
 
         final int[] infovktt = p.getInfoVukhiThoiTrang();
         
-        System.out.println("info VKTT: " + infovktt[0] + ", "+ infovktt[1] + ", "+ infovktt[2] + ", "+ infovktt[3]);
+        // Truoc day in MOI lan dung goi 3 (moi lan ve nhan vat) - dong lap nhieu nhat cua game.log.
+        if (com.htbb.log.Nhat.bat(com.htbb.log.Nhat.Muc.GO_LOI, "VKTT")) {
+            com.htbb.log.Nhat.goLoi("VKTT", p.charname + " " + infovktt[0] + ", " + infovktt[1] + ", " + infovktt[2] + ", " + infovktt[3]);
+        }
         
         int idVKTool = infovktt[0]; // Khởi tạo giá trị mặc định
         indexdxy = infovktt[1];

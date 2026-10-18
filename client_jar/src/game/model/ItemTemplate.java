@@ -17,7 +17,7 @@ public class ItemTemplate {
     public byte clazz;
     public short id;
     public byte colorItem;
-    public static final String[] nameItem = {"áo", "Quần", "Nón", "Kiếm", "Đao", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Cuốc", "Giáp linh thú", "Hộ uyển", "Nón linh thú", "Bàn đạp", "Yên cương", "Phi phong"};
+    public static final String[] nameItem = {"áo", "Quần", "Nón", "Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Cuốc", "Giáp thú cưỡi", "Vòng chân", "Nón thú cưỡi", "Bàn đạp", "Yên cương", "Ruy băng"};
     public static Hashtable ALL_NAME_ATTRIBUTE_ITEM = new Hashtable();
     public short ndayLoan = 0;
     public short[] attb = new short[10];

@@ -60,13 +60,13 @@ export async function nvChuNhan(userId: number): Promise<string> {
 export async function nvLayDeThaoTac(id: number): Promise<{ id: number, charname: string, userId: number, ban: number }> {
   const nv = await q1<{ id: number, charname: string, userId: number, ban: number }>(
     dbGame(), 'SELECT id, charname, userId, ban FROM tob_char WHERE id = ? LIMIT 1', [id])
-  if (!nv) throw apiLoi(404, `Không tìm thấy nhân vật #${id}.`)
+  if (!nv) throw apiLoi(404, `Không tìm thấy Pokémon #${id}.`)
   return nv
 }
 
 /** id nhân vật lấy từ route /api/admin/nhanvat/<id>/... */
 export function nvIdTuRoute(event: import('h3').H3Event): number {
   const id = int(getRouterParam(event, 'id'))
-  if (id <= 0) throw apiLoi(404, `Không tìm thấy nhân vật #${id}.`)
+  if (id <= 0) throw apiLoi(404, `Không tìm thấy Pokémon #${id}.`)
   return id
 }

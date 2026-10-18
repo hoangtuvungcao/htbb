@@ -73,11 +73,17 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
         <p class="text-xs text-dimmed">= lượng khoá + số đá + 5 × số vật phẩm</p>
       </UCard>
       <UCard>
-        <p class="text-sm text-muted">Mỗi nhân vật / tháng</p>
+        <p class="text-sm text-muted">Mỗi Pokémon / tháng</p>
         <p class="text-2xl font-bold">{{ data?.gioiHan.toiDaThang }} mã</p>
         <p class="text-xs text-dimmed">Mỗi tài khoản 1 lần / mã · nhập sai 5 lần khoá 10 phút (server)</p>
       </UCard>
     </div>
+
+    <!-- Trần / ngân sách: CÙNG khoá cau_hinh với trang Cấu hình hệ thống (nhóm Kinh tế). -->
+    <details v-if="duocSua" class="rounded-lg border border-default">
+      <summary class="cursor-pointer select-none px-4 py-2 text-sm font-medium">Sửa trần & ngân sách giftcode (Cấu hình hệ thống)</summary>
+      <div class="p-3"><AdminHethongCauHinhNhom :khoa="['giftcode.gia_tri_toi_da', 'giftcode.ngan_sach_thang', 'giftcode.toi_da_thang']" tieu-de="Trần & ngân sách giftcode" /></div>
+    </details>
 
     <UCard v-if="duocSua">
       <template #header>
@@ -155,7 +161,7 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
       </template>
       <div class="max-h-96 overflow-auto">
         <table class="bang-wiki">
-          <thead><tr><th>Lúc</th><th>Mã</th><th>Nhân vật</th><th class="so">TK #</th><th>Phần thưởng</th><th class="so">Giá trị</th></tr></thead>
+          <thead><tr><th>Lúc</th><th>Mã</th><th>Pokémon</th><th class="so">TK #</th><th>Phần thưởng</th><th class="so">Giá trị</th></tr></thead>
           <tbody>
             <tr v-for="(r, i) in log?.ds ?? []" :key="i">
               <td class="whitespace-nowrap text-xs">{{ r.luc }}</td><td class="font-mono">{{ r.ma }}</td><td>{{ r.charname }}</td><td class="so">{{ r.user_id }}</td><td class="text-xs">{{ r.phan_thuong }}</td><td class="so">{{ r.gia_tri }}</td>

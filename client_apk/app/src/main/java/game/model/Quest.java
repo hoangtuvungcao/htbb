@@ -215,7 +215,7 @@ public class Quest {
                         short s2 = (short) (s + 1);
                         sArr2[i2] = s2;
                         if (s2 < sArr3[i2]) {
-                            sbAppend = new StringBuilder("Giết được ").append((int) this.allMonsKilled[i2]).append("/").append((int) this.totalMonskill[i2]).append(" ");
+                            sbAppend = new StringBuilder("Hạ được ").append((int) this.allMonsKilled[i2]).append("/").append((int) this.totalMonskill[i2]).append(" ");
                         } else {
                             sbAppend = new StringBuilder("Nhiệm vụ ").append(this.name);
                             str = " đã hoàn thành";
@@ -246,7 +246,7 @@ public class Quest {
                     short s2 = (short) (s + 1);
                     sArr[i2] = s2;
                     if (s2 < sArr2[i2]) {
-                        sbAppend = new StringBuilder("Giết được ").append((int) this.allMonsKilled[i2]).append("/").append((int) this.totalMonskill[i2]);
+                        sbAppend = new StringBuilder("Hạ được ").append((int) this.allMonsKilled[i2]).append("/").append((int) this.totalMonskill[i2]);
                         str = " ";
                     } else {
                         sbAppend = new StringBuilder("Nhiệm vụ ").append(this.name);
@@ -286,7 +286,7 @@ public class Quest {
                 return str2 + "|" + this.infoGift;
             }
             if (b2 == 4) {
-                return ("Giết: " + ((int) this.allMonsKilled[0]) + "/" + ((int) this.totalMonskill[0])) + "|" + this.infoGift;
+                return ("Hạ: " + ((int) this.allMonsKilled[0]) + "/" + ((int) this.totalMonskill[0])) + "|" + this.infoGift;
             }
         }
         return "";

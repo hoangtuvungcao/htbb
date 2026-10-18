@@ -1,25 +1,21 @@
 /**
  * Phân quyền khu quản trị theo VAI TRÒ.
  *
- *   sieu_quan_tri : mọi thứ. Tên trong KPAH_ADMIN_ACCOUNTS luôn là siêu quản trị (không đổi
+ *   sieu_quan_tri : mọi thứ. Tên trong HTBB_ADMIN_ACCOUNTS luôn là siêu quản trị (không đổi
  *                   được từ web — muốn gỡ thì sửa biến môi trường).
  *   bien_tap      : sửa nội dung website (tin tức, cẩm nang, trang chủ, FAQ, menu, media, lịch).
  *   ho_tro        : hỗ trợ người chơi (khoá/mở, cấm chat, đổi mật khẩu, gửi thư, kích hoạt).
  *   xem           : chỉ xem (mọi GET trừ trang phân quyền / tải file chẩn đoán).
  *
- * Vai trò khác lưu ở kpah_db.web_admin_vai_tro (server/sql/web_cms.sql). Quyền kiểm ở MỘT chỗ:
+ * Vai trò khác lưu ở htbb_db.web_admin_vai_tro (sql/web_cms.sql). Quyền kiểm ở MỘT chỗ:
  * defineAdminHandler gọi kiemQuyen(đường dẫn, phương thức, vai trò) cho mọi /api/admin/**.
  */
 import type { H3Event } from 'h3'
+import { DS_VAI_TRO_QUYEN, TEN_VAI_TRO_QUYEN, kiemQuyenAdmin, type VaiTroQuyen } from '../../shared/utils/quyenAdmin'
 
-export type VaiTro = 'sieu_quan_tri' | 'bien_tap' | 'ho_tro' | 'xem'
-export const DS_VAI_TRO_ADMIN: VaiTro[] = ['sieu_quan_tri', 'bien_tap', 'ho_tro', 'xem']
-export const TEN_VAI_TRO_ADMIN: Record<VaiTro, string> = {
-  sieu_quan_tri: 'Siêu quản trị',
-  bien_tap: 'Biên tập nội dung',
-  ho_tro: 'Hỗ trợ người chơi',
-  xem: 'Chỉ xem',
-}
+export type VaiTro = VaiTroQuyen
+export const DS_VAI_TRO_ADMIN: VaiTro[] = DS_VAI_TRO_QUYEN
+export const TEN_VAI_TRO_ADMIN: Record<VaiTro, string> = TEN_VAI_TRO_QUYEN
 
 const cache = new Map<string, { vt: VaiTro | null, luc: number }>()
 
@@ -56,23 +52,9 @@ export async function coAiLaAdmin(): Promise<boolean> {
   catch { return false }
 }
 
-/** Nhóm API theo vai trò được GHI (POST/PUT/DELETE). GET: mọi vai trò, trừ CHI_SIEU_XEM. */
-const GHI: { tien_to: string, vai: VaiTro[] }[] = [
-  { tien_to: '/api/admin/auth/', vai: DS_VAI_TRO_ADMIN },
-  { tien_to: '/api/admin/cms/', vai: ['sieu_quan_tri', 'bien_tap'] },
-  { tien_to: '/api/admin/nguoi-choi/', vai: ['sieu_quan_tri', 'ho_tro'] },
-  { tien_to: '/api/admin/taikhoan/', vai: ['sieu_quan_tri', 'ho_tro'] },
-  { tien_to: '/api/admin/nhanvat/', vai: ['sieu_quan_tri', 'ho_tro'] },
-  { tien_to: '/api/admin/cammay', vai: ['sieu_quan_tri', 'ho_tro'] },
-]
-const CHI_SIEU_XEM = ['/api/admin/phan-quyen', '/api/admin/chandoan/file']
-
+/** Ma trận quyền ở shared/utils/quyenAdmin.ts (nguồn duy nhất, có test liệt kê mọi route). */
 export function kiemQuyen(path: string, method: string, vt: VaiTro): boolean {
-  if (vt === 'sieu_quan_tri') return true
-  const p = path.split('?')[0]!
-  if (method === 'GET' || method === 'HEAD') return !CHI_SIEU_XEM.some(t => p.startsWith(t))
-  const g = GHI.find(x => p.startsWith(x.tien_to))
-  return !!g && g.vai.includes(vt)
+  return kiemQuyenAdmin(path, method, vt)
 }
 
 export function requireQuyen(event: H3Event, vt: VaiTro) {

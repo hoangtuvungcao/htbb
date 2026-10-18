@@ -5,11 +5,24 @@
  * /api/cong-khai, server trộn giá trị trong CSDL ĐÈ LÊN mặc định ở đây (hopNhatCms). Admin bấm
  * "Khôi phục mặc định" là xoá dòng trong CSDL -> quay về đúng các giá trị này.
  */
+import { DS_NEN_TANG, banTaiMacDinh, chuanHoaBanTai, type BanTai } from './taiGame.ts'
 
 export interface LienKet { label: string, to: string, icon?: string }
 export interface NutCta { label: string, to: string, kieu: 'chinh' | 'phu' }
 export interface TheTinhNang { icon: string, t: string, m: string, to: string }
 export interface Banner { anh: string, tieuDe: string, moTa: string, to: string, hien: boolean }
+
+/** Kênh hỗ trợ chính thức: nhóm / Official Account Zalo. url trống = chưa có (ẩn mọi nút). */
+export interface HoTroZalo {
+  /** https://zalo.me/g/... (nhóm) hoặc https://zalo.me/<id OA> / https://oa.zalo.me/... — xem lienKetZalo. */
+  url: string
+  /** Ảnh QR chọn từ thư viện ảnh (/uploads/...) — tuỳ chọn. */
+  anhQr: string
+  /** Tên hiện trên nút/thẻ, vd. "Nhóm Zalo Huyền Thoại Bảo Bối". */
+  ten: string
+  /** Một câu mô tả ngắn dưới tên. */
+  moTa: string
+}
 
 export interface CmsSite {
   tenSite: string
@@ -18,6 +31,7 @@ export interface CmsSite {
   moTaSeo: string
   anhOg: string
   mangXaHoi: { ten: string, url: string, icon: string }[]
+  hoTroZalo: HoTroZalo
   baoTri: { bat: boolean, tieuDe: string, noiDung: string }
   thongBao: { bat: boolean, noiDung: string, to: string, mau: 'vang' | 'do' | 'xanh' }
   /** Nguồn trạng thái máy chủ: '' = bảng tob_vi_tri_online; hoặc URL JSON trả { song, online }. */
@@ -34,17 +48,6 @@ export interface CmsTrangChu {
 export interface CmsMenu {
   dauTrang: LienKet[]
   chanTrang: { ten: string, links: LienKet[] }[]
-}
-export interface BanTai {
-  ma: 'android' | 'pc' | 'jar' | 'ios'
-  ten: string
-  moTa: string
-  url: string
-  phienBan: string
-  dungLuong: string
-  capNhat: string
-  nhatKy: string
-  hien: boolean
 }
 export interface CmsTaiGame { ban: BanTai[] }
 
@@ -63,6 +66,12 @@ export const CMS_MAC_DINH: CmsCongKhai = {
     moTaSeo: 'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè. Miễn phí, không nạp tiền.',
     anhOg: '/og/htbb.png',
     mangXaHoi: [],
+    hoTroZalo: {
+      url: '',
+      anhQr: '',
+      ten: 'Hỗ trợ qua Zalo',
+      moTa: 'Hỏi đáp, báo lỗi, khiếu nại khoá tài khoản. Ban quản trị không bao giờ hỏi mật khẩu của bạn.',
+    },
     baoTri: { bat: false, tieuDe: 'Máy chủ đang bảo trì', noiDung: 'Chúng tôi đang nâng cấp hệ thống. Vui lòng quay lại sau ít phút.' },
     thongBao: { bat: false, noiDung: '', to: '', mau: 'vang' },
     trangThaiUrl: '',
@@ -81,7 +90,7 @@ export const CMS_MAC_DINH: CmsCongKhai = {
     tinhNangTieuDe: 'MMO Pokémon, theo cách của bạn',
     tinhNang: [
       { icon: 'i-lucide-paw-print', t: 'Bạn là Pokémon', m: 'Không huấn luyện — hoá thân. Lên cấp là tiến hoá ngay trên bản đồ.', to: '/gioi-thieu' },
-      { icon: 'i-lucide-flame', t: '18 hệ khắc chế', m: 'Đánh đúng hệ ×1,5–×2. Bảng khắc hệ tương tác 18×18.', to: '/cam-nang/he-khac-che' },
+      { icon: 'i-lucide-flame', t: '18 hệ & khắc hệ', m: 'Đánh đúng hệ ×1,5–×2. Bảng khắc hệ tương tác 18×18.', to: '/cam-nang/he-khac-che' },
       { icon: 'i-lucide-sparkles', t: 'Tiến hoá & 8 nhánh Eevee', m: 'Charizard, Venusaur, Blastoise, Raichu hay Sylveon?', to: '/cam-nang/tien-hoa' },
       { icon: 'i-lucide-skull', t: 'Đột kích huyền thoại', m: 'Zapdos, Rayquaza, Kyogre & Groudon — hạ boss cùng đội.', to: '/cam-nang/boss-dot-kich' },
       { icon: 'i-lucide-trophy', t: 'PvP xếp hạng mùa', m: 'Bốn mùa một năm, leo bậc Poké → Master.', to: '/cam-nang/pvp' },
@@ -110,8 +119,11 @@ export const CMS_MAC_DINH: CmsCongKhai = {
       ] },
       { ten: 'Cẩm nang', links: [
         { label: 'Hệ & khắc hệ', to: '/cam-nang/he-khac-che' },
-        { label: 'Cấp độ & tiến hoá', to: '/cam-nang/cap-do' },
+        { label: 'Cấp độ & EXP', to: '/cam-nang/cap-do' },
+        { label: 'Tiến hoá', to: '/cam-nang/tien-hoa' },
         { label: 'Trang bị & nâng cấp', to: '/cam-nang/trang-bi' },
+        { label: 'Sổ tay huấn luyện', to: '/cam-nang/so-tay' },
+        { label: 'Gym & huy hiệu', to: '/cam-nang/gym' },
         { label: 'Lịch sự kiện năm', to: '/cam-nang/su-kien' },
         { label: 'Câu hỏi thường gặp', to: '/cam-nang/faq' },
       ] },
@@ -120,22 +132,16 @@ export const CMS_MAC_DINH: CmsCongKhai = {
         { label: 'Bảng xếp hạng', to: '/ranking' },
         { label: 'Hỗ trợ', to: '/download#support' },
         { label: 'Đăng ký tài khoản', to: '/register' },
+        { label: 'Quy tắc tài khoản', to: '/cam-nang/tai-khoan' },
       ] },
       { ten: 'Pháp lý', links: [
-        { label: 'Ghi công & giấy phép', to: '/ghi-cong' },
         { label: 'Điều khoản sử dụng', to: '/dieu-khoan' },
         { label: 'Quyền riêng tư', to: '/quyen-rieng-tu' },
       ] },
     ],
   },
-  taiGame: {
-    ban: [
-      { ma: 'android', ten: 'Android', moTa: 'Bản cài đặt APK — đồ hoạ đầy đủ, điều khiển cảm ứng', url: '', phienBan: '', dungLuong: '', capNhat: '', nhatKy: '', hien: true },
-      { ma: 'pc', ten: 'PC / Windows', moTa: 'Chơi trên máy tính bằng bàn phím', url: '', phienBan: '', dungLuong: '', capNhat: '', nhatKy: '', hien: true },
-      { ma: 'jar', ten: 'Java (.jar)', moTa: 'Điện thoại phím Java hoặc giả lập J2ME', url: '', phienBan: '', dungLuong: '', capNhat: '', nhatKy: '', hien: true },
-      { ma: 'ios', ten: 'iOS', moTa: 'Hướng dẫn cài đặt', url: '', phienBan: '', dungLuong: '', capNhat: '', nhatKy: '', hien: false },
-    ],
-  },
+  // Danh mục nền tảng + khuôn bản tải: shared/utils/taiGame.ts
+  taiGame: { ban: DS_NEN_TANG.map(banTaiMacDinh) },
 }
 
 export const KHOA_CMS = ['site', 'trangChu', 'menu', 'taiGame'] as const
@@ -156,10 +162,10 @@ export function tronSau<T>(goc: T, de: unknown): T {
 
 export function hopNhatCms(db: Partial<Record<KhoaCms, unknown>>): CmsCongKhai {
   return {
-    site: tronSau(CMS_MAC_DINH.site, db.site),
+    site: chuanHoaCmsSite(tronSau(CMS_MAC_DINH.site, db.site)),
     trangChu: tronSau(CMS_MAC_DINH.trangChu, db.trangChu),
     menu: tronSau(CMS_MAC_DINH.menu, db.menu),
-    taiGame: tronSau(CMS_MAC_DINH.taiGame, db.taiGame),
+    taiGame: { ban: chuanHoaBanTai((db.taiGame as { ban?: unknown } | undefined)?.ban) },
   }
 }
 
@@ -169,4 +175,55 @@ export function lienKetAnToan(u: unknown): string {
   if (s === '') return ''
   if (/^(https?:\/\/|mailto:|\/(?!\/)|#)/i.test(s)) return s
   return ''
+}
+
+/** Host Zalo được nhận cho link hỗ trợ (nhóm: zalo.me/g/..., OA: zalo.me/<id> hoặc oa.zalo.me). */
+export const HOST_ZALO = ['zalo.me', 'chat.zalo.me', 'oa.zalo.me'] as const
+
+/** Link Zalo hợp lệ (https, đúng host Zalo, không cổng / user:pass) -> href đã chuẩn hoá; sai -> ''. */
+export function lienKetZalo(u: unknown): string {
+  const s = typeof u === 'string' ? u.trim() : ''
+  if (s === '' || s.length > 300) return ''
+  let url: URL
+  try { url = new URL(s) }
+  catch { return '' }
+  if (url.protocol !== 'https:' || url.username || url.password || url.port) return ''
+  if (!(HOST_ZALO as readonly string[]).includes(url.hostname.toLowerCase())) return ''
+  if (url.pathname === '/' && !url.search) return '' // chỉ trang chủ Zalo, không phải nhóm/OA nào
+  return url.href
+}
+
+/** Ảnh trong site (thư viện /uploads/... hoặc file tĩnh /...) — không nhận // hay URL ngoài. */
+export function anhTrongSite(u: unknown): string {
+  const s = typeof u === 'string' ? u.trim() : ''
+  if (s === '' || s.length > 300) return ''
+  return /^\/(?!\/)[A-Za-z0-9._~\/-]+$/.test(s) && !s.includes('..') ? s : ''
+}
+
+/** Link mạng xã hội thật: http(s) có host. "#", "https://" (ô để trống) bị bỏ -> không có link chết. */
+export function lienKetNgoaiThat(u: unknown): string {
+  const s = typeof u === 'string' ? u.trim() : ''
+  if (!/^https?:\/\//i.test(s)) return ''
+  try {
+    const url = new URL(s)
+    return url.hostname.includes('.') && !url.username && !url.password ? url.href : ''
+  }
+  catch { return '' }
+}
+
+/** Nắn khối 'site' trước khi lưu / trả ra: link Zalo, ảnh QR, mạng xã hội rỗng. */
+export function chuanHoaCmsSite(site: CmsSite): CmsSite {
+  const z = site.hoTroZalo
+  return {
+    ...site,
+    hoTroZalo: {
+      url: lienKetZalo(z.url),
+      anhQr: anhTrongSite(z.anhQr),
+      ten: z.ten.trim().slice(0, 80) || CMS_MAC_DINH.site.hoTroZalo.ten,
+      moTa: z.moTa.trim().slice(0, 300),
+    },
+    mangXaHoi: site.mangXaHoi
+      .filter(m => m && typeof m.url === 'string' && lienKetNgoaiThat(m.url))
+      .map(m => ({ ten: String(m.ten ?? '').trim().slice(0, 40), url: lienKetNgoaiThat(m.url), icon: /^i-[a-z0-9-]+$/.test(String(m.icon ?? '')) ? m.icon : 'i-lucide-link' })),
+  }
 }

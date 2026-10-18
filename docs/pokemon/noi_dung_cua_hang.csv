@@ -62,8 +62,8 @@ stt,cua_hang,vat_pham,ten,gia,tien,cap,ngay_mo,gioi_han,gio_thu_nhap
 61,Chansey (thuốc),thuoc:4,Thuốc hồi PP (Ether),29,xu,1,0,,0.0041
 62,Chansey (thuốc),thuoc:5,Thuốc hồi PP lớn (Ether lớn),109,xu,31,0,,0.004
 63,Chansey (thuốc),thuoc:6,Thuốc hồi PP tối đa (Ether tối đa),508,xu,61,0,,0.004
-64,Chansey (thuốc),thuoc:23,Thuốc hồi PP cả đội (Elixir),315,xu,30,0,,0.0048
-65,Kecleon (lượng khoá),thuoc:24,Thuốc hồi PP cả đội tối đa (Elixir tối đa),5,luong_khoa,60,0,2/tuần,0
+64,Chansey (thuốc),thuoc:23,Thuốc hồi PP cả nhóm (Elixir),315,xu,30,0,,0.0048
+65,Kecleon (lượng khoá),thuoc:24,Thuốc hồi PP cả nhóm tối đa (Elixir tối đa),5,luong_khoa,60,0,2/tuần,0
 66,Chansey (thuốc),moi:chua_doc,Thuốc giải độc,41,xu,1,0,,0.0012
 67,Chansey (thuốc),moi:chua_bong,Thuốc trị bỏng,41,xu,1,0,,0.0012
 68,Chansey (thuốc),moi:chua_te,Thuốc trị tê liệt,41,xu,1,0,,0.0012
@@ -76,7 +76,7 @@ stt,cua_hang,vat_pham,ten,gia,tien,cap,ngay_mo,gioi_han,gio_thu_nhap
 75,Chansey (thuốc),thuoc:129,X Phòng thủ,202,xu,10,0,,0.0048
 76,Chansey (thuốc),moi:x_toc_do,X Tốc độ,336,xu,10,0,,0.008
 77,Chansey (thuốc),moi:x_chinh_xac,X Chính xác,336,xu,10,0,,0.008
-78,Chansey (thuốc),moi:x_chi_mang,Tăng chí mạng (Dire Hit),336,xu,10,0,,0.008
+78,Chansey (thuốc),moi:x_chi_mang,Tăng chí mạng,336,xu,10,0,,0.008
 79,Kecleon (lượng khoá),thuoc:131,Thuốc săn trùm,3,luong_khoa,20,0,5/tuần,0
 80,Chansey (thuốc),moi:xua_quai_1,Thuốc xua quái,147,xu,5,0,,0.004
 81,Chansey (thuốc),moi:xua_quai_2,Siêu thuốc xua quái,316,xu,20,0,,0.006

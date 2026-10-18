@@ -24,7 +24,7 @@
 --  VI SAO PHAI CHAY TAY. DatabaseSuKien.ghiAnhChup() (chay moi lan may chu khoi dong)
 --  chi INSERT/UPDATE cac ma CON trong DANH_MUC - khong bao gio DELETE dong cu. Bo ma
 --  khoi Java xong ma khong chay script nay, 6 dong tren van con nguyen trong bang va
---  VAN HIEN tren trang web/admin/sukien.php (du bam nut Bat/Tat tren do khong con tac
+--  VAN HIEN tren trang /admin/sukien (du bam nut Bat/Tat tren do khong con tac
 --  dung gi - SuKien.dat() da tu loai bo ma la khong con trong danh muc khi doc CSDL).
 --
 --      mysql -u root -p <ten_db> < sql/xoa_su_kien_trung_lap.sql

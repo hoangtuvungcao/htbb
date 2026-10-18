@@ -58,7 +58,7 @@ public final class NapTien {
             return "NAP TIEN -> TAT (CANH BAO: sv.nap_tien=1 nhung sv.lau_dai=0 - nap chi chay khi bat ca"
                     + " thiet ke dai han, xem docs/pokemon/NAP_TIEN.md muc 1)";
         }
-        return "NAP TIEN -> BAT (sql/pokemon_nap_tien.sql phai da chay; web KPAH_NAP_BAT=true)";
+        return "NAP TIEN -> BAT (sql/pokemon_nap_tien.sql phai da chay; web HTBB_NAP_BAT=true)";
     }
 
     // ------------------------------------------------------------------ dem (thong ke)

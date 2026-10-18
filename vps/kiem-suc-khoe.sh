@@ -16,22 +16,22 @@
 #
 #  In mot dong ket qua; ma thoat 0 = khoe, 1 = co tang hong.
 #  TU_KHOI_DONG_LAI=1 (chi root): game TREO 2 lan lien tiep (tang 1 hoac 2) -> systemctl restart
-#  kpah-game (shutdown hook van luu nhan vat; TimeoutStopSec=180). Mac dinh TAT: chi bao.
+#  htbb-game (shutdown hook van luu nhan vat; TimeoutStopSec=180). Mac dinh TAT: chi bao.
 #
-#  Cai (root):  * * * * * TU_KHOI_DONG_LAI=1 /opt/kpah/vps/kiem-suc-khoe.sh >> /opt/kpah/log/suc-khoe.log 2>&1
-#  Bien: HOST=127.0.0.1 CONG_GAME=19129 CONG_LOGIN=8023 THU_MUC=/opt/kpah NGUONG_TREO=120
+#  Cai (root):  * * * * * TU_KHOI_DONG_LAI=1 /opt/htbb/vps/kiem-suc-khoe.sh >> /opt/htbb/log/suc-khoe.log 2>&1
+#  Bien: HOST=127.0.0.1 CONG_GAME=19129 CONG_LOGIN=8023 THU_MUC=/opt/htbb NGUONG_TREO=120
 #        WEB_URL=http://127.0.0.1:3000 MYSQL="mysql" (mat khau trong /root/.my.cnf)
 # ============================================================
 set -u
 HOST=${HOST:-127.0.0.1}
 CONG_GAME=${CONG_GAME:-19129}
 CONG_LOGIN=${CONG_LOGIN:-8023}
-THU_MUC=${THU_MUC:-/opt/kpah}
+THU_MUC=${THU_MUC:-/opt/htbb}
 NGUONG_TREO=${NGUONG_TREO:-120}
 WEB_URL=${WEB_URL:-}
 MYSQL=${MYSQL:-mysql}
 TU_KHOI_DONG_LAI=${TU_KHOI_DONG_LAI:-0}
-DEM_TEP=${DEM_TEP:-/tmp/kpah-suc-khoe.dem}
+DEM_TEP=${DEM_TEP:-/tmp/htbb-suc-khoe.dem}
 
 hong=""
 ghi=""
@@ -43,7 +43,7 @@ ms=$(( ($(date +%s%N) - t0) / 1000000 ))
 if [ "$tra" = "d8" ]; then ghi="$ghi game=ok(${ms}ms)"; else ghi="$ghi game=HONG"; hong="$hong game"; fi
 
 # 2. Nhip tim JVM
-TT="$THU_MUC/trang_thai.json"
+TT="$THU_MUC/server/trang_thai.json"
 if [ -f "$TT" ]; then
     tuoi=$(( $(date +%s) - $(stat -c %Y "$TT") ))
     online=$(grep -o '"nhanVat":[0-9]*' "$TT" | cut -d: -f2)
@@ -72,9 +72,9 @@ echo "$(date '+%F %T')$ghi"
 case "$hong" in
     *game*|*nhip*)
         n=$(( $(cat "$DEM_TEP" 2>/dev/null || echo 0) + 1 )); echo "$n" > "$DEM_TEP"
-        if [ "$TU_KHOI_DONG_LAI" = 1 ] && [ "$n" -ge 2 ] && systemctl is-active --quiet kpah-game; then
-            echo "$(date '+%F %T') game treo $n lan lien tiep -> systemctl restart kpah-game"
-            systemctl restart kpah-game
+        if [ "$TU_KHOI_DONG_LAI" = 1 ] && [ "$n" -ge 2 ] && systemctl is-active --quiet htbb-game; then
+            echo "$(date '+%F %T') game treo $n lan lien tiep -> systemctl restart htbb-game"
+            systemctl restart htbb-game
             echo 0 > "$DEM_TEP"
         fi ;;
     *) echo 0 > "$DEM_TEP" 2>/dev/null || true ;;

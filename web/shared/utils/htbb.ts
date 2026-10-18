@@ -3,14 +3,19 @@
  * Nuxt 4 tự import mọi thứ trong shared/utils ở cả hai phía.
  */
 
-/** Quy tắc tài khoản (khớp với server: 4-20 ký tự, chỉ chữ thường và số). */
-export const USERNAME_MIN = 4
-export const USERNAME_MAX = 20
-export const PASSWORD_MIN = 4
-export const PASSWORD_MAX = 20
+import { QUY_TAC_DANG_KY, dangKyEmailDungDang, dangKyMatKhauHopLe, dangKyTenDungDang, dangKyThongBao } from './quyTacDangKy'
+
+/**
+ * Quy tắc tài khoản — lấy từ shared/data/quy-tac-dang-ky.json (nguồn duy nhất cho web + đăng ký
+ * trong game, xem shared/utils/quyTacDangKy.ts). KHÔNG đặt số cứng ở đây.
+ */
+export const USERNAME_MIN = QUY_TAC_DANG_KY.tenTaiKhoan.min
+export const USERNAME_MAX = QUY_TAC_DANG_KY.tenTaiKhoan.max
+export const PASSWORD_MIN = QUY_TAC_DANG_KY.matKhau.min
+export const PASSWORD_MAX = QUY_TAC_DANG_KY.matKhau.max
 
 export function validUsername(u: string): boolean {
-  return new RegExp(`^[a-z0-9]{${USERNAME_MIN},${USERNAME_MAX}}$`).test(u)
+  return dangKyTenDungDang(u)
 }
 
 /**
@@ -30,27 +35,18 @@ export function validPassword(p: string): boolean {
  * Dùng cả cho form đăng ký.
  */
 export function matKhauGameHopLe(p: string): boolean {
-  return validPassword(p) && /^[A-Za-z0-9]+$/.test(p) && p.toLowerCase() !== '000000'
+  return dangKyMatKhauHopLe(p)
 }
 
 /** Lỗi khi mật khẩu mới không đúng matKhauGameHopLe (dùng cả ở form lẫn server). */
-export const LOI_MAT_KHAU_GAME
-  = `Mật khẩu mới phải từ ${PASSWORD_MIN}-${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số, và không được là 000000.`
+export const LOI_MAT_KHAU_GAME = dangKyThongBao('matKhauSai').replace(/^Mật khẩu/, 'Mật khẩu mới')
 
 /**
- * Kiểm tra email ở mức hợp lý: một @, phần trước không rỗng và không có khoảng
- * trắng, tên miền có ít nhất một dấu chấm, nhãn chỉ gồm chữ/số/gạch ngang.
+ * Kiểm tra email (một @, tên miền ≥ 2 nhãn, ≤ độ dài cột team_user.email).
  * Dùng chung cho form (kiểm tra trước khi gửi) và server (kiểm tra thật).
  */
 export function dangKyEmailHopLe(email: string): boolean {
-  if (email.length > 254) return false
-  const m = email.match(/^([A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64})@([A-Za-z0-9.-]+)$/)
-  if (!m) return false
-  const [, local, domain] = m as unknown as [string, string, string]
-  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false
-  const nhan = domain.split('.')
-  if (nhan.length < 2) return false
-  return nhan.every(n => /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(n))
+  return dangKyEmailDungDang(email)
 }
 
 /**
@@ -61,7 +57,7 @@ export function dangKyEmailHopLe(email: string): boolean {
 export const CLASS_NAMES = ['Charmander', 'Bulbasaur', 'Eevee', 'Squirtle', 'Pichu'] as const
 
 /** Tên nghề cũ của game gốc (khớp Res.nameClazz của client, MapCheTao.java:930). */
-export const CLASS_NAMES_CU = ['Kiếm khách', 'Chiến binh', 'Pháp sư', 'Đấu sĩ', 'Cung thủ'] as const
+export const CLASS_NAMES_CU = ['Dòng Charmander', 'Dòng Bulbasaur', 'Dòng Eevee', 'Dòng Squirtle', 'Dòng Pichu'] as const
 
 export function tenNghe(c: number | string | null | undefined): string {
   const i = Number(c)
@@ -77,9 +73,9 @@ export function so(n: number | string | null | undefined): string {
   return am ? `-${s}` : s
 }
 
-/** Định dạng tiền VNĐ: 49.000đ */
+/** Định dạng tiền VNĐ: 49.000 đ */
 export function vnd(n: number | string | null | undefined): string {
-  return `${so(n)}đ`
+  return `${so(n)} đ`
 }
 
 /** 3 mốc nạp tân thủ: giá tiền (VNĐ) + phần thưởng hiển thị trên web. */
@@ -91,19 +87,19 @@ export interface MocNap {
 export const MOC_NAP: Record<1 | 2 | 3, MocNap> = {
   1: {
     gia: 49000,
-    items: ['100.000 lượng mở', '200.000 lượng khóa'],
+    items: ['100.000 lượng mở', '200.000 lượng khoá'],
   },
   2: {
     gia: 99000,
-    items: ['1 Trứng Yêu Tinh', '1 Trứng Cú', '2 Huyết Linh Thảo', '100.000 lượng mở', '200.000 lượng khóa'],
+    items: ['1 trứng Cleffa', '1 trứng Hoothoot', '2 Kẹo hiếm', '100.000 lượng mở', '200.000 lượng khoá'],
   },
   3: {
     gia: 299000,
     items: [
-      '1 Trứng Đại Bàng', '1 Trứng Rồng', '2 Huyết Linh Thảo',
-      'Phượng Hoàng HOẶC Phượng Hoàng Băng (chọn khi nhận tại NPC Tổng Quản)',
-      'Vũ khí thời trang max chỉ số (7 ngày)',
-      '100.000 lượng mở', '200.000 lượng khóa',
+      '1 trứng Rufflet', '1 trứng Dratini', '2 Kẹo hiếm',
+      'Moltres hoặc Articuno (chọn khi nhận tại NPC Tổng Quản)',
+      'Đồ cầm tay thời trang max chỉ số (7 ngày)',
+      '100.000 lượng mở', '200.000 lượng khoá',
     ],
   },
 }

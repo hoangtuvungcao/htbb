@@ -106,8 +106,12 @@ public class Tree2014 extends Screen {
         this.left = this.cmdMenu;
         this.wCell = 300;
         this.hCell = 180;
-        if (!Canvas.isSmartPhone) {
-            this.wCell = 180;
+        if (!Canvas.isSmartPhone || Canvas.w < 308) {
+            // pokemon: màn hẹp (176/240/320) - bố cục một cột, không tràn mép
+            this.wCell = Math.min(180, Canvas.w - 8);
+        }
+        if (this.hCell > Canvas.h - 40) {
+            this.hCell = Canvas.h - 40;
         }
         this.xDr = (Canvas.w / 2) - (this.wCell / 2);
         this.yDr = (Canvas.h / 2) - (this.hCell / 2);
@@ -248,9 +252,9 @@ public class Tree2014 extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(0x003A70);
+        g.setColor(game.pokemon.GiaoDien.mauKhungCon());
         g.fillRect(this.xSh - 5, this.ySh + 10, this.wSh, this.hSh - 10);
-        g.setColor(0xFFCB05);
+        g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
         g.drawRect(this.xSh - 5, this.ySh + 10, this.wSh, this.hSh - 10);
         if (!this.isShowText && this.str != null && Canvas.isSmartPhone) {
             String[] r = Util.split(this.str, "|");
@@ -284,9 +288,9 @@ public class Tree2014 extends Screen {
         int w = Font.normalFont[0].getWidth(r[0]);
         int w1 = Font.normalFont[0].getWidth(r[1]);
         int w2 = w < w1 ? w1 : w;
-        g.setColor(0x003A70);
+        g.setColor(game.pokemon.GiaoDien.mauKhungCon());
         g.fillRect(((x + 16) - (w2 / 2)) - 3, y - 16, w2 + 5, 30);
-        g.setColor(0xFFCB05);
+        g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
         g.drawRect(((x + 16) - (w2 / 2)) - 3, y - 16, w2 + 5, 30);
         Font.normalFont[0].drawString(g, r[0], x + 16, y - 15, 2);
         Font.normalFont[0].drawString(g, r[1], x + 16, y, 2);
@@ -298,7 +302,7 @@ public class Tree2014 extends Screen {
             this.last.paint(g);
         }
         Res.paintDlgFull(g, this.xDr, this.yDr, this.wCell, this.hCell, 0, this.name == null || this.name.length() == 0 ? "Cây thần" : this.name, false, 0);
-        int w0 = Canvas.isSmartPhone ? this.wTree : this.wCell / 2;
+        int w0 = Canvas.isSmartPhone && this.wCell == 300 ? this.wTree : this.wCell / 2;
         GameData.paintIconTuBinh(g, (short) 8214, this.xDr + w0, (Canvas.h / 2) + 12, 3);
         this.str = null;
         int xx = 0;
@@ -307,9 +311,9 @@ public class Tree2014 extends Screen {
             ObjTree obj = (ObjTree) this.allTree.elementAt(i);
             if (obj != null) {
                 if (this.index == i) {
-                    g.setColor(0x003A70);
+                    g.setColor(game.pokemon.GiaoDien.mauKhungCon());
                     g.fillRect(obj.x, obj.y, 16, 30);
-                    g.setColor(0xFFCB05);
+                    g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
                     g.drawRect(obj.x, obj.y, 16, 30);
                     xx = obj.x;
                     yy = obj.y;

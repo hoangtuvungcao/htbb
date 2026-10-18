@@ -74,9 +74,9 @@ public class BangAuto : MyScreen
 
 	public int pa;
 
-	private string[] optionFC = new string[5] { "Chế độ thường", "Đánh quái ", "Chọn NPC", "Chế độ chiếm thành", "Chế độ quốc chiến" };
+	private string[] optionFC = new string[5] { "Chế độ thường", "Đánh quái ", "Chọn NPC", "Chế độ chiếm Gym", "Chế độ chiến vùng" };
 
-	private string[] optionDetail = new string[5] { "Chọn toàn bộ", "Chỉ chọn quái, người trong chế độ đồ sát và khác quốc gia ", "Chỉ chọn NPC", "Chỉ chọn người khác bang", "Chỉ người khác nước" };
+	private string[] optionDetail = new string[5] { "Chọn toàn bộ", "Chỉ chọn quái, người trong chế độ PK và khác vùng ", "Chỉ chọn NPC", "Chỉ chọn người khác đội", "Chỉ người khác nước" };
 
 	private string[] info;
 
@@ -682,7 +682,7 @@ public class BangAuto : MyScreen
 	{
 		if (Char.skillLevelLearnt[focus] == -1)
 		{
-			Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+			Canvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
 			return;
 		}
 		bool flag = false;

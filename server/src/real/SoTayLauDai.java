@@ -22,6 +22,7 @@ import java.util.List;
  *   3 Thang PvP mua
  *   4 Su pham (nhan tro trong doi)
  *   5 Lich dang nhap 7 ngay / ve chuong
+ *   9 Cua hang & doi vat pham (CuaHangLauDai, menu 20/21)
  * NPC ao {@link #NPC_ID} (-527, da grep src/: trong). Moi dieu kien kiem lai o day (muc 11).
  *
  * Text hien cho nguoi choi o day la BAN NHAP - can duyet (CODING_CONVENTION muc 10).
@@ -50,8 +51,8 @@ public final class SoTayLauDai {
         if (!LauDai.bat() || p == null) {
             return;
         }
-        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Năng lượng & tinh thông", "Nhiệm vụ tuần",
-            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò trong đội)", "Lịch đăng nhập & vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi"}, NPC_ID, MENU_GOC));
+        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Năng lượng và tinh thông", "Nhiệm vụ tuần",
+            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi", "Cửa hàng và đổi vật phẩm"}, NPC_ID, MENU_GOC));
     }
 
     static void bao(final Char p, final String s) {
@@ -97,6 +98,9 @@ public final class SoTayLauDai {
                     case 8:
                         NhiemVuEngine.moMenu(p);
                         break;
+                    case 9:
+                        CuaHangLauDai.moMenu(p); // luat "khong item mo coi" (kiem_item_mo_coi.py)
+                        break;
                     default:
                         break;
                 }
@@ -113,6 +117,8 @@ public final class SoTayLauDai {
                 bao(p, GymLauDai.thachDau(p, idOption));
             } else if (idMenu >= NhiemVuEngine.MENU_DAU && idMenu <= NhiemVuEngine.MENU_CUOI) {
                 NhiemVuEngine.doMenu(p, idMenu, idOption);
+            } else if (idMenu == CuaHangLauDai.MENU_NHOM || idMenu == CuaHangLauDai.MENU_DONG) {
+                CuaHangLauDai.doMenu(p, idMenu, idOption);
             } else if (idMenu == MENU_QUA_HOAT_DONG) {
                 bao(p, QuaHoatDong.nhan(p, idOption));
             } else if (idMenu == MENU_HAM_NGUC) {
@@ -124,12 +130,14 @@ public final class SoTayLauDai {
     }
 
     static void xemNangLuong(final Char p, final HoSoLauDai h) {
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         final int hs = NangLuong.heSoHienTai(h, bay);
         final long phut = h.nlNgay == NangLuong.ngay(bay) ? h.nlMsDung / 60000L : 0L;
         final int tran = CapDoLauDai.tranCap(LauDai.ngayHienTai(), LevelDetail.expMain.length);
         final String s = "Năng lượng huấn luyện\nĐã đánh quái hôm nay: " + phut + " phút\nGiờ 100% hôm nay: "
-                + h.nlPhut100 + " phút\nTốc độ EXP/xu hiện tại: " + hs + "%\n\nTrần cấp mùa này: " + tran
+                + h.nlPhut100 + " phút\nTốc độ EXP hiện tại: " + hs + "%, xu/đồ rơi: " + NangLuong.heSoXuHienTai(h, bay) + "%\n"
+                + com.htbb.pokemon.TangToc.trangThai(h, NangLuong.ngay(bay), com.htbb.pokemon.NhiemVuLauDai.tuan(bay))
+                + (LauDai.tranTheoMua() ? "\n\nTrần cấp mùa này: " + tran : "\n\nCấp tối đa: " + tran)
                 + "\nTinh thông: " + h.ttDiem + " điểm (+" + (CapDoLauDai.tinhThongPhanNghin(h.ttDiem) / 10.0) + "% "
                 + (h.ttLoai == 0 ? "tấn công" : "HP") + ")";
         bao(p, s);
@@ -182,7 +190,7 @@ public final class SoTayLauDai {
      * (luong khoa + da), 1 luot thuong / ngay; bang xep hang tang o tob_ham_nguc.
      */
     static void moHamNguc(final Char p, final HoSoLauDai h) {
-        final int hom = NangLuong.ngay(System.currentTimeMillis());
+        final int hom = NangLuong.ngay(com.htbb.pokemon.DongHo.bay());
         synchronized (h) {
             if (h.hnNgay != hom) {
                 h.hnNgay = hom;
@@ -193,16 +201,20 @@ public final class SoTayLauDai {
         }
         final int tang = h.hnTangCao + 1;
         final int[] t = CuonHut.tangHamNguc(hom, tang, new int[]{0});
-        bao(p, "Hầm ngục bí ẩn hôm nay (hạt giống " + hom + ")\nĐã qua tầng: " + h.hnTangCao + "\nTầng " + tang
-                + ": hạ " + t[1] + " quái ±5 cấp" + (t[2] == 1 ? " (tầng thưởng)" : "")
+        bao(p, "Hầm ngục bí ẩn hôm nay\nĐã qua tầng: " + h.hnTangCao + "\nTầng " + tang
+                + ": hạ " + t[1] + " quái chênh không quá 5 cấp" + (t[2] == 1 ? " (tầng thưởng)" : "")
                 + "\nTiến độ: " + HamNgucGame.tienDo(p) + "/" + t[1]);
         p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vào tầng " + tang, "Nhận thưởng hôm nay"}, NPC_ID, MENU_HAM_NGUC));
     }
 
     static void hamNguc(final Char p, final HoSoLauDai h, final int idOption) {
         if (idOption == 0) {
+            if (!com.htbb.cauhinh.CongTac.hamNguc()) {
+                bao(p, "Hầm ngục đang tạm đóng. Phần thưởng đã đạt vẫn nhận được."); // ham_nguc.bat=0
+                return;
+            }
             HamNgucGame.batDau(p);
-            bao(p, "Đã vào tầng " + (h.hnTangCao + 1) + ". Hạ quái ±5 cấp để qua tầng.");
+            bao(p, "Đã vào tầng " + (h.hnTangCao + 1) + ". Hạ quái chênh không quá 5 cấp để qua tầng.");
         } else if (idOption == 1) {
             bao(p, HamNgucGame.nhanThuong(p, h));
         }
@@ -218,7 +230,7 @@ public final class SoTayLauDai {
 
     static void suPham(final Char p) {
         if (p.party == null || p.party.userParty == null) {
-            bao(p, "Hãy lập đội với trò trước.");
+            bao(p, "Hãy lập nhóm với trò trước.");
             return;
         }
         int n = 0;
@@ -238,10 +250,10 @@ public final class SoTayLauDai {
             }
             DatabaseLauDai.ghiSuPham(t.charDBID, p.charDBID, "");
             NhiemVuEngine.suKien(p, "kem_cap", "", 1);
-            LauDaiNhanVat.bao(t, p.charname + " đã nhận bạn làm trò (+20% EXP khi chung đội).");
+            LauDaiNhanVat.bao(t, p.charname + " đã nhận bạn làm trò (+20% EXP khi cùng nhóm).");
             n++;
         }
-        bao(p, n > 0 ? "Đã nhận " + n + " trò." : "Cần cấp 30+ và trò thấp hơn ít nhất 20 cấp, chưa có thầy, trong cùng đội.");
+        bao(p, n > 0 ? "Đã nhận " + n + " trò." : "Cần từ cấp 30 trở lên, trò thấp hơn ít nhất 20 cấp, chưa có thầy và ở cùng nhóm.");
     }
 
     static void xemDangNhap(final Char p, final HoSoLauDai h) {

@@ -2,10 +2,10 @@ package game.model;
 
 import effect.DataEffect;
 import effect.DynamicEffect;
-import game.model.skill.Skill_TruRong;
+import game.model.skill.Skill_Rayquaza;
 import game.model.skill.Skill_blood_down;
 import game.model.skill.ThienThach_Skill;
-import game.model.skill.complete.Skill_Dao_Type3;
+import game.model.skill.complete.Skill_Bulbasaur_Type3;
 import game.networklogic.GameService;
 import game.render.Canvas;
 import game.render.Res;
@@ -269,7 +269,7 @@ public class MonsterNew extends Monster {
                                         Canvas.gameScr.startNewMagicBeam(9, this, acto2, this.x, this.y, acto2.damAttack, (byte) 0);
                                     } else if (this.skillID == 0) {
                                         for (int i = 0; i < 8; i++) {
-                                            Canvas.gameScr.startNewMagicBeam(10, this, acto2, this.x + this.splashDuaX[this.dir] + this.x2[i], this.y + this.splashDuaY[this.dir] + this.y2[i], acto2.damAttack, (byte) 0, Skill_Dao_Type3.goc[this.dir][i]);
+                                            Canvas.gameScr.startNewMagicBeam(10, this, acto2, this.x + this.splashDuaX[this.dir] + this.x2[i], this.y + this.splashDuaY[this.dir] + this.y2[i], acto2.damAttack, (byte) 0, Skill_Bulbasaur_Type3.goc[this.dir][i]);
                                         }
                                     } else {
                                         Skill_blood_down skill = new Skill_blood_down(acto2.x, acto2.y, acto2.damAttack);
@@ -450,7 +450,7 @@ public class MonsterNew extends Monster {
                     break;
                 case 6:
                     for (int i = 0; i < 8; i++) {
-                        Canvas.gameScr.startNewMagicBeam(10, this, acto, this.x + this.splashDuaX[this.dir] + this.x2[i], this.y + this.splashDuaY[this.dir] + this.y2[i], acto.damAttack, (byte) 0, Skill_Dao_Type3.goc[this.dir][i]);
+                        Canvas.gameScr.startNewMagicBeam(10, this, acto, this.x + this.splashDuaX[this.dir] + this.x2[i], this.y + this.splashDuaY[this.dir] + this.y2[i], acto.damAttack, (byte) 0, Skill_Bulbasaur_Type3.goc[this.dir][i]);
                     }
                     break;
                 case 7:
@@ -484,7 +484,7 @@ public class MonsterNew extends Monster {
                 case 12:
                     for (int i5 = 0; i5 < this.listAttack.size(); i5++) {
                         LiveActor act = (LiveActor) this.listAttack.elementAt(i5);
-                        Skill_TruRong ST = new Skill_TruRong(this.x, this.y, act.x, act.y, act, i5 * 4);
+                        Skill_Rayquaza ST = new Skill_Rayquaza(this.x, this.y, act.x, act.y, act, i5 * 4);
                         EffectManager.addHiEffect(ST);
                     }
                     break;

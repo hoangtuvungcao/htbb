@@ -88,7 +88,7 @@ class MapChat {
                 //
                 // De TRUOC cho chan lenh admin vi day la lenh danh cho moi nguoi choi.
                 if (msgChat.equalsIgnoreCase("boskin")) {
-                    SkinLinhThu.thaoSkin(player);
+                    SkinThuCuoi.thaoSkin(player);
                     return;
                 }
                 // he sinh thai: tra loi "Ai la Pokemon?", lenh tat "hst"/"cauca"/"dao"/"dua". Tat co: false.
@@ -133,7 +133,7 @@ class MapChat {
                             MapTown.dayAdminCheat = data.length > 3 ? data[3].trim() : "";
                             server.CauHinh.luuGioChiemThanh();
                             player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Đã set chiếm thành " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
+                                    "Đã set chiếm Gym " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
                                             + (MapTown.dayAdminCheat.isEmpty() ? " mỗi ngày." : " ngày " + MapTown.dayAdminCheat + ".")
                                             + "\n(đã lưu vào server.ini)", ""));
                         } catch (Exception exCT) {
@@ -151,7 +151,9 @@ class MapChat {
                 } else {
                     if (player.isAdmin) 
                     {
-                        Logger.logStringWithDate(player.charname + ": " + msgChat , "AdminChat.txt");
+                        // Lam sach: tin chat co the chua xuong dong -> gia mao dong kiem toan.
+                        Logger.logStringWithDate(player.charname + ": " + com.htbb.log.Nhat.sach(msgChat), "AdminChat.txt");
+                        com.htbb.log.Nhat.kiemToan("ADMIN", "chat lenh " + player.charname + ": " + msgChat);
                         
                         if (msgChat.startsWith("tlixi")) {
                             String[] data = Char.split(msgChat, " ");
@@ -1130,14 +1132,14 @@ class MapChat {
                                                             MapTown.minuteAdminCheat = -1;
                                                             MapTown.dayAdminCheat = "";
                                                             server.CauHinh.luuGioChiemThanh();
-                                                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã trả chiếm thành về lịch chuẩn: 21h thứ 3 và thứ 7.\n(đã lưu vào server.ini)", ""));
+                                                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã trả chiếm Gym về lịch chuẩn: 21h thứ 3 và thứ 7.\n(đã lưu vào server.ini)", ""));
                                                         } else {
                                                             MapTown.TimeAdminCheat = Integer.parseInt(info[2]);
                                                             MapTown.minuteAdminCheat = Integer.parseInt(info[3]);
                                                             MapTown.dayAdminCheat = info.length > 4 ? info[4].trim() : "";
                                                             server.CauHinh.luuGioChiemThanh();
                                                             player.sendMessage(MessageCreator.createServerAlertMessage(
-                                                                    "Đã set chiếm thành " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
+                                                                    "Đã set chiếm Gym " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
                                                                             + (MapTown.dayAdminCheat.isEmpty() ? " mỗi ngày." : " ngày " + MapTown.dayAdminCheat + ".")
                                                                             + "\n(đã lưu vào server.ini)", ""));
                                                         }
@@ -1157,8 +1159,8 @@ class MapChat {
                                             } else if (msgChat.startsWith("tgct") && player.isAdmin) {
                                                     if (player.isAdmin) {
                                                         String thongtin = MapTown.TimeAdminCheat < 0
-                                                                ? "Chiếm thành đang theo lịch chuẩn: 21h thứ 3 và thứ 7."
-                                                                : "Thời gian chiếm thành " + MapTown.TimeAdminCheat + " giờ " + MapTown.minuteAdminCheat + " phút"
+                                                                ? "Chiếm Gym đang theo lịch chuẩn: 21h thứ 3 và thứ 7."
+                                                                : "Thời gian chiếm Gym " + MapTown.TimeAdminCheat + " giờ " + MapTown.minuteAdminCheat + " phút"
                                                                         + (MapTown.dayAdminCheat.isEmpty() ? ", áp dụng mỗi ngày." : ", ngày " + MapTown.dayAdminCheat + ".");
                                                         player.sendMessage(MessageCreator.createServerAlertMessage(thongtin, ""));
                                                     }
@@ -1170,7 +1172,7 @@ class MapChat {
                                                         int country = Integer.parseInt(msgChat.substring(4));
                                                         if (country >= 0 && country <= 2) { // Kiểm tra country hợp lệ (0-2)
                                                             MapTown.gameOverByAdmin = country;
-                                                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã kết thúc chiến thành cho quốc gia " + country, ""));
+                                                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã kết thúc chiến Gym cho vùng " + country, ""));
                                                         }
                                                     } catch (Exception e) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Sai cú pháp. Sử dụng: over[0-2]", ""));
@@ -1278,6 +1280,10 @@ class MapChat {
                                                     player.region = p.region;
                                                     map.move2Map(player, p.x / 16, p.y / 16, p.mapID, p.inCountry);
                                                 }
+                                            } else if ((msgChat.equals("tua") || msgChat.startsWith("tua ")) && player.isAdmin) {
+                                                // Dong ho ao (chi may thu, sv.cho_phep_thu_nghiem=1) - xem com.htbb.pokemon.DongHo
+                                                player.sendMessage(MessageCreator.createServerAlertMessage(
+                                                        com.htbb.pokemon.DongHo.tua(msgChat.length() > 3 ? msgChat.substring(4) : "", player.charname), ""));
                                             } else if (msgChat.startsWith("mto")) {
                                                 if (player.isAdmin || TeamServer.isServerLocal()) {
                                                     String[] info = Char.split(msgChat.substring(4), " ");

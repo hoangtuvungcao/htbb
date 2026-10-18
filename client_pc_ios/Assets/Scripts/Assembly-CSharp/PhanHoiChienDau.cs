@@ -40,7 +40,7 @@ public static class PhanHoiChienDau
 
 	public const string CHU_LEN_CAP = "Lên cấp!";
 
-	public const string CHU_IT_HIEU_QUA = "Ít hiệu quả";
+	public const string CHU_IT_HIEU_QUA = "Kém hiệu quả";
 
 	/// <summary>So tick game nhay trang khi trung don.</summary>
 	public const int TICK_NHAY = 5;

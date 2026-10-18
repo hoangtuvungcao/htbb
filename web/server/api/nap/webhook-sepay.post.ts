@@ -3,7 +3,7 @@
  *
  * SePay POST JSON { id, gateway, transactionDate, accountNumber, code, content, transferType,
  * transferAmount, accumulated, subAccount, referenceCode, description }, header
- * `Authorization: Apikey <KPAH_SEPAY_WEBHOOK_APIKEY>` (khoá CHỈ ở biến môi trường máy chủ).
+ * `Authorization: Apikey <HTBB_SEPAY_WEBHOOK_APIKEY>` (khoá CHỈ ở biến môi trường máy chủ).
  * SePay coi là thành công khi HTTP 200/201 + {"success": true} trong 30 giây; ngược lại gửi lại
  * (Fibonacci, tối đa 7 lần / 5 giờ). Vì vậy:
  *   - mọi giao dịch ĐÃ GHI SỔ (khớp, trùng, thiếu, dư, sai tài khoản, không mã đơn) -> 200 {success:true};

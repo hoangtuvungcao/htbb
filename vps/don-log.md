@@ -6,21 +6,21 @@ nhau:
 
 | Loại | Ai dọn | File |
 |---|---|---|
-| `game.out`, `login.out`, `*.log`, các file `.txt` server tự ghi | logrotate — `logrotate.timer` của hệ thống 00:00 mỗi ngày, **cộng thêm** một lần kiểm mỗi giờ | [kpah-logrotate.conf](kpah-logrotate.conf) |
+| `game.out`, `login.out`, `*.log`, các file `.txt` server tự ghi | logrotate — `logrotate.timer` của hệ thống 00:00 mỗi ngày, **cộng thêm** một lần kiểm mỗi giờ | [htbb-logrotate.conf](htbb-logrotate.conf) |
 | Bảng nhật ký trong database, file `.txt` lẻ đặt tên động, bản backup quá hạn | cron 03:20 mỗi đêm | [don-log.sh](don-log.sh) |
 
 ## Cài
 
 ```bash
-sudo cp /opt/kpah/vps/kpah-logrotate.conf /etc/logrotate.d/kpah
-sudo chown root:root /etc/logrotate.d/kpah && sudo chmod 644 /etc/logrotate.d/kpah
-sudo logrotate -d /etc/logrotate.d/kpah          # chạy mô phỏng, không đổi gì
+sudo cp /opt/htbb/vps/htbb-logrotate.conf /etc/logrotate.d/htbb
+sudo chown root:root /etc/logrotate.d/htbb && sudo chmod 644 /etc/logrotate.d/htbb
+sudo logrotate -d /etc/logrotate.d/htbb          # chạy mô phỏng, không đổi gì
 
-sudo tee /etc/cron.d/kpah-don-log >/dev/null <<'EOF'
+sudo tee /etc/cron.d/htbb-don-log >/dev/null <<'EOF'
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-20 3 * * * root /opt/kpah/vps/don-log.sh >/dev/null 2>&1
-17 * * * * root /usr/sbin/logrotate /etc/logrotate.d/kpah >/dev/null 2>&1
+20 3 * * * root /opt/htbb/vps/don-log.sh >/dev/null 2>&1
+17 * * * * root /usr/sbin/logrotate /etc/logrotate.d/htbb >/dev/null 2>&1
 EOF
 ```
 
@@ -31,14 +31,14 @@ nhờ vậy hai bên không xoay vòng tranh phần nhau.
 Chạy tay:
 
 ```bash
-sudo /opt/kpah/vps/don-log.sh --thu    # chỉ báo sẽ xoá bao nhiêu, không xoá
-sudo /opt/kpah/vps/don-log.sh          # xoá thật
+sudo /opt/htbb/vps/don-log.sh --thu    # chỉ báo sẽ xoá bao nhiêu, không xoá
+sudo /opt/htbb/vps/don-log.sh          # xoá thật
 ```
 
 Số ngày giữ lại là biến `GIU_NGAY` ở đầu [don-log.sh](don-log.sh). Đổi cho một
-lần chạy: `sudo GIU_NGAY=7 /opt/kpah/vps/don-log.sh`.
+lần chạy: `sudo GIU_NGAY=7 /opt/htbb/vps/don-log.sh`.
 
-Nhật ký của chính việc dọn: `/opt/kpah/log/don-log.log`.
+Nhật ký của chính việc dọn: `/opt/htbb/log/don-log.log`.
 
 ## Vì sao 03:20
 
@@ -48,15 +48,15 @@ lúc 03:20 là để không đâm vào lúc server đang lưu dữ liệu ra dat
 
 ## Ba cái bẫy mà cấu hình này né
 
-**1. `game.out` bắt buộc phải `copytruncate`.** `kpah-game.service` dùng
-`StandardOutput=append:/opt/kpah/log/game.out` — systemd **mở file một lần** lúc
+**1. `game.out` bắt buộc phải `copytruncate`.** `htbb-game.service` dùng
+`StandardOutput=append:/opt/htbb/log/game.out` — systemd **mở file một lần** lúc
 khởi động rồi giữ nguyên fd đó. Nếu logrotate đổi tên file (cách mặc định),
 systemd vẫn ghi tiếp vào file đã đổi tên: file mới mãi mãi rỗng, file cũ vẫn
 phình to. `copytruncate` chép nội dung ra rồi cắt file gốc về 0; fd mở bằng
 `O_APPEND` nên lần ghi kế tiếp tự quay về đầu file.
 
 **2. Các file `.txt` thì ngược lại — đổi tên hoàn toàn an toàn.**
-`util.Logger` (trong `lib/NQSH_5h.jar`) ghi bằng `new FileWriter(tên, true)`,
+`util.Logger` (trong `lib/htbb-core.jar`) ghi bằng `new FileWriter(tên, true)`,
 tức **mở lại file mỗi lần ghi** rồi đóng ngay. Đổi tên file đi thì lần ghi sau
 tự tạo lại. Không cần `copytruncate`, và cũng không mất dòng nào.
 
@@ -69,8 +69,8 @@ liệu đầu vào, xoay vòng là mất dữ liệu:
 | `offline.txt` | `Database.java:11715` |
 | `top.txt` | `MapChat.java:868` |
 
-Vì vậy `kpah-logrotate.conf` **liệt kê từng file một**, cố ý không dùng
-`/opt/kpah/*.txt`. Thêm file mới vào danh sách thì kiểm lại: nó chỉ được **ghi**,
+Vì vậy `htbb-logrotate.conf` **liệt kê từng file một**, cố ý không dùng
+`/opt/htbb/server/*.txt`. Thêm file mới vào danh sách thì kiểm lại: nó chỉ được **ghi**,
 không được **đọc** ở bất kỳ đâu trong `src/`.
 
 **4. Log không được nằm trong git.** `AdminChat.txt` và `updateleaf.txt` trước
@@ -78,9 +78,9 @@ không được **đọc** ở bất kỳ đâu trong `src/`.
 vòng một file đang được theo dõi là làm `git status` trên VPS **dirty**, mà
 `deploy-auto.sh` từ chối `git pull` khi cây làm việc bẩn — lần deploy kế tiếp
 sẽ hỏng. Đã gỡ cả hai khỏi git và cho vào `.gitignore`; bản nội dung cũ nằm ở
-`/root/kpah-backup/*.truoc-khi-go-git` trên VPS.
+`/root/htbb-backup/*.truoc-khi-go-git` trên VPS.
 
-Thêm file nào vào `kpah-logrotate.conf` thì kiểm luôn `git ls-files <tên>` —
+Thêm file nào vào `htbb-logrotate.conf` thì kiểm luôn `git ls-files <tên>` —
 phải **rỗng**.
 
 **5. `maxsize` chỉ có tác dụng lúc logrotate CHẠY.** `Region.java:186-188` nằm
@@ -138,21 +138,21 @@ Sáu cách, làm hết chứ đừng dùng mỗi một cách:
 
 1. `grep -rn "logString\|logError\|logStringWithDate" src/` — đối số **thứ hai**
    là tên file.
-2. Đọc `build/nqsh-src/util/Logger.java` (giải mã từ `NQSH_5h.jar` bằng
-   `tools/giai-ma-nqsh.bat`) để biết nó ghi kiểu gì.
+2. Đọc `build/core-src/util/Logger.java` (giải mã từ `htbb-core.jar` bằng
+   `tools/giai-ma-core.bat`) để biết nó ghi kiểu gì.
 3. `grep -rn "new FileWriter\|new PrintWriter\|new FileOutputStream" src/`
 4. `grep -rn "insert into tob_log\|INSERT INTO tob_log" src/` cho phía database.
 5. Mục *"File runtime server tự ghi ra thư mục gốc khi chạy"* trong `.gitignore` —
    danh sách đó là manh mối tốt, vì file nào làm `git status` bẩn thì đã bị chặn
    ở đó rồi.
-6. Đối chiếu với thực tế trên VPS: `ls -la /opt/kpah/*.txt` và
+6. Đối chiếu với thực tế trên VPS: `ls -la /opt/htbb/server/*.txt` và
    `SELECT TABLE_NAME, TABLE_ROWS FROM information_schema.TABLES WHERE TABLE_NAME LIKE '%log%'`.
 
 Cách 1 tìm ra tên file, nhưng **không** chứng minh file đó bao giờ được ghi. Phải
 kiểm thêm: hàm chứa lệnh ghi có ai gọi không.
 
 Và cách 1 **cũng không đủ**: có những sink mà tên file nằm *trong jar*, không có
-trong `src/`. Phải đọc cả `build/nqsh-src/data/Logger.java` (khác
+trong `src/`. Phải đọc cả `build/core-src/data/Logger.java` (khác
 `util/Logger.java`) — nó hard-code bốn tên:
 
 | Hàm | File | Có ai gọi trong `src/`? |

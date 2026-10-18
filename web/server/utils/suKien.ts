@@ -1,5 +1,5 @@
 /**
- * Bật / tắt sự kiện trong game (bảng kpah_db.tob_su_kien) — phần logic thuần, không
+ * Bật / tắt sự kiện trong game (bảng htbb_db.tob_su_kien) — phần logic thuần, không
  * đụng CSDL (truy vấn nằm ở suKienDb.ts).
  *
  * TRƯỚC NGÀY 30/08/2026 mỗi sự kiện được mở bằng cách so ngày hệ thống với một mốc

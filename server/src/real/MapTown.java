@@ -338,14 +338,14 @@ public class MapTown extends Map {
          }
 
          if (player.idClan == -1) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có bang hội", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có đội", ""));
             return;
          }
 
          if (player.hp <= 0) {
             if (getTown[player.inCountry] && giveCardFail(player)) {
                this.doSend2AllChar(
-                  MessageCreator.createServerAlertAutoOffMessage("Bang " + Map.getClaninfoByID(player.idClan).name + " giao thẻ thất bại"), player.inCountry
+                  MessageCreator.createServerAlertAutoOffMessage("Đội " + Map.getClaninfoByID(player.idClan).name + " giao thẻ thất bại"), player.inCountry
                );
                this.sendAllPlayer(MessageCreator.createMsgStartGetTown(player.inCountry), player.inCountry);
             }
@@ -370,7 +370,7 @@ public class MapTown extends Map {
 
          NpcReceiveCard npc = (NpcReceiveCard)((Vector)npcReceiveCard.get(player.inCountry)).get(posNpc);
          if (npc.idClan == player.idClan) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Bang của bạn chưa mất vị trí này.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Đội của bạn chưa mất vị trí này.", ""));
             return;
          }
 
@@ -409,7 +409,7 @@ public class MapTown extends Map {
             try {
                ((Char)players.get(i))
                   .sendMessage(
-                     MessageCreator.createServerAlertAutoOffMessage("Bang " + namecl.toUpperCase() + " bắt đầu giao thẻ tại " + NpcReceiveCard.npc[npc.posNpc])
+                     MessageCreator.createServerAlertAutoOffMessage("Đội " + namecl.toUpperCase() + " bắt đầu giao thẻ tại " + NpcReceiveCard.npc[npc.posNpc])
                   );
                ((Char)players.get(i)).sendMessage(MessageCreator.createMsgStartGetTown(player.inCountry));
             } catch (Exception var9) {
@@ -443,7 +443,7 @@ public class MapTown extends Map {
          }
 
          if (!p.checkDurableWeapone()) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
             Message m = new Message(104);
 
             try {
@@ -878,7 +878,7 @@ public class MapTown extends Map {
             if (p.hp <= 0) {
                p.actorDie();
             } else if (!p.checkDurableWeapone()) {
-               p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+               p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
                Message m = new Message(104);
 
                try {
@@ -1456,7 +1456,7 @@ public class MapTown extends Map {
                   NewClan clan = NewClan.getClan(player.idClan);
                   int cos = 5000000;
                   if (clan.money < (long)cos) {
-                     player.sendMessage(MessageCreator.createServerAlertMessage("Bang phải có ít nhất " + cos + " xu để có thể xây trụ.", ""));
+                     player.sendMessage(MessageCreator.createServerAlertMessage("Đội phải có ít nhất " + cos + " xu để có thể xây trụ.", ""));
                   } else {
                      Vector<Monster> mons = (Vector<Monster>)((Vector)towerDefend.get(player.myCountry)).get(pos);
                      if (mons.size() >= 4) {
@@ -1546,7 +1546,7 @@ public class MapTown extends Map {
                Database.instance.updateLienTram();
                isStartWar = true;
                if (!info.equals("")) {
-                  info = "Bắt đầu diễn ra sự kiện chiếm lãnh thổ tại " + info.substring(0, info.length() - 1);
+                  info = "Bắt đầu diễn ra sự kiện chiếm vùng tại " + info.substring(0, info.length() - 1);
 
                   try {
                      sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(info));
@@ -1791,7 +1791,7 @@ public class MapTown extends Map {
             Char p = (Char)CharManager.instance.vChars.elementAt(i);
             if (p.myCountry > -1) {
                p.sendMessage(MessageCreator.createMsgStartGetTown(p.myCountry));
-               p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm thành bắt đầu"));
+               p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm Gym bắt đầu"));
                if (p.isBot == -1 && p.mapID >= 201 && p.mapID <= 271 && p.mapID != 202) {
                   p.map.move2Map(p, homeX, homeY, mapstart[r.nextInt(MessageCreator.nclone)], p.inCountry);
                }

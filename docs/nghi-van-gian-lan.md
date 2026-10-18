@@ -1,6 +1,6 @@
 # `hack.txt` và `hackdo.txt`
 
-Hai file này nằm ở thư mục gốc của server (`/opt/kpah` trên VPS) và đọc được ngay
+Hai file này nằm ở thư mục gốc của server (`/opt/htbb` trên VPS) và đọc được ngay
 trên trang **Chẩn đoán** của web quản trị.
 
 ```
@@ -20,7 +20,7 @@ một công cụ chống gian lận thủ công đời trước. **Không bật 
 SQL bằng cách nối chuỗi thẳng tên nhân vật, và `banchar()` đặt `ban=0` — tức là
 *mở khoá*, không phải khoá.
 
-Nay hai file được ghi bởi [`data.NghiVanGianLan`](../src/data/NghiVanGianLan.java),
+Nay hai file được ghi bởi [`data.NghiVanGianLan`](../server/src/data/NghiVanGianLan.java),
 nối vào các phép phát hiện **đang chạy thật** trong server.
 
 ## Định dạng
@@ -36,8 +36,8 @@ dòng bị lọc và dấu `|` bị đổi thành `/`. Nhờ vậy không ai t�
 chính mình, và `grep` theo tên luôn đếm đúng số sự kiện:
 
 ```bash
-grep ' | AnhHung | ' /opt/kpah/hack.txt | wc -l
-awk -F' \\| ' '{print $4}' /opt/kpah/hackdo.txt | sort | uniq -c | sort -rn
+grep ' | AnhHung | ' /opt/htbb/server/hack.txt | wc -l
+awk -F' \\| ' '{print $4}' /opt/htbb/server/hackdo.txt | sort | uniq -c | sort -rn
 ```
 
 ## Hạn mức ghi — đọc phần này trước khi thêm điểm mới
@@ -53,7 +53,7 @@ lặp chạy của map (`Region.java:186`, mỗi 300 ms).
 Các điểm phát hiện gian lận cũng nằm trong đường xử lý gói tin. Nếu một phép kiểm
 báo động giả liên tục — độ trễ mạng, dữ liệu cũ — nó sẽ ghi không ngừng. Bộ đếm
 được tách thành hàm thuần để kiểm thử được, xem
-[`test/KiemNghiVanGianLan.java`](../test/KiemNghiVanGianLan.java).
+[`test/KiemNghiVanGianLan.java`](../server/test/KiemNghiVanGianLan.java).
 
 ## Các điểm đang ghi
 

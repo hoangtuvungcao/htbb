@@ -48,13 +48,13 @@ import com.htbb.pokemon.DinhDangBanDo;
  */
 public final class VeMapMoi {
 
-    static final String VAO_CMAP = "cMap";
-    static final String RA_CMAP = "cMap_pokemon";
+    static final String VAO_CMAP = "server/cMap";
+    static final String RA_CMAP = "server/cMap_pokemon";
     static final String RA_ANH = "docs/pokemon/map_moi";
-    static final String RA_QUAI = "map/pokemon_spawn/";
+    static final String RA_QUAI = "server/map/pokemon_spawn/";
     /** Ban do 0 cho client Unity: Resources/poke_map/ cua moi client (thuMucClient - htbb-client/pc + ClientUnity cu). */
     static final String RA_J2ME = "tools/pokemon/map_j2me/";
-    static final String THU_MUC_TILE = "map/pokemon_tile/";
+    static final String THU_MUC_TILE = "server/map/pokemon_tile/";
     static final int O = 13;
     /** Chi so vat lieu san lat da "K" cua bo t (quang truong) - duong khong ve de len. */
     static final int VL_SAN = 9;
@@ -201,6 +201,88 @@ public final class VeMapMoi {
         DinhDangBanDo.LuoiQuai quai, quaiGoc;
         List<Moc> moc = new ArrayList<Moc>();
         List<int[]> den = new ArrayList<int[]>();
+        /** Ban do MOI (vung Hoenn - com.htbb.pokemon.BanDoHoenn): khong co cMap goc, "goc" la khung dung tu thiet ke. */
+        boolean moi;
+        /** Co thiet ke trong cot moc: [bien] bo bien, [ho] ho giua, [tro] tro nui lua, [nuoc] hang ngap nuoc. */
+        boolean co(final String the) {
+            return spec.moc.contains("[" + the + "]");
+        }
+    }
+
+    /**
+     * Khung "ban goc" cho ban do Hoenn: kich thuoc, cum cong 5 o tren mep (toM = thu tu cong trong
+     * BanDoHoenn, xOut/yOut = diem den o ban do ben kia), NPC client, luoi quai rai thanh cum o vung trong
+     * (ngoai troi: VeMapMoi xep lai vao bai co cao; hang/san: giu cho, khoet phong quanh). Diem den = o dung
+     * truoc moi cum cong (nguoi tu ban do ben kia sang).
+     */
+    static DauVao dauVaoHoenn(final com.htbb.pokemon.BanDoHoenn.BanDo bd, final Spec s) {
+        final DauVao v = new DauVao();
+        v.moi = true;
+        v.spec = s;
+        v.b = BO.get(DinhDangBanDo.boTile(bd.id));
+        final DinhDangBanDo g = new DinhDangBanDo(bd.w, bd.h);
+        for (int i = 0; i < bd.cong.size(); i++) {
+            final int[] den = com.htbb.pokemon.BanDoHoenn.diemDen(bd.id, bd.cong.get(i).den);
+            if (den == null) {
+                throw new IllegalStateException("Hoenn " + bd.id + ": cong toi " + bd.cong.get(i).den + " khong co cong chieu nguoc");
+            }
+            for (final int[] o : bd.oCong(i)) {
+                g.cong.add(new DinhDangBanDo.Cong(o[0], o[1], i, den[0], den[1]));
+            }
+            v.den.add(bd.diemVao(i));
+        }
+        for (final int[] n : bd.npcTuyetDoi()) {
+            g.npc.add(new DinhDangBanDo.Diem(n[0], n[1], n[2]));
+        }
+        g.coNpc = true;
+        g.duoi = new byte[]{0};
+        v.goc = g;
+        final DinhDangBanDo.LuoiQuai q = new DinhDangBanDo.LuoiQuai();
+        q.w = bd.w;
+        q.h = bd.h;
+        q.o = new int[bd.w * bd.h];
+        if (bd.quai.length > 0) {
+            final Random rd = new Random(bd.hat * 31 + 7);
+            final int so = Math.max(8, bd.w * bd.h / bd.matDo);
+            final int soCum = Math.max(3, so / 9);
+            final List<int[]> tam = new ArrayList<int[]>();
+            for (int thu = 0; thu < 4000 && tam.size() < soCum; thu++) {
+                final int x = 7 + rd.nextInt(Math.max(1, bd.w - 14)), y = 7 + rd.nextInt(Math.max(1, bd.h - 14));
+                boolean ok = true;
+                for (final DinhDangBanDo.Cong c : g.cong) {
+                    if (Math.abs(c.x - x) + Math.abs(c.y - y) < 12) {
+                        ok = false;
+                    }
+                }
+                for (final DinhDangBanDo.Diem n : g.npc) {
+                    if (Math.abs(n.x - x) + Math.abs(n.y - y) < 8) {
+                        ok = false;
+                    }
+                }
+                for (final int[] t : tam) {
+                    if (Math.abs(t[0] - x) + Math.abs(t[1] - y) < Math.max(10, (bd.w + bd.h) / (soCum + 2))) {
+                        ok = false;
+                    }
+                }
+                if (ok) {
+                    tam.add(new int[]{x, y});
+                }
+            }
+            int dat = 0;
+            for (int thu = 0; thu < so * 60 && dat < so && !tam.isEmpty(); thu++) {
+                final int[] t = tam.get(thu % tam.size());
+                final int x = t[0] + rd.nextInt(9) - 4, y = t[1] + rd.nextInt(9) - 4;
+                if (x < 5 || y < 5 || x >= bd.w - 5 || y >= bd.h - 5 || q.o[y * bd.w + x] != 0) {
+                    continue;
+                }
+                // cum gan tam thi mau dau, xa hon thi mau sau (moi cum tron 2-3 loai, cap tang dan theo danh sach)
+                q.o[y * bd.w + x] = bd.quai[(dat + tam.indexOf(t)) % bd.quai.length];
+                dat++;
+            }
+        }
+        v.quai = q;
+        v.quaiGoc = DinhDangBanDo.LuoiQuai.doc(q.ghi());
+        return v;
     }
 
     /** O nay co the dat vat can (khong phai diem co dinh, cong, quai, duong bat buoc, vung giu). */
@@ -443,6 +525,61 @@ public final class VeMapMoi {
             final int cx = x0 + rong / 2;
             k.moc[(y0 + 5) * k.w + cx] = true;
             return new int[]{cx, y0 + 9};
+        }
+        return null;
+    }
+
+    /**
+     * Nhu datLang nhung chon cho GAN (cx, cy) nhat (thi tran Hoenn: khoi nha ngay tren quang truong, loi
+     * vao rao quay xuong quang truong). Tra ve diem noi duong (giua loi vao rao) hoac null.
+     */
+    static int[] datLangGan(final KeHoach k, final BoVL b, final Random rd, final int vlSan, final int cx, final int cy) {
+        final int rong = 19, cao = 10;
+        final List<int[]> ung = new ArrayList<int[]>();
+        for (int y0 = 3; y0 + cao + 3 < k.h; y0++) {
+            for (int x0 = 3; x0 + rong + 3 < k.w; x0++) {
+                ung.add(new int[]{x0, y0});
+            }
+        }
+        // tam khoi (giua loi vao rao) cach diem mong muon gan nhat, uu tien nam phia tren
+        ung.sort((p, q) -> Double.compare(Math.hypot(p[0] + rong / 2 - cx, p[1] + cao - cy) + (p[1] + cao > cy ? 6 : 0),
+                Math.hypot(q[0] + rong / 2 - cx, q[1] + cao - cy) + (q[1] + cao > cy ? 6 : 0)));
+        for (final int[] u : ung) {
+            final int x0 = u[0], y0 = u[1];
+            if (!hcnTuDo(k, x0 - 1, y0 - 1, x0 + rong, y0 + cao)) {
+                continue;
+            }
+            for (int y = y0 + 3; y <= y0 + 6; y++) {
+                for (int x = x0; x < x0 + rong; x++) {
+                    k.vl[y * k.w + x] = vlSan;
+                    k.giu[y * k.w + x] = true;
+                }
+            }
+            veNha(k, b, 0, x0, y0);
+            veNha(k, b, 1, x0 + 5, y0);
+            veNha(k, b, 2 + rd.nextInt(3), x0 + 9, y0);
+            veNha(k, b, 2 + rd.nextInt(3), x0 + 14, y0);
+            k.dat(x0 + 4, y0 + 2, b.id("bien_hoi_phuc"));
+            if (b.co("bien_cua_hang")) {
+                k.dat(x0 + 8, y0 + 2, b.id("bien_cua_hang"));
+            }
+            for (int x = x0; x < x0 + rong; x++) {
+                final int y = y0 + 8;
+                if (x == x0 + rong / 2 || x == x0 + rong / 2 - 1) {
+                    k.vl[y * k.w + x] = vlSan;
+                    k.diBat[y * k.w + x] = true;
+                    k.giu[y * k.w + x] = true;
+                    continue;
+                }
+                k.dat(x, y, b.id(x == x0 ? "rao_trai" : (x == x0 + rong - 1 ? "rao_phai" : "rao_giua")));
+                k.dat(x, y - 1, b.id(((x + y) % 3 == 0) ? "hoa_cam" : "hoa_vang"));
+            }
+            for (int x = x0; x < x0 + rong; x++) {
+                k.diBat[(y0 + 5) * k.w + x] = true;
+            }
+            final int mx = x0 + rong / 2;
+            k.moc[(y0 + 5) * k.w + mx] = true;
+            return new int[]{mx, y0 + 9};
         }
         return null;
     }
@@ -1326,7 +1463,8 @@ public final class VeMapMoi {
                 phia = i;
             }
         }
-        final int sau = (int) (Math.min(k.w, k.h) * 0.22);
+        // [khoi] (tuyen bien Hoenn): bien chiem gan nua ban do
+        final int sau = (int) (Math.min(k.w, k.h) * (v.moi && v.co("khoi") ? 0.42 : 0.22));
         final boolean[] vat = new boolean[k.w * k.h];
         for (int i = 0; i < vat.length; i++) {
             vat[i] = k.giuChinh[i] || k.khoa[i];
@@ -1342,7 +1480,8 @@ public final class VeMapMoi {
                 final int d = phia == 0 ? y : phia == 1 ? k.h - 1 - y : phia == 2 ? x : k.w - 1 - x;
                 final int doc = phia < 2 ? x : y;
                 final double bo = sau * (0.6 + 0.8 * fbm(doc, 0, hat + 77, 14));
-                if (d < bo && !k.giuChinh[i] && dGiu[i] >= 3) {
+                // ban do moi (Hoenn): bien cham han mep ban do (bo bien that, khong thanh ho co vien co)
+                if (d < bo && !k.giuChinh[i] && (dGiu[i] >= 3 || (v.moi && d <= 2 && !k.giu[i]))) {
                     k.vl[i] = W;
                 } else if (d < bo + 1.5) {
                     k.vl[i] = G;
@@ -1559,6 +1698,70 @@ public final class VeMapMoi {
         }
     }
 
+    /**
+     * Dam nuoc lo tren map bien: ho kin hinh elip (rx 5, ry 4) cach bien 6-14 o, vien cat 1-2 o, cau go 3 o
+     * tu bo nam vao ho. Luat ho cau (BanDoSinhThai.nhanHo): kin, &gt;= 6 o, cach mep &gt;= 2, &lt;= 40% dien tich.
+     * Tra ve o dau cau (diem noi duong) hoac null neu khong co cho.
+     */
+    static int[] datDamPha(final KeHoach k, final BoVL b, final int W, final int S) {
+        final int rx = 5, ry = 4, n = k.w * k.h;
+        final boolean[] vat = new boolean[n], bien = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            vat[i] = k.giuChinh[i] || k.khoa[i] || k.moc[i] || k.diBat[i] || k.cong[i] || k.vl[i] == W || k.vl[i] == S;
+            bien[i] = k.vl[i] == W;
+        }
+        final int[] d = khoangCach(k.w, k.h, vat), dBien = khoangCach(k.w, k.h, bien);
+        int best = -1;
+        double bd = 1e9;
+        for (int i = 0; i < n; i++) {
+            final int x = i % k.w, y = i / k.w;
+            final int db = dBien[i] == Integer.MAX_VALUE ? 99 : dBien[i];
+            if (d[i] == Integer.MAX_VALUE || d[i] < rx + 2 || db < rx + 4 || x < rx + 4 || y < ry + 5 || x >= k.w - rx - 4 || y >= k.h - ry - 6) {
+                continue;
+            }
+            // gan bai bien (dam pha sau dai cat), khong dinh vao bien
+            final double sc = Math.abs(db - (rx + 5)) - d[i] * 0.05;
+            if (sc < bd) {
+                bd = sc;
+                best = i;
+            }
+        }
+        if (best < 0) {
+            return null;
+        }
+        final int cx = best % k.w, cy = best / k.w;
+        for (int y = cy - ry - 3; y <= cy + ry + 3; y++) {
+            for (int x = cx - rx - 3; x <= cx + rx + 3; x++) {
+                if (!k.trong(x, y) || k.khoa[y * k.w + x]) {
+                    continue;
+                }
+                final double r = Math.hypot((x - cx) / (double) rx, (y - cy) / (double) ry);
+                final int i = y * k.w + x;
+                if (r < 1.0) {
+                    k.vl[i] = W;
+                    k.giu[i] = true;
+                } else if (r < 1.45) {
+                    k.vl[i] = S;
+                    k.giu[i] = true;
+                }
+            }
+        }
+        // cau go tu bo nam vao 3 o nuoc, dau cau tren bo cat
+        final int B = b.vl("B");
+        for (int y = cy + ry - 2; y <= cy + ry + 1; y++) {
+            final int i = y * k.w + cx;
+            k.vl[i] = B;
+            k.giu[i] = true;
+            k.diBat[i] = true;
+            k.moc[i] = true;
+        }
+        final int dau = (cy + ry + 2) * k.w + cx;
+        k.vl[dau] = S;
+        k.diBat[dau] = true;
+        k.moc[dau] = true;
+        return new int[]{cx, cy + ry + 2};
+    }
+
     static KeHoach keHoachNgoaiTroi(final DauVao v, final Random rd) {
         final BoVL b = v.b;
         final boolean tuyet = v.spec.loai.equals("tuyet"), saMac = v.spec.loai.equals("sa_mac");
@@ -1601,6 +1804,13 @@ public final class VeMapMoi {
         // 2. nuoc lon
         if (loai.equals("bien")) {
             biengioi(k, v, hat, rd, W, S);
+            if (v.co("dam")) {
+                // dam nuoc lo (map bien -> ho = dam pha, cau duoc ca nuoc man): ho kin bo cat + cau go
+                final int[] ben = datDamPha(k, b, W, S);
+                if (ben != null) {
+                    noi.add(ben);
+                }
+            }
         }
         if (loai.equals("ho")) {
             final double tl = Math.max(10, Math.min(k.w, k.h) / 3.5);
@@ -1659,6 +1869,20 @@ public final class VeMapMoi {
             datDam(k, rd, hat + 3, F, soDam * 2, 2, 5, daDat);
             datDam(k, rd, hat + 4, R, Math.max(1, soDam / 2), 2, 4, daDat);
             datDam(k, rd, hat + 2, W, Math.max(1, dien / 6000), 3, 5, daDat);
+        }
+        if (v.moi && v.co("ho")) {
+            // ho thiet ke (cau ca): 2-3 ho kin vua, xa diem co dinh
+            datDam(k, rd, hat + 41, W, Math.max(2, dien / 2500), 4, 6, daDat);
+        }
+        if (v.moi && v.co("tro")) {
+            // nui lua: tro bui (cat xam) loang lo + them vach da
+            datDam(k, rd, hat + 43, R, soDam, 2, 5, daDat);
+            for (int i = 0; i < dien; i++) {
+                final int x = i % k.w, y = i / k.w;
+                if (k.vl[i] == G && !k.khoa[i] && fbm(x, y, hat + 44, 12) > 0.6) {
+                    k.vl[i] = S;
+                }
+            }
         }
         // khong de rung/vach cham nuoc
         for (int i = 0; i < dien; i++) {
@@ -1942,6 +2166,29 @@ public final class VeMapMoi {
         for (int i = 0; i < cua.size(); i++) {
             datNhaCua(k, b, cua.get(i), i == 0 ? 0 : (i == 1 ? 1 : 2 + (i % 3)), i < 2);
         }
+        // thi tran Hoenn (khong co cong cua nha): khoi Trung tam + Cua hang + 2 nha ngay tren quang truong
+        final boolean hoGiua = v.moi && v.co("ho");
+        if (v.moi && cua.isEmpty()) {
+            final int[] p = datLangGan(k, b, rd, D, cx, cy - (hoGiua ? Math.min(k.w, k.h) / 5 : 3));
+            if (p != null) {
+                noi.add(p);
+            }
+        }
+        if (hoGiua) {
+            // ho giua thi tran (Sootopolis: mieng nui lua; Lavaridge: suoi nong) - kin, khong cham mep
+            final double rx = Math.max(5, k.w / 6.5), ry = Math.max(4, k.h / 7.0);
+            for (int y = 0; y < k.h; y++) {
+                for (int x = 0; x < k.w; x++) {
+                    final int i = y * k.w + x;
+                    if (k.giuChinh[i] || k.khoa[i] || k.giu[i]) {
+                        continue;
+                    }
+                    if (Math.hypot((x - cx) / rx, (y - cy) / ry) < 1.0 + 0.18 * (fbm(x, y, hat + 23, 5) - 0.5)) {
+                        k.vl[i] = W;
+                    }
+                }
+            }
+        }
         for (int y = 0; y < k.h; y++) {
             for (int x = 0; x < k.w; x++) {
                 final int i = y * k.w + x;
@@ -1954,16 +2201,20 @@ public final class VeMapMoi {
                 }
             }
         }
+        if (v.moi && v.co("bien")) {
+            biengioi(k, v, hat, rd, W, b.vl("S"));
+        }
         noiDuong(k, b, hat, noi, 2, D);
-        datNhaDuong(k, b, rd, Math.max(2, k.w * k.h / 700), D);
+        // [pho] thanh pho dong nha (Slateport, Mauville...), [rung] lang giua rung (Fortree)
+        datNhaDuong(k, b, rd, Math.max(2, k.w * k.h / (v.moi && v.co("pho") ? 330 : 700)), D);
         final boolean[] daDat = new boolean[k.w * k.h];
         datDam(k, rd, hat + 2, W, Math.max(1, k.w * k.h / 3000), 2, 4, daDat);
-        datDam(k, rd, hat + 3, F, Math.max(1, k.w * k.h / 1800), 2, 3, daDat);
+        datDam(k, rd, hat + 3, F, Math.max(1, k.w * k.h / (v.moi && v.co("rung") ? 450 : 1800)), 2, v.moi && v.co("rung") ? 4 : 3, daDat);
         lamMin(k, b, 1);
         vienCo(k, W, D, G);
-        lamDay(k, b, new int[]{F, W, D});
-        // quang truong lat da
-        if (n > 0) {
+        lamDay(k, b, v.moi ? new int[]{F, W, D, b.vl("S")} : new int[]{F, W, D});
+        // quang truong lat da (thi tran co ho giua: ho la diem nhan, khong lat da)
+        if (n > 0 && !hoGiua) {
             final int rx = k.w >= 60 ? 5 : 4, ry = 3;
             final int x0 = Math.max(3, cx - rx), x1 = Math.min(k.w - 4, cx + rx), y0 = Math.max(3, cy - ry), y1 = Math.min(k.h - 4, cy + ry);
             for (int y = y0; y <= y1; y++) {
@@ -1990,9 +2241,10 @@ public final class VeMapMoi {
                 k.dat(cx - 1, cy, b.id("tuong_2"));
                 k.dat(cx, cy, b.id("tuong_3"));
             }
-            for (final int[] g : new int[][]{{x0 + 1, y0 + 1}, {x1 - 1, y0 + 1}, {x0 + 1, y1 - 1}, {x1 - 1, y1 - 1}}) {
-                final int i = g[1] * k.w + g[0];
-                if (!k.moc[i] && !k.khoa[i] && !k.cong[i] && b.co("den")) {
+            // den o 4 goc NGOAI san, tren co: tile "den" ve tren nen co (G) - dat trong san lat da se thanh o vuong co
+            // giua da (KiemVeMap: "lo nen")
+            for (final int[] g : new int[][]{{x0 - 1, y0 - 1}, {x1 + 1, y0 - 1}, {x0 - 1, y1 + 1}, {x1 + 1, y1 + 1}}) {
+                if (b.co("den") && tuDo(k, g[0], g[1]) && k.vl[g[1] * k.w + g[0]] == G) {
                     k.dat(g[0], g[1], b.id("den"));
                 }
             }
@@ -2013,6 +2265,9 @@ public final class VeMapMoi {
                     noiHai(k, b, hat, m, new int[]{best % k.w, best / k.w}, 2, D);
                 }
             }
+        }
+        if (v.moi && v.co("bien")) {
+            datBenTau(k, b, D, W, b.vl("B"));
         }
         lienThongKeHoach(k, b, hat, D);
         datBienBao(k, b, v);
@@ -2262,6 +2517,19 @@ public final class VeMapMoi {
             daDat[i] = k.vl[i] == V;
         }
         datDam(k, rd, hat + 2, W, Math.max(1, k.w * k.h / 3000), 2, 4, daDat);
+        if (v.moi && v.co("nuoc")) {
+            // hang ngap nuoc (Thac Meteor, hang duoi bien, Hang Khoi Nguyen): nhieu ho ngam lon
+            final boolean[] canNuoc = new boolean[k.w * k.h];
+            for (int i = 0; i < canNuoc.length; i++) {
+                canNuoc[i] = k.vl[i] != nen || k.giuChinh[i] || k.khoa[i] || k.moc[i];
+            }
+            final int[] dN = khoangCach(k.w, k.h, canNuoc);
+            for (int i = 0; i < canNuoc.length; i++) {
+                if (dN[i] != Integer.MAX_VALUE && dN[i] >= 2 && fbm(i % k.w, i / k.w, hat + 8, 7) > 0.47) {
+                    k.vl[i] = W;
+                }
+            }
+        }
         if (!cat) {
             datDam(k, rd, hat + 6, S, Math.max(1, k.w * k.h / 2500), 2, 4, daDat);
         }
@@ -2338,10 +2606,12 @@ public final class VeMapMoi {
         lamDay(k, b, new int[]{G, A, W});
         lienThongKeHoach(k, b, hat, P);
         // co ngu sac doc bo tren, den o goc trong, tuong o giua neu trong
-        if (b.co("co_0")) {
+        // co cao 2 o: dau (x, ho), duoi (x, ho + 1) - ca hai o deu chan
+        if (b.co("co0_0")) {
             for (int x = ho + 3, j = 0; x < k.w - ho - 3; x += 4, j++) {
-                if (tuDo(k, x, ho) && k.vl[ho * k.w + x] == P) {
-                    k.dat(x, ho, b.id("co_" + (j % 4)));
+                if (tuDo(k, x, ho) && tuDo(k, x, ho + 1) && k.vl[ho * k.w + x] == P && k.vl[(ho + 1) * k.w + x] == P) {
+                    k.dat(x, ho, b.id("co" + (j % 4) + "_0"));
+                    k.dat(x, ho + 1, b.id("co" + (j % 4) + "_1"));
                 }
             }
         }
@@ -2458,6 +2728,120 @@ public final class VeMapMoi {
 
     static String ma(final int bit) {
         return "" + ((bit >> 3) & 1) + ((bit >> 2) & 1) + ((bit >> 1) & 1) + (bit & 1);
+    }
+
+    /** Vat trang tri 1 o: anh = tren(nen, sprite) nen phai dung tren dung vat lieu nen cua no. */
+    static final Set<String> VAT_LE = new HashSet<String>(Arrays.asList("bui", "cay_mong", "goc_cay", "da", "da2", "soi", "pha_le",
+            "pha_le2", "thung", "bien_go", "hom_thu", "den", "rao_trai", "rao_giua", "rao_phai", "rao_doc", "hoa_vang", "hoa_cam", "hoa_trang",
+            "da_cat", "da_tuyet"));
+    /** Thay the cung loai (da tren cat/tuyet...). */
+    static final Set<String> NHOM_DA = new HashSet<String>(Arrays.asList("da", "da2", "soi", "da_cat", "da_tuyet", "goc_cay"));
+    static final Map<String, int[]> NEN_TILE = new HashMap<String, int[]>();
+
+    /** Vat lieu nen cua tile (so pixel trung tile vat lieu cung vi tri nhieu nhat, &gt;= 20/256); -1 neu khong ro. */
+    static int nenTile(final BoVL b, final int tile) {
+        int[] c = NEN_TILE.get(b.bo);
+        if (c == null) {
+            final BufferedImage a;
+            try {
+                a = ImageIO.read(new File(THU_MUC_TILE + b.bo + ".png"));
+            } catch (final java.io.IOException e) {
+                throw new IllegalStateException(e);
+            }
+            c = new int[a.getHeight() / 16];
+            for (int t = 0; t < c.length; t++) {
+                c[t] = -1;
+                int tot = 19;
+                for (int v = 0; v < b.ten.length; v++) {
+                    final String tv = b.ten[v];
+                    if (!b.co(tv) || tv.equals("T") || tv.equals("F") || tv.equals("R") || tv.equals("V") || b.id(tv) == t) {
+                        continue;
+                    }
+                    final int g = b.id(tv);
+                    int dem = 0;
+                    for (int i = 0; i < 256; i++) {
+                        if (a.getRGB(i % 16, t * 16 + i / 16) == a.getRGB(i % 16, g * 16 + i / 16)) {
+                            dem++;
+                        }
+                    }
+                    if (dem > tot) {
+                        tot = dem;
+                        c[t] = v;
+                    }
+                }
+            }
+            NEN_TILE.put(b.bo, c);
+        }
+        return tile >= 0 && tile < c.length ? c[tile] : -1;
+    }
+
+    /**
+     * Vat trang tri 1 o nam lot giua vat lieu khac nen cua no (bien go nen co giua cat/tuyet, da hang tren cat, hang rao nen co tren
+     * bai cat...) hien thanh o vuong mau la (KiemVeMap "lo nen"): doi sang ban cung loai dung nen, khong co thi go bo (o tro lai
+     * vat lieu xung quanh - di duoc).
+     */
+    static void suaNenVat(final KeHoach k, final BoVL b) {
+        final Map<Integer, String> tenId = new HashMap<Integer, String>();
+        for (final Map.Entry<String, Integer> e : b.id.entrySet()) {
+            tenId.put(e.getValue(), e.getKey());
+        }
+        for (int i = 0; i < k.vl.length; i++) {
+            if (!k.khoa[i]) {
+                continue;
+            }
+            final String ten = tenId.get(k.khoaTile[i]);
+            final int nv = nenTile(b, k.khoaTile[i]);
+            if (ten == null || !VAT_LE.contains(ten) || nv < 0) {
+                continue;
+            }
+            final int x = i % k.w, y = i / k.w;
+            final int[] dem = new int[b.ten.length];
+            int mo = 0, cungDem = 0;
+            for (int d = 0; d < 4; d++) {
+                final int xx = x + DX4[d], yy = y + DY4[d];
+                if (!k.trong(xx, yy) || k.khoa[yy * k.w + xx]) {
+                    continue;
+                }
+                final int v = k.vl[yy * k.w + xx];
+                if (v < 0 || v >= dem.length) {
+                    continue;
+                }
+                mo++;
+                dem[v]++;
+                if (v == nv || (b.ten[v].equals("T") && b.ten[nv].equals("G"))) {
+                    cungDem++;
+                    dem[v]--;
+                }
+            }
+            // >= 2 canh la vat lieu khac (giua vung khac, hoac goc vung nen - o vuong nho ra)
+            if (mo - cungDem < 2) {
+                continue;
+            }
+            int m = -1;
+            for (int v = 0; v < dem.length; v++) {
+                if (dem[v] > 0 && (m < 0 || dem[v] > dem[m])) {
+                    m = v;
+                }
+            }
+            if (m < 0 || !b.di[m] || b.ten[m].equals("T")) {
+                continue;
+            }
+            int thay = -1;
+            if (NHOM_DA.contains(ten)) {
+                for (final String t2 : NHOM_DA) {
+                    if (b.co(t2) && nenTile(b, b.id(t2)) == m) {
+                        thay = b.id(t2);
+                        break;
+                    }
+                }
+            }
+            if (thay >= 0) {
+                k.khoaTile[i] = thay;
+            } else {
+                k.khoa[i] = false;
+                k.vl[i] = m;
+            }
+        }
     }
 
     static int[] veTile(final KeHoach k, final BoVL b, final long hat) {
@@ -2832,13 +3216,34 @@ public final class VeMapMoi {
         final StringBuilder bao = new StringBuilder("# Kiem ban do moi (VeMapMoi) - id loai kich_thuoc cong npc moc quai | ket qua\n");
         final Map<Integer, BufferedImage> nho = new LinkedHashMap<Integer, BufferedImage>();
         int loi = 0;
-        for (final int id : GiaiMaMap.danhSachMap(VAO_CMAP)) {
+        final List<Integer> tatCa = new ArrayList<Integer>(GiaiMaMap.danhSachMap(VAO_CMAP));
+        for (final com.htbb.pokemon.BanDoHoenn.BanDo bd : com.htbb.pokemon.BanDoHoenn.ds()) {
+            if (tatCa.contains(bd.id)) {
+                throw new IllegalStateException("id Hoenn " + bd.id + " trung voi cMap goc");
+            }
+            tatCa.add(bd.id);
+        }
+        for (final int id : tatCa) {
             if (!chi.isEmpty() && !chi.contains(id)) {
                 continue;
             }
             final Spec s = spec.get(id);
             if (s == null) {
                 throw new IllegalStateException("thieu thiet ke cho map " + id + " trong docs/pokemon/thiet_ke_map.csv");
+            }
+            final com.htbb.pokemon.BanDoHoenn.BanDo bd = com.htbb.pokemon.BanDoHoenn.lay(id);
+            if (bd != null) {
+                final DauVao v = dauVaoHoenn(bd, s);
+                if (moc.containsKey(id)) {
+                    v.moc = moc.get(id);
+                }
+                final String kq = veMot(v, nho);
+                bao.append(kq).append('\n');
+                if (kq.contains("LOI")) {
+                    loi++;
+                }
+                System.out.println(kq);
+                continue;
             }
             final DauVao v = new DauVao();
             v.spec = s;
@@ -2905,6 +3310,7 @@ public final class VeMapMoi {
                 k = keHoachNgoaiTroi(v, rd);
                 vlDi = k.tuyet ? b.vl("N") : (k.saMac ? b.vl("S") : b.vl("G"));
             }
+            suaNenVat(k, b);
             tile = veTile(k, b, v.spec.hat);
             for (int lan = 0; lan < 12; lan++) {
                 final Kiem kt = kiem(k, v, tile);
@@ -2934,7 +3340,12 @@ public final class VeMapMoi {
         Files.write(new File(RA_CMAP, "" + id).toPath(), ra);
         final File fq = new File(RA_QUAI, "map" + id);
         boolean doiQuai = false;
-        if (v.quai != null && !Arrays.equals(v.quai.ghi(), v.quaiGoc.ghi())) {
+        if (v.moi) {
+            // ban do moi: luoi quai luon ghi (ke ca rong - server khong bao "File not found")
+            new File(RA_QUAI).mkdirs();
+            Files.write(fq.toPath(), v.quai.ghi());
+            doiQuai = true;
+        } else if (v.quai != null && !Arrays.equals(v.quai.ghi(), v.quaiGoc.ghi())) {
             new File(RA_QUAI).mkdirs();
             Files.write(fq.toPath(), v.quai.ghi());
             doiQuai = true;
@@ -3097,7 +3508,7 @@ public final class VeMapMoi {
         if (pc.isDirectory()) {
             ds.add(new File(pc, "Resources/" + con));
         }
-        final File cu = new File("ClientUnity/Assets");
+        final File cu = new File("client_pc_ios/ClientUnity/Assets");
         if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
             ds.add(new File(cu, "Resources/" + con));
         }

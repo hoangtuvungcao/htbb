@@ -30,7 +30,7 @@ public final class GiftcodeLauDai {
         }
         final int toiDa = LauDai.so(LauDai.K_GIFTCODE_THANG, ThongSoLauDai.GIFTCODE_TOI_DA_THANG);
         synchronized (h) {
-            final int t = thang(System.currentTimeMillis());
+            final int t = thang(com.htbb.pokemon.DongHo.bay());
             final int dem = h.gcThang == t ? h.gcDem : 0;
             return dem >= toiDa ? "Mỗi tháng chỉ nhập được " + toiDa + " mã quà tặng." : null;
         }
@@ -43,7 +43,7 @@ public final class GiftcodeLauDai {
             return;
         }
         synchronized (h) {
-            final int t = thang(System.currentTimeMillis());
+            final int t = thang(com.htbb.pokemon.DongHo.bay());
             if (h.gcThang != t) {
                 h.gcThang = t;
                 h.gcDem = 0;

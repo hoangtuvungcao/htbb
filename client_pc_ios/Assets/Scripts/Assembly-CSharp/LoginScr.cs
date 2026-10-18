@@ -147,57 +147,8 @@ public class LoginScr : MyScreen
 
 	protected void doRegister()
 	{
-		string text = tfUser.getText().ToLower().Trim();
-		string text2 = tfPass.getText();
-		if (text.Equals(string.Empty))
-		{
-			Canvas.startOKDlg("Vui lòng nhập Game ID muốn đăng ký vào ô trên.");
-			return;
-		}
-		if (text2.Equals(string.Empty))
-		{
-			Command command = new Command("OK");
-			ActionPerform action = () =>
-			{
-				focus = 1;
-				tfUser.isFocus = false;
-				tfPass.isFocus = true;
-				Canvas.endDlg();
-			};
-			command.action = action;
-			Canvas.msgdlg.setInfo("Bạn phải nhập password đăng ký.", null, command, null);
-			Canvas.msgdlg.show();
-			return;
-		}
-		Canvas.msgdlg.isIcon = false;
-		Command command2 = new Command("Có");
-		ActionPerform action2 = () =>
-		{
-			doSendRegisterInfo();
-		};
-		command2.action = action2;
-		Command command3 = new Command("Không");
-		ActionPerform action3 = () =>
-		{
-			Canvas.endDlg();
-		};
-		command3.action = action3;
-		Canvas.msgdlg.setInfo("Bạn có muốn đăng ký tài khoản: " + text + " không?", command2, null, command3);
-		Canvas.currentDialog = Canvas.msgdlg;
-	}
-
-	protected void doSendRegisterInfo()
-	{
-		if (!Session_ME.connected)
-		{
-			Canvas.startWaitDlg("Vui lòng thoát game và chờ trong ít phút", true);
-			Canvas.connect();
-		}
-		else
-		{
-			Canvas.startWaitDlg("Vui lòng thoát game và chờ trong ít phút", true);
-		}
-		GameService.gI().requestRegister(tfUser.getText().ToLower(), tfPass.getText());
+		// Đăng ký trong game: màn riêng (tài khoản, mật khẩu, nhập lại, email) + câu hỏi chống bot
+		DangKyScr.mo();
 	}
 
 	public override bool keyPress(int keyCode)
@@ -241,6 +192,11 @@ public class LoginScr : MyScreen
 		}
 		MFont.normalFont[0].drawString(g, "Nhớ mật khẩu", tfUser.x + 10, Canvas.h / 2 + 12, 0);
 		MFont.borderFont.drawString(g, "Hotline: " + GameMidlet.numberSupport, Canvas.hw, Canvas.hh + 50, 2);
+		// phiên bản dưới khung đăng nhập (ghi công tài nguyên: Cài đặt -> Giấy phép, và GHI_CONG.txt cạnh game)
+		if (MFont.smallFont != null)
+		{
+			MFont.smallFont.drawString(g, "Phiên bản " + ThuongHieu.phienBan(), Canvas.hw, Canvas.hh + Y_GHI_CONG + H_GHI_CONG + 4, 2);
+		}
 		base.paint(g);
 	}
 
@@ -317,6 +273,12 @@ public class LoginScr : MyScreen
 		updateCamera();
 		base.update();
 	}
+
+	private const int W_GHI_CONG = 110;
+
+	private const int H_GHI_CONG = 22;
+
+	private const int Y_GHI_CONG = 78;
 
 	public void updatePoinTer()
 	{

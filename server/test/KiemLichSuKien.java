@@ -164,7 +164,7 @@ public final class KiemLichSuKien {
     /**
      * Phep thu quan trong nhat cua ca tep nay.
      *
-     * kpah-game.service: StartLimitBurst=5, StartLimitIntervalSec=300. Neu hai lan khoi
+     * htbb-game.service: StartLimitBurst=5, StartLimitIntervalSec=300. Neu hai lan khoi
      * dong lai co the cach nhau duoi 300 giay thi mot nguoi bat vai su kien lien tay se
      * lam unit chet han. O day dien lai dung kich ban do: may chu vua bat lai xong (dong
      * ho ve 0) va admin doi tiep ngay lap tuc.
@@ -253,28 +253,29 @@ public final class KiemLichSuKien {
         }
         Kiem.dung("gom giay bi kep trong khoang", ch.contains("trongKhoang"));
 
-        // ---- Trang quan tri ----
-        final String php = doc("web/admin/sukien.php");
-        Kiem.dung("trang web co viec luu lich", php.contains("luu_lich"));
-        Kiem.dung("trang web co viec xoa lich", php.contains("xoa_lich"));
-        Kiem.dung("trang web ghi hai cot lich",
-                php.contains("mo_luc = ?") && php.contains("dong_luc = ?"));
+        // ---- Trang quan tri (HTBB-Web /admin/sukien; website PHP web/admin/sukien.php da bo) ----
+        if (WebHtbb.boQua("lich su kien phia web (HTBB-Web)")) {
+            return;
+        }
+        final String luu = WebHtbb.doc("server/api/admin/sukien/lich.post.ts");
+        final String xoa = WebHtbb.doc("server/api/admin/sukien/xoa-lich.post.ts");
+        final String logic = WebHtbb.doc("server/utils/suKien.ts");
+        final String ds = WebHtbb.doc("server/api/admin/sukien/index.get.ts");
+        Kiem.dung("trang web co viec luu lich", luu.contains("suKienKiemLich("));
+        Kiem.dung("trang web co viec xoa lich", xoa.contains("SET mo_luc = NULL, dong_luc = NULL"));
+        Kiem.dung("trang web ghi hai cot lich", luu.contains("SET mo_luc = ?, dong_luc = ?"));
         // Web va Java phai dung CHUNG mot luat "cho khoi dong lai", khong thi trang bao
         // mot dang con server lam mot neo.
-        Kiem.dung("trang web dung dung luat cho khoi dong lai",
-                php.contains("sua_luc'] > $d['may_chu_luc'"));
-        // Gio so sanh phai lay tu CSDL chu khong phai tu PHP.
-        Kiem.dung("trang web lay gio tu CSDL", php.contains("SELECT NOW()"));
-        Kiem.dung("trang web chan moc da qua", php.contains("Mốc mở đã qua"));
-        Kiem.dung("trang web chan moc dong truoc moc mo", php.contains("phải sau mốc mở"));
+        Kiem.dung("trang web dung dung luat cho khoi dong lai", logic.contains("d.sua_luc > d.may_chu_luc"));
+        // Gio so sanh phai lay tu CSDL chu khong phai tu Node.
+        Kiem.dung("trang web lay gio tu CSDL",
+                WebHtbb.doc("server/utils/suKienDb.ts").contains("'SELECT NOW()'") && luu.contains("await suKienBayGio()"));
+        Kiem.dung("trang web chan moc da qua", logic.contains("Mốc mở đã qua"));
+        Kiem.dung("trang web chan moc dong truoc moc mo", logic.contains("phải sau mốc mở"));
         // Bang co the chua co hai cot lich (tao truoc 30/08/2026) - trang van phai dung duoc.
-        Kiem.dung("trang web chiu duoc bang thieu cot lich", php.contains("coCotLich"));
-
-        // Lop CSS dung trong trang phai co that trong admin.css.
-        final String css = doc("web/admin/assets/admin.css");
-        for (final String lop : new String[]{".lich-form", ".lich-o"}) {
-            Kiem.dung("admin.css co dinh nghia " + lop, css.contains(lop));
-        }
+        Kiem.dung("trang web chiu duoc bang thieu cot lich", ds.contains("coCotLich"));
+        // (Phep kiem lop CSS .lich-form/.lich-o cua admin.css PHP da bo: giao dien Nuxt dung
+        // Nuxt UI, khong co tep CSS rieng cho trang nay - xem docs/pokemon/BO_WEB_PHP.md.)
     }
 
     private static String doc(final String duong) {

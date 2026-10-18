@@ -1,6 +1,8 @@
+import { hsAnEmail } from '../../../utils/hoSoNguoiChoi'
 /** Chi tiết một tài khoản + nhân vật + trạng thái kích hoạt (trang /admin/taikhoan?id=...). */
 export default defineAdminHandler(async (event, admin) => {
   const id = int(getRouterParam(event, 'id'))
+  if (!Number.isSafeInteger(id)) throw apiLoi(404, 'Không tìm thấy tài khoản.')
   // Liệt kê cột thay vì SELECT *: team_user có cột password (bản băm) — tuyệt đối không
   // được gửi xuống trình duyệt, kể cả cho admin.
   const tk = id > 0
@@ -25,8 +27,8 @@ export default defineAdminHandler(async (event, admin) => {
     taiKhoan: {
       id: Number(tk.id),
       username: ten,
-      email: tk.email ?? '',
-      phone: tk.phone ?? '',
+      email: admin.vaiTro === 'xem' ? hsAnEmail(tk.email) : (tk.email ?? ''),
+      phone: admin.vaiTro === 'xem' && tk.phone ? `${String(tk.phone).slice(0, 3)}•••••` : (tk.phone ?? ''),
       regdate: tk.regdate ?? '',
       ban: Number(tk.ban),
     },

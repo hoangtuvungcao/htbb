@@ -1,9 +1,9 @@
 -- ============================================================================
 -- web_cms.sql — bang noi dung website (CMS) + phan quyen admin + khoa co thoi han
--- Chay MOT LAN vao database GAME (kpah_db), cung cho voi web_admin_log:
+-- Chay MOT LAN vao database GAME (htbb_db), cung cho voi web_admin_log:
 --
---     mysql -u kpah -p kpah_db < web_cms.sql
---     NovaDB: mysql -h 127.0.0.1 -P 3318 -u kpah -p kpah_db < web_cms.sql
+--     mysql -u htbb -p htbb_db < web_cms.sql
+--     NovaDB: mysql -h 127.0.0.1 -P 3318 -u htbb -p htbb_db < web_cms.sql
 --
 -- Chay lai nhieu lan van an toan (CREATE TABLE IF NOT EXISTS, INSERT ... ON DUPLICATE KEY).
 -- SQL viet de chay ca MariaDB lan NovaDB: khong CREATE TABLE LIKE, khong UPDATE...JOIN,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `web_faq` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Thu vien anh tai len (file nam o KPAH_UPLOAD_DIR, phuc vu qua /uploads/<ten_file>).
+-- Thu vien anh tai len (file nam o HTBB_UPLOAD_DIR, phuc vu qua /uploads/<ten_file>).
 CREATE TABLE IF NOT EXISTS `web_media` (
   `id`         bigint(20)   NOT NULL AUTO_INCREMENT,
   `ten_file`   varchar(120) NOT NULL COMMENT 'ten luu tren dia (ngau nhien)',
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `web_su_kien_lich` (
   PRIMARY KEY (`tuan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Vai tro admin ngoai KPAH_ADMIN_ACCOUNTS (nguoi trong bien moi truong luon la sieu_quan_tri).
+-- Vai tro admin ngoai HTBB_ADMIN_ACCOUNTS (nguoi trong bien moi truong luon la sieu_quan_tri).
 -- vai_tro: sieu_quan_tri | bien_tap | ho_tro | xem
 CREATE TABLE IF NOT EXISTS `web_admin_vai_tro` (
   `username`  varchar(50)  NOT NULL COMMENT 'account.team_user.username (chu thuong)',

@@ -1111,7 +1111,7 @@ class MapEpNgoc {
 
             try {
                 if (getTown[player.inCountry]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm thành", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm Gym", ""));
                     return;
                 }
 

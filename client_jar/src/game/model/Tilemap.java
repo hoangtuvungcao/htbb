@@ -408,12 +408,13 @@ public class Tilemap {
                 idXaphu = (byte) 9;
                 break;
             default:
-                mapName = "";
+                // vung Hoenn (nam 2, ban do moi chi co o server Pokemon): ten theo id
+                mapName = game.pokemon.TenMapPokemon.tenHoenn(idmap);
                 break;
         }
         // pokemon (W2): ten dia danh viet cung -> dia danh Pokemon
         if (game.pokemon.PokeBody.CHE_DO_POKEMON) {
-            mapName = game.pokemon.TenMapPokemon.doi(mapName);
+            mapName = game.pokemon.TenMapPokemon.doiHien(mapName);
         }
     }
 

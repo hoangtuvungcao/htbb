@@ -63,7 +63,7 @@ const CHAM: ChamHud[] = [
       <span
         v-for="c in CHAM"
         :key="c.so"
-        class="absolute z-10 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white bg-pokered-500 font-display text-xs font-extrabold text-white shadow-md"
+        class="absolute z-10 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white bg-pokered-600 font-display text-xs font-extrabold text-white shadow-md"
         :style="{ left: `${c.x}%`, top: `${c.y}%` }"
         aria-hidden="true"
       >{{ c.so }}</span>
@@ -73,7 +73,7 @@ const CHAM: ChamHud[] = [
     </figcaption>
     <ol class="mt-4 grid gap-2 sm:grid-cols-2">
       <li v-for="c in CHAM" :key="c.so" class="flex gap-3 rounded-xl bg-elevated/60 p-3 text-sm">
-        <span class="grid size-6 shrink-0 place-items-center rounded-full bg-pokered-500 font-display text-xs font-extrabold text-white">{{ c.so }}</span>
+        <span class="grid size-6 shrink-0 place-items-center rounded-full bg-pokered-600 font-display text-xs font-extrabold text-white">{{ c.so }}</span>
         <span><strong class="text-highlighted">{{ c.ten }}</strong><span class="block text-muted">{{ c.mo }}</span></span>
       </li>
     </ol>

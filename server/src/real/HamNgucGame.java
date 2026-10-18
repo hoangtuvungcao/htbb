@@ -41,7 +41,7 @@ final class HamNgucGame {
         if (h == null) {
             return;
         }
-        final int hom = NangLuong.ngay(System.currentTimeMillis());
+        final int hom = NangLuong.ngay(com.htbb.pokemon.DongHo.bay());
         int qua = -1;
         synchronized (h) {
             if (h.hnNgay != hom) {
@@ -72,13 +72,13 @@ final class HamNgucGame {
     static String nhanThuong(final Char p, final HoSoLauDai h) {
         final int tang;
         synchronized (h) {
-            if (h.hnNgay != NangLuong.ngay(System.currentTimeMillis()) || h.hnTangCao <= 0) {
+            if (h.hnNgay != NangLuong.ngay(com.htbb.pokemon.DongHo.bay()) || h.hnTangCao <= 0) {
                 return "Hôm nay chưa qua tầng nào.";
             }
             if (h.hnDaThuong != 0) {
                 // nap tien: the thang +1 luot - CHI diem ve mua (khong EXP / vat lieu / luong).
                 final String them = com.htbb.pokemon.NapTienGame.luotHamNgucThem(p);
-                return them != null ? them : "Hôm nay đã nhận thưởng Hầm ngục (1 lượt/ngày).";
+                return them != null ? them : "Hôm nay đã nhận thưởng Hầm ngục bí ẩn (1 lần/ngày).";
             }
             h.hnDaThuong = 1; // danh dau truoc
             h.ban = true;
@@ -94,6 +94,6 @@ final class HamNgucGame {
             p.addLuongLock(lk);
         }
         Database.instance.saveOrtherLog("", p.charname, "ham nguc tang " + tang + " exp " + exp + " lk " + lk, "laudai");
-        return "Thưởng Hầm ngục (tầng " + tang + "): " + exp + " EXP" + (lk > 0 ? ", " + lk + " lượng khoá" : "") + ".";
+        return "Thưởng Hầm ngục bí ẩn (tầng " + tang + "): " + exp + " EXP" + (lk > 0 ? ", " + lk + " lượng khoá" : "") + ".";
     }
 }

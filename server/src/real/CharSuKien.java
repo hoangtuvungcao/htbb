@@ -129,8 +129,8 @@ class CharSuKien {
                         self.sendMessage(MessageCreator.createCharInventoryMessage(pReceive, 0));
                         if (notlock) {
                             try {
-                                Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + self.charname + " đã nhận được " + luongadd[colortieu] / div + " lượng"));
-                            } catch (final IOException e) {
+                                com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + self.charname + " đã nhận được " + luongadd[colortieu] / div + " lượng");
+                            } catch (final Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -678,8 +678,8 @@ class CharSuKien {
                     self.sendMessage(MessageCreator.createCharInventoryMessage(self, 1));
                     info = String.valueOf(newItem.getName()) + "_" + newItem.getDBInfo() + "|" + newItem.getAttribute() + "_" + newItem.level + " thoi han " + newItem.minuteExist;
                     try {
-                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(self.charname) + " đã nhận được " + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút khi gửi lời chúc 8/3 đến bạn " + friendName));
-                    } catch (final IOException ex) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", String.valueOf(self.charname) + " đã nhận được " + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút khi gửi lời chúc 8/3 đến bạn " + friendName);
+                    } catch (final Exception ex) {
                     }
                 } else {
                     newItem = new Item((ItemTemplates) Map.itemTemplates.get(5).get(idtemp), false, 0, 0, idtemp);
@@ -697,8 +697,8 @@ class CharSuKien {
                     self.sendMessage(MessageCreator.createCharInventoryMessage(self, 1));
                     info = String.valueOf(newItem.getName()) + "_" + newItem.getDBInfo() + "|" + newItem.getAttribute() + "_" + newItem.level + " thoi han " + newItem.minuteExist;
                     try {
-                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(self.charname) + " đã nhận được " + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút khi gửi lời chúc 8/3 đến bạn " + friendName));
-                    } catch (final IOException ex2) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", String.valueOf(self.charname) + " đã nhận được " + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút khi gửi lời chúc 8/3 đến bạn " + friendName);
+                    } catch (final Exception ex2) {
                     }
                 }
             } else if (typegift[index] == -2) {
@@ -735,8 +735,8 @@ class CharSuKien {
                     }
                 }
                 try {
-                    Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(self.charname) + " đã nhận được " + Map.gemTemplate[idgift[index]].name + " khi gửi lời chúc 8/3 đến bạn " + friendName));
-                } catch (final IOException ex3) {
+                    com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", String.valueOf(self.charname) + " đã nhận được " + Map.gemTemplate[idgift[index]].name + " khi gửi lời chúc 8/3 đến bạn " + friendName);
+                } catch (final Exception ex3) {
                 }
             } else if (typegift[index] == 3) {
                 if (self.isFullInventory()) {
@@ -771,8 +771,8 @@ class CharSuKien {
                     self.sendMessage(MessageCreator.createCharInventoryMessage(self, 1));
                     info = String.valueOf(info) + newItem.getName();
                     try {
-                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(self.charname) + " đã nhận được " + newItem.getName() + " khi tặng hoa"));
-                    } catch (final IOException ex4) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", String.valueOf(self.charname) + " đã nhận được " + newItem.getName() + " khi tặng hoa");
+                    } catch (final Exception ex4) {
                     }
                 }
                 self.sendMessage(MessageCreator.createServerAlertMessage(info, ""));

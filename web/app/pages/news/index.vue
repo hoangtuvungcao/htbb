@@ -105,7 +105,7 @@ const iconTheoLoai: Record<string, string> = {
       <FxReveal>
         <div class="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl glass ring-gilded p-8 text-center sm:flex-row sm:text-left">
           <div class="pointer-events-none absolute -bottom-20 -left-10 size-64 rounded-full bg-grass-500/15 blur-3xl" aria-hidden="true" />
-          <span class="relative font-display text-2xl font-bold text-highlighted">Chưa có nhân vật của riêng mình?</span>
+          <span class="relative font-display text-2xl font-bold text-highlighted">Chưa có Pokémon của riêng mình?</span>
           <UButton to="/register" size="xl" trailing-icon="i-lucide-arrow-up-right" class="relative shadow-[0_10px_40px_rgba(10,26,51,.14)]">
             Bắt đầu phiêu lưu
           </UButton>

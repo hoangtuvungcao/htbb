@@ -1,0 +1,12 @@
+# ten,toc_do_px_giay,do_sau(0..1),kieu  - sinh boi client_jar/tools/tao_banner.py
+# kieu: phu = phu man (cat giua, khong lap) | lap = lap ngang + troi | sang = lop anh sang (loc muot)
+# khung goc 880x400; vung 16:9 = x120 y20 640x360 (chieu cao hien = 360 px goc)
+troi,0,0,phu
+may,4,0.08,lap
+huyen_thoai,0,0.12,phu
+nui,0,0.2,phu
+rung,0,0.4,phu
+dat,0,0.7,phu
+khoi_dau,0,0.85,phu
+khung,0,1.0,phu
+anh_sang,0,0,sang

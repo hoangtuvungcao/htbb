@@ -63,10 +63,10 @@ async function huy(l: DongLenhGiaoDien) {
 
     <div>
       <h1 class="text-xl font-bold text-highlighted">
-        Nâng Level toàn bộ nhân vật
+        Nâng Level toàn bộ Pokémon
       </h1>
       <p class="text-sm text-muted">
-        Đưa MỌI nhân vật đang hoạt động trên server lên ĐÚNG một cấp độ chỉ định — dùng cho sự kiện / bù đắp toàn server.
+        Đưa MỌI Pokémon đang hoạt động trên server lên ĐÚNG một cấp độ chỉ định — dùng cho sự kiện / bù đắp toàn server.
       </p>
     </div>
 
@@ -74,7 +74,7 @@ async function huy(l: DongLenhGiaoDien) {
     <UAlert v-if="data?.loiDoc" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="`Lỗi đọc dữ liệu: ${data.loiDoc}`" />
 
     <div class="grid gap-4 sm:grid-cols-2">
-      <AdminStatCard label="Nhân vật sẽ được nâng level" :value="data?.soNhanVat ?? '…'" icon="i-lucide-users" />
+      <AdminStatCard label="Pokémon sẽ được nâng level" :value="data?.soNhanVat ?? '…'" icon="i-lucide-users" />
       <AdminStatCard
         label="Lệnh đang chờ server xử lý"
         :value="data?.soLenhChoXuLy ?? '…'"
@@ -90,13 +90,13 @@ async function huy(l: DongLenhGiaoDien) {
         </h2>
       </template>
       <form class="space-y-4" @submit.prevent="moXacNhan = true">
-        <UFormField label="Cấp độ muốn đưa tất cả nhân vật lên" required>
+        <UFormField label="Cấp độ muốn đưa tất cả Pokémon lên" required>
           <UInputNumber v-model="capDich" :min="1" :max="data?.capDoToiDa ?? 90" class="w-40" />
         </UFormField>
         <p class="text-sm text-muted">
-          Nhân vật đang online được nâng NGAY (kèm điểm cơ bản/kỹ năng của các cấp vừa lên, giống lên cấp tự nhiên);
-          nhân vật offline sẽ được nâng khi vào game. Nhân vật đã ở cấp này trở lên sẽ báo lỗi riêng cho nhân vật
-          đó (không bị hạ cấp), không ảnh hưởng đến các nhân vật khác.
+          Pokémon đang online được nâng NGAY (kèm điểm cơ bản/kỹ năng của các cấp vừa lên, giống lên cấp tự nhiên);
+          Pokémon offline sẽ được nâng khi vào game. Pokémon đã ở cấp này trở lên sẽ báo lỗi riêng cho Pokémon
+          đó (không bị hạ cấp), không ảnh hưởng đến các Pokémon khác.
         </p>
         <UButton type="submit" color="error" icon="i-lucide-trending-up" label="Nâng Level cho tất cả" :loading="dangGui" />
       </form>
@@ -118,8 +118,8 @@ async function huy(l: DongLenhGiaoDien) {
 
     <AdminNhanvatXacNhan
       v-model:open="moXacNhan"
-      :title="`Đưa toàn bộ ${data?.soNhanVat ?? 0} nhân vật đang hoạt động lên đúng cấp ${capDich}?`"
-      description="Lệnh được xếp hàng cho server game xử lý dần ở nền. Nhân vật đã ở cấp này trở lên được giữ nguyên."
+      :title="`Đưa toàn bộ ${data?.soNhanVat ?? 0} Pokémon đang hoạt động lên đúng cấp ${capDich}?`"
+      description="Lệnh được xếp hàng cho server game xử lý dần ở nền. Pokémon đã ở cấp này trở lên được giữ nguyên."
       nhan-nut="Nâng Level cho tất cả"
       mau="error"
       :dang-chay="dangGui"

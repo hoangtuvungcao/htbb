@@ -1,0 +1,164 @@
+package htbb.pc;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Properties;
+
+/**
+ * Cài đặt bản PC (lưu <thư mục dữ liệu>/cai_dat.properties) + thư mục dữ liệu người dùng:
+ * Windows %APPDATA%\HTBB, macOS ~/Library/Application Support/HTBB, Linux $XDG_DATA_HOME/htbb (~/.local/share/htbb).
+ * Ghi đè: --du-lieu <thư mục> / -Dhtbb.duLieu / biến HTBB_DU_LIEU (vd chơi nhiều tài khoản song song).
+ */
+public final class CaiDat {
+    public static int cuaSoRong = 1280;
+    public static int cuaSoCao = 720;
+    public static boolean toanMan;
+    public static int amNhac = 80;
+    public static int amHieuUng = 90;
+    public static boolean tatTieng;
+    /** cạnh ngắn logic tối thiểu: 240 = giao diện lớn, 320 = vừa (mặc định), 400 = nhỏ */
+    public static int coGiaoDien = 320;
+    public static boolean chuHD = true;
+    public static boolean khungHD = true;
+    public static boolean goiYPhim = true;
+    public static boolean hienFps;
+    /** Hiệu ứng cao: hiệu ứng HD + trình bày 60 khung/giây; thấp: chỉ khung game (máy yếu) */
+    public static boolean hieuUngCao = true;
+    /** thu phóng bản đồ: chênh so với mức tự động (htbb.pc.Zoom) */
+    public static int zoomBu;
+    /** dải gợi ý phím đang mở (F1) */
+    public static boolean goiYMo = true;
+    /** máy chủ ghi trong cài đặt (rỗng = theo bản build) */
+    public static String mayChu = "";
+
+    private static File thuMuc;
+    /** lần chạy đầu (chưa có cai_dat.properties) */
+    public static boolean lanDau = true;
+
+    private CaiDat() {
+    }
+
+    public static synchronized File thuMucDuLieu() {
+        if (thuMuc != null) return thuMuc;
+        String d = System.getProperty("htbb.duLieu");
+        if (d == null || d.length() == 0) d = System.getenv("HTBB_DU_LIEU");
+        File f;
+        if (d != null && d.length() > 0) {
+            f = new File(d);
+        } else {
+            String os = System.getProperty("os.name", "").toLowerCase();
+            String home = System.getProperty("user.home", ".");
+            if (os.indexOf("win") >= 0) {
+                String ad = System.getenv("APPDATA");
+                f = new File(ad != null && ad.length() > 0 ? ad : home, "HTBB");
+            } else if (os.indexOf("mac") >= 0) {
+                f = new File(home, "Library/Application Support/HTBB");
+            } else {
+                String x = System.getenv("XDG_DATA_HOME");
+                f = new File(x != null && x.length() > 0 ? x : home + "/.local/share", "htbb");
+            }
+        }
+        if (!f.isDirectory()) f.mkdirs();
+        thuMuc = f;
+        return f;
+    }
+
+    private static File tep() {
+        return new File(thuMucDuLieu(), "cai_dat.properties");
+    }
+
+    private static int so(Properties p, String k, int md, int min, int max) {
+        try {
+            int v = Integer.parseInt(p.getProperty(k, "").trim());
+            return Math.max(min, Math.min(max, v));
+        } catch (Exception e) {
+            return md;
+        }
+    }
+
+    private static boolean co(Properties p, String k, boolean md) {
+        String v = p.getProperty(k);
+        return v == null ? md : "1".equals(v.trim()) || "true".equalsIgnoreCase(v.trim());
+    }
+
+    public static synchronized void nap() {
+        Properties p = new Properties();
+        File f = tep();
+        if (f.isFile()) {
+            lanDau = false;
+            try {
+                InputStreamReader r = new InputStreamReader(new FileInputStream(f), "UTF-8");
+                try {
+                    p.load(r);
+                } finally {
+                    r.close();
+                }
+            } catch (Exception e) {
+                NhatKy.loi("doc cai dat", e);
+            }
+        }
+        cuaSoRong = so(p, "cua_so_rong", 1280, 640, 7680);
+        cuaSoCao = so(p, "cua_so_cao", 720, 400, 4320);
+        toanMan = co(p, "toan_man", false);
+        amNhac = so(p, "am_nhac", 80, 0, 100);
+        amHieuUng = so(p, "am_hieu_ung", 90, 0, 100);
+        tatTieng = co(p, "tat_tieng", false);
+        coGiaoDien = so(p, "co_giao_dien", 320, 240, 480);
+        chuHD = co(p, "chu_hd", true);
+        khungHD = co(p, "khung_hd", true);
+        goiYPhim = co(p, "goi_y_phim", true);
+        hienFps = co(p, "hien_fps", false);
+        hieuUngCao = co(p, "hieu_ung_cao", true);
+        zoomBu = so(p, "zoom_bu", 0, -8, 8);
+        Zoom.bu = zoomBu;
+        goiYMo = co(p, "goi_y_mo", true);
+        mayChu = p.getProperty("may_chu", "").trim();
+        BanPhim.nap(p);
+    }
+
+    public static synchronized void luu() {
+        Properties p = new Properties();
+        p.setProperty("cua_so_rong", String.valueOf(cuaSoRong));
+        p.setProperty("cua_so_cao", String.valueOf(cuaSoCao));
+        p.setProperty("toan_man", toanMan ? "1" : "0");
+        p.setProperty("am_nhac", String.valueOf(amNhac));
+        p.setProperty("am_hieu_ung", String.valueOf(amHieuUng));
+        p.setProperty("tat_tieng", tatTieng ? "1" : "0");
+        p.setProperty("co_giao_dien", String.valueOf(coGiaoDien));
+        p.setProperty("chu_hd", chuHD ? "1" : "0");
+        p.setProperty("khung_hd", khungHD ? "1" : "0");
+        p.setProperty("goi_y_phim", goiYPhim ? "1" : "0");
+        p.setProperty("hien_fps", hienFps ? "1" : "0");
+        p.setProperty("hieu_ung_cao", hieuUngCao ? "1" : "0");
+        p.setProperty("zoom_bu", String.valueOf(zoomBu));
+        p.setProperty("goi_y_mo", goiYMo ? "1" : "0");
+        if (mayChu.length() > 0) p.setProperty("may_chu", mayChu);
+        BanPhim.luu(p);
+        try {
+            File f = tep();
+            File tam = new File(f.getPath() + ".tam");
+            OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(tam), "UTF-8");
+            try {
+                p.store(w, "Cai dat ban PC Huyen Thoai Bao Boi (sua trong game: F10)");
+            } finally {
+                w.close();
+            }
+            if (!tam.renameTo(f)) {
+                f.delete();
+                tam.renameTo(f);
+            }
+        } catch (Exception e) {
+            NhatKy.loi("ghi cai dat", e);
+        }
+    }
+
+    /** Âm lượng tổng -> lớp MMAPI. */
+    public static void apAmThanh() {
+        javax.microedition.media.Manager.mucNhac = tatTieng ? 0 : amNhac;
+        javax.microedition.media.Manager.mucHieuUng = tatTieng ? 0 : amHieuUng;
+        javax.microedition.media.Manager.apAmLuongTong();
+    }
+}

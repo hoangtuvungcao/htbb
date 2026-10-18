@@ -1,5 +1,5 @@
 /**
- * Các bảng log mà game server tự ghi trong kpah_db — cấu hình của trang Log game.
+ * Các bảng log mà game server tự ghi trong htbb_db — cấu hình của trang Log game.
  *
  * Tên bảng và tên cột ở đây đều là HẰNG SỐ viết sẵn, không bao giờ lấy từ người
  * dùng — nên ghép thẳng vào câu SQL là an toàn. Riêng giá trị lọc thì luôn đi
@@ -28,13 +28,13 @@ export const LOG_GAME_BANG: Readonly<Record<string, LogGameBang>> = Object.freez
       + 'Truy vì sao mất đồ: lọc Loại = matdo (nghiền, bán tự động, admin xoá, '
       + 'server xoá lúc nạp). Từ 02/09/2026 bảng CHỈ còn ghi các loại về mất đồ, gian lận '
       + 'và tài sản tăng bất thường - danh sách GIU ở src/data/LocLogVatPham.java.',
-    cot: { id: 'ID', charname: 'Nhân vật', aclog: 'Loại', info: 'Chi tiết', charname2: 'Liên quan', timelog: 'Lúc' },
+    cot: { id: 'ID', charname: 'Pokémon', aclog: 'Loại', info: 'Chi tiết', charname2: 'Liên quan', timelog: 'Lúc' },
     loc: 'charname', loc2: 'aclog', sap: 'id DESC',
   },
   tob_log_all_gem: {
     ten: 'Ngọc',
     mota: 'Khảm, gỡ, mua bán ngọc.',
-    cot: { id: 'ID', charname: 'Nhân vật', aclog: 'Loại', info: 'Chi tiết', charname2: 'Liên quan', timelog: 'Lúc' },
+    cot: { id: 'ID', charname: 'Pokémon', aclog: 'Loại', info: 'Chi tiết', charname2: 'Liên quan', timelog: 'Lúc' },
     loc: 'charname', loc2: 'aclog', sap: 'id DESC',
   },
   tob_log_buy_shop: {
@@ -42,13 +42,13 @@ export const LOG_GAME_BANG: Readonly<Record<string, LogGameBang>> = Object.freez
     mota: 'Giao dịch mua trong cửa hàng NPC. Từ 14/09/2026: những lần mua CÙNG món '
       + 'liên tiếp trong vòng 5 giây được gộp thành 1 dòng (xem cột Số lượng) — gói '
       + 'tin mua không mang số lượng nên mỗi lần bấm mua vốn dĩ là 1 gói tin riêng.',
-    cot: { id: 'ID', charname: 'Nhân vật', info: 'Món', soluong: 'Số lượng', price: 'Giá', money: 'Trả bằng', timeBuy: 'Lúc' },
+    cot: { id: 'ID', charname: 'Pokémon', info: 'Món', soluong: 'Số lượng', price: 'Giá', money: 'Trả bằng', timeBuy: 'Lúc' },
     loc: 'charname', loc2: null, sap: 'id DESC',
   },
   tob_log_buy_store: {
     ten: 'Ký gửi qua NPC (Giáp/Ngưu)',
-    mota: 'Người chơi ký gửi đồ/ngọc qua 10 NPC ký gửi trong thành (Nhất..Ngũ Giáp, '
-      + 'Nhất..Ngũ Ngưu), người khác tới mua. Bảng gốc tob_log_buy_store đã KHÔNG còn '
+    mota: 'Người chơi ký gửi đồ/ngọc qua 10 NPC ký gửi trong thành (Golem 1..Golem 5, '
+      + 'Tauros 1..Tauros 5), người khác tới mua. Bảng gốc tob_log_buy_store đã KHÔNG còn '
       + 'được server ghi từ lâu (chỉ còn dữ liệu cũ, nếu có) — mục này là view lọc sẵn '
       + 'Loại = sitemu trên bảng tob_log_all_item, nơi log thật đang ghi cả người bán '
       + 'VÀ người mua (xem src/data/Database.java saveLogSellItem()).',
@@ -60,7 +60,7 @@ export const LOG_GAME_BANG: Readonly<Record<string, LogGameBang>> = Object.freez
   tob_log_clan: {
     ten: 'Đội',
     mota: 'Vào / ra đội, đóng góp, thay đổi chức vụ.',
-    cot: { id: 'ID', charname: 'Nhân vật', actioninfo: 'Việc', info: 'Chi tiết', timeLog: 'Lúc' },
+    cot: { id: 'ID', charname: 'Pokémon', actioninfo: 'Việc', info: 'Chi tiết', timeLog: 'Lúc' },
     loc: 'charname', loc2: 'actioninfo', sap: 'id DESC',
   },
   tob_log_use_luong: {
@@ -71,8 +71,8 @@ export const LOG_GAME_BANG: Readonly<Record<string, LogGameBang>> = Object.freez
   },
   tob_nap_xai_luong: {
     ten: 'Nạp / xài lượng',
-    mota: 'Tổng đã nạp và đã tiêu của từng nhân vật (mỗi nhân vật một dòng).',
-    cot: { charname: 'Nhân vật', luongnap: 'Đã nạp', luongxai: 'Đã xài', tnap: 'Nạp lần cuối', txai: 'Xài lần cuối' },
+    mota: 'Tổng đã nạp và đã tiêu của từng Pokémon (mỗi Pokémon một dòng).',
+    cot: { charname: 'Pokémon', luongnap: 'Đã nạp', luongxai: 'Đã xài', tnap: 'Nạp lần cuối', txai: 'Xài lần cuối' },
     loc: 'charname', loc2: null, sap: 'luongnap DESC',
   },
   tob_log_xoso: {

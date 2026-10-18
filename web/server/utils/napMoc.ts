@@ -1,5 +1,5 @@
 /**
- * NẠP TIỀN THEO MỐC (bảng tob_nap_moc trong kpah_db, xem vps/db_new_server.sql PHẦN 2I).
+ * NẠP TIỀN THEO MỐC (bảng tob_nap_moc trong htbb_db, xem vps/db_new_server.sql PHẦN 2I).
  * Tạo / đọc đơn, và phần "xác nhận đã nhận tiền" mà webhook SePay, trang
  * /xac-nhan-nap (mật khẩu chung) và trang /admin/naptien (khu quản trị) cùng dùng.
  *
@@ -110,7 +110,7 @@ export function napMocMoTaDon(don: DonNapMoc, username: string | null): string {
 }
 
 // ---------------------------------------------------------------------------
-//  Trang /xac-nhan-nap (mật khẩu chung KPAH_ADMIN_NAPTIEN_PASSWORD)
+//  Trang /xac-nhan-nap (mật khẩu chung HTBB_ADMIN_NAPTIEN_PASSWORD)
 // ---------------------------------------------------------------------------
 
 /**

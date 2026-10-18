@@ -24,12 +24,15 @@ public final class ThangPvpGame {
         if (!LauDai.bat() || thang == null || thua == null || thang.charDBID == thua.charDBID) {
             return;
         }
+        if (!com.htbb.cauhinh.CongTac.pvpTinhDiem()) {
+            return; // cau hinh trung tam: pvp.tinh_diem.bat=0
+        }
         try {
             if (!ThangPvp.cungDai(thang.lvDetail.lv, thua.lvDetail.lv)) {
                 return;
             }
             final String k = Math.min(thang.charDBID, thua.charDBID) + "-" + Math.max(thang.charDBID, thua.charDBID);
-            final long bay = System.currentTimeMillis();
+            final long bay = com.htbb.pokemon.DongHo.bay();
             final Long cu = LAN_CUOI.get(k);
             if (cu != null && bay - cu.longValue() < CHAN_LAP_MS) {
                 return;

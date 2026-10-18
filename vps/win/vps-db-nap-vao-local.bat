@@ -7,7 +7,7 @@ REM ============================================================
 REM  Nap ban dump vua tai ve (vps-db-tai-ve.bat) vao MySQL local
 REM  cua XAMPP, de DB local giong het VPS.
 REM
-REM  GHI DE TOAN BO kpah_db va account tren may nay. Ban cu duoc
+REM  GHI DE TOAN BO htbb_db va account tren may nay. Ban cu duoc
 REM  sao luu truoc, khong hoi lai.
 REM
 REM  Lenh DROP DATABASE nam o day chu khong nam trong file dump:
@@ -34,11 +34,11 @@ if not exist "%MYSQL%" (
 REM ---- Tim ban dump moi nhat ----
 set "D_GAME="
 set "D_ACC="
-for /f "delims=" %%F in ('dir /b /o-d "%LUU%\vps_kpah_db_*.sql" 2^>nul') do if not defined D_GAME set "D_GAME=%LUU%\%%F"
+for /f "delims=" %%F in ('dir /b /o-d "%LUU%\vps_htbb_db_*.sql" 2^>nul') do if not defined D_GAME set "D_GAME=%LUU%\%%F"
 for /f "delims=" %%F in ('dir /b /o-d "%LUU%\vps_account_*.sql" 2^>nul') do if not defined D_ACC set "D_ACC=%LUU%\%%F"
 
 if not defined D_GAME (
-    echo [LOI] Khong thay file vps_kpah_db_*.sql trong %LUU%
+    echo [LOI] Khong thay file vps_htbb_db_*.sql trong %LUU%
     echo       Chay vps-db-tai-ve.bat truoc.
     pause
     exit /b 1
@@ -86,7 +86,7 @@ if "%RUNNING%"=="1" (
     echo   Neu no duoc bat khong co cua so ^(khong bam "Bao Tri" duoc^) thi tat tay:
     echo         netstat -ano ^| findstr ":19129"     ^(xem PID o cot cuoi^)
     echo         taskkill /PID ^<so_PID^> /F
-    echo   - chap nhan mat phan chua ghi. Rieng lan nay it quan trong, vi kpah_db
+    echo   - chap nhan mat phan chua ghi. Rieng lan nay it quan trong, vi htbb_db
     echo   sap bi thay het bang ban cua VPS.
     echo.
     echo   Dang cho... ^(Ctrl+C o day de huy^)
@@ -135,9 +135,9 @@ for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-
 echo.
 echo [1/3] Sao luu DB local hien tai truoc khi ghi de...
 if not exist "%LUU%" mkdir "%LUU%"
-"%MYSQLDUMP%" -u root --skip-password --single-transaction --quick --default-character-set=utf8mb4 --routines --events --databases kpah_db > "%LUU%\truoc_khi_nap_kpah_db_%TS%.sql"
+"%MYSQLDUMP%" -u root --skip-password --single-transaction --quick --default-character-set=utf8mb4 --routines --events --databases htbb_db > "%LUU%\truoc_khi_nap_htbb_db_%TS%.sql"
 if errorlevel 1 (
-    echo [LOI] Sao luu kpah_db that bai -^> KHONG nap gi ca.
+    echo [LOI] Sao luu htbb_db that bai -^> KHONG nap gi ca.
     pause
     exit /b 1
 )
@@ -154,7 +154,7 @@ echo [2/3] Xoa DB local roi nap ban cua VPS...
 REM Phai xoa han DB: neu chi nap de len thi bang nao local CO ma VPS KHONG co
 REM se con lai, thanh ra hai ben van khong giong nhau. Ban dump co san dong
 REM CREATE DATABASE ^(nho --databases^) nen bang ma se dung y het VPS.
-echo DROP DATABASE IF EXISTS kpah_db; DROP DATABASE IF EXISTS account; | "%MYSQL%" -u root --skip-password -h 127.0.0.1
+echo DROP DATABASE IF EXISTS htbb_db; DROP DATABASE IF EXISTS account; | "%MYSQL%" -u root --skip-password -h 127.0.0.1
 if errorlevel 1 (
     echo [LOI] Khong xoa duoc DB local. Ban cu van con nguyen.
     pause
@@ -164,8 +164,8 @@ if errorlevel 1 (
 "%MYSQL%" -u root --skip-password -h 127.0.0.1 --default-character-set=utf8mb4 < "%D_GAME%"
 if errorlevel 1 (
     echo.
-    echo [LOI] Nap kpah_db that bai. DB dang do dang!
-    echo       Khoi phuc: "%MYSQL%" -u root --skip-password ^< "%LUU%\truoc_khi_nap_kpah_db_%TS%.sql"
+    echo [LOI] Nap htbb_db that bai. DB dang do dang!
+    echo       Khoi phuc: "%MYSQL%" -u root --skip-password ^< "%LUU%\truoc_khi_nap_htbb_db_%TS%.sql"
     pause
     exit /b 1
 )
@@ -180,7 +180,7 @@ if errorlevel 1 (
 
 echo.
 echo [3/3] Kiem tra sau khi nap...
-echo SELECT table_schema AS db, COUNT(*) AS so_bang FROM information_schema.tables WHERE table_schema IN ('kpah_db','account') GROUP BY table_schema; SELECT COUNT(*) AS so_nhan_vat FROM kpah_db.tob_char; SELECT COUNT(*) AS so_tai_khoan FROM account.team_user; | "%MYSQL%" -u root --skip-password -h 127.0.0.1 --default-character-set=utf8mb4 -t
+echo SELECT table_schema AS db, COUNT(*) AS so_bang FROM information_schema.tables WHERE table_schema IN ('htbb_db','account') GROUP BY table_schema; SELECT COUNT(*) AS so_nhan_vat FROM htbb_db.tob_char; SELECT COUNT(*) AS so_tai_khoan FROM account.team_user; | "%MYSQL%" -u root --skip-password -h 127.0.0.1 --default-character-set=utf8mb4 -t
 
 echo.
 echo ============================================================

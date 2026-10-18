@@ -17,17 +17,19 @@ import java.util.regex.Pattern;
  *    nguyen, an toan bam lai (moi buoc idempotent).
  * 2. Nhan vat dang online phai duoc kickPlayer() TRUOC khi xoa - tranh mot phien dang
  *    choi song song voi dong du lieu vua bi xoa that.
- * 3. Ca hai giao dien (nhanvat.php xoa nhan vat rieng, taikhoan.php xoa ca tai khoan) deu
+ * 3. Ca hai giao dien (HTBB-Web: API nhanvat/[id]/xoa xoa nhan vat rieng, taikhoan/[id] xoa ca tai khoan) deu
  *    phai: (a) chan tai khoan quan tri, (b) bat go dung ten de xac nhan O SERVER (khong
  *    chi dua vao JS disable nut), vi day la thao tac khong hoan tac duoc.
  */
 public final class KiemXoaVinhVien {
 
     private static final String F_LENHWEB = "src/data/LenhWeb.java";
-    private static final String F_LENHPHP = "web/admin/inc/lenh_nhan_vat.php";
-    private static final String F_NHANVAT = "web/admin/nhanvat.php";
-    private static final String F_TAIKHOAN = "web/admin/taikhoan.php";
-    private static final String F_SQL = "sql/gamedb7_clean.sql";
+    /** HTBB-Web (thay website PHP da bo - docs/pokemon/BO_WEB_PHP.md). */
+    private static final String F_LENH_TS = "server/utils/lenhNhanVat.ts";
+    private static final String F_NHANVAT = "server/api/admin/nhanvat/[id]/xoa.post.ts";
+    private static final String F_TAIKHOAN = "server/api/admin/taikhoan/[id].post.ts";
+    private static final String F_TK_UTIL = "server/utils/taiKhoanAdmin.ts";
+    private static final String F_SQL = "../sql/gamedb7_clean.sql";
 
     /** {ten bang, cot dung de khoa theo nhan vat} - dung THEO DUNG THU TU LenhWeb da xoa. */
     private static final String[][] BANG_CON_THEO_THU_TU = {
@@ -57,19 +59,13 @@ public final class KiemXoaVinhVien {
     };
 
     public static void chay() {
-        Kiem.nhom("Xoa vinh vien tai khoan/nhan vat (LenhWeb + nhanvat.php/taikhoan.php)");
+        Kiem.nhom("Xoa vinh vien tai khoan/nhan vat (LenhWeb + HTBB-Web nhanvat/taikhoan)");
 
         final String lenhWeb = doc(F_LENHWEB);
-        final String lenhPhp = doc(F_LENHPHP);
-        final String nhanvat = doc(F_NHANVAT);
-        final String taikhoan = doc(F_TAIKHOAN);
         final String sql = doc(F_SQL);
         Kiem.dung("doc duoc " + F_LENHWEB, !lenhWeb.isEmpty());
-        Kiem.dung("doc duoc " + F_LENHPHP, !lenhPhp.isEmpty());
-        Kiem.dung("doc duoc " + F_NHANVAT, !nhanvat.isEmpty());
-        Kiem.dung("doc duoc " + F_TAIKHOAN, !taikhoan.isEmpty());
         Kiem.dung("doc duoc " + F_SQL, !sql.isEmpty());
-        if (lenhWeb.isEmpty() || lenhPhp.isEmpty() || nhanvat.isEmpty() || taikhoan.isEmpty() || sql.isEmpty()) {
+        if (lenhWeb.isEmpty() || sql.isEmpty()) {
             return;
         }
 
@@ -137,46 +133,58 @@ public final class KiemXoaVinhVien {
                 Pattern.compile("LOAI_XOA_NHAN_VAT\\.equals\\(loai\\)\\)\\s*\\{\\s*return xuLyXoaNhanVat\\(")
                         .matcher(lenhWeb).find());
 
-        // ---- 5. PHP: hai giao dien deu chan tai khoan quan tri VA bat go dung ten xac
-        // nhan tren SERVER (khong chi dua vao JS). ----
-        Kiem.dung("inc/lenh_nhan_vat.php: co ham guiLenhXoaNhanVat",
-                lenhPhp.contains("function guiLenhXoaNhanVat("));
-
-        final int mocXoaNVPhp = nhanvat.indexOf("if ($viec === 'xoa_nhan_vat') {");
-        Kiem.dung("nhanvat.php: co nhanh xu ly 'xoa_nhan_vat'", mocXoaNVPhp > 0);
-        if (mocXoaNVPhp > 0) {
-            final int mocKet = nhanvat.indexOf("if ($viec !== 'khoa'", mocXoaNVPhp);
-            final String than = nhanvat.substring(mocXoaNVPhp, mocKet > mocXoaNVPhp ? mocKet : nhanvat.length());
-            Kiem.dung("nhanvat.php xoa_nhan_vat: chan tai khoan quan tri (laTaiKhoanAdmin)",
-                    than.contains("laTaiKhoanAdmin($chu)"));
-            Kiem.dung("nhanvat.php xoa_nhan_vat: kiem tra go dung ten tren SERVER (p('xac_nhan_ten') !== $ten)",
-                    than.contains("p('xac_nhan_ten') !== $ten"));
-            Kiem.dung("nhanvat.php xoa_nhan_vat: goi guiLenhXoaNhanVat (di qua hang doi, khong DELETE thang tu PHP)",
-                    than.contains("guiLenhXoaNhanVat(dbGame(), $id, $ten, adminName())"));
+        // ---- 5. Web (HTBB-Web; truoc la nhanvat.php/taikhoan.php cua website PHP da bo): hai
+        // giao dien deu chan tai khoan quan tri VA bat go dung ten xac nhan tren SERVER (khong
+        // chi dua vao JS). ----
+        if (WebHtbb.boQua("xoa vinh vien phia web (HTBB-Web)")) {
+            return;
         }
+        final String lenhTs = WebHtbb.doc(F_LENH_TS);
+        final String nhanvat = WebHtbb.doc(F_NHANVAT);
+        final String taikhoan = WebHtbb.doc(F_TAIKHOAN);
+        final String tkUtil = WebHtbb.doc(F_TK_UTIL);
+        Kiem.dung("doc duoc " + WebHtbb.ten(F_LENH_TS), !lenhTs.isEmpty());
+        Kiem.dung("doc duoc " + WebHtbb.ten(F_NHANVAT), !nhanvat.isEmpty());
+        Kiem.dung("doc duoc " + WebHtbb.ten(F_TAIKHOAN), !taikhoan.isEmpty());
+        Kiem.dung("doc duoc " + WebHtbb.ten(F_TK_UTIL), !tkUtil.isEmpty());
 
-        final int mocXoaTKPhp = taikhoan.indexOf("case 'xoa_tai_khoan':");
-        Kiem.dung("taikhoan.php: co nhanh xu ly 'xoa_tai_khoan'", mocXoaTKPhp > 0);
-        if (mocXoaTKPhp > 0) {
-            final int mocKet = taikhoan.indexOf("default:", mocXoaTKPhp);
-            final String than = taikhoan.substring(mocXoaTKPhp, mocKet > mocXoaTKPhp ? mocKet : taikhoan.length());
-            Kiem.dung("taikhoan.php xoa_tai_khoan: chan tai khoan quan tri ($laAdmin)",
-                    than.contains("if ($laAdmin) {"));
-            Kiem.dung("taikhoan.php xoa_tai_khoan: kiem tra go dung ten tren SERVER (p('xac_nhan_ten') !== $ten)",
-                    than.contains("p('xac_nhan_ten') !== $ten"));
-            Kiem.dung("taikhoan.php xoa_tai_khoan: xoa TUNG nhan vat qua hang doi TRUOC khi dung toi team_user",
-                    than.indexOf("guiLenhXoaNhanVat(") < than.indexOf("DELETE FROM team_user"));
-            Kiem.dung("taikhoan.php xoa_tai_khoan: chi xoa team_user khi KHONG con nhan vat nao (soConLai > 0 thi dung)",
-                    than.contains("if ($soConLai > 0) {"));
+        Kiem.dung("lenhNhanVat.ts: co ham guiLenhXoaNhanVat",
+                lenhTs.contains("export async function guiLenhXoaNhanVat("));
+
+        Kiem.dung("API xoa nhan vat: chan tai khoan quan tri (ncLaQuanTri)",
+                nhanvat.contains("if (chu !== '' && await ncLaQuanTri(chu))"));
+        Kiem.dung("API xoa nhan vat: kiem tra go dung ten tren SERVER (xac_nhan_ten !== ten)",
+                nhanvat.contains("if (str(body?.xac_nhan_ten) !== ten)"));
+        Kiem.dung("API xoa nhan vat: goi guiLenhXoaNhanVat (di qua hang doi, khong DELETE thang tu web)",
+                nhanvat.contains("guiLenhXoaNhanVat(dbGame(), id, ten, admin.username)"));
+
+        final int mocXoaTK = taikhoan.indexOf("case 'xoa_tai_khoan': {");
+        Kiem.dung("API tai khoan: co nhanh xu ly 'xoa_tai_khoan'", mocXoaTK > 0);
+        if (mocXoaTK > 0) {
+            final int mocKet = taikhoan.indexOf("case '", mocXoaTK + 10);
+            final String than = taikhoan.substring(mocXoaTK, mocKet > mocXoaTK ? mocKet : taikhoan.length());
+            Kiem.dung("xoa_tai_khoan: chan tai khoan quan tri (laAdmin)", than.contains("if (laAdmin) {"));
+            Kiem.dung("xoa_tai_khoan: kiem tra go dung ten tren SERVER (xac_nhan_ten !== ten)",
+                    than.contains("if (str(body?.xac_nhan_ten) !== ten)"));
+            Kiem.dung("xoa_tai_khoan: xoa TUNG nhan vat qua hang doi TRUOC khi dung toi team_user",
+                    than.indexOf("tkXoaHetNhanVat(") >= 0
+                    && than.indexOf("tkXoaHetNhanVat(") < than.indexOf("DELETE FROM team_user"));
+            Kiem.dung("xoa_tai_khoan: chi xoa team_user khi KHONG con nhan vat nao (soConLai > 0 thi dung)",
+                    than.contains("if (kq.soConLai > 0) {")
+                    && than.indexOf("if (kq.soConLai > 0) {") < than.indexOf("DELETE FROM team_user"));
         }
+        Kiem.dung("tkXoaHetNhanVat gui lenh xoa_nhan_vat qua web_lenh_nhan_vat cho TUNG nhan vat",
+                tkUtil.contains("TK_LENH_LOAI_XOA_NHAN_VAT = 'xoa_nhan_vat'")
+                && tkUtil.contains("'INSERT INTO web_lenh_nhan_vat (loai, char_id, charname, admin_user) VALUES (?, ?, ?, ?)'")
+                && tkUtil.contains("const idLenh = await tkGuiLenhXoaNhanVat(dbGame(), Number(nv.id)"));
 
-        // ---- 6. Khong ai (PHP) DELETE thang tu tob_char nua ngoai qua hang doi - tranh
+        // ---- 6. Khong ai (web) DELETE thang tu tob_char nua ngoai qua hang doi - tranh
         // lap lai dung sai cu (ghi thang RAM cua nhan vat dang online) da bi cam voi
         // dat_cap_do/xoa_vat_pham truoc day. ----
-        Kiem.sai("nhanvat.php: KHONG co cau \"DELETE FROM tob_char\" ghi thang (phai di qua LenhWeb)",
-                nhanvat.contains("DELETE FROM tob_char"));
-        Kiem.sai("taikhoan.php: KHONG co cau \"DELETE FROM tob_char\" ghi thang (phai di qua LenhWeb)",
-                taikhoan.contains("DELETE FROM tob_char"));
+        for (final String[] f : new String[][]{{F_NHANVAT, nhanvat}, {F_TAIKHOAN, taikhoan}, {F_TK_UTIL, tkUtil}, {F_LENH_TS, lenhTs}}) {
+            Kiem.sai(f[0] + ": KHONG co cau \"DELETE FROM tob_char\" ghi thang (phai di qua LenhWeb)",
+                    Pattern.compile("DELETE\\s+FROM\\s+`?tob_char`?\\b", Pattern.CASE_INSENSITIVE).matcher(f[1]).find());
+        }
     }
 
     private static String doc(final String duong) {

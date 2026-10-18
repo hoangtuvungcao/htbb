@@ -18,11 +18,11 @@ import java.util.Set;
  * (Client/Canvas.cs:157).
  *
  * Truoc day no chi duoc gui kem goi DANG KY (lenh 39), va real.RequestRegisterHandler
- * trong lib/NQSH_5h.jar la noi duy nhat dien io.Session.IMEI. Nhung dang ky da chuyen
- * han sang web, va duong lenh 39 da bi dong (real.cmd.DangKyDaChuyenSangWeb) vi no tao
- * tai khoan o trang thai chua dang nhap, vong qua han muc chong spam cua web.
+ * trong lib/htbb-core.jar la noi duy nhat dien io.Session.IMEI. Handler cu do da bo han.
+ * Lenh 39 nay la real.cmd.DangKyTrongGame: no doc ma may trong goi dang ky CHI de dem han
+ * muc va chan may bi cam (biCam) - KHONG dien io.Session.IMEI.
  *
- * NGHIA LA: ma may gio CHI den tu goi DANG NHAP. Server da doc san (LoginHandler), con
+ * NGHIA LA: io.Session.IMEI van CHI den tu goi DANG NHAP. Server da doc san (LoginHandler), con
  * CLIENT thi chua gui — phai them mot dong vao cuoi goi dang nhap roi build lai:
  *     message.writer().writeUTF(Canvas.IMEI);
  * Chua lam buoc do thi bang tob_may_dang_nhap se rong, va moi thu van chay binh thuong.
@@ -183,7 +183,7 @@ public final class CamTheoMay {
         }
         daBaoLoi = true;
         System.out.println("CAM THEO MAY: " + ex
-                + " (chay 'mysql -u root kpah_db < sql/them_bang_cam_may.sql' neu chua tao bang;"
+                + " (chay 'mysql -u root htbb_db < sql/them_bang_cam_may.sql' neu chua tao bang;"
                 + " se khong bao lai cho den khi chay duoc)");
     }
 

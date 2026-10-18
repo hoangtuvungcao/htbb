@@ -6,10 +6,10 @@
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Hướng dẫn tân thủ',
-  description: `Bắt đầu ${tenSite} từng bước: tải & cài game (Android, PC, Java), tạo tài khoản, chọn Pokémon khởi đầu, điều khiển, giao diện và 30 phút đầu tiên.`,
+  description: `Bắt đầu ${tenSite} từng bước: tải & cài game (Android, PC, Java, iOS sắp ra mắt), tạo tài khoản, chọn Pokémon khởi đầu, điều khiển, giao diện và 30 phút đầu tiên.`,
 })
 const { data: site } = await useSite()
-const hoTro = computed(() => linkHoTro(site.value))
+const hoTro = useHoTro().link
 
 const muc = [
   { id: 'tai-game', ten: 'Tải & cài đặt' },
@@ -21,20 +21,8 @@ const muc = [
   { id: 'tiep-theo', ten: 'Tiếp theo làm gì?' },
 ]
 
-const NEN_TANG = [
-  {
-    ten: 'Android (APK)', icon: 'i-lucide-smartphone',
-    buoc: ['Mở trang Tải game trên điện thoại, bấm tải bản Android.', 'Khi được hỏi, cho phép "Cài ứng dụng không rõ nguồn" cho trình duyệt.', 'Mở file .apk vừa tải và bấm Cài đặt.', `Mở ${tenSite}, chọn máy chủ và đăng nhập.`],
-  },
-  {
-    ten: 'PC / Windows', icon: 'i-lucide-monitor',
-    buoc: ['Tải bản PC (file nén .zip).', 'Giải nén ra một thư mục (không chạy trực tiếp trong file nén).', 'Chạy file .exe trong thư mục. Nếu Windows SmartScreen cảnh báo: "Thông tin thêm" → "Vẫn chạy".', 'Chọn máy chủ, đăng nhập và chơi bằng bàn phím.'],
-  },
-  {
-    ten: 'Java (.jar)', icon: 'i-lucide-cpu',
-    buoc: ['Dành cho điện thoại hỗ trợ Java (J2ME) hoặc giả lập (J2ME Loader trên Android).', 'Tải file .jar (bản thường) hoặc bản nhẹ cho máy yếu.', 'Mở file .jar bằng điện thoại/giả lập để cài.', 'Đăng nhập bằng cùng tài khoản như các bản khác.'],
-  },
-]
+// Nền tảng + bước cài: danh mục chung (shared/utils/taiGame.ts qua useBanTai) — admin bật iOS là thẻ đổi theo.
+const { ds: NEN_TANG } = useBanTai()
 
 // Khởi đầu
 const MO_KD: Record<number, { vai: string, mo: string }> = {
@@ -66,7 +54,16 @@ const meo = POKEDEX.huongDanGame.filter(t => !/^Phím/.test(t))
 const N = CAM_NANG.nhiemVu
 const hd = N.huongDan
 const cung1 = N.cung[0]
-const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.tienHoa?.buoc[1]?.dieuKien).filter(Boolean).map(s => Number(String(s).match(/\d+/)?.[0] ?? 99)))
+/** Lần tiến hoá đầu của từng dòng, gom theo cấp: "Pichu cấp 10, Charmander/Bulbasaur/Squirtle cấp 16". */
+const tienHoaDau = (() => {
+  const theoCap = new Map<number, string[]>()
+  for (const k of POKEDEX.khoiDau) {
+    const l = loaiTheoDex(k.dex)
+    const cap = Number(String(l?.tienHoa?.buoc[1]?.dieuKien ?? '').match(/\d+/)?.[0] ?? 0)
+    if (l && cap) theoCap.set(cap, [...(theoCap.get(cap) ?? []), l.ten])
+  }
+  return [...theoCap.entries()].sort((a, b) => a[0] - b[0]).map(([cap, ten]) => `${ten.join('/')} cấp ${cap}`).join(', ')
+})()
 </script>
 
 <template>
@@ -86,7 +83,7 @@ const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.t
           <ol class="mt-3 flex flex-wrap gap-2 lg:flex-col lg:gap-1">
             <li v-for="(m, i) in muc" :key="m.id">
               <a :href="`#${m.id}`" class="flex items-center gap-2 rounded-full px-3 py-1.5 font-display text-sm font-semibold text-muted ring-1 ring-default hover:bg-elevated hover:text-primary lg:ring-0">
-                <span class="grid size-5 place-items-center rounded-full bg-pokered-500 font-pixel text-[8px] text-white">{{ i + 1 }}</span> {{ m.ten }}
+                <span class="grid size-5 place-items-center rounded-full bg-pokered-600 font-pixel text-[8px] text-white">{{ i + 1 }}</span> {{ m.ten }}
               </a>
             </li>
           </ol>
@@ -97,12 +94,17 @@ const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.t
 
         <div class="wiki min-w-0">
           <WikiSection id="tai-game" title="1. Tải & cài đặt" lead="Chọn bản phù hợp thiết bị. Mọi bản dùng chung một tài khoản và một thế giới.">
-            <div class="grid gap-4 md:grid-cols-3">
-              <div v-for="n in NEN_TANG" :key="n.ten" class="rounded-3xl glass p-5">
-                <p class="flex items-center gap-2 font-display text-lg font-extrabold text-highlighted">
+            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div v-for="n in NEN_TANG" :key="n.ma" class="rounded-3xl glass p-5">
+                <p class="flex flex-wrap items-center gap-2 font-display text-lg font-extrabold text-highlighted">
                   <span class="grid size-9 place-items-center rounded-xl bg-pikachu-400 text-navy-950"><UIcon :name="n.icon" class="size-5" /></span>{{ n.ten }}
+                  <UBadge v-if="n.sapRaMat" color="warning" variant="subtle" size="sm">Sắp ra mắt</UBadge>
                 </p>
-                <ol class="mt-3 space-y-2 text-sm text-toned">
+                <p v-if="n.heDieuHanh" class="mt-1 text-xs text-muted">Cần: {{ n.heDieuHanh }}</p>
+                <p v-if="n.sapRaMat && !n.buoc.length" class="mt-3 text-sm text-toned">
+                  Bản {{ n.ten }} đang được chuẩn bị. Khi phát hành, hướng dẫn cài (TestFlight / App Store) sẽ hiện ở đây và trên trang Tải game.
+                </p>
+                <ol v-else class="mt-3 space-y-2 text-sm text-toned">
                   <li v-for="(b, i) in n.buoc" :key="i" class="flex gap-2">
                     <span class="font-bold text-primary">{{ i + 1 }}.</span><span>{{ b }}</span>
                   </li>
@@ -191,14 +193,12 @@ const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.t
           <WikiSection id="30-phut" title="6. 30 phút đầu tiên" :lead="`Chuỗi hướng dẫn ${hd.length} bước dẫn bạn đi khắp Pallet — làm xong bạn sẽ ở khoảng cấp 8, đủ hiểu mọi thứ cơ bản.`">
             <ol class="relative space-y-3 border-l-2 border-dashed border-[var(--ui-border)] pl-6">
               <li v-for="(q, i) in hd" :key="i" class="relative">
-                <span class="absolute -left-[35px] grid size-7 place-items-center rounded-full border-2 border-white bg-pokered-500 font-pixel text-[9px] text-white shadow">{{ i + 1 }}</span>
+                <span class="absolute -left-[35px] grid size-7 place-items-center rounded-full border-2 border-white bg-pokered-600 font-pixel text-[9px] text-white shadow">{{ i + 1 }}</span>
                 <p class="font-display font-bold text-highlighted">
                   {{ q.ten }}
                 </p>
                 <p class="text-sm text-muted">
-                  Gặp {{ q.npc }} ở {{ q.diaDanh }}<template v-if="q.mucTieu">
-                    · hạ {{ q.soLuong }} {{ q.mucTieu }}
-                  </template>
+                  {{ q.yeuCau || `Gặp ${q.npc} ở ${q.diaDanh}` }}
                 </p>
               </li>
               <li class="relative">
@@ -207,7 +207,7 @@ const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.t
                   Bắt đầu chính tuyến: {{ cung1?.ten }}
                 </p>
                 <p class="text-sm text-muted">
-                  Tiếp tục cốt truyện ở {{ cung1?.chuong[0]?.diaDanh }}; lần tiến hoá đầu tiên đến ở cấp {{ capTienHoaDau }} (Pichu) hoặc 16 (các dòng khác).
+                  Tiếp tục cốt truyện ở {{ cung1?.chuong[0]?.diaDanh }}; lần tiến hoá đầu tiên: {{ tienHoaDau }}; Eevee chọn nhánh bằng đá tiến hoá từ cấp {{ POKEDEX.capNhanhEevee }}.
                 </p>
               </li>
             </ol>
@@ -226,8 +226,8 @@ const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.t
                 { to: '/cam-nang/he-khac-che', icon: 'i-lucide-flame', t: 'Học khắc hệ', m: 'Đánh đúng hệ = nhanh gấp đôi.' },
                 { to: '/cam-nang/nhiem-vu', icon: 'i-lucide-scroll-text', t: 'Theo chính tuyến', m: 'EXP và xu đều đặn mỗi tuần.' },
                 { to: '/cam-nang/ban-do#luyen-cap', icon: 'i-lucide-map', t: 'Tìm khu luyện cấp', m: 'Quái gần cấp bạn nhất.' },
-                { to: '/cam-nang/trang-bi', icon: 'i-lucide-shield', t: 'Nâng trang bị', m: 'Từ cấp 10 nâng cấp được.' },
-                { to: '/cam-nang/doi-su-pham', icon: 'i-lucide-users', t: 'Tìm đội & sư phụ', m: 'Trò được +20% EXP.' },
+                { to: '/cam-nang/trang-bi', icon: 'i-lucide-shield', t: 'Nâng trang bị', m: 'Nâng cấp ở Machamp bằng đá nâng cấp và xu.' },
+                { to: '/cam-nang/doi-su-pham', icon: 'i-lucide-users', t: 'Tìm đội & thầy', m: 'Trò được +20% EXP.' },
                 { to: '/cam-nang/su-kien', icon: 'i-lucide-calendar-days', t: 'Xem sự kiện tuần này', m: 'Mỗi tuần một sự kiện.' },
               ]" :key="x.to">
                 <NuxtLink :to="x.to" class="group flex h-full gap-3 rounded-2xl glass p-4 transition hover:-translate-y-0.5">
@@ -237,7 +237,7 @@ const capTienHoaDau = Math.min(...POKEDEX.khoiDau.map(k => loaiTheoDex(k.dex)?.t
               </li>
             </ul>
             <p class="mt-6 text-sm text-muted">
-              Gặp khó khăn? Hỏi trong <ULink :to="hoTro" class="lien-ket">nhóm hỗ trợ</ULink> hoặc đọc <NuxtLink to="/cam-nang/faq" class="lien-ket">câu hỏi thường gặp</NuxtLink>.
+              Gặp khó khăn? Hỏi trong <ULink :to="hoTro" :target="hoTro.startsWith('https://') ? '_blank' : undefined" class="lien-ket">nhóm hỗ trợ</ULink> hoặc đọc <NuxtLink to="/cam-nang/faq" class="lien-ket">câu hỏi thường gặp</NuxtLink>.
             </p>
           </WikiSection>
         </div>

@@ -5,21 +5,21 @@
  *   node scripts/dev-token.mjs admin admin 1     # token admin cho tài khoản "admin" id 1
  *   node scripts/dev-token.mjs user hoahv 3      # token người chơi
  *
- * Đọc KPAH_SECRET từ .env. Thuật toán giống hệt server/utils/token.ts.
- * Không chạy được nếu không có KPAH_SECRET — tránh vô tình dùng trên máy thật.
+ * Đọc HTBB_SECRET từ .env. Thuật toán giống hệt server/utils/token.ts.
+ * Không chạy được nếu không có HTBB_SECRET — tránh vô tình dùng trên máy thật.
  */
 import { createHmac } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 
-let secret = process.env.KPAH_SECRET
+let secret = (process.env.HTBB_SECRET ?? process.env.KPAH_SECRET) // TUONG-THICH-TEN-CU
 if (!secret) {
   try {
-    const m = readFileSync(new URL('../.env', import.meta.url), 'utf8').match(/^KPAH_SECRET=(.+)$/m)
+    const m = readFileSync(new URL('../.env', import.meta.url), 'utf8').match(/^HTBB_SECRET=(.+)$/m)
     secret = m?.[1]?.trim()
   } catch { /* không có .env */ }
 }
 if (!secret) {
-  console.error('Thiếu KPAH_SECRET (đặt trong .env).')
+  console.error('Thiếu HTBB_SECRET (đặt trong .env).')
   process.exit(1)
 }
 const [k = 'admin', u = 'admin', id = '1', han = '3600'] = process.argv.slice(2)

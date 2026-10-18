@@ -1,8 +1,8 @@
 {
- "tong": 1864,
+ "tong": 1960,
  "theo_loai": {
   "huong_dan": 10,
-  "chinh": 486,
+  "chinh": 582,
   "phu": 413,
   "ngay": 233,
   "tuan": 103,
@@ -48,7 +48,7 @@
     "Truy dấu kẻ trộm",
     "Kecleon thấy gì?",
     "Phục kích ở bụi cỏ cao",
-    "Ảo ảnh của Lém",
+    "Lém hoá trang",
     "Lời nói với Persian"
    ],
    "huy_hieu": ""
@@ -80,9 +80,9 @@
    "cap": 8,
    "tom_tat": "Blaziken mở trại huấn luyện trong Rừng Viridian. Rừng đang có điều bất thường.",
    "buoc": [
-    "Trại huấn luyện trong rừng",
+    "Trại luyện trong rừng",
     "Bài một: đánh đúng sức",
-    "Bài hai: mặc đồ cho đàng hoàng",
+    "Bài hai: mặc đồ đàng hoàng",
     "Sâu trong rừng",
     "Đầu đàn của khu rừng",
     "Lông vũ tím rải rác",
@@ -115,14 +115,14 @@
    "cung": "Đá xám Pewter",
    "dia_danh": "Pewter",
    "cap": 12,
-   "tom_tat": "Machamp rèn đồ cho bạn trước trận Gym đầu tiên với Thủ lĩnh Golem.",
+   "tom_tat": "Machamp rèn đồ cho bạn trước trận Gym đầu tiên với trưởng Gym Golem.",
    "buoc": [
     "Xưởng chế tạo Pewter",
     "Món đồ tự tay làm",
     "Rèn thêm hai lần búa",
     "Tập đánh với đá",
     "Lời dặn của Blaziken",
-    "Thách đấu Gym: Huy hiệu Đá"
+    "Giành Huy hiệu Đá"
    ],
    "huy_hieu": "Huy hiệu Đá (Pewter)"
   },
@@ -193,9 +193,9 @@
     "Lá thư chưa gửi",
     "Thư gửi Lapras",
     "Lời hồi âm",
-    "Luyện tập bên bờ nước",
+    "Luyện tập bên bờ ao",
     "Dòng nước dữ",
-    "Thách đấu Gym: Huy hiệu Thác"
+    "Giành Huy hiệu Thác"
    ],
    "huy_hieu": "Huy hiệu Thác (Cerulean)"
   },
@@ -224,14 +224,14 @@
    "cung": "Dòng nước Cerulean",
    "dia_danh": "Vermilion",
    "cap": 23,
-   "tom_tat": "Sấm sét đánh liên hồi bên bờ biển. Luxray, Thủ lĩnh Gym Vermilion, đang mất kiểm soát.",
+   "tom_tat": "Sấm sét đánh liên hồi bên bờ biển. Luxray, trưởng Gym Vermilion, đang mất kiểm soát.",
    "buoc": [
     "Tiếng sấm bên bờ biển",
     "Ngọn hải đăng nhỏ",
     "Bão điện",
     "Phá lồng sắt",
     "Luxray bình tĩnh lại",
-    "Thách đấu Gym: Huy hiệu Sấm"
+    "Giành Huy hiệu Sấm"
    ],
    "huy_hieu": "Huy hiệu Sấm (Vermilion)"
   },
@@ -245,9 +245,9 @@
    "tom_tat": "Muốn lên tàu S.S. Anne phải có vé. Meowth có vé, nhưng không cho không.",
    "buoc": [
     "Tấm vé vàng",
-    "Việc thứ nhất: dọn đường hàng",
-    "Việc thứ hai: ngọc trai",
-    "Việc thứ ba: thư mời",
+    "Việc một: dọn đường hàng",
+    "Việc hai: ngọc trai",
+    "Việc ba: thư mời",
     "Nhận vé",
     "Lên tàu"
    ],
@@ -350,7 +350,7 @@
    "cung": "Sương mù Lavender",
    "dia_danh": "Celadon",
    "cap": 33,
-   "tom_tat": "Khu thương mại Celadon, nơi Đoàn Mặt Nạ Tím mở một cửa hàng ngụy trang.",
+   "tom_tat": "Khu thương mại Celadon, nơi Đoàn Mặt Nạ Tím mở một cửa hàng nguỵ trang.",
    "buoc": [
     "Khu thương mại sầm uất",
     "Cửa hàng lạ",
@@ -376,7 +376,7 @@
     "Rễ cây bị nhiễm",
     "Mảnh sao bị nhuốm",
     "Hương thơm cho trận đấu",
-    "Thách đấu Gym: Huy hiệu Cầu Vồng"
+    "Giành Huy hiệu Cầu Vồng"
    ],
    "huy_hieu": "Huy hiệu Cầu Vồng (Celadon)"
   },
@@ -394,7 +394,7 @@
     "Dọn vòng ngoài",
     "Vượt tường sương",
     "Thành phố ngủ say",
-    "Lối vào Tòa nhà Silph"
+    "Lối vào Toà nhà Silph"
    ],
    "huy_hieu": ""
   },
@@ -405,15 +405,15 @@
    "cung": "Saffron và Vùng Safari",
    "dia_danh": "Saffron",
    "cap": 38,
-   "tom_tat": "Bên trong Tòa nhà Silph, Đoàn Mặt Nạ Tím đặt máy khuếch đại ác mộng.",
+   "tom_tat": "Bên trong Toà nhà Silph, Đoàn Mặt Nạ Tím đặt máy khuếch đại ác mộng.",
    "buoc": [
-    "Tòa nhà Silph",
+    "Toà nhà Silph",
     "Mật mã thang máy",
     "Các tầng bị chiếm",
     "Murkrow lần thứ ba",
     "Tắt cỗ máy",
     "Thành phố thức dậy",
-    "Thách đấu Gym: Huy hiệu Đầm Lầy"
+    "Giành Huy hiệu Đầm Lầy"
    ],
    "huy_hieu": "Huy hiệu Đầm Lầy (Saffron)"
   },
@@ -428,8 +428,8 @@
    "buoc": [
     "Cổng Vùng Safari",
     "Vào Safari",
-    "Ảnh bình minh",
-    "Ảnh trong mưa",
+    "Chụp ảnh bình minh",
+    "Chụp ảnh trong mưa",
     "Đàn Tauros hoảng loạn",
     "Rửa ảnh"
    ],
@@ -449,7 +449,7 @@
     "Đèn lồng soi tường giả",
     "Lối đi bí mật",
     "Câu hỏi của bóng tối",
-    "Thách đấu Gym: Huy hiệu Linh Hồn"
+    "Giành Huy hiệu Linh Hồn"
    ],
    "huy_hieu": "Huy hiệu Linh Hồn (Fuchsia)"
   },
@@ -464,7 +464,7 @@
    "buoc": [
     "Chuyến đò ra đảo",
     "Lapras trở lại",
-    "Câu cá giữa biển",
+    "Câu cá trước chuyến đò",
     "Quái biển chặn đường",
     "Cập đảo Cinnabar",
     "Sinh vật trên đảo lửa"
@@ -480,7 +480,7 @@
    "cap": 44,
    "tom_tat": "Phòng thí nghiệm bỏ hoang trên đảo giữ nhật ký về nguồn gốc mảnh sao.",
    "buoc": [
-    "Phòng thí nghiệm bỏ hoang",
+    "Phòng thí nghiệm hoang",
     "Trang nhật ký thứ nhất",
     "Trang nhật ký giấu kín",
     "Kẻ canh phòng thí nghiệm",
@@ -504,7 +504,7 @@
     "Lên miệng núi lửa",
     "Rút mảnh sao đen",
     "Gym giữa tro bụi",
-    "Thách đấu Gym: Huy hiệu Núi Lửa"
+    "Giành Huy hiệu Núi Lửa"
    ],
    "huy_hieu": "Huy hiệu Núi Lửa (Cinnabar)"
   },
@@ -521,7 +521,7 @@
     "Đường về Viridian",
     "Lính gác Arcanine",
     "Thử lửa ở đấu trường",
-    "Thách đấu Gym: Huy hiệu Đất",
+    "Giành Huy hiệu Đất",
     "Gió mới phương tây"
    ],
    "huy_hieu": "Huy hiệu Đất (Viridian)"
@@ -556,7 +556,7 @@
     "Hoa anh đào Cherrygrove",
     "Tìm ông lão dẫn đường",
     "Dẫn người dẫn đường",
-    "Chiều bên biển",
+    "Chiều bên hồ",
     "Chuyện của ông lão",
     "Dưới gốc anh đào già"
    ],
@@ -576,7 +576,7 @@
     "Kẻ phá rối tầng hai",
     "Honchkrow trên đỉnh tháp",
     "Trước Gym Violet",
-    "Thách đấu Gym: Huy hiệu Gió"
+    "Giành Huy hiệu Gió"
    ],
    "huy_hieu": "Huy hiệu Gió (Violet)"
   },
@@ -613,7 +613,7 @@
     "Murkrow lần thứ tư",
     "Số phận của Murkrow",
     "Heracross giữ Gym",
-    "Thách đấu Gym: Huy hiệu Tổ Ong"
+    "Giành Huy hiệu Tổ Ong"
    ],
    "huy_hieu": "Huy hiệu Tổ Ong (Azalea)"
   },
@@ -648,7 +648,7 @@
     "Lễ vật cho đền",
     "Trước điện thờ",
     "Ánh xanh lúc bình minh",
-    "Ảo ảnh nghìn năm",
+    "Giấc mơ nghìn năm",
     "Truyền thuyết trăng non"
    ],
    "huy_hieu": ""
@@ -667,7 +667,7 @@
     "Đường đua thành phố",
     "Gánh hàng rong",
     "Tauros bán sữa",
-    "Thách đấu Gym: Huy hiệu Đồng Bằng",
+    "Giành Huy hiệu Đồng Bằng",
     "Bài hát ru trên radio"
    ],
    "huy_hieu": "Huy hiệu Đồng Bằng (Goldenrod)"
@@ -686,7 +686,7 @@
     "Bậc thang thứ chín",
     "Bóng cầu vồng",
     "Hồn ma quanh tháp",
-    "Thách đấu Gym: Huy hiệu Sương"
+    "Giành Huy hiệu Sương"
    ],
    "huy_hieu": "Huy hiệu Sương (Ecruteak)"
   },
@@ -699,7 +699,7 @@
    "cap": 64,
    "tom_tat": "Tháp Cháy, nơi ba huyền thoại Entei, Raikou, Suicune từng ngủ.",
    "buoc": [
-    "Tòa tháp bị lửa thiêu",
+    "Toà tháp bị lửa thiêu",
     "Tầng hầm Tháp Cháy",
     "Than hồng còn ấm",
     "Lũ quái bị đánh thức",
@@ -722,7 +722,7 @@
     "Đỉnh hải đăng",
     "Quái quấy hải đăng",
     "Giáp thép cho Gym Thép",
-    "Thách đấu Gym: Huy hiệu Khoáng"
+    "Giành Huy hiệu Khoáng"
    ],
    "huy_hieu": "Huy hiệu Khoáng (Olivine)"
   },
@@ -738,7 +738,7 @@
     "Thuốc từ Cianwood",
     "Vượt biển",
     "Nguyên liệu thuốc",
-    "Thách đấu Gym: Huy hiệu Bão",
+    "Giành Huy hiệu Bão",
     "Mang thuốc qua biển",
     "Hải đăng sáng lại"
    ],
@@ -812,7 +812,7 @@
     "Khoá cửa phòng phát",
     "Honchkrow ở trạm phát",
     "Tắt trạm phát",
-    "Thách đấu Gym: Huy hiệu Băng"
+    "Giành Huy hiệu Băng"
    ],
    "huy_hieu": "Huy hiệu Băng (Mahogany)"
   },
@@ -884,7 +884,7 @@
     "Lời thề",
     "Thử thách của đền",
     "Trước trận cuối",
-    "Thách đấu Gym: Huy hiệu Rồng"
+    "Giành Huy hiệu Rồng"
    ],
    "huy_hieu": "Huy hiệu Rồng (Blackthorn)"
   },
@@ -1021,12 +1021,12 @@
    "cung": "Đất liền Hoenn",
    "dia_danh": "Hang Granite",
    "cap": 91,
-   "tom_tat": "Hang Granite tối tăm, nơi khắc bích họa về Groudon và Kyogre.",
+   "tom_tat": "Hang Granite tối tăm, nơi khắc bích hoạ về Groudon và Kyogre.",
    "buoc": [
     "Hang Granite",
     "Vào hang",
     "Quái trong hang",
-    "Bích họa cổ",
+    "Bích hoạ cổ",
     "Lời của ông"
    ],
    "huy_hieu": ""
@@ -1038,7 +1038,7 @@
    "cung": "Biển nóng Slateport",
    "dia_danh": "Chợ cảng Slateport",
    "cap": 92,
-   "tom_tat": "Chợ cảng Slateport ồn ào, Đoàn Thủy Triều trà trộn trong đám đông.",
+   "tom_tat": "Chợ cảng Slateport ồn ào, Đoàn Thuỷ Triều trà trộn trong đám đông.",
    "buoc": [
     "Chợ cảng Slateport",
     "Phiên chợ phương nam",
@@ -1140,12 +1140,12 @@
    "cung": "Núi lửa Chimney",
    "dia_danh": "Sa mạc gió",
    "cap": 93,
-   "tom_tat": "Sa mạc gió, nơi Đoàn Thủy Triều tìm lối xuống mạch nước ngầm.",
+   "tom_tat": "Sa mạc gió, nơi Đoàn Thuỷ Triều tìm lối xuống mạch nước ngầm.",
    "buoc": [
     "Sa mạc gió",
     "Tìm mạch nước",
-    "Đoàn Thủy Triều",
-    "Ảo ảnh sa mạc",
+    "Đoàn Thuỷ Triều",
+    "Sa mạc ảo ảnh",
     "Sootopolis"
    ],
    "huy_hieu": ""
@@ -1155,14 +1155,14 @@
    "nam": 2,
    "vung": "Hoenn",
    "cung": "Núi lửa Chimney",
-   "dia_danh": "Huy hiệu nhiệt",
+   "dia_danh": "Huy hiệu Nhiệt",
    "cap": 93,
-   "tom_tat": "Huy hiệu nhiệt: thử thách Gym lửa đầu tiên của Hoenn.",
+   "tom_tat": "Huy hiệu Nhiệt: thử thách Gym lửa đầu tiên của Hoenn.",
    "buoc": [
     "Gym Lavaridge",
     "Khởi động",
     "Giáp chịu nhiệt",
-    "Huy hiệu nhiệt",
+    "Huy hiệu Nhiệt",
     "Thư cho anh trai"
    ],
    "huy_hieu": ""
@@ -1180,7 +1180,7 @@
     "Cầu treo",
     "Kecleon vô hình",
     "Đuổi kẻ truy đuổi",
-    "Bí mật Tháp Weather"
+    "Bí mật Viện Thời tiết"
    ],
    "huy_hieu": ""
   },
@@ -1189,11 +1189,11 @@
    "nam": 2,
    "vung": "Hoenn",
    "cung": "Bầu trời Fortree",
-   "dia_danh": "Tháp Weather",
+   "dia_danh": "Viện Thời tiết",
    "cap": 94,
-   "tom_tat": "Tháp Weather, nơi điều khiển thời tiết Hoenn.",
+   "tom_tat": "Viện Thời tiết, nơi điều khiển thời tiết Hoenn.",
    "buoc": [
-    "Tháp Weather",
+    "Viện Thời tiết",
     "Mưa bất thường",
     "Chiếm lại tháp",
     "Máy thời tiết",
@@ -1223,14 +1223,14 @@
    "nam": 2,
    "vung": "Hoenn",
    "cung": "Bầu trời Fortree",
-   "dia_danh": "Huy hiệu lông vũ",
+   "dia_danh": "Huy hiệu Lông Vũ",
    "cap": 94,
-   "tom_tat": "Huy hiệu lông vũ: Gym Bay của Fortree.",
+   "tom_tat": "Huy hiệu Lông Vũ: Gym Bay của Fortree.",
    "buoc": [
     "Gym Fortree",
     "Đường bay",
     "Thử thách bay",
-    "Huy hiệu lông vũ",
+    "Huy hiệu Lông Vũ",
     "Tới Lilycove"
    ],
    "huy_hieu": ""
@@ -1242,7 +1242,7 @@
    "cung": "Biển sâu Lilycove",
    "dia_danh": "Cửa hàng Lilycove",
    "cap": 95,
-   "tom_tat": "Cửa hàng bách hóa Lilycove, nơi mọi thứ đều có bán, kể cả tin tức.",
+   "tom_tat": "Cửa hàng bách hoá Lilycove, nơi mọi thứ đều có bán, kể cả tin tức.",
    "buoc": [
     "Lilycove",
     "Kinh doanh",
@@ -1293,7 +1293,7 @@
    "cung": "Biển sâu Lilycove",
    "dia_danh": "Hang dưới biển",
    "cap": 95,
-   "tom_tat": "Hang dưới biển: căn cứ của Đoàn Thủy Triều.",
+   "tom_tat": "Hang dưới biển: căn cứ của Đoàn Thuỷ Triều.",
    "buoc": [
     "Lặn xuống biển",
     "Ngọc trai đáy biển",
@@ -1315,7 +1315,7 @@
     "Sootopolis",
     "Sơ tán",
     "Giữ thành phố",
-    "Cùng nhau giữ thành",
+    "Cùng nhau giữ thành phố",
     "Hai gã khổng lồ"
    ],
    "huy_hieu": ""
@@ -1325,9 +1325,9 @@
    "nam": 2,
    "vung": "Hoenn",
    "cung": "Thức tỉnh Kyogre và Groudon",
-   "dia_danh": "Hang Cave of Origin",
+   "dia_danh": "Cave of Origin",
    "cap": 96,
-   "tom_tat": "Hang Cave of Origin, nơi hai gã khổng lồ sinh ra.",
+   "tom_tat": "Cave of Origin, nơi hai gã khổng lồ sinh ra.",
    "buoc": [
     "Hang khởi nguyên",
     "Vào hang",
@@ -1446,8 +1446,14 @@
    "cung": "Liên minh Hoenn",
    "dia_danh": "Đường Victory Hoenn",
    "cap": 98,
-   "tom_tat": "Dàn ý: Đường Victory Hoenn (cung Liên minh Hoenn). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Đường Victory Hoenn: hang cát dài nhất vùng, cửa ải cuối trước Liên minh.",
+   "buoc": [
+    "Cửa ải cuối",
+    "Hang cát",
+    "Người gác hang",
+    "Vượt hang trong giờ",
+    "Cửa Liên minh"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1455,10 +1461,16 @@
    "nam": 2,
    "vung": "Hoenn",
    "cung": "Liên minh Hoenn",
-   "dia_danh": "Tứ thiên vương 1",
+   "dia_danh": "Hội đồng Tứ Kỳ 1",
    "cap": 98,
-   "tom_tat": "Dàn ý: Tứ thiên vương 1 (cung Liên minh Hoenn). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Sảnh Liên minh Hoenn. Người thứ nhất trong Tứ Kỳ dùng Pokémon bóng tối.",
+   "buoc": [
+    "Lính gác Liên minh",
+    "Sân đấu thứ nhất",
+    "Đội hình bóng tối",
+    "Luyện tay",
+    "Cửa thứ hai"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1466,10 +1478,16 @@
    "nam": 2,
    "vung": "Hoenn",
    "cung": "Liên minh Hoenn",
-   "dia_danh": "Tứ thiên vương 2",
+   "dia_danh": "Hội đồng Tứ Kỳ 2",
    "cap": 98,
-   "tom_tat": "Dàn ý: Tứ thiên vương 2 (cung Liên minh Hoenn). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Sân đấu thứ hai và thứ ba của Tứ Kỳ: ma và băng.",
+   "buoc": [
+    "Hồi phục giữa trận",
+    "Sân đấu thứ hai",
+    "Ma và băng",
+    "Cùng đồng đội",
+    "Trước cửa rồng"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1479,8 +1497,14 @@
    "cung": "Liên minh Hoenn",
    "dia_danh": "Nhà vô địch",
    "cap": 98,
-   "tom_tat": "Dàn ý: Nhà vô địch (cung Liên minh Hoenn). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Sảnh Nhà vô địch. Người giữ ngôi là một huấn luyện viên rồng đá.",
+   "buoc": [
+    "Trận cuối",
+    "Giữa sân vô địch",
+    "Đội hình nhà vô địch",
+    "Giữ ngôi",
+    "Nhà vô địch mới"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1490,8 +1514,14 @@
    "cung": "Vùng chiến đấu",
    "dia_danh": "Tháp Battle",
    "cap": 99,
-   "tom_tat": "Dàn ý: Tháp Battle (cung Vùng chiến đấu). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Tháp Battle ở Ever Grande: mỗi tầng một đối thủ, không được nghỉ.",
+   "buoc": [
+    "Tháp Battle",
+    "Cổng tháp",
+    "Mười tầng đầu",
+    "Chủ tháp",
+    "Biểu tượng Tháp"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1501,8 +1531,14 @@
    "cung": "Vùng chiến đấu",
    "dia_danh": "Cung điện Battle",
    "cap": 99,
-   "tom_tat": "Dàn ý: Cung điện Battle (cung Vùng chiến đấu). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Cung điện Battle ở Lilycove: Pokémon tự chọn chiêu, người chỉ được cổ vũ.",
+   "buoc": [
+    "Cung điện",
+    "Sảnh cung điện",
+    "Đấu theo bản năng",
+    "Bánh cho đội",
+    "Biểu tượng Cung"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1512,8 +1548,14 @@
    "cung": "Vùng chiến đấu",
    "dia_danh": "Mái vòm Battle",
    "cap": 99,
-   "tom_tat": "Dàn ý: Mái vòm Battle (cung Vùng chiến đấu). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Mái vòm Battle ở chợ cảng Slateport: đấu loại trực tiếp trước đám đông.",
+   "buoc": [
+    "Mái vòm",
+    "Sàn đấu mái vòm",
+    "Vòng loại",
+    "Chung kết mái vòm",
+    "Đường vào sa mạc"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1523,8 +1565,14 @@
    "cung": "Vùng chiến đấu",
    "dia_danh": "Kim tự tháp Battle",
    "cap": 99,
-   "tom_tat": "Dàn ý: Kim tự tháp Battle (cung Vùng chiến đấu). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Kim tự tháp Battle chôn giữa Sa mạc Route 111. Trong tối, không ai biết mình đánh với gì.",
+   "buoc": [
+    "Kim tự tháp",
+    "Đào lối vào",
+    "Trong bóng tối",
+    "Bóng trong bão",
+    "Biểu tượng cuối"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1534,8 +1582,14 @@
    "cung": "Đảo Navel và Faraway",
    "dia_danh": "Đảo Navel",
    "cap": 100,
-   "tom_tat": "Dàn ý: Đảo Navel (cung Đảo Navel và Faraway). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Đảo Navel: hòn đảo đá giữa Biển Route 131, nơi có tiếng gọi lúc nửa đêm.",
+   "buoc": [
+    "Ra khơi",
+    "Bãi đá Navel",
+    "Chủ đảo",
+    "Tiếng hót nửa đêm",
+    "Hai chiếc lông"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1545,8 +1599,14 @@
    "cung": "Đảo Navel và Faraway",
    "dia_danh": "Đảo Faraway",
    "cap": 100,
-   "tom_tat": "Dàn ý: Đảo Faraway (cung Đảo Navel và Faraway). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Đảo Faraway: cỏ cao bất thường, như có ai đó tàng hình đi qua.",
+   "buoc": [
+    "Đảo Faraway",
+    "Đảo cát",
+    "Câu ven đảo",
+    "Bảo vệ đảo",
+    "Dấu chân mèo"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1556,8 +1616,14 @@
    "cung": "Đảo Navel và Faraway",
    "dia_danh": "Đảo Birth",
    "cap": 100,
-   "tom_tat": "Dàn ý: Đảo Birth (cung Đảo Navel và Faraway). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Đảo Birth gần Mossdeep: một khối tam giác đá rơi từ trời.",
+   "buoc": [
+    "Khối tam giác",
+    "Bãi đá",
+    "Ngọc trai ven bờ",
+    "Kẻ canh khối đá",
+    "Dữ liệu vũ trụ"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1567,8 +1633,14 @@
    "cung": "Đảo Navel và Faraway",
    "dia_danh": "Đảo Southern",
    "cap": 100,
-   "tom_tat": "Dàn ý: Đảo Southern (cung Đảo Navel và Faraway). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Đảo Southern ở cuối Biển Route 131: nơi hai chú rồng đỏ xanh làm tổ.",
+   "buoc": [
+    "Đảo Southern",
+    "Bia đảo",
+    "Sóng dữ",
+    "Vườn cho rồng",
+    "Ba vùng"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1578,8 +1650,14 @@
    "cung": "Kết nối ba vùng",
    "dia_danh": "Cầu nối Kanto",
    "cap": 100,
-   "tom_tat": "Dàn ý: Cầu nối Kanto (cung Kết nối ba vùng). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Cầu nối Kanto: tàu từ Cinnabar giờ chạy thẳng tới Littleroot mỗi ngày.",
+   "buoc": [
+    "Tuyến tàu mới",
+    "Cầu tàu Littleroot",
+    "Hướng dẫn người mới",
+    "Dọn đường cho khách",
+    "Thư từ Johto"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1589,8 +1667,14 @@
    "cung": "Kết nối ba vùng",
    "dia_danh": "Cầu nối Johto",
    "cap": 100,
-   "tom_tat": "Dàn ý: Cầu nối Johto (cung Kết nối ba vùng). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Cầu nối Johto: thương thuyền Olivine cập cảng Slateport.",
+   "buoc": [
+    "Thương thuyền",
+    "Bến hàng",
+    "Mở hàng",
+    "Kẻ trộm hàng",
+    "Quả trứng lạ"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1600,8 +1684,14 @@
    "cung": "Kết nối ba vùng",
    "dia_danh": "Cầu nối Hoenn",
    "cap": 100,
-   "tom_tat": "Dàn ý: Cầu nối Hoenn (cung Kết nối ba vùng). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Cầu nối Hoenn: Ever Grande dựng cổng chào cho Đại hội ba vùng.",
+   "buoc": [
+    "Cổng chào",
+    "Chợ lễ hội",
+    "Quả trứng Johto",
+    "Giữ trật tự",
+    "Đại hội"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1611,8 +1701,14 @@
    "cung": "Kết nối ba vùng",
    "dia_danh": "Đại hội ba vùng",
    "cap": 100,
-   "tom_tat": "Dàn ý: Đại hội ba vùng (cung Kết nối ba vùng). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Đại hội ba vùng ở Liên minh Hoenn.",
+   "buoc": [
+    "Lễ khai mạc",
+    "Sân đấu thứ nhất",
+    "Đấu giao hữu",
+    "Trận biểu diễn",
+    "Mùa giải"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1622,8 +1718,14 @@
    "cung": "Mùa giải huyền thoại",
    "dia_danh": "Mùa giải 1",
    "cap": 100,
-   "tom_tat": "Dàn ý: Mùa giải 1 (cung Mùa giải huyền thoại). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Mùa giải huyền thoại, chặng 1: Thác Meteor.",
+   "buoc": [
+    "Chặng 1",
+    "Chân thác",
+    "Câu dưới thác",
+    "Rồng con",
+    "Chặng 2"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1633,8 +1735,14 @@
    "cung": "Mùa giải huyền thoại",
    "dia_danh": "Mùa giải 2",
    "cap": 100,
-   "tom_tat": "Dàn ý: Mùa giải 2 (cung Mùa giải huyền thoại). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Mùa giải huyền thoại, chặng 2: Núi Chimney.",
+   "buoc": [
+    "Chặng 2",
+    "Cáp treo cũ",
+    "Hơi nóng",
+    "Leo núi lửa",
+    "Chặng 3"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1644,8 +1752,14 @@
    "cung": "Mùa giải huyền thoại",
    "dia_danh": "Mùa giải 3",
    "cap": 100,
-   "tom_tat": "Dàn ý: Mùa giải 3 (cung Mùa giải huyền thoại). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Mùa giải huyền thoại, chặng 3: Hang Khởi Nguyên.",
+   "buoc": [
+    "Chặng 3",
+    "Bờ hồ sâu",
+    "Người gác",
+    "Giữ giấc ngủ",
+    "Chung kết"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1655,8 +1769,14 @@
    "cung": "Mùa giải huyền thoại",
    "dia_danh": "Chung kết",
    "cap": 100,
-   "tom_tat": "Dàn ý: Chung kết (cung Mùa giải huyền thoại). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Chung kết mùa giải huyền thoại ở Sảnh Nhà vô địch.",
+   "buoc": [
+    "Chung kết",
+    "Sân chung kết",
+    "Đối thủ chung kết",
+    "Chiếc cúp",
+    "Lá thư lạ"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1666,8 +1786,14 @@
    "cung": "Khúc vĩ thanh",
    "dia_danh": "Lời mời mới",
    "cap": 100,
-   "tom_tat": "Dàn ý: Lời mời mới (cung Khúc vĩ thanh). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Lời mời mới: lá thư gửi từ Sinnoh.",
+   "buoc": [
+    "Lá thư",
+    "Thư của mẹ",
+    "Gửi lời chào",
+    "Luyện tập",
+    "Bản đồ cổ"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1677,8 +1803,14 @@
    "cung": "Khúc vĩ thanh",
    "dia_danh": "Tấm bản đồ cổ",
    "cap": 100,
-   "tom_tat": "Dàn ý: Tấm bản đồ cổ (cung Khúc vĩ thanh). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Tấm bản đồ cổ trong Hang Granite.",
+   "buoc": [
+    "Bức vẽ cổ",
+    "Đào tìm bản đồ",
+    "Người giữ hang",
+    "Câu đố trên bản đồ",
+    "Bờ biển lạ"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1688,8 +1820,14 @@
    "cung": "Khúc vĩ thanh",
    "dia_danh": "Bờ biển lạ",
    "cap": 100,
-   "tom_tat": "Dàn ý: Bờ biển lạ (cung Khúc vĩ thanh). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Bờ biển lạ ở Dewford: sóng đánh dạt vào một chiếc thuyền không người lái.",
+   "buoc": [
+    "Chiếc thuyền",
+    "Bãi cát Dewford",
+    "Khách không mời",
+    "Sổ tay thuyền trưởng",
+    "Chân trời"
+   ],
    "huy_hieu": ""
   },
   {
@@ -1699,8 +1837,14 @@
    "cung": "Khúc vĩ thanh",
    "dia_danh": "Chân trời Sinnoh",
    "cap": 100,
-   "tom_tat": "Dàn ý: Chân trời Sinnoh (cung Khúc vĩ thanh). Viết đầy đủ khi có bản đồ Hoenn.",
-   "buoc": [],
+   "tom_tat": "Chân trời Sinnoh: từ Đỉnh Tháp Trời nhìn thấy vùng đất phía bắc.",
+   "buoc": [
+    "Đỉnh tháp",
+    "Nơi Rayquaza ngủ",
+    "Thử thách cuối",
+    "Tiễn biệt",
+    "Khúc vĩ thanh"
+   ],
    "huy_hieu": ""
   }
  ],
@@ -2267,16 +2411,16 @@
   },
   {
    "noi": "Olivine",
-   "chuoi": "Bộ sưu tập vỏ sò",
-   "nhan_vat": "Corsola",
+   "chuoi": "Hàng xóm ồn ào",
+   "nhan_vat": "Exploud",
    "cap_tu": 68,
    "cap_den": 71,
    "so_buoc": 4
   },
   {
    "noi": "Olivine",
-   "chuoi": "Hàng xóm ồn ào",
-   "nhan_vat": "Exploud",
+   "chuoi": "Bay theo gió",
+   "nhan_vat": "Swablu",
    "cap_tu": 70,
    "cap_den": 73,
    "so_buoc": 4
@@ -2291,16 +2435,16 @@
   },
   {
    "noi": "Cianwood",
-   "chuoi": "Bay theo gió",
-   "nhan_vat": "Swablu",
+   "chuoi": "Bạn đấu tập",
+   "nhan_vat": "Eevee",
    "cap_tu": 70,
    "cap_den": 73,
    "so_buoc": 4
   },
   {
    "noi": "Cianwood",
-   "chuoi": "Bạn đấu tập",
-   "nhan_vat": "Eevee",
+   "chuoi": "Rừng nấm sáng",
+   "nhan_vat": "Morelull",
    "cap_tu": 72,
    "cap_den": 75,
    "so_buoc": 4
@@ -2315,16 +2459,16 @@
   },
   {
    "noi": "Mahogany",
-   "chuoi": "Rừng nấm sáng",
-   "nhan_vat": "Morelull",
+   "chuoi": "Đường đua địa phương",
+   "nhan_vat": "Dodrio",
    "cap_tu": 72,
    "cap_den": 75,
    "so_buoc": 4
   },
   {
    "noi": "Mahogany",
-   "chuoi": "Đường đua địa phương",
-   "nhan_vat": "Dodrio",
+   "chuoi": "Câu đố trên tường",
+   "nhan_vat": "Natu",
    "cap_tu": 74,
    "cap_den": 77,
    "so_buoc": 4
@@ -2339,16 +2483,16 @@
   },
   {
    "noi": "Hồ Phẫn Nộ",
-   "chuoi": "Câu đố trên tường",
-   "nhan_vat": "Natu",
+   "chuoi": "Cầu mưa",
+   "nhan_vat": "Wooper",
    "cap_tu": 73,
    "cap_den": 76,
    "so_buoc": 4
   },
   {
    "noi": "Hồ Phẫn Nộ",
-   "chuoi": "Cầu mưa",
-   "nhan_vat": "Wooper",
+   "chuoi": "Chăn len mùa đông",
+   "nhan_vat": "Wooloo",
    "cap_tu": 75,
    "cap_den": 78,
    "so_buoc": 4
@@ -2363,16 +2507,16 @@
   },
   {
    "noi": "Blackthorn",
-   "chuoi": "Chăn len mùa đông",
-   "nhan_vat": "Wooloo",
+   "chuoi": "Dạo bộ cùng bạn",
+   "nhan_vat": "Linoone",
    "cap_tu": 79,
    "cap_den": 82,
    "so_buoc": 4
   },
   {
    "noi": "Blackthorn",
-   "chuoi": "Dạo bộ cùng bạn",
-   "nhan_vat": "Linoone",
+   "chuoi": "Viên ngọc đẹp nhất",
+   "nhan_vat": "Carbink",
    "cap_tu": 81,
    "cap_den": 84,
    "so_buoc": 4
@@ -2387,16 +2531,16 @@
   },
   {
    "noi": "Hang Salamence",
-   "chuoi": "Viên ngọc đẹp nhất",
-   "nhan_vat": "Carbink",
+   "chuoi": "Sổ tay sinh vật",
+   "nhan_vat": "Oddish",
    "cap_tu": 81,
    "cap_den": 84,
    "so_buoc": 4
   },
   {
    "noi": "Hang Salamence",
-   "chuoi": "Sổ tay sinh vật",
-   "nhan_vat": "Oddish",
+   "chuoi": "Lá thư gửi nhầm",
+   "nhan_vat": "Luvdisc",
    "cap_tu": 83,
    "cap_den": 86,
    "so_buoc": 4
@@ -2411,16 +2555,16 @@
   },
   {
    "noi": "Đường Victory",
-   "chuoi": "Lá thư gửi nhầm",
-   "nhan_vat": "Luvdisc",
+   "chuoi": "Công thức thất lạc",
+   "nhan_vat": "Munchlax",
    "cap_tu": 86,
    "cap_den": 89,
    "so_buoc": 4
   },
   {
    "noi": "Đường Victory",
-   "chuoi": "Công thức thất lạc",
-   "nhan_vat": "Munchlax",
+   "chuoi": "Quả trứng lạc",
+   "nhan_vat": "Togepi",
    "cap_tu": 88,
    "cap_den": 91,
    "so_buoc": 4
@@ -2435,16 +2579,16 @@
   },
   {
    "noi": "Núi Silver",
-   "chuoi": "Quả trứng lạc",
-   "nhan_vat": "Togepi",
+   "chuoi": "Kho báu dưới gốc cây",
+   "nhan_vat": "Sandshrew",
    "cap_tu": 90,
    "cap_den": 93,
    "so_buoc": 4
   },
   {
    "noi": "Núi Silver",
-   "chuoi": "Con cá khổng lồ",
-   "nhan_vat": "Remoraid",
+   "chuoi": "Cuộc thi ảnh",
+   "nhan_vat": "Smeargle",
    "cap_tu": 92,
    "cap_den": 95,
    "so_buoc": 4
@@ -2459,16 +2603,16 @@
   },
   {
    "noi": "Cao nguyên Indigo",
-   "chuoi": "Kho báu dưới gốc cây",
-   "nhan_vat": "Sandshrew",
+   "chuoi": "Người gác đêm",
+   "nhan_vat": "Hoothoot",
    "cap_tu": 93,
    "cap_den": 96,
    "so_buoc": 4
   },
   {
    "noi": "Cao nguyên Indigo",
-   "chuoi": "Cuộc thi ảnh",
-   "nhan_vat": "Smeargle",
+   "chuoi": "Thợ rèn tập sự",
+   "nhan_vat": "Machoke",
    "cap_tu": 95,
    "cap_den": 98,
    "so_buoc": 4
@@ -2483,16 +2627,16 @@
   },
   {
    "noi": "Hang Darkrai",
-   "chuoi": "Người gác đêm",
-   "nhan_vat": "Hoothoot",
+   "chuoi": "Ca sĩ mất giọng",
+   "nhan_vat": "Jigglypuff",
    "cap_tu": 97,
    "cap_den": 100,
    "so_buoc": 4
   },
   {
    "noi": "Hang Darkrai",
-   "chuoi": "Thợ rèn tập sự",
-   "nhan_vat": "Machoke",
+   "chuoi": "Ba lá thư một buổi sáng",
+   "nhan_vat": "Pelipper",
    "cap_tu": 99,
    "cap_den": 100,
    "so_buoc": 4
@@ -2506,14 +2650,14 @@
   "Chuyển thuốc cho Chansey",
   "Chăm vườn nhà",
   "Chạy đua với đồng hồ",
-  "Câu đố buổi sáng: biến hình",
-  "Câu đố buổi sáng: bài hát",
-  "Câu đố buổi sáng: chậm chạp",
-  "Câu đố buổi sáng: hoá rồng",
-  "Câu đố buổi sáng: má đỏ",
-  "Câu đố buổi sáng: tám ngả",
-  "Câu đố buổi sáng: đau đầu",
-  "Câu đố buổi sáng: đuôi lửa",
+  "Câu đố sáng: biến hình",
+  "Câu đố sáng: bài hát",
+  "Câu đố sáng: chậm chạp",
+  "Câu đố sáng: hoá rồng",
+  "Câu đố sáng: má đỏ",
+  "Câu đố sáng: tám ngả",
+  "Câu đố sáng: đau đầu",
+  "Câu đố sáng: đuôi lửa",
   "Dọn túi đồ",
   "Ghi một loài mới",
   "Ghé thăm Cerulean",
@@ -2549,27 +2693,27 @@
   "Săn Sandshrew buổi sáng",
   "Săn theo tổ",
   "Thử thách tốc độ",
-  "Truy nã đặc biệt: Alpha Kricketot",
-  "Truy nã đặc biệt: Alpha Parasect",
-  "Truy nã đặc biệt: Alpha Rhydon",
-  "Truy nã đặc biệt: Alpha Vileplume",
   "Truy nã: Alpha Crabrawler",
   "Truy nã: Alpha Farfetch'd",
   "Truy nã: Alpha Galvantula",
   "Truy nã: Alpha Growlithe",
   "Truy nã: Alpha Litwick",
-  "Truy nã: Gastly hung dữ",
-  "Truy nã: Luxray hung dữ",
-  "Truy nã: Palpitoad hung dữ",
-  "Truy nã: Rhydon hung dữ",
-  "Truy nã: Venonat hung dữ",
+  "Truy nã: Gastly dữ tợn",
+  "Truy nã: Luxray dữ tợn",
+  "Truy nã: Palpitoad dữ tợn",
+  "Truy nã: Rhydon dữ tợn",
+  "Truy nã: Venonat dữ tợn",
   "Truy nã: kẻ mạnh vượt cấp",
   "Trưa nắng gắt",
   "Trứng ở nhà trẻ",
   "Tuần tra ngang sức",
   "Điểm ngắm cảnh hôm nay",
   "Đua buổi tối",
-  "Đơn hàng của Machamp"
+  "Đơn hàng của Machamp",
+  "Đại truy nã: Alpha Kricketot",
+  "Đại truy nã: Alpha Parasect",
+  "Đại truy nã: Alpha Rhydon",
+  "Đại truy nã: Alpha Vileplume"
  ],
  "tuan": [
   "Biển Olivine",
@@ -2620,32 +2764,32 @@
   {
    "tuan": 3,
    "ten": "Ngày cộng đồng Charmander",
-   "buoc": "Tập hợp: Ngày cộng đồng Charmander"
+   "buoc": "Tập hợp: Charmander"
   },
   {
    "tuan": 3,
    "ten": "Ngày cộng đồng Charmander",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Charmander"
+   "buoc": "Ba giờ vàng: Charmander"
   },
   {
    "tuan": 3,
    "ten": "Ngày cộng đồng Charmander",
-   "buoc": "Huy hiệu: Ngày cộng đồng Charmander"
+   "buoc": "Huy hiệu: Charmander"
   },
   {
    "tuan": 4,
    "ten": "Chuẩn bị Tết: gói bánh",
-   "buoc": "Lời mời: gói bánh"
+   "buoc": "Lời mời: Gói bánh Tết"
   },
   {
    "tuan": 4,
    "ten": "Chuẩn bị Tết: gói bánh",
-   "buoc": "Chuẩn bị: gói bánh"
+   "buoc": "Chuẩn bị: Gói bánh Tết"
   },
   {
    "tuan": 4,
    "ten": "Chuẩn bị Tết: gói bánh",
-   "buoc": "Đổi quà: gói bánh"
+   "buoc": "Đổi quà: Gói bánh Tết"
   },
   {
    "tuan": 5,
@@ -2690,22 +2834,22 @@
   {
    "tuan": 7,
    "ten": "Tuần Shiny",
-   "buoc": "Tem nghiên cứu: Tuần Shiny"
+   "buoc": "Thu tem: Tuần Shiny"
   },
   {
    "tuan": 8,
    "ten": "Valentine: Luvdisc",
-   "buoc": "Lời mời: Luvdisc"
+   "buoc": "Lời mời: Valentine"
   },
   {
    "tuan": 8,
    "ten": "Valentine: Luvdisc",
-   "buoc": "Chuẩn bị: Luvdisc"
+   "buoc": "Chuẩn bị: Valentine"
   },
   {
    "tuan": 8,
    "ten": "Valentine: Luvdisc",
-   "buoc": "Đổi quà: Luvdisc"
+   "buoc": "Đổi quà: Valentine"
   },
   {
    "tuan": 9,
@@ -2720,22 +2864,22 @@
   {
    "tuan": 9,
    "ten": "Đột kích huyền thoại: Zapdos",
-   "buoc": "Chiến lợi phẩm: Zapdos"
+   "buoc": "Chiến tích: Zapdos"
   },
   {
    "tuan": 10,
    "ten": "Quốc tế Phụ nữ 8/3",
-   "buoc": "Lời mời: Quốc tế Phụ nữ 8/3"
+   "buoc": "Lời mời: Ngày 8/3"
   },
   {
    "tuan": 10,
    "ten": "Quốc tế Phụ nữ 8/3",
-   "buoc": "Chuẩn bị: Quốc tế Phụ nữ 8/3"
+   "buoc": "Chuẩn bị: Ngày 8/3"
   },
   {
    "tuan": 10,
    "ten": "Quốc tế Phụ nữ 8/3",
-   "buoc": "Đổi quà: Quốc tế Phụ nữ 8/3"
+   "buoc": "Đổi quà: Ngày 8/3"
   },
   {
    "tuan": 11,
@@ -2755,32 +2899,32 @@
   {
    "tuan": 12,
    "ten": "Ngày cộng đồng Bulbasaur",
-   "buoc": "Tập hợp: Ngày cộng đồng Bulbasaur"
+   "buoc": "Tập hợp: Bulbasaur"
   },
   {
    "tuan": 12,
    "ten": "Ngày cộng đồng Bulbasaur",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Bulbasaur"
+   "buoc": "Ba giờ vàng: Bulbasaur"
   },
   {
    "tuan": 12,
    "ten": "Ngày cộng đồng Bulbasaur",
-   "buoc": "Huy hiệu: Ngày cộng đồng Bulbasaur"
+   "buoc": "Huy hiệu: Bulbasaur"
   },
   {
    "tuan": 13,
    "ten": "Mùa giải PvP 1 kết thúc",
-   "buoc": "Tổng kết mùa: Mùa giải PvP 1 kết thúc"
+   "buoc": "Tổng kết: Mùa PvP 1"
   },
   {
    "tuan": 13,
    "ten": "Mùa giải PvP 1 kết thúc",
-   "buoc": "Nước rút: Mùa giải PvP 1 kết thúc"
+   "buoc": "Nước rút: Mùa PvP 1"
   },
   {
    "tuan": 13,
    "ten": "Mùa giải PvP 1 kết thúc",
-   "buoc": "Huy chương: Mùa giải PvP 1 kết thúc"
+   "buoc": "Huy chương: Mùa PvP 1"
   },
   {
    "tuan": 14,
@@ -2795,52 +2939,52 @@
   {
    "tuan": 14,
    "ten": "Lễ hội Pokédex",
-   "buoc": "Tem nghiên cứu: Lễ hội Pokédex"
+   "buoc": "Thu tem: Lễ hội Pokédex"
   },
   {
    "tuan": 15,
    "ten": "Giỗ Tổ Hùng Vương",
-   "buoc": "Lời mời: Giỗ Tổ Hùng Vương"
+   "buoc": "Lời mời: Giỗ Tổ"
   },
   {
    "tuan": 15,
    "ten": "Giỗ Tổ Hùng Vương",
-   "buoc": "Chuẩn bị: Giỗ Tổ Hùng Vương"
+   "buoc": "Chuẩn bị: Giỗ Tổ"
   },
   {
    "tuan": 15,
    "ten": "Giỗ Tổ Hùng Vương",
-   "buoc": "Đổi quà: Giỗ Tổ Hùng Vương"
+   "buoc": "Đổi quà: Giỗ Tổ"
   },
   {
    "tuan": 16,
-   "ten": "Thế chiến vùng",
-   "buoc": "Tập hợp: Thế chiến vùng"
+   "ten": "Chiến vùng",
+   "buoc": "Tập hợp: Chiến vùng"
   },
   {
    "tuan": 16,
-   "ten": "Thế chiến vùng",
-   "buoc": "Giành cờ: Thế chiến vùng"
+   "ten": "Chiến vùng",
+   "buoc": "Giành cờ: Chiến vùng"
   },
   {
    "tuan": 16,
-   "ten": "Thế chiến vùng",
-   "buoc": "Cờ vùng: Thế chiến vùng"
+   "ten": "Chiến vùng",
+   "buoc": "Cờ vùng: Chiến vùng"
   },
   {
    "tuan": 17,
    "ten": "30/4 - 1/5: Thống nhất",
-   "buoc": "Lời mời: Thống nhất"
+   "buoc": "Lời mời: Ngày 30/4"
   },
   {
    "tuan": 17,
    "ten": "30/4 - 1/5: Thống nhất",
-   "buoc": "Chuẩn bị: Thống nhất"
+   "buoc": "Chuẩn bị: Ngày 30/4"
   },
   {
    "tuan": 17,
    "ten": "30/4 - 1/5: Thống nhất",
-   "buoc": "Đổi quà: Thống nhất"
+   "buoc": "Đổi quà: Ngày 30/4"
   },
   {
    "tuan": 18,
@@ -2860,17 +3004,17 @@
   {
    "tuan": 19,
    "ten": "Ngày cộng đồng Squirtle",
-   "buoc": "Tập hợp: Ngày cộng đồng Squirtle"
+   "buoc": "Tập hợp: Squirtle"
   },
   {
    "tuan": 19,
    "ten": "Ngày cộng đồng Squirtle",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Squirtle"
+   "buoc": "Ba giờ vàng: Squirtle"
   },
   {
    "tuan": 19,
    "ten": "Ngày cộng đồng Squirtle",
-   "buoc": "Huy hiệu: Ngày cộng đồng Squirtle"
+   "buoc": "Huy hiệu: Squirtle"
   },
   {
    "tuan": 20,
@@ -2885,97 +3029,97 @@
   {
    "tuan": 20,
    "ten": "Đột kích: Entei",
-   "buoc": "Chiến lợi phẩm: Entei"
+   "buoc": "Chiến tích: Entei"
   },
   {
    "tuan": 21,
    "ten": "Bùng phát quần thể",
-   "buoc": "Mở màn: Bùng phát quần thể"
+   "buoc": "Mở màn: Bùng phát"
   },
   {
    "tuan": 21,
    "ten": "Bùng phát quần thể",
-   "buoc": "Ghi chép: Bùng phát quần thể"
+   "buoc": "Ghi chép: Bùng phát"
   },
   {
    "tuan": 21,
    "ten": "Bùng phát quần thể",
-   "buoc": "Tem nghiên cứu: Bùng phát quần thể"
+   "buoc": "Thu tem: Bùng phát"
   },
   {
    "tuan": 22,
    "ten": "Quốc tế Thiếu nhi 1/6",
-   "buoc": "Lời mời: Quốc tế Thiếu nhi 1/6"
+   "buoc": "Lời mời: Ngày 1/6"
   },
   {
    "tuan": 22,
    "ten": "Quốc tế Thiếu nhi 1/6",
-   "buoc": "Chuẩn bị: Quốc tế Thiếu nhi 1/6"
+   "buoc": "Chuẩn bị: Ngày 1/6"
   },
   {
    "tuan": 22,
    "ten": "Quốc tế Thiếu nhi 1/6",
-   "buoc": "Đổi quà: Quốc tế Thiếu nhi 1/6"
+   "buoc": "Đổi quà: Ngày 1/6"
   },
   {
    "tuan": 23,
    "ten": "Sự kiện Hè: biển Vermilion",
-   "buoc": "Khai hội: biển Vermilion"
+   "buoc": "Khai hội: Hè Vermilion"
   },
   {
    "tuan": 23,
    "ten": "Sự kiện Hè: biển Vermilion",
-   "buoc": "Sưu tầm: biển Vermilion"
+   "buoc": "Sưu tầm: Hè Vermilion"
   },
   {
    "tuan": 23,
    "ten": "Sự kiện Hè: biển Vermilion",
-   "buoc": "Đổi quà: biển Vermilion"
+   "buoc": "Đổi quà: Hè Vermilion"
   },
   {
    "tuan": 24,
    "ten": "Sự kiện Hè: biển Vermilion",
-   "buoc": "Khai hội: biển Vermilion"
+   "buoc": "Khai hội: Hè Vermilion"
   },
   {
    "tuan": 24,
    "ten": "Sự kiện Hè: biển Vermilion",
-   "buoc": "Sưu tầm: biển Vermilion"
+   "buoc": "Sưu tầm: Hè Vermilion"
   },
   {
    "tuan": 24,
    "ten": "Sự kiện Hè: biển Vermilion",
-   "buoc": "Đổi quà: biển Vermilion"
+   "buoc": "Đổi quà: Hè Vermilion"
   },
   {
    "tuan": 25,
    "ten": "Ngày cộng đồng Pichu",
-   "buoc": "Tập hợp: Ngày cộng đồng Pichu"
+   "buoc": "Tập hợp: Pichu"
   },
   {
    "tuan": 25,
    "ten": "Ngày cộng đồng Pichu",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Pichu"
+   "buoc": "Ba giờ vàng: Pichu"
   },
   {
    "tuan": 25,
    "ten": "Ngày cộng đồng Pichu",
-   "buoc": "Huy hiệu: Ngày cộng đồng Pichu"
+   "buoc": "Huy hiệu: Pichu"
   },
   {
    "tuan": 26,
    "ten": "Mùa giải PvP 2 kết thúc",
-   "buoc": "Tổng kết mùa: Mùa giải PvP 2 kết thúc"
+   "buoc": "Tổng kết: Mùa PvP 2"
   },
   {
    "tuan": 26,
    "ten": "Mùa giải PvP 2 kết thúc",
-   "buoc": "Nước rút: Mùa giải PvP 2 kết thúc"
+   "buoc": "Nước rút: Mùa PvP 2"
   },
   {
    "tuan": 26,
    "ten": "Mùa giải PvP 2 kết thúc",
-   "buoc": "Huy chương: Mùa giải PvP 2 kết thúc"
+   "buoc": "Huy chương: Mùa PvP 2"
   },
   {
    "tuan": 27,
@@ -3005,52 +3149,52 @@
   {
    "tuan": 28,
    "ten": "Đột kích: Darkrai",
-   "buoc": "Chiến lợi phẩm: Darkrai"
+   "buoc": "Chiến tích: Darkrai"
   },
   {
    "tuan": 29,
    "ten": "Hè 2: Hầm ngục bí ẩn mùa hè",
-   "buoc": "Khai hội: Hầm ngục bí ẩn mùa hè"
+   "buoc": "Khai hội: Hầm ngục hè"
   },
   {
    "tuan": 29,
    "ten": "Hè 2: Hầm ngục bí ẩn mùa hè",
-   "buoc": "Sưu tầm: Hầm ngục bí ẩn mùa hè"
+   "buoc": "Sưu tầm: Hầm ngục hè"
   },
   {
    "tuan": 29,
    "ten": "Hè 2: Hầm ngục bí ẩn mùa hè",
-   "buoc": "Đổi quà: Hầm ngục bí ẩn mùa hè"
+   "buoc": "Đổi quà: Hầm ngục hè"
   },
   {
    "tuan": 30,
-   "ten": "Thế chiến vùng mùa hè",
-   "buoc": "Tập hợp: Thế chiến vùng mùa hè"
+   "ten": "Chiến vùng mùa hè",
+   "buoc": "Tập hợp: Chiến vùng hè"
   },
   {
    "tuan": 30,
-   "ten": "Thế chiến vùng mùa hè",
-   "buoc": "Giành cờ: Thế chiến vùng mùa hè"
+   "ten": "Chiến vùng mùa hè",
+   "buoc": "Giành cờ: Chiến vùng hè"
   },
   {
    "tuan": 30,
-   "ten": "Thế chiến vùng mùa hè",
-   "buoc": "Cờ vùng: Thế chiến vùng mùa hè"
+   "ten": "Chiến vùng mùa hè",
+   "buoc": "Cờ vùng: Chiến vùng hè"
   },
   {
    "tuan": 31,
    "ten": "Ngày cộng đồng Eevee",
-   "buoc": "Tập hợp: Ngày cộng đồng Eevee"
+   "buoc": "Tập hợp: Eevee"
   },
   {
    "tuan": 31,
    "ten": "Ngày cộng đồng Eevee",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Eevee"
+   "buoc": "Ba giờ vàng: Eevee"
   },
   {
    "tuan": 31,
    "ten": "Ngày cộng đồng Eevee",
-   "buoc": "Huy hiệu: Ngày cộng đồng Eevee"
+   "buoc": "Huy hiệu: Eevee"
   },
   {
    "tuan": 32,
@@ -3095,22 +3239,22 @@
   {
    "tuan": 34,
    "ten": "Tuần Shiny 2",
-   "buoc": "Tem nghiên cứu: Tuần Shiny 2"
+   "buoc": "Thu tem: Tuần Shiny 2"
   },
   {
    "tuan": 35,
    "ten": "Quốc khánh 2/9",
-   "buoc": "Lời mời: Quốc khánh 2/9"
+   "buoc": "Lời mời: Quốc khánh"
   },
   {
    "tuan": 35,
    "ten": "Quốc khánh 2/9",
-   "buoc": "Chuẩn bị: Quốc khánh 2/9"
+   "buoc": "Chuẩn bị: Quốc khánh"
   },
   {
    "tuan": 35,
    "ten": "Quốc khánh 2/9",
-   "buoc": "Đổi quà: Quốc khánh 2/9"
+   "buoc": "Đổi quà: Quốc khánh"
   },
   {
    "tuan": 36,
@@ -3125,7 +3269,7 @@
   {
    "tuan": 36,
    "ten": "Đột kích: Rayquaza",
-   "buoc": "Chiến lợi phẩm: Rayquaza"
+   "buoc": "Chiến tích: Rayquaza"
   },
   {
    "tuan": 37,
@@ -3160,122 +3304,122 @@
   {
    "tuan": 39,
    "ten": "Mùa giải PvP 3 kết thúc",
-   "buoc": "Tổng kết mùa: Mùa giải PvP 3 kết thúc"
+   "buoc": "Tổng kết: Mùa PvP 3"
   },
   {
    "tuan": 39,
    "ten": "Mùa giải PvP 3 kết thúc",
-   "buoc": "Nước rút: Mùa giải PvP 3 kết thúc"
+   "buoc": "Nước rút: Mùa PvP 3"
   },
   {
    "tuan": 39,
    "ten": "Mùa giải PvP 3 kết thúc",
-   "buoc": "Huy chương: Mùa giải PvP 3 kết thúc"
+   "buoc": "Huy chương: Mùa PvP 3"
   },
   {
    "tuan": 40,
    "ten": "Ngày cộng đồng Charmander 2",
-   "buoc": "Tập hợp: Ngày cộng đồng Charmander 2"
+   "buoc": "Tập hợp: Charmander 2"
   },
   {
    "tuan": 40,
    "ten": "Ngày cộng đồng Charmander 2",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Charmander 2"
+   "buoc": "Ba giờ vàng: Charmander 2"
   },
   {
    "tuan": 40,
    "ten": "Ngày cộng đồng Charmander 2",
-   "buoc": "Huy hiệu: Ngày cộng đồng Charmander 2"
+   "buoc": "Huy hiệu: Charmander 2"
   },
   {
    "tuan": 41,
    "ten": "Phụ nữ Việt Nam 20/10",
-   "buoc": "Lời mời: Phụ nữ Việt Nam 20/10"
+   "buoc": "Lời mời: Ngày 20/10"
   },
   {
    "tuan": 41,
    "ten": "Phụ nữ Việt Nam 20/10",
-   "buoc": "Chuẩn bị: Phụ nữ Việt Nam 20/10"
+   "buoc": "Chuẩn bị: Ngày 20/10"
   },
   {
    "tuan": 41,
    "ten": "Phụ nữ Việt Nam 20/10",
-   "buoc": "Đổi quà: Phụ nữ Việt Nam 20/10"
+   "buoc": "Đổi quà: Ngày 20/10"
   },
   {
    "tuan": 42,
    "ten": "Tuần hệ Siêu linh",
-   "buoc": "Khai mạc: Tuần hệ Siêu linh"
+   "buoc": "Khai mạc: Hệ Siêu linh"
   },
   {
    "tuan": 42,
    "ten": "Tuần hệ Siêu linh",
-   "buoc": "Săn theo hệ: Tuần hệ Siêu linh"
+   "buoc": "Săn theo hệ: Hệ Siêu linh"
   },
   {
    "tuan": 42,
    "ten": "Tuần hệ Siêu linh",
-   "buoc": "Tinh thể: Tuần hệ Siêu linh"
+   "buoc": "Tinh thể: Hệ Siêu linh"
   },
   {
    "tuan": 43,
    "ten": "Halloween: Gengar",
-   "buoc": "Khai hội: Gengar"
+   "buoc": "Khai hội: Halloween"
   },
   {
    "tuan": 43,
    "ten": "Halloween: Gengar",
-   "buoc": "Sưu tầm: Gengar"
+   "buoc": "Sưu tầm: Halloween"
   },
   {
    "tuan": 43,
    "ten": "Halloween: Gengar",
-   "buoc": "Đổi quà: Gengar"
+   "buoc": "Đổi quà: Halloween"
   },
   {
    "tuan": 44,
    "ten": "Halloween: Gengar",
-   "buoc": "Khai hội: Gengar"
+   "buoc": "Khai hội: Halloween"
   },
   {
    "tuan": 44,
    "ten": "Halloween: Gengar",
-   "buoc": "Sưu tầm: Gengar"
+   "buoc": "Sưu tầm: Halloween"
   },
   {
    "tuan": 44,
    "ten": "Halloween: Gengar",
-   "buoc": "Đổi quà: Gengar"
+   "buoc": "Đổi quà: Halloween"
   },
   {
    "tuan": 45,
    "ten": "Lễ hội Pokédex 2",
-   "buoc": "Mở màn: Lễ hội Pokédex 2"
+   "buoc": "Mở màn: Pokédex 2"
   },
   {
    "tuan": 45,
    "ten": "Lễ hội Pokédex 2",
-   "buoc": "Ghi chép: Lễ hội Pokédex 2"
+   "buoc": "Ghi chép: Pokédex 2"
   },
   {
    "tuan": 45,
    "ten": "Lễ hội Pokédex 2",
-   "buoc": "Tem nghiên cứu: Lễ hội Pokédex 2"
+   "buoc": "Thu tem: Pokédex 2"
   },
   {
    "tuan": 46,
    "ten": "Nhà giáo 20/11",
-   "buoc": "Lời mời: Nhà giáo 20/11"
+   "buoc": "Lời mời: Nhà giáo"
   },
   {
    "tuan": 46,
    "ten": "Nhà giáo 20/11",
-   "buoc": "Chuẩn bị: Nhà giáo 20/11"
+   "buoc": "Chuẩn bị: Nhà giáo"
   },
   {
    "tuan": 46,
    "ten": "Nhà giáo 20/11",
-   "buoc": "Đổi quà: Nhà giáo 20/11"
+   "buoc": "Đổi quà: Nhà giáo"
   },
   {
    "tuan": 47,
@@ -3294,78 +3438,78 @@
   },
   {
    "tuan": 48,
-   "ten": "Đột kích: Groudon & Kyogre",
-   "buoc": "Báo động: Groudon & Kyogre"
+   "ten": "Đột kích: Groudon và Kyogre",
+   "buoc": "Báo động: Groudon, Kyogre"
   },
   {
    "tuan": 48,
-   "ten": "Đột kích: Groudon & Kyogre",
-   "buoc": "Đột kích: Groudon & Kyogre"
+   "ten": "Đột kích: Groudon và Kyogre",
+   "buoc": "Đột kích: Groudon, Kyogre"
   },
   {
    "tuan": 48,
-   "ten": "Đột kích: Groudon & Kyogre",
-   "buoc": "Chiến lợi phẩm: Groudon & Kyogre"
+   "ten": "Đột kích: Groudon và Kyogre",
+   "buoc": "Chiến tích: Groudon, Kyogre"
   },
   {
    "tuan": 49,
-   "ten": "Thế chiến vùng mùa đông",
-   "buoc": "Tập hợp: Thế chiến vùng mùa đông"
+   "ten": "Chiến vùng mùa đông",
+   "buoc": "Tập hợp: Chiến vùng đông"
   },
   {
    "tuan": 49,
-   "ten": "Thế chiến vùng mùa đông",
-   "buoc": "Giành cờ: Thế chiến vùng mùa đông"
+   "ten": "Chiến vùng mùa đông",
+   "buoc": "Giành cờ: Chiến vùng đông"
   },
   {
    "tuan": 49,
-   "ten": "Thế chiến vùng mùa đông",
-   "buoc": "Cờ vùng: Thế chiến vùng mùa đông"
+   "ten": "Chiến vùng mùa đông",
+   "buoc": "Cờ vùng: Chiến vùng đông"
   },
   {
    "tuan": 50,
    "ten": "Ngày cộng đồng Bulbasaur 2",
-   "buoc": "Tập hợp: Ngày cộng đồng Bulbasaur 2"
+   "buoc": "Tập hợp: Bulbasaur 2"
   },
   {
    "tuan": 50,
    "ten": "Ngày cộng đồng Bulbasaur 2",
-   "buoc": "Ba giờ vàng: Ngày cộng đồng Bulbasaur 2"
+   "buoc": "Ba giờ vàng: Bulbasaur 2"
   },
   {
    "tuan": 50,
    "ten": "Ngày cộng đồng Bulbasaur 2",
-   "buoc": "Huy hiệu: Ngày cộng đồng Bulbasaur 2"
+   "buoc": "Huy hiệu: Bulbasaur 2"
   },
   {
    "tuan": 51,
    "ten": "Giáng sinh: Delibird",
-   "buoc": "Lời mời: Delibird"
+   "buoc": "Lời mời: Giáng sinh"
   },
   {
    "tuan": 51,
    "ten": "Giáng sinh: Delibird",
-   "buoc": "Chuẩn bị: Delibird"
+   "buoc": "Chuẩn bị: Giáng sinh"
   },
   {
    "tuan": 51,
    "ten": "Giáng sinh: Delibird",
-   "buoc": "Đổi quà: Delibird"
+   "buoc": "Đổi quà: Giáng sinh"
   },
   {
    "tuan": 52,
    "ten": "Tổng kết năm + mùa giải PvP 4",
-   "buoc": "Tổng kết mùa: Tổng kết năm + mùa giải PvP 4"
+   "buoc": "Tổng kết: Cuối năm"
   },
   {
    "tuan": 52,
    "ten": "Tổng kết năm + mùa giải PvP 4",
-   "buoc": "Nước rút: Tổng kết năm + mùa giải PvP 4"
+   "buoc": "Nước rút: Cuối năm"
   },
   {
    "tuan": 52,
    "ten": "Tổng kết năm + mùa giải PvP 4",
-   "buoc": "Huy chương: Tổng kết năm + mùa giải PvP 4"
+   "buoc": "Huy chương: Cuối năm"
   }
  ],
  "huyen_thoai": [
@@ -3745,22 +3889,22 @@
    "moc": 300
   },
   {
-   "nhom": "Ấp trứng",
+   "nhom": "Trứng nở",
    "ten": "Trứng đầu tiên",
    "moc": 1
   },
   {
-   "nhom": "Ấp trứng",
+   "nhom": "Trứng nở",
    "ten": "Nhà trẻ đông vui",
    "moc": 20
   },
   {
-   "nhom": "Ấp trứng",
+   "nhom": "Trứng nở",
    "ten": "Bảo mẫu ba vùng",
    "moc": 100
   },
   {
-   "nhom": "Ấp trứng",
+   "nhom": "Trứng nở",
    "ten": "Cha mẹ của trăm Pokémon",
    "moc": 300
   },

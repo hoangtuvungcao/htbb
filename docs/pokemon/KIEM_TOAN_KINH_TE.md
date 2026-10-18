@@ -142,7 +142,7 @@ Bậc theo cấp: sơ cấp / đồng / bạc / vàng / bạch kim / kim cương
 | Đục lỗ / khảm | 20.000 xu | 100% | — | tối đa 6 lỗ |
 | Thăng cấp đồ (+5 cấp) | 5.000 xu + nguyên liệu | — | — | giữ plus−1 |
 | Tinh luyện | 3.000.000 xu + 1 lượng + 1 vũ khí | 3% → 60% (`Map.java:9725-9737`) | mất nguyên liệu | không bảo hộ |
-| Thần Khí +1..+10 | nguyên liệu | 72 → 12% | mất nguyên liệu, giữ cấp | `ThoRenThanBi.java:581` |
+| Thần Khí +1..+10 | nguyên liệu | 72 → 12% | mất nguyên liệu, giữ cấp | `ThoRenBiAn.java:581` |
 | Pet | nguyên liệu cấp 6 | 90/45/20/15/7 | mất nguyên liệu | **AIOOBE ở bậc 5** (`Pet.java:69-70,703`) |
 
 Kết luận: hố tiền của nâng cấp **không tăng theo cấp/bậc đồ** (luôn 5.000 xu) nên không hút
@@ -184,11 +184,11 @@ và người có lượng (từ giftcode/nạp) mua đá may mắn bỏ xa ngư�
 | Shop đặc biệt | `doBuySpecialItem.java:40+` | 10–1.000 lượng; 50k–5M xu | bán sức mạnh |
 | Sửa đồ | `Char.java:4197-4253` | Σ price/10 | tốt, tỉ lệ theo cấp |
 | Hồi sinh | `Map.java:10416-10471` | 1k → 4,5M theo cấp | tốt |
-| Dịch chuyển | `Map.java:16909`, `BaiLuyenCong.java:55-77` | 500–30.000 xu | quá rẻ ở cấp cao |
+| Dịch chuyển | `Map.java:16909`, `BaiLuyenTap.java:55-77` | 500–30.000 xu | quá rẻ ở cấp cao |
 | Học chiêu | `Map.java:15528` | 60k/120k/300k | một lần |
 | Cường hoá/khảm/ép | `MapEpNgoc.java` | 5k/20k/5k | **không theo cấp** |
 | Tinh luyện | `Map.java:9692` | 3M xu + 1 lượng | tốt |
-| Lập đội | `MapBangHoi.java:1069` | 100M xu | một lần |
+| Lập đội | `MapDoi.java:1069` | 100M xu | một lần |
 | Thuế chợ | `OfflineMap.java:376-397` | 10% (hoặc thuế đội 80% về quỹ) | tốt |
 | Xổ số | `Char.java:944/958` | thuế 10% xu / 15% lượng | tốt |
 | Đổi tên | `CharDoiTenNhanVat.java:29` | 100.000 lượng | quá đắt, ít dùng |
@@ -229,7 +229,7 @@ và người có lượng (từ giftcode/nạp) mua đá may mắn bỏ xa ngư�
 | `type` | 0 hạ quái theo id; 1 đưa thư (vật phẩm nhiệm vụ id 4); 2 thu thập vật phẩm nhiệm vụ rơi từ quái; 3 nói chuyện; 4 hạ quái lệch ±`deltaLv` |
 | `npcrcv/npcres` | gửi client bằng **1 byte** (`MessageCreator.java:2909`) ⇒ −128..127 |
 | `lv` | **Không được kiểm tra** với nhiệm vụ chính (chỉ lọc type 4 phụ: `lv ≤ cấp < lv+10`) |
-| Vật phẩm nhiệm vụ | chỉ **10 loại** cố định trong `data.ItemQuest.NAME_ITEM_QUEST` (lớp trong `lib/NQSH_5h.jar`, không có nguồn) |
+| Vật phẩm nhiệm vụ | chỉ **10 loại** cố định trong `data.ItemQuest.NAME_ITEM_QUEST` (lớp trong `lib/htbb-core.jar`, không có nguồn) |
 | Danh sách gửi client | `writeByte(allQuest.size())` ⇒ tối đa 127 nhiệm vụ nhận được cùng lúc; hiện liệt kê **mọi** nhiệm vụ phụ |
 | `exp` | đọc bằng `getInt` ⇒ ≤ 2,147·10⁹ |
 | `infogift` | varchar(200), `name` varchar(45) |
@@ -264,10 +264,26 @@ Nguồn/hố bị sót ở bản đầu. "Đã sửa" = trong GĐ2 (`KE_HOACH_LA
 nâng cấp thời trang, mở rộng túi, nâng cấp/đổi màu/xoá thú cưỡi, ly hôn/cưới, rời bang, chế tạo, quy đổi, thả đèn,
 xổ số, hộp may mắn, mua EXP Dracula, chuộc lại đồ đã bán, đặt cọc đấu giá.
 
-**Lớp chỉ có trong `lib/NQSH_5h.jar` (không sửa được, CODING_CONVENTION §12)**: `RegionMapMoba` (addLuong 100 × 2),
+**Lớp chỉ có trong `lib/htbb-core.jar` (không sửa được, CODING_CONVENTION §12)**: `RegionMapMoba` (addLuong 100 × 2),
 `PrivateDataMap` (addXu 40k/50k), `TongKimData`, `ArenaData`. Không bọc được từ ngoài mà không đổi tên lớp; theo dõi bằng
 `tob_kinh_te_ngay` (xu vào/ra) và tắt các bản đồ/sự kiện đó khi chạy thiết kế dài hạn nếu chỉ số đỏ.
 
 **Thưởng mới GĐ2 đã đưa vào mô phỏng** (`MoPhongKinhTe`, module "GD2 bổ sung"): quà hoạt động (≤ 5 lượng khoá + 5% giờ xu/ngày/tài khoản),
 Hầm ngục (5 lượng khoá/ngày), boss thế giới (3/tuần), chiếm thành (5–20/tuần, chia quỹ bang là chuyển tiền). Kết quả vẫn **12/12**,
 xu ra/vào 99,3%, lượng khoá ra/vào 95,0%.
+
+**Cửa hàng & đổi vật phẩm (18/10/2026, luật "không item mồ côi", `docs/pokemon/KIEM_ITEM.md`)**: Sổ tay huấn luyện → mục 9
+(`real.CuaHangLauDai`, bảng `data_cua_hang_lau_dai` sinh bởi `tools/pokemon/sinh_vat_pham_lau_dai.py`, chỉ khi `sv.lau_dai=1`).
+Ngân sách không đổi vì mọi dòng **chỉ ra vật phẩm, không bao giờ ra xu / lượng / lượng khoá** (generator và
+`test/KiemItemMoCoi.java` chặn):
+- Thuốc trạng thái / X / xua quái / quả mọng bán bằng xu đúng giá thiết kế (`noi_dung_vat_pham.csv`, gói 5) = một phần của hố
+  hút "thuốc + sửa đồ" đã có trong mô phỏng (`TIEU_HAO_PHAN_TRAM`), không phải hố hút mới.
+- Kecleon: Thuốc hồi sinh tối đa 5 lượng khoá (3/tuần), bùa bảo hộ 10/25 lượng khoá = đúng giá lượng khoá cũ khi nâng cấp
+  thiếu bùa; nằm trong "lượng khoá thuốc 4/ngày" của mô phỏng.
+- Trang bị năm 2 (Bronzong, xu, 1,5 giờ thu nhập) và chế tạo Machamp (đá + nguyên liệu phụ + 50% giá xu) đúng
+  `noi_dung_cua_hang.csv` / `noi_dung_che_tao.csv` — vốn đã nằm trong ngân sách trang bị của `THIET_KE_LAU_DAI`.
+- Đổi huy chương Gym / mùa giải / tín vật đột kích / vật phẩm sự kiện lấy đồ giữ, đá tiến hoá, Kẹo hiếm (vẫn 2/tuần khi dùng,
+  trừ năng lượng), Mảnh tinh hoa / Vảy rồng, thuốc: giá trị ra ≤ giá trị tín vật trong ngân sách sự kiện tuần (≤ 70 giờ/năm).
+- Boss thế giới: đá nâng cấp nay nằm trong Hộp vàng / Hộp tham gia (4–8 / 2–4 đá theo `data_noi_dung_roi` nguồn `mo_hop`,
+  trước là 5 / 2 thẳng) + 1–3 tín vật đột kích tuần đột kích: +≈1 đá / người / tuần, không đáng kể so với rơi 1,5%/quái;
+  lượng khoá giữ nguyên 10 / 3. Mô phỏng chạy lại vẫn **12/12** + **6/6**.

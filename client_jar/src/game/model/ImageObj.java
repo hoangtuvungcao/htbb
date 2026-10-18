@@ -27,10 +27,10 @@ public class ImageObj {
     public ImageObj(int type, int palate) {
         this.img = new Image[1];
         try {
-            byte[] header = FilePack.instance.loadFile(new StringBuffer(String.valueOf(palate)).append("_h").toString());
-            byte[] data = FilePack.instance.loadFile("data");
+            byte[] header = FilePack.hienTai().loadFile(new StringBuffer(String.valueOf(palate)).append("_h").toString());
+            byte[] data = FilePack.hienTai().loadFile("data");
             this.img[0] = Res.createImgByHeader(header, data);
-            byte[] pos = FilePack.instance.loadFile("pos");
+            byte[] pos = FilePack.hienTai().loadFile("pos");
             ByteArrayInputStream bi = new ByteArrayInputStream(pos);
             DataInputStream dis = new DataInputStream(bi);
             int size = dis.readByte();

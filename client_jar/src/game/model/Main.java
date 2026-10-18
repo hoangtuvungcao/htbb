@@ -21,14 +21,20 @@ public abstract class Main {
 
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
+        Font.nenSang = false;
+        // pokemon: phím mềm dạng viên (trái xanh / giữa vàng / phải đỏ), lún khi đang bấm
+        int vung = Canvas.isPointerDown ? Canvas.collisionCmdBar() : -1;
+        // chia chỗ: phím giữa theo chữ (tối đa 2/5 màn), hai bên chia phần còn lại -> không đè nhau
+        int wGiua = this.center == null ? 0 : Math.min(game.pokemon.GiaoDien.rongNutMem(this.center.caption, 1), Canvas.w * 2 / 5);
+        int wBen = (Canvas.w - wGiua) / 2 - 6;
         if (this.left != null) {
-            Font.borderFont.drawString(g, this.left.caption, 5, Canvas.h - Screen.deltaY, 0);
+            game.pokemon.GiaoDien.nutMem(g, this.left.caption, 0, Canvas.keyHold[12] || vung == 0, wBen);
         }
         if (this.center != null) {
-            Font.borderFont.drawString(g, this.center.caption, Canvas.hw, Canvas.h - Screen.deltaY, 2);
+            game.pokemon.GiaoDien.nutMem(g, this.center.caption, 1, Canvas.keyHold[5] || vung == 1, Canvas.w * 2 / 5);
         }
         if (this.right != null) {
-            Font.borderFont.drawString(g, this.right.caption, Canvas.w - 5, Canvas.h - Screen.deltaY, 1);
+            game.pokemon.GiaoDien.nutMem(g, this.right.caption, 2, Canvas.keyHold[13] || vung == 2, wBen);
         }
         if (MessageScr.nMSG > 0) {
             g.drawImage(Res.imgMSG, Canvas.w - 7, 7, 3);

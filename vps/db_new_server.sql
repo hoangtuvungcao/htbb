@@ -2,17 +2,17 @@
 --  DỰNG DATABASE CHO SERVER MỚI — TRẮNG TINH DỮ LIỆU NGƯỜI CHƠI
 --
 --  Chạy trên VPS:
---      mysql -u root < /opt/kpah/vps/db_new_server.sql
+--      mysql -u root < /opt/htbb/vps/db_new_server.sql
 --
 --  CHẠY SAU KHI đã import 2 file:
---      mysql -u root kpah_db < /opt/kpah/sql/gamedb7_clean.sql
---      mysql -u root account < /opt/kpah/loginServer/account.sql
+--      mysql -u root htbb_db < /opt/htbb/sql/gamedb7_clean.sql
+--      mysql -u root account < /opt/htbb/loginServer/account.sql
 --
 --  Script này làm 5 việc:
---    1. Xoá sạch MỌI bảng dữ liệu người chơi trong kpah_db (đọc từ
+--    1. Xoá sạch MỌI bảng dữ liệu người chơi trong htbb_db (đọc từ
 --       information_schema nên không sót bảng log xoay vòng theo tháng)
 --    2. Giữ nguyên 16 bảng dữ liệu game (item, monster, quest, shop, giftcode...)
---    3. Xoá sạch tài khoản: account.team_user + kpah_db.5h_active
+--    3. Xoá sạch tài khoản: account.team_user + htbb_db.5h_active
 --    4. Tạo lại 1 tài khoản admin với mật khẩu bạn đặt, kích hoạt luôn
 --    5. In bảng kiểm tra cuối cùng
 --
@@ -28,11 +28,11 @@
 --  với mật khẩu mặc định (đó là cách để bạn không quên).
 -- ############################################################################
 SET @admin_user = 'admin';
-SET @admin_pass = 'kpah2026admin';
+SET @admin_pass = 'htbb2026admin';
 
 -- Phai chon database TRUOC khi tao procedure, neu khong MariaDB bao
 -- "ERROR 1046 (3D000): No database selected".
-USE kpah_db;
+USE htbb_db;
 
 
 -- ############################################################################
@@ -60,7 +60,7 @@ DROP PROCEDURE htbb_kiem_tra_truoc;
 
 
 -- ############################################################################
---  PHẦN 1 — XOÁ SẠCH DỮ LIỆU NGƯỜI CHƠI TRONG kpah_db
+--  PHẦN 1 — XOÁ SẠCH DỮ LIỆU NGƯỜI CHƠI TRONG htbb_db
 --
 --  GIỮ LẠI 16 bảng: data_attribute, data_item, data_monster, data_potion,
 --  data_quest, data_shop, bad_word, admin_msg, 5h_systems, 5h_active,
@@ -83,7 +83,7 @@ BEGIN
     DECLARE cur CURSOR FOR
         SELECT TABLE_NAME
           FROM information_schema.TABLES
-         WHERE TABLE_SCHEMA = 'kpah_db'
+         WHERE TABLE_SCHEMA = 'htbb_db'
            AND TABLE_TYPE   = 'BASE TABLE'
            AND TABLE_NAME NOT IN (
                 'data_attribute','data_item','data_monster','data_potion',
@@ -97,7 +97,7 @@ BEGIN
     vong_lap: LOOP
         FETCH cur INTO tbl;
         IF done THEN LEAVE vong_lap; END IF;
-        SET @s = CONCAT('TRUNCATE TABLE `kpah_db`.`', tbl, '`');
+        SET @s = CONCAT('TRUNCATE TABLE `htbb_db`.`', tbl, '`');
         PREPARE st FROM @s;
         EXECUTE st;
         DEALLOCATE PREPARE st;
@@ -268,13 +268,13 @@ ON DUPLICATE KEY UPDATE
 --  Đây là NGUỒN DUY NHẤT cho khối này (file sql/fix_cot_du_lieu_tran.sql cũ
 --  đã xoá vì trùng nội dung 100% với đây).
 -- ############################################################################
-ALTER TABLE `kpah_db`.`tob_char`
+ALTER TABLE `htbb_db`.`tob_char`
   MODIFY `equip` MEDIUMTEXT,
   MODIFY `inven` MEDIUMTEXT,
   MODIFY `bag`   MEDIUMTEXT,
   MODIFY `tuido` MEDIUMTEXT;
 
-ALTER TABLE `kpah_db`.`tob_gem_new`
+ALTER TABLE `htbb_db`.`tob_gem_new`
   MODIFY `listtemplate` MEDIUMTEXT NOT NULL,
   MODIFY `soluong`      MEDIUMTEXT NOT NULL,
   MODIFY `slock`        MEDIUMTEXT NOT NULL;
@@ -290,7 +290,7 @@ ALTER TABLE `kpah_db`.`tob_gem_new`
 --  Bản gốc của khối này: fix_mau_tang_lua_lan.sql ở thư mục gốc repo.
 --  SAU KHI CHẠY PHẢI RESTART SERVER (loadNameAttributeItem chỉ chạy lúc khởi động).
 -- ############################################################################
-UPDATE `kpah_db`.`data_attribute` SET `idcolor` = 0 WHERE `id` = 90;
+UPDATE `htbb_db`.`data_attribute` SET `idcolor` = 0 WHERE `id` = 90;
 
 
 -- ############################################################################
@@ -303,14 +303,14 @@ UPDATE `kpah_db`.`data_attribute` SET `idcolor` = 0 WHERE `id` = 90;
 --  chạy khi thật sự thiếu, để bảng luôn liền mạch.
 --  Bản gốc của khối này: sql/fix_data_item_lo_id.sql (đã xoá vì trùng nội dung 100%).
 -- ############################################################################
-INSERT INTO `kpah_db`.`data_item`
+INSERT INTO `htbb_db`.`data_item`
 (id, name, type, style, he, gender, level, durable,
  atb0, atb1, atb2, atb3, atb4, atb5, atb6, atb7, atb8, atb9,
  price, clazz, xstart, ystart, colortype, nloan, idUpLevel, namein, ideff, pricecu)
 SELECT 722, 'Sách kỹ năng pet (cũ)', 24, 0, 0, 0, 1, 0,
        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
        0, -1, 580, 0, -1, 0, -1, NULL, -1, 0
-WHERE NOT EXISTS (SELECT 1 FROM (SELECT id FROM `kpah_db`.`data_item` WHERE id = 722) t);
+WHERE NOT EXISTS (SELECT 1 FROM (SELECT id FROM `htbb_db`.`data_item` WHERE id = 722) t);
 
 
 -- ############################################################################
@@ -337,15 +337,15 @@ CROSS JOIN (SELECT 0 i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT
 CROSS JOIN (SELECT 0 i UNION SELECT 1) c
 WHERE a.i + b.i * 10 + c.i * 100 <= 161;
 
-INSERT INTO `kpah_db`.`data_potion` (id, idImage, delay, isTrade, name, name2, price, recovered)
+INSERT INTO `htbb_db`.`data_potion` (id, idImage, delay, isTrade, name, name2, price, recovered)
 SELECT s.n, 0, 0, 0, '', '', 0, 0
 FROM tmp_so_potion s
-LEFT JOIN `kpah_db`.`data_potion` p ON p.id = s.n
+LEFT JOIN `htbb_db`.`data_potion` p ON p.id = s.n
 WHERE p.id IS NULL;
 
 DROP TEMPORARY TABLE IF EXISTS tmp_so_potion;
 
-UPDATE `kpah_db`.`data_potion`
+UPDATE `htbb_db`.`data_potion`
    SET idImage = 95, delay = 0, isTrade = 1,
        name = 'Sách kỹ năng pet\nDùng để pet học kỹ năng.',
        name2 = 'sachkynangpet', price = 0, recovered = 0
@@ -355,12 +355,12 @@ UPDATE `kpah_db`.`data_potion`
 -- ############################################################################
 --  PHẦN 2I — TẠO BẢNG tob_nap_moc (mốc nạp tân thủ 49k/99k/299k)
 --
---  Luồng: web/naptien.php tạo dòng 'cho_thanh_toan' -> webhook_sepay.php hoặc
---  admin_naptien.php xác nhận -> 'da_thanh_toan' -> NPC Tổng Quản trong game
+--  Luồng: HTBB-Web /naptien tạo dòng 'cho_thanh_toan' -> /api/nap/webhook-sepay hoặc
+--  trang quản trị /admin/naptien xác nhận -> 'da_thanh_toan' -> NPC Tổng Quản trong game
 --  trao quà, chuyển 'da_nhan'.
 --  Bản gốc của khối này: sql/tob_nap_moc.sql (đã xoá vì trùng nội dung 100%).
 -- ############################################################################
-CREATE TABLE IF NOT EXISTS `kpah_db`.`tob_nap_moc` (
+CREATE TABLE IF NOT EXISTS `htbb_db`.`tob_nap_moc` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `userID` int(11) NOT NULL COMMENT 'team_user.id / player.userID',
   `moc` tinyint(3) unsigned NOT NULL COMMENT '1 = 49k, 2 = 99k, 3 = 299k',
@@ -381,12 +381,12 @@ CREATE TABLE IF NOT EXISTS `kpah_db`.`tob_nap_moc` (
 --  PHẦN 3 — XOÁ SẠCH TÀI KHOẢN ĐĂNG NHẬP
 --
 --  account.team_user   = tài khoản đăng nhập thật (login server đọc DB này)
---  kpah_db.5h_active   = bảng kích hoạt; thiếu dòng là bị chặn ngay màn login
+--  htbb_db.5h_active   = bảng kích hoạt; thiếu dòng là bị chặn ngay màn login
 --                        (sv.EnableAvtiveCheck=1)
---  kpah_db.team_user   = bảng KHÁC hoàn toàn, chỉ map provider/agent
+--  htbb_db.team_user   = bảng KHÁC hoàn toàn, chỉ map provider/agent
 -- ############################################################################
 TRUNCATE TABLE `account`.`team_user`;
-TRUNCATE TABLE `kpah_db`.`5h_active`;
+TRUNCATE TABLE `htbb_db`.`5h_active`;
 ALTER TABLE `account`.`team_user` AUTO_INCREMENT = 1;
 
 
@@ -410,7 +410,7 @@ BEGIN
     DEALLOCATE PREPARE st;
 
     -- Kich hoat tai khoan vua tao trong 30 ngay
-    INSERT INTO `kpah_db`.`5h_active` (userID, username, time_end)
+    INSERT INTO `htbb_db`.`5h_active` (userID, username, time_end)
     SELECT id, username, UNIX_TIMESTAMP() + 2592000 FROM `account`.`team_user` WHERE username = @admin_user;
 END$$
 DELIMITER ;
@@ -424,42 +424,42 @@ DROP PROCEDURE htbb_tao_admin;
 --
 --  Cột "phai_la" nói rõ giá trị đúng. Lệch là có gì sai, đừng bật server.
 -- ############################################################################
-SELECT 'tob_char (nhan vat)'        AS bang, COUNT(*) AS so_dong, '0' AS phai_la FROM kpah_db.tob_char
-UNION ALL SELECT 'tob_animal',       COUNT(*), '0'      FROM kpah_db.tob_animal
-UNION ALL SELECT 'tob_pet',          COUNT(*), '0'      FROM kpah_db.tob_pet
-UNION ALL SELECT 'tob_clan',         COUNT(*), '0'      FROM kpah_db.tob_clan
-UNION ALL SELECT 'tob_market',       COUNT(*), '0'      FROM kpah_db.tob_market
-UNION ALL SELECT 'giftcode_log',     COUNT(*), '0'      FROM kpah_db.giftcode_log
-UNION ALL SELECT 'board_created',    COUNT(*), '0'      FROM kpah_db.board_created
+SELECT 'tob_char (nhan vat)'        AS bang, COUNT(*) AS so_dong, '0' AS phai_la FROM htbb_db.tob_char
+UNION ALL SELECT 'tob_animal',       COUNT(*), '0'      FROM htbb_db.tob_animal
+UNION ALL SELECT 'tob_pet',          COUNT(*), '0'      FROM htbb_db.tob_pet
+UNION ALL SELECT 'tob_clan',         COUNT(*), '0'      FROM htbb_db.tob_clan
+UNION ALL SELECT 'tob_market',       COUNT(*), '0'      FROM htbb_db.tob_market
+UNION ALL SELECT 'giftcode_log',     COUNT(*), '0'      FROM htbb_db.giftcode_log
+UNION ALL SELECT 'board_created',    COUNT(*), '0'      FROM htbb_db.board_created
 UNION ALL SELECT '--- du lieu game phai CON ---', NULL, NULL
-UNION ALL SELECT 'data_item',        COUNT(*), '~904'   FROM kpah_db.data_item
-UNION ALL SELECT 'data_monster',     COUNT(*), '138'    FROM kpah_db.data_monster
-UNION ALL SELECT 'data_potion',      COUNT(*), '162'    FROM kpah_db.data_potion
-UNION ALL SELECT 'data_shop',        COUNT(*), '148'    FROM kpah_db.data_shop
-UNION ALL SELECT 'data_quest',       COUNT(*), '49'     FROM kpah_db.data_quest
-UNION ALL SELECT 'data_attribute',   COUNT(*), '198'    FROM kpah_db.data_attribute
-UNION ALL SELECT 'tob_tubinh (template)', COUNT(*), '16' FROM kpah_db.tob_tubinh
-UNION ALL SELECT 'bad_word',         COUNT(*), '147'    FROM kpah_db.bad_word
+UNION ALL SELECT 'data_item',        COUNT(*), '~904'   FROM htbb_db.data_item
+UNION ALL SELECT 'data_monster',     COUNT(*), '138'    FROM htbb_db.data_monster
+UNION ALL SELECT 'data_potion',      COUNT(*), '162'    FROM htbb_db.data_potion
+UNION ALL SELECT 'data_shop',        COUNT(*), '148'    FROM htbb_db.data_shop
+UNION ALL SELECT 'data_quest',       COUNT(*), '49'     FROM htbb_db.data_quest
+UNION ALL SELECT 'data_attribute',   COUNT(*), '198'    FROM htbb_db.data_attribute
+UNION ALL SELECT 'tob_tubinh (template)', COUNT(*), '16' FROM htbb_db.tob_tubinh
+UNION ALL SELECT 'bad_word',         COUNT(*), '147'    FROM htbb_db.bad_word
 UNION ALL SELECT '--- cot luu hanh trang (PHAN 2D) ---', NULL, NULL
 UNION ALL SELECT 'cot da la mediumtext', COUNT(*), '7'
   FROM information_schema.COLUMNS
- WHERE TABLE_SCHEMA = 'kpah_db' AND DATA_TYPE = 'mediumtext'
+ WHERE TABLE_SCHEMA = 'htbb_db' AND DATA_TYPE = 'mediumtext'
    AND ( (TABLE_NAME='tob_char'    AND COLUMN_NAME IN ('equip','inven','bag','tuido'))
       OR (TABLE_NAME='tob_gem_new' AND COLUMN_NAME IN ('listtemplate','soluong','slock')) )
 UNION ALL SELECT 'idcolor dong "Tang lua lan" (PHAN 2E)', idcolor, '0'
-  FROM kpah_db.data_attribute WHERE id = 90
+  FROM htbb_db.data_attribute WHERE id = 90
 UNION ALL SELECT '--- sach pet (PHAN 2G/2H) ---', NULL, NULL
 UNION ALL SELECT 'data_potion (0..161 lien tuc)', COUNT(*), '162'
-  FROM kpah_db.data_potion
+  FROM htbb_db.data_potion
 UNION ALL SELECT 'data_potion id=111 ten', name, 'Sach ky nang pet...'
-  FROM kpah_db.data_potion WHERE id = 111
+  FROM htbb_db.data_potion WHERE id = 111
 UNION ALL SELECT '--- moc nap (PHAN 2I) ---', NULL, NULL
 UNION ALL SELECT 'bang tob_nap_moc ton tai', COUNT(*), '1 (bang, khong can co dong)'
   FROM information_schema.TABLES
- WHERE TABLE_SCHEMA = 'kpah_db' AND TABLE_NAME = 'tob_nap_moc'
+ WHERE TABLE_SCHEMA = 'htbb_db' AND TABLE_NAME = 'tob_nap_moc'
 UNION ALL SELECT '--- tai khoan ---', NULL, NULL
 UNION ALL SELECT 'account.team_user', COUNT(*), '1 (admin)' FROM account.team_user
-UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;
+UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM htbb_db.5h_active;
 
 -- ============================================================================
 --  SAU KHI CHẠY — 2 VIỆC BẮT BUỘC
@@ -476,5 +476,5 @@ UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;
 --     thường nên không ai giành được tên này trước bạn.
 --
 --  Muốn thêm mã giftcode buff của bạn (tb8x, linhthu1, hoakylan, lkhoa1ty...):
---      mysql -u root kpah_db < /opt/kpah/sql/buff_ddsa.sql
+--      mysql -u root htbb_db < /opt/htbb/sql/buff_ddsa.sql
 -- ============================================================================

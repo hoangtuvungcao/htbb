@@ -25,7 +25,7 @@ python3 -I tools/pokemon/sinh_noi_dung.py     # ở thư mục HTBB/, chỉ thư
 
 **Cách nạp vào game**
 - `tools/pokemon/xuat_sql_day_du.sh` chạy `pokemon_noi_dung.sql` **sau** nhóm `LAU_DAI`, nên `sql/htbb_day_du.sql` sinh lại sẽ có đủ nội dung. Đã chạy thử toàn bộ pipeline trên một MariaDB 10.4 riêng (ra 937.921 byte, 143 bảng).
-- Đã chạy `pokemon_noi_dung.sql` hai lần liền trên NovaDB (CSDL nháp `kpah_db_noidung`, đã xoá bảng sau khi kiểm). Kết quả: data_item 924 → 985 dòng, cả hai lần như nhau.
+- Đã chạy `pokemon_noi_dung.sql` hai lần liền trên NovaDB (CSDL nháp `htbb_db_noidung`, đã xoá bảng sau khi kiểm). Kết quả: data_item 924 → 985 dòng, cả hai lần như nhau.
 - Phần B được server nạp lúc khởi động (`Map.loadAllTemplate` → `DatabaseXepHang.loadItemTemplate`) và gửi xuống client (MessageCreator gửi đủ id 0..max). Icon dùng lại icon đã có (`xstart`), nên client không cần thêm ảnh.
 - Hiện **chưa có nguồn rơi, cửa hàng hay nhiệm vụ nào trỏ tới** id 1001+. Vì vậy khi `sv.lau_dai=0`, game giữ nguyên hành vi cũ.
 - Phần A là số liệu thiết kế. Giai đoạn 2/3 đọc các bảng này để nối vào code (xem mục 9).

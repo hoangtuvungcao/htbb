@@ -8,16 +8,20 @@ export interface SiteConfig {
   linkJar: string
   linkGroup: string
   autoActivate: boolean
-  /** Nạp tiền đang bật (KPAH_NAP_BAT). Tắt = ẩn menu Nạp và trang /naptien, /xac-nhan-nap. */
+  /** Nạp tiền đang bật (HTBB_NAP_BAT). Tắt = ẩn menu Nạp và trang /naptien, /xac-nhan-nap. */
   napBat: boolean
+  /** Địa chỉ gốc từ HTBB_SITE_URL (mặc định http://localhost:3000) — canonical, OG, JSON-LD. */
+  siteUrl: string
+  /** false = chưa có tên miền thật -> noindex, nofollow. */
+  choIndex: boolean
 }
 
 export function useSite() {
   return useFetch<SiteConfig>('/api/site', { key: 'htbb-site', dedupe: 'defer' })
 }
 
-/** Link nhóm hỗ trợ, rơi về mục hỗ trợ của trang tải game khi chưa cấu hình. */
-export function linkHoTro(site: SiteConfig | null | undefined): string {
-  const g = site?.linkGroup?.trim() ?? ''
-  return g !== '' && g !== '#' ? g : '/download#support'
+/** Địa chỉ gốc của website (một nguồn: HTBB_SITE_URL qua /api/site; SSR và trình duyệt như nhau). */
+export function useGocSite() {
+  const { data } = useSite()
+  return computed(() => data.value?.siteUrl || GOC_SITE_MAC_DINH)
 }

@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Giam rac trong log game.out. vps/kpah-logrotate.conf da lo xoay vong theo
+ * Giam rac trong log game.out. vps/htbb-logrotate.conf da lo xoay vong theo
  * dung luong/thoi gian - van de la NOI DUNG: mot so cho in day du stack trace
  * cho loi RAT thuong xuyen (vd "broken pipe" khi client ngat ket noi, xay ra
  * o MOI lan logout/doi map) hoac lap lai VO HAN moi 300ms trong vong lap

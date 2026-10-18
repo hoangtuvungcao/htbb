@@ -42,7 +42,7 @@ public final class BossLauDai {
         Char niemMucTieu;
 
         TrangThai(final boolean theGioi) {
-            this.lan = System.currentTimeMillis();
+            this.lan = com.htbb.pokemon.DongHo.bay();
             this.gd = new GiaiDoanBoss(this.lan, theGioi);
             this.theGioi = theGioi;
         }
@@ -50,9 +50,13 @@ public final class BossLauDai {
 
     private static final WeakHashMap<Monster, TrangThai> BOSS = new WeakHashMap<Monster, TrangThai>();
 
-    /** Phan thuong (chuoi DatabaseGiftCode.applyItemString): vat pham KHOA + luong khoa. */
-    static final String THUONG_VANG = "LUONGKHOA:10,GEM:" + RoiLauDai.ID_DA + ":5:-1";
-    static final String THUONG_THAM_GIA = "LUONGKHOA:3,GEM:" + RoiLauDai.ID_DA + ":2:-1";
+    /**
+     * Phan thuong (chuoi DatabaseGiftCode.applyItemString): luong khoa. Da nang cap nam trong HOP (Hop vang /
+     * Hop tham gia dot kich 1051/1050, mo bang "Dung" - data_noi_dung_roi nguon mo_hop) + tin vat dot kich cua
+     * tuan, phat qua NoiDungLauDai.roiBossTheGioi (data_noi_dung_roi nguon boss_the_gioi). Luat "khong item mo coi".
+     */
+    static final String THUONG_VANG = "LUONGKHOA:10";
+    static final String THUONG_THAM_GIA = "LUONGKHOA:3";
 
     private BossLauDai() {
     }
@@ -71,7 +75,9 @@ public final class BossLauDai {
     }
 
     /** Nguoi {@code p} gay {@code dam} vao quai {@code mt}. @return sat thuong (khong doi). */
-    static int satThuongVaoBoss(final Char p, final Monster mt, final int dam) {
+    static int satThuongVaoBoss(final Char p, final Monster mt, final int dam0) {
+        // nhanBossThu = 1 tren may that (chi may thu + -Dhtbb.thu.nhanBoss, xem DongHo) - bot choi xuyen suot tang toc
+        final int dam = laBoss(mt) ? (int) Math.min(Integer.MAX_VALUE, (long) dam0 * com.htbb.pokemon.DongHo.nhanBossThu()) : dam0;
         return ghiNhan(p, mt, dam, Math.max(0, mt.hp - dam));
     }
 
@@ -82,6 +88,9 @@ public final class BossLauDai {
 
     static int ghiNhan(final Char p, final Monster mt, final int dam, final int hpSau) {
         TrangThaiGame.trungDon(mt);
+        if (laBoss(mt)) {
+            TuDongGame.khiGapBoss(p); // boss / Gym: dung Tu dong danh (tu_dong.tat_khi_pvp)
+        }
         if (!LauDai.bat() || !laBoss(mt) || dam <= 0) {
             return dam;
         }
@@ -99,10 +108,10 @@ public final class BossLauDai {
                     d[0] += dam;
                 }
                 t.nguoi.put(Integer.valueOf(p.charDBID), p);
-                sk = t.gd.capNhat(hpSau, Math.max(1, mt.maxhp), System.currentTimeMillis());
+                sk = t.gd.capNhat(hpSau, Math.max(1, mt.maxhp), com.htbb.pokemon.DongHo.bay());
             }
             for (final int s : sk) {
-                guiQuanh(p, GoiLauDaiGame.boss(mt, t.gd.pha, s, t.gd.giayDenNo(System.currentTimeMillis())));
+                guiQuanh(p, GoiLauDaiGame.boss(mt, t.gd.pha, s, t.gd.giayDenNo(com.htbb.pokemon.DongHo.bay())));
                 if (s == GiaiDoanBoss.SK_GOI_DE) {
                     goiDe(mt, t.nguoi.size());
                 }
@@ -151,7 +160,7 @@ public final class BossLauDai {
         if (t == null) {
             return ahp;
         }
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         int kq = ahp;
         try {
             final int[] sk;
@@ -233,13 +242,13 @@ public final class BossLauDai {
         final TrangThai t = new TrangThai(false);
         t.gym = stt;
         t.chuGym = chu.charDBID;
-        t.hetGioGym = System.currentTimeMillis() + ms;
+        t.hetGioGym = com.htbb.pokemon.DongHo.bay() + ms;
         BOSS.put(m, t);
     }
 
     /** Boss Gym dang mo cua nhan vat (stt) hoac 0. */
     static synchronized int gymDangDanh(final Char p) {
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
             if (e.getValue().gym > 0 && e.getValue().chuGym == p.charDBID && e.getKey() != null && e.getKey().hp > 0
                     && e.getValue().hetGioGym > bay) {
@@ -249,10 +258,25 @@ public final class BossLauDai {
         return 0;
     }
 
+    /**
+     * Nhan vat da gay sat thuong vao mot boss (the gioi / Gym) CON SONG tren cung ban do / khu - dang trong tran boss
+     * (HoiSinhGame: cam hoi sinh tai cho giua tran, hoi_sinh.cam_boss).
+     */
+    static synchronized boolean dangDanhBoss(final Char p) {
+        for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
+            final Monster m = e.getKey();
+            if (m != null && m.hp > 0 && !m.isDead && m.map == p.map && m.region == p.region
+                    && e.getValue().nguoi.containsKey(Integer.valueOf(p.charDBID))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Moi 5 giay: boss Gym het gio thi bien mat (thua). */
     static void donGymHetGio() {
         final List<Monster> het = new ArrayList<Monster>();
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         synchronized (BossLauDai.class) {
             for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
                 if (e.getValue().gym > 0 && e.getValue().hetGioGym < bay && e.getKey() != null) {
@@ -357,6 +381,10 @@ public final class BossLauDai {
             }
             try {
                 DatabaseGiftCode.applyItemString(c, bac == 2 ? THUONG_VANG : THUONG_THAM_GIA);
+                if (NoiDungLauDai.roiBossTheGioi(c, bac) == 0) {
+                    // bang roi tuan nay trong (chua nap noi dung): giu thuong da cu
+                    DatabaseGiftCode.applyItemString(c, "GEM:" + RoiLauDai.ID_DA + ":" + (bac == 2 ? 5 : 2) + ":-1");
+                }
                 c.sendMessage(MessageCreator.createCharInventoryMessage(c, 0));
                 c.sendMessage(MessageCreator.createCharGemItem(c));
                 LauDaiNhanVat.bao(c, "Boss thế giới: đóng góp " + (pn / 10.0) + "%, hạng " + (i + 1)
@@ -393,8 +421,8 @@ public final class BossLauDai {
             b.region = 0;
             map.addMonster(b, 0, 0);
             datTheGioi(b);
-            Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
-                    "Boss thế giới " + t.name + " đã xuất hiện! Thưởng theo % đóng góp."));
+            com.htbb.chongspam.ThongBaoGop.dua("boss",
+                    "Boss thế giới " + t.name + " đã xuất hiện! Thưởng theo mức đóng góp.");
             System.out.println("[LAU DAI] boss the gioi " + t.name + " id " + b.id + " o ban do " + map.mapId);
             return b;
         } catch (final Exception e) {

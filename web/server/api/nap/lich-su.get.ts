@@ -1,7 +1,7 @@
 /** Lịch sử 50 đơn nạp gần nhất của chính tài khoản. -> { dons } */
 export default defineEventHandler(async (event) => {
   const u = await requireUser(event)
-  if (!(await napCoBang())) napThieuBang()
+  if (!(await napCoBang())) napThieuBang(true)
   try {
     await napHetHanDonCu()
     return { dons: (await napLichSu(u.id)).map(napDonCongKhai) }

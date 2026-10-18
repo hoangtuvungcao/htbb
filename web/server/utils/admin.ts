@@ -2,7 +2,7 @@
  * Nền móng khu quản trị: đăng nhập, phân quyền, nhật ký thao tác.
  *
  * AI VÀO ĐƯỢC? Đăng nhập bằng chính TÀI KHOẢN GAME (account.team_user, so khớp
- * bằng PASSWORD() y hệt login server), và tên đó phải nằm trong KPAH_ADMIN_ACCOUNTS.
+ * bằng PASSWORD() y hệt login server), và tên đó phải nằm trong HTBB_ADMIN_ACCOUNTS.
  * Danh sách rỗng = KHÔNG AI vào được (khoá mặc định, không phải mở mặc định) —
  * quên cấu hình thì trang tự đóng lại chứ không mở toang.
  *
@@ -11,7 +11,7 @@
  * vật nên không đáng tin. Danh sách riêng cho web còn tách bạch được: làm GM trong
  * game chưa chắc được quyền khoá tài khoản trên web.
  *
- * PHIÊN: token 'admin' sống KPAH_ADMIN_IDLE_TIMEOUT giây (mặc định 60 phút) kể từ
+ * PHIÊN: token 'admin' sống HTBB_ADMIN_IDLE_TIMEOUT giây (mặc định 60 phút) kể từ
  * lần thao tác cuối. Mỗi request hợp lệ trả về token mới trong header
  * `X-Htbb-Token` (client tự thay) — tức "hết hạn khi quá lâu không thao tác".
  * Tên bị gỡ khỏi danh sách -> mất quyền ngay ở request kế tiếp.
@@ -23,7 +23,7 @@ import type { H3Event } from 'h3'
 export interface AdminUser {
   id: number
   username: string
-  /** Vai trò (server/utils/vaiTro.ts). Tên trong KPAH_ADMIN_ACCOUNTS = sieu_quan_tri. */
+  /** Vai trò (server/utils/vaiTro.ts). Tên trong HTBB_ADMIN_ACCOUNTS = sieu_quan_tri. */
   vaiTro: VaiTro
 }
 
@@ -80,7 +80,7 @@ export async function requireAdmin(event: H3Event): Promise<AdminUser> {
 }
 
 // ---------------------------------------------------------------------------
-//  Nhật ký thao tác (bảng kpah_db.web_admin_log)
+//  Nhật ký thao tác (bảng htbb_db.web_admin_log)
 // ---------------------------------------------------------------------------
 
 export async function coBangNhatKy(): Promise<boolean> {

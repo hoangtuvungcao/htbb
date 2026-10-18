@@ -108,7 +108,7 @@ public static class HudPokemon
 			}
 			if (mc.skillPointLeft > 0)
 			{
-				GiaoDien.vien(g, xv, y0 + 24, 74, 16, GiaoDien.XANH, "+Kỹ năng");
+				GiaoDien.vien(g, xv, y0 + 24, 74, 16, GiaoDien.XANH, "+Chiêu");
 			}
 		}
 	}

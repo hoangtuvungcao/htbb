@@ -4,15 +4,38 @@ useSeoMeta({
   description: 'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè. Tải game và đăng ký tài khoản.',
 })
 
+const gocSite = useGocSite()
+const tenGame = useAppConfig().htbb.tenSite
+// Nền tảng: danh mục chung /admin/tai-game (useBanTai)
+const { ds: dsBanTai, tenDangCo, tenSapRaMat } = useBanTai()
+useHead({
+  script: [{
+    type: 'application/ld+json',
+    key: 'ld-game',
+    innerHTML: () => JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'VideoGame',
+      'name': tenGame,
+      'url': `${gocSite.value}/`,
+      'inLanguage': 'vi',
+      'genre': ['MMORPG', 'Nhập vai'],
+      'gamePlatform': dsBanTai.value.filter(b => !b.sapRaMat).map(b => b.ten),
+      'playMode': 'MultiPlayer',
+      'isAccessibleForFree': true,
+      'description': 'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè.',
+    }),
+  }],
+})
+
 const auth = useAuth()
 onMounted(() => auth.hydrate())
 const { data: site } = await useSite()
-const hoTro = computed(() => linkHoTro(site.value))
+const hoTro = useHoTro().link
 const tenSite = useAppConfig().htbb.tenSite
 
 const stats = [
   { so: '05', tieuDe: 'Pokémon khởi đầu', mo: 'Chính bạn là Pokémon đó', to: '/huong-dan#khoi-dau' },
-  { so: String(POKEDEX.he.length), tieuDe: 'Hệ khắc chế', mo: 'Biết hệ là thắng', to: '/cam-nang/he-khac-che' },
+  { so: String(POKEDEX.he.length), tieuDe: 'Hệ Pokémon', mo: 'Nắm khắc hệ là nắm phần thắng', to: '/cam-nang/he-khac-che' },
   { so: String(POKEDEX.loai.length), tieuDe: 'Loài trong Pokédex', mo: 'Săn, sưu tầm, săn Shiny', to: '/pokedex' },
   { so: String(CAM_NANG.suKien.length), tieuDe: 'Tuần sự kiện / năm', mo: 'Tuần nào cũng có chuyện vui', to: '/cam-nang/su-kien' },
 ]
@@ -76,7 +99,7 @@ const khoiDau = computed(() => {
 
 const steps = computed(() => [
   { so: '1', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
-  { so: '2', tieuDe: 'Tải phiên bản phù hợp', mo: 'Chọn nền tảng và làm theo hướng dẫn cài đặt.', link: 'Chọn bản tải', to: '/download' },
+  { so: '2', tieuDe: 'Tải phiên bản phù hợp', mo: `Có trên ${tenDangCo.value || 'nhiều nền tảng'}${tenSapRaMat.value ? ` (${tenSapRaMat.value} sắp ra mắt)` : ''}. Chọn bản phù hợp và làm theo hướng dẫn cài đặt.`, link: 'Chọn bản tải', to: '/download' },
   { so: '3', tieuDe: 'Chọn Pokémon khởi đầu', mo: 'Đăng nhập game, chọn Pokémon của bạn và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
 ])
 
@@ -88,92 +111,82 @@ const faq = computed(() => [
 
 <template>
   <div>
-    <!-- ============ HERO: trời, cỏ, 5 Pokémon khởi đầu ============ -->
-    <section class="relative isolate overflow-hidden" aria-labelledby="hero-heading">
-      <SiteHeroSky class="-z-10" />
-
-      <UContainer class="max-w-7xl">
-        <div class="grid items-end gap-6 pb-10 pt-12 sm:pt-16 lg:min-h-[640px] lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-10 lg:pb-16">
-          <div class="lg:pb-24">
-            <FxReveal>
-              <p class="eyebrow">
-                {{ tc.hero.nhan || `${tenSite} · MMORPG` }}
+    <!-- ============ HERO: key art chung với màn đăng nhập trong game (SiteKeyArt), logo, 5 Pokémon khởi đầu ============ -->
+    <section class="relative isolate flex min-h-[max(46rem,calc(100svh-4rem))] overflow-hidden" aria-labelledby="hero-heading">
+      <SiteKeyArt class="-z-10" />
+      <UContainer class="w-full max-w-4xl">
+        <div class="flex flex-col items-center pb-[clamp(12rem,30svh,22rem)] pt-6 text-center sm:pt-8">
+          <!-- logo: hiện ngay từ HTML server (không chờ JS), chỉ trượt + rõ dần bằng CSS, không blur/filter để SVG luôn sắc nét -->
+          <img src="/logo.svg" :alt="tenSite" width="836" height="506" class="hero-logo w-[min(30rem,84vw,46svh)]" fetchpriority="high">
+          <FxReveal :delay="0.1">
+            <h1 id="hero-heading" class="mt-3 font-display text-2xl font-extrabold leading-tight text-white [text-shadow:0_2px_0_#141a3c,0_0_18px_rgb(20_26_60/.8)] sm:text-3xl">
+              {{ tc.hero.dong1 }}
+              <span class="text-[#ffe452]">{{ tc.hero.dong2 }}</span>
+            </h1>
+          </FxReveal>
+          <FxReveal :delay="0.2">
+            <div class="dialog-box no-arrow mx-auto mt-4 max-w-xl text-left">
+              <p class="text-base sm:text-lg">
+                {{ tc.hero.moTa }}
               </p>
-            </FxReveal>
-            <FxReveal :delay="0.1">
-              <h1 id="hero-heading" class="section-title mt-5 text-[2.6rem] leading-[1.08] text-highlighted sm:text-6xl lg:text-[4.2rem]">
-                {{ tc.hero.dong1 }}<br>
-                <span class="text-gilded">{{ tc.hero.dong2 }}</span>
-              </h1>
-            </FxReveal>
-            <FxReveal :delay="0.2">
-              <div class="dialog-box mt-7 max-w-xl">
-                <p class="text-base sm:text-lg">
-                  {{ tc.hero.moTa }}
-                </p>
-              </div>
-            </FxReveal>
-            <FxReveal :delay="0.3">
-              <div class="mt-8 flex flex-wrap gap-3">
-                <UButton
-                  v-for="(n, k) in tc.hero.nut"
-                  :key="k"
-                  :to="lienKetAnToan(n.to) || '/'"
-                  size="xl"
-                  :color="n.kieu === 'chinh' ? 'primary' : 'warning'"
-                  :class="n.kieu === 'chinh' ? 'btn-game px-6' : 'btn-pikachu px-6'"
-                  :trailing-icon="n.kieu === 'chinh' ? 'i-lucide-arrow-right' : undefined"
-                >
-                  {{ n.label }}
+            </div>
+          </FxReveal>
+          <FxReveal :delay="0.3">
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+              <UButton
+                v-for="(n, k) in tc.hero.nut"
+                :key="k"
+                :to="lienKetAnToan(n.to) || '/'"
+                size="xl"
+                :color="n.kieu === 'chinh' ? 'primary' : 'warning'"
+                :class="n.kieu === 'chinh' ? 'btn-game px-6' : 'btn-pikachu px-6'"
+                :trailing-icon="n.kieu === 'chinh' ? 'i-lucide-arrow-right' : undefined"
+              >
+                {{ n.label }}
+              </UButton>
+              <ClientOnly v-if="!tc.hero.nut.length">
+                <UButton v-if="auth.loggedIn.value" to="/account" size="xl" color="warning" class="btn-pikachu px-6">
+                  Tài khoản của bạn
                 </UButton>
-                <ClientOnly v-if="!tc.hero.nut.length">
-                  <UButton v-if="auth.loggedIn.value" to="/account" size="xl" color="warning" class="btn-pikachu px-6">
-                    Tài khoản của bạn
-                  </UButton>
-                  <UButton v-else to="/register" size="xl" color="warning" class="btn-pikachu px-6">
+                <UButton v-else to="/register" size="xl" color="warning" class="btn-pikachu px-6">
+                  Tạo tài khoản
+                </UButton>
+                <template #fallback>
+                  <UButton to="/register" size="xl" color="warning" class="btn-pikachu px-6">
                     Tạo tài khoản
                   </UButton>
-                  <template #fallback>
-                    <UButton to="/register" size="xl" color="warning" class="btn-pikachu px-6">
-                      Tạo tài khoản
-                    </UButton>
-                  </template>
-                </ClientOnly>
-              </div>
-            </FxReveal>
-            <FxReveal :delay="0.35">
-              <ClientOnly>
-                <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-sm font-semibold text-navy-800 shadow-sm dark:bg-navy-950/70 dark:text-navy-100">
-                  <span class="relative flex size-2.5">
-                    <span v-if="trangThai?.song" class="absolute inline-flex size-full animate-ping rounded-full bg-grass-400 opacity-75" />
-                    <span class="relative inline-flex size-2.5 rounded-full" :class="trangThai?.song ? 'bg-grass-500' : trangThai?.song === false ? 'bg-pokered-500' : 'bg-navy-400'" />
-                  </span>
-                  <template v-if="trangThai?.song">
-                    Máy chủ đang mở · {{ trangThai.online }} Pokémon online
-                  </template>
-                  <template v-else-if="trangThai?.song === false">
-                    Máy chủ đang bảo trì
-                  </template>
-                  <template v-else-if="ttStatus === 'pending' || ttStatus === 'idle'">
-                    Đang kiểm tra máy chủ…
-                  </template>
-                  <template v-else>
-                    Chưa rõ trạng thái máy chủ — xem kênh hỗ trợ
-                  </template>
-                </p>
+                </template>
               </ClientOnly>
-            </FxReveal>
-          </div>
-
-          <FxReveal :delay="0.15" class="relative">
-            <SiteStarterStage />
+            </div>
+          </FxReveal>
+          <FxReveal :delay="0.35">
+            <ClientOnly>
+              <p class="mt-5 inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-sm font-semibold text-navy-800 shadow-sm dark:bg-navy-950/70 dark:text-navy-100">
+                <span class="relative flex size-2.5">
+                  <span v-if="trangThai?.song" class="absolute inline-flex size-full animate-ping rounded-full bg-grass-400 opacity-75" />
+                  <span class="relative inline-flex size-2.5 rounded-full" :class="trangThai?.song ? 'bg-grass-500' : trangThai?.song === false ? 'bg-pokered-500' : 'bg-navy-400'" />
+                </span>
+                <template v-if="trangThai?.song">
+                  Máy chủ đang mở · {{ trangThai.online }} Pokémon online
+                </template>
+                <template v-else-if="trangThai?.song === false">
+                  Máy chủ đang bảo trì
+                </template>
+                <template v-else-if="ttStatus === 'pending' || ttStatus === 'idle'">
+                  Đang kiểm tra máy chủ…
+                </template>
+                <template v-else>
+                  Chưa rõ trạng thái máy chủ — xem kênh hỗ trợ
+                </template>
+              </p>
+            </ClientOnly>
           </FxReveal>
         </div>
       </UContainer>
     </section>
 
     <!-- ============ DẢI SỐ LIỆU ============ -->
-    <div class="bg-grass-400 pb-2 dark:bg-grass-800">
+    <div class="bg-[#1a3528] pb-2 pt-1">
       <UContainer class="max-w-6xl">
         <FxReveal>
           <div class="grid grid-cols-2 overflow-hidden rounded-2xl glass ring-gilded lg:grid-cols-4">
@@ -245,7 +258,7 @@ const faq = computed(() => [
       <UContainer class="max-w-7xl">
         <FxReveal class="text-center">
           <p class="eyebrow">
-            Chọn người bạn của chính bạn
+            Chọn hình hài của chính bạn
           </p>
           <h2 id="classes-title" class="section-title mt-4 text-4xl text-highlighted sm:text-5xl">
             Năm Pokémon khởi đầu
@@ -284,7 +297,7 @@ const faq = computed(() => [
                       <UIcon v-if="j > 0" name="i-lucide-chevron-right" class="size-3 text-dimmed" aria-hidden="true" />
                       <PokeAvatar :dex="t.dex" class="size-6" />
                       <span class="font-semibold text-toned">{{ t.ten }}</span>
-                      <span v-if="t.cap" class="text-dimmed">(Lv {{ t.cap }})</span>
+                      <span v-if="t.cap" class="text-dimmed">(cấp {{ t.cap }})</span>
                     </li>
                   </ol>
                   <template v-else>
@@ -328,7 +341,7 @@ const faq = computed(() => [
                     <span class="grid size-11 shrink-0 place-items-center rounded-xl text-white" :style="{ background: LOAI_SU_KIEN[e.loai]?.mau }"><UIcon :name="LOAI_SU_KIEN[e.loai]?.icon ?? 'i-lucide-calendar'" class="size-5" /></span>
                     <span class="min-w-0">
                       <span class="text-xs font-bold uppercase tracking-wide" :class="i === 0 ? 'text-primary' : 'text-dimmed'">{{ i === 0 ? 'Tuần này' : i === 1 ? 'Tuần sau' : 'Sắp tới' }} · {{ LOAI_SU_KIEN[e.loai]?.ten }}</span>
-                      <span class="block font-display text-lg font-bold text-highlighted group-hover:text-primary">{{ e.ten1 }}</span>
+                      <span class="block font-display text-lg font-bold text-highlighted group-hover:text-primary">{{ e.ten1 }}<template v-if="e.phan"> ({{ e.phan }})</template></span>
                       <span class="block text-sm text-muted">{{ e.coChe }}</span>
                     </span>
                   </NuxtLink>
@@ -388,10 +401,10 @@ const faq = computed(() => [
             </h2>
             <ol class="mt-10 grid gap-8 md:grid-cols-3">
               <li v-for="s in steps" :key="s.so" class="relative">
-                <span class="grid size-12 place-items-center rounded-full border-[3px] border-[var(--poke-outline)] bg-pokered-500 font-pixel text-sm text-white shadow-[0_3px_0_var(--poke-outline)]">{{ s.so }}</span>
+                <span class="grid size-12 place-items-center rounded-full border-[3px] border-[var(--poke-outline)] bg-pokered-600 font-pixel text-sm text-white shadow-[0_3px_0_var(--poke-outline)]">{{ s.so }}</span>
                 <h3 class="mt-4 text-xl font-bold text-highlighted">{{ s.tieuDe }}</h3>
                 <p class="mt-1 text-muted">{{ s.mo }}</p>
-                <ULink :to="s.to" class="mt-3 inline-flex items-center gap-1 font-display font-bold text-primary hover:underline">
+                <ULink :to="s.to" :target="s.to.startsWith('https://') ? '_blank' : undefined" class="mt-3 inline-flex items-center gap-1 font-display font-bold text-primary hover:underline">
                   {{ s.link }} <UIcon name="i-lucide-arrow-right" class="size-4" />
                 </ULink>
               </li>
@@ -406,7 +419,7 @@ const faq = computed(() => [
               </template>
               <template #faq2-body>
                 <p class="text-muted">
-                  Tham gia <ULink :to="hoTro" class="text-primary hover:underline">nhóm hỗ trợ</ULink> và mô tả lỗi để được hướng dẫn. Không chia sẻ mật khẩu tài khoản trong nhóm.
+                  Tham gia <ULink :to="hoTro" :target="hoTro.startsWith('https://') ? '_blank' : undefined" class="text-primary hover:underline">nhóm hỗ trợ</ULink> và mô tả lỗi để được hướng dẫn. Không chia sẻ mật khẩu tài khoản trong nhóm.
                 </p>
               </template>
             </UAccordion>
@@ -416,3 +429,19 @@ const faq = computed(() => [
     </section>
   </div>
 </template>
+
+<style scoped>
+.hero-logo {
+  display: block;
+  height: auto;
+  animation: hero-logo-hien 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes hero-logo-hien {
+  /* chỉ trượt nhẹ, KHÔNG đổi độ trong: logo luôn rõ 100% kể cả khi chụp giữa hoạt ảnh / không có JS */
+  from { transform: translateY(10px); }
+  to { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo { animation: none; }
+}
+</style>

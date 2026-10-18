@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  */
 public final class KiemBangThuocTinh {
 
-    private static final String NGUON = "sql/gamedb7_clean.sql";
+    private static final String NGUON = "../sql/gamedb7_clean.sql";
 
     /** Module Than Khi dung toi id 186, nen 0..186 phai co du. */
     private static final int ID_CAN_LIEN_TUC_DEN = 186;
@@ -89,7 +89,7 @@ public final class KiemBangThuocTinh {
 
         // Tai lieu phai con noi ro cai bay nay - go tai lieu di thi nguoi sau khong hieu
         // vi sao phep kiem nay ton tai.
-        final String tl = doc("docs/HUONG_DAN_BUILD_VPS.md");
+        final String tl = doc("../docs/HUONG_DAN_BUILD_VPS.md");
         Kiem.dung("tai lieu con canh bao ve data_attribute", tl.contains("data_attribute"));
     }
 

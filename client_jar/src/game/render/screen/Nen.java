@@ -2,40 +2,13 @@ package game.render.screen;
 
 import game.model.Sound;
 import game.render.Canvas;
-import game.networklogic.GameService;
 
 /**
- * Lớp đệm nền tảng - bản J2ME. Code mod (PauseMenu, AutoVanMay...) dùng chung cho jar và Android:
+ * Lớp đệm nền tảng - bản J2ME. Code mod (PauseMenu, TuDong...) dùng chung cho jar và Android:
  * chỗ nào hai nền tảng khác nhau thật thì gọi qua đây. Bản Android: Android277/src/.../Nen.java.
  */
 final class Nen {
     private Nen() {
-    }
-
-    /**
-     * pokemon: chữ trên nút mod nổi (AutoGuard) theo từ ngữ Pokémon, khớp từ điển ChuPokemon
-     * ("vận tiêu" -> "giao hàng", "đồ sát" -> "PK", "L.thổ"/map -> "Vùng"). Chức năng giữ nguyên.
-     */
-    static String nhanNut(String s) {
-        if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
-            return s;
-        }
-        if ("Up".equals(s)) {
-            return "Luyện";      // tự đánh quái lên cấp
-        }
-        if ("Tiêu".equals(s)) {
-            return "Giao";       // tự vận tiêu = giao hàng
-        }
-        if ("Nháy".equals(s)) {
-            return "Nhảy";
-        }
-        if ("Map".equals(s)) {
-            return "Vùng";
-        }
-        if ("ĐS".equals(s)) {
-            return "PK";         // đồ sát -> PK như từ điển
-        }
-        return s;
     }
 
     /**
@@ -51,8 +24,54 @@ final class Nen {
         if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
             return false;
         }
+        final int map = game.render.Canvas.gameScr != null ? game.render.Canvas.gameScr.map : -1;
+        if (game.pokemon.BanDoVung.chiSoHoenn(map) >= 0) {
+            game.pokemon.BanDoVung.veHoenn((javax.microedition.lcdui.Graphics) g, map, w, h);
+            return true;
+        }
         game.pokemon.BanDoVung.ve((javax.microedition.lcdui.Graphics) g, diem, hienTai, w, h);
         return true;
+    }
+
+    /** Túi sinh thái (hệ sinh thái server, NPC ảo -528, lựa chọn 4 của menu gốc). */
+    static void moTuiSinhThai() {
+        TuiSinhThaiScr.xin();
+    }
+
+    /** pokemon: biểu tượng mục menu (GiaoDien.veHinhMuc) - bề ngang chiếm chỗ (0 = không có). */
+    static int rongHinhMuc(String muc) {
+        return game.pokemon.GiaoDien.hinhMuc(muc) != null ? 16 : 0;
+    }
+
+    static void veHinhMuc(Object g, int x, int y, String muc) {
+        game.pokemon.GiaoDien.veHinhMuc((javax.microedition.lcdui.Graphics) g, x, y, muc);
+    }
+
+    /** pokemon: dải tiêu đề đỏ trên mép bảng menu chính + thanh cuộn bên phải khi dài hơn khung. */
+    static void veKhungMenu(Object g0, int x, int y, int w, int h, String tieuDe, int tong, int tu, int thay) {
+        javax.microedition.lcdui.Graphics g = (javax.microedition.lcdui.Graphics) g0;
+        game.pokemon.GiaoDien.moClip(g);
+        if (tieuDe != null && tieuDe.length() > 0) {
+            int wT = game.render.screen.Font.borderFont.getWidth(tieuDe) + 34;
+            if (wT > w - 16) {
+                wT = w - 16;
+            }
+            game.pokemon.GiaoDien.khoi(g, x + w / 2 - wT / 2 - 1, y - 9, wT + 2, 19, 6, game.pokemon.GiaoDien.VIEN);
+            game.pokemon.GiaoDien.dai(g, x + w / 2 - wT / 2, y - 8, wT, 16, tieuDe);
+        }
+        if (tong > thay && thay > 0) {
+            game.pokemon.KieuO.thanhCuon(g, x + w - 8, y + 12, h - 24, tong, tu, thay);
+        }
+    }
+
+    /** pokemon: con trỏ ▶ đen của mục đang chọn (menu chính). */
+    static void conTroMenu(Object g, int x, int y, int h) {
+        game.pokemon.GiaoDien.conTro((javax.microedition.lcdui.Graphics) g, x, y, h);
+    }
+
+    /** Cài đặt -> Giấy phép: màn ghi công (GHI_CONG.txt trong jar). */
+    static void moGiayPhep() {
+        GhiCongScr.mo();
     }
 
     static boolean menuNhanhTick() {
@@ -64,7 +83,7 @@ final class Nen {
         return MenuNhanh.phim(keyCode);
     }
 
-    /** Thanh trạng thái auto (AutoUp/VanTieu...): đặt ngay dưới khung HP góc trái trên, không đè giữa màn. */
+    /** Thanh trạng thái Tự động đánh: đặt ngay dưới khung HP góc trái trên, không đè giữa màn. */
     static int yTrangThai(int macDinh) {
         return macDinh + 34;
     }
@@ -93,13 +112,24 @@ final class Nen {
         Sound.me.setVolume(bat ? 7 : 0);
     }
 
-    /** Mở hết 5 rương vận may (NPC -10) - server: MapQuaTang.doOpenLuckyBox. */
-    static void moRuongVanMay(GameService gameService) {
-        gameService.playMiniGame((byte)2, (byte)100);
+    /** Mở bảng Tự động đánh chính thức (BangTuDong, kiểu Pokémon). */
+    static void moBangTuDong() {
+        BangTuDong.mo();
     }
 
-    /** Màn mở rương (mini game) đang hiện? */
-    static boolean laManRuong(Screen screen) {
-        return screen == MiniGame.gI();
+    /** Điểm chạm nằm trên nút mở Menu nhanh (Poké Ball) - Tự động đánh không coi là người chơi chạm map. */
+    static boolean trongNutNhanh(int x, int y) {
+        return MenuNhanh.trongBong(x, y);
+    }
+
+    /** Thanh trạng thái Tự động đánh (viên thuốc xanh dưới khung HP). */
+    static void veThanhTuDong(javax.microedition.lcdui.Graphics g, String s, int y) {
+        BangTuDong.veThanh(g, s, y);
+    }
+
+    /** Tiêu đề "Bản đồ lớn": vùng Hoenn (năm 2) có tiêu đề riêng. */
+    static String tieuDeBanDoLon(String macDinh) {
+        return game.pokemon.PokeBody.CHE_DO_POKEMON && game.render.Canvas.gameScr != null
+                && game.pokemon.BanDoVung.chiSoHoenn(game.render.Canvas.gameScr.map) >= 0 ? "Vùng Hoenn" : macDinh;
     }
 }

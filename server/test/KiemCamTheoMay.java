@@ -20,7 +20,7 @@ public final class KiemCamTheoMay {
 
     private static final String F_LOGIN = "src/real/cmd/LoginHandler.java";
     private static final String F_CAM = "src/data/CamTheoMay.java";
-    private static final String F_CLIENT = "ClientUnity/Assets/Scripts/Game/GameService.cs";
+    private static final String F_CLIENT = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/GameService.cs";
 
     public static void chay() {
         kiemLamSach();

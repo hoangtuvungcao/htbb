@@ -10,7 +10,9 @@ import java.util.regex.Pattern;
 import data.PetTemplate;
 
 /**
- * Doi chieu web/admin/inc/danh_muc_thu.php voi mang real.Map.petTemplate.
+ * Doi chieu HTBB-Web/shared/data/danh-muc-thu.json (tools/SinhDanhMucThu sinh; web doc qua
+ * server/utils/giftcodeThu.gen.ts) voi mang real.Map.petTemplate. Truoc day la tep PHP
+ * web/admin/inc/danh_muc_thu.php - website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
  *
  * Cung ly do voi KiemDanhMucNgoc: ten 30 con thu khong co trong CSDL, chi so
  * trong tep sinh KHONG PHAI id vat pham ma la chi so mang Map.petTemplate[] -
@@ -19,9 +21,9 @@ import data.PetTemplate;
  */
 public final class KiemDanhMucThu {
 
-    private static final String TEP = "web/admin/inc/danh_muc_thu.php";
+    private static final String TEP = "shared/data/danh-muc-thu.json";
 
-    private static final Pattern DONG = Pattern.compile("^\\s*(\\d+)\\s*=>\\s*'(.*)'\\s*,\\s*$");
+    private static final Pattern DONG = Pattern.compile("^\\s*\"(\\d+)\":\\s*\"(.*)\"\\s*,?\\s*$");
 
     private KiemDanhMucThu() {
     }
@@ -29,8 +31,11 @@ public final class KiemDanhMucThu {
     public static void chay() {
         Kiem.nhom("Danh muc thu - tep sinh phai khop mang Java");
 
-        final String php = doc(TEP);
-        Kiem.dung("doc duoc " + TEP, !php.isEmpty());
+        if (WebHtbb.boQua("danh muc thu")) {
+            return;
+        }
+        final String php = WebHtbb.doc(TEP);
+        Kiem.dung("doc duoc " + WebHtbb.ten(TEP), !php.isEmpty());
         if (php.isEmpty()) {
             return;
         }
@@ -51,7 +56,9 @@ public final class KiemDanhMucThu {
             return;
         }
 
-        Kiem.bang("dung 30 con thu (chi so 0..29)", Integer.valueOf(30), Integer.valueOf(ds.length));
+        // 19/09/2026 them mau 30 "Capybara" (Trung Thu 2026, yeu cau nguoi dung - xem chu
+        // thich tai Map.loadPetTemplate) nen mang co 31 o (0..30); tep sinh da duoc sinh lai.
+        Kiem.bang("dung 31 con thu (chi so 0..30, them Capybara 19/09/2026)", Integer.valueOf(31), Integer.valueOf(ds.length));
         Kiem.bang("so dong trong tep khop so phan tu mang Java",
                 Integer.valueOf(ds.length), Integer.valueOf(tuTep.size()));
 
@@ -94,7 +101,7 @@ public final class KiemDanhMucThu {
     }
 
     private static String boThoat(final String s) {
-        return s.replace("\\'", "'").replace("\\\\", "\\");
+        return WebHtbb.boThoatJson(s);
     }
 
     private static String doc(final String duong) {

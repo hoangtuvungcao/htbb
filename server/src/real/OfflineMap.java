@@ -316,6 +316,9 @@ public class OfflineMap extends Map {
    }
 
    public synchronized void buyItemOfUser(Char player) {
+      if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "cho")) { // thanh vien: cho nguoi choi
+         return;
+      }
       if (!player.isCorrectPass && !player.passWord.equals("")) {
          player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
       } else {
@@ -607,6 +610,9 @@ public class OfflineMap extends Map {
    }
 
    public synchronized void doBuyItemOfUser(Char player, Message msg) {
+      if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "cho")) { // thanh vien: cho nguoi choi
+         return;
+      }
       if (!player.isCorrectPass && !player.passWord.equals("")) {
          player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
       } else if (!this.checkTrade(player)) {
@@ -699,6 +705,9 @@ public class OfflineMap extends Map {
    }
 
    public void doUserSellItemAfterInputText(Char player, String privatename) {
+      if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "cho")) { // thanh vien: cho nguoi choi
+         return;
+      }
       if (!player.isCorrectPass && !player.passWord.equals("")) {
          player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
       } else if (player.itemwait != null) {
@@ -906,6 +915,9 @@ public class OfflineMap extends Map {
 
    /** Buoc cuoi cua "ban ngoc theo so luong": nguoi choi vua go so luong sau khi da chon gia + ten nguoi mua. */
    public void doUserSellGemQuantity(Char player, String text) {
+      if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "cho")) { // thanh vien: cho nguoi choi
+         return;
+      }
       if (player.itemwait == null || player.itemwait.type != 1 || !player.itemwait.sell) {
          return;
       }
@@ -997,6 +1009,9 @@ public class OfflineMap extends Map {
    }
 
    public void doUserSellItem(Char player, Message msg) {
+      if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "cho")) { // thanh vien: cho nguoi choi
+         return;
+      }
       if (!player.isCorrectPass && !player.passWord.equals("")) {
          player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
       } else if (!this.checkTrade(player)) {
@@ -1314,7 +1329,7 @@ public class OfflineMap extends Map {
 
             int ngem = player.getTotalGem();
             if (ngem + var15 > Char.MAX_GEM_TOTAL) {
-               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể mua thêm " + (Char.MAX_GEM_TOTAL - ngem) + " vật phẩm từ Phú ông", ""));
+               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể mua thêm " + (Char.MAX_GEM_TOTAL - ngem) + " vật phẩm từ Persian", ""));
                return;
             }
 
@@ -1464,7 +1479,14 @@ public class OfflineMap extends Map {
                         // Nhan bang long. Ban cu nhan gia (int) voi so luong (short) o 32-bit roi moi
                         // ep sang long: mua vai chuc nghin binh la tong tien tran, quay ve mot so nho
                         // (hoac am -> bi bo qua) trong khi so binh van duoc cong du.
-                        long price = (long) Map.potionTemplates2.get(var32).getPrice() * (long) quantity;
+                        // Thuoc hoi sinh (119) KHONG ban o cua so thuoc NPC (gia o day khong hien theo nguoi mua):
+                        // ban o So tay -> Cua hang (HoiSinhGame.moMuaThuoc, gia theo cap + hop xac nhan).
+                        if (var32 == com.htbb.pokemon.HoiSinh.THUOC_HOI_SINH && HoiSinhGame.bat()) {
+                           player.sendMessage(MessageCreator.createServerAlertMessage("Thuốc hồi sinh bán ở Sổ tay - Cửa hàng (giá theo cấp).", ""));
+                           continue;
+                        }
+                        final long giaMot = Map.potionTemplates2.get(var32).getPrice();
+                        long price = giaMot * (long) quantity;
                         if (price <= 0L) {
                            continue;
                         }
@@ -1477,7 +1499,7 @@ public class OfflineMap extends Map {
                            }
                            if (quantity > conChua) {
                               quantity = (short) conChua;
-                              price = (long) Map.potionTemplates2.get(var32).getPrice() * (long) quantity;
+                              price = giaMot * (long) quantity;
                            }
                         }
 
@@ -1625,7 +1647,7 @@ public class OfflineMap extends Map {
             player.sendMessage(msg);
             msg.cleanup();
          } else {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm thành", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm Gym", ""));
          }
       }
    }
@@ -1638,7 +1660,7 @@ public class OfflineMap extends Map {
 
          try {
             if (getTown[0] || getTown[1] || getTown[2]) {
-               player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm thành", ""));
+               player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm Gym", ""));
                return;
             }
 
@@ -1752,7 +1774,7 @@ public class OfflineMap extends Map {
          Item item = player.getItemFormVector(player.iItems, idItem);
          if (item != null) {
             if (item.colorName != 1 || item.hangItem != 1) {
-               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vật phẩm nhất phẩm hoàn mỹ mới có thể khóa.", ""));
+               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vật phẩm hạng 1 hoàn mỹ mới có thể khóa.", ""));
                return;
             }
 
@@ -1787,7 +1809,7 @@ public class OfflineMap extends Map {
          Item item = player.getItemFormVector(player.iItems, idItem);
          if (item != null) {
             if (item.colorName != 1 || item.hangItem != 1) {
-               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vật phẩm nhất phẩm hoàn mỹ mới có thể khóa.", ""));
+               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vật phẩm hạng 1 hoàn mỹ mới có thể khóa.", ""));
                return;
             }
 
@@ -1797,7 +1819,7 @@ public class OfflineMap extends Map {
             }
 
             if (idMaterial != 238 && idMaterial != 239 && idMaterial != 240) {
-               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng ngọc huyền minh cấp 4 trở lên", ""));
+               player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng ngọc hoàng hôn cấp 4 trở lên", ""));
                return;
             }
 
@@ -1856,7 +1878,7 @@ public class OfflineMap extends Map {
          }
 
          if (isWearingAnimal(it.getTemplate().type)) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nghiền vật phẩm dành cho linh thú.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nghiền vật phẩm dành cho thú cưỡi.", ""));
             return;
          }
 

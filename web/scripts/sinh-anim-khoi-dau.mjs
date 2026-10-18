@@ -4,7 +4,7 @@
  *   - MỌI loài đóng gói trong client: động tác đứng (idle) hướng DOWN — dùng ở Pokédex, thẻ, hero...
  *   - 5 Pokémon khởi đầu: thêm đi (walk, DOWN), đi + đánh hướng RIGHT (walkR, danhR) cho cảnh "trailer".
  *
- *   HTBB_DIR=../HTBB node scripts/sinh-anim-khoi-dau.mjs
+ *   HTBB_DIR=.. node scripts/sinh-anim-khoi-dau.mjs
  *
  * Đọc (chỉ đọc): ClientUnity/Assets/Resources/poke/<dddd>_anh.bytes (PNG atlas RGBA)
  *               + <dddd>_dl.bytes (dữ liệu khung, định dạng ở KE_HOACH_CHUYEN_DOI.md §7.1).
@@ -19,8 +19,8 @@ import { fileURLToPath } from 'node:url'
 import { deflateSync, inflateSync } from 'node:zlib'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '../HTBB')
-const POKE = join(HTBB, 'ClientUnity/Assets/Resources/poke')
+const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '..')
+const POKE = join(HTBB, 'client_pc_ios/ClientUnity/Assets/Resources/poke')
 const OUT = join(WEB, 'public/pokemon/anim')
 const OUT_JSON = join(WEB, 'shared/data/sprite-anim.json')
 

@@ -49,7 +49,7 @@ class MapDanhNhau {
             }
 
             if (!p.checkDurableWeapone()) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi vũ khí bị hư hại. Hãy đến Thợ Map.rèn để sửa lại.", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi đồ cầm tay bị hư hại. Hãy đến Thợ Map.rèn để sửa lại.", ""));
                 return;
             }
 
@@ -68,6 +68,7 @@ class MapDanhNhau {
             if (c == null) {
                 return;
             }
+            TuDongGame.khiPvp(c); // bi Pokemon khac tan cong: dung Tu dong danh (tu_dong.tat_khi_pvp)
 
             if (c.isThangBe()) {
                 return;
@@ -199,7 +200,7 @@ class MapDanhNhau {
                 }
 
                 if (Map.nwar[p.inCountry] && p.myCountry != Map.nationBeAttack[p.inCountry] && p.myCountry != p.inCountry) {
-                    p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tấn công tại lãnh thổ này."));
+                    p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tấn công tại vùng này."));
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     int toTX = 16 + Database.r.nextInt() % 5;
                     int toTY = 84;
@@ -289,9 +290,11 @@ class MapDanhNhau {
             if (com.htbb.pokemon.LauDai.bat()) {
                 // GD2 6.1 PvP (chung voi Region): x0,30, chi mang x1,5, tran 8% HP toi da muc tieu.
                 long dLd = (long) damGocLauDai * CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
-                if (critSv || baokich) {
+                if ((critSv || baokich) && ChiSoTrangBiGame.giuChiMangPvp(p, c)) { // PvP: tran 30%, tru khang chi mang
                     dLd = dLd * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L;
                     effect = 2;
+                } else if (critSv || baokich) {
+                    effect = 0;
                 }
                 damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, dLd), c.maxhp);
             }
@@ -449,7 +452,7 @@ class MapDanhNhau {
                 map.checkTrade(c);
                 if (c.mapID == Map.idMapTown && c.idClan != -1 && Map.getTown[p.inCountry] && Map.giveCardFail(c)) {
                     Database.instance.saveLogClan(p.charname, "pcok", "Pha the cua " + c.charname);
-                    map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Bang " + Map.getClaninfoByID(c.idClan).name + " giao thẻ thất bại"), c.myCountry);
+                    map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Đội " + Map.getClaninfoByID(c.idClan).name + " giao thẻ thất bại"), c.myCountry);
                     map.sendAllPlayer(MessageCreator.createMsgStartGetTown(p.inCountry), p.inCountry);
                 }
 
@@ -647,7 +650,7 @@ class MapDanhNhau {
                             if (p.hp <= 0) {
                                 p.actorDie();
                             } else if (!p.checkDurableWeapone()) {
-                                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ Map.rèn để sửa lại1.", ""));
+                                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ Map.rèn để sửa lại1.", ""));
                                 Message m = new Message(104);
 
                                 try {
@@ -1158,7 +1161,7 @@ class MapDanhNhau {
                         }
 
                         if (!p.checkDurableWeapone()) {
-                            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ Map.rèn để sửa lại.", ""));
+                            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ Map.rèn để sửa lại.", ""));
                             Message m = new Message(104);
 
                             try {

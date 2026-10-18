@@ -40,6 +40,11 @@ public class AnimateEffect extends Effect {
         this.timeLimit = timeLimit;
         this.type = type;
         this.number = number;
+        if (type == game.pokemon.SinhThai.SUONG_MU || type == game.pokemon.SinhThai.NANG_GAT) {
+            // pokemon (hệ sinh thái): sương mù / nắng gắt = lớp phủ vẽ bằng code, không có hạt
+            this.number = 0;
+            return;
+        }
         switch (type) {
             case 1:
                 this.idImg = (short) 801;
@@ -97,8 +102,17 @@ public class AnimateEffect extends Effect {
             case 3:
                 paintFallingFlower(g);
                 break;
+            case 6:
+                game.pokemon.SinhThai.veSuongMu(g, this.doDam);
+                break;
+            case 7:
+                game.pokemon.SinhThai.veNangGat(g, this.doDam);
+                break;
         }
     }
+
+    /** Độ đậm lớp phủ 6/7 (0..256): hiện dần khi bắt đầu, mờ dần rồi đóng khi dừng. */
+    private int doDam;
 
     private void paintSnow(Graphics g) {
         Image img = null;
@@ -197,6 +211,20 @@ public class AnimateEffect extends Effect {
                 break;
             case 3:
                 updateFlower();
+                break;
+            case 6:
+            case 7:
+                if (this.isStop) {
+                    this.doDam -= 16;
+                    if (this.doDam <= 0) {
+                        close();
+                    }
+                } else if (this.doDam < 256) {
+                    this.doDam += 10;
+                    if (this.doDam > 256) {
+                        this.doDam = 256;
+                    }
+                }
                 break;
         }
     }

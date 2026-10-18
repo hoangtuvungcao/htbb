@@ -76,7 +76,7 @@ bị khoá"**.
 
 Truy ra: client **PK Ngũ Đế** đang chơi được nối vào một server **khác** —
 `180.93.37.32`, tên hiển thị "Hùng Vương" (tìm thấy trong `qF.java` của
-`KPAH_PK-ngude.jar`, lớp danh sách server đã bị làm rối tên).
+`HTBB_PK-ngude.jar`, lớp danh sách server đã bị làm rối tên).
 
 Hai client gửi gói đăng nhập **giống hệt nhau** — đã đối chiếu từng trường:
 

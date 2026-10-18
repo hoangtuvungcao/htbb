@@ -22,7 +22,7 @@ async function chay() {
     <UCard>
       <p>Chạy lại 3 bước sinh dữ liệu từ repo game (Pokédex + sprite, dữ liệu cẩm nang từ CSV thiết kế), rồi thêm các tuần sự kiện còn thiếu vào CSDL.</p>
       <ul class="mt-2 list-disc pl-5 text-sm text-muted">
-        <li>Cần repo game trên cùng máy (biến <code>HTBB_DIR</code>, mặc định thư mục cạnh website) và mã nguồn website (<code>KPAH_WEB_SRC_DIR</code>).</li>
+        <li>Cần repo game trên cùng máy (biến <code>HTBB_DIR</code>, mặc định thư mục cạnh website) và mã nguồn website (<code>HTBB_WEB_SRC_DIR</code>).</li>
         <li>Số liệu Pokédex / cẩm nang được đóng gói lúc build: sau khi đồng bộ cần <b>build lại và khởi động lại website</b> (quy trình deploy thường lệ). Lịch sự kiện có hiệu lực ngay.</li>
       </ul>
       <UButton class="mt-4" icon="i-lucide-refresh-cw" label="Đồng bộ ngay" :loading="dangChay" @click="chay" />

@@ -3,7 +3,7 @@
  * Tìm kiếm phía trình duyệt (không gọi server): trang chính, cẩm nang (cả từng mục), Pokémon, tin tức.
  * Mở bằng nút kính lúp, Ctrl/⌘+K hoặc phím "/". Không phân biệt dấu tiếng Việt.
  */
-interface KetQua { nhom: string, ten: string, mo?: string, to: string, icon: string, khoa: string, dex?: number }
+interface KetQua { nhom: string, ten: string, mo?: string, to: string, icon: string, khoa: string, dex?: number, anh?: string }
 
 const mo = ref(false)
 const q = ref('')
@@ -20,7 +20,6 @@ const TRANG: KetQua[] = [
   { nhom: 'Trang', ten: 'Tải game', mo: 'Android APK, PC, Java .jar, cấu hình', to: '/download', icon: 'i-lucide-download' },
   { nhom: 'Trang', ten: 'Bảng xếp hạng', to: '/ranking', icon: 'i-lucide-trophy' },
   { nhom: 'Trang', ten: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper' },
-  { nhom: 'Trang', ten: 'Ghi công', mo: 'PMDCollab, Kenney, giấy phép', to: '/ghi-cong', icon: 'i-lucide-heart-handshake' },
   { nhom: 'Trang', ten: 'Điều khoản sử dụng', to: '/dieu-khoan', icon: 'i-lucide-scale' },
   { nhom: 'Trang', ten: 'Quyền riêng tư', to: '/quyen-rieng-tu', icon: 'i-lucide-shield' },
   { nhom: 'Trang', ten: 'Đăng ký tài khoản', to: '/register', icon: 'i-lucide-user-plus' },
@@ -31,10 +30,16 @@ const CAM = computed<KetQua[]>(() => danhMuc.value.flatMap(p => [
   { nhom: 'Cẩm nang', ten: p.ten, mo: p.moTa, to: `/cam-nang/${p.slug}`, icon: p.icon, khoa: boDau(`${p.ten} ${p.moTa} ${p.tuKhoa ?? ''}`) },
   ...(p.muc ?? []).map(m => ({ nhom: 'Cẩm nang', ten: m.ten, mo: p.ten, to: `/cam-nang/${p.slug}#${m.id}`, icon: 'i-lucide-hash', khoa: boDau(`${m.ten} ${p.ten}`) })),
 ]))
-const POKE: KetQua[] = POKEDEX.loai.map(l => ({ nhom: 'Pokémon', ten: l.ten, mo: `#${String(l.dex).padStart(3, '0')} · ${l.he.map(tenHe).join('/')}`, to: `/pokedex/${l.dex}`, icon: 'i-lucide-book-open', dex: l.dex, khoa: boDau(`${l.ten} ${l.dex} ${l.he.map(tenHe).join(' ')}`) }))
+// Pokédex (~90 KB) chỉ tải khi mở hộp tìm kiếm lần đầu — không nằm trong gói JS của mọi trang.
+const POKE = shallowRef<KetQua[]>([])
+async function napPokedex() {
+  if (POKE.value.length) return
+  const { POKEDEX, tenHe, anhLoaiDex } = await import('~~/shared/utils/pokedex')
+  POKE.value = POKEDEX.loai.map(l => ({ nhom: 'Pokémon', ten: l.ten, mo: `#${String(l.dex).padStart(3, '0')} · ${l.he.map(tenHe).join('/')}`, to: `/pokedex/${l.dex}`, icon: 'i-lucide-book-open', dex: l.dex, anh: anhLoaiDex(l), khoa: boDau(`${l.ten} ${l.dex} ${l.he.map(tenHe).join(' ')}`) }))
+}
 const { data: dsTin } = useFetch<TinTomTatWeb[]>('/api/tin-tuc', { key: 'htbb-tin', default: () => [], server: false, lazy: true })
 const TIN = computed<KetQua[]>(() => (dsTin.value ?? []).map(a => ({ nhom: 'Tin tức', ten: a.tieuDe, mo: a.loai, to: `/news/${a.slug}`, icon: 'i-lucide-newspaper', khoa: boDau(`${a.tieuDe} ${a.tomTat} ${a.the.join(' ')}`) })))
-const TAT_CA = computed(() => [...TRANG, ...CAM.value, ...POKE, ...TIN.value])
+const TAT_CA = computed(() => [...TRANG, ...CAM.value, ...POKE.value, ...TIN.value])
 
 const ketQua = computed(() => {
   const tu = boDau(q.value.trim()).split(/\s+/).filter(Boolean)
@@ -56,7 +61,7 @@ const nhomKq = computed(() => {
   return ra
 })
 watch(q, () => { chon.value = 0 })
-watch(mo, (v) => { if (v) { q.value = ''; chon.value = 0 } })
+watch(mo, (v) => { if (v) { q.value = ''; chon.value = 0; napPokedex() } })
 
 function di(x?: KetQua) {
   if (!x) return
@@ -104,7 +109,7 @@ defineShortcuts({
             @mouseenter="chon = i"
             @click="mo = false"
           >
-            <PokeAvatar v-if="x.dex" :dex="x.dex" class="size-8" />
+            <span v-if="x.anh" class="inline-grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-elevated"><img :src="x.anh" width="40" height="40" alt="" loading="lazy" decoding="async" class="pixelated size-full object-cover"></span>
             <span v-else class="grid size-8 shrink-0 place-items-center rounded-lg bg-elevated text-primary"><UIcon :name="x.icon" class="size-4" /></span>
             <span class="min-w-0">
               <span class="block truncate font-semibold text-highlighted">{{ x.ten }}</span>

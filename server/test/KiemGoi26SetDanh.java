@@ -45,7 +45,7 @@ public final class KiemGoi26SetDanh {
 
         // Goi 26 = du lieu 6 skin (xep truoc) + toan bo mang nay. Client cu doc so luong bang
         // 1 byte -> vuot 255 la server cat tu CUOI, va phan tu cuoi chinh la 300 (Set danh).
-        final int tong = real.SkinLinhThu.SO_SKIN + ids.size();
+        final int tong = real.SkinThuCuoi.SO_SKIN + ids.size();
         Kiem.dung("6 skin + id_eff_tool_ngu_long = " + tong + " <= 255 (client cu doc bang 1 byte)",
                 tong <= 255);
 
@@ -78,7 +78,7 @@ public final class KiemGoi26SetDanh {
         Kiem.dung("doc duoc src/real/CharTrangBi.java", !tb.isEmpty());
         if (!tb.isEmpty()) {
             Kiem.dung("dieu kien: dang mang skin Kim Cang Long (timSkinDangMac) va deo Choi Set (dangDeoChoiSet)",
-                    tb.contains("SkinLinhThu.timSkinDangMac(self) != null && self.dangDeoChoiSet()"));
+                    tb.contains("SkinThuCuoi.timSkinDangMac(self) != null && self.dangDeoChoiSet()"));
             Kiem.dung("ti le 5%", tb.contains("&& Map.r.nextInt(100) < 5) {"));
             Kiem.dung("them 3 giay choang (msChoang += 3000L)", tb.contains("msChoang += 3000L;"));
             Kiem.dung("gan SET_DANH cho muc tieu (actor), khong phai nguoi danh",
@@ -90,7 +90,7 @@ public final class KiemGoi26SetDanh {
         final String item = doc("src/real/Item.java");
         Kiem.dung("Item.isChoiSet = template 614 hoac 618",
                 item.contains("return this.tempateID == 614 || this.tempateID == 618;"));
-        final String sql = doc("sql/gamedb7_clean.sql");
+        final String sql = doc("../sql/gamedb7_clean.sql");
         Kiem.dung("data_item 618 'Choi set' co type 13 (vat pham model, khong phai thu cuoi)",
                 sql.contains("(618,'Chổi set',13,"));
         Kiem.dung("data_item 614 'Choi dien anh' co type 13",

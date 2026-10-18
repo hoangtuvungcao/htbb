@@ -13,12 +13,16 @@ map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y
 1,Pallet - dong co,dong_co,1,13,ao,64,67
 1,Pallet - dong co,dong_co,1,13,ao,69,68
 1,Pallet - dong co,dong_co,1,13,ao,65,70
+2,Viridian - bo bien,bien,0,27,ao,31,5
+2,Viridian - bo bien,bien,0,27,ao,30,6
+2,Viridian - bo bien,bien,0,27,ao,34,8
+2,Viridian - bo bien,bien,0,27,ao,28,10
 3,Vermilion - ho lon,ho,0,2345,ho_lon,37,7
 3,Vermilion - ho lon,ho,0,2345,ho_lon,24,16
 3,Vermilion - ho lon,ho,0,2345,ho_lon,74,26
 3,Vermilion - ho lon,ho,0,2345,ho_lon,40,39
 3,Vermilion - ho lon,ho,1,813,ho_lon,40,54
-3,Vermilion - ho lon,ho,1,813,ho_lon,43,59
+3,Vermilion - ho lon,ho,1,813,ho_lon,42,59
 3,Vermilion - ho lon,ho,1,813,ho_lon,62,71
 3,Vermilion - ho lon,ho,1,813,ho_lon,80,74
 3,Vermilion - ho lon,ho,2,12,ao,21,56
@@ -53,6 +57,10 @@ map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y
 7,Saffron - dam lay,ho,1,13,ao,11,10
 7,Saffron - dam lay,ho,1,13,ao,16,11
 7,Saffron - dam lay,ho,1,13,ao,12,13
+8,Fuchsia - bo bien,bien,0,39,ao,7,5
+8,Fuchsia - bo bien,bien,0,39,ao,5,7
+8,Fuchsia - bo bien,bien,0,39,ao,14,9
+8,Fuchsia - bo bien,bien,0,39,ao,9,11
 9,Cinnabar - dong bang,dong_co,0,13,ao,44,14
 9,Cinnabar - dong bang,dong_co,0,13,ao,42,16
 9,Cinnabar - dong bang,dong_co,0,13,ao,47,17
@@ -93,6 +101,10 @@ map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y
 17,Khu mo (sa mac),sa_mac,2,13,ao,96,61
 17,Khu mo (sa mac),sa_mac,2,13,ao,101,62
 17,Khu mo (sa mac),sa_mac,2,13,ao,97,64
+19,Ecruteak - ven bien,bien,0,20,ao,9,34
+19,Ecruteak - ven bien,bien,0,20,ao,8,35
+19,Ecruteak - ven bien,bien,0,20,ao,7,37
+19,Ecruteak - ven bien,bien,0,20,ao,9,39
 20,Violet - rung,rung,0,52,ao,59,31
 20,Violet - rung,rung,0,52,ao,57,33
 20,Violet - rung,rung,0,52,ao,55,36
@@ -137,3 +149,187 @@ map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y
 201,Cao nguyen Indigo,thanh,0,72,ho_lon,66,67
 201,Cao nguyen Indigo,thanh,0,72,ho_lon,57,71
 201,Cao nguyen Indigo,thanh,0,72,ho_lon,59,74
+45,Rustboro,thi_tran,0,59,ao,42,4
+45,Rustboro,thi_tran,0,59,ao,50,6
+45,Rustboro,thi_tran,0,59,ao,41,9
+45,Rustboro,thi_tran,0,59,ao,47,11
+46,Bo bien Dewford,bien,0,39,ao,11,5
+46,Bo bien Dewford,bien,0,39,ao,9,7
+46,Bo bien Dewford,bien,0,39,ao,18,9
+46,Bo bien Dewford,bien,0,39,ao,13,11
+49,Mauville,thi_tran,0,49,ao,10,8
+49,Mauville,thi_tran,0,49,ao,7,10
+49,Mauville,thi_tran,0,49,ao,6,13
+49,Mauville,thi_tran,0,49,ao,8,16
+50,Sa mac Route 111,sa_mac,0,13,ao,50,22
+50,Sa mac Route 111,sa_mac,0,13,ao,48,24
+50,Sa mac Route 111,sa_mac,0,13,ao,53,25
+50,Sa mac Route 111,sa_mac,0,13,ao,49,27
+51,Lavaridge,thi_tran,0,128,ho_lon,25,18
+51,Lavaridge,thi_tran,0,128,ho_lon,33,19
+51,Lavaridge,thi_tran,0,128,ho_lon,21,24
+51,Lavaridge,thi_tran,0,128,ho_lon,34,28
+53,Rung mua Route 119,rung,0,39,ao,51,45
+53,Rung mua Route 119,rung,0,39,ao,55,46
+53,Rung mua Route 119,rung,0,39,ao,56,49
+53,Rung mua Route 119,rung,0,39,ao,50,52
+54,Fortree,thi_tran,0,58,ao,5,20
+54,Fortree,thi_tran,0,58,ao,9,21
+54,Fortree,thi_tran,0,58,ao,12,25
+54,Fortree,thi_tran,0,58,ao,4,29
+55,Route 120 - Vien Thoi tiet,dong_co,0,158,ho_lon,24,4
+55,Route 120 - Vien Thoi tiet,dong_co,0,158,ho_lon,33,7
+55,Route 120 - Vien Thoi tiet,dong_co,0,158,ho_lon,36,12
+55,Route 120 - Vien Thoi tiet,dong_co,0,158,ho_lon,23,17
+55,Route 120 - Vien Thoi tiet,dong_co,1,93,ho_lon,71,7
+55,Route 120 - Vien Thoi tiet,dong_co,1,93,ho_lon,70,8
+55,Route 120 - Vien Thoi tiet,dong_co,1,93,ho_lon,68,12
+55,Route 120 - Vien Thoi tiet,dong_co,1,93,ho_lon,71,16
+56,Lilycove,thi_tran,0,48,ao,5,39
+56,Lilycove,thi_tran,0,48,ao,4,40
+56,Lilycove,thi_tran,0,48,ao,11,43
+56,Lilycove,thi_tran,0,48,ao,4,47
+58,Bien Route 124,bien,0,13,ao,79,11
+58,Bien Route 124,bien,0,13,ao,77,13
+58,Bien Route 124,bien,0,13,ao,82,14
+58,Bien Route 124,bien,0,13,ao,78,16
+59,Mossdeep,thi_tran,0,64,ho_lon,50,15
+59,Mossdeep,thi_tran,0,64,ho_lon,48,17
+59,Mossdeep,thi_tran,0,64,ho_lon,47,21
+59,Mossdeep,thi_tran,0,64,ho_lon,49,25
+60,Sootopolis,thi_tran,0,52,ao,51,7
+60,Sootopolis,thi_tran,0,52,ao,54,9
+60,Sootopolis,thi_tran,0,52,ao,56,12
+60,Sootopolis,thi_tran,0,52,ao,54,15
+60,Sootopolis,thi_tran,1,184,ho_lon,30,19
+60,Sootopolis,thi_tran,1,184,ho_lon,27,23
+60,Sootopolis,thi_tran,1,184,ho_lon,41,28
+60,Sootopolis,thi_tran,1,184,ho_lon,38,33
+61,Bien Route 131,bien,0,39,ao,7,5
+61,Bien Route 131,bien,0,39,ao,5,7
+61,Bien Route 131,bien,0,39,ao,14,9
+61,Bien Route 131,bien,0,39,ao,9,11
+62,Ever Grande,thi_tran,0,54,ao,48,9
+62,Ever Grande,thi_tran,0,54,ao,45,12
+62,Ever Grande,thi_tran,0,54,ao,44,15
+62,Ever Grande,thi_tran,0,54,ao,46,18
+161,Thac Meteor,hang,0,20,ao,18,4
+161,Thac Meteor,hang,0,20,ao,20,5
+161,Thac Meteor,hang,0,20,ao,17,8
+161,Thac Meteor,hang,0,20,ao,20,10
+161,Thac Meteor,hang,1,18,ao,7,6
+161,Thac Meteor,hang,1,18,ao,9,7
+161,Thac Meteor,hang,1,18,ao,9,10
+161,Thac Meteor,hang,1,18,ao,6,12
+161,Thac Meteor,hang,2,18,ao,50,5
+161,Thac Meteor,hang,2,18,ao,52,6
+161,Thac Meteor,hang,2,18,ao,47,8
+161,Thac Meteor,hang,2,18,ao,52,9
+161,Thac Meteor,hang,3,58,ao,38,7
+161,Thac Meteor,hang,3,58,ao,37,10
+161,Thac Meteor,hang,3,58,ao,39,13
+161,Thac Meteor,hang,3,58,ao,39,16
+161,Thac Meteor,hang,4,8,ao,27,8
+161,Thac Meteor,hang,4,8,ao,26,9
+161,Thac Meteor,hang,4,8,ao,30,10
+161,Thac Meteor,hang,4,8,ao,29,11
+161,Thac Meteor,hang,5,6,ao,25,13
+161,Thac Meteor,hang,5,6,ao,24,14
+161,Thac Meteor,hang,5,6,ao,27,15
+161,Thac Meteor,hang,5,6,ao,28,16
+161,Thac Meteor,hang,6,176,ho_lon,52,20
+161,Thac Meteor,hang,6,176,ho_lon,61,21
+161,Thac Meteor,hang,6,176,ho_lon,63,26
+161,Thac Meteor,hang,6,176,ho_lon,51,33
+161,Thac Meteor,hang,7,120,ho_lon,16,21
+161,Thac Meteor,hang,7,120,ho_lon,18,26
+161,Thac Meteor,hang,7,120,ho_lon,18,31
+161,Thac Meteor,hang,7,120,ho_lon,7,36
+161,Thac Meteor,hang,8,30,ao,44,30
+161,Thac Meteor,hang,8,30,ao,48,31
+161,Thac Meteor,hang,8,30,ao,46,34
+161,Thac Meteor,hang,8,30,ao,46,37
+161,Thac Meteor,hang,9,86,ho_lon,17,40
+161,Thac Meteor,hang,9,86,ho_lon,28,42
+161,Thac Meteor,hang,9,86,ho_lon,31,45
+161,Thac Meteor,hang,9,86,ho_lon,22,48
+161,Thac Meteor,hang,10,51,ao,47,40
+161,Thac Meteor,hang,10,51,ao,46,43
+161,Thac Meteor,hang,10,51,ao,46,46
+161,Thac Meteor,hang,10,51,ao,46,49
+161,Thac Meteor,hang,11,8,ao,60,47
+161,Thac Meteor,hang,11,8,ao,61,48
+161,Thac Meteor,hang,11,8,ao,58,50
+161,Thac Meteor,hang,11,8,ao,59,51
+162,Hang duoi bien,hang,0,9,ao,43,10
+162,Hang duoi bien,hang,0,9,ao,41,11
+162,Hang duoi bien,hang,0,9,ao,44,12
+162,Hang duoi bien,hang,0,9,ao,43,13
+162,Hang duoi bien,hang,1,12,ao,15,15
+162,Hang duoi bien,hang,1,12,ao,14,17
+162,Hang duoi bien,hang,1,12,ao,18,18
+162,Hang duoi bien,hang,1,12,ao,15,20
+162,Hang duoi bien,hang,2,35,ao,44,20
+162,Hang duoi bien,hang,2,35,ao,42,23
+162,Hang duoi bien,hang,2,35,ao,46,26
+162,Hang duoi bien,hang,2,35,ao,44,28
+162,Hang duoi bien,hang,3,15,ao,29,26
+162,Hang duoi bien,hang,3,15,ao,31,27
+162,Hang duoi bien,hang,3,15,ao,28,30
+162,Hang duoi bien,hang,3,15,ao,33,31
+162,Hang duoi bien,hang,4,28,ao,20,31
+162,Hang duoi bien,hang,4,28,ao,22,32
+162,Hang duoi bien,hang,4,28,ao,19,37
+162,Hang duoi bien,hang,4,28,ao,20,38
+162,Hang duoi bien,hang,5,23,ao,37,32
+162,Hang duoi bien,hang,5,23,ao,35,34
+162,Hang duoi bien,hang,5,23,ao,35,37
+162,Hang duoi bien,hang,5,23,ao,38,39
+162,Hang duoi bien,hang,6,75,ho_lon,50,32
+162,Hang duoi bien,hang,6,75,ho_lon,53,36
+162,Hang duoi bien,hang,6,75,ho_lon,46,40
+162,Hang duoi bien,hang,6,75,ho_lon,46,43
+163,Hang Khoi Nguyen,hang,0,34,ao,11,4
+163,Hang Khoi Nguyen,hang,0,34,ao,8,6
+163,Hang Khoi Nguyen,hang,0,34,ao,11,8
+163,Hang Khoi Nguyen,hang,0,34,ao,16,8
+163,Hang Khoi Nguyen,hang,1,38,ao,21,7
+163,Hang Khoi Nguyen,hang,1,38,ao,19,9
+163,Hang Khoi Nguyen,hang,1,38,ao,21,15
+163,Hang Khoi Nguyen,hang,1,38,ao,21,18
+163,Hang Khoi Nguyen,hang,2,85,ho_lon,43,11
+163,Hang Khoi Nguyen,hang,2,85,ho_lon,38,13
+163,Hang Khoi Nguyen,hang,2,85,ho_lon,51,16
+163,Hang Khoi Nguyen,hang,2,85,ho_lon,41,20
+163,Hang Khoi Nguyen,hang,3,7,ao,12,18
+163,Hang Khoi Nguyen,hang,3,7,ao,13,19
+163,Hang Khoi Nguyen,hang,3,7,ao,11,21
+163,Hang Khoi Nguyen,hang,3,7,ao,12,22
+163,Hang Khoi Nguyen,hang,4,12,ao,33,22
+163,Hang Khoi Nguyen,hang,4,12,ao,32,23
+163,Hang Khoi Nguyen,hang,4,12,ao,36,24
+163,Hang Khoi Nguyen,hang,4,12,ao,36,25
+163,Hang Khoi Nguyen,hang,5,30,ao,9,25
+163,Hang Khoi Nguyen,hang,5,30,ao,12,27
+163,Hang Khoi Nguyen,hang,5,30,ao,8,30
+163,Hang Khoi Nguyen,hang,5,30,ao,13,32
+163,Hang Khoi Nguyen,hang,6,12,ao,17,29
+163,Hang Khoi Nguyen,hang,6,12,ao,19,30
+163,Hang Khoi Nguyen,hang,6,12,ao,19,32
+163,Hang Khoi Nguyen,hang,6,12,ao,16,34
+163,Hang Khoi Nguyen,hang,7,26,ao,29,39
+163,Hang Khoi Nguyen,hang,7,26,ao,32,40
+163,Hang Khoi Nguyen,hang,7,26,ao,27,43
+163,Hang Khoi Nguyen,hang,7,26,ao,27,45
+163,Hang Khoi Nguyen,hang,8,32,ao,18,44
+163,Hang Khoi Nguyen,hang,8,32,ao,21,46
+163,Hang Khoi Nguyen,hang,8,32,ao,15,49
+163,Hang Khoi Nguyen,hang,8,32,ao,20,51
+163,Hang Khoi Nguyen,hang,9,28,ao,41,46
+163,Hang Khoi Nguyen,hang,9,28,ao,39,48
+163,Hang Khoi Nguyen,hang,9,28,ao,45,50
+163,Hang Khoi Nguyen,hang,9,28,ao,42,53
+164,Thap Troi,hang,0,11,ao,33,19
+164,Thap Troi,hang,0,11,ao,31,21
+164,Thap Troi,hang,0,11,ao,35,22
+164,Thap Troi,hang,0,11,ao,32,24

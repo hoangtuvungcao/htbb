@@ -79,7 +79,7 @@ public class Monster extends LiveActor {
         this.he = template.he;
         // Che do Pokemon: data_monster.he/he2 la he Pokemon 0..17. Giu rieng o
         // hePokemon/he2 (dung tinh khac he), con truong he doi ve ngu hanh 0..4 vi client
-        // cu va cac lop trong lib/NQSH_5h.jar (Dun, MapVanTienTran...) gui/dung no nhu
+        // cu va cac lop trong lib/htbb-core.jar (Dun, MapVanTienTran...) gui/dung no nhu
         // ngu hanh. Tat co thi khong dong vao gi.
         this.hePokemon = template.he;
         if (CheDoPokemon.bat()) {
@@ -619,7 +619,9 @@ public class Monster extends LiveActor {
     }
 
     public boolean isMonsterStand() {
-        return MonsterTemplate.info[this.idTemplate][0] == 4;
+        // MonsterTemplate.info chi co 0..138: mau moi 139.. (Hoenn nam 2, boss dot kich) khong phai quai dung yen.
+        // Truoc day nem ArrayIndexOutOfBounds trong Monster.update -> quai Hoenn khong bao gio hien voi client.
+        return this.idTemplate >= 0 && this.idTemplate < MonsterTemplate.info.length && MonsterTemplate.info[this.idTemplate][0] == 4;
     }
 
     public boolean isMaterialMons() {
@@ -781,7 +783,7 @@ public class Monster extends LiveActor {
     // danh quai cap nao. Tu 15/09/2026 doi sang ap dung o thoi diem CAP EXP CHO NGUOI
     // CHOI (xem apDungGiamExpTheoCapNV ben duoi), khong con ap o luc quai spawn nua.
     // Ten hang so / khoa cau_hinh (sv.tileExpLv50, sv.tileExpDuoiLv50) giu nguyen de khong
-    // phai doi web/admin/cauhinh.php, chi doi Y NGHIA: gio la "cap NHAN VAT", khong phai
+    // phai doi HTBB-Web /admin/cauhinh, chi doi Y NGHIA: gio la "cap NHAN VAT", khong phai
     // "cap quai". Ap dung DONG NHAT cho ca Boss (khong con mien tru Boss nhu truoc).
     public static int PC_TILE_EXP_LV50 = 10;
 
@@ -1153,7 +1155,7 @@ public class Monster extends LiveActor {
                         int[] idTrung = new int[]{16, 17};
                         p.createTrungPhuongHoang(1L, idTrung[Map.r.nextInt(idTrung.length)]);
                         try {
-                            Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + p.getName() + " vừa nhặt được trứng phượng hoàng. Điều kiện nhận là bạn không có trứng nào trong rương và phải từ level 40 trở lên."));
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " vừa nhặt được trứng Moltres. Điều kiện nhận là bạn không có trứng nào trong rương và phải từ level 40 trở lên.");
                         } catch (final Exception ex2) {
                         }
                     }
@@ -1189,7 +1191,7 @@ public class Monster extends LiveActor {
                         int[] idTrung = new int[]{18};
                         p.createTrungPhuongHoang(1L, idTrung[Map.r.nextInt(idTrung.length)]);
                         try {
-                            Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + p.getName() + " vừa nhặt được trứng hoả kì nhông. Điều kiện nhận là bạn không có trứng nào trong rương và phải từ level 60 trở lên."));
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " vừa nhặt được trứng hoả kì nhông. Điều kiện nhận là bạn không có trứng nào trong rương và phải từ level 60 trở lên.");
                         } catch (final Exception ex2) {
                         }
                     }
@@ -1608,7 +1610,7 @@ public class Monster extends LiveActor {
                         if (!this.isCuongThi()) {
                             if (!this.isMonsterMoba() && !this.isBossVanTienTran()  && !this.isMonsterVanTienTran()) {
                             Database.instance.updateCountBoss(p.charname);
-                            Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(p.charname) + " đã giết được " + this.getName()));
+                            Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(p.charname) + " đã hạ được " + this.getName()));
                         }
                     }
                     } catch (final Exception ex3) {
@@ -1666,7 +1668,7 @@ public class Monster extends LiveActor {
                             listGem = new Vector<GemItem>();
                         }
                         // Boss/tru cua Tran yeu tran (Van Tien Tran) khong an 2 khoan
-                        // chung nay: BossVanTienTran.dropListGemItem() da tu cho rieng
+                        // chung nay: BossMeCung.dropListGemItem() da tu cho rieng
                         // 1 nguyen lieu + 1 Luyen kim duoc co dinh moi lan chet roi.
                         if (!this.isBossVanTienTran()) {
                             final GemItem thuocHoaHinh = new GemItem(268);
@@ -1675,7 +1677,7 @@ public class Monster extends LiveActor {
                             listGem.add(thuocHoaHinh);
                             // Da BO co hoi 3% roi Luyen kim duoc 30 (id 11) chung cho moi boss -
                             // yeu cau nguoi dung 21/09/2026. Boss nao dang co dong LKD_30 co dinh
-                            // rieng (vd Tho Dia, BossSkelonton idTemplate 113) van giu nguyen,
+                            // rieng (vd Tho Dia, BossDusknoir idTemplate 113) van giu nguyen,
                             // khong dung nhanh nay nua.
                         }
                         // Vu Lan (viet lai): moi boss chet roi han 2-4 nhanh hoa hong vang

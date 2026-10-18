@@ -271,7 +271,7 @@ public class GameScr extends Screen {
     public static Vector serverInfo = new Vector();
     public static int tempIDActorParty = -1;
     public static byte idItemClanquest = -1;
-    public static String infoQuest = "Giết 10 con nhím, sau đó quay về nói chuyện với  NPC";
+    public static String infoQuest = "Hạ 10 con nhím, sau đó quay về nói chuyện với  NPC";
     public static String info_gif_quest = null;
     public static String titleQuest = "";
     public static Vector aeo = new Vector();
@@ -287,7 +287,7 @@ public class GameScr extends Screen {
     public static Vector msgWorld = new Vector();
     public static Vector savemsgWorld = new Vector();
     public static Boss_Dragon[] bDragon = new Boss_Dragon[1];
-    public static String[] nameCountry = {"Thanh long", "Hắc hổ"};
+    public static String[] nameCountry = {"Kanto", "Johto"};
     public static byte typeOptionFocus = 0;
     static Random r = new Random(System.currentTimeMillis());
     public static short dtmove = 250;
@@ -1370,7 +1370,7 @@ public class GameScr extends Screen {
     private boolean doIntro() {
         int i;
         if (Tilemap.lv == 105) {
-            String[] strArr = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao đấng anh hào, ẩn sỹ.", "1Năm xưa ta có người anh em kết nghĩa là Hai Minh", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng nghĩa sĩ.", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
+            String[] strArr = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao nhà huấn luyện tài ba.", "1Năm xưa ta có người bạn thân là Xatu", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng huấn luyện.", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
             Actor actor = this.focusedActor;
             if ((actor == null || !(actor instanceof NPC)) && GCanvas.currentDialog == null) {
                 GCanvas.keyHold[2] = true;
@@ -2307,7 +2307,7 @@ public class GameScr extends Screen {
                         }
                     }));
                     if ((GCanvas.gameScr.mainChar.isMaster == 0 || GCanvas.gameScr.mainChar.isMaster == 1 || GCanvas.gameScr.mainChar.isMaster == 2) && ((Char) this.focusedActor).idClan == -1) {
-                        vector.addElement(new Command("Mời vào bang hội", new IAction() {
+                        vector.addElement(new Command("Mời vào đội", new IAction() {
                             @Override
                             public void perform() {
                                 GameScr.this.gameService.sendRequestAddClan(GameScr.this.focusedActor.ID, (byte) 0, false);
@@ -2315,7 +2315,7 @@ public class GameScr extends Screen {
                         }));
                     }
                     if (((Char) this.focusedActor).idClan != -1) {
-                        vector.addElement(new Command("Xem thông tin bang hội", new IAction() {
+                        vector.addElement(new Command("Xem thông tin đội", new IAction() {
                             @Override
                             public void perform() {
                                 GameScr.this.gameService.requestClanInfo(((Char) GameScr.this.focusedActor).idClan);
@@ -2333,7 +2333,7 @@ public class GameScr extends Screen {
                             }
                         }
                     }));
-                    vector.addElement(new Command("Xuống ngựa", new IAction() {
+                    vector.addElement(new Command("Xuống thú cưỡi", new IAction() {
                         @Override
                         public void perform() {
                             GameScr.this.unRideHorse();
@@ -2353,7 +2353,7 @@ public class GameScr extends Screen {
 
     public void unRideHorse() {
         if (this.mainChar.useHorse != -1 || this.mainChar.idhorse > -1) {
-            GCanvas.startYesNoDlg("Ngựa sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống ngựa không ?", new IAction() {
+            GCanvas.startYesNoDlg("Thú cưỡi sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống thú cưỡi không ?", new IAction() {
                 @Override
                 public void perform() {
                     GameScr.this.gameService.unRideHorse((byte) 0);
@@ -2567,7 +2567,7 @@ public class GameScr extends Screen {
                         Vector allQuestNpc = getAllQuestNpc(this.focusedActor.getTypeNpc());
                         if (allQuestNpc.size() > 0 && !this.focusedActor.isNpcChar()) {
                             if (posNpcReceiveClan != null && ((NPC) this.focusedActor).type == posNpcReceiveClan.index) {
-                                allQuestNpc.addElement(new Command("Nhiệm vụ Bang hội", new IAction() {
+                                allQuestNpc.addElement(new Command("Nhiệm vụ Đội", new IAction() {
                                     @Override
                                     public void perform() {
                                         GameScr.this.gameService.questClan(3);
@@ -2737,7 +2737,7 @@ public class GameScr extends Screen {
         @Override
         public void perform() {
             Vector vector = new Vector();
-            vector.addElement(new Command("Vũ khí", new IAction() {
+            vector.addElement(new Command("Đồ cầm tay", new IAction() {
                 @Override
                 public void perform() {
                     if (GameScr.this.mainChar.charXu < GameScr.this.mainChar.getPriceRepair(1)) {
@@ -2849,7 +2849,7 @@ public class GameScr extends Screen {
                     if (GameScr.this.mainChar.haveItemImbue()) {
                         GameScr.this.gameService.requestImbue(0);
                     } else {
-                        GCanvas.startOKDlg("Bạn chưa có nguyên tố để luyện, hãy đến nhà lão Địa chủ mua rồi quay lại đây.");
+                        GCanvas.startOKDlg("Bạn chưa có nguyên tố để luyện, hãy đến nhà Persian mua rồi quay lại đây.");
                     }
                 }
             }));
@@ -4538,13 +4538,13 @@ public class GameScr extends Screen {
                             this.mainChar.attkPower = monsterDieInfo.hpLost;
                         }
                         if (this.mainChar.kilAllMonsterQuest(monsterFindMonsterByID.monster_type)) {
-                            addChat(new ChatInfo("", "Giết " + this.mainChar.infoQuest + " " + monsterFindMonsterByID.getDisplayName(), 0));
+                            addChat(new ChatInfo("", "Hạ " + this.mainChar.infoQuest + " " + monsterFindMonsterByID.getDisplayName(), 0));
                             if (WindowInfoScr.idMonsterClanQuest != -1) {
                                 if (WindowInfoScr.numberQuestGet + 1 >= WindowInfoScr.numberQuestAll) {
                                     WindowInfoScr.idMonsterClanQuest = (byte) -1;
                                     addChat(new ChatInfo("", "Hoàn thành nhiệm vụ.", 0));
                                 } else {
-                                    StringBuilder sbAppend = new StringBuilder().append("Giết được ");
+                                    StringBuilder sbAppend = new StringBuilder().append("Hạ được ");
                                     short s = (short) (WindowInfoScr.numberQuestGet + 1);
                                     WindowInfoScr.numberQuestGet = s;
                                     addChat(new ChatInfo("", sbAppend.append((int) s).append("/").append((int) WindowInfoScr.numberQuestAll).toString(), 0));
@@ -5088,7 +5088,7 @@ public class GameScr extends Screen {
                 public void perform() {
                     GameScr.iTaskAuto = 1;
                     GCanvas.endDlg();
-                    GameScr.this.addChat(new ChatInfo("", "Hãy đi gặp các tiền bối trong làng để học võ công.", 0));
+                    GameScr.this.addChat(new ChatInfo("", "Hãy đi gặp các bậc đàn anh trong làng để học chiêu thức.", 0));
                 }
             });
         }
@@ -5784,7 +5784,7 @@ public class GameScr extends Screen {
         if (r9 == this.mainChar) {
             addChat(new ChatInfo("", "Đạt được level " + ((int) b), 1));
             if (b == 2) {
-                GCanvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, nhân vật để tăng điểm tiềm năng và kỹ năng", false, 20);
+                GCanvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, Pokémon để tăng điểm tiềm năng và kỹ năng", false, 20);
             }
         }
     }
@@ -7028,7 +7028,7 @@ public class GameScr extends Screen {
             vector.addElement(new Command("", new IAction() {
                 @Override
                 public void perform() {
-                    GCanvas.inputDlg.setInfo("Tên bang hội của bạn", new IAction() {
+                    GCanvas.inputDlg.setInfo("Tên đội của bạn", new IAction() {
                         @Override
                         public void perform() {
                             if (GCanvas.inputDlg.tfInput.getText().equals("")) {

@@ -1,13 +1,13 @@
 -- ============================================================================
---  WIPE TOÀN BỘ DỮ LIỆU NGƯỜI CHƠI — DB kpah_db
+--  WIPE TOÀN BỘ DỮ LIỆU NGƯỜI CHƠI — DB htbb_db
 --
 --  ####################  KHÔNG HOÀN TÁC ĐƯỢC  ####################
 --
 --  LÀM ĐÚNG THỨ TỰ:
---    1. TẮT SERVER HẲN (đóng KPAH2_patched.jar và cả loginServer).
+--    1. TẮT SERVER HẲN (đóng htbb-server.jar và cả loginServer).
 --       Server giữ Char trong RAM, còn chạy là nó ghi đè lại sau khi bạn xoá.
 --    2. BACKUP:
---         mysqldump -u root kpah_db  > sql/backup_kpah_db.sql
+--         mysqldump -u root htbb_db  > sql/backup_htbb_db.sql
 --         mysqldump -u root account  > sql/backup_account.sql
 --    3. Chạy PHẦN 1 (hoặc PHẦN 2) bên dưới.
 --    4. Đọc mục "SAU KHI WIPE" ở cuối, có 2 việc bắt buộc phải làm.
@@ -129,12 +129,12 @@ UPDATE `tob_code_lixi` SET `nhan` = 0, `timeNhan` = NULL, `charnhan` = NULL;
 --  TUỲ CHỌN — XOÁ LUÔN TÀI KHOẢN ĐĂNG NHẬP
 --  Mặc định KHÔNG chạy. Bật khi bạn muốn mọi người đăng ký lại từ đầu.
 --  Tài khoản nằm ở DB RIÊNG tên `account` (xem loginServer/server.ini),
---  không phải kpah_db. Bảng account.team_user KHÁC hoàn toàn
---  kpah_db.team_user (cái sau chỉ map provider/agent).
+--  không phải htbb_db. Bảng account.team_user KHÁC hoàn toàn
+--  htbb_db.team_user (cái sau chỉ map provider/agent).
 -- ============================================================================
 
 -- TRUNCATE TABLE `account`.`team_user`;
--- TRUNCATE TABLE `kpah_db`.`5h_active`;
+-- TRUNCATE TABLE `htbb_db`.`5h_active`;
 --   Chạy 2 câu trên rồi thì BẮT BUỘC sửa server.ini: sv.EnableAvtiveCheck=0
 --   (nếu không thì tài khoản mới đăng ký sẽ không đăng nhập được vì
 --    5h_active trống), hoặc tự thêm dòng vào 5h_active cho từng tài khoản.

@@ -568,7 +568,7 @@ public class BossTruRongMoba extends BossTruRong {
                     NewClan clan = Map.getClaninfoByID(this.idClan);
                     if (pp.id != p.id && (pp.rankClan != 0 || pp.idClan != p.idClan)) {
                         if (clan != null) {
-                            pp.sendMessage(MessageCreator.createMsgChat(pp.id, "Chúc mừng bang " + clan.name + " đã giành được quyền giao thẻ"));
+                            pp.sendMessage(MessageCreator.createMsgChat(pp.id, "Chúc mừng đội " + clan.name + " đã giành được quyền giao thẻ"));
                         }
                     } else {
                         pp.sendMessage(MessageCreator.createMsgChat(pp.id, "Chúc mừng " + p.getName() + " đã giành được quyền giao thẻ"));

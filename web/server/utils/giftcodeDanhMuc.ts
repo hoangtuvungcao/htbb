@@ -188,7 +188,7 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
       ma: 'nhanh_hoa_dao',
       ten: 'Nhánh hoa đào',
       loai: 'ITEM',
-      ghiChu: 'Max chỉ số: sát thương chuẩn 24,1%; chỉ số vũ khí tăng 50,1%; tỷ lệ gây sát thương chuẩn 29,0%. Vật phẩm khóa, vĩnh viễn.',
+      ghiChu: 'Max chỉ số: sát thương chuẩn 24,1%; chỉ số đồ cầm tay tăng 50,1%; tỷ lệ gây sát thương chuẩn 29,0%. Vật phẩm khóa, vĩnh viễn.',
       muc: [hoaDao],
     })
   }
@@ -209,7 +209,7 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
   if (trungThuoc.length) {
     dm.push({
       ma: 'trung_thuoc',
-      ten: 'Trứng phượng hoàng / hoả kỳ lân / đương khang…',
+      ten: 'Trứng Moltres / Ponyta / Piloswine…',
       loai: 'PT',
       ghiChu: 'Mấy loại trứng này KHÔNG phải vật phẩm trong hành trang — trong '
         + 'game chúng là ô thuốc (data_item không có dòng nào tên phượng '
@@ -279,12 +279,12 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
     // CẢNH BÁO CHÍNH SÁCH: Char.createThanKhi() đặt CỨNG newItem.lock = 0, bỏ qua tham số
     // khoá. Thần khí phát qua TK/TKMAX LUÔN giao dịch được — hành vi của máy chủ, không
     // phải thiếu sót của bộ chọn.
-    const ghiChuThanKhi = 'Chỉ đúng 3 id này được hệ thần khí nhận diện. '
-      + 'LƯU Ý: khác mọi loại khác trong bộ chọn, thần khí phát qua giftcode '
+    const ghiChuThanKhi = 'Chỉ đúng 3 id này được hệ bảo vật huyền thoại nhận diện. '
+      + 'LƯU Ý: khác mọi loại khác trong bộ chọn, bảo vật huyền thoại phát qua giftcode '
       + 'KHÔNG BAO GIỜ bị khoá — máy chủ luôn tạo ở trạng thái giao dịch được, '
       + 'không có cách nào đặt khoá qua giftcode.'
-    dm.push({ ma: 'than_khi', ten: 'Thần khí', loai: 'TK', ghiChu: ghiChuThanKhi, muc: thanKhi })
-    dm.push({ ma: 'than_khi_max', ten: 'Thần khí — tối đa chỉ số', loai: 'TKMAX', ghiChu: ghiChuThanKhi, muc: thanKhi })
+    dm.push({ ma: 'than_khi', ten: 'Bảo vật huyền thoại', loai: 'TK', ghiChu: ghiChuThanKhi, muc: thanKhi })
+    dm.push({ ma: 'than_khi_max', ten: 'Bảo vật huyền thoại — tối đa chỉ số', loai: 'TKMAX', ghiChu: ghiChuThanKhi, muc: thanKhi })
   }
 
   // ---- Danh hiệu ----
@@ -316,15 +316,15 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
   // ITEM: trước 12/09/2026 nhóm này sinh "ITEM:911:1" -> Kim Cang Long 0 chỉ số và không
   // đặt được hạn. Java đã vá để ITEM cũng roll, nhưng ITEM vẫn không có thời hạn.
   const ghiChuSkin = 'Đổi hình thú cưỡi. 5 skin đầu (905–909) chỉ số cố định theo hệ; '
-    + 'Kim Cang Long (911) roll ngẫu nhiên 2–3 dòng (bạo kích / sát thương chuẩn / tăng công) '
+    + 'Dialga (911) roll ngẫu nhiên 2–3 dòng (bạo kích / sát thương chuẩn / tăng công) '
     + 'lúc phát. Thời hạn tính bằng PHÚT, 0 = vĩnh viễn (1 ngày = 1440, 7 ngày = 10080).'
   const nhomKhac: [number, string, string, string, string][] = [
-    [29, 'manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang Bát Giới / Sa Tăng.', 'ITEM'],
+    [29, 'manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang Emboar / Swampert.', 'ITEM'],
     [30, 'skin_thu', 'Skin thú cưỡi', ghiChuSkin, 'DB'],
-    [19, 'phi_phong', 'Phi phong', 'Loại thưởng ITEM cho phi phong thường; '
+    [19, 'phi_phong', 'Ruy băng', 'Loại thưởng ITEM cho ruy băng thường; '
       + 'muốn chọn kháng thì dùng PPRK và gõ tay.', 'ITEM'],
     [27, 'thu_nuoi', 'Thú nuôi', 'Thú nuôi dạng vật phẩm trong hành trang.', 'ITEM'],
-    [25, 'hoa_ky_lan', 'Hoả kỳ lân', '', 'ITEM'],
+    [25, 'hoa_ky_lan', 'Ponyta', '', 'ITEM'],
   ]
   for (const [type, ma, ten, ghiChu, loai] of nhomKhac) {
     let muc = vp.get(type) ?? []
@@ -362,7 +362,7 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
       ma: 'vat_pham',
       ten: `Vật phẩm khác (${mucVp.length})`,
       loai: 'ITEM',
-      ghiChu: 'Đã bỏ đồ chế ở thợ rèn thần bí (vũ khí, trang bị, trang bị thú, '
+      ghiChu: 'Đã bỏ đồ chế ở thợ rèn thần bí (đồ cầm tay, trang bị, trang bị thú, '
         + 'ngọc trang bị). Cần phát mấy món đó thì gõ tay ITEM:id:số lượng. '
         + 'Gõ vào ô tìm để lọc theo tên hoặc id.',
       muc: mucVp,
@@ -412,9 +412,9 @@ export const DM_LOAI_TRA_DATA_ITEM = [
 
 /** Ánh xạ EGG -> Char.createTrungPhuongHoang(): CHỈ 4 giá trị này có nghĩa. */
 export const DM_EGG_TEN: Record<number, string> = {
-  16: 'Phượng hoàng',
-  17: 'Trứng phượng hoàng băng',
-  18: 'Trứng Hoả kỳ lân',
+  16: 'Moltres',
+  17: 'Trứng Articuno',
+  18: 'Trứng Ponyta',
   19: 'Sách kỹ năng pet (KHÔNG phải trứng)',
 }
 
@@ -436,8 +436,8 @@ export function dmTenTheoLoaiKhongCache(nguon: NguonTenGiftcode, loai: string, i
       return danhMucDanhHieu()[id]?.ten ?? null
     case 'CAITRANG':
       // Chỉ 903/904 làm việc — xem doUsePotion/Char.createItemCaiTrang.
-      if (id === 903) return 'Cải Trang Bát Giới'
-      if (id === 904) return 'Cải Trang Sa Tăng'
+      if (id === 903) return 'Cải Trang Emboar'
+      if (id === 904) return 'Cải Trang Swampert'
       return null
     case 'MATNA':
       // option là CHỈ SỐ 0..4 vào Char.ID_MAT_NA = {745..749}, KHÔNG PHẢI id vật phẩm.

@@ -16,7 +16,7 @@ const muc = [
   ] },
   { id: 'quy-trinh', ten: 'Quy trình', noi: [
     'Gửi yêu cầu qua kênh hỗ trợ kèm mã đơn (HTxxxxxxxx) và ảnh sao kê. Ban quản trị phản hồi trong 3 ngày làm việc và chuyển khoản trả lại trong 7 ngày làm việc kể từ khi chấp thuận.',
-    'Khi hoàn tiền cho đơn đã vào game: lượng của đơn được thu hồi (trừ vào lượng đang có; phần thiếu thành nợ, trừ dần vào lượng nhận sau và tạm khoá cửa hàng tới khi trả hết), Thẻ tháng bị trừ 30 ngày, Vé mùa mất track cao cấp.',
+    'Khi hoàn tiền cho đơn đã vào game: lượng của đơn được thu hồi (trừ vào lượng đang có; phần thiếu thành nợ, trừ dần vào lượng nhận sau và tạm khoá cửa hàng tới khi trả hết), Thẻ tháng bị trừ 30 ngày, Vé mùa mất nhánh thưởng cao cấp.',
   ] },
   { id: 'khieu-nai', ten: 'Khiếu nại qua ngân hàng (chargeback)', noi: [
     'Nếu bạn yêu cầu ngân hàng huỷ giao dịch, đơn sẽ bị thu hồi như trên và tài khoản tạm khoá tạo đơn nạp mới cho tới khi giải quyết xong. Hãy liên hệ ban quản trị trước — đa số trường hợp được xử lý nhanh hơn.',

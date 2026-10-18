@@ -1,12 +1,21 @@
 <script setup lang="ts">
-/** Cấp độ & trần cấp mùa — mọi số từ cam-nang.json (ThongSoLauDai.java + bang_cap_do_lau_dai.csv). */
+/** Cấp độ, năng lượng & tăng tốc — số từ cam-nang.json (ThongSoLauDai.java + bang_cap_do_lau_dai.csv); bảng tăng tốc khớp com.htbb.pokemon.TangToc. */
 const C = CAM_NANG.capDo
 const nl = C.nangLuong
 const gioNgay = nl.phutNgay / 60
 const tt = C.tinhThong
 
-/** Giờ chơi hiệu dụng để đạt mỗi trần cấp. */
-const tranCap = C.tranCap.map(t => ({ ...t, gio: C.bang.find(r => r.cap === t.cap)?.gioTichLuy ?? 0 }))
+/** Giờ chơi hiệu dụng tới cấp tối đa. */
+const gioToiDa = C.bang.find(r => r.cap === C.capToiDa)?.gioTichLuy ?? 0
+
+/** Vật phẩm tăng tốc (khớp com.htbb.pokemon.TangToc — đổi bên game thì sửa ở đây). Chung trần 60 điểm/ngày, 210/tuần. */
+const TANG_TOC = [
+  { ten: 'Vé EXP x1,5 (30 phút)', diem: 15, tacDung: 'EXP hạ quái ×1,5 trong 30 phút đánh quái (đứng yên không mất)', gioiHan: '60 phút vé/ngày' },
+  { ten: 'Vé EXP x2 (30 phút)', diem: 30, tacDung: 'EXP hạ quái ×2 trong 30 phút đánh quái', gioiHan: 'chung 60 phút vé/ngày' },
+  { ten: 'Bùa thể lực', diem: 45, tacDung: '+60 phút năng lượng 100% hôm nay (chỉ EXP)', gioiHan: '1/ngày' },
+  { ten: 'Phiếu ủy thác luyện tập (1 giờ)', diem: 12, tacDung: 'Thoát game, Pokémon tự luyện: 20% EXP 1 giờ đánh quái', gioiHan: '3 giờ/ngày (+1 giờ với Thẻ tháng)' },
+  { ten: 'Kẹo hiếm', diem: 30, tacDung: '30 phút EXP, trừ 30 phút năng lượng 100%', gioiHan: '2/tuần' },
+]
 
 const xemTatCa = ref(false)
 const MOC = [1, 5, 10, 16, 20, 25, 30, 36, 40, 50, 60, 70, 80, 90, 91, 95, 100]
@@ -28,7 +37,7 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
         <b>{{ C.capToiDa }}</b><span>cấp tối đa</span>
       </div>
       <div class="the-so">
-        <b>{{ C.tranCap[0]!.cap }}</b><span>trần cấp lúc khai trương</span>
+        <b>Không</b><span>giới hạn cấp theo mùa</span>
       </div>
       <div class="the-so">
         <b>{{ hienGio(gioNgay) }}</b><span>tốc độ 100% mỗi ngày</span>
@@ -38,20 +47,31 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
       </div>
     </div>
 
-    <WikiSection id="tran-cap" title="Trần cấp theo mùa" lead="Cấp tối đa không mở hết ngay từ đầu: trần cấp nâng dần theo số ngày kể từ khi máy chủ khai trương. Người chơi chăm chỉ không bỏ quá xa người chơi nhẹ nhàng, còn nội dung mới luôn có người cùng khám phá.">
-      <ol class="relative grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <li v-for="(t, i) in tranCap" :key="t.ngay" class="flex items-center gap-4 rounded-2xl glass p-4">
-          <span class="grid size-14 shrink-0 place-items-center rounded-xl bg-screen font-pixel text-sm text-pokered-600 dark:text-pikachu-300">{{ t.cap }}</span>
-          <span>
-            <strong class="block font-display text-highlighted">{{ i === 0 ? 'Khai trương' : `Mùa ${i + 1}` }}</strong>
-            <span class="text-sm text-muted">{{ thangTuKhaiTruong(t.ngay) }}</span>
-            <span class="block text-xs text-dimmed">≈ {{ hienGio(t.gio) }} luyện cấp hiệu dụng để chạm trần</span>
-          </span>
-        </li>
-      </ol>
+    <WikiSection id="tran-cap" title="Không giới hạn cấp theo mùa" :lead="`Cấp ${C.capToiDa} mở cho mọi người ngay từ đầu — không còn trần cấp theo mùa. Bù lại, lên cấp chậm: tổng ≈ ${hienGio(gioToiDa)} đánh quái hiệu dụng từ cấp 1 tới ${C.capToiDa}, và năng lượng huấn luyện giới hạn số giờ đầy đủ mỗi ngày.`">
+      <ul class="cham">
+        <li>Người chơi 1–2 giờ/ngày tới cấp {{ C.capToiDa }} sau khoảng <strong>15–18 tháng</strong>; người cày 5–7 giờ/ngày khoảng <strong>9–12 tháng</strong>.</li>
+        <li>Nội dung mở theo <strong>cấp và cốt truyện</strong>: vùng Hoenn cần cấp 84 và xong chương 52 (kết năm 1, sau khi trở thành Nhà vô địch); chuỗi huyền thoại mở từng bước theo cấp.</li>
+        <li>Sự kiện tuần, boss đột kích, mùa PvP và vé mùa vẫn chạy theo lịch.</li>
+      </ul>
       <WikiCallout kieu="meo">
-        Chạm trần cấp rồi thì EXP không mất đi: nó chuyển sang <NuxtLink to="#tinh-thong" class="lien-ket">điểm tinh thông</NuxtLink>.
+        Ở cấp tối đa, EXP không mất đi: nó chuyển sang <NuxtLink to="#tinh-thong" class="lien-ket">điểm tinh thông</NuxtLink>.
       </WikiCallout>
+    </WikiSection>
+
+    <WikiSection id="tang-toc" title="Vật phẩm tăng tốc" lead="Muốn lên cấp nhanh hơn? Dùng vé EXP, bùa thể lực hoặc ủy thác luyện tập. Chúng chỉ cho EXP — không cho xu, đồ, đá hay chỉ số — và không dùng được ở cấp tối đa.">
+      <div class="bang-cuon">
+        <table class="bang-wiki">
+          <thead><tr><th>Vật phẩm</th><th>Tác dụng</th><th>Điểm</th><th>Giới hạn riêng</th></tr></thead>
+          <tbody>
+            <tr v-for="t in TANG_TOC" :key="t.ten"><td>{{ t.ten }}</td><td>{{ t.tacDung }}</td><td>{{ t.diem }}</td><td>{{ t.gioiHan }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="cham mt-4">
+        <li>Mọi vật phẩm tăng tốc dùng chung giới hạn <strong>60 điểm mỗi ngày</strong> và <strong>210 điểm mỗi tuần</strong> (khoảng 3,5 giờ EXP).</li>
+        <li><strong>Bản khoá</strong> kiếm được khi chơi: xong 2 nhiệm vụ tuần (2 vé x1,5 + 1 phiếu ủy thác), lịch đăng nhập ngày 3 (vé x1,5) và ngày 7 (bùa thể lực), vé mùa miễn phí, đổi lượng khoá ở Kecleon.</li>
+        <li><strong>Bản cao cấp</strong> (cửa hàng lượng) có cùng công dụng và cùng giới hạn — chỉ tiết kiệm thời gian, không mạnh hơn người cùng cấp.</li>
+      </ul>
     </WikiSection>
 
     <WikiSection id="nang-luong" title="Năng lượng huấn luyện" lead="Mỗi ngày, những giờ đánh quái đầu tiên cho đủ EXP và xu; chơi quá lâu thì tốc độ giảm dần. Cơ chế này giữ sức khoẻ cho người chơi và khiến treo máy/bot không có lợi.">
@@ -96,10 +116,10 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
       </ul>
     </WikiSection>
 
-    <WikiSection id="tinh-thong" title="Tinh thông" lead="Phần thưởng cho người đã chạm trần cấp của mùa.">
+    <WikiSection id="tinh-thong" title="Tinh thông" lead="Phần thưởng cho người đã đạt cấp tối đa.">
       <ul class="cham">
-        <li>Ở trần cấp, mỗi lần tích đủ <strong>{{ tt.phanTramCap }}%</strong> EXP của cấp liền trước trần → nhận <strong>1 điểm tinh thông</strong>.</li>
-        <li>Mỗi mùa nhận tối đa <strong>{{ tt.diemMoiMua }} điểm</strong>; tổng tối đa <strong>{{ tt.toiDa }} điểm</strong>.</li>
+        <li>Ở cấp tối đa, mỗi lần tích đủ <strong>{{ tt.phanTramCap }}%</strong> EXP của cấp liền trước → nhận <strong>1 điểm tinh thông</strong>.</li>
+        <li>Tổng tối đa <strong>{{ tt.toiDa }} điểm</strong>. Vật phẩm tăng tốc không dùng được ở cấp tối đa.</li>
         <li>Mỗi điểm: <strong>+{{ (tt.phanNghinMoiDiem / 10).toLocaleString('vi-VN') }}%</strong> tấn công và HP (tối đa +{{ ((tt.phanNghinMoiDiem * tt.toiDa) / 10).toLocaleString('vi-VN') }}%).</li>
       </ul>
     </WikiSection>
@@ -138,7 +158,7 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in bang" :key="r.cap" :class="C.tranCap.some(t => t.cap === r.cap) ? 'noi-bat' : ''">
+            <tr v-for="r in bang" :key="r.cap" :class="r.cap % 10 === 0 ? 'noi-bat' : ''">
               <td class="so font-bold text-highlighted">
                 {{ r.cap }}
               </td>
@@ -165,7 +185,7 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
         </table>
       </div>
       <p class="mt-2 text-xs text-dimmed">
-        Hàng tô vàng = mốc trần cấp theo mùa.
+        Hàng tô vàng = mốc mỗi 10 cấp.
       </p>
     </WikiSection>
   </WikiShell>

@@ -8,8 +8,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 /// <summary>
-/// Tự cập nhật bản PC: lúc mở game đọc https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json (repo public kpah-server/nqsh-h2-tai, do phat-hanh.sh ghi; không qua Nova WAF),
-/// mục "pc": {"ban", "link", "sha256", "ghiChu"}. "ban" lớn hơn Application.version (số bản, đặt lúc
+/// Tự cập nhật bản PC: lúc mở game đọc phienban.json của kênh phát hành HTBB (ThuongHieu.capNhatUrl(): hằng số
+/// ThuongHieu.CAP_NHAT_URL hoặc CAP_NHAT_URL đóng vào lúc build từ tools/phat-hanh/may_chu.conf; do phat-hanh.sh ghi),
+/// RỖNG = TẮT tự cập nhật (mặc định open test). Kênh NQSH-H2 cũ (kpah-server/nqsh-h2-tai) luôn bị bỏ qua ở chế độ
+/// Pokémon - bản HTBB đọc nó sẽ tải game cũ đè lên chính nó. Mục "pc": {"ban", "link", "sha256", "ghiChu"}. "ban" lớn hơn Application.version (số bản, đặt lúc
 /// build qua HTBB_VERSION_CODE) thì tải zip, kiểm sha256, rồi chạy một script PowerShell chờ game
 /// thoát, giải nén đè lên thư mục game và mở lại game. Không có mạng / lỗi thì game chạy bình thường.
 /// </summary>
@@ -23,8 +25,6 @@ public class CapNhat : MonoBehaviour
 
 	/// <summary>Tải zip mà quá bấy nhiêu giây không thêm byte nào thì huỷ (mạng treo giữa chừng).</summary>
 	private const float TAI_TREO_GIAY = 30f;
-
-	private const string LINK = "https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json";
 
 	/// <summary>Đang tải bản mới: Main bỏ qua chuột / phím của game.</summary>
 	public static bool dangCapNhat;
@@ -51,7 +51,8 @@ public class CapNhat : MonoBehaviour
 
 	public static void batDau(GameObject go)
 	{
-		if (Application.platform == RuntimePlatform.WindowsPlayer)
+		// chưa cấu hình kênh phát hành HTBB (hoặc là kênh NQSH-H2 cũ) = tắt hẳn, không gửi request nào
+		if (Application.platform == RuntimePlatform.WindowsPlayer && ThuongHieu.capNhatUrl() != null)
 		{
 			go.AddComponent<CapNhat>();
 		}
@@ -84,11 +85,11 @@ public class CapNhat : MonoBehaviour
 			UnityEngine.Debug.LogWarning("CapNhat: " + ex.Message);
 		}
 		string json;
-		// biến môi trường HTBB_CAPNHAT_URL chỉ để thử trên máy (trỏ tới phienban.json cục bộ)
-		string link = Environment.GetEnvironmentVariable("HTBB_CAPNHAT_URL");
-		if (string.IsNullOrEmpty(link))
+		// ThuongHieu.capNhatUrl: biến môi trường HTBB_CAPNHAT_URL (thử trên máy) > CAP_NHAT_URL; null = tắt
+		string link = ThuongHieu.capNhatUrl();
+		if (link == null)
 		{
-			link = LINK;
+			yield break;
 		}
 		using (UnityWebRequest r = UnityWebRequest.Get(link + "?t=" + DateTime.UtcNow.Ticks))
 		{
@@ -111,6 +112,12 @@ public class CapNhat : MonoBehaviour
 			UnityEngine.Debug.LogWarning("CapNhat: " + ex.Message);
 		}
 		UnityEngine.Debug.Log("CapNhat: dang cai " + dangCai + ", moi nhat " + (moi == null ? "?" : moi.ban.ToString()));
+		// link tải cũng không được trỏ về kênh NQSH-H2 (phienban.json bị ghi nhầm)
+		if (moi != null && !string.IsNullOrEmpty(moi.link) && PokeBody.CHE_DO_POKEMON && ThuongHieu.laKenhNqsh(moi.link))
+		{
+			UnityEngine.Debug.LogWarning("CapNhat: link tai thuoc kenh NQSH-H2 - bo qua");
+			yield break;
+		}
 		if (moi == null || moi.ban <= dangCai || string.IsNullOrEmpty(moi.link))
 		{
 			if (moi != null && moi.ban <= dangCai)
@@ -237,7 +244,7 @@ public class CapNhat : MonoBehaviour
 		return "'" + s.Replace("'", "''") + "'";
 	}
 
-	/// <summary>File .exe của game trong thư mục (bỏ UnityCrashHandler64.exe); không thấy thì NQSH-H2.exe.</summary>
+	/// <summary>File .exe của game trong thư mục (bỏ UnityCrashHandler64.exe); không thấy thì ThuongHieu.tenTep() + ".exe".</summary>
 	private static string timExe(string thuMuc)
 	{
 		try
@@ -253,7 +260,7 @@ public class CapNhat : MonoBehaviour
 		catch (Exception)
 		{
 		}
-		return Path.Combine(thuMuc, "NQSH-H2.exe");
+		return Path.Combine(thuMuc, ThuongHieu.tenTep() + ".exe");
 	}
 
 	/// <summary>Script chờ game thoát -> giải nén đè -> mở exe có trong bản mới (lỗi thì mở lại bản cũ).</summary>

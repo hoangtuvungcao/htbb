@@ -10,8 +10,8 @@ vu_khi_0_c4,0,sơ cấp,vu_khi,7,Pichu,Nam châm sơ cấp,107,co_san,1,1,0,60,1
 huy_hieu_0,0,sơ cấp,huy_hieu,8,,Huy hiệu sơ cấp,114,co_san,1,4,0,60,2,2,0,0,,,5385,269,2 Đá nâng cấp + 538 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_0,0,sơ cấp,vong_co,9,,Vòng cổ sơ cấp,126,co_san,1,4,0,60,1,3,0,109,,,5385,269,2 Đá nâng cấp + 538 xu,"che_tao,roi",data_item có sẵn
 long_vu_0,0,sơ cấp,long_vu,10,,Lông vũ tốc độ sơ cấp,138,co_san,1,4,0,60,1,0,0,109,Tốc chạy +1,,5385,269,2 Đá nâng cấp + 538 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_0,0,sơ cấp,gang_dam,11,,Găng đấm sơ cấp,150,co_san,1,4,0,60,1,3,0,0,Chí mạng +5‰,,5385,269,2 Đá nâng cấp + 538 xu,"cua_hang,roi",data_item có sẵn
-phien_da_0,0,sơ cấp,phien_da,12,,Phiến đá hệ sơ cấp,163,co_san,1,9,0,60,1,2,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,5385,269,2 Đá nâng cấp + 538 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_0,0,sơ cấp,gang_dam,11,,Găng đấm sơ cấp,150,co_san,1,4,0,60,1,3,0,0,"Chí mạng +0,5%",,5385,269,2 Đá nâng cấp + 538 xu,"cua_hang,roi",data_item có sẵn
+phien_da_0,0,sơ cấp,phien_da,12,,Phiến đá hệ sơ cấp,163,co_san,1,9,0,60,1,2,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,5385,269,2 Đá nâng cấp + 538 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_0,0,sơ cấp,ruy_bang,19,,Ruy băng sơ cấp,1001,moi,1,1,0,60,1,0,0,218,,,5385,269,2 Đá nâng cấp + 538 xu,"nhiem_vu,boss_the_gioi",sinh mới (id 1001)
 khan_quang_1,1,đồng,khan_quang,0,,Khăn quàng đồng,7,co_san,10,14,0,60,1,0,3,367,,,8328,416,2 Đá nâng cấp + 832 xu,"cua_hang,roi",data_item có sẵn
 dai_1,1,đồng,dai,1,,Đai đồng,33,co_san,10,14,0,60,1,0,2,294,,,8328,416,2 Đá nâng cấp + 832 xu,"cua_hang,roi",data_item có sẵn
@@ -24,8 +24,8 @@ vu_khi_1_c4,1,đồng,vu_khi,7,Pichu,Nam châm đồng,109,co_san,10,11,0,60,1,2
 huy_hieu_1,1,đồng,huy_hieu,8,,Huy hiệu đồng,116,co_san,10,14,0,60,2,5,0,0,,,8328,416,2 Đá nâng cấp + 832 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_1,1,đồng,vong_co,9,,Vòng cổ đồng,128,co_san,10,14,0,60,1,7,0,147,,,8328,416,2 Đá nâng cấp + 832 xu,"che_tao,roi",data_item có sẵn
 long_vu_1,1,đồng,long_vu,10,,Lông vũ tốc độ đồng,140,co_san,10,14,0,60,1,0,0,147,Tốc chạy +1,,8328,416,2 Đá nâng cấp + 832 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_1,1,đồng,gang_dam,11,,Găng đấm đồng,152,co_san,10,14,0,60,1,7,0,0,Chí mạng +6‰,,8328,416,2 Đá nâng cấp + 832 xu,"cua_hang,roi",data_item có sẵn
-phien_da_1,1,đồng,phien_da,12,,Phiến đá hệ đồng,164,co_san,10,14,0,60,1,5,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,8328,416,2 Đá nâng cấp + 832 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_1,1,đồng,gang_dam,11,,Găng đấm đồng,152,co_san,10,14,0,60,1,7,0,0,"Chí mạng +0,6%",,8328,416,2 Đá nâng cấp + 832 xu,"cua_hang,roi",data_item có sẵn
+phien_da_1,1,đồng,phien_da,12,,Phiến đá hệ đồng,164,co_san,10,14,0,60,1,5,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,8328,416,2 Đá nâng cấp + 832 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_1,1,đồng,ruy_bang,19,,Ruy băng đồng,1002,moi,10,10,0,60,1,0,0,294,,,8328,416,2 Đá nâng cấp + 832 xu,"nhiem_vu,boss_the_gioi",sinh mới (id 1002)
 khan_quang_2,2,bạc,khan_quang,0,,Khăn quàng bạc,268,co_san,20,20,0,60,1,0,5,472,,,13527,676,2 Đá nâng cấp + 1352 xu,"cua_hang,roi",data_item có sẵn
 dai_2,2,bạc,dai,1,,Đai bạc,37,co_san,20,24,0,60,1,0,3,378,,,13527,676,2 Đá nâng cấp + 1352 xu,"cua_hang,roi",data_item có sẵn
@@ -38,8 +38,8 @@ vu_khi_2_c4,2,bạc,vu_khi,7,Pichu,Nam châm bạc,111,co_san,20,21,0,60,1,43,0,
 huy_hieu_2,2,bạc,huy_hieu,8,,Huy hiệu bạc,118,co_san,20,24,0,60,2,10,0,0,,,13527,676,2 Đá nâng cấp + 1352 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_2,2,bạc,vong_co,9,,Vòng cổ bạc,130,co_san,20,24,0,60,1,16,0,189,,,13527,676,2 Đá nâng cấp + 1352 xu,"che_tao,roi",data_item có sẵn
 long_vu_2,2,bạc,long_vu,10,,Lông vũ tốc độ bạc,142,co_san,20,24,0,60,1,0,1,189,Tốc chạy +2,,13527,676,2 Đá nâng cấp + 1352 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_2,2,bạc,gang_dam,11,,Găng đấm bạc,154,co_san,20,24,0,60,1,16,0,0,Chí mạng +7‰,,13527,676,2 Đá nâng cấp + 1352 xu,"cua_hang,roi",data_item có sẵn
-phien_da_2,2,bạc,phien_da,12,,Phiến đá hệ bạc,166,co_san,20,24,0,60,1,10,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,13527,676,2 Đá nâng cấp + 1352 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_2,2,bạc,gang_dam,11,,Găng đấm bạc,154,co_san,20,24,0,60,1,16,0,0,"Chí mạng +0,7%",,13527,676,2 Đá nâng cấp + 1352 xu,"cua_hang,roi",data_item có sẵn
+phien_da_2,2,bạc,phien_da,12,,Phiến đá hệ bạc,166,co_san,20,24,0,60,1,10,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,13527,676,2 Đá nâng cấp + 1352 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_2,2,bạc,ruy_bang,19,,Ruy băng bạc,1003,moi,20,20,0,60,1,0,1,378,,,13527,676,2 Đá nâng cấp + 1352 xu,"nhiem_vu,boss_the_gioi",sinh mới (id 1003)
 khan_quang_3,3,vàng,khan_quang,0,,Khăn quàng vàng,272,co_san,30,30,0,60,1,0,10,577,,,20704,1035,2 Đá nâng cấp + 2070 xu,"cua_hang,roi",data_item có sẵn
 dai_3,3,vàng,dai,1,,Đai vàng,41,co_san,30,34,0,60,1,0,7,462,,,20704,1035,2 Đá nâng cấp + 2070 xu,"cua_hang,roi",data_item có sẵn
@@ -52,8 +52,8 @@ vu_khi_3_c4,3,vàng,vu_khi,7,Pichu,Nam châm vàng,113,co_san,30,31,0,60,1,86,0,
 huy_hieu_3,3,vàng,huy_hieu,8,,Huy hiệu vàng,120,co_san,30,34,0,60,2,21,0,0,,,20704,1035,2 Đá nâng cấp + 2070 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_3,3,vàng,vong_co,9,,Vòng cổ vàng,132,co_san,30,34,0,60,1,32,0,231,,,20704,1035,2 Đá nâng cấp + 2070 xu,"che_tao,roi",data_item có sẵn
 long_vu_3,3,vàng,long_vu,10,,Lông vũ tốc độ vàng,144,co_san,30,34,0,60,1,0,3,231,Tốc chạy +2,,20704,1035,2 Đá nâng cấp + 2070 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_3,3,vàng,gang_dam,11,,Găng đấm vàng,156,co_san,30,34,0,60,1,32,0,0,Chí mạng +8‰,,20704,1035,2 Đá nâng cấp + 2070 xu,"cua_hang,roi",data_item có sẵn
-phien_da_3,3,vàng,phien_da,12,,Phiến đá hệ vàng,168,co_san,30,34,0,60,1,21,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,20704,1035,2 Đá nâng cấp + 2070 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_3,3,vàng,gang_dam,11,,Găng đấm vàng,156,co_san,30,34,0,60,1,32,0,0,"Chí mạng +0,8%",,20704,1035,2 Đá nâng cấp + 2070 xu,"cua_hang,roi",data_item có sẵn
+phien_da_3,3,vàng,phien_da,12,,Phiến đá hệ vàng,168,co_san,30,34,0,60,1,21,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,20704,1035,2 Đá nâng cấp + 2070 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_3,3,vàng,ruy_bang,19,,Ruy băng vàng,584,co_san,30,35,0,60,1,0,3,462,,,20704,1035,2 Đá nâng cấp + 2070 xu,"nhiem_vu,boss_the_gioi",data_item có sẵn
 khan_quang_4,4,bạch kim,khan_quang,0,,Khăn quàng bạch kim,19,co_san,40,44,0,60,1,0,21,682,,,32340,1617,2 Đá nâng cấp + 3234 xu,"cua_hang,roi",data_item có sẵn
 dai_4,4,bạch kim,dai,1,,Đai bạch kim,45,co_san,40,44,0,60,1,0,15,546,,,32340,1617,2 Đá nâng cấp + 3234 xu,"cua_hang,roi",data_item có sẵn
@@ -66,8 +66,8 @@ vu_khi_4_c4,4,bạch kim,vu_khi,7,Pichu,Nam châm bạch kim,207,co_san,40,41,0,
 huy_hieu_4,4,bạch kim,huy_hieu,8,,Huy hiệu bạch kim,122,co_san,40,44,0,60,2,30,0,0,,,32340,1617,2 Đá nâng cấp + 3234 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_4,4,bạch kim,vong_co,9,,Vòng cổ bạch kim,134,co_san,40,44,0,60,1,45,0,273,,,32340,1617,2 Đá nâng cấp + 3234 xu,"che_tao,roi",data_item có sẵn
 long_vu_4,4,bạch kim,long_vu,10,,Lông vũ tốc độ bạch kim,146,co_san,40,44,0,60,1,0,6,273,Tốc chạy +3,,32340,1617,2 Đá nâng cấp + 3234 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_4,4,bạch kim,gang_dam,11,,Găng đấm bạch kim,158,co_san,40,44,0,60,1,45,0,0,Chí mạng +9‰,,32340,1617,2 Đá nâng cấp + 3234 xu,"cua_hang,roi",data_item có sẵn
-phien_da_4,4,bạch kim,phien_da,12,,Phiến đá hệ bạch kim,170,co_san,40,44,0,60,1,30,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,32340,1617,2 Đá nâng cấp + 3234 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_4,4,bạch kim,gang_dam,11,,Găng đấm bạch kim,158,co_san,40,44,0,60,1,45,0,0,"Chí mạng +0,9%",,32340,1617,2 Đá nâng cấp + 3234 xu,"cua_hang,roi",data_item có sẵn
+phien_da_4,4,bạch kim,phien_da,12,,Phiến đá hệ bạch kim,170,co_san,40,44,0,60,1,30,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,32340,1617,2 Đá nâng cấp + 3234 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_4,4,bạch kim,ruy_bang,19,,Ruy băng bạch kim,585,co_san,40,40,0,60,1,0,6,546,,,32340,1617,2 Đá nâng cấp + 3234 xu,"nhiem_vu,boss_the_gioi",data_item có sẵn
 khan_quang_5,5,kim cương,khan_quang,0,,Khăn quàng kim cương,23,co_san,50,54,0,60,1,0,33,787,,,50888,2544,2 Đá nâng cấp + 5088 xu,"cua_hang,roi",data_item có sẵn
 dai_5,5,kim cương,dai,1,,Đai kim cương,49,co_san,50,54,0,60,1,0,23,630,,,50888,2544,2 Đá nâng cấp + 5088 xu,"cua_hang,roi",data_item có sẵn
@@ -80,8 +80,8 @@ vu_khi_5_c4,5,kim cương,vu_khi,7,Pichu,Nam châm kim cương,209,co_san,50,51,
 huy_hieu_5,5,kim cương,huy_hieu,8,,Huy hiệu kim cương,124,co_san,50,54,0,60,2,37,0,0,,,50888,2544,2 Đá nâng cấp + 5088 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_5,5,kim cương,vong_co,9,,Vòng cổ kim cương,136,co_san,50,54,0,60,1,56,0,315,,,50888,2544,2 Đá nâng cấp + 5088 xu,"che_tao,roi",data_item có sẵn
 long_vu_5,5,kim cương,long_vu,10,,Lông vũ tốc độ kim cương,148,co_san,50,54,0,60,1,0,9,315,Tốc chạy +3,,50888,2544,2 Đá nâng cấp + 5088 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_5,5,kim cương,gang_dam,11,,Găng đấm kim cương,160,co_san,50,54,0,60,1,56,0,0,Chí mạng +10‰,,50888,2544,2 Đá nâng cấp + 5088 xu,"cua_hang,roi",data_item có sẵn
-phien_da_5,5,kim cương,phien_da,12,,Phiến đá hệ kim cương,172,co_san,50,54,0,60,1,37,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,50888,2544,2 Đá nâng cấp + 5088 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_5,5,kim cương,gang_dam,11,,Găng đấm kim cương,160,co_san,50,54,0,60,1,56,0,0,Chí mạng +1%,,50888,2544,2 Đá nâng cấp + 5088 xu,"cua_hang,roi",data_item có sẵn
+phien_da_5,5,kim cương,phien_da,12,,Phiến đá hệ kim cương,172,co_san,50,54,0,60,1,37,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,50888,2544,2 Đá nâng cấp + 5088 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_5,5,kim cương,ruy_bang,19,,Ruy băng kim cương,587,co_san,50,50,0,60,1,0,9,630,,,50888,2544,2 Đá nâng cấp + 5088 xu,"nhiem_vu,boss_the_gioi",data_item có sẵn
 khan_quang_6,6,chuyên gia,khan_quang,0,,Khăn quàng chuyên gia,467,co_san,60,64,0,60,1,0,39,892,,,79101,3955,2 Đá nâng cấp + 7910 xu,"cua_hang,roi",data_item có sẵn
 dai_6,6,chuyên gia,dai,1,,Đai chuyên gia,475,co_san,60,64,0,60,1,0,28,714,,,79101,3955,2 Đá nâng cấp + 7910 xu,"cua_hang,roi",data_item có sẵn
@@ -94,8 +94,8 @@ vu_khi_6_c4,6,chuyên gia,vu_khi,7,Pichu,Nam châm chuyên gia,211,co_san,60,61,
 huy_hieu_6,6,chuyên gia,huy_hieu,8,,Huy hiệu chuyên gia,499,co_san,60,64,0,60,2,45,0,0,,,79101,3955,2 Đá nâng cấp + 7910 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_6,6,chuyên gia,vong_co,9,,Vòng cổ chuyên gia,503,co_san,60,64,0,60,1,67,0,357,,,79101,3955,2 Đá nâng cấp + 7910 xu,"che_tao,roi",data_item có sẵn
 long_vu_6,6,chuyên gia,long_vu,10,,Lông vũ tốc độ chuyên gia,491,co_san,60,64,0,60,1,0,11,357,Tốc chạy +4,,79101,3955,2 Đá nâng cấp + 7910 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_6,6,chuyên gia,gang_dam,11,,Găng đấm chuyên gia,495,co_san,60,64,0,60,1,67,0,0,Chí mạng +11‰,,79101,3955,2 Đá nâng cấp + 7910 xu,"cua_hang,roi",data_item có sẵn
-phien_da_6,6,chuyên gia,phien_da,12,,Phiến đá hệ chuyên gia,569,co_san,60,64,0,60,1,45,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,79101,3955,2 Đá nâng cấp + 7910 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_6,6,chuyên gia,gang_dam,11,,Găng đấm chuyên gia,495,co_san,60,64,0,60,1,67,0,0,"Chí mạng +1,1%",,79101,3955,2 Đá nâng cấp + 7910 xu,"cua_hang,roi",data_item có sẵn
+phien_da_6,6,chuyên gia,phien_da,12,,Phiến đá hệ chuyên gia,569,co_san,60,64,0,60,1,45,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,79101,3955,2 Đá nâng cấp + 7910 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_6,6,chuyên gia,ruy_bang,19,,Ruy băng chuyên gia,589,co_san,60,60,0,60,1,0,11,714,,,79101,3955,2 Đá nâng cấp + 7910 xu,"nhiem_vu,boss_the_gioi",data_item có sẵn
 khan_quang_7,7,tinh anh,khan_quang,0,,Khăn quàng tinh anh,471,co_san,70,74,60,70,1,0,45,997,,,122664,6133,2 Đá nâng cấp + 12266 xu,"cua_hang,roi",data_item có sẵn
 dai_7,7,tinh anh,dai,1,,Đai tinh anh,479,co_san,70,74,60,70,1,0,32,798,,,122664,6133,2 Đá nâng cấp + 12266 xu,"cua_hang,roi",data_item có sẵn
@@ -108,8 +108,8 @@ vu_khi_7_c4,7,tinh anh,vu_khi,7,Pichu,Nam châm tinh anh,213,co_san,70,71,60,70,
 huy_hieu_7,7,tinh anh,huy_hieu,8,,Huy hiệu tinh anh,501,co_san,70,74,60,70,2,52,0,0,,,122664,6133,2 Đá nâng cấp + 12266 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_7,7,tinh anh,vong_co,9,,Vòng cổ tinh anh,505,co_san,70,74,60,70,1,78,0,399,,,122664,6133,2 Đá nâng cấp + 12266 xu,"che_tao,roi",data_item có sẵn
 long_vu_7,7,tinh anh,long_vu,10,,Lông vũ tốc độ tinh anh,493,co_san,70,74,60,70,1,0,13,399,Tốc chạy +4,,122664,6133,2 Đá nâng cấp + 12266 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_7,7,tinh anh,gang_dam,11,,Găng đấm tinh anh,497,co_san,70,74,60,70,1,78,0,0,Chí mạng +12‰,,122664,6133,2 Đá nâng cấp + 12266 xu,"cua_hang,roi",data_item có sẵn
-phien_da_7,7,tinh anh,phien_da,12,,Phiến đá hệ tinh anh,571,co_san,70,74,60,70,1,52,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,122664,6133,2 Đá nâng cấp + 12266 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_7,7,tinh anh,gang_dam,11,,Găng đấm tinh anh,497,co_san,70,74,60,70,1,78,0,0,"Chí mạng +1,2%",,122664,6133,2 Đá nâng cấp + 12266 xu,"cua_hang,roi",data_item có sẵn
+phien_da_7,7,tinh anh,phien_da,12,,Phiến đá hệ tinh anh,571,co_san,70,74,60,70,1,52,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,122664,6133,2 Đá nâng cấp + 12266 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_7,7,tinh anh,ruy_bang,19,,Ruy băng tinh anh,591,co_san,70,70,60,70,1,0,13,798,,,122664,6133,2 Đá nâng cấp + 12266 xu,"nhiem_vu,boss_the_gioi",data_item có sẵn
 khan_quang_8,8,huyền thoại,khan_quang,0,,Khăn quàng huyền thoại,641,co_san,80,85,150,80,1,0,51,1102,,,190464,9523,2 Đá nâng cấp + 19046 xu,"cua_hang,roi",data_item có sẵn
 dai_8,8,huyền thoại,dai,1,,Đai huyền thoại,646,co_san,80,85,150,80,1,0,37,882,,,190464,9523,2 Đá nâng cấp + 19046 xu,"cua_hang,roi",data_item có sẵn
@@ -122,8 +122,8 @@ vu_khi_8_c4,8,huyền thoại,vu_khi,7,Pichu,Nam châm huyền thoại,607,co_sa
 huy_hieu_8,8,huyền thoại,huy_hieu,8,,Huy hiệu huyền thoại,652,co_san,80,85,150,80,2,59,0,0,,,190464,9523,2 Đá nâng cấp + 19046 xu,"gym,nhiem_vu",data_item có sẵn
 vong_co_8,8,huyền thoại,vong_co,9,,Vòng cổ huyền thoại,656,co_san,80,85,150,80,1,89,0,441,,,190464,9523,2 Đá nâng cấp + 19046 xu,"che_tao,roi",data_item có sẵn
 long_vu_8,8,huyền thoại,long_vu,10,,Lông vũ tốc độ huyền thoại,660,co_san,80,85,150,80,1,0,14,441,Tốc chạy +5,,190464,9523,2 Đá nâng cấp + 19046 xu,"cua_hang,roi",data_item có sẵn
-gang_dam_8,8,huyền thoại,gang_dam,11,,Găng đấm huyền thoại,664,co_san,80,85,150,80,1,89,0,0,Chí mạng +13‰,,190464,9523,2 Đá nâng cấp + 19046 xu,"cua_hang,roi",data_item có sẵn
-phien_da_8,8,huyền thoại,phien_da,12,,Phiến đá hệ huyền thoại,668,co_san,80,85,150,80,1,59,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,190464,9523,2 Đá nâng cấp + 19046 xu,"che_tao,su_kien",data_item có sẵn
+gang_dam_8,8,huyền thoại,gang_dam,11,,Găng đấm huyền thoại,664,co_san,80,85,150,80,1,89,0,0,"Chí mạng +1,3%",,190464,9523,2 Đá nâng cấp + 19046 xu,"cua_hang,roi",data_item có sẵn
+phien_da_8,8,huyền thoại,phien_da,12,,Phiến đá hệ huyền thoại,668,co_san,80,85,150,80,1,59,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,190464,9523,2 Đá nâng cấp + 19046 xu,"che_tao,su_kien",data_item có sẵn
 ruy_bang_8,8,huyền thoại,ruy_bang,19,,Ruy băng huyền thoại,593,co_san,80,80,150,80,1,0,14,882,,,190464,9523,2 Đá nâng cấp + 19046 xu,"nhiem_vu,boss_the_gioi",data_item có sẵn
 khan_quang_9,9,thần thoại,khan_quang,0,,Khăn quàng thần thoại,1004,moi,90,90,365,95,1,0,58,1207,,,294152,14707,2 Đá nâng cấp + 29415 xu,"cua_hang,roi",sinh mới (id 1004/1005)
 dai_9,9,thần thoại,dai,1,,Đai thần thoại,1006,moi,90,90,365,95,1,0,41,966,,,294152,14707,2 Đá nâng cấp + 29415 xu,"cua_hang,roi",sinh mới (id 1006)
@@ -136,8 +136,8 @@ vu_khi_9_c4,9,thần thoại,vu_khi,7,Pichu,Nam châm thần thoại,1012,moi,90
 huy_hieu_9,9,thần thoại,huy_hieu,8,,Huy hiệu thần thoại,1013,moi,90,90,365,95,2,66,0,0,,,294152,14707,2 Đá nâng cấp + 29415 xu,"gym,nhiem_vu",sinh mới (id 1013)
 vong_co_9,9,thần thoại,vong_co,9,,Vòng cổ thần thoại,1014,moi,90,90,365,95,1,99,0,483,,,294152,14707,2 Đá nâng cấp + 29415 xu,"che_tao,roi",sinh mới (id 1014)
 long_vu_9,9,thần thoại,long_vu,10,,Lông vũ tốc độ thần thoại,1015,moi,90,90,365,95,1,0,16,483,Tốc chạy +5,,294152,14707,2 Đá nâng cấp + 29415 xu,"cua_hang,roi",sinh mới (id 1015)
-gang_dam_9,9,thần thoại,gang_dam,11,,Găng đấm thần thoại,1016,moi,90,90,365,95,1,99,0,0,Chí mạng +14‰,,294152,14707,2 Đá nâng cấp + 29415 xu,"cua_hang,roi",sinh mới (id 1016)
-phien_da_9,9,thần thoại,phien_da,12,,Phiến đá hệ thần thoại,1017,moi,90,90,365,95,1,66,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,294152,14707,2 Đá nâng cấp + 29415 xu,"che_tao,su_kien",sinh mới (id 1017)
+gang_dam_9,9,thần thoại,gang_dam,11,,Găng đấm thần thoại,1016,moi,90,90,365,95,1,99,0,0,"Chí mạng +1,4%",,294152,14707,2 Đá nâng cấp + 29415 xu,"cua_hang,roi",sinh mới (id 1016)
+phien_da_9,9,thần thoại,phien_da,12,,Phiến đá hệ thần thoại,1017,moi,90,90,365,95,1,66,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,294152,14707,2 Đá nâng cấp + 29415 xu,"che_tao,su_kien",sinh mới (id 1017)
 ruy_bang_9,9,thần thoại,ruy_bang,19,,Ruy băng thần thoại,1018,moi,90,90,365,95,1,0,16,966,,,294152,14707,2 Đá nâng cấp + 29415 xu,"nhiem_vu,boss_the_gioi",sinh mới (id 1018)
 khan_quang_10,10,tối thượng,khan_quang,0,,Khăn quàng tối thượng,1019,moi,98,98,545,100,1,0,63,1291,,,416954,20847,2 Đá nâng cấp + 41695 xu,"cua_hang,roi",sinh mới (id 1019/1020)
 dai_10,10,tối thượng,dai,1,,Đai tối thượng,1021,moi,98,98,545,100,1,0,45,1033,,,416954,20847,2 Đá nâng cấp + 41695 xu,"cua_hang,roi",sinh mới (id 1021)
@@ -150,6 +150,6 @@ vu_khi_10_c4,10,tối thượng,vu_khi,7,Pichu,Nam châm tối thượng,1027,mo
 huy_hieu_10,10,tối thượng,huy_hieu,8,,Huy hiệu tối thượng,1028,moi,98,98,545,100,2,72,0,0,,,416954,20847,2 Đá nâng cấp + 41695 xu,"gym,nhiem_vu",sinh mới (id 1028)
 vong_co_10,10,tối thượng,vong_co,9,,Vòng cổ tối thượng,1029,moi,98,98,545,100,1,108,0,516,,,416954,20847,2 Đá nâng cấp + 41695 xu,"che_tao,roi",sinh mới (id 1029)
 long_vu_10,10,tối thượng,long_vu,10,,Lông vũ tốc độ tối thượng,1030,moi,98,98,545,100,1,0,18,516,Tốc chạy +6,,416954,20847,2 Đá nâng cấp + 41695 xu,"cua_hang,roi",sinh mới (id 1030)
-gang_dam_10,10,tối thượng,gang_dam,11,,Găng đấm tối thượng,1031,moi,98,98,545,100,1,108,0,0,Chí mạng +15‰,,416954,20847,2 Đá nâng cấp + 41695 xu,"cua_hang,roi",sinh mới (id 1031)
-phien_da_10,10,tối thượng,phien_da,12,,Phiến đá hệ tối thượng,1032,moi,98,98,545,100,1,72,0,0,Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận,,416954,20847,2 Đá nâng cấp + 41695 xu,"che_tao,su_kien",sinh mới (id 1032)
+gang_dam_10,10,tối thượng,gang_dam,11,,Găng đấm tối thượng,1031,moi,98,98,545,100,1,108,0,0,"Chí mạng +1,5%",,416954,20847,2 Đá nâng cấp + 41695 xu,"cua_hang,roi",sinh mới (id 1031)
+phien_da_10,10,tối thượng,phien_da,12,,Phiến đá hệ tối thượng,1032,moi,98,98,545,100,1,72,0,0,Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào,,416954,20847,2 Đá nâng cấp + 41695 xu,"che_tao,su_kien",sinh mới (id 1032)
 ruy_bang_10,10,tối thượng,ruy_bang,19,,Ruy băng tối thượng,1033,moi,98,98,545,100,1,0,18,1033,,,416954,20847,2 Đá nâng cấp + 41695 xu,"nhiem_vu,boss_the_gioi",sinh mới (id 1033)

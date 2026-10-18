@@ -8,7 +8,8 @@ cd "$(dirname "$0")"
 BAN=${BAN:?dat BAN=so ban (versionCode)}
 OUT=${OUT:-NQSH-H2-$BAN.apk}
 TEN=${TEN:-NQSH-H2}
-KEY_DIR=${KEY_DIR:-"$HOME/Desktop/KPAH-All/_tmp_build/android-key"}
+KEY_DIR=${KEY_DIR:-"$HOME/Desktop/HTBB-All/_tmp_build/android-key"}
+[ -d "$KEY_DIR" ] || [ ! -d "$HOME/Desktop/KPAH-All/_tmp_build/android-key" ] || KEY_DIR="$HOME/Desktop/KPAH-All/_tmp_build/android-key"  # TUONG-THICH-TEN-CU: thu muc cu tren may chu repo
 case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*)
         U="C:/Program Files/Unity/Hub/Editor/6000.5.9f1/Editor/Data/PlaybackEngines/AndroidPlayer"

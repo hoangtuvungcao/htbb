@@ -17,7 +17,15 @@ watch(error, (e: any) => {
   if (e?.statusCode === 401) navigateTo('/login')
 })
 const { data: site } = await useSite()
-const hoTro = computed(() => linkHoTro(site.value))
+// Thành viên HTBB khác với kích hoạt: kích hoạt = được đăng nhập (5h_active, admin cấp); Thành viên = mở các
+// tính năng cộng đồng khi máy chủ bắt buộc (mua trên web). HTBB/docs/pokemon/THANH_VIEN.md.
+const { data: tv } = useAsyncData<{ coBang: boolean, trangThai: { laThanhVien: boolean, hetHanMs: number | null } | null }>(
+  'htbb-tv-kichhoat', () => api('/api/thanh-vien/cua-toi'), { server: false })
+// Chưa kích hoạt VẪN chơi được (trừ khi admin bật kich_hoat.chan_dang_nhap); chỉ khoá vài tính năng.
+const { data: tt } = useFetch<{ kichHoat: { chanDangNhap: boolean, chucNang: { ma: string, ten: string }[], thanhVienLaKichHoat: boolean } }>(
+  '/api/thanh-vien/thong-tin', { key: 'tv-thong-tin-kh', server: false })
+const choChoi = computed(() => !!data.value?.activated || tt.value?.kichHoat.chanDangNhap === false)
+const hoTro = useHoTro().link
 </script>
 
 <template>
@@ -72,16 +80,33 @@ const hoTro = computed(() => linkHoTro(site.value))
               <p v-if="data.activated" class="mt-4 text-muted">
                 Tài khoản của bạn đã sẵn sàng để đăng nhập vào game.
               </p>
-              <p v-else class="mt-4 text-sm text-muted">
-                Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.
+              <template v-else>
+                <p v-if="tt && !tt.kichHoat.chanDangNhap" class="mt-4 text-sm text-muted">
+                  Bạn <strong class="text-highlighted">vẫn đăng nhập và chơi bình thường</strong>.
+                  <template v-if="tt.kichHoat.chucNang.length">
+                    Chỉ tạm khoá: {{ tt.kichHoat.chucNang.map(c => c.ten).join(', ') }}.
+                  </template>
+                  Kích hoạt (miễn phí) do quản trị viên cấp — liên hệ hỗ trợ.
+                  <template v-if="tt.kichHoat.thanhVienLaKichHoat">
+                    Thành viên HTBB cũng được tính là đã kích hoạt.
+                  </template>
+                </p>
+                <p v-else class="mt-4 text-sm text-muted">
+                  Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.
+                </p>
+              </template>
+              <p v-if="tv?.coBang" class="mt-4 text-sm">
+                Thành viên HTBB:
+                <strong v-if="tv.trangThai?.laThanhVien" class="text-success">đang hiệu lực</strong>
+                <NuxtLink v-else to="/thanh-vien" class="lien-ket">chưa có — xem quyền lợi</NuxtLink>
               </p>
             </template>
 
             <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <UButton v-if="data?.activated" to="/download" icon="i-lucide-download" size="lg">
+              <UButton v-if="choChoi" to="/download" icon="i-lucide-download" size="lg">
                 Tải game
               </UButton>
-              <UButton v-else :to="hoTro" icon="i-lucide-life-buoy" size="lg">
+              <UButton v-if="!data?.activated" :to="hoTro" :target="hoTro.startsWith('https://') ? '_blank' : undefined" icon="i-lucide-life-buoy" size="lg" :color="choChoi ? 'neutral' : undefined" :variant="choChoi ? 'outline' : undefined">
                 Liên hệ hỗ trợ
               </UButton>
               <UButton to="/account" color="neutral" variant="outline" size="lg" icon="i-lucide-user-round">

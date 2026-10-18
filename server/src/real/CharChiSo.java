@@ -39,7 +39,7 @@ class CharChiSo {
             final Item item = self.wItems[self.slotWearing][i];
             if (item != null) {
                 if (item.getType() == 12 && item.level <= self.lvDetail.lv) {
-                    self.secondHealth += item.atb[5];
+                    self.secondHealth += ChiSoTrangBiGame.atb(self, item, 5); // bat: kep ngan sach
                 }
                 if (item.getType() == 19 && item.level <= self.lvDetail.lv) {
                     self.secondHealth += item.newAtb[1] * 1000;
@@ -89,6 +89,8 @@ class CharChiSo {
             self.maxhp += self.wModel.getHp();
             self.maxmp += self.wModel.getMp();
         }
+        final long hpGoc = self.maxhp; // goc truoc moi % (cho kep tong % cong them, gioi han chi so)
+        final long mpGoc = self.maxmp;
         // GD2 3.5: tinh thong (loai 1 = HP) +0,2%/diem, toi da +10%. Tat co = 0.
         if (com.htbb.pokemon.LauDai.bat()) {
             self.maxhp += (int) ((long) self.maxhp * LauDaiNhanVat.tinhThongPhanNghin(self, 1) / 1000L);
@@ -103,13 +105,9 @@ class CharChiSo {
 
         long pcUphp = 0L;
         long pcUpmp = 0L;
-        if (self.fullSet15 >= 10) {
-            pcUphp = 12L;
-            pcUpmp = 12L;
-        } else if (self.fullSet15 >= 6) {
-            pcUphp = 8L;
-            pcUpmp = 8L;
-        }
+        // thuong bo nang cap: bat gioi han chi so -> <= 5% (THIET_KE 3.4)
+        pcUphp = ChiSoTrangBiGame.thuongBo(self.fullSet15 >= 10 ? 12 : self.fullSet15 >= 6 ? 8 : 0);
+        pcUpmp = pcUphp;
         if (petUsing != null) {
             pcUphp += petUsing.getCuongTrang();
             pcUpmp += petUsing.getCuongThan();
@@ -155,11 +153,18 @@ class CharChiSo {
         // Dat truoc cac khoi phan tram thi 2000 mau se bi nhan len theo, thanh nhieu hon
         // con so ghi trong mo ta; dat sau hai dong chan thi hp co the vuot maxhp.
         // Che do Pokemon (B1): cong % HP theo giai doan tien hoa (LoaiPokemon.phanTramGiaiDoan).
+        // Gioi han chi so (sv.lau_dai): tong % cong them HP/PP (bo, pet, thu cuoi, thoi trang, cai tao, tu binh...)
+        // <= +50% goc; tinh thong + he sinh thai (<= 14%, da co tran rieng) duoc cong ngoai. Tat co: khong doi.
+        if (ChiSoTrangBiGame.bat()) {
+            final long them = 1000L + LauDaiNhanVat.tinhThongPhanNghin(self, 1) + Math.max(0, stHp);
+            self.maxhp = ChiSoTrangBiGame.kepPhanTram(self.maxhp, hpGoc * them / 1000L);
+            self.maxmp = ChiSoTrangBiGame.kepPhanTram(self.maxmp, mpGoc);
+        }
         if (com.htbb.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
             self.maxhp += (int) ((long) self.maxhp * com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex) / 100L);
         }
-        self.maxhp += SkinLinhThu.congHp(self);
-        self.maxmp += SkinLinhThu.congMp(self);
+        self.maxhp += SkinThuCuoi.congHp(self);
+        self.maxmp += SkinThuCuoi.congMp(self);
         if (self.hp > self.maxhp) {
             self.hp = self.maxhp;
         }
@@ -232,13 +237,16 @@ class CharChiSo {
             if (item != null) {
                 final int t = item.getTemplate().type;
                 if (item.level <= self.lvDetail.lv) {
+                    // bat gioi han chi so: thu / thu dac biet cua mon da kep ngan sach o/cap/nang cap
+                    final int a1 = ChiSoTrangBiGame.atb(self, item, 1);
+                    final int a6 = ChiSoTrangBiGame.atb(self, item, 6);
                     if (t == 19) {
                         if (item.magic_physic == 0) {
-                            defendMa += item.atb[6];
-                            defendVat += item.atb[1];
+                            defendMa += a6;
+                            defendVat += a1;
                         } else if (item.magic_physic == 1) {
-                            defendVat += item.atb[1];
-                            defendMa += item.atb[6];
+                            defendVat += a1;
+                            defendMa += a6;
                         }
                         upPTma += item.otherAtt[2];
                         upPtvat += item.otherAtt[3];
@@ -263,14 +271,14 @@ class CharChiSo {
                     }
                     if (t == 0) {
                         if (item.magic_physic == 2) {
-                            defendVat += item.atb[1] * 2 / 10;
-                            defendMa += item.atb[1] * 2 / 10;
+                            defendVat += a1 * 2 / 10;
+                            defendMa += a1 * 2 / 10;
                         } else if (item.magic_physic == 0) {
-                            defendMa += item.atb[6] * 2;
-                            defendVat += item.atb[1] * 2;
+                            defendMa += a6 * 2;
+                            defendVat += a1 * 2;
                         } else if (item.magic_physic == 1) {
-                            defendVat += item.atb[1] * 2;
-                            defendMa += item.atb[6] * 2;
+                            defendVat += a1 * 2;
+                            defendMa += a6 * 2;
                         }
                         upMa += item.lockAtb[1];
                         upVat += item.lockAtb[2];
@@ -279,14 +287,14 @@ class CharChiSo {
                     }
                     if (t == 1) {
                         if (item.magic_physic == 2) {
-                            defendVat += item.atb[1] / 10;
-                            defendMa += item.atb[1] / 10;
+                            defendVat += a1 / 10;
+                            defendMa += a1 / 10;
                         } else if (item.magic_physic == 0) {
-                            defendMa += item.atb[6];
-                            defendVat += item.atb[1];
+                            defendMa += a6;
+                            defendVat += a1;
                         } else if (item.magic_physic == 1) {
-                            defendVat += item.atb[1];
-                            defendMa += item.atb[6];
+                            defendVat += a1;
+                            defendMa += a6;
                         }
                         upMa += item.lockAtb[1];
                         upVat += item.lockAtb[2];
@@ -295,14 +303,14 @@ class CharChiSo {
                     }
                     if (t == 11) {
                         if (item.magic_physic == 2) {
-                            defendVat += item.atb[1] / 10;
-                            defendMa += item.atb[1] / 10;
+                            defendVat += a1 / 10;
+                            defendMa += a1 / 10;
                         } else if (item.magic_physic == 0) {
-                            defendMa += item.atb[6];
-                            defendVat += item.atb[1];
+                            defendMa += a6;
+                            defendVat += a1;
                         } else if (item.magic_physic == 1) {
-                            defendVat += item.atb[1];
-                            defendMa += item.atb[6];
+                            defendVat += a1;
+                            defendMa += a6;
                         }
                         upMa += item.lockAtb[1];
                         upVat += item.lockAtb[2];
@@ -311,14 +319,14 @@ class CharChiSo {
                     }
                     if (t == 2) {
                         if (item.magic_physic == 2) {
-                            defendVat += item.atb[1] / 10;
-                            defendMa += item.atb[1] / 10;
+                            defendVat += a1 / 10;
+                            defendMa += a1 / 10;
                         } else if (item.magic_physic == 0) {
-                            defendMa += item.atb[6];
-                            defendVat += item.atb[1];
+                            defendMa += a6;
+                            defendVat += a1;
                         } else if (item.magic_physic == 1) {
-                            defendVat += item.atb[1];
-                            defendMa += item.atb[6];
+                            defendVat += a1;
+                            defendMa += a6;
                         }
                         upMa += item.lockAtb[1];
                         upVat += item.lockAtb[2];
@@ -333,14 +341,14 @@ class CharChiSo {
                     }
                     if (t == 10) {
                         if (item.magic_physic == 2) {
-                            defendVat += item.atb[1] / 10;
-                            defendMa += item.atb[1] / 10;
+                            defendVat += a1 / 10;
+                            defendMa += a1 / 10;
                         } else if (item.magic_physic == 0) {
-                            defendMa += item.atb[6];
-                            defendVat += item.atb[1];
+                            defendMa += a6;
+                            defendVat += a1;
                         } else if (item.magic_physic == 1) {
-                            defendVat += item.atb[1];
-                            defendMa += item.atb[6];
+                            defendVat += a1;
+                            defendMa += a6;
                         }
                         upMa += item.lockAtb[1];
                         upVat += item.lockAtb[2];
@@ -403,6 +411,8 @@ class CharChiSo {
                 upmP += item2.lockAtb[1];
             }
         }
+        final int defThuvatGoc = defThuvat; // goc do thu cuoi (truoc % thu cuoi) cho kep tong %
+        final int defThumaGoc = defThuma;
         // ---- THAN KHI: diem phong thu co ban + diem giap khi o to doi ----
         int tkThu = self.getThanKhiRaw(151);
         if (self.idClan != -1) {
@@ -458,7 +468,7 @@ class CharChiSo {
         // bang nhan vat, upvP/upmP ra thu dung khi danh nhau voi nguoi choi
         // (defendVatPlayer/defendMaPlayer, dong 516-517). Thieu cap sau thi nguoi choi
         // thay +20% trong bang ma vao PK lai khong duoc gi.
-        final int pcThuSkin = SkinLinhThu.pcThu(self);
+        final int pcThuSkin = SkinThuCuoi.pcThu(self);
         if (pcThuSkin > 0) {
             upVat += pcThuSkin;
             upMa += pcThuSkin;
@@ -466,8 +476,8 @@ class CharChiSo {
             upmP += pcThuSkin;
         }
         // SKIN LINH THU (Kim Cang Long): "Bao kich" ngau nhien theo vat pham (khac ca bon
-        // skin tren, khong doc tu bang hang so) - xem SkinLinhThu.kimCangLongBaoKich.
-        self.baokich += (short) SkinLinhThu.kimCangLongBaoKich(self);
+        // skin tren, khong doc tu bang hang so) - xem SkinThuCuoi.kimCangLongBaoKich.
+        self.baokich += (short) SkinThuCuoi.kimCangLongBaoKich(self);
         self.defend_physic += upVat * self.defend_physic / 100;
         self.defend_magic += upMa * self.defend_magic / 100;
         if (animalRide != null) {
@@ -476,19 +486,11 @@ class CharChiSo {
             self.defend_physic += self.defend_physic * (animalRide.att[0] + animalRide.attUp[0]) / 100;
             upvP += animalRide.att[0] + animalRide.attUp[0];
             upmP += animalRide.att[1] + animalRide.attUp[1];
-            byte upm = 0;
-            byte upv = 0;
-            if (self.isFullsetAnimal >= 5) {
-                upm += 12;
-                upv += 12;
-                upvP += 12;
-                upmP += 12;
-            } else if (self.isFullsetAnimal >= 3) {
-                upv += 8;
-                upm += 8;
-                upvP += 8;
-                upmP += 8;
-            }
+            final int boThu = ChiSoTrangBiGame.thuongBo(self.isFullsetAnimal >= 5 ? 12 : self.isFullsetAnimal >= 3 ? 8 : 0);
+            final int upm = boThu;
+            final int upv = boThu;
+            upvP += boThu;
+            upmP += boThu;
             final int defThumaGocTruocThuCuoi = defThuma;
             final int defThuvatGocTruocThuCuoi = defThuvat;
             defThuma += defThuma * (animalRide.att[1] + animalRide.attUp[1] + upMa + upm) / 100;
@@ -506,15 +508,9 @@ class CharChiSo {
                 upfullset = 7;
             }
         }
-        if (self.fullSet15 >= 10) {
-            upfullset += 12;
-        } else if (self.fullSet15 >= 6) {
-            upfullset += 8;
-        } else if (self.fullSet13 >= 10) {
-            upfullset += 4;
-        } else if (self.fullSet10 >= 10) {
-            ++upfullset;
-        }
+        // thuong bo nang cap: bat gioi han chi so -> <= 5% (THIET_KE 3.4)
+        upfullset += ChiSoTrangBiGame.thuongBo(self.fullSet15 >= 10 ? 12 : self.fullSet15 >= 6 ? 8
+                : self.fullSet13 >= 10 ? 4 : self.fullSet10 >= 10 ? 1 : 0);
         upvP += upfullset;
         upmP += upfullset;
         if (self.wModel != null) {
@@ -554,6 +550,17 @@ class CharChiSo {
             self.defend_magic += defen4 + defendMa;
             self.defendVatPlayer += defend1 + defendVat;
             self.defendMaPlayer += defen4 + defendMa;
+        }
+        // Gioi han chi so (sv.lau_dai): tong % cong them (pet, thu cuoi, thoi trang, bo, VIP, chuc vu, skin...)
+        // <= +50% tren phong thu goc (nhan vat + do da kep + do thu cuoi + tu binh). Tat co: khong doi.
+        {
+            final int nhan = self.charClass == 3 ? 2 : 1;
+            final long gocVat = (long) (defend1 + defendVat) * nhan + defThuvatGoc + atkTubinh;
+            final long gocMa = (long) (defen4 + defendMa) * nhan + defThumaGoc + atkTubinh;
+            self.defend_physic = ChiSoTrangBiGame.kepPhanTram(self.defend_physic, gocVat);
+            self.defendVatPlayer = ChiSoTrangBiGame.kepPhanTram(self.defendVatPlayer, gocVat);
+            self.defend_magic = ChiSoTrangBiGame.kepPhanTram(self.defend_magic, gocMa);
+            self.defendMaPlayer = ChiSoTrangBiGame.kepPhanTram(self.defendMaPlayer, gocMa);
         }
         if (self.map != null && self.map.isMapChienTruongMoba()) {
             final CharChienTruong c2 = MapChienTruongMoba.getCharChienTruong(self.charname);
@@ -632,7 +639,7 @@ class CharChiSo {
                     // cong". Cong o day chu khong o calculateAttack: ham do chi chay lai
                     // khi mac/thao do, con noi tai nay bat tat theo tung giay — de o do
                     // thi no chi an dung luc nguoi choi tinh co doi trang bi.
-                    final int pcTanCongSkin = SkinLinhThu.pcCongTanCong(self);
+                    final int pcTanCongSkin = SkinThuCuoi.pcCongTanCong(self);
                     if (pcTanCongSkin > 0) {
                         att += att * pcTanCongSkin / 100;
                     }
@@ -678,7 +685,7 @@ class CharChiSo {
                         if (((Char) actor).isBatTu()) {
                             return 0;
                         }
-                        if (self.wModel != null && self.wModel.wpModel != null) { // GD2 1.8
+                        if (self.wModel != null && self.wModel.wpModel != null && !ChiSoTrangBiGame.bat()) { // GD2 1.8; bien nguoi tuyet: ngung khi bat gioi han chi so
                             int pcngtuyet = self.wModel.getPCNgtuyet();
                             if (self.isAdmin && Map.adminTest) {
                                 pcngtuyet = 100;
@@ -838,7 +845,8 @@ class CharChiSo {
                         final int heC = CheDoPokemon.bat() ? com.htbb.pokemon.ChieuPokemon.heChieu(self.charClass, idSkill) : -1;
                         final int heDung = heC >= 0 ? heC : (CheDoPokemon.bat() ? self.hePokemon1() : -1);
                         final int[] kqLd = com.htbb.pokemon.SatThuongLauDai.tinh(att, def, 100, heDung,
-                                self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(), 0, false,
+                                self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(),
+                                ChiSoTrangBiGame.doHePhanTram(self, heDung), false, // ST he + phien da (<= 20%)
                                 95 + Map.r.nextInt(11));
                         dam = kqLd[0];
                         if (idSkill == 0) {
@@ -866,12 +874,14 @@ class CharChiSo {
                     finalDame = com.htbb.pokemon.HeSinhThaiGame.satThuongThoiTiet(self, idSkill, finalDame);
                     if (idSkill >= 3 && self.wModel != null) {
                         if (self.wModel.haveDameAnhSang() && Map.r.nextInt(100) < 20 && !actor.haveDamAnhsang()) {
-                            finalDame += Map.r.nextInt(5000) + 5001;
+                            final int them = Map.r.nextInt(5000) + 5001;
+                            finalDame += ChiSoTrangBiGame.bat() ? Math.min(them, finalDame * 30 / 100) : them; // bat: <= 30% don
                         }
                         if (self.wModel.haveDameBongtoi() && Map.r.nextInt(100) < 20 && !actor.haveDamBongtoi()) {
-                            finalDame += Map.r.nextInt(5000) + 5001;
+                            final int them = Map.r.nextInt(5000) + 5001;
+                            finalDame += ChiSoTrangBiGame.bat() ? Math.min(them, finalDame * 30 / 100) : them;
                         }
-                        if (self.wModel.haveHutMau()) {
+                        if (self.wModel.haveHutMau() && !ChiSoTrangBiGame.bat()) { // bat: gop vao hut % (applyThanKhiOnHit)
                             self.hp += 100;
                             MessageCreator.createMsgUseHpMP(self, 100, 1);
                         }
@@ -977,6 +987,9 @@ class CharChiSo {
                     if (self.dangHoaGiaiKyNangPet() && actor instanceof Char) {
                         pcNeTranh = ((Char) actor).haveNeTranhBoQuaPet();
                     }
+                    if (ChiSoTrangBiGame.bat()) {
+                        pcNeTranh = ChiSoTrangBiGame.neTranh(pcNeTranh, actor instanceof Char); // tran 30% / PvP 20%
+                    }
                     if (Map.r.nextInt(1000) < pcNeTranh) {
                         finalDame = 0;
                     }
@@ -1005,7 +1018,9 @@ class CharChiSo {
                             && !actor.isBossTruRong()) {
                         final long mhp = actor.maxhp;
                         final long st = nguonSatThuongChuan.otherAtt[54] * mhp / 1000L;
-                        finalDame += (int) st;
+                        finalDame += ChiSoTrangBiGame.bat()
+                                ? ChiSoTrangBiGame.stTheoHp(mhp, nguonSatThuongChuan.otherAtt[54], actor.isBoss(), finalDame)
+                                : (int) st;
                     }
                     // SKIN LINH THU (Kim Cang Long): "Sat thuong chuan" ngau nhien theo vat
                     // pham, cong THANG moi don theo % maxHP MUC TIEU - CUNG loai tru Tru Rong
@@ -1013,9 +1028,11 @@ class CharChiSo {
                     // chuan" cua vu khi thoi trang o dong 929-933, nhung day KHONG co ti le
                     // proc rieng - luon cong khi da roll duoc dong nay).
                     if (!actor.isBossTruRong()) {
-                        final int pcSTC = SkinLinhThu.kimCangLongSatThuongChuan(self);
+                        final int pcSTC = SkinThuCuoi.kimCangLongSatThuongChuan(self);
                         if (pcSTC > 0) {
-                            finalDame += (int) ((long) actor.maxhp * pcSTC / 100L);
+                            finalDame += ChiSoTrangBiGame.bat()
+                                    ? ChiSoTrangBiGame.stTheoHp(actor.maxhp, pcSTC * 10, actor.isBoss(), finalDame)
+                                    : (int) ((long) actor.maxhp * pcSTC / 100L);
                         }
                     }
                     if (actor.cat == 0) {
@@ -1071,6 +1088,10 @@ class CharChiSo {
     static int applyThanKhiOnHit(Char self, final LiveActor actor, int finalDame) {
         if (actor == null || finalDame <= 0) {
             return finalDame;
+        }
+        if (ChiSoTrangBiGame.bat()) {
+            // gioi han chi so (sv.lau_dai): cung cac hieu ung duoi day nhung co tran + san sat thuong
+            return ChiSoTrangBiGame.trenDon(self, actor, finalDame);
         }
         try {
             final boolean targetLaChar = (actor.cat == 0 && actor instanceof Char);
@@ -1316,17 +1337,18 @@ class CharChiSo {
             if (t == 6 || t == 7
                     || t == 4 || t == 5
                     || t == 3) {
-                attack2 += item.atb[0] + item.getValueUpByVuKhiThoiTrang(item.atb[0], self.itemVukhiThoiTrang);
+                final int a0 = ChiSoTrangBiGame.atb(self, item, 0); // bat: kep ngan sach o/cap/nang cap
+                attack2 += a0 + item.getValueUpByVuKhiThoiTrang(a0, self.itemVukhiThoiTrang);
                 upAttack += item.lockAtb[0];
                 upatkP += item.lockAtb[0];
             }
             if (t == 9) {
-                attack2 += item.atb[0];
+                attack2 += ChiSoTrangBiGame.atb(self, item, 0);
                 upAttack += item.lockAtb[0];
                 upatkP += item.lockAtb[0];
             }
             if (t == 8) {
-                attack2 += item.atb[0];
+                attack2 += ChiSoTrangBiGame.atb(self, item, 0);
                 upAttack += item.lockAtb[0];
                 upatkP += item.lockAtb[0];
             }
@@ -1368,13 +1390,9 @@ class CharChiSo {
         if (animalRide != null) {
             upAttack += animalRide.attUp[2];
             upatkP += animalRide.attUp[2];
-            if (self.isFullsetAnimal >= 5) {
-                upAttack += 12;
-                upatkP += 12;
-            } else if (self.isFullsetAnimal >= 3) {
-                upAttack += 8;
-                upatkP += 8;
-            }
+            final int boThu = ChiSoTrangBiGame.thuongBo(self.isFullsetAnimal >= 5 ? 12 : self.isFullsetAnimal >= 3 ? 8 : 0);
+            upAttack += boThu;
+            upatkP += boThu;
         }
         if (self.rankGov == 0 && self.rideHorse > 0) {
             upAttack += 5;
@@ -1395,24 +1413,18 @@ class CharChiSo {
             upAttack += 5;
         }
         // SKIN LINH THU (Kim Cang Long): "Tang cong" ngau nhien theo vat pham - xem
-        // SkinLinhThu.kimCangLongTangCong. Cong vao ca hai bo dem % nhu cac dong tren, dung
+        // SkinThuCuoi.kimCangLongTangCong. Cong vao ca hai bo dem % nhu cac dong tren, dung
         // truoc khi nhan mot lan duy nhat o hai dong ke tiep.
-        final int pcTangCongSkin = SkinLinhThu.kimCangLongTangCong(self);
+        final int pcTangCongSkin = SkinThuCuoi.kimCangLongTangCong(self);
         upAttack += pcTangCongSkin;
         upatkP += pcTangCongSkin;
         self.attack += self.attack * upAttack / 100;
-        if (self.fullSet15 >= 10) {
-            self.attack += self.attack * 12 / 100;
-            upatkP += 12;
-        } else if (self.fullSet15 >= 6) {
-            self.attack += self.attack * 8 / 100;
-            upatkP += 8;
-        } else if (self.fullSet13 >= 10) {
-            self.attack += self.attack * 4 / 100;
-            upatkP += 4;
-        } else if (self.fullSet10 >= 10) {
-            self.attack += self.attack * 1 / 100;
-            upatkP++;
+        {
+            // thuong bo nang cap (+10/+13/+15 du bo): bat gioi han chi so -> <= 5% (THIET_KE 3.4)
+            final int boTc = ChiSoTrangBiGame.thuongBo(self.fullSet15 >= 10 ? 12 : self.fullSet15 >= 6 ? 8
+                    : self.fullSet13 >= 10 ? 4 : self.fullSet10 >= 10 ? 1 : 0);
+            self.attack += self.attack * boTc / 100;
+            upatkP += boTc;
         }
         if (self.wModel != null) {
             self.attack += self.attack * (self.wModel.getAttack() + ((petUsing != null) ? petUsing.getPcUpDam() : 0)) / 100;
@@ -1440,6 +1452,13 @@ class CharChiSo {
                     self.attackPlayer = (int) (self.attackPlayer * noiluc / 10L + (self.attackPlayer / 20));
                 }
             }
+        }
+        // Gioi han chi so (sv.lau_dai): tong % cong them tu MOI nguon ngoai do (pet, thu cuoi, thoi trang, bo,
+        // VIP, chuc vu, skin, bao vat %) <= +50% so voi tan cong goc (nhan vat + do da kep). Tat co: khong doi.
+        {
+            final long gocTc = (long) (attack1 + attack2) * (self.charClass == 3 ? 2 : 1) + atkTubinh;
+            self.attack = ChiSoTrangBiGame.kepPhanTram(self.attack, gocTc);
+            self.attackPlayer = ChiSoTrangBiGame.kepPhanTram(self.attackPlayer, gocTc);
         }
         // Che do Pokemon (B1): cong % tan cong theo giai doan tien hoa, truoc diem Than Khi.
         if (com.htbb.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {

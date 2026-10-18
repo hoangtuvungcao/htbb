@@ -6,5 +6,5 @@ REM ============================================================
 title Log game server VPS
 echo Dang ket noi 180.93.57.30 ... (Ctrl+C de thoat)
 echo.
-ssh root@180.93.57.30 "tail -n 80 -f /opt/kpah/log/game.out"
+ssh root@180.93.57.30 "tail -n 80 -f /opt/htbb/log/game.out"
 pause

@@ -11,8 +11,7 @@
 const props = defineProps<{ title: string }>()
 const route = useRoute()
 
-const nhom = computed(() => ADMIN_MENU.find(g => g.items.some(i =>
-  i.to === '/admin' ? route.path === '/admin' : route.path.startsWith(i.to)))?.nhom ?? '')
+const nhom = computed(() => mucMenuCua(route.path)?.nhom ?? '')
 
 useHead({ title: () => props.title })
 </script>

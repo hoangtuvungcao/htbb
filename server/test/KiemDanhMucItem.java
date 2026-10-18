@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
  */
 public final class KiemDanhMucItem {
 
-    private static final String NGUON = "sql/gamedb7_clean.sql";
-    private static final String DICH = "docs/danh_muc_item.md";
+    private static final String NGUON = "../sql/gamedb7_clean.sql";
+    private static final String DICH = "../docs/danh_muc_item.md";
 
     // Bat dau moi tuple data_item: "(<id>, '<ten co the co dau nhay thoat \' hoac ''>'"
     private static final Pattern MOC_SQL = Pattern.compile(

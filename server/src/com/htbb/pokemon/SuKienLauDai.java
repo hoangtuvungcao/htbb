@@ -43,7 +43,7 @@ public final class SuKienLauDai {
 
     /** Huyen thoai dot kich theo tuan (template boss dung lai: Zapdos/Entei/Darkrai...). */
     public static final String[][] DOT_KICH = {
-        {"9", "Zapdos"}, {"20", "Entei"}, {"28", "Darkrai"}, {"36", "Rayquaza"}, {"48", "Groudon & Kyogre"},
+        {"9", "Zapdos"}, {"20", "Entei"}, {"28", "Darkrai"}, {"36", "Rayquaza"}, {"48", "Groudon và Kyogre"},
     };
 
     /** Ma moi can them vao SuKien.DANH_MUC (GD2 buoc 5.1). */
@@ -58,7 +58,7 @@ public final class SuKienLauDai {
 
     /** Millis thu Hai 05:00 cua tuan ISO {@code tuan} nam {@code nam} (gio may). */
     public static long moLuc(final int nam, final int tuan) {
-        final Calendar c = Calendar.getInstance();
+        final Calendar c = com.htbb.pokemon.DongHo.lich();
         c.clear();
         c.setFirstDayOfWeek(Calendar.MONDAY);
         c.setMinimalDaysInFirstWeek(4);
@@ -75,7 +75,7 @@ public final class SuKienLauDai {
      * @return ma -> {mo_luc ms, dong_luc ms}
      */
     public static Map<String, long[]> lanKeTiep(final long bayGio) {
-        final Calendar c = Calendar.getInstance();
+        final Calendar c = com.htbb.pokemon.DongHo.lich();
         c.setTimeInMillis(bayGio);
         final int nam = c.get(Calendar.YEAR);
         final Map<String, long[]> kq = new LinkedHashMap<String, long[]>();
@@ -99,7 +99,7 @@ public final class SuKienLauDai {
 
     /** Tuan ISO cua thoi diem. */
     public static int tuanIso(final long ms) {
-        final Calendar c = Calendar.getInstance();
+        final Calendar c = com.htbb.pokemon.DongHo.lich();
         c.setFirstDayOfWeek(Calendar.MONDAY);
         c.setMinimalDaysInFirstWeek(4);
         c.setTimeInMillis(ms - 5L * 3600000L);

@@ -53,7 +53,7 @@ Thứ tự được xếp theo rủi ro (thấp trước) và theo phụ thuộc
 | 2.5 | Giá nâng cấp và tỉ lệ có pity | `MapEpNgoc.java:600-769` (`doFinishImbue`, mảng tỉ lệ ở `:617`), `CharCapNhat.java:866-1036` (`doAutoImbue`, `:870`) **cả hai bản** | `ThongSoLauDai.CHI_PHI_NC`, `tiLeNangCap(k, truot)`; lưu `truot` trên Item (dùng `otherAtt` chưa dùng: **grep trước**, §1) hoặc cột mới. Bùa bảo hộ là item mới (lượng khoá) thay bảo hiểm 0–4. +7 trở lên trượt thì −1 |
 | 2.6 | Chỉ số mỗi cấp + theo % | `MapEpNgoc.java:657-661`, `CharCapNhat.java:926-931` | `CHI_SO_NC_PHAN_TRAM` |
 | 2.7 | Thuế chợ 6% + phí đăng 1%; chuyển lượng 5%; trần chuyển xu trực tiếp | `src/real/OfflineMap.java:337-397`, `CharChuyenLuong.java:106-110` | Giữ nhánh thuế đội |
-| 2.8 | Giá dịch chuyển, hồi sinh, sửa đồ theo thu nhập | `Map.java:16909` (xa phu), `BaiLuyenCong.java:55-77`, `Map.java:10416-10471` (hồi sinh), `Char.java:4197-4253` (sửa) | `3%/5% × xuMoiGio(cấp)` |
+| 2.8 | Giá dịch chuyển, hồi sinh, sửa đồ theo thu nhập | `Map.java:16909` (xa phu), `BaiLuyenTap.java:55-77`, `Map.java:10416-10471` (hồi sinh), `Char.java:4197-4253` (sửa) | `3%/5% × xuMoiGio(cấp)` |
 | 2.9 | Bán đồ cho NPC còn 5% + phân rã | `OfflineMap.java:1169-1171`, `MapXuLyLenh.java:392` (tự bán), phân rã: `OfflineMap.java:1865` (đã có "nghiền đồ") | Ra 2 đá + 10% giá |
 | 2.10 | Shop: ngừng bán đồ có chỉ số bằng lượng, vé EXP chuyển sang lượng khoá 1/tuần | `data_shop` theo `data_shop_gia_lau_dai`; giới hạn tuần ở `doBuySpecialItem.java:40+` | Cần bảng đếm `tob_mua_tuan` |
 | 2.11 | Bỏ hoàn xu khi tiêu lượng, mốc nạp, VIP theo nạp | `Char.java:14789-14797`, `MapQuaTang.java:832-834`, `Char.java:1255` (`up_px_xu_vip`) | Q10 |
@@ -65,7 +65,7 @@ Thứ tự được xếp theo rủi ro (thấp trước) và theo phụ thuộc
 | # | Việc | Vị trí |
 |---|---|---|
 | 3.1 | Nạp bảng EXP mới khi bật cờ (giữ bảng cũ khi tắt) | `src/real/LevelDetail.java:11-14` (`expMain`/`expRequire`/`expTemplate`), `setExpNew` :87-105, `getLevelFromExp` :50-66. **Chuyển đổi nhân vật cũ**: giữ **cấp**, đặt exp = 0 của cấp đó (script SQL một lần, có bản sao lưu) |
-| 3.2 | Trần cấp theo mùa | `LevelDetail.setExpNew` (cắt theo `LauDai.tranCap(ngàyKhaiTruong)`) + `doUsePotion.java:229` ("lv max sv"). Khoá `sv.ngay_khai_truong` |
+| 3.2 | Trần cấp theo mùa (**tắt mặc định từ 18/10/2026**, `sv.tran_cap_theo_mua=0`; thay bằng lên cấp chậm + tăng tốc `TangToc`, THIET_KE 1.8) | `LevelDetail.setExpNew` (cắt theo `LauDai.tranCap(ngàyKhaiTruong)`) + `doUsePotion.java:229` ("lv max sv"). Khoá `sv.ngay_khai_truong` |
 | 3.3 | Bỏ các hệ số EXP chồng nhau | `CharCapNhat.java:127` (`×3·TangEXP`), `:133-137` (×0,65/0,6), `Monster.java:775-818` (`apDungGiamExpTheoCapNV`), `MapXuLyLenh.java:191-194` và `:31-60` (chia 3) |
 | 3.4 | Hệ số lệch cấp mới | **7 bản sao** (§3, đếm lại bằng `grep -c apDungGiamExpTheoCapNV`): `Region.java` 1163-1175 + 1544-1559 (hooks 1321/1582/1690), `RegionVantienTran.java` 1003/1279/1405, `MapTown.java` 817/1067/1197, `MapLienDau.java` 1692/1952/2083, `MapDanhNhau.java` 840/979/1566, `MapClan.java` 726/862, `CharCopy.java` 383/496/620, `CharTrangBi.java` 402. **Gom vào một hàm** `LauDai.expHaQuai(p, mt, raw)` rồi gọi từ mọi bản sao |
 | 3.5 | Tinh thông | `Char` (field + lưu `pInfo`), `CharChiSo` (+% HP/tấn công), menu NPC -90 |
@@ -88,7 +88,7 @@ Thứ tự được xếp theo rủi ro (thấp trước) và theo phụ thuộc
 
 | # | Việc | Vị trí |
 |---|---|---|
-| 5.1 | Thêm `Muc` cho mã `moi:*` (congdong, shiny, dotkich, tuanhe, pokedex, bungphat, chienvung, muapvp, valentine, 3004, thieunhi, quockhanh, 2010, hamngucmua, tongket) | `SuKien.java:142-205` (`DANH_MUC`), trang admin `web/admin/sukien.php` |
+| 5.1 | Thêm `Muc` cho mã `moi:*` (congdong, shiny, dotkich, tuanhe, pokedex, bungphat, chienvung, muapvp, valentine, 3004, thieunhi, quockhanh, 2010, hamngucmua, tongket) | `SuKien.java:142-205` (`DANH_MUC`), trang admin `/admin/sukien` (HTBB-Web) |
 | 5.2 | Nạp lịch 52 tuần vào `tob_su_kien` (`mo_luc/dong_luc`) | script từ `data_su_kien_nam`; lịch gom thay đổi lúc 05:00 thứ Hai (`LichSuKien`) |
 | 5.3 | Thưởng sự kiện là vật phẩm khoá, **hết hạn**; xu ≤ 25% ngân sách | `MapSuKien.java` (60 chỗ `subLuong`/`truNeuDu`), `Map.java:8321/8387, 11031-11408` |
 | 5.4 | Giftcode: chỉ vật phẩm khoá, ≤ 2/tháng | `DatabaseGiftCode.java:430-495` (kiểm ở **nơi xử lý**, §11) |
@@ -143,7 +143,15 @@ Thứ tự được xếp theo rủi ro (thấp trước) và theo phụ thuộc
 
 ## Trạng thái thực hiện (17/10/2026)
 
-Bật: `sv.lau_dai=1` trong `server.ini` (+ `sv.ngay_khai_truong=yyyy-MM-dd`, ngày 0 của trần cấp mùa).
+Bật: `sv.lau_dai=1` trong `server.ini` (+ `sv.ngay_khai_truong=yyyy-MM-dd`, ngày 0 của lịch tuần; trần cấp mùa chỉ khi
+`sv.tran_cap_theo_mua=1` — mặc định tắt từ 18/10/2026).
+
+**18/10/2026 — không trần theo mùa + tăng tốc** (THIET_KE 1.3/1.4/1.8, NAP_TIEN 3b): bảng EXP từ cấp 40 ×0,94 (1→100: 882 giờ),
+năng lượng 90 phút 100% → 120 phút 20% → 120 phút 5%; `com.htbb.pokemon.TangToc` + `real.TangTocGame` (vé EXP x1,5/x2, bùa
+thể lực, ủy thác offline, kẹo hiếm; bản cao cấp 1250/1252/1254/1256 + bản khoá 1251/1253/1255/1257, chung trần 60/210 điểm);
+nguồn bản khoá: nhiệm vụ tuần, lịch đăng nhập, vé mùa, Kecleon; cửa hàng lượng trao `tang_toc`; `LauDai.ngayMoNoiDung()` bỏ
+khoá `ngay_mo`; cổng Hoenn cần C52.7; huyền thoại +2 cấp/bước. Chạy lại `sql/pokemon_vat_pham_lau_dai.sql`,
+`sql/pokemon_lau_dai.sql`, `sql/pokemon_nhiem_vu.sql`, `sql/pokemon_nap_tien.sql` (INSERT IGNORE thêm 5 món). Test: `test/KiemTangToc.java`.
 Tắt (mặc định, thiếu dòng) = hành vi cũ; bộ test: 65 lỗi cũ, 0 lỗi mới (6 966 kiểm tra), nhóm mới
 `test/KiemLauDaiGd2.java`. Mọi số đọc đè được qua bảng `cau_hinh` bằng đúng khoá của
 `data_kinh_te_lau_dai` (vd `thue.cho`, `roi.xu.phan_tram`) + khoá thêm: `phi.dich_chuyen_phan_tram_gio`,
@@ -230,7 +238,7 @@ Chạy thật (server thứ hai 19149, NovaDB riêng 3329, cờ bật, dữ li�
 | Chiêu mới vào `CharManager`, bảng rơi, alpha, 16 Gym | Xong | `ChieuLauDai`, `NoiDungLauDai`, `GymLauDai`. |
 | Hoenn 139–178, boss thế giới năm 2 | Xong | Hồi sinh quái ≥ 84 sau ngày 365 (1/3), boss theo tuần ISO. |
 | Kẹo EXP 10–12 | Xong | Từ chối khi bật cờ. |
-| Ngọc hệ theo dữ liệu, ô trang trí, đổi tên item 720 | Còn | Cần client / thuộc đội nội dung. |
+| Ngọc hệ theo dữ liệu, ô trang trí | Còn | Cần client / thuộc đội nội dung. Item 720 đã đổi tên "Kẹo thú cưng" (`ChuPokemon`), xem `KIEM_ITEM.md`. |
 | -95 mọi bản tấn công, công thức PvP, trạng thái lên người | Xong | MapTown/LienDau/DanhNhau/Clan/VanTienTran. |
 | Cấp 92–100 | Xong | Bảng EXP 100 cấp; trần theo ngày khai trương: 60 → 70 (ngày 60) → 80 (150) → 91 (240) → 95 (365) → 100 (545). |
 | 5.3 chuyển ~60 thưởng sự kiện cũ | **Chưa làm** | |

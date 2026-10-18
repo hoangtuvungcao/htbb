@@ -47,6 +47,22 @@ public static class TenMapPokemon
 		new string[] { "Nhà thợ rèn", "Xưởng chế tạo" },
 	};
 
+	/// <summary>Vung Hoenn (nam 2): ten theo id nap - BAN SAO cua TenMapPokemon.java (server + J2ME).</summary>
+	public static readonly int[] HOENN_ID = new int[] { 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 160, 161, 162, 163, 164, 165, 280, 281, 282 };
+	public static readonly string[] HOENN_TEN = new string[] { "Littleroot", "Rừng Petalburg", "Rustboro", "Bờ biển Dewford", "Slateport", "Route 110", "Mauville", "Sa mạc Route 111", "Lavaridge", "Núi Chimney", "Rừng mưa Route 119", "Fortree", "Route 120 - Viện Thời tiết", "Lilycove", "Núi Pyre", "Biển Route 124", "Mossdeep", "Sootopolis", "Biển Route 131", "Ever Grande", "Hang Granite", "Thác Meteor", "Hang dưới biển", "Hang Khởi Nguyên", "Tháp Trời", "Đường Victory Hoenn", "Đỉnh Tháp Trời", "Liên minh Hoenn", "Sảnh Nhà vô địch" };
+
+	public static string tenHoenn(int id)
+	{
+		for (int i = 0; i < HOENN_ID.Length; i++)
+		{
+			if (HOENN_ID[i] == id)
+			{
+				return HOENN_TEN[i];
+			}
+		}
+		return string.Empty;
+	}
+
 	private static readonly string[] HUONG = new string[] { "Đông ", "Tây ", "Nam ", "Bắc " };
 
 	private static string traBang(string ten)

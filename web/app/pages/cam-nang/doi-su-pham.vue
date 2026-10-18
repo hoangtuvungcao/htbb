@@ -2,6 +2,7 @@
 /** Đội, vùng & sư phạm — nhiệm vụ đội/sư phạm từ cam-nang.json (nhiem_vu_moi.csv). */
 const N = CAM_NANG.nhiemVu
 const chienVung = CAM_NANG.suKien.filter(s => s.loai === 'chien_vung')
+const SP = CAM_NANG_ND.soTay.suPham
 </script>
 
 <template>
@@ -11,11 +12,11 @@ const chienVung = CAM_NANG.suKien.filter(s => s.loai === 'chien_vung')
         <li>Bấm <strong>phím *</strong> lên người chơi khác → <em>Mời nhóm</em>. Tổ đội tối đa 5 Pokémon.</li>
         <li>Cùng đánh quái thì cả nhóm đều nhận EXP; người ra đòn cuối nhận phần lớn nhất.</li>
         <li>Tổ đội mạnh hơn hẳn khi phối hợp hệ: một Pokémon chịu đòn (Bulbasaur, Squirtle), một gây sát thương (Charmander, Pichu), một hỗ trợ (Eevee).</li>
-        <li>Đột kích huyền thoại yêu cầu đội từ 5 người — xem <NuxtLink to="/cam-nang/boss-dot-kich" class="lien-ket">Boss & đột kích</NuxtLink>.</li>
+        <li>Boss thế giới và đột kích huyền thoại dễ hơn nhiều khi đi cả đội — xem <NuxtLink to="/cam-nang/boss-dot-kich" class="lien-ket">Boss & đột kích</NuxtLink>.</li>
       </ul>
     </WikiSection>
 
-    <WikiSection id="doi" title="Đội" lead="Đội là hội nhóm lâu dài (như bang hội). Đội trưởng và đội phó quản lý thành viên; đội có quỹ chung, thú cưỡi đội và lãnh địa riêng.">
+    <WikiSection id="doi" title="Đội" lead="Đội là hội nhóm lâu dài của người chơi. Đội trưởng và đội phó quản lý thành viên; đội có quỹ chung, thú cưỡi đội và lãnh địa riêng.">
       <div class="bang-cuon">
         <table class="bang-wiki">
           <caption>Nhiệm vụ đội hằng tuần — cả đội cùng tiến độ</caption>
@@ -32,7 +33,7 @@ const chienVung = CAM_NANG.suKien.filter(s => s.loai === 'chien_vung')
                 {{ q.ten }}
               </td><td class="so">
                 {{ q.cap }}
-              </td><td>{{ q.soLuong ? `Hạ ${soVn(q.soLuong)} ` : '' }}{{ q.mucTieu }}</td>
+              </td><td>{{ q.yeuCau || `${q.soLuong ? `${soVn(q.soLuong)} ` : ''}${q.mucTieu}` }}</td>
             </tr>
           </tbody>
         </table>
@@ -54,7 +55,7 @@ const chienVung = CAM_NANG.suKien.filter(s => s.loai === 'chien_vung')
       </WikiCallout>
     </WikiSection>
 
-    <WikiSection id="su-pham" title="Sư phạm (thầy – trò)" lead="Người chơi cấp cao kèm người mới: thầy và trò cùng nhận thưởng; trò được +20% EXP khi chung đội với thầy.">
+    <WikiSection id="su-pham" title="Sư phạm (thầy – trò)" :lead="`Người chơi cấp cao kèm người mới: thầy từ cấp ${SP.capThay}, trò thấp hơn ít nhất ${SP.cachCap} cấp; trò được +${SP.expPhanTram}% EXP khi chung nhóm với thầy.`">
       <div class="bang-cuon">
         <table class="bang-wiki">
           <thead>
@@ -70,13 +71,13 @@ const chienVung = CAM_NANG.suKien.filter(s => s.loai === 'chien_vung')
                 {{ q.ten }}
               </td><td class="so">
                 {{ q.cap }}
-              </td><td>{{ q.mucTieu }}</td><td>{{ q.lapLai === 'tuan' ? 'Mỗi tuần' : q.lapLai === 'ngay' ? 'Mỗi ngày' : 'Một lần' }}</td>
+              </td><td>{{ q.yeuCau || q.mucTieu }}</td><td>{{ q.lapLai === 'tuan' ? 'Mỗi tuần' : q.lapLai === 'ngay' ? 'Mỗi ngày' : 'Một lần' }}</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p class="van mt-4">
-        Sự kiện 1/6 và 20/11 nhân đôi thưởng sư phạm. Gặp NPC Xatu ở Pallet để đăng ký làm thầy hoặc tìm thầy.
+        Nhận trò trong <NuxtLink to="/cam-nang/so-tay#su-pham" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → Sư phạm (nhận trò). Khi trò đạt cấp {{ SP.moc.join(' và ') }}, cả hai cùng nhận thưởng.
       </p>
     </WikiSection>
   </WikiShell>

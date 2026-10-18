@@ -186,49 +186,8 @@ public class LoginScr extends Screen {
     }
 
     protected void doRegister() {
-        String user = this.tfUser.getText().toLowerCase().trim();
-        String pass = this.tfPass.getText();
-        if (user.equals("")) {
-            Canvas.startOKDlg("Vui lòng nhập Game ID muốn đăng ký vào ô trên.");
-            return;
-        }
-        if (pass.equals("")) {
-            Canvas.msgdlg.setInfo("Bạn phải nhập password đăng ký.", (Command) null, new Command("OK", new IAction() {
-                @Override
-                public void perform() {
-                    LoginScr.this.focus = 1;
-                    LoginScr.this.tfUser.isFocus = false;
-                    LoginScr.this.tfPass.isFocus = true;
-                    LoginScr.this.right = LoginScr.this.tfPass.cmdClear;
-                    Canvas.endDlg();
-                }
-            }), (Command) null);
-            Canvas.msgdlg.show();
-        } else {
-            Canvas.msgdlg.isIcon = false;
-            Canvas.msgdlg.setInfo(new StringBuffer("Bạn có muốn đăng ký tài khoản: ").append(user).append(" không?").toString(), new Command("Có", new IAction() {
-                @Override
-                public void perform() {
-                    LoginScr.this.doSendRegisterInfo();
-                }
-            }), (Command) null, new Command("Không", new IAction() {
-                @Override
-                public void perform() {
-                    Canvas.endDlg();
-                }
-            }));
-            Canvas.currentDialog = Canvas.msgdlg;
-        }
-    }
-
-    protected void doSendRegisterInfo() {
-        if (!Session_ME.gI().connected) {
-            Canvas.startWaitDlg("Đang kết nối", true);
-            Canvas.connect();
-        } else {
-            Canvas.startWaitDlg("Đang đăng ký", true);
-        }
-        GameService.gI().requestRegister(this.tfUser.getText().toLowerCase(), this.tfPass.getText());
+        // Đăng ký trong game: màn riêng (tài khoản, mật khẩu, nhập lại, email) + câu hỏi chống bot
+        DangKyScr.mo();
     }
 
     @Override
@@ -280,7 +239,7 @@ public class LoginScr extends Screen {
         }
         Font.blackFont.drawString(g, "Nhớ mật khẩu", this.xC + 18, Canvas.hh + 47, 0);
         if (!game.pokemon.Banner.co() && Canvas.hh + 84 + 14 < Canvas.h - Screen.deltaY) {
-            Font.borderFont.drawString(g, new StringBuffer("Hotline: ").append(numberSupport).toString(), Canvas.hw, Canvas.hh + 84, 2);
+            Font.borderFont.drawString(g, new StringBuffer("Hỗ trợ: ").append(numberSupport).toString(), Canvas.hw, Canvas.hh + 84, 2);
         }
         super.paint(g);
     }
@@ -296,6 +255,16 @@ public class LoginScr extends Screen {
     public void update() {
         this.tfUser.update();
         this.tfPass.update();
+        // chạm / bấm chuột vào ô (TField tự bật isFocus): đồng bộ focus để phím Lên/Xuống, Tab, Enter đúng ô
+        if (this.tfUser.isFocus && this.focus != 0) {
+            this.focus = 0;
+            this.tfPass.isFocus = false;
+            this.center = this.cmdLogin;
+        } else if (this.tfPass.isFocus && this.focus != 1) {
+            this.focus = 1;
+            this.tfUser.isFocus = false;
+            this.center = this.cmdLogin;
+        }
         if (this.tick < 20) {
             this.tick++;
             if (this.tick == 20) {

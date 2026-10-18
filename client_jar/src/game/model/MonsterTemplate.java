@@ -196,8 +196,8 @@ public class MonsterTemplate {
                 if (this.palate == 39 || this.palate == 40) {
                     this.imageObj = new ImageObj(this.palate, this.spalate);
                 } else {
-                    byte[] header = FilePack.instance.loadFile(new StringBuffer(String.valueOf((int) this.spalate)).append("_h").toString());
-                    byte[] data = FilePack.instance.loadFile("data");
+                    byte[] header = FilePack.hienTai().loadFile(new StringBuffer(String.valueOf((int) this.spalate)).append("_h").toString());
+                    byte[] data = FilePack.hienTai().loadFile("data");
                     this.image = Res.createImgByHeader(header, data);
                 }
                 FilePack.reset();

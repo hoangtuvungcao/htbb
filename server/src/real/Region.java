@@ -108,125 +108,119 @@ public class Region {
         this.startVilage1();
     }
 
-    public void startLeafVilage() {
-        new Thread(){
+    // ---- Vong lap cua khu: chay tren pool CHUNG (com.htbb.runtime.VongLapChung) ----
+    // Truoc day moi Region tao 4 thread rieng (2 vong tick + 2 vong goi tin, ~2.440 thread cho
+    // 610 khu khi server rong, moi thread thuc day 3-5 lan/giay du khong co ai). Nay moi vong la
+    // mot Nhip/Lan tren pool chung - than vong (updateSand/update/processMessage) GIU NGUYEN,
+    // chu ky tick GIU NGUYEN Map.DELAY_UPDATE_MAP khi khu co nguoi choi that. Khu KHONG co nguoi
+    // choi that (chi NPC/bot, isBot != -1) tick moi VongLapChung.CHU_KY_RANH_MS: luc do than tick
+    // chi lam viec hen gio (quai hoi sinh theo dong ho bornTime, xoa do roi theo dong ho, them quai
+    // dong) - nguoi choi vao khu (playerJoin/addPlayer) thi danhThuc() chay tick NGAY.
+    // Lop con trong lib/htbb-core.jar (RegionLoiDai, RegionNuiChauBau, RegionMapMoba) ghi de
+    // startSandVilage/startLeafVilage bang thread rieng cua no - khong doi.
+    private com.htbb.runtime.VongLapChung.Nhip nhip0;
+    private com.htbb.runtime.VongLapChung.Nhip nhip1;
+    private com.htbb.runtime.VongLapChung.Lan lan0;
+    private com.htbb.runtime.VongLapChung.Lan lan1;
 
-            /*
-             * WARNING - Removed try catching itself - possible behaviour change.
-             */
-            @Override
-            public void run() {
-                Thread.currentThread().setName("MAP SEND MONSTER 2 player" + Region.this.map.mapId);
-                while (!AdminHandler.isStopServer) {
-                    try {
-                        int count = 0;
-                        Vector<PlayerMessage> playerMessages = new Vector();
-                        playerMessages = Region.this.allPlayerMessages.get(1);
-                        while (playerMessages.size() > 0) {
-                            PlayerMessage pm = (PlayerMessage)playerMessages.remove(0);
-                            if (!pm.player.exit) {
-                                Region.this.map.processMessage(pm.player, pm.message);
-                            }
-                            if (++count != 500) continue;
-                            count = 0;
-                            Thread.sleep(5L);
-                        }
-                        Object object = Region.this.LOCK1;
-                        synchronized (object) {
-                            Region.this.LOCK1.wait(Map.timeDelay);
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
+    /** Khu co nguoi choi that (khong tinh NPC/bot) o phe nay khong. */
+    boolean coNguoiThat(int phe) {
+        try {
+            Vector<Char> ds = this.allPlayers.get(phe);
+            for (int i = ds.size() - 1; i >= 0; i--) {
+                Char c = ds.get(i);
+                if (c != null && c.isBot == -1) {
+                    return true;
                 }
             }
-        }.start();
+        } catch (Exception e) {
+            return true; // Vector vua co rut phan tu - coi nhu co nguoi, chay du chu ky
+        }
+        return false;
+    }
+
+    /** Than vong goi tin (giong vong cu): don hang doi, toi da 500 goi moi luot. */
+    private void donGoiTin(int phe, com.htbb.runtime.VongLapChung.Lan lan) {
+        Vector<PlayerMessage> playerMessages = this.allPlayerMessages.get(phe);
+        try {
+            int count = 0;
+            while (playerMessages.size() > 0) {
+                PlayerMessage pm = (PlayerMessage) playerMessages.remove(0);
+                if (!pm.player.exit) {
+                    this.map.processMessage(pm.player, pm.message);
+                }
+                if (++count == 500) {
+                    break; // vong cu: ngu 5 ms moi 500 goi; nay nhuong luong roi chay tiep
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (playerMessages.size() > 0 && lan != null) {
+            lan.kich();
+        }
+    }
+
+    /** Luoi an toan: neu hang doi goi tin con viec (vd ai do them thang vao Vector) thi kich. */
+    private void kichNeuCoGoi() {
+        if (this.lan0 != null && this.allPlayerMessages.get(0).size() > 0) {
+            this.lan0.kich();
+        }
+        if (this.lan1 != null && this.allPlayerMessages.get(1).size() > 0) {
+            this.lan1.kich();
+        }
+    }
+
+    public void startLeafVilage() {
+        // Vong goi tin PHE 1 (truoc: thread "MAP SEND MONSTER 2 player<id>").
+        final com.htbb.runtime.VongLapChung.Lan[] o = new com.htbb.runtime.VongLapChung.Lan[1];
+        o[0] = new com.htbb.runtime.VongLapChung.Lan(new Runnable() {
+            @Override
+            public void run() {
+                Region.this.donGoiTin(1, o[0]);
+            }
+        });
+        this.lan1 = o[0];
     }
 
     public void startWindVilage() {
     }
 
     public void startSandVilage() {
-        new Thread(){
-
-            /*
-             * WARNING - Removed try catching itself - possible behaviour change.
-             * Enabled aggressive block sorting
-             * Enabled unnecessary exception pruning
-             * Enabled aggressive exception aggregation
-             */
+        // Tick PHE 0 (updateSand) + vong goi tin PHE 0.
+        this.nhip0 = new com.htbb.runtime.VongLapChung.Nhip("khu " + this.map.mapId + "/" + this.idRegion + " phe0",
+                Map.DELAY_UPDATE_MAP, new Runnable() {
             @Override
             public void run() {
-                while (true) {
-                    try {
-                        if (AdminHandler.isStopServer) {
-                            Region.this.map_run_state = 0;
-                            return;
-                        }
-                        while (true) {
-                            if (!RealController.savingChar) {
-                                Region.this.map_run_state = 0;
-                                long l1 = System.currentTimeMillis();
-                                if (l1 - Region.this.lastTimeUpdateMap >= Map.DELAY_UPDATE_MAP) {
-                                    Region.this.updateSand();
-                                    Region.this.lastTimeUpdateMap = System.currentTimeMillis();
-                                }
-                                Region.this.map_run_state = 1;
-                                break;
-                            }
-                            Thread.sleep(100L);
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("LOI TRONG HAM RUN MAP " + e.toString());
-                    }
-                    try {
-                        Object object = Region.this.LOCK;
-                        synchronized (object) {
-                            Region.this.LOCK.wait(Map.DELAY_UPDATE_MAP);
-                            continue;
-                        }
-                    }
-                    catch (Exception exception) {
-                        continue;
-                    }
+                if (!Region.this.running) {
+                    Region.this.dungVongLap();
+                    return;
                 }
+                Region.this.map_run_state = 0;
+                try {
+                    Region.this.updateSand();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("LOI TRONG HAM RUN MAP " + e.toString());
+                }
+                Region.this.lastTimeUpdateMap = System.currentTimeMillis();
+                Region.this.map_run_state = 1;
+                Region.this.kichNeuCoGoi();
             }
-        }.start();
-        new Thread(){
-
-            /*
-             * WARNING - Removed try catching itself - possible behaviour change.
-             */
+        }, new com.htbb.runtime.VongLapChung.CoNguoi() {
+            @Override
+            public boolean coNguoiThat() {
+                return Region.this.coNguoiThat(0);
+            }
+        }).batDau(Map.DELAY_UPDATE_MAP);
+        final com.htbb.runtime.VongLapChung.Lan[] o = new com.htbb.runtime.VongLapChung.Lan[1];
+        o[0] = new com.htbb.runtime.VongLapChung.Lan(new Runnable() {
             @Override
             public void run() {
-                while (!AdminHandler.isStopServer) {
-                    try {
-                        int count = 0;
-                        Vector<PlayerMessage> playerMessages = new Vector();
-                        playerMessages = Region.this.allPlayerMessages.get(0);
-                        while (playerMessages.size() > 0) {
-                            PlayerMessage pm = (PlayerMessage)playerMessages.remove(0);
-                            if (!pm.player.exit) {
-                                Region.this.map.processMessage(pm.player, pm.message);
-                            }
-                            if (++count != 500) continue;
-                            count = 0;
-                            Thread.sleep(5L);
-                        }
-                        Object object = Region.this.LOCK;
-                        synchronized (object) {
-                            Region.this.LOCK.wait(Map.timeDelay);
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                Region.this.donGoiTin(0, o[0]);
             }
-        }.start();
+        });
+        this.lan0 = o[0];
     }
 
     /**
@@ -237,44 +231,56 @@ public class Region {
      * chi chua co ai dung toi.
      */
     public void startVilage1() {
-        new Thread() {
+        this.nhip1 = new com.htbb.runtime.VongLapChung.Nhip("khu " + this.map.mapId + "/" + this.idRegion + " phe1",
+                Map.DELAY_UPDATE_MAP, new Runnable() {
             @Override
             public void run() {
-                while (true) {
-                    try {
-                        if (AdminHandler.isStopServer) {
-                            Region.this.map_run_state1 = 0;
-                            return;
-                        }
-                        while (true) {
-                            if (!RealController.savingChar) {
-                                Region.this.map_run_state1 = 0;
-                                long l1 = System.currentTimeMillis();
-                                if (l1 - Region.this.lastTimeUpdateMap1 >= Map.DELAY_UPDATE_MAP) {
-                                    Region.this.update();
-                                    Region.this.lastTimeUpdateMap1 = System.currentTimeMillis();
-                                }
-                                Region.this.map_run_state1 = 1;
-                                break;
-                            }
-                            Thread.sleep(100L);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("LOI TRONG HAM RUN MAP (PHE 1) " + e.toString());
-                    }
-                    try {
-                        Object object = Region.this.LOCK1;
-                        synchronized (object) {
-                            Region.this.LOCK1.wait(Map.DELAY_UPDATE_MAP);
-                            continue;
-                        }
-                    } catch (Exception exception) {
-                        continue;
-                    }
+                if (!Region.this.running) {
+                    Region.this.dungVongLap();
+                    return;
                 }
+                Region.this.map_run_state1 = 0;
+                try {
+                    Region.this.update();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("LOI TRONG HAM RUN MAP (PHE 1) " + e.toString());
+                }
+                Region.this.lastTimeUpdateMap1 = System.currentTimeMillis();
+                Region.this.map_run_state1 = 1;
             }
-        }.start();
+        }, new com.htbb.runtime.VongLapChung.CoNguoi() {
+            @Override
+            public boolean coNguoiThat() {
+                return Region.this.coNguoiThat(1);
+            }
+        }).batDau(Map.DELAY_UPDATE_MAP);
+    }
+
+    /** Nguoi choi vao khu: tick dang o chu ky ranh thi chay ngay. Map.playerJoin/addPlayer cung goi. */
+    public void danhThucNhip() {
+        if (this.nhip0 != null) {
+            this.nhip0.danhThuc();
+        }
+        if (this.nhip1 != null) {
+            this.nhip1.danhThuc();
+        }
+    }
+
+    /** Khu bi go khoi ban do (MapLoiDai/MapChauBau.removeRegion -> stop()): tra lai pool. */
+    void dungVongLap() {
+        if (this.nhip0 != null) {
+            this.nhip0.dung();
+        }
+        if (this.nhip1 != null) {
+            this.nhip1.dung();
+        }
+        if (this.lan0 != null) {
+            this.lan0.dung();
+        }
+        if (this.lan1 != null) {
+            this.lan1.dung();
+        }
     }
 
     public void update() {
@@ -327,14 +333,17 @@ public class Region {
                     }
                     if (players.size() <= 0 || !(Map.isNewVersion ? !mt.isDead : !mt.isDead && mt.moved)) continue;
                     Char fp = null;
+                    // phan "luon gui quai nay" chi phu thuoc quai (allWayAdd tra template 2 lan qua Hashtable
+                    // dong bo) -> tinh MOT lan moi quai thay vi moi cap quai x nguoi choi. -1 = chua tinh.
+                    int luonThem = -1;
                     int i = 0;
                     while (i < players.size()) {
                         try {
                             Char p = players.get(i);
                             if (p.isBot == -1) {
-                                if (p.near((Actor)mt, (int)p.rangeAddMonster[0]) || mt.allWayAdd() || mt.isBoss || mt.idTemplate == 84 || mt.idTemplate == 90 || mt.idTemplate == 36 || mt.idTemplate == 37 || this.map.mapIDLoadMap == 201) {
+                                if (p.near((Actor)mt, (int)p.rangeAddMonster[0]) || (luonThem >= 0 ? luonThem == 1 : (luonThem = (mt.allWayAdd() || mt.isBoss || mt.idTemplate == 84 || mt.idTemplate == 90 || mt.idTemplate == 36 || mt.idTemplate == 37 || this.map.mapIDLoadMap == 201) ? 1 : 0) == 1)) {
                                     if (Map.isNewVersion) {
-                                        if (!p.nearMons.contains(mt.id)) {
+                                        if (!UtilHTBB.coId(p.nearMons, mt.id)) {
                                             p.nearMons.add(mt.id);
                                             p.sendMessage(p.writeActorPos(new Message(4), (Actor)mt));
                                         }
@@ -430,14 +439,17 @@ public class Region {
                     }
                     if (players.size() <= 0 || !(Map.isNewVersion ? !mt2.isDead : !mt2.isDead && mt2.moved)) continue;
                     Char fp = null;
+                    // phan "luon gui quai nay" chi phu thuoc quai (allWayAdd tra template 2 lan qua Hashtable
+                    // dong bo) -> tinh MOT lan moi quai thay vi moi cap quai x nguoi choi. -1 = chua tinh.
+                    int luonThem = -1;
                     int i = 0;
                     while (i < players.size()) {
                         try {
                             Char p = players.get(i);
                             if (p.isBot == -1) {
-                                if (p.near((Actor)mt2, (int)p.rangeAddMonster[0]) || mt2.allWayAdd() || mt2.isBoss || mt2.idTemplate == 84 || mt2.idTemplate == 90 || mt2.idTemplate == 36 || mt2.idTemplate == 37 || this.map.mapIDLoadMap == 201) {
+                                if (p.near((Actor)mt2, (int)p.rangeAddMonster[0]) || (luonThem >= 0 ? luonThem == 1 : (luonThem = (mt2.allWayAdd() || mt2.isBoss || mt2.idTemplate == 84 || mt2.idTemplate == 90 || mt2.idTemplate == 36 || mt2.idTemplate == 37 || this.map.mapIDLoadMap == 201) ? 1 : 0) == 1)) {
                                     if (Map.isNewVersion) {
-                                        if (!p.nearMons.contains(mt2.id)) {
+                                        if (!UtilHTBB.coId(p.nearMons, mt2.id)) {
                                             p.nearMons.add(mt2.id);
                                             p.sendMessage(p.writeActorPos(new Message(4), (Actor)mt2));
                                         }
@@ -523,14 +535,17 @@ public class Region {
                         }
                         if (players.size() <= 0 || !(Map.isNewVersion ? !mt2.isDead : !mt2.isDead && mt2.moved)) continue;
                         Char fp = null;
+                    // phan "luon gui quai nay" chi phu thuoc quai (allWayAdd tra template 2 lan qua Hashtable
+                    // dong bo) -> tinh MOT lan moi quai thay vi moi cap quai x nguoi choi. -1 = chua tinh.
+                    int luonThem = -1;
                         int i = 0;
                         while (i < players.size()) {
                             try {
                                 Char p = players.get(i);
                                 if (p.isBot == -1) {
-                                    if (p.near((Actor)mt2, (int)p.rangeAddMonster[0]) || mt2.allWayAdd() || mt2.isBoss || mt2.idTemplate == 84 || mt2.idTemplate == 90 || mt2.idTemplate == 36 || mt2.idTemplate == 37 || this.map.mapIDLoadMap == 201) {
+                                    if (p.near((Actor)mt2, (int)p.rangeAddMonster[0]) || (luonThem >= 0 ? luonThem == 1 : (luonThem = (mt2.allWayAdd() || mt2.isBoss || mt2.idTemplate == 84 || mt2.idTemplate == 90 || mt2.idTemplate == 36 || mt2.idTemplate == 37 || this.map.mapIDLoadMap == 201) ? 1 : 0) == 1)) {
                                         if (Map.isNewVersion) {
-                                            if (!p.nearMons.contains(mt2.id)) {
+                                            if (!UtilHTBB.coId(p.nearMons, mt2.id)) {
                                                 p.nearMons.add(mt2.id);
                                                 p.sendMessage(p.writeActorPos(new Message(4), (Actor)mt2));
                                             }
@@ -770,9 +785,11 @@ public class Region {
             if (com.htbb.pokemon.LauDai.bat()) {
                 // GD2 6.1 PvP: x0,30, chi mang x1,5, tran 8% HP toi da muc tieu (thay /5, -1/3, x4, tran 50k).
                 long d = (long) damGocLauDai * CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
-                if (critSv || baokich) {
+                if ((critSv || baokich) && ChiSoTrangBiGame.giuChiMangPvp(p, c)) { // PvP: tran 30%, tru khang chi mang
                     d = d * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L;
                     effect = 2;
+                } else if (critSv || baokich) {
+                    effect = 0;
                 }
                 damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, d), c.maxhp);
                 damage = p.subDam(c, damage);
@@ -803,7 +820,7 @@ public class Region {
                 ahp = 1;
             }
             c.hp = (int)((long)c.hp - ((long)damage - c.checkMagicShield(damage)));
-            ChiemThanhLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
+            ChiemGymLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
             if (c.hp <= 0) {
                 ThangPvpGame.ketQua(p, c); // GD2 7.2 Elo mua (tat co: khong lam gi)
             }
@@ -1492,7 +1509,9 @@ public class Region {
         if (com.htbb.pokemon.LauDai.bat()) {
             // GD2 6.1: chi mang x1,5, bo bao kich x4 (chi con o boss "pha giap").
             if (critSv || baokich) {
-                damage = damage * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100;
+                // gioi han chi so: x1,5 + ST chi mang (tran x2,0) qua tkNhanChiMang; tat: x1,5 phang nhu cu
+                damage = ChiSoTrangBiGame.bat() ? p.tkNhanChiMang(damage, 2)
+                        : damage * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100;
                 effect = 2;
                 p.lauDaiCo |= com.htbb.pokemon.SatThuongLauDai.CO_CHI_MANG;
             }
@@ -1888,6 +1907,7 @@ public class Region {
         player.nNpc = 0;
         player.map = this.map;
         player.region = this.idRegion;
+        this.danhThucNhip();
     }
 
     public void playerExit(Char p) {
@@ -1901,6 +1921,10 @@ public class Region {
         this.timeExist = System.currentTimeMillis();
         this.allPlayerMessages.get(p.inCountry).add(new PlayerMessage(p, message));
         this.notifyMap();
+        com.htbb.runtime.VongLapChung.Lan lan = p.inCountry == 0 ? this.lan0 : (p.inCountry == 1 ? this.lan1 : null);
+        if (lan != null) {
+            lan.kich();
+        }
     }
 
     public void addEffectAutoInMap(int country, Char p, int region, int x, int y, int idEff, long time) {
@@ -1918,6 +1942,9 @@ public class Region {
 
     public void addPlayer(int country, Char p) {
         this.allPlayers.get(country).add(p);
+        if (p != null && p.isBot == -1) {
+            this.danhThucNhip();
+        }
     }
 
     public void onOffSkelonton(boolean onoff) {
@@ -1946,12 +1973,14 @@ public class Region {
 
     public void stop() {
         this.running = false;
+        this.dungVongLap();
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public void notifyMap() {
+        this.kichNeuCoGoi();
         Object object;
         try {
             object = this.LOCK;

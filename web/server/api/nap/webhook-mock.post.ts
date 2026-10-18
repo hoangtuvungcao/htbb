@@ -1,6 +1,6 @@
 /**
  * Cổng thanh toán GIẢ để thử trên máy dev (KHÔNG gọi ngân hàng / cổng thật nào).
- * Chỉ mở khi KPAH_NAP_SANDBOX=1 VÀ có KPAH_NAP_MOCK_SECRET; ngoài ra trả 404 như không tồn tại.
+ * Chỉ mở khi HTBB_NAP_SANDBOX=1 VÀ có HTBB_NAP_MOCK_SECRET; ngoài ra trả 404 như không tồn tại.
  * Ký: X-HTBB-Signature: t=<giây>,v1=<hex HMAC-SHA256(secret, t + "." + thân thô)>.
  * Thân: { ma_gd, so_tien, noi_dung } — đi qua đúng đường napXuLyGiaoDich như SePay/Casso.
  */

@@ -19,6 +19,9 @@ import java.util.Vector;
 class CharTrangBi {
 
     static void checkNewEffectItem(Char self, final int cat, long damage, final LiveActor attacker) {
+        if (ChiSoTrangBiGame.bat()) {
+            return; // "lan" (set/doc/bang/lua lan) la di san kiem hiep: ngung khi bat gioi han chi so
+        }
         final int[] sl = {8, 15, 8, 8};
         final int pc = Map.r.nextInt(1000) + 1;
         int id = 0;
@@ -269,7 +272,7 @@ class CharTrangBi {
                                     // nay, KHONG ap dung nhanh phan choang o tren (do la choang
                                     // chinh chu tan cong, khong phai muc tieu).
                                     long msChoang = 3000L;
-                                    if (SkinLinhThu.timSkinDangMac(self) != null && self.dangDeoChoiSet()
+                                    if (SkinThuCuoi.timSkinDangMac(self) != null && self.dangDeoChoiSet()
                                             && Map.r.nextInt(100) < 5) {
                                         msChoang += 3000L;
                                         if (actor.addEffBuff(EffectBuff.SET_DANH, System.currentTimeMillis() + 800L, EffectBuff.BY_ACTOR, 0) != null) {
@@ -877,7 +880,7 @@ class CharTrangBi {
                                 // loi ma am tham chiem O PHI PHONG, con te hon.)
                                 // Nang hon nua, luc do khong go ra duoc: doUseItem chi quet
                                 // iItems, con lenh "boskin" chi quet awItems.
-                                if (!Map.isWearingAnimal(t) && !SkinLinhThu.laItemSkin(item.getTemplate().id)) {
+                                if (!Map.isWearingAnimal(t) && !SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
                                     boolean vk2 = false;
                                     if (t == 6 || t == 7 || t == 4 || t == 5 || t == 3) {
                                         vk2 = true;
@@ -928,7 +931,7 @@ class CharTrangBi {
                                     // ban con thu ma skin dang buoc vao van phai giu duoc
                                     // skin. getAnimalWearing se buoc lai idAnimal vao con
                                     // dang cuoi o lan hien thi ke tiep.
-                                    if (SkinLinhThu.laItemSkin(item.getTemplate().id)
+                                    if (SkinThuCuoi.laItemSkin(item.getTemplate().id)
                                             || self.checkExistAnimal(item.idAnimal)) {
                                         self.awItems.add(item);
                                     } else {

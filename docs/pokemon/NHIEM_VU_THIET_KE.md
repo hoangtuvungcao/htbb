@@ -23,8 +23,7 @@
 | loai | nhom | so_dong |
 |---|---|---|
 | an | an | 32 |
-| chinh | chinh | 462 |
-| chinh | dan_y | 24 |
+| chinh | chinh | 582 |
 | doi | doi | 12 |
 | hang_bi_an | ham_nguc | 6 |
 | huong_dan | huong_dan | 10 |
@@ -50,7 +49,7 @@
 | tuan | to_doi | 16 |
 | tuan | tuan | 48 |
 
-**Tổng: 1864 dòng.**
+**Tổng: 1960 dòng.**
 <!-- /SINH:DEM -->
 
 So với mục tiêu:
@@ -87,7 +86,7 @@ Các chặng chính:
 **Năm 2: Hoenn.** Bạn nhớ lại mình sinh ra ở Littleroot.
 - Đoàn Dung Nham muốn mở rộng đất liền, Đoàn Thủy Triều muốn mở rộng biển; cả hai đều cần mảnh sao.
 - Câu chuyện đi qua Groudon, Kyogre và Sootopolis rồi tới Tháp Sky Pillar. Mẹ bạn từng canh giữ tháp này; Rayquaza cho biết chính bạn là mảnh sao cuối cùng.
-- 28 chương đã viết đầy đủ. Bản đồ và quái Hoenn chưa có (GĐ3), nên các bước dùng quái cấp cao đang có sẵn, còn bước khám phá ghi tên nơi mà không có `map_id`.
+- Cả 52 chương (C53–C104) viết đầy đủ trên 29 bản đồ Hoenn mới (`src/com/htbb/pokemon/BanDoHoenn.java`; C53–C80 ở `nv_cot_truyen.NAM2`, C81–C104 ở `tools/pokemon/nv_hoenn.py`). Mỗi bước có `map_id` + toạ độ (điểm nhiệm vụ Hoenn trong `diem_co_dinh.csv`, câu cá lấy ô hồ trong `diem_cau_ca.csv`); quái mục tiêu là loài Hoenn mọc trên bản đồ đó (`nv_hoenn.chuan_buoc`).
 
 **Giọng nhân vật.** Mỗi NPC có câu mở đầu và cách xưng hô riêng, khai báo trong `nv_chung.NPC`:
 - Xatu "...", Snorlax "Oáp...", Blaziken "Lửa lên nào!"
@@ -103,11 +102,11 @@ Lời "đang làm" của mọi nhiệm vụ đều tự sinh theo giọng của 
 |---|---|---|---|---|
 | 1-15 | 0.8 | 27.9 | 100 | 395 |
 | 16-30 | 6.2 | 24.7 | 100 | 240 |
-| 31-45 | 26.3 | 27.8 | 100 | 239 |
-| 46-60 | 65.2 | 27.3 | 42 | 245 |
-| 61-75 | 151.1 | 31.2 | 21 | 195 |
-| 76-90 | 341.4 | 19.5 | 6 | 191 |
-| 91-100 | 346.8 | 51.9 | 15 | 245 |
+| 31-45 | 25.2 | 26.4 | 100 | 235 |
+| 46-60 | 61.3 | 25.3 | 41 | 239 |
+| 61-75 | 141.6 | 32.9 | 23 | 200 |
+| 76-90 | 321.3 | 19.5 | 6 | 191 |
+| 91-100 | 326.0 | 53.2 | 16 | 346 |
 <!-- /SINH:NHIP -->
 
 Đọc bảng:
@@ -132,14 +131,14 @@ Số lựa chọn có ý nghĩa tại mỗi cấp, đếm trong cửa sổ lọc
 | 20 | 31 | 12 | 38 | 5 | 17 | 31 | 0 | 3 | 33 | 50 |
 | 30 | 42 | 10 | 31 | 5 | 33 | 27 | 0 | 3 | 31 | 43 |
 | 40 | 38 | 11 | 36 | 5 | 22 | 29 | 1 | 3 | 33 | 48 |
-| 50 | 37 | 14 | 43 | 5 | 22 | 19 | 0 | 3 | 35 | 55 |
-| 60 | 37 | 18 | 60 | 5 | 22 | 11 | 2 | 3 | 41 | 72 |
-| 70 | 37 | 20 | 59 | 5 | 20 | 12 | 2 | 3 | 43 | 71 |
-| 80 | 30 | 15 | 46 | 5 | 33 | 9 | 1 | 3 | 37 | 58 |
-| 85 | 30 | 10 | 32 | 5 | 23 | 5 | 2 | 3 | 33 | 44 |
-| 90 | 39 | 11 | 32 | 5 | 21 | 3 | 1 | 3 | 31 | 44 |
-| 95 | 121 | 11 | 34 | 5 | 22 | 0 | 4 | 3 | 31 | 46 |
-| 100 | 164 | 10 | 36 | 5 | 21 | 0 | 6 | 3 | 32 | 48 |
+| 50 | 37 | 14 | 43 | 5 | 22 | 19 | 1 | 3 | 36 | 55 |
+| 60 | 37 | 18 | 60 | 5 | 22 | 11 | 3 | 3 | 42 | 72 |
+| 70 | 37 | 20 | 59 | 5 | 20 | 12 | 4 | 3 | 45 | 71 |
+| 80 | 30 | 15 | 46 | 5 | 33 | 9 | 4 | 3 | 40 | 58 |
+| 85 | 30 | 10 | 32 | 5 | 23 | 5 | 4 | 3 | 35 | 44 |
+| 90 | 39 | 11 | 32 | 5 | 21 | 3 | 3 | 3 | 33 | 44 |
+| 95 | 121 | 11 | 34 | 5 | 22 | 0 | 6 | 3 | 33 | 46 |
+| 100 | 260 | 10 | 36 | 5 | 21 | 0 | 8 | 3 | 34 | 48 |
 
 Ít lựa chọn nhất: cấp 1 (12). Gói danh sách phụ lớn nhất (trước khi engine cắt 20): cấp 73 (76 ≤ 127).
 <!-- /SINH:LUA_CHON -->
@@ -223,52 +222,52 @@ Engine nhiệm vụ do người làm GĐ2 viết trong `src`; tài liệu này c
 <!-- SINH:KIEU -->
 | kiểu | tên | cơ chế phát hiện (server) | dự phòng engine cũ | trạng thái | số dòng |
 |---|---|---|---|---|---|
-| `ap_trung` | Ấp trứng | NhaTre + HeSinhThaiMenu.hanhDongTrung (trứng nở sau 250–800 quái hạ) | — | he_sinh_thai | 11 |
+| `ap_trung` | Trứng nở | NhaTre + HeSinhThaiMenu.hanhDongTrung (trứng nở sau 250–800 quái hạ) | — | he_sinh_thai | 12 |
 | `bo_trang_bi` | Bộ trang bị | Char.calculateAttrib / checkKickAtt5 (đếm món cùng bậc) | — | gd2 | 5 |
-| `boss_the_gioi` | Boss thế giới | BossLauDai.satThuongVaoBoss + khiChet (bảng đóng góp) | — | gd2 | 19 |
-| `cau_ca` | Câu cá | HeSinhThaiMenu.cauCa (lệnh chat "cauca"): đứng cách ô nước thật ≤ 2 ô | 2 | he_sinh_thai | 30 |
-| `cau_do` | Câu đố | MapChat.doChat (cạnh HeSinhThaiGame.khiChat; so đáp án trước khi phát kênh) | — | gd2 | 64 |
+| `boss_the_gioi` | Boss thế giới | BossLauDai.satThuongVaoBoss + khiChet (bảng đóng góp) | — | gd2 | 20 |
+| `cau_ca` | Câu cá | HeSinhThaiMenu.cauCa (lệnh chat "cauca"): CHỈ ở hồ, đứng cách hồ ≤ 2 ô (docs/pokemon/diem_cau_ca.csv) | 2 | he_sinh_thai | 29 |
+| `cau_do` | Câu đố | MapChat.doChat (cạnh HeSinhThaiGame.khiChat; so đáp án trước khi phát kênh) | — | gd2 | 65 |
 | `che_tao` | Chế tạo | MapCheTao.doUserCreateItem | — | gd2 | 13 |
-| `cho_ban` | Chợ | HeSinhThaiMenu.rao + mua/traTienNguoiBan (Chợ sinh thái) hoặc banNpc | — | he_sinh_thai | 11 |
-| `dan_y` | Dàn ý | Chưa sinh (năm 2, cần bản đồ và quái Hoenn GĐ3) | — | gd3 | 24 |
+| `cho_ban` | Chợ | HeSinhThaiMenu.rao + mua/traTienNguoiBan (Chợ sinh thái) hoặc banNpc | — | he_sinh_thai | 12 |
+| `dan_y` | Dàn ý | Chương chưa viết (không còn dùng: 52 chương năm 2 đã có bản đồ Hoenn) | — | gd3 | 0 |
 | `dang_nhap` | Đăng nhập | LauDaiNhanVat.khiDoiNgay (QuaHoatDong) | — | gd2 | 1 |
-| `dao_dat` | Khảo cổ | HeSinhThaiMenu.dao (lệnh chat "dao" qua HeSinhThaiGame.khiChat); chỉ hang/núi/sa mạc/tuyết, 6 điểm/ngày | 2 | he_sinh_thai | 18 |
-| `den_noi` | Khám phá | Map.playerJoin / MapXuLyLenh.doChangeMap (hook vào bản đồ) | 3 | gd2 | 54 |
+| `dao_dat` | Khảo cổ | HeSinhThaiMenu.dao (lệnh chat "dao" qua HeSinhThaiGame.khiChat); chỉ hang/núi/sa mạc/tuyết, 6 điểm/ngày | 2 | he_sinh_thai | 20 |
+| `den_noi` | Khám phá | Map.playerJoin / MapXuLyLenh.doChangeMap (hook vào bản đồ) | 3 | gd2 | 58 |
 | `do_vui` | Đố vui | HeSinhThaiGame.DoVui.traLoi (qua khiChat, 12:30 và 21:30) | — | he_sinh_thai | 9 |
-| `doi_dong_gop` | Đóng góp Đội | MapBangHoi (nhiệm vụ Đội, mainsub=2) + ChiemThanhLauDai.dongGop | 4 | gd2 | 8 |
+| `doi_dong_gop` | Đóng góp Đội | MapDoi (nhiệm vụ Đội, mainsub=2) + ChiemGymLauDai.dongGop | 4 | gd2 | 8 |
 | `dua_pokemon` | Đua Pokémon | HeSinhThaiGame.Dua.dangKy / ketThuc (19:00, map 18) | — | he_sinh_thai | 13 |
-| `dua_thu` | Đưa thư | Char.OnQuest type 1 (vật phẩm nhiệm vụ 4, npcres) | 1 | co_san | 14 |
-| `dung_toa_do` | Đứng tại điểm | CharCapNhat.doPlayerMove (vị trí, bán kính 3 ô) | 3 | gd2 | 50 |
+| `dua_thu` | Đưa thư | Char.OnQuest type 1 (vật phẩm nhiệm vụ 4, npcres) | 1 | co_san | 18 |
+| `dung_toa_do` | Đứng tại điểm | CharCapNhat.doPlayerMove (vị trí, bán kính 3 ô) | 3 | gd2 | 68 |
 | `giao_hang` | Giao hàng | Char.OnQuest type 1 + vật phẩm nhiệm vụ mới (GĐ2 4.5) | 1 | gd2 | 31 |
-| `giet` | Hạ quái | Monster.onDropItem → Char.checkFinishQuest (type 0) | 0 | co_san | 108 |
-| `giet_lech_cap` | Hạ quái cùng tầm | Char.checkFinishQuest type 4 (deltaLv 5) | 4 | co_san | 74 |
-| `giet_tinh_anh` | Thách đấu | Char.checkFinishQuest type 0 trên quái cấp cao hơn | 0 | co_san | 32 |
-| `giup_tan_thu` | Giúp người mới | Region party + cấp thành viên < 20 | 4 | gd2 | 9 |
+| `giet` | Hạ quái | Monster.onDropItem → Char.checkFinishQuest (type 0) | 0 | co_san | 120 |
+| `giet_lech_cap` | Hạ quái cùng tầm | Char.checkFinishQuest type 4 (deltaLv 5) | 4 | co_san | 77 |
+| `giet_tinh_anh` | Thách đấu | Char.checkFinishQuest type 0 trên quái cấp cao hơn | 0 | co_san | 41 |
+| `giup_tan_thu` | Giúp người mới | Region party + cấp thành viên < 20 | 4 | gd2 | 10 |
 | `ha_alpha` | Hạ Alpha | Cờ alpha trên Monster (GĐ2 6.7, MapNapTaiNguyen.loadMap) → Monster.onDropItem | 0 | gd2 | 20 |
 | `ha_gym` | Thắng Gym | Boss Gym (noi_dung_gym, GĐ2 4.6 + BossLauDai.khiChet) | 0 | gd2 | 19 |
 | `ho_tong` | Hộ tống | Giao hàng (CharSuKien.doResponseTieu) với hàng nhiệm vụ | 3 | gd2 | 19 |
 | `kem_cap` | Sư phạm | SoTayLauDai.suPham / khiLenCap (tob_su_pham) | — | gd2 | 8 |
 | `kham_ngoc` | Khảm ngọc | MapEpNgoc.doFinishKhamItem | — | gd2 | 7 |
-| `lam_vuon` | Làm vườn | Char.doHarvest → HeSinhThaiGame.khiThuHoach (vườn berry trên bản đồ cá nhân) | 2 | he_sinh_thai | 27 |
-| `lua_chon` | Lựa chọn | Menu NPC (MapDoMenu) ghi nhánh vào tob_nhiem_vu_lau_dai | 3 | gd2 | 13 |
+| `lam_vuon` | Làm vườn | Char.doHarvest → HeSinhThaiGame.khiThuHoach (vườn berry trên bản đồ cá nhân) | 2 | he_sinh_thai | 28 |
+| `lua_chon` | Lựa chọn | Menu NPC (MapDoMenu) ghi nhánh vào tob_nhiem_vu_lau_dai | 3 | gd2 | 14 |
 | `nang_cap` | Mặc trang bị | Map.doUseItem (mặc đồ) | 3 | co_san | 2 |
 | `nang_cap_cong` | Nâng cấp | NangCapLauDaiGame.thu (MapEpNgoc.doFinishImbue, CharCapNhat.doAutoImbue) | — | gd2 | 13 |
-| `nau_an` | Nấu ăn | HeSinhThaiMenu.lamCongThuc (menu Hệ sinh thái → Công thức) | — | he_sinh_thai | 19 |
-| `noi_chuyen` | Nói chuyện | Char.OnQuest type 3 (hoàn thành ngay tại NPC) | 3 | co_san | 453 |
+| `nau_an` | Nấu ăn | HeSinhThaiMenu.lamCongThuc (menu Hệ sinh thái → Công thức) | — | he_sinh_thai | 22 |
+| `noi_chuyen` | Nói chuyện | Char.OnQuest type 3 (hoàn thành ngay tại NPC) | 3 | co_san | 499 |
 | `phan_ra` | Phân rã | RoiLauDai.phanRa (MapXuLyLenh.doGetItem) | — | gd2 | 8 |
 | `pokedex_gap` | Pokédex: gặp | PokedexPokemon.khiDanh (tob_pokedex) | — | gd2 | 72 |
 | `pokedex_ha` | Pokédex: nghiên cứu | PokedexPokemon.khiHaQuai (tob_pokedex.so_ha) | — | gd2 | 70 |
 | `pokedex_shiny` | Pokédex: shiny | RoiLauDai.shiny → tob_pokedex_shiny | — | gd2 | 22 |
 | `pokedex_vung` | Pokédex vùng | tob_pokedex (đếm loài theo vùng) | — | gd2 | 14 |
-| `quan_sat` | Quan sát | PokedexPokemon.khiDanh + HeSinhThaiGame.khiHaQuai (thoiTietMap, laDem 19:00–05:59) | — | gd2 | 121 |
+| `quan_sat` | Quan sát | PokedexPokemon.khiDanh + HeSinhThaiGame.khiHaQuai (thoiTietMap, laDem 19:00–05:59) | — | gd2 | 123 |
 | `su_kien_vat_pham` | Vật phẩm sự kiện | Monster.onDropItem (khối rơi sự kiện) + MapSuKien | — | gd2 | 52 |
 | `tang_hang` | Hầm ngục | HamNgucGame.khiHaQuai / nhanThuong (tob_ham_nguc) | — | gd2 | 11 |
-| `tham_gia_gym` | Chiếm Gym | ChiemThanhLauDai.batDau / dongGop | — | gd2 | 11 |
-| `thang_pvp` | Đấu trường | ThangPvpGame.ketQua(thắng, thua) | — | gd2 | 24 |
-| `thu_thach_gio` | Thử thách giờ | Bộ đếm giờ trong tob_nhiem_vu_lau_dai + checkFinishQuest | — | gd2 | 24 |
-| `thu_thap` | Thu thập | Map.doGetItemQuest → checkFinishQuest (type 2) | 2 | co_san | 50 |
-| `tim_vat_an` | Tìm vật ẩn | Điểm tương tác ẩn trên bản đồ (MapDoMenu, NPC ẩn) hoặc điểm đào | 2 | gd2 | 48 |
-| `to_doi` | Tổ đội | Region.doAttackMonster (vòng party.userParty) — cộng cho cả tổ | 4 | gd2 | 25 |
+| `tham_gia_gym` | Chiếm Gym | ChiemGymLauDai.batDau / dongGop | — | gd2 | 11 |
+| `thang_pvp` | Đấu trường | ThangPvpGame.ketQua(thắng, thua) | — | gd2 | 27 |
+| `thu_thach_gio` | Thử thách giờ | Bộ đếm giờ trong tob_nhiem_vu_lau_dai + checkFinishQuest | — | gd2 | 27 |
+| `thu_thap` | Thu thập | Map.doGetItemQuest → checkFinishQuest (type 2) | 2 | co_san | 52 |
+| `tim_vat_an` | Tìm vật ẩn | Điểm tương tác ẩn trên bản đồ (MapDoMenu, NPC ẩn) hoặc điểm đào | 2 | gd2 | 49 |
+| `to_doi` | Tổ đội | Region.doAttackMonster (vòng party.userParty) — cộng cho cả tổ | 4 | gd2 | 27 |
 | `thanh_tuu_*` | Thành tựu | bảng tiến độ + bộ đếm (xem cột ghi_chu) | — | gd2 | 114 |
 <!-- /SINH:KIEU -->
 

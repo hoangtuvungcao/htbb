@@ -26,6 +26,13 @@ public final class LauDai {
     public static final String KHOA = "sv.lau_dai";
     /** Ngay khai truong (yyyy-MM-dd) - ngay 0 cua tran cap theo mua. */
     public static final String KHOA_NGAY_KHAI_TRUONG = "sv.ngay_khai_truong";
+    /**
+     * Tran cap theo mua (60 -> 70 -> 80 -> 91 -> 95 -> 100 theo ngay khai truong). MAC DINH TAT (thieu dong = 0,
+     * quyet dinh 18/10/2026): khong tran, len cap cham (bang EXP + nang luong 90 phut/ngay) + vat pham tang toc
+     * ({@link TangToc}); noi dung mo theo CAP + COT TRUYEN thay vi theo ngay ({@link #ngayMoNoiDung}). "1" = bat lai
+     * thiet ke cu (giu code de so sanh / quay lui).
+     */
+    public static final String KHOA_TRAN_CAP_THEO_MUA = "sv.tran_cap_theo_mua";
 
     // ---- Ten khoa doc de tu cau_hinh (trung cot khoa cua data_kinh_te_lau_dai) ----
     public static final String K_ROI_XU = "roi.xu.phan_tram";
@@ -50,6 +57,7 @@ public final class LauDai {
     public static final String K_SHINY_PITY = "shiny.pity";
 
     private static volatile boolean bat = false;
+    private static volatile boolean tranTheoMua = false;
     /** Ngay khai truong, millis luc 00:00 gio may; 0 = chua dat (coi nhu hom nay la ngay 0). */
     private static volatile long khaiTruongMs = 0L;
     private static volatile Map<String, String> de = Collections.emptyMap();
@@ -68,6 +76,25 @@ public final class LauDai {
     /** Chi TeamServer (luc doc server.ini) va test duoc goi. */
     public static void dat(final boolean giaTri) {
         bat = giaTri;
+    }
+
+    /** Tran cap theo mua dang bat khong (sv.tran_cap_theo_mua=1). Mac dinh false. */
+    public static boolean tranTheoMua() {
+        return tranTheoMua;
+    }
+
+    /** Chi TeamServer (luc doc server.ini) va test duoc goi. */
+    public static void datTranTheoMua(final boolean giaTri) {
+        tranTheoMua = giaTri;
+    }
+
+    /**
+     * Ngay de so voi {@code ngay_mo} cua noi dung (chuong chinh, nhiem vu, cua hang, quai nam 2). Tran theo mua TAT
+     * -> moi ngay_mo coi nhu da qua (chi con cap + cot truyen + ve chuong chan). Lich su kien / mua PvP / ve mua
+     * van theo {@link #ngayHienTai()} (lich tuan, khong phai khoa noi dung).
+     */
+    public static int ngayMoNoiDung() {
+        return tranTheoMua ? ngayHienTai() : Integer.MAX_VALUE / 2;
     }
 
     /** "1" (co the co khoang trang) = bat; moi gia tri khac, ke ca null = tat. */
@@ -109,11 +136,15 @@ public final class LauDai {
     }
 
     public static int ngayHienTai() {
-        return ngayTuKhaiTruong(khaiTruongMs, System.currentTimeMillis());
+        // + tua nhanh thu nghiem (sv.tua_nhanh_ngay, cau hinh trung tam): LUON 0 tren may that.
+        return ngayTuKhaiTruong(khaiTruongMs, DongHo.bay()); // DongHo da gom sv.tua_nhanh_ngay + lenh GM 'tua'
     }
 
-    /** Chi so mua (0 = S1) tai ngay {@code ngay}. */
+    /** Chi so mua (0 = S1) tai ngay {@code ngay}. Tran theo mua tat: mua cuoi (tinh thong mo du 50 diem). */
     public static int mua(final int ngay) {
+        if (!tranTheoMua) {
+            return ThongSoLauDai.TRAN_CAP_NGAY.length - 1;
+        }
         int m = 0;
         for (int i = 0; i < ThongSoLauDai.TRAN_CAP_NGAY.length; i++) {
             if (ngay >= ThongSoLauDai.TRAN_CAP_NGAY[i]) {

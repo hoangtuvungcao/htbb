@@ -24,12 +24,12 @@ stt,tuan,su_kien,su_kien_nam2,loai,vat_pham,anh_xa,so_luong_toi_da_tuan,gio_thu_
 23,14,Lễ hội Pokédex,Lễ hội Pokédex: Johto,pokemon,Tem nghiên cứu,item:1054,20,0.05,1.0,25,1,1,Danh hiệu nghiên cứu
 24,15,Giỗ Tổ Hùng Vương,Giỗ Tổ: bánh giày,le_vn,Đậu xanh,thuoc:122,20,0.0375,1.5,25,1,1,Pháo hoa trang trí
 25,15,Giỗ Tổ Hùng Vương,Giỗ Tổ: bánh giày,le_vn,Pháo hoa,thuoc:99,20,0.0375,1.5,25,1,1,Pháo hoa trang trí
-26,16,Thế chiến vùng (Kanto/Johto/Hoenn),Thế chiến vùng,chien_vung,Cờ vùng,item:1056,20,0.05,1.0,25,1,1,Cờ vùng (trang trí)
+26,16,Chiến vùng (Kanto/Johto/Hoenn),Chiến vùng,chien_vung,Cờ vùng,item:1056,20,0.05,1.0,25,1,1,Cờ vùng (trang trí)
 27,17,30/4 - 1/5: Thống nhất,30/4: Diễu hành Pokémon,le_vn,Quà lễ 30/4 - 1/5,item:1057,20,0.075,1.5,25,1,1,Yên thú cưỡi trang trí
 28,18,Tuần hệ Lửa,Tuần hệ Ma,tuan_he,Tinh thể hệ,item:1052,20,0.05,1.0,25,1,1,Phiến đá trang trí
 29,19,Ngày cộng đồng Squirtle,Ngày cộng đồng Eevee,cong_dong,Huy hiệu ngày cộng đồng,item:1053,20,0.05,1.0,25,1,1,Trang phục
-30,20,Đột kích: Entei,Đột kích: Raikou,dot_kich,Nanh lửa Entei,item:1042,20,0.075,1.5,25,1,1,Nanh Entei (khoá)
-31,21,Bùng phát quần thể (Mass outbreak),Bùng phát: Johto,pokemon,Tem nghiên cứu,item:1054,20,0.05,1.0,25,1,1,Điểm Pokédex
+30,20,Đột kích: Entei,Đột kích: Raikou,dot_kich,Nanh lửa Entei,item:1042,20,0.075,1.5,25,1,1,Nanh lửa Entei (khoá)
+31,21,Bùng phát quần thể,Bùng phát: Johto,pokemon,Tem nghiên cứu,item:1054,20,0.05,1.0,25,1,1,Điểm Pokédex
 32,22,Quốc tế Thiếu nhi 1/6,1/6: Pichu & bạn,le_vn,Kẹo,thuoc:137,20,0.05,1.0,25,1,1,Mũ trẻ em
 33,23,Sự kiện Hè: biển Vermilion (tuần 1/2),Hè: đảo Cinnabar,mua,Dưa Hấu,thuoc:145,20,0.0375,1.5,25,1,1,Đồ bơi trang trí
 34,23,Sự kiện Hè: biển Vermilion (tuần 1/2),Hè: đảo Cinnabar,mua,Kem,thuoc:146,20,0.0375,1.5,25,1,1,Đồ bơi trang trí
@@ -41,7 +41,7 @@ stt,tuan,su_kien,su_kien_nam2,loai,vat_pham,anh_xa,so_luong_toi_da_tuan,gio_thu_
 40,28,Đột kích: Darkrai,Đột kích: Suicune,dot_kich,Mảnh bóng tối,item:1044,20,0.075,1.5,25,1,1,Mảnh bóng tối (khoá)
 41,29,Hè 2: Hầm ngục bí ẩn mùa hè,Hè 2: Hầm ngục sa mạc,mua,Dưa Hấu,thuoc:145,20,0.0375,1.5,25,1,1,Khung hầm ngục
 42,29,Hè 2: Hầm ngục bí ẩn mùa hè,Hè 2: Hầm ngục sa mạc,mua,Kem,thuoc:146,20,0.0375,1.5,25,1,1,Khung hầm ngục
-43,30,Thế chiến vùng mùa hè,Thế chiến vùng,chien_vung,Cờ vùng,item:1056,20,0.05,1.0,25,1,1,Cờ vùng
+43,30,Chiến vùng mùa hè,Chiến vùng,chien_vung,Cờ vùng,item:1056,20,0.05,1.0,25,1,1,Cờ vùng
 44,31,Ngày cộng đồng Eevee,Ngày cộng đồng Charmander,cong_dong,Huy hiệu ngày cộng đồng,item:1053,20,0.05,1.0,25,1,1,Trang phục Eevee
 45,32,Vu Lan,Vu Lan: hoa hồng vàng,le_vn,Nhánh hoa hồng vàng,thuoc:106,20,0.05,1.0,25,1,1,Hoa cài trang trí
 46,33,Tuần hệ Điện,Tuần hệ Thép,tuan_he,Tinh thể hệ,item:1052,20,0.05,1.0,25,1,1,Phiến đá
@@ -56,7 +56,7 @@ stt,tuan,su_kien,su_kien_nam2,loai,vat_pham,anh_xa,so_luong_toi_da_tuan,gio_thu_
 55,38,Trung Thu (tuần 2/2),Trung Thu: Clefairy,le_vn,Nến,thuoc:136,20,0.025,1.5,25,1,1,Lồng đèn trang trí
 56,39,Mùa giải PvP 3 kết thúc,Mùa giải PvP 7 kết thúc,pvp,Huy chương mùa giải,item:1055,20,0.05,1.0,25,1,1,Khung bậc mùa
 57,40,Ngày cộng đồng Charmander 2,Ngày cộng đồng Squirtle 2,cong_dong,Huy hiệu ngày cộng đồng,item:1053,20,0.05,1.0,25,1,1,Trang phục
-58,41,Phụ nữ Việt Nam 20/10,20/10: Sylveon,le_vn,Quà lễ Phụ nữ Việt Nam 20/10,item:1059,20,0.05,1.0,25,1,1,Ruy băng trang trí
+58,41,Phụ nữ Việt Nam 20/10,20/10: Sylveon,le_vn,Quà lễ Phụ nữ 20/10,item:1059,20,0.05,1.0,25,1,1,Ruy băng trang trí
 59,42,Tuần hệ Siêu linh,Tuần hệ Giác đấu,tuan_he,Tinh thể hệ,item:1052,20,0.05,1.0,25,1,1,Phiến đá
 60,43,Halloween: Gengar (tuần 1/2),Halloween: Mimikyu,mua,Bí ngô,thuoc:138,20,0.0375,1.5,25,1,1,Mặt nạ trang trí
 61,43,Halloween: Gengar (tuần 1/2),Halloween: Mimikyu,mua,Hộp quà halloween,thuoc:140,20,0.0375,1.5,25,1,1,Mặt nạ trang trí
@@ -64,9 +64,9 @@ stt,tuan,su_kien,su_kien_nam2,loai,vat_pham,anh_xa,so_luong_toi_da_tuan,gio_thu_
 63,44,Halloween: Gengar (tuần 2/2),Halloween: Mimikyu,mua,Hộp quà halloween,thuoc:140,20,0.0375,1.5,25,1,1,Mặt nạ trang trí
 64,45,Lễ hội Pokédex 2,Lễ hội Pokédex: Hoenn,pokemon,Tem nghiên cứu,item:1054,20,0.05,1.0,25,1,1,Danh hiệu
 65,46,Nhà giáo 20/11,20/11: thầy và trò,le_vn,Quà lễ Nhà giáo 20/11,item:1060,20,0.05,1.0,25,1,1,Danh hiệu người thầy
-66,47,Black Friday (giảm giá shop xu),Black Friday,mua,Phiếu giảm giá trang trí,item:1061,20,0.025,0.5,25,1,1,—
-67,48,Đột kích: Groudon & Kyogre,Đột kích: Kyogre & Groudon,dot_kich,Ngọc đỏ Groudon,item:1048,20,0.075,1.5,25,1,1,Ngọc lục/ngọc lam (khoá)
-68,49,Thế chiến vùng mùa đông,Thế chiến vùng,chien_vung,Cờ vùng,item:1056,20,0.05,1.0,25,1,1,Cờ vùng
+66,47,Black Friday (giảm giá cửa hàng xu),Black Friday,mua,Phiếu giảm giá trang trí,item:1061,20,0.025,0.5,25,1,1,—
+67,48,Đột kích: Groudon & Kyogre,Đột kích: Kyogre & Groudon,dot_kich,Ngọc đỏ Groudon,item:1048,20,0.075,1.5,25,1,1,"Ngọc đỏ Groudon, Ngọc lam Kyogre (khoá)"
+68,49,Chiến vùng mùa đông,Chiến vùng,chien_vung,Cờ vùng,item:1056,20,0.05,1.0,25,1,1,Cờ vùng
 69,50,Ngày cộng đồng Bulbasaur 2,Ngày cộng đồng Pichu 2,cong_dong,Huy hiệu ngày cộng đồng,item:1053,20,0.05,1.0,25,1,1,Trang phục
 70,51,Giáng sinh: Delibird,Giáng sinh: Abomasnow,le_vn,Hộp quà,thuoc:139,20,0.05,2.0,25,1,1,Mũ Noel trang trí
 71,51,Giáng sinh: Delibird,Giáng sinh: Abomasnow,le_vn,Sao vàng,thuoc:144,20,0.05,2.0,25,1,1,Mũ Noel trang trí

@@ -29,8 +29,8 @@ import com.htbb.pokemon.ThuongHieu;
  */
 public final class KiemHinhPokemon {
 
-    private static final String POKE = "ClientUnity/Assets/Resources/poke/";
-    private static final String GAME = "ClientUnity/Assets/Scripts/Game/";
+    private static final String POKE = "../client_pc_ios/ClientUnity/Assets/Resources/poke/";
+    private static final String GAME = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/";
 
     public static void chay() {
         Kiem.nhom("Hinh con sot + thuong hieu (G7.B/E: vat_the, NPC su kien, pet cu, ten game)");
@@ -43,8 +43,8 @@ public final class KiemHinhPokemon {
     // ------------------------------------------------------------------ B1
 
     private static void kiemVatThe() {
-        final List<String[]> quai = csv("docs/pokemon/bang_quai.csv");
-        final List<String[]> vt = csv("docs/pokemon/bang_vat_the.csv");
+        final List<String[]> quai = csv("../docs/pokemon/bang_quai.csv");
+        final List<String[]> vt = csv("../docs/pokemon/bang_vat_the.csv");
         Kiem.dung("co bang_quai.csv va bang_vat_the.csv", quai != null && vt != null);
         if (quai == null || vt == null) {
             return;
@@ -87,8 +87,8 @@ public final class KiemHinhPokemon {
     // ------------------------------------------------------------------ B2
 
     private static void kiemNpcSuKien() {
-        final List<String[]> bang = csv("docs/pokemon/bang_npc_su_kien.csv");
-        final List<String[]> vt = csv("docs/pokemon/bang_vat_the.csv");
+        final List<String[]> bang = csv("../docs/pokemon/bang_npc_su_kien.csv");
+        final List<String[]> vt = csv("../docs/pokemon/bang_vat_the.csv");
         final String cs = docChuoi(GAME + "Npc_Server.cs");
         Kiem.dung("co bang_npc_su_kien.csv va Npc_Server.cs", bang != null && cs != null && vt != null);
         if (bang == null || cs == null || vt == null) {
@@ -153,7 +153,7 @@ public final class KiemHinhPokemon {
     // ------------------------------------------------------------------ B3
 
     private static void kiemPetCu() {
-        final List<String[]> bang = csv("docs/pokemon/bang_pet_cu.csv");
+        final List<String[]> bang = csv("../docs/pokemon/bang_pet_cu.csv");
         final String cs = docChuoi(GAME + "AnimalMove.cs");
         final String map = docChuoi("src/real/Map.java");
         Kiem.dung("co bang_pet_cu.csv, AnimalMove.cs, Map.java", bang != null && cs != null && map != null);
@@ -196,7 +196,7 @@ public final class KiemHinhPokemon {
             final String s = docChuoi(GAME + f);
             Kiem.dung(f + " ve tieu de ThuongHieu", s != null && s.contains("ThuongHieu.veTieuDe("));
         }
-        final String xd = docChuoi("ClientUnity/Assets/Editor/XayDung.cs");
+        final String xd = docChuoi("../client_pc_ios/ClientUnity/Assets/Editor/XayDung.cs");
         Kiem.dung("XayDung.cs lay productName tu ThuongHieu", xd != null && xd.contains("ThuongHieu.tenSanPham()"));
     }
 

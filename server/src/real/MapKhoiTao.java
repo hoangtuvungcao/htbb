@@ -120,7 +120,7 @@ class MapKhoiTao {
 
             if (map.mapId == 17) {
                 Char bot = new Char(null);
-                bot.setInfoChar("Xa phu", -9, 2, 0, map, 1584, 864, (map.mapId + 2003) * -1, 25, 51, 77);
+                bot.setInfoChar("Pidgeot (Bay)", -9, 2, 0, map, 1584, 864, (map.mapId + 2003) * -1, 25, 51, 77);
                 bot.id = RealController.intance.idGen.getID(0, "Tao bot");
                 map.addPlayer(0, bot, 0);
                 map.addPlayer(1, bot, 0);

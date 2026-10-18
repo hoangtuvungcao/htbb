@@ -202,7 +202,7 @@ public class ListScr : MyScreen
 		{
 			if (type == TOP_CLAN)
 			{
-				Command command = new Command("Danh sách quản lý bang.");
+				Command command = new Command("Danh sách quản lý đội.");
 				ActionPerform action = () =>
 				{
 					GameService.gI().requestQuanLyBang(((ClanInfo)list.elementAt(selected)).id);
@@ -265,7 +265,7 @@ public class ListScr : MyScreen
 		{
 			if (((Char)list.elementAt(0)).idClan == Canvas.gameScr.mainChar.idClan)
 			{
-				Command command4 = new Command("Nhắn tin toàn bang");
+				Command command4 = new Command("Nhắn tin toàn đội");
 				ActionPerform action4 = () =>
 				{
 					ActionPerform ok = () =>
@@ -285,7 +285,7 @@ public class ListScr : MyScreen
 			}
 			if (((Char)list.elementAt(selected)).idClan == Canvas.gameScr.mainChar.idClan && (Canvas.gameScr.mainChar.isMaster == 0 || Canvas.gameScr.mainChar.isMaster == 1) && !((Char)list.elementAt(selected)).name.Equals(Canvas.gameScr.mainChar.name))
 			{
-				Command command5 = new Command("Mời khỏi bang");
+				Command command5 = new Command("Mời khỏi đội");
 				ActionPerform action5 = () =>
 				{
 					ActionPerform yesAction = () =>
@@ -296,7 +296,7 @@ public class ListScr : MyScreen
 						Canvas.endDlg();
 						setPos();
 					};
-					Canvas.startYesNoDlg("Bạn có chắc muốn mời " + ((Char)list.elementAt(selected)).name + " khỏi bang không ?", yesAction);
+					Canvas.startYesNoDlg("Bạn có chắc muốn mời " + ((Char)list.elementAt(selected)).name + " khỏi đội không ?", yesAction);
 				};
 				command5.action = action5;
 				mVector2.addElement(command5);
@@ -377,7 +377,7 @@ public class ListScr : MyScreen
 		}
 		if (type == MANAGER_LIST && nameManager == null)
 		{
-			nameManager = new string[3] { "Bang chủ", "Phó bang", "Trưởng lão" };
+			nameManager = new string[3] { "Đội trưởng", "Đội phó", "Cố vấn" };
 		}
 	}
 
@@ -476,7 +476,7 @@ public class ListScr : MyScreen
 			{
 				g.drawRegion(Res.imgNation, 0, clanInfo.nationID * 11, 11, 11, 0, 11 + num3 + 25 + width, i * height + 4, 0);
 			}
-			string text = "Bang chủ: " + clanInfo.master + " - Tiền: " + clanInfo.money + "xu - Thành viên: " + clanInfo.members;
+			string text = "Đội trưởng: " + clanInfo.master + " - Tiền: " + clanInfo.money + "xu - Thành viên: " + clanInfo.members;
 			if (i == selected)
 			{
 				int width2 = MFont.arialFontW.getWidth(text);

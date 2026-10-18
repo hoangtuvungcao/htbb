@@ -10,14 +10,14 @@ package game.pokemon;
  *   u8 coDongTacThat[6]
  * </pre>
  * Ban jar dung CHINH dinh dang nay cho tep res/pk/&lt;khoa&gt;.dl (sinh boi
- * j2me/tools/DongGoiPokeJ2me.java: khung da cat sat hinh, bot khung, moi dong tac mot anh rieng).
+ * client_jar/tools/DongGoiPokeJ2me.java: khung da cat sat hinh, bot khung, moi dong tac mot anh rieng).
  * Sau coDongTacThat, tep .dl cua jar co them phan mo rong u8 anhDongTac[6] (dong tac i dung anh
  * &lt;khoa&gt;_&lt;anhDongTac[i]&gt;.png), roi u16 caoTrenGoc (= caoKhung/2 + dyChan[0] cua dong tac dung
  * TRUOC khi cat khung, de dat ten tren dau giong Unity). Tep _dl cua Unity khong co phan nay:
  * anhDongTac[i] = i, caoTrenGoc = 0 (tinh tu khung).
  *
  * Lop nay CHI dung byte[] (khong lcdui) de kiem thu duoc bang JDK thuong
- * (j2me/tools/KiemPokeDuLieu.java doc het Resources/poke/*_dl.bytes cua HTBB).
+ * (client_jar/tools/KiemPokeDuLieu.java doc het Resources/poke/*_dl.bytes cua HTBB).
  */
 public class PokeDuLieu {
     public static final int DUNG = 0;
@@ -41,6 +41,14 @@ public class PokeDuLieu {
     public int[] anhDongTac = new int[SO_DONG_TAC];
     /** Phan mo rong cua ban jar: do cao dinh khung goc (chua cat) tren diem chan; 0 = khong co. */
     public int caoTrenGoc;
+    /**
+     * Phan mo rong cua ban jar (sau caoTrenGoc: u8 'N' roi moi dong tac 4 huong x soKhung x 8 byte, xem
+     * HTBB tools/pokemon/TinhNeoPoke.java): diem neo phu kien trang bi cua tung khung, so voi diem chan.
+     * neo[a][(huong * soKhung + khung) * 8 + i], i = dauX, dauY, dinhY, tayX, tayY, tamX, tamY, co.
+     * null = tep khong co (ban nhe): khong ve phu kien, chi vang sang mau (NgoaiHinhVe).
+     */
+    public byte[][] neo;
+    public static final int BYTE_NEO = 8;
 
     private static int u8(byte[] b, int p) {
         return b[p] & 0xFF;
@@ -118,6 +126,21 @@ public class PokeDuLieu {
             if (p + 2 <= b.length) {
                 kq.caoTrenGoc = u16(b, p);
                 p += 2;
+            }
+            if (p < b.length && b[p] == 'N') {
+                p++;
+                byte[][] neo = new byte[soDongTac][];
+                for (int i = 0; i < soDongTac; i++) {
+                    int n = 4 * kq.dongTac[i].soKhung * BYTE_NEO;
+                    if (p + n > b.length) {
+                        neo = null;
+                        break;
+                    }
+                    neo[i] = new byte[n];
+                    System.arraycopy(b, p, neo[i], 0, n);
+                    p += n;
+                }
+                kq.neo = neo;
             }
             return kq;
         } catch (ArrayIndexOutOfBoundsException e) {

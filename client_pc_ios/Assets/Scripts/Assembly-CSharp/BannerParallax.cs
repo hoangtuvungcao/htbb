@@ -2,60 +2,101 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Nền banner parallax cho các màn ngoài game (chọn máy chủ, đăng nhập / đăng ký, tạo / chọn Pokémon) ở
-/// chế độ Pokémon - thay cảnh bản đồ phía sau (ServerListScr.paintBg).
+/// Nền key art parallax cho các màn ngoài game (tải, chọn máy chủ, đăng nhập / đăng ký, tạo / chọn Pokémon) ở
+/// chế độ Pokémon - cùng một cảnh hoàng hôn với bản J2ME/Android (game.pokemon.Banner), website và ảnh quảng bá
+/// (client_jar/tools/tao_banner.py).
 ///
-/// Lớp ảnh: Resources/banner/ (chép từ htbb-client/shared/banner/ - BuildCli tự chép trước khi build nếu
-/// thư mục Resources/banner chưa có). Thứ tự / tốc độ đọc từ Resources/banner/lop.txt nếu có, mỗi dòng:
-///   ten_anh,toc_do_px_giay,do_sau(0..1)        vd: troi,0,0  |  may,6,0.15  |  doi,14,0.5  |  co,28,1
-/// Không có lop.txt: nạp lop0, lop1, ... (xa -> gần, tốc độ tăng dần). Không có lớp nào nhưng có ảnh
-/// ghép banner/banner (1920x1080): vẽ ảnh đó phủ màn + trôi nhẹ theo chuột. Không có gì: cảnh tự vẽ
-/// (trời, mây, núi xa, đồi, cỏ - BucVe) cùng hiệu ứng parallax.
-/// Mỗi lớp phóng theo chiều cao màn logic (giữ tỉ lệ), lặp ngang, trôi theo thời gian + lệch theo chuột
-/// (do_sau càng lớn càng lệch nhiều).
+/// Lớp ảnh: Resources/banner/*.bytes (PNG; BuildCli chép từ client_jar/shared/banner/lop/ + logo từ client_jar/shared/brand/).
+/// Thứ tự / chuyển động đọc từ Resources/banner/lop.txt, mỗi dòng: ten,toc_do_px_giay,do_sau(0..1),kieu
+///   kieu: phu = phủ màn (khung gốc 880x400, cắt giữa, hiện 360 px chiều cao) | lap = như phu nhưng lặp ngang + trôi
+///         | sang = lớp ánh sáng mềm (lọc mượt)
+/// Lớp "khoi_dau": vẽ 5 Pokémon khởi đầu bằng PokeBody (thở / chạy động tác đứng) theo đúng đội hình key art; chưa
+/// có sprite thì vẽ ảnh tĩnh. Thêm đom đóm lấp lánh. Chuột lệch tâm -> các lớp lệch theo do_sau.
+/// Không có lớp nào: cảnh tự vẽ đơn giản (trời, đồi, cỏ).
 /// </summary>
 public static class BannerParallax
 {
 	private sealed class Lop
 	{
+		public string ten;
+
 		public Image anh;
 
 		public float tocDo;
 
 		public float doSau;
 
-		/// <summary>true = phóng theo chiều cao màn; false = giữ cỡ gốc * tỉ lệ, neo đáy (lớp tự vẽ).</summary>
-		public bool phuCao = true;
-
-		public int yNeo;
-
-		public bool keoGian;
+		public string kieu = "phu";
 	}
+
+	/// <summary>Khung gốc của key art và vùng hiện (16:9 = x120 y20 640x360).</summary>
+	private const int GOC_W = 880;
+
+	private const int GOC_H = 400;
+
+	private const int HIEN_Y = 20;
+
+	private const int HIEN_H = 360;
+
+	/// <summary>Đội hình chữ V theo class 0..4 (khớp DOI_HINH trong tao_banner.py và Banner.java), px ở 1x.</summary>
+	private static readonly int[] DX = { -64, -124, 0, 64, 122 };
+
+	private static readonly int[] LUI = { 9, 20, 0, 9, 20 };
+
+	private static readonly int[] HUONG = { 3, 0, 0, 2, 0 };
+
+	private static readonly int[] THU_TU = { 1, 4, 0, 3, 2 };
+
+	/// <summary>Tâm đội hình và chân Pokémon gần nhất trong khung gốc (bo_cuc.json: cx, y_khoi).</summary>
+	private const int CX = 440;
+
+	private const int Y_KHOI = 344;
 
 	private static List<Lop> lop;
 
-	private static Image anhGhep;
+	private static Image logoAnh;
+
+	private static bool daNapLogo;
 
 	private static float lechChuot;
+
+	/// <summary>Pokémon khởi đầu đang chọn (0..4) - màn tạo / chọn Pokémon đặt; -1 = không.</summary>
+	public static int chon = -1;
 
 	public static bool bat()
 	{
 		return PokeBody.CHE_DO_POKEMON;
 	}
 
-	private static Image boc(Texture2D t)
+	private static Image napAnh(string ten)
 	{
-		if (t == null)
+		try
+		{
+			if (Resources.Load("banner/" + ten, typeof(TextAsset)) == null)
+			{
+				return null;
+			}
+			return Image.createImage("banner/" + ten);
+		}
+		catch (System.Exception)
 		{
 			return null;
 		}
-		t.wrapMode = TextureWrapMode.Clamp;
-		Image a = new Image();
-		UnityEngine.Object.Destroy(a.texture);
-		a.texture = t;
-		a.w = t.width;
-		a.h = t.height;
-		return a;
+	}
+
+	/// <summary>Logo wordmark (Resources/banner/logo - client_jar/shared/brand/logo_512.png); null nếu chưa chép.</summary>
+	public static Image logo()
+	{
+		if (!daNapLogo)
+		{
+			daNapLogo = true;
+			logoAnh = napAnh("logo");
+			if (logoAnh != null && logoAnh.texture != null)
+			{
+				logoAnh.texture.filterMode = FilterMode.Bilinear;
+			}
+		}
+		return logoAnh;
 	}
 
 	private static void nap()
@@ -78,171 +119,183 @@ public static class BannerParallax
 						continue;
 					}
 					string[] c = dong.Split(',');
-					Image a = boc(Resources.Load<Texture2D>("banner/" + c[0].Trim()));
+					Image a = napAnh(c[0].Trim());
 					if (a == null)
 					{
 						continue;
 					}
 					Lop l = new Lop();
+					l.ten = c[0].Trim();
 					l.anh = a;
 					l.tocDo = c.Length > 1 ? float.Parse(c[1].Trim(), System.Globalization.CultureInfo.InvariantCulture) : 0f;
 					l.doSau = c.Length > 2 ? float.Parse(c[2].Trim(), System.Globalization.CultureInfo.InvariantCulture) : 0f;
-					lop.Add(l);
-				}
-			}
-			else
-			{
-				for (int i = 0; i < 12; i++)
-				{
-					Image a = boc(Resources.Load<Texture2D>("banner/lop" + i));
-					if (a == null)
+					l.kieu = c.Length > 3 ? c[3].Trim() : "phu";
+					if (l.kieu == "sang" && a.texture != null)
 					{
-						break;
+						a.texture.filterMode = FilterMode.Bilinear;
 					}
-					Lop l = new Lop();
-					l.anh = a;
-					l.tocDo = i * 6f;
-					l.doSau = i * 0.12f;
 					lop.Add(l);
 				}
-			}
-			if (lop.Count == 0)
-			{
-				anhGhep = boc(Resources.Load<Texture2D>("banner/banner"));
 			}
 		}
 		catch (System.Exception e)
 		{
 			Debug.LogWarning("Banner: " + e.Message);
 		}
-		if (lop.Count == 0 && anhGhep == null)
-		{
-			taoCanhTuVe();
-		}
-	}
-
-	// ------------------------------------------------------------------ cảnh tự vẽ (chưa có ảnh banner)
-
-	private static void taoCanhTuVe()
-	{
-		// trời: dải dọc 1 px kéo giãn ngang
-		BucVe troi = new BucVe(1, 300);
-		for (int y = 0; y < 300; y++)
-		{
-			troi.setColor(GiaoDien.pha(0x4A90E2, 0xD6ECFA, y, 300));
-			troi.fillRect(0, y, 1, 1);
-		}
-		Lop lTroi = new Lop();
-		lTroi.anh = troi.taoAnh();
-		lTroi.keoGian = true;
-		lop.Add(lTroi);
-		// mây
-		BucVe may = new BucVe(640, 140);
-		veMay(may, 40, 30, 14);
-		veMay(may, 300, 70, 10);
-		veMay(may, 500, 20, 12);
-		lop.Add(lopTuVe(may.taoAnh(), 8f, 0.1f, 40));
-		// núi xa
-		BucVe nui = new BucVe(640, 180);
-		nui.setColor(0x8DB6D8);
-		nui.fillTriangle(-40, 180, 120, 30, 280, 180);
-		nui.fillTriangle(200, 180, 380, 10, 560, 180);
-		nui.fillTriangle(480, 180, 620, 60, 760, 180);
-		nui.setColor(0xF2F6FA);
-		nui.fillTriangle(102, 48, 120, 30, 138, 48);
-		nui.fillTriangle(358, 32, 380, 10, 402, 32);
-		lop.Add(lopTuVe(nui.taoAnh(), 4f, 0.2f, 230));
-		// đồi
-		BucVe doi = new BucVe(640, 200);
-		doi.setColor(0x58A848);
-		doi.fillArc(-160, 40, 520, 320, 0, 180);
-		doi.setColor(0x4E9A40);
-		doi.fillArc(220, 70, 560, 300, 0, 180);
-		lop.Add(lopTuVe(doi.taoAnh(), 12f, 0.45f, 330));
-		// cỏ gần
-		BucVe co = new BucVe(640, 110);
-		co.setColor(GiaoDien.LA);
-		co.fillRect(0, 10, 640, 100);
-		co.setColor(0x9AD870);
-		co.fillRect(0, 10, 640, 2);
-		co.setColor(0x68B840);
-		for (int y = 18; y < 110; y += 12)
-		{
-			for (int x = (y / 12 % 2) * 11; x < 640; x += 22)
-			{
-				co.fillRect(x, y, 2, 5);
-				co.fillRect(x + 3, y + 1, 2, 4);
-			}
-		}
-		lop.Add(lopTuVe(co.taoAnh(), 26f, 1f, 490));
-	}
-
-	private static Lop lopTuVe(Image a, float tocDo, float doSau, int yNeo)
-	{
-		Lop l = new Lop();
-		l.anh = a;
-		l.tocDo = tocDo;
-		l.doSau = doSau;
-		l.phuCao = false;
-		l.yNeo = yNeo;
-		return l;
-	}
-
-	private static void veMay(BucVe g, int x, int y, int s)
-	{
-		g.setColor(GiaoDien.TRANG);
-		g.fillArc(x, y, s * 2, s * 2 - 4, 0, 360);
-		g.fillArc(x + s, y - s / 2, s * 2 + 2, s * 2, 0, 360);
-		g.fillArc(x + s * 2 + 2, y + 1, s * 2 - 2, s * 2 - 6, 0, 360);
-		g.fillRect(x + s / 2, y + s, s * 3, s - 3);
 	}
 
 	// ------------------------------------------------------------------ vẽ
 
-	/// <summary>Vẽ nền banner phủ cả màn logic (thay ServerListScr.paintBg ở chế độ Pokémon).</summary>
+	/// <summary>Vẽ nền key art phủ cả màn logic (thay ServerListScr.paintBg ở chế độ Pokémon).</summary>
 	public static void ve(MyGraphics g)
+	{
+		ve(g, true);
+	}
+
+	public static void ve(MyGraphics g, bool veKhoiDau)
 	{
 		nap();
 		Canvas.resetTrans(g);
 		float t = Time.realtimeSinceStartup;
-		// chuột lệch khỏi tâm (-1..1), làm mượt
 		float muc = Screen.width > 0 ? Mathf.Clamp((Input.mousePosition.x / Screen.width) * 2f - 1f, -1f, 1f) : 0f;
 		lechChuot += (muc - lechChuot) * 0.08f;
-		if (anhGhep != null)
+		if (lop.Count == 0)
 		{
-			float tl = Mathf.Max((float)Canvas.w / anhGhep.w, (float)Canvas.h / anhGhep.h) * 1.04f;
-			int w = (int)(anhGhep.w * tl);
-			int h = (int)(anhGhep.h * tl);
-			int x = (Canvas.w - w) / 2 - (int)(lechChuot * (w - Canvas.w) / 2f);
-			g.drawImageScale(anhGhep, x, (Canvas.h - h) / 2, w, h, 0);
+			veTuVe(g);
 			return;
 		}
+		// 360 px gốc = chiều cao màn logic (600) -> ở 720p/1080p/1440p toàn màn là phóng nguyên lần 2/3/4
+		float s = (float)Canvas.h / HIEN_H;
+		int w = Mathf.CeilToInt(GOC_W * s);
+		int h = Mathf.CeilToInt(GOC_H * s);
+		int y0 = -Mathf.RoundToInt(HIEN_Y * s);
+		g.setColor(0x12163D);
+		g.fillRect(0, 0, Canvas.w, Canvas.h);
 		for (int i = 0; i < lop.Count; i++)
 		{
 			Lop l = lop[i];
-			if (l.anh == null)
+			int x0 = (Canvas.w - w) / 2 - (int)(lechChuot * 14f * s * l.doSau);
+			if (l.ten == "khoi_dau" && veKhoiDau)
+			{
+				if (!veKhoiDauSong(g, x0, y0, s))
+				{
+					g.drawImageScale(l.anh, x0, y0, w, h, 0);
+				}
+				veDomDom(g, x0, y0, s);
+				continue;
+			}
+			if (l.ten == "khoi_dau")
 			{
 				continue;
 			}
-			if (l.keoGian)
+			if (l.kieu == "lap")
 			{
-				g.drawImageScale(l.anh, 0, 0, Canvas.w, Canvas.h, 0);
+				int dich = (int)(t * l.tocDo * s) % w;
+				for (int x = x0 - dich - w; x < Canvas.w; x += w)
+				{
+					if (x + w > 0)
+					{
+						g.drawImageScale(l.anh, x, y0, w, h, 0);
+					}
+				}
 				continue;
 			}
-			float tl = l.phuCao ? (float)Canvas.h / l.anh.h : Canvas.h / 600f;
-			int w = Mathf.Max(1, (int)(l.anh.w * tl));
-			int h = (int)(l.anh.h * tl);
-			int y = l.phuCao ? 0 : (int)(l.yNeo * tl);
-			if (!l.phuCao && y + h < Canvas.h && i == lop.Count - 1)
+			g.drawImageScale(l.anh, x0, y0, w, h, 0);
+		}
+	}
+
+	/// <summary>5 Pokémon khởi đầu sống động theo đội hình; false nếu chưa vẽ được (thiếu sprite).</summary>
+	private static bool veKhoiDauSong(MyGraphics g, int x0, int y0, float s)
+	{
+		int tiLe = Mathf.RoundToInt(200f * s);
+		int tick = Canvas.gameTick;
+		for (int j = 0; j < THU_TU.Length; j++)
+		{
+			int i = THU_TU[j];
+			int dex = LoaiPokemonClient.khoiDau(i);
+			if (dex <= 0)
 			{
-				y = Canvas.h - h; // lớp gần nhất luôn chạm đáy màn
+				return false;
 			}
-			float dich = t * l.tocDo + lechChuot * 30f * l.doSau;
-			int x0 = -(int)(((dich % w) + w) % w);
-			for (int x = x0; x < Canvas.w; x += w)
+			int x = x0 + (int)((CX + DX[i]) * s);
+			int y = y0 + (int)((Y_KHOI - LUI[i]) * s);
+			// bóng chân
+			g.setColor(0x0E161E, 0.38f);
+			int bw = (int)(26 * s);
+			int bh = (int)(5 * s);
+			g.fillRect(x - bw / 2, y - bh / 2, bw, bh);
+			int dy = 0;
+			if (i == chon)
 			{
-				g.drawImageScale(l.anh, x, y, w, h, 0);
+				int k = (tick + i * 7) % 24;
+				dy = k < 12 ? -(int)((k < 6 ? k : 12 - k) * s) : 0;
+			}
+			if (!PokeBody.paint(g, dex, false, x, y + dy, HUONG[i], PokeDuLieu.DUNG, tick + i * 9, tiLe))
+			{
+				return false;
 			}
 		}
+		return true;
+	}
+
+	private static void veDomDom(MyGraphics g, int x0, int y0, float s)
+	{
+		int tick = Canvas.gameTick;
+		int tren = y0 + (int)(226 * s);
+		int cao = (int)(140 * s);
+		for (int i = 0; i < 18; i++)
+		{
+			int pha = (tick + i * 13) % 48;
+			if (pha >= 30)
+			{
+				continue;
+			}
+			int x = (i * 211 + tick * (2 + i % 3) / 4) % (Canvas.w + 40) - 20;
+			int y = tren + (i * 37 * 3) % cao + (pha < 15 ? pha : 30 - pha) / 2;
+			bool to = pha > 8 && pha < 22;
+			int c = (int)((to ? 2 : 1) * s * 1.5f);
+			g.setColor(to ? 0xFFF7B0 : 0xFFD070, to ? 0.95f : 0.7f);
+			g.fillRect(x, y, c, c);
+		}
+	}
+
+	/// <summary>Chưa có ảnh lớp: trời hoàng hôn + đồi + cỏ vẽ tay (cùng bảng màu key art).</summary>
+	private static void veTuVe(MyGraphics g)
+	{
+		int[] mau = { 0x12163D, 0x272462, 0x553384, 0xA4457F, 0xDE666B, 0xF99B5A, 0xFFD480 };
+		int chan = Canvas.h * 58 / 100;
+		for (int y = 0; y < chan; y += 4)
+		{
+			int p = y * (mau.Length - 1) * 100 / chan;
+			int i = p / 100;
+			g.setColor(GiaoDien.pha(mau[i], mau[Mathf.Min(i + 1, mau.Length - 1)], p % 100, 100));
+			g.fillRect(0, y, Canvas.w, 4);
+		}
+		g.setColor(0x5E4B8E);
+		g.fillRect(0, chan - 20, Canvas.w, 20);
+		g.setColor(0x3C6539);
+		g.fillRect(0, chan, Canvas.w, Canvas.h - chan);
+	}
+
+	/// <summary>
+	/// Vẽ logo wordmark canh giữa xTam trong khoảng [yTren, yDay] (rộng tối đa rongToiDa, giữ tỉ lệ). false nếu
+	/// chưa có ảnh logo.
+	/// </summary>
+	public static bool veLogo(MyGraphics g, int xTam, int yTren, int yDay, int rongToiDa)
+	{
+		Image a = logo();
+		if (a == null || a.w <= 0)
+		{
+			return false;
+		}
+		int w = Mathf.Min(rongToiDa, a.w);
+		int h = w * a.h / a.w;
+		if (h > yDay - yTren)
+		{
+			h = Mathf.Max(20, yDay - yTren);
+			w = h * a.w / a.h;
+		}
+		g.drawImageScale(a, xTam - w / 2, yTren, w, h, 0);
+		return true;
 	}
 }

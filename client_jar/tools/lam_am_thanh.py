@@ -3,7 +3,7 @@
 Sinh am thanh cho ban jar J2ME (Huyen Thoai Bao Boi): res/am/*.wav (SFX) + res/am/*.mid (nhac nen)
 va ban nhe res_nhe/am (chi SFX, it hon 60 KB).
 
-    python3 -P j2me/tools/lam_am_thanh.py <thu_muc_tai_ve> j2me/res/am j2me/res_nhe/am
+    python3 -P client_jar/tools/lam_am_thanh.py <thu_muc_tai_ve> client_jar/res/am client_jar/res_nhe/am
 
 <thu_muc_tai_ve>: noi giai nen cac goi Kenney (CC0, https://kenney.nl):
     kenney_interface-sounds/  kenney_impact-sounds/  kenney_rpg-audio/

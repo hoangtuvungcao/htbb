@@ -11,12 +11,13 @@
  * trận dội database.
  */
 export default defineAdminHandler(async (event, admin) => {
-  const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
+  const body = await bodyObj(event)
   const viec = str(body?.viec)
   const maMay = str(body?.ma_may)
 
   if (!tkMaMayHopLe(maMay)) throw apiLoi(400, 'Mã máy không hợp lệ.')
   if (viec !== 'cam' && viec !== 'bo_cam') throw apiLoi(400, 'Không hiểu thao tác.')
+  const lyDo = viec === 'cam' ? tkCatBot(chuoi(body?.ly_do, 'Lý do', 255, 3), 255) : ''
 
   if (viec === 'cam') {
     // Cấm nhầm một máy mà chính bạn đang ngồi thì mất luôn đường vào game — và web không
@@ -27,21 +28,23 @@ export default defineAdminHandler(async (event, admin) => {
     }
   }
 
+  let truoc: Record<string, unknown> | null = null
   try {
+    truoc = await q1(dbGame(), `SELECT ma_may, ly_do, boi_ai, luc FROM ${TK_BANG_CAM_MAY} WHERE ma_may = ? LIMIT 1`, [maMay])
     if (viec === 'cam') {
-      const lyDo = tkCatBot(str(body?.ly_do), 255)
       await exec(dbGame(),
         `INSERT INTO ${TK_BANG_CAM_MAY} (ma_may, ly_do, boi_ai)
          VALUES (?, ?, ?)
          ON DUPLICATE KEY UPDATE ly_do = VALUES(ly_do), boi_ai = VALUES(boi_ai)`,
         [maMay, lyDo, admin.username])
-      await ghiNhatKy(event, 'cam_may', maMay, lyDo)
-      return { loai: 'success', message: `Đã cấm máy ${maMay}. Có hiệu lực trong vòng 60 giây.` }
+    } else {
+      if (!truoc) return { loai: 'success', message: `Máy ${maMay} không bị cấm.` }
+      await exec(dbGame(), `DELETE FROM ${TK_BANG_CAM_MAY} WHERE ma_may = ?`, [maMay])
     }
-    await exec(dbGame(), `DELETE FROM ${TK_BANG_CAM_MAY} WHERE ma_may = ?`, [maMay])
-    await ghiNhatKy(event, 'bo_cam_may', maMay, '')
-    return { loai: 'success', message: `Đã bỏ cấm máy ${maMay}. Có hiệu lực trong vòng 60 giây.` }
   } catch (e: any) {
-    throw apiLoi(422, `Không thao tác được: ${e?.message ?? e}`)
+    console.error('[cammay]', e?.code ?? e)
+    throw apiLoi(422, 'Không thao tác được (lỗi cơ sở dữ liệu — xem log máy chủ web; bảng tob_cam_may có thể chưa được tạo).')
   }
+  await ghiThayDoi(event, viec === 'cam' ? 'cam_may' : 'bo_cam_may', `may:${maMay}`.slice(0, 100), truoc, viec === 'cam' ? { ma_may: maMay, ly_do: lyDo, boi_ai: admin.username } : null)
+  return { loai: 'success', message: viec === 'cam' ? `Đã cấm máy ${maMay}. Có hiệu lực trong vòng 60 giây.` : `Đã bỏ cấm máy ${maMay}. Có hiệu lực trong vòng 60 giây.` }
 })

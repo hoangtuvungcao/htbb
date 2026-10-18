@@ -83,66 +83,66 @@ public class SkillManager : MyHashTable
 	{
 		new SkillAnimate[9]
 		{
-			new Skill_Kiem_Type0(700),
-			new Skill_Kiem_Type1(),
-			new Skill_Kiem_Type2(),
-			new Skill_Kiem_Type3(0),
+			new Skill_DanhThuong(700),
+			new Skill_Charmander_Type1(),
+			new Skill_Charmander_Type2(),
+			new Skill_Charmander_Type3(0),
 			null,
 			null,
-			new Skill_Kiem_TypeAEO(4),
-			new Skill_Kiem_TypeAEO(5),
-			new Skill_Kiem_Type4()
+			new Skill_Charmander_TypeAEO(4),
+			new Skill_Charmander_TypeAEO(5),
+			new Skill_Charmander_Type4()
 		},
 		new SkillAnimate[9]
 		{
-			new Skill_Kiem_Type0(1200),
-			new Skill_Dao_Type1(),
-			new Skill_Dao_Type2(),
-			new Skill_Dao_Type3(0),
+			new Skill_DanhThuong(1200),
+			new Skill_Bulbasaur_Type1(),
+			new Skill_Bulbasaur_Type2(),
+			new Skill_Bulbasaur_Type3(0),
 			null,
 			null,
-			new Skill_Dao_TypeAEO(false),
-			new Skill_Dao_TypeAEO(true),
-			new Skill_Dao_Type4()
+			new Skill_Bulbasaur_TypeAEO(false),
+			new Skill_Bulbasaur_TypeAEO(true),
+			new Skill_Bulbasaur_Type4()
 		},
 		new SkillAnimate[11]
 		{
-			new Skill_Kiem_Type0(1000),
-			new Skill_Dua_Type1(),
-			new Skill_Dua_Type2(),
-			new Skill_Dua_Type3(0),
+			new Skill_DanhThuong(1000),
+			new Skill_Eevee_Type1(),
+			new Skill_Eevee_Type2(),
+			new Skill_Eevee_Type3(0),
 			null,
 			null,
 			null,
 			null,
-			new Skill_Dua_TypeAEO(false),
-			new Skill_Dua_TypeAEO(true),
-			new Skill_Dua_Type4(0)
+			new Skill_Eevee_TypeAEO(false),
+			new Skill_Eevee_TypeAEO(true),
+			new Skill_Eevee_Type4(0)
 		},
 		new SkillAnimate[9]
 		{
-			new Skill_Kiem_Type0(1500),
-			new Skill_Bua_Type1(),
-			new Skill_Bua_Type2(),
-			new Skill_Bua_Type3(0),
+			new Skill_DanhThuong(1500),
+			new Skill_Squirtle_Type1(),
+			new Skill_Squirtle_Type2(),
+			new Skill_Squirtle_Type3(0),
 			null,
 			null,
-			new Skill_Bua_TypeAEO(false),
-			new Skill_Bua_TypeAEO(true),
-			new Skill_Bua_Type4(0)
+			new Skill_Squirtle_TypeAEO(false),
+			new Skill_Squirtle_TypeAEO(true),
+			new Skill_Squirtle_Type4(0)
 		},
 		new SkillAnimate[10]
 		{
-			new Skill_Cung_Type0(),
-			new Skill_Cung_Type1(),
-			new Skill_Cung_Type2(),
-			new Skill_Cung_Type3(0),
+			new Skill_Pichu_Type0(),
+			new Skill_Pichu_Type1(),
+			new Skill_Pichu_Type2(),
+			new Skill_Pichu_Type3(0),
 			null,
 			null,
-			new Skill_Cung_TypeAEO(4, false, 2),
-			new Skill_Cung_TypeAEO(5, true, 2),
-			new Skill_Cung_Type4(0),
-			new Skill_Cung_TypeAEO(4, false, 5)
+			new Skill_Pichu_TypeAEO(4, false, 2),
+			new Skill_Pichu_TypeAEO(5, true, 2),
+			new Skill_Pichu_Type4(0),
+			new Skill_Pichu_TypeAEO(4, false, 5)
 		}
 	};
 

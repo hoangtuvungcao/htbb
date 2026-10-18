@@ -6,26 +6,25 @@
  */
 export default defineAdminHandler(async (event, admin) => {
   const id = nvIdTuRoute(event)
-  const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
+  const body = await bodyObj(event)
   const nv = await nvLayDeThaoTac(id)
   const ten = String(nv.charname)
 
   const chu = await nvChuNhan(Number(nv.userId))
-  if (chu !== '' && laTaiKhoanAdmin(chu)) {
-    throw apiLoi(403, `Nhân vật này thuộc tài khoản quản trị (${chu}) nên không xoá được.`)
+  if (chu !== '' && await ncLaQuanTri(chu)) {
+    throw apiLoi(403, `Pokémon này thuộc tài khoản quản trị (${chu}) nên không xoá được.`)
   }
   // Bỏ khoảng trắng hai đầu (lỡ dán thừa dấu cách), rồi so khớp đúng từng ký tự.
   if (str(body?.xac_nhan_ten) !== ten) {
-    throw apiLoi(400, `Gõ đúng tên nhân vật "${ten}" để xác nhận xoá.`)
+    throw apiLoi(400, `Gõ đúng tên Pokémon "${ten}" để xác nhận xoá.`)
   }
 
   const idLenh = await guiLenhXoaNhanVat(dbGame(), id, ten, admin.username)
   const lenh = await choKetQuaLenh(dbGame(), idLenh)
   const [loai, thongBao] = moTaKetQuaLenh(lenh, ten, 'xoá vĩnh viễn', LENH_LOAI_XOA_NHAN_VAT)
 
-  await ghiNhatKy(event, 'xoa_nhan_vat', ten,
-    `lệnh #${idLenh}: ${tenTrangThaiLenh(lenh ? Number(lenh.trang_thai) : -1)}`
-    + (lenh && lenh.ket_qua !== '' ? ` - ${lenh.ket_qua}` : ''))
+  await ghiThayDoi(event, 'xoa_nhan_vat', `nv:${ten}`, { id, charname: ten, userId: Number(nv.userId), chuTk: chu },
+    { lenh: idLenh, trangThai: tenTrangThaiLenh(lenh ? Number(lenh.trang_thai) : -1), ketQua: lenh?.ket_qua ?? '' })
 
   // Xoá xong thì nhân vật không còn nữa — trang về danh sách thay vì mở lại chi tiết
   // id này (sẽ ra "không tìm thấy nhân vật").

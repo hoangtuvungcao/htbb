@@ -18,7 +18,7 @@ import server.TeamServer;
 /**
  * LENH TU TRANG QUAN TRI WEB -> AP DUNG CHO NHAN VAT TRONG GAME.
  *
- * VI SAO CAN. Truoc 02/09/2026 trang web (web/admin/nhanvat.php) ghi THANG vao tob_char:
+ * VI SAO CAN. Truoc 02/09/2026 trang web (HTBB-Web /admin/nhanvat) ghi THANG vao tob_char:
  * "Dat cap do"/"Buff level" ghi lastLv/xp, "Xoa vat pham" cat chuoi equip/inven/bag. Voi nhan
  * vat dang online thi vo ich: ban trong RAM cua tien trinh game van la ban cu, lan tu luu ke
  * tiep (dinh ky hoac luc thoat) ghi de lai dung dong vua sua. Rieng cap do con khong an ca khi
@@ -36,10 +36,10 @@ import server.TeamServer;
  *                  lai, he thay nhan vat vao game thi cong nhu tren.
  *     - chi NANG cap: exp moi phai lon hon exp hien tai (xem duoi).
  *
- *   "nang level hang loat toan server" (web/admin/nang_level_toanbo.php) TAI SU DUNG dung
+ *   "nang level hang loat toan server" (HTBB-Web /admin/nang-level-toanbo) TAI SU DUNG dung
  *   loai dat_cap_do o tren cho MOI nhan vat, danh dau rieng bang cot tham_so = 'toanbo' de
  *   trang do liet ke dung lenh cua no (khong lan voi lenh dat_cap_do tung nhan vat mot cua
- *   nhanvat.php) - khong can them loai lenh moi vi dat_cap_do von da CHI NANG cap san.
+ *   trang Nhan vat) - khong can them loai lenh moi vi dat_cap_do von da CHI NANG cap san.
  *
  *   xoa_vat_pham (tham_so = "<cot>><mau>", cot = equip | inven | bag, mau = chuoi tho cua mon
  *   do dung nhu Item.getInfoSave() ghi xuong cot)
@@ -590,7 +590,7 @@ public final class LenhWeb implements Runnable {
      * song voi dong du lieu vua bi xoa that.
      *
      * GIOI HAN DA BIET (chua khoa, giong tinh than "khoa tai khoan khong da nguoi dang
-     * online ra ngay" da chap nhan o taikhoan.php): giua luc kickPlayer() ngat phien va
+     * online ra ngay" da chap nhan o trang Tai khoan (HTBB-Web /admin/taikhoan)): giua luc kickPlayer() ngat phien va
      * cac cau DELETE ben duoi chay xong, khong co gi chan CharManager.put() dang ky lai
      * mot phien MOI cho CUNG tai khoan neu ho dang nhap lai that nhanh dung luc do. Cua
      * so nay rat hep (chi bang thoi gian chay ~20 cau DELETE) va hau qua toi da chi la
@@ -636,7 +636,7 @@ public final class LenhWeb implements Runnable {
      * pInfo serialize sai co the hong ca nhan vat con lai), va moi bang log/lich su
      * (tob_log_*, tob_nap_xai_luong*, tob_qua*, tob_top_event*, tob_dau_gia*, tob_chien_truong,
      * tob_reg_chientruong...) - co y GIU LAI de con tra cuu duoc sau nay, giong cach
-     * giftcode.php giu nguyen giftcode_log khi xoa mot giftcode.
+     * trang Giftcode (HTBB-Web /admin/giftcode) giu nguyen giftcode_log khi xoa mot giftcode.
      */
     static String xoaNhanVatThat(final int charId) throws Exception {
         Connection conn = null;
@@ -844,7 +844,7 @@ public final class LenhWeb implements Runnable {
 
     /**
      * Tao bang neu chua co, va them cot tham_so neu bang duoc tao tu ban dau tien (chua co cot).
-     * Cung dinh nghia voi sql/them_bang_web_lenh_nhan_vat.sql va web/admin/inc/lenh_nhan_vat.php
+     * Cung dinh nghia voi sql/them_bang_web_lenh_nhan_vat.sql va HTBB-Web server/utils/lenhNhanVat.ts
      * (web cung tu tao, de ai chay truoc cung duoc).
      */
     static void taoBang() {

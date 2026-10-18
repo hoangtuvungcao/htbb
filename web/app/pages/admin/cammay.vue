@@ -7,8 +7,9 @@
  * Mã máy là SystemInfo.deviceUniqueIdentifier do client Unity gửi (Client/Canvas.cs:157),
  * KHÔNG phải MAC. Lệnh cấm có hiệu lực chậm nhất 60 giây (server làm mới danh sách mỗi phút).
  */
-import type { TableColumn } from '@nuxt/ui'
+import type { CotBang } from '~/components/admin/Bang.vue'
 import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
+import HoiLyDo from '~/components/admin/nguoichoi/HoiLyDo.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
@@ -33,6 +34,9 @@ const toast = useToast()
 const route = useRoute()
 const router = useRouter()
 const xacNhan = useOverlay().create(AdminTaikhoanXacNhan)
+const hoiLyDo = useOverlay().create(HoiLyDo)
+const me = useAdminMe()
+const duocCam = computed(() => me.duoc('/api/admin/cammay'))
 
 const qUrl = computed(() => (typeof route.query.q === 'string' ? route.query.q.trim() : ''))
 const tim = ref(qUrl.value)
@@ -50,17 +54,25 @@ function timKiem() {
 
 const dangLam = ref('')
 async function camHayBo(maMay: string, dangCam: boolean) {
-  const ok = await xacNhan.open({
-    title: `${dangCam ? 'Bỏ cấm' : 'Cấm'} máy ${maMay}?`,
-    nut: dangCam ? 'Bỏ cấm' : 'Cấm',
-    mau: dangCam ? 'primary' : 'error',
-  }).result
-  if (!ok) return
+  let lyDo = ''
+  if (dangCam) {
+    const ok = await xacNhan.open({ title: `Bỏ cấm máy ${maMay}?`, nut: 'Bỏ cấm', mau: 'primary' }).result
+    if (!ok) return
+  }
+  else {
+    const kq = await hoiLyDo.open({
+      title: `Cấm máy ${maMay}?`,
+      description: 'Mọi tài khoản đăng nhập từ máy này bị chặn (hiệu lực trong 60 giây). Máy dùng chung thì chặn cả nhóm.',
+      nut: 'Cấm máy', mau: 'error', toiDa: 255, goiY: ['Lập hàng loạt tài khoản phá game', 'Dùng bot / phần mềm thứ ba', 'Lừa đảo nhiều lần'],
+    }).result
+    if (!kq) return
+    lyDo = kq.lyDo
+  }
   dangLam.value = maMay
   try {
     const r = await api<{ message: string }>('/api/admin/cammay', {
       method: 'POST',
-      body: dangCam ? { viec: 'bo_cam', ma_may: maMay } : { viec: 'cam', ma_may: maMay, ly_do: 'cấm từ danh sách' },
+      body: dangCam ? { viec: 'bo_cam', ma_may: maMay } : { viec: 'cam', ma_may: maMay, ly_do: lyDo },
     })
     toast.add({ title: r.message, color: 'success', icon: 'i-lucide-check' })
     await refresh()
@@ -71,33 +83,32 @@ async function camHayBo(maMay: string, dangCam: boolean) {
   }
 }
 
-const giua = { th: 'text-right', td: 'text-right tabular-nums' }
-const cotTkCuaMay: TableColumn<TkCuaMay>[] = [
-  { accessorKey: 'username', header: 'Tài khoản' },
-  { accessorKey: 'ip', header: 'IP' },
-  { accessorKey: 'so_lan', header: 'Số lần', meta: { class: giua } },
-  { accessorKey: 'lan_dau', header: 'Lần đầu' },
-  { accessorKey: 'lan_cuoi', header: 'Lần cuối' },
+const cotTkCuaMay: CotBang[] = [
+  { key: 'username', label: 'Tài khoản', sort: true },
+  { key: 'ip', label: 'IP', sort: true },
+  { key: 'so_lan', label: 'Số lần', sort: true, so: true },
+  { key: 'lan_dau', label: 'Lần đầu', sort: true, anMobile: true },
+  { key: 'lan_cuoi', label: 'Lần cuối', sort: true },
 ]
-const cotMayCuaTk: TableColumn<MayCuaTk>[] = [
-  { accessorKey: 'ma_may', header: 'Mã máy' },
-  { accessorKey: 'ip', header: 'IP' },
-  { accessorKey: 'so_lan', header: 'Số lần', meta: { class: giua } },
-  { accessorKey: 'lan_cuoi', header: 'Lần cuối' },
-  { id: 'nut', header: '' },
+const cotMayCuaTk: CotBang[] = [
+  { key: 'ma_may', label: 'Mã máy', sort: true },
+  { key: 'ip', label: 'IP', sort: true, anMobile: true },
+  { key: 'so_lan', label: 'Số lần', sort: true, so: true },
+  { key: 'lan_cuoi', label: 'Lần cuối', sort: true, anMobile: true },
+  { key: 'nut', label: '' },
 ]
-const cotMayNhieu: TableColumn<MayNhieu>[] = [
-  { accessorKey: 'ma_may', header: 'Mã máy' },
-  { accessorKey: 'so_tk', header: 'Tài khoản', meta: { class: giua } },
-  { accessorKey: 'gan_nhat', header: 'Lần cuối' },
-  { id: 'nut', header: '' },
+const cotMayNhieu: CotBang[] = [
+  { key: 'ma_may', label: 'Mã máy', sort: true },
+  { key: 'so_tk', label: 'Tài khoản', sort: true, so: true },
+  { key: 'gan_nhat', label: 'Lần cuối', sort: true, anMobile: true },
+  { key: 'nut', label: '' },
 ]
-const cotCam: TableColumn<MayCam>[] = [
-  { accessorKey: 'ma_may', header: 'Mã máy' },
-  { accessorKey: 'ly_do', header: 'Lý do' },
-  { accessorKey: 'boi_ai', header: 'Bởi' },
-  { accessorKey: 'luc', header: 'Lúc' },
-  { id: 'nut', header: '' },
+const cotCam: CotBang[] = [
+  { key: 'ma_may', label: 'Mã máy', sort: true },
+  { key: 'ly_do', label: 'Lý do' },
+  { key: 'boi_ai', label: 'Bởi', sort: true, anMobile: true },
+  { key: 'luc', label: 'Lúc', sort: true, anMobile: true },
+  { key: 'nut', label: '' },
 ]
 </script>
 
@@ -108,16 +119,17 @@ const cotCam: TableColumn<MayCam>[] = [
         Cấm theo <strong class="text-highlighted">mã máy</strong> thay vì theo tài khoản. Gõ mã máy để xem nó đã dùng
         những tài khoản nào, hoặc gõ tên tài khoản để xem nó đăng nhập từ những máy nào.
       </p>
-      <form class="flex items-end gap-2" @submit.prevent="timKiem">
-        <UFormField label="Mã máy hoặc tên tài khoản" class="min-w-72">
-          <UInput v-model="tim" placeholder="dán mã máy, hoặc gõ tên tài khoản" icon="i-lucide-search" class="w-full" />
+      <form class="flex w-full flex-wrap items-end gap-2 sm:w-auto" @submit.prevent="timKiem">
+        <UFormField label="Mã máy hoặc tên tài khoản" class="min-w-0 flex-1 sm:min-w-72">
+          <UInput v-model="tim" maxlength="64" placeholder="dán mã máy, hoặc gõ tên tài khoản" icon="i-lucide-search" class="w-full" />
         </UFormField>
         <UButton type="submit" label="Tìm" />
         <UButton v-if="qUrl" to="/admin/cammay" color="neutral" variant="ghost" label="Bỏ lọc" />
       </form>
     </div>
 
-    <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" :title="loiApi(error)" />
+    <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" :title="loiApi(error)"
+      :actions="[{ label: 'Thử lại', color: 'error', variant: 'outline', onClick: () => refresh() }]" />
 
     <USkeleton v-else-if="status === 'pending' && !data" class="h-40" />
 
@@ -129,7 +141,7 @@ const cotCam: TableColumn<MayCam>[] = [
       title="Chưa có bảng dữ liệu."
     >
       <template #description>
-        <p>Chạy một lần trên máy chủ: <code>mysql -u root kpah_db &lt; sql/them_bang_cam_may.sql</code></p>
+        <p>Chạy một lần trên máy chủ: <code>mysql -u root htbb_db &lt; sql/them_bang_cam_may.sql</code></p>
         <p class="mt-1 text-xs">
           Lỗi đọc được: {{ data.loiDoc }}
         </p>
@@ -153,7 +165,7 @@ const cotCam: TableColumn<MayCam>[] = [
         <template #description>
           <p>
             1. Máy chủ chưa chạy bản jar có <code>CamTheoMay</code> — kiểm bằng:
-            <code>jar tf KPAH2_patched.jar | grep CamTheoMay</code>
+            <code>jar tf htbb-server.jar | grep CamTheoMay</code>
           </p>
           <p class="mt-1">
             2. <strong>Client chưa gửi mã máy</strong> — đây là nguyên nhân gần như chắc chắn. Client hiện chỉ gửi mã máy
@@ -182,6 +194,7 @@ const cotCam: TableColumn<MayCam>[] = [
               Máy này đã dùng {{ data.tkCuaMay.length }} tài khoản
             </h4>
             <UButton
+              v-if="duocCam"
               size="sm"
               :color="data.dangBiCam ? 'neutral' : 'error'"
               :variant="data.dangBiCam ? 'outline' : 'solid'"
@@ -190,50 +203,44 @@ const cotCam: TableColumn<MayCam>[] = [
               @click="camHayBo(qUrl, data.dangBiCam)"
             />
           </div>
-          <UTable :data="data.tkCuaMay" :columns="cotTkCuaMay">
-            <template #username-cell="{ row }">
-              <NuxtLink :to="{ path: '/admin/taikhoan', query: { q: row.original.username } }" class="text-primary hover:underline">
-                {{ row.original.username }}
+          <AdminBang :rows="data.tkCuaMay" :cot="cotTkCuaMay" ten-csv="tai-khoan-cua-may" rong-tieu-de="Không có tài khoản nào">
+            <template #cell-username="{ row }">
+              <NuxtLink :to="{ path: '/admin/nguoi-choi', query: { u: row.username } }" class="font-medium text-primary hover:underline">
+                {{ row.username }}
               </NuxtLink>
             </template>
-            <template #ip-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.ip }}</span>
+            <template #cell-ip="{ row }">
+              <span class="whitespace-nowrap font-mono text-xs text-muted">{{ row.ip }}</span>
             </template>
-            <template #so_lan-cell="{ row }">
-              {{ so(row.original.so_lan) }}
+            <template #cell-lan_dau="{ row }">
+              <span class="whitespace-nowrap text-xs text-muted">{{ row.lan_dau }}</span>
             </template>
-            <template #lan_dau-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lan_dau }}</span>
+            <template #cell-lan_cuoi="{ row }">
+              <span class="whitespace-nowrap text-xs text-muted">{{ row.lan_cuoi }}</span>
             </template>
-            <template #lan_cuoi-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lan_cuoi }}</span>
-            </template>
-          </UTable>
+          </AdminBang>
         </div>
 
         <div v-if="data.mayCuaTk.length" class="space-y-3" :class="{ 'mt-6': data.tkCuaMay.length }">
           <h4 class="font-medium text-highlighted">
             Tài khoản này đăng nhập từ {{ data.mayCuaTk.length }} máy
           </h4>
-          <UTable :data="data.mayCuaTk" :columns="cotMayCuaTk">
-            <template #ma_may-cell="{ row }">
-              <NuxtLink :to="{ path: '/admin/cammay', query: { q: row.original.ma_may } }" class="text-primary hover:underline">
-                <code>{{ row.original.ma_may }}</code>
+          <AdminBang :rows="data.mayCuaTk" :cot="cotMayCuaTk" ten-csv="may-cua-tai-khoan" rong-tieu-de="Không có máy nào">
+            <template #cell-ma_may="{ row }">
+              <NuxtLink :to="{ path: '/admin/cammay', query: { q: row.ma_may } }" class="text-primary hover:underline">
+                <code class="break-all">{{ row.ma_may }}</code>
               </NuxtLink>
             </template>
-            <template #ip-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.ip }}</span>
+            <template #cell-ip="{ row }">
+              <span class="whitespace-nowrap font-mono text-xs text-muted">{{ row.ip }}</span>
             </template>
-            <template #so_lan-cell="{ row }">
-              {{ so(row.original.so_lan) }}
+            <template #cell-lan_cuoi="{ row }">
+              <span class="whitespace-nowrap text-xs text-muted">{{ row.lan_cuoi }}</span>
             </template>
-            <template #lan_cuoi-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lan_cuoi }}</span>
+            <template #cell-nut="{ row }">
+              <UButton v-if="duocCam" size="xs" color="error" variant="soft" label="Cấm" :loading="dangLam === row.ma_may" @click="camHayBo(row.ma_may, false)" />
             </template>
-            <template #nut-cell="{ row }">
-              <UButton size="xs" color="error" variant="soft" label="Cấm" :loading="dangLam === row.original.ma_may" @click="camHayBo(row.original.ma_may, false)" />
-            </template>
-          </UTable>
+          </AdminBang>
         </div>
 
         <p v-if="!data.tkCuaMay.length && !data.mayCuaTk.length" class="text-sm text-muted">
@@ -242,7 +249,7 @@ const cotCam: TableColumn<MayCam>[] = [
       </UCard>
 
       <div class="grid items-start gap-4 xl:grid-cols-2">
-        <UCard :ui="{ body: 'p-0 sm:p-0' }">
+        <UCard :ui="{ body: 'p-3 sm:p-4' }">
           <template #header>
             <h3 class="font-semibold text-highlighted">
               Máy dùng nhiều tài khoản nhất
@@ -252,49 +259,40 @@ const cotCam: TableColumn<MayCam>[] = [
               chỗ kẻ lập hàng loạt tài khoản lộ ra.
             </p>
           </template>
-          <UTable :data="data.mayNhieuTk" :columns="cotMayNhieu" empty="Chưa có máy nào dùng từ 2 tài khoản trở lên.">
-            <template #ma_may-cell="{ row }">
-              <NuxtLink :to="{ path: '/admin/cammay', query: { q: row.original.ma_may } }" class="text-primary hover:underline">
-                <code class="break-all">{{ row.original.ma_may }}</code>
+          <AdminBang :rows="data.mayNhieuTk" :cot="cotMayNhieu" ten-csv="may-nhieu-tai-khoan" rong-tieu-de="Chưa có máy nào dùng từ 2 tài khoản trở lên">
+            <template #cell-ma_may="{ row }">
+              <NuxtLink :to="{ path: '/admin/cammay', query: { q: row.ma_may } }" class="text-primary hover:underline">
+                <code class="break-all">{{ row.ma_may }}</code>
               </NuxtLink>
             </template>
-            <template #so_tk-cell="{ row }">
-              {{ so(row.original.so_tk) }}
+            <template #cell-gan_nhat="{ row }">
+              <span class="whitespace-nowrap text-xs text-muted">{{ row.gan_nhat }}</span>
             </template>
-            <template #gan_nhat-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.gan_nhat }}</span>
+            <template #cell-nut="{ row }">
+              <UButton v-if="duocCam" size="xs" color="error" variant="soft" label="Cấm" :loading="dangLam === row.ma_may" @click="camHayBo(row.ma_may, false)" />
             </template>
-            <template #nut-cell="{ row }">
-              <UButton size="xs" color="error" variant="soft" label="Cấm" :loading="dangLam === row.original.ma_may" @click="camHayBo(row.original.ma_may, false)" />
-            </template>
-          </UTable>
+          </AdminBang>
         </UCard>
 
-        <UCard :ui="{ body: 'p-0 sm:p-0' }">
+        <UCard :ui="{ body: 'p-3 sm:p-4' }">
           <template #header>
             <h3 class="font-semibold text-highlighted">
               Đang bị cấm
             </h3>
           </template>
-          <UTable :data="data.dsCam" :columns="cotCam" empty="Chưa cấm máy nào.">
-            <template #ma_may-cell="{ row }">
-              <NuxtLink :to="{ path: '/admin/cammay', query: { q: row.original.ma_may } }" class="text-primary hover:underline">
-                <code class="break-all">{{ row.original.ma_may }}</code>
+          <AdminBang :rows="data.dsCam" :cot="cotCam" ten-csv="may-bi-cam" rong-tieu-de="Chưa cấm máy nào">
+            <template #cell-ma_may="{ row }">
+              <NuxtLink :to="{ path: '/admin/cammay', query: { q: row.ma_may } }" class="text-primary hover:underline">
+                <code class="break-all">{{ row.ma_may }}</code>
               </NuxtLink>
             </template>
-            <template #ly_do-cell="{ row }">
-              <span class="text-sm">{{ row.original.ly_do }}</span>
+            <template #cell-luc="{ row }">
+              <span class="whitespace-nowrap text-xs text-muted">{{ row.luc }}</span>
             </template>
-            <template #boi_ai-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.boi_ai }}</span>
+            <template #cell-nut="{ row }">
+              <UButton v-if="duocCam" size="xs" color="neutral" variant="outline" label="Bỏ cấm" :loading="dangLam === row.ma_may" @click="camHayBo(row.ma_may, true)" />
             </template>
-            <template #luc-cell="{ row }">
-              <span class="whitespace-nowrap text-xs text-muted">{{ row.original.luc }}</span>
-            </template>
-            <template #nut-cell="{ row }">
-              <UButton size="xs" color="neutral" variant="outline" label="Bỏ cấm" :loading="dangLam === row.original.ma_may" @click="camHayBo(row.original.ma_may, true)" />
-            </template>
-          </UTable>
+          </AdminBang>
         </UCard>
       </div>
 

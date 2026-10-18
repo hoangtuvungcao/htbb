@@ -86,7 +86,7 @@ public final class VatLieuSinhThai {
         dn(55, "Mảnh Đá Mặt Trăng", L_KHOANG, 60);
         dn(56, "Mảnh Đá Lá", L_KHOANG, 60);
         dn(57, "Mảnh Đá Băng", L_KHOANG, 60);
-        dn(58, "Mảnh sao", L_KHOANG, 120);
+        dn(58, "Đá sao rơi", L_KHOANG, 120); // khong trung "Mảnh sao" (item 1035, nang cap)
         dn(59, "Vảy tim", L_KHOANG, 50);
         // Hoa thach (60-69)
         dn(60, "Hoá thạch Vỏ ốc", L_HOA_THACH, 300);
@@ -114,6 +114,8 @@ public final class VatLieuSinhThai {
         dn(112, "Tượng đá Onix", L_TRANG_TRI, 800);
         dn(113, "Đèn lồng Chinchou", L_TRANG_TRI, 600);
         dn(114, "Bộ sưu tập hoá thạch", L_TRANG_TRI, 1500);
+        dn(115, "Bể san hô", L_TRANG_TRI, 250);           // KyNangSong.CONG_THUC 28
+        dn(116, "Tượng rồng Dratini", L_TRANG_TRI, 1000); // KyNangSong.CONG_THUC 29
     }
 
     public static boolean coMa(final int ma) {

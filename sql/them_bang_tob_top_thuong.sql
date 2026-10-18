@@ -2,10 +2,10 @@
 -- Bang `tob_top_thuong` - phat qua đua top tu trang quan tri web.
 --
 -- KHONG BAT BUOC CHAY TAY: ca server game (src/real/SuKienDuaTop.java) lan trang
--- web (web/admin/dua_top.php) deu tu CREATE TABLE IF NOT EXISTS. File nay co de
+-- web (HTBB-Web /admin/dua-top) deu tu CREATE TABLE IF NOT EXISTS. File nay co de
 -- chay tay truoc khi khoi dong lai server, hoac doi chieu ten cot.
 --
---     mysql -u root kpah_db < sql/them_bang_tob_top_thuong.sql
+--     mysql -u root htbb_db < sql/them_bang_tob_top_thuong.sql
 --
 -- VI SAO CAN (19/09/2026): truoc day "dua top" chi co mot co bat/tat rieng
 -- (SuKien.DUA_TOP_HOA_LU), khong gan voi phan thuong nao. Bang nay ghi tung dong
@@ -16,7 +16,7 @@
 -- Khong UNIQUE theo vi_tri: dua top lap lai nhieu dot, dong cua dot truoc (da
 -- nhan hay chua) van giu lai de tra cuu lich su.
 --
--- item: cung cu phap chuoi phan thuong voi giftcode (xem web/admin/inc/thuong.php
+-- item: cung cu phap chuoi phan thuong voi giftcode (xem HTBB-Web server/utils/giftcodeDanhMuc.ts
 -- va data/DatabaseGiftCode.applyItemString()), vd "ITEM:848:1000,GEM:73:100:-1".
 --
 -- item_chon (them 19/09/2026): phan thuong DE NGUOI CHOI TU CHON, cu phap
@@ -45,4 +45,4 @@ CREATE TABLE IF NOT EXISTS `tob_top_thuong` (
 
 -- Kiem tra lai: phai ra 1.
 SELECT COUNT(*) AS co_bang FROM information_schema.tables
- WHERE table_schema = 'kpah_db' AND table_name = 'tob_top_thuong';
+ WHERE table_schema = 'htbb_db' AND table_name = 'tob_top_thuong';

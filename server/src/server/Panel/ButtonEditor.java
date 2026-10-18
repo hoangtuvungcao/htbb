@@ -25,6 +25,22 @@ public class ButtonEditor extends DefaultCellEditor {
     private JTable table;
     private List<Object[]> rows;
     private int selectedRow;
+    // Bang dieu khien moi (server.quantri.TrangNguoiChoi) mo menu nay ngoai o bang: neo + toa do.
+    private Component neoMenu;
+    private int neoX, neoY;
+
+    /** Mo menu "Chinh sua" cho dong (chi so hien thi) cua bang, tai vi tri tren thanh phan neo. */
+    public void moMenu(int viewRow, Component neo, int x, int y) {
+        selectedRow = viewRow;
+        neoMenu = neo;
+        neoX = x;
+        neoY = y;
+        try {
+            showEditDialog();
+        } finally {
+            neoMenu = null;
+        }
+    }
 
     public ButtonEditor(JCheckBox checkBox, JTable table, List<Object[]> rows, AdminPanel adminPanel) {
         super(checkBox);
@@ -105,7 +121,7 @@ public class ButtonEditor extends DefaultCellEditor {
             public void actionPerformed(ActionEvent e) {
                 Char p = CharManager.instance.getCharByCharName(playerName);
                 if (p == null) {
-                    JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật!");
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon!");
                     return;
                 }
 
@@ -285,7 +301,7 @@ public class ButtonEditor extends DefaultCellEditor {
                         p.map.move2Map(p, x, y, mapId, p.inCountry);
                         JOptionPane.showMessageDialog(null, "Đã dịch chuyển " + playerName + " tới map " + mapId + " (" + x + ", " + y + ")");
                     } else {
-                        JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -296,7 +312,7 @@ public class ButtonEditor extends DefaultCellEditor {
         chestPassManageItem.addActionListener(e -> {
             Char player = CharManager.instance.getCharByCharName(playerName);
             if (player == null) {
-                JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật hoặc nhân vật đã offline!");
+                JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon hoặc Pokémon đã offline!");
                 return;
             }
 
@@ -418,7 +434,11 @@ public class ButtonEditor extends DefaultCellEditor {
         popup.add(teleportPlayerItem); // Thêm vào menu
         popup.add(chestPassManageItem);
 
-        popup.show(button, button.getWidth()/2, button.getHeight()/2);
+        if (neoMenu != null && neoMenu.isShowing()) {
+            popup.show(neoMenu, neoX, neoY);
+        } else {
+            popup.show(button, button.getWidth()/2, button.getHeight()/2);
+        }
         fireEditingStopped();
 
         buffExpItem.addActionListener(e -> {
@@ -473,7 +493,7 @@ public class ButtonEditor extends DefaultCellEditor {
         if (result == JOptionPane.OK_OPTION) {
             Char player = CharManager.instance.getCharByCharName(playerName);
             if (player == null) {
-                JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật hoặc nhân vật đã offline!");
+                JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon hoặc Pokémon đã offline!");
                 return;
             }
             if (typeBox.getSelectedIndex() == 0) {
@@ -555,7 +575,7 @@ public class ButtonEditor extends DefaultCellEditor {
             // Tìm player đang online
             Char player = CharManager.instance.getCharByCharName(playerName);
             if (player == null) {
-                JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật hoặc nhân vật đã offline!");
+                JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon hoặc Pokémon đã offline!");
                 return;
             }
 
@@ -607,7 +627,7 @@ public class ButtonEditor extends DefaultCellEditor {
     private void showInventoryTable(String playerName) {
         Char player = CharManager.instance.getCharByCharName(playerName);
         if (player == null) {
-            JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật hoặc nhân vật đã offline!");
+            JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon hoặc Pokémon đã offline!");
             return;
         }
 
@@ -916,7 +936,7 @@ public class ButtonEditor extends DefaultCellEditor {
 
         Char player = CharManager.instance.getCharByCharName(playerName);
         if (player == null) {
-            JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật!");
+            JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon!");
             return;
         }
 
@@ -1336,7 +1356,7 @@ public class ButtonEditor extends DefaultCellEditor {
                     adminPanel. addLog("Lỗi khi kick tài khoản: " + ex.getMessage());
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật hoặc nhân vật đã offline!");
+                JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon hoặc Pokémon đã offline!");
             }
         }
     }
@@ -1393,7 +1413,7 @@ public class ButtonEditor extends DefaultCellEditor {
                         JOptionPane.showMessageDialog(null, "Lỗi gửi thông báo: " + ex.getMessage());
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Không tìm thấy nhân vật hoặc nhân vật đã offline!");
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy Pokémon hoặc Pokémon đã offline!");
                 }
             }
         }

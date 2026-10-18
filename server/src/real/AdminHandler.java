@@ -33,7 +33,8 @@ public class AdminHandler implements ICommandHandler {
             }
             final String lenh = message.dis.readUTF();
             // Nhat ky kiem toan lenh quan tri (AdminChat*.txt da nam trong .gitignore).
-            Logger.logStringWithDate("cmd47 user=" + session.username + " ip=" + session.ip + " lenh=" + lenh, "AdminChat_lenh47.txt");
+            Logger.logStringWithDate("cmd47 user=" + com.htbb.log.Nhat.sach(session.username) + " ip=" + session.ip + " lenh=" + com.htbb.log.Nhat.sach(lenh), "AdminChat_lenh47.txt");
+            com.htbb.log.Nhat.kiemToan("ADMIN", "cmd47 user=" + session.username + " ip=" + session.ip + " lenh=" + lenh);
             final String st = this.processAdminCommand(lenh);
             final Message m = new Message(47);
             m.dos.writeUTF(st);

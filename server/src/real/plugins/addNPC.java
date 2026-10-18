@@ -27,7 +27,7 @@ public class addNPC {
         }
          if (Char.isSuKienTet2017()) {
              if (player.mapID == 0 || player.mapID == 301 || player.mapID == 302 || player.mapID == 303 || player.mapID == 304 || player.mapID == 70 || player.mapID == 1701 || player.mapID == 1702 || player.mapID == 1703 || player.mapID == 1704 || player.mapID == 80 || player.mapID == 1901 || player.mapID == 1902 || player.mapID == 1903 || player.mapID == 1904) {
-             player.sendMessage(MessageCreator.createMsgNpc("Nhà Vua", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 28, 31, 2, 14, -49, (byte) 1));
+             player.sendMessage(MessageCreator.createMsgNpc("Meowth", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 28, 31, 2, 14, -49, (byte) 1));
          }
          }    
         if (Char.isSuKienGioTo2016()) {

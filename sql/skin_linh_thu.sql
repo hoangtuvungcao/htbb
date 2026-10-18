@@ -4,7 +4,7 @@
 --
 --  Mac vat pham nay vao O DAU TIEN BEN PHAI bang "Trang bi thu" thi con linh thu dang
 --  cuoi doi hinh, doi hoat anh va doi cach di chuyen. CHI SO cua con linh thu khong doi
---  mot chut nao — skin chi ghi de o tang dong goi tin, xem src/real/SkinLinhThu.java.
+--  mot chut nao — skin chi ghi de o tang dong goi tin, xem src/real/SkinThuCuoi.java.
 --
 --  Chay mot lan tren may chu, roi khoi dong lai server (bang template item duoc nap luc
 --  bat may):
@@ -15,15 +15,15 @@
 --  PHAI CHAY CA TEP THU HAI. Tep nay chi dat TEN NGAN. Tep thu hai ghi de bang ten day
 --  du kem MO TA (he ngu hanh + cac dong noi tai) — cot `name` cua game nay vua la ten
 --  vua la mo ta, khong co cot mo ta rieng cho do mac duoc. Tep do DUOC SINH RA tu chinh
---  cac bang so trong SkinLinhThu.java (xem tools/SinhSqlTenSkinThu.java) nen so nguoi
+--  cac bang so trong SkinThuCuoi.java (xem tools/SinhSqlTenSkinThu.java) nen so nguoi
 --  choi doc duoc luon dung bang so game dung.
 --
 -- -------------------------------------------------------------------------------------
 --  CAC GIA TRI PHAI KHOP VOI CODE — doi o day thi phai doi ca ben kia
 -- -------------------------------------------------------------------------------------
---   id      905..909, 911  <-> real.SkinLinhThu.ID_ITEM (910 la Phi phong vo hinh, khac
+--   id      905..909, 911  <-> real.SkinThuCuoi.ID_ITEM (910 la Phi phong vo hinh, khac
 --                         tinh nang - 911 duoc chon de bo qua id do)
---   type    30        <-> real.SkinLinhThu.TYPE_ITEM
+--   type    30        <-> real.SkinThuCuoi.TYPE_ITEM
 --                         Bang "Trang bi thu" ben client co bang thu tu o co dinh
 --                         idWearAnimal = {18,30,14,31,15,32,16,33,17,34}; o dau tien ben
 --                         phai ung voi type 30.
@@ -46,7 +46,7 @@
 --
 --  Id 905..909, 911 la 6 id trong: data_item hien co dung 904 dong, id 1..904 lien tuc,
 --  910 la Phi phong vo hinh (khac tinh nang). Neu may chu cua ban da co san cac id nay
---  thi doi sang id trong khac VA sua SkinLinhThu.ID_ITEM cho khop, roi build lai.
+--  thi doi sang id trong khac VA sua SkinThuCuoi.ID_ITEM cho khop, roi build lai.
 --
 -- -------------------------------------------------------------------------------------
 --  Y NGHIA CAC COT DAT O DAY

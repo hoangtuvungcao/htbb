@@ -18,7 +18,7 @@ export default defineAdminHandler(async (event) => {
     throw apiLoi(500, `Không thao tác được (kiểm tra bảng 5h_systems): ${e?.message ?? e}`)
   }
   if (n > 0) {
-    await ghiNhatKy(event, 'server_restart_ngay', 'kpah-game', '')
+    await ghiNhatKy(event, 'server_restart_ngay', 'htbb-game', '')
     return {
       ok: true,
       message: 'Đã ghi cờ khởi động lại — server sẽ tự lưu dữ liệu và khởi động lại trong khoảng 10-15 giây (chỉ có tác dụng khi server đang chạy).',

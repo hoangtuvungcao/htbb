@@ -74,9 +74,9 @@ public class BangAuto : MyScreen
 
 	public int pa;
 
-	private string[] optionFC = new string[5] { "Chế độ thường", "Đánh quái ", "Chọn NPC", "Chế độ chiếm thành", "Chế độ quốc chiến" };
+	private string[] optionFC = new string[5] { "Chế độ thường", "Đánh quái ", "Chọn NPC", "Chế độ chiếm Gym", "Chế độ chiến vùng" };
 
-	private string[] optionDetail = new string[5] { "Chọn toàn bộ", "Chỉ chọn quái, người trong chế độ đồ sát và khác quốc gia ", "Chỉ chọn NPC", "Chỉ chọn người khác bang", "Chỉ người khác nước" };
+	private string[] optionDetail = new string[5] { "Chọn toàn bộ", "Chỉ chọn quái, người trong chế độ PK và khác vùng ", "Chỉ chọn NPC", "Chỉ chọn người khác đội", "Chỉ người khác nước" };
 
 	private string[] info;
 
@@ -243,44 +243,29 @@ public class BangAuto : MyScreen
 		}
 	}
 
+	/// <summary>
+	/// Auto gốc của game (đánh / bơm máu không qua máy chủ) đã thay bằng Tự động đánh CHÍNH THỨC (TuDong, máy chủ
+	/// điều khiển giờ / nhịp / vùng): mọi lựa chọn ở đây mở bảng Tự động đánh.
+	/// </summary>
 	public void setOptionAuto(int i)
 	{
 		isAutoFire = false;
 		isAll = false;
 		isAutoMHP = false;
-		switch (i)
+		GameScr.autoFight = false;
+		GameScr.autoBomHMP = false;
+		GameScr.saveAutoFight = false;
+		try
 		{
-		case 0:
-			isAutoFire = true;
-			GameScr.autoFight = true;
-			GameScr.autoBomHMP = false;
-			break;
-		case 1:
-			isAutoMHP = true;
-			GameScr.autoFight = false;
-			GameScr.autoBomHMP = true;
-			break;
-		case 2:
-			isAll = true;
-			GameScr.autoFight = true;
-			GameScr.autoBomHMP = true;
-			break;
-		default:
-			GameScr.autoFight = false;
-			GameScr.autoBomHMP = false;
-			break;
+			bomHp = int.Parse(tfHp.getText());
+			bomMp = int.Parse(tfMp.getText());
 		}
-		GameScr.saveAutoFight = GameScr.autoFight;
-		bomHp = int.Parse(tfHp.getText());
-		bomMp = int.Parse(tfMp.getText());
-		tgDelay = (int)(mSystem.currentTimeMillis() / 100) + 10;
-		GameScr.timeDelayHpMp = (int)(mSystem.currentTimeMillis() / 1000) + 1;
+		catch (Exception)
+		{
+			// giữ ngưỡng cũ
+		}
 		Canvas.gameScr.switchToMe();
-		if (GameScr.autoFight)
-		{
-			Canvas.gameScr.mainChar.lastXAuto = Canvas.gameScr.mainChar.x;
-			Canvas.gameScr.mainChar.lastYAuto = Canvas.gameScr.mainChar.y;
-		}
+		BangTuDong.mo();
 	}
 
 	private void doCheck()
@@ -682,7 +667,7 @@ public class BangAuto : MyScreen
 	{
 		if (Char.skillLevelLearnt[focus] == -1)
 		{
-			Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+			Canvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
 			return;
 		}
 		bool flag = false;

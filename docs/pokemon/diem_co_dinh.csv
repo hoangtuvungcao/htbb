@@ -47,7 +47,7 @@
 80;28;33;32;37;;hoi sinh
 80;19;47;23;51;;hoi sinh
 80;12;24;22;43;;doReturnVillage/MapDoMenu (dung tho tren 80)
-80;28;24;28;24;;MapBangHoi
+80;28;24;28;24;;MapDoi
 # --- Ban do khac (NPC hoa tieu, boss, diem den, su kien)
 105;11;17;11;17;;nhan vat moi bat dau
 1;53;19;53;19;;boss su kien
@@ -118,7 +118,7 @@
 107;20;11;23;14;;diem den
 111;22;25;22;25;;Dracula/NguoiTuyet
 25;22;25;22;25;;Dracula/NguoiTuyet
-112;27;10;27;13;;BossThanLan + ThanLan
+112;27;10;27;13;;BossDotKich + ThanLan
 118;55;20;55;20;;dich tram NPC
 118;46;40;46;40;;cong dich chuyen (createMsgNpc 736,640)
 117;37;28;41;36;;diem den + dang nhap
@@ -253,3 +253,64 @@
 41;42;6;46;9;;vung sang 42
 41;52;6;56;9;;vung sang 42
 41;9;6;9;6;;charCopy NPC
+# --- Vung Hoenn (nam 2, BanDoHoenn): diem nhiem vu (sinh_nhiem_vu.py diem=<n>, thu tu = n)
+43;17;14;17;14;;hoenn: buc thu cu (tim vat an C53)
+43;39;32;39;32;;hoenn: cau tau Littleroot
+44;21;26;21;26;;hoenn: goc cay co thu (rung Petalburg)
+44;50;42;50;42;;hoenn: vuon trong
+45;15;35;15;35;;hoenn: xuong che tao Rustboro
+45;45;36;45;36;;hoenn: hom tro cu (tim vat an C55)
+46;28;28;28;28;;hoenn: bai cat Dewford
+46;56;22;56;22;;hoenn: moc da
+47;16;16;16;16;;hoenn: cho ben cang (C57)
+47;46;37;46;37;;hoenn: bao tang hai duong (C58)
+47;19;39;19;39;;hoenn: vo so (tim vat an C58)
+48;25;31;25;31;;hoenn: tram nghi chan Route 110
+48;22;68;22;68;;hoenn: duong dua xe dap
+49;18;39;18;39;;hoenn: san thi do vui Mauville
+49;43;39;43;39;;hoenn: vach dich duong dua
+50;27;24;27;24;;hoenn: coi cat cu (dao C59)
+50;58;42;58;42;;hoenn: cot da sa mac (dao C63)
+50;45;15;45;15;;hoenn: o gio cat
+51;14;37;14;37;;hoenn: bep suoi nong Lavaridge
+51;42;37;42;37;;hoenn: Gym Lavaridge
+52;40;18;40;18;;hoenn: mieng nui Chimney (tim vat an C62)
+52;24;46;24;46;;hoenn: cap treo cu
+53;21;30;21;30;;hoenn: vuon rung mua (C67)
+53;39;70;39;70;;hoenn: cay tropius
+54;18;38;18;38;;hoenn: nha tren cay - diem hen (C65)
+54;43;38;43;38;;hoenn: Gym Fortree
+55;63;18;63;18;;hoenn: Vien Thoi tiet (C66)
+55;27;42;27;42;;hoenn: cau vong
+56;19;16;19;16;;hoenn: cho lon Lilycove (C69)
+56;46;37;46;37;;hoenn: bai bien Lilycove
+56;18;39;18;39;;hoenn: le hoi Hoenn (C80)
+57;30;24;30;24;;hoenn: dinh nui Pyre - dien tho (C70)
+57;21;52;21;52;;hoenn: nghia trang
+57;39;60;39;60;;hoenn: cua ngo suong
+58;27;33;27;33;;hoenn: dao cat Route 124
+58;63;18;63;18;;hoenn: vung nuoc sau
+59;17;38;17;38;;hoenn: trung tam vu tru Mossdeep (C71)
+59;43;38;43;38;;hoenn: bai da
+60;14;45;14;45;;hoenn: bo ho - cho nghi mua (C75)
+60;50;45;50;45;;hoenn: san kho han (C76)
+61;31;28;31;28;;hoenn: bai da Route 131
+61;63;20;63;20;;hoenn: bia dao Thap Troi
+62;17;42;17;42;;hoenn: cho le hoi sau chien (C79)
+62;43;42;43;42;;hoenn: cong thac nuoc
+160;18;18;18;18;;hoenn: buc ve co Rayquaza (C56)
+160;42;20;42;20;;hoenn: ngach sau
+161;21;22;21;22;;hoenn: chan thac Meteor
+161;49;36;49;36;;hoenn: ho ngam
+162;19;25;19;25;;hoenn: ngoc trai (C72)
+162;45;31;45;31;;hoenn: bai da ngap
+163;18;18;18;18;;hoenn: long hang Khoi Nguyen (C74)
+163;24;45;24;45;;hoenn: bo ho sau
+164;18;28;18;28;;hoenn: tang do nat (tim vat an C77)
+164;32;49;32;49;;hoenn: cau thang da
+165;24;22;24;22;;hoenn: bai da Victory
+165;56;36;56;36;;hoenn: ngach cat
+280;22;18;22;18;;hoenn: dinh thap - noi Rayquaza ngu (C78)
+281;18;22;18;22;;hoenn: san dau Tu Thien Vuong 1
+281;42;22;42;22;;hoenn: san dau Tu Thien Vuong 2
+282;20;16;20;16;;hoenn: san nha vo dich

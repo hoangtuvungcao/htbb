@@ -143,7 +143,7 @@ public class CatSpriteSheet {
         }
         g.dispose();
 
-        final File png = new File((raAvt ? "map/avtathu/" : raPet ? "map/pet/" : "map/d_effect/") + idDich + ".png");
+        final File png = new File((raAvt ? "server/map/avtathu/" : raPet ? "server/map/pet/" : "server/map/d_effect/") + idDich + ".png");
         ImageIO.write(dai, "png", png);
         if (raPet || raAvt) {
             // Hinh pet KHONG can file data: client tu chia dai theo so frame

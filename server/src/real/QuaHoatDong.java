@@ -42,7 +42,7 @@ public final class QuaHoatDong {
                 d = cu;
             }
         }
-        final int hom = NangLuong.ngay(System.currentTimeMillis());
+        final int hom = NangLuong.ngay(com.htbb.pokemon.DongHo.bay());
         synchronized (d) {
             if (d[0] != hom) {
                 d[0] = hom;
@@ -62,7 +62,7 @@ public final class QuaHoatDong {
         if (!LauDai.bat() || p == null || p.isBot != -1) {
             return;
         }
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         final Long truoc = LAN_CUOI.put(Integer.valueOf(p.userID), Long.valueOf(bay));
         final int g = QuaHoatDongLogic.congGiay(truoc == null ? 0L : truoc.longValue(), bay);
         if (g <= 0) {
@@ -92,7 +92,7 @@ public final class QuaHoatDong {
         if (d == null) {
             return;
         }
-        final int hom = NangLuong.ngay(System.currentTimeMillis());
+        final int hom = NangLuong.ngay(com.htbb.pokemon.DongHo.bay());
         final int thangNay = hom / 100;
         final int[] kq;
         boolean thuongThang = false;
@@ -116,6 +116,12 @@ public final class QuaHoatDong {
         }
         luu(p.userID, d); // danh dau truoc, phat sau
         p.addLuongLock(kq[1]);
+        // Tang toc (ban khoa, TangToc): ngay 3 -> 1 Ve EXP x1,5, ngay 7 -> 1 Bua the luc.
+        if (kq[0] == 3) {
+            TangTocGame.thuongKhoa(p, com.htbb.pokemon.TangToc.VE_15, 1, "lich dang nhap ngay 3");
+        } else if (kq[0] == 0) {
+            TangTocGame.thuongKhoa(p, com.htbb.pokemon.TangToc.BUA, 1, "lich dang nhap ngay 7");
+        }
         NhiemVuEngine.suKien(p, "dang_nhap", "", 1);
         LauDaiNhanVat.bao(p, "Lịch đăng nhập: nhận " + kq[1] + " lượng khoá (ngày " + (kq[0] == 0 ? 7 : kq[0]) + "/7)."
                 + (kq[2] == 1 ? " Chuỗi đã bắt đầu lại do nghỉ quá 1 ngày." : ""));
@@ -147,6 +153,10 @@ public final class QuaHoatDong {
 
     /** Nhan moc {@code i} (kiem lai tat ca o day). */
     static String nhan(final Char p, final int i) {
+        final String chanTv = com.htbb.pokemon.ThanhVien.chan(p, "qua_online"); // thanh vien: qua online
+        if (chanTv != null) {
+            return chanTv;
+        }
         if (i < 0 || i >= QuaHoatDongLogic.MOC_PHUT.length) {
             return "Mốc không hợp lệ.";
         }

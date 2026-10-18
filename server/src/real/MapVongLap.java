@@ -104,9 +104,9 @@ class MapVongLap {
                 }
 
                 if (MapChienTruongMoba.isDayChienTruong()) {
-                    String info = "Chiến trường chính tà sẽ mở vào 21h dành cho nhân vật có cấp độ dưới 70. Nhanh chân đến NPC Đấu Trường đăng ký trước 21h";
+                    String info = "Chiến trường liên vùng sẽ mở vào 21h dành cho Pokémon có cấp độ dưới 70. Nhanh chân đến NPC Đấu Trường đăng ký trước 21h";
                     if (UtilHTBB.isSunday()) {
-                        info = "Chiến trường chính tà sẽ mở vào 21h dành cho nhân vật có cấp độ từ 70 trở lên. Nhanh chân đến NPC Đấu Trường đăng ký trước 21h";
+                        info = "Chiến trường liên vùng sẽ mở vào 21h dành cho Pokémon có cấp độ từ 70 trở lên. Nhanh chân đến NPC Đấu Trường đăng ký trước 21h";
                     }
 
                     Message m = MessageCreator.createMsgChat(((Char) Map.npcVilage.get(3)).id, info);
@@ -181,7 +181,7 @@ class MapVongLap {
 
                 if (MapLoiDai.isRunLoiDai()) {
                     Message m = MessageCreator.createMsgChat(
-                            ((Char) Map.npcVilage.get(8)).id, "Lôi đài sẽ bắt đầu vào " + MapLoiDai.HOUR_LOI_DAI + "h " + MapLoiDai.start_minute + "p"
+                            ((Char) Map.npcVilage.get(8)).id, "Sàn đấu sẽ bắt đầu vào " + MapLoiDai.HOUR_LOI_DAI + "h " + MapLoiDai.start_minute + "p"
                     );
                     Map map = (Map) RealController.mapList.get(70);
                     map.sendAllCharMap(m, 0, 0);
@@ -302,7 +302,7 @@ class MapVongLap {
                             ((Char) CharManager.instance.vChars.elementAt(ix))
                                     .sendMessage(MessageCreator.createMsgStartGetTown(((Char) CharManager.instance.vChars.elementAt(ix)).inCountry));
                             ((Char) CharManager.instance.vChars.elementAt(ix))
-                                    .sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hết thời gian chiếm thành. Chưa có bang hội nào chiếm được thành"));
+                                    .sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hết thời gian chiếm Gym. Chưa có đội nào chiếm được Gym"));
                         } catch (Exception var10) {
                         }
                     }
@@ -413,21 +413,17 @@ class MapVongLap {
 
                         if (players.size() > 0 && (Map.isNewVersion ? !mt.isDead : !mt.isDead && (mt.moved || mt.isMonsterVantieu()))) {
                             Char fp = null;
+                            int luonThem = -1; // xem Region: tinh mot lan moi quai
 
                             for (int ix = 0; ix < players.size(); ix++) {
                                 try {
                                     Char p = (Char) players.get(ix);
                                     if (p.isBot == -1) {
                                         if (p.near(mt, p.rangeAddMonster[0])
-                                                || mt.allWayAdd()
-                                                || mt.isBoss
-                                                || mt.idTemplate == 84
-                                                || mt.idTemplate == 90
-                                                || mt.idTemplate == 36
-                                                || mt.idTemplate == 37
-                                                || map.mapIDLoadMap == 201) {
+                                                || (luonThem >= 0 ? luonThem == 1 : (luonThem = (mt.allWayAdd() || mt.isBoss || mt.idTemplate == 84 || mt.idTemplate == 90
+                                                        || mt.idTemplate == 36 || mt.idTemplate == 37 || map.mapIDLoadMap == 201) ? 1 : 0) == 1)) {
                                             if (Map.isNewVersion) {
-                                                if (!p.nearMons.contains(mt.id)) {
+                                                if (!UtilHTBB.coId(p.nearMons, mt.id)) {
                                                     p.nearMons.add(mt.id);
                                                     p.sendMessage(p.writeActorPos(new Message(4), mt));
                                                 }
@@ -615,7 +611,7 @@ class MapVongLap {
                             ((Char) CharManager.instance.vChars.elementAt(i))
                                     .sendMessage(MessageCreator.createMsgStartGetTown(((Char) CharManager.instance.vChars.elementAt(i)).inCountry));
                             ((Char) CharManager.instance.vChars.elementAt(i))
-                                    .sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hết thời gian chiếm thành. Chưa có bang hội nào chiếm được thành"));
+                                    .sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hết thời gian chiếm Gym. Chưa có đội nào chiếm được Gym"));
                         } catch (Exception var9) {
                         }
                     }
@@ -700,21 +696,17 @@ class MapVongLap {
 
                         if (playersx.size() > 0 && (Map.isNewVersion ? !mt.isDead : !mt.isDead && mt.moved)) {
                             Char fp = null;
+                            int luonThem = -1; // xem Region: tinh mot lan moi quai
 
                             for (int i = 0; i < playersx.size(); i++) {
                                 try {
                                     Char p = (Char) playersx.get(i);
                                     if (p.isBot == -1) {
                                         if (p.near(mt, p.rangeAddMonster[0])
-                                                || mt.allWayAdd()
-                                                || mt.isBoss
-                                                || mt.idTemplate == 84
-                                                || mt.idTemplate == 90
-                                                || mt.idTemplate == 36
-                                                || mt.idTemplate == 37
-                                                || map.mapIDLoadMap == 201) {
+                                                || (luonThem >= 0 ? luonThem == 1 : (luonThem = (mt.allWayAdd() || mt.isBoss || mt.idTemplate == 84 || mt.idTemplate == 90
+                                                        || mt.idTemplate == 36 || mt.idTemplate == 37 || map.mapIDLoadMap == 201) ? 1 : 0) == 1)) {
                                             if (Map.isNewVersion) {
-                                                if (!p.nearMons.contains(mt.id)) {
+                                                if (!UtilHTBB.coId(p.nearMons, mt.id)) {
                                                     p.nearMons.add(mt.id);
                                                     p.sendMessage(p.writeActorPos(new Message(4), mt));
                                                 }
@@ -845,7 +837,7 @@ class MapVongLap {
                             ((Char) CharManager.instance.vChars.elementAt(i))
                                     .sendMessage(MessageCreator.createMsgStartGetTown(((Char) CharManager.instance.vChars.elementAt(i)).inCountry));
                             ((Char) CharManager.instance.vChars.elementAt(i))
-                                    .sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hết thời gian chiếm thành. Chưa có bang hội nào chiếm được thành"));
+                                    .sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hết thời gian chiếm Gym. Chưa có đội nào chiếm được Gym"));
                         } catch (Exception var9) {
                         }
                     }
@@ -930,21 +922,17 @@ class MapVongLap {
 
                         if (playersx.size() > 0 && (Map.isNewVersion ? !mt.isDead : !mt.isDead && mt.moved)) {
                             Char fp = null;
+                            int luonThem = -1; // xem Region: tinh mot lan moi quai
 
                             for (int i = 0; i < playersx.size(); i++) {
                                 try {
                                     Char p = (Char) playersx.get(i);
                                     if (p.isBot == -1) {
                                         if (p.near(mt, p.rangeAddMonster[0])
-                                                || mt.allWayAdd()
-                                                || mt.isBoss
-                                                || mt.idTemplate == 84
-                                                || mt.idTemplate == 90
-                                                || mt.idTemplate == 36
-                                                || mt.idTemplate == 37
-                                                || map.mapIDLoadMap == 201) {
+                                                || (luonThem >= 0 ? luonThem == 1 : (luonThem = (mt.allWayAdd() || mt.isBoss || mt.idTemplate == 84 || mt.idTemplate == 90
+                                                        || mt.idTemplate == 36 || mt.idTemplate == 37 || map.mapIDLoadMap == 201) ? 1 : 0) == 1)) {
                                             if (Map.isNewVersion) {
-                                                if (!p.nearMons.contains(mt.id)) {
+                                                if (!UtilHTBB.coId(p.nearMons, mt.id)) {
                                                     p.nearMons.add(mt.id);
                                                     p.sendMessage(p.writeActorPos(new Message(4), mt));
                                                 }
@@ -1056,36 +1044,23 @@ class MapVongLap {
         }
     }
 
-    static void startSandVilage(Map map) {
+    static void startSandVilage(final Map map) {
         if (map.nRegion <= 0) {
-            new Thread(() -> {
-
-                Thread.currentThread().setName("THREAD SAND " + map.mapId);
-
-                while (true) {
+            // Truoc: thread "THREAD SAND <id>" (updateSand moi DELAY_UPDATE_MAP) + thread goi tin
+            // phe 0. Nay: Nhip + Lan tren pool chung (com.htbb.runtime.VongLapChung), than giu nguyen.
+            map.nhipSand = new com.htbb.runtime.VongLapChung.Nhip("map " + map.mapId + " sand", Map.DELAY_UPDATE_MAP, new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        if (AdminHandler.isStopServer) {
-                            map.map_run_state = 0;
-                            return;
-                        }
-
-                        while (RealController.savingChar) {
-                            Thread.sleep(100L);
-                        }
-
                         map.map_run_state = 0;
-                        long l1 = System.currentTimeMillis();
-                        if (l1 - map.lastTimeUpdateMap >= Map.DELAY_UPDATE_MAP) {
-                            // Phai goi qua map.updateSand() (Map.updateSand() lai goi
-                            // MapVongLap.updateSand(this)) chu KHONG goi thang ham tinh
-                            // updateSand(map): OfflineMap ghi de updateSand() va ban ghi
-                            // de do moi la ban chay auto-imbue cho nguoi choi trong map
-                            // offline. Goi thang ham tinh lam mat tinh da hinh -> ban ghi
-                            // de tro thanh ma chet.
-                            map.updateSand();
-                            map.lastTimeUpdateMap = System.currentTimeMillis();
-                        }
-
+                        // Phai goi qua map.updateSand() (Map.updateSand() lai goi
+                        // MapVongLap.updateSand(this)) chu KHONG goi thang ham tinh
+                        // updateSand(map): OfflineMap ghi de updateSand() va ban ghi
+                        // de do moi la ban chay auto-imbue cho nguoi choi trong map
+                        // offline. Goi thang ham tinh lam mat tinh da hinh -> ban ghi
+                        // de tro thanh ma chet.
+                        map.updateSand();
+                        map.lastTimeUpdateMap = System.currentTimeMillis();
                         map.map_run_state = 1;
                     } catch (Exception var5) {
                         if (!daBaoLoiRunMapSand) {
@@ -1094,65 +1069,50 @@ class MapVongLap {
                             var5.printStackTrace();
                         }
                     }
+                }
+            }, null).batDau(Map.DELAY_UPDATE_MAP);
+            map.taoLanGoiTin(0);
+        }
+    }
 
-                    try {
-                        synchronized (map.LOCK) {
-                            map.LOCK.wait(Map.DELAY_UPDATE_MAP);
-                        }
-                    } catch (Exception var4) {
+    /**
+     * Than vong goi tin cua map khong chia khu (giong het ba vong cu phe 0/1/2): don hang doi
+     * (toi da 500 goi moi luot - vong cu ngu 5 ms moi 500 goi), roi map 201 cap nhat NPC nhan the.
+     */
+    static void donGoiTin(Map map, int phe, com.htbb.runtime.VongLapChung.Lan lan) {
+        Vector<PlayerMessage> playerMessages = (Vector) map.allPlayerMessages.get(phe);
+        try {
+            int count = 0;
+            while (playerMessages.size() > 0) {
+                PlayerMessage pm = (PlayerMessage) playerMessages.remove(0);
+                if (!pm.player.exit) {
+                    map.processMessage(pm.player, pm.message);
+                }
+                if (++count == 500) {
+                    break;
+                }
+            }
+
+            if (Map.getTown[phe] && map.mapId == 201) {
+                Vector<NpcReceiveCard> npcReceiveCard = (Vector<NpcReceiveCard>) Map.npcReceiveCard.get(phe);
+
+                for (int i = 0; i < npcReceiveCard.size(); i++) {
+                    ((NpcReceiveCard) npcReceiveCard.get(i)).update();
+                    if (NpcReceiveCard.isFinish[phe]) {
+                        break;
                     }
                 }
 
-            }
-            ).start();
-            new Thread(() -> {
-
-                Thread.currentThread().setName("MAP SEND MONSTER 2 player" + map.mapId);
-
-                while (!AdminHandler.isStopServer) {
-                    try {
-                        int count = 0;
-                        new Vector();
-                        Vector<PlayerMessage> playerMessages = (Vector) map.allPlayerMessages.get(0);
-
-                        while (playerMessages.size() > 0) {
-                            PlayerMessage pm = (PlayerMessage) playerMessages.remove(0);
-                            if (!pm.player.exit) {
-                                map.processMessage(pm.player, pm.message);
-                            }
-
-                            if (++count == 500) {
-                                count = 0;
-                                Thread.sleep(5L);
-                            }
-                        }
-
-                        if (Map.getTown[0] && map.mapId == 201) {
-                            Vector<NpcReceiveCard> npcReceiveCard = (Vector<NpcReceiveCard>) Map.npcReceiveCard.get(0);
-
-                            for (int i = 0; i < npcReceiveCard.size(); i++) {
-                                ((NpcReceiveCard) npcReceiveCard.get(i)).update();
-                                if (NpcReceiveCard.isFinish[0]) {
-                                    break;
-                                }
-                            }
-
-                            if (NpcReceiveCard.isFinish[0]) {
-                                Map.getTown[0] = false;
-                                npcReceiveCard.removeAll(npcReceiveCard);
-                            }
-                        }
-
-                        synchronized (map.LOCK) {
-                            map.LOCK.wait((long) Map.timeDelay);
-                        }
-                    } catch (Exception var6) {
-                        var6.printStackTrace();
-                    }
+                if (NpcReceiveCard.isFinish[phe]) {
+                    Map.getTown[phe] = false;
+                    npcReceiveCard.removeAll(npcReceiveCard);
                 }
-
             }
-            ).start();
+        } catch (Exception var6) {
+            var6.printStackTrace();
+        }
+        if (playerMessages.size() > 0 && lan != null) {
+            lan.kich();
         }
     }
 

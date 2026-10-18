@@ -262,7 +262,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -51: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null && p.monster != null) {
-                    menu = new String[]{"Trả tiêu"};
+                    menu = new String[]{"Trả hàng"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }
@@ -282,10 +282,10 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 // con lai KHONG gui gi -> nguoi choi co luot van tieu ma dang o lanh tho nuoc
                 // khac thi bam npc khong ra gi, mat luon ca muc Ho Tro.
                 if (p.luot_van_tieu > 0 && p.myCountry == p.inCountry) {
-                    menu = new String[]{"Nhận tiêu cá nhân(" + p.luot_van_tieu + ")", "Xuống ngựa", "Đổi danh hiệu", "Đăng ký lôi đài", "Vào sảnh chờ", "Xem lôi đài", "Hỗ Trợ"};
+                    menu = new String[]{"Nhận hàng cá nhân(" + p.luot_van_tieu + ")", "Xuống thú cưỡi", "Đổi danh hiệu", "Đăng ký sàn đấu", "Vào sảnh chờ", "Xem sàn đấu", "Hỗ Trợ"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                 } else {
-                    menu = new String[]{"Xuống ngựa", "Đổi danh hiệu", "Đăng ký lôi đài", "Vào sảnh chờ", "Xem lôi đài", "Hỗ Trợ"};
+                    menu = new String[]{"Xuống thú cưỡi", "Đổi danh hiệu", "Đăng ký sàn đấu", "Vào sảnh chờ", "Xem sàn đấu", "Hỗ Trợ"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 10);
                 }
                 session.sendMessage(msg);
@@ -305,7 +305,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     }
                     if (!Char.isFinishAllSuKienTrungThul2016()) {
                         menu = new String[]{"Làm bánh nướng", "Làm bánh dẻo", "Đổi hộp bánh", "Đổi nguyên liệu", "Nhận lồng đèn", "Đổi pet(20bd+70l)", "Bảng xếp hạng", "Cán mốc thả đèn",
-                                "Lồng đèn rồng(20bd+100l)", "Nguyệt Linh Trượng(20bd+150l)", "Lân Sư Tử(20bd+150l)", "Đổi Tiên đan(10bd+30l, tối đa 5 lần)",
+                                "Lồng đèn rồng(20bd+100l)", "Gậy Ánh Trăng(20bd+150l)", "Suicune(20bd+150l)", "Đổi Cỏ hồi sinh(10bd+30l, tối đa 5 lần)",
                                 // Moi 19/09/2026: "diem tieu xai" (cu 2 luong = 1 diem, xem Char.subLuong).
                                 "Đổi điểm lấy lồng đèn(100đ, hiện có " + (p.luongDaXaiTrungThu / 2) + "đ)",
                                 // Moi 25/09/2026 (yeu cau nguoi dung "chi chinh nhan vat do moi biet duoc so
@@ -319,12 +319,12 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     if (!Char.isFinishAllSuKienGioTo2016()) {
                         menu = new String[]{"Đổi quà", "Đổi nguyên liệu"};
                         if (TeamServer.isServerHoaLu() || TeamServer.isServerLocal()) {
-                            menu = new String[]{"Đổi quà", "Đổi nguyên liệu", "Điểm dùng lượng(" + p.luongxainhanRuong + ")", "Đổi rương bát bảo(" + p.luongxai + " điểm)", "Đổi xu"};
+                            menu = new String[]{"Đổi quà", "Đổi nguyên liệu", "Điểm dùng lượng(" + p.luongxainhanRuong + ")", "Đổi rương kho báu(" + p.luongxai + " điểm)", "Đổi xu"};
                         }
                     }
                     if (Char.isSuKienNoel2023()) {
 
-                        menu = new String[]{"Đổi kem", "Đổi Tuần Lộc", "Đổi nguyên liệu", "Đổi túi quà may mắn", "Đổi đồ Bạch Mi", "Đổi đồ Thuý Vũ Hồng Sam", "Đổi quà đặc biệt"};
+                        menu = new String[]{"Đổi kem", "Đổi Tuần Lộc", "Đổi nguyên liệu", "Đổi túi quà may mắn", "Đổi đồ Absol", "Đổi đồ Thuý Vũ Hồng Sam", "Đổi quà đặc biệt"};
 
                     }
                     if (Char.isSuKienWordcup2017()) {
@@ -334,7 +334,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         menu = new String[]{"Nhận bánh chưng", "Nhận bánh tét", "Dâng bánh chưng", "Đổi nguyên liệu", "Làm pháo", "Đăng ký nấu bánh chưng", "Đăng ký nấu bánh tét", "Top pháo hoa"};
                     }
                     if (!Char.isFinishSuKienMiniChucNu()) {
-                        menu = new String[]{"Tìm Chức Nữ", "Đổi nguyên liệu", "Đổi phi phong ma", "Đổi phi phong vật", "Đổi Bạch thử (7ngày)"};
+                        menu = new String[]{"Tìm Illumise", "Đổi nguyên liệu", "Đổi ruy băng đặc biệt", "Đổi ruy băng vật lý", "Đổi Sandshrew (7ngày)"};
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
@@ -398,8 +398,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     menu = new String[]{
              
                         "Nhận quà nạp tích lũy",
-                        "Bật phi phong VIP", 
-                        "Tinh luyện thần binh",
+                        "Bật ruy băng VIP", 
+                        "Tinh luyện bảo vật",
                         "Kích ẩn mặt nạ cáo hoặc thỏ"
                     };
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
@@ -465,7 +465,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                         Database.instance.saveOrtherLog("", p.charname, "da doi duong khang", "duongkhang");
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận đương khang " + day + " ngày."));
+                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận Piloswine " + day + " ngày."));
                         return;
                     }
                     if (Qua == 8) {
@@ -484,7 +484,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                         Database.instance.saveOrtherLog("", p.charname, "da doi linh thu tuan loc", "tuanloc");
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận linh thú tuần lộc " + day + " ngày."));
+                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận thú cưỡi Stantler " + day + " ngày."));
                         return;
                     }
                     if (Qua == 6) {
@@ -494,7 +494,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                         Database.instance.saveOrtherLog("", p.charname, "da doi dai bach thu", "dai bach thu");
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận đại bạch thử " + day + " ngày."));
+                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận Wooloo " + day + " ngày."));
                         return;
                     }
                     if (Qua == 5) {
@@ -504,7 +504,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                         Database.instance.saveOrtherLog("", p.charname, "da doi bach cot", "bach cot");
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận bạch cốt mã " + day + " ngày."));
+                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận Spectrier " + day + " ngày."));
                         return;
                     }
                     if (Qua == 4) {
@@ -541,7 +541,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -32: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Chuyển sang Thanh Long", "Chuyển sang Hắc Hổ"};
+                    menu = new String[]{"Chuyển sang Kanto", "Chuyển sang Johto"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }
@@ -559,12 +559,12 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     // lai — MapDoMenu.VI_TRI_MENU_DAU_TRUONG doi vi tri hien thi ve vi tri
                     // goc. Muon bat lai muc nao: them lai chuoi vao day dung thu tu cu roi
                     // them vi tri goc tuong ung vao bang do.
-                    menu = new String[]{"Thách đấu cá nhân", "Trấn yêu trận", "Núi châu báu"};
+                    menu = new String[]{"Thách đấu cá nhân", "Mê cung", "Núi châu báu"};
                     if (!Char.isFinishAllSuKienMini()) {
                         // Nhanh nay hien khong bao gio chay: isFinishAllSuKienMini() la
                         // getDayTime(0) > "2020-07-11" nen luon dung. Van cat 4 muc o day
                         // cho khop, de neu ai doi moc thoi gian thi menu khong lech bang.
-                        menu = new String[]{"Thách đấu cá nhân", "Trấn yêu trận", "Núi châu báu", "Đổi đồ Bạch Mi", "Đổi đồ Thuý Vũ Hồng Sam", "Đổi quà đặc biệt"};
+                        menu = new String[]{"Thách đấu cá nhân", "Mê cung", "Núi châu báu", "Đổi đồ Absol", "Đổi đồ Thuý Vũ Hồng Sam", "Đổi quà đặc biệt"};
                     }
                     if (p.idArena > -1) {
                         menu[0] = "Vào lại đấu trường";
@@ -647,12 +647,12 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         if (!Map.openLog) {
                             menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10l)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)"};
                             if (p.canReceiveGif35()) {
-                                menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10L)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)","Mua 1 Vé quay Phượng Hoàng(50l)", "Quà 35 ma", "Quà 35 vật"};
+                                menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10L)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)","Mua 1 Vé quay Moltres(50l)", "Quà 35 ma", "Quà 35 vật"};
                             }
                         } else {
-                            menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10l)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)","Mua 2 Vé quay Phượng Hoàng(50l)", "Nhập mã quà tặng", "Kim cương", "Nạp sms", "Tặng lượng(" + p.vetangluong + " vé)"};
+                            menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10l)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)","Mua 2 Vé quay Moltres(50l)", "Nhập mã quà tặng", "Kim cương", "Nạp sms", "Tặng lượng(" + p.vetangluong + " vé)"};
                             if (p.canReceiveGif35()) {
-                                menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10L)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)", "Mua 2 Vé quay Phượng Hoàng(50l)", "Quà 35 ma", "Quà 35 vật", "Nhập mã quà tặng", "Kim cương", "Nạp sms", "Tặng lượng(" + p.vetangluong + " vé)"};
+                                menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10L)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)", "Mua 2 Vé quay Moltres(50l)", "Quà 35 ma", "Quà 35 vật", "Nhập mã quà tặng", "Kim cương", "Nạp sms", "Tặng lượng(" + p.vetangluong + " vé)"};
                             }
                         }
                         msg = MessageCreator.createMsgMenu(menu, npcType, 0);
@@ -672,7 +672,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                                 msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                                 session.sendMessage(msg);
                             } else {
-                                session.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể chọn quốc gia cho bang.", ""));
+                                session.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể chọn vùng cho đội.", ""));
                             }
                         }
                     } else {
@@ -688,8 +688,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 if (p != null && p.myCountry > -1 && p.idClan > -1 && Map.idClanTown[p.myCountry] == p.idClan) {
                     final NewClan cl = NewClan.getClan(p.idClan);
                     if (cl != null && cl.master.equals(p.charname)) {
-                        final String[] hour = {"Bảo hộ 6h-10h (15t xu bang)", "Bảo hộ 11h-15h (15t xu bang)", "Bảo hộ 16h-20h (15t xu bang)", "Bảo hộ 20h-24h (15t xu bang)"};
-                        menu = new String[]{hour[Char.getIdOpenShield(Calendar.getInstance().get(11))], "Bảo hộ toàn bộ (50t xu bang)", "Đăng ký tấn công lãnh thổ"};
+                        final String[] hour = {"Bảo hộ 6h-10h (15t xu đội)", "Bảo hộ 11h-15h (15t xu đội)", "Bảo hộ 16h-20h (15t xu đội)", "Bảo hộ 20h-24h (15t xu đội)"};
+                        menu = new String[]{hour[Char.getIdOpenShield(Calendar.getInstance().get(11))], "Bảo hộ toàn bộ (50t xu đội)", "Đăng ký tấn công vùng"};
                         p.sendMessage(MessageCreator.createMsgMenu(menu, -25, 0));
                     }
                 }
@@ -773,11 +773,11 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -15: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Đổi hệ ngũ hành.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán."};
+                    menu = new String[]{"Đổi hệ.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán."};
                     if (Char.isOpenDauGiaChoiBlackFriday()) {
-                        menu = new String[]{"Đổi hệ ngũ hành.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán.", "Đấu giá"};
+                        menu = new String[]{"Đổi hệ.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán.", "Đấu giá"};
                     } else if (Char.isOpenSellBlackFriday()) {
-                        menu = new String[]{"Đổi hệ ngũ hành.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán.", "Mua đồ thời trang", "Mua lồng đèn", "Nhận lại tiền cọc"};
+                        menu = new String[]{"Đổi hệ.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán.", "Mua đồ thời trang", "Mua lồng đèn", "Nhận lại tiền cọc"};
                         if (!p.passWord.equals("")) {
                             menu[2] = "Xóa mật khẩu rương";
                         }
@@ -788,7 +788,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         menu[2] = "Xóa mật khẩu rương";
                     }
                     if (Char.isSuKienBlackFriday()) {
-                        menu = new String[]{"Đổi hệ ngũ hành.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán.", "Đấu giá", "Mua Chổi Băng(30 ngày)", "Mua Chổi Điện(30 ngày)", "Mua Chổi Độc(30 ngày)", "Mua Chổi Lửa(30 ngày)", "Mua pet Bạch Thử(60 ngày)"};
+                        menu = new String[]{"Đổi hệ.", "Tháo ngọc khảm", "Đặt mật khẩu rương", "Vòng quay", "Đồ đã bán.", "Đấu giá", "Mua Chổi Băng(30 ngày)", "Mua Chổi Điện(30 ngày)", "Mua Chổi Độc(30 ngày)", "Mua Chổi Lửa(30 ngày)", "Mua pet Sandshrew(60 ngày)"};
                         session.sendMessage(MessageCreator.createMsgMenu(menu, npcType, 10));
                         return;
                     }
@@ -810,20 +810,20 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -10: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Hợp đục", "Mở rộng hành trang(150L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Đăng ký liên đấu"};
+                    menu = new String[]{"Hợp đục", "Mở rộng hành trang(150L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Đăng ký giải Liên minh"};
                     if (p.canReceiveGiftOffline > -1) {
-                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(150L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Đăng ký liên đấu", "Nhận quà top"};
+                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(150L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Đăng ký giải Liên minh", "Nhận quà top"};
                     }
                     if (p.canReceiveGiftEvent()) {
-                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(150L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Đăng ký liên đấu", "Nhận quà"};
+                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(150L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Đăng ký giải Liên minh", "Nhận quà"};
                     }
                     if (p.maxBag > 1) {
-                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Đăng ký liên đấu"};
+                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Đăng ký giải Liên minh"};
                         if (p.canReceiveGiftOffline > -1) {
-                            menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Đăng ký liên đấu", "Nhận quà top"};
+                            menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Đăng ký giải Liên minh", "Nhận quà top"};
                         }
                         if (p.canReceiveGiftEvent()) {
-                            menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Đăng ký liên đấu", "Nhận quà"};
+                            menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Đăng ký giải Liên minh", "Nhận quà"};
                         }
                     }
                     if (!TeamServer.isServerLienDau()) {
@@ -833,7 +833,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         }
                     }
                     if (TeamServer.isServerLienDau()) {
-                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Vào chiến trường", "Kết quả"};
+                        menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển vùng(300l)", "Nhận quà Giftcode", "Vào chiến trường", "Kết quả"};
                     }
                     // Nhan moc nap (49k/99k/299k): luon la muc cuoi menu, ghi nho vi tri
                     // that su cua no vao Char de Map.doMenu nhan dung du menu dai/ngan khac nhau.
@@ -893,7 +893,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 if (p != null) {
                     // "Go skin linh thu" bi bo khoi menu nay theo yeu cau nguoi choi (giu
                     // lai hai duong go khac: lenh chat "boskin" va goi packet 29 chung cho
-                    // moi trang bi thu — xem SkinLinhThu.thaoSkin / Map.thaoTrangBiThu).
+                    // moi trang bi thu — xem SkinThuCuoi.thaoSkin / Map.thaoTrangBiThu).
                     menu = new String[]{
                             "Điểm hiện tại: " + p.diemDoiThuong + " điểm - Xem đổi thưởng"
                     };
@@ -924,9 +924,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             }
             case -11: {
                 p = CharManager.instance.getByUserID(session.userID);
-                msg = MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Ngọc huyền minh", "Ngọc huyền minh khoá", "Bột thường", "Bột khoá"}, npcType, 0);
+                msg = MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Ngọc hoàng hôn", "Ngọc hoàng hôn khoá", "Bột thường", "Bột khoá"}, npcType, 0);
                 if (p.hlt_buy > 0) {
-                    msg = MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Ngọc huyền minh", "Ngọc huyền minh khoá", "Bột thường", "Bột khoá", "Huyết linh thảo(" + p.hlt_buy + ")"}, npcType, 0);
+                    msg = MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Ngọc hoàng hôn", "Ngọc hoàng hôn khoá", "Bột thường", "Bột khoá", "Kẹo thú cưng(" + p.hlt_buy + ")"}, npcType, 0);
                 }
                 session.sendMessage(msg);
                 return;
@@ -940,7 +940,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
                     p.infoItemCreate = null;
-                    menu = new String[]{"Vũ khí", "Trang bị", "Trang bị thú",
+                    menu = new String[]{"Đồ cầm tay", "Trang bị", "Trang bị thú",
                         "Nhận thành tích(ĐN " + p.diemNapVip + " , ĐT " + p.diemxaiVip + ", MN: " + (p.luongNap * 2) + ")",
                         "Hoạt động giờ",
                         (p.isTatPhiPhong() ? "Bật" : "Tắt") + " phi phong", 
@@ -951,16 +951,16 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         // "Doi ten nhan vat" chen giua (19/09/2026, yeu cau nguoi dung dat dung
                         // giua menu) - MOI muc TU DAY TRO XUONG lai dich len 1 bac NUA so voi
                         // ghi chu cu o tren, da doi lai toan bo case trong RealController.doCreateItem.
-                        "Đổi tên nhân vật",
-                        "Tinh Luyện Thần Binh","Gia Hạn VKTB(5000l 7n)","Cải Tạo Cải Trang","Bộ Sưu Tập",
+                        "Đổi tên Pokémon",
+                        "Tinh Luyện Bảo Vật","Gia Hạn VKTB(5000l 7n)","Cải Tạo Cải Trang","Bộ Sưu Tập",
                         "Hoá Hình Pet" + (p.petUsing != null && p.petUsing.dangHoaHinh() ? " (Lân cấp " + p.petUsing.capHoaHinh + ")" : ""),
                         (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú",
                         // "Go skin thu" (11/09/2026) - muc rieng ngang hang Than Khi, dat TRUOC
                         // no theo yeu cau, bam la go luon (khong mo submenu). Xem case trong
                         // RealController.doCreateItem - da doi cheo cho khop lai vi tri.
-                        "Gỡ skin thú", "Thần Khí"};
+                        "Gỡ skin thú", "Bảo Vật Huyền Thoại"};
                     if (TeamServer.isServerLienDau()) {
-                        menu = new String[]{"Vũ khí", "Trang bị", "Trang bị thú"};
+                        menu = new String[]{"Đồ cầm tay", "Trang bị", "Trang bị thú"};
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
@@ -1016,7 +1016,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -13: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null && p.idClan > -1) {
-                    menu = new String[]{"Kỹ năng bang", "Kỹ năng thành viên", "Mua 500 điểm cống hiến(100L)"};
+                    menu = new String[]{"Kỹ năng đội", "Kỹ năng thành viên", "Mua 500 điểm cống hiến(100L)"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }
@@ -1025,11 +1025,11 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -3: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null && p.idClan > -1) {
-                    menu = new String[]{"Nâng cấp bang", "Danh sách quản lý bang", "Đặt thuế"};
+                    menu = new String[]{"Nâng cấp đội", "Danh sách quản lý đội", "Đặt thuế"};
                     if (p.rankClan == 0) {
                         final NewClan clan = NewClan.getClan(p.idClan);
                         final long money = clan.getMoneyDistributeSalary(p.idClan);
-                        menu = new String[]{"Nâng cấp bang", "Danh sách quản lý bang", "Đặt thuế", "Phong chức", "Giáng chức", "Phát lương(max " + money + " xu)", "Lương bang chúng", "Phát lương nhanh(max " + money + " xu)"};
+                        menu = new String[]{"Nâng cấp đội", "Danh sách quản lý đội", "Đặt thuế", "Phong chức", "Giáng chức", "Phát lương(max " + money + " xu)", "Lương thành viên đội", "Phát lương nhanh(max " + money + " xu)"};
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
@@ -1076,7 +1076,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case 2: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Mua vũ khí", "Mua trang bị thú"};
+                    menu = new String[]{"Mua đồ cầm tay", "Mua trang bị thú"};
                     if (TeamServer.isServerIndo()) {
                         menu = new String[]{"Membeli senjata"};
                     }
@@ -1116,7 +1116,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
                     p.classBuy = (byte) giap1;
-                    menu = new String[]{"Trang bị ma pháp", "Trang bị vật lý"};
+                    menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                     return;
@@ -1158,7 +1158,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 }
                 if (p != null) {
                     p.classBuy = (byte) giap2;
-                    menu = new String[]{"Trang bị ma pháp", "Trang bị vật lý"};
+                    menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                     return;

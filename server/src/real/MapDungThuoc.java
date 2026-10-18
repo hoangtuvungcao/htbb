@@ -83,7 +83,7 @@ class MapDungThuoc {
                         if (player.map.isvanTienTran()) {
                             player.map.doReturnVillage(player);
                         } else if (Char.isSuKienMiniChucNu() && player.charCopy != null && player.map.mapId == player.charCopy.map.mapId) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Chức Nữ", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Illumise", ""));
                         } else if (player.char_quest != null && player.char_quest.receive == 1 && QuestTemplate.getTypeQuest(player.char_quest.id_quest) == 1) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ vận chuyển", ""));
                         } else if (player.map.isMapNuiChauBau()) {
@@ -238,7 +238,7 @@ class MapDungThuoc {
                                 break;
                             case 27:
                                 if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang vận tiêu.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang giao hàng.", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
@@ -261,7 +261,7 @@ class MapDungThuoc {
                                         )
                                 );
                                 if (player.inCountry != player.myCountry) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể sử dụng Thần Hành Phù trên lãnh thổ của mình", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể sử dụng Vé Bay Pidgeot trên vùng của mình", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
@@ -366,14 +366,14 @@ class MapDungThuoc {
                                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                                     } else {
                                         player.potions[potionType]++;
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nữ", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu lông chỉ dùng cho nữ", ""));
                                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     }
                                 } else if (player.gender == 2) {
                                     if (temp % 2 == 0) {
                                         player.potions[potionType]++;
                                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nam", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu lông chỉ dùng cho nam", ""));
                                     } else {
                                         player.headStyle = (byte) temp;
                                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
@@ -432,7 +432,7 @@ class MapDungThuoc {
                                 break;
                             case 82:
                                 player.luot_van_tieu++;
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn có thêm 1 lượt vận tiêu", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn có thêm 1 lượt giao hàng", ""));
                                 break;
                             case 84:
                                 if (player.timeCrazy != 0L) {
@@ -473,14 +473,14 @@ class MapDungThuoc {
                                 }
 
                                 if (player.monster != null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
                                 }
 
                                 if (player.myCountry != player.inCountry) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể vào khu mỏ từ lãnh thổ của mình.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể vào khu mỏ từ vùng của mình.", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
@@ -519,14 +519,14 @@ class MapDungThuoc {
                             case 97:
                             case 116:
                                 if (player.monster == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi bạn đang chưa nhận tiêu", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi bạn đang chưa nhận hàng", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
                                 }
 
                                 if (!player.canChangeTieu()) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đổi tiêu tại vị trí này", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đổi hàng tại vị trí này", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
@@ -543,7 +543,7 @@ class MapDungThuoc {
                                 }
 
                                 if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                                     return;
                                 }
 
@@ -566,7 +566,7 @@ class MapDungThuoc {
                                     return;
                                 }
 
-                                String[] namnu = new String[]{"Phu nhân", "Phu quân"};
+                                String[] namnu = new String[]{"Bạn đời", "Bạn đời"};
                                 if (p1 == null) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
                                     player.potions[potionType]++;
@@ -633,7 +633,7 @@ class MapDungThuoc {
                             case 113:
                             case 114:
                                 if (player.animalRide == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa cưỡi linh thú", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa cưỡi thú", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 } else {

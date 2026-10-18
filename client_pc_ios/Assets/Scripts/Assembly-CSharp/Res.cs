@@ -52,7 +52,7 @@ public class Res
 
 	public static mVector shopTemplate = new mVector();
 
-	public static XaphuTemplate[] XAPHU;
+	public static PidgeotBayTemplate[] XAPHU;
 
 	public static Res me;
 
@@ -66,14 +66,14 @@ public class Res
 	{
 		new string[1] { "Vào trong đi cậu. Đủ loại HP từ lớn đến bé!" },
 		new string[3] { "Hò ơ… mua gì cũng có, hỏi gì cũng biết", "Gánh hàng nhỏ nhưng món gì cũng có đây", "Mua gì đây, nói ta nghe" },
-		new string[3] { "Vũ khí ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Ngươi muốn sửa chữa đồ?", "Ngươi muốn luyện đồ?" },
-		new string[3] { "Mua giáp hộ thân nào …", "Mua giáp của ta, ngươi sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho ngươi biết tại sao người ta gọi ta là Thiết Bì" },
+		new string[3] { "Đồ cầm tay ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Cậu muốn sửa chữa đồ?", "Cậu muốn luyện đồ?" },
+		new string[3] { "Mua giáp hộ thân nào …", "Mua giáp của ta, cậu sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho cậu biết tại sao người ta gọi ta là Bronzong" },
 		new string[1] { "Trách nhiệm của ta là bảo vệ ngôi làng này." },
-		new string[3] { "Cố gắng lên con, hãy hoàn thành các nhiệm vụ đi nhé", "Anh hùng xuất thiếu niên..anh hùng xuất thiếu niên", "Con là thành viên của làng Nghĩa Sĩ này ! Hãy nhớ lấy điều đó" },
-		new string[3] { "Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Ngươi muốn mua vật phẩm để luyện đồ?" },
-		new string[3] { "Đường xa vạn lý, không làm nản lòng xa phu ta đây", "Đi lâu thành lối, lối thành đường đi.", "Nói ta nghe ngươi muốn đi đâu?" },
+		new string[3] { "Cố gắng lên con, hãy hoàn thành các nhiệm vụ đi nhé", "Tuổi trẻ tài cao..tuổi trẻ tài cao", "Con là thành viên của làng huấn luyện này ! Hãy nhớ lấy điều đó" },
+		new string[3] { "Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Cậu muốn mua vật phẩm để luyện đồ?" },
+		new string[3] { "Đường xa vạn lý, không làm nản lòng Pidgeot (Bay) ta đây", "Đi lâu thành lối, lối thành đường đi.", "Nói ta nghe cậu muốn đi đâu?" },
 		new string[1] { string.Empty },
-		new string[3] { "Gửi đồ chỗ ta là an toàn nhất đó", "Ngươi muốn nhờ ta giữ đồ?", "Ngươi có nhiều đồ muốn gửi àh?" },
+		new string[3] { "Gửi đồ chỗ ta là an toàn nhất đó", "Cậu muốn nhờ ta giữ đồ?", "Cậu có nhiều đồ muốn gửi àh?" },
 		new string[1] { "Bạn phải có vé mới được lên tàu." },
 		new string[1] { "Muốn nhờ ta bán gì nào" },
 		new string[1] { "Muốn nhờ ta bán gì nào" },
@@ -85,33 +85,33 @@ public class Res
 		new string[1] { "Muốn nhờ ta bán gì nào" },
 		new string[1] { "Muốn nhờ ta bán gì nào" },
 		new string[1] { "Muốn nhờ ta bán gì nào" },
-		new string[3] { "Tập luyện nào, tập luyện nào ..", "Sức khỏe trước đã, tập luyện nào …", "Cho ta xem khả năng của các ngươi nào !!" },
-		new string[3] { "Giao tiền ta giữ nào, yên tâm nhé", "Ngươi muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào" },
+		new string[3] { "Tập luyện nào, tập luyện nào ..", "Sức khỏe trước đã, tập luyện nào …", "Cho ta xem khả năng của các cậu nào !!" },
+		new string[3] { "Giao tiền ta giữ nào, yên tâm nhé", "Cậu muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào" },
 		new string[1] { "Chà, lâu rồi mới có người đi qua." },
-		new string[1] { "Ngươi muốn thuê gì?" },
-		new string[1] { "Hãy quản lý bang của ngươi thật tốt vào." },
+		new string[1] { "Cậu muốn thuê gì?" },
+		new string[1] { "Hãy quản lý đội của cậu thật tốt vào." },
 		new string[3] { "Hò ơ… mua gì cũng có, hỏi gì cũng biết", "Gánh hàng nhỏ nhưng món gì cũng có đây", "Mua gì đây, nói ta nghe" },
-		new string[3] { "Mua giáp hộ thân nào …", "Mua giáp của ta, ngươi sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho ngươi biết tại sao người ta gọi ta là Giáp Sư" },
-		new string[3] { "Vũ khí ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Ngươi muốn sửa chữa đồ?", "Ngươi muốn luyện đồ?" },
-		new string[3] { "Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Ngươi muốn mua vật phẩm để luyện đồ?" },
-		new string[3] { "Gửi đồ chỗ ta là an toàn nhất đó", "Ngươi muốn nhờ ta giữ đồ?", "Ngươi có nhiều đồ muốn gửi àh?" },
-		new string[3] { "Giao tiền ta giữ nào, yên tâm nhé", "Ngươi muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào" }
+		new string[3] { "Mua giáp hộ thân nào …", "Mua giáp của ta, cậu sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho cậu biết tại sao người ta gọi ta là Bronzong" },
+		new string[3] { "Đồ cầm tay ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Cậu muốn sửa chữa đồ?", "Cậu muốn luyện đồ?" },
+		new string[3] { "Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Cậu muốn mua vật phẩm để luyện đồ?" },
+		new string[3] { "Gửi đồ chỗ ta là an toàn nhất đó", "Cậu muốn nhờ ta giữ đồ?", "Cậu có nhiều đồ muốn gửi àh?" },
+		new string[3] { "Giao tiền ta giữ nào, yên tâm nhé", "Cậu muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào" }
 	};
 
 	public static string[] newNameAtbItem = new string[9]
 	{
-		"Tăng Hp ",
-		"Tăng Mp ",
+		"HP +",
+		"PP +",
 		"Sức mạnh +",
 		"Nhanh nhẹn +",
 		"Tinh thần +",
 		"Sức khoẻ +",
 		string.Empty,
-		"Chí mạng tăng ",
-		"Tăng st chí mạng "
+		"Chí mạng +",
+		"ST chí mạng % +"
 	};
 
-	public static string[] nameAtbItemLock = new string[3] { "Tăng công ", "Tăng thủ ma ", "Tăng thủ vật " };
+	public static string[] nameAtbItemLock = new string[3] { "Tăng công ", "Tăng phòng thủ đặc biệt ", "Tăng phòng thủ " };
 
 	private static MyRandom rd = new MyRandom();
 
@@ -307,11 +307,11 @@ public class Res
 
 	public static readonly string[] nameClazz = new string[6]
 	{
-		"Kiếm khách",
-		"Chiến binh",
-		"Pháp sư",
-		"Đấu sĩ",
-		"Cung thủ",
+		"Dòng Charmander",
+		"Dòng Bulbasaur",
+		"Dòng Eevee",
+		"Dòng Squirtle",
+		"Dòng Pichu",
 		string.Empty
 	};
 
@@ -451,7 +451,7 @@ public class Res
 		try
 		{
 			Boss_Dragon.loadDragon();
-			Skill_Kiem_Down.load();
+			Skill_Charmander_Down.load();
 			if (imgShadowPet == null)
 			{
 				imgShadowPet = Image.createImage(Main.res + "/m/imgshadow");
@@ -635,7 +635,7 @@ public class Res
 		return null;
 	}
 
-	public static XaphuTemplate getXaphu()
+	public static PidgeotBayTemplate getXaphu()
 	{
 		return (Tilemap.idXaphu < 0) ? null : XAPHU[Tilemap.idXaphu];
 	}
@@ -1250,6 +1250,11 @@ public class Res
 
 	public static void paintDlgFull(MyGraphics g, int x, int y)
 	{
+		if (UiPokemon.bat())
+		{
+			UiPokemon.bangKinh(g, x - 8, y + 11, 145, 145); // pokemon: giao diện
+			return;
+		}
 		x -= 10;
 		int num = y + 14;
 		g.drawImage(imgInv[2], x + 15, num, 20);
@@ -1275,6 +1280,11 @@ public class Res
 
 	public static void paintSelected(MyGraphics g, int x, int y, int w, int h)
 	{
+		if (UiPokemon.bat())
+		{
+			UiPokemon.hangChon(g, x, y, w + 1, h + 1, true); // pokemon: giao diện
+			return;
+		}
 		g.setColor(34949);
 		g.fillRect(x, y, w, h);
 		g.setColor(11908790);
@@ -1283,6 +1293,13 @@ public class Res
 
 	public static void paintDlgDragonFull(MyGraphics g, int x, int y, int w, int h)
 	{
+		if (UiPokemon.bat())
+		{
+			// pokemon: giao diện - bảng kính navy + Poké Ball giữa mép trên (thay khung rồng)
+			UiPokemon.bangKinh(g, x, y, w, h);
+			GiaoDien.pokeBall(g, x + w / 2, y, 7, 0);
+			return;
+		}
 		int num = w / 70 + 1;
 		int num2 = h / 47 + 1;
 		g.setClip(x, y, w, h);
@@ -1356,6 +1373,12 @@ public class Res
 
 	public static void paintDlgFull(MyGraphics g, int x, int y, int w, int h)
 	{
+		if (UiPokemon.bat())
+		{
+			UiPokemon.bangKinh(g, x, y, w, h); // pokemon: giao diện - bảng kính + dải đỏ đầu
+			UiPokemon.thanhDo(g, x + 3, y + 3, w - 6, 20, null);
+			return;
+		}
 		int num = w / 70 + 1;
 		g.setClip(x, y, w, h);
 		for (int i = 0; i < num; i++)
@@ -1379,6 +1402,19 @@ public class Res
 
 	public static void paintDlgFull(MyGraphics g, int x, int y, int w, int h, int y1, string tile, bool isDD, int h0)
 	{
+		if (UiPokemon.bat())
+		{
+			// pokemon: giao diện - bảng kính + dải tiêu đề đỏ + vạch vàng ngăn mục
+			UiPokemon.bangKinh(g, x, y, w, h);
+			UiPokemon.thanhDo(g, x + 3, y + 3, w - 6, 20, tile);
+			g.setColor(GiaoDien.VANG, 0.7f);
+			g.fillRect(x + 8, y + 25 + y1 + h0, w - 16, 1);
+			if (isDD)
+			{
+				g.fillRect(x + 8, y + y1 + h0 - 2, w - 16, 1);
+			}
+			return;
+		}
 		int num = w / 70 + 1;
 		g.setClip(x, y, w, h);
 		for (int i = 0; i < num; i++)
@@ -1412,6 +1448,15 @@ public class Res
 
 	public static void drawRect(MyGraphics g, int x, int y, int w, int h)
 	{
+		if (UiPokemon.bat())
+		{
+			// pokemon: giao diện - viền navy + viền trong vàng
+			g.setColor(GiaoDien.VIEN);
+			g.drawRect(x, y, w, h);
+			g.setColor(GiaoDien.VANG);
+			g.drawRect(x + 1, y + 1, w - 2, h - 2);
+			return;
+		}
 		for (int i = 0; i < 3; i++)
 		{
 			g.setColor(color[i]);

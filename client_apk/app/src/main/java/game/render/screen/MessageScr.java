@@ -191,7 +191,7 @@ public class MessageScr extends Screen {
             return;
         }
         chatDelay = (int) (System.currentTimeMillis() / 100);
-        if (this.focusT.name.equals("Bang hội")) {
+        if (this.focusT.name.equals("Đội")) {
             GameService.gI().chatToClan(this.tfInput.getText());
         } else {
             addTab(GCanvas.gameScr.mainChar.name + ": " + this.tfInput.getText(), this.focusT.name, 0);

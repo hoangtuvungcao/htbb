@@ -1,0 +1,11 @@
+TimGM6mb.sf2 - soundbank General MIDI 6 MB cho nhạc nền MIDI của bản PC (javax.sound.midi / Gervill).
+
+Bản quyền: 2004 Tim Brechbill <https://www.timbrechbill.com>, 2010 David Bolton.
+Giấy phép: GNU GPL phiên bản 2 (GPL-2.txt). Nguồn: https://github.com/musescore/musescore-old (commit
+90c33ef9d87b3f5ff92efd3b07d89eb455fb1fef); tệp lấy từ gói Debian/Ubuntu "timgm6mb-soundfont".
+Tim Brechbill: "I created some of the samples myself and all others are either public domain or fall under the
+terms of the GNU General Public License." (https://musescore.org/en/node/1463#comment-9168)
+
+Bản PC phát hành tệp này NGUYÊN VẸN, TÁCH RIÊNG (thư mục am/ cạnh HTBB-PC.jar, không đóng vào jar) và chỉ đọc
+lúc chạy - gộp đơn thuần (mere aggregation), không làm game thành tác phẩm phái sinh của soundbank. Muốn đổi /
+bỏ: xoá am/TimGM6mb.sf2 (game dùng soundbank mặc định của Java) hoặc chạy với -Dhtbb.soundbank=<tệp .sf2>.

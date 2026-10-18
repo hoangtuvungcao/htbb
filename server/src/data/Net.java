@@ -1,7 +1,7 @@
 package data;
 
 /**
- * Ban thay the (shim) cho class data.Net nam trong lib/NQSH_5h.jar.
+ * Ban thay the (shim) cho class data.Net nam trong lib/htbb-core.jar.
  *
  * VI SAO CAN FILE NAY:
  *   Class data.Net goc (trong lib dong, khong co source) chua san bang URL tro ve
@@ -12,7 +12,7 @@ package data;
  *   Net.getHttpADV(...) moi vong lap -> ben kia co the day link tai game va noi dung tuy y
  *   vao chat NPC cua server nay.
  *
- *   Trong manifest, KPAH2_patched.jar dung TRUOC lib/NQSH_5h.jar trong Class-Path,
+ *   Trong manifest, htbb-server.jar dung TRUOC lib/htbb-core.jar trong Class-Path,
  *   nen class nay se duoc nap thay cho class trong lib. Moi ket noi ra ngoai qua data.Net
  *   vi vay bi vo hieu, ke ca phan goi tu trong lib.
  *

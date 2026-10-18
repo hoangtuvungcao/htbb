@@ -36,7 +36,7 @@ public final class KiemIconPokemon {
         Kiem.dung("khong co file le sau o cuoi", !new File(IconPokemon.THU_MUC + (soFile + 1) + ".png").isFile());
 
         // Dai id khong chong nhau (CODING_CONVENTION muc 1).
-        Kiem.sai("dai 14000+ khong chong skin linh thu", IconPokemon.thuocDai(real.SkinLinhThu.ID_ANH_BAN_DO + real.SkinLinhThu.SO_SKIN - 1));
+        Kiem.sai("dai 14000+ khong chong skin linh thu", IconPokemon.thuocDai(real.SkinThuCuoi.ID_ANH_BAN_DO + real.SkinThuCuoi.SO_SKIN - 1));
         Kiem.sai("dai 14000+ khong chong than thu 12000+", IconPokemon.thuocDai(12099));
         Kiem.dung("14999 thuoc dai", IconPokemon.thuocDai(14999));
         Kiem.dung("dai cuoi van la short", IconPokemon.ID_DAU + IconPokemon.SO_TOI_DA - 1 <= Short.MAX_VALUE);
@@ -63,7 +63,7 @@ public final class KiemIconPokemon {
             Kiem.dung("nIconItem van la 866", dg.contains("nIconItem = 866;"));
 
             // So dong SQL sinh ra.
-            final List<String> sql = Files.readAllLines(new File("sql/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
+            final List<String> sql = Files.readAllLines(new File("../sql/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
             int dong = 0;
             int khai = -1;
             final Map<String, Integer> tachThuoc = new HashMap<String, Integer>();
@@ -82,10 +82,10 @@ public final class KiemIconPokemon {
             }
             Kiem.bang("so dong UPDATE = SO_DONG dau file", Integer.valueOf(khai), Integer.valueOf(dong));
             Kiem.bang("so dong bang_icon.csv = so file icon", Integer.valueOf(soFile),
-                    Integer.valueOf(Files.readAllLines(new File("docs/pokemon/bang_icon.csv").toPath(), StandardCharsets.UTF_8).size() - 1));
+                    Integer.valueOf(Files.readAllLines(new File("../docs/pokemon/bang_icon.csv").toPath(), StandardCharsets.UTF_8).size() - 1));
 
             // CSDL day du sau migration.
-            final String db = doc("sql/htbb_day_du.sql");
+            final String db = doc("../sql/htbb_day_du.sql");
             final List<List<String>> item = hang(db, "data_item");
             // Dai id 1001..1199 = noi dung moi (tools/pokemon/sinh_noi_dung.py -> sql/pokemon_noi_dung.sql,
             // xem test/KiemNoiDung): 0 dong (dump sinh truoc khi gom) hoac du so dong cua noi_dung_item_moi.csv.
@@ -104,7 +104,7 @@ public final class KiemIconPokemon {
                 }
             }
             Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1260)", Integer.valueOf(924), Integer.valueOf(goc));
-            final int soNoiDung = Files.readAllLines(new File("docs/pokemon/noi_dung_item_moi.csv").toPath(),
+            final int soNoiDung = Files.readAllLines(new File("../docs/pokemon/noi_dung_item_moi.csv").toPath(),
                     StandardCharsets.UTF_8).size() - 1;
             Kiem.dung("dai noi dung 1001..1199 trong dump: 0 hoac du " + soNoiDung + " dong (co " + noiDung + ")",
                     noiDung == 0 || noiDung == soNoiDung);

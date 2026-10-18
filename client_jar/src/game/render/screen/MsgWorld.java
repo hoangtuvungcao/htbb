@@ -78,6 +78,9 @@ public class MsgWorld extends Screen {
             Res.paintSelected(g, 4, (this.selected * 15) + 2, Canvas.w - 49, 15);
         }
         int yy = 2;
+        if (this.data.size() == 0) {
+            game.pokemon.GiaoDien.veTrong(g, (Canvas.w - 40) / 2, (Canvas.h - 90) / 2, Canvas.w - 64, "Kênh còn yên ắng", "Tin nhắn thế giới của các nhà huấn luyện sẽ hiện ở đây.");
+        }
         for (int i = 0; i < this.data.size(); i++) {
             MsgInfo ms = (MsgInfo) this.data.elementAt(i);
             for (int j = 0; j < ms.arr.length; j++) {

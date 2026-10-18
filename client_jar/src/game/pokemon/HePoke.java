@@ -38,7 +38,7 @@ public final class HePoke {
 
     static final short[] BOSS = {36, 37, 38, 39, 43, 46, 82, 90, 91, 92, 93, 94, 113, 115, 116, 117, 120, 129, 130, 138};
 
-    static final String MAP = "tdddrdrdddrrthdd.hddrdddhcr.drrr........dhh...........................t.ttt...ttt.ttt...tttttttttttttrtttdtdtthhhhhhhhh...h..............................................................................tccccttc................cccc...............................tttttttttttt";
+    static final String MAP = "tdddrdrdddrrthdd.hddrdddhcr.drrr........dhhtrtdtdtsthrtdthdttdt.......t.ttt...ttt.ttt...tttttttttttttrtttdtdtthhhhhhhhh...h.....................................hhhhhh...................................tccccttc................cccc...............................tttttttttttt........ctc";
 
     private HePoke() {
     }

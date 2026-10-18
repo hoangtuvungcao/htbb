@@ -112,7 +112,7 @@ class MapMenuNpc {
                 newItem.minuteExist = 10080;
                 player.iItems.add(newItem);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được phi phong lông thú thời hạn 10080 phút", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được ruy băng lông thú thời hạn 10080 phút", ""));
                 Database.instance.saveOrtherLog("", player.charname, "doi pp long thu ma", "pp");
             } else if (idOptionMenu == 1) {
                 if (player.luongNap < 200L) {
@@ -131,7 +131,7 @@ class MapMenuNpc {
                 newItem.minuteExist = 10080;
                 player.iItems.add(newItem);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được phi phong lông thú thời hạn 10080 phút", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được ruy băng lông thú thời hạn 10080 phút", ""));
                 Database.instance.saveOrtherLog("", player.charname, "doi pp long thu vat", "pp");
             } else if (idOptionMenu == 2) {
                 if (player.luongNap < 20L) {
@@ -140,7 +140,7 @@ class MapMenuNpc {
 
                 player.sendMessage(MessageCreator.createMsgInputText(-32015, idMenu, "Nhập số vé(" + player.luongNap + ")", 1));
             } else if (idOptionMenu == 3) {
-                String[] menu = new String[]{"Freddy", "Jason", "Harry potter", "Voldemort"};
+                String[] menu = new String[]{"Freddy", "Jason", "Alakazam", "Giratina"};
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
             }
         } else if (idMenu == 1) {
@@ -195,10 +195,10 @@ class MapMenuNpc {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 2));
             } else if (idOptionMenu == 3) {
                 if (nameTopNapLuong.equals("")) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại chưa có nhân vật nào nạp đủ " + (openLog ? "10k" : "8k") + " lượng.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại chưa có Pokémon nào nạp đủ " + (openLog ? "10k" : "8k") + " lượng.", ""));
                 } else {
                     player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Nhân vật nạp đủ " + (openLog ? "10k" : "8k") + " lượng nhanh nhất là " + nameTopNapLuong + ".", "")
+                            MessageCreator.createServerAlertMessage("Pokémon nạp đủ " + (openLog ? "10k" : "8k") + " lượng nhanh nhất là " + nameTopNapLuong + ".", "")
                     );
                 }
             } else if (idOptionMenu == 4) {
@@ -208,7 +208,7 @@ class MapMenuNpc {
                     player.potions[118] = player.potions[118] + nve;
                     player.diemdoivePH -= nve * 70;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đổi được " + nve + " vé phượng hoàng", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đổi được " + nve + " vé Moltres", ""));
                 }
             }
         } else if (idMenu == 1) {
@@ -296,7 +296,7 @@ class MapMenuNpc {
                     return;
                 }
 
-                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"áo lạc long quân", "áo yếm đào"}, idNpc, 1));
+                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"áo Rayquaza", "áo Bellossom"}, idNpc, 1));
             } else if (idOptionMenu == 3) {
                 if (player.potions[120] < 50 || player.potions[118] < 50) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh", ""));
@@ -393,12 +393,12 @@ class MapMenuNpc {
                 Calendar cal = Calendar.getInstance();
                 int ihour = cal.get(11);
                 if ((ihour < 9 || ihour >= 21) && TeamServer.server != 100) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể nhận tiêu từ 9h đến 21h hàng ngày", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể nhận hàng từ 9h đến 21h hàng ngày", ""));
                     return;
                 }
 
                 if (player.lvDetail.lv < 40) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho nhân vật từ cấp độ 40 trở lên", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho Pokémon từ cấp độ 40 trở lên", ""));
                     return;
                 }
 

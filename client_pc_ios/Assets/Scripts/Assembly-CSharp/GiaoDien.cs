@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Bộ vẽ giao diện kiểu Pokémon cho bản PC - bản C# của game.pokemon.GiaoDien (bản jar, j2me/src).
+/// Bộ vẽ giao diện kiểu Pokémon cho bản PC - bản C# của game.pokemon.GiaoDien (bản jar, client_jar/src).
 /// Cùng bảng màu với web HTBB-Web: đỏ Poké #E3350D, vàng Pikachu #FFCB05, xanh #3D7DCA / navy #003A70,
 /// xanh lá #78C850, viền tối #1E2A44.
 ///

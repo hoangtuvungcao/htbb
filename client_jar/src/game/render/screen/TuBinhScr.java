@@ -186,9 +186,9 @@ public class TuBinhScr extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(0x003A70);
+        g.setColor(game.pokemon.GiaoDien.mauKhungCon());
         g.fillRect(this.xSh, this.ySh + (Canvas.isSmartPhone ? 0 : 10), this.wSh, this.hSh - 10);
-        g.setColor(0xFFCB05);
+        g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
         g.drawRect(this.xSh, this.ySh + (Canvas.isSmartPhone ? 0 : 10), this.wSh, this.hSh - 10);
     }
 
@@ -231,6 +231,14 @@ public class TuBinhScr extends Screen {
         }
         g.fillRect(xDr + (this.wTab * this.arraySubTile.length), yDr + 27, 1, 21);
         Canvas.resetTrans(g);
+        boolean trong = true;
+        if (allTuBinh.size() > 0 && this.indexTab >= 0 && this.indexTab < allTuBinh.size()) {
+            trong = ((Vector) allTuBinh.elementAt(this.indexTab)).size() == 0;
+        }
+        if (trong) {
+            // pokemon: bộ sưu tập trống - lời nhắn thay khung trắng
+            game.pokemon.GiaoDien.veTrong(g, xDr + w0 / 2, yDr + 55 + (hCell - 55) / 2 - 10, w0 - 24, "Chưa có cổ vật", "Khám phá hang động và đào khảo cổ để tìm cổ vật quý.");
+        }
         if (allTuBinh.size() > 0) {
             if (this.saveIndexTab != this.indexTab && this.indexTab > -1 && this.indexTab < allTuBinh.size()) {
                 this.saveIndexTab = this.indexTab;

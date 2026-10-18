@@ -76,6 +76,8 @@ public final class HoSoLauDai {
     public int khSo;
     /** Do giu dang mang (id template item, 0 = khong). */
     public int doGiu;
+    /** Ngoai hinh trang bi: bit o phu kien an + bit 7 an trang phuc (com.htbb.pokemon.NgoaiHinh). */
+    public int ngoaiHinhAn;
     /** Gym: bit huy hieu da co (16 bit) va tuan danh lai gan nhat moi Gym bit. */
     public int gymHuyHieu;
     public int gymTuan;
@@ -83,6 +85,28 @@ public final class HoSoLauDai {
 
     /** Vi tri nhiem vu chinh CU (chuoi data_quest) + 1 truoc khi chuyen; 0 = khong co. */
     public int nvCu;
+
+    // ---- tang toc (TangToc, THIET_KE 1.8): tran diem ngay/tuan chung ban cao cap + ban khoa ----
+    public int tgNgay;
+    public int tgDiemNgay;
+    public int tgTuan;
+    public int tgDiemTuan;
+    /** Ve EXP dang chay: he so (150/200) va ms danh quai con lai. */
+    public int tgVeHeSo;
+    public long tgVeMs;
+    public int tgVePhutNgay;
+    /** Bua the luc: so lan hom nay, ngay cho cong (dung truoc lan danh quai dau), ngay da cong vao nlPhut100. */
+    public int tgBuaNgay;
+    public int tgBuaChoNgay;
+    public int tgBuaCongNgay;
+    /** Uy thac: ms da dat truoc (chua chay), ms da nhan hom nay, luc thoat game gan nhat (ms). */
+    public long tgUtMs;
+    public long tgUtMsNgay;
+    public long tgThoat;
+
+    // ---- tu dong danh (TuDong): ngay va ms da dung hom do (tran gio/ngay, chi tinh luc online) ----
+    public int tdNgay;
+    public long tdMsDung;
 
     /** Ban sao da doi so voi lan luu truoc (de khong ghi CSDL khi khong doi gi). */
     public boolean ban;
@@ -120,9 +144,25 @@ public final class HoSoLauDai {
         dat(b, "kt", khTuan);
         dat(b, "ks", khSo);
         dat(b, "dg", doGiu);
+        dat(b, "nh", ngoaiHinhAn);
         dat(b, "gh", gymHuyHieu);
         dat(b, "gw", gymTuan);
         dat(b, "gb", gymTuanBit);
+        dat(b, "z1", tgNgay);
+        dat(b, "z2", tgDiemNgay);
+        dat(b, "z3", tgTuan);
+        dat(b, "z4", tgDiemTuan);
+        dat(b, "z5", tgVeHeSo);
+        dat(b, "z6", tgVeMs);
+        dat(b, "z7", tgVePhutNgay);
+        dat(b, "z8", tgBuaNgay);
+        dat(b, "z9", tgBuaChoNgay);
+        dat(b, "za", tgBuaCongNgay);
+        dat(b, "zb", tgUtMs);
+        dat(b, "zc", tgUtMsNgay);
+        dat(b, "zd", tgThoat);
+        dat(b, "a1", tdNgay);
+        dat(b, "a2", tdMsDung);
         for (final Map.Entry<Integer, Integer> e : truot.entrySet()) {
             if (e.getValue().intValue() > 0) {
                 dat(b, "t" + e.getKey(), e.getValue().intValue());
@@ -229,12 +269,44 @@ public final class HoSoLauDai {
                 h.khSo = iv;
             } else if (k.equals("dg")) {
                 h.doGiu = iv;
+            } else if (k.equals("nh")) {
+                h.ngoaiHinhAn = iv;
             } else if (k.equals("gh")) {
                 h.gymHuyHieu = iv;
             } else if (k.equals("gw")) {
                 h.gymTuan = iv;
             } else if (k.equals("gb")) {
                 h.gymTuanBit = iv;
+            } else if (k.equals("z1")) {
+                h.tgNgay = iv;
+            } else if (k.equals("z2")) {
+                h.tgDiemNgay = iv;
+            } else if (k.equals("z3")) {
+                h.tgTuan = iv;
+            } else if (k.equals("z4")) {
+                h.tgDiemTuan = iv;
+            } else if (k.equals("z5")) {
+                h.tgVeHeSo = iv;
+            } else if (k.equals("z6")) {
+                h.tgVeMs = v;
+            } else if (k.equals("z7")) {
+                h.tgVePhutNgay = iv;
+            } else if (k.equals("z8")) {
+                h.tgBuaNgay = iv;
+            } else if (k.equals("z9")) {
+                h.tgBuaChoNgay = iv;
+            } else if (k.equals("za")) {
+                h.tgBuaCongNgay = iv;
+            } else if (k.equals("zb")) {
+                h.tgUtMs = v;
+            } else if (k.equals("zc")) {
+                h.tgUtMsNgay = v;
+            } else if (k.equals("zd")) {
+                h.tgThoat = v;
+            } else if (k.equals("a1")) {
+                h.tdNgay = iv;
+            } else if (k.equals("a2")) {
+                h.tdMsDung = v;
             } else if (k.length() > 1 && k.charAt(0) == 't') {
                 try {
                     h.truot.put(Integer.valueOf(k.substring(1)), Integer.valueOf(iv));

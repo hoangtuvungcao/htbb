@@ -25,7 +25,7 @@ const links = computed<NavigationMenuItem[]>(() => {
     return item
   })
   if (auth.loggedIn.value) {
-    // Nạp tiền tắt mặc định (KPAH_NAP_BAT, quyết định Q10): chỉ hiện khi server bật.
+    // Nạp tiền tắt mặc định (HTBB_NAP_BAT, quyết định Q10): chỉ hiện khi server bật.
     if (site.value?.napBat) ds.push({ label: 'Nạp tiền', to: '/naptien', icon: 'i-lucide-gem' })
     ds.push({ label: 'Kích hoạt', to: '/kichhoat', icon: 'i-lucide-badge-check' })
   }
@@ -60,6 +60,7 @@ const links = computed<NavigationMenuItem[]>(() => {
 
     <template #right>
       <SiteTimKiem />
+      <SiteHoTroZalo class="hidden lg:inline-flex" />
       <UColorModeButton color="neutral" variant="ghost" />
       <ClientOnly>
         <template v-if="auth.loggedIn.value">
@@ -88,6 +89,7 @@ const links = computed<NavigationMenuItem[]>(() => {
     <template #body>
       <UNavigationMenu :items="links" orientation="vertical" class="-mx-2.5" />
       <USeparator class="my-4" />
+      <SiteHoTroZalo kieu="chan" nhan="Hỗ trợ qua Zalo" block class="mb-4" />
       <ClientOnly>
         <div v-if="auth.loggedIn.value" class="flex flex-col gap-2">
           <UButton to="/account" color="neutral" variant="soft" icon="i-lucide-user-round" block>

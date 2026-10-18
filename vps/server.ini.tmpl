@@ -4,8 +4,8 @@
 #  DAY LA NGUON DUY NHAT CUA CAU HINH SERVER.
 #
 #  Sua file nay tren GitHub roi commit -> deploy tu dong sinh lai
-#  /opt/kpah/server.ini tren VPS va khoi dong lai server neu cau hinh doi.
-#  KHONG sua tay /opt/kpah/server.ini nua: lan deploy sau se ghi de.
+#  /opt/htbb/server.ini tren VPS va khoi dong lai server neu cau hinh doi.
+#  KHONG sua tay /opt/htbb/server.ini nua: lan deploy sau se ghi de.
 #
 #  Hai loai gia tri dac biet:
 #    ${TEN_BIEN}    lay tu GitHub Secrets (mat khau - khong bao gio nam trong git).
@@ -27,7 +27,7 @@ limit.ccu=20000
 # CHU Y: phai la MariaDB hoac MySQL 5.7. MySQL 8 da bo ham PASSWORD() ->
 # login server (CheckLoginSocket.jar) khong xac thuc duoc mat khau.
 db.host=localhost:3306
-db.name=kpah_db
+db.name=htbb_db
 db.user=${DB_USER}
 db.password=${DB_PASSWORD}
 # Cho phep db.password de trong. TREN VPS PHAI LUON LA 0.
@@ -36,13 +36,13 @@ db.password=${DB_PASSWORD}
 # vps/sinh-server-ini.sh tu choi cai neu gia tri khac 0. Xem TeamServer.choPhepMatKhauTrong().
 db.choPhepMatKhauTrong=0
 db.maxco=100
-db.nameNap=kpah_db
+db.nameNap=htbb_db
 db.userNap=${DB_USER_NAP}
 db.pass=${DB_PASS_NAP}
 db.maxNap=30
 #
 db.host1=localhost:3306
-db.name1=kpah_db
+db.name1=htbb_db
 db.user1=${DB_USER1}
 db.password1=${DB_PASSWORD1}
 db.maxco1=1
@@ -57,9 +57,9 @@ sv.LG=3
 sv.range=0
 
 # ==== DUONG DAN LINUX ====
-# PHAI co dau / o cuoi. Thu muc phai ton tai va user kpah ghi duoc.
-sv.pathLog=/opt/kpah/log/
-db.run=/opt/kpah/vps/update.sh
+# PHAI co dau / o cuoi. Thu muc phai ton tai va user htbb ghi duoc.
+sv.pathLog=/opt/htbb/log/
+db.run=/opt/htbb/vps/update.sh
 
 sv.createRace=2
 sv.tablerace=tob_race_257
@@ -82,6 +82,16 @@ sv.Luckyexp=1
 sv.ExpQua=1
 sv.CodeTest=0
 sv.EnableAvtiveCheck=1
+# ==== DANG KY TAI KHOAN TRONG GAME (lenh 39, real.cmd.DangKyTrongGame) ====
+# 1 = cho dang ky ngay trong game (jar/Android/PC), 0 = chi tren web.
+# Quy tac + han muc (3/gio, 10/ngay moi IP, gop voi web) o HTBB-Web/shared/data/quy-tac-dang-ky.json.
+sv.dangKyTrongGame=1
+# Kich hoat 5h_active 30 ngay sau khi dang ky trong game:
+#   web = theo HTBB_AUTO_ACTIVATE cua web (web tu ghi cau_hinh 'web.autoActivate'), 1 = luon, 0 = khong.
+sv.dangKyTuKichHoat=web
+# CSDL chua bang team_user (giong HTBB_DB_ACCOUNT cua web) va do tre tra loi chong bot (ms).
+sv.dangKyCsdlTaiKhoan=account
+sv.dangKyTreMs=800
 # So nhan vat toi da moi tai khoan (1..3, client chi ve duoc 3 slot).
 sv.maxCharPerAccount=3
 
@@ -89,7 +99,7 @@ sv.maxCharPerAccount=3
 # Cac so la PHAN TRAM so voi ti le goc: 100 = nhu ban goc, 10 = con 1/10, 0 = tat han.
 # Tu 09/09/2026: CHI la gia tri KHOI TAO LAN DAU, chep 1 lan vao bang SQL cau_hinh
 # luc server khoi dong (INSERT IGNORE, khong ghi de). Sau do sua o day KHONG con
-# tac dung nua - sua qua trang /admin/cauhinh.php hoac bang "setting" trong game.
+# tac dung nua - sua qua trang /admin/cauhinh hoac bang "setting" trong game.
 # Xem docs/cau-hinh-server-ini.md muc 3-4, src/server/CauHinh.java.
 sv.tileXu=4
 sv.tileLuong=10
@@ -102,13 +112,13 @@ sv.chiaXuRoi=30
 
 # ==== TI LE EXP QUAI THUONG (khong dung Boss) ====
 # Cung la GIA TRI KHOI TAO LAN DAU nhu khoi tren, sau do sua qua
-# /admin/cauhinh.php hoac bang "setting". 100 = nhu ban goc.
+# /admin/cauhinh hoac bang "setting". 100 = nhu ban goc.
 # Xem Monster.rcvXpSauGiam(), src/server/CauHinh.java.
 sv.tileExpLv50=10
 sv.tileExpDuoiLv50=50
 
 # ==== TI LE MAU + HE SO EXP VAN TIEU ====
-# Cung la GIA TRI KHOI TAO LAN DAU, sua qua /admin/cauhinh.php sau do.
+# Cung la GIA TRI KHOI TAO LAN DAU, sua qua /admin/cauhinh sau do.
 # sv.tieuNguongMau: 5 nguong CONG DON (Trang/Xanh/Do/Hoan My/Vang) tren thang
 #   100000, PHAI tang dan; phan con lai la Tim. Xem Char.TIEU_NGUONG_MAU,
 #   Char.doInitMonter().
@@ -146,19 +156,22 @@ sv.che_do_pokemon=1
 
 # ==== THIET KE DAI HAN (giai doan 2) ====
 # 1 = bat: kinh te moi (bo luong roi tu quai, xu roi theo cap, nang luong huan luyen, gia nang
-#     cap theo bac + pity, thue cho 6%+1%, phi theo thu nhap), bang EXP moi + tran cap theo mua
-#     + tinh thong, nhiem vu loc theo cap + ve chuong tuan, cong thuc sat thuong moi, boss theo
+#     cap theo bac + pity, thue cho 6%+1%, phi theo thu nhap), bang EXP moi (len cap cham, nang luong
+#     90 phut/ngay, vat pham tang toc) + tinh thong, nhiem vu loc theo cap + ve chuong tuan, cong thuc sat thuong moi, boss theo
 #     pha, goi -95..-99. Can chay sql/pokemon_lau_dai.sql + sql/them_bang_lau_dai.sql truoc.
 # 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
 # Xem docs/cau-hinh-server-ini.md muc 7c, docs/pokemon/KE_HOACH_LAU_DAI_GD2.md.
 sv.lau_dai=0
 # Bat/tat TU DONG: khoi dong lai la server tu chuyen EXP nhan vat sang bang dung voi co (ca chieu tat).
-# Ngay khai truong (yyyy-MM-dd, khong bat buoc): ngay 0 cua tran cap theo mua (60 -> 70 -> 80 -> 91).
-# De trong = lan bat dau tien tu ghi hom nay vao cau_hinh lau_dai.ngay_khai_truong va dung lai.
+# Ngay khai truong (yyyy-MM-dd, khong bat buoc): ngay 0 cua lich su kien / mua PvP / ve mua (va cua tran cap
+# theo mua neu bat). De trong = lan bat dau tien tu ghi hom nay vao cau_hinh lau_dai.ngay_khai_truong va dung lai.
 sv.ngay_khai_truong=
+# Tran cap theo mua 60 -> 70 -> 80 -> 91 -> 95 -> 100 (thiet ke cu). 0 / thieu dong = TAT (18/10/2026: khong tran,
+# noi dung mo theo cap + cot truyen, docs/pokemon/THIET_KE_LAU_DAI.md muc 1.4). 1 = bat lai. Khoi dong lai.
+sv.tran_cap_theo_mua=0
 
 # Gio bao tri tu dong hang ngay: HH:MM (vd 04:45), "tat" = khong tu tat may, de trong = ngau nhien
-# 4:30-5:30 nhu cu. Server tu thoat luc bao tri; vps/kpah-game.service (Restart=always) bat lai.
+# 4:30-5:30 nhu cu. Server tu thoat luc bao tri; vps/htbb-game.service (Restart=always) bat lai.
 sv.gioBaoTri=
 
 # ==== NAP TIEN (docs/pokemon/NAP_TIEN.md) ====
@@ -166,7 +179,7 @@ sv.gioBaoTri=
 #     menu "Cửa hàng & Nạp" o NPC Tong Quan (cua hang trang tri + tien ich, tu do, cho trang
 #     tri co thue), tieu luong = dot (khong doi ra xu/diem VIP/ve su kien), chan chuyen luong
 #     truc tiep, bo he so TileNap. CHI BAT KHI sv.lau_dai=1 (fail closed). Can chay
-#     sql/pokemon_nap_tien.sql truoc, va web dat KPAH_NAP_BAT=true.
+#     sql/pokemon_nap_tien.sql truoc, va web dat HTBB_NAP_BAT=true.
 # CHI BAT SAU KHI CO GIAY PHEP hinh anh / IP (xem docs/pokemon/NAP_TIEN.md muc 9).
 # 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
 sv.nap_tien=0
@@ -222,9 +235,71 @@ sv.dosBanSec=300
 # luong thien, va tat o VPS la mo cua cho spam lenh -51 (doc anh tu dia).
 sv.tranGoiThuong=300
 sv.tranGoiTaiNguyen=600
+# Lenh TRA CUU chi doc (7 = hoi mau quai) dem rieng: client that chi hoi quai dang thay,
+# bot quet id moi cham tran 300 lenh thuong. Xem docs/cau-hinh-server-ini.md muc 12e.
+sv.tranGoiTraCuu=600
+# IP KHONG bi dem ngap goi - CHI cho may chay bot tai (tools/pokemon/kiem_tai). VPS de trong.
+#sv.tranGoiMienIp=
+
+# ==== NHAT KY (LOG) + CHONG SPAM (docs/cau-hinh-server-ini.md muc 12) ====
+# Moi dong duoi day la GIA TRI MAC DINH trong ma nguon (thieu dong = dung so nay). Muon doi
+# thi bo dau # roi sua. Chi doc luc khoi dong.
+#
+# -- Nhat ky: muc LOI / CANH_BAO / THONG_TIN / GO_LOI. Tep o <sv.pathLog>/nhat_ky/
+#    (may_chu-yyyyMMdd.log + kiem_toan-yyyyMMdd.log), KHONG de chung /opt/htbb/log/*.log.
+#sv.log.muc=THONG_TIN
+#sv.log.mucTep=THONG_TIN
+#sv.log.tat=GOI3,GOI5,GOI26,VKTT,SQL,LUU_CHAR
+#sv.log.kiemToan=ADMIN,GM,NAP,NAP_TIEN,GIFTCODE,CAM,BAN,KINH_TE,KINHTE,CHONG_SPAM
+#sv.log.lapToiDa=5
+#sv.log.loaiToiDa=120
+#sv.log.cuaSoGiay=60
+#sv.log.cuaSoStackGiay=600
+#sv.log.hangDoi=50000
+#sv.log.tep=1
+#sv.log.thuMuc=
+#sv.log.tepToiDaMB=100
+#sv.log.soTepMoiNgay=5
+#sv.log.giuNgay=14
+#sv.log.giuNgayKiemToan=90
+#
+# -- Chong spam chat: nhip "so/giay" (cua so truot), admin mien.
+#sv.spam.bat=1
+#sv.spam.chat.gan=5/10
+#sv.spam.chat.rieng=6/10
+#sv.spam.chat.theGioi=1/30
+#sv.spam.theGioiToanServer=12/60
+#sv.spam.chat.doi=8/10
+#sv.spam.chat.bang=8/10
+#sv.spam.trungLapGiay=30
+#sv.spam.chanQuangCao=1
+#sv.spam.quangCaoThem=
+#sv.spam.viPhamCam=4
+#sv.spam.viPhamQuenGiay=600
+#sv.spam.camGiay=60,300,1800,7200
+#sv.spam.bacQuenGio=24
+#sv.spam.baoCachGiay=5
+#
+# -- Chong spam thao tac (vuot nhip = bo thao tac, khong cat ket noi).
+#sv.spam.hd.moiDoi=4/10
+#sv.spam.hd.moiBang=4/10
+#sv.spam.hd.ketBan=4/10
+#sv.spam.hd.moiGiaoDich=4/10
+#sv.spam.hd.npc=25/5
+#sv.spam.hd.raoBan=6/30
+#sv.spam.hd.muaBan=25/5
+#sv.spam.hd.dangKy=5/60
+#
+# -- Thong bao toan may chu (chuc mung nhan qua, bung phat sinh thai, boss): gioi han + gop.
+#sv.thongBao.bat=1
+#sv.thongBao.toiDa=6
+#sv.thongBao.cuaSoGiay=60
+#sv.thongBao.moiLoai=3
+#sv.thongBao.trungLapGiay=120
+#sv.thongBao.gopGiay=15
 
 # ==== SU KIEN ====
-# Tu 30/08/2026 cho bat/tat su kien la TRANG QUAN TRI /admin/sukien.php (bang
+# Tu 30/08/2026 cho bat/tat su kien la TRANG QUAN TRI /admin/sukien (bang
 # tob_su_kien trong CSDL), khong phai file nay. Moi su kien deu bat duoc, khong con
 # moc ngay ghi cung nao trong ma nguon nua - xem src/real/SuKien.java.
 #
@@ -248,9 +323,9 @@ sv.isSuKienTetduonglich2024=0
 #
 # sv.suKienTuKhoiDongLai : 1 = tu khoi dong lai khi thiet lap doi (mac dinh), 0 = tat han
 #                          - luc do lich hen VAN chay, chi la nguoi van hanh phai tu
-#                          chay `systemctl restart kpah-game`.
+#                          chay `systemctl restart htbb-game`.
 # sv.suKienGomGiay       : doi bao lau khong con thay doi nao nua moi khoi dong lai.
-#                          Kep trong 30..3600. DUNG HA XUONG THAP: kpah-game.service dat
+#                          Kep trong 30..3600. DUNG HA XUONG THAP: htbb-game.service dat
 #                          StartLimitBurst=5 / 300s, bat vai su kien lien tay ma moi lan
 #                          mot lan khoi dong lai la unit vao trang thai "failed" va server
 #                          NAM HAN cho toi khi co nguoi ssh vao.
@@ -285,7 +360,7 @@ sv.thuNghiemThuCuoi=
 # tgct : xem gio chiem thanh dang dat
 
 # ==== SU KIEN WORLD CUP (binh chon Messi / Ronaldo) ====
-# CACH BAT CHINH THUC gio la trang quan tri /admin/sukien.php (hai dong "World Cup").
+# CACH BAT CHINH THUC gio la trang quan tri /admin/sukien (hai dong "World Cup").
 # Ba dong duoi day chi con la GIA TRI MAC DINH cho hai cong do khi bang tob_su_kien
 # chua co dong tuong ung. Dinh dang "yyyy-MM-dd HH:mm:ss", thu tu batDau < ketThuc <=
 # hanNhanQua; de trong bat ky dong nao = mac dinh TAT.

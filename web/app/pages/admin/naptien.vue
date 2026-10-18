@@ -129,7 +129,7 @@ const giaLap = (d: Don, thieu = false) => gui('/api/admin/naptien/gia-lap', { ma
 const cotDon = [
   { accessorKey: 'id', header: '#' },
   { accessorKey: 'ma_don', header: 'Mã đơn' },
-  { accessorKey: 'username', header: 'Tài khoản / nhân vật' },
+  { accessorKey: 'username', header: 'Tài khoản / Pokémon' },
   { accessorKey: 'ten_goi', header: 'Gói' },
   { accessorKey: 'so_tien', header: 'Số tiền', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
   { accessorKey: 'trang_thai', header: 'Trạng thái' },
@@ -222,23 +222,28 @@ onMounted(() => {
       variant="solid"
       icon="i-lucide-octagon-alert"
       title="NẠP TIỀN ĐANG BẬT NHƯNG CHƯA XÁC NHẬN GIẤY PHÉP"
-      description="Asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo/The Pokémon Company. Thu tiền khi chưa có giấy phép là vi phạm. Tắt KPAH_NAP_BAT ngay, hoặc khi đã có giấy phép bằng văn bản thì đặt NAP_DA_CO_GIAY_PHEP=1 (HTBB/docs/pokemon/NAP_TIEN.md mục 9)."
+      description="Asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo/The Pokémon Company. Thu tiền khi chưa có giấy phép là vi phạm. Tắt HTBB_NAP_BAT ngay, hoặc khi đã có giấy phép bằng văn bản thì đặt NAP_DA_CO_GIAY_PHEP=1 (HTBB/docs/pokemon/NAP_TIEN.md mục 9)."
     />
     <UAlert
       v-if="tq?.canhBao.yeuCauBat && tq.canhBao.lyDoTat.length"
       color="error"
       variant="solid"
       icon="i-lucide-shield-x"
-      title="KPAH_NAP_BAT=true nhưng nạp BỊ TẮT (fail closed): cấu hình chưa an toàn"
+      title="HTBB_NAP_BAT=true nhưng nạp BỊ TẮT (fail closed): cấu hình chưa an toàn"
       :description="tq.canhBao.lyDoTat.join(' · ')"
     />
-    <UAlert v-else-if="tq && !tq.canhBao.napBat" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (KPAH_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, sql/pokemon_nap_tien.sql, sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
-    <UAlert v-if="tq?.canhBao.sandbox" color="warning" variant="subtle" icon="i-lucide-flask-conical" title="Chế độ thử (KPAH_NAP_SANDBOX=1)" description="Có nút Giả lập thanh toán và /api/nap/webhook-mock. KHÔNG bật trên máy thật." />
+    <UAlert v-else-if="tq && !tq.canhBao.napBat" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (HTBB_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, sql/pokemon_nap_tien.sql, sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
+    <UAlert v-if="tq?.canhBao.sandbox" color="warning" variant="subtle" icon="i-lucide-flask-conical" title="Chế độ thử (HTBB_NAP_SANDBOX=1)" description="Có nút Giả lập thanh toán và /api/nap/webhook-mock. KHÔNG bật trên máy thật." />
     <UAlert v-if="tq?.canhBao.napBat && !tq.canhBao.sepay && !tq.canhBao.casso" color="warning" variant="subtle" icon="i-lucide-triangle-alert" title="Chưa cấu hình webhook (SePay / Casso)" description="Đơn KHÔNG tự xác nhận. Đối chiếu sao kê rồi bấm Xác nhận (nhập mã giao dịch)." />
-    <UAlert v-if="tq?.canhBao.napBat && tq.canhBao.taiKhoanMacDinh" color="error" variant="subtle" icon="i-lucide-landmark" title="Chưa đặt tài khoản nhận tiền" description="Đặt KPAH_TPBANK_ACCOUNT_NO / KPAH_TPBANK_ACCOUNT_NAME (và KPAH_NAP_BANK_BIN nếu không phải TPBank)." />
-    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng nap_*" description="Chạy HTBB/sql/pokemon_nap_tien.sql trên kpah_db." />
+    <UAlert v-if="tq?.canhBao.napBat && tq.canhBao.taiKhoanMacDinh" color="error" variant="subtle" icon="i-lucide-landmark" title="Chưa đặt tài khoản nhận tiền" description="Đặt HTBB_TPBANK_ACCOUNT_NO / HTBB_TPBANK_ACCOUNT_NAME (và HTBB_NAP_BANK_BIN nếu không phải TPBank)." />
+    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng nap_*" description="Chạy HTBB/sql/pokemon_nap_tien.sql trên htbb_db." />
     <UAlert v-else-if="tq?.canhBao.napBat && serverCham" color="warning" variant="subtle" icon="i-lucide-server-off" title="Server game không báo nhịp nạp" :description="tq.serverGame ? `Lần cuối ${tq.serverGame.soGiay} giây trước.` : 'Chưa từng báo — kiểm tra sv.nap_tien=1 và sv.lau_dai=1 trong server.ini rồi khởi động lại.'" />
 
+    <!-- Công tắc bán / hoàn tiền / trần: CÙNG khoá với trang Cấu hình hệ thống (nhóm Nạp tiền) — không có công tắc thứ hai. -->
+    <details class="rounded-lg border border-default">
+      <summary class="cursor-pointer select-none px-4 py-2 text-sm font-medium">Công tắc bán, hoàn tiền, trần chi tiêu (Cấu hình hệ thống)</summary>
+      <div class="p-3"><AdminHethongCauHinhNhom nhom="nap_tien" /></div>
+    </details>
     <UTabs v-model="tab" :items="tabs" :content="false" class="w-full" />
 
     <!-- ============ ĐƠN ============ -->
@@ -251,7 +256,7 @@ onMounted(() => {
           <UFormField label="Loại">
             <USelect v-model="locLoai" :items="itemsLoai" class="w-40" />
           </UFormField>
-          <UFormField label="Tìm" hint="mã đơn, tài khoản, nhân vật hoặc #id" class="min-w-64 flex-1">
+          <UFormField label="Tìm" hint="mã đơn, tài khoản, Pokémon hoặc #id" class="min-w-64 flex-1">
             <UInput v-model="tim" icon="i-lucide-search" placeholder="HT7F3AQ2BX / hoahv / #12" class="w-full" />
           </UFormField>
           <UButton type="submit" icon="i-lucide-search">
@@ -285,7 +290,7 @@ onMounted(() => {
               {{ row.original.nha_cung_cap }} · {{ row.original.ma_gd_ncc }}
             </div>
             <div v-if="row.original.trang_thai === 'da_cong' && !Number(row.original.da_luu_nv)" class="text-xs text-error">
-              server chưa lưu nhân vật
+              server chưa lưu Pokémon
             </div>
           </template>
           <template #tao_luc-cell="{ row }">
@@ -322,11 +327,11 @@ onMounted(() => {
       </div>
       <p class="text-sm text-muted">
         Trần nạp mỗi tài khoản: {{ vnd(tq.tran?.tuan ?? 0) }}/tuần, {{ vnd(tq.tran?.thang ?? 0) }}/tháng (bảng nap_cau_hinh, kẹp ≤ 5.000.000 đ).
-        Server game: {{ tq.serverGame ? `${tq.serverGame.soGiay} giây trước` : 'chưa báo nhịp' }}. Job dò SePay (lỡ webhook): {{ tq.canhBao.jobSepay ? 'đang chạy' : 'tắt (KPAH_SEPAY_API_TOKEN trống)' }}.
+        Server game: {{ tq.serverGame ? `${tq.serverGame.soGiay} giây trước` : 'chưa báo nhịp' }}. Job dò SePay (lỡ webhook): {{ tq.canhBao.jobSepay ? 'đang chạy' : 'tắt (HTBB_SEPAY_API_TOKEN trống)' }}.
       </p>
       <UCard v-if="tq.choCongLau?.length">
         <template #header>
-          <b>Đã thanh toán &gt; 10 phút mà chưa vào game</b> <span class="text-sm text-muted">(nhân vật chưa online, hoặc server game tắt nạp)</span>
+          <b>Đã thanh toán &gt; 10 phút mà chưa vào game</b> <span class="text-sm text-muted">(Pokémon chưa online, hoặc server game tắt nạp)</span>
         </template>
         <ul class="text-sm">
           <li v-for="d in tq.choCongLau" :key="d.id">
@@ -347,7 +352,7 @@ onMounted(() => {
       </UCard>
       <UCard v-if="tq.congChuaLuu?.length">
         <template #header>
-          <b class="text-error">Đã cộng nhưng server chưa lưu nhân vật</b> <span class="text-sm text-muted">(kiểm tra nhân vật trong game, cộng tay nếu mất)</span>
+          <b class="text-error">Đã cộng nhưng server chưa lưu Pokémon</b> <span class="text-sm text-muted">(kiểm tra Pokémon trong game, cộng tay nếu mất)</span>
         </template>
         <ul class="text-sm">
           <li v-for="d in tq.congChuaLuu" :key="d.id">
@@ -400,7 +405,7 @@ onMounted(() => {
 
     <!-- ============ CỬA HÀNG ============ -->
     <template v-else-if="tab === 'cua_hang'">
-      <UAlert color="info" variant="subtle" icon="i-lucide-shield-check" title="Không bán sức mạnh" description="Chỉ 3 cách trao: trang_tri (sở hữu trang trí), mo_rong_tui (+42 ô hành trang), doi_ten. Không chỉ số, tên không chứa từ cấm (EXP, x2, tỉ lệ, đá, chỉ số...). Server game tự bỏ dòng sai luật và nạp lại sau ≤ 60 giây. Nhóm xoay 1–4 = bán theo tuần (xoay vòng 4 tuần)." />
+      <UAlert color="info" variant="subtle" icon="i-lucide-shield-check" title="Không bán sức mạnh" description="Chỉ 4 cách trao: trang_tri (sở hữu trang trí), mo_rong_tui (+42 ô hành trang), doi_ten, tang_toc (chỉ 5 mã cố định: ve_exp_15, ve_exp_2, bua_the_luc, uy_thac, keo_hiem — giá cố định, giới hạn mua/tuần, chỉ EXP, dùng chung trần 60 điểm/ngày, 210/tuần với bản khoá kiếm bằng chơi). Không chỉ số, tên không chứa từ cấm (EXP, x2, tỉ lệ, đá, chỉ số...) trừ món tăng tốc. Server game tự bỏ dòng sai luật và nạp lại sau ≤ 60 giây. Nhóm xoay 1–4 = bán theo tuần (xoay vòng 4 tuần)." />
       <UCard :ui="{ body: 'p-0 sm:p-0' }">
         <UTable :data="mon" :columns="[{ accessorKey: 'ma', header: 'Mã' }, { accessorKey: 'ten', header: 'Tên' }, { accessorKey: 'nhom', header: 'Nhóm' }, { accessorKey: 'trao', header: 'Trao' }, { accessorKey: 'gia_luong', header: 'Lượng' }, { accessorKey: 'nhom_xoay', header: 'Xoay' }, { accessorKey: 'loi', header: 'Kiểm luật' }, { id: 'sua', header: '' }]">
           <template #ten-cell="{ row }">
@@ -527,7 +532,7 @@ onMounted(() => {
           <UFormField label="Tài khoản">
             <UInput v-model="ct.username" class="w-full" />
           </UFormField>
-          <UFormField label="ID nhân vật (tob_char.id)">
+          <UFormField label="ID Pokémon (tob_char.id)">
             <UInputNumber v-model="ct.charId" :min="1" class="w-full" />
           </UFormField>
           <UFormField label="Gói">
@@ -603,7 +608,7 @@ onMounted(() => {
             <UFormField label="Hạn (ngày, 0 = vĩnh viễn)">
               <UInputNumber v-model="suaMon.han_ngay" :min="0" class="w-full" />
             </UFormField>
-            <UFormField label="Tối đa / nhân vật (0 = không)">
+            <UFormField label="Tối đa / Pokémon (0 = không)">
               <UInputNumber v-model="suaMon.gioi_han" :min="0" class="w-full" />
             </UFormField>
             <UFormField label="Nhóm xoay (0–4)">

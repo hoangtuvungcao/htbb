@@ -7,14 +7,14 @@ import game.model.Actor;
 import game.model.AnimalMove;
 import game.model.AnimateEffect;
 import game.model.AttackResult;
-import game.model.BossTL;
-import game.model.BossThanLan;
+import game.model.BossGyarados;
+import game.model.BossSalamence;
 import game.model.Boss_Dragon;
-import game.model.Boss_Eagle;
-import game.model.Boss_Eyes;
-import game.model.Boss_Snake;
-import game.model.Boss_TuongQuan;
-import game.model.Boss_Xuong;
+import game.model.BossZapdos;
+import game.model.BossGengar;
+import game.model.BossSerperior;
+import game.model.BossAegislash;
+import game.model.BossDusknoir;
 import game.model.CMLocation;
 import game.model.Char;
 import game.model.CharBuff;
@@ -24,7 +24,7 @@ import game.model.ChatInfo;
 import game.model.ChatPopup;
 import game.model.ClanInfo;
 import game.model.Command;
-import game.model.CongThanh;
+import game.model.CongGym;
 import game.model.Cout;
 import game.model.DropGemItem;
 import game.model.DropItem;
@@ -72,13 +72,13 @@ import game.model.Skill_Kham;
 import game.model.Sound;
 import game.model.SubEff;
 import game.model.Target;
-import game.model.ThanThu;
+import game.model.PokemonHuyenThoai;
 import game.model.Tilemap;
 import game.model.TimecountDown;
 import game.model.Tree;
-import game.model.TruTranThanh;
+import game.model.TruNangLuong;
 import game.model.WayPoint;
-import game.model.XaphuTemplate;
+import game.model.PidgeotBayTemplate;
 import game.model.arrow.Arrow;
 import game.model.arrow.IArrow;
 import game.model.arrow.MagicBeam;
@@ -86,7 +86,7 @@ import game.model.arrow.WeaponsAngleBoss;
 import game.model.arrow.WeaponsFire;
 import game.model.arrow.WeaponsLazer;
 import game.model.arrow.WeaponsMango;
-import game.model.monster.CuongThi;
+import game.model.monster.QuaiYamask;
 import game.model.monster.Pet;
 import game.model.skill.SkillAnimate;
 import game.model.skill.SkillManager;
@@ -263,7 +263,7 @@ public class GameScr extends Screen {
     public static Vector serverInfo = new Vector();
     public static int tempIDActorParty = -1;
     public static byte idItemClanquest = -1;
-    public static String infoQuest = "Giết 10 con nhím, sau đó quay về nói chuyện với  NPC";
+    public static String infoQuest = "Hạ 10 con nhím, sau đó quay về nói chuyện với  NPC";
     public static String info_gif_quest = null;
     public static String titleQuest = "";
     public static Vector aeo = new Vector();
@@ -279,7 +279,7 @@ public class GameScr extends Screen {
     public static Vector msgWorld = new Vector();
     public static Vector savemsgWorld = new Vector();
     public static Boss_Dragon[] bDragon = new Boss_Dragon[1];
-    static String[] nameCountry = {"Thanh Long", "Hắc Hổ"};
+    static String[] nameCountry = {"Kanto", "Johto"};
     public static byte typeOptionFocus = 0;
     static Random r = new Random(System.currentTimeMillis());
     public static short dtmove = 250;
@@ -744,7 +744,7 @@ public class GameScr extends Screen {
 
     @Override
     public void update() {
-        PauseMenu.autoCheDoTick();
+        AutoGuard.tick(); // Tự động đánh chính thức + Menu nhanh (code mod dùng chung)
         for (int i = 0; i < this.VecDataEff.size(); i++) {
             DataSkillEff data = (DataSkillEff) this.VecDataEff.elementAt(i);
             if (data != null) {
@@ -1184,6 +1184,13 @@ public class GameScr extends Screen {
     }
 
     public static void addChat(Actor ac, String str, int time) {
+        // pokemon: lời NPC (và lời người chơi đáp lại khi đang trò chuyện) -> hộp thoại đáy màn kiểu GBA
+        if (game.pokemon.PokeBody.CHE_DO_POKEMON && ac != null && (ac instanceof NPC || game.pokemon.HopThoaiDuoi.dangBat() && Canvas.gameScr != null && ac == Canvas.gameScr.mainChar)) {
+            String ten = ac instanceof NPC ? ((NPC) ac).name : ((Char) ac).name;
+            game.pokemon.HopThoaiDuoi.dat(ten, str, time);
+            ac.chat = null;
+            return;
+        }
         ac.chat = new ChatPopup(time, str, 1);
         ac.chat.setPos(ac.x, ac.y - ac.height);
     }
@@ -1289,7 +1296,7 @@ public class GameScr extends Screen {
 
     private boolean doIntro() {
         if (Tilemap.lv == 105) {
-            String[] intro = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao đấng anh hào, ẩn sỹ.", "1Năm xưa ta có người anh em kết nghĩa là Hai Minh", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng nghĩa sĩ này", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
+            String[] intro = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao nhà huấn luyện tài ba.", "1Năm xưa ta có người bạn thân là Xatu", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng huấn luyện này", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
             if ((this.focusedActor == null || !(this.focusedActor instanceof NPC)) && Canvas.currentDialog == null) {
                 Canvas.keyHold[2] = true;
                 this.indexContent = -1;
@@ -1581,7 +1588,14 @@ public class GameScr extends Screen {
         }
         if (Canvas.isKeyPressed(11)) {
             Vector menu = new Vector();
-            // pokemon: Menu nhanh của mod (Luyện cấp, Giao hàng, PK...) cho máy bấm phím
+            // pokemon: Tự động đánh chính thức (máy chủ điều khiển) + Menu nhanh (âm thanh, nút) cho máy bấm phím
+            menu.addElement(new Command("Tự động đánh", new IAction() {
+                @Override
+                public void perform() {
+                    Canvas.endDlg();
+                    BangTuDong.mo();
+                }
+            }));
             menu.addElement(new Command("Menu nhanh", new IAction() {
                 @Override
                 public void perform() {
@@ -1773,17 +1787,22 @@ public class GameScr extends Screen {
                     int index = getIndexArrMap();
                     final String[] name = Res.getNameMap(index, toMap.toM);
                     final short[] local = Res.getLocation(index, toMap.toM);
+                    if (name == null || local == null) {
+                        // map khong co trong bang vi tri (goi 105) - vd dau truong 227: truoc day NullPointer moi
+                        // khung hinh khi dung canh o cong (BotChucNang cong_tat_ca). Bo qua o cong nay.
+                        return false;
+                    }
                     Vector menuItem = new Vector();
                     for (int i = 0; i < name.length; i++) {
                         final int k = i;
                         if (!name[i].equals("")) {
-                            menuItem.addElement(new Command(name[i], new IAction() {
+                            menuItem.addElement(new Command(game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[i]) : name[i], new IAction() {
                                 @Override
                                 public void perform() {
                                     GameService.gI().changeMap(local[k * 3], local[(k * 3) + 1], local[(k * 3) + 2]);
                                     ChangScr.gI().switchToMe();
                                     Res.removeMonsterTemplet();
-                                    GameScr.nameMap = name[k];
+                                    GameScr.nameMap = game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[k]) : name[k];
                                 }
                             }));
                         }
@@ -1821,6 +1840,10 @@ public class GameScr extends Screen {
                 ChangScr.gI().setMap(this.map, 0, 0);
                 saveAutoFight = false;
                 autoFight = false;
+                return;
+            }
+            // pokemon: server moi -> hop thoai guc / hoi sinh (HopHoiSinh, lenh -101)
+            if (game.pokemon.HopHoiSinh.moLai()) {
                 return;
             }
             Canvas.msgdlg.setInfo("Quay về làng.", new Command("Về làng", new IAction() {
@@ -1862,6 +1885,10 @@ public class GameScr extends Screen {
                 ChangScr.gI().setMap(this.map, 0, 0);
                 saveAutoFight = false;
                 autoFight = false;
+                return;
+            }
+            // pokemon: server moi -> hop thoai guc / hoi sinh (HopHoiSinh, lenh -101)
+            if (game.pokemon.HopHoiSinh.moLai()) {
                 return;
             }
             Canvas.msgdlg.setInfo("Quay về làng.", new Command("Về làng", new IAction() {
@@ -2035,7 +2062,9 @@ public class GameScr extends Screen {
             return;
         }
         if (potionType == 19) {
-            if (this.map != 0) {
+            // Lang co 6 ban (0/301, 70/1701, 80/1901 - server MapDoMenu mapstart): truoc chi chan map 0
+            // nen o lang khac van mat binh ve thanh ma chi bay ve dung lang dang dung.
+            if (this.map != 0 && this.map != 301 && this.map != 70 && this.map != 1701 && this.map != 80 && this.map != 1901) {
                 Canvas.gameScr.mainChar.timeComeHome = System.currentTimeMillis();
                 Canvas.gameScr.mainChar.comeHome = true;
                 Canvas.gameScr.mainChar.state = (byte) 4;
@@ -2119,7 +2148,7 @@ public class GameScr extends Screen {
                     }
                 }));
                 if ((Canvas.gameScr.mainChar.isMaster == 0 || Canvas.gameScr.mainChar.isMaster == 1 || Canvas.gameScr.mainChar.isMaster == 2) && ((Char) this.focusedActor).idClan == -1) {
-                    menuItems.addElement(new Command("Mời vào bang hội", new IAction() {
+                    menuItems.addElement(new Command("Mời vào đội", new IAction() {
                         @Override
                         public void perform() {
                             GameScr.this.gameService.sendRequestAddClan(GameScr.this.focusedActor.ID, (byte) 0, false);
@@ -2127,7 +2156,7 @@ public class GameScr extends Screen {
                     }));
                 }
                 if (((Char) this.focusedActor).idClan != -1) {
-                    menuItems.addElement(new Command("Xem thông tin bang hội", new IAction() {
+                    menuItems.addElement(new Command("Xem thông tin đội", new IAction() {
                         @Override
                         public void perform() {
                             GameScr.this.gameService.requestClanInfo(((Char) GameScr.this.focusedActor).idClan);
@@ -2142,7 +2171,7 @@ public class GameScr extends Screen {
                         GameScr.this.gameService.requestSomeOneInfo(GameScr.this.focusedActor.ID, (byte) 0);
                     }
                 }));
-                menuItems.addElement(new Command("Xuống ngựa", new IAction() {
+                menuItems.addElement(new Command("Xuống thú cưỡi", new IAction() {
                     @Override
                     public void perform() {
                         GameScr.this.unRideHorse();
@@ -2159,7 +2188,7 @@ public class GameScr extends Screen {
 
     public void unRideHorse() {
         if (this.mainChar.useHorse != -1 || this.mainChar.idhorse > -1) {
-            Canvas.startYesNoDlg("Ngựa sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống ngựa không ?", new IAction() {
+            Canvas.startYesNoDlg("Thú cưỡi sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống thú cưỡi không ?", new IAction() {
                 @Override
                 public void perform() {
                     GameScr.this.gameService.unRideHorse((byte) 0);
@@ -2365,7 +2394,7 @@ public class GameScr extends Screen {
                         Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
                         if (allquest.size() > 0 && !this.focusedActor.isNpcChar()) {
                             if (posNpcReceiveClan != null && ((NPC) this.focusedActor).type == posNpcReceiveClan.index) {
-                                allquest.addElement(new Command("Nhiệm vụ Bang hội", new IAction() {
+                                allquest.addElement(new Command("Nhiệm vụ Đội", new IAction() {
                                     @Override
                                     public void perform() {
                                         GameScr.this.gameService.questClan(3);
@@ -2576,7 +2605,7 @@ public class GameScr extends Screen {
                     if (GameScr.this.mainChar.haveItemImbue()) {
                         GameScr.this.gameService.requestImbue(0);
                     } else {
-                        Canvas.startOKDlg("Bạn chưa có nguyên tố để luyện, hãy đến nhà lão Địa chủ mua rồi quay lại đây.");
+                        Canvas.startOKDlg("Bạn chưa có nguyên tố để luyện, hãy đến nhà Persian mua rồi quay lại đây.");
                     }
                 }
             }));
@@ -2734,7 +2763,7 @@ public class GameScr extends Screen {
         @Override
         public void perform() {
             Vector item = new Vector();
-            item.addElement(new Command("Vũ khí", new AnonymousClass45(this)));
+            item.addElement(new Command("Đồ cầm tay", new AnonymousClass45(this)));
             item.addElement(new Command("Quần áo", new AnonymousClass48(this)));
             item.addElement(new Command("Tất cả", new AnonymousClass51(this)));
             Canvas.menu.startAt(item, 3);
@@ -2834,13 +2863,13 @@ public class GameScr extends Screen {
 
         @Override
         public void perform() {
-            final XaphuTemplate xp = Res.getXaphu();
+            final PidgeotBayTemplate xp = Res.getXaphu();
             if (xp != null) {
                 Vector menuItem = new Vector();
                 for (int i = 0; i < xp.mapID.length; i++) {
                     final int aa = i;
                     final int idm = xp.mapID[aa];
-                    Command cmd = new Command(Res.nameBigMap[xp.mapID[aa]], new IAction() {
+                    Command cmd = new Command(game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(Res.nameBigMap[xp.mapID[aa]]) : Res.nameBigMap[xp.mapID[aa]], new IAction() {
                         @Override
                         public void perform() {
                             if (xp.price[aa] <= GameScr.this.mainChar.charXu) {
@@ -2865,14 +2894,14 @@ public class GameScr extends Screen {
         Vector menuItem = new Vector();
         for (int i = 0; i < name.length; i++) {
             final int k = i;
-            menuItem.addElement(new Command(name[i], new IAction() {
+            menuItem.addElement(new Command(game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[i]) : name[i], new IAction() {
                 @Override
                 public void perform() {
                     GameScr.this.gameService.doMove2Map((byte) idXphu, local[k * 3]);
                     ChangScr.gI().switchToMe();
                     ChangScr.gI().setMap(GameScr.this.map, 0, 0);
                     Res.removeMonsterTemplet();
-                    GameScr.nameMap = name[k];
+                    GameScr.nameMap = game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[k]) : name[k];
                 }
             }));
         }
@@ -3056,6 +3085,7 @@ public class GameScr extends Screen {
         paintPosNPCQuest(g);
         paintPoint(g, posNpcReceiveClan, 1);
         paintPoint(g, this.posBoss, 2);
+        game.pokemon.SinhThai.veMini(g);
         g.setColor(16516117);
         for (int i2 = 0; i2 < Char.party.size(); i2++) {
             PartyInfo p1 = (PartyInfo) Char.party.elementAt(i2);
@@ -3148,6 +3178,7 @@ public class GameScr extends Screen {
 
     @Override
     public void paint(Graphics g) {
+        Font.nenSang = false;   // pokemon: HUD / bản đồ: chữ trắng
         if (!this.readyGetGameLogic) {
             return;
         }
@@ -3234,7 +3265,7 @@ public class GameScr extends Screen {
                             if ((actor.y >> 4) > b) {
                                 break;
                             }
-                            if (((((actor.catagory == 0 && paintChar == 1) || actor.ID == this.mainChar.ID || actor.catagory != 0) && (actor.y >> 4) == b && actor.y <= this.gssye * 16 && actor.y >= this.gssy * 16) || actor.allwayPaint()) && !(actor instanceof CongThanh)) {
+                            if (((((actor.catagory == 0 && paintChar == 1) || actor.ID == this.mainChar.ID || actor.catagory != 0) && (actor.y >> 4) == b && actor.y <= this.gssye * 16 && actor.y >= this.gssy * 16) || actor.allwayPaint()) && !(actor instanceof CongGym)) {
                                 actor.paint(g);
                             }
                         } else if (actor.catagory == 2 && actor.typeLimit != 1 && canPaintNPC_SV(actor)) {
@@ -3294,6 +3325,8 @@ public class GameScr extends Screen {
                 p.paint(g);
             }
         }
+        // pokemon (hệ sinh thái): phao câu, cờ mốc đua, điểm đào
+        game.pokemon.SinhThai.veTheGioi(g);
         if (effAnimate.size() > 0 && !Tilemap.isOfflineMap && effAnimate.size() > 0) {
             for (int i8 = 0; i8 < effAnimate.size(); i8++) {
                 AnimateEffect ani = (AnimateEffect) effAnimate.elementAt(i8);
@@ -3302,6 +3335,8 @@ public class GameScr extends Screen {
                 }
             }
         }
+        // pokemon (hệ sinh thái): phủ đêm theo giờ
+        game.pokemon.SinhThai.veDem(g);
         if (charcountdonw != null) {
             charcountdonw.paint(g, objcountDown.x - 30, (objcountDown.y - 40) - objcountDown.getyHorse());
         }
@@ -3522,6 +3557,12 @@ public class GameScr extends Screen {
     }
 
     private void doChatFromMe(String text) {
+        if (text != null && "cauca".equals(text.trim().toLowerCase())) {
+            // hệ sinh thái: chỉ câu ở HỒ - xa hồ thì báo, không gửi, không ném cần
+            if (!game.pokemon.SinhThai.thuCau()) {
+                return;
+            }
+        }
         if (typechat == CHAT_NORMAL) {
             this.mainChar.chat = null;
             addChat(this.mainChar, text, 200);
@@ -3606,7 +3647,7 @@ public class GameScr extends Screen {
         }
         int xb = 35;
         int wb = W - xb - 5;
-        game.pokemon.GiaoDien.thanh(g, xb, 16, wb, 6, this.mainChar.hp, this.mainChar.maxhp, 0);
+        game.pokemon.GiaoDien.thanhHP(g, xb, 16, wb, 6, this.mainChar.hp, this.mainChar.maxhp);
         game.pokemon.GiaoDien.thanh(g, xb, 22, wb, 5, this.mainChar.mp, this.mainChar.maxmp, 1);
         game.pokemon.GiaoDien.thanh(g, xb, 27, wb, 4, this.mainChar.lvpercent, 1000, 2);
         if (this.mainChar.killer > 0) {
@@ -3746,7 +3787,7 @@ public class GameScr extends Screen {
             }
             if (coMau) {
                 long hp = la.hp <= 0 ? 0 : la.hp;
-                game.pokemon.GiaoDien.thanh(g, x0 + 5, 18, W - 40, 6, hp, la.maxhp, 0);
+                game.pokemon.GiaoDien.thanhHP(g, x0 + 5, 18, W - 40, 6, hp, la.maxhp);
                 String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
                 int wSo = Font.smallFont.getWidth(so) + 6;
                 game.pokemon.GiaoDien.khoi(g, x0 + 5, 25, wSo, 7, 2, game.pokemon.GiaoDien.VIEN);
@@ -4176,14 +4217,14 @@ public class GameScr extends Screen {
                         this.mainChar.attkPower = mdi.hpLost;
                     }
                     if (this.mainChar.kilAllMonsterQuest(m.monster_type)) {
-                        addChat(new ChatInfo("", new StringBuffer("Giết ").append(this.mainChar.infoQuest).append(" ").append(m.getDisplayName()).toString(), 0));
+                        addChat(new ChatInfo("", new StringBuffer("Hạ ").append(this.mainChar.infoQuest).append(" ").append(m.getDisplayName()).toString(), 0));
                         if (WindowInfoScr.idMonsterClanQuest != -1) {
                             if (WindowInfoScr.numberQuestGet + 1 >= WindowInfoScr.numberQuestAll) {
                                 WindowInfoScr.idMonsterClanQuest = (byte) -1;
                                 addChat(new ChatInfo("", "Hoàn thành nhiệm vụ.", 0));
                     game.pokemon.AmThanh.phat(game.pokemon.AmThanh.NHIEM_VU);   // pokemon
                             } else {
-                                StringBuffer stringBuffer = new StringBuffer("Giết được ");
+                                StringBuffer stringBuffer = new StringBuffer("Hạ được ");
                                 short s = (short) (WindowInfoScr.numberQuestGet + 1);
                                 WindowInfoScr.numberQuestGet = s;
                                 addChat(new ChatInfo("", stringBuffer.append((int) s).append("/").append((int) WindowInfoScr.numberQuestAll).toString(), 0));
@@ -4512,7 +4553,7 @@ public class GameScr extends Screen {
             }
         } catch (Throwable e) {
         }
-        if (Canvas.currentScreen != Canvas.loginScr) {
+        if (Canvas.currentScreen != Canvas.loginScr && !DangKyScr.matKetNoi()) {
             if (autoFight) {
                 autoFight = false;
                 Canvas.cmdNgatKetNoi.action.perform();
@@ -4696,7 +4737,8 @@ public class GameScr extends Screen {
             Canvas.clearKeyHold();
             Canvas.clearKeyPressed();
             Tilemap.setNameMap(loadMap);
-            nameMap = mapName;
+            // pokemon: tên server gửi đã đổi phần lớn; còn sót (vd "Bạch hạc_1") đổi nốt khi hiện
+            nameMap = game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(mapName) : mapName;
             if (isSame == 0) {
                 Canvas.gameScr.switchToMe();
                 setAutoTask();
@@ -4760,7 +4802,7 @@ public class GameScr extends Screen {
                     public void perform() {
                         GameScr.iTaskAuto = 1;
                         Canvas.endDlg();
-                        GameScr.this.addChat(new ChatInfo("", "Hãy đi gặp các tiền bối trong làng để học võ công.", 0));
+                        GameScr.this.addChat(new ChatInfo("", "Hãy đi gặp các bậc đàn anh trong làng để học chiêu thức.", 0));
                     }
                 });
             }
@@ -5377,7 +5419,7 @@ public class GameScr extends Screen {
         if (c == this.mainChar) {
             addChat(new ChatInfo("", new StringBuffer("Đạt được level ").append((int) newlevel).toString(), 1));
             if (newlevel == 2) {
-                Canvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, nhân vật để tăng điểm tiềm năng và kỹ năng", false, 20);
+                Canvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, Pokémon để tăng điểm tiềm năng và kỹ năng", false, 20);
             }
         }
     }
@@ -5403,10 +5445,6 @@ public class GameScr extends Screen {
     }
 
     public void onAdd2Party(final Message m) {
-        // mod: lời mời vào nhóm: auto up tự đồng ý / bỏ qua người lạ
-        if (AutoGuard.nhomGuard(m)) {
-            return;
-        }
         try {
             byte value = m.reader().readByte();
             if (value == 0) {
@@ -6160,6 +6198,9 @@ public class GameScr extends Screen {
                     } else {
                         if (cat == 0) {
                             ac.actorDie();
+                            if (ac.ID == this.mainChar.ID) {
+                                game.pokemon.HopHoiSinh.khiGuc(); // pokemon: xin hop thoai guc (-101)
+                            }
                             if (ac.ID == this.mainChar.ID && BangAuto.isAutoComeHome && autoFight) {
                                 Canvas.currentDialog = null;
                                 doFire(0, 0);
@@ -6432,10 +6473,6 @@ public class GameScr extends Screen {
     }
 
     public void showWindow(int focus, boolean isSell, byte[] index) {
-        // mod: cửa sổ chế đồ (tab 28): auto chế thẳng, không mở cửa sổ
-        if (AutoGuard.cuaSoGuard(focus, isSell, index)) {
-            return;
-        }
         WindowInfoScr.gI().setInfo(focus, isSell, index);
         WindowInfoScr.gI().switchToMe();
     }
@@ -6658,7 +6695,7 @@ public class GameScr extends Screen {
             InputDlg inputDlg = Canvas.inputDlg;
             final short[] sArr = this.val$arrayIndex;
             final int i = this.val$ii;
-            inputDlg.setInfo("Tên bang hội của bạn", new IAction() {
+            inputDlg.setInfo("Tên đội của bạn", new IAction() {
                 @Override
                 public void perform() {
                     if (!Canvas.inputDlg.tfInput.getText().equals("")) {
@@ -6679,6 +6716,14 @@ public class GameScr extends Screen {
     }
 
     public void onViewCharInfo(Char ch) {
+        // pokemon: the trang bi nguoi khac = Pokemon + ngoai hinh cua nguoi dang chon (goi -22 khong co)
+        Actor dangChon = Canvas.gameScr.focusedActor;
+        if (dangChon instanceof Char && ch.pokeDex <= 0) {
+            Char goc = (Char) dangChon;
+            ch.pokeDex = goc.pokeDex;
+            ch.pokeShiny = goc.pokeShiny;
+            ch.ngoaiHinh = goc.ngoaiHinh;
+        }
         WindowInfoScr.gI().setInfo(0, false, new byte[]{1});
         WindowInfoScr.charWearing = ch;
         WindowInfoScr.gI().switchToMe();
@@ -6790,7 +6835,7 @@ public class GameScr extends Screen {
         switch (catagory) {
             case 0:
                 if (isThanthu > -1) {
-                    a = new ThanThu();
+                    a = new PokemonHuyenThoai();
                     a.setIdThanThu(isThanthu);
                 } else {
                     a = new Char();
@@ -6798,30 +6843,30 @@ public class GameScr extends Screen {
                 break;
             case 1:
                 if (type == 91 || type == 92) {
-                    a = new Boss_Snake();
+                    a = new BossSerperior();
                 } else if (type == 93) {
-                    a = new Boss_Eyes();
+                    a = new BossGengar();
                 } else if (type == 94) {
-                    a = new Boss_Xuong();
+                    a = new BossDusknoir();
                 } else if (type == 46) {
-                    a = new Boss_TuongQuan();
+                    a = new BossAegislash();
                 } else if (type == 43) {
-                    a = new TruTranThanh(0);
+                    a = new TruNangLuong(0);
                 } else if (type == 36) {
-                    a = new TruTranThanh(1);
+                    a = new TruNangLuong(1);
                 } else if (type == 37) {
-                    a = new TruTranThanh(2);
+                    a = new TruNangLuong(2);
                 } else if (type == 38) {
-                    a = new BossTL();
+                    a = new BossGyarados();
                 } else if (type == 39) {
-                    a = new BossThanLan();
+                    a = new BossSalamence();
                 } else if (type == 82) {
-                    a = new Boss_Eagle();
+                    a = new BossZapdos();
                 } else if (type == 83) {
-                    a = new CongThanh();
+                    a = new CongGym();
                     congThanh = a;
                 } else if (type == 84) {
-                    a = new CuongThi();
+                    a = new QuaiYamask();
                 } else if (type == 113) {
                     a = new MonsterNew(113);
                 } else if (type == 115) {
@@ -7261,23 +7306,29 @@ public class GameScr extends Screen {
     }
 
     public void onMenuOption(final int userId1, final byte idMenu, String[] listStr) {
-        // mod: menu NPC từ server (-30): auto nuôi pet đọc danh sách mà không hiện menu
-        if (AutoGuard.menuGuard(userId1, idMenu, listStr)) {
-            return;
-        }
-        if (AutoGuard.autoHideUi()) {
-            return;
-        }
         if (Canvas.menu.showMenu) {
             Canvas.menu.showMenu = false;
+        }
+        // pokemon (hệ sinh thái, NPC ảo -528): menu "Túi sinh thái" hiện dạng lưới ô
+        if (TuiSinhThaiScr.laMenuTui(userId1, idMenu, listStr)) {
+            TuiSinhThaiScr.gI().moi(userId1, idMenu, listStr);
+            Canvas.currentDialog = null;
+            return;
         }
         Vector menu = new Vector();
         int size0 = listStr.length;
         for (int i = 0; i < size0; i++) {
             final int ii = i;
+            // hệ sinh thái: "Câu cá tại đây" chỉ hiện khi đứng sát hồ (luật chỉ câu ở hồ)
+            if (userId1 == TuiSinhThaiScr.NPC_ID && idMenu == 0 && listStr[i] != null && listStr[i].startsWith("Câu cá") && !game.pokemon.SinhThai.ganHo()) {
+                continue;
+            }
             menu.addElement(new Command(listStr[i], new IAction() {
                 @Override
                 public void perform() {
+                    if (userId1 == TuiSinhThaiScr.NPC_ID && idMenu == 0 && ii == 1) {
+                        game.pokemon.SinhThai.batDauCau();   // "Câu cá tại đây"
+                    }
                     GameScr.this.gameService.doMenuOption(userId1, idMenu, ii);
                 }
             }));
@@ -7308,6 +7359,10 @@ public class GameScr extends Screen {
     }
 
     public static void onWeather(byte weather2, int number, int timeLimit) {
+        // thời tiết mới thay hẳn thời tiết cũ (trước đây mưa + tuyết chồng nhau)
+        for (int i = 0; i < effAnimate.size(); i++) {
+            ((AnimateEffect) effAnimate.elementAt(i)).isStop = true;
+        }
         if (weather2 != -1) {
             effAnimate.addElement(new AnimateEffect(weather2, true, number, timeLimit));
         } else {

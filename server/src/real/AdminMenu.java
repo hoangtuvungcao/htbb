@@ -15,7 +15,7 @@ import server.TeamServer;
  *
  * LUU VINH VIEN: moi thay doi o bang nay co hieu luc NGAY va duoc GHI THANG vao
  * bang SQL `cau_hinh`, nen van con sau khi restart. Cung mot bang nay sua duoc tu xa
- * qua web/admin/cauhinh.php - server tu doc lai moi 10 giay nen sua tren web cung ap
+ * qua HTBB-Web /admin/cauhinh - server tu doc lai moi 10 giay nen sua tren web cung ap
  * dung duoc trong game ma khong can go lenh 8 (nap lai), chi la khong tuc thi bang.
  * => Bang setting trong game, trang web, va server luon la cung mot nguon du lieu.
  * Xem server.CauHinh.
@@ -42,8 +42,8 @@ public class AdminMenu {
      */
     private static final String HUONG_DAN
             = "Gõ số + tham số:\n"
-            + "1 = chiếm thành sau 2 phút\n"
-            + "2 <giờ> <phút> [ngày] = đặt giờ chiếm thành\n"
+            + "1 = chiếm Gym sau 2 phút\n"
+            + "2 <giờ> <phút> [ngày] = đặt giờ chiếm Gym\n"
             + "3 = trả về lịch chuẩn 21h T3+T7\n"
             + "5 <xu> <lượng> <sựkiện> <bình> <ngọc> <đồ> <chiaXu>\n"
             + "6 = xem cấu hình hiện tại\n"
@@ -71,7 +71,7 @@ public class AdminMenu {
             return;
         }
         final String[] menu = {
-            "Chiếm thành",
+            "Chiếm Gym",
             "Tỉ lệ drop train quái",
             "Xem cấu hình hiện tại"
         };
@@ -145,7 +145,7 @@ public class AdminMenu {
                 MapTown.minuteAdminCheat = cl.get(java.util.Calendar.MINUTE);
                 MapTown.dayAdminCheat = "";
                 player.sendMessage(MessageCreator.createServerAlertMessage(
-                        "Chiếm thành sẽ bắt đầu lúc " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
+                        "Chiếm Gym sẽ bắt đầu lúc " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
                         + " (khoảng 2 phút nữa). Phiên kéo dài 1 tiếng."
                         + ghiFile(server.CauHinh.luuGioChiemThanh()), ""));
                 break;
@@ -159,7 +159,7 @@ public class AdminMenu {
                 MapTown.minuteAdminCheat = -1;
                 MapTown.dayAdminCheat = "";
                 player.sendMessage(MessageCreator.createServerAlertMessage(
-                        "Đã trả chiếm thành về lịch chuẩn: 21h thứ 3 và thứ 7."
+                        "Đã trả chiếm Gym về lịch chuẩn: 21h thứ 3 và thứ 7."
                         + ghiFile(server.CauHinh.luuGioChiemThanh()), ""));
                 break;
             default:
@@ -324,9 +324,9 @@ public class AdminMenu {
 
     private static String moTaGioChiemThanh() {
         if (MapTown.TimeAdminCheat < 0) {
-            return "Chiếm thành đang theo lịch chuẩn: 21h thứ 3 và thứ 7.";
+            return "Chiếm Gym đang theo lịch chuẩn: 21h thứ 3 và thứ 7.";
         }
-        return "Chiếm thành: " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
+        return "Chiếm Gym: " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
                 + (MapTown.dayAdminCheat.isEmpty() ? " - mỗi ngày" : " - ngày " + MapTown.dayAdminCheat)
                 + ". Phiên kéo dài 1 tiếng.";
     }
@@ -347,6 +347,6 @@ public class AdminMenu {
                 + "\n---\n" + moTaTiLeDrop()
                 + "\nHạn mức lượng train/ngày: " + Char.MAX_LUONG_TRAIN_NGAY
                 + " (mở đã nhận " + player.luongMoTrainNgay + ", khoá đã nhận " + player.luongKhoaTrainNgay + ")"
-                + "\nNhân vật tối đa/tài khoản: " + data.Database.MAX_CHAR_PER_ACCOUNT;
+                + "\nPokémon tối đa/tài khoản: " + data.Database.MAX_CHAR_PER_ACCOUNT;
     }
 }

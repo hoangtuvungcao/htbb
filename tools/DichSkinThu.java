@@ -15,7 +15,7 @@ import java.nio.file.Paths;
  * "khoi" = 7 khung mot huong theo Char.getFrameHorse: xuong 0..6, len 7..13, ngang 14..20.
  * "anh"  = chi dich cac manh dung anh con co id trong danh sach (moi khung, moi khoi) - dung
  *          de tach rieng mot bo phan (vi du doi rong khoi xuong cua Kim Cang Long, xem
- *          docs/skin-linh-thu.md muc 9) ma khong dong toi phan con lai.
+ *          docs/skin-thu-cuoi.md muc 9) ma khong dong toi phan con lai.
  *
  * Dinh dang tep (xem tools/XemSkinNhuTrongGame): byte soAnh; soAnh x {id,x,y,w,h};
  * short soKhung; moi khung: byte soManh; moi manh: short dx, short dy, byte idAnh, byte lat,

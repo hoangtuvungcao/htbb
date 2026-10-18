@@ -19,7 +19,7 @@ const moTaLoai: Record<string, string> = {
   tuan_he: 'Quái một hệ xuất hiện ×2 và chiêu hệ đó +10% — cơ hội săn Pokédex và đá.',
   cong_dong: '3 giờ vàng: một dòng khởi đầu xuất hiện dày đặc, tỉ lệ shiny ×5.',
   pokemon: 'Tuần Shiny, Lễ hội Pokédex, Bùng phát quần thể.',
-  dot_kich: 'Boss huyền thoại xuất hiện 2 lần/ngày, cần đội từ 5 người.',
+  dot_kich: 'Boss thế giới xuất hiện thêm 2 lần mỗi ngày (12:30 và 20:30), thưởng theo mức đóng góp.',
   pvp: 'Chốt bậc mùa PvP và phát thưởng.',
   chien_vung: 'Thứ Bảy 20h: ba vùng Kanto/Johto/Hoenn giành cờ.',
   mua: 'Sự kiện theo mùa: Hè, Halloween, Black Friday…',
@@ -42,7 +42,7 @@ const moTaLoai: Record<string, string> = {
               {{ i === 0 ? 'Tuần này' : i === 1 ? 'Tuần sau' : 'Sắp tới' }} · tuần {{ s.tuan }}
             </p>
             <p class="mt-1 font-display text-lg font-extrabold text-highlighted">
-              {{ s.ten1 }}
+              {{ s.ten1 }}<template v-if="s.phan"> ({{ s.phan }})</template>
             </p>
             <p class="mt-1 text-sm text-muted">
               {{ s.coChe }}

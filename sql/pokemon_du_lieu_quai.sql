@@ -38,8 +38,8 @@ UPDATE data_monster SET name='Scraggy', dex=559, shiny=0, he=15, he2=6 WHERE id=
 UPDATE data_monster SET name='Crawdaunt', dex=342, shiny=0, he=2, he2=15 WHERE id=35; -- Hải tặc -> Crawdaunt
 UPDATE data_monster SET name='Bronzong', dex=437, shiny=0, he=16, he2=10 WHERE id=36; -- Long Trụ (sự kiện) -> Bronzong
 UPDATE data_monster SET name='Bronzor', dex=436, shiny=0, he=16, he2=10 WHERE id=37; -- Long trụ phụ -> Bronzor
-UPDATE data_monster SET name='Gyarados', dex=130, shiny=0, he=2, he2=9 WHERE id=38; -- Thuồng luồng -> Gyarados (BossThuongLuong)
-UPDATE data_monster SET name='Salamence', dex=373, shiny=0, he=14, he2=9 WHERE id=39; -- Thằn lằn -> Salamence (BossThanLan)
+UPDATE data_monster SET name='Gyarados', dex=130, shiny=0, he=2, he2=9 WHERE id=38; -- Thuồng luồng -> Gyarados (BossGyarados)
+UPDATE data_monster SET name='Salamence', dex=373, shiny=0, he=14, he2=9 WHERE id=39; -- Thằn lằn -> Salamence (BossDotKich)
 UPDATE data_monster SET name='Whirlipede', dex=544, shiny=0, he=11, he2=7 WHERE id=40; -- Rết đỏ -> Whirlipede
 UPDATE data_monster SET name='Scolipede', dex=545, shiny=0, he=11, he2=7 WHERE id=41; -- Rết tía -> Scolipede
 UPDATE data_monster SET name='Whirlipede Shiny', dex=544, shiny=1, he=11, he2=7 WHERE id=42; -- Rết xanh -> Whirlipede shiny
@@ -91,10 +91,10 @@ UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=87; -- Gỗ (nguyên li�
 UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=88; -- Da (nguyên liệu) -> Object PMD
 UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=89; -- Sắt (nguyên liệu) -> Object PMD
 UPDATE data_monster SET name='Abomasnow', dex=460, shiny=0, he=4, he2=5 WHERE id=90; -- Người tuyết -> Abomasnow (BossNguoiTuyet)
-UPDATE data_monster SET name='Serperior', dex=497, shiny=0, he=4, he2=-1 WHERE id=91; -- Rắn chị -> Serperior (BossLinhXa)
-UPDATE data_monster SET name='Servine', dex=496, shiny=0, he=4, he2=-1 WHERE id=92; -- Rắn em -> Servine (BossBachXa)
+UPDATE data_monster SET name='Serperior', dex=497, shiny=0, he=4, he2=-1 WHERE id=91; -- Rắn chị -> Serperior (BossSerperior)
+UPDATE data_monster SET name='Servine', dex=496, shiny=0, he=4, he2=-1 WHERE id=92; -- Rắn em -> Servine (BossServine)
 UPDATE data_monster SET name='Gengar', dex=94, shiny=0, he=13, he2=7 WHERE id=93; -- Mắt quỷ -> Gengar
-UPDATE data_monster SET name='Dusknoir', dex=477, shiny=0, he=13, he2=-1 WHERE id=94; -- Bạch cốt tướng quân -> Dusknoir (BossSkelonton)
+UPDATE data_monster SET name='Dusknoir', dex=477, shiny=0, he=13, he2=-1 WHERE id=94; -- Bạch cốt tướng quân -> Dusknoir (BossDusknoir)
 UPDATE data_monster SET name='Ponyta', dex=77, shiny=0, he=1, he2=-1 WHERE id=95; -- Ngựa cá nhân trắng -> Ponyta
 UPDATE data_monster SET name='Ponyta', dex=77, shiny=0, he=1, he2=-1 WHERE id=96; -- Ngựa cá nhân xanh -> Ponyta (đổi màu)
 UPDATE data_monster SET name='Ponyta', dex=77, shiny=0, he=1, he2=-1 WHERE id=97; -- Ngựa cá nhân đỏ -> Ponyta (đổi màu)
@@ -129,8 +129,8 @@ UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=125; -- Ngọc 4 sao -> 
 UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=126; -- Ngọc 5 sao -> Object/Item PMD
 UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=127; -- Ngọc 6 sao -> Object/Item PMD
 UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=128; -- Ngọc 7 sao -> Object/Item PMD
-UPDATE data_monster SET name='Kyogre', dex=382, shiny=0, he=2, he2=-1 WHERE id=129; -- Boss Thủy Tinh -> Kyogre (BossSonTinhThuyTinh)
-UPDATE data_monster SET name='Groudon', dex=383, shiny=0, he=8, he2=-1 WHERE id=130; -- Boss Sơn Tinh -> Groudon (BossSonTinhThuyTinh)
+UPDATE data_monster SET name='Kyogre', dex=382, shiny=0, he=2, he2=-1 WHERE id=129; -- Boss Thủy Tinh -> Kyogre (BossKyogreGroudon)
+UPDATE data_monster SET name='Groudon', dex=383, shiny=0, he=8, he2=-1 WHERE id=130; -- Boss Sơn Tinh -> Groudon (BossKyogreGroudon)
 UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=131; -- Thùng gỗ -> Object PMD
 UPDATE data_monster SET name='Marowak Shiny', dex=105, shiny=1, he=8, he2=-1 WHERE id=132; -- Skeleton lam (bản 2) -> Marowak shiny
 UPDATE data_monster SET name='Haunter Shiny', dex=93, shiny=1, he=13, he2=7 WHERE id=133; -- Huyết ma (bản 2) -> Haunter shiny

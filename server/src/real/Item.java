@@ -315,7 +315,7 @@ public class Item extends Actor {
         Item.MAX_ATT_KHAM = 18;
         Item.MAX_ATT = 33;
         // Dai 36 chu khong phai 30: cot phai bang "Trang bi thu" mang type 30..34
-        // (xem real.SkinLinhThu.TYPE_ITEM). De 30 thi getInfoAtbItem nem
+        // (xem real.SkinThuCuoi.TYPE_ITEM). De 30 thi getInfoAtbItem nem
         // ArrayIndexOutOfBoundsException NGAY giua luc dung goi tin, lam hong ca
         // createAnimalWearingMessage lan createCharInventoryMessage — nguoi choi thay
         // bang trang bi thu RONG va vat pham bien mat khoi hanh trang, du no van con
@@ -913,7 +913,7 @@ public class Item extends Actor {
                 allAtb.add(new InfoItemAttribute((byte) (56 + count2), p.itemVukhiThoiTrang.otherAtt[56]));
             }
         }
-        return allAtb;
+        return ChiSoTrangBiGame.locHienThi(this, allAtb, p); // bat: an dong ngung, so hien = so tinh
     }
 
     public Vector<InfoItemAttribute> getInfoAtbItem() {
@@ -1018,7 +1018,7 @@ public class Item extends Actor {
                 }
             }
         }
-        return allAtb;
+        return ChiSoTrangBiGame.locHienThi(this, allAtb, null); // bat: an dong ngung, so hien = so tinh
     }
 
     /**
@@ -2757,12 +2757,12 @@ public class Item extends Actor {
     }
 
     /**
-     * Skin thu Kim Cang Long (id 911, xem SkinLinhThu.KIM_CANG_LONG): chon NGAU NHIEN 2
+     * Skin thu Kim Cang Long (id 911, xem SkinThuCuoi.KIM_CANG_LONG): chon NGAU NHIEN 2
      * hoac 3 trong 3 dong duoi day, khong hoan lai - cung khuon rut pool voi
      * createAttributeNguyetLinhTruong() o tren.
      *
      *   otherAtt[4]  Bạo kích            1-5%   luu % THAT (vd 3 nghia la 3%)
-     *   otherAtt[47] Gia tăng tc         3-15%  luu % THAT (doc lai qua SkinLinhThu.kimCangLongTangCong)
+     *   otherAtt[47] Gia tăng tc         3-15%  luu % THAT (doc lai qua SkinThuCuoi.kimCangLongTangCong)
      *   otherAtt[54] Sát thương chuẩn    1-5%   luu THEO PHAN MUOI PHAN TRAM (vd 3% luu la 30)
      *
      * otherAtt[54] la NGOAI LE duy nhat: getInfoAtbItem() gui thang gia tri tho cho client
@@ -2772,7 +2772,7 @@ public class Item extends Actor {
      * createAttributeVuKhiThoiTrang o duoi) da luu san theo "phan muoi phan tram" (vd 160
      * nghia la 16.0%) tu truoc gio, nen bang tra cua client chia 10 cho chi so nay. Neu luu
      * % THAT (vd 3) o day, client se hien "0.3%" thay vi "3%" (da bao 12/09/2026, kem anh
-     * chup). Vi vay o day PHAI nhan 10 truoc khi luu, va SkinLinhThu.kimCangLongSatThuongChuan
+     * chup). Vi vay o day PHAI nhan 10 truoc khi luu, va SkinThuCuoi.kimCangLongSatThuongChuan
      * chia lai cho 10 khi doc ra cho code choi game dung - hai o nay la CAP DOI DUY NHAT
      * phai giu dong bo, dung tu doi mot ben ma quen ben kia.
      *
@@ -2782,7 +2782,7 @@ public class Item extends Actor {
      *
      * Ba o nay TRUNG voi cac vat pham khac dang dung (vu khi thoi trang, pet rong) nhung
      * KHONG dam vao nhau: moi noi doc tu MOT truong Char rieng (itemVukhiThoiTrang,
-     * itemPet, va o day la vat pham skin dang mac qua SkinLinhThu.timSkinDangMac) - dung
+     * itemPet, va o day la vat pham skin dang mac qua SkinThuCuoi.timSkinDangMac) - dung
      * quy uoc san co cua codebase nay (xem Pet.getbaoKich()/Pet.java:1110).
      */
     public void createAttributeSkinKimCangLong() {
@@ -2802,7 +2802,7 @@ public class Item extends Actor {
                 this.otherAtt[4] = (short) (Map.r.nextInt(5) + 1);
             } else if (lineId == 54) {
                 // Nhan 10: client dinh dang chi so 54 theo "phan muoi phan tram" dung chung
-                // cho moi vat pham - xem chu thich dau ham. SkinLinhThu.kimCangLongSatThuongChuan
+                // cho moi vat pham - xem chu thich dau ham. SkinThuCuoi.kimCangLongSatThuongChuan
                 // chia lai cho 10 khi doc ra.
                 this.otherAtt[54] = (short) ((Map.r.nextInt(5) + 1) * 10);
             } else if (lineId == 47) {
@@ -2888,6 +2888,22 @@ public class Item extends Actor {
         }
     }
 
+    /**
+     * Nhanh hoa dao giftcode (template 835, type 28, level 10): chi so CO DINH 24,1% sat thuong
+     * chuan / 50,1% chi so vu khi tang / 29,0% ti le - dung dac ta ghi tai
+     * Char.createItemSoLuong va test/KiemNhanhHoaDao. Tu 20/09/2026
+     * createAttributeVuKhiThoiTrangMax() co gian tran theo chuc level CUA TRANG BI, ma nhanh
+     * hoa dao chi co mot template level 10 nen bi keo ve san 6x (8%/10%) - phan thuong
+     * giftcode bi giam ~3 lan ngoai y muon. Giu dung tran cu (TRAN_STC_CU/TRAN_TILE_CU).
+     */
+    public void createAttributeNhanhHoaDaoGiftcode() {
+        this.createAttributeVuKhiThoiTrangMax();
+        if (this.isVukhiThoiTrang() && !this.isGayGiangSinh()) {
+            this.otherAtt[54] = (short) TRAN_STC_CU;
+            this.otherAtt[56] = (short) TRAN_TILE_CU;
+        }
+    }
+
     public void createAttributeItemModel(final boolean isMax) {
         if (this.isTienNu() || this.isTinhQuan()) {
             this.otherAtt[58] = 100;
@@ -2959,12 +2975,12 @@ public class Item extends Actor {
 
     public String getNameItemPetEat() {
         String name = this.getTemplate().name;
-        final String[] mg = {"ma pháp", "vậy lý", "", ""};
+        final String[] mg = {"đặc biệt", "vậy lý", "", ""};
         if (this.magic_physic < 2) {
             name = String.valueOf(name) + " " + mg[this.magic_physic];
         }
         final String[] n = {"", "Hoàn mỹ", "Đỏ", "Xanh"};
-        final String[] p = {"", "Nhất phẩm", "Nhị phẩm", "Tam phẩm", "Tứ phẩm", "NGũ phẩm"};
+        final String[] p = {"", "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Hạng 5"};
         if (this.colorName > 0 && this.colorName < 4) {
             name = String.valueOf(name) + " " + n[this.colorName];
         }
@@ -3085,7 +3101,7 @@ public class Item extends Actor {
     public static String tenTrangPhucSauTinhHoa(final int templateID) {
         for (int k = 0; k < ID_TRANG_PHUC_TINH_HOA.length; k++) {
             if (ID_TRANG_PHUC_TINH_HOA[k] == templateID) {
-                return (GIOI_TINH_TRANG_PHUC_TINH_HOA[k] == 1) ? "Giáp Sơn Tinh Vương" : "Mị Nương Công Chúa";
+                return (GIOI_TINH_TRANG_PHUC_TINH_HOA[k] == 1) ? "Giáp Groudon" : "Diancie";
             }
         }
         return null;
@@ -3114,18 +3130,19 @@ public class Item extends Actor {
     @Override
     public String getName() {
         String name = this.getTemplate().name;
-        final String[] mg = {"ma pháp", "vậy lý", "", ""};
+        final String[] mg = {"đặc biệt", "vậy lý", "", ""};
         if (this.magic_physic < 2) {
             name = String.valueOf(name) + " " + mg[this.magic_physic];
         }
         final String[] n = {"", "Hoàn mỹ", "Đỏ", "Xanh"};
-        final String[] p = {"", "Nhất phẩm", "Nhị phẩm", "Tam phẩm", "Tứ phẩm", "NGũ phẩm"};
+        final String[] p = {"", "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Hạng 5"};
         if (this.colorName > 0 && this.colorName < 4) {
             name = String.valueOf(name) + " " + n[this.colorName];
         }
         if (this.hangItem > 1 && this.hangItem < 6) {
             name = String.valueOf(name) + " " + p[this.hangItem];
         }
+        name += ChiSoTrangBiGame.tenHePhienDa(this); // phien da he: " (hệ X)" khi bat gioi han chi so
         if (this.plus > 0) {
             name = String.valueOf(name) + " +" + this.plus;
         }

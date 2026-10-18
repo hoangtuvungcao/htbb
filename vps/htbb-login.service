@@ -1,0 +1,21 @@
+[Unit]
+Description=HTBB login server (CheckLoginSocket)
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=simple
+User=htbb
+Group=htbb
+WorkingDirectory=/opt/htbb/server/loginServer
+Environment=LANG=en_US.UTF-8
+ExecStart=/usr/bin/java -Xms32m -Xmx96m -Dfile.encoding=UTF-8 -jar CheckLoginSocket.jar
+Restart=always
+RestartSec=5
+StandardOutput=append:/opt/htbb/log/login.out
+StandardError=append:/opt/htbb/log/login.out
+
+[Install]
+WantedBy=multi-user.target
+# TUONG-THICH-TEN-CU-DONG-SAU: `systemctl ... kpah-login` cu van chay sau khi `systemctl enable` (bo sau 1 ban)
+Alias=kpah-login.service

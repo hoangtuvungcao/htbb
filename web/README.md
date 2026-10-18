@@ -1,4 +1,4 @@
-# HTBB-Web — Website Huyền Thoại Bảo Bối (trước đây Khí Phách Anh Hùng)
+# HTBB-Web — Website Huyền Thoại Bảo Bối
 
 Website (trang công khai + khu quản trị) của máy chủ private HTBB, viết bằng **Vue 3**:
 
@@ -8,7 +8,7 @@ Website (trang công khai + khu quản trị) của máy chủ private HTBB, vi�
 | Giao diện | **Nuxt UI v4** (Tailwind CSS v4, Reka UI) — phong cách game Pokémon: đỏ Poké Ball / vàng Pikachu / xanh dương, nền trời + cỏ, 18 màu hệ (token ở `app/assets/css/main.css`), font Nunito + Baloo 2 (có tiếng Việt) |
 | Hero | CSS/SVG thuần (không WebGL): trời, mây, bãi cỏ, 5 Pokémon khởi đầu chạy sprite PMD thật (`PokeSprite`, dải khung sinh bằng `node scripts/sinh-anim-khoi-dau.mjs` vào `public/pokemon/anim/`) |
 | Hiệu ứng | **motion-v** (hiện dần khi cuộn), thẻ nghiêng 3D theo chuột (`FxTiltCard`) |
-| Database | `mysql2` — dùng **chung** MariaDB với game server (DB `account` + `kpah_db`) |
+| Database | `mysql2` — dùng **chung** MariaDB với game server (DB `account` + `htbb_db`) |
 
 Website này thay cho website cũ trong `HTBB/web/`; website cũ vẫn chạy cho tới khi
 bạn bật proxy Apache sang đây (xem [Bật website trên VPS](#bật-website-trên-vps)).
@@ -30,25 +30,25 @@ Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế ho�
 - **Chân dung** 40×40 của 21 loài người chơi ở `public/pokemon/<dex>.png`, chép từ
   `HTBB/ClientUnity/Assets/Resources/poke/<dddd>_cd.bytes` (thực chất là PNG). Hiển thị với
   class `.pixelated` (`image-rendering: pixelated`).
-- **Trang ghi công `/ghi-cong`** (bắt buộc theo CC BY-NC 4.0) đọc
+- **Trang giấy phép `/giay-phep`** (bắt buộc theo CC BY-NC 4.0; `/ghi-cong` chuyển hướng 301; chỉ có một link nhỏ ở chân trang) đọc
   `public/pokemon/GHI_CONG.txt` lúc build. Mỗi lần client đóng gói lại sprite thì chép lại
   file `HTBB/ClientUnity/Assets/Resources/poke/GHI_CONG.txt` sang rồi build.
-- **Tắt nạp tiền: `KPAH_NAP_BAT`** (mặc định `false`). Quyết định Q10: asset PMDCollab là
+- **Tắt nạp tiền: `HTBB_NAP_BAT`** (mặc định `false`). Quyết định Q10: asset PMDCollab là
   CC BY-NC 4.0 và Pokémon là IP của Nintendo, nên không được thu tiền. Khi tắt: menu
   "Nạp mốc" ẩn, trang `/naptien` và `/xac-nhan-nap` báo 403, mọi API `/api/nap/**` và
   `/api/xac-nhan-nap/**` (kể cả webhook SePay) trả **403** với thông báo tiếng Việt
   ([server/middleware/tat-nap.ts](server/middleware/tat-nap.ts)). Code nạp không bị xoá;
-  `/admin/naptien` vẫn mở để xem đơn cũ. Đặt `KPAH_NAP_BAT=true` để bật lại — lưu ý deploy
+  `/admin/naptien` vẫn mở để xem đơn cũ. Đặt `HTBB_NAP_BAT=true` để bật lại — lưu ý deploy
   bỏ qua biến rỗng, nên muốn tắt lại phải đặt hẳn `false`.
 - **Tên game/website: "Huyền Thoại Bảo Bối"** (viết tắt **HTBB**, không dấu "Huyen Thoai Bao Boi"),
-  thay cho "Khí Phách Anh Hùng" / tên tạm "KPAH Pokémon" trước đây. **Nguồn duy nhất:**
+  thay cho tên cũ. **Nguồn duy nhất:**
   [shared/utils/tenSite.ts](shared/utils/tenSite.ts) (`TEN_SITE`, `TEN_SITE_VIET_TAT`, `TEN_SITE_ASCII`).
   Giao diện đọc qua `useAppConfig().htbb.tenSite` / `.tenVietTat` ([app/app.config.ts](app/app.config.ts)):
   tiêu đề tab, meta description, `og:site_name`, đầu/chân trang, tin tức. Server đọc qua
   `useHtbbConfig().site.name` ([server/utils/config.ts](server/utils/config.ts)): API `/api/site`, tiêu đề
-  và nội dung email (`server/api/auth/*.post.ts`), tên người gửi mặc định (`KPAH_MAIL_FROM_NAME`).
+  và nội dung email (`server/api/auth/*.post.ts`), tên người gửi mặc định (`HTBB_MAIL_FROM_NAME`).
   Nhãn 2FA admin là "HTBB Admin". Chữ trong [public/logo.svg](public/logo.svg) là ảnh tĩnh, đổi tên
-  thì sửa tay. Khoá trong app config là `htbb`. Hạ tầng giữ tên cũ: biến môi trường `KPAH_*` (GitHub Secrets/VPS), CSDL `kpah_db`, service `kpah-web`, thư mục `/opt/kpah-web`.
+  thì sửa tay. Khoá trong app config là `htbb`. Hạ tầng giữ tên cũ: biến môi trường `HTBB_*` (GitHub Secrets/VPS), CSDL `htbb_db`, service `htbb-web`, thư mục `/opt/htbb-web`.
 - **Thuật ngữ** trên giao diện: nhân vật → Pokémon, bang hội → Đội, linh thú → thú cưỡi.
 
 ## Trang công khai & cẩm nang (dữ liệu sinh tự động)
@@ -58,23 +58,36 @@ Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế ho�
 | `/` | Hero, cảnh "trailer" sprite (`SiteCanhPhim`), tính năng, 5 khởi đầu, sự kiện tuần này, tin mới, trạng thái máy chủ (`/api/trang-thai`) | `pokedex.json`, `cam-nang.json`, `shared/utils/news.ts` |
 | `/gioi-thieu` | Thế giới, vùng, điểm độc đáo, cung truyện năm 1 | `cam-nang.json` |
 | `/huong-dan` | Tân thủ: tải/cài, tài khoản, chọn khởi đầu, điều khiển, HUD minh hoạ (`SiteHudMinhHoa`), 30 phút đầu | cả hai JSON |
-| `/cam-nang`, `/cam-nang/<slug>` | Wiki 18 trang có thanh bên, tìm kiếm, trang trước/sau (`WikiShell`). Danh mục trang: `DS_CAM_NANG` trong [shared/utils/camNang.ts](shared/utils/camNang.ts) | cả hai JSON |
+| `/cam-nang`, `/cam-nang/<slug>` | Wiki 24 trang có thanh bên, tìm kiếm, trang trước/sau, BreadcrumbList JSON-LD (`WikiShell`). Danh mục trang: `DS_CAM_NANG` trong [shared/utils/danhMucCamNang.ts](shared/utils/danhMucCamNang.ts) (không import JSON — dùng được ở header/tìm kiếm/sitemap). Trang mới: Sổ tay huấn luyện, Gym & huy hiệu, Hệ sinh thái, Câu cá, Cửa hàng & chế tạo, Tài khoản & đăng ký | `cam-nang.json`, `cam-nang-noi-dung.json`, `pokedex.json` |
 | `/pokedex` | Lọc theo tên/số, hệ, giai đoạn tiến hoá, vai trò, sắp xếp; sprite động (`PokeSan`) | `pokedex.json`, `sprite-anim.json` |
-| `/dieu-khoan`, `/quyen-rieng-tu`, `/ghi-cong` | Pháp lý, tuyên bố fan phi thương mại, ghi công PMDCollab / Kenney / Ninja Adventure | — |
+| `/dieu-khoan`, `/quyen-rieng-tu`, `/giay-phep` | Pháp lý, tuyên bố fan phi thương mại, ghi công PMDCollab / Kenney / Ninja Adventure | — |
 | `/sitemap.xml`, `/robots.txt` | Sinh động trong `server/routes/` | danh mục trang |
 
 Tìm kiếm toàn site (Ctrl/⌘+K hoặc `/`) chạy hoàn toàn trên trình duyệt (`SiteTimKiem`), không gọi server, không theo dõi.
+Pokédex chỉ được tải (import động) khi mở hộp tìm kiếm lần đầu.
+
+**Gói JS:** dữ liệu lớn chỉ nằm trong chunk của trang dùng nó — `CAM_NANG` (camNang.ts), `CAM_NANG_ND`
+(camNangNoiDung.ts), `POKEDEX` (pokedex.ts). Khung trang (layout, header, footer, tìm kiếm) chỉ dùng module
+không import JSON: `danhMucCamNang.ts`, `boDau.ts`, `useLichSuKien.ts` tách riêng. Thêm code vào layout mà gọi
+`POKEDEX`/`CAM_NANG` sẽ kéo ~90 KB JSON vào mọi trang — kiểm `.output/public/_nuxt` sau khi build.
 
 **Đồng bộ lại dữ liệu từ repo game** (chỉ đọc repo HTBB, ghi vào repo web):
 
 ```bash
-HTBB_DIR=../HTBB npm run dong-bo-du-lieu
+HTBB_DIR=.. npm run dong-bo-du-lieu
 #  = sinh-du-lieu-pokemon.mjs  -> shared/data/pokedex.json + public/pokemon/<dex>.png (chân dung)
 #  + sinh-anim-khoi-dau.mjs    -> public/pokemon/anim/<dex>[s]-idle.png (mọi loài), walk/walkR/danhR (5 khởi đầu)
 #                                 + shared/data/sprite-anim.json (khung, thời lượng, điểm chân)
 #  + dong-bo-cam-nang.mjs      -> shared/data/cam-nang.json (bang_cap_do_lau_dai, nhiem_vu_moi, su_kien_nam,
-#                                 thiet_ke_map, bang_vat_pham .csv + ThongSoLauDai.java + mo_phong_tom_tat.txt)
-node scripts/dong-bo-cam-nang.mjs --anh-map   # thêm: chép ảnh xem trước docs/pokemon/map_moi/<id>.png -> public/ban-do/
+#                                 thiet_ke_map, bang_vat_pham .csv + ThongSoLauDai.java; tên bản đồ Hoenn từ BanDoHoenn.java)
+#                              -> shared/data/cam-nang-noi-dung.json (docs/pokemon/web/*.csv: vật phẩm, cửa hàng, Gym,
+#                                 chế tạo, boss thế giới, trang trí, sự kiện; nhiem_vu_tom_tat.json: cốt truyện;
+#                                 diem_cau_ca.csv: điểm câu; hằng số Java: ThangPvp, GymLauDai, HamNgucGame, CuonHut,
+#                                 QuaHoatDongLogic, SoTayLauDai, HeSinhThai, KyNangSong, VatLieuSinhThai, SuuTamSinhThai)
+#  sinh-du-lieu-pokemon.mjs còn đọc BanDoHoenn.java để có nơi xuất hiện của quái Hoenn (không có file map/<id>).
+node scripts/dong-bo-cam-nang.mjs --anh-map   # thêm: ảnh xem trước docs/pokemon/map_moi/<id>.png -> public/ban-do/<id>.webp
+                                              # (ImageMagick `convert` thu về ≤ 640×480, ~3,6 MB cho 128 bản đồ;
+                                              #  không có convert thì chép PNG gốc ~22 MB — nên cài imagemagick)
 npm run sinh-anh-og                           # ảnh chia sẻ public/og/htbb.png (cần google-chrome)
 ```
 
@@ -84,14 +97,14 @@ chân dung 40×40 (có nền vẽ sẵn) chỉ dùng làm ảnh đại diện tr
 
 ## Khu quản trị nội dung (CMS) & phân quyền
 
-**Cài một lần:** chạy `server/sql/web_cms.sql` (bản sao `HTBB/sql/web_cms.sql`) vào CSDL game `kpah_db`
+**Cài một lần:** chạy `sql/web_cms.sql`  vào CSDL game `htbb_db`
 (MariaDB hoặc NovaDB — SQL viết để chạy cả hai). Chưa chạy thì website vẫn hiện nội dung mặc định;
 trang admin báo "Chưa có bảng". Bảng: `web_cai_dat` (khối JSON: site/trangChu/menu/taiGame),
 `web_tin_tuc`, `web_trang`, `web_faq`, `web_media`, `web_su_kien_lich`, `web_admin_vai_tro`,
 `web_khoa_tai_khoan`, `web_admin_thay_doi`.
 
 **Admin đầu tiên:** tài khoản game bình thường (đăng ký trên web hoặc trong game), rồi đặt
-`KPAH_ADMIN_ACCOUNTS=ten_tai_khoan` (nhiều tên cách dấu phẩy) và khởi động lại web — người trong
+`HTBB_ADMIN_ACCOUNTS=ten_tai_khoan` (nhiều tên cách dấu phẩy) và khởi động lại web — người trong
 danh sách này luôn là **Siêu quản trị**. Từ đó cấp vai trò cho người khác ở `/admin/phan-quyen`:
 
 | Vai trò | Được làm |
@@ -105,16 +118,16 @@ Quyền kiểm ở server cho MỌI `/api/admin/**` (`server/utils/vaiTro.ts`, g
 menu chỉ ẩn bớt cho gọn. Token admin đi qua header (không cookie) + chặn khác nguồn + chỉ nhận
 JSON/multipart (`server/middleware/admin-csrf.ts`); đăng nhập có giới hạn gõ sai; Markdown được lọc
 (HTML thô bị escape, link/ảnh chỉ http(s)/đường dẫn nội bộ — `shared/utils/markdown.ts`); ảnh tải
-lên kiểm chữ ký byte (PNG/JPEG/GIF/WebP ≤ 5 MB, không SVG), lưu ở `KPAH_UPLOAD_DIR`
+lên kiểm chữ ký byte (PNG/JPEG/GIF/WebP ≤ 5 MB, không SVG), lưu ở `HTBB_UPLOAD_DIR`
 (mặc định `./uploads`), phục vụ qua `/uploads/<tên>`. Mọi thao tác ghi `web_admin_log`; sửa nội dung
 ghi thêm bản trước/sau ở `web_admin_thay_doi` (xem `/admin/lich-su-thay-doi`).
 
 Trang: `/admin` (tổng quan + nội dung), `/admin/tin-tuc` (soạn Markdown + xem trước, nháp/đăng/hẹn giờ,
 ghim), `/admin/trang` (trang cẩm nang mới hoặc tuỳ chỉnh trang có sẵn), `/admin/trang-chu`,
 `/admin/lich-su-kien`, `/admin/faq`, `/admin/tai-game`, `/admin/menu`, `/admin/media`, `/admin/cai-dat`
-(bảo trì, thanh thông báo, SEO/OG, mạng xã hội, nguồn trạng thái máy chủ), `/admin/nguoi-choi`,
+(bảo trì, thanh thông báo, SEO/OG, **hỗ trợ qua Zalo**, mạng xã hội, nguồn trạng thái máy chủ), `/admin/nguoi-choi`,
 `/admin/bang-game` (kết quả trong game, chỉ đọc), `/admin/dong-bo` (chạy script đồng bộ dữ liệu game —
-cần `HTBB_DIR` + `KPAH_WEB_SRC_DIR`; số liệu đóng gói cần build lại).
+cần `HTBB_DIR` + `HTBB_WEB_SRC_DIR`; số liệu đóng gói cần build lại).
 
 ## Chạy thử trên máy
 
@@ -129,42 +142,64 @@ npm run dev               # http://localhost:3000
 `.env` tối thiểu khi dev:
 
 ```bash
-KPAH_SERVER_DIR=C:/Users/ADMIN/Desktop/KPAH-All/HTBB   # để tự đọc server.ini
-KPAH_SECRET=chuoi-ngau-nhien-bat-ky
-KPAH_ADMIN_ACCOUNTS=admin
+HTBB_SERVER_DIR=C:/duong/dan/HTBB   # để tự đọc server.ini
+HTBB_SECRET=chuoi-ngau-nhien-bat-ky
+HTBB_ADMIN_ACCOUNTS=admin
 ```
 
 Lệnh khác: `npm run build` (bản chạy thật ở `.output/`), `npm run typecheck`.
 
 `node scripts/dev-token.mjs admin admin 1` in ra một token admin để thử API bằng
-`curl -H "Authorization: Bearer <token>"` — chỉ chạy được khi có `KPAH_SECRET` trong `.env`.
+`curl -H "Authorization: Bearer <token>"` — chỉ chạy được khi có `HTBB_SECRET` trong `.env`.
 
-## Cấu hình — biến môi trường `KPAH_*`
+## Cấu hình — biến môi trường `HTBB_*`
 
 Danh sách đầy đủ và giải thích ở [.env.example](.env.example). Thứ tự ưu tiên:
 
-1. biến môi trường `KPAH_*` — khai thì luôn thắng
-2. `server.ini` + `loginServer/server.ini` trong `KPAH_SERVER_DIR` — nguồn thật, tự dò
+1. biến môi trường `HTBB_*` — khai thì luôn thắng
+2. `server.ini` + `loginServer/server.ini` trong `HTBB_SERVER_DIR` — nguồn thật, tự dò
 3. mặc định cho máy dev (`root`, không mật khẩu)
 
 Nên thông tin database **thường không phải khai**: đổi mật khẩu DB ở `server.ini`
 là web theo ngay.
 
+### Tên miền, SEO & chặn lập chỉ mục — `HTBB_SITE_URL`
+
+Mã nguồn **không ghi cứng tên miền nào** và không lấy địa chỉ theo `Host` của request (giả được).
+Địa chỉ gốc cho canonical, `og:url`, `og:image`, JSON-LD, `sitemap.xml` và dòng `Sitemap:` của
+`robots.txt` chỉ lấy từ **một** biến: `HTBB_SITE_URL` (server đọc ở `server/utils/config.ts`, gửi xuống
+trang qua `/api/site` → `useGocSite()`; SSR và trình duyệt dùng chung giá trị). Mặc định
+`http://localhost:3000`.
+
+Chưa có tên miền thật — biến trống, `localhost`, `127.x`, địa chỉ IP, tên không có dấu chấm, `.local` /
+`.test` — website tự **chặn lập chỉ mục**: `robots.txt` trả `Disallow: /`, mọi trang có
+`<meta name="robots" content="noindex, nofollow">` và header `X-Robots-Tag: noindex, nofollow`.
+Khi có tên miền: đặt `HTBB_SITE_URL=https://ten-mien-cua-ban.vn` (GitHub → Variables) rồi deploy /
+khởi động lại; không phải build lại.
+
+### Kênh hỗ trợ: Zalo
+
+`/admin/cai-dat` → **Hỗ trợ qua Zalo** (`cms.site.hoTroZalo`: `url`, `anhQr`, `ten`, `moTa`). Link chỉ nhận
+`https://zalo.me/…`, `https://chat.zalo.me/…`, `https://oa.zalo.me/…` (kiểm ở server khi lưu và khi
+đọc); ảnh QR chọn từ thư viện ảnh. Có link thì hiện ở đầu trang, chân trang, trang Tải game (`#support`),
+FAQ (mục "Liên hệ hỗ trợ") và ở trang đăng nhập khi tài khoản bị khoá. Chưa đặt thì dùng
+`HTBB_LINK_GROUP` nếu đó là link Zalo hợp lệ; không có thì mọi nút Zalo ẩn (không có link chết `#`).
+
 **Trên VPS, không ai sửa tay biến môi trường.** GitHub Actions ghi chúng vào
-`/etc/kpah-web.env` ở mỗi lần deploy (xem mục dưới).
+`/etc/htbb-web.env` ở mỗi lần deploy (xem mục dưới).
 
 ## Deploy lên VPS (GitHub Actions)
 
-Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/deploy.yml):
+Mỗi lần push lên `main`, [.github/workflows/deploy.yml](../.github/workflows/web-deploy.yml):
 
 1. `npm ci` → `nuxt build` → đóng gói `.output`.
 2. SSH vào VPS bằng khoá riêng `VPS_SSH_KEY_WEB`. Khoá này **bị ép chạy đúng một
    lệnh**: [deploy/deploy-web.sh](deploy/deploy-web.sh) — giống cách repo HTBB đang làm.
-3. **`nhan-env`**: gửi các biến `KPAH_*` qua **stdin** (không qua biến môi trường của
-   ssh, không in ra log). VPS gộp vào `/etc/kpah-web.env` (`chmod 640`). **Secret nào
+3. **`nhan-env`**: gửi các biến `HTBB_*` qua **stdin** (không qua biến môi trường của
+   ssh, không in ra log). VPS gộp vào `/etc/htbb-web.env` (`chmod 640`). **Secret nào
    để trống thì VPS giữ nguyên giá trị đang có** — quên đặt một secret không làm sập web.
 4. **`nhan-build <sha>`**: gửi bản build qua stdin → giải nén vào
-   `/opt/kpah-web/releases/<sha>` → trỏ `current` sang đó → restart `kpah-web` → gọi thử
+   `/opt/htbb-web/releases/<sha>` → trỏ `current` sang đó → restart `htbb-web` → gọi thử
    `/api/site`. Hỏng thì **tự quay lại bản trước**. Giữ 5 bản gần nhất.
 
 ### Khai ở đâu trên GitHub
@@ -173,37 +208,37 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 
 | Tab **Secrets** (bí mật) | Tab **Variables** (không nhạy cảm) |
 |---|---|
-| `VPS_SSH_KEY_WEB` — **bắt buộc** (VPS cũ 180.93.57.30) | `KPAH_LINK_ANDROID`, `KPAH_LINK_PC`, `KPAH_LINK_IOS`, `KPAH_LINK_JAR`, `KPAH_LINK_GROUP` |
+| `VPS_SSH_KEY_WEB` — **bắt buộc** (VPS cũ 180.93.57.30) | `HTBB_LINK_ANDROID`, `HTBB_LINK_PC`, `HTBB_LINK_IOS`, `HTBB_LINK_JAR`, `HTBB_LINK_GROUP`, `HTBB_SITE_URL` (để trống tới khi có tên miền) |
 | `VPS_SSH_KEY_WEB_2` — VPS mới 180.93.127.26 (để trống = bỏ qua VPS mới) | |
-| `KPAH_SECRET` — **bắt buộc**, `openssl rand -hex 32` | `KPAH_AUTO_ACTIVATE` (`true`/`false`), `KPAH_NAP_BAT` (`true`/`false`, xem [Nhánh Pokémon](#nhánh-pokémon-pokemonchuyen-doi)) |
-| `KPAH_ADMIN_ACCOUNTS` — vd `hoahv,admin` | `KPAH_ADMIN_2FA_BAT_BUOC` |
-| `KPAH_TPBANK_ACCOUNT_NO`, `KPAH_TPBANK_ACCOUNT_NAME` | `KPAH_ADMIN_IDLE_TIMEOUT`, `KPAH_ADMIN_MAX_FAIL`, `KPAH_ADMIN_FAIL_WINDOW` |
-| `KPAH_SEPAY_WEBHOOK_APIKEY` | `KPAH_SERVER_DIR` (mặc định `/opt/kpah`) |
-| `KPAH_ADMIN_NAPTIEN_PASSWORD` | `KPAH_TRUSTED_PROXIES` |
-| `KPAH_DB_*` — chỉ khi web không đọc được `server.ini` | |
-| `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`, `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `KPAH_MAIL_FROM_NAME` (mặc định `Huyền Thoại Bảo Bối`) |
+| `HTBB_SECRET` — **bắt buộc**, `openssl rand -hex 32` | `HTBB_AUTO_ACTIVATE` (`true`/`false`), `HTBB_NAP_BAT` (`true`/`false`, xem [Nhánh Pokémon](#nhánh-pokémon-pokemonchuyen-doi)) |
+| `HTBB_ADMIN_ACCOUNTS` — vd `hoahv,admin` | `HTBB_ADMIN_2FA_BAT_BUOC` |
+| `HTBB_TPBANK_ACCOUNT_NO`, `HTBB_TPBANK_ACCOUNT_NAME` | `HTBB_ADMIN_IDLE_TIMEOUT`, `HTBB_ADMIN_MAX_FAIL`, `HTBB_ADMIN_FAIL_WINDOW` |
+| `HTBB_SEPAY_WEBHOOK_APIKEY` | `HTBB_SERVER_DIR` (mặc định `/opt/htbb`) |
+| `HTBB_ADMIN_NAPTIEN_PASSWORD` | `HTBB_TRUSTED_PROXIES` |
+| `HTBB_DB_*` — chỉ khi web không đọc được `server.ini` | |
+| `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`, `HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `HTBB_MAIL_FROM_NAME` (mặc định `Huyền Thoại Bảo Bối`) |
 
 **Hai VPS.** Push lên `main` deploy song song lên cả hai (job `deploy (vps-cu)` và
 `deploy (vps-moi)`, một bên lỗi không chặn bên kia). VPS mới **chỉ nhận bản build**: các
-secret `KPAH_*` ở trên là của VPS cũ (mật khẩu CSDL, `KPAH_SECRET`...), đẩy sang VPS mới
-là web ở đó dùng sai CSDL - nên VPS mới giữ `/etc/kpah-web.env` riêng, sửa tay trên VPS.
+secret `HTBB_*` ở trên là của VPS cũ (mật khẩu CSDL, `HTBB_SECRET`...), đẩy sang VPS mới
+là web ở đó dùng sai CSDL - nên VPS mới giữ `/etc/htbb-web.env` riêng, sửa tay trên VPS.
 Lấy giá trị cho `VPS_SSH_KEY_WEB_2`: `ssh root@180.93.127.26 cat /root/.ssh/deploy_github_web`
 (khoá bị ép chạy đúng `deploy-web.sh`, tạo bởi `cai-dat-vps.sh`) - dán TOÀN BỘ, giữ xuống dòng.
 
 Thêm biến mới thì phải thêm ở **ba** chỗ: `deploy.yml` (env + vòng `for`),
 `KHOA_HOP_LE` trong `deploy/deploy-web.sh`, và `server/utils/config.ts`.
 
-Đổi `KPAH_SECRET` = mọi người (kể cả admin) bị đăng xuất.
+Đổi `HTBB_SECRET` = mọi người (kể cả admin) bị đăng xuất.
 
 ### Cài đặt một lần trên VPS
 
 ```bash
-scp -r deploy root@180.93.57.30:/root/kpah-web-deploy
-ssh root@180.93.57.30 'bash /root/kpah-web-deploy/cai-dat-vps.sh'
+scp -r deploy root@180.93.57.30:/root/htbb-web-deploy
+ssh root@180.93.57.30 'bash /root/htbb-web-deploy/cai-dat-vps.sh'
 ```
 
-Script kiểm Node ≥ 22, tạo user `kpah-web` (thêm vào nhóm `kpah` để đọc
-`server.ini` và log game), cài `kpah-web.service`, tạo khoá SSH bị ép lệnh và in
+Script kiểm Node ≥ 22, tạo user `htbb-web` (thêm vào nhóm `htbb` để đọc
+`server.ini` và log game), cài `htbb-web.service`, tạo khoá SSH bị ép lệnh và in
 private key ra để dán vào secret `VPS_SSH_KEY_WEB`. Rồi đặt các secret và push.
 
 ## Gửi email (Gmail API)
@@ -216,8 +251,8 @@ Gmail) — [server/utils/guiMail.ts](server/utils/guiMail.ts). Dùng cho:
   thì trả lại mật khẩu cũ. Chưa cấu hình mail thì trang báo "chưa được bật".
 - Thư báo khi người chơi **đổi mật khẩu** / **đổi email** ở trang Tài khoản (mục Bảo mật).
 
-Thiếu một trong 4 biến `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`,
-`KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` = tắt gửi mail. `KPAH_MAIL_FROM_NAME` là
+Thiếu một trong 4 biến `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`,
+`HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` = tắt gửi mail. `HTBB_MAIL_FROM_NAME` là
 tên người gửi (mặc định `Huyền Thoại Bảo Bối`).
 
 ### Lấy thông tin (làm một lần)
@@ -245,17 +280,17 @@ tên người gửi (mặc định `Huyền Thoại Bảo Bối`).
    ```
 
    Mở đường link script in ra, đăng nhập đúng tài khoản Gmail gửi thư, bấm Cho phép.
-   Script in ra `KPAH_GMAIL_REFRESH_TOKEN=...`.
+   Script in ra `HTBB_GMAIL_REFRESH_TOKEN=...`.
 6. Đặt giá trị:
    - **VPS cũ 180.93.57.30**: GitHub → Settings → Secrets and variables → Actions →
-     **Secrets**: `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`,
-     `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` (địa chỉ Gmail ở bước 1). Tab
-     **Variables** (tuỳ chọn): `KPAH_MAIL_FROM_NAME`. Push / chạy lại workflow để deploy.
+     **Secrets**: `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`,
+     `HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` (địa chỉ Gmail ở bước 1). Tab
+     **Variables** (tuỳ chọn): `HTBB_MAIL_FROM_NAME`. Push / chạy lại workflow để deploy.
    - **VPS mới 180.93.127.26**: CI **không** đẩy biến môi trường sang VPS này — thêm tay
-     các dòng trên vào `/etc/kpah-web.env` rồi `systemctl restart kpah-web`.
+     các dòng trên vào `/etc/htbb-web.env` rồi `systemctl restart htbb-web`.
 
 Refresh token + client secret = gửi được thư dưới tên bạn: **không** dán vào chat, không
-commit. Bị lộ / web báo `invalid_grant` trong log (`journalctl -u kpah-web | grep '\[mail\]'`)
+commit. Bị lộ / web báo `invalid_grant` trong log (`journalctl -u htbb-web | grep '\[mail\]'`)
 thì vào [quyền của tài khoản Google](https://myaccount.google.com/permissions) gỡ quyền
 ứng dụng rồi chạy lại bước 5. Gmail thường giới hạn khoảng 500 thư/ngày cho tài khoản
 cá nhân — dư cho quên mật khẩu.
@@ -264,8 +299,8 @@ cá nhân — dư cho quên mật khẩu.
 
 Apache **vẫn đứng trước** (HTTPS, mod_remoteip sau Nova WAF, whitelist IP, Basic
 Auth cho `/admin`) và chuyển tiếp mọi request về Node ở `127.0.0.1:3000`.
-Làm theo chú thích trong [deploy/apache-kpah-web.conf](deploy/apache-kpah-web.conf).
-Lưu ý quan trọng ở đó: các luật `<Directory /opt/kpah/web>` không áp dụng cho
+Làm theo chú thích trong [deploy/apache-htbb-web.conf](deploy/apache-htbb-web.conf).
+Lưu ý quan trọng ở đó: các luật `<Directory /opt/htbb/web>` không áp dụng cho
 request đã proxy — phải chuyển sang `<Location />` trước.
 
 Không phải đổi gì ở phía game:
@@ -274,10 +309,10 @@ Không phải đổi gì ở phía game:
   `https://<tên-miền>/api/nap/webhook-sepay` (API Key giữ nguyên). Chưa đổi thì
   tiền vẫn vào tài khoản nhưng đơn không tự xác nhận — phải bấm tay ở `/admin/naptien`.
 - Đường dẫn của website cũ không còn chạy; các trang mới: `/`, `/download`,
-  `/ranking`, `/news`, `/register`, `/login`, `/account`, `/kichhoat`, `/naptien`, `/ghi-cong`, `/admin`.
+  `/ranking`, `/news`, `/register`, `/login`, `/account`, `/kichhoat`, `/naptien`, `/giay-phep`, `/admin`.
 - Database, bảng, mật khẩu `PASSWORD()` y hệt — login server không biết gì về thay đổi.
 
-Tắt proxy (trả Apache về website cũ): `a2disconf kpah-web-proxy && systemctl reload apache2`.
+Tắt proxy (trả Apache về website cũ): `a2disconf htbb-web-proxy && systemctl reload apache2`.
 
 ## Thiết kế bảo mật
 
@@ -288,18 +323,23 @@ Tắt proxy (trả Apache về website cũ): `a2disconf kpah-web-proxy && system
   `timingSafeEqual`, loại token (`user` / `admin` / chờ mã hai bước / xác nhận nạp)
   nằm trong phần được ký nên token loại này không dùng thay được loại khác. Trình
   duyệt không tự gửi kèm token như cookie, nên không có lỗ CSRF và không cần token CSRF.
-- **`KPAH_SECRET` là khoá ký mọi token, kể cả admin.** Bắt buộc đặt khi chạy thật
+- **`HTBB_SECRET` là khoá ký mọi token, kể cả admin.** Bắt buộc đặt khi chạy thật
   (`openssl rand -hex 32`). Thiếu thì server tự sinh khoá ngẫu nhiên cho tiến trình
   (an toàn, nhưng mọi người bị đăng xuất mỗi lần khởi động lại) và ghi cảnh báo vào log.
 - **Phiên.** Người chơi: 7 ngày kể từ lúc đăng nhập (localStorage). Admin:
-  sessionStorage (đóng tab là mất), hết hạn sau `KPAH_ADMIN_IDLE_TIMEOUT` giây
+  sessionStorage (đóng tab là mất), hết hạn sau `HTBB_ADMIN_IDLE_TIMEOUT` giây
   (mặc định 60 phút) không thao tác — mỗi request hợp lệ server cấp token mới qua
-  header `X-Htbb-Token` (gia hạn trượt). Tên bị gỡ khỏi `KPAH_ADMIN_ACCOUNTS` thì
+  header `X-Htbb-Token` (gia hạn trượt). Tên bị gỡ khỏi `HTBB_ADMIN_ACCOUNTS` thì
   mất quyền ngay ở request kế tiếp; danh sách rỗng = không ai vào được.
 - **IP khách.** Node chỉ tin `X-Forwarded-For` khi kết nối đến từ proxy cùng máy
-  (`KPAH_TRUSTED_PROXIES`, mặc định chỉ loopback), và lấy phần tử **cuối** — địa
+  (`HTBB_TRUSTED_PROXIES`, mặc định chỉ loopback), và lấy phần tử **cuối** — địa
   chỉ do chính Apache ghi sau khi mod_remoteip đã khôi phục IP thật. Kết nối thẳng
   từ Internet thì bỏ qua mọi header tự khai.
+- **Đăng ký** web và trong game dùng CHUNG một bộ quy tắc: `shared/data/quy-tac-dang-ky.json`
+  (độ dài/ký tự, tên quản trị cấm, từ ngữ cấm, hạn mức 3/giờ + 10/ngày mỗi IP đếm gộp web+game, câu
+  báo lỗi). Sửa xong chạy `npm run sinh-quy-tac-dang-ky-java` (sinh bản Java cho server game) và
+  `npm test`. Web tự ghi `cau_hinh.web.autoActivate` theo `HTBB_AUTO_ACTIVATE` để server game kích
+  hoạt tài khoản tạo trong game y như web. Chi tiết: HTBB `docs/cau-hinh-server-ini.md` mục 7f.
 - **Giới hạn số lần** theo IP: đăng ký, gõ sai mật khẩu người chơi, quên mật khẩu
   (đếm mọi lần gửi), gõ sai mật khẩu hiện tại khi đổi mật khẩu/email, tạo đơn nạp, gõ
   sai mật khẩu trang xác nhận nạp (bảng `web_chan_spam`), gõ sai mật khẩu admin

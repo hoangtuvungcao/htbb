@@ -4,7 +4,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Sinh web/admin/inc/danh_muc_thu.php tu chinh mang real.Map.petTemplate.
+ * Sinh shared/data/danh-muc-thu.json tu chinh mang real.Map.petTemplate.
  *
  * VI SAO PHAI SINH CHU KHONG GO TAY (cung ly do voi tools/SinhDanhMucNgoc.java):
  * ten 30 con thu KHONG co trong CSDL - ghi cung trong src/real/Map.java
@@ -22,14 +22,16 @@ import java.nio.charset.StandardCharsets;
  * duy nhat dam bao bo chon khong bao gio dua ra id ngoai dai.
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
- *   java -cp "build/classes;lib/NQSH_5h.jar;lib/mysql-connector-java-5.1.49.jar" SinhDanhMucThu
+ *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucThu
+ *   -> ghi HTBB-Web/shared/data/danh-muc-thu.json (tim ../HTBB-Web, ../web, hoac -Dhtbb.web=<thu muc>).
+ *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
  * Chay lai moi khi them/doi thu trong Map.loadPetTemplate(). test/KiemDanhMucThu
  * doi chieu lai lan nua nen quen chay thi bo kiem se do, khong am tham lech.
  */
 public final class SinhDanhMucThu {
 
-    private static final String TEP = "web/admin/inc/danh_muc_thu.php";
+    private static final String TEP = "shared/data/danh-muc-thu.json";
 
     public static void main(final String[] thamSo) throws Exception {
         real.Map.loadPetTemplate();
@@ -40,30 +42,15 @@ public final class SinhDanhMucThu {
         }
 
         final StringBuilder s = new StringBuilder();
-        s.append("<?php\n");
-        s.append("/**\n");
-        s.append(" * DANH MUC THU NUOI (PET/PETV) cho o chon phan thuong giftcode.\n");
-        s.append(" *\n");
-        s.append(" * TEP NAY DUOC SINH RA, DUNG SUA TAY.\n");
-        s.append(" *   Nguon   : mang real.Map.petTemplate (src/real/Map.java, loadPetTemplate)\n");
-        s.append(" *   Sinh lai: java -cp \"build/classes;lib/NQSH_5h.jar;");
-        s.append("lib/mysql-connector-java-5.1.49.jar\" SinhDanhMucThu\n");
-        s.append(" *\n");
-        s.append(" * KHOA nay LA CHI SO MANG, khong phai id vat pham - Char.createPet() va\n");
-        s.append(" * createPetVinhVien() doc thang Map.petTemplate[idpet] khong kiem bien. Xem\n");
-        s.append(" * tools/SinhDanhMucThu.java de biet vi sao phai sinh dung 0..");
-        s.append(ds.length - 1).append(" tu chinh mang do.\n");
-        s.append(" *\n");
-        s.append(" * test/KiemDanhMucThu.java doi chieu tep nay voi mang Java, nen tep lech la\n");
-        s.append(" * bo kiem do chu khong am tham sai.\n");
-        s.append(" */\n\n");
-        s.append("/** @return array<int,string> chi so 0..").append(ds.length - 1)
-         .append(" => ten thu (KHONG phai id vat pham) */\n");
-        s.append("function danhMucThu(): array\n");
         s.append("{\n");
-        s.append("    return [\n");
-
+        s.append("  \"_ghiChu\": \"TEP SINH TU DONG - DUNG SUA TAY. Khoa la CHI SO MANG Map.petTemplate (0..")
+         .append(ds.length - 1).append("), KHONG phai id vat pham: Char.createPet()/createPetVinhVien() doc thang ")
+         .append("Map.petTemplate[idpet] khong kiem bien. test/KiemDanhMucThu (repo game) doi chieu tep nay voi mang Java.\",\n");
+        s.append("  \"_nguon\": \"real.Map.petTemplate (src/real/Map.java, loadPetTemplate) - repo game HTBB\",\n");
+        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucThu\",\n");
+        s.append("  \"thu\": {\n");
         int soDong = 0;
+        final StringBuilder dong = new StringBuilder();
         for (int i = 0; i < ds.length; i++) {
             final data.PetTemplate t = ds[i];
             if (t == null) {
@@ -73,22 +60,64 @@ public final class SinhDanhMucThu {
             if (ten.isEmpty()) {
                 ten = "(khong ten)";
             }
-            s.append("        ").append(i).append(" => '").append(thoatChuoiPhp(ten)).append("',\n");
+            if (dong.length() > 0) {
+                dong.append(",\n");
+            }
+            dong.append("    \"").append(i).append("\": ").append(jsonChuoi(ten));
             soDong++;
         }
+        s.append(dong).append("\n  }\n}\n");
 
-        s.append("    ];\n");
-        s.append("}\n");
-
-        try (Writer w = new OutputStreamWriter(new FileOutputStream(TEP), StandardCharsets.UTF_8)) {
-            w.write(s.toString());
-        }
-        System.out.println("Da sinh " + TEP + " voi " + soDong + " con thu.");
+        final String daGhi = ghiVaoWeb(TEP, s.toString());
+        System.out.println("Da sinh " + daGhi + " voi " + soDong + " con thu.");
         System.exit(0);
     }
 
-    private static String thoatChuoiPhp(final String s) {
-        return s.replace("\\", "\\\\").replace("'", "\\'");
+    // ------------------------------------------------------------------ ghi JSON vao HTBB-Web
+
+    /**
+     * Thu muc HTBB-Web: -Dhtbb.web=..., bien HTBB_WEB_DIR, ../HTBB-Web (ba repo dat canh
+     * nhau) hoac ../web (monorepo). Phai co nuxt.config.ts. Website PHP cu (web/ cua repo
+     * game) da bo - xem docs/pokemon/BO_WEB_PHP.md.
+     */
+    private static java.io.File thuMucWeb() {
+        final String[] ung = {System.getProperty("htbb.web"), System.getenv("HTBB_WEB_DIR"), "../HTBB-Web", "../web"};
+        for (final String u : ung) {
+            if (u != null && !u.isEmpty() && new java.io.File(u, "nuxt.config.ts").isFile()) {
+                return new java.io.File(u);
+            }
+        }
+        System.out.println("[LOI] Khong thay HTBB-Web (../HTBB-Web hoac ../web, hay -Dhtbb.web=<thu muc>).");
+        System.exit(1);
+        return null;
+    }
+
+    /** Ghi tep (UTF-8, LF) vao <HTBB-Web>/<tuongDoi>; tra ve duong dan da ghi. */
+    private static String ghiVaoWeb(final String tuongDoi, final String noiDung) throws java.io.IOException {
+        final java.io.File f = new java.io.File(thuMucWeb(), tuongDoi);
+        f.getParentFile().mkdirs();
+        try (Writer w = new OutputStreamWriter(new FileOutputStream(f), StandardCharsets.UTF_8)) {
+            w.write(noiDung);
+        }
+        return f.getPath();
+    }
+
+    /** Chuoi JSON co dau nhay kep (thoat ", \ va ky tu dieu khien; giu nguyen chu co dau). */
+    private static String jsonChuoi(final String s) {
+        final StringBuilder b = new StringBuilder("\"");
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            if (c == '"' || c == '\\') {
+                b.append('\\').append(c);
+            } else if (c == '\n') {
+                b.append("\\n");
+            } else if (c < 0x20) {
+                b.append(String.format("\\u%04x", (int) c));
+            } else {
+                b.append(c);
+            }
+        }
+        return b.append('"').toString();
     }
 
     private SinhDanhMucThu() {

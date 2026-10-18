@@ -5,8 +5,8 @@
  * ?bang= tên bảng (phải nằm trong danh sách) -> 200 dòng mới nhất.
  */
 const BANG: { ten: string, moTa: string }[] = [
-  { ten: 'tob_chiemthanh', moTa: 'Chiếm thành — đội đang giữ thành' },
-  { ten: 'tob_chiem_thanh_tuan', moTa: 'Chiếm thành tuần — thưởng theo đóng góp' },
+  { ten: 'tob_chiemthanh', moTa: 'Chiếm Gym — đội đang giữ Gym' },
+  { ten: 'tob_chiem_thanh_tuan', moTa: 'Chiếm Gym tuần — thưởng theo đóng góp' },
   { ten: 'tob_chien_truong', moTa: 'Chiến trường' },
   { ten: 'tob_qua_ct_top', moTa: 'Quà top chiến trường' },
   { ten: 'tob_qua_online', moTa: 'Quà online: mốc phút, chuỗi đăng nhập, lịch tháng (theo tài khoản)' },

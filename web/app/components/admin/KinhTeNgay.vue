@@ -16,7 +16,8 @@ const MUC = [{ t: 'Ổn định', mau: 'success', icon: 'i-lucide-circle-check' 
       <div class="flex flex-wrap items-center gap-3">
         <b>Kinh tế máy chủ (ghi mỗi đêm 04:00)</b>
         <UBadge v-if="cuoi" :color="MUC[cuoi.muc]?.mau ?? 'neutral'" variant="subtle" :icon="MUC[cuoi.muc]?.icon">{{ MUC[cuoi.muc]?.t ?? '—' }} · {{ cuoi.ngay }}</UBadge>
-        <USelect v-model="soNgay" :items="[{ label: '30 ngày', value: 30 }, { label: '60 ngày', value: 60 }, { label: '180 ngày', value: 180 }, { label: '1 năm', value: 365 }]" size="sm" class="ml-auto w-32" />
+        <UButton to="/admin/kinh-te" size="sm" color="neutral" variant="ghost" trailing-icon="i-lucide-arrow-right" class="ml-auto" label="Bảng kinh tế đầy đủ" />
+        <USelect v-model="soNgay" :items="[{ label: '30 ngày', value: 30 }, { label: '60 ngày', value: 60 }, { label: '180 ngày', value: 180 }, { label: '1 năm', value: 365 }]" size="sm" class="w-32" />
       </div>
     </template>
     <p v-if="!ds.length" class="text-sm text-muted">Chưa có dữ liệu — game ghi dòng đầu tiên vào 04:00 sau khi bật chế độ dài hạn.</p>

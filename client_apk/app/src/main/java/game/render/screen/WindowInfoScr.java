@@ -136,8 +136,8 @@ public class WindowInfoScr extends Screen {
     private static byte[][] posWearChar = {new byte[]{10, 11}, new byte[]{56, 11}, new byte[]{10, 32}, new byte[]{56, 32}, new byte[]{10, 52}, new byte[]{56, 52}, new byte[]{10, 73}, new byte[]{56, 94}, new byte[]{10, 94}, new byte[]{56, 94}};
     public int numW = 7;
     public int[][] arrFrame = {new int[]{0, 1, 2}, new int[]{0, 1}};
-    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng bang hội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
-    String[] tabName = {"Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội"};
+    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng đội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
+    String[] tabName = {"Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ"};
     public String name = "";
     public String firName = "";
     public Vector list = new Vector();
@@ -1556,7 +1556,7 @@ public class WindowInfoScr extends Screen {
 
     public void doSelectedSkill() {
         if (Char.skillLevelLearnt[this.selected] == -1) {
-            GCanvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+            GCanvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
             return;
         }
         Vector vector = new Vector();
@@ -2053,19 +2053,19 @@ public class WindowInfoScr extends Screen {
     private void setTextCharInfo() {
         this.charInfo = new String[15];
         MainChar mainChar = GCanvas.gameScr.mainChar;
-        this.charInfo[0] = "Nhân vật: " + mainChar.name;
+        this.charInfo[0] = "Pokémon: " + mainChar.name;
         this.charInfo[1] = "Level: " + ((int) mainChar.level) + "+" + mainChar.getPercent();
         this.charInfo[2] = "HP: " + mainChar.hp + "/" + mainChar.maxhp;
         this.charInfo[3] = "MP: " + mainChar.mp + "/" + mainChar.maxmp;
         this.charInfo[4] = "Tấn công: " + mainChar.getAttack();
-        this.charInfo[5] = "Thủ vật lý: " + mainChar.defend;
-        this.charInfo[6] = "Thủ ma pháp: " + mainChar.defend_magic;
+        this.charInfo[5] = "Phòng thủ: " + mainChar.defend;
+        this.charInfo[6] = "Phòng thủ đặc biệt: " + mainChar.defend_magic;
         this.charInfo[7] = "Chính xác: " + ((int) mainChar.accurate);
         this.charInfo[8] = "Né tránh: " + ((int) mainChar.dodge);
         this.charInfo[9] = "Bạo kích: " + (mainChar.baokich > 0 ? (mainChar.baokich / 10) + "." + (mainChar.baokich % 10) : "0") + "%";
         this.charInfo[10] = "Chí mạng: " + ((int) mainChar.critical);
         this.charInfo[11] = "Cống hiến: " + mainChar.dedicationPoint + " điểm.";
-        this.charInfo[12] = "Liên trảm: " + mainChar.lienTram + " điểm.";
+        this.charInfo[12] = "Chuỗi thắng: " + mainChar.lienTram + " điểm.";
         this.charInfo[13] = "Công trạng: " + mainChar.congTrang + " điểm.";
         int length = this.charInfo.length + 1;
         this.numH = length;
@@ -4440,7 +4440,7 @@ public class WindowInfoScr extends Screen {
     }
 
     private void paintNewSkillLearn(Graphics graphics) {
-        Font.normalFont[0].drawString(graphics, new String[]{"Kiếm sỹ", "Chiến binh", "Pháp sư", "Đấu sỹ", "Cung thủ"}[GCanvas.gameScr.mainChar.clazz], 60, -14, 2);
+        Font.normalFont[0].drawString(graphics, new String[]{"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"}[GCanvas.gameScr.mainChar.clazz], 60, -14, 2);
         graphics.setColor(-4868683);
         graphics.fillRect(-5, -2, 138, 1);
         if (GCanvas.gameTick % 10 > 3) {
@@ -4521,7 +4521,7 @@ public class WindowInfoScr extends Screen {
         int i3 = i + 2;
         int i4 = i2 + 15;
         graphics.drawRect(i3, i4, 166, 100);
-        Font.normalFont[0].drawString(graphics, "Nhiệm vụ bang hội", i + 90, i2 - 5, 2);
+        Font.normalFont[0].drawString(graphics, "Nhiệm vụ đội", i + 90, i2 - 5, 2);
         graphics.setClip(i3, i4, 166, 100);
         graphics.ClipRec(i3, i4, 166, 100);
         graphics.translate(i + 5, i2 + 20);
@@ -5760,7 +5760,7 @@ public class WindowInfoScr extends Screen {
                                 GCanvas.endDlg();
                             }
                         }));
-                        vector.addElement(new Command("Trang bị linh thú", new IAction() {
+                        vector.addElement(new Command("Trang bị thú cưỡi", new IAction() {
                             @Override
                             public void perform() {
                                 Char r0 = (Char) GCanvas.gameScr.findCharByID(GCanvas.gameScr.saveIDViewInfoAnimal);
@@ -5788,7 +5788,7 @@ public class WindowInfoScr extends Screen {
                 }
                 if (this.selected != 4) {
                     Vector vector2 = new Vector();
-                    vector2.addElement(new Command("Linh thú", new IAction() {
+                    vector2.addElement(new Command("Thú cưỡi", new IAction() {
                         @Override
                         public void perform() {
                             if (WindowInfoScr.charWearing.infoAnimal.equals("")) {

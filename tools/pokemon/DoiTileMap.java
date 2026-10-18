@@ -56,9 +56,9 @@ public final class DoiTileMap {
 
     static final String GOC_RAW = "https://raw.githubusercontent.com/PMDCollab/RawAsset/master/TileDtef/";
     static final String THU_MUC_RAW = "tools/pokemon/pmd_raw_tile/dtef/";
-    static final String THU_MUC_RA = "map/pokemon_tile/";
+    static final String THU_MUC_RA = "server/map/pokemon_tile/";
     /** A2: vat trang tri ban do (cay/nha map/tree, cay trong map/cay, anh dip le) - cung cau truc thu muc. */
-    static final String THU_MUC_TRANG_TRI = "map/pokemon_trang_tri/";
+    static final String THU_MUC_TRANG_TRI = "server/map/pokemon_trang_tri/";
     /** Anh dip le (Map.java imgDynamic). */
     static final String[] ANH_DIP_LE = {"dao", "mai", "rong", "rong1", "banhsn", "caythong", "longden"};
     /**
@@ -587,8 +587,8 @@ public final class DoiTileMap {
         final List<KetQua[]> tatCa = new ArrayList<KetQua[]>();
         new File(THU_MUC_RA).mkdirs();
         for (final BoTile b : bo) {
-            b.cu = ImageIO.read(new File("map/" + b.ten + ".png"));
-            b.kieu = docKieu("cMap/" + b.ten + ".type");
+            b.cu = ImageIO.read(new File("server/map/" + b.ten + ".png"));
+            b.kieu = docKieu("server/cMap/" + b.ten + ".type");
             final int soTile = b.cu.getHeight() / 16;
             if (b.cu.getWidth() != 16 || b.cu.getHeight() % 16 != 0 || soTile != b.kieu.length) {
                 throw new IllegalStateException(b.ten + ": anh " + b.cu.getWidth() + "x" + b.cu.getHeight()
@@ -1162,7 +1162,7 @@ public final class DoiTileMap {
         new File(THU_MUC_TRANG_TRI + "cay").mkdirs();
         int soCay = 0, soCayTrong = 0;
         for (int i = 0; i < 256; i++) {
-            final File f = new File("map/tree/" + i);
+            final File f = new File("server/map/tree/" + i);
             if (!f.isFile()) {
                 continue;
             }
@@ -1188,7 +1188,7 @@ public final class DoiTileMap {
             final byte[] pngMoi = Files.readAllBytes(tam.toPath());
             tam.delete();
             if (pngMoi.length > Short.MAX_VALUE) {
-                throw new IllegalStateException("map/tree/" + i + ": PNG moi qua lon");
+                throw new IllegalStateException("server/map/tree/" + i + ": PNG moi qua lon");
             }
             png.write(pngMoi.length >> 8);
             png.write(pngMoi.length);
@@ -1199,14 +1199,14 @@ public final class DoiTileMap {
             soCay++;
         }
         for (int j = 0; j < 256; j++) {
-            final File f = new File("map/cay/" + j + ".png");
+            final File f = new File("server/map/cay/" + j + ".png");
             if (f.isFile()) {
                 ghiPng(doiMauAnh(ImageIO.read(f), b), new File(THU_MUC_TRANG_TRI + "cay/" + j + ".png"));
                 soCayTrong++;
             }
         }
         for (final String ten : ANH_DIP_LE) {
-            final BufferedImage goc = ImageIO.read(new File("map/" + ten + ".png"));
+            final BufferedImage goc = ImageIO.read(new File("server/map/" + ten + ".png"));
             final BufferedImage moi = doiMauAnh(goc, b);
             ghiPng(moi, new File(THU_MUC_TRANG_TRI + ten + ".png"));
             xem.add(new BufferedImage[] {goc, moi});
@@ -1246,7 +1246,7 @@ public final class DoiTileMap {
         for (final int[] bd : BAN_DO_MAU) {
             final BoTile b = bo[bd[1]];
             final BufferedImage moi = ImageIO.read(new File(THU_MUC_RA + b.ten + ".png"));
-            final BufferedImage[] cap = {veBanDo(bd[0], b.cu, "map/tree/"), veBanDo(bd[0], moi, THU_MUC_TRANG_TRI + "tree/")};
+            final BufferedImage[] cap = {veBanDo(bd[0], b.cu, "server/map/tree/"), veBanDo(bd[0], moi, THU_MUC_TRANG_TRI + "tree/")};
             if (cap[0] != null) {
                 banDo.add(cap);
                 cao += 20 + cap[0].getHeight();
@@ -1324,7 +1324,7 @@ public final class DoiTileMap {
 
     /** Ve mot vung 22x18 tile cua ban do (lop nen + tileTop) phong 2 lan. */
     static BufferedImage veBanDo(final int id, final BufferedImage boAnh, final String thuMucCay) throws IOException {
-        final File f = new File("cMap/" + id);
+        final File f = new File("server/cMap/" + id);
         if (!f.isFile()) {
             return null;
         }
@@ -1438,7 +1438,7 @@ public final class DoiTileMap {
         if (pc.isDirectory()) {
             ds.add(new File(pc, "Resources/" + con));
         }
-        final File cu = new File("ClientUnity/Assets");
+        final File cu = new File("client_pc_ios/ClientUnity/Assets");
         if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
             ds.add(new File(cu, "Resources/" + con));
         }

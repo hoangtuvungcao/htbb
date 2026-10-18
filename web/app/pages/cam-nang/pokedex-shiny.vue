@@ -3,6 +3,7 @@
 const soLoaiHaDuoc = POKEDEX.loai.filter(l => l.quai.length).length
 const loaiShiny = POKEDEX.loai.filter(l => l.anhShiny && l.quai.some(q => q.shiny))
 const N = CAM_NANG.nhiemVu
+const SH = CAM_NANG_ND.shiny
 const suKienShiny = CAM_NANG.suKien.filter(s => /shiny/i.test(`${s.ten1} ${s.coChe}`))
 </script>
 
@@ -21,12 +22,12 @@ const suKienShiny = CAM_NANG.suKien.filter(s => /shiny/i.test(`${s.ten1} ${s.coC
         </div>
       </div>
       <p class="van mt-4">
-        Mở Pokédex trong game qua NPC Pokédex (Snorlax ở Phòng nghiên cứu). Số loài <strong>đã hạ</strong> quyết định mốc thưởng.
+        Mở Pokédex trong game ở NPC Đổi thưởng → Pokédex. Số loài <strong>đã hạ</strong> quyết định mốc thưởng.
         Website có <NuxtLink to="/pokedex" class="lien-ket">Pokédex đầy đủ</NuxtLink> để tra hệ, nơi xuất hiện và tiến hoá.
       </p>
     </WikiSection>
 
-    <WikiSection id="moc" title="Mốc thưởng" lead="Nhận ở NPC Pokédex khi đủ số loài đã hạ (cần một ô trống trong hành trang nếu mốc có vật phẩm).">
+    <WikiSection id="moc" title="Mốc thưởng" lead="Nhận trong mục Pokédex (NPC Đổi thưởng) khi đủ số loài đã hạ (cần một ô trống trong hành trang nếu mốc có vật phẩm).">
       <ol class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <li v-for="m in POKEDEX.mocPokedex" :key="m.moc" class="rounded-3xl glass ring-gilded p-5">
           <p class="font-display text-4xl font-black text-gilded">
@@ -52,7 +53,7 @@ const suKienShiny = CAM_NANG.suKien.filter(s => /shiny/i.test(`${s.ten1} ${s.coC
       </ul>
     </WikiSection>
 
-    <WikiSection id="shiny" title="Pokémon Shiny" lead="Một số quái có bản Shiny — màu sắc khác hẳn, hiếm gặp và thường mạnh hơn bản thường.">
+    <WikiSection id="shiny" title="Pokémon Shiny" :lead="`Mỗi lần hạ quái có 1/${soVn(SH.mauSo)} cơ hội gặp bản Shiny (màu khác hẳn); lần hạ thứ ${soVn(SH.pity)} kể từ lần Shiny gần nhất chắc chắn ra Shiny. Shiny được ghi vào Pokédex và tính danh hiệu — không cộng sức mạnh.`">
       <ul class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
         <li v-for="l in loaiShiny" :key="l.dex">
           <NuxtLink :to="`/pokedex/${l.dex}`" class="group block overflow-hidden rounded-2xl glass text-center transition hover:-translate-y-0.5">

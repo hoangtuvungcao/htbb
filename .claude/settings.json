@@ -27,8 +27,6 @@
       "Bash(echo \"EXIT17:$?\")",
       "PowerShell(& \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\HTBB\\\\build.bat\")",
       "Bash(git commit -m ' *)",
-      "Bash(curl -s http://180.93.57.30/kpah/index.php)",
-      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://180.93.57.30/kpah/naptien.php)",
       "Bash(awk 'NR==20586,NR==20620' src/real/Map.java)",
       "Bash(awk 'NR==20586,NR==22200 && /^    \\(private|protected|public\\).*\\\\\\(/' src/real/Map.java)",
       "Bash(grep -n \"^INSERT INTO \\\\`data_item\\\\`\" gamedb7_clean.sql)",

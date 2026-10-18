@@ -201,7 +201,7 @@ public class Canvas
 		ActionPerform ok = delegate
 		{
 		};
-		inputDlg.setInfo(strinfo, "Tên bang hội của bạn", ok, TField.INPUT_TYPE_ANY, 25, true);
+		inputDlg.setInfo(strinfo, "Tên đội của bạn", ok, TField.INPUT_TYPE_ANY, 25, true);
 		inputDlg.show();
 		Debug.LogWarning("vao ne ");
 	}

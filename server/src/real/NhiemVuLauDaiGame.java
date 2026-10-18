@@ -161,7 +161,7 @@ public final class NhiemVuLauDaiGame {
         }
         synchronized (h) {
             capNhatVe(h);
-            final String lyDo = NhiemVuLauDai.kiemChinh(info.lv, p.lvDetail.lv, info.ngayMo, LauDai.ngayHienTai(),
+            final String lyDo = NhiemVuLauDai.kiemChinh(info.lv, p.lvDetail.lv, info.ngayMo, LauDai.ngayMoNoiDung(),
                     info.canVe, h.veChuong);
             if (lyDo != null) {
                 return lyDo;
@@ -257,7 +257,7 @@ public final class NhiemVuLauDaiGame {
             l.add(new Object[]{ma, Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(tuan)});
         }
         DatabaseLauDai.luuNhiemVu(p.charDBID, ma, 0, 0, tuan);
-        return "Đã nhận: " + m[1] + " (hạ " + m[3] + " quái ±5 cấp).";
+        return "Đã nhận: " + m[1] + " (hạ " + m[3] + " quái chênh không quá 5 cấp).";
     }
 
     /** Ha mot quai: cong tien do nhiem vu tuan dang lam (quai +-5 cap). */
@@ -294,7 +294,7 @@ public final class NhiemVuLauDaiGame {
             DatabaseLauDai.luuNhiemVu(p.charDBID, (String) d[0], ((Integer) d[1]).intValue(), ((Integer) d[2]).intValue(),
                     ((Integer) d[3]).intValue());
             if (((Integer) d[2]).intValue() == 1) {
-                LauDaiNhanVat.bao(p, "Nhiệm vụ tuần hoàn thành, về Sổ tay huấn luyện nhận thưởng.");
+                LauDaiNhanVat.bao(p, "Đã hoàn thành nhiệm vụ tuần, mở Sổ tay huấn luyện để nhận thưởng.");
             }
         }
     }

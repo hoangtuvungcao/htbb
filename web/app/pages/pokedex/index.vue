@@ -7,7 +7,7 @@
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Pokédex',
-  description: `Pokédex ${tenSite}: ${POKEDEX.loai.length} loài Pokémon trong game — hệ, vai trò, tiến hoá, nơi xuất hiện và khắc chế.`,
+  description: `Pokédex ${tenSite}: ${POKEDEX.loai.length} loài Pokémon trong game — hệ, vai trò, tiến hoá, nơi xuất hiện và khắc hệ.`,
 })
 
 const route = useRoute()
@@ -91,7 +91,7 @@ const soDex = (d: number) => `#${String(d).padStart(3, '0')}`
     <SitePageBanner
       title="Pokédex"
       eyebrow="Cẩm nang"
-      :intro="`Toàn bộ ${POKEDEX.loai.length} loài Pokémon xuất hiện trong ${tenSite}: Pokémon khởi đầu, quái hoang dã, boss, thú cưỡi, pet và NPC.`"
+      :intro="`Toàn bộ ${POKEDEX.loai.length} loài Pokémon xuất hiện trong ${tenSite}: Pokémon khởi đầu, Pokémon hoang dã, boss, thú cưỡi, pet và NPC.`"
     />
 
     <section class="py-12 sm:py-16" aria-labelledby="loc-title">

@@ -8,7 +8,7 @@ import type { VatPhamNhanVat } from '../../../../utils/vatPham'
 export default defineAdminHandler(async (event) => {
   const id = nvIdTuRoute(event)
   const ct = await q1<NhanVatDong>(dbGame(), `SELECT ${NV_COT} FROM tob_char WHERE id = ? LIMIT 1`, [id])
-  if (!ct) throw apiLoi(404, `Không tìm thấy nhân vật #${id}.`)
+  if (!ct) throw apiLoi(404, `Không tìm thấy Pokémon #${id}.`)
 
   const chuTk = await nvChuNhan(Number(ct.userId))
 

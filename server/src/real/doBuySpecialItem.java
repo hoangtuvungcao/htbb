@@ -37,7 +37,31 @@ public class doBuySpecialItem {
         return -1;
     }
 
+    /**
+     * GD2 2.10 (sv.lau_dai): mon co data_shop_gia_lau_dai.tien_moi = 2 (ve EXP, thuoc...) chuyen
+     * sang tra bang LUONG KHOA. Cac nhanh mua ben duoi deu tru tien qua Char.truLuongNeuDu, nen
+     * thay vi sua tung nhanh, danh dau LUONG XU LY nay (ThreadLocal - lenh 85 chay tren luong phien,
+     * cac lenh tieu luong khac tren luong ban do khong bi anh huong) de truLuongNeuDu tru luong
+     * khoa. Truoc 18/10/2026 chanMuaShop chan han cac mon nay ("chi doi bang luong khoa") nhung
+     * khong co cho nao doi bang luong khoa -> ve EXP / thuoc / keo khong mua duoc (BotChucNang
+     * shop_luong bat duoc).
+     */
+    private static final ThreadLocal<Boolean> TRA_LUONG_KHOA = new ThreadLocal<Boolean>();
+
+    /** Dang xu ly lenh 85 cho mon tra bang luong khoa (xem TRA_LUONG_KHOA). */
+    static boolean traLuongKhoa() {
+        return Boolean.TRUE.equals(TRA_LUONG_KHOA.get());
+    }
+
     public static void doBuySpecialItem(Char player, Message msg) {
+        try {
+            doBuySpecialItem0(player, msg);
+        } finally {
+            TRA_LUONG_KHOA.remove();
+        }
+    }
+
+    private static void doBuySpecialItem0(Char player, Message msg) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
         } else {
@@ -86,10 +110,13 @@ public class doBuySpecialItem {
                             player.sendMessage(MessageCreator.createServerAlertMessage(chan, ""));
                             return;
                         }
+                        if (data.DatabaseLauDai.traBangLuongKhoa(item.id)) {
+                            TRA_LUONG_KHOA.set(Boolean.TRUE);
+                        }
                     }
 
                     if (item.id == 13 && player.idClan == -1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm chỉ dành cho người đã tham gia bang", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm chỉ dành cho người đã tham gia đội", ""));
                         return;
                     }
 
@@ -103,6 +130,9 @@ public class doBuySpecialItem {
                     int var10002;
                     Message m;
 
+                    if (traLuongKhoa()) {
+                        moneyType = "luong_lock";
+                    }
                     if (player.map.isItemLock(item.id)) {
                         // Kiem-va-tru luong khoa trong MOT buoc (truLuongKhoaNeuDu) thay vi
                         // kiem roi tru rieng: nhanh nay luon di tiep xuong dung MOT nhanh con
@@ -326,11 +356,11 @@ public class doBuySpecialItem {
                         // Runnable). Doi cho khong doi y nghia, chi doi thu tu bao loi.
                         if (player.gender == 1) {
                             if (item.id < 161) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nữ", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu lông chỉ dùng cho nữ", ""));
                                 return;
                             }
                         } else if (player.gender == 2 && item.id >= 161) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nam", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu lông chỉ dùng cho nam", ""));
                             return;
                         }
 
@@ -394,7 +424,7 @@ public class doBuySpecialItem {
                     } else if (item.id == 131) {
                         moneyType = "xu";
                         if (player.buy_luot_van_tieu <= 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Một ngày chỉ có thể mua 2 thẻ vận tiêu.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Một ngày chỉ có thể mua 2 thẻ giao hàng.", ""));
                             return;
                         }
 

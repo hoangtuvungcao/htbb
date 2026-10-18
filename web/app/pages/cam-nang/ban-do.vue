@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * Bản đồ thế giới — danh sách bản đồ từ thiet_ke_map.csv, khu luyện cấp + quái từ pokedex.json.
- * Ảnh xem trước (public/ban-do/<id>.png) chỉ có khi chạy `dong-bo-cam-nang.mjs --anh-map`.
+ * Ảnh xem trước (public/ban-do/<id>.webp, đã thu nhỏ) chỉ có khi chạy `dong-bo-cam-nang.mjs --anh-map`.
+ * Bản đồ Hoenn (năm 2) lấy tên + quái từ BanDoHoenn.java.
  */
 const LOAI_MAP: Record<string, { ten: string, icon: string, mau: string }> = {
   thi_tran: { ten: 'Thị trấn', icon: 'i-lucide-house', mau: '#e3350d' },
@@ -13,15 +14,22 @@ const LOAI_MAP: Record<string, { ten: string, icon: string, mau: string }> = {
   nui: { ten: 'Núi', icon: 'i-lucide-mountain', mau: '#705848' },
   hang: { ten: 'Hang động', icon: 'i-lucide-tent', mau: '#3a4d6b' },
   hang_cat: { ten: 'Hang cát', icon: 'i-lucide-tent', mau: '#e0c068' },
+  sa_mac: { ten: 'Sa mạc', icon: 'i-lucide-sun', mau: '#c8a038' },
+  tuyet: { ten: 'Vùng tuyết', icon: 'i-lucide-snowflake', mau: '#5fa8c8' },
   trong_nha: { ten: 'Trong nhà', icon: 'i-lucide-door-open', mau: '#a06104' },
   thanh: { ten: 'Thành / lãnh địa', icon: 'i-lucide-castle', mau: '#7038f8' },
   dau_truong: { ten: 'Đấu trường', icon: 'i-lucide-swords', mau: '#c03028' },
   tau: { ten: 'Tàu', icon: 'i-lucide-ship', mau: '#5f98e2' },
 }
+const capVung = (v: string) => {
+  const ds = CAM_NANG.nhiemVu.cung.filter(c => c.vung === v)
+  return ds.length ? `Cấp ${Math.min(...ds.map(c => c.capTu))}–${Math.max(...ds.map(c => c.capDen))} của cốt truyện.` : ''
+}
+const capHoenn = Math.min(...CAM_NANG_ND.cotTruyen.chuong.filter(c => c.vung === 'Hoenn').map(c => c.cap))
 const VUNG = [
-  { ten: 'Kanto', mo: 'Vùng khởi đầu: đồng cỏ Pallet, Rừng Viridian, Núi Mặt Trăng, tàu S.S. Anne và đảo lửa Cinnabar. Cấp 1–48 của cốt truyện.' },
-  { ten: 'Johto', mo: 'Vùng cổ kính: tháp chuông Ecruteak, Rừng Ilex, Hồ Phẫn Nộ, làng rồng Blackthorn và Đường Victory dẫn tới Núi Silver. Cấp 49–90.' },
-  { ten: 'Hoenn', mo: 'Vùng biển nhiệt đới mở trong năm thứ hai: núi lửa Chimney, biển sâu Lilycove, Kyogre và Groudon thức tỉnh.' },
+  { ten: 'Kanto', mo: `Vùng khởi đầu: đồng cỏ Pallet, Rừng Viridian, Núi Mặt Trăng, tàu S.S. Anne và đảo lửa Cinnabar. ${capVung('Kanto')}` },
+  { ten: 'Johto', mo: `Vùng cổ kính: tháp chuông Ecruteak, Rừng Ilex, Hồ Phẫn Nộ, làng rồng Blackthorn và Đường Victory dẫn tới Núi Silver. ${capVung('Johto')}` },
+  { ten: 'Hoenn', mo: `Vùng biển nhiệt đới mở trong năm thứ hai (${POKEDEX.hoenn.soBanDo} bản đồ): rừng Petalburg, núi lửa Chimney, Thác Meteor, Tháp Trời. Vào qua cổng bắc Cinnabar (cần cấp ${POKEDEX.hoenn.capVao}+); cốt truyện Hoenn từ cấp ${capHoenn}.` },
 ]
 const thiTran = CAM_NANG.nhiemVu.phu
 const luyenCap = [...POKEDEX.map].sort((a, b) => a.capThap - b.capThap || a.id - b.id)
@@ -52,9 +60,10 @@ const coAnh = CAM_NANG.banDo.some(m => m.anh)
         </div>
       </div>
       <ul class="cham mt-5">
-        <li>Di chuyển nhanh giữa các vùng: nhờ <strong>Pidgeot (Bay)</strong> ở mỗi thị trấn (tốn một ít xu).</li>
-        <li>Ra đảo: tới bến tàu mua vé và đi tàu.</li>
-        <li>Trung tâm Pokémon (Chansey) hồi máu, Poké Mart (Kecleon) bán thuốc, Machamp sửa và chế tạo đồ, Kangaskhan giữ đồ.</li>
+        <li>Di chuyển nhanh: nhờ <strong>Pidgeot</strong> (Pidgeot (Bay)) ở thị trấn đưa tới bản đồ khác — mỗi lần tốn xu bằng {{ CAM_NANG.kinhTe.dichChuyenPhanTramGio }}% thu nhập một giờ ở cấp của bạn.</li>
+        <li>Ra đảo: gặp <strong>Lapras</strong> (hoa tiêu) ở bến tàu mua vé và đi thuyền.</li>
+        <li>NPC trong thị trấn: Chansey bán thuốc, Kecleon tạp hoá, Bronzong bán trang bị, Machamp rèn/sửa/chế tạo, Kangaskhan giữ đồ — giá xem ở <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng</NuxtLink>.</li>
+        <li>Muốn câu cá? Chỉ câu được ở hồ — xem <NuxtLink to="/cam-nang/cau-ca#ban-do" class="lien-ket">bản đồ có hồ</NuxtLink>.</li>
       </ul>
     </WikiSection>
 
@@ -108,7 +117,7 @@ const coAnh = CAM_NANG.banDo.some(m => m.anh)
       </div>
       <ul class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <li v-for="m in dsMap" :key="m.id" class="overflow-hidden rounded-2xl glass">
-          <img v-if="m.anh" :src="`/ban-do/${m.id}.png`" :alt="`Xem trước bản đồ ${m.ten}`" loading="lazy" decoding="async" class="aspect-[4/3] w-full object-cover">
+          <img v-if="m.anh" :src="m.anh" :width="m.rong || 640" :height="m.cao || 480" :alt="`Xem trước bản đồ ${m.ten}`" loading="lazy" decoding="async" class="aspect-[4/3] w-full bg-elevated object-cover">
           <div v-else class="grid aspect-[4/3] place-items-center" :style="{ background: `linear-gradient(160deg, color-mix(in oklab, ${LOAI_MAP[m.loai]?.mau} 22%, var(--poke-card)), color-mix(in oklab, ${LOAI_MAP[m.loai]?.mau} 8%, var(--poke-card)))` }">
             <UIcon :name="LOAI_MAP[m.loai]?.icon ?? 'i-lucide-map'" class="size-10 opacity-70" :style="{ color: LOAI_MAP[m.loai]?.mau }" />
           </div>

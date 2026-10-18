@@ -1,5 +1,5 @@
 /**
- * NẠP TIỀN — phần chạm database (bảng nap_* của HTBB/sql/pokemon_nap_tien.sql, nằm trong kpah_db).
+ * NẠP TIỀN — phần chạm database (bảng nap_* của HTBB/sql/pokemon_nap_tien.sql, nằm trong htbb_db).
  *
  * Web KHÔNG BAO GIỜ cộng lượng: chỉ đổi đơn sang `da_thanh_toan` qua MỘT hàm duy nhất
  * {@link napXacNhanThanhToan} (webhook / admin / mật khẩu chung / sandbox đều đi qua đây). Server
@@ -13,6 +13,7 @@ import type { H3Event } from 'h3'
 import type { PoolConnection } from 'mysql2/promise'
 import type { GiaoDichVao } from './napTienThuan'
 import { dungTaiKhoan, maDonCuaGiaoDich } from './napTienThuan'
+import { tvBanDuoc, tvCap, tvCauHinh, tvThuHoi, tvTrangThai } from './thanhVien'
 
 export interface GoiNap {
   ma: string
@@ -62,7 +63,9 @@ export async function napCoBang(): Promise<boolean> {
   return (await coBang(dbGame(), 'nap_don')) && (await coBang(dbGame(), 'nap_goi')) && (await coBang(dbGame(), 'nap_so_cai'))
 }
 
-export function napThieuBang(): never {
+export function napThieuBang(nguoiChoi = false): never {
+  // Người chơi không cần biết tên bảng / tệp SQL; trang admin vẫn nhận hướng dẫn đầy đủ.
+  if (nguoiChoi) throw apiLoi(409, 'Tính năng nạp tiền chưa sẵn sàng. Vui lòng thử lại sau.', { code: 'thieu_bang' })
   throw apiLoi(409, 'Chưa có bảng nạp tiền (nap_*) — chạy HTBB/sql/pokemon_nap_tien.sql trước.', { code: 'thieu_bang' })
 }
 
@@ -192,9 +195,22 @@ export async function napTaoDon(u: { id: number, username: string }, maGoi: stri
     const goi = await q1<GoiNap>(conn, 'SELECT ma, ten, loai, gia_vnd, luong, mo_ta, dang_ban, thu_tu FROM nap_goi WHERE ma = ? LIMIT 1', [maGoi])
     if (!goi || (Number(goi.dang_ban) !== 1 && nguon === 'web')) throw apiLoi(404, 'Gói không tồn tại hoặc đã ngừng bán.')
     const loiGoi = kiemGoi(goi.loai, Number(goi.gia_vnd), Number(goi.luong))
-    if (loiGoi) throw apiLoi(409, `Gói đang cấu hình sai: ${loiGoi}`)
-    const nv = await q1<{ id: number, charname: string }>(conn, 'SELECT id, charname FROM tob_char WHERE id = ? AND userId = ? LIMIT 1', [Math.trunc(charId), u.id])
-    if (!nv) throw apiLoi(400, 'Hãy chọn nhân vật nhận (nhân vật của chính tài khoản này).')
+    if (loiGoi) throw apiLoi(409, nguon === 'web' ? 'Gói này tạm thời chưa mua được. Vui lòng chọn gói khác hoặc liên hệ ban quản trị.' : `Gói đang cấu hình sai: ${loiGoi}`)
+    // Công tắc bán theo loại gói (trang Cấu hình hệ thống: nap.luong.bat / nap.the_thang.bat / nap.ve_mua.bat),
+    // đọc lỗi = TẮT (fail closed). Đơn đã thanh toán vẫn được cộng — chỉ chặn tạo đơn MỚI.
+    if (nguon === 'web' && !(await chBanLoai(goi.loai))) throw apiLoi(403, 'Gói này đang tạm ngừng bán. Bạn vui lòng quay lại sau.', { code: 'tam_ngung_ban' })
+    // Thành viên HTBB: theo TÀI KHOẢN (không cần chọn nhân vật), công tắc bán RIÊNG (thanh_vien.ban_bat).
+    const laTv = goi.loai === 'thanh_vien'
+    if (laTv && nguon === 'web') {
+      const ban = await tvBanDuoc()
+      if (!ban.duoc) throw apiLoi(403, 'Hiện chưa mở bán Thành viên HTBB.', { code: 'tv_tat' })
+      const tt = await tvTrangThai(u.id)
+      if (tt.laThanhVien && tt.hetHanMs === 0) throw apiLoi(409, 'Tài khoản đã là Thành viên vĩnh viễn.')
+    }
+    const nv = laTv && Math.trunc(charId) <= 0
+      ? { id: 0, charname: '' }
+      : await q1<{ id: number, charname: string }>(conn, 'SELECT id, charname FROM tob_char WHERE id = ? AND userId = ? LIMIT 1', [Math.trunc(charId), u.id])
+    if (!nv) throw apiLoi(400, 'Hãy chọn Pokémon nhận (thuộc chính tài khoản này).')
     if (nguon === 'web') {
       const tran = await napTran()
       const da = await napDaDung(conn, u.id)
@@ -293,6 +309,20 @@ export async function napXacNhanThanhToan(a: {
       [Math.trunc(a.soTienNhan), gioDb(), don.user_id])
     await napNhatKy(conn, a.tacNhan, 'xac_nhan_thanh_toan', don.ma_don, don.user_id,
       `${a.nhaCungCap} ${a.maGd} ${a.soTienNhan} đ${khop === 'du_thua' ? ' (chuyển dư)' : ''}${a.ghiChu ? ` — ${a.ghiChu}` : ''}`, a.ip ?? '')
+    if (don.loai === 'thanh_vien') {
+      // Thành viên theo tài khoản: cấp NGAY trong cùng transaction (không cần nhân vật online), đơn -> da_cong.
+      const ngay = (await tvCauHinh(true)).thoiHanNgay
+      const kq = await tvCap(conn, { userId: don.user_id, username: don.username, ngay, nguon: 'mua', tacNhan: a.tacNhan, lyDo: `mua ${don.ma_don}`, maDon: don.ma_don, ip: a.ip })
+      await exec(conn, "UPDATE nap_don SET trang_thai = 'da_cong', cong_luc = ?, da_luu_nv = 1 WHERE id = ? AND trang_thai = 'da_thanh_toan'", [gioDb(), don.id])
+      try {
+        await exec(conn,
+          'INSERT INTO nap_so_cai (user_id, char_id, loai, so_luong, so_tien, ma_don, ma_tham_chieu, ghi_chu, tao_luc) VALUES (?, 0, ?, 0, ?, ?, ?, ?, ?)',
+          [don.user_id, 'cong', Number(don.so_tien), don.ma_don, `cong:${don.ma_don}`, `thanh vien ${ngay ? `${ngay} ngay` : 'vinh vien'} -> het han ${kq.moi}`, gioDb()])
+      } catch (e: any) {
+        if (!/duplicate|unique/i.test(String(e?.message ?? e))) throw e
+      }
+      return { ketQua: 'ok' as const, don: { ...don, trang_thai: 'da_cong' } }
+    }
     return { ketQua: 'ok' as const, don: { ...don, trang_thai: 'da_thanh_toan' } }
   })
 }
@@ -317,7 +347,7 @@ export async function napCapNhatWebhook(ncc: string, maGd: string, maDon: string
 /**
  * Xử lý MỘT giao dịch tiền vào (chung cho webhook SePay / Casso / mock VÀ job dò SePay user API):
  *   1. ghi nap_webhook — UNIQUE(nha_cung_cap, ma_gd) chặn gọi lặp / webhook + job cùng một giao dịch;
- *   2. tài khoản nhận phải đúng KPAH_NAP_ACCOUNT_NO (khác -> 'sai_tai_khoan', không xác nhận);
+ *   2. tài khoản nhận phải đúng HTBB_NAP_ACCOUNT_NO (khác -> 'sai_tai_khoan', không xác nhận);
  *   3. mã đơn: cột `code` của SePay trước, rồi tới nội dung chuyển khoản;
  *   4. napXacNhanThanhToan (đủ/dư -> da_thanh_toan, dư ghi chú cho admin; thiếu -> ghi một phần, giữ chờ).
  * Mọi kết quả đã ghi sổ đều trả success=true (để SePay KHÔNG gửi lại); lỗi CSDL ném ra -> 500 -> SePay gửi lại.
@@ -371,6 +401,13 @@ export async function napHoanTien(id: number, admin: string, lyDo: string, charg
       [Number(don.so_tien_nhan || don.so_tien), gioDb(), don.user_id])
     await napNhatKy(conn, `admin:${admin}`, chargeback ? 'chargeback' : 'hoan_tien', don.ma_don, don.user_id,
       `${don.trang_thai} -> ${den}: ${lyDo}`, ip)
+    if (don.loai === 'thanh_vien' && den === 'cho_thu_hoi') {
+      // Thành viên: web tự thu hồi (trừ đúng số ngày lần mua này đã cấp) -> da_thu_hoi; game không phải làm gì.
+      const ngay = Number(await qv(conn, "SELECT ngay FROM tv_nhat_ky WHERE ma_don = ? AND hanh_dong IN ('cap','gia_han') ORDER BY id DESC LIMIT 1", [don.ma_don]) ?? 0)
+      await tvThuHoi(conn, { userId: don.user_id, username: don.username, ngay, nguon: 'mua', tacNhan: `admin:${admin}`, lyDo: `hoàn ${don.ma_don}: ${lyDo}`, maDon: don.ma_don, ip, hoanTien: true })
+      await exec(conn, "UPDATE nap_don SET trang_thai = 'da_thu_hoi' WHERE id = ? AND trang_thai = 'cho_thu_hoi'", [don.id])
+      return { ...don, trang_thai: 'da_thu_hoi' }
+    }
     return { ...don, trang_thai: den }
   })
 }

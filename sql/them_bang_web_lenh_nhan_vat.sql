@@ -2,12 +2,12 @@
 -- Bang `web_lenh_nhan_vat` - hang doi lenh tu trang quan tri web cho server game.
 --
 -- KHONG BAT BUOC CHAY TAY: ca server game (src/data/LenhWeb.java) lan trang web
--- (web/admin/inc/lenh_nhan_vat.php) deu tu CREATE TABLE IF NOT EXISTS (va tu them cot
+-- (HTBB-Web server/utils/lenhNhanVat.ts) deu tu CREATE TABLE IF NOT EXISTS (va tu them cot
 -- `tham_so` neu bang duoc tao tu ban dau tien chua co cot nay). File nay co de:
---   1. bo kiem web/admin/test/kiem_schema.php doi chieu duoc ten cot,
+--   1. xem duoc ten cot/cau truc ma khong phai doc ma nguon,
 --   2. ai muon co bang truoc khi khoi dong lai server thi chay tay duoc.
 --
---     mysql -u root kpah_db < sql/them_bang_web_lenh_nhan_vat.sql
+--     mysql -u root htbb_db < sql/them_bang_web_lenh_nhan_vat.sql
 --
 -- VI SAO CAN (02/09/2026): "Dat cap do" / "Buff level" / "Xoa vat pham" tren web ghi
 -- thang vao tob_char. Nhan vat online bi luu de tu RAM; rieng cap do con khong an ca khi
@@ -53,4 +53,4 @@ CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat` (
 
 -- Kiem tra lai: phai ra 1.
 SELECT COUNT(*) AS co_bang FROM information_schema.tables
- WHERE table_schema = 'kpah_db' AND table_name = 'web_lenh_nhan_vat';
+ WHERE table_schema = 'htbb_db' AND table_name = 'web_lenh_nhan_vat';

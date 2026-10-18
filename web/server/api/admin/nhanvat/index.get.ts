@@ -11,14 +11,14 @@ import type { NhanVatDong } from '../../../utils/nhanVatAdmin'
 
 export default defineAdminHandler(async (event) => {
   const query = getQuery(event)
-  const tim = str(query.q)
+  const tim = str(query.q).slice(0, 64)
   const trang = Math.min(1_000_000, Math.max(1, int(query.trang, 1)))
   const moi = 30
   let ds: NhanVatDong[] = []
   let conTrangSau = false
 
   if (tim !== '') {
-    if (/^\d+$/.test(tim)) {
+    if (/^\d{1,10}$/.test(tim)) {
       // Số: hiểu là userId (xem hết nhân vật của một tài khoản) hoặc id nhân vật.
       const so = int(tim)
       ds = await q<NhanVatDong>(dbGame(),
@@ -26,8 +26,8 @@ export default defineAdminHandler(async (event) => {
           ORDER BY lastLv DESC LIMIT 50`, [so, so])
     } else {
       ds = await q<NhanVatDong>(dbGame(),
-        `SELECT ${NV_COT} FROM tob_char WHERE charname LIKE ?
-          ORDER BY lastLv DESC LIMIT 50`, [`%${tim}%`])
+        `SELECT ${NV_COT} FROM tob_char WHERE charname LIKE ? ESCAPE '!'
+          ORDER BY lastLv DESC LIMIT 50`, [`%${tim.replace(/[!%_]/g, c => `!${c}`)}%`])
     }
   } else {
     // Lấy dư 1 dòng để biết còn trang sau hay không — khỏi phải COUNT(*) cả bảng mỗi lần.

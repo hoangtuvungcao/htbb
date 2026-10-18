@@ -31,7 +31,7 @@ import xml.etree.ElementTree as ET
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW = os.path.join(GOC, "tools", "pokemon", "pmd_raw")
 BANG_QUAI = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
-LOAI_JAVA = os.path.join(GOC, "src", "com", "htbb", "pokemon", "LoaiPokemon.java")
+LOAI_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "LoaiPokemon.java")
 KIEM_KE = os.path.join(GOC, "docs", "pokemon", "kiem_ke_sprite.csv")
 
 NGUON = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master"
@@ -155,7 +155,8 @@ def main():
             w, h, n, ten_file = anims[chon]
             o.append("%s %dx%d x%d" % (chon, w, h, n))
             if not chi_kiem:
-                for hau_to in ("Anim", "Shadow"):
+                # Offsets: diem dau / tay / tam tung khung (phu kien trang bi, TinhNeoPoke.java)
+                for hau_to in ("Anim", "Shadow", "Offsets"):
                     tai("%s/%s-%s.png" % (base, ten_file, hau_to), os.path.join(tm, "%s-%s.png" % (ten_file, hau_to)))
         if thieu:
             loi += 1

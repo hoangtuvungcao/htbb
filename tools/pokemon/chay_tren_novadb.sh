@@ -1,6 +1,6 @@
 #!/bin/sh
 # Chay TOAN BO server Huyen Thoai Bao Boi tren NovaDB (may dev / test):
-#   NovaDB (cong MySQL) -> nap sql/htbb_day_du.sql neu CSDL trong -> login server -> game server.
+#   NovaDB (cong MySQL) -> nap ../sql/htbb_day_du.sql neu CSDL trong -> login server -> game server.
 #
 # Chay o thu muc HTBB/:
 #   sh tools/pokemon/chay_tren_novadb.sh            # khoi dong
@@ -12,19 +12,20 @@
 #   NOVA_USER / NOVA_PASS  tai khoan cong MySQL      MYSQL      lenh mysql client (de nap SQL)
 #   CHAY         thu muc chua pid + log (mac dinh ./chay_novadb, nam trong .gitignore)
 #
-# Game server doc server.ini o HTBB/: script SINH server.ini tu vps/server.ini.tmpl (tro vao NovaDB,
+# Game server doc server.ini o server/: script SINH server.ini tu vps/server.ini.tmpl (tro vao NovaDB,
 # db.thamSoJdbc=useSSL=false). server.ini nam trong .gitignore.
 set -e
+cd "$(dirname "$0")/../../server"   # monorepo: game doc server.ini, map/, lib/ tu server/
 NOVADBD=${NOVADBD:-$HOME/Downloads/github/nova-db/NovaDB/target/release/novadbd}
 # Duong dan TUYET DOI, khong chua ten thu muc repo: NovaDB mo file CSDL theo duong dan nay moi lan
 # co ket noi moi, nen doi ten thu muc repo khi dang chay se lam moi ket noi bao "Unknown database".
-NOVA_DATA=${NOVA_DATA:-$(cd .. && pwd -P)/novadb-data}
+NOVA_DATA=${NOVA_DATA:-$(cd ../.. && pwd -P)/novadb-data}
 NOVA_PORT=${NOVA_PORT:-3318}
-NOVA_USER=${NOVA_USER:-kpah}
+NOVA_USER=${NOVA_USER:-htbb}
 NOVA_PASS=${NOVA_PASS:-htbb}
 MYSQL=${MYSQL:-mysql}
 CHAY=${CHAY:-$(pwd)/chay_novadb}
-CP="build/classes:lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/NQSH_5h.jar"
+CP="build/classes:lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
 
 dung() {
     for f in game login nova; do
@@ -52,10 +53,15 @@ echo $! > "$CHAY/nova.pid"
 i=0; until m -e "select 1" > /dev/null 2>&1; do i=$((i+1)); [ $i -gt 60 ] && { echo "NovaDB khong len"; exit 1; }; sleep 1; done
 echo "NovaDB san sang (cong $NOVA_PORT, $(m -N -e 'select version()'))"
 
-# 2. Nap CSDL day du neu chua co kpah_db.
-if ! m -N -e "show databases" | grep -qx kpah_db; then
-    echo "Nap sql/htbb_day_du.sql ..."
-    m < sql/htbb_day_du.sql
+# 2. Nap CSDL day du neu chua co htbb_db.
+# Doi ten kpah_db -> htbb_db: may chua chay tools/doi_ten/chuyen_csdl.sh thi DUNG LAI - nap sql day du  # TUONG-THICH-TEN-CU
+# ben duoi se ghi de ca bang cua CSDL account dang co.  # TUONG-THICH-TEN-CU
+if m -N -e "show databases" | grep -qx kpah_db && ! m -N -e "show databases" | grep -qx htbb_db; then  # TUONG-THICH-TEN-CU
+    echo "Con CSDL ten cu kpah_db - chay truoc: sh tools/doi_ten/chuyen_csdl.sh --apply"; dung; exit 1  # TUONG-THICH-TEN-CU
+fi
+if ! m -N -e "show databases" | grep -qx htbb_db; then
+    echo "Nap ../sql/htbb_day_du.sql ..."
+    m < ../sql/htbb_day_du.sql
 fi
 
 # 3. Bien dich server (neu chua co build/classes moi hon src).
@@ -63,7 +69,7 @@ if [ ! -d build/classes ] || [ -n "$(find src -newer build/classes -name '*.java
     echo "Bien dich server ..."
     rm -rf build/classes && mkdir -p build/classes
     find src -name '*.java' > build/nguon.txt
-    javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/NQSH_5h.jar" \
+    javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar" \
         -sourcepath src -d build/classes @build/nguon.txt
 fi
 
@@ -71,7 +77,7 @@ fi
 sed -e "s/^db\.host\(1\?\)=.*/db.host\1=127.0.0.1:$NOVA_PORT/" -e "s/^db\.user\(1\?\)=.*/db.user\1=$NOVA_USER/" \
     -e "s/^db\.password\(1\?\)=.*/db.password\1=$NOVA_PASS/" -e "s/^db\.userNap=.*/db.userNap=$NOVA_USER/" \
     -e "s/^db\.pass=.*/db.pass=$NOVA_PASS/" -e "s/^db\.thamSoJdbc=.*/db.thamSoJdbc=useSSL=false/" \
-    -e "s|^sv\.pathLog=.*|sv.pathLog=$CHAY/log/|" -e "s|^db\.run=.*|db.run=/bin/true|" vps/server.ini.tmpl > server.ini
+    -e "s|^sv\.pathLog=.*|sv.pathLog=$CHAY/log/|" -e "s|^db\.run=.*|db.run=/bin/true|" ../vps/server.ini.tmpl > server.ini
 
 # 5. Login server (cong 8023) + game server (cong 19129).
 cp loginServer/CheckLoginSocket.jar "$CHAY/login/"

@@ -392,10 +392,6 @@ public class ScreenDapDo extends Screen {
 
         @Override
         public void perform() {
-            // mod: nút "Đập": các việc auto đập/thêm dòng
-            if (AutoGuard.dapGuard()) {
-                return;
-            }
             ScreenDapDo.this.currentRow = (byte) -1;
             if (ScreenDapDo.vnguyenLieu.size() <= 0) {
                 Canvas.startOKDlg("Không có nguyên liệu.", new IAction() {
@@ -424,7 +420,7 @@ public class ScreenDapDo extends Screen {
                         } else {
                             if (ScreenDapDo.this.type == 4) {
                                 if (ScreenDapDo.selectGemBH != null) {
-                                    AutoGuard.themDong(GameService.gI(), ScreenDapDo.itemSelect.itemID, 5, ScreenDapDo.selectGem.id, ScreenDapDo.selectGem.lock ? 1 : 0, ScreenDapDo.selectGemBH.id, ScreenDapDo.selectGemBH.lock ? 1 : 0);
+                                    GameService.gI().doRequestThemThuocTinh(ScreenDapDo.itemSelect.itemID, 5, ScreenDapDo.selectGem.id, ScreenDapDo.selectGem.lock ? 1 : 0, ScreenDapDo.selectGemBH.id, ScreenDapDo.selectGemBH.lock ? 1 : 0);
                                     ScreenDapDo.this.left = ScreenDapDo.this.cmdContinue;
                                     Canvas.startOKDlg("Xin chờ");
                                     return;
@@ -506,7 +502,7 @@ public class ScreenDapDo extends Screen {
                         }
                     }));
                 }
-                AutoGuard.startAtDapDo(Canvas.menu, menu, 3);
+                Canvas.menu.startAt(menu, 3);
                 Canvas.currentDialog = null;
                 return;
             }
@@ -604,10 +600,10 @@ public class ScreenDapDo extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(0x003A70);
+        g.setColor(game.pokemon.GiaoDien.mauKhungCon());
         int h0 = Canvas.isSmartPhone ? -27 : 10;
         g.fillRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
-        g.setColor(0xFFCB05);
+        g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
         g.drawRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
     }
 
@@ -659,7 +655,7 @@ public class ScreenDapDo extends Screen {
             g.setColor(0x6FA6EA);
             g.fillRect(xDr + (this.wTab * i2), yDr + 22 + this.h0, 1, 29);
             if (itemSelect != null && itemSelect.itemID == item.itemID) {
-                g.setColor(0xFFCB05);
+                g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
                 g.drawRect(xDr + (this.wTab * i2) + 1, yDr + 23 + this.h0, this.wTab - 2, 28);
                 g.drawRect(xDr + (this.wTab * i2) + 2, yDr + 24 + this.h0, this.wTab - 4, 26);
             }
@@ -685,7 +681,7 @@ public class ScreenDapDo extends Screen {
                 }
             }
             if (selectGem != null && selectGem.id == gem.id && selectGem.lock == gem.lock) {
-                g.setColor(0xFFCB05);
+                g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
                 g.drawRect(xDr + (this.wTab * i3) + 1, ((yDr + 24) + this.h0) - 28, this.wTab - 2, 25);
                 g.drawRect(xDr + (this.wTab * i3) + 2, ((yDr + 24) + this.h0) - 27, this.wTab - 4, 23);
             }

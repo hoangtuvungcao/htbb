@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  *   - mo phong: 6 muc tieu nap tien (chenh suc manh <= 5%, xu khong doi, luong bi dot...).
  *
  * Phan CSDL that (cong don song song, goi lap webhook, cho) chi chay khi dat bien moi truong
- * KIEM_NAP_DB = URL JDBC toi mot CSDL NHAP (vd jdbc:mysql://127.0.0.1:3318/kpah_db_nap?useSSL=false,
+ * KIEM_NAP_DB = URL JDBC toi mot CSDL NHAP (vd jdbc:mysql://127.0.0.1:3318/htbb_db_nap?useSSL=false,
  * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu sql/pokemon_nap_tien.sql roi XOA sau.
  */
 public final class KiemNapTien {
@@ -258,13 +258,29 @@ public final class KiemNapTien {
         Kiem.bang("da nang cap track cao cap = track free (cung ngan sach)", free, cao);
         Kiem.dung("da/mua <= 30 vien (~3,5% da cua nguoi choi vua trong 56 ngay)", free <= 30);
         boolean sach = true;
+        int diemFree = 0, diemCao = 0;
         for (final boolean caoCap : new boolean[]{false, true}) {
             for (int b = 1; b <= NapTienLogic.VE_MUA_SO_BAC; b++) {
                 final String t = NapTienLogic.thuongBac(caoCap, b);
-                sach &= t.isEmpty() || t.matches("DA:[0-9]+") || t.matches("TT:[a-z0-9_]+");
+                boolean tg = false;
+                if (t.matches("TG:[a-z0-9_]+:[0-9]+")) {
+                    // tang toc: CHI ma trong TangToc.MA, trao ban KHOA (ID_KHOA) - chung tran diem ngay/tuan
+                    final int loai = com.htbb.pokemon.TangToc.loaiCuaMa(t.split(":")[1]);
+                    tg = loai >= 0 && Integer.parseInt(t.split(":")[2]) <= 2;
+                    if (caoCap) {
+                        diemCao += loai >= 0 ? com.htbb.pokemon.TangToc.DIEM[loai] * Integer.parseInt(t.split(":")[2]) : 0;
+                    } else {
+                        diemFree += loai >= 0 ? com.htbb.pokemon.TangToc.DIEM[loai] * Integer.parseInt(t.split(":")[2]) : 0;
+                    }
+                }
+                sach &= t.isEmpty() || t.matches("DA:[0-9]+") || t.matches("TT:[a-z0-9_]+") || tg;
             }
         }
-        Kiem.dung("thuong ve mua chi la DA (khoa) hoac TT (trang tri) - khong xu/luong/EXP/do chi so", sach);
+        Kiem.dung("thuong ve mua chi la DA (khoa), TT (trang tri) hoac TG (tang toc ban KHOA, chung tran) - khong xu/luong/EXP truc tiep/do chi so", sach);
+        Kiem.dung("track mien phi co tang toc ban khoa >= track cao cap (nguoi khong nap kiem duoc tuong duong): free "
+                + diemFree + " / cao cap " + diemCao + " diem", diemFree >= diemCao && diemFree > 0);
+        Kiem.dung("tong diem tang toc ca 2 track / mua (56 ngay) << tran tuan (khong vuot tran)",
+                diemFree + diemCao <= com.htbb.pokemon.TangToc.DIEM_TUAN_TOI_DA);
         Kiem.dung("ca 30 bac cao cap deu co thuong", NapTienLogic.thuongBac(true, 1).length() > 0
                 && NapTienLogic.thuongBac(true, 30).length() > 0);
     }
@@ -381,7 +397,7 @@ public final class KiemNapTien {
         Kiem.dung("doi diem xai luong -> xu (MapSuKien) chan khi lau_dai",
                 doc("src/real/MapSuKien.java").contains("Bat co sv.lau_dai: tat (THIET_KE 2.1 bo hoan xu khi tieu luong)."));
         Kiem.dung("luong roi tu quai tat khi lau_dai", doc("src/real/Monster.java").contains("boolean DropLuong = !com.htbb.pokemon.LauDai.bat();"));
-        final String tmpl = doc("vps/server.ini.tmpl");
+        final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.dung("server.ini.tmpl: sv.nap_tien=0 (mac dinh tat)", tmpl.contains("\nsv.nap_tien=0\n"));
         // Moi mon ma code trao chi qua whitelist: khong goi applyItemString / AddItem (do co chi so).
         final String game = doc("src/com/htbb/pokemon/NapTienGame.java");
@@ -407,7 +423,7 @@ public final class KiemNapTien {
 
     static void sqlVaWeb() {
         Kiem.nhom("Nap tien - sql/pokemon_nap_tien.sql + web khop NapTienLogic");
-        final String s = doc("sql/pokemon_nap_tien.sql");
+        final String s = doc("../sql/pokemon_nap_tien.sql");
         Kiem.dung("SET NAMES utf8", s.contains("SET NAMES utf8;"));
         final String lenh = s.replaceAll("(?m)--.*$", "");
         Kiem.sai("khong ON DUPLICATE KEY (NovaDB)", lenh.contains("ON DUPLICATE KEY"));
@@ -437,9 +453,9 @@ public final class KiemNapTien {
                     + "|" + x.nhomXoay + "|" + (x.giaoDichDuoc ? 1 : 0) + "|" + (x.coChiSo ? 1 : 0));
         }
         Kiem.bang("nap_cua_hang trong SQL = MON_MAC_DINH", javaMon.toString(), sqlMon.toString());
-        Kiem.dung("xuat_sql_day_du.sh gom pokemon_nap_tien", doc("tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_nap_tien"));
+        Kiem.dung("xuat_sql_day_du.sh gom pokemon_nap_tien", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_nap_tien"));
 
-        final File web = new File("../HTBB-Web/server/utils/napTienThuan.ts");
+        final File web = new File("../web/server/utils/napTienThuan.ts");
         if (!web.isFile()) {
             System.out.println("   (bo qua doi chieu web: khong thay ../HTBB-Web)");
             return;
@@ -449,7 +465,7 @@ public final class KiemNapTien {
         Kiem.dung("web: tran tuan", ts.contains("TRAN_TUAN_VND = " + NapTienLogic.TRAN_TUAN_VND));
         Kiem.dung("web: tran thang", ts.contains("TRAN_THANG_VND = " + NapTienLogic.TRAN_THANG_VND));
         Kiem.dung("web: tran cung", ts.contains("TRAN_CUNG_THANG_VND = " + NapTienLogic.TRAN_CUNG_THANG_VND));
-        Kiem.dung("web: whitelist cach trao giong server", ts.contains("'trang_tri', 'mo_rong_tui', 'doi_ten'"));
+        Kiem.dung("web: whitelist cach trao giong server", ts.contains("'trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc'"));
         Kiem.dung("web: bang chu ma don giong server", ts.contains("'" + NapTienLogic.KY_TU_MA + "'"));
         Kiem.dung("web: trang thai don giong server", ts.contains("'cho_thu_hoi'") && ts.contains("'da_thu_hoi'") && ts.contains("'da_cong'"));
     }
@@ -513,7 +529,7 @@ public final class KiemNapTien {
 
     static void chayKichBan(final String url, final String u, final String p) throws Exception {
         xoaBang(url, u, p);
-        final String sql = doc("sql/pokemon_nap_tien.sql").replaceAll("(?m)^--.*$", "");
+        final String sql = doc("../sql/pokemon_nap_tien.sql").replaceAll("(?m)^--.*$", "");
         try (Connection c = DriverManager.getConnection(url, u, p); Statement st = c.createStatement()) {
             for (final String cau : sql.split(";\\s*\\n")) {
                 if (!cau.trim().isEmpty()) {
@@ -527,7 +543,7 @@ public final class KiemNapTien {
                 }
             }
             Kiem.bang("chay SQL 2 lan: 7 goi (INSERT IGNORE)", 7L, dem1(st, "SELECT COUNT(*) FROM nap_goi"));
-            Kiem.bang("chay SQL 2 lan: 17 mon cua hang", 17L, dem1(st, "SELECT COUNT(*) FROM nap_cua_hang"));
+            Kiem.bang("chay SQL 2 lan: 22 mon cua hang", 22L, dem1(st, "SELECT COUNT(*) FROM nap_cua_hang"));
             Kiem.bang("13 bang", 13, BANG.length);
             st.execute("INSERT INTO nap_don (ma_don, user_id, char_id, ma_goi, loai, so_tien, luong, trang_thai, tao_luc)"
                     + " VALUES ('HTAAAAAAAA', 7, 70, 'L100', 'luong', 100000, 1000, 'da_thanh_toan', '2026-10-17 10:00:00')");
@@ -657,14 +673,14 @@ public final class KiemNapTien {
         try {
             final File ra = Files.createTempDirectory("mophongnap").toFile();
             final int kq = jc.run(null, null, null, "-encoding", "UTF-8", "-nowarn", "-cp",
-                    System.getProperty("java.class.path"), "-d", ra.getPath(), "tools/pokemon/MoPhongKinhTe.java");
+                    System.getProperty("java.class.path"), "-d", ra.getPath(), "../tools/pokemon/MoPhongKinhTe.java");
             Kiem.bang("bien dich MoPhongKinhTe", 0, kq);
             if (kq != 0) {
                 return;
             }
             try (URLClassLoader cl = new URLClassLoader(new URL[]{ra.toURI().toURL()}, KiemNapTien.class.getClassLoader())) {
                 final Method m = cl.loadClass("MoPhongKinhTe").getMethod("chayKiemNapTien", String.class, int.class, int.class);
-                final String[][] r = (String[][]) m.invoke(null, ".", 730, 25);
+                final String[][] r = (String[][]) m.invoke(null, "..", 730, 25);
                 Kiem.bang("6 muc tieu nap tien", 6, r.length);
                 for (final String[] x : r) {
                     Kiem.bang("mo phong: " + x[0] + " (" + x[2] + ")", "1", x[1]);

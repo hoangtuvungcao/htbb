@@ -23,7 +23,7 @@ import java.nio.file.Paths;
  */
 public final class KiemTaiLieuCauHinh {
 
-    private static final String F_TAI_LIEU = "docs/cau-hinh-server-ini.md";
+    private static final String F_TAI_LIEU = "../docs/cau-hinh-server-ini.md";
     private static final String F_CAU_HINH = "src/server/CauHinh.java";
     private static final String F_SERVER = "src/server/TeamServer.java";
 
@@ -102,9 +102,9 @@ public final class KiemTaiLieuCauHinh {
 
         // ---- Duong dan va cai bay chinh phai con dung ----
         Kiem.dung("tai lieu chi dung thu muc chay tren VPS",
-                tl.contains("/opt/kpah/server.ini"));
-        Kiem.dung("thu muc do khop voi kpah-game.service",
-                doc("vps/kpah-game.service").contains("WorkingDirectory=/opt/kpah"));
+                tl.contains("/opt/htbb/server.ini"));
+        Kiem.dung("thu muc do khop voi htbb-game.service",
+                doc("../vps/htbb-game.service").contains("WorkingDirectory=/opt/htbb"));
         Kiem.dung("tai lieu neu dong log bao loi doc cau hinh",
                 tl.contains("Load configuration file error!"));
         Kiem.dung("dong log do van con trong ma nguon",
@@ -112,7 +112,7 @@ public final class KiemTaiLieuCauHinh {
         Kiem.dung("tai lieu nhac server.ini bi gitignore",
                 tl.contains(".gitignore"));
         Kiem.dung("server.ini van thuc su bi gitignore",
-                doc(".gitignore").contains("server.ini"));
+                doc("../.gitignore").contains("server.ini"));
         Kiem.dung("tai lieu co ghi khoa chan doan thu cuoi",
                 tl.contains("sv.thuNghiemThuCuoi"));
         Kiem.dung("khoa chan doan do van con duoc doc",

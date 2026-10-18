@@ -140,7 +140,7 @@ public class Monster extends LiveActor {
 
     /**
      * pokemon: ve quai bang PokeBody neu template co pokeDex (lenh -91). false = lop goi ve kieu
-     * cu. Dung chung cho Monster va cac lop boss con (Boss_*, BossTL, MonsterNew...).
+     * cu. Dung chung cho Monster va cac lop boss con (Boss_*, BossGyarados, MonsterNew...).
      */
     public boolean paintPokemon(Graphics g) {
         int t = this.monster_type;

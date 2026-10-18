@@ -8,6 +8,7 @@ Nguon su that: BANG ben duoi (sua O DAY). Script:
        src/real/MessageCreator.java            SKILL_NAME          (gui xuong client)
        ClientUnity/Assets/Scripts/Game/SkillManager.cs   SKILL_NAME (client tu hien)
        src/data/Text.java                      nameSkillLearn (ban tieng Viet, 3 skill hoc them)
+       htbb-client/{j2me,android}/.../SkillManager.java  SKILL_NAME (client J2ME/Android tu hien)
 
 Chay (o thu muc HTBB/):  python3 -I tools/pokemon/ap_ten_chieu.py [--chi-csv]
 Chay lai nhieu lan van an toan: neu code da mang ten moi thi bo qua.
@@ -19,7 +20,7 @@ import sys
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA = os.path.join(GOC, "docs", "pokemon", "bang_chieu.csv")
-F_SERVER = os.path.join(GOC, "src", "real", "MessageCreator.java")
+F_SERVER = os.path.join(GOC, "server", "src", "real", "MessageCreator.java")
 import importlib.util as _iu
 _sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
 dc = _iu.module_from_spec(_sd)
@@ -27,7 +28,11 @@ _sd.loader.exec_module(dc)
 # Client PC chinh: htbb-client/pc (doi bang HTBB_CLIENT_ASSETS); sua MOI ban client con ton tai.
 F_CLIENTS = [os.path.join(dc.scripts(a), "SkillManager.cs") for a in dc.cac_assets()]
 F_CLIENT = F_CLIENTS[0]
-F_TEXT = os.path.join(GOC, "src", "data", "Text.java")
+F_TEXT = os.path.join(GOC, "server", "src", "data", "Text.java")
+# Client J2ME va Android (repo htbb-client canh HTBB/): ten chieu client tu hien (BangChieu, InfoAttributeItem).
+_CL = os.path.normpath(os.path.join(GOC, "..", "htbb-client"))
+F_JAVA_CLIENTS = [os.path.join(_CL, "j2me", "src", "game", "model", "skill", "SkillManager.java"),
+                  os.path.join(_CL, "android", "app", "src", "main", "java", "game", "model", "skill", "SkillManager.java")]
 
 HE = ["Thường", "Lửa", "Nước", "Điện", "Cỏ", "Băng", "Giác đấu", "Độc", "Đất",
       "Bay", "Siêu linh", "Bọ", "Đá", "Ma", "Rồng", "Bóng tối", "Thép", "Tiên"]
@@ -160,6 +165,39 @@ def main():
         else:
             print("LOI: SkillManager.SKILL_NAME khong khop bang cu lan bang moi - kiem tra tay", F_CLIENT)
             ok = False
+    # Client J2ME + Android (SkillManager.java): mang SKILL_NAME = {new String[]{...}, ...}; thay THEO VI TRI
+    # trong tung class (ten cu lap lai giua class). Phan tu thua (vd "Bua 8x") giu nguyen.
+    for F_J in F_JAVA_CLIENTS:
+        if not os.path.exists(F_J):
+            continue
+        s = open(F_J, encoding="utf8").read()
+        a = s.index("SKILL_NAME = {")
+        b = s.index("};", a)
+        khoi = s[a:b]
+        lop = re.findall(r"new String\[\]\{([^{}]*)\}", khoi)
+        moi_khoi = khoi
+        doi = 0
+        if len(lop) != len(cu):
+            print("LOI: SKILL_NAME so class khac bang - kiem tra tay", F_J)
+            ok = False
+            continue
+        ra = []
+        for c, than in enumerate(lop):
+            ten = re.findall(r'"((?:[^"\\]|\\.)*)"', than)
+            for i, t in enumerate(ten):
+                if i < len(cu[c]) and t == cu[c][i]:
+                    ten[i] = moi[c][i]
+                    doi += 1
+                elif i < len(cu[c]) and t != moi[c][i]:
+                    print("LOI: SKILL_NAME[%d][%d] = %s khong khop ten cu/moi - kiem tra tay" % (c, i, t), F_J)
+                    ok = False
+            ra.append("new String[]{" + ", ".join('"%s"' % x for x in ten) + "}")
+        moi_khoi = "SKILL_NAME = {" + ", ".join(ra)
+        if doi:
+            open(F_J, "w", encoding="utf8").write(s[:a] + moi_khoi + s[b:])
+            print("da thay: SkillManager.SKILL_NAME (%d ten)" % doi, F_J)
+        else:
+            print("bo qua (da co ten moi): SkillManager.SKILL_NAME", F_J)
     # Text.nameSkillLearn (ban tieng Viet - dong DAU TIEN): 3 skill cuoi moi class
     hoc_cu = [d[-3:] for d in cu]
     hoc_moi = [d[-3:] for d in moi]

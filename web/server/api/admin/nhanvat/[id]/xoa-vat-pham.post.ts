@@ -7,7 +7,7 @@
  */
 export default defineAdminHandler(async (event, admin) => {
   const id = nvIdTuRoute(event)
-  const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
+  const body = await bodyObj(event)
   const nv = await nvLayDeThaoTac(id)
   const ten = String(nv.charname)
 
@@ -45,9 +45,8 @@ export default defineAdminHandler(async (event, admin) => {
   const muc = `xoá "${moTa}" (${cot})`
   const [loai, thongBao] = moTaKetQuaLenh(lenh, ten, muc)
 
-  await ghiNhatKy(event, 'xoa_vat_pham_nhan_vat', ten, `cột ${cot}, xoá: ${moTa}`
-    + ` | lệnh #${idLenh}: ${tenTrangThaiLenh(lenh ? Number(lenh.trang_thai) : -1)}`
-    + (lenh && lenh.ket_qua !== '' ? ` - ${lenh.ket_qua}` : ''))
+  await ghiThayDoi(event, 'xoa_vat_pham_nhan_vat', `nv:${ten}`, { cot, viTri, vatPham: moTa, chuoiTho: mau.slice(0, 2000) },
+    { daXoa: moTa, lenh: idLenh, trangThai: tenTrangThaiLenh(lenh ? Number(lenh.trang_thai) : -1), ketQua: lenh?.ket_qua ?? '' })
 
   return { loai, thongBao, idLenh }
 })

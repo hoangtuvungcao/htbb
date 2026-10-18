@@ -28,7 +28,7 @@ import java.nio.file.Paths;
  * DO TRUOC KHI SUA: chay tools/XemSkinNhuTrongGame de xem so lut hien tai, va de so voi
  * chinh thu tool cua game — Poro (map/d_effect/56) lut 12px, Heo (64) 15px, Lan (62) 19px
  * huong xuong. Nam skin dang o 11..14px, tuc trong khoang binh thuong.
- * test/KiemSkinLinhThu.kiemChoNgoiSkin chot lai khoang nay.
+ * test/KiemSkinThuCuoi.kiemChoNgoiSkin chot lai khoang nay.
  *
  * Cach dung:
  *   java CanChoNgoiSkinThu map/skinthu 5 12 2

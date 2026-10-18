@@ -9,12 +9,8 @@ const xacNhan = useOverlay().create(AdminTaikhoanXacNhan)
 const { data, refresh } = await useAsyncData('admin-phan-quyen', () => api<{ coBang: boolean, env: string[], ds: { username: string, vai_tro: string, ghi_chu: string, tao_boi: string, tao_luc: string }[], vaiTro: Record<string, string> }>('/api/admin/phan-quyen'), { server: false })
 const f = reactive({ username: '', vaiTro: 'bien_tap', ghiChu: '' })
 const items = computed(() => Object.entries(data.value?.vaiTro ?? {}).map(([value, label]) => ({ value, label })))
-const MO_TA: Record<string, string> = {
-  sieu_quan_tri: 'Mọi thứ, kể cả bật/tắt server, cấu hình, giftcode, phân quyền.',
-  bien_tap: 'Sửa nội dung website: tin tức, cẩm nang, trang chủ, FAQ, menu, ảnh, lịch.',
-  ho_tro: 'Hỗ trợ người chơi: tra cứu, khoá/mở, cấm chat, gửi thư, đổi mật khẩu.',
-  xem: 'Chỉ xem mọi trang, không sửa được gì.',
-}
+// Mô tả lấy từ ma trận quyền (cùng nguồn với server) — chi tiết từng chức năng ở /admin/vai-tro.
+const MO_TA = MO_TA_VAI_TRO_QUYEN
 async function luu() {
   try { await api('/api/admin/phan-quyen/luu', { method: 'POST', body: f }); toast.add({ title: 'Đã cấp quyền', color: 'success' }); f.username = ''; f.ghiChu = ''; refresh() }
   catch (e) { toast.add({ title: loiApi(e), color: 'error' }) }
@@ -28,6 +24,9 @@ async function go(u: string) {
 
 <template>
   <AdminPage title="Phân quyền">
+    <template #right>
+      <UButton to="/admin/vai-tro" color="neutral" variant="outline" icon="i-lucide-table-properties" label="Xem ma trận vai trò" />
+    </template>
     <AdminCmsChuaCoBang v-if="data && !data.coBang" bang="web_admin_vai_tro" />
     <div class="grid gap-4 lg:grid-cols-4">
       <UCard v-for="(t, k) in MO_TA" :key="k">
@@ -49,7 +48,7 @@ async function go(u: string) {
         <thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Ghi chú</th><th>Cấp bởi</th><th /></tr></thead>
         <tbody>
           <tr v-for="u in data?.env ?? []" :key="`env-${u}`">
-            <td class="font-semibold">{{ u }}</td><td><UBadge color="error" variant="subtle">Siêu quản trị</UBadge></td><td class="text-xs">KPAH_ADMIN_ACCOUNTS (sửa trên máy chủ)</td><td>—</td><td />
+            <td class="font-semibold">{{ u }}</td><td><UBadge color="error" variant="subtle">Siêu quản trị</UBadge></td><td class="text-xs">HTBB_ADMIN_ACCOUNTS (sửa trên máy chủ)</td><td>—</td><td />
           </tr>
           <tr v-for="r in data?.ds ?? []" :key="r.username">
             <td class="font-semibold">{{ r.username }}</td>

@@ -148,7 +148,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1
+  bundleVersion: 900
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -170,7 +170,7 @@ PlayerSettings:
   androidMinAspectRatio: 1
   applicationIdentifier:
     Android: com.Company.ProductName
-    Standalone: unity.KPAH.KPAH
+    Standalone: com.htbb.pokemon
     VisionOS: com.Company.ProductName
     iPhone: com.Company.ProductName
     tvOS: com.Company.ProductName

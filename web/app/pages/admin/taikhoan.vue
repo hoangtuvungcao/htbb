@@ -8,7 +8,7 @@
  * KHOÁ = team_user.ban = 1, cột mà login server đọc. Khoá chỉ chặn LẦN ĐĂNG NHẬP SAU —
  * người đang online vẫn chơi tiếp tới khi thoát ra.
  */
-import type { TableColumn } from '@nuxt/ui'
+import type { CotBang } from '~/components/admin/Bang.vue'
 import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
@@ -36,6 +36,8 @@ const toast = useToast()
 const route = useRoute()
 const router = useRouter()
 const xacNhan = useOverlay().create(AdminTaikhoanXacNhan)
+const me = useAdminMe()
+const duocXoaNhieu = computed(() => me.duoc('/api/admin/taikhoan/xoa-nhieu'))
 
 const xemId = computed(() => {
   const n = Number(route.query.id)
@@ -85,7 +87,7 @@ async function xoaDaChon() {
   const ds = (data.value?.ketQua ?? []).filter(r => chon.value.includes(r.id))
   if (!ds.length || goXacNhan.value !== 'XOA DA CHON') return
   const ok = await xacNhan.open({
-    title: `Xoá vĩnh viễn ${ds.length} tài khoản và toàn bộ nhân vật của chúng?`,
+    title: `Xoá vĩnh viễn ${ds.length} tài khoản và toàn bộ Pokémon của chúng?`,
     description: `${ds.map(r => r.username).join(', ')}\n\nKhông thể hoàn tác.`,
     nut: 'Xoá tài khoản đã chọn',
     mau: 'error',
@@ -119,15 +121,15 @@ function trangThaiBan(ban: number) {
   return { nhan: 'Bình thường', mau: 'success' as const }
 }
 
-const cot: TableColumn<Dong>[] = [
-  { id: 'chon', header: '' },
-  { accessorKey: 'id', header: 'ID', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
-  { accessorKey: 'username', header: 'Tài khoản' },
-  { accessorKey: 'email', header: 'Email' },
-  { accessorKey: 'regdate', header: 'Đăng ký' },
-  { id: 'trangthai', header: 'Trạng thái' },
-  { id: 'xem', header: '' },
-]
+const cot = computed<CotBang[]>(() => [
+  ...(duocXoaNhieu.value ? [{ key: 'chon', label: '' }] : []),
+  { key: 'id', label: 'ID', sort: true, so: true, anMobile: true },
+  { key: 'username', label: 'Tài khoản', sort: true },
+  { key: 'email', label: 'Email', sort: true, anMobile: true },
+  { key: 'regdate', label: 'Đăng ký', sort: true, anMobile: true },
+  { key: 'trangthai', label: 'Trạng thái', giaTri: (r: Dong) => trangThaiBan(r.ban).nhan },
+  { key: 'xem', label: '' },
+])
 </script>
 
 <template>
@@ -141,10 +143,11 @@ const cot: TableColumn<Dong>[] = [
     <template v-else>
       <div class="flex flex-wrap items-end justify-between gap-4">
         <p class="text-sm text-muted">
-          Khoá / mở khoá đăng nhập, kích hoạt, đổi mật khẩu.
+          Khoá / mở khoá đăng nhập, kích hoạt, đổi mật khẩu. Hồ sơ đầy đủ (Pokémon, IP, lịch sử) ở
+          <NuxtLink to="/admin/nguoi-choi" class="text-primary hover:underline">Trung tâm người chơi</NuxtLink>.
         </p>
-        <form class="flex items-end gap-2" @submit.prevent="timKiem">
-          <UFormField label="Tìm theo tên, email, số điện thoại hoặc ID" class="min-w-64">
+        <form class="flex w-full flex-wrap items-end gap-2 sm:w-auto" @submit.prevent="timKiem">
+          <UFormField label="Tìm theo tên, email, số điện thoại hoặc ID" class="min-w-0 flex-1 sm:min-w-64">
             <UInput v-model="tim" placeholder="ví dụ: hoahv" icon="i-lucide-search" class="w-full" />
           </UFormField>
           <UButton type="submit" label="Tìm" />
@@ -152,62 +155,68 @@ const cot: TableColumn<Dong>[] = [
         </form>
       </div>
 
-      <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" :title="`Lỗi đọc dữ liệu: ${loiApi(error)}`" />
-
-      <UCard :ui="{ body: 'p-0 sm:p-0' }">
+      
+      <UCard :ui="{ body: 'p-3 sm:p-4' }">
         <template #header>
           <div class="space-y-3">
             <h3 class="font-semibold text-highlighted">
               {{ qUrl === '' ? 'Danh sách tài khoản' : `Kết quả cho “${qUrl}”` }}
             </h3>
-            <p class="text-sm text-muted">
-              Chọn tài khoản cần xoá trên trang này. Xoá vĩnh viễn cả tài khoản và toàn bộ nhân vật; không thể hoàn tác.
-            </p>
-            <div class="flex flex-wrap items-center gap-3">
-              <UCheckbox v-model="tatCa" label="Chọn tất cả trên trang" :disabled="chonDuoc.length === 0" />
-              <span class="text-sm text-muted" aria-live="polite">Đã chọn {{ chon.length }} tài khoản</span>
-              <UInput v-model="goXacNhan" autocomplete="off" size="sm" placeholder="Gõ XOA DA CHON để xác nhận" aria-label="Gõ XOA DA CHON để xác nhận" class="w-64" />
-              <UButton
-                color="error"
-                size="sm"
-                icon="i-lucide-trash-2"
-                label="Xoá tài khoản đã chọn"
-                :disabled="chon.length === 0 || goXacNhan !== 'XOA DA CHON'"
-                :loading="dangXoa"
-                @click="xoaDaChon"
-              />
-            </div>
+            <template v-if="duocXoaNhieu">
+              <p class="text-sm text-muted">
+                Chọn tài khoản cần xoá trên trang này. Xoá vĩnh viễn cả tài khoản và toàn bộ Pokémon; không thể hoàn tác.
+              </p>
+              <div class="flex flex-wrap items-center gap-3">
+                <UCheckbox v-model="tatCa" label="Chọn tất cả trên trang" :disabled="chonDuoc.length === 0" />
+                <span class="text-sm text-muted" aria-live="polite">Đã chọn {{ chon.length }} tài khoản</span>
+                <UInput v-model="goXacNhan" autocomplete="off" size="sm" placeholder="Gõ XOA DA CHON để xác nhận" aria-label="Gõ XOA DA CHON để xác nhận" class="w-full sm:w-64" />
+                <UButton
+                  color="error"
+                  size="sm"
+                  icon="i-lucide-trash-2"
+                  label="Xoá tài khoản đã chọn"
+                  :disabled="chon.length === 0 || goXacNhan !== 'XOA DA CHON'"
+                  :loading="dangXoa"
+                  @click="xoaDaChon"
+                />
+              </div>
+            </template>
           </div>
         </template>
 
-        <UTable :data="data?.ketQua ?? []" :columns="cot" :loading="status === 'pending'" empty="Không có tài khoản nào khớp.">
-          <template #chon-cell="{ row }">
+        <AdminBang :rows="data?.ketQua" :cot="cot" :dang-tai="status === 'pending'" :loi="error" ten-csv="tai-khoan" row-key="id"
+          :moi-trang="50" rong-tieu-de="Không có tài khoản nào khớp" @thu-lai="refresh">
+          <template #cell-chon="{ row }">
             <UCheckbox
-              :model-value="chon.includes(row.original.id)"
-              :disabled="row.original.laAdmin || row.original.laChinhMinh"
-              :aria-label="`Chọn ${row.original.username}`"
-              @update:model-value="(v) => batTat(row.original.id, v)"
+              :model-value="chon.includes(row.id)"
+              :disabled="row.laAdmin || row.laChinhMinh"
+              :aria-label="`Chọn ${row.username}`"
+              @update:model-value="(v) => batTat(row.id, v)"
             />
           </template>
-          <template #username-cell="{ row }">
-            <span class="flex items-center gap-2">
-              <NuxtLink :to="`/admin/taikhoan?id=${row.original.id}`" class="font-semibold text-highlighted hover:text-primary">{{ row.original.username }}</NuxtLink>
-              <UBadge v-if="row.original.laAdmin" color="neutral" variant="outline" size="sm" label="admin" />
+          <template #cell-username="{ row }">
+            <span class="flex flex-wrap items-center gap-2">
+              <NuxtLink :to="`/admin/nguoi-choi?u=${encodeURIComponent(row.username)}`" class="font-semibold text-primary hover:underline">{{ row.username }}</NuxtLink>
+              <UBadge v-if="row.laAdmin" color="neutral" variant="outline" size="sm" label="admin" />
             </span>
+            <span class="text-xs text-muted md:hidden">#{{ row.id }} · {{ row.email }}</span>
           </template>
-          <template #email-cell="{ row }">
-            <span class="text-xs text-muted">{{ row.original.email }}</span>
+          <template #cell-email="{ row }">
+            <span class="break-all text-xs text-muted">{{ row.email || '—' }}</span>
           </template>
-          <template #regdate-cell="{ row }">
-            <span class="whitespace-nowrap text-xs text-muted">{{ row.original.regdate }}</span>
+          <template #cell-regdate="{ row }">
+            <span class="whitespace-nowrap text-xs text-muted">{{ row.regdate }}</span>
           </template>
-          <template #trangthai-cell="{ row }">
-            <UBadge :color="trangThaiBan(row.original.ban).mau" variant="subtle" :label="trangThaiBan(row.original.ban).nhan" />
+          <template #cell-trangthai="{ row }">
+            <UBadge :color="trangThaiBan(row.ban).mau" variant="subtle" :label="trangThaiBan(row.ban).nhan" />
           </template>
-          <template #xem-cell="{ row }">
-            <UButton :to="`/admin/taikhoan?id=${row.original.id}`" size="xs" color="neutral" variant="outline" label="Xem" />
+          <template #cell-xem="{ row }">
+            <div class="flex justify-end gap-1">
+              <UButton :to="`/admin/nguoi-choi?u=${encodeURIComponent(row.username)}`" size="xs" color="primary" variant="soft" icon="i-lucide-contact" label="Hồ sơ" />
+              <UButton :to="`/admin/taikhoan?id=${row.id}`" size="xs" color="neutral" variant="outline" label="Quản lý" />
+            </div>
           </template>
-        </UTable>
+        </AdminBang>
 
         <template #footer>
           <div v-if="qUrl === ''" class="flex items-center justify-between gap-3 text-sm text-muted">

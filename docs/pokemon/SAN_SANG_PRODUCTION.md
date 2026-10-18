@@ -44,7 +44,7 @@ Ký hiệu: ✅ sẵn sàng · ⚠️ chạy được nhưng có điều kiện 
 | Q7 | Thương hiệu / IP Pokémon | Đọc mục 6 — giữ tên thật (rủi ro gỡ cao) hay đổi tên loài/thương hiệu trước khi công khai |
 | Q8 | Chính sách wipe | Wipe nhân vật sau open test, giữ tài khoản (mục 7) |
 | Q9 | Kênh hỗ trợ (Discord/Zalo/Facebook) | Chọn một, ghi vào trang chủ + `sv.website` |
-| Q10 | HSTS / CSP web | CSP bật mặc định; HSTS chỉ khi chắc chắn chạy HTTPS (`KPAH_HSTS=1`) |
+| Q10 | HSTS / CSP web | CSP bật mặc định; HSTS chỉ khi chắc chắn chạy HTTPS (`HTBB_HSTS=1`) |
 | Q11 | Bỏ chỉ mục `tob_char.Index_5` (pInfo) | Nên bỏ (mục 2.3) |
 
 ## 1. Bảo mật
@@ -62,11 +62,11 @@ Ký hiệu: ✅ sẵn sàng · ⚠️ chạy được nhưng có điều kiện 
 | `mto`/`loadshop` không cần GM khi `sv.server=0` | ⚠️ | `TeamServer.isServerLocal()`. Production `sv.server=1` — **không bao giờ đặt 0**. |
 | `camchat` cho 3 tên tài khoản cứng (`kongpeo`, `phieubatgiangho6789`, `staynight`) | ⚠️ | Chỉ khi `sv.me=1`. Production `sv.me=0` → vô hiệu. Không sửa (điều kiện rối, rủi ro sửa nhầm). |
 | testMode / testCode / CodeTest / mã giftcode "cửa sau" | ✅ | `sv.testMode=0`, `sv.CodeTest=0`; mã test 100 triệu xu và các mã cửa sau đã bị nhóm GD2 xoá hẳn (`DatabaseGiftCode`). |
-| SQL injection | ✅ **đã sửa 1** | Quét 137 chỗ ghép chuỗi SQL. Tên tài khoản/mật khẩu/tên nhân vật/tên bang đều qua bộ lọc chỉ chữ+số (`CreateCharHandler.checkInfo*`, đã thử với `' \ " ; %`), mã quà lọc `[a-zA-Z0-9_-]`. **Lỗ thật:** đuổi thành viên bang (`MapBangHoi.doKickMemberOutNewClan`) đưa tên đọc từ gói tin thẳng vào `Database.getIDClanChar(String)` → bang chủ tiêm SQL được. Đã đổi cả hai hàm `getIDClanChar` sang `PreparedStatement`. Còn `checkLoginIndo`/`addNewAcountAuto` ghép chuỗi nhưng chỉ chạy khi `sv.lang=1` (Indo) và đầu vào đã lọc chữ+số. |
+| SQL injection | ✅ **đã sửa 1** | Quét 137 chỗ ghép chuỗi SQL. Tên tài khoản/mật khẩu/tên nhân vật/tên bang đều qua bộ lọc chỉ chữ+số (`CreateCharHandler.checkInfo*`, đã thử với `' \ " ; %`), mã quà lọc `[a-zA-Z0-9_-]`. **Lỗ thật:** đuổi thành viên bang (`MapDoi.doKickMemberOutNewClan`) đưa tên đọc từ gói tin thẳng vào `Database.getIDClanChar(String)` → bang chủ tiêm SQL được. Đã đổi cả hai hàm `getIDClanChar` sang `PreparedStatement`. Còn `checkLoginIndo`/`addNewAcountAuto` ghép chuỗi nhưng chỉ chạy khi `sv.lang=1` (Indo) và đầu vào đã lọc chữ+số. |
 | Kiểm tra gói tin (độ dài, số âm, chỉ số) | ✅ | Khung gói: `Session.readMessage` chặn > 10000 byte, bỏ gói ≥ 1024; số lượng mua/quyên góp đã kiểm `> 0`, nhân `long` (KiemTienAm…). Ngập gói: `BoDemGoiTin` 300/600 gói mỗi 5 s. Lỗi xử lý gói trước đây **bị nuốt im lặng** — nay được đếm (`loi_xu_ly`, mục 3). |
 | Chống DoS (`sv.*`) | ⚠️ | `maxConnPerIp=50`, `connRateMax=60`, `dosBanSec=300`, ngập gói 300/600: hợp lý. **Nhưng** `vps/server.ini.tmpl` đặt `sv.socketTimeout=0` và `sv.connRateWindow=0` = **tắt** hai lớp (kết nối im lặng không bao giờ bị đóng, mỗi kết nối 2 thread). Và `isLocalIp()` miễn mọi IP `127.*`, `10.*`, `192.168.*` → qua frp/proxy là mất hết chống DoS theo IP. Quyết định Q4, Q5. |
 | `sv.iplogin` / `sv.portlogin` bị bỏ qua | ✅ **đã sửa** | `LogInController` mở kết nối **trước** khi đọc `server.ini` → luôn nối `127.0.0.1:8023`. Phát hiện khi máy chủ thử (cổng 8123) đi đăng nhập qua login server thật. Nay đọc sớm hai khoá (`TeamServer.docDiaChiLoginSom`). |
-| Bí mật trong git | ✅ | Quét cây làm việc ba repo: không có khoá riêng, keystore, `.env`, token. Mật khẩu trong `server.ini.tmpl` là `${...}` (GitHub Secrets); tệp test PHP dùng mật khẩu giả. `.gitignore` chặn `server.ini`, dump, `config.local.php`, `.env`, keystore. Thêm `trang_thai.json`, `bao_tri.txt`. |
+| Bí mật trong git | ✅ | Quét cây làm việc ba repo: không có khoá riêng, keystore, `.env`, token. Mật khẩu trong `server.ini.tmpl` là `${...}` (GitHub Secrets); tệp test PHP (web PHP cũ, đã bỏ 19/10/2026) dùng mật khẩu giả. `.gitignore` chặn `server.ini`, dump, `config.local.php`, `.env`, keystore. Thêm `trang_thai.json`, `bao_tri.txt`. |
 
 **Đánh giá -88 / giả mạo client.** Bước -88 cũ là *client kiểm server* (chữ ký RSA của server NQSH, khoá
 riêng không có) cộng một "bằng chứng" SHA-256 tính từ hằng số trong jar. Nó **không bao giờ** chống được
@@ -93,14 +93,14 @@ giao thức thật mà không cần -88). Rủi ro thật của client giả là
 
 | Hạng mục | TT | Ghi chú |
 |---|---|---|
-| Đăng nhập | ✅ | Token HMAC-SHA256 qua `Authorization: Bearer` (không cookie — Nova WAF lọc cookie). Người chơi 7 ngày; admin 60 phút rảnh / 12 giờ tối đa; đổi mật khẩu/bị khoá là token hết hiệu lực. Khoá ký: `KPAH_SECRET` (production không có thì sinh ngẫu nhiên + cảnh báo). |
-| Phân quyền admin | ✅ | Mọi `server/api/admin/**` qua `defineAdminHandler` + vai trò; chỉ `auth/status` và `verify-2fa` công khai (đúng thiết kế). 2FA tuỳ chọn (`KPAH_ADMIN_2FA_BAT_BUOC=1` để bắt buộc — **nên bật**). |
+| Đăng nhập | ✅ | Token HMAC-SHA256 qua `Authorization: Bearer` (không cookie — Nova WAF lọc cookie). Người chơi 7 ngày; admin 60 phút rảnh / 12 giờ tối đa; đổi mật khẩu/bị khoá là token hết hiệu lực. Khoá ký: `HTBB_SECRET` (production không có thì sinh ngẫu nhiên + cảnh báo). |
+| Phân quyền admin | ✅ | Mọi `server/api/admin/**` qua `defineAdminHandler` + vai trò; chỉ `auth/status` và `verify-2fa` công khai (đúng thiết kế). 2FA tuỳ chọn (`HTBB_ADMIN_2FA_BAT_BUOC=1` để bắt buộc — **nên bật**). |
 | CSRF | ✅ | Bearer token, không cookie → CSRF cổ điển không áp dụng; thêm `server/middleware/admin-csrf.ts` kiểm Origin. |
 | Giới hạn tần suất | ✅ | `web_chan_spam`: sai đăng nhập 15/15 phút, đăng ký 5/giờ, quên mật khẩu 5/giờ/IP + 3/ngày/tài khoản, admin 8/15 phút. Giftcode chỉ nhập trong game (có giãn cách `GIFTCODE_COOLDOWN_MS`). |
-| Header bảo mật | ✅ **đã thêm** | `server/middleware/bao-mat-header.ts`: CSP (`default-src 'self'`, script/style `'unsafe-inline'` vì Nuxt), Permissions-Policy, COOP, nosniff; HSTS 180 ngày chỉ khi production + HTTPS qua proxy tin cậy (`KPAH_HSTS`). `KPAH_CSP=enforce|report-only|off`. Đã thử bản build: header có, trang chủ/điều khoản/`/api/trang-thai` 200. Còn lộ `x-powered-by: Nuxt` (nhỏ). |
+| Header bảo mật | ✅ **đã thêm** | `server/middleware/bao-mat-header.ts`: CSP (`default-src 'self'`, script/style `'unsafe-inline'` vì Nuxt), Permissions-Policy, COOP, nosniff; HSTS 180 ngày chỉ khi production + HTTPS qua proxy tin cậy (`HTBB_HSTS`). `HTBB_CSP=enforce|report-only|off`. Đã thử bản build: header có, trang chủ/điều khoản/`/api/trang-thai` 200. Còn lộ `x-powered-by: Nuxt` (nhỏ). |
 | SQL injection web | ✅ | Mọi truy vấn có đầu vào dùng `?`. Sửa thêm: `/api/admin/nhanvat?trang=` không chặn trên (SQL hỏng, không tiêm được) → chặn 1.000.000. |
-| Nạp tiền | ✅ | Khoá bởi `server/middleware/tat-nap.ts` khi `KPAH_NAP_BAT` tắt (mặc định nhánh Pokémon). **Giữ tắt** (mục 6). |
-| Upload CMS trên VPS | ⚠️ | `kpah-web.service` có `ProtectSystem=strict`, không `ReadWritePaths`; upload ghi vào `/opt/kpah-web/current/uploads` (bị thay mỗi lần deploy). Đặt `KPAH_UPLOAD_DIR=/var/lib/kpah-web/uploads` + `ReadWritePaths=` cho nó. |
+| Nạp tiền | ✅ | Khoá bởi `server/middleware/tat-nap.ts` khi `HTBB_NAP_BAT` tắt (mặc định nhánh Pokémon). **Giữ tắt** (mục 6). |
+| Upload CMS trên VPS | ⚠️ | `htbb-web.service` có `ProtectSystem=strict`, không `ReadWritePaths`; upload ghi vào `/opt/htbb-web/current/uploads` (bị thay mỗi lần deploy). Đặt `HTBB_UPLOAD_DIR=/var/lib/htbb-web/uploads` + `ReadWritePaths=` cho nó. |
 | Node | ⚠️ | Build **chỉ qua với Node 22** (Nuxt 4.5/Vite 8); Node 20.20 lỗi `trustedFunctions.difference`. `deploy/cai-dat-vps.sh` còn chấp nhận Node 20 → ghim 22. |
 
 ## 2. Cơ sở dữ liệu
@@ -109,7 +109,7 @@ giao thức thật mà không cần -88). Rủi ro thật của client giả là
 
 | CSDL (tự dựng, không container) | Kết quả |
 |---|---|
-| **MariaDB 10.4.32** (`/opt/lampp`, datadir riêng, cổng 3420, `STRICT_TRANS_TABLES`) | ✅ nạp sạch: `account` 1 bảng + `kpah_db` 101 bảng, 0 lỗi, < 1 s |
+| **MariaDB 10.4.32** (`/opt/lampp`, datadir riêng, cổng 3420, `STRICT_TRANS_TABLES`) | ✅ nạp sạch: `account` 1 bảng + `htbb_db` 101 bảng, 0 lỗi, < 1 s |
 | **NovaDB 0.3.0** (instance riêng, cổng 3419) | ✅ nạp sạch, 0 lỗi (~4 s) |
 | MySQL 8.0.46 (datadir riêng, cổng 3421) | ❌ dừng ở dòng 392: `BLOB/TEXT column 'nhanQuaOnline' can't have a default value`; và **không có `PASSWORD()`** → login server không chạy. Loại. |
 
@@ -118,7 +118,7 @@ chuẩn (`mysqldump --single-transaction`), toàn bộ tài liệu VPS/backup vi
 **chưa commit bên repo NovaDB** (`PASSWORD()`, `NOVADB_MYSQL_TIME_ZONE`), so sánh chuỗi phân biệt hoa/thường,
 không truy vấn chéo CSDL — giữ cho máy dev.
 
-Cấu hình MariaDB mới: **`vps/kpah-mariadb.cnf`** — lý do chính:
+Cấu hình MariaDB mới: **`vps/htbb-mariadb.cnf`** — lý do chính:
 - Game server **mở sẵn ~137 kết nối** khi khởi động (đo được: `db.maxco=100` + 2×`db.maxNap=30` + …); mặc định
   `max_connections=151` → thêm web/login/backup là "Too many connections". Đặt 300.
 - **Login server không đăng nhập được** nếu máy chủ mặc định `utf8mb4_unicode_ci`: Connector/J trong jar báo
@@ -156,7 +156,7 @@ không tự chạy).
 
 | Hạng mục | TT | Ghi chú |
 |---|---|---|
-| Sao lưu hằng ngày | ✅ | `vps/backup_db.sh` (đã có): `--single-transaction`, `pipefail`, kiểm `gzip -t` + "Dump completed", giữ 7 ngày. **Thêm:** bản Chủ nhật giữ 5 tuần (`backup/tuan/`), chép ra máy khác nếu đặt `KPAH_BACKUP_DICH` trong `/etc/default/kpah-backup` (rsync). |
+| Sao lưu hằng ngày | ✅ | `vps/backup_db.sh` (đã có): `--single-transaction`, `pipefail`, kiểm `gzip -t` + "Dump completed", giữ 7 ngày. **Thêm:** bản Chủ nhật giữ 5 tuần (`backup/tuan/`), chép ra máy khác nếu đặt `HTBB_BACKUP_DICH` trong `/etc/default/htbb-backup` (rsync). |
 | Thử khôi phục | ✅ **mới** | `vps/kiem-khoi-phuc-csdl.sh`: nạp bản mới nhất vào CSDL tạm `<db>_kiem_khoi_phuc`, so số bảng + số dòng `tob_char/tob_pet/tob_clan/tob_pokedex/data_item`, xoá CSDL tạm; báo lỗi nếu bản lưu cũ > 48 giờ. **Đã chạy thật** trên bản sao: 128/128 bảng, 300/300 nhân vật, nạp 1 s → OK. Cron tuần (trong đầu tệp). Đầu tệp có quy trình khôi phục thật. |
 | Bản sao ngoài máy | ⚠️ | Chủ server chọn đích (VPS thứ hai / máy nhà qua ssh key). Không có thì mất VPS = mất hết. |
 
@@ -164,18 +164,18 @@ không tự chạy).
 
 | Hạng mục | TT | Ghi chú / việc đã làm |
 |---|---|---|
-| systemd game/login | ✅ | `vps/kpah-game.service` (`Restart=always`, `StartLimitBurst=5/300s`, `TasksMax=infinity`, `LimitNOFILE=65535`, `-Xss256k`, `TimeoutStopSec=180`), `vps/kpah-login.service`. **Đã cập nhật cờ JVM** (mục 4). |
-| systemd web | ✅ | `HTBB-Web/deploy/kpah-web.service` (xem lưu ý upload mục 1.3). |
-| systemd CSDL | ✅ | Unit `mariadb.service` của distro + `vps/kpah-mariadb.cnf`. `kpah-game` đã `Wants=mariadb.service`. |
-| Xoay vòng log | ✅ | `vps/kpah-logrotate.conf` (game.out/login.out copytruncate 30 ngày, các `.txt` gốc); thêm `AdminChat_lenh47.txt`. |
+| systemd game/login | ✅ | `vps/htbb-game.service` (`Restart=always`, `StartLimitBurst=5/300s`, `TasksMax=infinity`, `LimitNOFILE=65535`, `-Xss256k`, `TimeoutStopSec=180`), `vps/htbb-login.service`. **Đã cập nhật cờ JVM** (mục 4). |
+| systemd web | ✅ | `HTBB-Web/deploy/htbb-web.service` (xem lưu ý upload mục 1.3). |
+| systemd CSDL | ✅ | Unit `mariadb.service` của distro + `vps/htbb-mariadb.cnf`. `htbb-game` đã `Wants=mariadb.service`. |
+| Xoay vòng log | ✅ | `vps/htbb-logrotate.conf` (game.out/login.out copytruncate 30 ngày, các `.txt` gốc); thêm `AdminChat_lenh47.txt`. |
 | Tắt có trật tự (lưu người chơi) | ✅ **đã thử** | `SIGTERM` → shutdown hook `TeamServer` lưu bang, nhân vật, chợ, vận tiêu, log. Kết quả thử thật ở mục 3.1. |
 | Tự khởi động lại khi chết | ✅ | `Restart=always`. Khi **treo** (cổng mở nhưng không xử lý): mới `vps/kiem-suc-khoe.sh` (cron mỗi phút, `TU_KHOI_DONG_LAI=1`). |
 | Kiểm tra sức khoẻ | ✅ **mới** | `vps/kiem-suc-khoe.sh`: bắt tay -40 thật tới cổng game (đo ms), nhịp tim `trang_thai.json` (< 120 s), cổng login, `SELECT 1`, web `/api/trang-thai`. Đã thử: khoẻ → `game=ok(12ms) … login=ok csdl=ok`, mã 0; sai cổng → `game=HONG`, mã 1. |
 | Trang trạng thái công khai | ✅ | Web `GET /api/trang-thai` → `{song, online, capNhat}` (đọc `tob_vi_tri_online`, game ghi mỗi 30 s). |
-| Chế độ bảo trì | ✅ **mới** | Trước đây chỉ có nút "Dừng đăng nhập" trong AdminPanel (Swing — VPS không có màn hình). Nay: tạo `/opt/kpah/bao_tri.txt` → ≤ 5 s sau từ chối đăng nhập mới (người đang chơi không bị đá); dòng đầu = câu báo; `cho: gm1 gm2` = tài khoản vẫn vào được; xoá tệp = mở lại. Tắt hẳn bằng `sv.chiSoMayChu=0`. |
+| Chế độ bảo trì | ✅ **mới** | Trước đây chỉ có nút "Dừng đăng nhập" trong AdminPanel (Swing — VPS không có màn hình). Nay: tạo `/opt/htbb/server/bao_tri.txt` → ≤ 5 s sau từ chối đăng nhập mới (người đang chơi không bị đá); dòng đầu = câu báo; `cho: gm1 gm2` = tài khoản vẫn vào được; xoá tệp = mở lại. Tắt hẳn bằng `sv.chiSoMayChu=0`. |
 | Chỉ số cho trang quản trị | ✅ **mới** | Lớp `server/ChiSoMayChu.java`: mỗi 30 s ghi một dòng `tob_chi_so_may_chu` (giữ 7 ngày): `ket_noi, nhan_vat, heap_mb, heap_toi_da_mb, so_thread, cpu_phan_tram, tai_may, goi_vao, goi_bo, cat_ngap, loi_xu_ly, bao_tri` (bốn bộ đếm là **số tăng trong 30 s**, chia 30 ra /giây) + `trang_thai.json` cùng nội dung. Bộ đếm gắn ở `io/Session` (gói vào, gói bị bỏ vì ngập, kết nối bị cắt vì ngập, lỗi xử lý gói — trước đây bị nuốt). **API đã thêm:** `HTBB-Web/server/api/admin/chi-so-may-chu.get.ts` (`GET /api/admin/chi-so-may-chu?gio=6`, mọi vai trò admin; gộp điểm, đổi bộ đếm ra /giây, trả `songGanNhat` = mẫu mới nhất cách bao nhiêu giây; SQL đã thử MariaDB + NovaDB; build Node 22 OK). **Việc cho nhóm web/CMS:** vẽ biểu đồ ở `/admin` (tổng quan / chẩn đoán). Đã thử thật: bảo trì chặn/cho đúng tài khoản `cho:`, `trang_thai.json` + bảng ghi đều 30 s. Đã có sẵn: `tob_log_online` (5 phút), `/api/admin/online`. |
 
-### 3.1 Thử tắt có trật tự (máy chủ thử, MariaDB `kpah_db_prod_thu`)
+### 3.1 Thử tắt có trật tự (máy chủ thử, MariaDB `htbb_db_prod_thu`)
 
 Kịch bản `san_sang/thu_tat_em.sh` (scratch): 30 bot đang chơi (10 GM tự `slv` lên cấp), sau 75 s gửi
 `kill -TERM` vào máy chủ **khi 29 nhân vật đang online** (đọc từ `trang_thai.json`).
@@ -193,7 +193,7 @@ Chú ý: `-XX:+ExitOnOutOfMemoryError` (cờ mới) thoát **không** qua shutdo
 ## 4. Tải và cỡ máy
 
 Máy chủ thử: bản build hiện tại (có mọi sửa đổi ở trên), `-Xms512m -Xmx1g -Xss256k -XX:+UseG1GC`, MariaDB 10.4
-riêng (`kpah_db_prod_thu`, buffer pool 512 MB), cùng một máy dev 12 luồng / 23 GB (bot chạy cùng máy, qua
+riêng (`htbb_db_prod_thu`, buffer pool 512 MB), cùng một máy dev 12 luồng / 23 GB (bot chạy cùng máy, qua
 loopback). Bot: `tools/pokemon/kiem_tai/BotTai.java` + bản đo độ trễ (scratch); 10 bot GM đi đánh quái
 (`mto` + lệnh 9 + hỏi máu lệnh 7), còn lại đi lại + chat 15–25 s/lần. Mỗi mức **600 s**, khởi động lại máy chủ giữa các mức.
 DoS bật như production nên cân nhắc (`socketTimeout=180`, `connRateWindow=30`).
@@ -222,9 +222,9 @@ DoS bật như production nên cân nhắc (`socketTimeout=180`, `connRateWindow
 **Nút cổ chai thấy được:**
 1. **Thread:** máy chủ tạo **một thread cho mỗi khu của mỗi map** (~2.950 thread khi rỗng) + 2 thread/kết nối. Chi phí
    CPU nền khi **không có ai** ≈ 0,5–0,7 lõi (các vòng lặp khu tự chạy). Đây là giới hạn chính, không phải CSDL.
-2. **Heap:** 1 GB đủ cho 300 nhưng old gen ~92 % → nâng `-Xmx2g` (đã sửa `vps/kpah-game.service`).
+2. **Heap:** 1 GB đủ cho 300 nhưng old gen ~92 % → nâng `-Xmx2g` (đã sửa `vps/htbb-game.service`).
 3. **Đăng nhập dồn:** p95 đăng nhập tăng 15 → 93 ms ở 300 (300 bot vào trong 45 s) — vẫn tốt.
-4. CSDL: 0 lỗi, ~140–155 kết nối (chủ yếu pool mở sẵn) → `max_connections=300` (`vps/kpah-mariadb.cnf`).
+4. CSDL: 0 lỗi, ~140–155 kết nối (chủ yếu pool mở sẵn) → `max_connections=300` (`vps/htbb-mariadb.cnf`).
 
 **Khuyến nghị VPS (Q2):** **4 vCPU / 8 GB RAM / SSD 40 GB+** cho open test tới ~300 CCU (game ~1,2–2 GB, MariaDB ~1 GB,
 web Node ~200 MB, dư cho đỉnh và heap dump). Băng thông ~0,4 MB/s (~3 Mbps) ra ở 300 người (bot ít hoạt động hơn người thật — tính
@@ -240,7 +240,7 @@ gấp 3: ~10 Mbps). Chắc chắn < 100 CCU: 2 vCPU / 4 GB với `-Xmx1536m`. Tr
 | Android | ✅ / ⚠️ | `KIEU=release BAN=N MAY_CHU=host:19129 sh android/build-pokemon.sh` → APK release (đã thử: debug 5,0 MB, release chưa ký 4,76 MB). **Ký**: script mới `htbb-client/android/ky-ban-phat-hanh.sh` (zipalign + apksigner v2+v3; keystore `$KEY_DIR/$HTBB_KEYSTORE`, mật khẩu qua `HTBB_KS_PASS`/`HTBB_KEY_PASS`; từ chối nếu `KEY_DIR` nằm trong repo git). Lệnh `keytool` tạo khoá ở đầu script. **Chưa tạo khoá thật** — chủ server tạo offline, sao lưu 2 nơi (mất khoá = không cập nhật được APK). |
 | PC (Unity) qua CI | ⚠️ | `htbb-client/.github/workflows/phat-hanh.yml` (game-ci/unity-builder@v5, Unity 6000.5.9f1). Secrets: `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD` (`UNITY_SERIAL` chỉ khi Pro), `ANDROID_KEYSTORE_B64`, `ANDROID_KEY_PASSWORD`, `NQSH_TAI_TOKEN`. Chạy: Actions → "Phát hành" → Run workflow. ❌ Workflow vẫn là NQSH-H2 (mục 0.3). |
 | Tự cập nhật / `phienban.json` | ❌ | Mục 0.1. Manifest `{ban, link, sha256, kichThuoc, ghiChu, ngay}` do `phat-hanh/phienban.py` sinh; tên tệp còn `NQSH-H2-PC.zip/.apk/.jar`. Jar và APK `:pokemon` **không** tự cập nhật (người chơi tải lại từ web). |
-| Trang tải web | ⚠️ | `app/pages/download.vue` lấy link từ CMS `/admin/tai-game` (dự phòng `KPAH_LINK_*`, mặc định `#`). Điền link bản HTBB trước khi mở. |
+| Trang tải web | ⚠️ | `app/pages/download.vue` lấy link từ CMS `/admin/tai-game` (dự phòng `HTBB_LINK_*`, mặc định `#`). Điền link bản HTBB trước khi mở. |
 | Đánh số bản + nhật ký thay đổi | ⚠️ | Số bản = số nguyên tăng dần (`build.sh <n>`, `BAN=n`) — dùng **cùng một số** cho jar/APK của một đợt để `sv.banToiThieu` có nghĩa. Chưa có CHANGELOG: dùng mẫu mục 8.3, đăng ở web tin tức + `ghiChu` của `phienban.json`. |
 
 ## 6. Pháp lý / tuân thủ
@@ -288,7 +288,7 @@ gấp 3: ~10 Mbps). Chắc chắn < 100 CCU: 2 vCPU / 4 GB với `-Xmx1536m`. Tr
 
 | Lỗi | Nơi | Tình trạng |
 |---|---|---|
-| `NullPointerException` ở `BossVanTienTran.sendMove → MapVanTienTran.getAllPlayer` khi sự kiện Vạn Tiên Trận bắt đầu (log máy chủ thử 22:11) | server, sự kiện | Bị bắt, không sập; cần sửa (nhóm sự kiện) |
+| `NullPointerException` ở `BossMeCung.sendMove → MapVanTienTran.getAllPlayer` khi sự kiện Vạn Tiên Trận bắt đầu (log máy chủ thử 22:11) | server, sự kiện | Bị bắt, không sập; cần sửa (nhóm sự kiện) |
 | `tob_top_event` có dòng trùng / migrate `idx_id_char` lỗi lúc khởi động | server, bảng xếp hạng sự kiện | Mục 2.2 |
 | `pokemon_lau_dai.sql` lỗi strict trên MariaDB | SQL | Mục 2.2 — chặn nếu bật `sv.lau_dai=1` |
 | Còn 2 chuỗi chữ HOA có dấu — font jar không vẽ được | nội dung | Test "Chu HOA co dau" đang hỏng |
@@ -319,20 +319,20 @@ Máy chủ: <host:cổng>   Bắt buộc cập nhật: có/không (sv.banToiThie
 ## 10. Chủ server phải làm (theo thứ tự)
 
 1. Quyết định Q1–Q11 (mục 0).
-2. VPS: MariaDB + `sudo cp vps/kpah-mariadb.cnf /etc/mysql/mariadb.conf.d/90-kpah.cnf`; nạp `sql/htbb_day_du.sql`
-   (sau khi nhóm GD2 sửa `pokemon_lau_dai.sql` và sinh lại); `mysql kpah_db < sql/them_chi_muc_production.sql`.
+2. VPS: MariaDB + `sudo cp vps/htbb-mariadb.cnf /etc/mysql/mariadb.conf.d/90-htbb.cnf`; nạp `sql/htbb_day_du.sql`
+   (sau khi nhóm GD2 sửa `pokemon_lau_dai.sql` và sinh lại); `mysql htbb_db < sql/them_chi_muc_production.sql`.
 3. `loginServer/server.ini` từ `vps/loginServer.server.ini.example` (có `characterEncoding=UTF-8`).
 4. GitHub Secrets cho `server.ini.tmpl` (đã có trong pipeline); đặt `sv.website`, `sv.linkTaiGame` thật; xem lại
    `sv.socketTimeout`/`sv.connRateWindow` (Q4).
-5. systemd: `kpah-game`, `kpah-login`, `kpah-web`; logrotate; cron root:
+5. systemd: `htbb-game`, `htbb-login`, `htbb-web`; logrotate; cron root:
    ```
-   0 4 * * *  /opt/kpah/vps/backup_db.sh >> /opt/kpah/log/backup.log 2>&1
-   30 4 * * 1 /opt/kpah/vps/kiem-khoi-phuc-csdl.sh >> /opt/kpah/log/backup.log 2>&1
-   * * * * *  TU_KHOI_DONG_LAI=1 WEB_URL=http://127.0.0.1:3000 /opt/kpah/vps/kiem-suc-khoe.sh >> /opt/kpah/log/suc-khoe.log 2>&1
+   0 4 * * *  /opt/htbb/vps/backup_db.sh >> /opt/htbb/log/backup.log 2>&1
+   30 4 * * 1 /opt/htbb/vps/kiem-khoi-phuc-csdl.sh >> /opt/htbb/log/backup.log 2>&1
+   * * * * *  TU_KHOI_DONG_LAI=1 WEB_URL=http://127.0.0.1:3000 /opt/htbb/vps/kiem-suc-khoe.sh >> /opt/htbb/log/suc-khoe.log 2>&1
    ```
-   và `/etc/default/kpah-backup` với `KPAH_BACKUP_DICH=` (bản sao ngoài máy).
-6. Web: Node 22, `KPAH_SECRET` (64 hex), `KPAH_ADMIN_2FA_BAT_BUOC=1`, `KPAH_UPLOAD_DIR` + `ReadWritePaths`,
-   `KPAH_NAP_BAT` để tắt; điền link tải ở `/admin/tai-game`; thêm link Điều khoản/Quyền riêng tư + thông báo tuổi.
+   và `/etc/default/htbb-backup` với `HTBB_BACKUP_DICH=` (bản sao ngoài máy).
+6. Web: Node 22, `HTBB_SECRET` (64 hex), `HTBB_ADMIN_2FA_BAT_BUOC=1`, `HTBB_UPLOAD_DIR` + `ReadWritePaths`,
+   `HTBB_NAP_BAT` để tắt; điền link tải ở `/admin/tai-game`; thêm link Điều khoản/Quyền riêng tư + thông báo tuổi.
 7. Client: tạo repo phát hành HTBB, sửa `CapNhat.cs` (hoặc tắt tự cập nhật PC), `phienban.py`/`day-len.sh`/
    `phat-hanh.yml` (tên `HTBB*`, Android qua `build-pokemon.sh`, `MAY_CHU_CHINH`); tạo keystore Android offline;
    thêm `GHI_CONG.txt` vào jar; đổi `MIDlet-Vendor`.

@@ -2,12 +2,12 @@
 # ============================================================
 #  CAP NHAT SERVER HTBB TU GIT
 #
-#  Dung o VPS:  sudo /opt/kpah/vps/update.sh
+#  Dung o VPS:  sudo /opt/htbb/vps/update.sh
 #
 #  Luong lam viec:
-#     May nha: build jar -> chay capnhat.bat (de KPAH2_patched.jar la ban moi)
+#     May nha: build jar -> chay capnhat.bat (de htbb-server.jar la ban moi)
 #              -> git add -A && git commit && git push
-#     VPS:     sudo /opt/kpah/vps/update.sh
+#     VPS:     sudo /opt/htbb/vps/update.sh
 #
 #  Script lam:
 #    1. Kiem tra repo co bi sua tay khong (tranh git pull that bai giua duong)
@@ -21,10 +21,10 @@
 # ============================================================
 set -u
 
-DIR=/opt/kpah
-USER_SV=kpah
-SV_GAME=kpah-game
-SV_LOGIN=kpah-login
+DIR=/opt/htbb
+USER_SV=htbb; id -u htbb >/dev/null 2>&1 || USER_SV=kpah  # TUONG-THICH-TEN-CU: bo sau 1 ban
+SV_GAME=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SV_GAME=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
+SV_LOGIN=htbb-login; systemctl cat htbb-login >/dev/null 2>&1 || SV_LOGIN=kpah-login  # TUONG-THICH-TEN-CU: bo sau 1 ban
 
 cd "$DIR" || { echo "[LOI] Khong vao duoc $DIR"; exit 1; }
 
@@ -59,13 +59,13 @@ echo "== Kiem tra jar"
 # Phai kiem tra co lenh unzip khong. Thieu unzip thi "unzip -t" that bai va script
 # se ket luan oan la jar hong.
 if command -v unzip >/dev/null 2>&1; then
-    if ! unzip -t "$DIR/KPAH2_patched.jar" >/dev/null 2>&1; then
-        echo "[LOI] KPAH2_patched.jar hong. Server VAN DANG TAT."
+    if ! unzip -t "$DIR/server/htbb-server.jar" >/dev/null 2>&1; then
+        echo "[LOI] htbb-server.jar hong. Server VAN DANG TAT."
         exit 1
     fi
 elif command -v jar >/dev/null 2>&1; then
-    if ! jar tf "$DIR/KPAH2_patched.jar" >/dev/null 2>&1; then
-        echo "[LOI] KPAH2_patched.jar hong. Server VAN DANG TAT."
+    if ! jar tf "$DIR/server/htbb-server.jar" >/dev/null 2>&1; then
+        echo "[LOI] htbb-server.jar hong. Server VAN DANG TAT."
         exit 1
     fi
 else

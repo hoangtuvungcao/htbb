@@ -46,7 +46,7 @@ public final class KiemBoDemGoiTin {
 
         // Ban mau VPS phai ghim dung hai so mac dinh do: lech la deploy am tham doi hanh vi
         // chan flood tren server that.
-        final String tmpl = doc("vps/server.ini.tmpl");
+        final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.dung("ban mau VPS ghim sv.tranGoiThuong=300", coDong(tmpl, "sv.tranGoiThuong=300"));
         Kiem.dung("ban mau VPS ghim sv.tranGoiTaiNguyen=600",
                 coDong(tmpl, "sv.tranGoiTaiNguyen=600"));

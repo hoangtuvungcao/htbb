@@ -67,7 +67,7 @@ public final class BangChieu {
         int lop = Canvas.gameScr.mainChar.clazz;
         int diem = Canvas.gameScr.mainChar.skillPointLeft;
         GiaoDien.moClip(g);
-        // ---- đầu: điểm kỹ năng
+        // ---- đầu: điểm chiêu
         // viên điểm sát mép phải, nhãn canh phải sát viên (không đè "x/y" bên trái ở máy hẹp)
         String sd = String.valueOf(diem);
         int wd = Font.borderFont.getWidth(sd) + 10;
@@ -75,7 +75,7 @@ public final class BangChieu {
         GiaoDien.khoi(g, xd, -15, wd, 14, 6, GiaoDien.VIEN);
         GiaoDien.khoiDoc(g, xd + 1, -14, wd - 2, 12, 5, diem > 0 ? GiaoDien.VANG_NHAT : 0x8A93A3, diem > 0 ? GiaoDien.VANG_TOI : 0x5E6A80);
         Font.borderFont.drawString(g, sd, xd + wd / 2, -15, Font.CENTER);
-        String nhan = "Điểm kỹ năng:";
+        String nhan = "Điểm chiêu:";
         String so = new StringBuffer().append(chon + 1).append('/').append(soChieu).toString();
         int wSo = Font.smallFont.getWidth(so);
         if (Font.arialFontW.getWidth(nhan) > xd - 3 - (-6 + wSo + 4)) {
@@ -126,8 +126,9 @@ public final class BangChieu {
         int wThe = w + 21;
         int y0 = 28;
         int hThe = 77;
-        GiaoDien.khoi(g, x0, y0, wThe, hThe, 4, 0x0E1A30);
-        GiaoDien.khoiDoc(g, x0 + 1, y0 + 1, wThe - 2, hThe - 2, 3, 0x1F4682, 0x173662);
+        // thẻ chiêu sáng (kiểu trang tóm tắt Pokémon): viền xanh, thân trắng
+        GiaoDien.khoi(g, x0, y0, wThe, hThe, 4, GiaoDien.XANH);
+        GiaoDien.khoiDoc(g, x0 + 1, y0 + 1, wThe - 2, hThe - 2, 3, GiaoDien.TRANG, GiaoDien.HANG_CHAN);
         g.setClip(x0 + 1, y0 + 1, wThe - 2, hThe - 2);
         int c = cap(chon);
         int he = PokeChieu.he(lop, chon);
@@ -169,11 +170,11 @@ public final class BangChieu {
             Font.borderFont.drawString(g, s, xs + ws / 2, y + 1, Font.CENTER);
             y += 17;
             if (du && diem <= 0) {
-                f.drawString(g, "Cần 1 điểm kỹ năng", x0 + 4, y, Font.LEFT);
+                f.drawString(g, "Cần 1 điểm chiêu", x0 + 4, y, Font.LEFT);
                 y += 12;
             }
         } else {
-            // "Cấp 3/9" + vạch cấp + (▸ Lv cần để nâng tiếp)
+            // "Cấp 3/9" + vạch cấp + (▸ cấp cần để nâng tiếp)
             String sc = new StringBuffer("Cấp ").append(c).append('/').append(PokeChieu.CAP_TOI_DA).toString();
             f.drawString(g, sc, x0 + 4, y, Font.LEFT);
             int xv = x0 + 8 + f.getWidth(sc);
@@ -188,7 +189,7 @@ public final class BangChieu {
                 int xl = xv + PokeChieu.CAP_TOI_DA * 4 + 4;
                 g.setColor(GiaoDien.LA);
                 g.fillTriangle(xl, y + 3, xl, y + 11, xl + 4, y + 7);
-                Font.normalFont[1].drawString(g, new StringBuffer("Lv").append(capCan(chon, c)).toString(), xl + 6, y - 1, Font.LEFT);
+                Font.normalFont[1].drawString(g, new StringBuffer("Cấp ").append(capCan(chon, c)).toString(), xl + 6, y - 1, Font.LEFT);
             }
             y += 13;
             int cot2 = x0 + 4 + (wThe - 8) / 2 + 4;
@@ -204,7 +205,7 @@ public final class BangChieu {
             } catch (Throwable e) {
             }
             boolean buff = laBuff(lop, chon);
-            dong(g, x0 + 4, y, buff ? "Tỉ lệ" : "ST", new StringBuffer().append(dam).append('%').toString());
+            dong(g, x0 + 4, y, buff ? "Tỉ lệ" : "Uy lực", new StringBuffer().append(dam).append('%').toString());
             dong(g, cot2, y, "MP", String.valueOf(mp));
             y += 12;
             dong(g, x0 + 4, y, "Hồi", giay(cd));

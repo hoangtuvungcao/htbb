@@ -41,8 +41,8 @@ public final class MiniGameSinhThai {
         if (he2 >= 0) {
             b.append('/').append(HePokemon.ten(he2));
         }
-        b.append(", tên ").append(c.length()).append(" chữ cái, bắt đầu bằng '")
-                .append(c.isEmpty() ? '?' : Character.toUpperCase(c.charAt(0))).append("'");
+        b.append(", tên ").append(c.length()).append(" chữ cái, bắt đầu bằng chữ ")
+                .append(c.isEmpty() ? '?' : Character.toUpperCase(c.charAt(0)));
         return b.toString();
     }
 

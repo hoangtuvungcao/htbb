@@ -1,5 +1,5 @@
 /**
- * MẬT KHẨU V2 (scrypt) — CHƯA NỐI VÀO LUỒNG ĐĂNG NHẬP. Mặc định TẮT (KPAH_MAT_KHAU_V2 trống).
+ * MẬT KHẨU V2 (scrypt) — CHƯA NỐI VÀO LUỒNG ĐĂNG NHẬP. Mặc định TẮT (HTBB_MAT_KHAU_V2 trống).
  * Hiện tại web vẫn so/lưu bằng MySQL PASSWORD() ở cột team_user.password, y hệt login server.
  *
  * ── VÌ SAO CHƯA ĐỔI ──────────────────────────────────────────────────────────────────────────
@@ -12,7 +12,7 @@
  * ── KẾ HOẠCH HAI CỘT ─────────────────────────────────────────────────────────────────────────
  * Giai đoạn 1 (làm được ngay, không ảnh hưởng game):
  *   ALTER TABLE account.team_user ADD COLUMN password_v2 VARCHAR(255) NULL;
- *   Bật KPAH_MAT_KHAU_V2=1 và nối: đăng ký / đổi mật khẩu / đặt lại mật khẩu ghi CẢ HAI cột
+ *   Bật HTBB_MAT_KHAU_V2=1 và nối: đăng ký / đổi mật khẩu / đặt lại mật khẩu ghi CẢ HAI cột
  *   (`password` = PASSWORD(?) như cũ, `password_v2` = bamMatKhauV2(pw)); đăng nhập web đúng
  *   PASSWORD() mà password_v2 còn NULL -> ghi bù password_v2 (nâng cấp dần).
  * Giai đoạn 2: khi phần lớn tài khoản đã có password_v2, web chỉ kiểm password_v2.
@@ -38,9 +38,9 @@ function scryptAsync(pw: string, salt: Buffer, n: number, r: number, p: number, 
   })
 }
 
-/** Bật lưu/kiểm mật khẩu v2 hay chưa (KPAH_MAT_KHAU_V2=1). Mặc định false. */
+/** Bật lưu/kiểm mật khẩu v2 hay chưa (HTBB_MAT_KHAU_V2=1). Mặc định false. */
 export function matKhauV2Bat(): boolean {
-  return ['1', 'true', 'yes', 'on'].includes((process.env.KPAH_MAT_KHAU_V2 ?? '').trim().toLowerCase())
+  return ['1', 'true', 'yes', 'on'].includes(((process.env.HTBB_MAT_KHAU_V2 ?? process.env.KPAH_MAT_KHAU_V2) ?? '').trim().toLowerCase()) // TUONG-THICH-TEN-CU
 }
 
 export async function bamMatKhauV2(matKhau: string): Promise<string> {

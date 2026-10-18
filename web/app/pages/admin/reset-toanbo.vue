@@ -49,7 +49,7 @@ async function gui() {
         Reset toàn server về trắng
       </h1>
       <p class="text-sm text-muted">
-        Xoá vĩnh viễn nhân vật của MỌI tài khoản (trừ quản trị) — dùng khi cần làm mới toàn bộ server.
+        Xoá vĩnh viễn Pokémon của MỌI tài khoản (trừ quản trị) — dùng khi cần làm mới toàn bộ server.
       </p>
     </div>
 
@@ -63,7 +63,7 @@ async function gui() {
         </h2>
       </template>
       <div class="grid gap-4 sm:grid-cols-3">
-        <AdminStatCard label="Nhân vật sẽ bị xoá" :value="data?.soNhanVat ?? '…'" icon="i-lucide-shield" />
+        <AdminStatCard label="Pokémon sẽ bị xoá" :value="data?.soNhanVat ?? '…'" icon="i-lucide-shield" />
         <AdminStatCard label="Tài khoản bị ảnh hưởng" :value="data?.soTaiKhoan ?? '…'" icon="i-lucide-user-round" />
         <AdminStatCard
           label="Lệnh xoá đang chờ server xử lý"
@@ -81,7 +81,7 @@ async function gui() {
       </div>
       <p class="mt-3 text-xs text-muted">
         Bấm "Cập nhật số liệu" để xem tiến độ sau khi đã gửi lệnh — hai số đầu sẽ giảm dần khi server xử lý xong
-        từng nhân vật (khoảng 1 nhân vật/giây).
+        từng Pokémon (khoảng 1 Pokémon/giây).
       </p>
     </UCard>
 
@@ -93,17 +93,17 @@ async function gui() {
       </template>
       <UAlert color="error" variant="subtle" icon="i-lucide-octagon-alert" title="KHÔNG THỂ HOÀN TÁC.">
         <template #description>
-          Xoá vĩnh viễn toàn bộ <strong>{{ so(data?.soNhanVat) }} nhân vật</strong> của
+          Xoá vĩnh viễn toàn bộ <strong>{{ so(data?.soNhanVat) }} Pokémon</strong> của
           <strong>{{ so(data?.soTaiKhoan) }} tài khoản</strong> (cùng dữ liệu riêng: thú nuôi, trang trại, đá quý...)
           và đưa cả {{ so(data?.soTaiKhoan) }} tài khoản đó về <strong>CHƯA KÍCH HOẠT</strong>. Các tài khoản trong
-          <code>ADMIN_ACCOUNTS</code> được giữ nguyên, không tài khoản nào bị xoá — chỉ nhân vật bị xoá và mất kích hoạt,
+          <code>ADMIN_ACCOUNTS</code> được giữ nguyên, không tài khoản nào bị xoá — chỉ Pokémon bị xoá và mất kích hoạt,
           ai đăng nhập lại đều thấy tài khoản trắng như vừa đăng ký và phải bấm "Kích hoạt ngay" lại mới vào game được.
-          Nhân vật đang online sẽ bị đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log vẫn được giữ lại để tra cứu.
+          Pokémon đang online sẽ bị đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log vẫn được giữ lại để tra cứu.
         </template>
       </UAlert>
 
       <p v-if="data && data.soNhanVat === 0" class="mt-4 text-sm text-muted">
-        Không có nhân vật nào ngoài tài khoản quản trị — chưa cần reset.
+        Không có Pokémon nào ngoài tài khoản quản trị — chưa cần reset.
       </p>
       <form v-else-if="data" class="mt-4 flex flex-wrap items-end gap-3" @submit.prevent="dungCum && (moXacNhan = true)">
         <UFormField :label="`Gõ đúng cụm “${data.cumTu}” để xác nhận`" class="min-w-64">
@@ -115,7 +115,7 @@ async function gui() {
 
     <AdminNhanvatXacNhan
       v-model:open="moXacNhan"
-      :title="`RESET TOÀN SERVER — xoá vĩnh viễn ${so(data?.soNhanVat)} nhân vật của ${so(data?.soTaiKhoan)} tài khoản?`"
+      :title="`RESET TOÀN SERVER — xoá vĩnh viễn ${so(data?.soNhanVat)} Pokémon của ${so(data?.soTaiKhoan)} tài khoản?`"
       description="Không thể hoàn tác."
       nhan-nut="Reset toàn server"
       mau="error"

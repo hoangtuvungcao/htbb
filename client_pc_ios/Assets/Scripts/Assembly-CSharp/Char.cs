@@ -144,6 +144,9 @@ public class Char : LiveActor
 
 	public bool pokePetShiny;
 
+	/// <summary>Ngoai hinh trang bi (lenh -102 POKE_NGOAI_HINH), null = chua nhan. Ve bang NgoaiHinhVe.</summary>
+	public NgoaiHinhCua ngoaiHinh;
+
 	/// <summary>1.5 giay o 50 tick/giay (PokeDuLieu.TICK_MOI_GIAY).</summary>
 	public const int POKE_TICK_TIEN_HOA = 75;
 
@@ -1471,7 +1474,18 @@ public class Char : LiveActor
 		}
 		// hit flash (PhanHoiChienDau)
 		doSang = System.Math.Max(doSang, pokeDoSangNhay());
-		PokeBody.paint(g, dexVe, pokeShiny, x, yNguoi, dir, dongTac, tick, 100, doSang);
+		// ngoai hinh trang bi: lop sau (vong sang, vien, ao choang) -> than (trang phuc) -> lop truoc (mu, khan...)
+		bool coNgoaiHinh = ngoaiHinh != null && state != 3 && dexVe == pokeDex
+			&& (NgoaiHinhVe.hien || (Canvas.gameScr != null && this == Canvas.gameScr.mainChar));
+		if (coNgoaiHinh)
+		{
+			NgoaiHinhVe.veSau(g, ngoaiHinh, dexVe, pokeShiny, x, yNguoi, y, dir, dongTac, tick);
+		}
+		PokeBody.paint(g, dexVe, pokeShiny, x, yNguoi, dir, dongTac, tick, 100, doSang, coNgoaiHinh ? ngoaiHinh.trangPhuc : 0);
+		if (coNgoaiHinh)
+		{
+			NgoaiHinhVe.veTruoc(g, ngoaiHinh, dexVe, pokeShiny, x, yNguoi, dir, dongTac, tick);
+		}
 		if (comeHome)
 		{
 			g.setColor(0);
@@ -1492,7 +1506,28 @@ public class Char : LiveActor
 		{
 			return false;
 		}
-		return PokeBody.paint(g, pokeDex, pokeShiny, xp, yp, DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100);
+		return paintPokemonTinh(g, xp, yp, DOWN);
+	}
+
+	/// <summary>Nhu tren, them huong (the trang bi xoay Pokemon) + ngoai hinh trang bi.</summary>
+	public bool paintPokemonTinh(MyGraphics g, int xp, int yp, int huong)
+	{
+		if (pokeDex <= 0)
+		{
+			return false;
+		}
+		int t = Canvas.gameTick;
+		NgoaiHinhCua n = ngoaiHinh;
+		if (n != null)
+		{
+			NgoaiHinhVe.veSau(g, n, pokeDex, pokeShiny, xp, yp, yp, huong, PokeDuLieu.DUNG, t);
+		}
+		bool ok = PokeBody.paint(g, pokeDex, pokeShiny, xp, yp, huong, PokeDuLieu.DUNG, t, 100, 0, n != null ? n.trangPhuc : 0);
+		if (ok && n != null)
+		{
+			NgoaiHinhVe.veTruoc(g, n, pokeDex, pokeShiny, xp, yp, huong, PokeDuLieu.DUNG, t);
+		}
+		return ok;
 	}
 
 	public void paintAvatar(MyGraphics g)

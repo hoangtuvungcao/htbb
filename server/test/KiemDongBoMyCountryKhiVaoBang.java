@@ -12,7 +12,7 @@ import java.nio.file.Paths;
  * this.inCountry` (khong doc idClan/NewClan) de quyet dinh co kick khoi ban do Thanh (Map.
  * idMapTown) hay khong luc dang mo cua chiem thanh (Map.getTown[country]). Duong DUY NHAT
  * cap nhat myCountry theo bang la Char.setCountry(), nhung truoc day chi duoc goi luc dang
- * nhap (CharNapDuLieu) - nhanh "duoc duyet vao bang" trong MapBangHoi.java gan idClan roi
+ * nhap (CharNapDuLieu) - nhanh "duoc duyet vao bang" trong MapDoi.java gan idClan roi
  * KHONG goi setCountry(), nen nguoi vua vao bang van giu myCountry CU (-1 neu chua tung chon
  * lang, hoac lang cua bang truoc do) cho toi khi dang xuat/dang nhap lai - trong luc do ho
  * buoc vao thanh dung luc bang minh dang chiem la bi kick ngay, nhin tu ngoai giong nhu
@@ -32,8 +32,8 @@ public final class KiemDongBoMyCountryKhiVaoBang {
     public static void chay() {
         Kiem.nhom("Vao bang co san phai dong bo myCountry ngay (tranh bi kick khoi thanh)");
 
-        final String noiDung = doc("src/real/MapBangHoi.java");
-        Kiem.dung("doc duoc src/real/MapBangHoi.java", !noiDung.isEmpty());
+        final String noiDung = doc("src/real/MapDoi.java");
+        Kiem.dung("doc duoc src/real/MapDoi.java", !noiDung.isEmpty());
         if (noiDung.isEmpty()) {
             return;
         }

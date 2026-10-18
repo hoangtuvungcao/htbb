@@ -1,0 +1,13 @@
+# Máy chủ production cho BẢN PHÁT HÀNH của cả 3 client (jar / APK Android / PC Unity).
+# Chép thành tools/phat-hanh/may_chu.conf (đã .gitignore, KHÔNG đưa lên git) rồi điền host:cổng thật:
+#   cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf
+# Đọc bởi: client_jar/build.sh (MAY_CHU_CHINH), client_apk/pokemon/build.gradle (release; -PmayChu / MAY_CHU ghi đè),
+#          client_pc_ios/Assets/Editor/BuildCli.cs (ThuongHieu.MAY_CHU_CHINH; -htbbMayChu khi build ghi đè).
+# Biến môi trường cùng tên luôn thắng tệp này. Thiếu cả hai -> build phát hành DỪNG (không còn rơi về nqsh-h2.top).
+# Một dòng KHOA=giatri, không dấu nháy, không khoảng trắng. Để trống = build phát hành dừng với thông báo lỗi.
+# Vd: MAY_CHU_CHINH=203.0.113.10:19129
+MAY_CHU_CHINH=
+
+# Kênh tự cập nhật bản PC (phienban.json của repo phát hành HTBB, mục "pc"). Để TRỐNG = tắt tự cập nhật PC.
+# Vd: https://raw.githubusercontent.com/<chu-repo>/<repo-phat-hanh-htbb>/main/phienban.json
+CAP_NHAT_URL=

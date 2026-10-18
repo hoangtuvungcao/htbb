@@ -3,7 +3,7 @@ package real;
 import java.util.Hashtable;
 import java.util.Vector;
 
-// Tach tu lib/NQSH_5h.jar (19/09/2026) cung dot voi CharSell/SellerTemplate/GemSellEntry
+// Tach tu lib/htbb-core.jar (19/09/2026) cung dot voi CharSell/SellerTemplate/GemSellEntry
 // de ho tro ban/mua ngoc theo SO LUONG. Phan trang bi (type==0, cac ham lien quan Item)
 // giu nguyen y het ban goc, khong dung toi trong tinh nang nay.
 public class ShopSellItem {

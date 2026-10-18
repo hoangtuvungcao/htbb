@@ -38,11 +38,11 @@ import game.model.PotionTemplate;
 import game.model.Property;
 import game.model.SkillClan;
 import game.model.Sound;
-import game.model.ThanThu;
+import game.model.PokemonHuyenThoai;
 import game.model.Tilemap;
 import game.model.TreeInfo;
 import game.model.WayPoint;
-import game.model.XaphuTemplate;
+import game.model.PidgeotBayTemplate;
 import game.model.monster.Pet;
 import game.model.skill.InfoSkillLearn;
 import game.model.skill.SkillManager;
@@ -103,6 +103,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         }
         // pokemon: lenh -90..-94 (than, quai, tien hoa, thu cuoi, pet)
         if (game.pokemon.PokeMang.xuLy(msg)) {
+            return;
+        }
+        // pokemon: lenh -101 hop thoai guc / hoi sinh (HopHoiSinh)
+        if (game.pokemon.HopHoiSinh.nhan(msg)) {
             return;
         }
         int i;
@@ -745,9 +749,12 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     }
                     Canvas.endDlg();
                     break;
-                case -26:
-                    Canvas.gameScr.onMSGServer(msg.reader().readUTF());
+                case -26: {
+                    String chay = msg.reader().readUTF();
+                    game.pokemon.SinhThai.docThongBaoChay(chay);
+                    Canvas.gameScr.onMSGServer(chay);
                     break;
+                }
                 case -24:
                     int typeStr = msg.reader().readByte();
                     String strt = msg.reader().readUTF();
@@ -879,13 +886,13 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             }
                             Canvas.gameScr.onAnimalWearingInfo(Canvas.gameScr.saveIDViewInfoAnimal, infoAnimal, imgAnimal, numFrame, wimg, himg, timeChangeFrame);
                         } else {
-                            Canvas.startOKDlg("Chưa có thông tin linh thú");
+                            Canvas.startOKDlg("Chưa có thông tin thú cưỡi");
                         }
                     }
                     break;
                 case -20:
                     final int moneyClan1 = msg.reader().readInt();
-                    Canvas.startOKDlg(new StringBuffer("Bạn nhận được ").append(moneyClan1).append("xu từ bang hội.").toString(), new IAction() {
+                    Canvas.startOKDlg(new StringBuffer("Bạn nhận được ").append(moneyClan1).append("xu từ đội.").toString(), new IAction() {
                         @Override
                         public void perform() {
                             Canvas.gameScr.mainChar.charXu += (long) moneyClan1;
@@ -909,20 +916,20 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             clan2.nationID = msg.reader().readByte();
                             list6.addElement(clan2);
                         }
-                        ListScr.gI().setInfo(list6, type6, "TOP BANG HỘI");
+                        ListScr.gI().setInfo(list6, type6, "TOP ĐỘI");
                         ListScr.gI().switchToMe();
                         Canvas.endDlg();
                     } else if (type6 == 7 || type6 == 8) {
                         Canvas.gameScr.onFriendList(msg, type6, nameTile);
                     } else if (type6 == 4) {
-                        Canvas.gameScr.onFriendList(msg, type6, "TOP CAO THỦ");
+                        Canvas.gameScr.onFriendList(msg, type6, "TOP SỨC MẠNH");
                     } else {
                         Canvas.gameScr.onFriendList(msg, type6, "TOP ĐẠI GIA");
                     }
                     break;
                 case -18:
                     String info2 = msg.reader().readUTF();
-                    MessageScr.gI().addTab(info2, "Bang hội", 1);
+                    MessageScr.gI().addTab(info2, "Đội", 1);
                     break;
                 case -17:
                     Vector list = new Vector();
@@ -940,7 +947,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     break;
                 case -13:
                     Canvas.gameScr.mainChar.idClan = (short) -1;
-                    Canvas.startOKDlg("Bạn bị mời khỏi bang hội.");
+                    Canvas.startOKDlg("Bạn bị mời khỏi đội.");
                     break;
                 case -12:
                     ClanInfo clan = new ClanInfo();
@@ -1170,12 +1177,12 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     }
                     msg.reader().readByte();
                     try {
-                        ThanThu.ALL_DATA_THAN_THU.clear();
+                        PokemonHuyenThoai.ALL_DATA_THAN_THU.clear();
                         byte nthanthu = msg.reader().readByte();
                         for (int i35 = 0; i35 < nthanthu; i35++) {
                             byte[] data3 = new byte[msg.reader().readShort()];
                             msg.reader().read(data3);
-                            ThanThu.setDataThanThu(i35, data3);
+                            PokemonHuyenThoai.setDataThanThu(i35, data3);
                         }
                     } catch (Exception e6) {
                     }
@@ -1353,6 +1360,8 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     Canvas.gameScr.onMainCharInfo();
                     break;
                 case 4:
+                    // Sửa lỗi dịch ngược: các "break;" sau từng trường tuỳ chọn (idchar / isnewmonster / isThanthu)
+                    // thoát cả vòng trước khi gọi onActorMove -> Pokémon hoang dã không bao giờ hiện (như PC).
                     while (msg.reader().available() > 0) {
                         byte actorCatagory = msg.reader().readByte();
                         short type2 = (short) msg.reader().readUnsignedByte();
@@ -1364,20 +1373,17 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         int idchar = -1;
                         try {
                             idchar = msg.reader().readInt();
-                            break;
                         } catch (Exception e15) {
                         }
                         if (actorCatagory == 1) {
                             try {
                                 isnewmonster = msg.reader().readByte();
-                                break;
                             } catch (Exception e16) {
                             }
                         }
                         byte isThanthu = -1;
                         try {
                             isThanthu = msg.reader().readByte();
-                            break;
                         } catch (Exception e17) {
                         }
                         boolean canfocus = true;
@@ -1696,7 +1702,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     }
                     break;
                 case 14:
-                    Canvas.startOKDlg("Xin chọn tên nhân vật khác");
+                    Canvas.startOKDlg("Xin chọn tên Pokémon khác");
                     break;
                 case 15:
                     byte typeWearing = msg.reader().readByte();
@@ -2355,6 +2361,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                 case 37:
                     String message = msg.reader().readUTF();
                     final String url = msg.reader().readUTF();
+                    // pokemon (hệ sinh thái): kết quả câu cá hiện sau hoạt cảnh cá cắn; đọc mốc đua / điểm đào
+                    if (url.equals("") && game.pokemon.SinhThai.chanThongBao(message)) {
+                        break;
+                    }
                     if (url.equals("")) {
                         Canvas.startOKDlg(message);
                     } else {
@@ -2385,24 +2395,9 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     GameScr.serverInfo.addElement(str3);
                     break;
                 case 39:
-                    final String username = msg.reader().readUTF();
-                    boolean available = msg.reader().readBoolean();
-                    String smsPrefix = msg.reader().readUTF();
-                    String sendTo = msg.reader().readUTF();
-                    if (!available) {
-                        Canvas.startOKDlg("Xin chọn nick khác");
-                    } else {
-                        GameMidlet.sendSMS(new StringBuffer(String.valueOf(smsPrefix)).append(username).toString(), new StringBuffer("sms://").append(sendTo).toString(), new IAction() {
-                            @Override
-                            public void perform() {
-                                Canvas.startOKDlg(new StringBuffer("Tài khoản ").append(username).append(" với M.Khẩu: ").append(Canvas.loginScr.tfPass.getText()).append(" đã được đăng ký.Vui lòng thoát game và chờ trong ít phút.").toString());
-                            }
-                        }, new IAction() {
-                            @Override
-                            public void perform() {
-                                Canvas.startOKDlg("Có lỗi khi gửi tin nhắn đăng ký. Xin hãy thử lại");
-                            }
-                        });
+                    // Đăng ký trong game (giao thức mới, sau chuỗi "#dk2") - xem DangKyScr
+                    if (game.render.screen.DangKyScr.DAU.equals(msg.reader().readUTF())) {
+                        game.render.screen.DangKyScr.nhan(msg.reader());
                     }
                     break;
                 case 48:
@@ -2529,9 +2524,9 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     Canvas.gameScr.onSellGemItem(idGem);
                     break;
                 case 80:
-                    Res.XAPHU = new XaphuTemplate[msg.reader().readByte()];
+                    Res.XAPHU = new PidgeotBayTemplate[msg.reader().readByte()];
                     for (int i82 = 0; i82 < Res.XAPHU.length; i82++) {
-                        Res.XAPHU[i82] = new XaphuTemplate();
+                        Res.XAPHU[i82] = new PidgeotBayTemplate();
                         int kk = msg.reader().readByte();
                         Res.XAPHU[i82].mapID = new int[kk];
                         for (int j21 = 0; j21 < Res.XAPHU[i82].mapID.length; j21++) {

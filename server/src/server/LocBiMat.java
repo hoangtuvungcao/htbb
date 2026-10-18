@@ -12,12 +12,12 @@ import java.util.Properties;
 /**
  * Che mat khau CSDL trong moi thu di ra System.out / System.err.
  *
- * VI SAO PHAI CO. data.ConnPool (nam trong lib/NQSH_5h.jar, KHONG co ma nguon nen khong
+ * VI SAO PHAI CO. data.ConnPool (nam trong lib/htbb-core.jar, KHONG co ma nguon nen khong
  * sua duoc) in ra dong nay ngay trong ham dung, moi lan tao pool:
  *
- *     URL: jdbc:mysql://localhost:3306/kpah_db | USER: kpah | PASS: &lt;mat khau that&gt;
+ *     URL: jdbc:mysql://localhost:3306/htbb_db | USER: htbb | PASS: &lt;mat khau that&gt;
  *
- * Bon pool -> bon dong moi lan khoi dong, di thang vao /opt/kpah/log/game.out, va cac tep
+ * Bon pool -> bon dong moi lan khoi dong, di thang vao /opt/htbb/log/game.out, va cac tep
  * log lai de quyen -rw-r--r--. Khong sua duoc ben trong jar thi chan o dau ra.
  *
  * Loc theo TUNG DONG chu khong ghi de println(String): nhu vay bat duoc ca printf, ca

@@ -10,7 +10,7 @@ package com.htbb.pokemon;
  *    {@link #doiAnh} doi chi so cu -> n theo bang sinh IconPokemonBang, DataGame.sendByteImg
  *    goi khi bat che do Pokemon. Tat che do thi van ra hinh goc cu.
  *
- * Dai rieng vi nIconItem = 866 bi khoa (test KiemSkinLinhThu) va icon cu dung chung giua
+ * Dai rieng vi nIconItem = 866 bi khoa (test KiemSkinThuCuoi) va icon cu dung chung giua
  * nhieu vat pham. Truoc 14000 la dai skin linh thu (13000..13005), sendByteImg khong co dai
  * nao khac tu 12100 tro len (da grep 17/10/2026).
  */

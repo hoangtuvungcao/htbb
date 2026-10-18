@@ -1,0 +1,263 @@
+# Huyền Thoại Bảo Bối - Ghi công
+Game fan phi thương mại. Không liên kết, không được bảo trợ bởi Nintendo, Creatures, GAME FREAK hay The Pokémon Company.
+Pokémon (c) Nintendo / Creatures / GAME FREAK / The Pokémon Company.
+
+# Hình Pokémon
+PMDCollab SpriteCollab - https://github.com/PMDCollab/SpriteCollab
+Giấy phép CC BY-NC 4.0 (phải ghi công, không dùng cho mục đích thương mại): https://creativecommons.org/licenses/by-nc/4.0/
+Hình đã được thu nhỏ / cắt khung / đổi định dạng để chạy trên điện thoại.
+Nhân vật dựa trên Pokémon Mystery Dungeon (Chunsoft / Spike Chunsoft).
+Chân dung Pokémon và biểu tượng ứng dụng (chân dung Pikachu) cũng lấy từ SpriteCollab.
+
+# Người vẽ (42)
+CHUNSOFT, 3P1C, <SKREE>, anomalocaris, Anon, baronessfaron, bwappi, Caitemis, Deeshura, Discord 199989579682414592, Discord 215638650434617345, dmDash, El_Pangoro_Parse, Emboarger, Emmuffin, FlowerSnek, G-, Ginnie, Grimlin, JFain, JustAGunk, KCN015, LightBlueBlaze, Lovi, Michael12, NeroIntruder, NikolaP, Noo, Pencil, pi3.14, powercristal, Reppamon, Sceptile, SethY, ShyStarryRain, Smalusion, Soulja, Spikey-Valentine, Tacocoa, TawnySoup, Top_Kec, Uni
+
+# Người vẽ theo từng loài
+#0001: CHUNSOFT
+#0002: CHUNSOFT
+#0003: CHUNSOFT
+#0004: CHUNSOFT
+#0005: CHUNSOFT, Discord 199989579682414592, bwappi, Grimlin
+#0006: CHUNSOFT, Emboarger
+#0007: CHUNSOFT
+#0008: CHUNSOFT
+#0009: CHUNSOFT
+#0010: CHUNSOFT
+#0012: CHUNSOFT
+#0013: CHUNSOFT
+#0018: CHUNSOFT
+#0019: CHUNSOFT
+#0023: CHUNSOFT, Emmuffin
+#0024: CHUNSOFT
+#0025: CHUNSOFT
+#0026: CHUNSOFT, Grimlin, Top_Kec
+#0027: CHUNSOFT, Emboarger, 3P1C
+#0029: CHUNSOFT
+#0035: CHUNSOFT
+#0036: CHUNSOFT
+#0036: Tacocoa
+#0037: CHUNSOFT
+#0041: CHUNSOFT
+#0042: CHUNSOFT
+#0043: CHUNSOFT
+#0044: CHUNSOFT
+#0045: CHUNSOFT
+#0046: CHUNSOFT
+#0047: CHUNSOFT
+#0048: CHUNSOFT, anomalocaris
+#0052: CHUNSOFT
+#0053: CHUNSOFT
+#0058: CHUNSOFT, Emmuffin, JustAGunk
+#0059: CHUNSOFT
+#0068: CHUNSOFT
+#0069: CHUNSOFT
+#0072: CHUNSOFT
+#0076: CHUNSOFT, Emmuffin
+#0077: CHUNSOFT, JFain
+#0077: Tacocoa, Emmuffin
+#0078: CHUNSOFT
+#0078: El_Pangoro_Parse, Noo
+#0083: CHUNSOFT
+#0085: CHUNSOFT
+#0092: CHUNSOFT
+#0093: CHUNSOFT
+#0093: Tacocoa
+#0094: CHUNSOFT, Emboarger
+#0099: CHUNSOFT
+#0100: Tacocoa, Emboarger, Emmuffin
+#0104: CHUNSOFT, Emmuffin, Sceptile
+#0105: CHUNSOFT
+#0105: El_Pangoro_Parse
+#0112: CHUNSOFT
+#0113: CHUNSOFT
+#0115: CHUNSOFT
+#0120: CHUNSOFT
+#0121: CHUNSOFT
+#0123: CHUNSOFT
+#0127: CHUNSOFT
+#0128: CHUNSOFT
+#0128: El_Pangoro_Parse
+#0129: CHUNSOFT
+#0130: CHUNSOFT
+#0131: CHUNSOFT
+#0133: CHUNSOFT
+#0134: CHUNSOFT
+#0135: CHUNSOFT, dmDash
+#0136: CHUNSOFT, Ginnie, JFain
+#0143: CHUNSOFT
+#0144: CHUNSOFT
+#0145: CHUNSOFT
+#0146: CHUNSOFT
+#0147: CHUNSOFT, JFain
+#0148: CHUNSOFT
+#0149: CHUNSOFT, SethY, Deeshura
+#0159: CHUNSOFT
+#0160: CHUNSOFT
+#0163: CHUNSOFT
+#0164: CHUNSOFT, Emmuffin
+#0164: Pencil, Noo, Emmuffin
+#0165: CHUNSOFT, JFain
+#0168: CHUNSOFT
+#0169: CHUNSOFT
+#0172: CHUNSOFT, Spikey-Valentine
+#0173: CHUNSOFT
+#0178: CHUNSOFT
+#0179: CHUNSOFT, Emmuffin
+#0185: CHUNSOFT
+#0190: CHUNSOFT, JFain
+#0194: CHUNSOFT, Caitemis, Anon, Uni
+#0195: CHUNSOFT
+#0196: CHUNSOFT
+#0197: CHUNSOFT, JFain, Emmuffin
+#0214: CHUNSOFT
+#0217: CHUNSOFT
+#0219: CHUNSOFT
+#0221: CHUNSOFT
+#0225: CHUNSOFT, G-, FlowerSnek
+#0227: CHUNSOFT
+#0234: CHUNSOFT
+#0243: CHUNSOFT
+#0244: CHUNSOFT
+#0245: CHUNSOFT
+#0249: CHUNSOFT
+#0250: CHUNSOFT
+#0255: CHUNSOFT
+#0256: CHUNSOFT
+#0257: CHUNSOFT
+#0261: CHUNSOFT, Smalusion
+#0262: CHUNSOFT, KCN015
+#0269: CHUNSOFT
+#0270: CHUNSOFT
+#0276: CHUNSOFT
+#0279: CHUNSOFT
+#0282: CHUNSOFT
+#0286: CHUNSOFT, Emmuffin
+#0288: CHUNSOFT
+#0297: CHUNSOFT
+#0302: CHUNSOFT
+#0304: CHUNSOFT, Emboarger
+#0305: CHUNSOFT
+#0306: CHUNSOFT
+#0309: CHUNSOFT, JFain
+#0310: CHUNSOFT, Caitemis
+#0318: CHUNSOFT
+#0319: CHUNSOFT
+#0321: CHUNSOFT
+#0322: CHUNSOFT
+#0323: CHUNSOFT
+#0324: CHUNSOFT
+#0326: CHUNSOFT
+#0330: CHUNSOFT
+#0333: CHUNSOFT, Emmuffin
+#0334: CHUNSOFT, TawnySoup
+#0335: CHUNSOFT, KCN015
+#0336: CHUNSOFT
+#0336: Emmuffin
+#0337: CHUNSOFT
+#0340: CHUNSOFT
+#0342: CHUNSOFT
+#0343: CHUNSOFT
+#0344: CHUNSOFT
+#0346: CHUNSOFT, JFain
+#0348: CHUNSOFT
+#0352: CHUNSOFT, Top_Kec
+#0353: CHUNSOFT, Caitemis
+#0354: CHUNSOFT
+#0355: CHUNSOFT, JFain
+#0356: CHUNSOFT
+#0357: CHUNSOFT, Emmuffin
+#0359: CHUNSOFT, Deeshura, Top_Kec
+#0361: CHUNSOFT, JFain
+#0362: CHUNSOFT
+#0363: CHUNSOFT, JFain
+#0365: CHUNSOFT
+#0370: CHUNSOFT
+#0371: CHUNSOFT, JFain
+#0372: CHUNSOFT
+#0373: CHUNSOFT, Emmuffin
+#0375: CHUNSOFT
+#0376: CHUNSOFT
+#0382: CHUNSOFT
+#0383: CHUNSOFT
+#0384: CHUNSOFT
+#0385: CHUNSOFT, Grimlin
+#0393: CHUNSOFT
+#0399: CHUNSOFT, Emmuffin
+#0401: CHUNSOFT
+#0402: CHUNSOFT
+#0403: Reppamon
+#0404: CHUNSOFT, Caitemis
+#0405: CHUNSOFT
+#0417: CHUNSOFT, JFain, baronessfaron
+#0423: CHUNSOFT
+#0428: CHUNSOFT
+#0428: Lovi
+#0436: CHUNSOFT
+#0437: CHUNSOFT
+#0448: CHUNSOFT, Emmuffin
+#0451: CHUNSOFT
+#0453: CHUNSOFT, Caitemis
+#0454: CHUNSOFT
+#0460: CHUNSOFT
+#0470: CHUNSOFT, baronessfaron
+#0471: CHUNSOFT, JFain, baronessfaron
+#0473: CHUNSOFT
+#0477: CHUNSOFT, Caitemis
+#0491: CHUNSOFT, baronessfaron
+#0496: NeroIntruder
+#0497: NeroIntruder
+#0498: NeroIntruder, Emboarger, NikolaP, 3P1C
+#0510: LightBlueBlaze
+#0510: ShyStarryRain
+#0536: JFain
+#0537: Soulja
+#0543: baronessfaron, pi3.14, Soulja, JFain
+#0544: G-, Soulja
+#0544: G-
+#0545: baronessfaron
+#0552: Soulja
+#0559: JFain, Soulja
+#0560: baronessfaron
+#0562: Michael12, baronessfaron
+#0585: baronessfaron
+#0596: JFain
+#0607: Emmuffin
+#0615: baronessfaron
+#0627: baronessfaron, Discord 215638650434617345
+#0628: Caitemis
+#0628: Caitemis
+#0637: powercristal, Emmuffin, pi3.14, Soulja
+#0667: Caitemis
+#0681: Top_Kec
+#0700: baronessfaron
+#0709: baronessfaron
+#0711: JFain, baronessfaron
+#0739: Soulja
+#0750: bwappi
+#0750: <SKREE>
+#0781: baronessfaron
+#0831: Emmuffin, JFain
+#0896: JFain
+#0897: baronessfaron
+#0901: Emmuffin, baronessfaron
+
+# Hiệu ứng chiêu và vật thể
+PMDCollab RawAsset - https://github.com/PMDCollab/RawAsset (thư mục Particle, Object, Item).
+Trích từ Pokémon Mystery Dungeon gốc (Chunsoft / Nintendo), chỉ dùng phi thương mại.
+Hiệu ứng: Aqua_Tail_Splash.None, Bite.Dir8, Brine_Splashes.None, Bubbles_Blue.None, Charge_Beam_Glow.None, Charge_Beam_Hit.None, Charge_Up.None, Discharge.None, Discharge_Hit.None, Ember.None, Fire_Blast.None, Fire_Fang_Fang.None, Fire_Spin_Front.None, Flamethrower.None, Giga_Impact_Front.None, Grudge_Lights.None, Harden_RSE.None, Healing_Wish_Charge.None, Hit_Neutral.None, Hit_Super_Effective.None, Hydro_Cannon.None, Hydro_Pump_RSE.Dir1, Iron_Head.None, Last_Resort_Front.None, Leaf_Storm_Hit.None, Light_Ball_Yellow.None, Mud_Bomb_Ball.None, Protect.None, Razor_Leaf.None, Scratch.Dir1, Seed_Bomb_Blast.None, Shadow_Claw.None, Shock_Wave.None, Sleep_Z.None, Smoke_Black.None, Spark.None, Stat_Blue_Ring.None, Stat_Green_Ring.None, Swift_Star.None, Swords_Dance.None, Thunder_Fang_Fang.None, Vine_Whip.Dir1, Water_Column_Ranger.None, Wish.None, Withdraw.Flip
+Vật thể: Item/Belt_Brown.None, Item/Box_Brown.None, Item/Iron_Ball.None, Item/Orb_Tan.None, Item/Rock_Gray.None, Item/Silk_White.None, Object/Block_Blank.None, Object/Block_Guild.None, Object/Block_Vault.None, Object/Chest.None, Object/Logs_Stacked.Flip, Object/Portal.6, Object/Pot.Flip, Object/Sign.None
+
+# Bản đồ
+Ninja Adventure - Asset Pack, tác giả Pixel-boy và AAA - CC0 1.0
+https://pixel-boy.itch.io/ninja-adventure-asset-pack
+Mép chuyển tiếp, nền / vách hang, biển hiệu: vẽ bằng code trong dự án HTBB (CC0).
+
+# Âm thanh
+Kenney (www.kenney.nl) - CC0 1.0: Interface Sounds, Impact Sounds, RPG Audio, Digital Audio, Music Jingles.
+Nhạc nền chiptune gốc, tự soạn cho dự án (CC0) - không dùng nhạc Pokémon.
+
+# Giao diện và mã nguồn
+Nhóm phát triển Huyền Thoại Bảo Bối (HTBB). Chữ tiếng Việt, giao diện kiểu Pokémon: vẽ bằng code.
+Logo và key art màn tải / đăng nhập: dựng bằng code (client_jar/tools/tao_logo.py, tao_banner.py) từ sprite PMDCollab (Charmander, Bulbasaur, Eevee, Squirtle, Pichu, Lapras, Butterfree, Mareep, Rayquaza - ghi công ở trên) và tile Ninja Adventure. Chữ logo: font Baloo 2 (Ek Type) - SIL Open Font License 1.1.
+
+Cảm ơn các hoạ sĩ PMDCollab và cộng đồng đã chia sẻ tác phẩm!

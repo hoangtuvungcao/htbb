@@ -49,7 +49,7 @@ public class RegionVantienTran implements Runnable {
             try {
                 int xs = MapVanTienTran.xyboss[j][0];
                 int ys = MapVanTienTran.xyboss[j][1];
-                BossVanTienTran bo = new BossVanTienTran(this.map, (MonsterTemplate)MapVanTienTran.monsterTemplates.get(idBoss[j]), xs * 16, ys * 16, 0);
+                BossMeCung bo = new BossMeCung(this.map, (MonsterTemplate)MapVanTienTran.monsterTemplates.get(idBoss[j]), xs * 16, ys * 16, 0);
                 short var10003 = this.idMonster;
                 this.idMonster = (short)(var10003 + 1);
                 bo.id = var10003;
@@ -97,7 +97,7 @@ public class RegionVantienTran implements Runnable {
 
     public void doAddLienHoaTru(int pos, int idClan, int myCountry) {
         try {
-            Monster m = new BossVanTienTran(this.map, (MonsterTemplate)MapVanTienTran.monsterTemplates.get(43), MapVanTienTran.xytrulienhoa[pos][0] * 16, MapVanTienTran.xytrulienhoa[pos][1] * 16, 0);
+            Monster m = new BossMeCung(this.map, (MonsterTemplate)MapVanTienTran.monsterTemplates.get(43), MapVanTienTran.xytrulienhoa[pos][0] * 16, MapVanTienTran.xytrulienhoa[pos][1] * 16, 0);
             m.level = this.level;
             short var10003 = this.idMonster;
             this.idMonster = (short)(var10003 + 1);
@@ -151,7 +151,7 @@ public class RegionVantienTran implements Runnable {
                     }
 
                     for(int i = 0; i < allplayer.size(); ++i) {
-                        ((Char)allplayer.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage("Trấn yêu trận kết thúc"));
+                        ((Char)allplayer.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage("Mê cung kết thúc"));
                         ((Char)allplayer.get(i)).canJoinTranYeuTran = false;
                         this.map.doReturnVillage((Char)allplayer.get(i));
                     }
@@ -295,7 +295,7 @@ public class RegionVantienTran implements Runnable {
                     }
 
                     if (this.wave == maxWave) {
-                        this.map.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Trấn yêu trận đã bị phá"), 0, this.id);
+                        this.map.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Mê cung đã bị phá giải"), 0, this.id);
                         this.timeEnd = System.currentTimeMillis() + 120000L;
                         this.isFinish = true;
                         ++this.wave;
@@ -374,7 +374,7 @@ public class RegionVantienTran implements Runnable {
             }
 
             if (!p.checkDurableWeapone()) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi vũ khí bị hư hại. Hãy đến Thợ rèn để sửa lại.", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi đồ cầm tay bị hư hại. Hãy đến Thợ rèn để sửa lại.", ""));
                 return;
             }
 
@@ -495,9 +495,11 @@ public class RegionVantienTran implements Runnable {
             if (com.htbb.pokemon.LauDai.bat()) {
                 // GD2 6.1 PvP (chung voi Region): x0,30, chi mang x1,5, tran 8% HP toi da muc tieu.
                 long dLd = (long) damGocLauDai * CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
-                if (critSv || baokich) {
+                if ((critSv || baokich) && ChiSoTrangBiGame.giuChiMangPvp(p, c)) { // PvP: tran 30%, tru khang chi mang
                     dLd = dLd * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L;
                     effect = 2;
+                } else if (critSv || baokich) {
+                    effect = 0;
                 }
                 damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, dLd), c.maxhp);
             }
@@ -666,7 +668,7 @@ public class RegionVantienTran implements Runnable {
             }
 
             if (!p.checkDurableWeapone()) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
                 Message m = new Message(104);
 
                 try {
@@ -1129,7 +1131,7 @@ public class RegionVantienTran implements Runnable {
                 if (p.hp <= 0) {
                     p.actorDie();
                 } else if (!p.checkDurableWeapone()) {
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
                     Message m = new Message(104);
 
                     try {

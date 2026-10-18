@@ -38,8 +38,8 @@ public final class KiemGiaiTanBangMoiTao {
     public static void chay() {
         Kiem.nhom("Giai tan bang - dem nguoc 60 phut phai dung o MOI noi, khong con cho bi bo sot");
 
-        final String noiDung = doc("src/real/MapBangHoi.java");
-        Kiem.dung("doc duoc src/real/MapBangHoi.java", !noiDung.isEmpty());
+        final String noiDung = doc("src/real/MapDoi.java");
+        Kiem.dung("doc duoc src/real/MapDoi.java", !noiDung.isEmpty());
         if (noiDung.isEmpty()) {
             return;
         }

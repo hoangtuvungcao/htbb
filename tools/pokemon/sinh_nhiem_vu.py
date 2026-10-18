@@ -38,6 +38,7 @@ sys.path.insert(0, DIR)
 import nv_chung as NC  # noqa: E402
 import nv_cot_truyen as NT  # noqa: E402
 import nv_phu as NP  # noqa: E402
+import nv_hoenn as NH  # noqa: E402
 import nv_lap_lai as NL  # noqa: E402
 
 D = os.path.join(GOC, "docs", "pokemon")
@@ -45,6 +46,9 @@ RA_SQL = os.path.join(GOC, "sql", "pokemon_nhiem_vu.sql")
 RA_NHIP = os.path.join(D, "nhiem_vu_nhip_do.csv")
 RA_WEB = os.path.join(D, "web", "nhiem_vu_tom_tat.json")
 RA_DOC = os.path.join(D, "NHIEM_VU_THIET_KE.md")
+
+# Kieu muc tieu dem theo LOAI (so dex trong muc_tieu_id): mot loai co the co nhieu template quai.
+KIEU_THEO_LOAI = ("pokedex_gap", "pokedex_ha", "pokedex_shiny", "quan_sat")
 
 # Cot them vao nhiem_vu_moi.csv (sau 30 cot cu - giu tuong thich).
 COT_THEM = ["nhom", "nhan_vat", "map_id", "toa_do", "dieu_kien", "du_phong", "mo_ta", "muc_tieu_text",
@@ -71,8 +75,17 @@ class Kho:
         for r in doc_csv("thiet_ke_map.csv", ";"):
             self.map_ids.add(int(r["id"]))
             self.map_loai[int(r["id"])] = r["loai"]
+        # id template quai -> so dex (docs/pokemon/bang_quai.csv = data_monster.dex)
+        self.dex = {int(r["id_quai"]): int(r["dex"]) for r in doc_csv("bang_quai.csv") if (r.get("dex") or "").isdigit()}
+        # Ho cau ca (docs/pokemon/diem_cau_ca.csv, he sinh thai): CHI cau o ho/ao.
+        self.ho = {}
+        for r in doc_csv("diem_cau_ca.csv"):
+            self.ho.setdefault(int(r["map_id"]), []).append((int(r["x"]), int(r["y"]), r["loai_ho"]))
         self.diem = {}
-        for r in doc_csv("diem_co_dinh.csv", ";"):
+        # diem_co_dinh.csv KHONG co dong tieu de (chi chu thich "# Cot: map;x0;y0;x1;y1;noi;ghi_chu")
+        with open(os.path.join(D, "diem_co_dinh.csv"), encoding="utf-8") as f:
+            dong_dcd = [l for l in f if l.strip() and not l.startswith("#")]
+        for r in csv.DictReader(dong_dcd, fieldnames=["map", "x0", "y0", "x1", "y1", "noi", "ghi_chu"], delimiter=";"):
             try:
                 m, x0, y0, x1, y1 = (int(r[k]) for k in ("map", "x0", "y0", "x1", "y1"))
             except (ValueError, KeyError, TypeError):
@@ -92,6 +105,42 @@ class Kho:
             self.sk_vp.setdefault(int(r["tuan"]), []).append(r)
         self.su_kien = doc_csv("su_kien_nam.csv")
         self.trang_tri = doc_csv("noi_dung_trang_tri.csv")
+
+    def luoi_di_duoc(self, map_id):
+        """(w, h, [bool]) o di duoc - giong BanDoSinhThai.luoiDiDuoc (cMap_pokemon/<id> + <bo tile>.type)."""
+        if not hasattr(self, "_luoi"):
+            self._luoi = {}
+        if map_id in self._luoi:
+            return self._luoi[map_id]
+        f = os.path.join(GOC, "server", "cMap_pokemon", str(map_id))
+        if not os.path.isfile(f):
+            self._luoi[map_id] = None
+            return None
+        b = open(f, "rb").read()
+        w, h = b[0], b[1]
+        tile = b[2:2 + w * h]
+        bo = "t" if map_id < 110 else ("t_thanh" if map_id > 200 else "t_hang")
+        ft = os.path.join(GOC, "server", "cMap_pokemon", bo + ".type")
+        kieu = open(ft, "rb").read() if os.path.isfile(ft) else None
+        di = [t >= 254 or (kieu is not None and t < len(kieu) and (kieu[t] & 2) == 0) for t in tile]
+        self._luoi[map_id] = (w, h, di)
+        return self._luoi[map_id]
+
+    def diem_dung(self, map_id, chi_so):
+        """O dung cho muc tieu "dung tai diem": diem co dinh (diem_co_dinh.csv) neu di duoc, khong thi o di
+        duoc gan tam ban do nhat. Tra ve (x, y) hoac None."""
+        l = self.luoi_di_duoc(map_id)
+        if l is None:
+            return None
+        w, h, di = l
+        ds = self.diem.get(map_id) or []
+        for j in range(len(ds)):
+            x, y, gc = ds[(chi_so + j) % len(ds)]
+            if 0 <= x < w and 0 <= y < h and di[y * w + x]:
+                return x, y
+        cx, cy = w // 2, h // 2
+        tot = sorted((abs(x - cx) + abs(y - cy), y, x) for y in range(h) for x in range(w) if di[y * w + x])
+        return (tot[0][2], tot[0][1]) if tot else None
 
     def do_theo_cap(self, L, k):
         bac = max(b for b, c, o, i, t in self.trang_bi if c <= max(1, L))
@@ -130,6 +179,8 @@ def tham_so(s):
 def thay(s, gt):
     def f(m):
         k = m.group(1)
+        if k in gt and isinstance(gt[k], int) and not isinstance(gt[k], bool) and gt[k] >= 1000:
+            return so_dep(gt[k])   # so lon trong chu: 1.000
         return str(gt[k]) if k in gt and gt[k] not in (None,) else m.group(0)
     return re.sub(r"\{(\w+)\}", f, s)
 
@@ -145,11 +196,23 @@ def hoi_thoai(chu, nguoi_giao, gt):
         if not c:
             continue
         m = NGUOI_NOI.match(c)
-        if m and not m.group(1).startswith("'"):
+        if m and not m.group(1).startswith("'") and "..." not in m.group(1):   # "...Ta thay: x" la loi NPC giao
             ra.append(c)
         else:
             ra.append("%s: %s" % (nguoi_giao, c))
     return "|".join(ra)
+
+
+def hoa_dau(t):
+    return t[:1].upper() + t[1:]
+
+
+def loi_mo(mo, cau, nguoi):
+    """'Ten: <cau mo dac trung> <cau>': cau mo ket bang dau phay -> doi thanh '!' (khong viet hoa sau phay);
+    '...' dinh lien chu sau."""
+    if mo.endswith(","):
+        mo = mo[:-1] + "!"
+    return "%s: %s%s%s" % (nguoi, mo, "" if mo == "..." else " ", cau)
 
 
 def so_dep(n):
@@ -216,7 +279,7 @@ class Sinh:
         gt["noi"] = noi
         mid, mten, mcap = "", "", ""
         if kieu in ("giet", "giet_tinh_anh", "thu_thap", "quan_sat", "thu_thach_gio", "pokedex_ha", "pokedex_gap",
-                    "boss_the_gioi") and ("q" in ts or kieu not in ("boss_the_gioi",)):
+                    "pokedex_shiny", "boss_the_gioi") and ("q" in ts or kieu not in ("boss_the_gioi",)):
             mid, mten, mcap = self.quai(L, ts, k)
         if kieu == "ha_alpha":
             mid, mten, mcap = self.alpha(L + int(ts.get("q", "0").lstrip("#") or 0) if not ts.get("q", "").startswith("#") else L, k)
@@ -230,29 +293,60 @@ class Sinh:
                 gt["he"] = g["he"]
         so = self.so_luong(kieu, L, ts, loai)
         vat = ts.get("vat", "")
-        gt.update(quai=mten, so=so, vat=vat, npc=nguoi, npc_nhan=ten_npc(npc_nhan) if npc_nhan is not None else nguoi,
+        npc_t = NC.NPC.get(int(giao), NC.NPC[5]) if str(giao).lstrip("-").isdigit() else NC.NPC[5]
+        gt.update(goi=npc_t[2], Goi=hoa_dau(npc_t[2]), xung=npc_t[3], Xung=hoa_dau(npc_t[3]))
+        ten_chu = mten
+        if kieu == "pokedex_shiny" and "q" in ts:
+            # chi dien TEN loai vao chu (muc_tieu_id van rong = engine nhan shiny bat ky, giu nguyen luat)
+            ten_chu = self.quai(L, ts, k)[1]
+        gt.update(quai=ten_chu or ("boss thế giới" if kieu == "boss_the_gioi" else ""), so=so, vat=vat, npc=nguoi, npc_nhan=ten_npc(npc_nhan) if npc_nhan is not None else nguoi,
                   phut=ts.get("phut", ""), bac=ts.get("bac", ""), so2=ts.get("so2", ""), dk=ts.get("dk", ""),
+                  khi_dk=NC.KHI_DK.get(ts.get("dk", ""), "khi " + ts.get("dk", "")),
                   he=gt.get("he", ""), cap=L, da="{da}")
+        doi_ho = ""
+        if kieu == "cau_ca" and "map" not in ts:
+            # chi cau o ho: noi khong co ho -> ho gan nhat theo cap (NP.NOI)
+            if NC.DIA_DANH_MAP.get(noi) in self.k.ho:
+                ts["map"] = noi
+            else:
+                ung = [(c, n) for (n, v, c, g, sm) in NP.NOI if NC.DIA_DANH_MAP.get(n) in self.k.ho]
+                truoc_cap = [x for x in ung if x[0] <= L]
+                ts["map"] = (truoc_cap[-1] if truoc_cap else ung[0])[1]
+                doi_ho = ts["map"]
+                gt["noi"] = noi = ts["map"]
         map_id, toa = "", ""
         if "map" in ts:
             map_id = NC.DIA_DANH_MAP[ts["map"]]
             gt["map"] = ts["map"]
-            if "diem" in ts:
-                ds = self.k.diem.get(map_id) or []
-                if ds:
-                    x, y, gc = ds[int(ts["diem"]) % len(ds)]
-                    toa = "%d;%d" % (x, y)
+            if "diem" in ts or kieu == "dung_toa_do":
+                xy = self.k.diem_dung(map_id, int(ts.get("diem", "0")))
+                if xy:
+                    x, y = xy
+                    toa = "%d;%d" % (x, y)   # dang chuan "x;y" (NhiemVuMau.docToaDo doc ca "x,y")
                     gt.update(x=x, y=y, diem="điểm đánh dấu")
         else:
             gt["map"] = noi
-        if kieu == "dung_toa_do" and not toa:
-            gt.update(x="?", y="?", diem=noi)
+        if kieu == "cau_ca":
+            if map_id not in self.k.ho:
+                raise ValueError("%s: cau ca o ban do khong co ho (%s)" % (ma, map_id))
+            if not toa:
+                x, y, lh = self.k.ho[map_id][0]
+                toa = "%d;%d" % (x, y)
         K = NC.KIEU[kieu]
+        mau_muc, mau_goi_y, mau_dl = K[4], K[5], [K[6]] + NC.DANG_LAM_THEM.get(kieu, [])
+        if kieu == "dung_toa_do" and not toa:
+            # khong co diem danh dau: engine chap nhan moi vi tri tren ban do -> khong in "o ?,?"
+            mau_muc, mau_goi_y = "Đến {map} và đứng yên vài giây", "Tới {map} rồi đứng yên vài giây là được."
+            mau_dl = ["Chưa đúng chỗ. Tới {map} rồi đứng yên một lát nhé."]
+        if kieu == "ha_gym" and not gt.get("he"):
+            mau_goi_y = "Trưởng Gym rất mạnh: mang chiêu khắc hệ và đồ +6 trở lên."
         ten_ra = thay(ten, gt)[:45]
-        muc_tieu_text = thay(K[4], gt)
-        goi_y = thay(K[5], gt)
-        dang_lam = "%s: %s %s" % (nguoi, NC.NPC.get(giao, NC.NPC[5])[1], thay(K[6], gt))
+        muc_tieu_text = thay(mau_muc, gt)
+        goi_y = thay(mau_goi_y, gt)
+        dang_lam = loi_mo(npc_t[1], thay(mau_dl[k % len(mau_dl)], gt), nguoi)
         bd = hoi_thoai(mo, nguoi, gt)
+        if doi_ho:
+            bd += "|%s: Chỗ này không có hồ. Hồ gần nhất có cá là ở %s, ra đó mà câu nhé." % (nguoi, doi_ho)
         xg = hoi_thoai(xong, nguoi, gt)
         mo_ta = them.get("mo_ta") or re.sub(r"^[^:]+: ", "", bd.split("|")[0])[:160]
         dk = ""
@@ -306,6 +400,9 @@ class Sinh:
             mt_id, mt_ten = NC.VAT_NV_ID.get(vat, ""), vat
         else:
             mt_id = mid if mid != "" else (npc_nhan if npc_nhan is not None else "")
+            if kieu in KIEU_THEO_LOAI and mid != "":
+                # engine (PokedexPokemon/RoiLauDai -> NhiemVuEngine.suKien) gui SO DEX cua loai, khong phai id template
+                mt_id = self.k.dex[int(mid)]
             mt_ten = mten or vat or (ten_npc(npc_nhan) if npc_nhan is not None else "")
         d = dict(ma=ma, loai=loai, ten=ten_ra, npc_giao=giao, ten_npc=nguoi, dia_danh=them.get("dia_danh") or noi,
                  cap_toi_thieu=L, kieu_muc_tieu=kieu, muc_tieu_id=mt_id, muc_tieu_ten=mt_ten[:200], so_luong=so,
@@ -315,6 +412,8 @@ class Sinh:
                  hoi_thoai_xong=xg, goi_y=goi_y, nhanh_lua_chon=nhanh, an=0, dap_an=ts.get("dap", ""),
                  phut=them.get("phut", 6), nhan_vat=them.get("nhan_vat", ""), nhom=them.get("nhom", loai),
                  vat_nv=vat)
+        if kieu == "cau_ca":
+            d["dia_danh"] = ts["map"]   # cau ca chi o ho: dia danh = noi co ho
         for kk in ("nam", "vung", "cung", "chuong", "buoc", "ngay_mo", "truoc", "lap_lai", "gioi_han",
                    "huy_hieu", "ghi_chu", "dieu_kien_mo", "id_so"):
             if kk in them:
@@ -417,7 +516,7 @@ def sinh(s):
         ("noi_chuyen", "npc=2", "Gặp Machamp thợ chế tạo", "Khà khà! Ta lo đồ đạc. Nâng cấp, chế tạo, khảm ngọc: tìm ta.", "Mặc thử món đồ ta tặng đi."),
         ("nang_cap", "", "Mặc trang bị", "Mở túi, chọn món đồ rồi chọn Mặc.", "Ra dáng rồi đấy!"),
         ("giet", "q=+2", "Thử sức ngoài đồng", "Đi xa hơn một chút. Hạ {so} {quai}.", "Cháu tiến bộ nhanh lắm."),
-        ("pokedex_gap", "q=+0", "Sổ tay Pokédex", "Oáp... mỗi loài cháu gặp sẽ được ghi vào Pokédex. Gặp {quai} đi.", "Sổ có trang đầu tiên rồi."),
+        ("pokedex_gap", "q=+0", "Sổ tay Pokédex", "Mỗi loài cháu gặp sẽ được ghi vào Pokédex. Thử gặp {quai} đi.", "Sổ có trang đầu tiên rồi."),
         ("noi_chuyen", "npc=5", "Lời hứa với Xatu", "...Cháu đã sẵn sàng. Ngôi sao rơi đêm qua đang chờ cháu tìm hiểu.", "Đi đi. Ta sẽ dõi theo."),
     ]
     truoc = ""
@@ -498,9 +597,12 @@ def sinh(s):
             ngay_mo = 365 if L <= 95 else 545
             ex, xu, lk, lg = s.thuong("chinh", L, he=4.0)
             lk_tong = lk * 4
-            if stt in NT.NAM2:
-                ch = NT.NAM2[stt]
-                bs = ch["buoc"]
+            if stt in NT.NAM2 or stt in NH.NAM2_THEM:
+                ch = NT.NAM2[stt] if stt in NT.NAM2 else NH.NAM2_THEM[stt]
+                # ban do Hoenn (BanDoHoenn): moi buoc co map/diem + quai muc tieu moc tren ban do do
+                cap_quai = {i: c for i, (t, c) in s.ten_quai_tat_ca.items()}
+                bs = [NH.chuan_buoc(stt, bi, b, L, cap_quai) for bi, b in enumerate(ch["buoc"], 1)]
+                noi_h = NH.CHUONG[stt][0]
                 n = len(bs)
                 w = [0.8] + [1.0] * (n - 2) + [1.6]
                 lks = chia_nguyen(lk_tong, w)
@@ -510,7 +612,7 @@ def sinh(s):
                     d = G.buoc("chinh", ma, L, b, ch["npc"], {"noi": tch}, stt * 7 + bi, nam=2, vung=vung,
                                cung=mc + " " + tc, chuong=stt, buoc=bi, ngay_mo=ngay_mo, truoc=truoc, id_so=id2,
                                nhom="chinh", dia_danh=tch, phut=int(round(LD.GIO_MOI_CHUONG * 60 / n)),
-                               ghi_chu=("Cần 1 vé chương; năm 2: cần bản đồ/quái Hoenn GĐ3 (tạm dùng quái cấp cao có sẵn)"
+                               ghi_chu=("Cần 1 vé chương; năm 2: bản đồ Hoenn %s (map %d)" % (noi_h, NH.DIA_DANH[noi_h])
                                         if bi == 1 else ("Cliffhanger: " + ch["treo"] if bi == n else "")),
                                mo_ta=(ch["mo"] if bi == 1 else None))
                     d["exp"] = int(ex * w[bi - 1] / sum(w))
@@ -530,10 +632,11 @@ def sinh(s):
                          truoc=truoc, kieu_muc_tieu="dan_y", lap_lai="khong", exp=ex, xu=xu, luong_khoa=lk_tong,
                          luong=0, dong_co_tuong_thich=0, nhom="dan_y",
                          ghi_chu="Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)",
-                         mo_ta="Dàn ý: %s (cung %s). Viết đầy đủ khi có bản đồ Hoenn." % (tch, tc),
-                         muc_tieu_text="Chương dàn ý năm 2", goi_y="Mở ở ngày %d của máy chủ." % ngay_mo,
-                         hoi_thoai_bat_dau="Xatu: ...Chương này chưa được viết. Hãy chờ ngày %d." % ngay_mo,
-                         hoi_thoai_dang_lam="Xatu: ...Chưa tới lúc.", hoi_thoai_xong="Xatu: ...Câu chuyện còn tiếp.",
+                         mo_ta="Chương sắp mở: %s (phần %s)." % (tch, tc),
+                         muc_tieu_text="Chương sắp mở (năm 2)",
+                         goi_y="Mở khi bản đồ Hoenn của chương này sẵn sàng; cần cấp %d và xong chương trước." % L,
+                         hoi_thoai_bat_dau="Xatu: ...Ta chưa nhìn rõ đoạn đường này. Hãy đạt cấp %d và đi tiếp câu chuyện." % L,
+                         hoi_thoai_dang_lam="Xatu: ...Chưa tới lúc.", hoi_thoai_xong="Xatu: ...Câu chuyện vẫn còn tiếp.",
                          phut=36)
                 them(d)
                 truoc = ma
@@ -544,7 +647,11 @@ def sinh(s):
     id_p = 2000
     for pi, (noi, vung, L0, npc, so_mau) in enumerate(NP.NOI, 1):
         chuoi = [(0, NP.DAC_TRUNG[noi][0], NP.DAC_TRUNG[noi][2], npc, NP.DAC_TRUNG[noi][3])]
+        co_ho = NC.DIA_DANH_MAP.get(noi) in kho.ho
         for j in range(so_mau):
+            # chuoi mau co cau ca chi gan cho noi co ho (cau ca chi o ho)
+            while not co_ho and any(b[0] == "cau_ca" for b in NP.MAU[mau_i % len(NP.MAU)][4]):
+                mau_i += 1
             m = NP.MAU[mau_i % len(NP.MAU)]
             nv = m[1][(mau_i // len(NP.MAU)) % 2][0]
             mau_i += 1
@@ -627,8 +734,8 @@ def sinh(s):
                        lap_lai="tuan", gioi_han=LD.GIOI_HAN_TUAN, id_so=id_t, nhom="tuan",
                        dia_danh="Trung tâm Pokémon", phut=60, ghi_chu="Reset thứ Hai 05:00; tính vào 2 nhiệm vụ tuần")
             d["so_luong"] = LD.so_quai(Lt, 60)
-            d["muc_tieu_text"] = "Hạ %d Pokémon hoang dã chênh không quá 5 cấp" % d["so_luong"]
-            d["hoi_thoai_bat_dau"] = d["hoi_thoai_bat_dau"].replace("{so}", str(d["so_luong"]))
+            d["muc_tieu_text"] = "Hạ %s Pokémon hoang dã chênh không quá 5 cấp" % so_dep(d["so_luong"])
+            d["hoi_thoai_bat_dau"] = d["hoi_thoai_bat_dau"].replace("{so}", so_dep(d["so_luong"]))
             ex, xu, lk, lg = s.thuong("tuan", Lt)
             d.update(exp=ex, xu=xu, luong_khoa=lk, luong=0, du_phong="4:%d" % d["so_luong"], dong_co_tuong_thich=0)
             them(d)
@@ -652,9 +759,9 @@ def sinh(s):
         id_t += 1
         so2 = 2 if L < 40 else 3
         d = G.buoc("tuan", "TD-%02d" % i, L, ("to_doi", "so=%d;so2=%d" % (LD.so_quai(L, 40) * 2, so2), ten,
-                                               "Lửa lên nào! Tuần này cần sức cả tổ: lập tổ đội từ {so2} Pokémon, cùng hạ {so} quái.",
-                                               "Cả tổ làm tốt lắm!"),
-                   21, {"noi": "Trụ sở đội"}, i, vung="Mọi vùng", cung="Nhiệm vụ tổ đội", lap_lai="tuan", gioi_han=1,
+                                               "Lửa lên nào! Tuần này cần sức cả nhóm: lập nhóm từ {so2} Pokémon, cùng hạ {so} quái.",
+                                               "Cả nhóm làm tốt lắm!"),
+                   21, {"noi": "Trụ sở đội"}, i, vung="Mọi vùng", cung="Nhiệm vụ nhóm", lap_lai="tuan", gioi_han=1,
                    id_so=id_t, nhom="to_doi", dia_danh="Trụ sở đội", phut=40,
                    ghi_chu="Cả tổ cùng tiến độ; tính vào 2 nhiệm vụ tuần")
         ex, xu, lk, lg = s.thuong("tuan", L)
@@ -673,14 +780,15 @@ def sinh(s):
         da.add(ten)
         k += 1
         qid = [i for i, (t, c) in s.quai.items() if t == ten][0]
-        for bac, (kieu, sl, nhan, hs) in enumerate((("pokedex_gap", 1, "Gặp", 0.5), ("pokedex_ha", 50, "Hạ", 1.0),
-                                                    ("pokedex_shiny", 1, "Thấy shiny", 2.0))):
+        for bac, (kieu, sl, nhan, hs) in enumerate((("pokedex_gap", 1, "Gặp %s lần đầu", 0.5),
+                                                    ("pokedex_ha", 50, "Nghiên cứu %s", 1.0),
+                                                    ("pokedex_shiny", 1, "Săn %s shiny", 2.0))):
             if bac == 2 and k % 3 != 0:
                 continue
             L = max(1, cap - 5)
             id_d += 1
             d = G.buoc("pokedex", "D-%03d.%d" % (k, bac + 1), L,
-                       (kieu, "q=#%d;so=%d" % (qid, sl), "Nghiên cứu %s: %s" % (nhan, ten),
+                       (kieu, "q=#%d;so=%d" % (qid, sl), nhan % ten,
                         ["Oáp... trang về {quai} trong sổ ông còn trống. Cháu gặp nó thử xem.",
                          "Muốn hiểu {quai} thì phải đấu với nó nhiều lần. Hạ {so} con nhé.",
                          "Nghe nói có {quai} màu sắc khác thường. Ông muốn thấy một lần trong đời."][bac],
@@ -703,9 +811,9 @@ def sinh(s):
         dk = NL.QUAN_SAT_DK[j % len(NL.QUAN_SAT_DK)]
         id_d += 1
         d = G.buoc("pokedex", "DQ-%03d" % (j + 1), max(1, cap - 3),
-                   ("quan_sat", "q=#%d;dk=%s" % (qid, dk), "Sinh thái: %s khi %s" % (ten, dk),
-                    "Oáp... {quai} khi {dk} sống khác hẳn. Quan sát giúp ông một lần.",
-                    "Ông ghi lại rồi: {quai} khi {dk}. Thú vị thật."),
+                   ("quan_sat", "q=#%d;dk=%s" % (qid, dk), "%s %s" % (ten, NC.KHI_DK.get(dk, "khi " + dk)),
+                    "Oáp... {quai} {khi_dk} sống khác hẳn. Quan sát giúp ông một lần.",
+                    "Ông ghi lại rồi. {quai} {khi_dk} thú vị thật."),
                    8, {"noi": "Phòng nghiên cứu"}, j, vung="Mọi vùng", cung="Nghiên cứu sinh thái", id_so=id_d,
                    nhom="sinh_thai", dia_danh="Phòng nghiên cứu", phut=15,
                    ghi_chu="Cần thời tiết/giờ (SinhThaiTheGioi)")
@@ -736,7 +844,7 @@ def sinh(s):
     for i, (ten, kieu, L) in enumerate(NL.DOI, 1):
         so = LD.so_quai(L, 40) * 3
         d = G.buoc("doi", "DOI-%02d" % i, L, (kieu, "so=%d" % (so if kieu == "doi_dong_gop" else 1), ten,
-                                               "Hự! Đội của chiến hữu cần sức. {so} điểm đóng góp trong tuần này!" if kieu == "doi_dong_gop"
+                                               "Hự! Đội của chiến hữu đang cần sức. Tuần này hãy góp {so} điểm!" if kieu == "doi_dong_gop"
                                                else "Hự! Trận chiếm Gym tuần này, cả đội phải có mặt!",
                                                "Hự! Đội tự hào về chiến hữu."),
                    25, {"noi": "Lãnh địa đội"}, i, vung="Mọi vùng", cung="Nhiệm vụ Đội", lap_lai="tuan", gioi_han=1,
@@ -756,14 +864,14 @@ def sinh(s):
                    5, {"noi": "Pallet"}, i, vung="Mọi vùng", cung="Sư phạm", lap_lai="tuan", gioi_han=1,
                    id_so=5100 + i, nhom="su_pham", dia_danh="Pallet", phut=60,
                    ghi_chu="Thầy (cấp ≥ 30) và trò (thấp hơn ≥ 20 cấp) cùng nhận; trò +20% EXP khi chung đội")
-        d["muc_tieu_text"] = "Kèm học trò (thấp hơn ≥ 20 cấp) đạt mốc: %s" % ten
+        d["muc_tieu_text"] = "Kèm học trò đạt mốc: %s" % ten
         ds.append(them(d))
     nhom_scale("su_pham", ds)
     ds = []
     for i, ten in enumerate(NL.HAM_NGUC, 1):
         L = 20 + (i - 1) * 12
         d = G.buoc("hang_bi_an", "HM-%02d" % i, L, ("tang_hang", "so=%d" % (5 * i), ten,
-                                                     "Oáp... Hầm ngục bí ẩn đổi lối mỗi ngày. Cháu xuống thử {so} tầng.",
+                                                     "Oáp... Hầm ngục bí ẩn đổi lối mỗi ngày. Cháu xuống thử {so} tầng xem.",
                                                      "Cháu lên rồi! Kể ông nghe dưới đó có gì."),
                    8, {"noi": "Hang động"}, i, vung="Mọi vùng", cung="Hầm ngục bí ẩn", lap_lai="ngay", gioi_han=1,
                    id_so=5200 + i, nhom="ham_nguc", dia_danh="Hang động", phut=20,
@@ -791,10 +899,12 @@ def sinh(s):
         for bi, b in enumerate(tpl, 1):
             id_s += 1
             ma = "SK-%02d.%d" % (t, bi)
-            gt = {"ten": r["ten_nam1"].split(" (")[0], "vat": vp["vat_pham"], "thuong": r["phan_thuong"],
+            thuong_sk = r["phan_thuong"] if r["phan_thuong"].strip() not in ("", "-", "—", "–") else "quà sự kiện"
+            # font J2ME khong co "&": doi thanh "và" trong chu nguoi choi thay
+            gt = {"ten": r["ten_nam1"].split(" (")[0].replace(" & ", " và "), "vat": vp["vat_pham"], "thuong": thuong_sk,
                   "mo_rieng": NL.SU_KIEN_MO[t - 1], "noi": "Pallet"}
             kieu, tss, ten, mo, xong = b
-            ten_ngan = gt["ten"].split(": ")[-1]
+            ten_ngan = NL.SU_KIEN_TEN_NGAN[t - 1]
             m_ = re.match(r"\{ten\}: (.+)$", ten)
             if m_:
                 ten = m_.group(1)[0].upper() + m_.group(1)[1:] + ": " + ten_ngan
@@ -821,6 +931,9 @@ def sinh(s):
             truoc_s = ma
 
     # ---------------- 10. Huyen thoai ----------------
+    # 18/10/2026 (khong tran cap theo mua): bo khoa "cach buoc truoc 7 ngay" (engine chua tung chay) -> moi buoc can
+    # cap cao hon buoc truoc HT_CAP_MOI_BUOC cap (khoa theo cap + chuoi `truoc` + vat pham nhiem vu cua buoc).
+    HT_CAP_MOI_BUOC = 2
     id_h = 5500
     lk_ht = 0
     for (mh, ten_ht, L, npc, token, boss, noi, dh, bs) in NL.HUYEN_THOAI:
@@ -830,11 +943,9 @@ def sinh(s):
             ma = "HT-%s.%d" % (mh, bi)
             d = G.buoc("huyen_thoai", ma, L, b, npc, {"noi": noi}, bi, vung="Mọi vùng",
                        cung="Huyền thoại: " + ten_ht, buoc=bi, truoc=truoc_h, id_so=id_h, nhom="huyen_thoai",
-                       nhan_vat=ten_ht, dia_danh=noi, phut=20, dieu_kien_mo="cách bước trước ≥ 7 ngày" if bi > 1 else "",
-                       ngay_mo=0 if L <= 91 else 365,
-                       ghi_chu="Chuỗi nhiều tuần: mỗi bước mở sau bước trước 7 ngày")
-            if bi > 1:
-                d["dieu_kien"] = (d["dieu_kien"] + ";" if d["dieu_kien"] else "") + "cach_buoc_truoc_ngay=7"
+                       nhan_vat=ten_ht, dia_danh=noi, phut=20, ngay_mo=0 if L <= 91 else 365,
+                       ghi_chu="Chuỗi nhiều bước: mỗi bước cần cấp cao hơn bước trước %d cấp" % HT_CAP_MOI_BUOC)
+            d["cap_toi_thieu"] = min(100, L + HT_CAP_MOI_BUOC * (bi - 1))
             d.update(exp=0, xu=0, luong=0, dong_co_tuong_thich=0, luong_khoa=0)
             if bi == len(bs):
                 d["luong_khoa"] = 5
@@ -874,9 +985,9 @@ def sinh(s):
                  ten=ten, npc_giao="", dia_danh="", cap_toi_thieu=1, kieu_muc_tieu="thanh_tuu_" + kieu, so_luong=ng,
                  lap_lai="khong", exp=0, xu=0, luong_khoa=lks[i], luong=lgs[i], dong_co_tuong_thich=0, nhom="thanh_tuu",
                  ghi_chu="Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số. Đếm: " + NC.THANH_TUU_CO_CHE[kieu],
-                 mo_ta="%s: đạt mốc %s." % (nhom, ng), muc_tieu_text="%s đạt %s" % (nhom, ng),
+                 mo_ta="%s: đạt mốc %s." % (nhom, so_dep(ng)), muc_tieu_text="%s đạt %s" % (nhom, so_dep(ng)),
                  goi_y="Tự ghi nhận khi đạt mốc.", hoi_thoai_bat_dau="", hoi_thoai_dang_lam="",
-                 hoi_thoai_xong="Xatu: ...Thành tựu \"%s\" đã được ghi vào sổ." % ten,
+                 hoi_thoai_xong="Xatu: ...Sổ thành tựu đã ghi thêm: %s." % ten,
                  thuong_khac="danh_hieu:%s" % ten + (";trang_tri:Khung %s" % nhom if j == n - 1 else ""),
                  truoc=("A-%03d" % i) if j > 0 else "", phut=0)
         them(d)
@@ -914,16 +1025,24 @@ def sinh(s):
                 iid, sl = v.split("x") if "x" in v else (v, "1")
                 p.append("vật phẩm sự kiện x%s" % sl)
             elif k_ == "danh_hieu":
-                p.append("danh hiệu \"%s\"" % v)
+                p.append("danh hiệu %s" % v)   # font J2ME khong co dau nhay kep
             elif k_ == "trang_tri":
-                p.append("trang trí: %s" % v)
+                if v.strip().lower().startswith("danh hiệu"):
+                    p.append(v[:1].lower() + v[1:])
+                elif v.strip() not in ("", "-", "—", "–"):
+                    p.append("trang trí: %s" % v)
             elif k_ == "truyen":
                 p.append("trang truyện: %s" % v)
             elif k_ == "diem_bang":
                 p.append("%s điểm bảng ngày" % v)
         if d.get("nhanh_lua_chon"):
             p.append("danh hiệu theo lựa chọn")
-        d["dong_thuong"] = "Thưởng: " + (", ".join(p) if p else "danh hiệu và lời cảm ơn")
+        if p:
+            d["dong_thuong"] = "Thưởng: " + ", ".join(p)
+        elif d.get("loai") == "su_kien":
+            d["dong_thuong"] = "Thưởng: nhận ở bước cuối của sự kiện"
+        else:
+            d["dong_thuong"] = "Thưởng: lời cảm ơn"
     s.nv_kho = kho
 
 
@@ -949,6 +1068,42 @@ def noi_dung_cu(hoi_thoai_bd):
     return s[:990]
 
 
+def vat_nv_hop_le(x, mac_dinh):
+    """ItemQuest dung duoc: 10..50 (data_vat_pham_nhiem_vu, NoiDungLauDai.moRongVatPhamNhiemVu) hoac cac ten cu
+    dung duoc trong jar (nv_chung.VAT_NV_CU)."""
+    try:
+        i = int(x)
+    except (TypeError, ValueError):
+        return mac_dinh
+    if i in NC.VAT_NV_ID.values() or i in NC.VAT_NV_CU:
+        return str(i)
+    return mac_dinh
+
+
+_VK_THEO_LOP = None
+LOP_DONG = ["Charmander", "Bulbasaur", "Eevee", "Squirtle", "Pichu"]   # charClass 0..4 (GymLauDai)
+
+
+def item_gift(vat):
+    """data_quest.itemgift = "id lop0,..,id lop4,cong" (InfoQuestTemplate.addGift doc idItemgift[charClass] va
+    idItemgift[5]). Mot id -> cung id cho moi lop; vu khi (type 3..7, theo dong) -> vu khi cung bac cua tung
+    dong (docs/pokemon/noi_dung_trang_bi.csv). Truoc day ghi 1 so: lop > 0 loi AIOOBE, lop 0 mat cong."""
+    global _VK_THEO_LOP
+    if not vat or not str(vat).strip().isdigit():
+        return "32000"
+    i = int(vat)
+    if _VK_THEO_LOP is None:
+        _VK_THEO_LOP = {}
+        bac_dong = {}
+        for r in doc_csv("noi_dung_trang_bi.csv"):
+            if r.get("o") == "vu_khi" and (r.get("id_item") or "").isdigit():
+                bac_dong[(r["bac"], r["dong"])] = int(r["id_item"])
+        for (bac, dong), iid in bac_dong.items():
+            _VK_THEO_LOP[iid] = [bac_dong.get((bac, l), iid) for l in LOP_DONG]
+    ds = _VK_THEO_LOP.get(i, [i] * 5)
+    return ",".join(str(x) for x in ds) + ",0"
+
+
 def dong_data_quest(d, mainsub):
     dp = (d.get("du_phong") or "3:%s" % (d.get("npc_giao") or 5)).split(":")
     typ = int(dp[0])
@@ -960,23 +1115,28 @@ def dong_data_quest(d, mainsub):
     elif typ == 4:
         nmon = dp[1]
     elif typ == 2:
-        iget, mon, nget = "6", dp[1], dp[2]   # Long duoi Hong Ke (ItemQuest cu) - GD2 4.5 doi sang vat moi
+        # vat pham nhiem vu THAT cua thiet ke (muc_tieu_id = ItemQuest 10..50 / cu dung duoc), roi khi lam
+        # nhiem vu (Monster -> checkDropItemQuest), nop luc tra (Char.OnQuest). Khac -> Long duoi Hong Ke (6).
+        iget, mon, nget = vat_nv_hop_le(d.get("muc_tieu_id"), "6"), dp[1], dp[2]
     elif typ == 1:
-        iget = "4"
+        # giao_hang: hang trong tui nhiem vu = muc_tieu_id; dua_thu: La thu (4)
+        iget = vat_nv_hop_le(d.get("muc_tieu_id"), "4") if d.get("kieu_muc_tieu") == "giao_hang" else "4"
         npcres = int(dp[1])
     elif typ == 3:
         npcres = 32000
     nv = (d.get("muc_tieu_text") or d["ten"])[:150]
     thuong = (d.get("dong_thuong") or "")[:120]
-    info = "Nhiệm vụ:|%s|Địa điểm:|%s|NPC nv:|%s|Phần thưởng:|%s" % (nv, d["dia_danh"] or "-", d["ten_npc"] or "-",
+    info = "Nhiệm vụ:|%s|Địa điểm:|%s|NPC:|%s|Phần thưởng:|%s" % (nv, d["dia_danh"] or "-", d["ten_npc"] or "-",
                                                                    thuong.replace("Thưởng: ", ""))
+    dd = d["dia_danh"] or ""
+    sc = nv if (not dd or dd == "?" or dd in nv) else nv + " ở " + dd   # khong lap "o Pallet o Pallet"
     content = noi_dung_cu(d.get("hoi_thoai_bat_dau") or ("%s: %s" % (d["ten_npc"], nv)))
     xg = (d.get("hoi_thoai_xong") or "").split("|")
     res = "1" + xg[0][:480] if typ != 3 and xg[0] else "32000"
     fin = ("Nhiệm vụ hoàn thành|%s" % (xg[-1] if xg and xg[-1] else "Quay về nhận thưởng"))[:200]
-    vat = d.get("vat_pham") or "32000"
+    vat = item_gift(d.get("vat_pham"))
     gt = [d["id_so"], sql_chuoi(d["ten"][:45]), npc, npcres, max(1, int(d["cap_toi_thieu"])), mainsub,
-          sql_chuoi(content), sql_chuoi((nv + " ở " + (d["dia_danh"] or "-"))[:490]), sql_chuoi(res), sql_chuoi(iget),
+          sql_chuoi(content), sql_chuoi(sc[:490]), sql_chuoi(res), sql_chuoi(iget),
           sql_chuoi(mon), typ, sql_chuoi(nget), sql_chuoi(nmon), d["xu"] or 0, d["exp"] or 0, "'32000'", "'32000'",
           sql_chuoi(vat), 5 if typ == 4 else 0, sql_chuoi(info[:200]), sql_chuoi(fin), 0, d["luong"] or 0,
           d["luong_khoa"] or 0]

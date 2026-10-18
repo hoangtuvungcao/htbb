@@ -383,7 +383,7 @@ public final class DongGoiSprite {
         if (pc.isDirectory()) {
             ds.add(new File(pc, "Resources/poke"));
         }
-        final File cu = new File(goc, "ClientUnity/Assets");
+        final File cu = new File(goc, "client_pc_ios/ClientUnity/Assets");
         if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
             ds.add(new File(cu, "Resources/poke"));
         }

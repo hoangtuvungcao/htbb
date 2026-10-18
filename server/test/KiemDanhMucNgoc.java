@@ -11,7 +11,9 @@ import java.util.regex.Pattern;
 import real.GemTemplate;
 
 /**
- * Doi chieu web/admin/inc/danh_muc_ngoc.php voi mang real.Map.gemTemplate.
+ * Doi chieu HTBB-Web/shared/data/danh-muc-ngoc.json (tools/SinhDanhMucNgoc sinh; web doc qua
+ * server/utils/giftcodeNgoc.gen.ts) voi mang real.Map.gemTemplate. Truoc day la tep PHP
+ * web/admin/inc/danh_muc_ngoc.php - website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
  *
  * VI SAO CAN BO KIEM NAY. Ten 270 vien ngoc khong co trong CSDL - chung ghi cung trong
  * src/real/MapNapTaiNguyen.java, va mot nua lay tu hang so data.Text.*. Trang quan tri
@@ -27,12 +29,12 @@ import real.GemTemplate;
  */
 public final class KiemDanhMucNgoc {
 
-    private static final String TEP = "web/admin/inc/danh_muc_ngoc.php";
+    private static final String TEP = "shared/data/danh-muc-ngoc.json";
 
-    /** 108 => ['ten' => 'Tơ lụa cấp 6', 'ban' => false, 'nhom' => 'NLCC6'], */
+    /** "108": {"ten": "Tơ lụa cấp 6", "ban": false, "nhom": "NLCC6"}, */
     private static final Pattern DONG = Pattern.compile(
-            "^\\s*(\\d+)\\s*=>\\s*\\['ten'\\s*=>\\s*'(.*)'\\s*,\\s*'ban'\\s*=>\\s*(true|false)\\s*,"
-                    + "\\s*'nhom'\\s*=>\\s*'([^']*)'\\s*\\],\\s*$");
+            "^\\s*\"(\\d+)\":\\s*\\{\"ten\":\\s*\"(.*)\",\\s*\"ban\":\\s*(true|false)\\s*,"
+                    + "\\s*\"nhom\":\\s*\"([^\"]*)\"\\s*\\},?\\s*$");
 
     private KiemDanhMucNgoc() {
     }
@@ -40,8 +42,11 @@ public final class KiemDanhMucNgoc {
     public static void chay() {
         Kiem.nhom("Danh muc ngoc - tep sinh phai khop mang Java");
 
-        final String php = doc(TEP);
-        Kiem.dung("doc duoc " + TEP, !php.isEmpty());
+        if (WebHtbb.boQua("danh muc ngoc")) {
+            return;
+        }
+        final String php = WebHtbb.doc(TEP);
+        Kiem.dung("doc duoc " + WebHtbb.ten(TEP), !php.isEmpty());
         if (php.isEmpty()) {
             return;
         }
@@ -123,7 +128,7 @@ public final class KiemDanhMucNgoc {
                 "108,115,122,129,136", idCuaNhom(nhomJava, "NLCC6"));
 
         // ---- Bo sinh phai con dung, va tep phai ghi ro la tep sinh ----
-        final String tool = doc("tools/SinhDanhMucNgoc.java");
+        final String tool = doc("../tools/SinhDanhMucNgoc.java");
         Kiem.dung("con bo sinh tools/SinhDanhMucNgoc.java", !tool.isEmpty());
         Kiem.dung("tep sinh co ghi ro DUNG SUA TAY", php.contains("DUNG SUA TAY"));
         Kiem.dung("tep sinh co ghi cach sinh lai", php.contains("SinhDanhMucNgoc"));
@@ -139,9 +144,9 @@ public final class KiemDanhMucNgoc {
         return s.isEmpty() ? "(khong ten)" : s;
     }
 
-    /** Bo thoat cua chuoi PHP nhay don. */
+    /** Bo thoat chuoi JSON. */
     private static String boThoat(final String s) {
-        return s.replace("\\'", "'").replace("\\\\", "\\");
+        return WebHtbb.boThoatJson(s);
     }
 
     private static void gomNhom(final Map<Integer, String> ra, final short[][] mang, final String tienTo) {

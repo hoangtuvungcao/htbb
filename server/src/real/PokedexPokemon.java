@@ -28,7 +28,7 @@ public final class PokedexPokemon {
 
     /**
      * Npc ao cho menu Pokedex. Da grep src/ (16/10/2026): -520/-521 (moc nap), -522..-524
-     * (KhoXuLuong), -525 (BaiLuyenCong) dang dung; -526 trong.
+     * (KhoXuLuong), -525 (BaiLuyenTap) dang dung; -526 trong.
      */
     public static final int NPC_ID = -526;
 
@@ -249,7 +249,7 @@ public final class PokedexPokemon {
             baoLoi(p, "Cần hạ " + moc + " loài Pokémon (hiện " + daHa + ").");
             return;
         }
-        if (Pokedex.canOTrong(moc) && p.isFullInventory()) {
+        if ((Pokedex.canOTrong(moc) || com.htbb.pokemon.LauDai.bat()) && p.countSlotInventory() < 3) {
             baoLoi(p, "Hành trang đã đầy.");
             return;
         }
@@ -260,7 +260,10 @@ public final class PokedexPokemon {
             return;
         }
         d.danhDauMoc(moc);
-        final String thuong = Pokedex.phanThuong(moc, Map.r.nextInt(DaTienHoa.ID_ITEM.length));
+        String thuong = Pokedex.phanThuong(moc, Map.r.nextInt(DaTienHoa.ID_ITEM.length));
+        if (com.htbb.pokemon.LauDai.bat()) {
+            thuong = Pokedex.doiThuongLauDai(thuong, moc); // keo EXP cu 10..12 ngung dung -> Keo hiem
+        }
         try {
             DatabaseGiftCode.applyItemString(p, thuong);
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));

@@ -14,10 +14,13 @@
  *   - frame-ancestors 'self': thay/hỗ trợ X-Frame-Options.
  *
  * Biến môi trường:
- *   KPAH_CSP  = enforce (mặc định khi chạy thật) | report-only | off
- *   KPAH_HSTS = 1 bắt buộc gửi HSTS | 0 không bao giờ | (trống) tự động: chỉ khi chạy thật VÀ
+ *   HTBB_CSP  = enforce (mặc định khi chạy thật) | report-only | off
+ *   HTBB_HSTS = 1 bắt buộc gửi HSTS | 0 không bao giờ | (trống) tự động: chỉ khi chạy thật VÀ
  *               request đến qua HTTPS (X-Forwarded-Proto: https từ proxy tin cậy — Apache trong
- *               deploy/apache-kpah-web.conf đặt header này khi env HTTPS).
+ *               deploy/apache-htbb-web.conf đặt header này khi env HTTPS).
+ *   HTBB_SITE_URL chưa phải tên miền thật (trống / localhost / IP) -> mọi phản hồi có
+ *               X-Robots-Tag: noindex, nofollow (cùng với robots.txt chặn hết và thẻ meta robots).
+ * Header x-powered-by do Nuxt tự gắn bị gỡ ở server/plugins/bo-x-powered-by.ts.
  * Khi `nuxt dev` không gửi CSP (Vite HMR cần websocket + eval) và không gửi HSTS.
  */
 const CSP = [
@@ -39,7 +42,7 @@ const CSP = [
 const PERMISSIONS = 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=()'
 
 function cheDoCsp(): 'enforce' | 'report-only' | 'off' {
-  const v = (process.env.KPAH_CSP ?? '').trim().toLowerCase()
+  const v = ((process.env.HTBB_CSP ?? process.env.KPAH_CSP) ?? '').trim().toLowerCase() // TUONG-THICH-TEN-CU
   if (v === 'off' || v === '0' || v === 'false') return 'off'
   if (v === 'report-only' || v === 'report') return 'report-only'
   return 'enforce'
@@ -58,6 +61,7 @@ export default defineEventHandler((event) => {
   setResponseHeader(event, 'Permissions-Policy', PERMISSIONS)
   setResponseHeader(event, 'Cross-Origin-Opener-Policy', 'same-origin')
   setResponseHeader(event, 'X-Content-Type-Options', 'nosniff')
+  if (!useHtbbConfig().site.choIndex) setResponseHeader(event, 'X-Robots-Tag', 'noindex, nofollow')
 
   if (import.meta.dev) return
 
@@ -66,7 +70,7 @@ export default defineEventHandler((event) => {
   if (che === 'enforce') setResponseHeader(event, 'Content-Security-Policy', CSP)
   else if (che === 'report-only') setResponseHeader(event, 'Content-Security-Policy-Report-Only', CSP)
 
-  const hsts = (process.env.KPAH_HSTS ?? '').trim()
+  const hsts = ((process.env.HTBB_HSTS ?? process.env.KPAH_HSTS) ?? '').trim() // TUONG-THICH-TEN-CU
   if (hsts === '1' || (hsts === '' && quaHttps(event))) {
     // 180 ngày, KHÔNG includeSubDomains/preload: subdomain khác có thể chưa có HTTPS.
     setResponseHeader(event, 'Strict-Transport-Security', 'max-age=15552000')

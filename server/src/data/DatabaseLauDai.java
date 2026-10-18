@@ -115,7 +115,7 @@ public final class DatabaseLauDai {
     public static boolean ghiKhoa(final String khoa, final String giaTri) {
         return ghi("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES (?, ?, 'lau_dai', ?)"
                 + " ON DUPLICATE KEY UPDATE gia_tri = VALUES(gia_tri), sua_boi = VALUES(sua_boi), sua_luc = VALUES(sua_luc)",
-                khoa, giaTri, new Timestamp(System.currentTimeMillis())) >= 0;
+                khoa, giaTri, new Timestamp(com.htbb.pokemon.DongHo.bay())) >= 0;
     }
 
     /** id -> {xp_truoc, xp_sau} da ghi cua lan {@code lan}; null neu loi. */
@@ -144,7 +144,7 @@ public final class DatabaseLauDai {
     public static boolean ghiNhatKyChuyen(final int lan, final long id, final String huong, final long truoc, final long sau, final long lv) {
         return ghi("INSERT INTO tob_char_xp_chuyen (lan, id, huong, xp_truoc, xp_sau, lv, luc) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 Integer.valueOf(lan), Long.valueOf(id), huong, Long.valueOf(truoc), Long.valueOf(sau), Long.valueOf(lv),
-                new Timestamp(System.currentTimeMillis())) == 1;
+                new Timestamp(com.htbb.pokemon.DongHo.bay())) == 1;
     }
 
     /** UPDATE co dieu kien: chi doi khi xp con dung gia tri truoc. true neu da o gia tri sau. */
@@ -206,7 +206,7 @@ public final class DatabaseLauDai {
     public static boolean luuHoSo(final int idChar, final String duLieu) {
         return ghi("INSERT INTO tob_char_lau_dai (id_char, du_lieu, cap_nhat) VALUES (?, ?, ?)"
                 + " ON DUPLICATE KEY UPDATE du_lieu = VALUES(du_lieu), cap_nhat = VALUES(cap_nhat)",
-                Integer.valueOf(idChar), duLieu, new Timestamp(System.currentTimeMillis())) >= 0;
+                Integer.valueOf(idChar), duLieu, new Timestamp(com.htbb.pokemon.DongHo.bay())) >= 0;
     }
 
     // ------------------------------------------------------------------ nhiem vu tuan
@@ -266,13 +266,13 @@ public final class DatabaseLauDai {
         ghi("INSERT INTO tob_boss_dong_gop (lan, id_char, phan_nghin, hang, bac_thuong, ghi_luc) VALUES (?, ?, ?, ?, ?, ?)"
                 + " ON DUPLICATE KEY UPDATE phan_nghin = VALUES(phan_nghin), hang = VALUES(hang), bac_thuong = VALUES(bac_thuong)",
                 Long.valueOf(lan), Integer.valueOf(idChar), Integer.valueOf(phanNghin), Integer.valueOf(hang),
-                Integer.valueOf(bac), new Timestamp(System.currentTimeMillis()));
+                Integer.valueOf(bac), new Timestamp(com.htbb.pokemon.DongHo.bay()));
     }
 
     public static void ghiHamNguc(final int ngay, final int idChar, final int tang) {
         ghi("INSERT INTO tob_ham_nguc (ngay, id_char, tang, ghi_luc) VALUES (?, ?, ?, ?)"
                 + " ON DUPLICATE KEY UPDATE tang = GREATEST(tang, VALUES(tang)), ghi_luc = VALUES(ghi_luc)",
-                Integer.valueOf(ngay), Integer.valueOf(idChar), Integer.valueOf(tang), new Timestamp(System.currentTimeMillis()));
+                Integer.valueOf(ngay), Integer.valueOf(idChar), Integer.valueOf(tang), new Timestamp(com.htbb.pokemon.DongHo.bay()));
     }
 
     public static void ghiPvp(final int mua, final int idChar, final int elo, final int thang, final int thua) {
@@ -284,7 +284,7 @@ public final class DatabaseLauDai {
     public static void ghiSuPham(final int idTro, final int idThay, final String moc) {
         ghi("INSERT INTO tob_su_pham (id_tro, id_thay, bat_dau, moc) VALUES (?, ?, ?, ?)"
                 + " ON DUPLICATE KEY UPDATE id_thay = VALUES(id_thay), moc = VALUES(moc)",
-                Integer.valueOf(idTro), Integer.valueOf(idThay), new Timestamp(System.currentTimeMillis()), moc);
+                Integer.valueOf(idTro), Integer.valueOf(idThay), new Timestamp(com.htbb.pokemon.DongHo.bay()), moc);
     }
 
     public static void congShiny(final int idChar, final int dex) {
@@ -332,7 +332,8 @@ public final class DatabaseLauDai {
     public static java.util.LinkedHashMap<String, com.htbb.pokemon.NhiemVuMau> napMauNhiemVu() {
         final java.util.LinkedHashMap<String, com.htbb.pokemon.NhiemVuMau> m = new java.util.LinkedHashMap<String, com.htbb.pokemon.NhiemVuMau>();
         for (final Object[] d : docBang("SELECT ma, loai, ten, ten_npc, cap_toi_thieu, ngay_mo, truoc, kieu_muc_tieu, muc_tieu_id,"
-                + " so_luong, lap_lai, exp, xu, luong_khoa, luong, vat_pham, quai_roi FROM data_quest_lau_dai ORDER BY id_so", 17)) {
+                + " so_luong, lap_lai, exp, xu, luong_khoa, luong, vat_pham, quai_roi, dong_co_tuong_thich FROM data_quest_lau_dai"
+                + " ORDER BY id_so", 18)) {
             final com.htbb.pokemon.NhiemVuMau x = new com.htbb.pokemon.NhiemVuMau();
             x.ma = s(d[0]);
             x.loai = s(d[1]);
@@ -351,7 +352,9 @@ public final class DatabaseLauDai {
             x.luong = so(d[14]);
             x.vatPham = s(d[15]);
             x.quaiRoi = s(d[16]);
-            if (com.htbb.pokemon.NhiemVuMau.engineQuanLy(x.loai)) {
+            // chuoi chinh nam 2 (khong vao duoc data_quest cu): engine chay khi co ban do + tran cap mua (NhiemVuMau.kiemNam2)
+            x.chuoiNam2 = com.htbb.pokemon.NhiemVuMau.laChuoiNam2(x.loai, so(d[17]));
+            if (com.htbb.pokemon.NhiemVuMau.engineQuanLy(x.loai) || x.chuoiNam2) {
                 m.put(x.ma, x);
             }
         }
@@ -362,10 +365,10 @@ public final class DatabaseLauDai {
                 continue;
             }
             x.mapId = s(d[1]).isEmpty() ? -1 : so(d[1]);
-            final String td = s(d[2]);
-            if (td.indexOf(',') > 0) {
-                x.toaX = so(td.substring(0, td.indexOf(',')));
-                x.toaY = so(td.substring(td.indexOf(',') + 1));
+            final int[] td = com.htbb.pokemon.NhiemVuMau.docToaDo(s(d[2]));
+            if (td != null) {
+                x.toaX = td[0];
+                x.toaY = td[1];
             }
             x.dieuKien = com.htbb.pokemon.NhiemVuMau.docDieuKien(s(d[3]));
             x.mucTieuText = s(d[4]);
@@ -378,6 +381,27 @@ public final class DatabaseLauDai {
             x.dieuKienMo = s(d[11]);
             x.dapAn = s(d[12]);
             x.phut = so(d[13]);
+        }
+        return m;
+    }
+
+    /**
+     * thuong_khac cua chuoi chinh CU (chinh / huong_dan chay bang data_quest_moi, dong_co_tuong_thich = 1):
+     * ma -> thuong_khac (data_nhiem_vu_noi_dung). Phat o NhiemVuEngine.khiXongChuoiCu (Char, luc tra nhiem vu).
+     */
+    public static java.util.HashMap<String, String> napThuongChuoiCu() {
+        final java.util.HashSet<String> cu = new java.util.HashSet<String>();
+        for (final Object[] d : docBang("SELECT ma, loai, dong_co_tuong_thich FROM data_quest_lau_dai", 3)) {
+            final String loai = s(d[1]);
+            if (("chinh".equals(loai) || "huong_dan".equals(loai)) && so(d[2]) != 0) {
+                cu.add(s(d[0]));
+            }
+        }
+        final java.util.HashMap<String, String> m = new java.util.HashMap<String, String>();
+        for (final Object[] d : docBang("SELECT ma, thuong_khac FROM data_nhiem_vu_noi_dung", 2)) {
+            if (cu.contains(s(d[0])) && !s(d[1]).trim().isEmpty()) {
+                m.put(s(d[0]), s(d[1]));
+            }
         }
         return m;
     }
@@ -442,6 +466,20 @@ public final class DatabaseLauDai {
             dong(rs, pre, conn);
         }
         return java.util.Collections.unmodifiableMap(m);
+    }
+
+    /**
+     * Cua hang & doi vat pham (real.CuaHangLauDai): {id, nhom, ten, chi_phi, thuong, cap, ngay_mo, lop,
+     * gioi_han_tuan} tu data_cua_hang_lau_dai (sql/pokemon_vat_pham_lau_dai.sql). Thieu bang -> rong.
+     */
+    public static List<Object[]> napCuaHangLauDai() {
+        final List<Object[]> kq = new ArrayList<Object[]>();
+        for (final Object[] d : docBang("SELECT id, nhom, ten, chi_phi, thuong, cap, ngay_mo, lop, gioi_han_tuan"
+                + " FROM data_cua_hang_lau_dai ORDER BY id", 9)) {
+            kq.add(new Object[]{Integer.valueOf(so(d[0])), s(d[1]), s(d[2]), s(d[3]), s(d[4]), Integer.valueOf(so(d[5])),
+                Integer.valueOf(so(d[6])), Integer.valueOf(so(d[7])), Integer.valueOf(so(d[8]))});
+        }
+        return kq;
     }
 
     /** {bac, cong, ten nguyen lieu phu, so} tu data_noi_dung_vat_lieu_nang_cap (doi noi dung). */
@@ -633,6 +671,12 @@ public final class DatabaseLauDai {
      * lai ly do. Mon doi tien (vd luong -> luong khoa) bi chan o shop luong (Q10: luong khong mua
      * suc manh); gioi han tuan duoc dem co dieu kien TRUOC khi phat (muc 5).
      */
+    /** Mon shop luong chuyen sang tra bang luong khoa (tien_moi = 2), xem doBuySpecialItem. */
+    public static boolean traBangLuongKhoa(final int idShop) {
+        final int[] g = GIA_SHOP.get(Integer.valueOf(idShop));
+        return g != null && g[2] == 2 && g[1] != 2;
+    }
+
     public static String chanMuaShop(final int idChar, final int idShop, final int tuan) {
         final int[] g = GIA_SHOP.get(Integer.valueOf(idShop));
         if (g == null) {
@@ -641,7 +685,7 @@ public final class DatabaseLauDai {
         if (g[2] == 9) {
             return "Vật phẩm này đã ngừng bán.";
         }
-        if (g[2] != g[1]) {
+        if (g[2] != g[1] && g[2] != 2) {
             return "Vật phẩm này không còn bán bằng lượng (chỉ đổi bằng lượng khoá).";
         }
         if (g[3] > 0 && !tangMuaTuan(idChar, idShop, tuan, g[3])) {
@@ -694,7 +738,7 @@ public final class DatabaseLauDai {
     public static void ghiChiemThanh(final long lan, final int idChar, final int idClan, final long diem, final String thuong) {
         ghi("INSERT INTO tob_chiem_thanh_tuan (lan, id_char, id_clan, diem, thuong, luc) VALUES (?, ?, ?, ?, ?, ?)"
                 + " ON DUPLICATE KEY UPDATE diem = VALUES(diem), thuong = VALUES(thuong)", Long.valueOf(lan), Integer.valueOf(idChar),
-                Integer.valueOf(idClan), Long.valueOf(diem), thuong, new Timestamp(System.currentTimeMillis()));
+                Integer.valueOf(idClan), Long.valueOf(diem), thuong, new Timestamp(com.htbb.pokemon.DongHo.bay()));
     }
 
     // ------------------------------------------------------------------ giftcode an toan
@@ -746,7 +790,7 @@ public final class DatabaseLauDai {
             final String thuong, final int giaTri, final int thang) {
         return ghi("INSERT IGNORE INTO tob_giftcode_log (ma, user_id, id_char, charname, phan_thuong, gia_tri, thang, luc)"
                 + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", ma, Integer.valueOf(userId), Integer.valueOf(idChar), ten, thuong,
-                Integer.valueOf(giaTri), Integer.valueOf(thang), new Timestamp(System.currentTimeMillis())) == 1;
+                Integer.valueOf(giaTri), Integer.valueOf(thang), new Timestamp(com.htbb.pokemon.DongHo.bay())) == 1;
     }
 
     public static boolean truLuotGiftcode(final String ma) {
@@ -783,7 +827,7 @@ public final class DatabaseLauDai {
             conn = Database.instance.getConnection();
             pre = conn.prepareStatement("SELECT lastLv, gold, kho_xu, luong, kho_luong, luonglock, kho_luong_khoa"
                     + " FROM tob_char WHERE lastLog >= ?");
-            pre.setTimestamp(1, new Timestamp(System.currentTimeMillis() - 7L * 86400000L));
+            pre.setTimestamp(1, new Timestamp(com.htbb.pokemon.DongHo.bay() - 7L * 86400000L));
             rs = pre.executeQuery();
             while (rs.next()) {
                 ds.add(new long[]{rs.getLong(1), rs.getLong(2) + rs.getLong(3), rs.getLong(4) + rs.getLong(5),
@@ -822,10 +866,10 @@ public final class DatabaseLauDai {
                 + " tong_luong_khoa = VALUES(tong_luong_khoa), cung_tien_thuc_x100 = VALUES(cung_tien_thuc_x100),"
                 + " top1_phan_tram_x100 = VALUES(top1_phan_tram_x100), xu_vao = xu_vao + VALUES(xu_vao),"
                 + " xu_ra = xu_ra + VALUES(xu_ra), muc = VALUES(muc), ghi_luc = VALUES(ghi_luc)",
-                new java.sql.Date(System.currentTimeMillis()), Integer.valueOf(c.soNguoi), Integer.valueOf(c.capTrungVi),
+                new java.sql.Date(com.htbb.pokemon.DongHo.bay()), Integer.valueOf(c.soNguoi), Integer.valueOf(c.capTrungVi),
                 Long.valueOf(c.chiSoGia), Long.valueOf(c.tongXu), Long.valueOf(c.tongLuong), Long.valueOf(c.tongLuongKhoa),
                 Long.valueOf(c.cungTienThucX100), Integer.valueOf(c.phanTramTop1X100), Long.valueOf(vaoRa[0]),
-                Long.valueOf(vaoRa[1]), Integer.valueOf(c.muc), new Timestamp(System.currentTimeMillis()));
+                Long.valueOf(vaoRa[1]), Integer.valueOf(c.muc), new Timestamp(com.htbb.pokemon.DongHo.bay()));
         return c;
     }
 

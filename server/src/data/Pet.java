@@ -38,7 +38,7 @@ public class Pet extends Actor {
     public byte idTemplate;
     public LevelPet lvDetail = new LevelPet();
     public Item itemPet = null;
-    static String[] decript = new String[]{"Tăng công 20%", "Tăng 10% tấn công, 10% phòng thủ", "Tăng 20% tấn công, 20% phòng thủ", "Tăng công 30%", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10%exp,10% tấn công", "Tăng 10%exp,10% tấn công,10% phòng thủ, tặng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính băng lan", "Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính sét lan", "Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính độc lan", "Tăng 5% tấn công", "Tăng 10%exp,10% tấn công,10% phòng thủ, tăng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan, 2% bạo kích", "Tăng 10%exp,10% tấn công,10% phòng thủ, tăng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan, 2% bạo kích", "Tăng 10%exp,10% tấn công,10% phòng thủ", "", "", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10% exp", "Tăng 5% phòng thủ", "Tăng 10%exp, tặng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan", "Tăng 10%exp,10% tấn công,10% phòng thủ. Mỗi 5s hồi phục 5k hp cho chủ. 50% biến chủ nhân thành Tề thiên đại thánh", "", "", "", "", "", "Tăng 25%exp,10% tấn công", ""};
+    static String[] decript = new String[]{"Tăng công 20%", "Tăng 10% tấn công, 10% phòng thủ", "Tăng 20% tấn công, 20% phòng thủ", "Tăng công 30%", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10%exp,10% tấn công", "Tăng 10%exp,10% tấn công,10% phòng thủ, tặng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính băng lan", "Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính sét lan", "Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính độc lan", "Tăng 5% tấn công", "Tăng 10%exp,10% tấn công,10% phòng thủ, tăng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan, 2% bạo kích", "Tăng 10%exp,10% tấn công,10% phòng thủ, tăng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan, 2% bạo kích", "Tăng 10%exp,10% tấn công,10% phòng thủ", "", "", "Tăng 10%exp,10% tấn công,10% phòng thủ", "Tăng 10% exp", "Tăng 5% phòng thủ", "Tăng 10%exp, tặng 100% thuộc tính băng lan, sét lan, độc lan, lửa lan", "Tăng 10%exp,10% tấn công,10% phòng thủ. Mỗi 5s hồi phục 5k hp cho chủ. 50% biến chủ nhân thành Infernape", "", "", "", "", "", "Tăng 25%exp,10% tấn công", ""};
     public static int[][] percent = new int[][]{{20, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 0, 0, 0, 0, 0, 0}, {20, 20, 0, 0, 0, 0, 0, 0}, {30, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 0, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 1, 1, 1, 0, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 3, 0, 0, 0, 0}, {10, 10, 10, 0, 3, 0, 0, 0}, {10, 10, 10, 0, 0, 3, 0, 0}, {5, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 10, 1, 1, 1, 20, 1}, {10, 10, 10, 1, 1, 1, 20, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {0, 0, 10, 0, 0, 0, 0, 0}, {0, 5, 0, 0, 0, 0, 0, 0}, {10, 0, 10, 1, 1, 1, 0, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, new int[8], new int[8], new int[8], new int[8], new int[8], {10, 0, 25, 0, 0, 0, 0, 0}, new int[8], new int[8], new int[8], new int[8], new int[8], new int[8]};
     static int[][] pc_chang_thong_thao = new int[][]{{983, 14, 3, 0}, {996, 498, 3, 0}, {999, 666, 333, 0}, {1000, 750, 500, 250}};
     long timeBienHinh = 0L;
@@ -89,7 +89,7 @@ public class Pet extends Actor {
     public static short ID_SKILL_TANG_KICH = 12;
     public static short ID_SKILL_THUAN_ANH = 13;
     public static short ID_SKILL_PHI_HUYET = 14;
-    public static SkillPet[] ALL_SKILL = new SkillPet[]{new SkillPet("Chữa trị", "Hồi #% hp mỗi 5s", 0, 1, 3), new SkillPet("Phá triền", "Giảm 50% sát thương. Tỷ lệ xuất hiện #%", 1, 5, 10, 5, 10), new SkillPet("Đoạt mệnh", "Tăng #% sát thương", 2, 5, 10), new SkillPet("Thiên nhãn", "Né đòn. Tỷ lệ xuất hiện #%", 3, 10, 20), new SkillPet("Tiên khí", "Chủ nhân không bị hiệu ứng bất lợi(ko loại bỏ sát thương từ hiệu ứng). Tỷ lệ xuất hiện #%, tồn tại trong @s", 4, 5, 10, 5, 10), new SkillPet("Kim cang", "Tăng #% thủ vật lý", 5, 5, 10), new SkillPet("Càn khôn", "Tăng #% thủ ma pháp", 6, 5, 10), new SkillPet("Cường tráng", "Tăng #% hp", 7, 5, 15), new SkillPet("Cường thân", "Tăng #% mp", 8, 5, 10), new SkillPet("Kiên cố", "Tăng #% phòng thủ", 9, 5, 10), new SkillPet("Hộ thể", "Tăng #% phòng thủ trang bị", 10, 15, 30), new SkillPet("Liên kích", "Tăng #% sát thương chí mạng", 11, 5, 15), new SkillPet("Tăng kích", "Tăng #% bạo kích", 12, 1, 3), new SkillPet("Thuấn ảnh", "Hồi # mp sau mỗi 5s", 13, 1000, 2000), new SkillPet("Phí huyết", "Hồi # hp sau mỗi 5s", 14, 500, 1000)};
+    public static SkillPet[] ALL_SKILL = new SkillPet[]{new SkillPet("Chữa trị", "Hồi #% hp mỗi 5s", 0, 1, 3), new SkillPet("Phá triền", "Giảm 50% sát thương. Tỷ lệ xuất hiện #%", 1, 5, 10, 5, 10), new SkillPet("Đoạt mệnh", "Tăng #% sát thương", 2, 5, 10), new SkillPet("Phân thân", "Né đòn. Tỷ lệ xuất hiện #%", 3, 10, 20), new SkillPet("Tiên khí", "Chủ nhân không bị hiệu ứng bất lợi(ko loại bỏ sát thương từ hiệu ứng). Tỷ lệ xuất hiện #%, tồn tại trong @s", 4, 5, 10, 5, 10), new SkillPet("Thu mình", "Tăng #% phòng thủ", 5, 5, 10), new SkillPet("Màn ánh sáng", "Tăng #% phòng thủ đặc biệt", 6, 5, 10), new SkillPet("Cường tráng", "Tăng #% hp", 7, 5, 15), new SkillPet("Tĩnh tâm", "Tăng #% mp", 8, 5, 10), new SkillPet("Kiên cố", "Tăng #% phòng thủ", 9, 5, 10), new SkillPet("Hộ thể", "Tăng #% phòng thủ trang bị", 10, 15, 30), new SkillPet("Liên kích", "Tăng #% sát thương chí mạng", 11, 5, 15), new SkillPet("Tăng kích", "Tăng #% bạo kích", 12, 1, 3), new SkillPet("Thuấn ảnh", "Hồi # mp sau mỗi 5s", 13, 1000, 2000), new SkillPet("Rễ bám", "Hồi # hp sau mỗi 5s", 14, 500, 1000)};
     public static short[][] ID_SKILL_PET;
     static int[] PC_LEAR_SKILL_1;
     static int[] PC_LEAR_SKILL_2;
@@ -704,12 +704,12 @@ public class Pet extends Actor {
 
         for(int i = 0; i < GemTemplate.ID_MATERIAL_HIGHT[5].length; ++i) {
             if (p.listGemitem[GemTemplate.ID_MATERIAL_HIGHT[5][i]] < soluongDel && p.listGemitemLock[GemTemplate.ID_MATERIAL_HIGHT[5][i]] < soluongDel) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Ngươi cần có " + soluongDel + " nguyên liệu cao cấp mỗi loại", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Cậu cần có " + soluongDel + " nguyên liệu cao cấp mỗi loại", ""));
                 return;
             }
 
             if (p.listGemitem[GemTemplate.ID_MATERIAL_LOW[5][i]] < soluongDel && p.listGemitemLock[GemTemplate.ID_MATERIAL_LOW[5][i]] < soluongDel) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Ngươi cần có " + soluongDel + " nguyên liệu sơ cấp mỗi loại", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Cậu cần có " + soluongDel + " nguyên liệu sơ cấp mỗi loại", ""));
                 return;
             }
         }
@@ -948,7 +948,7 @@ public class Pet extends Actor {
             }
 
             if (this.isPetBachThu()) {
-                info = info + "\nChống đồ sát.";
+                info = info + "\nChống PK.";
             } else if (this.isPetCu()) {
                 info = info + "\n- Ru ngủ mục tiêu trong 10s. Khi bị ru ngủ mục tiêu sẽ bất động và sẽ tỉnh lại khi nhận sát thương hoặc hết 10s";
             } else if (this.isPetRong()) {
@@ -971,7 +971,7 @@ public class Pet extends Actor {
                 } else if (this.isPetDaiBang()) {
                     info = info + "\n- Bất tử trong 5s( 10% xuất hiện khi hp<50%. Chờ 60s)";
                 } else if (this.isPetYeuTinh()) {
-                    info = info + "\n- Yểm bùa(mất 95%mp, không hồi mp) trong 5s, 10% xuất hiện";
+                    info = info + "\n- Nguyền rủa(mất 95%mp, không hồi mp) trong 5s, 10% xuất hiện";
                 }
             } else if (this.itemPet.level == 2) {
                 if (this.isPetCu()) {
@@ -983,7 +983,7 @@ public class Pet extends Actor {
                 } else if (this.isPetDaiBang()) {
                     info = info + "\n- Bất tử trong 5s( 30% xuất hiện khi hp<70%. Chờ 60s)";
                 } else if (this.isPetYeuTinh()) {
-                    info = info + "\n- Yểm bùa(mất 99%mp, không hồi mp) trong 10s, 20% xuất hiện";
+                    info = info + "\n- Nguyền rủa(mất 99%mp, không hồi mp) trong 10s, 20% xuất hiện";
                 }
             }
 
@@ -1429,7 +1429,16 @@ public class Pet extends Actor {
         return 0;
     }
 
+    /**
+     * Lien kich (% ST chi mang them) o cac diem chi mang. Bat gioi han chi so (sv.lau_dai): 0 o day vi
+     * da gop vao tran ST chi mang trong Char.tkNhanChiMang (real.ChiSoTrangBiGame.heSoChiMang).
+     */
     public int getLienKich() {
+        return real.ChiSoTrangBiGame.bat() ? 0 : lienKichGoc();
+    }
+
+    /** Gia tri goc cua noi tai lien kich (khong phu thuoc co). */
+    public int lienKichGoc() {
         if (this.CanUseNoiTai() && (this.id_skill1 == ID_SKILL_LIEN_KICH || this.id_skill2 == ID_SKILL_LIEN_KICH)) {
             if (this.itemPet.level == 1) {
                 return 5;

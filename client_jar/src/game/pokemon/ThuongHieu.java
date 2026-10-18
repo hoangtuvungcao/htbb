@@ -15,8 +15,11 @@ public final class ThuongHieu {
     public static final String TEN_GAME_HOA = "HUYỀN THOẠI BẢO BỐI";
     public static final String TEN_VIET_TAT = "HTBB";
     public static final String TEN_GAME_CU = "Khí Phách Anh Hùng";
-    public static final String GIOI_THIEU = "Game Pokémon fan phi thương mại";
+    public static final String GIOI_THIEU = "Game fan Pokémon phi thương mại";
     public static final String GIOI_THIEU_2 = "Pokémon (c) Nintendo / Game Freak";
+    /** Ban ngan cho man hep (176 px: hai dong tren ~173/178 px tran khung). */
+    private static final String GIOI_THIEU_NGAN = "Game fan phi thương mại";
+    private static final String GIOI_THIEU_2_NGAN = "Pokémon: Nintendo/Game Freak";
     public static final int SO_KHOI_DAU = 5;
 
     private ThuongHieu() {
@@ -32,6 +35,28 @@ public final class ThuongHieu {
      * Trả về đáy logo.
      */
     public static int veLogo(Graphics g, int xTam, int yTren, int rongToiDa) {
+        // logo pixel art (client_jar/tools/tao_logo.py - cùng wordmark với PC / web): lớn nhất vừa chỗ trên khung
+        // giữa màn (đỉnh khung ~ hh - 50); không đủ chỗ thì kéo logo lên sát mép trên
+        int day = game.render.Canvas.hh - 52;
+        javax.microedition.lcdui.Image lg = Banner.logo(rongToiDa - 8, day - Math.min(yTren, 8));
+        if (lg != null) {
+            int y = yTren;
+            if (y + lg.getHeight() > day) {
+                y = Math.max(1, day - lg.getHeight());
+            }
+            GiaoDien.moClip(g);
+            g.drawImage(lg, xTam, y, Graphics.HCENTER | Graphics.TOP);
+            // lấp lánh nhỏ chạy quanh mép trên logo mỗi ~4 giây
+            int t = game.render.Canvas.gameTick % 100;
+            if (t < 16) {
+                int xs = xTam - lg.getWidth() / 2 + lg.getWidth() * t / 16;
+                int ys = y + 2 + (t & 3);
+                g.setColor(0xFFFFFF);
+                g.fillRect(xs, ys - 2, 1, 5);
+                g.fillRect(xs - 2, ys, 5, 1);
+            }
+            return y + lg.getHeight();
+        }
         Font chu = Font.bigFont;
         String ten = TEN_GAME_HOA;
         int wMax = rongToiDa - 12;
@@ -150,10 +175,10 @@ public final class ThuongHieu {
         try {
             Font f = Font.arialFont != null ? Font.arialFont : Font.normalFont[0];
             if (soDong >= 1) {
-                f.drawString(g, GIOI_THIEU, xTam, yChu, Font.CENTER);
+                f.drawString(g, f.getWidth(GIOI_THIEU) > wP - 10 ? GIOI_THIEU_NGAN : GIOI_THIEU, xTam, yChu, Font.CENTER);
             }
             if (soDong >= 2) {
-                f.drawString(g, GIOI_THIEU_2, xTam, yChu + 13, Font.CENTER);
+                f.drawString(g, f.getWidth(GIOI_THIEU_2) > wP - 10 ? GIOI_THIEU_2_NGAN : GIOI_THIEU_2, xTam, yChu + 13, Font.CENTER);
             }
         } catch (Throwable e) {
             // font chua nap

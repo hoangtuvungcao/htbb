@@ -41,7 +41,7 @@ export interface LoaiDex {
   pet: { idItem: number, ten: string, cap: number, trung: boolean, shiny: boolean }[]
   npc: { ten: string, suKien: boolean }[]
 }
-export interface MapQuai { id: number, ten: string, dex: number[], capThap: number, capCao: number }
+export interface MapQuai { id: number, ten: string, vung: string, dex: number[], capThap: number, capCao: number }
 export interface PokedexData {
   he: HeInfo[]
   /** khacChinhXac[congKich][phongThu] = 200 | 100 | 50 | 0 (chuẩn Gen 6+). */
@@ -59,6 +59,8 @@ export interface PokedexData {
   vung: string[]
   huongDanGame: string[]
   map: MapQuai[]
+  /** Vùng Hoenn (năm 2): cấp nhân vật tối thiểu để qua cổng, số bản đồ. */
+  hoenn: { capVao: number, soBanDo: number }
   loai: LoaiDex[]
 }
 
@@ -153,9 +155,4 @@ export function bangPhongThu(he: readonly number[]): { heSo: number, chinhXac: n
     nhom.set(g, n)
   }
   return [...nhom.entries()].sort((a, b) => b[0] - a[0]).map(([heSo, v]) => ({ heSo, ...v }))
-}
-
-/** Bỏ dấu tiếng Việt để tìm kiếm. */
-export function boDau(s: string): string {
-  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
 }

@@ -1,10 +1,10 @@
 #!/bin/sh
 # Ký APK phát hành Huyền Thoại Bảo Bối (Pokémon) bằng zipalign + apksigner, khóa nằm NGOÀI repo.
 #
-#   KIEU=release BAN=2 MAY_CHU=host:cong sh android/build-pokemon.sh      (không đặt KEY_DIR -> APK chưa ký)
+#   KIEU=release BAN=2 MAY_CHU=host:cong sh client_apk/build-pokemon.sh      (không đặt KEY_DIR -> APK chưa ký)
 #   KEY_DIR=~/htbb-khoa HTBB_KEYSTORE=htbb.jks HTBB_KEY_ALIAS=htbb \
-#   HTBB_KS_PASS=... [HTBB_KEY_PASS=...] sh android/ky-ban-phat-hanh.sh android/out/HTBB-android-2.apk
-#       -> android/out/HTBB-android-2-ky.apk (hoặc tham số thứ 2)
+#   HTBB_KS_PASS=... [HTBB_KEY_PASS=...] sh client_apk/ky-ban-phat-hanh.sh client_apk/out/HTBB-android-2.apk
+#       -> client_apk/out/HTBB-android-2-ky.apk (hoặc tham số thứ 2)
 #
 # Biến môi trường (BẮT BUỘC, thiếu là dừng):
 #   KEY_DIR          thư mục chứa keystore, PHẢI nằm ngoài repo git (script từ chối nếu nằm trong repo)
@@ -24,7 +24,7 @@ set -e
 loi() { echo "LOI: $*" >&2; exit 1; }
 
 VAO=$1
-[ -n "$VAO" ] || loi "dung: sh android/ky-ban-phat-hanh.sh <apk chua ky> [apk ra]"
+[ -n "$VAO" ] || loi "dung: sh client_apk/ky-ban-phat-hanh.sh <apk chua ky> [apk ra]"
 [ -f "$VAO" ] || loi "khong thay APK: $VAO"
 RA=${2:-"${VAO%.apk}-ky.apk"}
 

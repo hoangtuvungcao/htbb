@@ -49,10 +49,16 @@ public final class ExpLauDai {
                 if (heLech <= 0) {
                     continue;
                 }
+                final HoSoLauDai hc = LauDaiNhanVat.lay(c);
+                final long msTruoc = hc == null ? 0L : hc.nlMsDung;
                 final int nl = LauDaiNhanVat.nangLuong(c);
-                final int x = CapDoLauDai.expHaQuai(raw, heLech, buffPhanTram(c, ds), nl, LauDaiNhanVat.batKip(c), toDoi);
+                // Ve EXP (TangToc): nhan SAU nang luong - ve dung luc met chi duoc 20%/5% x he so ve. Chi EXP.
+                final int x = HoiSinhGame.apMetExp(c, com.htbb.pokemon.TangToc.nhanVe(
+                        CapDoLauDai.expHaQuai(raw, heLech, buffPhanTram(c, ds), nl, LauDaiNhanVat.batKip(c), toDoi),
+                        TangTocGame.heSoVe(c, hc, msTruoc))); // Met moi (ve Trung tam sau khi guc): -X% EXP
                 if (x > 0) {
-                    Map.addXPForChar(c, (long) x, false, pos);
+                    // nhanExpThu = 1 tren may that (chi may thu + -Dhtbb.thu.nhanExp, xem DongHo)
+                    Map.addXPForChar(c, (long) x * com.htbb.pokemon.DongHo.nhanExpThu(), false, pos);
                 }
             }
         } catch (final Exception e) {
@@ -92,18 +98,23 @@ public final class ExpLauDai {
     static int buffPhanTram(final Char c, final List<Char> doi) {
         int b = 0;
         try {
+            // Gioi han chi so: nguon tu TRANG BI / pet / thoi trang / cai trang / do giu gop rieng, tran +30%
+            // (ChiSoTrangBiGame.expTrangBi), khong cong don qua tran. Nguon su kien / ve / doi giu nguyen.
+            int tb = 0;
             if (c.petUsing != null) {
-                b += c.petUsing.getPcUpExp();
+                tb += c.petUsing.getPcUpExp();
             }
             if (c.wModel != null && c.wModel.CanhModel != null) {
-                b += c.wModel.CanhModel.otherAtt[50];
+                tb += c.wModel.CanhModel.otherAtt[50];
             }
             if (c.wModel != null && c.wModel.matNa != null) {
-                b += c.wModel.matNa.otherAtt[50];
+                tb += c.wModel.matNa.otherAtt[50];
             }
             if (c.isBatGioi()) {
-                b += c.getLevelCaiTrang();
+                tb += c.getLevelCaiTrang();
             }
+            tb += VatPhamDungLauDai.congExp(c); // Trung may man (do giu)
+            b += ChiSoTrangBiGame.expTrangBi(tb);
             if (c.idCuiDot > -1 && c.idCuiDot < 3) {
                 b += new int[]{5, 10, 20}[c.idCuiDot];
             }
@@ -122,8 +133,7 @@ public final class ExpLauDai {
             } else if (x2 >= 2) {
                 b += 100;
             }
-            b += ChiemThanhLauDai.buffExp(c);
-            b += VatPhamDungLauDai.congExp(c); // Trung may man
+            b += ChiemGymLauDai.buffExp(c);
             final HoSoLauDai h = LauDaiNhanVat.lay(c);
             if (h != null && h.thayId > 0) {
                 for (final Char t : doi) {

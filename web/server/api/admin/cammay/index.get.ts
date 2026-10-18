@@ -3,7 +3,7 @@
  * ?q= mã máy HOẶC tên tài khoản — một ô tìm cho cả hai chiều.
  */
 export default defineAdminHandler(async (event) => {
-  const qs = str(getQuery(event).q)
+  const qs = str(getQuery(event).q).slice(0, 64)
   const ra = {
     q: qs,
     coBang: true,
@@ -43,8 +43,9 @@ export default defineAdminHandler(async (event) => {
       ra.dangBiCam = (await qv(g, `SELECT 1 FROM ${TK_BANG_CAM_MAY} WHERE ma_may = ? LIMIT 1`, [qs])) !== null
     }
   } catch (e: any) {
+    console.error('[cammay] doc', e?.code ?? e)
     ra.coBang = false
-    ra.loiDoc = String(e?.message ?? e)
+    ra.loiDoc = 'Không đọc được bảng tob_may_dang_nhap / tob_cam_may (server game tạo khi khởi động; xem log máy chủ web).'
   }
   return ra
 })

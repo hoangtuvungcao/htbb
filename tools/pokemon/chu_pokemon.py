@@ -13,8 +13,8 @@ import os
 import re
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-F_CHU = os.path.join(GOC, "src", "com", "htbb", "pokemon", "ChuPokemon.java")
-F_MAP = os.path.join(GOC, "src", "com", "htbb", "pokemon", "TenMapPokemon.java")
+F_CHU = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "ChuPokemon.java")
+F_MAP = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "TenMapPokemon.java")
 F_DUMP = os.path.join(GOC, "sql", "gamedb7_clean.sql")
 
 PHAN_BIET = "="

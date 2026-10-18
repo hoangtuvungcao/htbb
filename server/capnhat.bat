@@ -47,17 +47,17 @@ timeout /t 3 /nobreak >nul
 :COPY
 echo.
 echo Dang thay jar...
-if exist "KPAH2_patched.jar" (
-  copy /Y "KPAH2_patched.jar" "KPAH2_patched_backup_truoc_capnhat.jar" >nul
-  echo   Ban cu luu tai: KPAH2_patched_backup_truoc_capnhat.jar
+if exist "htbb-server.jar" (
+  copy /Y "htbb-server.jar" "htbb-server_backup_truoc_capnhat.jar" >nul
+  echo   Ban cu luu tai: htbb-server_backup_truoc_capnhat.jar
 )
-copy /Y "HTBB_NEW.jar" "KPAH2_patched.jar" >nul
+copy /Y "HTBB_NEW.jar" "htbb-server.jar" >nul
 if errorlevel 1 (
   echo [LOI] Copy that bai, file co the dang bi khoa.
   pause
   exit /b 1
 )
-echo   Da cap nhat KPAH2_patched.jar
+echo   Da cap nhat htbb-server.jar
 
 echo.
 echo ============================================================

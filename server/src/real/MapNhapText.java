@@ -183,7 +183,7 @@ class MapNhapText {
                 }
 
                 if (!Database.instance.checkCanInputCodeLixi(player.charname)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Mỗi nhân vật chỉ được dùng 1 code.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Mỗi Pokémon chỉ được dùng 1 code.", ""));
                     return;
                 }
 
@@ -226,7 +226,7 @@ class MapNhapText {
                 }
 
                 if (player.idClan != p.idClan) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể phát lương cho người thuộc bang hội khác.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể phát lương cho người thuộc đội khác.", ""));
                     return;
                 }
 
@@ -278,10 +278,10 @@ class MapNhapText {
                         + " , "
                         + clanInfo.getDCHPhatLuong()
                         + ", phat nhanh";
-                p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được lương bang hội là " + player.salaryClan + " xu", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được lương đội là " + player.salaryClan + " xu", ""));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 Database.instance.saveOrtherLog("", p.charname, info, "salaryCN");
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận được " + player.salaryClan + " xu lương bang hội.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận được " + player.salaryClan + " xu lương đội.", ""));
                 clanInfo.updateNewClandata2DB();
                 player.salaryClan = 0L;
             } else if (idActor == -32049) {
@@ -310,7 +310,7 @@ class MapNhapText {
                 }
 
                 if (money > cl.money) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bang không đủ tiền.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Đội không đủ tiền.", ""));
                     return;
                 }
 
@@ -666,7 +666,7 @@ class MapNhapText {
 
                 p = CharManager.instance.getCharByCharName(text);
                 if (p != null && p.idClan != player.idClan) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể phong chức cho người trong cùng bang.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể phong chức cho người trong cùng đội.", ""));
                     return;
                 }
             }
@@ -711,7 +711,7 @@ class MapNhapText {
 
                 p = CharManager.instance.getCharByCharName(text.trim().toLowerCase());
                 if (p != null && p.isCharNam()) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể tặng hoa cho nhân vật nữ.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể tặng hoa cho Pokémon nữ.", ""));
                     return;
                 }
 
@@ -938,7 +938,7 @@ class MapNhapText {
                 }
 
                 if (player.myCountry != p.myCountry) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " và bạn không cùng lãnh thổ.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " và bạn không cùng vùng.", ""));
                     return;
                 }
 
@@ -955,7 +955,7 @@ class MapNhapText {
                 }
 
                 if (player.myCountry != p.myCountry) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " và bạn không cùng lãnh thổ.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " và bạn không cùng vùng.", ""));
                     return;
                 }
 
@@ -984,7 +984,7 @@ class MapNhapText {
                 }
 
                 if (player.myCountry != p.myCountry) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " và bạn không cùng lãnh thổ.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " và bạn không cùng vùng.", ""));
                     return;
                 }
 
@@ -1038,7 +1038,7 @@ class MapNhapText {
 
                 NewClan clan = NewClan.getClan(player.idClan);
                 if (!clan.master.toLowerCase().equals(player.charname.toLowerCase())) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể đặt thuế.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể đặt thuế.", ""));
                     return;
                 }
 
@@ -1060,11 +1060,11 @@ class MapNhapText {
                 }
 
                 if (p.idClan != player.idClan || p.idClan == -1 || player.idClan == -1) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " không có trong bang của bạn", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " không có trong đội của bạn", ""));
                     return;
                 }
 
-                if (MapBangHoi.doSetTitleClan(map, player, p, true)) {
+                if (MapDoi.doSetTitleClan(map, player, p, true)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage(text + " đã được phong chức", ""));
                     p.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã được phong chức làm " + NewClan.titlesClan[p.rankClan], ""));
                 }
@@ -1076,11 +1076,11 @@ class MapNhapText {
                 }
 
                 if (p.idClan != player.idClan) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " không có trong bang của bạn", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(text + " không có trong đội của bạn", ""));
                     return;
                 }
 
-                if (MapBangHoi.doSetTitleClan(map, player, p, false)) {
+                if (MapDoi.doSetTitleClan(map, player, p, false)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage(text + " đã bị giáng chức", ""));
                     p.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã bị giáng chức thành " + NewClan.titlesClan[p.rankClan], ""));
                 }
@@ -1108,7 +1108,7 @@ class MapNhapText {
                 }
 
                 if (moneyxx > clx.money) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bang không đủ tiền.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Đội không đủ tiền.", ""));
                     return;
                 }
 
@@ -1148,7 +1148,7 @@ class MapNhapText {
                 }
 
                 if (player.idClan != p.idClan) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể phát lương cho người thuộc bang hội khác.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể phát lương cho người thuộc đội khác.", ""));
                     return;
                 }
 
@@ -1198,10 +1198,10 @@ class MapNhapText {
                         + player.pointCongHienClan
                         + " , "
                         + clanInfox.getDCHPhatLuong();
-                p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được lương bang hội là " + player.salaryClan + " xu", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được lương đội là " + player.salaryClan + " xu", ""));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 Database.instance.saveOrtherLog("", p.charname, info, "salaryC");
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận được " + player.salaryClan + " xu lương bang hội.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận được " + player.salaryClan + " xu lương đội.", ""));
                 clanInfox.updateNewClandata2DB();
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 player.salaryClan = 0L;
@@ -1224,7 +1224,7 @@ class MapNhapText {
                 NewClan clanInfoxx = Map.getClaninfoByID(player.idClan);
                 Vector<String> sub = clanInfoxx.getMemberReceiveMoney();
                 if (sub.size() <= 0) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại không có thành viên nào trong bang đang chơi game", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại không có thành viên nào trong đội đang chơi game", ""));
                     return;
                 }
 
@@ -1248,7 +1248,7 @@ class MapNhapText {
                     Char pp = CharManager.instance.getCharByCharName((String) sub.get(ix));
                     if (pp != null && pp.idClan == player.idClan) {
                         pp.addXu((long) Integer.parseInt(text), "map 34");
-                        pp.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận được lương bang hội là " + moneyxxx + " xu", ""));
+                        pp.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận được lương đội là " + moneyxxx + " xu", ""));
                         pp.sendMessage(MessageCreator.createCharInventoryMessage(pp, 0));
                         Database.instance
                                 .saveLogClan(
@@ -1275,7 +1275,7 @@ class MapNhapText {
             } else if (idActor == player.id) {
                 if (idMenu == 0) {
                     if (Map.getTown[player.inCountry]) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tặng hoa trong thời gian chiếm thành.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tặng hoa trong thời gian chiếm Gym.", ""));
                         return;
                     }
 
@@ -1285,6 +1285,10 @@ class MapNhapText {
                     }
 
                     p = CharManager.instance.getCharByCharName(text.trim().toLowerCase());
+                    // thanh vien: tang hoa / qua (nguoi tang "gui_thu", nguoi nhan "nhan_tang").
+                    if (p != null && com.htbb.pokemon.ThanhVien.chanHaiNguoi(player, p, "gui_thu", "nhan_tang")) {
+                        return;
+                    }
                     if (p != null && player.idPotionUsed > 49 && player.idPotionUsed < 62) {
                         if (player.potions[player.idPotionUsed] <= 0) {
                             return;
@@ -1353,8 +1357,18 @@ class MapNhapText {
                     if (player.potions[100] <= 0) {
                         return;
                     }
+                    // thanh vien: chat the gioi (loa) can Thanh vien HTBB.
+                    if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "chat_the_gioi")) {
+                        return;
+                    }
                     // Co loa that thi van phai gian cach, vi loa mua duoc hang loat.
                     if (System.currentTimeMillis() - player.timeDungLoa < Char.LOA_COOLDOWN_MS) {
+                        return;
+                    }
+                    // Chong spam kenh the gioi: nhip moi nguoi (sv.spam.chat.theGioi), trung lap,
+                    // quang cao, va tran CHUNG toan may chu (sv.spam.theGioiToanServer). Bi chan
+                    // thi KHONG tru loa.
+                    if (!MapXaHoi.kiemSpamChat(player, com.htbb.chongspam.ChongSpam.Kenh.THE_GIOI, text)) {
                         return;
                     }
 

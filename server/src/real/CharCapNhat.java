@@ -142,7 +142,7 @@ class CharCapNhat {
     static void buffAttackSkill(Char self, final Monster mt, final int d) {
         final Random r = java.util.concurrent.ThreadLocalRandom.current(); // GD2 1.1: khong reseed theo ms
         try {
-            int damPhan = d * self.attNguHanh[4] / 100;
+            int damPhan = d * ChiSoTrangBiGame.phanDonPhanTram(self.attNguHanh[4], false) / 100; // tran 15% khi bat
             if (self.charClass == 0 && self.arrayBuff[4] != -1) {
                 final int n = r.nextInt(100);
                 if (n < 70) {
@@ -430,7 +430,7 @@ class CharCapNhat {
                                 } catch (final Exception ex) {
                                 }
                             } else if (!p1.exit) {
-                                if (!self.nearChars.contains(p1.id)) {
+                                if (!UtilHTBB.coId(self.nearChars, p1.id)) {
                                     if (self.nearChars.size() - self.nNpc < self.nNearchar || p1.pk != 0 || p1.isKiller || self.checkInParty(p1) || p1.isBot != -1 || self.mapID == Map.idMapDautruong || self.map.isMapChienTruongMoba() || (self.mapID == Map.idMapTown && (Map.nwar[self.myCountry] || Map.getTown[self.myCountry]))) {
                                         final boolean near2 = self.near(p1, self.rangeAddMonster[0]);
                                         if ((near2 && p1.inCountry == self.inCountry) || (self.isPublicMap() && near2) || p1.isBot != -1) {
@@ -775,7 +775,7 @@ class CharCapNhat {
                 }
                 final int buff = bid;
                 if (buff == -1) {
-                    final Message i = MessageCreator.createServerAlertMessage("Nhân vật bạn chọn không có kỹ năng này.", "");
+                    final Message i = MessageCreator.createServerAlertMessage("Pokémon bạn chọn không có kỹ năng này.", "");
                     self.sendMessage(i);
                     i.cleanup();
                     return;
@@ -1064,10 +1064,10 @@ class CharCapNhat {
         String tb = ra[0];
         if (kq == NangCapLauDaiGame.THIEU) {
             dung = true;
-            tb = "Dừng luyện tự động: " + ra[0] + " Hiện tại +" + item.plus;
+            tb = "Dừng luyện tự động: " + ra[0] + " Hiện tại: +" + item.plus + ".";
         } else if (item.plus >= self.plus || kq == NangCapLauDaiGame.DA_TOI_DA) {
             dung = true;
-            tb = "Hoàn thành +" + item.plus;
+            tb = "Hoàn thành: +" + item.plus + ".";
         }
         final Message m = new Message(-69);
         try {

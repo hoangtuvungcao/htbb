@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
  *   - xuong / trai / phai : THAN nguoi ve truoc -> con thu (tren0 roi tren1) -> DAU nguoi sau
  *   - len                 : con thu -> than -> dau
  * Nen o ba huong dau, bat cu manh thu nao nam trong cot nguoi la ve DE LEN nguoi (do la ly
- * do phai doi soi duoi cua Kim Cang Long ra mep than, xem docs/skin-linh-thu.md muc 9).
+ * do phai doi soi duoi cua Kim Cang Long ra mep than, xem docs/skin-thu-cuoi.md muc 9).
  *
  * Huong PHAI: client lat guong khung trai (DataSkillEff.paintTopHorse voi rotale = 2 lam
  * dx' = -(dx + w) va dao co lat), o day lam y het. Nguoi: chan tai (x + DX, y + DY) lay tu
@@ -37,7 +37,7 @@ import javax.imageio.ImageIO;
  *     anh:dx  : dich rieng vai anh con, vd "2,5,10:20" (dung de tach mot bo phan ra)
  *
  * Ung so nao roi thi ghi vao tep bang tools/DichSkinThu, con dong bang dx/dy thi sua
- * Char.dx_horse_tool / dy_horse_tool va SkinLinhThu.INDEX_DXY.
+ * Char.dx_horse_tool / dy_horse_tool va SkinThuCuoi.INDEX_DXY.
  *
  *   javac -encoding UTF-8 -d build/tools-classes tools/ThuChoNgoiSkinThu.java
  *   java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-23,-15,-15" "0,0,0" 0 5

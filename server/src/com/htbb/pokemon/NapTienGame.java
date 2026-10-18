@@ -38,7 +38,7 @@ public final class NapTienGame implements Runnable {
     public static final int NPC_CHO_DONG = -547;
     public static final int NPC_CHO_MUA = -548;
     public static final int NPC_RAO_GIA = -549;
-    public static final String TEN_MUC = "Cửa hàng & Nạp";
+    public static final String TEN_MUC = "Cửa hàng và nạp";
 
     /** Vong quet: 15 giay (cong luong sau khi web xac nhan, nguoi choi doi toi da ~15 giay). */
     public static final long CHU_KY_MS = 15000L;
@@ -111,8 +111,11 @@ public final class NapTienGame implements Runnable {
             }
         }
         // 2. Hoan tien sau khi da cong -> no cua tai khoan (thu dan khi online).
-        for (final NapTienDb.Don d : NapTienDb.donChoThuHoi(100)) {
-            thuHoiDon(d);
+        //    Cong tac nap.hoan_tien.tu_dong (cau hinh trung tam, ap dung <= 10 giay): 0 = don dung cho, xu ly tay.
+        if (com.htbb.cauhinh.CongTac.hoanTienTuDong()) {
+            for (final NapTienDb.Don d : NapTienDb.donChoThuHoi(100)) {
+                thuHoiDon(d);
+            }
         }
         // 3. Thu no tu nhan vat online.
         final Map<Integer, Long> no = NapTienDb.taiKhoanDangNo();
@@ -180,7 +183,8 @@ public final class NapTienGame implements Runnable {
      * @return so luong thuc cong vao nhan vat (0 neu don da duoc xu ly o noi khac).
      */
     public static int congDon(final Char p, final NapTienDb.Don d) throws SQLException {
-        if (!NapTien.bat() || p == null || d == null) {
+        if (!NapTien.bat() || p == null || d == null || NapTienLogic.LOAI_THANH_VIEN.equals(d.loai)) {
+            // thanh vien: do web cap thang theo tai khoan, game khong cong (va khong cham don).
             return 0;
         }
         final long bayGioMs = System.currentTimeMillis();
@@ -211,7 +215,7 @@ public final class NapTienGame implements Runnable {
             final long[] tn = NapTienLogic.congCoNo(NapTienDb.noLuong(d.userId), d.luong);
             if (tn[0] > 0L && NapTienDb.truNo(d.userId, tn[0])) {
                 NapTienDb.ghiSoCai(d.userId, p.charDBID, "tra_no", -tn[0], 0, d.maDon, "trano:" + d.maDon, "tra no thu hoi");
-                bao.append("Đã trừ ").append(tn[0]).append(" lượng nợ (hoàn tiền trước đó). ");
+                bao.append("Đã trừ ").append(tn[0]).append(" lượng để trả nợ thu hồi (giao dịch nạp trước đó đã được hoàn tiền). ");
             } else {
                 tn[1] = d.luong;
             }
@@ -229,11 +233,11 @@ public final class NapTienGame implements Runnable {
                 NapTienDb.doiHanThe(p.charDBID, d.userId, hc, hm);
             }
             bao.append("Kích hoạt Thẻ tháng 30 ngày: nhận ").append(NapTienLogic.THE_THANG_LUONG_NGAY)
-                    .append(" lượng mỗi ngày ở NPC Tổng Quản > ").append(TEN_MUC).append('.');
+                    .append(" lượng mỗi ngày ở NPC Tổng Quản, mục ").append(TEN_MUC).append('.');
         } else if (NapTienLogic.LOAI_VE_MUA.equals(d.loai)) {
             final int mua = NapTienLogic.muaVe(LauDai.ngayHienTai());
             NapTienDb.datCaoCap(p.charDBID, mua, 1);
-            bao.append("Đã mở Vé mùa cao cấp (mùa ").append(mua + 1).append("). Nhận thưởng ở NPC Tổng Quản > ")
+            bao.append("Đã mở Vé mùa cao cấp (mùa ").append(mua + 1).append("). Nhận thưởng ở NPC Tổng Quản, mục ")
                     .append(TEN_MUC).append('.');
         }
         // Thuong lan dau: CHI trang tri, mot lan / tai khoan.
@@ -398,19 +402,23 @@ public final class NapTienGame implements Runnable {
                 } else if (t.startsWith("TT:")) {
                     NapTienDb.themSoHuu(p.charDBID, t.substring(3), "ve_mua", false, 0L);
                     tt++;
+                } else if (t.startsWith("TG:")) {
+                    final String[] g = t.split(":");
+                    real.TangTocGame.thuongKhoa(p, TangToc.loaiCuaMa(g[1]), Integer.parseInt(g[2]), "ve mua bac " + b);
+                    tt++;
                 }
             }
         }
         if (da == 0 && tt == 0) {
             return "Vé mùa " + (mua + 1) + ": bậc " + bac + "/" + NapTienLogic.VE_MUA_SO_BAC + " (" + v[1] + " điểm). Chưa có thưởng mới."
-                    + (caoCap ? "" : " Track cao cấp: mua Vé mùa trên website.");
+                    + (caoCap ? "" : " Muốn nhận thêm thưởng cao cấp, hãy mua Vé mùa cao cấp trên website.");
         }
         try {
             Database.instance.saveCharAuto(p);
         } catch (final Exception ignored) {
         }
         capNhatTui(p);
-        kq.append("Vé mùa: nhận ").append(da).append(" đá nâng cấp (khoá), ").append(tt).append(" món trang trí.");
+        kq.append("Vé mùa: nhận ").append(da).append(" đá nâng cấp (khoá), ").append(tt).append(" món trang trí / tăng tốc (khoá).");
         return kq.toString();
     }
 
@@ -421,7 +429,7 @@ public final class NapTienGame implements Runnable {
         final Object[] t = NapTienDb.theThang(p.charDBID);
         final long han = (Long) t[0];
         if (!NapTienLogic.theConHan(han, bayGio)) {
-            return "Bạn chưa có Thẻ tháng (mua trên website, 50.000 đ / 30 ngày).";
+            return "Bạn chưa có Thẻ tháng. Thẻ tháng (30 ngày) được bán trên website, mục Nạp tiền.";
         }
         final String homNay = NapTienDb.homNay();
         if (!NapTienLogic.coTheNhanNgay(han, bayGio, (String) t[1], homNay) || !NapTienDb.nhanNgay(p.charDBID, homNay, bayGio)) {
@@ -445,7 +453,7 @@ public final class NapTienGame implements Runnable {
         } catch (final Exception ignored) {
         }
         capNhatTui(p);
-        return "Thẻ tháng: +" + tn[1] + " lượng" + (tn[0] > 0 ? " (trừ nợ " + tn[0] + ")" : "") + ". Còn "
+        return "Thẻ tháng: +" + tn[1] + " lượng" + (tn[0] > 0 ? " (đã trừ " + tn[0] + " lượng nợ)" : "") + ". Còn "
                 + soNgayCon(han, bayGio) + " ngày.";
     }
 
@@ -592,7 +600,7 @@ public final class NapTienGame implements Runnable {
                 return null;
             }
             final int duoc = congDiemVeMua(p, NapTienLogic.THE_THANG_DIEM_VE_MUA_LUOT_THEM, "ham_nguc_the_thang");
-            return "Lượt Hầm ngục thêm (Thẻ tháng): +" + duoc + " điểm Vé mùa.";
+            return "Lượt Hầm ngục bí ẩn thêm (Thẻ tháng): +" + duoc + " điểm Vé mùa.";
         } catch (final SQLException e) {
             return null;
         }
@@ -634,12 +642,12 @@ public final class NapTienGame implements Runnable {
             final long han = (Long) NapTienDb.theThang(p.charDBID)[0];
             final long bayGio = System.currentTimeMillis();
             if (NapTienLogic.theConHan(han, bayGio)) {
-                the = "Thẻ tháng: nhận " + NapTienLogic.THE_THANG_LUONG_NGAY + " lượng hôm nay (còn " + soNgayCon(han, bayGio) + " ngày)";
+                the = "Thẻ tháng: nhận lượng";
             }
             final int mua = NapTienLogic.muaVe(LauDai.ngayHienTai());
             final Object[] v = NapTienDb.veMua(p.charDBID, mua);
             ve = "Vé mùa " + (mua + 1) + ((Integer) v[0] == 1 ? " (cao cấp)" : "") + ": bậc "
-                    + NapTienLogic.bacTuDiem((Integer) v[1]) + "/" + NapTienLogic.VE_MUA_SO_BAC + " - nhận thưởng";
+                    + NapTienLogic.bacTuDiem((Integer) v[1]) + "/" + NapTienLogic.VE_MUA_SO_BAC;
             no = NapTienDb.noLuong(p.userID);
         } catch (final SQLException e) {
             bao(p, "Cửa hàng tạm thời gián đoạn, vui lòng thử lại sau.");
@@ -647,7 +655,7 @@ public final class NapTienGame implements Runnable {
         }
         final String[] menu = {
             "Lượng: " + p.getLuong() + (no > 0 ? " (nợ thu hồi " + no + ")" : ""),
-            "Cửa hàng lượng (trang trí, tiện ích)",
+            "Cửa hàng lượng",
             the,
             ve,
             "Tủ đồ trang trí",
@@ -660,8 +668,9 @@ public final class NapTienGame implements Runnable {
     static void chonGoc(final Char p, final int chon) throws SQLException {
         switch (chon) {
             case 0:
-                bao(p, "Lượng chỉ mua được trang trí và tiện ích (không bán sức mạnh). Mọi lượng tiêu đều bị huỷ, không đổi"
-                        + " ra xu. Nạp trên website, tỷ giá cố định 10 lượng / 1.000 đ.");
+                bao(p, "Lượng chỉ dùng để mua đồ trang trí và tiện ích (không bán sức mạnh). Lượng đã tiêu sẽ mất hẳn, không"
+                        + " quy đổi ra xu. Nạp trên website với tỷ giá cố định " + NapTienLogic.LUONG_MOI_1000_VND
+                        + " lượng cho mỗi 1.000 đ.");
                 return;
             case 1:
                 moNhom(p);
@@ -679,12 +688,18 @@ public final class NapTienGame implements Runnable {
                 moCho(p);
                 return;
             case 6:
-                bao(p, "Nạp trên website (mục Nạp tiền): chọn gói, chọn nhân vật nhận, chuyển khoản VietQR đúng nội dung."
-                        + " Lượng/Thẻ tháng/Vé mùa tự vào nhân vật trong ~15 giây khi đang online. Trần nạp: "
-                        + (NapTienLogic.TRAN_TUAN_VND / 1000) + "k/tuần, " + (NapTienLogic.TRAN_THANG_VND / 1000) + "k/tháng.");
+                bao(p, "Nạp trên website (mục Nạp tiền): chọn gói, chọn Pokémon nhận, rồi chuyển khoản qua VietQR với đúng nội dung"
+                        + " chuyển khoản. Lượng, Thẻ tháng và Vé mùa được cộng tự động vào Pokémon trong khoảng 15 giây"
+                        + " khi đang online. Hạn mức nạp mặc định: " + soTien(NapTienLogic.TRAN_TUAN_VND) + " đ/tuần, "
+                        + soTien(NapTienLogic.TRAN_THANG_VND) + " đ/tháng.");
                 return;
             default:
         }
+    }
+
+    /** So tien kieu Viet: 1000000 -> "1.000.000". */
+    static String soTien(final long v) {
+        return String.format(java.util.Locale.ROOT, "%,d", v).replace(',', '.');
     }
 
     // ================================================================== cua hang
@@ -780,9 +795,20 @@ public final class NapTienGame implements Runnable {
         if (NapTienDb.noLuong(p.userID) > 0L) {
             return "Tài khoản đang có khoản thu hồi nạp chưa trả, tạm khoá mua bằng lượng.";
         }
-        final long[] dem = NapTienDb.demMua(p.charDBID, m.ma);
+        final boolean tangToc = NapTienLogic.TRAO_TANG_TOC.equals(m.trao);
+        if (tangToc && !com.htbb.cauhinh.CongTac.banTangToc()) {
+            // Cong tac nap.tang_toc.bat (trang "Cau hinh he thong"): tam ngung ban ban cao cap.
+            return "Vật phẩm tăng tốc đang tạm ngừng bán. Vui lòng quay lại sau.";
+        }
+        // Tang toc: gioi_han tinh theo TUAN (dem rieng moi tuan: ma@tuan), tui can 1 o trong.
+        final String maDem = tangToc ? m.ma + "@" + NhiemVuLauDai.tuan(System.currentTimeMillis()) : m.ma;
+        final long[] dem = NapTienDb.demMua(p.charDBID, maDem);
         if (m.gioiHan > 0 && dem[0] >= m.gioiHan) {
-            return "Bạn đã mua tối đa " + m.gioiHan + " lần món này.";
+            return tangToc ? "Tuần này đã mua tối đa " + m.gioiHan + " lần món này (mở lại thứ Hai)."
+                    : "Bạn đã mua tối đa " + m.gioiHan + " lần món này.";
+        }
+        if (tangToc && (!LauDai.bat() || p.countSlotInventory() < 1)) {
+            return "Hành trang cần 1 ô trống.";
         }
         if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao) && p.maxBag >= Char.MAX_BAG_LIMIT) {
             return "Hành trang đã mở rộng tối đa.";
@@ -792,11 +818,11 @@ public final class NapTienGame implements Runnable {
             return "Tủ đồ trang trí đã đầy.";
         }
         if (!p.truLuongNeuDu(m.giaLuong)) {
-            return "Không đủ lượng (cần " + m.giaLuong + ").";
+            return "Không đủ lượng (cần " + m.giaLuong + " lượng).";
         }
-        if (!NapTienDb.ghiMua(p.charDBID, m.ma, dem[0], System.currentTimeMillis())) {
+        if (!NapTienDb.ghiMua(p.charDBID, maDem, dem[0], System.currentTimeMillis())) {
             p.addLuong(m.giaLuong); // bam hai lan cung luc: hoan lan sau
-            return "Thao tác quá nhanh, thử lại.";
+            return "Thao tác quá nhanh, vui lòng thử lại.";
         }
         try {
             if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao)) {
@@ -808,13 +834,21 @@ public final class NapTienGame implements Runnable {
                     p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                 } catch (final Exception ignored) {
                 }
+            } else if (tangToc) {
+                // Ban CAO CAP vao tui (khoa, khong giao dich). Dung chung tran diem ngay/tuan voi ban khoa.
+                final int loai = TangToc.loaiCuaMa(m.ma);
+                if (loai < 0 || real.Map.itemTemplates.get(5).get(Integer.valueOf(TangToc.ID_CAO_CAP[loai])) == null) {
+                    throw new IllegalStateException("chua co vat pham tang toc " + m.ma);
+                }
+                Char.createItemSoLuong(TangToc.ID_CAO_CAP[loai], 1, p);
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             } else {
                 final long han = m.hanNgay > 0 ? System.currentTimeMillis() + m.hanNgay * 86400000L : 0L;
                 NapTienDb.themSoHuu(p.charDBID, m.ma, "mua", m.giaoDichDuoc, han);
             }
         } catch (final Exception e) {
             p.addLuong(m.giaLuong);
-            NapTienDb.hoanMua(p.charDBID, m.ma);
+            NapTienDb.hoanMua(p.charDBID, maDem);
             return "Mua thất bại, đã hoàn " + m.giaLuong + " lượng.";
         }
         NapTienDb.ghiSoCai(p.userID, p.charDBID, "tieu", -m.giaLuong, 0, "",
@@ -825,7 +859,9 @@ public final class NapTienGame implements Runnable {
         }
         capNhatTui(p);
         return "Đã mua " + m.ten + " (-" + m.giaLuong + " lượng)."
-                + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "");
+                + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "")
+                + (tangToc ? " Vật phẩm đã vào hành trang; dùng chung giới hạn " + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, "
+                        + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "");
     }
 
     // ================================================================== tu do
@@ -850,7 +886,7 @@ public final class NapTienGame implements Runnable {
         }
         final List<String> ten = new ArrayList<String>();
         for (final NapTienDb.SoHuu s : ds) {
-            ten.add((s.dangDung ? "[Đang dùng] " : "") + (s.dangRao ? "[Đang rao] " : "") + tenMa(s.ma)
+            ten.add((s.dangDung ? "(Đang dùng) " : "") + (s.dangRao ? "(Đang rao) " : "") + tenMa(s.ma)
                     + (s.hetHanMs > 0 ? " (còn " + soNgayCon(s.hetHanMs, System.currentTimeMillis()) + " ngày)" : ""));
         }
         NGU_CANH.put(p.charDBID, ds);
@@ -912,6 +948,10 @@ public final class NapTienGame implements Runnable {
     }
 
     static void chonGiaRao(final Char p, final int chon) throws SQLException {
+        if (ThanhVien.chanVaBao(p, "cho")) { // thanh vien
+            NGU_CANH.remove(p.charDBID);
+            return;
+        }
         final Object o = NGU_CANH.remove(p.charDBID);
         if (!(o instanceof Object[])) {
             return;
@@ -929,7 +969,7 @@ public final class NapTienGame implements Runnable {
             return;
         }
         if (NapTienDb.soDangRao(p.charDBID) >= NapTienLogic.RAO_TOI_DA) {
-            bao(p, "Mỗi nhân vật rao tối đa " + NapTienLogic.RAO_TOI_DA + " món.");
+            bao(p, "Mỗi Pokémon rao tối đa " + NapTienLogic.RAO_TOI_DA + " món.");
             return;
         }
         final long phi = NapTienLogic.phiDang(g);
@@ -1008,6 +1048,10 @@ public final class NapTienGame implements Runnable {
 
     /** Mua tren cho: tru xu nguoi mua TRUOC, chot dong rao, chuyen so huu; nguoi ban nhan xu qua vong quet. */
     static String muaCho(final Char p, final NapTienDb.Rao r) throws SQLException {
+        final String chanTv = ThanhVien.chan(p, "cho"); // thanh vien
+        if (chanTv != null) {
+            return chanTv;
+        }
         if (r.nguoiBan == p.charDBID) {
             return "Không mua được món của chính mình.";
         }

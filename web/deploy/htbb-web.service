@@ -1,0 +1,32 @@
+# /etc/systemd/system/htbb-web.service
+# Website HTBB (Nuxt). Bien moi truong do GitHub Actions ghi vao /etc/htbb-web.env
+# (xem deploy/deploy-web.sh). Apache dung truoc, chuyen tiep ve 127.0.0.1:3000.
+[Unit]
+Description=Website HTBB (Nuxt)
+After=network.target novadb.service
+
+[Service]
+Type=simple
+User=htbb-web
+# Nhom htbb: de doc duoc /opt/htbb/server.ini (chmod 640 htbb:htbb) va file log cua game.
+Group=htbb-web
+SupplementaryGroups=htbb
+# TUONG-THICH-TEN-CU-DONG-SAU: may chua chuyen van con /etc/kpah-web.env; file moi (doc sau) de len.
+EnvironmentFile=-/etc/kpah-web.env
+EnvironmentFile=-/etc/htbb-web.env
+WorkingDirectory=/opt/htbb-web/current
+ExecStart=/usr/bin/node /opt/htbb-web/current/.output/server/index.mjs
+Restart=always
+RestartSec=3
+
+# Cung hoa: web chi can doc /opt/htbb, khong can ghi o dau tren dia.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadOnlyPaths=/opt/htbb
+
+[Install]
+WantedBy=multi-user.target
+# TUONG-THICH-TEN-CU-DONG-SAU: `systemctl ... kpah-web` cu van chay sau khi `systemctl enable` (bo sau 1 ban)
+Alias=kpah-web.service

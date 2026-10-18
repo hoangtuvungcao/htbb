@@ -183,13 +183,13 @@ hàng rào bảo vệ — client luôn có thể gửi gói tin trực tiếp b�
 
 ## 12. Không đổi tên package/class hiện có trong `src/`
 
-`lib/NQSH_5h.jar` chứa hàng trăm class đã biên dịch sẵn cùng package với `src/`,
+`lib/htbb-core.jar` chứa hàng trăm class đã biên dịch sẵn cùng package với `src/`,
 không có mã nguồn. Đổi tên package/class trong `src/` biên dịch sạch nhưng ném
 `NoClassDefFoundError` lúc chạy vì class trong jar gọi ngược theo tên cũ.
 
 **Quy tắc:** Không đổi tên package/class hiện có trong `real`/`data`/`server`/
-`io`/`real/cmd` trừ khi đã xác nhận không có class nào trong `lib/NQSH_5h.jar`
-tham chiếu tới tên cũ (xem `project_kpah_nqsh_jar_khoa_ten_package.md`).
+`io`/`real/cmd` trừ khi đã xác nhận không có class nào trong `lib/htbb-core.jar`
+tham chiếu tới tên cũ (xem `project_htbb_nqsh_jar_khoa_ten_package.md`).
 
 ## 13. SQL mới luôn dùng PreparedStatement
 
@@ -244,7 +244,7 @@ vì vá thêm số liệu.
 - [ ] Nếu tính năng có điều kiện bật/tắt (sự kiện/VIP/level): điều kiện đó có
       được kiểm tra lại ở CHÍNH nơi xử lý lệnh cuối cùng, không chỉ ở tầng menu/UI? (#11)
 - [ ] Không đổi tên package/class có sẵn trong `src/` mà chưa xác nhận
-      `lib/NQSH_5h.jar` không tham chiếu tên cũ? (#12)
+      `lib/htbb-core.jar` không tham chiếu tên cũ? (#12)
 - [ ] Mọi SQL mới dùng PreparedStatement, không nối chuỗi? (#13)
 - [ ] Nếu đây là lần sửa thứ ≥2 cho cùng khu vực trong vài ngày: đã cân nhắc khả
       năng sai loại nguyên nhân (cấu trúc dữ liệu) thay vì tiếp tục vá số liệu? (#14)

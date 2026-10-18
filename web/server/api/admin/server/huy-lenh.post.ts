@@ -5,6 +5,6 @@ export default defineAdminHandler(async (event) => {
   } catch (e: any) {
     throw apiLoi(500, `Không thao tác được (có thể chưa có bảng dieu_khien_server): ${e?.message ?? e}`)
   }
-  await ghiNhatKy(event, 'server_huy_lenh', 'kpah-game', '')
+  await ghiNhatKy(event, 'server_huy_lenh', 'htbb-game', '')
   return { ok: true, message: 'Đã huỷ yêu cầu/lịch hẹn đang chờ xử lý.' }
 })

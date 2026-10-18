@@ -1,10 +1,10 @@
 #!/bin/bash
-# Backup 2 database ra /opt/kpah/backup, giu 7 ngay gan nhat.
+# Backup 2 database ra /opt/htbb/backup, giu 7 ngay gan nhat.
 #
 # Cai vao cron cua root:  sudo crontab -e
-#   0 4 * * * /opt/kpah/vps/backup_db.sh >> /opt/kpah/log/backup.log 2>&1
+#   0 4 * * * /opt/htbb/vps/backup_db.sh >> /opt/htbb/log/backup.log 2>&1
 #
-# Duong dan la /opt/kpah/vps/backup_db.sh chu KHONG phai /opt/kpah/backup_db.sh:
+# Duong dan la /opt/htbb/vps/backup_db.sh chu KHONG phai /opt/htbb/server/backup_db.sh:
 # deploy chep nguyen thu muc vps/ sang, khong bo file ra ngoai goc.
 #
 # Mat khau doc tu /root/.my.cnf (chmod 600), KHONG de trong file nay:
@@ -13,7 +13,7 @@
 #   password=MAT_KHAU
 set -euo pipefail
 
-OUT=/opt/kpah/backup
+OUT=/opt/htbb/backup
 NGAY=$(date +%F_%H%M)
 
 loi() { echo "$(date '+%F %T') LOI: $*" >&2; exit 1; }
@@ -21,7 +21,8 @@ loi() { echo "$(date '+%F %T') LOI: $*" >&2; exit 1; }
 [ -r /root/.my.cnf ] || loi "khong doc duoc /root/.my.cnf -> mysqldump khong co mat khau"
 mkdir -p "$OUT"
 
-for DB in kpah_db account; do
+CSDL_GAME=htbb_db; [ -e /etc/htbb/da-chuyen-csdl ] || CSDL_GAME=kpah_db  # TUONG-THICH-TEN-CU: bo sau 1 ban
+for DB in "$CSDL_GAME" account; do
     F="$OUT/${DB}_${NGAY}.sql.gz"
 
     # 'set -o pipefail' o tren la dong quan trong nhat ca script nay. Khong co no,
@@ -57,12 +58,12 @@ fi
 # Chi xoa ban cu SAU KHI ca hai ban moi deu da qua kiem tra o tren. -maxdepth 1: khong dung toi tuan/.
 find "$OUT" -maxdepth 1 -name "*.sql.gz" -mtime +7 -delete
 
-# Ban sao NGOAI MAY (khuyen nghi): dat KPAH_BACKUP_DICH="user@may-khac:/duong/dan/" trong
-# /etc/default/kpah-backup (root doc) -> rsync qua ssh key. Trong = bo qua (khong loi).
-[ -r /etc/default/kpah-backup ] && . /etc/default/kpah-backup
-if [ -n "${KPAH_BACKUP_DICH:-}" ]; then
-    rsync -a --timeout=120 "$OUT"/ "$KPAH_BACKUP_DICH" \
-        && echo "$(date '+%F %T') da chep ra ngoai -> $KPAH_BACKUP_DICH" \
+# Ban sao NGOAI MAY (khuyen nghi): dat HTBB_BACKUP_DICH="user@may-khac:/duong/dan/" trong
+# /etc/default/htbb-backup (root doc) -> rsync qua ssh key. Trong = bo qua (khong loi).
+[ -r /etc/default/htbb-backup ] && . /etc/default/htbb-backup
+if [ -n "${HTBB_BACKUP_DICH:-}" ]; then
+    rsync -a --timeout=120 "$OUT"/ "$HTBB_BACKUP_DICH" \
+        && echo "$(date '+%F %T') da chep ra ngoai -> $HTBB_BACKUP_DICH" \
         || echo "$(date '+%F %T') CANH BAO: chep ra ngoai that bai (ban tai cho van con)" >&2
 fi
 

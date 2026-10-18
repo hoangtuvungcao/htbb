@@ -1,6 +1,6 @@
 /**
  * Thêm / sửa một món cửa hàng lượng (CMS). Luật y như server (kiemMon): chỉ trang_tri /
- * mo_rong_tui / doi_ten, KHÔNG chỉ số, không từ cấm, giá 10–5.000 lượng. Server game nạp lại
+ * mo_rong_tui / doi_ten / tang_toc (5 mã cố định, giá + giới hạn tuần cố định, chỉ EXP), KHÔNG chỉ số, không từ cấm, giá 10–5.000 lượng. Server game nạp lại
  * danh mục sau tối đa 60 giây và tự bỏ qua dòng sai luật.
  */
 import type { MonCuaHang } from '../../../utils/napTienThuan'

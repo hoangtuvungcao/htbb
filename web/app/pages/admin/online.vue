@@ -6,7 +6,7 @@
  * phần "đang online" không có "trang sau" hay lịch sử: luôn là ảnh chụp mới nhất, trễ tối
  * đa 30 giây. Bộ lọc nằm trên URL (?locTen=&locMap=&banNgoai=1) để chép link gửi nhau được.
  *
- * Client: PC / Android / jar và BẢN CHÍNH THỨC (NQSH-H2 của mình) hay BẢN NGOÀI (client gốc TeaMobi,
+ * Client: PC / Android / jar và BẢN CHÍNH THỨC (HTBB chính thức) hay BẢN NGOÀI (client gốc TeaMobi,
  * client lạ). Phần dưới (AdminThongKeClient) là lịch sử đăng nhập theo client + danh sách tài khoản
  * từng dùng bản ngoài để soát và khoá.
  */
@@ -68,7 +68,7 @@ const ICON_CLIENT: Record<string, string> = { pc: 'i-lucide-monitor', android: '
 
 const cotPhai = { class: { th: 'text-right', td: 'text-right tabular-nums' } }
 const columns = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon' },
   { accessorKey: 'tai_khoan', header: 'Tài khoản' },
   { accessorKey: 'client', header: 'Client' },
   { accessorKey: 'map_ten', header: 'Map' },
@@ -89,7 +89,7 @@ const columns = [
 
     <p class="text-sm text-muted">
       Vị trí (map + toạ độ) và client của mọi người chơi đang online — lấy mẫu lại mỗi 30 giây,
-      có thể trễ tối đa 30 giây so với thực tế. <b>Bản ngoài</b> = client không phải bản NQSH-H2 của bạn
+      có thể trễ tối đa 30 giây so với thực tế. <b>Bản ngoài</b> = client không phải bản HTBB chính thức của bạn
       (client gốc TeaMobi hoặc client lạ — không gửi mã máy lúc đăng nhập).
     </p>
 
@@ -116,7 +116,7 @@ const columns = [
 
     <UCard>
       <form class="flex flex-wrap items-end gap-3" @submit.prevent="locLai">
-        <UFormField label="Tên nhân vật (gần đúng)" class="min-w-56 flex-1">
+        <UFormField label="Tên Pokémon (gần đúng)" class="min-w-56 flex-1">
           <UInput v-model="loc.ten" placeholder="vd: hoang" icon="i-lucide-user-search" class="w-full" />
         </UFormField>
         <UFormField label="Tên map (gần đúng)" class="min-w-56 flex-1">

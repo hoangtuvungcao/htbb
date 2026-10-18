@@ -1,6 +1,6 @@
 /**
  * Mỗi 5 phút: mở khoá tài khoản có hạn khoá đã qua (web_khoa_tai_khoan.het_han <= bây giờ).
- * Hai CSDL tách nhau (kpah_db / account) nên làm hai bước, không dùng UPDATE...JOIN.
+ * Hai CSDL tách nhau (htbb_db / account) nên làm hai bước, không dùng UPDATE...JOIN.
  */
 export default defineNitroPlugin(() => {
   if (import.meta.prerender) return

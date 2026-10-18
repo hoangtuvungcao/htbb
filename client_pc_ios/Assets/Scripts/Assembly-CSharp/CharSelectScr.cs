@@ -33,7 +33,7 @@ public class CharSelectScr : MyScreen
 		ServerListScr.gI().paintBg(g);
 		Canvas.resetTrans(g);
 		MFont.borderFont.drawString(g, LoginScr.nameServer, 4, 2, 0);
-		MFont.borderFont.drawString(g, "Chọn nhân vật:", Canvas.hw, Canvas.hh - 65, 2);
+		MFont.borderFont.drawString(g, "Chọn Pokémon:", Canvas.hw, Canvas.hh - 65, 2);
 		int num = Canvas.hw - 100;
 		int num2 = Canvas.hh - 30;
 		int num3 = 0;
@@ -325,7 +325,7 @@ public class CharSelectScr : MyScreen
 				{
 					Canvas.currentDialog = null;
 				};
-				Canvas.startYesNoDlg("Bạn thật sự muốn xóa nhân vật này?", yesAction, noAction);
+				Canvas.startYesNoDlg("Bạn thật sự muốn xóa Pokémon này?", yesAction, noAction);
 			}
 			else if (cmdDel.caption.Equals("Khôi phục"))
 			{
@@ -338,7 +338,7 @@ public class CharSelectScr : MyScreen
 				{
 					Canvas.currentDialog = null;
 				};
-				Canvas.startYesNoDlg("Bạn muốn khôi phục nhân vật này?", yesAction2, noAction2);
+				Canvas.startYesNoDlg("Bạn muốn khôi phục Pokémon này?", yesAction2, noAction2);
 			}
 		};
 		cmdDel.action = action3;

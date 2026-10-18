@@ -15,7 +15,7 @@
 --
 --  Moc nao cung nam trong 2015..2024 nen den nay moi su kien deu tat vinh vien, khong
 --  co cach nao mo lai ngoai sua ma nguon roi build lai jar. Gio moi su kien la mot dong
---  trong bang nay, bat luc nao cung duoc, dat o trang quan tri /admin/sukien.php.
+--  trong bang nay, bat luc nao cung duoc, dat o trang quan tri /admin/sukien (HTBB-Web).
 --
 --  AI GHI COT NAO - hai ben khong dam len nhau:
 --

@@ -51,12 +51,12 @@ public class WindowInfoScr : MyScreen
 	private string[] title = new string[33]
 	{
 		"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Nhóm", "Gian hàng",
-		"Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Gian hàng",
-		"Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng bang hội",
+		"Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Gian hàng",
+		"Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng đội",
 		"Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"
 	};
 
-	private string[] tabName = new string[8] { "Áo", "Quần", "Nón", "Nhẫn", "D.chuyền", "Giày", "Găng tay", "Ngọc bội" };
+	private string[] tabName = new string[8] { "Áo", "Quần", "Nón", "Nhẫn", "D.chuyền", "Giày", "Găng tay", "Phiến đá hệ" };
 
 	private string[] showText;
 
@@ -2264,7 +2264,7 @@ public class WindowInfoScr : MyScreen
 	{
 		if (Char.skillLevelLearnt[selected] == -1)
 		{
-			Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+			Canvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
 			return;
 		}
 		mVector mVector2 = new mVector();
@@ -2924,19 +2924,19 @@ public class WindowInfoScr : MyScreen
 	{
 		charInfo = new string[15];
 		MainChar mainChar = Canvas.gameScr.mainChar;
-		charInfo[0] = "Nhân vật: " + mainChar.name;
+		charInfo[0] = "Pokémon: " + mainChar.name;
 		charInfo[1] = "Level: " + mainChar.level + "+" + mainChar.getPercent();
 		charInfo[2] = "HP: " + mainChar.hp + "/" + mainChar.maxhp;
 		charInfo[3] = "MP: " + mainChar.mp + "/" + mainChar.maxmp;
 		charInfo[4] = "Tấn công: " + mainChar.getAttack();
-		charInfo[5] = "Thủ vật lý: " + mainChar.defend;
-		charInfo[6] = "Thủ ma pháp: " + mainChar.defend_magic;
+		charInfo[5] = "Phòng thủ: " + mainChar.defend;
+		charInfo[6] = "Phòng thủ đặc biệt: " + mainChar.defend_magic;
 		charInfo[7] = "Chính xác: " + mainChar.accurate;
 		charInfo[8] = "Né tránh: " + mainChar.dodge;
 		charInfo[9] = "Bạo kích: " + ((mainChar.baokich <= 0) ? "0" : (mainChar.baokich / 10 + "." + mainChar.baokich % 10)) + "%";
 		charInfo[10] = "Chí mạng: " + mainChar.critical;
 		charInfo[11] = "Cống hiến: " + mainChar.dedicationPoint + " điểm.";
-		charInfo[12] = "Liên trảm: " + mainChar.lienTram + " điểm.";
+		charInfo[12] = "Chuỗi thắng: " + mainChar.lienTram + " điểm.";
 		charInfo[13] = "Công trạng: " + mainChar.congTrang + " điểm.";
 		numH = charInfo.Length + 1;
 		setLim();
@@ -3969,11 +3969,24 @@ public class WindowInfoScr : MyScreen
 				{
 					countR--;
 				}
-				g.setColor(7961465);
-				g.fillRect(21, 11, 88, 16);
-				g.fillRect(20, 12, 90, 14);
-				g.setColor((!isChangeTab) ? 2368548 : 30611);
-				g.fillRect(21, 12, 88, 14);
+				if (UiPokemon.bat())
+				{
+					// pokemon: giao diện - viên tên tab (đỏ = nội dung, xanh = đang đổi tab) + mũi tên vàng
+					GiaoDien.khung(g, 18, 9, 94, 20, 9, GiaoDien.VIEN, isChangeTab ? GiaoDien.XANH_SANG : GiaoDien.DO_SANG, isChangeTab ? GiaoDien.XANH : GiaoDien.DO_TOI, false);
+					if (isChangeTab && Canvas.gameTick % 10 < 7)
+					{
+						GiaoDien.muiNgang(g, 6, 19, 10, -1, GiaoDien.VANG);
+						GiaoDien.muiNgang(g, 117, 19, 10, 1, GiaoDien.VANG);
+					}
+				}
+				else
+				{
+					g.setColor(7961465);
+					g.fillRect(21, 11, 88, 16);
+					g.fillRect(20, 12, 90, 14);
+					g.setColor((!isChangeTab) ? 2368548 : 30611);
+					g.fillRect(21, 12, 88, 14);
+				}
 				g.setClip(21, 11, 88, 16);
 				g.translate(-cmxname, 0);
 				int width = MFont.normalFont[0].getWidth(name);
@@ -5344,7 +5357,7 @@ public class WindowInfoScr : MyScreen
 
 	private void paintNewSkillLearn(MyGraphics g)
 	{
-		string[] array = new string[5] { "Kiếm sỹ", "Chiến binh", "Pháp sư", "Đấu sỹ", "Cung thủ" };
+		string[] array = new string[5] { "Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu" };
 		MFont.normalFont[0].drawString(g, array[Canvas.gameScr.mainChar.clazz], 7 * wCell / 2 + xTr, -16 + yTr, MFont.CENTER);
 		g.setColor(11908533);
 		g.fillRect(-4 + xTr, yTr, 7 * wCell, 1);
@@ -5402,7 +5415,7 @@ public class WindowInfoScr : MyScreen
 	{
 		Canvas.resetTrans(g);
 		Res.paintDlgFull(g, 10, 10, Canvas.w - 20, Canvas.h - 50);
-		MFont.normalFont[0].drawString(g, "Nhiệm vụ bang hội", Canvas.hw, 15, MFont.CENTER);
+		MFont.normalFont[0].drawString(g, "Nhiệm vụ đội", Canvas.hw, 15, MFont.CENTER);
 		int num = 45;
 		g.setClip(0, num - 1, Canvas.w, h - 32);
 		g.translate(0, num);
@@ -5423,7 +5436,7 @@ public class WindowInfoScr : MyScreen
 		Res.paintDlgDragonFull(g, num3 - 5, num4 - 10, num + 10, num2 + 20);
 		g.setColor(11908533);
 		g.drawRect(num3 + 2, num4 + 15, num - 4, num2 - 30);
-		MFont.normalFont[0].drawString(g, "Kỹ năng bang hội", num3 + (num + 10) / 2, num4 - 5, MFont.CENTER);
+		MFont.normalFont[0].drawString(g, "Kỹ năng đội", num3 + (num + 10) / 2, num4 - 5, MFont.CENTER);
 		g.setClip(num3 + 2, num4 + 15, num - 4, num2 - 30);
 		g.translate(num3 + 5, num4 + 20);
 		g.translate(0, -cmy);
@@ -5692,7 +5705,19 @@ public class WindowInfoScr : MyScreen
 		{
 			selected = 0;
 		}
-		charWearing.paintAvatar(g, (short)(90 + xTr), (short)(110 + yTr));
+		if (charWearing.pokeDex > 0 && charWearing.ngoaiHinh != null)
+		{
+			// pokemon: the trang bi - Pokemon xoay 4 huong voi phu kien + dai tom tat (bac, +N, bo, trang phuc)
+			if (!charWearing.paintPokemonTinh(g, 90 + xTr, 110 + yTr, NgoaiHinhVe.huongThe(Canvas.gameTick)))
+			{
+				charWearing.paintAvatar(g, (short)(90 + xTr), (short)(110 + yTr));
+			}
+			NgoaiHinhVe.veThe(g, charWearing.ngoaiHinh, 91 + xTr, -8 + yTr);
+		}
+		else
+		{
+			charWearing.paintAvatar(g, (short)(90 + xTr), (short)(110 + yTr));
+		}
 		if (imgCharWear != null && Canvas.gameTick % 16 >= 8)
 		{
 			g.drawImage(imgCharWear, w / 2 + 5 + xTr, -5 + yTr, MyGraphics.TOP | MyGraphics.HCENTER);
@@ -6817,7 +6842,7 @@ public class WindowInfoScr : MyScreen
 						};
 						command.action = action;
 						command.perform();
-						Command command2 = new Command("Trang bị linh thú");
+						Command command2 = new Command("Trang bị thú cưỡi");
 						ActionPerform action2 = () =>
 						{
 							Char obj = (Char)Canvas.gameScr.findCharByID(Canvas.gameScr.saveIDViewInfoAnimal);
@@ -6852,7 +6877,7 @@ public class WindowInfoScr : MyScreen
 				if (selected != 4)
 				{
 					mVector mVector3 = new mVector();
-					Command command3 = new Command("Linh thú");
+					Command command3 = new Command("Thú cưỡi");
 					ActionPerform action3 = () =>
 					{
 						if (!charWearing.infoAnimal.Equals(string.Empty))

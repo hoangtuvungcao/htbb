@@ -4,7 +4,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Sinh web/admin/inc/capdo.php tu chinh mang real.LevelDetail.expMain.
+ * Sinh shared/data/bang-cap-do.json tu chinh mang real.LevelDetail.expMain.
  *
  * VI SAO SINH CHU KHONG GO TAY: mang co 91 phan tu, nhieu so dai toi 14 chu so.
  * Go tay mot mang nhu the la tu ruoc loi go nham mot chu so - loi kieu do KHONG
@@ -22,7 +22,9 @@ import java.nio.charset.StandardCharsets;
  * nen KHONG can va KHONG duoc dong vao cot nao khac.
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
- *   java -cp "build/classes;lib/NQSH_5h.jar;lib/mysql-connector-java-5.1.49.jar" SinhBangCapDo
+ *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhBangCapDo
+ *   -> ghi HTBB-Web/shared/data/bang-cap-do.json (tim ../HTBB-Web, ../web, hoac -Dhtbb.web=<thu muc>).
+ *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
  * Chay lai neu bang expMain trong LevelDetail.java doi (rat hiem, thuong chi khi
  * mo rong tran cap). test/KiemBangCapDo.java doi chieu tep sinh voi mang Java tung
@@ -30,7 +32,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class SinhBangCapDo {
 
-    private static final String TEP = "web/admin/inc/capdo.php";
+    private static final String TEP = "shared/data/bang-cap-do.json";
 
     public static void main(final String[] thamSo) throws Exception {
         final long[] expMain = real.LevelDetail.expMain;
@@ -54,67 +56,91 @@ public final class SinhBangCapDo {
         // do dai mang) - tranh dung toi bien do bang cach dat tran thap hon do
         // dai mang mot don vi.
         final int tranCap = expMain.length - 1;
+        // Moi so phai doc dung trong JavaScript (number) - lon hon 2^53 thi web lam tron sai.
+        for (final long[] mang : new long[][]{expMain, expRequire}) {
+            for (final long v : mang) {
+                if (v < 0 || v > 9007199254740991L) {
+                    System.out.println("[LOI] gia tri " + v + " vuot Number.MAX_SAFE_INTEGER - web khong doc dung duoc.");
+                    System.exit(1);
+                }
+            }
+        }
 
         final StringBuilder s = new StringBuilder();
-        s.append("<?php\n");
-        s.append("/**\n");
-        s.append(" * BANG QUY DOI CAP DO -> DIEM KINH NGHIEM, cho chuc nang \"Dat cap do\" o\n");
-        s.append(" * trang Nhan vat (nhanvat.php).\n");
-        s.append(" *\n");
-        s.append(" * TEP NAY DUOC SINH RA, DUNG SUA TAY.\n");
-        s.append(" *   Nguon   : real.LevelDetail.expMain (src/real/LevelDetail.java)\n");
-        s.append(" *   Sinh lai: java -cp \"build/classes;lib/NQSH_5h.jar;");
-        s.append("lib/mysql-connector-java-5.1.49.jar\" SinhBangCapDo\n");
-        s.append(" *\n");
-        s.append(" * CHI dung de dat cot `xp` cho KHOP voi cap do dat vao `lastLv`, giong het\n");
-        s.append(" * trang thai vua len cap tu nhien (0% vao cap tiep theo). MOI chi so khac\n");
-        s.append(" * cua nhan vat (suc manh/nhanh nhen/HP/diem ky nang...) deu duoc may chu game\n");
-        s.append(" * TU TINH LAI tu `lastLv` ngay luc chon nhan vat\n");
-        s.append(" * (src/real/cmd/SelectCharHandler.java:206-215, roi p.calculateAttrib()) -\n");
-        s.append(" * trang web KHONG duoc va KHONG can dong vao bat ky cot nao khac.\n");
-        s.append(" *\n");
-        s.append(" * test/KiemBangCapDo.java doi chieu tung phan tu voi mang that trong Java.\n");
-        s.append(" *\n");
-        s.append(" * capDoRaExpRequire() them cho chuc nang \"Buff level kem %\" (lo #A trong\n");
-        s.append(" * loi.xlsx, port tu server/Panel/ButtonEditor.java showBuffExpDialog/\n");
-        s.append(" * calculateExpToBuff) - can de tinh dung xp ung voi MOT PHAN TRAM cu the\n");
-        s.append(" * vao trong cap do, khong chi moc 0% nhu capDoRaExp().\n");
-        s.append(" */\n\n");
-        s.append("/** Cap do cao nhat trang quan tri cho phep dat. */\n");
-        s.append("const CAPDO_TOI_DA = ").append(tranCap).append(";\n\n");
-        s.append("/**\n");
-        s.append(" * Diem kinh nghiem dung tai LUC VUA LEN cap do nay (0% vao cap tiep theo).\n");
-        s.append(" * Chi so mang = cap do - 1, dung nhu real.LevelDetail.expMain ben Java.\n");
-        s.append(" */\n");
-        s.append("function capDoRaExp(): array\n");
         s.append("{\n");
-        s.append("    return [\n");
-        for (int i = 0; i < expMain.length; i++) {
-            s.append("        ").append(expMain[i]).append(", // cap ").append(i + 1).append("\n");
-        }
-        s.append("    ];\n");
-        s.append("}\n\n");
-        s.append("/**\n");
-        s.append(" * Tong diem kinh nghiem can co de dat DUNG mot % cu the vao trong mot cap do\n");
-        s.append(" * (dung real.LevelDetail.expMain[capDo-1] + expRequire[capDo] * % / 100).\n");
-        s.append(" * Chi so mang = cap do (KHONG phai cap do - 1) - trung voi cach\n");
-        s.append(" * real.LevelDetail.expRequire duoc doc index ben Java (expRequire[lv]).\n");
-        s.append(" */\n");
-        s.append("function capDoRaExpRequire(): array\n");
-        s.append("{\n");
-        s.append("    return [\n");
-        for (int i = 0; i < expRequire.length; i++) {
-            s.append("        ").append(expRequire[i]).append(", // cap ").append(i).append("\n");
-        }
-        s.append("    ];\n");
-        s.append("}\n");
+        s.append("  \"_ghiChu\": \"TEP SINH TU DONG - DUNG SUA TAY. Bang quy doi cap do -> diem kinh nghiem cho khu quan tri. ")
+         .append("expMain[cap-1] = exp LUC VUA LEN cap do (0%); expRequire[cap] = exp de di het cap do (chi so = CHINH cap do). ")
+         .append("Web KHONG tu tinh exp de ghi tob_char (lenh di qua web_lenh_nhan_vat, server tinh bang real.LevelDetail); ")
+         .append("moi chi so khac do may chu tu tinh lai tu cap luc chon nhan vat (src/real/cmd/SelectCharHandler.java, ")
+         .append("p.calculateAttrib()). test/KiemBangCapDo (repo game) doi chieu tung so voi mang Java.\",\n");
+        s.append("  \"_nguon\": \"real.LevelDetail.expMain / expRequire (src/real/LevelDetail.java) - repo game HTBB\",\n");
+        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhBangCapDo\",\n");
+        s.append("  \"capDoToiDa\": ").append(tranCap).append(",\n");
+        s.append("  \"expMain\": [\n");
+        noiMang(s, expMain);
+        s.append("  ],\n");
+        s.append("  \"expRequire\": [\n");
+        noiMang(s, expRequire);
+        s.append("  ]\n}\n");
 
-        try (Writer w = new OutputStreamWriter(new FileOutputStream(TEP), StandardCharsets.UTF_8)) {
-            w.write(s.toString());
-        }
-        System.out.println("Da sinh " + TEP + " voi " + expMain.length
+        final String daGhi = ghiVaoWeb(TEP, s.toString());
+        System.out.println("Da sinh " + daGhi + " voi " + expMain.length
                 + " muc (tran cap cho phat = " + tranCap + ").");
         System.exit(0);
+    }
+
+    /** Moi phan tu mot dong (de diff de doc, va de test/KiemBangCapDo dem tung dong). */
+    private static void noiMang(final StringBuilder s, final long[] mang) {
+        for (int i = 0; i < mang.length; i++) {
+            s.append("    ").append(mang[i]).append(i + 1 < mang.length ? ",\n" : "\n");
+        }
+    }
+
+    // ------------------------------------------------------------------ ghi JSON vao HTBB-Web
+
+    /**
+     * Thu muc HTBB-Web: -Dhtbb.web=..., bien HTBB_WEB_DIR, ../HTBB-Web (ba repo dat canh
+     * nhau) hoac ../web (monorepo). Phai co nuxt.config.ts. Website PHP cu (web/ cua repo
+     * game) da bo - xem docs/pokemon/BO_WEB_PHP.md.
+     */
+    private static java.io.File thuMucWeb() {
+        final String[] ung = {System.getProperty("htbb.web"), System.getenv("HTBB_WEB_DIR"), "../HTBB-Web", "../web"};
+        for (final String u : ung) {
+            if (u != null && !u.isEmpty() && new java.io.File(u, "nuxt.config.ts").isFile()) {
+                return new java.io.File(u);
+            }
+        }
+        System.out.println("[LOI] Khong thay HTBB-Web (../HTBB-Web hoac ../web, hay -Dhtbb.web=<thu muc>).");
+        System.exit(1);
+        return null;
+    }
+
+    /** Ghi tep (UTF-8, LF) vao <HTBB-Web>/<tuongDoi>; tra ve duong dan da ghi. */
+    private static String ghiVaoWeb(final String tuongDoi, final String noiDung) throws java.io.IOException {
+        final java.io.File f = new java.io.File(thuMucWeb(), tuongDoi);
+        f.getParentFile().mkdirs();
+        try (Writer w = new OutputStreamWriter(new FileOutputStream(f), StandardCharsets.UTF_8)) {
+            w.write(noiDung);
+        }
+        return f.getPath();
+    }
+
+    /** Chuoi JSON co dau nhay kep (thoat ", \ va ky tu dieu khien; giu nguyen chu co dau). */
+    private static String jsonChuoi(final String s) {
+        final StringBuilder b = new StringBuilder("\"");
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            if (c == '"' || c == '\\') {
+                b.append('\\').append(c);
+            } else if (c == '\n') {
+                b.append("\\n");
+            } else if (c < 0x20) {
+                b.append(String.format("\\u%04x", (int) c));
+            } else {
+                b.append(c);
+            }
+        }
+        return b.append('"').toString();
     }
 
     private SinhBangCapDo() {

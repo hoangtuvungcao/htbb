@@ -46,7 +46,7 @@ import java.util.Vector;
 import real.cmd.LoginHandler;
 import real.cmd.RequestNPCInfoHandler;
 import server.TeamServer;
-import ThanKhi.ThoRenThanBi;
+import BaoVatHuyenThoai.ThoRenBiAn;
 
 
 public class Map implements Runnable {
@@ -152,7 +152,7 @@ public class Map implements Runnable {
         5, new byte[]{0, 1, 1, 1, 1}, "Hoa hướng dương", new short[]{1, 2, 3, 4, 5}, 4, 10, 50, new byte[]{45, 46, 47, 48, 49}, 33, 16, 3, 0, 0, 1
         ),
         new SeedTemplate(6, new byte[]{8, 8, 8, 8, 8}, "Dưa hấu", new short[]{1, 2, 3, 4, 5}, 4, 10, 100, new byte[]{30, 31, 32, 33, 34}, 36, 14, 5, 0, 0, 1),
-        new SeedTemplate(7, new byte[]{2, 2, 2, 2, 2}, "Thanh long", new short[]{1, 2, 3, 4, 5}, 4, 10, 100, new byte[]{40, 41, 42, 43, 44}, 38, 14, 5, 0, 0, 1),
+        new SeedTemplate(7, new byte[]{2, 2, 2, 2, 2}, "Kanto", new short[]{1, 2, 3, 4, 5}, 4, 10, 100, new byte[]{40, 41, 42, 43, 44}, 38, 14, 5, 0, 0, 1),
         new SeedTemplate(8, new byte[]{12, 12, 12, 12, 12}, "Lúa", new short[]{1, 2, 3, 4, 5}, 4, 10, 100, new byte[]{35, 36, 37, 38, 39}, 40, 14, 5, 0, 0, 1),
         new SeedTemplate(
         9, new byte[]{2, 2, 2, 2, 2}, "Hoa tulip", new short[]{1, 2, 3, 4, 5}, 4, 10, 500000, new byte[]{50, 51, 52, 53, 54}, 36, 16, 1, 20, 0, 1
@@ -209,7 +209,7 @@ public class Map implements Runnable {
     public static Weather weather = null;
     public static Vector<Hashtable<Integer, ItemTemplates>> itemTemplates = new Vector();
     public static Vector<Collection<ItemTemplates>> itemTemplateCollection = new Vector();
-    public static String[] nameCountry = new String[]{"Thanh long", "Hắc hổ", "Huyền vũ"};
+    public static String[] nameCountry = new String[]{"Kanto", "Johto", "Hoenn"};
     public static Vector<ClanInfo> allClan = new Vector();
     public static Hashtable<Short, Short> locationId = new Hashtable();
     public static String[][][] nameMap = new String[][][]{
@@ -244,7 +244,7 @@ public class Map implements Runnable {
             {"Đông sơn", "Đông Đông sơn", "Tây Đông sơn", "Nam Đông sơn", "Bắc Đông sơn"},
             {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"}
         },
-        {{"Tử quan", "Đông Tử quan", "Tây Tử quan", "Nam Tử quan", "Bắc Tử quan"}, {"Thành Trấn danh", "Biên giới", "", "", ""}},
+        {{"Tử quan", "Đông Tử quan", "Tây Tử quan", "Nam Tử quan", "Bắc Tử quan"}, {"Cao nguyên Indigo", "Biên giới", "", "", ""}},
         {
             {"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"},
             {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
@@ -258,7 +258,7 @@ public class Map implements Runnable {
         },
         {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}},
         {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}},
-        {{"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"}, {"Hang thằn lằn", "Hang Đại Bàng", "", "", ""}, {"Hang Dracula", "", "", "", ""}},
+        {{"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"}, {"Hang thằn lằn", "Hang Đại Bàng", "", "", ""}, {"Hang Darkrai", "", "", "", ""}},
         new String[0][],
         {{"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"}},
         {{"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"}},
@@ -323,7 +323,7 @@ public class Map implements Runnable {
         },
         {{"Biên giới", "", "", "", ""}, {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"}},
         {{"Biên giới", "", "", "", ""}, {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"}},
-        {{"Thành Trấn Danh", "", "", "", ""}},
+        {{"Cao nguyên Indigo", "", "", "", ""}},
         {{"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"}},
         new String[0][],
         new String[0][],
@@ -604,9 +604,9 @@ public class Map implements Runnable {
         {"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"},
         {"Thuyền", "Thuyền bến đông", "Thuyền bến tây", "Thuyền bến nam", "Thuyền bến bắc"},
         {"Hang Thằn Lằn", "Hang Đại Bàng", "Hang thằn lằn tây", "Hang thằn lằn nam", "Hang thằn lằn bắc"},
-        {"Hang Dracula", "Hang Dracula phía đông", "Hang Dracula phía tây", "Hang Dracula phía nam", "Hang Dracula phía bắc"},
+        {"Hang Darkrai", "Hang Darkrai phía đông", "Hang Darkrai phía tây", "Hang Darkrai phía nam", "Hang Darkrai phía bắc"},
         {"Đấu trường", "", "", "", ""},
-        {"Thành Trấn Danh", "", "", "", ""},
+        {"Cao nguyên Indigo", "", "", "", ""},
         {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
         {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"},
         {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"},
@@ -625,26 +625,26 @@ public class Map implements Runnable {
         {"Lâm tây", "Đông Lâm tây", "Tây Lâm tây", "Nam Lâm tây", "Bắc Lâm tây"},
         {"Cẩm khê", "Đông Cẩm khê", "Tây Cẩm khê", "Nam Cẩm khê", "Bắc Cẩm khê"},
         {"Đỗ đông", "Đông Đỗ đông", "Tây Đỗ đông", "Nam Đỗ đông", "Bắc Đỗ đông"},
-        {"Lãnh địa bang", "", "", "", ""},
+        {"Lãnh địa đội", "", "", "", ""},
         {"Rừng già", "", "", "", ""},
         {"TYT 5x", "", "", "", ""},
         {"TYT 6x", "", "", "", ""},
         {"TYT 7x", "", "", "", ""},
         {"Chien truong", "", "", "", ""},
-        {"Thành liên đấu 1", "", "", "", ""},
-        {"Thành liên đấu 2", "", "", "", ""},
-        {"Thành liên đấu 3", "", "", "", ""},
-        {"Thành liên đấu 4", "", "", "", ""},
-        {"Thành liên đấu 5", "", "", "", ""},
-        {"Thành liên đấu 6", "", "", "", ""},
-        {"Thành liên đấu 7", "", "", "", ""},
-        {"Thành liên đấu 8", "", "", "", ""},
-        {"Thành liên đấu 9", "", "", "", ""},
-        {"Thành liên đấu 10", "", "", "", ""},
+        {"Sân Liên minh 1", "", "", "", ""},
+        {"Sân Liên minh 2", "", "", "", ""},
+        {"Sân Liên minh 3", "", "", "", ""},
+        {"Sân Liên minh 4", "", "", "", ""},
+        {"Sân Liên minh 5", "", "", "", ""},
+        {"Sân Liên minh 6", "", "", "", ""},
+        {"Sân Liên minh 7", "", "", "", ""},
+        {"Sân Liên minh 8", "", "", "", ""},
+        {"Sân Liên minh 9", "", "", "", ""},
+        {"Sân Liên minh 10", "", "", "", ""},
         {"Chiến trường", "", "", "", ""},
         {"Cân núi", "", "", "", ""},
         {"Núi kho báu", "", "", "", ""},
-        {"Lôi đài", "", "", "", ""},
+        {"Sàn đấu", "", "", "", ""},
         {"Sảnh chờ", "", "", "", ""}
     };
     byte idXaphu = -1;
@@ -994,6 +994,24 @@ public class Map implements Runnable {
     static byte[] X_FOWARD;
     static byte[] Y_FOWARD;
     public static long DELAY_UPDATE_MAP;
+
+    static {
+        // Vong lap chung (com.htbb.runtime.VongLapChung) dung khi AdminHandler.isStopServer, hoan
+        // 100 ms khi RealController.savingChar - dung nhu cac vong thread cu.
+        com.htbb.runtime.VongLapChung.datDieuKien(new com.htbb.runtime.VongLapChung.DieuKien() {
+            @Override
+            public boolean dung() {
+                return AdminHandler.isStopServer;
+            }
+        }, new com.htbb.runtime.VongLapChung.DieuKien() {
+            @Override
+            public boolean dung() {
+                return RealController.savingChar;
+            }
+        });
+        // Mot dong "[NHIP] ..." moi 60 s (thoi gian chay/tre tick, so vong ranh). 0 = tat.
+        com.htbb.runtime.VongLapChung.batLogDinhKy(Long.getLong("htbb.nhip.logGiay", 60L));
+    }
     // Hai vong lap "RUN MAP" (updateWind/update) chay MAI cho MOI map. Neu co
     // loi, no lap lai moi DELAY_UPDATE_MAP (300ms) cho toi khi server tat -
     // in day du stack trace moi lan se ngap log ngay lap tuc. Chi bao 1 lan
@@ -1092,11 +1110,11 @@ public class Map implements Runnable {
                             if (p != null) {
                                 if (p.monster != null && p.monster.isFinish) {
                                     try {
-                                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chúc mừng bạn đã có 1 chuyến tiêu thành công."));
+                                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chúc mừng bạn đã có 1 chuyến giao hàng thành công."));
                                     } catch (IOException var7) {
                                     }
                                 } else {
-                                    p.sendMessage(MessageCreator.createServerAlertMessage("Chuyến tiêu của bạn đã kết thúc.", ""));
+                                    p.sendMessage(MessageCreator.createServerAlertMessage("Chuyến giao hàng của bạn đã kết thúc.", ""));
                                 }
 
                                 if (p.monster == mon) {
@@ -1630,16 +1648,16 @@ public class Map implements Runnable {
         getTop = false;
         currentDay = Char.getDayOpen(0L);
         topnation = new String[]{
-            "Top cao thủ Thanh long",
-            "Top cao thủ Hắc hổ",
-            "Top cao thủ Huyền vũ",
-            "Top công trạng Thanh long",
-            "Top công trạng Hắc hổ",
-            "Top công trạng Huyền vũ",
-            "Top liên trảm Thanh long",
-            "Top liên trảm Hắc hổ",
-            "Top liên trảm Huyền vũ",
-            "Danh sách cừu nhân"
+            "Top sức mạnh Kanto",
+            "Top sức mạnh Johto",
+            "Top sức mạnh Hoenn",
+            "Top công trạng Kanto",
+            "Top công trạng Johto",
+            "Top công trạng Hoenn",
+            "Top chuỗi thắng Kanto",
+            "Top chuỗi thắng Johto",
+            "Top chuỗi thắng Hoenn",
+            "Danh sách đối thủ"
         };
         stopGiveMoney = false;
         isUseNewClan = true;
@@ -2696,7 +2714,7 @@ public class Map implements Runnable {
     public static void loadPetTemplate() {
         petTemplate = new PetTemplate[]{
             new PetTemplate((byte) 0, "Lồng đèn xếp", 20160, (byte) 0, (byte) 2, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 5, Pet.TYPE_FLY_1_FRAME),
-            new PetTemplate((byte) 1, "Thanh tước", 43200, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 6, Pet.TYPE_FLY_2_FRAME),
+            new PetTemplate((byte) 1, "Taillow", 43200, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 6, Pet.TYPE_FLY_2_FRAME),
             new PetTemplate((byte) 2, "Cánh cam", 43200, (byte) 2, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 7, Pet.TYPE_FLY_2_FRAME),
             new PetTemplate((byte) 3, "Dơi quỷ", 10080, (byte) 3, (byte) 6, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 8, Pet.TYPE_FLY_2_FRAME),
             new PetTemplate((byte) 4, "Tim bay", 10080, (byte) 4, (byte) 2, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 9, Pet.TYPE_LANTERNS),
@@ -2711,8 +2729,8 @@ public class Map implements Runnable {
             new PetTemplate((byte) 13, "Chim cánh cụt", 20160, (byte) 13, (byte) 12, (byte) 17, (byte) 29, 1000, (byte) 0, (byte) 22, Pet.TYPE_WALK),
             new PetTemplate((byte) 14, "Pet ất mùi", 20160, (byte) 14, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 23, Pet.TYPE_WALK),
             new PetTemplate((byte) 15, "Ngôi sao băng", 20160, (byte) 15, (byte) 2, (byte) 14, (byte) 14, 1000, (byte) 0, (byte) 24, Pet.TYPE_LANTERNS),
-            new PetTemplate((byte) 16, "Phượng hoàng lửa", 20160, (byte) 16, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 10, Pet.TYPE_FLY_2_FRAME),
-            new PetTemplate((byte) 17, "Phượng hoàng băng", 20160, (byte) 17, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 20, Pet.TYPE_FLY_2_FRAME),
+            new PetTemplate((byte) 16, "Moltres", 20160, (byte) 16, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 10, Pet.TYPE_FLY_2_FRAME),
+            new PetTemplate((byte) 17, "Articuno", 20160, (byte) 17, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 20, Pet.TYPE_FLY_2_FRAME),
             new PetTemplate((byte) 18, "Lồng đèn", 20160, (byte) 16, (byte) 2, (byte) 9, (byte) 19, 1000, (byte) 0, (byte) 25, Pet.TYPE_LANTERNS),
             new PetTemplate((byte) 19, "Lồng đèn Ngôi sao", 20160, (byte) 18, (byte) 2, (byte) 15, (byte) 14, 1000, (byte) 0, (byte) 26, Pet.TYPE_LANTERNS),
             new PetTemplate((byte) 20, "Lồng đèn Trăng khuyết", 20160, (byte) 19, (byte) 2, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 27, Pet.TYPE_LANTERNS),
@@ -2745,7 +2763,7 @@ public class Map implements Runnable {
             new PetTemplate((byte) 26, "Dơi", 20160, (byte) 3, (byte) 6, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 33, Pet.TYPE_FLY_2_FRAME),   // <- mau 3  Dơi quỷ
             new PetTemplate((byte) 27, "Đại bàng", 20160, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 34, Pet.TYPE_FLY_2_FRAME), // <- mau 1  Thanh tước
             new PetTemplate((byte) 28, "Lồng đèn hoa sen", 20160, (byte) 5, (byte) 2, (byte) 14, (byte) 14, 1000, (byte) 0, (byte) 11, Pet.TYPE_LANTERNS),
-            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 9, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK),    // <- mau 9  Pet Armadillo băng
+            new PetTemplate((byte) 29, "Sandshrew", 20160, (byte) 9, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK),    // <- mau 9  Pet Armadillo băng
             // Trung Thu 2026 (moi 19/09/2026, yeu cau nguoi dung): pet Capybara - MUON tam
             // anh/kich thuoc cua mau 9 "Pet Armadillo bang" (giong cach Bach Thu o tren da
             // lam) vi CHUA co anh Capybara that. Se hien HINH GIONG Bach Thu cho toi khi co
@@ -3241,7 +3259,10 @@ public class Map implements Runnable {
                 byte[] xTheoPhe = {23, 18, 35};
                 byte[] yTheoPhe = {38, 32, 44};
                 player.map.idImgDynamic = new byte[]{6};
-                player.map.idImg = new byte[]{6};
+                // idImg = chi so trong DANH SACH ANH GUI KEM goi -43 (client: obj.img = img2[idimg]), KHONG phai
+                // chi so imgDynamic: gui 6 voi danh sach 1 anh -> client ArrayIndexOutOfBounds moi lan vao lang
+                // khi bat Trung Thu (MessageHandler -43; bot giao dien 176x220 bat duoc 18/10/2026).
+                player.map.idImg = new byte[]{0};
                 player.map.xDynamic = new byte[]{xTheoPhe[player.inCountry]};
                 player.map.yDynamic = new byte[]{yTheoPhe[player.inCountry]};
                 player.map.limX = new byte[]{0};
@@ -3352,16 +3373,16 @@ public class Map implements Runnable {
         Boss bo = null;
         switch (idTemplate) {
             case 91:
-                bo = new BossLinhXa(this, (MonsterTemplate) monsterTemplates.get(91), x, y, incountry);
+                bo = new BossSerperior(this, (MonsterTemplate) monsterTemplates.get(91), x, y, incountry);
                 break;
             case 92:
-                bo = new BossBachXa(this, (MonsterTemplate) monsterTemplates.get(92), x, y, incountry);
+                bo = new BossServine(this, (MonsterTemplate) monsterTemplates.get(92), x, y, incountry);
                 break;
             case 93:
                 bo = new BossMatQuy(this, (MonsterTemplate) monsterTemplates.get(93), x, y, incountry);
                 break;
             case 94:
-                bo = new BossSkelonton(this, (MonsterTemplate) monsterTemplates.get(94), x, y, incountry);
+                bo = new BossDusknoir(this, (MonsterTemplate) monsterTemplates.get(94), x, y, incountry);
         }
 
         if (bo != null) {
@@ -3396,19 +3417,19 @@ public class Map implements Runnable {
             for (int i = 0; i < boss.size(); i++) {
                 Boss b = (Boss) boss.get(i);
                 if (b.isOpen && !b.isDead) {
-                    info = info + b.getName() + " , ";
+                    info = info + b.getName() + ", ";
                 }
             }
 
             for (int ix = 0; ix < bossTime.size(); ix++) {
                 Boss b = (Boss) bossTime.get(ix);
                 if (b.isOpen && !b.isDead) {
-                    info = info + b.getName() + " , ";
+                    info = info + b.getName() + ", ";
                 }
             }
 
             if (!info.equals("")) {
-                info = info.substring(0, info.length() - 1);
+                info = info.substring(0, info.length() - 2); // bo ", " cuoi (truoc: "A , B , đã xuất hiện")
             }
 
             return info;
@@ -3505,7 +3526,7 @@ public class Map implements Runnable {
 
                     for (int j = 0; j < xxx[i].length; j++) {
                         for (int k = 0; k < MAX_COUNTRY; k++) {
-                            BossSonTinhThuyTinh ct = new BossSonTinhThuyTinh(
+                            BossKyogreGroudon ct = new BossKyogreGroudon(
                                     m, (MonsterTemplate) monsterTemplates.get(isboss[i]), xxx[i][j] * 16, yyy[i][j] * 16, (byte) k
                             );
                             if (TeamServer.isServerHoaLu()) {
@@ -3582,6 +3603,8 @@ public class Map implements Runnable {
             }
 
             ((Region) this.ALL_REGION.get(player.region)).playerJoin(player);
+            // lop con Region trong jar co the ghi de playerJoin -> danh thuc tick o day nua
+            ((Region) this.ALL_REGION.get(player.region)).danhThucNhip();
         } else {
             ((Vector) this.allPlayers.get(player.inCountry)).add(player);
             player.region = 0;
@@ -3599,10 +3622,10 @@ public class Map implements Runnable {
                     NpcReceiveCard npc = (NpcReceiveCard) ((Vector) npcReceiveCard.get(player.inCountry)).get(i);
                     if (npc.charGive != null) {
                         if (charname.equals("")) {
-                            charname = "Bang " + getClaninfoByID(npc.charGive.idClan).name;
+                            charname = "Đội " + getClaninfoByID(npc.charGive.idClan).name;
                             nameNPC = NpcReceiveCard.npc[npc.posNpc];
                         } else {
-                            charname = charname + " và Bang " + getClaninfoByID(npc.charGive.idClan).name;
+                            charname = charname + " và Đội " + getClaninfoByID(npc.charGive.idClan).name;
                             nameNPC = nameNPC + " và " + NpcReceiveCard.npc[npc.posNpc];
                         }
                     }
@@ -3623,7 +3646,7 @@ public class Map implements Runnable {
                 if (cl != null) {
                     player.sendMessage(
                             MessageCreator.createServerAlertAutoOffMessage(
-                                    cl.name + " đang sở hữu thành Trấn Danh. Mức thuế hiện tại là " + taxOfClan[player.inCountry] + "%"
+                                    cl.name + " đang sở hữu Cao nguyên Indigo. Mức thuế hiện tại là " + taxOfClan[player.inCountry] + "%"
                             )
                     );
                 }
@@ -4112,7 +4135,7 @@ public class Map implements Runnable {
     // Bon ham duoi day tra ve true = "toi da chiem duoc, duoc phep cap thuong". Moi duong nhat
     // phai dung chung mau: if (!chiemX(...)) return;  TRUOC khi cong vao tui.
     // Giu nguyen bon ham remove* (void) ben duoi: chung con duoc goi tu cac lop con nam trong
-    // lib/NQSH_5h.jar - doi chu ky la doi descriptor, lop trong jar se khong con ghi de dung.
+    // lib/htbb-core.jar - doi chu ky la doi descriptor, lop trong jar se khong con ghi de dung.
     protected boolean chiemGem(GemItem pt, int country) {
         if (pt == null || country < 0 || country >= this.gemItem.size()) {
             return false;
@@ -4567,7 +4590,7 @@ public class Map implements Runnable {
 
 
     // Than method (593 dong) da chuyen sang real/MapDanhNhau.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi method nay,
+    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doAttackPlayer(Char p, Message message) {
         MapDanhNhau.doAttackPlayer(this, p,message);
@@ -4727,7 +4750,7 @@ public class Map implements Runnable {
     }
 
     // Than method (509 dong) da chuyen sang real/MapDanhNhau.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi method nay,
+    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
     // va lop con van override duoc nhu cu.
     public void doAttackMultiTarget(Char p, Message message) {
         MapDanhNhau.doAttackMultiTarget(this, p,message);
@@ -4793,7 +4816,7 @@ public class Map implements Runnable {
 
     /// TODO Đánh Quái
     // Than method (470 dong) da chuyen sang real/MapDanhNhau.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi method nay,
+    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doAttackMonster(Char p, Message message) throws IOException {
         MapDanhNhau.doAttackMonster(this, p,message);
@@ -5152,10 +5175,10 @@ public class Map implements Runnable {
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             }
 
-                            sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã hụt " + item.getName()));
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã hụt " + item.getName());
                         } else {
                             if (player.potions[104] <= 0) {
-                                sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã hụt " + item.getName()));
+                                com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã hụt " + item.getName());
                             } else {
                                 int[] nday = new int[]{3, 5, 7, 15};
                                 int day = nday[r.nextInt(nday.length)];
@@ -5541,7 +5564,7 @@ public class Map implements Runnable {
     }
 
 
-    void doUnRideHorse(Char player, int type) {
+    void doXuongThuCuoi(Char player, int type) {
         try {
             String sub = " full";
             if (type == 0 && player.rideHorse > 0) {
@@ -5612,7 +5635,7 @@ public class Map implements Runnable {
         }
     }
 
-    void doUnRideHorse(Char player, Message msg) {
+    void doXuongThuCuoi(Char player, Message msg) {
         try {
             byte type = 0;
 
@@ -5726,7 +5749,7 @@ public class Map implements Runnable {
     }
 
     // Than method (760 dong) da chuyen sang real/MapDungThuoc.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi method nay,
+    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doUsePotion(Char player, Message message) throws IOException {
         MapDungThuoc.doUsePotion(this, player,message);
@@ -5933,8 +5956,8 @@ public class Map implements Runnable {
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 if (idgift[index] == 9) {
                     try {
-                        sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được nhân sâm khi bắn pháo hoa"));
-                    } catch (IOException var13) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Berry Razz vàng khi bắn pháo hoa");
+                    } catch (Exception var13) {
                     }
                 }
             }
@@ -6051,14 +6074,14 @@ public class Map implements Runnable {
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
                 Database.instance.saveOrtherLog("", p.charname, "mo ruong may man trung " + newItem.getName(), "trungdx");
                 genTrungRuongMayMan();
-                sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + p.charname + " mở rương may mắn trúng " + newItem.getName()));
+                com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.charname + " mở rương may mắn trúng " + newItem.getName());
                 Database.instance.updateShopRuongMM();
                 p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được " + newItem.getName(), ""));
             } else {
                 int idtem = GemTemplate.ID_MATERIAL_LOW[4][r.nextInt(GemTemplate.ID_MATERIAL_LOW[4].length)];
                 p.doAddGemItem(idtem, 5, false);
                 doCreateHuyetLinhThao(p, 0);
-                p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Huyết linh thảo và 5 " + gemTemplate[idtem].name, ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Kẹo thú cưng và 5 " + gemTemplate[idtem].name, ""));
                 Database.instance.saveOrtherLog("", p.charname, "mo ruong may man nhan dc Huyet linh thao + 5 " + gemTemplate[idtem].name, "trungdx");
             }
         } catch (Exception var4) {
@@ -6175,13 +6198,13 @@ public class Map implements Runnable {
                 if (rg.total_cuongthi >= 5) {
                     player.potions[144]++;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Khu vực này đã có quá nhiều cương thi.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Khu vực này đã có quá nhiều Pokémon ma.", ""));
                     return;
                 }
             } else if (this.total_cuongthi >= 5) {
                 player.potions[144]++;
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Khu vực này đã có quá nhiều cương thi.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Khu vực này đã có quá nhiều Pokémon ma.", ""));
                 return;
             }
 
@@ -6438,7 +6461,7 @@ public class Map implements Runnable {
         int level = (player.lvDetail.lv - 40) / 10;
         int index = level < 0 ? 0 : level;
         MonsterTemplate mt = (MonsterTemplate) monsterTemplates.get(idTemplate[index]);
-        BossSkelonton ct = new BossSkelonton(this, (MonsterTemplate) monsterTemplates.get(idtemplate), player.x, player.y, player.inCountry);
+        BossDusknoir ct = new BossDusknoir(this, (MonsterTemplate) monsterTemplates.get(idtemplate), player.x, player.y, player.inCountry);
         ct.id = RealController.intance.idGen.getID(1, "TAO GHOST");
         ct.attack = mt.attack + 1000;
         ct.defend_physic = mt.defend + 1500;
@@ -6504,7 +6527,7 @@ public class Map implements Runnable {
                 try {
                     Char p = (Char) CharManager.instance.vChars.elementAt(i);
                     if (p != null && p.myCountry == player.myCountry && p.id != player.id && p.myCountry == player.myCountry && p.lvDetail.lv >= 40) {
-                        p.sendMessage(MessageCreator.createMsgPopUp(p.id, 6, "Đức vua triệu hồi bảo vệ lãnh thổ. Bạn có muốn tham gia không ?"));
+                        p.sendMessage(MessageCreator.createMsgPopUp(p.id, 6, "Nhà vô địch vùng triệu hồi bảo vệ vùng. Bạn có muốn tham gia không ?"));
                     }
                 } catch (Exception var4) {
                     var4.printStackTrace();
@@ -6519,7 +6542,7 @@ public class Map implements Runnable {
     void doSelectPosBuildLienHoa(Char player) {
         player.sendMessage(
                 MessageCreator.createMsgMenu(
-                        new String[]{"Xây tại long trụ phụ trên", "Xây tại long trụ phụ dưới", "Xây tại long trụ phụ trái", "Xây tại long trụ phụ phải"}, -503, 0
+                        new String[]{"Xây tại trụ năng lượng phụ trên", "Xây tại trụ năng lượng phụ dưới", "Xây tại trụ năng lượng phụ trái", "Xây tại trụ năng lượng phụ phải"}, -503, 0
                 )
         );
     }
@@ -6527,10 +6550,10 @@ public class Map implements Runnable {
     void doPhongChuc(Char player) {
         if (player.idClan != -1) {
             if (player.rankGov > 1) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vua hoặc đại thần mới có thể phong chức.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có nhà vô địch vùng hoặc cố vấn vùng mới có thể phong chức.", ""));
             } else {
                 String[][] menu = new String[][]{
-                    {"Phong chức Đại thần", "Phong chức Tướng quân", "Phế Đại thần", "Phế Tướng quân"}, {"Phong chức Bộ đầu", "Phế Bộ đầu"}
+                    {"Phong chức Cố vấn vùng", "Phong chức Chỉ huy", "Bãi nhiệm Cố vấn vùng", "Bãi nhiệm Chỉ huy"}, {"Phong chức Cảnh sát vùng", "Bãi nhiệm Cảnh sát vùng"}
                 };
                 player.sendMessage(MessageCreator.createMsgMenu(menu[player.rankGov], -501, 0));
             }
@@ -7000,7 +7023,7 @@ public class Map implements Runnable {
                         int idAtt = r.nextInt(5);
                         int[] pcAtt = getPercentAppearAtt((Byte) soluong.get(0), material[0], posMax, material[1][5] > 0 ? material[1][5] : 0);
                         System.out.print(pcAtt[0] + "," + pcAtt[1] + "," + pcAtt[2] + "," + pcAtt[3] + "," + pcAtt[4]);
-                        String[] nameAtt = new String[]{"", "Nhất phẩm", "Nhị phẩm", "Tam phẩm", "Tứ phẩm", "Ngũ phẩm"};
+                        String[] nameAtt = new String[]{"", "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Hạng 5"};
                         int[] idOfAtt = new int[]{5, 4, 3, 2, 1};
                         int pcatt = r.nextInt(100);
                         int tempPCAtt = -100;
@@ -7570,7 +7593,7 @@ public class Map implements Runnable {
             }
         } else {
             try {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi ngựa", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi thú", ""));
                 player.potions[type]++;
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             } catch (Exception var4) {
@@ -7945,7 +7968,7 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã tắt cải trang Bát Giới", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã tắt cải trang Emboar", ""));
                     } else {
                         // Nếu chưa sử dụng thì bật
                         player.isCaiTrang = 1;
@@ -7953,7 +7976,7 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã bật cải trang Bát Giới", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã bật cải trang Emboar", ""));
                     }
                 } else if (selectedItem.tempateID == 904) {
                     if (player.isCaiTrang == 2) {
@@ -7963,7 +7986,7 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã tắt cải trang Sa Tăng", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã tắt cải trang Swampert", ""));
                     } else {
                         // Nếu chưa sử dụng thì bật
                         player.isCaiTrang = 2;
@@ -7971,7 +7994,7 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã bật cải trang Sa Tăng", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã bật cải trang Swampert", ""));
                     }
                 }
                 return;
@@ -8145,8 +8168,8 @@ public class Map implements Runnable {
                     if (!player.checkVuKhiThanBinh()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage(
                                 player.daTinhLuyenToiDa()
-                                        ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
-                                        : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                                        ? "Bảo vật cầm tay này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                        : "Bạn phải mặc bảo vật cầm tay mới có thể tinh luyện", ""));
                         return;
                     }
 
@@ -8213,8 +8236,8 @@ public class Map implements Runnable {
                     if (!player.checkVuKhiThanBinh()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage(
                                 player.daTinhLuyenToiDa()
-                                        ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
-                                        : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                                        ? "Bảo vật cầm tay này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                        : "Bạn phải mặc bảo vật cầm tay mới có thể tinh luyện", ""));
                         return;
                     }
 
@@ -8263,11 +8286,11 @@ public class Map implements Runnable {
                 // noi vao CUOI menu (sau Shop Trung Thu neu co) - vi tri THAY DOI tuy su
                 // kien Trung Thu con bat hay khong, nen ghi lai vi tri thuc te vao Char de
                 // MapDoMenu doc dung, giong het idxChuyenLuong/idxKhoXuLuong. Xem
-                // real/BaiLuyenCong.java.
+                // real/BaiLuyenTap.java.
                 {
                     final String[] menuBai = new String[menu.length + 2];
                     System.arraycopy(menu, 0, menuBai, 0, menu.length);
-                    menuBai[menu.length] = "Bãi luyện công";
+                    menuBai[menu.length] = "Bãi luyện tập";
                     player.idxBaiLuyenCong = menu.length;
                     menuBai[menu.length + 1] = player.isAutoVeMapUp ? "Tắt auto về Map Up" : "Bật auto về Map Up";
                     player.idxAutoVeMapUp = menu.length + 1;
@@ -8279,12 +8302,12 @@ public class Map implements Runnable {
             else if (type == 15)
             {
                 short shopIndex = (short)message.dis.readUnsignedByte();
-                ThoRenThanBi.UpgradeThanKhi(player, shopIndex); 
+                ThoRenBiAn.UpgradeThanKhi(player, shopIndex); 
             }
             else if (type == 14)
             {
                 short shopIndex = (short)message.dis.readUnsignedByte();
-                ThoRenThanBi.RerollThanKhiAttribute(player, shopIndex);
+                ThoRenBiAn.RerollThanKhiAttribute(player, shopIndex);
             }
             else if (type == TYPE_SHOP_NEW_TRUNG_THU)
             {
@@ -9018,7 +9041,7 @@ public class Map implements Runnable {
 
                 player.sendMessage(
                         MessageCreator.createServerAlertMessage(
-                                "Vật phẩm " + item.getTemplate().name + " đã được chuyển đổi thành trang bị " + (magic_physic == 0 ? "Ma pháp" : "Vật lý"), ""
+                                "Vật phẩm " + item.getTemplate().name + " đã được chuyển đổi thành trang bị " + (magic_physic == 0 ? "Đặc biệt" : "Vật lý"), ""
                         )
                 );
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -9027,11 +9050,11 @@ public class Map implements Runnable {
         }
     }
 
-    public void doRideAnimal(Char player, int type, int id) {
+    public void doCuoiThu(Char player, int type, int id) {
         try {
             if (type == 0) {
                 if (player.rideHorse > 0) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi linh thú khác.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi thú khác.", ""));
                     return;
                 }
 
@@ -9107,7 +9130,7 @@ public class Map implements Runnable {
         }
     }
 
-    public void doRideAnimal(Char player, Message message) {
+    public void doCuoiThu(Char player, Message message) {
         try {
             byte type = 0;
 
@@ -9135,7 +9158,7 @@ public class Map implements Runnable {
                         }
 
                         if (player.rideHorse > 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi linh thú khác.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi thú khác.", ""));
                             return;
                         }
 
@@ -9225,7 +9248,7 @@ public class Map implements Runnable {
     void doMove2Warp(Char player, Message message) {
         try {
             if (player.monster != null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                 return;
             }
 
@@ -9653,13 +9676,13 @@ public class Map implements Runnable {
                     if (!player.checkVuKhiThanBinh()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage(
                                 player.daTinhLuyenToiDa()
-                                        ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
-                                        : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                                        ? "Bảo vật cầm tay này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                        : "Bạn phải mặc bảo vật cầm tay mới có thể tinh luyện", ""));
                         return;
                     }
 
                     if (player.itemVukhiThoiTrang.TinhLuyen >= 100) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vũ khí đã đạt cấp tinh luyện tối đa", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Đồ cầm tay đã đạt cấp tinh luyện tối đa", ""));
                         return;
                     }
         
@@ -10036,12 +10059,12 @@ public class Map implements Runnable {
 
             if (idpopup == 114) {
                 if (stopGiveMoney) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại chưa thể quyên góp cho bang.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại chưa thể quyên góp cho đội.", ""));
                     return;
                 }
 
                 if (player.idClan == -1) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa gia nhập bang.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa gia nhập đội.", ""));
                     return;
                 }
 
@@ -10075,12 +10098,12 @@ public class Map implements Runnable {
                 }
 
                 if (player.giveMoneyClan <= 0) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể quyên góp xu vào bang 1 lần trong 1 ngày.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể quyên góp xu vào đội 1 lần trong 1 ngày.", ""));
                     return;
                 }
 
                 if (player.lvDetail.lv < 50) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể quyên góp vào bang.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể quyên góp vào đội.", ""));
                     return;
                 }
 
@@ -10396,18 +10419,18 @@ public class Map implements Runnable {
                     long moneyClan = NewClan.getMoneyClan(player.idClan);
                     long moneyUp = (long) NewClan.getMoneyUplevelClan(player.idClan);
                     if (!NewClan.enoughtXP(player.idClan)) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bang hội phải cần có " + NewClan.getXPUplevelClan(player.idClan) + " xp", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Đội phải cần có " + NewClan.getXPUplevelClan(player.idClan) + " xp", ""));
                         return;
                     }
 
                     if (moneyClan < moneyUp) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bang không đủ tiền", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Đội không đủ tiền", ""));
                     } else {
                         NewClan c = NewClan.getClan(player.idClan);
                         c.addMoney2Clan(-moneyUp);
                         c.level++;
                         c.updateNewClandata2DB();
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng, cấp độ hiện tại của quý bang là " + c.level, ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng, cấp độ hiện tại của quý đội là " + c.level, ""));
                         NewClan clanInfo = getClaninfoByID(player.idClan);
                         if (clanInfo != null && clanInfo.master.toLowerCase().equals(c.master.toLowerCase())) {
                             clanInfo.money = c.money;
@@ -10419,6 +10442,9 @@ public class Map implements Runnable {
                     }
                 }
             } else if (idpopup == 1 && idActor == player.id) {
+                if (HoiSinhGame.chanCu(player)) {
+                    return; // co che hoi sinh moi: popup cu khong tru tien / hoi sinh nua
+                }
                 if (!this.isvanTienTran()) {
                     int[] cost = new int[]{
                         1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 60000, 70000, 500000, 1000000, 1300000, 1500000, 2000000, 2500000, 3000000, 4500000
@@ -10512,7 +10538,7 @@ public class Map implements Runnable {
                     player.doOpenAllLuckyBox();
                 } else if (idpopup == 6 && idActor == player.id) {
                     if (player.monster != null) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                         return;
                     }
 
@@ -10554,7 +10580,7 @@ public class Map implements Runnable {
                     }
                 } else if (idpopup == 8 && idActor == player.id) {
                     if (player.gender == 2) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có phu quân của bạn mới có thể chọn chức năng này.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bạn đời của bạn mới có thể chọn chức năng này.", ""));
                         return;
                     }
 
@@ -10575,7 +10601,7 @@ public class Map implements Runnable {
 
                     Char p = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                     if (p == null) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Phu nhân của bạn hiện tại chưa online", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn hiện tại chưa online", ""));
                         return;
                     }
 
@@ -10585,7 +10611,7 @@ public class Map implements Runnable {
                     }
 
                     if (p.getLuong() < 150) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Phu nhân của bạn phải có 150 lượng mới có thể ly dị được.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn phải có 150 lượng mới có thể ly dị được.", ""));
                         return;
                     }
 
@@ -10776,7 +10802,7 @@ public class Map implements Runnable {
                     }
 
                     if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc cậu may mắn"));
                         return;
                     }
 
@@ -10789,11 +10815,11 @@ public class Map implements Runnable {
                         player.doInitCharCopy();
                         player.receiveQuestVulan = 1;
                         player.potions[142]--;
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Cảm ơn ngươi đã nhận lời giúp đỡ của ta. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Cảm ơn cậu đã nhận lời giúp đỡ của ta. Chúc cậu may mắn"));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else {
                         player.sendMessage(
-                                MessageCreator.createMsgChat(-49, "Cảm ơn ngươi. Trên đường hành tẩu hãy làm nhiều việc nghĩa hiệp nhé. Chúc ngươi may mắn")
+                                MessageCreator.createMsgChat(-49, "Cảm ơn cậu. Trên đường phiêu lưu hãy làm nhiều việc tốt nhé. Chúc cậu may mắn")
                         );
                     }
                 } else if (idpopup == 14 && idActor == player.id) {
@@ -10802,7 +10828,7 @@ public class Map implements Runnable {
                     }
 
                     if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Chức Nữ đã về rồi. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Illumise đã về rồi. Chúc cậu may mắn"));
                         return;
                     }
 
@@ -10815,16 +10841,19 @@ public class Map implements Runnable {
                         player.doInitCharCopy();
                         player.receiveQuestVulan = 1;
                         player.potions[77]--;
-                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Cảm ơn ngươi đã nhận lời giúp đỡ của ta. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Cảm ơn cậu đã nhận lời giúp đỡ của ta. Chúc cậu may mắn"));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else {
                         player.sendMessage(
-                                MessageCreator.createMsgChat(idNPC49, "Cảm ơn ngươi. Trên đường hành tẩu hãy làm nhiều việc nghĩa hiệp nhé. Chúc ngươi may mắn")
+                                MessageCreator.createMsgChat(idNPC49, "Cảm ơn cậu. Trên đường phiêu lưu hãy làm nhiều việc tốt nhé. Chúc cậu may mắn")
                         );
                     }
                 } 
                 else if (idpopup == -1 && idActor == player.id) 
                 {
+                    if (HoiSinhGame.chanCu(player)) {
+                        return; // nut "Hoi sinh" cua client cu -> hop thoai lua chon moi
+                    }
                     if (!this.isMapChienTruongMoba()) 
                     {
                         if (!this.isvanTienTran()) 
@@ -10881,7 +10910,7 @@ public class Map implements Runnable {
                                 {
                                     if (player.potions[119] > 0) 
                                     {
-                                        String[] menu = new String[]{"Dùng tiên đan", "Hs bằng xu (" + cpx + " xu)"};
+                                        String[] menu = new String[]{"Dùng cỏ hồi sinh", "Hs bằng xu (" + cpx + " xu)"};
                                         player.sendMessage(MessageCreator.createMsgMenu(menu, -802, 0));
                                     } 
                                     else 
@@ -10895,7 +10924,7 @@ public class Map implements Runnable {
                         } 
                         else if (player.potions[119] > 0) 
                         {
-                            String[] menu = new String[]{"Dùng tiên đan", "Hs bằng xu (100000 xu)"};
+                            String[] menu = new String[]{"Dùng cỏ hồi sinh", "Hs bằng xu (100000 xu)"};
                             player.sendMessage(MessageCreator.createMsgMenu(menu, -802, 1));
                         } 
                         else 
@@ -10955,7 +10984,7 @@ public class Map implements Runnable {
                 }
                 else if (idpopup == 121)
                 {
-                    ThoRenThanBi.CreateThanKhi(player);
+                    ThoRenBiAn.CreateThanKhi(player);
                 }
             }
         } catch (Exception var19) {
@@ -11431,7 +11460,7 @@ public class Map implements Runnable {
     }
 
     // Than method (1432 dong) da chuyen sang real/MapNhapText.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi method nay,
+    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doProcessInputText(Char player, Message message) {
         MapNhapText.doProcessInputText(this, player,message);
@@ -11627,7 +11656,7 @@ public class Map implements Runnable {
         }
         if (moc == 3) {
             // Moc 3 duoc chon Phuong Hoang hoac Phuong Hoang Bang truoc khi trao qua.
-            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Phượng Hoàng", "Phượng Hoàng Băng"}, -521, 0));
+            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Moltres", "Articuno"}, -521, 0));
             return;
         }
         if (player.isFullInventory()) {
@@ -11671,43 +11700,43 @@ public class Map implements Runnable {
     // 31 vat pham co dinh, chia doi so trang tu dong (xem soMucMoiTrangDoiThuong).
     // Ten hien thi dung "diem" (khong con "sao vang").
     static final String[] TEN_DOI_THUONG = {
-            "Phi phong Huyền Vũ ma pháp random kháng 7 ngày",
-            "Phi phong Huyền Vũ vật lý random kháng 7 ngày",
-            "Vũ khí thời trang random chỉ số 7 ngày",
-            "Hoả thạch cấp 2 x20",
-            "Nghê Thường 7 ngày",
-            "Xích Cước 7 ngày",
-            "Nguyệt Linh Trượng random chỉ số 7 ngày",
+            "Ruy băng Hoenn đặc biệt random kháng 7 ngày",
+            "Ruy băng Hoenn vật lý random kháng 7 ngày",
+            "Đồ cầm tay thời trang random chỉ số 7 ngày",
+            "Nham thạch cấp 2 x20",
+            "Milotic 7 ngày",
+            "Blaziken 7 ngày",
+            "Gậy Ánh Trăng random chỉ số 7 ngày",
             // Canh: random CA he (Bang/Set/Doc/Lua/EXP/bao kich...) LAN chi so, tru
             // tier cao nhat (tier cao nhat chi danh cho quay so may man). Xem
             // Item.createOptionCanhNgauNhien.
             "Cánh ngẫu nhiên (hệ + chỉ số random) 7 ngày",
             "Mặt nạ Bí Ngô 7 ngày",
-            "Mặt nạ Dạ Xoa 7 ngày",
-            "Mặt nạ Thi Khiển 7 ngày",
-            "Mặt nạ Ngạ Khuyển 7 ngày",
+            "Mặt nạ Gengar 7 ngày",
+            "Mặt nạ Yamask 7 ngày",
+            "Mặt nạ Houndoom 7 ngày",
             // Choi: random CA he (Bang/Set/Doc/Lua) LAN chi so, tru tier cao nhat.
             // Xem Item.createAttChoiNgauNhien.
             "Chổi ngẫu nhiên (hệ + chỉ số random) 7 ngày",
             "Đầu Bí Ngô 7 ngày",
             "Nón Phù Thủy 7 ngày",
-            // 5 skin linh thu, 7 ngay. Xem real.SkinLinhThu — skin chi doi hinh,
+            // 5 skin linh thu, 7 ngay. Xem real.SkinThuCuoi — skin chi doi hinh,
             // hoat anh va cach di chuyen cua con linh thu, khong cong them chi so nao,
             // nen dat gia theo do hiem chu khong theo suc manh.
-            "Skin linh thú Phúc Thú 7 ngày",
-            "Skin linh thú Gấu Trúc 7 ngày",
-            "Skin linh thú Tiên Lộc 7 ngày",
-            "Skin linh thú Xích Dương 7 ngày",
-            "Skin linh thú Chiến Lang 7 ngày",
+            "Skin thú cưỡi Copperajah 7 ngày",
+            "Skin thú cưỡi Pangoro 7 ngày",
+            "Skin thú cưỡi Xerneas 7 ngày",
+            "Skin thú cưỡi Camerupt 7 ngày",
+            "Skin thú cưỡi Lycanroc 7 ngày",
             // Ho ve lenh: random lv1-lv3 CUNG mot cap (5x/6x), 7 ngay. Da bo han muc 4x.
-            "Hộ vệ lệnh 5x random lv1-3, 7 ngày",
-            "Hộ vệ lệnh 6x random lv1-3, 7 ngày",
+            "Vé gọi Pokémon hỗ trợ 5x random lv1-3, 7 ngày",
+            "Vé gọi Pokémon hỗ trợ 6x random lv1-3, 7 ngày",
             // Tu hon dan la Potion (TYPE_TU_HON_DAN_C1=83, data_potion isTrade=0 - da luon
             // KHONG giao dich duoc, khoa la ban chat san co chu khong phai lua chon rieng),
             // dem qua player.potions[83] nen xep chong duoc (khac Item id 714 dung khi cho
             // thu an - tempateID rieng, KHONG stack, moi cai chiem 1 o hanh trang). Yeu cau
             // nguoi dung 17/09/2026: doi 1000 diem lay 100 tu hon dan khoa.
-            "Tụ hồn đan khoá x100",
+            "Kẹo Poké khoá x100",
     };
     static final int[] GIA_DOI_THUONG = {
             500, 500, 1500, 800, 1200, 1500, 1500,
@@ -11723,7 +11752,7 @@ public class Map implements Runnable {
     public void showMenuDiemDoiThuong(Char player) {
         if (player.diemDoiThuong <= 0 && !player.isAdmin) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Bạn không đủ điểm để đổi thưởng. Hãy vận tiêu, cướp tiêu hoặc đánh quái để tích điểm.", ""));
+                    "Bạn không đủ điểm để đổi thưởng. Hãy giao hàng, cướp hàng hoặc đánh quái để tích điểm.", ""));
             return;
         }
         MapQuaTang.showTrangDoiThuong(this, player, 0);
@@ -11772,7 +11801,7 @@ public class Map implements Runnable {
 
 
     // Than method (4.601 dong) da chuyen sang real/MapDoMenu.java.
-    // Chu ky va tinh protected GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi
+    // Chu ky va tinh protected GIU NGUYEN: bytecode trong lib/htbb-core.jar goi
     // Map.doMenu, va lop con van override duoc nhu cu.
     protected void doMenu(Char player, Message message) {
         MapDoMenu.doMenu(this, player, message);
@@ -11890,16 +11919,16 @@ public class Map implements Runnable {
                 String info = "";
                 if (idMenu == 0) {
                     String[] menu = new String[]{
-                        "Phi phong Huyền vũ ma(kim)",
-                        "Phi phong Huyền vũ ma(mộc)",
-                        "Phi phong Huyền vũ ma(thuỷ)",
-                        "Phi phong Huyền vũ ma(hoả)",
-                        "Phi phong Huyền vũ ma(thổ)",
-                        "Phi phong Huyền vũ vật(kim)",
-                        "Phi phong Huyền vũ vật(mộc)",
-                        "Phi phong Huyền vũ vật(thuỷ)",
-                        "Phi phong Huyền vũ vật(hoả)",
-                        "Phi phong Huyền vũ vật(thổ)"
+                        "Ruy băng Hoenn đặc biệt (Thép)",
+                        "Ruy băng Hoenn đặc biệt (Cỏ)",
+                        "Ruy băng Hoenn đặc biệt (Nước)",
+                        "Ruy băng Hoenn đặc biệt (Lửa)",
+                        "Ruy băng Hoenn đặc biệt (Đất)",
+                        "Ruy băng Hoenn vật lý (Thép)",
+                        "Ruy băng Hoenn vật lý (Cỏ)",
+                        "Ruy băng Hoenn vật lý (Nước)",
+                        "Ruy băng Hoenn vật lý (Lửa)",
+                        "Ruy băng Hoenn vật lý (Đất)"
                     };
                     p.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 20));
                 } else if (idMenu == 20) {
@@ -11994,11 +12023,11 @@ public class Map implements Runnable {
                 int indexTop = p.canReceiveGiftOffline;
                 String info = "";
                 if (idMenu == 0) {
-                    String[] menu = new String[]{"Phi phong Khổng tước ma", "Phi phong Khổng tước vật"};
+                    String[] menu = new String[]{"Ruy băng lông công đặc biệt", "Ruy băng lông công vật lý"};
                     p.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 20));
                 } else if (idMenu == 20) {
                     if (indexTop < 3) {
-                        String[] menu = new String[]{"Lân sư tử", "Đương khang", "Bạch cốt mã"};
+                        String[] menu = new String[]{"Suicune", "Piloswine", "Spectrier"};
                         p.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 30 + idOptionMenu));
                     } else if (indexTop == 3) {
                         String[] menu = new String[]{"Lồng đèn Cá chép", "Lồng đèn Ngôi sao", "Lồng đèn Trăng khuyết"};
@@ -12040,7 +12069,7 @@ public class Map implements Runnable {
         if (p.canReceiveGiftOffline >= 0) {
             int indexTop = p.canReceiveGiftOffline;
             if (idMenu == 0) {
-                String[] menu = new String[]{"Phi phong ma theo lv", "Phi phong vật theo lv", "Phi phong ma lv 80", "Phi phong vật lv 80"};
+                String[] menu = new String[]{"Ruy băng đặc biệt theo lv", "Ruy băng vật lý theo lv", "Ruy băng đặc biệt lv 80", "Ruy băng vật lý lv 80"};
                 p.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 20));
             } else if (idMenu == 20) {
                 if (indexTop == 0) {
@@ -12060,7 +12089,7 @@ public class Map implements Runnable {
                     p.sendMessage(MessageCreator.createCharGemItem(p));
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                     p.sendMessage(
-                            MessageCreator.createServerAlertMessage("Nhận được " + it.getName() + " và 1 trứng Hoả Kỳ Lân và nguyên liệu khoá mỗi loại 10 viên", "")
+                            MessageCreator.createServerAlertMessage("Nhận được " + it.getName() + " và 1 trứng Ponyta và nguyên liệu khoá mỗi loại 10 viên", "")
                     );
                     Database.instance
                             .saveOrtherLog(
@@ -12072,7 +12101,7 @@ public class Map implements Runnable {
                     p.potions[71]++;
                     Item it = Char.createPhiPhongMaxBaoKich(p, idOptionMenu % 2, 0, null, true, idOptionMenu > 1, 0, false);
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được " + it.getName() + " và 1 trứng Hoả Kỳ Lân", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được " + it.getName() + " và 1 trứng Ponyta", ""));
                     Database.instance.saveOrtherLog("", p.charname, "nhan qua top 3: " + it.getName() + "_" + it.getInfoSave() + " và 1 trung hkl", "quatop");
                 } else if (indexTop > 2) {
                     String[] menu = new String[]{"Trứng Cú", "Trứng Rồng", "Trứng Yêu Tinh", "Trứng Dơi", "Trứng Đại bàng"};
@@ -12088,7 +12117,7 @@ public class Map implements Runnable {
                 Item choi = Char.createChoi(idchoi[idOptionMenu], p, 129600, 1, true);
                 p.sendMessage(MessageCreator.createCharGemItem(p));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được " + newItem.getName() + ", " + choi.getName() + " và 1 trứng Hoả Kỳ Lân", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Nhận được " + newItem.getName() + ", " + choi.getName() + " và 1 trứng Ponyta", ""));
                 Database.instance
                         .saveOrtherLog(
                                 "",
@@ -12125,8 +12154,8 @@ public class Map implements Runnable {
                 return;
             }
 
-            String[] menu = new String[]{"Bạch mi", "Thuý vũ hồng sam", "Hắc lang", "Thần nữ"};
-            String[] menu2 = new String[]{"Phi phong ma", "Phi phong vật"};
+            String[] menu = new String[]{"Absol", "Thuý vũ hồng sam", "Zoroark", "Gardevoir"};
+            String[] menu2 = new String[]{"Ruy băng đặc biệt", "Ruy băng vật lý"};
             String info = "Nhận quà top " + player.canReceiveGiftOffline;
             if (idMenu == 0) {
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 20));
@@ -12156,17 +12185,17 @@ public class Map implements Runnable {
                 if (idMenu == 22) {
                     doBuyModelClothe(player, 725, daytt, 1);
                     info = info
-                            + ". Nhận thời trang bạch mi, phi phong "
+                            + ". Nhận thời trang Absol, ruy băng "
                             + idOptionMenu
                             + " luong: "
                             + luong[player.canReceiveGiftOffline]
                             + " ,lk: "
                             + luongk[player.canReceiveGiftOffline];
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Bạch Mi", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Absol", ""));
                 } else if (idMenu == 23) {
                     doBuyModelClothe(player, 726, daytt, 1);
                     info = info
-                            + ". Nhận thời trang thuý vũ hồng sam, phi phong "
+                            + ". Nhận thời trang Oricorio, ruy băng "
                             + idOptionMenu
                             + " luong: "
                             + luong[player.canReceiveGiftOffline]
@@ -12176,23 +12205,23 @@ public class Map implements Runnable {
                 } else if (idMenu == 24) {
                     doBuyModelClothe(player, 723, daytt, 1);
                     info = info
-                            + ". Nhận thời trang hắc lang, phi phong "
+                            + ". Nhận thời trang Zoroark, ruy băng "
                             + idOptionMenu
                             + " luong: "
                             + luong[player.canReceiveGiftOffline]
                             + " ,lk: "
                             + luongk[player.canReceiveGiftOffline];
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Hắc Lang", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Zoroark", ""));
                 } else if (idMenu == 25) {
                     doBuyModelClothe(player, 724, daytt, 1);
                     info = info
-                            + ". Nhận thời trang thần nữ, phi phong "
+                            + ". Nhận thời trang Gardevoir, ruy băng "
                             + idOptionMenu
                             + " luong: "
                             + luong[player.canReceiveGiftOffline]
                             + " ,lk: "
                             + luongk[player.canReceiveGiftOffline];
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Thần Nữ", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Gardevoir", ""));
                 }
 
                 player.addLuong(luong[player.canReceiveGiftOffline]);
@@ -12222,16 +12251,16 @@ public class Map implements Runnable {
             }
 
             String[] menu = new String[]{
-                "Hộ vệ nam hệ kim",
-                "Hộ vệ nữ hệ kim",
-                "Hộ vệ nam hệ hoả",
-                "Hộ vệ nữ hệ hoả",
-                "Hộ vệ nam hệ thuỷ",
-                "Hộ vệ nữ hệ thuỷ",
-                "Hộ vệ nam hệ thổ",
-                "Hộ vệ nữ hệ thổ",
-                "Hộ vệ nam hệ mộc",
-                "Hộ vệ nữ hệ mộc"
+                "Pokémon hỗ trợ nam hệ Thép",
+                "Pokémon hỗ trợ nữ hệ Thép",
+                "Pokémon hỗ trợ nam hệ Lửa",
+                "Pokémon hỗ trợ nữ hệ Lửa",
+                "Pokémon hỗ trợ nam hệ Nước",
+                "Pokémon hỗ trợ nữ hệ Nước",
+                "Pokémon hỗ trợ nam hệ Đất",
+                "Pokémon hỗ trợ nữ hệ Đất",
+                "Pokémon hỗ trợ nam hệ Cỏ",
+                "Pokémon hỗ trợ nữ hệ Cỏ"
             };
             player.sendMessage(MessageCreator.createMsgMenu(menu, -512, 0));
         } catch (Exception var3) {
@@ -12255,7 +12284,7 @@ public class Map implements Runnable {
             }
 
             Animal anima = new Animal();
-            anima.name = "Rồng Băng";
+            anima.name = "Dragonite";
             anima.idImg = Animal.RONG_LON;
             anima.createAtt();
             // Mo o dong dac biet thu hai cho bang ban phat san bang giftcode RONGBANG:<ngay>
@@ -12276,7 +12305,7 @@ public class Map implements Runnable {
                     .saveOrtherLog(
                             "tob_log_other_animal", player.charname, "ap trung rong bang | " + anima.getAttribute(), "crt"
                     );
-            player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã nở được linh thú " + anima.name, ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã nở được thú cưỡi " + anima.name, ""));
             return true;
         } catch (Exception var4) {
             var4.printStackTrace();
@@ -12436,11 +12465,11 @@ public class Map implements Runnable {
             try {
                 if (idgift[index] == 70) {
                     sendAllCharServer(
-                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Phượng hoàng băng khi mở hộp quà Halloween")
+                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Articuno khi mở hộp quà Halloween")
                     );
                 } else if (idgift[index] == 86) {
                     sendAllCharServer(
-                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Phượng hoàng lửa khi mở hộp quà Halloween")
+                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Moltres khi mở hộp quà Halloween")
                     );
                 }
             } catch (IOException var14) {
@@ -12496,7 +12525,7 @@ public class Map implements Runnable {
 
     public static void doHopQuaBiMatHaloween2016(Char player) {
         player.sendMessage(
-                MessageCreator.createMsgMenu(new String[]{"Mặt nạ bí ngô", "Mặt nạ ngạ quỷ", "Mặt nạ ngạ khuyển", "Mặt nạ thi khiển", "Mặt nạ dạ xoa"}, -515, 0)
+                MessageCreator.createMsgMenu(new String[]{"Mặt nạ bí ngô", "Mặt nạ Haunter", "Mặt nạ Houndoom", "Mặt nạ Yamask", "Mặt nạ Gengar"}, -515, 0)
         );
     }
 
@@ -12802,8 +12831,8 @@ public class Map implements Runnable {
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
 
                 try {
-                    sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được nhân sâm khi mở rương dracula"));
-                } catch (IOException var13) {
+                    com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được Berry Razz vàng khi mở rương Darkrai");
+                } catch (Exception var13) {
                 }
             } else if (typegift[index] == 6) {
                 int soluong = soluongmin[index];
@@ -12952,8 +12981,8 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         if (idgift[index] == 9) {
                             try {
-                                sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được nhân sâm khi mở bao lì xì"));
-                            } catch (IOException var13) {
+                                com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được Berry Razz vàng khi mở bao lì xì");
+                            } catch (Exception var13) {
                             }
                         }
                     } else if (typegift[index] == 3) {
@@ -13042,7 +13071,7 @@ public class Map implements Runnable {
             int[] time = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7};
             int idt = r.nextInt(time.length);
             player.createPoro((long) time[idt], false);
-            info = info + " đại bạch thử " + time[idt] + " ngày, ";
+            info = info + " Wooloo " + time[idt] + " ngày, ";
         } else if (typegift[index] == -1) {
             int soluong = r.nextInt(11) * 1000 + 10000;
             player.addXu((long) soluong, "map 57");
@@ -13543,7 +13572,7 @@ public class Map implements Runnable {
                         int idAtt = r.nextInt(5);
                         int[] pcAtt = getPercentAppearAtt((Byte) soluong.get(0), material[0], posMax, material[1][5] > 0 ? material[1][5] : 0);
                         System.out.print(pcAtt[0] + "," + pcAtt[1] + "," + pcAtt[2] + "," + pcAtt[3] + "," + pcAtt[4]);
-                        String[] nameAtt = new String[]{"", "Nhất phẩm", "Nhị phẩm", "Tam phẩm", "Tứ phẩm", "Ngũ phẩm"};
+                        String[] nameAtt = new String[]{"", "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Hạng 5"};
                         int[] idOfAtt = new int[]{5, 4, 3, 2, 1};
                         int pcatt = r.nextInt(100);
                         int tempPCAtt = -100;
@@ -13727,7 +13756,7 @@ public class Map implements Runnable {
         if (idMenu == 0 && idOptionMenu == 0) {
             if (player.idTongKim > -1) {
                 player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn đã đăng ký tham gia chiến trường tống kim, nhóm của bạn là nhóm " + (player.idTeamTongKim + 1), "")
+                        MessageCreator.createServerAlertMessage("Bạn đã đăng ký tham gia chiến trường liên vùng, nhóm của bạn là nhóm " + (player.idTeamTongKim + 1), "")
                 );
                 return;
             }
@@ -13739,14 +13768,14 @@ public class Map implements Runnable {
                 player.idTeamTongKim = (byte) (abs(result) - 1);
                 teamtongkim = (byte) (abs(result) % 2);
                 player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn đã đăng ký tham gia chiến trường tống kim, nhóm của bạn là nhóm " + abs(result), "")
+                        MessageCreator.createServerAlertMessage("Bạn đã đăng ký tham gia chiến trường liên vùng, nhóm của bạn là nhóm " + abs(result), "")
                 );
             } else if (result == -2) {
                 player.idTongKim = MapTongKim.ID_TONG_KIM;
                 player.idTeamTongKim = (byte) (abs(result) - 1);
                 teamtongkim = (byte) (abs(result) % 2);
                 player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn đã đăng ký tham gia chiến trường tống kim, nhóm của bạn là nhóm " + abs(result), "")
+                        MessageCreator.createServerAlertMessage("Bạn đã đăng ký tham gia chiến trường liên vùng, nhóm của bạn là nhóm " + abs(result), "")
                 );
             }
         }
@@ -13994,7 +14023,7 @@ public class Map implements Runnable {
         // MapCheTao.doCreateItem (idMenu==11) nem ArrayIndexOutOfBoundsException ngay khi
         // idTempateItemCreate[type][13] duoc doc - loi bi nuot boi catch(Exception) bao quanh
         // nen nguoi choi khong thay gi ca, chi thay "nang cap len lv86" khong co phan ung
-        // (phat hien 05/09/2026, xem test/KiemNangCapVuKhiLv86.java).
+        // (phat hien 05/09/2026, xem test/KiemNangCapDoCamTayLv86.java).
         short[][] idTempateItemCreate = new short[][]{
             {268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 640, 639},
             {292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 644, 643},
@@ -14592,7 +14621,7 @@ public class Map implements Runnable {
     void doMove2Map(Char player, int index, int mapID) {
         try {
             if (Char.isSuKienMiniChucNu() && player.charCopy != null && player.map.mapId == player.charCopy.map.mapId) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Chức Nữ", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Illumise", ""));
                 return;
             }
 
@@ -14601,7 +14630,7 @@ public class Map implements Runnable {
             }
 
             if (player.char_quest != null && player.char_quest.receive == 1 && QuestTemplate.getTypeQuest(player.char_quest.id_quest) == 1) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể di chuyển bằng xa phu khi đang làm nhiệm vụ vận chuyển", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể di chuyển bằng Pidgeot (Bay) khi đang làm nhiệm vụ vận chuyển", ""));
                 return;
             }
 
@@ -15227,18 +15256,18 @@ public class Map implements Runnable {
             // Bo sung kiem toan D2: thong nhat khoang thue doi voi duong nhap chu (MapNhapText,
             // 1..20%) - truoc day goi tin cho 0..30, nhap chu chi 1..20.
             if (tax < THUE_DOI_TOI_THIEU || tax > THUE_DOI_TOI_DA) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Mức thuế tối đa có thể thu là " + THUE_DOI_TOI_DA + " phần trăm", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Mức thuế tối đa là " + THUE_DOI_TOI_DA + "%.", ""));
                 return;
             }
 
             NewClan clanInfo = getClaninfoByID(player.idClan);
             if (player.idClan == -1 || clanInfo == null || clanInfo != null && !clanInfo.master.toLowerCase().equals(player.charname.toLowerCase())) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể đặt thuế.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể đặt thuế.", ""));
                 return;
             }
 
             if (player.idClan != -1 && player.idClan != idClanTown[player.myCountry]) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang đang sở hữu thành mới được đặt thuế.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội đang sở hữu Gym mới được đặt thuế.", ""));
                 return;
             }
 
@@ -15535,7 +15564,7 @@ public class Map implements Runnable {
             int charclass = msg.dis.readByte();
             int skillSelectIndex = msg.dis.readByte();
             if (player.charClass != charclass) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể học kỹ năng của nhân vật khác", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể học kỹ năng của Pokémon khác", ""));
                 return;
             }
 
@@ -15568,12 +15597,12 @@ public class Map implements Runnable {
 
     void doAddSkillPoint(Char player, Message message) throws IOException {
         if (player.skill[0] == 0) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Chưa học kỹ năng chiến đấu từ Lâm tướng quân", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chưa học kỹ năng chiến đấu từ Blaziken", ""));
         } else {
             byte skillType = message.dis.readByte();
             if (skillType >= 0 && skillType < player.skill.length) {
                 if (player.skill[skillType] == -1) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Xin gặp Lâm tướng quân để học kỹ năng này", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Xin gặp Blaziken để học kỹ năng này", ""));
                 } else {
                     if (player.skillpoint > 0 && player.skill[skillType] < 9) {
                         int lv = CharManager.getLvAddSkill(player.charClass, skillType, player.skill[skillType]);
@@ -15926,7 +15955,7 @@ public class Map implements Runnable {
                     // kiem tra danh cho do nhan vat (dung mon phai, dung gioi tinh,
                     // isArmor...) va de gui lai goi thong tin thu cuoi o duoi.
                     isItemAnimal = isWearingAnimal(item.getTemplate().type)
-                            || SkinLinhThu.laItemSkin(item.getTemplate().id);
+                            || SkinThuCuoi.laItemSkin(item.getTemplate().id);
                     if (t == 24) {
                         return;
                     }
@@ -16231,7 +16260,7 @@ public class Map implements Runnable {
                         }
 
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang giao hàng", ""));
                             return;
                         }
 
@@ -16311,7 +16340,7 @@ public class Map implements Runnable {
 
                     // Vua doi trang bi thu: cap nhat skin dang mang TRUOC khi dung goi
                     // tin, vi ca ba goi ben duoi deu mang hinh con thu.
-                    final boolean doiSkin = isItemAnimal && SkinLinhThu.dongBoTheoTrangBi(player);
+                    final boolean doiSkin = isItemAnimal && SkinThuCuoi.dongBoTheoTrangBi(player);
                     // TINH LAI CHI SO PHAI NAM SAU dongBoTheoTrangBi, KHONG duoc truoc.
                     //
                     // LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "mac skin thi bang Tiem
@@ -16326,9 +16355,9 @@ public class Map implements Runnable {
                     // TAI CHO luc dung goi tin, doc idSkinLinhThu vua moi cap nhat - nen no
                     // tang ngay. Nguoi choi thay tiem nang nhay len ma tan cong dung im.
                     //
-                    // Ba duong kia (dongBoVaGui, doRideAnimal, SelectCharHandler) da dat dung
+                    // Ba duong kia (dongBoVaGui, doCuoiThu, SelectCharHandler) da dat dung
                     // thu tu tu truoc; rieng duong nay bi sot. Xem kiemTinhLaiChiSo() trong
-                    // test/KiemSkinLinhThu.java - da them phep kiem cho ca bon duong.
+                    // test/KiemSkinThuCuoi.java - da them phep kiem cho ca bon duong.
                     player.calculateAttrib();
                     Message m = MessageCreator.createMainCharInfoMessage(player);
                     player.sendMessage(m);
@@ -16349,7 +16378,7 @@ public class Map implements Runnable {
                             // chu khong dung de ve con thu tren ban do. Hinh tren ban do
                             // di bang createCharInfo, da gui vo dieu kien o cuoi ham.
                             player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    SkinLinhThu.thongBaoDoiSkin(player), ""));
+                                    SkinThuCuoi.thongBaoDoiSkin(player), ""));
                         }
                     }
 
@@ -16409,7 +16438,7 @@ public class Map implements Runnable {
         // Gui lai dung nhung goi ma duong MAC gui, khong thi bang van hien mon vua thao.
         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-        SkinLinhThu.dongBoVaGui(player);
+        SkinThuCuoi.dongBoVaGui(player);
         return true;
     }
 
@@ -16430,8 +16459,8 @@ public class Map implements Runnable {
             // — cho buoc lai idAnimal. Nhung do la mot rang buoc rat mong, chi can them
             // mot luong doi thu quen gui goi do la loi bat ra.
             final boolean cungLoai = wItem.getTemplate().type == iItem.getTemplate().type;
-            final boolean laSkin = SkinLinhThu.laItemSkin(iItem.getTemplate().id);
-            if (cungLoai && (laSkin ? SkinLinhThu.laItemSkin(wItem.getTemplate().id)
+            final boolean laSkin = SkinThuCuoi.laItemSkin(iItem.getTemplate().id);
+            if (cungLoai && (laSkin ? SkinThuCuoi.laItemSkin(wItem.getTemplate().id)
                                     : wItem.idAnimal == player.animalRide.dbid)) {
                 player.awItems.remove(wItem);
                 player.iItems.add(wItem);
@@ -16508,7 +16537,7 @@ public class Map implements Runnable {
                         try {
                             Char p = (Char) CharManager.instance.vChars.elementAt(j);
                             p.sendMessage(MessageCreator.createMsgStartGetTown(p.inCountry));
-                            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm thành bắt đầu"));
+                            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm Gym bắt đầu"));
                             if (p.isBot == -1 && p.mapID >= 201 && p.mapID <= 271 && p.mapID != 202) {
                                 p.map.move2Map(p, homeX, homeY, mapstart[r.nextInt(MessageCreator.nclone)], p.inCountry);
                             }
@@ -16562,7 +16591,7 @@ public class Map implements Runnable {
                     try {
                         Char p = (Char) CharManager.instance.vChars.elementAt(j);
                         p.sendMessage(MessageCreator.createMsgStartGetTown(p.inCountry));
-                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm thành bắt đầu"));
+                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm Gym bắt đầu"));
                         if (p.isBot == -1 && p.mapID >= 201 && p.mapID <= 271 && p.mapID != 202) {
                             this.move2Map(p, homeX, homeY, mapstart[r.nextInt(MessageCreator.nclone)], p.inCountry);
                         }
@@ -16616,7 +16645,7 @@ public class Map implements Runnable {
         }
 
         if (!info.equals("")) {
-            info = "Bắt đầu diễn ra sự kiện chiếm lãnh thổ tại " + info.substring(0, info.length() - 1);
+            info = "Bắt đầu diễn ra sự kiện chiếm vùng tại " + info.substring(0, info.length() - 1);
 
             try {
                 sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(info));
@@ -16769,7 +16798,7 @@ public class Map implements Runnable {
     }
 
     // Than method (1497 dong) da chuyen sang real/MapChat.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/NQSH_5h.jar goi method nay,
+    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
     // va lop con van override duoc nhu cu.
     public void doChat(Char player, Message message) throws IOException {
         MapChat.doChat(this, player,message);
@@ -16905,8 +16934,8 @@ public class Map implements Runnable {
         if (!this.checkTrade(player)) {
             try {
                 if (this.idXaphu != -1 && player.mapID == this.mapId) {
-                    // GD2 2.8: gia theo thu nhap khi bat co (BaiLuyenCong.giaDichChuyen).
-                    final long giaXaPhu = BaiLuyenCong.giaDichChuyen(player, (long) RealController.xaphu[this.idXaphu].price[indexXaphu]);
+                    // GD2 2.8: gia theo thu nhap khi bat co (BaiLuyenTap.giaDichChuyen).
+                    final long giaXaPhu = BaiLuyenTap.giaDichChuyen(player, (long) RealController.xaphu[this.idXaphu].price[indexXaphu]);
                     if (player.getxu() < giaXaPhu) {
                         return;
                     }
@@ -17004,7 +17033,7 @@ public class Map implements Runnable {
                     || player.mapID == 1904)
                     && !TeamServer.isServerIndo()) {
                 player.sendMessage(
-                        MessageCreator.createMsgNpc("Thần tài", posNpcThanTai[player.inCountry][0], posNpcThanTai[player.inCountry][1], 28, 31, 2, 14, -24, (byte) 1)
+                        MessageCreator.createMsgNpc("Meowth", posNpcThanTai[player.inCountry][0], posNpcThanTai[player.inCountry][1], 28, 31, 2, 14, -24, (byte) 1)
                 );
                 if (!Char.isFinishAllSuKienHe2017()) {
                     player.sendMessage(
@@ -17019,7 +17048,7 @@ public class Map implements Runnable {
                     int[][] posLongDenKeoQuan = new int[][]{{22 * 16, 36 * 16}, {288, 512}, {560, 704}};
                     player.sendMessage(
                             MessageCreator.createMsgNpc(
-                                    "Lồng đèn Lân Sư Tử", posLongDenKeoQuan[player.inCountry][0], posLongDenKeoQuan[player.inCountry][1], 100, 150, 3, 21, -65, (byte) 1
+                                    "Litleo", posLongDenKeoQuan[player.inCountry][0], posLongDenKeoQuan[player.inCountry][1], 100, 150, 3, 21, -65, (byte) 1
                             )
                     );
                 }
@@ -17080,6 +17109,47 @@ public class Map implements Runnable {
     }
 
     public void sendInfoNpcFarm(Char player, int idImg, int house_store) {
+    }
+
+    /**
+     * Che do Pokemon: ban do da ve lai (cMap_pokemon) nhung vung chu nhat ALL_LOCALTION_MAP
+     * (MapNapTaiNguyen.loadAllLocaltionMap) van la toa do ban do GOC, nhieu o cong moi nam ngoai
+     * vung (map 4/7/9/70/201...) -> nguoi choi buoc vao cong tu o ke ben bi kick "hack chuyen map"
+     * (BotChucNang cong_tat_ca bat duoc 18/10/2026). Kiem tra thay the CHAT hon: nguoi choi dung
+     * trong 2 o quanh mot o cong cua map nay VA dich (map, x, y) khop dung mot ban sao trong
+     * locationMap cua huong cong do.
+     */
+    public boolean dungCanhCong(Char p, int toMapID, int toTX, int toTY) {
+        try {
+            int dx = p.x / 16;
+            int dy = p.y / 16;
+            int index = -1;
+            for (int ix = 0; ix < mapID.length && index < 0; ix++) {
+                for (int j = 0; j < mapID[ix].length; j++) {
+                    if (mapID[ix][j] == this.mapId) {
+                        index = idArrMap[ix];
+                        break;
+                    }
+                }
+            }
+            if (index < 0 || index >= locationMap.length) {
+                return false;
+            }
+            for (int i = 0; i < this.mapchangeLocations.size(); i++) {
+                CMLocation cm = (CMLocation) this.mapchangeLocations.get(i);
+                if (Math.abs(dx - cm.toX) > 2 || Math.abs(dy - cm.toY) > 2 || cm.toM < 0 || cm.toM >= locationMap[index].length) {
+                    continue;
+                }
+                short[] loc = locationMap[index][cm.toM];
+                for (int k = 0; k + 2 < loc.length; k += 3) {
+                    if (loc[k] == toMapID && loc[k + 1] == toTX && loc[k + 2] == toTY) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 
     public boolean checkChangeMap(Char p, int x, int y, int mapidChange, int xout, int yout) {
@@ -17230,6 +17300,9 @@ public class Map implements Runnable {
                 player.timeHs = Char.timeAddMoreHs;
                 player.timedie = 0L;
                 player.timeWaitComeHome = 0L;
+                final boolean hsGuc = player.hp <= 0; // guc that (khong phai Tho dia) -> phat nhe sau khi ve
+                // Vung Hoenn: ve Trung tam Pokemon cua thi tran Hoenn gan nhat (truoc day ve lang nha o Kanto).
+                final int[] hsHoenn = HoiSinhGame.diemVeTrungTam(player);
                 int[] var10000 = new int[]{0, 301};
                 int[][] mapstart1 = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
                 int homeX = 18 + Database.r.nextInt() % 5;
@@ -17256,6 +17329,11 @@ public class Map implements Runnable {
                 }
 
                 int homeMap = player.hp > 0 && !player.isThodia ? player.mapID : mapstart[r.nextInt(mapstart.length)];
+                if (hsHoenn != null) {
+                    homeMap = hsHoenn[0];
+                    homeX = hsHoenn[1];
+                    homeY = hsHoenn[2];
+                }
                 if (!nwar[player.inCountry] && (player.hp <= 0 || player.isThodia)) {
                     player.inCountry = player.myCountry;
                 }
@@ -17273,6 +17351,10 @@ public class Map implements Runnable {
 
                 player.x = homeX * 16 + Database.r.nextInt() % 16;
                 player.y = homeY * 16 + Database.r.nextInt() % 16;
+                if (hsHoenn != null) {
+                    player.x = homeX * 16 + 8; // dung o da kiem di duoc truoc Trung tam
+                    player.y = homeY * 16 + 8;
+                }
                 player.mapID = homeMap;
                 player.gotoIsland = false;
                 player.calculateAttrib();
@@ -17294,6 +17376,9 @@ public class Map implements Runnable {
                 this.sendInfoNpc(player);
                 player.doSendProperties();
                 player.sendPetEff();
+                if (hsGuc) {
+                    HoiSinhGame.sauVeTrungTam(player); // mat EXP cap (khong tut cap), do ben, Met moi
+                }
             }
         }
     }
@@ -17301,81 +17386,57 @@ public class Map implements Runnable {
     public void doStartThreadUpdatePlayer() {
     }
 
+    // ---- Vong lap cua ban do KHONG chia khu (nRegion <= 0): pool CHUNG (VongLapChung) ----
+    // Truoc day moi map 4 thread (run/update, THREAD SAND, 2 vong goi tin; map 80 them 2). Nay la
+    // Nhip/Lan tren pool chung, than vong GIU NGUYEN. Tick cua map KHONG giam nhip khi rong: than
+    // update() cua map chua hen gio TOAN SERVER (map 201: su kien/ngay moi/chien tranh, map 25,
+    // map su kien quai, updateWind: boss Dracula) - chay du Map.DELAY_UPDATE_MAP nhu cu.
+    com.htbb.runtime.VongLapChung.Nhip nhipUpdate;
+    com.htbb.runtime.VongLapChung.Nhip nhipSand;
+    com.htbb.runtime.VongLapChung.Nhip nhipWind;
+    final com.htbb.runtime.VongLapChung.Lan[] lanGoiTin = new com.htbb.runtime.VongLapChung.Lan[3];
+
+    /** Tao vong goi tin cua phe (than = MapVongLap.donGoiTin, giong vong cu). */
+    void taoLanGoiTin(final int phe) {
+        final com.htbb.runtime.VongLapChung.Lan[] o = new com.htbb.runtime.VongLapChung.Lan[1];
+        o[0] = new com.htbb.runtime.VongLapChung.Lan(new Runnable() {
+            @Override
+            public void run() {
+                MapVongLap.donGoiTin(Map.this, phe, o[0]);
+            }
+        });
+        if (this.mapId == 201) {
+            // Vong cu cua map 201 con cap nhat NPC nhan the (chiem thanh) moi Map.timeDelay ms.
+            o[0].kichDinhKy(Math.max(10L, (long) Map.timeDelay));
+        }
+        this.lanGoiTin[phe] = o[0];
+    }
+
+    void kichGoiTin() {
+        for (int i = 0; i < this.lanGoiTin.length; i++) {
+            com.htbb.runtime.VongLapChung.Lan lan = this.lanGoiTin[i];
+            if (lan != null && i < this.allPlayerMessages.size() && ((Vector) this.allPlayerMessages.get(i)).size() > 0) {
+                lan.kich();
+            }
+        }
+    }
+
     public void startLeafVilage() {
         if (this.nRegion <= 0) {
-            new Thread(() -> {
-                Thread.currentThread().setName("MAP SEND MONSTER 2 player" + Map.this.mapId);
-
-                while (!AdminHandler.isStopServer) {
-                    try {
-                        int count = 0;
-                        new Vector();
-                        Vector<PlayerMessage> playerMessages = (Vector) Map.this.allPlayerMessages.get(1);
-
-                        while (playerMessages.size() > 0) {
-                            PlayerMessage pm = (PlayerMessage) playerMessages.remove(0);
-                            if (!pm.player.exit) {
-                                Map.this.processMessage(pm.player, pm.message);
-                            }
-
-                            if (++count == 500) {
-                                count = 0;
-                                Thread.sleep(5L);
-                            }
-                        }
-
-                        Vector<NpcReceiveCard> npcReceiveCard = (Vector<NpcReceiveCard>) Map.npcReceiveCard.get(1);
-                        if (Map.getTown[1] && Map.this.mapId == 201) {
-                            for (int i = 0; i < npcReceiveCard.size(); i++) {
-                                ((NpcReceiveCard) npcReceiveCard.get(i)).update();
-                                if (NpcReceiveCard.isFinish[1]) {
-                                    break;
-                                }
-                            }
-
-                            if (NpcReceiveCard.isFinish[1]) {
-                                Map.getTown[1] = false;
-                                npcReceiveCard.removeAll(npcReceiveCard);
-                            }
-                        }
-
-                        synchronized (Map.this.LOCK1) {
-                            Map.this.LOCK1.wait((long) Map.timeDelay);
-                        }
-                    } catch (Exception var6) {
-                        var6.printStackTrace();
-                    }
-                }
-
-            }).start();
+            this.taoLanGoiTin(1);
         }
     }
 
     public void startWindVilage() {
         if (this.mapIDLoadMap == 80) {
             if (this.nRegion <= 0) {
-                new Thread(() -> {
-
-                    Thread.currentThread().setName("THREAD LEAF " + Map.this.mapId);
-
-                    while (true) {
+                this.nhipWind = new com.htbb.runtime.VongLapChung.Nhip("map " + this.mapId + " wind", DELAY_UPDATE_MAP, new Runnable() {
+                    @Override
+                    public void run() {
                         try {
-                            if (AdminHandler.isStopServer) {
-                                Map.this.map_run_state = 0;
-                                return;
-                            }
-
-                            while (RealController.savingChar) {
-                                Thread.sleep(100L);
-                            }
-
                             Map.this.map_run_state2 = 0;
-                            long l1 = System.currentTimeMillis();
-                            if (l1 - Map.this.lastTimeUpdateMap2 >= Map.DELAY_UPDATE_MAP) {
-                                Map.this.updateWind();
-                                Map.this.lastTimeUpdateMap2 = System.currentTimeMillis();
-                            }
-
+                            Map.this.updateWind();
+                            Map.this.lastTimeUpdateMap2 = System.currentTimeMillis();
                             Map.this.map_run_state2 = 1;
                         } catch (Exception var5) {
                             if (!daBaoLoiRunMapWind) {
@@ -17384,63 +17445,9 @@ public class Map implements Runnable {
                                 var5.printStackTrace();
                             }
                         }
-
-                        try {
-                            synchronized (Map.this.LOCK2) {
-                                Map.this.LOCK2.wait(Map.DELAY_UPDATE_MAP);
-                            }
-                        } catch (Exception var4) {
-                        }
                     }
-
-                }).start();
-                new Thread(() -> {
-
-                    Thread.currentThread().setName("MAP SEND MONSTER 2 player" + Map.this.mapId);
-
-                    while (!AdminHandler.isStopServer) {
-                        try {
-                            int count = 0;
-                            new Vector();
-                            Vector<PlayerMessage> playerMessages = (Vector) Map.this.allPlayerMessages.get(2);
-
-                            while (playerMessages.size() > 0) {
-                                PlayerMessage pm = (PlayerMessage) playerMessages.remove(0);
-                                if (!pm.player.exit) {
-                                    Map.this.processMessage(pm.player, pm.message);
-                                }
-
-                                if (++count == 500) {
-                                    count = 0;
-                                    Thread.sleep(5L);
-                                }
-                            }
-
-                            if (Map.getTown[2] && Map.this.mapId == 201) {
-                                Vector<NpcReceiveCard> npcReceiveCard = (Vector<NpcReceiveCard>) Map.npcReceiveCard.get(2);
-
-                                for (int i = 0; i < npcReceiveCard.size(); i++) {
-                                    ((NpcReceiveCard) npcReceiveCard.get(i)).update();
-                                    if (NpcReceiveCard.isFinish[2]) {
-                                        break;
-                                    }
-                                }
-
-                                if (NpcReceiveCard.isFinish[2]) {
-                                    Map.getTown[2] = false;
-                                    npcReceiveCard.removeAll(npcReceiveCard);
-                                }
-                            }
-
-                            synchronized (Map.this.LOCK2) {
-                                Map.this.LOCK2.wait((long) Map.timeDelay);
-                            }
-                        } catch (Exception var6) {
-                            var6.printStackTrace();
-                        }
-                    }
-
-                }).start();
+                }, null).batDau(DELAY_UPDATE_MAP);
+                this.taoLanGoiTin(2);
             }
         }
     }
@@ -17450,44 +17457,32 @@ public class Map implements Runnable {
         MapVongLap.startSandVilage(this);
     }
 
+    /**
+     * Truoc day: vong lap vo han "MAP <id>" (update() moi DELAY_UPDATE_MAP). Nay dang ky tick
+     * tren pool chung roi TRA VE NGAY - thread do MapKhoiTao/Map(int) tao ra ket thuc luon.
+     * Lop con trong jar (MapBoss, PrivateMap, ArenaMap, DungeonMap, MapVanTienTran) ghi de run()
+     * bang vong lap rieng cua no - khong doi.
+     */
     public void run() {
-        if (this.nRegion <= 0) {
-            Thread.currentThread().setName("MAP " + this.mapId);
-
-            while (true) {
-                try {
-                    if (AdminHandler.isStopServer) {
-                        this.map_run_state = 0;
-                        return;
+        if (this.nRegion <= 0 && this.nhipUpdate == null) {
+            this.nhipUpdate = new com.htbb.runtime.VongLapChung.Nhip("map " + this.mapId, DELAY_UPDATE_MAP, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Map.this.map_run_state1 = 0;
+                        Map.this.update();
+                        Map.this.lastTimeUpdateMap1 = System.currentTimeMillis();
+                        Map.this.map_run_state1 = 1;
+                    } catch (Exception var5) {
+                        if (!daBaoLoiRunMapUpdate) {
+                            daBaoLoiRunMapUpdate = true;
+                            System.out.println("LOI TRONG HAM RUN MAP (update, chi bao 1 lan - lap lai se ngap log):");
+                            var5.printStackTrace();
+                        }
                     }
-
-                    while (RealController.savingChar) {
-                        Thread.sleep(100L);
-                    }
-
-                    this.map_run_state1 = 0;
-                    long l1 = System.currentTimeMillis();
-                    if (l1 - this.lastTimeUpdateMap1 >= DELAY_UPDATE_MAP) {
-                        this.update();
-                        this.lastTimeUpdateMap1 = System.currentTimeMillis();
-                    }
-
-                    this.map_run_state1 = 1;
-                } catch (Exception var5) {
-                    if (!daBaoLoiRunMapUpdate) {
-                        daBaoLoiRunMapUpdate = true;
-                        System.out.println("LOI TRONG HAM RUN MAP (update, chi bao 1 lan - lap lai se ngap log):");
-                        var5.printStackTrace();
-                    }
+                    Map.this.kichGoiTin();
                 }
-
-                try {
-                    synchronized (this.LOCK1) {
-                        this.LOCK1.wait(DELAY_UPDATE_MAP);
-                    }
-                } catch (Exception var4) {
-                }
-            }
+            }, null).batDau(0L);
         }
     }
 
@@ -17658,7 +17653,7 @@ public class Map implements Runnable {
                 npcAppear = true;
 
                 try {
-                    sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Thần Tài chúc các game thủ một năm mới An Khang Thịnh Vượng."));
+                    sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Meowth chúc các game thủ một năm mới An Khang Thịnh Vượng."));
                 } catch (Exception var5) {
                 }
             }
@@ -17878,10 +17873,15 @@ public class Map implements Runnable {
             ((Region) this.ALL_REGION.get(p.region)).addPlayerMessage(p, message);
         } else {
             ((Vector) this.allPlayerMessages.get(p.inCountry)).add(new PlayerMessage(p, message));
+            com.htbb.runtime.VongLapChung.Lan lan = p.inCountry >= 0 && p.inCountry < this.lanGoiTin.length ? this.lanGoiTin[p.inCountry] : null;
+            if (lan != null) {
+                lan.kich();
+            }
         }
     }
 
     public void notifyMap() {
+        this.kichGoiTin();
         try {
             synchronized (this.LOCK) {
                 this.LOCK.notify();
@@ -18012,7 +18012,7 @@ public class Map implements Runnable {
     private void doGoInDun(Char player) {
         try {
             if (player.monster != null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang vận tiêu", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang giao hàng", ""));
                 return;
             }
 
@@ -18040,7 +18040,7 @@ public class Map implements Runnable {
     public void doGoOutDun(Char player) {
         try {
             if (player.monster != null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang vận tiêu", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang giao hàng", ""));
                 return;
             }
 

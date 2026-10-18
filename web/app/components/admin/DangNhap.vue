@@ -182,10 +182,10 @@ function huy2fa() {
             <template #description>
               <p>Đặt biến môi trường cho dịch vụ web trên máy chủ:</p>
               <p class="mt-1">
-                <code>KPAH_ADMIN_ACCOUNTS=tenTaiKhoanCuaBan</code>
+                <code>HTBB_ADMIN_ACCOUNTS=tenTaiKhoanCuaBan</code>
               </p>
               <p class="mt-1">
-                Đó là <em>tên tài khoản đăng nhập</em> (cột <code>team_user.username</code>), không phải tên nhân vật.
+                Đó là <em>tên tài khoản đăng nhập</em> (cột <code>team_user.username</code>), không phải tên Pokémon.
                 Nhiều người thì ngăn nhau bằng dấu phẩy.
               </p>
             </template>

@@ -420,16 +420,20 @@ public final class DungBoTileMoi {
         cay2(b, "cayB", 2, 0, G);
         cay2(b, "cayC", 6, 0, G);
         cay2(b, "cayT", 8, 0, N);
-        cay2d(b, "dua", 10, 4, S);
-        cay2h(b, "tuong", 0, 15, K);
+        // dua: cay don (10,10) - (10,4) nam giua cum dua chong nhau nen 2x2 bi cat la
+        cay2d(b, "dua", 10, 10, S);
+        // tuong Phat 2x2 tron ven (3,15) - (0,15) la cot + nua trai tuong mot mat (bi cat doi)
+        cay2h(b, "tuong", 3, 15, K);
         b.them("bui", tren(G, nj("TilesetNature", 0, 10)), true, nn("TilesetNature", 0, 10));
         b.them("cay_mong", tren(G, nj("TilesetNature", 4, 14)), true, nn("TilesetNature", 4, 14));
-        b.them("goc_cay", tren(G, nj("TilesetNature", 1, 13)), true, nn("TilesetNature", 1, 13));
+        // goc cay that (4,8); (1,13) la goc duoi phai cua tang da xanh 2x2 (o vuong xanh bi cat)
+        b.them("goc_cay", tren(G, nj("TilesetNature", 4, 8)), true, nn("TilesetNature", 4, 8));
         b.them("da", tren(G, nj("TilesetNature", 4, 12)), true, nn("TilesetNature", 4, 12));
         b.them("soi", tren(G, nj("TilesetNature", 16, 17)), false, nn("TilesetNature", 16, 17));
         b.them("da_tuyet", tren(N, nj("TilesetNature", 5, 12)), true, nn("TilesetNature", 5, 12));
         b.them("da_cat", tren(S, nj("TilesetNature", 4, 12)), true, nn("TilesetNature", 4, 12));
-        b.them("thung", tren(G, nj("TilesetHouse", 15, 14)), true, nn("TilesetHouse", 15, 14));
+        // thung go tron ven trong 1 o (TilesetHouse (15,14) la dau cot cao 2 o, bi cat)
+        b.them("thung", tren(G, nj("TilesetDesert", 7, 11)), true, nn("TilesetDesert", 7, 11));
         b.them("den", den(G), true, VE);
         b.them("hom_thu", homThu(G), true, VE);
         b.them("bien_go", tren(G, nj("TilesetElement", 3, 2)), true, nn("TilesetElement", 3, 2));
@@ -639,9 +643,10 @@ public final class DungBoTileMoi {
         b.them("P2", hoaVan(P), false, VE + " + " + nn("TilesetField", 3, 9));
         b.them("P3", hoaVan2(P), false, VE + " + " + nn("TilesetField", 3, 9));
         for (int i = 0; i < 4; i++) {
-            b.them("co_" + i, tren(P, nj("TilesetHouse", 22 + i, 21)), true, nn("TilesetHouse", 22 + i, 21));
+            // co ngu sac cao 2 o (hang 20-21): day o cho cu (giu chi so), dau co them o cuoi bo
+            b.them("co" + i + "_1", tren(P, nj("TilesetHouse", 22 + i, 21)), true, nn("TilesetHouse", 22 + i, 21));
         }
-        cay2h(b, "tuong", 0, 15, P);
+        cay2h(b, "tuong", 3, 15, P);
         b.them("den", den(P), true, VE);
         b.them("bien_hoi_phuc", bien(P, rgb(214, 64, 64), true), true, VE);
         b.them("cau_ngang", tren(W, nj("TilesetWater", 1, 12)), false, nn("TilesetWater", 1, 12));
@@ -649,6 +654,9 @@ public final class DungBoTileMoi {
         nhaNinja(b, P);
         hangRao(b, P);
         trongNha(b);
+        for (int i = 0; i < 4; i++) {
+            b.them("co" + i + "_0", tren(P, nj("TilesetHouse", 22 + i, 20)), true, nn("TilesetHouse", 22 + i, 20));
+        }
         return b;
     }
 
@@ -661,8 +669,8 @@ public final class DungBoTileMoi {
         }
         final Bo[] bo = {boNgoai("t"), boHang(), boThanh()};
         final String[] nho = {"t_small", "t_hang_s", "t_thanh_s"};
-        new File("map/pokemon_tile").mkdirs();
-        new File("cMap_pokemon").mkdirs();
+        new File("server/map/pokemon_tile").mkdirs();
+        new File("server/cMap_pokemon").mkdirs();
         new File("tools/pokemon/map_j2me").mkdirs();
         final StringBuilder csv = new StringBuilder("bo_tile,chi_so,ten,kieu,nguon\n");
         final Map<String, BufferedImage> xem = new LinkedHashMap<String, BufferedImage>();
@@ -696,11 +704,11 @@ public final class DungBoTileMoi {
             if (!b.ten.equals("t") && png.length > Short.MAX_VALUE) {
                 throw new IllegalStateException(b.ten + ".png " + png.length + " byte > 32767 (goi dang nhap)");
             }
-            Files.write(new File("map/pokemon_tile/" + b.ten + ".png").toPath(), png);
-            Files.write(new File("map/pokemon_tile/" + nho[i] + ".png").toPath(), pngNho);
+            Files.write(new File("server/map/pokemon_tile/" + b.ten + ".png").toPath(), png);
+            Files.write(new File("server/map/pokemon_tile/" + nho[i] + ".png").toPath(), pngNho);
             ghiClient("poke_tile", b.ten + ".bytes", png);
             ghiClient("poke_tile", nho[i] + ".bytes", pngNho);
-            Files.write(new File("cMap_pokemon/" + b.ten + ".type").toPath(), kieu);
+            Files.write(new File("server/cMap_pokemon/" + b.ten + ".type").toPath(), kieu);
             ghiClient("poke_map", "kieu_" + b.ten + ".bytes", kieu);
             Files.write(new File("tools/pokemon/map_j2me/" + b.ten + ".type").toPath(), kieu);
             xem.put(b.ten, dai);
@@ -783,7 +791,7 @@ public final class DungBoTileMoi {
         if (pc.isDirectory()) {
             ds.add(new File(pc, "Resources/" + con));
         }
-        final File cu = new File("ClientUnity/Assets");
+        final File cu = new File("client_pc_ios/ClientUnity/Assets");
         if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
             ds.add(new File(cu, "Resources/" + con));
         }

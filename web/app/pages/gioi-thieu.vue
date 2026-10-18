@@ -7,9 +7,9 @@ useSeoMeta({
 const N = CAM_NANG.nhiemVu
 const cung1 = N.cung.filter(c => c.nam === 1)
 const DIEM = [
-  { icon: 'i-lucide-paw-print', t: 'Bạn chính là Pokémon', m: 'Không có nhân vật người. Bạn sinh ra là Charmander, Bulbasaur, Squirtle, Pichu hoặc Eevee — lên cấp và tiến hoá ngay trên bản đồ.' },
+  { icon: 'i-lucide-paw-print', t: 'Bạn chính là Pokémon', m: 'Thế giới không có con người. Bạn sinh ra là Charmander, Bulbasaur, Squirtle, Pichu hoặc Eevee — lên cấp và tiến hoá ngay trên bản đồ.' },
   { icon: 'i-lucide-swords', t: 'Đánh thời gian thực', m: 'MMO hành động: di chuyển, né, xoay chiêu. Không đánh theo lượt.' },
-  { icon: 'i-lucide-flame', t: '18 hệ, khắc chế làm dịu', m: `Đủ 18 hệ như bản gốc, hệ số tối đa ×2 và không miễn nhiễm — luôn có cách đánh, luôn có lợi thế.` },
+  { icon: 'i-lucide-flame', t: '18 hệ, khắc hệ dịu hơn', m: `Đủ 18 hệ như bản gốc, hệ số tối đa ×2 và không miễn nhiễm — luôn có cách đánh, luôn có lợi thế.` },
   { icon: 'i-lucide-heart-handshake', t: 'Công bằng tuyệt đối', m: 'Phi thương mại: không nạp tiền, không bán sức mạnh. Ai chăm chơi, chơi giỏi thì mạnh.' },
   { icon: 'i-lucide-calendar-heart', t: '52 tuần sự kiện', m: 'Tết, Trung Thu, Ngày cộng đồng, Tuần Shiny, đột kích huyền thoại — mỗi tuần một điều mới.' },
   { icon: 'i-lucide-hourglass', t: 'Trần cấp theo mùa', m: `Cấp tối đa ${CAM_NANG.capDo.capToiDa} mở dần; người chơi ít giờ không bị bỏ lại, cốt truyện trải đều cả năm.` },
@@ -39,7 +39,7 @@ const VUNG = [
             </h2>
             <div class="mt-5 space-y-4 text-lg text-toned">
               <p>
-                Trưởng làng Xatu đã chờ bạn từ lâu. Thế giới Pokémon đang đổi thay: quái hoang dã kéo về các tuyến đường, những huyền thoại cổ xưa trở mình dưới lòng núi và đáy biển.
+                Trưởng làng Xatu đã chờ bạn từ lâu. Thế giới Pokémon đang đổi thay: Pokémon hoang dã kéo về các tuyến đường, những huyền thoại cổ xưa trở mình dưới lòng núi và đáy biển.
               </p>
               <p>
                 Bạn — một Pokémon nhỏ bé — sẽ rời Pallet, đi qua {{ cung1.length }} chặng đường của Kanto và Johto, kết bạn, lập đội, tiến hoá,

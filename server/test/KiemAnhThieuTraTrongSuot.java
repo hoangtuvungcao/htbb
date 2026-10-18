@@ -85,8 +85,8 @@ public final class KiemAnhThieuTraTrongSuot {
 
     /** Ly do goi rong gay chet ve: ghim lai tu ma client de ai doc test cung hieu. */
     private static void tienDeClient() {
-        final String mh = doc("ClientUnity/Assets/Scripts/Game/MessageHandler.cs");
-        final String am = doc("ClientUnity/Assets/Scripts/Game/AnimalMove.cs");
+        final String mh = doc("../client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs");
+        final String am = doc("../client_pc_ios/ClientUnity/Assets/Scripts/Game/AnimalMove.cs");
         if (mh.isEmpty() || am.isEmpty()) {
             System.out.println("   bo qua tien de client (khong co ClientUnity trong ban nay)");
             return;

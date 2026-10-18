@@ -7,7 +7,7 @@
 -- nay neu chua co. File nay chi can khi server tu them THAT BAI (log dong "[GIFTCODE] Chua
 -- them duoc UNIQUE KEY...") vi du lieu cu con dong (giftcode,userId) trung nhau.
 --
---     mysql -u root kpah_db < sql/them_khoa_duy_nhat_giftcode_log.sql
+--     mysql -u root htbb_db < sql/them_khoa_duy_nhat_giftcode_log.sql
 --
 -- VI SAO CAN (15/09/2026): newDoGetGiftCode() kiem "da nhan chua" bang SELECT roi moi INSERT -
 -- khong nguyen tu. Hai request REDEEM gan nhu dong thoi cho cung mot userId ve ly thuyet co
@@ -52,4 +52,4 @@ ALTER TABLE giftcode_log
 
 -- 5) Kiem tra lai: phai ra 1.
 SELECT COUNT(*) AS co_khoa FROM information_schema.statistics
- WHERE table_schema = 'kpah_db' AND table_name = 'giftcode_log' AND index_name = 'uk_giftcode_userid';
+ WHERE table_schema = 'htbb_db' AND table_name = 'giftcode_log' AND index_name = 'uk_giftcode_userid';

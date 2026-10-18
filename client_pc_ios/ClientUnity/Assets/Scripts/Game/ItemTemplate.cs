@@ -4,8 +4,8 @@ public class ItemTemplate
 
 	public static string[] nameItem = new string[20]
 	{
-		"áo", "Quần", "Nón", "Kiếm", "Đao", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền",
-		"Giày", "Găng tay", "Ngọc bội", "Cuốc", "Giáp linh thú", "Hộ uyển", "Nón linh thú", "Bàn đạp", "Yên cương", "Phi phong"
+		"áo", "Quần", "Nón", "Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền",
+		"Giày", "Găng tay", "Phiến đá hệ", "Cuốc", "Giáp thú cưỡi", "Vòng chân", "Nón thú cưỡi", "Bàn đạp", "Yên cương", "Ruy băng"
 	};
 
 	public short type;

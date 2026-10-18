@@ -1,13 +1,13 @@
 # Kiem ban do moi (VeMapMoi) - id loai kich_thuoc cong npc moc quai | ket qua
 0 thi_tran 60x60 cong=32 npc=13 moc=157 quai=0 | OK
 1 dong_co 80x100 cong=9 npc=0 moc=13 quai=106 (luoi quai moi) | OK
-2 bien 130x60 cong=12 npc=0 moc=16 quai=128 (luoi quai moi) | OK
+2 bien 130x60 cong=12 npc=0 moc=21 quai=128 (luoi quai moi) | OK
 3 ho 100x100 cong=14 npc=1 moc=19 quai=143 (luoi quai moi) | OK
 4 rung 101x101 cong=13 npc=2 moc=19 quai=157 (luoi quai moi) | OK
 5 dong_co 80x80 cong=8 npc=1 moc=14 quai=142 (luoi quai moi) | OK
 6 rung 50x50 cong=10 npc=1 moc=15 quai=99 (luoi quai moi) | OK
 7 ho 100x100 cong=10 npc=1 moc=14 quai=189 (luoi quai moi) | OK
-8 bien 80x80 cong=9 npc=1 moc=15 quai=169 (luoi quai moi) | OK
+8 bien 80x80 cong=9 npc=1 moc=20 quai=169 (luoi quai moi) | OK
 9 dong_co 70x100 cong=14 npc=1 moc=209 quai=71 (luoi quai moi) | OK
 10 rung 130x130 cong=17 npc=0 moc=51 quai=102 (luoi quai moi) | OK
 11 rung 150x70 cong=26 npc=0 moc=32 quai=172 (luoi quai moi) | OK
@@ -17,7 +17,7 @@
 15 ho 100x100 cong=22 npc=0 moc=30 quai=71 (luoi quai moi) | OK
 17 sa_mac 120x90 cong=0 npc=0 moc=5 quai=225 (luoi quai moi) | OK
 18 duong 60x60 cong=16 npc=0 moc=23 quai=47 (luoi quai moi) | OK
-19 bien 77x60 cong=15 npc=0 moc=23 quai=41 (luoi quai moi) | OK
+19 bien 77x60 cong=15 npc=0 moc=28 quai=41 (luoi quai moi) | OK
 20 rung 71x61 cong=18 npc=0 moc=29 quai=35 (luoi quai moi) | OK
 21 dong_co 70x70 cong=0 npc=0 moc=3 quai=58 (luoi quai moi) | OK
 22 ho 60x60 cong=0 npc=0 moc=3 quai=34 (luoi quai moi) | OK
@@ -98,3 +98,32 @@
 269 trong_nha 15x10 cong=3 npc=1 moc=4 quai=0 | OK
 270 trong_nha 15x10 cong=3 npc=1 moc=4 quai=0 | OK
 271 trong_nha 15x10 cong=3 npc=1 moc=4 quai=0 | OK
+43 thi_tran 56x46 cong=10 npc=3 moc=18 quai=0 (luoi quai moi) | OK
+44 rung 70x64 cong=10 npc=1 moc=15 quai=64 (luoi quai moi) | OK
+45 thi_tran 60x50 cong=15 npc=4 moc=25 quai=0 (luoi quai moi) | OK
+46 bien 80x50 cong=15 npc=0 moc=25 quai=57 (luoi quai moi) | OK
+47 thi_tran 64x52 cong=10 npc=4 moc=20 quai=0 (luoi quai moi) | OK
+48 duong 50x90 cong=10 npc=0 moc=14 quai=64 (luoi quai moi) | OK
+49 thi_tran 60x54 cong=15 npc=3 moc=24 quai=0 (luoi quai moi) | OK
+50 sa_mac 90x60 cong=10 npc=2 moc=17 quai=72 (luoi quai moi) | OK
+51 thi_tran 56x46 cong=10 npc=4 moc=19 quai=0 (luoi quai moi) | OK
+52 nui 80x70 cong=10 npc=1 moc=15 quai=70 (luoi quai moi) | OK
+53 rung 60x100 cong=10 npc=1 moc=15 quai=80 (luoi quai moi) | OK
+54 thi_tran 60x50 cong=10 npc=3 moc=18 quai=0 (luoi quai moi) | OK
+55 dong_co 90x60 cong=15 npc=1 moc=21 quai=72 (luoi quai moi) | OK
+56 thi_tran 64x52 cong=10 npc=4 moc=20 quai=0 (luoi quai moi) | OK
+57 nui 60x80 cong=5 npc=1 moc=10 quai=64 (luoi quai moi) | OK
+58 bien 90x60 cong=15 npc=1 moc=21 quai=67 (luoi quai moi) | OK
+59 thi_tran 60x50 cong=10 npc=3 moc=18 quai=0 (luoi quai moi) | OK
+60 thi_tran 64x56 cong=15 npc=4 moc=25 quai=0 (luoi quai moi) | OK
+61 bien 90x56 cong=10 npc=0 moc=19 quai=63 (luoi quai moi) | OK
+62 thi_tran 60x56 cong=10 npc=4 moc=19 quai=0 (luoi quai moi) | OK
+160 hang 60x50 cong=5 npc=1 moc=9 quai=42 (luoi quai moi) | OK
+161 hang 70x56 cong=10 npc=0 moc=14 quai=56 (luoi quai moi) | OK
+162 hang 64x56 cong=10 npc=1 moc=15 quai=51 (luoi quai moi) | OK
+163 hang 60x60 cong=5 npc=2 moc=10 quai=51 (luoi quai moi) | OK
+164 hang 50x70 cong=10 npc=1 moc=15 quai=53 (luoi quai moi) | OK
+165 hang 80x56 cong=10 npc=0 moc=14 quai=68 (luoi quai moi) | OK
+280 dau_truong 44x40 cong=5 npc=1 moc=8 quai=19 (luoi quai moi) | OK
+281 thanh 60x56 cong=10 npc=2 moc=16 quai=0 (luoi quai moi) | OK
+282 dau_truong 40x36 cong=5 npc=2 moc=9 quai=0 (luoi quai moi) | OK

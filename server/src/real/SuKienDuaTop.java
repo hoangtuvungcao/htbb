@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * khong gan voi phan thuong nao ca - admin muon phat thuong cho top phai lam thu cong
  * (vd goi lenh chat cong tung nguoi). Tinh nang nay cho admin: (1) nhap ten NHAN VAT
  * cho tung hang 1..10, (2) chon vat pham se phat cho hang do (dung LAI dung mot bo chon
- * + cu phap chuoi phan thuong cua trang giftcode.php, xem web/admin/inc/thuong.php),
+ * + cu phap chuoi phan thuong cua trang Giftcode (HTBB-Web /admin/giftcode), xem HTBB-Web shared/utils/thuong.ts),
  * (3) nhan vat duoc xep hang se thay mot muc "Nhan thuong đua top" o NPC Tong Quan
  * (npcType -10) - CHI nguoi co ten trong bang nay va CHUA nhan moi thay muc do.
  *
@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * MENU 2 BUOC (them 19/09/2026, yeu cau nguoi dung "chon loai mat nạ truoc, roi moi
  * chon tiep cac dong chi so"): nhan trong item_chon co the la "ten nhom::nhan con"
- * (vd bo chon trang dua_top.php sinh "Mặt nạ bí ngô::Thuộc tính Lân (+50%)") - cac
+ * (vd bo chon trang Dua top (HTBB-Web /admin/dua-top) sinh "Mặt nạ bí ngô::Thuộc tính Lân (+50%)") - cac
  * doan CUNG ten nhom duoc GOM LAI thanh mot NHOM CAP 1 (vd 5 mau mat na), moi nhom co
  * danh sach NHAN CON cap 2 (vd 5 hieu ung). Nguoi choi chon nhom (cap 1) TRUOC, roi
  * moi chon nhan con (cap 2) trong nhom do; nhom chi co DUNG 1 nhan con (kieu nhan
@@ -232,7 +232,7 @@ public final class SuKienDuaTop {
     /**
      * Gom cac cap [nhan, chuoi] cua tachItemChon() thanh cay 2 cap theo ten nhom, giu
      * dung THU TU xuat hien dau tien (LinkedHashMap) de menu hien ra dung thu tu admin
-     * da them. Nhan dang "ten nhom::nhan con" (bo chon dua_top.php sinh cho nut "Thêm
+     * da them. Nhan dang "ten nhom::nhan con" (bo chon trang Dua top (HTBB-Web /admin/dua-top) sinh cho nut "Thêm
      * CẢ NHÓM") duoc tach doi; nhan KHONG co "::" (nut "Thêm" don le) tu no la mot nhom
      * CHI CO DUNG 1 nhan con (chinh no) - xem doChonThuong ve cach xu ly nhom 1 nhan con.
      */

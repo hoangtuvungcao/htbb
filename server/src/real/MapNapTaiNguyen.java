@@ -19,7 +19,7 @@ import server.TeamServer;
  * tile map, boss, vi tri, anh vu khi.
  *
  * Tach tu real/Map.java. Cac method VAN CON trong Map, giu NGUYEN chu ky cu,
- * chi than chuyen sang day - nen bytecode trong lib/NQSH_5h.jar va cac lop
+ * chi than chuyen sang day - nen bytecode trong lib/htbb-core.jar va cac lop
  * con (OfflineMap override loadTileMap) khong bi anh huong.
  * Tham so "Map map" thay cho "this" truoc day.
  */
@@ -70,7 +70,7 @@ class MapNapTaiNguyen {
             new GemTemplate(40, 11, Text.KHANG_GIAM_TOC_20, Text.KHAM_NON_QUAN_DCR, new byte[]{2, 1}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
             new GemTemplate(41, 11, Text.KHANG_TRUNG_DOC_20, Text.KHAM_NON_QUAN_DCR, new byte[]{2, 1}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
             new GemTemplate(42, 9, Text.KHANG_GAY_MU_20, "Khảm vào găng tay và giày", new byte[]{10, 11}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
-            new GemTemplate(43, 12, Text.KHANG_DONG_BANG_20, "Khảm vào Áo và vũ khí", new byte[]{0, 3, 4, 5, 6, 7}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
+            new GemTemplate(43, 12, Text.KHANG_DONG_BANG_20, "Khảm vào Áo và đồ cầm tay", new byte[]{0, 3, 4, 5, 6, 7}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
             new GemTemplate(44, 9, Text.KHANG_GAY_CHOANG_20, "Khảm vào găng tay và giày", new byte[]{10, 11}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
             new GemTemplate(45, 10, Text.KHANG_HOA_THACH_20, "Khảm vào dây chuyền và ngọc", new byte[]{9, 12}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
             new GemTemplate(46, 11, Text.KHANG_GIAM_TOC_30, Text.KHAM_NON_QUAN_DCR, new byte[]{2, 1}, -1, GemTemplate.TYPE_KHAM, 30, 0, 0, 10),
@@ -145,7 +145,7 @@ class MapNapTaiNguyen {
                 new GemTemplate(40, 11, Text.KHANG_GIAM_TOC_20, Text.KHAM_NON_QUAN_DCR, new byte[]{2, 1}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
                 new GemTemplate(41, 11, Text.KHANG_TRUNG_DOC_20, Text.KHAM_NON_QUAN_DCR, new byte[]{2, 1}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
                 new GemTemplate(42, 9, Text.KHANG_GAY_MU_20, "Khảm vào găng tay và giày", new byte[]{10, 11}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
-                new GemTemplate(43, 12, Text.KHANG_DONG_BANG_20, "Khảm vào Áo và vũ khí", new byte[]{0, 3, 4, 5, 6, 7}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
+                new GemTemplate(43, 12, Text.KHANG_DONG_BANG_20, "Khảm vào Áo và đồ cầm tay", new byte[]{0, 3, 4, 5, 6, 7}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
                 new GemTemplate(44, 9, Text.KHANG_GAY_CHOANG_20, "Khảm vào găng tay và giày", new byte[]{10, 11}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
                 new GemTemplate(45, 10, Text.KHANG_HOA_THACH_20, "Khảm vào dây chuyền và ngọc", new byte[]{9, 12}, -1, GemTemplate.TYPE_KHAM, 20, 0, 0, 10),
                 new GemTemplate(46, 11, Text.KHANG_GIAM_TOC_30, Text.KHAM_NON_QUAN_DCR, new byte[]{2, 1}, -1, GemTemplate.TYPE_KHAM, 30, 0, 0, 10),
@@ -345,74 +345,74 @@ class MapNapTaiNguyen {
                 new GemTemplate(156, 42, "Đá may mắn cấp 5", "Tăng 80% tỷ lệ luyện đồ thành công", 60, -1, 800, GemTemplate.TYPE_IMBUE, 0, 0),
                 new GemTemplate(157, 39, "Luyện kim dược cao cấp", "Tỷ lệ thành công tăng 50%", 30, -1, 700, GemTemplate.TYPE_IMBUE, 0, 0),
                 new GemTemplate(158, 40, "Luyện kim dược cao cấp", "Tỷ lệ thành công tăng 60%", 40, -1, 800, GemTemplate.TYPE_IMBUE, 0, 0),
-                new GemTemplate(159, 43, "Mảnh mai 1", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(160, 43, "Mảnh mai 2", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(161, 43, "Mảnh mai 3", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(162, 43, "Mảnh mai 4", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(163, 44, "Mảnh lan 1", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(164, 44, "Mảnh lan 2", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(165, 44, "Mảnh lan 3", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(166, 44, "Mảnh lan 4", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(167, 45, "Mảnh cúc 1", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(168, 45, "Mảnh cúc 2", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(169, 45, "Mảnh cúc 3", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(170, 45, "Mảnh cúc 4", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(171, 46, "Mảnh trúc 1", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(172, 46, "Mảnh trúc 2", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(173, 46, "Mảnh trúc 3", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(174, 46, "Mảnh trúc 4", "Mảnh tứ bình", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(159, 43, "Mảnh mai 1", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(160, 43, "Mảnh mai 2", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(161, 43, "Mảnh mai 3", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(162, 43, "Mảnh mai 4", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(163, 44, "Mảnh Berry Pecha 1", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(164, 44, "Mảnh Berry Pecha 2", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(165, 44, "Mảnh Berry Pecha 3", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(166, 44, "Mảnh Berry Pecha 4", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(167, 45, "Mảnh Berry Cheri 1", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(168, 45, "Mảnh Berry Cheri 2", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(169, 45, "Mảnh Berry Cheri 3", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(170, 45, "Mảnh Berry Cheri 4", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(171, 46, "Mảnh Berry Rawst 1", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(172, 46, "Mảnh Berry Rawst 2", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(173, 46, "Mảnh Berry Rawst 3", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(174, 46, "Mảnh Berry Rawst 4", "Mảnh bộ Berry", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
                 new GemTemplate(175, 47, "Đá tách nguyên liệu 5x", "Tách nguyên liệu từ trang bị 5x", 1, -1, 15 * Map.gg1 / Map.gg2, 5, 1, 1),
                 new GemTemplate(176, 48, "Đá tách nguyên liệu 6x", "Tách nguyên liệu từ trang bị 6x", 1, -1, 20 * Map.gg1 / Map.gg2, 5, 1, 1),
                 new GemTemplate(177, 49, "Đá tách nguyên liệu 7x", "Tách nguyên liệu từ trang bị 7x", 1, -1, 25 * Map.gg1 / Map.gg2, 5, 1, 1),
                 new GemTemplate(178, 50, "Đá tách nguyên liệu đặc biệt", "Tách nguyên liệu từ trang bị 5x trở lên", 1, -1, 100, 5, 0, 1),
-                new GemTemplate(179, 51, "Mảnh sáo 1", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(180, 51, "Mảnh sáo 2", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(181, 51, "Mảnh sáo 3", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(182, 51, "Mảnh sáo 4", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(183, 52, "Mảnh quạt 1", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(184, 52, "Mảnh quạt 2", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(185, 52, "Mảnh quạt 3", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(186, 52, "Mảnh quạt 4", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(187, 53, "Mảnh sênh 1", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(188, 53, "Mảnh sênh 2", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(189, 53, "Mảnh sênh 3", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(190, 53, "Mảnh sênh 4", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(191, 54, "Mảnh đàn 1", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(192, 54, "Mảnh đàn 2", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(193, 54, "Mảnh đàn 3", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(194, 54, "Mảnh đàn 4", "Mảnh tứ nhạc", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(195, 57, "Mảnh ngư 1", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(196, 57, "Mảnh ngư 2", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(197, 57, "Mảnh ngư 3", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(198, 57, "Mảnh ngư 4", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(199, 58, "Mảnh tiều 1", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(200, 58, "Mảnh tiều 2", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(201, 58, "Mảnh tiều 3", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(202, 58, "Mảnh tiều 4", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(203, 59, "Mảnh canh 1", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(204, 59, "Mảnh canh 2", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(205, 59, "Mảnh canh 3", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(206, 59, "Mảnh canh 4", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(207, 60, "Mảnh độc 1", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(208, 60, "Mảnh độc 2", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(209, 60, "Mảnh độc 3", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(210, 60, "Mảnh độc 4", "Mảnh tứ khoái", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(211, 61, "Mảnh long 1", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(212, 61, "Mảnh long 2", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(213, 61, "Mảnh long 3", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(214, 61, "Mảnh long 4", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(215, 62, "Mảnh lân 1", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(216, 62, "Mảnh lân 2", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(217, 62, "Mảnh lân 3", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(218, 62, "Mảnh lân 4", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(219, 63, "Mảnh quy 1", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(220, 63, "Mảnh quy 2", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(221, 63, "Mảnh quy 3", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(222, 63, "Mảnh quy 4", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(223, 64, "Mảnh phụng 1", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(224, 64, "Mảnh phụng 2", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(225, 64, "Mảnh phụng 3", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
-                new GemTemplate(226, 64, "Mảnh phụng 4", "Mảnh tứ linh", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(179, 51, "Mảnh Blue Flute 1", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(180, 51, "Mảnh Blue Flute 2", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(181, 51, "Mảnh Blue Flute 3", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(182, 51, "Mảnh Blue Flute 4", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(183, 52, "Mảnh Red Flute 1", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(184, 52, "Mảnh Red Flute 2", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(185, 52, "Mảnh Red Flute 3", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(186, 52, "Mảnh Red Flute 4", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(187, 53, "Mảnh Yellow Flute 1", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(188, 53, "Mảnh Yellow Flute 2", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(189, 53, "Mảnh Yellow Flute 3", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(190, 53, "Mảnh Yellow Flute 4", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(191, 54, "Mảnh White Flute 1", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(192, 54, "Mảnh White Flute 2", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(193, 54, "Mảnh White Flute 3", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(194, 54, "Mảnh White Flute 4", "Mảnh bộ Flute", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(195, 57, "Mảnh huy hiệu Cascade 1", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(196, 57, "Mảnh huy hiệu Cascade 2", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(197, 57, "Mảnh huy hiệu Cascade 3", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(198, 57, "Mảnh huy hiệu Cascade 4", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(199, 58, "Mảnh huy hiệu Rainbow 1", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(200, 58, "Mảnh huy hiệu Rainbow 2", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(201, 58, "Mảnh huy hiệu Rainbow 3", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(202, 58, "Mảnh huy hiệu Rainbow 4", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(203, 59, "Mảnh huy hiệu Boulder 1", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(204, 59, "Mảnh huy hiệu Boulder 2", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(205, 59, "Mảnh huy hiệu Boulder 3", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(206, 59, "Mảnh huy hiệu Boulder 4", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(207, 60, "Mảnh huy hiệu Marsh 1", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(208, 60, "Mảnh huy hiệu Marsh 2", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(209, 60, "Mảnh huy hiệu Marsh 3", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(210, 60, "Mảnh huy hiệu Marsh 4", "Mảnh bộ huy hiệu", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(211, 61, "Mảnh Rayquaza 1", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(212, 61, "Mảnh Rayquaza 2", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(213, 61, "Mảnh Rayquaza 3", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(214, 61, "Mảnh Rayquaza 4", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(215, 62, "Mảnh Suicune 1", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(216, 62, "Mảnh Suicune 2", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(217, 62, "Mảnh Suicune 3", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(218, 62, "Mảnh Suicune 4", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(219, 63, "Mảnh Kyogre 1", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(220, 63, "Mảnh Kyogre 2", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(221, 63, "Mảnh Kyogre 3", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(222, 63, "Mảnh Kyogre 4", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(223, 64, "Mảnh Ho-Oh 1", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(224, 64, "Mảnh Ho-Oh 2", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(225, 64, "Mảnh Ho-Oh 3", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
+                new GemTemplate(226, 64, "Mảnh Ho-Oh 4", "Mảnh bộ huyền thoại", 40, -1, 800, GemTemplate.TYPE_TU_BINH, 0, 0),
                 new GemTemplate(
                 227,
                 55,
@@ -444,33 +444,33 @@ class MapNapTaiNguyen {
                 new GemTemplate(233, 65, "Xương cấp 5", "Khóa đồ thú", 1, -1, 20, GemTemplate.TYPE_LOCK_ANIMAL, 0, 1),
                 new GemTemplate(234, 65, "Xương cấp 6", "Khóa đồ thú", 1, -1, 25, GemTemplate.TYPE_LOCK_ANIMAL, 1, 1),
                 new GemTemplate(
-                235, 66, "Ngọc huyền minh cấp 1", "Tăng 5% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
+                235, 66, "Ngọc hoàng hôn cấp 1", "Tăng 5% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
                 ),
                 new GemTemplate(
-                236, 66, "Ngọc huyền minh cấp 2", "Tăng 10% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
+                236, 66, "Ngọc hoàng hôn cấp 2", "Tăng 10% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
                 ),
                 new GemTemplate(
-                237, 66, "Ngọc huyền minh cấp 3", "Tăng 15% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
+                237, 66, "Ngọc hoàng hôn cấp 3", "Tăng 15% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
                 ),
                 new GemTemplate(
-                238, 66, "Ngọc huyền minh cấp 4", "Tăng 20% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
+                238, 66, "Ngọc hoàng hôn cấp 4", "Tăng 20% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
                 ),
                 new GemTemplate(
-                239, 66, "Ngọc huyền minh cấp 5", "Tăng 25% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
+                239, 66, "Ngọc hoàng hôn cấp 5", "Tăng 25% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 25, GemTemplate.TYPE_LOCK_ITEM, Map.NOT_SELL, 1
                 ),
                 new GemTemplate(
-                240, 66, "Ngọc huyền minh cấp 6", "Tăng 30% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 250, GemTemplate.TYPE_LOCK_ITEM, Map.SELL, 1
+                240, 66, "Ngọc hoàng hôn cấp 6", "Tăng 30% tỷ lệ khoá thành công vật phẩm lên 25%", 1, -1, 250, GemTemplate.TYPE_LOCK_ITEM, Map.SELL, 1
                 ),
-                new GemTemplate(241, 67, "Long lệnh bài", "Dùng nâng cấp bang hội", 1, -1, 100, 0, Map.NOT_SELL, 1),
-                new GemTemplate(242, 68, "Lân lệnh bài", "Dùng nâng cấp bang hội", 1, -1, 100, 0, Map.NOT_SELL, 0),
-                new GemTemplate(243, 69, "Quy lệnh bài", "Dùng nâng cấp bang hội", 1, -1, 100, 0, Map.NOT_SELL, 0),
-                new GemTemplate(244, 70, "Phụng lệnh bài", "Dùng nâng cấp bang hội", 1, -1, 100, 0, Map.NOT_SELL, 0),
+                new GemTemplate(241, 67, "Thẻ Rayquaza", "Dùng nâng cấp đội", 1, -1, 100, 0, Map.NOT_SELL, 1),
+                new GemTemplate(242, 68, "Thẻ Suicune", "Dùng nâng cấp đội", 1, -1, 100, 0, Map.NOT_SELL, 0),
+                new GemTemplate(243, 69, "Thẻ Kyogre", "Dùng nâng cấp đội", 1, -1, 100, 0, Map.NOT_SELL, 0),
+                new GemTemplate(244, 70, "Thẻ Ho-Oh", "Dùng nâng cấp đội", 1, -1, 100, 0, Map.NOT_SELL, 0),
                 new GemTemplate(245, 71, "Luyện kim dược 40", "Tỷ lệ thành công 40%", 40, -1, 1, GemTemplate.TYPE_IMBUE, Map.NOT_SELL, 0),
-                new GemTemplate(246, 72, "Bột trắng", "Nguyên liệu tiến giai", 1, -1, 100, GemTemplate.TYPE_UNKNOW, Map.NOT_SELL, 0),
-                new GemTemplate(247, 73, "Bột xanh", "Nguyên liệu tiến giai", 1, -1, 100, GemTemplate.TYPE_UNKNOW, Map.NOT_SELL, 0),
-                new GemTemplate(248, 74, "Bột đỏ", "Nguyên liệu tiến giai", 1, -1, 100, GemTemplate.TYPE_UNKNOW, Map.NOT_SELL, 0),
-                new GemTemplate(249, 75, "Bột xanh lá", "Nguyên liệu tiến giai", 1, -1, 100, GemTemplate.TYPE_BOT, Map.NOT_SELL, 0),
-                new GemTemplate(250, 76, "Đá tiến giai", "Nguyên liệu tiến giai", 1, -1, 10, GemTemplate.TYPE_DA_TIEN_GIAI, Map.SELL, 1),
+                new GemTemplate(246, 72, "Bột trắng", "Nguyên liệu thăng bậc", 1, -1, 100, GemTemplate.TYPE_UNKNOW, Map.NOT_SELL, 0),
+                new GemTemplate(247, 73, "Bột xanh", "Nguyên liệu thăng bậc", 1, -1, 100, GemTemplate.TYPE_UNKNOW, Map.NOT_SELL, 0),
+                new GemTemplate(248, 74, "Bột đỏ", "Nguyên liệu thăng bậc", 1, -1, 100, GemTemplate.TYPE_UNKNOW, Map.NOT_SELL, 0),
+                new GemTemplate(249, 75, "Bột xanh lá", "Nguyên liệu thăng bậc", 1, -1, 100, GemTemplate.TYPE_BOT, Map.NOT_SELL, 0),
+                new GemTemplate(250, 76, "Đá thăng bậc", "Nguyên liệu thăng bậc", 1, -1, 10, GemTemplate.TYPE_DA_TIEN_GIAI, Map.SELL, 1),
                 new GemTemplate(251, 77, "Giấy", "Nguyên liệu làm pháo hoa", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.NOT_SELL, 1),
                 new GemTemplate(252, 78, "Thuốc", "Nguyên liệu làm pháo hoa", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.NOT_SELL, 1),
                 new GemTemplate(253, 79, "Mãng cầu", "Nguyên liệu làm mâm ngũ quả", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.NOT_SELL, 1),
@@ -478,8 +478,8 @@ class MapNapTaiNguyen {
                 new GemTemplate(255, 81, "Dừa", "Nguyên liệu làm mâm ngũ quả", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.NOT_SELL, 1),
                 new GemTemplate(256, 82, "Đu đủ", "Nguyên liệu làm mâm ngũ quả", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.NOT_SELL, 1),
                 new GemTemplate(257, 83, "Xoài", "Nguyên liệu làm mâm ngũ quả", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.NOT_SELL, 1),
-                new GemTemplate(258, 84, "Hoả thạch cấp 1", "1% nâng cấp thành công Hoả Kỳ Lân", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.SELL, 1),
-                new GemTemplate(259, 85, "Hoả thạch cấp 2", "10% nâng cấp thành công Hoả Kỳ Lân", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
+                new GemTemplate(258, 84, "Nham thạch cấp 1", "1% nâng cấp thành công Ponyta", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, Map.SELL, 1),
+                new GemTemplate(259, 85, "Nham thạch cấp 2", "10% nâng cấp thành công Ponyta", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
                 new GemTemplate(260, 86, "Ngọc 1 sao", "Vật phẩm sự kiện", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
                 new GemTemplate(261, 87, "Ngọc 2 sao", "Vật phẩm sự kiện", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
                 new GemTemplate(262, 88, "Ngọc 3 sao", "Vật phẩm sự kiện", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
@@ -1184,7 +1184,7 @@ class MapNapTaiNguyen {
         if (!TeamServer.isServerIndo() && !TeamServer.isServerLienDau()) {
             Map.boss.size();
             if (type == 0) {
-                Boss bo = new BossSkelonton(null, (MonsterTemplate) Map.monsterTemplates.get(94), 432, 112, 0);
+                Boss bo = new BossDusknoir(null, (MonsterTemplate) Map.monsterTemplates.get(94), 432, 112, 0);
                 bo.isDead = true;
                 bo.id = RealController.intance.idGen.getID(1, "new monster");
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
@@ -1206,7 +1206,7 @@ class MapNapTaiNguyen {
                 }
 
                 Map.boss.add(bo);
-                bo = new BossThanLan(null, (MonsterTemplate) Map.monsterTemplates.get(82), 432, 112, 0);
+                bo = new BossDotKich(null, (MonsterTemplate) Map.monsterTemplates.get(82), 432, 112, 0);
                 bo.isDead = true;
                 bo.id = RealController.intance.idGen.getID(1, "new monster");
                 bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
@@ -1216,7 +1216,7 @@ class MapNapTaiNguyen {
                 }
 
                 Map.boss.add(bo);
-                Boss var7 = new BossThanLan(null, (MonsterTemplate) Map.monsterTemplates.get(39), 432, 112, 0);
+                Boss var7 = new BossDotKich(null, (MonsterTemplate) Map.monsterTemplates.get(39), 432, 112, 0);
                 var7.isDead = true;
                 var7.id = RealController.intance.idGen.getID(1, "new monster");
                 var7.he = var7.heKhiSinh(he[Map.r.nextInt(5)]);
@@ -1226,7 +1226,7 @@ class MapNapTaiNguyen {
                 }
 
                 Map.boss.add(var7);
-                Boss var8 = new BossLinhXa(null, (MonsterTemplate) Map.monsterTemplates.get(91), 432, 112, 0);
+                Boss var8 = new BossSerperior(null, (MonsterTemplate) Map.monsterTemplates.get(91), 432, 112, 0);
                 var8.isDead = true;
                 var8.id = RealController.intance.idGen.getID(1, "new monster");
                 var8.he = var8.heKhiSinh(he[Map.r.nextInt(5)]);
@@ -1238,7 +1238,7 @@ class MapNapTaiNguyen {
                 Map.boss.add(var8);
 
                 try {
-                    Boss var9 = new BossBachXa(null, (MonsterTemplate) Map.monsterTemplates.get(92), 432, 112, 0);
+                    Boss var9 = new BossServine(null, (MonsterTemplate) Map.monsterTemplates.get(92), 432, 112, 0);
                     var9.isDead = true;
                     var9.id = RealController.intance.idGen.getID(1, "new monster");
                     var9.he = var9.heKhiSinh(he[Map.r.nextInt(5)]);
@@ -1251,7 +1251,7 @@ class MapNapTaiNguyen {
                 } catch (Exception var4) {
                 }
 
-                Boss var10 = new BossSkelonton(null, (MonsterTemplate) Map.monsterTemplates.get(113), 432, 112, 0);
+                Boss var10 = new BossDusknoir(null, (MonsterTemplate) Map.monsterTemplates.get(113), 432, 112, 0);
                 var10.isDead = true;
                 var10.id = RealController.intance.idGen.getID(1, "new monster");
                 var10.he = var10.heKhiSinh(he[Map.r.nextInt(5)]);
@@ -1262,7 +1262,7 @@ class MapNapTaiNguyen {
 
                 var10.bornTime = 1000L;
                 Map.boss.add(var10);
-                Boss var11 = new BossSkelonton(null, (MonsterTemplate) Map.monsterTemplates.get(115), 432, 112, 0);
+                Boss var11 = new BossDusknoir(null, (MonsterTemplate) Map.monsterTemplates.get(115), 432, 112, 0);
                 var11.isDead = true;
                 var11.id = RealController.intance.idGen.getID(1, "new monster");
                 var11.he = var11.heKhiSinh(he[Map.r.nextInt(5)]);
@@ -1441,7 +1441,7 @@ class MapNapTaiNguyen {
             {
                 int xs = 74;
                 int ys = 50;
-                BossVanTienTran bo = new BossVanTienTran(map, (MonsterTemplate) MapVanTienTran.monsterTemplates.get(116), xs * 16, ys * 16, 0);
+                BossMeCung bo = new BossMeCung(map, (MonsterTemplate) MapVanTienTran.monsterTemplates.get(116), xs * 16, ys * 16, 0);
                 bo.id = id++;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
                 bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);

@@ -1,0 +1,8 @@
+Phông chữ đi kèm bản PC Huyền Thoại Bảo Bối (client_pc/res/phong) - đều theo SIL Open Font License 1.1:
+
+- NotoSans-Regular.ttf, NotoSans-Bold.ttf  - Noto Sans, (c) Google. Chữ giao diện + chữ game HD (đủ tiếng Việt).
+  Giấy phép: OFL-NotoSans.txt
+- Baloo2-wght.ttf                          - Baloo 2, (c) The Baloo 2 Project Authors (EkType). Tiêu đề / logo chữ.
+  Giấy phép: OFL-Baloo2.txt (cùng tệp trong client_jar/tools/phong)
+
+OFL cho phép đóng kèm phần mềm (kể cả bán), không được bán riêng phông; giữ nguyên giấy phép + bản quyền.

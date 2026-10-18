@@ -7,7 +7,7 @@ useSeoMeta({
 const bang = [
   ['Tên tài khoản, mật khẩu (đã băm)', 'Đăng nhập game và website', 'Đến khi bạn yêu cầu xoá'],
   ['Email (nếu bạn nhập)', 'Lấy lại mật khẩu, thông báo bảo mật', 'Đến khi bạn đổi/xoá'],
-  ['Dữ liệu nhân vật (cấp, vật phẩm, Pokédex…)', 'Vận hành game, bảng xếp hạng công khai', 'Theo tài khoản'],
+  ['Dữ liệu Pokémon của bạn (cấp, vật phẩm, Pokédex…)', 'Vận hành game, bảng xếp hạng công khai', 'Theo tài khoản'],
   ['Địa chỉ IP, thời điểm đăng nhập', 'Chống spam đăng ký, chống gian lận, gỡ lỗi', 'Nhật ký máy chủ, xoá định kỳ'],
   ['Phiên đăng nhập website', 'Lưu trong localStorage của trình duyệt (không dùng cookie)', 'Tối đa 7 ngày hoặc khi đăng xuất'],
 ]
@@ -50,7 +50,7 @@ const bang = [
         <WikiSection id="chia-se" title="Chia sẻ & công khai">
           <ul class="cham">
             <li>Không bán, không chia sẻ dữ liệu cho bên thứ ba.</li>
-            <li>Tên nhân vật, cấp, loài Pokémon có thể hiện công khai trên bảng xếp hạng.</li>
+            <li>Tên Pokémon, cấp, loài Pokémon có thể hiện công khai trên bảng xếp hạng.</li>
             <li>Email chỉ dùng để gửi thư khôi phục mật khẩu / thông báo tài khoản.</li>
           </ul>
         </WikiSection>

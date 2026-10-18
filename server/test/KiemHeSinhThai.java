@@ -48,6 +48,7 @@ public final class KiemHeSinhThai {
         suuTam();
         hoSo();
         banDo();
+        hoCauCa();
         duLieuSql();
         diemMoc();
     }
@@ -72,7 +73,7 @@ public final class KiemHeSinhThai {
         Kiem.dung("tat co: cac diem moc khong nem loi", true);
         HeSinhThai.dat(cu);
         try {
-            final String tmpl = new String(Files.readAllBytes(new File("vps/server.ini.tmpl").toPath()), StandardCharsets.UTF_8);
+            final String tmpl = new String(Files.readAllBytes(new File("../vps/server.ini.tmpl").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("vps/server.ini.tmpl co sv.he_sinh_thai=0", tmpl.contains("\nsv.he_sinh_thai=0"));
         } catch (final Exception e) {
             Kiem.dung("doc server.ini.tmpl: " + e, false);
@@ -137,6 +138,11 @@ public final class KiemHeSinhThai {
                 lech <= HeSinhThai.THOI_TIET_SAT_THUONG_PHAN_TRAM);
         Kiem.bang("hieu ung client: mua = 0 (AnimateEffect.RAIN)", Integer.valueOf(0), Integer.valueOf(SinhThaiTheGioi.HIEU_UNG_CLIENT[SinhThaiTheGioi.MUA]));
         Kiem.bang("hieu ung client: tuyet = 2 (AnimateEffect.SNOW)", Integer.valueOf(2), Integer.valueOf(SinhThaiTheGioi.HIEU_UNG_CLIENT[SinhThaiTheGioi.TUYET]));
+        Kiem.bang("hieu ung client: suong mu = 6 (moc client moi)", Integer.valueOf(6), Integer.valueOf(SinhThaiTheGioi.HIEU_UNG_CLIENT[SinhThaiTheGioi.SUONG_MU]));
+        Kiem.bang("hieu ung client: nang gat = 7 (moc client moi)", Integer.valueOf(7), Integer.valueOf(SinhThaiTheGioi.HIEU_UNG_CLIENT[SinhThaiTheGioi.NANG]));
+        Kiem.bang("hieu ung client: quang = -1 (tat)", Integer.valueOf(-1), Integer.valueOf(SinhThaiTheGioi.HIEU_UNG_CLIENT[SinhThaiTheGioi.QUANG]));
+        Kiem.dung("id hieu ung danh hieu sinh thai 9600.. khong dung dai 8700..8999 / skin 13000..",
+                HeSinhThai.ID_EFF_DANH_HIEU_DAU > 8999 && HeSinhThai.ID_EFF_DANH_HIEU_DAU + HoSoSinhThai.DANH_HIEU.length <= 9616);
 
         Kiem.nhom("He sinh thai - bung phat");
         final List<int[]> ds = new ArrayList<int[]>();
@@ -387,7 +393,7 @@ public final class KiemHeSinhThai {
         Kiem.sai("tra loi rong khong dung", MiniGameSinhThai.dung("   ", "Pikachu"));
         Kiem.sai("tra loi sai", MiniGameSinhThai.dung("Raichu", "Pikachu"));
         final String g = MiniGameSinhThai.goiY("Pikachu", HePokemon.DIEN, -1);
-        Kiem.dung("goi y co he, so chu, chu dau: " + g, g.contains("7 chữ") && g.contains("'P'") && g.contains(HePokemon.ten(HePokemon.DIEN)));
+        Kiem.dung("goi y co he, so chu, chu dau: " + g, g.contains("7 chữ") && g.contains("chữ P") && g.contains(HePokemon.ten(HePokemon.DIEN)));
         Kiem.dung("cau hoi tat dinh", MiniGameSinhThai.chonCauHoi(20261017, 1, 50) == MiniGameSinhThai.chonCauHoi(20261017, 1, 50));
         final int[][] cap = MiniGameSinhThai.capDauVong1(new int[]{1, 2, 3, 4, 5});
         Kiem.bang("5 nguoi -> 4 cap (3 mien dau)", Integer.valueOf(4), Integer.valueOf(cap.length));
@@ -487,7 +493,7 @@ public final class KiemHeSinhThai {
         Kiem.nhom("He sinh thai - mep nuoc / diem dao (bo tile moi)");
         try {
             final Map<String, Set<Integer>> nuoc = new HashMap<String, Set<Integer>>();
-            for (final String d : Files.readAllLines(new File("docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
+            for (final String d : Files.readAllLines(new File("../docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
                 final String[] c = d.split(",");
                 if (c.length < 4 || "bo_tile".equals(c[0])) {
                     continue;
@@ -541,14 +547,106 @@ public final class KiemHeSinhThai {
         }
     }
 
+    // ------------------------------------------------------------------ ho cau ca
+
+    static void hoCauCa() {
+        Kiem.nhom("He sinh thai - CHI cau ca o ho (vung nuoc kin, khong toi mep ban do)");
+        final int w = 30, h = 20;
+        final boolean[] n = new boolean[w * h];
+        for (int y = 6; y < 12; y++) {
+            for (int x = 8; x < 16; x++) {
+                n[y * w + x] = true; // ho 48 o giua ban do
+            }
+        }
+        for (int x = 0; x < w; x++) {
+            n[18 * w + x] = true; // bien sat mep duoi
+            n[17 * w + x] = true;
+        }
+        n[3 * w + 25] = n[3 * w + 26] = true; // vung nuoc 2 o: qua nho
+        final int[] nh = BanDoSinhThai.nhanHo(n, w, h);
+        Kiem.bang("ho giua ban do = ho 0", Integer.valueOf(0), Integer.valueOf(nh[8 * w + 10]));
+        Kiem.bang("bien cham mep -> khong phai ho", Integer.valueOf(-1), Integer.valueOf(nh[18 * w + 5]));
+        Kiem.bang("vung nuoc 2 o -> khong phai ho", Integer.valueOf(-1), Integer.valueOf(nh[3 * w + 25]));
+        Kiem.bang("1 ho, 48 o", "[48]", java.util.Arrays.toString(BanDoSinhThai.kichThuocHo(nh)));
+        Kiem.bang("dung sat ho (cach 2 o) -> ho 0", Integer.valueOf(0), Integer.valueOf(BanDoSinhThai.hoGan(nh, w, h, 6, 8, 2)));
+        Kiem.bang("dung sat bien -> khong cau duoc", Integer.valueOf(-1), Integer.valueOf(BanDoSinhThai.hoGan(nh, w, h, 5, 15, 2)));
+        final boolean[] di = new boolean[w * h];
+        for (int i = 0; i < di.length; i++) {
+            di[i] = !n[i];
+        }
+        final List<int[]> dc = BanDoSinhThai.diemCau(nh, di, w, h, 4);
+        Kiem.bang("4 diem cau cho ho", Integer.valueOf(4), Integer.valueOf(dc.size()));
+        boolean sat = true;
+        for (final int[] d : dc) {
+            sat &= BanDoSinhThai.hoGan(nh, w, h, d[1], d[2], 1) == 0 && di[d[2] * w + d[1]];
+        }
+        Kiem.dung("diem cau: o di duoc, sat ho", sat);
+        Kiem.sai("ao nho (< " + BanDoSinhThai.HO_LON + " o): khong co ca hiem (Dratini)", coCa(false, 19));
+        Kiem.dung("ho lon: co Dratini (cap 50)", coCa(true, 19));
+        // Java (luc chay) va bang sinh (diem_cau_ca.csv / data_hst_ho_cau) phai cung mot ket qua.
+        try {
+            final Map<String, List<String>> csvHo = new HashMap<String, List<String>>();
+            final Set<String> mapCsv = new HashSet<String>();
+            for (final String d : Files.readAllLines(new File("../docs/pokemon/diem_cau_ca.csv").toPath(), StandardCharsets.UTF_8)) {
+                if (d.startsWith("#") || d.startsWith("map_id")) {
+                    continue;
+                }
+                final String[] c = d.split(",");
+                mapCsv.add(c[0]);
+                csvHo.computeIfAbsent(c[0], (k) -> new ArrayList<String>()).add(c[3] + ":" + c[4] + ":" + c[6] + ":" + c[7]);
+            }
+            Kiem.dung("diem_cau_ca.csv co ho (" + mapCsv.size() + " map)", mapCsv.size() >= 10);
+            int lech = 0, soMap = 0;
+            for (final String d : Files.readAllLines(new File("../docs/pokemon/thiet_ke_map.csv").toPath(), StandardCharsets.UTF_8)) {
+                final String[] c = d.split(";");
+                if (c.length < 3 || !c[0].matches("\\d+") || "40".equals(c[0]) || "42".equals(c[0])) {
+                    continue;
+                }
+                final int id = Integer.parseInt(c[0]);
+                final File f = new File("cMap_pokemon/" + id);
+                if (!f.isFile()) {
+                    continue;
+                }
+                soMap++;
+                final DinhDangBanDo bd = DinhDangBanDo.doc(Files.readAllBytes(f.toPath()));
+                final String bo = DinhDangBanDo.boTile(id);
+                final boolean[] nuoc = BanDoSinhThai.luoiNuoc(bd, bo);
+                final boolean[] dd = BanDoSinhThai.luoiDiDuoc(bd, Files.readAllBytes(new File("cMap_pokemon/" + bo + ".type").toPath()), nuoc);
+                final int[] nhan = BanDoSinhThai.nhanHo(nuoc, bd.w, bd.h);
+                final int[] kt = BanDoSinhThai.kichThuocHo(nhan);
+                final List<String> java = new ArrayList<String>();
+                for (final int[] p : BanDoSinhThai.diemCau(nhan, dd, bd.w, bd.h, 4)) {
+                    java.add(p[0] + ":" + kt[p[0]] + ":" + p[1] + ":" + p[2]);
+                }
+                if (!java.equals(csvHo.getOrDefault(String.valueOf(id), new ArrayList<String>()))) {
+                    lech++;
+                    System.out.println("        lech map " + id + ": java " + java + " / csv " + csvHo.get(String.valueOf(id)));
+                }
+            }
+            Kiem.bang("ho + diem cau: Java khop bang sinh tren " + soMap + " map", Integer.valueOf(0), Integer.valueOf(lech));
+        } catch (final Exception e) {
+            Kiem.dung("doi chieu diem_cau_ca.csv: " + e, false);
+        }
+    }
+
+    static boolean coCa(final boolean hoLon, final int ma) {
+        final Random r = new Random(5);
+        for (int i = 0; i < 300000; i++) {
+            if (KyNangSong.cauCa(KyNangSong.NUOC_NGOT, 50, true, hoLon, r).ma == ma) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ------------------------------------------------------------------ SQL sinh ra
 
     static void duLieuSql() {
         Kiem.nhom("He sinh thai - sql/pokemon_he_sinh_thai.sql (sinh tu tools/pokemon/sinh_sql_he_sinh_thai.py)");
         try {
-            final String sql = new String(Files.readAllBytes(new File("sql/pokemon_he_sinh_thai.sql").toPath()), StandardCharsets.UTF_8);
+            final String sql = new String(Files.readAllBytes(new File("../sql/pokemon_he_sinh_thai.sql").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("co dau SINH RA / KHONG SUA TAY", sql.startsWith("-- SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py"));
-            for (final String b : new String[]{"data_hst_vung", "data_hst_thay_quai", "data_hst_bung_phat", "data_hst_vung_loai",
+            for (final String b : new String[]{"data_hst_vung", "data_hst_thay_quai", "data_hst_bung_phat", "data_hst_vung_loai", "data_hst_ho_cau",
                 "tob_hst_nhan_vat", "tob_hst_cho", "tob_hst_don", "tob_hst_hop_thu"}) {
                 Kiem.dung("co bang " + b, sql.contains("`" + b + "`"));
             }
@@ -556,7 +654,7 @@ public final class KiemHeSinhThai {
             Kiem.sai("bang nguoi choi khong bi DROP", sql.contains("DROP TABLE IF EXISTS `tob_hst"));
             // Quai: id -> cap, phan loai
             final Map<Integer, int[]> quai = new HashMap<Integer, int[]>();
-            for (final String d : Files.readAllLines(new File("docs/pokemon/bang_quai.csv").toPath(), StandardCharsets.UTF_8)) {
+            for (final String d : Files.readAllLines(new File("../docs/pokemon/bang_quai.csv").toPath(), StandardCharsets.UTF_8)) {
                 final String[] c = d.split(",");
                 if (c.length > 5 && c[0].matches("\\d+")) {
                     quai.put(Integer.parseInt(c[0]), new int[]{Integer.parseInt(c[2]), "quai".equals(c[4]) ? 1 : 0});
@@ -595,7 +693,7 @@ public final class KiemHeSinhThai {
             Kiem.dung("doc sql/pokemon_he_sinh_thai.sql: " + e, false);
         }
         try {
-            final String sh = new String(Files.readAllBytes(new File("tools/pokemon/xuat_sql_day_du.sh").toPath()), StandardCharsets.UTF_8);
+            final String sh = new String(Files.readAllBytes(new File("../tools/pokemon/xuat_sql_day_du.sh").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("xuat_sql_day_du.sh gom pokemon_he_sinh_thai", sh.contains("pokemon_he_sinh_thai"));
         } catch (final Exception e) {
             Kiem.dung("doc xuat_sql_day_du.sh: " + e, false);

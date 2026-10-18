@@ -103,7 +103,37 @@ public final class NhiemVuMau {
 
     /** Nhiem vu phu "chiem khe" (toi da 3 cung luc). */
     public boolean chiemKhe() {
-        return !laNgay() && !laTuan() && !laThanhTuu() && !laSuKien();
+        return !chuoiNam2 && !laNgay() && !laTuan() && !laThanhTuu() && !laSuKien();
+    }
+
+    // ------------------------------------------------------------------ chuoi chinh nam 2 (Hoenn)
+
+    /**
+     * Chuoi chinh nam 2 (chinh / huong_dan co dong_co_tuong_thich = 0: khong bieu dien duoc bang data_quest cu)
+     * do ENGINE chay - nhung CHI khi da co ban do (map_id cua nhiem vu ton tai tren may chu; doi ban do Hoenn noi
+     * map_id) va tran cap mua >= {@link #CAP_MUA_NAM_2}. Khong tu tao ban do. Tran cap theo mua TAT (mac dinh)
+     * thi CapDoLauDai.tranCap = 100 (dieu kien mua luon qua): chuoi nam 2 mo theo CAP (cap_toi_thieu >= 91) +
+     * COT TRUYEN (C53.1 truoc = C52.7, ket nam 1 - sau Nha vo dich C50.7).
+     */
+    public boolean chuoiNam2;
+    public static final int CAP_MUA_NAM_2 = 91;
+
+    public static boolean laChuoiNam2(final String loai, final int dongCoTuongThich) {
+        return ("chinh".equals(loai) || "huong_dan".equals(loai)) && dongCoTuongThich == 0;
+    }
+
+    /** null = chay duoc; nguoc lai ly do. {@code coMap}: map_id >= 0 va ban do co tren may chu. */
+    public String kiemNam2(final int tranCapMua, final boolean coMap) {
+        if (!chuoiNam2) {
+            return null;
+        }
+        if (tranCapMua < CAP_MUA_NAM_2) {
+            return "Cốt truyện năm 2 mở khi trần cấp mùa đạt " + CAP_MUA_NAM_2;
+        }
+        if ("dan_y".equals(kieu) || mapId < 0 || !coMap) {
+            return "Bản đồ Hoenn của nhiệm vụ này chưa mở";
+        }
+        return null;
     }
 
     /** Bac bang ngay theo cap: 1-19 -> 1, 20-39 -> 2, 40-59 -> 3, 60-79 -> 4, 80+ -> 5. */
@@ -128,7 +158,7 @@ public final class NhiemVuMau {
      */
     public String kiemNhan(final int capNguoi, final int ngayHienTai, final java.util.Set<String> daXong, final boolean moAn) {
         if (capNguoi < cap) {
-            return "Cần cấp " + cap;
+            return "Cần đạt cấp " + cap;
         }
         if (ngayMo > ngayHienTai) {
             return "Mở sau " + (ngayMo - ngayHienTai) + " ngày";
@@ -136,12 +166,12 @@ public final class NhiemVuMau {
         if (truoc != null && !truoc.isEmpty()) {
             for (final String t : truoc.split("[,;]")) {
                 if (!t.trim().isEmpty() && !daXong.contains(t.trim())) {
-                    return "Cần xong " + t.trim();
+                    return "Cần hoàn thành nhiệm vụ trước đó";
                 }
             }
         }
         if (an && !moAn) {
-            return "Chưa mở";
+            return "Nhiệm vụ này chưa mở";
         }
         return null;
     }
@@ -191,14 +221,19 @@ public final class NhiemVuMau {
     // ------------------------------------------------------------------ khop su kien
 
     /**
-     * Su kien (kieu, tham so) co tinh cho mau nay khong. muc_tieu_id rong = bat ky. thanh_tuu_<nhom>
+     * Su kien (kieu, tham so) co tinh cho mau nay khong. muc_tieu_id rong = bat ky (tru pokedex_shiny: bat buoc
+     * so dex). Kieu Pokedex (gap/ha/shiny/quan_sat) so theo SO DEX cua loai. thanh_tuu_<nhom>
      * khop su kien "thanh_tuu_<nhom>".
      */
     public boolean khop(final String kieuSuKien, final String thamSo) {
         if (!kieu.equals(kieuSuKien)) {
             return false;
         }
-        if (mucTieuId == null || mucTieuId.isEmpty() || "0".equals(mucTieuId) && laThanhTuu()) {
+        final boolean rong = mucTieuId == null || mucTieuId.isEmpty();
+        if (rong && "pokedex_shiny".equals(kieu)) {
+            return false; // shiny phai dung loai muc tieu (so dex); du lieu thieu loai thi khong tinh
+        }
+        if (rong || "0".equals(mucTieuId) && laThanhTuu()) {
             return true;
         }
         if (thamSo == null) {
@@ -210,6 +245,27 @@ public final class NhiemVuMau {
             }
         }
         return false;
+    }
+
+    /**
+     * Toa do o "x;y" (dang chuan, sinh boi tools/pokemon/sinh_nhiem_vu.py) hoac "x,y".
+     * @return {x, y} (>= 0) hoac null neu rong / hong
+     */
+    public static int[] docToaDo(final String s) {
+        if (s == null) {
+            return null;
+        }
+        final String[] p = s.trim().split("\\s*[;,]\\s*");
+        if (p.length != 2) {
+            return null;
+        }
+        try {
+            final int x = Integer.parseInt(p[0].trim());
+            final int y = Integer.parseInt(p[1].trim());
+            return x >= 0 && y >= 0 ? new int[]{x, y} : null;
+        } catch (final NumberFormatException e) {
+            return null;
+        }
     }
 
     /** Dang dung trong ban kinh (o, mac dinh 3) cua toa do mau (x, y theo o). */

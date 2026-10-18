@@ -2,8 +2,8 @@
 # ============================================================
 #  DEPLOY TU DONG - GitHub Actions ssh vao goi file nay sau moi push len main
 #
-#  Chay tay cung duoc:  sudo /opt/kpah/vps/deploy-auto.sh
-#  Log rieng:           /opt/kpah/log/autodeploy.log
+#  Chay tay cung duoc:  sudo /opt/htbb/vps/deploy-auto.sh
+#  Log rieng:           /opt/htbb/log/autodeploy.log
 #
 #  Khac vps/update.sh o hai diem:
 #    1. KHONG restart neu commit moi chi doi file khong anh huong server dang chay
@@ -11,7 +11,7 @@
 #    2. Neu PHAI restart va KHONG co DEPLOY_NOW: KHONG tu tat may. Xem "GIO RESTART"
 #       ben duoi - day la thay doi 12/09/2026, doc ky truoc khi sua tiep file nay.
 #
-#  CAU HINH: /opt/kpah/server.ini duoc SINH RA tu vps/server.ini.tmpl (co trong git)
+#  CAU HINH: /opt/htbb/server.ini duoc SINH RA tu vps/server.ini.tmpl (co trong git)
 #  cong voi bi mat GitHub gui qua stdin. Xem vps/sinh-server-ini.sh. Cau hinh doi
 #  cung tinh la "phai restart", giong nhu file thuoc CAN_RESTART_REGEX.
 #
@@ -42,17 +42,17 @@
 # ============================================================
 set -u
 
-DIR=/opt/kpah
-USER_SV=kpah
-SV_GAME=kpah-game
-SV_LOGIN=kpah-login
+DIR=/opt/htbb
+USER_SV=htbb; id -u htbb >/dev/null 2>&1 || USER_SV=kpah  # TUONG-THICH-TEN-CU: bo sau 1 ban
+SV_GAME=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SV_GAME=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
+SV_LOGIN=htbb-login; systemctl cat htbb-login >/dev/null 2>&1 || SV_LOGIN=kpah-login  # TUONG-THICH-TEN-CU: bo sau 1 ban
 LOG=$DIR/log/autodeploy.log
 GIAY_BAO_TRUOC=60
 
 # Nhung duong dan ma khi doi thi BUOC phai restart moi co tac dung.
 # src/*.java KHONG nam trong day: server chay jar, sua .java ma chua build lai thi
 # restart cung vo nghia.
-CAN_RESTART_REGEX='^(KPAH2_patched\.jar|lib/|map/|cMap/|loginServer/|vps/server\.ini\.tmpl|vps/sinh-server-ini\.sh)'
+CAN_RESTART_REGEX='^(server/htbb-server\.jar|server/lib/|server/map/|server/cMap/|server/cMap_pokemon/|server/loginServer/|vps/server\.ini\.tmpl|vps/sinh-server-ini\.sh)'
 
 # ---- Bi mat tu GitHub, gui qua STDIN ----
 # Khoa SSH cua Actions bi ep chay dung lenh nay (command="..." trong authorized_keys)
@@ -81,7 +81,7 @@ echo
 echo "===== $(date '+%F %T') deploy tu dong"
 
 # Khong cho hai lan deploy chay chong nhau (push lien tiep 2 commit).
-exec 9>/tmp/kpah-deploy.lock
+exec 9>/tmp/htbb-deploy.lock
 if ! flock -n 9; then
     echo "Dang co mot lan deploy khac chay, bo qua lan nay."
     exit 0
@@ -116,7 +116,7 @@ restart_ngay() {
     echo "== Bao truoc bao tri ${GIAY_BAO_TRUOC}s cho nguoi dang online"
     # Server doc co nay moi 5 giay (BaoTriDaily -> Database.baoTriThongBaoCMD) roi chay
     # marquee dem nguoc. Thieu dong nay trong DB thi bo qua, khong sao.
-    if ! mysql -u root -e "UPDATE kpah_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';" 2>/dev/null; then
+    if ! mysql -u root -e "UPDATE htbb_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';" 2>/dev/null; then
         echo "   [CANH BAO] khong dat duoc co bao tri, van tiep tuc (nguoi choi se bi out khong bao truoc)"
     fi
     sleep "$GIAY_BAO_TRUOC"
@@ -146,8 +146,8 @@ restart_ngay() {
 
 echo "== Kiem tra repo co bi sua tay khong"
 # Bo qua file tam CHUA DUOC THEO DOI cua trinh soan thao (nano/vim). Mot phien nano
-# dang mo /opt/kpah/server.ini de lai .server.ini.swp, va the la ca deploy dung lai
-# du khong ai sua gi that. Da vap 29/08 (web/config.local.php) va 30/08/2026
+# dang mo /opt/htbb/server.ini de lai .server.ini.swp, va the la ca deploy dung lai
+# du khong ai sua gi that. Da vap 29/08 (web PHP cu, config.local.php) va 30/08/2026
 # (server.ini). Dong nay chi bo qua dong "??" - file da theo doi ma bi sua van chan.
 DIRTY=$(sudo -u "$USER_SV" git -C "$DIR" status --porcelain \
         | grep -vE '^\?\? .*(\.swp|\.swo|\.sw[a-p]|~)$')
@@ -192,11 +192,11 @@ if [ "$CO_COMMIT_MOI" = 1 ]; then
 
     echo "== Kiem tra jar"
     if command -v unzip >/dev/null 2>&1; then
-        if ! unzip -t "$DIR/KPAH2_patched.jar" >/dev/null 2>&1; then
-            echo "[LOI] KPAH2_patched.jar hong sau khi pull. Server VAN DANG CHAY BAN CU"
+        if ! unzip -t "$DIR/server/htbb-server.jar" >/dev/null 2>&1; then
+            echo "[LOI] htbb-server.jar hong sau khi pull. Server VAN DANG CHAY BAN CU"
             echo "      (chua he dung toi) - phuc hoi ngay de khong ai lo phai bao tri xong roi moi vo"
             echo "      chay ban hong."
-            sudo -u "$USER_SV" git -C "$DIR" checkout "$CU" -- KPAH2_patched.jar
+            sudo -u "$USER_SV" git -C "$DIR" checkout "$CU" -- server/htbb-server.jar
             chown -R "$USER_SV":"$USER_SV" "$DIR"
             exit 1
         fi
@@ -217,7 +217,7 @@ fi
 
 # MOT LAN sau ca hai buoc tren, bat ke co commit moi va/hoac cau hinh doi hay khong -
 # server.ini vua sinh lai (thuong tren) va file vua pull (neu co) deu phai thuoc ve
-# $USER_SV, khong thi kpah-game.service (User=kpah) khong doc/ghi duoc lan sau.
+# $USER_SV, khong thi htbb-game.service (User=htbb) khong doc/ghi duoc lan sau.
 chown -R "$USER_SV":"$USER_SV" "$DIR"
 chmod +x "$DIR"/vps/*.sh 2>/dev/null
 

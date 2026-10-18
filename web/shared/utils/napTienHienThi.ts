@@ -6,7 +6,7 @@
 export const TEN_TRANG_THAI_NAP: Record<string, string> = {
   cho_thanh_toan: 'Chờ thanh toán',
   da_thanh_toan: 'Đã thanh toán — chờ vào game',
-  da_cong: 'Đã cộng vào nhân vật',
+  da_cong: 'Đã cộng vào Pokémon',
   that_bai: 'Hết hạn / thất bại',
   hoan_tien: 'Đã hoàn tiền',
   cho_thu_hoi: 'Hoàn tiền — chờ thu hồi',
@@ -27,4 +27,5 @@ export const TEN_LOAI_GOI: Record<string, string> = {
   luong: 'Gói lượng',
   the_thang: 'Thẻ tháng',
   ve_mua: 'Vé mùa',
+  thanh_vien: 'Thành viên HTBB',
 }

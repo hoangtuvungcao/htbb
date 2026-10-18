@@ -8,7 +8,7 @@ import java.util.Vector;
 /**
  * G7.C3: doi chu kiem hiep -&gt; the gioi Pokemon tren client - ban J2ME cua ClientUnity ChuPokemon.cs.
  * Tu dien /pk/chu.bin (u16 n, n x (writeUTF khoa, writeUTF chu moi)) sinh tu ChuPokemonDuLieu.cs
- * boi j2me/tools/DongGoiPokeJ2me.java. Khoa bat dau bang "=" la so khop phan biet hoa thuong.
+ * boi client_jar/tools/DongGoiPokeJ2me.java. Khoa bat dau bang "=" la so khop phan biet hoa thuong.
  *
  * CLDC khong co regex nen so khop bang tay, giu dung nghia mau cua ban C#:
  *   (?&lt;![\p{L}_])(?:khoa dai truoc | ...)(?!\w)   khong phan biet hoa thuong (tru khoa "=").

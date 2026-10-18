@@ -3,7 +3,7 @@
 -- Xem docs/pokemon/SAN_SANG_PRODUCTION.md muc 2.
 --
 -- Chay NHIEU LAN DUOC (IF NOT EXISTS, MariaDB >= 10.1.4). Chay khi server dang tat hoac luc it nguoi:
---     mysql kpah_db < sql/them_chi_muc_production.sql
+--     mysql htbb_db < sql/them_chi_muc_production.sql
 --
 -- Moi chi muc duoi day ung voi mot truy van chay o DUONG NONG ma truoc day phai quet ca bang:
 -- ============================================================================

@@ -286,14 +286,40 @@ public class TeamServer {
         return TeamServer.controllerManager.getController(serviceID);
     }
 
+    /** De quy qua Hashtable/Vector/ItemMarket: Vector rong -> trimToSize(). Xem cho goi Market.init(). */
+    static int thuGonVectorRong(final Object o) {
+        int n = 0;
+        try {
+            if (o instanceof java.util.Vector) {
+                final java.util.Vector<?> v = (java.util.Vector<?>) o;
+                if (v.isEmpty()) {
+                    v.trimToSize();
+                    return 1;
+                }
+                for (int i = 0; i < v.size(); i++) {
+                    final Object e = v.get(i);
+                    if (e instanceof java.util.Vector || e instanceof java.util.Hashtable || e instanceof real.ItemMarket) {
+                        n += thuGonVectorRong(e);
+                    }
+                }
+            } else if (o instanceof java.util.Hashtable) {
+                for (final Object e : ((java.util.Hashtable<?, ?>) o).values()) {
+                    n += thuGonVectorRong(e);
+                }
+            } else if (o instanceof real.ItemMarket) {
+                n += thuGonVectorRong(((real.ItemMarket) o).ALL_ITEM_COLOR_THANH_LONG);
+                n += thuGonVectorRong(((real.ItemMarket) o).ALL_ITEM_COLOR_HAC_HO);
+            }
+        } catch (final Exception ignored) {
+        }
+        return n;
+    }
+
     public static void main(String[] args) {
 
-        try {
-            System.setOut(new PrintStream(System.out, true, "UTF-8"));
-            System.setErr(new PrintStream(System.err, true, "UTF-8"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Nhat ky: thay System.out/err bang bo chan dong (UTF-8, phan loai, gop dong lap, ghi
+        // bat dong bo). Thay cho hai dong setOut/setErr UTF-8 cu. Xem com.htbb.log.Nhat.
+        com.htbb.log.Nhat.caiDat();
 
         run();
     }
@@ -458,7 +484,7 @@ public class TeamServer {
      *
      * Chet ngay tai day thi systemd bao "failed" dung su that, va log co MOT dong noi ro ly
      * do thay vi hang tram stack trace NoSuchElementException khong dau la dau. Xem them
-     * StartLimitBurst trong vps/kpah-game.service de systemd thoi khoi dong lai vo han.
+     * StartLimitBurst trong vps/htbb-game.service de systemd thoi khoi dong lai vo han.
      *
      * KHONG in mat khau ra log - chi noi no co dung chuoi mau hay khong.
      *
@@ -468,13 +494,13 @@ public class TeamServer {
      * de trong" duoc mien - moi phep kiem khac giu nguyen, va van phai ket noi duoc that.
      * Xem choPhepMatKhauTrong(). VPS duoc giu o ba lop:
      *   1. vps/server.ini.tmpl ghim db.choPhepMatKhauTrong=0, va deploy-auto.sh SINH LAI
-     *      /opt/kpah/server.ini tu ban mau do o moi lan deploy;
+     *      /opt/htbb/server.ini tu ban mau do o moi lan deploy;
      *   2. vps/sinh-server-ini.sh tu choi cai neu gia tri khac 0, va tu choi ca file co
      *      khoa khai hai lan (Properties lay dong cuoi, bo sinh truoc day lay dong dau);
      *   3. thieu khoa (hoac sai chinh ta) mac dinh la KHONG cho - fail-closed.
      *
      * DUNG COI DAY LA BAT KHA XAM PHAM. Hai lop dau la lop VAN HANH, khong phai lop ky
-     * thuat: ai co quyen root tren VPS van sua tay /opt/kpah/server.ini duoc, va rieng
+     * thuat: ai co quyen root tren VPS van sua tay /opt/htbb/server.ini duoc, va rieng
      * duong vps/update.sh thi khoi dong lai ma KHONG sinh lai server.ini - sua tay se song
      * tiep cho tan lan deploy sau. Cung dung tuong "mat khau trong thi MySQL tu chan": neu
      * grant cho phep thi MariaDB van cho vao qua TCP binh thuong. Lop chan that su cuoi
@@ -504,7 +530,7 @@ public class TeamServer {
         if (choTrong) {
             System.out.println("  cach sua : bat MySQL (XAMPP) roi chay lai run.bat");
         } else {
-            System.out.println("  cach sua : sua /opt/kpah/server.ini roi systemctl restart kpah-game");
+            System.out.println("  cach sua : sua /opt/htbb/server.ini roi systemctl restart htbb-game");
             if ("".equals(matKhau)) {
                 System.out.println("  o may nha: them db.choPhepMatKhauTrong=1 vao server.ini cua may minh");
                 System.out.println("             (ban mau VPS ghim 0 - DUNG sua ban mau)");
@@ -603,7 +629,7 @@ public class TeamServer {
         // Tren VPS Linux khong co X server (hoac chay bang systemd), new JFrame()
         // nem HeadlessException: server van chay nhung log day stack trace. Kiem tra
         // truoc cho sach. Tren Windows khong doi gi, panel van hien nhu cu.
-        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+        if (!java.awt.GraphicsEnvironment.isHeadless() && AdminPanel.choPhepMo()) {
             SwingUtilities.invokeLater(() -> {
                 try {
                     AdminPanel panel = new AdminPanel();
@@ -614,7 +640,7 @@ public class TeamServer {
             });
         } else {
             System.out.println("[ADMIN PANEL] Che do khong man hinh (headless) - bo qua cua so admin."
-                    + " Dung lenh chat trong game, hoac 'systemctl stop kpah-game' de tat co trat tu.");
+                    + " Dung lenh chat trong game, hoac 'systemctl stop htbb-game' de tat co trat tu.");
         }
 
         // Luu du lieu khi JVM thoat (dong cua so console, Ctrl+C, taskkill /IM java.exe).
@@ -651,6 +677,9 @@ public class TeamServer {
             // PHAI dat NGAY SAU khi doc server.ini va TRUOC Database.setLink(...):
             // data.ConnPool in mat khau CSDL ra stdout ngay trong ham dung. Xem LocBiMat.
             LocBiMat.batDau(p);
+            // Nhat ky: muc / loai tat / gop / tep xoay vong (sv.log.*). Som nhat co the de moi dong
+            // khoi dong da theo cau hinh that.
+            com.htbb.log.Nhat.docCauHinh(p, p.getProperty("sv.pathLog"));
             BaoTriDaily.Server = Integer.parseInt(p.getProperty("api.sv"));
             BaoTriDaily.domain = p.getProperty("api.url");
             TeamServer.PORT = Integer.parseInt(p.getProperty("sv.port"));
@@ -668,6 +697,10 @@ public class TeamServer {
             Database.setLinkBoardNap(p.getProperty("db.host"), p.getProperty("db.nameNap"), p.getProperty("db.userNap"), p.getProperty("db.pass"), p.getProperty("db.maxNap"));
             Database.setLinkGiftCode(p.getProperty("db.host"), p.getProperty("db.nameNap"), p.getProperty("db.userNap"), p.getProperty("db.pass"), p.getProperty("db.maxNap"));
             Database.setLink1(p.getProperty("db.host1"), p.getProperty("db.name1"), p.getProperty("db.user1"), p.getProperty("db.password1"), p.getProperty("db.maxco1"));
+            // CAU HINH TRUNG TAM (com.htbb.cauhinh, docs/cau-hinh-trung-tam.md): doc bang cau_hinh NGAY BAY GIO va
+            // ghi de vao p cac khoa co trong CSDL -> moi p.getProperty(...) ben duoi (co che do, dai han, nap tien,
+            // DoS, dang ky...) theo thu tu CSDL > server.ini > mac dinh. Cong / CSDL o tren chi doc tu server.ini.
+            com.htbb.cauhinh.CauHinhTrungTam.khoiTao(p);
             Database.tableRace = p.getProperty("sv.tablerace");
             Database.createRace = Byte.parseByte(p.getProperty("sv.createRace"));
             Database.dayCreateRace = p.getProperty("sv.dayrace");
@@ -677,7 +710,7 @@ public class TeamServer {
             TeamServer.language = Byte.parseByte(p.getProperty("sv.lang"));
             Map.openLog = (Byte.parseByte(p.getProperty("sv.me")) == 1);
             // sv.expvantieu / sv.Luckyexp / sv.ExpQua: chuyen sang server.CauHinh tu 11/09/2026
-            // (bang cau_hinh, nap lai duoc qua trang admin/cauhinh.php, khong con bat buoc phai
+            // (bang cau_hinh, nap lai duoc qua trang HTBB-Web /admin/cauhinh, khong con bat buoc phai
             // co dong trong server.ini nua - xem CauHinh.napLai()). Ba dong trong server.ini van
             // giu lai lam gia tri khoi tao lan dau (CauHinh.dongBoLucKhoiDong()), giong 26 khoa
             // con lai cua CauHinh - KHONG doc truc tiep o day nua de tranh doc hai lan hai noi.
@@ -739,6 +772,9 @@ public class TeamServer {
             System.out.println("MAX CHAR PER ACCOUNT = " + Database.MAX_CHAR_PER_ACCOUNT);
 
             // ==== TEST FLAGS (đọc an toàn, có giá trị mặc định nếu thiếu trong server.ini) ====
+            // Dang ky trong game (lenh 39): sv.dangKyTrongGame / sv.dangKyTuKichHoat / ... - xem real.cmd.DangKyTrongGame
+            real.cmd.DangKyTrongGame.docCauHinh(p.getProperty("sv.dangKyTrongGame"), p.getProperty("sv.dangKyTuKichHoat"),
+                    p.getProperty("sv.dangKyCsdlTaiKhoan"), p.getProperty("sv.dangKyTreMs"));
             TeamServer.testMode = "1".equals(p.getProperty("sv.testMode", "0").trim());
             TeamServer.gmCanCoPInfo = parseIntDefault(p.getProperty("sv.gmCanCoPInfo"), 0) == 1;
             TeamServer.banToiThieu = parseIntDefault(p.getProperty("sv.banToiThieu"), 0);
@@ -772,8 +808,21 @@ public class TeamServer {
                     p.getProperty("sv.tranGoiThuong"), io.BoDemGoiTin.GOI_THUONG_MAC_DINH);
             io.BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA = parseIntDefault(
                     p.getProperty("sv.tranGoiTaiNguyen"), io.BoDemGoiTin.GOI_TAI_NGUYEN_MAC_DINH);
+            io.BoDemGoiTin.GOI_TRA_CUU_TOI_DA = parseIntDefault(
+                    p.getProperty("sv.tranGoiTraCuu"), io.BoDemGoiTin.GOI_TRA_CUU_MAC_DINH);
+            io.BoDemGoiTin.datMienIp(p.getProperty("sv.tranGoiMienIp", ""));
+            if (!io.BoDemGoiTin.MIEN_IP.isEmpty()) {
+                com.htbb.log.Nhat.canhBao("NGAP_GOI", "sv.tranGoiMienIp=" + io.BoDemGoiTin.MIEN_IP
+                        + " - cac IP nay KHONG bi dem ngap goi (chi dung cho may chay bot tai)");
+            }
+            // Chong spam chat / thao tac + gop thong bao toan server (docs/cau-hinh-server-ini.md muc 13).
+            com.htbb.chongspam.ChongSpam.docCauHinh(p);
+            com.htbb.chongspam.ThongBaoGop.docCauHinh(p);
+            System.out.println(com.htbb.chongspam.ChongSpam.moTa());
+            System.out.println(com.htbb.chongspam.ThongBaoGop.moTa());
             System.out.println("NGAP GOI TIN -> tran thuong=" + io.BoDemGoiTin.GOI_THUONG_TOI_DA
                     + ", tran tai nguyen=" + io.BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA
+                    + ", tran tra cuu=" + io.BoDemGoiTin.GOI_TRA_CUU_TOI_DA
                     + " moi " + io.BoDemGoiTin.CUA_SO_MS + "ms");
             System.out.println("DoS PROTECT -> socketTimeout=" + (TeamServer.SOCKET_TIMEOUT_MS / 1000)
                     + "s, maxConnPerIp=" + TeamServer.MAX_CONN_PER_IP
@@ -796,10 +845,13 @@ public class TeamServer {
             // com.htbb.pokemon.LauDai.bat(). Doi gia tri phai khoi dong lai.
             com.htbb.pokemon.LauDai.dat(com.htbb.pokemon.LauDai.docGiaTri(p.getProperty("sv.lau_dai")));
             com.htbb.pokemon.LauDai.datNgayKhaiTruong(p.getProperty("sv.ngay_khai_truong"));
+            // Tran cap theo mua: mac dinh TAT (thieu dong = 0) - docs/pokemon/THIET_KE_LAU_DAI.md muc 1.4.
+            com.htbb.pokemon.LauDai.datTranTheoMua(com.htbb.pokemon.LauDai.docGiaTri(p.getProperty("sv.tran_cap_theo_mua")));
             // Gio bao tri hang ngay (HH:MM | tat | trong = ngau nhien 4:30-5:30 nhu cu).
             real.BaoTriDaily.datGio(p.getProperty("sv.gioBaoTri"));
             System.out.println("LAU DAI -> " + (com.htbb.pokemon.LauDai.bat() ? "BAT" : "TAT")
-                    + ", khai truong ngay thu " + com.htbb.pokemon.LauDai.ngayHienTai());
+                    + ", khai truong ngay thu " + com.htbb.pokemon.LauDai.ngayHienTai()
+                    + ", tran cap theo mua " + (com.htbb.pokemon.LauDai.tranTheoMua() ? "BAT" : "TAT"));
             // nap tien: co sv.nap_tien (docs/pokemon/NAP_TIEN.md). Chi BAT khi ca sv.lau_dai=1.
             com.htbb.pokemon.NapTien.dat(com.htbb.pokemon.NapTien.docGiaTri(p.getProperty("sv.nap_tien")));
             System.out.println(com.htbb.pokemon.NapTien.moTaTrangThai());
@@ -890,7 +942,7 @@ public class TeamServer {
         // Cot soluong cho gop log mua shop NPC (xem Database.saveLogBuyItemShop()).
         Database.instance.chuanBiCotSoLuongLogBuyShop();
         // 26 setting nap lai duoc chuyen tu server.ini sang bang cau_hinh (sua duoc qua
-        // web/admin/cauhinh.php). Dong bo mot lan tu file (INSERT IGNORE, khong ghi de
+        // HTBB-Web /admin/cauhinh). Dong bo mot lan tu file (INSERT IGNORE, khong ghi de
         // dong da co) roi bat vong lap tu nap lai moi 10 giay. Xem server.CauHinh.
         CauHinh.dongBoLucKhoiDong(p);
         CauHinh.batDau();
@@ -956,6 +1008,11 @@ public class TeamServer {
         new Thread(DBUserLogger.instance).start();
         DataGame.load();
         Market.init();
+        // Market.init (lib/htbb-core.jar) dung san luoi cho cho: ~57 ItemMarket x 2 phe x 20x4x6x16 = ~870.000
+        // Vector RONG (do heap 18/10/2026: ~45 % so doi tuong song khi server rong). Thu gon mang ben
+        // trong cua Vector rong (10 o -> 0): ~35 MB heap, hanh vi y het (Vector tu no ra khi add).
+        thuGonVectorRong(Market.ALL_ITEM);
+        thuGonVectorRong(Market.ALL_GEM);
         Database.loadAllCharSell();
         String nt = new Date(System.currentTimeMillis()).toString();
         if (!Char.isSuKienHaloween2016() && !Char.isSuKienTet2017() && !Char.isSuKienNoel() && !Char.isSuKienGioTo2016() && !Char.isSuKienHe2017() && !Char.isSuKienMini() && !Char.isSuKienMiniChucNu() && !Char.isSuKienTrungThul2016()) {
@@ -1297,6 +1354,10 @@ public class TeamServer {
                 int ch;
                 while ((ch = isr.read()) > -1) {
                     TeamServer.stHelp = String.valueOf(TeamServer.stHelp) + (char) ch;
+                }
+                // map/help.txt luu UTF-8 co BOM: U+FEFF dau chuoi client ve thanh "?" o dau Huong dan
+                if (TeamServer.stHelp.startsWith("\uFEFF")) {
+                    TeamServer.stHelp = TeamServer.stHelp.substring(1);
                 }
             } catch (IOException e2) {
                 e2.printStackTrace();

@@ -240,8 +240,8 @@ public final class NqshMod {
     /** Đầu MessageHandler.onMessage: true = gói -88 đã xử lý ở đây. */
     public static boolean goiGuard(Message m) {
         try {
-            // Vận may: nuốt gói mở màn rương (-62) như AutoGuard.goiGuard của jar
-            if (AutoVanMay.anGoi(m.command)) {
+            // Tự động đánh chính thức (-100, máy chủ điều khiển) như AutoGuard.goiGuard của jar
+            if (TuDong.nhan(m)) {
                 return true;
             }
             return nhan(m);

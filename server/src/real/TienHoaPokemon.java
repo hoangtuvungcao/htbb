@@ -177,12 +177,17 @@ public final class TienHoaPokemon {
             // Chuoi -90 -> -93 -> -94 (Session gui ca chuoi kemTheo ngay sau goi chinh).
             final Message cuoi = taoPokeCuoi(ch);
             final Message pet = taoPokePet(ch);
-            if (cuoi != null) {
-                cuoi.kemTheo = pet;
-                m.kemTheo = cuoi;
-            } else {
-                m.kemTheo = pet;
+            // ... -> -102 ngoai hinh trang bi (NgoaiHinhGame): phu kien + vang sang hien cho moi nguoi
+            Message duoi = NgoaiHinhGame.tao(ch);
+            if (pet != null) {
+                pet.kemTheo = duoi;
+                duoi = pet;
             }
+            if (cuoi != null) {
+                cuoi.kemTheo = duoi;
+                duoi = cuoi;
+            }
+            m.kemTheo = duoi;
         }
         return m;
     }
@@ -244,7 +249,7 @@ public final class TienHoaPokemon {
 
     /**
      * -93 POKE_CUOI: thu cuoi Pokemon cua {@code ch} (0 khi khong cuoi hoac dang hoa hinh).
-     * Di kem sau moi -90, nen len/xuong thu (doRideAnimal/doUnRideHorse gui lai lenh 3 + 5)
+     * Di kem sau moi -90, nen len/xuong thu (doCuoiThu/doXuongThuCuoi gui lai lenh 3 + 5)
      * tu cap nhat ma khong can them cho goi.
      */
     public static Message taoPokeCuoi(final Char ch) {

@@ -338,9 +338,9 @@ public final class KieuO {
 
     // ------------------------------------------------------------ ô lưới đồ
     /** Nền ô (chẵn/lẻ xen kẽ) */
-    public static final int O_CHAN = 0x23497F;
-    public static final int O_LE = 0x1D3F70;
-    public static final int O_TRONG = 0x18345E;
+    public static final int O_CHAN = 0x28397E;
+    public static final int O_LE = 0x213070;
+    public static final int O_TRONG = 0x1A2658;
 
     /**
      * Ô lưới đồ s x s tại (x, y) (gồm khe 1 px bên phải/dưới): co = có đồ, le = sọc xen kẽ.

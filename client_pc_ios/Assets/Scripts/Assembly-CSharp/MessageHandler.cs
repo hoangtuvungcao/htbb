@@ -92,7 +92,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 			tenMoi = "#" + dexMoi;
 		}
 		// Bong chat tren dau (khong dung startFlyText: ham do tach chu so trong chuoi va int.Parse).
-		GameScr.addChat(c, "Tiến hóa thành " + tenMoi + "!", 100);
+		GameScr.addChat(c, "Tiến hoá thành " + tenMoi + "!", 100);
 	}
 
 	/// <summary>-93 POKE_CUOI: i16 charId, i16 dexThu (0 = xuong thu), u8 shiny.</summary>
@@ -125,14 +125,37 @@ public class MessageHandler : Cmd_message, IMessageHandler
 		c.pokePetShiny = shiny;
 	}
 
+	/// <summary>
+	/// -102 POKE_NGOAI_HINH: i16 charId + NgoaiHinhCua (server com.htbb.pokemon.NgoaiHinh), di kem chuoi
+	/// -90 -&gt; -93 -&gt; -94 -&gt; -102. Goi hong thi bo qua.
+	/// </summary>
+	private void onPokeNgoaiHinh(Message msg)
+	{
+		try
+		{
+			short id = msg.reader().readShort();
+			NgoaiHinhCua n = NgoaiHinhCua.doc(msg.reader());
+			NgoaiHinhMenu.nap();
+			Char c = timCharPoke(id);
+			if (c != null)
+			{
+				c.ngoaiHinh = n;
+			}
+		}
+		catch (Exception)
+		{
+			// goi hong: bo qua
+		}
+	}
+
 	public void onMessage(Message msg)
 	{
 		if (KiemServer.nhan(msg))
 		{
 			return;
 		}
-		// mod: Vận may nuốt gói mở màn rương (-62) như AutoGuard.goiGuard bản jar
-		if (AutoVanMay.anGoi(msg.command))
+		// Tự động đánh chính thức: gói -100 của máy chủ (như AutoGuard.goiGuard bản jar)
+		if (TuDong.nhan(msg))
 		{
 			return;
 		}
@@ -155,6 +178,9 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				break;
 			case -94:
 				onPokePet(msg);
+				break;
+			case -102:
+				onPokeNgoaiHinh(msg);
 				break;
 			case -76:
 				Canvas.gameScr.onShopNew(msg);
@@ -252,10 +278,10 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				break;
 			case 80:
 			{
-				Res.XAPHU = new XaphuTemplate[msg.reader().readByte()];
+				Res.XAPHU = new PidgeotBayTemplate[msg.reader().readByte()];
 				for (int num143 = 0; num143 < Res.XAPHU.Length; num143++)
 				{
-					Res.XAPHU[num143] = new XaphuTemplate();
+					Res.XAPHU[num143] = new PidgeotBayTemplate();
 					int num144 = msg.reader().readByte();
 					Res.XAPHU[num143].mapID = new int[num144];
 					for (int num145 = 0; num145 < Res.XAPHU[num143].mapID.Length; num145++)
@@ -573,7 +599,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				sbyte b93 = msg.reader().readByte();
 				try
 				{
-					ThanThu.ALL_DATA_THAN_THU.clear();
+					PokemonHuyenThoai.ALL_DATA_THAN_THU.clear();
 					sbyte b94 = msg.reader().readByte();
 					for (int num226 = 0; num226 < b94; num226++)
 					{
@@ -582,7 +608,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 						{
 							array40[num227] = msg.reader().readByte();
 						}
-						ThanThu.setDataThanThu(num226, array40);
+						PokemonHuyenThoai.setDataThanThu(num226, array40);
 					}
 				}
 				catch (Exception)
@@ -2159,7 +2185,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				break;
 			}
 			case 14:
-				Canvas.startOKDlg("Xin chọn tên nhân vật khác");
+				Canvas.startOKDlg("Xin chọn tên Pokémon khác");
 				break;
 			case 34:
 				Canvas.endDlg();
@@ -2211,34 +2237,12 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				break;
 			}
 			case 39:
-			{
-				string text9 = msg.reader().readUTF();
-				bool flag2 = msg.reader().readBoolean();
-				string text10 = msg.reader().readUTF();
-				string text11 = msg.reader().readUTF();
-				if (!flag2)
+				// Đăng ký trong game (giao thức mới, sau chuỗi "#dk2") - xem DangKyScr
+				if (msg.reader().readUTF() == DangKyScr.DAU)
 				{
-					Canvas.startOKDlg("Xin chọn nick khác");
-					break;
-				}
-				ActionPerform successAction = () =>
-				{
-					Canvas.startOKDlg("Đã gửi thông tin. Vui lòng thoát game và chờ trong ít phút");
-				};
-				ActionPerform failAction = () =>
-				{
-					Canvas.startOKDlg("Có lỗi xảy ra. Xin hãy thử lại");
-				};
-				if (Main.isPC)
-				{
-					Canvas.startOKDlg("Để đăng ký tài khoản vui lòng soạn\n" + text10 + text9 + " \ngửi tới " + text11);
-				}
-				else
-				{
-					GameMidlet.sendSMS(text10 + text9, "sms://" + text11, successAction, failAction);
+					DangKyScr.nhan(msg.reader());
 				}
 				break;
-			}
 			case 20:
 			{
 				sbyte cat = msg.reader().readByte();
@@ -2429,7 +2433,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 			}
 			case -13:
 				Canvas.gameScr.mainChar.idClan = -1;
-				Canvas.startOKDlg("Bạn bị mời khỏi bang hội.");
+				Canvas.startOKDlg("Bạn bị mời khỏi đội.");
 				break;
 			case -17:
 			{
@@ -2451,7 +2455,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 			case -18:
 			{
 				string te = msg.reader().readUTF();
-				MessageScr.gI().addTab(te, "Bang hội", 1);
+				MessageScr.gI().addTab(te, "Đội", 1);
 				break;
 			}
 			case -19:
@@ -2474,7 +2478,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 						clanInfo.nationID = msg.reader().readByte();
 						mVector2.addElement(clanInfo);
 					}
-					ListScr.gI().setInfo(mVector2, b29, "TOP BANG HỘI");
+					ListScr.gI().setInfo(mVector2, b29, "TOP ĐỘI");
 					ListScr.gI().switchToMe();
 					Canvas.endDlg();
 				}
@@ -2484,7 +2488,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				}
 				else if (b29 == ListScr.STRONGER)
 				{
-					Canvas.gameScr.onFriendList(msg, b29, "TOP CAO THỦ");
+					Canvas.gameScr.onFriendList(msg, b29, "TOP SỨC MẠNH");
 				}
 				else
 				{
@@ -2499,7 +2503,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				{
 					Canvas.gameScr.mainChar.charXu += moneyClan1;
 				};
-				Canvas.startOKDlg("Bạn nhận được " + moneyClan1 + "xu từ bang hội.", action);
+				Canvas.startOKDlg("Bạn nhận được " + moneyClan1 + "xu từ đội.", action);
 				break;
 			}
 			case -22:
@@ -2642,7 +2646,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				}
 				else
 				{
-					Canvas.startOKDlg("Chưa có thông tin linh thú");
+					Canvas.startOKDlg("Chưa có thông tin thú cưỡi");
 				}
 				break;
 			}

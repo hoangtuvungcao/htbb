@@ -18,7 +18,13 @@ export default defineNuxtConfig({
             'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè. Tải game và đăng ký tài khoản.',
         },
       ],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/logo-mark.svg' }],
+      // biểu tượng chung với game (htbb-client/j2me/tools/tao_logo.py --web)
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/logo-mark.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
+        { rel: 'alternate icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+      ],
     },
   },
 
@@ -34,6 +40,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
       },
     },
+    // Trang ghi công đổi tên: giữ link cũ (301) cho bên ngoài đã trỏ tới.
+    '/ghi-cong': { redirect: { to: '/giay-phep', statusCode: 301 } },
     '/admin': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/admin/**': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/xac-nhan-nap': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },

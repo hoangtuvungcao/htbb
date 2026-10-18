@@ -1,0 +1,96 @@
+MO PHONG CHI SO / TTK (sinh boi tools/pokemon/MoPhongChiSo.java, KHONG SUA TAY)
+Kich ban toi da sau tran: CM 36.7% x1.92, hut 9.5%, giam ST tong 60.0%, ne 28.0%, % cong +50%
+Kich ban toi da TRUOC tran: CM 80% x2.10, hut 35%, giam ST 85%, ne 60%, % cong +150%
+
+1. TTK (giay) NGUOI HA QUAI THUONG theo cap / dong / nang cap (kich ban thuong) - muc tieu 4 / 5 / 6 giay
+   cap  muc  Charmander              Bulbasaur               Eevee                   Squirtle                Pichu                   
+    10    4    4.0  3.6  3.4  3.0      5.2  4.6  4.3  3.8      4.3  3.9  3.7  3.3      5.7  5.1  4.8  4.2      3.7  3.4  3.2  2.8    
+    20    4    4.0  3.6  3.4  3.0      5.2  4.6  4.3  3.8      4.3  3.9  3.7  3.3      5.7  5.1  4.7  4.2      3.7  3.4  3.2  2.8    
+    30    4    4.0  3.6  3.4  3.0      5.1  4.6  4.3  3.8      4.3  3.9  3.7  3.3      5.7  5.1  4.7  4.2      3.7  3.4  3.2  2.8    
+    40    5    5.0  4.5  4.3  3.8      6.4  5.8  5.4  4.8      5.4  4.9  4.6  4.1      7.1  6.3  5.9  5.2      4.7  4.2  4.0  3.6    
+    50    5    5.0  4.5  4.3  3.8      6.4  5.8  5.4  4.8      5.4  4.9  4.6  4.1      7.1  6.4  5.9  5.2      4.7  4.2  4.0  3.6    
+    60    5    5.0  4.5  4.3  3.8      6.4  5.8  5.4  4.8      5.4  4.9  4.6  4.1      7.1  6.3  5.9  5.2      4.7  4.2  4.0  3.6    
+    70    6    6.0  5.4  5.1  4.6      7.7  6.9  6.5  5.7      6.5  5.9  5.5  4.9      8.5  7.6  7.1  6.2      5.6  5.1  4.8  4.3    
+    80    6    6.0  5.4  5.1  4.6      7.7  6.9  6.5  5.7      6.5  5.9  5.5  4.9      8.5  7.6  7.1  6.2      5.6  5.1  4.8  4.3    
+    90    6    6.0  5.4  5.1  4.6      7.7  6.9  6.5  5.7      6.5  5.9  5.5  4.9      8.5  7.6  7.1  6.2      5.6  5.1  4.8  4.3    
+   100    6    6.0  5.4  5.1  4.6      7.7  6.9  6.5  5.7      6.5  5.9  5.5  4.9      8.5  7.6  7.1  6.2      5.6  5.1  4.8  4.3    
+   (moi o: +0 / +6 / +10 / +15)
+   Toi da sau tran: TTK thap nhat = 48% muc tieu; truoc tran = 27%.
+
+2. TINH ANH / GYM / BOSS THE GIOI (dong chuan Eevee, +6, kich ban thuong; ngoac: +0 / +15)
+   cap  12: tinh anh  15.6 s | Gym 114.4 s (128.5 /  93.8) | boss TG 20 nguoi  9.8 phut (toi da sau tran +15:  5.0)
+   cap  20: tinh anh  15.6 s | Gym 114.8 s (128.7 /  93.8) | boss TG 20 nguoi  9.7 phut (toi da sau tran +15:  4.9)
+   cap  30: tinh anh  15.6 s | Gym 114.7 s (128.7 /  93.8) | boss TG 20 nguoi  9.7 phut (toi da sau tran +15:  5.0)
+   cap  40: tinh anh  19.5 s | Gym 114.8 s (128.8 /  93.8) | boss TG 20 nguoi  9.7 phut (toi da sau tran +15:  4.9)
+   cap  50: tinh anh  19.5 s | Gym 114.7 s (128.8 /  93.8) | boss TG 20 nguoi  9.7 phut (toi da sau tran +15:  4.9)
+   cap  60: tinh anh  19.5 s | Gym 114.7 s (128.7 /  93.8) | boss TG 20 nguoi  9.8 phut (toi da sau tran +15:  4.9)
+   cap  70: tinh anh  23.4 s | Gym 115.0 s (128.9 /  93.8) | boss TG 20 nguoi  9.8 phut (toi da sau tran +15:  4.9)
+   cap  80: tinh anh  23.4 s | Gym 114.9 s (128.8 /  93.8) | boss TG 20 nguoi  9.8 phut (toi da sau tran +15:  4.9)
+   cap  90: tinh anh  23.4 s | Gym 114.8 s (128.8 /  93.7) | boss TG 20 nguoi  9.8 phut (toi da sau tran +15:  4.9)
+
+3. CHONG BAT TU: hoi phuc (hoi 1%/5 giay + hut HP x DPS) so voi DPS nhan (toi da sau tran, +15, sau ne/giam)
+   cap  10 Squirtle +15 vs Gym: hoi   16.9 HP/s < nhan   29.1 HP/s (58%)
+   cap  30 Squirtle +15 vs Gym: hoi   32.3 HP/s < nhan   46.6 HP/s (69%)
+   cap  50 Squirtle +15 vs Gym: hoi   47.7 HP/s < nhan   79.3 HP/s (60%)
+   cap  70 Squirtle +15 vs Gym: hoi   63.1 HP/s < nhan  100.8 HP/s (63%)
+   cap  90 Squirtle +15 vs Gym: hoi   78.5 HP/s < nhan  122.4 HP/s (64%)
+   Truoc tran (giam 85%, ne 60%, hut 35%): CO truong hop hoi >= nhan (bat tu).
+
+4. PvP cung cap, cung do, cung dong (giay): thuong (khong chi mang) | khac x2 + chi mang toi da sau tran | truoc tran
+   cap  10:  27.2| 38.0|11880   42.2| 57.8|17652   26.5| 36.9|11436   50.5| 68.3|20507   21.6| 30.1| 9451  
+   cap  20:  19.5| 27.1| 8479   30.1| 41.3|12602   18.9| 26.3| 8192   36.0| 48.7|14664   15.4| 21.5| 6746  
+   cap  30:  16.5| 22.9| 7173   25.5| 35.0|10662   16.0| 22.3| 6939   30.4| 41.2|12389   13.0| 18.2| 5713  
+   cap  40:  14.9| 20.7| 6481   23.1| 31.6| 9634   14.5| 20.1| 6262   27.4| 37.2|11204   11.8| 16.4| 5261  
+   cap  50:  13.9| 19.4| 6063   21.6| 29.5| 9008   13.5| 18.8| 5853   25.6| 34.7|10458   11.0| 16.2| 5261  
+   cap  60:  13.2| 18.5| 5770   20.5| 28.1| 8574   12.9| 17.9| 5571   24.4| 33.1| 9960   10.5| 16.2| 5261  
+   cap  70:  12.8| 17.8| 5558   19.8| 27.1| 8260   12.4| 17.2| 5367   23.5| 31.9| 9600   10.1| 16.2| 5261  
+   cap  80:  12.4| 17.3| 5398   19.2| 26.3| 8022   12.1| 16.8| 5261   22.8| 30.9| 9320    9.8| 16.2| 5261  
+   cap  90:  12.1| 16.9| 5275   18.8| 25.7| 7835   11.8| 16.4| 5261   22.3| 30.2| 9106    9.6| 16.2| 5261  
+   cap 100:  11.9| 16.5| 5261   18.4| 25.2| 7685   11.6| 16.2| 5261   21.9| 29.7| 8929    9.4| 16.2| 5261  
+   (cot: Charmander / Bulbasaur / Eevee / Squirtle / Pichu)
+
+5. DO BAC CU +15 (+ ngoc 10%) / DO BAC MOI +0 (chi so chinh, cung cap moc bac moi): truoc kep | sau kep
+   o  0: 0.68|0.48 1.38|1.06 1.29|1.00 1.27|0.99 1.44|1.13 1.48|1.16 1.50|1.19 1.53|1.20 1.64|1.29 1.61|1.27 
+   o  1: 0.54|0.36 1.17|0.90 1.30|1.01 1.38|1.08 1.43|1.12 1.47|1.16 1.50|1.18 1.55|1.23 1.57|1.23 1.58|1.25 
+   o  2: 0.43|0.28 1.14|0.85 1.28|0.98 1.36|1.06 1.42|1.11 1.46|1.14 1.49|1.17 1.52|1.19 1.60|1.26 1.57|1.25 
+   o  3: 0.73|0.56 1.09|0.85 1.25|0.99 1.28|1.02 1.42|1.13 1.46|1.16 1.49|1.19 1.52|1.21 1.39|1.11 1.58|1.26 
+   o  4: 0.95|0.74 1.18|0.93 1.30|1.04 1.38|1.10 1.43|1.14 1.47|1.17 1.50|1.19 1.52|1.21 1.41|1.13 1.59|1.27 
+   o  5: 1.09|0.85 1.25|0.99 1.35|1.07 1.44|1.14 1.45|1.15 1.48|1.18 1.51|1.20 1.53|1.22 1.43|1.14 1.60|1.28 
+   o  6: 1.18|0.93 1.30|1.04 1.38|1.10 1.43|1.14 1.47|1.17 1.50|1.19 1.52|1.21 1.57|1.25 1.42|1.14 1.60|1.28 
+   o  7: 0.57|0.43 1.02|0.80 1.42|1.13 1.20|0.96 1.38|1.10 1.49|1.19 1.46|1.16 1.49|1.19 1.37|1.09 1.58|1.26 
+   o  8: 0.57|0.37 1.02|0.77 1.22|0.94 1.33|1.03 1.40|1.09 1.44|1.13 1.48|1.16 1.50|1.19 1.59|1.26 1.57|1.24 
+   o  9: 0.70|0.47 1.07|0.80 1.24|0.95 1.34|1.04 1.41|1.09 1.45|1.13 1.48|1.16 1.54|1.21 1.58|1.24 1.57|1.24 
+   o 10: 0.93|0.65 1.17|0.90 1.30|1.01 1.38|1.08 1.43|1.12 1.47|1.16 1.50|1.18 1.61|1.27 1.53|1.20 1.59|1.25 
+   o 11: 0.85|0.60 1.14|0.85 1.28|0.98 1.36|1.06 1.42|1.11 1.46|1.14 1.49|1.17 1.52|1.19 1.60|1.26 1.57|1.25 
+   o 12: 1.14|0.27 1.02|0.48 1.22|0.80 1.33|0.89 1.40|0.95 1.44|1.05 1.58|1.14 1.59|1.17 1.50|1.13 1.53|1.14 
+   o 19: 1.09|0.85 1.22|0.95 1.19|0.94 1.55|1.23 1.44|1.14 1.48|1.17 1.50|1.20 1.53|1.21 1.54|1.23 1.58|1.26 
+   (Chi so chinh MOT mon, don vi engine: bac moi +0 / bac cu +15 lon nhat 2.58 - bac so cap -> dong chenh 13 cap.)
+   THIET_KE 3.6 (tong tc/thu/HP, bac 1..10): 1.081/0.995/0.947  1.084/1.048/0.929  1.091/1.075/0.909  0.966/1.087/0.895  0.914/0.996/0.886  0.902/0.904/0.879  0.888/0.889/0.873  0.881/0.877/0.869  0.874/0.879/0.865  0.863/0.866/0.856  
+
+6. DATA_ITEM (sql/htbb_day_du.sql): 729 dong trang bi nhan vat; vuot ngan sach TRUOC migration 70, SAU 0
+     id 214 (o 3, cap 21): [atb0=193>145, atb1=10>6, atb2=10>6, atb4=10>6, atb5=10>6]
+     id 215 (o 3, cap 26): [atb0=219>171, atb1=10>6, atb2=10>6, atb3=14>13, atb4=10>6, atb5=10>6]
+     id 216 (o 3, cap 31): [atb0=244>197, atb1=10>7, atb2=10>7, atb3=15>13, atb4=10>7, atb5=10>7]
+     id 217 (o 3, cap 36): [atb0=281>230, atb1=10>7, atb2=10>7, atb3=15>13, atb4=10>7, atb5=10>7]
+     id 218 (o 3, cap 41): [atb0=306>262, atb1=10>8, atb2=10>8, atb3=15>13, atb4=10>8, atb5=10>8]
+     id 219 (o 3, cap 46): [atb0=343>288, atb1=10>8, atb2=10>8, atb3=15>13, atb4=10>8, atb5=10>8]
+     id 220 (o 3, cap 51): [atb0=356>314, atb1=10>9, atb2=10>9, atb3=15>13, atb4=10>9, atb5=10>9]
+     id 221 (o 3, cap 56): [atb0=381>340, atb1=10>9, atb2=10>9, atb3=15>13, atb4=10>9, atb5=10>9]
+     id 222 (o 3, cap 61): [atb0=406>366, atb3=15>13]
+     id 223 (o 3, cap 66): [atb0=431>392, atb3=15>13]
+     id 224 (o 4, cap 21): [atb0=218>171, atb1=10>6, atb2=10>6, atb3=13>6, atb4=10>6, atb5=10>6]
+
+MUC TIEU
+  DAT   TTK quai thuong dong chuan (Eevee) trong +-25% muc tieu o MOI muc +0..+15: lech lon nhat 18.7%
+  DAT   TTK quai thuong MOI dong trong 0,6..1,5 x muc tieu o moi muc +0..+15 (dong do don / dong sat thuong): 0.71..1.42
+  DAT   Chi so phu toi da SAU tran: TTK quai thuong >= 40% muc tieu (it nhat ~4 don): thap nhat 48% muc tieu (truoc tran 27%)
+  DAT   Gym 90-120 giay danh mot minh, dung cap, +6: xem bang 2
+  DAT   Boss the gioi 8-12 phut voi 20 nguoi (+6); toi da sau tran >= 4 phut: xem bang 2
+  DAT   Tinh anh 12-30 giay (+6): xem bang 2
+  DAT   Khong bat tu (toi da sau tran): hoi phuc < sat thuong nhan tu tinh anh / Gym / boss / 3 quai: ti le hoi/nhan cao nhat 88% o cap 30 Squirtle nguon x1.3 x1 (truoc tran: CO bat tu)
+  DAT   PvP cung cap cung do, dong chuan, cap >= 40: 10-15 giay (thiet ke 10-14): 11.6..14.5 giay
+  DAT   PvP khac he x2 + chi mang toi da sau tran >= 6 giay: xem bang 4
+  DAT   Do bac cu nang toi da khong hon do bac hien tai +0 qua 30% (sau kep): lon nhat 1.29 (truoc kep 1.64)
+  DAT   Bac moi +0 <= 1,10 x bac cu +15 cung cap, TONG chi so (goc + 11 o, THIET_KE 3.6, noi_dung_trang_bi.csv): lon nhat 1.091
+  DAT   Moi dong data_item trang bi nhan vat trong ngan sach sau sql/pokemon_chi_so.sql: 729 dong, truoc 70 vuot, sau 0
+  => 12/12

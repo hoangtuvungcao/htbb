@@ -12,7 +12,9 @@ import java.util.Locale;
  * Thiet ke: docs/pokemon/NAP_TIEN.md.
  *
  * Nguyen tac (N-NAP):
- *   1. Ban tiet kiem thoi gian / tien ich / trang tri, KHONG ban suc manh.
+ *   1. Ban tiet kiem thoi gian / tien ich / trang tri, KHONG ban suc manh. Thoi gian = nhom "tang_toc"
+ *      (ve EXP, bua the luc, uy thac, keo hiem - danh sach CO DINH TangToc.MA, gia + gioi han tuan co dinh,
+ *      dung chung tran diem ngay/tuan voi ban khoa kiem bang choi; chi EXP, khong xu/vat pham/chi so).
  *   2. Luong (tien cao cap) chi vao qua nap (+ thanh tuu nho co tran). Moi luong tieu bi dot.
  *      Khong doi luong -> xu o bat ky NPC nao.
  *   3. Ty gia CO DINH 10 luong / 1.000 d, khong he so ngau nhien, khong khuyen mai % luong.
@@ -32,6 +34,8 @@ public final class NapTienLogic {
     public static final String LOAI_LUONG = "luong";
     public static final String LOAI_THE_THANG = "the_thang";
     public static final String LOAI_VE_MUA = "ve_mua";
+    /** Thành viên HTBB (theo TÀI KHOẢN): web cấp thẳng khi xác nhận thanh toán, game KHÔNG cộng gì (ThanhVien). */
+    public static final String LOAI_THANH_VIEN = "thanh_vien";
 
     /** Mot goi ban tren web (bang nap_goi). */
     public static final class Goi {
@@ -83,7 +87,7 @@ public final class NapTienLogic {
             }
             return null;
         }
-        if (LOAI_THE_THANG.equals(loai) || LOAI_VE_MUA.equals(loai)) {
+        if (LOAI_THE_THANG.equals(loai) || LOAI_VE_MUA.equals(loai) || LOAI_THANH_VIEN.equals(loai)) {
             return luong == 0 ? null : "the thang / ve mua khong kem luong tuc thi";
         }
         return "loai goi khong hop le";
@@ -237,6 +241,8 @@ public final class NapTienLogic {
     public static final int THE_THANG_BAN_KINH_NHAT_THEM = 2;
     /** QoL: +1 trang tu do trang tri (trang = 10 o). */
     public static final int THE_THANG_TRANG_TU_DO_THEM = 1;
+    /** QoL: +1 gio uy thac luyen tap / ngay (TangToc.UY_THAC_GIO_THE_THANG) - van trong tran diem tang toc. */
+    public static final int THE_THANG_GIO_UY_THAC_THEM = TangToc.UY_THAC_GIO_THE_THANG;
 
     static final long NGAY_MS = 86400000L;
 
@@ -308,8 +314,8 @@ public final class NapTienLogic {
 
     /**
      * Thuong bac {@code bac} (1..30) cua track. Ngu phap: "DA:n" (da nang cap KHOA), "TT:ma" (so huu
-     * trang tri, khong giao dich duoc), rong = khong co. KHONG BAO GIO co xu, luong, luong khoa, EXP,
-     * do co chi so (test chan).
+     * trang tri, khong giao dich duoc), "TG:ma:n" (vat pham tang toc ban KHOA, ma trong TangToc.MA), rong = khong
+     * co. KHONG BAO GIO co xu, luong, luong khoa, EXP truc tiep, do co chi so (test chan).
      */
     public static String thuongBac(final boolean caoCap, final int bac) {
         if (bac < 1 || bac > VE_MUA_SO_BAC) {
@@ -317,6 +323,17 @@ public final class NapTienLogic {
         }
         if (bac % 3 == 0) {
             return "DA:3";
+        }
+        // Tang toc ban KHOA (TangToc): track mien phi bac 7/14/22 ve x1,5, bac 28 bua the luc; cao cap bac 26
+        // 2 ve x2. Dung chung tran diem ngay/tuan voi ban cao cap - khong vuot tran du co ca hai track.
+        if (!caoCap && (bac == 7 || bac == 14 || bac == 22)) {
+            return "TG:" + TangToc.MA[TangToc.VE_15] + ":1";
+        }
+        if (!caoCap && bac == 28) {
+            return "TG:" + TangToc.MA[TangToc.BUA] + ":1";
+        }
+        if (caoCap && bac == 26) {
+            return "TG:" + TangToc.MA[TangToc.VE_2] + ":2";
         }
         if (!caoCap) {
             if (bac == 10) {
@@ -357,13 +374,18 @@ public final class NapTienLogic {
     public static final String TRAO_TRANG_TRI = "trang_tri";
     public static final String TRAO_MO_RONG_TUI = "mo_rong_tui";
     public static final String TRAO_DOI_TEN = "doi_ten";
-    public static final String[] TRAO_HOP_LE = {TRAO_TRANG_TRI, TRAO_MO_RONG_TUI, TRAO_DOI_TEN};
+    /**
+     * Vat pham tang toc luyen cap (ban cao cap): CHI cac ma trong TangToc.MA, gia = TangToc.GIA_LUONG, gioi_han =
+     * so lan mua / TUAN = TangToc.MUA_TUAN_TOI_DA. Trao vao tui la vat pham KHOA (khong giao dich).
+     */
+    public static final String TRAO_TANG_TOC = "tang_toc";
+    public static final String[] TRAO_HOP_LE = {TRAO_TRANG_TRI, TRAO_MO_RONG_TUI, TRAO_DOI_TEN, TRAO_TANG_TOC};
 
     /** Nhom hien thi. */
     public static final String[] NHOM_CUA_HANG = {"skin", "hao_quang", "thu_cuoi", "mau_ten", "bieu_cam", "nha",
-        "khung", "tien_ich"};
+        "khung", "tien_ich", "tang_toc"};
     public static final String[] TEN_NHOM_CUA_HANG = {"Skin Pokémon", "Hào quang", "Skin thú cưỡi", "Màu tên",
-        "Biểu cảm", "Trang trí nhà", "Khung & danh hiệu", "Tiện ích"};
+        "Biểu cảm", "Trang trí nhà", "Khung và danh hiệu", "Tiện ích", "Tăng tốc luyện cấp"};
 
     /** Tu cam trong ten/mo ta mon ban bang luong - chan do suc manh lot vao (kem whitelist). */
     static final String[] TU_CAM = {"exp", "kinh nghiệm", "kinh nghiem", "x2", "x3", "tấn công", "tan cong",
@@ -410,7 +432,7 @@ public final class NapTienLogic {
     /** Danh muc mac dinh - trung voi INSERT trong sql/pokemon_nap_tien.sql (test doi chieu). */
     public static final Mon[] MON_MAC_DINH = {
         new Mon("mo_rong_tui", "Mở rộng hành trang (+42 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_MO_RONG_TUI, 0, 4, 0, false),
-        new Mon("doi_ten", "Đổi tên nhân vật", "tien_ich", TRAO_DOI_TEN, GIA_DOI_TEN, 0, 0, 0, false),
+        new Mon("doi_ten", "Đổi tên Pokémon", "tien_ich", TRAO_DOI_TEN, GIA_DOI_TEN, 0, 0, 0, false),
         new Mon("mau_ten_vang", "Màu tên Vàng (30 ngày)", "mau_ten", TRAO_TRANG_TRI, 150, 30, 0, 0, false),
         new Mon("mau_ten_xanh", "Màu tên Xanh ngọc (30 ngày)", "mau_ten", TRAO_TRANG_TRI, 150, 30, 0, 0, false),
         new Mon("khung_ten_bac", "Khung tên Bạc", "khung", TRAO_TRANG_TRI, 200, 0, 1, 0, true),
@@ -426,6 +448,12 @@ public final class NapTienLogic {
         new Mon("skin_no_xinh", "Skin: Nơ xinh", "skin", TRAO_TRANG_TRI, 600, 0, 1, 4, true),
         new Mon("thu_cuoi_cau_vong", "Skin thú cưỡi: Cầu vồng", "thu_cuoi", TRAO_TRANG_TRI, 500, 0, 1, 4, true),
         new Mon("nha_cay_canh", "Trang trí nhà: Cây cảnh", "nha", TRAO_TRANG_TRI, 120, 0, 5, 4, true),
+        // Tang toc (TangToc): gioi_han = lan mua / TUAN; han 0; khong giao dich; gia co dinh.
+        new Mon("ve_exp_15", "Vé EXP x1,5 (30 phút)", "tang_toc", TRAO_TANG_TOC, 20, 0, 14, 0, false),
+        new Mon("ve_exp_2", "Vé EXP x2 (30 phút)", "tang_toc", TRAO_TANG_TOC, 40, 0, 7, 0, false),
+        new Mon("bua_the_luc", "Bùa thể lực (+60 phút)", "tang_toc", TRAO_TANG_TOC, 60, 0, 4, 0, false),
+        new Mon("uy_thac", "Phiếu ủy thác luyện tập (1 giờ)", "tang_toc", TRAO_TANG_TOC, 15, 0, 17, 0, false),
+        new Mon("keo_hiem", "Kẹo hiếm", "tang_toc", TRAO_TANG_TOC, 40, 0, 2, 0, false),
     };
 
     /** Thuong lan nap dau (moi tai khoan 1 lan): CHI trang tri, khong giao dich duoc. */
@@ -447,7 +475,10 @@ public final class NapTienLogic {
             traoDung |= t.equals(m.trao);
         }
         if (!traoDung) {
-            return "cach trao '" + m.trao + "' khong nam trong danh sach trang (trang_tri / mo_rong_tui / doi_ten)";
+            return "cach trao '" + m.trao + "' khong nam trong danh sach trang (trang_tri / mo_rong_tui / doi_ten / tang_toc)";
+        }
+        if (TRAO_TANG_TOC.equals(m.trao)) {
+            return kiemTangToc(m);
         }
         if (m.giaLuong < GIA_MON_TOI_THIEU || m.giaLuong > GIA_MON_TOI_DA) {
             return "gia phai trong " + GIA_MON_TOI_THIEU + "-" + GIA_MON_TOI_DA + " luong";
@@ -466,6 +497,31 @@ public final class NapTienLogic {
         }
         if (m.giaoDichDuoc && (m.hanNgay > 0 || !TRAO_TRANG_TRI.equals(m.trao))) {
             return "chi trang tri vinh vien moi duoc giao dich";
+        }
+        return null;
+    }
+
+    /**
+     * Mon tang toc: ma PHAI thuoc TangToc.MA (danh sach co dinh - admin khong them duoc mon tang toc moi bang du
+     * lieu), gia = TangToc.GIA_LUONG, gioi han tuan 1..TangToc.MUA_TUAN_TOI_DA, nhom tang_toc, vinh vien, khong
+     * giao dich, khong chi so. Ten duoc phep co "EXP" (tu cam ap cho moi cach trao khac).
+     */
+    static String kiemTangToc(final Mon m) {
+        final int loai = TangToc.loaiCuaMa(m.ma);
+        if (loai < 0) {
+            return "mon tang toc chi gom: " + String.join(", ", TangToc.MA);
+        }
+        if (!"tang_toc".equals(m.nhom)) {
+            return "mon tang toc phai thuoc nhom tang_toc";
+        }
+        if (m.giaLuong != TangToc.GIA_LUONG[loai]) {
+            return "gia " + m.ma + " co dinh " + TangToc.GIA_LUONG[loai] + " luong (TangToc.GIA_LUONG)";
+        }
+        if (m.gioiHan < 1 || m.gioiHan > TangToc.MUA_TUAN_TOI_DA[loai]) {
+            return "gioi han tuan " + m.ma + " phai trong 1.." + TangToc.MUA_TUAN_TOI_DA[loai];
+        }
+        if (m.giaoDichDuoc || m.hanNgay != 0 || m.nhomXoay != 0) {
+            return "mon tang toc: khong giao dich, khong han, luon ban";
         }
         return null;
     }
@@ -555,7 +611,7 @@ public final class NapTienLogic {
      */
     public static String kiemGiaRao(final long gia, final List<Long> giaoDichGanDay) {
         if (gia < 1L || gia > 2000000000L) {
-            return "gia khong hop le";
+            return "giá không hợp lệ.";
         }
         if (giaoDichGanDay == null || giaoDichGanDay.size() < SO_GIAO_DICH_TOI_THIEU) {
             return null;
@@ -564,7 +620,7 @@ public final class NapTienLogic {
         final long duoi = tv * BIEN_GIA_DUOI_PHAN_TRAM / 100L;
         final long tren = tv * BIEN_GIA_TREN_PHAN_TRAM / 100L;
         if (gia < duoi || gia > tren) {
-            return String.format(Locale.ROOT, "gia phai trong %d - %d xu (50%%-200%% gia giao dich trung vi %d)",
+            return String.format(Locale.ROOT, "giá phải từ %d đến %d xu (50%%-200%% giá giao dịch trung vị %d xu).",
                     duoi, tren, tv);
         }
         return null;

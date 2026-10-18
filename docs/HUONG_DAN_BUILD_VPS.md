@@ -6,8 +6,8 @@ không ảnh hưởng người chơi.
 
 ```
 Người chơi ──► 180.93.57.30:19129   game server (Java)
-                              :80      Apache + PHP (web đăng ký, NQSH2.txt)
-             VPS chạy tất cả: Java game server + login server + MariaDB + Apache
+                              :80/443  Apache reverse proxy → Nuxt 127.0.0.1:3000 (HTBB-Web, server.txt)
+             VPS chạy tất cả: Java game server + login server + MariaDB + web Node
                               127.0.0.1:8023   login server  (KHÔNG mở ra ngoài)
 ```
 
@@ -24,7 +24,7 @@ chạy đúng. Máy nhà của bạn cũng đang là MariaDB 10.4 (XAMPP) nên b
 
 **2. RAM là thứ phải tính trước.**
 Cần cùng lúc: game server (heap + ~250 MB phụ trợ của JVM), login server (~50 MB),
-MariaDB (~250 MB), Apache/PHP (~100 MB), hệ điều hành (~150 MB).
+MariaDB (~250 MB), Apache + web Node (~150 MB), hệ điều hành (~150 MB).
 
 | RAM VPS | `-Xmx` game server | Swap | Đủ cho |
 |---|---|---|---|
@@ -70,9 +70,9 @@ Nên PHẦN A gần như không có việc gì. Chỉ cần chắc mọi thứ �
 Tắt game server (Admin Panel → **Bảo Trì**) và `loginServer`, rồi:
 
 ```powershell
-& "C:\xampp\mysql\bin\mysqldump.exe" -u root --single-transaction --routines --events kpah_db > kpah_db.sql
+& "C:\xampp\mysql\bin\mysqldump.exe" -u root --single-transaction --routines --events htbb_db > htbb_db.sql
 & "C:\xampp\mysql\bin\mysqldump.exe" -u root --single-transaction --routines --events account > account.sql
-scp kpah_db.sql account.sql root@180.93.57.30:/root/
+scp htbb_db.sql account.sql root@180.93.57.30:/root/
 ```
 
 Import 2 file này thay cho bước C3, rồi vẫn chạy `vps/db_new_server.sql` nếu muốn xoá
@@ -92,12 +92,12 @@ ra tài khoản admin với mật khẩu mặc định.
 
 ### A3. Đảm bảo mọi thứ đã push lên Git
 
-Jar đang chạy **có nằm trong Git** (`KPAH2_patched.jar`), nên VPS chỉ cần `git pull` là có
+Jar đang chạy **có nằm trong Git** (`htbb-server.jar`), nên VPS chỉ cần `git pull` là có
 jar mới — không phải `scp` từng lần. Quy trình mỗi lần sửa code:
 
 ```powershell
 # 1. Build (đã làm) -> HTBB_NEW.jar
-# 2. Chạy capnhat.bat  -> KPAH2_patched.jar thành bản mới, server ở nhà chạy luôn bản đó
+# 2. Chạy capnhat.bat  -> htbb-server.jar thành bản mới, server ở nhà chạy luôn bản đó
 # 3. Đẩy lên Git
 git add -A
 git commit -m "mo ta thay doi"
@@ -110,7 +110,7 @@ Kiểm tra đã push xong:
 git status -sb          # phải là "## main...origin/main" không có ahead
 ```
 
-**Bước 2 quan trọng.** VPS lấy `KPAH2_patched.jar` từ Git, nên file đó trong repo phải là
+**Bước 2 quan trọng.** VPS lấy `htbb-server.jar` từ Git, nên file đó trong repo phải là
 bản mới nhất. Nếu chỉ commit `HTBB_NEW.jar` mà quên chạy `capnhat.bat`, VPS pull về vẫn
 chạy jar cũ và bạn sẽ ngồi tìm xem code mới đi đâu mất.
 
@@ -119,7 +119,7 @@ chạy jar cũ và bạn sẽ ngồi tìm xem code mới đi đâu mất.
 Database là thứ duy nhất phải `scp` (Git không chứa dữ liệu người chơi):
 
 ```powershell
-scp kpah_db.sql account.sql root@180.93.57.30:/root/
+scp htbb_db.sql account.sql root@180.93.57.30:/root/
 ```
 
 ---
@@ -132,7 +132,7 @@ Vào VPS: `ssh root@180.93.57.30` (Linux không có Remote Desktop, `mstsc` sẽ
 
 ```bash
 apt update && apt upgrade -y
-apt install -y openjdk-8-jre-headless mariadb-server unzip ufw git
+apt install -y openjdk-17-jre-headless mariadb-server unzip ufw git
 ```
 
 **Kiểm tra thật sự cài được** — dòng `apt install` hay bị `unattended-upgrades` giữ khoá
@@ -159,9 +159,11 @@ ss -lntp | grep 19129        # phai trong
 
 Bỏ bước này thì game server không bind được cổng, mà systemd vẫn báo `active (running)`.
 
-Java 8 là đủ: jar server biên dịch ở class version 52 (Java 8), thư viện `NQSH_5h.jar` là
-version 50 (Java 6). Máy có Java 11/17 sẵn cũng chạy được, nhưng 8 là bản khớp nhất.
-Kiểm tra: `java -version`.
+Cần **Java ≥ 11 (khuyên 17 hoặc 21)**: jar server vẫn biên dịch ở class version 52 (Java 8), thư viện
+`htbb-core.jar` là version 50 (Java 6) — chạy được trên JVM mới. Nhưng `vps/htbb-game.service` dùng cờ
+`-Xlog:gc...` chỉ có từ Java 9+: **Java 8 sẽ báo `Unrecognized option` và không khởi động**. G1 của 17/21
+cũng ngắn dừng hơn và tự đọc giới hạn RAM của container. Kiểm tra: `java -version`
+(xem [pokemon/TOI_UU_HIEU_NANG.md](pokemon/TOI_UU_HIEU_NANG.md)).
 
 ### B2. Swap
 
@@ -226,8 +228,8 @@ grep -i "killed process" /var/log/syslog        # trống = chưa từng bị OO
 Đừng chạy game server bằng `root`.
 
 ```bash
-adduser --system --group --home /opt/kpah --shell /bin/bash kpah
-mkdir -p /opt/kpah/log /opt/kpah/backup
+adduser --system --group --home /opt/htbb --shell /bin/bash htbb
+mkdir -p /opt/htbb/log /opt/htbb/backup
 ```
 
 ### B4. Múi giờ
@@ -287,14 +289,14 @@ Vì sao phải là MariaDB: đọc lại mục "hai điều quyết định thà
 ### C1. Cấu hình trước khi import
 
 **KHÔNG sửa `50-server.cnf`.** MariaDB đọc mọi file `.cnf` trong `mariadb.conf.d/`, file số
-lớn hơn thắng — nên tạo file riêng `99-kpah.cnf`. Hai cái lợi: không cần mở editor (dán một
+lớn hơn thắng — nên tạo file riêng `99-htbb.cnf`. Hai cái lợi: không cần mở editor (dán một
 khối là xong, không sợ gõ lẫn vào file mặc định), và `apt upgrade` có thay `50-server.cnf`
 thì cấu hình của bạn vẫn còn nguyên.
 
 Dán **một dòng** này (dài nhưng là một dòng — dán xong Enter là chạy ngay):
 
 ```bash
-printf '[mysqld]\nlower_case_table_names = 1\ncharacter-set-server = utf8mb4\ncollation-server = utf8mb4_general_ci\ninnodb_buffer_pool_size = 256M\nperformance_schema = OFF\nskip-name-resolve\nmax_connections = 200\n' > /etc/mysql/mariadb.conf.d/99-kpah.cnf
+printf '[mysqld]\nlower_case_table_names = 1\ncharacter-set-server = utf8mb4\ncollation-server = utf8mb4_general_ci\ninnodb_buffer_pool_size = 256M\nperformance_schema = OFF\nskip-name-resolve\nmax_connections = 200\n' > /etc/mysql/mariadb.conf.d/99-htbb.cnf
 ```
 
 > **Vì sao không dùng `cat > file <<'EOF'`.** Kiểu heredoc bắt shell chờ tới khi gặp dòng chỉ
@@ -317,7 +319,7 @@ printf '[mysqld]\nlower_case_table_names = 1\ncharacter-set-server = utf8mb4\nco
 Xem lại nội dung file rồi mới khởi động lại:
 
 ```bash
-cat /etc/mysql/mariadb.conf.d/99-kpah.cnf
+cat /etc/mysql/mariadb.conf.d/99-htbb.cnf
 systemctl enable mariadb
 systemctl restart mariadb
 ```
@@ -353,24 +355,24 @@ mysql -u root
 ```
 
 ```sql
-CREATE DATABASE kpah_db DEFAULT CHARSET utf8mb4;
+CREATE DATABASE htbb_db DEFAULT CHARSET utf8mb4;
 CREATE DATABASE account DEFAULT CHARSET utf8mb4;
 
 -- Mat khau: doi thanh chuoi cua ban, se dung o server.ini
-CREATE USER 'kpah'@'localhost' IDENTIFIED BY '';
-GRANT ALL PRIVILEGES ON kpah_db.* TO 'kpah'@'localhost';
-GRANT ALL PRIVILEGES ON account.* TO 'kpah'@'localhost';
+CREATE USER 'htbb'@'localhost' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON htbb_db.* TO 'htbb'@'localhost';
+GRANT ALL PRIVILEGES ON account.* TO 'htbb'@'localhost';
 
 -- BAT BUOC phai co ca 3 dong nay, xem giai thich ben duoi
-CREATE USER 'kpah'@'127.0.0.1' IDENTIFIED BY '';
-GRANT ALL PRIVILEGES ON kpah_db.* TO 'kpah'@'127.0.0.1';
-GRANT ALL PRIVILEGES ON account.* TO 'kpah'@'127.0.0.1';
+CREATE USER 'htbb'@'127.0.0.1' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON htbb_db.* TO 'htbb'@'127.0.0.1';
+GRANT ALL PRIVILEGES ON account.* TO 'htbb'@'127.0.0.1';
 
 FLUSH PRIVILEGES;
 EXIT;
 ```
 
-**Vì sao phải cấp quyền cho cả `localhost` và `127.0.0.1`.** `99-kpah.cnf` có
+**Vì sao phải cấp quyền cho cả `localhost` và `127.0.0.1`.** `99-htbb.cnf` có
 `skip-name-resolve` nên MariaDB không phân giải tên host nữa. Lúc đó `localhost` chỉ khớp
 kết nối qua **unix socket**, còn kết nối **TCP** — đúng cái JDBC dùng
 (`jdbc:mysql://localhost:3306/...`) — bị coi là đến từ host `127.0.0.1`. Thiếu dòng
@@ -378,7 +380,7 @@ kết nối qua **unix socket**, còn kết nối **TCP** — đúng cái JDBC d
 
 | Ai kết nối | Đường đi | Kết quả |
 |---|---|---|
-| `mysql -u kpah -p...` (CLI) | unix socket → khớp `@'localhost'` | **chạy tốt** → làm bạn tưởng đã đúng |
+| `mysql -u htbb -p...` (CLI) | unix socket → khớp `@'localhost'` | **chạy tốt** → làm bạn tưởng đã đúng |
 | Game server / login server (Java) | TCP → cần `@'127.0.0.1'` | `Access denied`, pool DB rỗng |
 
 Pool rỗng thì server ném `java.util.NoSuchElementException` ở `ConnPool.getConFromPool`,
@@ -389,14 +391,14 @@ Kiểm tra đúng đường mà Java đi — **phải có `-h 127.0.0.1`**, thi�
 socket và bài test thành vô nghĩa:
 
 ```bash
-mysql -u kpah -p'' -h 127.0.0.1 -e "SHOW DATABASES;"
+mysql -u htbb -p'' -h 127.0.0.1 -e "SHOW DATABASES;"
 ```
 
 ### C3. Import (làm SAU khi đã clone code ở PHẦN D — 3 file đều nằm trong repo)
 
 ```bash
-cd /opt/kpah
-mysql -u root kpah_db < sql/gamedb7_clean.sql
+cd /opt/htbb
+mysql -u root htbb_db < sql/gamedb7_clean.sql
 mysql -u root account < loginServer/account.sql
 mysql -u root --default-character-set=utf8 -t < vps/db_new_server.sql
 ```
@@ -442,7 +444,7 @@ mới tìm ra, script đã bù sẵn:
    Tên bắt đầu bằng `tob_` nhưng đây là **dữ liệu game**, không phải của người chơi. Để
    trống thì nhân vật lv ≥ 40 vào game sẽ ném `Duplicate entry ... for key PRIMARY` ở
    `addCharTubinh` và `ArrayIndexOutOfBounds` ở `createMsgCharTuBinh`.
-2. **`history_win_xoso`** — [Database.java:1619](../src/data/Database.java#L1619) `INSERT` vào
+2. **`history_win_xoso`** — [Database.java:1619](../server/src/data/Database.java#L1619) `INSERT` vào
    bảng này nhưng không có lệnh tạo bảng, dump cũng không có. Thiếu là ai thắng xổ số sẽ ăn
    `Table doesn't exist`.
 3. **4 cột `tob_char.equip/inven/bag/tuido` còn là `TEXT`** (trần 65.535 byte) và 3 cột
@@ -469,16 +471,16 @@ Script ở C3 đã tạo tài khoản `admin` (mật khẩu bạn đặt) và th
 tài khoản (`server.ini` → `sv.adminAccounts=admin,admin2`). Nên sau khi vào game bằng tài
 khoản `admin`, tạo nhân vật đặt tên đúng **`admin`** thì mới có quyền. Người chơi thường
 không giành được tên này: mọi tên chứa chữ "admin" đã bị chặn ở
-[Database.java:14632](../src/data/Database.java#L14632).
+[Database.java:14632](../server/src/data/Database.java#L14632).
 
-Người chơi mới đăng ký qua web (PHẦN F): `config.php` để `AUTO_ACTIVATE = true` là đăng ký
+Người chơi mới đăng ký qua web (PHẦN F): `HTBB_AUTO_ACTIVATE=true` trong `/etc/htbb-web.env` là đăng ký
 xong vào game được luôn. Nếu bạn tạo tài khoản bằng tay trong DB thì phải tự thêm dòng
 `5h_active`:
 
 ```sql
-INSERT INTO kpah_db.5h_active (userID, username, time_end)
+INSERT INTO htbb_db.5h_active (userID, username, time_end)
 SELECT id, username, UNIX_TIMESTAMP() + 2592000 FROM account.team_user
-WHERE id NOT IN (SELECT userID FROM kpah_db.5h_active);
+WHERE id NOT IN (SELECT userID FROM htbb_db.5h_active);
 ```
 
 ---
@@ -491,9 +493,9 @@ WHERE id NOT IN (SELECT userID FROM kpah_db.5h_active);
 với **một repo**, và đặt được thành read-only — VPS bị chiếm cũng không sửa được repo.
 
 ```bash
-sudo -u kpah mkdir -p /opt/kpah/.ssh
-sudo -u kpah ssh-keygen -t ed25519 -N "" -f /opt/kpah/.ssh/id_ed25519 -C "vps-180.93.57.30"
-cat /opt/kpah/.ssh/id_ed25519.pub
+sudo -u htbb mkdir -p /opt/htbb/.ssh
+sudo -u htbb ssh-keygen -t ed25519 -N "" -f /opt/htbb/.ssh/id_ed25519 -C "vps-180.93.57.30"
+cat /opt/htbb/.ssh/id_ed25519.pub
 ```
 
 Copy dòng `ssh-ed25519 AAAA...` rồi vào
@@ -503,31 +505,31 @@ Title `VPS 180.93.57.30`, dán key vào, **KHÔNG tích** *Allow write access*.
 Nhận diện host GitHub (làm một lần, tránh câu hỏi yes/no lúc clone):
 
 ```bash
-sudo -u kpah bash -c 'ssh-keyscan github.com >> /opt/kpah/.ssh/known_hosts'
-sudo -u kpah ssh -T git@github.com          # "You've successfully authenticated" là xong
+sudo -u htbb bash -c 'ssh-keyscan github.com >> /opt/htbb/.ssh/known_hosts'
+sudo -u htbb ssh -T git@github.com          # "You've successfully authenticated" là xong
 ```
 
-### D2. Clone vào `/opt/kpah`
+### D2. Clone vào `/opt/htbb`
 
-`/opt/kpah` đang là home của user `kpah` và đã có `.ssh` bên trong, nên không clone trực
+`/opt/htbb` đang là home của user `htbb` và đã có `.ssh` bên trong, nên không clone trực
 tiếp vào đó được (git đòi thư mục rỗng). Clone ra chỗ khác rồi chuyển vào:
 
 ```bash
-sudo -u kpah git clone git@github.com:hoanghoa0903/KPAH.git /tmp/htbb-src
-sudo -u kpah cp -a /tmp/htbb-src/. /opt/kpah/
+sudo -u htbb git clone git@github.com:hoanghoa0903/KPAH.git /tmp/htbb-src
+sudo -u htbb cp -a /tmp/htbb-src/. /opt/htbb/
 rm -rf /tmp/htbb-src
 
-mkdir -p /opt/kpah/log /opt/kpah/backup
-chmod +x /opt/kpah/vps/*.sh
-chown -R kpah:kpah /opt/kpah
+mkdir -p /opt/htbb/log /opt/htbb/backup
+chmod +x /opt/htbb/vps/*.sh
+chown -R htbb:htbb /opt/htbb
 ```
 
 Kiểm tra:
 
 ```bash
-cd /opt/kpah
-sudo -u kpah git log -1 --oneline      # phai ra commit moi nhat cua ban
-ls -la                                  # KPAH2_patched.jar, lib/, map/, cMap/, loginServer/, vps/
+cd /opt/htbb
+sudo -u htbb git log -1 --oneline      # phai ra commit moi nhat cua ban
+ls -la                                  # htbb-server.jar, lib/, map/, cMap/, loginServer/, vps/
 du -sh map                              # ~16 MB
 ```
 
@@ -541,21 +543,21 @@ Clone ra sẽ **không có** hai file này, server chạy sẽ chết ngay ở d
 Trong repo đã có bản mẫu cho Linux, chỉ cần copy rồi sửa mật khẩu:
 
 ```bash
-cd /opt/kpah
+cd /opt/htbb
 cp vps/server.ini.linux.example server.ini
 cp vps/loginServer.server.ini.example loginServer/server.ini
 
 # Doi DOI_MAT_KHAU_DB thanh mat khau tao o buoc C2 (4 cho trong server.ini, 1 cho o login)
 sed -i 's/DOI_MAT_KHAU_DB/MAT_KHAU_MANH_CUA_BAN/g' server.ini loginServer/server.ini
 
-chown kpah:kpah server.ini loginServer/server.ini
+chown htbb:htbb server.ini loginServer/server.ini
 chmod 640 server.ini loginServer/server.ini
 grep -n "password\|pathLog\|db.run" server.ini      # kiem tra lai
 ```
 
 Bản mẫu [vps/server.ini.linux.example](../vps/server.ini.linux.example) đã sửa sẵn cho Linux:
-`sv.pathLog=/opt/kpah/log/` (có dấu `/` cuối), `db.run=/opt/kpah/vps/update.sh`, user DB
-`kpah`, và giữ nguyên các tỉ lệ drop bạn đang dùng.
+`sv.pathLog=/opt/htbb/log/` (có dấu `/` cuối), `db.run=/opt/htbb/vps/update.sh`, user DB
+`htbb`, và giữ nguyên các tỉ lệ drop bạn đang dùng.
 
 **Điểm hay của cách này:** `git pull` không bao giờ đè lên `server.ini`. Cấu hình riêng của
 VPS — kể cả những gì bạn sửa bằng bảng setting trong game — được giữ nguyên qua mọi lần
@@ -574,28 +576,28 @@ database còn rỗng thì nó sẽ chạy nhưng không ai đăng nhập đượ
 
 ```bash
 # VPS 2 GB: nang heap 512m -> 1g TRUOC khi copy (bo qua neu VPS 1 GB)
-sed -i 's/-Xmx1g/-Xmx1g/' /opt/kpah/vps/kpah-game.service
-grep Xmx /opt/kpah/vps/kpah-game.service        # kiem tra lai
+sed -i 's/-Xmx1g/-Xmx1g/' /opt/htbb/vps/htbb-game.service
+grep Xmx /opt/htbb/vps/htbb-game.service        # kiem tra lai
 
-cp /opt/kpah/vps/kpah-login.service /etc/systemd/system/
-cp /opt/kpah/vps/kpah-game.service  /etc/systemd/system/
+cp /opt/htbb/vps/htbb-login.service /etc/systemd/system/
+cp /opt/htbb/vps/htbb-game.service  /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now kpah-login
+systemctl enable --now htbb-login
 sleep 3
-systemctl enable --now kpah-game
+systemctl enable --now htbb-game
 ```
 
 Xem có chạy không:
 
 ```bash
-systemctl status kpah-login kpah-game --no-pager
-tail -f /opt/kpah/log/game.out          # Ctrl+C để thoát
+systemctl status htbb-login htbb-game --no-pager
+tail -f /opt/htbb/log/game.out          # Ctrl+C để thoát
 ```
 
 Trong log phải thấy `MAX CHAR PER ACCOUNT`, `TI LE DROP TRAIN QUAI`, `CHIEM THANH ->`,
 và dòng `[ADMIN PANEL] Che do khong man hinh (headless)` — dòng cuối là đúng, không phải lỗi.
 
-> **Tắt server đúng cách:** `systemctl stop kpah-game`. systemd gửi SIGTERM, JVM chạy
+> **Tắt server đúng cách:** `systemctl stop htbb-game`. systemd gửi SIGTERM, JVM chạy
 > shutdown hook trong `TeamServer.run()` để lưu nhân vật / bang hội / chợ trước khi thoát,
 > `TimeoutStopSec=180` cho nó đủ thời gian. **Đừng `kill -9`** — mất dữ liệu chưa lưu.
 
@@ -619,30 +621,45 @@ Nhà cung cấp VPS có firewall riêng trong panel (Security Group) thì mở y
 
 ---
 
-## PHẦN F — Web đăng ký + file danh sách server
+## PHẦN F — Website (HTBB-Web) + file danh sách server
+
+Website + trang quản trị là **HTBB-Web** (Nuxt 4, Node 22, repo riêng). Web PHP cũ
+(`web/` trong repo này, `/opt/htbb/web`) đã **bỏ hẳn** từ 19/10/2026 — không cài PHP, không có
+vhost/DocumentRoot PHP. Apache (hoặc reverse proxy bất kỳ) chỉ đứng trước Node:
 
 ```bash
-apt install -y apache2 php php-mysql
-cp -r /opt/kpah/web /var/www/html/kpah      # nếu bạn có upload thư mục web
-nano /var/www/html/kpah/config.php
+apt install -y apache2
+# Cài dịch vụ web một lần (Node >= 22, user htbb-web, htbb-web.service trên 127.0.0.1:3000):
+scp -r HTBB-Web/deploy root@180.93.57.30:/root/htbb-web-deploy
+ssh root@180.93.57.30 'bash /root/htbb-web-deploy/cai-dat-vps.sh'
+# Bản build đến qua GitHub Actions (HTBB-Web/.github/workflows/deploy.yml); biến HTBB_*/HTBB_* nằm ở /etc/htbb-web.env.
+# Bật reverse proxy (xem chú thích trong tệp):
+a2enmod proxy proxy_http headers
+cp /root/htbb-web-deploy/apache-htbb-web.conf /etc/apache2/conf-available/htbb-web-proxy.conf
+a2enconf htbb-web-proxy && apachectl configtest && systemctl reload apache2
+# Lớp bảo vệ (tuỳ chọn, theo thứ tự): whitelist IP, ép HTTPS cho /admin, Basic Auth cho /admin
+/opt/htbb/vps/chi-cho-server-txt.sh; /opt/htbb/vps/bat-https.sh [ten.mien]; /opt/htbb/vps/mat-khau-admin.sh
 ```
 
-Trong `config.php` sửa `DB_USER = 'kpah'`, `DB_PASS = 'MAT_KHAU_...'`; `DB_ACCOUNT` và
-`DB_GAME` giữ nguyên.
+Web đọc `server.ini` của game (user `htbb-web` thuộc nhóm `htbb`) để lấy thông tin CSDL; không
+đọc được thì khai `HTBB_DB_*` trong `/etc/htbb-web.env`. Đăng ký có tự kích hoạt hay không:
+`HTBB_AUTO_ACTIVATE` (mặc định `false` — admin kích hoạt ở `/admin/taikhoan`).
 
-File danh sách server mà client đọc:
+File danh sách server mà client đọc (`http://<máy chủ>/server.txt`) do Nuxt trả về từ biến
+`HTBB_SERVER_LIST` (đọc `HTBB_SERVER_LIST` nếu thiếu) trong `/etc/htbb-web.env` — thiếu biến thì
+`/server.txt` trả 503:
 
 ```bash
-echo 'Server 1:180.93.57.30:19129:0' > /var/www/html/NQSH2.txt
-chown -R www-data:www-data /var/www/html
-systemctl restart apache2
+echo 'HTBB_SERVER_LIST="Server 1:180.93.57.30:19129:0"' >> /etc/htbb-web.env
+systemctl restart htbb-web
+curl -s http://127.0.0.1:3000/server.txt
 ```
 
-Định dạng: `tên:địa_chỉ:port:index`, nhiều server ngăn nhau bằng dấu phẩy. Sau này đổi IP
-chỉ cần sửa file này, người chơi bấm **"Cập nhật"** trong client là xong — không phải
-phát hành client mới.
+Định dạng: `tên:địa_chỉ:port:index`, nhiều server ngăn nhau bằng dấu phẩy (nhiều dòng: xuống
+dòng thật hoặc `\n`). Sau này đổi IP chỉ cần sửa biến này rồi restart `htbb-web`, người chơi bấm
+**"Cập nhật"** trong client là xong — không phải phát hành client mới.
 
-Client đã trỏ đúng IP: [ServerListScr.cs:36](../ClientUnity/Assets/Scripts/Game/ServerListScr.cs#L36)
+Client đã trỏ đúng IP: [ServerListScr.cs:36](../client_pc_ios/ClientUnity/Assets/Scripts/Game/ServerListScr.cs#L36)
 `SERVER_HOST = "180.93.57.30"`, port `19129`.
 (Client lưu port bằng `short` nên không nhận port > 32767 — đừng đổi sang cổng cao.)
 
@@ -653,13 +670,14 @@ Client đã trỏ đúng IP: [ServerListScr.cs:36](../ClientUnity/Assets/Scripts
 ### G1. Trên VPS
 
 ```bash
-ss -lntp | grep -E ':(19129|8023|80|3306)'
+ss -lntp | grep -E ':(19129|8023|80|3000|3306)'
 ```
 
 Phải thấy:
 - `19129` — `0.0.0.0` (game, mở ra ngoài)
 - `8023` — login server
-- `80` — Apache
+- `80` — Apache (reverse proxy)
+- `3000` — web Node (HTBB-Web), nên là `127.0.0.1`
 - `3306` — MariaDB, nên là `127.0.0.1`
 
 ### G2. Từ máy khác
@@ -668,7 +686,7 @@ Phải thấy:
 Test-NetConnection 180.93.57.30 -Port 19129
 ```
 
-`TcpTestSucceeded : True` là thông. Mở `http://180.93.57.30/NQSH2.txt` phải ra đúng dòng
+`TcpTestSucceeded : True` là thông. Mở `http://180.93.57.30/server.txt` phải ra đúng dòng
 `Server 1:...`.
 
 ### G3. Vào game
@@ -700,7 +718,7 @@ thay vì MariaDB.
 
 ```powershell
 # build -> HTBB_NEW.jar, rồi:
-.\capnhat.bat            # KPAH2_patched.jar = bản mới, server nhà chạy luôn để test
+.\capnhat.bat            # htbb-server.jar = bản mới, server nhà chạy luôn để test
 git add -A
 git commit -m "mo ta thay doi"
 git push
@@ -709,7 +727,7 @@ git push
 **VPS:**
 
 ```bash
-sudo /opt/kpah/vps/update.sh
+sudo /opt/htbb/vps/update.sh
 ```
 
 [vps/update.sh](../vps/update.sh) làm đúng thứ tự an toàn: kiểm tra repo trên VPS có bị sửa tay
@@ -721,35 +739,35 @@ Nếu pull hoặc jar lỗi, nó **để server tắt** và nói rõ — thà t�
 Đổi ý muốn quay lại bản trước:
 
 ```bash
-cd /opt/kpah
-sudo -u kpah git log --oneline -5          # chọn commit cũ
-systemctl stop kpah-game
-sudo -u kpah git checkout <ma_commit> -- KPAH2_patched.jar
-systemctl start kpah-game
+cd /opt/htbb
+sudo -u htbb git log --oneline -5          # chọn commit cũ
+systemctl stop htbb-game
+sudo -u htbb git checkout <ma_commit> -- htbb-server.jar
+systemctl start htbb-game
 ```
 
 > **Cách 2 — không qua Git**, khi cần thử nhanh một bản jar chưa muốn commit:
-> `scp HTBB_NEW.jar kpah@180.93.57.30:/opt/kpah/` rồi `sudo /opt/kpah/vps/capnhat.sh`.
-> Nhưng nhớ là lần `update.sh` sau sẽ báo `KPAH2_patched.jar` bị sửa tay và dừng lại —
-> lúc đó chạy `sudo -u kpah git -C /opt/kpah checkout -- KPAH2_patched.jar` rồi update lại.
+> `scp HTBB_NEW.jar htbb@180.93.57.30:/opt/htbb/` rồi `sudo /opt/htbb/vps/capnhat.sh`.
+> Nhưng nhớ là lần `update.sh` sau sẽ báo `htbb-server.jar` bị sửa tay và dừng lại —
+> lúc đó chạy `sudo -u htbb git -C /opt/htbb checkout -- htbb-server.jar` rồi update lại.
 
 ### Deploy tự động: `git push` là VPS tự cập nhật
 
 Đã bật. Máy nhà chỉ cần:
 
 ```powershell
-.\capnhat.bat            # BẮT BUỘC: KPAH2_patched.jar mới là file VPS chạy
+.\capnhat.bat            # BẮT BUỘC: htbb-server.jar mới là file VPS chạy
 git add -A && git commit -m "..." && git push
 ```
 
-Không phải SSH vào VPS nữa. [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) chạy
+Không phải SSH vào VPS nữa. [.github/workflows/deploy.yml](../.github/workflows/server-deploy.yml) chạy
 sau mỗi push lên `main`, SSH vào VPS gọi [vps/deploy-auto.sh](../vps/deploy-auto.sh).
 
 **Nó không restart bừa.** Script so danh sách file giữa commit cũ và mới:
 
 | Commit đổi gì | Hành động |
 |---|---|
-| `KPAH2_patched.jar`, `lib/`, `libs/`, `map/`, `cMap/`, `loginServer/` | báo trước 60s trong game → tắt → pull → bật |
+| `htbb-server.jar`, `lib/`, `libs/`, `map/`, `cMap/`, `loginServer/` | báo trước 60s trong game → tắt → pull → bật |
 | còn lại (`.md`, `.sql`, `vps/*.sh`, `src/*.java`…) | chỉ `git pull`, **không ai bị kick** |
 
 `src/*.java` cố ý **không** nằm trong nhóm phải restart: server chạy jar, sửa `.java` mà chưa
@@ -758,13 +776,13 @@ sau mỗi push lên `main`, SSH vào VPS gọi [vps/deploy-auto.sh](../vps/deplo
 **Báo trước bảo trì 60 giây** hoạt động qua cờ DB, không cần ai bấm nút:
 
 ```sql
-UPDATE kpah_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';
+UPDATE htbb_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';
 ```
 
-`BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](../src/data/Database.java))
+`BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](../server/src/data/Database.java))
 rồi chạy **dòng thông báo trên đỉnh màn hình** cho mọi người đang online
-([BaoTriDaily.baoTruocBaoTri](../src/real/BaoTriDaily.java)) — đúng loại tin mà nút "Bảo Trì" của
-AdminPanel dùng ([AdminPanel.java:711](../src/server/AdminPanel.java#L711)). Cờ **chỉ báo, không
+([BaoTriDaily.baoTruocBaoTri](../server/src/real/BaoTriDaily.java)) — đúng loại tin mà nút "Bảo Trì" của
+AdminPanel dùng ([AdminPanel.java:711](../server/src/server/AdminPanel.java#L711)). Cờ **chỉ báo, không
 tự tắt server** — việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook lưu dữ liệu). Chạy
 câu SQL trên bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
 
@@ -772,25 +790,25 @@ câu SQL trên bất cứ lúc nào cũng được nếu muốn báo tay mà kh�
 >
 > **1. Đừng gửi nhiều mốc đếm ngược.** Client nhét tin 38 vào hàng đợi **tĩnh**
 > `GameScr.serverInfo`, và `paintServerInfo` **chỉ chạy khi người chơi đang ở màn hình game**
-> ([GameScr.cs:4737](../ClientUnity/Assets/Scripts/Game/GameScr.cs#L4737)), mỗi tin mất 15-20 giây mới trôi hết
-> ([Ticker.cs](../ClientUnity/Assets/Scripts/Game/Ticker.cs)). Hàng đợi **không bị xoá khi mất kết nối** → tin nào chưa
+> ([GameScr.cs:4737](../client_pc_ios/ClientUnity/Assets/Scripts/Game/GameScr.cs#L4737)), mỗi tin mất 15-20 giây mới trôi hết
+> ([Ticker.cs](../client_pc_ios/ClientUnity/Assets/Scripts/Game/Ticker.cs)). Hàng đợi **không bị xoá khi mất kết nối** → tin nào chưa
 > trôi kịp lúc tắt server sẽ chạy tiếp **ngay sau khi họ đăng nhập lại**, hiện *"bảo trì sau 1
 > phút"* đúng lúc bảo trì đã xong. Bản đầu gửi 4 mốc 60/30/20/10 nên mốc 10s gần như chắc chắn
 > còn đọng. Một tin gửi trước 60 giây thì trôi xong từ lúc còn 40 giây.
 >
 > **2. Đừng gán `RealController.maquee`.** `LoginHandler`/`SelectCharHandler` gửi lại maquee
 > cho **mọi người mới đăng nhập** nếu nó khác rỗng
-> ([LoginHandler.java:650](../src/real/cmd/LoginHandler.java#L650)) — đường tồn thông báo thứ hai.
+> ([LoginHandler.java:650](../server/src/real/cmd/LoginHandler.java#L650)) — đường tồn thông báo thứ hai.
 > Dùng `MessageCreator.createthongbao(text)` (truyền chuỗi trực tiếp) thay cho
 > `createServerInfoMessage()` (đọc maquee) là tránh được.
 >
 > Nếu sau này vẫn muốn chắc chắn 100% không đọng: tin **37**
 > (`createServerAlertMessage`) bật `Canvas.startOKDlg` ngay, không qua hàng đợi
-> ([MessageHandler.cs:2065](../ClientUnity/Assets/Scripts/Game/MessageHandler.cs#L2065)) — nhưng nó là hộp thoại phải bấm
+> ([MessageHandler.cs:2065](../client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs#L2065)) — nhưng nó là hộp thoại phải bấm
 > OK, không phải dòng chạy.
 
 **Khoá SSH bị giới hạn.** Khoá riêng `/root/.ssh/deploy_github` khai trong `authorized_keys`
-kèm `command="/opt/kpah/vps/deploy-auto.sh"` + `no-pty,no-port-forwarding`, nên nếu secret
+kèm `command="/opt/htbb/vps/deploy-auto.sh"` + `no-pty,no-port-forwarding`, nên nếu secret
 trên GitHub bị lộ thì kẻ lấy được cũng **chỉ chạy được đúng script deploy**, không mở được
 shell. Đặt secret: repo → Settings → Secrets and variables → Actions → `VPS_SSH_KEY` =
 nội dung `ssh root@180.93.57.30 "cat /root/.ssh/deploy_github"`.
@@ -798,11 +816,11 @@ nội dung `ssh root@180.93.57.30 "cat /root/.ssh/deploy_github"`.
 Xem chuyện gì đã xảy ra:
 
 ```bash
-tail -n 40 /opt/kpah/log/autodeploy.log     # trên VPS
+tail -n 40 /opt/htbb/log/autodeploy.log     # trên VPS
 ```
 
 hoặc tab **Actions** trên GitHub — output của script được `tee` nên hiện luôn ở đó.
-Chạy tay lúc nào cũng được: `sudo /opt/kpah/vps/deploy-auto.sh` (không có commit mới thì
+Chạy tay lúc nào cũng được: `sudo /opt/htbb/vps/deploy-auto.sh` (không có commit mới thì
 nó không làm gì).
 
 Hai chỗ script tự bảo vệ: `flock` để hai push liên tiếp không deploy chồng nhau, và `trap`
@@ -819,36 +837,36 @@ crontab -e
 Thêm dòng:
 
 ```
-0 4 * * * /opt/kpah/vps/backup_db.sh >> /opt/kpah/log/backup.log 2>&1
+0 4 * * * /opt/htbb/vps/backup_db.sh >> /opt/htbb/log/backup.log 2>&1
 ```
 
-4h sáng mỗi ngày, giữ 7 bản gần nhất trong `/opt/kpah/backup`. Tải về máy nhà:
+4h sáng mỗi ngày, giữ 7 bản gần nhất trong `/opt/htbb/backup`. Tải về máy nhà:
 
 ```powershell
-scp root@180.93.57.30:/opt/kpah/backup/kpah_db_*.sql.gz .
+scp root@180.93.57.30:/opt/htbb/backup/htbb_db_*.sql.gz .
 ```
 
 ### Bật/tắt server từ web admin (không cần SSH)
 
-Trang [web/admin/server.php](../web/admin/server.php) ghi "trạng thái mong muốn" vào bảng
+Trang `/admin/server` của HTBB-Web ghi "trạng thái mong muốn" vào bảng
 `dieu_khien_server` — cần một tiến trình canh gác riêng chạy **ngoài** JVM game để đọc bảng đó
-rồi tự gọi `systemctl start/stop kpah-game` thay bạn (bắt buộc phải tách riêng: lúc server đã tắt
+rồi tự gọi `systemctl start/stop htbb-game` thay bạn (bắt buộc phải tách riêng: lúc server đã tắt
 hẳn thì không còn gì bên trong Java để mà tự poll DB nữa). Cài một lần:
 
 ```bash
-mysql -u root kpah_db < sql/them_bang_dieu_khien_server.sql
+mysql -u root htbb_db < sql/them_bang_dieu_khien_server.sql
 crontab -e
 ```
 
 Thêm dòng:
 
 ```
-* * * * * /opt/kpah/vps/dieu-khien-server.sh >>/opt/kpah/log/dieu-khien-server.log 2>&1
+* * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/log/dieu-khien-server.log 2>&1
 ```
 
 Mỗi phút kiểm tra một lần — bấm nút trên web thì chậm nhất khoảng 1 phút mới có tác dụng. An toàn
-vì `vps/dieu-khien-server.sh` chỉ gọi đúng hai lệnh cố định (`systemctl start kpah-game` /
-`systemctl stop kpah-game`), tên service không bao giờ lấy từ dữ liệu đọc trong database. Cơ chế
+vì `vps/dieu-khien-server.sh` chỉ gọi đúng hai lệnh cố định (`systemctl start htbb-game` /
+`systemctl stop htbb-game`), tên service không bao giờ lấy từ dữ liệu đọc trong database. Cơ chế
 này **khác hẳn** cờ báo bảo trì phía trên: cờ đó chỉ hoạt động khi server đang sống (server tự
 thoát rồi để `Restart=always` của systemd bật lại), còn trang này điều khiển được cả lúc server đã
 tắt hẳn.
@@ -857,21 +875,21 @@ tắt hẳn.
 
 | Cần gì | Lệnh |
 |---|---|
-| Log game server | `tail -f /opt/kpah/log/game.out` |
-| Log login server | `tail -f /opt/kpah/log/login.out` |
-| Log systemd | `journalctl -u kpah-game -f` |
-| Log của game (UserLogger) | `ls /opt/kpah/log/` |
+| Log game server | `tail -f /opt/htbb/log/game.out` |
+| Log login server | `tail -f /opt/htbb/log/login.out` |
+| Log systemd | `journalctl -u htbb-game -f` |
+| Log của game (UserLogger) | `ls /opt/htbb/log/` |
 | RAM còn bao nhiêu | `free -h` |
 | Java đang ăn bao nhiêu | `ps -o pid,rss,cmd -C java` |
 
 ### Sửa cấu hình khi đang chạy
 
 Bảng setting trong game vẫn hoạt động y như trên Windows: gõ `setting` → sửa → nó ghi
-thẳng vào `/opt/kpah/server.ini`. Sửa tay file rồi gõ `setting` → `8` để nạp lại, không
-cần restart. Nhớ file phải cho user `kpah` ghi được (`chown kpah:kpah /opt/kpah/server.ini`),
+thẳng vào `/opt/htbb/server.ini`. Sửa tay file rồi gõ `setting` → `8` để nạp lại, không
+cần restart. Nhớ file phải cho user `htbb` ghi được (`chown htbb:htbb /opt/htbb/server.ini`),
 nếu không thông báo trong game sẽ nói "CHƯA lưu được server.ini".
 
-**Chỉ 17 khoá nạp lại được**, mọi khoá khác bắt buộc `systemctl restart kpah-game`. Và một
+**Chỉ 17 khoá nạp lại được**, mọi khoá khác bắt buộc `systemctl restart htbb-game`. Và một
 cạm bẫy phải biết: sai **một** dòng trong `server.ini` là **mọi dòng bên dưới bị bỏ qua**
 mà server vẫn khởi động, chạy với cấu hình dở dang — dấu hiệu duy nhất là dòng
 `Load configuration file error!` trong log.
@@ -892,11 +910,11 @@ apt install -y openjdk-8-jdk
 `src/` đã có sẵn sau khi clone, chạy luôn:
 
 ```bash
-cd /opt/kpah
+cd /opt/htbb
 mkdir -p out
 find src -name '*.java' > srcs.txt
 javac -encoding UTF-8 -nowarn \
-  -cp "lib/NQSH_5h.jar:lib/json-20250107.jar:lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar" \
+  -cp "lib/htbb-core.jar:lib/json-20250107.jar:lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar" \
   -d out @srcs.txt
 ```
 
@@ -905,14 +923,14 @@ Dấu ngăn classpath trên Linux là **`:`**, không phải `;` như Windows.
 **Bước quan trọng nhất — KHÔNG đóng jar từ đầu:**
 
 ```bash
-cp KPAH2_patched.jar HTBB_NEW.jar
+cp htbb-server.jar HTBB_NEW.jar
 jar uf HTBB_NEW.jar -C out .
 unzip -t HTBB_NEW.jar >/dev/null && echo "jar OK"
-sudo /opt/kpah/vps/capnhat.sh          # doi jar tai cho, KHONG qua git
+sudo /opt/htbb/vps/capnhat.sh          # doi jar tai cho, KHONG qua git
 ```
 
-Build kiểu này làm `KPAH2_patched.jar` khác với bản trong Git → lần `update.sh` sau sẽ báo
-"có file bị sửa tay" và dừng. Xử lý: `sudo -u kpah git -C /opt/kpah checkout -- KPAH2_patched.jar`
+Build kiểu này làm `htbb-server.jar` khác với bản trong Git → lần `update.sh` sau sẽ báo
+"có file bị sửa tay" và dừng. Xử lý: `sudo -u htbb git -C /opt/htbb checkout -- htbb-server.jar`
 rồi `update.sh` lại. Vì vậy chỉ nên build trên VPS để **thử gấp**; sửa xong thì đưa code về
 máy nhà, build, commit, push cho hai bên khớp nhau.
 
@@ -923,7 +941,7 @@ nhà. Kiểm tra sau khi build:
 
 ```bash
 # Danh sach class truoc/sau phai giong nhau (tru class bạn co tinh them)
-unzip -l KPAH2_patched.jar | awk '{print $4}' | sort > /tmp/cu.txt
+unzip -l htbb-server.jar | awk '{print $4}' | sort > /tmp/cu.txt
 unzip -l HTBB_NEW.jar     | awk '{print $4}' | sort > /tmp/moi.txt
 diff /tmp/cu.txt /tmp/moi.txt
 ```
@@ -939,15 +957,15 @@ thì vẫn xong, chỉ chậm.
 → Bảng `data_attribute` thiếu id 141..186. Bản dump `sql/gamedb7_clean.sql` chỉ có 141 dòng
 (id 0..140), trong khi module Thần Khí dùng tới id 186. Tên thuộc tính tra cứu **theo vị
 trí** trong danh sách nạp lúc khởi động (`otherAtt[i] -> ALL_NAME_ATTRIBUTE_ITEM.get(i+61)`,
-xem [Item.java:1031](../src/real/Item.java#L1031) và [Map.java:15658](../src/real/Map.java#L15658)),
+xem [Item.java:1031](../server/src/real/Item.java#L1031) và [Map.java:15658](../server/src/real/Map.java#L15658)),
 nên id phải liên tục. Gói đăng nhập cmd 25 chỉ gửi đúng số dòng đang có, client tra key
 "163" ra null rồi chết giữa lúc vẽ — nên **client đơ mà server im lặng**.
-Kiểm tra: `mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute;"` — phải **≥ 187**,
+Kiểm tra: `mysql -u root htbb_db -e "SELECT COUNT(*) FROM data_attribute;"` — phải **≥ 187**,
 và quan trọng hơn là **id 0..186 không được thiếu cái nào** (số dòng đủ mà hổng id ở giữa thì
 vẫn đơ). Kiểm đúng cách:
 
 ```bash
-mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute WHERE id BETWEEN 0 AND 186;"
+mysql -u root htbb_db -e "SELECT COUNT(*) FROM data_attribute WHERE id BETWEEN 0 AND 186;"
 # phải ra đúng 187
 ```
 
@@ -966,20 +984,20 @@ Ba nguyên nhân khác nhau, cùng một triệu chứng. Kiểm tra theo thứ 
 1. **Cột `inven` còn là `TEXT`** (trần 65.535 byte) — xem PHẦN 2D ở
    [vps/db_new_server.sql](../vps/db_new_server.sql). Món mới nằm ở cuối chuỗi nên chết đầu tiên.
    ```bash
-   mysql -u root kpah_db -e "SELECT COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS
-     WHERE TABLE_SCHEMA='kpah_db' AND TABLE_NAME='tob_char'
+   mysql -u root htbb_db -e "SELECT COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA='htbb_db' AND TABLE_NAME='tob_char'
        AND COLUMN_NAME IN ('equip','inven','bag','tuido');"
    ```
    Còn `text` thì chạy khối PHẦN 2D trong [vps/db_new_server.sql](../vps/db_new_server.sql). Xem ai đang sát
    trần: `SELECT charname, LENGTH(inven) FROM tob_char ORDER BY LENGTH(inven) DESC LIMIT 5;`
 
 2. **Trần đọc lại 130 entry** trong `setitemInvenBag` —
-   [Char.java:12074](../src/real/Char.java#L12074). Đã sửa: trần giờ là
+   [Char.java:12074](../server/src/real/Char.java#L12074). Đã sửa: trần giờ là
    `Char.MAX_ENTRY_INVEN_LOAD` = 42 × 5 + 16 = 226, đủ cho 210 ô túi + 3 ô đặc biệt + 6 món
    model. Trước đó mọi entry từ vị trí 130 trở đi bị **xoá vĩnh viễn mỗi lần login** — mất
    luôn phần model dính ở cuối chuỗi. Ai còn chạy jar cũ thì vẫn dính; kiểm tra:
    ```bash
-   mysql -u root kpah_db -e "SELECT charname,
+   mysql -u root htbb_db -e "SELECT charname,
      LENGTH(inven)-LENGTH(REPLACE(inven,'>',''))+1 AS so_entry FROM tob_char
      ORDER BY so_entry DESC LIMIT 5;"
    ```
@@ -987,15 +1005,15 @@ Ba nguyên nhân khác nhau, cùng một triệu chứng. Kiểm tra theo thứ 
 
 3. **Món vẫn còn nhưng bị tháo ra khỏi ô trang bị.** Đây là *thiết kế hiện tại*, không phải
    lỗi tràn: 3 ô đặc biệt `itemHoaKyLan` / `itemVukhiThoiTrang` / `itemThanKhi` được ghi vào
-   cột `inven` chung với hành trang ([Database.java:12685](../src/data/Database.java#L12685))
+   cột `inven` chung với hành trang ([Database.java:12685](../server/src/data/Database.java#L12685))
    nhưng lúc đọc lại thì mọi entry đều vào `iItems`
-   ([Char.java:12214](../src/real/Char.java#L12214)) — không có cờ nào đánh dấu "đang đeo". Nên
+   ([Char.java:12214](../server/src/real/Char.java#L12214)) — không có cờ nào đánh dấu "đang đeo". Nên
    sau mỗi lần login phải bấm đeo lại. Muốn giữ nguyên trạng thái đeo thì phải thêm một giá
    trị `place` riêng cho từng ô (place 4 đang dành cho model) rồi khôi phục theo `place`.
 
 **Thêm option vào menu NPC nhưng bấm vào không hiển thị gì, log cũng không có gì**
 → Bẫy lớn nhất khi sửa menu: lệnh `-30` (chọn option menu) **không đi thẳng vào
-`Map.doMenu`**. Nó vào `RealController` trước ([RealController.java:1024](../src/real/RealController.java#L1024)),
+`Map.doMenu`**. Nó vào `RealController` trước ([RealController.java:1024](../server/src/real/RealController.java#L1024)),
 ở đó có một `switch (idNpc)` với bản **copy** logic menu của một số NPC (-65, -800, -50,
 -51, -49, -8). NPC nào có case riêng ở đây và **không** set `defHandle = true` thì
 `Map.doMenu` vĩnh viễn không nhận được NPC đó — code viết trong `Map.doMenu` cho NPC ấy là
@@ -1009,7 +1027,7 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
 
 **Nhân vật mất thân (chỉ còn cái đầu), hành trang và ô trang bị nhìn như rỗng**
 → Bảng `data_item` bị **lỗ id**. Client cấp phát mảng template theo **số lượng** nhưng ghi
-vào mảng theo **id** ([MessageHandler.cs:1647](../ClientUnity/Assets/Scripts/Game/MessageHandler.cs#L1647)):
+vào mảng theo **id** ([MessageHandler.cs:1647](../client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs#L1647)):
 
     int soLuong = readShort();
     ItemTemplate[] array = new ItemTemplate[soLuong + 1];
@@ -1023,7 +1041,7 @@ ngắn đi một ô → template có id lớn nhất bị `IndexOutOfRange`, mà
 âm thầm**. Chuỗi hậu quả rất khó lần vì nó không giống lỗi vật phẩm:
 
 - `Res.getItem(id)` trả `null`
-- `Char.setWearingInfo()` ([Char.cs:2804](../ClientUnity/Assets/Scripts/Game/Char.cs#L2804)) nổ NPE giữa vòng lặp — mà
+- `Char.setWearingInfo()` ([Char.cs:2804](../client_pc_ios/ClientUnity/Assets/Scripts/Game/Char.cs#L2804)) nổ NPE giữa vòng lặp — mà
   hàm này đặt `bodyStyle`/`legStyle`/`hatStyle`/`weaponStyle` **= -1 trước vòng lặp** → mọi
   style sau chỗ nổ giữ nguyên -1 → `paintAvatar` bỏ qua thân, chân, nón, vũ khí →
   **nhân vật chỉ còn cái đầu**
@@ -1067,7 +1085,7 @@ server** (toàn bộ `map/` chỉ đọc một lần lúc khởi động), và k
 `.png` lẫn file dữ liệu không đuôi** cùng nhau.
 
 **Sách kỹ năng pet (potion 111) không có tên, không có icon**
-→ `data_potion` chỉ được đọc **một lần lúc khởi động** ([Map.java:3030](../src/real/Map.java#L3030)),
+→ `data_potion` chỉ được đọc **một lần lúc khởi động** ([Map.java:3030](../server/src/real/Map.java#L3030)),
 không phải "mỗi lần hiện túi bình". Sửa mô tả trong DB xong thì phải `loadpotion` (lệnh chat
 admin) **hoặc** bật lại server — và vì client nhận danh sách thuốc trong **gói đăng nhập**
 (`LoginHandler.createMsgLogin`), người chơi còn phải **đăng nhập lại** mới thấy tên/icon mới.
@@ -1091,7 +1109,7 @@ bệnh. Cài lại MariaDB theo bước C0.
 `/etc/mysql/my.cnf` chưa có dòng `!includedir`. Chạy bước C0 để xác định rồi
 `apt install -y mariadb-server`.
 
-**`Table 'kpah_db.tob_char' doesn't exist` mà rõ ràng bảng có**
+**`Table 'htbb_db.tob_char' doesn't exist` mà rõ ràng bảng có**
 → Sai hoa thường. Đặt `lower_case_table_names = 1` rồi restart MariaDB. Đã import với chữ
 hoa rồi thì phải import lại.
 
@@ -1100,24 +1118,24 @@ hoa rồi thì phải import lại.
 Giảm `-Xmx`, giảm `innodb_buffer_pool_size`, hoặc nâng VPS.
 
 **`java.net.BindException: Address already in use`**
-→ Còn tiến trình cũ giữ cổng: `ss -lntp | grep 19129` rồi `systemctl stop kpah-game`.
+→ Còn tiến trình cũ giữ cổng: `ss -lntp | grep 19129` rồi `systemctl stop htbb-game`.
 
 **Client báo kết nối được nhưng đứng ở màn hình chờ**
 → Login server chưa chạy. Game server gọi `127.0.0.1:8023`.
-`systemctl status kpah-login`.
+`systemctl status htbb-login`.
 
 **Vào game trắng màn hình / không thấy map**
-→ Thiếu `map/` hoặc `cMap/`, hoặc sai hoa thường tên thư mục, hoặc user `kpah` không có
-quyền đọc: `chown -R kpah:kpah /opt/kpah`.
+→ Thiếu `map/` hoặc `cMap/`, hoặc sai hoa thường tên thư mục, hoặc user `htbb` không có
+quyền đọc: `chown -R htbb:htbb /opt/htbb`.
 
 **Tên nhân vật tiếng Việt thành `???`**
 → Charset. Kiểm tra `mysql -e "SHOW VARIABLES LIKE 'character_set_server';"` phải là
 `utf8mb4`. Code không ghi `characterEncoding` vào URL JDBC nên nó lấy theo mặc định của
 server DB.
 
-**Ghi log lỗi `FileNotFoundException /opt/kpah/log/...`**
+**Ghi log lỗi `FileNotFoundException /opt/htbb/log/...`**
 → Thiếu thư mục hoặc `sv.pathLog` không có dấu `/` ở cuối.
-`mkdir -p /opt/kpah/log && chown kpah:kpah /opt/kpah/log`.
+`mkdir -p /opt/htbb/log && chown htbb:htbb /opt/htbb/log`.
 
 **Giờ chiếm thành / vận tiêu lệch**
 → Chưa đặt múi giờ (bước B4).
@@ -1126,12 +1144,14 @@ server DB.
 → Đúng, nó đang lưu toàn bộ nhân vật online. Chờ. Đừng `kill -9`.
 
 **`OutOfMemoryError: unable to create new native thread` ở `Region.startSandVilage`**
-→ Server tạo **một thread cho mỗi region của mỗi map** — đo thực tế trên VPS này là
+→ (Bản cũ, trước 18/10/2026 — nay các vòng khu/bản đồ chạy trên pool chung `HTBB-NHIP-*`, ~170 thread khi
+rỗng + 2 thread/kết nối, xem [pokemon/TOI_UU_HIEU_NANG.md](pokemon/TOI_UU_HIEU_NANG.md).) Bản cũ tạo
+**một thread cho mỗi region của mỗi map** — đo thực tế trên VPS này là
 **2936 thread**. Hai thứ chặn nó, phải sửa cả hai (đã có sẵn trong
-[vps/kpah-game.service](../vps/kpah-game.service)):
+[vps/htbb-game.service](../vps/htbb-game.service)):
 `TasksMax=infinity` (systemd mặc định chỉ ~2250, đếm cả thread) và `-Xss256k` (mặc định
 mỗi thread 1 MB stack → 2936 thread cần ~2,9 GB, vượt RAM; 256k còn ~730 MB).
-Kiểm tra số thread thật: `ls /proc/$(pgrep -f KPAH2_patched.jar)/task | wc -l`
+Kiểm tra số thread thật: `ls /proc/$(pgrep -f htbb-server.jar)/task | wc -l`
 
 **Cổng 19129 bị chiếm bởi `frps`**
 → VPS còn chạy frp từ hướng dẫn cũ. `systemctl disable --now frps`. Nhận biết:
@@ -1139,42 +1159,42 @@ Kiểm tra số thread thật: `ls /proc/$(pgrep -f KPAH2_patched.jar)/task | wc
 
 **`Exception in thread "AWT-EventQueue-0" java.awt.HeadlessException`**
 → Vô hại, bỏ qua. Toàn bộ code AWT trong `src` đã được chặn bằng
-`GraphicsEnvironment.isHeadless()`, dòng này đến từ thư viện đóng `NQSH_5h.jar` (không có
+`GraphicsEnvironment.isHeadless()`, dòng này đến từ thư viện đóng `htbb-core.jar` (không có
 mã nguồn để sửa). Nó chỉ giết luồng AWT, server chạy bình thường.
 
 **`SQL ERROR=CREATE TABLE tob_log_use_luong_5_7_2026 LIKE tob_log_use_luong`**
 → Vô hại. Đây là bảng log xoay vòng theo tuần/tháng; server tạo bằng `CREATE TABLE ... LIKE`
-**không có** `IF NOT EXISTS`, và [Database.java:5793](../src/data/Database.java#L5793) chỉ in
+**không có** `IF NOT EXISTS`, và [Database.java:5793](../server/src/data/Database.java#L5793) chỉ in
 `SQL ERROR=` chứ không in lý do. Lần khởi động đầu tạo xong rồi, nên mọi lần restart sau
 trong cùng tuần/tháng đều in lại dòng này. Xác nhận bảng đã có:
-`mysql -u root -e "SHOW TABLES FROM kpah_db LIKE 'tob_log_use_luong%';"`
+`mysql -u root -e "SHOW TABLES FROM htbb_db LIKE 'tob_log_use_luong%';"`
 
-**`bash: /opt/kpah/vps/update.sh: /bin/bash^M: bad interpreter`**
+**`bash: /opt/htbb/vps/update.sh: /bin/bash^M: bad interpreter`**
 → File `.sh` bị lưu kiểu CRLF của Windows. Repo đã có [.gitattributes](../.gitattributes) ép
 `*.sh eol=lf` nên không xảy ra nữa; nếu vẫn gặp (file cũ đã commit trước đó):
-`sed -i 's/\r$//' /opt/kpah/vps/*.sh`.
+`sed -i 's/\r$//' /opt/htbb/vps/*.sh`.
 
 **`Permission denied` khi chạy `update.sh`**
 → Git trên Windows không lưu quyền thực thi. Đã set sẵn bit `+x` trong index cho 3 script,
-nếu vẫn thiếu: `chmod +x /opt/kpah/vps/*.sh`.
+nếu vẫn thiếu: `chmod +x /opt/htbb/vps/*.sh`.
 
 **`git@github.com: Permission denied (publickey)`**
 → Chưa thêm deploy key vào GitHub, hoặc chạy git bằng user khác (`root` không có key của
-`kpah`). Luôn chạy `sudo -u kpah git -C /opt/kpah ...`.
+`htbb`). Luôn chạy `sudo -u htbb git -C /opt/htbb ...`.
 
 **`error: Your local changes to the following files would be overwritten by merge`**
-→ Trên VPS có file bị sửa tay (thường là `KPAH2_patched.jar` do chạy `capnhat.sh` thủ công).
-Bỏ thay đổi đó: `sudo -u kpah git -C /opt/kpah checkout -- <file>`, hoặc lấy sạch theo Git:
-`sudo -u kpah git -C /opt/kpah fetch origin && sudo -u kpah git -C /opt/kpah reset --hard origin/main`
+→ Trên VPS có file bị sửa tay (thường là `htbb-server.jar` do chạy `capnhat.sh` thủ công).
+Bỏ thay đổi đó: `sudo -u htbb git -C /opt/htbb checkout -- <file>`, hoặc lấy sạch theo Git:
+`sudo -u htbb git -C /opt/htbb fetch origin && sudo -u htbb git -C /opt/htbb reset --hard origin/main`
 (`server.ini` và `log/` không bị ảnh hưởng vì nằm trong `.gitignore`).
 
 **Server chạy được ở nhà nhưng trên VPS báo `server.ini (No such file or directory)`**
 → Bình thường: `server.ini` bị `.gitignore` chặn. Làm bước D3.
 
 **`git pull` xong mà code mới không có tác dụng**
-→ Bạn quên chạy `capnhat.bat` ở nhà nên `KPAH2_patched.jar` trong Git vẫn là bản cũ.
-Kiểm tra trên VPS: `unzip -p KPAH2_patched.jar META-INF/MANIFEST.MF` và so ngày commit
-`git log -1 --format=%cd -- KPAH2_patched.jar`.
+→ Bạn quên chạy `capnhat.bat` ở nhà nên `htbb-server.jar` trong Git vẫn là bản cũ.
+Kiểm tra trên VPS: `unzip -p htbb-server.jar META-INF/MANIFEST.MF` và so ngày commit
+`git log -1 --format=%cd -- htbb-server.jar`.
 
 ---
 
@@ -1185,7 +1205,7 @@ Kiểm tra trên VPS: `unzip -p KPAH2_patched.jar META-INF/MANIFEST.MF` và so n
 Mình kiểm tra `api.github.com/repos/hoanghoa0903/KPAH` trả về 404 khi không đăng nhập →
 repo **đang private**, đúng như cần. Giữ nguyên như vậy, vì trong repo có:
 
-- `lib/NQSH_5h.jar` — thư viện đóng của người khác, không phải code của bạn để phát hành
+- `lib/htbb-core.jar` — thư viện đóng của người khác, không phải code của bạn để phát hành
 - (đã xoá khỏi repo) `backup_account.sql` — từng có `INSERT INTO team_user` kèm **hash mật
   khẩu thật** của tài khoản `admin` (dạng `*A4B61573...` của hàm `PASSWORD()`, băm yếu, dò
   được). Nội dung cũ vẫn còn trong lịch sử git — vẫn phải giữ repo private.
@@ -1201,9 +1221,9 @@ không đẩy được code độc vào repo.
 - Chuyển SSH sang xác thực bằng key, đổi cổng 22 sang cổng khác, tắt `PermitRootLogin`.
 - MariaDB chỉ nghe `127.0.0.1` (mặc định của Ubuntu). Đừng mở 3306 ra ngoài.
 - Chỉ mở 3 cổng: 22, 19129, 80. **Tuyệt đối không** mở 8023 và 19153.
-- Game server chạy bằng user `kpah`, không phải `root`.
-- Mật khẩu MariaDB nằm trong `server.ini` dạng chữ thường → `chmod 640 /opt/kpah/server.ini`
-  và `chown kpah:kpah`.
+- Game server chạy bằng user `htbb`, không phải `root`.
+- Mật khẩu MariaDB nằm trong `server.ini` dạng chữ thường → `chmod 640 /opt/htbb/server.ini`
+  và `chown htbb:htbb`.
 - Đổi `sv.adminAccounts` trong `server.ini` nếu bạn đổi tên nhân vật admin. Tên chứa
   "admin" đã bị chặn không cho người chơi tạo.
 
@@ -1211,9 +1231,9 @@ không đẩy được code độc vào repo.
 
 ## Chuyển đổi ngược lại nếu cần
 
-Muốn quay về chạy ở nhà: chỉ cần sửa `NQSH2.txt` trên VPS trỏ về IP/tunnel của nhà, người
+Muốn quay về chạy ở nhà: chỉ cần sửa `HTBB_SERVER_LIST` (danh sách server, PHẦN F) trên VPS trỏ về IP/tunnel của nhà, người
 chơi bấm "Cập nhật" trong client. Nhớ dump DB từ VPS về trước:
 
 ```bash
-mysqldump --single-transaction kpah_db | gzip > /root/kpah_db_tu_vps.sql.gz
+mysqldump --single-transaction htbb_db | gzip > /root/htbb_db_tu_vps.sql.gz
 ```

@@ -637,7 +637,7 @@ public class BossNguoiTuyet extends Boss {
             }
 
             Database.instance.saveOrtherLog("", p.charname, info, "quaboss");
-            Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã tiêu diệt boss Người tuyết"));
+            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã tiêu diệt boss Người tuyết");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,21 +3,21 @@
 #  DON LOG DINH KY - giu 30 ngay gan nhat
 #
 #  Chay thu (khong xoa gi, chi bao se xoa bao nhieu):
-#      sudo /opt/kpah/vps/don-log.sh --thu
+#      sudo /opt/htbb/vps/don-log.sh --thu
 #
 #  Chay that:
-#      sudo /opt/kpah/vps/don-log.sh
+#      sudo /opt/htbb/vps/don-log.sh
 #
 #  Cai vao cron cho chay 03:20 moi dem:
 #      sudo crontab -e
-#      20 3 * * * /opt/kpah/vps/don-log.sh >/dev/null 2>&1
+#      20 3 * * * /opt/htbb/vps/don-log.sh >/dev/null 2>&1
 #
 #  Chay luc 03:20 la co y: BaoTriDaily trong server tu tat va khoi dong lai o
 #  mot moc NGAU NHIEN giua 04:30-05:30 (xem src/real/BaoTriDaily.java). Don
 #  truoc do thi khong dam vao luc server dang luu du lieu.
 #
 #  File .txt va game.out KHONG do script nay don - logrotate lo, xem
-#  vps/kpah-logrotate.conf. O day chi don thu logrotate khong voi toi duoc:
+#  vps/htbb-logrotate.conf. O day chi don thu logrotate khong voi toi duoc:
 #  bang trong database, va file rac dat ten theo IP.
 # ============================================================
 set -u
@@ -40,8 +40,8 @@ NGHI=${NGHI:-0.4}
 # Tran an toan: du chua xoa het cung dung lai, de khong chiem may qua lau.
 TOI_DA_LOT=${TOI_DA_LOT:-600}
 
-DIR=/opt/kpah
-INI=$DIR/server.ini
+DIR=/opt/htbb
+INI=$DIR/server/server.ini
 LOG=$DIR/log/don-log.log
 
 THU=0
@@ -56,7 +56,7 @@ echo
 echo "===== $(date '+%F %T') don log (giu $GIU_NGAY ngay)$([ $THU = 1 ] && echo ' [CHAY THU]')"
 
 # Khong cho hai lan chay chong nhau.
-exec 9>/tmp/kpah-don-log.lock
+exec 9>/tmp/htbb-don-log.lock
 if ! flock -n 9; then
     echo "  co mot lan don khac dang chay, bo qua lan nay"
     exit 0
@@ -233,7 +233,7 @@ done
 #
 #   DatabaseNhanVat.java:770   Logger.logError(ex, p.charname + ".txt")
 #       Moi lan LUU NHAN VAT THAT BAI o duong luu chinh, server de lai mot file
-#       mang dung ten nhan vat ngay tai /opt/kpah. Bao nhieu nhan vat gap loi la
+#       mang dung ten nhan vat ngay tai /opt/htbb. Bao nhieu nhan vat gap loi la
 #       bay nhieu file. (Luu y: savechar.txt chi phu duong luu TU DONG, khong
 #       phai duong nay.)
 #
@@ -250,7 +250,7 @@ done
 # (a) Server DOC NGUOC LAI nhu du lieu dau vao - xoa la mat du lieu.
 BAO_VE="trangan.txt offline.txt top.txt"
 
-# (b) logrotate da lo roi (xem vps/kpah-logrotate.conf) - de no tu xoay vong,
+# (b) logrotate da lo roi (xem vps/htbb-logrotate.conf) - de no tu xoay vong,
 #     dung o day xoa tranh phan.
 LOGROTATE_LO="hack.txt hackdo.txt errorlog.txt errorlogPet.txt errorAnima.txt errorSellITem.txt errorquayso.txt
 savechar.txt saitenchar4.txt update.txt updateleaf.txt rUpdateleaf.txt

@@ -36,8 +36,8 @@ id_quai,ten_cu,cap,maxhp,phan_loai,dex,ten_pokemon,shiny,he1,he2,"pmd_sprite(2=d
 35,Hải tặc,36,46230,quai,342,crawdaunt,0,2,15,1,Hải tặc -> Crawdaunt
 36,Long Trụ,33,50000000,boss,437,bronzong,0,16,10,1,Long Trụ (sự kiện) -> Bronzong
 37,Long trụ phụ,37,25000000,boss,436,bronzor,0,16,10,1,Long trụ phụ -> Bronzor
-38,Thuồng luồng,38,500000,boss,130,gyarados,0,2,9,1,Thuồng luồng -> Gyarados (BossThuongLuong)
-39,Thằn lằn,39,200000000,boss,373,salamence,0,14,9,2,Thằn lằn -> Salamence (BossThanLan)
+38,Thuồng luồng,38,500000,boss,130,gyarados,0,2,9,1,Thuồng luồng -> Gyarados (BossGyarados)
+39,Thằn lằn,39,200000000,boss,373,salamence,0,14,9,2,Thằn lằn -> Salamence (BossDotKich)
 40,Rết đỏ,38,53678,quai,544,whirlipede,0,11,7,1,Rết đỏ -> Whirlipede
 41,Rết tía,49,106654,quai,545,scolipede,0,11,7,1,Rết tía -> Scolipede
 42,Rết xanh,43,75098,quai,544,whirlipede,1,11,7,1,Rết xanh -> Whirlipede shiny
@@ -89,10 +89,10 @@ id_quai,ten_cu,cap,maxhp,phan_loai,dex,ten_pokemon,shiny,he1,he2,"pmd_sprite(2=d
 88,Da,40,50,vat_the,,,0,,,,Da (nguyên liệu) -> Object PMD
 89,Sắt,40,50,vat_the,,,0,,,,Sắt (nguyên liệu) -> Object PMD
 90,Người tuyết,40,150000000,boss,460,abomasnow,0,4,5,1,Người tuyết -> Abomasnow (BossNguoiTuyet)
-91,Rắn chị,50,150000000,boss,497,serperior,0,4,-1,1,Rắn chị -> Serperior (BossLinhXa)
-92,Rắn em,50,150000000,boss,496,servine,0,4,-1,1,Rắn em -> Servine (BossBachXa)
+91,Rắn chị,50,150000000,boss,497,serperior,0,4,-1,1,Rắn chị -> Serperior (BossSerperior)
+92,Rắn em,50,150000000,boss,496,servine,0,4,-1,1,Rắn em -> Servine (BossServine)
 93,Mắt quỷ,55,100000000,boss,94,gengar,0,13,7,2,Mắt quỷ -> Gengar
-94,Bạch cốt tướng quân,60,150000000,boss,477,dusknoir,0,13,-1,2,Bạch cốt tướng quân -> Dusknoir (BossSkelonton)
+94,Bạch cốt tướng quân,60,150000000,boss,477,dusknoir,0,13,-1,2,Bạch cốt tướng quân -> Dusknoir (BossDusknoir)
 95,Ngựa ca nhan trang,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân trắng -> Ponyta
 96,Ngựa ca nhan xanh,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân xanh -> Ponyta (đổi màu)
 97,Ngựa ca nhan đỏ,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân đỏ -> Ponyta (đổi màu)
@@ -127,8 +127,8 @@ id_quai,ten_cu,cap,maxhp,phan_loai,dex,ten_pokemon,shiny,he1,he2,"pmd_sprite(2=d
 126,Ngọc 5 sao,1,1,vat_the,,,0,,,,Ngọc 5 sao -> Object/Item PMD
 127,Ngọc 6 sao,1,1,vat_the,,,0,,,,Ngọc 6 sao -> Object/Item PMD
 128,Ngọc 7 sao,1,1,vat_the,,,0,,,,Ngọc 7 sao -> Object/Item PMD
-129,Boss thuỷ tinh,1,1,boss,382,kyogre,0,2,-1,1,Boss Thủy Tinh -> Kyogre (BossSonTinhThuyTinh)
-130,Boss sơn tinh,1,1,boss,383,groudon,0,8,-1,1,Boss Sơn Tinh -> Groudon (BossSonTinhThuyTinh)
+129,Boss thuỷ tinh,1,1,boss,382,kyogre,0,2,-1,1,Boss Thủy Tinh -> Kyogre (BossKyogreGroudon)
+130,Boss sơn tinh,1,1,boss,383,groudon,0,8,-1,1,Boss Sơn Tinh -> Groudon (BossKyogreGroudon)
 131,Thùng gỗ,1,1,vat_the,,,0,,,,Thùng gỗ -> Object PMD
 132,Skeleton lam,47,95378,quai,105,marowak,1,8,-1,1,Skeleton lam (bản 2) -> Marowak shiny
 133,Huyết ma,46,90030,quai,93,haunter,1,13,7,1,Huyết ma (bản 2) -> Haunter shiny

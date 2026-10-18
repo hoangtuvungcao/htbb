@@ -1,34 +1,34 @@
 bac,ten_bo,vung,so_mon,chi_so,phan_tram,mo_ta
-0,Bộ Pallet,Kanto,4,HP,5,Bộ Pallet: 4 món cùng bậc sơ cấp ⇒ +5% hp
-0,Bộ Pallet,Kanto,7,Tấn công,5,Bộ Pallet: 7 món cùng bậc sơ cấp ⇒ +5% tấn công
-0,Bộ Pallet,Kanto,11,Chí mạng,3,Bộ Pallet: 11 món cùng bậc sơ cấp ⇒ +3% chí mạng
-1,Bộ Pewter,Kanto,4,HP,5,Bộ Pewter: 4 món cùng bậc đồng ⇒ +5% hp
-1,Bộ Pewter,Kanto,7,Tấn công,5,Bộ Pewter: 7 món cùng bậc đồng ⇒ +5% tấn công
-1,Bộ Pewter,Kanto,11,Chí mạng,3,Bộ Pewter: 11 món cùng bậc đồng ⇒ +3% chí mạng
-2,Bộ Cerulean,Kanto,4,HP,5,Bộ Cerulean: 4 món cùng bậc bạc ⇒ +5% hp
-2,Bộ Cerulean,Kanto,7,Tấn công,5,Bộ Cerulean: 7 món cùng bậc bạc ⇒ +5% tấn công
-2,Bộ Cerulean,Kanto,11,Chí mạng,3,Bộ Cerulean: 11 món cùng bậc bạc ⇒ +3% chí mạng
-3,Bộ Vermilion,Kanto,4,HP,5,Bộ Vermilion: 4 món cùng bậc vàng ⇒ +5% hp
-3,Bộ Vermilion,Kanto,7,Tấn công,5,Bộ Vermilion: 7 món cùng bậc vàng ⇒ +5% tấn công
-3,Bộ Vermilion,Kanto,11,Chí mạng,3,Bộ Vermilion: 11 món cùng bậc vàng ⇒ +3% chí mạng
-4,Bộ Celadon,Kanto,4,HP,5,Bộ Celadon: 4 món cùng bậc bạch kim ⇒ +5% hp
-4,Bộ Celadon,Kanto,7,Tấn công,5,Bộ Celadon: 7 món cùng bậc bạch kim ⇒ +5% tấn công
-4,Bộ Celadon,Kanto,11,Chí mạng,3,Bộ Celadon: 11 món cùng bậc bạch kim ⇒ +3% chí mạng
-5,Bộ Saffron,Kanto,4,HP,5,Bộ Saffron: 4 món cùng bậc kim cương ⇒ +5% hp
-5,Bộ Saffron,Kanto,7,Tấn công,5,Bộ Saffron: 7 món cùng bậc kim cương ⇒ +5% tấn công
-5,Bộ Saffron,Kanto,11,Chí mạng,3,Bộ Saffron: 11 món cùng bậc kim cương ⇒ +3% chí mạng
-6,Bộ Cinnabar,Kanto,4,HP,5,Bộ Cinnabar: 4 món cùng bậc chuyên gia ⇒ +5% hp
-6,Bộ Cinnabar,Kanto,7,Tấn công,5,Bộ Cinnabar: 7 món cùng bậc chuyên gia ⇒ +5% tấn công
-6,Bộ Cinnabar,Kanto,11,Chí mạng,3,Bộ Cinnabar: 11 món cùng bậc chuyên gia ⇒ +3% chí mạng
-7,Bộ Ecruteak,Johto,4,HP,5,Bộ Ecruteak: 4 món cùng bậc tinh anh ⇒ +5% hp
-7,Bộ Ecruteak,Johto,7,Tấn công,5,Bộ Ecruteak: 7 món cùng bậc tinh anh ⇒ +5% tấn công
-7,Bộ Ecruteak,Johto,11,Chí mạng,3,Bộ Ecruteak: 11 món cùng bậc tinh anh ⇒ +3% chí mạng
-8,Bộ Blackthorn,Johto,4,HP,5,Bộ Blackthorn: 4 món cùng bậc huyền thoại ⇒ +5% hp
-8,Bộ Blackthorn,Johto,7,Tấn công,5,Bộ Blackthorn: 7 món cùng bậc huyền thoại ⇒ +5% tấn công
-8,Bộ Blackthorn,Johto,11,Chí mạng,3,Bộ Blackthorn: 11 món cùng bậc huyền thoại ⇒ +3% chí mạng
-9,Bộ Hoenn,Hoenn,4,HP,5,Bộ Hoenn: 4 món cùng bậc thần thoại ⇒ +5% hp
-9,Bộ Hoenn,Hoenn,7,Tấn công,5,Bộ Hoenn: 7 món cùng bậc thần thoại ⇒ +5% tấn công
-9,Bộ Hoenn,Hoenn,11,Chí mạng,3,Bộ Hoenn: 11 món cùng bậc thần thoại ⇒ +3% chí mạng
-10,Bộ Rayquaza,Hoenn,4,HP,5,Bộ Rayquaza: 4 món cùng bậc tối thượng ⇒ +5% hp
-10,Bộ Rayquaza,Hoenn,7,Tấn công,5,Bộ Rayquaza: 7 món cùng bậc tối thượng ⇒ +5% tấn công
-10,Bộ Rayquaza,Hoenn,11,Chí mạng,3,Bộ Rayquaza: 11 món cùng bậc tối thượng ⇒ +3% chí mạng
+0,Bộ Pallet,Kanto,4,HP,5,Bộ Pallet: mặc 4 món cùng bậc sơ cấp được +5% HP
+0,Bộ Pallet,Kanto,7,Tấn công,5,Bộ Pallet: mặc 7 món cùng bậc sơ cấp được +5% tấn công
+0,Bộ Pallet,Kanto,11,Chí mạng,3,Bộ Pallet: mặc 11 món cùng bậc sơ cấp được +3% chí mạng
+1,Bộ Pewter,Kanto,4,HP,5,Bộ Pewter: mặc 4 món cùng bậc đồng được +5% HP
+1,Bộ Pewter,Kanto,7,Tấn công,5,Bộ Pewter: mặc 7 món cùng bậc đồng được +5% tấn công
+1,Bộ Pewter,Kanto,11,Chí mạng,3,Bộ Pewter: mặc 11 món cùng bậc đồng được +3% chí mạng
+2,Bộ Cerulean,Kanto,4,HP,5,Bộ Cerulean: mặc 4 món cùng bậc bạc được +5% HP
+2,Bộ Cerulean,Kanto,7,Tấn công,5,Bộ Cerulean: mặc 7 món cùng bậc bạc được +5% tấn công
+2,Bộ Cerulean,Kanto,11,Chí mạng,3,Bộ Cerulean: mặc 11 món cùng bậc bạc được +3% chí mạng
+3,Bộ Vermilion,Kanto,4,HP,5,Bộ Vermilion: mặc 4 món cùng bậc vàng được +5% HP
+3,Bộ Vermilion,Kanto,7,Tấn công,5,Bộ Vermilion: mặc 7 món cùng bậc vàng được +5% tấn công
+3,Bộ Vermilion,Kanto,11,Chí mạng,3,Bộ Vermilion: mặc 11 món cùng bậc vàng được +3% chí mạng
+4,Bộ Celadon,Kanto,4,HP,5,Bộ Celadon: mặc 4 món cùng bậc bạch kim được +5% HP
+4,Bộ Celadon,Kanto,7,Tấn công,5,Bộ Celadon: mặc 7 món cùng bậc bạch kim được +5% tấn công
+4,Bộ Celadon,Kanto,11,Chí mạng,3,Bộ Celadon: mặc 11 món cùng bậc bạch kim được +3% chí mạng
+5,Bộ Saffron,Kanto,4,HP,5,Bộ Saffron: mặc 4 món cùng bậc kim cương được +5% HP
+5,Bộ Saffron,Kanto,7,Tấn công,5,Bộ Saffron: mặc 7 món cùng bậc kim cương được +5% tấn công
+5,Bộ Saffron,Kanto,11,Chí mạng,3,Bộ Saffron: mặc 11 món cùng bậc kim cương được +3% chí mạng
+6,Bộ Cinnabar,Kanto,4,HP,5,Bộ Cinnabar: mặc 4 món cùng bậc chuyên gia được +5% HP
+6,Bộ Cinnabar,Kanto,7,Tấn công,5,Bộ Cinnabar: mặc 7 món cùng bậc chuyên gia được +5% tấn công
+6,Bộ Cinnabar,Kanto,11,Chí mạng,3,Bộ Cinnabar: mặc 11 món cùng bậc chuyên gia được +3% chí mạng
+7,Bộ Ecruteak,Johto,4,HP,5,Bộ Ecruteak: mặc 4 món cùng bậc tinh anh được +5% HP
+7,Bộ Ecruteak,Johto,7,Tấn công,5,Bộ Ecruteak: mặc 7 món cùng bậc tinh anh được +5% tấn công
+7,Bộ Ecruteak,Johto,11,Chí mạng,3,Bộ Ecruteak: mặc 11 món cùng bậc tinh anh được +3% chí mạng
+8,Bộ Blackthorn,Johto,4,HP,5,Bộ Blackthorn: mặc 4 món cùng bậc huyền thoại được +5% HP
+8,Bộ Blackthorn,Johto,7,Tấn công,5,Bộ Blackthorn: mặc 7 món cùng bậc huyền thoại được +5% tấn công
+8,Bộ Blackthorn,Johto,11,Chí mạng,3,Bộ Blackthorn: mặc 11 món cùng bậc huyền thoại được +3% chí mạng
+9,Bộ Hoenn,Hoenn,4,HP,5,Bộ Hoenn: mặc 4 món cùng bậc thần thoại được +5% HP
+9,Bộ Hoenn,Hoenn,7,Tấn công,5,Bộ Hoenn: mặc 7 món cùng bậc thần thoại được +5% tấn công
+9,Bộ Hoenn,Hoenn,11,Chí mạng,3,Bộ Hoenn: mặc 11 món cùng bậc thần thoại được +3% chí mạng
+10,Bộ Rayquaza,Hoenn,4,HP,5,Bộ Rayquaza: mặc 4 món cùng bậc tối thượng được +5% HP
+10,Bộ Rayquaza,Hoenn,7,Tấn công,5,Bộ Rayquaza: mặc 7 món cùng bậc tối thượng được +5% tấn công
+10,Bộ Rayquaza,Hoenn,11,Chí mạng,3,Bộ Rayquaza: mặc 11 món cùng bậc tối thượng được +3% chí mạng

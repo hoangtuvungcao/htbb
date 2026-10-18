@@ -13,11 +13,11 @@ import { promisify } from 'node:util'
 const chay = promisify(execFile)
 
 export default defineAdminHandler(async (event) => {
-  const web = resolve(process.env.KPAH_WEB_SRC_DIR || process.cwd())
-  const htbb = resolve(web, process.env.HTBB_DIR ?? '../HTBB')
+  const web = resolve((process.env.HTBB_WEB_SRC_DIR ?? process.env.KPAH_WEB_SRC_DIR) || process.cwd()) // TUONG-THICH-TEN-CU
+  const htbb = resolve(web, process.env.HTBB_DIR ?? '..')
   const ketQua: { buoc: string, ok: boolean, log: string }[] = []
   if (!existsSync(join(web, 'scripts/dong-bo-cam-nang.mjs'))) {
-    throw apiLoi(409, `Không thấy thư mục mã nguồn website (${web}/scripts). Đặt KPAH_WEB_SRC_DIR trỏ tới thư mục HTBB-Web.`)
+    throw apiLoi(409, `Không thấy thư mục mã nguồn website (${web}/scripts). Đặt HTBB_WEB_SRC_DIR trỏ tới thư mục HTBB-Web.`)
   }
   if (!existsSync(join(htbb, 'docs/pokemon'))) {
     throw apiLoi(409, `Không thấy repo game ở ${htbb} (đặt HTBB_DIR).`)

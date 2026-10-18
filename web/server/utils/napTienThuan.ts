@@ -22,11 +22,38 @@ export const GIO_CHO_NANG_TRAN = 72
 /** Đơn chờ thanh toán quá 24 giờ thì hết hạn (tiền đến muộn vẫn được nhận). */
 export const GIO_HET_HAN_DON = 24
 
-export const LOAI_GOI = ['luong', 'the_thang', 've_mua'] as const
+export const LOAI_GOI = ['luong', 'the_thang', 've_mua', 'thanh_vien'] as const
 export type LoaiGoi = typeof LOAI_GOI[number]
 
-export const TRAO_HOP_LE = ['trang_tri', 'mo_rong_tui', 'doi_ten'] as const
-export const NHOM_CUA_HANG = ['skin', 'hao_quang', 'thu_cuoi', 'mau_ten', 'bieu_cam', 'nha', 'khung', 'tien_ich'] as const
+export const TRAO_HOP_LE = ['trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc'] as const
+export const NHOM_CUA_HANG = ['skin', 'hao_quang', 'thu_cuoi', 'mau_ten', 'bieu_cam', 'nha', 'khung', 'tien_ich', 'tang_toc'] as const
+
+/**
+ * Tăng tốc luyện cấp (chỉ EXP — khớp com.htbb.pokemon.TangToc + NapTienLogic.kiemTangToc): danh sách CỐ ĐỊNH,
+ * giá cố định (lượng), giới hạn mua/tuần tối đa. Bản cao cấp và bản khoá (kiếm bằng chơi) dùng CHUNG trần
+ * 60 điểm/ngày, 210 điểm/tuần trong game; không giao dịch, không chỉ số, không ảnh hưởng xu/tỉ lệ rơi.
+ */
+export const TANG_TOC: Record<string, { gia: number, tuanToiDa: number, diem: number }> = {
+  ve_exp_15: { gia: 20, tuanToiDa: 14, diem: 15 },
+  ve_exp_2: { gia: 40, tuanToiDa: 7, diem: 30 },
+  bua_the_luc: { gia: 60, tuanToiDa: 4, diem: 45 },
+  uy_thac: { gia: 15, tuanToiDa: 17, diem: 12 },
+  keo_hiem: { gia: 40, tuanToiDa: 2, diem: 30 },
+}
+export const TANG_TOC_DIEM_NGAY = 60
+export const TANG_TOC_DIEM_TUAN = 210
+
+/** null = hợp lệ; món trao 'tang_toc' (giống NapTienLogic.kiemTangToc). */
+function kiemTangToc(m: MonCuaHang): string | null {
+  const t = TANG_TOC[m.ma]
+  if (!t) return `Món tăng tốc chỉ gồm: ${Object.keys(TANG_TOC).join(', ')}.`
+  if (m.nhom !== 'tang_toc') return 'Món tăng tốc phải thuộc nhóm tang_toc.'
+  if (m.gia_luong !== t.gia) return `Giá ${m.ma} cố định ${t.gia} lượng.`
+  if (!Number.isInteger(m.gioi_han) || m.gioi_han < 1 || m.gioi_han > t.tuanToiDa) return `Giới hạn tuần ${m.ma} phải trong 1..${t.tuanToiDa}.`
+  const gd = Number(m.giao_dich_duoc) === 1 || m.giao_dich_duoc === true
+  if (gd || m.han_ngay !== 0 || m.nhom_xoay !== 0) return 'Món tăng tốc: không giao dịch, không hạn, luôn bán.'
+  return null
+}
 export const GIA_MON_TOI_THIEU = 10
 export const GIA_MON_TOI_DA = 5000
 export const SO_NHOM_XOAY = 4
@@ -56,7 +83,7 @@ export function kiemGoi(loai: string, giaVnd: number, luong: number): string | n
   if (loai === 'luong') {
     return luong === luongTheoGia(giaVnd) ? null : `Gói lượng phải đúng tỷ giá ${LUONG_MOI_1000_VND} lượng / 1.000 đ (không khuyến mãi %).`
   }
-  if (loai === 'the_thang' || loai === 've_mua') return luong === 0 ? null : 'Thẻ tháng / vé mùa không kèm lượng tức thì.'
+  if (loai === 'the_thang' || loai === 've_mua' || loai === 'thanh_vien') return luong === 0 ? null : 'Thẻ tháng / vé mùa / thành viên không kèm lượng.'
   return 'Loại gói không hợp lệ.'
 }
 
@@ -89,7 +116,8 @@ function chuaTu(s: string, tu: string): boolean {
 export function kiemMon(m: MonCuaHang): string | null {
   if (!/^[a-z0-9_]{2,40}$/.test(m.ma ?? '')) return 'Mã món chỉ gồm a-z 0-9 _ (2–40 ký tự).'
   if (Number(m.co_chi_so) !== 0 && m.co_chi_so !== false) return 'Cấm bán món có chỉ số.'
-  if (!(TRAO_HOP_LE as readonly string[]).includes(m.trao)) return 'Cách trao phải là trang_tri / mo_rong_tui / doi_ten.'
+  if (!(TRAO_HOP_LE as readonly string[]).includes(m.trao)) return 'Cách trao phải là trang_tri / mo_rong_tui / doi_ten / tang_toc.'
+  if (m.trao === 'tang_toc') return kiemTangToc(m)
   if (!(NHOM_CUA_HANG as readonly string[]).includes(m.nhom)) return 'Nhóm không hợp lệ.'
   if (!Number.isInteger(m.gia_luong) || m.gia_luong < GIA_MON_TOI_THIEU || m.gia_luong > GIA_MON_TOI_DA) {
     return `Giá phải trong ${GIA_MON_TOI_THIEU}–${GIA_MON_TOI_DA} lượng.`
@@ -319,7 +347,7 @@ export const MK_NAP_MAC_DINH = 'doi-mat-khau-nay'
 
 /**
  * Lý do KHÔNG được bật nạp trên máy thật (rỗng = được). config.ts gọi lúc khởi động: có lý do thì
- * ép KPAH_NAP_BAT=false và in log rõ ràng.
+ * ép HTBB_NAP_BAT=false và in log rõ ràng.
  */
 export function kiemCauHinhNapThat(c: {
   secret: string
@@ -333,16 +361,16 @@ export function kiemCauHinhNapThat(c: {
 }): string[] {
   const loi: string[] = []
   const yeu = (s: string, n: number) => s.length < n || /^(.)\1+$/.test(s) || /^(123|abc|password|changeme|doi)/i.test(s)
-  if (yeu(c.secret, 32)) loi.push('KPAH_SECRET trống/yếu (cần >= 32 ký tự ngẫu nhiên: openssl rand -hex 32)')
+  if (yeu(c.secret, 32)) loi.push('HTBB_SECRET trống/yếu (cần >= 32 ký tự ngẫu nhiên: openssl rand -hex 32)')
   if (c.adminNaptienPassword === MK_NAP_MAC_DINH || yeu(c.adminNaptienPassword, 12)) {
-    loi.push('KPAH_ADMIN_NAPTIEN_PASSWORD đang là mặc định hoặc < 12 ký tự')
+    loi.push('HTBB_ADMIN_NAPTIEN_PASSWORD đang là mặc định hoặc < 12 ký tự')
   }
-  if (!/^\d{6,19}$/.test(c.accountNo) || c.accountNo === '0000000000') loi.push('KPAH_NAP_ACCOUNT_NO (số tài khoản nhận tiền) chưa đặt')
-  if (c.accountName === '' || c.accountName === 'NGUYEN VAN A') loi.push('KPAH_NAP_ACCOUNT_NAME (tên chủ tài khoản, viết hoa không dấu) chưa đặt')
-  if (!/^\d{6}$/.test(c.bankBin)) loi.push('KPAH_NAP_BANK_BIN phải là mã BIN 6 số (VD 970423 TPBank)')
-  if (yeu(c.sepayApiKey, 24)) loi.push('KPAH_SEPAY_WEBHOOK_APIKEY trống/yếu (>= 24 ký tự) — nạp tự động cần webhook SePay')
-  if (c.sepayApiToken !== '' && c.sepayApiToken.length < 20) loi.push('KPAH_SEPAY_API_TOKEN quá ngắn (để trống nếu không dùng job dò giao dịch)')
-  if (c.sandbox) loi.push('KPAH_NAP_SANDBOX=1 không được bật trên máy thật')
+  if (!/^\d{6,19}$/.test(c.accountNo) || c.accountNo === '0000000000') loi.push('HTBB_NAP_ACCOUNT_NO (số tài khoản nhận tiền) chưa đặt')
+  if (c.accountName === '' || c.accountName === 'NGUYEN VAN A') loi.push('HTBB_NAP_ACCOUNT_NAME (tên chủ tài khoản, viết hoa không dấu) chưa đặt')
+  if (!/^\d{6}$/.test(c.bankBin)) loi.push('HTBB_NAP_BANK_BIN phải là mã BIN 6 số (VD 970423 TPBank)')
+  if (yeu(c.sepayApiKey, 24)) loi.push('HTBB_SEPAY_WEBHOOK_APIKEY trống/yếu (>= 24 ký tự) — nạp tự động cần webhook SePay')
+  if (c.sepayApiToken !== '' && c.sepayApiToken.length < 20) loi.push('HTBB_SEPAY_API_TOKEN quá ngắn (để trống nếu không dùng job dò giao dịch)')
+  if (c.sandbox) loi.push('HTBB_NAP_SANDBOX=1 không được bật trên máy thật')
   return loi
 }
 

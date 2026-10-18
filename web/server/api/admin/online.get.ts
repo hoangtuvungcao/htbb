@@ -10,7 +10,7 @@
  * bangChuaCo = true để trang hiện hướng dẫn thay vì lỗi khó hiểu.
  *
  * Cột client (server bản mới mới có — bản cũ thiếu cột thì trang hiện "?"):
- *   tai_khoan, client (pc / android / jar / khac), chinh_chu (1 = client NQSH-H2 chính thức: gửi
+ *   tai_khoan, client (pc / android / jar / khac), chinh_chu (1 = client HTBB chính thức: gửi
  *   mã máy lúc đăng nhập; 0 = client gốc TeaMobi / client ngoài), client_ban (jar: "v159"), platf.
  *   Xem data/GhiClient.java (repo HTBB).
  *

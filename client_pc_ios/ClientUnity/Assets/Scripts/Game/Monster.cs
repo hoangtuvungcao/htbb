@@ -239,7 +239,7 @@ public class Monster : LiveActor
 
 	/// <summary>
 	/// Ve quai bang PokeBody neu template co pokeDex (lenh -91). Tra ve false de lop goi
-	/// ve kieu cu. Dung chung cho Monster va cac lop boss con (Boss_*, BossTL, MonsterNew...).
+	/// ve kieu cu. Dung chung cho Monster va cac lop boss con (Boss_*, BossGyarados, MonsterNew...).
 	/// </summary>
 	public bool paintPokemon(MyGraphics g)
 	{

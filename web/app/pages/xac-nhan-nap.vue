@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Trang xác nhận nạp tiền THỦ CÔNG — dùng khi chưa cấu hình
- * SePay (hoặc muốn kiểm tra tay). Bảo vệ bằng mật khẩu chung KPAH_ADMIN_NAPTIEN_PASSWORD,
+ * SePay (hoặc muốn kiểm tra tay). Bảo vệ bằng mật khẩu chung HTBB_ADMIN_NAPTIEN_PASSWORD,
  * KHÔNG phải tài khoản admin. Chưa đổi mật khẩu mặc định -> server trả 404 (fail closed).
  *
  * Phiên: token 'naptien' sống 1 giờ, giữ trong sessionStorage (đóng tab là mất).
@@ -110,7 +110,7 @@ async function xacNhan(d: DonCho) {
 const columns = [
   { accessorKey: 'id', header: '#' },
   { accessorKey: 'username', header: 'Tài khoản' },
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon' },
   { accessorKey: 'ten_goi', header: 'Gói' },
   { accessorKey: 'so_tien', header: 'Số tiền' },
   { accessorKey: 'ma_don', header: 'Mã đơn' },
@@ -219,7 +219,7 @@ onMounted(() => {
             Chỉ xác nhận khi đã thấy đúng <strong class="text-highlighted">{{ vnd(choXacNhan.so_tien) }}</strong> với nội dung
             <strong class="font-mono text-highlighted">{{ choXacNhan.ma_don }}</strong> trên sao kê ngân hàng.
             Sau khi xác nhận, server game tự cộng <strong class="text-highlighted">{{ choXacNhan.ten_goi }}</strong> vào
-            <strong class="text-highlighted">{{ choXacNhan.charname }}</strong> khi nhân vật online.
+            <strong class="text-highlighted">{{ choXacNhan.charname }}</strong> khi Pokémon online.
           </p>
           <UFormField label="Mã giao dịch trên sao kê" hint="bắt buộc — một giao dịch chỉ xác nhận được một đơn">
             <UInput v-model="maGd" class="w-full" placeholder="VD FT26290123456" />

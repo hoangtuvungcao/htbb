@@ -17,7 +17,33 @@ public static class BanDoVung
 		return 34 + (y - 48) * (h - 44) / 122;
 	}
 
+	/// <summary>Vùng Hoenn (năm 2): tọa độ điểm song song ID_HOENN - BẢN SAO của game.pokemon.BanDoVung (jar).</summary>
+	private static readonly short[][] DIEM_HOENN = new short[][] { new short[2] { 40, 150 }, new short[2] { 30, 128 }, new short[2] { 28, 100 }, new short[2] { 55, 112 }, new short[2] { 80, 140 }, new short[2] { 82, 118 }, new short[2] { 84, 98 }, new short[2] { 70, 80 }, new short[2] { 60, 64 }, new short[2] { 45, 56 }, new short[2] { 100, 78 }, new short[2] { 108, 58 }, new short[2] { 130, 62 }, new short[2] { 160, 60 }, new short[2] { 140, 82 }, new short[2] { 160, 86 }, new short[2] { 182, 92 }, new short[2] { 135, 118 }, new short[2] { 178, 118 }, new short[2] { 150, 150 }, new short[2] { 55, 140 }, new short[2] { 30, 74 }, new short[2] { 152, 104 }, new short[2] { 118, 128 }, new short[2] { 170, 138 }, new short[2] { 184, 156 }, new short[2] { 130, 158 }, new short[2] { 112, 164 }, new short[2] { 94, 166 } };
+	private static readonly int[] ID_HOENN = new int[] { 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 160, 161, 162, 163, 164, 165, 280, 281, 282 };
+
+	public static int chiSoHoenn(int map)
+	{
+		for (int i = 0; i < ID_HOENN.Length; i++)
+		{
+			if (ID_HOENN[i] == map)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static void veHoenn(MyGraphics g, int map, int w, int h)
+	{
+		ve(g, DIEM_HOENN, chiSoHoenn(map), w, h, TenMapPokemon.tenHoenn(map));
+	}
+
 	public static void ve(MyGraphics g, short[][] pts, int cur, int w, int h)
+	{
+		ve(g, pts, cur, w, h, null);
+	}
+
+	public static void ve(MyGraphics g, short[][] pts, int cur, int w, int h, string nhan)
 	{
 		int n = pts.Length;
 		int[] x = new int[n];
@@ -123,9 +149,9 @@ public static class BanDoVung
 				GiaoDien.pokeBall(g, x[cur], yCd, 8, 0);
 			}
 		}
-		if (cur >= 0 && cur < Res.nameBigMap.Length)
+		if (nhan != null || (cur >= 0 && cur < Res.nameBigMap.Length))
 		{
-			string ten = TenMapPokemon.doi(Res.nameBigMap[cur]);
+			string ten = nhan ?? TenMapPokemon.doi(Res.nameBigMap[cur]);
 			int tw = MFont.borderFont.getWidth(ten) + 14;
 			GiaoDien.khung(g, w / 2 - tw / 2, h - 22, tw, 18, 8, GiaoDien.VIEN, GiaoDien.XANH_SANG, GiaoDien.NAVY, false);
 			MFont.borderFont.drawString(g, ten, w / 2, h - 21, MFont.CENTER);

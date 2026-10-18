@@ -1,14 +1,19 @@
 name: Deploy len VPS
 
-# Moi push len main se ssh vao VPS goi /opt/kpah/vps/deploy-auto.sh.
+# Moi push len main se ssh vao VPS goi /opt/htbb/vps/deploy-auto.sh.
 # Script tu quyet dinh co can restart server hay khong: commit chi doi tai lieu thi
-# no chi git pull, khong ai bi kick. Doi KPAH2_patched.jar / lib / map / cMap /
+# no chi git pull, khong ai bi kick. Doi htbb-server.jar / lib / map / cMap /
 # loginServer thi code van duoc keo ve NGAY, nhung restart thuc su doi toi lan bao
 # tri tu dong tiep theo cua server (gio ngau nhien 4:30-5:59, xem BaoTriDaily.java)
 # - tru khi chay tay qua workflow_dispatch va tick "deploy_now" de ep len ngay.
 on:
   push:
     branches: [main]
+    paths:
+      - 'server/**'
+      - 'vps/**'
+      - 'sql/**'
+      - '.github/workflows/server-deploy.yml'
   workflow_dispatch:
     inputs:
       deploy_now:
@@ -27,6 +32,8 @@ concurrency:
 
 jobs:
   deploy:
+    # Chi bat sau khi VPS da la ban checkout monorepo (vps/CHUYEN_TEN_HTBB.md): Settings > Variables HTBB_VPS_MONOREPO=1
+    if: ${{ vars.HTBB_VPS_MONOREPO == '1' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

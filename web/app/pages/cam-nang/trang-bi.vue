@@ -43,7 +43,7 @@ const giaNgoc = Array.from({ length: ngoc.capToiDa }, (_, i) => ({ cap: i + 1, g
       </ul>
     </WikiSection>
 
-    <WikiSection id="bac" title="Bậc trang bị" :lead="`Mỗi bậc mở theo cấp; vài bậc cao mở theo mùa cùng trần cấp. Mỗi bậc chỉ ${T.soMonMuaMoiBac} món bán ở cửa hàng, phần còn lại đến từ nhiệm vụ, quái rơi và chế tạo.`">
+    <WikiSection id="bac" title="Bậc trang bị" :lead="`Mỗi bậc mở theo cấp (không còn khoá theo mùa). Mỗi bậc chỉ ${T.soMonMuaMoiBac} món bán ở cửa hàng, phần còn lại đến từ nhiệm vụ, quái rơi và chế tạo.`">
       <div class="bang-cuon">
         <table class="bang-wiki">
           <thead>
@@ -63,7 +63,7 @@ const giaNgoc = Array.from({ length: ngoc.capToiDa }, (_, i) => ({ cap: i + 1, g
               <td class="so">
                 {{ b.cap }}
               </td>
-              <td>{{ b.ngayMo ? thangTuKhaiTruong(b.ngayMo) : 'Ngay từ đầu' }}</td>
+              <td>Khi đạt cấp {{ b.cap }}</td>
               <td class="so">
                 {{ soVn(b.gia) }} xu
               </td>

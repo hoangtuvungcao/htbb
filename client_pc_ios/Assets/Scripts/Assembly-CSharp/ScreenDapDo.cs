@@ -292,11 +292,6 @@ public class ScreenDapDo : MyScreen
 		cmdEp = new Command("Đập");
 		cmdEp.action = () =>
 		{
-			// mod: nút "Đập" mở Cộng thuộc tính / Khóa đồ thú khi đã đặt đồ + đá (AutoGuard.dapGuard)
-			if (AutoGuard.dapGuard())
-			{
-				return;
-			}
 			currentRow = -1;
 			if (vnguyenLieu.size() <= 0)
 			{
@@ -329,7 +324,7 @@ public class ScreenDapDo : MyScreen
 						{
 							if (selectGemBH != null)
 							{
-								AutoGuard.themDong(GameService.gI(), itemSelect.itemID, 5, selectGem.id, selectGem.ilock ? 1 : 0, selectGemBH.id, selectGemBH.ilock ? 1 : 0);
+								GameService.gI().doRequestThemThuocTinh(itemSelect.itemID, 5, selectGem.id, selectGem.ilock ? 1 : 0, selectGemBH.id, selectGemBH.ilock ? 1 : 0);
 								left = cmdContinue;
 								Canvas.startOKDlg("Xin chờ");
 							}
@@ -422,7 +417,7 @@ public class ScreenDapDo : MyScreen
 							}
 						});
 					}
-					AutoGuard.startAtDapDo(Canvas.menu, mVector2, 3);
+					Canvas.menu.startAt(mVector2, 3);
 					Canvas.currentDialog = null;
 				}
 			}

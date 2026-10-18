@@ -32,9 +32,9 @@ import java.nio.file.Files;
  */
 public final class TaoPetLan {
 
-    static final String MO_TA_69 = "map/d_effect/69";
-    static final String MO_TA_49 = "map/d_effect/49";
-    static final String DICH = "map/d_effect/69.pet";
+    static final String MO_TA_69 = "server/map/d_effect/69";
+    static final String MO_TA_49 = "server/map/d_effect/49";
+    static final String DICH = "server/map/d_effect/69.pet";
     /** Chi so 3 o nho trong bang 69 dung lam 3 khung cua pet. */
     static final int[] O_DUNG = {10, 11, 12};
     /** Vi tri bat dau phan sequence trong bang 49: 1 + 3 o x 5 byte + 2 byte so khung + 3 khung x 8 byte. */

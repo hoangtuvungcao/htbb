@@ -262,19 +262,19 @@ public class FruitTemplate {
         if (this.getTemplate().type == 1) {
             info = "Có thể nhận được:";
             info = info + "|* 1 LKD 35%";
-            info = info + "|* 1 nhân sâm 1%exp ";
+            info = info + "|* 1 Berry Razz vàng 1%exp ";
             info = info + "|* 1 nguyên liệu sơ cấp 4-6";
             info = info + "|* 1 nguyên liệu cao cấp 4-6";
             info = info + "|* 3 kinh nghiệm đơn";
             info = info + "|* 25-100 lkd cao cấp 60%";
             info = info + "|* 25-100 đá may mắn cao cấp 80%";
-            info = info + "|* 1-3 thức ăn linh thú tăng 4% pt";
-            info = info + "|* 1-3 thức ăn linh thú tăng 4% tc";
-            info = info + "|* 1-3 thức ăn linh thú tăng 4% pt và tc";
+            info = info + "|* 1-3 thức ăn thú cưỡi tăng 4% pt";
+            info = info + "|* 1-3 thức ăn thú cưỡi tăng 4% tc";
+            info = info + "|* 1-3 thức ăn thú cưỡi tăng 4% pt và tc";
             info = info + "|* 1-3 thuốc cường hóa";
-            info = info + "|* 1 đá ngũ hợp thường cấp 4-6";
-            info = info + "|* 1 đá ngũ hợp cao cấp cấp 4-6";
-            info = info + "|* 1 đá ngũ hợp tinh khiết cấp 4-6";
+            info = info + "|* 1 đá cầu vồng thường cấp 4-6";
+            info = info + "|* 1 đá cầu vồng cao cấp cấp 4-6";
+            info = info + "|* 1 đá cầu vồng tinh khiết cấp 4-6";
         } else if (this.getTemplate().type == 2) {
             info = "Có thể nhận được:";
             info = info + "|* 1 LKD 30%";
@@ -283,13 +283,13 @@ public class FruitTemplate {
             info = info + "|* 1 kinh nghiệm đơn";
             info = info + "|* 20-50 lkd cao cấp 60%";
             info = info + "|* 20-50 đá may mắn cao cấp 80%";
-            info = info + "|* 1 thức ăn linh thú tăng 4% pt";
-            info = info + "|* 1 thức ăn linh thú tăng 4% tc";
-            info = info + "|* 1 thức ăn linh thú tăng 4% pt và tc";
+            info = info + "|* 1 thức ăn thú cưỡi tăng 4% pt";
+            info = info + "|* 1 thức ăn thú cưỡi tăng 4% tc";
+            info = info + "|* 1 thức ăn thú cưỡi tăng 4% pt và tc";
             info = info + "|* 1 thuốc cường hóa";
-            info = info + "|* 1 đá ngũ hợp thường cấp 1-3";
-            info = info + "|* 1 đá ngũ hợp cao cấp cấp 1-3";
-            info = info + "|* 1 đá ngũ hợp tinh khiết cấp 1-3";
+            info = info + "|* 1 đá cầu vồng thường cấp 1-3";
+            info = info + "|* 1 đá cầu vồng cao cấp cấp 1-3";
+            info = info + "|* 1 đá cầu vồng tinh khiết cấp 1-3";
         } else if (this.getTemplate().type == 0) {
             if (TeamServer.ExpQua) {
                 info = info + this.gift + "exp";

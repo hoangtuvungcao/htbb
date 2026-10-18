@@ -33,7 +33,7 @@ public final class KiemTilePokemon {
         Kiem.nhom("Tile ban do Pokemon (bo moi CC0: map/pokemon_tile, Resources/poke_tile, cMap_pokemon/*.type)");
         List<String> csv = null;
         try {
-            csv = Files.readAllLines(new File("docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8);
+            csv = Files.readAllLines(new File("../docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8);
         } catch (final IOException e) {
             // bao o duoi
         }
@@ -49,12 +49,12 @@ public final class KiemTilePokemon {
                 Kiem.dung(ten + ": so tile <= mang mau ban do nho client (" + TOI_DA[b] + ")", kieu.length <= TOI_DA[b]);
                 Kiem.dung(ten + ": so tile < 254 (254/255 = o trong)", kieu.length < 254);
                 final byte[] client = Files.readAllBytes(
-                    new File("ClientUnity/Assets/Resources/poke_tile/" + ten + ".bytes").toPath());
+                    new File("../client_pc_ios/ClientUnity/Assets/Resources/poke_tile/" + ten + ".bytes").toPath());
                 Kiem.dung(ten + ": ban client trung ban server", Arrays.equals(client, Files.readAllBytes(fMoi.toPath())));
                 Kiem.dung(ten + ": kieu Unity (poke_map/kieu_*) trung server", Arrays.equals(kieu,
-                    Files.readAllBytes(new File("ClientUnity/Assets/Resources/poke_map/kieu_" + ten + ".bytes").toPath())));
+                    Files.readAllBytes(new File("../client_pc_ios/ClientUnity/Assets/Resources/poke_map/kieu_" + ten + ".bytes").toPath())));
                 Kiem.dung(ten + ": kieu J2ME (tools/pokemon/map_j2me) trung server", Arrays.equals(kieu,
-                    Files.readAllBytes(new File("tools/pokemon/map_j2me/" + ten + ".type").toPath())));
+                    Files.readAllBytes(new File("../tools/pokemon/map_j2me/" + ten + ".type").toPath())));
                 if (!ten.equals("t")) {
                     Kiem.dung(ten + ": vua goi dang nhap (<= 32767 byte)", fMoi.length() <= Short.MAX_VALUE);
                 }

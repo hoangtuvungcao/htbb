@@ -453,7 +453,17 @@ class MapXuLyLenh {
     }
 
     static void processMessage(Map map, Char player, Message message) throws IOException {
-        
+        // Chong spam thao tac lap (menu NPC 53/55, rao ban 62/92, mua ban 24/28/95): moi lenh
+        // nay cham CSDL / tao popup; bot bam lien tuc thi bo bot, khong cat ket noi. Xem ChongSpam.
+        final com.htbb.chongspam.ChongSpam.HanhDong hdSpam = com.htbb.chongspam.ChongSpam.hanhDongCuaLenh(message.command);
+        if (hdSpam != null && !MapXaHoi.kiemSpamHanhDong(player, hdSpam)) {
+            return;
+        }
+        // Tu dong danh chinh thuc: nhip nguoi that luc dang tu dong (danh / nhat), danh nguoi = PvP -> tat. TuDongGame.
+        if (!TuDongGame.kiemLenh(player, message.command)) {
+            return;
+        }
+
         switch (message.command) {
             case -76:
                 map.doBuyItemShopNew(player, message);
@@ -538,11 +548,20 @@ class MapXuLyLenh {
             case 105:
             default:
                 break;
+            case -100: // Tu dong danh chinh thuc (com.htbb.pokemon.TuDong)
+                TuDongGame.xuLy(player, message);
+                break;
+            case -103: // Ngoai hinh trang bi: an/hien phu kien, trang phuc (com.htbb.pokemon.NgoaiHinh)
+                NgoaiHinhGame.xuLy(player, message);
+                break;
+            case -101: // Guc / hoi sinh (com.htbb.pokemon.HoiSinh): xin / chon trong hop thoai
+                HoiSinhGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;
             case -70:
-                MapBangHoi.doInfoClanQuest(map, player, message);
+                MapDoi.doInfoClanQuest(map, player, message);
                 break;
             case -69:
                 MapEpNgoc.doAutoImbue(map, player, message);
@@ -600,13 +619,13 @@ class MapXuLyLenh {
                 player.sendMessage(MessageCreator.createMsgSound(1));
                 break;
             case -45:
-                map.doRideAnimal(player, message);
+                map.doCuoiThu(player, message);
                 break;
             case -41:
                 map.doGetGemItem(player, message);
                 break;
             case -37:
-                MapBangHoi.doQuestClan(map, player, message);
+                MapDoi.doQuestClan(map, player, message);
                 break;
             case -36:
                 MapEpNgoc.doFinishEpNgoc(map, player, message.dis.readByte(), message);
@@ -651,46 +670,46 @@ class MapXuLyLenh {
                 map.doGivePotion2Ground(player, message);
                 break;
             case -20:
-                MapBangHoi.doGiveMoneyClan(map, player, message);
+                MapDoi.doGiveMoneyClan(map, player, message);
                 break;
             case -19:
                 doSendTop(map, player, message);
                 break;
             case -18:
-                MapBangHoi.doChatClan(map, player, message);
+                MapDoi.doChatClan(map, player, message);
                 break;
             case -17:
-                MapBangHoi.doSendMessage2Clan(map, player, message);
+                MapDoi.doSendMessage2Clan(map, player, message);
                 break;
             case -16:
-                MapBangHoi.doSetSloganClan(map, player, message);
+                MapDoi.doSetSloganClan(map, player, message);
                 break;
             case -15:
-                MapBangHoi.doUserOutClan(map, player);
+                MapDoi.doUserOutClan(map, player);
                 break;
             case -14:
-                MapBangHoi.doDelClan(map, player);
+                MapDoi.doDelClan(map, player);
                 break;
             case -13:
-                MapBangHoi.doKickMemberOutClan(map, player, message);
+                MapDoi.doKickMemberOutClan(map, player, message);
                 break;
             case -12:
-                MapBangHoi.doSendInfoClan(map, player, message);
+                MapDoi.doSendInfoClan(map, player, message);
                 break;
             case -11:
-                MapBangHoi.doInviteChar2Clan(map, player, message);
+                MapDoi.doInviteChar2Clan(map, player, message);
                 break;
             case -10:
-                MapBangHoi.doCreateClan(map, player, message);
+                MapDoi.doCreateClan(map, player, message);
                 break;
             case -9:
-                MapBangHoi.doRequestCreateClan(map, player);
+                MapDoi.doRequestCreateClan(map, player);
                 break;
             case -8:
-                MapBangHoi.doSendImgIconClan(map, player, message);
+                MapDoi.doSendImgIconClan(map, player, message);
                 break;
             case -7:
-                MapBangHoi.doSendListMemberClan(map, player, message);
+                MapDoi.doSendListMemberClan(map, player, message);
                 break;
             case -6:
                 map.delFriend(player, message.dis.readUTF());
@@ -868,7 +887,7 @@ class MapXuLyLenh {
                 map.doNapSMS(player, message);
                 break;
             case 108:
-                map.doUnRideHorse(player, message);
+                map.doXuongThuCuoi(player, message);
                 break;
             case 109:
                 map.doLearnSkil(player, message);
@@ -1250,7 +1269,7 @@ class MapXuLyLenh {
                             } else if (typegift[index] == -6) {
                                 int time = Map.r.nextInt(3) + 3;
                                 player.createPoro((long) time, false);
-                                info = info + " đại bạch thử";
+                                info = info + " Wooloo";
                             } else if (typegift[index] == -1) {
                                 player.addXu((long) soluongmax[index], "map 56");
                                 info = info + soluongmax[index] + " xu";
@@ -1703,7 +1722,7 @@ class MapXuLyLenh {
                     }
                     break;
                 case 4:
-                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top cao thủ"));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top sức mạnh"));
                     if (start >= Map.topLv.size()) {
                         start = Map.topLv.size();
                     }
@@ -1742,7 +1761,7 @@ class MapXuLyLenh {
                     }
                     break;
                 case 5:
-                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top bang hội"));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top đội"));
                     if (start >= Map.topClan.size()) {
                         start = Map.topClan.size();
                     }
@@ -1770,16 +1789,16 @@ class MapXuLyLenh {
                     player.sendMessage(
                             MessageCreator.createMsgMenu(
                                     new String[]{
-                                        "Top cao thủ Thanh long",
-                                        "Top cao thủ Hắc hổ",
-                                        "Top cao thủ Huyền vũ",
-                                        "Top công trạng Thanh long",
-                                        "Top công trạng Hắc hổ",
-                                        "Top công trạng Huyền vũ",
-                                        "Top liên trảm Thanh long",
-                                        "Top liên trảm Hắc hổ",
-                                        "Top liên trảm Huyền vũ",
-                                        "Danh sách cừu nhân"
+                                        "Top sức mạnh Kanto",
+                                        "Top sức mạnh Johto",
+                                        "Top sức mạnh Hoenn",
+                                        "Top công trạng Kanto",
+                                        "Top công trạng Johto",
+                                        "Top công trạng Hoenn",
+                                        "Top chuỗi thắng Kanto",
+                                        "Top chuỗi thắng Johto",
+                                        "Top chuỗi thắng Hoenn",
+                                        "Danh sách đối thủ"
                                     },
                                     -504,
                                     0
@@ -1958,6 +1977,14 @@ class MapXuLyLenh {
                     Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 201 ", "hcm");
                 }
 
+                // Vung Hoenn: cong vao chi mo khi tran cap mua >= 91 (sv.lau_dai) va du cap - xem real.VungHoenn.
+                if (VungHoenn.chanVao(player, map, toMapID)) {
+                    toMapID = player.mapID;
+                    toTX = player.x / 16;
+                    toTY = player.y / 16;
+                    checklocation = false;
+                }
+
                 if (toMapID == 111 && !Char.isSuKienHe2017()) {
                     toMapID = player.mapID;
                     toTX = player.x / 16;
@@ -1991,14 +2018,14 @@ class MapXuLyLenh {
                         || Map.nwar[player.inCountry] && player.myCountry != player.inCountry && Map.nationBeAttack[player.inCountry] != player.myCountry
                         || player.inCountry != player.myCountry && MapTown.addDragon[player.inCountry])
                         && toMapID == Map.idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại quốc gia khác."));
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại vùng khác."));
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;
                     toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
                 } else if (player.idClan == -1 && Map.getTown[player.myCountry] && toMapID == Map.idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào thành trong thơi gian này do chưa tham gia bang hội."));
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội."));
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;
@@ -2027,7 +2054,16 @@ class MapXuLyLenh {
                             }
                         }
 
+                        if (!onPos && contentMap && com.htbb.pokemon.CheDoPokemon.bat()
+                                && map.dungCanhCong(player, toMapID, toTX, toTY)) {
+                            onPos = true; // vung chu nhat goc lech voi ban do Pokemon: xem Map.dungCanhCong
+                        }
                         if (!onPos && contentMap) {
+                            try { // nhat ky: phan biet hack that voi o cong lech vung (bao cao cho nguoi van hanh)
+                                com.htbb.log.Nhat.canhBao("DOI_MAP", "kick doi map khong dung o: " + player.charname + " map " + map.mapId
+                                        + " o " + player.x / 16 + "," + player.y / 16 + " -> " + toMapID + " (" + toTX + "," + toTY + ")");
+                            } catch (Throwable ignored) {
+                            }
                             if (toMapID != player.mapID) {
                                 toMapID = player.mapID;
                                 toTX = player.x / 16;

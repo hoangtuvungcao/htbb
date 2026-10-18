@@ -127,7 +127,7 @@ public class TichLuyOnline {
     private static String getLastResetTime() {
         LocalDate today = LocalDate.now();
         LocalTime resetTime = LocalTime.of(5, 0); // 05:00:00
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = com.htbb.pokemon.DongHo.lich();
         calendar.setTime(Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         calendar.set(Calendar.HOUR_OF_DAY, resetTime.getHour());
         calendar.set(Calendar.MINUTE, resetTime.getMinute());

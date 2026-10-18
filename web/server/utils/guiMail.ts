@@ -16,7 +16,7 @@
  * KHÔNG BAO GIỜ ghi token (refresh/access) hay client secret ra log — chỉ ghi mã lỗi
  * và trạng thái Google trả về.
  *
- * Cấu hình: KPAH_GMAIL_* (xem server/utils/config.ts và README mục "Gửi email (Gmail API)").
+ * Cấu hình: HTBB_GMAIL_* (xem server/utils/config.ts và README mục "Gửi email (Gmail API)").
  */
 import { randomBytes } from 'node:crypto'
 
@@ -32,7 +32,7 @@ export interface ThuGui {
   html: string
 }
 
-/** Đủ cấu hình để gửi mail chưa (đủ 4 giá trị KPAH_GMAIL_*). */
+/** Đủ cấu hình để gửi mail chưa (đủ 4 giá trị HTBB_GMAIL_*). */
 export function mailDaCauHinh(): boolean {
   const m = useHtbbConfig().mail
   return m.gmailClientId !== '' && m.gmailClientSecret !== ''

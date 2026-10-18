@@ -587,7 +587,7 @@ public class MapClan extends Map {
                 if (p.hp <= 0) {
                     p.actorDie();
                 } else if (!p.checkDurableWeapone()) {
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
                     Message m = new Message(104);
 
                     try {
@@ -986,7 +986,7 @@ public class MapClan extends Map {
     protected void doProcessNpcClan(Char player, int idNpc, int idMenu, int idOptionMenu) {
         NewClan clan = NewClan.getClan(player.idClan);
         if (clan == null) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tham gia bang hội.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tham gia đội.", ""));
         } else {
             synchronized(clan) {
                 switch (idNpc) {

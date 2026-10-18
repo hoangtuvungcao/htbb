@@ -13,9 +13,13 @@ const form = reactive({ username: '', password: '' })
 const showPass = ref(false)
 const loading = ref(false)
 const errors = ref<string[]>([])
+/** Đăng nhập bị từ chối vì tài khoản bị khoá -> chỉ đường khiếu nại qua Zalo. */
+const biKhoa = ref(false)
+const { coZalo, link: linkHoTro } = useHoTro()
 
 async function submit() {
   errors.value = []
+  biKhoa.value = false
   loading.value = true
   try {
     const res = await api<{ token: string, user: WebUser }>('/api/auth/login', {
@@ -27,6 +31,7 @@ async function submit() {
     await navigateTo('/account')
   } catch (e) {
     errors.value = [loiApi(e)]
+    biKhoa.value = (e as { data?: { code?: string } })?.data?.code === 'tai_khoan_bi_khoa'
   } finally {
     loading.value = false
   }
@@ -57,6 +62,7 @@ async function submit() {
       :description="errors.join(' ')"
       role="alert"
     />
+    <SiteHoTroZalo v-if="biKhoa" kieu="the" nhan="Khiếu nại qua Zalo" class="mt-3" />
 
     <form class="mt-6 space-y-5" :aria-describedby="errors.length ? 'login-errors' : undefined" @submit.prevent="submit">
       <UFormField label="Tên tài khoản" name="username" required>
@@ -101,7 +107,7 @@ async function submit() {
         <NuxtLink to="/quen-mat-khau" class="text-primary hover:underline">Quên mật khẩu?</NuxtLink>
       </p>
       <p class="text-sm text-muted">
-        Cần hỗ trợ tài khoản? <NuxtLink to="/download#support" class="text-primary hover:underline">Xem kênh hỗ trợ ↗</NuxtLink>
+        Cần hỗ trợ tài khoản? <ULink :to="linkHoTro" :target="coZalo ? '_blank' : undefined" class="text-primary hover:underline">{{ coZalo ? 'Nhắn Zalo hỗ trợ' : 'Xem kênh hỗ trợ' }} ↗</ULink>
       </p>
       <!-- Dùng prop label (không dùng slot) để ui.label áp vào: nút block đẩy icon sang
            mép phải bằng ms-auto, chữ phải tự giãn ra mới nằm giữa được. -->

@@ -18,10 +18,10 @@ import java.util.regex.Pattern;
  */
 public final class KiemPokemonClient {
 
-    private static final String F_LOAI = "ClientUnity/Assets/Scripts/Game/LoaiPokemonClient.cs";
-    private static final String F_NPC = "ClientUnity/Assets/Scripts/Game/NPC.cs";
-    private static final String F_BANG_NPC = "docs/pokemon/bang_npc.csv";
-    private static final String F_LENH = "ClientUnity/Assets/Scripts/Game/MessageHandler.cs";
+    private static final String F_LOAI = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/LoaiPokemonClient.cs";
+    private static final String F_NPC = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/NPC.cs";
+    private static final String F_BANG_NPC = "../docs/pokemon/bang_npc.csv";
+    private static final String F_LENH = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs";
 
     public static void chay() {
         Kiem.nhom("Client Unity - Pokemon (LoaiPokemonClient, NPC, lenh -90..-92)");

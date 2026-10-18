@@ -23,41 +23,61 @@ public static class BuildCli
     /// TieuDeCuaSo.cs đặt lúc chạy. Không đổi applicationIdentifier / tên file build (hạ tầng phát hành).
     /// </summary>
     /// <summary>
-    /// Ảnh banner parallax (màn đăng nhập / chọn Pokémon - BannerParallax.cs): chép htbb-client/shared/banner/
-    /// (*.png, *.jpg, lop.txt) vào Assets/Resources/banner/ nếu thư mục đó chưa có ảnh. Không có nguồn thì bỏ
-    /// qua - game tự vẽ cảnh trời / đồi.
+    /// Key art parallax (màn tải / đăng nhập / chọn Pokémon - BannerParallax.cs): chép client_jar/shared/banner/lop/
+    /// (*.png -> *.bytes để Unity không nén / lọc ảnh pixel art; lop.txt) và client_jar/shared/brand/logo_512.png (-> logo.bytes)
+    /// vào Assets/Resources/banner/. Chép lại khi nguồn mới hơn. Không có nguồn thì bỏ qua - game tự vẽ cảnh đơn giản.
     /// </summary>
     private static void chepBanner()
     {
         try
         {
-            string nguon = System.IO.Path.GetFullPath(System.IO.Path.Combine(UnityEngine.Application.dataPath, "../../shared/banner"));
+            string goc = System.IO.Path.GetFullPath(System.IO.Path.Combine(UnityEngine.Application.dataPath, "../../shared"));
+            string nguon = System.IO.Path.Combine(goc, "banner/lop");
             string dich = System.IO.Path.Combine(UnityEngine.Application.dataPath, "Resources/banner");
             if (!System.IO.Directory.Exists(nguon))
             {
                 return;
             }
-            if (System.IO.Directory.Exists(dich) && System.IO.Directory.GetFiles(dich, "*.png").Length > 0)
-            {
-                return;
-            }
             System.IO.Directory.CreateDirectory(dich);
+            int n = 0;
             foreach (string f in System.IO.Directory.GetFiles(nguon))
             {
                 string ten = System.IO.Path.GetFileName(f);
                 string duoi = System.IO.Path.GetExtension(f).ToLowerInvariant();
-                if (duoi == ".png" || duoi == ".jpg" || ten == "lop.txt")
+                if (duoi == ".png")
                 {
-                    System.IO.File.Copy(f, System.IO.Path.Combine(dich, ten), true);
+                    n += chepNeuMoi(f, System.IO.Path.Combine(dich, System.IO.Path.GetFileNameWithoutExtension(f) + ".bytes"));
+                }
+                else if (ten == "lop.txt")
+                {
+                    n += chepNeuMoi(f, System.IO.Path.Combine(dich, ten));
                 }
             }
-            AssetDatabase.Refresh();
-            UnityEngine.Debug.Log("HTBB banner: da chep " + nguon + " -> " + dich);
+            string logo = System.IO.Path.Combine(goc, "brand/logo_512.png");
+            if (System.IO.File.Exists(logo))
+            {
+                n += chepNeuMoi(logo, System.IO.Path.Combine(dich, "logo.bytes"));
+            }
+            if (n > 0)
+            {
+                AssetDatabase.Refresh();
+                UnityEngine.Debug.Log("HTBB banner: da chep " + n + " tep " + nguon + " -> " + dich);
+            }
         }
         catch (System.Exception e)
         {
             UnityEngine.Debug.LogWarning("HTBB banner: " + e.Message);
         }
+    }
+
+    private static int chepNeuMoi(string nguon, string dich)
+    {
+        if (System.IO.File.Exists(dich) && System.IO.File.GetLastWriteTimeUtc(dich) >= System.IO.File.GetLastWriteTimeUtc(nguon))
+        {
+            return 0;
+        }
+        System.IO.File.Copy(nguon, dich, true);
+        return 1;
     }
 
     private static void datThuongHieu()
@@ -68,9 +88,111 @@ public static class BuildCli
         UnityEngine.Debug.Log("HTBB san pham: " + PlayerSettings.companyName + " / " + PlayerSettings.productName);
     }
 
+    /// <summary>KHOA=giatri trong một tệp cấu hình của tools/phat-hanh/ (không có tệp / khoá = null).</summary>
+    private static string docConf(string tep, string khoa)
+    {
+        try
+        {
+            string duong = System.IO.Path.GetFullPath(System.IO.Path.Combine(UnityEngine.Application.dataPath, "../../tools/phat-hanh", tep));
+            if (!System.IO.File.Exists(duong))
+            {
+                return null;
+            }
+            string kq = null;
+            foreach (string dong in System.IO.File.ReadAllLines(duong))
+            {
+                string d = dong.Trim();
+                if (d.StartsWith(khoa + "="))
+                {
+                    kq = d.Substring(khoa.Length + 1).Trim().Trim('"');
+                }
+            }
+            return string.IsNullOrEmpty(kq) ? null : kq;
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogWarning("HTBB conf " + tep + ": " + e.Message);
+            return null;
+        }
+    }
+
+    private static string khongRong(params string[] ds)
+    {
+        foreach (string s in ds)
+        {
+            if (!string.IsNullOrEmpty(s) && s.Trim().Length > 0)
+            {
+                return s.Trim();
+            }
+        }
+        return null;
+    }
+
+    private const string TEP_PHAT_HANH = "Assets/Resources/" + ThuongHieu.TEP_PHAT_HANH + ".txt";
+
+    /// <summary>
+    /// Máy chủ + kênh cập nhật + phiên bản cho BẢN PHÁT HÀNH, đóng vào Resources/htbb_phat_hanh.txt (ThuongHieu đọc
+    /// lúc chạy). Máy chủ: -htbbMayChu (GameCI customParameters) > biến MAY_CHU_CHINH > tools/phat-hanh/may_chu.conf >
+    /// ThuongHieu.MAY_CHU_CHINH - thiếu là DỪNG build (trước đây rơi về danh sách server nqsh-h2.top).
+    /// Kênh cập nhật: -htbbCapNhat > CAP_NHAT_URL > may_chu.conf; rỗng = tắt tự cập nhật; kênh NQSH-H2 = DỪNG.
+    /// Trả false nếu cấu hình sai (đã ghi lỗi).
+    /// </summary>
+    private static bool dongCauHinhPhatHanh(out string ban)
+    {
+        string mayChu = khongRong(thamSo("-htbbMayChu"), System.Environment.GetEnvironmentVariable("MAY_CHU_CHINH"),
+            docConf("may_chu.conf", "MAY_CHU_CHINH"), ThuongHieu.MAY_CHU_CHINH);
+        string capNhat = khongRong(thamSo("-htbbCapNhat"), System.Environment.GetEnvironmentVariable("CAP_NHAT_URL"),
+            docConf("may_chu.conf", "CAP_NHAT_URL"), ThuongHieu.CAP_NHAT_URL) ?? string.Empty;
+        string phienBan = khongRong(System.Environment.GetEnvironmentVariable("HTBB_PHIEN_BAN"),
+            docConf("phien_ban.conf", "PHIEN_BAN"), ThuongHieu.PHIEN_BAN);
+        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json): tham số -htbbBan (GitHub Actions - GameCI
+        // KHÔNG chuyển biến môi trường vào container Unity) hoặc biến HTBB_VERSION_CODE (phat-hanh.sh trên máy)
+        // hoặc BAN trong tools/phat-hanh/phien_ban.conf
+        ban = khongRong(thamSo("-htbbBan"), System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE"),
+            docConf("phien_ban.conf", "BAN"));
+        if (mayChu == null || mayChu.IndexOf(':') <= 0)
+        {
+            UnityEngine.Debug.LogError("HTBB LOI: ban phat hanh PC CAN may chu production host:cong. Dat -htbbMayChu host:cong "
+                + "(GameCI customParameters), bien MAY_CHU_CHINH, hoac MAY_CHU_CHINH= trong tools/phat-hanh/may_chu.conf "
+                + "(mau: may_chu.conf.example). Hien tai: '" + mayChu + "'");
+            return false;
+        }
+        if (ThuongHieu.laKenhNqsh(mayChu) || ThuongHieu.laKenhNqsh(capNhat))
+        {
+            UnityEngine.Debug.LogError("HTBB LOI: may chu / kenh cap nhat tro ve NQSH-H2 (" + mayChu + " / " + capNhat + ") - khong build ban HTBB");
+            return false;
+        }
+        int so;
+        if (ban != null && !int.TryParse(ban, out so))
+        {
+            UnityEngine.Debug.LogError("HTBB LOI: so ban '" + ban + "' khong phai so nguyen");
+            return false;
+        }
+        System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(TEP_PHAT_HANH));
+        System.IO.File.WriteAllText(TEP_PHAT_HANH, "# Sinh boi BuildCli.Win64 luc build - KHONG sua tay, KHONG dua len git\n"
+            + "MAY_CHU_CHINH=" + mayChu + "\nCAP_NHAT_URL=" + capNhat + "\nPHIEN_BAN=" + phienBan + "\n");
+        AssetDatabase.ImportAsset(TEP_PHAT_HANH);
+        UnityEngine.Debug.Log("HTBB phat hanh: may chu " + mayChu + ", cap nhat " + (capNhat.Length > 0 ? capNhat : "(TAT)")
+            + ", phien ban " + phienBan);
+        return true;
+    }
+
+    private static void xoaCauHinhPhatHanh()
+    {
+        // không để máy chủ production lại trong Editor (Play trong Editor sẽ vào server thật)
+        AssetDatabase.DeleteAsset(TEP_PHAT_HANH);
+    }
+
     public static void Win64()
     {
         datThuongHieu();
+        string ban;
+        if (!dongCauHinhPhatHanh(out ban))
+        {
+            UnityEngine.Debug.Log("BUILD RESULT: Failed errors=1 (cau hinh phat hanh)");
+            EditorApplication.Exit(1);
+            return;
+        }
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string outPath = duongRa();
         // IL2CPP: C# dịch ra C++ rồi mã máy - chạy nhanh hơn Mono và khó dịch ngược hơn (DLL không còn mã C#).
@@ -91,9 +213,6 @@ public static class BuildCli
             PlayerSettings.SetScriptingBackend(standalone, ScriptingImplementation.Mono2x);
         }
         UnityEngine.Debug.Log("HTBB scripting backend: " + PlayerSettings.GetScriptingBackend(standalone));
-        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json): tham số -htbbBan (GitHub Actions - GameCI
-        // KHÔNG chuyển biến môi trường vào container Unity) hoặc biến HTBB_VERSION_CODE (phat-hanh.sh trên máy)
-        string ban = thamSo("-htbbBan") ?? System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE");
         if (!string.IsNullOrEmpty(ban))
         {
             PlayerSettings.bundleVersion = ban;
@@ -106,9 +225,27 @@ public static class BuildCli
         PlayerSettings.resizableWindow = true;
         PlayerSettings.allowFullscreenSwitch = true;
         BuildReport r = BuildPipeline.BuildPlayer(scenes, outPath, BuildTarget.StandaloneWindows64, BuildOptions.None);
+        xoaCauHinhPhatHanh();
         UnityEngine.Debug.Log("BUILD RESULT: " + r.summary.result + " errors=" + r.summary.totalErrors);
         // số bản thật đã đóng vào bản build, ghi CẠNH thư mục build (không vào zip) để workflow kiểm tra
         string thuMuc = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(outPath));
+        // ghi công đọc được ngay trong zip phát hành (CC BY-NC 4.0 của PMDCollab), cạnh .exe
+        try
+        {
+            string ghiCong = System.IO.Path.Combine(UnityEngine.Application.dataPath, "Resources/ghicong/GHI_CONG.txt");
+            if (System.IO.File.Exists(ghiCong))
+            {
+                System.IO.File.Copy(ghiCong, System.IO.Path.Combine(thuMuc, "GHI_CONG.txt"), true);
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("HTBB: thieu Assets/Resources/ghicong/GHI_CONG.txt (chay client_jar/tools/sinh_ghi_cong.py)");
+            }
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogError("HTBB ghi cong: " + e.Message);
+        }
         System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(thuMuc), "htbb-ban.txt"), PlayerSettings.bundleVersion);
         EditorApplication.Exit(r.summary.result == BuildResult.Succeeded ? 0 : 1);
     }

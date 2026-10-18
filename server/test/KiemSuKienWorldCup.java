@@ -146,7 +146,7 @@ public final class KiemSuKienWorldCup {
                 quai.contains("if (SuKienWorldCup.dangDienRa())"));
 
         // ================= 7. CAU HINH =================
-        final String tmpl = doc("vps/server.ini.tmpl");
+        final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.dung("server.ini.tmpl co sv.worldCupBatDau", tmpl.contains("sv.worldCupBatDau="));
         Kiem.dung("server.ini.tmpl co sv.worldCupKetThuc", tmpl.contains("sv.worldCupKetThuc="));
         Kiem.dung("server.ini.tmpl co sv.worldCupHanNhanQua",
@@ -160,7 +160,7 @@ public final class KiemSuKienWorldCup {
                 cauHinh.contains("apDungSuKienWorldCup(p);"));
 
         // ================= 8. SQL =================
-        final String sql = doc("sql/them_su_kien_world_cup.sql");
+        final String sql = doc("../sql/them_su_kien_world_cup.sql");
         Kiem.dung("co tep migrate sql", !sql.isEmpty());
         Kiem.dung("migrate dat ten cho dong thuoc 108", sql.contains("WHERE `id` = 108"));
         Kiem.dung("migrate tao bang diem",

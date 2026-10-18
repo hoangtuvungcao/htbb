@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Quản lý mã quà tặng (bảng kpah_db.giftcode + giftcode_log).
+ * Quản lý mã quà tặng (bảng htbb_db.giftcode + giftcode_log).
  *
  * Bốn điều server game làm, quyết định mọi thứ trên trang này (DatabaseGiftCode.java):
  *   1. Chỉ tìm mã `type = 0` -> type khác 0 là mã vô hình với người chơi.
@@ -324,7 +324,7 @@ function denTrang(t: number) {
 async function choNhanLai(r: DongLog) {
   const ok = await xacNhan.open({
     title: `Cho tài khoản của ${r.player} nhận lại mã ${r.giftcode}?`,
-    description: 'Xoá mọi dòng của TÀI KHOẢN đó (theo userId, không chỉ riêng nhân vật này) với mã này trong giftcode_log. Không cộng lại lượt cho mã.',
+    description: 'Xoá mọi dòng của TÀI KHOẢN đó (theo userId, không chỉ riêng Pokémon này) với mã này trong giftcode_log. Không cộng lại lượt cho mã.',
     nut: 'Cho nhận lại',
     mau: 'primary',
   }).result
@@ -336,7 +336,7 @@ async function choNhanLai(r: DongLog) {
 const cotLog: TableColumn<DongLog>[] = [
   { accessorKey: 'id', header: 'ID', meta: { class: so_ } },
   { accessorKey: 'giftcode', header: 'Mã' },
-  { accessorKey: 'player', header: 'Nhân vật' },
+  { accessorKey: 'player', header: 'Pokémon' },
   { accessorKey: 'xu', header: 'Xu', meta: { class: so_ } },
   { accessorKey: 'luong', header: 'Lượng', meta: { class: so_ } },
   { accessorKey: 'luongK', header: 'Lượng khoá', meta: { class: so_ } },
@@ -500,12 +500,12 @@ const cotLog: TableColumn<DongLog>[] = [
             <template #description>
               <ul class="mt-1 space-y-1">
                 <li>
-                  · Mỗi <em>tài khoản</em> chỉ nhận một mã một lần, dù có bao nhiêu nhân vật (chặn theo
-                  <code>giftcode_log.userId</code>, không còn theo tên nhân vật).
+                  · Mỗi <em>tài khoản</em> chỉ nhận một mã một lần, dù có bao nhiêu Pokémon (chặn theo
+                  <code>giftcode_log.userId</code>, không còn theo tên Pokémon).
                 </li>
                 <li>· Cột <code>expire</code> trong bảng không có tác dụng gì cả; muốn hết hạn thì tự bấm “Tắt”.</li>
                 <li>
-                  · Mã cho quá nhiều món một lúc dễ làm hành trang phình to; trước đây từng có nhân vật
+                  · Mã cho quá nhiều món một lúc dễ làm hành trang phình to; trước đây từng có Pokémon
                   bị server tự khoá vì lưu hỏng. Xem <code>vps/sql-giftcode.md</code>.
                 </li>
               </ul>
@@ -668,7 +668,7 @@ const cotLog: TableColumn<DongLog>[] = [
             <UFormField label="Mã">
               <UInput v-model="locMa" placeholder="để trống = tất cả" icon="i-lucide-ticket" />
             </UFormField>
-            <UFormField label="Tên nhân vật">
+            <UFormField label="Tên Pokémon">
               <UInput v-model="locPlayer" placeholder="để trống = tất cả" icon="i-lucide-user" />
             </UFormField>
             <UButton type="submit" icon="i-lucide-filter" label="Lọc" />
@@ -753,7 +753,7 @@ const cotLog: TableColumn<DongLog>[] = [
           </div>
           <p class="max-w-2xl text-xs text-muted">
             “Cho nhận lại” xoá mọi dòng của <strong>tài khoản đó</strong> (theo <code>userId</code>, không
-            chỉ riêng nhân vật đang hiện ở dòng này) với mã này trong <code>giftcode_log</code> — đúng thứ
+            chỉ riêng Pokémon đang hiện ở dòng này) với mã này trong <code>giftcode_log</code> — đúng thứ
             server dùng để chặn nhận trùng. Nó <strong>không</strong> cộng lại lượt cho mã.
           </p>
         </div>

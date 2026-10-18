@@ -5,7 +5,7 @@
 /// </summary>
 public static class BangTiemNang
 {
-	private static readonly string[] TEN = { "Sức mạnh", "Khéo léo", "Tinh thần", "Sức khỏe", "May mắn" };
+	private static readonly string[] TEN = { "Sức mạnh", "Khéo léo", "Tinh thần", "Sức khoẻ", "May mắn" };
 
 	private static readonly byte[] HINH = { KieuO.HINH_VA, KieuO.HINH_NHANH, KieuO.HINH_SAO, KieuO.HINH_TIM, KieuO.HINH_MAT_TROI };
 

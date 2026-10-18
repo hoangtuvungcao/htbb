@@ -2,7 +2,7 @@
 /**
  * Sinh dữ liệu Pokédex cho website từ repo game HTBB (nhánh pokemon/chuyen-doi).
  *
- *   HTBB_DIR=../HTBB node scripts/sinh-du-lieu-pokemon.mjs
+ *   HTBB_DIR=.. node scripts/sinh-du-lieu-pokemon.mjs
  *
  * Đọc (chỉ đọc, không sửa gì bên HTBB):
  *   docs/pokemon/bang_quai.csv, bang_chieu.csv, bang_thu.csv, bang_npc.csv,
@@ -24,7 +24,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '../HTBB')
+const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '..')
 const OUT_JSON = join(WEB, 'shared/data/pokedex.json')
 const OUT_ANH = join(WEB, 'public/pokemon')
 
@@ -211,7 +211,7 @@ MAP_ID.forEach((id, i) => {
   if (t) tenMapServer[id] = t
 })
 const tenMapClient = {}
-const tilemap = join(HTBB, 'ClientUnity/Assets/Scripts/Game/Tilemap.cs')
+const tilemap = join(HTBB, 'client_pc_ios/ClientUnity/Assets/Scripts/Game/Tilemap.cs')
 if (existsSync(tilemap)) {
   const src = khoi(readFileSync(tilemap, 'utf8'), 'void setNameMap(')
   for (const m of src.matchAll(/case (\d+):\s*mapName = "([^"]*)";/g)) tenMapClient[m[1]] = m[2]
@@ -220,6 +220,7 @@ const vietHoa = s => s.charAt(0).toLocaleUpperCase('vi') + s.slice(1)
 /** Map không có trong hai bảng trên (tên lấy từ chú thích RealController.java). */
 const TEN_MAP_THEM = { 28: 'Cánh Rừng Đông' }
 function tenMap(id) {
+  if (BAN_DO_HOENN[id]) return BAN_DO_HOENN[id].ten
   const cu = tenMapClient[id] || tenMapServer[id] || TEN_MAP_THEM[id]
   return cu ? vietHoa(doiTenMap(cu)) : `Khu vực ${id}`
 }
@@ -230,10 +231,10 @@ function tenMap(id) {
 const MAP_BO_QUA = new Set([40, 42])
 const SPAWN = {} // idTemplate -> {mapId: soLuong}
 const MAP_CO_QUAI = {}
-for (const f of readdirSync(join(HTBB, 'map')).filter(f => /^map\d+$/.test(f))) {
+for (const f of readdirSync(join(HTBB, 'server/map')).filter(f => /^map\d+$/.test(f))) {
   const id = Number(f.slice(3))
   if (MAP_BO_QUA.has(id)) continue
-  const b = readFileSync(join(HTBB, 'map', f))
+  const b = readFileSync(join(HTBB, 'server/map', f))
   const w = b[0]
   const h = b[1]
   for (let i = 0; i < w * h && 2 + i < b.length; i++) {
@@ -244,9 +245,34 @@ for (const f of readdirSync(join(HTBB, 'map')).filter(f => /^map\d+$/.test(f))) 
     ;(MAP_CO_QUAI[id] ??= new Set()).add(v)
   }
 }
+/**
+ * Vùng Hoenn (năm 2): 29 bản đồ chỉ có ở chế độ Pokémon, không có file map/<id>. Nguồn duy nhất là
+ * src/com/htbb/pokemon/BanDoHoenn.java: `them(id, "loai", "Tên", w, h, ...)...q(matDo, idQuai...)`.
+ * Số con mỗi loài ≈ w*h/matDo chia đều cho các mẫu quái (giống VeMapMoi).
+ */
+const BAN_DO_HOENN = {}
+{
+  const src = doc('src/com/htbb/pokemon/BanDoHoenn.java')
+  for (const m of src.matchAll(/them\((\d+),\s*"(\w+)",\s*"([^"]+)",\s*(\d+),\s*(\d+),[^;]*;/g)) {
+    const [, id, loaiMap, ten, w, h] = m
+    BAN_DO_HOENN[id] = { ten, loai: loaiMap }
+    const q = /\.q\(([\d,\s]+)\)/.exec(m[0])
+    if (!q) continue
+    const [matDo, ...mau] = so(q[1])
+    const moi = Math.max(1, Math.round(Number(w) * Number(h) / matDo / mau.length))
+    for (const v of mau) {
+      ;(SPAWN[v] ??= {})[id] = (SPAWN[v][id] ?? 0) + moi
+      ;(MAP_CO_QUAI[id] ??= new Set()).add(v)
+    }
+  }
+  if (Object.keys(BAN_DO_HOENN).length < 20) throw new Error('BanDoHoenn.java: không đọc được danh sách bản đồ')
+}
+/** Cấp nhân vật tối thiểu để qua cổng vào Hoenn (BanDoHoenn.CAP_VAO). */
+const CAP_VAO_HOENN = Number(/CAP_VAO\s*=\s*(\d+)/.exec(doc('src/com/htbb/pokemon/BanDoHoenn.java'))?.[1] ?? 0)
+
 /** Boss không nằm trong lưới: nơi xuất hiện theo tên hang (TenMapPokemon) hoặc sự kiện. */
 const NOI_BOSS = {
-  39: 'Hang Thằn Lằn', 82: 'Hang Đại Bàng', 116: 'Hang Dracula', 117: 'Hang Dracula',
+  39: 'Hang Thằn Lằn', 82: 'Hang Đại Bàng', 116: 'Hang Darkrai', 117: 'Hang Darkrai',
   91: 'Hang Mãng Xà', 92: 'Hang Mãng Xà',
 }
 
@@ -415,7 +441,7 @@ for (const l of LOAI.values()) {
 
 // ---------------------------------------------------------------- Chân dung
 
-const THU_MUC_ANH = join(HTBB, 'ClientUnity/Assets/Resources/poke')
+const THU_MUC_ANH = join(HTBB, 'client_pc_ios/ClientUnity/Assets/Resources/poke')
 const anhCo = new Set(readdirSync(THU_MUC_ANH).filter(f => /^\d{4}s?_cd\.bytes$/.test(f)).map(f => f.slice(0, -'_cd.bytes'.length)))
 mkdirSync(OUT_ANH, { recursive: true })
 let soAnhGhi = 0
@@ -508,7 +534,7 @@ const dsLoai = [...LOAI.values()].sort((a, b) => a.dex - b.dex).map((l) => {
 const dsMap = Object.keys(MAP_CO_QUAI).map(Number).sort((a, b) => a - b).map((id) => {
   const loaiTrenMap = [...new Set([...MAP_CO_QUAI[id]].map(t => Number(QUAI_SQL[t]?.dex ?? 0)).filter(Boolean))]
   const cap = [...MAP_CO_QUAI[id]].map(t => QUAI_SQL[t]?.cap ?? 0).filter(Boolean)
-  return { id, ten: tenMap(id), dex: loaiTrenMap.sort((a, b) => a - b), capThap: Math.min(...cap), capCao: Math.max(...cap) }
+  return { id, ten: tenMap(id), vung: BAN_DO_HOENN[id] ? 'Hoenn' : '', dex: loaiTrenMap.sort((a, b) => a - b), capThap: Math.min(...cap), capCao: Math.max(...cap) }
 }).filter(m => m.dex.length)
 
 const kiemKeDex = new Set(KIEM_KE.map(r => Number(r.dex)))
@@ -530,6 +556,7 @@ const du = {
   vung: TEN_VUNG,
   huongDanGame: HUONG_DAN_GAME,
   map: dsMap,
+  hoenn: { capVao: CAP_VAO_HOENN, soBanDo: Object.keys(BAN_DO_HOENN).length },
   loai: dsLoai,
 }
 

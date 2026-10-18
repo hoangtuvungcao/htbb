@@ -1,0 +1,973 @@
+import java.io.*;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.function.Predicate;
+
+/**
+ * Bo kich ban kiem thu CHUC NANG cho server Huyen Thoai Bao Boi (noi giao thuc that, giong BotTai).
+ * Moi kich ban in PASS / FAIL / BO QUA kem bang chung (thong bao server, so du, dong CSDL).
+ *
+ * Chay (o thu muc HTBB/):
+ *   javac -d build/kiem_tai tools/pokemon/kiem_tai/BotChucNang.java
+ *   java -cp build/kiem_tai -Ddb=htbb_db_bot -Dgm=kt001 BotChucNang 127.0.0.1 19169 kt [kich_ban ...]
+ *     args: host cong tienTo [ten kich ban | all]   (tai khoan <tienTo>NNN / 123456)
+ *     -Ddb      CSDL nhan vat de doi chieu (bo trong = khong kiem CSDL)
+ *     -Dtu=N    so thu tu tai khoan dau tien (mac dinh 1); moi kich ban lay tai khoan rieng
+ *     -Dgm=0    server khong cho bot quyen GM (vd server that): bo qua kich ban can GM
+ *     -Dnoi=... thu muc HTBB (doc cMap_pokemon/ de kiem o di duoc)
+ * Ket qua tong: in cuoi + ghi file -Dra=<tep> (mac dinh khong ghi).
+ *
+ * Xem tools/pokemon/kiem_tai/README.md va docs/pokemon/KIEM_THU_TU_DONG.md.
+ */
+public class BotChucNang {
+
+    // =========================================================== cau hinh chung
+    static String HOST;
+    static int PORT;
+    static String TIEN_TO;
+    static final String DB = System.getProperty("db", "");
+    static final boolean GM = !"0".equals(System.getProperty("gm", "1"));
+    static final String NOI = System.getProperty("noi", "/home/vantrong/Downloads/pokemon/HTBB");
+    static int soTk = Integer.getInteger("tu", 1);
+    static final List<String> KET_QUA = new ArrayList<>();
+    static int nPass, nFail, nBo;
+
+    static final int TK_DAU = Integer.getInteger("tu", 1), TK_CUOI = Integer.getInteger("den", 100);
+
+    /** Tai khoan ke tiep trong [tu, den], quay vong (moi kich ban mot tai khoan, khong dung chung cung luc). */
+    static synchronized String tkMoi() {
+        if (soTk > TK_CUOI) soTk = TK_DAU;
+        return String.format("%s%03d", TIEN_TO, soTk++);
+    }
+
+    // =========================================================== mot ket noi bot
+    static class Bot implements Closeable {
+        final String user;
+        Socket s;
+        DataInputStream in;
+        OutputStream out;
+        byte[] key;
+        int curR, curW;
+        boolean dut;
+        final ArrayDeque<Long> guiGan = new ArrayDeque<>();
+        // trang thai
+        int mapCu = -1;
+        int charDb = -1, actor = -1, lv, pt, hp, maxhp, mp, maxmp, nSkill, quocGia = -1, mapId = -1, mapLoad = -1, tx, ty, px, py;
+        String ten = "", tenMap = "";
+        int[] chieu = new int[0];
+        long xu = -1;
+        int luong = -1, lk = -1;
+        boolean coBanDo;
+        final Map<Integer, Integer> thuoc = new TreeMap<>();
+        final List<int[]> doDung = new ArrayList<>(); // {id, tpl, plus, level, lock, color}
+        final Map<Integer, int[]> ngoc = new TreeMap<>(); // realId -> {tpl, sl, khoa}
+        final List<int[]> dsNv = new ArrayList<>(); // {dbid, lv, using}
+        final List<String> dsTen = new ArrayList<>();
+        final List<int[]> thu = new ArrayList<>(), vatNuoi = new ArrayList<>();
+        final Map<Integer, String> tenThu = new HashMap<>();
+        int soMac = -1;
+        final List<Integer> dangMac = new ArrayList<>(), dangMacTpl = new ArrayList<>();
+        final Map<Integer, int[]> quai = new HashMap<>(); // id -> {x,y,hp,lv,maxhp,tpl}
+        final Map<Integer, int[]> nguoi = new HashMap<>(); // actor -> {x,y}
+        short[][][] viTriMap; // [nhom][toM][clone*3]
+        short[][] maIdNhom;
+        short[] idArr;
+        final List<SuKien> su = new ArrayList<>();
+        final Map<Integer, Integer> demLenh = new TreeMap<>();
+        int[] menuCuoi; // {npc, menu}
+        List<String> menuChu = new ArrayList<>();
+
+        Bot(String user) {
+            this.user = user;
+        }
+
+        // ------------------------------------------------------- ma hoa + khung goi
+        byte rk(byte b) {
+            if (key == null) return b;
+            byte r = (byte) (key[curR] ^ b);
+            curR = (curR + 1) % key.length;
+            return r;
+        }
+
+        byte wk(byte b) {
+            if (key == null) return b;
+            byte r = (byte) (key[curW] ^ b);
+            curW = (curW + 1) % key.length;
+            return r;
+        }
+
+        void gui(int cmd, byte[] d) throws IOException {
+            // tu gioi han 200 goi / 5 giay (server chan 300)
+            long bay = System.currentTimeMillis();
+            while (!guiGan.isEmpty() && bay - guiGan.peekFirst() > 5000) guiGan.pollFirst();
+            if (guiGan.size() >= 200) {
+                try { Thread.sleep(5000 - (bay - guiGan.peekFirst()) + 20); } catch (InterruptedException ignored) { }
+            }
+            guiGan.addLast(System.currentTimeMillis());
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            bo.write(wk((byte) cmd));
+            bo.write(wk((byte) (d.length >> 8)));
+            bo.write(wk((byte) d.length));
+            for (byte b : d) bo.write(wk(b));
+            out.write(bo.toByteArray());
+            out.flush();
+        }
+
+        void gui(int cmd, Object... f) throws IOException {
+            gui(cmd, goi(f));
+        }
+
+        Object[] doc() throws IOException {
+            int cmd = rk(in.readByte());
+            int size;
+            if (key != null && cmd == -128) {
+                cmd = rk(in.readByte());
+                byte[] a = new byte[4];
+                in.readFully(a);
+                size = ((rk(a[0]) & 255) << 24) | ((rk(a[1]) & 255) << 16) | ((rk(a[2]) & 255) << 8) | (rk(a[3]) & 255);
+            } else {
+                int a1 = rk(in.readByte()) & 255, a2 = rk(in.readByte()) & 255;
+                size = (a1 << 8) | a2;
+            }
+            byte[] d = new byte[size];
+            in.readFully(d);
+            for (int i = 0; i < d.length; i++) d[i] = rk(d[i]);
+            return new Object[]{cmd, d};
+        }
+
+        void ketNoi() throws IOException {
+            s = new Socket();
+            s.connect(new java.net.InetSocketAddress(HOST, PORT), 10000);
+            s.setSoTimeout(0);
+            in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
+            out = s.getOutputStream();
+            gui(-40, new byte[0]);
+            Object[] k = doc();
+            xuLy((Integer) k[0], (byte[]) k[1]);
+        }
+
+        /** Doc het goi den trong ms mili giay. */
+        void bom(long ms) {
+            long het = System.currentTimeMillis() + ms;
+            try {
+                while (System.currentTimeMillis() < het) {
+                    if (in.available() == 0) {
+                        if (dut) return;
+                        Thread.sleep(10);
+                        // phat hien dut: available khong bao EOF -> kiem bang read voi timeout ngan
+                        if (s.isClosed()) { dut = true; return; }
+                        continue;
+                    }
+                    Object[] m = doc();
+                    xuLy((Integer) m[0], (byte[]) m[1]);
+                }
+            } catch (EOFException | java.net.SocketException e) {
+                dut = true;
+            } catch (Exception e) {
+                ghi(0, "loi doc: " + e);
+                dut = true;
+            }
+        }
+
+        /** Kiem ket noi con song: doc thu voi timeout 1 ms. */
+        boolean conSong() {
+            if (dut) return false;
+            try {
+                s.setSoTimeout(30);
+                in.mark(1);
+                int b = -2;
+                try {
+                    if (in.available() == 0) b = in.read();
+                } catch (java.net.SocketTimeoutException t) {
+                    b = -2;
+                }
+                if (b == -1) { dut = true; return false; }
+                if (b >= 0) in.reset();
+            } catch (IOException e) {
+                dut = true;
+                return false;
+            } finally {
+                try { s.setSoTimeout(0); } catch (Exception ignored) { }
+            }
+            return true;
+        }
+
+        /** Doc goi den khi dieu kien dung (tra true) hoac het gio. */
+        boolean cho(Predicate<Bot> dk, long ms) {
+            long het = System.currentTimeMillis() + ms;
+            while (System.currentTimeMillis() < het) {
+                if (dk.test(this)) return true;
+                bom(50);
+                if (dut) return dk.test(this);
+            }
+            return dk.test(this);
+        }
+
+        boolean choLenh(int tu, int cmd, long ms) {
+            return cho(b -> b.coLenh(tu, cmd), ms);
+        }
+
+        int moc() {
+            return su.size();
+        }
+
+        /** Thong bao (37/-26/27 cua minh/-32/-31/77/-35/-36) xuat hien sau moc, co chua mot trong cac chuoi. */
+        String doiChu(int tu, long ms, String... chua) {
+            final String[] kq = {null};
+            cho(b -> {
+                for (int i = tu; i < su.size(); i++) {
+                    SuKien e = su.get(i);
+                    if (e.chu == null) continue;
+                    String t = khongDau(e.chu);
+                    for (String c : chua) {
+                        if (c.isEmpty() || t.contains(khongDau(c))) { kq[0] = e.chu; return true; }
+                    }
+                }
+                return false;
+            }, ms);
+            return kq[0];
+        }
+
+        String chuTu(int tu) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = tu; i < su.size(); i++) if (su.get(i).chu != null) sb.append('[').append(su.get(i).cmd).append("] ").append(su.get(i).chu.replace('\n', ' ')).append(" | ");
+            return sb.length() > 600 ? sb.substring(0, 600) + "..." : sb.toString();
+        }
+
+        boolean coLenh(int tu, int cmd) {
+            for (int i = tu; i < su.size(); i++) if (su.get(i).cmd == cmd) return true;
+            return false;
+        }
+
+        SuKien layLenh(int tu, int cmd) {
+            for (int i = tu; i < su.size(); i++) if (su.get(i).cmd == cmd) return su.get(i);
+            return null;
+        }
+
+        void ghi(int cmd, String chu) {
+            su.add(new SuKien(cmd, chu, null));
+        }
+
+        // ------------------------------------------------------- phan tich goi den
+        void xuLy(int cmd, byte[] d) {
+            demLenh.merge(cmd, 1, Integer::sum);
+            DataInputStream r = new DataInputStream(new ByteArrayInputStream(d));
+            SuKien e = new SuKien(cmd, null, d);
+            try {
+                switch (cmd) {
+                    case -40: {
+                        int n = r.readUnsignedByte();
+                        key = new byte[n];
+                        r.readFully(key);
+                        for (int j = 0; j < n - 1; j++) key[j + 1] ^= key[j];
+                        curR = curW = 0;
+                        break;
+                    }
+                    case 2:
+                        e.chu = "DANG NHAP LOI: " + r.readUTF();
+                        break;
+                    case 13: {
+                        int n = r.readByte();
+                        dsNv.clear();
+                        dsTen.clear();
+                        for (int i = 0; i < n; i++) {
+                            int id = r.readInt();
+                            String t = r.readUTF();
+                            r.readByte();
+                            int ni = r.readByte();
+                            for (int j = 0; j < ni; j++) { r.readByte(); r.readByte(); }
+                            int l = r.readShort();
+                            int dung = r.readByte();
+                            r.readByte();
+                            r.readShort();
+                            int c = r.readByte();
+                            if (c != -1) {
+                                int a = r.readShort(); r.skipBytes(a);
+                                a = r.readShort(); r.skipBytes(a);
+                                r.readByte(); r.readByte();
+                            }
+                            dsNv.add(new int[]{id, l, dung});
+                            dsTen.add(t);
+                        }
+                        e.chu = "DS NHAN VAT " + dsTen;
+                        break;
+                    }
+                    case 37:
+                    case -26:
+                    case 38:
+                    case -60:
+                        e.chu = r.readUTF();
+                        break;
+                    case 77:
+                        e.chu = "NANG CAP: " + r.readUTF();
+                        break;
+                    case -35:
+                        e.chu = "KHAM: " + r.readUTF();
+                        break;
+                    case 27: {
+                        int id = r.readShort();
+                        if (r.available() > 0) {
+                            String t = r.readUTF();
+                            e.chu = (id == actor ? "CHAT(minh): " : "CHAT(" + id + "): ") + t;
+                        }
+                        break;
+                    }
+                    case -5: {
+                        int a = r.readByte();
+                        if (a == 1 && d.length > 3) {
+                            e.chu = "TIN RIENG tu " + r.readUTF() + ": " + r.readUTF();
+                        } else {
+                            StringBuilder sb = new StringBuilder("HOP THU:");
+                            for (int i = 0; i < a; i++) sb.append(' ').append(r.readUTF()).append(": ").append(r.readUTF());
+                            e.chu = sb.toString();
+                        }
+                        break;
+                    }
+                    case -18:
+                        e.chu = "CHAT BANG: " + r.readUTF();
+                        break;
+                    case -30: {
+                        int npc = r.readShort();
+                        int menu = r.readUnsignedByte();
+                        int n = r.readUnsignedByte();
+                        List<String> ds = new ArrayList<>();
+                        for (int i = 0; i < n; i++) ds.add(r.readUTF());
+                        menuCuoi = new int[]{npc, menu};
+                        menuChu = ds;
+                        e.so = new int[]{npc, menu};
+                        e.chu = "MENU(" + npc + "/" + menu + "): " + String.join(" ; ", ds);
+                        break;
+                    }
+                    case -31: {
+                        int npc = r.readShort();
+                        int menu = r.readByte();
+                        e.so = new int[]{npc, menu};
+                        e.chu = "NHAP(" + npc + "/" + menu + "): " + r.readUTF();
+                        break;
+                    }
+                    case -32: {
+                        int npc = r.readShort();
+                        int pop = r.readByte();
+                        e.so = new int[]{npc, pop};
+                        e.chu = "POPUP(" + npc + "/" + pop + "): " + r.readUTF();
+                        break;
+                    }
+                    case 3: {
+                        actor = r.readShort();
+                        ten = r.readUTF();
+                        hp = r.readInt();
+                        maxhp = r.readInt();
+                        mp = r.readInt(); maxmp = r.readInt();
+                        r.readByte(); r.readByte();
+                        r.readInt(); r.readInt(); r.readInt();
+                        r.readShort(); r.readShort(); r.readShort();
+                        r.readByte();
+                        lv = r.readUnsignedByte();
+                        pt = r.readShort();
+                        for (int i = 0; i < 7; i++) r.readShort();
+                        r.readInt(); r.readShort();
+                        nSkill = r.readByte();
+                        chieu = new int[nSkill];
+                        for (int i = 0; i < nSkill; i++) chieu[i] = r.readByte();
+                        e.chu = null;
+                        break;
+                    }
+                    case 12: {
+                        if (mapId >= 0) mapCu = mapId;
+                        mapId = r.readShort();
+                        tx = r.readShort();
+                        ty = r.readShort();
+                        px = tx * 16 + 8;
+                        py = ty * 16 + 8;
+                        r.readByte();
+                        mapLoad = r.readShort();
+                        tenMap = r.readUTF();
+                        coBanDo = true;
+                        quai.clear();
+                        nguoi.clear();
+                        e.so = new int[]{mapId, tx, ty, mapLoad};
+                        e.chu = "VAO MAP " + mapId + " (" + tenMap + ") o " + tx + "," + ty;
+                        break;
+                    }
+                    case 16: {
+                        int t = r.readByte();
+                        if (t == 0) {
+                            xu = r.readLong();
+                            int n = r.readUnsignedByte();
+                            thuoc.clear();
+                            for (int i = 0; i < n; i++) thuoc.put(r.readUnsignedByte(), r.readInt());
+                        } else if (t == 1) {
+                            int n = r.readShort();
+                            doDung.clear();
+                            for (int i = 0; i < n; i++) {
+                                r.readByte();
+                                int id = r.readShort(), tpl = r.readShort(), plus = r.readByte(), lev = r.readByte();
+                                r.readShort(); r.readShort(); r.readByte(); r.readByte(); r.readByte();
+                                int color = r.readByte();
+                                r.readByte(); r.readByte(); r.readByte(); r.readByte();
+                                int lock = r.readByte();
+                                r.readUTF();
+                                r.readShort();
+                                int na = r.readByte();
+                                for (int k = 0; k < na; k++) { r.readByte(); r.readShort(); }
+                                r.readByte();
+                                doDung.add(new int[]{id, tpl, plus, lev, lock, color});
+                            }
+                        }
+                        if (t == 2) {
+                            luong = r.readInt();
+                            thu.clear();
+                            vatNuoi.clear();
+                            int na = r.readByte();
+                            for (int i = 0; i < na; i++) {
+                                int id = r.readShort(), img = r.readByte();
+                                r.readByte();
+                                int lvt = r.readByte();
+                                String tn = r.readUTF();
+                                r.readUTF();
+                                r.readByte();
+                                thu.add(new int[]{id, img, lvt});
+                                tenThu.put(id, tn);
+                            }
+                            int np = r.readByte();
+                            for (int i = 0; i < np; i++) {
+                                int id = r.readShort(), img = r.readByte();
+                                r.readByte();
+                                String tn = r.readUTF();
+                                r.readByte();
+                                r.readUTF();
+                                r.readInt();
+                                r.readByte();
+                                vatNuoi.add(new int[]{id, img});
+                                tenThu.put(-id - 1, tn);
+                            }
+                            lk = r.readInt();
+                        }
+                        if (t == 0 || t == 1) {
+                            luong = r.readInt();
+                            if (r.available() >= 4) {
+                                // type 2/3 khong co o day; lk o cuoi
+                                byte[] con = new byte[r.available()];
+                                r.readFully(con);
+                                if (con.length >= 4) {
+                                    int n = con.length;
+                                    lk = ((con[n - 4] & 255) << 24) | ((con[n - 3] & 255) << 16) | ((con[n - 2] & 255) << 8) | (con[n - 1] & 255);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    case 73: {
+                        int n = r.readShort();
+                        List<int[]> l = new ArrayList<>();
+                        for (int i = 0; i < n; i++) l.add(new int[]{r.readShort(), r.readShort(), r.readShort()});
+                        int khoa = r.available() > 0 ? r.readByte() : 0;
+                        ngoc.values().removeIf(v -> v[2] == khoa);
+                        for (int[] g : l) ngoc.put(g[0] * 2 + khoa, new int[]{g[1], g[2], khoa, g[0]});
+                        break;
+                    }
+                    case 4: {
+                        while (r.available() >= 8) {
+                            int cat = r.readByte();
+                            int type = r.readUnsignedByte();
+                            int id = r.readShort();
+                            int x = r.readShort(), y = r.readShort();
+                            if (r.available() > 0) r.readByte();
+                            if (cat == 1) {
+                                int[] q = quai.get(id);
+                                if (q == null) quai.put(id, new int[]{x, y, -1, -1, -1, type});
+                                else { q[0] = x; q[1] = y; }
+                            } else if (cat == 0) {
+                                if (id == actor) { px = x; py = y; e.so = new int[]{x, y}; e.chu = "VI TRI MINH " + x + "," + y; }
+                                else nguoi.put(id, new int[]{x, y});
+                            }
+                            break; // goi thuong chi 1 actor; phan con lai la truong phu
+                        }
+                        break;
+                    }
+                    case 7: {
+                        int id = r.readShort();
+                        int tp = r.readUnsignedByte();
+                        int x = r.readShort(), y = r.readShort();
+                        int h = r.readInt();
+                        int l = r.readByte();
+                        r.readByte();
+                        int mh = r.readInt();
+                        quai.put(id, new int[]{x, y, h, l, mh, tp});
+                        break;
+                    }
+                    case 105: {
+                        int nClone = r.readByte();
+                        int nMap = r.readByte();
+                        viTriMap = new short[nMap][][];
+                        for (int i = 0; i < nMap; i++) {
+                            int nm = r.readByte();
+                            viTriMap[i] = new short[nm][];
+                            for (int j = 0; j < nm; j++) {
+                                viTriMap[i][j] = new short[nClone * 3];
+                                for (int k = 0; k < nClone * 3; k++) {
+                                    viTriMap[i][j][k] = r.readShort();
+                                    if (k % 3 == 0) r.readUTF();
+                                }
+                            }
+                        }
+                        int n2 = r.readByte();
+                        maIdNhom = new short[n2][nClone];
+                        idArr = new short[n2];
+                        for (int i = 0; i < n2; i++) {
+                            for (int j = 0; j < nClone; j++) maIdNhom[i][j] = r.readShort();
+                            idArr[i] = r.readShort();
+                        }
+                        break;
+                    }
+                    case -92:
+                        e.chu = "TIEN HOA";
+                        break;
+                    case 15: {
+                        int t = r.readByte();
+                        int id = r.readShort();
+                        if (t == 0 && id == actor) {
+                            int n = r.readByte();
+                            soMac = n;
+                            dangMac.clear();
+                            for (int i = 0; i < n; i++) {
+                                r.readByte();
+                                dangMac.add((int) r.readShort());
+                                int tpl = r.readShort();
+                                dangMacTpl.add(tpl);
+                                break; // chi can so luong + mon dau; truong con lai thay doi theo phien ban
+                            }
+                            e.so = new int[]{n};
+                        }
+                        break;
+                    }
+                    case 23:
+                        e.chu = "SHOP NPC (" + d.length + " byte)";
+                        break;
+                    case 66: {
+                        e.so = new int[]{r.readByte()};
+                        e.chu = "GIAO DICH " + e.so[0];
+                        break;
+                    }
+                    default:
+                }
+            } catch (IOException ex) {
+                // goi ngan hon du doan: giu phan da doc
+            }
+            su.add(e);
+        }
+
+        // ------------------------------------------------------- hanh dong co ban
+        /** Dang nhap; tra ve null neu ok, chuoi loi neu khong. */
+        String dangNhap(String mk) throws IOException {
+            ketNoi();
+            int m = moc();
+            gui(1, user, mk, "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + user);
+            cho(b -> b.coLenh(m, 13) || b.coLenh(m, 2) || b.dut, 8000);
+            if (coLenh(m, 13)) return null;
+            String t = chuTu(m);
+            return t.isEmpty() ? (dut ? "server dong ket noi" : "khong tra loi") : t;
+        }
+
+        /** Tao nhan vat (neu chua co) va vao game. */
+        String vaoGame(int lop) throws IOException {
+            if (dsNv.stream().noneMatch(v -> v[2] == 1)) {
+                int m = moc();
+                gui(14, user, (byte) lop, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
+                cho(b -> b.coLenh(m, 13) && b.dsNv.stream().anyMatch(v -> v[2] == 1) || b.doiChu(m, 0, "") != null, 6000);
+                if (dsNv.stream().noneMatch(v -> v[2] == 1)) return "tao nhan vat that bai: " + chuTu(m) + " lenh=" + demLenh + " ds=" + dsTen + " " + (dsNv.isEmpty() ? "" : Arrays.toString(dsNv.get(0)));
+            }
+            int[] nv = dsNv.stream().filter(v -> v[2] == 1).findFirst().get();
+            charDb = nv[0];
+            int m = moc();
+            gui(13, (byte) 0, charDb);
+            cho(b -> b.coLenh(m, 12) && b.actor >= 0, 10000);
+            if (!coLenh(m, 12)) return "chon nhan vat: khong nhan map. " + chuTu(m);
+            gui(12, (short) -500, (short) 0, (short) 0); // client bao vao map xong
+            bom(1500);
+            return null;
+        }
+
+        void chat(String t) throws IOException {
+            gui(27, t);
+        }
+
+        /** Lenh GM qua chat, doi phan hoi. */
+        void gm(String t, long ms) throws IOException {
+            chat(t);
+            bom(ms);
+        }
+
+        /** Den map/o bang GM mto, tra ve true neu da vao dung map. */
+        boolean den(int map, int x, int y) throws IOException {
+            int m = moc();
+            gui(27, "mto " + map + " " + x + " " + y);
+            boolean ok = cho(b -> {
+                SuKien k = b.layLenh(m, 12);
+                return k != null;
+            }, 6000);
+            if (ok) {
+                gui(12, (short) -500, (short) 0, (short) 0);
+                bom(800);
+            }
+            return ok && mapId == map;
+        }
+
+        /** Di bo theo duong ngan nhat (BFS 8 huong tren o di duoc) toi o (tx,ty); tra ve true neu toi noi. */
+        boolean diDuong(BanDo bd, int dx, int dy) throws IOException {
+            int sx = px / 16, sy = py / 16;
+            if (sx == dx && sy == dy) return true;
+            int[] truoc = new int[bd.w * bd.h];
+            Arrays.fill(truoc, -1);
+            ArrayDeque<Integer> q = new ArrayDeque<>();
+            int bdau = sy * bd.w + sx, dich = dy * bd.w + dx;
+            if (bdau < 0 || bdau >= truoc.length) return false;
+            truoc[bdau] = bdau;
+            q.add(bdau);
+            int[][] hg = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            while (!q.isEmpty() && truoc[dich] < 0) {
+                int c = q.poll(), cx = c % bd.w, cy = c / bd.w;
+                for (int[] h : hg) {
+                    int nx = cx + h[0], ny = cy + h[1];
+                    if (nx < 0 || ny < 0 || nx >= bd.w || ny >= bd.h) continue;
+                    int n = ny * bd.w + nx;
+                    if (truoc[n] >= 0 || !bd.diDuoc(nx, ny) || (n != dich && bd.laCong(nx, ny))) continue;
+                    truoc[n] = c;
+                    q.add(n);
+                }
+            }
+            if (truoc[dich] < 0) return false;
+            List<Integer> duong = new ArrayList<>();
+            for (int c = dich; c != bdau; c = truoc[c]) duong.add(c);
+            Collections.reverse(duong);
+            int m = moc();
+            for (int c : duong) {
+                diToi((c % bd.w) * 16 + 8, (c / bd.w) * 16 + 8);
+                bom(210);
+                if (dut) return false;
+            }
+            bom(300);
+            for (int i = m; i < su.size(); i++) if (su.get(i).cmd == 4 && su.get(i).chu != null) {
+                SuKien k = su.get(i);
+                if (k.so[0] / 16 != dx || k.so[1] / 16 != dy) { px = k.so[0]; py = k.so[1]; }
+            }
+            return px / 16 == dx && py / 16 == dy;
+        }
+
+        void diToi(int x, int y) throws IOException {
+            gui(4, (short) x, (short) y);
+            px = x;
+            py = y;
+        }
+
+        /** Chon menu: npc, menu, lua chon. */
+        void menu(int npc, int idMenu, int chon) throws IOException {
+            gui(-30, (short) npc, (byte) idMenu, (byte) chon);
+        }
+
+        /** Tim lua chon co chua chuoi trong menu cuoi, -1 neu khong co. */
+        int timMuc(String chua) {
+            for (int i = 0; i < menuChu.size(); i++) if (khongDau(menuChu.get(i)).contains(khongDau(chua))) return i;
+            return -1;
+        }
+
+        /** Mo menu -> doi menu moi (npc,menu) -> tra ve so muc, -1 neu khong co menu. */
+        int doiMenu(int tu, int npc, int idMenu, long ms) {
+            cho(b -> {
+                for (int i = tu; i < b.su.size(); i++) {
+                    SuKien e = b.su.get(i);
+                    if (e.cmd == -30 && e.so != null && e.so[0] == npc && (idMenu < 0 || e.so[1] == idMenu)) return true;
+                }
+                return false;
+            }, ms);
+            for (int i = su.size() - 1; i >= tu; i--) {
+                SuKien e = su.get(i);
+                if (e.cmd == -30 && e.so != null && e.so[0] == npc && (idMenu < 0 || e.so[1] == idMenu)) return menuChu.size();
+            }
+            return -1;
+        }
+
+        void lamMoi() throws IOException {
+            gui(88, new byte[0]);
+            bom(700);
+        }
+
+        int soThuoc(int id) {
+            return thuoc.getOrDefault(id, 0);
+        }
+
+        int soNgoc(int tpl) {
+            int n = 0;
+            for (int[] g : ngoc.values()) if (g[0] == tpl) n += g[1];
+            return n;
+        }
+
+        int[] timDo(Predicate<int[]> p) {
+            for (int[] d : doDung) if (p.test(d)) return d;
+            return null;
+        }
+
+        @Override
+        public void close() {
+            try { if (s != null) s.close(); } catch (Exception ignored) { }
+        }
+    }
+
+    static class SuKien {
+        final int cmd;
+        String chu;
+        int[] so;
+        final byte[] d;
+        final long luc = System.currentTimeMillis();
+
+        SuKien(int cmd, String chu, byte[] d) {
+            this.cmd = cmd;
+            this.chu = chu;
+            this.d = d;
+        }
+    }
+
+    // =========================================================== tien ich
+    static byte[] goi(Object... fs) throws IOException {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        DataOutputStream o = new DataOutputStream(bo);
+        for (Object f : fs) {
+            if (f instanceof String) o.writeUTF((String) f);
+            else if (f instanceof Byte) o.writeByte((Byte) f);
+            else if (f instanceof Short) o.writeShort((Short) f);
+            else if (f instanceof Integer) o.writeInt((Integer) f);
+            else if (f instanceof Long) o.writeLong((Long) f);
+            else if (f instanceof Boolean) o.writeBoolean((Boolean) f);
+            else if (f instanceof byte[]) o.write((byte[]) f);
+        }
+        return bo.toByteArray();
+    }
+
+    static String khongDau(String s) {
+        String n = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+        return n.replace('đ', 'd').replace('Đ', 'D').toLowerCase();
+    }
+
+    /** Chay truy van tren CSDL (mysql CLI), tra ve cac dong (tab). Rong neu khong cau hinh -Ddb. */
+    static List<String> sql(String q) {
+        List<String> kq = new ArrayList<>();
+        if (DB.isEmpty()) return kq;
+        try {
+            Process p = new ProcessBuilder("mysql", "--no-defaults", "-h127.0.0.1", "-P" + System.getProperty("dbport", "3318"), "-uhtbb", "-phtbb", "--skip-ssl",
+                    "--default-character-set=utf8mb4", "-N", "-B", DB, "-e", q).redirectErrorStream(true).start();
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
+            String l;
+            while ((l = br.readLine()) != null) if (!l.startsWith("mysql: [Warning]")) kq.add(l);
+            p.waitFor();
+        } catch (Exception e) {
+            kq.add("LOI SQL " + e);
+        }
+        return kq;
+    }
+
+    static String sql1(String q) {
+        List<String> l = sql(q);
+        return l.isEmpty() ? null : l.get(0);
+    }
+
+    static void ket(String ten, Boolean ok, String bang) {
+        String nhan = ok == null ? "BO QUA" : ok ? "PASS" : "FAIL";
+        if (ok == null) nBo++;
+        else if (ok) nPass++;
+        else nFail++;
+        String dong = String.format("%-6s %-28s %s", nhan, ten, bang == null ? "" : bang.replace('\n', ' '));
+        System.out.println(dong);
+        System.out.flush();
+        synchronized (KET_QUA) {
+            KET_QUA.add(dong);
+        }
+    }
+
+    static int soThuong = Integer.getInteger("tuThuong", 101);
+    static final int THUONG_CUOI = Integer.getInteger("denThuong", 120);
+
+    /** Tai khoan KHONG GM ke tiep (mac dinh kt101..kt120; admin bo qua mot so kiem tra). */
+    static synchronized String tkThuong() {
+        if (soThuong > THUONG_CUOI) soThuong = Integer.getInteger("tuThuong", 101);
+        return String.format("%s%03d", TIEN_TO, soThuong++);
+    }
+
+    static Bot botThuong() throws Exception {
+        Bot b = new Bot(tkThuong());
+        String l = b.dangNhap("123456");
+        if (l != null) throw new IllegalStateException(b.user + " dang nhap: " + l);
+        l = b.vaoGame(0);
+        if (l != null) throw new IllegalStateException(b.user + " " + l);
+        return b;
+    }
+
+    /** Bot moi da vao game (tai khoan rieng). lop -1 = mac dinh 0. */
+    static Bot botMoi(int lop) throws Exception {
+        Bot b = new Bot(tkMoi());
+        String l = b.dangNhap("123456");
+        if (l != null && l.contains("khong tra loi")) { // phien cu cua tai khoan dung lai vua bi da: thu lai
+            b.close();
+            Thread.sleep(2000);
+            b = new Bot(b.user);
+            l = b.dangNhap("123456");
+        }
+        if (l != null) throw new IllegalStateException(b.user + " dang nhap: " + l);
+        l = b.vaoGame(lop < 0 ? 0 : lop);
+        if (l != null) throw new IllegalStateException(b.user + " " + l);
+        return b;
+    }
+
+    // =========================================================== ban do (doc tep tren dia)
+    static class BanDo {
+        int w, h;
+        int[] type;
+        boolean offline;
+        List<int[]> cong = new ArrayList<>(); // {x,y,toM,xOut,yOut}
+
+        static final Map<Integer, BanDo> CACHE = new HashMap<>();
+
+        static synchronized BanDo nap(int load) {
+            if (CACHE.containsKey(load)) return CACHE.get(load);
+            BanDo m = null;
+            try {
+                File f = new File(NOI, "server/cMap_pokemon/" + load);
+                if (!f.isFile()) f = new File(NOI, "server/cMap/" + load);
+                String bo = load < 110 ? "t" : (load > 200 ? "t_thanh" : "t_hang");
+                File ft = new File(NOI, "server/cMap_pokemon/" + bo + ".type");
+                if (!ft.isFile()) ft = new File(NOI, "server/cMap/" + bo + ".type");
+                byte[] tt = java.nio.file.Files.readAllBytes(ft.toPath());
+                byte[] b = java.nio.file.Files.readAllBytes(f.toPath());
+                m = new BanDo();
+                int p = 0;
+                m.w = b[p++] & 255;
+                m.h = b[p++] & 255;
+                m.type = new int[m.w * m.h];
+                for (int i = 0; i < m.w * m.h; i++) {
+                    int t = b[p++] & 255;
+                    if (t != 254 && t != 255 && t < tt.length) m.type[i] = tt[t] & 255;
+                }
+                while ((b[p] & 255) != 255) { // khoi tileTop
+                    int ww = b[p + 2] & 255, hh = b[p + 3] & 255;
+                    p += 4 + ww * hh;
+                }
+                p++;
+                while ((b[p] & 255) != 255) p += 3;
+                p++;
+                while ((b[p] & 255) != 255 && (b[p] & 255) != 254) p += 3;
+                p++;
+                m.offline = b[p++] == 1;
+                int n = b[p++] & 255;
+                for (int i = 0; i < n; i++) {
+                    int x = b[p] & 255, y = b[p + 1] & 255;
+                    int toM = (b[p + 2] & 255) | ((b[p + 3] & 255) << 8);
+                    int xo = b[p + 4] & 255, yo = b[p + 5] & 255;
+                    p += 6;
+                    m.cong.add(new int[]{x, y, (short) toM, xo, yo});
+                    m.type[y * m.w + x] = 2000000000 + i;
+                }
+            } catch (Exception e) {
+                m = null;
+            }
+            CACHE.put(load, m);
+            return m;
+        }
+
+        boolean diDuoc(int x, int y) {
+            if (x < 0 || y < 0 || x >= w || y >= h) return false;
+            return (type[y * w + x] & 2) != 2;
+        }
+
+        /** So o di duoc lien thong (4 huong) tu (x,y), dung som khi vuot gioiHan. */
+        int vungLienThong(int x, int y, int gioiHan) {
+            if (!diDuoc(x, y)) return 0;
+            boolean[] tham = new boolean[w * h];
+            ArrayDeque<int[]> q = new ArrayDeque<>();
+            q.add(new int[]{x, y});
+            tham[y * w + x] = true;
+            int n = 0;
+            while (!q.isEmpty() && n < gioiHan) {
+                int[] c = q.poll();
+                n++;
+                int[][] hg = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+                for (int[] d : hg) {
+                    int nx = c[0] + d[0], ny = c[1] + d[1];
+                    if (nx >= 0 && ny >= 0 && nx < w && ny < h && !tham[ny * w + nx] && diDuoc(nx, ny)) {
+                        tham[ny * w + nx] = true;
+                        q.add(new int[]{nx, ny});
+                    }
+                }
+            }
+            return n;
+        }
+
+        /** O di duoc gan (x,y) nhat trong ban kinh r. */
+        int[] oGan(int x, int y, int r) {
+            for (int k = 0; k <= r; k++)
+                for (int dy = -k; dy <= k; dy++)
+                    for (int dx = -k; dx <= k; dx++)
+                        if (Math.max(Math.abs(dx), Math.abs(dy)) == k && diDuoc(x + dx, y + dy)) return new int[]{x + dx, y + dy};
+            return null;
+        }
+
+        boolean laCong(int x, int y) {
+            return x >= 0 && y >= 0 && x < w && y < h && type[y * w + x] >= 2000000000;
+        }
+
+        /** O dung truoc cong nhu client (Tilemap.toOtherMapAt o phia truoc): o di duoc, KHONG phai o cong, ke 4 huong. */
+        int[] oTruocCong(int x, int y) {
+            int[][] hg = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+            for (int k = 1; k <= 3; k++)
+                for (int[] d : hg) {
+                    int nx = x + d[0] * k, ny = y + d[1] * k;
+                    if (diDuoc(nx, ny) && !laCong(nx, ny)) return new int[]{nx, ny};
+                }
+            return null;
+        }
+    }
+
+    // =========================================================== kich ban
+    interface KichBan {
+        void chay() throws Exception;
+    }
+
+    static final LinkedHashMap<String, KichBan> KB = new LinkedHashMap<>();
+    static final Set<String> CAN_GM = new HashSet<>();
+
+    static void dk(String ten, boolean canGm, KichBan k) {
+        KB.put(ten, k);
+        if (canGm) CAN_GM.add(ten);
+    }
+
+    public static void main(String[] a) throws Exception {
+        HOST = a[0];
+        PORT = Integer.parseInt(a[1]);
+        TIEN_TO = a[2];
+        KichBanDS.dangKy();
+        List<String> chon = new ArrayList<>();
+        for (int i = 3; i < a.length; i++) chon.add(a[i]);
+        if (chon.isEmpty() || chon.contains("all")) chon = new ArrayList<>(KB.keySet());
+        long bd = System.currentTimeMillis();
+        for (String t : chon) {
+            KichBan k = KB.get(t);
+            if (k == null) { ket(t, null, "khong co kich ban nay"); continue; }
+            if (!GM && CAN_GM.contains(t)) { ket(t, null, "can quyen GM (-Dgm=0)"); continue; }
+            System.out.println("---- " + t);
+            try {
+                k.chay();
+            } catch (Throwable e) {
+                ket(t, false, "ngoai le: " + e);
+                e.printStackTrace(System.out);
+            }
+        }
+        System.out.printf("=== TONG: PASS %d, FAIL %d, BO QUA %d (%ds) ===%n", nPass, nFail, nBo, (System.currentTimeMillis() - bd) / 1000);
+        String ra = System.getProperty("ra");
+        if (ra != null) {
+            try (PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(ra), StandardCharsets.UTF_8))) {
+                for (String d : KET_QUA) w.println(d);
+                w.printf("TONG PASS %d FAIL %d BO_QUA %d%n", nPass, nFail, nBo);
+            }
+        }
+        System.exit(nFail == 0 ? 0 : 1);
+    }
+}

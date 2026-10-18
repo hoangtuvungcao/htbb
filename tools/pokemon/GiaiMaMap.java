@@ -28,18 +28,18 @@ import com.htbb.pokemon.DinhDangBanDo;
  *
  * Chay (o thu muc HTBB/; can ban build server de doc bang cong/den - neu thieu thi bo qua phan do):
  *   javac -encoding UTF-8 -cp &lt;lop server&gt; -sourcepath src -d build/tools tools/pokemon/GiaiMaMap.java
- *   java -cp build/tools:&lt;lop server&gt;:lib/NQSH_5h.jar GiaiMaMap [thuMucCMap] [thuMucRa]
+ *   java -cp build/tools:&lt;lop server&gt;:lib/htbb-core.jar GiaiMaMap [thuMucCMap] [thuMucRa]
  *     mac dinh: cMap -> docs/pokemon/map_cu  (anh &lt;id&gt;.png + &lt;id&gt;.json + bang_den.json)
  */
 public final class GiaiMaMap {
 
     /** Ban do GOC ve bang tile goc (map/t*.png); ban moi (VeMapMoi) ve bang map/pokemon_tile/. */
-    static final String THU_MUC_TILE = "map/";
-    static final String THU_MUC_CAY = "map/pokemon_trang_tri/tree/";
-    static final String THU_MUC_CAY_GOC = "map/tree/";
+    static final String THU_MUC_TILE = "server/map/";
+    static final String THU_MUC_CAY = "server/map/pokemon_trang_tri/tree/";
+    static final String THU_MUC_CAY_GOC = "server/map/tree/";
 
     public static void main(final String[] a) throws Exception {
-        final String vao = a.length > 0 ? a[0] : "cMap";
+        final String vao = a.length > 0 ? a[0] : "server/cMap";
         final String ra = a.length > 1 ? a[1] : "docs/pokemon/map_cu";
         new File(ra).mkdirs();
         final List<Integer> ids = danhSachMap(vao);
@@ -78,7 +78,7 @@ public final class GiaiMaMap {
     }
 
     static DinhDangBanDo.LuoiQuai docQuai(final int id) throws IOException {
-        final File f = new File("map/map" + id);
+        final File f = new File("server/map/map" + id);
         return f.isFile() ? DinhDangBanDo.LuoiQuai.doc(Files.readAllBytes(f.toPath())) : null;
     }
 
@@ -88,7 +88,7 @@ public final class GiaiMaMap {
     static int[] kieuTile(final String bo) throws IOException {
         int[] k = KIEU.get(bo);
         if (k == null) {
-            final byte[] b = Files.readAllBytes(new File("cMap/" + bo + ".type").toPath());
+            final byte[] b = Files.readAllBytes(new File("server/cMap/" + bo + ".type").toPath());
             k = new int[b.length];
             for (int i = 0; i < b.length; i++) {
                 k[i] = b[i] & 0xFF;

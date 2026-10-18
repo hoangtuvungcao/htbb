@@ -1,0 +1,52 @@
+# Bo vi du kiem gia tri DUNG CHUNG cho may chu (test/KiemCauHinhTrungTam.java) va web
+# (HTBB-Web/tests/cau-hinh-trung-tam.test.ts). Moi dong: khoa<TAB>gia tri<TAB>ok:<gia tri chuan hoa> | loi
+# Hai ben PHAI cho cung ket qua - sua luat kiem mot ben thi them dong vao day.
+sv.tileXu	50	ok:50
+sv.tileXu	 7 	ok:7
+sv.tileXu	101	loi
+sv.tileXu	-1	loi
+sv.tileXu	05	loi
+sv.tileXu	5.5	loi
+sv.tileXu		loi
+sv.tileXu	1e2	loi
+sv.gioChiemThanh	-1	ok:-1
+sv.dangKyTrongGame	1	ok:1
+sv.dangKyTrongGame	true	loi
+sv.dangKyTrongGame	2	loi
+sv.dangKyTuKichHoat	web	ok:web
+sv.dangKyTuKichHoat	WEB	loi
+sv.log.muc	info	ok:INFO
+sv.log.muc	thong_tin	ok:THONG_TIN
+sv.log.muc	verbose	loi
+sv.log.mucTep		ok:
+thanh_vien.gia	25000	ok:25000
+thanh_vien.gia	25500	loi
+thanh_vien.gia	5000	loi
+thanh_vien.chuc_nang	giao_dich, cho ,cho	ok:giao_dich,cho
+thanh_vien.chuc_nang	bay	loi
+thanh_vien.chuc_nang		ok:
+bao_tri.cho	admin,tai001	ok:admin,tai001
+bao_tri.cho	Admin	loi
+sv.tieuNguongMau	1,2,3,4,5	ok:1,2,3,4,5
+sv.tieuNguongMau	1,2,3,4	loi
+sv.tieuNguongMau	1,2,x,4,5	loi
+sv.spam.camGiay	60, 300	ok:60,300
+sv.spam.camGiay		loi
+sv.worldCupBatDau	2026-06-11 00:00:00	ok:2026-06-11 00:00:00
+sv.worldCupBatDau		ok:
+sv.worldCupBatDau	2026-13-11 00:00:00	loi
+sv.worldCupBatDau	2026-06-11	loi
+sv.ngay_khai_truong	2026-02-30	loi
+sv.ngay_khai_truong	2026-10-18	ok:2026-10-18
+sv.spam.chat.gan	5/10	ok:5/10
+sv.spam.chat.gan	0/10	loi
+sv.spam.chat.gan	5	loi
+sv.gioBaoTri	04:30	ok:04:30
+sv.gioBaoTri	tat	ok:tat
+sv.gioBaoTri		ok:
+sv.gioBaoTri	25:00	loi
+sv.ngayChiemThanh	Mon,Sat	ok:Mon,Sat
+sv.ngayChiemThanh	Monday	loi
+sv.dangKyCsdlTaiKhoan	account	ok:account
+sv.dangKyCsdlTaiKhoan	acc;drop	loi
+thanh_vien.thong_bao	Chỉ dành cho Thành viên	ok:Chỉ dành cho Thành viên

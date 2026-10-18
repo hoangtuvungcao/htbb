@@ -128,5 +128,7 @@ export function useAdminMe() {
   const api = useAdminApi()
   const { data, refresh } = useAsyncData('admin-me', () => api<{ admin: { username: string, vaiTro: VaiTroAdmin }, coBangNhatKy: boolean, coBangCms: boolean }>('/api/admin/auth/me'), { server: false })
   const vaiTro = computed<VaiTroAdmin>(() => data.value?.admin?.vaiTro ?? 'xem')
-  return { data, refresh, vaiTro, coBangCms: computed(() => data.value?.coBangCms ?? true), duocGhiNoiDung: computed(() => ['sieu_quan_tri', 'bien_tap'].includes(vaiTro.value)) }
+  return { data, refresh, vaiTro, coBangCms: computed(() => data.value?.coBangCms ?? true), duocGhiNoiDung: computed(() => ['sieu_quan_tri', 'bien_tap'].includes(vaiTro.value)),
+    /** Vai trò hiện tại có gọi được API này không (cùng ma trận với server — chỉ để ẩn nút). */
+    duoc: (path: string, method = 'POST') => !!data.value && kiemQuyenAdmin(path, method, vaiTro.value) }
 }

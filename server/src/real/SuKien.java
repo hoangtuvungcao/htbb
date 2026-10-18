@@ -24,10 +24,10 @@ import server.TeamServer;
  * ==== BAY GIO ====
  * KHONG CON MOC NGAY NAO trong ma nguon. Moi su kien la mot MA + mot cong bat/tat,
  * luu trong bang CSDL `tob_su_kien` (xem data/DatabaseSuKien), bat luc nao cung duoc.
- * Trang quan tri web/admin/sukien.php la cho bat/tat.
+ * Trang quan tri HTBB-Web /admin/sukien la cho bat/tat.
  *
  * Cac ham Char.isSuKien* / Char.isFinishAllSuKien* van con nguyen ten va chu ky - hon
- * 400 cho trong ma nguon lan bytecode trong lib/NQSH_5h.jar goi chung - chi doi than
+ * 400 cho trong ma nguon lan bytecode trong lib/htbb-core.jar goi chung - chi doi than
  * thanh mot dong goi sang day.
  *
  * ==== MAC DINH GIU NGUYEN HANH VI CU ====
@@ -143,7 +143,7 @@ public final class SuKien {
                 "Thưởng riêng ba ngày mùng 1-2-3."),
 
         new Muc(NOEL, "Noel", "Cuối năm",
-                "NPC Noel, quà Giáng sinh, tuần lộc. Luôn tắt trên server liên đấu và server local."),
+                "NPC Noel, quà Giáng sinh, Stantler. Luôn tắt trên server giải Liên minh và server local."),
         new Muc(NOEL_2023, "Noel 2023", "Cuối năm",
                 "Bản Noel dựng lại năm 2023."),
         new Muc(DEM_NOEL, "Đêm Noel", "Cuối năm",
@@ -156,9 +156,9 @@ public final class SuKien {
                 "Mở bán các món giới hạn của đợt Black Friday."),
 
         new Muc(TRUNG_THU, "Trung Thu", "Mùa",
-                "Bánh nướng / bánh dẻo, lồng đèn, NPC Hằng Nga, thả đèn."),
+                "Bánh nướng / bánh dẻo, lồng đèn, NPC Clefairy, thả đèn."),
         new Muc(HALLOWEEN, "Halloween", "Mùa",
-                "Bí ngô, mặt nạ, hộp quà Halloween, boss Dracula."),
+                "Bí ngô, mặt nạ, hộp quà Halloween, boss Darkrai."),
         new Muc(DEM_HALLOWEEN, "Đêm Halloween", "Mùa",
                 "Thưởng riêng đêm 31/10."),
         new Muc(HALLOWEEN_2015, "Halloween 2015", "Mùa",
@@ -168,16 +168,16 @@ public final class SuKien {
         new Muc(HE_2015, "Hè 2015", "Mùa",
                 "Bản sự kiện hè cũ."),
         new Muc(VU_LAN, "Vu Lan", "Mùa",
-                "Rơi nhánh hoa hồng vàng (thu hoạch cây thần, chế đồ, tiến giai, săn boss,"
-                + " giết quái lệch cấp); NPC Đấu Trường đổi bó hoa vàng/đỏ và nguyên liệu;"
-                + " tinh luyện thần khí +10% với đá hỏa thạch cấp 2; Mặt nạ Ông Địa."),
+                "Rơi nhánh hoa hồng vàng (thu hoạch cây thần, chế đồ, thăng bậc, săn boss,"
+                + " hạ quái lệch cấp); NPC Đấu Trường đổi bó hoa vàng/đỏ và nguyên liệu;"
+                + " tinh luyện bảo vật huyền thoại +10% với đá nham thạch cấp 2; Mặt nạ Snorlax."),
         new Muc(GIO_TO, "Giỗ Tổ Hùng Vương", "Mùa",
                 "Bánh giày, pháo hoa, đổi nguyên liệu, bảng xếp hạng bắn pháo."),
 
         new Muc(MINI, "Sự kiện mini", "Mini",
-                "Đổi đồ Bạch Mi, Thuý Vũ Hồng Sam, quà đặc biệt ở NPC đấu trường."),
-        new Muc(MINI_CHUC_NU, "Mini Chức Nữ", "Mini",
-                "Nhiệm vụ đi tìm Chức Nữ."),
+                "Đổi đồ Absol, Oricorio, quà đặc biệt ở NPC đấu trường."),
+        new Muc(MINI_CHUC_NU, "Mini Illumise", "Mini",
+                "Nhiệm vụ đi tìm Illumise."),
         new Muc(MINI_NUI_CHAU_BAU, "Mini Núi Châu Báu", "Mini",
                 "Bản mini của núi châu báu."),
 
@@ -213,7 +213,7 @@ public final class SuKien {
                 "Điểm nghiên cứu Pokédex x2 (cần sv.lau_dai=1)."),
         new Muc("moi:bungphat", "Bùng phát quần thể", "Pokémon",
                 "Một loài x5 trên một tuyến mỗi ngày (cần sv.lau_dai=1)."),
-        new Muc("moi:chienvung", "Thế chiến vùng", "Pokémon",
+        new Muc("moi:chienvung", "Chiến vùng", "Pokémon",
                 "Thứ Bảy 20h, Kanto/Johto/Hoenn giành cờ (dùng lại chiến trường)."),
         new Muc("moi:muapvp", "Kết thúc mùa PvP", "Pokémon",
                 "Chốt bậc mùa PvP, phát thưởng khung/danh hiệu (cần sv.lau_dai=1)."),
@@ -232,9 +232,9 @@ public final class SuKien {
         new Muc("moi:tongket", "Tổng kết năm", "Pokémon",
                 "Tổng kết năm + mùa giải PvP 4."),
 
-        new Muc(AN_XU_LUONG_TOP, "Ẩn xu/lượng trên bảng top", "Bảng xếp hạng",
-                "Bật thì mọi bảng top (đại gia, cao thủ, bang hội, top theo phe, top nhóm đua)"
-                + " không hiện số xu/lượng của từng người/bang nữa - thứ hạng vẫn giữ nguyên."),
+        new Muc(AN_XU_LUONG_TOP, "Bảng top: ẩn xu/lượng", "Bảng xếp hạng",
+                "Bật thì mọi bảng top (đại gia, nhà vô địch, đội, top theo phe, top nhóm đua)"
+                + " không hiện số xu/lượng của từng người/đội nữa - thứ hạng vẫn giữ nguyên."),
     };
 
     // ============================ TRANG THAI ============================

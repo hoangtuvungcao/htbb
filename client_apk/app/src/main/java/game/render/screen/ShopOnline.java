@@ -55,9 +55,9 @@ public class ShopOnline extends Screen {
     public static short[] nPage = {0, 0, 0, 0, 0, 0};
     public static short[] indexPage = {0, 0, 0, 0, 0, 0};
     public static String[][] tileFind = {new String[]{"Loại:", "Level:", "Phẩm:", "Màu:", "Cộng:"}, new String[]{"N.vật"}, new String[0]};
-    public static String[] nameItem = {"áo", "Quần", "Nón", "Kiếm", "Đao", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Giáp linh thú", "Hộ uyển", "Nón linh thú", "Bàn đạp", "Yên cương", "Phi phong"};
+    public static String[] nameItem = {"áo", "Quần", "Nón", "Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Giáp thú cưỡi", "Vòng chân", "Nón thú cưỡi", "Bàn đạp", "Yên cương", "Ruy băng"};
     public static byte[] ID_TYPE_ITEM = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19};
-    public static String[] Pham = {"Nhất phẩm", "Nhị phẩm", "Tam phẩm", "Tứ phẩm", "Khác"};
+    public static String[] Pham = {"Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Khác"};
     public static String[] Color = {"Trắng", "Xanh", "Đỏ", "Hoàn mỹ"};
     public static String pham = "";
     public static String mau = "";
@@ -148,7 +148,7 @@ public class ShopOnline extends Screen {
     @Override
     public void init() {
         if (GCanvas.isSmartPhone) {
-            tileFind[1][0] = "Nhân vật";
+            tileFind[1][0] = "Pokémon";
         }
         if (this.img == null) {
             try {

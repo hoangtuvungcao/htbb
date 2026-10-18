@@ -20,7 +20,7 @@ import java.util.*;
  * danh sach nhan vat cua tai khoan.
  *
  * Tach tu data/Database.java. Cac method VAN CON trong Database, giu NGUYEN
- * chu ky cu, chi than chuyen sang day - nen bytecode trong lib/NQSH_5h.jar
+ * chu ky cu, chi than chuyen sang day - nen bytecode trong lib/htbb-core.jar
  * goi Database.getChar/saveChar... van chay binh thuong.
  * Tham so "Database db" thay cho "this" truoc day.
  */
@@ -1345,7 +1345,7 @@ class DatabaseNhanVat {
             // Nhan vat dau tien va duy nhat cua tai khoan: tang 40.000.000 xu + 20.000 luong mo
             // + 30.000 luong khoa, cong qua hang doi board_created (nhu Nhan moc nap), Char se
             // nhan khi vao game lan dau qua Database.getBoardCreated(), khong dung sua truc tiep
-            // pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]). So doi 12/09/2026 theo yeu
+            // pInfo (fragile, xem [[feedback-htbb-safe-npc-edits]]). So doi 12/09/2026 theo yeu
             // cau nguoi dung (thay the hoan toan bo cu 10tr/5k/100k). Trung Cu/Rong/Yeu Tinh/
             // Doi/Dai bang x3 va Huyet linh thao x4 (khong the nhet vao bang nay - chi co cot
             // so, khong co vat pham) duoc cong THEM ngay trong chinh getBoardCreated() ben duoi,

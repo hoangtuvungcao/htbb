@@ -33,6 +33,18 @@ public class HtbbActivity extends Activity {
         super.onCreate(b);
         NenAndroid.hoatDong = this;
         NenAndroid.ungDung = getApplicationContext();
+        // như máy J2ME: lỗi không bắt ở luồng phụ của game (tải dữ liệu, mạng...) chỉ dừng luồng đó,
+        // không làm chết cả ứng dụng (Android mặc định giết tiến trình)
+        final Thread.UncaughtExceptionHandler goc = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread t, Throwable e) {
+                if (t == Looper.getMainLooper().getThread() || goc == null) {
+                    if (goc != null) goc.uncaughtException(t, e);
+                    return;
+                }
+                Log.e(NenAndroid.TAG, "loi luong " + t.getName() + " (bo qua nhu J2ME)", e);
+            }
+        });
         System.setProperty("microedition.platform", "Android/" + Build.MODEL);
         System.setProperty("microedition.configuration", "CLDC-1.1");
         System.setProperty("microedition.profiles", "MIDP-2.0");
@@ -47,6 +59,16 @@ public class HtbbActivity extends Activity {
         };
         Window w = getWindow();
         w.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (Build.VERSION.SDK_INT >= 28) {
+            // vẽ cả vùng tai thỏ (không viền đen); HUD tự tránh qua NenAndroid.anToan*
+            WindowManager.LayoutParams lp = w.getAttributes();
+            lp.layoutInDisplayCutoutMode = Build.VERSION.SDK_INT >= 30
+                    ? WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                    : WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            w.setAttributes(lp);
+        }
+        com.htbb.pokemon.hd.Hud.khoiTao();
+        com.htbb.pokemon.hd.AmThanhHd.khoiTao(this);
         manHinh = new ManHinh(this);
         setContentView(manHinh);
         anThanhHeThong();
@@ -197,6 +219,22 @@ public class HtbbActivity extends Activity {
             super(a);
             this.a = a;
             getHolder().addCallback(this);
+            setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                public WindowInsets onApplyWindowInsets(View v, WindowInsets in) {
+                    int l = 0, t = 0, r = 0, b = 0;
+                    if (Build.VERSION.SDK_INT >= 28 && in.getDisplayCutout() != null) {
+                        android.view.DisplayCutout dc = in.getDisplayCutout();
+                        l = dc.getSafeInsetLeft();
+                        t = dc.getSafeInsetTop();
+                        r = dc.getSafeInsetRight();
+                        b = dc.getSafeInsetBottom();
+                    }
+                    // góc màn bo tròn: chừa thêm ~2% cạnh ngắn ở hai bên
+                    int bo = Math.min(v.getWidth(), v.getHeight()) / 50;
+                    NenAndroid.datAnToan(Math.max(l, bo), t, Math.max(r, bo), b);
+                    return in;
+                }
+            });
             setFocusable(true);
             setFocusableInTouchMode(true);
         }
@@ -223,37 +261,11 @@ public class HtbbActivity extends Activity {
             NenAndroid.boMat();
         }
 
-        /** J2ME chỉ có một con trỏ: theo ngón chạm đầu tiên, ngón khác bỏ qua. */
+        /** Đa chạm: HUD HD giữ nút / cần điều khiển; cú chạm khác chuyển cho game (một con trỏ J2ME). */
         @Override
         public boolean onTouchEvent(MotionEvent e) {
-            switch (e.getActionMasked()) {
-                case MotionEvent.ACTION_DOWN:
-                    ngonChinh = e.getPointerId(0);
-                    NenAndroid.cham(0, e.getX(0), e.getY(0));
-                    return true;
-                case MotionEvent.ACTION_MOVE: {
-                    int i = e.findPointerIndex(ngonChinh);
-                    if (i >= 0) NenAndroid.cham(1, e.getX(i), e.getY(i));
-                    return true;
-                }
-                case MotionEvent.ACTION_POINTER_UP: {
-                    int i = e.getActionIndex();
-                    if (e.getPointerId(i) == ngonChinh) {
-                        NenAndroid.cham(2, e.getX(i), e.getY(i));
-                        ngonChinh = -1;
-                    }
-                    return true;
-                }
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL: {
-                    int i = e.findPointerIndex(ngonChinh);
-                    if (i >= 0) NenAndroid.cham(2, e.getX(i), e.getY(i));
-                    ngonChinh = -1;
-                    return true;
-                }
-                default:
-                    return true;
-            }
+            com.htbb.pokemon.hd.Hud.chamAndroid(e);
+            return true;
         }
     }
 

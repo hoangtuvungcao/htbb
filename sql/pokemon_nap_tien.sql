@@ -1,15 +1,15 @@
 -- NAP TIEN khong lam phat, khong tra tien de manh hon (docs/pokemon/NAP_TIEN.md).
 -- Bang dung CHUNG giua website (HTBB-Web: server/utils/napTien.ts) va server game
 -- (com.htbb.pokemon.NapTienGame / NapTienDb). Chi co tac dung khi sv.nap_tien=1 + sv.lau_dai=1
--- (server) va KPAH_NAP_BAT=true (web). Tao bang khong bat gi ca.
+-- (server) va HTBB_NAP_BAT=true (web). Tao bang khong bat gi ca.
 --
 -- SQL portable (MariaDB/MySQL va NovaDB): khong CREATE TABLE .. LIKE, khong UPDATE co JOIN,
 -- khong ON DUPLICATE KEY, khong ham thoi gian rieng (moi moc thoi gian do UNG DUNG ghi, han
 -- the thang luu bang millis BIGINT de NovaDB/MariaDB khong lech mui gio). Chay lai an toan
 -- (CREATE TABLE IF NOT EXISTS + INSERT IGNORE: khong ghi de chinh sua cua admin).
 --
---     mysql kpah_db < sql/pokemon_nap_tien.sql
---     NovaDB: mysql -h 127.0.0.1 -P 3318 -u kpah -p kpah_db < sql/pokemon_nap_tien.sql
+--     mysql htbb_db < sql/pokemon_nap_tien.sql
+--     NovaDB: mysql -h 127.0.0.1 -P 3318 -u htbb -p htbb_db < sql/pokemon_nap_tien.sql
 SET NAMES utf8;
 
 -- ---------------------------------------------------------------- danh muc goi (web ban)
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `nap_cua_hang` (
   `trao` varchar(20) NOT NULL,
   `gia_luong` int NOT NULL,
   `han_ngay` int NOT NULL DEFAULT 0 COMMENT '0 = vinh vien',
-  `gioi_han` int NOT NULL DEFAULT 0 COMMENT 'so lan mua toi da / nhan vat (0 = khong gioi han)',
+  `gioi_han` int NOT NULL DEFAULT 0 COMMENT 'so lan mua toi da / nhan vat (0 = khong gioi han); trao tang_toc: / TUAN',
   `nhom_xoay` int NOT NULL DEFAULT 0,
   `giao_dich_duoc` tinyint NOT NULL DEFAULT 0 COMMENT '1 = rao duoc tren Cho trang tri (co thue)',
   `co_chi_so` tinyint NOT NULL DEFAULT 0,
@@ -239,12 +239,12 @@ INSERT IGNORE INTO `nap_goi` (`ma`,`ten`,`loai`,`gia_vnd`,`luong`,`mo_ta`,`dang_
 ('L100','1.000 lượng','luong',100000,1000,'Tỷ giá cố định 10 lượng / 1.000 đ.',1,3),
 ('L200','2.000 lượng','luong',200000,2000,'Tỷ giá cố định 10 lượng / 1.000 đ.',1,4),
 ('L500','5.000 lượng','luong',500000,5000,'Tỷ giá cố định 10 lượng / 1.000 đ.',1,5),
-('THE_THANG','Thẻ tháng (30 ngày)','the_thang',50000,0,'20 lượng mỗi ngày đăng nhập (30 ngày, bỏ lỡ không cộng bù), +1 lượt Hầm ngục (chỉ điểm vé mùa), +2 ô tự nhặt, +1 trang tủ đồ trang trí.',1,6),
+('THE_THANG','Thẻ tháng (30 ngày)','the_thang',50000,0,'20 lượng mỗi ngày đăng nhập (30 ngày, bỏ lỡ không cộng bù), +1 lượt Hầm ngục (chỉ điểm vé mùa), +2 ô tự nhặt, +1 trang tủ đồ trang trí, +1 giờ ủy thác luyện tập/ngày (trong giới hạn tăng tốc).',1,6),
 ('VE_MUA','Vé mùa cao cấp','ve_mua',99000,0,'Mở track cao cấp của mùa hiện tại: trang phục, biểu cảm, hào quang; vật liệu khoá đúng bằng track miễn phí. Tiến độ chỉ bằng chơi.',1,7);
 
 INSERT IGNORE INTO `nap_cua_hang` (`ma`,`ten`,`nhom`,`trao`,`gia_luong`,`han_ngay`,`gioi_han`,`nhom_xoay`,`giao_dich_duoc`,`co_chi_so`,`dang_ban`,`thu_tu`) VALUES
 ('mo_rong_tui','Mở rộng hành trang (+42 ô)','tien_ich','mo_rong_tui',300,0,4,0,0,0,1,1),
-('doi_ten','Đổi tên nhân vật','tien_ich','doi_ten',500,0,0,0,0,0,1,2),
+('doi_ten','Đổi tên Pokémon','tien_ich','doi_ten',500,0,0,0,0,0,1,2),
 ('mau_ten_vang','Màu tên Vàng (30 ngày)','mau_ten','trang_tri',150,30,0,0,0,0,1,3),
 ('mau_ten_xanh','Màu tên Xanh ngọc (30 ngày)','mau_ten','trang_tri',150,30,0,0,0,0,1,4),
 ('khung_ten_bac','Khung tên Bạc','khung','trang_tri',200,0,1,0,1,0,1,5),
@@ -259,7 +259,12 @@ INSERT IGNORE INTO `nap_cua_hang` (`ma`,`ten`,`nhom`,`trao`,`gia_luong`,`han_nga
 ('bieu_cam_ngu','Biểu cảm: Buồn ngủ','bieu_cam','trang_tri',80,0,1,3,1,0,1,14),
 ('skin_no_xinh','Skin: Nơ xinh','skin','trang_tri',600,0,1,4,1,0,1,15),
 ('thu_cuoi_cau_vong','Skin thú cưỡi: Cầu vồng','thu_cuoi','trang_tri',500,0,1,4,1,0,1,16),
-('nha_cay_canh','Trang trí nhà: Cây cảnh','nha','trang_tri',120,0,5,4,1,0,1,17);
+('nha_cay_canh','Trang trí nhà: Cây cảnh','nha','trang_tri',120,0,5,4,1,0,1,17),
+('ve_exp_15','Vé EXP x1,5 (30 phút)','tang_toc','tang_toc',20,0,14,0,0,0,1,18),
+('ve_exp_2','Vé EXP x2 (30 phút)','tang_toc','tang_toc',40,0,7,0,0,0,1,19),
+('bua_the_luc','Bùa thể lực (+60 phút)','tang_toc','tang_toc',60,0,4,0,0,0,1,20),
+('uy_thac','Phiếu ủy thác luyện tập (1 giờ)','tang_toc','tang_toc',15,0,17,0,0,0,1,21),
+('keo_hiem','Kẹo hiếm','tang_toc','tang_toc',40,0,2,0,0,0,1,22);
 
 INSERT IGNORE INTO `nap_cau_hinh` (`khoa`,`gia_tri`) VALUES
 ('tran_tuan_vnd','1000000'),

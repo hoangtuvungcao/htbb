@@ -53,6 +53,7 @@ public final class NoiDungLauDai {
             GymLauDai.nap();
             ChieuLauDai.apDung();
             NhiemVuEngine.nap();
+            CuaHangLauDai.nap(); // cua hang & doi vat pham (So tay)
             moRongVatPhamNhiemVu();
             System.out.println("[LAU DAI] noi dung: " + ROI.size() + " dong roi, " + ALPHA.size() + " alpha, "
                     + NAM2.size() + " dai nam 2, " + BOSS_TUAN.size() + " tuan boss");
@@ -112,7 +113,7 @@ public final class NoiDungLauDai {
                     apTemplate(m, t);
                 }
             }
-            if (LauDai.ngayHienTai() >= NGAY_NAM_2 && m.level >= 84 && Map.random(3) == 0) {
+            if (LauDai.ngayMoNoiDung() >= NGAY_NAM_2 && m.level >= 84 && Map.random(3) == 0) {
                 final int[] ds = NAM2.get(Integer.valueOf(daiCap(m.level + 3)));
                 if (ds != null && ds.length > 0) {
                     final MonsterTemplate t = Map.monsterTemplates.get(Integer.valueOf(ds[Map.random(ds.length)]));
@@ -208,8 +209,46 @@ public final class NoiDungLauDai {
                 continue;
             }
             final int sl = ((Integer) r[5]).intValue() + Map.random(Math.max(1, ((Integer) r[6]).intValue() - ((Integer) r[5]).intValue() + 1));
-            phat(p, (String) r[2], ((Integer) r[3]).intValue(), sl, ((Integer) r[7]).intValue() == 1);
+            if (!phatTrangBi(p, r, "alpha".equals(nguon))) {
+                phat(p, (String) r[2], ((Integer) r[3]).intValue(), sl, ((Integer) r[7]).intValue() == 1);
+            }
         }
+    }
+
+    /**
+     * Dong roi la TRANG BI (item khong phai type 28): tao bang Map.dropItemByIdTemplate (chi so theo template, nhu
+     * Gym / nhiem vu). Ngan sach: "dai" chi phat mon Map.dropItem cu KHONG rot (id ngoai Map.isIdTemplateItemDrop -
+     * tranh roi hai lan cung mot mon), ppm cua bang (150 ppm/quai chia deu cac mon cua dai, x nang luong); "alpha"
+     * = vu khi Hoan my (mau xanh, 2% tong). Day = bo qua. @return true neu dong la trang bi (da xu ly, ke ca bo qua).
+     */
+    static boolean phatTrangBi(final Char p, final Object[] r, final boolean alpha) {
+        if (!"item".equals(r[2])) {
+            return false;
+        }
+        final int id = ((Integer) r[3]).intValue();
+        final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf(id));
+        if (t == null || t.type == 28) {
+            return false;
+        }
+        if (!alpha && Map.isIdTemplateItemDrop(id) || p.isFullInventory()) {
+            return true;
+        }
+        try {
+            final Item it = Map.dropItemByIdTemplate(p.inCountry, id);
+            if (it != null) {
+                it.id = p.getIDItem();
+                it.owner = p.charDBID;
+                if (alpha) {
+                    it.colorName = Item.COLOR_GREEN; // Hoan my (nhu GymLauDai.vuKhiHoanMy)
+                }
+                it.lock = ((Integer) r[7]).intValue() == 1 ? (byte) 1 : it.lock;
+                p.iItems.add(it);
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+            }
+        } catch (final Exception e) {
+            System.out.println("NoiDungLauDai.phatTrangBi: " + e);
+        }
+        return true;
     }
 
     /** Phat 1 dong roi: ngoc -> doAddGemItem; item type 28 -> createItemSoLuong (khoa); khac: bo qua. */
@@ -229,11 +268,93 @@ public final class NoiDungLauDai {
         }
     }
 
+    // ------------------------------------------------------------------ boss the gioi: hop + tin vat; mo hop
+
+    /** Nam 2 (ngay >= 365): tin vat dot kich nam 1 -> tin vat cua huyen thoai nam 2 cung tuan. */
+    static final int[][] TIN_VAT_NAM2 = {{1040, 1041}, {1042, 1043}, {1044, 1045}, {1046, 1047}, {1048, 1049}};
+
+    static int tinVatTheoNam(final int id) {
+        if (LauDai.ngayHienTai() >= NGAY_NAM_2) {
+            for (final int[] d : TIN_VAT_NAM2) {
+                if (d[0] == id) {
+                    return d[1];
+                }
+            }
+        }
+        return id;
+    }
+
+    /**
+     * BossLauDai.khiChet: dong roi "boss_the_gioi" cua tuan ISO hien tai (khoa_nguon "tuan_WW:dong_gop>=0.5%" /
+     * "tuan_WW:top10"). Bac 1: dong dong_gop (Hop tham gia + tin vat dot kich). Bac 2: Hop vang (thay Hop tham
+     * gia) + tin vat. Chi vat pham type 28 / ngoc (phat). @return so dong da phat.
+     */
+    static int roiBossTheGioi(final Char p, final int bac) {
+        final String tuan = String.format("tuan_%02d:", com.htbb.pokemon.SuKienLauDai.tuanIso(com.htbb.pokemon.DongHo.bay()));
+        int n = 0;
+        for (final Object[] r : ROI) {
+            final String k = (String) r[1];
+            if (!"boss_the_gioi".equals(r[0]) || !k.startsWith(tuan)) {
+                continue;
+            }
+            final int id = ((Integer) r[3]).intValue();
+            final boolean top = k.endsWith(":top10");
+            if (top ? bac < 2 : (bac == 2 && id == ID_HOP_THAM_GIA)) {
+                continue;
+            }
+            if (Map.randomMillion() >= ((Integer) r[4]).intValue()) {
+                continue;
+            }
+            final int sl = ((Integer) r[5]).intValue() + Map.random(Math.max(1, ((Integer) r[6]).intValue() - ((Integer) r[5]).intValue() + 1));
+            phat(p, (String) r[2], "item".equals(r[2]) ? tinVatTheoNam(id) : id, sl, true);
+            n++;
+        }
+        return n;
+    }
+
+    static final int ID_HOP_THAM_GIA = 1050;
+
+    /** VatPhamDungLauDai (nhom 'hop'): mo hop theo dong "mo_hop" khoa_nguon "item:<id>". @return mo ta phan thuong. */
+    static String moHop(final Char p, final int idHop) {
+        final StringBuilder b = new StringBuilder();
+        for (final Object[] r : ROI) {
+            if (!"mo_hop".equals(r[0]) || !("item:" + idHop).equals(r[1]) || Map.randomMillion() >= ((Integer) r[4]).intValue()) {
+                continue;
+            }
+            final int id = ((Integer) r[3]).intValue();
+            final int sl = ((Integer) r[5]).intValue() + Map.random(Math.max(1, ((Integer) r[6]).intValue() - ((Integer) r[5]).intValue() + 1));
+            if ("thuoc".equals(r[2])) {
+                if (id > 0 && id < p.potions.length) {
+                    p.potions[id] += sl;
+                    p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                }
+            } else {
+                phat(p, (String) r[2], id, sl, true);
+            }
+            b.append(b.length() > 0 ? ", " : "").append(sl).append(' ').append(tenVatPham((String) r[2], id));
+        }
+        return b.toString();
+    }
+
+    static String tenVatPham(final String loai, final int id) {
+        try {
+            if ("ngoc".equals(loai)) {
+                return Map.gemTemplate[id].name;
+            }
+            if ("thuoc".equals(loai)) {
+                return Map.potionTemplates2.get(id).name;
+            }
+            return Map.itemTemplates.get(5).get(Integer.valueOf(id)).name;
+        } catch (final Exception e) {
+            return "vật phẩm";
+        }
+    }
+
     // ------------------------------------------------------------------ boss the gioi theo tuan
 
     /** Template boss the gioi tuan nay (nam 2 doi cot), -1 neu bang rong. */
     public static int bossTuanNay() {
-        final int[] b = BOSS_TUAN.get(Integer.valueOf(com.htbb.pokemon.SuKienLauDai.tuanIso(System.currentTimeMillis())));
+        final int[] b = BOSS_TUAN.get(Integer.valueOf(com.htbb.pokemon.SuKienLauDai.tuanIso(com.htbb.pokemon.DongHo.bay())));
         if (b == null) {
             return -1;
         }

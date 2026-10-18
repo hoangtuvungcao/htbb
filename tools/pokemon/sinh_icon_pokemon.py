@@ -17,7 +17,7 @@ Ra (KHONG sua tay, chay lai tool):
   docs/pokemon/xem_truoc_icon.png        anh xem truoc: cu | moi cho moi cho dung (--xem-truoc)
 
 Vi sao dai rieng ma khong ghi de map/icon/<id>.png: icon cu dung chung giua nhieu vat pham,
-nIconItem = 866 bi test cu (KiemSkinLinhThu) khoa cung, va khi tat che do Pokemon thi cac dai
+nIconItem = 866 bi test cu (KiemSkinThuCuoi) khoa cung, va khi tat che do Pokemon thi cac dai
 cu van phai ra hinh goc.
 
 Nguon su that DUY NHAT cua danh sach icon la bang ICON ben duoi. So thu tu n = vi tri trong
@@ -60,9 +60,9 @@ import urllib.request
 import zlib
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RA_ANH = os.path.join(GOC, "map", "icon_pokemon")
+RA_ANH = os.path.join(GOC, "server", "map", "icon_pokemon")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_icon_vat_pham.sql")
-RA_JAVA = os.path.join(GOC, "src", "com", "htbb", "pokemon", "IconPokemonBang.java")
+RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "IconPokemonBang.java")
 RA_CSV = os.path.join(GOC, "docs", "pokemon", "bang_icon.csv")
 RA_XEM = os.path.join(GOC, "docs", "pokemon", "xem_truoc_icon.png")
 BANG_VP = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
@@ -74,11 +74,11 @@ SO_TOI_DA = 1000  # khop IconPokemon.SO_TOI_DA (14000..14999)
 
 # Dai anh khong co cot DB: ten -> (id dau, so o, thu muc anh cu, mau ten file)
 DAI = {
-    "potion": (5500, 256, "map/images_potion", "%d.png"),
-    "gem": (6500, 96, "map/images_gem", "%d.png"),
-    "thu": (7500, 58, "map/images_animal", "%d.png"),
-    "nv": (8000, 10, "map/iconquest", "%d.png"),
-    "trai": (8200, 15, "map/fruit", "b%d.png"),
+    "potion": (5500, 256, "server/map/images_potion", "%d.png"),
+    "gem": (6500, 96, "server/map/images_gem", "%d.png"),
+    "thu": (7500, 58, "server/map/images_animal", "%d.png"),
+    "nv": (8000, 10, "server/map/iconquest", "%d.png"),
+    "trai": (8200, 15, "server/map/fruit", "b%d.png"),
 }
 TEN_JAVA = {"potion": "THUOC", "gem": "NGOC", "thu": "THU", "nv": "NHIEM_VU", "trai": "TRAI"}
 
@@ -866,7 +866,7 @@ def anh_cu(loai, k):
         dau, _, tm, mau = DAI[loai]
         p = os.path.join(GOC, tm, mau % k)
     else:
-        p = os.path.join(GOC, "map", "icon", "%d.png" % k)
+        p = os.path.join(GOC, "server", "map", "icon", "%d.png" % k)
     try:
         return doc_png(open(p, "rb").read())
     except Exception:

@@ -1009,12 +1009,12 @@ public class DataGame {
             } else if (com.htbb.pokemon.IconPokemon.thuocDai(idImg)) {
                 // Icon vat pham Pokemon (map/icon_pokemon/), xem com.htbb.pokemon.IconPokemon.
                 ghiAnh(m, imgIconPokemon, idImg - com.htbb.pokemon.IconPokemon.ID_DAU, idImg);
-            } else if (idImg >= real.SkinLinhThu.ID_ANH_BAN_DO
-                    && idImg < real.SkinLinhThu.ID_ANH_BAN_DO + real.SkinLinhThu.SO_SKIN) {
+            } else if (idImg >= real.SkinThuCuoi.ID_ANH_BAN_DO
+                    && idImg < real.SkinThuCuoi.ID_ANH_BAN_DO + real.SkinThuCuoi.SO_SKIN) {
                 // Skin linh thu. Dai id nay chua tung duoc dung (dai cu cao nhat het o
                 // 12099) nen khong client nao co san anh cu cua id nay trong bo dem —
                 // do la ly do chon dai moi thay vi dung lai id d_effect nao do.
-                final byte[] anh = anhBanDoSkinThu(idImg - real.SkinLinhThu.ID_ANH_BAN_DO);
+                final byte[] anh = anhBanDoSkinThu(idImg - real.SkinThuCuoi.ID_ANH_BAN_DO);
                 if (anh != null) {
                     m.dos.write(anh);
                 }
@@ -1058,13 +1058,13 @@ public class DataGame {
      * muc rieng + dai id rieng thi them bao nhieu skin cung duoc, va khong dung den mot
      * file anh cu nao.
      *
-     * Thieu file thi skin do bi TAT HAN (SkinLinhThu.coDuAnh tra false), con thu ve lai
+     * Thieu file thi skin do bi TAT HAN (SkinThuCuoi.coDuAnh tra false), con thu ve lai
      * hinh that. Phai tat han chu khong the tat mot nua: bat skin la tat duong ve "ngua
      * co dien" (userHorse = 0), ma thieu du lieu frame thi duong "thu cuoi tool" cung
      * khong ve duoc gi — nguoi choi se cuoi hu khong.
      */
     private static void napSkinThu() {
-        final int n = real.SkinLinhThu.SO_SKIN;
+        final int n = real.SkinThuCuoi.SO_SKIN;
         imgSkinThu = new byte[n][];
         dataSkinThu = new byte[n][];
         for (int i = 0; i < n; i++) {

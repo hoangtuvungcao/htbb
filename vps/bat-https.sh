@@ -2,8 +2,8 @@
 # ============================================================================
 #  BAT HTTPS CHO TRANG QUAN TRI
 #
-#      sudo /opt/kpah/vps/bat-https.sh                  # chung chi tu ky (theo IP)
-#      sudo /opt/kpah/vps/bat-https.sh admin.abc.com    # chung chi that (Let's Encrypt)
+#      sudo /opt/htbb/vps/bat-https.sh                  # chung chi tu ky (theo IP)
+#      sudo /opt/htbb/vps/bat-https.sh admin.abc.com    # chung chi that (Let's Encrypt)
 #
 # ----------------------------------------------------------------------------
 #  VI SAO CAN
@@ -26,8 +26,12 @@
 #          nhat khi chua co ten mien. Chung chi tu ky MA HOA DAY DU (mat khau khong
 #          con di dang chu thuong), chi la trinh duyet canh bao lan dau vi khong ai
 #          bao dam ho danh tinh may chu - bam "van tiep tuc" mot lan la xong.
-#   3. Them mot VirtualHost cong 443, giu NGUYEN cong 80.
-#   4. Ep HTTPS CHI cho /kpah/admin.
+#   3. Them mot VirtualHost cong 443, giu NGUYEN cong 80. Website la HTBB-Web
+#      (Nuxt) sau reverse proxy: vhost nay KHONG co DocumentRoot rieng, ProxyPass
+#      cua htbb-web-proxy.conf (HTBB-Web/deploy/apache-htbb-web.conf, tang server)
+#      duoc moi vhost ke thua. Web PHP cu (/opt/htbb/web) da bo 19/10/2026.
+#   4. Ep HTTPS CHI cho /admin (manh 20-admin-https.conf, xem
+#      vps/chi-cho-server-txt.sh vi sao luat nam trong /etc/apache2/htbb-web-bao-ve.d).
 #
 #  KHONG ep HTTPS cho ca site. Trang gioi thieu / dang ky / nap tien cua nguoi choi
 #  van chay cong 80 nhu cu. Ly do: voi chung chi tu ky, ep ca site la MOI nguoi choi
@@ -43,21 +47,23 @@
 # ----------------------------------------------------------------------------
 #  GO BO NEU CO CHUYEN
 # ----------------------------------------------------------------------------
-#      sudo a2disconf kpah-admin-https
-#      sudo a2dissite kpah-ssl
+#      sudo rm /etc/apache2/htbb-web-bao-ve.d/20-admin-https.conf
+#      sudo a2dissite htbb-ssl
 #      sudo systemctl reload apache2
 #  Cong 80 chua bao gio bi tat nen trang web van chay trong suot qua trinh nay.
 # ============================================================================
 set -u
 
 TEN_MIEN="${1:-}"
-CONF_SSL=/etc/apache2/sites-available/kpah-ssl.conf
-CONF_EP=/etc/apache2/conf-available/kpah-admin-https.conf
-CHUNG_CHI_DIR=/etc/ssl/kpah
+CONF_SSL=/etc/apache2/sites-available/htbb-ssl.conf
+THU_MUC_BAO_VE=/etc/apache2/htbb-web-bao-ve.d
+CONF_EP="$THU_MUC_BAO_VE/20-admin-https.conf"
+CONF_NAP=/etc/apache2/conf-available/htbb-web-bao-ve.conf
+CHUNG_CHI_DIR=/etc/ssl/htbb
 LOG_TAG="[bat-https]"
 
 if [ "$(id -u)" != "0" ]; then
-    echo "$LOG_TAG Phai chay bang root:  sudo /opt/kpah/vps/bat-https.sh"
+    echo "$LOG_TAG Phai chay bang root:  sudo /opt/htbb/vps/bat-https.sh"
     exit 1
 fi
 if ! command -v apache2 >/dev/null 2>&1; then
@@ -111,22 +117,22 @@ if [ "$DUNG_CERTBOT" = "0" ]; then
     echo "$LOG_TAG === 2/5 Tao chung chi tu ky cho $IP_MAY"
     mkdir -p "$CHUNG_CHI_DIR"
     chmod 700 "$CHUNG_CHI_DIR"
-    if [ -f "$CHUNG_CHI_DIR/kpah.crt" ]; then
-        echo "      Da co san $CHUNG_CHI_DIR/kpah.crt - dung lai, khong tao moi."
+    if [ -f "$CHUNG_CHI_DIR/htbb.crt" ]; then
+        echo "      Da co san $CHUNG_CHI_DIR/htbb.crt - dung lai, khong tao moi."
     else
         # subjectAltName la BAT BUOC. Trinh duyet hien dai bo qua hoan toan truong
         # CN cu; thieu SAN thi chung chi bi tu choi thang chu khong chi canh bao.
         openssl req -x509 -nodes -newkey rsa:2048 -days 3650 \
-            -keyout "$CHUNG_CHI_DIR/kpah.key" \
-            -out "$CHUNG_CHI_DIR/kpah.crt" \
+            -keyout "$CHUNG_CHI_DIR/htbb.key" \
+            -out "$CHUNG_CHI_DIR/htbb.crt" \
             -subj "/CN=$IP_MAY" \
             -addext "subjectAltName=IP:$IP_MAY,DNS:localhost" >/dev/null 2>&1
-        if [ ! -f "$CHUNG_CHI_DIR/kpah.crt" ]; then
+        if [ ! -f "$CHUNG_CHI_DIR/htbb.crt" ]; then
             echo "      [LOI] Khong tao duoc chung chi."
             exit 1
         fi
-        chmod 600 "$CHUNG_CHI_DIR/kpah.key"
-        echo "      Da tao, han 10 nam: $CHUNG_CHI_DIR/kpah.crt"
+        chmod 600 "$CHUNG_CHI_DIR/htbb.key"
+        echo "      Da tao, han 10 nam: $CHUNG_CHI_DIR/htbb.crt"
     fi
 
     cat > "$CONF_SSL" <<EOF
@@ -134,11 +140,12 @@ if [ "$DUNG_CERTBOT" = "0" ]; then
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
     ServerAdmin webmaster@localhost
-    DocumentRoot /opt/kpah/web
+    # Khong DocumentRoot: moi request do ProxyPass (htbb-web-proxy.conf, tang
+    # server, duoc vhost ke thua) chuyen sang Nuxt 127.0.0.1:3000.
 
     SSLEngine on
-    SSLCertificateFile    $CHUNG_CHI_DIR/kpah.crt
-    SSLCertificateKeyFile $CHUNG_CHI_DIR/kpah.key
+    SSLCertificateFile    $CHUNG_CHI_DIR/htbb.crt
+    SSLCertificateKeyFile $CHUNG_CHI_DIR/htbb.key
 
     # Chi cho phep TLS 1.2 tro len. TLS 1.0/1.1 da bi coi la hong tu 2021.
     SSLProtocol -all +TLSv1.2 +TLSv1.3
@@ -149,83 +156,56 @@ if [ "$DUNG_CERTBOT" = "0" ]; then
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "same-origin"
 
-    # Link cu domain/kpah/xxx (tu hoi DocumentRoot con la /var/www/html) van chay.
-    RedirectMatch permanent "^/kpah/(.*)\$" "/\$1"
-
-    ErrorLog \${APACHE_LOG_DIR}/kpah-ssl-error.log
-    CustomLog \${APACHE_LOG_DIR}/kpah-ssl-access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/htbb-ssl-error.log
+    CustomLog \${APACHE_LOG_DIR}/htbb-ssl-access.log combined
 </VirtualHost>
 </IfModule>
 EOF
-    a2ensite kpah-ssl >/dev/null 2>&1
+    a2ensite htbb-ssl >/dev/null 2>&1
     echo "      Da them VirtualHost cong 443 (cong 80 giu nguyen)."
 fi
 
 # ---------------------------------------------------------------------------
-#  3. Ep HTTPS chi cho /kpah/admin
+#  3. Ep HTTPS chi cho /admin
 # ---------------------------------------------------------------------------
-echo "$LOG_TAG === 3/5 Ep HTTPS cho /kpah/admin"
+echo "$LOG_TAG === 3/5 Ep HTTPS cho /admin"
+mkdir -p "$THU_MUC_BAO_VE"
+[ -f "$CONF_NAP" ] || printf '# Sinh boi vps/chi-cho-server-txt.sh / bat-https.sh / mat-khau-admin.sh.\n# Nap cac manh bao ve website (Nuxt sau reverse proxy) THEO SO THU TU - xem vps/chi-cho-server-txt.sh.\nIncludeOptional %s/*.conf\n' \
+    "$THU_MUC_BAO_VE" > "$CONF_NAP"
 cat > "$CONF_EP" <<'EOF'
 # Sinh boi vps/bat-https.sh - dung sua tay, chay lai script se ghi de.
 #
-# Ep HTTPS CHI cho khu quan tri. Trang cong khai cua nguoi choi van chay cong 80
-# nhu cu: voi chung chi tu ky, ep ca site la moi nguoi choi deu gap man hinh canh
-# bao do cua trinh duyet va phan lon se tuong server bi hack roi bo di.
+# Ep HTTPS CHI cho khu quan tri (/admin cua Nuxt). Trang cong khai cua nguoi choi
+# van chay cong 80 nhu cu: voi chung chi tu ky, ep ca site la moi nguoi choi deu
+# gap man hinh canh bao do cua trinh duyet.
 #
-# ---------------------------------------------------------------------------
-#  VI SAO LUAT NAY NAM TRONG <Directory> CHU KHONG O TANG SERVER
-# ---------------------------------------------------------------------------
-#  Ban dau viet o tang server (RewriteRule ^/kpah/admin ...). Apache nap tep,
-#  configtest bao Syntax OK, khong mot dong canh bao nao - va luat KHONG HE CHAY.
-#  Ly do: luat rewrite o tang server MAC DINH KHONG duoc VirtualHost ke thua
-#  (phai co RewriteOptions Inherit trong tung vhost). Moi yeu cau that deu do
-#  <VirtualHost *:80> phuc vu, nen luat o ngoai bi bo qua hoan toan.
+# VI SAO <Location> + <If> + Redirect (khong phai <Directory> + RewriteRule nhu ban
+# web PHP cu): request di qua ProxyPass khong gan voi thu muc nao tren dia, nen
+# <Directory> khong bao gio khop; RewriteRule o tang server thi vhost KHONG ke
+# thua (da vap: Syntax OK ma luat khong chay). <Location> thi ap dung ca cho
+# request da proxy va duoc gop vao moi vhost. Redirect trong <Location> nhan bieu
+# thuc ap_expr cho URL dich (Apache >= 2.4.19).
 #
-#  <Directory> thi khac: no duoc gop vao moi vhost, nen dat o day la chay that.
-#  Da kiem tu ngoai Internet: http .../kpah/admin/ phai tra ve 301.
-#
-#  Ghi ca hai duong dan vi /var/www/html/kpah la symlink tro toi /opt/kpah/web:
-#  Apache so khop <Directory> theo duong dan THAT sau khi giai symlink, nhung ghi
-#  ca hai thi khong phu thuoc vao chuyen do nua.
-#
-#  Trong <Directory>, mau "^" khop moi thu, va %{REQUEST_URI} van la duong dan
-#  day du ke ca phan thu muc - nen khong phai dung lai tien to bang tay.
-#
-#  Dieu kien %{HTTPS} != on chan vong lap chuyen huong vo tan: VirtualHost 443
-#  cung gop tep nay.
-#
-#  HAI NGOAI LE THEM SAU NAY (dung sua mat, chay lai script se giu nguyen vi
-#  chung nam trong chinh heredoc nay):
-#   - REMOTE_ADDR khop IP goc cua Nova WAF (104.243.35.x / 104.243.37.x): Nova
-#     WAF giai ma TLS o bien roi noi ve origin bang HTTP THUONG, nen ep https o
-#     day se tao vong lap chuyen huong vo tan cho chinh no.
-#   - HTTP_HOST bang dung IP may chu (180.93.57.30): duong vao thang bang IP
-#     tren cong 80, ne hoan toan Nova WAF, dung khi Nova WAF hong
-#     (khong chuyen Cookie/Set-Cookie qua origin - 12/09/2026, lam CSRF/session
-#     cua trang admin luon "het han"). Cong 443 chi mo cho Cloudflare/Nova WAF/
-#     whitelist (xem /etc/kpah-cloudflare-web/apply.sh) nen ep ve https o day se
-#     dua nguoi dung vao dung cai tuong lua do - mat luon con duong thoat.
-<IfModule mod_rewrite.c>
-    <Directory /opt/kpah/web/admin>
-        RewriteEngine On
-        RewriteCond %{HTTPS} !=on
-        RewriteCond %{HTTP:X-Forwarded-Proto} !=https
-        RewriteCond %{REMOTE_ADDR} !^104\.243\.(35|37)\.
-        RewriteCond %{HTTP_HOST} !=180.93.57.30
-        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-    </Directory>
-    <Directory /var/www/html/kpah/admin>
-        RewriteEngine On
-        RewriteCond %{HTTPS} !=on
-        RewriteCond %{HTTP:X-Forwarded-Proto} !=https
-        RewriteCond %{REMOTE_ADDR} !^104\.243\.(35|37)\.
-        RewriteCond %{HTTP_HOST} !=180.93.57.30
-        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-    </Directory>
-</IfModule>
+# Dieu kien %{HTTPS} != 'on' chan vong lap chuyen huong vo tan: vhost 443 cung
+# gop tep nay. HAI NGOAI LE:
+#  - Ket noi TCP tu IP goc cua Nova WAF (104.243.35.x / 104.243.37.x): Nova WAF
+#    giai ma TLS o bien roi noi ve origin bang HTTP THUONG, ep https o day se tao
+#    vong lap cho chinh no. Xet CONN_REMOTE_ADDR (IP cua ket noi) vi mod_remoteip
+#    da thay REMOTE_ADDR bang IP that cua khach.
+#  - HTTP_HOST bang dung IP may chu (180.93.57.30): duong vao thang bang IP tren
+#    cong 80, ne Nova WAF, dung khi Nova WAF hong. Cong 443 chi mo cho Cloudflare/
+#    Nova WAF/whitelist (xem /etc/htbb-cloudflare-web/apply.sh) nen ep ve https o
+#    day se dua nguoi dung vao dung cai tuong lua do - mat luon con duong thoat.
+<Location /admin>
+    <If "%{HTTPS} != 'on' && req('X-Forwarded-Proto') != 'https' && ! (%{CONN_REMOTE_ADDR} =~ /^104\.243\.(35|37)\./) && %{HTTP_HOST} != '180.93.57.30'">
+        Redirect permanent "https://%{HTTP_HOST}%{REQUEST_URI}"
+    </If>
+</Location>
 EOF
-a2enconf kpah-admin-https >/dev/null 2>&1
-echo "      Xong. Trang cong khai cong 80 khong bi anh huong."
+# Conf cu thoi web PHP (<Directory /opt/htbb/web/admin>) - bo, thay bang manh o tren.
+a2disconf htbb-admin-https >/dev/null 2>&1 || true
+a2enconf htbb-web-bao-ve >/dev/null 2>&1
+echo "      Xong ($CONF_EP). Trang cong khai cong 80 khong bi anh huong."
 
 # ---------------------------------------------------------------------------
 #  3b. Mo cong 443 tren tuong lua
@@ -251,7 +231,7 @@ if ! apache2ctl configtest 2>&1 | grep -qi "Syntax OK"; then
     apache2ctl configtest 2>&1 | sed 's/^/        /'
     echo
     echo "      Apache van dang chay cau hinh cu, trang web khong bi anh huong."
-    echo "      Go bo: a2disconf kpah-admin-https; a2dissite kpah-ssl"
+    echo "      Go bo: rm $CONF_EP; a2dissite htbb-ssl"
     exit 1
 fi
 echo "      Syntax OK"
@@ -272,10 +252,10 @@ else
 fi
 echo "============================================================"
 if [ "$DUNG_CERTBOT" = "1" ]; then
-    echo "  Vao admin:  https://$TEN_MIEN/kpah/admin/"
+    echo "  Vao admin:  https://$TEN_MIEN/admin/"
     echo "  Chung chi that, trinh duyet khong canh bao, tu gia han."
 else
-    echo "  Vao admin:  https://$IP_MAY/kpah/admin/"
+    echo "  Vao admin:  https://$IP_MAY/admin/"
     echo
     echo "  LAN DAU trinh duyet se canh bao \"ket noi khong an toan\" - do la vi"
     echo "  chung chi tu ky, KHONG phai vi bi tan cong. Bam Nang cao -> Tiep tuc."
@@ -283,8 +263,8 @@ else
     echo
     echo "  Muon het canh bao: tro mot ten mien ve $IP_MAY (ten mien mien phi nhu"
     echo "  DuckDNS cung duoc) roi chay lai:"
-    echo "      sudo /opt/kpah/vps/bat-https.sh ten.mien.cua.ban"
+    echo "      sudo /opt/htbb/vps/bat-https.sh ten.mien.cua.ban"
 fi
 echo
-echo "  Trang cong khai cho nguoi choi: http://$IP_MAY/kpah/  (khong doi gi)"
+echo "  Trang cong khai cho nguoi choi: http://$IP_MAY/  (khong doi gi)"
 echo "============================================================"

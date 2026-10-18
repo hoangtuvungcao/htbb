@@ -9,8 +9,8 @@ public partial class PauseMenu : MyScreen
 		new string[7] { "Bản thân", "Hành trang", "Kỹ năng", "Tiềm năng", "Trang bị", "Thông tin", "Trang bị thú" },
 		new string[1] { "Nap Xu" },
 		new string[1] { "Nhiệm vụ" },
-		new string[1] { "Đồ sát" },
-		new string[7] { "Khác", "Tin nhắn", "Nhóm", "Bạn bè", "Top cao thủ", "Top đại gia", "Kênh thế giới" },
+		new string[1] { "PK" },
+		new string[7] { "Khác", "Tin nhắn", "Nhóm", "Bạn bè", "Top sức mạnh", "Top đại gia", "Kênh thế giới" },
 		new string[1] { string.Empty },
 		new string[1] { "Thoát" }
 	};
@@ -44,19 +44,19 @@ public partial class PauseMenu : MyScreen
 	{
 		if (Canvas.gameScr.mainChar.idClan == -1)
 		{
-			name[7] = new string[3] { "Bang hội", "Top bang hội", "Đăng ký bang hội" };
+			name[7] = new string[3] { "Đội", "Top đội", "Đăng ký đội" };
 		}
 		else if (Canvas.gameScr.mainChar.isMaster == 0)
 		{
-			name[7] = new string[10] { "Bang hội", "Top bang hội", "Nhiệm vụ", "Thành viên bang hội", "Thông tin bang hội", "Tin nhắn bang hội", "Kỹ năng", "Chat toàn bang", "Quyên góp", "Giải tán bang hội" };
+			name[7] = new string[10] { "Đội", "Top đội", "Nhiệm vụ", "Thành viên đội", "Thông tin đội", "Tin nhắn đội", "Kỹ năng", "Chat toàn đội", "Quyên góp", "Giải tán đội" };
 			if (Char.dissolved)
 			{
-				name[7][9] = "Phục hồi bang hội";
+				name[7][9] = "Phục hồi đội";
 			}
 		}
 		else
 		{
-			name[7] = new string[10] { "Bang hội", "Top bang hội", "Nhiệm vụ", "Thành viên bang hội", "Thông tin bang hội", "Tin nhắn bang hội", "Kỹ năng", "Chat toàn bang", "Quyên góp", "Rời bang" };
+			name[7] = new string[10] { "Đội", "Top đội", "Nhiệm vụ", "Thành viên đội", "Thông tin đội", "Tin nhắn đội", "Kỹ năng", "Chat toàn đội", "Quyên góp", "Rời đội" };
 		}
 	}
 }

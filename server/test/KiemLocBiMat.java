@@ -9,9 +9,9 @@ import java.util.Properties;
 /**
  * Che mat khau CSDL trong log, va don xac luong chet cua Region.
  *
- * CHUYEN THAT: data.ConnPool (trong lib/NQSH_5h.jar, khong co ma nguon) in ra
- *     URL: jdbc:mysql://... | USER: kpah | PASS: &lt;mat khau that&gt;
- * moi lan tao pool - bon lan moi khoi dong, thang vao /opt/kpah/log/game.out, ma cac
+ * CHUYEN THAT: data.ConnPool (trong lib/htbb-core.jar, khong co ma nguon) in ra
+ *     URL: jdbc:mysql://... | USER: htbb | PASS: &lt;mat khau that&gt;
+ * moi lan tao pool - bon lan moi khoi dong, thang vao /opt/htbb/log/game.out, ma cac
  * tep log de quyen -rw-r--r--. Khong sua duoc trong jar nen chan o dau ra.
  *
  * Test goi HAM THAT chu khong doi chieu chu trong ma nguon: dung mot PrintStream boc
@@ -31,11 +31,11 @@ public final class KiemLocBiMat {
         server.LocBiMat.xoaHet();
         server.LocBiMat.themBiMat(matKhau);
 
-        final String dongThat = "URL: jdbc:mysql://localhost:3306/kpah_db | USER: kpah | PASS: " + matKhau;
+        final String dongThat = "URL: jdbc:mysql://localhost:3306/htbb_db | USER: htbb | PASS: " + matKhau;
         final String daChe = server.LocBiMat.che(dongThat);
         Kiem.sai("dong ConnPool in ra KHONG con chua mat khau", daChe.contains(matKhau));
         Kiem.dung("phan con lai cua dong van giu nguyen (log van doc duoc)",
-                daChe.contains("jdbc:mysql://localhost:3306/kpah_db") && daChe.contains("USER: kpah"));
+                daChe.contains("jdbc:mysql://localhost:3306/htbb_db") && daChe.contains("USER: htbb"));
 
         // ---- Loc o TANG BYTE: bat duoc ca printf va printStackTrace ----
         // Ghi de println(String) thi khong bat duoc printf; loc theo dong thi bat het.

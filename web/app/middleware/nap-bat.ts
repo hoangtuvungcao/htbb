@@ -1,5 +1,5 @@
 /**
- * Trang nạp tiền chỉ mở khi server bật KPAH_NAP_BAT (mặc định tắt trên nhánh Pokémon,
+ * Trang nạp tiền chỉ mở khi server bật HTBB_NAP_BAT (mặc định tắt trên nhánh Pokémon,
  * quyết định Q10). Chặn thật nằm ở server/middleware/tat-nap.ts; đây chỉ để không hiện
  * một trang không dùng được.
  */

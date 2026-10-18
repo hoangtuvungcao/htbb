@@ -24,8 +24,8 @@ import java.util.Properties;
 public final class KiemChotCSDL {
 
     private static final String F_SERVER = "src/server/TeamServer.java";
-    private static final String F_UNIT = "vps/kpah-game.service";
-    private static final String F_BACKUP = "vps/backup_db.sh";
+    private static final String F_UNIT = "../vps/htbb-game.service";
+    private static final String F_BACKUP = "../vps/backup_db.sh";
 
     public static void chay() {
         Kiem.nhom("Chot chan khoi dong khi khong vao duoc CSDL");
@@ -45,7 +45,7 @@ public final class KiemChotCSDL {
 
         // ---- 2. Ly do KHONG duoc chua mat khau ----
         // Day la phep quan trong nhat trong tep nay. Chuoi tra ve duoc in thang ra
-        // /opt/kpah/log/game.out, ma cac tep log dang de quyen -rw-r--r-- (ai cung doc duoc).
+        // /opt/htbb/log/game.out, ma cac tep log dang de quyen -rw-r--r-- (ai cung doc duoc).
         final String matKhauRieng = "mAtKhAuRiEnG_9x7q";
         for (final String host : new String[] {"127.0.0.1:1", "localhost:3306"}) {
             final String lyDo = chanDoan(matKhauRieng, host);
@@ -88,16 +88,16 @@ public final class KiemChotCSDL {
         final int viTriXoa = bk.indexOf("-delete");
         Kiem.dung("chi xoa ban cu SAU KHI da kiem tra ban moi",
                 viTriKiem > 0 && viTriXoa > 0 && viTriKiem < viTriXoa);
-        Kiem.dung("huong dan cron tro dung duong dan sau khi deploy (/opt/kpah/vps/)",
-                bk.contains("/opt/kpah/vps/backup_db.sh"));
+        Kiem.dung("huong dan cron tro dung duong dan sau khi deploy (/opt/htbb/vps/)",
+                bk.contains("/opt/htbb/vps/backup_db.sh"));
     }
 
     /** Goi that server.TeamServer.chanDoanCSDL voi mot cau hinh dung san. */
     private static String chanDoan(final String matKhau, final String host) {
         final Properties p = new Properties();
         p.setProperty("db.host", host);
-        p.setProperty("db.name", "kpah_db");
-        p.setProperty("db.user", "kpah");
+        p.setProperty("db.name", "htbb_db");
+        p.setProperty("db.user", "htbb");
         p.setProperty("db.password", matKhau);
         return server.TeamServer.chanDoanCSDL(p);
     }

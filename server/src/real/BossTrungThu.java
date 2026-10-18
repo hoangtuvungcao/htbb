@@ -12,7 +12,7 @@ import real.cmd.LoginHandler;
  * gate boi Char.isSuKienTrungThul2016(). Do hoa/chi so goc TAM DUNG mau "Su Tu" (id 48 trong
  * data_monster) theo yeu cau nguoi dung (16/09/2026: "dung tam do hoa 1 quai/boss co san") -
  * chi so goc cua id 48 la QUAI THUONG (maxhp ~193k, qua yeu), nen BOOST lai o constructor
- * thanh chi so tuong duong cac boss khac dang co (BossThanLan/BossLinhXa: ~150-200 trieu HP).
+ * thanh chi so tuong duong cac boss khac dang co (BossDotKich/BossSerperior: ~150-200 trieu HP).
  *
  * KHONG chan danh o MapDanhNhau/Region (qua nhieu diem ap dung sat thuong rai rac trong 2
  * file do, sua rong se rui ro cao cho toan bo combat). Thay vao do: AI CUNG danh duoc binh
@@ -115,7 +115,7 @@ public class BossTrungThu extends Boss {
                 }
                 try {
                     Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
-                            "Boss Trung Thu đã xuất hiện tại Trường Giang! Phải đeo Mặt nạ Ông Địa mới nhận được quà khi hạ gục."));
+                            "Boss Trung Thu đã xuất hiện tại Cinnabar! Phải đeo Mặt nạ Snorlax mới nhận được quà khi hạ gục."));
                 } catch (final java.io.IOException ex) {
                 }
             }
@@ -150,7 +150,7 @@ public class BossTrungThu extends Boss {
         final String tenTopDame = this.layTenTopDame();
         if (p.wModel == null || !p.wModel.isMatNaOngDia()) {
             p.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Bạn cần đeo Mặt nạ Ông Địa để nhận thưởng từ Boss Trung Thu.", ""));
+                    "Bạn cần đeo Mặt nạ Snorlax để nhận thưởng từ Boss Trung Thu.", ""));
             return super.onDropItem(m, p);
         }
         phatQuaTrungThu(p);
@@ -160,7 +160,7 @@ public class BossTrungThu extends Boss {
         if (Map.r.nextInt(100) < 8) {
             p.createLan(10080L, false, 95);
             p.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Chúc mừng! Bạn đã bắt được Boss Trung Thu về làm Lân Sư Tử hộ vệ (7 ngày).", ""));
+                    "Chúc mừng! Bạn đã bắt được Boss Trung Thu về làm Suicune hỗ trợ (7 ngày).", ""));
             Database.instance.saveOrtherLog("", p.charname, "bat boss trung thu ve lam ho ve", "bosstrungthu");
         }
         // "Top dame" (them 19/09/2026) - phan thuong RIENG, ngau nhien nhu nguoi ha guc,
@@ -247,7 +247,7 @@ public class BossTrungThu extends Boss {
                 // co san (Map.doCreateHoVeLenhByLevel), chua co template rieng cho "ho ve
                 // than thu boss Trung Thu".
                 final Item hvl = Map.doCreateHoVeLenhByLevel(p, idgift[index]);
-                info = String.valueOf(info) + (hvl != null ? hvl.getName() : "hộ vệ lệnh");
+                info = String.valueOf(info) + (hvl != null ? hvl.getName() : "vé gọi Pokémon hỗ trợ");
                 break;
             }
             default:

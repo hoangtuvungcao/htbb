@@ -24,8 +24,8 @@ public class ShopOnline : MyScreen
 
 	public static string[] nameItem = new string[19]
 	{
-		"áo", "Quần", "Nón", "Kiếm", "Đao", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền",
-		"Giày", "Găng tay", "Ngọc bội", "Giáp linh thú", "Hộ uyển", "Nón linh thú", "Bàn đạp", "Yên cương", "Phi phong"
+		"áo", "Quần", "Nón", "Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền",
+		"Giày", "Găng tay", "Phiến đá hệ", "Giáp thú cưỡi", "Vòng chân", "Nón thú cưỡi", "Bàn đạp", "Yên cương", "Ruy băng"
 	};
 
 	public static sbyte[] ID_TYPE_ITEM = new sbyte[19]
@@ -34,7 +34,7 @@ public class ShopOnline : MyScreen
 		10, 11, 12, 14, 15, 16, 17, 18, 19
 	};
 
-	public static string[] Pham = new string[5] { "Nhất phẩm", "Nhị phẩm", "Tam phẩm", "Tứ phẩm", "Khác" };
+	public static string[] Pham = new string[5] { "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Khác" };
 
 	public static string[] Color = new string[4] { "Trắng", "Xanh", "Đỏ", "Hoàn mỹ" };
 
@@ -191,7 +191,7 @@ public class ShopOnline : MyScreen
 	{
 		if (Canvas.isSmartPhone)
 		{
-			tileFind[1][0] = "Nhân vật";
+			tileFind[1][0] = "Pokémon";
 		}
 		if (img == null)
 		{

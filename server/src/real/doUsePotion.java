@@ -131,7 +131,7 @@ public class doUsePotion {
                 if (player.map.isvanTienTran()) {
                     player.map.doReturnVillage(player);
                 } else if (Char.isSuKienMiniChucNu() && player.charCopy != null && player.map.mapId == player.charCopy.map.mapId) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Chức Nữ", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Illumise", ""));
                 } else if (player.char_quest != null && player.char_quest.receive == 1 && QuestTemplate.getTypeQuest(player.char_quest.id_quest) == 1) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ vận chuyển", ""));
                 } else if (player.map.isMapNuiChauBau()) {
@@ -250,7 +250,7 @@ public class doUsePotion {
                         if (com.htbb.pokemon.LauDai.bat()) {
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này đã ngừng sử dụng.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này đã ngừng sử dụng. Đổi lấy Kẹo hiếm ở Sổ tay huấn luyện, mục Cửa hàng và đổi vật phẩm.", ""));
                             return;
                         }
                         int[] expdon = new int[]{100000, 500000, 1000000};
@@ -307,7 +307,7 @@ public class doUsePotion {
                         break;
                     case 27:
                         if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang vận tiêu.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang giao hàng.", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
@@ -322,7 +322,7 @@ public class doUsePotion {
 
                         player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể sử dụng vật phẩm này sau " + (player.timeUseThanHanhPhu - System.currentTimeMillis()) / 1000L + "s", ""));
                         if (player.inCountry != player.myCountry) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể sử dụng Thần Hành Phù trên lãnh thổ của mình", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể sử dụng Vé Bay Pidgeot trên vùng của mình", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
@@ -428,14 +428,14 @@ public class doUsePotion {
                                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             } else {
                                 var10002 = player.potions[potionType]++;
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nữ", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu lông chỉ dùng cho nữ", ""));
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             }
                         } else if (player.gender == 2) {
                             if (temp % 2 == 0) {
                                 var10002 = player.potions[potionType]++;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nam", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu lông chỉ dùng cho nam", ""));
                             } else {
                                 player.headStyle = (byte) temp;
                                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
@@ -498,7 +498,7 @@ public class doUsePotion {
                         // buy_luot_van_tieu (gioi han LUOT MUA, khong phai gioi han LUOT DUNG).
                         if (player.luot_van_tieu < 5) {
                             ++player.luot_van_tieu;
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn có thêm 1 lượt vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn có thêm 1 lượt giao hàng", ""));
                         } else {
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createServerAlertMessage("Một ngày chỉ được đi tối đa 5 tiêu, không thể dùng thêm vé.", ""));
@@ -544,14 +544,14 @@ public class doUsePotion {
                         }
 
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
                         }
 
                         if (player.myCountry != player.inCountry) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể vào khu mỏ từ lãnh thổ của mình.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể vào khu mỏ từ vùng của mình.", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
@@ -590,14 +590,14 @@ public class doUsePotion {
                     case 97:
                     case 116:
                         if (player.monster == null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi bạn đang chưa nhận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi bạn đang chưa nhận hàng", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
                         }
 
                         if (!player.canChangeTieu()) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đổi tiêu tại vị trí này", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đổi hàng tại vị trí này", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
@@ -614,7 +614,7 @@ public class doUsePotion {
                         }
 
                         if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                             return;
                         }
 
@@ -627,7 +627,7 @@ public class doUsePotion {
 
                         Char p1 = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                         if (player.mapID != 225 && player.mapID != 226) {
-                            String[] namnu = new String[]{"Phu nhân", "Phu quân"};
+                            String[] namnu = new String[]{"Bạn đời", "Bạn đời"};
                             if (p1 == null) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
                                 var10002 = player.potions[potionType]++;
@@ -689,7 +689,7 @@ public class doUsePotion {
                     case 113:
                     case 114:
                         if (player.animalRide == null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa cưỡi linh thú", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa cưỡi thú", ""));
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         } else {
@@ -927,7 +927,7 @@ public class doUsePotion {
             }
         } else {
             try {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi ngựa", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi thú", ""));
                 int var10002 = player.potions[type]++;
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             } catch (Exception var4) {
@@ -1005,7 +1005,7 @@ public class doUsePotion {
     }
 
     private static void doSelectPosBuildLienHoa(Char player) {
-        player.sendMessage(MessageCreator.createMsgMenu((String[]) (new String[]{"Xây tại long trụ phụ trên", "Xây tại long trụ phụ dưới", "Xây tại long trụ phụ trái", "Xây tại long trụ phụ phải"}), -503, 0));
+        player.sendMessage(MessageCreator.createMsgMenu((String[]) (new String[]{"Xây tại trụ năng lượng phụ trên", "Xây tại trụ năng lượng phụ dưới", "Xây tại trụ năng lượng phụ trái", "Xây tại trụ năng lượng phụ phải"}), -503, 0));
     }
 
     private static void doSummons(Char player) {
@@ -1029,7 +1029,7 @@ public class doUsePotion {
                 try {
                     Char p = (Char) CharManager.instance.vChars.elementAt(i);
                     if (p != null && p.myCountry == player.myCountry && p.id != player.id && p.myCountry == player.myCountry && p.lvDetail.lv >= 40) {
-                        p.sendMessage(MessageCreator.createMsgPopUp(p.id, 6, "Đức vua triệu hồi bảo vệ lãnh thổ. Bạn có muốn tham gia không ?"));
+                        p.sendMessage(MessageCreator.createMsgPopUp(p.id, 6, "Nhà vô địch vùng triệu hồi bảo vệ vùng. Bạn có muốn tham gia không ?"));
                     }
                 } catch (Exception var4) {
                     var4.printStackTrace();
@@ -1045,9 +1045,9 @@ public class doUsePotion {
     private static void doPhongChuc(Char player) {
         if (player.idClan != -1) {
             if (player.rankGov > 1) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vua hoặc đại thần mới có thể phong chức.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có nhà vô địch vùng hoặc cố vấn vùng mới có thể phong chức.", ""));
             } else {
-                String[][] menu = new String[][]{{"Phong chức Đại thần", "Phong chức Tướng quân", "Phế Đại thần", "Phế Tướng quân"}, {"Phong chức Bộ đầu", "Phế Bộ đầu"}};
+                String[][] menu = new String[][]{{"Phong chức Cố vấn vùng", "Phong chức Chỉ huy", "Bãi nhiệm Cố vấn vùng", "Bãi nhiệm Chỉ huy"}, {"Phong chức Cảnh sát vùng", "Bãi nhiệm Cảnh sát vùng"}};
                 player.sendMessage(MessageCreator.createMsgMenu((String[]) menu[player.rankGov], -501, 0));
             }
         }
@@ -1190,9 +1190,9 @@ public class doUsePotion {
 
                 try {
                     if (idgift[index] == 70 || idgift[index] == 86) {
-                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được " + LoginHandler.PORTION_NAME[idgift[index]] + " khi mở rương quà haloween"));
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được " + LoginHandler.PORTION_NAME[idgift[index]] + " khi mở rương quà haloween");
                     }
-                } catch (IOException var15) {
+                } catch (Exception var15) {
                 }
             } else if (typegift[index] == 6) {
                 soluong = soluongmin[index];
@@ -1358,8 +1358,8 @@ public class doUsePotion {
                     p.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
                     if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_30) {
                         try {
-                            Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi bắn pháo hoa"));
-                        } catch (IOException var16) {
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi bắn pháo hoa");
+                        } catch (Exception var16) {
                         }
                     }
                 } else {
@@ -1377,8 +1377,8 @@ public class doUsePotion {
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                         if (idgift[index] == 9) {
                             try {
-                                Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được nhân sâm khi bắn pháo hoa"));
-                            } catch (IOException var15) {
+                                com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Berry Razz vàng khi bắn pháo hoa");
+                            } catch (Exception var15) {
                             }
                         }
                     } else if (typegift[index] == 3) {
@@ -1618,11 +1618,11 @@ public class doUsePotion {
 
                     try {
                         if (idgift[index] == 70) {
-                            sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Phượng hoàng băng khi mở hộp quà Halloween"));
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được Articuno khi mở hộp quà Halloween");
                         } else if (idgift[index] == 86) {
-                            sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Phượng hoàng lửa khi mở hộp quà Halloween"));
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được Moltres khi mở hộp quà Halloween");
                         }
-                    } catch (IOException var14) {
+                    } catch (Exception var14) {
                     }
                 } else if (typegift[index] == 6) {
                     xu = soluongmin[index];

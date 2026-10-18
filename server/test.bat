@@ -9,7 +9,7 @@ REM
 REM  Test KHONG nam trong src\ va KHONG dung thu vien ngoai. Ly do:
 REM  build.bat gom toan bo src\, va lib\ nam tren Class-Path cua jar deploy -
 REM  de test o hai cho do la day ca test len server that. Chay file nay khong
-REM  dung toi KPAH2_patched.jar, khong doi mot byte nao cua ban deploy.
+REM  dung toi htbb-server.jar, khong doi mot byte nao cua ban deploy.
 REM
 REM  Ma thoat: 0 = tat ca dat, 1 = co test hong.
 REM ============================================================
@@ -31,7 +31,7 @@ if not defined JDKBIN (
     exit /b 1
 )
 
-set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\NQSH_5h.jar"
+set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\htbb-core.jar"
 set "OUTSRC=build\test-classes-src"
 set "OUTTEST=build\test-classes"
 

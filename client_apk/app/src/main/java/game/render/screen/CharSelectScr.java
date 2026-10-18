@@ -72,7 +72,7 @@ public class CharSelectScr extends Screen {
                 @Override
                 public void perform() {
                     if (CharSelectScr.this.cmdDel.caption.equals("Xóa")) {
-                        GCanvas.startYesNoDlg("Bạn thật sự muốn xóa nhân vật này?", new IAction() {
+                        GCanvas.startYesNoDlg("Bạn thật sự muốn xóa Pokémon này?", new IAction() {
                             @Override
                             public void perform() {
                                 GCanvas.startWaitDlg("Xin chờ..", true);
@@ -85,7 +85,7 @@ public class CharSelectScr extends Screen {
                             }
                         });
                     } else if (CharSelectScr.this.cmdDel.caption.equals("Khôi phục")) {
-                        GCanvas.startYesNoDlg("Bạn muốn khôi phục nhân vật này?", new IAction() {
+                        GCanvas.startYesNoDlg("Bạn muốn khôi phục Pokémon này?", new IAction() {
                             @Override
                             public void perform() {
                                 GCanvas.startWaitDlg("Xin chờ..", true);

@@ -16,11 +16,11 @@ import java.util.Vector;
  * lieu tho (Soi bong, Quang sat, Ngoc tho, Go thuong tho, Da mem tho).
  *
  * TRUOC DAY lop nay CHI ton tai duoi dang bytecode da bien dich trong
- * lib/NQSH_5h.jar (khong co file .java, chua tung duoc dua vao dot tach
+ * lib/htbb-core.jar (khong co file .java, chua tung duoc dua vao dot tach
  * real/Map.java dang lam). Dua vao src/ ngay 14/09/2026 DUY NHAT de sua loi
- * duoi day - moi cho khac giu NGUYEN vi ban dich nguoc (build/nqsh-src/real/
+ * duoi day - moi cho khac giu NGUYEN vi ban dich nguoc (build/core-src/real/
  * MaterialMap.java), da doi chieu chu ky bang javap voi class that trong jar
- * truoc khi sua (xem [[project-kpah-nqsh-jar-khoa-ten-package]]).
+ * truoc khi sua (xem [[project-htbb-core-jar-khoa-ten-package]]).
  *
  * LOI DA SUA: addGemItem/getGem/removeGem/deletePotionAndItemOnGround ban cu
  * LUON dung `this.gemItem.get(0)` bat ke tham so `country` truyen vao (con
@@ -421,7 +421,7 @@ public class MaterialMap extends Map {
             return;
         }
         if (!p.checkDurableWeapone()) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
             Message m = new Message(104);
             try {
                 m.dos.writeByte(p.typeConfig);

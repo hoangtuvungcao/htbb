@@ -43,14 +43,14 @@ export const CHAN_DOAN_THU_TU: Record<ChanDoanMuc, number> = { loi: 0, canhbao: 
  * là 7 lượt mua bình thường hiện lên thành 7 nghi vấn gian lận.
  */
 export const CHAN_DOAN_LOAI_LOI: Readonly<Record<string, string>> = Object.freeze({
-  loiinvent: 'Lưu hành trang thất bại — server tự khoá nhân vật',
+  loiinvent: 'Lưu hành trang thất bại — server tự khoá Pokémon',
   hackc: 'Nghi vấn gian lận — giao thẻ khi không ở đúng map',
   hackR: 'Nghi vấn gian lận — sửa đồ ngoài map offline',
   hackbitem: 'Nghi vấn gian lận vật phẩm — mua món không có trong gian hàng',
-  hackchonchar: 'Nghi vấn gian lận — chọn nhân vật của tài khoản khác',
-  ffbug: 'Lỗi đã biết bị khai thác — phi phong lỗi cũ còn trong túi',
+  hackchonchar: 'Nghi vấn gian lận — chọn Pokémon của tài khoản khác',
+  ffbug: 'Lỗi đã biết bị khai thác — ruy băng lỗi cũ còn trong túi',
   thugay: 'Tịch thu gậy Giáng Sinh tạo trước ngày vá lỗi',
-  hklbug: 'Lỗi đã biết bị khai thác — vật phẩm thần thú',
+  hklbug: 'Lỗi đã biết bị khai thác — vật phẩm Pokémon huyền thoại',
   tichthuchoi: 'Tịch thu chổi đua top',
   timeout: 'Vật phẩm hết hạn sử dụng, server đã xoá',
 })
@@ -107,9 +107,9 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
     if (nho.length) {
       them('Sức chứa cột hành trang', 'loi',
         `Các cột ${nho.join(', ')} vẫn là TEXT — trần 65.535 byte, tức khoảng 140 món. `
-        + 'Vượt trần thì câu UPDATE lưu nhân vật thất bại, và khối bắt lỗi của server TỰ ĐẶT ban = 1: '
-        + 'nhân vật biến mất khỏi màn chọn, người chơi tưởng bị xoá tài khoản. Chuyện này đã xảy ra thật '
-        + 'ngày 28/07/2026 với nhân vật admin.',
+        + 'Vượt trần thì câu UPDATE lưu Pokémon thất bại, và khối bắt lỗi của server TỰ ĐẶT ban = 1: '
+        + 'Pokémon biến mất khỏi màn chọn, người chơi tưởng bị xoá tài khoản. Chuyện này đã xảy ra thật '
+        + 'ngày 28/07/2026 với Pokémon admin.',
         `ALTER TABLE ${DB_GAME}.tob_char MODIFY inven MEDIUMTEXT;\n`
         + `ALTER TABLE ${DB_GAME}.tob_char MODIFY bag MEDIUMTEXT;\n`
         + `ALTER TABLE ${DB_GAME}.tob_char MODIFY tuido MEDIUMTEXT;\n`
@@ -122,7 +122,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
   })
 
   // --- 2. Nhân vật sắp tràn hành trang ----------------------------------------
-  await thu('Nhân vật sắp đầy hành trang', async () => {
+  await thu('Pokémon sắp đầy hành trang', async () => {
     // MEDIUMTEXT báo 16.777.215; TEXT 65.535. Không đọc được thì giả định TEXT.
     const tran = tranInven || 65535
     const nguong = Math.trunc(tran * 0.80)
@@ -133,19 +133,19 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
       [nguong],
     )
     if (!dong.length) {
-      them('Nhân vật sắp đầy hành trang', 'ok',
-        `Không nhân vật nào dùng quá 80% sức chứa cột inven (${so(nguong)} byte).`)
+      them('Pokémon sắp đầy hành trang', 'ok',
+        `Không Pokémon nào dùng quá 80% sức chứa cột inven (${so(nguong)} byte).`)
       return
     }
     const bang = dong.map(d => ({
-      'Nhân vật': String(d.charname),
+      'Pokémon': String(d.charname),
       'Đã dùng': `${soVN(d.n)} / ${so(tran)} byte`,
       'Phần trăm': `${Math.round(Number(d.n) * 1000 / tran) / 10}%`,
       'Đang khoá': Number(d.ban) !== 0 ? 'CÓ' : '',
     }))
-    them('Nhân vật sắp đầy hành trang', 'canhbao',
-      `${dong.length} nhân vật đã dùng quá 80% sức chứa cột inven. Đầy là lần lưu kế tiếp hỏng `
-      + 'và server tự khoá nhân vật.', '', bang)
+    them('Pokémon sắp đầy hành trang', 'canhbao',
+      `${dong.length} Pokémon đã dùng quá 80% sức chứa cột inven. Đầy là lần lưu kế tiếp hỏng `
+      + 'và server tự khoá Pokémon.', '', bang)
   })
 
   // --- 3. Dấu vết lưu hành trang thất bại -------------------------------------
@@ -158,37 +158,37 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
     )
     if (!dong.length) {
       them('Lỗi lưu hành trang (loiinvent)', 'ok',
-        'Server chưa từng ghi dòng loiinvent nào — chưa nhân vật nào lưu hành trang thất bại.')
+        'Server chưa từng ghi dòng loiinvent nào — chưa Pokémon nào lưu hành trang thất bại.')
       return
     }
-    const bang = dong.map(d => ({ 'Nhân vật': String(d.charname), 'Số lần': soVN(d.n), 'Gần nhất': String(d.lan_cuoi ?? '') }))
+    const bang = dong.map(d => ({ 'Pokémon': String(d.charname), 'Số lần': soVN(d.n), 'Gần nhất': String(d.lan_cuoi ?? '') }))
     them('Lỗi lưu hành trang (loiinvent)', 'loi',
-      `${dong.length} nhân vật từng lưu hành trang thất bại. Mỗi lần như vậy là nhân vật lùi về bản `
+      `${dong.length} Pokémon từng lưu hành trang thất bại. Mỗi lần như vậy là Pokémon lùi về bản `
       + 'lưu thành công cuối cùng — phần chơi ở giữa mất thật, gỡ khoá không lấy lại được. Nhiều khả năng '
-      + 'các nhân vật này đang bị ban = 1.',
+      + 'các Pokémon này đang bị ban = 1.',
       `UPDATE ${DB_GAME}.tob_char SET ban = 0 WHERE charname = 'ten_nhan_vat';`, bang)
   })
 
   // --- 4. Nhân vật đang bị khoá ------------------------------------------------
-  await thu('Nhân vật đang bị khoá', async () => {
+  await thu('Pokémon đang bị khoá', async () => {
     const dong = await q(
       game,
       `SELECT charname, userId, lastLv, lastLog FROM tob_char
         WHERE ban <> 0 ORDER BY lastLog DESC LIMIT 20`,
     )
     if (!dong.length) {
-      them('Nhân vật đang bị khoá', 'ok', 'Không nhân vật nào đang bị khoá.')
+      them('Pokémon đang bị khoá', 'ok', 'Không Pokémon nào đang bị khoá.')
       return
     }
     const bang = dong.map(d => ({
-      'Nhân vật': String(d.charname),
+      'Pokémon': String(d.charname),
       'Tài khoản': `#${Math.trunc(Number(d.userId))}`,
       'Cấp': Math.trunc(Number(d.lastLv)),
       'Vào lần cuối': String(d.lastLog ?? ''),
     }))
-    them('Nhân vật đang bị khoá', 'canhbao',
-      `${dong.length} nhân vật đang bị khoá. Nhớ rằng không phải cái nào cũng do admin khoá — `
-      + 'server tự đặt ban = 1 khi lưu nhân vật thất bại.', '', bang)
+    them('Pokémon đang bị khoá', 'canhbao',
+      `${dong.length} Pokémon đang bị khoá. Nhớ rằng không phải cái nào cũng do admin khoá — `
+      + 'server tự đặt ban = 1 khi lưu Pokémon thất bại.', '', bang)
   })
 
   // --- 5. Giftcode trùng tên ---------------------------------------------------
@@ -275,24 +275,24 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
   })
 
   // --- 9. Nhân vật mồ côi tài khoản --------------------------------------------
-  await thu('Nhân vật mồ côi tài khoản', async () => {
+  await thu('Pokémon mồ côi tài khoản', async () => {
     // Đối chiếu bằng JS: NovaDB không cho truy vấn chéo database (xem mục 8).
     const coId = new Set((await q(dbAccount(), 'SELECT id FROM team_user')).map(d => Number(d.id)))
     const dong = (await q(game, 'SELECT charname, userId, lastLv FROM tob_char ORDER BY lastLv DESC'))
       .filter(d => !coId.has(Number(d.userId)))
       .slice(0, 20)
     if (!dong.length) {
-      them('Nhân vật mồ côi tài khoản', 'ok', 'Mọi nhân vật đều thuộc về một tài khoản có thật.')
+      them('Pokémon mồ côi tài khoản', 'ok', 'Mọi Pokémon đều thuộc về một tài khoản có thật.')
       return
     }
     const bang = dong.map(d => ({
-      'Nhân vật': String(d.charname),
+      'Pokémon': String(d.charname),
       'Trỏ tới tài khoản': `#${Math.trunc(Number(d.userId))}`,
       'Cấp': Math.trunc(Number(d.lastLv)),
     }))
-    them('Nhân vật mồ côi tài khoản', 'canhbao',
-      `${dong.length} nhân vật thuộc về tài khoản không còn tồn tại — không ai đăng nhập vào được nữa. `
-      + 'Thường là dấu vết của một lần xoá tài khoản mà quên xoá nhân vật.', '', bang)
+    them('Pokémon mồ côi tài khoản', 'canhbao',
+      `${dong.length} Pokémon thuộc về tài khoản không còn tồn tại — không ai đăng nhập vào được nữa. `
+      + 'Thường là dấu vết của một lần xoá tài khoản mà quên xoá Pokémon.', '', bang)
   })
 
   // --- 10. Giá trị ban lạ ------------------------------------------------------
@@ -339,24 +339,24 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
   })
 
   // --- 12. Cờ nghi vấn gian lận ------------------------------------------------
-  await thu('Cờ nghi vấn trên nhân vật', async () => {
+  await thu('Cờ nghi vấn trên Pokémon', async () => {
     const dong = await q(
       game,
       `SELECT charname, nhack, blacklist, lastLv, lastLog FROM tob_char
         WHERE nhack > 0 OR blacklist > 0 ORDER BY lastLog DESC LIMIT 20`,
     )
     if (!dong.length) {
-      them('Cờ nghi vấn trên nhân vật', 'ok', 'Không nhân vật nào bị server đánh dấu nghi vấn.')
+      them('Cờ nghi vấn trên Pokémon', 'ok', 'Không Pokémon nào bị server đánh dấu nghi vấn.')
       return
     }
     const bang = dong.map(d => ({
-      'Nhân vật': String(d.charname),
+      'Pokémon': String(d.charname),
       nhack: Math.trunc(Number(d.nhack)),
       blacklist: Math.trunc(Number(d.blacklist)),
       'Vào lần cuối': String(d.lastLog ?? ''),
     }))
-    them('Cờ nghi vấn trên nhân vật', 'canhbao',
-      `${dong.length} nhân vật bị server đánh dấu. Đây chỉ là nghi vấn máy tự đặt, không phải kết luận `
+    them('Cờ nghi vấn trên Pokémon', 'canhbao',
+      `${dong.length} Pokémon bị server đánh dấu. Đây chỉ là nghi vấn máy tự đặt, không phải kết luận `
       + '— soi thêm ở Log game trước khi xử lý.', '', bang)
   })
 
@@ -378,7 +378,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
       { 'Nguồn': 'loginServer/server.ini', 'Đường dẫn': fLogin, 'Tình trạng': trangThai(fLogin, nguon.docDuocLoginIni) },
     ]
     if (nguon.userTuEnv) {
-      bang.push({ 'Nguồn': 'KPAH_DB_USER', 'Đường dẫn': 'biến môi trường', 'Tình trạng': 'đã đặt — ghi đè server.ini cho CẢ HAI database' })
+      bang.push({ 'Nguồn': 'HTBB_DB_USER', 'Đường dẫn': 'biến môi trường', 'Tình trạng': 'đã đặt — ghi đè server.ini cho CẢ HAI database' })
     }
     // Giá trị đang thật sự dùng. KHÔNG in mật khẩu, chỉ in độ dài — vừa đủ để
     // biết nó có rỗng hay không mà không phơi ra màn hình.
@@ -393,10 +393,10 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
     if (khongDoc) {
       them('Nguồn thông tin database', 'canhbao',
         'File cấu hình của game server CÓ ở đó nhưng website không có quyền đọc, nên web đang dùng giá trị '
-        + 'khai trong biến môi trường KPAH_DB_* (hoặc mặc định). Hai bên lệch nhau lúc nào không hay: đổi mật khẩu '
+        + 'khai trong biến môi trường HTBB_DB_* (hoặc mặc định). Hai bên lệch nhau lúc nào không hay: đổi mật khẩu '
         + 'database cho game server là website chết mà không rõ vì sao.',
-        '# thêm người dùng chạy website (tiến trình Node) vào nhóm kpah\n'
-        + 'usermod -a -G kpah <user-chay-website>\n'
+        '# thêm người dùng chạy website (tiến trình Node) vào nhóm htbb\n'
+        + 'usermod -a -G htbb <user-chay-website>\n'
         + `chmod 640 ${SERVER_DIR}/server.ini ${SERVER_DIR}/loginServer/server.ini\n`
         + '# rồi khởi động lại tiến trình website để đọc lại cấu hình', bang)
       return
@@ -404,13 +404,13 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
     if (!existsSync(fGame) && !existsSync(fLogin)) {
       them('Nguồn thông tin database', 'ok',
         'Không thấy server.ini nào — website không nằm cùng cây thư mục với game server, nên nó dùng '
-        + 'giá trị khai trong biến môi trường KPAH_DB_* (hoặc mặc định). Bình thường nếu đây là máy chạy thử.', '', bang)
+        + 'giá trị khai trong biến môi trường HTBB_DB_* (hoặc mặc định). Bình thường nếu đây là máy chạy thử.', '', bang)
       return
     }
     them('Nguồn thông tin database', 'ok',
       'Đọc được cấu hình của chính game server, nên web và server luôn dùng cùng một thông tin '
       + 'database — đổi mật khẩu ở server.ini là web theo ngay (sau khi khởi động lại website), không phải sửa hai chỗ.'
-      + (nguon.userTuEnv ? ' Riêng KPAH_DB_USER đang được đặt trong môi trường nên user/mật khẩu lấy từ đó.' : ''),
+      + (nguon.userTuEnv ? ' Riêng HTBB_DB_USER đang được đặt trong môi trường nên user/mật khẩu lấy từ đó.' : ''),
       '', bang)
   })
 
@@ -433,7 +433,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
     if (coFile === 0) {
       them('Đọc file log của server', 'canhbao',
         `Không thấy file log nào trong ${SERVER_DIR}. Nếu website không nằm cùng máy với game `
-        + 'server thì đúng như vậy — đặt biến môi trường KPAH_SERVER_DIR nếu muốn đọc được.')
+        + 'server thì đúng như vậy — đặt biến môi trường HTBB_SERVER_DIR nếu muốn đọc được.')
       return
     }
     them('Đọc file log của server', 'ok', `Thấy ${coFile} file log trong ${SERVER_DIR}.`, '', bang)

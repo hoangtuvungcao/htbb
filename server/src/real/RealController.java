@@ -467,6 +467,8 @@ public class RealController extends ServerController {
         }
 
         System.out.println("TONG MAP TRAIN ROI NGOC RONG: " + all_map_train.size());
+        // Vung Hoenn (nam 2) - chi che do Pokemon. Bang locationMap/mapID noi them o add_more_idMapSend2Client.
+        VungHoenn.taoMap(mapList);
     }
 
     public static void add_more_idMapSend2Client() {
@@ -498,7 +500,7 @@ public class RealController extends ServerController {
             {{"Đông sơn", "Đông Đông sơn", "Tây Đông sơn", "Nam Đông sơn", "Bắc Đông sơn"},
             {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"}},//8
             {{"Tử quan", "Đông Tử quan", "Tây Tử quan", "Nam Tử quan", "Bắc Tử quan"},
-            {"Thành Trấn danh", "Biên giới", "", "", ""}},//9
+            {"Cao nguyên Indigo", "Biên giới", "", "", ""}},//9
             {{"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"},
             {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
             {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"}},//10
@@ -510,7 +512,7 @@ public class RealController extends ServerController {
             {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}},//13
             {{"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"},
             {"Hang thằn lằn", "Hang Đại Bàng", "", "", ""},
-            {"Hang Dracula", "", "", "", ""}},//14
+            {"Hang Darkrai", "", "", "", ""}},//14
             new String[0][],//15
             {{"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"}},//16
             {{"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"}},//17
@@ -557,7 +559,7 @@ public class RealController extends ServerController {
             {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"}},
             {{"Biên giới", "", "", "", ""},
             {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"}},
-            {{"Thành Trấn Danh", "", "", "", ""}},
+            {{"Cao nguyên Indigo", "", "", "", ""}},
             {{"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"}}, new String[0][], new String[0][], new String[0][], new String[0][], {{"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
             {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
             {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
@@ -785,9 +787,9 @@ public class RealController extends ServerController {
             {"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"},
             {"Thuyền", "Thuyền bến đông", "Thuyền bến tây", "Thuyền bến nam", "Thuyền bến bắc"},
             {"Hang Thằn Lằn", "Hang Đại Bàng", "Hang thằn lằn tây", "Hang thằn lằn nam", "Hang thằn lằn bắc"},
-            {"Hang Dracula", "Hang Dracula phía đông", "Hang Dracula phía tây", "Hang Dracula phía nam", "Hang Dracula phía bắc"},
+            {"Hang Darkrai", "Hang Darkrai phía đông", "Hang Darkrai phía tây", "Hang Darkrai phía nam", "Hang Darkrai phía bắc"},
             {"Đấu trường", "", "", "", ""},
-            {"Thành Trấn Danh", "", "", "", ""},
+            {"Cao nguyên Indigo", "", "", "", ""},
             {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
             {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"},
             {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"},
@@ -806,26 +808,26 @@ public class RealController extends ServerController {
             {"Lâm tây", "Đông Lâm tây", "Tây Lâm tây", "Nam Lâm tây", "Bắc Lâm tây"},
             {"Cẩm khê", "Đông Cẩm khê", "Tây Cẩm khê", "Nam Cẩm khê", "Bắc Cẩm khê"},
             {"Đỗ đông", "Đông Đỗ đông", "Tây Đỗ đông", "Nam Đỗ đông", "Bắc Đỗ đông"},
-            {"Lãnh địa bang", "", "", "", ""},
+            {"Lãnh địa đội", "", "", "", ""},
             {"Rừng già", "", "", "", ""},
             {"TYT 5x", "", "", "", ""},
             {"TYT 6x", "", "", "", ""},
             {"TYT 7x", "", "", "", ""},
             {"Chien truong", "", "", "", ""},
             {"Cánh Rừng Đông", "", "", "", ""},//28
-            {"Thành liên đấu 2", "", "", "", ""},//29
-            {"Thành liên đấu 3", "", "", "", ""},//30
-            {"Thành liên đấu 4", "", "", "", ""},//31
-            {"Thành liên đấu 5", "", "", "", ""},//32
-            {"Thành liên đấu 6", "", "", "", ""},//33
-            {"Thành liên đấu 7", "", "", "", ""},//34
-            {"Thành liên đấu 8", "", "", "", ""},//35
-            {"Thành liên đấu 9", "", "", "", ""},//36
-            {"Thành liên đấu 10", "", "", "", ""},//37
+            {"Sân Liên minh 2", "", "", "", ""},//29
+            {"Sân Liên minh 3", "", "", "", ""},//30
+            {"Sân Liên minh 4", "", "", "", ""},//31
+            {"Sân Liên minh 5", "", "", "", ""},//32
+            {"Sân Liên minh 6", "", "", "", ""},//33
+            {"Sân Liên minh 7", "", "", "", ""},//34
+            {"Sân Liên minh 8", "", "", "", ""},//35
+            {"Sân Liên minh 9", "", "", "", ""},//36
+            {"Sân Liên minh 10", "", "", "", ""},//37
             {"Chiến trường", "", "", "", ""},//38
             {"Cân núi", "", "", "", ""},//39
             {"Núi kho báu", "", "", "", ""},//40
-            {"Lôi đài", "", "", "", ""},//41
+            {"Sàn đấu", "", "", "", ""},//41
             {"Sảnh chờ", "", "", "", ""},//42
         };
         Map.idArrMap = new short[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58};
@@ -921,6 +923,8 @@ public class RealController extends ServerController {
         } catch (Exception var25) {
             var25.printStackTrace();
         }
+        // Vung Hoenn: noi hang vao cac bang tren (sau khi da gan lai) + loi vao o cong bac map 9.
+        VungHoenn.dangKyBang();
     }
 
     public void initData() {
@@ -928,12 +932,11 @@ public class RealController extends ServerController {
         System.out.println("KHOI TAO XONG ");
         Map.loadAllLocaltionMap();
         commandHandler.put(1, new LoginHandler());
-        // Dang ky da chuyen han sang web (web/register.php). Handler cu
-        // real.RequestRegisterHandler (trong lib/NQSH_5h.jar) la mot diem TAO TAI KHOAN
-        // o trang thai chua dang nhap, va no KHONG di qua han muc 5 tai khoan/IP/gio ma
-        // web/register.php dem bang bang web_chan_spam -> ai noi dung giao thuc la lap
-        // duoc tai khoan hang loat. Thay bang mot loi nhan ro rang.
-        commandHandler.put(39, new real.cmd.DangKyDaChuyenSangWeb());
+        // Lenh 39 = DANG KY TRONG GAME (jar/Android/PC), cung quy tac + han muc gop voi web
+        // (HTBB-Web/shared/data/quy-tac-dang-ky.json), co cau do chong bot. Tat bang
+        // server.ini sv.dangKyTrongGame=0. KHONG dung lai real.RequestRegisterHandler cu cua
+        // lib/htbb-core.jar (khong han muc, khong dau vet). Xem real.cmd.DangKyTrongGame.
+        commandHandler.put(39, new real.cmd.DangKyTrongGame());
         commandHandler.put(23, new RequestNPCInfoHandler());
         commandHandler.put(14, new CreateCharHandler());
         commandHandler.put(13, new SelectCharHandler());
@@ -1002,14 +1005,17 @@ public class RealController extends ServerController {
 
                             switch (message.command) {
                                 case -45:
-                                    doRideAnimal.doRideAnimal(p, message);
+                                    doCuoiThu.doCuoiThu(p, message);
 
                                     break;
                                 case 85:
                                     doBuySpecialItem.doBuySpecialItem(p, message);
                                     break;
                                 case 22:
-
+                                    // Tu dong danh: nhip uong thuoc nguoi that luc dang tu dong (TuDongGame)
+                                    if (!TuDongGame.kiemLenh(p, 22)) {
+                                        break;
+                                    }
                                     doUsePotion.doUsePotion(p, message);
                                     break;
                                 case -30:// doMenu(player, message);
@@ -1044,7 +1050,7 @@ public class RealController extends ServerController {
                                                     } else {
                                                         p.potions[136] = p.potions[136] - 20;
                                                         p.createNguyetLinhTruong(p, 0, 10080, (Item) null, true, true, 1, false);
-                                                        String info = "Chúc mừng bạn nhận được Nguyệt Linh Trượng 7 ngày";
+                                                        String info = "Chúc mừng bạn nhận được Gậy Ánh Trăng 7 ngày";
                                                         p.sendMessage(MessageCreator.createMsgChat(p.id, info));
                                                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                                                         Database.instance.saveLogThongKeChiTieu("doiNLT", 0, 1, 10000L, "luong");
@@ -1088,7 +1094,7 @@ public class RealController extends ServerController {
                                                 }
                                             } else {
                                                 Animal anim = (Animal) p.animal.get(idMenu);
-                                                p.map.doRideAnimal(p, 0, anim.id);
+                                                p.map.doCuoiThu(p, 0, anim.id);
                                             }
                                             break;
 
@@ -1135,7 +1141,7 @@ public class RealController extends ServerController {
                                                             if (idOptionMenu != 3) {
                                                                 if (idOptionMenu == 4) {
                                                                     if (MapLoiDai.listMatch.size() == 0) {
-                                                                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Các trận lôi đài chưa bắt đầu"));
+                                                                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Các trận sàn đấu chưa bắt đầu"));
                                                                         return;
                                                                     }
 
@@ -1158,7 +1164,7 @@ public class RealController extends ServerController {
                                                             }
                                                         } else {
                                                             if (!MapLoiDai.isRunLoiDai()) {
-                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đăng ký khi lôi đài chưa mở."));
+                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đăng ký khi sàn đấu chưa mở."));
                                                                 return;
                                                             }
 
@@ -1178,7 +1184,7 @@ public class RealController extends ServerController {
                                                                     p.nhomThidau = (byte) win;
                                                                 }
 
-                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé"));
+                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé"));
                                                                 return;
                                                             }
 
@@ -1186,7 +1192,7 @@ public class RealController extends ServerController {
                                                             c = new CharThiDau(p.charname, p.lvDetail.lv, p.charDBID);
                                                             c.nhom = win;
                                                             ((Hashtable) Map.ALL_CHAR_LOI_DAI.get(win)).put(p.charDBID, c);
-                                                            p.sendMessage(MessageCreator.createMsgChat(p.id, "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé."));
+                                                            p.sendMessage(MessageCreator.createMsgChat(p.id, "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé."));
                                                             Database.instance.doAddCharThachDau(c, win, true);
                                                             Database.instance.saveOrtherLog("", p.charname, "dang ky loi dai", "regloidai");
                                                         }
@@ -1195,7 +1201,7 @@ public class RealController extends ServerController {
                                                         p.sendMessage(MessageCreator.createMsgMenu((String[]) ld, idNpc, 11));
                                                     }
                                                 } else {
-                                                    doUnRideHorse.doUnRideHorse(p, 0);
+                                                    doXuongThuCuoi.doXuongThuCuoi(p, 0);
                                                 }
                                             } else if (idOptionMenu != 0) {
                                                 if (idOptionMenu != 1) {
@@ -1204,7 +1210,7 @@ public class RealController extends ServerController {
                                                             if (idOptionMenu != 4) {
                                                                 if (idOptionMenu == 5) {
                                                                     if (MapLoiDai.listMatch.size() == 0) {
-                                                                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Các trận lôi đài chưa bắt đầu"));
+                                                                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Các trận sàn đấu chưa bắt đầu"));
                                                                         return;
                                                                     }
 
@@ -1227,7 +1233,7 @@ public class RealController extends ServerController {
                                                             }
                                                         } else {
                                                             if (!MapLoiDai.isRunLoiDai()) {
-                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đăng ký khi lôi đài chưa mở."));
+                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đăng ký khi sàn đấu chưa mở."));
                                                                 return;
                                                             }
 
@@ -1247,7 +1253,7 @@ public class RealController extends ServerController {
                                                                     p.nhomThidau = (byte) win;
                                                                 }
 
-                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé"));
+                                                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé"));
                                                                 return;
                                                             }
 
@@ -1255,7 +1261,7 @@ public class RealController extends ServerController {
                                                             c = new CharThiDau(p.charname, p.lvDetail.lv, p.charDBID);
                                                             c.nhom = win;
                                                             ((Hashtable) Map.ALL_CHAR_LOI_DAI.get(win)).put(p.charDBID, c);
-                                                            p.sendMessage(MessageCreator.createMsgChat(p.id, "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé."));
+                                                            p.sendMessage(MessageCreator.createMsgChat(p.id, "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé."));
                                                             Database.instance.doAddCharThachDau(c, win, true);
                                                             Database.instance.saveOrtherLog("", p.charname, "dang ky loi dai", "regloidai");
                                                         }
@@ -1264,7 +1270,7 @@ public class RealController extends ServerController {
                                                         p.sendMessage(MessageCreator.createMsgMenu((String[]) ld, idNpc, 11));
                                                     }
                                                 } else {
-                                                    doUnRideHorse.doUnRideHorse(p, 0);
+                                                    doXuongThuCuoi.doXuongThuCuoi(p, 0);
                                                 }
                                             } else if (p.map.mapIDLoadMap != 0 || p.map.mapIDLoadMap != 70) {
                                                 doMenuNpcNhanTieu(p, idNpc, idMenu, idOptionMenu);
@@ -1272,7 +1278,7 @@ public class RealController extends ServerController {
 
                                             break;
                                         case -51:
-                                            TraVanTieu.excecute(p);
+                                            TraHang.excecute(p);
                                             break;
                                         case -49: // todo do menu su kien word cup
                                             if (!Char.isFinishAllSuKienHe2017()) {
@@ -1510,7 +1516,7 @@ public class RealController extends ServerController {
                                 // Trung Thu 2026: "Thu cuoi Lan Su Tu thoi han" - them moi theo spec.
                                 int[] minute = new int[]{1440, 4320, 7200, 10080};
                                 player.createLan((long) minute[r.nextInt(minute.length)], true, 95);
-                                info = info + "Lân Sư Tử";
+                                info = info + "Suicune";
                                 player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                             } else if (typegift[index] == -8) {
                                 // Trung Thu 2026 (sua 19/09/2026): "100.000 exp" la MOT trong cac
@@ -1550,7 +1556,7 @@ public class RealController extends ServerController {
                                 // dbt
                                 int time = r.nextInt(3) + 3;
                                 player.createPoro((long) time, false);
-                                info = info + " đại bạch thử";
+                                info = info + " Wooloo";
                             } else if (typegift[index] == -1) {
                                 player.addXu((long) soluongmax[index], "map 56");
                                 info = info + soluongmax[index] + " xu";
@@ -1683,7 +1689,7 @@ public class RealController extends ServerController {
         if (tongMoi == data.DatabaseCanMocThaDen.MOC_TOAN_SERVER_X2_EXP) {
             try {
                 Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
-                        "Toàn server đã đốt/thả đủ 10.000 lượt đèn Trung Thu! Hôm nay toàn bộ nhân vật online được X2 EXP!"));
+                        "Toàn server đã đốt/thả đủ 10.000 lượt đèn Trung Thu! Hôm nay toàn bộ Pokémon online được X2 EXP!"));
             } catch (final java.io.IOException ex) {
             }
         }
@@ -1697,12 +1703,12 @@ public class RealController extends ServerController {
                 Calendar cal = Calendar.getInstance();
                 int ihour = cal.get(11);
                 if ((ihour < 9 || ihour >= 21) && TeamServer.server != 100) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể nhận tiêu từ 9h đến 21h hàng ngày", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể nhận hàng từ 9h đến 21h hàng ngày", ""));
                     return;
                 }
 
                 if (player.lvDetail.lv < 40) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho nhân vật từ cấp độ 40 trở lên", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho Pokémon từ cấp độ 40 trở lên", ""));
                     return;
                 }
 
@@ -1811,7 +1817,7 @@ public class RealController extends ServerController {
                             text += "tắt";
                             player.setTatPhiPhong();
                         }
-                        text += " phi phong thành công";
+                        text += " ruy băng thành công";
                         try {
                             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             player.sendToNearPlayer(MessageCreator.createCharInfo(player));
@@ -1890,8 +1896,8 @@ public class RealController extends ServerController {
                             // nguong 100 la kiem SAI TRUONG va khong bao gio dung ca.
                             player.sendMessage(MessageCreator.createServerAlertMessage(
                                     player.daTinhLuyenToiDa()
-                                            ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
-                                            : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                                            ? "Bảo vật cầm tay này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                            : "Bạn phải mặc bảo vật cầm tay mới có thể tinh luyện", ""));
                             return;
                         }
                         if (player.getLuong() <1) {
@@ -1914,7 +1920,7 @@ public class RealController extends ServerController {
                         // nguyen lieu that - xem Map.doBuyItemShopNew, nhanh type == 7.
                         final Vector<Item> vuKhiDangMac = new Vector<>();
                         vuKhiDangMac.addElement(player.itemVukhiThoiTrang);
-                        player.sendMessage(MessageCreator.createMessageShopNew(player, vuKhiDangMac, "Tiếp tục", "Vũ Khí Thần Binh", 7));
+                        player.sendMessage(MessageCreator.createMessageShopNew(player, vuKhiDangMac, "Tiếp tục", "Bảo Vật Cầm Tay", 7));
                         return;
                         case 10:
                         if (!player.checkVuKhiThanBinh()) {
@@ -1955,7 +1961,7 @@ public class RealController extends ServerController {
                         player.sendMessage(MessageCreator.createMsgPopUp(
                             player.id,
                             123,
-                            "Bạn có muốn gia hạn vũ khí " + player.itemVukhiThoiTrang.getTemplate().name +
+                            "Bạn có muốn gia hạn đồ cầm tay " + player.itemVukhiThoiTrang.getTemplate().name +
                             " đang có thời hạn " + timeInfo[0] +
                             " thêm 7 ngày với giá " + giaLuong + " lượng không ?"
                         ));
@@ -1966,7 +1972,7 @@ public class RealController extends ServerController {
                     // "boskin": tu no da tu kiem khong co skin dang mac / hanh trang day va
                     // bao loi phu hop.
                     case 15:
-                        SkinLinhThu.thaoSkin(player);
+                        SkinThuCuoi.thaoSkin(player);
                         return;
 
                     // Than Khi doi xuong cuoi menu (05/09/2026), roi lui xuong case 15 khi
@@ -2060,7 +2066,7 @@ public class RealController extends ServerController {
                         return;
 
                     // Bat/tat HIEN THI skin linh thu (them 01/09/2026) — chi an hinh anh
-                    // con thu, khong dong toi chi so/noi tai da mac. Xem SkinLinhThu.hienThi.
+                    // con thu, khong dong toi chi so/noi tai da mac. Xem SkinThuCuoi.hienThi.
                     // So case doi tu 15 xuong 14 (01/09/2026): gop "Tinh Hoa Trang Phuc"
                     // (case 14 cu) vao chung case 11 "Cai Tao Cai Trang" nen xoa mot muc
                     // menu rieng, muc nay tut xuong dung mot bac trong mang menu.
@@ -2108,6 +2114,10 @@ public class RealController extends ServerController {
 
             switch (idMenu) {
                 case 100:
+                    // thanh vien: qua online (ca he cu lan QuaHoatDong).
+                    if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "qua_online")) {
+                        break;
+                    }
                     // Yeu cau 17/10/2026: bat co sv.lau_dai -> qua hoat dong theo tai khoan (QuaHoatDong).
                     if (com.htbb.pokemon.LauDai.bat()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage(QuaHoatDong.nhan(player, idOptionMenu), ""));
@@ -2212,7 +2222,7 @@ public class RealController extends ServerController {
                         newItem.dateCreate = Char.getDayTime(0L);
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ vận tiêu."));
+                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ giao hàng."));
                         Database.instance.saveOrtherLog("", player.charname, "nhan loa vip va the mua ban 30 ngay va them 2 luot mua the van tieu", "loavip");
                         if (ALL_CHAR_VIP.get(player.charname) == null) {
                             Database.instance.doAddCharVip(player.charname, player.vip);
@@ -2227,7 +2237,7 @@ public class RealController extends ServerController {
                         var10000 = player.potions;
                         var10000[100] += Char.soluong_loa_vip[player.vip];
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 loa và thêm 1 lượt mua thẻ vận tiêu."));
+                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 loa và thêm 1 lượt mua thẻ giao hàng."));
                         Database.instance.saveOrtherLog("", player.charname, "nhan loa vip, them 1 luot mua the van tieu", "loavip");
                         if (ALL_CHAR_VIP.get(player.charname) == null) {
                             Database.instance.doAddCharVip(player.charname, player.vip);
@@ -2258,7 +2268,7 @@ public class RealController extends ServerController {
                         newItem.dateCreate = Char.getDayTime(0L);
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ vận tiêu."));
+                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ giao hàng."));
                         Database.instance.saveOrtherLog("", player.charname, "nhan loa vip va the mua ban 30 ngay, them 2 luot mua the van tieu", "loavip");
                         if (ALL_CHAR_VIP.get(player.charname) == null) {
                             Database.instance.doAddCharVip(player.charname, player.vip);
@@ -2296,10 +2306,10 @@ public class RealController extends ServerController {
             if (idMenu == 0) {
                 player.infoItemCreate = null;
                 if (idOptionMenu == 0) {
-                    menu = new String[]{"Kiếm", "Đại đao", "Bút", "Búa", "Cung"};
+                    menu = new String[]{"Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung"};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 1));
                 } else if (idOptionMenu == 1) {
-                    menu = new String[]{"Trang bị ma pháp", "Trang bị vât lý"};
+                    menu = new String[]{"Trang bị đặc biệt", "Trang bị vât lý"};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 3));
                 } else if (idOptionMenu == 2) {
                     menu = new String[]{"Cấp độ 30", "Cấp độ 35", "Cấp độ 40", "Cấp độ 45", "Cấp độ 50", "Cấp độ 55", "Cấp độ 60", "Cấp độ 65", "Cấp độ 70", "Cấp độ 75", "Cấp độ 80", "Cấp độ 85"};
@@ -2311,12 +2321,12 @@ public class RealController extends ServerController {
                     String nameItem = "";
                     switch (idOptionMenu) {
                         case 0:
-                            nameItem = "Kiếm cấp độ ";
+                            nameItem = "Than lửa cấp độ ";
                             player.infoItemCreate.charClass = 0;
                             player.infoItemCreate.typeItem = 3;
                             break;
                         case 1:
-                            nameItem = "Đại đao cấp độ ";
+                            nameItem = "Hạt giống thần cấp độ ";
                             player.infoItemCreate.charClass = 1;
                             player.infoItemCreate.typeItem = 4;
                             break;
@@ -2360,12 +2370,12 @@ public class RealController extends ServerController {
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) (new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Nguyên liệu tổng hợp"}), idNpc, 11));
                 } else if (idMenu == 3) {
                     player.infoItemCreate = new InfoItemCreate();
-                    menu = new String[]{"Kiếm khách", "Chiến binh", "Pháp sư", "Đấu sĩ", "Cung thủ"};
+                    menu = new String[]{"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 4));
                     player.infoItemCreate.magic_physic = (byte) idOptionMenu;
                 } else if (idMenu == 4) {
                     player.infoItemCreate.charClass = (byte) idOptionMenu;
-                    menu = new String[]{"Kiếm khách", "Chiến binh", "Pháp sư", "Đấu sĩ", "Cung thủ"};
+                    menu = new String[]{"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"};
                     menu = new String[]{"áo " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Quần " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Nón " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Giày " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Găng " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Nhẫn " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Dây chuyền " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu], "Ngọc " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + menu[idOptionMenu]};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 5));
                 } else if (idMenu == 5) {
@@ -2427,7 +2437,7 @@ public class RealController extends ServerController {
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) (new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Nguyên liệu tổng hợp"}), idNpc, 11));
                 } else if (idMenu == 7) {
                     player.itChangeColor = new ItemChangeColor(idOptionMenu);
-                    menu = new String[]{"Ma pháp", "Vật lý"};
+                    menu = new String[]{"Đặc biệt", "Vật lý"};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 8));
                 } else if (idMenu == 8) {
                     player.itChangeColor.magic_physic = (byte) idOptionMenu;

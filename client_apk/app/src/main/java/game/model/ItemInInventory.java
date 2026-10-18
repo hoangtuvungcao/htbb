@@ -32,15 +32,15 @@ public class ItemInInventory {
     public long timeEnd;
     public byte totalKham;
     public byte viTriVe;
-    private static String[][] groupKick = {new String[]{"Quần", "Nhẫn dưới"}, new String[]{"Ngọc", "Găng"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"Nón", "Vũ khí", "Ngọc bội", "Găng"}, new String[]{"Nhẫn dưới", "Quần"}, new String[]{"Nón", "Vũ khí"}, new String[]{"Giày", "Nhẫn trên"}, new String[]{"Giày", "Nhẫn trên"}};
-    private static String[][] kickHe = {new String[]{"Kim"}, new String[]{"Thủy"}, new String[]{"Mộc"}, new String[]{"Hỏa"}, new String[]{"Thổ"}};
-    private static String[][] groupKickAnimal = {new String[]{"Nón"}, new String[]{"Bàn đạp"}, new String[]{"Hộ uyển"}, new String[]{"Yên cương"}, new String[]{"Giáp"}};
-    public static final String[] attrName = {"Tấn công", "Thủ vật", "Né tránh", "Chính xác", "Chí mạng", "Sức khoẻ", "Thủ ma", "Chỉ số 7", "Chỉ số 8", "Chỉ số 9"};
+    private static String[][] groupKick = {new String[]{"Quần", "Nhẫn dưới"}, new String[]{"Ngọc", "Găng"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"Nón", "Đồ cầm tay", "Phiến đá hệ", "Găng"}, new String[]{"Nhẫn dưới", "Quần"}, new String[]{"Nón", "Đồ cầm tay"}, new String[]{"Giày", "Nhẫn trên"}, new String[]{"Giày", "Nhẫn trên"}};
+    private static String[][] kickHe = {new String[]{"Thép"}, new String[]{"Nước"}, new String[]{"Cỏ"}, new String[]{"Lửa"}, new String[]{"Đất"}};
+    private static String[][] groupKickAnimal = {new String[]{"Nón"}, new String[]{"Bàn đạp"}, new String[]{"Vòng chân"}, new String[]{"Yên cương"}, new String[]{"Giáp"}};
+    public static final String[] attrName = {"Tấn công", "Phòng thủ", "Né tránh", "Chính xác", "Chí mạng", "HP", "Phòng thủ đặc biệt", "Mã hình 1", "Mã hình 2", "Đánh dấu thời trang"};
     static String[] na = {"Giáp nhẹ", "Giáp nặng", "Giáp vải", "Giáp nặng", "Giáp nhẹ", ""};
     static String[] nameNguHanh = {"Giảm st vật: ", "Giảm st ma: ", "Tăng tc: ", "Bỏ qua pt: ", "Phản st: ", "Bỏ qua tc ma", "Bỏ qua tc vật"};
-    static String[] nameHangItem = {"", "nhất phẩm", "nhị phẩm", "tam phẩm", "tứ phẩm", "ngũ phẩm"};
-    static String[] he = {"hệ thuỷ", "hệ mộc", "hệ hoả", "hệ thổ", "hệ kim"};
-    static String[] magic = {"ma pháp", "vật lý", ""};
+    static String[] nameHangItem = {"", "hạng 1", "hạng 2", "hạng 3", "hạng 4", "hạng 5"};
+    static String[] he = {"hệ Nước", "hệ Cỏ", "hệ Lửa", "hệ Đất", "hệ Thép"};
+    static String[] magic = {"đặc biệt", "vật lý", ""};
     public static byte typeItemBuy = 2;
     private static int[] color = {7667443, 3334656, 16705024};
     public byte[] newAtb = new byte[10];
@@ -164,17 +164,17 @@ public class ItemInInventory {
                 byte b2 = this.hangItem;
                 if (b2 > 0 && b2 < 5 && item.type != 13 && item.type < 13) {
                     if (item.type != 8) {
-                        str2 = str + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                        str2 = str + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                     } else if (this.viTriVe == 1) {
-                        str2 = str + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                        str2 = str + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                     } else {
-                        str2 = str + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                        str2 = str + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                     }
                     str = str2;
                 }
                 byte b3 = this.hangItem;
                 if (b3 > 0 && b3 < 5 && isAnimalArmor(item.type)) {
-                    str = str + setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                    str = str + setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                 }
             } catch (Exception unused) {
             }
@@ -242,17 +242,17 @@ public class ItemInInventory {
                 byte b2 = this.hangItem;
                 if (b2 > 0 && b2 < 5 && item.type != 13 && item.type < 13) {
                     if (item.type != 8) {
-                        str2 = str + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                        str2 = str + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                     } else if (this.viTriVe == 1) {
-                        str2 = str + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                        str2 = str + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                     } else {
-                        str2 = str + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                        str2 = str + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                     }
                     str = str2;
                 }
                 byte b3 = this.hangItem;
                 if (b3 > 0 && b3 < 5 && isAnimalArmor(item.type)) {
-                    str = str + setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[this.heItem][0] + " để kích ngũ hành", "0");
+                    str = str + setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[this.heItem][0] + " để kích hệ", "0");
                 }
             } catch (Exception unused) {
             }

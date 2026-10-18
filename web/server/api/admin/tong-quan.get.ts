@@ -2,7 +2,7 @@
  * Bảng tổng quan khu quản trị: thống kê tài khoản / nhân vật / online / giftcode
  * và các cảnh báo an toàn đăng nhập.
  *
- * Mọi con số đọc trực tiếp từ `account` và `kpah_db` ngay lúc gọi. Một câu đếm
+ * Mọi con số đọc trực tiếp từ `account` và `htbb_db` ngay lúc gọi. Một câu đếm
  * hỏng (bảng chưa có) trả null để trang hiện "—" thay vì vỡ cả trang.
  */
 import type { H3Event } from 'h3'
@@ -97,7 +97,7 @@ async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
   ])
 
   // Chưa kích hoạt: NovaDB dùng mỗi database một file, không hỗ trợ truy vấn chéo
-  // `account`.`kpah_db`. Đối chiếu hai tập ở application layer thay vì để câu SQL lỗi rồi
+  // `account`.`htbb_db`. Đối chiếu hai tập ở application layer thay vì để câu SQL lỗi rồi
   // mới rơi về phép trừ gần đúng (phép trừ sai khi có tài khoản bị xóa/kích hoạt mồ côi).
   let tkChuaKH: number | null = null
   let tkChuaKHUocLuong = false
@@ -228,8 +228,8 @@ async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
   try {
     daBat2fa = await hbDaGhiDanh(admin.username)
     conMaDuPhong = daBat2fa ? await hbSoMaDuPhongConLai(admin.username) : 0
-    // Ai trong KPAH_ADMIN_ACCOUNTS còn chưa ghi danh — để biết khi nào bật được
-    // KPAH_ADMIN_2FA_BAT_BUOC mà không khoá ai ra ngoài.
+    // Ai trong HTBB_ADMIN_ACCOUNTS còn chưa ghi danh — để biết khi nào bật được
+    // HTBB_ADMIN_2FA_BAT_BUOC mà không khoá ai ra ngoài.
     for (const ten of adminAccounts()) {
       if (!(await hbDaGhiDanh(ten))) chuaGhiDanh.push(ten)
     }

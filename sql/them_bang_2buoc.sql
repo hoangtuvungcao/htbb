@@ -1,11 +1,11 @@
 -- ============================================================================
 --  Bang `web_admin_2fa` - xac thuc hai buoc (TOTP) cho Trang quan tri web.
 --
---      mysql -u root kpah_db < sql/them_bang_2buoc.sql
+--      mysql -u root htbb_db < sql/them_bang_2buoc.sql
 --
 --  KHONG BAT BUOC CHAY TAY: lenh ghi danh tu tao bang
---  (web/admin/tao_ma_2buoc.php). De o day de bo kiem web/admin/test/kiem_schema.php
---  doi chieu duoc ten cot, va de xem cau truc ma khong phai doc PHP.
+--  (HTBB-Web scripts/tao-ma-2buoc.mjs). De o day de xem cau truc ma khong phai
+--  doc ma nguon web.
 --
 -- ----------------------------------------------------------------------------
 --  VI SAO CAN
@@ -24,7 +24,7 @@
 -- ----------------------------------------------------------------------------
 --  Ghi danh CHI lam bang lenh chay tren may chu qua SSH:
 --
---      cd /opt/kpah && sudo -u www-data php web/admin/tao_ma_2buoc.php <ten>
+--      cd <thu muc HTBB-Web> && sudo -u htbb-web node --env-file=/etc/htbb-web.env scripts/tao-ma-2buoc.mjs <ten>
 --
 --  Web KHONG co duong nao tao hay doi khoa. Neu de nguoi go dung mat khau tu
 --  ghi danh tren web thi ke trom duoc mat khau cung tu ghi danh duoc bang dien

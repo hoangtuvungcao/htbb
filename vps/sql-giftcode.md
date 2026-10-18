@@ -16,37 +16,37 @@ Hoặc trên VPS: `mysql -u root -t -e "<câu SQL>"`
 Tất cả mã và số lượt còn lại:
 
 ```sql
-SELECT id, giftcode, xu, luong, luongLock, limit_use, type, item FROM kpah_db.giftcode ORDER BY id;
+SELECT id, giftcode, xu, luong, luongLock, limit_use, type, item FROM htbb_db.giftcode ORDER BY id;
 ```
 
 Chỉ những mã còn dùng được:
 
 ```sql
-SELECT giftcode, limit_use, xu, luong, luongLock, item FROM kpah_db.giftcode WHERE type = 0 AND limit_use <> 0 ORDER BY id;
+SELECT giftcode, limit_use, xu, luong, luongLock, item FROM htbb_db.giftcode WHERE type = 0 AND limit_use <> 0 ORDER BY id;
 ```
 
 30 lần nhận mã gần nhất (ai nhận gì):
 
 ```sql
-SELECT id, giftcode, player, xu, luong, luongK, item FROM kpah_db.giftcode_log ORDER BY id DESC LIMIT 30;
+SELECT id, giftcode, player, xu, luong, luongK, item FROM htbb_db.giftcode_log ORDER BY id DESC LIMIT 30;
 ```
 
 Một nhân vật đã nhận những mã nào:
 
 ```sql
-SELECT giftcode, xu, luong, luongK FROM kpah_db.giftcode_log WHERE player = 'admin';
+SELECT giftcode, xu, luong, luongK FROM htbb_db.giftcode_log WHERE player = 'admin';
 ```
 
 Một mã đã có bao nhiêu người nhận:
 
 ```sql
-SELECT giftcode, COUNT(*) AS so_nguoi_nhan FROM kpah_db.giftcode_log WHERE giftcode = 'oke212' GROUP BY giftcode;
+SELECT giftcode, COUNT(*) AS so_nguoi_nhan FROM htbb_db.giftcode_log WHERE giftcode = 'oke212' GROUP BY giftcode;
 ```
 
 Thống kê tổng: mã nào được dùng nhiều nhất:
 
 ```sql
-SELECT giftcode, COUNT(*) AS lan_nhan FROM kpah_db.giftcode_log GROUP BY giftcode ORDER BY lan_nhan DESC LIMIT 20;
+SELECT giftcode, COUNT(*) AS lan_nhan FROM htbb_db.giftcode_log GROUP BY giftcode ORDER BY lan_nhan DESC LIMIT 20;
 ```
 
 ## Câu quan trọng nhất — vì sao một người không nhận được mã
@@ -54,7 +54,7 @@ SELECT giftcode, COUNT(*) AS lan_nhan FROM kpah_db.giftcode_log GROUP BY giftcod
 Mô phỏng đúng logic server kiểm tra (đổi `oke212` và `admin` theo nhu cầu):
 
 ```sql
-SELECT g.giftcode, g.type, g.limit_use, (SELECT COUNT(*) FROM kpah_db.giftcode_log l WHERE l.giftcode = g.giftcode AND l.player = 'admin') AS da_nhan FROM kpah_db.giftcode g WHERE g.giftcode = 'oke212';
+SELECT g.giftcode, g.type, g.limit_use, (SELECT COUNT(*) FROM htbb_db.giftcode_log l WHERE l.giftcode = g.giftcode AND l.player = 'admin') AS da_nhan FROM htbb_db.giftcode g WHERE g.giftcode = 'oke212';
 ```
 
 Nhận được khi **cả ba** đúng: `type = 0`, `limit_use <> 0`, `da_nhan = 0`.
@@ -65,38 +65,38 @@ Không ra dòng nào = mã không tồn tại (sai chính tả, hoặc mã nằm
 Nạp thêm lượt cho một mã:
 
 ```sql
-UPDATE kpah_db.giftcode SET limit_use = 100 WHERE giftcode = 'oke212';
+UPDATE htbb_db.giftcode SET limit_use = 100 WHERE giftcode = 'oke212';
 ```
 
 Cho một nhân vật nhận lại mã (xoá dấu vết đã nhận):
 
 ```sql
-DELETE FROM kpah_db.giftcode_log WHERE giftcode = 'oke212' AND player = 'admin';
+DELETE FROM htbb_db.giftcode_log WHERE giftcode = 'oke212' AND player = 'admin';
 ```
 
 Tạo mã mới (`id` là AUTO_INCREMENT nên không cần điền):
 
 ```sql
-INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('tanthu2026', 1000000, 500, 0, 'DB:1234:1:0', 0, 100, 0);
+INSERT INTO htbb_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('tanthu2026', 1000000, 500, 0, 'DB:1234:1:0', 0, 100, 0);
 ```
 
 Tắt một mã ngay:
 
 ```sql
-UPDATE kpah_db.giftcode SET limit_use = 0 WHERE giftcode = 'tanthu2026';
+UPDATE htbb_db.giftcode SET limit_use = 0 WHERE giftcode = 'tanthu2026';
 ```
 
 Xoá hẳn một mã:
 
 ```sql
-DELETE FROM kpah_db.giftcode WHERE giftcode = 'tanthu2026';
+DELETE FROM htbb_db.giftcode WHERE giftcode = 'tanthu2026';
 ```
 
 ## Bốn điều về cách server xử lý mã
 
 **1. `type` phải bằng 0.** Câu truy vấn của server là
 `select * from giftcode where giftcode='...' and type = 0 limit 1`
-([Database.java:2314](../src/data/Database.java#L2314)). Đặt `type` khác 0 là mã vô hình
+([Database.java:2314](../server/src/data/Database.java#L2314)). Đặt `type` khác 0 là mã vô hình
 với người chơi.
 
 **2. `limit_use` là số lượt còn lại, không phải số lượt đã dùng.** Mỗi lần nhận:
@@ -124,7 +124,7 @@ Nhiều phần thưởng ngăn nhau bằng dấu phẩy, mỗi phần thưởng 
 | `DH:<id>:<sl>:<time>` | danh hiệu | `DH:8767:1:0` |
 | `EGG:<id>:<sl>` | trứng phượng hoàng | `EGG:3:1` |
 | `TK:<id>::<time>` | thần khí | `TK:12::0` |
-| `GEM`, `PP`, `PPR`, `PPV`, `AOTT`, `MATNA`, `VKTT`... | ngọc / phi phong / áo / mặt nạ / vũ khí | xem [Char.java:8764](../src/real/Char.java#L8764) |
+| `GEM`, `PP`, `PPR`, `PPV`, `AOTT`, `MATNA`, `VKTT`... | ngọc / phi phong / áo / mặt nạ / vũ khí | xem [Char.java:8764](../server/src/real/Char.java#L8764) |
 
 Mã có sẵn trong bản dump, dùng làm mẫu:
 
@@ -137,7 +137,7 @@ oke212   -> 1000 lượng khoá + 12 loại item     (limit_use 2154)
 Thêm phần thưởng vào một mã đang có:
 
 ```sql
-UPDATE kpah_db.giftcode SET item = CONCAT(item, ',PET:5:1:0') WHERE giftcode = 'oke212';
+UPDATE htbb_db.giftcode SET item = CONCAT(item, ',PET:5:1:0') WHERE giftcode = 'oke212';
 ```
 
 ## Bộ 6 mã: đồ VĨNH VIỄN + nguyên liệu (không cần `ALTER`, mỗi mã dưới 255 ký tự)
@@ -145,11 +145,11 @@ UPDATE kpah_db.giftcode SET item = CONCAT(item, ',PET:5:1:0') WHERE giftcode = '
 Xoá 3 mã cũ (dùng thời hạn ngày) trước khi tạo lại:
 
 ```sql
-DELETE FROM kpah_db.giftcode WHERE giftcode IN ('vip1','vip2','vip3');
+DELETE FROM htbb_db.giftcode WHERE giftcode IN ('vip1','vip2','vip3');
 ```
 
 ```sql
-INSERT INTO kpah_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type) VALUES
+INSERT INTO htbb_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type) VALUES
 ('vip1',2000000000,1000000000,1000000000,'PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:0,PHTT:0,PHBT:0,HKL:0,CAITRANG:903:1:10,CAITRANG:904:1:10',0,1,0),
 ('vip2',0,0,0,'VKTT:0:1:0,VKMAX:0:1:0,VKTB:0:1:0,VKTBMAX:0:1:0,VKTBLV:70:99:0,NLTMAX:0:1:0,PP8X:0:1:0,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,MNT:0,MNC:0,HOVELAN:882:5:0,BT:0:1:0',0,1,0),
 ('vip3',0,0,0,'AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:0,TRANGPHUC:833:1:0,TRANGPHUC:834:1:0,TRANGPHUC:839:1:0,TRANGPHUC:791:1:0,TRANGPHUC:744:1:0,TRANGPHUC:736:1:0,TRANGPHUC:737:1:0,GEM:73:10000:1,GEM:108:10000:1,SUTU:1:0,TL:0',0,1,0),
@@ -200,7 +200,7 @@ món đó thành `5256000` (10 năm tính bằng phút) hoặc `3650` (10 năm t
 **Không có item nào tên "nguyên liệu siêu cấp 6"** trong `data_item`. Cấp 6 chỉ có đúng hai
 món: `828 Xương cấp 6` và `829 Ngọc huyền minh cấp 6` (cả hai đã có trong `nlieu3`). Nguyên
 liệu ghép đồ thì cao nhất là **cấp 5** (807-816). Tự kiểm:
-`SELECT id,name FROM kpah_db.data_item WHERE name LIKE '%cấp 6%';`
+`SELECT id,name FROM htbb_db.data_item WHERE name LIKE '%cấp 6%';`
 
 **Coi chừng hành trang đầy.** Ba mã nguyên liệu tạo hơn 30 loại đồ = hơn 30 ô hành trang.
 Nhiều hàm tạo đồ có kiểm `isFullInventory()` và **bỏ qua im lặng** khi đầy. Dọn hành trang
@@ -212,13 +212,13 @@ Chuỗi `item` dài 787 ký tự mà cột đang là `varchar(255)` → **phải
 MySQL cắt cụt ở 255 và phần sau mất im lặng:
 
 ```sql
-ALTER TABLE kpah_db.giftcode MODIFY item TEXT;
+ALTER TABLE htbb_db.giftcode MODIFY item TEXT;
 ```
 
 Rồi tạo mã:
 
 ```sql
-INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('vipall', 2000000000, 1000000000, 1000000000, 'PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:30,PHTT:30,PHBT:30,HKL:30,CAITRANG:903:1:10,CAITRANG:904:1:10,VKTT:0:1:43200,VKMAX:0:1:43200,VKTB:0:1:43200,VKTBMAX:0:1:43200,VKTBLV:70:99:5000,NLTMAX:0:1:80000,PP8X:0:1:43200,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:43200,TRANGPHUC:833:1:30,TRANGPHUC:834:1:30,TRANGPHUC:839:1:30,TRANGPHUC:791:1:30,TRANGPHUC:744:1:30,TRANGPHUC:736:1:30,TRANGPHUC:737:1:50,HOVELAN:882:5:43200,MNT:30,MNC:30,GEM:73:10000:1,GEM:108:10000:1,ITEM:848:30000:1,ITEM:849:1000:1,ITEM:850:10000:1,ITEM:851:1000:1,ITEM:852:1000:1,ITEM:853:1000:1,ITEM:854:1000:1,ITEM:855:1000:1,ITEM:856:1000:1,ITEM:857:1000:1,ITEM:858:1000:1,ITEM:859:1000:1,SUTU:1:300,TL:30,DN:500000:500000', 0, 1, 0);
+INSERT INTO htbb_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('vipall', 2000000000, 1000000000, 1000000000, 'PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:30,PHTT:30,PHBT:30,HKL:30,CAITRANG:903:1:10,CAITRANG:904:1:10,VKTT:0:1:43200,VKMAX:0:1:43200,VKTB:0:1:43200,VKTBMAX:0:1:43200,VKTBLV:70:99:5000,NLTMAX:0:1:80000,PP8X:0:1:43200,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:43200,TRANGPHUC:833:1:30,TRANGPHUC:834:1:30,TRANGPHUC:839:1:30,TRANGPHUC:791:1:30,TRANGPHUC:744:1:30,TRANGPHUC:736:1:30,TRANGPHUC:737:1:50,HOVELAN:882:5:43200,MNT:30,MNC:30,GEM:73:10000:1,GEM:108:10000:1,ITEM:848:30000:1,ITEM:849:1000:1,ITEM:850:10000:1,ITEM:851:1000:1,ITEM:852:1000:1,ITEM:853:1000:1,ITEM:854:1000:1,ITEM:855:1000:1,ITEM:856:1000:1,ITEM:857:1000:1,ITEM:858:1000:1,ITEM:859:1000:1,SUTU:1:300,TL:30,DN:500000:500000', 0, 1, 0);
 ```
 
 Gồm những gì:
@@ -237,9 +237,9 @@ Gồm những gì:
 ## Bốn điều phải biết trước khi phát mã này
 
 **1. `luong` và `lockLuong` trong `Char` là `int`, không phải `long`**
-([Char.java:101](../src/real/Char.java#L101)). Trần là 2.147.483.647. Nhận 1 tỉ tới lần thứ
+([Char.java:101](../server/src/real/Char.java#L101)). Trần là 2.147.483.647. Nhận 1 tỉ tới lần thứ
 **ba** là tràn thành số âm, và `getLuong()` không chỉ trả 0 — nó gọi
-`banChar(this, "amLuong")` ([Char.java:19741](../src/real/Char.java#L19741)) → **nhân vật bị
+`banChar(this, "amLuong")` ([Char.java:19741](../server/src/real/Char.java#L19741)) → **nhân vật bị
 ban**. Vì vậy mã trên đặt `limit_use = 1`. `xu` thì an toàn vì `Char.xu` là `long`.
 
 **2. Một entry sai làm mất toàn bộ phần còn lại.** Cả vòng lặp vật phẩm nằm trong một
@@ -248,7 +248,7 @@ sau **không được trao**, và dòng ghi vào `giftcode_log` cũng không ch�
 được. **Test trên một nhân vật phụ trước**, đừng phát ngay.
 
 **3. Cố ý KHÔNG đưa thần khí (`TK`/`TKMAX`) vào.** `createThanKhi` tra template bằng
-`itemTemplates.get(clazz).get(idThanKhi)` ([Char.java:18378](../src/real/Char.java#L18378))
+`itemTemplates.get(clazz).get(idThanKhi)` ([Char.java:18378](../server/src/real/Char.java#L18378))
 — id thần khí là **id vũ khí riêng của từng class**. Một mã dùng chung sẽ lỗi
 `NullPointerException` với class không có id đó và làm mất luôn phần thưởng phía sau (xem
 điều 2). Muốn phát thần khí thì làm **mã riêng cho từng class**. Thay thế an toàn đã có
@@ -267,12 +267,12 @@ Có hai thứ chặn nhập lại, phải mở cả hai:
 | `giftcode_log` — mỗi nhân vật một mã một lần | trigger đổi tên người nhận khi ghi log, nên câu kiểm của server không tìm ra |
 
 ```sql
-UPDATE kpah_db.giftcode SET limit_use = -1
+UPDATE htbb_db.giftcode SET limit_use = -1
  WHERE giftcode IN ('vip1','vip2','vip3','pet1','manh1','manh2','nlieu1','nlieu2','nlieu3');
 
-DELETE FROM kpah_db.giftcode_log WHERE player = 'admin';
+DELETE FROM htbb_db.giftcode_log WHERE player = 'admin';
 
-USE kpah_db;
+USE htbb_db;
 CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH ROW
   SET NEW.player = IF(NEW.player = 'admin', CONCAT(NEW.player, '~free'), NEW.player);
 ```
@@ -280,9 +280,9 @@ CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH 
 ### Vì sao trigger này chạy được
 
 Server ghi log bằng `insert into giftcode_log set player = '<charname>' ...`
-([Database.java:2607](../src/data/Database.java#L2607)) rồi lần sau kiểm bằng
+([Database.java:2607](../server/src/data/Database.java#L2607)) rồi lần sau kiểm bằng
 `select * from giftcode_log where giftcode='X' AND player='<charname>'`
-([Database.java:2074](../src/data/Database.java#L2074)). Trigger ghi thành `admin~free`, nên
+([Database.java:2074](../server/src/data/Database.java#L2074)). Trigger ghi thành `admin~free`, nên
 câu `player='admin'` luôn ra 0 dòng → luôn nhận được. Người chơi khác vẫn ghi tên thật và
 vẫn chỉ nhận một lần. Vẫn còn dòng log để tra lịch sử (`WHERE player LIKE 'admin%'`).
 
@@ -295,30 +295,30 @@ vẫn chỉ nhận một lần. Vẫn còn dòng log để tra lịch sử (`WHE
 tràn `int` thành âm và `getLuong()` tự ban nhân vật** (xem điều 1 ở trên). Nên đã đổi:
 
 ```sql
-UPDATE kpah_db.giftcode SET luong = 1000000, luongLock = 1000000 WHERE giftcode = 'vip1';
+UPDATE htbb_db.giftcode SET luong = 1000000, luongLock = 1000000 WHERE giftcode = 'vip1';
 ```
 
 Nhập 2147 lần mới tới trần, coi như an toàn. `xu` giữ 2 tỉ vì `Char.xu` là `long`.
 Muốn trả lại số cũ (chấp nhận chỉ nhập được **tối đa 2 lần**, lần 3 là bị ban):
 
 ```sql
-UPDATE kpah_db.giftcode SET luong = 1000000000, luongLock = 1000000000 WHERE giftcode = 'vip1';
+UPDATE htbb_db.giftcode SET luong = 1000000000, luongLock = 1000000000 WHERE giftcode = 'vip1';
 ```
 
 ### Thêm / bớt nhân vật, hoặc tắt hẳn
 
 ```sql
 -- thêm người: xoá rồi tạo lại trigger với danh sách mới
-DROP TRIGGER IF EXISTS kpah_db.tg_giftcode_log_unlimited;
-USE kpah_db;
+DROP TRIGGER IF EXISTS htbb_db.tg_giftcode_log_unlimited;
+USE htbb_db;
 CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH ROW
   SET NEW.player = IF(NEW.player IN ('admin','tennhanvatmoi'), CONCAT(NEW.player, '~free'), NEW.player);
 
 -- tắt hẳn, quay về mỗi người một lần
-DROP TRIGGER IF EXISTS kpah_db.tg_giftcode_log_unlimited;
+DROP TRIGGER IF EXISTS htbb_db.tg_giftcode_log_unlimited;
 
 -- và đóng lượt của mã
-UPDATE kpah_db.giftcode SET limit_use = 0 WHERE giftcode IN ('vip1','vip2','vip3');
+UPDATE htbb_db.giftcode SET limit_use = 0 WHERE giftcode IN ('vip1','vip2','vip3');
 ```
 
 Nhớ: **`limit_use = -1` là vô hạn cho TẤT CẢ người chơi**, không riêng hai nhân vật này —
@@ -341,34 +341,34 @@ vô hạn nhiều lần. Nhân vật **không bị xoá** — nó bị `ban = 1`
    **65.535 byte** → trần thật sự chỉ khoảng **140 món**.
 3. Vượt trần + MariaDB đang `STRICT_TRANS_TABLES` → `Data too long for column 'inven'`,
    câu `UPDATE` **thất bại**.
-4. Chỗ `catch` của lần ghi đó **tự đặt `ban = 1`** ([Database.java:12689](../src/data/Database.java#L12689)).
-5. Câu lấy danh sách nhân vật lọc `AND ban=0 AND del=1` ([Database.java:14718](../src/data/Database.java#L14718))
+4. Chỗ `catch` của lần ghi đó **tự đặt `ban = 1`** ([Database.java:12689](../server/src/data/Database.java#L12689)).
+5. Câu lấy danh sách nhân vật lọc `AND ban=0 AND del=1` ([Database.java:14718](../server/src/data/Database.java#L14718))
    → nhân vật mất khỏi màn hình chọn, tưởng như bị xoá.
 
 Cách nhận ra (log của server ghi rõ, không phải đoán):
 
 ```sql
-SELECT charname, info, aclog, timelog FROM kpah_db.tob_log_all_item WHERE aclog = 'loiinvent';
+SELECT charname, info, aclog, timelog FROM htbb_db.tob_log_all_item WHERE aclog = 'loiinvent';
 SELECT charname, ban, del, LENGTH(inven) AS len_inven,
        LENGTH(inven) - LENGTH(REPLACE(inven,'>','')) + 1 AS so_mon
-  FROM kpah_db.tob_char;
+  FROM htbb_db.tob_char;
 ```
 
-Trong `/opt/kpah/log/game.out`: `LOI excute char ... Data too long for column 'inven'`.
+Trong `/opt/htbb/log/game.out`: `LOI excute char ... Data too long for column 'inven'`.
 
 Cách cứu:
 
 ```sql
-UPDATE kpah_db.tob_char SET ban = 0 WHERE charname = 'admin';
+UPDATE htbb_db.tob_char SET ban = 0 WHERE charname = 'admin';
 ```
 
 Và đã nới cột để không tái diễn (`MEDIUMTEXT` = 16 MB, ~35.000 món):
 
 ```sql
-ALTER TABLE kpah_db.tob_char MODIFY inven MEDIUMTEXT;
-ALTER TABLE kpah_db.tob_char MODIFY bag MEDIUMTEXT;
-ALTER TABLE kpah_db.tob_char MODIFY tuido MEDIUMTEXT;
-ALTER TABLE kpah_db.tob_char MODIFY equip MEDIUMTEXT;
+ALTER TABLE htbb_db.tob_char MODIFY inven MEDIUMTEXT;
+ALTER TABLE htbb_db.tob_char MODIFY bag MEDIUMTEXT;
+ALTER TABLE htbb_db.tob_char MODIFY tuido MEDIUMTEXT;
+ALTER TABLE htbb_db.tob_char MODIFY equip MEDIUMTEXT;
 ```
 
 **Mất dữ liệu là thật, không tránh được:** mọi lần `saveChar` từ lúc vượt trần đến lúc sửa
@@ -376,7 +376,7 @@ ALTER TABLE kpah_db.tob_char MODIFY equip MEDIUMTEXT;
 phải nguyên nhân — gỡ ban không lấy lại được phần đã mất.
 
 Trần kế tiếp sau `MEDIUMTEXT` là `max_allowed_packet` (16 MB) và số món ghi trong gói tin
-inventory là `writeShort` ([MessageCreator.java:824](../src/real/MessageCreator.java#L824))
+inventory là `writeShort` ([MessageCreator.java:824](../server/src/real/MessageCreator.java#L824))
 = 32.767 món — thực tế không bao giờ tới.
 
 ## Trứng rồng băng (item 887) — nở ở NPC, không phải bấm Dùng
@@ -393,7 +393,7 @@ Riêng **887 đã được sửa** thành trứng thật:
 | Bấm Dùng → chỉ nhắc *"Hãy tìm NPC Hạo Nguyệt…"*, không nở, không ra menu hộ vệ | `doUseItem`, chặn trước nhánh `isTheBaiLinhDanhThue` |
 | NPC Hạo Nguyệt → **Tạo thú** → option **"Rồng băng"** (thứ 11) → nở | `Map` menu `-6`, `case 10` |
 | Nở ra **level 1** thuộc tính random, y như 10 trứng còn lại ở NPC đó | `Map.doApTrungRongBang` |
-| Yêu cầu cấp độ hạ về 1 | `UPDATE kpah_db.data_item SET level = 1 WHERE id = 887;` |
+| Yêu cầu cấp độ hạ về 1 | `UPDATE htbb_db.data_item SET level = 1 WHERE id = 887;` |
 
 **Luyện lên level 4 thì bằng hoặc cao hơn con phát sẵn bằng `RONGBANG:0`:**
 
@@ -424,9 +424,9 @@ Giống phượng hoàng: thú đạt **level 4** thì menu NPC tạo thú hiệ
 
 | Hiệu ứng | Chỗ kiểm |
 |---|---|
-| Khảm kháng băng trả 95% | `Char.khamKhangBang` ([Char.java:3153](../src/real/Char.java#L3153)) |
-| Chống bị đóng băng | [Char.java:6525](../src/real/Char.java#L6525) |
-| Chống bị cháy (tàn phế + giảm tốc) | [Char.java:6601](../src/real/Char.java#L6601) |
+| Khảm kháng băng trả 95% | `Char.khamKhangBang` ([Char.java:3153](../server/src/real/Char.java#L3153)) |
+| Chống bị đóng băng | [Char.java:6525](../server/src/real/Char.java#L6525) |
+| Chống bị cháy (tàn phế + giảm tốc) | [Char.java:6601](../server/src/real/Char.java#L6601) |
 
 Cả ba đều **đã liệt kê `isRongLon()`** từ trước, chỉ thiếu đường bật cờ — không có option nào
 đặt `KHANG_*` cho rồng băng, và `createAttBasicMax` cũng không (chỉ `HEO_BANG` và `SU_TU_BANG`
@@ -438,20 +438,20 @@ cho tới khi trả 200 lượng — nhưng đó chỉ là bỏ con số sai, s�
 Phát trứng để test (vô hạn lượt):
 
 ```sql
-INSERT INTO kpah_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type)
+INSERT INTO htbb_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type)
 VALUES ('trungrb',0,0,0,'DB:887:5:0',0,-1,0);
 ```
 
 > Đổi `data_item.level` chỉ ăn vào **trứng tạo mới**. Trứng đang nằm trong hành trang lưu
 > `level` riêng trong chuỗi `inven` nên vẫn hiện *"Yêu cầu lv: 65"* — bỏ đi rồi nhập lại mã.
 >
-> Số linh thú gửi cho client ghi bằng **1 byte** ([MessageCreator.java:862](../src/real/MessageCreator.java#L862))
+> Số linh thú gửi cho client ghi bằng **1 byte** ([MessageCreator.java:862](../server/src/real/MessageCreator.java#L862))
 > → quá **127 con** là hỏng gói tin. Mã trứng vô hạn nên đừng ấp hàng loạt.
 
 ## Mã riêng theo nhân vật (`ngude_giftcode`)
 
 ```sql
-SELECT id, code, type, charname, userId, status, level, xu, luong, item FROM kpah_db.ngude_giftcode ORDER BY id DESC LIMIT 20;
+SELECT id, code, type, charname, userId, status, level, xu, luong, item FROM htbb_db.ngude_giftcode ORDER BY id DESC LIMIT 20;
 ```
 
 Khác `giftcode` ở chỗ: mỗi dòng gắn với **một nhân vật cụ thể** (`charname`), có yêu cầu

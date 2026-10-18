@@ -158,14 +158,14 @@ public final class DuLieuHeSinhThai {
             c = ketNoi();
             p = c.prepareStatement("UPDATE tob_hst_nhan_vat SET du_lieu = ?, cap_nhat = ? WHERE id_char = ?");
             p.setString(1, duLieu);
-            p.setLong(2, System.currentTimeMillis());
+            p.setLong(2, com.htbb.pokemon.DongHo.bay());
             p.setInt(3, idChar);
             if (p.executeUpdate() == 0) {
                 dong(p);
                 p = c.prepareStatement("INSERT INTO tob_hst_nhan_vat (id_char, du_lieu, cap_nhat) VALUES (?, ?, ?)");
                 p.setInt(1, idChar);
                 p.setString(2, duLieu);
-                p.setLong(3, System.currentTimeMillis());
+                p.setLong(3, com.htbb.pokemon.DongHo.bay());
                 p.executeUpdate();
             }
             return true;
@@ -216,7 +216,7 @@ public final class DuLieuHeSinhThai {
     /** Tin dang mo; idBan > 0 = chi cua nguoi do; loai >= 0 = loc theo loai vat lieu. */
     public static List<TinBan> dsTinBan(final int idBan, final int loai, final int toiDa) {
         final List<TinBan> r = new ArrayList<TinBan>();
-        final long now = System.currentTimeMillis();
+        final long now = com.htbb.pokemon.DongHo.bay();
         docBang("SELECT id, id_ban, ten_ban, khoa_vat, so_luong, gia_moi, du_lieu, het_han FROM tob_hst_cho"
                 + " WHERE trang_thai = 0 ORDER BY id DESC", (rs) -> {
                     if (r.size() >= toiDa) {
@@ -299,7 +299,7 @@ public final class DuLieuHeSinhThai {
     /** Tin ban da het han con mo (de tra hang ve hop thu). */
     public static List<TinBan> tinHetHan() {
         final List<TinBan> r = new ArrayList<TinBan>();
-        final long now = System.currentTimeMillis();
+        final long now = com.htbb.pokemon.DongHo.bay();
         docBang("SELECT id, id_ban, ten_ban, khoa_vat, so_luong, gia_moi, du_lieu, het_han FROM tob_hst_cho"
                 + " WHERE trang_thai = 0", (rs) -> {
                     if (rs.getLong(8) >= now) {
@@ -354,7 +354,7 @@ public final class DuLieuHeSinhThai {
 
     public static List<Don> dsDon(final int idMua, final int toiDa, final boolean caHetHan) {
         final List<Don> r = new ArrayList<Don>();
-        final long now = System.currentTimeMillis();
+        final long now = com.htbb.pokemon.DongHo.bay();
         docBang("SELECT id, id_mua, ten_mua, ma_vat, so_can, so_da_giao, gia_moi, het_han FROM tob_hst_don"
                 + " WHERE trang_thai = 0 ORDER BY id DESC", (rs) -> {
                     if (r.size() >= toiDa) {
@@ -419,7 +419,7 @@ public final class DuLieuHeSinhThai {
             p.setInt(4, so);
             p.setString(5, duLieu == null ? "" : duLieu);
             p.setString(6, ghiChu == null ? "" : (ghiChu.length() > 120 ? ghiChu.substring(0, 120) : ghiChu));
-            p.setLong(7, System.currentTimeMillis());
+            p.setLong(7, com.htbb.pokemon.DongHo.bay());
             return p.executeUpdate() == 1;
         } catch (final Exception e) {
             System.out.println("[HE SINH THAI] LOI gui hop thu " + idChar + ": " + e);

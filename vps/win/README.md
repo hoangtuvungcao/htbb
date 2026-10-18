@@ -10,7 +10,7 @@ Tất cả đi qua **SSH**, không cần mở thêm cổng nào trên VPS.
 | `vps-loi.bat` | Lọc riêng các dòng lỗi trong log + log login server |
 | `vps-sql.bat "<câu SQL>"` | Chạy một câu SQL trên DB của VPS |
 | `vps-db-tunnel.bat` | Mở đường hầm để dùng HeidiSQL/Workbench xem DB như DB local |
-| `vps-db-tai-ve.bat` | **Tải** `kpah_db` + `account` từ VPS về máy này |
+| `vps-db-tai-ve.bat` | **Tải** `htbb_db` + `account` từ VPS về máy này |
 | `vps-db-nap-vao-local.bat` | **Nạp** bản vừa tải vào MySQL local (XAMPP) — ghi đè DB local |
 
 ## Cho DB local giống VPS
@@ -48,10 +48,10 @@ xoá sạch DB thật.
 ## Ví dụ `vps-sql.bat`
 
 ```
-vps-sql "SELECT id,charname,userId,ban FROM kpah_db.tob_char;"
+vps-sql "SELECT id,charname,userId,ban FROM htbb_db.tob_char;"
 vps-sql "SELECT username,ban FROM account.team_user;"
-vps-sql "SELECT COUNT(*) FROM kpah_db.tob_char;"
-vps-sql "SHOW TABLES FROM kpah_db LIKE 'tob_%';"
+vps-sql "SELECT COUNT(*) FROM htbb_db.tob_char;"
+vps-sql "SHOW TABLES FROM htbb_db LIKE 'tob_%';"
 ```
 
 Câu SQL được đưa qua stdin nên không phải lo escape dấu nháy.
@@ -62,9 +62,9 @@ Câu SQL được đưa qua stdin nên không phải lo escape dấu nháy.
 2. Trong HeidiSQL tạo session mới:
    - Hostname/IP: `127.0.0.1`
    - Port: **3307** (3306 đã bị MySQL của XAMPP chiếm)
-   - User: `kpah`
+   - User: `htbb`
    - Password: mật khẩu DB trên VPS
-3. Mở `kpah_db` và `account` như DB thường
+3. Mở `htbb_db` và `account` như DB thường
 
 Cổng 3306 trên VPS vẫn **đóng** với internet — đường hầm chạy bên trong kết nối SSH.
 

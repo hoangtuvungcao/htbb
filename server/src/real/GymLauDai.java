@@ -64,6 +64,9 @@ public final class GymLauDai {
 
     /** Chon Gym thu {@code i} trong menu. */
     static String thachDau(final Char p, final int i) {
+        if (!com.htbb.cauhinh.CongTac.gym()) {
+            return "Gym đang tạm đóng. Vui lòng quay lại sau."; // cau hinh trung tam: gym.bat=0
+        }
         if (i < 0 || i >= GYM.size()) {
             return "Gym không hợp lệ.";
         }
@@ -79,7 +82,7 @@ public final class GymLauDai {
         if (BossLauDai.gymDangDanh(p) > 0) {
             return "Bạn đang thách đấu một Gym.";
         }
-        final int tuan = NhiemVuLauDai.tuan(System.currentTimeMillis());
+        final int tuan = NhiemVuLauDai.tuan(com.htbb.pokemon.DongHo.bay());
         synchronized (h) {
             if (h.gymTuan != tuan) {
                 h.gymTuan = tuan;
@@ -91,18 +94,18 @@ public final class GymLauDai {
         }
         final MonsterTemplate t = Map.monsterTemplates.get(Integer.valueOf(so(g[4])));
         if (t == null || p.map == null) {
-            return "Không triệu hồi được thủ lĩnh.";
+            return "Không triệu hồi được trưởng Gym.";
         }
         final Monster b = BossLauDai.trieuHoi(p.map, t, p.x + 48, p.y, p.inCountry, p.region, so(g[3]), so(g[6]), so(g[7]), so(g[8]));
         if (b == null) {
-            return "Không triệu hồi được thủ lĩnh.";
+            return "Không triệu hồi được trưởng Gym.";
         }
         BossLauDai.datGym(b, stt, p, THOI_GIAN_MS);
         try {
             Database.instance.saveOrtherLog("", p.charname, "thach dau gym " + stt, "laudai");
         } catch (final Exception ignored) {
         }
-        return g[5] + " xuất hiện! Hạ trong 10 phút (nộ sau " + so(g[9]) + " phút).";
+        return g[5] + " xuất hiện! Hãy hạ trong 10 phút (nổi giận sau " + so(g[9]) + " phút).";
     }
 
     /** BossLauDai.khiChet: boss Gym {@code stt} cua {@code idChar} bi ha. */
@@ -171,7 +174,7 @@ public final class GymLauDai {
         try {
             final Item it = Map.dropItemByIdTemplate(p.inCountry, id);
             if (it == null || p.isFullInventory()) {
-                LauDaiNhanVat.bao(p, "Hành trang đầy, không nhận được vũ khí Hoàn mỹ.");
+                LauDaiNhanVat.bao(p, "Hành trang đầy, không nhận được đồ cầm tay Hoàn mỹ.");
                 return;
             }
             it.id = p.getIDItem();

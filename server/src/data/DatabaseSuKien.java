@@ -12,7 +12,7 @@ import real.SuKien;
  *
  * CHIEU GHI CHIA DOI RO RANG, de hai ben khong dam len nhau:
  *
- *   Trang quan tri (web/admin/sukien.php) ghi:  bat, sua_boi, sua_luc, mo_luc, dong_luc
+ *   Trang quan tri (HTBB-Web /admin/sukien) ghi:  bat, sua_boi, sua_luc, mo_luc, dong_luc
  *   May chu game ghi:                           ten, nhom, mo_ta, dang_bat, may_chu_luc
  *
  * ghiAnhChup() KHONG BAO GIO ghi vao cot `bat`. Nho vay khoi dong lai may chu khong lam
@@ -308,7 +308,7 @@ public final class DatabaseSuKien {
      * top lien tram) truoc khi System.exit(0). Viet mot duong tat thu hai la co hai luong
      * cung luu mot luc - hong du lieu kieu kho lan nhat.
      *
-     * Bat lai may la viec cua systemd: kpah-game.service dat Restart=always, RestartSec=10.
+     * Bat lai may la viec cua systemd: htbb-game.service dat Restart=always, RestartSec=10.
      * Tren may Windows thi BaoTriDaily tu mo lai run.bat.
      *
      * Database.baotriCMD() se dat status ve 1 ngay khi doc duoc, nen co nay tu tat.

@@ -28,6 +28,8 @@ interface KetQua { loai: 'success' | 'warning' | 'error', thongBao: string, daXo
 
 const api = useAdminApi()
 const toast = useToast()
+const me = useAdminMe()
+const duoc = (viec: string) => me.duoc(`/api/admin/nhanvat/${props.id}/${viec}`)
 
 const { data, status, error, refresh } = useAsyncData(
   () => `admin-nhanvat-${props.id}`,
@@ -102,7 +104,7 @@ function khoaMo() {
   const v = ct.value
   if (!v) return
   const khoa = Number(v.ban) !== 0
-  hoi(`${khoa ? 'Mở khoá' : 'Khoá'} nhân vật ${v.charname}?`, '',
+  hoi(`${khoa ? 'Mở khoá' : 'Khoá'} Pokémon ${v.charname}?`, '',
     () => goi('khoa', { viec: khoa ? 'mo_khoa' : 'khoa' }),
     { nhanNut: khoa ? 'Mở khoá' : 'Khoá', mau: khoa ? 'primary' : 'error' })
 }
@@ -111,7 +113,7 @@ function datCapDo() {
   const v = ct.value
   if (!v) return
   hoi(`Đặt cấp độ ${capDo.value} cho ${v.charname}?`,
-    'Nhân vật đang online sẽ được cộng ngay; offline thì cộng ngay khi họ vào game. Chỉ NÂNG cấp, không hạ.',
+    'Pokémon đang online sẽ được cộng ngay; offline thì cộng ngay khi họ vào game. Chỉ NÂNG cấp, không hạ.',
     () => goi('cap-do', { viec: 'dat_cap_do', cap_do: capDo.value }),
     { nhanNut: 'Đặt cấp độ', mau: 'error' })
 }
@@ -122,7 +124,7 @@ function buffLevel() {
   // Bước 0,1 cộng dồn trong ô số dễ ra 0.30000000000000004 — làm tròn trước khi hiện.
   const pt = (Math.round(Number(phanTramBuff.value ?? 0) * 10) / 10).toLocaleString('vi-VN')
   hoi(`Buff ${capDoBuff.value} (${pt}%) cho ${v.charname}?`,
-    'Nhân vật đang online sẽ được cộng ngay; offline thì cộng ngay khi họ vào game. Chỉ NÂNG cấp, không hạ.',
+    'Pokémon đang online sẽ được cộng ngay; offline thì cộng ngay khi họ vào game. Chỉ NÂNG cấp, không hạ.',
     () => goi('cap-do', { viec: 'buff_level', cap_do: capDoBuff.value, phan_tram: phanTramBuff.value ?? 0 }),
     { nhanNut: 'Buff level', mau: 'error' })
 }
@@ -142,8 +144,8 @@ function huyLenh(l: DongLenhGiaoDien) {
 const dangXoa = ref<string | null>(null)
 function xoaVatPham(vp: VatPhamGiaoDien, cot: 'equip' | 'inven' | 'bag') {
   const tenMon = (vp.ten ?? `#${vp.template}`) + (vp.plus > 0 ? ` +${vp.plus}` : '')
-  hoi(`Xoá vĩnh viễn ${tenMon} khỏi nhân vật?`,
-    'Nhân vật đang online thì server gỡ ngay trong game; offline thì xoá trong CSDL.',
+  hoi(`Xoá vĩnh viễn ${tenMon} khỏi Pokémon?`,
+    'Pokémon đang online thì server gỡ ngay trong game; offline thì xoá trong CSDL.',
     async () => {
       dangXoa.value = `${cot}:${vp._i}`
       try {
@@ -173,7 +175,10 @@ const trangThai = computed(() => {
 
 <template>
   <div class="space-y-6">
-    <UButton icon="i-lucide-arrow-left" color="neutral" variant="ghost" label="Về danh sách" class="-ml-2" @click="emit('veDanhSach')" />
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <UButton icon="i-lucide-arrow-left" color="neutral" variant="ghost" label="Về danh sách" class="-ml-2" @click="emit('veDanhSach')" />
+      <UButton v-if="data?.chuTk" :to="{ path: '/admin/nguoi-choi', query: { u: data.chuTk, nv: String(id) } }" icon="i-lucide-contact" color="primary" variant="soft" size="sm" label="Hồ sơ người chơi" />
+    </div>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="loiApi(error)" />
     <div v-else-if="status === 'pending' && !data" class="grid gap-4 lg:grid-cols-[2fr_1fr]">
@@ -190,7 +195,7 @@ const trangThai = computed(() => {
                 {{ ct.charname }}
               </h2>
               <UBadge v-if="trangThai" :color="trangThai.color" variant="subtle" :label="trangThai.label" />
-              <div class="ml-auto">
+              <div v-if="duoc('khoa')" class="ml-auto">
                 <UButton
                   :color="Number(ct.ban) !== 0 ? 'primary' : 'error'"
                   :variant="Number(ct.ban) !== 0 ? 'solid' : 'soft'"
@@ -233,16 +238,16 @@ const trangThai = computed(() => {
             </dd>
           </dl>
 
-          <UAlert v-if="Number(ct.ban) !== 0" class="mt-5" color="warning" variant="subtle" icon="i-lucide-triangle-alert" title="Nhân vật này đang bị khoá.">
+          <UAlert v-if="Number(ct.ban) !== 0" class="mt-5" color="warning" variant="subtle" icon="i-lucide-triangle-alert" title="Pokémon này đang bị khoá.">
             <template #description>
               <p>
-                Nếu bạn không phải người khoá nó thì rất có thể server tự khoá: khi lưu nhân vật
+                Nếu bạn không phải người khoá nó thì rất có thể server tự khoá: khi lưu Pokémon
                 thất bại (ví dụ hành trang quá dài so với sức chứa của cột <code>inven</code>),
                 khối bắt lỗi trong <code>Database.java</code> tự đặt <code>ban = 1</code>.
                 Xem <code>vps/sql-giftcode.md</code>, mục “CẠM BẪY ĐÃ NỔ MỘT LẦN”.
               </p>
               <p class="mt-1">
-                Mở khoá lấy lại được nhân vật, nhưng <em>không</em> lấy lại phần dữ liệu đã mất giữa lúc lưu hỏng.
+                Mở khoá lấy lại được Pokémon, nhưng <em>không</em> lấy lại phần dữ liệu đã mất giữa lúc lưu hỏng.
               </p>
             </template>
           </UAlert>
@@ -250,7 +255,7 @@ const trangThai = computed(() => {
           <USeparator class="my-6" />
 
           <!-- Đặt cấp độ -->
-          <section class="space-y-3">
+          <section v-if="duoc('cap-do')" class="space-y-3">
             <h3 class="font-semibold text-highlighted">
               Đặt cấp độ
             </h3>
@@ -260,13 +265,13 @@ const trangThai = computed(() => {
               </UFormField>
               <UButton color="error" icon="i-lucide-trending-up" label="Đặt cấp độ" @click="datCapDo" />
             </div>
-            <UAlert color="info" variant="subtle" icon="i-lucide-info" title="Dùng được cả khi nhân vật đang online.">
+            <UAlert color="info" variant="subtle" icon="i-lucide-info" title="Dùng được cả khi Pokémon đang online.">
               <template #description>
                 <p>
                   Trang web không ghi thẳng CSDL nữa mà gửi một lệnh vào bảng <code>web_lenh_nhan_vat</code>;
-                  server game đọc mỗi giây và tự xử lý: nhân vật <strong>đang online</strong> được cộng ngay trong
+                  server game đọc mỗi giây và tự xử lý: Pokémon <strong>đang online</strong> được cộng ngay trong
                   game (đúng như lên cấp tự nhiên: có điểm cơ bản, điểm kỹ năng, hồi đầy HP/MP) rồi lưu lại tức thì;
-                  nhân vật <strong>offline</strong> thì lệnh nằm chờ và server cộng ngay khi họ vào game. Kết quả hiện
+                  Pokémon <strong>offline</strong> thì lệnh nằm chờ và server cộng ngay khi họ vào game. Kết quả hiện
                   ngay sau khi bấm.
                 </p>
                 <p class="mt-2">
@@ -280,7 +285,7 @@ const trangThai = computed(() => {
           </section>
 
           <!-- Buff level kèm % -->
-          <section class="mt-6 space-y-3">
+          <section v-if="duoc('cap-do')" class="mt-6 space-y-3">
             <h3 class="font-semibold text-highlighted">
               Buff level kèm %
             </h3>
@@ -296,7 +301,7 @@ const trangThai = computed(() => {
             <p class="text-sm text-muted">
               Giống hệt "Đặt cấp độ" nhưng cho nhập thêm % tiến độ vào cấp đó (thay vì luôn là 0%) — cùng tính
               năng "Buff EXP → Lên Level/Phần trăm" đã có sẵn trong AdminPanel (ứng dụng chạy trên server).
-              Cũng đi qua bảng lệnh như "Đặt cấp độ" ở trên nên dùng được cả khi nhân vật đang online lẫn offline.
+              Cũng đi qua bảng lệnh như "Đặt cấp độ" ở trên nên dùng được cả khi Pokémon đang online lẫn offline.
             </p>
           </section>
 
@@ -305,22 +310,22 @@ const trangThai = computed(() => {
             <h3 class="font-semibold text-highlighted">
               Lệnh đã gửi
             </h3>
-            <AdminNhanvatBangLenh :lenh="data.lenh" empty="Chưa có lệnh nào cho nhân vật này." :dang-huy="dangHuy" @huy="huyLenh" />
+            <AdminNhanvatBangLenh :lenh="data.lenh" empty="Chưa có lệnh nào cho Pokémon này." :dang-huy="dangHuy" @huy="(l) => duoc('huy-lenh') && huyLenh(l)" />
             <p v-if="data.lenh.length" class="text-xs text-muted">
-              "Chờ vào game" = nhân vật đang offline, server sẽ cộng ngay khi họ đăng nhập.
+              "Chờ vào game" = Pokémon đang offline, server sẽ cộng ngay khi họ đăng nhập.
               "Chờ server" quá lâu = server game đang tắt; lệnh sẽ chạy khi server lên.
             </p>
           </section>
 
           <!-- Xoá vĩnh viễn -->
-          <section class="mt-8 space-y-3 rounded-lg border border-error/40 bg-error/5 p-4">
+          <section v-if="duoc('xoa')" class="mt-8 space-y-3 rounded-lg border border-error/40 bg-error/5 p-4">
             <h3 class="font-semibold text-error">
               Xoá vĩnh viễn
             </h3>
             <p class="text-sm text-muted">
               <strong class="text-highlighted">KHÔNG THỂ HOÀN TÁC.</strong> Khác hẳn "Khoá" ở trên (chỉ ẩn đi, mở lại
               được) — xoá vĩnh viễn xoá hẳn dòng <code>tob_char</code> này khỏi cơ sở dữ liệu, cùng với thú nuôi, trang
-              trại, đá quý, bạn bè, quest riêng của nhân vật. Nhân vật đang online sẽ bị đẩy ra khỏi game trước khi xoá.
+              trại, đá quý, bạn bè, quest riêng của Pokémon. Pokémon đang online sẽ bị đẩy ra khỏi game trước khi xoá.
               Nhật ký giao dịch/log vẫn được giữ lại để tra cứu. Nếu Pokémon đang trong một đội, hãy tự rời đội
               trước — trang này không tự gỡ tên khỏi danh sách thành viên đội.
             </p>
@@ -336,13 +341,13 @@ const trangThai = computed(() => {
         <UCard>
           <template #header>
             <h3 class="font-semibold text-highlighted">
-              Khoá nhân vật làm gì
+              Khoá Pokémon làm gì
             </h3>
           </template>
           <ul class="list-disc space-y-2 pl-5 text-sm text-muted">
-            <li>Nhân vật <strong class="text-highlighted">biến mất khỏi màn hình chọn nhân vật</strong> — người chơi thường hiểu nhầm là bị xoá.</li>
+            <li>Pokémon <strong class="text-highlighted">biến mất khỏi màn hình chọn Pokémon</strong> — người chơi thường hiểu nhầm là bị xoá.</li>
             <li>Bị loại khỏi mọi bảng xếp hạng.</li>
-            <li>Tài khoản <strong class="text-highlighted">vẫn đăng nhập được</strong> và vẫn chơi được các nhân vật khác.</li>
+            <li>Tài khoản <strong class="text-highlighted">vẫn đăng nhập được</strong> và vẫn chơi được các Pokémon khác.</li>
             <li>
               Người đang online <strong class="text-highlighted">không bị đá ra</strong> — việc khoá ghi thẳng cột
               <code>ban</code>, không đi qua bảng lệnh như "Đặt cấp độ". Khoá chỉ ăn từ lần vào sau.
@@ -369,9 +374,9 @@ const trangThai = computed(() => {
             <code>tob_char</code>. Đây là ảnh chụp <em>lần lưu gần nhất</em>: người chơi đang online thì đồ thật nằm
             trong RAM của server, chỉ khớp sau khi họ thoát hoặc server tự lưu.
           </p>
-          <UAlert color="info" variant="subtle" icon="i-lucide-info" title="Nút &quot;Xoá&quot; dùng được cả khi nhân vật đang online.">
+          <UAlert color="info" variant="subtle" icon="i-lucide-info" title="Nút &quot;Xoá&quot; dùng được cả khi Pokémon đang online.">
             <template #description>
-              Giống "Đặt cấp độ", lệnh xoá đi qua bảng lệnh cho server game: nhân vật đang online thì server tìm đúng món
+              Giống "Đặt cấp độ", lệnh xoá đi qua bảng lệnh cho server game: Pokémon đang online thì server tìm đúng món
               đó trong RAM, gỡ ra và lưu ngay; offline thì server xoá trong CSDL rồi đối chiếu lại một lần nữa khi nhân
               vật vào game. Server báo lỗi nếu món đồ đã đổi so với bảng đang xem (tải lại trang rồi bấm lại). Mọi thao
               tác xoá đều được ghi lại ở trang <NuxtLink to="/admin/log" class="text-primary hover:underline">Log</NuxtLink>
@@ -384,13 +389,13 @@ const trangThai = computed(() => {
               <h4 class="font-semibold">
                 Đang mặc <span class="text-sm font-normal text-muted">({{ data.vatPham.mac.length }})</span>
               </h4>
-              <AdminNhanvatBangVatPham :ds="data.vatPham.mac" trong="Không mặc gì." cot="equip" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
+              <AdminNhanvatBangVatPham :ds="data.vatPham.mac" trong="Không mặc gì." :cot="duoc('xoa-vat-pham') ? 'equip' : undefined" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
             </div>
             <div class="space-y-2">
               <h4 class="font-semibold">
                 Thời trang <span class="text-sm font-normal text-muted">({{ data.vatPham.thoiTrang.length }})</span>
               </h4>
-              <AdminNhanvatBangVatPham :ds="data.vatPham.thoiTrang" trong="Không có." cot="inven" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
+              <AdminNhanvatBangVatPham :ds="data.vatPham.thoiTrang" trong="Không có." :cot="duoc('xoa-vat-pham') ? 'inven' : undefined" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
             </div>
           </div>
 
@@ -398,14 +403,14 @@ const trangThai = computed(() => {
             <h4 class="font-semibold">
               Hành trang <span class="text-sm font-normal text-muted">({{ data.vatPham.tui.length }})</span>
             </h4>
-            <AdminNhanvatBangVatPham :ds="data.vatPham.tui" trong="Túi rỗng." cot="inven" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
+            <AdminNhanvatBangVatPham :ds="data.vatPham.tui" trong="Túi rỗng." :cot="duoc('xoa-vat-pham') ? 'inven' : undefined" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
           </div>
 
           <div class="space-y-2">
             <h4 class="font-semibold">
               Rương <span class="text-sm font-normal text-muted">({{ data.vatPham.ruong.length }})</span>
             </h4>
-            <AdminNhanvatBangVatPham :ds="data.vatPham.ruong" trong="Rương rỗng." cot="bag" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
+            <AdminNhanvatBangVatPham :ds="data.vatPham.ruong" trong="Rương rỗng." :cot="duoc('xoa-vat-pham') ? 'bag' : undefined" :dang-xoa="dangXoa" @xoa="xoaVatPham" />
           </div>
 
           <p class="text-xs text-muted">

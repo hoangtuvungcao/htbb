@@ -1,0 +1,540 @@
+package com.htbb.cauhinh;
+
+/**
+ * SINH TU tools/cauhinh/danh_muc.json boi tools/cauhinh/sinh_cau_hinh.py - KHONG SUA TAY.
+ * Danh muc moi khoa cau hinh trung tam (xem {@link CauHinhTrungTam}).
+ */
+final class DanhMucSinh {
+
+    private DanhMucSinh() {
+    }
+
+    /** {ma, ten} theo thu tu hien thi. */
+    static final String[][] NHOM = {
+        {"che_do", "Chế độ game"},
+        {"kinh_te", "Kinh tế"},
+        {"nap_tien", "Nạp tiền"},
+        {"thanh_vien", "Thành viên"},
+        {"dang_ky", "Đăng ký"},
+        {"su_kien", "Sự kiện"},
+        {"bao_tri", "Bảo trì"},
+        {"chong_spam", "Chống spam, DoS & nhật ký"},
+        {"pvp", "PvP / Gym / Hầm Ngục"},
+        {"chi_so", "Chỉ số & chống lạm phát"},
+        {"tu_dong", "Tự động đánh"},
+        {"hoi_sinh", "Hồi sinh"},
+        {"thong_bao", "Thông báo"},
+        {"quan_tri", "Quản trị & thử nghiệm"},
+    };
+
+    static DinhNghiaKhoa[] tatCa() {
+        return new DinhNghiaKhoa[]{
+            new DinhNghiaKhoa("sv.che_do_pokemon", "che_do", "co", "0", false, "cau_hinh")
+                    .nhan("Chế độ Pokémon", "1 = Huyền Thoại Bảo Bối (người chơi là Pokémon). Đổi schema/chữ lúc khởi động."),
+            new DinhNghiaKhoa("sv.lau_dai", "che_do", "co", "0", false, "cau_hinh")
+                    .nhan("Thiết kế dài hạn", "1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động."),
+            new DinhNghiaKhoa("sv.he_sinh_thai", "che_do", "co", "0", false, "cau_hinh")
+                    .nhan("Hệ sinh thái", "1 = bật hệ sinh thái thế giới (data_hst_*, tob_hst_*)."),
+            new DinhNghiaKhoa("sv.tran_cap_theo_mua", "che_do", "co", "0", false, "cau_hinh")
+                    .nhan("Trần cấp theo mùa", "1 = bật lại trần cấp 60→100 theo ngày khai trương (thiết kế cũ). 0 = không trần, lên cấp chậm + vật phẩm tăng tốc."),
+            new DinhNghiaKhoa("sv.ngay_khai_truong", "che_do", "ngay", "", false, "cau_hinh")
+                    .nhan("Ngày khai trương", "yyyy-MM-dd — ngày 0 của lịch mùa. Để trống = theo lau_dai.ngay_khai_truong game tự ghi."),
+            new DinhNghiaKhoa("sv.tua_nhanh_ngay", "che_do", "so", "0", false, "cau_hinh")
+                    .nhan("Tua nhanh thử nghiệm (ngày)", "Cộng thêm N ngày vào ngày hiện tại của lịch dài hạn (thử mùa, vé mùa, lịch). chỉ máy thử — máy thật luôn 0.")
+                    .khoang(0L, 3650L)
+                    .khoaProd(),
+            new DinhNghiaKhoa("sv.tileXu", "kinh_te", "so", "10", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi xu (%)", "% so với tỉ lệ gốc. 100 = như cũ, 0 = tắt.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.tileLuong", "kinh_te", "so", "20", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi lượng (%)", "% so với tỉ lệ gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.tileItemSuKien", "kinh_te", "so", "20", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi đồ sự kiện (%)", "% so với tỉ lệ gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.tilePotion", "kinh_te", "so", "30", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi bình thuốc (%)", "% so với tỉ lệ gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.tileNgoc", "kinh_te", "so", "30", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi ngọc (%)", "% so với tỉ lệ gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.tileItem", "kinh_te", "so", "20", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi đồ thường (%)", "% so với tỉ lệ gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.chiaXuRoi", "kinh_te", "so", "10", true, "cau_hinh")
+                    .nhan("Chia số xu rơi", "Xu rơi = xu gốc chia số này (tối thiểu 1).")
+                    .khoang(1L, 1000000L),
+            new DinhNghiaKhoa("sv.tileExpLv50", "kinh_te", "so", "10", true, "cau_hinh")
+                    .nhan("EXP quái từ cấp 50 (%)", "% so với EXP gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.tileExpDuoiLv50", "kinh_te", "so", "50", true, "cau_hinh")
+                    .nhan("EXP quái dưới cấp 50 (%)", "% so với EXP gốc.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.expvantieu", "kinh_te", "co", "0", true, "cau_hinh")
+                    .nhan("Thưởng EXP giao hàng", "1 = bật."),
+            new DinhNghiaKhoa("sv.Luckyexp", "kinh_te", "co", "0", true, "cau_hinh")
+                    .nhan("Ô EXP rương may mắn", "1 = bật."),
+            new DinhNghiaKhoa("sv.ExpQua", "kinh_te", "co", "0", true, "cau_hinh")
+                    .nhan("EXP cây ăn quả", "1 = bật (cũng khoá nút tăng tốc cây)."),
+            new DinhNghiaKhoa("sv.giaXuBoHoaDoVuLan", "kinh_te", "so", "150000", true, "cau_hinh")
+                    .nhan("Giá xu bó hoa Vu Lan", "Số xu.")
+                    .khoang(0L, 2000000000L),
+            new DinhNghiaKhoa("sv.tieuNguongMau", "kinh_te", "ds_so", "60189,89389,99689,99989,99999", true, "cau_hinh")
+                    .nhan("Giao hàng: ngưỡng màu khi nhận", "5 ngưỡng cộng dồn trên thang 100000 (Trắng..Vàng, còn lại Tím).")
+                    .khoang(0L, 100000L)
+                    .soPhanTu(5),
+            new DinhNghiaKhoa("sv.tieuHeSoExp", "kinh_te", "so", "200", true, "cau_hinh")
+                    .nhan("Giao hàng: hệ số EXP chung (%)", "200 = ×2.")
+                    .khoang(0L, 10000L),
+            new DinhNghiaKhoa("sv.tieuPcExpTheoMau", "kinh_te", "ds_so", "50,100,150,250,250,500,0", true, "cau_hinh")
+                    .nhan("Giao hàng: % EXP theo màu", "7 số (Trắng..Tím, số cuối không dùng).")
+                    .khoang(0L, 100000L)
+                    .soPhanTu(7),
+            new DinhNghiaKhoa("sv.tieuPermilleCaoCap", "kinh_te", "ds_so", "50,70,90,35,55,75,5,25,45", true, "cau_hinh")
+                    .nhan("Giao hàng: phần nghìn EXP cao cấp", "9 số (3 khung cấp × 3 màu).")
+                    .khoang(0L, 1000L)
+                    .soPhanTu(9),
+            new DinhNghiaKhoa("sv.doiTieuNguongMauXu", "kinh_te", "ds_so", "50545,85545,98945,99945,99995", true, "cau_hinh")
+                    .nhan("Đổi hàng (xu): ngưỡng màu", "5 ngưỡng cộng dồn.")
+                    .khoang(0L, 100000L)
+                    .soPhanTu(5),
+            new DinhNghiaKhoa("sv.doiTieuNguongMauLuong", "kinh_te", "ds_so", "22890,52890,96890,99890,99990", true, "cau_hinh")
+                    .nhan("Đổi hàng (lượng): ngưỡng màu", "5 ngưỡng cộng dồn.")
+                    .khoang(0L, 100000L)
+                    .soPhanTu(5),
+            new DinhNghiaKhoa("roi.xu.phan_tram", "kinh_te", "so", "30", true, "cau_hinh")
+                    .nhan("Tỉ lệ một quái rơi xu (%) — dài hạn", "Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("roi.da_nang_cap.phan_nghin", "kinh_te", "so", "15", true, "cau_hinh")
+                    .nhan("Tỉ lệ rơi đá nâng cấp (‰)", "Phần nghìn mỗi quái khi lệch cấp ≤ 5.")
+                    .khoang(0L, 200L),
+            new DinhNghiaKhoa("exp.nang_luong_phut", "kinh_te", "so", "180", true, "cau_hinh")
+                    .nhan("Phút năng lượng 100% / ngày", "Số phút EXP/rơi đầy đủ mỗi ngày.")
+                    .khoang(0L, 1440L),
+            new DinhNghiaKhoa("exp.nang_luong_tich_phut", "kinh_te", "so", "360", true, "cau_hinh")
+                    .nhan("Năng lượng tích luỹ tối đa (phút)", "Phút năng lượng dồn tối đa khi không chơi.")
+                    .khoang(0L, 4320L),
+            new DinhNghiaKhoa("thue.cho", "kinh_te", "so", "6", true, "cau_hinh")
+                    .nhan("Thuế chợ ký gửi (%)", "Đốt khỏi nền kinh tế khi bán được.")
+                    .khoang(0L, 50L),
+            new DinhNghiaKhoa("thue.dang_ban", "kinh_te", "so", "1", true, "cau_hinh")
+                    .nhan("Phí đăng bán (%)", "Đốt, không hoàn; tối thiểu 1 xu.")
+                    .khoang(0L, 20L),
+            new DinhNghiaKhoa("thue.chuyen_luong", "kinh_te", "so", "5", true, "cau_hinh")
+                    .nhan("Phí chuyển lượng (%)", "Làm tròn lên, tối thiểu 1 khi > 0.")
+                    .khoang(0L, 50L),
+            new DinhNghiaKhoa("thue.tran_chuyen_xu_gio", "kinh_te", "so", "5", true, "cau_hinh")
+                    .nhan("Trần chuyển xu / ngày (giờ thu nhập)", "Bội số thu nhập 1 giờ ở cấp người gửi.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("phi.dich_chuyen_phan_tram_gio", "kinh_te", "so", "3", true, "cau_hinh")
+                    .nhan("Phí dịch chuyển (% thu nhập 1 giờ)", "Tối thiểu 1 xu.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("phi.hoi_sinh_phan_tram_gio", "kinh_te", "so", "5", true, "cau_hinh")
+                    .nhan("Phí hồi sinh (% thu nhập 1 giờ)", "Tối thiểu 1 xu.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("phi.ban_npc_phan_tram", "kinh_te", "so", "5", true, "cau_hinh")
+                    .nhan("Giá bán đồ cho NPC (% giá)", "Không cộng theo cấp cường hoá.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("tieu_hao.sua_do_phan_tram_thu_nhap", "kinh_te", "so", "8", true, "cau_hinh")
+                    .nhan("Trần phí sửa đồ (% thu nhập 1 giờ / món)", "Phí sửa = min(công thức cũ, trần × số món).")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("giftcode.toi_da_thang", "kinh_te", "so", "2", true, "cau_hinh")
+                    .nhan("Giftcode dài hạn tối đa / tháng", "Số giftcode một Pokémon nhập được mỗi tháng.")
+                    .khoang(0L, 20L),
+            new DinhNghiaKhoa("giftcode.gia_tri_toi_da", "kinh_te", "so", "30", true, "cau_hinh")
+                    .nhan("Trần giá trị một giftcode", "Điểm giá trị tối đa của một mã (GiftcodeAnToanLogic).")
+                    .khoang(0L, 100000L),
+            new DinhNghiaKhoa("giftcode.ngan_sach_thang", "kinh_te", "so", "20000", true, "cau_hinh")
+                    .nhan("Ngân sách giftcode / tháng", "Tổng giá trị giftcode được phát mỗi tháng.")
+                    .khoang(0L, 100000000L),
+            new DinhNghiaKhoa("sv.nap_tien", "nap_tien", "co", "0", false, "cau_hinh")
+                    .nhan("Hệ thống nạp tiền (máy chủ game)", "Công tắc tổng phía game: 1 = bật (chỉ chạy khi sv.lau_dai=1). Phía web còn cần HTBB_NAP_BAT."),
+            new DinhNghiaKhoa("HTBB_NAP_BAT", "nap_tien", "co", "0", false, "env")
+                    .nhan("Web: bật nạp tiền (biến môi trường)", "Đặt trong .env của web, không sửa từ trang này. Tắt hoặc cấu hình cổng chưa an toàn = KHOÁ toàn bộ thu tiền.")
+                    .chiDoc(),
+            new DinhNghiaKhoa("NAP_DA_CO_GIAY_PHEP", "nap_tien", "co", "0", false, "env")
+                    .nhan("Xác nhận giấy phép hình ảnh/IP (biến môi trường)", "Chủ máy chủ tự xác nhận đã có giấy phép. Thiếu = không bán Thành viên, cảnh báo đỏ ở trang Nạp tiền.")
+                    .chiDoc(),
+            new DinhNghiaKhoa("nap.luong.bat", "nap_tien", "co", "1", true, "cau_hinh")
+                    .nhan("Bán gói lượng", "0 = web ngừng tạo đơn gói lượng mới (đơn đã thanh toán vẫn được cộng)."),
+            new DinhNghiaKhoa("nap.the_thang.bat", "nap_tien", "co", "1", true, "cau_hinh")
+                    .nhan("Bán thẻ tháng", "0 = web ngừng tạo đơn thẻ tháng mới. Người đã mua vẫn nhận lượng hằng ngày."),
+            new DinhNghiaKhoa("nap.ve_mua.bat", "nap_tien", "co", "1", true, "cau_hinh")
+                    .nhan("Bán vé mùa cao cấp", "0 = web ngừng tạo đơn vé mùa mới."),
+            new DinhNghiaKhoa("thanh_vien.ban_bat", "nap_tien", "co", "0", true, "cau_hinh")
+                    .nhan("Bán Thành viên HTBB", "1 = mở bán (còn cần giấy phép + cổng an toàn). Cùng khoá với trang Thành viên."),
+            new DinhNghiaKhoa("nap.tang_toc.bat", "nap_tien", "co", "1", true, "cau_hinh")
+                    .nhan("Bán vật phẩm tăng tốc (bằng lượng, trong game)", "0 = cửa hàng lượng trong game ngừng bán vé EXP / bùa thể lực / ủy thác / kẹo hiếm bản cao cấp."),
+            new DinhNghiaKhoa("nap.hoan_tien.thu_cong", "nap_tien", "co", "1", true, "cau_hinh")
+                    .nhan("Cho phép hoàn tiền thủ công", "0 = khoá nút Hoàn tiền / Chargeback ở trang Nạp tiền."),
+            new DinhNghiaKhoa("nap.hoan_tien.tu_dong", "nap_tien", "co", "1", true, "cau_hinh")
+                    .nhan("Tự động thu hồi khi hoàn đơn đã cộng", "1 = máy chủ game tự chuyển lượng thành nợ / trừ thẻ tháng / gỡ vé mùa cho đơn 'chờ thu hồi'. 0 = đơn đứng chờ, xử lý tay."),
+            new DinhNghiaKhoa("tran_tuan_vnd", "nap_tien", "so", "1000000", true, "nap_cau_hinh")
+                    .nhan("Trần nạp / tuần / tài khoản (VND)", "0 = mặc định 1.000.000 đ. Bị kẹp ≤ 5.000.000.")
+                    .khoang(0L, 5000000L),
+            new DinhNghiaKhoa("tran_thang_vnd", "nap_tien", "so", "2000000", true, "nap_cau_hinh")
+                    .nhan("Trần nạp / tháng / tài khoản (VND)", "0 = mặc định 2.000.000 đ. Bị kẹp ≤ 5.000.000.")
+                    .khoang(0L, 5000000L),
+            new DinhNghiaKhoa("thanh_vien.bat", "thanh_vien", "co", "0", true, "cau_hinh")
+                    .nhan("Bật yêu cầu Thành viên", "1 = các tính năng trong danh sách dưới chỉ dành cho Thành viên. 0 = không khoá gì."),
+            new DinhNghiaKhoa("thanh_vien.gia", "thanh_vien", "so", "20000", true, "cau_hinh")
+                    .nhan("Giá Thành viên (VND)", "Đồng bộ sang gói nạp THANH_VIEN khi lưu.")
+                    .khoang(10000L, 2000000L)
+                    .buoc(1000L),
+            new DinhNghiaKhoa("thanh_vien.thoi_han_ngay", "thanh_vien", "so", "0", true, "cau_hinh")
+                    .nhan("Thời hạn (ngày)", "0 = vĩnh viễn.")
+                    .khoang(0L, 36500L),
+            new DinhNghiaKhoa("thanh_vien.chuc_nang", "thanh_vien", "ds_chuoi", "giao_dich,nhan_tang,chat_the_gioi,cho,cho_sinh_thai,chuyen_luong,bang,pvp_xep_hang,giftcode", true, "cau_hinh")
+                    .nhan("Tính năng yêu cầu Thành viên", "Chọn các tính năng bị khoá với tài khoản thường.")
+                    .luaChon(new String[]{"giao_dich", "nhan_tang", "chat_the_gioi", "cho", "cho_sinh_thai", "chuyen_luong", "bang", "pvp_xep_hang", "giftcode", "qua_online", "gui_thu"}),
+            new DinhNghiaKhoa("thanh_vien.mien_cap", "thanh_vien", "so", "0", true, "cau_hinh")
+                    .nhan("Miễn yêu cầu dưới cấp", "Người chơi dưới cấp này được dùng thử (0 = không miễn).")
+                    .khoang(0L, 200L),
+            new DinhNghiaKhoa("thanh_vien.thong_bao", "thanh_vien", "chuoi", "", true, "cau_hinh")
+                    .nhan("Câu thông báo khi bị khoá", "Trống = câu mặc định.")
+                    .doDai(250),
+            new DinhNghiaKhoa("kich_hoat.chan_dang_nhap", "thanh_vien", "co", "0", true, "cau_hinh")
+                    .nhan("Chặn đăng nhập tài khoản chưa kích hoạt", "0 (mặc định) = chưa kích hoạt vẫn vào chơi, chỉ bị khoá các tính năng dưới. 1 = hành vi cũ: không vào được game. Chỉ có tác dụng khi sv.EnableAvtiveCheck=1."),
+            new DinhNghiaKhoa("kich_hoat.chuc_nang", "thanh_vien", "ds_chuoi", "giao_dich,chat_the_gioi,cho,chuyen_luong,nhan_tang,giftcode", true, "cau_hinh")
+                    .nhan("Tính năng khoá khi chưa kích hoạt", "Cùng cổng với Thành viên: bị chặn nếu (cần kích hoạt và chưa kích hoạt) hoặc (cần Thành viên và chưa là Thành viên).")
+                    .luaChon(new String[]{"giao_dich", "nhan_tang", "chat_the_gioi", "cho", "cho_sinh_thai", "chuyen_luong", "bang", "pvp_xep_hang", "giftcode", "qua_online", "gui_thu"}),
+            new DinhNghiaKhoa("kich_hoat.thong_bao", "thanh_vien", "chuoi", "", true, "cau_hinh")
+                    .nhan("Câu thông báo khi bị khoá vì chưa kích hoạt", "Trống = câu mặc định (chỉ tới /kichhoat). Thay được {ten} {web}.")
+                    .doDai(250),
+            new DinhNghiaKhoa("kich_hoat.thanh_vien_la_kich_hoat", "thanh_vien", "co", "1", true, "cau_hinh")
+                    .nhan("Thành viên được coi như đã kích hoạt", "1 (mặc định) = tài khoản là Thành viên HTBB không bị khoá vì chưa kích hoạt (gộp hai bậc làm một nếu muốn)."),
+            new DinhNghiaKhoa("sv.dangKyTrongGame", "dang_ky", "co", "1", true, "cau_hinh")
+                    .nhan("Đăng ký trong game", "0 = nút Đăng ký trong game báo 'đăng ký trên web'."),
+            new DinhNghiaKhoa("sv.dangKyTuKichHoat", "dang_ky", "chon", "web", true, "cau_hinh")
+                    .nhan("Tự kích hoạt tài khoản đăng ký trong game", "web = theo cấu hình web (web.autoActivate).")
+                    .luaChon(new String[]{"web", "1", "0"}),
+            new DinhNghiaKhoa("sv.dangKyTreMs", "dang_ky", "so", "800", true, "cau_hinh")
+                    .nhan("Trễ phản hồi đăng ký (ms)", "Làm chậm dò tài khoản.")
+                    .khoang(0L, 5000L),
+            new DinhNghiaKhoa("sv.dangKyCsdlTaiKhoan", "dang_ky", "chuoi", "account", false, "cau_hinh")
+                    .nhan("CSDL tài khoản", "Tên database chứa team_user.")
+                    .mau("^[A-Za-z0-9_]{1,64}$"),
+            new DinhNghiaKhoa("dang_ky.web.bat", "dang_ky", "co", "1", true, "cau_hinh")
+                    .nhan("Đăng ký trên web", "0 = trang Đăng ký từ chối tài khoản mới."),
+            new DinhNghiaKhoa("sv.maxCharPerAccount", "dang_ky", "so", "3", true, "cau_hinh")
+                    .nhan("Số Pokémon tối đa / tài khoản", "Client hỗ trợ tối đa 3.")
+                    .khoang(1L, 3L),
+            new DinhNghiaKhoa("sv.suKienTuKhoiDongLai", "su_kien", "co", "1", true, "cau_hinh")
+                    .nhan("Tự khởi động lại khi đổi sự kiện", "1 = lệnh bật/tắt sự kiện có hẹn sẽ tự khởi động lại máy chủ."),
+            new DinhNghiaKhoa("sv.suKienGomGiay", "su_kien", "so", "120", true, "cau_hinh")
+                    .nhan("Gom lệnh sự kiện (giây)", "Gom nhiều lệnh thành một lần khởi động lại.")
+                    .khoang(30L, 3600L),
+            new DinhNghiaKhoa("sv.suKienBaoTruocGiay", "su_kien", "so", "60", true, "cau_hinh")
+                    .nhan("Báo trước khi đổi sự kiện (giây)", "")
+                    .khoang(10L, 600L),
+            new DinhNghiaKhoa("sv.worldCupBatDau", "su_kien", "ngay_gio", "", true, "cau_hinh")
+                    .nhan("World Cup bắt đầu", "yyyy-MM-dd HH:mm:ss. Trống = tắt."),
+            new DinhNghiaKhoa("sv.worldCupKetThuc", "su_kien", "ngay_gio", "", true, "cau_hinh")
+                    .nhan("World Cup kết thúc", "Trống = tắt."),
+            new DinhNghiaKhoa("sv.worldCupHanNhanQua", "su_kien", "ngay_gio", "", true, "cau_hinh")
+                    .nhan("World Cup hạn nhận quà", "Trống = tắt."),
+            new DinhNghiaKhoa("sv.gioChiemThanh", "su_kien", "so", "-1", true, "cau_hinh")
+                    .nhan("Giờ chiếm Gym", "0–23, −1 = lịch chuẩn 21h thứ 3 + thứ 7.")
+                    .khoang(-1L, 23L),
+            new DinhNghiaKhoa("sv.phutChiemThanh", "su_kien", "so", "0", true, "cau_hinh")
+                    .nhan("Phút chiếm Gym", "0–59.")
+                    .khoang(-1L, 59L),
+            new DinhNghiaKhoa("sv.ngayChiemThanh", "su_kien", "chuoi", "", true, "cau_hinh")
+                    .nhan("Ngày chiếm Gym", "Mon,Tue,... hoặc yyyy-MM-dd; trống = mỗi ngày.")
+                    .mau("^$|^((Mon|Tue|Wed|Thu|Fri|Sat|Sun)(,(Mon|Tue|Wed|Thu|Fri|Sat|Sun))*|\\d{4}-\\d{2}-\\d{2})$")
+                    .doDai(64),
+            new DinhNghiaKhoa("sv.isSuKienTrungThul2016", "su_kien", "co", "0", false, "cau_hinh")
+                    .nhan("Sự kiện cũ: Trung thu 2016", "Cờ sự kiện gốc (đọc lúc khởi động)."),
+            new DinhNghiaKhoa("sv.isSuKienTet2017", "su_kien", "co", "0", false, "cau_hinh")
+                    .nhan("Sự kiện cũ: Tết 2017", ""),
+            new DinhNghiaKhoa("sv.isSuKienGioTo2016", "su_kien", "co", "0", false, "cau_hinh")
+                    .nhan("Sự kiện cũ: Giỗ Tổ 2016", ""),
+            new DinhNghiaKhoa("sv.isSuKienNoel2023", "su_kien", "co", "0", false, "cau_hinh")
+                    .nhan("Sự kiện cũ: Noel 2023", ""),
+            new DinhNghiaKhoa("sv.isSuKienTetduonglich2024", "su_kien", "co", "0", false, "cau_hinh")
+                    .nhan("Sự kiện cũ: Tết dương lịch 2024", ""),
+            new DinhNghiaKhoa("bao_tri.bat", "bao_tri", "co", "0", true, "cau_hinh")
+                    .nhan("Chế độ bảo trì đăng nhập", "1 = từ chối đăng nhập mới (người đang chơi không bị đá). Tương đương tệp bao_tri.txt — bật một trong hai là bảo trì."),
+            new DinhNghiaKhoa("bao_tri.cau", "bao_tri", "chuoi", "", true, "cau_hinh")
+                    .nhan("Câu thông báo bảo trì", "Trống = câu mặc định.")
+                    .doDai(200),
+            new DinhNghiaKhoa("bao_tri.cho", "bao_tri", "ds_chuoi", "", true, "cau_hinh")
+                    .nhan("Tài khoản được vào khi bảo trì", "Tên tài khoản (chữ thường), cách nhau dấu phẩy.")
+                    .mau("^[a-z0-9_]{3,20}$")
+                    .doDai(255),
+            new DinhNghiaKhoa("sv.gioBaoTri", "bao_tri", "chuoi", "", true, "cau_hinh")
+                    .nhan("Giờ bảo trì hằng ngày", "HH:MM cố định, 'tat' = không tự bảo trì, trống = ngẫu nhiên 4:30–5:30.")
+                    .mau("^$|^(tat|off)$|^([01]?\\d|2[0-3]):[0-5]\\d$")
+                    .doDai(5),
+            new DinhNghiaKhoa("sv.chiSoMayChu", "bao_tri", "co", "1", false, "cau_hinh")
+                    .nhan("Ghi chỉ số máy chủ + đọc bao_tri.txt", "0 = tắt luồng chỉ số (tob_chi_so_may_chu)."),
+            new DinhNghiaKhoa("sv.spam.bat", "chong_spam", "co", "1", true, "cau_hinh")
+                    .nhan("Chống spam chat / thao tác", "0 = tắt toàn bộ."),
+            new DinhNghiaKhoa("sv.spam.chat.gan", "chong_spam", "nhip", "5/10", true, "cau_hinh")
+                    .nhan("Nhịp chat gần", "số tin / giây (vd 5/10)."),
+            new DinhNghiaKhoa("sv.spam.chat.rieng", "chong_spam", "nhip", "6/10", true, "cau_hinh")
+                    .nhan("Nhịp chat riêng", ""),
+            new DinhNghiaKhoa("sv.spam.chat.theGioi", "chong_spam", "nhip", "1/30", true, "cau_hinh")
+                    .nhan("Nhịp chat thế giới / người", ""),
+            new DinhNghiaKhoa("sv.spam.theGioiToanServer", "chong_spam", "nhip", "12/60", true, "cau_hinh")
+                    .nhan("Nhịp chat thế giới toàn máy chủ", ""),
+            new DinhNghiaKhoa("sv.spam.chat.doi", "chong_spam", "nhip", "8/10", true, "cau_hinh")
+                    .nhan("Nhịp chat đội", ""),
+            new DinhNghiaKhoa("sv.spam.chat.bang", "chong_spam", "nhip", "8/10", true, "cau_hinh")
+                    .nhan("Nhịp chat đội", ""),
+            new DinhNghiaKhoa("sv.spam.trungLapGiay", "chong_spam", "so", "30", true, "cau_hinh")
+                    .nhan("Chặn tin trùng lặp (giây)", "")
+                    .khoang(0L, 3600L),
+            new DinhNghiaKhoa("sv.spam.chanQuangCao", "chong_spam", "co", "1", true, "cau_hinh")
+                    .nhan("Chặn quảng cáo / link", ""),
+            new DinhNghiaKhoa("sv.spam.viPhamCam", "chong_spam", "so", "4", true, "cau_hinh")
+                    .nhan("Số vi phạm thì cấm chat", "")
+                    .khoang(1L, 100L),
+            new DinhNghiaKhoa("sv.spam.camGiay", "chong_spam", "ds_so", "60,300,1800,7200", true, "cau_hinh")
+                    .nhan("Thang cấm chat (giây)", "Các bậc cấm tăng dần, cách nhau dấu phẩy.")
+                    .khoang(1L, 31536000L),
+            new DinhNghiaKhoa("sv.socketTimeout", "chong_spam", "so", "180", true, "cau_hinh")
+                    .nhan("Hết hạn socket (giây)", "Áp dụng cho kết nối mới. 0 = tắt.")
+                    .khoang(0L, 3600L),
+            new DinhNghiaKhoa("sv.maxConnPerIp", "chong_spam", "so", "50", true, "cau_hinh")
+                    .nhan("Kết nối tối đa / IP", "0 = tắt.")
+                    .khoang(0L, 100000L),
+            new DinhNghiaKhoa("sv.connRateMax", "chong_spam", "so", "60", true, "cau_hinh")
+                    .nhan("Số kết nối tối đa / cửa sổ", "0 = tắt.")
+                    .khoang(0L, 100000L),
+            new DinhNghiaKhoa("sv.connRateWindow", "chong_spam", "so", "30", true, "cau_hinh")
+                    .nhan("Cửa sổ đếm kết nối (giây)", "0 = tắt.")
+                    .khoang(0L, 3600L),
+            new DinhNghiaKhoa("sv.dosBanSec", "chong_spam", "so", "300", true, "cau_hinh")
+                    .nhan("Thời gian chặn IP ngập (giây)", "")
+                    .khoang(0L, 86400L),
+            new DinhNghiaKhoa("sv.reloginWaitSec", "chong_spam", "so", "0", true, "cau_hinh")
+                    .nhan("Chờ đăng nhập lại (giây)", "")
+                    .khoang(0L, 600L),
+            new DinhNghiaKhoa("sv.tranGoiThuong", "chong_spam", "so", "300", true, "cau_hinh")
+                    .nhan("Trần gói tin thường / cửa sổ", "")
+                    .khoang(10L, 100000L),
+            new DinhNghiaKhoa("sv.tranGoiTaiNguyen", "chong_spam", "so", "600", true, "cau_hinh")
+                    .nhan("Trần gói tải tài nguyên / cửa sổ", "")
+                    .khoang(10L, 100000L),
+            new DinhNghiaKhoa("sv.tranGoiTraCuu", "chong_spam", "so", "600", true, "cau_hinh")
+                    .nhan("Trần gói tra cứu / cửa sổ", "")
+                    .khoang(10L, 100000L),
+            new DinhNghiaKhoa("sv.log.muc", "chong_spam", "chon", "THONG_TIN", true, "cau_hinh")
+                    .nhan("Mức nhật ký (màn hình)", "")
+                    .luaChon(new String[]{"LOI", "CANH_BAO", "THONG_TIN", "GO_LOI", "ERROR", "WARN", "INFO", "DEBUG"})
+                    .hoa(),
+            new DinhNghiaKhoa("sv.log.mucTep", "chong_spam", "chon", "", true, "cau_hinh")
+                    .nhan("Mức nhật ký (tệp)", "Trống = như màn hình.")
+                    .luaChon(new String[]{"", "LOI", "CANH_BAO", "THONG_TIN", "GO_LOI", "ERROR", "WARN", "INFO", "DEBUG"})
+                    .hoa(),
+            new DinhNghiaKhoa("sv.log.tat", "chong_spam", "ds_chuoi", "GOI3,GOI5,GOI26,VKTT,SQL,LUU_CHAR", true, "cau_hinh")
+                    .nhan("Loại nhật ký tắt", "Mã loại, cách nhau dấu phẩy.")
+                    .mau("^[A-Z0-9_]{1,32}$")
+                    .doDai(255),
+            new DinhNghiaKhoa("sv.log.kiemToan", "chong_spam", "ds_chuoi", "ADMIN,GM,NAP,NAP_TIEN,GIFTCODE,CAM,BAN,KINH_TE,KINHTE,CHONG_SPAM", true, "cau_hinh")
+                    .nhan("Loại nhật ký kiểm toán", "Ghi riêng tệp kiem_toan (giữ lâu).")
+                    .mau("^[A-Z0-9_]{1,32}$")
+                    .doDai(255),
+            new DinhNghiaKhoa("chi_so.bat", "chi_so", "co", "1", true, "cau_hinh")
+                    .nhan("Bật giới hạn chỉ số", "0 = tắt mọi trần/giảm dần chỉ số (quay về công thức cũ)."),
+            new DinhNghiaKhoa("chi_so.kep_trang_bi", "chi_so", "co", "1", true, "cau_hinh")
+                    .nhan("Kẹp chỉ số trang bị theo ngân sách", "Mỗi món ≤ chuẩn bậc × 1,30 × nâng cấp; đồ bậc cũ ≤ 130% đồ bậc hiện tại."),
+            new DinhNghiaKhoa("chi_so.tran_chi_mang", "chi_so", "so", "400", true, "cau_hinh")
+                    .nhan("Trần tỉ lệ chí mạng (‰)", "Phần nghìn, có giảm dần. PvP cố định 300‰.")
+                    .khoang(100L, 1000L),
+            new DinhNghiaKhoa("chi_so.tran_st_chi_mang", "chi_so", "so", "500", true, "cau_hinh")
+                    .nhan("Trần ST chí mạng cộng thêm (‰)", "Trên nền ×1,5. 500 = đòn chí mạng tối đa ×2,0.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("chi_so.tran_ne", "chi_so", "so", "300", true, "cau_hinh")
+                    .nhan("Trần né tránh (‰)", "Phần nghìn, có giảm dần. PvP cố định 200‰.")
+                    .khoang(0L, 900L),
+            new DinhNghiaKhoa("chi_so.tran_hut", "chi_so", "so", "100", true, "cau_hinh")
+                    .nhan("Trần hút HP PvE (‰ sát thương)", "Gộp mọi nguồn hút HP.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("chi_so.tran_hut_pvp", "chi_so", "so", "50", true, "cau_hinh")
+                    .nhan("Trần hút HP PvP (‰ sát thương thật)", "Gộp mọi nguồn hút HP, tính trên sát thương sau ×0,30.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("chi_so.tran_giam_st", "chi_so", "so", "500", true, "cau_hinh")
+                    .nhan("Trần giảm sát thương nhận (‰)", "Gộp mọi nguồn thụ động (PvP cố định 400‰).")
+                    .khoang(0L, 900L),
+            new DinhNghiaKhoa("chi_so.tran_khang_he", "chi_so", "so", "600", true, "cau_hinh")
+                    .nhan("Trần kháng một hệ (‰)", "Kháng hệ + kháng mọi hệ + phiến đá.")
+                    .khoang(0L, 900L),
+            new DinhNghiaKhoa("chi_so.san_sat_thuong", "chi_so", "so", "400", true, "cau_hinh")
+                    .nhan("Sàn sát thương mỗi đòn (‰)", "Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử).")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("chi_so.tran_phan_tram_cong", "chi_so", "so", "500", true, "cau_hinh")
+                    .nhan("Trần tổng % cộng thêm (‰)", "Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc.")
+                    .khoang(0L, 5000L),
+            new DinhNghiaKhoa("pvp.tinh_diem.bat", "pvp", "co", "1", true, "cau_hinh")
+                    .nhan("Tính điểm thang PvP", "0 = trận PvP không cộng/trừ điểm thang."),
+            new DinhNghiaKhoa("gym.bat", "pvp", "co", "1", true, "cau_hinh")
+                    .nhan("Thách đấu Gym", "0 = tạm đóng Gym."),
+            new DinhNghiaKhoa("ham_nguc.bat", "pvp", "co", "1", true, "cau_hinh")
+                    .nhan("Hầm Ngục bí ẩn", "0 = không vào tầng mới (vẫn nhận thưởng đã đạt)."),
+            new DinhNghiaKhoa("tu_dong.bat", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Bật Tự động đánh", "0 = tạm khoá (người đang dùng bị dừng ở lần kiểm tiếp theo)."),
+            new DinhNghiaKhoa("tu_dong.gio_moi_ngay", "tu_dong", "so", "5", true, "cau_hinh")
+                    .nhan("Giờ Tự động đánh mỗi ngày", "Miễn phí, chỉ tính lúc online và đang bật. Đặt lại lúc 00:00.")
+                    .khoang(0L, 24L),
+            new DinhNghiaKhoa("tu_dong.gio_them_the_thang", "tu_dong", "so", "2", true, "cau_hinh")
+                    .nhan("Giờ cộng thêm khi có thẻ tháng", "Cộng vào giờ mỗi ngày khi thẻ tháng còn hạn.")
+                    .khoang(0L, 24L),
+            new DinhNghiaKhoa("tu_dong.chi_map_da_mo", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Chỉ ở bãi luyện tập", "1 = chỉ bật ở bản đồ có Pokémon hoang dã đã mở (không ở thành phố, nhà, sàn đấu, sự kiện)."),
+            new DinhNghiaKhoa("tu_dong.tat_khi_pvp", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Dừng khi PvP / sàn đấu / Gym / boss", "1 = dừng khi bị Pokémon khác tấn công, bật PK, vào sàn đấu / Gym / chiến trường hay đánh boss."),
+            new DinhNghiaKhoa("tu_dong.tu_dung_thuoc", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Cho tự uống thuốc", "0 = Tự động đánh không tự uống thuốc hồi phục (người chơi tự bấm)."),
+            new DinhNghiaKhoa("tu_dong.ban_kinh", "tu_dong", "so", "240", true, "cau_hinh")
+                    .nhan("Bán kính tối đa (px)", "Pokémon chỉ đánh quanh điểm bật trong bán kính này; ra xa hơn (+64 px) thì dừng. 1 ô = 16 px.")
+                    .khoang(48L, 960L)
+                    .buoc(16L),
+            new DinhNghiaKhoa("tu_dong.nhip_danh", "tu_dong", "nhip", "12/5", true, "cau_hinh")
+                    .nhan("Nhịp đánh tối đa khi tự động", "số lệnh đánh / giây (vd 12/5). Vượt thì bỏ lệnh và tính vi phạm."),
+            new DinhNghiaKhoa("tu_dong.nhip_thuoc", "tu_dong", "nhip", "4/5", true, "cau_hinh")
+                    .nhan("Nhịp uống thuốc tối đa khi tự động", ""),
+            new DinhNghiaKhoa("tu_dong.nhip_nhat", "tu_dong", "nhip", "8/5", true, "cau_hinh")
+                    .nhan("Nhịp nhặt đồ tối đa khi tự động", ""),
+            new DinhNghiaKhoa("tu_dong.nhip_nguoi", "tu_dong", "nhip", "30/5", true, "cau_hinh")
+                    .nhan("Nhịp đánh nghi bot (mọi người chơi)", "Chỉ ghi nghi vấn (hack.txt), không chặn."),
+            new DinhNghiaKhoa("tu_dong.vi_pham_tat", "tu_dong", "so", "20", true, "cau_hinh")
+                    .nhan("Số vi phạm nhịp thì dừng", "Dừng Tự động đánh + ghi nghi vấn.")
+                    .khoang(1L, 1000L),
+            new DinhNghiaKhoa("tu_dong.hoi_sinh_moi_gio", "tu_dong", "so", "2", true, "cau_hinh")
+                    .nhan("Tự hồi sinh tối đa / giờ", "Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật \"Tự hồi sinh\", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ.")
+                    .khoang(0L, 20L),
+            new DinhNghiaKhoa("hoi_sinh.bat", "hoi_sinh", "co", "1", true, "cau_hinh")
+                    .nhan("Bật cơ chế hồi sinh mới", "0 = luồng cũ (popup hồi sinh tại chỗ 5% giờ thu nhập, tự hồi sinh dưới cấp 50)."),
+            new DinhNghiaKhoa("hoi_sinh.xu_phan_tram_gio", "hoi_sinh", "so", "40", true, "cau_hinh")
+                    .nhan("Phí xu tại chỗ (% thu nhập 1 giờ)", "Theo cấp (ThongSoLauDai.xuMoiGio). 40 = 0,4 giờ cày. Nhân hệ số gục lặp.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("hoi_sinh.xu_toi_thieu", "hoi_sinh", "so", "200", true, "cau_hinh")
+                    .nhan("Phí xu tại chỗ tối thiểu", "Xu.")
+                    .khoang(0L, 100000000L),
+            new DinhNghiaKhoa("hoi_sinh.he_so_lap", "hoi_sinh", "ds_so", "100,150,200,300", true, "cau_hinh")
+                    .nhan("Hệ số gục lặp (%)", "Lần gục thứ 1, 2, 3... trong cửa sổ; lần sau dùng số cuối (trần). Áp cho phí xu và lượng khoá.")
+                    .khoang(0L, 10000L),
+            new DinhNghiaKhoa("hoi_sinh.cua_so_phut", "hoi_sinh", "so", "30", true, "cau_hinh")
+                    .nhan("Cửa sổ gục lặp (phút)", "Đếm số lần gục trong ngần này phút.")
+                    .khoang(1L, 1440L),
+            new DinhNghiaKhoa("hoi_sinh.luong_khoa", "hoi_sinh", "so", "2", true, "cau_hinh")
+                    .nhan("Phí lượng khoá tại chỗ", "0 = tắt lựa chọn trả lượng khoá. Nhân hệ số gục lặp (làm tròn lên).")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("hoi_sinh.luong_khoa_toi_da", "hoi_sinh", "so", "10", true, "cau_hinh")
+                    .nhan("Trần phí lượng khoá", "Lượng khoá tối đa một lần.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("hoi_sinh.cho_sau_guc_giay", "hoi_sinh", "so", "5", true, "cau_hinh")
+                    .nhan("Chờ sau khi gục (giây)", "Hồi sinh tại chỗ chỉ bấm được sau ngần này giây (đếm ngược trên hộp thoại).")
+                    .khoang(0L, 600L),
+            new DinhNghiaKhoa("hoi_sinh.hoi_chieu_giay", "hoi_sinh", "so", "60", true, "cau_hinh")
+                    .nhan("Hồi chiêu hồi sinh tại chỗ (giây)", "Giữa hai lần hồi sinh tại chỗ. Về Trung tâm luôn được.")
+                    .khoang(0L, 3600L),
+            new DinhNghiaKhoa("hoi_sinh.hp_thuoc", "hoi_sinh", "so", "30", true, "cau_hinh")
+                    .nhan("HP khi dùng Thuốc hồi sinh (%)", "Thuốc hồi sinh tối đa lấy % trong data_vat_pham_lau_dai (hoi_sinh:100).")
+                    .khoang(1L, 100L),
+            new DinhNghiaKhoa("hoi_sinh.hp_tra_phi", "hoi_sinh", "so", "50", true, "cau_hinh")
+                    .nhan("HP khi trả xu / lượng khoá / tân thủ (%)", "")
+                    .khoang(1L, 100L),
+            new DinhNghiaKhoa("hoi_sinh.exp_mat_phan_nghin", "hoi_sinh", "so", "20", true, "cau_hinh")
+                    .nhan("Mất EXP khi về Trung tâm (phần nghìn)", "Phần nghìn EXP lên cấp hiện tại (20 = 2%). Không bao giờ tụt cấp: chỉ trừ trong tiến độ cấp.")
+                    .khoang(0L, 200L),
+            new DinhNghiaKhoa("hoi_sinh.exp_mat_toi_da_phut", "hoi_sinh", "so", "15", true, "cau_hinh")
+                    .nhan("Trần mất EXP (phút cày)", "Không mất quá ngần này phút EXP đánh quái ở cấp đó. 0 = không chặn.")
+                    .khoang(0L, 600L),
+            new DinhNghiaKhoa("hoi_sinh.do_ben_mat_phan_tram", "hoi_sinh", "so", "5", true, "cau_hinh")
+                    .nhan("Mất độ bền khi về Trung tâm (%)", "% độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ).")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("hoi_sinh.met_moi_phut", "hoi_sinh", "so", "5", true, "cau_hinh")
+                    .nhan("Mệt mỏi (phút)", "Sau khi về Trung tâm. 0 = tắt.")
+                    .khoang(0L, 120L),
+            new DinhNghiaKhoa("hoi_sinh.met_moi_exp", "hoi_sinh", "so", "20", true, "cau_hinh")
+                    .nhan("Mệt mỏi: giảm EXP (%)", "EXP hạ quái.")
+                    .khoang(0L, 90L),
+            new DinhNghiaKhoa("hoi_sinh.met_moi_tan_cong", "hoi_sinh", "so", "10", true, "cau_hinh")
+                    .nhan("Mệt mỏi: giảm tấn công (%)", "")
+                    .khoang(0L, 90L),
+            new DinhNghiaKhoa("hoi_sinh.tan_thu_cap", "hoi_sinh", "so", "15", true, "cau_hinh")
+                    .nhan("Bảo vệ tân thủ dưới cấp", "Dưới cấp này: không mất EXP / độ bền / Mệt mỏi, hồi sinh tại chỗ miễn phí.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("hoi_sinh.tan_thu_hoi_chieu_giay", "hoi_sinh", "so", "30", true, "cau_hinh")
+                    .nhan("Hồi chiêu hồi sinh miễn phí tân thủ (giây)", "")
+                    .khoang(0L, 3600L),
+            new DinhNghiaKhoa("hoi_sinh.dong_doi_bat", "hoi_sinh", "co", "1", true, "cau_hinh")
+                    .nhan("Cho chờ đồng đội hồi sinh", "Đồng đội ở gần mang Thuốc hồi sinh được mời cứu."),
+            new DinhNghiaKhoa("hoi_sinh.dong_doi_giay", "hoi_sinh", "so", "60", true, "cau_hinh")
+                    .nhan("Thời gian chờ đồng đội (giây)", "")
+                    .khoang(10L, 600L),
+            new DinhNghiaKhoa("hoi_sinh.cam_pvp", "hoi_sinh", "co", "1", true, "cau_hinh")
+                    .nhan("Cấm tại chỗ ở PvP / sàn đấu", "Sàn đấu, giải Liên minh, chiến trường, lãnh địa đội, chiếm Gym đang đánh, đấu trường + hoi_sinh.map_pvp."),
+            new DinhNghiaKhoa("hoi_sinh.cam_gym", "hoi_sinh", "co", "1", true, "cau_hinh")
+                    .nhan("Cấm tại chỗ khi thách đấu Gym", ""),
+            new DinhNghiaKhoa("hoi_sinh.cam_boss", "hoi_sinh", "co", "1", true, "cau_hinh")
+                    .nhan("Cấm tại chỗ giữa trận boss", "Đã gây sát thương vào boss thế giới / Gym còn sống cùng bản đồ."),
+            new DinhNghiaKhoa("hoi_sinh.cam_me_cung", "hoi_sinh", "co", "1", true, "cau_hinh")
+                    .nhan("Cấm tại chỗ trong Mê cung", ""),
+            new DinhNghiaKhoa("hoi_sinh.map_pvp", "hoi_sinh", "ds_so", "202,203,204,205,227,228", true, "cau_hinh")
+                    .nhan("Bản đồ PvP (id)", "Thêm vào luật cấm PvP (so cả id bản đồ lẫn id nạp).")
+                    .khoang(0L, 100000L),
+            new DinhNghiaKhoa("hoi_sinh.map_cam_them", "hoi_sinh", "chuoi", "", true, "cau_hinh")
+                    .nhan("Bản đồ cấm tại chỗ thêm (id)", "Cách nhau dấu phẩy; trống = không.")
+                    .mau("^[0-9, ]*$")
+                    .doDai(255),
+            new DinhNghiaKhoa("hoi_sinh.auto_ve_map_up", "hoi_sinh", "co", "0", true, "cau_hinh")
+                    .nhan("Cho \"Auto về Map Up\" sau khi gục", "0 = gục thì không tự bay lại bãi luyện (chống treo máy vô hạn)."),
+            new DinhNghiaKhoa("hoi_sinh.gia_thuoc_phan_tram_gio", "hoi_sinh", "so", "30", true, "cau_hinh")
+                    .nhan("Giá Thuốc hồi sinh (% thu nhập 1 giờ)", "Giá ở cửa hàng NPC theo cấp người mua (cùng bậc phí xu tại chỗ). 0 = giá gốc data_potion.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("hoi_sinh.gia_thuoc_toi_thieu", "hoi_sinh", "so", "407", true, "cau_hinh")
+                    .nhan("Giá Thuốc hồi sinh tối thiểu", "Xu / viên (không thấp hơn giá gốc).")
+                    .khoang(0L, 100000000L),
+            new DinhNghiaKhoa("hoi_sinh.thuoc_moi_gio", "hoi_sinh", "so", "6", true, "cau_hinh")
+                    .nhan("Hồi sinh bằng vật phẩm tối đa / giờ", "Thuốc hồi sinh / tối đa của chính mình (tay, Tự động đánh, dùng từ túi) trong 60 phút. Đồng đội cứu không tính. 0 = không giới hạn.")
+                    .khoang(0L, 100L),
+            new DinhNghiaKhoa("sv.thongBao.bat", "thong_bao", "co", "1", true, "cau_hinh")
+                    .nhan("Gộp thông báo toàn máy chủ", "0 = gửi thẳng như cũ."),
+            new DinhNghiaKhoa("sv.thongBao.toiDa", "thong_bao", "so", "6", true, "cau_hinh")
+                    .nhan("Thông báo tối đa / cửa sổ", "")
+                    .khoang(1L, 1000L),
+            new DinhNghiaKhoa("sv.thongBao.cuaSoGiay", "thong_bao", "so", "60", true, "cau_hinh")
+                    .nhan("Cửa sổ đếm thông báo (giây)", "")
+                    .khoang(1L, 3600L),
+            new DinhNghiaKhoa("sv.thongBao.moiLoai", "thong_bao", "so", "3", true, "cau_hinh")
+                    .nhan("Tối đa mỗi loại / cửa sổ", "")
+                    .khoang(1L, 1000L),
+            new DinhNghiaKhoa("sv.thongBao.trungLapGiay", "thong_bao", "so", "120", true, "cau_hinh")
+                    .nhan("Bỏ thông báo trùng (giây)", "")
+                    .khoang(0L, 86400L),
+            new DinhNghiaKhoa("sv.thongBao.gopGiay", "thong_bao", "so", "15", true, "cau_hinh")
+                    .nhan("Gộp mỗi (giây)", "")
+                    .khoang(1L, 3600L),
+            new DinhNghiaKhoa("sv.website", "thong_bao", "chuoi", "", true, "cau_hinh")
+                    .nhan("Địa chỉ website (hiện trong game)", "")
+                    .doDai(200),
+            new DinhNghiaKhoa("sv.linkTaiGame", "thong_bao", "chuoi", "", true, "cau_hinh")
+                    .nhan("Link tải game (hiện trong game)", "")
+                    .doDai(200),
+            new DinhNghiaKhoa("sv.adminAccounts", "quan_tri", "ds_chuoi", "", true, "cau_hinh")
+                    .nhan("Danh sách GM trong game", "Tên Pokémon GM, cách nhau dấu phẩy.")
+                    .mau("^[A-Za-z0-9_]{1,30}$")
+                    .doDai(255),
+            new DinhNghiaKhoa("sv.gmCanCoPInfo", "quan_tri", "co", "0", true, "cau_hinh")
+                    .nhan("GM cần cả cờ pInfo", "1 = quyền GM cần tên trong danh sách VÀ pInfo[16]=1."),
+            new DinhNghiaKhoa("sv.banToiThieu", "quan_tri", "so", "0", true, "cau_hinh")
+                    .nhan("Bản client tối thiểu", "> 0 = từ chối client jar/Android cũ hơn.")
+                    .khoang(0L, 1000000L),
+            new DinhNghiaKhoa("sv.choPhepTaoTenGM", "quan_tri", "co", "0", true, "cau_hinh")
+                    .nhan("Cho tạo Pokémon tên GM", "Chỉ bật tạm thời."),
+            new DinhNghiaKhoa("sv.testMode", "quan_tri", "co", "0", true, "cau_hinh")
+                    .nhan("Chế độ thử (testMode)", "Mã test cấp tài nguyên miễn phí. Khoá ở máy thật.")
+                    .khoaProd(),
+            new DinhNghiaKhoa("sv.testCode", "quan_tri", "chuoi", "", true, "cau_hinh")
+                    .nhan("Mã test", "Chuỗi gõ trong game khi testMode=1.")
+                    .mau("^[ -~]*$")
+                    .doDai(64)
+                    .nhay()
+                    .khoaProd(),
+        };
+    }
+}

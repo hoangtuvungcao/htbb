@@ -335,7 +335,7 @@ public class MonsterNew : Monster
 							{
 								for (int i = 0; i < 8; i++)
 								{
-									Canvas.gameScr.startNewMagicBeam(10, this, liveActor2, x + splashDuaX[dir] + x2[i], y + splashDuaY[dir] + y2[i], liveActor2.damAttack, 0, Skill_Dao_Type3.goc[dir][i]);
+									Canvas.gameScr.startNewMagicBeam(10, this, liveActor2, x + splashDuaX[dir] + x2[i], y + splashDuaY[dir] + y2[i], liveActor2.damAttack, 0, Skill_Bulbasaur_Type3.goc[dir][i]);
 								}
 							}
 							else
@@ -597,7 +597,7 @@ public class MonsterNew : Monster
 		{
 			for (int k = 0; k < 8; k++)
 			{
-				Canvas.gameScr.startNewMagicBeam(10, this, liveActor, x + splashDuaX[dir] + x2[k], y + splashDuaY[dir] + y2[k], liveActor.damAttack, 0, Skill_Dao_Type3.goc[dir][k]);
+				Canvas.gameScr.startNewMagicBeam(10, this, liveActor, x + splashDuaX[dir] + x2[k], y + splashDuaY[dir] + y2[k], liveActor.damAttack, 0, Skill_Bulbasaur_Type3.goc[dir][k]);
 			}
 			break;
 		}

@@ -14,11 +14,11 @@ public class NpcReceiveCard {
     public short time = 0;
     public static byte[] x = new byte[]{40, 18, 61};
     public static byte[] y = new byte[]{15, 45, 45};
-    public static String[] npc = new String[]{"Trần thống lĩnh", "Tả thống lĩnh", "Hữu thống lĩnh"};
+    public static String[] npc = new String[]{"Heracross", "Lucario", "Lucario"};
     public byte inCountry = 0;
     static short timeGiveCard = 60;
     public static boolean[] isFinish = new boolean[3];
-    public static String[] nameCountry = new String[]{"Thanh long", "Hắc hổ", "Huyền vũ"};
+    public static String[] nameCountry = new String[]{"Kanto", "Johto", "Hoenn"};
 
     public NpcReceiveCard(int pos, int country) {
         this.posNpc = (byte) pos;
@@ -57,7 +57,7 @@ public class NpcReceiveCard {
                     Map mapok = this.charGive.map;
                     cinfo = Map.getClaninfoByID(this.idClan);
                     this.nameClan = cinfo.name;
-                    this.charGive.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Bang " + this.nameClan + " lãnh thổ " + nameCountry[this.inCountry] + " đã giao thẻ thành công tại " + npc[this.posNpc]), this.inCountry);
+                    this.charGive.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Đội " + this.nameClan + " vùng " + nameCountry[this.inCountry] + " đã giao thẻ thành công tại " + npc[this.posNpc]), this.inCountry);
                     String charname = this.charGive.charname;
                     this.charGive.timeGiveCardTown = 0L;
 
@@ -73,7 +73,7 @@ public class NpcReceiveCard {
                     if (npc1.idClan == npc2.idClan && npc1.idClan == npc3.idClan && npc1.idClan != -1) {
                         this.charGive.map.curday[this.inCountry] = "";
                         this.charGive.timeGiveCardTown = 0L;
-                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng bang " + this.nameClan.toUpperCase() + " thuộc lãnh thổ " + nameCountry[this.inCountry] + " đã chiếm được thành."));
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng đội " + this.nameClan.toUpperCase() + " thuộc vùng " + nameCountry[this.inCountry] + " đã chiếm được Gym.");
 
 //                        String tenBangChu = cinfo.master;
 //                        Char bangChu = CharManager.instance.getCharByCharName(tenBangChu);
@@ -150,13 +150,13 @@ public class NpcReceiveCard {
 
                         NewClan.updateTown(this.idClan, 1, this.inCountry);
                         cinfo.updateNewClandata2DB();
-                        Database.instance.saveLogClan(this.nameClan, "cgt", "đã chiếm thành " + Char.getDayTime(0L));
+                        Database.instance.saveLogClan(this.nameClan, "cgt", "đã chiếm Gym " + Char.getDayTime(0L));
                         // Thuong 10.000 luong + 50tr xu cho thanh vien bang: BO theo yeu cau
                         // nguoi dung 22/09/2026 - khong con thuong khi thang chiem thanh.
-                        // ThuongChiemThanh.batDau(this.inCountry, this.idClan, this.nameClan);
+                        // ThuongChiemGym.batDau(this.inCountry, this.idClan, this.nameClan);
                         // Yeu cau 17/10/2026: bat co sv.lau_dai -> thuong chiem thanh MOI (khong in
                         // luong/xu: danh hieu, buff EXP, chia lai quy bang, luong khoa theo dong gop).
-                        ChiemThanhLauDai.batDau(this.inCountry, this.idClan, this.nameClan);
+                        ChiemGymLauDai.batDau(this.inCountry, this.idClan, this.nameClan);
                         isFinish[this.inCountry] = true;
                         Map.getTown[this.inCountry] = false;
                         Char pmaster = CharManager.instance.getCharByCharName(cinfo.master.toLowerCase());
@@ -181,7 +181,7 @@ public class NpcReceiveCard {
                         Database.instance.saveOrtherLog("", this.charGive.charname, this.charGive.idClan + " x= " + this.charGive.x / 16 + " y= " + this.charGive.y / 16 + " mid= " + this.charGive.mapID + " posnpc= " + this.posNpc + " > " + this.charGive.inCountry, "ngoairange");
                         this.charGive.timeGiveCardTown = 0L;
                         cinfo = Map.getClaninfoByID(this.charGive.idClan);
-                        this.charGive.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Bang " + cinfo.name + " giao thẻ thất bại"), this.charGive.myCountry);
+                        this.charGive.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Đội " + cinfo.name + " giao thẻ thất bại"), this.charGive.myCountry);
                         this.time = 0;
                         this.charGive.map.sendAllPlayer(MessageCreator.createMsgStartGetTown(this.inCountry), this.inCountry);
                         this.charGive = null;
@@ -191,7 +191,7 @@ public class NpcReceiveCard {
                 this.charGive.timeGiveCardTown = 0L;
                 Database.instance.saveOrtherLog("", this.charGive.charname, this.charGive.idClan + " x= " + this.charGive.x / 16 + " y= " + this.charGive.y / 16 + " mid= " + this.charGive.mapID + " posnpc= " + this.posNpc + " > " + this.charGive.inCountry, "ngoairange1");
                 cinfo = Map.getClaninfoByID(this.charGive.idClan);
-                this.charGive.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Bang " + cinfo.name + " giao thẻ thất bại"), this.charGive.myCountry);
+                this.charGive.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Đội " + cinfo.name + " giao thẻ thất bại"), this.charGive.myCountry);
                 this.time = 0;
                 this.charGive.map.sendAllPlayer(MessageCreator.createMsgStartGetTown(this.inCountry), this.inCountry);
                 this.charGive = null;

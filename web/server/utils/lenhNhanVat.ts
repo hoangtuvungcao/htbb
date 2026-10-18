@@ -1,5 +1,5 @@
 /**
- * GỬI LỆNH CHO SERVER GAME qua bảng kpah_db.web_lenh_nhan_vat (xem src/data/LenhWeb.java).
+ * GỬI LỆNH CHO SERVER GAME qua bảng htbb_db.web_lenh_nhan_vat (xem src/data/LenhWeb.java).
  *
  * VÌ SAO KHÔNG GHI THẲNG tob_char NỮA. Nhân vật đang online giữ bản của nó trong RAM của
  * tiến trình game; lần tự lưu kế tiếp ghi đè lại dòng web vừa sửa — mất hẳn thay đổi.
@@ -141,7 +141,7 @@ export function tachThamSoXoaVatPham(thamSo: string | null | undefined): [CotVat
 export function moTaYeuCauLenh(l: { loai?: string, cap_do?: number, phan_nghin?: number, tham_so?: string | null }): string {
   const loai = String(l.loai ?? '')
   if (loai === LENH_LOAI_GIAM_CAP_DO) return `giảm ${Math.trunc(Number(l.cap_do ?? 0))} level`
-  if (loai === LENH_LOAI_XOA_NHAN_VAT) return 'xoá vĩnh viễn nhân vật'
+  if (loai === LENH_LOAI_XOA_NHAN_VAT) return 'xoá vĩnh viễn Pokémon'
   if (loai === LENH_LOAI_XOA_VAT_PHAM) {
     const ts = tachThamSoXoaVatPham(l.tham_so ?? '')
     if (ts === null) return 'xoá vật phẩm (tham số hỏng)'
@@ -181,7 +181,7 @@ export function moTaKetQuaLenh(r: DongLenhNhanVat | null, ten: string, muc: stri
       return ['success', `Đã thực hiện NGAY cho ${ten} đang online: ${muc}${kq !== '' ? ` (${kq})` : ''}. Server đã lưu lại, không bị ghi đè nữa.`]
     case LENH_CHO_DANG_NHAP:
       return ['success', `${ten} đang offline. ${kq !== '' ? `${ucfirst(kq)}. ` : ''}`
-        + `Lệnh ${muc} sẽ được server đối chiếu/thực hiện NGAY KHI nhân vật vào game. `
+        + `Lệnh ${muc} sẽ được server đối chiếu/thực hiện NGAY KHI Pokémon vào game. `
         + 'Không cần bấm lại — có thể huỷ ở bảng "Lệnh đã gửi" bên dưới nếu đổi ý.']
     case LENH_XONG_OFFLINE:
       return ['success', `${ten} đang offline, đã ghi ${muc} vào CSDL (cách cũ).`]
@@ -213,10 +213,10 @@ export function tachTenGiamLevel(text: string): string[] {
     const name = entry.trim()
     if (name === '') continue
     // Giới hạn 50 tính theo BYTE UTF-8 (tên tiếng Việt có dấu tốn 2–3 byte mỗi chữ).
-    if (new TextEncoder().encode(name).length > 50) throw new LoiNhapGiamLevel('Tên nhân vật quá dài.')
+    if (new TextEncoder().encode(name).length > 50) throw new LoiNhapGiamLevel('Tên Pokémon quá dài.')
     names.set(thuongAscii(name), name)
   }
-  if (names.size === 0 || names.size > 100) throw new LoiNhapGiamLevel('Nhập từ 1 đến 100 tên nhân vật.')
+  if (names.size === 0 || names.size > 100) throw new LoiNhapGiamLevel('Nhập từ 1 đến 100 tên Pokémon.')
   return [...names.values()]
 }
 

@@ -68,27 +68,27 @@ public class DanhHieu {
             case 8768:
                 return "Bá chủ";
             case 8769:
-                return "Chí tôn";
+                return "Tối thượng";
             case 8770:
                 return "Đại gia";
             case 8771:
                 return "Đệ nhất";
             case 8772:
-                return "Duy ngã độc tôn";
+                return "Tứ Thiên Vương";
             case 8773:
-                return "Hiệp khách";
+                return "Nhà thám hiểm";
             case 8774:
-                return "Hảo hán";
+                return "Người dũng cảm";
             case 8775:
                 return "Huyền thoại";
             case 8776:
-                return "Tông sư";
+                return "Bậc thầy Pokémon";
             case 8777:
                 return "Uy phong";
             case 8778:
                 return "Vô địch";
             case 8779:
-                return "Võ lâm chí tôn";
+                return "Nhà vô địch Pokémon";
             case 8780:
             case 8781:
             case 8782:
@@ -97,9 +97,9 @@ public class DanhHieu {
             default:
                 return "";
             case 8785:
-                return "Nhất dương tiễn";
+                return "Tia Mặt Trời";
             case 8786:
-                return "Tuyệt thế vô song";
+                return "Có một không hai";
             case 8787:
                 return "ACE";
             case 8788:
@@ -110,41 +110,41 @@ public class DanhHieu {
             case 8901:
                 return "Bất Chấp Cuộc Chơi";
             case 8902:
-                return "Chiến Thần Bất Diệt";
+                return "Huyền Thoại Bất Diệt";
             case 8903:
-                return "Long Tiễn Chấn Thiên";
+                return "Rayquaza Chấn Thiên";
             case 8904:
-                return "Nghịch Thiên Nhi Hành";
+                return "Kẻ Thách Thức Định Mệnh";
             case 8905:
-                return "Khai Thiên Thần Kiếm";
+                return "Gươm Aegislash";
             case 8906:
-                return "Thiên Hạ Chí Tôn";
+                return "Nhà Vô Địch Mọi Vùng";
             case 8907:
-                return "Vô Địch Thiên Hạ";
+                return "Vô Địch Mọi Vùng";
             case 8908:
-                return "Thần Binh Bất Bại";
+                return "Bảo Vật Bất Bại";
             case 8909:
-                return "Độc Bá Nhất Phương";
+                return "Bá Chủ Một Vùng";
             case 8910:
-                return "Tung Hoành Thiên Hạ";
+                return "Tung Hoành Mọi Vùng";
             case 8911:
-                return "Tuyệt Đỉnh Cao Thủ";
+                return "Tinh Anh Tuyệt Đỉnh";
             case 8924:
                 return "Độc Nhất Vô Nhị";
             case 8925:
-                return "Nhất Tiễn Phá Thiên";
+                return "Tia Chớp Phá Trời";
             case 8935:
-                return "Vinh Danh Bang Hội";
+                return "Vinh Danh Đội";
             case 8956:
-                return "Chân Mên Thiên Tử";
+                return "Người Được Chọn";
             case 8957:
-                return "Võ Lâm Chí Tôn 2";
+                return "Nhà Vô Địch Pokémon 2";
             case 8983:
-                return "Chiến Thần Bất Diệt 2";
+                return "Huyền Thoại Bất Diệt 2";
             case 8984:
-                return "Cửu Huyền Thất Tổ";
+                return "Truyền Nhân Huyền Thoại";
             case 8985:
-                return "Hủy Thiên Diệt Địa";
+                return "Sức Mạnh Hủy Diệt";
             case 8986:
                 return "Kinh Tài Tuyệt Diễm";
             case 8987:
@@ -152,22 +152,22 @@ public class DanhHieu {
             case 8988:
                 return "Phong Vân Tùy Bút";
             case 8989:
-                return "Quy Ân Giang Hồ";
+                return "Lão Làng Pokémon";
             case 8990:
-                return "Thiên Hạ Đệ Nhất";
+                return "Số Một Mọi Vùng";
             case 8991:
-                return "Thiên Hạ Vô Song";
+                return "Vô Song Mọi Vùng";
             case 8992:
-                return "Tung Hoành Thiên Hạ";
+                return "Tung Hoành Mọi Vùng";
             case 8993:
-                // Dung ten trong web/admin/inc/danh_muc_danh_hieu.php (nguon chuan) - KHONG co
+                // Dung ten trong HTBB-Web shared/data/danh-muc-danh-hieu.json (nguon chuan) - KHONG co
                 // hau to "2" du hang so TUYET_THE_VO_SONG_2 dat ten nhu vay (ten hang so chi de
                 // phan biet voi 8983 "Chien Than Bat Diet 2", khong phai ten hien thi that).
-                return "Tuyệt Thế Vô Song";
+                return "Có Một Không Hai";
             case 8994:
                 return "Vinh Hoa Phú Qúy";
             case 8995:
-                return "Quân Lâm Thiên Hạ";
+                return "Chúa Tể Mọi Vùng";
             case 8996:
                 return "Tuyệt Thế Giai Nhân";
              case 8999:
@@ -182,27 +182,27 @@ public class DanhHieu {
             case 8768:
                 return "Bá chủ";
             case 8769:
-                return "Chí tôn";
+                return "Tối thượng";
             case 8770:
                 return "Đại gia";
             case 8771:
                 return "Đệ nhất";
             case 8772:
-                return "Duy ngã độc tôn";
+                return "Tứ Thiên Vương";
             case 8773:
-                return "Hiệp khách";
+                return "Nhà thám hiểm";
             case 8774:
-                return "Hảo hán";
+                return "Người dũng cảm";
             case 8775:
                 return "Huyền thoại";
             case 8776:
-                return "Tông sư";
+                return "Bậc thầy Pokémon";
             case 8777:
                 return "Uy phong";
             case 8778:
                 return "Vô địch";
             case 8779:
-                return "Võ lâm chí tôn";
+                return "Nhà vô địch Pokémon";
             case 8780:
             case 8781:
             case 8782:
@@ -211,9 +211,9 @@ public class DanhHieu {
             default:
                 return "";
             case 8785:
-                return "Nhất dương tiễn";
+                return "Tia Mặt Trời";
             case 8786:
-                return "Tuyệt thế vô song";
+                return "Có một không hai";
             case 8787:
                 return "ACE";
             case 8788:
@@ -224,41 +224,41 @@ public class DanhHieu {
             case 8901:
                 return "Bất Chấp Cuộc Chơi";
             case 8902:
-                return "Chiến Thần Bất Diệt";
+                return "Huyền Thoại Bất Diệt";
             case 8903:
-                return "Long Tiễn Chấn Thiên";
+                return "Rayquaza Chấn Thiên";
             case 8904:
-                return "Nghịch Thiên Nhi Hành";
+                return "Kẻ Thách Thức Định Mệnh";
             case 8905:
-                return "Khai Thiên Thần Kiếm";
+                return "Gươm Aegislash";
             case 8906:
-                return "Thiên Hạ Chí Tôn";
+                return "Nhà Vô Địch Mọi Vùng";
             case 8907:
-                return "Vô Địch Thiên Hạ";
+                return "Vô Địch Mọi Vùng";
             case 8908:
-                return "Thần Binh Bất Bại";
+                return "Bảo Vật Bất Bại";
             case 8909:
-                return "Độc Bá Nhất Phương";
+                return "Bá Chủ Một Vùng";
             case 8910:
-                return "Tung Hoành Thiên Hạ";
+                return "Tung Hoành Mọi Vùng";
             case 8911:
-                return "Tuyệt Đỉnh Cao Thủ";
+                return "Tinh Anh Tuyệt Đỉnh";
             case 8924:
                 return "Độc Nhất Vô Nhị";
             case 8925:
-                return "Nhất Tiễn Phá Thiên";
+                return "Tia Chớp Phá Trời";
             case 8935:
-                return "Vinh Danh Bang Hội";
+                return "Vinh Danh Đội";
             case 8956:
-                return "Chân Mên Thiên Tử";
+                return "Người Được Chọn";
             case 8957:
-                return "Võ Lâm Chí Tôn 2";
+                return "Nhà Vô Địch Pokémon 2";
             case 8983:
-                return "Chiến Thần Bất Diệt 2";
+                return "Huyền Thoại Bất Diệt 2";
             case 8984:
-                return "Cửu Huyền Thất Tổ";
+                return "Truyền Nhân Huyền Thoại";
             case 8985:
-                return "Hủy Thiên Diệt Địa";
+                return "Sức Mạnh Hủy Diệt";
             case 8986:
                 return "Kinh Tài Tuyệt Diễm";
             case 8987:
@@ -266,22 +266,22 @@ public class DanhHieu {
             case 8988:
                 return "Phong Vân Tùy Bút";
             case 8989:
-                return "Quy Ân Giang Hồ";
+                return "Lão Làng Pokémon";
             case 8990:
-                return "Thiên Hạ Đệ Nhất";
+                return "Số Một Mọi Vùng";
             case 8991:
-                return "Thiên Hạ Vô Song";
+                return "Vô Song Mọi Vùng";
             case 8992:
-                return "Tung Hoành Thiên Hạ";
+                return "Tung Hoành Mọi Vùng";
             case 8993:
-                // Dung ten trong web/admin/inc/danh_muc_danh_hieu.php (nguon chuan) - KHONG co
+                // Dung ten trong HTBB-Web shared/data/danh-muc-danh-hieu.json (nguon chuan) - KHONG co
                 // hau to "2" du hang so TUYET_THE_VO_SONG_2 dat ten nhu vay (ten hang so chi de
                 // phan biet voi 8983 "Chien Than Bat Diet 2", khong phai ten hien thi that).
-                return "Tuyệt Thế Vô Song";
+                return "Có Một Không Hai";
             case 8994:
                 return "Vinh Hoa Phú Qúy";
             case 8995:
-                return "Quân Lâm Thiên Hạ";
+                return "Chúa Tể Mọi Vùng";
             case 8996:
                 return "Tuyệt Thế Giai Nhân";
             case 8999:

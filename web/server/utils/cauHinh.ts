@@ -1,5 +1,5 @@
 /**
- * Cấu hình server (bảng kpah_db.cau_hinh).
+ * Cấu hình server (bảng htbb_db.cau_hinh).
  *
  * 32 setting server.ini nạp lại được lúc đang chạy, xem src/server/CauHinh.java.
  *
@@ -251,18 +251,18 @@ export function cauHinhDungThaoTac(viec: string, b: Record<string, unknown>): Ca
       // đơn điệu của số không âm — chỉ cần chặn tổng 5 màu không vượt 100%.
       const mac = (ds: number[], tien: string) => ds.map((d, i) => cauHinhSoThapPhan(p(`${tien}${i}`), 0, 100, d))
       const phanTramMau = mac([60.189, 29.2, 10.3, 0.3, 0.01], 'tieuMau')
-      let loi = cauHinhLoiTongQua100(phanTramMau, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (nhận tiêu mới)')
+      let loi = cauHinhLoiTongQua100(phanTramMau, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (nhận hàng mới)')
       if (loi) throw new Error(loi)
       const nguong = cauHinhPhanTramSangNguong(phanTramMau)
 
       // Đổi tiêu (reroll trả phí) — bảng RIÊNG cho xu và lượng, cùng định dạng.
       const phanTramDoiXu = mac([50.545, 35, 13.4, 1, 0.05], 'doiTieuXuMau')
-      loi = cauHinhLoiTongQua100(phanTramDoiXu, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (đổi tiêu bằng xu)')
+      loi = cauHinhLoiTongQua100(phanTramDoiXu, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (đổi hàng bằng xu)')
       if (loi) throw new Error(loi)
       const nguongDoiXu = cauHinhPhanTramSangNguong(phanTramDoiXu)
 
       const phanTramDoiLuong = mac([22.89, 30, 44, 3, 0.1], 'doiTieuLuongMau')
-      loi = cauHinhLoiTongQua100(phanTramDoiLuong, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (đổi tiêu bằng lượng)')
+      loi = cauHinhLoiTongQua100(phanTramDoiLuong, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (đổi hàng bằng lượng)')
       if (loi) throw new Error(loi)
       const nguongDoiLuong = cauHinhPhanTramSangNguong(phanTramDoiLuong)
 
@@ -289,7 +289,7 @@ export function cauHinhDungThaoTac(viec: string, b: Record<string, unknown>): Ca
           [K.DOI_TIEU_NGUONG_MAU_LUONG]: nguongDoiLuong.join(','),
         },
         doiTuong: 'ti_le_tieu',
-        thongBao: `Đã lưu tỉ lệ Vận Tiêu. ${ap}`,
+        thongBao: `Đã lưu tỉ lệ Giao Hàng. ${ap}`,
       }
     }
 
@@ -315,7 +315,7 @@ export function cauHinhDungThaoTac(viec: string, b: Record<string, unknown>): Ca
           [K.NGAY_CT]: cauHinhCat(ngay, 60),
         },
         doiTuong: 'gio_chiem_thanh',
-        thongBao: `Đã lưu giờ chiếm thành. ${ap}`,
+        thongBao: `Đã lưu giờ chiếm Gym. ${ap}`,
       }
     }
 
@@ -485,8 +485,9 @@ export async function cauHinhTaoBangNeuThieu(): Promise<void> {
 export async function cauHinhLuu(capGiaTri: Record<string, string | number>, adminTen: string): Promise<void> {
   const choPhep = new Set<string>(Object.values(CAU_HINH_K))
   for (const khoa of Object.keys(capGiaTri)) {
-    // Chốt an toàn: chỉ ghi khoá có trong whitelist CAU_HINH_K (các thao tác ở trên vốn chỉ dùng khoá này).
-    if (!choPhep.has(khoa)) throw new Error(`Khoá cấu hình không được phép: ${khoa}`)
+    // Chốt an toàn: chỉ ghi khoá có trong whitelist CAU_HINH_K (thẻ nhóm) hoặc khoá sửa lẻ
+    // của DANH_MUC_CAU_HINH (shared/utils/cauHinhDanhMuc.ts).
+    if (!choPhep.has(khoa) && !khoaSuaLeDuoc(khoa)) throw new Error(`Khoá cấu hình không được phép: ${khoa}`)
   }
   await cauHinhTaoBangNeuThieu()
   await transaction(dbGame(), async (conn) => {
@@ -512,4 +513,14 @@ export async function cauHinhDocBang(): Promise<{ gt: Record<string, string>, su
     suaBoi[r.khoa] = [String(r.sua_boi ?? ''), String(r.sua_luc ?? '')]
   }
   return { gt, suaBoi }
+}
+
+/** Giá trị hiện tại của các khoá (khoá chưa có -> null) — dùng làm "trước" cho lịch sử thay đổi. */
+export async function cauHinhDocKhoa(khoas: string[]): Promise<Record<string, string | null>> {
+  const ra: Record<string, string | null> = Object.fromEntries(khoas.map(k => [k, null]))
+  if (!khoas.length) return ra
+  await cauHinhTaoBangNeuThieu()
+  const rows = await q(dbGame(), `SELECT khoa, gia_tri FROM \`${BANG_CAU_HINH}\` WHERE khoa IN (${khoas.map(() => '?').join(',')})`, khoas)
+  for (const r of rows) ra[r.khoa] = String(r.gia_tri ?? '')
+  return ra
 }

@@ -20,12 +20,12 @@ export default defineAdminHandler(async (event, admin) => {
     const ten = str(o.ten)
     if (ten === '') continue // hạng này bỏ trống — không tạo
     if (!DUA_TOP_TEN_RE.test(ten)) {
-      loi.push(`Hạng ${hang}: tên nhân vật không hợp lệ ("${ten}").`)
+      loi.push(`Hạng ${hang}: tên Pokémon không hợp lệ ("${ten}").`)
       continue
     }
     const co = await qv(game, 'SELECT id FROM tob_char WHERE charname = ? AND del = 1 LIMIT 1', [ten])
     if (!co) {
-      loi.push(`Hạng ${hang}: không tìm thấy nhân vật "${ten}" đang hoạt động.`)
+      loi.push(`Hạng ${hang}: không tìm thấy Pokémon "${ten}" đang hoạt động.`)
       continue
     }
     const [item, loiItem] = kiemTraItem(str(o.item))
@@ -45,7 +45,7 @@ export default defineAdminHandler(async (event, admin) => {
     lam.push([hang, ten, item, itemChon])
   }
   if (loi.length) throw apiLoi(400, `Chưa lưu gì cả, sửa lỗi rồi lưu lại: ${loi.join(' ')}`, { loi })
-  if (!lam.length) throw apiLoi(400, 'Chưa điền hạng nào (cần tên nhân vật + phần thưởng).')
+  if (!lam.length) throw apiLoi(400, 'Chưa điền hạng nào (cần tên Pokémon + phần thưởng).')
 
   await transaction(game, async (conn) => {
     for (const [hang, ten, item, itemChon] of lam) {
@@ -61,7 +61,7 @@ export default defineAdminHandler(async (event, admin) => {
   return {
     ok: true,
     soHang: lam.length,
-    message: `Đã tạo phần thưởng cho ${lam.length} hạng. Nhân vật tương ứng sẽ `
+    message: `Đã tạo phần thưởng cho ${lam.length} hạng. Pokémon tương ứng sẽ `
       + 'thấy mục "Nhận thưởng đua top" ở NPC Tổng Quản.',
   }
 })

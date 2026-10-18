@@ -683,10 +683,10 @@ public class ScreenItemTim extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(0x003A70);
+        g.setColor(game.pokemon.GiaoDien.mauKhungCon());
         int h0 = Canvas.isSmartPhone ? -27 : 10;
         g.fillRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
-        g.setColor(0xFFCB05);
+        g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
         g.drawRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
     }
 
@@ -739,7 +739,7 @@ public class ScreenItemTim extends Screen {
             g.setColor(0x6FA6EA);
             g.fillRect(xDr + (this.wTab * i), yDr + 22 + this.h0, 1, 29);
             if (itemSelect != null && itemSelect.itemID == item.itemID) {
-                g.setColor(0xFFCB05);
+                g.setColor(Font.nenSang ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.VANG);
                 g.drawRect(xDr + (this.wTab * i) + 1, yDr + 23 + this.h0, this.wTab - 2, 28);
                 g.drawRect(xDr + (this.wTab * i) + 2, yDr + 24 + this.h0, this.wTab - 4, 26);
             }

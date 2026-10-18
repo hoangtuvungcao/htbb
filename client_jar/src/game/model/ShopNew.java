@@ -114,7 +114,7 @@ public class ShopNew extends Screen {
     private static byte[][] posWearChar = {new byte[]{10, 11}, new byte[]{56, 11}, new byte[]{10, 32}, new byte[]{56, 32}, new byte[]{10, 52}, new byte[]{56, 52}, new byte[]{10, 73}, new byte[]{56, 94}, new byte[]{10, 94}, new byte[]{56, 94}};
     public int numW = 7;
     public int[][] arrFrame = {new int[]{0, 1, 2}, new int[]{0, 1}};
-    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng bang hội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
+    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng đội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
     public String name = "";
     public String firName = "";
     public Vector list = new Vector();
@@ -1406,7 +1406,7 @@ public class ShopNew extends Screen {
 
     public void doSelectedSkill() {
         if (Char.skillLevelLearnt[this.selected] == -1) {
-            Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+            Canvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
             return;
         }
         Vector menuItems = new Vector();
@@ -1897,19 +1897,19 @@ public class ShopNew extends Screen {
     private void setTextCharInfo() {
         this.charInfo = new String[17];
         MainChar c = Canvas.gameScr.mainChar;
-        this.charInfo[0] = new StringBuffer("Nhân vật: ").append(c.name).toString();
+        this.charInfo[0] = new StringBuffer("Pokémon: ").append(c.name).toString();
         this.charInfo[1] = new StringBuffer("Level: ").append((int) c.level).append("+").append(c.getPercent()).toString();
         this.charInfo[2] = new StringBuffer("HP: ").append(c.hp).append("/").append(c.maxhp).toString();
         this.charInfo[3] = new StringBuffer("MP: ").append(c.mp).append("/").append(c.maxmp).toString();
         this.charInfo[4] = new StringBuffer("Tấn công: ").append(c.getAttack()).toString();
-        this.charInfo[5] = new StringBuffer("Thủ vật lý: ").append(c.defend).toString();
-        this.charInfo[6] = new StringBuffer("Thủ ma pháp: ").append(c.defend_magic).toString();
+        this.charInfo[5] = new StringBuffer("Phòng thủ: ").append(c.defend).toString();
+        this.charInfo[6] = new StringBuffer("Phòng thủ đặc biệt: ").append(c.defend_magic).toString();
         this.charInfo[7] = new StringBuffer("Chính xác: ").append((int) c.accurate).toString();
         this.charInfo[8] = new StringBuffer("Né tránh: ").append((int) c.dodge).toString();
         this.charInfo[9] = new StringBuffer("Bạo kích: ").append(c.baokich > 0 ? new StringBuffer(String.valueOf(c.baokich / 10)).append(".").append(c.baokich % 10).toString() : "0").append("%").toString();
         this.charInfo[10] = new StringBuffer("Chí mạng: ").append((int) c.critical).toString();
         this.charInfo[11] = new StringBuffer("Cống hiến: ").append(c.dedicationPoint).append(" điểm.").toString();
-        this.charInfo[12] = new StringBuffer("Liên trảm: ").append(c.lienTram).append(" điểm.").toString();
+        this.charInfo[12] = new StringBuffer("Chuỗi thắng: ").append(c.lienTram).append(" điểm.").toString();
         this.charInfo[13] = new StringBuffer("Công trạng: ").append(c.congTrang).append(" điểm.").toString();
         this.charInfo[14] = new StringBuffer("Điểm hoạt động: ").append(c.hoatdong).append(" điểm.").toString();
         this.charInfo[15] = new StringBuffer("Điểm đấu trường: ").append(c.pArena).append(" điểm.").toString();
@@ -3246,7 +3246,7 @@ public class ShopNew extends Screen {
     }
 
     private void paintNewSkillLearn(Graphics g) {
-        String[] nameChar = {"Kiếm sỹ", "Chiến binh", "Pháp sư", "Đấu sỹ", "Cung thủ"};
+        String[] nameChar = {"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"};
         Font.normalFont[0].drawString(g, nameChar[Canvas.gameScr.mainChar.clazz], 60, -14, 2);
         g.setColor(11908533);
         g.fillRect(-8, 0, 133, 1);
@@ -4003,7 +4003,7 @@ public class ShopNew extends Screen {
                             Canvas.endDlg();
                         }
                     }));
-                    menu.addElement(new Command("Trang bị linh thú", new IAction() {
+                    menu.addElement(new Command("Trang bị thú cưỡi", new IAction() {
                         @Override
                         public void perform() {
                             Char c = (Char) Canvas.gameScr.findCharByID(Canvas.gameScr.saveIDViewInfoAnimal);
@@ -4030,7 +4030,7 @@ public class ShopNew extends Screen {
             }
             if (this.selected != 4) {
                 Vector menu1 = new Vector();
-                menu1.addElement(new Command("Linh thú", new IAction() {
+                menu1.addElement(new Command("Thú cưỡi", new IAction() {
                     @Override
                     public void perform() {
                         if (!ShopNew.charWearing.infoAnimal.equals("")) {

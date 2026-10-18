@@ -81,7 +81,7 @@ final class RoiLauDai {
             NhiemVuEngine.suKien(p, "pokedex_shiny", String.valueOf(dex), 1);
             try {
                 p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(
-                        "Bạn vừa thấy một " + PokedexPokemon.tenLoai(dex) + " shiny! (Pokédex)"));
+                        "Bạn vừa thấy một " + PokedexPokemon.tenLoai(dex) + " shiny! Đã ghi vào Pokédex."));
             } catch (final Exception ignored) {
             }
             Database.instance.saveOrtherLog("", p.charname, "shiny dex " + dex, "laudai");

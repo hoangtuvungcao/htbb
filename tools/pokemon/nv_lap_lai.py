@@ -21,7 +21,7 @@ BAC_NGAY = [1, 20, 40, 60, 80]
 # (cap toi thieu cua mau, kieu, tham so, ten, loi mo, loi xong). NPC: 21 bang ngay, 4 bang truy na.
 NGAY = [
  (1, "giet", "q=+0", "Săn {quai} buổi sáng", "Lửa lên nào! Bảng hôm nay: {so} {quai} đang phá ruộng.", "Gọn gàng! Mai ghé bảng tiếp nhé."),
- (1, "giet_lech_cap", "", "Tuần tra ngang sức", "Tuần tra quanh làng: hạ {so} quái ngang sức.", "Làng yên ổn. Cảm ơn nhóc."),
+ (1, "giet_lech_cap", "", "Tuần tra ngang sức", "Tuần tra quanh làng nhé. Hạ {so} quái ngang sức.", "Làng yên ổn. Cảm ơn nhóc."),
  (1, "thu_thap", "vat=Gói hàng", "Hàng thất lạc", "Lũ {quai} tha mất {so} {vat} của Kecleon. Lấy lại giúp.", "Kecleon gửi lời cảm ơn, hí hí."),
  (1, "giao_hang", "npc=0;vat=Lọ thuốc", "Chuyển thuốc cho Chansey", "Chansey cần {vat} gấp. Chạy một vòng nhé.", "Chansey: Chan-sey! Kịp lúc lắm."),
  (1, "giao_hang", "npc=8;vat=Giỏ quả Oran", "Bữa phụ của ông", "Ông Snorlax đói rồi. Mang {vat} tới cho ông.", "Snorlax: Oáp... ngon. Cảm ơn cháu."),
@@ -31,60 +31,60 @@ NGAY = [
  (1, "den_noi", "map={noi}", "Ghé thăm {noi}", "Có thư mời từ {noi}. Ghé qua đó hôm nay nhé.", "Dân {noi} vẫy tay chào nhóc."),
  (1, "thu_thach_gio", "q=+0;phut=5", "Chạy đua với đồng hồ", "Hạ {so} {quai} trong {phut} phút. Bấm giờ!", "Kịp giờ! Phản xạ tốt đấy."),
  (1, "tim_vat_an", "map={noi};vat=Hạt giống Berry", "Hạt giống rơi", "Gió thổi rơi gói {vat} ở {noi}. Tìm giúp.", "Tìm thấy rồi! Mùa sau có quả."),
- (1, "lam_vuon", "vat=Quả Oran;so=2", "Chăm vườn nhà", "Vườn nhà cần chăm: thu {so} {vat}.", "Giỏ quả đầy ắp."),
+ (1, "lam_vuon", "vat=Quả Oran;so=2", "Chăm vườn nhà", "Vườn nhà cần chăm sóc. Thu hoạch {so} {vat} nhé.", "Giỏ quả đầy ắp."),
  (1, "cau_ca", "vat=Vảy cá vàng;so=2", "Mẻ cá buổi chiều", "Câu {so} con có {vat} cho bữa tối.", "Cá tươi rói!"),
  (1, "dao_dat", "map=Khu mỏ;so=2", "Khảo cổ ở khu mỏ", "Khu mỏ vừa lở một vách đá. Đào {so} lần xem có gì.", "Bạn đào được vài viên sỏi đẹp và một chiếc nút áo cũ."),
  (5, "nau_an", "vat=Bánh quả mọng;so=1", "Bếp chung", "Chansey mời nấu {vat} cho bữa chung.", "Cả làng khen ngon."),
- (5, "ha_alpha", "q=+0", "Truy nã: Alpha {quai}", "BẢNG TRUY NÃ! Alpha {quai} quấy phá. Hạ nó!", "Gâu! Một tên truy nã đã gục."),
- (5, "giet_tinh_anh", "q=+3", "Truy nã: {quai} hung dữ", "Truy nã: {so} {quai} mạnh hơn bình thường đang lộng hành.", "Gâu! Tiền thưởng của cậu đây."),
+ (5, "ha_alpha", "q=+0", "Truy nã: Alpha {quai}", "Bảng truy nã có tin mới! Alpha {quai} đang quấy phá. Hạ nó!", "Gâu! Một tên truy nã đã gục."),
+ (5, "giet_tinh_anh", "q=+3", "Truy nã: {quai} dữ tợn", "Có lệnh truy nã {so} {quai} mạnh hơn bình thường đang lộng hành.", "Gâu! Tiền thưởng của cậu đây."),
  (5, "quan_sat", "q=+0;dk=trời mưa", "Quan sát trong mưa", "Natu muốn biết {quai} làm gì khi mưa. Quan sát giúp.", "Natu ghi chép say sưa."),
  (5, "quan_sat", "q=+0;dk=ban đêm", "Quan sát ban đêm", "Quan sát {quai} ban đêm cho sổ nghiên cứu.", "Ban đêm chúng hiền hơn ban ngày."),
- (5, "cau_do", "dap=Pikachu", "Câu đố buổi sáng: má đỏ", "Natu đố: 'Má đỏ, đuôi tia chớp, ai cũng yêu. Ta là ai?'", "Natu: Đúng! Dễ quá phải không?"),
- (5, "cau_do", "dap=Jigglypuff", "Câu đố buổi sáng: bài hát", "Natu đố: 'Ta hát cho ai cũng ngủ, rồi giận vì không ai nghe hết bài. Ta là ai?'", "Natu: Đúng rồi!"),
- (5, "cau_do", "dap=Ditto", "Câu đố buổi sáng: biến hình", "Natu đố: 'Ta biến thành bất cứ ai, mặt cười tí hin. Ta là ai?'", "Natu: Chính xác!"),
- (5, "cau_do", "dap=Slowpoke", "Câu đố buổi sáng: chậm chạp", "Natu đố: 'Ta chậm nhất Johto, đuôi ta câu cá, đau mất năm giây mới biết. Ta là ai?'", "Natu: Hay lắm!"),
- (5, "cau_do", "dap=Gyarados", "Câu đố buổi sáng: hoá rồng", "Natu đố: 'Từ con cá vô dụng nhất, ta thành con rồng biển giận dữ nhất. Ta là ai?'", "Natu: Đúng!"),
- (5, "cau_do", "dap=Eevee", "Câu đố buổi sáng: tám ngả", "Natu đố: 'Ta có tám con đường tiến hoá. Ta là ai?'", "Natu: Đúng! Tám ngả đường!"),
- (5, "cau_do", "dap=Charmander", "Câu đố buổi sáng: đuôi lửa", "Natu đố: 'Đuôi ta có ngọn lửa, lửa tắt là ta yếu đi. Ta là ai?'", "Natu: Đúng rồi!"),
- (5, "cau_do", "dap=Psyduck", "Câu đố buổi sáng: đau đầu", "Natu đố: 'Ta luôn ôm đầu, đau càng nhiều niệm lực càng mạnh. Ta là ai?'", "Natu: Giỏi quá!"),
- (8, "giup_tan_thu", "so=10", "Giúp người mới", "Có người mới ở làng. Tổ đội với một Pokémon dưới cấp 20, cùng hạ {so} quái.", "Người mới vẫy tay cảm ơn nhóc."),
+ (5, "cau_do", "dap=Pikachu", "Câu đố sáng: má đỏ", "Natu đố: Má đỏ, đuôi tia chớp, ai cũng yêu. Ta là ai?", "Natu: Đúng! Dễ quá phải không?"),
+ (5, "cau_do", "dap=Jigglypuff", "Câu đố sáng: bài hát", "Natu đố: Ta hát cho ai cũng ngủ, rồi giận vì không ai nghe hết bài. Ta là ai?", "Natu: Đúng rồi!"),
+ (5, "cau_do", "dap=Ditto", "Câu đố sáng: biến hình", "Natu đố: Ta biến thành bất cứ ai, mặt cười tí hin. Ta là ai?", "Natu: Chính xác!"),
+ (5, "cau_do", "dap=Slowpoke", "Câu đố sáng: chậm chạp", "Natu đố: Ta chậm nhất Johto, đuôi ta câu cá, đau mất năm giây mới biết. Ta là ai?", "Natu: Hay lắm!"),
+ (5, "cau_do", "dap=Gyarados", "Câu đố sáng: hoá rồng", "Natu đố: Từ con cá vô dụng nhất, ta thành con rồng biển giận dữ nhất. Ta là ai?", "Natu: Đúng!"),
+ (5, "cau_do", "dap=Eevee", "Câu đố sáng: tám ngả", "Natu đố: Ta có tám con đường tiến hoá. Ta là ai?", "Natu: Đúng! Tám ngả đường!"),
+ (5, "cau_do", "dap=Charmander", "Câu đố sáng: đuôi lửa", "Natu đố: Đuôi ta có ngọn lửa, lửa tắt là ta yếu đi. Ta là ai?", "Natu: Đúng rồi!"),
+ (5, "cau_do", "dap=Psyduck", "Câu đố sáng: đau đầu", "Natu đố: Ta luôn ôm đầu, đau càng nhiều niệm lực càng mạnh. Ta là ai?", "Natu: Giỏi quá!"),
+ (8, "giup_tan_thu", "so=10", "Giúp người mới", "Có người mới ở làng. Lập nhóm với một Pokémon dưới cấp 20, cùng hạ {so} quái.", "Người mới vẫy tay cảm ơn nhóc."),
  (10, "nang_cap_cong", "so=3", "Mài đồ mỗi ngày", "Machamp nhắn: thử nâng một món đồ lên +{so}.", "Khà khà! Sáng loáng!"),
  (10, "phan_ra", "so=1", "Dọn túi đồ", "Túi đầy rồi đấy. Phân rã {so} món đồ thừa lấy đá.", "Gọn túi, thêm đá!"),
  (10, "thang_pvp", "so=1", "Một trận đấu trường", "Đấu trường hôm nay đông. Thắng {so} trận!", "Lửa lên! Thắng đẹp!"),
- (10, "do_vui", "so=1", "Ai là Pokémon?", "Trò 'Ai là Pokémon?' mở lúc trưa và tối. Trả lời đúng {so} câu.", "Trí nhớ tốt đấy!"),
+ (10, "do_vui", "so=1", "Ai là Pokémon?", "Trò đố Ai là Pokémon? mở lúc trưa và tối. Trả lời đúng {so} câu.", "Trí nhớ tốt đấy!"),
  (10, "cho_ban", "so=1", "Một phiên chợ", "Meowth nhắn: bán {so} món ở chợ hôm nay.", "Meo! Có lời rồi!"),
- (10, "tang_hang", "so=3", "Hầm ngục buổi sáng", "Hầm ngục bí ẩn có hạt giống mới. Vượt {so} tầng.", "Ra khỏi hầm an toàn!"),
+ (10, "tang_hang", "so=3", "Hầm ngục buổi sáng", "Hầm ngục bí ẩn vừa đổi lối mới. Vượt {so} tầng nhé.", "Ra khỏi hầm an toàn!"),
  (12, "che_tao", "vat=Vòng cổ sơ cấp", "Đơn hàng của Machamp", "Machamp có đơn: chế tạo một món {vat}.", "Khà khà! Đơn xong!"),
  (12, "ho_tong", "vat=Gói hàng;npc=1", "Hộ tống hàng Kecleon", "Hộ tống {vat} tới tiệm Kecleon. Có kẻ rình cướp.", "Kecleon: Hí hí, nguyên vẹn!"),
- (15, "to_doi", "so=20;so2=2", "Săn theo tổ", "Lập tổ đội từ {so2} Pokémon, cùng hạ {so} quái.", "Đồng đội ăn ý!"),
- (15, "ap_trung", "so=1", "Trứng ở nhà trẻ", "Nhà trẻ báo có trứng. Ấp nở {so} quả.", "Một bé con chào đời!"),
+ (15, "to_doi", "so=20;so2=2", "Săn theo tổ", "Lập nhóm từ {so2} Pokémon, cùng hạ {so} quái.", "Đồng đội ăn ý!"),
+ (15, "ap_trung", "so=1", "Trứng ở nhà trẻ", "Nhà trẻ báo có trứng. Hãy ấp nở {so} quả.", "Một bé con chào đời!"),
  (15, "dua_pokemon", "", "Đua buổi tối", "Cuộc đua 19:00 thiếu người. Tham gia và về đích nhé.", "Về đích! Khán giả reo hò."),
  (20, "kham_ngoc", "so=1", "Khảm một viên ngọc", "Sableye khuyến mãi ngọc. Khảm {so} viên.", "Hì hì, lấp lánh!"),
  (20, "boss_the_gioi", "so=1", "Góp sức đánh boss", "Boss thế giới xuất hiện hôm nay? Góp sức, dù chỉ một chút.", "Mọi người cảm ơn nhóc đã có mặt."),
  (20, "tham_gia_gym", "", "Góp mặt chiếm Gym", "Đội của nhóc có trận chiếm Gym. Tham gia đi.", "Đội ghi nhận công nhóc."),
- (25, "quan_sat", "q=+1;dk=sương mù", "Bóng trong sương", "Sương mù hiếm hoi. Quan sát {quai} trong sương.", "Ảnh mờ ảo như tranh."),
+ (25, "quan_sat", "q=+1;dk=sương mù", "Bóng trong sương", "Sương mù hiếm hoi. Quan sát {quai} trong sương.", "Cảnh mờ ảo như tranh."),
  (25, "quan_sat", "q=+1;dk=nắng gắt", "Trưa nắng gắt", "Quan sát {quai} giữa trưa nắng gắt.", "Chúng lười biếng nằm dưới bóng cây."),
- (30, "ha_alpha", "q=+1", "Truy nã đặc biệt: Alpha {quai}", "TRUY NÃ ĐẶC BIỆT! Alpha {quai}, cực kỳ nguy hiểm.", "Gâu! Cả làng biết ơn cậu."),
+ (30, "ha_alpha", "q=+1", "Đại truy nã: Alpha {quai}", "Lệnh truy nã đặc biệt! Alpha {quai} cực kỳ nguy hiểm.", "Gâu! Cả làng biết ơn cậu."),
  (30, "thu_thach_gio", "q=+1;phut=4", "Thử thách tốc độ", "Hạ {so} {quai} trong {phut} phút. Khó đấy!", "Nhanh như Pidgeot!"),
  (35, "pokedex_ha", "q=+0;so=20", "Nghiên cứu sâu {quai}", "Snorlax muốn biết thêm về {quai}. Hạ {so} con để ghi chép.", "Oáp... hay lắm. Ông ghi lại rồi."),
- (40, "giet_tinh_anh", "q=+4", "Truy nã: kẻ mạnh vượt cấp", "Truy nã: {quai} vượt cấp. Hạ {so} con.", "Gâu! Đáng nể!"),
+ (40, "giet_tinh_anh", "q=+4", "Truy nã: kẻ mạnh vượt cấp", "Có lệnh truy nã {quai} vượt cấp. Hạ {so} con.", "Gâu! Đáng nể!"),
  (40, "thang_pvp", "so=2", "Hai trận đấu trường", "Thắng {so} trận đấu trường hôm nay.", "Lửa lên! Hai trận, hai chiến thắng!"),
 ]
 
 # 12 ten mau tuan (T-): engine hien co dem ha quai +-5 cap. Ten + loi giao khac nhau.
 TUAN_TEN = [
- ("Đội tuần tra vùng", "Cả tuần, tuần tra các tuyến: hạ {so} quái ngang sức."),
+ ("Tuần tra vùng", "Cả tuần tuần tra các tuyến đường. Hạ {so} quái ngang sức."),
  ("Cúp huấn luyện tuần", "Cúp huấn luyện mở! Ai hạ đủ {so} quái ngang sức sẽ có tên trên bảng."),
  ("Mùa thu hoạch", "Lũ quái phá mùa màng khắp vùng. Hạ {so} con trong tuần."),
  ("Bảo vệ ba vùng", "Kanto, Johto đều cần người. Hạ {so} quái ngang sức."),
- ("Đợt săn lớn", "Đợt săn lớn của tuần: {so} quái ngang sức."),
+ ("Đợt săn lớn", "Đợt săn lớn của tuần đây. Hạ {so} quái ngang sức."),
  ("Thám hiểm hang động", "Hang động đông quái. Dọn {so} con trong tuần."),
  ("Chuyến hàng lớn", "Đường hàng phải thông suốt cả tuần: hạ {so} quái."),
- ("Thử thách bền bỉ", "Không cần nhanh, cần bền: {so} quái ngang sức trong tuần."),
+ ("Thử thách bền bỉ", "Không cần nhanh, chỉ cần bền. Hạ {so} quái ngang sức trong tuần."),
  ("Tuần lễ Blaziken", "Lửa lên nào! Tuần này tôi muốn thấy {so} trận thắng ngang sức."),
  ("Bảo vệ vườn Berry", "Mùa quả chín, lũ quái kéo về. Hạ {so} con."),
  ("Đêm dài", "Quái hoạt động mạnh về đêm tuần này. Hạ {so} con."),
- ("Lời hứa của Xatu", "Xatu thấy trước một tuần bận rộn: {so} quái ngang sức."),
+ ("Lời hứa của Xatu", "Xatu thấy trước một tuần bận rộn. Hạ {so} quái ngang sức."),
 ]
 # bac -> cap toi thieu (NhiemVuLauDai.bacCap: 1-29 / 30-54 / 55-79 / 80+)
 BAC_TUAN = [(1, 10), (2, 30), (3, 55), (4, 80)]
@@ -100,7 +100,7 @@ CHUOI_VUNG = [
   ("giet", "q=+1", "Dọn hang", "Hạ {so} {quai} trong hang.", "Bầy Clefairy vẫy tay."),
   ("thu_thap", "vat=Nấm phát quang", "Đèn cho hang", "Lấy {so} {vat} từ {quai} làm đèn.", "Hang sáng dịu.")]),
  ("Bến cảng Vermilion", "Kanto", "Vermilion", 22, [
-  ("cau_ca", "vat=Vảy cá vàng;so=5", "Mẻ cá tuần", "Câu {so} con có {vat}.", "Chợ cá đầy ắp."),
+  ("cau_ca", "vat=Vảy cá vàng;so=5;map=Vermilion", "Mẻ cá tuần", "Câu {so} con có {vat} ở hồ lớn Vermilion.", "Chợ cá đầy ắp."),
   ("giao_hang", "npc=9;vat=Gói hàng", "Hàng về kho", "Giao {vat} cho Kangaskhan.", "Kangaskhan: Đủ hàng cho cả tuần."),
   ("giet", "q=+1", "Canh bến", "Hạ {so} {quai} quanh bến.", "Bến an toàn.")]),
  ("Sương mù Lavender", "Kanto", "Lavender", 30, [
@@ -128,12 +128,12 @@ CHUOI_VUNG = [
   ("dua_pokemon", "", "Đường đua", "Về đích trong cuộc đua.", "Về đích!"),
   ("do_vui", "so=2", "Đố vui", "Đúng {so} câu.", "Thông minh!")]),
  ("Biển Olivine", "Johto", "Olivine", 66, [
-  ("cau_ca", "vat=Ngọc trai;so=3", "Ngọc biển", "Câu {so} {vat}.", "Ngọc lấp lánh."),
+  ("cau_ca", "vat=Ngọc trai;so=3;map=Bến tàu", "Ngọc ở ao bến cảng", "Ao cạnh Bến tàu có trai ngọc. Câu {so} {vat}.", "Ngọc lấp lánh."),
   ("giet", "q=+1", "Giữ hải đăng", "Hạ {so} {quai}.", "Hải đăng sáng."),
   ("ho_tong", "vat=Gói hàng;npc=2", "Hàng cho xưởng", "Hộ tống {vat} tới Machamp.", "Machamp: Khà khà, đủ hàng!")]),
  ("Hồ và núi Johto", "Johto", "Hồ Phẫn Nộ", 71, [
   ("ha_alpha", "q=+0", "Alpha bên hồ", "Hạ Alpha {quai}.", "Hồ yên."),
-  ("cau_ca", "vat=Vảy cá vàng;so=4", "Cá hồ", "Câu {so} con.", "Cá béo."),
+  ("cau_ca", "vat=Vảy cá vàng;so=4;map=Hồ Phẫn Nộ", "Cá hồ", "Câu {so} con ở ao trong hang Hồ Phẫn Nộ.", "Cá béo."),
   ("giet", "q=+1", "Quanh hồ", "Hạ {so} {quai}.", "Bờ hồ an toàn.")]),
  ("Đất rồng", "Johto", "Blackthorn", 77, [
   ("thu_thap", "vat=Vảy rồng nhỏ", "Vảy rồng", "Lấy {so} {vat} từ {quai}.", "Già làng hài lòng."),
@@ -146,10 +146,10 @@ CHUOI_VUNG = [
 ]
 
 TO_DOI = [
- ("Đội săn Gyarados", 20), ("Đội trinh sát Hang Tối", 30), ("Đội hái Berry", 10), ("Đội bảo vệ Pallet", 12),
+ ("Nhóm săn Gyarados", 20), ("Nhóm trinh sát Hang Tối", 30), ("Nhóm hái Berry", 10), ("Nhóm bảo vệ Pallet", 12),
  ("Đột kích Tổ Zapdos", 50), ("Đêm Hang Darkrai", 60), ("Bão Rayquaza", 75), ("Liên minh ba vùng", 85),
- ("Đội giải cứu Safari", 39), ("Đội hộ tống tàu", 27), ("Đội leo núi Silver", 88), ("Đội lặn Hồ Phẫn Nộ", 71),
- ("Đội đêm Lavender", 32), ("Đội rừng Ilex", 58), ("Đội đường Victory", 84), ("Đội Cao nguyên", 92),
+ ("Nhóm giải cứu Safari", 39), ("Nhóm hộ tống tàu", 27), ("Nhóm leo núi Silver", 88), ("Nhóm lặn Hồ Phẫn Nộ", 71),
+ ("Nhóm đêm Lavender", 32), ("Nhóm rừng Ilex", 58), ("Nhóm đường Victory", 84), ("Nhóm Cao nguyên", 92),
 ]
 
 DOI = [
@@ -165,7 +165,7 @@ SU_PHAM = ["Dẫn đường người mới", "Kèm cặp tới cấp 20", "Kèm 
            "Người thầy tận tâm", "Chia sẻ bí quyết", "Bài học đầu tiên", "Học trò thành tài"]
 
 HAM_NGUC = ["Hầm ngục bí ẩn: tầng 1-5", "Hầm ngục bí ẩn: tầng 6-10", "Hầm ngục bí ẩn: tầng 11-20",
-            "Hầm ngục bí ẩn: hạt giống ngày", "Hầm ngục bí ẩn: xếp hạng tuần", "Hầm ngục bí ẩn: tầng sâu"]
+            "Hầm ngục bí ẩn hôm nay", "Xếp hạng hầm ngục tuần", "Hầm ngục bí ẩn: tầng sâu"]
 
 QUAY_LAI = [
  ("Chào mừng trở lại", "noi_chuyen", "...Ta biết cháu sẽ quay lại. Ta đã thấy trước.", "Nghỉ ngơi đủ rồi. Thế giới vẫn chờ cháu."),
@@ -189,29 +189,39 @@ SU_KIEN = {
   ("su_kien_vat_pham", "so=10", "{ten}: tinh thể", "Thu {so} {vat}, đổi {thuong}.", "Lấp lánh!")],
  "cong_dong": [
   ("noi_chuyen", "npc=8", "{ten}: tập hợp", "{mo_rieng}|Oáp... ngày cộng đồng! Ai cũng ra đồng.", "Đi cùng mọi người nhé."),
-  ("quan_sat", "q=+0;dk=giờ cộng đồng", "{ten}: ba giờ vàng", "Trong 3 giờ cộng đồng, quan sát Pokémon nổi bật.", "Ảnh đẹp quá!"),
+  ("quan_sat", "q=+0;dk=giờ cộng đồng", "{ten}: ba giờ vàng", "Trong 3 giờ cộng đồng, quan sát Pokémon nổi bật.", "Những tấm ảnh đẹp quá!"),
   ("su_kien_vat_pham", "so=5", "{ten}: huy hiệu", "Thu {so} {vat}.", "Kỷ niệm ngày cộng đồng!")],
  "pokemon": [
   ("noi_chuyen", "npc=8", "{ten}: mở màn", "{mo_rieng}|Oáp... tuần đặc biệt cho nhà nghiên cứu.", "Ghi chép thật nhiều nhé."),
   ("pokedex_vung", "so=5", "{ten}: ghi chép", "Ghi {so} loài mới vào Pokédex trong tuần.", "Sổ dày lên!"),
-  ("su_kien_vat_pham", "so=10", "{ten}: tem nghiên cứu", "Thu {so} {vat}, đổi {thuong}.", "Nhà nghiên cứu chăm chỉ!")],
+  ("su_kien_vat_pham", "so=10", "{ten}: thu tem", "Thu {so} {vat}, đổi {thuong}.", "Nhà nghiên cứu chăm chỉ!")],
  "dot_kich": [
   ("noi_chuyen", "npc=21", "{ten}: báo động", "{mo_rieng}|Huyền thoại xuất hiện! Tập hợp!", "Lửa lên nào!"),
   ("boss_the_gioi", "so=1", "{ten}: đột kích", "Cùng mọi người đánh huyền thoại (2 lần/ngày).", "Huyền thoại đã lui!"),
-  ("su_kien_vat_pham", "so=3", "{ten}: chiến lợi phẩm", "Thu {so} {vat}.", "Đáng nhớ!")],
+  ("su_kien_vat_pham", "so=3", "{ten}: chiến tích", "Thu {so} {vat}.", "Đáng nhớ!")],
  "pvp": [
-  ("noi_chuyen", "npc=21", "{ten}: tổng kết mùa", "{mo_rieng}|Mùa giải sắp chốt. Dốc sức lần cuối!", "Lửa lên!"),
+  ("noi_chuyen", "npc=21", "{ten}: tổng kết", "{mo_rieng}|Mùa giải sắp chốt. Dốc sức lần cuối!", "Lửa lên!"),
   ("thang_pvp", "so=3", "{ten}: nước rút", "Thắng {so} trận đấu trường trong tuần.", "Bậc mùa giải tăng!"),
   ("su_kien_vat_pham", "so=1", "{ten}: huy chương", "Nhận {so} {vat} khi chốt mùa.", "Huy chương mùa giải!")],
  "chien_vung": [
   ("noi_chuyen", "npc=25", "{ten}: tập hợp", "{mo_rieng}|Hự! Thứ Bảy 20h, ba vùng giành cờ. Chọn phe đi chiến hữu!", "Vì vùng của ta!"),
-  ("tham_gia_gym", "", "{ten}: giành cờ", "Tham gia trận giành cờ cùng Đội.", "Cờ tung bay!"),
+  ("tham_gia_gym", "", "{ten}: giành cờ", "Tham gia trận giành cờ cùng đội.", "Cờ tung bay!"),
   ("su_kien_vat_pham", "so=5", "{ten}: cờ vùng", "Thu {so} {vat}.", "Chiến công ghi nhận!")],
  "mua": [
   ("noi_chuyen", "npc=22", "{ten}: khai hội", "{mo_rieng}|Meo! Mùa lễ hội! Bán, mua, chơi!", "Vui nào!"),
   ("su_kien_vat_pham", "so=15", "{ten}: sưu tầm", "Thu {so} {vat} trong tuần.", "Đủ rồi!"),
   ("noi_chuyen", "npc=22", "{ten}: đổi quà", "Mang {vat} đổi {thuong}.", "Meo! Quà đây!")],
 }
+# Ten ngan 52 tuan cho TEN nhiem vu su kien (vua mot dong J2ME ~150 px); ten day du van o cung/hoi thoai.
+SU_KIEN_TEN_NGAN = [
+ "Tết dương lịch", "Tuần hệ Băng", "Charmander", "Gói bánh Tết", "Tết Nguyên Đán", "Tết Nguyên Đán", "Tuần Shiny",
+ "Valentine", "Zapdos", "Ngày 8/3", "Tuần hệ Cỏ", "Bulbasaur", "Mùa PvP 1", "Lễ hội Pokédex", "Giỗ Tổ",
+ "Chiến vùng", "Ngày 30/4", "Tuần hệ Lửa", "Squirtle", "Entei", "Bùng phát", "Ngày 1/6", "Hè Vermilion",
+ "Hè Vermilion", "Pichu", "Mùa PvP 2", "Tuần hệ Nước", "Darkrai", "Hầm ngục hè", "Chiến vùng hè", "Eevee",
+ "Vu Lan", "Tuần hệ Điện", "Tuần Shiny 2", "Quốc khánh", "Rayquaza", "Trung Thu", "Trung Thu", "Mùa PvP 3",
+ "Charmander 2", "Ngày 20/10", "Hệ Siêu linh", "Halloween", "Halloween", "Pokédex 2", "Nhà giáo", "Black Friday",
+ "Groudon, Kyogre", "Chiến vùng đông", "Bulbasaur 2", "Giáng sinh", "Cuối năm",
+]
 # Cau mo rieng 52 tuan (theo thu tu su_kien_nam.csv).
 SU_KIEN_MO = [
  "Tuyết đầu năm phủ trắng Pallet, cây thông treo đầy kẹo.",
@@ -243,7 +253,7 @@ SU_KIEN_MO = [
  "Mưa mùa hạ, Pokémon hệ Nước vui đùa khắp nơi.",
  "Ác mộng trở lại trong đêm: Darkrai xuất hiện!",
  "Hầm ngục mùa hè: tầng sâu nhất mát lạnh như suối.",
- "Thế chiến vùng mùa hè, cờ ba vùng tung bay.",
+ "Chiến vùng mùa hè, cờ ba vùng tung bay.",
  "Eevee kéo về đồng cỏ, đá tiến hoá rơi nhiều hơn.",
  "Mùa Vu Lan, hoa hồng vàng cài trên ngực áo.",
  "Sấm chớp mùa thu, Pokémon hệ Điện tích đầy năng lượng.",
@@ -262,7 +272,7 @@ SU_KIEN_MO = [
  "Tuần tri ân thầy cô: Blaziken được học trò tặng hoa.",
  "Giảm giá đồ trang trí, Meowth vui nhất làng.",
  "Đất nứt, biển dâng: Groudon và Kyogre cùng thức giấc!",
- "Thế chiến vùng mùa đông, tuyết phủ chiến trường.",
+ "Chiến vùng mùa đông, tuyết phủ chiến trường.",
  "Bulbasaur lại về, mầm xanh giữa trời đông.",
  "Delibird phát quà, cây thông Abomasnow lấp lánh đèn.",
  "Năm cũ khép lại. Ai là người đáng nhớ nhất năm?",
@@ -273,7 +283,7 @@ SU_KIEN_MO = [
 HUYEN_THOAI = [
  ("ZAP", "Zapdos", 40, 8, "Lông vũ Zapdos", 82, "Tổ Zapdos", "Người nghe tiếng sấm", [
   ("noi_chuyen", "", "Tiếng sấm không mây", "Oáp... trời quang mà có sấm. Ông nghe kể Zapdos đang tìm tổ mới.", "Đi tìm hiểu đi cháu."),
-  ("quan_sat", "q=+0;dk=trời mưa", "Mây sấm kéo về", "Quan sát {quai} khi mưa giông, chúng nhạy với sấm.", "Sét đánh về một hướng: phía Tổ Zapdos."),
+  ("quan_sat", "q=+0;dk=trời mưa", "Mây sấm kéo về", "Quan sát {quai} khi mưa giông, chúng nhạy với sấm.", "Sét đánh dồn về một hướng, phía Tổ Zapdos."),
   ("tim_vat_an", "map=Tổ Zapdos;vat=Lông vũ tím", "Chiếc lông cháy xém", "Tìm dấu vết ở Tổ Zapdos.", "Một chiếc lông vàng cháy xém. Zapdos bị thương?"),
   ("thu_thap", "vat=Lọ thuốc", "Thuốc cho chim sấm", "Thu {so} {vat} từ {quai} để làm thuốc.", "Thuốc đã sẵn sàng."),
   ("dung_toa_do", "map=Tổ Zapdos;diem=0", "Đặt thuốc ở tổ", "Đặt thuốc ở mỏm đá cao nhất.", "Đêm đó, sấm rền một tiếng như lời cảm ơn."),
@@ -284,7 +294,7 @@ HUYEN_THOAI = [
   ("tim_vat_an", "map=Ecruteak;vat=Than hồng", "Than còn ấm", "Tìm {vat} trên vệt lửa.", "Than nóng như mới."),
   ("quan_sat", "q=+0;dk=nắng gắt", "Bóng trong nắng", "Quan sát {quai} giữa trưa nắng gắt, Entei thích nắng.", "Một bóng lớn lướt qua đồi."),
   ("giet", "q=+1", "Vết cháy lan", "Lửa lan làm {quai} hoảng. Hạ {so} con.", "Lửa tắt dần."),
-  ("cau_do", "dap=Ho-Oh", "Truyền thuyết Tháp Cháy", "Bronzong hỏi: 'Ai đã hồi sinh ba huyền thoại từ tro tàn Tháp Cháy?'", "Đúng. Ho-Oh, chim cầu vồng."),
+  ("cau_do", "dap=Ho-Oh", "Truyền thuyết Tháp Cháy", "Bronzong hỏi: Ai đã hồi sinh ba huyền thoại từ tro tàn Tháp Cháy?", "Đúng. Ho-Oh, chim cầu vồng."),
   ("boss_the_gioi", "q=#138;so=1", "Entei hiện thân", "Đột kích Entei! Cùng mọi người đối mặt.", "Entei gầm vang rồi chạy về Núi Silver."),
   ("noi_chuyen", "", "Lửa trong tim", "Kể lại với Blaziken.", "Lửa lên nào... Entei công nhận nhóc. Hiếm lắm đấy.")]),
  ("DAR", "Darkrai", 70, 5, "Mảnh bóng tối", 116, "Hang Darkrai", "Người đi qua ác mộng", [
@@ -296,7 +306,7 @@ HUYEN_THOAI = [
   ("boss_the_gioi", "q=#116;so=1", "Đối mặt Darkrai", "Đột kích Darkrai! Cùng mọi người.", "Darkrai tan vào bóng tối, để lại một mảnh đen."),
   ("noi_chuyen", "", "Sau cơn mơ", "Kể cho Xatu.", "...Đêm nay ta ngủ không mơ. Cảm ơn cháu.")]),
  ("RAY", "Rayquaza", 80, 21, "Vảy Rayquaza", 120, "Núi Silver", "Người chạm tới bầu trời", [
-  ("noi_chuyen", "", "Vệt xanh trên trời", "Lửa lên nào! Có vệt xanh lục xé toạc mây. Không phải máy bay đâu!", "Đi xem!"),
+  ("noi_chuyen", "", "Vệt xanh trên trời", "Lửa lên nào! Có vệt xanh lục xé toạc mây. Không phải Pidgeot đâu!", "Đi xem!"),
   ("dung_toa_do", "map=Núi Silver;diem=4", "Đỉnh cao nhất", "Lên đỉnh Núi Silver, nơi gần trời nhất.", "Gió mạnh. Một tiếng gầm xa xăm."),
   ("quan_sat", "q=+0;dk=bão cát", "Gió xoáy", "Quan sát {quai} trong gió lớn.", "Gió xoáy theo hình con rồng."),
   ("thu_thap", "vat=Vảy rồng nhỏ", "Vảy rơi từ trời", "Thu {so} {vat} từ {quai}.", "Vảy lấp lánh xanh lục."),
@@ -307,7 +317,7 @@ HUYEN_THOAI = [
   ("noi_chuyen", "", "Biển dâng, đất nứt", "La la~ biển dâng mà đất lại khô. Lạ lắm.", "Đi xem cùng mình."),
   ("quan_sat", "q=+0;dk=trời mưa", "Mưa không dứt", "Quan sát {quai} trong mưa kéo dài.", "Mưa nặng hạt bất thường."),
   ("quan_sat", "q=+0;dk=nắng gắt", "Nắng như đổ lửa", "Quan sát {quai} khi nắng gắt.", "Đất nứt nẻ."),
-  ("cau_ca", "vat=Ngọc trai;so=3", "Ngọc lam dưới biển", "Câu {so} {vat}.", "Một viên sáng lam như mắt Kyogre."),
+  ("cau_ca", "vat=Ngọc trai;so=3;map=Hồ Phẫn Nộ", "Ngọc lam dưới đáy hồ", "Nước Hồ Phẫn Nộ dâng bất thường. Câu {so} {vat} ở đó.", "Một viên sáng lam như mắt Kyogre."),
   ("dao_dat", "map=Khu mỏ;so=4", "Ngọc đỏ dưới đất", "Đào {so} lần ở khu mỏ.", "Một viên đỏ rực như mắt Groudon."),
   ("boss_the_gioi", "q=#130;so=1", "Hai gã khổng lồ", "Đột kích Groudon và Kyogre!", "Hai gã khổng lồ chìm vào giấc ngủ."),
   ("noi_chuyen", "", "Cân bằng", "Kể với Lapras.", "La la~ Biển và đất lại yên.")]),
@@ -315,7 +325,7 @@ HUYEN_THOAI = [
   ("noi_chuyen", "", "Tuyết giữa mùa hè", "Khụ khụ... tuyết rơi giữa hè ở Núi Silver. Hồi trẻ lão thấy một lần. Là Articuno.", "Đi đi, lão già rồi."),
   ("quan_sat", "q=+0;dk=trời tuyết", "Bông tuyết xanh", "Quan sát {quai} khi tuyết rơi.", "Bông tuyết xanh nhạt, lạnh buốt."),
   ("den_noi", "map=Núi Silver", "Đỉnh tuyết", "Lên Núi Silver.", "Một chiếc lông xanh băng nằm trên tuyết."),
-  ("cau_do", "dap=Articuno", "Bài đồng dao", "'Chim băng ba anh em, anh cả mang tuyết, cánh xanh như hồ. Là ai?'", "Đúng. Articuno."),
+  ("cau_do", "dap=Articuno", "Bài đồng dao", "Chim băng ba anh em, anh cả mang tuyết, cánh xanh như hồ. Là ai?", "Đúng. Articuno."),
   ("giet", "q=+1", "Bão tuyết", "Hạ {so} {quai} trong bão tuyết.", "Bão dịu dần."),
   ("tim_vat_an", "map=Núi Silver;vat=Mảnh băng vĩnh cửu", "Băng vĩnh cửu", "Tìm {vat}.", "Băng không tan trong tay bạn."),
   ("noi_chuyen", "", "Lời của băng", "Kể với lão Torkoal.", "Khụ khụ... cháu thấy nó rồi à. Lão mừng.")]),
@@ -337,7 +347,7 @@ HUYEN_THOAI = [
   ("noi_chuyen", "", "Tốc độ", "Kể với Bronzong.", "Boong... cậu nhanh hơn ta. Nhiều.")]),
  ("SUI", "Suicune", 95, 10, "Pha lê Suicune", 0, "Hồ Phẫn Nộ", "Người làm trong dòng nước", [
   ("noi_chuyen", "", "Nước tự trong", "La la~ hồ đục bỗng trong veo trong một đêm. Suicune đã qua đây.", "Theo dấu nước trong."),
-  ("cau_ca", "vat=Vảy cá vàng;so=3", "Cá hồ trong", "Câu {so} con có {vat}.", "Cá khỏe mạnh."),
+  ("cau_ca", "vat=Vảy cá vàng;so=3;map=Hồ Phẫn Nộ", "Cá hồ trong", "Câu {so} con có {vat} ở Hồ Phẫn Nộ.", "Cá khoẻ mạnh."),
   ("quan_sat", "q=+0;dk=sương mù", "Gió bắc", "Quan sát {quai} khi sương mù.", "Bóng xanh lướt trên mặt nước."),
   ("lam_vuon", "vat=Hoa sương;so=3", "Hoa bên hồ", "Trồng {so} {vat}.", "Hoa nở trắng bờ hồ."),
   ("dung_toa_do", "map=Hồ Phẫn Nộ;diem=0", "Mặt hồ", "Đứng bên mặt hồ lúc bình minh.", "Suicune nhìn bạn từ bờ bên kia."),
@@ -345,7 +355,7 @@ HUYEN_THOAI = [
   ("noi_chuyen", "", "Nước trong", "Kể với Lapras.", "La la~ hiếm ai được Suicune nhìn tận mắt.")]),
  ("LUG", "Lugia", 96, 10, "Lông bạc Lugia", 0, "Olivine", "Người nghe bài ca biển sâu", [
   ("noi_chuyen", "", "Bài ca dưới biển", "La la~ có tiếng hát từ đáy biển. Không phải mình.", "Lugia."),
-  ("cau_ca", "vat=Ngọc trai;so=3", "Ngọc biển sâu", "Câu {so} {vat}.", "Ngọc ngân nga."),
+  ("cau_ca", "vat=Ngọc trai;so=3;map=Tàu S.S. Anne", "Ngọc trai quanh đảo", "La la~ quanh hòn đảo nơi tàu S.S. Anne neo có ao trai ngọc biết hát. Câu {so} {vat}.", "Ngọc ngân nga giai điệu của biển sâu."),
   ("den_noi", "map=Olivine", "Hải đăng", "Đến Olivine.", "Ampharos chỉ ra biển."),
   ("quan_sat", "q=+0;dk=trời mưa", "Bão biển", "Quan sát {quai} trong bão.", "Một bóng bạc dưới sóng."),
   ("giet", "q=+1", "Biển động", "Hạ {so} {quai}.", "Sóng lặng."),
@@ -356,7 +366,7 @@ HUYEN_THOAI = [
   ("dung_toa_do", "map=Ecruteak;diem=0", "Bậc thang thứ chín", "Đứng trên bậc thang thứ chín Tháp Chuông.", "Chuông rung."),
   ("quan_sat", "q=+0;dk=bình minh", "Ánh cầu vồng", "Quan sát {quai} lúc bình minh.", "Ánh sáng bảy màu."),
   ("thu_thap", "vat=Lá trà Ecruteak", "Trà dâng tháp", "Thu {so} {vat} từ {quai}.", "Hương trà thơm."),
-  ("cau_do", "dap=Ho-Oh", "Câu hỏi của tháp", "'Chim cầu vồng, hồi sinh ba huyền thoại. Là ai?'", "Đúng."),
+  ("cau_do", "dap=Ho-Oh", "Câu hỏi của tháp", "Chim cầu vồng, hồi sinh ba huyền thoại. Là ai?", "Đúng."),
   ("tim_vat_an", "map=Ecruteak;vat=Lông vũ tím", "Lông bảy sắc", "Tìm chiếc lông rơi từ trời.", "Lông vũ bảy sắc."),
   ("noi_chuyen", "", "Cầu vồng", "Kể với Xatu.", "...Ho-Oh chỉ hiện ra với người có trái tim trong sáng.")]),
  ("CEL", "Celebi", 55, 8, "Mảnh tinh hoa", 0, "Rừng Ilex", "Người du hành qua thời gian", [
@@ -365,15 +375,15 @@ HUYEN_THOAI = [
   ("lam_vuon", "vat=Hạt giống Berry;so=3", "Cây non", "Trồng {so} {vat} quanh đền.", "Cây lớn nhanh lạ thường."),
   ("quan_sat", "q=+0;dk=bình minh", "Bình minh", "Quan sát {quai} lúc bình minh.", "Thời gian như chậm lại."),
   ("tim_vat_an", "map=Rừng Ilex;vat=Hộp nhạc", "Hộp nhạc từ tương lai", "Tìm {vat} trong đền.", "Hộp nhạc khắc năm sau."),
-  ("ap_trung", "so=1", "Quả trứng thời gian", "Ấp nở quả trứng tìm thấy trong đền.", "Một Pokémon nhỏ nở ra, mắt xanh lá."),
+  ("ap_trung", "so=1", "Quả trứng thời gian", "Hãy ấp nở quả trứng tìm thấy trong đền.", "Một Pokémon nhỏ nở ra, mắt xanh lá."),
   ("noi_chuyen", "", "Thời gian", "Kể với ông.", "Oáp... Celebi cho cháu thấy tương lai. Tốt đẹp chứ?")]),
  ("MEW", "Mew", 65, 3, "Mảnh tinh hoa", 0, "Cinnabar", "Người tìm thấy Mew", [
   ("noi_chuyen", "", "Bong bóng hồng", "Boong... có bong bóng hồng bay quanh phòng thí nghiệm Cinnabar.", "Lạ."),
   ("den_noi", "map=Cinnabar", "Phòng thí nghiệm", "Đến Cinnabar.", "Bong bóng dẫn ra biển."),
-  ("cau_do", "dap=Mew", "Nhật ký cũ", "'Pokémon mang gen của mọi Pokémon. Là ai?'", "Đúng. Mew."),
+  ("cau_do", "dap=Mew", "Nhật ký cũ", "Pokémon mang gen của mọi Pokémon. Là ai?", "Đúng. Mew."),
   ("quan_sat", "q=+0;dk=buổi sáng", "Trò chơi", "Quan sát {quai} buổi sáng, Mew hay chơi cùng chúng.", "Một đuôi hồng thoáng qua."),
   ("ho_tong", "vat=Bong bóng hồng;npc=3", "Đuổi bong bóng", "Đưa bong bóng về cho Bronzong.", "Bong bóng vỡ, để lại tiếng cười."),
-  ("tim_vat_an", "map=Cinnabar;vat=Ảnh chụp", "Bức ảnh mờ", "Tìm {vat} cũ trong phòng thí nghiệm.", "Ảnh một Pokémon hồng nhỏ."),
+  ("tim_vat_an", "map=Cinnabar;vat=Tấm ảnh", "Bức ảnh mờ", "Tìm {vat} cũ trong phòng thí nghiệm.", "Tấm ảnh chụp một Pokémon hồng nhỏ."),
   ("noi_chuyen", "", "Lời chào của Mew", "Kể với Bronzong.", "Boong... Mew chọn cậu làm bạn chơi.")]),
 ]
 
@@ -381,8 +391,8 @@ HUYEN_THOAI = [
 AN = [
  ("Snorlax thức giấc", "nói chuyện với Snorlax 10 lần vào ban đêm", "noi_chuyen", "npc=8", 10, "...Khò... Ơ? Cháu lại tới à? Mười lần rồi đấy. Ông kể cháu nghe bí mật: ông không ngủ đâu, ông nghe hết.", "Đừng nói với ai nhé.", "Người giữ bí mật của Snorlax"),
  ("Bóng ma lúc nửa đêm", "đứng trên đỉnh Tháp Lavender lúc 0:00", "dung_toa_do", "map=Lavender;diem=0", 30, "Đúng nửa đêm. Một bóng ma nhỏ hiện lên, mời bạn chơi trốn tìm.", "Bóng ma cười khúc khích rồi biến mất.", "Bạn của bóng đêm"),
- ("Magikarp vàng", "câu cá khi mưa 50 lần", "cau_ca", "vat=Vảy cá vàng;so=1", 20, "Dưới làn mưa, phao câu chìm sâu bất thường...", "Một Magikarp vàng óng! Nó búng lên rồi bơi đi.", "Người thấy Magikarp vàng"),
- ("Lời thì thầm của Unown", "giải 10 câu đố Natu", "cau_do", "dap=Alph", 30, "Các Unown xếp thành câu: 'Tên tàn tích của chúng ta là gì?'", "Các Unown xoay tròn vui vẻ.", "Người đọc chữ Unown"),
+ ("Magikarp vàng", "câu cá khi mưa 50 lần", "cau_ca", "vat=Vảy cá vàng;so=1;map=Vùng Safari", 20, "Dưới làn mưa trên hồ lớn Vùng Safari, phao câu chìm sâu bất thường...", "Một Magikarp vàng óng! Nó búng lên rồi bơi đi.", "Người thấy Magikarp vàng"),
+ ("Lời thì thầm của Unown", "giải 10 câu đố Natu", "cau_do", "dap=Alph", 30, "Các Unown xếp thành câu: Tên tàn tích của chúng ta là gì?", "Các Unown xoay tròn vui vẻ.", "Người đọc chữ Unown"),
  ("Ditto ở Khu mua bán", "nói chuyện với Kecleon 20 lần", "noi_chuyen", "npc=1", 15, "Kecleon: Hí hí... thật ra tôi không phải Kecleon. Tôi là Ditto! Đùa thôi. Hay không?", "Kecleon đổi sang màu hồng rồi lại xanh.", "Người nhìn thấu"),
  ("Tảng đá biết nói", "đào 100 lần", "dao_dat", "map=Khu mỏ;so=1", 25, "Xẻng chạm vào một tảng đá. Tảng đá... ho.", "Một Sudowoodo cũ ngái ngủ chui lên, cảm ơn vì được đào lên.", "Thợ đào may mắn"),
  ("Người ngủ trên cầu", "đứng trên cầu Cerulean 5 phút", "dung_toa_do", "map=Cerulean;diem=0", 18, "Bạn đứng lặng trên cầu. Lão Torkoal bước tới ngồi cạnh, không nói gì.", "Lão kể chuyện thời trẻ đến tận khuya.", "Người lắng nghe"),
@@ -393,8 +403,8 @@ AN = [
  ("Chạy cùng gió", "về đích 10 cuộc đua", "dua_pokemon", "", 25, "Gió đẩy sau lưng bạn suốt cuộc đua.", "Pidgeot bay theo cổ vũ.", "Người chạy cùng gió"),
  ("Kẻ trộm lông vũ", "giữ 30 Lông vũ tím", "noi_chuyen", "npc=5", 40, "Murkrow cũ quay lại, cúi đầu xin lỗi vì những gì đã làm.", "Murkrow giờ làm người đưa thư.", "Người tha thứ"),
  ("Vườn đêm", "thu hoạch ban đêm 20 lần", "lam_vuon", "vat=Hoa sương;so=1", 30, "Hoa sương chỉ nở dưới trăng.", "Vườn nhà bạn toả hương.", "Người làm vườn đêm"),
- ("Đối thủ cũ", "thắng 50 trận đấu trường", "thang_pvp", "so=1", 50, "Lém xuất hiện ở đấu trường, không hoá trang: 'Đấu thật một trận nhé!'", "Lém: Hô hô... vẫn thua. Bạn tốt.", "Bạn của Lém"),
- ("Hồ sơ Mặt Nạ Tím", "xong chương 44", "tim_vat_an", "map=Mahogany;vat=Cuộn băng radio", 75, "Trong căn cứ cũ còn sót một cuộn băng.", "Giọng Darkrai: 'Ta chỉ muốn không ai phải đau.'", "Người hiểu Darkrai"),
+ ("Đối thủ cũ", "thắng 50 trận đấu trường", "thang_pvp", "so=1", 50, "Lém xuất hiện ở đấu trường, không hoá trang: Đấu thật một trận nhé!", "Lém: Hô hô... vẫn thua. Bạn tốt.", "Bạn của Lém"),
+ ("Hồ sơ Mặt Nạ Tím", "xong chương 44", "tim_vat_an", "map=Mahogany;vat=Cuộn băng radio", 75, "Trong căn cứ cũ còn sót một cuộn băng.", "Giọng Darkrai: Ta chỉ muốn không ai phải đau.", "Người hiểu Darkrai"),
  ("Clefairy và mặt trăng", "đứng ở Núi Mặt Trăng lúc trăng tròn", "dung_toa_do", "map=Núi Mặt Trăng;diem=2", 16, "Bầy Clefairy mời bạn múa cùng.", "Bạn được tặng một viên đá Mặt Trăng.", "Vũ công dưới trăng"),
  ("Người đưa thư bí ẩn", "giao 50 thư/hàng", "dua_thu", "npc=23", 30, "Một lá thư không người gửi, chỉ đề tên lão Torkoal.", "Khụ khụ... thư của Lapras. Lão sẽ trả lời ngay.", "Người đưa thư tận tâm"),
  ("Trận chiến trong mơ", "ngủ trong nhà 3 đêm liền (không đăng nhập ban đêm)", "giet_tinh_anh", "q=+3", 60, "Bạn mơ thấy mình đấu với {quai}.", "Tỉnh dậy, người mỏi nhừ nhưng mạnh hơn.", "Người chiến đấu trong mơ"),
@@ -403,11 +413,11 @@ AN = [
  ("Một ngày không đánh", "đăng nhập mà không hạ quái nào cả ngày", "noi_chuyen", "npc=8", 20, "Oáp... hôm nay cháu không đánh nhau à? Ngồi đây với ông.", "Một ngày yên bình cũng là một ngày tốt.", "Người biết nghỉ ngơi"),
  ("Bóng mắt xanh", "xong chuỗi huyền thoại Darkrai", "quan_sat", "q=+0;dk=ban đêm", 75, "Trong đêm, một đôi mắt xanh nhìn bạn, không còn đáng sợ.", "Darkrai gật đầu rồi tan biến.", "Người được Darkrai tin"),
  ("Kẻ ăn đá", "thu 100 Quặng sắt", "giet", "q=+0", 70, "Larvitar ở Núi Silver đã lớn thành Pupitar, muốn đấu với bạn.", "Pupitar: Rộp! Mạnh lên rồi chứ?", "Người nuôi Larvitar"),
- ("Bức thư năm sau", "một năm sau khi chôn Hộp thư thời gian", "dao_dat", "map=Pallet;so=1", 30, "Bạn đào lại chiếc hộp đã chôn một năm trước.", "Thư của Xatu: '...Ta đã biết cháu sẽ quay lại.'", "Người giữ lời hẹn"),
+ ("Bức thư năm sau", "một năm sau khi chôn Hộp thư thời gian", "dao_dat", "map=Pallet;so=1", 30, "Bạn đào lại chiếc hộp đã chôn một năm trước.", "Thư của Xatu viết: ...Ta đã biết cháu sẽ quay lại.", "Người giữ lời hẹn"),
  ("Ngôi sao thứ mười bảy", "xong chương 62", "tim_vat_an", "map=Núi Silver;vat=Mảnh sao băng", 93, "Một mảnh sao nữa nằm trên Núi Silver, chưa ai thấy.", "Mảnh sao ấm lên khi gặp bạn.", "Người tìm sao"),
  ("Bữa tiệc của Snorlax", "mời 5 bạn bè cùng ăn bánh ở Pallet", "nau_an", "vat=Bánh quả mọng;so=5", 40, "Ông Snorlax mở tiệc.", "Oáp... no quá. Năm nay vui nhất.", "Khách quý của Snorlax"),
- ("Người gác cầu", "thắng 5 trận thử thách giờ liên tiếp", "thu_thach_gio", "q=+1;phut=4", 45, "Lão Torkoal bấm giờ: 'Thử lại thời trẻ của lão xem!'", "Khụ khụ... nhanh hơn lão ngày xưa.", "Người gác cầu Cerulean"),
- ("Hoa anh đào cuối mùa", "ghé Cherrygrove 30 ngày khác nhau", "dung_toa_do", "map=Cherrygrove;diem=0", 51, "Cánh hoa anh đào cuối cùng rơi vào tay bạn.", "Ông lão Furret mỉm cười: 'Ta đi lạc cả đời để thấy cảnh này.'", "Người ngắm hoa cuối mùa"),
+ ("Người gác cầu", "thắng 5 trận thử thách giờ liên tiếp", "thu_thach_gio", "q=+1;phut=4", 45, "Lão Torkoal bấm giờ: Thử lại thời trẻ của lão xem!", "Khụ khụ... nhanh hơn lão ngày xưa.", "Người gác cầu Cerulean"),
+ ("Hoa anh đào cuối mùa", "ghé Cherrygrove 30 ngày khác nhau", "dung_toa_do", "map=Cherrygrove;diem=0", 51, "Cánh hoa anh đào cuối cùng rơi vào tay bạn.", "Ông lão Furret mỉm cười: Ta đi lạc cả đời để thấy cảnh này.", "Người ngắm hoa cuối mùa"),
  ("Lửa của Blaziken", "đạt cấp 90", "noi_chuyen", "npc=21", 90, "Blaziken: Lửa lên nào... lần cuối tôi dạy nhóc. Giờ nhóc dạy lại tôi đi.", "Hai thầy trò đấu tập đến tối.", "Học trò của Blaziken"),
  ("Huyền thoại của làng", "xong 100 nhiệm vụ phụ", "noi_chuyen", "npc=5", 50, "...Cả làng muốn dựng tượng cháu. Ta đã cản. Cháu không thích thế đâu.", "Thay vào đó, họ đặt tên một con đường theo tên cháu.", "Huyền thoại của làng"),
  ("Hòn đá lạ ở Pewter", "Geodude đứng gác bảo tàng 30 ngày", "noi_chuyen", "npc=2", 30, "Khà khà! Geodude tiến hoá rồi! Nó muốn cảm ơn cháu.", "Graveler đứng gác bảo tàng, ngực ưỡn cao hơn.", "Người bạn của đá"),
@@ -439,7 +449,7 @@ THANH_TUU = [
  ("Câu cá", "cau_ca", [(10, "Cần câu mới"), (100, "Ngư ông"), (500, "Vua câu cá"), (1000, "Huyền thoại sông hồ")]),
  ("Đào đất", "dao_dat", [(10, "Xẻng mới"), (100, "Thợ đào"), (500, "Thợ đào huyền thoại")]),
  ("Nấu ăn", "nau_an", [(10, "Bếp nhỏ"), (100, "Đầu bếp"), (300, "Siêu đầu bếp")]),
- ("Ấp trứng", "ap_trung", [(1, "Trứng đầu tiên"), (20, "Nhà trẻ đông vui"), (100, "Bảo mẫu ba vùng"), (300, "Cha mẹ của trăm Pokémon")]),
+ ("Trứng nở", "ap_trung", [(1, "Trứng đầu tiên"), (20, "Nhà trẻ đông vui"), (100, "Bảo mẫu ba vùng"), (300, "Cha mẹ của trăm Pokémon")]),
  ("Alpha", "alpha", [(1, "Hạ Alpha đầu tiên"), (10, "Thợ săn Alpha"), (50, "Khắc tinh Alpha"), (200, "Vua Alpha")]),
  ("Khám phá", "kham_pha", [(10, "Người đi đường"), (30, "Nhà thám hiểm"), (60, "Người vẽ bản đồ"), (90, "Đặt chân mọi nơi")]),
  ("Sư phạm", "su_pham", [(1, "Người thầy đầu tiên"), (5, "Người thầy tận tâm"), (20, "Bậc thầy dạy dỗ")]),

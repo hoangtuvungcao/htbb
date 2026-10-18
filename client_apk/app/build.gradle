@@ -1,7 +1,7 @@
 // Bản Android (client TeaMobi 2.7.7 + mod NQSH-H2) build hoàn toàn từ source.
 //   gradlew :app:assembleRelease -PhtbbBan=1423 [-PhtbbTen=NQSH-H2] [-PhtbbKeyDir=...]
 // Ký: thư mục KEY_DIR (hoặc -PhtbbKeyDir) chứa key.properties (keystore=, alias=, password=) + keystore.
-// Code mod dùng chung với bản J2ME (../../shared/mod) được port-android.py đổi tên lớp rồi đưa vào biên dịch.
+// Code mod dùng chung với bản J2ME (../../client_jar/shared/mod) được port-android.py đổi tên lớp rồi đưa vào biên dịch.
 plugins {
     id 'com.android.application'
 }
@@ -79,9 +79,9 @@ dependencies {
     implementation 'androidx.core:core:1.2.0'   // FileProvider (tự cập nhật APK)
 }
 
-// shared/mod (viết theo API J2ME) -> đổi tên lớp sang bản Android; sinh PhienBan (số bản gửi khi đăng nhập)
+// client_jar/shared/mod (viết theo API J2ME) -> đổi tên lớp sang bản Android; sinh PhienBan (số bản gửi khi đăng nhập)
 def chepModChung = tasks.register('chepModChung') {
-    def vao = rootProject.file('../shared/mod/game/render/screen')
+    def vao = rootProject.file('../client_jar/shared/mod/game/render/screen')
     def ra = modSinh.get().dir('game/render/screen').asFile
     inputs.dir(vao)
     inputs.file(rootProject.file('port-android.py'))

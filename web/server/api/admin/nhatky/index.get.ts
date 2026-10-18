@@ -1,5 +1,5 @@
 /**
- * Nhật ký thao tác của chính các admin (bảng kpah_db.web_admin_log).
+ * Nhật ký thao tác của chính các admin (bảng htbb_db.web_admin_log).
  *
  * Đây là thứ trả lời câu “ai đã khoá tài khoản này?”, “mã quà kia ở đâu ra?”.
  * CỐ Ý CHỈ CÓ API ĐỌC, không có API xoá: một cuốn nhật ký xoá được thì không còn

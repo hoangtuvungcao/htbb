@@ -24,8 +24,32 @@ public final class BanDoVung {
         return 34 + (y - 48) * (h - 44) / 122;
     }
 
+    /** Vùng Hoenn (năm 2): tọa độ điểm (cùng hệ ảnh 197 x 168) song song ID_HOENN (id map server). */
+    static final short[][] DIEM_HOENN = {{40, 150}, {30, 128}, {28, 100}, {55, 112}, {80, 140}, {82, 118}, {84, 98}, {70, 80}, {60, 64}, {45, 56}, {100, 78}, {108, 58}, {130, 62}, {160, 60}, {140, 82}, {160, 86}, {182, 92}, {135, 118}, {178, 118}, {150, 150}, {55, 140}, {30, 74}, {152, 104}, {118, 128}, {170, 138}, {184, 156}, {130, 158}, {112, 164}, {94, 166}};
+    static final int[] ID_HOENN = {43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 160, 161, 162, 163, 164, 165, 280, 281, 282};
+
+    /** Chỉ số map trong vùng Hoenn, -1 nếu không phải Hoenn. */
+    public static int chiSoHoenn(int map) {
+        for (int i = 0; i < ID_HOENN.length; i++) {
+            if (ID_HOENN[i] == map) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /** Bản đồ vùng Hoenn, điểm đang đứng = map hiện tại. */
+    public static void veHoenn(Graphics g, int map, int w, int h) {
+        ve(g, DIEM_HOENN, chiSoHoenn(map), w, h, TenMapPokemon.tenHoenn(map));
+    }
+
     /** pts = tọa độ gốc {x, y}; cur = điểm đang đứng; w, h = cỡ khung PageScr (gốc tọa độ = góc khung). */
     public static void ve(Graphics g, short[][] pts, int cur, int w, int h) {
+        ve(g, pts, cur, w, h, null);
+    }
+
+    /** nhan = tên điểm đang đứng (null = Res.nameBigMap[cur]). */
+    public static void ve(Graphics g, short[][] pts, int cur, int w, int h, String nhan) {
         int n = pts.length;
         int[] x = new int[n];
         int[] y = new int[n];
@@ -115,8 +139,8 @@ public final class BanDoVung {
         }
         g.setClip(cx, cy, cw, ch);
         // nhãn tên điểm đang đứng (đáy khung)
-        if (cur >= 0 && cur < Res.nameBigMap.length) {
-            String ten = Res.nameBigMap[cur];
+        if (nhan != null || (cur >= 0 && cur < Res.nameBigMap.length)) {
+            String ten = nhan != null ? nhan : TenMapPokemon.doiHien(Res.nameBigMap[cur]);
             int tw = Font.borderFont.getWidth(ten) + 12;
             GiaoDien.khoi(g, w / 2 - tw / 2, h - 20, tw, 15, 6, GiaoDien.VIEN);
             GiaoDien.khoiDoc(g, w / 2 - tw / 2 + 1, h - 19, tw - 2, 13, 5, GiaoDien.XANH_SANG, GiaoDien.NAVY);

@@ -46,6 +46,16 @@ public class Quest {
     }
 
     public void update(Actor mychar, Actor npc) {
+        try {
+            capNhat(mychar, npc);
+        } catch (RuntimeException e) {
+            // dữ liệu nhiệm vụ lệch (chỉ số dòng thoại): đóng hội thoại thay vì ném lỗi mỗi khung hình
+            this.isShow = false;
+            this.index = (byte) 0;
+        }
+    }
+
+    private void capNhat(Actor mychar, Actor npc) {
         if (Canvas.keyPressed[5]) {
             Canvas.keyPressed[5] = false;
             if (npc != null && ((npc.getTypeNpc() != this.idNpcReceive && this.stateQuest == 0) || (npc.getTypeNpc() != this.idNpcResponse && this.stateQuest == 1))) {
@@ -56,14 +66,20 @@ public class Quest {
             this.index = (byte) (this.index + 1);
             if (this.stateQuest == 0) {
                 if (this.index >= this.content.size() - 1) {
+                    // hết lời thoại. Trước đây elementAt(index) với index = size (nội dung 1 dòng) ném
+                    // ArrayIndexOutOfBounds MỖI lần bấm phím (isShow vẫn bật nên GameScr gọi lại mãi)
                     if (this.type == 3) {
-                        GameScr.addChat(npc, (String) this.content.elementAt(this.index), 100);
+                        if (this.content.size() > 0) {
+                            GameScr.addChat(npc, (String) this.content.elementAt(this.content.size() - 1), 100);
+                        }
                         this.stateQuest = (byte) 3;
                         GameService.gI().onSendInfoQuest(1, this.idQuest, this.main_sub);
                         this.isShow = false;
                         this.index = (byte) 0;
                         return;
                     }
+                    this.isShow = false;       // không phải loại 3: kết thúc hội thoại (trước đây kẹt isShow)
+                    this.index = (byte) 0;
                     return;
                 }
                 String info = (String) this.content.elementAt(this.index);
@@ -72,7 +88,7 @@ public class Quest {
                 } else {
                     GameScr.addChat(mychar, info.substring(1), 100);
                 }
-                if (this.type != 3 && this.index >= this.content.size() - 2) {
+                if (this.type != 3 && this.index >= this.content.size() - 2 && this.index + 1 < this.content.size()) {
                     this.index = (byte) (this.index + 1);
                     Canvas.startYesNoDlg((String) this.content.elementAt(this.index), new IAction() {
                         @Override
@@ -127,6 +143,10 @@ public class Quest {
 
     public void startTalk(Actor mychar, Actor npc, int state) {
         this.index = (byte) 0;
+        if (state == 0 && this.content.size() == 0 || state == 1 && this.rescontent.size() == 0) {
+            this.isShow = false;       // server gửi nhiệm vụ không có lời thoại: không mở hội thoại rỗng
+            return;
+        }
         String info = "";
         if (state == 0) {
             info = (String) this.content.elementAt(this.index);
@@ -143,7 +163,7 @@ public class Quest {
             GameScr.addChat(mychar, info.substring(1), 100);
         }
         this.isShow = true;
-        if (this.stateQuest == 0 && this.type != 3 && this.content.size() <= 2) {
+        if (this.stateQuest == 0 && this.type != 3 && this.content.size() <= 2 && this.content.size() > 1) {
             this.index = (byte) (this.index + 1);
             Canvas.startYesNoDlg((String) this.content.elementAt(this.index), new IAction() {
                 @Override
@@ -191,7 +211,7 @@ public class Quest {
                     short[] sArr = this.allMonsKilled;
                     int i2 = i;
                     sArr[i2] = (short) (sArr[i2] + 1);
-                    return this.allMonsKilled[i] < this.totalMonskill[i] ? new StringBuffer("Giết được ").append((int) this.allMonsKilled[i]).append("/").append((int) this.totalMonskill[i]).append(" ").append(nameMons).toString() : new StringBuffer("Nhiệm vụ ").append(this.name).append(" đã hoàn thành").toString();
+                    return this.allMonsKilled[i] < this.totalMonskill[i] ? new StringBuffer("Hạ được ").append((int) this.allMonsKilled[i]).append("/").append((int) this.totalMonskill[i]).append(" ").append(nameMons).toString() : new StringBuffer("Nhiệm vụ ").append(this.name).append(" đã hoàn thành").toString();
                 }
             }
             return "";
@@ -206,7 +226,7 @@ public class Quest {
                     short[] sArr = this.allMonsKilled;
                     int i2 = i;
                     sArr[i2] = (short) (sArr[i2] + 1);
-                    return this.allMonsKilled[i] < this.totalMonskill[i] ? new StringBuffer("Giết được ").append((int) this.allMonsKilled[i]).append("/").append((int) this.totalMonskill[i]).append(" ").toString() : new StringBuffer("Nhiệm vụ ").append(this.name).append(" đã hoàn thành").toString();
+                    return this.allMonsKilled[i] < this.totalMonskill[i] ? new StringBuffer("Hạ được ").append((int) this.allMonsKilled[i]).append("/").append((int) this.totalMonskill[i]).append(" ").toString() : new StringBuffer("Nhiệm vụ ").append(this.name).append(" đã hoàn thành").toString();
                 }
             }
             return "";
@@ -235,7 +255,7 @@ public class Quest {
                     info = new StringBuffer(String.valueOf(info3)).append("|").append(this.infoGift).toString();
                     break;
                 case 4:
-                    info = new StringBuffer(String.valueOf(new StringBuffer("Giết: ").append((int) this.allMonsKilled[0]).append("/").append((int) this.totalMonskill[0]).toString())).append("|").append(this.infoGift).toString();
+                    info = new StringBuffer(String.valueOf(new StringBuffer("Hạ: ").append((int) this.allMonsKilled[0]).append("/").append((int) this.totalMonskill[0]).toString())).append("|").append(this.infoGift).toString();
                     break;
             }
         }

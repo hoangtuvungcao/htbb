@@ -13,7 +13,7 @@ logs
 .vscode/*
 !.vscode/extensions.json
 
-# Bí mật riêng của từng máy (DB pass, số TK ngân hàng, API key, KPAH_SECRET...)
+# Bí mật riêng của từng máy (DB pass, số TK ngân hàng, API key, HTBB_SECRET...)
 .env
 .env.*
 !.env.example

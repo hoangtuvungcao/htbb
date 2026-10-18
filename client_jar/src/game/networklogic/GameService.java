@@ -536,10 +536,6 @@ public class GameService extends Cmd_message {
     }
 
     public void requestMonsterInfo(short actorID) {
-        // mod: auto vận tiêu nháy map - không xin thông tin quái thường (tránh chống flood của server)
-        if (game.render.screen.AutoGuard.chanXinQuai(actorID)) {
-            return;
-        }
         Message m = init((byte) 7);
         try {
             m.writer().writeShort(actorID);
@@ -918,18 +914,32 @@ public class GameService extends Cmd_message {
         }
     }
 
-    public void requestRegister(String username, String pass) {
+    /** Đăng ký trong game, bước 0: xin câu hỏi chống bot (xem DangKyScr / server real.cmd.DangKyTrongGame). */
+    public void dangKyXinCauDo(String maMay) {
         Message m = init((byte) 39);
         try {
-            m.writer().writeUTF(username);
-            m.writer().writeUTF(pass);
-            GameMidlet.client_Provider.trim();
-            m.writer().writeUTF(GameMidlet.client_Provider);
-            m.writer().writeUTF(GameMidlet.provider);
-            m.writer().writeUTF(GameMidlet.agent);
-            System.out.println(new StringBuffer("dang nhap ").append(username).append(" ").append(pass).toString());
+            m.writer().writeUTF(game.render.screen.DangKyScr.DAU);
+            m.writer().writeByte(0);
+            m.writer().writeUTF(maMay);
         } catch (IOException e) {
-            System.out.println(new StringBuffer("loi r ne ").append(e.toString()).toString());
+        }
+        this.session.sendMessage(m);
+        m.cleanup();
+    }
+
+    /** Đăng ký trong game, bước 1: gửi thông tin + câu trả lời. */
+    public void dangKyGui(String ten, String matKhau, String nhapLai, String email, String traLoi, String maMay) {
+        Message m = init((byte) 39);
+        try {
+            m.writer().writeUTF(game.render.screen.DangKyScr.DAU);
+            m.writer().writeByte(1);
+            m.writer().writeUTF(ten);
+            m.writer().writeUTF(matKhau);
+            m.writer().writeUTF(nhapLai);
+            m.writer().writeUTF(email);
+            m.writer().writeUTF(traLoi);
+            m.writer().writeUTF(maMay);
+        } catch (IOException e) {
         }
         this.session.sendMessage(m);
         m.cleanup();

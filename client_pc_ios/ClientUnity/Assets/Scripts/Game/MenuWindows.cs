@@ -116,7 +116,7 @@ public class MenuWindows : MyScreen
 
 	public static int focusTab;
 
-	private string[] tabName = new string[10] { "C.hàng", "H.trang", "Trang bị", "T.bị thú", "Kỹ năng", "T.năng", "N.vụ", "Cài đặt", "Bang hội", "Khác" };
+	private string[] tabName = new string[10] { "C.hàng", "H.trang", "Trang bị", "T.bị thú", "Kỹ năng", "T.năng", "N.vụ", "Cài đặt", "Đội", "Khác" };
 
 	private string[] tabCuaHang = new string[3] { "Gian hàng 1", "Gian hàng 2", "Gian hàng 3" };
 
@@ -124,7 +124,7 @@ public class MenuWindows : MyScreen
 
 	private string[] tabCaiDat = new string[6] { "Bản đồ lớn", "Hướng dẫn", "Bật/tắt lời mời", "Bật/tắt giao diện", "Bật/tắt tự động đánh", "Chế độ focus" };
 
-	private string[] tabKhac = new string[9] { "Tin nhắn", "Kênh thế giới", "Bạn bè", "Top cao thủ", "Top đại gia", "Bảng top", "Cây thần", "Cổ vật", "Khác" };
+	private string[] tabKhac = new string[9] { "Tin nhắn", "Kênh thế giới", "Bạn bè", "Top sức mạnh", "Top đại gia", "Bảng top", "Cây thần", "Cổ vật", "Khác" };
 
 	public bool isDefault;
 
@@ -406,19 +406,19 @@ public class MenuWindows : MyScreen
 	{
 		if (Canvas.gameScr.mainChar.idClan == -1)
 		{
-			nameClan = new string[2] { "Top bang hội", "Đăng ký bang hội" };
+			nameClan = new string[2] { "Top đội", "Đăng ký đội" };
 		}
 		else if (Canvas.gameScr.mainChar.isMaster == 0)
 		{
-			nameClan = new string[9] { "Top bang hội", "Nhiệm vụ", "Thành viên bang hội", "Thông tin bang hội", "Tin nhắn bang hội", "Kỹ năng", "Chat toàn bang", "Quyên góp", "Giải tán bang hội" };
+			nameClan = new string[9] { "Top đội", "Nhiệm vụ", "Thành viên đội", "Thông tin đội", "Tin nhắn đội", "Kỹ năng", "Chat toàn đội", "Quyên góp", "Giải tán đội" };
 			if (Char.dissolved)
 			{
-				nameClan[8] = "Phục hồi bang hội";
+				nameClan[8] = "Phục hồi đội";
 			}
 		}
 		else
 		{
-			nameClan = new string[9] { "Top bang hội", "Nhiệm vụ", "Thành viên bang hội", "Thông tin bang hội", "Tin nhắn bang hội", "Kỹ năng", "Chat toàn bang", "Quyên góp", "Rời bang" };
+			nameClan = new string[9] { "Top đội", "Nhiệm vụ", "Thành viên đội", "Thông tin đội", "Tin nhắn đội", "Kỹ năng", "Chat toàn đội", "Quyên góp", "Rời đội" };
 		}
 	}
 
@@ -866,8 +866,8 @@ public class MenuWindows : MyScreen
 			break;
 		case 6:
 			Canvas.gameScr.switchToMe();
-			MessageScr.gI().addTab(string.Empty, "Bang hội", 1);
-			MessageScr.gI().setFocusTab("Bang hội");
+			MessageScr.gI().addTab(string.Empty, "Đội", 1);
+			MessageScr.gI().setFocusTab("Đội");
 			MessageScr.gI().switchToMe();
 			break;
 		case 7:
@@ -900,11 +900,11 @@ public class MenuWindows : MyScreen
 				{
 					Canvas.gameScr.switchToMe();
 					GameService.gI().dissolveCLan();
-					Canvas.startOKDlg((!Char.dissolved) ? "Đã giãi tán bang hội" : "Đã khôi phục lại bang hội");
+					Canvas.startOKDlg((!Char.dissolved) ? "Đã giãi tán đội" : "Đã khôi phục lại đội");
 					Char.dissolved = !Char.dissolved;
 					initName();
 				};
-				Canvas.startYesNoDlg((!Char.dissolved) ? "Bạn có chắc muốn giải tán bang hội không ?" : "Bạn có chắc muốn phục hồi lại bang hội không ?", yesAction);
+				Canvas.startYesNoDlg((!Char.dissolved) ? "Bạn có chắc muốn giải tán đội không ?" : "Bạn có chắc muốn phục hồi lại đội không ?", yesAction);
 			}
 			else
 			{
@@ -914,9 +914,9 @@ public class MenuWindows : MyScreen
 					Canvas.gameScr.mainChar.idClan = -1;
 					Canvas.gameScr.switchToMe();
 					initName();
-					Canvas.startOKDlg("Rời bang thành công");
+					Canvas.startOKDlg("Rời đội thành công");
 				};
-				Canvas.startYesNoDlg("Bạn có chắc muốn rời bang không ?", yesAction2);
+				Canvas.startYesNoDlg("Bạn có chắc muốn rời đội không ?", yesAction2);
 			}
 			break;
 		}
@@ -2277,19 +2277,19 @@ public class MenuWindows : MyScreen
 	{
 		charInfo = new string[17];
 		MainChar mainChar = Canvas.gameScr.mainChar;
-		charInfo[0] = "Nhân vật: " + mainChar.name;
+		charInfo[0] = "Pokémon: " + mainChar.name;
 		charInfo[1] = "Level: " + mainChar.level + "+" + mainChar.getPercent();
 		charInfo[2] = "HP: " + mainChar.hp + "/" + mainChar.maxhp;
 		charInfo[3] = "MP: " + mainChar.mp + "/" + mainChar.maxmp;
 		charInfo[4] = "Tấn công: " + mainChar.getAttack();
-		charInfo[5] = "Thủ vật lý: " + mainChar.defend;
-		charInfo[6] = "Thủ ma pháp: " + mainChar.defend_magic;
+		charInfo[5] = "Phòng thủ: " + mainChar.defend;
+		charInfo[6] = "Phòng thủ đặc biệt: " + mainChar.defend_magic;
 		charInfo[7] = "Chính xác: " + mainChar.accurate;
 		charInfo[8] = "Né tránh: " + mainChar.dodge;
 		charInfo[9] = "Bạo kích: " + ((mainChar.baokich <= 0) ? "0" : (mainChar.baokich / 10 + "." + mainChar.baokich % 10)) + "%";
 		charInfo[10] = "Chí mạng: " + mainChar.critical;
 		charInfo[11] = "Cống hiến: " + mainChar.dedicationPoint + " điểm.";
-		charInfo[12] = "Liên trảm: " + mainChar.lienTram + " điểm.";
+		charInfo[12] = "Chuỗi thắng: " + mainChar.lienTram + " điểm.";
 		charInfo[13] = "Công trạng: " + mainChar.congTrang + " điểm.";
 		charInfo[14] = "Điểm hoạt động: " + mainChar.hoatdong + " điểm.";
 		charInfo[15] = "Điểm đấu trường: " + mainChar.pArena + " điểm.";
@@ -2358,7 +2358,7 @@ public class MenuWindows : MyScreen
 	{
 		if (Char.skillLevelLearnt[selected] == -1)
 		{
-			Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+			Canvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
 			return;
 		}
 		mVector mVector2 = new mVector();
@@ -2643,7 +2643,7 @@ public class MenuWindows : MyScreen
 						};
 						command.action = action;
 						mVector2.addElement(command);
-						Command command2 = new Command("Trang bị linh thú");
+						Command command2 = new Command("Trang bị thú cưỡi");
 						ActionPerform action2 = delegate
 						{
 							Char @char = (Char)Canvas.gameScr.findCharByID(Canvas.gameScr.saveIDViewInfoAnimal);
@@ -2678,7 +2678,7 @@ public class MenuWindows : MyScreen
 				if (selected != 4)
 				{
 					mVector mVector3 = new mVector();
-					Command command3 = new Command("Linh thú");
+					Command command3 = new Command("Thú cưỡi");
 					ActionPerform action3 = delegate
 					{
 						if (!charWearing.infoAnimal.Equals(string.Empty))

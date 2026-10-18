@@ -19,7 +19,7 @@ import server.TeamServer;
 public class MapLienDau extends Map {
 
     public static String[] NAME_WIN = new String[]{"", "", "", "", "", "", "", "", "", "", ""};
-    public static String[] name_town = new String[]{"Thành liên đấu 1", "Thành liên đấu 2", "Thành liên đấu 3", "Thành liên đấu 4", "Thành liên đấu 5", "Thành liên đấu 6", "Thành liên đấu 7", "Thành liên đấu 8", "Thành liên đấu 9", "Thành liên đấu 10", "Thành liên đấu 11"};
+    public static String[] name_town = new String[]{"Sân Liên minh 1", "Sân Liên minh 2", "Sân Liên minh 3", "Sân Liên minh 4", "Sân Liên minh 5", "Sân Liên minh 6", "Sân Liên minh 7", "Sân Liên minh 8", "Sân Liên minh 9", "Sân Liên minh 10", "Sân Liên minh 11"};
     Hashtable<Short, Monster> monsters = new Hashtable();
     Vector<Char> players = new Vector();
     public Vector<NpcReceiveCardLienDau> npcReceiveCard = new Vector();
@@ -327,10 +327,10 @@ public class MapLienDau extends Map {
                     NpcReceiveCardLienDau npc = (NpcReceiveCardLienDau) this.npcReceiveCard.get(i);
                     if (npc.charGive != null) {
                         if (charname.equals("")) {
-                            charname = "Lãnh thổ " + NpcReceiveCard.nameCountry[npc.charGive.myCountry];
+                            charname = "Vùng " + NpcReceiveCard.nameCountry[npc.charGive.myCountry];
                             nameNPC = NpcReceiveCard.npc[npc.posNpc];
                         } else {
-                            charname = charname + " và Lãnh thổ " + NpcReceiveCard.nameCountry[npc.charGive.myCountry];
+                            charname = charname + " và Vùng " + NpcReceiveCard.nameCountry[npc.charGive.myCountry];
                             nameNPC = nameNPC + " và " + NpcReceiveCard.npc[npc.posNpc];
                         }
                     }
@@ -354,9 +354,9 @@ public class MapLienDau extends Map {
     }
 
     public void sendInfoNpc(Char player) {
-        player.sendMessage(MessageCreator.createMsgNpc("Trần thống lĩnh", 640, 240, 17, 29, 2, 28, -29, (byte) 1));
-        player.sendMessage(MessageCreator.createMsgNpc("Tả thống lĩnh", 288, 720, 17, 29, 2, 27, -4, (byte) 1));
-        player.sendMessage(MessageCreator.createMsgNpc("Hữu thống lĩnh", 976, 720, 17, 29, 2, 27, -5, (byte) 1));
+        player.sendMessage(MessageCreator.createMsgNpc("Heracross", 640, 240, 17, 29, 2, 28, -29, (byte) 1));
+        player.sendMessage(MessageCreator.createMsgNpc("Lucario", 288, 720, 17, 29, 2, 27, -4, (byte) 1));
+        player.sendMessage(MessageCreator.createMsgNpc("Lucario", 976, 720, 17, 29, 2, 27, -5, (byte) 1));
     }
 
     protected void doChangeMap(Char player, Message message) {
@@ -377,7 +377,7 @@ public class MapLienDau extends Map {
                 player.idItemQuest.removeAllElements();
                 player.idPotion.removeAllElements();
                 if (this.isStart && this.giveCardLienDauFail(player)) {
-                    this.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Lãnh thổ " + NpcReceiveCard.nameCountry[player.myCountry] + " giao thẻ thất bại"), player.inCountry);
+                    this.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Vùng " + NpcReceiveCard.nameCountry[player.myCountry] + " giao thẻ thất bại"), player.inCountry);
                     this.sendAllPlayer(this.createMsgStartGetTown(player.inCountry), player.inCountry);
                 }
 
@@ -450,14 +450,14 @@ public class MapLienDau extends Map {
                     toMapID = mapstart2[player.myCountry][r.nextInt(mapstart2[player.myCountry].length)];
                     checklocation = false;
                 } else if ((player.myCountry != player.inCountry && getTown[player.inCountry] || nwar[player.inCountry] && player.myCountry != player.inCountry && nationBeAttack[player.inCountry] != player.myCountry || player.inCountry != player.myCountry && MapTown.addDragon[player.inCountry]) && toMapID == idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại quốc gia khác."));
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại vùng khác."));
                     mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;
                     toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
                 } else if (player.idClan == -1 && getTown[player.myCountry] && toMapID == idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào thành trong thơi gian này do chưa tham gia bang hội."));
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội."));
                     mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;
@@ -787,7 +787,7 @@ public class MapLienDau extends Map {
 
             NpcReceiveCardLienDau npc = (NpcReceiveCardLienDau) this.npcReceiveCard.get(posNpc);
             if (npc.idClan == player.myCountry) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Lãnh thổ của bạn chưa mất vị trí này.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Vùng của bạn chưa mất vị trí này.", ""));
                 return;
             }
 
@@ -823,7 +823,7 @@ public class MapLienDau extends Map {
 
             for (int i = 0; i < players.size(); ++i) {
                 try {
-                    ((Char) players.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage("Lãnh thổ " + namecl.toUpperCase() + " bắt đầu giao thẻ tại " + NpcReceiveCard.npc[npc.posNpc]));
+                    ((Char) players.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage("Vùng " + namecl.toUpperCase() + " bắt đầu giao thẻ tại " + NpcReceiveCard.npc[npc.posNpc]));
                     ((Char) players.get(i)).sendMessage(this.createMsgStartGetTown(player.inCountry));
                 } catch (Exception var8) {
                     var8.printStackTrace();
@@ -866,7 +866,7 @@ public class MapLienDau extends Map {
             }
 
             if (!p.checkDurableWeapone()) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi vũ khí bị hư hại. Hãy đến Thợ rèn để sửa lại.", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi đồ cầm tay bị hư hại. Hãy đến Thợ rèn để sửa lại.", ""));
                 return;
             }
 
@@ -990,9 +990,11 @@ public class MapLienDau extends Map {
             if (com.htbb.pokemon.LauDai.bat()) {
                 // GD2 6.1 PvP (chung voi Region): x0,30, chi mang x1,5, tran 8% HP toi da muc tieu.
                 long dLd = (long) damGocLauDai * CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
-                if (critSv || baokich) {
+                if ((critSv || baokich) && ChiSoTrangBiGame.giuChiMangPvp(p, c)) { // PvP: tran 30%, tru khang chi mang
                     dLd = dLd * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L;
                     effect = 2;
+                } else if (critSv || baokich) {
+                    effect = 0;
                 }
                 damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, dLd), c.maxhp);
             }
@@ -1068,7 +1070,7 @@ public class MapLienDau extends Map {
 
                 if (this.giveCardLienDauFail(c)) {
                     this.sendAllPlayer(this.createMsgStartGetTown(p.inCountry), p.inCountry);
-                    this.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Lãnh thổ " + NpcReceiveCard.nameCountry[c.myCountry] + " giao thẻ thất bại"), c.myCountry);
+                    this.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Vùng " + NpcReceiveCard.nameCountry[c.myCountry] + " giao thẻ thất bại"), c.myCountry);
                 }
             } else {
                 if (ahp > 0) {
@@ -1283,7 +1285,7 @@ public class MapLienDau extends Map {
                 this.isStart = false;
 
                 try {
-                    this.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Chiếm thành kết thúc."), 0);
+                    this.sendAllPlayer(MessageCreator.createServerAlertAutoOffMessage("Chiếm Gym kết thúc."), 0);
                 } catch (IOException var7) {
                 }
             }
@@ -1380,7 +1382,7 @@ public class MapLienDau extends Map {
                         if (p.hp <= 0) {
                             p.actorDie();
                         } else if (!p.checkDurableWeapone()) {
-                            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+                            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
                             Message m = new Message(104);
 
                             try {
@@ -1784,7 +1786,7 @@ public class MapLienDau extends Map {
                 if (p.hp <= 0) {
                     p.actorDie();
                 } else if (!p.checkDurableWeapone()) {
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi vũ khí bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ rèn để sửa lại.", ""));
                     Message m = new Message(104);
 
                     try {
@@ -2357,7 +2359,7 @@ public class MapLienDau extends Map {
                             Char p = (Char) CharManager.instance.vChars.elementAt(i);
                             if (p.myCountry > -1) {
                                 p.sendMessage(this.createMsgStartGetTown(p.myCountry));
-                                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm thành" + name_town[this.mapId - 30] + " bắt đầu"));
+                                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian chiếm Gym" + name_town[this.mapId - 30] + " bắt đầu"));
                             }
                         } catch (Exception var13) {
                         }

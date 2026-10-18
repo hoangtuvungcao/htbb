@@ -17,7 +17,7 @@ const heChu = l.he.map(tenHe).join(' / ')
 
 useSeoMeta({
   title: `${l.ten} ${soDex(l.dex)} — Pokédex`,
-  description: `${l.ten} (${heChu}) trong ${tenSite}: ${l.vaiTro.map(v => TEN_VAI_TRO[v].toLowerCase()).join(', ')}. Khắc chế, tiến hoá, nơi xuất hiện${l.chieu ? ', chiêu thức' : ''}.`,
+  description: `${l.ten} (${heChu}) trong ${tenSite}: ${l.vaiTro.map(v => TEN_VAI_TRO[v].toLowerCase()).join(', ')}. Khắc hệ, tiến hoá, nơi xuất hiện${l.chieu ? ', chiêu thức' : ''}.`,
 })
 
 const phongThu = bangPhongThu(l.he)
@@ -139,7 +139,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
             </div>
           </dl>
           <p class="mt-6 text-sm text-muted">
-            <NuxtLink to="/cam-nang/he-khac-che" class="text-primary hover:underline">Xem bảng khắc chế đầy đủ</NuxtLink>
+            <NuxtLink to="/cam-nang/he-khac-che" class="text-primary hover:underline">Xem bảng khắc hệ đầy đủ</NuxtLink>
             · Chiêu cùng hệ với người dùng được cộng ×{{ (POKEDEX.stabPhanTram / 100).toLocaleString('vi-VN') }} (STAB).
           </p>
         </div>

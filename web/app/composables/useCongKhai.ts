@@ -11,12 +11,6 @@ export function useCongKhai() {
   return computed<CmsCongKhai>(() => data.value ?? CMS_MAC_DINH)
 }
 
-/** Lịch sự kiện: CSDL nếu admin đã nhập, không thì dữ liệu sinh từ su_kien_nam.csv. */
-export function useLichSuKien() {
-  const { data } = useFetch<SuKienTuan[] | null>('/api/su-kien-lich', { key: 'htbb-lich', dedupe: 'defer', default: () => null })
-  return computed<SuKienTuan[]>(() => (data.value && data.value.length ? data.value : CAM_NANG.suKien))
-}
-
 /** Trang cẩm nang trong CSDL (ghi đè + trang mới). */
 export function useTrangDb() {
   const { data } = useFetch<TrangDbCongKhai[]>('/api/cam-nang-db', { key: 'htbb-trang-db', dedupe: 'defer', default: () => [] })

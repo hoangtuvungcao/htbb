@@ -4,10 +4,10 @@
 --
 -- KHONG BAT BUOC CHAY TAY: server game tu tao bang nay luc khoi dong
 -- (src/data/GhiSoOnline.java, cau CREATE TABLE IF NOT EXISTS). File nay co de:
---   1. bo kiem web/admin/test/kiem_schema.php doi chieu duoc ten cot,
+--   1. xem duoc ten cot/cau truc ma khong phai doc ma nguon,
 --   2. ai muon co bang truoc khi khoi dong lai server thi chay tay duoc.
 --
---     mysql -u root kpah_db < sql/them_bang_tob_log_online.sql
+--     mysql -u root htbb_db < sql/them_bang_tob_log_online.sql
 --
 -- VI SAO CAN: truoc day server chi biet so online TUC THOI
 -- (SessionManager.instance.size(), dung o AdminPanel va o chan dang nhap), khong
@@ -38,4 +38,4 @@ CREATE TABLE IF NOT EXISTS `tob_log_online` (
 
 -- Kiem tra lai: phai ra 1.
 SELECT COUNT(*) AS co_bang FROM information_schema.tables
- WHERE table_schema = 'kpah_db' AND table_name = 'tob_log_online';
+ WHERE table_schema = 'htbb_db' AND table_name = 'tob_log_online';

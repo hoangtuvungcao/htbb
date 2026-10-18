@@ -1,12 +1,13 @@
 /**
- * CMS: đọc/ghi nội dung website trong kpah_db (bảng tạo bởi server/sql/web_cms.sql).
+ * CMS: đọc/ghi nội dung website trong htbb_db (bảng tạo bởi sql/web_cms.sql).
  *
  * Nguyên tắc: thiếu bảng / lỗi CSDL -> trang công khai vẫn chạy bằng nội dung mặc định
  * (shared/utils/cmsMacDinh.ts, tin tức tĩnh, dữ liệu CSV). Đọc công khai có bộ nhớ đệm ngắn,
  * mọi lần admin ghi gọi xoaDemCms() để trang thấy ngay.
  */
-import { CMS_MAC_DINH, KHOA_CMS, hopNhatCms, lienKetAnToan, tronSau } from '../../shared/utils/cmsMacDinh'
-import type { CmsCongKhai, KhoaCms } from '../../shared/utils/cmsMacDinh'
+import { CMS_MAC_DINH, KHOA_CMS, chuanHoaCmsSite, hopNhatCms, lienKetAnToan, lienKetNgoaiThat, lienKetZalo, tronSau, HOST_ZALO } from '../../shared/utils/cmsMacDinh'
+import type { CmsCongKhai, CmsSite, KhoaCms } from '../../shared/utils/cmsMacDinh'
+import { chuanHoaBanTai, loiBanTai } from '../../shared/utils/taiGame'
 
 import type { H3Event } from 'h3'
 
@@ -20,7 +21,7 @@ export async function coBangCms(bang: typeof BANG_CMS[number] = 'web_cai_dat'): 
 
 export async function canBangCms(bang: typeof BANG_CMS[number]) {
   if (!(await coBangCms(bang))) {
-    throw apiLoi(409, `Chưa có bảng ${bang}. Chạy file server/sql/web_cms.sql vào database game (kpah_db) rồi tải lại trang.`, { code: 'chua_co_bang' })
+    throw apiLoi(409, `Chưa có bảng ${bang}. Chạy file sql/web_cms.sql vào database game rồi tải lại trang.`, { code: 'chua_co_bang' })
   }
 }
 
@@ -105,6 +106,35 @@ export function gioHienTai(): string {
   const d = new Date()
   const p = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+}
+
+/**
+ * Nắn + kiểm một khối cài đặt trước khi lưu. Khối 'site': link Zalo phải là https trên host Zalo
+ * (HOST_ZALO), link mạng xã hội phải là http(s) thật — sai thì báo lỗi rõ thay vì lặng lẽ bỏ.
+ */
+export function nanCaiDatLuu<K extends KhoaCms>(khoa: K, giaTri: unknown): CmsCongKhai[K] {
+  if (khoa === 'taiGame') {
+    const ban = chuanHoaBanTai((giaTri as { ban?: unknown } | null)?.ban)
+    for (const b of ban) {
+      const loi = loiBanTai(b)
+      if (loi) throw apiLoi(400, loi)
+    }
+    return { ban } as CmsCongKhai[K]
+  }
+  const moi = tronSau(CMS_MAC_DINH[khoa], giaTri)
+  if (khoa !== 'site') return moi
+  const site = moi as CmsSite
+  const urlZalo = site.hoTroZalo.url.trim()
+  if (urlZalo !== '' && !lienKetZalo(urlZalo)) {
+    throw apiLoi(400, `Link Zalo không hợp lệ: chỉ nhận https://${HOST_ZALO.join(', https://')} (vd. https://zalo.me/g/abcxyz).`)
+  }
+  for (const m of site.mangXaHoi) {
+    const u = typeof m?.url === 'string' ? m.url.trim() : ''
+    if (u !== '' && u !== 'https://' && u !== 'http://' && u !== '#' && !lienKetNgoaiThat(u)) {
+      throw apiLoi(400, `Mạng xã hội "${String(m.ten ?? '').slice(0, 40)}": link phải bắt đầu bằng https:// và có tên miền.`)
+    }
+  }
+  return chuanHoaCmsSite(site) as CmsCongKhai[K]
 }
 
 /** Đọc body JSON, chỉ nhận object. */

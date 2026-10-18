@@ -30,6 +30,10 @@ public final class ChuyenDoiLauDai {
     public static final String K_DANG = "lau_dai.dang_chuyen";
     public static final String K_LAN = "lau_dai.lan_chuyen";
     public static final String K_NGAY = "lau_dai.ngay_khai_truong";
+    /** Phien bang EXP moi ma tob_char.xp dang dung (CapDoLauDai.PHIEN_BANG); thieu = 1 (bang 17/10/2026). */
+    public static final String K_PHIEN = "lau_dai.phien_bang_exp";
+    /** Dang doi phien (lan) - lam tiep neu bi ngat. */
+    public static final String K_DANG_PHIEN = "lau_dai.dang_doi_phien";
     public static final String MOI = "moi";
     public static final String CU = "cu";
 
@@ -43,6 +47,9 @@ public final class ChuyenDoiLauDai {
                 ngayKhaiTruong();
             }
             chuyenExp();
+            if (LauDai.bat()) {
+                doiPhienBang();
+            }
             if (!LauDai.bat()) {
                 goLichSuKien();
                 NhiemVuLauDaiGame.coHoSoCu = DatabaseLauDai.coHoSo();
@@ -106,8 +113,10 @@ public final class ChuyenDoiLauDai {
         }
         // Bang moi 1..100 (cap > 91 chi co khi da qua ngay 365). Doi NGUOC ve bang cu: cap > 91 ve 91
         // (bang cu dung o 91) - xem KE_HOACH_LAU_DAI_GD2.md "Bat / tat co".
-        final long[] mainMoi = CapDoLauDai.expMain(CapDoLauDai.CAP_BANG);
-        final long[] reqMoi = CapDoLauDai.expRequire(CapDoLauDai.CAP_BANG);
+        // Chieu cu -> moi: bang moi phien hien tai. Chieu moi -> cu: bang moi PHIEN nhan vat dang o (co the la phien cu).
+        final int phienMoi = MOI.equals(huong) ? CapDoLauDai.PHIEN_BANG : phien();
+        final long[] mainMoi = CapDoLauDai.expMain(CapDoLauDai.CAP_BANG, phienMoi);
+        final long[] reqMoi = CapDoLauDai.expRequire(CapDoLauDai.CAP_BANG, phienMoi);
         final long[] mainCu = LevelDetail.expMainCu != null ? LevelDetail.expMainCu : LevelDetail.expMain;
         final long[] reqCu = LevelDetail.expRequireCu != null ? LevelDetail.expRequireCu : LevelDetail.expRequire;
         final boolean sangMoi = MOI.equals(huong);
@@ -135,6 +144,7 @@ public final class ChuyenDoiLauDai {
         }
         DatabaseLauDai.ghiKhoa(K_THANG, huong);
         DatabaseLauDai.ghiKhoa(K_LAN, String.valueOf(lan));
+        DatabaseLauDai.ghiKhoa(K_PHIEN, String.valueOf(CapDoLauDai.PHIEN_BANG));
         DatabaseLauDai.ghiKhoa(K_DANG, "");
         System.out.println("[LAU DAI] chuyen EXP lan " + lan + " sang bang " + huong + ": " + n + "/" + ds.size()
                 + " nhan vat (nhat ky tob_char_xp_chuyen)");
@@ -142,6 +152,71 @@ public final class ChuyenDoiLauDai {
             Database.instance.saveOrtherLog("", "server", "chuyen exp lau dai lan " + lan + " -> " + huong + ": " + n, "laudai");
         } catch (final Exception ignored) {
         }
+    }
+
+    /** Phien bang EXP moi cua tob_char.xp (thieu khoa = 1: du lieu truoc 18/10/2026). */
+    static int phien() {
+        final String s = DatabaseLauDai.docKhoa(K_PHIEN);
+        try {
+            return s == null || s.trim().isEmpty() ? 1 : Integer.parseInt(s.trim());
+        } catch (final NumberFormatException e) {
+            return 1;
+        }
+    }
+
+    /**
+     * Bang EXP moi doi phien (18/10/2026: bo tran theo mua, cac moc tu cap 40 x0,94): nhan vat dang o bang moi phien
+     * cu -> phien CapDoLauDai.PHIEN_BANG, GIU CAP + % trong cap (CapDoLauDai.chuyenExp), cung nhat ky + UPDATE co dieu
+     * kien nhu chuyenExp. Ngat giua chung: lan sau lam tiep dung lan do (lau_dai.dang_doi_phien).
+     */
+    static void doiPhienBang() {
+        if (!MOI.equals(DatabaseLauDai.docKhoa(K_THANG))) {
+            return; // tob_char.xp dang o bang cu: lan bat sau chuyen thang sang phien moi nhat
+        }
+        final int tu = phien();
+        if (tu >= CapDoLauDai.PHIEN_BANG) {
+            return;
+        }
+        final String huong = "phien" + CapDoLauDai.PHIEN_BANG;
+        final String dang = DatabaseLauDai.docKhoa(K_DANG_PHIEN);
+        int lan;
+        if (dang != null && !dang.trim().isEmpty()) {
+            lan = Integer.parseInt(dang.trim());
+            System.out.println("[LAU DAI] lam tiep doi phien bang EXP lan " + lan);
+        } else {
+            final String l = DatabaseLauDai.docKhoa(K_LAN);
+            lan = (l == null || l.isEmpty() ? 0 : Integer.parseInt(l.trim())) + 1;
+            DatabaseLauDai.ghiKhoa(K_DANG_PHIEN, String.valueOf(lan));
+        }
+        final long[] mainTu = CapDoLauDai.expMain(CapDoLauDai.CAP_BANG, tu);
+        final long[] reqTu = CapDoLauDai.expRequire(CapDoLauDai.CAP_BANG, tu);
+        final long[] mainDen = CapDoLauDai.expMain(CapDoLauDai.CAP_BANG, CapDoLauDai.PHIEN_BANG);
+        final long[] reqDen = CapDoLauDai.expRequire(CapDoLauDai.CAP_BANG, CapDoLauDai.PHIEN_BANG);
+        final java.util.Map<Long, long[]> daGhi = DatabaseLauDai.napNhatKyChuyen(lan);
+        final List<long[]> ds = DatabaseLauDai.napXpTatCa();
+        if (ds == null || daGhi == null) {
+            System.out.println("[LAU DAI] khong doc duoc tob_char / nhat ky - KHONG doi phien, giu " + K_DANG_PHIEN + " de lam tiep");
+            return;
+        }
+        int n = 0;
+        for (final long[] d : ds) {
+            long[] g = daGhi.get(Long.valueOf(d[0]));
+            if (g == null) {
+                final long sau = CapDoLauDai.chuyenExp(d[1], mainTu, reqTu, mainDen, reqDen);
+                if (!DatabaseLauDai.ghiNhatKyChuyen(lan, d[0], huong, d[1], sau, d[2])) {
+                    continue;
+                }
+                g = new long[]{d[1], sau};
+            }
+            if (DatabaseLauDai.apChuyen(d[0], g[0], g[1])) {
+                n++;
+            }
+        }
+        DatabaseLauDai.ghiKhoa(K_PHIEN, String.valueOf(CapDoLauDai.PHIEN_BANG));
+        DatabaseLauDai.ghiKhoa(K_LAN, String.valueOf(lan));
+        DatabaseLauDai.ghiKhoa(K_DANG_PHIEN, "");
+        System.out.println("[LAU DAI] doi bang EXP phien " + tu + " -> " + CapDoLauDai.PHIEN_BANG + " lan " + lan + ": " + n + "/"
+                + ds.size() + " nhan vat (giu cap, nhat ky tob_char_xp_chuyen)");
     }
 
     /** Tat co: bo cac moc lich 52 tuan da hen (chi dong co moc trung khop dung lan da hen). */

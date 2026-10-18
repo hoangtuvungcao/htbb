@@ -25,9 +25,9 @@ import java.util.regex.Pattern;
  */
 public final class KiemNoiDung {
 
-    private static final String D = "docs/pokemon/";
-    private static final String F_SQL = "sql/pokemon_noi_dung.sql";
-    private static final String F_DUMP = "sql/htbb_day_du.sql";
+    private static final String D = "../docs/pokemon/";
+    private static final String F_SQL = "../sql/pokemon_noi_dung.sql";
+    private static final String F_DUMP = "../sql/htbb_day_du.sql";
     private static final int ID_TU = 1001;
     private static final int ID_DEN = 1199;
     private static final int SO_THUOC = 162;
@@ -865,7 +865,7 @@ public final class KiemNoiDung {
         Kiem.dung("SQL co >= 19 bang staging data_noi_dung_* (" + n + ")", n >= 19);
         Kiem.bang("moi bang staging co DROP IF EXISTS", "[]", thieuDrop.toString());
         Kiem.sai("SQL portable: khong CREATE TABLE ... LIKE / ENGINE=", sql.contains(" LIKE ") || sql.contains("ENGINE="));
-        Kiem.dung("xuat_sql_day_du.sh gom pokemon_noi_dung", doc("tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_noi_dung"));
+        Kiem.dung("xuat_sql_day_du.sh gom pokemon_noi_dung", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_noi_dung"));
     }
 
     // ================================================================== tien ich

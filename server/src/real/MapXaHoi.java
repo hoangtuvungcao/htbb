@@ -25,6 +25,58 @@ import static real.Map.replaceStringWithSpace;
 
 class MapXaHoi {
 
+    /**
+     * Chong spam chat (com.htbb.chongspam.ChongSpam) - kiem tren noi dung GOC truoc moi bo loc
+     * tu xau (bo loc cu xoa dau cham nen "abc.com" thanh "abccom" va lot qua). Admin mien.
+     *
+     * @return true = duoc phat; false = da chan (va da bao nguoi gui, toi da 1 lan / 5 giay).
+     */
+    static boolean kiemSpamChat(Char player, com.htbb.chongspam.ChongSpam.Kenh kenh, String noiDungGoc) {
+        if (player == null || player.isAdmin) {
+            return true;
+        }
+        final long bayGio = System.currentTimeMillis();
+        final com.htbb.chongspam.ChongSpam.TrangThai t = com.htbb.chongspam.ChongSpam.cua(Integer.valueOf(player.charDBID));
+        final long camTruoc = t.conCam(bayGio);
+        final com.htbb.chongspam.ChongSpam.KetQua kq = com.htbb.chongspam.ChongSpam.kiemChat(t, kenh, noiDungGoc, bayGio);
+        if (kq == com.htbb.chongspam.ChongSpam.KetQua.CHO_PHEP) {
+            return true;
+        }
+        server.ChiSoMayChu.CHAT_CHAN.incrementAndGet();
+        if (camTruoc == 0L && t.conCam(bayGio) > 0L) {
+            com.htbb.log.Nhat.kiemToan("CHONG_SPAM", "tu dong cam chat " + com.htbb.log.Nhat.sach(player.charname)
+                    + " " + (t.conCam(bayGio) / 1000L) + "s (bac " + t.bac() + ", kenh " + kenh + ", ly do " + kq + "): "
+                    + com.htbb.log.Nhat.sach(noiDungGoc));
+        } else if (kq == com.htbb.chongspam.ChongSpam.KetQua.QUANG_CAO) {
+            com.htbb.log.Nhat.thongTin("CHONG_SPAM", "chan quang cao " + com.htbb.log.Nhat.sach(player.charname)
+                    + " (kenh " + kenh + "): " + com.htbb.log.Nhat.sach(noiDungGoc));
+        }
+        if (com.htbb.chongspam.ChongSpam.nenBao(t, bayGio)) {
+            final String lyDo = com.htbb.chongspam.ChongSpam.lyDo(kq, t, bayGio);
+            if (lyDo != null) {
+                player.sendMessage(MessageCreator.createMsgChat(player.id, lyDo));
+            }
+        }
+        return false;
+    }
+
+    /** Chong spam thao tac (moi doi / ket ban / moi giao dich ...). false = bo thao tac nay. */
+    static boolean kiemSpamHanhDong(Char player, com.htbb.chongspam.ChongSpam.HanhDong hd) {
+        if (player == null || player.isAdmin) {
+            return true;
+        }
+        final long bayGio = System.currentTimeMillis();
+        final com.htbb.chongspam.ChongSpam.TrangThai t = com.htbb.chongspam.ChongSpam.cua(Integer.valueOf(player.charDBID));
+        if (com.htbb.chongspam.ChongSpam.choHanhDong(t, hd, bayGio)) {
+            return true;
+        }
+        server.ChiSoMayChu.THAO_TAC_CHAN.incrementAndGet();
+        if (com.htbb.chongspam.ChongSpam.nenBao(t, bayGio)) {
+            player.sendMessage(MessageCreator.createMsgChat(player.id, "Thao tác quá nhanh, chờ một chút."));
+        }
+        return false;
+    }
+
     static void doSendChallenParty(Map map, Char player, String text, int idMenu) {
         if (idMenu == 0) {
             int money;
@@ -104,7 +156,7 @@ class MapXaHoi {
     static void doAddFriend(Map map, Char player, Message msg) {
         try {
             if (player.myCountry == -1) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạ chưa chọn quốc gia", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạ chưa chọn vùng", ""));
                 return;
             }
 
@@ -112,12 +164,12 @@ class MapXaHoi {
             int ok = msg.dis.readByte();
             Char p = CharManager.instance.getByCharID((short) charid);
             if (p == null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Ngươi bạn mời hiện đang offline", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Cậu bạn mời hiện đang offline", ""));
                 return;
             }
 
             if (p.myCountry == -1) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể mời người đã chọn quốc gia", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể mời người đã chọn vùng", ""));
                 return;
             }
 
@@ -136,6 +188,9 @@ class MapXaHoi {
             }
 
             if (ok == 0) {
+                if (!kiemSpamHanhDong(player, com.htbb.chongspam.ChongSpam.HanhDong.KET_BAN)) {
+                    return;
+                }
                 if (!p.rcvInvite || !p.rcvInviteVip) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại người chơi không chấp nhận bất kỳ lời mời nào.", ""));
                     return;
@@ -178,6 +233,9 @@ class MapXaHoi {
         try {
             byte value = message.dis.readByte();
             if (value == 0) {
+                if (!kiemSpamHanhDong(player, com.htbb.chongspam.ChongSpam.HanhDong.MOI_DOI)) {
+                    return;
+                }
                 player.sendInviteParty2User(message);
                 return;
             }
@@ -193,7 +251,6 @@ class MapXaHoi {
             }
 
             if (value == 3) {
-                System.out.println("MOI BAN VAO TIEC");
                 if (player.idWedding == -1) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không thể mời", ""));
                     return;
@@ -224,7 +281,7 @@ class MapXaHoi {
                 }
 
                 if (p.myCountry != player.myCountry) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ thể mới khách cũng lãnh thổ với bạn", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ thể mới khách cũng vùng với bạn", ""));
                     return;
                 }
 
@@ -248,22 +305,25 @@ class MapXaHoi {
     }
 
     static void doSendMessage(Map map, Char player, Message message) {
+        if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "gui_thu")) { // thanh vien: nhan tin rieng
+            return;
+        }
         try {
             if (player.map.mapIDLoadMap == idMapTown && getTown[player.inCountry] || map.mapIDLoadMap == 17) {
                 return;
             }
 
-            if (System.currentTimeMillis() - player.timeChatRieng < 0L) {
-                Thread.sleep(5000L);
-                player.timeChatRieng = System.currentTimeMillis() + 5000L;
-            }
-
+            // Bo Thread.sleep(5000) cu: no ngu NGAY TREN luong doc goi tin cua ket noi (ca ket noi
+            // dung hinh 5 giay). Gio chan bang ChongSpam (kenh RIENG) va bo tin, khong ngu.
             if (Char.getDayTime(0L).compareTo(player.dayCamChat) < 0) {
                 return;
             }
 
             String receiver = message.dis.readUTF().trim();
             String info = message.dis.readUTF().trim().replaceAll("\\s+", " ");
+            if (!kiemSpamChat(player, com.htbb.chongspam.ChongSpam.Kenh.RIENG, info)) {
+                return;
+            }
             if (BadWord.checkBadWord(info)) {
                 player.sendMessage(MessageCreator.createMsgChat(player.id, "Nội dung bạn trò chuyện không hợp lệ. Người chơi khác sẽ không thấy câu nói của bạn"));
                 return;
@@ -298,6 +358,9 @@ class MapXaHoi {
     }
 
     static void doChatBinhThuong(Map map, Char player, Message m, String msgChat) throws IOException {
+        if (!kiemSpamChat(player, com.htbb.chongspam.ChongSpam.Kenh.GAN, msgChat)) {
+            return;
+        }
         if (BadWord.checkBadWord(msgChat)) {
             player.sendMessage(
                     MessageCreator.createMsgChat(player.id, "Nội dung bạn trò chuyện không hợp lệ. Người chơi khác sẽ không thấy câu nói của bạn")
@@ -308,33 +371,16 @@ class MapXaHoi {
         msgChat = msgChat.replaceAll("\\s+", " ").trim();
         msgChat = replaceStringWithSpace(msgChat);
         msgChat = replaceExtendDomain(msgChat);
+        // Cam chat cu (timecamchat) van ton trong neu noi khac dat. Nhip chat + cam TU DONG cu
+        // (5 tin trong 5 giay -> cam THANG 30 phut, khong canh bao) da thay bang ChongSpam o tren:
+        // nhip theo cua so truot, chan trung lap / quang cao, cam tang dan 1 -> 5 -> 30 -> 120 phut.
         if (System.currentTimeMillis() - player.timecamchat < 0L) {
             player.sendMessage(m);
             return;
         }
-        player.timecamchat = 0L;
-        long time = System.currentTimeMillis() - player.timeChat;
-        if (time <= 30000L && player.nMsgChat >= 5) {
-            return;
-        }
-        if (time > 30000L) {
-            player.timeChat = System.currentTimeMillis();
-            player.nMsgChat = 0;
-        }
-        player.nMsgChat++;
         if (player.map.mapIDLoadMap == idMapTown && getTown[player.inCountry] || map.mapIDLoadMap == 17) {
-            player.nMsgChat = 0;
             player.sendMessage(m);
             return;
-        }
-        if (player.timeChat > 0L && System.currentTimeMillis() - player.timeChat <= 5000L) {
-            if (player.nMsgChat >= 5) {
-                player.timecamchat = System.currentTimeMillis() + 1800000L;
-                player.nMsgChat = 0;
-            }
-        } else if (System.currentTimeMillis() - player.timeChat > 5000L) {
-            player.timeChat = System.currentTimeMillis();
-            player.nMsgChat = 0;
         }
         msgChat = BadWord.checkBadWord2(msgChat);
         if (player.lvDetail.lv >= 20 && msgChat.length() >= 2) {

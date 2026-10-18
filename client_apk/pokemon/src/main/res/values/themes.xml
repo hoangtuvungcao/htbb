@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Toàn màn hình như trước; nền cửa sổ = màn chờ thương hiệu (logo trên trời hoàng hôn) -->
+    <style name="HtbbTheme" parent="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@drawable/man_cho</item>
+    </style>
+</resources>

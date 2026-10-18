@@ -335,19 +335,19 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
         this.KHANG_MOC = (byte) getKhangNguHanh(4);
         String s = "";
         if (this.KHANG_HOA > 0) {
-            s = s + "Kháng Hỏa " + this.KHANG_HOA + "% (giảm ST từ Đại đao)\n";
+            s = s + "Kháng Lửa " + this.KHANG_HOA + "% (giảm ST từ Hạt giống thần)\n";
         }
         if (this.KHANG_THUY > 0) {
-            s = s + "Kháng Thủy " + this.KHANG_THUY + "% (giảm ST từ Bút)\n";
+            s = s + "Kháng Nước " + this.KHANG_THUY + "% (giảm ST từ Bút)\n";
         }
         if (this.KHANG_KIM > 0) {
-            s = s + "Kháng Kim " + this.KHANG_KIM + "% (giảm ST từ Kiếm)\n";
+            s = s + "Kháng Thép " + this.KHANG_KIM + "% (giảm ST từ Than lửa)\n";
         }
         if (this.KHANG_MOC > 0) {
-            s = s + "Kháng Mộc " + this.KHANG_MOC + "% (giảm ST từ Cung)\n";
+            s = s + "Kháng Cỏ " + this.KHANG_MOC + "% (giảm ST từ Cung)\n";
         }
         if (this.KHANG_THO > 0) {
-            s = s + "Kháng Thổ " + this.KHANG_THO + "% (giảm ST từ Búa)\n";
+            s = s + "Kháng Đất " + this.KHANG_THO + "% (giảm ST từ Búa)\n";
         }
         return s;
     }
@@ -582,8 +582,8 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             // Dong nay truoc day chi la chu, khong he co code combat. Nay da lam that o
             // Char.giamSatThuongPhanDon: chi giam khi VUA cuoi rong VUA mac Hoa Ky Lan,
             // nen ghi ro dieu kien de nguoi choi khong hieu nham la co san.
-            info = info + "Kết hợp hỏa kì lân:\n";
-            info = info + "- Trả đũa (cần mặc Hoả Kỳ Lân):\n Giảm 50% sát thương nhận từ phản sát thương\n";
+            info = info + "Kết hợp Ponyta:\n";
+            info = info + "- Trả đũa (cần mặc Ponyta):\n Giảm 50% sát thương nhận từ phản sát thương\n";
         }
 
         if (this.isHoaHinh == 1) {
@@ -1225,12 +1225,12 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
      */
     public void doHoaHinh(Char p) {
         if (p.animalRide == null) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú ", ""));
+            p.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi thú ", ""));
             return;
         }
 
         if (p.animalRide.capHoaHinh >= 5) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Linh thú đã hóa hình tối đa cấp 5", ""));
+            p.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi đã hóa hình tối đa cấp 5", ""));
             return;
         }
 
@@ -1239,7 +1239,7 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
 
         // Check if player has enough materials
         if (p.listGemitem[268] < soluongDel && p.listGemitemLock[268] < soluongDel) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Ngươi cần có " + soluongDel + " lọ thuốc hóa hình để hóa hình", ""));
+            p.sendMessage(MessageCreator.createServerAlertMessage("Cậu cần có " + soluongDel + " lọ thuốc hóa hình để hóa hình", ""));
             return;
         }
 
@@ -1371,7 +1371,7 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
      * (map/d_effect/265 va 266 deu nam trong id_eff_tool_ngu_long) nen client ve
      * duoc ngay, khong can nap them du lieu.
      *
-     * Bo goi duoi day copy y nguyen tu doRideAnimal - duong da chay tot khi len
+     * Bo goi duoi day copy y nguyen tu doCuoiThu - duong da chay tot khi len
      * xuong linh thu giua game. Dung tu che bo khac.
      */
     private static void veLaiHinhAnhThuCuoi(final Char p) {
@@ -1385,8 +1385,8 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             // lo #2 loi.xlsx: KHONG gui createAnimalWearingMessage cho nguoi xung
             // quanh - client hieu goi nay la "mo cua so Trang bi thu", charID khac
             // nguoi nhan se hat man hinh ho sang xem trang bi cua nguoi hoa hinh (xem
-            // docs/skin-linh-thu.md muc 10). Day la loi da biet, bi copy nham tu
-            // doRideAnimal.java khi viet tinh nang hoa hinh - KHONG sua doRideAnimal.java
+            // docs/skin-thu-cuoi.md muc 10). Day la loi da biet, bi copy nham tu
+            // doCuoiThu.java khi viet tinh nang hoa hinh - KHONG sua doCuoiThu.java
             // cung luc, do la bug rieng chua duoc yeu cau.
             MessageCreator.createMsgCharMonster(p, p);
         } catch (Exception e) {

@@ -6,7 +6,7 @@
  *
  *      node scripts/lay-gmail-refresh-token.mjs <client_id> <client_secret> [cổng]
  *
- *  hoặc đặt KPAH_GMAIL_CLIENT_ID / KPAH_GMAIL_CLIENT_SECRET trong môi trường / .env
+ *  hoặc đặt HTBB_GMAIL_CLIENT_ID / HTBB_GMAIL_CLIENT_SECRET trong môi trường / .env
  *  rồi chạy `node scripts/lay-gmail-refresh-token.mjs`. Cổng mặc định 8765.
  *
  *  Các bước script làm:
@@ -17,8 +17,8 @@
  *       Nâng cao -> Đi tới ... — ứng dụng của chính bạn nên an toàn).
  *    3. Google chuyển trình duyệt về http://127.0.0.1:<cổng>/?code=... ; script nhận
  *       mã đó, đổi lấy token ở https://oauth2.googleapis.com/token.
- *    4. In ra KPAH_GMAIL_REFRESH_TOKEN. Chép vào GitHub Secrets (VPS cũ) và vào
- *       /etc/kpah-web.env trên VPS mới 180.93.127.26, rồi khởi động lại kpah-web.
+ *    4. In ra HTBB_GMAIL_REFRESH_TOKEN. Chép vào GitHub Secrets (VPS cũ) và vào
+ *       /etc/htbb-web.env trên VPS mới 180.93.127.26, rồi khởi động lại htbb-web.
  *
  *  OAuth client loại "Desktop app": Google nhận mọi cổng 127.0.0.1, không cần khai.
  *  Loại "Web application": phải khai đúng redirect URI http://127.0.0.1:<cổng>/ .
@@ -42,14 +42,14 @@ if (existsSync(join(GOC, '.env'))) {
 }
 
 const [argId, argSecret, argCong] = process.argv.slice(2)
-const clientId = (argId || process.env.KPAH_GMAIL_CLIENT_ID || '').trim()
-const clientSecret = (argSecret || process.env.KPAH_GMAIL_CLIENT_SECRET || '').trim()
+const clientId = (argId || (process.env.HTBB_GMAIL_CLIENT_ID ?? process.env.KPAH_GMAIL_CLIENT_ID) || '').trim() // TUONG-THICH-TEN-CU
+const clientSecret = (argSecret || (process.env.HTBB_GMAIL_CLIENT_SECRET ?? process.env.KPAH_GMAIL_CLIENT_SECRET) || '').trim() // TUONG-THICH-TEN-CU
 const cong = Number(argCong || 8765)
 
 if (!clientId || !clientSecret) {
   console.error('Thieu client id / client secret.')
   console.error('Cach dung: node scripts/lay-gmail-refresh-token.mjs <client_id> <client_secret> [cong]')
-  console.error('(hoac dat KPAH_GMAIL_CLIENT_ID va KPAH_GMAIL_CLIENT_SECRET trong moi truong / .env)')
+  console.error('(hoac dat HTBB_GMAIL_CLIENT_ID va HTBB_GMAIL_CLIENT_SECRET trong moi truong / .env)')
   process.exit(1)
 }
 if (!Number.isInteger(cong) || cong < 1024 || cong > 65535) {
@@ -135,13 +135,13 @@ const server = createServer(async (req, res) => {
         console.warn('\n[CANH BAO] Token khong co quyen gmail.send (scope:', tk.scope, ')')
       }
       console.log('\n================ KET QUA ================')
-      console.log('KPAH_GMAIL_CLIENT_ID=' + clientId)
-      console.log('KPAH_GMAIL_CLIENT_SECRET=' + clientSecret)
-      console.log('KPAH_GMAIL_REFRESH_TOKEN=' + tk.refresh_token)
-      console.log('KPAH_GMAIL_SENDER=<dia chi Gmail ban vua dang nhap>')
+      console.log('HTBB_GMAIL_CLIENT_ID=' + clientId)
+      console.log('HTBB_GMAIL_CLIENT_SECRET=' + clientSecret)
+      console.log('HTBB_GMAIL_REFRESH_TOKEN=' + tk.refresh_token)
+      console.log('HTBB_GMAIL_SENDER=<dia chi Gmail ban vua dang nhap>')
       console.log('=========================================')
-      console.log('Chep 4 dong tren vao GitHub Secrets (VPS cu) va /etc/kpah-web.env (VPS moi),')
-      console.log('roi: systemctl restart kpah-web. KHONG dan cac gia tri nay vao chat / commit.')
+      console.log('Chep 4 dong tren vao GitHub Secrets (VPS cu) va /etc/htbb-web.env (VPS moi),')
+      console.log('roi: systemctl restart htbb-web. KHONG dan cac gia tri nay vao chat / commit.')
     }
   } catch (e) {
     traTrang(res, 500, 'Đổi mã lấy token thất bại.')

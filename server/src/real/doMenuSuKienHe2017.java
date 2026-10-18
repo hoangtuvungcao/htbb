@@ -26,7 +26,7 @@ public class doMenuSuKienHe2017 {
 
                 if (player.receiveQuestVulan == 0) {
                     if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc cậu may mắn"));
                         return;
                     }
 
@@ -35,7 +35,7 @@ public class doMenuSuKienHe2017 {
                         return;
                     }
 
-                    player.sendMessage(MessageCreator.createMsgPopUp(player.id, 13, "Con ta đi tìm thuốc cho ta đã lâu rồi mà chưa thấy về. Ngươi có thể giúp ta tìm con không?"));
+                    player.sendMessage(MessageCreator.createMsgPopUp(player.id, 13, "Con ta đi tìm thuốc cho ta đã lâu rồi mà chưa thấy về. Cậu có thể giúp ta tìm con không?"));
                 } else if (player.receiveQuestVulan == 1) {
                     if (player.charCopy == null || player.map.mapId != player.charCopy.map.mapId || player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 80) {
                         if (player.charCopy == null) {
@@ -107,7 +107,7 @@ public class doMenuSuKienHe2017 {
                 }
 
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa" + (istuhondan ? " và 1 Tiên đan" : ""), ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa" + (istuhondan ? " và 1 Cỏ hồi sinh" : ""), ""));
                 Database.instance.saveOrtherLog("", player.charname, sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Tiên đan" : ""), "redeem");
             }
         }

@@ -10,7 +10,7 @@ import java.util.Vector;
 /**
  * Su kien am thanh cua ban jar: ten tieng (/am/s_&lt;ten&gt;.wav), uu tien, va chon nhac nen
  * (/am/n_&lt;ten&gt;.mid) theo loai ban do (HePoke.MAP) / boss gan / man tieu de. Tep sinh boi
- * j2me/tools/lam_am_thanh.py (Kenney CC0 + tieng/nhac tu tong hop, xem res/LICENSE-audio.txt).
+ * client_jar/tools/lam_am_thanh.py (Kenney CC0 + tieng/nhac tu tong hop, xem res/LICENSE-audio.txt).
  * Ban nhe (GOI=nhe) chi co mot phan tieng, khong co nhac: tep thieu thi im lang.
  * Moi ham deu an loi (am thanh khong bao gio lam hong game).
  */

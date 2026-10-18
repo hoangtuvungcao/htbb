@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+: màn splash hệ thống = biểu tượng Poké Ball trên nền trời đêm của key art -->
+    <style name="HtbbTheme" parent="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@drawable/man_cho</item>
+        <item name="android:windowSplashScreenBackground">#12163D</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_truoc</item>
+    </style>
+</resources>

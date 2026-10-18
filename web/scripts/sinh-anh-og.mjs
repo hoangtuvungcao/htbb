@@ -8,12 +8,20 @@
  * Chạy lại khi đổi tên game (shared/utils/tenSite.ts) hoặc sprite khởi đầu.
  */
 import { execFileSync } from 'node:child_process'
-import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdtempSync, existsSync, copyFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// Ảnh OG chuẩn = key art chung của game (htbb-client/j2me/tools/tao_banner.py --web ghi thẳng public/og/htbb.png).
+// Có sẵn bản đó thì chỉ chép lại; không có repo client mới vẽ bằng HTML như cũ.
+const OG_KEYART = resolve(WEB, '../htbb-client/shared/banner/og_1200x630.png')
+if (existsSync(OG_KEYART)) {
+  copyFileSync(OG_KEYART, join(WEB, 'public/og/htbb.png'))
+  console.log(`Đã chép ${OG_KEYART} -> public/og/htbb.png`)
+  process.exit(0)
+}
 const ten = readFileSync(join(WEB, 'shared/utils/tenSite.ts'), 'utf8').match(/TEN_SITE\s*=\s*'([^']+)'/)?.[1] ?? 'Huyền Thoại Bảo Bối'
 const anim = JSON.parse(readFileSync(join(WEB, 'shared/data/sprite-anim.json'), 'utf8'))
 const sprite = (dex, s) => {

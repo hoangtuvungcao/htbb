@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Khung trang đăng nhập / đăng ký / đăng xuất: bên trái là cảnh trời + cỏ với 5
- * Pokémon khởi đầu và hộp thoại kiểu game, form bên phải. Màn hình hẹp chỉ hiện form.
+ * Khung trang đăng nhập / đăng ký / đăng xuất: bên trái là key art chung với màn đăng nhập trong game
+ * (SiteKeyArt: hoàng hôn, hồ, 5 Pokémon khởi đầu) và hộp thoại kiểu game, form bên phải. Màn hình hẹp chỉ hiện form.
  */
 </script>
 
@@ -11,7 +11,7 @@
     <UContainer class="relative max-w-6xl">
       <div class="grid overflow-hidden rounded-3xl glass ring-gilded lg:grid-cols-[1.05fr_1fr]">
         <aside class="relative isolate hidden min-h-[36rem] flex-col justify-between overflow-hidden border-r-[3px] border-[var(--poke-outline)] lg:flex" aria-label="Thế giới Pokémon">
-          <SiteHeroSky class="-z-10" />
+          <SiteKeyArt class="-z-10" />
           <div class="p-8">
             <p class="eyebrow">
               Một lời hẹn với vùng đất Pokémon
@@ -25,9 +25,7 @@
               </p>
             </div>
           </div>
-          <div class="px-4 pb-2">
-            <SiteStarterStage nho />
-          </div>
+          <div class="h-48" aria-hidden="true" />
         </aside>
         <div class="relative p-6 sm:p-10">
           <NuxtLink to="/" class="inline-flex items-center gap-1 font-display font-semibold text-muted hover:text-primary">

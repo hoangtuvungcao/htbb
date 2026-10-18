@@ -10,7 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Doi chieu web/admin/inc/danh_muc_danh_hieu.php voi data.DanhHieu.getName() VA
+ * Doi chieu HTBB-Web/shared/data/danh-muc-danh-hieu.json (tools/SinhDanhMucDanhHieu sinh; web doc
+ * qua server/utils/giftcodeDanhHieu.gen.ts - truoc day la web/admin/inc/danh_muc_danh_hieu.php,
+ * website PHP da bo, xem docs/pokemon/BO_WEB_PHP.md) voi data.DanhHieu.getName() VA
  * voi mang availableTitles ghi cung trong src/data/DatabaseGiftCode.java.
  *
  * Hai dieu phai dung dong thoi:
@@ -22,11 +24,11 @@ import java.util.regex.Pattern;
  */
 public final class KiemDanhMucDanhHieu {
 
-    private static final String TEP = "web/admin/inc/danh_muc_danh_hieu.php";
+    private static final String TEP = "shared/data/danh-muc-danh-hieu.json";
     private static final String TEP_GOC = "src/data/DatabaseGiftCode.java";
 
     private static final Pattern DONG = Pattern.compile(
-            "^\\s*(\\d+)\\s*=>\\s*\\['ten'\\s*=>\\s*'(.*)'\\s*,\\s*'ngauNhien'\\s*=>\\s*(true|false)\\s*\\],\\s*$");
+            "^\\s*\"(\\d+)\":\\s*\\{\"ten\":\\s*\"(.*)\",\\s*\"ngauNhien\":\\s*(true|false)\\s*\\},?\\s*$");
 
     private KiemDanhMucDanhHieu() {
     }
@@ -34,8 +36,11 @@ public final class KiemDanhMucDanhHieu {
     public static void chay() {
         Kiem.nhom("Danh muc danh hieu - tep sinh phai khop getName() va mang ngau nhien that");
 
-        final String php = doc(TEP);
-        Kiem.dung("doc duoc " + TEP, !php.isEmpty());
+        if (WebHtbb.boQua("danh muc danh hieu")) {
+            return;
+        }
+        final String php = WebHtbb.doc(TEP);
+        Kiem.dung("doc duoc " + WebHtbb.ten(TEP), !php.isEmpty());
         final String goc = doc(TEP_GOC);
         Kiem.dung("doc duoc " + TEP_GOC, !goc.isEmpty());
         if (php.isEmpty() || goc.isEmpty()) {
@@ -146,7 +151,7 @@ public final class KiemDanhMucDanhHieu {
     }
 
     private static String boThoat(final String s) {
-        return s.replace("\\'", "'").replace("\\\\", "\\");
+        return WebHtbb.boThoatJson(s);
     }
 
     private static String doc(final String duong) {

@@ -22,22 +22,22 @@ import java.io.Reader;
  */
 public final class KiemClientUnity {
 
-    private static final String F_DO_HOA = "ClientUnity/Assets/Scripts/Game/MyGraphics.cs";
-    private static final String F_PLUGIN = "ClientUnity/Assets/Scripts/Game/iOSPlugins.cs";
-    private static final String F_DOC_LUONG = "ClientUnity/Assets/Scripts/Game/DataInputStream.cs";
-    private static final String F_GOI = "ClientUnity/Assets/Scripts/Game/FilePack.cs";
-    private static final String F_BAN_DO = "ClientUnity/Assets/Scripts/Game/Tilemap.cs";
-    private static final String F_MAIN = "ClientUnity/Assets/Scripts/Game/Main.cs";
-    private static final String F_LENH = "ClientUnity/Assets/Scripts/Game/MainJ2ME.cs";
-    private static final String F_TAI_NGUYEN = "ClientUnity/Assets/Scripts/Game/Res.cs";
-    private static final String F_CHU = "ClientUnity/Assets/Scripts/Game/MFont.cs";
-    private static final String F_NHAT_KY = "ClientUnity/Assets/Scripts/Game/Out.cs";
-    private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
-    private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
-    private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
-    private static final String F_RUT = "tools/RutTaiNguyenUnity.java";
+    private static final String F_DO_HOA = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MyGraphics.cs";
+    private static final String F_PLUGIN = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/iOSPlugins.cs";
+    private static final String F_DOC_LUONG = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/DataInputStream.cs";
+    private static final String F_GOI = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/FilePack.cs";
+    private static final String F_BAN_DO = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Tilemap.cs";
+    private static final String F_MAIN = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Main.cs";
+    private static final String F_LENH = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MainJ2ME.cs";
+    private static final String F_TAI_NGUYEN = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Res.cs";
+    private static final String F_CHU = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MFont.cs";
+    private static final String F_NHAT_KY = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Out.cs";
+    private static final String F_XAY = "../client_pc_ios/ClientUnity/Assets/Editor/XayDung.cs";
+    private static final String F_MANIFEST = "../client_pc_ios/ClientUnity/Packages/manifest.json";
+    private static final String F_CHUYEN = "../tools/ChuyenTaiNguyen.java";
+    private static final String F_RUT = "../tools/RutTaiNguyenUnity.java";
     private static final String F_XAY_BAT = "xay-client.bat";
-    private static final String F_BO_QUA = ".gitignore";
+    private static final String F_BO_QUA = "../.gitignore";
 
     public static void chay() {
         kiemShader();
@@ -177,7 +177,7 @@ public final class KiemClientUnity {
         // Day moi la phep thu co rang: hai so duoi day chi dung khi bo GOC thang. Neu ai
         // do dao thu tu hai buoc, hoac tro taonguon vao thu muc chi co tep J2ME, thi
         // inv_1 se la 125x116 va bai kiem nay hong ngay.
-        final File invGoc = new File("ClientUnity/Assets/Resources/res/inv_1.bytes");
+        final File invGoc = new File("../client_pc_ios/ClientUnity/Assets/Resources/res/inv_1.bytes");
         if (invGoc.isFile()) {
             final int[] co = doCoPng(invGoc);
             Kiem.bang("inv_1 la ban GOC 190 rong", 190, co[0]);
@@ -572,7 +572,7 @@ public final class KiemClientUnity {
 
         // Unity chi nhan ma nguon nam duoi Assets/.
         Kiem.dung("ma game nam duoi Assets/",
-                new File("ClientUnity/Assets/Scripts/Game/Main.cs").isFile());
+                new File("../client_pc_ios/ClientUnity/Assets/Scripts/Game/Main.cs").isFile());
         Kiem.dung("kich ban xay nam trong Assets/Editor/ (bat buoc voi ma Editor)",
                 new File(F_XAY).isFile());
         Kiem.dung("co manifest goi", new File(F_MANIFEST).isFile());

@@ -15,9 +15,9 @@ import { join } from 'node:path'
 /**
  * Danh sách file log của server mà trang này được phép đọc. CỐ ĐỊNH.
  *
- * Đường dẫn tương đối so với KPAH_SERVER_DIR là đúng: util.Logger ghi bằng
+ * Đường dẫn tương đối so với HTBB_SERVER_DIR là đúng: util.Logger ghi bằng
  * `new FileWriter(tên, true)` với đường dẫn tương đối, nên nó rơi vào thư mục
- * làm việc của JVM — `WorkingDirectory=/opt/kpah` trong kpah-game.service.
+ * làm việc của JVM — `WorkingDirectory=/opt/htbb` trong htbb-game.service.
  *
  * ĐÃ BỎ khỏi danh sách vì đối chiếu với src/ thì chúng KHÔNG BAO GIỜ sinh ra:
  *   offline.txt     là file ĐẦU VÀO gõ tay (Database.java:11715), không liên quan
@@ -29,7 +29,7 @@ import { join } from 'node:path'
  * các phép phát hiện gian lận đang chạy thật (data.NghiVanGianLan).
  */
 export const DOC_LOG_FILE: Readonly<Record<string, string>> = Object.freeze({
-  'hack.txt': 'Nghi vấn gian lận — mỗi dòng: giờ | nhân vật | IP | loại | chi tiết',
+  'hack.txt': 'Nghi vấn gian lận — mỗi dòng: giờ | Pokémon | IP | loại | chi tiết',
   'hackdo.txt': 'Nghi vấn gian lận vật phẩm — cùng định dạng với hack.txt',
   'errorlog.txt': 'Vết gọi lỗi Java + cảnh báo chặn lệnh admin trái phép (AdminHandler)',
   'log/game.out': 'Toàn bộ stdout/stderr của server (chỉ có trên VPS Linux)',
@@ -40,17 +40,17 @@ export const DOC_LOG_FILE: Readonly<Record<string, string>> = Object.freeze({
   'errorlogPet.txt': 'Nạp dữ liệu thú nuôi hỏng (Pet.java:1208) — chuỗi lưu thú sai định dạng',
   'errorSellITem.txt': 'Đếm số lần bán vật phẩm hỏng — chỉ ghi chuỗi cố định, không có giờ / tên / vết gọi',
   'errorquayso.txt': 'Lỗi thủ tục sự kiện theo ngày (vòng quay và cả sự kiện khác)',
-  'savechar.txt': 'Lỗi lưu nhân vật — CHỈ đường lưu tự động; đường lưu chính ghi ra <tên nhân vật>.txt',
+  'savechar.txt': 'Lỗi lưu Pokémon — CHỈ đường lưu tự động; đường lưu chính ghi ra <tên Pokémon>.txt',
   'matketinfo.txt': 'Chốt số mặt kê mỗi ngày và mỗi lần tắt server',
   'AdminChat.txt': 'Mọi câu chat của tài khoản admin — dấu vết lệnh GM',
-  'logtopluong.txt': 'Nhân vật nạp từ 10.000 lượng trở lên',
+  'logtopluong.txt': 'Pokémon nạp từ 10.000 lượng trở lên',
   'updateleaf.txt': 'Lỗi vòng lặp AI quái (MapVongLap)',
   'rUpdateleaf.txt': 'Lỗi vòng lặp AI quái (Region / RegionVantienTran)',
-  'nhantieu.txt': 'Sổ vận tiêu: nhận tiêu (ghi lúc sang ngày mới)',
-  'doitieu.txt': 'Sổ vận tiêu: đổi tiêu',
-  'thetieu.txt': 'Sổ vận tiêu: thế tiêu',
-  'tratieu.txt': 'Sổ vận tiêu: trả tiêu',
-  'cuoptieu.txt': 'Sổ vận tiêu: cướp tiêu',
+  'nhantieu.txt': 'Sổ giao hàng: nhận hàng (ghi lúc sang ngày mới)',
+  'doitieu.txt': 'Sổ giao hàng: đổi hàng',
+  'thetieu.txt': 'Sổ giao hàng: thế chỗ hàng',
+  'tratieu.txt': 'Sổ giao hàng: trả hàng',
+  'cuoptieu.txt': 'Sổ giao hàng: cướp hàng',
 })
 
 /** Ba file server ĐỌC ngược lại như dữ liệu đầu vào, không phải log. */

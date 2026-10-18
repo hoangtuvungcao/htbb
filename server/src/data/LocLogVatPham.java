@@ -19,7 +19,7 @@ import java.util.Set;
  *   1. Truy vat pham hiem bi mat hay doi chu: nghien/ban tu dong/admin xoa (matdo), trao doi,
  *      ban gian hang, vut ra dat, het han, tich thu, thao do khi hanh trang day, chuyen giua
  *      tui va hanh trang, mo trung tao pet (itemtrungpet, them 13/09/2026).
- *   2. Loi va nghi van gian lan: dung danh sach web/admin/chandoan.php dang dem, cong cac cho
+ *   2. Loi va nghi van gian lan: dung danh sach HTBB-Web server/utils/chanDoan.ts dang dem, cong cac cho
  *      ghi "hack..." trong ma nguon.
  *   3. Tai san tang bat thuong: nap tien, moc nap, giftcode, moi lan nhan xu, chuyen luong,
  *      len cap (kem exp truoc/sau), anh chup lv/exp/xu dinh ky, thuong top, luong bang hoi,
@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * Danh sach nay duoc chep lai trong vps/don-log.sh (bien LOAI_GIU) de xoa not dong cu tren
  * production; test/KiemLocLogVatPham.java ep hai ban phai khop, ep moi ten o day van con la
- * aclog that trong ma nguon (doi ten la bo loc chet am tham), va ep moi loai chandoan.php
+ * aclog that trong ma nguon (doi ten la bo loc chet am tham), va ep moi loai chanDoan.ts
  * dang dem deu co mat o day.
  */
 public final class LocLogVatPham {
@@ -57,7 +57,7 @@ public final class LocLogVatPham {
             "downlv",                   // bi tut cap
             "caitaocaitrang",           // cai tao cai trang: tru diem xai/nap, doi % Tinh Hoa (real/CaiTaoCaiTrang)
             "hoahinhpet",               // hoa hinh pet Lan: tru binh 268, cap Lan, va luc het han (data/Pet)
-            // --- 2. Loi va nghi van gian lan (khop web/admin/chandoan.php + NghiVanGianLan) ---
+            // --- 2. Loi va nghi van gian lan (khop HTBB-Web server/utils/chanDoan.ts + NghiVanGianLan) ---
             "loiinvent",                // luu hanh trang that bai - server tu khoa nhan vat
             "loisave",                  // luu nhan vat tu dong that bai
             "hackc", "hackR", "hackbitem", "hackchonchar", // cac nghi van gian lan
@@ -103,8 +103,8 @@ public final class LocLogVatPham {
                                         // "hatmam" (mua qua shop chung, 1000+ lan/tuan, dung chung duong voi hang
                                         // tram vat pham khac trong toan bo game - nguoi dung tu chon khong bat).
             // --- 4. Tieu nguyen lieu Than Khi (kho gem rieng, khong qua hanh trang) ---
-            "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenThanBi.CreateThanKhi)
-            "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)
+            "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenBiAn.CreateThanKhi)
+            "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenBiAn.UpgradeThanKhi)
             // --- 5. Che tao trang bi thuong (vu khi/giap/nhan/day chuyen/ngoc...) ---
             "chetaotrangbi",            // xac nhan tao do o Map.doCreateNewItem: nguyen lieu da tieu (gemUse) + vat pham ra doi;
                                         // TRUOC la aclog "tao" chung, bi loai bo 02/09/2026 vi la nguon rac lon nhat -

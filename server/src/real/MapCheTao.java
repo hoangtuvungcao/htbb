@@ -848,7 +848,7 @@ class MapCheTao {
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                         player.sendMessage(
-                                MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ vận tiêu.")
+                                MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ giao hàng.")
                         );
                         Database.instance.saveOrtherLog("", player.charname, "nhan loa vip va the mua ban 30 ngay va them 2 luot mua the van tieu", "loavip");
                         if (ALL_CHAR_VIP.get(player.charname) == null) {
@@ -863,7 +863,7 @@ class MapCheTao {
                         player.buy_luot_van_tieu++;
                         player.potions[100] = player.potions[100] + Char.soluong_loa_vip[player.vip];
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 loa và thêm 1 lượt mua thẻ vận tiêu."));
+                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 loa và thêm 1 lượt mua thẻ giao hàng."));
                         Database.instance.saveOrtherLog("", player.charname, "nhan loa vip, them 1 luot mua the van tieu", "loavip");
                         if (ALL_CHAR_VIP.get(player.charname) == null) {
                             Database.instance.doAddCharVip(player.charname, player.vip);
@@ -894,7 +894,7 @@ class MapCheTao {
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                         player.sendMessage(
-                                MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ vận tiêu.")
+                                MessageCreator.createMsgChat(player.id, "Nhận được 2 loa và 1 thẻ mua bán thời hạn 30 ngày và thêm 2 lượt mua thẻ giao hàng.")
                         );
                         Database.instance.saveOrtherLog("", player.charname, "nhan loa vip va the mua ban 30 ngay, them 2 luot mua the van tieu", "loavip");
                         if (ALL_CHAR_VIP.get(player.charname) == null) {
@@ -932,10 +932,10 @@ class MapCheTao {
             if (idMenu == 0) {
                 player.infoItemCreate = null;
                 if (idOptionMenu == 0) {
-                    String[] menu = new String[]{"Kiếm", "Đại đao", "Bút", "Búa", "Cung"};
+                    String[] menu = new String[]{"Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung"};
                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
                 } else if (idOptionMenu == 1) {
-                    String[] menu = new String[]{"Trang bị ma pháp", "Trang bị vât lý"};
+                    String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vât lý"};
                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 3));
                 } else if (idOptionMenu == 2) {
                     String[] menu = new String[]{
@@ -948,12 +948,12 @@ class MapCheTao {
                 String nameItem = "";
                 switch (idOptionMenu) {
                     case 0:
-                        nameItem = "Kiếm cấp độ ";
+                        nameItem = "Than lửa cấp độ ";
                         player.infoItemCreate.charClass = 0;
                         player.infoItemCreate.typeItem = 3;
                         break;
                     case 1:
-                        nameItem = "Đại đao cấp độ ";
+                        nameItem = "Hạt giống thần cấp độ ";
                         player.infoItemCreate.charClass = 1;
                         player.infoItemCreate.typeItem = 4;
                         break;
@@ -1001,12 +1001,12 @@ class MapCheTao {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Nguyên liệu tổng hợp"}, idNpc, 11));
             } else if (idMenu == 3) {
                 player.infoItemCreate = new InfoItemCreate();
-                String[] menu = new String[]{"Kiếm khách", "Chiến binh", "Pháp sư", "Đấu sĩ", "Cung thủ"};
+                String[] menu = new String[]{"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"};
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 4));
                 player.infoItemCreate.magic_physic = (byte) idOptionMenu;
             } else if (idMenu == 4) {
                 player.infoItemCreate.charClass = (byte) idOptionMenu;
-                String[] className = new String[]{"Kiếm khách", "Chiến binh", "Pháp sư", "Đấu sĩ", "Cung thủ"};
+                String[] className = new String[]{"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"};
                 String[] menu = new String[]{
                     "áo " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + className[idOptionMenu],
                     "Quần " + InfoItemCreate.nameMagic_physic[player.infoItemCreate.magic_physic] + " " + className[idOptionMenu],
@@ -1088,7 +1088,7 @@ class MapCheTao {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Nguyên liệu tổng hợp"}, idNpc, 11));
             } else if (idMenu == 7) {
                 player.itChangeColor = new ItemChangeColor(idOptionMenu);
-                String[] menu = new String[]{"Ma pháp", "Vật lý"};
+                String[] menu = new String[]{"Đặc biệt", "Vật lý"};
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 8));
             } else if (idMenu == 8) {
                 player.itChangeColor.magic_physic = (byte) idOptionMenu;

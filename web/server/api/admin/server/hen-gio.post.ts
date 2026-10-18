@@ -13,7 +13,7 @@ export default defineAdminHandler(async (event, admin) => {
   } catch (e: any) {
     throw apiLoi(500, `Không thao tác được (có thể chưa có bảng dieu_khien_server): ${e?.message ?? e}`)
   }
-  await ghiNhatKy(event, 'server_hen_gio', 'kpah-game', `hẹn bật lúc ${gio}`)
+  await ghiNhatKy(event, 'server_hen_gio', 'htbb-game', `hẹn bật lúc ${gio}`)
   return {
     ok: true,
     message: `Đã đặt lịch: watcher sẽ tự BẬT server lúc ${gio} (sai lệch tối đa khoảng 1 phút, theo giờ hệ thống VPS).`,

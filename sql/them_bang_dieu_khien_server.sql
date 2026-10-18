@@ -1,11 +1,11 @@
--- Bang dieu khien bat/tat server tu web admin (web/admin/server.php).
+-- Bang dieu khien bat/tat server tu web admin (HTBB-Web /admin/server).
 --
 -- Web KHONG SSH/exec vao VPS duoc - no chi ghi "trang thai mong muon" vao day.
 -- Mot tien trinh canh gac rieng chay ngoai JVM game (vps/dieu-khien-server.sh,
 -- cai qua cron cua ROOT) doc bang nay moi phut roi tu goi systemctl thay ban.
 --
--- Chi MOT dong duy nhat (id=1) - dieu khien MOT service kpah-game. Chay mot
--- lan:  mysql -u root kpah_db < sql/them_bang_dieu_khien_server.sql
+-- Chi MOT dong duy nhat (id=1) - dieu khien MOT service htbb-game. Chay mot
+-- lan:  mysql -u root htbb_db < sql/them_bang_dieu_khien_server.sql
 CREATE TABLE IF NOT EXISTS `dieu_khien_server` (
   `id` TINYINT UNSIGNED NOT NULL,
   `muon_chay` TINYINT(1) NOT NULL DEFAULT 1

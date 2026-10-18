@@ -173,7 +173,7 @@ public class MessageRecieve1 extends Cmd_message {
                     Vector vector2 = new Vector();
                     byte b13 = message.reader().readByte();
                     if (b13 <= -1) {
-                        GCanvas.startOKDlg("Chưa có thông tin linh thú");
+                        GCanvas.startOKDlg("Chưa có thông tin thú cưỡi");
                         return;
                     }
                     for (int i16 = 0; i16 < b13; i16++) {
@@ -294,7 +294,7 @@ public class MessageRecieve1 extends Cmd_message {
                     switch (b10) {
                         case -20:
                             final int i23 = message.reader().readInt();
-                            GCanvas.startOKDlg("Bạn nhận được " + i23 + "xu từ bang hội.", new IAction() {
+                            GCanvas.startOKDlg("Bạn nhận được " + i23 + "xu từ đội.", new IAction() {
                                 @Override
                                 public void perform() {
                                     GCanvas.gameScr.mainChar.charXu += (long) i23;
@@ -308,7 +308,7 @@ public class MessageRecieve1 extends Cmd_message {
                             if (b18 != 5) {
                                 if (b18 != 7 && b18 != 8) {
                                     if (b18 == 4) {
-                                        GCanvas.gameScr.onFriendList(message, b18, "TOP CAO THỦ");
+                                        GCanvas.gameScr.onFriendList(message, b18, "TOP SỨC MẠNH");
                                         return;
                                     } else {
                                         GCanvas.gameScr.onFriendList(message, b18, "TOP ĐẠI GIA");
@@ -331,12 +331,12 @@ public class MessageRecieve1 extends Cmd_message {
                                 vector3.addElement(clanInfo);
                                 i9++;
                             }
-                            ListScr.gI().setInfo(vector3, b18, "TOP BANG HỘI");
+                            ListScr.gI().setInfo(vector3, b18, "TOP ĐỘI");
                             ListScr.gI().switchToMe();
                             GCanvas.endDlg();
                             return;
                         case -18:
-                            MessageScr.gI().addTab(message.reader().readUTF(), "Bang hội", 1);
+                            MessageScr.gI().addTab(message.reader().readUTF(), "Đội", 1);
                             return;
                         case -17:
                             Vector vector4 = new Vector();
@@ -357,7 +357,7 @@ public class MessageRecieve1 extends Cmd_message {
                             switch (b10) {
                                 case -13:
                                     GCanvas.gameScr.mainChar.idClan = (short) -1;
-                                    GCanvas.startOKDlg("Bạn bị mời khỏi bang hội.");
+                                    GCanvas.startOKDlg("Bạn bị mời khỏi đội.");
                                     return;
                                 case -12:
                                     ClanInfo clanInfo2 = new ClanInfo();
@@ -578,7 +578,7 @@ public class MessageRecieve1 extends Cmd_message {
                                             CharSelectScr.gI().switchToMe();
                                             return;
                                         case 14:
-                                            GCanvas.startOKDlg("Xin chọn tên nhân vật khác");
+                                            GCanvas.startOKDlg("Xin chọn tên Pokémon khác");
                                             return;
                                         case 15:
                                             if (message.reader().readByte() != 0) {

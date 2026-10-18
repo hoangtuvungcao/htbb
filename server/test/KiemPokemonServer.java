@@ -165,7 +165,7 @@ public final class KiemPokemonServer {
         Kiem.bang("-91: het du lieu", Integer.valueOf(0), Integer.valueOf(di.available()));
 
         Kiem.dung("template 46 (cong thanh) KHONG la boss", !GoiPokemon.laTemplateBoss(46, 100));
-        Kiem.dung("template 94 (BossSkelonton) la boss", GoiPokemon.laTemplateBoss(94, 100));
+        Kiem.dung("template 94 (BossDusknoir) la boss", GoiPokemon.laTemplateBoss(94, 100));
         Kiem.bang("bot 0 -> Chansey", Integer.valueOf(113), Integer.valueOf(GoiPokemon.dexBot(0)));
         Kiem.bang("bot 6 -> Kecleon", Integer.valueOf(352), Integer.valueOf(GoiPokemon.dexBot(6)));
         Kiem.dung("bot id am van ra dex hop le", GoiPokemon.dexBot(-7) > 0);
@@ -194,13 +194,13 @@ public final class KiemPokemonServer {
         Kiem.bang("thong bao", "Chỉ Eevee từ cấp 25 mới dùng được", DaTienHoa.THONG_BAO_KHONG_DUNG_DUOC);
 
         // Doi chieu file SQL: dung id, dung ten, type 28.
-        final String sql = doc("sql/pokemon_vat_pham_eevee.sql");
+        final String sql = doc("../sql/pokemon_vat_pham_eevee.sql");
         Kiem.dung("doc duoc sql/pokemon_vat_pham_eevee.sql", sql.length() > 100);
         for (int i = 0; i < DaTienHoa.ID_ITEM.length; i++) {
             Kiem.dung("SQL co dong " + DaTienHoa.ID_ITEM[i] + " '" + DaTienHoa.TEN[i] + "' type 28",
                     sql.contains("(" + DaTienHoa.ID_ITEM[i] + ",'" + DaTienHoa.TEN[i] + "',28,"));
         }
-        final String seed = doc("sql/gamedb7_clean.sql");
+        final String seed = doc("../sql/gamedb7_clean.sql");
         for (final int id : DaTienHoa.ID_ITEM) {
             Kiem.sai("ban seed chua dung id " + id, seed.contains("\n(" + id + ",'"));
         }
@@ -222,10 +222,10 @@ public final class KiemPokemonServer {
 
         final String sv = doc("src/server/TeamServer.java");
         Kiem.dung("TeamServer doc sv.che_do_pokemon", sv.contains("p.getProperty(\"sv.che_do_pokemon\")"));
-        final String tmpl = doc("vps/server.ini.tmpl");
+        final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.dung("ban mau dat sv.che_do_pokemon=1", tmpl.contains("\nsv.che_do_pokemon=1\n"));
 
-        final String mig = doc("sql/them_cot_pokemon.sql");
+        final String mig = doc("../sql/them_cot_pokemon.sql");
         Kiem.dung("migration: tob_char.dex SMALLINT DEFAULT 0", mig.contains("`dex`   SMALLINT NOT NULL DEFAULT 0"));
         Kiem.dung("migration: data_monster.he2 DEFAULT -1", mig.contains("`he2`   TINYINT  NOT NULL DEFAULT -1"));
         Kiem.dung("migration: ALTER ca tob_char lan data_monster",
@@ -233,7 +233,7 @@ public final class KiemPokemonServer {
 
         // Moi spawn quai trong src/ (tru Moba - lop jar CharChienTruong.setTimeBuff dung he
         // 0..4 lam chi so) di qua heKhiSinh, khong con gan random thang.
-        final String[] tep = {"src/real/MapNapTaiNguyen.java", "src/real/BossSkelonton.java", "src/real/BossNguoiTuyet.java",
+        final String[] tep = {"src/real/MapNapTaiNguyen.java", "src/real/BossDusknoir.java", "src/real/BossNguoiTuyet.java",
             "src/real/Map.java", "src/real/MapTown.java"};
         for (final String t : tep) {
             final String ma = doc(t);

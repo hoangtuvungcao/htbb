@@ -201,7 +201,7 @@ public class Canvas
 		ActionPerform ok = () =>
 		{
 		};
-		inputDlg.setInfo(strinfo, "Tên bang hội của bạn", ok, TField.INPUT_TYPE_ANY, 25, true);
+		inputDlg.setInfo(strinfo, "Tên đội của bạn", ok, TField.INPUT_TYPE_ANY, 25, true);
 		inputDlg.show();
 		Debug.LogWarning("vao ne ");
 	}
@@ -294,7 +294,7 @@ public class Canvas
 	{
 		if (Main.isPC)
 		{
-			if (currentScreen != loginScr)
+			if (currentScreen != loginScr && !DangKyScr.matKetNoi())
 			{
 				Command command = new Command("OK");
 				command.action = () =>
@@ -548,13 +548,8 @@ public class Canvas
 
 	public void mapKeyPress(int keyCode)
 	{
-		// pokemon: bảng Menu nhanh đang mở nhận phím (mũi tên / Enter / F3 / Esc)
+		// pokemon: bảng Menu nhanh / Tự động đánh đang mở nhận phím (mũi tên / Enter / F3 / Esc)
 		if (MenuNhanh.phim(keyCode))
-		{
-			return;
-		}
-		// mod: phím tắt PK (Mã pk, nháy map, bật đồ sát, gọi thú/pet)
-		if (AutoGuard.phimPk(keyCode))
 		{
 			return;
 		}
@@ -903,6 +898,12 @@ public class Canvas
 				resetTrans(g);
 				g.setColor(0);
 				g.fillRect(0, 0, w, h);
+				if (BannerParallax.bat())
+				{
+					// màn tải: cùng key art (không có 5 khởi đầu), logo giữa
+					BannerParallax.ve(g, false);
+					resetTrans(g);
+				}
 				if (!ThuongHieu.veTieuDe(g, w / 2, h / 2 - 30))
 				{
 					g.drawImage(imgLogo, w / 2, h / 2, 3);
@@ -918,7 +919,7 @@ public class Canvas
 		{
 			Out.println(" Loi tai ham paint Can vas" + ex.ToString());
 		}
-		// mod: thanh trạng thái các auto
+		// mod: nút / Menu nhanh / thanh trạng thái Tự động đánh
 		resetTrans(g);
 		AutoGuard.paint(g);
 		int x = 4;

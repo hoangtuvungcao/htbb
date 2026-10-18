@@ -4,7 +4,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Sinh sql/ten_mo_ta_skin_linh_thu.sql tu chinh cac bang so trong real.SkinLinhThu.
+ * Sinh sql/ten_mo_ta_skin_linh_thu.sql tu chinh cac bang so trong real.SkinThuCuoi.
  *
  * VI SAO PHAI SINH CHU KHONG GO TAY:
  *
@@ -13,16 +13,16 @@ import java.nio.charset.StandardCharsets;
  *    bang \n (xem "Áo Nghê Thường" trong ban dump). Nghia la con so nguoi choi DOC duoc
  *    nam o CSDL, con con so game DUNG nam trong ma nguon. Go tay hai cho la som muon lech,
  *    va lech kieu do khong ai phat hien ra tru khi ngoi cong tay.
- *    Sinh tu mot nguon thi khong lech duoc. test/KiemSkinLinhThu con doi chieu lai lan nua.
+ *    Sinh tu mot nguon thi khong lech duoc. test/KiemSkinThuCuoi con doi chieu lai lan nua.
  *
  * 2. KHONG HONG BANG MA. Chuoi tieng Viet o day di thang tu hang so Java ra tep UTF-8,
  *    khong qua sed/perl/heredoc — dung ba cho da tung lam hong 178 dong tieng Viet trong
  *    kho nay. Xem test/KiemBangMaNguon.
  *
  * Cach dung (sau khi da bien dich src/):
- *   java -cp build/sb-src;lib/NQSH_5h.jar SinhSqlTenSkinThu
+ *   java -cp build/sb-src;lib/htbb-core.jar SinhSqlTenSkinThu
  *
- * Chay lai bat cu luc nao doi so trong SkinLinhThu, roi chay tep sql tren may chu.
+ * Chay lai bat cu luc nao doi so trong SkinThuCuoi, roi chay tep sql tren may chu.
  */
 public final class SinhSqlTenSkinThu {
 
@@ -31,11 +31,11 @@ public final class SinhSqlTenSkinThu {
     public static void main(final String[] thamSo) throws Exception {
         final StringBuilder s = new StringBuilder();
         s.append("-- ==================================================================================\n");
-        s.append("--  TEN + MO TA cua ").append(real.SkinLinhThu.SO_SKIN).append(" vat pham skin linh thu\n");
+        s.append("--  TEN + MO TA cua ").append(real.SkinThuCuoi.SO_SKIN).append(" vat pham skin linh thu\n");
         s.append("-- ==================================================================================\n");
         s.append("--\n");
         s.append("--  TEP NAY DUOC SINH RA, DUNG SUA TAY.\n");
-        s.append("--  Nguon: cac bang hang so trong src/real/SkinLinhThu.java\n");
+        s.append("--  Nguon: cac bang hang so trong src/real/SkinThuCuoi.java\n");
         s.append("--  Sinh lai: java -cp build/sb-src SinhSqlTenSkinThu\n");
         s.append("--\n");
         s.append("--  Cot `name` cua game nay vua la TEN vua la MO TA: khong co cot mo ta rieng cho\n");
@@ -48,19 +48,19 @@ public final class SinhSqlTenSkinThu {
         s.append("--      mysql -u root -p <ten_db> < ").append(TEP).append("\n");
         s.append("-- ==================================================================================\n\n");
 
-        for (int i = 0; i < real.SkinLinhThu.SO_SKIN; i++) {
-            final String ten = real.SkinLinhThu.moTaVatPham(i).replace("'", "''");
+        for (int i = 0; i < real.SkinThuCuoi.SO_SKIN; i++) {
+            final String ten = real.SkinThuCuoi.moTaVatPham(i).replace("'", "''");
             s.append("UPDATE `data_item` SET `name` = '").append(ten)
-             .append("'\n WHERE `id` = ").append(real.SkinLinhThu.ID_ITEM[i]).append(";\n\n");
+             .append("'\n WHERE `id` = ").append(real.SkinThuCuoi.ID_ITEM[i]).append(";\n\n");
         }
 
-        s.append("-- Kiem tra: phai ra dung ").append(real.SkinLinhThu.SO_SKIN).append(" dong.\n");
+        s.append("-- Kiem tra: phai ra dung ").append(real.SkinThuCuoi.SO_SKIN).append(" dong.\n");
         s.append("SELECT `id`, `name` FROM `data_item` WHERE `id` IN (");
-        for (int i = 0; i < real.SkinLinhThu.ID_ITEM.length; i++) {
+        for (int i = 0; i < real.SkinThuCuoi.ID_ITEM.length; i++) {
             if (i > 0) {
                 s.append(',');
             }
-            s.append(real.SkinLinhThu.ID_ITEM[i]);
+            s.append(real.SkinThuCuoi.ID_ITEM[i]);
         }
         s.append(") ORDER BY `id`;\n");
 
@@ -70,7 +70,7 @@ public final class SinhSqlTenSkinThu {
         } finally {
             w.close();
         }
-        System.out.println("Da ghi " + TEP + " (" + real.SkinLinhThu.SO_SKIN + " vat pham).");
+        System.out.println("Da ghi " + TEP + " (" + real.SkinThuCuoi.SO_SKIN + " vat pham).");
     }
 
     private SinhSqlTenSkinThu() {

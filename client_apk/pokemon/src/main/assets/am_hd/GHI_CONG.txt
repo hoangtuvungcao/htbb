@@ -1,0 +1,2 @@
+Tiếng hiệu ứng: Kenney (kenney.nl) - CC0 1.0; làm lại 44,1 kHz OGG bởi lam_am_thanh_hd.py.
+Nhạc nền: nhạc chiptune gốc của HTBB (client_jar/tools/lam_am_thanh.py, CC0) tổng hợp 44,1 kHz stereo.

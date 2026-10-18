@@ -121,14 +121,48 @@ Bảng SQL không lưu toạ độ map, trừ vị trí đã lưu của nhân v�
 - `docs/pokemon/map_moi/tong_hop.png`: ảnh tổng hợp.
 - `docs/pokemon/map_moi/kiem_tra.txt`: kết quả kiểm.
 
+**Kiểm cách client vẽ** (`htbb-client/j2me/tools/kiem_ve_map/chay.sh [thư_mục_ra]`): vẽ mọi bản đồ bằng chính mã vẽ J2ME (PokeBody/VatThePokemon trên stub lcdui AWT + phép tính `Tilemap.paintTile`/`TileTop`/`Tree`/`NPC.paint`), so từng pixel với ảnh xem trước, và báo: tile ngoài bộ, `.type` jar ≠ server, vật thể nhiều ô thiếu mảnh (sprite nguồn bị cắt), vật thể có nền khác nền xung quanh ("lỗ nền"), ô nền bị chặn (tường vô hình), ô vật thể đi xuyên được, NPC đứng ô chặn/thiếu sprite. Phải ra `LOI 0`.
+
+Mọi vật thể trong bản đồ mới là tile của lớp nền (không dùng tileTop/cây), và mọi ô có hình vật thể đều chặn (trừ ô cửa, cầu, cỏ cao, hoa, sỏi), nên nhân vật không bao giờ đứng "sau" vật thể: vẽ nhân vật sau lớp tile là đúng chiều sâu. Vật thể cao hơn 1 ô (cờ đấu trường, tượng 2×2, cây 2×2, nhà w×3) chiếm đủ ô.
+
+`VeMapMoi.suaNenVat`: vật trang trí 1 ô (biển gỗ, đá, sỏi, hàng rào, đèn, hoa...) nằm giữa vật liệu khác nền của nó thì đổi sang bản cùng loại đúng nền (đá cát/tuyết) hoặc gỡ.
+
 Ảnh bản gốc ở `docs/pokemon/map_cu/`.
 
 ```sh
 # trong HTBB/ (lớp server đã build ở <build>)
 javac -encoding UTF-8 -cp <build> -sourcepath src -d build/tools tools/pokemon/GiaiMaMap.java
-java -cp build/tools:<build>:lib/NQSH_5h.jar GiaiMaMap               # map_cu + bang_den.json
+java -cp build/tools:<build>:lib/htbb-core.jar GiaiMaMap               # map_cu + bang_den.json
 javac -d build/tools tools/pokemon/DungBoTileMoi.java && java -cp build/tools DungBoTileMoi
 javac -encoding UTF-8 -sourcepath src -d build/tools tools/pokemon/GiaiMaMap.java tools/pokemon/VeMapMoi.java
 java -Djava.awt.headless=true -cp build/tools VeMapMoi               # [id ...] để vẽ vài map
 sh tools/pokemon/cai_map_j2me.sh                                     # chép vào htbb-client/j2me/res (không build jar)
 ```
+
+## 7. Vùng Hoenn (năm 2): bản đồ mới không có bản gốc
+
+29 bản đồ chỉ có ở chế độ Pokémon (`cMap_pokemon/<id>`, không có `cMap/<id>`). Ảnh xem trước nằm ở `docs/pokemon/map_moi/<id>.png` và `kiem/<id>.png`.
+
+| id | Bộ tile | Loại |
+|---|---|---|
+| 43–62 | `t` | 10 thị trấn (Littleroot, Rustboro, Slateport, Mauville, Lavaridge, Fortree, Lilycove, Mossdeep, Sootopolis, Ever Grande), tuyến đường, rừng, biển, sa mạc, núi lửa |
+| 160–165 | `t_hang` | Hang Granite, Thác Meteor, Hang dưới biển, Hang Khởi Nguyên, Tháp Trời, Đường Victory Hoenn |
+| 280–282 | `t_thanh` | Đỉnh Tháp Trời, Liên minh Hoenn, Sảnh Nhà vô địch |
+
+Lý do chọn id: không trùng `cMap` gốc, không nằm trong `offMapID` của client, và ngoài khoảng 200–271 (luật thành, công thành, "trong thành").
+
+**Nguồn duy nhất của khung** là `src/com/htbb/pokemon/BanDoHoenn.java`: kích thước, cụm cổng 5 ô trên mép, NPC client và mẫu quái 139–174.
+
+- **Vẽ bản đồ.** `VeMapMoi` dựng "bản gốc ảo" từ lớp này (`dauVaoHoenn`) rồi vẽ như mọi bản đồ khác.
+  - Cột `moc` của `thiet_ke_map.csv` có thêm các cờ: `[bien]` bờ biển chạm mép, `[khoi]` biển chiếm gần nửa bản đồ, `[ho]` hồ giữa thị trấn hoặc thêm hồ câu, `[tro]` tro núi lửa, `[nuoc]` hang ngập nước, `[pho]` nhiều nhà, `[rung]` làng giữa rừng.
+  - `[dam]` (map loại `bien`, cả map cũ 2/8/19 và Hoenn 46/61): một đầm nước lợ kín hình elip có viền cát và cầu gỗ (`datDamPha`). Hồ trên map biển được câu cả cá nước mặn (`HeSinhThaiMenu.cauCa`: vùng `V_BIEN` → `NUOC_MAN | NUOC_NGOT`), xem `diem_cau_ca.csv`.
+  - Thị trấn không có cổng cửa nhà sẽ có một khối Trung tâm + Cửa hàng + 2 nhà ngay trên quảng trường (`datLangGan`).
+- **Server.** `real.VungHoenn` đăng ký `Map` (một bản sao, `nregion` 0). Nó nối thêm hàng vào `mapID`/`idArrMap`/`namMap`/`nameMap`/`locationMap` (gói 105), `mapChange`, `ALL_LOCALTION_MAP` và danh sách gửi bố cục (gói 12).
+  - **Lối vào duy nhất:** cụm cổng bắc của map 9 (nhóm 9, `toM` 1) có thêm khe 2 là "Littleroot (Hoenn)".
+  - **Khoá theo mùa:** `MapXuLyLenh.doChangeMap` gọi `VungHoenn.chanVao`. Khi `sv.lau_dai` bật và trần cấp mùa < 91, hoặc khi nhân vật dưới cấp 84, cổng không cho qua và hiện thông báo.
+- **Client.**
+  - `TenMapPokemon.HOENN_ID/HOENN_TEN` có bản giống hệt nhau ở server, J2ME, PC và ClientUnity. Client dùng nó cho `Tilemap.setNameMap`.
+  - Bản đồ lớn vẽ vùng Hoenn riêng bằng `BanDoVung.veHoenn`.
+  - `HePoke.MAP` đã nối dài tới id 282 để chọn nhạc.
+- **Kiểm tra.** `test/KiemVungHoenn` kiểm khung, cổng hai chiều, điểm đến, tính liên thông, quái, tên và luật mở cổng. `KiemMapPokemon` chỉ duyệt các map có trong `cMap` gốc.
+- **Điểm nhiệm vụ.** Nằm trong `diem_co_dinh.csv`, phần "Vung Hoenn". Hồ câu được sinh lại bằng `sinh_sql_he_sinh_thai.py` ra `diem_cau_ca.csv`.

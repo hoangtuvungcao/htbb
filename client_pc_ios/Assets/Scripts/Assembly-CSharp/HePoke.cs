@@ -37,7 +37,7 @@ public static class HePoke {
 
     static readonly short[] BOSS = new short[] {36, 37, 38, 39, 43, 46, 82, 90, 91, 92, 93, 94, 113, 115, 116, 117, 120, 129, 130, 138};
 
-    const string MAP = "tdddrdrdddrrthdd.hddrdddhcr.drrr........dhh...........................t.ttt...ttt.ttt...tttttttttttttrtttdtdtthhhhhhhhh...h..............................................................................tccccttc................cccc...............................tttttttttttt";
+    const string MAP = "tdddrdrdddrrthdd.hddrdddhcr.drrr........dhhtrtdtdtsthrtdthdttdt.......t.ttt...ttt.ttt...tttttttttttttrtttdtdtthhhhhhhhh...h.....................................hhhhhh...................................tccccttc................cccc...............................tttttttttttt........ctc";
 
 
     private static int tim(int dex) {

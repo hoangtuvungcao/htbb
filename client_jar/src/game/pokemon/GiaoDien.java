@@ -17,26 +17,30 @@ import javax.microedition.lcdui.Graphics;
  * Res.paintDlgFull / paintDlgDragonFull / paintSelected, Menu, MsgDlg, thanh phím mềm... gọi vào đây.
  */
 public final class GiaoDien {
-    public static final int DO = 0xE3350D;
-    public static final int DO_SANG = 0xF4613A;
-    public static final int DO_TOI = 0xA5240A;
-    public static final int VANG = 0xFFCB05;
-    public static final int VANG_NHAT = 0xFFE680;
-    public static final int VANG_TOI = 0xB98A00;
-    public static final int XANH = 0x3D7DCA;
-    public static final int XANH_SANG = 0x6FA6EA;
-    public static final int XANH_NHAT = 0xCFE0F5;
-    public static final int NAVY = 0x003A70;
+    public static final int DO = 0xE8312B;
+    public static final int DO_SANG = 0xFF6A4D;
+    public static final int DO_TOI = 0x9E1520;
+    public static final int VANG = 0xFFC824;
+    public static final int VANG_NHAT = 0xFFE452;
+    /** cam nhấn (thương hiệu: dải vàng -> cam của logo) */
+    public static final int CAM = 0xFF9F1C;
+    public static final int CAM_TOI = 0xF26A1B;
+    public static final int KEM_VANG = 0xFFF7B0;
+    public static final int VANG_TOI = 0xC97A10;
+    public static final int XANH = 0x3A64D0;
+    public static final int XANH_SANG = 0x5D93FF;
+    public static final int XANH_NHAT = 0xD6DCEF;
+    public static final int NAVY = 0x1C2A66;
     public static final int LA = 0x78C850;
     public static final int LA_TOI = 0x3E8A30;
-    public static final int VIEN = 0x1E2A44;
+    public static final int VIEN = 0x141A3C;
     public static final int TRANG = 0xFFFFFF;
     public static final int KEM = 0xF5F8FC;
     public static final int XAM = 0xB4BDCA;
     public static final int XAM_TOI = 0x5E6A80;
     /** thân bảng tối (chữ trắng đọc được) - gradient trên -> dưới */
-    public static final int THAN_TREN = 0x2D62AA;
-    public static final int THAN_DUOI = 0x1A3B6E;
+    public static final int THAN_TREN = 0x2A3E8E;
+    public static final int THAN_DUOI = 0x172152;
     /** màu thanh máu kiểu Pokémon */
     public static final int HP_XANH = 0x48D058;
     public static final int HP_VANG = 0xF8C020;
@@ -160,19 +164,68 @@ public final class GiaoDien {
     /** Hộp thoại trắng viền tối (kiểu hộp thoại Pokémon) - chữ bên trong nên dùng font tối. */
     public static void hop(Graphics g, int x, int y, int w, int h) {
         moClip(g);
-        khoi(g, x + 1, y + 2, w, h, 6, 0x0B1222);          // bóng đổ
+        khoi(g, x + 1, y + 2, w, h, 6, 0x0A0F2C);          // bóng đổ
         khoi(g, x, y, w, h, 6, VIEN);
-        khoi(g, x + 2, y + 2, w - 4, h - 4, 4, XANH_NHAT);
+        khoi(g, x + 2, y + 2, w - 4, h - 4, 4, VANG);       // viền vàng thương hiệu
         khoi(g, x + 3, y + 3, w - 6, h - 6, 3, TRANG);
+        g.setColor(XANH_NHAT);
+        g.fillRect(x + 6, y + h - 5, w - 12, 1);            // bóng nhẹ đáy trong
     }
 
     /** Bảng thân xanh đậm, viền trắng + viền tối - chữ trắng của game gốc đọc rõ. */
     public static void bang(Graphics g, int x, int y, int w, int h) {
+        // kiểu bảng Pokémon GBA/DS: viền tối + viền kép màu (xanh dày, trắng mảnh) + thân kem sáng
         moClip(g);
-        khoi(g, x + 1, y + 2, w, h, 6, 0x0B1222);
+        khoi(g, x + 1, y + 2, w, h, 6, 0x0A0F2C);
         khoi(g, x, y, w, h, 6, VIEN);
-        khoi(g, x + 2, y + 2, w - 4, h - 4, 4, TRANG);
+        khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 5, XANH_SANG, XANH);
+        khoi(g, x + 3, y + 3, w - 6, h - 6, 4, TRANG);
+        khoi(g, x + 4, y + 4, w - 8, h - 8, 3, VIEN);
+        khoiDoc(g, x + 5, y + 5, w - 10, h - 10, 3, NEN_SANG, NEN_SANG_DUOI);
+        Font.nenSang = true;
+    }
+
+    /** thân bảng sáng (kem) */
+    public static final int NEN_SANG = 0xFCFCF4;
+    public static final int NEN_SANG_DUOI = 0xEEF0E4;
+    /** hàng xen kẽ trên bảng sáng */
+    public static final int HANG_CHAN = 0xF4F6FB;
+    public static final int HANG_LE = 0xE6EAF4;
+
+    /** Màu ô / khung con theo nền đang vẽ: bảng sáng -> trắng ngà, nền tối -> navy (khung mô tả, ô chọn cũ). */
+    public static int mauKhungCon() {
+        return Font.nenSang ? HANG_CHAN : NAVY;
+    }
+
+    /**
+     * Trạng thái trống thân thiện: Poké Ball lớn đung đưa + dòng chính (đậm) + dòng phụ, giữa (cx, cy),
+     * chữ ngắt theo rong. Dùng cho danh sách / kênh / bộ sưu tập chưa có gì.
+     */
+    public static void veTrong(Graphics g, int cx, int cy, int rong, String chinh, String phu) {
+        int goc = (Canvas.gameTick % 40) < 20 ? (Canvas.gameTick % 20) - 10 : 10 - (Canvas.gameTick % 20);
+        khoi(g, cx - 16, cy - 30 + 26, 32, 6, 3, pha(NEN_SANG_DUOI, VIEN, 1, 6));   // bóng
+        pokeBall(g, cx, cy - 16, 12, goc);
+        Font f = Font.normalFont[0];
+        if (chinh != null) {
+            f.drawString(g, catChu(f, chinh, rong), cx, cy + 2, Font.CENTER);
+        }
+        if (phu != null) {
+            String[] d = Font.arialFontW.splitFontBStrInLine(phu, rong);
+            for (int i = 0; i < d.length && i < 3; i++) {
+                Font.arialFontW.drawString(g, d[i], cx, cy + 18 + i * 13, Font.CENTER);
+            }
+        }
+    }
+
+    /** Bảng tối (giữ chữ trắng) - cho thẻ / khung con cần nền đậm. */
+    public static void bangToi(Graphics g, int x, int y, int w, int h) {
+        moClip(g);
+        khoi(g, x + 1, y + 2, w, h, 6, 0x0A0F2C);
+        khoi(g, x, y, w, h, 6, VIEN);
+        khoiDoc(g, x + 2, y + 2, w - 4, h - 4, 4, VANG_NHAT, CAM);
+        khoi(g, x + 3, y + 3, w - 6, h - 6, 3, VIEN);
         khoiDoc(g, x + 4, y + 4, w - 8, h - 8, 3, THAN_TREN, THAN_DUOI);
+        Font.nenSang = false;
     }
 
     /**
@@ -213,6 +266,7 @@ public final class GiaoDien {
     /** Bảng xanh đậm mờ trên nền banner (chọn / tạo nhân vật): chữ trắng của game đọc rõ. */
     public static void bangMo(Graphics g, int x, int y, int w, int h) {
         moClip(g);
+        Font.nenSang = false;
         thanMo(g, x + 1, y + 2, w, h, 0x500B1222);
         thanMo(g, x + 3, y + 3, w - 6, h - 6, 0xD81A3B6E);
         g.setColor(VIEN);
@@ -235,8 +289,10 @@ public final class GiaoDien {
             return;
         }
         khoiDoc(g, x, y, w, h, 3, DO_SANG, DO_TOI);
-        g.setColor(0xFF9070);
+        g.setColor(0xFF9A82);
         g.fillRect(x + 3, y + 1, w - 6, 1);
+        g.setColor(VANG);
+        g.fillRect(x + 1, y + h - 1, w - 2, 1);             // gạch vàng dưới dải đỏ
         g.setColor(VIEN);
         g.fillRect(x, y + h, w, 1);
         boolean coBong = h >= 12 && w > 60;
@@ -293,16 +349,100 @@ public final class GiaoDien {
         return s.substring(0, n) + "..";
     }
 
+    // ------------------------------------------------------------------ biểu tượng mục menu
+    /** từ khoá (chữ thường, sau khi đổi từ điển) -> hình KieuO + hệ (màu); dòng đầu khớp trước. */
+    private static final String[] MUC_KHOA = {
+        "hành trang", "túi", "kỹ năng", "chiêu", "tiềm năng", "trang bị", "thông tin", "nhiệm vụ", "sổ tay",
+        "cài đặt", "cấu hình", "âm thanh", "nhạc", "bản đồ", "vùng", "bạn bè", "tìm bạn", "nhóm", "đội",
+        "top", "bảng", "cửa hàng", "shop", "mua", "bán", "chat", "tin nhắn", "kênh", "thế giới",
+        "pk", "đấu", "gym", "dungeon", "hang", "hệ sinh thái", "câu cá", "đào", "nấu", "vườn", "trứng",
+        "pokédex", "pet", "thú", "cây", "cổ vật", "nạp", "xu", "lượng", "đăng xuất", "thoát", "về", "hồi sinh",
+        "giao hàng", "luyện", "auto", "tự", "dừng", "menu nhanh", "hướng dẫn", "ghi công", "đổi", "nhận", "quà",
+    };
+    private static final byte[][] MUC_HINH = {
+        {KieuO.HINH_BOM, 1}, {KieuO.HINH_BOM, 1}, {KieuO.HINH_SET, 3}, {KieuO.HINH_SET, 3}, {KieuO.HINH_TANG, 6},
+        {KieuO.HINH_KHIEN, 16}, {KieuO.HINH_SAO, 10}, {KieuO.HINH_LA, 4}, {KieuO.HINH_LA, 4},
+        {KieuO.HINH_LOC, 0}, {KieuO.HINH_LOC, 0}, {KieuO.HINH_SONG, 2}, {KieuO.HINH_SONG, 2}, {KieuO.HINH_NHANH, 9},
+        {KieuO.HINH_NHANH, 9}, {KieuO.HINH_TIM, 17}, {KieuO.HINH_TIM, 17}, {KieuO.HINH_TIM, 17}, {KieuO.HINH_KHIEN, 6},
+        {KieuO.HINH_SAO, 3}, {KieuO.HINH_SAO, 3}, {KieuO.HINH_BONG, 2}, {KieuO.HINH_BONG, 2}, {KieuO.HINH_BONG, 2},
+        {KieuO.HINH_BONG, 2}, {KieuO.HINH_MAY, 0}, {KieuO.HINH_MAY, 0}, {KieuO.HINH_MAY, 0}, {KieuO.HINH_MAY, 0},
+        {KieuO.HINH_VA, 6}, {KieuO.HINH_VA, 6}, {KieuO.HINH_KHIEN, 12}, {KieuO.HINH_MA, 13}, {KieuO.HINH_MA, 13},
+        {KieuO.HINH_LA, 4}, {KieuO.HINH_GIOT, 2}, {KieuO.HINH_THEP, 8}, {KieuO.HINH_LUA, 1}, {KieuO.HINH_LA, 4},
+        {KieuO.HINH_TIM, 17}, {KieuO.HINH_SAO, 10}, {KieuO.HINH_TIM, 17}, {KieuO.HINH_TIM, 17}, {KieuO.HINH_LA, 4},
+        {KieuO.HINH_THEP, 12}, {KieuO.HINH_SAO, 3}, {KieuO.HINH_SAO, 3}, {KieuO.HINH_SAO, 3}, {KieuO.HINH_NHANH, 15},
+        {KieuO.HINH_NHANH, 15}, {KieuO.HINH_NHANH, 9}, {KieuO.HINH_CONG, 4}, {KieuO.HINH_NHANH, 1}, {KieuO.HINH_TANG, 6},
+        {KieuO.HINH_VONG, 14}, {KieuO.HINH_VONG, 14}, {KieuO.HINH_KHIEN, 0}, {KieuO.HINH_SAO, 1}, {KieuO.HINH_LA, 4},
+        {KieuO.HINH_SAO, 17}, {KieuO.HINH_LOC, 10}, {KieuO.HINH_BOM, 1}, {KieuO.HINH_BOM, 1},
+    };
+    private static final java.util.Hashtable boHinhMuc = new java.util.Hashtable();
+
+    /** Hình + hệ cho mục menu theo chữ (null = không có biểu tượng). */
+    public static byte[] hinhMuc(String caption) {
+        if (caption == null || caption.length() == 0) {
+            return null;
+        }
+        Object o = boHinhMuc.get(caption);
+        if (o != null) {
+            return o instanceof byte[] ? (byte[]) o : null;
+        }
+        String t = ChuPokemon.thuong(ChuPokemon.D(caption));
+        byte[] kq = null;
+        int dai = 0;
+        for (int i = 0; i < MUC_KHOA.length && i < MUC_HINH.length; i++) {
+            if (MUC_KHOA[i].length() > dai && t.indexOf(MUC_KHOA[i]) >= 0) {
+                kq = MUC_HINH[i];               // khoá dài nhất thắng ("đăng xuất" hơn "xu")
+                dai = MUC_KHOA[i].length();
+            }
+        }
+        if (boHinhMuc.size() > 300) {
+            boHinhMuc.clear();
+        }
+        boHinhMuc.put(caption, kq == null ? (Object) "" : kq);
+        return kq;
+    }
+
+    /** Ô biểu tượng mục menu 12x12 tại (x, y); trả bề ngang đã dùng (0 nếu không có). */
+    public static int veHinhMuc(Graphics g, int x, int y, String caption) {
+        byte[] h = hinhMuc(caption);
+        if (h == null) {
+            return 0;
+        }
+        int mau = KieuO.mauHe(h[1]);
+        khoi(g, x, y, 13, 13, 4, VIEN);
+        khoiDoc(g, x + 1, y + 1, 11, 11, 3, pha(mau, TRANG, 1, 3), pha(mau, 0x000000, 1, 3));
+        javax.microedition.lcdui.Image a = KieuO.anhHinh(h[0], 1);
+        if (a != null) {
+            int cx = g.getClipX(), cy = g.getClipY(), cw = g.getClipWidth(), ch = g.getClipHeight();
+            g.clipRect(x + 1, y + 1, 11, 11);
+            g.drawImage(a, x + 7, y + 7, javax.microedition.lcdui.Graphics.HCENTER | javax.microedition.lcdui.Graphics.VCENTER);
+            g.setClip(cx, cy, cw, ch);
+        }
+        return 16;
+    }
+
     /** Ô đang chọn trên nền tối: thân xanh sáng, viền vàng. */
     public static void chon(Graphics g, int x, int y, int w, int h) {
-        khoi(g, x, y, w, h, 3, VANG);
-        khoiDoc(g, x + 2, y + 2, w - 4, h - 4, 2, XANH_SANG, XANH);
+        if (!Font.nenSang) {
+            // trên nền tối: thân xanh sáng, viền vàng
+            khoiDoc(g, x, y, w, h, 3, VANG_NHAT, CAM);
+            khoiDoc(g, x + 2, y + 2, w - 4, h - 4, 2, XANH_SANG, XANH);
+            return;
+        }
+        // trên bảng sáng (kiểu GBA): dải vàng nhạt viền cam
+        khoi(g, x, y, w, h, 3, CAM);
+        khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 2, KEM_VANG, VANG_NHAT);
+    }
+
+    /** Con trỏ ▶ đen kiểu menu Pokémon, đỉnh trái (x, y), cao h. */
+    public static void conTro(Graphics g, int x, int y, int h) {
+        g.setColor(VIEN);
+        g.fillTriangle(x, y, x, y + h, x + h / 2 + 1, y + h / 2);
     }
 
     /** Ô đang chọn trên nền trắng: vàng nhạt viền vàng đậm (chữ tối). */
     public static void chonSang(Graphics g, int x, int y, int w, int h) {
-        khoi(g, x, y, w, h, 3, VANG_TOI);
-        khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 2, VANG_NHAT, VANG);
+        khoi(g, x, y, w, h, 3, CAM_TOI);
+        khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 2, KEM_VANG, VANG);
     }
 
     /** Mũi tên chọn kiểu Pokémon (tam giác chỉ sang phải), đỉnh trái ở (x, y), cao h. */
@@ -328,6 +468,24 @@ public final class GiaoDien {
     }
 
     /** Thanh HP / MP / EXP: loai 0 = HP (xanh -> vàng -> đỏ), 1 = MP, 2 = EXP. */
+    /** Mẫu chữ 3x5 "HP" cho thẻ thanh máu kiểu Pokémon. */
+    private static final String[] CHU_HP = {"#.#.##.", "#.#.#.#", "###.##.", "#.#.#..", "#.#.#.."};
+
+    /** Thanh máu kiểu Pokémon: thẻ "HP" vàng trên nền tối + thanh xanh -> vàng -> đỏ. */
+    public static void thanhHP(Graphics g, int x, int y, int w, int h, long gt, long max) {
+        khoi(g, x, y - 1, 11, h + 2 > 7 ? h + 2 : 7, 2, VIEN);
+        g.setColor(VANG);
+        int yc = y - 1 + ((h + 2 > 7 ? h + 2 : 7) - 5) / 2;
+        for (int r = 0; r < 5; r++) {
+            for (int c = 0; c < 7; c++) {
+                if (CHU_HP[r].charAt(c) == '#') {
+                    g.fillRect(x + 2 + c, yc + r, 1, 1);
+                }
+            }
+        }
+        thanh(g, x + 11, y, w - 11, h, gt, max, 0);
+    }
+
     public static void thanh(Graphics g, int x, int y, int w, int h, long gt, long max, int loai) {
         if (w < 4 || h < 3) {
             return;
@@ -457,8 +615,53 @@ public final class GiaoDien {
             g.setColor(pha(NAVY, VIEN, i - 6, h - 6));
             g.fillRect(0, i, w, 1);
         }
-        g.setColor(0x24508A);
-        g.fillRect(0, 6, w, 1);
+        g.setColor(VANG);
+        g.fillRect(0, 5, w, 1);
+    }
+
+    /**
+     * Phím mềm dạng viên: vt 0 trái (xanh), 1 giữa (vàng, chấm phím giữa), 2 phải (đỏ); nhan = đang
+     * bấm (lún 1 px, màu đậm). Bề ngang theo chữ, tối đa 1/3 màn.
+     */
+    public static void nutMem(Graphics g, String s, int vt, boolean nhan) {
+        nutMem(g, s, vt, nhan, vt == 1 ? Canvas.w * 2 / 5 : Canvas.w * 3 / 10 - 2);
+    }
+
+    /** Bề ngang viên phím mềm (chưa cắt) cho chuỗi s. */
+    public static int rongNutMem(String s, int vt) {
+        return s == null || s.length() == 0 || Font.borderFont == null ? 0 : Font.borderFont.getWidth(s) + 12 + (vt == 1 ? 9 : 0);
+    }
+
+    public static void nutMem(Graphics g, String s, int vt, boolean nhan, int toiDa) {
+        if (s == null || s.length() == 0 || Font.borderFont == null) {
+            return;
+        }
+        Font f = Font.borderFont;
+        int goi = vt == 1 ? 9 : 0;
+        s = catChu(f, s, toiDa - 12 - goi);
+        int w = f.getWidth(s) + 12 + goi;
+        int h = 13;
+        int y = Canvas.h - 15 + (nhan ? 1 : 0);
+        int x = vt == 0 ? 2 : (vt == 2 ? Canvas.w - 2 - w : Canvas.hw - w / 2);
+        int tren = vt == 0 ? XANH_SANG : (vt == 1 ? VANG_NHAT : DO_SANG);
+        int duoi = vt == 0 ? XANH : (vt == 1 ? CAM : DO_TOI);
+        if (nhan) {
+            int t = tren;
+            tren = duoi;
+            duoi = t;
+        }
+        khoi(g, x, y, w, h, 6, VIEN);
+        khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 5, tren, duoi);
+        if (!nhan) {
+            g.setColor(pha(tren, TRANG, 1, 2));
+            g.fillRect(x + 5, y + 2, w - 10, 1);
+        }
+        if (goi > 0) {
+            // gợi ý phím giữa: chấm tròn (phím chọn / 5)
+            khoi(g, x + 4, y + 4, 6, 6, 3, VIEN);
+            khoi(g, x + 5, y + 5, 4, 4, 2, TRANG);
+        }
+        f.drawString(g, s, x + goi + (w - goi) / 2, y, Font.CENTER);
     }
 
     /** Viên thuốc trạng thái (pill): khối bo tròn màu mau, chữ trắng viền ở giữa. */

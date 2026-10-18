@@ -19,7 +19,7 @@ public final class NangLuong {
 
     /** yyyyMMdd cua thoi diem (gio may). Doi ngay luc 00:00 nhu CharCapNhat. */
     public static int ngay(final long ms) {
-        final java.util.Calendar c = java.util.Calendar.getInstance();
+        final java.util.Calendar c = com.htbb.pokemon.DongHo.lich();
         c.setTimeInMillis(ms);
         return c.get(java.util.Calendar.YEAR) * 10000 + (c.get(java.util.Calendar.MONTH) + 1) * 100
                 + c.get(java.util.Calendar.DAY_OF_MONTH);
@@ -30,10 +30,10 @@ public final class NangLuong {
         if (a <= 0 || b <= 0) {
             return 0;
         }
-        final java.util.Calendar ca = java.util.Calendar.getInstance();
+        final java.util.Calendar ca = com.htbb.pokemon.DongHo.lich();
         ca.clear();
         ca.set(a / 10000, (a / 100) % 100 - 1, a % 100, 12, 0, 0);
-        final java.util.Calendar cb = java.util.Calendar.getInstance();
+        final java.util.Calendar cb = com.htbb.pokemon.DongHo.lich();
         cb.clear();
         cb.set(b / 10000, (b / 100) % 100 - 1, b % 100, 12, 0, 0);
         return (int) Math.max(0L, Math.round((cb.getTimeInMillis() - ca.getTimeInMillis()) / 86400000.0));
@@ -76,10 +76,13 @@ public final class NangLuong {
             final int hn = ngay(bayGio);
             if (h.nlNgay != hn) {
                 final int cach = h.nlNgay <= 0 ? 2 : cachNgay(h.nlNgay, hn);
-                h.nlPhut100 = h.nlNgay <= 0 ? phutNgay : phut100NgayMoi(h.nlPhut100, h.nlMsDung, cach, phutNgay, phutTichToiDa);
+                // Bua the luc (TangToc) chi cho hom do: tru ra truoc khi tinh phan tich sang hom sau.
+                h.nlPhut100 = h.nlNgay <= 0 ? phutNgay
+                        : phut100NgayMoi(TangToc.phut100KhongBua(h), h.nlMsDung, cach, phutNgay, phutTichToiDa);
                 h.nlNgay = hn;
                 h.nlMsDung = 0L;
                 h.nlLanCuoi = 0L;
+                TangToc.sauDoiNgay(h, hn);
             }
             if (h.nlLanCuoi > 0L && bayGio > h.nlLanCuoi) {
                 h.nlMsDung += Math.min(KHOANG_TOI_DA_MS, bayGio - h.nlLanCuoi);
@@ -87,6 +90,19 @@ public final class NangLuong {
             h.nlLanCuoi = bayGio;
             h.ban = true;
             return heSo(h.nlMsDung, h.nlPhut100);
+        }
+    }
+
+    /**
+     * He so cho XU / da / vat pham roi (khong ghi nhan): KHONG tinh Bua the luc (TangToc) - vat pham tang toc
+     * chi cho EXP, khong lam tang tien / do roi.
+     */
+    public static int heSoXuHienTai(final HoSoLauDai h, final long bayGio) {
+        synchronized (h) {
+            if (h.nlNgay != ngay(bayGio)) {
+                return 100;
+            }
+            return heSo(h.nlMsDung, TangToc.phut100KhongBua(h));
         }
     }
 

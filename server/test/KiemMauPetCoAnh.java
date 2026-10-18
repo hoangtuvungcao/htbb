@@ -36,6 +36,7 @@ public final class KiemMauPetCoAnh {
         {26, 3},   // Dơi       <- Dơi quỷ
         {27, 1},   // Đại bàng  <- Thanh tước
         {29, 9},   // Bạch Thử  <- Pet Armadillo băng
+        {30, 9},   // Capybara  <- Pet Armadillo băng (them 19/09/2026, chua co anh rieng)
     };
 
     /**
@@ -60,7 +61,8 @@ public final class KiemMauPetCoAnh {
 
         real.Map.loadPetTemplate();
         final PetTemplate[] ds = real.Map.petTemplate;
-        Kiem.dung("nap duoc Map.petTemplate (30 mau)", ds != null && ds.length == 30);
+        // 31 mau tu 19/09/2026 (mau 30 Capybara muon anh mau 9 - xem Map.loadPetTemplate).
+        Kiem.dung("nap duoc Map.petTemplate (31 mau)", ds != null && ds.length == 31);
         if (ds == null || ds.length == 0) {
             return;
         }

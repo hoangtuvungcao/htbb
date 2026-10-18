@@ -1,13 +1,17 @@
 <script setup lang="ts">
 const tenSite = useAppConfig().htbb.tenSite
 const cms = useCongKhai()
-const cot = computed(() => cms.value.menu.chanTrang.map(c => ({ ten: c.ten, links: c.links.map(l => ({ ...l, to: lienKetAnToan(l.to) || '/' })) })))
-// Trang điều khoản thanh toán chỉ hiện khi máy chủ bật nạp (KPAH_NAP_BAT).
+const { tenDangCo, tenSapRaMat } = useBanTai()
+// Link giấy phép chỉ có MỘT chỗ (dòng chữ nhỏ cuối chân trang): bỏ khỏi cột menu kể cả khi menu đã lưu trong CSDL còn mục cũ.
+const LINK_GIAY_PHEP = ['/ghi-cong', '/giay-phep']
+const cot = computed(() => cms.value.menu.chanTrang.map(c => ({ ten: c.ten, links: c.links.filter(l => !LINK_GIAY_PHEP.includes(String(l.to ?? '').split('#')[0]!)).map(l => ({ ...l, to: lienKetAnToan(l.to) || '/' })) })).filter(c => c.links.length))
+// Trang điều khoản thanh toán chỉ hiện khi máy chủ bật nạp (HTBB_NAP_BAT).
 const { data: siteCfg } = useSite()
 const cotDayDu = computed(() => cot.value.map(c => c.ten === 'Pháp lý' && siteCfg.value?.napBat
   ? { ...c, links: [...c.links, { label: 'Điều khoản thanh toán', to: '/dieu-khoan-thanh-toan' }, { label: 'Chính sách hoàn tiền', to: '/chinh-sach-hoan-tien' }] }
   : c))
-const mangXaHoi = computed(() => cms.value.site.mangXaHoi.filter(m => lienKetAnToan(m.url)))
+// Chỉ link mạng xã hội thật (http(s) có tên miền) — ô để trống / '#' không thành link chết.
+const mangXaHoi = computed(() => cms.value.site.mangXaHoi.filter(m => lienKetNgoaiThat(m.url)))
 </script>
 
 <template>
@@ -28,9 +32,9 @@ const mangXaHoi = computed(() => cms.value.site.mangXaHoi.filter(m => lienKetAnT
               <UButton
                 v-for="m in mangXaHoi"
                 :key="m.url"
-                :to="lienKetAnToan(m.url)"
+                :to="lienKetNgoaiThat(m.url)"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 size="sm"
                 color="neutral"
                 variant="ghost"
@@ -42,6 +46,7 @@ const mangXaHoi = computed(() => cms.value.site.mangXaHoi.filter(m => lienKetAnT
               </UButton>
             </div>
             <div class="mt-5 flex flex-wrap gap-2">
+              <SiteHoTroZalo kieu="chan" nhan="Hỗ trợ qua Zalo" />
               <UButton to="/download" size="sm" class="btn-pikachu" trailing-icon="i-lucide-download">
                 Tải game
               </UButton>
@@ -49,6 +54,9 @@ const mangXaHoi = computed(() => cms.value.site.mangXaHoi.filter(m => lienKetAnT
                 Cẩm nang
               </UButton>
             </div>
+            <p v-if="tenDangCo" class="mt-3 text-xs text-white/75">
+              Có trên {{ tenDangCo }}<template v-if="tenSapRaMat"> · {{ tenSapRaMat }} sắp ra mắt</template>.
+            </p>
           </div>
           <nav class="grid grid-cols-2 gap-8 sm:grid-cols-4" aria-label="Liên kết chân trang">
             <div v-for="c in cotDayDu" :key="c.ten">
@@ -81,7 +89,7 @@ const mangXaHoi = computed(() => cms.value.site.mangXaHoi.filter(m => lienKetAnT
           {{ tenSite }} là dự án fan <strong class="text-toned">phi thương mại</strong>, không liên kết, không được tài trợ hay xác nhận bởi Nintendo, Creatures Inc., GAME FREAK inc. hay The Pokémon Company.
           Pokémon và các tên, hình ảnh liên quan là thương hiệu © Nintendo / Creatures / GAME FREAK / The Pokémon Company.
           Sprite & chân dung: PMDCollab (CC BY-NC 4.0); tile bản đồ: Kenney, Ninja Adventure (CC0) —
-          <NuxtLink to="/ghi-cong" class="underline hover:text-primary">xem ghi công</NuxtLink>.
+          <NuxtLink to="/giay-phep" class="underline hover:text-primary">Giấy phép & nguồn tài nguyên</NuxtLink>.
           Mã nguồn game gốc thuộc bản quyền TeaMobi; máy chủ này chỉ dùng cho mục đích học tập / cộng đồng.
         </p>
       </UContainer>

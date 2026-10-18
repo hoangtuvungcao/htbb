@@ -261,6 +261,54 @@ public sealed class BucVe
 		mau = cu;
 	}
 
+	/// <summary>
+	/// Thu nhỏ k lần (lọc hộp, pha alpha đúng) - vẽ hình ở cỡ k lần rồi thu về để góc bo / đường cong mịn
+	/// như khử răng cưa (kiểu khung HD của bản pc-java) mà vẫn chỉ dùng lệnh vẽ nguyên.
+	/// </summary>
+	public BucVe thuNho(int k)
+	{
+		if (k <= 1)
+		{
+			return this;
+		}
+		BucVe r = new BucVe(w / k, h / k);
+		int n = k * k;
+		for (int y = 0; y < r.h; y++)
+		{
+			for (int x = 0; x < r.w; x++)
+			{
+				int sa = 0;
+				int sr = 0;
+				int sg = 0;
+				int sb = 0;
+				for (int j = 0; j < k; j++)
+				{
+					int hang = (y * k + j) * w + x * k;
+					for (int i = 0; i < k; i++)
+					{
+						Color32 c = px[hang + i];
+						sa += c.a;
+						sr += c.r * c.a;
+						sg += c.g * c.a;
+						sb += c.b * c.a;
+					}
+				}
+				if (sa == 0)
+				{
+					continue;
+				}
+				r.px[y * r.w + x] = new Color32((byte)(sr / sa), (byte)(sg / sa), (byte)(sb / sa), (byte)(sa / n));
+			}
+		}
+		return r;
+	}
+
+	/// <summary>Điểm ảnh (hàng trên trước) - cho công cụ xuất ảnh xem trước / kiểm thử.</summary>
+	public Color32[] diem()
+	{
+		return px;
+	}
+
 	/// <summary>Đóng thành ảnh (lọc Point, không lặp). Hàng 0 của Texture2D là đáy nên lật dọc.</summary>
 	public Image taoAnh()
 	{

@@ -20,7 +20,7 @@ import game.model.Tilemap;
 import game.model.TreeInfo;
 import game.model.WPSplashInfo;
 import game.model.WeaponInfo;
-import game.model.XaphuTemplate;
+import game.model.PidgeotBayTemplate;
 import game.model.arrow.MagicBeam;
 import game.networklogic.GameService;
 import game.render.screen.CreateCharScr;
@@ -41,7 +41,7 @@ public class Res {
     public static final int MAX_DAM = 2000000;
     public static final String xu = "xu";
     public static final String luong = "lượng";
-    public static XaphuTemplate[] XAPHU;
+    public static PidgeotBayTemplate[] XAPHU;
     public static final int COLLECT_ITEM_RANGE = 35;
     public static final String doYouWantSell = "Muốn nhờ ta bán gì nào";
     public static Image[] imgSoft;
@@ -125,9 +125,9 @@ public class Res {
     public static Vector itemTemplates = new Vector();
     public static Vector gemTemplate = new Vector();
     public static Vector shopTemplate = new Vector();
-    public static final String[][] NPC_DEFAULT_CHAT = {new String[]{"Vào trong đi cậu. Đủ loại HP từ lớn đến bé!"}, new String[]{"Hò ơ… mua gì cũng có, hỏi gì cũng biết", "Gánh hàng nhỏ nhưng món gì cũng có đây", "Mua gì đây, nói ta nghe"}, new String[]{"Vũ khí ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Ngươi muốn sửa chữa đồ?", "Ngươi muốn luyện đồ?"}, new String[]{"Mua giáp hộ thân nào …", "Mua giáp của ta, ngươi sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho ngươi biết tại sao người ta gọi ta là Thiết Bì"}, new String[]{"Trách nhiệm của ta là bảo vệ ngôi làng này."}, new String[]{"Cố gắng lên con, hãy hoàn thành các nhiệm vụ đi nhé", "Anh hùng xuất thiếu niên..anh hùng xuất thiếu niên", "Con là thành viên của làng Nghĩa Sĩ này ! Hãy nhớ lấy điều đó"}, new String[]{"Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Ngươi muốn mua vật phẩm để luyện đồ?"}, new String[]{"Đường xa vạn lý, không làm nản lòng xa phu ta đây", "Đi lâu thành lối, lối thành đường đi.", "Nói ta nghe ngươi muốn đi đâu?"}, new String[]{""}, new String[]{"Gửi đồ chỗ ta là an toàn nhất đó", "Ngươi muốn nhờ ta giữ đồ?", "Ngươi có nhiều đồ muốn gửi àh?"}, new String[]{"Bạn phải có vé mới được lên tàu."}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Tập luyện nào, tập luyện nào ..", "Sức khỏe trước đã, tập luyện nào …", "Cho ta xem khả năng của các ngươi nào !!"}, new String[]{"Giao tiền ta giữ nào, yên tâm nhé", "Ngươi muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào"}, new String[]{"Chà, lâu rồi mới có người đi qua."}, new String[]{"Ngươi muốn thuê gì?"}, new String[]{"Hãy quản lý bang của ngươi thật tốt vào."}, new String[]{"Hò ơ… mua gì cũng có, hỏi gì cũng biết", "Gánh hàng nhỏ nhưng món gì cũng có đây", "Mua gì đây, nói ta nghe"}, new String[]{"Mua giáp hộ thân nào …", "Mua giáp của ta, ngươi sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho ngươi biết tại sao người ta gọi ta là Giáp Sư"}, new String[]{"Vũ khí ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Ngươi muốn sửa chữa đồ?", "Ngươi muốn luyện đồ?"}, new String[]{"Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Ngươi muốn mua vật phẩm để luyện đồ?"}, new String[]{"Gửi đồ chỗ ta là an toàn nhất đó", "Ngươi muốn nhờ ta giữ đồ?", "Ngươi có nhiều đồ muốn gửi àh?"}, new String[]{"Giao tiền ta giữ nào, yên tâm nhé", "Ngươi muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào"}};
-    public static String[] newNameAtbItem = {"Tăng Hp ", "Tăng Mp ", "Sức mạnh +", "Nhanh nhẹn +", "Tinh thần +", "Sức khoẻ +", "", "Chí mạng tăng ", "Tăng st chí mạng "};
-    public static String[] nameAtbItemLock = {"Tăng công ", "Tăng thủ ma ", "Tăng thủ vật "};
+    public static final String[][] NPC_DEFAULT_CHAT = {new String[]{"Vào trong đi cậu. Đủ loại HP từ lớn đến bé!"}, new String[]{"Hò ơ… mua gì cũng có, hỏi gì cũng biết", "Gánh hàng nhỏ nhưng món gì cũng có đây", "Mua gì đây, nói ta nghe"}, new String[]{"Đồ cầm tay ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Cậu muốn sửa chữa đồ?", "Cậu muốn luyện đồ?"}, new String[]{"Mua giáp hộ thân nào …", "Mua giáp của ta, cậu sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho cậu biết tại sao người ta gọi ta là Bronzong"}, new String[]{"Trách nhiệm của ta là bảo vệ ngôi làng này."}, new String[]{"Cố gắng lên con, hãy hoàn thành các nhiệm vụ đi nhé", "Tuổi trẻ tài cao..tuổi trẻ tài cao", "Con là thành viên của làng huấn luyện này ! Hãy nhớ lấy điều đó"}, new String[]{"Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Cậu muốn mua vật phẩm để luyện đồ?"}, new String[]{"Đường xa vạn lý, không làm nản lòng Pidgeot (Bay) ta đây", "Đi lâu thành lối, lối thành đường đi.", "Nói ta nghe cậu muốn đi đâu?"}, new String[]{""}, new String[]{"Gửi đồ chỗ ta là an toàn nhất đó", "Cậu muốn nhờ ta giữ đồ?", "Cậu có nhiều đồ muốn gửi àh?"}, new String[]{"Bạn phải có vé mới được lên tàu."}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Muốn nhờ ta bán gì nào"}, new String[]{"Tập luyện nào, tập luyện nào ..", "Sức khỏe trước đã, tập luyện nào …", "Cho ta xem khả năng của các cậu nào !!"}, new String[]{"Giao tiền ta giữ nào, yên tâm nhé", "Cậu muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào"}, new String[]{"Chà, lâu rồi mới có người đi qua."}, new String[]{"Cậu muốn thuê gì?"}, new String[]{"Hãy quản lý đội của cậu thật tốt vào."}, new String[]{"Hò ơ… mua gì cũng có, hỏi gì cũng biết", "Gánh hàng nhỏ nhưng món gì cũng có đây", "Mua gì đây, nói ta nghe"}, new String[]{"Mua giáp hộ thân nào …", "Mua giáp của ta, cậu sẽ luôn được bảo vệ an toàn", "Đến với ta, ta sẽ nói cho cậu biết tại sao người ta gọi ta là Bronzong"}, new String[]{"Đồ cầm tay ở đây rất lợi hại, vào trong tôi cho cậu xem!", "Cậu muốn sửa chữa đồ?", "Cậu muốn luyện đồ?"}, new String[]{"Chào chàng trai trẻ", "Muốn mua ngọc thì vào nhà", "Cậu muốn mua vật phẩm để luyện đồ?"}, new String[]{"Gửi đồ chỗ ta là an toàn nhất đó", "Cậu muốn nhờ ta giữ đồ?", "Cậu có nhiều đồ muốn gửi àh?"}, new String[]{"Giao tiền ta giữ nào, yên tâm nhé", "Cậu muốn đổi tiền à, nói ta nghe", "Ta lấy chữ Tín làm đầu, yên tâm nào"}};
+    public static String[] newNameAtbItem = {"HP +", "PP +", "Sức mạnh +", "Nhanh nhẹn +", "Tinh thần +", "Sức khoẻ +", "", "Chí mạng +", "ST chí mạng % +"};
+    public static String[] nameAtbItemLock = {"Tăng công ", "Tăng phòng thủ đặc biệt ", "Tăng phòng thủ "};
     static Random rd = new Random(System.currentTimeMillis());
     public static final String[] GENDERNAME = {"bất kỳ", "nam", "nữ"};
     public static Image[] imgEffect = new Image[66];
@@ -235,7 +235,7 @@ public class Res {
         stVND = "lượng";
         r = new Random();
         nameBigMap = new String[]{"Làng Sơn Nam", "Dao Châu", "Tiên Du", "Phù Liệt", "Kỳ Bố", "Hàm Tử", "Thạch Giang", "Đông Sơn", "Tử Quan", "Trường Giang", "Lộc Trĩ", "Sơn Lâm", "Hang động", "Hang mãng xà", "Hang thằn lằn", "Đấu trường", "Khu vực 1"};
-        nameClazz = new String[]{"Kiếm khách", "Chiến binh", "Pháp sư", "Đấu sĩ", "Cung thủ", ""};
+        nameClazz = new String[]{"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu", ""};
     }
 
     public static String getDefaultChat(int type) {
@@ -349,7 +349,7 @@ public class Res {
         return null;
     }
 
-    public static XaphuTemplate getXaphu() {
+    public static PidgeotBayTemplate getXaphu() {
         if (Tilemap.idXaphu >= 0) {
             return XAPHU[Tilemap.idXaphu];
         }
@@ -394,22 +394,25 @@ public class Res {
 
     public static class LoadData implements Runnable {
         IAction iaLoadMap;
-        int iWpsPlash = -1;
-        int jWpsPlash = -1;
-        int iImgWeaPone = -1;
-        int jImgWeaPone = -1;
-        int indexWeapone = -1;
-        int indexImgEffect = -1;
+        volatile int iWpsPlash = -1;
+        volatile int jWpsPlash = -1;
+        volatile int iImgWeaPone = -1;
+        volatile int jImgWeaPone = -1;
+        volatile int indexWeapone = -1;
+        volatile int indexImgEffect = -1;
         int indexTreeImg = -1;
         int indexMap = -1;
-        int indexArrow = -1;
-        public boolean isInitGame = false;
+        volatile int indexArrow = -1;
+        public volatile boolean isInitGame = false;
         public byte[] byteMap = null;
 
         public void loadMap(int index, IAction ia, byte[] byteMap) {
-            this.indexMap = index;
-            this.iaLoadMap = ia;
-            this.byteMap = byteMap;
+            // ghi ba trường cùng lúc (luồng mạng) - luồng nạp đọc dưới cùng khoá (không lấy lẫn map cũ / mới)
+            synchronized (this) {
+                this.iaLoadMap = ia;
+                this.byteMap = byteMap;
+                this.indexMap = index;
+            }
             Tilemap.reset();
         }
 
@@ -442,37 +445,77 @@ public class Res {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (this.iWpsPlash != -1 && this.jWpsPlash != -1) {
-                    Res.GetWPSplashInfo(this.iWpsPlash, this.jWpsPlash);
-                    this.iWpsPlash = -1;
-                    this.jWpsPlash = -1;
-                }
-                if (this.iImgWeaPone != -1 && this.jImgWeaPone != -1) {
-                    Res.getImgWeaPone(this.iImgWeaPone, this.jImgWeaPone, this.indexWeapone);
-                    this.iImgWeaPone = -1;
-                    this.jImgWeaPone = -1;
-                }
-                if (this.indexImgEffect != -1) {
-                    try {
-                        Res.getImgEffect(this.indexImgEffect);
-                    } catch (IOException e2) {
+                // mỗi việc bọc riêng: một lỗi (thiếu tài nguyên, dữ liệu hỏng) không được giết luồng nạp -
+                // trước đây NullPointerException ở đây làm luồng chết, các map sau kẹt màn chuyển (ChangScr)
+                try {
+                    if (this.iWpsPlash != -1 && this.jWpsPlash != -1) {
+                        int i0 = this.iWpsPlash, j0 = this.jWpsPlash;
+                        this.iWpsPlash = -1;
+                        this.jWpsPlash = -1;
+                        Res.GetWPSplashInfo(i0, j0);
                     }
-                    this.indexImgEffect = -1;
+                } catch (Throwable e) {
+                    Cout.println("LoadData wpsplash: " + e);
                 }
-                if (this.indexMap != -1) {
-                    int aa = this.indexMap;
+                try {
+                    if (this.iImgWeaPone != -1 && this.jImgWeaPone != -1) {
+                        int i0 = this.iImgWeaPone, j0 = this.jImgWeaPone, k0 = this.indexWeapone;
+                        this.iImgWeaPone = -1;
+                        this.jImgWeaPone = -1;
+                        Res.getImgWeaPone(i0, j0, k0);
+                    }
+                } catch (Throwable e) {
+                    Cout.println("LoadData weapon: " + e);
+                }
+                try {
+                    if (this.indexImgEffect != -1) {
+                        int i0 = this.indexImgEffect;
+                        this.indexImgEffect = -1;
+                        Res.getImgEffect(i0);
+                    }
+                } catch (Throwable e) {
+                    Cout.println("LoadData effect: " + e);
+                }
+                int aa;
+                byte[] bMap;
+                IAction ia;
+                synchronized (this) {
+                    aa = this.indexMap;
+                    bMap = this.byteMap;
+                    ia = this.iaLoadMap;
                     this.indexMap = -1;
-                    Tilemap.loadMap(aa, this.byteMap);
-                    this.iaLoadMap.perform();
                     this.byteMap = null;
                 }
-                if (this.indexArrow != -1) {
-                    Res.loadImgArrow(this.indexArrow);
-                    this.indexArrow = -1;
+                if (aa != -1) {
+                    try {
+                        Tilemap.loadMap(aa, bMap);
+                    } catch (Throwable e) {
+                        Cout.println("LoadData map " + aa + ": " + e);
+                    }
+                    try {
+                        if (ia != null) {
+                            ia.perform();   // luôn báo xong (kể cả lỗi) để không kẹt màn chuyển map
+                        }
+                    } catch (Throwable e) {
+                        Cout.println("LoadData map xong: " + e);
+                    }
                 }
-                if (this.isInitGame) {
-                    GameMidlet.instance.load();
-                    this.isInitGame = false;
+                try {
+                    if (this.indexArrow != -1) {
+                        int i0 = this.indexArrow;
+                        this.indexArrow = -1;
+                        Res.loadImgArrow(i0);
+                    }
+                } catch (Throwable e) {
+                    Cout.println("LoadData arrow: " + e);
+                }
+                try {
+                    if (this.isInitGame) {
+                        this.isInitGame = false;
+                        GameMidlet.instance.load();
+                    }
+                } catch (Throwable e) {
+                    Cout.println("LoadData init: " + e);
                 }
             }
         }
@@ -608,8 +651,8 @@ public class Res {
         FilePack.init(new StringBuffer("/wpsplash/").append(st[i]).append("/").append(j).toString());
         Char.imgWeapone[i][j][index] = new WeaponInfo();
         try {
-            byte[] header = FilePack.instance.loadFile(new StringBuffer(String.valueOf(index)).append("_h").toString());
-            byte[] data = FilePack.instance.loadFile("data");
+            byte[] header = FilePack.hienTai().loadFile(new StringBuffer(String.valueOf(index)).append("_h").toString());
+            byte[] data = FilePack.hienTai().loadFile("data");
             Char.imgWeapone[i][j][index].img = createImgByHeader(header, data);
         } catch (Exception e) {
             e.printStackTrace();

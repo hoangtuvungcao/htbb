@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public final class KiemNhiemVu {
 
-    private static final String D = "docs/pokemon/";
+    private static final String D = "../docs/pokemon/";
 
     private KiemNhiemVu() {
     }
@@ -41,6 +41,8 @@ public final class KiemNhiemVu {
             kiemGoi(nv);
             kiemFile(nv);
             kiemHeSinhThai(nv);
+            kiemToaDo(nv);
+            kiemLoaiPokedex(nv);
         } catch (final Exception e) {
             Kiem.dung("khong nem loi: " + e, false);
         }
@@ -206,7 +208,7 @@ public final class KiemNhiemVu {
     }
 
     static Set<String> idQuai() throws Exception {
-        final String s = new String(Files.readAllBytes(Paths.get("sql/htbb_day_du.sql")), StandardCharsets.UTF_8);
+        final String s = new String(Files.readAllBytes(Paths.get("../sql/htbb_day_du.sql")), StandardCharsets.UTF_8);
         final int i = s.indexOf("INSERT INTO `data_monster` VALUES");
         final int j = s.indexOf(";\n", i);
         final Set<String> ra = new HashSet<String>();
@@ -218,7 +220,7 @@ public final class KiemNhiemVu {
     }
 
     private static final Set<String> KIEU_QUAI = new HashSet<String>(java.util.Arrays.asList("giet", "giet_tinh_anh",
-            "ha_alpha", "ha_gym", "quan_sat", "thu_thach_gio", "pokedex_gap", "pokedex_ha", "pokedex_shiny"));
+            "ha_alpha", "ha_gym", "thu_thach_gio"));
     private static final Set<String> KIEU_VAT = new HashSet<String>(java.util.Arrays.asList("giao_hang", "tim_vat_an",
             "thu_thap"));
 
@@ -243,7 +245,7 @@ public final class KiemNhiemVu {
                 }
             }
         }
-        final String sqlNv = new String(Files.readAllBytes(Paths.get("sql/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
+        final String sqlNv = new String(Files.readAllBytes(Paths.get("../sql/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
         final Set<String> vatNv = new HashSet<String>(java.util.Arrays.asList("Nọc bọ cạp", "Khúc gỗ", "Rết đỏ", "Lá thư",
                 "Lông đuôi Hồng Kê", "Móng cá sấu", "Da ếch", "Cựa gà"));
         final Matcher mv = Pattern.compile("\\((\\d+),'([^']*)'\\)").matcher(
@@ -475,7 +477,7 @@ public final class KiemNhiemVu {
 
     // ------------------------------------------------------------------ file
     private static void kiemFile(final List<Map<String, String>> nv) throws Exception {
-        final String sql = new String(Files.readAllBytes(Paths.get("sql/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
+        final String sql = new String(Files.readAllBytes(Paths.get("../sql/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
         Kiem.dung("pokemon_nhiem_vu.sql: SET NAMES + data_nhiem_vu_noi_dung", sql.contains("SET NAMES utf8;")
                 && sql.contains("CREATE TABLE `data_nhiem_vu_noi_dung`"));
         int dong = 0;
@@ -485,7 +487,7 @@ public final class KiemNhiemVu {
         }
         Kiem.bang("data_nhiem_vu_noi_dung du dong", nv.size(), dong);
         Kiem.sai("SQL nhiem vu khong sua bang dang chay", Pattern.compile("(?m)^(UPDATE|DELETE|INSERT INTO `data_quest` )").matcher(sql).find());
-        final String xuat = new String(Files.readAllBytes(Paths.get("tools/pokemon/xuat_sql_day_du.sh")), StandardCharsets.UTF_8);
+        final String xuat = new String(Files.readAllBytes(Paths.get("../tools/pokemon/xuat_sql_day_du.sh")), StandardCharsets.UTF_8);
         Kiem.dung("pokemon_nhiem_vu nam trong xuat_sql_day_du.sh", xuat.contains("pokemon_nhiem_vu"));
         final String web = new String(Files.readAllBytes(Paths.get(D + "web/nhiem_vu_tom_tat.json")), StandardCharsets.UTF_8);
         boolean sach = web.contains("\"cot_truyen\"") && !web.contains("\"dap_an\"") && !web.contains("\"id_so\"")
@@ -546,8 +548,142 @@ public final class KiemNhiemVu {
                 }
             }
         }
+        // Cau ca CHI o ho (docs/pokemon/diem_cau_ca.csv, xuat boi he sinh thai): ban do + o dung cau phai co trong bang.
+        final Set<String> ho = new HashSet<String>();
+        final Set<String> oHo = new HashSet<String>();
+        for (final String l : Files.readAllLines(Paths.get(D + "diem_cau_ca.csv"), StandardCharsets.UTF_8)) {
+            final String[] o = l.split(",");
+            if (o.length >= 8 && o[0].matches("\\d+")) {
+                ho.add(o[0]);
+                oHo.add(o[0] + ":" + o[6] + ";" + o[7]);
+            }
+        }
+        int soCau = 0;
+        final List<String> loiHo = new ArrayList<String>();
+        for (final Map<String, String> d : nv) {
+            if ("cau_ca".equals(d.get("kieu_muc_tieu"))) {
+                soCau++;
+                if (!ho.contains(d.get("map_id")) || !oHo.contains(d.get("map_id") + ":" + d.get("toa_do"))) {
+                    loiHo.add(d.get("ma") + "@" + d.get("map_id") + "(" + d.get("toa_do") + ")");
+                }
+            }
+        }
+        Kiem.bang("moi nhiem vu cau ca (" + soCau + ") o ban do co ho + o dung cau trong diem_cau_ca.csv", "[]", loiHo.toString());
         Kiem.dung("co muc tieu dung vat lieu he sinh thai (" + so + ")", so >= 50);
         Kiem.bang("cau ca/vuon/nau an/khao co/quan sat khop HE_SINH_THAI (VatLieuSinhThai, SinhThaiTheGioi, loai map)",
                 "[]", loi.toString());
+    }
+
+    // ------------------------------------------------------------------ toa do
+    /**
+     * Toa do: generator ghi dang chuan "x;y"; engine (NhiemVuMau.docToaDo) doc ca "x;y" lan "x,y". Moi
+     * muc tieu co toa do phai doc duoc, nam trong ban do va la O DI DUOC (cMap_pokemon + .type nhu
+     * BanDoSinhThai); cau ca con phai gan nuoc (<= 2 o). Truoc day DatabaseLauDai chi tach "," nen buoc
+     * "dung tai diem" chap nhan moi vi tri.
+     */
+    private static void kiemToaDo(final List<Map<String, String>> nv) throws Exception {
+        final int[] a = com.htbb.pokemon.NhiemVuMau.docToaDo("12;34");
+        final int[] b = com.htbb.pokemon.NhiemVuMau.docToaDo(" 5 , 6 ");
+        Kiem.dung("docToaDo doc ca 'x;y' lan 'x,y'", a != null && a[0] == 12 && a[1] == 34 && b != null && b[0] == 5 && b[1] == 6);
+        Kiem.dung("docToaDo: rong/hong -> null", com.htbb.pokemon.NhiemVuMau.docToaDo("") == null
+                && com.htbb.pokemon.NhiemVuMau.docToaDo("abc") == null && com.htbb.pokemon.NhiemVuMau.docToaDo("1;2;3") == null
+                && com.htbb.pokemon.NhiemVuMau.docToaDo(null) == null);
+        final com.htbb.pokemon.NhiemVuMau m = new com.htbb.pokemon.NhiemVuMau();
+        m.mapId = 1;
+        m.toaX = a[0];
+        m.toaY = a[1];
+        Kiem.dung("trongToaDo: dung o + ban do moi tinh", m.trongToaDo(1, 13, 33) && !m.trongToaDo(1, 30, 30)
+                && !m.trongToaDo(2, 12, 34));
+        final Map<String, boolean[][]> cache = new HashMap<String, boolean[][]>();
+        final List<String> loi = new ArrayList<String>();
+        int so = 0;
+        for (final Map<String, String> d : nv) {
+            final String td = d.get("toa_do");
+            final String k = d.get("kieu_muc_tieu");
+            if ("dung_toa_do".equals(k) && !d.get("map_id").isEmpty() && td.isEmpty()) {
+                loi.add(d.get("ma") + " dung_toa_do thieu toa do");
+            }
+            if (td.isEmpty()) {
+                continue;
+            }
+            so++;
+            final int[] xy = com.htbb.pokemon.NhiemVuMau.docToaDo(td);
+            if (xy == null || !td.matches("\\d+;\\d+")) {
+                loi.add(d.get("ma") + " toa do khong chuan '" + td + "'");
+                continue;
+            }
+            final String mp = d.get("map_id");
+            boolean[][] l = cache.get(mp);
+            if (l == null) {
+                final File f = new File("cMap_pokemon/" + mp);
+                if (!f.isFile()) {
+                    loi.add(d.get("ma") + " thieu ban do cMap_pokemon/" + mp);
+                    continue;
+                }
+                final com.htbb.pokemon.DinhDangBanDo bd = com.htbb.pokemon.DinhDangBanDo.doc(Files.readAllBytes(f.toPath()));
+                final String bo = com.htbb.pokemon.DinhDangBanDo.boTile(Integer.parseInt(mp));
+                final boolean[] nuoc = com.htbb.pokemon.BanDoSinhThai.luoiNuoc(bd, bo);
+                final File ft = new File("cMap_pokemon/" + bo + ".type");
+                final boolean[] di = com.htbb.pokemon.BanDoSinhThai.luoiDiDuoc(bd, ft.isFile() ? Files.readAllBytes(ft.toPath()) : null, nuoc);
+                l = new boolean[][]{di, nuoc, {true}};
+                cache.put(mp, l);
+                kichThuocCache.put(mp, new int[]{bd.w, bd.h});
+            }
+            final int[] wh = kichThuocCache.get(mp);
+            if (xy[0] >= wh[0] || xy[1] >= wh[1]) {
+                loi.add(d.get("ma") + " ngoai ban do " + td);
+            } else if (!l[0][xy[1] * wh[0] + xy[0]]) {
+                loi.add(d.get("ma") + " o khong di duoc " + mp + "@" + td);
+            } else if ("cau_ca".equals(k) && !com.htbb.pokemon.BanDoSinhThai.ganNuoc(l[1], wh[0], wh[1], xy[0], xy[1], 2)) {
+                loi.add(d.get("ma") + " cau ca khong gan nuoc " + mp + "@" + td);
+            }
+        }
+        Kiem.dung("co muc tieu co toa do (" + so + ")", so >= 40);
+        Kiem.bang("moi toa do doc duoc, dang 'x;y', trong ban do, o di duoc (cau ca: gan nuoc)", "[]",
+                loi.size() > 8 ? loi.subList(0, 8) + "... (" + loi.size() + ")" : loi.toString());
+    }
+
+    private static final Map<String, int[]> kichThuocCache = new HashMap<String, int[]>();
+
+    // ------------------------------------------------------------------ loai Pokedex
+    /** Kieu Pokedex dem theo SO DEX (engine gui dex): muc_tieu_id = dex cua loai ghi trong muc_tieu_ten; shiny bat buoc co loai. */
+    private static void kiemLoaiPokedex(final List<Map<String, String>> nv) throws Exception {
+        final Map<String, Set<String>> dexTheoTen = new HashMap<String, Set<String>>();
+        for (final Map<String, String> r : KiemLauDai.docCsv(D + "bang_quai.csv")) {
+            final String ten = r.get("ten_pokemon");
+            if (ten != null && !ten.isEmpty()) {
+                dexTheoTen.computeIfAbsent(ten.toLowerCase().replace("'", "").replace(" ", "").replace("-", ""),
+                        x -> new HashSet<String>()).add(r.get("dex"));
+            }
+        }
+        final List<String> loi = new ArrayList<String>();
+        int shiny = 0;
+        for (final Map<String, String> d : nv) {
+            final String k = d.get("kieu_muc_tieu");
+            if (!("pokedex_gap".equals(k) || "pokedex_ha".equals(k) || "pokedex_shiny".equals(k) || "quan_sat".equals(k))) {
+                continue;
+            }
+            if ("pokedex_shiny".equals(k)) {
+                shiny++;
+            }
+            final String ten = d.get("muc_tieu_ten").toLowerCase().replace(" shiny", "").replace("'", "").replace(" ", "")
+                    .replace("-", "");
+            final Set<String> dex = dexTheoTen.get(ten);
+            if (d.get("muc_tieu_id").isEmpty()) {
+                loi.add(d.get("ma") + " thieu loai");
+            } else if (dex != null && !dex.contains(d.get("muc_tieu_id"))) {
+                loi.add(d.get("ma") + " dex " + d.get("muc_tieu_id") + " khong phai " + d.get("muc_tieu_ten"));
+            } else if (dex == null) {
+                loi.add(d.get("ma") + " loai la " + d.get("muc_tieu_ten"));
+            }
+        }
+        Kiem.bang("muc tieu Pokedex/quan sat = so dex dung loai (" + shiny + " shiny)", "[]",
+                loi.size() > 8 ? loi.subList(0, 8) + "... (" + loi.size() + ")" : loi.toString());
+        final com.htbb.pokemon.NhiemVuMau m = new com.htbb.pokemon.NhiemVuMau();
+        m.kieu = "pokedex_shiny";
+        m.mucTieuId = "194";
+        final boolean dung = m.khop("pokedex_shiny", "194") && !m.khop("pokedex_shiny", "27");
+        m.mucTieuId = "";
+        Kiem.dung("engine: shiny chi tinh dung loai; thieu loai thi khong tinh", dung && !m.khop("pokedex_shiny", "27"));
     }
 }

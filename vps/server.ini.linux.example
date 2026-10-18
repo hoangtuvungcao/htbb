@@ -1,6 +1,6 @@
 #Tien Len TeaM Server  —  BAN CHO VPS LINUX
 #
-# !!!!!! DUNG CHEP FILE NAY DE LEN /opt/kpah/server.ini !!!!!!
+# !!!!!! DUNG CHEP FILE NAY DE LEN /opt/htbb/server.ini !!!!!!
 # Lam the la dat mat khau CSDL thanh chuoi mau DOI_MAT_KHAU_DB -> server bat len
 # roi chet lung chung ma systemd van bao "active (running)". Da xay ra 30/08/2026,
 # xem docs/cau-hinh-server-ini.md muc 10.
@@ -11,9 +11,9 @@
 #
 # server.ini KHONG nam trong git (bi .gitignore chan, vi chua mat khau DB).
 # Vi vay tren VPS phai tao tay MOT LAN:
-#     cp /opt/kpah/vps/server.ini.linux.example /opt/kpah/server.ini
-#     nano /opt/kpah/server.ini        # sua DOI_MAT_KHAU_DB
-#     chown kpah:kpah /opt/kpah/server.ini && chmod 640 /opt/kpah/server.ini
+#     cp /opt/htbb/vps/server.ini.linux.example /opt/htbb/server.ini
+#     nano /opt/htbb/server.ini        # sua DOI_MAT_KHAU_DB
+#     chown htbb:htbb /opt/htbb/server.ini && chmod 640 /opt/htbb/server.ini
 #
 # Sau do "git pull" khong bao gio de len file nay -> cau hinh rieng cua VPS
 # duoc giu nguyen, ke ca khi ban sua bang bang setting trong game.
@@ -25,20 +25,20 @@ limit.ccu=20000
 # CHU Y: phai la MariaDB hoac MySQL 5.7. MySQL 8 da bo ham PASSWORD() ->
 # login server (CheckLoginSocket.jar) khong xac thuc duoc mat khau.
 db.host=localhost:3306
-db.name=kpah_db
-db.user=kpah
+db.name=htbb_db
+db.user=htbb
 db.password=DOI_MAT_KHAU_DB
 # Cho phep db.password de trong - chi may nha (XAMPP) moi dat 1. Tren VPS giu 0.
 db.choPhepMatKhauTrong=0
 db.maxco=100
-db.nameNap=kpah_db
-db.userNap=kpah
+db.nameNap=htbb_db
+db.userNap=htbb
 db.pass=DOI_MAT_KHAU_DB
 db.maxNap=30
 #
 db.host1=localhost:3306
-db.name1=kpah_db
-db.user1=kpah
+db.name1=htbb_db
+db.user1=htbb
 db.password1=DOI_MAT_KHAU_DB
 db.maxco1=1
 # Tham so them vao cuoi MOI URL JDBC (ca 4 pool + phep thu ket noi luc khoi dong), dang
@@ -52,11 +52,11 @@ sv.LG=3
 sv.range=0
 
 # ==== DUONG DAN LINUX (khac han ban Windows) ====
-# PHAI co dau / o cuoi. Thu muc phai ton tai va user kpah ghi duoc:
-#     mkdir -p /opt/kpah/log && chown kpah:kpah /opt/kpah/log
-sv.pathLog=/opt/kpah/log/
+# PHAI co dau / o cuoi. Thu muc phai ton tai va user htbb ghi duoc:
+#     mkdir -p /opt/htbb/log && chown htbb:htbb /opt/htbb/log
+sv.pathLog=/opt/htbb/log/
 # Script cap nhat/restart (truoc day la D:\nqsh30\toolRestart.bat)
-db.run=/opt/kpah/vps/update.sh
+db.run=/opt/htbb/vps/update.sh
 
 sv.createRace=2
 sv.tablerace=tob_race_257
@@ -80,6 +80,16 @@ sv.Luckyexp=1
 sv.ExpQua=1
 sv.CodeTest=0
 sv.EnableAvtiveCheck=1
+# ==== DANG KY TAI KHOAN TRONG GAME (lenh 39, real.cmd.DangKyTrongGame) ====
+# 1 = cho dang ky ngay trong game (jar/Android/PC), 0 = chi tren web.
+# Quy tac + han muc (3/gio, 10/ngay moi IP, gop voi web) o HTBB-Web/shared/data/quy-tac-dang-ky.json.
+sv.dangKyTrongGame=1
+# Kich hoat 5h_active 30 ngay sau khi dang ky trong game:
+#   web = theo HTBB_AUTO_ACTIVATE cua web (web tu ghi cau_hinh 'web.autoActivate'), 1 = luon, 0 = khong.
+sv.dangKyTuKichHoat=web
+# CSDL chua bang team_user (giong HTBB_DB_ACCOUNT cua web) va do tre tra loi chong bot (ms).
+sv.dangKyCsdlTaiKhoan=account
+sv.dangKyTreMs=800
 # So nhan vat toi da moi tai khoan (1..3, client chi ve duoc 3 slot). Thieu dong nay = 3.
 sv.maxCharPerAccount=3
 

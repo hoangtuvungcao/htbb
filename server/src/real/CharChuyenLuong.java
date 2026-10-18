@@ -39,7 +39,7 @@ public final class CharChuyenLuong {
             return;
         }
         player.sendMessage(MessageCreator.createMsgInputText(
-                INPUT_TEN_NGUOI_NHAN, 0, "Nhập tên nhân vật muốn chuyển lượng", 0));
+                INPUT_TEN_NGUOI_NHAN, 0, "Nhập tên Pokémon muốn chuyển lượng", 0));
     }
 
     /**
@@ -47,11 +47,15 @@ public final class CharChuyenLuong {
      * nguoi choi - mua ban hang cao cap chi qua Cho trang tri co thue (docs/pokemon/NAP_TIEN.md).
      */
     static boolean chanViNapTien(final Char player) {
+        // thanh vien: chuyen luong can Thanh vien HTBB (tat he thong = khong chan).
+        if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "chuyen_luong")) {
+            return true;
+        }
         if (!com.htbb.pokemon.NapTien.bat()) {
             return false;
         }
         player.sendMessage(MessageCreator.createServerAlertMessage(
-                "Chuyển lượng trực tiếp đã tắt. Mua bán đồ trang trí qua Chợ trang trí (NPC Tổng Quản > Cửa hàng & Nạp).", ""));
+                "Chuyển lượng trực tiếp đã tắt. Mua bán đồ trang trí qua Chợ trang trí (NPC Tổng Quản, mục Cửa hàng và nạp).", ""));
         return true;
     }
 
@@ -72,7 +76,7 @@ public final class CharChuyenLuong {
         final Char nguoiNhan = CharManager.instance.getCharByCharName(ten);
         if (nguoiNhan == null) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Không tìm thấy nhân vật \"" + ten + "\" đang online.", ""));
+                    "Không tìm thấy Pokémon \"" + ten + "\" đang online.", ""));
             return;
         }
         final ChoNhapSoLuong c = new ChoNhapSoLuong();

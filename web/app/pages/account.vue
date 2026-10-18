@@ -12,6 +12,13 @@ interface AccountInfo {
 const api = useApi()
 const auth = useAuth()
 const { data, error, refresh } = useAsyncData<AccountInfo>('htbb-account', () => api('/api/account'), { server: false })
+// Thành viên HTBB (theo tài khoản) — HTBB/docs/pokemon/THANH_VIEN.md.
+const { data: tv } = useAsyncData<{ coBang: boolean, trangThai: { laThanhVien: boolean, hetHanMs: number | null } | null }>(
+  'htbb-tv-cua-toi', () => api('/api/thanh-vien/cua-toi'), { server: false })
+const hanTv = computed(() => {
+  const h = tv.value?.trangThai?.hetHanMs
+  return h === 0 ? 'vĩnh viễn' : (h && h > 0 ? new Date(h).toLocaleDateString('vi-VN') : '')
+})
 
 // Phiên hết hạn (401) -> useApi đã xoá token; đưa người chơi về trang đăng nhập.
 watch(error, (e: any) => {
@@ -112,7 +119,7 @@ const columns = [
 
 <template>
   <div>
-    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ nhà huấn luyện" :intro="`Thông tin tài khoản và các Pokémon của bạn trong thế giới ${useAppConfig().htbb.tenSite}.`" />
+    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ của bạn" :intro="`Thông tin tài khoản và các Pokémon của bạn trong thế giới ${useAppConfig().htbb.tenSite}.`" />
 
     <UContainer class="max-w-6xl py-14">
       <UAlert
@@ -165,6 +172,11 @@ const columns = [
               <p v-if="data && !data.activated" class="mt-4 text-sm text-muted">
                 Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.
               </p>
+              <div v-if="tv?.coBang" class="mt-4 flex items-center justify-between gap-4">
+                <span class="text-muted">Thành viên HTBB</span>
+                <UBadge v-if="tv.trangThai?.laThanhVien" color="success" variant="subtle" icon="i-lucide-badge-check" size="lg" :label="`Hạn ${hanTv}`" />
+                <UButton v-else to="/thanh-vien" size="sm" color="neutral" variant="outline" icon="i-lucide-badge-plus" label="Xem / mua" />
+              </div>
 
               <div class="mt-8 flex flex-wrap gap-3">
                 <UButton to="/download" icon="i-lucide-download">

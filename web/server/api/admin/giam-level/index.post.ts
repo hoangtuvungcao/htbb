@@ -46,7 +46,7 @@ export default defineAdminHandler(async (event, admin) => {
   })
 
   await ghiNhatKy(event, 'giam_level_hang_loat', [...players.values()].map(p => p.charname).join(', '),
-    `Gửi giảm ${soCap} level/nhân vật`)
+    `Gửi giảm ${soCap} level/Pokémon`)
 
   return {
     loai: 'success' as const,

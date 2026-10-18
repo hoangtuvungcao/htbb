@@ -5,13 +5,13 @@
 id;loai;ten;hat;moc
 0;thi_tran;Pewter;1001;lang chinh vung 1: quang truong, nha co cua, ao sen
 1;dong_co;Pallet - dong co;1002;dong co rong, bui ram, co cao quanh quai
-2;bien;Viridian - bo bien;1003;bai cat phia bac, duong ven bien
+2;bien;Viridian - bo bien;1003;[dam] bai cat phia bac, duong ven bien
 3;ho;Vermilion - ho lon;1004;ho giua, dao nho
 4;rung;Cerulean - rung;1005;rung day, loi mon
 5;dong_co;Lavender - dong co;1006;dong co, ao nho
 6;rung;Celadon - rung nho;1007;rung nho
 7;ho;Saffron - dam lay;1008;nhieu ao
-8;bien;Fuchsia - bo bien;1009;bien phia dong
+8;bien;Fuchsia - bo bien;1009;[dam] bien phia dong
 9;dong_co;Cinnabar - dong bang;1010;dong rong, duong lon ve lang
 10;rung;New Bark - rung lon;1011;rung lon nhieu khoang trong
 11;rung;Rung Viridian;1012;rung dai dong-tay
@@ -21,7 +21,7 @@ id;loai;ten;hat;moc
 15;ho;Cherrygrove - ho;1016;ho va suoi
 17;sa_mac;Khu mo (sa mac);1017;sa mac, vach da, cay dua
 18;duong;Goldenrod - tuyen duong;1018;duong chinh
-19;bien;Ecruteak - ven bien;1019;bien phia nam
+19;bien;Ecruteak - ven bien;1019;[dam] bien phia nam
 20;rung;Violet - rung;1020;rung
 21;dong_co;Dong co phia tay;1021;dong co
 22;ho;Tau S.S. Anne - dao;1022;dao giua nuoc
@@ -102,3 +102,33 @@ id;loai;ten;hat;moc
 269;trong_nha;Nha (Indigo) 10;1097;
 270;trong_nha;Nha (Indigo) 11;1098;
 271;trong_nha;Nha (Indigo) 12;1099;
+# --- Vung Hoenn (nam 2): ban do MOI, khung (kich thuoc/cong/NPC/quai) o src/com/htbb/pokemon/BanDoHoenn.java - giu loai/ten/moc khop
+43;thi_tran;Littleroot;3001;[bien] ben tau tu Kanto, cau go, thi tran dau tien
+44;rung;Rung Petalburg;3002;[ho] rung toi am, loi mon quanh co, ao nho
+45;thi_tran;Rustboro;3003;[pho] thanh pho da, xuong che tao, loi len Thac Meteor
+46;bien;Bo bien Dewford;3004;[dam] Route 116 - bai cat, bien phia nam, loi vao Hang Granite
+47;thi_tran;Slateport;3005;[bien] [pho] cho ben cang + bao tang hai duong
+48;duong;Route 110;3006;duong ven bien doc bac-nam, co cao hai ben
+49;thi_tran;Mauville;3007;[pho] nga tu Hoenn: tay sa mac, dong rung mua
+50;sa_mac;Sa mac Route 111;3008;sa mac gio cat, vach da, diem dao
+51;thi_tran;Lavaridge;3009;[ho] suoi nuoc nong giua thi tran, chan nui lua
+52;nui;Nui Chimney;3010;[tro] nui lua: tro bui, vach da, mieng nui
+53;rung;Rung mua Route 119;3011;[ho] rung mua nhiet doi, suoi va ho
+54;thi_tran;Fortree;3012;[rung] lang tren cay giua rung
+55;dong_co;Route 120 - Vien Thoi tiet;3013;[ho] dong co mua, ao, Vien thoi tiet
+56;thi_tran;Lilycove;3014;[bien] [pho] thanh pho cang, cho lon
+57;nui;Nui Pyre;3015;nui mo suong mu, bia mo
+58;bien;Bien Route 124;3016;[khoi] bien khoi, dao cat, loi xuong hang duoi bien
+59;thi_tran;Mossdeep;3017;[bien] dao trung tam vu tru
+60;thi_tran;Sootopolis;3018;[ho] thanh pho trong mieng nui lua co, ho giua
+61;bien;Bien Route 131;3019;[khoi] [dam] bien phia nam, dao Thap Troi
+62;thi_tran;Ever Grande;3020;[pho] thanh pho thac nuoc truoc Lien minh
+160;hang;Hang Granite;3021;hang toi, buc ve co
+161;hang;Thac Meteor;3022;[nuoc] hang thac, ho ngam
+162;hang;Hang duoi bien;3023;[nuoc] hang ngap nuoc duoi day bien
+163;hang;Hang Khoi Nguyen;3024;[nuoc] Cave of Origin - ho ngam sau
+164;hang;Thap Troi;3025;Sky Pillar - tang thap do nat
+165;hang;Duong Victory Hoenn;3026;hang cat dai truoc Lien minh
+280;dau_truong;Dinh Thap Troi;3027;san dinh thap - noi Rayquaza ngu
+281;thanh;Lien minh Hoenn;3028;san Lien minh Pokemon - Tu Thien Vuong
+282;dau_truong;Sanh Nha vo dich;3029;san nha vo dich Hoenn

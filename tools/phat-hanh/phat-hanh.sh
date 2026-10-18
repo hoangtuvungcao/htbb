@@ -1,57 +1,146 @@
 #!/bin/sh
-# Build + phat hanh tren MAY NAY (Windows, Git Bash) len GitHub Releases cua kpah-server/nqsh-h2-tai.
-# (Khong can may: bam "Run workflow" o tab Actions, workflow "Phat hanh" - xem phat-hanh/README.md.)
-#   sh phat-hanh/phat-hanh.sh android ["ghi chu"]   -> APK tu android/ (Gradle), tu cap nhat
-#   sh phat-hanh/phat-hanh.sh pc      ["ghi chu"]   -> ban PC tu pc/ (Unity), tu cap nhat
-#   sh phat-hanh/phat-hanh.sh jar     ["ghi chu"]   -> jar J2ME tu j2me/ (ban -release), chi dat link
-#   sh phat-hanh/phat-hanh.sh tat-ca  ["ghi chu"]   -> ca 3
-#   BAN=1425 sh phat-hanh/phat-hanh.sh android     -> tu dat so ban (mac dinh: ban dang phat hanh + 1)
-#   THU=1 sh phat-hanh/phat-hanh.sh jar            -> chi build vao phat-hanh/tam/, KHONG day len GitHub
+# Build + phát hành Huyền Thoại Bảo Bối (HTBB) trên MÁY NÀY lên GitHub Releases của repo phát hành HTBB.
+# (Không cần máy: tab Actions -> workflow "Phát hành HTBB" - .github/workflows/phat-hanh-htbb.yml, tools/phat-hanh/README.md.)
+#
+#   REPO=<chu>/<repo-phat-hanh-htbb> sh tools/phat-hanh/phat-hanh.sh jar     ["ghi chu"] -> jar thường + nhẹ (ProGuard)
+#   REPO=...                         sh tools/phat-hanh/phat-hanh.sh android ["ghi chu"] -> APK :pokemon, ký bằng KEY_DIR
+#   REPO=...                         sh tools/phat-hanh/phat-hanh.sh pc      ["ghi chu"] -> bản PC (Unity, máy Windows)
+#   REPO=...                         sh tools/phat-hanh/phat-hanh.sh tat-ca  ["ghi chu"]
+#   THU=1 sh tools/phat-hanh/phat-hanh.sh jar     -> chỉ build vào tools/phat-hanh/tam/, KHÔNG đẩy lên GitHub (không cần REPO)
+#
+# Cấu hình (không có giá trị nào cứng trong script):
+#   tools/phat-hanh/phien_ban.conf  PHIEN_BAN (vd 0.9.0-opentest) + BAN (số bản build, chỉ tăng) - đưa lên git
+#   tools/phat-hanh/may_chu.conf    MAY_CHU_CHINH=host:cổng production (BẮT BUỘC) + CAP_NHAT_URL (tự cập nhật PC,
+#                             rỗng = tắt) - gitignore, mẫu may_chu.conf.example; biến môi trường cùng tên thắng
+#   REPO                      repo phát hành HTBB (chủ server tạo; KHÔNG phải kpah-server/nqsh-h2-tai)
+#   Android: KEY_DIR (ngoài repo) + HTBB_KEYSTORE + HTBB_KEY_ALIAS + HTBB_KS_PASS [+ HTBB_KEY_PASS]
+#            -> client_apk/ky-ban-phat-hanh.sh (zipalign + apksigner). THU=1 không có khoá = APK chưa ký.
+#   PC: UNITY (đường dẫn Unity.exe 6000.5.9f1)
+# Tên tệp: HTBB-<PHIEN_BAN>-thuong.jar, -nhe.jar, -android.apk, -PC.zip; phienban.json mục jar / jar-nhe / android / pc.
+#
+# Kiểu cũ NQSH-H2 (module client_apk/app, tên NQSH-H2*, repo kpah-server/nqsh-h2-tai): chỉ khi đặt NQSH=1, và bị từ
+# chối trên nhánh pokemon/* (trừ khi thêm CHO_PHEP_NQSH=1).
 set -e
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 LOAI=$1
 GHI_CHU=${2:-}
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*) PY=python; WIN=1 ;;
+    *) PY=python3; WIN= ;;
+esac
+loi() { echo "LOI: $*" >&2; exit 1; }
+doc_conf() { [ -f "tools/phat-hanh/$1" ] && sed -n "s/^$2=//p" "tools/phat-hanh/$1" | tail -1 | tr -d '\r" ' || true; }
+nhanh() { { echo "${GITHUB_REF_NAME:-}"; git rev-parse --abbrev-ref HEAD 2>/dev/null; } | grep -q '^pokemon/'; }
+
 if [ "$LOAI" = tat-ca ]; then
-    for L in jar android pc; do sh phat-hanh/phat-hanh.sh $L "$GHI_CHU"; done
+    for L in jar android pc; do sh tools/phat-hanh/phat-hanh.sh $L "$GHI_CHU"; done
     exit 0
 fi
-case "$LOAI" in pc|android|jar) ;; *) echo "dung: sh phat-hanh/phat-hanh.sh pc|android|jar|tat-ca [\"ghi chu\"]"; exit 1 ;; esac
+case "$LOAI" in pc|android|jar) ;; *) echo "dung: sh tools/phat-hanh/phat-hanh.sh pc|android|jar|tat-ca [\"ghi chu\"]"; exit 1 ;; esac
 UNITY=${UNITY:-"/c/Program Files/Unity/Hub/Editor/6000.5.9f1/Editor/Unity.exe"}
-TAM=phat-hanh/tam
+TAM=tools/phat-hanh/tam
 rm -rf $TAM && mkdir -p $TAM
 
-# so ban ke tiep tu phienban.json tren repo (THU=1 ma chua dang nhap gh thi coi nhu {})
-python -I phat-hanh/phienban.py tai-ve $TAM/phienban.json 2>/dev/null || echo "{}" > $TAM/phienban.json
-if [ -z "$BAN" ]; then
-    BAN=$(python -I phat-hanh/phienban.py ban-ke-tiep $TAM/phienban.json $LOAI)
-    if [ "$LOAI" = jar ]; then
-        # khong ghi de jar da build trong j2me/out
-        CUOI=$(ls j2me/out 2>/dev/null | sed -n 's/.*-v\([0-9]*\)-release\.jar$/\1/p' | sort -n | tail -1)
-        [ -n "$CUOI" ] && [ "$CUOI" -ge "$BAN" ] && BAN=$((CUOI + 1))
+# ============================================================ kiểu cũ NQSH-H2 (chỉ khi NQSH=1)
+if [ "${NQSH:-0}" = 1 ]; then
+    if nhanh && [ "${CHO_PHEP_NQSH:-0}" != 1 ]; then
+        loi "NQSH=1 tren nhanh pokemon/* (ban HTBB) - khong build/phat hanh NQSH-H2 tu day (CHO_PHEP_NQSH=1 neu chac chan)"
     fi
+    REPO=${REPO:-kpah-server/nqsh-h2-tai}
+    export REPO CHO_PHEP_NQSH
+    $PY -I tools/phat-hanh/phienban.py tai-ve $TAM/phienban.json 2>/dev/null || echo "{}" > $TAM/phienban.json
+    if [ -z "$BAN" ]; then
+        BAN=$($PY -I tools/phat-hanh/phienban.py ban-ke-tiep $TAM/phienban.json $LOAI)
+        if [ "$LOAI" = jar ]; then
+            CUOI=$(ls client_jar/out 2>/dev/null | sed -n 's/.*-v\([0-9]*\)-release\.jar$/\1/p' | sort -n | tail -1)
+            [ -n "$CUOI" ] && [ "$CUOI" -ge "$BAN" ] && BAN=$((CUOI + 1))
+        fi
+    fi
+    echo "== [NQSH-H2] Phat hanh $LOAI ban $BAN"
+    if [ "$LOAI" = android ]; then
+        TEN=NQSH-H2-$BAN.apk
+        BAN=$BAN OUT=$TEN sh client_apk/build.sh
+        cp client_apk/out/$TEN $TAM/$TEN
+    elif [ "$LOAI" = jar ]; then
+        TEN=NQSH-H2-v$BAN.jar
+        NQSH=1 sh client_jar/build.sh $BAN | tail -2
+        cp "client_jar/out/HTBB-v$BAN-release.jar" $TAM/$TEN
+    else
+        TEN=NQSH-H2-PC-$BAN.zip
+        HTBB_VERSION_CODE=$BAN HTBB_OUT="$(cygpath -w "$PWD/$TAM/pc")\\NQSH-H2.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \
+            -projectPath "$(cygpath -w "$PWD/pc")" -executeMethod BuildCli.Win64 \
+            -logFile "$(cygpath -w "$PWD/$TAM/unity-build.log")" || true
+        grep -q "BUILD RESULT: Succeeded" $TAM/unity-build.log || { grep -E "error CS|BUILD RESULT|HTBB LOI" $TAM/unity-build.log; echo "Build PC loi"; exit 1; }
+        $PY -I tools/phat-hanh/nen-zip.py $TAM/pc $TAM/$TEN
+    fi
+    if [ -n "$THU" ]; then
+        echo "== THU=1: khong day len GitHub. File: $TAM/$TEN"
+        exit 0
+    fi
+    sh tools/phat-hanh/day-len.sh $LOAI $BAN $TAM/$TEN "$GHI_CHU"
+    exit 0
 fi
-echo "== Phat hanh $LOAI ban $BAN"
 
-if [ "$LOAI" = android ]; then
-    TEN=NQSH-H2-$BAN.apk
-    BAN=$BAN OUT=$TEN sh android/build.sh
-    cp android/out/$TEN $TAM/$TEN
-elif [ "$LOAI" = jar ]; then
-    TEN=NQSH-H2-v$BAN.jar
-    sh j2me/build.sh $BAN | tail -2
-    # ban -release (ProGuard); mapping-vNN.txt GIU KIN, khong day len
-    cp "j2me/out/HTBB-v$BAN-release.jar" $TAM/$TEN
+# ============================================================ Huyền Thoại Bảo Bối
+PHIEN_BAN=${PHIEN_BAN:-$(doc_conf phien_ban.conf PHIEN_BAN)}
+BAN=${BAN:-$(doc_conf phien_ban.conf BAN)}
+[ -n "$PHIEN_BAN" ] || loi "thieu PHIEN_BAN= trong tools/phat-hanh/phien_ban.conf"
+case "$BAN" in ''|*[!0-9]*) loi "BAN='$BAN' khong hop le (tools/phat-hanh/phien_ban.conf)" ;; esac
+MAY_CHU_CHINH=${MAY_CHU_CHINH:-$(doc_conf may_chu.conf MAY_CHU_CHINH)}
+CAP_NHAT_URL=${CAP_NHAT_URL:-$(doc_conf may_chu.conf CAP_NHAT_URL)}
+[ -n "$MAY_CHU_CHINH" ] || loi "chua co may chu production: MAY_CHU_CHINH=host:cong hoac tools/phat-hanh/may_chu.conf (mau: may_chu.conf.example)"
+case "$MAY_CHU_CHINH$CAP_NHAT_URL" in *nqsh-h2*) loi "may chu / CAP_NHAT_URL tro ve NQSH-H2 - day la ban HTBB" ;; esac
+if [ -z "$THU" ]; then
+    [ -n "$REPO" ] || loi "chua dat REPO=<chu>/<repo phat hanh HTBB> (THU=1 de chi build)"
+    case "$REPO" in *nqsh-h2*) loi "REPO=$REPO la kenh NQSH-H2 - ban HTBB phai co repo phat hanh rieng" ;; esac
+fi
+export REPO PHIEN_BAN MAY_CHU_CHINH CAP_NHAT_URL
+GOC_TEN="HTBB-$PHIEN_BAN"
+echo "== [HTBB] Phat hanh $LOAI $PHIEN_BAN (ban $BAN), may chu $MAY_CHU_CHINH"
+
+DAY=""   # "<loai> <file>" từng dòng
+if [ "$LOAI" = jar ]; then
+    GOI=nhe sh client_jar/build.sh "$BAN" | tail -3
+    cp "client_jar/out/HTBB-v$BAN-release.jar" "$TAM/$GOC_TEN-thuong.jar"
+    cp "client_jar/out/HTBB-v$BAN-nhe.jar" "$TAM/$GOC_TEN-nhe.jar"
+    for f in "$TAM/$GOC_TEN-thuong.jar" "$TAM/$GOC_TEN-nhe.jar"; do
+        unzip -p "$f" META-INF/MANIFEST.MF | grep -q "^HTBB-May-Chu: $MAY_CHU_CHINH" || loi "$f khong gan may chu $MAY_CHU_CHINH"
+        unzip -l "$f" | grep -q " GHI_CONG.txt$" || loi "$f thieu GHI_CONG.txt"
+    done
+    DAY="jar $TAM/$GOC_TEN-thuong.jar
+jar-nhe $TAM/$GOC_TEN-nhe.jar"
+elif [ "$LOAI" = android ]; then
+    # build CHƯA ký (không truyền KEY_DIR cho Gradle), rồi ký bằng ky-ban-phat-hanh.sh: mật khẩu chỉ ở biến môi trường
+    env -u KEY_DIR KIEU=release BAN="$BAN" MAY_CHU="$MAY_CHU_CHINH" OUT="$GOC_TEN-android-chuaky.apk" sh client_apk/build-pokemon.sh
+    CHUA_KY="client_apk/out/$GOC_TEN-android-chuaky.apk"
+    if [ -n "$KEY_DIR" ]; then
+        sh client_apk/ky-ban-phat-hanh.sh "$CHUA_KY" "$TAM/$GOC_TEN-android.apk"
+    elif [ -n "$THU" ]; then
+        echo "CANH BAO: THU=1 khong co KEY_DIR - APK CHUA KY (khong cai duoc len may), chi de kiem tra"
+        cp "$CHUA_KY" "$TAM/$GOC_TEN-android.apk"
+    else
+        loi "APK phat hanh phai ky: dat KEY_DIR + HTBB_KEYSTORE + HTBB_KEY_ALIAS + HTBB_KS_PASS (xem client_apk/ky-ban-phat-hanh.sh)"
+    fi
+    DAY="android $TAM/$GOC_TEN-android.apk"
 else
-    TEN=NQSH-H2-PC-$BAN.zip
-    HTBB_VERSION_CODE=$BAN HTBB_OUT="$(cygpath -w "$PWD/$TAM/pc")\\NQSH-H2.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \
-        -projectPath "$(cygpath -w "$PWD/pc")" -executeMethod BuildCli.Win64 \
+    [ -n "$WIN" ] || loi "build PC can may Windows co Unity (hoac workflow phat-hanh-htbb.yml)"
+    THAM_CN=""
+    [ -n "$CAP_NHAT_URL" ] && THAM_CN="-htbbCapNhat $CAP_NHAT_URL"
+    HTBB_OUT="$(cygpath -w "$PWD/$TAM/pc")\\HuyenThoaiBaoBoi.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \
+        -projectPath "$(cygpath -w "$PWD/pc")" -executeMethod BuildCli.Win64 -htbbBan "$BAN" -htbbMayChu "$MAY_CHU_CHINH" $THAM_CN \
         -logFile "$(cygpath -w "$PWD/$TAM/unity-build.log")" || true
-    grep -q "BUILD RESULT: Succeeded" $TAM/unity-build.log || { grep -E "error CS|BUILD RESULT" $TAM/unity-build.log; echo "Build PC loi"; exit 1; }
-    python -I phat-hanh/nen-zip.py $TAM/pc $TAM/$TEN
+    grep -q "BUILD RESULT: Succeeded" $TAM/unity-build.log || { grep -E "error CS|BUILD RESULT|HTBB LOI" $TAM/unity-build.log; loi "build PC loi"; }
+    [ "$(cat $TAM/htbb-ban.txt 2>/dev/null)" = "$BAN" ] || loi "ban build PC mang so '$(cat $TAM/htbb-ban.txt 2>/dev/null)', can $BAN"
+    [ -f "$TAM/pc/GHI_CONG.txt" ] || loi "ban PC thieu GHI_CONG.txt canh .exe"
+    $PY -I tools/phat-hanh/nen-zip.py $TAM/pc "$TAM/$GOC_TEN-PC.zip"
+    DAY="pc $TAM/$GOC_TEN-PC.zip"
 fi
 
 if [ -n "$THU" ]; then
-    echo "== THU=1: khong day len GitHub. File: $TAM/$TEN"
+    echo "== THU=1: khong day len GitHub. File:"
+    echo "$DAY" | while read -r L F; do ls -l "$F"; done
     exit 0
 fi
-sh phat-hanh/day-len.sh $LOAI $BAN $TAM/$TEN "$GHI_CHU"
+echo "$DAY" | while read -r L F; do
+    sh tools/phat-hanh/day-len.sh "$L" "$BAN" "$F" "$GHI_CHU"
+done

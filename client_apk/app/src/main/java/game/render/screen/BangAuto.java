@@ -47,8 +47,8 @@ public class BangAuto extends Screen {
     public TField tfMp;
     private boolean trans;
     public int seleted = 0;
-    String[] optionFC = {"Chế độ thường", "Đánh quái ", "Chọn NPC", "Chế độ chiếm thành", "Chế độ quốc chiến"};
-    String[] optionDetail = {"Chọn toàn bộ", "Chỉ chọn quái, người trong chế độ đồ sát và khác quốc gia ", "Chỉ chọn NPC", "Chỉ chọn người khác bang", "Chỉ người khác nước"};
+    String[] optionFC = {"Chế độ thường", "Đánh quái ", "Chọn NPC", "Chế độ chiếm Gym", "Chế độ chiến vùng"};
+    String[] optionDetail = {"Chọn toàn bộ", "Chỉ chọn quái, người trong chế độ PK và khác vùng ", "Chỉ chọn NPC", "Chỉ chọn người khác đội", "Chỉ người khác nước"};
     boolean first = false;
     int[] IDSkillBuff = {-1, -1, -1};
     int[] IDSkillAuto = {-1, -1, -1};
@@ -582,7 +582,7 @@ public class BangAuto extends Screen {
 
     public void doSelectedSkillAuto() {
         if (Char.skillLevelLearnt[this.focus] == -1) {
-            GCanvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+            GCanvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
             return;
         }
         boolean zIsBuffSkillAuto = isBuffSkillAuto();

@@ -1,5 +1,5 @@
 /**
- * Thư viện ảnh: lưu file ở KPAH_UPLOAD_DIR (mặc định <thư mục chạy web>/uploads), phục vụ qua
+ * Thư viện ảnh: lưu file ở HTBB_UPLOAD_DIR (mặc định <thư mục chạy web>/uploads), phục vụ qua
  * /uploads/<tên> (server/routes/uploads/[ten].get.ts). CHỈ nhận ảnh PNG / JPEG / GIF / WebP —
  * kiểm bằng chữ ký byte đầu file, KHÔNG tin đuôi tên hay Content-Type trình duyệt gửi.
  * Không nhận SVG (có thể chứa script). Tên file lưu là chuỗi ngẫu nhiên.
@@ -9,7 +9,7 @@ import { join, resolve } from 'node:path'
 export const MEDIA_TOI_DA = 5 * 1024 * 1024
 
 export function thuMucTaiLen(): string {
-  return resolve(process.env.KPAH_UPLOAD_DIR || join(process.cwd(), 'uploads'))
+  return resolve((process.env.HTBB_UPLOAD_DIR ?? process.env.KPAH_UPLOAD_DIR) || join(process.cwd(), 'uploads')) // TUONG-THICH-TEN-CU
 }
 
 export interface ThongTinAnh { mime: string, duoi: string, rong: number, cao: number }

@@ -103,6 +103,53 @@ public final class GiftcodeAnToanLogic {
         return (int) Math.min(Integer.MAX_VALUE, v);
     }
 
+    /**
+     * Danh sach trang (GiftcodeAnToanDuLieu, sinh tu HTBB-Web/shared/data/giftcode-an-toan.json): moi ITEM phai la
+     * tieu hao / nguyen lieu / tin vat (dai VAT_PHAM) hoac trang bi catalog co cap mon <= {@code capNguoiNhan}
+     * (web: cap_toi_thieu cua ma; server: cap nhan vat); moi GEM phai co that va khong ban bang luong.
+     * {@code capMon}: id item -> cap (data_item.level), -1 neu khong co. Chuoi phai DA chuan hoa.
+     * Ban TS: gcKiemVatPham (HTBB-Web/server/utils/giftcodeAnToan.ts). @return null = hop le, khac = ly do.
+     */
+    public static String kiemVatPham(final String chuan, final int capNguoiNhan, final java.util.function.IntUnaryOperator capMon) {
+        if (chuan == null) {
+            return "Phần thưởng không hợp lệ.";
+        }
+        for (final String phan : chuan.split(",")) {
+            final String[] t = phan.split(":");
+            final int id = t.length > 1 ? Integer.parseInt(t[1]) : -1;
+            if (t[0].equals("ITEM")) {
+                if (trongDai(id)) {
+                    continue;
+                }
+                if (java.util.Arrays.binarySearch(GiftcodeAnToanDuLieu.TRANG_BI, id) >= 0) {
+                    final int cap = capMon.applyAsInt(id);
+                    if (cap < 0) {
+                        return "Vật phẩm #" + id + " không tồn tại.";
+                    }
+                    if (cap > capNguoiNhan) {
+                        return "Trang bị #" + id + " (cấp " + cap + ") cao hơn cấp người nhận (" + capNguoiNhan + ").";
+                    }
+                    continue;
+                }
+                return "Vật phẩm #" + id + " không được phát bằng giftcode (chỉ tiêu hao, nguyên liệu, tín vật, trang bị thường).";
+            } else if (t[0].equals("GEM")) {
+                if (id < 0 || id > GiftcodeAnToanDuLieu.NGOC_TOI_DA || java.util.Arrays.binarySearch(GiftcodeAnToanDuLieu.NGOC_CAM, id) >= 0) {
+                    return "Ngọc #" + id + " không được phát bằng giftcode (không tồn tại hoặc bán bằng lượng).";
+                }
+            }
+        }
+        return null;
+    }
+
+    static boolean trongDai(final int id) {
+        for (final int[] d : GiftcodeAnToanDuLieu.VAT_PHAM) {
+            if (id >= d[0] && id <= d[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** null = hop le; nguoc lai ly do (dung chung cho web tao ma va server phat). */
     public static String kiem(final String phanThuong, final int tranMa) {
         final String c = chuanHoaThuong(phanThuong);

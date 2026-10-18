@@ -4,14 +4,17 @@
  */
 export default defineEventHandler(async (event) => {
   const u = await requireUser(event)
-  if (!(await napCoBang())) napThieuBang()
+  if (!(await napCoBang())) napThieuBang(true)
   try {
     const [goi, nhanVat, tran, vi, da, cauHinh] = await Promise.all([
       napDanhSachGoi(true), napNhanVat(u.id), napTran(), napVi(u.id), napDaDung(null, u.id), napCauHinh(),
     ])
     const mua = /mua=(\d+);con_ngay=(\d+)/.exec(cauHinh['trang_thai.mua_ve'] ?? '')
+    // Ẩn loại gói đang tạm ngừng bán (cấu hình trung tâm, cùng khoá với napTaoDon).
+    const banDuoc: Record<string, boolean> = {}
+    for (const l of new Set(goi.map(g => g.loai))) banDuoc[l] = await chBanLoai(l)
     return {
-      goi: goi.map(g => ({ ma: g.ma, ten: g.ten, loai: g.loai, gia_vnd: Number(g.gia_vnd), luong: Number(g.luong), mo_ta: g.mo_ta })),
+      goi: goi.filter(g => banDuoc[g.loai] !== false).map(g => ({ ma: g.ma, ten: g.ten, loai: g.loai, gia_vnd: Number(g.gia_vnd), luong: Number(g.luong), mo_ta: g.mo_ta })),
       nhanVat: nhanVat.map(n => ({ id: Number(n.id), charname: n.charname, lastLv: Number(n.lastLv) })),
       tran: {
         tuan: tran.tuan,

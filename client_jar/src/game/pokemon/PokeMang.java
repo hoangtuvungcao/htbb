@@ -18,6 +18,8 @@ public final class PokeMang {
     public static final int POKE_TIEN_HOA = -92;
     public static final int POKE_CUOI = -93;
     public static final int POKE_PET = -94;
+    /** -102 ngoai hinh trang bi (S->C, NgoaiHinhCua); -103 cai dat an/hien (C->S, NgoaiHinhMenu). */
+    public static final int POKE_NGOAI_HINH = -102;
 
     private PokeMang() {
     }
@@ -45,6 +47,21 @@ public final class PokeMang {
             } catch (Throwable e) {
                 return true;
             }
+        }
+        if (lenh == POKE_NGOAI_HINH) {
+            try {
+                DataInputStream r = msg.reader();
+                short id = r.readShort();
+                NgoaiHinhCua n = NgoaiHinhCua.doc(r);
+                NgoaiHinhMenu.nap();
+                Char c = timChar(id);
+                if (c != null) {
+                    c.ngoaiHinh = n;
+                }
+            } catch (Throwable e) {
+                // goi hong: bo qua
+            }
+            return true;
         }
         if (lenh > POKE_THAN || lenh < POKE_PET) {
             return false;
@@ -86,7 +103,7 @@ public final class PokeMang {
                         if (tenMoi.length() == 0) {
                             tenMoi = "#" + dexMoi;
                         }
-                        GameScr.addChat(c, "Tiến hóa thành " + tenMoi + "!", 50);
+                        GameScr.addChat(c, "Tiến hoá thành " + tenMoi + "!", 50);
                     }
                     break;
                 }

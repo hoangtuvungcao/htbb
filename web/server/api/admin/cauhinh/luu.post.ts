@@ -4,6 +4,7 @@
  *
  * Token bearer thay cho CSRF (xem server/utils/admin.ts). Chỉ ghi bảng cau_hinh — KHÔNG
  * ghi server.ini; server game tự đọc lại bảng mỗi 10 giây.
+ * Nhật ký: ghiThayDoi (trước/sau từng khoá) — xem ở Lịch sử thay đổi.
  */
 export default defineAdminHandler(async (event, admin) => {
   const body = (await readBody<Record<string, unknown>>(event).catch(() => null)) ?? {}
@@ -16,8 +17,10 @@ export default defineAdminHandler(async (event, admin) => {
     throw apiLoi(400, String(e?.message ?? e))
   }
 
+  const truoc = await cauHinhDocKhoa(Object.keys(tt.m))
   // Lỗi CSDL để defineAdminHandler ghi 'loi_web' vào nhật ký và báo lại cho admin.
   await cauHinhLuu(tt.m, admin.username)
-  await ghiNhatKy(event, 'sua_cau_hinh', tt.doiTuong, cauHinhJson(tt.m))
+  const sau = Object.fromEntries(Object.entries(tt.m).map(([k, v]) => [k, String(v)]))
+  await ghiThayDoi(event, 'sua_cau_hinh', `cau_hinh:${tt.doiTuong}`, truoc, sau)
   return { ok: true, message: tt.thongBao }
 })

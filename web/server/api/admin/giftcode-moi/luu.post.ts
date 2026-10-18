@@ -1,4 +1,4 @@
-import { gcChuanHoaMa, gcChuanHoaThuong, gcGiaTri, gcGioiHan, gcMoTa, gcThangNay } from '../../../utils/giftcodeAnToan'
+import { gcChuanHoaMa, gcChuanHoaThuong, gcGiaTri, gcGioiHan, gcKiemVatPham, gcMoTa, gcThangNay } from '../../../utils/giftcodeAnToan'
 /**
  * Tạo / sửa mã. Body { ma, phanThuong, han ('' = không hạn), tongLuot, capToiThieu, bat, ghiChu, sua?: boolean }.
  * Sửa: không đổi được tên mã; giữ nguyên da_dung.
@@ -16,8 +16,11 @@ export default defineAdminHandler(async (event, admin) => {
   const han = ngayGio(b.han)
   const tongLuot = Math.max(1, Math.min(1_000_000, int(b.tongLuot, 1)))
   const cap = Math.max(1, Math.min(100, int(b.capToiThieu, 1)))
+  const loiVatPham = await gcKiemVatPham(chuan, cap)
+  if (loiVatPham) throw apiLoi(400, loiVatPham)
   const bat = b.bat === false || int(b.bat, 1) === 0 ? 0 : 1
-  const ghiChu = chuoi(b.ghiChu, 'Ghi chú', 255)
+  // tob_giftcode là utf8 (3 byte): emoji → '?' để MariaDB strict không báo lỗi 1366 (chuoiDb.ts)
+  const ghiChu = chuUtf8mb3(chuoi(b.ghiChu, 'Ghi chú', 255))
   const cu = await q1<Record<string, any>>(dbGame(), 'SELECT * FROM tob_giftcode WHERE ma = ? LIMIT 1', [ma])
   if (cu && b.sua !== true) throw apiLoi(409, `Đã có mã "${ma}".`)
   if (!cu && b.sua === true) throw apiLoi(404, 'Không tìm thấy mã.')

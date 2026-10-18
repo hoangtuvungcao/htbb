@@ -95,7 +95,7 @@ public class CharSelectScr extends Screen {
         @Override
         public void perform() {
             if (CharSelectScr.this.cmdDel.caption.equals("Xóa")) {
-                Canvas.startYesNoDlg("Bạn thật sự muốn xóa nhân vật này?", new IAction() {
+                Canvas.startYesNoDlg("Bạn thật sự muốn xóa Pokémon này?", new IAction() {
                     @Override
                     public void perform() {
                         Canvas.startWaitDlg("Xin chờ..", true);
@@ -108,7 +108,7 @@ public class CharSelectScr extends Screen {
                     }
                 });
             } else if (CharSelectScr.this.cmdDel.caption.equals("Khôi phục")) {
-                Canvas.startYesNoDlg("Bạn muốn khôi phục nhân vật này?", new IAction() {
+                Canvas.startYesNoDlg("Bạn muốn khôi phục Pokémon này?", new IAction() {
                     @Override
                     public void perform() {
                         Canvas.startWaitDlg("Xin chờ..", true);
@@ -173,7 +173,7 @@ public class CharSelectScr extends Screen {
         int xKhung = xThe(0) - 8;
         int wKhung = 3 * cw + 8 + 16;
         game.pokemon.GiaoDien.bangMo(g, xKhung, yThe() - 30, wKhung, CAO_THE + 76);
-        game.pokemon.GiaoDien.dai(g, xKhung + 4, yThe() - 26, wKhung - 8, 18, "Chọn nhân vật");
+        game.pokemon.GiaoDien.dai(g, xKhung + 4, yThe() - 26, wKhung - 8, 18, "Chọn Pokémon");
         for (int i = 0; i < 3; i++) {
             int x = xThe(i);
             int y = yThe();
@@ -218,7 +218,7 @@ public class CharSelectScr extends Screen {
                 ten = ten.substring(0, ten.length() - 1);
             }
             Font.blackFont.drawString(g, ten, cx, y + 61, 2);
-            Font.arialFont.drawString(g, new StringBuffer("Lv ").append(lv).toString(), cx, y + 74, 2);
+            Font.arialFont.drawString(g, new StringBuffer("Cấp ").append(lv).toString(), cx, y + 74, 2);
             if (c.weaponType >= 3 && c.weaponType <= 7) {
                 String he = LoaiPokemonClient.HE_KHOI_DAU[c.weaponType - 3];
                 String chu = he.startsWith("Hệ ") ? he.substring(3) : he;
@@ -232,11 +232,13 @@ public class CharSelectScr extends Screen {
         int yDuoi = yThe() + CAO_THE + 8;
         if (this.charInfos != null && this.selected < this.charInfos.length && this.chars != null && this.selected < this.chars.length) {
             MainChar ci = this.charInfos[this.selected];
-            String dong = new StringBuffer(String.valueOf(ci.name)).append(" - Lv ").append((int) (ci.lastLv > 0 ? ci.lastLv : (short) 1)).toString();
+            String dong = new StringBuffer(String.valueOf(ci.name)).append(" - Cấp ").append((int) (ci.lastLv > 0 ? ci.lastLv : (short) 1)).toString();
             int dex = duDoanDex(this.chars[this.selected], ci.lastLv);
             if (dex > 0) {
                 dong = new StringBuffer(dong).append(" - ").append(LoaiPokemonClient.ten(dex)).toString();
             }
+            // pokemon: cắt ".." cho vừa khung (chừa chỗ cờ vùng bên trái)
+            dong = game.pokemon.GiaoDien.catChu(Font.borderFont, dong, Canvas.w - 46);
             Font.borderFont.drawString(g, dong, Canvas.hw, yDuoi, 2);
             if (ci.using == 0) {
                 Font.borderFont.drawString(g, new StringBuffer("Còn lại: ").append((int) ci.day).append(" ngày").toString(), Canvas.hw, yDuoi + 14, 2);
@@ -246,7 +248,7 @@ public class CharSelectScr extends Screen {
                 g.drawRegion(Res.imgNation, 0, ci.nationID * 11, 11, 11, 0, (Canvas.hw - (ww / 2)) - 15, yDuoi + 2, 20);
             }
         } else {
-            Font.borderFont.drawString(g, "Ô trống: bấm để tạo nhân vật", Canvas.hw, yDuoi, 2);
+            Font.borderFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.borderFont, "Ô trống: bấm để tạo Pokémon", Canvas.w - 24), Canvas.hw, yDuoi, 2);
         }
         super.paint(g);
     }

@@ -32,7 +32,7 @@ DUMP = os.path.join(GOC, "sql", "htbb_day_du.sql")
 RA_CSV_NV = os.path.join(GOC, "docs", "pokemon", "nhiem_vu_moi.csv")
 RA_CSV_SK = os.path.join(GOC, "docs", "pokemon", "su_kien_nam.csv")
 RA_CSV_CAP = os.path.join(GOC, "docs", "pokemon", "bang_cap_do_lau_dai.csv")
-RA_JAVA = os.path.join(GOC, "src", "com", "htbb", "pokemon", "ThongSoLauDai.java")
+RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "ThongSoLauDai.java")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_lau_dai.sql")
 BANG_VP = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
 
@@ -42,13 +42,17 @@ BANG_VP = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
 
 CAP_TOI_DA = 100
 
-# Mo tran cap theo mua: (ngay ke tu khai truong, tran cap).
+# Mo tran cap theo mua: (ngay ke tu khai truong, tran cap). TAT MAC DINH tu 18/10/2026 (server.ini
+# sv.tran_cap_theo_mua=0, quyet dinh: khong tran theo mua, len cap CHAM + vat pham tang toc - TangToc.java).
+# Giu bang de bat lai duoc (sv.tran_cap_theo_mua=1) va de mo phong so sanh.
 TRAN_CAP_THEO_NGAY = [(0, 60), (60, 70), (150, 80), (240, 91), (365, 95), (545, 100)]
 
 # Gio "hieu dung" (danh quai cung cap, toc do 100%) de len TU cap L -> L+1. Noi suy log giua
-# cac moc => duong cong tron, EXP_LEN_CAP tang don dieu. Tong 1->91 ~ 620 gio, 91->100 ~ 360 gio.
-GIO_CAP_MOC = [(1, 0.03), (10, 0.05), (16, 0.10), (20, 0.25), (30, 0.9), (40, 2.0), (50, 3.6),
-               (60, 6.2), (70, 11.0), (80, 19.0), (90, 32.0), (100, 46.0)]
+# cac moc => duong cong tron, EXP_LEN_CAP tang don dieu. 18/10/2026 (khong tran theo mua): cac moc tu cap 40
+# nhan 0,94 (cap 1-30 giu nguyen: tien hoa dau ~1,1 gio) va nang luong 90 phut/ngay (duoi) => tong 1->100 ~ 885
+# gio; mo phong: nguoi nhe khong nap (1-2 gio/ngay, dung ban khoa) toi cap 100 ~ thang 17, nguoi cay ~ thang 10.
+GIO_CAP_MOC = [(1, 0.03), (10, 0.05), (16, 0.10), (20, 0.25), (30, 0.9), (40, 1.9), (50, 3.4),
+               (60, 5.8), (70, 10.3), (80, 17.9), (90, 30.1), (100, 43.2)]
 
 # EXP chuan cua 1 quai cung cap (noi suy log tu data_monster.rcvxp quai thuong da dat tren map).
 MOB_EXP_MOC = [(1, 20), (10, 300), (20, 900), (30, 2000), (40, 4100), (50, 5940), (60, 9000),
@@ -68,9 +72,11 @@ def xu_moi_quai(L):
 TI_LE_ROI_XU = 30  # %
 
 # Nang luong huan luyen (chong cay qua muc + chong bot). Gio trong NGAY, sau gio nghi (rested).
-NANG_LUONG_GIO_NGAY = 3.0           # gio 100% moi ngay
-NANG_LUONG_TICH_TOI_DA = 6.0        # gio 100% tich luy toi da (nghi ngoi)
-BAC_MET = [(3.0, 50), (4.0, 20)]    # sau gio 100%: 3 gio 50%, 4 gio 20%, sau do 0% EXP va 0 xu
+# 18/10/2026: thu hep (90 phut) de nguoi cay 6 gio/ngay chi nhanh ~1,7 lan nguoi choi 1,5 gio (truoc: ~3 lan) khi
+# khong con tran theo mua. Nguoi choi nhe (<= 90 phut danh quai) khong bi anh huong. Bua the luc (TangToc) +60 phut.
+NANG_LUONG_GIO_NGAY = 1.5           # gio 100% moi ngay
+NANG_LUONG_TICH_TOI_DA = 3.0        # gio 100% tich luy toi da (nghi ngoi)
+BAC_MET = [(2.0, 20), (2.0, 5)]     # sau gio 100%: 2 gio 20%, 2 gio 5%, sau do 0% EXP va 0 xu
 HE_SO_BAT_KIP = 150                 # % EXP khi cap < trung vi may chu - 5
 KHOANG_BAT_KIP = 5
 
@@ -165,9 +171,15 @@ GIFTCODE_GIO_TOI_DA = 0.5
 
 # Muc tieu (mo phong phai dat).
 MUC_TIEU = {
-    "nhe_xong_chinh_som_nhat_thang": 12,       # nhom choi nhe (1-2h) khong xong truoc thang 12
-    "nhe_xong_chinh_muon_nhat_thang": 18,
-    "cay_xong_chinh_som_nhat_thang": 6,
+    # 18/10/2026 (khong tran theo mua): cot truyen nam 1 bi chan boi cap chuong (C52 can cap 90) + ve chuong 2/tuan.
+    "nhe_xong_chinh_som_nhat_thang": 9,        # nhom choi nhe (1-2h): <= 5% xong nam 1 truoc thang 9
+    "nhe_xong_chinh_muon_nhat_thang": 14,      # ... trung vi <= thang 14
+    "cay_xong_chinh_som_nhat_thang": 5,        # nhom cay: <= 5% truoc thang 5 (52 chuong / 2 ve tuan ~ 26 tuan)
+    # Thoi gian toi cap toi da (end-game) khi KHONG tran theo mua, nguoi khong nap (dung ban khoa kiem duoc).
+    "nhe_cap_toi_da_thang_min": 15, "nhe_cap_toi_da_thang_max": 18,
+    "cay_cap_toi_da_thang_min": 9, "cay_cap_toi_da_thang_max": 12,
+    "tang_toc_nhanh_hon_toi_da_phan_tram": 40,   # nguoi mua tang toc toi tran / khong dung gi, cung gio choi
+    "luong_dot_toi_thieu_phan_tram": 95,        # luong nap bi dot (tu thang 3)
     "tang_tien_thuc_thang_toi_da_phan_tram": 5,      # xu/nguoi tinh theo GIO thu nhap o cap trung vi, TB thang 4..24
     "xu_thuc_toi_da_gio": 20,                         # xu TB/nguoi <= 20 gio thu nhap o cap trung vi
     "sink_faucet_min": 0.80, "sink_faucet_max": 1.05,
@@ -242,7 +254,7 @@ QUAI_DA_DAT = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
                51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 62, 63, 65, 68, 71, 74, 76, 77, 80, 81, 118,
                136, 137, 138]
 
-# Vat pham nhiem vu dung duoc (data.ItemQuest.NAME_ITEM_QUEST trong lib/NQSH_5h.jar).
+# Vat pham nhiem vu dung duoc (data.ItemQuest.NAME_ITEM_QUEST trong lib/htbb-core.jar).
 VP_NV = {0: "Nọc bọ cạp", 2: "Khúc gỗ", 3: "Rết đỏ", 6: "Lông đuôi Hồng Kê", 7: "Móng cá sấu",
          8: "Da ếch", 9: "Cựa gà"}
 VP_THU = 4  # "Lá thư"
@@ -642,29 +654,29 @@ LICH = [
     (3, 1, "Ngày cộng đồng Charmander", "Ngày cộng đồng Squirtle", "cong_dong", "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5", "moi:congdong", "SuKien + spawn", 1.0, "Trang phục khởi đầu (không chỉ số)", "Giờ vàng chung"),
     (4, 1, "Chuẩn bị Tết: gói bánh", "Chuẩn bị Tết: chợ hoa", "le_vn", "Nồi bánh chưng/bánh tét theo đội", "tet2017", "MapSuKien nấu bánh, tob_nau_banh", 1.5, "Bánh (thuốc khoá), lì xì khoá", "Hoạt động đội"),
     (5, 2, "Tết Nguyên Đán (theo âm lịch: tuần 4-7)", "Tết Nguyên Đán: Lân Litleo", "le_vn", "Cây lì xì Sudowoodo, lì xì khoá, top Tết theo điểm (không theo nạp)", "tet2017,tet123", "SuKien.TET_2017/TET_123", 3.0, "Áo Tết (không chỉ số), danh hiệu năm", "Đỉnh năm: quay lại"),
-    (7, 1, "Tuần Shiny", "Tuần Shiny: Johto", "pokemon", "Tỉ lệ shiny ×10, pity 2.000 lần hạ", "moi:shiny", "tob_pokedex + cột shiny (GĐ2)", 1.0, "Huy hiệu shiny", "Sưu tầm"),
-    (8, 1, "Valentine: Luvdisc", "Valentine: Alomomola", "le_vn", "Tặng hoa cho bạn (Hoa hồng shop), cặp đôi cùng đội +EXP", "moi:valentine", "data_shop Hoa hồng + MapSuKien", 1.0, "Khung đôi, hiệu ứng trái tim", "Xã hội"),
-    (9, 1, "Đột kích huyền thoại: Zapdos", "Đột kích: Articuno", "dot_kich", "Boss thế giới 2 lần/ngày, đội ≥ 5", "moi:dotkich", "BossThanLan (Zapdos 82)", 1.5, "Lông vũ Zapdos (nguyên liệu khoá)", "Hẹn giờ chung"),
+    (7, 1, "Tuần Shiny", "Tuần Shiny: Johto", "pokemon", "Tỉ lệ shiny ×10, chắc chắn gặp shiny sau 2.000 lần hạ quái", "moi:shiny", "tob_pokedex + cột shiny (GĐ2)", 1.0, "Huy hiệu shiny", "Sưu tầm"),
+    (8, 1, "Valentine: Luvdisc", "Valentine: Alomomola", "le_vn", "Tặng hoa cho bạn bè (Hoa hồng bán ở cửa hàng), cặp đôi cùng đội được thêm EXP", "moi:valentine", "data_shop Hoa hồng + MapSuKien", 1.0, "Khung đôi, hiệu ứng trái tim", "Xã hội"),
+    (9, 1, "Đột kích huyền thoại: Zapdos", "Đột kích: Articuno", "dot_kich", "Boss thế giới 2 lần/ngày, đi nhóm từ 5 thành viên trở lên", "moi:dotkich", "BossDotKich (Zapdos 82)", 1.5, "Lông vũ Zapdos (nguyên liệu khoá)", "Hẹn giờ chung"),
     (10, 1, "Quốc tế Phụ nữ 8/3", "8/3: Gardevoir", "le_vn", "Quà 8/3, hoa hồng; nhiệm vụ tặng hoa", "quocte83", "SuKien.QUOC_TE_8_3", 1.0, "Ruy băng trang trí", "Xã hội"),
     (11, 1, "Tuần hệ Cỏ", "Tuần hệ Tiên", "tuan_he", "Như tuần 2", "moi:tuanhe", "spawn", 1.0, "Phiến đá trang trí", "Mục tiêu tuần"),
     (12, 1, "Ngày cộng đồng Bulbasaur", "Ngày cộng đồng Pichu", "cong_dong", "Như tuần 3", "moi:congdong", "spawn", 1.0, "Trang phục", "Giờ vàng chung"),
-    (13, 1, "Mùa giải PvP 1 kết thúc", "Mùa giải PvP 5 kết thúc", "pvp", "Chốt bậc Poké→Master, phát thưởng mùa", "moi:muapvp", "MapLienDau/ArenaData, tob_char_thach_dau", 1.0, "Khung bậc mùa, lượng theo bậc", "Cạnh tranh"),
+    (13, 1, "Mùa giải PvP 1 kết thúc", "Mùa giải PvP 5 kết thúc", "pvp", "Chốt bậc xếp hạng (từ Poké đến Master), phát thưởng mùa", "moi:muapvp", "MapLienDau/ArenaData, tob_char_thach_dau", 1.0, "Khung bậc mùa, lượng theo bậc", "Cạnh tranh"),
     (14, 1, "Lễ hội Pokédex", "Lễ hội Pokédex: Johto", "pokemon", "Mốc Pokédex ×2 điểm nghiên cứu", "moi:pokedex", "tob_pokedex_thuong", 1.0, "Danh hiệu nghiên cứu", "Sưu tầm"),
-    (15, 1, "Giỗ Tổ Hùng Vương", "Giỗ Tổ: bánh giày", "le_vn", "Bánh giày, pháo hoa (EXP theo % cấp, có trần)", "gioto", "SuKien.GIO_TO", 1.5, "Pháo hoa trang trí", "Giờ vàng chung"),
-    (16, 1, "Thế chiến vùng (Kanto/Johto/Hoenn)", "Thế chiến vùng", "chien_vung", "Thứ Bảy 20h: 3 vùng giành cờ", "moi:chienvung", "MapChienTruongMoba, Moba boss", 1.0, "Cờ vùng (trang trí)", "Đồng đội"),
+    (15, 1, "Giỗ Tổ Hùng Vương", "Giỗ Tổ: bánh giày", "le_vn", "Bánh giày, pháo hoa (EXP theo % cấp, có giới hạn)", "gioto", "SuKien.GIO_TO", 1.5, "Pháo hoa trang trí", "Giờ vàng chung"),
+    (16, 1, "Chiến vùng (Kanto/Johto/Hoenn)", "Chiến vùng", "chien_vung", "Thứ Bảy 20h: 3 vùng giành cờ", "moi:chienvung", "MapChienTruongMoba, Moba boss", 1.0, "Cờ vùng (trang trí)", "Đồng đội"),
     (17, 1, "30/4 - 1/5: Thống nhất", "30/4: Diễu hành Pokémon", "le_vn", "Đường đua Ponyta, nhiệm vụ tuyến", "moi:3004", "Thú cưỡi Ponyta/Rapidash", 1.5, "Yên thú cưỡi trang trí", "Nghỉ lễ"),
     (18, 1, "Tuần hệ Lửa", "Tuần hệ Ma", "tuan_he", "Như tuần 2", "moi:tuanhe", "spawn", 1.0, "Phiến đá trang trí", "Mục tiêu tuần"),
     (19, 1, "Ngày cộng đồng Squirtle", "Ngày cộng đồng Eevee", "cong_dong", "Như tuần 3", "moi:congdong", "spawn", 1.0, "Trang phục", "Giờ vàng chung"),
-    (20, 1, "Đột kích: Entei", "Đột kích: Raikou", "dot_kich", "Như tuần 9", "moi:dotkich", "Entei 138", 1.5, "Nanh Entei (khoá)", "Hẹn giờ chung"),
-    (21, 1, "Bùng phát quần thể (Mass outbreak)", "Bùng phát: Johto", "pokemon", "Mỗi ngày 1 tuyến có 1 loài ×5", "moi:bungphat", "spawn", 1.0, "Điểm Pokédex", "Bất ngờ"),
-    (22, 1, "Quốc tế Thiếu nhi 1/6", "1/6: Pichu & bạn", "le_vn", "Nhiệm vụ dẫn người mới (sư phạm ×2)", "moi:thieunhi", "Sư phạm", 1.0, "Mũ trẻ em", "Người mới"),
-    (23, 2, "Sự kiện Hè: biển Vermilion", "Hè: đảo Cinnabar", "mua", "Kem, dưa hấu, câu cá; thả 50% giờ 100% thêm (năng lượng hè)", "he2017", "SuKien.HE_2017", 1.5, "Đồ bơi trang trí", "Mùa hè: nhiều giờ chơi"),
+    (20, 1, "Đột kích: Entei", "Đột kích: Raikou", "dot_kich", "Như tuần 9", "moi:dotkich", "Entei 138", 1.5, "Nanh lửa Entei (khoá)", "Hẹn giờ chung"),
+    (21, 1, "Bùng phát quần thể", "Bùng phát: Johto", "pokemon", "Mỗi ngày 1 tuyến đường có 1 loài xuất hiện ×5", "moi:bungphat", "spawn", 1.0, "Điểm Pokédex", "Bất ngờ"),
+    (22, 1, "Quốc tế Thiếu nhi 1/6", "1/6: Pichu & bạn", "le_vn", "Nhiệm vụ dẫn dắt người mới (thưởng Sư phạm ×2)", "moi:thieunhi", "Sư phạm", 1.0, "Mũ trẻ em", "Người mới"),
+    (23, 2, "Sự kiện Hè: biển Vermilion", "Hè: đảo Cinnabar", "mua", "Kem, dưa hấu, câu cá; thêm 50% thời gian năng lượng 100% (năng lượng hè)", "he2017", "SuKien.HE_2017", 1.5, "Đồ bơi trang trí", "Mùa hè: nhiều giờ chơi"),
     (25, 1, "Ngày cộng đồng Pichu", "Ngày cộng đồng Bulbasaur", "cong_dong", "Như tuần 3", "moi:congdong", "spawn", 1.0, "Trang phục", "Giờ vàng chung"),
     (26, 1, "Mùa giải PvP 2 kết thúc", "Mùa giải PvP 6 kết thúc", "pvp", "Như tuần 13", "moi:muapvp", "MapLienDau", 1.0, "Khung bậc mùa", "Cạnh tranh"),
     (27, 1, "Tuần hệ Nước", "Tuần hệ Đất", "tuan_he", "Như tuần 2", "moi:tuanhe", "spawn", 1.0, "Phiến đá", "Mục tiêu tuần"),
     (28, 1, "Đột kích: Darkrai", "Đột kích: Suicune", "dot_kich", "Như tuần 9", "moi:dotkich", "BossDracula (Darkrai 116)", 1.5, "Mảnh bóng tối (khoá)", "Hẹn giờ chung"),
     (29, 1, "Hè 2: Hầm ngục bí ẩn mùa hè", "Hè 2: Hầm ngục sa mạc", "mua", "Hầm ngục bí ẩn ×2 điểm xếp hạng", "moi:hamngucmua", "Hầm ngục (GĐ3)", 1.5, "Khung hầm ngục", "Endgame"),
-    (30, 1, "Thế chiến vùng mùa hè", "Thế chiến vùng", "chien_vung", "Như tuần 16", "moi:chienvung", "Moba", 1.0, "Cờ vùng", "Đồng đội"),
+    (30, 1, "Chiến vùng mùa hè", "Chiến vùng", "chien_vung", "Như tuần 16", "moi:chienvung", "Moba", 1.0, "Cờ vùng", "Đồng đội"),
     (31, 1, "Ngày cộng đồng Eevee", "Ngày cộng đồng Charmander", "cong_dong", "Như tuần 3 + đá tiến hoá ×2", "moi:congdong", "DaTienHoa", 1.0, "Trang phục Eevee", "Giờ vàng chung"),
     (32, 1, "Vu Lan", "Vu Lan: hoa hồng vàng", "le_vn", "Nhánh hoa hồng vàng, đổi quà khoá", "vulan", "SuKien.VU_LAN", 1.0, "Hoa cài trang trí", "Gia đình"),
     (33, 1, "Tuần hệ Điện", "Tuần hệ Thép", "tuan_he", "Như tuần 2", "moi:tuanhe", "spawn", 1.0, "Phiến đá", "Mục tiêu tuần"),
@@ -678,13 +690,13 @@ LICH = [
     (42, 1, "Tuần hệ Siêu linh", "Tuần hệ Giác đấu", "tuan_he", "Như tuần 2", "moi:tuanhe", "spawn", 1.0, "Phiến đá", "Mục tiêu tuần"),
     (43, 2, "Halloween: Gengar", "Halloween: Mimikyu", "mua", "Bí ngô, mặt nạ, boss Darkrai đêm 31/10", "halloween,demhalloween", "SuKien.HALLOWEEN", 1.5, "Mặt nạ trang trí", "Bất ngờ"),
     (45, 1, "Lễ hội Pokédex 2", "Lễ hội Pokédex: Hoenn", "pokemon", "Như tuần 14", "moi:pokedex", "tob_pokedex_thuong", 1.0, "Danh hiệu", "Sưu tầm"),
-    (46, 1, "Nhà giáo 20/11", "20/11: thầy và trò", "le_vn", "Sư phạm ×2, chổi băng/độc/điện", "sinhnhat2011", "SuKien.SINH_NHAT_2011", 1.0, "Danh hiệu người thầy", "Người mới"),
-    (47, 1, "Black Friday (giảm giá shop xu)", "Black Friday", "mua", "Giảm 30% đồ trang trí bằng xu (là hố hút)", "blackfriday", "SuKien.BLACK_FRIDAY", 0.5, "—", "Hố hút xu"),
-    (48, 1, "Đột kích: Groudon & Kyogre", "Đột kích: Kyogre & Groudon", "dot_kich", "2 boss cùng lúc", "moi:dotkich", "BossSonTinhThuyTinh (129/130)", 1.5, "Ngọc lục/ngọc lam (khoá)", "Hẹn giờ chung"),
-    (49, 1, "Thế chiến vùng mùa đông", "Thế chiến vùng", "chien_vung", "Như tuần 16", "moi:chienvung", "Moba", 1.0, "Cờ vùng", "Đồng đội"),
+    (46, 1, "Nhà giáo 20/11", "20/11: thầy và trò", "le_vn", "Thưởng Sư phạm ×2, chổi băng/độc/điện", "sinhnhat2011", "SuKien.SINH_NHAT_2011", 1.0, "Danh hiệu người thầy", "Người mới"),
+    (47, 1, "Black Friday (giảm giá cửa hàng xu)", "Black Friday", "mua", "Giảm 30% đồ trang trí mua bằng xu", "blackfriday", "SuKien.BLACK_FRIDAY", 0.5, "—", "Hố hút xu"),
+    (48, 1, "Đột kích: Groudon & Kyogre", "Đột kích: Kyogre & Groudon", "dot_kich", "2 boss cùng lúc", "moi:dotkich", "BossKyogreGroudon (129/130)", 1.5, "Ngọc đỏ Groudon, Ngọc lam Kyogre (khoá)", "Hẹn giờ chung"),
+    (49, 1, "Chiến vùng mùa đông", "Chiến vùng", "chien_vung", "Như tuần 16", "moi:chienvung", "Moba", 1.0, "Cờ vùng", "Đồng đội"),
     (50, 1, "Ngày cộng đồng Bulbasaur 2", "Ngày cộng đồng Pichu 2", "cong_dong", "Như tuần 3", "moi:congdong", "spawn", 1.0, "Trang phục", "Giờ vàng chung"),
     (51, 1, "Giáng sinh: Delibird", "Giáng sinh: Abomasnow", "le_vn", "Cây thông Abomasnow, quà Delibird, đêm 24/12", "noel,demnoel", "SuKien.NOEL", 2.0, "Mũ Noel trang trí", "Đỉnh năm"),
-    (52, 1, "Tổng kết năm + mùa giải PvP 4", "Tổng kết năm 2", "pvp", "Bảng năm, kỷ niệm máy chủ", "moi:tongket", "SuKienDuaTop, tob_top_thuong", 2.0, "Danh hiệu năm", "Cạnh tranh"),
+    (52, 1, "Tổng kết năm + mùa giải PvP 4", "Tổng kết năm 2", "pvp", "Bảng xếp hạng năm, kỷ niệm máy chủ", "moi:tongket", "SuKienDuaTop, tob_top_thuong", 2.0, "Danh hiệu năm", "Cạnh tranh"),
 ]
 
 
@@ -700,7 +712,7 @@ def sinh_su_kien():
             t1, t2, loai, cc, ngay, ma, td, ns, th, moc = tuan_da[t]
         else:
             t1, t2, loai, cc, ngay, ma, td, ns, th, moc = ("Tuần thường: nhiệm vụ tuần + xếp hạng", "Tuần thường",
-                                                           "thuong", "Không sự kiện; chỉ bảng tuần", 7, "",
+                                                           "thuong", "Không có sự kiện, chỉ có bảng xếp hạng tuần", 7, "",
                                                            "—", 0.5, "—", "Mục tiêu tuần")
         ra.append({"tuan": t, "thang": min(12, 1 + (t - 1) * 12 // 52), "ten_nam1": t1, "ten_nam2": t2,
                    "loai": loai, "co_che": cc, "so_ngay": ngay or 7, "ma_su_kien": ma, "tai_dung": td,
@@ -919,7 +931,8 @@ def ghi_sql(nv, sk, quai):
            "% EXP theo lệch cấp người - quái = 0..15+"),
           ("exp.nang_luong_phut", int(NANG_LUONG_GIO_NGAY * 60), "0", "Phút 100% mỗi ngày"),
           ("exp.nang_luong_tich_phut", int(NANG_LUONG_TICH_TOI_DA * 60), "0", "Tích luỹ tối đa"),
-          ("exp.bac_met", "180:50,240:20", "0", "Sau giờ 100%: 180 phút 50%, 240 phút 20%, rồi 0"),
+          ("exp.bac_met", ",".join("%d:%d" % (int(a * 60), b) for a, b in BAC_MET), "0",
+           "Sau giờ 100%: " + ", ".join("%d phút %d%%" % (int(a * 60), b) for a, b in BAC_MET) + ", rồi 0"),
           ("thue.cho", THUE_CHO_PHAN_TRAM, "10", "Thuế chợ ký gửi (đốt)"),
           ("thue.dang_ban", PHI_DANG_BAN_PHAN_TRAM, "0", "Phí đăng bán (đốt, không hoàn)"),
           ("thue.chuyen_luong", 5, "0", "Phí chuyển lượng NPC (%)"),
@@ -1041,7 +1054,7 @@ def lap_shop(shop):
 
 
 def doc_exp_cu():
-    s = open(os.path.join(GOC, "src", "real", "LevelDetail.java"), encoding="utf-8").read()
+    s = open(os.path.join(GOC, "server", "src", "real", "LevelDetail.java"), encoding="utf-8").read()
     m = re.search(r"public static long\[\] expRequire = new long\[\]\{([^}]*)\}", s)
     return [int(x.strip().rstrip("L")) for x in m.group(1).split(",") if x.strip()]
 

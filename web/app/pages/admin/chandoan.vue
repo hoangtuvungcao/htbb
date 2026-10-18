@@ -133,7 +133,7 @@ const cotFile: TableColumn<FileLog>[] = [
   { id: 'xem', header: '' },
 ]
 const cotHong: TableColumn<FileHong>[] = [
-  { accessorKey: 'ten', header: 'Nhân vật' },
+  { accessorKey: 'ten', header: 'Pokémon' },
   { accessorKey: 'kichThuoc', header: 'Cỡ', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
   { accessorKey: 'suaLuc', header: 'Sửa lần cuối' },
   { id: 'xem', header: '' },
@@ -259,7 +259,7 @@ const cotLoiWeb: TableColumn<LoiWeb>[] = [
             File log của server
           </h3>
           <p class="mt-1 text-xs text-muted">
-            Đọc từ <code>{{ data.serverDir }}</code> (biến môi trường <code>KPAH_SERVER_DIR</code>). Chỉ đọc đúng danh sách tên file viết sẵn
+            Đọc từ <code>{{ data.serverDir }}</code> (biến môi trường <code>HTBB_SERVER_DIR</code>). Chỉ đọc đúng danh sách tên file viết sẵn
             trong mã nguồn — server không nhận đường dẫn từ trình duyệt, nên không ai lần ra <code>.env</code> hay mật khẩu database được.
           </p>
         </template>
@@ -286,10 +286,10 @@ const cotLoiWeb: TableColumn<LoiWeb>[] = [
 
         <template v-if="data.luuHong.length" #footer>
           <h3 class="font-semibold text-highlighted">
-            Vết lưu nhân vật thất bại
+            Vết lưu Pokémon thất bại
           </h3>
           <p class="mb-3 mt-1 text-xs text-muted">
-            Mỗi file dưới đây mang đúng <strong>tên một nhân vật</strong>. Server tạo nó khi đường lưu chính của nhân vật đó ném lỗi
+            Mỗi file dưới đây mang đúng <strong>tên một Pokémon</strong>. Server tạo nó khi đường lưu chính của Pokémon đó ném lỗi
             (<code>DatabaseNhanVat.java:770</code>) — thường là vết duy nhất còn lại của sự cố mất đồ / tụt cấp sau khi thoát game.
             <code>savechar.txt</code> ở bảng trên <em>không</em> phủ đường lưu này.
           </p>

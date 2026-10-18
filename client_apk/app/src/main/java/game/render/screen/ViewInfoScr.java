@@ -132,7 +132,7 @@ public class ViewInfoScr extends Screen {
         this.idClan = clanInfo.id;
         this.text = new Vector();
         this.status = clanInfo.status;
-        this.text.addElement("Bang chủ: " + clanInfo.master);
+        this.text.addElement("Đội trưởng: " + clanInfo.master);
         this.text.addElement("Cấp độ: " + ((int) clanInfo.level));
         this.text.addElement("Xu: " + GCanvas.getMoneys(clanInfo.money));
         this.text.addElement("Thành viên: " + ((int) clanInfo.members));

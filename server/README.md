@@ -3,20 +3,21 @@
 > **Nhánh `pokemon/chuyen-doi`:** game đã chuyển hoàn toàn sang **Huyền Thoại Bảo Bối** — game
 > Pokémon (người chơi chính là một Pokémon), bật bằng `sv.che_do_pokemon=1`. Mọi thứ về việc chuyển
 > đổi (quyết định, bảng chuyển đổi, tool, thứ tự chạy SQL, kết quả kiểm thử) nằm ở
-> [docs/pokemon/KE_HOACH_CHUYEN_DOI.md](docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Phần dưới đây mô tả
+> [docs/pokemon/KE_HOACH_CHUYEN_DOI.md](../docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Phần dưới đây mô tả
 > hạ tầng gốc của HTBB, vẫn đúng cho nhánh này.
 
-Private server cho game mobile MMORPG Huyền Thoại Bảo Bối (HTBB; trước đây là KPAH — "Khí Phách Anh Hùng").
-Các tên hạ tầng trên VPS vẫn giữ chữ `kpah` (CSDL `kpah_db`, thư mục `/opt/kpah`, service
-`kpah-game`/`kpah-login`, user Linux `kpah`, jar deploy `KPAH2_patched.jar`, biến `KPAH_*`). Gồm 4 phần chạy độc lập:
+Private server cho game mobile MMORPG Huyền Thoại Bảo Bối (HTBB).
+Các tên hạ tầng trên VPS vẫn giữ chữ `htbb` (CSDL `htbb_db`, thư mục `/opt/htbb`, service
+`htbb-game`/`htbb-login`, user Linux `htbb`, jar deploy `htbb-server.jar`, biến `HTBB_*`). Gồm 4 phần chạy độc lập:
 
 - **Java game server** — `src/`, build bằng `build.bat`. Jar deploy thật là
-  `KPAH2_patched.jar` ở gốc repo.
+  `htbb-server.jar` ở gốc repo.
 - **Login server** — `loginServer/` (jar riêng, cổng 8023; game server không nhận
   đăng nhập nếu thiếu nó).
 - **Client Unity (C#)** — `ClientUnity/`, port từ client J2ME gốc, **build được** ra
   Windows/WebGL/Android/iOS bằng `xay-client.bat` — xem mục `ClientUnity/` bên dưới.
-- **Web PHP** — `web/` (đăng nhập, nạp tiền, admin; PDO + MySQL). Xem `web/README.md`.
+- **Website** — repo riêng **HTBB-Web** (Nuxt 4: đăng ký, đăng nhập, nạp tiền, trang quản trị `/admin`).
+  Web PHP cũ (`web/`) đã bỏ ngày 19/10/2026 — xem [docs/pokemon/BO_WEB_PHP.md](../docs/pokemon/BO_WEB_PHP.md).
 
 ## Thư mục
 
@@ -25,7 +26,6 @@ Các tên hạ tầng trên VPS vẫn giữ chữ `kpah` (CSDL `kpah_db`, thư m
 | `src/` | Source Java game server |
 | `lib/` | Thư viện `.jar` bên thứ ba (nằm trên `Class-Path` của jar deploy) |
 | `ClientUnity/` | Client Unity (C#) — **build được**, ra Windows/WebGL/Android/iOS (xem dưới) |
-| `web/` | Website PHP (login, nạp tiền, admin) |
 | `sql/` | Script SQL: fix dữ liệu, migrate, dump mốc |
 | `vps/` | Script deploy & vận hành trên VPS (systemd service, backup DB, deploy-auto) |
 | `map/`, `cMap/` | Tài nguyên bản đồ, sprite |
@@ -178,9 +178,9 @@ Muốn đầy đủ thì vẫn phải xin `Assets/Resources/res/` của **dự �
 ### Liên hệ với việc cấm theo thiết bị
 
 Client này **đã có sẵn** `Canvas.IMEI = SystemInfo.deviceUniqueIdentifier`
-([Canvas.cs:157](ClientUnity/Assets/Scripts/Game/Canvas.cs#L157)) — chạy được trên
+([Canvas.cs:157](../client_pc_ios/ClientUnity/Assets/Scripts/Game/Canvas.cs#L157)) — chạy được trên
 Windows, Android, iOS. Dòng gửi mã máy lúc đăng nhập đã có ở
-[GameService.cs:402](ClientUnity/Assets/Scripts/Game/GameService.cs#L402), khớp đúng thứ
+[GameService.cs:402](../client_pc_ios/ClientUnity/Assets/Scripts/Game/GameService.cs#L402), khớp đúng thứ
 tự trường mà `real/cmd/LoginHandler.java` đọc.
 
 Nghĩa là: **ngày người chơi chuyển sang bản Unity này, tính năng cấm theo thiết bị tự
@@ -191,18 +191,18 @@ bình thường như hiện nay.
 
 ```
 build.bat      # biên dịch src/ -> HTBB_NEW.jar (jar sạch, dựng từ đầu)
-capnhat.bat    # thay HTBB_NEW.jar vào KPAH2_patched.jar (có backup) + chạy lại
+capnhat.bat    # thay HTBB_NEW.jar vào htbb-server.jar (có backup) + chạy lại
 test.bat       # chạy bộ kiểm thử (mã thoát 0 = đạt) — không đụng jar deploy
 ```
 
-Sau đó **bắt buộc** `git add KPAH2_patched.jar && git commit && git push` — VPS chỉ
+Sau đó **bắt buộc** `git add htbb-server.jar && git commit && git push` — VPS chỉ
 pull file `.jar` có sẵn, nó **không** tự biên dịch `.java`.
 
-Hướng dẫn đầy đủ: [docs/HUONG_DAN_BUILD_VPS.md](docs/HUONG_DAN_BUILD_VPS.md) ·
-[docs/HUONG_DAN_VPS_FRP.md](docs/HUONG_DAN_VPS_FRP.md) · [web/README.md](web/README.md)
+Hướng dẫn đầy đủ: [docs/HUONG_DAN_BUILD_VPS.md](../docs/HUONG_DAN_BUILD_VPS.md) ·
+[docs/HUONG_DAN_VPS_FRP.md](../docs/HUONG_DAN_VPS_FRP.md)
 
 Chỉnh cấu hình đang chạy (tỉ lệ rơi, giờ chiếm thành, quyền admin, chống flood):
-[docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md)
+[docs/cau-hinh-server-ini.md](../docs/cau-hinh-server-ini.md)
 
 ### Chạy thử ở máy nhà
 
@@ -210,7 +210,7 @@ Ba thành phần, theo đúng thứ tự này:
 
 ```
 1. MySQL      c:\xampp\mysql_start.bat        (hoặc bảng điều khiển XAMPP)
-                 cần 2 CSDL: kpah_db (game) + account (đăng nhập)
+                 cần 2 CSDL: htbb_db (game) + account (đăng nhập)
 2. Login      loginServer\run.bat             -> cổng 8023
 3. Game       run.bat                         -> cổng 19129
 ```
@@ -222,10 +222,10 @@ nhập được**.
 `server.ini` là file **của riêng từng máy** (bị `.gitignore`) — máy nhà và VPS mỗi bên một bản,
 nên chạy local không ảnh hưởng gì tới VPS. Máy nhà để `db.password` trống được nhờ khoá
 `db.choPhepMatKhauTrong=1`; bản mẫu VPS ghim `0` và bộ sinh từ chối cài nếu khác `0`
-(xem [mục 9](docs/cau-hinh-server-ini.md)). **Đừng** thêm khoá đó vào `vps/server.ini.tmpl`.
+(xem [mục 9](../docs/cau-hinh-server-ini.md)). **Đừng** thêm khoá đó vào `vps/server.ini.tmpl`.
 
-Cấu hình cho VPS **không** nằm ở `server.ini` mà ở [`vps/server.ini.tmpl`](vps/server.ini.tmpl):
-mỗi lần deploy, `vps/sinh-server-ini.sh` sinh lại `/opt/kpah/server.ini` từ bản mẫu đó.
+Cấu hình cho VPS **không** nằm ở `server.ini` mà ở [`vps/server.ini.tmpl`](../vps/server.ini.tmpl):
+mỗi lần deploy, `vps/sinh-server-ini.sh` sinh lại `/opt/htbb/server.ini` từ bản mẫu đó.
 
 ## Ràng buộc phải biết trước khi sửa cấu trúc
 
@@ -233,22 +233,22 @@ mỗi lần deploy, `vps/sinh-server-ini.sh` sinh lại `/opt/kpah/server.ini` t
 
 | Thứ | Bị khoá bởi |
 |---|---|
-| `KPAH2_patched.jar` ở gốc | `ExecStart=java -jar KPAH2_patched.jar`, `WorkingDirectory=/opt/kpah` |
+| `htbb-server.jar` ở gốc | `ExecStart=java -jar htbb-server.jar`, `WorkingDirectory=/opt/htbb` |
 | `lib/` (đúng tên này) | `Class-Path: lib/...` ghi trong MANIFEST của jar |
 | `map/`, `cMap/` | hard-code ~50 chỗ trong source (`"map/map"`, `"cMap/t.type"`…) |
 | `server.ini` + các `.txt` ở gốc | server đọc/ghi bằng đường dẫn tương đối thư mục chạy |
-| `loginServer/` | `WorkingDirectory=/opt/kpah/loginServer` |
+| `loginServer/` | `WorkingDirectory=/opt/htbb/server/loginServer` |
 | **Tên package `real`/`data`/`io`/`server`/`real.cmd`** | xem mục dưới |
 
-### `lib/NQSH_5h.jar` — vì sao không đổi được tên package
+### `lib/htbb-core.jar` — vì sao không đổi được tên package
 
-`lib/NQSH_5h.jar` chứa **878 class đã biên dịch, không có mã nguồn**, trong đó
+`lib/htbb-core.jar` chứa **878 class đã biên dịch, không có mã nguồn**, trong đó
 133 class package `real`, 73 package `data`, 8 `io`, 8 `real/cmd`, 4 `server` —
 **trùng đúng package với `src/`**. Runtime là hợp nhất của hai nguồn: class nào có
-trong `KPAH2_patched.jar` thì bản đó thắng, thiếu thì rơi xuống `NQSH_5h.jar`
+trong `htbb-server.jar` thì bản đó thắng, thiếu thì rơi xuống `htbb-core.jar`
 (33 class tồn tại ở cả hai nơi).
 
-**49 trên 100 class của `src/` bị bytecode trong `NQSH_5h.jar` gọi ngược theo tên.**
+**49 trên 100 class của `src/` bị bytecode trong `htbb-core.jar` gọi ngược theo tên.**
 Ví dụ `data/BossMatQuy.class` trong jar giữ tham chiếu cứng tới `real/Char`.
 
 Hệ quả: đổi `real.Char` thành `com.htbb.game.Char` sẽ **biên dịch sạch, mọi kiểm
@@ -256,7 +256,7 @@ tra đều pass, rồi server ném `NoClassDefFoundError: real/Char` lúc chạy
 lúc người chơi chạm vào đường code đó. Compiler không thể phát hiện, vì jar là
 bytecode đóng.
 
-Muốn đổi tên package thật sự thì phải gỡ phụ thuộc `NQSH_5h.jar` trước
+Muốn đổi tên package thật sự thì phải gỡ phụ thuộc `htbb-core.jar` trước
 (dịch ngược ~233 class game trong đó về `src/`; 642 class còn lại chỉ là bản sao
 thừa của `jxl` và `mysql-connector` đã có sẵn trong `lib/`).
 
@@ -266,7 +266,7 @@ thừa của `jxl` và `mysql-connector` đã có sẵn trong `lib/`).
 ### `real/Map.java` — 41.541 → 17.525 dòng (−58%)
 
 `Map.java` từng là 41.541 dòng. Đã tách còn 17.525 dòng (−58%) bằng **hai kỹ
-thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi được**:
+thuật, cả hai đều không đổi API nên `lib/htbb-core.jar` vẫn gọi được**:
 
 1. **Chuyển hẳn method `private`** sang class mới cùng package. An toàn vì
    bytecode ngoài không thể gọi tới `private`.
@@ -288,7 +288,7 @@ thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi đ
 | `MapDungThuoc.java` | thân `Map.doUsePotion` |
 | `MapSuKien.java` | NPC sự kiện theo mùa (Tết, Noel, Trung Thu, Giỗ Tổ, Vu Lan) |
 | `MapMenuNpc.java` | menu NPC riêng lẻ (Hằng Nga, Vua Hùng, Dracula…) |
-| `MapBangHoi.java` | quản lý bang hội |
+| `MapDoi.java` | quản lý bang hội |
 | `MapQuaTang.java` | hộp quà, vòng quay, phần thưởng |
 | `MapMuaBan.java` | mua bán, giao dịch |
 | `MapCheTao.java` | chế tạo / sửa chữa vật phẩm |
@@ -333,9 +333,9 @@ viên `private` phải nới thành package-private. Đo trên `real.Map` bằng
 Nới quyền **không bao giờ phá được gì** (chỉ thêm khả năng truy cập, không bỏ
 đi cái gì), nhưng 63 là nhiều — `Map` mất dần tính đóng gói. Đây là cái giá
 bắt buộc khi tách một lớp 41k dòng mà **không được** đổi API, vì
-`lib/NQSH_5h.jar` gọi thẳng vào nó.
+`lib/htbb-core.jar` gọi thẳng vào nó.
 
-Nếu sau này gỡ được phụ thuộc `NQSH_5h.jar` thì có thể gộp mỗi nhóm method
+Nếu sau này gỡ được phụ thuộc `htbb-core.jar` thì có thể gộp mỗi nhóm method
 với dữ liệu của nó thành lớp thực sự độc lập, và trả lại `private`.
 
 ### `real/Char.java` — 21.888 → 14.307 dòng (−35%)
@@ -391,23 +391,23 @@ quyền và sinh thêm file nhỏ, nên **lợi ích trên mỗi lần tách đ�
 
 Riêng `Map.java` còn **6.524 dòng khai báo field + khối `static`** — đây mới là
 phần lớn nhất còn lại, và nó **không thể** tách: field phải ở nguyên trong `Map`
-vì `lib/NQSH_5h.jar` truy cập trực tiếp.
+vì `lib/htbb-core.jar` truy cập trực tiếp.
 
 Ba việc còn lại đáng làm hơn là tách tiếp:
 
 1. ~~**Gộp 9 handler trùng lặp**~~ — đã làm, xem mục dưới. Xoá được 2 cái chết,
    7 cái còn lại không gộp được vì cả hai bản đều sống qua hai lối vào khác nhau.
 
-2. **Gỡ phụ thuộc `NQSH_5h.jar`** — đã khảo sát đầy đủ, xem mục dưới. Làm được
+2. **Gỡ phụ thuộc `htbb-core.jar`** — đã khảo sát đầy đủ, xem mục dưới. Làm được
    nhưng chưa nên làm trước khi có test phủ các đường đi chính.
 3. ~~**Viết test**~~ — đã có `test/` + `test.bat` (62 kiểm tra). Nhưng mới phủ được
    hàm thuần; các đường đi chính vẫn chưa có test.
 
 
-### Gỡ phụ thuộc `NQSH_5h.jar` — đã khảo sát xong, **chưa nên làm**
+### Gỡ phụ thuộc `htbb-core.jar` — đã khảo sát xong, **chưa nên làm**
 
-Chạy `tools/giai-ma-nqsh.bat` để đọc được mã nguồn trong jar (kết quả ra
-`build/nqsh-src/`, không commit). Đây là số liệu đo thật:
+Chạy `tools/giai-ma-core.bat` để đọc được mã nguồn trong jar (kết quả ra
+`build/core-src/`, không commit). Đây là số liệu đo thật:
 
 | | |
 |---|---|
@@ -452,7 +452,7 @@ cho 63 thành viên đã nới, và bỏ được mối nguy trộn hai phiên b
 khối `static` từ mảng `pCmd` (96 lệnh) — đã grep toàn bộ `src/`: chỉ ghi ở một
 chỗ, không nơi nào sửa lúc chạy. Nên tập lệnh là **cố định**, đối chiếu được.
 
-**Đã xoá** (chứng minh được là chết, và `NQSH_5h.jar` không tham chiếu):
+**Đã xoá** (chứng minh được là chết, và `htbb-core.jar` không tham chiếu):
 
 | Thứ | Vì sao chết |
 |---|---|
@@ -464,8 +464,8 @@ chỗ, không nơi nào sửa lúc chạy. Nên tập lệnh là **cố định*
 
 | Handler | Lối vào 1 (class tách rời) | Lối vào 2 (bản trong `Map`) |
 |---|---|---|
-| `doRideAnimal` | lệnh −45 | menu NPC → `MapDoMenu` |
-| `doUnRideHorse` | menu `case -50` | menu NPC → `MapDoMenu` |
+| `doCuoiThu` | lệnh −45 | menu NPC → `MapDoMenu` |
+| `doXuongThuCuoi` | menu `case -50` | menu NPC → `MapDoMenu` |
 | `doMenuSuKienHe2017` | menu `case -49` | menu NPC → `MapDoMenu` |
 | `doMenuSuKienMiniChucNu` | menu `case -49` | menu NPC → `MapDoMenu` |
 | `domenuWorldcup2017` | menu `case -49` | menu NPC → `MapDoMenu` |
@@ -478,7 +478,7 @@ mới quyết được, nên tôi để nguyên.
 Riêng `doBuySpecialItem` (lệnh 85) và `doUsePotion` (lệnh 22): bản trong `Map`
 chỉ tới được qua `Map.processMessage`, mà hai lệnh này **có** trong `pCmd` nên
 không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` là `protected` và
-`NQSH_5h.jar` có class nhắc tới `doUsePotion`, nên **không xoá** — chỉ ghi lại.
+`htbb-core.jar` có class nhắc tới `doUsePotion`, nên **không xoá** — chỉ ghi lại.
 
 ## Tính năng
 
@@ -531,16 +531,16 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   lệ rơi nhánh hoa hồng vàng khi đánh quái trong kỳ Vu Lan. Test:
   [test/KiemCuaHangSuKien.java](test/KiemCuaHangSuKien.java).
 
-- Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
+- Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-thu-cuoi.md](../docs/skin-thu-cuoi.md)
 - **Sự kiện**: mọi sự kiện bật/tắt được bất kỳ lúc nào — hoặc **hẹn giờ mở/đóng** — ở trang
-  quản trị `/admin/sukien.php` ([web/admin/sukien.php](web/admin/sukien.php), bảng `tob_su_kien`).
+  quản trị `/admin/sukien` (HTBB-Web, bảng `tob_su_kien`).
   Trước đây mốc thời gian của từng sự kiện ghi cứng trong `Char.java` (toàn 2015–2024, nên đều
   tắt vĩnh viễn); nay danh mục nằm ở [src/real/SuKien.java](src/real/SuKien.java).
   Đổi xong **server tự khởi động lại**: gom các thay đổi trong 2 phút, báo trong game 60 giây,
   rồi lưu dữ liệu và thoát cho systemd bật lại — xem [src/real/LichSuKien.java](src/real/LichSuKien.java)
-  và [docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md) mục 4.
+  và [docs/cau-hinh-server-ini.md](../docs/cau-hinh-server-ini.md) mục 4.
 - Sự kiện World Cup (bình chọn Messi/Ronaldo): [src/real/SuKienWorldCup.java](src/real/SuKienWorldCup.java) ·
-  chạy [sql/them_su_kien_world_cup.sql](sql/them_su_kien_world_cup.sql) một lần trước khi mở
+  chạy [sql/them_su_kien_world_cup.sql](../sql/them_su_kien_world_cup.sql) một lần trước khi mở
 - **Hoá Hình Pet → Pet Lân** (menu NPC dịch vụ chung, npcType `-8`; luật viết lại ngày 02/09/2026
   theo mô tả của người yêu cầu): pet nuôi **vĩnh viễn** đã tiến hoá, cấp n (cột `atb0` của template
   pet, 1–5) + **n×10 bình hoá hình** (item 268, dùng chung với hoá hình Thú) = **Pet Lân cấp n**,
@@ -589,7 +589,7 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   thật (`idpopup` 124: 1 lượng + 3.000.000 xu) — khiến chỉ số nguyên liệu người chơi gửi về có thể
   trỏ sang MÓN KHÁC trong danh sách dùng để thực thi. Đã đổi sang dùng chung
   `locNguyenLieuTinhLuyen()` và đồng bộ giá tiền. Test:
-  [test/KiemTinhLuyenThanBinh.java](test/KiemTinhLuyenThanBinh.java).
+  [test/KiemTinhLuyenBaoVat.java](test/KiemTinhLuyenBaoVat.java).
 - **Xu rơi quá ít khi đánh quái level cao — lỗi tràn số**: `Potion.quantity` là kiểu `short` (giới
   hạn giao thức: `Char`/`Map`/`MapClan` gửi nó về client bằng `dos.writeShort(...)`, tối đa
   32767), nhưng `Monster.java` tính số xu rơi ra từ `rcvgold` của quái (có con tới hàng trăm
@@ -610,7 +610,7 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   quái thường lúc train, không ảnh hưởng boss/quest/tiêu), chỉnh trực tiếp trong game (menu admin
   → `xuLyDrop`/`xuLyLenh` lệnh `5`) hoặc `server.ini` khoá `sv.tileXu`, lưu lại ngay không cần
   build lại — xem [src/real/AdminMenu.java](src/real/AdminMenu.java).
-- **Dọn rác trong log `game.out`**: `vps/kpah-logrotate.conf` đã lo xoay vòng theo dung lượng/thời
+- **Dọn rác trong log `game.out`**: `vps/htbb-logrotate.conf` đã lo xoay vòng theo dung lượng/thời
   gian (30 ngày, tối đa 20MB/file) — vấn đề là NỘI DUNG, không phải dung lượng. Hai nhóm gây rác
   nhiều nhất: (1) [src/io/Session.java](src/io/Session.java) in đầy đủ stack trace mỗi khi gửi dữ
   liệu cho client thất bại — mà nguyên nhân phổ biến nhất là "socket đã đóng" (client vừa ngắt kết
@@ -640,7 +640,7 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   [test/KiemCaiTaoCaiTrang.java](test/KiemCaiTaoCaiTrang.java).
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
-xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,
+xuất (`.github/workflows/deploy.yml`). Đổi `htbb-server.jar`, `lib/`, `map/`,
 `cMap/`, hoặc `loginServer/` sẽ khiến server live tự restart (có cảnh báo 60 giây
 trong game trước khi tắt) — xem `vps/deploy-auto.sh`. Commit chỉ đổi `src/` hoặc
 tài liệu thì **không** ai bị kick.

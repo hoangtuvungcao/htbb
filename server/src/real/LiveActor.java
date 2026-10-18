@@ -470,7 +470,7 @@ public class LiveActor extends Actor {
     * He Pokemon thu nhat dung de tinh khac he khi bat CheDoPokemon. Nhan vat: chinh
     * la he (gan tu loai luc nap/tien hoa). Monster ghi de: lay tu template, vi truong
     * he cua quai van giu ngu hanh 0..4 (client cu ve icon bang no, va lop trong
-    * lib/NQSH_5h.jar con random/gui no) - xem Monster.hePokemon1.
+    * lib/htbb-core.jar con random/gui no) - xem Monster.hePokemon1.
     */
    public int hePokemon1() {
       return this.he;

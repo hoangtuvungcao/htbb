@@ -556,30 +556,37 @@ public class TField : ObjGame
 			paintedText = text;
 			num = -1;
 		}
-		if (flag)
+		if (UiPokemon.bat())
 		{
-			if (paintFocus)
-			{
-				g.setColor(7950336);
-			}
+			UiPokemon.oNhap(g, x + 1, y + 1, width - 1, height - 1, flag && paintFocus); // pokemon: giao diện
 		}
 		else
 		{
-			g.setColor(5979911);
-		}
-		g.fillRect(x + 1, y + 1, width - 2, height - 2);
-		if (flag)
-		{
-			if (paintFocus)
+			if (flag)
 			{
-				g.setColor(16767892);
+				if (paintFocus)
+				{
+					g.setColor(7950336);
+				}
+			}
+			else
+			{
+				g.setColor(5979911);
+			}
+			g.fillRect(x + 1, y + 1, width - 2, height - 2);
+			if (flag)
+			{
+				if (paintFocus)
+				{
+					g.setColor(16767892);
+					g.fillRect(x + 1, y + 1, width - 1, height - 1);
+				}
+			}
+			else
+			{
+				g.setColor(11768142);
 				g.fillRect(x + 1, y + 1, width - 1, height - 1);
 			}
-		}
-		else
-		{
-			g.setColor(11768142);
-			g.fillRect(x + 1, y + 1, width - 1, height - 1);
 		}
 		g.setClip(x + 3, y + 1, width - typingModeAreaWidth - 8, height - 3);
 		g.setColor(0);
@@ -613,30 +620,37 @@ public class TField : ObjGame
 			paintedText = text;
 			num = -1;
 		}
-		if (flag)
+		if (UiPokemon.bat())
 		{
-			if (paintFocus)
-			{
-				g.setColor(7950336);
-			}
+			UiPokemon.oNhap(g, x + 1, y + 1, width - 1, height - 1, flag && paintFocus); // pokemon: giao diện
 		}
 		else
 		{
-			g.setColor(5979911);
-		}
-		g.fillRect(x + 1, y + 1, width - 2, height - 2);
-		if (flag)
-		{
-			if (paintFocus)
+			if (flag)
 			{
-				g.setColor(16767892);
+				if (paintFocus)
+				{
+					g.setColor(7950336);
+				}
+			}
+			else
+			{
+				g.setColor(5979911);
+			}
+			g.fillRect(x + 1, y + 1, width - 2, height - 2);
+			if (flag)
+			{
+				if (paintFocus)
+				{
+					g.setColor(16767892);
+					g.fillRect(x + 1, y + 1, width - 1, height - 1);
+				}
+			}
+			else
+			{
+				g.setColor(11768142);
 				g.fillRect(x + 1, y + 1, width - 1, height - 1);
 			}
-		}
-		else
-		{
-			g.setColor(11768142);
-			g.fillRect(x + 1, y + 1, width - 1, height - 1);
 		}
 		g.setColor(0);
 		// G7.C3: chu nguoi choi dang go giu nguyen (khong qua ChuPokemon.D).

@@ -101,8 +101,8 @@ class MapQuaTang {
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             if (idgift[index] == 9) {
                 try {
-                    sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được nhân sâm khi sử dụng trứng"));
-                } catch (IOException var13) {
+                    com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được Berry Razz vàng khi sử dụng trứng");
+                } catch (Exception var13) {
                 }
             }
         } else if (typegift[index] == 3) {
@@ -125,9 +125,9 @@ class MapQuaTang {
 
                 try {
                     if (idgift[index] == 721) {
-                        sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Huyết bồ đề khi sử dụng trứng vàng."));
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được Bạc hà tính cách khi sử dụng trứng vàng.");
                     }
-                } catch (IOException var12) {
+                } catch (Exception var12) {
                 }
             }
 
@@ -482,7 +482,7 @@ class MapQuaTang {
             String info = "Chúc mừng bạn nhận được ";
             int ran = r.nextInt(100);
             if (ran == 0) {
-                info = info + "nhân sâm";
+                info = info + "Berry Razz vàng";
                 player.potions[9]++;
             } else if (r.nextInt(100) < 50) {
                 int soluong = 3;
@@ -682,7 +682,7 @@ class MapQuaTang {
                             "gcode"
                     );
         } else if (id == 3) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Một nhân vật chỉ có thể nhận được 1 phần quà.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Một Pokémon chỉ có thể nhận được 1 phần quà.", ""));
         }
     }
 
@@ -717,14 +717,14 @@ class MapQuaTang {
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.sendMessage(
                     MessageCreator.createServerAlertMessage(
-                            "Chúc mừng bạn đã nhận được 10 nguyên liệu sơ cấp cấp 6 khoá mỗi loại, 10 luyện kim dược 30% và 1 phi phong lông thú 30 ngày.", ""
+                            "Chúc mừng bạn đã nhận được 10 nguyên liệu sơ cấp cấp 6 khoá mỗi loại, 10 luyện kim dược 30% và 1 ruy băng lông thú 30 ngày.", ""
                     )
             );
             Database.instance.saveOrtherLog("", player.charname, "gif offline", "offline");
         } else if (id == 2) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Mã code không hợp lệ", ""));
         } else if (id != 3 && id == -1) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Một nhân vật chỉ có thể nhận được 1 phần quà.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Một Pokémon chỉ có thể nhận được 1 phần quà.", ""));
         }
     }
 
@@ -963,7 +963,7 @@ class MapQuaTang {
             case 19: // Skin linh thu Chien Lang
                 // 7 ngay (truoc day la 0 = vinh vien). Vat pham skin la trang bi thu
                 // (type 30), mac vao o dau tien ben phai bang Trang bi thu.
-                GiftCode.AddItem(player, SkinLinhThu.ID_ITEM[idx - 15], 0, 0, PHUT_7_NGAY);
+                GiftCode.AddItem(player, SkinThuCuoi.ID_ITEM[idx - 15], 0, 0, PHUT_7_NGAY);
                 break;
             case 20: // Ho ve lenh 5x random lv1-3, 7 ngay
                 map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{633, 634, 635}[r.nextInt(3)]);
@@ -1010,10 +1010,10 @@ class MapQuaTang {
 
                 if (r.nextInt(100) < 50) {
                     p.createNguaXuong(7L, false);
-                    infoAlert = infoAlert + " và 1 linh thú Bạch Cốt";
+                    infoAlert = infoAlert + " và 1 thú cưỡi Spectrier";
                 } else {
                     p.createHeo(7L, false);
-                    infoAlert = infoAlert + " và 1 linh thú Đương Khang";
+                    infoAlert = infoAlert + " và 1 thú cưỡi Piloswine";
                 }
 
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));

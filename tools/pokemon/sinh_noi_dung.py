@@ -176,9 +176,10 @@ def chi_so_phu(ma, b):
     if ma == "long_vu":
         return "Tốc chạy +%d" % (1 + b // 2)
     if ma == "gang_dam":
-        return "Chí mạng +%d‰" % min(15, 5 + b)
+        pn = min(15, 5 + b)   # phan nghin -> "0,5%".."1,5%"
+        return "Chí mạng +%d,%d%%" % (pn // 10, pn % 10) if pn % 10 else "Chí mạng +%d%%" % (pn // 10)
     if ma == "phien_da":
-        return "Chọn 1 trong 18 hệ: +5% sát thương hoặc −5% sát thương nhận"
+        return "Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào"
     return ""
 
 
@@ -272,15 +273,15 @@ TIEU_HAO = [
     ("thuoc_pp_1", "Thuốc hồi PP (Ether)", "hoi_pp", "Hồi 30% MP (PP chiêu)", 1, 30, "mp:30", 6, 0.20, "xu", "cửa hàng", "", "thuoc:4", "co_san"),
     ("thuoc_pp_2", "Thuốc hồi PP lớn (Ether lớn)", "hoi_pp", "Hồi 45% MP", 31, 60, "mp:45", 6, 0.20, "xu", "cửa hàng", "", "thuoc:5", "co_san"),
     ("thuoc_pp_3", "Thuốc hồi PP tối đa (Ether tối đa)", "hoi_pp", "Hồi 60% MP", 61, 100, "mp:60", 6, 0.20, "xu", "cửa hàng", "", "thuoc:6", "co_san"),
-    ("thuoc_pp_doi", "Thuốc hồi PP cả đội (Elixir)", "hoi_pp", "Hồi 30% MP cho cả đội gần", 30, 100, "mp_doi:30", 1, 0.04, "xu", "cửa hàng, boss Gym", "", "thuoc:23", "co_san"),
-    ("thuoc_pp_doi_2", "Thuốc hồi PP cả đội tối đa (Elixir tối đa)", "hoi_pp", "Hồi 60% MP cho cả đội gần", 60, 100, "mp_doi:60", 1, 0.05, "luong_khoa", "nhiệm vụ tuần", "2/tuần", "thuoc:24", "co_san"),
+    ("thuoc_pp_doi", "Thuốc hồi PP cả nhóm (Elixir)", "hoi_pp", "Hồi 30% MP cho cả nhóm ở gần", 30, 100, "mp_doi:30", 1, 0.04, "xu", "cửa hàng, boss Gym", "", "thuoc:23", "co_san"),
+    ("thuoc_pp_doi_2", "Thuốc hồi PP cả nhóm tối đa (Elixir tối đa)", "hoi_pp", "Hồi 60% MP cho cả nhóm ở gần", 60, 100, "mp_doi:60", 1, 0.05, "luong_khoa", "nhiệm vụ tuần", "2/tuần", "thuoc:24", "co_san"),
     # --- chua trang thai (TrangThaiPokemon: 1 bong, 2 doc, 3 te, 4 ngu, 5 bang)
     ("chua_doc", "Thuốc giải độc", "trang_thai", "Gỡ trạng thái Độc", 1, 100, "go:2", 2, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
     ("chua_bong", "Thuốc trị bỏng", "trang_thai", "Gỡ trạng thái Bỏng", 1, 100, "go:1", 2, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
     ("chua_te", "Thuốc trị tê liệt", "trang_thai", "Gỡ trạng thái Tê liệt", 1, 100, "go:3", 2, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
     ("chua_ngu", "Thuốc đánh thức", "trang_thai", "Gỡ trạng thái Ngủ", 1, 100, "go:4", 2, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
     ("chua_bang", "Thuốc rã đông", "trang_thai", "Gỡ trạng thái Đóng băng", 1, 100, "go:5", 2, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
-    ("chua_tat_ca", "Thuốc chữa toàn diện", "trang_thai", "Gỡ mọi trạng thái, miễn 5 giây", 30, 100, "go:tat_ca,mien:5", 1, 0.03, "xu", "cửa hàng, boss Gym", "", "moi", "can_code"),
+    ("chua_tat_ca", "Thuốc chữa toàn diện", "trang_thai", "Gỡ mọi trạng thái và miễn nhiễm trạng thái trong 5 giây", 30, 100, "go:tat_ca,mien:5", 1, 0.03, "xu", "cửa hàng, boss Gym", "", "moi", "can_code"),
     # --- hoi sinh
     ("hoi_sinh", "Thuốc hồi sinh", "hoi_sinh", "Hồi sinh tại chỗ với 30% HP", 1, 100, "hoi_sinh:30", 0.2, 0.02, "xu", "cửa hàng, nhiệm vụ", "", "thuoc:119", "co_san"),
     ("hoi_sinh_2", "Thuốc hồi sinh tối đa", "hoi_sinh", "Hồi sinh tại chỗ với 100% HP", 40, 100, "hoi_sinh:100", 0.05, 0.01, "luong_khoa", "boss thế giới, nhiệm vụ tuần", "3/tuần", "moi", "can_code"),
@@ -289,14 +290,14 @@ TIEU_HAO = [
     ("x_phong_thu", "X Phòng thủ", "x_tang_cuong", "+20% phòng thủ trong 90 giây", 10, 100, "thu:20,giay:90", 0.5, 0.02, "xu", "cửa hàng", "", "thuoc:129", "co_san"),
     ("x_toc_do", "X Tốc độ", "x_tang_cuong", "+15% tốc đánh trong 90 giây", 10, 100, "toc_danh:15,giay:90", 0.3, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
     ("x_chinh_xac", "X Chính xác", "x_tang_cuong", "+15% chính xác trong 90 giây", 10, 100, "chinh_xac:15,giay:90", 0.3, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
-    ("x_chi_mang", "Tăng chí mạng (Dire Hit)", "x_tang_cuong", "+5% chí mạng trong 90 giây", 10, 100, "chi_mang:5,giay:90", 0.3, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
+    ("x_chi_mang", "Tăng chí mạng", "x_tang_cuong", "+5% chí mạng trong 90 giây", 10, 100, "chi_mang:5,giay:90", 0.3, 0.02, "xu", "cửa hàng", "", "moi", "can_code"),
     ("x_san_trum", "Thuốc săn trùm", "x_tang_cuong", "+30% sát thương lên boss trong 60 giây", 20, 100, "boss:30,giay:60", 0.1, 0.02, "luong_khoa", "boss Gym, nhiệm vụ tuần", "5/tuần", "thuoc:131", "co_san"),
     # --- xua quai (Repel): quai thap hon >= 5 cap khong chu dong danh
     ("xua_quai_1", "Thuốc xua quái", "xua_quai", "Quái thấp hơn 5 cấp không chủ động tấn công trong 5 phút", 5, 100, "xua:5,phut:5", 0.3, 0.01, "xu", "cửa hàng", "", "moi", "can_code"),
-    ("xua_quai_2", "Siêu thuốc xua quái", "xua_quai", "Như trên, 10 phút", 20, 100, "xua:5,phut:10", 0.2, 0.01, "xu", "cửa hàng", "", "moi", "can_code"),
-    ("xua_quai_3", "Thuốc xua quái tối đa", "xua_quai", "Như trên, 20 phút", 40, 100, "xua:5,phut:20", 0.1, 0.01, "xu", "cửa hàng", "", "moi", "can_code"),
+    ("xua_quai_2", "Siêu thuốc xua quái", "xua_quai", "Như Thuốc xua quái, kéo dài 10 phút", 20, 100, "xua:5,phut:10", 0.2, 0.01, "xu", "cửa hàng", "", "moi", "can_code"),
+    ("xua_quai_3", "Thuốc xua quái tối đa", "xua_quai", "Như Thuốc xua quái, kéo dài 20 phút", 40, 100, "xua:5,phut:20", 0.1, 0.01, "xu", "cửa hàng", "", "moi", "can_code"),
     # --- keo EXP (gioi han boi nang luong huan luyen: KHONG vuot gio 100% cua ngay)
-    ("keo_hiem", "Kẹo Hiếm", "keo_exp", "Nhận EXP bằng 30 phút đánh quái ở cấp hiện tại; trừ 30 phút năng lượng 100% (không vượt trần ngày)", 1, 100, "exp_phut:30,tru_nang_luong_phut:30", 0, 0.0, "khong_ban", "nhiệm vụ tuần, Pokédex, sự kiện", "2/tuần", "moi", "can_code"),
+    ("keo_hiem", "Kẹo hiếm", "keo_exp", "Nhận EXP bằng 30 phút đánh quái ở cấp hiện tại; trừ 30 phút năng lượng 100% nên không vượt mức EXP tối đa trong ngày", 1, 100, "exp_phut:30,tru_nang_luong_phut:30", 0, 0.0, "khong_ban", "nhiệm vụ tuần, Pokédex, sự kiện", "2/tuần", "moi", "can_code"),
     # --- da tien hoa (co san 960..967)
     ("da_nuoc", "Đá Nước", "da_tien_hoa", "Tiến hoá Eevee thành Vaporeon", 25, 100, "nhanh:134", 0, 0.0, "khong_ban", "Ngày cộng đồng Eevee, chương J2, Pokédex", "", "item:960", "co_san"),
     ("da_sam", "Đá Sấm", "da_tien_hoa", "Tiến hoá Eevee thành Jolteon", 25, 100, "nhanh:135", 0, 0.0, "khong_ban", "Ngày cộng đồng Eevee, chương K3, Pokédex", "", "item:961", "co_san"),
@@ -307,25 +308,25 @@ TIEU_HAO = [
     ("da_bang", "Đá Băng", "da_tien_hoa", "Tiến hoá Eevee thành Glaceon", 25, 100, "nhanh:471", 0, 0.0, "khong_ban", "Ngày cộng đồng Eevee, Hồ Phẫn Nộ", "", "item:966", "co_san"),
     ("ruy_bang_tien", "Ruy Băng Tiên", "da_tien_hoa", "Tiến hoá Eevee thành Sylveon", 25, 100, "nhanh:700", 0, 0.0, "khong_ban", "Ngày cộng đồng Eevee, sự kiện 20/10", "", "item:967", "co_san"),
     # --- qua mong (tu dung khi dieu kien thoa; nguon trang trai tob_fruit + nhiem vu)
-    ("qua_oran", "Quả Oran", "qua_mong", "Tự dùng khi HP < 50%: hồi 10% HP", 1, 100, "tu_dung:hp50,hp:10", 3, 0.02, "xu", "trang trại, quái đồng cỏ", "", "moi", "can_code"),
-    ("qua_sitrus", "Quả Sitrus", "qua_mong", "Tự dùng khi HP < 50%: hồi 25% HP", 30, 100, "tu_dung:hp50,hp:25", 2, 0.02, "xu", "trang trại, quái rừng", "", "moi", "can_code"),
-    ("qua_lum", "Quả Lum", "qua_mong", "Tự gỡ trạng thái đầu tiên trúng phải", 20, 100, "tu_dung:trang_thai,go:tat_ca", 1, 0.02, "xu", "trang trại", "", "moi", "can_code"),
+    ("qua_oran", "Quả Oran", "qua_mong", "Tự dùng khi HP dưới 50%: hồi 10% HP", 1, 100, "tu_dung:hp50,hp:10", 3, 0.02, "xu", "trang trại, quái đồng cỏ", "", "moi", "can_code"),
+    ("qua_sitrus", "Quả Sitrus", "qua_mong", "Tự dùng khi HP dưới 50%: hồi 25% HP", 30, 100, "tu_dung:hp50,hp:25", 2, 0.02, "xu", "trang trại, quái rừng", "", "moi", "can_code"),
+    ("qua_lum", "Quả Lum", "qua_mong", "Tự gỡ trạng thái xấu đầu tiên dính phải", 20, 100, "tu_dung:trang_thai,go:tat_ca", 1, 0.02, "xu", "trang trại", "", "moi", "can_code"),
     ("qua_cheri", "Quả Cheri", "qua_mong", "Tự gỡ Tê liệt", 1, 100, "tu_dung:te,go:3", 1, 0.005, "xu", "trang trại", "", "moi", "can_code"),
     ("qua_chesto", "Quả Chesto", "qua_mong", "Tự gỡ Ngủ", 1, 100, "tu_dung:ngu,go:4", 1, 0.005, "xu", "trang trại", "", "moi", "can_code"),
     ("qua_pecha", "Quả Pecha", "qua_mong", "Tự gỡ Độc", 1, 100, "tu_dung:doc,go:2", 1, 0.005, "xu", "trang trại", "", "moi", "can_code"),
     ("qua_rawst", "Quả Rawst", "qua_mong", "Tự gỡ Bỏng", 1, 100, "tu_dung:bong,go:1", 1, 0.005, "xu", "trang trại", "", "moi", "can_code"),
     ("qua_aspear", "Quả Aspear", "qua_mong", "Tự gỡ Đóng băng", 1, 100, "tu_dung:dong_bang,go:5", 1, 0.005, "xu", "trang trại", "", "moi", "can_code"),
-    ("qua_leppa", "Quả Leppa", "qua_mong", "Tự dùng khi MP < 20%: hồi 15% MP", 1, 100, "tu_dung:mp20,mp:15", 2, 0.01, "xu", "trang trại", "", "moi", "can_code"),
+    ("qua_leppa", "Quả Leppa", "qua_mong", "Tự dùng khi MP dưới 20%: hồi 15% MP", 1, 100, "tu_dung:mp20,mp:15", 2, 0.01, "xu", "trang trại", "", "moi", "can_code"),
     # --- do giu (held item): KHONG phai tieu hao; hieu ung thay chi so phu cua o Phien da he,
     #     gia tri <= ngan sach o do (test kiem nhom do_giu co o = phien_da).
     ("giu_thuc_an_thua", "Thức ăn thừa", "do_giu", "Hồi 1% HP mỗi 3 giây (thay chỉ số phụ Phiến đá hệ)", 30, 100, "o:phien_da,hoi_hp_3s:1", 0, 0.0, "khong_ban", "boss Gym Celadon", "", "moi", "can_code"),
     ("giu_chuong_vo_so", "Chuông vỏ sò", "do_giu", "Hút 3% sát thương gây ra thành HP", 40, 100, "o:phien_da,hut:3", 0, 0.0, "khong_ban", "boss Gym Cerulean", "", "moi", "can_code"),
-    ("giu_mong_nhanh", "Móng vuốt nhanh", "do_giu", "10% ra đòn trước, hồi chiêu −10% trong 3 giây", 40, 100, "o:phien_da,toc_danh_ngau_nhien:10", 0, 0.0, "khong_ban", "boss Gym Violet", "", "moi", "can_code"),
-    ("giu_bang_tap_trung", "Băng đô tập trung", "do_giu", "10% còn 1 HP khi nhận đòn chí tử (hồi 120 giây)", 50, 100, "o:phien_da,song_sot:10,hoi:120", 0, 0.0, "khong_ban", "boss Gym Cianwood", "", "moi", "can_code"),
+    ("giu_mong_nhanh", "Móng vuốt nhanh", "do_giu", "10% cơ hội ra đòn nhanh: giảm 10% thời gian hồi chiêu trong 3 giây", 40, 100, "o:phien_da,toc_danh_ngau_nhien:10", 0, 0.0, "khong_ban", "boss Gym Violet", "", "moi", "can_code"),
+    ("giu_bang_tap_trung", "Băng đô tập trung", "do_giu", "10% cơ hội trụ lại với 1 HP khi trúng đòn hạ gục (120 giây mới kích hoạt lại)", 50, 100, "o:phien_da,song_sot:10,hoi:120", 0, 0.0, "khong_ban", "boss Gym Cianwood", "", "moi", "can_code"),
     ("giu_kinh_ngam", "Kính ngắm", "do_giu", "+3% chí mạng", 30, 100, "o:phien_da,chi_mang:3", 0, 0.0, "khong_ban", "boss Gym Saffron", "", "moi", "can_code"),
     ("giu_dai_luc", "Đai lực sĩ", "do_giu", "+4% sát thương đòn đánh thường", 30, 100, "o:phien_da,don_thuong:4", 0, 0.0, "khong_ban", "boss Gym Viridian", "", "moi", "can_code"),
-    ("giu_da_vinh_cuu", "Đá vĩnh cửu", "do_giu", "Chặn tiến hoá (giữ dạng hiện tại), không chỉ số", 1, 100, "o:phien_da,chan_tien_hoa:1", 0, 0.0, "khong_ban", "nhiệm vụ Pewter", "", "moi", "can_code"),
-    ("giu_trung_may_man", "Trứng may mắn", "do_giu", "+10% EXP (cộng vào trần buff +100%)", 20, 100, "o:phien_da,exp:10", 0, 0.0, "khong_ban", "Pokédex 50 loài", "", "moi", "can_code"),
+    ("giu_da_vinh_cuu", "Đá vĩnh cửu", "do_giu", "Chặn tiến hoá (giữ dạng hiện tại), không cộng chỉ số", 1, 100, "o:phien_da,chan_tien_hoa:1", 0, 0.0, "khong_ban", "nhiệm vụ Pewter", "", "moi", "can_code"),
+    ("giu_trung_may_man", "Trứng may mắn", "do_giu", "+10% EXP (tính chung vào mức tăng EXP tối đa +100%)", 20, 100, "o:phien_da,exp:10", 0, 0.0, "khong_ban", "Pokédex 50 loài", "", "moi", "can_code"),
 ]
 
 # =====================================================================================
@@ -358,7 +359,7 @@ KHUNG_CHIEU = {
         (8, "toi_thuong", 3, "tối thượng + hồi 5% HP", 4.40, 15.0, 5, "")],
     2: [(0, "thuong", 1, "tấn công", 1.00, 0.7, 0, ""), (1, "tan_cong", 1, "tấn công nhanh", 1.50, 1.2, 35, ""),
         (2, "tan_cong", 1, "tấn công (hệ Bóng tối)", 1.80, 1.6, 25, ""), (3, "nhieu_don", 2, "tấn công lan", 5.30, 6.0, 15, ""),
-        (4, "hoi", 2, "hồi 10% HP cả đội sau 3 giây (Mong ước)", 0, 30.0, 10, ""),
+        (4, "hoi", 2, "hồi 10% HP cả nhóm sau 3 giây (Mong ước)", 0, 30.0, 10, ""),
         (5, "bi_dong", 1, "hồi 30% HP bản thân, ngủ 2 giây (Nghỉ ngơi)", 0, 90.0, 5, ""),
         (6, "hoi_sinh", 3, "hồi sinh đồng đội 30% HP", 0, 120.0, 3, ""),
         (7, "buff", 3, "cân bằng HP với mục tiêu (Chia sẻ nỗi đau)", 0, 60.0, 5, ""),
@@ -367,7 +368,7 @@ KHUNG_CHIEU = {
     3: [(0, "thuong", 1, "tấn công", 1.00, 0.7, 0, ""), (1, "tan_cong", 1, "tấn công", 1.50, 1.3, 35, ""),
         (2, "tan_cong", 1, "làm chậm 15%", 1.75, 1.7, 25, ""), (3, "nhieu_don", 2, "khiêu khích quái quanh", 5.00, 6.0, 15, ""),
         (4, "buff", 2, "+25% tấn công, −15% thủ 20 giây (Phá mai)", 0, 45.0, 10, ""),
-        (5, "khien", 1, "khiên 15% HP, giảm 10% sát thương cả đội 10 giây (Rút vào mai)", 0, 40.0, 10, ""),
+        (5, "khien", 1, "khiên 15% HP, giảm 10% sát thương cho cả nhóm 10 giây (Rút vào mai)", 0, 40.0, 10, ""),
         (6, "tan_cong", 3, "tấn công", 2.80, 6.0, 15, ""), (7, "tan_cong", 3, "đẩy lùi", 3.00, 6.0, 15, ""),
         (8, "toi_thuong", 3, "tối thượng", 4.30, 15.0, 5, "")],
     4: [(0, "thuong", 1, "tấn công xa", 1.00, 0.7, 0, "tê 5%"), (1, "tan_cong", 1, "tấn công xa", 1.55, 1.3, 35, "tê 10%"),
@@ -389,7 +390,7 @@ HE_SO_TTK = 2.2          # he so xoay chieu trung binh cua quai_de_xuat (sinh_sq
 # Nhanh Eevee (LoaiPokemon.NHANH_EEVEE) - chieu dac trung thay o 2/8/10 (ten hien thi THIET KE;
 # client van dung ten cua o chieu - xem ap_ten_chieu.py).
 NHANH_EEVEE = [
-    (134, "Vaporeon", "Nước", "Hỗ trợ hồi đội", "Súng nước", "Vòng nước", "Thủy triều"),
+    (134, "Vaporeon", "Nước", "Hỗ trợ hồi máu nhóm", "Súng nước", "Vòng nước", "Thủy triều"),
     (135, "Jolteon", "Điện", "Tốc độ", "Phóng điện", "Gai sấm", "Sấm sét"),
     (136, "Flareon", "Lửa", "Bùng nổ", "Nanh lửa", "Hỏa diệm", "Đại hỏa"),
     (196, "Espeon", "Siêu linh", "Phép", "Tâm niệm", "Ảo ảnh tâm linh", "Siêu năng"),
@@ -503,6 +504,9 @@ SK_MOI_THEO_LOAI = {
     "pvp": "Huy chương mùa giải", "chien_vung": "Cờ vùng", "mua": "Phiếu lễ hội mùa", "thuong": "Tem tuần",
 }
 
+# Ten vat pham "Qua le ..." qua dai cho o vat pham J2ME (do_rong_j2me.py, nen <= ~120 px).
+TEN_QUA_LE_GON = {"Quà lễ Phụ nữ Việt Nam 20/10": "Quà lễ Phụ nữ 20/10"}
+
 SK_SO_LUONG_TUAN = 20      # moi vat pham su kien: toi da 20 cai / tuan / nhan vat
 
 # Mua: (ma, ten, ngay mo, tran) - lay tu TRAN_CAP_THEO_NGAY
@@ -615,7 +619,7 @@ def sinh_trang_bi(item, ids):
     for b, ten_bac, L, ngay in BAC:
         for (so, cs, pt) in LD.BO_TB:
             bo.append({"bac": b, "ten_bo": TEN_BO[b], "vung": VUNG_BO[b], "so_mon": so, "chi_so": cs,
-                       "phan_tram": pt, "mo_ta": "%s: %d món cùng bậc %s ⇒ +%d%% %s" % (TEN_BO[b], so, ten_bac, pt, cs.lower())})
+                       "phan_tram": pt, "mo_ta": "%s: mặc %d món cùng bậc %s được +%d%% %s" % (TEN_BO[b], so, ten_bac, pt, cs if cs == "HP" else cs.lower())})
     return cat, moi, bo
 
 
@@ -641,22 +645,22 @@ def sinh_vat_lieu(ids, item_moi):
     for bacs, ma, ten in NL_PHU:
         i = item28(ten, icon_nl[ma])
         nl.append({"ma": ma, "ten": ten, "nhom": "nguyen_lieu_phu", "anh_xa": "item:%d" % i,
-                   "dung_cho": "Nâng cấp +11..+15 bậc %s (1 cái mỗi lần thử)" % ", ".join(BAC[b][1] for b in bacs),
-                   "nguon": "rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",
+                   "dung_cho": "Nâng cấp +11 đến +15 cho đồ bậc %s (1 cái mỗi lần thử)" % ", ".join(BAC[b][1] for b in bacs),
+                   "nguon": "quái ở dải cấp của bậc rơi (0,4%), phân rã đồ bậc đó, chế tạo",
                    "gia": 0, "tien": "khong_ban"})
     i = item28("Mảnh tinh hoa", 14138)
     nl.append({"ma": "manh_tinh_hoa", "ten": "Mảnh tinh hoa", "nhom": "nguyen_lieu_hoan_my", "anh_xa": "item:%d" % i,
-               "dung_cho": "Chuyển đồ Hoàn mỹ sang bậc mới (3 mảnh)", "nguon": "phân rã đồ Hoàn mỹ",
+               "dung_cho": "Chuyển đồ Hoàn mỹ sang bậc mới (cần 3 mảnh)", "nguon": "phân rã đồ Hoàn mỹ",
                "gia": 0, "tien": "khong_ban"})
     nl.append({"ma": "da_nang_cap", "ten": "Đá nâng cấp", "nhom": "nguyen_lieu_chinh", "anh_xa": "ngoc:%d" % NGOC_DA_NANG_CAP,
-               "dung_cho": "Mọi lần nâng cấp: +1..+5 ×1, +6..+10 ×2, +11..+15 ×4",
-               "nguon": "rơi 1,5%/quái (lệch cấp ≤ 5), quái tinh anh chắc chắn, phân rã 2/món",
+               "dung_cho": "Mọi lần nâng cấp: lên +1 đến +5 cần 1 viên, +6 đến +10 cần 2 viên, +11 đến +15 cần 4 viên",
+               "nguon": "quái chênh tối đa 5 cấp rơi 1,5%, quái tinh anh chắc chắn rơi, phân rã 1 món được 2 viên",
                "gia": 0, "tien": "khong_ban"})
     nl.append({"ma": "bua_bao_ho", "ten": "Bùa bảo hộ", "nhom": "bua", "anh_xa": "ngoc:%s" % "/".join(map(str, NGOC_BUA[:3])),
-               "dung_cho": "Giữ cấp khi trượt +7..+10", "nguon": "cửa hàng lượng khoá",
+               "dung_cho": "Giữ cấp khi nâng cấp +7 đến +10 thất bại", "nguon": "cửa hàng lượng khoá",
                "gia": 10, "tien": "luong_khoa"})
     nl.append({"ma": "bua_bao_ho_cao", "ten": "Bùa bảo hộ cao cấp", "nhom": "bua", "anh_xa": "ngoc:%s" % "/".join(map(str, NGOC_BUA[3:])),
-               "dung_cho": "Giữ cấp khi trượt +11..+15", "nguon": "cửa hàng lượng khoá",
+               "dung_cho": "Giữ cấp khi nâng cấp +11 đến +15 thất bại", "nguon": "cửa hàng lượng khoá",
                "gia": 25, "tien": "luong_khoa"})
     # Vat lieu theo bac x +k
     vl = []
@@ -861,10 +865,10 @@ def sinh_quai(quai, ten_id, ids, item_moi):
         dps = (LD.ngan_sach_tc(L) - thq) * 1.1 * HE_SO_TTK
         b = max(x[0] for x in BAC if x[2] <= max(1, L))
         gym.append({"stt": k, "ma_nhiem_vu": ma, "huy_hieu": huy, "dia_danh": r["dia_danh"], "he": he,
-                    "cap": L, "template_quai": tpl, "ten_boss": "Thủ lĩnh %s: %s" % (r["dia_danh"], quai[tpl]["name"]),
+                    "cap": L, "template_quai": tpl, "ten_boss": "Trưởng Gym %s: %s" % (r["dia_danh"], quai[tpl]["name"]),
                     "hp": int(round(TTK_GYM_GIAY * dps / 100.0) * 100), "tan_cong": int(round(atq * 1.5)),
                     "phong_thu": int(round(thq * 1.2)), "ttk_giay": TTK_GYM_GIAY, "no_sau_phut": 5,
-                    "thuong_lan_dau": "%s + 1 món Hoàn mỹ bậc %s (vũ khí theo dòng)" % (huy, BAC[b][1]),
+                    "thuong_lan_dau": "%s + 1 món Hoàn mỹ bậc %s (đồ cầm tay theo dòng)" % (huy, BAC[b][1]),
                     "thuong_tuan": "3 Huy chương Gym (item:%d)" % token_gym, "bac_thuong": b})
     # Boss the gioi 52 tuan
     boss = []
@@ -962,12 +966,14 @@ def dong_quai(mau, i, ten, dex, h1, h2, L, hp, at, th, xp, xu, loai):
     return d
 
 
-def ids_item28(ten_id, ids, item_moi, ten, icon):
+def ids_item28(ten_id, ids, item_moi, ten, icon, khoa_icon=None):
+    """khoa_icon: khoa nd: trong bang_icon.csv khi ten hien thi da doi (giu icon cu)."""
     if ten in ten_id:
         return ten_id[ten]
     i = ids.lay()
     item_moi.append({"id": i, "name": ten, "type": 28, "style": 0, "he": 0, "gender": 0, "level": 1,
-                     "durable": 0, **{c: 0 for c in COT_ATB}, "price": 0, "clazz": -1, "xstart": icon_nd(khoa_ten(ten), icon),
+                     "durable": 0, **{c: 0 for c in COT_ATB}, "price": 0, "clazz": -1,
+                     "xstart": icon_nd(khoa_icon or khoa_ten(ten), icon),
                      "ystart": 0, "colortype": -1, "nloan": 0, "idUpLevel": -1, "namein": ten, "ideff": -1,
                      "pricecu": 0})
     ten_id[ten] = i
@@ -1059,11 +1065,15 @@ def sinh_su_kien(ten_id, ids, item_moi):
             vp = [(tk, "item:%d" % ten_id[tk])]
         if not vp:
             ten_tk = SK_MOI_THEO_LOAI.get(r["loai"], "Tem tuần")
+            khoa_icon = None
             if "Black Friday" in ten1:
                 ten_tk = "Phiếu giảm giá trang trí"
             elif r["loai"] == "le_vn":
                 ten_tk = "Quà lễ " + re.sub(r"[:(].*$", "", ten1).strip()
-            i = ids_item28(ten_id, ids, item_moi, ten_tk, icon_loai.get(r["loai"], 14135))
+                if ten_tk in TEN_QUA_LE_GON:   # ten dai qua ~120 px tren J2ME -> rut gon, giu icon cu
+                    khoa_icon = khoa_ten(ten_tk)
+                    ten_tk = TEN_QUA_LE_GON[ten_tk]
+            i = ids_item28(ten_id, ids, item_moi, ten_tk, icon_loai.get(r["loai"], 14135), khoa_icon)
             vp = [(ten_tk, "item:%d" % i)]
         ns = float(r["ngan_sach_gio"])
         for (ten_vp, ax) in vp:
@@ -1080,14 +1090,15 @@ def sinh_trang_tri():
     ra = []
     for m, (ngay, tran) in enumerate(LD.TRAN_CAP_THEO_NGAY):
         ten = TEN_MUA[m]
+        ten_giua = "m" + ten[1:]   # "Mùa Kanto" giua ten -> "mùa Kanto"
         lv = LINH_VAT_MUA[m]
         for (kieu, t, gia, nguon) in [
-                ("danh_hieu", "Nhà vô địch %s" % ten, 0, "Top 100 PvP cuối mùa"),
-                ("danh_hieu", "Nhà nghiên cứu %s" % ten, 0, "Pokédex +25 loài trong mùa"),
+                ("danh_hieu", "Nhà vô địch %s" % ten_giua, 0, "Top 100 PvP cuối mùa"),
+                ("danh_hieu", "Nhà nghiên cứu %s" % ten_giua, 0, "Pokédex +25 loài trong mùa"),
                 ("khung", "Khung ảnh %s" % lv, 60, "Cửa hàng lượng (chỉ trang trí)"),
-                ("khung", "Khung bậc Master %s" % ten, 0, "Bậc Master mùa PvP"),
+                ("khung", "Khung bậc Master %s" % ten_giua, 0, "Bậc Master mùa PvP"),
                 ("trang_phuc", "Trang phục %s" % lv, 150, "Cửa hàng lượng (chỉ trang trí)"),
-                ("trang_phuc", "Áo choàng Gym %s" % ten, 0, "Đổi 40 Huy chương Gym"),
+                ("trang_phuc", "Áo choàng Gym %s" % ten_giua, 0, "Đổi 40 Huy chương Gym"),
                 ("hieu_ung", "Hào quang %s" % lv, 0, "Hoàn thành 8 Gym của vùng"),
         ]:
             ra.append({"mua": m + 1, "ten_mua": ten, "ngay_mo": ngay, "tran_cap": tran, "kieu": kieu, "ten": t,
@@ -1284,8 +1295,8 @@ def main():
         ", ".join("`%s`" % c for c in COT_ITEM),
         ",\n".join("(" + ", ".join(sql_gt(d[c]) for c in COT_ITEM) + ")" for d in item_moi)))
     o.append("\n-- ====================== PHAN C: data_monster moi (nam 2) ======================\n"
-             "-- Id lien tiep %d.. (client cap mang template theo so luong). Chua dat tren map nao:\n"
-             "-- doi map / GD3 them spawn (dai 86-100) va boss dot kich nam 2.\n" % ID_QUAI_MOI_TU)
+             "-- Id lien tiep %d.. (client cap mang template theo so luong). 139..174 moc tren ban do\n"
+             "-- vung Hoenn (BanDoHoenn, map/pokemon_spawn/map43..282); 175..178 = boss dot kich nam 2.\n" % ID_QUAI_MOI_TU)
     o.append("DELETE FROM `data_monster` WHERE `id` >= %d AND `id` <= %d;\n" % (ID_QUAI_MOI_TU, ID_QUAI_MOI_DEN))
     o.append("INSERT INTO `data_monster` (%s) VALUES\n%s;\n" % (
         ", ".join("`%s`" % c for c in COT_QUAI),
@@ -1302,7 +1313,7 @@ def main():
 
 
 def ghi_web(cat, bo, nl, vl, ngoc, tieu_hao, chieu, nhanh, dai, gym, boss, sk, tt, ch, ct):
-    TEN_O = {r[0]: (r[2] or "Vũ khí theo dòng") for r in LOAI_O}
+    TEN_O = {r[0]: (r[2] or "Đồ cầm tay theo dòng") for r in LOAI_O}
     TEN_NGUON = {"cua_hang": "Cửa hàng", "roi": "Quái rơi", "nhiem_vu": "Nhiệm vụ", "gym": "Gym",
                  "che_tao": "Chế tạo", "su_kien": "Sự kiện", "boss_the_gioi": "Boss thế giới"}
     w = []
@@ -1344,7 +1355,7 @@ def ghi_web(cat, bo, nl, vl, ngoc, tieu_hao, chieu, nhanh, dai, gym, boss, sk, t
           "Hệ": r["he"].replace("|", ", "), "Môi trường": r["moi_truong"].replace("|", ", ")} for r in dai]
     ghi_csv("quai.csv", list(w[0].keys()), w, RA_WEB)
     w = [{"Gym": r["stt"], "Huy hiệu": r["huy_hieu"], "Nơi": r["dia_danh"], "Hệ": r["he"], "Cấp": r["cap"],
-          "Thủ lĩnh": r["ten_boss"], "Thưởng": "Huy hiệu + 1 vũ khí Hoàn mỹ; đánh lại hằng tuần: Huy chương Gym"} for r in gym]
+          "Trưởng Gym": r["ten_boss"], "Thưởng": "Huy hiệu + 1 đồ cầm tay Hoàn mỹ; đánh lại hằng tuần: Huy chương Gym"} for r in gym]
     ghi_csv("gym.csv", list(w[0].keys()), w, RA_WEB)
     w = [{"Tuần": r["tuan"], "Boss năm 1": r["ten_nam1"], "Boss năm 2": r["ten_nam2"], "Hệ": r["he"],
           "Loại": "Đột kích huyền thoại" if r["loai"] == "dot_kich" else "Boss tuần",

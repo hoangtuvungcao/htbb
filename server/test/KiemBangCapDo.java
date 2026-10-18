@@ -8,16 +8,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Doi chieu web/admin/inc/capdo.php voi mang real.LevelDetail.expMain.
+ * Doi chieu HTBB-Web/shared/data/bang-cap-do.json (tools/SinhBangCapDo sinh; web doc qua
+ * server/utils/capDo.ts) voi mang real.LevelDetail.expMain / expRequire. Truoc day la tep PHP
+ * web/admin/inc/capdo.php - website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
  *
  * Mang co 91 phan tu, nhieu so dai toi 14 chu so - loi go nham MOT chu so o day
- * khong ai nhin ra bang mat. Bo kiem nay doc lai tung so trong tep PHP va so
+ * khong ai nhin ra bang mat. Bo kiem nay doc lai tung so trong tep JSON va so
  * TUNG PHAN TU MOT voi mang that, khong chi so luong phan tu.
  */
 public final class KiemBangCapDo {
 
-    private static final String TEP = "web/admin/inc/capdo.php";
-    private static final Pattern DONG_SO = Pattern.compile("^\\s*(\\d+),\\s*//\\s*cap\\s+(\\d+)\\s*$");
+    private static final String TEP = "shared/data/bang-cap-do.json";
+    /** Bo sinh ghi MOI phan tu mang mot dong: "    12345," (phan tu cuoi khong co dau phay). */
+    private static final Pattern DONG_SO = Pattern.compile("^\\s*(\\d+),?\\s*$");
 
     private KiemBangCapDo() {
     }
@@ -25,8 +28,11 @@ public final class KiemBangCapDo {
     public static void chay() {
         Kiem.nhom("Bang cap do - tep sinh phai khop tung so voi LevelDetail.expMain");
 
-        final String php = doc(TEP);
-        Kiem.dung("doc duoc " + TEP, !php.isEmpty());
+        if (WebHtbb.boQua("bang cap do")) {
+            return;
+        }
+        final String php = WebHtbb.doc(TEP);
+        Kiem.dung("doc duoc " + WebHtbb.ten(TEP), !php.isEmpty());
         if (php.isEmpty()) {
             return;
         }
@@ -37,33 +43,35 @@ public final class KiemBangCapDo {
             return;
         }
 
-        // capDoRaExp() (chi so mang = cap - 1) va capDoRaExpRequire() (chi so mang =
-        // CHINH cap do) nam trong cung mot tep, cung dung dang dong "N, // cap M" -
-        // phai tach rieng tung ham truoc khi doi chieu, khong thi regex se gop nham
-        // ca hai bang lam mot.
-        final int viTriHam2 = php.indexOf("function capDoRaExpRequire()");
-        final String phanExp = viTriHam2 >= 0 ? php.substring(0, viTriHam2) : php;
-        doiChieu("capDoRaExp()", phanExp, that, 1);
+        // expMain (chi so mang = cap - 1) va expRequire (chi so mang = CHINH cap do) nam
+        // trong cung mot tep, cung dang "moi so mot dong" - phai tach rieng tung mang truoc
+        // khi doi chieu, khong thi regex se gop nham ca hai bang lam mot.
+        final int viTriMang1 = php.indexOf("\"expMain\"");
+        final int viTriHam2 = php.indexOf("\"expRequire\"");
+        Kiem.dung("tim thay mang expMain trong tep", viTriMang1 >= 0);
+        final String phanExp = viTriHam2 > viTriMang1 && viTriMang1 >= 0
+                ? php.substring(viTriMang1, viTriHam2) : (viTriMang1 >= 0 ? php.substring(viTriMang1) : "");
+        doiChieu("expMain", phanExp, that, 1);
 
         if (viTriHam2 >= 0) {
             final long[] thatRequire = real.LevelDetail.expRequire;
             Kiem.dung("doc duoc real.LevelDetail.expRequire", thatRequire != null && thatRequire.length > that.length);
             if (thatRequire != null) {
-                doiChieu("capDoRaExpRequire()", php.substring(viTriHam2), thatRequire, 0);
+                doiChieu("expRequire", php.substring(viTriHam2), thatRequire, 0);
             }
         } else {
-            Kiem.dung("tim thay ham capDoRaExpRequire() trong tep (cho chuc nang Buff level %)", false);
+            Kiem.dung("tim thay mang expRequire trong tep (cho chuc nang Buff level %)", false);
         }
 
         // Tran cap ghi trong tep phai THAP HON do dai mang mot don vi - tranh dung
         // toi bien co loi lech-mot trong chinh LevelDetail.getXpFromLevel() ben Java
         // (dieu kien "level < expMain.length" sai cho dung level = do dai mang).
-        if (preg1(php, "CAPDO_TOI_DA\\s*=\\s*(\\d+)") != null) {
-            final int tranCap = Integer.parseInt(preg1(php, "CAPDO_TOI_DA\\s*=\\s*(\\d+)"));
+        if (preg1(php, "\"capDoToiDa\":\\s*(\\d+)") != null) {
+            final int tranCap = Integer.parseInt(preg1(php, "\"capDoToiDa\":\\s*(\\d+)"));
             Kiem.bang("CAPDO_TOI_DA = do dai mang - 1 (tranh loi lech-mot cua Java)",
                     Integer.valueOf(that.length - 1), Integer.valueOf(tranCap));
         } else {
-            Kiem.dung("tim thay hang so CAPDO_TOI_DA trong tep", false);
+            Kiem.dung("tim thay capDoToiDa trong tep", false);
         }
 
         // Doi chieu voi du lieu THAT dang chay: cap cao nhat tung ghi nhan tren VPS
@@ -91,12 +99,10 @@ public final class KiemBangCapDo {
      */
     private static void doiChieu(final String tenHam, final String phanTep, final long[] that, final int capBanDau) {
         final List<Long> tuTep = new ArrayList<Long>();
-        final List<Integer> capTuTep = new ArrayList<Integer>();
         for (final String dong : phanTep.split("\r?\n")) {
             final Matcher m = DONG_SO.matcher(dong);
             if (m.matches()) {
                 tuTep.add(Long.valueOf(Long.parseLong(m.group(1))));
-                capTuTep.add(Integer.valueOf(Integer.parseInt(m.group(2))));
             }
         }
 
@@ -106,15 +112,9 @@ public final class KiemBangCapDo {
         int lech = 0;
         String viDuLech = "";
         for (int i = 0; i < that.length && i < tuTep.size(); i++) {
-            // Nhan cap ghi trong chu thich phai dung nhu ky vong - bat luon neu dong bi
-            // xoa nham hay chen nham thu tu luc sinh lai bang tay.
-            if (capTuTep.get(i).intValue() != i + capBanDau) {
-                lech++;
-                if (viDuLech.isEmpty()) {
-                    viDuLech = "dong " + i + ": ghi \"cap " + capTuTep.get(i) + "\" nhung phai la cap " + (i + capBanDau);
-                }
-                continue;
-            }
+            // JSON khong co chu thich "// cap M" nhu tep PHP cu: cap suy tu VI TRI (chi so
+            // + capBanDau). Dong bi xoa/chen nham thi so muc lech (kiem o tren) va cac so sau
+            // do lech tung cai mot - van bi bat.
             if (that[i] != tuTep.get(i).longValue()) {
                 lech++;
                 if (viDuLech.isEmpty()) {

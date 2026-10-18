@@ -7,6 +7,13 @@
 >
 > Hiện trạng và lý do thay đổi: `KIEM_TOAN_KINH_TE.md`. Thứ tự sửa code: `KE_HOACH_LAU_DAI_GD2.md`.
 > Không có gì trong tài liệu này đang chạy trong game. Mới chỉ có dữ liệu và mô phỏng.
+>
+> **Cập nhật 18/10/2026 — quyết định của chủ dự án (thay thiết kế cũ):** KHÔNG còn trần cấp theo mùa/năm. Thay vào đó
+> lên cấp **chậm** (bảng EXP mục 1.1 + năng lượng 90 phút/ngày mục 1.3) và người chơi dùng **vật phẩm tăng tốc**
+> (mục 1.8: vé EXP, bùa thể lực, ủy thác luyện tập, kẹo hiếm) để cày/treo nhanh hơn. Mỗi món có bản **cao cấp** (mua bằng
+> lượng, `NAP_TIEN.md` mục 3b) và bản **khoá** (kiếm bằng chơi), **dùng chung một trần** 60 điểm/ngày, 210 điểm/tuần, chỉ cho
+> EXP. Nội dung (Hoenn, chuỗi năm 2, huyền thoại) mở theo **cấp + cốt truyện**, không theo ngày. Code trần theo mùa vẫn giữ,
+> tắt bằng `sv.tran_cap_theo_mua=0` (mặc định; `=1` bật lại thiết kế cũ). Mô phỏng: 17/17 + 6/6 mục tiêu (mục 10).
 
 ## 0. Nguyên tắc và mục tiêu đo được
 
@@ -15,10 +22,10 @@
 | N1 | **Đơn vị chung là "giờ chơi"**. Mọi thưởng, giá và chi phí tính theo "giờ thu nhập ở cấp X" chứ không theo số cố định | `xuMoiGio(L)`, `expMoiGio(L)` | Không còn quà kiểu "10 triệu xu" cho mọi cấp |
 | N2 | **Mỗi nguồn tiền (faucet) có hố hút (sink) cùng tỉ lệ theo cấp** | Tổng xu ra/vào, từ tháng 3 | 80–105% (mô phỏng: **99,4%**) |
 | N3 | **Tiền thực không phình** | Xu TB/người ÷ thu nhập 1 giờ ở cấp trung vị | Tăng TB ≤ 5%/tháng (mô phỏng: **2,7%**), ≤ 20 giờ (mô phỏng: **≤ 3,2 giờ**) |
-| N4 | **Cày nhiều có lợi nhưng giảm dần**; treo máy 20 giờ không hơn người chơi 5–7 giờ | Giờ hiệu dụng/ngày | Bot ≤ 1,3 × nhóm cày (mô phỏng: **5,3 so với 4,36**) |
-| N5 | **Cốt truyện kéo dài 12–18 tháng** với người chơi nhẹ | % xong năm 1 | Nhóm nhẹ: không ai xong trước tháng 12, trung vị **tháng 12,8**. Nhóm cày: không ai xong trước tháng 6 (sớm nhất **ngày 287**) |
-| N6 | **Mở trần cấp theo mùa** để game sống 2 năm | Trần cấp theo ngày | 60 → 70 → 80 → 91 → 95 → 100 |
-| N7 | **Không trả tiền để mạnh hơn** (Q10). Lượng chỉ đến từ chơi, chỉ mua đồ trang trí | Shop | Đồ có chỉ số ngừng bán bằng lượng |
+| N4 | **Cày nhiều có lợi nhưng giảm dần**; treo máy 20 giờ không hơn người chơi 5–7 giờ | Giờ hiệu dụng/ngày | Bot ≤ 1,3 × nhóm cày (mô phỏng: **2,00 so với 2,02**; mua tăng tốc tối đa: 2,24 so với 2,22) |
+| N5 | **Lên cấp chậm, không trần theo mùa** (18/10/2026): tới cấp 100 | Tháng tới cấp tối đa (người không nạp, dùng bản khoá) | Nhẹ 15–18 tháng (mô phỏng **17,1**), cày 9–12 (**9,8**); cốt truyện năm 1: nhẹ trung vị ≤ tháng 14 (**10,4**), cày không ai trước tháng 5 |
+| N6 | ~~Mở trần cấp theo mùa~~ → **tắt mặc định** (`sv.tran_cap_theo_mua=0`); nội dung mở theo cấp + cốt truyện | — | Code giữ để bật lại |
+| N7 | **Không trả tiền để mạnh hơn** (Q10). Tiền chỉ mua trang trí, tiện ích và **thời gian** (tăng tốc, chung trần với bản khoá) | Shop + mô phỏng | Mua tăng tốc tối đa nhanh hơn ≤ 40% cùng giờ chơi (**+29%**); sức mạnh cùng cấp chênh ≤ +1% (**+0,36%**) |
 | N8 | **Ngân sách sức mạnh theo mùa**: bậc đồ mới chỉ hơn bậc cũ +15 khoảng 10% | Chỉ số tấn công kỳ vọng | Mục 4.6 |
 | N9 | **Cuốn hút**: luôn có mục tiêu phiên (15–30 phút), tuần và mùa | D1/D7/D30 (proxy) | ≥ 40/20/10% (mô phỏng: 68/49/29%) |
 
@@ -41,16 +48,17 @@ Cách dựng:
 | 16 | 0,10 | 0,8 | 19.700 | 248.935 | 7.458 |
 | 20 | 0,25 | 1,3 | 75.200 | 574.256 | 9.018 |
 | 30 | 0,90 | 6,1 | 578.000 | 2.567.962 | 13.803 |
-| 40 | 2,0 | 19,3 | 2.530.000 | 15.900.142 | 21.560 |
-| 50 | 3,6 | 45,8 | 6.310.000 | 98.449.487 | 33.925 |
-| 60 | 6,2 | 92,3 | 15.700.000 | 609.573.273 | 52.734 |
-| 70 | 11 | 173,6 | 41.400.000 | 3,77·10⁹ | 81.776 |
-| 80 | 19 | 316 | 117.000.000 | 4,35·10¹¹ | 126.976 |
-| 90 | 32 | 559 | 264.000.000 | 2,51·10¹³ | 196.101 |
-| 91 → 100 | 33 → 46 | 591 → 938 | 281M → 548M | (không có) | 205k → 302k |
+| 40 | 1,9 | 19,0 | 2.400.000 | 15.900.142 | 21.560 |
+| 50 | 3,4 | 44,0 | 5.960.000 | 98.449.487 | 33.925 |
+| 60 | 5,8 | 87,8 | 14.700.000 | 609.573.273 | 52.734 |
+| 70 | 10,3 | 163,9 | 38.800.000 | 3,77·10⁹ | 81.776 |
+| 80 | 17,9 | 297,6 | 110.000.000 | 4,35·10¹¹ | 126.976 |
+| 90 | 30,1 | 526,3 | 249.000.000 | 2,51·10¹³ | 196.101 |
+| 91 → 100 | 31 → 42 | 556 → 882 | 264M → 421M | (không có) | 205k → 302k |
 
-- **Tổng 1 → 91: 591 giờ hiệu dụng**. Bảng cũ cần 7,5·10¹³ EXP; bảng mới chỉ cần 3,1·10⁹.
-- Cấp 91 → 100 (năm 2) thêm 347 giờ.
+- **Tổng 1 → 100: 882 giờ hiệu dụng** (18/10/2026: các mốc từ cấp 40 nhân 0,94; cấp 1–30 giữ nguyên để tiến hoá đầu
+  vẫn ~1,1 giờ). Tổng 1 → 91: 556 giờ. Bảng cũ cần 7,5·10¹³ EXP; bảng mới chỉ cần 2,9·10⁹.
+- Không còn trần theo mùa: thời gian thật tới cấp 100 do **năng lượng** (mục 1.3) và **tăng tốc** (mục 1.8) quyết định.
 - Bảng mới **tăng đều và đơn điệu**, đã kiểm trong test.
 - Mọi giá trị đều nhỏ hơn `Integer.MAX`, nên vẫn đọc được bằng `data_quest.exp` (`getInt`).
 
@@ -72,16 +80,28 @@ Tổ đội: sửa lỗi `nUser = 5`. Mỗi thành viên ở gần nhận `100% 
 
 | Thời gian đánh quái trong ngày | Tốc độ EXP và xu |
 |---|---|
-| 3 giờ đầu (180 phút), cộng phần tích luỹ từ hôm trước (tối đa thêm 180 phút, tổng 6 giờ) | **100%** |
-| 3 giờ tiếp theo | **50%** |
-| 4 giờ tiếp theo | **20%** |
-| Sau 10 giờ | **0%** EXP, 0 xu, 0 đá (vẫn tốn thuốc và độ bền đồ) |
+| 90 phút đầu, cộng phần tích luỹ từ hôm trước (tối đa thêm 90 phút, tổng 3 giờ) | **100%** |
+| 2 giờ tiếp theo | **20%** |
+| 2 giờ tiếp theo | **5%** |
+| Sau 5,5 giờ | **0%** EXP, 0 xu, 0 đá (vẫn tốn thuốc và độ bền đồ) |
 
-- Người chơi nhẹ (1–2 giờ) **không bao giờ chạm trần**. Nghỉ 1 ngày thì hôm sau có 6 giờ 100%, nên **không có áp lực đăng nhập mỗi ngày**.
-- Người cày 6 giờ/ngày được 4,5 giờ hiệu dụng. Treo máy 20 giờ chỉ được 5,3 giờ, **thêm 18%** so với người cày 6 giờ.
+> 18/10/2026 (thay 180 phút 100% → 180 phút 50% → 240 phút 20%): khi không còn trần theo mùa, cửa sổ 100% thu hẹp để
+> người cày 6 giờ/ngày chỉ nhanh ~1,7 lần người chơi 1,5 giờ (trước ~3 lần). Bùa thể lực (mục 1.8) +60 phút 100% **chỉ cho
+> EXP** (xu và đồ rơi vẫn theo năng lượng gốc — `NangLuong.heSoXuHienTai`). Khoá `cau_hinh` `exp.nang_luong_phut` /
+> `exp.nang_luong_tich_phut` vẫn ghi đè được (nếu máy chủ đã đặt 180/360 thì xoá dòng đó để dùng số mới).
+
+- Người chơi nhẹ (1–2 giờ, ~60–90 phút đánh quái sau nhiệm vụ) **gần như không chạm trần**. Nghỉ 1 ngày thì hôm sau có 3 giờ 100%, nên **không có áp lực đăng nhập mỗi ngày**.
+- Người cày 6 giờ/ngày được ~2,0 giờ hiệu dụng. Treo máy 20 giờ cũng chỉ ~2,0 giờ (mô phỏng: bot 2,00, cày 2,02).
 - Nhiệm vụ, sự kiện và boss **không bị** giới hạn bởi năng lượng.
 
-### 1.4 Trần cấp theo mùa (`TRAN_CAP_THEO_NGAY`)
+### 1.4 Trần cấp theo mùa (`TRAN_CAP_THEO_NGAY`) — TẮT MẶC ĐỊNH
+
+> 18/10/2026: `sv.tran_cap_theo_mua=0` (thiếu dòng = 0). Khi tắt: `CapDoLauDai.tranCap` = cấp cao nhất của bảng (100),
+> `LauDai.mua` = mùa cuối (tinh thông mở đủ 50 điểm, chỉ tích ở cấp 100), mọi `ngay_mo` của nội dung (chương chính, nhiệm vụ,
+> cửa hàng Bronzong, quái năm 2) bị bỏ qua qua `LauDai.ngayMoNoiDung()` — còn khoá **cấp**, chuỗi **`truoc`** (cốt truyện)
+> và **vé chương 2/tuần**. Lịch sự kiện 52 tuần, boss thế giới, mùa PvP, vé mùa vẫn theo lịch tuần (không phải khoá nội dung).
+> Bảng dưới chỉ áp khi `sv.tran_cap_theo_mua=1`. Đổi cờ không cần chuyển EXP (`ChuyenDoiLauDai` chỉ phụ thuộc `sv.lau_dai`):
+> nhân vật giữ cấp; bật lại trần thì ai đang trên trần giữ cấp, EXP thêm vào thành tinh thông như cũ.
 
 | Mùa | Từ ngày | Trần | Nội dung mở | Bậc đồ mở |
 |---|---|---|---|---|
@@ -93,6 +113,22 @@ Tổ đội: sửa lỗi `nUser = 5`. Mỗi thành viên ở gần nhận `100% 
 | S6 | 545 | 100 | Hoenn 2 + Liên vùng | tối thượng (98) |
 
 ### 1.5 Nhịp độ (mô phỏng, nhóm chuẩn chơi liên tục từ khai trương)
+
+**18/10/2026, không trần theo mùa** (dân chuẩn hỗn hợp: người không nạp dùng bản khoá kiếm được, người nạp theo nhóm nạp):
+
+| Tháng | Nhẹ (1–2 giờ/ngày) | Vừa (~3 giờ) | Cày (5–7 giờ) |
+|---|---|---|---|
+| 3 | cấp 68 | 74 | 78 |
+| 6 | 80 | 87 | 91 |
+| 9 | 87 | 94 | 98 |
+| 12 | 92 | 100 | 100 |
+| 15 | 97 | 100 | 100 |
+| 18 | 100 | 100 | 100 |
+
+Trung vị tới cấp 100 (người không nạp): nhẹ **tháng 17,1**, vừa 11,8, cày **9,8**. Không dùng tăng tốc: 19,6 / 13,3 / 11,4.
+Mua tăng tốc tối đa (lấp đủ trần): 15,1 / 11,0 / 9,5.
+
+Bảng cũ (trần theo mùa, `sv.tran_cap_theo_mua=1`):
 
 | Tháng | Nhẹ (1–2 giờ/ngày) | Vừa (~3 giờ) | Cày (5–7 giờ) |
 |---|---|---|---|
@@ -107,6 +143,9 @@ Khi chạm trần, người cày chuyển sang **tinh thông, nâng cấp, Poké
 
 ### 1.6 Sau trần: Tinh thông (thay cho chuyển sinh)
 
+> Không trần theo mùa: "trần" = cấp 100, tối đa 50 điểm ngay (không mở dần 10 điểm/mùa). **Vật phẩm tăng tốc không dùng
+> được ở cấp 100**, nên tinh thông (sức mạnh) chỉ đến từ EXP thường — tiền không mua được tinh thông. Điểm đã có giữ nguyên.
+
 - EXP vượt trần chuyển thành **điểm Tinh thông**: 1 điểm = 50% EXP lên cấp (trần − 1).
 - Mỗi mùa mở thêm tối đa 10 điểm, trần toàn bộ là 50 điểm.
 - Mỗi điểm cho +0,2% tấn công **hoặc** HP, tối đa **+10%**. Mức này đã nằm trong ngân sách sức mạnh (mục 4.6).
@@ -120,6 +159,31 @@ Khi chạm trần, người cày chuyển sang **tinh thông, nâng cấp, Poké
 | Người quay lại | Vắng ≥ 14 ngày | Cùng ưu đãi EXP ×1,5; thêm 3 nhiệm vụ "Quay lại" (`QL-01..03`, 0,8 giờ EXP mỗi cái) |
 
 Cả hai ưu đãi đều không cộng thêm xu.
+
+### 1.8 Vật phẩm tăng tốc (18/10/2026, `com.htbb.pokemon.TangToc`, `real.TangTocGame`)
+
+Mua **thời gian**, không mua sức mạnh: chỉ cho EXP — không xu, không đá, không vật phẩm, không đổi tỉ lệ rơi, không chỉ số.
+Mỗi món có **bản cao cấp** (id 1250/1252/1254/1256, bán bằng lượng ở Cửa hàng & Nạp, lượng bị đốt) và **bản khoá**
+(1251/1253/1255/1257, kiếm bằng chơi). Cả hai khoá (không giao dịch), **dùng chung một trần**:
+
+| Món | Điểm | Tác dụng | Trần riêng | Giá cao cấp (lượng) | Mua/tuần |
+|---|---|---|---|---|---|
+| Vé EXP x1,5 (30 phút) | 15 | EXP hạ quái ×1,5 trong 30 phút **đánh quái** (đứng yên không mất), nhân SAU năng lượng | 60 phút vé/ngày, không trộn x1,5 với x2 đang chạy | 20 | 14 |
+| Vé EXP x2 (30 phút) | 30 | như trên, ×2 | (chung 60 phút vé) | 40 | 7 |
+| Bùa thể lực | 45 | +60 phút năng lượng 100% hôm nay, **chỉ EXP**, không tích sang hôm sau | 1/ngày | 60 | 4 |
+| Phiếu ủy thác luyện tập (1 giờ) | 12 | Treo offline: thoát game, đăng nhập lại nhận 20% EXP 1 giờ đánh quái ở cấp lúc thoát (chỉ EXP) | 3 giờ/ngày, +1 giờ với Thẻ tháng; đặt trước ≤ 4 giờ | 15 | 17 |
+| Kẹo hiếm (đã có, 1214) | 30 | 30 phút EXP, trừ 30 phút năng lượng 100% | 2/tuần | 40 | 2 |
+
+- **Điểm tăng tốc** = số phút EXP ở tốc độ 100% món đó cho tối đa. Tổng ≤ **60 điểm/ngày, 210 điểm/tuần** (3,5 giờ EXP),
+  bản cao cấp + bản khoá cộng chung, đếm theo nhân vật khi **dùng** (không theo khi mua). Bot treo máy không vượt được trần.
+- **Cấp 100**: không dùng được (EXP vượt cấp là tinh thông = sức mạnh).
+- **Nguồn bản khoá** (người không nạp): hoàn thành 2/2 nhiệm vụ tuần → 2 vé x1,5 + 1 phiếu ủy thác; lịch đăng nhập ngày 3 →
+  1 vé x1,5, ngày 7 → 1 bùa thể lực; vé mùa track miễn phí bậc 7/14/22 → vé x1,5, bậc 28 → bùa (track cao cấp bậc 26: 2 vé x2
+  khoá — vẫn trong trần chung, track miễn phí có nhiều điểm tăng tốc hơn track cao cấp); Kecleon (lượng khoá): vé x1,5 khoá
+  15 lk, phiếu ủy thác khoá 10 lk, mỗi món 2/tuần. Người không nạp dùng ~40–60% trần mỗi tuần.
+- Mô phỏng (mục 10): người nhẹ mua tối đa tới cấp 100 nhanh hơn người không dùng gì **+29%** (vừa +21%, cày +20%; mục tiêu
+  ≤ 40%), nhanh hơn người không nạp dùng bản khoá +13%. Sức mạnh cùng cấp chênh +0,36% (mục tiêu ≤ 1%).
+- Trạng thái hiện ở Sổ tay → Năng lượng: điểm hôm nay/tuần, vé đang chạy, ủy thác đang chờ.
 
 ---
 
@@ -490,8 +554,21 @@ Ngân sách thưởng mỗi dòng (test kiểm cả 721 dòng). Đơn vị: gi�
 
 **Khoá theo tuần:**
 - Mỗi nhân vật nhận **2 vé chương/tuần** (tích tối đa 4, bắt đầu với 4 vé).
-- Mỗi chương còn cần **cấp tối thiểu** và **ngày mở** của máy chủ.
-- 52 chương cần ≥ 24 tuần. Thực tế bị trần cấp chặn: chương 52 cần cấp 90, mà trần 91 mở ở ngày 240.
+- Mỗi chương còn cần **cấp tối thiểu** (và **ngày mở** của máy chủ chỉ khi `sv.tran_cap_theo_mua=1`).
+- 52 chương cần ≥ 24 tuần. Không trần theo mùa: chương 52 cần cấp 90 → người nhẹ xong năm 1 ~tháng 10,4, người cày bị vé
+  chương chặn (sớm nhất ngày 168).
+
+**Khoá theo cấp + cốt truyện (18/10/2026, thay khoá theo ngày):**
+
+| Nội dung | Trước (theo ngày / trần mùa) | Nay |
+|---|---|---|
+| Cổng Hoenn (map 9 → Littleroot) | trần mùa ≥ 91 + cấp 84 | cấp ≥ 84 + đã xong **C52.7** "Vùng đất phía nam" (kết năm 1; chuỗi trước gồm Nhà vô địch C50.7, chương 52 cần cấp 90) — `BanDoHoenn.lyDoChan` |
+| Chuỗi chính năm 2 (C53..) | trần mùa ≥ 91, `ngay_mo` 365/545 | cấp tối thiểu từng chương (91..100) + `truoc` (C53.1 sau C52.7) + vé chương |
+| Phụ / huyền thoại cấp > 91 | `ngay_mo` 365 | chỉ cấp |
+| Chuỗi huyền thoại (HT-*) | mỗi bước sau bước trước 7 ngày (chưa từng chạy trong engine) | mỗi bước cần **cấp cao hơn bước trước 2** (vd Zapdos 40, 42, …, 52) + vật phẩm nhiệm vụ của bước |
+| Bậc đồ 7–10, cửa hàng Bronzong | ngày 60/150/365/545 | chỉ cấp của bậc |
+| Quái Hoenn ở map cấp ≥ 84 | ngày ≥ 365 | luôn (map cấp ≥ 84) |
+| Boss thế giới, sự kiện tuần, mùa PvP, vé mùa | lịch tuần | **giữ** lịch tuần |
 
 ### 5.2 Danh sách chương năm 1 (13 cung, 16 huy hiệu Gym)
 
@@ -513,7 +590,7 @@ Ngân sách thưởng mỗi dòng (test kiểm cả 721 dòng). Đơn vị: gi�
 
 Chi tiết từng bước (NPC giao, id quái, số lượng, vật phẩm, thưởng) nằm trong CSV.
 
-### 5.3 Dàn ý năm 2 (cấp 91–100, mở ngày 365 / 545)
+### 5.3 Dàn ý năm 2 (cấp 91–100; mở theo cấp + cốt truyện — ngày 365 / 545 chỉ khi bật trần theo mùa)
 
 H1 Đất liền Hoenn → H2 Biển nóng Slateport → H3 Núi lửa Chimney → H4 Bầu trời Fortree →
 H5 Biển sâu Lilycove → H6 Thức tỉnh Kyogre và Groudon → H7 Tháp trời (Rayquaza) → H8 Liên
@@ -543,10 +620,10 @@ Chỗ còn thiếu (chi tiết trong GĐ2):
 | Lễ Việt Nam | 1 Tết dương lịch, 4 gói bánh, 5–6 **Tết Nguyên Đán** (âm lịch: dời tuần 4–7), 8 Valentine, 10 8/3, 15 Giỗ Tổ, 17 30/4–1/5, 22 1/6, 23–24 Hè, 32 Vu Lan, 35 2/9, 37–38 Trung Thu, 41 20/10, 43–44 Halloween, 46 20/11, 47 Black Friday, 51 Giáng sinh | Đổi vật phẩm sự kiện, NPC, nấu bánh, thả đèn | `SuKien.TET_2017/TET_123/TET_DUONG_LICH/QUOC_TE_8_3/GIO_TO/HE_2017/VU_LAN/TRUNG_THU/HALLOWEEN/SINH_NHAT_2011/BLACK_FRIDAY/NOEL` | 1–3 (Tết 3, Noel 2) |
 | Ngày cộng đồng (mỗi dòng 2 lần/năm) | 3, 12, 19, 25, 31, 40, 50 | 3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5 | spawn + `tob_pokedex` | 1 |
 | Tuần Shiny | 7, 34 | Shiny ×10, pity 2.000 lần hạ | cột shiny mới | 1 |
-| Đột kích huyền thoại | 9 Zapdos, 20 Entei, 28 Darkrai, 36 Rayquaza, 48 Groudon & Kyogre | Boss thế giới 2 lần/ngày, thưởng theo đóng góp | `BossThanLan/BossDracula/BossTruRong/BossSonTinhThuyTinh` | 1,5 |
+| Đột kích huyền thoại | 9 Zapdos, 20 Entei, 28 Darkrai, 36 Rayquaza, 48 Groudon & Kyogre | Boss thế giới 2 lần/ngày, thưởng theo đóng góp | `BossDotKich/BossDracula/BossTruRong/BossKyogreGroudon` | 1,5 |
 | Tuần hệ | 2 Băng, 11 Cỏ, 18 Lửa, 27 Nước, 33 Điện, 42 Siêu linh | Quái hệ X ×2, chiêu hệ X +10% | spawn | 1 |
 | Lễ hội Pokédex / bùng phát | 14, 45 / 21 | Điểm nghiên cứu ×2 / 1 loài ×5 trên 1 tuyến mỗi ngày | `tob_pokedex_thuong` | 1 |
-| Thế chiến vùng | 16, 30, 49 | Thứ Bảy 20h, Kanto/Johto/Hoenn giành cờ | `MapChienTruongMoba` | 1 |
+| Chiến vùng | 16, 30, 49 | Thứ Bảy 20h, Kanto/Johto/Hoenn giành cờ | `MapChienTruongMoba` | 1 |
 | Mùa giải PvP | 13, 26, 39, 52 | Chốt bậc mùa | `MapLienDau`, `tob_char_thach_dau` | 1–2 |
 | Tuần thường | các tuần còn lại | Chỉ có bảng tuần + xếp hạng | — | 0,5 |
 
@@ -564,7 +641,7 @@ Chỗ còn thiếu (chi tiết trong GĐ2):
 |---|---|---|---|
 | Phiên | 15–30 phút | 3 nhiệm vụ ngày (~5 phút mỗi cái), 1 bước chương, 1 lượt Hầm ngục, 1 lần nâng cấp, 1 loài Pokédex mới | `data_quest` type 4, NPC Blaziken |
 | Tuần | 7 ngày | 2 nhiệm vụ tuần, 2 vé chương, boss Gym đánh lại, đột kích, thế chiến vùng (thứ Bảy), xếp hạng tuần (lượng) | bảng tuần mới, `SuKien` |
-| Mùa | 2–6 tháng | Trần cấp mới, bậc đồ mới, mùa PvP (13 tuần), 8 huy hiệu Gym của vùng, săn huyền thoại, danh hiệu mùa | `TRAN_CAP_THEO_NGAY`, `DanhHieu` |
+| Mùa | 2–6 tháng | Mốc cấp / bậc đồ mới (theo cấp, không còn trần mùa), mùa PvP (13 tuần), 8 huy hiệu Gym của vùng, săn huyền thoại, danh hiệu mùa, vé mùa | `DanhHieu`, `NapTienLogic.muaVe` |
 
 Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + đá → nâng cấp → mở chương / Gym → tuyến mới**.
 
@@ -579,7 +656,7 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 
 | Cơ chế | Số liệu | Dùng lại |
 |---|---|---|
-| Đội (bang cũ) | Nhiệm vụ đội tuần (8 mẫu, `mainsub=2`), boss đội, quỹ đội | `tob_quest_clan`, `MapBangHoi` |
+| Đội (bang cũ) | Nhiệm vụ đội tuần (8 mẫu, `mainsub=2`), boss đội, quỹ đội | `tob_quest_clan`, `MapDoi` |
 | Bạn bè | +5% EXP khi cùng đội tổ với bạn ≥ 7 ngày | `tob_friendlist` |
 | Tổ đội | +10%/người, tối đa +40% | sửa `calculatorXpParty` |
 | Sư phạm | Thầy (cấp ≥ 30) kèm trò thấp hơn ≥ 20 cấp. Trò +20% EXP khi chung đội. Cả hai nhận thưởng khi trò lên 20/40 hoặc tiến hoá | nhiệm vụ `SP-01..05` |
@@ -592,7 +669,7 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 - **Ghép trận theo dải cấp 10.**
 - **Reset mềm** mỗi 13 tuần, giữ 50% điểm.
 - Thưởng mùa chỉ là khung và danh hiệu, cộng lượng theo bậc (Master 100, Ultra 40, Great 15).
-- **Thế chiến vùng** hằng tuần giữa Kanto, Johto và Hoenn (lãnh thổ cũ).
+- **Chiến vùng** hằng tuần giữa Kanto, Johto và Hoenn (lãnh thổ cũ).
 - **Thách đấu Gym**: boss PvE mạnh dần theo cấp, có bảng xếp hạng thời gian hạ.
 - **Bảng xếp hạng reset theo mùa**: cấp, Pokédex, Hầm ngục, PvP. Ẩn xu/lượng (`AN_XU_LUONG_TOP`).
 
@@ -627,6 +704,8 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 - Mọi đồ trang trí đều lấy từ việc chơi.
 - Bỏ mốc nạp, bỏ VIP theo nạp (`up_px_xu_vip`).
 - Cập nhật: nếu chủ server có giấy phép và muốn thu tiền, dùng hệ thống nạp **không bán sức mạnh** trong [`NAP_TIEN.md`](NAP_TIEN.md) (tắt mặc định, `sv.nap_tien`).
+- Cập nhật 18/10/2026: khi nạp bật, lượng mua được **vật phẩm tăng tốc** (mục 1.8) — chỉ thời gian/EXP, chung trần với bản khoá
+  người không nạp kiếm được, không dùng ở cấp 100. Vẫn không bán chỉ số, đồ, đá, tỉ lệ nâng cấp.
 
 ### 7.9 Giữ chân trong mô phỏng (proxy)
 
@@ -649,7 +728,7 @@ Kết quả: **D1 68%, D7 49%, D30 29%**. Đây là con số **tương đối** 
 | Nhiệm vụ chính/phụ/đội | `data_quest`, `NewCharQuest`, `tob_char_quest` |
 | Pokédex | `tob_pokedex`, `tob_pokedex_thuong`, NPC -90 |
 | PvP | `MapLienDau`, `ArenaData`, `tob_char_thach_dau` |
-| Đội | `tob_clan`, `tob_quest_clan`, `MapBangHoi` |
+| Đội | `tob_clan`, `tob_quest_clan`, `MapDoi` |
 | Boss | `Boss*.java`, `MapNapTaiNguyen` |
 | Tham số không cần build | `cau_hinh` / `CauHinh.java` |
 | Danh hiệu | `DanhHieu`, `tob_danh_hieu` |
@@ -687,19 +766,31 @@ java -cp build/tools:build/src MoPhongKinhTe [số_ngày=730] [%dân_số=100]
   - **Dân số máy chủ**: 2.000 người khai trương (50% nhẹ, 30% vừa, 15% cày, 5% bot), thêm `40·e^(−ngày/150) + 12` người/ngày (×1,3 trong tuần lễ), có bỏ chơi và quay lại. Tổng khoảng 21.000 người. Dùng để đo kinh tế và giữ chân.
 - Mỗi ngày mỗi người: đăng nhập (85 / 90 / 97 / 100%) → hướng dẫn → vé và chương chính → phụ (≤ 25% thời gian) → Pokédex → 3 nhiệm vụ ngày (+2 tuần) → sự kiện → đánh quái qua năng lượng → thuốc, sửa đồ, dịch chuyển → học chiêu → đổi bậc → nâng cấp (mục tiêu +12 / +14 / +15) → ngọc hệ → trang trí → lượng khoá / lượng → thành tựu. Bot bán 90% xu mỗi ngày qua chợ (bị đánh thuế).
 
-**Kết quả: 12/12 mục tiêu đạt** (`mo_phong_tom_tat.txt`).
+**Kết quả (18/10/2026, không trần theo mùa + tăng tốc): 17/17 mục tiêu đạt + 6/6 mục tiêu nạp** (`mo_phong_tom_tat.txt`).
+Các mục tiêu dựa trên trần (cốt truyện năm 1 "không ai xong trước tháng 12 / 6") được thay vì chính trần đã chặn chúng;
+chỉ tiêu tiến độ chính bây giờ là **thời gian tới cấp 100**.
 
 | Mục tiêu | Kết quả |
 |---|---|
-| Nhẹ: ≤ 5% xong năm 1 trước tháng 12 | 0% |
-| Nhẹ: trung vị ≤ tháng 18 | tháng 12,8 |
-| Cày: ≤ 5% xong năm 1 trước tháng 6 | 0% (sớm nhất ngày 287) |
+| Nhẹ: ≤ 5% xong năm 1 trước tháng 9 (cũ: 12) | 0,3% |
+| Nhẹ: trung vị xong năm 1 ≤ tháng 14 (cũ: 18) | tháng 10,4 |
+| Cày: ≤ 5% xong năm 1 trước tháng 5 (cũ: 6; nay vé chương chặn) | 0% (sớm nhất ngày 168) |
 | Tiến hoá đầu ≤ 1,2 giờ | 1,10 giờ |
-| Bot ≤ 1,3 × cày | 5,30 so với 4,36 giờ hiệu dụng |
-| Xu thực tăng ≤ 5%/tháng | 2,7% (danh nghĩa 8,0%, do cấp tăng) |
-| Xu TB ≤ 20 giờ thu nhập | ≤ 3,2 giờ |
-| Ra/vào xu 80–105% | 99,4% |
+| Bot ≤ 1,3 × cày | 2,00 so với 2,02 giờ hiệu dụng |
+| Xu thực tăng ≤ 5%/tháng | 4,09% (danh nghĩa 9,5%) |
+| Xu TB ≤ 20 giờ thu nhập | ≤ 4,6 giờ |
+| Ra/vào xu 80–105% | 98,8% |
+| Trung vị xu đang giữ ≤ 60 giờ | ≤ 2,5 giờ |
 | D1 / D7 / D30 ≥ 40 / 20 / 10% | 68 / 49 / 29% |
+| **Mới:** không nạp, nhẹ tới cấp 100 trong tháng 15–18 | tháng 17,1 (vừa 11,8) |
+| **Mới:** không nạp, cày tới cấp 100 trong tháng 9–12 | tháng 9,8 |
+| **Mới:** mua tăng tốc tối đa nhanh hơn không dùng, cùng giờ chơi ≤ 40% | nhẹ +29%, vừa +21%, cày +20% (so với bản khoá: +13%) |
+| **Mới:** sức mạnh cùng cấp (1–99) mua tối đa / không dùng ≤ +1% | +0,36% |
+| **Mới:** bot mua tăng tốc tối đa ≤ 1,3 × cày, ≤ 210 điểm/tuần | 2,24 so với 2,22; tối đa 210 |
+| Nạp: lượng bị đốt ≥ 95% (cũ 90%) | 97,8% |
+| Nạp: chênh sức mạnh cùng giờ chơi ≤ 5% | người nạp 4,18%, cá voi 4,98% (sát ngưỡng: người nạp lên cấp sớm hơn → thu nhập xu theo cấp cao hơn; theo dõi khi vận hành) |
+
+Ba dân chuẩn chạy cùng hạt giống: hỗn hợp (bản khoá + người nạp theo nhóm nạp), **không ai dùng tăng tốc**, **mọi người mua tới trần**.
 
 **Kịch bản so sánh** (để thấy cơ chế nào giữ cân bằng):
 

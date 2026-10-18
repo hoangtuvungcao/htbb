@@ -59,6 +59,29 @@ final class Nen {
         return false;
     }
 
+    /** Túi sinh thái (hệ sinh thái server, NPC ảo -528, lựa chọn 4 của menu gốc). */
+    static void moTuiSinhThai() {
+        game.networklogic.GameService.gI().doMenuOption(-528, (byte) 0, 4);
+    }
+
+    /** Bản Android: menu chính giữ kiểu cũ (biểu tượng / tiêu đề chỉ bản jar). */
+    static int rongHinhMuc(String muc) {
+        return 0;
+    }
+
+    static void veHinhMuc(Object g, int x, int y, String muc) {
+    }
+
+    static void veKhungMenu(Object g, int x, int y, int w, int h, String tieuDe, int tong, int tu, int thay) {
+    }
+
+    static void conTroMenu(Object g, int x, int y, int h) {
+    }
+
+    /** Cài đặt -> Giấy phép: bản Android cần màn ghi công riêng (GHI_CONG.txt trong APK) - chưa có thì bỏ qua. */
+    static void moGiayPhep() {
+    }
+
     static boolean menuNhanhTick() {
         return false;
     }
@@ -68,6 +91,31 @@ final class Nen {
     }
 
     static int yTrangThai(int macDinh) {
+        return macDinh;
+    }
+
+    /** Tự động đánh chính thức: bản Android NQSH cũ mở bằng menu (chưa có bảng kiểu Pokémon). */
+    static void moBangTuDong() {
+        java.util.Vector v = new java.util.Vector();
+        v.addElement(new game.model.Command(TuDong.dang ? "Dừng tự động" : "Bắt đầu tự động", new game.model.IAction() {
+            public void perform() {
+                TuDong.batTat();
+            }
+        }));
+        PauseMenu.moMenuGiuChon(v, 3, 0);
+        TuDong.xinTrangThai();
+    }
+
+    static boolean trongNutNhanh(int x, int y) {
+        return AutoGuard.trongNut(x, y);
+    }
+
+    static void veThanhTuDong(Object g, String s, int y) {
+        game.core.j2me.Graphics gr = (game.core.j2me.Graphics) g;
+        Font.normalFont[0].drawString(gr, s, 6, y, 0);
+    }
+
+    static String tieuDeBanDoLon(String macDinh) {
         return macDinh;
     }
 }

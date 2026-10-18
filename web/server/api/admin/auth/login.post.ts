@@ -34,12 +34,12 @@ function goiYLoiKetNoi(): string {
       accessSync(f, constants.R_OK)
     } catch {
       return `Có file ${f} nhưng web không có quyền đọc, nên đang dùng thông tin mặc định. `
-        + 'Cho người chạy web đọc được file đó (usermod -a -G kpah <người chạy web> rồi khởi động lại), '
-        + 'hoặc khai KPAH_DB_USER/KPAH_DB_PASS trong biến môi trường.'
+        + 'Cho người chạy web đọc được file đó (usermod -a -G htbb <người chạy web> rồi khởi động lại), '
+        + 'hoặc khai HTBB_DB_USER/HTBB_DB_PASS trong biến môi trường.'
     }
   }
   if (!laFile && c.db.user === 'root' && c.db.pass === '') {
-    return `Không thấy ${f} và biến môi trường cũng không khai KPAH_DB_USER/KPAH_DB_PASS, `
+    return `Không thấy ${f} và biến môi trường cũng không khai HTBB_DB_USER/HTBB_DB_PASS, `
       + 'nên đang dùng mặc định root với mật khẩu rỗng. Khai thông tin thật trong biến môi trường.'
   }
   return ''
@@ -48,7 +48,7 @@ function goiYLoiKetNoi(): string {
 /** Lỗi cơ sở dữ liệu lúc đăng nhập: chi tiết vào log, trình duyệt chỉ nhận câu chung. */
 function loiCsdl(buoc: string, e: any): never {
   // Khối gọi hàm này bắt CẢ hai loại lỗi, và chúng cần cách sửa khác hẳn nhau:
-  //   - không kết nối được  -> MySQL chưa chạy, hoặc sai KPAH_DB_USER/KPAH_DB_PASS
+  //   - không kết nối được  -> MySQL chưa chạy, hoặc sai HTBB_DB_USER/HTBB_DB_PASS
   //   - kết nối được nhưng câu lệnh hỏng -> hay gặp nhất là máy chủ dùng MySQL 8,
   //     nơi hàm PASSWORD() đã bị gỡ (login server cũng sẽ hỏng theo)
   // Ghi nguyên văn + gợi ý ra log của server để người sửa không đi nhầm hướng.
@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
     throw apiLoi(400, 'Nhập đủ tên tài khoản và mật khẩu.')
   }
   if (!(await coAiLaAdmin())) {
-    throw apiLoi(403, 'Chưa cấu hình KPAH_ADMIN_ACCOUNTS nên trang quản trị đang đóng với tất cả mọi người.')
+    throw apiLoi(403, 'Chưa cấu hình HTBB_ADMIN_ACCOUNTS nên trang quản trị đang đóng với tất cả mọi người.')
   }
 
   let row: { id: number, username: string, ban: number } | null
@@ -125,7 +125,7 @@ export default defineEventHandler(async (event) => {
     }
   }
   if (hbBatBuocTatCa()) {
-    // KPAH_ADMIN_2FA_BAT_BUOC = 1: đúng mật khẩu vẫn không đủ.
+    // HTBB_ADMIN_2FA_BAT_BUOC = 1: đúng mật khẩu vẫn không đủ.
     await ghiNhatKyDangNhapThatBai(event, tenDaGo, 'chưa ghi danh hai bước mà đang bắt buộc')
     throw apiLoi(403, 'Tài khoản này chưa bật xác thực hai bước, và máy chủ đang bắt buộc. '
       + `Ghi danh trên máy chủ trước: node scripts/tao-ma-2buoc.mjs ${tenDaGo}`)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Bật / tắt sự kiện trong game (bảng kpah_db.tob_su_kien), và hẹn giờ mở/đóng.
+ * Bật / tắt sự kiện trong game (bảng htbb_db.tob_su_kien), và hẹn giờ mở/đóng.
  *
  * Danh sách sự kiện do GAME SERVER đăng lên mỗi lần khởi động. Trang này chỉ ghi
  * bat / sua_boi / sua_luc / mo_luc / dong_luc; server ghi phần còn lại. Đổi xong server
@@ -210,7 +210,7 @@ const lichCot = [
       <template #description>
         <p>Server tự tạo bảng này lần đầu khởi động sau khi cập nhật. Muốn tạo trước thì chạy:</p>
         <p class="mt-1">
-          <code>mysql -u root kpah_db &lt; sql/them_bang_su_kien.sql</code>
+          <code>mysql -u root htbb_db &lt; sql/them_bang_su_kien.sql</code>
         </p>
         <p class="mt-1 text-xs">
           Lỗi đọc được: {{ data.loiDoc }}
@@ -312,11 +312,11 @@ const lichCot = [
           </template>
           <p v-else-if="data.tuKhoiDongLai === false" class="mt-2">
             <strong>Tự khởi động lại đang TẮT</strong> (<code>sv.suKienTuKhoiDongLai=0</code> trong <code>server.ini</code>).
-            Phải tự khởi động lại: <code>systemctl restart kpah-game</code>.
+            Phải tự khởi động lại: <code>systemctl restart htbb-game</code>.
           </p>
           <p v-else class="mt-2 text-xs">
             Không đọc được <code>server.ini</code> (web có thể nằm khác máy với game server) nên không biết tự khởi động
-            lại đang bật hay tắt. Nếu tắt thì chạy tay: <code>systemctl restart kpah-game</code>.
+            lại đang bật hay tắt. Nếu tắt thì chạy tay: <code>systemctl restart htbb-game</code>.
           </p>
           <p class="mt-1 text-xs">
             Vì sao phải khởi động lại: bảng shop, <code>Map.isSale</code> và danh sách NPC được dựng <em>một lần</em> lúc

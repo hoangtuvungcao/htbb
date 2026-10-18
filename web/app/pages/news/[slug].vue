@@ -21,13 +21,13 @@ if (!tin.value && import.meta.server) {
   setResponseStatus(useRequestEvent()!, 404)
 }
 
-const url = useRequestURL()
+const gocSite = useGocSite()
 const pageIntro = computed(() => article.value ? article.value.body : 'Bài viết này không tồn tại hoặc đường dẫn chưa chính xác.')
 useSeoMeta({
   title: () => article.value ? article.value.title : 'Không tìm thấy bài viết',
   description: () => pageIntro.value,
   robots: () => (article.value ? undefined : 'noindex'),
-  ogImage: () => (tin.value?.anhBia ? new URL(tin.value.anhBia, url.origin).href : undefined),
+  ogImage: () => (tin.value?.anhBia ? urlTuyetDoi(gocSite.value, tin.value.anhBia) : undefined),
   ogType: 'article',
 })
 
@@ -147,7 +147,7 @@ const related = computed(() => (tatCa.value ?? []).filter(t => t.slug !== slug.v
               <USeparator class="my-5" />
               <div class="flex items-center gap-3 text-sm text-dimmed">
                 <UIcon name="i-lucide-sparkles" class="size-6 text-primary/70" aria-hidden="true" />
-                <p>Từng cấp một lần tiến hoá.<br>Viết nên huyền thoại của riêng bạn.</p>
+                <p>Từng cấp, từng lần tiến hoá.<br>Viết nên huyền thoại của riêng bạn.</p>
               </div>
             </div>
           </aside>

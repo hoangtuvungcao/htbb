@@ -88,7 +88,7 @@ class CharVongLap {
         // khi chet tai bai luyen cong (xem chu thich o do): buoc 1 (3s) dua ve lang VA hoi
         // sinh luon (doReturnVillage khong tu hoi HP/MP, phai lam o day giong het cach
         // nhanh timeHoiSinh phia duoi lam); buoc 2 (5s) bay lai dung vi tri up, tru phi
-        // theo hang Vip (mien phi rieng vip==3, xem BaiLuyenCong.PHI_AUTO_VE_MAP_UP).
+        // theo hang Vip (mien phi rieng vip==3, xem BaiLuyenTap.PHI_AUTO_VE_MAP_UP).
         if (self.timeVeLangSauChet > 0L && System.currentTimeMillis() >= self.timeVeLangSauChet) {
             self.timeVeLangSauChet = 0L;
             if (self.map != null) {
@@ -107,17 +107,18 @@ class CharVongLap {
             self.timeVeBaiSauChet = 0L;
             if (self.viTriUpMapId > 0) {
                 final boolean mienPhi = self.vip >= 3;
-                if (mienPhi || self.truXuNeuDu(BaiLuyenCong.giaDichChuyen(self, BaiLuyenCong.PHI_AUTO_VE_MAP_UP), false, "auto ve map up")) {
+                if (mienPhi || self.truXuNeuDu(BaiLuyenTap.giaDichChuyen(self, BaiLuyenTap.PHI_AUTO_VE_MAP_UP), false, "auto ve map up")) {
                     self.map.move2Map(self, self.viTriUpTileX, self.viTriUpTileY, self.viTriUpMapId, self.inCountry);
                     self.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Đã tự động đưa bạn về vị trí luyện công trước đó.", ""));
+                            "Đã tự động đưa bạn về vị trí luyện tập trước đó.", ""));
                 } else {
                     self.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Không đủ " + BaiLuyenCong.giaDichChuyen(self, BaiLuyenCong.PHI_AUTO_VE_MAP_UP) + " xu để tự động bay lại vị trí luyện công.", ""));
+                            "Không đủ " + BaiLuyenTap.giaDichChuyen(self, BaiLuyenTap.PHI_AUTO_VE_MAP_UP) + " xu để tự động bay lại vị trí luyện tập.", ""));
                 }
                 self.viTriUpMapId = -1;
             }
         }
+        HoiSinhGame.nhip(self); // guc / hoi sinh: tu dong, cho dong doi, het Met moi
         ++self.countSecond;
         if (self.map != null && (self.map.isMapTrain() || self.map.isMapBoss() || self.map.isMapChienTruongMoba()) && self.hp <= 0 && self.timeHoiSinh > 0L && self.countSecond % 5 == 0) {
             final int second = (int) ((self.timeHoiSinh - System.currentTimeMillis()) / 1000L);
@@ -195,7 +196,7 @@ class CharVongLap {
         if (self.charCopy != null) {
             if (self.hp <= 0 || (!self.charCopy.map.equals(self.map) && self.charCopy.isFollow() && !self.isDoChangeMap)) {
                 if (Char.isSuKienMiniChucNu()) {
-                    self.sendMessage(MessageCreator.createMsgChat(self.id, "Nhiệm vụ tìm Chức nữ thất bại"));
+                    self.sendMessage(MessageCreator.createMsgChat(self.id, "Nhiệm vụ tìm Illumise thất bại"));
                 } else {
                     self.sendMessage(MessageCreator.createMsgChat(self.id, "Nhiệm vụ tìm trẻ lạc thất bại"));
                 }
@@ -257,7 +258,7 @@ class CharVongLap {
             self.lvlinh = 0;
             self.lvlinhthue = 0;
             self.classlinh = 0;
-            self.sendMessage(MessageCreator.createMsgChat(self.id, "Hộ vệ đã hết hạn"));
+            self.sendMessage(MessageCreator.createMsgChat(self.id, "Pokémon hỗ trợ đã hết hạn"));
             Database.instance.saveOrtherLog("", self.charname, "linh thue het han:c= " + self.classlinh + ",g=" + self.genderlinh + ",lvl=" + self.lvlinhthue + ",lvcl=" + self.lvlinh, "lhethan");
         }
         if (self.isNguoiTuyet() && System.currentTimeMillis() - self.timeNguoiTuyet >= 0L) {
@@ -466,7 +467,8 @@ class CharVongLap {
             }
             if (self.mapID != 204) {
                 if (!MessageCreator.isVersion162(self) && self.timedie > 0L && System.currentTimeMillis() - self.timedie >= 1000L) {
-                    if (self.myCountry > -1 && !Map.idMapMONSTER.get(self.myCountry).contains(self.map.mapId)) {
+                    // Guc / hoi sinh moi (HoiSinhGame): hop thoai lua chon thay popup "hoi sinh tai cho" cu.
+                    if (!HoiSinhGame.sauMotGiay(self) && self.myCountry > -1 && !Map.idMapMONSTER.get(self.myCountry).contains(self.map.mapId)) {
                         final int[] cost = {1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 60000, 70000, 500000, 1000000, 1300000, 1500000, 2000000, 2500000, 3000000, 4500000};
                         int cp = cost[Math.min(self.lvDetail.lv / 5, cost.length - 1)];
                         if (self.mapID == 112 || self.mapID == 2541 || self.mapID == 2542 || self.mapID == 2543 || self.mapID == 2544) {
@@ -486,7 +488,7 @@ class CharVongLap {
                         }
                         if (cp > 0) {
                             if (self.potions[119] > 0) {
-                                final String[] menu = {"Dùng tiên đan", "Hs bằng xu (" + cp + " xu)"};
+                                final String[] menu = {"Dùng cỏ hồi sinh", "Hs bằng xu (" + cp + " xu)"};
                                 self.sendMessage(MessageCreator.createMsgMenu(menu, -802, 0));
                             } else {
                                 self.sendMessage(MessageCreator.createMsgPopUp(self.id, 1, "Bạn muốn hồi sinh tại chỗ không. Chi phí " + cp + " xu"));
@@ -1237,8 +1239,8 @@ class CharVongLap {
                 // luu tiep theo va cac cho khac (exchangeItemAnimal) van khop.
                 //
                 // Loc theo ID TEMPLATE chu khong theo type: type 30 khong nam trong
-                // dai isWearingAnimal (14..18) — xem real.SkinLinhThu.ID_ITEM.
-                if (it.getTemplate() != null && SkinLinhThu.laItemSkin(it.getTemplate().id)) {
+                // dai isWearingAnimal (14..18) — xem real.SkinThuCuoi.ID_ITEM.
+                if (it.getTemplate() != null && SkinThuCuoi.laItemSkin(it.getTemplate().id)) {
                     if (skin == 0) {
                         skin = 1;
                         it.idAnimal = self.animalRide.dbid;
@@ -1400,8 +1402,8 @@ class CharVongLap {
                 self.sendMessage(MessageCreator.createCharInventoryMessage(self, 0));
                 if (idgift[index] == 9) {
                     try {
-                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(self.charname) + " đã nhận được nhân sâm khi mở bao lì xì"));
-                    } catch (final IOException ex) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", String.valueOf(self.charname) + " đã nhận được Berry Razz vàng khi mở bao lì xì");
+                    } catch (final Exception ex) {
                     }
                 }
             } else if (typegift[index] == 3) {
@@ -1461,14 +1463,14 @@ class CharVongLap {
                 self.sendMessage(MessageCreator.createMsgChat(self.id, info));
             } else if (typegift[index] == -7) {
                 self.doCreatePetBachThu(14400, false);
-                info = String.valueOf(info) + " pet bạch thử, ";
+                info = String.valueOf(info) + " pet Sandshrew, ";
             } else if (typegift[index] == -6) {
                 final Item it = Map.doBuyModelClothe(self, self.isCharNam() ? 725 : 726, 10, 1);
                 info = String.valueOf(info) + " " + it.getName();
             } else if (typegift[index] == -5) {
                 final int time = 3;
                 self.createHeo(time, false);
-                info = String.valueOf(info) + " đương khang, ";
+                info = String.valueOf(info) + " Piloswine, ";
             } else if (typegift[index] == -4) {
                 int soluong = soluongmin[index];
                 if (soluongmin[index] < soluongmax[index]) {

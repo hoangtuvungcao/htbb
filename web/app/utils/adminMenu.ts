@@ -1,19 +1,22 @@
 /**
- * Menu khu quản trị, chia nhóm theo loại việc.
- * Mỗi trang admin nằm ở app/pages/admin/<key>.vue (riêng Tổng quan là /admin).
+ * Menu khu quản trị — MỘT cấu trúc thông tin, chia nhóm theo loại việc.
+ * Mỗi trang admin nằm ở app/pages/admin/<...>.vue (riêng Tổng quan là /admin).
+ *
+ * Ai THẤY mục nào: suy ra từ ma trận quyền (shared/utils/quyenAdmin.ts) qua `api` = API chính
+ * mà trang đó đọc. Vậy menu không bao giờ hiện trang mà vai trò đó gọi API bị 403.
+ * Quyền thật vẫn kiểm ở server cho mọi /api/admin/**.
  */
-export type VaiTroAdmin = 'sieu_quan_tri' | 'bien_tap' | 'ho_tro' | 'xem'
+export type VaiTroAdmin = VaiTroQuyen
 export interface AdminMenuItem {
   key: string
   to: string
   label: string
   icon: string
-  /** Vai trò THẤY mục này (bỏ trống = mọi vai trò). Quyền thật kiểm ở server (server/utils/vaiTro.ts). */
-  vai?: VaiTroAdmin[]
+  /** API chính của trang — quyết định vai trò nào thấy mục này. */
+  api: string
+  /** Mô tả ngắn (tooltip / trang tổng quan). */
+  moTa?: string
 }
-const SIEU: VaiTroAdmin[] = ['sieu_quan_tri']
-const NOI_DUNG: VaiTroAdmin[] = ['sieu_quan_tri', 'bien_tap', 'xem']
-const HO_TRO: VaiTroAdmin[] = ['sieu_quan_tri', 'ho_tro', 'xem']
 
 export const TEN_VAI_TRO_WEB: Record<VaiTroAdmin, string> = {
   sieu_quan_tri: 'Siêu quản trị', bien_tap: 'Biên tập', ho_tro: 'Hỗ trợ', xem: 'Chỉ xem',
@@ -21,60 +24,104 @@ export const TEN_VAI_TRO_WEB: Record<VaiTroAdmin, string> = {
 
 export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
   {
-    nhom: 'Theo dõi',
+    nhom: 'Tổng quan',
     items: [
-      { key: 'tongquan', to: '/admin', label: 'Tổng quan', icon: 'i-lucide-layout-grid' },
-      { key: 'online', to: '/admin/online', label: 'Ai đang ở đâu · client', icon: 'i-lucide-map-pin' },
-      { key: 'bang_game', to: '/admin/bang-game', label: 'Kết quả trong game', icon: 'i-lucide-castle' },
-    ],
-  },
-  {
-    nhom: 'Nội dung website',
-    items: [
-      { key: 'tin_tuc', to: '/admin/tin-tuc', label: 'Tin tức & sự kiện', icon: 'i-lucide-newspaper', vai: NOI_DUNG },
-      { key: 'trang', to: '/admin/trang', label: 'Trang cẩm nang', icon: 'i-lucide-library', vai: NOI_DUNG },
-      { key: 'trang_chu', to: '/admin/trang-chu', label: 'Trang chủ', icon: 'i-lucide-house', vai: NOI_DUNG },
-      { key: 'lich_su_kien', to: '/admin/lich-su-kien', label: 'Lịch sự kiện năm', icon: 'i-lucide-calendar-range', vai: NOI_DUNG },
-      { key: 'faq', to: '/admin/faq', label: 'Câu hỏi thường gặp', icon: 'i-lucide-circle-help', vai: NOI_DUNG },
-      { key: 'tai_game', to: '/admin/tai-game', label: 'Bản tải game', icon: 'i-lucide-download', vai: NOI_DUNG },
-      { key: 'menu', to: '/admin/menu', label: 'Menu & chân trang', icon: 'i-lucide-panel-top', vai: NOI_DUNG },
-      { key: 'media', to: '/admin/media', label: 'Thư viện ảnh', icon: 'i-lucide-image', vai: NOI_DUNG },
-      { key: 'cai_dat', to: '/admin/cai-dat', label: 'Cài đặt website', icon: 'i-lucide-settings', vai: NOI_DUNG },
+      { key: 'tongquan', to: '/admin', label: 'Bảng điều khiển', icon: 'i-lucide-layout-grid', api: '/api/admin/tong-quan' },
+      { key: 'online', to: '/admin/online', label: 'Đang online', icon: 'i-lucide-map-pin', api: '/api/admin/online', moTa: 'Ai đang ở bản đồ nào, phiên bản client' },
     ],
   },
   {
     nhom: 'Người chơi',
     items: [
-      { key: 'nguoi_choi', to: '/admin/nguoi-choi', label: 'Trung tâm người chơi', icon: 'i-lucide-contact', vai: HO_TRO },
-      { key: 'taikhoan', to: '/admin/taikhoan', label: 'Tài khoản', icon: 'i-lucide-user-round', vai: HO_TRO },
-      { key: 'nhanvat', to: '/admin/nhanvat', label: 'Pokémon', icon: 'i-lucide-paw-print', vai: HO_TRO },
-      { key: 'cammay', to: '/admin/cammay', label: 'Cấm theo máy', icon: 'i-lucide-lock', vai: HO_TRO },
-      { key: 'giam_level', to: '/admin/giam-level', label: 'Giảm Level', icon: 'i-lucide-user-minus', vai: SIEU },
-      { key: 'nang_level_toanbo', to: '/admin/nang-level-toanbo', label: 'Nâng Level toàn bộ', icon: 'i-lucide-users', vai: SIEU },
-      { key: 'tao_hang_loat', to: '/admin/tao-hang-loat', label: 'Tạo hàng loạt', icon: 'i-lucide-users-round', vai: SIEU },
-      { key: 'reset_toanbo', to: '/admin/reset-toanbo', label: 'Reset toàn server', icon: 'i-lucide-rotate-ccw', vai: SIEU },
+      { key: 'nguoi_choi', to: '/admin/nguoi-choi', label: 'Trung tâm người chơi', icon: 'i-lucide-contact', api: '/api/admin/nguoi-choi/tim', moTa: 'Tìm theo tài khoản, Pokémon, IP, mã máy; hồ sơ đầy đủ và thao tác' },
+      { key: 'taikhoan', to: '/admin/taikhoan', label: 'Tài khoản', icon: 'i-lucide-user-round', api: '/api/admin/taikhoan' },
+      { key: 'nhanvat', to: '/admin/nhanvat', label: 'Pokémon', icon: 'i-lucide-paw-print', api: '/api/admin/nhanvat' },
+      { key: 'cammay', to: '/admin/cammay', label: 'Cấm theo máy', icon: 'i-lucide-lock', api: '/api/admin/cammay' },
+      { key: 'giam_level', to: '/admin/giam-level', label: 'Giảm cấp', icon: 'i-lucide-user-minus', api: '/api/admin/giam-level' },
+      { key: 'nang_level_toanbo', to: '/admin/nang-level-toanbo', label: 'Nâng cấp toàn bộ', icon: 'i-lucide-users', api: '/api/admin/nang-level-toanbo' },
+      { key: 'tao_hang_loat', to: '/admin/tao-hang-loat', label: 'Tạo hàng loạt', icon: 'i-lucide-users-round', api: '/api/admin/tao-hang-loat' },
+      { key: 'reset_toanbo', to: '/admin/reset-toanbo', label: 'Reset toàn máy chủ', icon: 'i-lucide-rotate-ccw', api: '/api/admin/reset-toanbo' },
     ],
   },
   {
-    nhom: 'Vận hành',
+    nhom: 'Nội dung web',
     items: [
-      { vai: SIEU, key: 'sukien', to: '/admin/sukien', label: 'Sự kiện', icon: 'i-lucide-calendar-days' },
-      { vai: SIEU, key: 'giftcode', to: '/admin/giftcode', label: 'Giftcode', icon: 'i-lucide-gift' },
-      { vai: SIEU, key: 'dua_top', to: '/admin/dua-top', label: 'Đua top', icon: 'i-lucide-medal' },
-      { vai: SIEU, key: 'cauhinh', to: '/admin/cauhinh', label: 'Cấu hình server', icon: 'i-lucide-sliders-horizontal' },
-      { vai: SIEU, key: 'server', to: '/admin/server', label: 'Bật/tắt server', icon: 'i-lucide-power' },
-      { vai: SIEU, key: 'naptien', to: '/admin/naptien', label: 'Nạp tiền', icon: 'i-lucide-banknote' },
+      { key: 'tin_tuc', to: '/admin/tin-tuc', label: 'Tin tức', icon: 'i-lucide-newspaper', api: '/api/admin/cms/tin-tuc' },
+      { key: 'trang', to: '/admin/trang', label: 'Trang cẩm nang', icon: 'i-lucide-library', api: '/api/admin/cms/trang' },
+      { key: 'trang_chu', to: '/admin/trang-chu', label: 'Trang chủ', icon: 'i-lucide-house', api: '/api/admin/cms/cai-dat' },
+      { key: 'faq', to: '/admin/faq', label: 'Câu hỏi thường gặp', icon: 'i-lucide-circle-help', api: '/api/admin/cms/faq' },
+      { key: 'tai_game', to: '/admin/tai-game', label: 'Bản tải game', icon: 'i-lucide-download', api: '/api/admin/cms/cai-dat' },
+      { key: 'menu', to: '/admin/menu', label: 'Menu & chân trang', icon: 'i-lucide-panel-top', api: '/api/admin/cms/cai-dat' },
+      { key: 'media', to: '/admin/media', label: 'Thư viện ảnh', icon: 'i-lucide-image', api: '/api/admin/cms/media' },
+      { key: 'cai_dat', to: '/admin/cai-dat', label: 'Cài đặt website', icon: 'i-lucide-settings', api: '/api/admin/cms/cai-dat' },
     ],
   },
   {
-    nhom: 'Ghi chép',
+    nhom: 'Trò chơi & kinh tế',
     items: [
-      { key: 'log', to: '/admin/log', label: 'Log game', icon: 'i-lucide-list' },
-      { key: 'chandoan', to: '/admin/chandoan', label: 'Chẩn đoán', icon: 'i-lucide-activity' },
-      { key: 'nhatky', to: '/admin/nhatky', label: 'Nhật ký admin', icon: 'i-lucide-clock' },
-      { key: 'thay_doi', to: '/admin/lich-su-thay-doi', label: 'Lịch sử thay đổi', icon: 'i-lucide-history' },
-      { key: 'phan_quyen', to: '/admin/phan-quyen', label: 'Phân quyền', icon: 'i-lucide-shield-check', vai: SIEU },
-      { key: 'dong_bo', to: '/admin/dong-bo', label: 'Đồng bộ dữ liệu game', icon: 'i-lucide-refresh-cw', vai: SIEU },
+      { key: 'du_lieu_game', to: '/admin/du-lieu-game', label: 'Dữ liệu game', icon: 'i-lucide-database', api: '/api/admin/du-lieu-game/tong-quan', moTa: 'Vật phẩm, quái, bản đồ, nhiệm vụ, cửa hàng, rơi đồ (chỉ đọc)' },
+      { key: 'kinh_te', to: '/admin/kinh-te', label: 'Kinh tế', icon: 'i-lucide-chart-line', api: '/api/admin/kinh-te/tong-quan', moTa: 'Nguồn vào/ra, lạm phát, người giữ nhiều, cảnh báo' },
+      { key: 'bang_game', to: '/admin/bang-game', label: 'Kết quả trong game', icon: 'i-lucide-castle', api: '/api/admin/bang-game' },
+      { key: 'xep_hang', to: '/admin/xep-hang', label: 'Bảng xếp hạng web', icon: 'i-lucide-trophy', api: '/api/admin/xep-hang', moTa: 'Bảng nào hiện, thứ tự, làm mới, loại trừ' },
+      { key: 'dua_top', to: '/admin/dua-top', label: 'Đua top', icon: 'i-lucide-medal', api: '/api/admin/dua-top' },
+      { key: 'cauhinh', to: '/admin/cauhinh', label: 'Cấu hình game', icon: 'i-lucide-sliders-horizontal', api: '/api/admin/cauhinh' },
+    ],
+  },
+  {
+    nhom: 'Sự kiện',
+    items: [
+      { key: 'sukien', to: '/admin/sukien', label: 'Sự kiện trong game', icon: 'i-lucide-calendar-days', api: '/api/admin/sukien' },
+      { key: 'lich_su_kien', to: '/admin/lich-su-kien', label: 'Lịch sự kiện năm (web)', icon: 'i-lucide-calendar-range', api: '/api/admin/cms/lich' },
+    ],
+  },
+  {
+    nhom: 'Giftcode',
+    items: [
+      { key: 'giftcode', to: '/admin/giftcode', label: 'Giftcode', icon: 'i-lucide-gift', api: '/api/admin/giftcode-moi' },
+    ],
+  },
+  {
+    nhom: 'Nạp tiền / Thành viên',
+    items: [
+      { key: 'naptien', to: '/admin/naptien', label: 'Nạp tiền (đang tắt)', icon: 'i-lucide-banknote', api: '/api/admin/naptien/tong-quan' },
+      { key: 'thanh_vien', to: '/admin/thanh-vien', label: 'Thành viên HTBB', icon: 'i-lucide-badge-check', api: '/api/admin/thanh-vien/tong-quan', moTa: 'Bắt buộc / bán, giá, tính năng khoá, cấp/thu hồi, tín hiệu clone' },
+    ],
+  },
+  {
+    nhom: 'Hệ thống',
+    items: [
+      { key: 'cau_hinh_he_thong', to: '/admin/cau-hinh-he-thong', label: 'Cấu hình hệ thống', icon: 'i-lucide-settings-2', api: '/api/admin/cau-hinh-he-thong', moTa: 'Mọi công tắc & tham số máy chủ (áp dụng ngay / cần khởi động lại), lịch sử, khởi động lại an toàn' },
+      { key: 'he_thong', to: '/admin/he-thong', label: 'Máy chủ & bảo trì', icon: 'i-lucide-server', api: '/api/admin/he-thong/bao-tri', moTa: 'Biểu đồ chỉ số, chế độ bảo trì đăng nhập' },
+      { key: 'server', to: '/admin/server', label: 'Bật/tắt máy chủ', icon: 'i-lucide-power', api: '/api/admin/server' },
+      { key: 'chandoan', to: '/admin/chandoan', label: 'Chẩn đoán', icon: 'i-lucide-activity', api: '/api/admin/chandoan' },
+      { key: 'phan_quyen', to: '/admin/phan-quyen', label: 'Phân quyền', icon: 'i-lucide-shield-check', api: '/api/admin/phan-quyen' },
+      { key: 'vai_tro', to: '/admin/vai-tro', label: 'Ma trận vai trò', icon: 'i-lucide-table-properties', api: '/api/admin/auth/me' },
+      { key: 'dong_bo', to: '/admin/dong-bo', label: 'Đồng bộ dữ liệu game', icon: 'i-lucide-refresh-cw', api: '/api/admin/cms/dong-bo' },
+    ],
+  },
+  {
+    nhom: 'Nhật ký',
+    items: [
+      { key: 'nhatky', to: '/admin/nhatky', label: 'Nhật ký quản trị', icon: 'i-lucide-clock', api: '/api/admin/nhatky' },
+      { key: 'thay_doi', to: '/admin/lich-su-thay-doi', label: 'Lịch sử thay đổi', icon: 'i-lucide-history', api: '/api/admin/cms/thay-doi' },
+      { key: 'log', to: '/admin/log', label: 'Log game', icon: 'i-lucide-list', api: '/api/admin/log' },
     ],
   },
 ]
+
+/** Mục menu ứng với một đường dẫn trang (khớp dài nhất). */
+export function mucMenuCua(path: string): { nhom: string, item: AdminMenuItem } | null {
+  let tot: { nhom: string, item: AdminMenuItem } | null = null
+  for (const g of ADMIN_MENU) {
+    for (const i of g.items) {
+      const khop = i.to === '/admin' ? path === '/admin' : (path === i.to || path.startsWith(`${i.to}/`))
+      if (khop && (!tot || i.to.length > tot.item.to.length)) tot = { nhom: g.nhom, item: i }
+    }
+  }
+  return tot
+}
+
+/** Vai trò có thấy mục này không (= đọc được API chính của trang). */
+export function thayMucMenu(i: AdminMenuItem, vt: VaiTroAdmin): boolean {
+  return kiemQuyenAdmin(i.api, 'GET', vt)
+}

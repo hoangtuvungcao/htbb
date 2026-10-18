@@ -1,0 +1,199 @@
+id,ten,ten_cu,don_vi,trang_thai,nhom,mo_ta,ap_dung
+0,Tấn công,Tấn công,so,dung,co_ban,Cộng thẳng vào tấn công.,"CharChiSo.calculateAttack (đồ cầm tay 3-7, huy hiệu 8, vòng cổ 9, đồ thú cưỡi 15/17)"
+1,Phòng thủ,Thủ vật,so,dung,co_ban,Giảm sát thương vật lý nhận vào.,"CharChiSo.calculateDefend (giáp 0-2, 10, 11, ruy băng 19, đồ thú cưỡi 14/16/18)"
+2,Né tránh,Né tránh,so,dung,co_ban,Điểm né tránh: tăng khả năng tránh đòn.,Char.calculateDodge
+3,Chính xác,Chính xác,so,dung,co_ban,Điểm chính xác: tăng khả năng đánh trúng.,Char.calculateAccurate
+4,Chí mạng,Chí mạng,so,dung,chi_mang,Điểm chí mạng: 3 điểm = 1% tỉ lệ chí mạng.,Char.calculateCritical -> Char.havecrit
+5,HP,Sức khỏe,so,dung,co_ban,Tăng HP tối đa (nhân theo dòng Pokémon).,CharChiSo.calculateMaxHPMP (phiến đá hệ 12: secondHealth)
+6,Phòng thủ đặc biệt,Thủ ma,so,dung,co_ban,Giảm sát thương đặc biệt nhận vào.,CharChiSo.calculateDefend
+7,Mã hình 1,chỉ số 7,so,noi_bo,noi_bo,Số hiệu hình của đồ thời trang (không phải chỉ số).,Char/CharCopy id[4] (atb8 thời trang)
+8,Mã hình 2,chỉ số 8,so,noi_bo,noi_bo,Số hiệu hình của đồ thời trang (không phải chỉ số).,Char/CharCopy id[4]
+9,Đánh dấu thời trang,chỉ số 9,so,noi_bo,noi_bo,1 = món là đồ thời trang (không phải chỉ số).,Map.isModelClothes
+10,Sức mạnh,Tăng sức mạnh,so,dung,co_ban,Cộng điểm sức mạnh (ngọc khảm).,Char.calculateAttrib -> abilityKham[0]
+11,Nhanh nhẹn,Tăng nhanh nhẹn,so,dung,co_ban,Cộng điểm nhanh nhẹn (ngọc khảm).,abilityKham[1]
+12,Tinh thần,Tăng tinh thần,so,dung,co_ban,Cộng điểm tinh thần (ngọc khảm).,abilityKham[2]
+13,Sức khoẻ,Tăng sức khoẻ,so,dung,co_ban,Cộng điểm sức khoẻ (ngọc khảm).,abilityKham[3]
+14,Gây ngủ,Gây mù,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu ngủ khi đánh trúng.,Char.buffSkillKham -> TrangThaiGame (sv.lau_dai)
+15,Gây đóng băng,Đóng băng,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu đóng băng khi đánh trúng.,Char.buffSkillKham
+16,Gây trúng độc,Trúng độc,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu trúng độc khi đánh trúng.,Char.buffSkillKham
+17,Gây tê liệt,Gây choáng,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu tê liệt khi đánh trúng.,Char.buffSkillKham
+18,Gây bỏng,Hoá thạch,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu bị bỏng khi đánh trúng.,Char.buffSkillKham
+19,Gây giảm tốc,Giảm tốc,phan_nghin,ngung,trang_thai,Không còn tác dụng.,-
+20,Kháng giảm tốc,Kháng giảm tốc,phan_nghin,ngung,trang_thai,Không còn tác dụng.,-
+21,Kháng trúng độc,Kháng trúng độc,phan_nghin,dung,trang_thai,Giảm tỉ lệ bị trúng độc.,Char.khamKhangDoc
+22,Kháng ngủ,Kháng gây mù,phan_nghin,dung,trang_thai,Giảm tỉ lệ bị ngủ.,Char.khamKhangMu
+23,Kháng đóng băng,Kháng đóng băng,phan_nghin,dung,trang_thai,Giảm tỉ lệ bị đóng băng.,Char.khamKhangBang
+24,Kháng tê liệt,Kháng gây choáng,phan_nghin,dung,trang_thai,Giảm tỉ lệ bị tê liệt.,Char.khamKhangChoang
+25,Kháng bỏng,Kháng hoá thạch,phan_nghin,dung,trang_thai,Giảm tỉ lệ bị bỏng.,Char.khamKhangHoathach
+26,Đánh kép,Tăng x2 mỗi lần đánh,phan_tram,ngung,dac_biet,Không còn tác dụng.,Char.khamX2 (không nơi nào gọi)
+27,Tăng rơi bảo vật,Tăng tỷ lệ rớt bảo vật,phan_tram,ngung,kinh_te,Không còn tác dụng.,Char.khamDropItem (không nơi nào gọi)
+28,Giảm ST vật lý nhận,Giảm st vật,phan_tram,dung,sinh_ton,Giảm % sát thương vật lý nhận vào (khi kích bộ hệ).,Char.checkKickAtt5 -> attNguHanh[0] -> Char.subDam
+29,Giảm ST đặc biệt nhận,Giảm st ma,phan_tram,dung,sinh_ton,Giảm % sát thương đặc biệt nhận vào (khi kích bộ hệ).,attNguHanh[1] -> Char.subDam
+30,Tấn công %,Tăng tấn công,phan_tram,dung,co_ban,Tăng % tấn công (khi kích bộ hệ).,attNguHanh[2] -> CharChiSo.calculateAttack
+31,Xuyên giáp,Xuyên giáp,phan_tram,dung,dac_biet,Tỉ lệ đòn đánh bỏ qua phòng thủ (khi kích bộ hệ).,attNguHanh[3] -> Char.getBuffEffAttack
+32,Phản sát thương,Phản st,phan_tram,dung,sinh_ton,Trả lại % sát thương nhận vào cho kẻ đánh (khi kích bộ hệ).,attNguHanh[4] -> CharCapNhat / Char
+33,HP (mỗi điểm +1.000),Tăng HP,so,dung,co_ban,Mỗi điểm cộng 1.000 HP tối đa.,Char.newAtb[0] x1000
+34,PP (mỗi điểm +1.000),Tăng MP,so,dung,co_ban,Mỗi điểm cộng 1.000 PP tối đa.,Char.newAtb[1] x1000
+35,Sức mạnh,Cộng sức mạnh,so,dung,co_ban,Cộng điểm sức mạnh.,Char.newAtb[2]
+36,Nhanh nhẹn,Cộng khéo léo,so,dung,co_ban,Cộng điểm nhanh nhẹn.,Char.newAtb[3]
+37,Tinh thần,Cộng tinh thần,so,dung,co_ban,Cộng điểm tinh thần.,Char.newAtb[4] (thú cưng: sức mạnh)
+38,Sức khoẻ,Cộng sức khoẻ,so,dung,co_ban,Cộng điểm sức khoẻ.,Char.newAtb[5] (thú cưng: nhanh nhẹn)
+39,Kỹ năng,Cộng kỹ năng,so,dung,co_ban,Cộng điểm kỹ năng của thú cưng.,Pet.getspirit (newAtb[6])
+40,Chí mạng,Tăng chí mạng,so,dung,chi_mang,Điểm chí mạng: 3 điểm = 1% tỉ lệ chí mạng.,Char.calculateCritical (newAtb[7])
+41,ST chí mạng %,Tăng st chí mạng,phan_tram,dung,chi_mang,Tăng % sát thương của đòn chí mạng.,"Char.tkNhanChiMang (newAtb[8], sv.lau_dai)"
+42,Không dùng,chưa dùng,so,noi_bo,noi_bo,"Ô dự phòng, không có chỉ số.",-
+43,Cấp chiêu 1,kỹ năng 1 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 1 (tên chiêu hiện theo dòng Pokémon).,Char.addMoreLevelSkill
+44,Cấp chiêu 2,kỹ năng 2 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 2.,Char.addMoreLevelSkill
+45,Cấp chiêu 3,kỹ năng 3 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 3.,Char.addMoreLevelSkill
+46,Cấp chiêu 4,kỹ năng 4 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 4.,Char.addMoreLevelSkill
+47,Cấp chiêu 5,kỹ năng 5 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 5.,Char.addMoreLevelSkill
+48,Cấp chiêu 6,kỹ năng 6 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 6.,Char.addMoreLevelSkill
+49,Cấp chiêu 7,kỹ năng 7 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 7.,Char.addMoreLevelSkill
+50,Cấp chiêu 8,kỹ năng 8 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 8.,Char.addMoreLevelSkill
+51,Cấp chiêu 9,kỹ năng 9 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 9.,Char.addMoreLevelSkill
+52,Cấp chiêu 10,kỹ năng 10 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 10.,Char.addMoreLevelSkill
+53,Cấp chiêu 11,kỹ năng 11 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 11.,Char.addMoreLevelSkill
+54,Cấp chiêu 12,kỹ năng 12 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 12.,Char.addMoreLevelSkill
+55,Cấp chiêu 13,kỹ năng 13 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 13.,Char.addMoreLevelSkill
+56,Cấp chiêu 14,kỹ năng 14 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 14.,Char.addMoreLevelSkill
+57,Cấp chiêu 15,kỹ năng 15 cộng thêm,so,dung,dac_biet,Tăng cấp chiêu 15.,Char.addMoreLevelSkill
+58,Tấn công %,Tăng công,phan_tram,dung,co_ban,Tăng % tấn công.,lockAtb[0] -> CharChiSo.calculateAttack
+59,Phòng thủ đặc biệt %,Tăng thủ ma,phan_tram,dung,co_ban,Tăng % phòng thủ đặc biệt.,lockAtb[1] -> CharChiSo.calculateDefend
+60,Phòng thủ %,Tăng thủ vật,phan_tram,dung,co_ban,Tăng % phòng thủ.,lockAtb[2] -> CharChiSo.calculateDefend
+61,Bỏ qua phòng thủ đặc biệt,Bỏ qua tc ma,phan_tram,dung,dac_biet,Bỏ qua % phòng thủ đặc biệt của mục tiêu (mặt nạ).,Char.getPcBoQuaThuMatNa
+62,Bỏ qua phòng thủ,Bỏ qua tc vật,phan_tram,dung,dac_biet,Bỏ qua % phòng thủ của mục tiêu (mặt nạ).,Char.getPcBoQuaThuMatNa
+63,Phòng thủ đặc biệt từ trang bị %,Tăng thủ ma trang bị,phan_tram,dung,co_ban,Tăng % phòng thủ đặc biệt lấy từ trang bị.,CharChiSo.calculateDefend (ruy băng 19)
+64,Phòng thủ từ trang bị %,Tăng thủ vật trang bị,phan_tram,dung,co_ban,Tăng % phòng thủ lấy từ trang bị.,CharChiSo.calculateDefend (ruy băng 19)
+65,Chí mạng thêm,Bạo kích,phan_nghin,dung,chi_mang,Cộng thêm tỉ lệ chí mạng.,Char.haveBaoKich -> gộp vào chí mạng (sv.lau_dai)
+66,Lan sét,Sét lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,CharTrangBi.checkNewEffectItem (tắt khi sv.lau_dai)
+67,Lan độc,Độc lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,CharTrangBi.checkNewEffectItem
+68,Lan băng,Băng lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,CharTrangBi.checkNewEffectItem
+69,Tăng lan sét,Tăng sét lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+70,Tăng lan độc,Tăng độc lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+71,Tăng lan băng,Tăng băng lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+72,ST lan băng,Tăng st băng lan,phan_tram,ngung,dac_biet,Không còn tác dụng.,-
+73,ST lan sét,Tăng st sét lan,phan_tram,ngung,dac_biet,Không còn tác dụng.,-
+74,ST lan độc,Tăng st độc lan,phan_tram,ngung,dac_biet,Không còn tác dụng.,-
+75,Biến người tuyết,Hoá người tuyết,phan_nghin,ngung,dac_biet,Không còn tác dụng.,CharChiSo.attackDam (tắt khi sv.lau_dai)
+76,Kháng chí mạng,Kháng bạo kích,phan_nghin,dung,chi_mang,Giảm tỉ lệ bị đòn chí mạng trong PvP.,Char.getKhangBaoKichMatNa
+77,Hút HP,Hút máu,phan_nghin,dung,sinh_ton,Hồi HP theo % sát thương gây ra.,"Char.hutmau -> CharChiSo.applyThanKhiOnHit (gộp, sv.lau_dai)"
+78,Hồi HP mỗi 5 giây,Hồi HP,so,dung,sinh_ton,Hồi HP mỗi 5 giây.,Char.haveRegentHP
+79,Hồi PP mỗi 5 giây,Hồi MP,so,dung,sinh_ton,Hồi PP mỗi 5 giây.,Char.haveRegentMP
+80,Gây chậm,Tàn phế,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu chậm lại khi đánh trúng.,Char.haveTanPhe
+81,Hấp thụ sát thương,Hấp thu sát thương,phan_nghin,ngung,sinh_ton,Không còn tác dụng.,-
+82,Gây cấm chiêu,Câm lặng,phan_nghin,dung,trang_thai,Tỉ lệ làm mục tiêu không dùng được chiêu trong thời gian ngắn.,Char.haveLamThinh
+83,Tăng rơi vật phẩm,Tăng tỷ lệ rớt vật phẩm,phan_nghin,ngung,kinh_te,Không còn tác dụng.,Char.tyleRotItem (không nơi nào đọc)
+84,Tăng rơi xu,Tăng tỷ lệ rớt xu,phan_nghin,ngung,kinh_te,Không còn tác dụng.,Char.tylerotXu (không nơi nào đọc)
+85,Kháng lan băng,Kháng băng lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+86,Kháng lan sét,Kháng sét lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+87,Kháng lan độc,Kháng độc lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+88,Phòng thủ từ trang bị,Tăng thủ trang bị,phan_nghin,dung,co_ban,Tăng phòng thủ theo phòng thủ của trang bị.,CharChiSo.calculateDefend (upThuTbChar)
+89,Lan lửa,Lửa lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+90,Tăng lan lửa,Tăng lửa lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+91,ST lan lửa,Tăng st lửa lan,phan_tram,ngung,dac_biet,Không còn tác dụng.,-
+92,Kháng lan lửa,Kháng lửa lan,phan_nghin,ngung,dac_biet,Không còn tác dụng.,-
+93,ST theo hệ phiến đá,St hắc ám,phan_nghin,dung,he,Tăng sát thương các chiêu cùng hệ đã chọn trên phiến đá hệ.,ChiSoTrangBiGame.stHe (sv.lau_dai)
+94,Kháng theo hệ phiến đá,St ánh sáng,phan_nghin,dung,he,Giảm sát thương nhận từ hệ đã chọn trên phiến đá hệ.,ChiSoTrangBiGame.khangHe (sv.lau_dai)
+95,Không dùng,Xh hắc ám,phan_nghin,ngung,noi_bo,Không còn tác dụng.,-
+96,Không dùng,Xh ánh sáng,phan_nghin,ngung,noi_bo,Không còn tác dụng.,-
+97,Gây hoảng sợ,Gây hoảng sợ:,so,ngung,trang_thai,Không còn tác dụng.,-
+98,Tỉ lệ hoảng sợ,Xh hoảng sợ,phan_tram,ngung,trang_thai,Không còn tác dụng.,-
+99,ST theo chủ,St theo chủ,phan_tram,ngung,dac_biet,Không còn tác dụng.,-
+100,Sức khoẻ,Sức khoẻ,so,ngung,co_ban,Không còn tác dụng.,-
+101,ST theo HP tối đa,St max Hp,phan_tram,ngung,dac_biet,Không còn tác dụng.,-
+102,Gây ngủ (thú cưng),Ru ngủ,phan_nghin,dung,trang_thai,Kỹ năng thú cưng: tỉ lệ làm mục tiêu ngủ.,Pet (otherAtt[41])
+103,Gây choáng (thú cưng),Choáng,phan_nghin,dung,trang_thai,Kỹ năng thú cưng: tỉ lệ làm mục tiêu choáng.,Pet (otherAtt[42])
+104,Gây bỏng (thú cưng),Bỏng,phan_nghin,dung,trang_thai,Kỹ năng thú cưng: tỉ lệ gây bỏng.,Pet (otherAtt[43])
+105,Gây trúng độc (thú cưng),Trúng độc,phan_nghin,dung,trang_thai,Kỹ năng thú cưng: tỉ lệ gây trúng độc.,Pet.getpcTrungDoc
+106,Gây suy yếu (thú cưng),Suy yếu,phan_nghin,dung,trang_thai,Kỹ năng thú cưng: tỉ lệ làm mục tiêu suy yếu.,Pet.getpcSuyYeu
+107,Chuyển ST nhận thành PP (thú cưng),Chuyển st qua mp,so,dung,sinh_ton,Kỹ năng thú cưng: chuyển một phần sát thương nhận vào thành PP.,Pet (otherAtt[46])
+108,Tăng tấn công (thú cưng),Gia tăng tc,so,dung,co_ban,Kỹ năng thú cưng: tăng tấn công.,Pet (otherAtt[47])
+109,Hút HP (thú cưng),Hút hp,so,dung,sinh_ton,Kỹ năng thú cưng: lượng HP hút mỗi lần kích hoạt.,Pet.getHpHutByHit -> gộp hút HP (sv.lau_dai)
+110,Sát thương độc (thú cưng),Sát thương độc,so,dung,trang_thai,Kỹ năng thú cưng: sát thương của độc.,Pet (otherAtt[49])
+111,Tăng EXP,Tăng exp,phan_tram,dung,kinh_te,"Tăng % EXP nhận được (gộp với thú cưng, thời trang, tối đa +30%).",ExpLauDai.buffPhanTram (kẹp GioiHanChiSo.expTrangBi)
+112,Thời gian suy yếu (thú cưng),Tác động suy yếu,phan_tram,dung,trang_thai,Kỹ năng thú cưng: độ mạnh của suy yếu.,Pet.getPcTacDongSuyYeu
+113,Tỉ lệ hút HP (thú cưng),Tl hút hp,phan_nghin,dung,sinh_ton,Kỹ năng thú cưng: tỉ lệ kích hoạt hút HP.,Pet.getpcHutHpByHit
+114,ST thêm khi mục tiêu bỏng (thú cưng),Nhân thêm st khi bỏng,phan_tram,dung,trang_thai,Kỹ năng thú cưng: tăng sát thương lên mục tiêu đang bỏng.,Pet (otherAtt[53])
+115,ST theo % HP mục tiêu,Sát thương chuẩn,phan_nghin,dung,dac_biet,Đòn đánh cộng thêm sát thương theo % HP tối đa của mục tiêu.,"CharChiSo.attackDam (bảo vật cầm tay, kẹp GioiHanChiSo.stTheoHp)"
+116,Tăng chỉ số đồ cầm tay,Chỉ số vũ khí tăng,phan_nghin,dung,co_ban,Tăng % chỉ số của đồ cầm tay đang dùng.,Item.getValueUpByVuKhiThoiTrang
+117,Tỉ lệ ST theo % HP,Tỷ lệ gây sát thương chuẩn,phan_nghin,dung,dac_biet,Tỉ lệ kích hoạt sát thương theo % HP mục tiêu.,CharChiSo.attackDam
+118,Giảm sát thương cuối,Giảm sát thương cuối,phan_nghin,hien,sinh_ton,Giảm sát thương nhận vào trong thời gian hiệu lực (đồ thời trang).,ModelWearing.getPcGiamSatThuong
+119,Ánh Trăng (tỉ lệ kích hoạt),Nguyệt ảnh gây st(10%-15%) tl xuất hiện,phan_nghin,hien,dac_biet,Tỉ lệ kích hoạt Ánh Trăng của đồ thời trang.,ModelWearing
+120,Kháng hệ Lửa,Kháng hoả,phan_nghin,dung,he,Giảm sát thương nhận từ chiêu hệ Lửa.,ChiSoTrangBiGame.khangHe (sv.lau_dai)
+121,Kháng hệ Nước,Kháng thuỷ,phan_nghin,dung,he,Giảm sát thương nhận từ chiêu hệ Nước.,ChiSoTrangBiGame.khangHe
+122,Kháng hệ Cỏ,Kháng mộc,phan_nghin,dung,he,Giảm sát thương nhận từ chiêu hệ Cỏ.,ChiSoTrangBiGame.khangHe
+123,Kháng hệ Thép,Kháng kim,phan_nghin,dung,he,Giảm sát thương nhận từ chiêu hệ Thép.,ChiSoTrangBiGame.khangHe
+124,Kháng hệ Đất,Kháng thổ,phan_nghin,dung,he,Giảm sát thương nhận từ chiêu hệ Đất.,ChiSoTrangBiGame.khangHe
+125,Giá lượng,Giá lượng,so,noi_bo,noi_bo,Giá bán (không phải chỉ số).,Map / MapMuaBan
+126,Số lượng,Số lượng,so,noi_bo,noi_bo,Số lượng gộp (không phải chỉ số).,Char / Map
+127,Kháng sát thương lan,Kháng st lan,so,ngung,dac_biet,Không còn tác dụng.,-
+128,Hồi HP theo HP tối đa,Hồi hp theo maxhp,so,ngung,sinh_ton,Không còn tác dụng.,-
+129,Chuyển ST thành HP,Chuyển sát thương thành hp,phan_tram,dung,sinh_ton,Hồi HP theo % sát thương gây ra (mặt nạ).,Char.getPcChuyenStThanhHpMatNa -> gộp hút HP
+130,Giảm phòng thủ đối thủ,Giảm thủ đối phương,so,ngung,dac_biet,Không còn tác dụng.,-
+131,Né tránh,Né tránh,so,ngung,co_ban,Không còn tác dụng.,-
+132,Hoá giải kỹ năng thú cưng,Hoá giải kỹ năng pet,phan_tram,dung,dac_biet,Tỉ lệ vô hiệu kỹ năng thú cưng của đối thủ (mặt nạ + bảo vật).,Char.getPcHoaGiaiKyNangPet
+133,Tăng hồi phục khi HP thấp,Tăng hiệu quả bình hp mp khi hp dưới 30%,so,ngung,sinh_ton,Không còn tác dụng.,-
+134,Sát thương theo HP,Sát thương theo hp,phan_tram,hien,dac_biet,Hiệu ứng cố định của cải trang.,Item.setAttributeByBatGioi / SaTang
+135,Mở khoá: chủ nhận đủ 500.000 sát thương,Điều kiện chủ nhận đủ 500k st từ hvl,phan_tram,hien,dac_biet,Điều kiện mở hiệu ứng của cải trang.,Item.setAttributeByBatGioi
+136,Hấp thụ sát thương,Hấp thu sát thương,phan_tram,hien,sinh_ton,Hiệu ứng cố định của cải trang.,Item.setAttributeByBatGioi
+137,Tốc độ chạy,Tăng tốc,phan_tram,hien,co_ban,Hiệu ứng cố định của cải trang.,Item.setAttributeByBatGioi
+138,Tiềm năng %,Tiềm năng,phan_tram,hien,co_ban,Hiệu ứng cố định của cải trang.,Item.setAttributeByBatGioi
+139,HP,HP,so,hien,co_ban,Hiệu ứng cố định của cải trang.,Item.setAttributeByBatGioi (CharChiSo cộng theo cấp cải trang)
+140,Chí mạng %,Trí Mạng,phan_tram,hien,chi_mang,Hiệu ứng cố định của cải trang.,Item.setAttributeBySaTang
+141,ST chí mạng,Tăng sát thương chí mạng,phan_nghin,dung,chi_mang,Tăng % sát thương của đòn chí mạng.,Char.getTkStChiMang -> tkNhanChiMang
+142,ST theo % HP đối thủ,Tăng sát thương theo % HP kẻ địch,phan_nghin,dung,dac_biet,Cộng sát thương theo % HP tối đa của mục tiêu.,CharChiSo.applyThanKhiOnHit (kẹp)
+143,ST theo % PP đối thủ,Tăng sát thương theo % MP kẻ địch,phan_nghin,dung,dac_biet,Cộng sát thương theo % PP tối đa của mục tiêu (PvP).,CharChiSo.applyThanKhiOnHit (kẹp)
+144,ST vật lý %,Tăng % sát thương vật lý,phan_tram,dung,co_ban,Tăng % sát thương vật lý.,Char.getThanKhiPhanTramSatThuong
+145,ST đặc biệt %,Tăng % sát thương ma pháp,phan_tram,dung,co_ban,Tăng % sát thương đặc biệt.,Char.getThanKhiPhanTramSatThuong
+146,Xuyên phòng thủ đặc biệt,Tăng % Xuyên thủ ma,phan_nghin,dung,dac_biet,Bỏ qua % phòng thủ đặc biệt của mục tiêu.,CharChiSo.attackDam (getTkXuyenThu)
+147,Xuyên phòng thủ,Tăng % Xuyên thủ vật,phan_nghin,dung,dac_biet,Bỏ qua % phòng thủ của mục tiêu.,CharChiSo.attackDam (getTkXuyenThu)
+148,ST lên boss,Tăng % sát thương lên boss/trụ,phan_nghin,dung,dac_biet,Tăng % sát thương lên boss.,CharChiSo.applyThanKhiOnHit (kẹp 20%)
+149,ST lên quái,Tăng % sát thương lên quái,phan_nghin,dung,dac_biet,Tăng % sát thương lên quái thường.,CharChiSo.applyThanKhiOnHit (kẹp 20%)
+150,Giảm ST nhận từ boss,Giảm % sát thương nhận vào từ Boss,phan_nghin,dung,sinh_ton,Giảm % sát thương nhận từ boss.,Char.subDamThanKhi
+151,Phòng thủ cơ bản,Tăng điểm phòng thủ cơ bản,so,dung,co_ban,Cộng phòng thủ cơ bản.,CharChiSo.calculateDefend
+152,Kháng hệ Thép,Kháng Kim,phan_tram,dung,he,Giảm % sát thương nhận từ chiêu hệ Thép.,ChiSoTrangBiGame.khangHe
+153,Kháng hệ Cỏ,Kháng Mộc,phan_tram,dung,he,Giảm % sát thương nhận từ chiêu hệ Cỏ.,ChiSoTrangBiGame.khangHe
+154,Kháng hệ Nước,Kháng Thủy,phan_tram,dung,he,Giảm % sát thương nhận từ chiêu hệ Nước.,ChiSoTrangBiGame.khangHe
+155,Kháng hệ Lửa,Kháng Hỏa,phan_tram,dung,he,Giảm % sát thương nhận từ chiêu hệ Lửa.,ChiSoTrangBiGame.khangHe
+156,Kháng hệ Đất,Kháng Thổ,phan_tram,dung,he,Giảm % sát thương nhận từ chiêu hệ Đất.,ChiSoTrangBiGame.khangHe
+157,Phòng thủ khi trong đội,Tăng điểm giáp khi đang ở trong tổ đội,so,dung,co_ban,Cộng phòng thủ khi đang ở trong đội.,CharChiSo.calculateDefend
+158,ST vật lý cộng thêm,Tăng điểm sát thương vật lý,so,dung,co_ban,Cộng thẳng sát thương vật lý (sau cùng).,Char.getThanKhiDiemSatThuong
+159,ST đặc biệt cộng thêm,Tăng điểm sát thương ma pháp,so,dung,co_ban,Cộng thẳng sát thương đặc biệt (sau cùng).,Char.getThanKhiDiemSatThuong
+160,Tốc độ đánh %,Tăng tốc độ đánh,phan_tram,dung,co_ban,Giảm % thời gian hồi chiêu.,"Char.calculateAttrib (getTkGiamHoiChieu, kẹp 33%)"
+161,Tốc độ chạy,Tăng tốc độ di chuyển,so,dung,co_ban,Tăng tốc độ chạy.,Char.getThanKhiSpeedBonus
+162,Gây cấm chiêu,Tăng % câm lặng của bản thân,phan_tram,dung,trang_thai,Tỉ lệ làm mục tiêu không dùng được chiêu.,CharChiSo.applyThanKhiOnHit
+163,ST hệ Thép,Sát thương hệ kim,phan_tram,dung,he,Tăng % sát thương chiêu hệ Thép.,ChiSoTrangBiGame.stHe (sv.lau_dai)
+164,ST hệ Cỏ,Sát thương hệ mộc,phan_tram,dung,he,Tăng % sát thương chiêu hệ Cỏ.,ChiSoTrangBiGame.stHe
+165,ST hệ Nước,Sát thương hệ thuỷ,phan_tram,dung,he,Tăng % sát thương chiêu hệ Nước.,ChiSoTrangBiGame.stHe
+166,ST hệ Lửa,Sát thương hệ hoả,phan_tram,dung,he,Tăng % sát thương chiêu hệ Lửa.,ChiSoTrangBiGame.stHe
+167,ST hệ Đất,Sát thương hệ thổ,phan_tram,dung,he,Tăng % sát thương chiêu hệ Đất.,ChiSoTrangBiGame.stHe
+168,Số dòng ẩn,Số dòng ẩn,so,dung,dac_biet,Số dòng ẩn tối đa của bảo vật huyền thoại.,ThoRenBiAn
+169,Vải,Vải,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+170,Sắt,Sắt,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+171,Ngọc,Ngọc,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+172,Gỗ thường,Gỗ thường,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+173,Da mềm,Da mềm,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+174,Tơ lụa,Tơ lụa,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+175,Bạc,Bạc,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+176,Thuỷ tinh,Thuỷ tinh,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+177,Gỗ sưa,Gỗ sưa,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+178,Da cứng,Da cứng,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+179,Đá cầu vồng,Đá ngũ hợp,so,hien,noi_bo,Nguyên liệu đã góp vào bảo vật huyền thoại.,ThoRenBiAn
+180,Giảm ST nhận từ người chơi,Giảm sát thương nhận vào từ người chơi,phan_nghin,dung,sinh_ton,Giảm % sát thương nhận từ người chơi khác.,Char.getTkGiamStPlayer
+181,Hút PP,Hút MP,phan_tram,dung,sinh_ton,Hồi PP theo % sát thương gây ra.,Char.getTkHutMp
+182,Hút HP %,Hút HP,phan_tram,dung,sinh_ton,Hồi HP theo % sát thương gây ra.,Char.getTkHutHp -> gộp hút HP
+183,Né tránh %,Tăng % né tránh,phan_tram,dung,co_ban,Tăng % tỉ lệ né đòn.,Char.getTkNeTranh -> haveNeTranh
+184,Làm yếu đối thủ,Giảm % sức mạnh và % phòng thủ của kẻ địch,phan_nghin,dung,trang_thai,Giảm tấn công và phòng thủ của mục tiêu trong vài giây.,CharChiSo.applyThanKhiOnHit (SUY_YEU)
+185,Phản đòn %,Tăng % phản đòn,phan_tram,dung,sinh_ton,Trả lại % sát thương nhận vào cho kẻ đánh.,Char.getTkPhanDon (kẹp 15% / PvP 10%)
+186,Kháng mọi hệ,Kháng tất cả,phan_nghin,dung,he,Giảm sát thương nhận từ mọi hệ.,ChiSoTrangBiGame.khangHe
+200,HP,Sinh lực,so,hien,co_ban,Cộng HP tối đa cho chủ (skin thú cưỡi).,SkinThuCuoi.congHp
+201,PP,Nội lực,so,hien,co_ban,Cộng PP tối đa cho chủ (skin thú cưỡi).,SkinThuCuoi.congMp
+202,Giảm sát thương khi bị đánh,Giảm sát thương khi bị đánh,phan_tram,hien,sinh_ton,Đặc tính skin thú cưỡi: giảm sát thương nhận vào.,SkinThuCuoi.pcChanSatThuong
+203,Chính xác,Chính xác cộng thêm,so,hien,co_ban,Cộng điểm chính xác cho chủ (skin thú cưỡi).,SkinThuCuoi.congChinhXac
+204,Phản sát thương,Phản sát thương,phan_tram,hien,sinh_ton,Đặc tính skin thú cưỡi: trả lại sát thương.,SkinThuCuoi
+205,Tiềm năng %,Tiềm năng cộng thêm,phan_tram,hien,co_ban,Tăng % điểm tiềm năng cho chủ (skin thú cưỡi).,SkinThuCuoi
+206,Lá chắn chặn sát thương,Lá chắn chặn sát thương,phan_tram,hien,sinh_ton,Đặc tính skin thú cưỡi: lá chắn chặn sát thương.,SkinThuCuoi.pcChanSatThuong
+207,Xuyên giáp,Xuyên giáp cộng thêm,phan_tram,hien,dac_biet,Tăng tỉ lệ xuyên giáp cho chủ (skin thú cưỡi).,SkinThuCuoi.pcXuyenGiap
+208,Nộ: tăng tấn công khi HP thấp,Nộ khí tăng tấn công,phan_tram,hien,co_ban,Đặc tính skin thú cưỡi: HP dưới 30% thì tăng tấn công.,SkinThuCuoi.pcCongTanCong
+209,Phòng thủ %,Phòng thủ cộng thêm,phan_tram,hien,co_ban,Tăng % phòng thủ cho chủ (skin thú cưỡi).,SkinThuCuoi.pcThu
+210,Hấp thụ sát thương,Hấp thụ sát thương,phan_tram,hien,sinh_ton,Đặc tính skin thú cưỡi: hấp thụ một phần sát thương.,SkinThuCuoi.pcHapThu

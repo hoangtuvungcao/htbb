@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   const u = await requireUser(event)
-  if (!(await napCoBang())) napThieuBang()
+  if (!(await napCoBang())) napThieuBang(true)
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
   const tran = int(body?.tran, -1)
   if (tran < 0 || tran > TRAN_CUNG_THANG_VND || (tran > 0 && tran < 10000)) {

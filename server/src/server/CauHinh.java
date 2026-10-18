@@ -8,14 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.Properties;
 
 /**
- * DOC / GHI 26 SETTING NAP LAI DUOC LUC DANG CHAY - bang `kpah_db.cau_hinh`.
+ * DOC / GHI 26 SETTING NAP LAI DUOC LUC DANG CHAY - bang `htbb_db.cau_hinh`.
  *
  * TRUOC 09/09/2026: nguon du lieu la file server.ini, sua qua bang setting trong game
  * (real/AdminMenu.java) hoac sua tay file roi go lenh "nap lai". File rieng tren tung
  * may (khong nam trong git), sua tu xa phai SSH.
  *
  * NAY: nguon du lieu la bang SQL `cau_hinh` (khoa, gia_tri, sua_boi, sua_luc). Web
- * (web/admin/cauhinh.php) va bang setting trong game GHI CHUNG mot bang. Server tu
+ * (HTBB-Web /admin/cauhinh) va bang setting trong game GHI CHUNG mot bang. Server tu
  * doc lai bang nay moi 10 giay (xem batDau()) nen admin sua tren web thi may chu ap
  * dung trong toi da 10 giay, khong can restart, khong can go lenh "nap lai" trong game
  * nua (van con dung duoc, chi la khong bat buoc).
@@ -71,7 +71,7 @@ public final class CauHinh {
     /**
      * 3 co thuong EXP phu - truoc 11/09/2026 doc bang Byte.parseByte truc tiep tu server.ini
      * trong TeamServer (bat buoc phai co dong, thieu la nem loi ngay luc khoi dong). Chuyen
-     * vao day de sua duoc qua trang admin/cauhinh.php, khong can restart. Xem noi dung tung
+     * vao day de sua duoc qua trang HTBB-Web /admin/cauhinh, khong can restart. Xem noi dung tung
      * co: CharSuKien.java (ExpVantieu - EXP giao tieu ca nhan), InfoGifLucky.java (LuckyExp -
      * o thuong EXP trong Ruong May Man), FruitTemplate.java (ExpQua - EXP cay an qua; luu y
      * canTangToc() cung dung co nay de khoa nut "tang toc" cho MOI loai cay, khong rieng cay
@@ -176,6 +176,8 @@ public final class CauHinh {
                 pre.setString(3, nguoiSua);
                 pre.executeUpdate();
             }
+            // Cau hinh trung tam (com.htbb.cauhinh): bao co thay doi -> nap lai + ghi lich su trong <= 5 giay.
+            com.htbb.cauhinh.CauHinhTrungTam.tangPhienBan(nguoiSua);
             return true;
         } catch (final Exception e) {
             System.out.println("[CAUHINH] loi ghi " + BANG + ": " + e);
@@ -246,20 +248,10 @@ public final class CauHinh {
             return;
         }
         daBatDau = true;
-        final Thread t = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(CHU_KY_NAP_LAI_MS);
-                    } catch (final InterruptedException ignored) {
-                        return;
-                    }
-                    napLai();
-                }
-            }
-        }, "CauHinh-napLai");
-        t.setDaemon(true);
-        t.start();
+        // Tu 18/10/2026: vong nap lai thuoc com.htbb.cauhinh.CauHinhTrungTam (hoi phien ban moi 5 giay, doc ca
+        // bang khi doi / moi 60 giay, kiem gia tri, bao nguoi nghe, ghi xac nhan). Ham apDung() ben duoi la mot
+        // nguoi nghe cua no. CHU_KY_NAP_LAI_MS giu lai lam tran tren (<= 10 giay) cho tai lieu.
+        com.htbb.cauhinh.CauHinhTrungTam.batDau();
     }
 
     // =========================== NAP LAI ===========================
@@ -273,80 +265,77 @@ public final class CauHinh {
      *
      * @return mo ta ket qua de hien cho admin
      */
-    public static synchronized String napLai() {
-        Connection conn = null;
-        try {
-            conn = data.Database.instance.getConnection();
-            taoBangNeuThieu(conn);
-            final Properties p = docTuSql(conn);
+    public static String napLai() {
+        // Doc + kiem + ap dung qua cau hinh trung tam (CSDL > server.ini > mac dinh); no goi apDung() ben duoi.
+        return com.htbb.cauhinh.CauHinhTrungTam.napLaiNgay("lenh-nap-lai");
+    }
 
-            real.Monster.PC_TILE_XU = kep(p.getProperty(K_TILE_XU), real.Monster.PC_TILE_XU);
-            real.Monster.PC_TILE_LUONG = kep(p.getProperty(K_TILE_LUONG), real.Monster.PC_TILE_LUONG);
-            real.Monster.PC_TILE_ITEM_SUKIEN = kep(p.getProperty(K_TILE_SUKIEN), real.Monster.PC_TILE_ITEM_SUKIEN);
-            real.Monster.PC_TILE_POTION = kep(p.getProperty(K_TILE_POTION), real.Monster.PC_TILE_POTION);
-            real.Monster.PC_TILE_NGOC = kep(p.getProperty(K_TILE_NGOC), real.Monster.PC_TILE_NGOC);
-            real.Monster.PC_TILE_ITEM = kep(p.getProperty(K_TILE_ITEM), real.Monster.PC_TILE_ITEM);
-            real.Map.DIV_DROP_XU = Math.max(1, so(p.getProperty(K_CHIA_XU), real.Map.DIV_DROP_XU));
-            TeamServer.tileGoc = new int[]{real.Monster.PC_TILE_XU, real.Monster.PC_TILE_LUONG,
-                real.Monster.PC_TILE_ITEM_SUKIEN, real.Monster.PC_TILE_POTION,
-                real.Monster.PC_TILE_NGOC, real.Monster.PC_TILE_ITEM, real.Map.DIV_DROP_XU};
+    /**
+     * Ap Properties da kiem (cau hinh trung tam: server.ini + bang cau_hinh, gia tri sai da bi tu choi) vao
+     * bien tinh cua server. Goi tu com.htbb.cauhinh.ApDungMacDinh moi khi cau hinh doi. Khong dong bo
+     * (synchronized) co y: chi chay tren luong nap lai cua CauHinhTrungTam (da khoa san), tranh khoa cheo voi
+     * luuNhieu().
+     */
+    public static void apDung(final Properties p) {
+        real.Monster.PC_TILE_XU = kep(p.getProperty(K_TILE_XU), real.Monster.PC_TILE_XU);
+        real.Monster.PC_TILE_LUONG = kep(p.getProperty(K_TILE_LUONG), real.Monster.PC_TILE_LUONG);
+        real.Monster.PC_TILE_ITEM_SUKIEN = kep(p.getProperty(K_TILE_SUKIEN), real.Monster.PC_TILE_ITEM_SUKIEN);
+        real.Monster.PC_TILE_POTION = kep(p.getProperty(K_TILE_POTION), real.Monster.PC_TILE_POTION);
+        real.Monster.PC_TILE_NGOC = kep(p.getProperty(K_TILE_NGOC), real.Monster.PC_TILE_NGOC);
+        real.Monster.PC_TILE_ITEM = kep(p.getProperty(K_TILE_ITEM), real.Monster.PC_TILE_ITEM);
+        real.Map.DIV_DROP_XU = Math.max(1, so(p.getProperty(K_CHIA_XU), real.Map.DIV_DROP_XU));
+        TeamServer.tileGoc = new int[]{real.Monster.PC_TILE_XU, real.Monster.PC_TILE_LUONG,
+            real.Monster.PC_TILE_ITEM_SUKIEN, real.Monster.PC_TILE_POTION,
+            real.Monster.PC_TILE_NGOC, real.Monster.PC_TILE_ITEM, real.Map.DIV_DROP_XU};
 
-            real.Monster.PC_TILE_EXP_LV50 = kep(p.getProperty(K_TILE_EXP_LV50), real.Monster.PC_TILE_EXP_LV50);
-            real.Monster.PC_TILE_EXP_DUOI_LV50 = kep(p.getProperty(K_TILE_EXP_DUOI_LV50), real.Monster.PC_TILE_EXP_DUOI_LV50);
+        real.Monster.PC_TILE_EXP_LV50 = kep(p.getProperty(K_TILE_EXP_LV50), real.Monster.PC_TILE_EXP_LV50);
+        real.Monster.PC_TILE_EXP_DUOI_LV50 = kep(p.getProperty(K_TILE_EXP_DUOI_LV50), real.Monster.PC_TILE_EXP_DUOI_LV50);
 
-            real.Char.TIEU_NGUONG_MAU = mang(p.getProperty(K_TIEU_NGUONG_MAU), real.Char.TIEU_NGUONG_MAU);
-            real.Char.TIEU_HE_SO_EXP = Math.max(0, so(p.getProperty(K_TIEU_HE_SO_EXP), real.Char.TIEU_HE_SO_EXP));
-            real.Char.TIEU_PC_EXP_THEO_MAU = mang(p.getProperty(K_TIEU_PC_EXP_THEO_MAU), real.Char.TIEU_PC_EXP_THEO_MAU);
-            real.Char.TIEU_PERMILLE_CAO_CAP = mang(p.getProperty(K_TIEU_PERMILLE_CAO_CAP), real.Char.TIEU_PERMILLE_CAO_CAP);
+        real.Char.TIEU_NGUONG_MAU = mang(p.getProperty(K_TIEU_NGUONG_MAU), real.Char.TIEU_NGUONG_MAU);
+        real.Char.TIEU_HE_SO_EXP = Math.max(0, so(p.getProperty(K_TIEU_HE_SO_EXP), real.Char.TIEU_HE_SO_EXP));
+        real.Char.TIEU_PC_EXP_THEO_MAU = mang(p.getProperty(K_TIEU_PC_EXP_THEO_MAU), real.Char.TIEU_PC_EXP_THEO_MAU);
+        real.Char.TIEU_PERMILLE_CAO_CAP = mang(p.getProperty(K_TIEU_PERMILLE_CAO_CAP), real.Char.TIEU_PERMILLE_CAO_CAP);
 
-            real.Char.DOI_TIEU_NGUONG_MAU_XU = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_XU), real.Char.DOI_TIEU_NGUONG_MAU_XU);
-            real.Char.DOI_TIEU_NGUONG_MAU_LUONG = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_LUONG), real.Char.DOI_TIEU_NGUONG_MAU_LUONG);
+        real.Char.DOI_TIEU_NGUONG_MAU_XU = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_XU), real.Char.DOI_TIEU_NGUONG_MAU_XU);
+        real.Char.DOI_TIEU_NGUONG_MAU_LUONG = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_LUONG), real.Char.DOI_TIEU_NGUONG_MAU_LUONG);
 
-            apDungGioChiemThanh(p);
-            // Thiet ke dai han: doc de so lieu (khoa cua data_kinh_te_lau_dai, vd thue.cho).
-            com.htbb.pokemon.LauDai.apDungCauHinh(p);
-            data.Database.CHO_PHEP_TAO_TEN_GM = "1".equals(nhan(p.getProperty(K_TAO_TEN_GM), "0"));
+        apDungGioChiemThanh(p);
+        // Thiet ke dai han: doc de so lieu (khoa cua data_kinh_te_lau_dai, vd thue.cho).
+        com.htbb.pokemon.LauDai.apDungCauHinh(p);
+        // thanh vien: thanh_vien.* (bat, chuc_nang, mien_cap, thong_bao...) doc lai moi 10 giay.
+        com.htbb.pokemon.ThanhVien.apDungCauHinh(p);
+        data.Database.CHO_PHEP_TAO_TEN_GM = "1".equals(nhan(p.getProperty(K_TAO_TEN_GM), "0"));
 
-            int max = so(p.getProperty("sv.maxCharPerAccount"), data.Database.MAX_CHAR_PER_ACCOUNT);
-            if (max < 1) {
-                max = 1;
-            }
-            if (max > 3) {
-                max = 3;
-            }
-            data.Database.MAX_CHAR_PER_ACCOUNT = max;
+        int max = so(p.getProperty("sv.maxCharPerAccount"), data.Database.MAX_CHAR_PER_ACCOUNT);
+        if (max < 1) {
+            max = 1;
+        }
+        if (max > 3) {
+            max = 3;
+        }
+        data.Database.MAX_CHAR_PER_ACCOUNT = max;
 
-            TeamServer.adminAccounts.clear();
-            final String ds = nhan(p.getProperty("sv.adminAccounts"), "");
-            if (!ds.isEmpty()) {
-                for (final String a : ds.split(",")) {
-                    final String an = a.trim().toLowerCase();
-                    if (!an.isEmpty()) {
-                        TeamServer.adminAccounts.add(an);
-                    }
+        TeamServer.adminAccounts.clear();
+        final String ds = nhan(p.getProperty("sv.adminAccounts"), "");
+        if (!ds.isEmpty()) {
+            for (final String a : ds.split(",")) {
+                final String an = a.trim().toLowerCase();
+                if (!an.isEmpty()) {
+                    TeamServer.adminAccounts.add(an);
                 }
             }
-            TeamServer.website = nhan(p.getProperty("sv.website"), "");
-            TeamServer.linkTaiGame = nhan(p.getProperty("sv.linkTaiGame"), "");
-            TeamServer.testMode = "1".equals(nhan(p.getProperty("sv.testMode"), "0"));
-            TeamServer.testCode = nhan(p.getProperty("sv.testCode"), "").toLowerCase();
-
-            apDungSuKienWorldCup(p);
-            apDungLichSuKien(p);
-
-            TeamServer.ExpVantieu = "1".equals(nhan(p.getProperty(K_EXP_VANTIEU), "0"));
-            TeamServer.LuckyExp = "1".equals(nhan(p.getProperty(K_LUCKY_EXP), "0"));
-            TeamServer.ExpQua = "1".equals(nhan(p.getProperty(K_EXP_QUA), "0"));
-
-            return "Đã nạp lại cấu hình từ CSDL.";
-        } catch (final Exception e) {
-            return "Không nạp được cấu hình: " + e;
-        } finally {
-            try {
-                data.Database.connPool.free(conn);
-            } catch (final Exception ignored) {
-            }
         }
+        TeamServer.website = nhan(p.getProperty("sv.website"), "");
+        TeamServer.linkTaiGame = nhan(p.getProperty("sv.linkTaiGame"), "");
+        TeamServer.testMode = "1".equals(nhan(p.getProperty("sv.testMode"), "0"));
+        TeamServer.testCode = nhan(p.getProperty("sv.testCode"), "").toLowerCase();
+
+        apDungSuKienWorldCup(p);
+        apDungLichSuKien(p);
+
+        TeamServer.ExpVantieu = "1".equals(nhan(p.getProperty(K_EXP_VANTIEU), "0"));
+        TeamServer.LuckyExp = "1".equals(nhan(p.getProperty(K_LUCKY_EXP), "0"));
+        TeamServer.ExpQua = "1".equals(nhan(p.getProperty(K_EXP_QUA), "0"));
     }
 
     /**

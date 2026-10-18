@@ -17,7 +17,7 @@ rem ===================================================================
 
 set "GOC=%~dp0"
 if "%GOC:~-1%"=="\" set "GOC=%GOC:~0,-1%"
-set "DUAN=%GOC%\ClientUnity"
+set "DUAN=%GOC%\..\client_pc_ios\ClientUnity"
 
 rem --- Tim Unity. Dat bien moi truong UNITY_EXE de dung ban khac. ---
 if not defined UNITY_EXE set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.9f1\Editor\Unity.exe"
@@ -56,8 +56,8 @@ if not exist "%~2" (
 echo [1/3] Bien dich hai cong cu tai nguyen...
 if not exist "%GOC%\build\tools-classes" mkdir "%GOC%\build\tools-classes"
 "%JAVA_BIN%\javac.exe" --release 8 -encoding UTF-8 -nowarn ^
-    -d "%GOC%\build\tools-classes" "%GOC%\tools\ChuyenTaiNguyen.java" ^
-    "%GOC%\tools\RutTaiNguyenUnity.java"
+    -d "%GOC%\build\tools-classes" "%GOC%\..\tools\ChuyenTaiNguyen.java" ^
+    "%GOC%\..\tools\RutTaiNguyenUnity.java"
 if errorlevel 1 exit /b 1
 
 rem --- Buoc 2 chi chay khi thu muc dua vao co ca ban Unity da dung san.
@@ -101,7 +101,7 @@ if not "%MA%"=="0" (
     findstr /i /c:"error" /c:"Exception" "%GOC%\build\unity-%VIEC%.log"
     exit /b %MA%
 )
-echo Xong. Ket qua trong ClientUnity\Build\
+echo Xong. Ket qua trong ..\client_pc_ios\ClientUnity\Build\
 exit /b 0
 
 rem -------------------------------------------------------------------

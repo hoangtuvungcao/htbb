@@ -12,7 +12,7 @@ import os
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PC = os.path.normpath(os.path.join(GOC, "..", "htbb-client", "pc", "Assets"))
-CU = os.path.join(GOC, "ClientUnity", "Assets")
+CU = os.path.join(GOC, "client_pc_ios", "ClientUnity", "Assets")
 
 
 def cac_assets():

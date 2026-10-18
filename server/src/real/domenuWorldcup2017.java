@@ -79,7 +79,7 @@ public class domenuWorldcup2017 {
 
                         player.sendMessage(MessageCreator.createCharGemItem(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa" + (istuhondan ? " và 1 Tụ hồn đan" : ""), ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa" + (istuhondan ? " và 1 Kẹo Poké" : ""), ""));
                         Database.instance.saveOrtherLog("", player.charname, sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Tụ hồn đan" : ""), "redeem");
                     }
                     break;

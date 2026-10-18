@@ -119,6 +119,10 @@ class MapMuaBan {
 
                 short userId = 0;
                 int cmd = msg.dis.readByte();
+                // thanh vien: moi / nhan loi giao dich can Thanh vien HTBB (tat he thong = khong chan).
+                if ((cmd == 0 || cmd == 1) && com.htbb.pokemon.ThanhVien.chanVaBao(player, "giao_dich")) {
+                    return;
+                }
                 Char p = null;
                 Char dp = null;
                 switch (cmd) {
@@ -153,7 +157,7 @@ class MapMuaBan {
                         }
 
                         if ((getTown[player.myCountry] || getTown[p.myCountry]) && player.mapID == 201) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời trong thời gian chiếm thành", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời trong thời gian chiếm Gym", ""));
                             return;
                         }
 
@@ -164,6 +168,10 @@ class MapMuaBan {
 
                         if (!p.rcvInviteVip) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại người chơi không chấp nhận bất kỳ lời mời nào.", ""));
+                            return;
+                        }
+                        // thanh vien: nguoi duoc moi cung phai la thanh vien (chan clone chuyen do cho nhau).
+                        if (com.htbb.pokemon.ThanhVien.chanHaiNguoi(player, p, "giao_dich", "nhan_tang")) {
                             return;
                         }
 
@@ -515,11 +523,11 @@ class MapMuaBan {
     static void exchangeItem(Map map, Char player, Item iItem, int slot) {
         // Vat pham skin linh thu mang type 30, isWearingAnimal (14..18) khong nhan ra,
         // nen phai chan ngay o day keo no roi xuong nhanh do nhan vat. Phan biet
-        // bang ID TEMPLATE, khong bang type — xem real.SkinLinhThu.ID_ITEM.
-        if (SkinLinhThu.laItemSkin(iItem.getTemplate().id)) {
+        // bang ID TEMPLATE, khong bang type — xem real.SkinThuCuoi.ID_ITEM.
+        if (SkinThuCuoi.laItemSkin(iItem.getTemplate().id)) {
             if (player.animalRide == null) {
                 player.sendMessage(MessageCreator.createServerAlertMessage(
-                        "Phải cưỡi linh thú mới trang bị được skin.", ""));
+                        "Phải cưỡi thú mới trang bị được skin.", ""));
                 return;
             }
             map.exchangeItemAnimal(player, iItem, slot);

@@ -40,10 +40,10 @@ public class ItemInInventory {
     public int prizeBet;
     public long timeEnd;
     private static int[] color;
-    private static String[][] groupKick = {new String[]{"Quần", "Nhẫn dưới"}, new String[]{"Ngọc", "Găng"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"Nón", "Vũ khí", "Ngọc bội", "Găng"}, new String[]{"Nhẫn dưới", "Quần"}, new String[]{"Nón", "Vũ khí"}, new String[]{"Giày", "Nhẫn trên"}, new String[]{"Giày", "Nhẫn trên"}};
-    private static String[][] kickHe = {new String[]{"Kim"}, new String[]{"Thủy"}, new String[]{"Mộc"}, new String[]{"Hỏa"}, new String[]{"Thổ"}};
-    private static String[][] groupKickAnimal = {new String[]{"Nón"}, new String[]{"Bàn đạp"}, new String[]{"Hộ uyển"}, new String[]{"Yên cương"}, new String[]{"Giáp"}};
-    public static final String[] attrName = {"Tấn công", "Thủ vật", "Né tránh", "Chính xác", "Chí mạng", "Sức khoẻ", "Thủ ma", "Chỉ số 7", "Chỉ số 8", "Chỉ số 9"};
+    private static String[][] groupKick = {new String[]{"Quần", "Nhẫn dưới"}, new String[]{"Ngọc", "Găng"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"Nón", "Đồ cầm tay", "Phiến đá hệ", "Găng"}, new String[]{"Nhẫn dưới", "Quần"}, new String[]{"Nón", "Đồ cầm tay"}, new String[]{"Giày", "Nhẫn trên"}, new String[]{"Giày", "Nhẫn trên"}};
+    private static String[][] kickHe = {new String[]{"Thép"}, new String[]{"Nước"}, new String[]{"Cỏ"}, new String[]{"Lửa"}, new String[]{"Đất"}};
+    private static String[][] groupKickAnimal = {new String[]{"Nón"}, new String[]{"Bàn đạp"}, new String[]{"Vòng chân"}, new String[]{"Yên cương"}, new String[]{"Giáp"}};
+    public static final String[] attrName = {"Tấn công", "Phòng thủ", "Né tránh", "Chính xác", "Chí mạng", "HP", "Phòng thủ đặc biệt", "Mã hình 1", "Mã hình 2", "Đánh dấu thời trang"};
     public byte[] newAtb = new byte[10];
     public byte[] addMoreLevelSkill = new byte[15];
     public byte[] lockAtb = new byte[3];
@@ -148,9 +148,9 @@ public class ItemInInventory {
         attribShowedForType = new boolean[][]{zArr, zArr2, zArr3, zArr4, zArr5, zArr6, zArr7, zArr8, zArr9, zArr10, zArr11, zArr12, zArr13, zArr14, zArr15, zArr16, zArr17, zArr18, zArr19, zArr20};
         na = new String[]{"Giáp nhẹ", "Giáp nặng", "Giáp vải", "Giáp nặng", "Giáp nhẹ", ""};
         nameNguHanh = new String[]{"Giảm st vật: ", "Giảm st ma: ", "Tăng tc: ", "Bỏ qua pt: ", "Phản st: ", "Bỏ qua tc ma", "Bỏ qua tc vật"};
-        nameHangItem = new String[]{"", "nhất phẩm", "nhị phẩm", "tam phẩm", "tứ phẩm", "ngũ phẩm"};
-        he = new String[]{"hệ thuỷ", "hệ mộc", "hệ hoả", "hệ thổ", "hệ kim"};
-        magic = new String[]{"ma pháp", "vật lý", ""};
+        nameHangItem = new String[]{"", "hạng 1", "hạng 2", "hạng 3", "hạng 4", "hạng 5"};
+        he = new String[]{"hệ Nước", "hệ Cỏ", "hệ Lửa", "hệ Đất", "hệ Thép"};
+        magic = new String[]{"đặc biệt", "vật lý", ""};
         typeItemBuy = (byte) 2;
         color = new int[]{7667443, 3334656, 16705024};
     }
@@ -267,15 +267,15 @@ public class ItemInInventory {
                 }
                 if (this.hangItem > 0 && this.hangItem < 5 && item.type != 13 && item.type < 13) {
                     if (item.type != 8) {
-                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                     } else if (this.viTriVe == 1) {
-                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn trên cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn trên cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                     } else {
-                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn dưới cần ").append(groupKick[item.type][2]).append(" hoặc ").append(groupKick[item.type][3]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn dưới cần ").append(groupKick[item.type][2]).append(" hoặc ").append(groupKick[item.type][3]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                     }
                 }
                 if (this.hangItem > 0 && this.hangItem < 5 && isAnimalArmor(item.type)) {
-                    s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKickAnimal[item.type - 14][0]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                    s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKickAnimal[item.type - 14][0]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                 }
             } else {
                 s = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(s)).append(item.name).toString())).append("\nTấn công tăng: ").append((int) item.attb[0]).append("%").toString())).append("\nThủ tăng: ").append((int) item.attb[1]).append("%").toString())).append("\nHP tăng: ").append((int) item.attb[2]).toString())).append("\nMP tăng: ").append((int) item.attb[3]).toString();
@@ -353,15 +353,15 @@ public class ItemInInventory {
                 }
                 if (this.hangItem > 0 && this.hangItem < 5 && item.type != 13 && item.type < 13) {
                     if (item.type != 8) {
-                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                     } else if (this.viTriVe == 1) {
-                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn trên cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn trên cần ").append(groupKick[item.type][0]).append(" hoặc ").append(groupKick[item.type][1]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                     } else {
-                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn dưới cần ").append(groupKick[item.type][2]).append(" hoặc ").append(groupKick[item.type][3]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                        s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("Nhẫn dưới cần ").append(groupKick[item.type][2]).append(" hoặc ").append(groupKick[item.type][3]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                     }
                 }
                 if (this.hangItem > 0 && this.hangItem < 5 && isAnimalArmor(item.type)) {
-                    s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKickAnimal[item.type - 14][0]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích ngũ hành").toString(), "0")).toString();
+                    s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("cần ").append(groupKickAnimal[item.type - 14][0]).append(" hệ ").append(kickHe[this.heItem][0]).append(" để kích hệ").toString(), "0")).toString();
                 }
             } else {
                 s = new StringBuffer(String.valueOf(s)).append(item.name).toString();

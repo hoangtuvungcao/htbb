@@ -16,24 +16,18 @@ const errors = ref<string[]>([])
 /** Tài khoản vừa tạo thành công (hiện kết quả ngay trên trang, không chuyển trang). */
 const daDangKy = ref<{ username: string, autoActivate: boolean } | null>(null)
 
-/** Kiểm tra email trước khi gửi, đúng như server (dangKyKiemTra). */
-function loiEmail(): string | null {
-  const email = form.email.trim()
-  if (email === '') return 'Vui lòng nhập email (dùng để lấy lại mật khẩu).'
-  if (!dangKyEmailHopLe(email)) return 'Email không hợp lệ.'
-  return null
-}
-
 async function submit() {
   errors.value = []
-  // Cùng quy tắc với server: login server của game chỉ nhận chữ cái không dấu + số.
-  if (!matKhauGameHopLe(form.password)) {
-    errors.value = [`Mật khẩu phải từ ${PASSWORD_MIN}-${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số, và không được là 000000.`]
-    return
-  }
-  const le = loiEmail()
-  if (le) {
-    errors.value = [le]
+  // Cùng một bộ quy tắc với server VÀ với đăng ký trong game (shared/data/quy-tac-dang-ky.json):
+  // độ dài, ký tự, tên quản trị bị cấm, từ ngữ cấm, mật khẩu login server nhận được, email.
+  const loi = dangKyLoi({
+    username: form.username.trim().toLowerCase(),
+    password: form.password,
+    confirm: form.confirm,
+    email: form.email.trim(),
+  }, 'web')
+  if (loi.length) {
+    errors.value = loi.map(l => l.loi)
     return
   }
   loading.value = true
@@ -137,7 +131,7 @@ async function submit() {
             @update:model-value="(v: string | number) => (form.username = String(v).toLowerCase())"
           />
         </UFormField>
-        <UFormField label="Mật khẩu" name="password" required :help="`Từ ${PASSWORD_MIN}–${PASSWORD_MAX} ký tự, chỉ chữ cái không dấu và số.`">
+        <UFormField label="Mật khẩu" name="password" required :help="`${PASSWORD_MIN}–${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số.`">
           <UInput
             v-model="form.password"
             :type="showPass ? 'text' : 'password'"
@@ -200,7 +194,7 @@ async function submit() {
             autocomplete="email"
             autocapitalize="none"
             :spellcheck="false"
-            maxlength="254"
+            :maxlength="QUY_TAC_DANG_KY.email.toiDa"
             size="xl"
             icon="i-lucide-mail"
             class="w-full"

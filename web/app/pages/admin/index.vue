@@ -120,8 +120,8 @@ const cotNhatKy = [
         </h3>
       </template>
       <p>
-        Kiểm tra MySQL/MariaDB đã chạy chưa, và <code>KPAH_DB_HOST</code> / <code>KPAH_DB_USER</code> /
-        <code>KPAH_DB_PASS</code> (hoặc <code>server.ini</code> của game server) có đúng không.
+        Kiểm tra MySQL/MariaDB đã chạy chưa, và <code>HTBB_DB_HOST</code> / <code>HTBB_DB_USER</code> /
+        <code>HTBB_DB_PASS</code> (hoặc <code>server.ini</code> của game server) có đúng không.
       </p>
       <p class="mt-2 text-sm text-muted">
         Chi tiết: {{ data.loiKetNoi }}
@@ -146,7 +146,7 @@ const cotNhatKy = [
             và nó không liên quan gì tới việc đường dẫn <code>/admin</code> có bí mật hay không.
           </p>
           <p class="mt-2">
-            Sửa: bật HTTPS trên máy chủ — <code>sudo /opt/kpah/vps/bat-https.sh</code>.
+            Sửa: bật HTTPS trên máy chủ — <code>sudo /opt/htbb/vps/bat-https.sh</code>.
             Xem <NuxtLink to="/admin/chandoan" class="text-primary hover:underline">Chẩn đoán</NuxtLink> để biết máy chủ đang mở những cổng nào.
           </p>
         </template>
@@ -162,8 +162,8 @@ const cotNhatKy = [
             <code>cd &lt;thư mục HTBB-Web&gt; &amp;&amp; node scripts/tao-ma-2buoc.mjs {{ data.baoMat.admin }}</code>
           </p>
           <p v-if="!data.baoMat.batBuoc2fa" class="mt-2">
-            Ghi danh xong cho tất cả người trong <code>KPAH_ADMIN_ACCOUNTS</code> thì đặt
-            <code>KPAH_ADMIN_2FA_BAT_BUOC=1</code> cho dịch vụ web —
+            Ghi danh xong cho tất cả người trong <code>HTBB_ADMIN_ACCOUNTS</code> thì đặt
+            <code>HTBB_ADMIN_2FA_BAT_BUOC=1</code> cho dịch vụ web —
             chưa có dòng đó thì người chưa ghi danh vẫn vào được chỉ bằng mật khẩu.
           </p>
         </template>
@@ -194,7 +194,7 @@ const cotNhatKy = [
       >
         <template #description>
           Còn {{ data.baoMat.chuaGhiDanh.join(', ') }} chưa ghi danh — những tài khoản đó vẫn vào được chỉ bằng mật khẩu.
-          Ghi danh xong cho mọi người thì đặt <code>KPAH_ADMIN_2FA_BAT_BUOC=1</code>.
+          Ghi danh xong cho mọi người thì đặt <code>HTBB_ADMIN_2FA_BAT_BUOC=1</code>.
         </template>
       </UAlert>
 
@@ -218,13 +218,13 @@ const cotNhatKy = [
           </p>
           <p class="mt-1.5 text-sm text-muted">
             Bộ lấy mẫu nằm trong <code>data/GhiSoOnline.java</code> — nó chỉ chạy khi
-            <code>KPAH2_patched.jar</code> đã được build lại từ mã nguồn hiện tại và server
+            <code>htbb-server.jar</code> đã được build lại từ mã nguồn hiện tại và server
             đã khởi động lại. Sửa file <code>.java</code> thôi thì server đang chạy vẫn dùng
             jar cũ và không có gì thay đổi.
           </p>
           <p class="mt-1.5 text-sm text-muted">
             Kiểm tra nhanh xem jar đã có lớp đó chưa:
-            <code>jar tf KPAH2_patched.jar | grep GhiSoOnline</code> — không ra dòng nào
+            <code>jar tf htbb-server.jar | grep GhiSoOnline</code> — không ra dòng nào
             tức là chưa build lại.
           </p>
         </UCard>
@@ -274,8 +274,8 @@ const cotNhatKy = [
               </template>
               <AdminBarChart :data="data.online.bdNgay" don-vi="người" />
               <p class="mt-3 text-xs text-muted">
-                Đếm <em>nhân vật đang trong game</em>. Số kết nối luôn cao hơn vì tính cả người
-                còn ở màn hình đăng nhập hoặc chọn nhân vật.
+                Đếm <em>Pokémon đang trong game</em>. Số kết nối luôn cao hơn vì tính cả người
+                còn ở màn hình đăng nhập hoặc chọn Pokémon.
               </p>
             </UCard>
           </div>
@@ -338,7 +338,7 @@ const cotNhatKy = [
           <AdminStatCard
             label="Pokémon bị khoá"
             :value="hienSo(data.nhanVat.khoa)"
-            note="biến mất khỏi màn chọn nhân vật"
+            note="biến mất khỏi màn chọn Pokémon"
             :mau="(data.nhanVat.khoa ?? 0) > 0 ? 'bad' : ''"
             icon="i-lucide-shield-off"
           />
@@ -368,8 +368,8 @@ const cotNhatKy = [
           </template>
           <AdminBarChart :data="data.bdHoatDong" don-vi="Pokémon" />
           <p class="mt-3 text-xs text-muted">
-            Đếm theo cột <code>lastLog</code> — <em>lần vào cuối cùng</em> của mỗi nhân vật, nên một
-            nhân vật chỉ nằm ở đúng một cột. Người chơi vào đều mỗi ngày sẽ luôn đứng ở cột hôm nay.
+            Đếm theo cột <code>lastLog</code> — <em>lần vào cuối cùng</em> của mỗi Pokémon, nên một
+            Pokémon chỉ nằm ở đúng một cột. Người chơi vào đều mỗi ngày sẽ luôn đứng ở cột hôm nay.
           </p>
         </UCard>
       </div>

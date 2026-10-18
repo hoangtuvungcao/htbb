@@ -4,18 +4,24 @@ Kiểm tra ngày 2026-10-17 trên nhánh `pokemon/chuyen-doi`. Server game HTBB:
 
 ## 1. Đặt máy chủ (host:cổng) cho bản phát hành
 
-Không đặt thì client **rơi về danh sách server của game cũ** (`nqsh-h2.top:30774` /
-`https://nqsh-h2.top/robots.txt`), không phải server HTBB.
+**Bắt buộc** (cập nhật 2026-10-18): thiếu máy chủ là build phát hành **dừng** với thông báo lỗi — không còn rơi về
+danh sách server của game cũ (`nqsh-h2.top:30774`). Một tệp cho cả ba client:
 
-| Client | Cách đặt | Ghi vào |
+```sh
+cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf   # gitignore; điền MAY_CHU_CHINH=host:19129
+```
+
+| Client | Thứ tự ưu tiên | Ghi vào |
 |---|---|---|
-| J2ME jar | `MAY_CHU_CHINH=host:19129 sh j2me/build.sh N` (`GOI=nhe` thêm bản nhẹ) | MANIFEST `HTBB-May-Chu` (đọc ở `TaiDanhSach.mayChuThu`) |
-| Android (`android/pokemon`) | `KIEU=release BAN=N MAY_CHU=host:19129 sh android/build-pokemon.sh` (= `-PmayChu=`) | `assets/htbb-app.properties` `HTBB-May-Chu` |
-| PC (Unity) | sửa `ThuongHieu.MAY_CHU_CHINH` trong `pc/Assets/Scripts/Assembly-CSharp/ThuongHieu.cs` trước khi build, hoặc chạy game với `-htbbMayChu host:19129` | hằng số C# / tham số dòng lệnh |
+| J2ME jar | biến `MAY_CHU_CHINH` > `may_chu.conf` (`NQSH=1` = kiểu cũ, cố ý) | MANIFEST `HTBB-May-Chu` mọi bản (thường/phát hành/nhẹ) |
+| Android (`client_apk/pokemon`) | `-PmayChu` / `MAY_CHU` > `MAY_CHU_CHINH` > `may_chu.conf` (chỉ release; debug vẫn `10.0.2.2:19129`) | `assets/htbb-app.properties` `HTBB-May-Chu` |
+| PC (Unity) | lúc chạy: `-htbbMayChu` > `ThuongHieu.MAY_CHU_CHINH` > giá trị đóng lúc build. Lúc build (`BuildCli.Win64`): `-htbbMayChu` > `MAY_CHU_CHINH` > `may_chu.conf` | `Resources/htbb_phat_hanh.txt` (BuildCli sinh rồi xoá sau build) |
+
+Phiên bản: `tools/phat-hanh/phien_ban.conf` (`PHIEN_BAN=0.9.0-opentest`, `BAN=900`) cho cả ba.
 
 Kiểm tra sau build:
-`unzip -p j2me/out/HTBB-vN-release.jar META-INF/MANIFEST.MF | grep HTBB-May-Chu`,
-`unzip -p android/out/HTBB-android-N.apk assets/htbb-app.properties | grep HTBB-May-Chu`.
+`unzip -p client_jar/out/HTBB-v900-release.jar META-INF/MANIFEST.MF | grep HTBB-`,
+`unzip -p client_apk/out/HTBB-android-900.apk assets/htbb-app.properties | grep HTBB-`.
 
 ## 2. Ký APK phát hành
 
@@ -27,26 +33,35 @@ keytool -genkeypair -v -keystore "$KEY_DIR/htbb.jks" -alias htbb -keyalg RSA -ke
 ```
 
 Cách A, Gradle ký luôn: `$KEY_DIR/key.properties` có `keystore=htbb.jks`, `alias=htbb`, `password=...`, rồi chạy
-`KIEU=release BAN=N MAY_CHU=host:19129 KEY_DIR=... sh android/build-pokemon.sh`.
+`KIEU=release BAN=N MAY_CHU=host:19129 KEY_DIR=... sh client_apk/build-pokemon.sh`.
 
 Cách B, mật khẩu chỉ ở biến môi trường: build ra APK chưa ký (không đặt KEY_DIR), rồi chạy
 ```sh
 KEY_DIR=... HTBB_KEYSTORE=htbb.jks HTBB_KEY_ALIAS=htbb HTBB_KS_PASS=... [HTBB_KEY_PASS=...] \
-  sh android/ky-ban-phat-hanh.sh android/out/HTBB-android-N.apk
+  sh client_apk/ky-ban-phat-hanh.sh client_apk/out/HTBB-android-N.apk
 ```
 Script chạy zipalign rồi apksigner (v2+v3), sau đó in vân tay SHA-256. Nó từ chối chạy khi thiếu biến hoặc khi KEY_DIR nằm trong repo git.
 
-## 3. CI (`.github/workflows/phat-hanh.yml`) chưa dùng được cho HTBB
+## 3. CI — workflow "Phát hành HTBB" (`.github/workflows/phat-hanh-htbb.yml`)
 
-Workflow hiện vẫn là của NQSH-H2. Nó build Android bằng `android/build.sh` (module `:app` cũ, không phải `:pokemon`), build jar mà không có `MAY_CHU_CHINH`, đặt tên file `NQSH-H2*` và đẩy lên `kpah-server/nqsh-h2-tai`.
-Secrets cần có: `NQSH_TAI_TOKEN`, `ANDROID_KEYSTORE_B64`, `ANDROID_KEY_PASSWORD`, `UNITY_LICENSE`,
-`UNITY_EMAIL`, `UNITY_PASSWORD` (game-ci/unity-builder@v5, Unity 6000.5.9f1; `UNITY_SERIAL` chỉ cần với license Pro).
-Cách chạy: tab Actions → "Phát hành" → Run workflow. Chọn `chi_build=true` để chỉ build mà không phát hành.
+Build jar (thường + nhẹ), APK `:pokemon` (ký bằng `client_apk/ky-ban-phat-hanh.sh`, khoá giải từ secret vào thư mục tạm
+ngoài repo rồi xoá), PC qua GameCI (tham số `-htbbBan/-htbbMayChu/-htbbCapNhat`), tên `HTBB-<phiên bản>-thuong.jar`,
+`-nhe.jar`, `-android.apk`, `-PC.zip`, rồi `day-len.sh` lên repo phát hành HTBB (biến `HTBB_REPO_PHAT_HANH`,
+**chủ server tạo**). Mặc định `chi_build=true`. Biến / secrets: `tools/phat-hanh/README.md`.
+Workflow NQSH-H2 cũ (`phat-hanh.yml`) chỉ chạy khi tích `xac_nhan_nqsh` và **không** chạy từ nhánh `pokemon/*`.
+Chạy tay: `tools/phat-hanh/phat-hanh.sh` (mặc định HTBB; kiểu cũ cần `NQSH=1`).
 
-## 4. Tự cập nhật: VIỆC PHẢI LÀM trước khi phát hành
+## 4. Tự cập nhật PC
 
-`pc/.../CapNhat.cs` đọc `https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json`,
-tức kênh phát hành của NQSH-H2. Bản PC HTBB (`bundleVersion` 1) sẽ thấy số bản `pc` của NQSH-H2 lớn hơn và **tự tải
-NQSH-H2 đè lên**. Cần tạo repo phát hành riêng cho HTBB, đổi `LINK` trong CapNhat.cs, rồi gọi
-`REPO=<repo HTBB> sh phat-hanh/day-len.sh ...`. Hiện `day-len.sh` từ chối đẩy vào repo NQSH-H2 khi đang ở nhánh `pokemon/*`
-(muốn bỏ qua thì đặt `CHO_PHEP_NQSH=1`).
+`pc/.../CapNhat.cs` đọc link `ThuongHieu.capNhatUrl()` = `CAP_NHAT_URL` (hằng số `ThuongHieu.CAP_NHAT_URL` hoặc giá trị
+đóng lúc build từ `may_chu.conf` / `-htbbCapNhat`). **Rỗng = tắt hẳn** (không gửi request nào) — mặc định cho open
+test. Link chứa `nqsh-h2` (kênh `kpah-server/nqsh-h2-tai`) luôn bị bỏ qua, kể cả khi `phienban.json` ghi nhầm link tải.
+Bật lại sau khi có repo phát hành HTBB: `CAP_NHAT_URL=https://raw.githubusercontent.com/<chu>/<repo>/main/phienban.json`.
+`bundleVersion` = `BAN` (900).
+
+## 5. Ghi công (CC BY-NC 4.0)
+
+`client_jar/res/GHI_CONG.txt` (sinh bằng `client_jar/tools/sinh_ghi_cong.py` từ ghi công PMDCollab của HTBB + tên họa sĩ
+`client_jar/tools/pmdcollab_credit_names.txt`) nằm trong jar và APK; PC có `Resources/ghicong/GHI_CONG.txt` và
+`GHI_CONG.txt` cạnh `.exe`. Trong game: Menu màn đăng nhập → **Ghi công** (jar/APK), nút **Ghi công** dưới khung
+đăng nhập (PC); cuộn được, dòng đầu là phiên bản.

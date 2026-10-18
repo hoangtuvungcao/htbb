@@ -2,7 +2,7 @@
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Cẩm nang cơ chế',
-  description: `Cẩm nang ${tenSite}: hệ khắc chế, chỉ số, cấp độ, tiến hoá, trang bị, kinh tế, Pokédex, PvP, boss, sự kiện, nhiệm vụ và bản đồ.`,
+  description: `Cẩm nang ${tenSite}: hệ & khắc hệ, chỉ số, cấp độ, tiến hoá, trang bị, kinh tế, Pokédex, PvP, boss, sự kiện, nhiệm vụ và bản đồ.`,
 })
 
 const tim = ref('')
@@ -17,7 +17,7 @@ const nhom = computed(() => {
 
 const C = CAM_NANG
 const nhanh = [
-  { so: String(POKEDEX.he.length), nhan: 'hệ khắc chế', to: '/cam-nang/he-khac-che' },
+  { so: String(POKEDEX.he.length), nhan: 'hệ Pokémon', to: '/cam-nang/he-khac-che' },
   { so: String(C.capDo.capToiDa), nhan: 'cấp tối đa', to: '/cam-nang/cap-do' },
   { so: `+${C.trangBi.nangCap.length}`, nhan: 'mức nâng cấp', to: '/cam-nang/trang-bi' },
   { so: String(C.suKien.length), nhan: 'tuần sự kiện / năm', to: '/cam-nang/su-kien' },

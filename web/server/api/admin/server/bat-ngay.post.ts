@@ -6,6 +6,6 @@ export default defineAdminHandler(async (event, admin) => {
   } catch (e: any) {
     throw apiLoi(500, `Không thao tác được (có thể chưa có bảng dieu_khien_server): ${e?.message ?? e}`)
   }
-  await ghiNhatKy(event, 'server_bat', 'kpah-game', 'bật ngay')
+  await ghiNhatKy(event, 'server_bat', 'htbb-game', 'bật ngay')
   return { ok: true, message: 'Đã ghi yêu cầu BẬT server. Watcher trên VPS sẽ áp dụng trong vòng 1 phút.' }
 })

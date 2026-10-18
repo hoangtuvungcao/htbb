@@ -1,8 +1,11 @@
 <script setup lang="ts">
-/** Vật phẩm — nhóm theo KE_HOACH_CHUYEN_DOI.md §6.4; đá Eevee + mốc Pokédex từ pokedex.json. */
+/**
+ * Vật phẩm — nhóm theo KE_HOACH_CHUYEN_DOI.md §6.4; đá Eevee + mốc Pokédex từ pokedex.json;
+ * bảng chi tiết (công dụng, cấp, giá, nguồn, giới hạn) từ docs/pokemon/web/vat_pham.csv (cam-nang-noi-dung.json).
+ */
 const T = CAM_NANG.trangBi
 const NHOM = [
-  { icon: 'i-lucide-heart-pulse', ten: 'Thuốc hồi máu & Ether', mo: 'Hồi HP (phím 7) và năng lượng chiêu (phím 9). Mua ở Kecleon (Poké Mart). Chi phí khoảng một phần nhỏ thu nhập mỗi giờ.' },
+  { icon: 'i-lucide-heart-pulse', ten: 'Thuốc hồi máu & Ether', mo: 'Hồi HP (phím 7) và PP chiêu (phím 9). Mua ở Chansey (Trung tâm Pokémon); loại mạnh hơn mở theo cấp.', to: '#bang' },
   { icon: 'i-lucide-cherry', ten: 'Berry & thuốc đặc biệt', mo: 'Vật phẩm tiêu hao tăng tạm thời EXP, tấn công, phòng thủ; nhiều loại là quà sự kiện (khoá).' },
   { icon: 'i-lucide-gem', ten: 'Đá tiến hoá', mo: `${POKEDEX.daTienHoa.length} loại (${POKEDEX.daTienHoa.map(d => d.ten).join(', ')}) — dùng cho Eevee từ cấp ${POKEDEX.capNhanhEevee}.`, to: '/cam-nang/tien-hoa#kiem-da' },
   { icon: 'i-lucide-hammer', ten: 'Đá nâng cấp', mo: `Nguyên liệu nâng cấp trang bị: rơi ${(T.daRoiPhanNghin / 10).toLocaleString('vi-VN')}% từ quái gần cấp, hoặc phân rã đồ trùng.`, to: '/cam-nang/trang-bi#nang-cap' },
@@ -16,6 +19,9 @@ const NHOM = [
   { icon: 'i-lucide-package', ten: 'Vật phẩm nhiệm vụ', mo: 'Thư, nguyên liệu thu thập cho nhiệm vụ; tự mất khi trả nhiệm vụ.' },
 ]
 const tongTrangBi = T.o.reduce((s, o) => s + o.soMon, 0)
+const VP = CAM_NANG_ND.vatPham
+const nhomVp = [...new Set(VP.map(v => v.nhom))].map(nhom => ({ nhom, ds: VP.filter(v => v.nhom === nhom) }))
+const coSapCo = VP.some(v => v.sapCo)
 </script>
 
 <template>
@@ -36,6 +42,53 @@ const tongTrangBi = T.o.reduce((s, o) => s + o.soMon, 0)
         </li>
       </ul>
     </WikiSection>
+    <WikiSection id="bang" title="Bảng vật phẩm" :lead="`${VP.length} vật phẩm tiêu hao và nguyên liệu: công dụng, cấp dùng, giá và nơi kiếm.`">
+      <p v-if="coSapCo" class="mb-4 text-sm text-muted">
+        <UBadge color="info" variant="subtle" size="sm">
+          Sắp có
+        </UBadge> = đã có trong thiết kế, sẽ xuất hiện trong game ở các bản cập nhật tới.
+      </p>
+      <div v-for="g in nhomVp" :key="g.nhom" class="mt-6 first:mt-0">
+        <h3 class="font-display text-xl font-bold text-highlighted">
+          {{ g.nhom }}
+        </h3>
+        <div class="bang-cuon mt-2">
+          <table class="bang-wiki">
+            <thead>
+              <tr>
+                <th>Vật phẩm</th><th>Công dụng</th><th class="so">
+                  Cấp
+                </th><th class="so">
+                  Giá
+                </th><th>Nguồn</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="v in g.ds" :key="v.ten">
+                <td class="font-semibold text-highlighted">
+                  {{ v.ten }}
+                  <UBadge v-if="v.sapCo" color="info" variant="subtle" size="sm" class="ml-1">
+                    Sắp có
+                  </UBadge>
+                </td>
+                <td>{{ v.congDung }}{{ v.gioiHan ? ' ' : '' }}<span v-if="v.gioiHan" class="text-muted">(tối đa {{ v.gioiHan }})</span></td>
+                <td class="so whitespace-nowrap">
+                  {{ v.cap || '—' }}
+                </td>
+                <td class="so whitespace-nowrap">
+                  {{ giaHienThi(v.gia, v.tien) }}
+                </td>
+                <td>{{ v.nguon }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="mt-3 text-sm">
+        Giá theo từng cửa hàng: <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng & chế tạo</NuxtLink>.
+      </p>
+    </WikiSection>
+
     <WikiSection id="khoa" title="Vật phẩm khoá & hết hạn">
       <ul class="cham">
         <li><strong>Khoá</strong>: không bán, không trao đổi được (biểu tượng ổ khoá). Phần lớn quà sự kiện, nhiệm vụ là đồ khoá để giữ giá chợ ổn định.</li>

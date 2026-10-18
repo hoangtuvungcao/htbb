@@ -3,12 +3,31 @@ package real;
 /**
  * Ham tien ich dung chung (goc, khoang cach, ngau nhien, gio/ngay) cho code server.
  *
- * Ban cai dat that la lop real.UtilKPAH nam trong lib/NQSH_5h.jar (KHONG co source). Lop do
- * phai giu nguyen ten: cac lop chi co ban nhi phan trong NQSH_5h.jar (ItemShop,
+ * Ban cai dat that la lop real.UtilKPAH nam trong lib/htbb-core.jar (KHONG co source). Lop do
+ * phai giu nguyen ten: cac lop chi co ban nhi phan trong htbb-core.jar (ItemShop,
  * RequestRegisterHandler, data.Logdata...) goi no theo ten. Code trong src/ goi qua lop nay
  * de khong lap lai ten cu; moi ham chi chuyen tiep, dung chung bo sinh so ngau nhien cua jar.
  */
 public final class UtilHTBB {
+
+    /**
+     * Giong {@code v.contains(id)} voi Vector&lt;Short&gt; (nearMons/nearChars) nhung KHONG boc Short:
+     * id quai/nguoi choi > 127 nam ngoai bo nho dem Short.valueOf, nen moi lan contains(short)
+     * cap phat mot Short moi - vong quai x nguoi choi va updateNearChar goi hang tram nghin lan/giay
+     * (~400 MB rac / 5 phut o 300 nguoi). Cung khoa Vector nhu contains().
+     */
+    public static boolean coId(final java.util.Vector<Short> v, final int id) {
+        synchronized (v) {
+            for (int i = 0, n = v.size(); i < n; i++) {
+                final Short s = v.elementAt(i);
+                if (s != null && s.shortValue() == (short) id) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private UtilHTBB() {
     }
 

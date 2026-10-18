@@ -125,9 +125,9 @@ public final class KiemDemGoiTin {
                 Integer.valueOf(1), Integer.valueOf(dem(s, "this.messageHandler.processMessage(this, message)")));
 
         // Tep co va jar thu khong duoc commit.
-        final String gi = doc(".gitignore");
+        final String gi = doc("../.gitignore");
         Kiem.dung(".gitignore bo qua debug_goi_tin.txt", gi.contains("debug_goi_tin.txt"));
-        Kiem.dung(".gitignore bo qua jar thu KPAH2_TRUOC_2480c47_de_thu.jar", gi.contains("KPAH2_TRUOC_2480c47_de_thu.jar"));
+        Kiem.dung(".gitignore bo qua jar thu htbb-server_TRUOC_2480c47_de_thu.jar", gi.contains("htbb-server_TRUOC_2480c47_de_thu.jar"));
     }
 
     private static int dem(final String s, final String mau) {

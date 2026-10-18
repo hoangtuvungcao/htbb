@@ -6,13 +6,22 @@
  * Không có token chống CSRF: đăng nhập bằng bearer token trong header nên trình
  * duyệt không tự gửi kèm phiên (xem server/utils/token.ts). Thứ chặn script tạo
  * tài khoản hàng loạt là hạn mức theo IP bên dưới — mỗi lần gọi thành công là một
- * dòng mới trong account.team_user.
+ * dòng mới trong account.team_user. Hạn mức và quy tắc nhập liệu dùng CHUNG với đăng ký
+ * trong game (lệnh 39, HTBB/src/real/cmd/DangKyTrongGame.java): shared/data/quy-tac-dang-ky.json.
  *
  * Lỗi nhập liệu trả 400 với `data.errors` (danh sách) để trang hiện đủ từng dòng.
  */
 export default defineEventHandler(async (event) => {
-  if (await biChanSpam(event, 'dang_ky', DANG_KY_TOI_DA, DANG_KY_TRONG_GIAY)) {
-    throw apiLoi(429, 'Bạn đã tạo quá nhiều tài khoản từ địa chỉ này. Vui lòng thử lại sau một giờ.')
+  // Công tắc dang_ky.web.bat (trang Cấu hình hệ thống, áp dụng ≤ 5 giây). Đọc lỗi = vẫn cho đăng ký (mặc định).
+  if (!(await chCo('dang_ky.web.bat', true))) {
+    const msg = 'Máy chủ đang tạm ngừng nhận đăng ký tài khoản mới. Bạn vui lòng quay lại sau.'
+    throw apiLoi(403, msg, { errors: [msg] })
+  }
+  // Hạn mức chung với đăng ký trong game (shared/data/quy-tac-dang-ky.json: hanMuc), đếm gộp cả hai đường.
+  const chan = await dangKyBiChan(event)
+  if (chan) {
+    const msg = dangKyLoiHanMuc(chan)
+    throw apiLoi(429, msg, { errors: [msg] })
   }
 
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
@@ -27,7 +36,7 @@ export default defineEventHandler(async (event) => {
     const acc = dbAccount()
     // Kiểm tra trùng tên
     if (await qv(acc, DANG_KY_TRUNG_TEN_SQL, [d.username]) !== null) {
-      const msg = 'Tên tài khoản đã tồn tại, vui lòng chọn tên khác.'
+      const msg = dangKyThongBao('trungTen')
       throw apiLoi(409, msg, { errors: [msg] })
     }
     // Lưu mật khẩu bằng PASSWORD() để KHỚP với login server của game. Email đã
@@ -38,12 +47,12 @@ export default defineEventHandler(async (event) => {
     if (e?.statusCode && e.statusCode < 500) throw e
     // Trùng khoá UNIQUE khi hai người gửi cùng lúc: báo như trùng tên.
     if (e?.code === 'ER_DUP_ENTRY') {
-      const msg = 'Tên tài khoản đã tồn tại, vui lòng chọn tên khác.'
+      const msg = dangKyThongBao('trungTen')
       throw apiLoi(409, msg, { errors: [msg] })
     }
     console.error('Register unavailable:', e?.code ?? e)
     // Người gọi chưa đăng nhập: không nói gì về cấu hình hay loại database.
-    const msg = 'Hệ thống tạm thời chưa tạo được tài khoản. Vui lòng thử lại sau.'
+    const msg = dangKyThongBao('loiHeThong')
     throw apiLoi(503, msg, { errors: [msg] })
   }
 

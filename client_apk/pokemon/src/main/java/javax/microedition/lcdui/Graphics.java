@@ -25,13 +25,17 @@ public class Graphics {
     public static final int SOLID = 0;
     public static final int DOTTED = 1;
 
-    private final Canvas canvas;
-    private final int baseSave;
-    private final int surfaceW;
-    private final int surfaceH;
+    private Canvas canvas;
+    private int baseSave;
+    private int surfaceW;
+    private int surfaceH;
+    /** hd: vẽ thẳng lên màn thật (đã scale hệ số) - hình khử răng cưa, chữ vector. */
+    private boolean hd;
     private final Paint fill = new Paint();
     private final Paint stroke = new Paint();
     private final Paint bmpPaint = new Paint();
+    /** hình chữ nhật: luôn không khử răng cưa (toạ độ nguyên, khớp điểm ảnh thật) */
+    private final Paint rectPaint = new Paint();
     private final Rect src = new Rect();
     private final Rect dst = new Rect();
     private final RectF rf = new RectF();
@@ -61,11 +65,51 @@ public class Graphics {
         bmpPaint.setFilterBitmap(false);
         bmpPaint.setAntiAlias(false);
         bmpPaint.setDither(false);
+        rectPaint.setAntiAlias(false);
+        rectPaint.setStyle(Paint.Style.FILL);
         reset();
+    }
+
+    /**
+     * HD: gắn Graphics vào canvas màn hình thật mỗi khung (canvas đã translate + scale hệ số, toạ độ vẫn
+     * là toạ độ logic của game). Hình tròn / tam giác / bo góc khử răng cưa ở độ phân giải thật.
+     */
+    void ganCanvas(Canvas c, int w, int h) {
+        canvas = c;
+        surfaceW = w;
+        surfaceH = h;
+        baseSave = c.save();
+        hd = true;
+        fill.setAntiAlias(true);
+        stroke.setAntiAlias(true);
+        stroke.setStrokeWidth(1f);
+        reset();
+    }
+
+    /** Canvas Android bên dưới (lớp HD vẽ thẳng; nhớ cộng getTranslateX/Y). */
+    public Canvas androidCanvas() {
+        return canvas;
+    }
+
+    /** true = Graphics màn hình HD (không phải ảnh mutable). */
+    public boolean laHd() {
+        return hd;
+    }
+
+    /** Màu ARGB đang đặt. */
+    public int mauArgb() {
+        return color;
     }
 
     /** Đưa về trạng thái đầu (mỗi khung hình trước Canvas.paint). */
     void reset() {
+        pz = 1f;
+        px = 0f;
+        py = 0f;
+        tatPhong = false;
+        zz = 1f;
+        zx = 0f;
+        zy = 0f;
         tx = 0;
         ty = 0;
         clipX = 0;
@@ -143,7 +187,58 @@ public class Graphics {
         clipH = y1 - y0;
         canvas.restoreToCount(baseSave);
         canvas.save();
+        if (!tatPhong && (pz != 1f || px != 0f || py != 0f)) {
+            canvas.translate(px, py);
+            canvas.scale(pz, pz);
+        }
+        if (zz != 1f || zx != 0f || zy != 0f) {
+            canvas.translate(zx, zy);
+            canvas.scale(zz, zz);
+        }
         canvas.clipRect(x0, y0, x1, y1);
+    }
+
+    /** HD: phóng thế giới (bản đồ nhỏ hơn màn): màn' = zz * màn + (zx, zy); giữ qua mọi setClip. */
+    private float zz = 1f, zx, zy;
+
+    /** HD: phóng cả màn (cửa sổ nhỏ của jar -> thẻ lớn dễ chạm), ngoài lớp phóng thế giới. */
+    private float pz = 1f, px, py;
+    private boolean tatPhong;
+
+    public void datPhongMan(float z, float dx, float dy) {
+        pz = z;
+        px = dx;
+        py = dy;
+        apClip(clipX, clipY, clipX + clipW, clipY + clipH);
+    }
+
+    /** Tạm bỏ phóng màn (vẽ thanh phím mềm đúng chỗ) - true = tắt. */
+    public void tamTatPhong(boolean tat) {
+        if (tatPhong == tat) return;
+        tatPhong = tat;
+        apClip(clipX, clipY, clipX + clipW, clipY + clipH);
+    }
+
+    /** Toạ độ màn (logic, sau mọi phép phóng) của điểm (x, y) theo gốc đang dịch. */
+    public float manX(float x) {
+        float v = (x + tx) * zz + zx;
+        return tatPhong ? v : v * pz + px;
+    }
+
+    public float manY(float y) {
+        float v = (y + ty) * zz + zy;
+        return tatPhong ? v : v * pz + py;
+    }
+
+    public boolean coPhongMan() {
+        return pz != 1f || px != 0f || py != 0f;
+    }
+
+    public void datBienDoi(float z, float dx, float dy) {
+        zz = z;
+        zx = dx;
+        zy = dy;
+        apClip(clipX, clipY, clipX + clipW, clipY + clipH);
     }
 
     // ---------- màu ----------
@@ -151,6 +246,7 @@ public class Graphics {
         color = 0xFF000000 | rgb;
         fill.setColor(color);
         stroke.setColor(color);
+        rectPaint.setColor(color);
     }
 
     public void setColor(int r, int g, int b) {
@@ -206,7 +302,7 @@ public class Graphics {
         if (w <= 0 || h <= 0) return;
         x += tx;
         y += ty;
-        canvas.drawRect(x, y, x + w, y + h, fill);
+        canvas.drawRect(x, y, x + w, y + h, rectPaint);
     }
 
     public void drawRect(int x, int y, int w, int h) {
@@ -214,10 +310,10 @@ public class Graphics {
         x += tx;
         y += ty;
         // J2ME: viền phủ (w+1) x (h+1) điểm ảnh
-        canvas.drawRect(x, y, x + w + 1, y + 1, fill);
-        canvas.drawRect(x, y + h, x + w + 1, y + h + 1, fill);
-        canvas.drawRect(x, y, x + 1, y + h + 1, fill);
-        canvas.drawRect(x + w, y, x + w + 1, y + h + 1, fill);
+        canvas.drawRect(x, y, x + w + 1, y + 1, rectPaint);
+        canvas.drawRect(x, y + h, x + w + 1, y + h + 1, rectPaint);
+        canvas.drawRect(x, y, x + 1, y + h + 1, rectPaint);
+        canvas.drawRect(x + w, y, x + w + 1, y + h + 1, rectPaint);
     }
 
     public void drawLine(int x1, int y1, int x2, int y2) {
@@ -228,17 +324,17 @@ public class Graphics {
         if (y1 == y2) {
             int a = Math.min(x1, x2);
             int b = Math.max(x1, x2);
-            canvas.drawRect(a, y1, b + 1, y1 + 1, fill);
+            canvas.drawRect(a, y1, b + 1, y1 + 1, rectPaint);
             return;
         }
         if (x1 == x2) {
             int a = Math.min(y1, y2);
             int b = Math.max(y1, y2);
-            canvas.drawRect(x1, a, x1 + 1, b + 1, fill);
+            canvas.drawRect(x1, a, x1 + 1, b + 1, rectPaint);
             return;
         }
         canvas.drawLine(x1 + 0.5f, y1 + 0.5f, x2 + 0.5f, y2 + 0.5f, stroke);
-        canvas.drawRect(x2, y2, x2 + 1, y2 + 1, fill);
+        canvas.drawRect(x2, y2, x2 + 1, y2 + 1, rectPaint);
     }
 
     public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3) {
@@ -375,8 +471,8 @@ public class Graphics {
             }
         }
         Bitmap tmp = Bitmap.createBitmap(buf, w, h, Bitmap.Config.ARGB_8888);
+        // không recycle: canvas HD ghi lệnh, ảnh được đọc lúc đưa khung lên màn
         canvas.drawBitmap(tmp, x + tx, y + ty, bmpPaint);
-        tmp.recycle();
     }
 
     public void copyArea(int xs, int ys, int w, int h, int xd, int yd, int anchor) {

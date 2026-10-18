@@ -24,9 +24,9 @@ import java.util.Properties;
  */
 public final class KiemMayDevCSDL {
 
-    private static final String F_TMPL = "vps/server.ini.tmpl";
-    private static final String F_VIDU = "vps/server.ini.linux.example";
-    private static final String F_SINH = "vps/sinh-server-ini.sh";
+    private static final String F_TMPL = "../vps/server.ini.tmpl";
+    private static final String F_VIDU = "../vps/server.ini.linux.example";
+    private static final String F_SINH = "../vps/sinh-server-ini.sh";
     private static final String F_SERVER = "src/server/TeamServer.java";
 
     /** Dong ghim trong ban mau. Doi mot ky tu la deploy khong con chan duoc nua. */
@@ -143,8 +143,8 @@ public final class KiemMayDevCSDL {
     private static Properties cauHinh(final String matKhau) {
         final Properties p = new Properties();
         p.setProperty("db.host", "localhost:3306");
-        p.setProperty("db.name", "kpah_db");
-        p.setProperty("db.user", "kpah");
+        p.setProperty("db.name", "htbb_db");
+        p.setProperty("db.user", "htbb");
         p.setProperty("db.password", matKhau);
         return p;
     }

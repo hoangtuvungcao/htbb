@@ -20,7 +20,7 @@ public final class SuuTamSinhThai {
 
     public static final int NV_CAU = 1, NV_AP = 2, NV_THOI_TIET = 4, NV_DEM = 8, NV_HIEM = 16, NV_SHINY = 32;
     public static final int[] BIT_NV = {NV_CAU, NV_AP, NV_THOI_TIET, NV_DEM, NV_HIEM, NV_SHINY};
-    public static final String[] TEN_NV = {"Câu được", "Ấp nở", "Hạ trong thời tiết ưa thích", "Hạ ban đêm",
+    public static final String[] TEN_NV = {"Câu được", "Cho trứng nở", "Hạ trong thời tiết ưa thích", "Hạ ban đêm",
         "Gặp khi xuất hiện hiếm / bùng phát", "Nở shiny"};
 
     public static int soBit(final int m) {

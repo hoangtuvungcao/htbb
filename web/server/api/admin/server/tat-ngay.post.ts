@@ -15,7 +15,7 @@ export default defineAdminHandler(async (event, admin) => {
   } catch (e: any) {
     throw apiLoi(500, `Không thao tác được (có thể chưa có bảng dieu_khien_server): ${e?.message ?? e}`)
   }
-  await ghiNhatKy(event, 'server_tat', 'kpah-game', 'tắt ngay')
+  await ghiNhatKy(event, 'server_tat', 'htbb-game', 'tắt ngay')
   return {
     ok: true,
     message: 'Đã ghi yêu cầu TẮT server. Watcher trên VPS sẽ áp dụng trong vòng 1 phút — mọi người chơi đang online sẽ bị văng ra.',

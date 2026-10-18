@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `tob_qua_online` (
   PRIMARY KEY (`user_id`)
 ) DEFAULT CHARSET=utf8;
 
--- Chiem thanh tuan (real.ChiemThanhLauDai): moi khoan phat theo dong gop.
+-- Chiem thanh tuan (real.ChiemGymLauDai): moi khoan phat theo dong gop.
 CREATE TABLE IF NOT EXISTS `tob_chiem_thanh_tuan` (
   `lan` bigint NOT NULL,
   `id_char` int NOT NULL,

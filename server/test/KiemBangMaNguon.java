@@ -83,18 +83,16 @@ public final class KiemBangMaNguon {
     private static final List<String> BO_QUA = Arrays.asList(
         // sql/buff_ddsa.sql da xoa ngay 02/09/2026 (chua tung ap dung vao production,
         // noi dung con bi loi bang ma) - xem sql/README.md muc "Da xoa".
-        "sql/them_bang_cam_may.sql",
-        "sql/gamedb7_clean.sql",
-        "vps/db_new_server.sql",
-        "vps/sql-giftcode.md",
-        "web/admin/chandoan.php",
-        "web/admin/cammay.php",
-        "web/admin/nhanvat.php",
-        "web/admin/inc/layout.php",
-        "web/admin/test/kiem_duong_dan.php"
+        "../sql/them_bang_cam_may.sql",
+        "../sql/gamedb7_clean.sql",
+        "../vps/db_new_server.sql",
+        "../vps/sql-giftcode.md"
+        // web/admin/*.php (5 tep) da ra khoi danh sach: website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
     );
 
-    private static final String[] THU_MUC = { "src", "test", "tools", "web", "sql" };
+    // "web" (website PHP cu) da bo - xem docs/pokemon/BO_WEB_PHP.md. Website Nuxt nam o repo
+    // HTBB-Web, co bo kiem rieng (npm test) va duoc KiemThuatNgu quet chu.
+    private static final String[] THU_MUC = { "src", "test", "../tools", "../sql" };
     private static final String[] DUOI = { ".java", ".php", ".sql", ".md" };
 
     public static void chay() {

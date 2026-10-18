@@ -2,7 +2,7 @@ package real;
 
 import java.util.Vector;
 
-// Tach tu lib/NQSH_5h.jar (19/09/2026) de doi gemSell sang niem yet MANG THEO SO LUONG
+// Tach tu lib/htbb-core.jar (19/09/2026) de doi gemSell sang niem yet MANG THEO SO LUONG
 // (GemSellEntry) thay vi 1 dong = 1 vien (GemItem) nhu ban goc. Phan itemSell (trang bi,
 // type==0) giu y nguyen, khong dung toi trong tinh nang nay.
 public class CharSell {

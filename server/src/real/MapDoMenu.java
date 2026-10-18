@@ -18,7 +18,7 @@ import java.util.Vector;
 import real.cmd.LoginHandler;
 import real.cmd.RequestNPCInfoHandler;
 import server.TeamServer;
-import ThanKhi.ThoRenThanBi;
+import BaoVatHuyenThoai.ThoRenBiAn;
 
 /**
  * Than cua Map.doMenu - xu ly nguoi choi chon mot muc trong menu NPC
@@ -28,7 +28,7 @@ import ThanKhi.ThoRenThanBi;
  * 4.601 dong nay truoc nam trong real/Map.java. Map.doMenu VAN CON, giu
  * NGUYEN chu ky protected cu, chi uy nhiem sang day:
  *     protected void doMenu(Char p, Message m) { MapDoMenu.doMenu(this, p, m); }
- * Nho vay bytecode trong lib/NQSH_5h.jar goi Map.doMenu van chay binh thuong,
+ * Nho vay bytecode trong lib/htbb-core.jar goi Map.doMenu van chay binh thuong,
  * va lop con van override duoc nhu cu (hien khong lop nao override).
  */
 // Thanh vien static cua Map ma than doMenu dung khong dinh danh.
@@ -128,6 +128,10 @@ class MapDoMenu {
             if (AdminMenu.xuLyChon(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // Guc / hoi sinh: menu -803 (client cu chon cach hoi sinh), -804 (dong doi cuu)
+            if (HoiSinhGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             if (map.isNpcThanh(idNpc) && map.mapId != 201 && !map.isMapLienDau()) {
                 return;
             }
@@ -221,8 +225,8 @@ class MapDoMenu {
                 KhoXuLuong.doMenuRut(player, idOptionMenu);
                 return;
             }
-            if (idNpc == BaiLuyenCong.NPC_ID) {
-                BaiLuyenCong.doMenu(player, idOptionMenu);
+            if (idNpc == BaiLuyenTap.NPC_ID) {
+                BaiLuyenTap.doMenu(player, idOptionMenu);
                 return;
             }
             // NPC Tong Quan (-10), muc "Vong quay luong": cung la muc cuoi menu, vi tri
@@ -326,13 +330,13 @@ class MapDoMenu {
                     // THAY DOI tuy Shop Trung Thu con bat hay khong nen kiem qua Char.idxXxx
                     // truoc, KHONG dung switch case co dinh (xem Map.java case type==-10000).
                     if (player.idxBaiLuyenCong >= 0 && idOptionMenu == player.idxBaiLuyenCong) {
-                        BaiLuyenCong.mo(player);
+                        BaiLuyenTap.mo(player);
                         return;
                     }
                     if (player.idxAutoVeMapUp >= 0 && idOptionMenu == player.idxAutoVeMapUp) {
                         player.isAutoVeMapUp = !player.isAutoVeMapUp;
                         player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Auto về Map Up: " + (player.isAutoVeMapUp ? "ĐANG BẬT" : "ĐANG TẮT"), ""));
+                                "Auto về Map Up: " + (player.isAutoVeMapUp ? "đang bật" : "đang tắt"), ""));
                         return;
                     }
                     switch (idOptionMenu) {
@@ -531,6 +535,9 @@ class MapDoMenu {
 
             switch (idNpc) {
                 case -802:
+                    if (HoiSinhGame.chanCu(player)) {
+                        return; // menu "Dung co hoi sinh / Hs bang xu" cu -> hop thoai lua chon moi
+                    }
                     if (idMenu != 0) {
                         if (idMenu == 1) {
                             if (idOptionMenu != 0) {
@@ -554,7 +561,7 @@ class MapDoMenu {
                                 }
                             } else {
                                 if (player.potions[119] == 0) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không có tiên đan", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không có cỏ hồi sinh", ""));
                                     return;
                                 }
 
@@ -642,7 +649,7 @@ class MapDoMenu {
                         }
                     } else {
                         if (player.potions[119] == 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không có tiên đan", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không có cỏ hồi sinh", ""));
                             return;
                         }
 
@@ -679,7 +686,7 @@ class MapDoMenu {
                         return;
                     }
 
-                    map.doRideAnimal(player, 1, idMenu);
+                    map.doCuoiThu(player, 1, idMenu);
                     break;
                 case -800:
                     if (idOptionMenu != 0) {
@@ -705,11 +712,11 @@ class MapDoMenu {
                         }
                     } else {
                         Animal anim = (Animal) player.animal.get(idMenu);
-                        map.doRideAnimal(player, 0, anim.id);
+                        map.doCuoiThu(player, 0, anim.id);
                     }
                     break;
                 case -517:
-                    ThoRenThanBi.Option(player, idNpc, idMenu, idOptionMenu);
+                    ThoRenBiAn.Option(player, idNpc, idMenu, idOptionMenu);
                     break;
                 case -513:
                     if (player.itemTam != null) {
@@ -728,7 +735,7 @@ class MapDoMenu {
 
                                 if (idOptionMenu != 0) {
                                     if (player.listGemitem[GemTemplate.HOA_THACH_C2] < 1 && player.listGemitemLock[GemTemplate.HOA_THACH_C2] < 1) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ hoả thạch", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nham thạch", ""));
                                         player.itemTam = null;
                                         return;
                                     }
@@ -741,7 +748,7 @@ class MapDoMenu {
                                     player.itemTam = null;
                                 } else {
                                     if (player.listGemitem[GemTemplate.HOA_THACH_C1] < 1 && player.listGemitemLock[GemTemplate.HOA_THACH_C1] < 1) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ hoả thạch", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nham thạch", ""));
                                         player.itemTam = null;
                                         return;
                                     }
@@ -756,7 +763,7 @@ class MapDoMenu {
                                 return;
                             }
 
-                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Hoả thạch cấp 1", "Hoả thạch cấp 2"}, -513, 1));
+                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Nham thạch cấp 1", "Nham thạch cấp 2"}, -513, 1));
                         } else if ((daToiDaCap && idOptionMenu == 1) || (!daToiDaCap && idOptionMenu == 2)) {
                             // "Ảo hóa" - xem Char.doAoHoaHoaKyLan. Ham do tu kiem vinh vien/
                             // du luong/mac len nguoi, o day chi don itemTam sau khi xong.
@@ -793,7 +800,7 @@ class MapDoMenu {
                                     MessageCreator.createMsgPopUp(
                                             player.id,
                                             14 + idOptionMenu,
-                                            "Hộ vệ hiện tại của bạn sẽ bị mất. Bạn có muốn triệu hồi hộ vệ "
+                                            "Pokémon hỗ trợ hiện tại của bạn sẽ bị mất. Bạn có muốn triệu hồi Pokémon hỗ trợ "
                                             + (gender != 0 ? "nữ hệ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
                                     )
                             );
@@ -802,7 +809,7 @@ class MapDoMenu {
                                     MessageCreator.createMsgPopUp(
                                             player.id,
                                             14 + idOptionMenu,
-                                            "Bạn có muốn triệu hồi hộ vệ " + (gender != 0 ? "nữ hệ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
+                                            "Bạn có muốn triệu hồi Pokémon hỗ trợ " + (gender != 0 ? "nữ hệ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
                                     )
                             );
                         }
@@ -830,7 +837,7 @@ class MapDoMenu {
                             .saveOrtherLog(
                                     "",
                                     player.charname,
-                                    "Mo ruong dracula nhan duoc " + sl + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name,
+                                    "Mo ruong Darkrai nhan duoc " + sl + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name,
                                     "ruongdracula"
                             );
                     player.sendMessage(MessageCreator.createCharGemItem(player));
@@ -975,7 +982,7 @@ class MapDoMenu {
                     return;
                 case -400:
                     if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang vận tiêu.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang giao hàng.", ""));
                         return;
                     }
 
@@ -994,7 +1001,7 @@ class MapDoMenu {
                             if (px.map.isMapTrain()) {
                                 if (px.inCountry != player.myCountry) {
                                     ((Vector) listKillPerson.get(player.myCountry)).remove(px.charname);
-                                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage(px.charname + " đã rời khỏi lãnh thổ của bạn"));
+                                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage(px.charname + " đã rời khỏi vùng của bạn"));
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
                                 }
@@ -1044,7 +1051,7 @@ class MapDoMenu {
                         }
 
                         ((Vector) listKillPerson.get(player.myCountry)).remove(nameKiller);
-                        player.sendMessage(MessageCreator.createServerAlertAutoOffMessage(nameKiller + " đã rời khỏi lãnh thổ của bạn"));
+                        player.sendMessage(MessageCreator.createServerAlertAutoOffMessage(nameKiller + " đã rời khỏi vùng của bạn"));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         return;
                     }
@@ -1124,13 +1131,13 @@ class MapDoMenu {
                 case -51:
                     if (player.monster != null) {
                         if (player.map.mapIDLoadMap != 118) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả tiêu tại vị trí này", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng tại vị trí này", ""));
                             return;
                         }
 
                         if (player.x / 16 >= 51 && player.x / 16 <= 59 && player.y / 16 >= 16 && player.y / 16 <= 24) {
                             if (player.monster != null && player.monster.isFinish()) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả tiêu", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng", ""));
                                 player.monster.actorDie();
                                 player.monster = null;
                                 player.typeTieu = -1;
@@ -1138,12 +1145,12 @@ class MapDoMenu {
                             }
 
                             if (!player.monster.map.equals(player.map)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả tiêu do khác map", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng do khác map", ""));
                                 return;
                             }
 
                             if (!inRangeActor(player, player.monster, 120)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả tiêu do quá xa", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng do quá xa", ""));
                                 return;
                             }
 
@@ -1154,7 +1161,7 @@ class MapDoMenu {
                             break;
                         }
 
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả tiêu tại vị trí này", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng tại vị trí này", ""));
                         return;
                     }
 
@@ -1184,7 +1191,7 @@ class MapDoMenu {
                                     if (idOptionMenu != 3) {
                                         if (idOptionMenu == 4) {
                                             if (MapLoiDai.listMatch.size() == 0) {
-                                                player.sendMessage(MessageCreator.createMsgChat(player.id, "Các trận lôi đài chưa bắt đầu"));
+                                                player.sendMessage(MessageCreator.createMsgChat(player.id, "Các trận sàn đấu chưa bắt đầu"));
                                                 return;
                                             }
 
@@ -1209,7 +1216,7 @@ class MapDoMenu {
                                     }
                                 } else {
                                     if (!MapLoiDai.isRunLoiDai()) {
-                                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Không thể đăng ký khi lôi đài chưa mở."));
+                                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Không thể đăng ký khi sàn đấu chưa mở."));
                                         return;
                                     }
 
@@ -1232,7 +1239,7 @@ class MapDoMenu {
                                         player.sendMessage(
                                                 MessageCreator.createMsgChat(
                                                         player.id,
-                                                        "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé"
+                                                        "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé"
                                                 )
                                         );
                                         return;
@@ -1245,7 +1252,7 @@ class MapDoMenu {
                                     player.sendMessage(
                                             MessageCreator.createMsgChat(
                                                     player.id,
-                                                    "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé."
+                                                    "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé."
                                             )
                                     );
                                     Database.instance.doAddCharThachDau(c, index, true);
@@ -1256,7 +1263,7 @@ class MapDoMenu {
                                 player.sendMessage(MessageCreator.createMsgMenu(dh, idNpc, 11));
                             }
                         } else {
-                            map.doUnRideHorse(player, 0);
+                            map.doXuongThuCuoi(player, 0);
                         }
                     } else if (idOptionMenu != 0) {
                         if (idOptionMenu != 1) {
@@ -1265,7 +1272,7 @@ class MapDoMenu {
                                     if (idOptionMenu != 4) {
                                         if (idOptionMenu == 5) {
                                             if (MapLoiDai.listMatch.size() == 0) {
-                                                player.sendMessage(MessageCreator.createMsgChat(player.id, "Các trận lôi đài chưa bắt đầu"));
+                                                player.sendMessage(MessageCreator.createMsgChat(player.id, "Các trận sàn đấu chưa bắt đầu"));
                                                 return;
                                             }
 
@@ -1290,7 +1297,7 @@ class MapDoMenu {
                                     }
                                 } else {
                                     if (!MapLoiDai.isRunLoiDai()) {
-                                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Không thể đăng ký khi lôi đài chưa mở."));
+                                        player.sendMessage(MessageCreator.createMsgChat(player.id, "Không thể đăng ký khi sàn đấu chưa mở."));
                                         return;
                                     }
 
@@ -1313,7 +1320,7 @@ class MapDoMenu {
                                         player.sendMessage(
                                                 MessageCreator.createMsgChat(
                                                         player.id,
-                                                        "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé"
+                                                        "Đã đăng ký tham gia rồi thì hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé"
                                                 )
                                         );
                                         return;
@@ -1326,7 +1333,7 @@ class MapDoMenu {
                                     player.sendMessage(
                                             MessageCreator.createMsgChat(
                                                     player.id,
-                                                    "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho môn phái của mình nhé."
+                                                    "Đăng ký thành công.Hãy chăm chỉ tập luyện để có thể giành được chức vô địch làm rạng danh cho dòng Pokémon của mình nhé."
                                             )
                                     );
                                     Database.instance.doAddCharThachDau(c, indexx, true);
@@ -1337,7 +1344,7 @@ class MapDoMenu {
                                 player.sendMessage(MessageCreator.createMsgMenu(dh, idNpc, 11));
                             }
                         } else {
-                            map.doUnRideHorse(player, 0);
+                            map.doXuongThuCuoi(player, 0);
                         }
                     } else if (player.map.mapIDLoadMap != 0 || player.map.mapIDLoadMap != 70) {
                         MapMenuNpc.doMenuNpcNhanTieu(map, player, idNpc, idMenu, idOptionMenu);
@@ -1398,7 +1405,7 @@ class MapDoMenu {
                         return;
                     }
                     if (player.monster != null) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                         return;
                     }
                     map.doHoaTieu(player, idNpc, idMenu, idOptionMenu);
@@ -1427,7 +1434,7 @@ class MapDoMenu {
                     if (abs(player.x / 16 - RequestNPCInfoHandler.xyNPC[abs(idNpc) - 38][0]) <= rangeNpc
                             && abs(player.y / 16 - RequestNPCInfoHandler.xyNPC[abs(idNpc) - 38][1]) <= rangeNpc) {
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                             return;
                         }
 
@@ -1465,7 +1472,7 @@ class MapDoMenu {
                     {
                         if (player.monster != null) 
                         {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể chuyển khu khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể chuyển khu khi đang giao hàng", ""));
                             return;
                         }
 
@@ -1493,19 +1500,19 @@ class MapDoMenu {
                         }
 
                         if (player.idClan > -1 && !player.isMasterClan()) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể chọn lãnh thổ cho bang hội.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể chọn vùng cho đội.", ""));
                             return;
                         }
 
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể chuyển lãnh thổ khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể chuyển vùng khi đang giao hàng", ""));
                             return;
                         }
 
                         byte oldCountry = player.myCountry;
                         if (checkFullNation(idOptionMenu, 1, player.lvDetail.lv)) {
                             player.sendMessage(
-                                    MessageCreator.createServerAlertMessage(Map.nameCountry[idOptionMenu] + " lãnh đã có quá nhiều người. Vui lòng chọn lãnh thổ khác.", "")
+                                    MessageCreator.createServerAlertMessage(Map.nameCountry[idOptionMenu] + " lãnh đã có quá nhiều người. Vui lòng chọn vùng khác.", "")
                             );
                             return;
                         }
@@ -1683,7 +1690,7 @@ class MapDoMenu {
                         }
                     } else if (idOptionMenu == 0) {
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang giao hàng", ""));
                             return;
                         }
 
@@ -1739,7 +1746,7 @@ class MapDoMenu {
                             } else {
                                 if (!MapChienTruongMoba.isDayChienTruong()) {
                                     if (!TeamServer.isServerLienDau()) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho máy chủ Liên đấu.", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho máy chủ Giải Liên minh.", ""));
                                     } else {
                                         player.sendMessage(
                                                 MessageCreator.createServerAlertMessage(
@@ -1759,7 +1766,7 @@ class MapDoMenu {
                                         player.sendMessage(
                                                 MessageCreator.createServerAlertMessage(
                                                         !MapChienTruongMoba.isStart
-                                                                ? "Chiến trường hôm nay chỉ dành cho nhân vật có cấp độ dưới 70."
+                                                                ? "Chiến trường hôm nay chỉ dành cho Pokémon có cấp độ dưới 70."
                                                                 : "Không thể đăng ký khi chiến trường đang diễn ra",
                                                         ""
                                                 )
@@ -1770,7 +1777,7 @@ class MapDoMenu {
                                     player.sendMessage(
                                             MessageCreator.createServerAlertMessage(
                                                     !MapChienTruongMoba.isStart
-                                                            ? "Chiến trường hôm nay chỉ dành cho nhân vật có cấp độ từ 70 trở lên."
+                                                            ? "Chiến trường hôm nay chỉ dành cho Pokémon có cấp độ từ 70 trở lên."
                                                             : "Không thể đăng ký khi chiến trường đang diễn ra",
                                                     ""
                                             )
@@ -1892,7 +1899,7 @@ class MapDoMenu {
                         }
                     } else {
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang giao hàng", ""));
                             return;
                         }
 
@@ -1918,7 +1925,7 @@ class MapDoMenu {
                         if (mapTran != null) {
                             RegionVantienTran rg = mapTran.getRegionJoinMapVanTienTran(player);
                             if (rg == null) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể vào trấn yêu trận lúc này", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể vào Mê cung lúc này", ""));
                             } else {
                                 map.playerExit(player);
                                 player.region = rg.id;
@@ -2104,7 +2111,7 @@ class MapDoMenu {
                             }
 
                             if (player.gender == 2) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có phu quân của bạn mới có thê chọn chức năng này.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bạn đời của bạn mới có thê chọn chức năng này.", ""));
                                 return;
                             }
 
@@ -2121,7 +2128,7 @@ class MapDoMenu {
 
                                 Char p = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                                 if (p == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Phu nhân của bạn hiện tại chưa online", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn hiện tại chưa online", ""));
                                     return;
                                 }
 
@@ -2131,7 +2138,7 @@ class MapDoMenu {
                                 }
 
                                 if (p.getLuong() < 150) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Phu nhân của bạn phải có 150 lượng mới có thể ly dị được.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn phải có 150 lượng mới có thể ly dị được.", ""));
                                     return;
                                 }
 
@@ -2144,7 +2151,7 @@ class MapDoMenu {
                         }
 
                         if (player.monster != null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi đang giao hàng", ""));
                             return;
                         }
 
@@ -2188,7 +2195,7 @@ class MapDoMenu {
                         return;
                     }
 
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                     return;
                 case -25:
                     if (!isMapThanh(player.map)) {
@@ -2204,7 +2211,7 @@ class MapDoMenu {
 
                         if (player.idClan != -1 && player.myCountry != -1) {
                             if (player.inCountry != player.myCountry) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể đăng ký tại quốc gia của mình.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể đăng ký tại vùng của mình.", ""));
                                 return;
                             }
 
@@ -2218,13 +2225,13 @@ class MapDoMenu {
                             }
 
                             if (!player.charname.equals(cla.master)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể sử dụng chức năng này", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể sử dụng chức năng này", ""));
                                 return;
                             }
 
                             long moneyClan = cla.getMoneyDistributeSalary(player.idClan);
                             if (idOptionMenu < 2 && idMenu == 0 && moneyClan < 15000000L) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bang chỉ có thể sử dụng " + moneyClan + " xu.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Đội chỉ có thể sử dụng " + moneyClan + " xu.", ""));
                                 return;
                             }
 
@@ -2255,7 +2262,7 @@ class MapDoMenu {
                                     if (reg.idMyAttack != -1) {
                                         player.sendMessage(
                                                 MessageCreator.createServerAlertMessage(
-                                                        "Bạn đã đăng ký tấn công lãnh thổ " + Map.nameCountry[reg.idMyAttack] + " vào ngày " + reg.dayAttack, ""
+                                                        "Bạn đã đăng ký tấn công vùng " + Map.nameCountry[reg.idMyAttack] + " vào ngày " + reg.dayAttack, ""
                                                 )
                                         );
                                         return;
@@ -2263,7 +2270,7 @@ class MapDoMenu {
 
                                     byte[][] idCountry = new byte[][]{{1, 2}, {0, 2}, {0, 1}};
                                     if (idClanTown[idCountry[player.myCountry][idOptionMenu]] == -1) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công lãnh thổ này.", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công vùng này.", ""));
                                         return;
                                     }
 
@@ -2271,7 +2278,7 @@ class MapDoMenu {
                                         player.sendMessage(
                                                 MessageCreator.createServerAlertMessage(
                                                         Map.nameCountry[nationBeAttack[idCountry[player.myCountry][idOptionMenu]]]
-                                                        + " đã đăng ký tấn công lãnh thổ "
+                                                        + " đã đăng ký tấn công vùng "
                                                         + Map.nameCountry[idCountry[player.myCountry][idOptionMenu]],
                                                         ""
                                                 )
@@ -2282,14 +2289,14 @@ class MapDoMenu {
                                     NewClan clanx = NewClan.getClan(player.idClan);
                                     int cos = 20000000;
                                     if (clanx.money < (long) cos) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Bang phải có " + cos + " xu mới có thể đăng ký.", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Đội phải có " + cos + " xu mới có thể đăng ký.", ""));
                                         return;
                                     }
 
                                     if (nationBeAttack[player.myCountry] == idCountry[player.myCountry][idOptionMenu]) {
                                         player.sendMessage(
                                                 MessageCreator.createServerAlertMessage(
-                                                        Map.nameCountry[nationBeAttack[player.myCountry]] + " đã đăng ký tấn công lãnh thổ của bạn.", ""
+                                                        Map.nameCountry[nationBeAttack[player.myCountry]] + " đã đăng ký tấn công vùng của bạn.", ""
                                                 )
                                         );
                                         return;
@@ -2303,7 +2310,7 @@ class MapDoMenu {
                                     reg.dayAttack = Char.getDayOpen(0L);
                                     player.sendMessage(
                                             MessageCreator.createServerAlertMessage(
-                                                    "Bạn đã đăng ký tấn công lãnh thổ "
+                                                    "Bạn đã đăng ký tấn công vùng "
                                                     + Map.nameCountry[reg.idMyAttack]
                                                     + ". Cuộc tấn công sẽ diễn ra lúc 20h ngày "
                                                     + reg.dayAttack,
@@ -2314,7 +2321,7 @@ class MapDoMenu {
                                             -1,
                                             MessageCreator.createServerAlertAutoOffMessage(
                                                     Map.nameCountry[player.myCountry]
-                                                    + " đã đăng ký tấn công lãnh thổ "
+                                                    + " đã đăng ký tấn công vùng "
                                                     + Map.nameCountry[reg.idMyAttack]
                                                     + ". Cuộc tấn công sẽ diễn ra lúc 20h ngày "
                                                     + reg.dayAttack
@@ -2328,7 +2335,7 @@ class MapDoMenu {
                                                     clanx.name
                                                     + "_"
                                                     + clanx.money
-                                                    + " lãnh thổ "
+                                                    + " vùng "
                                                     + Map.nameCountry[player.myCountry]
                                                     + "_ đăng ký tấn công "
                                                     + Map.nameCountry[reg.idMyAttack],
@@ -2351,8 +2358,8 @@ class MapDoMenu {
                                         }
 
                                         String[][] nameCountry = new String[][]{
-                                            {"Tấn công Hắc hổ(20t xu bang)"}, 
-                                            {"Tấn công Thanh long(20t xu bang)"}
+                                            {"Tấn công Johto(20t xu đội)"}, 
+                                            {"Tấn công Kanto(20t xu đội)"}
                                         };
                                         player.sendMessage(MessageCreator.createMsgMenu(
                                             nameCountry[player.myCountry], 
@@ -2372,7 +2379,7 @@ class MapDoMenu {
                                         }
 
                                         if (moneyClan < 50000000L) {
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Bang chỉ có thể sử dụng " + moneyClan + " xu.", ""));
+                                            player.sendMessage(MessageCreator.createServerAlertMessage("Đội chỉ có thể sử dụng " + moneyClan + " xu.", ""));
                                             return;
                                         }
 
@@ -2386,7 +2393,7 @@ class MapDoMenu {
                                                 .saveOrtherLog("", player.charname, cla.name + "_" + cla.money + " >> bao ho toan bo 50t" + idOptionMenu, "shieldAll");
                                         sendAllCharServer(
                                                 MessageCreator.createServerAlertAutoOffMessage(
-                                                        "Lãnh thổ " + Map.nameCountry[player.myCountry] + " đã được bảo hộ toàn bộ các khung giờ."
+                                                        "Vùng " + Map.nameCountry[player.myCountry] + " đã được bảo hộ toàn bộ các khung giờ."
                                                 ),
                                                 player.myCountry
                                         );
@@ -2405,7 +2412,7 @@ class MapDoMenu {
                                     Database.instance.saveOrtherLog("", player.charname, cla.name + "_" + cla.money + " >> bao ho khung h 15t" + iHour, "shield");
                                     sendAllCharServer(
                                             MessageCreator.createServerAlertAutoOffMessage(
-                                                    "Lãnh thổ " + Map.nameCountry[player.myCountry] + " đã được bảo hộ trong khung giờ " + (iHour + 1)
+                                                    "Vùng " + Map.nameCountry[player.myCountry] + " đã được bảo hộ trong khung giờ " + (iHour + 1)
                                             ),
                                             player.myCountry
                                     );
@@ -2599,7 +2606,7 @@ class MapDoMenu {
                     if (idMenu != 0) {
                         if (idMenu == 1) {
                             if (player.monster != null) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang vận tiêu", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang giao hàng", ""));
                                 return;
                             }
 
@@ -2609,7 +2616,7 @@ class MapDoMenu {
                                 if (checkFullNation(idOptionMenu, 1, player.lvDetail.lv)) {
                                     player.sendMessage(
                                             MessageCreator.createServerAlertMessage(
-                                                    Map.nameCountry[idOptionMenu] + " lãnh đã có quá nhiều người. Vui lòng chọn lãnh thổ khác.", ""
+                                                    Map.nameCountry[idOptionMenu] + " lãnh đã có quá nhiều người. Vui lòng chọn vùng khác.", ""
                                             )
                                     );
                                     return;
@@ -2642,7 +2649,7 @@ class MapDoMenu {
                             if (checkFullNation(idOptionMenu, cinfo.getAllMember().size(), cinfo.allLv)) {
                                 player.sendMessage(
                                         MessageCreator.createServerAlertMessage(
-                                                Map.nameCountry[idOptionMenu] + " lãnh đã có quá nhiều người. Vui lòng chọn lãnh thổ khác.", ""
+                                                Map.nameCountry[idOptionMenu] + " lãnh đã có quá nhiều người. Vui lòng chọn vùng khác.", ""
                                         )
                                 );
                                 return;
@@ -2681,11 +2688,11 @@ class MapDoMenu {
                             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                             player.sendMessage(
-                                    MessageCreator.createServerAlertMessage("Chào mừng bang " + cinfo.name + " đã gia nhập " + Map.nameCountry[cinfo.country], "")
+                                    MessageCreator.createServerAlertMessage("Chào mừng đội " + cinfo.name + " đã gia nhập " + Map.nameCountry[cinfo.country], "")
                             );
                             MessageCreator.createMsgCharMonster(player, player);
                         } else {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bang của bạn đã gia nhập " + Map.nameCountry[cinfo.country], ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Đội của bạn đã gia nhập " + Map.nameCountry[cinfo.country], ""));
                         }
                     }
                     break;
@@ -2696,7 +2703,7 @@ class MapDoMenu {
 
                     if (abs(player.x / 16 - 46) <= 7 && abs(player.y / 16 - 40) <= 7) {
                         if (player.monster != null && player.mapID == player.monster.map.mapId) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang vận tiêu", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang giao hàng", ""));
                             return;
                         }
 
@@ -2716,7 +2723,7 @@ class MapDoMenu {
                                 // ngay khi ham do duoc bat lai that.
                                 if (checkFullNation(targetCountry, 1, player.lvDetail.lv)) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage(
-                                            Map.nameCountry[targetCountry] + " đã có quá nhiều người. Vui lòng chọn lãnh thổ khác.", ""));
+                                            Map.nameCountry[targetCountry] + " đã có quá nhiều người. Vui lòng chọn vùng khác.", ""));
                                     return;
                                 }
                                 player.myCountry = targetCountry;
@@ -2747,7 +2754,7 @@ class MapDoMenu {
                                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                                 if (Char.haveShieldNation(player.inCountry)) {
                                     player.sendMessage(
-                                            MessageCreator.createServerAlertAutoOffMessage("Lãnh thổ " + Map.nameCountry[player.inCountry] + " đang được bảo hộ")
+                                            MessageCreator.createServerAlertAutoOffMessage("Vùng " + Map.nameCountry[player.inCountry] + " đang được bảo hộ")
                                     );
                                 }
                             }
@@ -2784,11 +2791,11 @@ class MapDoMenu {
                         break;
                     }
 
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                     return;
                 case -19:
                     if (player.monster != null) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                         return;
                     }
 
@@ -2999,7 +3006,7 @@ class MapDoMenu {
                             }
 
                             if (player.myCountry != player.inCountry) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể tham gia sự kiện trong lãnh thổ nước của bạn.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể tham gia sự kiện trong vùng nước của bạn.", ""));
                                 return;
                             }
 
@@ -3035,7 +3042,7 @@ class MapDoMenu {
                         return;
                     }
 
-                    String[] he = new String[]{"hệ thuỷ", "hệ mộc", "hệ hoả", "hệ thổ", "hệ kim"};
+                    String[] he = new String[]{"hệ Nước", "hệ Cỏ", "hệ Lửa", "hệ Đất", "hệ Thép"};
                     if (idMenu != 0) {
                         if (idMenu != 1) {
                             if (idMenu != 2) {
@@ -3151,7 +3158,7 @@ class MapDoMenu {
                                                                                                 MessageCreator.createServerAlertMessage("Chưa mở bán hoặc bạn không thể mua thêm", "")
                                                                                         );
                                                                                     } else {
-                                                                                        String[][] namett = new String[][]{{"Bạch Mi", "Hắc Lang"}, {"Thuý Vũ Hồng Sam", "Thần Nữ"}};
+                                                                                        String[][] namett = new String[][]{{"Absol", "Zoroark"}, {"Thuý Vũ Hồng Sam", "Gardevoir"}};
                                                                                         player.sendMessage(
                                                                                                 MessageCreator.createMsgMenu(!player.isCharNam() ? namett[1] : namett[0], idNpc, 13)
                                                                                         );
@@ -3659,7 +3666,7 @@ class MapDoMenu {
                         if (idOptionMenu != 1) {
                             if (idOptionMenu == 2) {
                                 if (player.idClan == -1) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tham gia bang hội.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tham gia đội.", ""));
                                     return;
                                 }
 
@@ -3688,7 +3695,7 @@ class MapDoMenu {
                             }
                         } else {
                             if (player.idClan == -1) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tham gia bang hội.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tham gia đội.", ""));
                                 return;
                             }
 
@@ -3696,7 +3703,7 @@ class MapDoMenu {
                         }
                     } else {
                         if (player.rankClan > 1) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ hoặc phó bang mới có thể mua kỹ năng bang.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng hoặc đội phó mới có thể mua kỹ năng đội.", ""));
                             return;
                         }
 
@@ -4153,7 +4160,7 @@ class MapDoMenu {
                                                                 || player.canReceiveGiftOffline == 40
                                                                 || player.canReceiveGiftOffline == 50) {
                                                             player.sendMessage(
-                                                                    MessageCreator.createMsgMenu(new String[]{"Phi phong ma", "Phi phong vat"}, idNpc, 10 + idOptionMenu)
+                                                                    MessageCreator.createMsgMenu(new String[]{"Ruy băng đặc biệt", "Ruy băng vật lý"}, idNpc, 10 + idOptionMenu)
                                                             );
                                                             return;
                                                         }
@@ -4174,21 +4181,21 @@ class MapDoMenu {
                                                 Item it = Char.createPhiPhongMaxBaoKich(
                                                         player, idOptionMenu >= 2 ? idOptionMenu - 2 : idOptionMenu, 0, null, true, idOptionMenu < 2, 0, false
                                                 );
-                                                player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Hoả kỳ lân 1 tháng và " + it.getName(), ""));
+                                                player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Ponyta 1 tháng và " + it.getName(), ""));
                                             }
                                         } else {
                                             map.doCreateHoaKyLan(player, 683, 129600L);
                                             Item it = Char.createPhiPhongMaxBaoKich(
                                                     player, idOptionMenu >= 2 ? idOptionMenu - 2 : idOptionMenu, 0, null, true, idOptionMenu < 2, 0, false
                                             );
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Hoả kỳ lân 3 tháng và " + it.getName(), ""));
+                                            player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Ponyta 3 tháng và " + it.getName(), ""));
                                         }
                                     } else {
                                         player.potions[71]++;
                                         Item it = Char.createPhiPhongMaxBaoKich(
                                                 player, idOptionMenu >= 2 ? idOptionMenu - 2 : idOptionMenu, 0, null, true, idOptionMenu < 2, 15, false
                                         );
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được 1 trứng Hoả kỳ lân và " + it.getName(), ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được 1 trứng Ponyta và " + it.getName(), ""));
                                     }
 
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -4199,12 +4206,12 @@ class MapDoMenu {
                                 }
 
                                 if (player.idClan > -1) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể chọn lãnh th", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể chọn lãnh th", ""));
                                     return;
                                 }
 
                                 if (player.monster != null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đổi lãnh thổ khi đang vận tiêu", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đổi vùng khi đang giao hàng", ""));
                                     return;
                                 }
 
@@ -4225,7 +4232,7 @@ class MapDoMenu {
                                 if (checkFullNation(player.myCountry != 1 ? 1 : 0, 1, player.lvDetail.lv)) {
                                     player.sendMessage(
                                             MessageCreator.createServerAlertMessage(
-                                                    Map.nameCountry[player.myCountry != 1 ? 1 : 0] + " lãnh đã có quá nhiều người. Vui lòng chọn lãnh thổ khác.", ""
+                                                    Map.nameCountry[player.myCountry != 1 ? 1 : 0] + " lãnh đã có quá nhiều người. Vui lòng chọn vùng khác.", ""
                                             )
                                     );
                                     return;
@@ -4296,6 +4303,10 @@ class MapDoMenu {
                                                 player.sendMessage(MessageCreator.createMsgMenu(name, -5000, 0));
                                             }
                                         } else {
+                                            // thanh vien: dang ky lien dau xep hang.
+                                            if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "pvp_xep_hang")) {
+                                                return;
+                                            }
                                             if (!openLog) {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng đang phát triển.", ""));
                                                 return;
@@ -4315,13 +4326,13 @@ class MapDoMenu {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Chiến trường đã đầy", ""));
                                             } else {
                                                 if (isDayOpenLiendau()) {
-                                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký trong ngày diễn ra liên đấu", ""));
+                                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký trong ngày diễn ra giải Liên minh", ""));
                                                     return;
                                                 }
 
                                                 if (player.lvDetail.lv < 50) {
                                                     player.sendMessage(
-                                                            MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể tham gia liên đấu", "")
+                                                            MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể tham gia giải Liên minh", "")
                                                     );
                                                     return;
                                                 }
@@ -4338,7 +4349,7 @@ class MapDoMenu {
 
                                                 if (data[1] > -1) {
                                                     player.sendMessage(
-                                                            MessageCreator.createServerAlertMessage("Một tài khoản chỉ có thể đăng ký 1 nhân vật tham gia liên đấu", "")
+                                                            MessageCreator.createServerAlertMessage("Một tài khoản chỉ có thể đăng ký 1 Pokémon tham gia giải Liên minh", "")
                                                     );
                                                     return;
                                                 }
@@ -4353,7 +4364,7 @@ class MapDoMenu {
                                     }
                                 } else {
                                     if (player.idClan > -1) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có người chưa tham gia bang hội mới có thể chuyển lãnh thổ", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có người chưa tham gia đội mới có thể chuyển vùng", ""));
                                         return;
                                     }
 
@@ -4421,7 +4432,7 @@ class MapDoMenu {
                         return;
                     }
 
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
                     return;
                 case -8:
                     if (!isMapThanh(player.map) && !isMapLang(player.map)) {
@@ -4436,7 +4447,7 @@ class MapDoMenu {
                             if (idMenu != 2) {
                                 if (idMenu == 3) {
                                     if (player.animalRide == null) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú mà bạn muốn luyện", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi thú mà bạn muốn luyện", ""));
                                         return;
                                     }
 
@@ -4480,7 +4491,7 @@ class MapDoMenu {
                                 }
                             } else {
                                 if (player.animalRide == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú mà bạn muốn luyện", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi thú mà bạn muốn luyện", ""));
                                     return;
                                 }
 
@@ -4548,29 +4559,29 @@ class MapDoMenu {
                             switch (idOptionMenu) {
                                 case 0:
                                     if (player.potions[64] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[64]--;
-                                    anima.name = "Hắc ngưu";
+                                    anima.name = "Machamp";
                                     anima.idImg = 2;
                                     break;
                                 case 1:
                                     if (player.potions[65] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[65]--;
-                                    anima.name = "Mãnh hổ";
+                                    anima.name = "Arcanine";
                                     anima.idImg = 1;
                                     break;
                                 case 2:
                                     if (player.potions[66] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
@@ -4581,79 +4592,79 @@ class MapDoMenu {
                                     break;
                                 case 3:
                                     if (player.potions[67] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[67]--;
-                                    anima.name = "Tiên hạc";
+                                    anima.name = "Pidgeot";
                                     anima.idImg = 4;
                                     break;
                                 case 4:
                                     if (player.potions[68] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[68]--;
-                                    anima.name = "Bạch mã";
+                                    anima.name = "Rapidash";
                                     anima.idImg = 0;
                                     break;
                                 case 5:
                                     if (player.potions[86] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[86]--;
-                                    anima.name = "Phượng hoàng lửa";
+                                    anima.name = "Moltres";
                                     anima.idImg = 5;
                                     break;
                                 case 6:
                                     if (player.potions[70] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[70]--;
-                                    anima.name = "Phượng hoàng băng";
+                                    anima.name = "Articuno";
                                     anima.idImg = 8;
                                     break;
                                 case 7:
                                     if (player.potions[74] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[74]--;
-                                    anima.name = "Bạch cốt";
+                                    anima.name = "Spectrier";
                                     anima.idImg = Animal.NGUA_XUONG;
                                     break;
                                 case 8:
                                     if (player.potions[72] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[72]--;
-                                    anima.name = "Đương khang";
+                                    anima.name = "Piloswine";
                                     anima.idImg = Animal.HEO;
                                     break;
                                 case 9:
                                     if (player.potions[115] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
                                     anima = new Animal();
                                     player.potions[115]--;
-                                    anima.name = "Lân sư tử";
+                                    anima.name = "Suicune";
                                     anima.idImg = Animal.LAN;
                                     break;
                                 case 10:
@@ -4661,7 +4672,7 @@ class MapDoMenu {
                                     // potion nhu 10 truong hop tren, nen tu ap roi return luon.
                                     Item trungRongBang = getTrungRongBang(player);
                                     if (trungRongBang == null) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                         return;
                                     }
 
@@ -4683,19 +4694,19 @@ class MapDoMenu {
                                         .saveOrtherLog(
                                                 "tob_log_other_animal", player.charname, "Tao " + anima.name + " | " + anima.getAttribute() + "_" + player.getLuong(), "crt"
                                         );
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã tạo được linh thú " + anima.name, ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã tạo được thú cưỡi " + anima.name, ""));
                             }
                         }
                     } else if (idOptionMenu != 0) {
                         switch (idOptionMenu) {
                             case 1:
                                 if (player.animalRide == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú mà bạn muốn luyện", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi thú mà bạn muốn luyện", ""));
                                     return;
                                 }
                     
                                 if (player.animalRide.idImg == 7) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Linh thú đã đạt max chỉ số.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi đã đạt max chỉ số.", ""));
                                     return;
                                 }
                     
@@ -4710,7 +4721,7 @@ class MapDoMenu {
                     
                             case 2:
                                 if (player.animalRide == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú mà bạn muốn luyện", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi thú mà bạn muốn luyện", ""));
                                     return;
                                 }
                     
@@ -4722,7 +4733,7 @@ class MapDoMenu {
                                 if (player.animalRide.upLevel(player)) {
                                     player.subLuong((long) Animal.price[3][player.animalRide.level - 1]);
                                     Database.instance.saveLogThongKeChiTieu("nang cap level thu", 0, 1, (long) Animal.price[3][player.animalRide.level - 1], "luong");
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng, linh thú của bạn đã đạt được cấp độ " + player.animalRide.level, ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng, thú cưỡi của bạn đã đạt được cấp độ " + player.animalRide.level, ""));
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 100));
                                     Database.instance.saveAnimal(player.animalRide);
@@ -4733,7 +4744,7 @@ class MapDoMenu {
                                 break;
                             case 3:
                             if (player.animalRide == null ) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú mà bạn muốn hóa hình", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi thú mà bạn muốn hóa hình", ""));
                                 return;
                             }
                             player.animalRide.doHoaHinh(player);
@@ -4755,7 +4766,7 @@ class MapDoMenu {
                                     player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_BI_CHAY = 95;
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Linh thú phượng hoàng băng đã được thêm thuộc tính kháng bị cháy", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Articuno đã được thêm thuộc tính kháng bị cháy", ""));
                                     Database.instance.saveAnimal(player.animalRide);
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang bi chay cho phb 200L", "kchay");
@@ -4764,7 +4775,7 @@ class MapDoMenu {
                                     player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_DONG_BANG = 95;
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Linh thú phượng hoàng lửa đã được thêm thuộc tính kháng đóng băng", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Moltres đã được thêm thuộc tính kháng đóng băng", ""));
                                     Database.instance.saveAnimal(player.animalRide);
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang dong bang cho phl 200L", "kdongbang");
@@ -4779,7 +4790,7 @@ class MapDoMenu {
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_BI_CHAY = 95;
                                     player.animalRide.KHANG_DONG_BANG = 95;
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Linh thú Rồng Băng đã được thêm thuộc tính kháng bị cháy và kháng đóng băng", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Dragonite đã được thêm thuộc tính kháng bị cháy và kháng đóng băng", ""));
                                     Database.instance.saveAnimal(player.animalRide);
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang cho rong bang 200L", "krongbang");
@@ -4788,7 +4799,7 @@ class MapDoMenu {
                                     player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_HOA_TUYET = 95;
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Linh thú Lân sư tử đã được thêm thuộc tính kháng hoá tuyết", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Suicune đã được thêm thuộc tính kháng hoá tuyết", ""));
                                     Database.instance.saveAnimal(player.animalRide);
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang hoa tuyet cho lan su tu 200L", "khoatuyet");
@@ -4797,9 +4808,9 @@ class MapDoMenu {
                         }
                     } else {
                         String[] menu = new String[]{
-                            "Hắc ngưu", "Mãnh hổ", "Sói xám", "Tiên hạc", "Bạch mã",
-                            "Phượng hoàng", "Phượng hoàng băng", "Bạch cốt", "Đương khang", "Lân sư tử",
-                            "Rồng băng"
+                            "Machamp", "Arcanine", "Sói xám", "Pidgeot", "Rapidash",
+                            "Moltres", "Articuno", "Spectrier", "Piloswine", "Suicune",
+                            "Dragonite"
                         };
                         Message msg = MessageCreator.createMsgMenu(menu, idNpc, 1);
                         player.sendMessage(msg);
@@ -4844,21 +4855,21 @@ class MapDoMenu {
                             } else {
                                 if (player.rankClan == 0 && player.idClan != -1) {
                                     NewClan.getClan(player.idClan).rankClan = (byte) (idOptionMenu + 2);
-                                    player.sendMessage(MessageCreator.createMsgInputText(-32003, 0, "Nhập tên nhân vật", 0));
+                                    player.sendMessage(MessageCreator.createMsgInputText(-32003, 0, "Nhập tên Pokémon", 0));
                                     break;
                                 }
 
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể giáng chức.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể giáng chức.", ""));
                                 return;
                             }
                         } else {
                             if (player.rankClan == 0 && player.idClan != -1) {
                                 NewClan.getClan(player.idClan).rankClan = (byte) (idOptionMenu + 1);
-                                player.sendMessage(MessageCreator.createMsgInputText(-32002, 0, "Nhập tên nhân vật", 0));
+                                player.sendMessage(MessageCreator.createMsgInputText(-32002, 0, "Nhập tên Pokémon", 0));
                                 break;
                             }
 
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể giáng chức.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể giáng chức.", ""));
                             return;
                         }
                     } else if (idOptionMenu != 0) {
@@ -4877,7 +4888,7 @@ class MapDoMenu {
                                                     break;
                                                 }
 
-                                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể phát lương.", ""));
+                                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể phát lương.", ""));
                                                 return;
                                             }
 
@@ -4886,7 +4897,7 @@ class MapDoMenu {
                                                 break;
                                             }
 
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể phát lương.", ""));
+                                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể phát lương.", ""));
                                             return;
                                         }
 
@@ -4899,36 +4910,36 @@ class MapDoMenu {
                                             break;
                                         }
 
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể phát lương.", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể phát lương.", ""));
                                         return;
                                     }
 
                                     if (player.rankClan == 0 && player.idClan != -1) {
-                                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Trưởng lão", "bang chúng"}, idNpc, 3));
+                                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Cố vấn", "thành viên đội"}, idNpc, 3));
                                         break;
                                     }
 
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể giáng chức.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể giáng chức.", ""));
                                     return;
                                 }
 
                                 if (player.rankClan == 0 && player.idClan != -1) {
-                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Phó bang", "Trưởng lão"}, idNpc, 2));
+                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đội phó", "Cố vấn"}, idNpc, 2));
                                     break;
                                 }
 
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể phong chức.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể phong chức.", ""));
                                 return;
                             }
 
                             if (player.idClan != idClanTown[player.myCountry] && player.inCountry == player.myCountry) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bang của bạn hiện tại không sở hữu thành Trấn Danh.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Đội của bạn hiện tại không sở hữu Cao nguyên Indigo.", ""));
                                 return;
                             }
 
                             NewClan clan = NewClan.getClan(player.idClan);
                             if (!clan.master.toLowerCase().equals(player.charname.toLowerCase())) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể đặt thuế.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể đặt thuế.", ""));
                                 return;
                             }
 
@@ -4951,7 +4962,7 @@ class MapDoMenu {
                         NewClan clanx = NewClan.getClan(player.idClan);
                         if (clanx != null && clanx.level < NewClan.MAX_LEVEL) {
                             if (!clanx.master.toLowerCase().equals(player.charname.toLowerCase())) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bang chủ mới có thể nâng cấp bang.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có đội trưởng mới có thể nâng cấp đội.", ""));
                                 return;
                             }
 
@@ -4959,7 +4970,7 @@ class MapDoMenu {
                                     MessageCreator.createMsgPopUp(
                                             player.id,
                                             0,
-                                            "phí nâng cấp bang là "
+                                            "phí nâng cấp đội là "
                                             + NewClan.getMoneyUplevelClan(player.idClan)
                                             + " xu và phải có "
                                             + NewClan.getXPUplevelClan(player.idClan)

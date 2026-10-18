@@ -1,12 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Menu nhanh của mod - bản PC của game.render.screen.MenuNhanh (bản jar). Ở chế độ Pokémon thay hai cột
-/// nút tròn 52 px (Up / Tiêu / PK / Mã PK / Nháy / ĐS / Dừng / Đổi pet - AutoGuard.veNutUp) từng che nửa
-/// phải màn chơi: chỉ còn MỘT Poké Ball nhỏ sát mép trái; bấm (hoặc F3) mở bảng nút dạng viên thuốc:
-/// xanh lá = đang bật, xám = tắt, xanh dương = lệnh làm ngay, đỏ = dừng hết. Đóng: nút x, bấm ra ngoài,
-/// F3 hoặc Esc. Chuột rê = viền vàng; phím mũi tên + Enter cũng dùng được. "Tự ẩn nút": Poké Ball ẩn
-/// trong lúc nhân vật đang đánh. Gọi từ AutoGuard.veNutUp / nutUpTick và Canvas.mapKeyPress.
+/// Menu nhanh - bản PC của game.render.screen.MenuNhanh (bản jar). Ở chế độ Pokémon: MỘT Poké Ball nhỏ sát mép
+/// trái; bấm (hoặc F3) mở bảng nút dạng viên thuốc. Mục "Tự động đánh" mở bảng Tự động đánh CHÍNH THỨC
+/// (BangTuDong, máy chủ điều khiển). Các nút mod cũ (Luyện cấp, Giao hàng, Tự PK, Mã PK, Nhảy vùng, Bật cờ PK,
+/// Đổi Pet, Dừng hết) đã bỏ. Đóng: nút x, bấm ra ngoài, F3 hoặc Esc. "Tự ẩn nút": Poké Ball ẩn lúc Pokémon đang
+/// đánh. Gọi từ AutoGuard.veNutUp / nutUpTick và AutoGuard.phimPk.
 /// </summary>
 public static class MenuNhanh
 {
@@ -26,21 +25,12 @@ public static class MenuNhanh
 
 	private static bool dungPhim;
 
-	private const int LUYEN = 0;
-	private const int GIAO = 1;
-	private const int TU_PK = 2;
-	private const int MA_PK = 3;
-	private const int NHAY = 4;
-	private const int CO_PK = 5;
-	private const int DOI_PET = 6;
-	private const int DUNG = 7;
-	private const int AN = 8;
+	private const int TU_DONG = 0;
+	private const int AN = 1;
 
-	private static readonly string[] TEN = { "Luyện cấp", "Giao hàng", "Tự PK", "Mã PK", "Nhảy vùng", "Bật cờ PK", "Đổi Pet", "Dừng hết", "Tự ẩn nút" };
+	private static readonly string[] TEN = { "Tự động đánh", "Tự ẩn nút" };
 
-	private static readonly int[] DS_DU = { LUYEN, GIAO, TU_PK, MA_PK, NHAY, CO_PK, DOI_PET, DUNG, AN };
-
-	private static readonly int[] DS_GON = { LUYEN, GIAO, TU_PK, DUNG, AN };
+	private static readonly int[] DS = { TU_DONG, AN };
 
 	public static bool bat()
 	{
@@ -65,7 +55,7 @@ public static class MenuNhanh
 
 	private static int[] dsMuc()
 	{
-		return AutoPk.hienNut ? DS_DU : DS_GON;
+		return DS;
 	}
 
 	/// <summary>1 = đang bật, 0 = tắt, -1 = lệnh, -2 = lệnh dừng (đỏ).</summary>
@@ -73,18 +63,10 @@ public static class MenuNhanh
 	{
 		switch (m)
 		{
-		case LUYEN:
-			return AutoUp.dang ? 1 : 0;
-		case GIAO:
-			return AutoVanTieu.dang ? 1 : 0;
-		case TU_PK:
-			return AutoPk.danh() ? 1 : 0;
-		case MA_PK:
-			return AutoPk.maPk ? 1 : 0;
+		case TU_DONG:
+			return TuDong.dang ? 1 : 0;
 		case AN:
 			return anKhiDanh ? 1 : 0;
-		case DUNG:
-			return -2;
 		default:
 			return -1;
 		}
@@ -95,30 +77,8 @@ public static class MenuNhanh
 		AmThanh.phat(AmThanh.BAM);
 		switch (m)
 		{
-		case LUYEN:
-			AutoUp.batTat();
-			break;
-		case GIAO:
-			AutoVanTieu.batTat();
-			break;
-		case TU_PK:
-			AutoPk.batTat();
-			break;
-		case MA_PK:
-			AutoPk.nutMaPk();
-			break;
-		case NHAY:
-			mo = false;
-			AutoPk.nutNhay();
-			break;
-		case CO_PK:
-			AutoPk.nutDs();
-			break;
-		case DOI_PET:
-			AutoPk.nutDoiPet();
-			break;
-		case DUNG:
-			AutoPk.nutDung();
+		case TU_DONG:
+			BangTuDong.mo();
 			break;
 		case AN:
 			anKhiDanh = !anKhiDanh;
@@ -135,7 +95,7 @@ public static class MenuNhanh
 
 	private static bool dangChay()
 	{
-		return AutoUp.dang || AutoVanTieu.dang || AutoPk.dang();
+		return TuDong.dang;
 	}
 
 	private static bool dungManChoi()
@@ -243,6 +203,7 @@ public static class MenuNhanh
 		if (!dungManChoi())
 		{
 			mo = false;
+			BangTuDong.dangMo = false;
 			return;
 		}
 		if (Canvas.currentDialog != null || Canvas.menu.showMenu || Canvas.gameScr.chatMode)
@@ -250,6 +211,11 @@ public static class MenuNhanh
 			return;
 		}
 		Canvas.resetTrans(g);
+		if (BangTuDong.dangMo)
+		{
+			BangTuDong.ve(g);
+			return;
+		}
 		if (!mo)
 		{
 			if (anBong())
@@ -334,10 +300,16 @@ public static class MenuNhanh
 		if (!dungManChoi())
 		{
 			mo = false;
+			BangTuDong.dangMo = false;
 			return;
 		}
 		if (Canvas.currentDialog != null || Canvas.menu.showMenu || Canvas.gameScr.chatMode)
 		{
+			return;
+		}
+		if (BangTuDong.dangMo)
+		{
+			BangTuDong.tick();
 			return;
 		}
 		if (!mo)
@@ -387,14 +359,14 @@ public static class MenuNhanh
 		}
 	}
 
-	/// <summary>Điểm (x, y) thuộc Poké Ball / bảng đang mở (AutoUp không coi là người chơi chạm để dừng).</summary>
+	/// <summary>Điểm (x, y) thuộc Poké Ball / bảng đang mở (Tự động đánh không coi là người chơi chạm để dừng).</summary>
 	public static bool trongNut(int x, int y)
 	{
 		if (!bat() || !dungManChoi())
 		{
 			return false;
 		}
-		if (mo)
+		if (mo || BangTuDong.dangMo)
 		{
 			return true;
 		}
@@ -414,6 +386,15 @@ public static class MenuNhanh
 
 	public static bool phim(int keyCode)
 	{
+		if (BangTuDong.dangMo)
+		{
+			if (!dungManChoi() || Canvas.currentDialog != null || Canvas.menu.showMenu || Canvas.gameScr.chatMode)
+			{
+				BangTuDong.dangMo = false;
+				return false;
+			}
+			return BangTuDong.phim(keyCode);
+		}
 		if (!bat())
 		{
 			return false;

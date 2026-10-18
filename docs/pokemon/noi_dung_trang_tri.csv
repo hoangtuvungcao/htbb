@@ -1,43 +1,43 @@
 stt,mua,ten_mua,ngay_mo,tran_cap,kieu,ten,gia,tien,nguon,chi_so,trang_thai,icon
-1,1,Mùa Kanto,0,60,danh_hieu,Nhà vô địch Mùa Kanto,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14478
-2,1,Mùa Kanto,0,60,danh_hieu,Nhà nghiên cứu Mùa Kanto,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14478
+1,1,Mùa Kanto,0,60,danh_hieu,Nhà vô địch mùa Kanto,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14478
+2,1,Mùa Kanto,0,60,danh_hieu,Nhà nghiên cứu mùa Kanto,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14478
 3,1,Mùa Kanto,0,60,khung,Khung ảnh Pikachu,60,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14479
-4,1,Mùa Kanto,0,60,khung,Khung bậc Master Mùa Kanto,0,khong_ban,Bậc Master mùa PvP,0,can_code,14479
+4,1,Mùa Kanto,0,60,khung,Khung bậc Master mùa Kanto,0,khong_ban,Bậc Master mùa PvP,0,can_code,14479
 5,1,Mùa Kanto,0,60,trang_phuc,Trang phục Pikachu,150,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14480
-6,1,Mùa Kanto,0,60,trang_phuc,Áo choàng Gym Mùa Kanto,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14480
+6,1,Mùa Kanto,0,60,trang_phuc,Áo choàng Gym mùa Kanto,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14480
 7,1,Mùa Kanto,0,60,hieu_ung,Hào quang Pikachu,0,khong_ban,Hoàn thành 8 Gym của vùng,0,can_code,14481
-8,2,Mùa Johto giữa,60,70,danh_hieu,Nhà vô địch Mùa Johto giữa,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14482
-9,2,Mùa Johto giữa,60,70,danh_hieu,Nhà nghiên cứu Mùa Johto giữa,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14482
+8,2,Mùa Johto giữa,60,70,danh_hieu,Nhà vô địch mùa Johto giữa,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14482
+9,2,Mùa Johto giữa,60,70,danh_hieu,Nhà nghiên cứu mùa Johto giữa,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14482
 10,2,Mùa Johto giữa,60,70,khung,Khung ảnh Togepi,60,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14483
-11,2,Mùa Johto giữa,60,70,khung,Khung bậc Master Mùa Johto giữa,0,khong_ban,Bậc Master mùa PvP,0,can_code,14483
+11,2,Mùa Johto giữa,60,70,khung,Khung bậc Master mùa Johto giữa,0,khong_ban,Bậc Master mùa PvP,0,can_code,14483
 12,2,Mùa Johto giữa,60,70,trang_phuc,Trang phục Togepi,150,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14484
-13,2,Mùa Johto giữa,60,70,trang_phuc,Áo choàng Gym Mùa Johto giữa,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14484
+13,2,Mùa Johto giữa,60,70,trang_phuc,Áo choàng Gym mùa Johto giữa,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14484
 14,2,Mùa Johto giữa,60,70,hieu_ung,Hào quang Togepi,0,khong_ban,Hoàn thành 8 Gym của vùng,0,can_code,14485
-15,3,Mùa Johto cuối,150,80,danh_hieu,Nhà vô địch Mùa Johto cuối,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14486
-16,3,Mùa Johto cuối,150,80,danh_hieu,Nhà nghiên cứu Mùa Johto cuối,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14486
+15,3,Mùa Johto cuối,150,80,danh_hieu,Nhà vô địch mùa Johto cuối,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14486
+16,3,Mùa Johto cuối,150,80,danh_hieu,Nhà nghiên cứu mùa Johto cuối,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14486
 17,3,Mùa Johto cuối,150,80,khung,Khung ảnh Ho-Oh,60,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14487
-18,3,Mùa Johto cuối,150,80,khung,Khung bậc Master Mùa Johto cuối,0,khong_ban,Bậc Master mùa PvP,0,can_code,14487
+18,3,Mùa Johto cuối,150,80,khung,Khung bậc Master mùa Johto cuối,0,khong_ban,Bậc Master mùa PvP,0,can_code,14487
 19,3,Mùa Johto cuối,150,80,trang_phuc,Trang phục Ho-Oh,150,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14488
-20,3,Mùa Johto cuối,150,80,trang_phuc,Áo choàng Gym Mùa Johto cuối,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14488
+20,3,Mùa Johto cuối,150,80,trang_phuc,Áo choàng Gym mùa Johto cuối,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14488
 21,3,Mùa Johto cuối,150,80,hieu_ung,Hào quang Ho-Oh,0,khong_ban,Hoàn thành 8 Gym của vùng,0,can_code,14489
-22,4,Mùa Đường Victory,240,91,danh_hieu,Nhà vô địch Mùa Đường Victory,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14490
-23,4,Mùa Đường Victory,240,91,danh_hieu,Nhà nghiên cứu Mùa Đường Victory,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14490
+22,4,Mùa Đường Victory,240,91,danh_hieu,Nhà vô địch mùa Đường Victory,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14490
+23,4,Mùa Đường Victory,240,91,danh_hieu,Nhà nghiên cứu mùa Đường Victory,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14490
 24,4,Mùa Đường Victory,240,91,khung,Khung ảnh Lugia,60,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14491
-25,4,Mùa Đường Victory,240,91,khung,Khung bậc Master Mùa Đường Victory,0,khong_ban,Bậc Master mùa PvP,0,can_code,14491
+25,4,Mùa Đường Victory,240,91,khung,Khung bậc Master mùa Đường Victory,0,khong_ban,Bậc Master mùa PvP,0,can_code,14491
 26,4,Mùa Đường Victory,240,91,trang_phuc,Trang phục Lugia,150,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14492
-27,4,Mùa Đường Victory,240,91,trang_phuc,Áo choàng Gym Mùa Đường Victory,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14492
+27,4,Mùa Đường Victory,240,91,trang_phuc,Áo choàng Gym mùa Đường Victory,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14492
 28,4,Mùa Đường Victory,240,91,hieu_ung,Hào quang Lugia,0,khong_ban,Hoàn thành 8 Gym của vùng,0,can_code,14493
-29,5,Mùa Hoenn 1,365,95,danh_hieu,Nhà vô địch Mùa Hoenn 1,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14494
-30,5,Mùa Hoenn 1,365,95,danh_hieu,Nhà nghiên cứu Mùa Hoenn 1,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14494
+29,5,Mùa Hoenn 1,365,95,danh_hieu,Nhà vô địch mùa Hoenn 1,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14494
+30,5,Mùa Hoenn 1,365,95,danh_hieu,Nhà nghiên cứu mùa Hoenn 1,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14494
 31,5,Mùa Hoenn 1,365,95,khung,Khung ảnh Latias,60,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14495
-32,5,Mùa Hoenn 1,365,95,khung,Khung bậc Master Mùa Hoenn 1,0,khong_ban,Bậc Master mùa PvP,0,can_code,14495
+32,5,Mùa Hoenn 1,365,95,khung,Khung bậc Master mùa Hoenn 1,0,khong_ban,Bậc Master mùa PvP,0,can_code,14495
 33,5,Mùa Hoenn 1,365,95,trang_phuc,Trang phục Latias,150,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14496
-34,5,Mùa Hoenn 1,365,95,trang_phuc,Áo choàng Gym Mùa Hoenn 1,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14496
+34,5,Mùa Hoenn 1,365,95,trang_phuc,Áo choàng Gym mùa Hoenn 1,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14496
 35,5,Mùa Hoenn 1,365,95,hieu_ung,Hào quang Latias,0,khong_ban,Hoàn thành 8 Gym của vùng,0,can_code,14497
-36,6,Mùa Hoenn 2,545,100,danh_hieu,Nhà vô địch Mùa Hoenn 2,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14498
-37,6,Mùa Hoenn 2,545,100,danh_hieu,Nhà nghiên cứu Mùa Hoenn 2,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14498
+36,6,Mùa Hoenn 2,545,100,danh_hieu,Nhà vô địch mùa Hoenn 2,0,khong_ban,Top 100 PvP cuối mùa,0,can_code,14498
+37,6,Mùa Hoenn 2,545,100,danh_hieu,Nhà nghiên cứu mùa Hoenn 2,0,khong_ban,Pokédex +25 loài trong mùa,0,can_code,14498
 38,6,Mùa Hoenn 2,545,100,khung,Khung ảnh Rayquaza,60,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14499
-39,6,Mùa Hoenn 2,545,100,khung,Khung bậc Master Mùa Hoenn 2,0,khong_ban,Bậc Master mùa PvP,0,can_code,14499
+39,6,Mùa Hoenn 2,545,100,khung,Khung bậc Master mùa Hoenn 2,0,khong_ban,Bậc Master mùa PvP,0,can_code,14499
 40,6,Mùa Hoenn 2,545,100,trang_phuc,Trang phục Rayquaza,150,luong,Cửa hàng lượng (chỉ trang trí),0,can_code,14500
-41,6,Mùa Hoenn 2,545,100,trang_phuc,Áo choàng Gym Mùa Hoenn 2,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14500
+41,6,Mùa Hoenn 2,545,100,trang_phuc,Áo choàng Gym mùa Hoenn 2,0,khong_ban,Đổi 40 Huy chương Gym,0,can_code,14500
 42,6,Mùa Hoenn 2,545,100,hieu_ung,Hào quang Rayquaza,0,khong_ban,Hoàn thành 8 Gym của vùng,0,can_code,14501

@@ -187,7 +187,7 @@ public final class HePokemon {
     /**
      * Ngu hanh goc cu (LiveActor.HE_THUY=0, HE_MOC=1, HE_HOA=2, HE_THO=3, HE_KIM=4)
      * gan nhat voi tung he Pokemon. CHI dung de gui xuong client cu / ghi vao cac
-     * truong ngu hanh cu (icon he cua quai, mang buff 5 o trong lib/NQSH_5h.jar) -
+     * truong ngu hanh cu (icon he cua quai, mang buff 5 o trong lib/htbb-core.jar) -
      * KHONG dung de tinh khac he (do la heSoTrongGame).
      */
     private static final byte[] NGU_HANH_CU = {

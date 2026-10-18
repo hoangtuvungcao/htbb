@@ -17,7 +17,7 @@ export default defineAdminHandler(async (event, admin) => {
   const dsNV = await q<{ id: number, charname: string, userId: number }>(db, `SELECT id, charname, userId FROM tob_char${dk}`, th)
 
   if (dsNV.length === 0) {
-    return { loai: 'success' as const, thongBao: 'Không có nhân vật nào ngoài tài khoản quản trị — không có gì để reset.' }
+    return { loai: 'success' as const, thongBao: 'Không có Pokémon nào ngoài tài khoản quản trị — không có gì để reset.' }
   }
 
   await taoBangLenhNhanVat(db)
@@ -38,12 +38,12 @@ export default defineAdminHandler(async (event, admin) => {
     await exec(conn, `DELETE FROM \`5h_active\` WHERE userID IN (${cho})`, idsTaiKhoan)
   })
 
-  await ghiNhatKy(event, 'reset_toanbo', '', `đã xếp hàng đợi xoá ${dsNV.length} nhân vật và huỷ kích hoạt ${taiKhoan.size}`
+  await ghiNhatKy(event, 'reset_toanbo', '', `đã xếp hàng đợi xoá ${dsNV.length} Pokémon và huỷ kích hoạt ${taiKhoan.size}`
     + ` tài khoản (loại trừ ${idsAdmin.length} tài khoản quản trị)`)
   return {
     loai: 'success' as const,
-    thongBao: `Đã xếp hàng đợi lệnh xoá cho ${dsNV.length} nhân vật và huỷ kích hoạt ${taiKhoan.size}`
-      + ' tài khoản (phải "Kích hoạt ngay" lại mới vào game được). Server game sẽ tự xử lý xoá nhân vật dần ở nền'
-      + ' (khoảng 1 nhân vật/giây) — tải lại trang này để xem tiến độ.',
+    thongBao: `Đã xếp hàng đợi lệnh xoá cho ${dsNV.length} Pokémon và huỷ kích hoạt ${taiKhoan.size}`
+      + ' tài khoản (phải "Kích hoạt ngay" lại mới vào game được). Server game sẽ tự xử lý xoá Pokémon dần ở nền'
+      + ' (khoảng 1 Pokémon/giây) — tải lại trang này để xem tiến độ.',
   }
 })

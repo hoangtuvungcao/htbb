@@ -9,7 +9,12 @@ export interface RankRow {
   sub?: string
   /** Chân dung Pokémon 40×40 (vd. /pokemon/4.png), hiện cạnh tên. */
   anh?: string
-  value: number
+  /** null = bị ẩn (game đang bật "ẩn xu/lượng ở bảng top"). */
+  value: number | null
+  /** Hạng thật (khi phân trang). Bỏ trống = theo vị trí. */
+  hang?: number
+  /** Huy hiệu nhỏ cạnh tên: vùng, shiny, bậc PvP… */
+  nhan?: string[]
 }
 </script>
 
@@ -24,24 +29,28 @@ const props = defineProps<{
   error?: boolean
   errorText: string
   emptyText: string
+  /** false = không vẽ bục (trang 2 trở đi): mọi dòng vào bảng. */
+  buc?: boolean
 }>()
 
-const top3 = computed(() => props.rows.slice(0, 3))
-const rest = computed(() => props.rows.slice(3).map((r, i) => ({ ...r, hang: i + 4 })))
+const coBuc = computed(() => props.buc !== false)
+const top3 = computed(() => (coBuc.value ? props.rows.slice(0, 3) : []))
+const rest = computed(() => props.rows.slice(coBuc.value ? 3 : 0).map((r, i) => ({ ...r, hang: r.hang ?? i + (coBuc.value ? 4 : 1) })))
+const hienSo = (v: number | null) => (v == null ? 'Ẩn' : so(v))
 
 /** Bục: hạng 2 bên trái, hạng 1 ở giữa (cao nhất), hạng 3 bên phải. */
 const bucVinhDanh = computed(() => {
   const thuTu = [1, 0, 2]
   return thuTu
     .filter(i => top3.value[i])
-    .map(i => ({ ...top3.value[i]!, hang: i + 1 }))
+    .map(i => ({ ...top3.value[i]!, hang: top3.value[i]!.hang ?? i + 1 }))
 })
 
 /** Màu bục theo hạng: vàng Pikachu, bạc (xanh nhạt), đồng (cam lửa). */
 const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: string, huy: string }> = {
-  1: { nen: 'bg-pikachu-400', chu: 'text-navy-950', cao: 'sm:h-40', icon: 'i-lucide-crown', huy: 'bg-pikachu-400 text-navy-950' },
-  2: { nen: 'bg-pokeblue-200', chu: 'text-navy-950', cao: 'sm:h-32', icon: 'i-lucide-medal', huy: 'bg-pokeblue-200 text-navy-950' },
-  3: { nen: 'bg-[#f6a26b]', chu: 'text-navy-950', cao: 'sm:h-24', icon: 'i-lucide-award', huy: 'bg-[#f6a26b] text-navy-950' },
+  1: { nen: 'bg-pikachu-400', chu: 'text-navy-950', cao: 'sm:h-44', icon: 'i-lucide-crown', huy: 'bg-pikachu-400 text-navy-950' },
+  2: { nen: 'bg-pokeblue-200', chu: 'text-navy-950', cao: 'sm:h-36', icon: 'i-lucide-medal', huy: 'bg-pokeblue-200 text-navy-950' },
+  3: { nen: 'bg-[#f6a26b]', chu: 'text-navy-950', cao: 'sm:h-28', icon: 'i-lucide-award', huy: 'bg-[#f6a26b] text-navy-950' },
 }
 </script>
 
@@ -81,23 +90,26 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
             <p v-if="r.sub" class="text-sm font-semibold text-muted">
               {{ r.sub }}
             </p>
+            <p v-if="r.nhan?.length" class="mt-1 flex flex-wrap justify-center gap-1">
+              <UBadge v-for="n in r.nhan" :key="n" size="sm" color="neutral" variant="subtle">{{ n }}</UBadge>
+            </p>
             <!-- Thân bục: cao thấp theo hạng -->
             <div
-              class="mt-3 flex w-full flex-col items-center justify-center rounded-t-2xl border-[3px] border-b-0 border-[var(--poke-outline)] py-4 sm:justify-start"
+              class="mt-3 flex w-full flex-col items-center justify-center rounded-2xl border-[3px] sm:rounded-b-none sm:border-b-0 border-[var(--poke-outline)] py-4 sm:justify-start"
               :class="[kieuHang[r.hang]!.nen, kieuHang[r.hang]!.cao]"
             >
               <span class="font-pixel text-sm" :class="kieuHang[r.hang]!.chu">#{{ r.hang }}</span>
-              <span class="num mt-2 font-display text-3xl font-extrabold" :class="kieuHang[r.hang]!.chu">{{ so(r.value) }}</span>
+              <span class="num mt-2 font-display text-3xl font-extrabold" :class="kieuHang[r.hang]!.chu">{{ hienSo(r.value) }}</span>
               <span class="text-xs font-bold uppercase tracking-[0.15em] text-navy-800">{{ valueLabel }}</span>
             </div>
           </div>
         </FxReveal>
       </div>
-      <div class="h-3 rounded-b-xl border-[3px] border-[var(--poke-outline)] bg-grass-500" aria-hidden="true" />
+      <div v-if="top3.length" class="h-3 rounded-b-xl border-[3px] border-[var(--poke-outline)] bg-grass-500" aria-hidden="true" />
 
       <!-- Hạng 4–10 -->
       <FxReveal v-if="rest.length" :delay="0.2">
-        <div class="mt-8 overflow-hidden rounded-2xl glass">
+        <div class="overflow-x-auto rounded-2xl glass" :class="top3.length ? 'mt-8' : ''">
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b-2 border-default bg-elevated text-left font-display text-xs uppercase tracking-wider text-muted">
@@ -120,14 +132,17 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
                 <td class="px-5 py-3">
                   <span class="inline-flex items-center gap-3 align-middle">
                     <PokeAvatar v-if="r.anh" :src="r.anh" class="size-10" />
-                    <span>
+                    <span class="min-w-0">
                       <span class="font-bold text-highlighted">{{ r.name }}</span>
                       <span v-if="r.sub" class="ms-2 text-muted">· {{ r.sub }}</span>
+                      <span v-if="r.nhan?.length" class="ms-2 inline-flex flex-wrap gap-1 align-middle">
+                        <UBadge v-for="n in r.nhan" :key="n" size="sm" color="neutral" variant="subtle">{{ n }}</UBadge>
+                      </span>
                     </span>
                   </span>
                 </td>
                 <td class="num px-5 py-3 font-display text-base font-bold text-primary">
-                  {{ so(r.value) }}
+                  {{ hienSo(r.value) }}
                 </td>
               </tr>
             </tbody>

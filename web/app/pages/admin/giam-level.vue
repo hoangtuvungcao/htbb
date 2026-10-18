@@ -23,7 +23,7 @@ const soTen = computed(() => new Set(tenNhanVat.value.split(/[,;\r\n]+/).map(s =
 
 function hoiGui() {
   if (soTen.value === 0) {
-    toast.add({ title: 'Thiếu tên', description: 'Nhập từ 1 đến 100 tên nhân vật.', color: 'error' })
+    toast.add({ title: 'Thiếu tên', description: 'Nhập từ 1 đến 100 tên Pokémon.', color: 'error' })
     return
   }
   moXacNhan.value = true
@@ -70,24 +70,24 @@ async function huy(l: DongLenhGiaoDien) {
 
     <div>
       <h1 class="text-xl font-bold text-highlighted">
-        Giảm Level nhiều nhân vật
+        Giảm Level nhiều Pokémon
       </h1>
       <p class="text-sm text-muted">
-        Giảm cùng số level cho một hoặc nhiều nhân vật.
+        Giảm cùng số level cho một hoặc nhiều Pokémon.
       </p>
     </div>
 
     <UCard>
       <form class="space-y-4" @submit.prevent="hoiGui">
-        <UFormField label="Tên nhân vật — mỗi dòng một tên, hoặc ngăn bằng dấu phẩy / chấm phẩy (tối đa 100)" required>
+        <UFormField label="Tên Pokémon — mỗi dòng một tên, hoặc ngăn bằng dấu phẩy / chấm phẩy (tối đa 100)" required>
           <UTextarea v-model="tenNhanVat" :rows="6" placeholder="nhanvat1&#10;nhanvat2" class="w-full" />
         </UFormField>
-        <UFormField label="Số level cần giảm cho mỗi nhân vật" required>
+        <UFormField label="Số level cần giảm cho mỗi Pokémon" required>
           <UInputNumber v-model="soCap" :min="1" :max="data?.capDoToiDa ?? 90" class="w-40" />
         </UFormField>
         <div class="space-y-1 text-sm text-muted">
-          <p>Cấp thấp nhất là 1, EXP về 0% cấp mới. Không đủ cấp sẽ báo lỗi riêng cho nhân vật đó. Tên trùng chỉ xử lý một lần.</p>
-          <p>Giữ điểm đã nhận; luyện lại cấp cũ không cộng trùng điểm. Nhân vật offline sẽ được giảm khi vào game.</p>
+          <p>Cấp thấp nhất là 1, EXP về 0% cấp mới. Không đủ cấp sẽ báo lỗi riêng cho Pokémon đó. Tên trùng chỉ xử lý một lần.</p>
+          <p>Giữ điểm đã nhận; luyện lại cấp cũ không cộng trùng điểm. Pokémon offline sẽ được giảm khi vào game.</p>
         </div>
         <UButton type="submit" color="error" icon="i-lucide-user-minus" label="Gửi lệnh giảm Level" :loading="dangGui" />
       </form>
@@ -111,8 +111,8 @@ async function huy(l: DongLenhGiaoDien) {
 
     <AdminNhanvatXacNhan
       v-model:open="moXacNhan"
-      :title="`Giảm ${soCap} level cho ${soTen} nhân vật?`"
-      description="Nhân vật đang online được giảm ngay; offline sẽ được giảm khi vào game."
+      :title="`Giảm ${soCap} level cho ${soTen} Pokémon?`"
+      description="Pokémon đang online được giảm ngay; offline sẽ được giảm khi vào game."
       nhan-nut="Gửi lệnh giảm Level"
       mau="error"
       :dang-chay="dangGui"

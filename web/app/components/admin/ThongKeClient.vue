@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Lịch sử đăng nhập theo client (PC / Android / jar) + danh sách tài khoản từng dùng BẢN NGOÀI
- * (không phải client NQSH-H2 của mình) để soát và khoá. Đặt dưới trang "Ai đang ở đâu".
+ * (không phải client HTBB chính thức của mình) để soát và khoá. Đặt dưới trang "Ai đang ở đâu".
  * Dữ liệu: server/api/admin/client.get.ts (bảng tob_client_dang_nhap, server game ghi mỗi lần
  * đăng nhập thành công — data/GhiClient.java bên repo HTBB).
  */
@@ -92,7 +92,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
             </UBadge>
           </h3>
           <p class="text-sm text-muted">
-            Từng đăng nhập bằng client KHÔNG phải bản NQSH-H2 của bạn (client gốc TeaMobi hoặc client lạ — không
+            Từng đăng nhập bằng client KHÔNG phải bản HTBB chính thức của bạn (client gốc TeaMobi hoặc client lạ — không
             gửi mã máy). Bấm "Khoá / xem" để mở tài khoản và khoá. Client bị sửa tay vẫn có thể giả làm bản của
             bạn, nên đây là danh sách để soát, không phải bằng chứng tuyệt đối.
           </p>

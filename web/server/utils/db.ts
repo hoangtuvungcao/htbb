@@ -3,7 +3,7 @@
  *
  * Hai database dùng chung với game server:
  *   - account : bảng team_user (login server CheckLoginSocket.jar kiểm tra)
- *   - kpah_db : dữ liệu game (nhân vật, kích hoạt, bảng xếp hạng...)
+ *   - htbb_db : dữ liệu game (nhân vật, kích hoạt, bảng xếp hạng...)
  *
  * Luôn dùng prepared statement (`?`). Mật khẩu được so/ghi bằng hàm PASSWORD()
  * của MariaDB ngay trong câu SQL để KHỚP với login server.

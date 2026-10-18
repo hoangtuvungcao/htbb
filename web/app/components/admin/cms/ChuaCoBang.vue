@@ -8,10 +8,13 @@ defineProps<{ bang?: string }>()
     <template #description>
       <p>
         Website vẫn chạy bằng nội dung mặc định. Để sửa được{{ bang ? ` (${bang})` : '' }}, chạy một lần file
-        <code>server/sql/web_cms.sql</code> (bản sao: <code>HTBB/sql/web_cms.sql</code>) vào database game:
+        <code>sql/web_cms.sql</code>  vào <strong>database game</strong>
+        bằng công cụ quản trị CSDL quen dùng (dòng lệnh mysql/mariadb, HeidiSQL, DBeaver...), đăng nhập bằng
+        tài khoản CSDL có quyền tạo bảng — thông tin kết nối giống cấu hình của web/game server.
       </p>
-      <pre class="mt-2 overflow-x-auto rounded-lg bg-elevated p-2 text-xs">mysql -u kpah -p kpah_db &lt; server/sql/web_cms.sql
-# NovaDB: mysql -h 127.0.0.1 -P 3318 -u kpah -p kpah_db &lt; server/sql/web_cms.sql</pre>
+      <p class="mt-2 text-xs text-muted">
+        File chỉ tạo bảng còn thiếu (CREATE TABLE IF NOT EXISTS), chạy lại nhiều lần không mất dữ liệu.
+      </p>
     </template>
   </UAlert>
 </template>

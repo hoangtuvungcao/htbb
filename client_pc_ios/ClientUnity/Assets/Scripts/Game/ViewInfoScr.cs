@@ -141,7 +141,7 @@ public class ViewInfoScr : MyScreen
 		idClan = clan.id;
 		text = new mVector();
 		status = clan.status;
-		text.addElement("Bang chủ: " + clan.master);
+		text.addElement("Đội trưởng: " + clan.master);
 		text.addElement("Cấp độ: " + clan.level);
 		text.addElement("Xu: " + Canvas.getMoneys(clan.money));
 		text.addElement("Thành viên: " + clan.members);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Bật/tắt server game (kpah-game) từ xa, không cần SSH/CLI.
+ * Bật/tắt server game (htbb-game) từ xa, không cần SSH/CLI.
  *
  * Trang này KHÔNG tự bật/tắt gì: nó chỉ ghi "trạng thái mong muốn" vào bảng
  * `dieu_khien_server`; watcher vps/dieu-khien-server.sh (cron của root, mỗi phút) đọc
@@ -109,7 +109,7 @@ function hoiRestart() {
     </template>
 
     <p class="text-sm text-muted">
-      Điều khiển service <code>kpah-game</code> trên VPS từ xa, không cần SSH/CLI.
+      Điều khiển service <code>htbb-game</code> trên VPS từ xa, không cần SSH/CLI.
     </p>
 
     <USkeleton v-if="!data && status === 'pending'" class="h-48" />
@@ -134,7 +134,7 @@ function hoiRestart() {
       <template #description>
         <p>Chạy một lần trên máy chủ:</p>
         <p class="mt-1">
-          <code>mysql -u root kpah_db &lt; sql/them_bang_dieu_khien_server.sql</code>
+          <code>mysql -u root htbb_db &lt; sql/them_bang_dieu_khien_server.sql</code>
         </p>
         <p class="mt-1 text-xs">
           Lỗi đọc được: {{ data.loiDoc }}
@@ -242,7 +242,7 @@ function hoiRestart() {
             Thêm dòng:
           </p>
           <p class="mt-1">
-            <code>* * * * * /opt/kpah/vps/dieu-khien-server.sh &gt;&gt;/opt/kpah/log/dieu-khien-server.log 2&gt;&amp;1</code>
+            <code>* * * * * /opt/htbb/vps/dieu-khien-server.sh &gt;&gt;/opt/htbb/log/dieu-khien-server.log 2&gt;&amp;1</code>
           </p>
           <p class="mt-1 text-xs">
             Chi tiết/an toàn: xem chú thích đầu file <code>vps/dieu-khien-server.sh</code>.

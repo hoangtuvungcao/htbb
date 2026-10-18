@@ -17,7 +17,7 @@ public class ItemLuckyDraw {
     public String name;
     static short[] PC_UP_ATK_CHAR_CHOI = new short[]{10, 10, 10};
     static short[] PC_UP_ATK_EFF_CHOI = new short[]{10, 10, 10};
-    public static String[] nameAnimal = new String[]{"Ngựa", "Hổ", "Trâu", "Sói", "Hạc", "Phượng hoàng", "Hắc thố", "Tuần lộc"};
+    public static String[] nameAnimal = new String[]{"Thú cưỡi", "Hổ", "Trâu", "Sói", "Hạc", "Moltres", "Lopunny", "Tuần lộc"};
 
     public ItemLuckyDraw() {
     }
@@ -47,12 +47,12 @@ public class ItemLuckyDraw {
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                 info = "trúng " + pet.getName() + " thoi han " + time;
             } else {
-                info = "trúng phượng hoàng";
+                info = "trúng Moltres";
                 Database.instance.saveOrtherLog("", p.getName(), "Trung phuong hoang " + this.id, "phuonghoang");
                 p.createTrungPhuongHoang(30L, this.id);
 
                 try {
-                    Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + p.getName() + " cấp độ " + p.lvDetail.lv + " đã trúng được Linh Thú Phượng Hoàng."));
+                    Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + p.getName() + " cấp độ " + p.lvDetail.lv + " đã trúng được Thú Cưỡi Moltres."));
                 } catch (Exception var8) {
                 }
             }
@@ -174,7 +174,7 @@ public class ItemLuckyDraw {
             info = newItem.getDBInfo() + "|" + newItem.getAttribute() + "_" + newItem.level + " thoi han " + time;
             if (time == 0) {
                 try {
-                    Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Chúc mừng " + p.getName() + " đã nhận được " + newItem.getTemplate().name + " " + newItem.level + " vĩnh viễn"));
+                    com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " đã nhận được " + newItem.getTemplate().name + " " + newItem.level + " vĩnh viễn");
                     Database.instance.saveOrtherLog("", p.getName(), newItem.getTemplate().name + "_" + newItem.getDBInfo() + "|" + newItem.getAttribute() + " " + newItem.level, "vv");
                 } catch (Exception var7) {
                 }
@@ -373,7 +373,7 @@ public class ItemLuckyDraw {
                     String[] nameatt = new String[]{"băng lan", "sét lan", "độc lan"};
                     ItemTemplates it = (ItemTemplates)((Hashtable)Map.itemTemplates.get(5)).get(tempid);
                     String info = "Tăng 10% tấn công";
-                    String info1 = "cơ bản của nhân vật";
+                    String info1 = "cơ bản của Pokémon";
                     String info2 = "Tăng 10% st " + nameatt[tempid - 617];
                     String info3 = "Tăng thêm 1-4% tỷ lệ";
                     if (tempid == 613) {
@@ -404,8 +404,8 @@ public class ItemLuckyDraw {
                    if(tempid == 898) {
                     result.add("Tăng 1-10% tấn công");
                    } else if (tempid == 899) {
-                    result.add("Tăng 1-10% thủ vật");
-                    result.add("Tăng 1-10% thủ ma");
+                    result.add("Tăng 1-10% phòng thủ");
+                    result.add("Tăng 1-10% phòng thủ đặc biệt");
                    } else if (tempid == 900) {
                     result.add("Tăng 1-20% exp");
                    } else if (tempid == 901) {
@@ -446,7 +446,7 @@ public class ItemLuckyDraw {
                 result.add(Map.gemTemplate[this.id].decript);
                 break;
             case 8:
-                result.add("Linh Thú " + nameAnimal[this.id]);
+                result.add("Thú Cưỡi " + nameAnimal[this.id]);
                 break;
             case 12:
                 if (this.id != 9) {

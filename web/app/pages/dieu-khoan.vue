@@ -8,7 +8,7 @@ const muc = [
   { id: 'phi-thuong-mai', ten: 'Dự án fan phi thương mại', noi: [
     `${tenSite} là dự án do cộng đồng người hâm mộ thực hiện, hoàn toàn miễn phí. Không có nạp tiền, không bán vật phẩm, không quảng cáo.`,
     'Pokémon, tên các loài Pokémon và mọi hình ảnh, thương hiệu liên quan thuộc về Nintendo, Creatures Inc., GAME FREAK inc. và The Pokémon Company. Dự án không liên kết, không được tài trợ hay xác nhận bởi các công ty này.',
-    'Sprite và chân dung Pokémon dùng theo giấy phép Creative Commons BY-NC 4.0 của PMDCollab (bắt buộc ghi công, cấm thương mại). Danh sách tác giả ở trang Ghi công.',
+    'Sprite và chân dung Pokémon dùng theo giấy phép Creative Commons BY-NC 4.0 của PMDCollab (bắt buộc ghi công, cấm thương mại). Danh sách tác giả ở trang Giấy phép & nguồn tài nguyên (/giay-phep).',
     'Nếu bạn là chủ sở hữu quyền và muốn gỡ nội dung, hãy liên hệ ban quản trị qua kênh hỗ trợ — chúng tôi sẽ xử lý nhanh nhất có thể.',
   ] },
   { id: 'tai-khoan', ten: 'Tài khoản', noi: [
@@ -20,7 +20,7 @@ const muc = [
     'Không dùng bot, phần mềm tự động, client sửa đổi hay lợi dụng lỗi. Phát hiện lỗi hãy báo cho ban quản trị.',
     'Không mua bán vật phẩm, xu, tài khoản bằng tiền thật (RMT).',
     'Tôn trọng người chơi khác: không lăng mạ, quấy rối, lừa đảo, phát tán thông tin cá nhân của người khác.',
-    'Tên nhân vật/đội không được phản cảm, mạo danh ban quản trị hay người khác.',
+    'Tên Pokémon/đội không được phản cảm, mạo danh ban quản trị hay người khác.',
   ] },
   { id: 'dich-vu', ten: 'Dịch vụ & thay đổi', noi: [
     'Máy chủ được vận hành "như hiện có", có thể bảo trì, thay đổi cân bằng, hoặc ngừng hoạt động mà không bồi hoàn — vì không có giao dịch tiền nào.',
@@ -46,7 +46,7 @@ const muc = [
           </ul>
         </WikiSection>
         <p class="mt-12 text-sm text-muted">
-          Xem thêm: <NuxtLink to="/quyen-rieng-tu" class="lien-ket">Quyền riêng tư</NuxtLink> · <NuxtLink to="/ghi-cong" class="lien-ket">Ghi công & giấy phép</NuxtLink>. Cập nhật lần cuối: 17/10/2026.
+          Xem thêm: <NuxtLink to="/quyen-rieng-tu" class="lien-ket">Quyền riêng tư</NuxtLink> · <NuxtLink to="/giay-phep" class="lien-ket">Giấy phép & nguồn tài nguyên</NuxtLink>. Cập nhật lần cuối: 17/10/2026.
         </p>
       </div>
     </UContainer>

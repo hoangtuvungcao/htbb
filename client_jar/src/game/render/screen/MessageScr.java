@@ -161,8 +161,23 @@ public class MessageScr extends Screen {
             setWTab();
         }
         if (!te.equals("")) {
-            String[] tex = Font.arialFontW.splitFontBStrInLine(te, this.w - 20);
-            for (String str : tex) {
+            // pokemon: ngắt dòng theo lòng bảng (bảng có viền kép ~5 px mỗi bên; w có thể chưa khởi tạo)
+            int rongChu = (this.w > 0 ? this.w : Canvas.w - 48) - 22;
+            String[] tex = Font.arialFontW.splitFontBStrInLine(te, rongChu);
+            for (String str0 : tex) {
+                // dòng vẫn dài hơn lòng bảng (ngắt dòng gốc trượt): ngắt tiếp theo dấu cách
+                String str = str0;
+                while (Font.arialFontW.getWidthNguyenVan(str) > rongChu && str.indexOf(' ') > 0) {
+                    int cat = str.length();
+                    do {
+                        cat = str.lastIndexOf(' ', cat - 1);
+                    } while (cat > 0 && Font.arialFontW.getWidthNguyenVan(str.substring(0, cat)) > rongChu);
+                    if (cat <= 0) {
+                        break;
+                    }
+                    tab.text.addElement(str.substring(0, cat));
+                    str = str.substring(cat + 1);
+                }
                 tab.text.addElement(str);
                 if (tab.text.size() > 50) {
                     tab.text.removeElementAt(0);
@@ -186,7 +201,7 @@ public class MessageScr extends Screen {
             return;
         }
         chatDelay = (int) (System.currentTimeMillis() / 100);
-        if (this.focusT.name.equals("Bang hội")) {
+        if (this.focusT.name.equals("Đội")) {
             GameService.gI().chatToClan(this.tfInput.getText());
         } else {
             addTab(new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.name)).append(": ").append(this.tfInput.getText()).toString(), this.focusT.name, 0);
@@ -239,7 +254,7 @@ public class MessageScr extends Screen {
         if (this.focusT.isInput && !Canvas.menu.showMenu) {
             this.tfInput.paint(g);
         }
-        g.setClip(this.x, this.y + this.hTab + 5, this.w - 3, limit - 9);
+        g.setClip(this.x + 5, this.y + this.hTab + 5, this.w - 10, limit - 9);
         g.translate(0, -cmy);
         if (this.focusT.text.size() > 0) {
             int aa = cmy / 14;

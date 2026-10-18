@@ -2,7 +2,7 @@
 # ============================================================================
 #  MAT KHAU RIENG CHO KHU QUAN TRI (HTTP Basic Auth truoc man hinh dang nhap)
 #
-#      sudo /opt/kpah/vps/mat-khau-admin.sh
+#      sudo /opt/htbb/vps/mat-khau-admin.sh
 #
 # ----------------------------------------------------------------------------
 #  VI SAO CAN
@@ -13,58 +13,61 @@
 #  duoc, khong con la "chi minh".
 #
 #  Doi sang chan THEO NGUOI thay vi THEO NOI DUNG (IP): them mot lop mat khau
-#  Basic Auth cua chinh Apache, dat NGOAI DocumentRoot, truoc ca trang dang
-#  nhap admin (taikhoan.php cua khu quan tri). Ai khong biet mat khau nay thi
+#  Basic Auth cua chinh Apache (reverse proxy dung truoc Nuxt), truoc ca trang
+#  dang nhap admin (/admin cua HTBB-Web). Ai khong biet mat khau nay thi
 #  KHONG THAY duoc ca man hinh dang nhap admin, du dung IP nao / domain nao.
 #  Biet mat khau nay roi van phai dang nhap dung tai khoan + mat khau game
-#  (+ ma 2FA neu da bat) o lop thu hai (trang dang nhap that cua taikhoan.php)
+#  (+ ma 2FA neu da bat) o lop thu hai (trang dang nhap that cua /admin)
 #  - hai mat khau HOAN TOAN khac nhau, doi rieng, mat mot cai khong lo cai kia.
 #
 # ----------------------------------------------------------------------------
 #  VI SAO LOP NAY THAY THE DUOC WHITELIST IP CUA chi-cho-server-txt.sh
 # ----------------------------------------------------------------------------
-#  <Directory /opt/kpah/web/admin> cu the hon <Directory /opt/kpah/web>. Theo
-#  mac dinh cua Apache (AuthMerging Off), <Directory> cu the hon tu dinh nghia
-#  Require rieng se THAY THE HOAN TOAN dieu kien Require cua <Directory> cha
-#  cho nhung duong dan nam trong no - khong cong don voi nhau. Nghia la rieng
-#  /admin/ se KHONG con bi chan theo IP nua, chi con bi chan boi Basic Auth o
-#  day. Cac duong dan khac (dang ky, dang nhap, trang chu server.txt...) khong
-#  doi gi, van theo dung whitelist IP nhu cu trong chi-cho-server-txt.sh.
+#  Mac dinh Apache (AuthMerging Off): <Location /admin> nap SAU <Location /> va
+#  tu dinh nghia Require rieng se THAY THE HOAN TOAN Require cua "/" cho moi
+#  duong dan /admin/... - khong cong don. Nghia la rieng /admin se KHONG con bi
+#  chan theo IP, chi con Basic Auth o day. Cac duong dan khac van theo whitelist
+#  cua chi-cho-server-txt.sh.
 #
-#  Day la file conf-available RIENG (khac vps/chi-cho-server-txt.sh), nhung
-#  KHONG dinh bay tro lai "BAY DA GAP 09/09/2026" cua file do: bay do xay ra
-#  vi hai file cung dinh nghia <Directory> TRUNG DUONG DAN. O day hai file
-#  dinh nghia hai duong dan KHAC NHAU (/opt/kpah/web vs /opt/kpah/web/admin),
-#  Apache gop theo do cu the cua duong dan (khong theo thu tu nap file), nen
-#  tach rieng an toan.
+#  <Location> gop THEO THU TU NAP (khong theo do cu the nhu <Directory> cua ban
+#  web PHP cu, da bo 19/10/2026), nen tep nay ghi MANH 30-admin-basic-auth.conf
+#  vao /etc/apache2/htbb-web-bao-ve.d/ - so 30 bao dam nap SAU
+#  10-chi-cho-server-txt.conf (xem "BAY DA GAP" trong vps/chi-cho-server-txt.sh).
+#
+#  CHI /admin (trang HTML cua Nuxt), KHONG dat cho /api/admin: API admin dung
+#  header "Authorization: Bearer <token>", trung header voi Basic Auth nen se bi
+#  Apache tu choi (xem HTBB-Web/deploy/apache-htbb-web.conf). Quyen that cua API
+#  admin do Node kiem (token admin + HTBB_ADMIN_ACCOUNTS).
 #
 # ----------------------------------------------------------------------------
 #  DOI MAT KHAU / THEM NGUOI
 # ----------------------------------------------------------------------------
 #  Chay lai script nay se HOI mat khau moi va GHI DE nguoi dung duy nhat
-#  "kpah" (mot mat khau dung chung cho ca nhom, dung y ban da chon). Muon
+#  "htbb" (mot mat khau dung chung cho ca nhom, dung y ban da chon). Muon
 #  nhieu nguoi dung ten rieng (de sau nay biet ai vao, xoa duoc rieng tung
 #  nguoi) thi tu chay them:
-#      htpasswd /etc/apache2/kpah-admin.htpasswd ten_nguoi_thu_2
+#      htpasswd /etc/apache2/htbb-admin.htpasswd ten_nguoi_thu_2
 #  roi neu muon GIOI HAN dung vai ten cu the (thay vi "ai co trong tep deu
 #  vao duoc") thi doi "Require valid-user" trong CONF ben duoi thanh:
-#      Require user kpah ten_nguoi_thu_2
+#      Require user htbb ten_nguoi_thu_2
 #
 # ----------------------------------------------------------------------------
 #  GO BO NEU CO CHUYEN
 # ----------------------------------------------------------------------------
-#      sudo a2disconf kpah-admin-basic-auth && sudo systemctl reload apache2
-#      sudo rm -f /etc/apache2/kpah-admin.htpasswd   # xoa luon mat khau da luu
+#      sudo rm /etc/apache2/htbb-web-bao-ve.d/30-admin-basic-auth.conf && sudo systemctl reload apache2
+#      sudo rm -f /etc/apache2/htbb-admin.htpasswd   # xoa luon mat khau da luu
 # ============================================================================
 set -u
 
-CONF=/etc/apache2/conf-available/kpah-admin-basic-auth.conf
-HTPASSWD_FILE=/etc/apache2/kpah-admin.htpasswd
-TEN_BASIC_AUTH="kpah"
+THU_MUC_BAO_VE=/etc/apache2/htbb-web-bao-ve.d
+CONF="$THU_MUC_BAO_VE/30-admin-basic-auth.conf"
+CONF_NAP=/etc/apache2/conf-available/htbb-web-bao-ve.conf
+HTPASSWD_FILE=/etc/apache2/htbb-admin.htpasswd
+TEN_BASIC_AUTH="htbb"
 LOG_TAG="[mat-khau-admin]"
 
 if [ "$(id -u)" != "0" ]; then
-    echo "$LOG_TAG Phai chay bang root:  sudo /opt/kpah/vps/mat-khau-admin.sh"
+    echo "$LOG_TAG Phai chay bang root:  sudo /opt/htbb/vps/mat-khau-admin.sh"
     exit 1
 fi
 
@@ -97,36 +100,32 @@ chmod 640 "$HTPASSWD_FILE"
 echo "      Da luu vao $HTPASSWD_FILE (chi root va www-data doc duoc)"
 
 echo "$LOG_TAG === 3/5 Viet cau hinh"
+mkdir -p "$THU_MUC_BAO_VE"
+[ -f "$CONF_NAP" ] || printf '# Sinh boi vps/chi-cho-server-txt.sh / bat-https.sh / mat-khau-admin.sh.\n# Nap cac manh bao ve website (Nuxt sau reverse proxy) THEO SO THU TU - xem vps/chi-cho-server-txt.sh.\nIncludeOptional %s/*.conf\n' \
+    "$THU_MUC_BAO_VE" > "$CONF_NAP"
 cat > "$CONF" <<EOF
 # Sinh boi vps/mat-khau-admin.sh - dung sua tay, chay lai script se hoi mat
-# khau moi va ghi de tep nay.
-#
-# Ghi ca hai duong dan vi /var/www/html/kpah la symlink tro toi /opt/kpah/web
-# (xem vps/bat-https.sh vi sao ghi ca hai duong dan cho chac, khong phu thuoc
-# vao viec Apache tu giai symlink truoc khi so khop <Directory> hay khong).
-<Directory /opt/kpah/web/admin>
+# khau moi va ghi de tep nay. Nap SAU 10-chi-cho-server-txt.conf (xem dau
+# vps/chi-cho-server-txt.sh vi sao thu tu quan trong).
+<Location /admin>
     AuthType Basic
     AuthName "HTBB - Khu quan tri"
     AuthUserFile $HTPASSWD_FILE
     Require valid-user
-</Directory>
-<Directory /var/www/html/kpah/admin>
-    AuthType Basic
-    AuthName "HTBB - Khu quan tri"
-    AuthUserFile $HTPASSWD_FILE
-    Require valid-user
-</Directory>
+</Location>
 EOF
 
 a2enmod auth_basic authn_file authz_user authz_core >/dev/null 2>&1
-a2enconf kpah-admin-basic-auth >/dev/null 2>&1
-echo "      Da bat kpah-admin-basic-auth"
+# Conf cu thoi web PHP (<Directory /opt/htbb/web/admin>) - bo, thay bang manh o tren.
+a2disconf htbb-admin-basic-auth >/dev/null 2>&1 || true
+a2enconf htbb-web-bao-ve >/dev/null 2>&1
+echo "      Da bat $CONF"
 
 echo "$LOG_TAG === 4/5 Kiem tra cau hinh"
 if ! apache2ctl configtest 2>&1 | grep -qi "Syntax OK"; then
     echo "      [DUNG LAI] Cau hinh co loi, KHONG nap lai:"
     apache2ctl configtest 2>&1 | sed 's/^/        /'
-    echo "      Apache van chay cau hinh cu. Go bo: a2disconf kpah-admin-basic-auth"
+    echo "      Apache van chay cau hinh cu. Go bo: rm $CONF"
     exit 1
 fi
 echo "      Syntax OK"

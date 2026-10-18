@@ -5,7 +5,7 @@ useSeoMeta({
 })
 
 const { data: site } = await useSite()
-const hoTro = computed(() => linkHoTro(site.value))
+const { link: hoTro, coZalo } = useHoTro()
 
 /** Link được cấu hình hay còn để trống / '#'. */
 function coLink(url: string | null | undefined): boolean {
@@ -13,22 +13,24 @@ function coLink(url: string | null | undefined): boolean {
   return u !== '' && u !== '#'
 }
 
-const cms = useCongKhai()
-/** Link + phiên bản sửa ở /admin/tai-game; link trống thì dùng biến môi trường KPAH_LINK_*. */
-const banCms = (ma: string) => cms.value.taiGame.ban.find(b => b.ma === ma)
-const platforms = computed(() => _platformsGoc.value
-  .map((p) => {
-    const b = banCms(p.ma)
-    return { ...p, name: b?.ten || p.name, hint: b?.moTa || p.hint, url: lienKetAnToan(b?.url) || p.url, phienBan: b?.phienBan ?? '', dungLuong: b?.dungLuong ?? '', capNhat: b?.capNhat ?? '', nhatKy: b?.nhatKy ?? '', hien: b ? b.hien || coLink(b.url) : true }
-  })
-  .filter(p => p.hien))
-const _platformsGoc = computed(() => [
-  { ma: 'android', name: 'Android', hint: 'Bản cài đặt APK — đồ hoạ đầy đủ, điều khiển cảm ứng', icon: 'i-lucide-smartphone', url: site.value?.linkAndroid ?? '', mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30', chiTiet: ['File .apk', 'Cài ngoài CH Play', 'Cảm ứng + bàn phím'] },
-  { ma: 'pc', name: 'PC / Windows', hint: 'Chơi trên máy tính bằng bàn phím', icon: 'i-lucide-monitor', url: site.value?.linkPc ?? '', mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30', chiTiet: ['File nén .zip', 'Giải nén rồi chạy .exe', 'Màn hình lớn'] },
-  { ma: 'jar', name: 'Java (.jar)', hint: 'Điện thoại phím Java hoặc giả lập J2ME', icon: 'i-lucide-cpu', url: site.value?.linkJar ?? '', mau: 'from-pokeblue-400/25 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30', chiTiet: ['Bản thường & bản nhẹ (~2 MB)', 'Máy yếu chơi mượt', 'Phím số'] },
-  // iOS chưa có bản riêng: chỉ hiện khi đã cấu hình link
-  ...(coLink(site.value?.linkIos) || banCms('ios')?.hien ? [{ ma: 'ios', name: 'iOS', hint: 'Hướng dẫn cài đặt', icon: 'i-lucide-tablet-smartphone', url: site.value?.linkIos ?? '', mau: 'from-pokered-400/25 to-pokered-900/5', anh: 'shadow-pokered-500/30', chiTiet: [] as string[] }] : []),
-])
+/** Bản tải: /admin/tai-game (danh mục chung useBanTai — cùng nguồn với Hướng dẫn tân thủ, trang chủ, FAQ). */
+const { ds: dsBanTai } = useBanTai()
+const MAU: Record<string, { mau: string, anh: string }> = {
+  'android': { mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30' },
+  'pc': { mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
+  'pc-linux': { mau: 'from-pikachu-400/20 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
+  'macos': { mau: 'from-pokeblue-400/20 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
+  'jar': { mau: 'from-pokeblue-400/25 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
+  'ios': { mau: 'from-pokered-400/25 to-pokered-900/5', anh: 'shadow-pokered-500/30' },
+}
+const platforms = computed(() => dsBanTai.value.map(b => ({ ...b, ...(MAU[b.ma] ?? MAU.pc!) })))
+
+const goiY = ref<string | null>(null)
+onMounted(() => { goiY.value = nenTangTheoUa(navigator.userAgent) })
+/** Bản gợi ý cho thiết bị này (có thể là "Sắp ra mắt", vd. iPhone). */
+const banGoiY = computed(() => platforms.value.find(p => p.ma === goiY.value) ?? null)
+const nhanNut = (p: { kieu: string }) => (p.kieu === 'testflight' ? 'Cài qua TestFlight' : p.kieu === 'app-store' ? 'Mở App Store' : p.kieu === 'ipa-manifest' ? 'Cài trên iPhone/iPad' : 'Tải / cài đặt')
+const shaMo = ref<string | null>(null)
 
 const steps = computed(() => [
   { so: '01.', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
@@ -73,11 +75,23 @@ const faq = [
           </p>
         </FxReveal>
 
-        <div class="mt-14 grid gap-6 md:grid-cols-3">
-          <FxReveal v-for="(p, i) in platforms" :key="p.name" :delay="i * 0.1">
+        <!-- Gợi ý theo thiết bị -->
+        <div v-if="banGoiY" class="glass mx-auto mt-10 flex max-w-2xl flex-col items-center gap-3 rounded-2xl p-6 text-center sm:flex-row sm:text-left" aria-live="polite">
+          <UIcon :name="banGoiY.icon" class="size-10 shrink-0 text-primary" />
+          <div class="min-w-0 flex-1">
+            <p class="text-sm text-muted">Gợi ý cho thiết bị của bạn</p>
+            <p class="font-display text-xl font-bold text-highlighted">{{ banGoiY.ten }}<span v-if="banGoiY.phienBan" class="text-base font-semibold text-muted"> · {{ banGoiY.phienBan }}</span></p>
+          </div>
+          <UButton v-if="banGoiY.href" :to="banGoiY.href" external size="lg" trailing-icon="i-lucide-download">{{ nhanNut(banGoiY) }}</UButton>
+          <UBadge v-else color="warning" variant="subtle" size="lg" icon="i-lucide-hourglass">{{ banGoiY.trangThai === 'sap-ra-mat' ? 'Sắp ra mắt' : 'Đang cập nhật bản tải' }}</UBadge>
+        </div>
+
+        <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <FxReveal v-for="(p, i) in platforms" :key="p.ma" :delay="Math.min(i, 5) * 0.08">
             <FxTiltCard :max="12" as="article" class="group h-full rounded-3xl">
-              <div class="relative flex h-full flex-col items-center overflow-hidden rounded-3xl glass ring-gilded bg-gradient-to-b p-8 text-center" :class="p.mau">
-                <small class="text-[0.7rem] tracking-[0.25em] text-dimmed">0{{ i + 1 }} / NỀN TẢNG</small>
+              <div class="relative flex h-full flex-col items-center overflow-hidden rounded-3xl glass ring-gilded bg-gradient-to-b p-8 text-center" :class="[p.mau, p.ma === goiY ? 'ring-2 ring-primary' : '']">
+                <small class="text-[0.7rem] tracking-[0.25em] text-dimmed">{{ String(i + 1).padStart(2, '0') }} / NỀN TẢNG</small>
+                <UBadge v-if="p.trangThai === 'sap-ra-mat'" color="warning" variant="solid" class="absolute right-4 top-4">Sắp ra mắt</UBadge>
                 <span
                   class="mt-8 grid size-20 place-items-center rounded-2xl border border-white/10 bg-white/5 text-highlighted shadow-2xl transition-transform duration-500 [transform:translateZ(70px)] group-hover:scale-110"
                   :class="p.anh"
@@ -86,17 +100,20 @@ const faq = [
                   <UIcon :name="p.icon" class="size-10" />
                 </span>
                 <h3 class="mt-8 font-display text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
-                  {{ p.name }}
+                  {{ p.ten }}
                 </h3>
                 <p class="mt-2 text-muted [transform:translateZ(25px)]">
-                  {{ p.hint }}
+                  {{ p.moTa }}
                 </p>
                 <ul class="mt-4 flex flex-1 flex-wrap content-start justify-center gap-1.5 [transform:translateZ(20px)]">
                   <li v-for="c in p.chiTiet" :key="c" class="rounded-full bg-elevated px-2.5 py-1 text-xs font-semibold text-toned">
                     {{ c }}
                   </li>
                 </ul>
-                <p v-if="p.phienBan || p.dungLuong || p.capNhat" class="mt-4 text-xs font-semibold text-dimmed">
+                <p v-if="p.heDieuHanh" class="mt-4 text-xs text-muted">
+                  <UIcon name="i-lucide-info" class="size-3.5 align-[-2px]" /> Cần: {{ p.heDieuHanh }}
+                </p>
+                <p v-if="p.phienBan || p.dungLuong || p.capNhat" class="mt-2 text-xs font-semibold text-dimmed">
                   <span v-if="p.phienBan">Phiên bản {{ p.phienBan }}</span>
                   <span v-if="p.dungLuong"> · {{ p.dungLuong }}</span>
                   <span v-if="p.capNhat"> · cập nhật {{ p.capNhat }}</span>
@@ -105,18 +122,32 @@ const faq = [
                   <summary class="cursor-pointer text-center font-semibold text-primary">Có gì mới</summary>
                   <p class="mt-2 whitespace-pre-line">{{ p.nhatKy }}</p>
                 </details>
+                <div v-if="p.sha256 && p.href" class="mt-2 w-full text-xs text-muted">
+                  <button type="button" class="font-semibold text-primary hover:underline" :aria-expanded="shaMo === p.ma" @click="shaMo = shaMo === p.ma ? null : p.ma">
+                    Mã kiểm tra SHA-256
+                  </button>
+                  <code v-if="shaMo === p.ma" class="mt-1 block break-all rounded bg-elevated p-2 text-left">{{ p.sha256 }}</code>
+                </div>
                 <div class="mt-8 w-full [transform:translateZ(30px)]">
                   <UButton
-                    v-if="coLink(p.url)"
-                    :to="p.url"
+                    v-if="p.href"
+                    :to="p.href"
                     external
                     block
                     size="lg"
                     trailing-icon="i-lucide-arrow-up-right"
                     class="shadow-[0_10px_30px_rgba(10,26,51,.14)]"
                   >
-                    Tải / cài đặt
+                    {{ nhanNut(p) }}
                   </UButton>
+                  <template v-else-if="p.trangThai === 'sap-ra-mat'">
+                    <UBadge color="warning" variant="outline" size="lg" icon="i-lucide-hourglass" class="w-full justify-center py-2">
+                      Sắp ra mắt
+                    </UBadge>
+                    <p v-if="coZalo" class="mt-2 text-xs text-muted">
+                      Theo dõi <ULink :to="hoTro" target="_blank" class="font-semibold text-primary hover:underline">nhóm Zalo</ULink> để biết khi có bản.
+                    </p>
+                  </template>
                   <UBadge v-else color="neutral" variant="outline" size="lg" icon="i-lucide-hourglass" class="w-full justify-center py-2">
                     Đang cập nhật bản tải
                   </UBadge>
@@ -178,22 +209,15 @@ const faq = [
                   Cần hỗ trợ cài đặt?
                 </h2>
                 <p class="mt-2 text-muted">
-                  Kết nối cộng đồng để nhận hướng dẫn và tìm những người bạn cùng chơi.
+                  Kênh hỗ trợ chính thức là <strong class="text-highlighted">Zalo</strong>: hỏi cách cài đặt, báo lỗi,
+                  khiếu nại khoá tài khoản và tìm bạn cùng chơi.
+                </p>
+                <p class="mt-1 text-xs text-dimmed">
+                  Ban quản trị không bao giờ hỏi mật khẩu. Chỉ tin link Zalo hiện trên website này.
                 </p>
               </div>
             </div>
-            <UButton
-              v-if="coLink(site?.linkGroup)"
-              :to="site!.linkGroup"
-              external
-              color="neutral"
-              variant="outline"
-              size="lg"
-              trailing-icon="i-lucide-arrow-up-right"
-              class="relative"
-            >
-              Vào nhóm hỗ trợ
-            </UButton>
+            <SiteHoTroZalo v-if="coZalo" kieu="the" class="relative w-full sm:w-auto sm:max-w-md" />
             <UBadge v-else color="neutral" variant="outline" size="lg" icon="i-lucide-hourglass" class="relative">
               Kênh hỗ trợ đang cập nhật
             </UBadge>
@@ -216,14 +240,14 @@ const faq = [
             </h2>
             <div class="mt-10 grid gap-8 md:grid-cols-3">
               <div v-for="s in steps" :key="s.so">
-                <b class="font-display text-5xl text-primary/30">{{ s.so }}</b>
+                <b class="font-display text-5xl text-primary/30" aria-hidden="true">{{ s.so }}</b>
                 <h3 class="mt-2 text-lg font-bold text-highlighted">
                   {{ s.tieuDe }}
                 </h3>
                 <p class="mt-1 text-muted">
                   {{ s.mo }}
                 </p>
-                <ULink :to="s.to" class="mt-3 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                <ULink :to="s.to" :target="s.to.startsWith('https://') ? '_blank' : undefined" class="mt-3 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
                   {{ s.link }} <UIcon name="i-lucide-arrow-up-right" class="size-4" />
                 </ULink>
               </div>
@@ -237,7 +261,7 @@ const faq = [
               </template>
               <template #faq2-body>
                 <p class="text-muted">
-                  Tham gia <ULink :to="hoTro" class="text-primary hover:underline">nhóm hỗ trợ</ULink> và mô tả lỗi để được hướng dẫn. Không chia sẻ mật khẩu tài khoản trong nhóm.
+                  Tham gia <ULink :to="hoTro" :target="hoTro.startsWith('https://') ? '_blank' : undefined" class="text-primary hover:underline">nhóm hỗ trợ</ULink> và mô tả lỗi để được hướng dẫn. Không chia sẻ mật khẩu tài khoản trong nhóm.
                 </p>
               </template>
             </UAccordion>

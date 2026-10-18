@@ -15,7 +15,7 @@ import real.Item;
  *
  * Pet.java song trong package data va dung Map/Char that, nen: phan goi that duoc (bang
  * khang, applyKhangXuyenGiap co moc thoi gian, endHoaHinhPet, donHoaHinhHetHan, getName,
- * getDBInfo/initDbInfo) thi goi THAT; phan noi day UI (RealController case 12, menu NPC -8,
+ * getDBInfo/initDbInfo) thi goi THAT; phan noi day UI (RealController case 13 - truoc 19/09/2026 la 12, menu NPC -8,
  * Char.checkExpirePet, Database.getCharPet, goi 26) thi quet van ban nguon.
  *
  * Phan ANH la cho da hong hai lan (31/08 va 01/09/2026) nen khoa ky nhat: id 67/68/69 deu phai
@@ -224,26 +224,29 @@ public final class KiemHoaHinhPet {
 
         final String rc = doc("src/real/RealController.java");
         Kiem.dung("doc duoc RealController.java", !rc.isEmpty());
-        final String case12 = doan(rc, "case 12:", "case 13:");
-        Kiem.dung("co case 12 (Hoa hinh Pet)", !case12.isEmpty());
-        Kiem.dung("case 12: chi pet vinh vien (getTimeExpire() != 32000)", case12.contains("getTimeExpire() != 32000"));
-        Kiem.dung("case 12: doi pet DA TIEN HOA (level < 1 thi chan) - hinh Lan chi ve cho TYPE_PET_TOOL",
+        // 19/09/2026 menu NPC -8 chen "Doi ten nhan vat" o vi tri 8 (chu thich trong
+        // RequestNPCInfoHandler case -8) -> moi muc tu do tro xuong dich 1 bac: Hoa hinh Pet
+        // tu case 12 sang case 13 cua RealController.doCreateItem (case 12 gio la Bo Suu Tap).
+        final String case12 = doan(rc, "case 13:", "case 14:");
+        Kiem.dung("co case 13 (Hoa hinh Pet)", !case12.isEmpty());
+        Kiem.dung("case 13: chi pet vinh vien (getTimeExpire() != 32000)", case12.contains("getTimeExpire() != 32000"));
+        Kiem.dung("case 13: doi pet DA TIEN HOA (level < 1 thi chan) - hinh Lan chi ve cho TYPE_PET_TOOL",
                 case12.contains("itemPet.level < 1"));
-        Kiem.sai("case 12: KHONG con doi sieu tien hoa (level < 2)", case12.contains("itemPet.level < 2"));
-        Kiem.sai("case 12: KHONG con chan 'toi da cap 5' (hoa hinh lai luc nao cung duoc)", case12.contains("capHoaHinh >= 5"));
-        Kiem.dung("case 12: cap Lan = capPet() cua pet", case12.contains("player.petUsing.capPet()"));
-        Kiem.dung("case 12: so binh = soBinhHoaHinhCan(cap) (n x 10)", case12.contains("soBinhHoaHinhCan(capPetHoaHinh)"));
-        Kiem.dung("case 12: dung item 268", case12.contains("player.listGemitem[268]") && case12.contains("player.delGem(268,"));
-        Kiem.sai("case 12: KHONG ton luong", case12.contains("subLuong(") || case12.contains("getLuong()") || case12.contains("Cần 5000 lượng"));
-        Kiem.dung("case 12: han lay tu Pet.HAN_HOA_HINH_MS", case12.contains("HAN_HOA_HINH_MS"));
-        Kiem.sai("case 12: khong con so 864_000_000L viet tay", case12.contains("864_000_000L"));
-        Kiem.dung("case 12: gan idHoaHinhPet = 67 (co bao da hoa hinh)", case12.contains("idHoaHinhPet = 67"));
-        Kiem.dung("case 12: luu CSDL", case12.contains("Database.instance.savePet(player.petUsing);"));
-        Kiem.dung("case 12: gui lai hinh cho NGUOI XUNG QUANH",
+        Kiem.sai("case 13: KHONG con doi sieu tien hoa (level < 2)", case12.contains("itemPet.level < 2"));
+        Kiem.sai("case 13: KHONG con chan 'toi da cap 5' (hoa hinh lai luc nao cung duoc)", case12.contains("capHoaHinh >= 5"));
+        Kiem.dung("case 13: cap Lan = capPet() cua pet", case12.contains("player.petUsing.capPet()"));
+        Kiem.dung("case 13: so binh = soBinhHoaHinhCan(cap) (n x 10)", case12.contains("soBinhHoaHinhCan(capPetHoaHinh)"));
+        Kiem.dung("case 13: dung item 268", case12.contains("player.listGemitem[268]") && case12.contains("player.delGem(268,"));
+        Kiem.sai("case 13: KHONG ton luong", case12.contains("subLuong(") || case12.contains("getLuong()") || case12.contains("Cần 5000 lượng"));
+        Kiem.dung("case 13: han lay tu Pet.HAN_HOA_HINH_MS", case12.contains("HAN_HOA_HINH_MS"));
+        Kiem.sai("case 13: khong con so 864_000_000L viet tay", case12.contains("864_000_000L"));
+        Kiem.dung("case 13: gan idHoaHinhPet = 67 (co bao da hoa hinh)", case12.contains("idHoaHinhPet = 67"));
+        Kiem.dung("case 13: luu CSDL", case12.contains("Database.instance.savePet(player.petUsing);"));
+        Kiem.dung("case 13: gui lai hinh cho NGUOI XUNG QUANH",
                 case12.contains("sendToNearPlayer(MessageCreator.createCharWearingMessage(player, player))"));
-        Kiem.dung("case 12: thong bao co du 4 so cua bang khang",
+        Kiem.dung("case 13: thong bao co du 4 so cua bang khang",
                 case12.contains("tsKxg[0]") && case12.contains("tsKxg[1]") && case12.contains("tsKxg[2]") && case12.contains("tsKxg[3]"));
-        Kiem.dung("case 12: ghi log hoahinhpet kem cap va so binh",
+        Kiem.dung("case 13: ghi log hoahinhpet kem cap va so binh",
                 case12.contains("\"hoahinhpet\"") && case12.contains("soBinhHoaHinh"));
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");

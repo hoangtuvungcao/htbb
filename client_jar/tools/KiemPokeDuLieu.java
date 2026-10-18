@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  *  3. (tuy chon) ChuPokemon / TenMapPokemon cua jar cho KET QUA GIONG HET ban server
  *     com.htbb.pokemon.ChuPokemon.doiLuon / TenMapPokemon.doi (regex) tren tap chu kiem.
  *
- *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;htbb-client/pc/Assets (hoac HTBB/ClientUnity/Assets cu)&gt; res [nguon java ...]
+ *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;client_pc_ios/Assets (hoac client_pc_ios/ClientUnity/Assets cu)&gt; res [nguon java ...]
  */
 public class KiemPokeDuLieu {
     static int loi = 0;
@@ -105,6 +105,11 @@ public class KiemPokeDuLieu {
             }
         }
         System.out.println("jar .dl: " + soJar + " tep, anh dong tac khop kich thuoc");
+        try {
+            DongGoiPokeJ2me.loaiGan = DongGoiPokeJ2me.loaiGan(DongGoiPokeJ2me.thuMucDocs(new File(a[0])));
+        } catch (java.io.IOException e) {
+            DongGoiPokeJ2me.loaiGan = null;
+        }
         soSanhHinh(poke, pk, DongGoiPokeJ2me.DAY_DU);
         kiemHieuUng(poke, pk, DongGoiPokeJ2me.DAY_DU.toiDaHu);
         File nhe = new File(res.getAbsoluteFile().getParentFile(), "res_nhe/pk");
@@ -118,6 +123,8 @@ public class KiemPokeDuLieu {
         }
 
         kiemAmThanh(res);
+        kiemHoCau(new File(a[0]));
+        kiemFilePackDaLuong();
         kiemHe();
         kiemChu(a);
         System.out.println(loi == 0 ? "OK" : ("HONG: " + loi + " loi"));
@@ -128,9 +135,11 @@ public class KiemPokeDuLieu {
      * Ve tung khung giu lai cua ban Unity (atlas goc) va ban jar (da cat, bot khung) theo CUNG cong
      * thuc PokeBody (diem chan tai goc toa do) va so tung pixel: cat/bot khung khong duoc lam lech hinh.
      */
-    static void soSanhHinh(File poke, File pk, DongGoiPokeJ2me.Cau cau) throws Exception {
+    static void soSanhHinh(File poke, File pk, DongGoiPokeJ2me.Cau cauVao) throws Exception {
         int soKhung = 0;
+        DongGoiPokeJ2me.Cau cau = cauVao;
         for (String t : pk.list()) {
+            cau = cauVao;
             if (!t.endsWith(".dl")) {
                 continue;
             }
@@ -145,6 +154,11 @@ public class KiemPokeDuLieu {
                 sai(khoa + " caoTrenGoc " + moi.caoTrenGoc + " != " + caoGoc);
             }
             java.awt.image.BufferedImage atlas = javax.imageio.ImageIO.read(new File(poke, khoa + "_anh.bytes"));
+            // ban day du: loai chi la quai (khong nhin gan) dong goi kieu XA (it khung) - xem DongGoiPokeJ2me
+            String gocKhoa = khoa.endsWith("s") ? khoa.substring(0, khoa.length() - 1) : khoa;
+            if (cau == DongGoiPokeJ2me.DAY_DU && DongGoiPokeJ2me.loaiGan != null && !DongGoiPokeJ2me.loaiGan.contains(gocKhoa)) {
+                cau = DongGoiPokeJ2me.XA;
+            }
             for (int i = 0; i < 6; i++) {
                 PokeDongTac g = goc.dongTac[i], m = moi.dongTac[i];
                 g = goc.dongTac[cau.nguon[i]];
@@ -189,6 +203,127 @@ public class KiemPokeDuLieu {
      * thuoc, va moi khung giu lai ve tai (dx, dy) trung khung Unity ve tai tam (alpha + mau gan dung,
      * PNG bang mau co the luong tu hoa).
      */
+    /**
+     * Ho cau ca: client (game.pokemon.SinhThai.nhanHo / diemCau) phai tim DUNG cac diem cua server
+     * (HTBB docs/pokemon/diem_cau_ca.csv, sinh tu BanDoSinhThai) tren moi ban do HTBB/cMap_pokemon.
+     */
+    /**
+     * FilePack nhieu luong (loi cu: luong nap Res.LoadData va luong ve dung chung FilePack.instance ->
+     * NullPointerException / sai goi): 4 luong cung init -> loadFile -> reset hai goi khac nhau, moi luong
+     * phai luon thay dung goi cua minh.
+     */
+    static void kiemFilePackDaLuong() throws Exception {
+        final String[] goi = {"/font.sh", "/main.sh"};
+        final String[] dau = new String[2];
+        for (int i = 0; i < 2; i++) {
+            game.model.FilePack.init(goi[i]);
+            game.model.FilePack fp = game.model.FilePack.hienTai();
+            if (fp == null || fp.fname == null || fp.fname.length == 0) {
+                System.out.println("filepack: bo qua (khong mo duoc " + goi[i] + ")");
+                game.model.FilePack.reset();
+                return;
+            }
+            dau[i] = fp.fname[0];
+            game.model.FilePack.reset();
+        }
+        final int[] loiLuong = {0};
+        Thread[] t = new Thread[4];
+        for (int k = 0; k < t.length; k++) {
+            final int g = k % 2;
+            t[k] = new Thread() {
+                public void run() {
+                    for (int n = 0; n < 150; n++) {
+                        try {
+                            game.model.FilePack.init(goi[g]);
+                            Thread.yield();
+                            game.model.FilePack fp = game.model.FilePack.hienTai();
+                            if (fp == null || fp.fname == null || !dau[g].equals(fp.fname[0]) || fp.loadFile(dau[g]) == null) {
+                                synchronized (loiLuong) {
+                                    loiLuong[0]++;
+                                }
+                            }
+                            game.model.FilePack.reset();
+                        } catch (Throwable e) {
+                            synchronized (loiLuong) {
+                                loiLuong[0]++;
+                            }
+                        }
+                    }
+                }
+            };
+            t[k].start();
+        }
+        for (int k = 0; k < t.length; k++) {
+            t[k].join();
+        }
+        if (loiLuong[0] > 0) {
+            sai("FilePack da luong: " + loiLuong[0] + " lan doc sai goi / loi");
+        }
+        System.out.println("filepack da luong: 4 luong x 150 lan init/loadFile/reset, loi " + loiLuong[0]);
+    }
+
+    static void kiemHoCau(File assets) throws Exception {
+        File docs = DongGoiPokeJ2me.thuMucDocs(assets);
+        File csv = new File(docs, "diem_cau_ca.csv");
+        File cmap = new File(docs, "../../server/cMap_pokemon");
+        if (!csv.isFile() || !cmap.isDirectory()) {
+            System.out.println("ho cau ca: bo qua (khong thay " + csv + " / " + cmap + ")");
+            return;
+        }
+        java.util.Map<Integer, java.util.TreeSet<String>> server = new java.util.TreeMap<>();
+        for (String d : Files.readAllLines(csv.toPath(), StandardCharsets.UTF_8)) {
+            if (d.startsWith("#") || d.startsWith("map_id") || d.trim().isEmpty()) {
+                continue;
+            }
+            String[] c = d.split(",");
+            int m = Integer.parseInt(c[0].trim());
+            server.computeIfAbsent(m, k -> new java.util.TreeSet<>()).add(c[c.length - 2].trim() + "," + c[c.length - 1].trim());
+        }
+        int soMap = 0, soDiem = 0;
+        String[] ds = cmap.list();
+        Arrays.sort(ds);
+        for (String f : ds) {
+            if (!f.matches("\\d+")) {
+                continue;
+            }
+            int id = Integer.parseInt(f);
+            if (game.pokemon.SinhThai.mapKhongDong(id)) {
+                continue;   // ban do khong co he sinh thai (client cung khong tim ho)
+            }
+            byte[] b = Files.readAllBytes(new File(cmap, f).toPath());
+            if (b.length < 2) {
+                continue;
+            }
+            int w = b[0] & 255, h = b[1] & 255;
+            if (b.length < 2 + w * h) {
+                continue;
+            }
+            String bo = id < 110 ? "t" : (id > 200 ? "t_thanh" : "t_hang");
+            File ft = new File(cmap, bo + ".type");
+            byte[] kt = ft.isFile() ? Files.readAllBytes(ft.toPath()) : null;
+            short[] m = new short[w * h];
+            int[] kieu = new int[w * h];
+            for (int i = 0; i < w * h; i++) {
+                m[i] = (short) (b[2 + i] & 255);
+                kieu[i] = kt != null && m[i] < kt.length ? kt[m[i]] : 0;
+            }
+            int[] nhan = game.pokemon.SinhThai.nhanHo(game.pokemon.SinhThai.luoiNuoc(m, id), w, h);
+            java.util.Vector v = game.pokemon.SinhThai.diemCau(nhan, kt == null ? null : game.pokemon.SinhThai.luoiDiDuoc(m, kieu), w, h, 4);
+            java.util.TreeSet<String> client = new java.util.TreeSet<>();
+            for (int i = 0; i < v.size(); i++) {
+                int[] d = (int[]) v.elementAt(i);
+                client.add(d[1] + "," + d[2]);
+            }
+            java.util.TreeSet<String> sv = server.getOrDefault(id, new java.util.TreeSet<>());
+            if (!client.equals(sv)) {
+                sai("ho cau ca map " + id + ": client " + client + " server " + sv);
+            }
+            soMap++;
+            soDiem += client.size();
+        }
+        System.out.println("ho cau ca: " + soMap + " ban do, " + soDiem + " diem cau khop server (diem_cau_ca.csv)");
+    }
+
     static void kiemHieuUng(File poke, File pk, int toiDa) throws Exception {
         List<String> dong = Files.readAllLines(new File(poke, "hu_bang.bytes").toPath(), StandardCharsets.UTF_8);
         game.pokemon.HieuUngBang[] bang = game.pokemon.HieuUngBang.doc(Files.readAllBytes(new File(pk, "hu.bin").toPath()));
@@ -407,6 +542,14 @@ public class KiemPokeDuLieu {
             }
         }
         System.out.println("TenMapPokemon: " + soMap + " chuoi khop ban server");
+        // vung Hoenn (nam 2): bang ten theo id (server com.htbb.pokemon.TenMapPokemon.HOENN_*)
+        Class<?> tmS = Class.forName("com.htbb.pokemon.TenMapPokemon");
+        int[] idS = (int[]) tmS.getField("HOENN_ID").get(null);
+        String[] tenS = (String[]) tmS.getField("HOENN_TEN").get(null);
+        if (!java.util.Arrays.equals(idS, TenMapPokemon.HOENN_ID) || !java.util.Arrays.equals(tenS, TenMapPokemon.HOENN_TEN)) {
+            sai("TenMapPokemon.HOENN_ID/HOENN_TEN khac ban server");
+        }
+        System.out.println("TenMapPokemon Hoenn: " + idS.length + " ban do khop ban server");
     }
 
     static void liet(File f, List<File> ds) {

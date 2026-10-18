@@ -1,7 +1,7 @@
 -- ============================================================================
---  Cấm theo MÃ MÁY (device id) — chạy một lần trên database GAME (kpah_db)
+--  Cấm theo MÃ MÁY (device id) — chạy một lần trên database GAME (htbb_db)
 --
---      mysql -u root kpah_db < sql/them_bang_cam_may.sql
+--      mysql -u root htbb_db < sql/them_bang_cam_may.sql
 --
 --  VÌ SAO CÓ HAI BẢNG
 --  ------------------

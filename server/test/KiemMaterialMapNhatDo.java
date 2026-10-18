@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 /**
  * Loi tim thay 14/09/2026 khi ra soat "dao nguyen lieu" o khu mo (mapId=17,
  * lop MaterialMap - truoc day CHI ton tai duoi dang bytecode trong
- * lib/NQSH_5h.jar, khong co file .java, chua tung duoc bao tri).
+ * lib/htbb-core.jar, khong co file .java, chua tung duoc bao tri).
  *
  * addGemItem/getGem/removeGem/deletePotionAndItemOnGround ban cu LUON dung
  * `this.gemItem.get(0)`, bo qua tham so `country` truyen vao - trong khi
@@ -16,7 +16,7 @@ import java.nio.file.Paths;
  * KHONG thay vat vua tao o o 0 -> im lang khong cong gi, dung khop trieu
  * chung "danh roi nguyen lieu nhung khong tu dong nhat".
  *
- * Da dua MaterialMap vao src/ (ban dich nguoc tu build/nqsh-src/), CHI sua 4
+ * Da dua MaterialMap vao src/ (ban dich nguoc tu build/core-src/), CHI sua 4
  * ham lien quan, moi cho khac giu nguyen. Da doi chieu bang javap: chu ky
  * public/protected cua class moi KHOP TUYET DOI voi class cu trong jar (khong
  * them/bot/doi bat ky method nao) truoc khi tin day la ban thay the an toan.

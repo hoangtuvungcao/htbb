@@ -17,7 +17,7 @@ import javax.microedition.lcdui.Image;
 
 /**
  * Hieu ung chieu kieu Pokemon (viec K3) - ban J2ME cua ClientUnity PokeHieuUng.cs.
- * Bang /pk/hu.bin (HieuUngBang) + anh /pk/hu_&lt;ten&gt;.png, dong goi boi j2me/tools/DongGoiPokeJ2me.java
+ * Bang /pk/hu.bin (HieuUngBang) + anh /pk/hu_&lt;ten&gt;.png, dong goi boi client_jar/tools/DongGoiPokeJ2me.java
  * tu Resources/poke/hu_bang.bytes + hu_*.bytes (khung cat sat hinh, bot khung, PNG bang mau).
  *
  * Char co pokeDex &gt; 0 dung chieu (lop, chieu) co trong bang thi Char.setCurrentSkillByID lay

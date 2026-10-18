@@ -1,171 +1,128 @@
 <script setup lang="ts">
 /**
- * Trung tâm người chơi: tìm tài khoản/nhân vật, hồ sơ (cấp, loài, xu/lượng, Pokédex, túi đồ, IP,
- * lần cuối vào game), khoá có lý do + thời hạn, cấm chat, gửi thư, đổi mật khẩu.
+ * Trung tâm người chơi.
+ *   /admin/nguoi-choi?q=…&kieu=…        tìm theo tài khoản / nhân vật / email / IP / mã máy
+ *   /admin/nguoi-choi?u=<tài khoản>     hồ sơ đầy đủ (tab), &nv=<id nhân vật> mở sẵn nhân vật
+ * Các trang Tài khoản / Nhân vật / Cấm theo máy liên kết về đây bằng ?u=.
  */
-import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
+import type { CotBang } from '~/components/admin/Bang.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
+
+interface NvTim { id: number, charname: string, lastLv: number, ban: number, loai: string, dex: number, lastLog: string, online: boolean | null }
+interface DongTim {
+  id: number, username: string, email: string, regdate: string, ban: number, tuGame: boolean, laAdmin: boolean
+  nhanVat: NvTim[], capCao: number, dangOnline: boolean, lanCuoi: string, khop: string[]
+}
+
 const api = useAdminApi()
-const toast = useToast()
-const me = useAdminMe()
 const route = useRoute()
 const router = useRouter()
-const xacNhan = useOverlay().create(AdminTaikhoanXacNhan)
-const duocLam = computed(() => ['sieu_quan_tri', 'ho_tro'].includes(me.vaiTro.value))
 
-const tim = ref('')
-const { data: kq } = await useAsyncData('admin-nc-tim', () => tim.value.trim().length >= 2 ? api<{ taiKhoan: any[], nhanVat: any[] }>('/api/admin/nguoi-choi/tim', { query: { q: tim.value.trim() } }) : Promise.resolve({ taiKhoan: [], nhanVat: [] }), { server: false, watch: [refDebounced(tim, 300)] })
+const KIEU = [
+  { label: 'Tất cả', value: 'tat_ca' },
+  { label: 'Tên tài khoản', value: 'tai_khoan' },
+  { label: 'Tên Pokémon', value: 'nhan_vat' },
+  { label: 'Email', value: 'email' },
+  { label: 'IP', value: 'ip' },
+  { label: 'Mã máy', value: 'ma_may' },
+]
+const qUrl = computed(() => (typeof route.query.q === 'string' ? route.query.q.trim() : ''))
+const kieuUrl = computed(() => (typeof route.query.kieu === 'string' && KIEU.some(k => k.value === route.query.kieu) ? route.query.kieu : 'tat_ca'))
+const u = computed(() => (typeof route.query.u === 'string' ? route.query.u.trim() : ''))
 
-const u = computed(() => (typeof route.query.u === 'string' ? route.query.u : ''))
-const { data: hs, refresh } = await useAsyncData('admin-nc-hs', () => u.value ? api<any>('/api/admin/nguoi-choi/chi-tiet', { query: { u: u.value } }) : Promise.resolve(null), { server: false, watch: [u] })
-function mo(ten: string) { router.push({ query: { u: ten } }) }
+const tim = ref(qUrl.value)
+const kieu = ref(kieuUrl.value)
+watch(qUrl, v => (tim.value = v))
+watch(kieuUrl, v => (kieu.value = v))
 
-const fKhoa = reactive({ lyDo: '', soGio: 24 })
-const HAN = [{ label: '1 giờ', value: 1 }, { label: '24 giờ', value: 24 }, { label: '3 ngày', value: 72 }, { label: '7 ngày', value: 168 }, { label: '30 ngày', value: 720 }, { label: 'Vĩnh viễn', value: 0 }]
-async function goi(url: string, body: Record<string, unknown>, hoi?: { title: string, nut: string, mau?: 'error' | 'warning' | 'primary' }) {
-  if (hoi && !(await xacNhan.open({ ...hoi }).result)) return
-  try {
-    const r = await api<{ message?: string }>(url, { method: 'POST', body })
-    toast.add({ title: r.message ?? 'Xong', color: 'success' })
-    refresh()
-  }
-  catch (e) { toast.add({ title: loiApi(e), color: 'error' }) }
+function timKiem() {
+  const q = tim.value.trim()
+  router.push({ query: q ? { q, ...(kieu.value !== 'tat_ca' ? { kieu: kieu.value } : {}) } : {} })
 }
-const khoa = () => goi('/api/admin/nguoi-choi/khoa', { username: u.value, ...fKhoa }, { title: `Khoá ${u.value}?`, nut: 'Khoá', mau: 'error' })
-const moKhoa = () => goi('/api/admin/nguoi-choi/mo-khoa', { username: u.value }, { title: `Mở khoá ${u.value}?`, nut: 'Mở khoá' })
+watch(kieu, () => { if (tim.value.trim().length >= 2) timKiem() })
 
-const fChat = reactive<Record<number, { soGio: number, lyDo: string }>>({})
-const fThu = reactive<Record<number, string>>({})
-const camChat = (c: any, soGio: number) => goi('/api/admin/nguoi-choi/cam-chat', { charId: c.id, soGio, lyDo: fChat[c.id]?.lyDo ?? '' })
-const guiThu = async (c: any) => { await goi('/api/admin/nguoi-choi/gui-thu', { charname: c.charname, noiDung: fThu[c.id] ?? '' }); fThu[c.id] = '' }
-watch(hs, (v) => {
-  for (const c of v?.nhanVat ?? []) { fChat[c.id] ??= { soGio: 24, lyDo: '' }; fThu[c.id] ??= '' }
-}, { immediate: true })
+const { data, status, error, refresh } = useAsyncData(
+  'admin-nc-tim',
+  () => (u.value || qUrl.value.length < 2
+    ? Promise.resolve(null)
+    : api<{ ketQua: DongTim[], gioiHan: boolean }>('/api/admin/nguoi-choi/tim', { query: { q: qUrl.value, kieu: kieuUrl.value } })),
+  { server: false, watch: [qUrl, kieuUrl, u] },
+)
 
-const mk = reactive({ a: '', b: '' })
-const doiMk = () => goi(`/api/admin/taikhoan/${hs.value?.tk.id}`, { viec: 'doi_mat_khau', matkhau: mk.a, matkhau2: mk.b }, { title: `Đặt mật khẩu mới cho ${u.value}?`, nut: 'Đổi', mau: 'warning' })
-const so = (n: unknown) => Number(n ?? 0).toLocaleString('vi-VN')
+const cot: CotBang[] = [
+  { key: 'username', label: 'Tài khoản', sort: true },
+  { key: 'nhanVat', label: 'Pokémon', giaTri: r => r.nhanVat.map((n: NvTim) => n.charname).join(' ') },
+  { key: 'capCao', label: 'Cấp cao nhất', sort: true, so: true, anMobile: true },
+  { key: 'trangThai', label: 'Trạng thái', giaTri: r => `${r.dangOnline ? 'online ' : ''}${r.ban === 1 ? 'khoá' : ''}` },
+  { key: 'lanCuoi', label: 'Vào lần cuối', sort: true, anMobile: true },
+  { key: 'khop', label: 'Khớp theo', giaTri: r => r.khop.join(', '), anMobile: true },
+]
+const mo = (ten: string) => router.push({ query: { u: ten } })
 </script>
 
 <template>
   <AdminPage title="Trung tâm người chơi">
-    <UInput v-model="tim" icon="i-lucide-search" size="lg" placeholder="Gõ tên tài khoản hoặc tên Pokémon (ít nhất 2 ký tự)..." class="w-full" autofocus />
-    <div v-if="kq && (kq.taiKhoan.length || kq.nhanVat.length)" class="grid gap-4 lg:grid-cols-2">
-      <UCard>
-        <template #header><b>Tài khoản ({{ kq.taiKhoan.length }})</b></template>
-        <ul class="divide-y divide-default">
-          <li v-for="t in kq.taiKhoan" :key="t.id" class="flex items-center gap-2 py-1.5">
-            <button type="button" class="font-semibold hover:text-primary" @click="mo(t.username)">{{ t.username }}</button>
-            <UBadge v-if="Number(t.ban) === 1" color="error" variant="subtle" size="sm">Khoá</UBadge>
-            <span class="ml-auto text-xs text-dimmed">{{ t.regdate }}</span>
-          </li>
-        </ul>
-      </UCard>
-      <UCard>
-        <template #header><b>Pokémon ({{ kq.nhanVat.length }})</b></template>
-        <ul class="divide-y divide-default">
-          <li v-for="n in kq.nhanVat" :key="n.id" class="flex items-center gap-2 py-1.5">
-            <PokeAvatar :dex="dexHienTai(n.class, n.lastLv, n.dex)" class="size-7" />
-            <button type="button" class="font-semibold hover:text-primary" :disabled="!n.chu" @click="mo(n.chu)">{{ n.charname }}</button>
-            <span class="text-xs text-muted">Lv {{ n.lastLv }} · {{ speciesName(n.class, n.lastLv, n.dex) }}</span>
-            <span class="ml-auto text-xs text-dimmed">TK: {{ n.chu }}</span>
-          </li>
-        </ul>
-      </UCard>
-    </div>
+    <template v-if="u">
+      <UButton icon="i-lucide-arrow-left" color="neutral" variant="link" label="Tìm người chơi khác" class="self-start px-0" @click="router.push({ query: {} })" />
+      <AdminNguoichoiHoSo :key="u" :u="u" />
+    </template>
 
-    <template v-if="hs">
-      <UCard>
-        <div class="flex flex-wrap items-center gap-3">
-          <UIcon name="i-lucide-user-round" class="size-8 text-primary" />
-          <div>
-            <p class="text-xl font-bold">{{ hs.tk.username }} <UBadge v-if="hs.tk.laAdmin" color="error" variant="subtle">Quản trị</UBadge></p>
-            <p class="text-sm text-muted">#{{ hs.tk.id }} · đăng ký {{ hs.tk.regdate ?? '?' }} · email {{ hs.tk.email || '—' }}</p>
+    <template v-else>
+      <form class="flex flex-col gap-2 sm:flex-row" role="search" @submit.prevent="timKiem">
+        <USelect v-model="kieu" :items="KIEU" class="sm:w-44" aria-label="Tìm theo" />
+        <UInput v-model="tim" icon="i-lucide-search" size="lg" class="flex-1" autofocus maxlength="64"
+          placeholder="Tên tài khoản, tên Pokémon, email, IP hoặc mã máy (ít nhất 2 ký tự)" aria-label="Từ khoá" />
+        <UButton type="submit" size="lg" label="Tìm" :disabled="tim.trim().length < 2" />
+      </form>
+
+      <UCard v-if="!qUrl" class="bg-elevated/40">
+        <div class="flex items-start gap-3 text-sm text-muted">
+          <UIcon name="i-lucide-info" class="mt-0.5 size-5 shrink-0 text-primary" />
+          <div class="space-y-1">
+            <p>Gõ tên tài khoản hoặc tên Pokémon để mở hồ sơ. Chọn <b>IP</b> hoặc <b>Mã máy</b> để xem mọi tài khoản đã đăng nhập từ đó (lấy theo đầu chuỗi).</p>
+            <p>Số thuần được hiểu thêm là ID tài khoản / ID Pokémon.</p>
           </div>
-          <UBadge :color="Number(hs.tk.ban) === 1 ? 'error' : 'success'" size="lg" class="ml-auto">{{ Number(hs.tk.ban) === 1 ? 'Đang bị khoá' : 'Hoạt động' }}</UBadge>
         </div>
       </UCard>
 
-      <div class="grid gap-4 xl:grid-cols-3">
-        <UCard v-if="duocLam && !hs.tk.laAdmin">
-          <template #header><b>Khoá / mở tài khoản</b></template>
-          <template v-if="Number(hs.tk.ban) !== 1">
-            <UFormField label="Lý do"><UInput v-model="fKhoa.lyDo" placeholder="Dùng bot, lừa đảo..." class="w-full" /></UFormField>
-            <UFormField label="Thời hạn" class="mt-2"><USelect v-model="fKhoa.soGio" :items="HAN" class="w-full" /></UFormField>
-            <UButton class="mt-3" color="error" icon="i-lucide-lock" label="Khoá" :disabled="fKhoa.lyDo.length < 3" @click="khoa" />
-          </template>
-          <UButton v-else color="success" icon="i-lucide-lock-open" label="Mở khoá ngay" @click="moKhoa" />
-          <p class="mt-2 text-xs text-dimmed">Hết hạn thì website tự mở khoá (kiểm mỗi 5 phút). Người đang online chơi tiếp tới khi thoát.</p>
-        </UCard>
-        <UCard v-if="duocLam">
-          <template #header><b>Đặt mật khẩu mới</b></template>
-          <UInput v-model="mk.a" type="password" placeholder="Mật khẩu mới" class="w-full" autocomplete="new-password" />
-          <UInput v-model="mk.b" type="password" placeholder="Nhập lại" class="mt-2 w-full" autocomplete="new-password" />
-          <UButton class="mt-3" color="warning" icon="i-lucide-key-round" label="Đổi mật khẩu" :disabled="!mk.a || mk.a !== mk.b" @click="doiMk" />
-        </UCard>
-        <UCard>
-          <template #header><b>Máy & IP đăng nhập</b></template>
-          <ul class="space-y-1 text-sm">
-            <li v-for="m in hs.may" :key="`${m.ip}${m.lan_cuoi}`" class="flex justify-between gap-2"><span class="font-mono">{{ m.ip || '?' }}</span><span class="text-xs text-dimmed">{{ m.lan_cuoi }} · {{ m.so_lan }} lần</span></li>
-            <li v-if="!hs.may.length" class="text-muted">Chưa có dữ liệu.</li>
-          </ul>
-        </UCard>
-      </div>
-
-      <UCard v-for="c in hs.nhanVat" :key="c.id">
-        <template #header>
-          <div class="flex flex-wrap items-center gap-3">
-            <PokeAvatar :dex="c.dexHienTai" class="size-10" />
-            <div>
-              <b class="text-lg">{{ c.charname }}</b>
-              <p class="text-sm text-muted">Lv {{ c.lastLv }} · {{ c.loai }} · vào game lần cuối {{ c.lastLog || '?' }}</p>
-            </div>
-            <UBadge v-if="c.online" color="success" variant="subtle">Đang online</UBadge>
-            <UBadge v-if="c.camChatDen && c.camChatDen > new Date().toISOString().slice(0, 19).replace('T', ' ')" color="warning" variant="subtle">Cấm chat tới {{ c.camChatDen }}</UBadge>
-            <UButton class="ml-auto" size="xs" color="neutral" variant="outline" :to="`/admin/nhanvat?id=${c.id}`" icon="i-lucide-backpack" label="Túi đồ & lệnh" />
+      <AdminBang v-else :rows="data?.ketQua" :cot="cot" :dang-tai="status === 'pending'" :loi="error" ten-csv="tim-nguoi-choi"
+        row-key="id" rong-tieu-de="Không tìm thấy người chơi nào" rong-mo-ta="Thử kiểu tìm khác, hoặc gõ ít ký tự hơn." @thu-lai="refresh">
+        <template #cell-username="{ row }">
+          <button type="button" class="text-left font-semibold text-primary hover:underline" @click="mo(row.username)">{{ row.username }}</button>
+          <div class="flex flex-wrap gap-1 text-xs text-muted">
+            <span>#{{ row.id }}</span>
+            <span v-if="row.email" class="break-all">· {{ row.email }}</span>
+            <UBadge v-if="row.laAdmin" size="sm" color="neutral" variant="outline" label="quản trị" />
           </div>
         </template>
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-          <div><p class="text-xs text-muted">Xu</p><b>{{ so(c.gold) }}</b></div>
-          <div><p class="text-xs text-muted">Lượng</p><b>{{ so(c.luong) }}</b></div>
-          <div><p class="text-xs text-muted">Lượng khoá</p><b>{{ so(c.luonglock) }}</b></div>
-          <div><p class="text-xs text-muted">Kho xu / lượng</p><b>{{ so(c.khoXu) }} / {{ so(c.khoLuong) }}</b></div>
-          <div><p class="text-xs text-muted">Pokédex đã hạ</p><b>{{ c.pokedexDaHa }} loài</b></div>
-          <div><p class="text-xs text-muted">Vật phẩm</p><b>{{ c.soVatPham.mac }} mặc · {{ c.soVatPham.tui }} túi · {{ c.soVatPham.ruong }} rương</b></div>
-          <div><p class="text-xs text-muted">Thời gian chơi (ghi nhận)</p><b>{{ so(c.totalTimePlay) }}</b></div>
-        </div>
-        <div v-if="duocLam" class="mt-4 grid gap-4 border-t border-default pt-4 lg:grid-cols-2">
-          <div>
-            <p class="text-sm font-semibold">Cấm chat <span class="font-normal text-dimmed">(chỉ khi offline)</span></p>
-            <div v-if="fChat[c.id]" class="mt-2 flex flex-wrap gap-2">
-              <USelect v-model="fChat[c.id]!.soGio" :items="HAN.filter(h => h.value > 0)" class="w-32" />
-              <UInput v-model="fChat[c.id]!.lyDo" placeholder="Lý do" class="min-w-40 flex-1" />
-              <UButton color="warning" icon="i-lucide-message-square-off" label="Cấm" :disabled="(fChat[c.id]!.lyDo ?? '').length < 3" @click="camChat(c, fChat[c.id]!.soGio)" />
-              <UButton color="neutral" variant="outline" label="Bỏ cấm" @click="camChat(c, 0)" />
-            </div>
+        <template #cell-nhanVat="{ row }">
+          <div class="flex flex-col gap-1">
+            <span v-for="n in row.nhanVat" :key="n.id" class="flex items-center gap-2">
+              <PokeAvatar :dex="n.dex" class="size-6" />
+              <span class="font-medium">{{ n.charname }}</span>
+              <span class="text-xs text-muted">Lv {{ n.lastLv }} · {{ n.loai }}</span>
+              <span v-if="n.online === true" class="size-2 rounded-full bg-success" title="Đang online" />
+            </span>
+            <span v-if="!row.nhanVat.length" class="text-xs text-dimmed">Chưa có Pokémon</span>
           </div>
-          <div>
-            <p class="text-sm font-semibold">Gửi thư trong game</p>
-            <div class="mt-2 flex gap-2">
-              <UInput v-model="fThu[c.id]" placeholder="Nội dung (tối đa 800 ký tự)" :maxlength="800" class="flex-1" />
-              <UButton icon="i-lucide-send" label="Gửi" :disabled="!fThu[c.id]" @click="guiThu(c)" />
-            </div>
+        </template>
+        <template #cell-trangThai="{ row }">
+          <div class="flex flex-wrap gap-1">
+            <UBadge v-if="row.dangOnline" color="success" variant="subtle" label="Online" />
+            <UBadge v-if="row.ban === 1" color="error" variant="subtle" label="Bị khoá" />
+            <UBadge v-else-if="row.ban === 3" color="warning" variant="subtle" label="Chờ email" />
+            <UBadge v-else-if="!row.dangOnline" color="neutral" variant="subtle" label="Bình thường" />
           </div>
-        </div>
-      </UCard>
-
-      <UCard v-if="hs.khoa.length">
-        <template #header><b>Lịch sử khoá / cấm chat</b></template>
-        <table class="bang-wiki">
-          <thead><tr><th>Loại</th><th>Lý do</th><th>Hết hạn</th><th>Bởi</th><th>Lúc</th><th>Đã mở</th></tr></thead>
-          <tbody>
-            <tr v-for="k in hs.khoa" :key="k.id">
-              <td>{{ k.loai === 'khoa' ? 'Khoá TK' : 'Cấm chat' }}</td><td>{{ k.ly_do }}</td><td>{{ k.het_han ?? 'Vĩnh viễn' }}</td><td>{{ k.admin_user }}</td><td class="text-xs">{{ k.tao_luc }}</td><td class="text-xs">{{ k.mo_luc ?? '—' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </UCard>
+        </template>
+        <template #cell-lanCuoi="{ row }">
+          <span class="whitespace-nowrap text-xs text-muted">{{ row.lanCuoi || '—' }}</span>
+        </template>
+        <template #cell-khop="{ row }">
+          <span class="text-xs text-muted">{{ row.khop.join(' · ') }}</span>
+        </template>
+      </AdminBang>
+      <p v-if="data?.gioiHan" class="text-sm text-muted">Chỉ hiện 50 tài khoản đầu — gõ cụ thể hơn để thu hẹp.</p>
     </template>
   </AdminPage>
 </template>

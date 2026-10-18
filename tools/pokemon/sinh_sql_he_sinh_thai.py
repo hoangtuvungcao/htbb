@@ -81,7 +81,7 @@ def doc_quai():
 
 
 def doc_luoi(map_id):
-    for duong in ("map/pokemon_spawn/map%d" % map_id, "map/map%d" % map_id):
+    for duong in ("server/map/pokemon_spawn/map%d" % map_id, "server/map/map%d" % map_id):
         p = os.path.join(GOC, duong)
         if os.path.isfile(p):
             b = open(p, "rb").read()
@@ -123,14 +123,14 @@ def bo_tile(map_id):
 
 def ho_cua_map(map_id, nuoc_bo):
     """[(ho_id, so_o, [(x,y) diem cau]...)] cua map; [] neu thieu tep."""
-    p = os.path.join(GOC, "cMap_pokemon", str(map_id))
+    p = os.path.join(GOC, "server", "cMap_pokemon", str(map_id))
     if not os.path.isfile(p):
         return []
     b = open(p, "rb").read()
     w, h = b[0], b[1]
     tile = b[2:2 + w * h]
     bo = bo_tile(map_id)
-    kieu = open(os.path.join(GOC, "cMap_pokemon", bo + ".type"), "rb").read()
+    kieu = open(os.path.join(GOC, "server", "cMap_pokemon", bo + ".type"), "rb").read()
     tn = nuoc_bo.get(bo, set())
     nuoc = [t < 254 and t in tn for t in tile]
     di = [True if t >= 254 else ((kieu[t] & 2) == 0 if t < len(kieu) else not nuoc[i]) for i, t in enumerate(tile)]

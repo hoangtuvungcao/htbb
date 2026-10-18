@@ -58,7 +58,11 @@ public final class LauDaiNhanVat {
             return;
         }
         final HoSoLauDai h = CACHE.get(Integer.valueOf(p.charDBID));
-        if (h == null || !h.ban) {
+        if (h == null) {
+            return;
+        }
+        TangTocGame.ghiMocLuu(h, com.htbb.pokemon.DongHo.bay()); // moc "thoat" cho uy thac luyen tap
+        if (!h.ban) {
             return;
         }
         final String s;
@@ -95,6 +99,7 @@ public final class LauDaiNhanVat {
                 h.ban = true;
             }
             NhiemVuLauDaiGame.khiNap(p, h);
+            TangTocGame.khiNap(p, h);
         } catch (final Exception e) {
             System.out.println("LauDaiNhanVat.khiNap: " + e);
         }
@@ -123,15 +128,18 @@ public final class LauDaiNhanVat {
         if (h == null) {
             return 100;
         }
-        return NangLuong.ghiNhan(h, System.currentTimeMillis(),
+        return NangLuong.ghiNhan(h, com.htbb.pokemon.DongHo.bay(),
                 LauDai.so(LauDai.K_NANG_LUONG_PHUT, ThongSoLauDai.NANG_LUONG_PHUT_NGAY),
                 LauDai.so(LauDai.K_NANG_LUONG_TICH, ThongSoLauDai.NANG_LUONG_PHUT_TICH_TOI_DA));
     }
 
-    /** He so nang luong hien tai, khong ghi nhan (de roi xu cung lan ha da ghi o EXP). */
+    /**
+     * He so nang luong hien tai cho XU / da / do roi, khong ghi nhan (de roi xu cung lan ha da ghi o EXP). Khong
+     * tinh Bua the luc (vat pham tang toc chi cho EXP).
+     */
     public static int nangLuongHienTai(final Char p) {
         final HoSoLauDai h = lay(p);
-        return h == null ? 100 : NangLuong.heSoHienTai(h, System.currentTimeMillis());
+        return h == null ? 100 : NangLuong.heSoXuHienTai(h, com.htbb.pokemon.DongHo.bay());
     }
 
     /** Bat kip (%): vao sau ngay 30 hoac dang trong 14 ngay quay lai, va cap < trung vi - 5. */
@@ -203,6 +211,6 @@ public final class LauDaiNhanVat {
 
     /** Tuan hien tai cho ve chuong / nhiem vu tuan. */
     static int tuanNay() {
-        return NhiemVuLauDai.tuan(System.currentTimeMillis());
+        return NhiemVuLauDai.tuan(com.htbb.pokemon.DongHo.bay());
     }
 }

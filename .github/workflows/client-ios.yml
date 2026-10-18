@@ -2,7 +2,7 @@
 # Bước 1 (Ubuntu, tính phút x1): Unity xuất project Xcode qua GameCI.
 # Bước 2 (macOS, tính phút x10 với repo private): xcodebuild -> .ipa.
 # Cần secrets: UNITY_LICENSE (nội dung Unity_lic.ulf), UNITY_EMAIL, UNITY_PASSWORD.
-name: Build iOS (pc/)
+name: Build iOS (client_pc_ios/)
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ on:
         default: "1"
 
 env:
-  PROJECT_PATH: pc
+  PROJECT_PATH: client_pc_ios
   UNITY_VERSION: 6000.5.9f1
 
 jobs:
@@ -91,11 +91,11 @@ jobs:
           APP=$(find dd/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -n 1)
           test -n "$APP"
           mkdir Payload && cp -R "$APP" Payload/
-          zip -qry "HTBB276-NQSH-H2-${{ inputs.version }}-unsigned.ipa" Payload
+          zip -qry "HTBB276-${{ inputs.version }}-unsigned.ipa" Payload
           ls -la *.ipa
 
       - uses: actions/upload-artifact@v7
         with:
-          name: HTBB276-NQSH-H2-ipa
+          name: HTBB276-ipa
           path: "*.ipa"
           retention-days: 14

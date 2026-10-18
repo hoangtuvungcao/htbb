@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Log game — xem các bảng log mà game server tự ghi trong kpah_db.
+ * Log game — xem các bảng log mà game server tự ghi trong htbb_db.
  *
  * Bộ lọc nằm trên địa chỉ trang (?bang=&loc=&loc2=&trang=) để trang Chẩn đoán
  * trỏ thẳng vào được (vd /admin/log?bang=tob_log_all_item&loc2=loiinvent).
@@ -133,8 +133,8 @@ const tenRong = (v: string) => v === '' || v === '""'
     <UAlert v-if="data?.bangThat === 'tob_log_all_item'" color="neutral" variant="subtle" icon="i-lucide-info">
       <template #description>
         Cột <strong>Loại</strong> (<code>aclog</code>) là chỗ đáng soi nhất. Gõ <code>loiinvent</code>
-        vào ô lọc để tìm những nhân vật lưu hành trang thất bại — đó là nguyên nhân khiến server
-        <em>tự</em> đặt <code>ban = 1</code> và nhân vật biến mất khỏi màn chọn.
+        vào ô lọc để tìm những Pokémon lưu hành trang thất bại — đó là nguyên nhân khiến server
+        <em>tự</em> đặt <code>ban = 1</code> và Pokémon biến mất khỏi màn chọn.
       </template>
     </UAlert>
 

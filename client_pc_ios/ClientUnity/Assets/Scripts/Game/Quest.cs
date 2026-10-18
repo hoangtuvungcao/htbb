@@ -235,7 +235,7 @@ public class Quest
 				if (idMonsKill[i] == idMonstemplate && allMonsKilled[i] < totalMonskill[i])
 				{
 					allMonsKilled[i]++;
-					return (allMonsKilled[i] >= totalMonskill[i]) ? ("Nhiệm vụ " + name + " đã hoàn thành") : ("Giết được " + allMonsKilled[i] + "/" + totalMonskill[i] + " " + nameMons);
+					return (allMonsKilled[i] >= totalMonskill[i]) ? ("Nhiệm vụ " + name + " đã hoàn thành") : ("Hạ được " + allMonsKilled[i] + "/" + totalMonskill[i] + " " + nameMons);
 				}
 			}
 		}
@@ -251,7 +251,7 @@ public class Quest
 				if (allMonsKilled[i] < totalMonskill[i])
 				{
 					allMonsKilled[i]++;
-					return (allMonsKilled[i] >= totalMonskill[i]) ? ("Nhiệm vụ " + name + " đã hoàn thành") : ("Giết được " + allMonsKilled[i] + "/" + totalMonskill[i] + " ");
+					return (allMonsKilled[i] >= totalMonskill[i]) ? ("Nhiệm vụ " + name + " đã hoàn thành") : ("Hạ được " + allMonsKilled[i] + "/" + totalMonskill[i] + " ");
 				}
 			}
 		}
@@ -293,7 +293,7 @@ public class Quest
 				break;
 			}
 			case 4:
-				result = "Giết: " + allMonsKilled[0] + "/" + totalMonskill[0];
+				result = "Hạ: " + allMonsKilled[0] + "/" + totalMonskill[0];
 				result = result + "|" + infoGift;
 				break;
 			}

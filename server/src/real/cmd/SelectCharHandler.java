@@ -119,7 +119,7 @@ public class SelectCharHandler implements ICommandHandler {
 //                    session.sendMessage(MessageCreator.createServerAlertMessage("Chức năng đang bảo trì", ""));
 //                    return;
                     Database.instance.updateDelChar(charDBID, 0);
-                    session.sendMessage(MessageCreator.createServerAlertMessage("Nhân vật đã xoá, không thể khôi phục.", ""));
+                    session.sendMessage(MessageCreator.createServerAlertMessage("Pokémon đã xoá. Có thể khôi phục trong 7 ngày.", ""));
 //                    Database.instance.banChar(p, "xoa nhan vat");
                     session.sendMessage(MessageCreator.createCharListMessage(session.userID, p.getSession()));
 
@@ -131,7 +131,7 @@ public class SelectCharHandler implements ICommandHandler {
 //                    session.sendMessage(MessageCreator.createServerAlertMessage("Không thể khôi phục nhân vật", ""));
 //                    return;
 
-                    session.sendMessage(MessageCreator.createServerAlertMessage("Nhân vật đã được khôi phục.", ""));
+                    session.sendMessage(MessageCreator.createServerAlertMessage("Pokémon đã được khôi phục.", ""));
                     Database.instance.updateDelChar(charDBID, 1);
                     session.sendMessage(MessageCreator.createCharListMessage(session.userID, p.getSession()));
 
@@ -163,7 +163,7 @@ public class SelectCharHandler implements ICommandHandler {
                 }
            
 
-            if (!Database.check_active(p.userID)) {
+            if (com.htbb.pokemon.ThanhVien.chanDangNhap(p.userID) && !Database.check_active(p.userID)) { // kich hoat: mac dinh KHONG chan dang nhap
                 session.sendMessage(MessageCreator.createServerAlertMessage(LoginHandler.KichHoatTaiKhoan, ""));
                 session.userID = -1;
                 return;
@@ -183,7 +183,7 @@ public class SelectCharHandler implements ICommandHandler {
                 if (wd != null) {
                     wd.listMember.put(p.charDBID, p.userID);
                     if (wd.action == 1) {
-                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Đang diễn ra tiệc cưới mà bạn được mời tham dự. Hãy nhanh chân lên thành Trấn Danh để dự tiệc."));
+                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Đang diễn ra tiệc cưới mà bạn được mời tham dự. Hãy nhanh chân lên Cao nguyên Indigo để dự tiệc."));
                     }
                 } else {
                     p.idWedding = -1;
@@ -260,7 +260,7 @@ public class SelectCharHandler implements ICommandHandler {
                 for (int k = 0; k < 3; ++k) {
                     info = String.valueOf(info) + (Map.getTown[k] ? (String.valueOf(Map.nameCountry[k]) + ",") : "");
                 }
-                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("đang diễn ra sự kiện chiếm thành"));
+                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("đang diễn ra sự kiện chiếm Gym"));
             }
             p.typeFirmware = session.firmWare;
             p.setSizeScreen(session.w, session.h);
@@ -279,7 +279,7 @@ public class SelectCharHandler implements ICommandHandler {
             // vao p.awItems truoc do), khong co cot DB rieng. Phai tinh TRUOC goi thong
             // tin nhan vat dau tien, khong thi dang nhap vao thay hinh thu that roi phai
             // doi den luc mac lai do moi hien skin.
-            real.SkinLinhThu.dongBoTheoTrangBi(p);
+            real.SkinThuCuoi.dongBoTheoTrangBi(p);
             // Tinh lai chi so SAU khi biet skin, TRUOC goi thong tin nhan vat dau tien.
             // Skin cong chi so cho chu nhan (HP/MP, thu, tiem nang...) ma attack/maxhp/
             // defend deu la truong duoc luu san — lan calculateAttrib truoc do trong qua
@@ -349,6 +349,7 @@ public class SelectCharHandler implements ICommandHandler {
             }
 //            Database.instance.countChar(p, session.userID);
             Database.instance.getBoardNapTien(p);
+            com.htbb.pokemon.ThanhVien.baoKhiVaoGame(p); // kich hoat: nhac tinh nang bi khoa khi chua kich hoat
             Database.instance.getBoardCreated(p);
             Database.instance.sendNotiLogin(p, m);
             p.doAddGiftEventOffline();
@@ -433,7 +434,7 @@ public class SelectCharHandler implements ICommandHandler {
                     session.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Đang diễn ra sự kiện săn Mãnh thú."));
                 }
                 if (p.myCountry > -1 && Map.nationBeAttack[p.myCountry] > -1) {
-                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(Map.nameCountry[Map.nationBeAttack[p.myCountry]]) + " sẽ tấn công lãnh thổ của bạn vào lúc 20h ngày " + Map.nationWar.get(Map.nationBeAttack[p.myCountry]).dayAttack));
+                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(Map.nameCountry[Map.nationBeAttack[p.myCountry]]) + " sẽ tấn công vùng của bạn vào lúc 20h ngày " + Map.nationWar.get(Map.nationBeAttack[p.myCountry]).dayAttack));
                 }
                 final String infoBoss = Map.getNameBossApear(p.inCountry);
                 if (!infoBoss.equals("")) {
@@ -462,8 +463,8 @@ public class SelectCharHandler implements ICommandHandler {
 
             // Vao game trong 1 gio sau khi bang chiem thanh -> nhan thuong chiem thanh
             try {
-                real.ThuongChiemThanh.kiemTraKhiVaoGame(p);
-                real.ChiemThanhLauDai.kiemTraKhiVaoGame(p); // GD2 (tat co: khong lam gi)
+                real.ThuongChiemGym.kiemTraKhiVaoGame(p);
+                real.ChiemGymLauDai.kiemTraKhiVaoGame(p); // GD2 (tat co: khong lam gi)
             } catch (final Exception exThuong) {
                 exThuong.printStackTrace();
             }

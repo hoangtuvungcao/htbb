@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * cua khoi nay la thieu trong font.
  *
  * Khong sua duoc font: ban client JAR khong co ma nguon, khong dong goi lai duoc (xem chu
- * thich dau real/SkinLinhThu.java). Cach duy nhat la PHIA MAY CHU khong gui nhung ky tu do
+ * thich dau real/SkinThuCuoi.java). Cach duy nhat la PHIA MAY CHU khong gui nhung ky tu do
  * nua — viet thuong chu do, hoac dat lai cau cho no roi vao giua cau.
  *
  * Phep kiem duoi day quet MOI chuoi hien cho nguoi choi trong src/ va bao ngay khi ai do

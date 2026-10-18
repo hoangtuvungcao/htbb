@@ -19,7 +19,7 @@ import java.nio.file.Paths;
  * SUA. Them Map.chiemGem/chiemPotion/chiemItem/chiemItemQuest: dua thang ket qua cua
  * Vector.remove(Object) (nguyen tu, chi tra true cho luong that su rut duoc phan tu) ra ngoai,
  * kem kiem bien country. Moi duong nhat doi sang mau "if (!chiemX(...)) return;" TRUOC khi cong.
- * Bon ham removeX (void) GIU NGUYEN vi lop con trong lib/NQSH_5h.jar con goi chung - doi chu ky
+ * Bon ham removeX (void) GIU NGUYEN vi lop con trong lib/htbb-core.jar con goi chung - doi chu ky
  * la doi descriptor, lop trong jar se khong con ghi de dung.
  *
  * Test nay quet ma nguon (khong dung duoc Map that: khoi static cua Map mo ket noi DB va sinh
@@ -57,7 +57,7 @@ public final class KiemChiemVatRoi {
         Kiem.dung("Map co chiemPotion", map.contains("protected boolean chiemPotion(Potion pt, int country)"));
         Kiem.dung("Map co chiemItem", map.contains("protected boolean chiemItem(Item pt, int country)"));
         Kiem.dung("Map co chiemItemQuest", map.contains("protected boolean chiemItemQuest(ItemQuest pt, int country)"));
-        // Bon ham remove* cu phai CON: lop con trong NQSH_5h.jar goi chung.
+        // Bon ham remove* cu phai CON: lop con trong htbb-core.jar goi chung.
         Kiem.dung("van con removeGem (jar goi)", map.contains("protected void removeGem(GemItem pt, int country)"));
         Kiem.dung("van con removePotion (jar goi)", map.contains("protected void removePotion(Potion pt, int country)"));
         Kiem.dung("van con removeItem (jar goi)", map.contains("protected void removeItem(Item pt, int country)"));

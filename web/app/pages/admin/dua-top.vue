@@ -185,8 +185,8 @@ async function huy() {
         Phát quà đua top
       </h1>
       <p class="mt-1 max-w-4xl text-muted">
-        {{ soHang }} hạng. Điền tên nhân vật + chọn phần thưởng cho hạng nào cần phát — để trống hạng
-        không dùng. Nhân vật được điền tên sẽ thấy mục "Nhận thưởng đua top" ở NPC Tổng Quản, chỉ đúng người đó
+        {{ soHang }} hạng. Điền tên Pokémon + chọn phần thưởng cho hạng nào cần phát — để trống hạng
+        không dùng. Pokémon được điền tên sẽ thấy mục "Nhận thưởng đua top" ở NPC Tổng Quản, chỉ đúng người đó
         mới nhận được đúng phần thưởng của mình.
       </p>
     </div>
@@ -280,11 +280,11 @@ async function huy() {
             {{ nhom.ghiChu }}
           </p>
           <p class="text-xs text-muted">
-            "Cho người chơi tự chọn": nhân vật bấm "Nhận thưởng đua top" ở NPC Tổng Quản sẽ
+            "Cho người chơi tự chọn": Pokémon bấm "Nhận thưởng đua top" ở NPC Tổng Quản sẽ
             thấy một menu để TỰ CHỌN 1 trong các món đã thêm vào đây, thay vì admin chọn sẵn một món cố định.
             Nút "Thêm CẢ NHÓM" đưa HẾT các tổ hợp có thể có của nhóm đang chọn thành các lựa chọn trong một lần
             bấm — không chỉ duyệt hết các món (vd 5 mặt nạ), mà còn duyệt hết CẢ các ô "Hệ"/"Kháng"... đang là
-            dropdown nhiều lựa chọn (vd Phi phong kháng ra đủ 2 Hệ × 6 Kháng = 12 lựa chọn); ô số lượng/thời hạn
+            dropdown nhiều lựa chọn (vd Ruy băng kháng ra đủ 2 Hệ × 6 Kháng = 12 lựa chọn); ô số lượng/thời hạn
             thì giữ nguyên giá trị đang đặt cho mọi lựa chọn.
           </p>
         </div>
@@ -292,7 +292,7 @@ async function huy() {
         <!-- ============ Chèn nhanh ============ -->
         <div v-if="data?.chenNhanh.length" class="space-y-3 rounded-lg border border-default bg-elevated/30 p-4">
           <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <strong class="text-highlighted">Chèn nhanh — thú cưỡi, phi phong kháng, vũ khí thời trang/thần binh, nguyệt linh trượng, mặt nạ</strong>
+            <strong class="text-highlighted">Chèn nhanh — thú cưỡi, ruy băng kháng, đồ cầm tay thời trang/bảo vật, Gậy Ánh Trăng, mặt nạ</strong>
             <span class="text-xs text-muted">không có danh sách id để chọn, bấm Chèn rồi tự sửa số ngày/phút trong ô của hạng đang chọn ở "Điền vào hạng" bên trên</span>
           </div>
           <div class="max-h-80 overflow-auto rounded-md border border-default">
@@ -349,7 +349,7 @@ async function huy() {
                     Hạng
                   </th>
                   <th class="px-3 py-2 font-medium">
-                    Tên nhân vật
+                    Tên Pokémon
                   </th>
                   <th class="px-3 py-2 font-medium">
                     Phần thưởng cố định
@@ -371,13 +371,13 @@ async function huy() {
                     <strong class="text-highlighted">Top {{ i + 1 }}</strong>
                   </td>
                   <td class="w-56 px-3 py-2">
-                    <UInput v-model="h.ten" maxlength="50" placeholder="tên nhân vật" class="w-full" />
+                    <UInput v-model="h.ten" maxlength="50" placeholder="tên Pokémon" class="w-full" />
                   </td>
                   <td class="px-3 py-2">
                     <UTextarea v-model="h.item" :rows="2" autoresize placeholder="ITEM:848:1000,GEM:73:100:-1" class="w-full font-mono text-xs" />
                   </td>
                   <td class="px-3 py-2">
-                    <UTextarea v-model="h.itemchon" :rows="2" autoresize placeholder="Mặt nạ bí ngô=MATNA:0:_:0|Mặt nạ dạ xoa=MATNA:4:_:0" class="w-full font-mono text-xs" />
+                    <UTextarea v-model="h.itemchon" :rows="2" autoresize placeholder="Mặt nạ Pumpkaboo=MATNA:0:_:0|Mặt nạ Gengar=MATNA:4:_:0" class="w-full font-mono text-xs" />
                   </td>
                 </tr>
               </tbody>
@@ -418,7 +418,7 @@ async function huy() {
                 Hạng
               </th>
               <th class="px-4 py-2 font-medium">
-                Nhân vật
+                Pokémon
               </th>
               <th class="px-4 py-2 font-medium">
                 Phần thưởng
@@ -482,7 +482,7 @@ async function huy() {
                 Hạng
               </th>
               <th class="px-4 py-2 font-medium">
-                Nhân vật
+                Pokémon
               </th>
               <th class="px-4 py-2 font-medium">
                 Phần thưởng

@@ -32,6 +32,11 @@ public final class NenAndroid {
     public static final String TAG = "HTBB";
     /** cạnh ngắn logic nhỏ nhất (px): hệ số = cạnh ngắn thật / CANH_NGAN (làm tròn xuống) */
     public static int CANH_NGAN = 320;
+    /** cạnh dài logic nhỏ nhất (px): máy tính bảng 4:3 không bị phóng quá to (2048x1536 -> 682x512 x3) */
+    public static int CANH_DAI = 640;
+    /** vùng an toàn (tai thỏ / bo góc) theo px logic: trái, trên, phải, dưới - HUD tránh các vùng này */
+    public static volatile int anToanTrai, anToanTren, anToanPhai, anToanDuoi;
+    private static volatile int[] anToanThat = new int[4];
 
     public static volatile Activity hoatDong;
     /** Context ứng dụng (đọc assets, lưu RMS) - còn sống cả khi Activity bị tạo lại. */
@@ -66,7 +71,8 @@ public final class NenAndroid {
     public static boolean tinhKichThuoc(int w, int h) {
         if (w <= 0 || h <= 0) return false;
         int ngan = Math.min(w, h);
-        int s = Math.max(1, ngan / CANH_NGAN);
+        int dai = Math.max(w, h);
+        int s = Math.max(1, Math.min(ngan / CANH_NGAN, dai / CANH_DAI));
         int lw = w / s;
         int lh = h / s;
         thatW = w;
@@ -77,7 +83,61 @@ public final class NenAndroid {
         boolean doi = lw != rong || lh != cao;
         rong = lw;
         cao = lh;
+        tinhAnToan();
         return doi;
+    }
+
+    /** Vùng an toàn thật (px màn) từ WindowInsets (cutout + thanh hệ thống) -> px logic. */
+    public static void datAnToan(int trai, int tren, int phai, int duoi) {
+        anToanThat = new int[]{trai, tren, phai, duoi};
+        tinhAnToan();
+    }
+
+    private static void tinhAnToan() {
+        int s = Math.max(1, heSo);
+        int[] a = anToanThat;
+        anToanTrai = (a[0] + s - 1) / s;
+        anToanTren = (a[1] + s - 1) / s;
+        anToanPhai = (a[2] + s - 1) / s;
+        anToanDuoi = (a[3] + s - 1) / s;
+    }
+
+    /** Lớp vẽ đè (HUD cảm ứng HD) - vẽ sau khung game, có thể vẽ lại 60 hình/giây độc lập với game. */
+    public interface LopPhu {
+        /** Vẽ lớp phủ (toạ độ logic). */
+        void ve(Graphics g);
+
+        /** true = đang có hoạt hình -> vẽ lại ~60 hình/giây. */
+        boolean dangDong();
+
+        /** Trước / sau khi game vẽ một khung (thu thập thẻ, nút theo ngữ cảnh). */
+        void khungMoi();
+
+        void khungXong();
+    }
+
+    public static volatile LopPhu lopPhu;
+    private static Thread nhip;
+
+    /** Gắn lớp phủ + nhịp ~60 Hz: khi lớp phủ đang hoạt hình thì ghép lại màn (không gọi game paint). */
+    public static synchronized void ganLopPhu(LopPhu lp) {
+        lopPhu = lp;
+        if (nhip != null || Build.VERSION.SDK_INT < 29) return;
+        nhip = new Thread("HTBB-nhip") {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(16);
+                        LopPhu l = lopPhu;
+                        if (l != null && mat != null && l.dangDong()) luong().yeuCauSoan();
+                    } catch (Throwable e) {
+                        // tiếp tục
+                    }
+                }
+            }
+        };
+        nhip.setDaemon(true);
+        nhip.start();
     }
 
     /** Báo đổi cỡ màn cho Canvas đang hiện (trên luồng sự kiện). */
@@ -132,6 +192,44 @@ public final class NenAndroid {
                 else c.pointerReleased(fx, fy);
             }
         });
+    }
+
+    /** Chạm toạ độ LOGIC, gọi ngay (đang ở luồng sự kiện - HUD chuyển cú chạm không trúng nút cho game). */
+    public static void chamNgay(int kieu, int lx, int ly) {
+        Displayable d = Display.hienTai;
+        if (!(d instanceof Canvas)) return;
+        Canvas c = (Canvas) d;
+        if (lx < 0) lx = 0;
+        if (ly < 0) ly = 0;
+        if (lx >= rong) lx = rong - 1;
+        if (ly >= cao) ly = cao - 1;
+        if (kieu == 0) c.pointerPressed(lx, ly);
+        else if (kieu == 1) c.pointerDragged(lx, ly);
+        else c.pointerReleased(lx, ly);
+    }
+
+    /** Phím J2ME gọi ngay trên luồng sự kiện (HUD: cần điều khiển ảo, nút chiêu). */
+    public static void phimNgay(int kieu, int ma) {
+        Displayable d = Display.hienTai;
+        if (!(d instanceof Canvas)) return;
+        Canvas c = (Canvas) d;
+        if (kieu == 0) c.keyPressed(ma);
+        else if (kieu == 1) c.keyRepeated(ma);
+        else c.keyReleased(ma);
+    }
+
+    /** Rung phản hồi rất nhẹ khi bấm nút HUD (tick hệ thống nếu có). */
+    public static void rungNhe() {
+        Activity a = hoatDong;
+        if (a == null) return;
+        try {
+            Vibrator v = (Vibrator) a.getSystemService(Context.VIBRATOR_SERVICE);
+            if (v == null || !v.hasVibrator()) return;
+            if (Build.VERSION.SDK_INT >= 29) v.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK));
+            else v.vibrate(VibrationEffect.createOneShot(8, 60));
+        } catch (Throwable e) {
+            // không rung được
+        }
     }
 
     /** Phím J2ME: kieu 0 = nhấn, 1 = giữ lặp, 2 = thả. */
@@ -235,7 +333,7 @@ public final class NenAndroid {
                         xong(tb, et.getText().toString(), fOk);
                     }
                 });
-                b.setNegativeButton(nhan(huy, "Hủy"), new DialogInterface.OnClickListener() {
+                b.setNegativeButton(nhan(huy, "Huỷ"), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface d, int w) {
                         xong(tb, null, fHuy);
                     }
@@ -270,7 +368,7 @@ public final class NenAndroid {
     private static String nhan(Command c, String macDinh) {
         String l = c == null ? null : c.getLabel();
         if (l == null || l.length() == 0) return macDinh;
-        if ("Cancel".equalsIgnoreCase(l) || "Back".equalsIgnoreCase(l)) return "Hủy";
+        if ("Cancel".equalsIgnoreCase(l) || "Back".equalsIgnoreCase(l)) return "Huỷ";
         if ("OK".equalsIgnoreCase(l)) return "Xong";
         return l;
     }
@@ -314,20 +412,16 @@ public final class NenAndroid {
         private boolean choVe;
         private long soYeuCau;
         private long soDaVe;
-        private Bitmap sau;
-        private android.graphics.Canvas cvSau;
         private Graphics g;
-        private final Paint pPhong = new Paint();
-        private final Rect rNguon = new Rect();
-        private final Rect rDich = new Rect();
         private int loiVe;
+        private android.graphics.RenderNode nutGame;
+        private boolean coKhung;
+        private boolean choSoan;
+        private Graphics gPhu;
 
         LuongSuKien() {
             super("HTBB-su-kien");
             setDaemon(true);
-            pPhong.setFilterBitmap(false);
-            pPhong.setAntiAlias(false);
-            pPhong.setDither(false);
         }
 
         public void them(Runnable r) {
@@ -379,7 +473,7 @@ public final class NenAndroid {
                 Runnable r = null;
                 long dich = 0;
                 synchronized (this) {
-                    while (hang.isEmpty() && !choVe) {
+                    while (hang.isEmpty() && !choVe && !choSoan) {
                         try {
                             wait();
                         } catch (InterruptedException e) {
@@ -388,10 +482,22 @@ public final class NenAndroid {
                     }
                     if (!hang.isEmpty()) {
                         r = hang.pollFirst();
-                    } else {
+                    } else if (choVe) {
                         choVe = false;
+                        choSoan = false;
                         dich = soYeuCau;
+                    } else {
+                        choSoan = false;
+                        dich = -1;
                     }
+                }
+                if (r == null && dich < 0) {
+                    try {
+                        soan(Display.canvasCuoi, rong, cao);
+                    } catch (Throwable e) {
+                        Log.e(TAG, "loi ghep", e);
+                    }
+                    continue;
                 }
                 if (r != null) {
                     try {
@@ -413,6 +519,7 @@ public final class NenAndroid {
             }
         }
 
+        /** Vẽ khung game (Canvas.paint) rồi ghép lên màn. */
         private void ve() {
             Canvas c = Display.canvasCuoi;
             if (c == null) return;
@@ -421,42 +528,120 @@ public final class NenAndroid {
             }
             int w = rong;
             int h = cao;
-            if (sau == null || sau.getWidth() != w || sau.getHeight() != h) {
-                sau = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                cvSau = new android.graphics.Canvas(sau);
-                g = new Graphics(cvSau, w, h);
-            }
-            g.reset();
-            try {
-                c.paint(g);
-            } catch (Throwable e) {
-                if (loiVe++ < 20) Log.e(TAG, "loi paint", e);
-            }
-            synchronized (KHOA_MAT) {
-                SurfaceHolder m = mat;
-                if (m == null) return;
-                Surface s = m.getSurface();
-                if (s == null || !s.isValid()) return;
-                android.graphics.Canvas sc = null;
-                try {
-                    sc = Build.VERSION.SDK_INT >= 26 ? s.lockHardwareCanvas() : m.lockCanvas();
-                } catch (Throwable e) {
-                    sc = null;
+            if (Build.VERSION.SDK_INT >= 29) {
+                // HD: game ghi lệnh vẽ vào RenderNode theo toạ độ logic; ghép = phát lại ở độ phân giải thật
+                if (nutGame == null) {
+                    nutGame = new android.graphics.RenderNode("htbb-game");
+                    nutGame.setClipToBounds(true);
                 }
+                nutGame.setPosition(0, 0, w, h);
+                android.graphics.RecordingCanvas rc = nutGame.beginRecording(w, h);
+                try {
+                    if (g == null) g = new Graphics(rc, w, h);
+                    g.ganCanvas(rc, w, h);
+                    LopPhu lp = lopPhu;
+                    if (lp != null) lp.khungMoi();
+                    c.paint(g);
+                    if (lp != null) lp.khungXong();
+                } catch (Throwable e) {
+                    if (loiVe++ < 20) Log.e(TAG, "loi paint", e);
+                } finally {
+                    nutGame.endRecording();
+                }
+                coKhung = true;
+                soan(c, w, h);
+                return;
+            }
+            // API 26-28: vẽ thẳng lên bề mặt (không giữ khung để vẽ lại HUD riêng)
+            synchronized (KHOA_MAT) {
+                android.graphics.Canvas sc = khoaMat();
                 if (sc == null) return;
                 try {
                     sc.drawColor(0xFF000000);
-                    int k = heSo;
-                    rNguon.set(0, 0, w, h);
-                    rDich.set(lechX, lechY, lechX + w * k, lechY + h * k);
-                    sc.drawBitmap(sau, rNguon, rDich, pPhong);
-                } finally {
+                    int sv = sc.save();
+                    sc.translate(lechX, lechY);
+                    sc.scale(heSo, heSo);
                     try {
-                        s.unlockCanvasAndPost(sc);
+                        if (g == null) g = new Graphics(sc, w, h);
+                        g.ganCanvas(sc, w, h);
+                        LopPhu lp = lopPhu;
+                        if (lp != null) lp.khungMoi();
+                        c.paint(g);
+                        if (lp != null) lp.khungXong();
                     } catch (Throwable e) {
-                        // bề mặt vừa bị huỷ
+                        if (loiVe++ < 20) Log.e(TAG, "loi paint", e);
                     }
+                    sc.restoreToCount(sv);
+                    veLopPhu(sc, w, h);
+                } finally {
+                    moMat(sc);
                 }
+            }
+        }
+
+        /** Ghép khung game đã ghi + lớp phủ HUD lên màn thật (gọi cả khi chỉ HUD đổi). */
+        private void soan(Canvas c, int w, int h) {
+            if (nutGame == null || !coKhung) return;
+            synchronized (KHOA_MAT) {
+                android.graphics.Canvas sc = khoaMat();
+                if (sc == null) return;
+                try {
+                    sc.drawColor(0xFF000000);
+                    int sv = sc.save();
+                    sc.translate(lechX, lechY);
+                    sc.scale(heSo, heSo);
+                    sc.drawRenderNode(nutGame);
+                    sc.restoreToCount(sv);
+                    veLopPhu(sc, w, h);
+                } finally {
+                    moMat(sc);
+                }
+            }
+        }
+
+        private void veLopPhu(android.graphics.Canvas sc, int w, int h) {
+            LopPhu lp = lopPhu;
+            if (lp == null) return;
+            int sv = sc.save();
+            sc.translate(lechX, lechY);
+            sc.scale(heSo, heSo);
+            try {
+                if (gPhu == null) gPhu = new Graphics(sc, w, h);
+                gPhu.ganCanvas(sc, w, h);
+                lp.ve(gPhu);
+            } catch (Throwable e) {
+                if (loiVe++ < 20) Log.e(TAG, "loi ve lop phu", e);
+            }
+            sc.restoreToCount(sv);
+        }
+
+        private android.graphics.Canvas khoaMat() {
+            SurfaceHolder m = mat;
+            if (m == null) return null;
+            Surface s = m.getSurface();
+            if (s == null || !s.isValid()) return null;
+            try {
+                return Build.VERSION.SDK_INT >= 26 ? s.lockHardwareCanvas() : m.lockCanvas();
+            } catch (Throwable e) {
+                return null;
+            }
+        }
+
+        private void moMat(android.graphics.Canvas sc) {
+            try {
+                SurfaceHolder m = mat;
+                if (m != null) m.getSurface().unlockCanvasAndPost(sc);
+            } catch (Throwable e) {
+                // bề mặt vừa bị huỷ
+            }
+        }
+
+        /** Chỉ vẽ lại lớp phủ (HUD hoạt hình 60 hình/giây) - dùng lại khung game đã ghi. */
+        public void yeuCauSoan() {
+            synchronized (this) {
+                if (choSoan) return;
+                choSoan = true;
+                notifyAll();
             }
         }
     }

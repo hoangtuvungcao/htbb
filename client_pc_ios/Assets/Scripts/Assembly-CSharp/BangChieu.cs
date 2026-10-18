@@ -76,7 +76,7 @@ public static class BangChieu
 		int xd = w + 4 - wd;
 		GiaoDien.khung(g, xd, -17, wd, 16, 7, GiaoDien.VIEN, diem > 0 ? GiaoDien.VANG_NHAT : 0x8A93A3, diem > 0 ? GiaoDien.VANG_TOI : 0x5E6A80, false);
 		MFont.borderFont.drawString(g, sd, xd + wd / 2, -16, MFont.CENTER);
-		string nhan = "Điểm kỹ năng:";
+		string nhan = "Điểm chiêu:";
 		string so = (chon + 1) + "/" + soChieu;
 		int wSo = MFont.smallFont.getWidth(so);
 		if (MFont.arialFontW.getWidth(nhan) > xd - 3 - (-6 + wSo + 4))
@@ -174,7 +174,7 @@ public static class BangChieu
 			y += 17;
 			if (du && diem <= 0)
 			{
-				f.drawString(g, "Cần 1 điểm kỹ năng", x0 + 4, y, MFont.LEFT);
+				f.drawString(g, "Cần 1 điểm chiêu", x0 + 4, y, MFont.LEFT);
 				y += 12;
 			}
 		}
@@ -195,7 +195,7 @@ public static class BangChieu
 			{
 				int xl = xv + PokeChieu.CAP_TOI_DA * 4 + 4;
 				GiaoDien.muiTen(g, xl, y + 3, 8, GiaoDien.LA);
-				MFont.normalFont[1].drawString(g, "Lv" + capCan(chon, cc), xl + 7, y - 1, MFont.LEFT);
+				MFont.normalFont[1].drawString(g, "Cấp " + capCan(chon, cc), xl + 7, y - 1, MFont.LEFT);
 			}
 			y += 13;
 			int cot2 = x0 + 4 + (wThe - 8) / 2 + 4;
@@ -214,7 +214,7 @@ public static class BangChieu
 			{
 			}
 			bool buff = laBuff(lop, chon);
-			dong(g, x0 + 4, y, buff ? "Tỉ lệ" : "ST", dam + "%");
+			dong(g, x0 + 4, y, buff ? "Tỉ lệ" : "Uy lực", dam + "%");
 			dong(g, cot2, y, "PP", mp.ToString());
 			y += 12;
 			dong(g, x0 + 4, y, "Hồi", giay(cd));

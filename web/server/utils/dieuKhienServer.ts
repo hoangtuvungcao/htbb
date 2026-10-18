@@ -1,13 +1,13 @@
 /**
- * Bật/tắt server game (kpah-game) từ xa — hằng số và logic thuần, không đụng CSDL.
+ * Bật/tắt server game (htbb-game) từ xa — hằng số và logic thuần, không đụng CSDL.
  *
  * VÌ SAO KHÔNG GỌI LỆNH HỆ THỐNG: server chạy bằng systemd (Restart=always). Khi đang
  * SỐNG thì có sẵn cơ chế tự khởi động lại qua cờ trong bảng `5h_systems` (server tự poll
  * mỗi 5 giây, xem Database.baotriCMD()). Nhưng khi server đã TẮT HẲN thì không còn gì bên
  * trong Java để poll DB nữa — web KHÔNG tự bật/tắt được, nó chỉ GHI "trạng thái mong
  * muốn" vào bảng `dieu_khien_server`; một tiến trình canh gác chạy NGOÀI JVM game trên VPS
- * (vps/dieu-khien-server.sh, cài qua cron của ROOT vì kpah-game.service chạy bằng user
- * "kpah" không đủ quyền systemctl) đọc bảng đó mỗi phút rồi tự gọi systemctl — kể cả lúc
+ * (vps/dieu-khien-server.sh, cài qua cron của ROOT vì htbb-game.service chạy bằng user
+ * "htbb" không đủ quyền systemctl) đọc bảng đó mỗi phút rồi tự gọi systemctl — kể cả lúc
  * server đang tắt hẳn. Web không bao giờ tự chạy lệnh hệ thống: tiến trình web không có
  * (và không được có) quyền systemctl.
  *

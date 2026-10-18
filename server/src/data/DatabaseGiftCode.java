@@ -134,6 +134,9 @@ public class DatabaseGiftCode {
     }
 
     static void newDoGetGiftCode(Database db, String text, Char player) {
+        if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "giftcode")) { // thanh vien: nhap giftcode
+            return;
+        }
 
         // SECURITY: gift codes are alphanumeric only. Strip everything else to prevent SQL injection,
         // since 'text' is concatenated into SQL below.
@@ -294,7 +297,7 @@ public class DatabaseGiftCode {
 
     /**
      * Ap dung mot chuoi phan thuong (cu phap ITEM:id:soLuong, GEM:id:soLuong:khoa, ...
-     * xem web/admin/inc/thuong.php:loaiThuong()) cho mot nhan vat.
+     * xem HTBB-Web shared/utils/thuong.ts loaiThuong()) cho mot nhan vat.
      *
      * TACH RA tu newDoGetGiftCode() (chinh xac cung ~60 nhanh if/else, khong sua logic
      * nao) de dung lai cho cac nguon phat thuong KHAC ngoai giftcode - vd thuong dua
@@ -557,7 +560,7 @@ public class DatabaseGiftCode {
                             
                             Animal anima = null;
                             anima = new Animal();
-                            anima.name = "Phượng hoàng đa sắc";
+                            anima.name = "Ho-Oh";
                             anima.idImg = Animal.PHUONG_HOANG_7MAU;
                             anima.createAtt();
                             anima.level = 1;
@@ -1017,9 +1020,9 @@ public class DatabaseGiftCode {
             } catch (Exception ignored) {
             }
             try {
-                String[] name = {"Kháng hoả", "Kháng thuỷ", "Kháng mộc", "Kháng kim", "Kháng thổ", "Giá lượng", "Số lượng"};
+                String[] name = {"Kháng Lửa", "Kháng Nước", "Kháng Cỏ", "Kháng Thép", "Kháng Đất", "Giá lượng", "Số lượng"};
                 if (TeamServer.isServerLienDau()) {
-                    name = new String[]{"Kháng hoả", "Kháng thuỷ", "Kháng mộc", "Kháng kim", "Kháng thổ"};
+                    name = new String[]{"Kháng Lửa", "Kháng Nước", "Kháng Cỏ", "Kháng Thép", "Kháng Đất"};
                 }
                 int[] id = {120, 121, 122, 123, 124, 125, 126};
                 int[] idcolor = {1, 1, 1, 1, 1, 2, 2, 2};
@@ -1062,7 +1065,7 @@ public class DatabaseGiftCode {
             } catch (Exception ignored) {
             }
             try {
-                String[] data = {"750, 'Phi Phong Huyền Vũ', 19, 15, 0, 0, 1, 480, 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 626, 0, -1, 10080, -1, '', 8806,0", "751, 'Phù phu thê', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 627, 0, -1, 0, -1, '', -1,0", "752, 'Rương nguyên liệu cao cấp', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "753, 'Rương nguyên liệu sơ cấp', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "754, 'Áo dài nam \nTăng 100% băng ,sét ,độc ,lửa lan', 0, 0, 0, 1, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 630, 0, -1, 10080, -1, '', -1, 0", "755, 'Áo dài nữ \nTăng 100% băng ,sét ,độc ,lửa lan', 0, 0, 0, 2, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 631, 0, -1, 10080, -1, '', -1, 0"};
+                String[] data = {"750, 'Ruy Băng Hoenn', 19, 15, 0, 0, 1, 480, 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 626, 0, -1, 10080, -1, '', 8806,0", "751, 'Vảy trái tim', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 627, 0, -1, 0, -1, '', -1,0", "752, 'Rương nguyên liệu cao cấp', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "753, 'Rương nguyên liệu sơ cấp', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "754, 'Áo dài nam \nTăng 100% băng ,sét ,độc ,lửa lan', 0, 0, 0, 1, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 630, 0, -1, 10080, -1, '', -1, 0", "755, 'Áo dài nữ \nTăng 100% băng ,sét ,độc ,lửa lan', 0, 0, 0, 2, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 631, 0, -1, 10080, -1, '', -1, 0"};
                 for (String datum : data) {
                     try {
                         String sql4 = "insert into data_item values(" + datum + " )";

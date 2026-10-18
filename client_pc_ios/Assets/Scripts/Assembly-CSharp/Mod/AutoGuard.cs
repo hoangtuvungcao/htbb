@@ -1,141 +1,25 @@
-// Port 1:1 từ Jar276/src/game/render/screen/AutoGuard.java
+// Port từ client_jar/shared/mod/game/render/screen/AutoGuard.java (bản jar / APK).
 using System;
 
+/// <summary>
+/// Cổng hook của code mod. Sau khi bỏ mod NQSH (Auto up, PK, Vận may, Lên thành, Giao hàng tự động, Chế đồ nhanh,
+/// Dòng ẩn, Pidgeot từ xa, tự mua, tự đăng nhập lại...) chỉ còn:
+///  - Tự động đánh CHÍNH THỨC (TuDong, máy chủ điều khiển): vòng mỗi khung hình, thanh trạng thái;
+///  - Menu nhanh / nút "Tự động" nổi, hiệu ứng (HieuUng), Tiện ích (cửa hàng, đăng xuất, tắt popup);
+///  - hai sửa lỗi hiển thị của game gốc (NPC mất khi vào lại cùng map, xe giao hàng biến mất khi đổi màu).
+/// Gói -100 xử lý ở đầu MessageHandler.onMessage (TuDong.nhan), như AutoGuard.goiGuard bản jar.
+/// </summary>
 public sealed class AutoGuard
 {
-	public static bool on;
-
-	public static int pendingSell;
-
-	public static bool eatXinCho;
-
-	/** Bảng màu nền thanh trạng thái auto. */
+	/** Bảng màu nền thanh trạng thái (KiemServer dùng làm muối xác thực -88 - không đổi). */
 	public static readonly int[] MAU_NEN = new int[8] { 0x69436c, 0x45957f, 0xd11674, 0xb24394, 0xf69a31, 0x8c9b09, 0xbcdeeb, 0x8f48ec };
 
-	public static bool autoHideUi()
-	{
-		return on;
-	}
-
+	/** Canvas.startOKDlg: true = nuốt hộp thoại (Tiện ích "Thông báo: tắt"). */
 	public static bool autoEatDlg(string @string)
 	{
 		try
 		{
-			if (AutoVanTieu.thongBao(@string) || AutoVanMay.thongBao(@string))
-			{
-				return true;
-			}
-		}
-		catch (Exception)
-		{
-			// không được chặn hộp thoại của game
-		}
-		try
-		{
-			if (TienIch.anThongBao(@string))
-			{
-				return true;
-			}
-		}
-		catch (Exception)
-		{
-			// empty catch block
-		}
-		if (eatXinCho)
-		{
-			eatXinCho = false;
-			if (@string != null && @string.StartsWith("Xin ch", System.StringComparison.Ordinal))
-			{
-				return true;
-			}
-		}
-		if (pendingSell > 0 && @string != null && @string.StartsWith("Đã bán", System.StringComparison.Ordinal))
-		{
-			--pendingSell;
-			return true;
-		}
-		if (!on)
-		{
-			return false;
-		}
-		return PauseMenu.autoEatDlg(@string);
-	}
-
-	public static void startAtDapDo(Menu menu, mVector vector, int n)
-	{
-		try
-		{
-			PauseMenu.addLuyenCommands(vector);
-		}
-		catch (Exception)
-		{
-			// never block the original menu
-		}
-		menu.startAt(vector, n);
-	}
-
-	public static void themDong(GameService gameService, short s, int n, int n2, int n3, int n4, int n5)
-	{
-		try
-		{
-			if (PauseMenu.showThemDongMenu(s, n, n2, n3, n4, n5))
-			{
-				eatXinCho = true;
-				return;
-			}
-		}
-		catch (Exception)
-		{
-			// fall back to the game's own single roll
-		}
-		gameService.doRequestThemThuocTinh(s, n, n2, n3, n4, n5);
-	}
-
-	private static bool dapThat;
-
-	/**
-	 * Chèn ở ĐẦU ScreenDapDo$7.perform() (nút "Đập"). Màn Cộng thuộc tính (type 0) / Khóa đồ thú (type 2) đã đặt đủ đồ
-	 * + đá: chỉ mở menu rồi trả true để bỏ toàn bộ code gốc (gửi lệnh, animation, đổi nút
-	 * "Tiếp tục") - chưa có thao tác nào cho tới khi chọn một mục trong menu.
-	 * Thiếu đồ/đá thì trả false để code gốc tự báo lỗi như cũ.
-	 * (C#: chèn ở đầu cmdEp.action trong ScreenDapDo.cs)
-	 */
-	public static bool dapGuard()
-	{
-		if (dapThat)
-		{
-			return false;
-		}
-		try
-		{
-			ScreenDapDo screenDapDo = ScreenDapDo.gI();
-			if ((screenDapDo.type != 0 && screenDapDo.type != 2) || ScreenDapDo.vnguyenLieu.size() <= 0 || ScreenDapDo.itemSelect == null || ScreenDapDo.selectGem == null)
-			{
-				return false;
-			}
-			if (screenDapDo.type == 2)
-			{
-				return PauseMenu.showKhoaThuMenu(ScreenDapDo.itemSelect.itemID, ScreenDapDo.selectGem.id, ScreenDapDo.selectGem.ilock ? 1 : 0);
-			}
-			return PauseMenu.showCongTTMenu(ScreenDapDo.itemSelect.itemID, ScreenDapDo.selectGem.id, ScreenDapDo.selectGem.ilock ? 1 : 0);
-		}
-		catch (Exception)
-		{
-			// never block the original button
-			return false;
-		}
-	}
-
-	/** Chèn ở ĐẦU GameScr.onMenuOption: true = menu NPC đã được auto dùng, không hiện ra. */
-	public static bool menuGuard(int n, sbyte by, string[] stringArray)
-	{
-		try
-		{
-			if (AutoVanMay.anMenu(n))
-			{
-				return true;
-			}
-			return PauseMenu.petMenuGuard(n, by, stringArray);
+			return TienIch.anThongBao(@string);
 		}
 		catch (Exception)
 		{
@@ -143,65 +27,16 @@ public sealed class AutoGuard
 		}
 	}
 
-	/** Tài khoản của lần đăng nhập gần nhất - để auto nuôi pet tự đăng nhập lại (chỉ giữ trong bộ nhớ). */
-	// C#: GameService.login gán hai biến này (thay cho loginGuard bản jar).
-	public static string tkDangNhap;
-
-	public static string mkDangNhap;
-
-	// BỎ (không port): loginGuard / maMay / guiDangNhap.
-	// Bản C# đã xử lý trong GameService.login (ghi nhớ tkDangNhap/mkDangNhap, gọi KiemServer.chanDangNhap,
-	// gửi gói đăng nhập kèm KiemServer.maMay()) nên không cần guard ở đây.
-
-	// BỎ (không port): goiGuard.
-	// Bản C# MessageHandler.onMessage gọi thẳng KiemServer.nhan(msg) và AutoVanMay.anGoi(msg.command).
-
-	/** Chèn ở ĐẦU GameScr.onActorMove: chỉ ghi nhận vị trí server gửi cho chính mình, không chặn. */
+	/** Chèn ở ĐẦU GameScr.onActorMove: không chặn, chỉ bỏ actor quái đang chết trùng id (xe giao hàng đổi màu). */
 	public static bool viTriGuard(sbyte by, short s, short s2, short s3, short s4)
 	{
-		try
-		{
-			PauseMenu.viTriServer(by, s2, s3, s4);
-		}
-		catch (Exception)
-		{
-			// không bao giờ cản lệnh di chuyển của game
-		}
 		try
 		{
 			AutoGuard.boQuaiDangChet(by, s2);
 		}
 		catch (Exception)
 		{
-			// empty catch block
-		}
-		return false;
-	}
-
-	/**
-	 * Chèn ở ĐẦU GameService.requestMonsterInfo: true = không gửi lệnh 7. Lúc auto vận tiêu nháy map
-	 * (nạp lại map mỗi vài ô) client xin lại thông tin MỌI con quái -> vượt chống flood của server
-	 * (300 gói / 5s), server bỏ cả lệnh nháy -> xe tiêu bị bỏ lại. Chỉ xin cho xe tiêu (idChar >= 0).
-	 */
-	public static bool chanXinQuai(short s)
-	{
-		try
-		{
-			if (!AutoVanTieu.dang || Canvas.gameScr == null)
-			{
-				return false;
-			}
-			mVector vector = Canvas.gameScr.actors;
-			for (int i = vector.size() - 1; i >= 0; --i)
-			{
-				Actor actor = (Actor)vector.elementAt(i);
-				if (actor == null || actor.catagory != 1 || actor.ID != s) continue;
-				return !(actor is Monster) || ((Monster)actor).idChar < 0;
-			}
-		}
-		catch (Exception)
-		{
-			// không bao giờ cản lệnh của game
+			// không bao giờ cản lệnh di chuyển của game
 		}
 		return false;
 	}
@@ -250,52 +85,13 @@ public sealed class AutoGuard
 		return false;
 	}
 
-	// BỎ (không port): dsGuard / capNhatGuard (TaiDanhSach.taiNgam / capNhat).
-	// Bản C# ServerListScr tự tải danh sách server (ServerListScr.taiDanhSachTuDong).
-
-	/** Chèn ở ĐẦU GameScr.onAdd2Party: auto up tự vào nhóm / bỏ qua lời mời người lạ. */
-	public static bool nhomGuard(Message message)
+	/** Chèn ở đầu xử lý phím của Canvas (sau MenuNhanh.phim): không còn phím tắt mod. */
+	public static bool phimPk(int n)
 	{
-		try
-		{
-			// AutoUp.moiNhom đọc trên bản sao new myReader(message.reader().buffer) (C# không có mark/reset)
-			return AutoUp.moiNhom(message);
-		}
-		catch (Exception)
-		{
-			return false;
-		}
+		return false;
 	}
 
-	/** Chèn ở ĐẦU GameScr.showWindow: true = không mở cửa sổ (auto nuôi pet chế thẳng). */
-	public static bool cuaSoGuard(int n, bool bl, sbyte[] byArray)
-	{
-		try
-		{
-			return PauseMenu.anCuaSoCheDo(n, bl, byArray);
-		}
-		catch (Exception)
-		{
-			return false;
-		}
-	}
-
-	/** Mục "Đập 1 lần": chạy đúng nút "Đập" gốc (gửi lệnh + animation) một lần. */
-	public static void dapMotLan()
-	{
-		dapThat = true;
-		try
-		{
-			ScreenDapDo.gI().cmdEp.action();
-		}
-		finally
-		{
-			dapThat = false;
-		}
-	}
-
-	// ---------------------------------------------------------------- nút UP nổi trên màn game
-	// Bật/tắt Auto up không cần mở menu (bản jar: Nen.coNutUp() = false trên J2ME; Unity luôn có).
+	// ---------------------------------------------------------------- nút "Tự động" nổi (bản không Pokémon)
 
 	public const int NUT_W = 52;
 
@@ -311,72 +107,35 @@ public sealed class AutoGuard
 		return Canvas.h / 3;
 	}
 
-	/** Nút TIÊU (bật/tắt vòng vận tiêu) nằm ngay dưới nút UP. */
-	public static int nutY2()
-	{
-		return nutY() + NUT_H + 8;
-	}
-
-	/** Điểm (x, y) nằm trong nút (đang ở màn game). */
-	public static bool trongNutUp(int x, int y)
+	/** Điểm (x, y) nằm trên nút mở bảng (đang ở màn game). */
+	public static bool trongNut(int x, int y)
 	{
 		if (MenuNhanh.bat())
 		{
 			return MenuNhanh.trongNut(x, y);
 		}
+		if (BangTuDong.dangMo)
+		{
+			return true;
+		}
 		return Canvas.currentScreen == Canvas.gameScr && x >= nutX() && x < nutX() + NUT_W && y >= nutY() && y < nutY() + NUT_H;
 	}
 
-	/** Nút PK (bật/tắt Đập người) dưới nút TIÊU. */
-	public static int nutY3()
-	{
-		return nutY2() + NUT_H + 8;
-	}
-
-	public static bool trongNutPk(int x, int y)
-	{
-		return Canvas.currentScreen == Canvas.gameScr && x >= nutX() && x < nutX() + NUT_W && y >= nutY3() && y < nutY3() + NUT_H;
-	}
-
-	/** Cột nút thứ hai (MÃ PK / NHÁY / ĐS / DỪNG) bên trái cột UP / TIÊU / PK. */
-	public static int nutX2()
-	{
-		return nutX() - NUT_W - 6;
-	}
-
-	public static int nutYPhim(int n)
-	{
-		return nutY() + n * (NUT_H + 8);
-	}
-
-	/** Nút phím PK thứ n (0..3) có điểm (x, y) - chỉ khi đang hiện. */
-	public static bool trongNutPhim(int n, int x, int y)
-	{
-		return AutoPk.hienNut && Canvas.currentScreen == Canvas.gameScr && x >= nutX2() && x < nutX2() + NUT_W && y >= nutYPhim(n) && y < nutYPhim(n) + NUT_H;
-	}
-
-	public static bool trongNutTieu(int x, int y)
-	{
-		return Canvas.currentScreen == Canvas.gameScr && x >= nutX() && x < nutX() + NUT_W && y >= nutY2() && y < nutY2() + NUT_H;
-	}
-
-	/** Chèn ở đầu xử lý phím của Canvas: phím tắt PK (AutoPk.phim). true = đã dùng phím này. */
-	public static bool phimPk(int n)
+	/** Mỗi khung hình (GameScr.update, trước khi game xử lý chạm): nút / Menu nhanh / bảng + Tự động đánh. */
+	public static void tick()
 	{
 		try
 		{
-			return AutoPk.phim(n);
+			AutoGuard.nutUpTick();
+			TuDong.tick();
 		}
 		catch (Exception)
 		{
-			return false;
+			// tự động lỗi không được làm hỏng khung hình của game
 		}
 	}
 
-	/**
-	 * Đầu PauseMenu.autoCheDoTick (trước khi game xử lý chạm): chạm nút thì bật/tắt Auto up và nuốt cú
-	 * chạm - nhân vật không chạy tới chỗ đó, AutoUp.nguoiBam không coi là người chơi chạm để dừng.
-	 */
+	/** Chạm nút thì mở bảng Tự động đánh và nuốt cú chạm (Pokémon không chạy tới chỗ đó). */
 	public static void nutUpTick()
 	{
 		if (Canvas.currentScreen != Canvas.gameScr || Canvas.menu.showMenu || Canvas.currentDialog != null)
@@ -385,58 +144,24 @@ public sealed class AutoGuard
 		}
 		if (MenuNhanh.bat())
 		{
-			// pokemon: Menu nhanh + thanh chiêu nhận chuột trước game
+			// pokemon: Menu nhanh (+ bảng Tự động đánh) + thanh chiêu nhận chuột trước game
 			MenuNhanh.tick();
 			HudPokemon.tick(Canvas.gameScr);
 			return;
 		}
-		if (Canvas.isPointerDown && (trongNutUp(Canvas.px, Canvas.py) || trongNutTieu(Canvas.px, Canvas.py) || trongNutPk(Canvas.px, Canvas.py)))
+		if (BangTuDong.dangMo)
+		{
+			BangTuDong.tick();
+			return;
+		}
+		if (Canvas.isPointerDown && trongNut(Canvas.px, Canvas.py))
 		{
 			Canvas.isPointerDown = false;
 		}
-		if (Canvas.isPointerClick && trongNutUp(Canvas.px, Canvas.py) && trongNutUp(Canvas.pxLast, Canvas.pyLast))
+		if (Canvas.isPointerClick && trongNut(Canvas.px, Canvas.py) && trongNut(Canvas.pxLast, Canvas.pyLast))
 		{
 			Canvas.isPointerClick = false;
-			AutoUp.batTat();
-		}
-		if (Canvas.isPointerClick && trongNutTieu(Canvas.px, Canvas.py) && trongNutTieu(Canvas.pxLast, Canvas.pyLast))
-		{
-			Canvas.isPointerClick = false;
-			AutoVanTieu.batTat();
-		}
-		if (Canvas.isPointerClick && trongNutPk(Canvas.px, Canvas.py) && trongNutPk(Canvas.pxLast, Canvas.pyLast))
-		{
-			Canvas.isPointerClick = false;
-			AutoPk.batTat();
-		}
-		for (int i = 0; i < 5; ++i)
-		{
-			if (Canvas.isPointerDown && trongNutPhim(i, Canvas.px, Canvas.py))
-			{
-				Canvas.isPointerDown = false;
-			}
-			if (!Canvas.isPointerClick || !trongNutPhim(i, Canvas.px, Canvas.py) || !trongNutPhim(i, Canvas.pxLast, Canvas.pyLast)) continue;
-			Canvas.isPointerClick = false;
-			if (i == 0)
-			{
-				AutoPk.nutMaPk();
-			}
-			else if (i == 1)
-			{
-				AutoPk.nutNhay();
-			}
-			else if (i == 2)
-			{
-				AutoPk.nutDs();
-			}
-			else if (i == 3)
-			{
-				AutoPk.nutDung();
-			}
-			else
-			{
-				AutoPk.nutDoiPet();
-			}
+			BangTuDong.mo();
 		}
 	}
 
@@ -513,7 +238,7 @@ public sealed class AutoGuard
 		return (r << 16) | (g << 8) | c;
 	}
 
-	/** Nút tròn: viền vàng nhấp nháy + nền xanh khi đang bật, viền bạc + nền xám khi tắt; chữ UP và BẬT/TẮT. */
+	/** Nút "Tự động": Menu nhanh (chế độ Pokémon) hoặc một nút tròn; bảng Tự động đánh khi đang mở. */
 	public static void veNutUp(MyGraphics graphics)
 	{
 		if (Canvas.currentScreen != Canvas.gameScr)
@@ -522,26 +247,15 @@ public sealed class AutoGuard
 		}
 		if (MenuNhanh.bat())
 		{
-			// pokemon: một Poké Ball nhỏ mép trái + bảng Menu nhanh thay hai cột nút che màn chơi
 			MenuNhanh.ve(graphics);
 			return;
 		}
-		AutoGuard.veNut(graphics, nutY(), "Up", AutoUp.dang);
-		AutoGuard.veNut(graphics, nutY2(), "Tiêu", AutoVanTieu.dang);
-		AutoGuard.veNut(graphics, nutY3(), "PK", AutoPk.danh());
-		if (AutoPk.hienNut)
+		if (BangTuDong.dangMo)
 		{
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "Mã PK", AutoPk.maPk ? "Bật" : "Tắt", AutoPk.maPk);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "Nháy", "Map", false);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "Bật", "ĐS", false);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "Dừng", "Hết", false);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "Đổi", "Pet", false);
+			BangTuDong.ve(graphics);
+			return;
 		}
-	}
-
-	private static void veNut(MyGraphics graphics, int y, string ten, bool bat)
-	{
-		AutoGuard.veNut(graphics, nutX(), y, ten, bat ? "Bật" : "Tắt", bat);
+		AutoGuard.veNut(graphics, nutX(), nutY(), "Tự động", TuDong.dang ? "Bật" : "Tắt", TuDong.dang);
 	}
 
 	private static void veNut(MyGraphics graphics, int x, int y, string ten, string dong2, bool bat)
@@ -566,7 +280,7 @@ public sealed class AutoGuard
 		{
 			HieuUng.ve(graphics);
 		}
-		catch (System.Exception)
+		catch (Exception)
 		{
 			// hiệu ứng lỗi thì bỏ qua
 		}
@@ -574,40 +288,17 @@ public sealed class AutoGuard
 		{
 			AutoGuard.veNutUp(graphics);
 		}
-		catch (System.Exception)
+		catch (Exception)
 		{
-			// nút UP lỗi thì bỏ qua
+			// nút lỗi thì bỏ qua
 		}
 		try
 		{
-			AutoUp.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
-			AutoVanTieu.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
-			AutoVanMay.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
-			LenThanh.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
+			TuDong.ve(graphics, 36);
 		}
 		catch (Exception)
 		{
-			// thanh trạng thái auto up lỗi thì bỏ qua
-		}
-		try
-		{
-			TienIch.batLuong();
-		}
-		catch (Exception)
-		{
-			// thanh trạng thái auto up lỗi thì bỏ qua
-		}
-		if (!on)
-		{
-			return;
-		}
-		try
-		{
-			PauseMenu.autoPaintStatus(graphics);
-		}
-		catch (Exception)
-		{
-			// an overlay problem must never break the game's frame
+			// thanh trạng thái lỗi thì bỏ qua
 		}
 	}
 }

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 /**
  * Cấu hình server.
- * Ghi bảng kpah_db.cau_hinh; server game tự đọc lại mỗi 10 giây, không cần restart.
+ * Ghi bảng htbb_db.cau_hinh; server game tự đọc lại mỗi 10 giây, không cần restart.
  */
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
 const api = useAdminApi()
 const toast = useToast()
+const { duoc } = useAdminMe()
+/** Vai trò "Chỉ xem" thấy mọi giá trị nhưng không bấm lưu được (server cũng chặn). */
+const coTheSua = computed(() => duoc('/api/admin/cauhinh/luu', 'POST'))
 
 interface SuaLanCuoi { boi: string, luc: string }
 interface DuLieu {
@@ -32,6 +35,7 @@ interface DuLieu {
   }
   suaLanCuoi: Record<string, SuaLanCuoi | null>
   cacThu: Record<string, string>
+  dong: any[]
 }
 
 const { data, status, error, refresh } = await useAsyncData('admin-cauhinh', () => api<DuLieu>('/api/admin/cauhinh'), { server: false })
@@ -105,15 +109,17 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
         Cấu hình server
       </h1>
       <p class="mt-1 text-muted">
-        32 setting nạp lại được lúc đang chạy — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.
+        Các setting nạp lại được lúc đang chạy (bảng <code>cau_hinh</code>) — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.
       </p>
     </div>
+
+    <UAlert v-if="!coTheSua" color="neutral" variant="subtle" icon="i-lucide-eye" title="Bạn đang ở chế độ chỉ xem — chỉ siêu quản trị lưu được cấu hình." />
 
     <UAlert v-if="data?.loiDoc" color="error" variant="subtle" icon="i-lucide-circle-x" :title="`Lỗi đọc dữ liệu: ${data.loiDoc}`" />
 
     <UAlert color="warning" variant="subtle" icon="i-lucide-info">
       <template #description>
-        Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ 32 khoá đã có sẵn cơ chế nạp lại
+        Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ các khoá đã có sẵn cơ chế nạp lại
         (xem <code>src/server/CauHinh.java</code>). Các khoá kết nối CSDL, cổng mạng, đường dẫn máy... vẫn phải
         sửa trực tiếp <code>server.ini</code> trên VPS rồi khởi động lại — không nằm ở đây vì bản thân chúng là
         thứ server cần để kết nối được tới CSDL này.
@@ -170,7 +176,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
           </div>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.drop" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_drop'">
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_drop'">
               Lưu tỷ lệ rơi đồ
             </UButton>
           </div>
@@ -184,23 +190,23 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
             Tỉ lệ EXP quái thường
           </h3>
           <p class="text-sm text-muted">
-            Phần trăm so với EXP gốc, tính theo <strong>cấp NHÂN VẬT</strong> đang nhận EXP
-            (không phải cấp quái) — dù nhân vật ≥50 đi train ở quái cấp nào cũng bị giảm. Áp dụng cho cả Boss.
+            Phần trăm so với EXP gốc, tính theo <strong>cấp POKÉMON</strong> đang nhận EXP
+            (không phải cấp quái) — dù Pokémon ≥50 đi train ở quái cấp nào cũng bị giảm. Áp dụng cho cả Boss.
             100 = như gốc, 0 = tắt hẳn. Xem <code>Monster.apDungGiamExpTheoCapNV()</code>.
           </p>
         </template>
         <form class="space-y-4" @submit.prevent="luu('luu_exp_quai', f.expQuai)">
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <UFormField label="Nhân vật cấp ≥ 50 (%)">
+            <UFormField label="Pokémon cấp ≥ 50 (%)">
               <UInput v-model="f.expQuai.tileExpLv50" type="number" min="0" max="100" class="w-full" />
             </UFormField>
-            <UFormField label="Nhân vật cấp < 50 (%)">
+            <UFormField label="Pokémon cấp < 50 (%)">
               <UInput v-model="f.expQuai.tileExpDuoiLv50" type="number" min="0" max="100" class="w-full" />
             </UFormField>
           </div>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.expQuai" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_exp_quai'">
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_exp_quai'">
               Lưu tỉ lệ EXP quái
             </UButton>
           </div>
@@ -211,12 +217,12 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
       <UCard>
         <template #header>
           <h3 class="font-semibold text-highlighted">
-            Tỉ lệ Vận Tiêu
+            Tỉ lệ Giao Hàng
           </h3>
           <p class="text-sm text-muted">
-            Khi nhận một con tiêu (Vận Tiêu) mới, server random ra 1 trong 6 màu theo % ở
-            phần 1 — Trắng phổ biến nhất, Tím hiếm nhất. Khi TRẢ tiêu thành công, người chơi nhận EXP theo
-            phần 2 (và phần 3 nếu là Hoàn Mỹ/Vàng/Tím từ cấp 50). Phần 4 là tỉ lệ RIÊNG khi ĐỔI tiêu
+            Khi nhận một kiện hàng (Giao Hàng) mới, server random ra 1 trong 6 màu theo % ở
+            phần 1 — Trắng phổ biến nhất, Tím hiếm nhất. Khi Trả hàng thành công, người chơi nhận EXP theo
+            phần 2 (và phần 3 nếu là Hoàn Mỹ/Vàng/Tím từ cấp 50). Phần 4 là tỉ lệ RIÊNG khi Đổi hàng
             (reroll trả phí xu/lượng) — độc lập với phần 1. Xem <code>Char.doInitMonter()</code>,
             <code>Char.doChangeTieu()</code>, <code>CharSuKien.doResponseTieu()</code>.
           </p>
@@ -224,7 +230,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
         <form class="space-y-8" @submit.prevent="luuTieu">
           <section class="space-y-3">
             <h4 class="font-semibold text-highlighted">
-              1. Tỉ lệ ra màu khi nhận tiêu mới
+              1. Tỉ lệ ra màu khi nhận hàng mới
             </h4>
             <p class="text-sm text-muted">
               Nhập % cho 5 màu đầu (được nhập số lẻ, vd <code>0.001</code> để ra tỉ lệ cực
@@ -247,7 +253,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
 
           <section class="space-y-3">
             <h4 class="font-semibold text-highlighted">
-              2. Hệ số EXP khi trả tiêu thành công
+              2. Hệ số EXP khi trả hàng thành công
             </h4>
             <p class="text-sm text-muted">
               Hệ số dạng "x lần" — 1 = giữ nguyên gốc, 2 = gấp đôi. Hai hệ số NHÂN VỚI
@@ -269,7 +275,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
               3. % EXP cần để lên cấp (riêng Hoàn Mỹ/Vàng/Tím, từ cấp 50)
             </h4>
             <p class="text-sm text-muted">
-              Vd 9.0 = trả tiêu xong được cộng thêm 9.0% lượng EXP cần để lên cấp kế
+              Vd 9.0 = trả hàng xong được cộng thêm 9.0% lượng EXP cần để lên cấp kế
               tiếp. Chỉ 3 màu hiếm mới dùng bảng này; Trắng/Xanh/Đỏ luôn dùng công thức ở phần 2.
             </p>
             <div class="max-w-2xl overflow-x-auto rounded-lg border border-default">
@@ -298,11 +304,11 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
 
           <section class="space-y-3">
             <h4 class="font-semibold text-highlighted">
-              4. Tỉ lệ ra màu khi ĐỔI tiêu (reroll trả phí)
+              4. Tỉ lệ ra màu khi Đổi hàng (reroll trả phí)
             </h4>
             <p class="text-sm text-muted">
               Bảng RIÊNG, độc lập với phần 1 — dùng khi người chơi trả phí để đổi màu
-              con tiêu đang cầm. Có 2 giá riêng theo cách trả phí (xu rẻ hơn, lượng đắt hơn nhưng tỉ lệ
+              kiện hàng đang cầm. Có 2 giá riêng theo cách trả phí (xu rẻ hơn, lượng đắt hơn nhưng tỉ lệ
               màu hiếm cao hơn). Cùng quy tắc nhập: 5 màu đầu nhập %, Tím tự tính phần còn lại.
             </p>
 
@@ -343,8 +349,8 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.tieu" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_tieu'">
-              Lưu tỉ lệ Vận Tiêu
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_tieu'">
+              Lưu tỉ lệ Giao Hàng
             </UButton>
           </div>
         </form>
@@ -354,7 +360,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
       <UCard>
         <template #header>
           <h3 class="font-semibold text-highlighted">
-            Giờ chiếm thành
+            Giờ chiếm Gym
           </h3>
           <p class="text-sm text-muted">
             Để trống giờ = dùng lịch chuẩn 21h thứ 3 và thứ 7. Sự kiện World Cup nay bật/tắt
@@ -386,8 +392,8 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
           </UFormField>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.chiemThanh" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_chiemthanh'">
-              Lưu giờ chiếm thành
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_chiemthanh'">
+              Lưu giờ chiếm Gym
             </UButton>
           </div>
         </form>
@@ -416,7 +422,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
           </div>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.lichHen" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_lichhen'">
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_lichhen'">
               Lưu lịch hẹn sự kiện
             </UButton>
           </div>
@@ -450,7 +456,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
           </UAlert>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.expPhu" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_exp_phu'">
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_exp_phu'">
               Lưu
             </UButton>
           </div>
@@ -466,12 +472,12 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
         </template>
         <form class="space-y-4" @submit.prevent="luu('luu_khac', f.khac)">
           <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField label="Số nhân vật tối đa / tài khoản (1-3)">
+            <UFormField label="Số Pokémon tối đa / tài khoản (1-3)">
               <UInput v-model="f.khac.maxCharPerAccount" type="number" min="1" max="3" class="w-full" />
             </UFormField>
             <UFormField
               label="Tài khoản quản trị trong game (phân cách bằng dấu phẩy)"
-              help="Đây là quyền GM trong game (chat lệnh, bảng setting...) — khác hẳn KPAH_ADMIN_ACCOUNTS (danh sách được vào trang quản trị web này), hai danh sách không liên quan nhau."
+              help="Đây là quyền GM trong game (chat lệnh, bảng setting...) — khác hẳn HTBB_ADMIN_ACCOUNTS (danh sách được vào trang quản trị web này), hai danh sách không liên quan nhau."
             >
               <UInput v-model="f.khac.adminAccounts" maxlength="255" class="w-full" />
             </UFormField>
@@ -488,7 +494,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
           <UAlert color="warning" variant="subtle" icon="i-lucide-triangle-alert">
             <template #description>
               <strong>Hai cờ dưới đây chỉ nên bật tạm thời rồi tắt lại ngay</strong> — để quên trên server thật
-              là lỗ hổng (cho phép tạo nhân vật trùng tên GM / mã test cấp xu-lượng miễn phí).
+              là lỗ hổng (cho phép tạo Pokémon trùng tên GM / mã test cấp xu-lượng miễn phí).
             </template>
           </UAlert>
           <div class="flex flex-wrap gap-x-8 gap-y-3">
@@ -497,12 +503,15 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
           </div>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <AdminCauHinhSuaBoi :moc="data?.suaLanCuoi.khac" />
-            <UButton type="submit" icon="i-lucide-save" :loading="dangLuu === 'luu_khac'">
+            <UButton type="submit" :disabled="!coTheSua" icon="i-lucide-save" :loading="dangLuu === 'luu_khac'">
               Lưu
             </UButton>
           </div>
         </form>
       </UCard>
+
+      <!-- ============ Tất cả khoá (xem + sửa lẻ theo whitelist) ============ -->
+      <AdminHethongCauHinhTatCa :dong="data?.dong" :dang-tai="status === 'pending'" :co-the-sua="coTheSua" @da-luu="refresh()" />
     </template>
   </AdminPage>
 </template>

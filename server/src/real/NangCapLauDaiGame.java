@@ -183,6 +183,8 @@ public final class NangCapLauDaiGame {
                     thanhCong ? "ibok" : "fib");
         } catch (final Exception ignored) {
         }
+        // mon dang mac doi +N: vang sang / hat lap lanh tren than doi theo (chi gui khi ngoai hinh doi)
+        NgoaiHinhGame.guiNeuDoi(p);
         return thanhCong ? THANH_CONG : TRUOT;
     }
 
@@ -203,8 +205,11 @@ public final class NangCapLauDaiGame {
             }
             final long goc = Math.max(1L, Math.round(hien * 100.0 / (100 + pcTu)));
             long moi = Math.round(goc * (100 + pcDen) / 100.0);
+            // Ban cu ep "+1 moi cap" (do cap thap van thay tang): goc doan lai tu so da ep nen troi dan - chi mang 10
+            // len +15 thanh ~25 (x2,5) thay vi 16 (x1,55), thu 7 thanh 22. Bat gioi han chi so: KHONG ep, chi giu
+            // khong giam khi len cap (docs/pokemon/CHI_SO_TRANG_BI.md muc 1.5).
             if (den > tu && moi <= hien) {
-                moi = hien + 1; // do cap thap van thay tang
+                moi = ChiSoTrangBiGame.bat() ? hien : hien + 1;
             }
             item.atb[i] = (short) Math.max(0L, Math.min(Short.MAX_VALUE, moi));
         }

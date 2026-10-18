@@ -8,3 +8,5 @@
 *.csproj
 *.sln
 *.slnx
+/Assets/Resources/htbb_phat_hanh.txt
+/Assets/Resources/htbb_phat_hanh.txt.meta

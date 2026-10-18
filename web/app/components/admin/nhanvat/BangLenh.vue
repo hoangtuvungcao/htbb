@@ -38,7 +38,7 @@ const emit = defineEmits<{ huy: [l: DongLenhGiaoDien] }>()
 
 const columns = computed<TableColumn<DongLenhGiaoDien>[]>(() => {
   const c: TableColumn<DongLenhGiaoDien>[] = [{ accessorKey: 'id', header: 'Lệnh' }]
-  if (props.cot.includes('charname')) c.push({ accessorKey: 'charname', header: 'Nhân vật' })
+  if (props.cot.includes('charname')) c.push({ accessorKey: 'charname', header: 'Pokémon' })
   c.push({ accessorKey: 'mo_ta', header: props.nhanYeuCau })
   c.push({ accessorKey: 'ten_trang_thai', header: 'Trạng thái' })
   c.push({ accessorKey: 'ket_qua', header: 'Kết quả' })

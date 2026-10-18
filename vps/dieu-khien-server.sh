@@ -2,37 +2,37 @@
 # ============================================================
 #  DIEU KHIEN BAT/TAT SERVER GAME TU WEB ADMIN
 #
-#  Web admin (web/admin/server.php) khong SSH/exec duoc vao VPS - no chi GHI
-#  "trang thai mong muon" vao bang dieu_khien_server (kpah_db). Script nay la
+#  Web admin (HTBB-Web /admin/server) khong SSH/exec duoc vao VPS - no chi GHI
+#  "trang thai mong muon" vao bang dieu_khien_server (htbb_db). Script nay la
 #  canh gac CHAY NGOAI JVM game, doc bang do roi tu goi systemctl thay ban.
 #  Ly do bat buoc phai co canh gac rieng (khong the lam trong Java server):
 #  khi server dang TAT HAN thi khong co gi trong JVM de ma poll DB nua - can
 #  mot tien trinh song doc lap voi chinh server.
 #
-#  BAT BUOC chay bang CRON CUA ROOT (kpah-game.service chay bang user "kpah",
-#  khong phai root - xem vps/kpah-game.service User=kpah - nen chi root moi
+#  BAT BUOC chay bang CRON CUA ROOT (htbb-game.service chay bang user "htbb",
+#  khong phai root - xem vps/htbb-game.service User=htbb - nen chi root moi
 #  co quyen goi systemctl start/stop no).
 #
 #  Cai dat (mot lan):
 #      sudo crontab -e
-#      * * * * * /opt/kpah/vps/dieu-khien-server.sh >>/opt/kpah/log/dieu-khien-server.log 2>&1
+#      * * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/log/dieu-khien-server.log 2>&1
 #
 #  Chay thu bang tay de kiem tra:
-#      sudo /opt/kpah/vps/dieu-khien-server.sh
+#      sudo /opt/htbb/vps/dieu-khien-server.sh
 #
-#  AN TOAN: script CHI goi dung hai lenh co dinh "systemctl start kpah-game"
-#  va "systemctl stop kpah-game" - ten service KHONG BAO GIO duoc ghep tu du
+#  AN TOAN: script CHI goi dung hai lenh co dinh "systemctl start htbb-game"
+#  va "systemctl stop htbb-game" - ten service KHONG BAO GIO duoc ghep tu du
 #  lieu doc trong database. Bang dieu_khien_server chi chua co/khong (0/1) va
 #  mot moc gio, khong chua chuoi lenh nao ca.
 # ============================================================
 set -u
 
-DIR=/opt/kpah
-INI=$DIR/server.ini
-SERVICE=kpah-game
+DIR=/opt/htbb
+INI=$DIR/server/server.ini
+SERVICE=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SERVICE=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
 
 # Khong cho hai lan chay chong nhau (cron moi phut, phong khi mot lan bi treo).
-exec 9>/tmp/kpah-dieu-khien-server.lock
+exec 9>/tmp/htbb-dieu-khien-server.lock
 if ! flock -n 9; then
     echo "$(date '+%F %T') co mot lan dang chay, bo qua lan nay"
     exit 0

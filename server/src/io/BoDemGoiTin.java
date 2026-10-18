@@ -51,6 +51,42 @@ public final class BoDemGoiTin {
     public static int GOI_THUONG_TOI_DA     = GOI_THUONG_MAC_DINH;
     public static int GOI_TAI_NGUYEN_TOI_DA = GOI_TAI_NGUYEN_MAC_DINH;
 
+    /**
+     * Lenh TRA CUU chi doc (7 = hoi mau/vi tri quai) dem RIENG, mac dinh 600/5s.
+     *
+     * VI SAO (18/10/2026, do bang tools/pokemon/kiem_tai/BotTai 100 bot): bot GM quet id quai
+     * 0..399 bang lenh 7 trong ~2.4 giay de tim quai, cham tran 300 lenh thuong va sinh 67 dong
+     * "NGAP GOI TIN" trong 10 phut. Client that chi hoi quai DANG THAY tren man hinh (vai chuc
+     * moi giay luc danh nhom), nen tach rieng lenh doc re tien nay ra khoi ngan sach cua lenh
+     * doi trang thai (di chuyen, danh, mua ban) - lenh thuong van giu nguyen 300.
+     * sv.tranGoiTraCuu; 0 = tat phep dem nay.
+     */
+    public static final int GOI_TRA_CUU_MAC_DINH = 600;
+    public static int GOI_TRA_CUU_TOI_DA = GOI_TRA_CUU_MAC_DINH;
+
+    /**
+     * IP mien dem ngap (sv.tranGoiMienIp, phan cach dau phay) - CHI cho may chay bot tai
+     * (tools/pokemon/kiem_tai) de do suc chiu ma khong bi bo goi. Mac dinh RONG. Tren VPS de
+     * trong: mot IP mien la mot cua spam khong khoa.
+     */
+    public static volatile java.util.Set<String> MIEN_IP = java.util.Collections.emptySet();
+
+    public static boolean mienIp(final String ip) {
+        return ip != null && !MIEN_IP.isEmpty() && MIEN_IP.contains(ip.trim());
+    }
+
+    public static void datMienIp(final String ds) {
+        final java.util.Set<String> r = new java.util.HashSet<String>();
+        if (ds != null) {
+            for (final String x : ds.split(",")) {
+                if (!x.trim().isEmpty()) {
+                    r.add(x.trim());
+                }
+            }
+        }
+        MIEN_IP = java.util.Collections.unmodifiableSet(r);
+    }
+
     /** Do dai cua so dem (ms). */
     public static final long CUA_SO_MS             = 5000L;
 
@@ -74,6 +110,7 @@ public final class BoDemGoiTin {
     private long mocCuaSo;
     private int  demThuong;
     private int  demTaiNguyen;
+    private int  demTraCuu;
     /** Da ghi log "bo bot goi" trong cua so hien tai chua (chi ghi 1 dong moi cua so). */
     private boolean daBaoTrongCuaSo;
 
@@ -89,6 +126,26 @@ public final class BoDemGoiTin {
         return command == -47 || command == -48 || command == -49 || command == -51;
     }
 
+    /** Lenh tra cuu chi doc, re tien (xem GOI_TRA_CUU_TOI_DA). */
+    public static boolean laLenhTraCuu(final int command) {
+        return command == 7;
+    }
+
+    private int dem(final int command) {
+        return laLenhTaiNguyen(command) ? this.demTaiNguyen
+                : laLenhTraCuu(command) ? this.demTraCuu : this.demThuong;
+    }
+
+    private static int tran(final int command) {
+        return laLenhTaiNguyen(command) ? GOI_TAI_NGUYEN_TOI_DA
+                : laLenhTraCuu(command) ? GOI_TRA_CUU_TOI_DA : GOI_THUONG_TOI_DA;
+    }
+
+    /** "thuong" / "tai nguyen" / "tra cuu" - cho dong log. */
+    public static String tenLoai(final int command) {
+        return laLenhTaiNguyen(command) ? "tai nguyen" : laLenhTraCuu(command) ? "tra cuu" : "thuong";
+    }
+
     /**
      * Ghi nhan mot goi tin vua toi, va cho biet ket noi nay da vuot nguong chua.
      *
@@ -101,12 +158,19 @@ public final class BoDemGoiTin {
             this.mocCuaSo = bayGio;
             this.demThuong = 0;
             this.demTaiNguyen = 0;
+            this.demTraCuu = 0;
             this.daBaoTrongCuaSo = false;
         }
 
-        final boolean taiNguyen = laLenhTaiNguyen(command);
-        final int dem  = taiNguyen ? ++this.demTaiNguyen : ++this.demThuong;
-        final int tran = taiNguyen ? GOI_TAI_NGUYEN_TOI_DA : GOI_THUONG_TOI_DA;
+        final int dem;
+        if (laLenhTaiNguyen(command)) {
+            dem = ++this.demTaiNguyen;
+        } else if (laLenhTraCuu(command)) {
+            dem = ++this.demTraCuu;
+        } else {
+            dem = ++this.demThuong;
+        }
+        final int tran = tran(command);
         if (tran <= 0) {
             // 0 = TAT han phep dem nay, dung quy uoc cua sv.socketTimeout va
             // sv.connRateWindow trong ban mau. PHAI co nhanh nay: khong thi tran=0 lam
@@ -126,9 +190,8 @@ public final class BoDemGoiTin {
      * Chi co nghia khi vuotNguong() vua tra ve true.
      */
     public boolean vuotXaNguong(final int command) {
-        final boolean taiNguyen = laLenhTaiNguyen(command);
-        final int dem  = taiNguyen ? this.demTaiNguyen : this.demThuong;
-        final int tran = taiNguyen ? GOI_TAI_NGUYEN_TOI_DA : GOI_THUONG_TOI_DA;
+        final int dem  = dem(command);
+        final int tran = tran(command);
         if (tran <= 0) {
             return false;
         }
@@ -152,10 +215,10 @@ public final class BoDemGoiTin {
 
     /** So goi da dem duoc trong cua so hien tai, cho dong log khi cat ket noi. */
     public int demHienTai(final int command) {
-        return laLenhTaiNguyen(command) ? this.demTaiNguyen : this.demThuong;
+        return dem(command);
     }
 
     public int tranCua(final int command) {
-        return laLenhTaiNguyen(command) ? GOI_TAI_NGUYEN_TOI_DA : GOI_THUONG_TOI_DA;
+        return tran(command);
     }
 }

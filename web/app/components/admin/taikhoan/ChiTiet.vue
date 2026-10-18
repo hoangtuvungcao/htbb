@@ -4,7 +4,7 @@
  * reset về trắng, xoá vĩnh viễn, và danh sách nhân vật.
  * Mọi chốt chặn (tài khoản quản trị, gõ đúng tên...) đều được server kiểm lại.
  */
-import type { TableColumn } from '@nuxt/ui'
+import type { CotBang } from '~/components/admin/Bang.vue'
 import AdminTaikhoanXacNhan from './XacNhan.vue'
 
 const props = defineProps<{ id: number }>()
@@ -34,6 +34,9 @@ interface ChiTiet {
 const api = useAdminApi()
 const toast = useToast()
 const xacNhan = useOverlay().create(AdminTaikhoanXacNhan)
+const me = useAdminMe()
+const duocSua = computed(() => me.duoc(`/api/admin/taikhoan/${props.id}`))
+const laSieu = computed(() => me.vaiTro.value === 'sieu_quan_tri')
 
 const { data, status, error, refresh } = await useAsyncData(
   () => `admin-taikhoan-${props.id}`,
@@ -88,7 +91,7 @@ async function resetTrang() {
   const n = data.value!.nhanVat.length
   const ok = await xacNhan.open({
     title: `RESET tài khoản ${t.username} về trắng?`,
-    description: `Xoá toàn bộ ${n} nhân vật của nó.\n\nKhông thể hoàn tác.`,
+    description: `Xoá toàn bộ ${n} Pokémon của nó.\n\nKhông thể hoàn tác.`,
     nut: 'Reset về trắng',
     mau: 'error',
     goDe: t.username,
@@ -101,7 +104,7 @@ async function xoaVinhVien() {
   const n = data.value!.nhanVat.length
   const ok = await xacNhan.open({
     title: `XOÁ VĨNH VIỄN tài khoản ${t.username}?`,
-    description: `Xoá tài khoản và toàn bộ ${n} nhân vật của nó.\n\nKhông thể hoàn tác.`,
+    description: `Xoá tài khoản và toàn bộ ${n} Pokémon của nó.\n\nKhông thể hoàn tác.`,
     nut: 'Xoá vĩnh viễn',
     mau: 'error',
     goDe: t.username,
@@ -123,20 +126,23 @@ function trangThaiBan(ban: number) {
   return { nhan: 'Bình thường', mau: 'success' as const }
 }
 
-const cotNV: TableColumn<NhanVat>[] = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
-  { accessorKey: 'lastLv', header: 'Cấp', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
-  { accessorKey: 'luong', header: 'Lượng', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
-  { accessorKey: 'gold', header: 'Xu', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
-  { accessorKey: 'lastLog', header: 'Vào lần cuối' },
-  { id: 'trangthai', header: 'Trạng thái' },
-  { id: 'mo', header: '' },
+const cotNV: CotBang[] = [
+  { key: 'charname', label: 'Pokémon', sort: true },
+  { key: 'lastLv', label: 'Cấp', sort: true, so: true },
+  { key: 'luong', label: 'Lượng', sort: true, so: true, anMobile: true },
+  { key: 'gold', label: 'Xu', sort: true, so: true, anMobile: true },
+  { key: 'lastLog', label: 'Vào lần cuối', sort: true, anMobile: true },
+  { key: 'trangthai', label: 'Trạng thái', giaTri: (r: NhanVat) => (r.ban !== 0 ? 'Khoá' : r.del !== 1 ? 'Đã xoá' : 'Bình thường') },
+  { key: 'mo', label: '' },
 ]
 </script>
 
 <template>
   <div class="space-y-4">
-    <UButton to="/admin/taikhoan" icon="i-lucide-arrow-left" color="neutral" variant="link" label="Về danh sách" class="px-0" />
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <UButton to="/admin/taikhoan" icon="i-lucide-arrow-left" color="neutral" variant="link" label="Về danh sách" class="px-0" />
+      <UButton v-if="tk" :to="`/admin/nguoi-choi?u=${encodeURIComponent(tk.username)}`" icon="i-lucide-contact" color="primary" variant="soft" size="sm" label="Hồ sơ người chơi (IP, Pokémon, lịch sử)" />
+    </div>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" :title="loiApi(error)" />
 
@@ -182,7 +188,7 @@ const cotNV: TableColumn<NhanVat>[] = [
               <UBadge :color="data.daKichHoat ? 'success' : 'warning'" variant="subtle" :label="data.daKichHoat ? 'Đã kích hoạt' : 'Chưa kích hoạt'" />
             </dd>
             <dt class="text-muted">
-              Nhân vật
+              Pokémon
             </dt><dd class="tabular-nums">
               {{ data.nhanVat.length }}
             </dd>
@@ -210,7 +216,8 @@ const cotNV: TableColumn<NhanVat>[] = [
               Tài khoản đang bị khoá. Khi đăng nhập, người chơi thấy “Tài khoản của bạn hiện đang bị khoá”.
             </template>
             <template v-else>
-              Khoá sẽ chặn <em>lần đăng nhập sau</em>. Người đang online vẫn chơi tiếp cho tới khi thoát ra.
+              Khoá ở đây là <em>vĩnh viễn</em>, chặn từ lần đăng nhập sau (người đang online chơi tiếp tới khi thoát). Cần
+              thời hạn + lý do thì dùng <NuxtLink :to="`/admin/nguoi-choi?u=${encodeURIComponent(tk.username)}`" class="text-primary hover:underline">Trung tâm người chơi</NuxtLink>.
             </template>
           </p>
           <UButton
@@ -218,7 +225,7 @@ const cotNV: TableColumn<NhanVat>[] = [
             :label="tk.ban === 1 ? 'Mở khoá' : 'Khoá tài khoản'"
             :icon="tk.ban === 1 ? 'i-lucide-lock-open' : 'i-lucide-lock'"
             size="sm"
-            :disabled="data.laAdmin"
+            :disabled="data.laAdmin || !duocSua"
             :loading="dangLam === 'khoa' || dangLam === 'mo_khoa'"
             @click="khoaMo"
           />
@@ -239,6 +246,7 @@ const cotNV: TableColumn<NhanVat>[] = [
             :variant="data.daKichHoat ? 'outline' : 'solid'"
             :label="data.daKichHoat ? 'Huỷ kích hoạt' : 'Kích hoạt ngay'"
             size="sm"
+            :disabled="!duocSua"
             :loading="dangLam === 'kich_hoat' || dangLam === 'huy_kich_hoat'"
             @click="lam(data.daKichHoat ? 'huy_kich_hoat' : 'kich_hoat')"
           />
@@ -251,7 +259,10 @@ const cotNV: TableColumn<NhanVat>[] = [
               Đổi mật khẩu
             </h3>
           </template>
-          <p v-if="data.laAdmin && !data.laChinhMinh" class="text-sm text-muted">
+          <p v-if="!duocSua" class="text-sm text-muted">
+            Vai trò của bạn chỉ được xem.
+          </p>
+          <p v-else-if="data.laAdmin && !data.laChinhMinh" class="text-sm text-muted">
             Không đổi được mật khẩu của một tài khoản quản trị khác.
           </p>
           <form v-else class="space-y-3" autocomplete="off" @submit.prevent="doiMatKhau">
@@ -269,7 +280,7 @@ const cotNV: TableColumn<NhanVat>[] = [
         </UCard>
 
         <!-- Reset về trắng -->
-        <UCard :ui="{ root: 'ring-error/30' }">
+        <UCard v-if="laSieu" :ui="{ root: 'ring-error/30' }">
           <template #header>
             <h3 class="font-semibold text-error">
               Reset về trắng
@@ -281,10 +292,10 @@ const cotNV: TableColumn<NhanVat>[] = [
           <template v-else>
             <p class="mb-3 text-sm text-muted">
               <strong class="text-highlighted">KHÔNG THỂ HOÀN TÁC.</strong> Xoá vĩnh viễn toàn bộ
-              <strong class="text-highlighted">{{ data.nhanVat.length }} nhân vật</strong> của tài khoản này (cùng dữ liệu
-              riêng của từng nhân vật: thú nuôi, trang trại, đá quý...) nhưng
+              <strong class="text-highlighted">{{ data.nhanVat.length }} Pokémon</strong> của tài khoản này (cùng dữ liệu
+              riêng của từng Pokémon: thú nuôi, trang trại, đá quý...) nhưng
               <strong class="text-highlighted">giữ nguyên tài khoản đăng nhập</strong> — khác với "Xoá vĩnh viễn" bên dưới.
-              Đăng nhập lại được ngay và tạo nhân vật mới, y như tài khoản vừa đăng ký. Nhân vật đang online sẽ bị đẩy ra
+              Đăng nhập lại được ngay và tạo Pokémon mới, y như tài khoản vừa đăng ký. Pokémon đang online sẽ bị đẩy ra
               khỏi game trước khi xoá. Nhật ký giao dịch/log vẫn được giữ lại để tra cứu.
             </p>
             <UButton color="error" variant="soft" size="sm" icon="i-lucide-rotate-ccw" label="Reset về trắng" :loading="dangLam === 'reset_trang'" @click="resetTrang" />
@@ -292,7 +303,7 @@ const cotNV: TableColumn<NhanVat>[] = [
         </UCard>
 
         <!-- Xoá vĩnh viễn -->
-        <UCard :ui="{ root: 'ring-error/30' }">
+        <UCard v-if="laSieu" :ui="{ root: 'ring-error/30' }">
           <template #header>
             <h3 class="font-semibold text-error">
               Xoá vĩnh viễn
@@ -305,8 +316,8 @@ const cotNV: TableColumn<NhanVat>[] = [
             <p class="mb-3 text-sm text-muted">
               <strong class="text-highlighted">KHÔNG THỂ HOÀN TÁC.</strong> Khác hẳn "Khoá đăng nhập" ở trên (chỉ chặn đăng
               nhập, mở lại được) — xoá vĩnh viễn xoá hẳn tài khoản này khỏi cơ sở dữ liệu, cùng với
-              <strong class="text-highlighted">toàn bộ {{ data.nhanVat.length }} nhân vật</strong> của nó (và dữ liệu riêng
-              của từng nhân vật: thú nuôi, trang trại, đá quý...). Nhân vật đang online sẽ bị đẩy ra khỏi game trước khi
+              <strong class="text-highlighted">toàn bộ {{ data.nhanVat.length }} Pokémon</strong> của nó (và dữ liệu riêng
+              của từng Pokémon: thú nuôi, trang trại, đá quý...). Pokémon đang online sẽ bị đẩy ra khỏi game trước khi
               xoá. Nhật ký giao dịch/log vẫn được giữ lại để tra cứu.
             </p>
             <UButton color="error" size="sm" icon="i-lucide-trash-2" label="Xoá vĩnh viễn" :loading="dangLam === 'xoa_tai_khoan'" @click="xoaVinhVien" />
@@ -315,37 +326,37 @@ const cotNV: TableColumn<NhanVat>[] = [
       </div>
 
       <!-- Nhân vật -->
-      <UCard :ui="{ body: 'p-0 sm:p-0' }">
+      <UCard :ui="{ body: 'p-3 sm:p-4' }">
         <template #header>
           <h3 class="font-semibold text-highlighted">
-            Nhân vật của tài khoản này
+            Pokémon của tài khoản này
           </h3>
         </template>
-        <UTable :data="data.nhanVat" :columns="cotNV" empty="Tài khoản này chưa tạo nhân vật nào.">
-          <template #charname-cell="{ row }">
-            <strong class="text-highlighted">{{ row.original.charname }}</strong>
-            <div class="text-xs text-muted">
-              {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }} · máy chủ {{ row.original.idserver }}
-            </div>
+        <AdminBang :rows="data.nhanVat" :cot="cotNV" khong-tim row-key="id" rong-tieu-de="Tài khoản này chưa tạo Pokémon nào">
+          <template #cell-charname="{ row }">
+            <span class="flex items-center gap-2">
+              <PokeAvatar :dex="row.dex" class="size-7" />
+              <span>
+                <strong class="text-highlighted">{{ row.charname }}</strong>
+                <span class="block text-xs text-muted">{{ speciesName(row.class, row.lastLv, row.dex) }} · máy chủ {{ row.idserver }}</span>
+              </span>
+            </span>
           </template>
-          <template #luong-cell="{ row }">
-            {{ so(row.original.luong) }}
+          <template #cell-lastLog="{ row }">
+            <span class="whitespace-nowrap text-xs text-muted">{{ row.lastLog }}</span>
           </template>
-          <template #gold-cell="{ row }">
-            {{ so(row.original.gold) }}
-          </template>
-          <template #lastLog-cell="{ row }">
-            <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lastLog }}</span>
-          </template>
-          <template #trangthai-cell="{ row }">
-            <UBadge v-if="row.original.ban !== 0" color="error" variant="subtle" label="Khoá" />
-            <UBadge v-else-if="row.original.del !== 1" color="neutral" variant="subtle" label="Đã xoá" />
+          <template #cell-trangthai="{ row }">
+            <UBadge v-if="row.ban !== 0" color="error" variant="subtle" label="Khoá" />
+            <UBadge v-else-if="row.del !== 1" color="neutral" variant="subtle" label="Đã xoá" />
             <UBadge v-else color="success" variant="subtle" label="Bình thường" />
           </template>
-          <template #mo-cell="{ row }">
-            <UButton :to="`/admin/nhanvat?id=${row.original.id}`" size="xs" color="neutral" variant="outline" label="Mở" />
+          <template #cell-mo="{ row }">
+            <div class="flex justify-end gap-1">
+              <UButton :to="`/admin/nguoi-choi?u=${encodeURIComponent(tk.username)}&nv=${row.id}`" size="xs" color="primary" variant="soft" label="Hồ sơ" />
+              <UButton :to="`/admin/nhanvat?id=${row.id}`" size="xs" color="neutral" variant="outline" label="Quản lý" />
+            </div>
           </template>
-        </UTable>
+        </AdminBang>
       </UCard>
     </div>
   </div>

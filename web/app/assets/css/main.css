@@ -145,7 +145,9 @@
   --ui-primary: var(--ui-color-primary-600);
   --ui-secondary: var(--ui-color-secondary-600);
   --ui-success: var(--ui-color-success-700);
-  --ui-warning: var(--ui-color-warning-700);
+  --ui-warning: var(--ui-color-warning-800);
+  --ui-info: var(--ui-color-info-600);
+  --ui-error: var(--ui-color-error-700);
 
   --ui-bg: #ffffff;
   --ui-bg-muted: var(--color-navy-50);
@@ -154,7 +156,8 @@
   --ui-border: var(--color-navy-200);
   --ui-border-muted: var(--color-navy-100);
   --ui-border-accented: var(--color-navy-300);
-  --ui-text-dimmed: var(--color-navy-500);
+  /* dimmed đậm hơn navy-500 một chút: đủ 4,5:1 cả trên nền navy-50 (bảng, thẻ). */
+  --ui-text-dimmed: #52698d;
   --ui-text-muted: var(--color-navy-600);
   --ui-text-toned: var(--color-navy-700);
   --ui-text: var(--color-navy-800);
@@ -170,10 +173,13 @@
 }
 
 .dark {
-  --ui-primary: var(--ui-color-primary-400);
+  /* primary-300 (không phải 400): chữ đỏ nhỏ trên nền badge/thẻ navy vẫn đạt 4,5:1. */
+  --ui-primary: var(--ui-color-primary-300);
   --ui-secondary: var(--ui-color-secondary-300);
   --ui-success: var(--ui-color-success-400);
   --ui-warning: var(--ui-color-warning-400);
+  --ui-info: var(--ui-color-info-300);
+  --ui-error: var(--ui-color-error-400);
 
   --ui-bg: var(--color-navy-950);
   --ui-bg-muted: #0f2240;
@@ -409,12 +415,12 @@ h1, h2, h3, .font-display {
 
 /* Nút đỏ chính có "bóng đáy" kiểu nút game. */
 .btn-game {
-  background: var(--color-pokered-500) !important;
+  background: var(--color-pokered-600) !important;
   color: #fff !important;
   border: 2px solid var(--poke-outline);
   box-shadow: 0 3px 0 var(--poke-outline);
 }
-.btn-game:hover { background: var(--color-pokered-600) !important; }
+.btn-game:hover { background: var(--color-pokered-700) !important; }
 .btn-game:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--poke-outline); }
 
 /* Khối nền navy đậm (chân trang...): đặt lại màu chữ/viền cho cả hai chế độ. */
@@ -443,17 +449,47 @@ h1, h2, h3, .font-display {
   background: linear-gradient(to bottom, var(--color-pokered-500) 0 45%, var(--poke-outline) 45% 58%, #fff 58%);
   box-shadow: 0 0 0 1.5px var(--poke-outline);
 }
+/* Danh sách có thứ tự (các bước): số tròn đỏ kiểu nút game. */
+.wiki ol.cham { list-style: none; padding: 0; display: grid; gap: .5rem; color: var(--ui-text-toned); max-width: 48rem; counter-reset: buoc; }
+.wiki ol.cham > li { position: relative; padding-left: 2rem; line-height: 1.6; counter-increment: buoc; }
+.wiki ol.cham > li::before {
+  content: counter(buoc); position: absolute; left: 0; top: .1em; width: 1.4rem; height: 1.4rem; border-radius: 999px;
+  display: grid; place-items: center; font-size: .75rem; font-weight: 800; color: #fff;
+  background: var(--color-pokered-600); box-shadow: 0 0 0 1.5px var(--poke-outline);
+}
 .wiki strong { color: var(--ui-text-highlighted); }
 .wiki a.lien-ket { color: var(--ui-primary); font-weight: 600; }
 .wiki a.lien-ket:hover { text-decoration: underline; }
 
 /* Bảng số liệu cẩm nang: khung bo góc, đầu bảng navy nhạt, hàng xen màu. */
-.bang-cuon { overflow-x: auto; border-radius: 1rem; border: 2px solid var(--ui-border); background: var(--poke-card); box-shadow: 0 4px 0 var(--ui-border); }
+.bang-cuon {
+  overflow-x: auto; border-radius: 1rem; border: 2px solid var(--ui-border); box-shadow: 0 4px 0 var(--ui-border);
+  /* Bóng mờ ở mép khi bảng còn cuộn ngang được (gợi ý "vuốt sang"): lớp `local` che bóng khi đã tới mép. */
+  background:
+    linear-gradient(to right, var(--poke-card) 40%, transparent) left / 2rem 100% no-repeat local,
+    linear-gradient(to left, var(--poke-card) 40%, transparent) right / 2rem 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgb(10 26 51 / .28), transparent) left / .9rem 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgb(10 26 51 / .28), transparent) right / .9rem 100% no-repeat scroll,
+    var(--poke-card);
+}
+.dark .bang-cuon {
+  background:
+    linear-gradient(to right, var(--poke-card) 40%, transparent) left / 2rem 100% no-repeat local,
+    linear-gradient(to left, var(--poke-card) 40%, transparent) right / 2rem 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgb(0 0 0 / .6), transparent) left / .9rem 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / .6), transparent) right / .9rem 100% no-repeat scroll,
+    var(--poke-card);
+}
+/* Màn hẹp: cột chữ không bị bóp còn một từ mỗi dòng (bảng cuộn ngang thay vào đó). */
+@media (max-width: 640px) {
+  .bang-wiki td:not(.so) { min-width: 8.5rem; }
+  .bang-wiki td:first-child:not(.so) { min-width: 7rem; }
+}
 .bang-wiki { width: 100%; border-collapse: collapse; font-size: .875rem; }
 .bang-wiki caption { text-align: left; padding: .75rem 1rem 0; color: var(--ui-text-muted); font-size: .8rem; }
 .bang-wiki th { text-align: left; font-family: var(--font-display); font-weight: 800; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ui-text-muted); background: var(--ui-bg-muted); padding: .6rem .9rem; white-space: nowrap; }
 .bang-wiki td { padding: .55rem .9rem; border-top: 1px solid var(--ui-border-muted); color: var(--ui-text-toned); vertical-align: top; }
-.bang-wiki tbody tr:nth-child(even) td { background: color-mix(in oklab, var(--ui-bg-muted) 55%, transparent); }
+.bang-wiki tbody tr:nth-child(even) td { background: color-mix(in oklab, var(--ui-bg-muted) 45%, transparent); }
 .bang-wiki td.so, .bang-wiki th.so { text-align: right; font-variant-numeric: tabular-nums; }
 .bang-wiki tr.noi-bat td { background: color-mix(in oklab, var(--color-pikachu-300) 30%, transparent) !important; }
 
@@ -482,3 +518,13 @@ h1, h2, h3, .font-display {
 .noi-dung-md th, .noi-dung-md td { border: 1px solid var(--ui-border); padding: .45rem .7rem; text-align: left; }
 .noi-dung-md th { background: var(--ui-bg-muted); color: var(--ui-text-highlighted); }
 .noi-dung-md hr { border: 0; border-top: 2px dashed var(--ui-border); margin: 2rem 0; }
+
+/*
+ * Vòng focus bàn phím rõ ràng cho mọi phần tử tương tác (WCAG 2.4.7). :where() = độ ưu tiên 0, nên
+ * component nào tự vẽ vòng focus riêng (Nuxt UI: focus-visible:outline-none + ring) vẫn thắng.
+ */
+:where(a[href], button, summary, [role="button"], [role="option"], [tabindex]:not([tabindex="-1"]), input, select, textarea):focus-visible {
+  outline: 3px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+.on-navy :where(a[href], button, summary):focus-visible { outline-color: var(--color-pikachu-400); }

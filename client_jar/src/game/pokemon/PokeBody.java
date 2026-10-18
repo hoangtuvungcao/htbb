@@ -8,7 +8,7 @@ import javax.microedition.lcdui.Image;
 
 /**
  * Ve than Pokemon nguyen con (thay paper doll) - ban J2ME cua ClientUnity PokeBody.cs.
- * Tai nguyen trong jar (sinh boi j2me/tools/DongGoiPokeJ2me.java tu Resources/poke/ cua HTBB):
+ * Tai nguyen trong jar (sinh boi client_jar/tools/DongGoiPokeJ2me.java tu Resources/poke/ cua HTBB):
  *   /pk/&lt;khoa&gt;.dl          du lieu khung (PokeDuLieu, dinh dang _dl ban 2 + anhDongTac[6])
  *   /pk/&lt;khoa&gt;_&lt;a&gt;.png       anh dong tac a (4 hang huong x soKhung cot), NAP LUOI tung dong tac
  *   /pk/&lt;khoa&gt;_c.png         chan dung 40x40
@@ -341,11 +341,164 @@ public class PokeBody {
      * doSang: 0 = binh thuong, &gt;0 sang hon (100 = gap doi, hieu ung tien hoa).
      */
     public static boolean paint(Graphics g, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int tiLe, int doSang) {
+        return paint(g, dex, shiny, x, y, dir, dongTac, tick, tiLe, doSang, 0);
+    }
+
+    /**
+     * Nhu tren, them trangPhuc (1.. = bang mau trang phuc cua PhuKien, 0 = khong): anh dong tac doi mau
+     * mot lan roi nho trong bo dem LRU (khoa anh + "~" + trangPhuc). Shiny giu: doi mau tren nen anh shiny.
+     */
+    public static boolean paint(Graphics g, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int tiLe, int doSang, int trangPhuc) {
         PokeBody pb = lay(dex, shiny);
         if (pb == null) {
             return false;
         }
-        return pb.ve(g, x, y, dir, dongTac, tick, tiLe, doSang);
+        veTrangPhuc = trangPhuc;
+        try {
+            return pb.ve(g, x, y, dir, dongTac, tick, tiLe, doSang);
+        } finally {
+            veTrangPhuc = 0;
+        }
+    }
+
+    private static boolean dac(int[] px, int w, int h, int x, int y) {
+        return x >= 0 && y >= 0 && x < w && y < h && (px[y * w + x] >>> 24) >= 128;
+    }
+
+    /** Trang phuc cua lan ve dang chay (chi luong ve dung). */
+    private static int veTrangPhuc;
+
+    /** Anh dong tac da doi mau trang phuc tp (nho LRU). */
+    private Image anhTrangPhuc(Image goc, String ten, int tp) {
+        String k = ten + "~" + tp;
+        Object o = layDem(k);
+        if (o instanceof Image) {
+            return (Image) o;
+        }
+        if (o == KHONG_CO) {
+            return goc;
+        }
+        Image img = null;
+        try {
+            int w = goc.getWidth(), h = goc.getHeight();
+            int[] px = new int[w * h];
+            goc.getRGB(px, 0, w, 0, 0, w, h);
+            PhuKien.doiMauTrangPhuc(px, tp);
+            img = Image.createRGBImage(px, w, h, true);
+        } catch (OutOfMemoryError e) {
+            xoaBoDem();
+            return goc;
+        } catch (Throwable e) {
+            img = null;
+        }
+        if (img == null) {
+            return goc;
+        }
+        datDem(k, img);
+        return img;
+    }
+
+    /**
+     * Diem neo phu kien cua khung DANG ve (cung cach chon dong tac / khung nhu ve()), da nhan tiLe, so voi
+     * diem chan: out = {dauX, dauY, dinhY, tayX, tayY, tamX, tamY, co}. false = loai khong co neo (ban nhe).
+     */
+    public static boolean neo(int dex, boolean shiny, int dir, int dongTac, int tick, int tiLe, int[] out) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null || pb.dl.neo == null) {
+            return false;
+        }
+        if (dir < 0 || dir > 3) {
+            dir = 0;
+        }
+        if (tiLe <= 0) {
+            tiLe = 100;
+        }
+        PokeDongTac d = pb.dl.layDongTac(dongTac);
+        if (pb.anhDongTac(dongTac, d, 100) == null && dongTac != PokeDuLieu.DUNG) {
+            dongTac = PokeDuLieu.DUNG;
+            d = pb.dl.layDongTac(dongTac);
+        }
+        int a = dongTac < 0 || dongTac >= pb.dl.dongTac.length ? 0 : dongTac;
+        byte[] nb = pb.dl.neo[a];
+        int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
+        int p = (dir * d.soKhung + f) * PokeDuLieu.BYTE_NEO;
+        if (nb == null || p + PokeDuLieu.BYTE_NEO > nb.length) {
+            return false;
+        }
+        for (int i = 0; i < 7; i++) {
+            out[i] = nb[p + i] * tiLe / 100;
+        }
+        out[7] = nb[p + 7] & 0xFF;
+        return true;
+    }
+
+    /**
+     * Vien sang 1 px quanh hinh khung dang ve (vang sang cap cuong hoa cao), mau = mau RGB. Anh vien tinh
+     * mot lan cho moi (anh, huong, khung, mau) roi nho LRU. Chi ti le 100 (nguoi choi). false = khong ve.
+     */
+    public static boolean veVien(Graphics g, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int mau) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null) {
+            return false;
+        }
+        if (dir < 0 || dir > 3) {
+            dir = 0;
+        }
+        PokeDongTac d = pb.dl.layDongTac(dongTac);
+        Image anh = pb.anhDongTac(dongTac, d, 100);
+        if (anh == null && dongTac != PokeDuLieu.DUNG) {
+            dongTac = PokeDuLieu.DUNG;
+            d = pb.dl.layDongTac(dongTac);
+            anh = pb.anhDongTac(dongTac, d, 100);
+        }
+        if (anh == null) {
+            return false;
+        }
+        int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
+        int w = d.rongKhung, h = d.caoKhung;
+        int sx = d.xAtlas + f * w, sy = d.yAtlas + dir * h;
+        if (sx + w > anh.getWidth() || sy + h > anh.getHeight()) {
+            return false;
+        }
+        String k = THU_MUC + pb.khoa + "_" + pb.dl.anhCua(dongTac) + "#v" + dir + "_" + f + "_" + mau;
+        Object o = layDem(k);
+        Image img = o instanceof Image ? (Image) o : null;
+        if (o == KHONG_CO) {
+            return false;
+        }
+        if (img == null) {
+            try {
+                int[] src = new int[w * h];
+                anh.getRGB(src, 0, w, sx, sy, w, h);
+                int W = w + 2, H = h + 2;
+                int[] dst = new int[W * H];
+                int c = 0xFF000000 | mau;
+                for (int yy = 0; yy < H; yy++) {
+                    for (int xx = 0; xx < W; xx++) {
+                        int ox = xx - 1, oy = yy - 1;
+                        if (dac(src, w, h, ox, oy)) {
+                            continue;   // pixel cua than: de trong
+                        }
+                        if (dac(src, w, h, ox - 1, oy) || dac(src, w, h, ox + 1, oy)
+                                || dac(src, w, h, ox, oy - 1) || dac(src, w, h, ox, oy + 1)) {
+                            dst[yy * W + xx] = c;
+                        }
+                    }
+                }
+                img = Image.createRGBImage(dst, W, H, true);
+            } catch (OutOfMemoryError e) {
+                xoaBoDem();
+                return false;
+            } catch (Throwable e) {
+                datDem(k, null);
+                return false;
+            }
+            datDem(k, img);
+        }
+        int xVe = x - w / 2 - d.dxChan[dir];
+        int yVe = y - h / 2 - d.dyChan[dir];
+        g.drawImage(img, xVe - 1, yVe - 1, Graphics.TOP | Graphics.LEFT);
+        return true;
     }
 
     public static boolean paint(Graphics g, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int tiLe) {
@@ -368,6 +521,9 @@ public class PokeBody {
         }
         if (anh == null) {
             return false;
+        }
+        if (veTrangPhuc > 0 && tiLe == 100) {
+            anh = anhTrangPhuc(anh, THU_MUC + khoa + "_" + dl.anhCua(dongTac) + ".png", veTrangPhuc);
         }
         int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
         int rong = d.rongKhung * tiLe / 100;
@@ -426,6 +582,12 @@ public class PokeBody {
         } catch (Throwable e) {
             g.drawRegion(anh, sx, sy, w, h, 0, x, y, Graphics.TOP | Graphics.LEFT);
         }
+    }
+
+    /** Be ngang hinh dung yen (khung da cat sat hinh cua ban jar ~ be ngang con Pokemon), 0 neu khong co. */
+    public static int rongHinh(int dex, boolean shiny) {
+        PokeBody pb = lay(dex, shiny);
+        return pb == null ? 0 : pb.dl.layDongTac(PokeDuLieu.DUNG).rongKhung;
     }
 
     /** Chieu cao phan hinh nam tren diem chan (de dat ten/icon tren dau). */

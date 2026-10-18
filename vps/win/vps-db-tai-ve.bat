@@ -4,7 +4,7 @@ title Tai DB tu VPS ve may nay
 cd /d "%~dp0"
 
 REM ============================================================
-REM  Tai kpah_db + account tu VPS ve may Windows nay, de nap vao
+REM  Tai htbb_db + account tu VPS ve may Windows nay, de nap vao
 REM  MySQL local (XAMPP) cho giong VPS.
 REM
 REM  Buoc tiep theo sau khi chay xong: vps-db-nap-vao-local.bat
@@ -58,10 +58,10 @@ if errorlevel 1 (
 echo.
 echo [2/4] Xem thong tin DB tren VPS...
 REM In ra bang ma va so bang, de lat nua nap vao local biet co khop khong.
-echo SELECT table_schema AS db, COUNT(*) AS so_bang FROM information_schema.tables WHERE table_schema IN ('kpah_db','account') GROUP BY table_schema; SELECT SCHEMA_NAME AS db, DEFAULT_CHARACTER_SET_NAME AS bang_ma FROM information_schema.SCHEMATA WHERE SCHEMA_NAME IN ('kpah_db','account'); | ssh %VPS% "mysql -u root --default-character-set=utf8 -t"
+echo SELECT table_schema AS db, COUNT(*) AS so_bang FROM information_schema.tables WHERE table_schema IN ('htbb_db','account') GROUP BY table_schema; SELECT SCHEMA_NAME AS db, DEFAULT_CHARACTER_SET_NAME AS bang_ma FROM information_schema.SCHEMATA WHERE SCHEMA_NAME IN ('htbb_db','account'); | ssh %VPS% "mysql -u root --default-character-set=utf8 -t"
 
 echo.
-echo [3/4] Tai kpah_db (~600MB, cho vai phut)...
+echo [3/4] Tai htbb_db (~600MB, cho vai phut)...
 REM  --single-transaction: chup mot anh nhat quan MA KHONG khoa bang. Server
 REM     game dang chay that nen tuyet doi khong duoc khoa.
 REM  --quick: doc tung dong, khong dom het vao RAM cua VPS.
@@ -73,10 +73,10 @@ REM     cua VPS, nen luc nap vao local khong phai doan bang ma nua.
 REM  CO Y KHONG dung --add-drop-database: file nay nam tren Desktop, nhung ai
 REM     do chay nham no NGUOC len VPS la xoa sach DB that. Lenh xoa de trong
 REM     vps-db-nap-vao-local.bat, cho no ghim cung 127.0.0.1.
-ssh -C %VPS% "mysqldump -u root --single-transaction --quick --default-character-set=utf8mb4 --routines --events --databases kpah_db" > "%DICH%\vps_kpah_db_%TS%.sql"
+ssh -C %VPS% "mysqldump -u root --single-transaction --quick --default-character-set=utf8mb4 --routines --events --databases htbb_db" > "%DICH%\vps_htbb_db_%TS%.sql"
 if errorlevel 1 (
-    echo [LOI] Dump kpah_db that bai. File tai ve KHONG dung duoc, dang xoa.
-    del /f /q "%DICH%\vps_kpah_db_%TS%.sql" 2>nul
+    echo [LOI] Dump htbb_db that bai. File tai ve KHONG dung duoc, dang xoa.
+    del /f /q "%DICH%\vps_htbb_db_%TS%.sql" 2>nul
     pause
     exit /b 1
 )
@@ -95,7 +95,7 @@ echo [4/4] Kiem tra hai ban dump...
 REM Phep kiem thu hai, doc lap voi ma thoat: mysqldump chi in dong nay khi da
 REM chay HET. Dump bi cat giua duong se khong co no.
 set "HONG=0"
-for %%F in ("%DICH%\vps_kpah_db_%TS%.sql" "%DICH%\vps_account_%TS%.sql") do (
+for %%F in ("%DICH%\vps_htbb_db_%TS%.sql" "%DICH%\vps_account_%TS%.sql") do (
     powershell -NoProfile -Command "if ((Get-Content -LiteralPath '%%~F' -Tail 5) -match 'Dump completed') { exit 0 } else { exit 1 }"
     if errorlevel 1 (
         echo   [LOI] %%~nxF thieu dong 'Dump completed' -^> ban dump BI CAT giua duong.

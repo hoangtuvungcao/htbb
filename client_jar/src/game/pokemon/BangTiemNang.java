@@ -11,7 +11,7 @@ import javax.microedition.lcdui.Image;
  * của bảng gốc không đổi: hàng "Điểm cộng" ở y = -20, 5 hàng chỉ số ở y = i * 19 (cao 18).
  */
 public final class BangTiemNang {
-    private static final String[] TEN = {"Sức mạnh", "Khéo léo", "Tinh thần", "Sức khỏe", "May mắn"};
+    private static final String[] TEN = {"Sức mạnh", "Khéo léo", "Tinh thần", "Sức khoẻ", "May mắn"};
     /** hình biểu tượng (KieuO.HINH_*) + hệ lấy màu cho từng chỉ số */
     private static final byte[] HINH = {KieuO.HINH_VA, KieuO.HINH_NHANH, KieuO.HINH_SAO, KieuO.HINH_TIM, KieuO.HINH_MAT_TROI};
     private static final byte[] HE = {6, 9, 10, 17, 3};
@@ -51,7 +51,7 @@ public final class BangTiemNang {
         int x0 = -2;
         int diem = c.basePointLeft;
         // ---- hàng điểm cộng
-        GiaoDien.khoiDoc(g, x0, -20, r, 18, 4, diem > 0 ? 0x4E9A3C : 0x2A4F82, diem > 0 ? 0x2F6E25 : 0x1D3F70);
+        GiaoDien.khoiDoc(g, x0, -20, r, 18, 4, diem > 0 ? 0x4E9A3C : GiaoDien.XANH_SANG, diem > 0 ? 0x2F6E25 : GiaoDien.XANH);
         oBieuTuong(g, x0 + 1, -19, GiaoDien.VANG, KieuO.HINH_CONG);
         Font.borderFont.drawString(g, "Điểm cộng", x0 + 21, -18, Font.LEFT);
         vienSo(g, x0 + r - 3, -18, String.valueOf(diem), diem > 0);
@@ -63,7 +63,7 @@ public final class BangTiemNang {
             if (dangChon) {
                 GiaoDien.chon(g, x0, y, r, 18);
             } else {
-                GiaoDien.khoi(g, x0, y, r, 18, 4, (i & 1) == 0 ? KieuO.O_CHAN : KieuO.O_LE);
+                GiaoDien.khoi(g, x0, y, r, 18, 4, (i & 1) == 0 ? GiaoDien.HANG_CHAN : GiaoDien.HANG_LE);
             }
             oBieuTuong(g, x0 + 1, y + 1, KieuO.mauHe(HE[i]), HINH[i]);
             Font.arialFontW.drawString(g, TEN[i], x0 + 21, y + 3, Font.LEFT);

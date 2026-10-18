@@ -2,7 +2,7 @@
 # ============================================================
 #  CAP NHAT SERVER HTBB TREN VPS  (ban Linux cua capnhat.bat)
 #
-#  Dung o VPS:  sudo /opt/kpah/vps/capnhat.sh
+#  Dung o VPS:  sudo /opt/htbb/vps/capnhat.sh
 #
 #  Dung khi muon thu nhanh mot jar chua commit (scp truc tiep len VPS).
 #  Deploy binh thuong thi dung vps/update.sh (keo tu git).
@@ -16,16 +16,16 @@
 # ============================================================
 set -u
 
-DIR=/opt/kpah
-NEW="$DIR/HTBB_NEW.jar"
-CUR="$DIR/KPAH2_patched.jar"
-BAK="$DIR/KPAH2_patched_backup_truoc_capnhat.jar"
-SV=kpah-game
+DIR=/opt/htbb
+NEW="$DIR/server/HTBB_NEW.jar"
+CUR="$DIR/server/htbb-server.jar"
+BAK="$DIR/server/htbb-server_backup_truoc_capnhat.jar"
+SV=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SV=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
 
 if [ ! -f "$NEW" ]; then
     echo "[LOI] Khong thay $NEW"
     echo "      Upload jar moi tu may nha truoc:"
-    echo "      scp HTBB_NEW.jar kpah@180.93.57.30:/opt/kpah/"
+    echo "      scp HTBB_NEW.jar htbb@180.93.57.30:/opt/htbb/"
     exit 1
 fi
 
@@ -56,7 +56,7 @@ fi
 
 echo "== Thay jar"
 mv -f "$NEW" "$CUR"
-chown kpah:kpah "$CUR"
+chown htbb:htbb "$CUR"
 
 echo "== Bat lai $SV"
 systemctl start "$SV"
@@ -65,4 +65,4 @@ systemctl --no-pager --lines=15 status "$SV"
 
 echo
 echo "== Cong 19129 phai dang LISTEN:"
-ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f /opt/kpah/log/game.out"
+ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f /opt/htbb/log/game.out"

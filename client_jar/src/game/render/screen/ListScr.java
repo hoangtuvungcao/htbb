@@ -117,7 +117,7 @@ public class ListScr extends Screen {
         Vector menu = new Vector();
         if (this.type == 4 || this.type == 3 || this.type == 5 || this.type == 1) {
             if (this.type == 5) {
-                menu.addElement(new Command("Danh sách quản lý bang.", new IAction() {
+                menu.addElement(new Command("Danh sách quản lý đội.", new IAction() {
                     @Override
                     public void perform() {
                         GameService.gI().requestQuanLyBang(((ClanInfo) ListScr.this.list.elementAt(ListScr.selected)).id);
@@ -151,7 +151,7 @@ public class ListScr extends Screen {
         }
         if (this.type == 1) {
             if (((Char) this.list.elementAt(0)).idClan == Canvas.gameScr.mainChar.idClan) {
-                menu.addElement(new Command("Nhắn tin toàn bang", new IAction() {
+                menu.addElement(new Command("Nhắn tin toàn đội", new IAction() {
                     @Override
                     public void perform() {
                         Canvas.inputDlg.setInfo("Nội dung", new IAction() {
@@ -169,7 +169,7 @@ public class ListScr extends Screen {
                 }));
             }
             if (((Char) this.list.elementAt(selected)).idClan == Canvas.gameScr.mainChar.idClan && ((Canvas.gameScr.mainChar.isMaster == 0 || Canvas.gameScr.mainChar.isMaster == 1) && !((Char) this.list.elementAt(selected)).name.equals(Canvas.gameScr.mainChar.name))) {
-                menu.addElement(new Command("Mời khỏi bang", new AnonymousClass10()));
+                menu.addElement(new Command("Mời khỏi đội", new AnonymousClass10()));
             }
         } else if (this.type == 2 && Canvas.gameScr.mainChar.isMaster == 0) {
             menu.addElement(new Command("Xóa tin nhắn", new IAction() {
@@ -226,7 +226,7 @@ public class ListScr extends Screen {
 
         @Override
         public void perform() {
-            Canvas.startYesNoDlg(new StringBuffer("Bạn có chắc muốn mời ").append(((Char) ListScr.this.list.elementAt(ListScr.selected)).name).append(" khỏi bang không ?").toString(), new IAction() {
+            Canvas.startYesNoDlg(new StringBuffer("Bạn có chắc muốn mời ").append(((Char) ListScr.this.list.elementAt(ListScr.selected)).name).append(" khỏi đội không ?").toString(), new IAction() {
                 @Override
                 public void perform() {
                     GameService.gI().requestEvictionClan(((Char) ListScr.this.list.elementAt(ListScr.selected)).name);
@@ -281,7 +281,7 @@ public class ListScr extends Screen {
             cmyLim = 0;
         }
         if (type == 6 && this.nameManager == null) {
-            this.nameManager = new String[]{"Bang chủ", "Phó bang", "Trưởng lão"};
+            this.nameManager = new String[]{"Đội trưởng", "Đội phó", "Cố vấn"};
         }
     }
 
@@ -427,7 +427,7 @@ public class ListScr extends Screen {
         g.translate(0, -cmy);
         if (this.list == null || this.list.size() == 0) {
             // pokemon: danh sách rỗng -> dòng báo thay ô chọn trống
-            Font.arialFontW.drawString(g, "Chưa có dữ liệu", this.w / 2, cmy + 12, Font.CENTER);
+            game.pokemon.GiaoDien.veTrong(g, this.w / 2, cmy + (this.h - 31) / 2 - 6, this.w - 20, "Chưa có ai ở đây", "Hãy quay lại sau nhé - bảng sẽ cập nhật khi có người tham gia.");
             super.paint(g);
             return;
         }
@@ -458,12 +458,12 @@ public class ListScr extends Screen {
                 GameData.paintIcon(g, (short) (c.id + 1000), 16, (i * this.height) + 12);
             }
             String temp = new StringBuffer(String.valueOf(c.name)).append(" - Cấp độ: ").append(c.level > -1 ? new StringBuffer(String.valueOf((int) c.level)).toString() : "?").toString();
-            Font.normalFont[0].drawString(g, temp, 11 + zz, (i * this.height) + 4, 0);
+            Font.normalFont[0].drawString(g, game.pokemon.GiaoDien.catChu(Font.normalFont[0], temp, this.w - 22 - zz), 11 + zz, (i * this.height) + 4, 0);
             int wchar = Font.normalFont[0].getWidth(temp);
             if (c.nationID > -1) {
                 g.drawRegion(Res.imgNation, 0, c.nationID * 11, 11, 11, 0, 11 + zz + 17 + wchar, (i * this.height) + 4, 0);
             }
-            String str = new StringBuffer("Bang chủ: ").append(c.master).append(" - Tiền: ").append(c.money).append("xu - Thành viên: ").append((int) c.members).toString();
+            String str = new StringBuffer("Đội trưởng: ").append(c.master).append(" - Tiền: ").append(c.money).append("xu - Thành viên: ").append((int) c.members).toString();
             if (i == selected && (ww = Font.arialFontW.getWidth(str)) > this.w - 10 && selected == i) {
                 if (this.dir1 == 1) {
                     this.x1--;
@@ -477,7 +477,8 @@ public class ListScr extends Screen {
                     }
                 }
             }
-            Font.arialFontW.drawString(g, str, 11 + (i == selected ? this.x1 : 0), (i * this.height) + 20, 0);
+            // pokemon: cắt ".." thay chữ chạy (không tràn / bị xén)
+            Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, str, this.w - 22), 11, (i * this.height) + 20, 0);
             i++;
         }
     }
@@ -540,7 +541,8 @@ public class ListScr extends Screen {
                 }
             }
             g.setClip(45, cmy, this.w - 49, this.h - 31);
-            Font.normalFont[0].drawString(g, new StringBuffer(String.valueOf(ac.name)).append(" - ").append(money).append((this.type != 6 || ac.isMaster >= 3) ? "" : new StringBuffer(" - ").append(this.nameManager[ac.isMaster]).toString()).append(this.type == 7 ? new StringBuffer(" - CT: ").append(ac.congTrang).append(" - LT: ").append(ac.lienTram).toString() : "").toString(), 45 + zz + (i == selected ? this.x2 : 0), (i * this.height) + 5, 0);
+            String dong1 = new StringBuffer(String.valueOf(ac.name)).append(" - ").append(money).append((this.type != 6 || ac.isMaster >= 3) ? "" : new StringBuffer(" - ").append(this.nameManager[ac.isMaster]).toString()).append(this.type == 7 ? new StringBuffer(" - CT: ").append(ac.congTrang).append(" - LT: ").append(ac.lienTram).toString() : "").toString();
+            Font.normalFont[0].drawString(g, game.pokemon.GiaoDien.catChu(Font.normalFont[0], dong1, this.w - 52 - zz), 45 + zz, (i * this.height) + 5, 0);
             int wchar = Font.normalFont[0].getWidth(new StringBuffer(String.valueOf(ac.name)).append(" - ").append(money).append((this.type != 6 || ac.isMaster >= 3) ? "" : new StringBuffer(" - ").append(this.nameManager[ac.isMaster]).toString()).append(this.type == 7 ? new StringBuffer(" - CT: ").append(ac.congTrang).append(" - LT: ").append(ac.lienTram).toString() : "").toString());
             if (ac.nationID > -1) {
                 g.drawRegion(Res.imgNation, 0, ac.nationID * 11, 11, 11, 0, 45 + zz + (i == selected ? this.x2 : 0) + wchar + 5, (i * this.height) + 5, 0);
@@ -559,7 +561,7 @@ public class ListScr extends Screen {
                     }
                 }
             }
-            Font.arialFontW.drawString(g, str, 45 + (i == selected ? this.x0 : 0), (i * this.height) + 20, 0);
+            Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, str, this.w - 52), 45, (i * this.height) + 20, 0);
             g.setClip(0, cmy, this.w - 4, this.h - 31);
             i++;
         }

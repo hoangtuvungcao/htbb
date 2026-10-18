@@ -8,7 +8,7 @@
  * thoát ra, vì web không nói chuyện được với tiến trình game đang chạy.
  *
  * XOÁ NHÂN VẬT không DELETE thẳng từ web: nhân vật có thể đang online (RAM của tiến
- * trình game), nên web chỉ chèn một dòng lệnh `xoa_nhan_vat` vào kpah_db.web_lenh_nhan_vat
+ * trình game), nên web chỉ chèn một dòng lệnh `xoa_nhan_vat` vào htbb_db.web_lenh_nhan_vat
  * (xem src/data/LenhWeb.java); server đọc mỗi giây, đuổi nhân vật ra (lưu bản cuối +
  * ngắt kết nối) rồi xoá thật cả tob_char lẫn dữ liệu con. Server đang tắt thì dòng lệnh
  * nằm chờ, không mất. Tài khoản chỉ bị xoá khi KHÔNG còn nhân vật nào.
@@ -115,13 +115,13 @@ export async function tkXoaNhieuTaiKhoan(kho: TkKhoXoaTaiKhoan, ids: number[], a
       }
       if ((await kho.demNhanVat(id)) > 0) {
         kq.cho.push(ten)
-        await kho.ghiNhatKy('xoa_nhieu_tai_khoan_cho', ten, 'đã gửi lệnh xoá nhân vật; chưa xoá tài khoản')
+        await kho.ghiNhatKy('xoa_nhieu_tai_khoan_cho', ten, 'đã gửi lệnh xoá Pokémon; chưa xoá tài khoản')
         continue
       }
       await kho.xoaKichHoat(ten, id)
       await kho.xoaTaiKhoan(id, ten)
       kq.xoa.push(ten)
-      await kho.ghiNhatKy('xoa_nhieu_tai_khoan', ten, 'đã xoá tài khoản sau khi kiểm tra không còn nhân vật')
+      await kho.ghiNhatKy('xoa_nhieu_tai_khoan', ten, 'đã xoá tài khoản sau khi kiểm tra không còn Pokémon')
     } catch {
       kq.loi.push(ten)
       try {
@@ -138,7 +138,7 @@ export function tkMoTaKetQuaXoaNhieu(kq: TkKetQuaXoaNhieu): { loai: 'success' | 
   if (kq.xoa.length) msg += `: ${kq.xoa.join(', ')}`
   msg += '.'
   if (kq.cho.length) {
-    msg += ` Đang chờ xoá nhân vật: ${kq.cho.join(', ')}. Khi server xử lý xong, chọn lại các tài khoản này và bấm xoá để hoàn tất.`
+    msg += ` Đang chờ xoá Pokémon: ${kq.cho.join(', ')}. Khi server xử lý xong, chọn lại các tài khoản này và bấm xoá để hoàn tất.`
   }
   if (kq.bo_qua.length) msg += ` Bỏ qua: ${kq.bo_qua.join(', ')}.`
   if (kq.loi.length) msg += ` Chưa hoàn tất do lỗi: ${kq.loi.join(', ')}. Có thể thử lại.`
@@ -177,7 +177,7 @@ export function tkKhoXoaMysql(ghi: (hanhDong: string, doiTuong: string, chiTiet:
 }
 
 // ---------------------------------------------------------------------------
-//  Bảng lệnh nhân vật (kpah_db.web_lenh_nhan_vat) — phần cần cho việc xoá
+//  Bảng lệnh nhân vật (htbb_db.web_lenh_nhan_vat) — phần cần cho việc xoá
 // ---------------------------------------------------------------------------
 
 export const TK_LENH_LOAI_XOA_NHAN_VAT = 'xoa_nhan_vat'

@@ -1,12 +1,13 @@
 /**
  * sitemap.xml sinh từ danh mục trang (cẩm nang, Pokédex, tin tức) — không cần module ngoài.
- * Địa chỉ gốc lấy theo request (đứng sau proxy thì nhớ chuyển tiếp Host / X-Forwarded-Proto).
+ * Địa chỉ gốc lấy từ HTBB_SITE_URL (server/utils/config.ts, mặc định http://localhost:3000) —
+ * không theo Host của request (Host / X-Forwarded-Host giả được).
  */
 export default defineEventHandler(async (event) => {
-  const goc = getRequestURL(event, { xForwardedHost: true, xForwardedProto: true }).origin
+  const goc = useHtbbConfig().site.siteUrl
   const trang = [
     '/', '/gioi-thieu', '/huong-dan', '/cam-nang', '/pokedex', '/download', '/news', '/ranking',
-    '/ghi-cong', '/dieu-khoan', '/quyen-rieng-tu', '/register',
+    '/giay-phep', '/dieu-khoan', '/quyen-rieng-tu', '/register',
     ...DS_CAM_NANG.map(p => `/cam-nang/${p.slug}`),
     ...(await dsTinCongKhai()).map(t => `/news/${t.slug}`),
     ...(await dsTrangDb()).filter(t => t.hien && !t.coSan).map(t => `/cam-nang/${t.slug}`),

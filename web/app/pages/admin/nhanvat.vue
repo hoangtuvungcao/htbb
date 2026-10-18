@@ -9,7 +9,7 @@
  * phẩm, và người xem tưởng trang không hề có. Bốn bảng Đang mặc / Thời trang / Hành trang /
  * Rương nằm trong AdminNhanvatChiTiet (app/components/admin/nhanvat/ChiTiet.vue).
  */
-import type { TableColumn } from '@nuxt/ui'
+import type { CotBang } from '~/components/admin/Bang.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
@@ -23,6 +23,7 @@ const api = useAdminApi()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+const me = useAdminMe()
 
 const idXem = computed(() => {
   const n = Number(route.query.id)
@@ -89,22 +90,23 @@ function nhan(nv: DongNV) {
   return { label: 'Bình thường', color: 'success' as const }
 }
 
-const columns: TableColumn<DongNV>[] = [
-  { accessorKey: 'charname', header: 'Pokémon' },
-  { accessorKey: 'lastLv', header: 'Cấp', meta: { class: { th: 'text-right', td: 'text-right' } } },
-  { accessorKey: 'luong', header: 'Lượng', meta: { class: { th: 'text-right', td: 'text-right' } } },
-  { accessorKey: 'gold', header: 'Xu', meta: { class: { th: 'text-right', td: 'text-right' } } },
-  { accessorKey: 'lastLog', header: 'Vào lần cuối' },
-  { id: 'trang_thai', header: 'Trạng thái' },
-  { id: 'thao_tac', header: '' },
-]
+const duocKhoa = computed(() => me.duoc('/api/admin/nhanvat/1/khoa'))
+const columns = computed<CotBang[]>(() => [
+  { key: 'charname', label: 'Pokémon', sort: true },
+  { key: 'lastLv', label: 'Cấp', sort: true, so: true },
+  { key: 'luong', label: 'Lượng', sort: true, so: true, anMobile: true },
+  { key: 'gold', label: 'Xu', sort: true, so: true, anMobile: true },
+  { key: 'lastLog', label: 'Vào lần cuối', sort: true, anMobile: true },
+  { key: 'trang_thai', label: 'Trạng thái', giaTri: (r: DongNV) => nhan(r).label },
+  { key: 'thao_tac', label: '' },
+])
 </script>
 
 <template>
   <AdminPage title="Pokémon người chơi">
     <template #right>
       <form class="flex items-center gap-2" @submit.prevent="timKiem">
-        <UInput v-model="oTim" icon="i-lucide-search" placeholder="Tên Pokémon hoặc ID tài khoản" class="w-56 sm:w-72" />
+        <UInput v-model="oTim" icon="i-lucide-search" placeholder="Tên Pokémon hoặc ID tài khoản" maxlength="64" class="w-40 sm:w-72" />
         <UButton type="submit" label="Tìm" />
       </form>
     </template>
@@ -113,61 +115,59 @@ const columns: TableColumn<DongNV>[] = [
 
     <template v-else>
       <p class="text-sm text-muted">
-        Khoá / mở khoá từng nhân vật. Muốn chặn cả tài khoản thì làm ở trang
+        Khoá / mở khoá từng Pokémon. Muốn chặn cả tài khoản thì làm ở trang
         <NuxtLink to="/admin/taikhoan" class="text-primary hover:underline">Tài khoản</NuxtLink>.
-        Tìm theo tên nhân vật, hoặc gõ số để tra theo ID tài khoản.
+        Tìm theo tên Pokémon, hoặc gõ số để tra theo ID tài khoản.
       </p>
 
-      <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="`Lỗi đọc dữ liệu: ${loiApi(error)}`" />
-
-      <UCard :ui="{ body: 'p-0 sm:p-0' }">
+      <UCard :ui="{ body: 'p-3 sm:p-4' }">
         <template #header>
           <div class="space-y-1">
             <h2 class="font-semibold text-highlighted">
               {{ tim === '' ? 'Danh sách Pokémon' : `Kết quả cho “${tim}”` }}
             </h2>
             <p class="text-sm text-muted">
-              Bấm <strong class="text-highlighted">tên nhân vật</strong> để mở trang chi tiết — ở đó mới có
-              <strong class="text-highlighted">đồ đang mặc, thời trang, hành trang và rương</strong> của nhân vật đó.
-              Bảng này chỉ liệt kê, không kèm vật phẩm.
+              Bấm <strong class="text-highlighted">tên Pokémon</strong> để mở trang quản lý (cấp độ, đồ đang mặc, hành trang, rương, lệnh).
+              <strong class="text-highlighted">Hồ sơ</strong> mở Trung tâm người chơi (tài khoản, IP, Pokédex, nhiệm vụ, lịch sử).
             </p>
           </div>
         </template>
 
-        <UTable :data="data?.ds ?? []" :columns="columns" :loading="status === 'pending'" empty="Không có Pokémon nào khớp.">
-          <template #charname-cell="{ row }">
-            <NuxtLink :to="{ query: { ...(tim ? { q: tim } : {}), id: row.original.id } }" class="font-semibold text-primary hover:underline">
-              {{ row.original.charname }}
-            </NuxtLink>
-            <div class="text-xs text-muted">
-              {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }} · tài khoản #{{ row.original.userId }}
+        <AdminBang :rows="data?.ds" :cot="columns" :dang-tai="status === 'pending'" :loi="error" ten-csv="nhan-vat" row-key="id"
+          :moi-trang="50" rong-tieu-de="Không có Pokémon nào khớp" @thu-lai="refresh">
+          <template #cell-charname="{ row }">
+            <span class="flex items-center gap-2">
+              <PokeAvatar :dex="dexHienTai(row.class, row.lastLv, row.dex)" class="size-7" />
+              <span>
+                <NuxtLink :to="{ query: { ...(tim ? { q: tim } : {}), id: row.id } }" class="font-semibold text-primary hover:underline">
+                  {{ row.charname }}
+                </NuxtLink>
+                <span class="block text-xs text-muted">
+                  {{ speciesName(row.class, row.lastLv, row.dex) }} · tài khoản #{{ row.userId }}
+                </span>
+              </span>
+            </span>
+          </template>
+          <template #cell-lastLog="{ row }">
+            <span class="whitespace-nowrap text-xs text-muted">{{ row.lastLog }}</span>
+          </template>
+          <template #cell-trang_thai="{ row }">
+            <UBadge :color="nhan(row).color" variant="subtle" :label="nhan(row).label" />
+          </template>
+          <template #cell-thao_tac="{ row }">
+            <div class="flex justify-end gap-1">
+              <UButton size="xs" color="primary" variant="soft" icon="i-lucide-contact" label="Hồ sơ" :to="{ path: '/admin/nguoi-choi', query: { u: `#${row.userId}`, nv: String(row.id) } }" />
+              <UButton
+                v-if="duocKhoa"
+                size="xs"
+                :color="Number(row.ban) !== 0 ? 'primary' : 'error'"
+                :variant="Number(row.ban) !== 0 ? 'solid' : 'soft'"
+                :label="Number(row.ban) !== 0 ? 'Mở khoá' : 'Khoá'"
+                @click="hoiKhoa(row)"
+              />
             </div>
           </template>
-          <template #lastLv-cell="{ row }">
-            <span class="tabular-nums">{{ row.original.lastLv }}</span>
-          </template>
-          <template #luong-cell="{ row }">
-            <span class="tabular-nums">{{ so(row.original.luong) }}</span>
-          </template>
-          <template #gold-cell="{ row }">
-            <span class="tabular-nums">{{ so(row.original.gold) }}</span>
-          </template>
-          <template #lastLog-cell="{ row }">
-            <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lastLog }}</span>
-          </template>
-          <template #trang_thai-cell="{ row }">
-            <UBadge :color="nhan(row.original).color" variant="subtle" :label="nhan(row.original).label" />
-          </template>
-          <template #thao_tac-cell="{ row }">
-            <UButton
-              size="xs"
-              :color="Number(row.original.ban) !== 0 ? 'primary' : 'error'"
-              :variant="Number(row.original.ban) !== 0 ? 'solid' : 'soft'"
-              :label="Number(row.original.ban) !== 0 ? 'Mở khoá' : 'Khoá'"
-              @click="hoiKhoa(row.original)"
-            />
-          </template>
-        </UTable>
+        </AdminBang>
 
         <template #footer>
           <div v-if="tim === ''" class="flex items-center justify-between gap-3 text-sm text-muted">
@@ -186,7 +186,7 @@ const columns: TableColumn<DongNV>[] = [
 
     <AdminNhanvatXacNhan
       v-model:open="xn.open"
-      :title="xn.nv ? `${Number(xn.nv.ban) !== 0 ? 'Mở khoá' : 'Khoá'} nhân vật ${xn.nv.charname}?` : ''"
+      :title="xn.nv ? `${Number(xn.nv.ban) !== 0 ? 'Mở khoá' : 'Khoá'} Pokémon ${xn.nv.charname}?` : ''"
       :nhan-nut="xn.nv && Number(xn.nv.ban) !== 0 ? 'Mở khoá' : 'Khoá'"
       :mau="xn.nv && Number(xn.nv.ban) !== 0 ? 'primary' : 'error'"
       :dang-chay="dangKhoa"

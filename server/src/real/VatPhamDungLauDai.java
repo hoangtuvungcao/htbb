@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * exp_phut + tru_nang_luong_phut (Keo Hiem, 2/tuan); tu_dung:<hp50|mp20|trang_thai|bong|doc|te|ngu|dong_bang>
  * (qua mong: dung tay hoac TU DUNG khi du dieu kien, LauDaiJob); o:phien_da (do giu: bam dung = mang/thao,
  * hieu ung exp / chi_mang / hut / hoi_hp_3s / don_thuong / song_sot / chan_tien_hoa); bua:<k1-k2>
- * (bua bao ho that, NangCapLauDaiGame). toc_danh / chinh_xac / toc_danh_ngau_nhien: CHUA noi vao
+ * (bua bao ho that, NangCapLauDaiGame); nhom 'hop' + mo_hop:<id> (hop dot kich 1050/1051 -> NoiDungLauDai.moHop). toc_danh / chinh_xac / toc_danh_ngau_nhien: CHUA noi vao
  * cong thuc (ghi nhan buff, chua co tac dung) - xem KE_HOACH_LAU_DAI_GD2.md "Con lai".
  */
 public final class VatPhamDungLauDai {
@@ -75,6 +75,9 @@ public final class VatPhamDungLauDai {
         if (!LauDai.bat() || p == null || item == null || item.getTemplate() == null) {
             return false;
         }
+        if (TangTocGame.dung(p, item)) {
+            return true; // ve EXP / bua the luc / uy thac (tran chung TangToc)
+        }
         final Object[] d = BANG.get(Integer.valueOf(item.getTemplate().id));
         if (d == null) {
             return false;
@@ -89,6 +92,10 @@ public final class VatPhamDungLauDai {
             bao(p, "Bùa bảo hộ tự dùng khi nâng cấp thất bại (đặt ngọc bảo hiểm hoặc chọn bảo hộ).");
             return true;
         }
+        if ("hop".equals(nhom)) {
+            moHop(p, item);
+            return true;
+        }
         if (hu.containsKey("o")) {
             doiDoGiu(p, item);
             return true;
@@ -99,14 +106,34 @@ public final class VatPhamDungLauDai {
             return true;
         }
         if (hu.containsKey("exp_phut") && !keoHiemDuoc(p)) {
-            bao(p, "Kẹo Hiếm: tối đa 2 viên mỗi tuần.");
+            bao(p, "Kẹo hiếm: tối đa 2 viên mỗi tuần.");
             return true;
+        }
+        if (hu.containsKey("exp_phut")) {
+            final String tg = TangTocGame.kiemKeo(p); // chung tran diem tang toc ngay/tuan, khong dung o cap toi da
+            if (tg != null) {
+                bao(p, tg);
+                return true;
+            }
+        }
+        if (hu.containsKey("hoi_sinh")) {
+            final String hs = HoiSinhGame.chanDungTuTui(p); // cam / cho / hoi chieu cua co che hoi sinh
+            if (hs != null) {
+                bao(p, hs);
+                return true;
+            }
         }
         // tru vat pham TRUOC (CODING_CONVENTION muc 5)
         if (!p.iItems.remove(item)) {
             return true;
         }
         apDung(p, hu);
+        if (hu.containsKey("hoi_sinh")) {
+            HoiSinhGame.daHoiSinh(p);
+        }
+        if (hu.containsKey("exp_phut")) {
+            TangTocGame.ghiKeo(p);
+        }
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
         try {
             Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "dung " + d[0] + " dbid" + item.dbid, "vatphamlaudai");
@@ -126,7 +153,7 @@ public final class VatPhamDungLauDai {
         }
         if (hu.containsKey("go") && !hu.containsKey("hp")) {
             final TrangThaiPokemon t = TrangThaiGame.lay(p);
-            if (t == null || !t.dangCo(System.currentTimeMillis())) {
+            if (t == null || !t.dangCo(com.htbb.pokemon.DongHo.bay())) {
                 return "Bạn không bị trạng thái nào.";
             }
         }
@@ -135,7 +162,7 @@ public final class VatPhamDungLauDai {
 
     /** Ap mot chuoi hieu ung (vat pham da tru). */
     static void apDung(final Char p, final HashMap<String, String> hu) {
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         if (hu.containsKey("hoi_sinh")) {
             p.hp = Math.max(1, p.maxhp * so(hu, "hoi_sinh", 30) / 100);
             try {
@@ -172,6 +199,32 @@ public final class VatPhamDungLauDai {
         }
     }
 
+    /** Hop dot kich (1050/1051, nhom 'hop'): tru hop TRUOC roi mo theo data_noi_dung_roi nguon mo_hop. */
+    static void moHop(final Char p, final Item item) {
+        if (p.countSlotInventory() < 2) {
+            bao(p, "Hành trang cần 2 ô trống để mở hộp.");
+            return;
+        }
+        if (!p.iItems.remove(item)) {
+            return;
+        }
+        if (item.dbid != 0) {
+            try {
+                Database.instance.deleteItem(item.dbid);
+            } catch (final Exception ignored) {
+            }
+        }
+        final String kq = NoiDungLauDai.moHop(p, item.getTemplate().id);
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+        p.sendMessage(MessageCreator.createCharGemItem(p));
+        try {
+            Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "mo hop " + item.getTemplate().id + " dbid" + item.dbid
+                    + ": " + kq, "vatphamlaudai");
+        } catch (final Exception ignored) {
+        }
+        bao(p, kq.isEmpty() ? "Hộp trống." : "Mở " + item.getTemplate().name + ": " + kq + ".");
+    }
+
     static void guiHp(final Char p) {
         try {
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
@@ -192,7 +245,7 @@ public final class VatPhamDungLauDai {
             return false;
         }
         synchronized (h) {
-            final int tuan = NhiemVuLauDai.tuan(System.currentTimeMillis());
+            final int tuan = NhiemVuLauDai.tuan(com.htbb.pokemon.DongHo.bay());
             if (h.khTuan != tuan) {
                 h.khTuan = tuan;
                 h.khSo = 0;
@@ -209,7 +262,7 @@ public final class VatPhamDungLauDai {
         }
         synchronized (h) {
             h.khSo++;
-            com.htbb.pokemon.NangLuong.ghiNhan(h, System.currentTimeMillis(), ThongSoLauDai.NANG_LUONG_PHUT_NGAY,
+            com.htbb.pokemon.NangLuong.ghiNhan(h, com.htbb.pokemon.DongHo.bay(), ThongSoLauDai.NANG_LUONG_PHUT_NGAY,
                     ThongSoLauDai.NANG_LUONG_PHUT_TICH_TOI_DA);
             h.nlMsDung += truPhut * 60000L;
             h.ban = true;
@@ -241,7 +294,7 @@ public final class VatPhamDungLauDai {
         }
         synchronized (m) {
             final long[] v = m.get(k);
-            return v != null && v[0] > System.currentTimeMillis() ? (int) v[1] : 0;
+            return v != null && v[0] > com.htbb.pokemon.DongHo.bay() ? (int) v[1] : 0;
         }
     }
 
@@ -312,12 +365,13 @@ public final class VatPhamDungLauDai {
         int d = ahp;
         final int thu = buff(c, "thu");
         if (thu > 0) {
-            d = d * (100 - Math.min(80, thu)) / 100;
+            d = ChiSoTrangBiGame.bat() ? ChiSoTrangBiGame.giam(c, d, Math.min(500, thu * 10)) // tran 50% + san
+                    : d * (100 - Math.min(80, thu)) / 100;
         }
         if (d >= c.hp && c.hp > 1) {
             final int sot = doGiuSo(c, "song_sot");
             if (sot > 0 && buff(c, "hoi_song_sot") == 0 && Map.random(100) < sot) {
-                datBuff(c, "hoi_song_sot", 1, System.currentTimeMillis() + doGiuSo(c, "hoi") * 1000L);
+                datBuff(c, "hoi_song_sot", 1, com.htbb.pokemon.DongHo.bay() + doGiuSo(c, "hoi") * 1000L);
                 d = c.hp - 1;
             }
         }
@@ -332,6 +386,9 @@ public final class VatPhamDungLauDai {
 
     /** Sau moi don trung (GoiLauDaiGame.don): Chuong vo so hut %. */
     public static void sauDonDanh(final Char p, final int dam) {
+        if (ChiSoTrangBiGame.bat()) {
+            return; // da gop vao hut HP chung (ChiSoTrangBiGame.hutSauDon, tran 10% / PvP 5%)
+        }
         final int hut = doGiuSo(p, "hut");
         if (hut > 0 && dam > 0 && p.hp > 0 && p.hp < p.maxhp) {
             p.hp = Math.min(p.maxhp, p.hp + Math.max(1, dam * hut / 100));
@@ -371,6 +428,7 @@ public final class VatPhamDungLauDai {
                 continue;
             }
             try {
+                TangTocGame.nhip(p); // EXP uy thac luyen tap (tinh luc dang nhap)
                 final int hoi = doGiuSo(p, "hoi_hp_3s");
                 if (hoi > 0 && p.hp < p.maxhp) {
                     p.hp = Math.min(p.maxhp, p.hp + Math.max(1, p.maxhp * hoi / 100));
@@ -385,7 +443,7 @@ public final class VatPhamDungLauDai {
     /** Qua mong trong tui tu dung khi du dieu kien (moi lan toi da 1 qua). */
     static void tuDungQua(final Char p) {
         final TrangThaiPokemon t = TrangThaiGame.lay(p);
-        final long bay = System.currentTimeMillis();
+        final long bay = com.htbb.pokemon.DongHo.bay();
         final int tt = t != null && t.dangCo(bay) ? t.loai : 0;
         for (final Entry<Integer, Object[]> e : BANG.entrySet()) {
             final HashMap<String, String> hu = hieuUng((String) e.getValue()[2]);

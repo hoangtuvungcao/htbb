@@ -13,7 +13,7 @@ Tổng quan sẵn sàng production: [SAN_SANG_PRODUCTION.md](SAN_SANG_PRODUCTION
   (`Database.laTenDanhRieng`). Muốn tạo nhân vật GM mới: chủ server bật tạm `sv.choPhepTaoTenGM=1`,
   tạo xong tắt ngay.
 - Mọi lệnh chat GM được ghi vào `AdminChat.txt`, mọi lệnh gói 47 vào `AdminChat_lenh47.txt`
-  (thư mục `/opt/kpah`, xoay vòng bởi logrotate). **Mọi thứ bạn gõ đều có dấu vết.**
+  (thư mục `/opt/htbb`, xoay vòng bởi logrotate). **Mọi thứ bạn gõ đều có dấu vết.**
 
 ## 2. Lệnh được dùng trong open test
 
@@ -70,6 +70,6 @@ Game **chưa có** nút báo lỗi trong client. Trong open test dùng:
 ## 7. Bảo trì
 
 - Báo trước trên kênh cộng đồng ≥ 30 phút (trừ sự cố).
-- Chặn đăng nhập mới: tạo `/opt/kpah/bao_tri.txt` (dòng đầu = câu báo người chơi, dòng
+- Chặn đăng nhập mới: tạo `/opt/htbb/server/bao_tri.txt` (dòng đầu = câu báo người chơi, dòng
   `cho: tentaikhoan1 tentaikhoan2` = tài khoản GM vẫn vào được). Xoá tệp = mở lại.
-- Tắt hẳn: `sudo systemctl stop kpah-game` (shutdown hook lưu toàn bộ nhân vật, chờ tối đa 180 s).
+- Tắt hẳn: `sudo systemctl stop htbb-game` (shutdown hook lưu toàn bộ nhân vật, chờ tối đa 180 s).

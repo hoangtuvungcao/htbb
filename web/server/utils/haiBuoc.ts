@@ -29,7 +29,7 @@
  *   - Tài khoản ĐÃ ghi danh: luôn bị hỏi mã, không có cách bỏ qua.
  *   - Tài khoản CHƯA ghi danh: mặc định vẫn vào được (kèm cảnh báo đỏ), để lần
  *     cập nhật đầu tiên không khoá bạn ra khỏi chính trang của mình. Ghi danh
- *     xong cho cả đội thì đặt biến môi trường KPAH_ADMIN_2FA_BAT_BUOC=1.
+ *     xong cho cả đội thì đặt biến môi trường HTBB_ADMIN_2FA_BAT_BUOC=1.
  *     Từ đó tài khoản nào chưa có
  *     khoá là KHÔNG vào được, kể cả đúng mật khẩu. Đừng dừng ở bước ghi danh.
  *
@@ -66,7 +66,7 @@ export const HB_LECH_BUOC = 1
 /** Số mã dự phòng sinh ra lúc ghi danh. */
 export const HB_SO_MA_DU_PHONG = 8
 
-/** Tên bảng lưu khoá (kpah_db). */
+/** Tên bảng lưu khoá (htbb_db). */
 export const HB_BANG = 'web_admin_2fa'
 
 // ===========================================================================
@@ -484,7 +484,7 @@ export function hbDemMaDuPhong(chuoiBam: string | null | undefined): number {
 }
 
 // ===========================================================================
-//  LƯU TRỮ (bảng kpah_db.web_admin_2fa) — chỉ chạy trong server Nitro
+//  LƯU TRỮ (bảng htbb_db.web_admin_2fa) — chỉ chạy trong server Nitro
 // ===========================================================================
 
 export interface HbDong {
@@ -543,7 +543,7 @@ export async function hbDaGhiDanh(tenTaiKhoan: string): Promise<boolean> {
   return d !== null && Number(d.kich_hoat) === 1
 }
 
-/** Có bắt buộc MỌI tài khoản admin phải có 2FA không (KPAH_ADMIN_2FA_BAT_BUOC). */
+/** Có bắt buộc MỌI tài khoản admin phải có 2FA không (HTBB_ADMIN_2FA_BAT_BUOC). */
 export function hbBatBuocTatCa(): boolean {
   return useHtbbConfig().admin.batBuoc2fa
 }

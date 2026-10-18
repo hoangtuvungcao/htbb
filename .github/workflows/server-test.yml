@@ -23,7 +23,27 @@ name: Kiem thu
 on:
   push:
     branches: ['**']
+    paths:
+      - 'server/**'
+      - 'sql/**'
+      - 'docs/**'
+      - 'tools/**'
+      - 'vps/**'
+      - 'client_pc_ios/ClientUnity/**'
+      - 'web/shared/data/**'
+      - 'web/server/utils/**'
+      - '.github/workflows/server-test.yml'
   pull_request:
+    paths:
+      - 'server/**'
+      - 'sql/**'
+      - 'docs/**'
+      - 'tools/**'
+      - 'vps/**'
+      - 'client_pc_ios/ClientUnity/**'
+      - 'web/shared/data/**'
+      - 'web/server/utils/**'
+      - '.github/workflows/server-test.yml'
   workflow_dispatch:
 
 # Push lien tiep tren cung nhanh thi huy lan cu, khoi xep hang vo ich.
@@ -35,6 +55,9 @@ jobs:
   kiem-thu:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: server   # monorepo: test chay o server/
     steps:
       - uses: actions/checkout@v4
 
@@ -48,7 +71,7 @@ jobs:
       - name: Bien dich src/ va test/
         run: |
           set -euo pipefail
-          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/NQSH_5h.jar"
+          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
           mkdir -p build/ci-classes
           find src test -name '*.java' > build/ci-sources.txt
           echo "So file .java: $(wc -l < build/ci-sources.txt)"
@@ -59,6 +82,6 @@ jobs:
       - name: Chay bo kiem thu
         run: |
           set -euo pipefail
-          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/NQSH_5h.jar"
+          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
           # Kiem.tongKet() tra ve 1 khi co phep hong, nen ma thoat cua java la ket luan.
           java -cp "build/ci-classes:$LIBCP" Kiem

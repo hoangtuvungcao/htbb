@@ -1,1058 +1,610 @@
 package server;
 
-import javax.swing.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import javax.swing.table.DefaultTableModel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.HashSet;
-import java.util.Set;
-import io.Message;
-import io.SessionManager;
-import real.AdminHandler;
-import real.CharManager;
-import real.MessageCreator;
-import real.cmd.LoginHandler;
-import real.Char;
-import data.Database;
-import server.Panel.*;
+import server.quantri.AnhPokemon;
+import server.quantri.DinhDang;
+import server.quantri.DuLieuTrucTiep;
+import server.quantri.GiaoDien;
+import server.quantri.HopThoai;
+import server.quantri.KiemToanQuanTri;
+import server.quantri.ThanhPhan;
+import server.quantri.ThaoTacMayChu;
+import server.quantri.Trang;
+import server.quantri.TrangCauHinh;
+import server.quantri.TrangDichVu;
+import server.quantri.TrangKinhTe;
+import server.quantri.TrangNguoiChoi;
+import server.quantri.TrangNhatKy;
+import server.quantri.TrangSuKien;
+import server.quantri.TrangTongQuan;
+import server.quantri.TrangVanHanh;
 
+import static server.quantri.GiaoDien.s;
 
-
+/**
+ * BANG DIEU KHIEN MAY CHU (cua so Swing) - mo khi server chay co man hinh (TeamServer.run, kiem headless).
+ *
+ * Giao dien Pokemon (dau trang Poke Ball, thanh ben co icon PMD, sang/toi, HiDPI) chia 8 trang:
+ *   Tong quan · Nguoi choi · Su kien · Kinh te · Van hanh · Cau hinh · Dich vu · Nhat ky
+ * (server.quantri.Trang*). Nghiep vu nam o server.quantri.ThaoTacMayChu - giu nguyen moi chuc nang cua
+ * ban 12 nut cu (bao tri dem nguoc, dung dang nhap, don bo nho, thong bao 3 kieu, kick, khoa/mo khoa,
+ * quan ly gem, danh sach online + menu "Chinh sua" cua server.Panel.ButtonEditor, doi mat khau, giam level).
+ *
+ * KHONG lam cham game: so lieu lay tren MOT luong nen do uu tien thap (1 lan/giay), trang chi cap nhat khi
+ * dang hien va cua so khong thu nho, moi thao tac CSDL / hang loat chay trong SwingWorker, moi thao tac thay
+ * doi trang thai deu hoi xac nhan va ghi kiem toan (AdminPanel_kiem_toan.txt + Nhat.kiemToan "ADMIN").
+ */
 public class AdminPanel extends JFrame {
-    private JPanel mainPanel;
-    
-    // Server status components
-    private JLabel statusLabel;
-    private JLabel playersLabel;
-    private JLabel memoryLabel;
-    private JLabel uptimeLabel;
-    private JLabel portLabel;
-    
-    // Control buttons
-    private JButton maintenanceButton;
-    private JButton stopLoginButton;
-    private JButton cleanMemoryButton;
-    private JButton announceButton;
-    private JButton updateButton;
-    private JButton lockAccountButton;
-    private JButton banAccountButton;
-    private JButton unbanAccountButton;
-    private JButton gemManagerButton;
-    private JButton listOnlineButton;
-    private JButton changePasswordButton;
-    private JButton reduceLevelButton;
-    
-    // Log components
-    private JTextArea logArea;
-    private JScrollPane logScrollPane;
-    
-    private Timer maintenanceTimer;
-    private Timer statsUpdateTimer;
-    private int maintenanceMinutes = 5;
 
-    private static final Set<String> NPC_NAMES = new HashSet<>();
-    static {
-        String[] npcNames = {
-            "phat lo", "tho ren than bi", "tong quan", "thohopthanhsocap", "thohopthanhcaocap", "thay ngu hanh",
-            "dau truong", "hoa tieu", "doi tieu", "tong tieu dau", "chuyenlanhtho", "xa phu", "ta pho thong",
-            "ta thong linh", "huu thong linh", "tran thong linh", "hao duyen", "tho san", "le quan", "ky nang bang",
-            "nguyet lao", "market", "dich tram", "nguyetlao", "quanly", "thoren", "trangbi", "cuahang", "nhaboss",
-            "nhapet", "nhathu", "nhacaythan", "Xaphu", "lequan","admin"
-        };
-        for (String name : npcNames) NPC_NAMES.add(name.toLowerCase());
-    }
+    private final DuLieuTrucTiep du = new DuLieuTrucTiep();
+    private final List<Trang> trang = new ArrayList<Trang>();
+    private final JPanel than = new JPanel(new CardLayout());
+    private ThanhBen thanhBen;
+    private final DauTrang dauTrang;
+    private final JLabel thongBaoNhanh = new JLabel(" ");
+    private Timer nhip;
+    private Trang hien;
+    private long lanMoCam;
+    private long lanKinhTe;
+    private TrangNhatKy trangNhatKy;
 
     public AdminPanel() {
-        setTitle("Quản Lý Máy Chủ");
-        setSize(900, 500);
+        super("Quản Lý Máy Chủ · " + tenGame());
+        GiaoDien.khoiTao();
+        try {
+            GiaoDien.datToi(java.util.prefs.Preferences.userNodeForPackage(AdminPanel.class).getBoolean("toi", false));
+        } catch (final Throwable ignored) {
+        }
+        dauTrang = new DauTrang();
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        try {
+            setIconImage(AnhPokemon.pokeBall(64));
+        } catch (final Throwable ignored) {
+        }
+        final JPanel goc = noiDung(this);
+        setContentPane(goc);
+        GiaoDien.toCay(goc);
+        final Dimension man = kichManHinh();
+        final Dimension ep = kichThuocEp();
+        if (ep != null) {
+            setSize(ep);
+        } else {
+            setSize(Math.min(s(1440), man.width - 40), Math.min(s(900), man.height - 60));
+        }
+        setMinimumSize(new Dimension(Math.min(s(960), man.width - 40), Math.min(s(620), man.height - 60)));
         setLocationRelativeTo(null);
-        
-        initComponents();
-        layoutComponents();
-        initEventHandlers();
-        
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                int confirm = JOptionPane.showConfirmDialog(
-                    AdminPanel.this,
-                    "Bạn có chắc chắn muốn đóng bảng điều khiển?",
-                    "Xác Nhận",
-                    JOptionPane.YES_NO_OPTION
-                );
-                if (confirm == JOptionPane.YES_OPTION) {
+            public void windowClosing(final WindowEvent e) {
+                if (HopThoai.xacNhan(AdminPanel.this, "Đóng bảng điều khiển", "Đóng cửa sổ quản lý? Máy chủ game vẫn chạy tiếp"
+                        + " (tắt máy chủ ở trang Vận hành).", "Đóng cửa sổ")) {
+                    nhip.stop();
+                    du.dung();
                     dispose();
                 }
             }
         });
+        HopThoai.baoNhanh = this::baoNhanh;
+        KiemToanQuanTri.ghi("MO_BANG_DIEU_KHIEN", "", "cong=" + TeamServer.PORT + " font=" + GiaoDien.tenFont() + " tiLe=" + GiaoDien.tiLe);
+        du.batDau();
+        nhip = new Timer(1000, e -> moiGiay());
+        nhip.setCoalesce(true);
+        nhip.start();
+        chon(0);
     }
 
-    private void initComponents() {
+    /** -Dhtbb.panel.kichThuoc=1280x720 (kiem thu bo cuc / man hinh nho). */
+    static Dimension kichThuocEp() {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
+            final String v = System.getProperty("htbb.panel.kichThuoc", "").trim();
+            if (v.matches("\\d+x\\d+")) {
+                final String[] a = v.split("x");
+                return new Dimension(Integer.parseInt(a[0]), Integer.parseInt(a[1]));
+            }
+        } catch (final Throwable ignored) {
         }
-        
-        // Main panel
-        mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(new EmptyBorder(12, 12, 12, 12));
-        
-        // Server status components
-        statusLabel = createStatusLabel("Trạng Thái: Đang chạy");
-        playersLabel = createStatusLabel("Người chơi: 0/" + TeamServer.LIMIT_CCU);
-        memoryLabel = createStatusLabel("Bộ Nhớ: 0MB");
-        uptimeLabel = createStatusLabel("Thời Gian: 00:00:00");
-        portLabel = createStatusLabel("Cổng: " + TeamServer.PORT);
-        
-        // Control buttons
-        maintenanceButton = createButton("Bảo Trì");
-        stopLoginButton = createButton("Dừng Đăng Nhập");
-        cleanMemoryButton = createButton("Dọn Bộ Nhớ");
-        announceButton = createButton("Thông Báo");
-        updateButton = createButton("Cập Nhật");
-        lockAccountButton = createButton("Kick Player");
-        banAccountButton = createButton("Khóa Vĩnh Viễn");
-        unbanAccountButton = createButton("Mở Khóa");
-        gemManagerButton = createButton("Quản Lý Gem");
-        listOnlineButton = createButton("Member Online");
-        changePasswordButton = createButton("Đổi mật khẩu");
-        reduceLevelButton = createButton("Giảm Level");
-        
-        // Log area
-        logArea = new JTextArea();
-        logArea.setEditable(false);
-        logArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        logScrollPane = new JScrollPane(logArea);
-        
-        // Do an initial update of the status
-        updateServerStatus();
-        updateMemoryStatus();
-
-        // Thêm tooltip cho các nút
-        setButtonTooltips();
-        
-         
+        return null;
     }
 
-    private void layoutComponents() {
-        // Status panel
-        JPanel statusPanel = new JPanel(new GridLayout(5, 1, 0, 2));
-        statusPanel.setBorder(createGroupBorder("Thông Tin Máy Chủ"));
-        statusPanel.add(statusLabel);
-        statusPanel.add(playersLabel);
-        statusPanel.add(memoryLabel);
-        statusPanel.add(uptimeLabel);
-        statusPanel.add(portLabel);
-
-        // Log panel
-        JPanel logPanel = new JPanel(new BorderLayout());
-        logPanel.setBorder(createGroupBorder("Nhật Ký Hoạt Động"));
-        logPanel.add(logScrollPane, BorderLayout.CENTER);
-
-        // Đặt chiều ngang cho statusPanel và logPanel bằng serverControlPanel
-        Dimension panelWidth = new Dimension(250, 120);
-        statusPanel.setPreferredSize(panelWidth);
-        logPanel.setPreferredSize(panelWidth);
-
-        // Panel ngang chứa status và log
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        topPanel.add(statusPanel);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(logPanel);
-
-        JPanel serverPanel = createButtonPanel("Quản Lý Server", maintenanceButton, stopLoginButton, cleanMemoryButton, announceButton, updateButton, listOnlineButton);
-        JPanel accountPanel = createButtonPanel("Tài Khoản", banAccountButton, unbanAccountButton, lockAccountButton, changePasswordButton);
-        JPanel playerPanel = createButtonPanel("Player", listOnlineButton, gemManagerButton, reduceLevelButton);
-
-        // Đặt cùng chiều cao cho các panel
-        Dimension panelSize = new Dimension(220, 220); // hoặc cao hơn nếu cần
-        serverPanel.setPreferredSize(panelSize);
-        accountPanel.setPreferredSize(panelSize);
-        playerPanel.setPreferredSize(panelSize);
-
-        // Đảm bảo các panel căn top khi dùng BoxLayout
-        serverPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-        accountPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-        playerPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-
-        // ... existing code ...
-        JPanel controlsPanel = new JPanel();
-        controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.X_AXIS));
-        controlsPanel.add(serverPanel);
-        controlsPanel.add(Box.createHorizontalStrut(10));
-        controlsPanel.add(accountPanel);
-        controlsPanel.add(Box.createHorizontalStrut(10));
-controlsPanel.add(playerPanel);
-
-        // Thêm đoạn này:
-        JPanel controlsWrapper = new JPanel(new BorderLayout());
-        controlsWrapper.add(controlsPanel, BorderLayout.NORTH);
-
-        // Main layout
-        mainPanel.removeAll();
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(controlsWrapper, BorderLayout.CENTER);
-
-        setContentPane(mainPanel);
+    /**
+     * Co mo bang dieu khien khong: tat bang -Dhtbb.panel=0 hoac bien moi truong HTBB_PANEL=0 (vd may chu thu chay
+     * tren may co man hinh nhung khong muon cua so hien len desktop). Mac dinh: Windows mo khi co man hinh;
+     * Linux/macOS chi mo khi bat ro (-Dhtbb.panel=1 / HTBB_PANEL=1, vd chay_novadb/chay_lap.sh) de may chu
+     * thu (bot, kiem thu) khong bat cua so len desktop cua nguoi dung.
+     */
+    public static boolean choPhepMo() {
+        final String v = System.getProperty("htbb.panel", System.getenv("HTBB_PANEL"));
+        if (v == null) {
+            return System.getProperty("os.name", "").toLowerCase().startsWith("windows");
+        }
+        final String t = v.trim().toLowerCase();
+        return !(t.equals("0") || t.equals("tat") || t.equals("off") || t.equals("false"));
     }
 
-    private void initEventHandlers() {
-        maintenanceButton.addActionListener(e -> {
-            if (!AdminHandler.isStopServer) {
-                startMaintenanceMode();
-            } else {
-                cancelMaintenanceMode();
-            }
-        });
-
-        stopLoginButton.addActionListener(e -> {
-            boolean stopLogin = !LoginHandler.stopLogin;
-            LoginHandler.stopLogin = stopLogin;
-            stopLoginButton.setText(stopLogin ? "Cho Phép Đăng Nhập" : "Dừng Đăng Nhập");
-            String message = stopLogin ? "Đã tắt đăng nhập mới" : "Đã bật đăng nhập mới";
-            addLog(message);
-        });
-
-        cleanMemoryButton.addActionListener(e -> {
-            System.gc();
-            updateMemoryStatus();
-            addLog("Đã dọn dẹp bộ nhớ");
-        });
-
-        announceButton.addActionListener(e -> {
-            JPanel panel = new JPanel(new BorderLayout(5, 5));
-            JTextArea messageArea = new JTextArea(4, 25);
-            JScrollPane scrollPane = new JScrollPane(messageArea);
-
-            JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JRadioButton topRadio = new JRadioButton("Thông Báo Trên");
-            JRadioButton middleRadio = new JRadioButton("Thông Báo Giữa");
-            JRadioButton bottomRadio = new JRadioButton("Thông Báo Dưới");
-            ButtonGroup group = new ButtonGroup();
-            group.add(topRadio);
-            group.add(middleRadio);
-            group.add(bottomRadio);
-            topRadio.setSelected(true);
-
-            radioPanel.add(topRadio);
-            radioPanel.add(middleRadio);
-            radioPanel.add(bottomRadio);
-
-            panel.add(new JLabel("Nhập nội dung thông báo:"), BorderLayout.NORTH);
-            panel.add(scrollPane, BorderLayout.CENTER);
-            panel.add(radioPanel, BorderLayout.SOUTH);
-
-            int result = JOptionPane.showConfirmDialog(
-                this,
-                panel,
-                "Gửi Thông Báo",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-            );
-
-            if (result == JOptionPane.OK_OPTION) {
-                String message = messageArea.getText().trim();
-                if (!message.isEmpty()) {
-                    try {
-                        Message msg;
-                        if (topRadio.isSelected()) {
-                            msg = MessageCreator.createthongbao(message);
-                        } else if (bottomRadio.isSelected()) {
-                            msg = MessageCreator.createServerAlertAutoOffMessage(message);
-                        } else {
-                            msg = MessageCreator.createServerAlertMessage(message, "");
-                        }
-                        for (int j = 0; j < CharManager.instance.vChars.size(); ++j) {
-                            CharManager.instance.vChars.elementAt(j).sendMessage(msg);
-                        }
-                        String type = topRadio.isSelected() ? "Thông Báo Trên" : (middleRadio.isSelected() ? "Thông Báo Giữa" : "Thông Báo Dưới");
-                        addLog("Đã gửi " + type + ": " + message);
-                    } catch (IOException ex) {
-                        addLog("Lỗi gửi thông báo: " + ex.getMessage());
-                    }
-                }
-            }
-        });
-
-        updateButton.addActionListener(e -> {
-            updateServerStatus();
-            updateMemoryStatus();
-            addLog("Đã cập nhật trạng thái máy chủ");
-        });
-
-        reduceLevelButton.addActionListener(e -> handleReduceLevel());
-        lockAccountButton.addActionListener(e -> handleKickPlayer());
-
-        banAccountButton.addActionListener(e -> handleBanAccount());
-
-        unbanAccountButton.addActionListener(e -> handleUnbanAccount());
-
-        gemManagerButton.addActionListener(e -> {
-            String[] options = {"Kiểm Tra Gem", "Thu Hồi Gem", "Hủy"};
-            int choice = JOptionPane.showOptionDialog(
-                this,
-                "Chọn chức năng quản lý gem:",
-                "Quản Lý Gem",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,
-                options[0]
-            );
-            if (choice == 0) {
-                // --- Đoạn code cũ của checkHackButton ---
-                // Tạo dialog nhập liệu
-                JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
-                
-                // Components
-                JTextField charNameField = new JTextField(15);
-                JTextField gemIdsField = new JTextField(15);
-                JTextField quantityField = new JTextField(15);
-                
-                // Radio buttons cho loại gem
-                JRadioButton unlockedGemButton = new JRadioButton("Gem Mở");
-                JRadioButton lockedGemButton = new JRadioButton("Gem Khóa");
-                JRadioButton bothGemButton = new JRadioButton("Cả Hai");
-                ButtonGroup gemTypeGroup = new ButtonGroup();
-                gemTypeGroup.add(unlockedGemButton);
-                gemTypeGroup.add(lockedGemButton);
-                gemTypeGroup.add(bothGemButton);
-                unlockedGemButton.setSelected(true);
-                
-                // Combobox cho điều kiện so sánh
-                JComboBox<String> compareBox = new JComboBox<>(new String[]{
-                    "Lớn hơn hoặc bằng", "Nhỏ hơn hoặc bằng", "Bằng"
-                });
-                
-                // Layout
-                inputPanel.add(new JLabel("Tên nhân vật:"));
-                inputPanel.add(charNameField);
-                inputPanel.add(new JLabel("ID gem (để trống = tất cả):"));
-                inputPanel.add(gemIdsField);
-                inputPanel.add(new JLabel("Số lượng:"));
-                inputPanel.add(quantityField);
-                
-                JPanel gemTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                gemTypePanel.add(unlockedGemButton);
-                gemTypePanel.add(lockedGemButton);
-                gemTypePanel.add(bothGemButton);
-                inputPanel.add(new JLabel("Loại gem:"));
-                inputPanel.add(gemTypePanel);
-                
-                inputPanel.add(new JLabel("Điều kiện:"));
-                inputPanel.add(compareBox);
-                
-                int option = JOptionPane.showConfirmDialog(
-                    this,
-                    inputPanel,
-                    "Kiểm Tra Gem",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-                );
-                
-                if (option == JOptionPane.OK_OPTION) {
-                    String charName = charNameField.getText().trim();
-                    String gemIds = gemIdsField.getText().trim();
-                    String quantity = quantityField.getText().trim();
-                    
-                    // Validate input
-                    if (quantity.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Vui lòng nhập số lượng cần kiểm tra!");
-                        return;
-                    }
-                    
-                    try {
-                        Integer.parseInt(quantity);
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(this, "Số lượng phải là số!");
-                        return;
-                    }
-                    
-                    // Xác định điều kiện so sánh
-                    String compareType = "";
-                    switch(compareBox.getSelectedIndex()) {
-                        case 0: compareType = "greater"; break;
-                        case 1: compareType = "less"; break;
-                        case 2: compareType = "equal"; break;
-                    }
-                    
-                    // Xác định loại gem cần kiểm tra
-                    String gemType = "";
-                    if (unlockedGemButton.isSelected()) gemType = "soluong";
-                    else if (lockedGemButton.isSelected()) gemType = "slock";
-                    else gemType = "both";
-                    
-                    try {
-                        Database.checkDetailGems(gemIds, quantity, compareType, charName, "check_gem", gemType);
-                        addLog("Đã kiểm tra gem thành công. Xem kết quả trong file check_gem.txt");
-                    } catch (Exception ex) {
-                        addLog("Lỗi khi kiểm tra gem: " + ex.getMessage());
-                    }
-                }
-            } else if (choice == 1) {
-                // --- Đoạn code cũ của revokeItemButton ---
-                // Tạo dialog nhập liệu
-                JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
-                
-                // Components
-                JTextField charNameField = new JTextField(15);
-                JTextField gemIdsField = new JTextField(15);
-                JTextField amountField = new JTextField(15);
-                JRadioButton lockedGemButton = new JRadioButton("Gem Khóa");
-                JRadioButton unlockedGemButton = new JRadioButton("Gem Mở");
-                
-                ButtonGroup gemTypeGroup = new ButtonGroup();
-                gemTypeGroup.add(lockedGemButton);
-                gemTypeGroup.add(unlockedGemButton);
-                unlockedGemButton.setSelected(true);
-                
-                // Layout
-                inputPanel.add(new JLabel("Tên nhân vật:"));
-                inputPanel.add(charNameField);
-                inputPanel.add(new JLabel("ID gem:"));
-                inputPanel.add(gemIdsField);
-                inputPanel.add(new JLabel("Số lượng:"));
-                inputPanel.add(amountField);
-                inputPanel.add(lockedGemButton);
-                inputPanel.add(unlockedGemButton);
-                
-                int option = JOptionPane.showConfirmDialog(
-                    this,
-                    inputPanel,
-                    "Thu Hồi Gem",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-                );
-                
-                if (option == JOptionPane.OK_OPTION) {
-                    String charName = charNameField.getText().trim();
-                    String[] itemIds = gemIdsField.getText().trim().split(",");
-                    String[] quantities = amountField.getText().trim().split(",");
-                    boolean isLockedGem = lockedGemButton.isSelected();
-                    
-                    // Validate input
-                    if (charName.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Vui lòng nhập tên nhân vật!");
-                        return;
-                    }
-                    if (itemIds.length != quantities.length) {
-                        JOptionPane.showMessageDialog(this, "Số lượng ID và số lượng vật phẩm không khớp!");
-                        return;
-                    }
-                    
-                    try {
-                        // Kiểm tra người chơi có online không
-                        Char player = CharManager.instance.getCharByCharName(charName);
-                        if (player != null) {
-                            JOptionPane.showMessageDialog(this, "Người chơi đang online. Vui lòng chờ người chơi offline!");
-                            return;
-                        }
-
-                        Connection conn = Database.instance.getConnection();
-
-                        // Thu hồi từng gem
-                        StringBuilder logMsg = new StringBuilder();
-                        logMsg.append("Thu hồi ").append(isLockedGem ? "gem khóa" : "gem mở")
-                              .append(" từ người chơi: ").append(charName).append("\n");
-
-                        // Lấy dữ liệu gem hiện tại
-                        String sql = "SELECT listtemplate, soluong, slock FROM tob_gem_new WHERE owner IN (SELECT id FROM tob_char WHERE charname=?)";
-                        PreparedStatement pre = conn.prepareStatement(sql);
-                        pre.setString(1, charName);
-                        ResultSet rs = null;
-                        try {
-                            rs = pre.executeQuery();
-                            if (rs.next()) {
-                                String[] templates = rs.getString("listtemplate").split(",");
-                                String[] amounts = (isLockedGem ? rs.getString("slock") : rs.getString("soluong")).split(",");
-                                
-                                // Cập nhật số lượng gem
-                                for (int i = 0; i < itemIds.length; i++) {
-                                    int gemId = Integer.parseInt(itemIds[i].trim());
-                                    int quantity = Integer.parseInt(quantities[i].trim());
-                                    
-                                    // Tìm vị trí của gem trong listtemplate
-                                    for (int j = 0; j < templates.length; j++) {
-                                        if (Integer.parseInt(templates[j].trim()) == gemId) {
-                                            int currentAmount = Integer.parseInt(amounts[j].trim());
-                                            amounts[j] = String.valueOf(Math.max(0, currentAmount - quantity));
-                                            logMsg.append("- Đã thu hồi Gem ID: ").append(gemId)
-                                                 .append(", Số lượng: ").append(quantity)
-                                                 .append("\n");
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                // Cập nhật vào database
-                                String updateSql = "UPDATE tob_gem_new SET " +
-                                                 (isLockedGem ? "slock" : "soluong") +
-                                                 "=? WHERE owner IN (SELECT id FROM tob_char WHERE charname=?)";
-                                PreparedStatement preUpdate = conn.prepareStatement(updateSql);
-                                preUpdate.setString(1, String.join(",", amounts));
-                                preUpdate.setString(2, charName);
-                                preUpdate.executeUpdate();
-                                preUpdate.close();
-
-                                // Log kết quả
-                                addLog(logMsg.toString());
-                                JOptionPane.showMessageDialog(this, "Đã thu hồi gem thành công!");
-                            } else {
-                                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu gem của nhân vật: " + charName);
-                            }
-                        } finally {
-                            if (rs != null) {
-                                rs.close();
-                            }
-                            pre.close();
-                            Database.connPool.free(conn);
-                        }
-                        
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(this, "ID gem và số lượng phải là số!");
-                    } catch (Exception ex) {
-                        addLog("Lỗi khi thu hồi gem: " + ex.getMessage());
-                        JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
-                    }
-                }
-            }
-        });
-
-        listOnlineButton.addActionListener(e -> {
-            String[] columnNames = {"#", "Tên", "Cấp Độ", "Xu", "Lượng", "Lượng Khóa", "Tọa Độ", "Thao tác"};
-            java.util.List<Object[]> rows = new java.util.ArrayList<>();
-            int idx = 1;
-            for (int i = 0; i < CharManager.instance.vChars.size(); i++) {
-                real.Char c = CharManager.instance.vChars.elementAt(i);
-                // Kiểm tra nếu tên không chứa @ và không có dấu cách và không phải là NPC
-                if (!c.charname.contains("@") && !c.charname.contains(" ") && !NPC_NAMES.contains(c.charname.toLowerCase())) {
-                    String levelStr = "";
-                    if (c.lvDetail != null) {
-                        double percent = c.lvDetail.percent / 10.0;
-                        levelStr = c.lvDetail.lv + " + " + String.format("%.1f", percent) + "%";
-                    }
-                    String toado = "Map " + c.mapID + " (" + (c.x / 16) + ", " + (c.y / 16) + ")";
-                    rows.add(new Object[]{
-                        idx++,
-                        c.charname,
-                        levelStr,
-                        c.getxu(),
-                        c.getLuong(),
-                        c.getLuongLock(),
-                        toado,
-                        "Chỉnh sửa" // Placeholder cho nút
-                    });
-                }
-            }
-            if (rows.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Không có người chơi nào đang online.", "Danh Sách Người Chơi Online", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            Object[][] data = rows.toArray(new Object[0][]);
-            // Sử dụng DefaultTableModel để cho phép chỉnh sửa cột cuối
-            DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return column == 7; // Chỉ cột "Thao tác" cho phép bấm nút
-                }
-            };
-            
-            JTable table = new JTable(model);
-
-            // Đặt chiều rộng cho từng cột
-            table.getColumnModel().getColumn(0).setPreferredWidth(36);   // #
-            table.getColumnModel().getColumn(1).setPreferredWidth(120);  // Tên
-            table.getColumnModel().getColumn(2).setPreferredWidth(80);   // Cấp Độ
-            table.getColumnModel().getColumn(3).setPreferredWidth(90);   // Xu
-            table.getColumnModel().getColumn(4).setPreferredWidth(90);   // Lượng
-            table.getColumnModel().getColumn(5).setPreferredWidth(90);   // Lượng Khóa
-            table.getColumnModel().getColumn(6).setPreferredWidth(120);  // Tọa Độ
-            table.getColumnModel().getColumn(7).setPreferredWidth(90);   // Thao tác
-
-            // GÁN LẠI renderer và editor cho cột "Thao tác"
-            table.getColumn("Thao tác").setCellRenderer(new ButtonRenderer());
-            table.getColumn("Thao tác").setCellEditor(new ButtonEditor(new JCheckBox(), table, rows, this));
-
-            int totalWidth = 0;
-            for (int i = 0; i < table.getColumnCount(); i++) {
-                totalWidth += table.getColumnModel().getColumn(i).getPreferredWidth();
-            }
-            int intercell = table.getIntercellSpacing().width * (table.getColumnCount() - 1);
-            int scrollWidth = totalWidth + intercell + 2;
-
-            JScrollPane scroll = new JScrollPane(table);
-            scroll.setPreferredSize(new Dimension(scrollWidth, 350));
-
-            JOptionPane.showMessageDialog(this, scroll, "Danh Sách Người Chơi Online (" + rows.size() + ")", JOptionPane.PLAIN_MESSAGE);
-        });
-
-        changePasswordButton.addActionListener(e -> handleChangePassword());
-    }
-
-    private void handleChangePassword() {
-        JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
-        JTextField usernameField = new JTextField();
-        JTextField passwordField = new JTextField();
-        JTextField retypeField = new JTextField();
-
-        panel.add(new JLabel("Tài khoản:"));
-        panel.add(usernameField);
-        panel.add(new JLabel("Mật khẩu mới:"));
-        panel.add(passwordField);
-        panel.add(new JLabel("Nhập lại mật khẩu:"));
-        panel.add(retypeField);
-
-        int result = JOptionPane.showConfirmDialog(this, panel, "Đổi mật khẩu tài khoản", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            String username = usernameField.getText().trim();
-            String pass1 = passwordField.getText();
-            String pass2 = retypeField.getText();
-
-            if (username.isEmpty() || pass1.isEmpty() || pass2.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
-                return;
-            }
-            if (!pass1.equals(pass2)) {
-                JOptionPane.showMessageDialog(this, "Mật khẩu nhập lại không khớp!");
-                return;
-            }
-            try {
-                String hash = sqlPassword(pass1);
-                Connection conn = Database.instance.getConnection();
-                // Doi CSDL hien hanh sang "account" (COM_INIT_DB) roi tra lai, thay cho ten
-                // bang kem CSDL "account.team_user": NovaDB moi ket noi chi thay MOT CSDL nen
-                // khong hieu tien to "account.". Ket noi la cua pool -> PHAI tra catalog cu
-                // truoc khi free, khong thi cau SQL sau dung nham CSDL.
-                final String catalogCu = conn.getCatalog();
-                int updated;
-                try {
-                    conn.setCatalog("account");
-                    PreparedStatement pre = conn.prepareStatement("UPDATE team_user SET password=? WHERE username=?");
-                    pre.setString(1, hash);
-                    pre.setString(2, username);
-                    updated = pre.executeUpdate();
-                    pre.close();
-                } finally {
-                    try {
-                        conn.setCatalog(catalogCu);
-                    } finally {
-                        Database.connPool.free(conn);
-                    }
-                }
-                if (updated > 0) {
-                    addLog("Đã đổi mật khẩu cho tài khoản: " + username);
-                    JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản!");
-                }
-            } catch (Exception ex) {
-                addLog("Lỗi đổi mật khẩu: " + ex.getMessage());
-                JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
-            }
+    static String tenGame() {
+        try {
+            return com.htbb.pokemon.ThuongHieu.TEN_GAME;
+        } catch (final Throwable t) {
+            return "Huyền Thoại Bảo Bối";
         }
     }
 
-    // Hàm mã hóa mật khẩu giống PHP MySQL
-    private String sqlPassword(String input) throws Exception {
+    static Dimension kichManHinh() {
         try {
-            java.security.MessageDigest sha1 = java.security.MessageDigest.getInstance("SHA-1");
-            byte[] first = sha1.digest(input.getBytes("UTF-8"));
-            byte[] second = sha1.digest(first);
-            StringBuilder sb = new StringBuilder();
-            for (byte b : second) {
-                sb.append(String.format("%02X", b));
-            }
-            return "*" + sb.toString();
-        } catch (Exception ex) {
-            throw new Exception("Lỗi mã hóa mật khẩu: " + ex.getMessage());
+            return java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        } catch (final Throwable t) {
+            return new Dimension(1600, 1000);
         }
     }
 
-    private void startMaintenanceMode() {
-        String input = JOptionPane.showInputDialog(
-            this,
-            "Nhập số phút trước khi bảo trì (1-60):",
-            "5"
-        );
-
-        try {
-            maintenanceMinutes = Integer.parseInt(input);
-            if (maintenanceMinutes < 1 || maintenanceMinutes > 60) {
-                throw new NumberFormatException();
+    /**
+     * Dung toan bo noi dung (dau trang + thanh ben + 8 trang + thanh trang thai) - khong can hien JFrame.
+     * Kiem thu headless dung {@link #taoNoiDungThu()}.
+     */
+    JPanel noiDung(final AdminPanel khung) {
+        final JPanel goc = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(final Graphics g) {
+                g.setColor(GiaoDien.nen);
+                g.fillRect(0, 0, getWidth(), getHeight());
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(
-                this,
-                "Vui lòng nhập số phút hợp lệ (1-60)",
-                "Lỗi",
-                JOptionPane.ERROR_MESSAGE
-            );
+        };
+        final TrangTongQuan tq = new TrangTongQuan(du);
+        final TrangVanHanh vh = new TrangVanHanh();
+        trangNhatKy = new TrangNhatKy();
+        trang.add(tq);
+        trang.add(new TrangNguoiChoi(khung));
+        trang.add(new TrangSuKien());
+        trang.add(new TrangKinhTe());
+        trang.add(vh);
+        trang.add(new TrangCauHinh());
+        trang.add(new TrangDichVu());
+        trang.add(trangNhatKy);
+        vh.khiMoTep(f -> {
+            chon(trang.indexOf(trangNhatKy));
+            trangNhatKy.moTep(f);
+        });
+        than.setOpaque(false);
+        for (int i = 0; i < trang.size(); i++) {
+            than.add(trang.get(i), String.valueOf(i));
+        }
+        thanhBen = new ThanhBen();
+        goc.add(dauTrang, BorderLayout.NORTH);
+        goc.add(thanhBen, BorderLayout.WEST);
+        goc.add(than, BorderLayout.CENTER);
+        final JPanel duoi = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(final Graphics g) {
+                g.setColor(GiaoDien.nenThe);
+                g.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(GiaoDien.vien);
+                g.fillRect(0, 0, getWidth(), 1);
+            }
+        };
+        duoi.setBorder(new EmptyBorder(s(5), s(16), s(5), s(16)));
+        thongBaoNhanh.setFont(GiaoDien.font(12));
+        duoi.add(thongBaoNhanh, BorderLayout.CENTER);
+        final JLabel phai = ThanhPhan.nhanPhu("Mọi thao tác đều được ghi nhật ký kiểm toán");
+        phai.setToolTipText("Tệp kiểm toán: " + KiemToanQuanTri.tep().getAbsolutePath() + " · Java "
+                + System.getProperty("java.version") + " · phông " + GiaoDien.tenFont());
+        duoi.add(phai, BorderLayout.EAST);
+        goc.add(duoi, BorderLayout.SOUTH);
+        return goc;
+    }
+
+    /** Mo bang dieu khien neu co man hinh; headless -> null, khong nem loi. */
+    public static AdminPanel moNeuCoManHinh() {
+        if (GraphicsEnvironment.isHeadless() || !choPhepMo()) {
+            return null;
+        }
+        final AdminPanel p = new AdminPanel();
+        p.setVisible(true);
+        return p;
+    }
+
+    /**
+     * Kiem thu: dung 8 trang + thanh phan (JPanel dung duoc khi headless) ma KHONG tao JFrame.
+     * Tra ve so trang da dung.
+     */
+    public static int taoNoiDungThu() {
+        GiaoDien.khoiTao();
+        final DuLieuTrucTiep d = new DuLieuTrucTiep();
+        final List<JComponent> l = new ArrayList<JComponent>();
+        l.add(new TrangTongQuan(d));
+        l.add(new TrangNguoiChoi(null));
+        l.add(new TrangSuKien());
+        l.add(new TrangKinhTe());
+        l.add(new TrangVanHanh());
+        l.add(new TrangCauHinh());
+        l.add(new TrangDichVu());
+        l.add(new TrangNhatKy());
+        for (final JComponent c : l) {
+            c.setSize(1200, 800);
+            c.doLayout();
+            GiaoDien.toCay(c);
+        }
+        GiaoDien.datToi(true);
+        GiaoDien.datToi(false);
+        return l.size();
+    }
+
+    void chon(final int i) {
+        if (i < 0 || i >= trang.size()) {
             return;
         }
+        for (final Trang t : trang) {
+            Trang.datHien(t, false);
+        }
+        hien = trang.get(i);
+        Trang.datHien(hien, true);
+        ((CardLayout) than.getLayout()).show(than, String.valueOf(i));
+        if (thanhBen != null) {
+            thanhBen.chon(i);
+        }
+        try {
+            hien.lenDau();
+            hien.khiHien();
+            final DuLieuTrucTiep.Mau m = du.moiNhat();
+            if (m != null) {
+                hien.nhip(m);
+            }
+        } catch (final Throwable t) {
+            baoNhanh("Lỗi trang: " + t);
+        }
+        hien.revalidate();
+    }
 
-        int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "Xác nhận bảo trì sau " + maintenanceMinutes + " phút?",
-            "Xác nhận",
-            JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            final int[] remainingMinutes = {maintenanceMinutes};
-            maintenanceTimer = new Timer(60000, evt -> {
-                remainingMinutes[0]--;
-                String countdownMsg = "Hệ thống sẽ bảo trì sau " + remainingMinutes[0] + " phút.";
-                
-               if (remainingMinutes[0] == 2) {
-                LoginHandler.stopLogin = true;
-               }
-                if (remainingMinutes[0] <= 1) {
-                    AdminHandler.isStopServer = true;
-                   
-                    countdownMsg = "Hệ thống sẽ bảo trì sau 1 phút. Vui lòng thoát game để tránh mất dữ liệu!";
-                }
-                
-                try {
-                    Message m = MessageCreator.createthongbao(countdownMsg);
-                    for (int j = 0; j < CharManager.instance.vChars.size(); ++j) {
-                        CharManager.instance.vChars.elementAt(j).sendMessage(m);
-                    }
-                } catch (IOException ex) {
-                    addLog("Lỗi gửi thông báo bảo trì: " + ex.getMessage());
-                }
-                
-                if (remainingMinutes[0] <= 0) {
-                    maintenanceTimer.stop();
-                    new AdminHandler().stopServer();
+    void moiGiay() {
+        if (!isShowing() || (getExtendedState() & ICONIFIED) != 0) {
+            return; // cua so an / thu nho: khong ve gi
+        }
+        final DuLieuTrucTiep.Mau m = du.moiNhat();
+        dauTrang.capNhat(m);
+        if (hien != null && m != null) {
+            try {
+                hien.nhip(m);
+            } catch (final Throwable t) {
+                baoNhanh("Lỗi cập nhật: " + t);
+            }
+        }
+        if (System.currentTimeMillis() - lanKinhTe > 600000L) {
+            // mau kinh te moi gio (tob_kinh_te_gio) cho bieu do Kinh te - chi doc tong, ngoai EDT
+            lanKinhTe = System.currentTimeMillis();
+            HopThoai.doc(server.quantri.KinhTeTrucTiep::ghiNeuCan, a -> {
+            });
+        }
+        if (System.currentTimeMillis() - lanMoCam > 60000L) {
+            lanMoCam = System.currentTimeMillis();
+            HopThoai.doc(ThaoTacMayChu::moCamHetHan, n -> {
+                if (n != null && n > 0) {
+                    baoNhanh("Đã tự mở " + n + " lệnh khoá hết hạn.");
                 }
             });
-            maintenanceTimer.start();
-            
-            // Gửi thông báo đầu tiên
-            String initialMsg = "Hệ thống sẽ bảo trì sau " + maintenanceMinutes + " phút.";
-            try {
-                Message m = MessageCreator.createthongbao(initialMsg); 
-                for (int j = 0; j < CharManager.instance.vChars.size(); ++j) {
-                    CharManager.instance.vChars.elementAt(j).sendMessage(m);
-                }
-            } catch (IOException ex) {
-                addLog("Lỗi gửi thông báo bảo trì: " + ex.getMessage());
-            }
-
-            maintenanceButton.setText("Hủy Bảo Trì");
-            updateServerStatus();
-            addLog("Bắt đầu bảo trì sau " + maintenanceMinutes + " phút");
         }
     }
 
-    private void cancelMaintenanceMode() {
-        int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "Bạn có chắc muốn hủy bảo trì?",
-            "Xác nhận",
-            JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            if (maintenanceTimer != null) {
-                maintenanceTimer.stop();
-            }
-            
-            AdminHandler.isStopServer = false;
-            LoginHandler.stopLogin = false;
-            
-            // Send cancellation notice to all players
-            try {
-                Message m = MessageCreator.createthongbao("Thông báo: Lịch bảo trì đã được hủy bỏ.");
-                for (int j = 0; j < CharManager.instance.vChars.size(); ++j) {
-                    CharManager.instance.vChars.elementAt(j).sendMessage(m);
-                }
-                addLog("Đã gửi thông báo hủy bảo trì");
-            } catch (IOException ex) {
-                addLog("Lỗi gửi thông báo hủy bảo trì: " + ex.getMessage());
-            }
-            
-            maintenanceButton.setText("Bảo Trì");
-            updateServerStatus();
-            addLog("Đã hủy bảo trì");
-        }
-    }
-
-    private void updateServerStatus() {
-        String status = AdminHandler.isStopServer ? "Đang Bảo Trì" : "Đang Hoạt Động";
-        statusLabel.setText("Trạng Thái: " + status);
-        playersLabel.setText("Người Chơi: " + SessionManager.instance.size() + "/" + TeamServer.LIMIT_CCU);
-        portLabel.setText("Cổng: " + TeamServer.PORT);
-        maintenanceButton.setText(AdminHandler.isStopServer ? "Hủy Bảo Trì" : "Bảo Trì");
-        
-        stopLoginButton.setText(LoginHandler.stopLogin ? "Cho Phép Đăng Nhập" : "Dừng Đăng Nhập");
-        
-        long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
-        long hours = uptime / (60 * 60 * 1000);
-        long minutes = (uptime / (60 * 1000)) % 60;
-        long seconds = (uptime / 1000) % 60;
-        uptimeLabel.setText(String.format("Thời Gian: %02d:%02d:%02d", hours, minutes, seconds));
-    }
-
-    private void updateMemoryStatus() {
-        Runtime runtime = Runtime.getRuntime();
-        long usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
-        memoryLabel.setText("Bộ Nhớ: " + usedMemory + "MB");
-    }
-
-    public void addLog(String message) {
-        String timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
-        logArea.append("[" + timestamp + "] " + message + "\n");
-        // Giới hạn số dòng log (ví dụ 500 dòng)
-        int maxLines = 100;
-        String[] lines = logArea.getText().split("\n");
-        if (lines.length > maxLines) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = lines.length - maxLines; i < lines.length; i++) {
-                sb.append(lines[i]).append("\n");
-            }
-            logArea.setText(sb.toString());
-        }
-        logArea.setCaretPosition(logArea.getDocument().getLength());
-    }
-
-    private JLabel createStatusLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setBorder(new EmptyBorder(2, 5, 2, 5)); // Add padding for better appearance
-        return label;
-    }
-
-    private JButton createButton(String text) {
-        JButton button = new JButton(text);
-        button.setFocusPainted(false);
-        return button;
-    }
-
-    private TitledBorder createGroupBorder(String title) {
-        TitledBorder border = BorderFactory.createTitledBorder(
-            BorderFactory.createEtchedBorder(),
-            title
-        );
-        return border;
-    }
-
-    private JPanel createButtonPanel(String title, JButton... buttons) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(createGroupBorder(title));
-        for (JButton btn : buttons) {
-            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-            Dimension size = btn.getPreferredSize();
-            btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, size.height));
-            btn.setMinimumSize(new Dimension(0, size.height));
-            btn.setPreferredSize(new Dimension(0, size.height));
-            btn.setMargin(new Insets(4, 10, 4, 10));
-            panel.add(btn);
-            panel.add(Box.createVerticalStrut(5));
-        }
-        return panel;
-    }
-
-    private void setButtonTooltips() {
-        maintenanceButton.setToolTipText("Bật/Tắt chế độ bảo trì");
-        stopLoginButton.setToolTipText("Dừng hoặc cho phép đăng nhập mới");
-        cleanMemoryButton.setToolTipText("Dọn dẹp bộ nhớ server");
-        announceButton.setToolTipText("Gửi thông báo đến toàn bộ người chơi");
-        updateButton.setToolTipText("Cập nhật trạng thái server");
-        lockAccountButton.setToolTipText("Kick người chơi khỏi server");
-        banAccountButton.setToolTipText("Khóa tài khoản vĩnh viễn");
-        unbanAccountButton.setToolTipText("Mở khóa tài khoản");
-        gemManagerButton.setToolTipText("Kiểm tra hoặc thu hồi gem của người chơi");
-        listOnlineButton.setToolTipText("Liệt kê danh sách người chơi đang online");
-        changePasswordButton.setToolTipText("Đổi mật khẩu tài khoản");
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            AdminPanel panel = new AdminPanel();
-            panel.setVisible(true);
-        });
-    }
-
-    private void handleReduceLevel() {
-        JTextArea namesField = new JTextArea(6, 32);
-        JTextField amountField = new JTextField("1", 8);
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
-        panel.add(new JLabel("Tên nhân vật online (mỗi dòng một tên, hoặc ngăn bằng dấu phẩy/chấm phẩy):"), BorderLayout.NORTH);
-        panel.add(new JScrollPane(namesField), BorderLayout.CENTER);
-        JPanel details = new JPanel(new GridLayout(0, 1, 5, 5));
-        details.add(new JLabel("Số level cần giảm cho mỗi nhân vật:"));
-        details.add(amountField);
-        details.add(new JLabel("EXP về 0% cấp mới; bỏ qua nhân vật nếu giảm xuống dưới cấp 1."));
-        details.add(new JLabel("Giữ điểm đã nhận, không cộng lại khi lên cấp cũ. Tên trùng chỉ xử lý một lần."));
-        panel.add(details, BorderLayout.SOUTH);
-        if (JOptionPane.showConfirmDialog(this, panel, "Giảm Level nhiều nhân vật",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) {
+    void baoNhanh(final String s0) {
+        if (s0 == null) {
             return;
         }
-        Set<String> names = new java.util.LinkedHashSet<>();
-        for (String entry : namesField.getText().split("[,;\\r\\n]+")) {
-            String name = entry.trim().toLowerCase();
-            if (!name.isEmpty()) names.add(name);
+        final Runnable r = () -> {
+            thongBaoNhanh.setText(DinhDang.gio(System.currentTimeMillis()) + "  ·  " + s0.replace('\n', ' '));
+            thongBaoNhanh.setForeground(s0.startsWith("Lỗi") || s0.startsWith("Từ chối") || s0.startsWith("Không")
+                    ? GiaoDien.DO : GiaoDien.chu);
+        };
+        TrangNhatKy.hoatDong(s0);
+        if (SwingUtilities.isEventDispatchThread()) {
+            r.run();
+        } else {
+            SwingUtilities.invokeLater(r);
         }
-        int amount;
-        try {
-            amount = Integer.parseInt(amountField.getText().trim());
-            if (amount <= 0 || names.isEmpty()) throw new NumberFormatException();
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Nhập ít nhất một tên nhân vật và số level là số nguyên dương.");
-            return;
-        }
-        StringBuilder results = new StringBuilder();
-        for (String name : names) {
-            String result = reducePlayerLevel(name, amount);
-            addLog(result);
-            results.append(result).append('\n');
-        }
-        JTextArea resultArea = new JTextArea(results.toString(), Math.min(16, names.size() + 2), 65);
-        resultArea.setEditable(false);
-        resultArea.setLineWrap(true);
-        resultArea.setWrapStyleWord(true);
-        resultArea.setCaretPosition(0);
-        JOptionPane.showMessageDialog(this, new JScrollPane(resultArea),
-                "Kết quả giảm level - " + names.size() + " nhân vật", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private String reducePlayerLevel(String name, int amount) {
-        boolean saved = false;
-        String result = "";
+    /** Giu cho server.Panel.ButtonEditor (menu "Chinh sua" cu): dong hoat dong + kiem toan. */
+    public void addLog(final String message) {
+        KiemToanQuanTri.ghi("CONG_CU_CU", "", message);
+        baoNhanh(message);
+    }
+
+    void doiCheDo() {
+        GiaoDien.datToi(!GiaoDien.toi);
         try {
-            Char player = CharManager.instance.getCharByCharName(name);
-            if (player == null || player.getSession() == null || !player.getSession().isConnected()) {
-                return "Bỏ qua " + name + ": nhân vật không online.";
-            }
-            synchronized (player.KHOA_LUU) {
-                synchronized (player.lvDetail) {
-                    if (CharManager.instance.getCharByCharName(name) != player
-                            || player.getSession() == null || !player.getSession().isConnected()) {
-                        return "Bỏ qua " + name + ": nhân vật đã ngắt kết nối.";
+            java.util.prefs.Preferences.userNodeForPackage(AdminPanel.class).putBoolean("toi", GiaoDien.toi);
+        } catch (final Throwable ignored) {
+        }
+        GiaoDien.toCay(getContentPane());
+        repaint();
+    }
+
+    public static void main(final String[] args) {
+        SwingUtilities.invokeLater(AdminPanel::moNeuCoManHinh);
+    }
+
+    // ================================================================== dau trang (Poke Ball)
+
+    final class DauTrang extends JComponent {
+        private final BufferedImage linhVat = AnhPokemon.khungDung(25);
+        private final BufferedImage linhVat2 = AnhPokemon.chanDung(25);
+        private String trangThai = "Đang khởi động";
+        private Color mauTrangThai = GiaoDien.XANH_LA;
+        private String online = "—";
+        private final int[] nutCheDo = new int[4];
+
+        DauTrang() {
+            setPreferredSize(new Dimension(10, s(84)));
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(final MouseEvent e) {
+                    if (trongNut(e)) {
+                        doiCheDo();
                     }
-                    int oldLevel = player.lvDetail.lv;
-                    if (amount >= oldLevel) {
-                        return "Bỏ qua " + name + ": cấp hiện tại " + oldLevel
-                                + ", chỉ giảm được tối đa " + Math.max(0, oldLevel - 1) + " level.";
-                    }
-                    long oldExp = player.lvDetail.getExp();
-                    int newLevel = oldLevel - amount;
-                    player.lvDetail.setExpNew(real.LevelDetail.expMain[newLevel - 1]);
-                    // Keep lastLV: previously awarded stat/skill points must not be awarded twice.
-                    try {
-                        saved = Database.instance.saveCharAuto(player);
-                    } finally {
-                        if (!saved) player.lvDetail.setExpNew(oldExp);
-                    }
-                    if (!saved) {
-                        return "Thất bại " + name + ": không lưu được, đã khôi phục EXP.";
-                    }
-                    result = "Đã giảm " + amount + " level của " + player.charname
-                            + ": " + oldLevel + " → " + newLevel + " (0% EXP).";
-                    player.calculateAttrib();
-                    player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
-                    player.sendToNearPlayer(MessageCreator.createCharInfo(player));
-                    player.sendMessage(MessageCreator.createServerAlertMessage(result, ""));
                 }
+            });
+            addMouseMotionListener(new MouseAdapter() {
+                @Override
+                public void mouseMoved(final MouseEvent e) {
+                    final boolean tren = trongNut(e);
+                    setCursor(Cursor.getPredefinedCursor(tren ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+                    setToolTipText(tren ? (GiaoDien.toi ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối") : null);
+                }
+            });
+        }
+
+        boolean trongNut(final MouseEvent e) {
+            return e.getX() >= nutCheDo[0] && e.getX() <= nutCheDo[0] + nutCheDo[2] && e.getY() >= nutCheDo[1]
+                    && e.getY() <= nutCheDo[1] + nutCheDo[3];
+        }
+
+        void capNhat(final DuLieuTrucTiep.Mau m) {
+            if (m == null) {
+                return;
             }
-            return result;
-        } catch (Exception ex) {
-            if (saved) {
-                return result + " Đã lưu nhưng lỗi cập nhật hiển thị: " + ex.getMessage()
-                        + ". Đăng nhập lại để cập nhật; không giảm lại.";
+            final String tt;
+            final Color mc;
+            if (m.dangTat) {
+                tt = "Đang tắt máy";
+                mc = GiaoDien.DO;
+            } else if (m.baoTri) {
+                tt = "Bảo trì";
+                mc = GiaoDien.VANG;
+            } else if (m.dungDangNhap) {
+                tt = "Dừng đăng nhập";
+                mc = GiaoDien.VANG;
+            } else {
+                tt = "Đang hoạt động";
+                mc = GiaoDien.XANH_LA;
             }
-            return "Lỗi giảm level của " + name + ": " + ex.getMessage()
-                    + ". Kiểm tra cấp nhân vật trước khi thử lại.";
+            final String on = DinhDang.so(m.online);
+            if (!tt.equals(trangThai) || !on.equals(online)) {
+                trangThai = tt;
+                mauTrangThai = mc;
+                online = on;
+                repaint();
+            }
+        }
+
+        @Override
+        protected void paintComponent(final Graphics g0) {
+            final Graphics2D g = (Graphics2D) g0.create();
+            GiaoDien.khuRang(g);
+            final int w = getWidth(), h = getHeight();
+            final int vach = s(6);
+            // nua tren do (than Poke Ball) + vach den
+            g.setPaint(new GradientPaint(0, 0, GiaoDien.toi ? new Color(0xB8290A) : new Color(0xF0441C), 0, h - vach,
+                    GiaoDien.toi ? new Color(0x861D06) : GiaoDien.DO_DAM));
+            g.fillRect(0, 0, w, h - vach);
+            AnhPokemon.vePokeBall(g, w * 0.52f, -s(40), s(150), true);
+            AnhPokemon.vePokeBall(g, w * 0.70f, s(20), s(90), true);
+            g.setColor(new Color(0x22252E));
+            g.fillRect(0, h - vach, w, vach);
+            g.setColor(new Color(255, 255, 255, 40));
+            g.fillRect(0, h - vach - s(2), w, s(2));
+            // bieu tuong Poke Ball lon
+            final int d = s(58);
+            final int bx = s(18), by = (h - vach - d) / 2;
+            g.setColor(new Color(0, 0, 0, 50));
+            g.fill(new Ellipse2D.Float(bx + s(2), by + s(3), d, d));
+            AnhPokemon.vePokeBall(g, bx, by, d, false);
+            // logo chu vang vien xanh
+            final Font fLogo = GiaoDien.dam(25);
+            ThanhPhan.veChuVien(g, tenGame(), fLogo, bx + d + s(16), by + s(30), GiaoDien.VANG, GiaoDien.XANH_DUONG_DAM, GiaoDien.sf(5f));
+            g.setFont(GiaoDien.dam(12));
+            g.setColor(new Color(255, 255, 255, 230));
+            g.drawString("Bảng điều khiển máy chủ".toUpperCase() + "  ·  cổng " + TeamServer.PORT, bx + d + s(18), by + s(50));
+            // ben phai: linh vat, nut sang/toi, chip online, chip trang thai
+            int x = w - s(16);
+            final BufferedImage lv = linhVat != null ? linhVat : linhVat2;
+            if (lv != null) {
+                final int lh = s(60);
+                final int lw = lh * lv.getWidth() / Math.max(1, lv.getHeight());
+                g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                g.drawImage(lv, x - lw, (h - vach - lh) / 2, lw, lh, null);
+                x -= lw + s(14);
+            }
+            final int ch = s(32), cy = (h - vach - ch) / 2;
+            final int nw = s(36);
+            x -= nw;
+            nutCheDo[0] = x;
+            nutCheDo[1] = cy;
+            nutCheDo[2] = nw;
+            nutCheDo[3] = ch;
+            g.setColor(new Color(255, 255, 255, 46));
+            g.fill(new RoundRectangle2D.Float(x, cy, nw, ch, ch, ch));
+            veMatTrangMatTroi(g, x + nw / 2f, cy + ch / 2f, s(9), GiaoDien.toi);
+            x -= s(10);
+            x = chip(g, x, cy, ch, "Online " + online, GiaoDien.VANG, false);
+            x -= s(8);
+            chip(g, x, cy, ch, trangThai, mauTrangThai, true);
+            g.dispose();
+        }
+
+        int chip(final Graphics2D g, final int phai, final int y, final int h, final String chu, final Color cham, final boolean coCham) {
+            g.setFont(GiaoDien.dam(12.5f));
+            final int tw = g.getFontMetrics().stringWidth(chu);
+            final int w = tw + s(coCham ? 40 : 26);
+            final int x = phai - w;
+            g.setColor(new Color(0, 0, 0, 60));
+            g.fill(new RoundRectangle2D.Float(x, y, w, h, h, h));
+            g.setColor(new Color(255, 255, 255, 60));
+            g.setStroke(new BasicStroke(1f));
+            g.draw(new RoundRectangle2D.Float(x + 0.5f, y + 0.5f, w - 1, h - 1, h, h));
+            int tx = x + s(13);
+            if (coCham) {
+                g.setColor(GiaoDien.trong(cham, 90));
+                g.fill(new Ellipse2D.Float(tx - s(2), y + h / 2f - s(7), s(14), s(14)));
+                g.setColor(cham);
+                g.fill(new Ellipse2D.Float(tx + s(1), y + h / 2f - s(4), s(8), s(8)));
+                tx += s(17);
+            }
+            g.setColor(Color.WHITE);
+            g.drawString(chu, tx, y + h / 2 + g.getFontMetrics().getAscent() / 2 - s(2));
+            return x;
         }
     }
 
-    private void handleKickPlayer() {
-        String playerName = promptInput("Nhập tên nhân vật cần kick:", "Kick Player");
-        if (playerName == null) return;
-        Char player = CharManager.instance.getCharByCharName(playerName);
-        if (player != null) {
-            try {
-                player.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Tài khoản của bạn tạm bị kick trong giây lát để admin giải quyết. Xin đăng nhập sau ít phút nữa", 
-                    ""
-                ));
-                player.getSession().disconnect(8);
-                addLog("Đã kick tài khoản: " + playerName);
-            } catch (Exception ex) {
-                addLog("Lỗi khi kick tài khoản: " + ex.getMessage());
+    static void veMatTrangMatTroi(final Graphics2D g, final float cx, final float cy, final float r, final boolean toi) {
+        g.setColor(Color.WHITE);
+        if (toi) {
+            g.fill(new Ellipse2D.Float(cx - r * 0.55f, cy - r * 0.55f, r * 1.1f, r * 1.1f));
+            g.setStroke(new BasicStroke(GiaoDien.sf(1.6f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            for (int i = 0; i < 8; i++) {
+                final double a = Math.PI / 4 * i;
+                g.draw(new java.awt.geom.Line2D.Double(cx + Math.cos(a) * r * 0.8, cy + Math.sin(a) * r * 0.8, cx + Math.cos(a) * r * 1.15,
+                        cy + Math.sin(a) * r * 1.15));
             }
         } else {
-            addLog("Không tìm thấy nhân vật: " + playerName);
+            final java.awt.geom.Area a = new java.awt.geom.Area(new Ellipse2D.Float(cx - r, cy - r, 2 * r, 2 * r));
+            a.subtract(new java.awt.geom.Area(new Ellipse2D.Float(cx - r * 0.35f, cy - r * 1.25f, 2 * r, 2 * r)));
+            g.fill(a);
         }
     }
 
-    private void handleBanAccount() {
-        String playerName = promptInput("Nhập tên nhân vật cần khóa vĩnh viễn:", "Khóa Vĩnh Viễn");
-        if (playerName == null) return;
-        try {
-            Connection conn = Database.instance.getConnection();
-            String sql = "UPDATE tob_char SET ban=1 where charname=?";
-            PreparedStatement pre = conn.prepareStatement(sql);
-            pre.setString(1, playerName);
-            pre.execute();
+    // ================================================================== thanh ben
 
-            // Kick player if online
-            Char player = CharManager.instance.getCharByCharName(playerName);
-            if (player != null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Tài khoản của bạn đã bị khóa vĩnh viễn.",
-                    ""
-                ));
-                player.getSession().disconnect(8);
+    final class ThanhBen extends JPanel {
+        private final List<MucBen> muc = new ArrayList<MucBen>();
+
+        ThanhBen() {
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            setBorder(new EmptyBorder(s(16), s(10), s(14), s(10)));
+            setPreferredSize(new Dimension(s(214), 10));
+            putClientProperty("giuMau", Boolean.TRUE);
+            for (int i = 0; i < trang.size(); i++) {
+                final MucBen m = new MucBen(i, trang.get(i).ten(), trang.get(i).icon());
+                muc.add(m);
+                add(m);
+                add(javax.swing.Box.createVerticalStrut(s(4)));
             }
+            add(javax.swing.Box.createVerticalGlue());
+            final JLabel ghi = new JLabel("<html><div style='text-align:center'>" + tenGame() + "<br>máy chủ · cổng "
+                    + TeamServer.PORT + "</div></html>", JLabel.CENTER);
+            ghi.setFont(GiaoDien.font(11));
+            ghi.setForeground(new Color(255, 255, 255, 150));
+            ghi.setAlignmentX(0f);
+            add(ghi);
+        }
 
-            addLog("Đã khóa vĩnh viễn tài khoản: " + playerName);
-            pre.close();
-            Database.connPool.free(conn);
-        } catch (Exception ex) {
-            addLog("Lỗi khi khóa tài khoản: " + ex.getMessage());
+        void chon(final int i) {
+            for (final MucBen m : muc) {
+                m.chon = m.i == i;
+                m.repaint();
+            }
+        }
+
+        @Override
+        protected void paintComponent(final Graphics g0) {
+            final Graphics2D g = (Graphics2D) g0.create();
+            g.setPaint(new GradientPaint(0, 0, GiaoDien.benTren, 0, getHeight(), GiaoDien.benDuoi));
+            g.fillRect(0, 0, getWidth(), getHeight());
+            GiaoDien.khuRang(g);
+            AnhPokemon.vePokeBall(g, -s(60), getHeight() - s(190), s(200), true);
+            g.dispose();
         }
     }
 
-    private void handleUnbanAccount() {
-        String playerName = promptInput("Nhập tên nhân vật cần mở khóa:", "Mở Khóa Tài Khoản");
-        if (playerName == null) return;
-        try {
-            Connection conn = Database.instance.getConnection();
-            String sql = "UPDATE tob_char SET ban=0 where charname=?";
-            PreparedStatement pre = conn.prepareStatement(sql);
-            pre.setString(1, playerName);
-            pre.execute();
-            addLog("Đã mở khóa tài khoản: " + playerName);
-            pre.close();
-            Database.connPool.free(conn);
-        } catch (Exception ex) {
-            addLog("Lỗi khi mở khóa tài khoản: " + ex.getMessage());
-        }
-    }
+    final class MucBen extends JComponent {
+        final int i;
+        final String ten;
+        final BufferedImage icon;
+        boolean chon, tren;
 
-    // Add this utility method inside your AdminPanel class:
-    private String promptInput(String message, String title) {
-        String input = JOptionPane.showInputDialog(this, message, title, JOptionPane.PLAIN_MESSAGE);
-        return (input != null && !input.trim().isEmpty()) ? input.trim() : null;
+        MucBen(final int i, final String ten, final String icon) {
+            this.i = i;
+            this.ten = ten;
+            this.icon = AnhPokemon.phongTo(AnhPokemon.vatPham(icon), s(24), s(24));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, s(44)));
+            setPreferredSize(new Dimension(s(190), s(44)));
+            setAlignmentX(0f);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(final MouseEvent e) {
+                    AdminPanel.this.chon(MucBen.this.i);
+                }
+
+                @Override
+                public void mouseEntered(final MouseEvent e) {
+                    tren = true;
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(final MouseEvent e) {
+                    tren = false;
+                    repaint();
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(final Graphics g0) {
+            final Graphics2D g = (Graphics2D) g0.create();
+            GiaoDien.khuRang(g);
+            final int w = getWidth(), h = getHeight();
+            if (chon) {
+                g.setColor(GiaoDien.toi ? new Color(0x2B3560) : Color.WHITE);
+                g.fill(new RoundRectangle2D.Float(0, 0, w, h, s(14), s(14)));
+                g.setColor(GiaoDien.VANG);
+                g.fill(new RoundRectangle2D.Float(0, s(9), s(5), h - s(18), s(5), s(5)));
+            } else if (tren) {
+                g.setColor(GiaoDien.chonBen);
+                g.fill(new RoundRectangle2D.Float(0, 0, w, h, s(14), s(14)));
+            }
+            final int o = s(32);
+            g.setColor(chon ? GiaoDien.trong(GiaoDien.VANG, 110) : new Color(255, 255, 255, 30));
+            g.fill(new Ellipse2D.Float(s(12), (h - o) / 2f, o, o));
+            g.drawImage(icon, s(12) + (o - s(24)) / 2, (h - s(24)) / 2, null);
+            g.setFont(chon ? GiaoDien.dam(13.5f) : GiaoDien.font(13.5f));
+            g.setColor(chon ? (GiaoDien.toi ? Color.WHITE : GiaoDien.XANH_DUONG_DAM) : GiaoDien.chuBen);
+            g.drawString(ten, s(54), h / 2 + g.getFontMetrics().getAscent() / 2 - s(2));
+            g.dispose();
+        }
     }
 }
-
-
-
-
-

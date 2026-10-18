@@ -26,10 +26,10 @@ import java.util.regex.Pattern;
  */
 public final class KiemCauHinhPipeline {
 
-    private static final String F_TMPL = "vps/server.ini.tmpl";
-    private static final String F_SINH = "vps/sinh-server-ini.sh";
-    private static final String F_DEPLOY = "vps/deploy-auto.sh";
-    private static final String F_WORKFLOW = ".github/workflows/deploy.yml";
+    private static final String F_TMPL = "../vps/server.ini.tmpl";
+    private static final String F_SINH = "../vps/sinh-server-ini.sh";
+    private static final String F_DEPLOY = "../vps/deploy-auto.sh";
+    private static final String F_WORKFLOW = "../.github/workflows/server-deploy.yml";
     private static final String F_SERVER = "src/server/TeamServer.java";
     private static final String F_CAUHINH = "src/server/CauHinh.java";
 
@@ -68,7 +68,7 @@ public final class KiemCauHinhPipeline {
         }
 
         // ---- 1b. TAT CA thiet lap phai nam trong ban mau, khong thieu khong thua ----
-        // Muc dich cua pipeline la khong bao gio phai mo /opt/kpah/server.ini nua. Chi can
+        // Muc dich cua pipeline la khong bao gio phai mo /opt/htbb/server.ini nua. Chi can
         // MOT khoa ma nguon doc ma ban mau khong co, la lai phai vao VPS sua tay - dung cai
         // viec da lam sap server. Chieu nguoc lai cung phai dung: khoa nao ban mau co ma
         // khong ai doc thi la nut bam gia, xoay het co cung khong co tac dung.

@@ -1,7 +1,7 @@
 /**
  * Bo kiem thu toi gian - KHONG phu thuoc thu vien ngoai (khong JUnit).
  *
- * Vi sao khong dung JUnit: thu muc lib/ nam tren Class-Path cua KPAH2_patched.jar
+ * Vi sao khong dung JUnit: thu muc lib/ nam tren Class-Path cua htbb-server.jar
  * (xem MANIFEST), va build.bat gom TOAN BO src/. Them junit.jar vao lib/ hay them
  * test vao src/ la day ca hai len server that. Test nam o test/ rieng, build.bat
  * khong dung toi, nen jar deploy khong doi mot byte nao.
@@ -68,7 +68,7 @@ public final class Kiem {
         KiemVatPham.chay();
         KiemNhanhHoaDao.chay();
         KiemDucLoKham.chay();
-        KiemSkinLinhThu.chay();
+        KiemSkinThuCuoi.chay();
         KiemPokemon.chay();
         KiemThuPokemon.chay();
         KiemIconPokemon.chay();
@@ -77,9 +77,12 @@ public final class Kiem {
         KiemPokemonServer.chay();
         KiemPokemonClient.chay();
         KiemChuPokemon.chay();
+        KiemThuatNgu.chay();
         KiemHieuUngPokemon.chay();
         KiemTilePokemon.chay();
         KiemMapPokemon.chay();
+        KiemVungHoenn.chay();
+        KiemTanThu.chay();
         KiemHinhPokemon.chay();
         KiemLauDai.chay();
         KiemNhiemVu.chay();
@@ -89,9 +92,10 @@ public final class Kiem {
         KiemGoi3Test.chay();
         KiemGoi5Test.chay();
         KiemBoDemGoiTin.chay();
+        KiemNhatKyChongSpam.chay();
         KiemMatDoKhiTaoDo.chay();
         KiemCuaHangSuKien.chay();
-        KiemAoHoaHoaKyLan.chay();
+        KiemAoHoaPonyta.chay();
         KiemNghiVanGianLan.chay();
         KiemTienAm.chay();
         KiemMenuDauTruong.chay();
@@ -100,13 +104,14 @@ public final class Kiem {
         KiemLocLogVatPham.chay();
         KiemBanDoOffline.chay();
         KiemCamTheoMay.chay();
-        KiemDongDangKyClient.chay();
+        KiemDangKyTrongGame.chay();
         KiemClientUnity.chay();
         KiemTatCaiTrang.chay();
         KiemTaiLieuCauHinh.chay();
         KiemChotCSDL.chay();
         KiemMayDevCSDL.chay();
         KiemCauHinhPipeline.chay();
+        KiemCauHinhTrungTam.chay();
         KiemLocBiMat.chay();
         KiemChiTietThuoc.chay();
         KiemIconSkinThu.chay();
@@ -130,7 +135,7 @@ public final class Kiem {
         KiemHoaHinhThu.chay();
         KiemSoLuongItemGiftcode.chay();
         KiemTranXuRoi.chay();
-        KiemTinhLuyenThanBinh.chay();
+        KiemTinhLuyenBaoVat.chay();
         KiemDonLog.chay();
         KiemCaiTaoCaiTrang.chay();
         KiemBangMaNguon.chay();
@@ -139,9 +144,9 @@ public final class Kiem {
         KiemCharManagerBotTrungTen.chay();
         KiemGiaoDichThuoc.chay();
         KiemChiemVatRoi.chay();
-        KiemGiftcodeVuKhiThanBinh.chay();
-        KiemGiftcodePhiPhongHuyenVu.chay();
-        KiemNangCapVuKhiLv86.chay();
+        KiemGiftcodeDoCamTayBaoVat.chay();
+        KiemGiftcodeRuyBangHoenn.chay();
+        KiemNangCapDoCamTayLv86.chay();
         KiemXoaVinhVien.chay();
         KiemGuiGoiNguoiGan.chay();
         KiemGoiViTriActor.chay();
@@ -155,15 +160,24 @@ public final class Kiem {
         KiemSaveCharAutoDuBangPhu.chay();
         KiemDongBoMyCountryKhiVaoBang.chay();
         KiemThuongTanThuVaLenCap35.chay();
-        KiemCongThanhDoiDiemDiTieu.chay();
+        KiemChiemGymDoiDiemGiaoHang.chay();
         KiemCuocKhuMoAttackDam.chay();
         KiemMaterialMapNhatDo.chay();
         KiemPetTrangThai1LaPetTool.chay();
         KiemLauDaiGd2.chay();
         KiemNoiDung.chay();
         KiemHeSinhThai.chay();
+        KiemItemMoCoi.chay(); // luat khong item mo coi (tools/pokemon/kiem_item_mo_coi.py)
         KiemNapTien.chay();
+        KiemTangToc.chay();
+        KiemTuDong.chay();
+        KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
+        KiemNgoaiHinh.chay(); // ngoai hinh trang bi tren than Pokemon (NGOAI_HINH_TRANG_BI.md)
+        KiemThanhVien.chay();
+        KiemVongLapChung.chay(); // vong lap chung thay thread-moi-khu (TOI_UU_HIEU_NANG.md)
 
+        KiemChiSo.chay(); // chi so trang bi + chong lam phat (CHI_SO_TRANG_BI.md)
+        KiemAdminPanel.chay();
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

@@ -20,11 +20,11 @@ import java.util.Map;
  */
 public final class KiemHieuUngPokemon {
 
-    private static final String F_CHIEU = "docs/pokemon/bang_chieu.csv";
-    private static final String F_HU = "docs/pokemon/bang_hieu_ung.csv";
-    private static final String THU_MUC = "ClientUnity/Assets/Resources/poke/";
+    private static final String F_CHIEU = "../docs/pokemon/bang_chieu.csv";
+    private static final String F_HU = "../docs/pokemon/bang_hieu_ung.csv";
+    private static final String THU_MUC = "../client_pc_ios/ClientUnity/Assets/Resources/poke/";
     private static final String F_BANG_CLIENT = THU_MUC + "hu_bang.bytes";
-    private static final String F_CHAR = "ClientUnity/Assets/Scripts/Game/Char.cs";
+    private static final String F_CHAR = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Char.cs";
 
     public static void chay() {
         Kiem.nhom("Hieu ung chieu Pokemon (K3: bang_hieu_ung.csv, hu_*.bytes)");

@@ -28,12 +28,12 @@ import java.util.regex.Pattern;
  */
 public final class KiemLauDai {
 
-    private static final String F_NV = "docs/pokemon/nhiem_vu_moi.csv";
-    private static final String F_SK = "docs/pokemon/su_kien_nam.csv";
-    private static final String F_SQL = "sql/pokemon_lau_dai.sql";
-    private static final String F_DUMP = "sql/htbb_day_du.sql";
-    private static final String F_XUAT = "tools/pokemon/xuat_sql_day_du.sh";
-    private static final String F_MO_PHONG = "tools/pokemon/MoPhongKinhTe.java";
+    private static final String F_NV = "../docs/pokemon/nhiem_vu_moi.csv";
+    private static final String F_SK = "../docs/pokemon/su_kien_nam.csv";
+    private static final String F_SQL = "../sql/pokemon_lau_dai.sql";
+    private static final String F_DUMP = "../sql/htbb_day_du.sql";
+    private static final String F_XUAT = "../tools/pokemon/xuat_sql_day_du.sh";
+    private static final String F_MO_PHONG = "../tools/pokemon/MoPhongKinhTe.java";
 
     private KiemLauDai() {
     }
@@ -94,7 +94,10 @@ public final class KiemLauDai {
             }
         }
         Kiem.dung("chi phi nang cap tang theo +k va theo bac (ho hut lon dan)", chiPhi);
-        Kiem.bang("bac met: 3 gio 100% roi 50%", 50, ThongSoLauDai.heSoMet(0));
+        Kiem.bang("bac met: het 90 phut 100% roi 20% (18/10/2026)", 20, ThongSoLauDai.heSoMet(0));
+        Kiem.bang("bac met: sau 120 phut met -> 5%", 5, ThongSoLauDai.heSoMet(120));
+        Kiem.bang("nang luong 90 phut 100%/ngay, tich toi da 180", 90 * 1000 + 180,
+                ThongSoLauDai.NANG_LUONG_PHUT_NGAY * 1000 + ThongSoLauDai.NANG_LUONG_PHUT_TICH_TOI_DA);
         Kiem.bang("bac met: sau 7 gio vuot -> 0 (chong bot)", 0, ThongSoLauDai.heSoMet(7 * 60));
     }
 
@@ -247,7 +250,7 @@ public final class KiemLauDai {
         Kiem.dung("moi tuan co ban xoay vong nam 2", coTen2);
         final String all = sk.toString();
         for (final String le : new String[]{"Tết Nguyên Đán", "Valentine", "8/3", "30/4", "Hè", "Trung Thu", "20/10",
-            "Halloween", "Giáng sinh", "Ngày cộng đồng", "Shiny", "Đột kích", "Tuần hệ", "Pokédex", "Thế chiến vùng"}) {
+            "Halloween", "Giáng sinh", "Ngày cộng đồng", "Shiny", "Đột kích", "Tuần hệ", "Pokédex", "Chiến vùng"}) {
             Kiem.dung("lich co: " + le, all.contains(le));
         }
     }
@@ -295,12 +298,12 @@ public final class KiemLauDai {
         }
         try (URLClassLoader cl = new URLClassLoader(new URL[]{ra.toURI().toURL()}, KiemLauDai.class.getClassLoader())) {
             final Method m = cl.loadClass("MoPhongKinhTe").getMethod("chayKiem", String.class, int.class, int.class);
-            final String[][] r = (String[][]) m.invoke(null, ".", 730, 25);
+            final String[][] r = (String[][]) m.invoke(null, "..", 730, 25);
             Kiem.dung("mo phong co >= 10 muc tieu", r.length >= 10);
             for (final String[] x : r) {
                 Kiem.bang("mo phong: " + x[0] + " (" + x[2] + ")", "1", x[1]);
             }
-            final String[][] r2 = (String[][]) m.invoke(null, ".", 730, 25);
+            final String[][] r2 = (String[][]) m.invoke(null, "..", 730, 25);
             boolean giong = r.length == r2.length;
             for (int i = 0; giong && i < r.length; i++) {
                 giong = r[i][2].equals(r2[i][2]);

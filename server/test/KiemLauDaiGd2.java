@@ -62,7 +62,7 @@ public final class KiemLauDaiGd2 {
         Kiem.dung("\"1\" = bat", LauDai.docGiaTri(" 1 "));
         Kiem.sai("\"0\" = tat", LauDai.docGiaTri("0"));
         Kiem.sai("mac dinh tat khi chay ngoai server", LauDai.bat());
-        final String tmpl = doc("vps/server.ini.tmpl");
+        final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.dung("ban mau co sv.lau_dai=0", tmpl.contains("\nsv.lau_dai=0"));
         Kiem.dung("ban mau co sv.ngay_khai_truong", tmpl.contains("\nsv.ngay_khai_truong="));
         final String sv = doc("src/server/TeamServer.java");
@@ -85,8 +85,11 @@ public final class KiemLauDaiGd2 {
         Kiem.bang("ngay sai dinh dang = 0", Long.valueOf(0L), Long.valueOf(LauDai.docNgay("01/10/2026")));
         Kiem.bang("10 ngay sau khai truong", Integer.valueOf(10), Integer.valueOf(LauDai.ngayTuKhaiTruong(kt, kt + 10L * 86400000L + 5000L)));
         Kiem.bang("chua dat ngay = ngay 0", Integer.valueOf(0), Integer.valueOf(LauDai.ngayTuKhaiTruong(0L, System.currentTimeMillis())));
+        LauDai.datTranTheoMua(true);
         Kiem.bang("mua S1 ngay 59", Integer.valueOf(0), Integer.valueOf(LauDai.mua(59)));
         Kiem.bang("mua S4 ngay 240", Integer.valueOf(3), Integer.valueOf(LauDai.mua(240)));
+        LauDai.datTranTheoMua(false);
+        Kiem.bang("tran theo mua tat (mac dinh): mua cuoi -> tinh thong du 50", Integer.valueOf(5), Integer.valueOf(LauDai.mua(0)));
 
         LauDai.dat(false);
         LauDai.ghiXuVao(100L);
@@ -108,19 +111,19 @@ public final class KiemLauDaiGd2 {
         Kiem.dung("top 1% (1 nguoi) giu > 99% xu", c.phanTramTop1X100 > 9900);
         Kiem.bang("khong ai hoat dong: 0 nguoi", Integer.valueOf(0), Integer.valueOf(ChiSoKinhTe.tinh(new int[0], new long[0], new long[0], new long[0]).soNguoi));
 
-        final String sql = doc("sql/them_bang_lau_dai.sql");
+        final String sql = doc("../sql/them_bang_lau_dai.sql");
         for (final String b : new String[]{"tob_kinh_te_ngay", "tob_char_lau_dai", "tob_nhiem_vu_lau_dai", "tob_mua_tuan",
             "tob_boss_dong_gop", "tob_ham_nguc", "tob_pvp_mua", "tob_su_pham", "tob_char_xp_cu", "tob_pokedex_shiny",
             "tob_giftcode", "tob_giftcode_log", "tob_qua_online", "tob_chiem_thanh_tuan"}) {
             Kiem.dung("sql/them_bang_lau_dai.sql tao " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
             Kiem.dung("DatabaseLauDai cung tu tao " + b, doc("src/data/DatabaseLauDai.java").contains("CREATE TABLE IF NOT EXISTS " + b + " "));
         }
-        for (final String f : new String[]{"sql/them_bang_lau_dai.sql", "sql/pokemon_lau_dai.sql", "sql/vo_hieu_giftcode_tt.sql"}) {
+        for (final String f : new String[]{"../sql/them_bang_lau_dai.sql", "../sql/pokemon_lau_dai.sql", "../sql/vo_hieu_giftcode_tt.sql"}) {
             final String s = doc(f).toUpperCase();
             Kiem.sai(f + " khong dung CREATE TABLE ... LIKE", s.matches("(?s).*CREATE TABLE[^;]*\\sLIKE\\s.*"));
             Kiem.sai(f + " khong dung TIMESTAMPDIFF", s.contains("TIMESTAMPDIFF"));
         }
-        final String xuat = doc("tools/pokemon/xuat_sql_day_du.sh");
+        final String xuat = doc("../tools/pokemon/xuat_sql_day_du.sh");
         Kiem.dung("xuat_sql_day_du.sh gom pokemon_lau_dai", xuat.contains("pokemon_lau_dai"));
         Kiem.dung("xuat_sql_day_du.sh gom them_bang_lau_dai", xuat.contains("them_bang_lau_dai"));
         Kiem.dung("xuat_sql_day_du.sh gom vo_hieu_giftcode_tt", xuat.contains("vo_hieu_giftcode_tt"));
@@ -243,7 +246,7 @@ public final class KiemLauDaiGd2 {
         }
 
         // 1.10 giftcode tt
-        final String gc = doc("sql/vo_hieu_giftcode_tt.sql");
+        final String gc = doc("../sql/vo_hieu_giftcode_tt.sql");
         Kiem.dung("sql vo hieu giftcode tt", gc.contains("UPDATE giftcode SET limit_use = 0 WHERE giftcode = 'tt'"));
         Kiem.dung("limit_use = 0 nghia la het luot (DatabaseGiftCode)", doc("src/data/DatabaseGiftCode.java").contains("if (limit == 0) {"));
     }
@@ -274,11 +277,11 @@ public final class KiemLauDaiGd2 {
         for (int i = 180; i <= 200; i++) {
             heSo = NangLuong.ghiNhan(h, t0 + i * 60000L, 180, 360);
         }
-        Kiem.bang("phut 200: 50%", Integer.valueOf(50), Integer.valueOf(heSo));
+        Kiem.bang("phut 200: 20% (bac met 18/10/2026)", Integer.valueOf(20), Integer.valueOf(heSo));
         for (int i = 201; i <= 400; i++) {
             heSo = NangLuong.ghiNhan(h, t0 + i * 60000L, 180, 360);
         }
-        Kiem.bang("phut 400: 20%", Integer.valueOf(20), Integer.valueOf(heSo));
+        Kiem.bang("phut 400: 5%", Integer.valueOf(5), Integer.valueOf(heSo));
         for (int i = 401; i <= 610; i++) {
             heSo = NangLuong.ghiNhan(h, t0 + i * 60000L, 180, 360);
         }
@@ -396,8 +399,11 @@ public final class KiemLauDaiGd2 {
         Kiem.bang("chuyen exp 0 = 0", Long.valueOf(0L), Long.valueOf(CapDoLauDai.chuyenExp(0L, mainCu, reqCu, main, req)));
 
         // tran
+        LauDai.datTranTheoMua(true);
         Kiem.bang("tran ngay 0 = 60", Integer.valueOf(60), Integer.valueOf(CapDoLauDai.tranCap(0, 91)));
         Kiem.bang("tran ngay 400 kep 91", Integer.valueOf(91), Integer.valueOf(CapDoLauDai.tranCap(400, 91)));
+        LauDai.datTranTheoMua(false);
+        Kiem.bang("tran theo mua tat: ngay 0 = cap cao nhat bang", Integer.valueOf(100), Integer.valueOf(CapDoLauDai.tranCap(0, 100)));
         final long tranExp = main[60] - 1L;
         long[] kq = CapDoLauDai.catTheoTran(tranExp - 10L, 100L, 60, main);
         Kiem.bang("cat theo tran: exp dung o tran", Long.valueOf(tranExp), Long.valueOf(kq[0]));
@@ -551,7 +557,7 @@ public final class KiemLauDaiGd2 {
 
     static void buoc5() {
         Kiem.nhom("GD2 buoc 5 - su kien: ma moi + lich 52 tuan");
-        final String csv = doc("docs/pokemon/su_kien_nam.csv");
+        final String csv = doc("../docs/pokemon/su_kien_nam.csv");
         final List<String[]> dong = docCsv(csv);
         Kiem.bang("CSV 52 tuan", Integer.valueOf(52), Integer.valueOf(dong.size()));
         Kiem.bang("bang Java 52 tuan", Integer.valueOf(52), Integer.valueOf(SuKienLauDai.LICH.length));
@@ -661,7 +667,7 @@ public final class KiemLauDaiGd2 {
             Kiem.bang("Message(" + lenh + ") chi tao o GoiLauDaiGame", Integer.valueOf(0),
                     Integer.valueOf(dem(src.replace(doc("src/real/GoiLauDaiGame.java"), ""), "new Message(" + lenh + ")")));
         }
-        final String tl = doc("docs/pokemon/THIET_KE_LAU_DAI.md");
+        final String tl = doc("../docs/pokemon/THIET_KE_LAU_DAI.md");
         Kiem.dung("muc 4.6 ghi ro -95..-99 da chot", tl.contains("-95") && tl.contains("POKE_DONG_GOP"));
     }
 
@@ -771,18 +777,18 @@ public final class KiemLauDaiGd2 {
         Kiem.dung("qua hoat dong theo TAI KHOAN (userID)", doc("src/real/QuaHoatDong.java").contains("p.userID"));
         Kiem.dung("RealController case 100 khong con 'dang cap nhat' khi bat co", doc("src/real/RealController.java").contains("QuaHoatDong.nhan(player, idOptionMenu)"));
         // chiem thanh
-        Kiem.sai("AFK (0 dong gop) khong nhan", com.htbb.pokemon.ChiemThanhLogic.duDongGop(0, 100000));
-        Kiem.sai("duoi 1% nguoi cao nhat khong nhan", com.htbb.pokemon.ChiemThanhLogic.duDongGop(5000, 1000000));
-        Kiem.dung("du dong gop", com.htbb.pokemon.ChiemThanhLogic.duDongGop(50000, 1000000));
-        Kiem.bang("bang thang top 3: 25 (tran)", Integer.valueOf(25), Integer.valueOf(com.htbb.pokemon.ChiemThanhLogic.luongKhoa(true, true, 3)));
-        Kiem.bang("bang thua hang 50: 5", Integer.valueOf(5), Integer.valueOf(com.htbb.pokemon.ChiemThanhLogic.luongKhoa(false, true, 50)));
-        Kiem.bang("khong du dong gop: 0", Integer.valueOf(0), Integer.valueOf(com.htbb.pokemon.ChiemThanhLogic.luongKhoa(true, false, 1)));
-        Kiem.bang("chia 20% quy / nguoi", Long.valueOf(2000L), Long.valueOf(com.htbb.pokemon.ChiemThanhLogic.phanQuy(100000L, 10, 999999L)));
-        Kiem.bang("chia quy tran 1 gio thu nhap", Long.valueOf(500L), Long.valueOf(com.htbb.pokemon.ChiemThanhLogic.phanQuy(100000L, 10, 500L)));
-        final String ct = doc("src/real/ChiemThanhLauDai.java");
+        Kiem.sai("AFK (0 dong gop) khong nhan", com.htbb.pokemon.ChiemGymLogic.duDongGop(0, 100000));
+        Kiem.sai("duoi 1% nguoi cao nhat khong nhan", com.htbb.pokemon.ChiemGymLogic.duDongGop(5000, 1000000));
+        Kiem.dung("du dong gop", com.htbb.pokemon.ChiemGymLogic.duDongGop(50000, 1000000));
+        Kiem.bang("bang thang top 3: 25 (tran)", Integer.valueOf(25), Integer.valueOf(com.htbb.pokemon.ChiemGymLogic.luongKhoa(true, true, 3)));
+        Kiem.bang("bang thua hang 50: 5", Integer.valueOf(5), Integer.valueOf(com.htbb.pokemon.ChiemGymLogic.luongKhoa(false, true, 50)));
+        Kiem.bang("khong du dong gop: 0", Integer.valueOf(0), Integer.valueOf(com.htbb.pokemon.ChiemGymLogic.luongKhoa(true, false, 1)));
+        Kiem.bang("chia 20% quy / nguoi", Long.valueOf(2000L), Long.valueOf(com.htbb.pokemon.ChiemGymLogic.phanQuy(100000L, 10, 999999L)));
+        Kiem.bang("chia quy tran 1 gio thu nhap", Long.valueOf(500L), Long.valueOf(com.htbb.pokemon.ChiemGymLogic.phanQuy(100000L, 10, 500L)));
+        final String ct = doc("src/real/ChiemGymLauDai.java");
         Kiem.dung("quy bang bi tru (chia lai, khong in tien)", ct.contains("clan.addMoney2Clan(-xu)"));
         Kiem.sai("khong con luong mo trong thuong chiem thanh moi", ct.contains("addLuong("));
-        Kiem.dung("NpcReceiveCard goi thuong moi", doc("src/real/NpcReceiveCard.java").contains("ChiemThanhLauDai.batDau("));
+        Kiem.dung("NpcReceiveCard goi thuong moi", doc("src/real/NpcReceiveCard.java").contains("ChiemGymLauDai.batDau("));
         // kiem toan bo sung
         Kiem.sai("A1: khong con cong thang lockLuong += 1000", doc("src/real/CharCapNhat.java").contains("self.lockLuong += 1000;"));
         Kiem.sai("A6: doi keo khong cong thang lockLuong", doc("src/real/cmd/RequestNPCInfoHandler.java").contains("p.lockLuong += luongLock;"));
@@ -921,7 +927,7 @@ public final class KiemLauDaiGd2 {
         final String dl = doc("src/data/DatabaseLauDai.java");
         Kiem.dung("nap mau khong JOIN", dl.contains("napMauNhiemVu") && !dl.toUpperCase().contains(" JOIN "));
         // vat pham dung + noi dung
-        final String vp = doc("sql/pokemon_vat_pham_lau_dai.sql");
+        final String vp = doc("../sql/pokemon_vat_pham_lau_dai.sql");
         Kiem.dung("type 28 + bang hieu ung", vp.contains("data_vat_pham_lau_dai") && vp.contains("Bùa bảo hộ"));
         Kiem.dung("map dung vat pham goi VatPhamDungLauDai", docThuMuc("src/real").contains("VatPhamDungLauDai.dung("));
         Kiem.dung("keo EXP 10-12 bi chan khi bat co", docThuMuc("src/real").contains("keo EXP"));

@@ -12,27 +12,27 @@ public class ItemInInventory
 		new string[2] { "áo", "Dây chuyền" },
 		new string[2] { "áo", "Dây chuyền" },
 		new string[2] { "áo", "Dây chuyền" },
-		new string[4] { "Nón", "Vũ khí", "Ngọc bội", "Găng" },
+		new string[4] { "Nón", "Đồ cầm tay", "Phiến đá hệ", "Găng" },
 		new string[2] { "Nhẫn dưới", "Quần" },
-		new string[2] { "Nón", "Vũ khí" },
+		new string[2] { "Nón", "Đồ cầm tay" },
 		new string[2] { "Giày", "Nhẫn trên" },
 		new string[2] { "Giày", "Nhẫn trên" }
 	};
 
 	private static string[][] kickHe = new string[5][]
 	{
-		new string[1] { "Kim" },
-		new string[1] { "Thủy" },
-		new string[1] { "Mộc" },
-		new string[1] { "Hỏa" },
-		new string[1] { "Thổ" }
+		new string[1] { "Thép" },
+		new string[1] { "Nước" },
+		new string[1] { "Cỏ" },
+		new string[1] { "Lửa" },
+		new string[1] { "Đất" }
 	};
 
 	private static string[][] groupKickAnimal = new string[5][]
 	{
 		new string[1] { "Nón" },
 		new string[1] { "Bàn đạp" },
-		new string[1] { "Hộ uyển" },
+		new string[1] { "Vòng chân" },
 		new string[1] { "Yên cương" },
 		new string[1] { "Giáp" }
 	};
@@ -99,7 +99,7 @@ public class ItemInInventory
 
 	public sbyte maxNgoc;
 
-	public static readonly string[] attrName = new string[10] { "Tấn công", "Thủ vật", "Né tránh", "Chính xác", "Chí mạng", "Sức khoẻ", "Thủ ma", "Chỉ số 7", "Chỉ số 8", "Chỉ số 9" };
+	public static readonly string[] attrName = new string[10] { "Tấn công", "Phòng thủ", "Né tránh", "Chính xác", "Chí mạng", "Sức khoẻ", "Phòng thủ đặc biệt", "Chỉ số 7", "Chỉ số 8", "Chỉ số 9" };
 
 	public short[] attCreate;
 
@@ -184,18 +184,18 @@ public class ItemInInventory
 	private static string[] nameHangItem = new string[6]
 	{
 		string.Empty,
-		"nhất phẩm",
-		"nhị phẩm",
-		"tam phẩm",
-		"tứ phẩm",
-		"ngũ phẩm"
+		"hạng 1",
+		"hạng 2",
+		"hạng 3",
+		"hạng 4",
+		"hạng 5"
 	};
 
-	private static string[] he = new string[5] { "hệ thuỷ", "hệ mộc", "hệ hoả", "hệ thổ", "hệ kim" };
+	private static string[] he = new string[5] { "hệ Nước", "hệ Cỏ", "hệ Lửa", "hệ Đất", "hệ Thép" };
 
 	private static string[] magic = new string[3]
 	{
-		"ma pháp",
+		"đặc biệt",
 		"vật lý",
 		string.Empty
 	};
@@ -354,11 +354,11 @@ public class ItemInInventory
 				{
 					if (hangItem > 0 && hangItem < 5 && item.type != 13 && item.type < 13)
 					{
-						text = ((item.type != 8) ? (text + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0")) : ((viTriVe != 1) ? (text + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0")) : (text + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0"))));
+						text = ((item.type != 8) ? (text + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0")) : ((viTriVe != 1) ? (text + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0")) : (text + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0"))));
 					}
 					if (hangItem > 0 && hangItem < 5 && isAnimalArmor(item.type))
 					{
-						text += setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0");
+						text += setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0");
 					}
 				}
 				catch (Exception)
@@ -458,11 +458,11 @@ public class ItemInInventory
 				{
 					if (hangItem > 0 && hangItem < 5 && item.type != 13 && item.type < 13)
 					{
-						text = ((item.type != 8) ? (text + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0")) : ((viTriVe != 1) ? (text + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0")) : (text + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0"))));
+						text = ((item.type != 8) ? (text + setTemp("cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0")) : ((viTriVe != 1) ? (text + setTemp("Nhẫn dưới cần " + groupKick[item.type][2] + " hoặc " + groupKick[item.type][3] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0")) : (text + setTemp("Nhẫn trên cần " + groupKick[item.type][0] + " hoặc " + groupKick[item.type][1] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0"))));
 					}
 					if (hangItem > 0 && hangItem < 5 && isAnimalArmor(item.type))
 					{
-						text += setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[heItem][0] + " để kích ngũ hành", "0");
+						text += setTemp("cần " + groupKickAnimal[item.type - 14][0] + " hệ " + kickHe[heItem][0] + " để kích hệ", "0");
 					}
 				}
 				catch (Exception)

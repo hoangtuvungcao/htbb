@@ -141,8 +141,8 @@ class MapSuKien {
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 if (idgift[index] == 9) {
                     try {
-                        sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được nhân sâm khi bắn pháo hoa"));
-                    } catch (IOException var15) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Berry Razz vàng khi bắn pháo hoa");
+                    } catch (Exception var15) {
                     }
                 }
             } else if (typegift[index] == 3) {
@@ -294,8 +294,8 @@ class MapSuKien {
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 if (idgift[index] == 9) {
                     try {
-                        sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được nhân sâm khi bắn pháo hoa"));
-                    } catch (IOException var15) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Berry Razz vàng khi bắn pháo hoa");
+                    } catch (Exception var15) {
                     }
                 }
             } else if (typegift[index] == 3) {
@@ -414,8 +414,8 @@ class MapSuKien {
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
 
                 try {
-                    sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được Hoả kỳ lân khi bắn pháo hoa"));
-                } catch (IOException var19) {
+                    com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Ponyta khi bắn pháo hoa");
+                } catch (Exception var19) {
                 }
             } else {
                 int index = Char.getIndexRandom(per);
@@ -488,8 +488,8 @@ class MapSuKien {
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                     if (idgift[index] == 9) {
                         try {
-                            sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được nhân sâm khi bắn pháo hoa"));
-                        } catch (IOException var17) {
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Berry Razz vàng khi bắn pháo hoa");
+                        } catch (Exception var17) {
                         }
                     }
                 } else if (typegift[index] == 3) {
@@ -582,7 +582,7 @@ class MapSuKien {
                             + " "
                             + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
                             + " khóa"
-                            + (istuhondan ? " và 1 Tụ hồn đan" : ""),
+                            + (istuhondan ? " và 1 Kẹo Poké" : ""),
                             ""
                     )
             );
@@ -590,7 +590,7 @@ class MapSuKien {
                     .saveOrtherLog(
                             "",
                             player.charname,
-                            sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Tụ hồn đan" : ""),
+                            sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Kẹo Poké" : ""),
                             "redeem"
                     );
         } else if (idMenu == 5) {
@@ -807,16 +807,16 @@ class MapSuKien {
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 } else if (typegift[index] == -2) {
                     p.createHeo((long) (r.nextInt(3) + 1), true);
-                    info = info + " thú cưỡi Đương Khang";
+                    info = info + " thú cưỡi Piloswine";
                 } else if (typegift[index] == -3) {
                     p.createNguaXuong((long) (r.nextInt(3) + 1), true);
-                    info = info + " thú cưỡi Bạch Cốt Mã";
+                    info = info + " thú cưỡi Spectrier";
                 } else if (typegift[index] == -4) {
                     p.doCreatePetBachThu((r.nextInt(2) + 2) * 24 * 60, true);
-                    info = info + " pet Bạch Thử";
+                    info = info + " pet Sandshrew";
                 } else if (typegift[index] == -5) {
                     if (map.doCreateHoVeLenh(p, 4320) != null) {
-                        info = info + " Hộ vệ lệnh";
+                        info = info + " Vé gọi Pokémon hỗ trợ";
                         p.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
                     } else {
                         addXpCharEvent(p, 50000L, false, "dangbanhchung");
@@ -824,7 +824,7 @@ class MapSuKien {
                     }
                 } else if (typegift[index] == -6) {
                     doCreateHuyetLinhThao(p, 0);
-                    info = info + " Huyết linh thảo";
+                    info = info + " Kẹo thú cưng";
                     p.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
                 } else if (typegift[index] == 6) {
                     boolean lock = r.nextInt(100) < 50;
@@ -854,8 +854,8 @@ class MapSuKien {
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                     if (idgift[index] == 9) {
                         try {
-                            sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được nhân sâm khi dâng bánh"));
-                        } catch (IOException var15) {
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã nhận được Berry Razz vàng khi dâng bánh");
+                        } catch (Exception var15) {
                         }
                     }
 
@@ -881,7 +881,7 @@ class MapSuKien {
                             player.potions[146] = player.potions[146] - 50;
                         })) {
                     if (player.getLuong() < 120) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 120 lượng mới có thể đổi được linh thú Tuần Lộc", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 120 lượng mới có thể đổi được thú cưỡi Stantler", ""));
                     } else {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có kem", ""));
                     }
@@ -1093,7 +1093,7 @@ class MapSuKien {
                     if (idOptionMenu == 0) {
                         Char.createChoi(617, p, 129600, 1, false);
                         it = map.doCreateHoVeLenh(p, 43200, idhove);
-                        info = "nhan choi bang  và " + it.getName();
+                        info = "nhan choi đội  và " + it.getName();
                         infoAlert = "Chúc mừng bạn nhận được 1 chổi băng và " + it.getName();
                     } else if (idOptionMenu == 1) {
                         Char.createChoi(619, p, 129600, 1, false);
@@ -1112,7 +1112,7 @@ class MapSuKien {
                         infoAlert = "Chúc mừng bạn nhận được 1 chổi lửa và " + it.getName();
                     }
                 } else {
-                    String[] menu = new String[]{"Trứng Bạch Cốt", "Trứng Đương Khang"};
+                    String[] menu = new String[]{"Trứng Spectrier", "Trứng Piloswine"};
                     p.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, idOptionMenu + 22));
                 }
             } else if (idMenu == 22) {
@@ -1396,13 +1396,13 @@ class MapSuKien {
             if (idOptionMenu == 0) {
                 player.sendMessage(
                         MessageCreator.createMsgMenu(
-                                new String[]{"Mặt nạ bí ngô", "Mặt nạ ngạ quỷ", "Mặt nạ ngạ khuyển", "Mặt nạ thi khiển", "Mặt nạ dạ xoa"}, idNpc, 11
+                                new String[]{"Mặt nạ bí ngô", "Mặt nạ Haunter", "Mặt nạ Houndoom", "Mặt nạ Yamask", "Mặt nạ Gengar"}, idNpc, 11
                         )
                 );
             } else if (idOptionMenu == 1) {
                 player.sendMessage(
                         MessageCreator.createMsgMenu(
-                                new String[]{"Mặt nạ bí ngô", "Mặt nạ ngạ quỷ", "Mặt nạ ngạ khuyển", "Mặt nạ thi khiển", "Mặt nạ dạ xoa"}, idNpc, 12
+                                new String[]{"Mặt nạ bí ngô", "Mặt nạ Haunter", "Mặt nạ Houndoom", "Mặt nạ Yamask", "Mặt nạ Gengar"}, idNpc, 12
                         )
                 );
             } else if (idOptionMenu == 2) {
@@ -1471,7 +1471,7 @@ class MapSuKien {
         if (idMenu == 0) {
             if (idOptionMenu == 0) {
                 player.sendMessage(
-                        MessageCreator.createMsgMenu(new String[]{"Pet Bạch thử", "áo Lạc long quân", "áo yếm", "Vũ khí thời trang", "Pháo hoa"}, idNpc, 6)
+                        MessageCreator.createMsgMenu(new String[]{"Pet Sandshrew", "áo Rayquaza", "áo Bellossom", "Đồ cầm tay thời trang", "Pháo hoa"}, idNpc, 6)
                 );
             } else if (idOptionMenu == 1) {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 5));
@@ -1501,7 +1501,7 @@ class MapSuKien {
 
                     info = info + ". sau doi co: " + player.potions[120] + " ruong bat bao";
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 rương bát bảo"));
+                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 rương kho báu"));
                     Database.instance.saveOrtherLog("", player.charname, info, "doiruong");
                 } else if (idOptionMenu == 4) {
                     if (player.luongxainhanRuong == 0L) {
@@ -1510,7 +1510,7 @@ class MapSuKien {
                     // Bo sung kiem toan A5: doi diem xai luong -> xu x10000 (chuyen luong thanh xu).
                     // Bat co sv.lau_dai: tat (THIET_KE 2.1 bo hoan xu khi tieu luong).
                     if (com.htbb.pokemon.LauDai.bat()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Đổi điểm xài lượng lấy xu đã ngừng.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Đổi điểm tiêu lượng lấy xu đã ngừng.", ""));
                         return;
                     }
 
@@ -1563,7 +1563,7 @@ class MapSuKien {
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(
                     MessageCreator.createServerAlertMessage(
-                            "Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (receiveda ? " và 1 Hộ vệ lệnh" : ""), ""
+                            "Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (receiveda ? " và 1 Vé gọi Pokémon hỗ trợ" : ""), ""
                     )
             );
             Database.instance
@@ -1633,15 +1633,15 @@ class MapSuKien {
                 if (idOptionMenu == 0) {
                     int[] time = new int[]{30};
                     player.doCreatePetBachThu(time[r.nextInt(time.length)] * 24 * 60, false);
-                    info = info + " pet Bạch thử 30 ngày";
+                    info = info + " pet Sandshrew 30 ngày";
                 } else if (idOptionMenu == 1) {
                     ShopTemplate item = getShopTemplate(51);
                     doBuyModelClothe(player, item, 30);
-                    info = info + " áo Lạc long quân 30 ngày";
+                    info = info + " áo Rayquaza 30 ngày";
                 } else if (idOptionMenu == 2) {
                     ShopTemplate item = getShopTemplate(56);
                     doBuyModelClothe(player, item, 30);
-                    info = info + " áo yếm đào 30 ngày";
+                    info = info + " áo Bellossom 30 ngày";
                 } else if (idOptionMenu == 3) {
                     Item it = doCreateVuKhiThoiTrang(player, 10080, ID_VU_KHI_THOI_TRANG[player.charClass]);
                     info = info + " " + it.getName() + " 7 ngày.";
@@ -1708,7 +1708,7 @@ class MapSuKien {
                             + sl[idMenu]
                             + " "
                             + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
-                            + (receiveda ? " và 1 đá tiến giai" : "")
+                            + (receiveda ? " và 1 đá thăng bậc" : "")
                             + " khóa",
                             ""
                     )
@@ -1802,7 +1802,7 @@ class MapSuKien {
                             + sl[idMenu]
                             + " "
                             + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
-                            + (receiveda ? " và 1 đá tiến giai" : "")
+                            + (receiveda ? " và 1 đá thăng bậc" : "")
                             + " khóa",
                             ""
                     )
@@ -1997,7 +1997,7 @@ class MapSuKien {
                 nlt.minuteExist = 10080;
                 player.iItems.add(nlt);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được Nguyệt Linh Trượng (7 ngày, khoá)", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được Gậy Ánh Trăng (7 ngày, khoá)", ""));
                 Database.instance.saveOrtherLog("", player.charname, "doi Linh Nguyet Truong (Trung Thu 2026)", "linhnguyettruong2026");
                 Database.instance.saveLogThongKeChiTieu("linh nguyet truong", 0, 1, 150L, "luong");
             } else if (idOptionMenu == 10) {
@@ -2020,7 +2020,7 @@ class MapSuKien {
                 // Ban Do(1) - GIOI HAN TRON DOI 5 lan/nhan vat (data.DatabaseGioiHanTrungThu).
                 final int daDoi = data.DatabaseGioiHanTrungThu.laySoLanDoiTienDan(player.charDBID);
                 if (daDoi >= 5) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã đổi Tiên đan đủ 5 lần (giới hạn tối đa).", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã đổi Cỏ hồi sinh đủ 5 lần (giới hạn tối đa).", ""));
                     return;
                 }
                 if (!player.truNeuDu(
@@ -2040,7 +2040,7 @@ class MapSuKien {
                 data.DatabaseGioiHanTrungThu.tangSoLanDoiTienDan(player.charDBID);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createServerAlertMessage(
-                        "Bạn nhận được 10 Tiên đan" + (nhanManhBanDoTienDan ? " và 1 Mảnh Bản Đồ" : "")
+                        "Bạn nhận được 10 Cỏ hồi sinh" + (nhanManhBanDoTienDan ? " và 1 Mảnh Bản Đồ" : "")
                                 + " (đã đổi " + (daDoi + 1) + "/5 lần)", ""));
                 Database.instance.saveOrtherLog("", player.charname, "doi tien dan lan " + (daDoi + 1) + "/5", "tiendan2026");
                 Database.instance.saveLogThongKeChiTieu("tien dan", 0, 10, 30L, "luong");
@@ -2226,7 +2226,7 @@ class MapSuKien {
                         hvl.lock = 1;
                     }
                     player.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Chúc mừng! Bạn nhận mặt nạ thời trang Trung Thu (30 ngày, khoá) và hộ vệ lệnh (7 ngày, khoá).", ""));
+                            "Chúc mừng! Bạn nhận mặt nạ thời trang Trung Thu (30 ngày, khoá) và vé gọi Pokémon hỗ trợ (7 ngày, khoá).", ""));
                 }
                 data.DatabaseCanMocThaDen.danhDauDaNhan(player.charDBID, moc);
                 Database.instance.saveOrtherLog("", player.charname, "nhan qua can moc " + moc, "canmocthaden");
@@ -2357,19 +2357,19 @@ class MapSuKien {
 
                 if (player.receiveQuestVulan == 0) {
                     if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Ta đã tìm thấy Chức Nữ rồi. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Ta đã tìm thấy Illumise rồi. Chúc cậu may mắn"));
                         return;
                     }
 
                     if (player.potions[77] <= 0) {
                         player.sendMessage(
-                                MessageCreator.createMsgChat(idNPC49, "Hay đi tìm lá thư của Ngưu Lang rồi đến gặp ta. Lá thư của Ngưu Lang có bán trong cửa hàng")
+                                MessageCreator.createMsgChat(idNPC49, "Hay đi tìm lá thư của Volbeat rồi đến gặp ta. Lá thư của Volbeat có bán trong cửa hàng")
                         );
                         return;
                     }
 
                     player.sendMessage(
-                            MessageCreator.createMsgPopUp(player.id, 14, "Chức Nữ đi dạo đã lâu rồi mà chưa thấy về. Ngươi có thể giúp ta tìm Nàng không?")
+                            MessageCreator.createMsgPopUp(player.id, 14, "Illumise đi dạo đã lâu rồi mà chưa thấy về. Cậu có thể giúp ta tìm Nàng không?")
                     );
                 } else if (player.receiveQuestVulan == 1) {
                     if (player.charCopy == null
@@ -2379,7 +2379,7 @@ class MapSuKien {
                             player.receiveQuestVulan = 0;
                         }
 
-                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Hãy tranh thủ tìm giúp ta Chức Nữ về đây nha."));
+                        player.sendMessage(MessageCreator.createMsgChat(idNPC49, "Hãy tranh thủ tìm giúp ta Illumise về đây nha."));
                     } else {
                         map.doGiftQuestChucNu(player);
                         player.receiveQuestVulan = 0;
@@ -2474,7 +2474,7 @@ class MapSuKien {
                                 + " "
                                 + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
                                 + " khóa"
-                                + (istuhondan ? " và 1 Tiên đan" : ""),
+                                + (istuhondan ? " và 1 Cỏ hồi sinh" : ""),
                                 ""
                         )
                 );
@@ -2482,7 +2482,7 @@ class MapSuKien {
                         .saveOrtherLog(
                                 "",
                                 player.charname,
-                                sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Tiên đan" : ""),
+                                sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Cỏ hồi sinh" : ""),
                                 "redeem"
                         );
             }
@@ -2499,7 +2499,7 @@ class MapSuKien {
 
                 if (player.receiveQuestVulan == 0) {
                     if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc cậu may mắn"));
                         return;
                     }
 
@@ -2509,7 +2509,7 @@ class MapSuKien {
                     }
 
                     player.sendMessage(
-                            MessageCreator.createMsgPopUp(player.id, 13, "Con ta đi tìm thuốc cho ta đã lâu rồi mà chưa thấy về. Ngươi có thể giúp ta tìm con không?")
+                            MessageCreator.createMsgPopUp(player.id, 13, "Con ta đi tìm thuốc cho ta đã lâu rồi mà chưa thấy về. Cậu có thể giúp ta tìm con không?")
                     );
                 } else if (player.receiveQuestVulan == 1) {
                     if (player.charCopy == null
@@ -2584,7 +2584,7 @@ class MapSuKien {
                                 + " "
                                 + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
                                 + " khóa"
-                                + (istuhondan ? " và 1 Tiên đan" : ""),
+                                + (istuhondan ? " và 1 Cỏ hồi sinh" : ""),
                                 ""
                         )
                 );
@@ -2592,7 +2592,7 @@ class MapSuKien {
                         .saveOrtherLog(
                                 "",
                                 player.charname,
-                                sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Tiên đan" : ""),
+                                sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Cỏ hồi sinh" : ""),
                                 "redeem"
                         );
             }
@@ -3164,7 +3164,7 @@ class MapSuKien {
                     }
 
                     if (player.giftTop != 3) {
-                        String[] menu = new String[]{"Phi phong ma pháp", "Phi phong vật lý"};
+                        String[] menu = new String[]{"Ruy băng đặc biệt", "Ruy băng vật lý"};
                         player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 10));
                     } else {
                         player.selectPhiphong = (byte) idOptionMenu;
@@ -3346,7 +3346,7 @@ class MapSuKien {
             newItem.dateCreate = Char.getDayTime(0L);
         }
 
-        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được trang bị linh thú", ""));
+        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được trang bị thú cưỡi", ""));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
         Database.instance.saveOrtherLog("", player.charname, "lv : " + lv + "_" + start, "giftGioto1");
     }

@@ -10,7 +10,7 @@ import java.util.Map;
  * com.htbb.pokemon.SuKienLauDai (thuan, co test).
  *
  * Hen lich: moi ma chi hen LAN KE TIEP vao tob_su_kien.mo_luc/dong_luc va CHI khi ca hai cot
- * dang trong (khong de len lich admin da dat tay tren web/admin/sukien.php). Bat/tat that do
+ * dang trong (khong de len lich admin da dat tay tren HTBB-Web /admin/sukien). Bat/tat that do
  * DatabaseSuKien.chayLichDenHan + LichSuKien lam (can khoi dong lai, co san chot an toan).
  */
 public final class SuKienLauDaiGame {
@@ -24,7 +24,7 @@ public final class SuKienLauDaiGame {
             return 0;
         }
         int n = 0;
-        for (final Map.Entry<String, long[]> e : SuKienLauDai.lanKeTiep(System.currentTimeMillis()).entrySet()) {
+        for (final Map.Entry<String, long[]> e : SuKienLauDai.lanKeTiep(com.htbb.pokemon.DongHo.bay()).entrySet()) {
             if (SuKien.timMuc(e.getKey()) == null) {
                 continue;
             }
@@ -48,6 +48,6 @@ public final class SuKienLauDaiGame {
         if (!SuKien.bat("moi:tuanhe")) {
             return -1;
         }
-        return SuKienLauDai.heTuan(SuKienLauDai.tuanIso(System.currentTimeMillis()));
+        return SuKienLauDai.heTuan(SuKienLauDai.tuanIso(com.htbb.pokemon.DongHo.bay()));
     }
 }

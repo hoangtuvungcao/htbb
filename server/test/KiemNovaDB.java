@@ -76,11 +76,11 @@ public final class KiemNovaDB {
         Kiem.dung("DDL khong phai CREATE TABLE -> nem loi, khong doan bua", nem);
 
         // ---- db.thamSoJdbc ----
-        Kiem.bang("thamSoJdbc trong -> URL y nhu cu", "jdbc:mysql://127.0.0.1:3306/kpah_db",
-                Database.urlJdbc("127.0.0.1:3306", "kpah_db", ""));
+        Kiem.bang("thamSoJdbc trong -> URL y nhu cu", "jdbc:mysql://127.0.0.1:3306/htbb_db",
+                Database.urlJdbc("127.0.0.1:3306", "htbb_db", ""));
         Kiem.bang("thamSoJdbc null -> URL y nhu cu", "jdbc:mysql://h/d", Database.urlJdbc("h", "d", null));
-        Kiem.bang("thamSoJdbc useSSL=false", "jdbc:mysql://h:3318/kpah_db?useSSL=false",
-                Database.urlJdbc("h:3318", "kpah_db", "useSSL=false"));
+        Kiem.bang("thamSoJdbc useSSL=false", "jdbc:mysql://h:3318/htbb_db?useSSL=false",
+                Database.urlJdbc("h:3318", "htbb_db", "useSSL=false"));
         Kiem.bang("thamSoJdbc bo dau ? va khoang trang thua", "jdbc:mysql://h/d?a=1&b=2",
                 Database.urlJdbc("h", "d", "  ?a=1&b=2 "));
 
@@ -94,7 +94,7 @@ public final class KiemNovaDB {
         Kiem.sai("Database khong tu ghep \"jdbc:mysql://\" cho ConnPool nua",
                 db.contains("new ConnPool(\"jdbc:mysql://"));
         Kiem.dung("docs ghi db.thamSoJdbc=useSSL=false cho NovaDB",
-                doc("docs/cau-hinh-server-ini.md").contains("db.thamSoJdbc=useSSL=false"));
+                doc("../docs/cau-hinh-server-ini.md").contains("db.thamSoJdbc=useSSL=false"));
 
         // ---- Phan biet hoa/thuong: NovaDB "=" phan biet, MariaDB utf8_general_ci thi khong ----
         final String nv = doc("src/data/DatabaseNhanVat.java");

@@ -327,7 +327,7 @@ public final class SuKienWorldCup {
             CHO_XAC_NHAN.put(khoa, Long.valueOf(bayGio));
             final int con = (ITEM_HOP_MAY_MAN < player.potions.length)
                     ? player.potions[ITEM_HOP_MAY_MAN] : 0;
-            final String info = "Hộp quà may mắn World Cup: có thể ra phi phong, nguyên liệu,"
+            final String info = "Hộp quà may mắn World Cup: có thể ra ruy băng, nguyên liệu,"
                     + " xu/lượng hoặc pet. Số lượng: " + con + ". Bấm lần nữa trong 10 giây để mở.";
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));

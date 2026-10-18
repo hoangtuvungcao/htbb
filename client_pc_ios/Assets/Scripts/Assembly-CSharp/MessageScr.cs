@@ -401,7 +401,7 @@ public class MessageScr : MyScreen
 		if (!tfInput.getText().Equals(string.Empty))
 		{
 			chatDelay = mSystem.getCurrentTimeMillis() / 100;
-			if (focusT.name.Equals("Bang hội"))
+			if (focusT.name.Equals("Đội"))
 			{
 				GameService.gI().chatToClan(tfInput.getText());
 			}

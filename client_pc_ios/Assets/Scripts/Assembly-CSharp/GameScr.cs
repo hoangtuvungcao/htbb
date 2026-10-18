@@ -213,7 +213,7 @@ public class GameScr : MyScreen
 
 	public string[] content_quest;
 
-	public static string infoQuest = "Giết 10 con nhím, sau đó quay về nói chuyện với  NPC";
+	public static string infoQuest = "Hạ 10 con nhím, sau đó quay về nói chuyện với  NPC";
 
 	public static string info_gif_quest = null;
 
@@ -287,7 +287,7 @@ public class GameScr : MyScreen
 
 	public static mVector msgWorld = new mVector();
 
-	public static string[] nameCountry = new string[2] { "Thanh Long", "Hắc Hổ" };
+	public static string[] nameCountry = new string[2] { "Kanto", "Johto" };
 
 	public static sbyte typeOptionFocus = 0;
 
@@ -1092,8 +1092,8 @@ public class GameScr : MyScreen
 
 	public override void update()
 	{
-		// mod: tick mọi auto mỗi khung hình (giống bản jar: GameScr.update -> PauseMenu.autoCheDoTick)
-		PauseMenu.autoCheDoTick();
+		// mod: Tự động đánh chính thức + Menu nhanh mỗi khung hình (giống bản jar: GameScr.update -> AutoGuard.tick)
+		AutoGuard.tick();
 		timeRemovePos--;
 		if (timeRemovePos < 0)
 		{
@@ -1856,7 +1856,7 @@ public class GameScr : MyScreen
 		{
 			string[] array = new string[15]
 			{
-				"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao đấng anh hào, ẩn sỹ.", "1Năm xưa ta có người anh em kết nghĩa là Hai Minh", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng nghĩa sỹ Sơn Nam", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương",
+				"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao nhà huấn luyện tài ba.", "1Năm xưa ta có người bạn thân là Xatu", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng huấn luyện Pewter", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương",
 				"1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."
 			};
 			if ((focusedActor == null || !(focusedActor is NPC)) && Canvas.currentDialog == null)
@@ -2992,7 +2992,7 @@ public class GameScr : MyScreen
 				mVector2.addElement(command5);
 				if ((Canvas.gameScr.mainChar.isMaster == 0 || Canvas.gameScr.mainChar.isMaster == 1 || Canvas.gameScr.mainChar.isMaster == 2) && ((Char)focusedActor).idClan == -1)
 				{
-					Command command6 = new Command("Mời vào bang hội");
+					Command command6 = new Command("Mời vào đội");
 					ActionPerform action6 = () =>
 					{
 						gameService.sendRequestAddClan(focusedActor.ID, 0, false);
@@ -3002,7 +3002,7 @@ public class GameScr : MyScreen
 				}
 				if (((Char)focusedActor).idClan != -1)
 				{
-					Command command7 = new Command("Xem thông tin bang hội");
+					Command command7 = new Command("Xem thông tin đội");
 					ActionPerform action7 = () =>
 					{
 						gameService.requestClanInfo(((Char)focusedActor).idClan);
@@ -3026,7 +3026,7 @@ public class GameScr : MyScreen
 				};
 				command8.action = action8;
 				mVector2.addElement(command8);
-				Command command9 = new Command("Xuống ngựa");
+				Command command9 = new Command("Xuống thú cưỡi");
 				ActionPerform action9 = () =>
 				{
 					unRideHorse();
@@ -3055,7 +3055,7 @@ public class GameScr : MyScreen
 				gameService.unRideHorse(0);
 				Canvas.currentDialog = null;
 			};
-			Canvas.startYesNoDlg("Ngựa sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống ngựa không ?", yesAction);
+			Canvas.startYesNoDlg("Thú cưỡi sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống thú cưỡi không ?", yesAction);
 		}
 	}
 
@@ -3302,7 +3302,7 @@ public class GameScr : MyScreen
 						mVector mVector3 = allQuestNpc;
 						if (posNpcReceiveClan != null && ((NPC)focusedActor).type == posNpcReceiveClan.index)
 						{
-							Command command = new Command("Nhiệm vụ bang hội");
+							Command command = new Command("Nhiệm vụ đội");
 							command.action = () =>
 							{
 								gameService.questClan(3);
@@ -3562,7 +3562,7 @@ public class GameScr : MyScreen
 				}
 				else
 				{
-					Canvas.startOKDlg("Bạn chưa có nguyên tố để luyện, hãy đến nhà lão Địa chủ mua rồi quay lại đây.");
+					Canvas.startOKDlg("Bạn chưa có nguyên tố để luyện, hãy đến nhà Persian mua rồi quay lại đây.");
 				}
 			};
 			command5.action = action5;
@@ -3603,7 +3603,7 @@ public class GameScr : MyScreen
 			ActionPerform action6 = () =>
 			{
 				mVector mVector2 = new mVector();
-				Command command27 = new Command("Vũ khí");
+				Command command27 = new Command("Đồ cầm tay");
 				ActionPerform action23 = () =>
 				{
 					if (mainChar.charXu < mainChar.getPriceRepair(1))
@@ -3711,7 +3711,7 @@ public class GameScr : MyScreen
 			Command command14 = new Command("Đi đến");
 			ActionPerform action10 = () =>
 			{
-				XaphuTemplate xp = Res.getXaphu();
+				PidgeotBayTemplate xp = Res.getXaphu();
 				if (xp != null)
 				{
 					mVector mVector2 = new mVector();
@@ -4280,7 +4280,7 @@ public class GameScr : MyScreen
 							{
 								break;
 							}
-							if (((((actor2.catagory == Actor.CAT_PLAYER && paintChar == 1) || actor2.ID == mainChar.ID || actor2.catagory != Actor.CAT_PLAYER) && actor2.y >> 4 == m && actor2.y <= gssye * 16 && actor2.y >= gssy * 16) || actor2.allwayPaint()) && !(actor2 is CongThanh))
+							if (((((actor2.catagory == Actor.CAT_PLAYER && paintChar == 1) || actor2.ID == mainChar.ID || actor2.catagory != Actor.CAT_PLAYER) && actor2.y >> 4 == m && actor2.y <= gssye * 16 && actor2.y >= gssy * 16) || actor2.allwayPaint()) && !(actor2 is CongGym))
 							{
 								actor2.paint(g);
 							}
@@ -5616,7 +5616,7 @@ public class GameScr : MyScreen
 			}
 			if (mainChar.kilAllMonsterQuest(monster.monster_type))
 			{
-				addChat(new ChatInfo(string.Empty, "Giết " + mainChar.infoQuest + " " + monster.getDisplayName(), 0));
+				addChat(new ChatInfo(string.Empty, "Hạ " + mainChar.infoQuest + " " + monster.getDisplayName(), 0));
 				if (WindowInfoScr.idMonsterClanQuest != -1)
 				{
 					if (WindowInfoScr.numberQuestGet + 1 >= WindowInfoScr.numberQuestAll)
@@ -5626,7 +5626,7 @@ public class GameScr : MyScreen
 					}
 					else
 					{
-						addChat(new ChatInfo(string.Empty, "Giết được " + ++WindowInfoScr.numberQuestGet + "/" + WindowInfoScr.numberQuestAll, 0));
+						addChat(new ChatInfo(string.Empty, "Hạ được " + ++WindowInfoScr.numberQuestGet + "/" + WindowInfoScr.numberQuestAll, 0));
 					}
 				}
 			}
@@ -6318,7 +6318,7 @@ public class GameScr : MyScreen
 		{
 			iTaskAuto = 1;
 			Canvas.endDlg();
-			addChat(new ChatInfo(string.Empty, "Hãy đi gặp các tiền bối trong làng để học võ công.", 0));
+			addChat(new ChatInfo(string.Empty, "Hãy đi gặp các bậc đàn anh trong làng để học chiêu thức.", 0));
 		};
 		Canvas.startYesNoDlg("Bạn có muốn hệ thống tự động làm nhiệm vụ cho bạn hay không ?", yesAction, noAction);
 	}
@@ -7232,7 +7232,7 @@ public class GameScr : MyScreen
 			addChat(new ChatInfo(string.Empty, "Đạt được level " + newlevel, 1));
 			if (newlevel == 2)
 			{
-				Canvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, nhân vật để tăng điểm tiềm năng và kỹ năng", false, 20);
+				Canvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, Pokémon để tăng điểm tiềm năng và kỹ năng", false, 20);
 			}
 		}
 	}
@@ -7264,10 +7264,6 @@ public class GameScr : MyScreen
 
 	public void onAdd2Party(Message m)
 	{
-		if (AutoGuard.nhomGuard(m))
-		{
-			return;
-		}
 		try
 		{
 			sbyte b = m.reader().readByte();
@@ -8509,10 +8505,6 @@ public class GameScr : MyScreen
 
 	public void showWindow(int focus, bool isSell, sbyte[] index)
 	{
-		if (AutoGuard.cuaSoGuard(focus, isSell, index))
-		{
-			return;
-		}
 		WindowInfoScr.gI().setInfo(focus, isSell, index);
 		WindowInfoScr.gI().switchToMe();
 	}
@@ -8794,7 +8786,7 @@ public class GameScr : MyScreen
 						PaintPopup.gI().right.perform();
 					}
 				};
-				Canvas.inputDlg.setInfo("Tên bang hội của bạn", ok, TField.INPUT_TYPE_ANY, 25, true);
+				Canvas.inputDlg.setInfo("Tên đội của bạn", ok, TField.INPUT_TYPE_ANY, 25, true);
 				Canvas.inputDlg.show();
 			};
 			ActionPaintCmd actionPaint = (MyGraphics g, int x, int y) =>
@@ -8819,6 +8811,14 @@ public class GameScr : MyScreen
 
 	public void onViewCharInfo(Char ch)
 	{
+		// pokemon: the trang bi nguoi khac = Pokemon + ngoai hinh cua nguoi dang chon (goi -22 khong co)
+		Char goc = focusedActor as Char;
+		if (goc != null && ch != null && ch.pokeDex <= 0)
+		{
+			ch.pokeDex = goc.pokeDex;
+			ch.pokeShiny = goc.pokeShiny;
+			ch.ngoaiHinh = goc.ngoaiHinh;
+		}
 		WindowInfoScr.gI().setInfo(0, false, new sbyte[1] { 1 });
 		WindowInfoScr.charWearing = ch;
 		WindowInfoScr.gI().switchToMe();
@@ -8942,7 +8942,7 @@ public class GameScr : MyScreen
 		case 0:
 			if (isThanthu > -1)
 			{
-				actor = new ThanThu();
+				actor = new PokemonHuyenThoai();
 				actor.setIdThanThu(isThanthu);
 			}
 			else
@@ -8955,40 +8955,40 @@ public class GameScr : MyScreen
 			{
 			case 91:
 			case 92:
-				actor = new Boss_Snake();
+				actor = new BossSerperior();
 				break;
 			case 93:
-				actor = new Boss_Eyes();
+				actor = new BossGengar();
 				break;
 			case 94:
-				actor = new Boss_Xuong();
+				actor = new BossDusknoir();
 				break;
 			case 46:
-				actor = new Boss_TuongQuan();
+				actor = new BossAegislash();
 				break;
 			case 43:
-				actor = new TruTranThanh(0);
+				actor = new TruNangLuong(0);
 				break;
 			case 36:
-				actor = new TruTranThanh(1);
+				actor = new TruNangLuong(1);
 				break;
 			case 37:
-				actor = new TruTranThanh(2);
+				actor = new TruNangLuong(2);
 				break;
 			case 38:
-				actor = new BossTL();
+				actor = new BossGyarados();
 				break;
 			case 39:
-				actor = new BossThanLan();
+				actor = new BossSalamence();
 				break;
 			case 82:
-				actor = new Boss_Eagle();
+				actor = new BossZapdos();
 				break;
 			case 83:
-				actor = (congThanh = new CongThanh());
+				actor = (congThanh = new CongGym());
 				break;
 			case 84:
-				actor = new CuongThi();
+				actor = new QuaiYamask();
 				break;
 			case 113:
 				actor = new MonsterNew(113);
@@ -9900,11 +9900,6 @@ public class GameScr : MyScreen
 
 	public void onMenuOption(int userId1, sbyte idMenu, string[] listStr)
 	{
-		// mod: nuôi pet / vận may đọc menu NPC; việc chế đồ ẩn menu
-		if (AutoGuard.menuGuard(userId1, idMenu, listStr) || AutoGuard.autoHideUi())
-		{
-			return;
-		}
 		Out.println("may lan nho");
 		if (Canvas.menu.showMenu)
 		{

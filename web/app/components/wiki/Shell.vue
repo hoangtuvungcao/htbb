@@ -25,6 +25,23 @@ useSeoMeta({
   ogDescription: () => trang.value?.moTa ?? '',
 })
 
+const goc = useGocSite()
+useHead({
+  script: [{
+    type: 'application/ld+json',
+    key: 'ld-breadcrumb',
+    innerHTML: () => JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        { '@type': 'ListItem', 'position': 1, 'name': 'Trang chủ', 'item': `${goc.value}/` },
+        { '@type': 'ListItem', 'position': 2, 'name': 'Cẩm nang', 'item': `${goc.value}/cam-nang` },
+        { '@type': 'ListItem', 'position': 3, 'name': trang.value?.ten ?? 'Cẩm nang', 'item': `${goc.value}/cam-nang/${props.slug}` },
+      ],
+    }),
+  }],
+})
+
 const loc = ref('')
 const nhom = computed(() => {
   const t = boDau(loc.value.trim())
@@ -76,7 +93,7 @@ const moMenu = ref(false)
                     <NuxtLink
                       :to="`/cam-nang/${p.slug}`"
                       class="flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-semibold transition-colors"
-                      :class="p.slug === slug ? 'bg-pokered-500 text-white shadow-[0_2px_0_var(--poke-outline)]' : 'text-toned hover:bg-elevated hover:text-highlighted'"
+                      :class="p.slug === slug ? 'bg-pokered-600 text-white shadow-[0_2px_0_var(--poke-outline)]' : 'text-toned hover:bg-elevated hover:text-highlighted'"
                       :aria-current="p.slug === slug ? 'page' : undefined"
                       @click="moMenu = false"
                     >
@@ -109,7 +126,7 @@ const moMenu = ref(false)
           <div class="mt-14 rounded-2xl bg-elevated/60 p-4 text-xs text-muted">
             <UIcon name="i-lucide-database" class="mr-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
             Số liệu có thể được điều chỉnh trong các bản cập nhật cân bằng. Một số tính năng (trần cấp theo mùa, năng lượng huấn luyện,
-            Hầm Ngục Bí Ẩn) ra mắt dần — khi có khác biệt, thông báo trong game là chuẩn.
+            Hầm ngục bí ẩn) ra mắt dần — khi có khác biệt, thông báo trong game là chuẩn.
           </div>
 
           <nav class="mt-8 grid gap-3 sm:grid-cols-2" aria-label="Trang trước / sau">

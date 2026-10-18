@@ -34,7 +34,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
             Không giao dịch được
           </p>
           <p class="mt-3 text-sm text-muted">
-            Nhận từ nhiệm vụ, đăng nhập 7 ngày ({{ K.lichDangNhap.join(' · ') }} — tổng {{ tongDangNhap }}/tuần), thành tựu, sự kiện. Dùng mua bùa bảo hộ, vé, đồ tiện ích.
+            Nhận từ nhiệm vụ, đăng nhập {{ K.lichDangNhap.length }} ngày liên tiếp ({{ K.lichDangNhap.join(' · ') }} — tổng {{ tongDangNhap }} mỗi vòng), thành tựu, sự kiện. Dùng mua bùa bảo hộ, vé, đồ tiện ích.
           </p>
         </div>
         <div class="rounded-3xl glass p-5">
@@ -45,32 +45,17 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
             Giao dịch được · hiếm
           </p>
           <p class="mt-3 text-sm text-muted">
-            Không mua được bằng tiền thật. Chỉ có từ bảng xếp hạng tuần, thành tựu và top sự kiện — phần thưởng cho người chơi giỏi.
+            Không mua được bằng tiền thật. Chỉ có từ đua top, thành tựu lớn và top sự kiện — phần thưởng cho người chơi giỏi.
           </p>
         </div>
       </div>
-      <div class="bang-cuon mt-5 max-w-md">
-        <table class="bang-wiki">
-          <caption>Lượng thưởng theo bảng xếp hạng tuần</caption>
-          <thead>
-            <tr>
-              <th>Hạng</th><th class="so">
-                Lượng
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(x, i) in K.luongXepHangTuan" :key="x.top">
-              <td>{{ i === 0 ? 'Hạng 1' : `Top ${x.top}` }}</td><td class="so font-bold text-highlighted">
-                {{ x.luong }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <p class="mt-4 text-sm text-muted">
+        Lượng đến từ các đợt <strong>đua top</strong> do ban quản trị công bố (nhận ở NPC Tổng quản → "Nhận thưởng đua top"), thành tựu lớn và top sự kiện.
+        Lượng dùng cho đồ trang trí ở <NuxtLink to="/cam-nang/cua-hang#delcatty-trang-tri" class="lien-ket">Delcatty</NuxtLink> và tiện ích, không mua được sức mạnh.
+      </p>
     </WikiSection>
 
-    <WikiSection id="kiem" title="Kiếm tiền">
+    <WikiSection id="kiem" title="Cách kiếm tiền">
       <ul class="cham">
         <li><strong>Đánh quái gần cấp mình</strong> — nguồn xu chính, tỉ lệ thuận với cấp (xem cột "Xu / giờ" ở <NuxtLink to="/cam-nang/cap-do#bang-exp" class="lien-ket">bảng EXP</NuxtLink>). Chịu giới hạn <NuxtLink to="/cam-nang/cap-do#nang-luong" class="lien-ket">năng lượng huấn luyện</NuxtLink>.</li>
         <li><strong>Nhiệm vụ</strong> trả xu + EXP theo "giờ thu nhập" ở cấp của nhiệm vụ, nên luôn đáng làm dù bạn cấp nào.</li>

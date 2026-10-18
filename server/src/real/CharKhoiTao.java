@@ -1,7 +1,7 @@
 package real;
 
 
-import ThanKhi.ThanKhiCraftState;
+import BaoVatHuyenThoai.BaoVatHuyenThoaiCraftState;
 import data.ItemQuest;
 
 import data.DanhHieu;
@@ -448,7 +448,7 @@ class CharKhoiTao {
         self.allGemGetLock = new int[Map.gemTemplate.length];
         self.allGemUse = new int[Map.gemTemplate.length];
         self.allGemUseLock = new int[Map.gemTemplate.length];
-        self.thanKhiCraftState = new ThanKhiCraftState();
+        self.thanKhiCraftState = new BaoVatHuyenThoaiCraftState();
     }
 
 }

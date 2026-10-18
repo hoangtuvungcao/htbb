@@ -20,14 +20,16 @@ import java.util.stream.Stream;
  *      nhung loai QUAN TRONG do lap tuc bi bo qua vi khong con khop GIU.
  *   3. vps/don-log.sh chep lai danh sach de xoa dong cu tren production; hai ban lech nhau la
  *      loai dang giu bi xoa mat, hoac rac khong bao gio duoc don.
- *   4. web/admin/chandoan.php dem mot so loai loi/gian lan; loai nao o do ma khong nam trong
+ *   4. Trang chan doan web (HTBB-Web server/utils/chanDoan.ts; truoc la web/admin/chandoan.php
+ *      cua website PHP da bo) dem mot so loai loi/gian lan; loai nao o do ma khong nam trong
  *      GIU thi trang chan doan mu, luon bao "0 loi".
  */
 public final class KiemLocLogVatPham {
 
     private static final String F_DATABASE = "src/data/Database.java";
-    private static final String F_DON_LOG = "vps/don-log.sh";
-    private static final String F_CHAN_DOAN = "web/admin/chandoan.php";
+    private static final String F_DON_LOG = "../vps/don-log.sh";
+    /** HTBB-Web (thay web/admin/chandoan.php da bo - docs/pokemon/BO_WEB_PHP.md). */
+    private static final String F_CHAN_DOAN = "server/utils/chanDoan.ts";
 
     public static void chay() {
         Kiem.nhom("LocLogVatPham - chi ghi loai trong danh sach GIU vao tob_log_all_item");
@@ -127,23 +129,32 @@ public final class KiemLocLogVatPham {
 
     /** (4) Moi loai ma trang chan doan web dem deu phai nam trong GIU, khong thi trang do mu. */
     private static void kiemKhopChanDoan() {
-        final String php = doc(Paths.get(F_CHAN_DOAN));
-        Kiem.dung("doc duoc " + F_CHAN_DOAN, !php.isEmpty());
-        final int bd = php.indexOf("$LOAI_LOI = [");
-        Kiem.dung("chandoan.php co bang $LOAI_LOI", bd >= 0);
+        if (WebHtbb.boQua("trang chan doan HTBB-Web")) {
+            return;
+        }
+        final String php = WebHtbb.doc(F_CHAN_DOAN);
+        Kiem.dung("doc duoc " + WebHtbb.ten(F_CHAN_DOAN), !php.isEmpty());
+        final int bd = php.indexOf("CHAN_DOAN_LOAI_LOI: Readonly<Record<string, string>> = Object.freeze({");
+        Kiem.dung("chanDoan.ts co bang CHAN_DOAN_LOAI_LOI", bd >= 0);
         if (bd < 0) {
             return;
         }
-        final int kt = php.indexOf("];", bd);
+        final int kt = php.indexOf("\n})", bd);
         final String khoi = php.substring(bd, kt < 0 ? php.length() : kt);
-        final Matcher m = Pattern.compile("'([A-Za-z0-9_]+)'[ \t]*=>").matcher(khoi);
+        final Matcher m = Pattern.compile("(?m)^\\s*([A-Za-z0-9_]+):\\s*'").matcher(khoi);
         int so = 0;
         while (m.find()) {
             so++;
-            Kiem.dung("chandoan.php dem '" + m.group(1) + "' -> phai nam trong GIU",
+            Kiem.dung("chanDoan.ts dem '" + m.group(1) + "' -> phai nam trong GIU",
                     data.LocLogVatPham.GIU.contains(m.group(1)));
         }
-        Kiem.dung("doc duoc danh sach loai loi cua chandoan.php (tren 5 loai)", so > 5);
+        Kiem.dung("doc duoc danh sach loai loi cua chanDoan.ts (tren 5 loai)", so > 5);
+        // Cau SQL ghi cung loai (vd "WHERE aclog = 'loiinvent'") cung phai nam trong GIU.
+        final Matcher m2 = Pattern.compile("aclog\\s*=\\s*'([A-Za-z0-9_]+)'").matcher(php);
+        while (m2.find()) {
+            Kiem.dung("chanDoan.ts truy van aclog = '" + m2.group(1) + "' -> phai nam trong GIU",
+                    data.LocLogVatPham.GIU.contains(m2.group(1)));
+        }
     }
 
     /** Lay than mot method: tu chu ky toi dau dong ket thuc "    }" cung cap. */

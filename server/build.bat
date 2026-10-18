@@ -7,7 +7,7 @@ REM ============================================================
 REM  Build HTBB_NEW.jar tu src\  (jar SACH, dung tu dau)
 REM
 REM  Chay sau khi sua bat ky file .java nao trong src\.
-REM  Xong thi chay capnhat.bat de thay vao KPAH2_patched.jar.
+REM  Xong thi chay capnhat.bat de thay vao htbb-server.jar.
 REM
 REM  Ghi chu lich su: ban cu chong class moi len jar cu ("jar uf") vi so
 REM  mat util/Common.class va real/SkinThuNuoi.class - hai class khong co
@@ -63,7 +63,7 @@ echo.
 
 set "OUT=build\classes"
 set "MF=build\manifest.mf"
-set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\NQSH_5h.jar"
+set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\htbb-core.jar"
 set "MAINCLASS=server.TeamServer"
 
 if not exist build mkdir build
@@ -92,11 +92,11 @@ echo       OK - %SOCLASS% class.
 
 echo [3/4] Dong goi HTBB_NEW.jar...
 REM Class-Path tro toi lib\ - la duong dan TUONG DOI so voi cho dat jar, tuc
-REM /opt/kpah/lib tren VPS (WorkingDirectory=/opt/kpah). Doi ten thu muc lib
+REM /opt/htbb/lib tren VPS (WorkingDirectory=/opt/htbb). Doi ten thu muc lib
 REM la server chet ngay luc khoi dong vi khong thay driver MySQL.
 > "%MF%" echo Manifest-Version: 1.0
 >> "%MF%" echo Main-Class: %MAINCLASS%
->> "%MF%" echo Class-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar lib/NQSH_5h.jar
+>> "%MF%" echo Class-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar lib/htbb-core.jar
 >> "%MF%" echo.
 
 if exist HTBB_NEW.jar del /f /q HTBB_NEW.jar
@@ -134,9 +134,9 @@ echo.
 echo ============================================================
 echo   XONG: da tao HTBB_NEW.jar (%SOJAR% class)
 echo   Buoc tiep theo:
-echo     1. capnhat.bat  -^> thay vao KPAH2_patched.jar (co backup) + chay lai
+echo     1. capnhat.bat  -^> thay vao htbb-server.jar (co backup) + chay lai
 echo     2. Test server chay on tren may ban
-echo     3. git add KPAH2_patched.jar ^&^& git commit ^&^& git push
+echo     3. git add htbb-server.jar ^&^& git commit ^&^& git push
 echo        (BAT BUOC - deploy-auto.sh tren VPS chi pull file .jar co san,
 echo         no KHONG tu bien dich .java)
 echo ============================================================

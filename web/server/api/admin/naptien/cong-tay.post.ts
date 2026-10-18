@@ -1,10 +1,10 @@
 /**
  * Cộng tay (đền bù / tiền vào không khớp nội dung). Tạo đơn nguồn 'admin' rồi xác nhận qua
  * hàm duy nhất — vào cùng sổ cái, cùng nhật ký. Body: { username, char_id, ma_goi, ma_gd, ly_do }.
- * Chỉ khi KPAH_NAP_BAT bật (không dựng sổ sách khi nạp đang tắt).
+ * Chỉ khi HTBB_NAP_BAT bật (không dựng sổ sách khi nạp đang tắt).
  */
 export default defineAdminHandler(async (event, admin) => {
-  if (!useHtbbConfig().nap.bat) throw apiLoi(409, 'Nạp tiền đang tắt (KPAH_NAP_BAT).')
+  if (!useHtbbConfig().nap.bat) throw apiLoi(409, 'Nạp tiền đang tắt (HTBB_NAP_BAT).')
   if (!(await napCoBang())) napThieuBang()
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
   const ten = str(body?.username).trim().slice(0, 50)

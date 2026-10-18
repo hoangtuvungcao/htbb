@@ -1,0 +1,248 @@
+# Phát hành Huyền Thoại Bảo Bối (HTBB): build jar (thường + nhẹ), APK :pokemon (ký bằng ky-ban-phat-hanh.sh),
+# PC (Unity qua GameCI) rồi đẩy lên GitHub Releases của repo phát hành HTBB + ghi phienban.json.
+# Bấm "Run workflow" ở tab Actions. Không bao giờ đụng kênh NQSH-H2 cũ (kpah-server/nqsh-h2-tai).
+#
+# Cấu hình (Settings -> Secrets and variables -> Actions), xem tools/phat-hanh/README.md:
+#   Variables: HTBB_REPO_PHAT_HANH   <chu>/<repo-phat-hanh-htbb>   (chưa có = chỉ build được, chi_build=true)
+#              HTBB_MAY_CHU_CHINH    host:cổng máy chủ production   (BẮT BUỘC - build dừng nếu thiếu)
+#              HTBB_CAP_NHAT_URL     link phienban.json cho PC tự cập nhật (trống = TẮT tự cập nhật PC)
+#              HTBB_KEY_ALIAS        alias khoá ký APK (mặc định htbb)
+#   Secrets:   HTBB_TAI_TOKEN        token ghi repo phát hành HTBB (Contents + Releases: write)
+#              HTBB_KEYSTORE_B64     keystore APK dạng base64 (khoá chỉ nằm trong secrets, KHÔNG trong repo)
+#              HTBB_KS_PASS          mật khẩu keystore  [HTBB_KEY_PASS: mật khẩu khoá nếu khác]
+#              UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD   (bản PC)
+# Phiên bản + số bản: tools/phat-hanh/phien_ban.conf (PHIEN_BAN, BAN) - sửa + cập nhật CHANGELOG.md trước khi chạy.
+name: Phát hành HTBB
+
+on:
+  workflow_dispatch:
+    inputs:
+      loai:
+        description: "Phát hành bản nào"
+        type: choice
+        options: [tat-ca, jar, android, pc]
+        default: tat-ca
+      ghi_chu:
+        description: "Ghi chú hiện cho người chơi lúc cập nhật (phienban.json)"
+        default: ""
+      chi_build:
+        description: "Chỉ build thử (tải file ở Artifacts), KHÔNG phát hành"
+        type: boolean
+        default: true
+      pc_kieu:
+        description: "Kiểu build PC (mono / il2cpp)"
+        type: choice
+        options: [mono, il2cpp]
+        default: mono
+
+concurrency:
+  group: phat-hanh-htbb
+  cancel-in-progress: false
+
+env:
+  REPO: ${{ vars.HTBB_REPO_PHAT_HANH }}
+  MAY_CHU_CHINH: ${{ vars.HTBB_MAY_CHU_CHINH }}
+  CAP_NHAT_URL: ${{ vars.HTBB_CAP_NHAT_URL }}
+
+jobs:
+  chuan-bi:
+    name: Kiểm cấu hình + đọc phiên bản
+    runs-on: ubuntu-24.04
+    outputs:
+      ban: ${{ steps.pb.outputs.ban }}
+      phien_ban: ${{ steps.pb.outputs.phien_ban }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: pb
+        name: Phiên bản (tools/phat-hanh/phien_ban.conf)
+        run: |
+          pb=$(sed -n 's/^PHIEN_BAN=//p' tools/phat-hanh/phien_ban.conf | tail -1 | tr -d '\r" ')
+          ban=$(sed -n 's/^BAN=//p' tools/phat-hanh/phien_ban.conf | tail -1 | tr -d '\r" ')
+          case "$ban" in ''|*[!0-9]*) echo "::error::BAN='$ban' khong hop le trong tools/phat-hanh/phien_ban.conf"; exit 1 ;; esac
+          [ -n "$pb" ] || { echo "::error::thieu PHIEN_BAN trong tools/phat-hanh/phien_ban.conf"; exit 1; }
+          echo "phien_ban=$pb" >> "$GITHUB_OUTPUT"
+          echo "ban=$ban" >> "$GITHUB_OUTPUT"
+          echo "HTBB $pb (ban $ban)"
+      - name: Kiểm biến + secrets
+        env:
+          LOAI: ${{ inputs.loai }}
+          CHI_BUILD: ${{ inputs.chi_build }}
+          T: ${{ secrets.HTBB_TAI_TOKEN }}
+          KS: ${{ secrets.HTBB_KEYSTORE_B64 }}
+          KP: ${{ secrets.HTBB_KS_PASS }}
+          UL: ${{ secrets.UNITY_LICENSE }}
+          UE: ${{ secrets.UNITY_EMAIL }}
+          UP: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          thieu=""
+          case "$MAY_CHU_CHINH" in ?*:[0-9]*) ;; *) thieu="$thieu vars.HTBB_MAY_CHU_CHINH(host:cong)" ;; esac
+          case "$MAY_CHU_CHINH$CAP_NHAT_URL$REPO" in *nqsh-h2*) echo "::error::may chu / CAP_NHAT_URL / REPO tro ve NQSH-H2"; exit 1 ;; esac
+          if [ "$CHI_BUILD" != true ]; then
+            [ -n "$REPO" ] || thieu="$thieu vars.HTBB_REPO_PHAT_HANH"
+            [ -n "$T" ] || thieu="$thieu secrets.HTBB_TAI_TOKEN"
+          fi
+          case "$LOAI" in tat-ca|android) [ -n "$KS" ] || thieu="$thieu secrets.HTBB_KEYSTORE_B64"; [ -n "$KP" ] || thieu="$thieu secrets.HTBB_KS_PASS" ;; esac
+          case "$LOAI" in tat-ca|pc) [ -n "$UL" ] || thieu="$thieu UNITY_LICENSE"; [ -n "$UE" ] || thieu="$thieu UNITY_EMAIL"; [ -n "$UP" ] || thieu="$thieu UNITY_PASSWORD" ;; esac
+          if [ -n "$thieu" ]; then
+            echo "::error::Thieu cau hinh:$thieu (Settings -> Secrets and variables -> Actions, xem tools/phat-hanh/README.md)"
+            exit 1
+          fi
+          [ -n "$CAP_NHAT_URL" ] || echo "::warning::HTBB_CAP_NHAT_URL trong - ban PC KHONG tu cap nhat"
+          echo "OK: $LOAI, may chu $MAY_CHU_CHINH, repo ${REPO:-(chi build)}"
+
+  jar:
+    name: Build jar (thường + nhẹ)
+    needs: chuan-bi
+    if: inputs.loai == 'tat-ca' || inputs.loai == 'jar'
+    runs-on: ubuntu-24.04
+    env:
+      BAN: ${{ needs.chuan-bi.outputs.ban }}
+      PB: ${{ needs.chuan-bi.outputs.phien_ban }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6    # JRE 8: rt.jar cho ProGuard
+        with:
+          distribution: temurin
+          java-version: "8"
+      - uses: actions/setup-java@v6    # JDK biên dịch (--release 8)
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Build jar
+        run: |
+          GOI=nhe RT_JAR="$JAVA_HOME_8_X64/jre/lib/rt.jar" sh client_jar/build.sh "$BAN"
+          cp "client_jar/out/HTBB-v$BAN-release.jar" "HTBB-$PB-thuong.jar"
+          cp "client_jar/out/HTBB-v$BAN-nhe.jar" "HTBB-$PB-nhe.jar"
+          for f in "HTBB-$PB-thuong.jar" "HTBB-$PB-nhe.jar"; do
+            unzip -p "$f" META-INF/MANIFEST.MF | grep "^HTBB-"
+            unzip -p "$f" META-INF/MANIFEST.MF | grep -q "^HTBB-May-Chu: $MAY_CHU_CHINH" || { echo "::error::$f khong gan may chu"; exit 1; }
+            unzip -l "$f" | grep -q " GHI_CONG.txt$" || { echo "::error::$f thieu GHI_CONG.txt"; exit 1; }
+          done
+      - uses: actions/upload-artifact@v7
+        with:
+          name: jar
+          path: HTBB-*.jar
+          retention-days: 3
+
+  android:
+    name: Build APK (:pokemon, ký)
+    needs: chuan-bi
+    if: inputs.loai == 'tat-ca' || inputs.loai == 'android'
+    runs-on: ubuntu-24.04
+    env:
+      BAN: ${{ needs.chuan-bi.outputs.ban }}
+      PB: ${{ needs.chuan-bi.outputs.phien_ban }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Build APK chưa ký
+        run: |
+          KIEU=release MAY_CHU="$MAY_CHU_CHINH" OUT="HTBB-$PB-android-chuaky.apk" sh client_apk/build-pokemon.sh
+      - name: Ký APK (khoá từ secrets, thư mục tạm NGOÀI repo)
+        env:
+          KS: ${{ secrets.HTBB_KEYSTORE_B64 }}
+          HTBB_KS_PASS: ${{ secrets.HTBB_KS_PASS }}
+          HTBB_KEY_PASS: ${{ secrets.HTBB_KEY_PASS }}
+          HTBB_KEY_ALIAS: ${{ vars.HTBB_KEY_ALIAS || 'htbb' }}
+        run: |
+          export KEY_DIR="$RUNNER_TEMP/htbb-khoa"
+          mkdir -p "$KEY_DIR" && chmod 700 "$KEY_DIR"
+          printf '%s' "$KS" | base64 -d > "$KEY_DIR/htbb.jks"
+          [ -n "$HTBB_KEY_PASS" ] || unset HTBB_KEY_PASS
+          HTBB_KEYSTORE=htbb.jks sh client_apk/ky-ban-phat-hanh.sh "client_apk/out/HTBB-$PB-android-chuaky.apk" "HTBB-$PB-android.apk" \
+            || { rm -rf "$KEY_DIR"; exit 1; }
+          rm -rf "$KEY_DIR"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: android
+          path: HTBB-${{ needs.chuan-bi.outputs.phien_ban }}-android.apk
+          retention-days: 3
+
+  pc:
+    name: Build PC (Unity)
+    needs: chuan-bi
+    if: inputs.loai == 'tat-ca' || inputs.loai == 'pc'
+    runs-on: windows-2022
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    env:
+      BAN: ${{ needs.chuan-bi.outputs.ban }}
+      PB: ${{ needs.chuan-bi.outputs.phien_ban }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: client_pc_ios/Library
+          key: Library-Win64-${{ hashFiles('client_pc_ios/Assets/**', 'client_pc_ios/Packages/**', 'client_pc_ios/ProjectSettings/**') }}
+          restore-keys: Library-Win64-
+      - uses: game-ci/unity-builder@v5
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: client_pc_ios
+          unityVersion: 6000.5.9f1
+          targetPlatform: StandaloneWindows64
+          buildMethod: BuildCli.Win64
+          buildName: HuyenThoaiBaoBoi
+          buildsPath: build
+          # GameCI KHÔNG chuyển biến môi trường vào container Unity -> mọi cấu hình qua tham số dòng lệnh
+          customParameters: >-
+            -htbbBan ${{ needs.chuan-bi.outputs.ban }}
+            -htbbMayChu ${{ vars.HTBB_MAY_CHU_CHINH }}
+            ${{ vars.HTBB_CAP_NHAT_URL != '' && format('-htbbCapNhat {0}', vars.HTBB_CAP_NHAT_URL) || '' }}
+            ${{ inputs.pc_kieu != 'il2cpp' && '-htbbMono' || '' }}
+      - name: Kiểm bản build
+        run: |
+          ls build build/StandaloneWindows64
+          that=$(cat build/htbb-ban.txt 2>/dev/null || echo "?")
+          if [ "$that" != "$BAN" ]; then
+            echo "::error::Ban build mang so $that, khac $BAN - KHONG phat hanh"
+            exit 1
+          fi
+          [ -f build/StandaloneWindows64/GHI_CONG.txt ] || { echo "::error::ban PC thieu GHI_CONG.txt canh .exe"; exit 1; }
+      - name: Nén zip
+        run: python -I tools/phat-hanh/nen-zip.py build/StandaloneWindows64 "HTBB-$PB-PC.zip"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pc
+          path: HTBB-${{ needs.chuan-bi.outputs.phien_ban }}-PC.zip
+          retention-days: 3
+
+  day-len:
+    name: Đẩy lên repo phát hành HTBB
+    needs: [chuan-bi, jar, android, pc]
+    if: ${{ !cancelled() && needs.chuan-bi.result == 'success' && !inputs.chi_build }}
+    runs-on: ubuntu-24.04
+    env:
+      BAN: ${{ needs.chuan-bi.outputs.ban }}
+      PHIEN_BAN: ${{ needs.chuan-bi.outputs.phien_ban }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          path: ra
+      - name: Đẩy lên + ghi phienban.json (lần lượt từng bản)
+        env:
+          GH_TOKEN: ${{ secrets.HTBB_TAI_TOKEN }}
+          GHI_CHU: ${{ inputs.ghi_chu }}
+        run: |
+          ls -R ra
+          day() {  # <loai> <file>: chỉ đẩy bản đã build trong lần chạy này
+            if [ -f "$2" ]; then sh tools/phat-hanh/day-len.sh "$1" "$BAN" "$2" "$GHI_CHU"; fi
+          }
+          day jar "ra/jar/HTBB-$PHIEN_BAN-thuong.jar"
+          day jar-nhe "ra/jar/HTBB-$PHIEN_BAN-nhe.jar"
+          day android "ra/android/HTBB-$PHIEN_BAN-android.apk"
+          day pc "ra/pc/HTBB-$PHIEN_BAN-PC.zip"
+      - name: Bản build lỗi (nếu có)
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: |
+          echo "::error::Co ban build loi (jar=${{ needs.jar.result }}, android=${{ needs.android.result }}, pc=${{ needs.pc.result }}) - ban do KHONG duoc phat hanh"
+          exit 1

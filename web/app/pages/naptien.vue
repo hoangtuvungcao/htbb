@@ -3,12 +3,13 @@
  * Nạp tiền (HTBB/docs/pokemon/NAP_TIEN.md): chọn nhân vật nhận + gói (lượng / Thẻ tháng / Vé mùa)
  * -> tạo đơn -> QR VietQR. Trang tự hỏi lại trạng thái; cổng thanh toán báo tiền vào (hoặc admin
  * xác nhận) thì server game tự cộng vào nhân vật trong ~15 giây khi nhân vật online.
- * Không bán sức mạnh: lượng chỉ mua trang trí + tiện ích trong game.
+ * Không bán sức mạnh: lượng chỉ mua trang trí + tiện ích + tăng tốc (chỉ EXP, chung trần với bản khoá) trong game.
  */
 definePageMeta({ middleware: ['auth', 'nap-bat'] })
 useSeoMeta({
   title: 'Nạp tiền',
-  description: 'Nạp lượng, Thẻ tháng, Vé mùa bằng chuyển khoản VietQR. Tỷ giá cố định, chỉ bán trang trí và tiện ích, có trần nạp bảo vệ người chơi.',
+  robots: 'noindex',
+  description: 'Nạp lượng, Thẻ tháng, Vé mùa bằng chuyển khoản VietQR. Tỷ giá cố định, chỉ bán trang trí, tiện ích và vật phẩm tăng tốc (chung giới hạn với bản kiếm được khi chơi), có trần nạp bảo vệ người chơi.',
 })
 
 interface Goi { ma: string, ten: string, loai: string, gia_vnd: number, luong: number, mo_ta: string }
@@ -65,7 +66,7 @@ const goiLuong = computed(() => dm.value?.goi.filter(g => g.loai === 'luong') ??
 const goiKhac = computed(() => dm.value?.goi.filter(g => g.loai !== 'luong') ?? [])
 const chuaThanhToan = computed(() => !!don.value && ['cho_thanh_toan', 'that_bai'].includes(don.value.trang_thai))
 const dangChoVaoGame = computed(() => don.value?.trang_thai === 'da_thanh_toan')
-const nhanVatItems = computed(() => (dm.value?.nhanVat ?? []).map(n => ({ label: `${n.charname} (Lv ${n.lastLv})`, value: n.id })))
+const nhanVatItems = computed(() => (dm.value?.nhanVat ?? []).map(n => ({ label: `${n.charname} (cấp ${n.lastLv})`, value: n.id })))
 
 async function taiDanhMuc() {
   try {
@@ -102,10 +103,10 @@ async function hoiTrangThai() {
     don.value.trang_thai = r.trang_thai
     don.value.cong_luc = r.cong_luc
     if (cu !== r.trang_thai && r.trang_thai === 'da_thanh_toan') {
-      toast.add({ title: 'Đã nhận được thanh toán!', description: `Đang chuyển vào nhân vật ${don.value.charname} (cần đang online trong game).`, color: 'success', icon: 'i-lucide-party-popper' })
+      toast.add({ title: 'Đã nhận được thanh toán!', description: `Đang chuyển vào Pokémon ${don.value.charname} (cần đang online trong game).`, color: 'success', icon: 'i-lucide-party-popper' })
     }
     if (cu !== r.trang_thai && r.trang_thai === 'da_cong') {
-      toast.add({ title: 'Đã vào nhân vật!', color: 'success', icon: 'i-lucide-check' })
+      toast.add({ title: `Quà đã vào ${don.value.charname}!`, color: 'success', icon: 'i-lucide-check' })
       taiLichSu()
       return
     }
@@ -148,7 +149,7 @@ function khoaIdem(): string {
 
 async function taoDon(g: Goi) {
   if (!charId.value) {
-    toast.add({ title: 'Chọn nhân vật nhận trước', color: 'warning', icon: 'i-lucide-user' })
+    toast.add({ title: 'Hãy chọn Pokémon nhận trước', color: 'warning', icon: 'i-lucide-user' })
     return
   }
   dangTao.value = g.ma
@@ -208,7 +209,7 @@ onBeforeUnmount(() => {
 const cotLichSu = [
   { accessorKey: 'ma_don', header: 'Mã đơn' },
   { accessorKey: 'ten_goi', header: 'Gói' },
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon nhận' },
   { accessorKey: 'so_tien', header: 'Số tiền', meta: { class: { th: 'text-right', td: 'text-right tabular-nums' } } },
   { accessorKey: 'trang_thai', header: 'Trạng thái' },
   { accessorKey: 'tao_luc', header: 'Tạo lúc' },
@@ -220,7 +221,7 @@ const cotLichSu = [
     <SitePageBanner
       title="Nạp tiền"
       eyebrow="Ủng hộ máy chủ"
-      intro="Tỷ giá cố định 10 lượng / 1.000 đ. Lượng chỉ mua được trang trí và tiện ích — không bán sức mạnh, không quay may rủi."
+      intro="Tỷ giá cố định 10 lượng / 1.000 đ. Lượng chỉ mua được trang trí, tiện ích và vật phẩm tăng tốc luyện cấp (chỉ EXP, chung giới hạn 60 điểm/ngày, 210/tuần với bản khoá kiếm được khi chơi) — không bán sức mạnh, không quay may rủi."
     />
 
     <UContainer class="max-w-6xl py-14">
@@ -313,7 +314,7 @@ const cotLichSu = [
                   {{ TEN_TRANG_THAI_NAP[don.trang_thai] ?? don.trang_thai }}
                 </h3>
                 <p v-if="dangChoVaoGame" class="mt-3 text-muted">
-                  Vào game bằng nhân vật <strong class="text-highlighted">{{ don.charname }}</strong> — quà tự vào trong khoảng 15 giây.
+                  Vào game bằng Pokémon <strong class="text-highlighted">{{ don.charname }}</strong> — quà tự vào trong khoảng 15 giây.
                   Thẻ tháng / Vé mùa: nhận thưởng ở <strong class="text-highlighted">NPC Tổng Quản › Cửa hàng &amp; Nạp</strong>.
                 </p>
                 <p v-else-if="don.trang_thai === 'da_cong'" class="mt-3 text-muted">
@@ -341,8 +342,8 @@ const cotLichSu = [
         <UAlert v-if="dm && dm.noLuong > 0" class="mb-6" color="warning" variant="subtle" icon="i-lucide-undo-2" :title="`Còn nợ thu hồi ${dm.noLuong} lượng`" description="Do một giao dịch đã hoàn tiền. Lượng nạp mới sẽ trừ nợ trước." />
 
         <div class="mb-8 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-          <UFormField label="Nhân vật nhận" :hint="dm && !dm.nhanVat.length ? 'Tài khoản chưa có nhân vật' : undefined">
-            <USelect v-model="charId" :items="nhanVatItems" placeholder="Chọn nhân vật" class="w-full md:w-80" />
+          <UFormField label="Pokémon nhận" :hint="dm && !dm.nhanVat.length ? 'Tài khoản chưa có Pokémon nào' : undefined">
+            <USelect v-model="charId" :items="nhanVatItems" placeholder="Chọn Pokémon" class="w-full md:w-80" />
           </UFormField>
           <p v-if="dm" class="text-sm text-muted">
             Đã nạp tuần này {{ vnd(dm.tran.daTuan) }} / {{ vnd(Math.min(dm.tran.tuan, tranThang)) }} ·
@@ -385,7 +386,7 @@ const cotLichSu = [
               {{ g.mo_ta }}
             </p>
             <p v-if="g.loai === 've_mua' && dm?.mua" class="mt-2 text-xs text-muted">
-              Áp dụng cho mùa {{ dm.mua.so }} (còn {{ dm.mua.conNgay }} ngày). Vật liệu track cao cấp đúng bằng track miễn phí.
+              Áp dụng cho mùa {{ dm.mua.so }} (còn {{ dm.mua.conNgay }} ngày). Nhánh cao cấp cho đúng lượng vật liệu như nhánh miễn phí.
             </p>
             <UButton class="mt-5" block :loading="dangTao === g.ma" :disabled="!!dangTao || dm?.khoaNap" trailing-icon="i-lucide-qr-code" @click="taoDon(g)">
               Mua {{ g.ten }}
@@ -428,7 +429,7 @@ const cotLichSu = [
               Đang chờ đổi thành {{ dm.tran.cho ? vnd(dm.tran.cho) : 'mặc định' }} lúc {{ dm.tran.choLuc }}.
             </p>
             <form class="mt-4 flex gap-2" @submit.prevent="datTran">
-              <UInputNumber v-model="tranMoi" :min="0" :step="50000" placeholder="VD 200000 (0 = bỏ)" class="flex-1" />
+              <UInputNumber v-model="tranMoi" :min="0" :step="50000" placeholder="VD: 200000 (0 = bỏ trần)" class="flex-1" />
               <UButton type="submit" :loading="dangDatTran" icon="i-lucide-shield-check">
                 Đặt
               </UButton>

@@ -50,7 +50,6 @@ public final class KiemSuKien {
      * false = ham tra ve DUNG khi su kien TAT (isFinishAllSuKienX)
      */
     private static final Object[][] BANG = {
-        {"isFinishAllSuKien", real.SuKien.TAT_CA, Boolean.FALSE},
 
         {"isSuKienNoel", real.SuKien.NOEL, Boolean.TRUE},
         {"isFinishAllSuKienNoel", real.SuKien.NOEL, Boolean.FALSE},
@@ -61,8 +60,6 @@ public final class KiemSuKien {
         {"isSuKienTet2017", real.SuKien.TET_2017, Boolean.TRUE},
         {"isFinishAllSuKienTet2017", real.SuKien.TET_2017, Boolean.FALSE},
         {"isSuKienTetduonglich2024", real.SuKien.TET_DUONG_LICH, Boolean.TRUE},
-        {"isSuKienTet2016", real.SuKien.TET_2016, Boolean.TRUE},
-        {"isFinishAllSuKienTet2016", real.SuKien.TET_2016, Boolean.FALSE},
         {"is123Tet", real.SuKien.TET_123, Boolean.TRUE},
 
         {"isSuKienBlackFriday", real.SuKien.BLACK_FRIDAY, Boolean.TRUE},
@@ -71,10 +68,6 @@ public final class KiemSuKien {
 
         {"isSuKienTrungThul2016", real.SuKien.TRUNG_THU, Boolean.TRUE},
         {"isFinishAllSuKienTrungThul2016", real.SuKien.TRUNG_THU, Boolean.FALSE},
-        {"isDemTrungThu", real.SuKien.DEM_TRUNG_THU, Boolean.TRUE},
-        {"isSuKienTrungThu2015", real.SuKien.TRUNG_THU_2015, Boolean.TRUE},
-        {"isFinishAllSuKienTrungthu2015", real.SuKien.TRUNG_THU_2015, Boolean.FALSE},
-        {"isBanLongDenHoaSen", real.SuKien.LONG_DEN_HOA_SEN, Boolean.TRUE},
 
         {"isSuKienHaloween2016", real.SuKien.HALLOWEEN, Boolean.TRUE},
         {"isFinishAllSuKienHaloween2016", real.SuKien.HALLOWEEN, Boolean.FALSE},
@@ -103,11 +96,30 @@ public final class KiemSuKien {
         {"isSuKien2011l2016", real.SuKien.SINH_NHAT_2011, Boolean.TRUE},
         {"isSuKienSnNgude", real.SuKien.SINH_NHAT_NGUDE, Boolean.TRUE},
         {"isFinishAllSuKienSnNgude", real.SuKien.SINH_NHAT_NGUDE, Boolean.FALSE},
-        {"isSinhNhatNgude", real.SuKien.SINH_NHAT_NGUDE_QUA, Boolean.TRUE},
-        {"canReceiveGiftSNNgude", real.SuKien.SINH_NHAT_NGUDE_QUA, Boolean.TRUE},
         {"isSuKienDuaTopHoaLu", real.SuKien.DUA_TOP_HOA_LU, Boolean.TRUE},
 
         {"isSuKienWordcup2017", real.SuKien.WORLD_CUP_2017, Boolean.TRUE},
+    };
+
+    /**
+     * Ham van con trong Char nhung MA CONG da bi bo khoi SuKien.DANH_MUC CO Y ngay
+     * 21/09/2026 (yeu cau nguoi dung "xoa su kien trung lap + xoa het Trung Thu, chi giu
+     * ban da sua", commit ba7df7b - ly do tung ma ghi o chu thich tren SuKien.DANH_MUC):
+     * TAT_CA, TET_2016, TRUNG_THU_2015, SINH_NHAT_NGUDE_QUA (khong con noi nao doc),
+     * DEM_TRUNG_THU, LONG_DEN_HOA_SEN (xoa theo yeu cau rieng). Hanh vi MONG MUON moi:
+     * ma KHONG con trong danh muc, va SuKien.dat() BO QUA ma do (trang quan tri bam cung
+     * khong doi gi) - nen ket qua cua ham khong phu thuoc cong bat/tat nua.
+     */
+    private static final Object[][] DA_BO_21_09 = {
+        {"isFinishAllSuKien", real.SuKien.TAT_CA, Boolean.FALSE},
+        {"isSuKienTet2016", real.SuKien.TET_2016, Boolean.TRUE},
+        {"isFinishAllSuKienTet2016", real.SuKien.TET_2016, Boolean.FALSE},
+        {"isDemTrungThu", real.SuKien.DEM_TRUNG_THU, Boolean.TRUE},
+        {"isSuKienTrungThu2015", real.SuKien.TRUNG_THU_2015, Boolean.TRUE},
+        {"isFinishAllSuKienTrungthu2015", real.SuKien.TRUNG_THU_2015, Boolean.FALSE},
+        {"isBanLongDenHoaSen", real.SuKien.LONG_DEN_HOA_SEN, Boolean.TRUE},
+        {"isSinhNhatNgude", real.SuKien.SINH_NHAT_NGUDE_QUA, Boolean.TRUE},
+        {"canReceiveGiftSNNgude", real.SuKien.SINH_NHAT_NGUDE_QUA, Boolean.TRUE},
     };
 
     public static void chay() {
@@ -163,6 +175,18 @@ public final class KiemSuKien {
             Kiem.dung("ma " + d[1] + " co trong danh muc", maCoThat.contains(d[1]));
         }
 
+        // ================= 2b. MA DA BO CO Y (21/09/2026) =================
+        for (final Object[] d : DA_BO_21_09) {
+            final String tenHam = (String) d[0];
+            final String ma = (String) d[1];
+            Kiem.sai("ma " + ma + " da bo khoi danh muc (21/09/2026)", maCoThat.contains(ma));
+            final Boolean khiBat = goi(tenHam, ma, true);
+            final Boolean khiTat = goi(tenHam, ma, false);
+            Kiem.dung("goi duoc Char." + tenHam + "()", khiBat != null && khiTat != null);
+            Kiem.dung(tenHam + ": cong " + ma + " da bo -> bat/tat khong con tac dung",
+                    khiBat != null && khiBat.equals(khiTat));
+        }
+
         // ================= 3. BAT / TAT THAT SU DOI KET QUA =================
         for (final Object[] d : BANG) {
             final String tenHam = (String) d[0];
@@ -186,6 +210,9 @@ public final class KiemSuKien {
         // deu phai co mat trong BANG o tren. Them ham moi ma quen la do ngay.
         final Set<String> daPhu = new HashSet<String>();
         for (final Object[] d : BANG) {
+            daPhu.add((String) d[0]);
+        }
+        for (final Object[] d : DA_BO_21_09) {
             daPhu.add((String) d[0]);
         }
         for (final Method m : real.Char.class.getDeclaredMethods()) {
@@ -225,30 +252,43 @@ public final class KiemSuKien {
         Kiem.dung("nap cong su kien TRUOC khi dung bang template/shop",
                 viTriNap > 0 && viTriInit > 0 && viTriNap < viTriInit);
 
-        // ================= 7. TRANG QUAN TRI =================
-        final String php = doc("web/admin/sukien.php");
-        Kiem.dung("co trang web/admin/sukien.php", !php.isEmpty());
-        Kiem.dung("trang quan tri dung dung ten bang", php.contains("'tob_su_kien'"));
-        // May chu so huu cac cot mo ta; web chi duoc ghi cot bat/sua_*. Ghi de len cot cua
-        // may chu thi lan khoi dong sau bi xoa sach, va nguoc lai may chu ghi vao cot `bat`
-        // se nuot mat thiet lap cua admin.
-        Kiem.sai("trang quan tri KHONG ghi de cot cua may chu",
-                php.contains("SET ten =") || php.contains("SET dang_bat =")
-                        || php.contains("SET nhom ="));
+        // ================= 7. TRANG QUAN TRI (HTBB-Web /admin/sukien; website PHP da bo) =================
         final String dbSuKien = doc("src/data/DatabaseSuKien.java");
+        if (!WebHtbb.boQua("trang quan tri su kien (HTBB-Web)")) {
+            final String api = WebHtbb.doc("server/api/admin/sukien/index.get.ts")
+                    + WebHtbb.doc("server/api/admin/sukien/bat-tat.post.ts")
+                    + WebHtbb.doc("server/api/admin/sukien/tat-het.post.ts")
+                    + WebHtbb.doc("server/api/admin/sukien/lich.post.ts")
+                    + WebHtbb.doc("server/api/admin/sukien/xoa-lich.post.ts")
+                    + WebHtbb.doc("server/utils/suKienDb.ts");
+            Kiem.dung("co API HTBB-Web server/api/admin/sukien", !WebHtbb.doc("server/api/admin/sukien/index.get.ts").isEmpty());
+            Kiem.dung("trang quan tri dung dung ten bang",
+                    WebHtbb.doc("server/utils/suKien.ts").contains("SU_KIEN_BANG = 'tob_su_kien'"));
+            // May chu so huu cac cot mo ta; web chi duoc ghi cot bat/sua_*. Ghi de len cot cua
+            // may chu thi lan khoi dong sau bi xoa sach, va nguoc lai may chu ghi vao cot `bat`
+            // se nuot mat thiet lap cua admin.
+            Kiem.sai("trang quan tri KHONG ghi de cot cua may chu",
+                    api.contains("SET ten =") || api.contains("SET dang_bat =")
+                            || api.contains("SET nhom =") || api.contains("SET mo_ta =")
+                            || api.contains("SET may_chu_luc ="));
+            Kiem.dung("API bat/tat chi ghi bat, sua_boi, sua_luc",
+                    WebHtbb.doc("server/api/admin/sukien/bat-tat.post.ts").contains("SET bat = ?, sua_boi = ?, sua_luc = NOW()"));
+        }
         Kiem.dung("may chu KHONG ghi de cot `bat` khi cap nhat anh chup",
                 dbSuKien.contains("ON DUPLICATE KEY UPDATE")
                         && !dbSuKien.contains("bat = VALUES(bat)"));
 
-        final String layout = doc("web/admin/inc/layout.php");
-        Kiem.dung("menu quan tri co muc su kien",
-                layout.contains("'sukien.php'") && layout.contains("'Sự kiện'"));
+        if (WebHtbb.goc() != null) {
+            final String menu = WebHtbb.doc("app/utils/adminMenu.ts");
+            Kiem.dung("menu quan tri co muc su kien",
+                    menu.contains("to: '/admin/sukien'") && menu.contains("nhom: 'Sự kiện'"));
+        }
 
         // ================= 8. SQL MIGRATE KHOP VOI CREATE TABLE TRONG JAVA =================
         // May chu tu tao bang, con tep sql/ la ban chep tay de chay truoc. Hai ban lech
         // cot thi ai chay tep sql se co mot bang ma may chu khong ghi duoc - va loi do chi
         // lo ra thanh mot dong log lang le luc khoi dong.
-        final String sql = doc("sql/them_bang_su_kien.sql");
+        final String sql = doc("../sql/them_bang_su_kien.sql");
         Kiem.dung("co tep sql/them_bang_su_kien.sql", !sql.isEmpty());
         final String[] cot = {"ma", "bat", "ten", "nhom", "mo_ta", "dang_bat",
             "sua_boi", "sua_luc", "may_chu_luc", "mo_luc", "dong_luc"};

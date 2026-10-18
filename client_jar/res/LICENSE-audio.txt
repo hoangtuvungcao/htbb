@@ -3,7 +3,7 @@ Am thanh trong jar Huyen Thoai Bao Boi (/am/*.wav, /am/*.mid)
 
 Tat ca am thanh deu la CC0 1.0 (Creative Commons Zero, public domain):
 https://creativecommons.org/publicdomain/zero/1.0/
-Sinh bang j2me/tools/lam_am_thanh.py (cat ngan, chuan hoa, doi sang WAV 8 bit mono 8-16 kHz).
+Sinh bang client_jar/tools/lam_am_thanh.py (cat ngan, chuan hoa, doi sang WAV 8 bit mono 8-16 kHz).
 
 1. Kenney (www.kenney.nl) - CC0, License.txt trong tung goi:
    - "Interface Sounds"  : click_001, confirmation_001, back_001, open_001, pluck_001

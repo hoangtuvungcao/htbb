@@ -34,7 +34,7 @@ public class Message {
 
     public Message(int command) {
         this.command = command;
-        this.os = new ByteArrayOutputStream();
+        this.os = new BoDem();
         this.dos = new DataOutputStream(this.os);
     }
 
@@ -49,53 +49,65 @@ public class Message {
         this.dis = new DataInputStream(this.is);
     }
 
-    public byte[] toByteArray() {
-        int datalen = 0;
-        byte[] data = (byte[]) null;
-        if (this.bytes == null) {
-            ByteArrayOutputStream bos1 = null;
-            DataOutputStream dos1 = null;
+    /** ByteArrayOutputStream cho doc thang mang ben trong (khoi chep them mot lan). */
+    private static final class BoDem extends ByteArrayOutputStream {
+        BoDem() {
+            super(64);
+        }
 
+        byte[] mang() {
+            return this.buf;
+        }
+
+        int dem() {
+            return this.count;
+        }
+    }
+
+    /**
+     * Goi tin da dong khung: [cmd][len 2 byte][du lieu], hoac [-128][cmd][len 4 byte][du lieu] khi
+     * du lieu > 32767 byte. Ket qua duoc NHO LAI (cung mot mang cho moi nguoi nhan - Session.Sender
+     * ma hoa vao bo dem rieng, khong sua mang nay). Truoc day chep du lieu 3 lan (toByteArray cua
+     * luong ghi + DataOutputStream moi + toByteArray); nay mot lan cap phat, mot lan chep.
+     */
+    public byte[] toByteArray() {
+        if (this.bytes == null) {
             try {
+                byte[] data = null;
+                int datalen = 0;
                 if (this.dos != null) {
                     this.dos.flush();
-                    data = this.os.toByteArray();
-                    datalen = data.length;
+                    if (this.os instanceof BoDem) {
+                        data = ((BoDem) this.os).mang();
+                        datalen = ((BoDem) this.os).dem();
+                    } else {
+                        data = this.os.toByteArray();
+                        datalen = data.length;
+                    }
                     this.dos.close();
                 }
 
-                bos1 = new ByteArrayOutputStream(3 + datalen);
-                dos1 = new DataOutputStream(bos1);
-                if (datalen > 32767) {
-                    dos1.writeByte(-128);
+                final boolean lon = datalen > 32767;
+                final int dau = lon ? 6 : 3;
+                final byte[] kq = new byte[dau + datalen];
+                int i = 0;
+                if (lon) {
+                    kq[i++] = (byte) -128;
                 }
-
-                dos1.writeByte(this.command);
-                if (datalen > 32767) {
-                    dos1.writeInt(datalen);
-                } else {
-                    dos1.writeShort(datalen);
+                kq[i++] = (byte) this.command;
+                if (lon) {
+                    kq[i++] = (byte) (datalen >>> 24);
+                    kq[i++] = (byte) (datalen >>> 16);
                 }
-
+                kq[i++] = (byte) (datalen >>> 8);
+                kq[i++] = (byte) datalen;
                 if (datalen > 0) {
-                    dos1.write(data);
+                    System.arraycopy(data, 0, kq, i, datalen);
                 }
-
-                this.bytes = bos1.toByteArray();
+                this.bytes = kq;
             } catch (IOException var18) {
                 var18.printStackTrace();
                 System.out.println("LOI KHI TAO BYTE");
-            } finally {
-                try {
-                    dos1.close();
-                } catch (Exception var17) {
-                }
-
-                try {
-                    bos1.close();
-                } catch (Exception var16) {
-                }
-
             }
 
             this.cleanup();

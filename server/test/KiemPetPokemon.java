@@ -29,7 +29,7 @@ public final class KiemPetPokemon {
         Kiem.bang("Golbat cap 3 (706)", Integer.valueOf(42), Integer.valueOf(PetPokemon.dex(706)));
         Kiem.bang("Crobat cap 5 (708)", Integer.valueOf(169), Integer.valueOf(PetPokemon.dex(708)));
         try {
-            final List<String> dong = Files.readAllLines(new File("docs/pokemon/bang_thu.csv").toPath(), StandardCharsets.UTF_8);
+            final List<String> dong = Files.readAllLines(new File("../docs/pokemon/bang_thu.csv").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
             for (final String d : dong) {
                 final String[] c = d.split(",");
@@ -43,7 +43,7 @@ public final class KiemPetPokemon {
                 Kiem.bang("item " + id + " (" + c[5] + ") dex", Integer.valueOf(dex), Integer.valueOf(PetPokemon.dex(id)));
                 Kiem.bang("item " + id + " shiny", Boolean.valueOf(shiny), Boolean.valueOf(PetPokemon.shiny(id)));
                 Kiem.dung("co sprite da dong goi: " + dex + (shiny ? "s" : ""), new File(String.format(
-                        "ClientUnity/Assets/Resources/poke/%04d%s_dl.bytes", dex, shiny ? "s" : "")).isFile());
+                        "../client_pc_ios/ClientUnity/Assets/Resources/poke/%04d%s_dl.bytes", dex, shiny ? "s" : "")).isFile());
             }
             Kiem.bang("CSV va bang Java cung so dong pet_item", Integer.valueOf(PetPokemon.soDong()), Integer.valueOf(dem));
         } catch (final Exception e) {
@@ -69,7 +69,7 @@ public final class KiemPetPokemon {
             Kiem.dung("ghiPet: " + e, false);
         }
         try {
-            final String g = "ClientUnity/Assets/Scripts/Game/";
+            final String g = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/";
             final String mh = new String(Files.readAllBytes(new File(g + "MessageHandler.cs").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("client xu ly case -94", mh.contains("case -94:"));
             Kiem.dung("client doc i16,i16,u8 cho -94", mh.contains("c.pokePetDex = dexPet;"));
@@ -119,7 +119,9 @@ public final class KiemPetPokemon {
             return -1;
         }
         final io.Message pet = than.kemTheo.kemTheo;
-        if (pet == null || pet.command != -94 || pet.kemTheo != null) {
+        // sau -94 chi con -102 ngoai hinh trang bi (NgoaiHinhGame) la mat xich cuoi
+        if (pet == null || pet.command != -94
+                || (pet.kemTheo != null && (pet.kemTheo.command != -102 || pet.kemTheo.kemTheo != null))) {
             return -1;
         }
         // toByteArray = u8 lenh, i16 do dai, roi 5 byte noi dung.

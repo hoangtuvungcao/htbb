@@ -9,7 +9,7 @@
  */
 export default defineAdminHandler(async (event, admin) => {
   const id = nvIdTuRoute(event)
-  const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
+  const body = await bodyObj(event)
   const viec = str(body?.viec)
   if (viec !== 'dat_cap_do' && viec !== 'buff_level') throw apiLoi(400, 'Không hiểu thao tác.')
   const nv = await nvLayDeThaoTac(id)
@@ -38,12 +38,10 @@ export default defineAdminHandler(async (event, admin) => {
   const [loai, thongBao] = moTaKetQuaLenh(lenh, ten, muc)
 
   // Nhật ký ghi đúng số server dùng (phần nghìn), không ghi số thô người dùng gõ.
-  await ghiNhatKy(event, laBuff ? 'buff_level_nhan_vat' : 'dat_cap_do_nhan_vat', ten,
-    `lastLv: ${cu ? Math.trunc(Number(cu.lastLv)) : '?'} -> ${capDoMoi}`
-    + (phanNghin > 0 ? ` (${phanNghinRaChuoi(phanNghin)})` : '')
-    + ` | xp cũ: ${cu ? String(cu.xp) : '?'}`
-    + ` | lệnh #${idLenh}: ${tenTrangThaiLenh(lenh ? Number(lenh.trang_thai) : -1)}`
-    + (lenh && lenh.ket_qua !== '' ? ` - ${lenh.ket_qua}` : ''))
+  await ghiThayDoi(event, laBuff ? 'buff_level_nhan_vat' : 'dat_cap_do_nhan_vat', `nv:${ten}`,
+    { lastLv: cu ? Math.trunc(Number(cu.lastLv)) : null, xp: cu ? String(cu.xp) : null },
+    { lastLv: capDoMoi, phanTram: phanNghin > 0 ? phanNghinRaChuoi(phanNghin) : '0%', lenh: idLenh,
+      trangThai: tenTrangThaiLenh(lenh ? Number(lenh.trang_thai) : -1), ketQua: lenh?.ket_qua ?? '' })
 
   return { loai, thongBao, idLenh }
 })

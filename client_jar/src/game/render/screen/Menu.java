@@ -84,6 +84,16 @@ public class Menu extends Main {
             this.menuH += Screen.ITEM_HEIGHT;
         }
         this.menuW += 20;   // pokemon: chỗ cho mũi tên chọn
+        this.coHinh = false;
+        for (int i = 0; i < menuItems.size(); i++) {
+            if (game.pokemon.GiaoDien.hinhMuc(((Command) menuItems.elementAt(i)).caption) != null) {
+                this.coHinh = true;     // có ít nhất một mục có biểu tượng: chừa cột biểu tượng
+                break;
+            }
+        }
+        if (this.coHinh) {
+            this.menuW += 16;
+        }
         if (this.menuW < 100) {
             this.menuW = 100;
         }
@@ -196,6 +206,8 @@ public class Menu extends Main {
         super.updateKey();
     }
 
+    private boolean coHinh;
+
     public void paintMenu(Graphics g) {
         Canvas.resetTrans(g);
         if (this.cyBag != this.ctoyBag) {
@@ -220,10 +232,17 @@ public class Menu extends Main {
                 g.setColor(game.pokemon.GiaoDien.XANH_NHAT);
                 g.fillRect(0, yy, this.menuW - 10, 1);
             }
+            String cap = ((Command) this.menuItems.elementAt(i)).caption;
             if (Canvas.isBB) {
-                Font.blackFont.drawString(g, ((Command) this.menuItems.elementAt(i)).caption, Canvas.hw, 3 + yy, 2);
+                Font.blackFont.drawString(g, cap, Canvas.hw, 3 + yy, 2);
             } else {
-                Font.blackFont.drawString(g, ((Command) this.menuItems.elementAt(i)).caption, 7, 3 + yy, 0);
+                // pokemon: biểu tượng theo nội dung mục + chữ cắt ".." thay vì bị xén ở mép
+                int xc = 7;
+                if (this.coHinh) {
+                    game.pokemon.GiaoDien.veHinhMuc(g, 6, yy + (Screen.ITEM_HEIGHT - 13) / 2, cap);
+                    xc = 23;
+                }
+                Font.blackFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.blackFont, cap, this.menuW - xc - 8), xc, 3 + yy, 0);
             }
         }
         // thanh cuộn nhỏ khi danh sách dài hơn khung

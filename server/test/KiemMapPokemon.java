@@ -219,9 +219,9 @@ public final class KiemMapPokemon {
         }
         final byte[] m0 = Files.readAllBytes(new File(BanDoPokemon.THU_MUC_CMAP + "0").toPath());
         Kiem.dung("Unity Resources/poke_map/0.bytes = cMap_pokemon/0",
-                Arrays.equals(m0, Files.readAllBytes(new File("ClientUnity/Assets/Resources/poke_map/0.bytes").toPath())));
+                Arrays.equals(m0, Files.readAllBytes(new File("../client_pc_ios/ClientUnity/Assets/Resources/poke_map/0.bytes").toPath())));
         Kiem.dung("tools/pokemon/map_j2me/0 = cMap_pokemon/0",
-                Arrays.equals(m0, Files.readAllBytes(new File("tools/pokemon/map_j2me/0").toPath())));
+                Arrays.equals(m0, Files.readAllBytes(new File("../tools/pokemon/map_j2me/0").toPath())));
     }
 
     private static boolean giongCong(final DinhDangBanDo a, final DinhDangBanDo b) {
@@ -283,7 +283,7 @@ public final class KiemMapPokemon {
         final Map<Integer, List<int[]>> m = new HashMap<Integer, List<int[]>>();
         final Pattern ten = Pattern.compile("^\\s*\"(\\d+)\"\\s*:");
         final Pattern cap = Pattern.compile("\\[(\\d+),(\\d+)\\]");
-        for (final String l : Files.readAllLines(new File("docs/pokemon/map_cu/bang_den.json").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("../docs/pokemon/map_cu/bang_den.json").toPath(), StandardCharsets.UTF_8)) {
             final Matcher mt = ten.matcher(l);
             if (!mt.find()) {
                 continue;
@@ -301,7 +301,7 @@ public final class KiemMapPokemon {
     /** docs/pokemon/diem_co_dinh.csv: map;x0;y0;x1;y1;noi;ghi_chu. */
     private static Map<Integer, List<int[]>> docCoDinh() throws Exception {
         final Map<Integer, List<int[]>> m = new HashMap<Integer, List<int[]>>();
-        for (final String l : Files.readAllLines(new File("docs/pokemon/diem_co_dinh.csv").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("../docs/pokemon/diem_co_dinh.csv").toPath(), StandardCharsets.UTF_8)) {
             final String t = l.trim();
             if (t.isEmpty() || t.startsWith("#")) {
                 continue;

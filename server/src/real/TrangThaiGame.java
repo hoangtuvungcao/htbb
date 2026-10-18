@@ -50,6 +50,46 @@ final class TrangThaiGame {
         }
     }
 
+    /**
+     * Trang thai {@code tt} tu dong gay trang thai cua trang bi (ChiSoTrangBiGame.khamTrangThai, da quay ti le co
+     * tran). Ton trong mien theo he, thoi luong PvP x0,5 / boss 30% (boss khong ngu/bang); gui -97. @return tt / 0.
+     */
+    static int gayTuTrangBi(final Char p, final LiveActor dich, final int tt) {
+        if (tt <= 0 || dich == null || dich.hp <= 0) {
+            return 0;
+        }
+        if (TrangThaiPokemon.mien(tt, dich.hePokemon1(), dich.hePokemon2())) {
+            return 0;
+        }
+        final boolean pvp = dich instanceof Char;
+        final boolean boss = dich instanceof Monster && (((Monster) dich).isBoss || BossLauDai.laBoss((Monster) dich));
+        final int ms = TrangThaiPokemon.thoiGian(tt, pvp, boss);
+        if (ms <= 0) {
+            return 0;
+        }
+        final TrangThaiPokemon t;
+        synchronized (TrangThaiGame.class) {
+            TrangThaiPokemon x = TT.get(dich);
+            if (x == null) {
+                x = TrangThaiPokemon.moi();
+                TT.put(dich, x);
+            }
+            if (!x.ap(tt, ms, System.currentTimeMillis())) {
+                return 0;
+            }
+            t = x;
+        }
+        final io.Message g = GoiLauDaiGame.trangThai(dich, t);
+        if (g != null) {
+            if (dich instanceof Char) {
+                ((Char) dich).sendMessage(g);
+            }
+            p.sendMessage(g);
+            p.sendToNearPlayer(g);
+        }
+        return tt;
+    }
+
     /** % quai (khong boss) gay trang thai theo he cua no moi don trung nguoi. */
     static final int QUAI_GAY_PHAN_TRAM = 3;
 

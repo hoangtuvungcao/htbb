@@ -87,8 +87,19 @@ public class ChatPopup
 		}
 	}
 
+	/// <summary>Các dòng lời thoại (HopThoaiPoke).</summary>
+	public string[] dong()
+	{
+		return chats;
+	}
+
 	public static void paintRoundRect(MyGraphics g, int x, int y, int w, int h, int color1, int color2)
 	{
+		if (UiPokemon.bat() && color1 == 16777215)
+		{
+			UiPokemon.theKinh(g, x, y, w, h); // pokemon: giao diện - bóng thoại kính trắng viền navy
+			return;
+		}
 		g.drawRegion(imgPopup, 0, 0, 8, 8, 0, x, y, 0);
 		g.drawRegion(imgPopup, 0, 8, 8, 8, 0, x + w - 8, y, 0);
 		g.drawRegion(imgPopup, 0, 24, 8, 8, 0, x, y + h - 8, 0);

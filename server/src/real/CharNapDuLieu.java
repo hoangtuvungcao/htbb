@@ -23,7 +23,7 @@ import java.util.Vector;
  *
  * 1.602 dong nay truoc nam trong real/Char.java. Ca hai method VAN CON trong
  * Char, giu NGUYEN chu ky public cu, chi than chuyen sang day - nen bytecode
- * trong lib/NQSH_5h.jar va cac lop con (CharThanthu, CharCopy) khong bi anh
+ * trong lib/htbb-core.jar va cac lop con (CharThanthu, CharCopy) khong bi anh
  * huong. Tham so "Char self" thay cho "this" truoc day.
  */
 class CharNapDuLieu {
@@ -462,7 +462,12 @@ class CharNapDuLieu {
                         e2.printStackTrace();
                     }
                 }
-                if (self.lvDetail.lv >= 3 && self.skill[0] == 0) {
+                // Game goc mo chieu 0 qua nhiem vu cu so 8 (Char.onSendGiftQuest) hoac khi vao lai
+                // tu cap 3. Chuoi nhiem vu moi (sv.lau_dai, data_quest_moi 901+) khong co nhiem vu 8
+                // ma nhiem vu thu 3 (903) da bat ha quai o cap 2 -> nhan vat moi khong danh duoc gi
+                // (Region/MapDanhNhau.doAttackMonster bo qua khi cap chieu = 0). BotChucNang
+                // danh_quai bat duoc 18/10/2026. Mo chieu 0 ngay tu dau khi bat co.
+                if ((self.lvDetail.lv >= 3 || com.htbb.pokemon.LauDai.bat()) && self.skill[0] == 0) {
                     self.skill[0] = 1;
                 }
             }
@@ -1427,7 +1432,7 @@ class CharNapDuLieu {
                                         // chay khi cot equip rong, nhung van phai vá cho
                                         // dong bo, khong thi hai duong nap ra hai ket qua.
                                         if (Map.isWearingAnimal(t)
-                                                || SkinLinhThu.laItemSkin(item.getTemplate().id)) {
+                                                || SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
                                             self.awItems.add(item);
                                             break;
                                         }
@@ -1631,7 +1636,7 @@ class CharNapDuLieu {
         if (self.monster == null && self.typeTieu > -1) {
             self.typeTieu = -1;
             try {
-                self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chuyến tiêu của bạn đã kết thúc."));
+                self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chuyến giao hàng của bạn đã kết thúc."));
             } catch (final IOException e6) {
                 e6.printStackTrace();
             }
@@ -1641,7 +1646,7 @@ class CharNapDuLieu {
                     self.monster.actorDie();
                     self.typeTieu = -1;
                 } else {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Ngựa vận tiêu đang ở " + Map.getNameMap(self.monster.map.mapId) + " toạ độ " + self.monster.x / 16 + " " + self.monster.y / 16));
+                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Ponyta giao hàng đang ở " + Map.getNameMap(self.monster.map.mapId) + " toạ độ " + self.monster.x / 16 + " " + self.monster.y / 16));
                 }
             } catch (final IOException e6) {
                 e6.printStackTrace();

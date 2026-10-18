@@ -122,7 +122,7 @@ public class WindowInfoScr extends Screen {
     private static byte[][] posWearChar = {new byte[]{10, 11}, new byte[]{56, 11}, new byte[]{10, 32}, new byte[]{56, 32}, new byte[]{10, 52}, new byte[]{56, 52}, new byte[]{10, 73}, new byte[]{56, 94}, new byte[]{10, 94}, new byte[]{56, 94}};
     public int numW = 7;
     public int[][] arrFrame = {new int[]{0, 1, 2}, new int[]{0, 1}};
-    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng bang hội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
+    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng đội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
     public String name = "";
     public String firName = "";
     public Vector list = new Vector();
@@ -162,8 +162,7 @@ public class WindowInfoScr extends Screen {
 
     @Override
     public void init() {
-        this.x = Canvas.hw - 64;
-        this.y = Canvas.hh - 77;
+        canKhung();
         setLim();
     }
 
@@ -250,7 +249,108 @@ public class WindowInfoScr extends Screen {
         setSelectTab();
     }
 
+    /** pokemon: bề ngang / cao khung bảng (thay khung cố định 145 px) - lưới đồ dùng ô to hơn ở màn rộng. */
+    int rk = 145;
+    int hk = 150;
+
+    /** Cạnh ô lưới đồ theo màn: 18 (176), 22 (240), 26 (320+) - giữ vừa chiều cao màn. */
+    static int canhO() {
+        int k = Canvas.w >= 300 ? 26 : (Canvas.w >= 230 ? 22 : 18);
+        while (k > 18 && 5 * k + 60 + 40 > Canvas.h - Screen.deltaY) {
+            k -= 2;
+        }
+        return k;
+    }
+
+    /** Dời tâm khung theo bề ngang mới (khung cũ: x = giữa - 64, rộng 145 bắt đầu ở x - 8). */
+    void canKhung() {
+        this.x = Canvas.hw - this.rk / 2 + 8;
+        this.y = Canvas.hh - this.hk / 2 - 2;
+    }
+
+    // ------------------------------------------------------------ pokemon: cửa hàng kiểu Poké Mart
+    boolean laMart;
+    String[] martTen;
+    String[] martGia;
+    int[] martCo;
+
+    /** Danh sách hàng: biểu tượng + tên + giá canh phải + số đang có (thay lưới ô ở shop thuốc / đặc biệt). */
+    void datMart(String[] ten, String[] gia, int[] co) {
+        this.martTen = ten;
+        this.martGia = gia;
+        this.martCo = co;
+        int rong = Math.min(Canvas.w - 30, 250);
+        if (rong < 126) {
+            rong = 126;
+        }
+        int hang = Canvas.w >= 230 ? 22 : 20;
+        this.numW = 1;
+        this.wSmall = rong;
+        this.hSmall = hang;
+        this.numH = Math.max(5, ten.length);
+        this.w = rong;
+        this.h = 5 * hang;
+        this.rk = Math.max(145, rong + 19);
+        this.hk = 150 + Math.max(0, 5 * hang - 90);
+        canKhung();
+        setLim();
+        this.laMart = true;
+    }
+
+    private void paintMart(Graphics g) {
+        int n = this.list == null ? 0 : this.list.size();
+        int s = this.hSmall;
+        int wr = this.wSmall;
+        game.pokemon.GiaoDien.khoi(g, -2, -2, wr + 3, 5 * s + 3, 3, game.pokemon.GiaoDien.XANH);
+        g.setClip(-1, -1, wr + 1, 5 * s + 1);
+        g.translate(0, -cmy);
+        int tu = Math.max(0, cmy / s);
+        int den = Math.min(n, tu + 6);
+        for (int i = tu; i < den; i++) {
+            int y = i * s;
+            boolean chon = i == this.selected && !this.isChangeTab;
+            if (chon) {
+                game.pokemon.GiaoDien.chon(g, 0, y, wr - 1, s - 1);
+                game.pokemon.GiaoDien.conTro(g, 2, y + s / 2 - 4, 8);
+            } else {
+                game.pokemon.GiaoDien.khoi(g, 0, y, wr - 1, s - 1, 2, (i & 1) == 0 ? game.pokemon.GiaoDien.HANG_CHAN : game.pokemon.GiaoDien.HANG_LE);
+            }
+            ((Command) this.list.elementAt(i)).paint(g, 18, y + s / 2);
+            String gia = this.martGia != null && i < this.martGia.length ? this.martGia[i] : "";
+            int wGia = Font.arialFontW.getWidth(gia);
+            Font.arialFontW.drawString(g, gia, wr - 5, y + (s - 13) / 2, Font.RIGHT);
+            String ten = this.martTen != null && i < this.martTen.length ? this.martTen[i] : "";
+            int co = this.martCo != null && i < this.martCo.length ? this.martCo[i] : -1;
+            int wTen = wr - 30 - wGia - 8;
+            if (co >= 0 && s >= 20 && wr >= 180) {
+                // có: số đang mang, chữ nhỏ dưới tên
+                Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, ten, wTen), 30, y + 1, 0);
+                Font.smallFont.drawString(g, "co " + co, 30, y + s - 7, 0);
+            } else {
+                Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, ten, wTen), 30, y + (s - 13) / 2, 0);
+            }
+        }
+        if (n == 0) {
+            Font.arialFontW.drawString(g, "Cửa hàng chưa có hàng", wr / 2, cmy + 2 * s, Font.CENTER);
+        }
+        g.translate(0, cmy);
+        game.pokemon.GiaoDien.moClip(g);
+        game.pokemon.KieuO.thanhCuon(g, wr + 2, 0, 5 * s, Math.max(5, n) * s, cmy, 5 * s);
+    }
+
     public void setSize(int wBig, int hBig, int numW, int numH, int wSmall, int hSmall) {
+        this.laMart = false;
+        // pokemon: lưới đồ (hành trang / cửa hàng / rương: ô 18 x 18, >= 6 cột) dùng ô to hơn ở màn rộng
+        if (wSmall == 18 && hSmall == 18 && numW >= 6) {
+            int k = canhO();
+            wSmall = k;
+            hSmall = k;
+            wBig = numW * k;
+            hBig = 5 * k;
+        }
+        this.rk = Math.max(145, wBig + 19);
+        this.hk = 150 + Math.max(0, (hSmall == wSmall && numW >= 6 ? 5 * hSmall : 90) - 90);
+        canKhung();
         this.w = wBig;
         this.h = hBig;
         this.numW = numW;
@@ -319,7 +419,7 @@ public class WindowInfoScr extends Screen {
                 this.isChangeTab = true;
                 Canvas.keyPressed[4] = true;
             }
-            if (Canvas.isPointer(this.x + 104, this.y, 30, 35)) {
+            if (Canvas.isPointer(this.x + this.rk - 41, this.y, 30, 35)) {
                 this.isChangeTab = true;
                 Canvas.keyPressed[6] = true;
             }
@@ -559,6 +659,25 @@ public class WindowInfoScr extends Screen {
                 setListPotion();
                 setInfo(this.list);
                 doSetLeftPotion();
+                {
+                    int n = Canvas.gameScr.shop.size();
+                    String[] ten = new String[n];
+                    String[] gia = new String[n];
+                    int[] co = new int[n];
+                    for (int i = 0; i < n; i++) {
+                        ItemInInventory it = (ItemInInventory) Canvas.gameScr.shop.elementAt(i);
+                        try {
+                            ten[i] = MainChar.listPotion[it.potionType].name;
+                            gia[i] = Res.potionTemplates[it.potionType].price + " xu";
+                            co[i] = Canvas.gameScr.mainChar.potions[it.potionType];
+                        } catch (Throwable e) {
+                            ten[i] = "";
+                            gia[i] = "";
+                            co[i] = -1;
+                        }
+                    }
+                    datMart(ten, gia, co);
+                }
                 break;
             case 20:
                 this.isPaintMoney = true;
@@ -566,6 +685,28 @@ public class WindowInfoScr extends Screen {
                 getShopTemplate();
                 setInfo(this.list);
                 doBuyShopSpecial();
+                {
+                    Vector ds = new Vector();
+                    for (int i = 0; i < Res.shopTemplate.size(); i++) {
+                        GemTemp gt = (GemTemp) Res.shopTemplate.elementAt(i);
+                        if (gt.shopType == focusTab && gt.isSell) {
+                            ds.addElement(gt);
+                        }
+                    }
+                    String[] ten = new String[ds.size()];
+                    String[] gia = new String[ds.size()];
+                    int[] co = new int[ds.size()];
+                    for (int i = 0; i < ds.size(); i++) {
+                        GemTemp gt = Res.getShopByID(((GemTemp) ds.elementAt(i)).id);
+                        if (gt == null) {
+                            gt = (GemTemp) ds.elementAt(i);
+                        }
+                        ten[i] = gt.name;
+                        gia[i] = gt.price + (gt.typeMoney == 0 ? " lượng" : " xu");
+                        co[i] = -1;
+                    }
+                    datMart(ten, gia, co);
+                }
                 this.name = new StringBuffer(String.valueOf(this.name)).append(" ").append(focusTab + 1).toString();
                 break;
             case 21:
@@ -1505,7 +1646,7 @@ public class WindowInfoScr extends Screen {
 
     public void doSelectedSkill() {
         if (Char.skillLevelLearnt[this.selected] == -1) {
-            Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+            Canvas.startOKDlg("Xin gặp Blaziken để học kỹ năng này");
             return;
         }
         Vector menuItems = new Vector();
@@ -1996,27 +2137,25 @@ public class WindowInfoScr extends Screen {
     private void setTextCharInfo() {
         this.charInfo = new String[17];
         MainChar c = Canvas.gameScr.mainChar;
-        this.charInfo[0] = new StringBuffer("Nhân vật: ").append(c.name).toString();
+        this.charInfo[0] = new StringBuffer("Pokémon: ").append(c.name).toString();
         this.charInfo[1] = new StringBuffer("Level: ").append((int) c.level).append("+").append(c.getPercent()).toString();
         this.charInfo[2] = new StringBuffer("HP: ").append(c.hp).append("/").append(c.maxhp).toString();
         this.charInfo[3] = new StringBuffer("MP: ").append(c.mp).append("/").append(c.maxmp).toString();
         this.charInfo[4] = new StringBuffer("Tấn công: ").append(c.getAttack()).toString();
-        this.charInfo[5] = new StringBuffer("Thủ vật lý: ").append(c.defend).toString();
-        this.charInfo[6] = new StringBuffer("Thủ ma pháp: ").append(c.defend_magic).toString();
+        this.charInfo[5] = new StringBuffer("Phòng thủ: ").append(c.defend).toString();
+        this.charInfo[6] = new StringBuffer("Phòng thủ đặc biệt: ").append(c.defend_magic).toString();
         this.charInfo[7] = new StringBuffer("Chính xác: ").append((int) c.accurate).toString();
         this.charInfo[8] = new StringBuffer("Né tránh: ").append((int) c.dodge).toString();
         this.charInfo[9] = new StringBuffer("Bạo kích: ").append(c.baokich > 0 ? new StringBuffer(String.valueOf(c.baokich / 10)).append(".").append(c.baokich % 10).toString() : "0").append("%").toString();
         this.charInfo[10] = new StringBuffer("Chí mạng: ").append((int) c.critical).toString();
         this.charInfo[11] = new StringBuffer("Cống hiến: ").append(c.dedicationPoint).append(" điểm.").toString();
-        this.charInfo[12] = new StringBuffer("Liên trảm: ").append(c.lienTram).append(" điểm.").toString();
+        this.charInfo[12] = new StringBuffer("Chuỗi thắng: ").append(c.lienTram).append(" điểm.").toString();
         this.charInfo[13] = new StringBuffer("Công trạng: ").append(c.congTrang).append(" điểm.").toString();
         this.charInfo[14] = new StringBuffer("Điểm hoạt động: ").append(c.hoatdong).append(" điểm.").toString();
         this.charInfo[15] = new StringBuffer("Điểm đấu trường: ").append(c.pArena).append(" điểm.").toString();
         this.charInfo[16] = c.nameHusband_wife.equals("") ? "Độc thân" : c.nameHusband_wife;
-        this.numH = this.charInfo.length + 1;
-        if (infoMainCharServer != null) {
-            this.numH += infoMainCharServer.length;
-        }
+        int soHang = this.charInfo.length - 4 + (infoMainCharServer != null ? infoMainCharServer.length : 0);
+        this.numH = (46 + soHang * 13 + 14) / Math.max(1, this.hSmall) + 1;   // pokemon: thẻ đầu + hàng chỉ số
         setLim();
     }
 
@@ -2647,21 +2786,23 @@ public class WindowInfoScr extends Screen {
     public void paint(Graphics g) {
         Canvas.gameScr.paint(g);
         g.translate(this.x, this.y);
-        Res.paintDlgFull(g, -10, -10);
+        // pokemon: khung theo bề ngang / cao của tab (rk x hk), mọi vị trí tính từ khung
+        int dl = (this.rk - 145) / 2;
+        game.pokemon.GiaoDien.bang(g, -8, 1, this.rk, this.hk);
         if (index[focusTab] == 0) {
             // pokemon: chấm trang hành trang (trang đang xem vàng)
-            game.pokemon.KieuO.chamTrang(g, 64, 29, Canvas.gameScr.mainChar.limItemBag, this.countTabMyitem);
+            game.pokemon.KieuO.chamTrang(g, 64 + dl, 29, Canvas.gameScr.mainChar.limItemBag, this.countTabMyitem);
         }
         if (this.isPaintMoney) {
-            int hMoney = 139;
+            int hMoney = this.hk - 11;
             if (Canvas.h < 196) {
-                hMoney = 126;
+                hMoney = this.hk - 24;
             }
-            Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.charXu)).append("$").toString(), 122, hMoney, 1);
+            Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.charXu)).append("$").toString(), this.rk - 23, hMoney, 1);
             Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luong)).append("l").toString(), 5, hMoney, 0);
             if (Canvas.gameScr.mainChar.luongKhoa > -1) {
                 if (Canvas.h > 190) {
-                    Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 63, 130, 2);
+                    Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 63 + dl, this.hk - 20, 2);
                 } else {
                     Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 5, 28, 0);
                 }
@@ -2670,10 +2811,11 @@ public class WindowInfoScr extends Screen {
         // pokemon: mũi tên đổi tab vàng viền tối
         g.setColor(game.pokemon.GiaoDien.VIEN);
         g.fillTriangle(1 - countL, 19, 10 - countL, 13, 10 - countL, 25);
-        g.fillTriangle(127 + countR, 19, 118 + countR, 13, 118 + countR, 25);
+        int xp = this.rk - 145;
+        g.fillTriangle(127 + xp + countR, 19, 118 + xp + countR, 13, 118 + xp + countR, 25);
         g.setColor(game.pokemon.GiaoDien.VANG);
         g.fillTriangle(3 - countL, 19, 9 - countL, 15, 9 - countL, 23);
-        g.fillTriangle(125 + countR, 19, 119 + countR, 15, 119 + countR, 23);
+        g.fillTriangle(125 + xp + countR, 19, 119 + xp + countR, 15, 119 + xp + countR, 23);
         if (countL > 0) {
             countL = (byte) (countL - 1);
         }
@@ -2681,21 +2823,18 @@ public class WindowInfoScr extends Screen {
             countR = (byte) (countR - 1);
         }
         // pokemon: tên tab trên viên đỏ (đang chuyển tab: xanh)
-        game.pokemon.GiaoDien.khoi(g, 19, 10, 92, 18, 6, game.pokemon.GiaoDien.VIEN);
-        game.pokemon.GiaoDien.khoiDoc(g, 20, 11, 90, 16, 5, this.isChangeTab ? game.pokemon.GiaoDien.XANH_SANG : game.pokemon.GiaoDien.DO_SANG, this.isChangeTab ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.DO_TOI);
-        g.setClip(21, 11, 88, 16);
+        game.pokemon.GiaoDien.khoi(g, 19 + dl, 10, 92, 18, 6, game.pokemon.GiaoDien.VIEN);
+        game.pokemon.GiaoDien.khoiDoc(g, 20 + dl, 11, 90, 16, 5, this.isChangeTab ? game.pokemon.GiaoDien.XANH_SANG : game.pokemon.GiaoDien.DO_SANG, this.isChangeTab ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.DO_TOI);
+        g.setClip(21 + dl, 11, 88, 16);
         g.translate(-cmxname, 0);
-        int wN = Font.normalFont[0].getWidth(this.name);
-        if (wN > 88) {
-            this.transX -= this.dirX;
-            if (Util.abs(this.transX) > ((wN - 88) / 2) + 5) {
-                this.dirX *= -1;
-            }
-        }
-        Font.normalFont[0].drawString(g, this.name, 66 + this.transX, 12, 2);
+        boolean sangTab = Font.nenSang;
+        Font.nenSang = false;   // tên tab chữ trắng trên viên đỏ / xanh
+        String tenTab = game.pokemon.GiaoDien.catChu(Font.normalFont[0], this.name, 86);
+        Font.normalFont[0].drawString(g, tenTab, 66 + dl, 12, 2);
         if (cmxname != 0) {
-            Font.normalFont[0].drawString(g, this.firName, 66 + (100 * dir), 12, 2);
+            Font.normalFont[0].drawString(g, game.pokemon.GiaoDien.catChu(Font.normalFont[0], this.firName, 86), 66 + dl + (100 * dir), 12, 2);
         }
+        Font.nenSang = sangTab;
         g.translate(cmxname, 0);
         g.translate(this.x0, this.y0);
         g.setClip(-100, -100, 300, 300);
@@ -2740,6 +2879,10 @@ public class WindowInfoScr extends Screen {
             case 29:
             case 30:
             default:
+                if (this.laMart) {
+                    paintMart(g);
+                    break;
+                }
                 // pokemon: lưới ô bo góc có khe, sọc xen kẽ, ô trống mờ, ô chọn viền vàng dày
                 game.pokemon.GiaoDien.khoi(g, -2, -2, (this.numW * this.wSmall) + 3, (5 * this.hSmall) + 3, 3, 0x0B1730);
                 g.setClip(-2, -2, (this.numW * this.wSmall) + 3, (5 * this.hSmall) + 3);
@@ -2767,7 +2910,7 @@ public class WindowInfoScr extends Screen {
                     game.pokemon.KieuO.chonO(g, (this.selected % this.numW) * this.wSmall, (this.selected / this.numW) * this.hSmall, this.wSmall);
                 }
                 g.translate(0, cmy);
-                g.setClip(-10, -40, 160, 160);
+                g.setClip(-10, -40, this.rk + 20, this.hk + 40);
                 game.pokemon.KieuO.thanhCuon(g, (this.numW * this.wSmall) + 2, 0, 5 * this.hSmall, soHang * this.hSmall, cmy, 5 * this.hSmall);
                 break;
             case 21:
@@ -3426,7 +3569,7 @@ public class WindowInfoScr extends Screen {
     }
 
     private void paintNewSkillLearn(Graphics g) {
-        String[] nameChar = {"Kiếm sỹ", "Chiến binh", "Pháp sư", "Đấu sỹ", "Cung thủ"};
+        String[] nameChar = {"Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu"};
         Font.normalFont[0].drawString(g, nameChar[Canvas.gameScr.mainChar.clazz], 60, -14, 2);
         g.setColor(11908533);
         g.fillRect(-8, 0, 133, 1);
@@ -3580,16 +3723,60 @@ public class WindowInfoScr extends Screen {
 
     private void paintCharInfo(Graphics g) {
         paintKhung(g);
+        // pokemon: chữ thông tin không đè hàng tiền ở đáy khung (cuộn để xem tiếp)
+        if (this.isPaintMoney) {
+            g.clipRect(0, cmy - 1, this.w, this.h - 12);
+        }
+        // pokemon: trang tóm tắt kiểu Pokémon - thẻ đầu (huy hiệu, tên, Lv, hệ, thanh HP/PP) + bảng chỉ số
+        MainChar c = Canvas.gameScr.mainChar;
+        int w = this.w;
+        game.pokemon.GiaoDien.khoi(g, 1, 1, w - 2, 42, 4, game.pokemon.GiaoDien.XANH);
+        game.pokemon.GiaoDien.khoiDoc(g, 2, 2, w - 4, 40, 3, game.pokemon.GiaoDien.TRANG, game.pokemon.GiaoDien.HANG_CHAN);
+        int dex = c.pokeDex;
+        if (dex <= 0 || !game.pokemon.PokeBody.paintChanDung(g, dex, c.pokeShiny, 19, 22, 32)) {
+            game.pokemon.GiaoDien.pokeBall(g, 19, 22, 12, 0);
+        }
+        String lv = new StringBuffer("Lv").append((int) c.level).toString();
+        int wLv = Font.normalFont[0].getWidth(lv);
+        Font.normalFont[0].drawString(g, game.pokemon.GiaoDien.catChu(Font.normalFont[0], c.name, w - 44 - wLv - 6), 38, 3, 0);
+        Font.normalFont[0].drawString(g, lv, w - 5, 3, 1);
+        int he = dex > 0 ? game.pokemon.HuyHieuPoke.he(dex) : 0;
+        game.pokemon.KieuO.vienHe(g, 38, 16, he);
+        String loai = dex > 0 ? game.pokemon.LoaiPokemonClient.ten(dex) : "";
+        if (loai.length() > 0) {
+            Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, loai, w - 44 - game.pokemon.KieuO.rongVienHe(he)), 41 + game.pokemon.KieuO.rongVienHe(he), 17, 0);
+        }
+        game.pokemon.GiaoDien.thanhHP(g, 38, 33, w - 44, 5, c.hp, c.maxhp);
+        game.pokemon.GiaoDien.thanh(g, 49, 38, w - 55, 3, c.mp, c.maxmp, 1);
+        int y = 46;
         if (this.charInfo != null) {
-            for (int i = 0; i < this.charInfo.length; i++) {
-                Font.arialFontW.drawString(g, this.charInfo[i], 4, 5 + (i * 12), 0);
+            for (int i = 4; i < this.charInfo.length; i++) {
+                y = hangChiSo(g, this.charInfo[i], y, w, i);
             }
         }
         if (infoMainCharServer != null) {
             for (int i2 = 0; i2 < infoMainCharServer.length; i2++) {
-                Font.arialFontW.drawString(g, infoMainCharServer[i2], 4, 5 + ((i2 + this.charInfo.length + 1) * 12), 0);
+                y = hangChiSo(g, infoMainCharServer[i2], y, w, i2 + 1);
             }
         }
+    }
+
+    /** Hàng chỉ số "Nhãn: giá trị": nhãn trái, giá trị phải, nền xen kẽ; trả y hàng sau. */
+    private int hangChiSo(Graphics g, String dong, int y, int w, int i) {
+        if (dong == null) {
+            return y;
+        }
+        game.pokemon.GiaoDien.khoi(g, 1, y, w - 2, 12, 2, (i & 1) == 0 ? game.pokemon.GiaoDien.HANG_CHAN : game.pokemon.GiaoDien.HANG_LE);
+        int p = dong.indexOf(": ");
+        if (p > 0) {
+            String gt = dong.substring(p + 2);
+            int wGt = Font.arialFontW.getWidth(gt);
+            Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, dong.substring(0, p), w - wGt - 12), 4, y, 0);
+            Font.arialFontW.drawString(g, gt, w - 4, y, 1);
+        } else {
+            Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, dong, w - 8), 4, y, 0);
+        }
+        return y + 13;
     }
 
     private void paintSkill(Graphics g) {
@@ -3608,7 +3795,13 @@ public class WindowInfoScr extends Screen {
     }
 
     private void paintCharWearing(Graphics g) {
-        charWearing.paintAvatar(g, (short) 58, (short) 90);
+        // pokemon: the trang bi - Pokemon xoay 4 huong voi phu kien + dai tom tat (bac, +N, bo, trang phuc)
+        if (charWearing.pokeDex > 0 && charWearing.ngoaiHinh != null) {
+            charWearing.paintPokemonTinh(g, 58, 90, game.pokemon.NgoaiHinhVe.huongThe(Canvas.gameTick));
+            game.pokemon.NgoaiHinhVe.veThe(g, charWearing.ngoaiHinh, this.w / 2, 1);
+        } else {
+            charWearing.paintAvatar(g, (short) 58, (short) 90);
+        }
         if (this.imgCharWear != null && Canvas.gameTick % 16 >= 8) {
             g.drawImage(this.imgCharWear, this.w / 2, 0, 17);
         }
@@ -3842,7 +4035,9 @@ public class WindowInfoScr extends Screen {
                     if (gem.shopType == WindowInfoScr.focusTab && gem.isSell) {
                         if (aa == WindowInfoScr.this.selected) {
                             final GemTemp item = (GemTemp) Res.shopTemplate.elementAt(i);
-                            Canvas.startYesNoDlg("Bạn có muốn mua vật phẩm này không ?", new IAction() {
+                            GemTemp tg = Res.getShopByID(item.id);
+                            String hoi = tg == null ? "Bạn có muốn mua vật phẩm này không ?" : new StringBuffer("Mua ").append(tg.name).append("? Giá: ").append(tg.price).append(tg.typeMoney == 0 ? " lượng" : " xu").toString();
+                            Canvas.startYesNoDlg(hoi, new IAction() {
                                 @Override
                                 public void perform() {
                                     GameService.gI().buyItemShopSpecial(item.id);
@@ -4479,7 +4674,7 @@ public class WindowInfoScr extends Screen {
                             Canvas.endDlg();
                         }
                     }));
-                    menu.addElement(new Command("Trang bị linh thú", new IAction() {
+                    menu.addElement(new Command("Trang bị thú cưỡi", new IAction() {
                         @Override
                         public void perform() {
                             Char c = (Char) Canvas.gameScr.findCharByID(Canvas.gameScr.saveIDViewInfoAnimal);
@@ -4506,7 +4701,7 @@ public class WindowInfoScr extends Screen {
             }
             if (this.selected != 4) {
                 Vector menu1 = new Vector();
-                menu1.addElement(new Command("Linh thú", new IAction() {
+                menu1.addElement(new Command("Thú cưỡi", new IAction() {
                     @Override
                     public void perform() {
                         if (!WindowInfoScr.charWearing.infoAnimal.equals("")) {
@@ -4973,13 +5168,25 @@ public class WindowInfoScr extends Screen {
                             Canvas.startOKDlg("Chỉ được mua nhiều nhất 120 đơn vị một lần.");
                             return;
                         }
-                        ItemInInventory item2 = (ItemInInventory) WindowInfoScr.this.readyBuy.elementAt(bb);
-                        item2.number = (short) (item2.number + number);
-                        Canvas.gameScr.mainChar.charXu -= (long) price;
-                        Canvas.endDlg();
-                        WindowInfoScr.this.countPop = 0;
-                        WindowInfoScr.this.closeText();
-                        WindowInfoScr.this.setShowText(item2.getTemplateDescription(), (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
+                        final int soMua = number;
+                        final ItemInInventory item2 = (ItemInInventory) WindowInfoScr.this.readyBuy.elementAt(bb);
+                        String tenThuoc = "";
+                        try {
+                            tenThuoc = MainChar.listPotion[item2.potionType].name;
+                        } catch (Throwable e) {
+                        }
+                        // pokemon: xác nhận kèm TỔNG tiền kiểu Poké Mart
+                        Canvas.startYesNoDlg(new StringBuffer("Mua ").append(soMua).append(" ").append(tenThuoc).append("? Tổng: ").append((long) soMua * price).append(" xu").toString(), new IAction() {
+                            @Override
+                            public void perform() {
+                                item2.number = (short) (item2.number + soMua);
+                                Canvas.gameScr.mainChar.charXu -= (long) price * soMua;
+                                Canvas.endDlg();
+                                WindowInfoScr.this.countPop = 0;
+                                WindowInfoScr.this.closeText();
+                                WindowInfoScr.this.setShowText(item2.getTemplateDescription(), (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
+                            }
+                        });
                     } catch (Exception e) {
                         Canvas.startOKDlg("Không được nhập chữ");
                     }

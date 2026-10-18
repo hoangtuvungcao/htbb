@@ -3,7 +3,7 @@
 ## Dựng server mới (Huyền Thoại Bảo Bối): MỘT file
 
 ```
-mysql -uroot < sql/htbb_day_du.sql        # tạo cả `account` lẫn `kpah_db`, đủ dữ liệu Pokémon
+mysql -uroot < sql/htbb_day_du.sql        # tạo cả `account` lẫn `htbb_db`, đủ dữ liệu Pokémon
 ```
 
 `htbb_day_du.sql` là **file sinh ra** (đừng sửa tay) bằng `tools/pokemon/xuat_sql_day_du.sh`. Script dựng
@@ -22,14 +22,13 @@ Các file lẻ bên dưới **vẫn giữ** vì test/tool/trang quản trị đ�
 ## Đừng xoá thư mục này khi migration "đã áp dụng xong"
 
 "Đã áp dụng vào production" **không** phải tiêu chí để xoá. Các file ở đây còn là **nguồn
-schema** cho 19 chỗ đọc:
+schema** cho các chỗ đọc sau:
 
 - `tools/SinhDanhMucItem.java` sinh `docs/danh_muc_item.md` từ `gamedb7_clean.sql`
 - `test/KiemDanhMucItem.java`, `test/KiemBangThuocTinh.java` đối chiếu lại chính file đó
-- `test/KiemSkinLinhThu.java` đọc `skin_linh_thu.sql`, `ten_mo_ta_skin_linh_thu.sql`,
+- `test/KiemSkinThuCuoi.java` đọc `skin_linh_thu.sql`, `ten_mo_ta_skin_linh_thu.sql`,
   `sua_type_skin_linh_thu.sql`
 - `test/KiemBangMaNguon.java` quét cả `sql/` tìm lỗi bảng mã
-- `web/admin/test/kiem_schema.php` đọc 6 file `them_bang_*.sql` ở đây + `vps/db_new_server.sql`
 
 Xoá một file là hỏng những chỗ đó, hoàn toàn không liên quan tới việc migration đã chạy chưa.
 
@@ -66,22 +65,21 @@ mới: vẫn phải chạy `vps/db_new_server.sql` sau khi nạp seed.
 | `them_bang_web_chan_spam.sql` | ✅ đang ghi (25 dòng) |
 | `them_bang_cam_may.sql` | ✅ có bảng, 0 dòng (chưa ai bị cấm máy) |
 | `them_bang_2buoc.sql` | ✅ có bảng, 0 dòng (chưa ai bật 2FA) |
-| `them_bang_web_lenh_nhan_vat.sql` | 🆕 02/09/2026 — hàng đợi lệnh web → server game (đặt cấp độ cho nhân vật đang online). Server (`data/LenhWeb.java`) và web (`inc/lenh_nhan_vat.php`) đều tự `CREATE TABLE IF NOT EXISTS`, không cần chạy tay; **chưa có trong seed** |
+| `them_bang_web_lenh_nhan_vat.sql` | 🆕 02/09/2026 — hàng đợi lệnh web → server game (đặt cấp độ cho nhân vật đang online). Server (`data/LenhWeb.java`) và web (HTBB-Web `server/utils/lenhNhanVat.ts`) đều tự `CREATE TABLE IF NOT EXISTS`, không cần chạy tay; **chưa có trong seed** |
 
 Từ bản làm mới ngày 02/09/2026, 7 bảng đầu **đã có trong bản seed**, nên dựng server mới từ
-seed không cần chạy lại chúng (bảng `web_lenh_nhan_vat` thêm sau, server tự tạo lúc khởi động). Vẫn giữ file vì `web/admin/test/kiem_schema.php` parse chúng để
-kiểm schema của DB thật, và các trang admin (`cammay.php`, `sukien.php`, `nhatky.php`) trỏ người
-vận hành tới đây khi thiếu bảng. Muốn bỏ hẳn thì phải đổi `kiem_schema.php` sang đọc seed trước.
+seed không cần chạy lại chúng (bảng `web_lenh_nhan_vat` thêm sau, server tự tạo lúc khởi động). Vẫn giữ file vì các trang admin của HTBB-Web (`/admin/cammay`, `/admin/sukien`, `/admin/nhatky`) trỏ người
+vận hành tới đây khi thiếu bảng. (Bộ kiểm `kiem_schema.php` của web PHP cũ đã bỏ cùng web PHP, 19/10/2026.)
 
 ## Migration — sự kiện & vật phẩm
 
 | File | Trạng thái trên production |
 |---|---|
-| `them_su_kien_world_cup.sql` | ✅ đã áp dụng (potion 108 + 2 bảng). Bản seed đã hấp thụ cả ba. Giữ vì 4 file Java, `test/KiemSuKienWorldCup.java`, `web/admin/sukien.php` và docs trỏ vào. |
+| `them_su_kien_world_cup.sql` | ✅ đã áp dụng (potion 108 + 2 bảng). Bản seed đã hấp thụ cả ba. Giữ vì 4 file Java, `test/KiemSuKienWorldCup.java`, trang `/admin/sukien` và docs trỏ vào. |
 | `them_phi_phong_vo_hinh.sql` | ⚠️ **áp dụng một phần**: item 910 có, nhưng giftcode `canhvohinh` **chưa có**. |
 | `skin_linh_thu.sql` | ✅ 5 dòng, type 30, xstart 860-864. Bản seed đã hấp thụ (id 905-909). |
 | `ten_mo_ta_skin_linh_thu.sql` | ✅ tên đã kèm mô tả `[hệ …]`. Bản seed đã hấp thụ. |
-| `sua_type_skin_linh_thu.sql` | ✅ đã áp dụng, **giờ là no-op**: điều kiện `AND type = 19` không còn khớp dòng nào (cả 5 đã là type 30). Giữ vì `SkinLinhThu.java` trỏ vào nó làm hướng dẫn khi đổi `TYPE_ITEM`. |
+| `sua_type_skin_linh_thu.sql` | ✅ đã áp dụng, **giờ là no-op**: điều kiện `AND type = 19` không còn khớp dòng nào (cả 5 đã là type 30). Giữ vì `SkinThuCuoi.java` trỏ vào nó làm hướng dẫn khi đổi `TYPE_ITEM`. |
 
 **`data_shop` id 180/181 (thời trang Bóng đá nam/nữ, ngày 02/09/2026):** hai dòng này đã có sẵn
 trên production khi kiểm tra — không có migration nào trong repo tạo ra chúng, và lịch sử code
@@ -126,7 +124,7 @@ rỗng nên mượn được; ai điền `decript` cho chúng là mô tả bốn
 
 | File | Trạng thái |
 |---|---|
-| `wipe_player_data.sql` | Thao tác tay (xoá dữ liệu người chơi). Đã bị `vps/db_new_server.sql` thay thế cho việc dựng server mới. **Giữ**: `web/admin/inc/vatpham.php` trỏ vào ghi chú trong file này để giải thích cách item được serialize vào 3 cột. |
+| `wipe_player_data.sql` | Thao tác tay (xoá dữ liệu người chơi). Đã bị `vps/db_new_server.sql` thay thế cho việc dựng server mới. **Giữ**: HTBB-Web `server/utils/vatPham.ts` trỏ vào ghi chú trong file này để giải thích cách item được serialize vào 3 cột. |
 
 ## Đã xoá ngày 02/09/2026
 
@@ -142,7 +140,7 @@ rỗng nên mượn được; ai điền `decript` cho chúng là mô tả bốn
 
 Kiến thức này giữ lại từ `go_skin_linh_thu.sql` (đã xoá file đó ngày 02/09/2026 vì header của
 nó khẳng định sai rằng tính năng skin linh thú "đã được gỡ" — thực tế đã **làm lại** trên đúng
-id 905-909, xem `SkinLinhThu.java:79`; và câu truy vấn trong đó dùng bảng `char` trong khi
+id 905-909, xem `SkinThuCuoi.java:79`; và câu truy vấn trong đó dùng bảng `char` trong khi
 schema thật là `tob_char`).
 
 **Xoá template trong khi còn người chơi giữ món đó = họ không vào được game.**

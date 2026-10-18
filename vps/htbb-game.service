@@ -1,0 +1,63 @@
+[Unit]
+Description=HTBB game server
+After=network.target mariadb.service htbb-login.service
+Wants=mariadb.service htbb-login.service
+
+# Thoi khoi dong lai sau 5 lan chet trong 300s, de unit vao trang thai "failed"
+# thay vi lap vo han. Can cho chot kiemTraCSDL() trong TeamServer: khi server.ini
+# sai mat khau CSDL, server tu thoat ma 1 - khong co gioi han nay thi Restart=always
+# se khoi dong lai mai mai moi 10s va khong ai thay unit hong.
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=htbb
+Group=htbb
+WorkingDirectory=/opt/htbb/server
+Environment=LANG=en_US.UTF-8
+
+# THREAD (cap nhat 18/10/2026, docs/pokemon/TOI_UU_HIEU_NANG.md): vong lap khu/ban do nay chay tren
+# pool CHUNG (com.htbb.runtime.VongLapChung: "HTBB-NHIP-n" = so loi x 2, "HTBB-GOITIN-n" = max(16, loi x 4))
+# thay cho ~2.970 thread rieng truoc day. Do that: ~170 thread khi rong, + 2 thread / ket noi
+# (READ + SEND) -> ~800 o 300 nguoi. TasksMax/LimitNPROC giu infinity cho an toan (lop trong
+# lib/htbb-core.jar - MapBoss, ArenaMap, su kien - van tao thread rieng khi mo).
+#   -Xss256k: van nen giu (moi thread it stack hon; khong co de quy sau).
+#   -Dhtbb.nhip.luong=N / -Dhtbb.goitin.luong=N: doi co pool (mac dinh theo so loi la du).
+TasksMax=infinity
+LimitNPROC=infinity
+LimitNOFILE=65535
+
+# BO NHO - do 18/10/2026 (TOI_UU_HIEU_NANG.md muc 3): du lieu song sau full GC ~180 MB khi rong,
+# ~220 MB o 300 nguoi (quai cua 610 khu x 2 phe chiem phan lon). Heap 1 GB la du toi ~300 nguoi:
+#     VPS 2 GB  -> -Xms512m -Xmx768m   (<= 100 nguoi)
+#     VPS 4 GB  -> -Xms768m -Xmx1g     (mac dinh o day, toi ~300 nguoi)
+#     VPS 8 GB  -> -Xms1g   -Xmx1536m  (300-600 nguoi; do lai truoc khi mo them)
+# Dung dat -Xmx sat RAM: JVM con ton metaspace (~60 MB) + stack thread + bo dem GC; MariaDB can them 0,5-1 GB.
+# -XX:+UseG1GC: ghi ro - tren VPS 1-2 vCPU JVM tu chon SerialGC (dung ca server moi lan GC).
+# -XX:MaxGCPauseMillis=100: G1 nham dung <= 100 ms (mac dinh 200) - do duoc p99 < 50 ms o 300 nguoi.
+# -XX:+UseStringDeduplication: G1 gop chuoi trung (ten item/dia danh/chat lap lai) trong old gen.
+# -XX:+ExitOnOutOfMemoryError: het bo nho thi THOAT de systemd Restart=always dung lai server sach,
+#   thay vi song do dang (thread chet tung cai, nguoi choi ket). Shutdown hook KHONG chay khi thoat
+#   kieu nay -> mat toi da mot chu ky luu tu dong; chap nhan doi lay server khong treo.
+# -XX:+HeapDumpOnOutOfMemoryError: de lai bang chung (log/ phai du cho trong ~1 GB).
+# -Xlog:gc...: CAN JAVA >= 11 (Java 8 bao "Unrecognized option" va KHONG khoi dong). Cai
+#   openjdk-17-jre-headless hoac -21 (docs/HUONG_DAN_BUILD_VPS.md B1). Container (Docker/LXC): JVM >= 11
+#   tu doc gioi han cgroup; van nen ghi ro -Xmx nhu tren.
+# -Djava.awt.headless=true: VPS khong co man hinh (AdminPanel tu bo qua).
+ExecStart=/usr/bin/java -Xms768m -Xmx1g -Xss256k -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/htbb/log -Xlog:gc:file=/opt/htbb/log/gc.log:time:filecount=5,filesize=10m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar htbb-server.jar
+
+# Tat = SIGTERM -> shutdown hook trong TeamServer luu char/clan/market roi moi thoat.
+# TimeoutStopSec phai du dai cho no luu xong, dung ha xuong duoi 60s.
+KillSignal=SIGTERM
+TimeoutStopSec=180
+Restart=always
+RestartSec=10
+
+StandardOutput=append:/opt/htbb/log/game.out
+StandardError=append:/opt/htbb/log/game.out
+
+[Install]
+WantedBy=multi-user.target
+# TUONG-THICH-TEN-CU-DONG-SAU: `systemctl ... kpah-game` cu van chay sau khi `systemctl enable` (bo sau 1 ban)
+Alias=kpah-game.service

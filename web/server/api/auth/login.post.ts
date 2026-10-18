@@ -39,7 +39,8 @@ export default defineEventHandler(async (event) => {
     throw apiLoi(401, 'Sai tên tài khoản hoặc mật khẩu.')
   }
   if (Number(row.ban) === 1) {
-    throw apiLoi(403, 'Tài khoản của bạn đã bị khóa.')
+    // Trang đăng nhập thấy code này thì hiện nút Zalo hỗ trợ (kênh khiếu nại khoá tài khoản).
+    throw apiLoi(403, 'Tài khoản của bạn đã bị khoá. Nếu cho rằng có nhầm lẫn, hãy nhắn ban quản trị qua Zalo hỗ trợ (ghi tên tài khoản, không gửi mật khẩu).', { code: 'tai_khoan_bi_khoa' })
   }
 
   const user = { id: Number(row.id), username: String(row.username) }

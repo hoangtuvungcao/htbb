@@ -1,4 +1,4 @@
-# Kế hoạch chuyển đổi game kiếm hiệp gốc (trước đây là KPAH) → Huyền Thoại Bảo Bối (game Pokémon)
+# Kế hoạch chuyển đổi game kiếm hiệp gốc → Huyền Thoại Bảo Bối (game Pokémon)
 
 > **Nhánh:** `pokemon/chuyen-doi`, có ở cả 3 repo: `HTBB`, `htbb-client`, `HTBB-Web`.
 > **File này là nguồn sự thật duy nhất** của việc chuyển đổi. Ai làm phần nào cũng đọc
@@ -52,7 +52,7 @@
 
 | # | Quyết định | Lý do |
 |---|---|---|
-| Q1 | **5 class cũ ánh xạ sang 5 dòng Pokémon khởi đầu** (bảng 4.1). Cột `tob_char.class` giữ nguyên. | `CreateCharHandler` chỉ có bytecode trong `lib/NQSH_5h.jar`, không có source. Giữ `class` thì không phải viết lại phần tạo nhân vật, và toàn bộ bảng skill `CharManager[class]` vẫn dùng được. |
+| Q1 | **5 class cũ ánh xạ sang 5 dòng Pokémon khởi đầu** (bảng 4.1). Cột `tob_char.class` giữ nguyên. | `CreateCharHandler` chỉ có bytecode trong `lib/htbb-core.jar`, không có source. Giữ `class` thì không phải viết lại phần tạo nhân vật, và toàn bộ bảng skill `CharManager[class]` vẫn dùng được. |
 | Q2 | **Loài lưu ở cột mới `tob_char.dex`** (smallint, 0 = tự suy ra từ class + cấp). | Nhánh Eevee do người chơi chọn nên không suy ra được từ cấp. |
 | Q3 | **Tiến hoá theo cấp**, xử lý ngay sau khối lên cấp trong `MapXuLyLenh` (bảng 5). Eevee chọn nhánh ở cấp 25 bằng vật phẩm đá. | Cấp tối đa là 91 (`LevelDetail.expMain`), nên các mốc 10/16/25/30/32/36 rải đều. |
 | Q4 | **18 hệ thay cho ngũ hành.** Hệ số được "làm dịu": x4→x2, x2→x1.5, x0.5→x0.7, x0.25→x0.5, x0→x0.3. Code ở `HePokemon.heSoTrongGame`. | Người chơi không đổi được Pokémon giữa trận, nên giữ x0 thì có quái không thể đánh được, còn x4 sẽ đánh chết ngay trong PvP. |
@@ -175,7 +175,7 @@ Không cần lật ảnh như kiểu cũ. Tool đóng gói (việc A3) chỉ c�
 |---|---|---|---|
 | Ngũ hành trong sát thương người → mục tiêu | `CharChiSo.java:744-755` | Thay khối `(he+2)%5` bằng `att = att * HePokemon.heSoTrongGame(heTanCong, actor.he, actor.he2) / 100`. Giai đoạn 2: `heTanCong` = hệ 1 của người đánh. Giai đoạn 3: hệ của chiêu. | 2 |
 | Ngũ hành trong sát thương quái → người | `LiveActor.java:~446` (`attackDam` ở :389) | Như trên | 2 |
-| Random hệ khi spawn | `MapNapTaiNguyen.java:1187-1265`, `BossSkelonton.java:472`, `BossNguoiTuyet.java:352` | Bỏ random khi bật `che_do_pokemon`. Lấy hệ từ template (Q9) | 2 |
+| Random hệ khi spawn | `MapNapTaiNguyen.java:1187-1265`, `BossDusknoir.java:472`, `BossNguoiTuyet.java:352` | Bỏ random khi bật `che_do_pokemon`. Lấy hệ từ template (Q9) | 2 |
 | Lên cấp → tiến hoá | `MapXuLyLenh.java:114-130` và `:240-260` (sau `newlevel > lastLV`) | `dexMoi = LoaiPokemon.tienHoaKeTiep(dex, level)`. Nếu khác `KHONG` thì cập nhật `dex`, `he`, `he2`, gửi lệnh POKE_THAN (mục 7) cho mình và người ở gần, kèm thông báo "… đã tiến hoá thành …" | 2 |
 | Nạp nhân vật | `CharNapDuLieu.initPinfo` :31, `initInfoFromDB` :278 | Đọc `dex`. Nếu bằng 0 thì `dangTheoCap(khoiDau(class), level)` | 2 |
 | Lưu nhân vật | `DatabaseNhanVat.java:718, 967, 1451` | Thêm `dex`, `shiny` vào câu UPDATE | 2 |
@@ -223,16 +223,16 @@ Các `id` dưới đây lấy theo `Map.java:3336-3345` và `MapNapTaiNguyen.jav
 
 | File | Template id | Pokémon | Renderer client cũ cần thay |
 |---|---|---|---|
-| `BossLinhXa` / `BossBachXa` | 91 / 92 | Serperior / Servine | `Boss_Snake.cs` |
-| `BossThanLan` | 39, 82 | Salamence, Zapdos | |
-| `BossThuongLuong` | 38 | Gyarados | |
-| `BossSkelonton`, `BossSkelontonMoba` | 94 | Dusknoir | |
+| `BossSerperior` / `BossServine` | 91 / 92 | Serperior / Servine | `BossSerperior.cs` |
+| `BossDotKich` | 39, 82 | Salamence, Zapdos | |
+| `BossGyarados` | 38 | Gyarados | |
+| `BossDusknoir`, `BossSkelontonMoba` | 94 | Dusknoir | |
 | `BossNguoiTuyet` | 90 | Abomasnow | |
 | `BossDracula` | 116, 117 | Darkrai, Gourgeist | |
 | `BossTruRong`, `BossTruRongMoba` | 120 | Rayquaza | `Boss_Dragon.cs` |
-| `BossSonTinhThuyTinh` | 129, 130 | Kyogre, Groudon | |
+| `BossKyogreGroudon` | 129, 130 | Kyogre, Groudon | |
 | `BossTrungThu` | 48 | Arcanine (theo bảng quái). **Cần xác nhận** | |
-| `BossMoba`, `BossVanTienTran`, `BossLocaltion`, `Boss` (lớp cha) | xem code | Theo template | |
+| `BossMoba`, `BossMeCung`, `BossLocaltion`, `Boss` (lớp cha) | xem code | Theo template | |
 | Mắt quỷ, Thỏ điên, Gấu xám | 93, 113, 115 | Gengar, Lopunny, Ursaring | |
 
 ### 6.3 Thú cưỡi, pet, skin
@@ -241,7 +241,7 @@ Các `id` dưới đây lấy theo `Map.java:3336-3345` và `MapNapTaiNguyen.jav
 |---|---|---|
 | Ngựa cá nhân, ngựa bang, ngựa quốc gia (6 màu × 3) | `data_monster` 95–112, `map/horse…` | Ponyta, Rapidash, Mudsdale. Màu thứ 6 là shiny; 5 màu còn lại đổi màu bằng palette ở client |
 | Linh thú (`tob_animal`, `Animal.java`), 20+ loại | `map/d_effect`, `skinthu/` | Pokémon cưỡi được: Lapras, Arcanine, Gyarados, Dragonite… (việc T1 lập bảng) |
-| Skin linh thú (item 905–909, 911) | `SkinLinhThu.java` | Bản shiny của thú cưỡi |
+| Skin linh thú (item 905–909, 911) | `SkinThuCuoi.java` | Bản shiny của thú cưỡi |
 | Pet (`tob_pet`, `Pet.java`), 24 ảnh | `map/pet/` | Pokémon nhỏ đi theo |
 | Thần thú | `map/thanthu/` | Pokémon huyền thoại đi theo |
 | Hoá hình (`isHoaHinh`) | `Animal.java` | Giữ cơ chế, đổi sang hình Pokémon |
@@ -495,14 +495,14 @@ Nguyên tắc chung:
 | File:dòng | Đang dùng `he` để làm gì | Xử lý |
 |---|---|---|
 | `CharChiSo.java:747` | Khắc ngũ hành, người → mục tiêu | Cờ bật: `SatThuongHe.apDung` (HePokemon) |
-| `LiveActor.java:452` + `attackDam` của 7 boss (BossSkelonton, BossMoba, BossSkelontonMoba, BossBachXa, BossLinhXa, BossThanLan, data/BossMatQuy) | Khắc ngũ hành, quái → người | Như trên |
+| `LiveActor.java:452` + `attackDam` của 7 boss (BossDusknoir, BossMoba, BossSkelontonMoba, BossServine, BossSerperior, BossDotKich, data/BossMatQuy) | Khắc ngũ hành, quái → người | Như trên |
 | `CharNapDuLieu.java:52` | `he[charClass]` | Sau đó `TienHoaPokemon.napLoai` ghi đè bằng hệ của loài |
 | `Monster.java:79` | `he = template.he` | Giữ 0..4 (qua `nguHanhCu`); hệ thật nằm ở `hePokemon`/`he2` |
 | ~65 chỗ random hệ khi sinh quái (MapNapTaiNguyen 1187–1569, Map, MapTown, MapLienDau, Region…, Boss*) | Random ngũ hành | `heKhiSinh(...)`: cờ bật thì lấy hệ của template. Vẫn gọi random để chuỗi random giữ nguyên khi cờ tắt |
 | `MapChienTruongMoba`, `BossSkelontonMoba:479/562/713` | Random; `CharChienTruong` trong jar đánh chỉ số theo 0..4 | Giữ nguyên; sát thương vẫn dùng hệ template |
 | `MessageCreator:1734/1938/1999`, `Map.java:15062` | `he` nhân vật gửi trong lệnh 5/3 | `heGuiClient` → 0..4 |
-| `SkinLinhThu` "hợp hệ" | Dựa vào `charClass`, không dựa vào `he` | Không đổi |
-| `data_item.he`, `GemTemplate.he`, ThanKhi | Hệ của trang bị, ngọc | Không đổi; độc lập với hệ loài |
+| `SkinThuCuoi` "hợp hệ" | Dựa vào `charClass`, không dựa vào `he` | Không đổi |
+| `data_item.he`, `GemTemplate.he`, BaoVatHuyenThoai | Hệ của trang bị, ngọc | Không đổi; độc lập với hệ loài |
 | Các class chỉ có trong jar: Material, Monster_Clone, MapBoss, PrivateDataMap, RegionMapMoba, RegionNuiChauBau | Random riêng | Không sửa được. Vô hại vì sát thương dùng hệ template |
 
 ## 11. Câu hỏi mở: đã chốt (2026-10-16)
@@ -528,7 +528,7 @@ Nguyên tắc chung:
 | Migration và SQL dữ liệu trên MariaDB 10.4 nạp `gamedb7_clean.sql` + `db_new_server.sql` | Chạy hết không lỗi: 122 quái có dex, 696 trang bị đổi tên, 8 đá Eevee (id 960–967) |
 | **Đầu–cuối:** game server + login server thật, client giả lập theo giao thức (khoá -40, đăng nhập, tạo, chọn nhân vật, chat GM) | Đăng nhập → -91 (122 template, boss 160%) ngay sau 26. Vào game → -90 dex=4 + -93. `slv 16` → -92 4→5, `slv 36` → -92 5→6. Thoát → DB lưu `dex=6`. Đăng nhập lại → -90 dex=6. Server log không có exception |
 | Cờ `sv.che_do_pokemon=0` | Không gửi gói -90…-93 nào; server chạy như cũ |
-| HTBB-Web: `nuxi typecheck` + `npm run build` (Node 22) | 0 lỗi. API nạp trả 403 khi `KPAH_NAP_BAT=false` |
+| HTBB-Web: `nuxi typecheck` + `npm run build` (Node 22) | 0 lỗi. API nạp trả 403 khi `HTBB_NAP_BAT=false` |
 
 **Chưa kiểm được:** hình ảnh thật trong Unity (vị trí, kích cỡ, hiệu ứng tiến hoá), vì máy dev không có Unity Editor. Việc đầu tiên khi mở Unity: vào game nhìn bằng mắt các mục C2, C3, C5, T2.
 
@@ -537,7 +537,7 @@ Nguyên tắc chung:
 | Việc | Làm gì | Kiểm |
 |---|---|---|
 | **K3** Hiệu ứng chiêu | `tools/pokemon/tai_hieu_ung_pmd.py` tải particle RawAsset → `Resources/poke/hu_*.bytes` (45 ảnh, 125 KB) + `hu_bang.bytes`; client `PokeHieuUng.cs` (`SkillPokemon` thay hiệu ứng game gốc khi `pokeDex > 0`; buff chạy particle trên người nhận). Bảng: `bang_hieu_ung.csv` | KiemHieuUngPokemon; nhìn tay vài atlas |
-| **T3** Pet + thần thú | Lệnh -94 (`PetPokemon` theo id item pet); client vẽ pet đi theo bằng PokeBody 70%. Thần thú (Hoả kỳ lân 0..2) vẽ Ponyta/Rapidash/Rapidash shiny ở `ThanThu.cs` (bảng ở client) | KiemPetPokemon; e2e thấy -94 |
+| **T3** Pet + thần thú | Lệnh -94 (`PetPokemon` theo id item pet); client vẽ pet đi theo bằng PokeBody 70%. Thần thú (Hoả kỳ lân 0..2) vẽ Ponyta/Rapidash/Rapidash shiny ở `PokemonHuyenThoai.cs` (bảng ở client) | KiemPetPokemon; e2e thấy -94 |
 | Atlas ≤ 2048 | Định dạng `_dl` bản 2 (`xAtlas`), `DongGoiSprite` xếp cột/kệ. 0/178 loài vượt 2048 | Tool tự đọc lại so pixel; test C# kiểm chồng lấn + giới hạn |
 | Nguồn đá Eevee | `RoiDaTienHoa` (gọi đầu `Monster.onDropItem`): Eevee cấp ≥ 25 hạ quái không thấp hơn 10 cấp → 0,5% rơi 1 đá ngẫu nhiên | Test hàm thuần `DaTienHoa.daRoiKhiHaQuai` |
 | Icon item PMD | `tools/pokemon/sinh_icon_pokemon.py` → `map/icon_pokemon/0..21.png` + `sql/pokemon_icon_vat_pham.sql`; server phục vụ dải ảnh **14000+n** (`IconPokemon`). `nIconItem` giữ 866 | e2e: xin ảnh 14014 nhận đúng 271 byte |

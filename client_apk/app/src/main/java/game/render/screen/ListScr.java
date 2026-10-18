@@ -119,7 +119,7 @@ public class ListScr extends Screen {
         int i = this.type;
         if (i == 4 || i == 3 || i == 5 || i == 1) {
             if (i == 5) {
-                vector.addElement(new Command("Danh sách quản lý bang.", new IAction() {
+                vector.addElement(new Command("Danh sách quản lý đội.", new IAction() {
                     @Override
                     public void perform() {
                         GameService.gI().requestQuanLyBang(((ClanInfo) ListScr.this.list.elementAt(ListScr.selected)).id);
@@ -177,7 +177,7 @@ public class ListScr extends Screen {
         int i2 = this.type;
         if (i2 == 1) {
             if (((Char) this.list.elementAt(0)).idClan == GCanvas.gameScr.mainChar.idClan) {
-                vector.addElement(new Command("Nhắn tin toàn bang", new IAction() {
+                vector.addElement(new Command("Nhắn tin toàn đội", new IAction() {
                     @Override
                     public void perform() {
                         GCanvas.inputDlg.setInfo("Nội dung", new IAction() {
@@ -196,10 +196,10 @@ public class ListScr extends Screen {
                 }));
             }
             if (((Char) this.list.elementAt(selected)).idClan == GCanvas.gameScr.mainChar.idClan && ((GCanvas.gameScr.mainChar.isMaster == 0 || GCanvas.gameScr.mainChar.isMaster == 1) && !((Char) this.list.elementAt(selected)).name.equals(GCanvas.gameScr.mainChar.name))) {
-                vector.addElement(new Command("Mời khỏi bang", new IAction() {
+                vector.addElement(new Command("Mời khỏi đội", new IAction() {
                     @Override
                     public void perform() {
-                        GCanvas.startYesNoDlg("Bạn có chắc muốn mời " + ((Char) ListScr.this.list.elementAt(ListScr.selected)).name + " khỏi bang không ?", new IAction() {
+                        GCanvas.startYesNoDlg("Bạn có chắc muốn mời " + ((Char) ListScr.this.list.elementAt(ListScr.selected)).name + " khỏi đội không ?", new IAction() {
                             @Override
                             public void perform() {
                                 GameService.gI().requestEvictionClan(((Char) ListScr.this.list.elementAt(ListScr.selected)).name);
@@ -271,7 +271,7 @@ public class ListScr extends Screen {
             cmyLim = 0;
         }
         if (i == 6 && this.nameManager == null) {
-            this.nameManager = new String[]{"Bang chủ", "Phó bang", "Trưởng lão"};
+            this.nameManager = new String[]{"Đội trưởng", "Đội phó", "Cố vấn"};
         }
     }
 
@@ -467,7 +467,7 @@ public class ListScr extends Screen {
             if (clanInfo.nation > -1) {
                 graphics.drawRegion(Res.imgNation, 0, clanInfo.nation * 11, 11, 11, 0, i + 15 + Font.normalFont[0].getWidth(clanInfo.name) + 3, (this.height * i4) + 6, 0);
             }
-            String str = "Bang chủ: " + clanInfo.master + " - Tiền: " + clanInfo.money + "xu - Thành viên: " + ((int) clanInfo.members);
+            String str = "Đội trưởng: " + clanInfo.master + " - Tiền: " + clanInfo.money + "xu - Thành viên: " + ((int) clanInfo.members);
             if (i4 == selected) {
                 int width = Font.arialFont11.getWidth(str);
                 int i6 = this.w;

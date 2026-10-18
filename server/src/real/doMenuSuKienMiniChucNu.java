@@ -30,23 +30,23 @@ public class doMenuSuKienMiniChucNu {
 
                 if (player.receiveQuestVulan == 0) {
                     if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Ta đã tìm thấy Chức Nữ rồi. Chúc ngươi may mắn"));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Ta đã tìm thấy Illumise rồi. Chúc cậu may mắn"));
                         return;
                     }
 
                     if (player.potions[77] <= 0) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Hay đi tìm lá thư của Ngưu Lang rồi đến gặp ta. Lá thư của Ngưu Lang có bán trong cửa hàng"));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Hay đi tìm lá thư của Volbeat rồi đến gặp ta. Lá thư của Volbeat có bán trong cửa hàng"));
                         return;
                     }
 
-                    player.sendMessage(MessageCreator.createMsgPopUp(player.id, 14, "Chức Nữ đi dạo đã lâu rồi mà chưa thấy về. Ngươi có thể giúp ta tìm Nàng không?"));
+                    player.sendMessage(MessageCreator.createMsgPopUp(player.id, 14, "Illumise đi dạo đã lâu rồi mà chưa thấy về. Cậu có thể giúp ta tìm Nàng không?"));
                 } else if (player.receiveQuestVulan == 1) {
                     if (player.charCopy == null || player.map.mapId != player.charCopy.map.mapId || player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 80) {
                         if (player.charCopy == null) {
                             player.receiveQuestVulan = 0;
                         }
 
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Hãy tranh thủ tìm giúp ta Chức Nữ về đây nha."));
+                        player.sendMessage(MessageCreator.createMsgChat(-49, "Hãy tranh thủ tìm giúp ta Illumise về đây nha."));
                     } else {
                         doGiftQuestChucNu(player);
                         player.receiveQuestVulan = 0;
@@ -72,7 +72,7 @@ public class doMenuSuKienMiniChucNu {
                 }
 
                 ItemLuckyDraw.createtemCoat(742, player, 0, true, 43200);
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được phi phong khổng tước (Ma pháp)", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được ruy băng lông công (Đặc biệt)", ""));
 
             } else if (idOptionMenu == 3) { // pp vật
                 if (!player.truNeuDu(
@@ -89,7 +89,7 @@ public class doMenuSuKienMiniChucNu {
                     return;
                 }
                 ItemLuckyDraw.createtemCoat(742, player, 1, true, 43200);
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được phi phong khổng tước (vật lý)", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được ruy băng lông công (vật lý)", ""));
             } else if (idOptionMenu == 4) { // bạch thử 7 ngày
                 if (!player.truNeuDu(
                         () -> player.getLuong() >= 2500 && player.potions[105] >= 5,
@@ -105,7 +105,7 @@ public class doMenuSuKienMiniChucNu {
                     return;
                 }
                 player.doCreatePetBachThu(10080, false);
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được bạch thử (7 ngày)", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được Sandshrew (7 ngày)", ""));
             }
         } else if (idMenu != 1) {
             int[] sl;
@@ -174,7 +174,7 @@ public class doMenuSuKienMiniChucNu {
                 var10000 = new int[]{0, 0, 0, 1, 2, 5, 10};
                 boolean istuhondan = false;
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa" + (istuhondan ? " và 1 Tiên đan" : ""), ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa" + (istuhondan ? " và 1 Cỏ hồi sinh" : ""), ""));
                 Database.instance.saveOrtherLog("", player.charname, sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + (istuhondan ? " và 1 Tiên đan" : ""), "redeem");
             }
         }
@@ -197,7 +197,7 @@ public class doMenuSuKienMiniChucNu {
             minute = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7};
             int idt = r.nextInt(minute.length);
             player.createPoro((long) minute[idt], false);
-            info = info + " đại bạch thử " + minute[idt] + " ngày, ";
+            info = info + " Wooloo " + minute[idt] + " ngày, ";
         } else {
             int soluong;
             if (typegift[index] == -1) {
@@ -238,8 +238,8 @@ public class doMenuSuKienMiniChucNu {
                 player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
                 if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_40) {
                     try {
-                        player.map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi làm nhiệm vụ tìm trẻ lạc"));
-                    } catch (IOException var14) {
+                        com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", player.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi làm nhiệm vụ tìm trẻ lạc");
+                    } catch (Exception var14) {
                     }
                 }
             }

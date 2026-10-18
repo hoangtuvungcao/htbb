@@ -47,7 +47,54 @@ public final class TenMapPokemon {
         {"Nhà thợ rèn", "Xưởng chế tạo"},
     };
 
+    /**
+     * Vung Hoenn (nam 2, ban do moi 43..62 / 160..165 / 280..282 - com.htbb.pokemon.BanDoHoenn): ten
+     * theo id nap. BAN SAO o client J2ME (game/pokemon/TenMapPokemon) va Unity (TenMapPokemon.cs) -
+     * test/KiemThuPokemon + client_jar/tools/KiemPokeDuLieu doi chieu.
+     */
+    public static final int[] HOENN_ID = {43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 160, 161, 162, 163, 164, 165, 280, 281, 282};
+    public static final String[] HOENN_TEN = {"Littleroot", "Rừng Petalburg", "Rustboro", "Bờ biển Dewford", "Slateport", "Route 110", "Mauville", "Sa mạc Route 111", "Lavaridge", "Núi Chimney", "Rừng mưa Route 119", "Fortree", "Route 120 - Viện Thời tiết", "Lilycove", "Núi Pyre", "Biển Route 124", "Mossdeep", "Sootopolis", "Biển Route 131", "Ever Grande", "Hang Granite", "Thác Meteor", "Hang dưới biển", "Hang Khởi Nguyên", "Tháp Trời", "Đường Victory Hoenn", "Đỉnh Tháp Trời", "Liên minh Hoenn", "Sảnh Nhà vô địch"};
+
+    /** Ten ban do Hoenn theo id nap, "" neu khong phai Hoenn. */
+    public static String tenHoenn(int id) {
+        for (int i = 0; i < HOENN_ID.length; i++) {
+            if (HOENN_ID[i] == id) {
+                return HOENN_TEN[i];
+            }
+        }
+        return "";
+    }
+
     private static final String[] HUONG = {"Đông ", "Tây ", "Nam ", "Bắc "};
+
+    /**
+     * Chỉ client (KHÔNG có trong bảng server - KiemPokeDuLieu chỉ đối chiếu BANG): tên riêng kiếm hiệp còn
+     * sót trong Map.namMap của server / tên ghép số khu. Dùng qua doiHien() khi HIỆN tên bản đồ.
+     * Tên chung (Bến tàu, Khu mua bán, Hang phía đông, Thuyền...) giữ nguyên.
+     */
+    public static final String[][] BANG_HIEN = {
+        {"Hang Dracula phía đông", "Hang Darkrai phía đông"},
+        {"Hang Dracula phía tây", "Hang Darkrai phía tây"},
+        {"Hang Dracula phía nam", "Hang Darkrai phía nam"},
+        {"Hang Dracula phía bắc", "Hang Darkrai phía bắc"},
+        {"Hang thằn lằn đông", "Hang Salamence đông"},
+        {"Hang thằn lằn tây", "Hang Salamence tây"},
+        {"Hang thằn lằn nam", "Hang Salamence nam"},
+        {"Hang thằn lằn bắc", "Hang Salamence bắc"},
+        {"Lãnh địa bang", "Lãnh địa đội"},
+        {"TYT 5x", "Tháp luyện 5x"},
+        {"TYT 6x", "Tháp luyện 6x"},
+        {"TYT 7x", "Tháp luyện 7x"},
+        {"Chien truong", "Chiến trường Pokémon"},
+        {"Chiến trường", "Chiến trường Pokémon"},
+        {"Đấu trường la mã", "Đấu trường Colosseum"},
+        {"Lôi đài", "Sàn đấu"},
+        {"Ngục tối", "Ngục Team Rocket"},
+        {"Khu mỏ", "Mỏ Oreburgh"},
+        {"Cân núi", "Đỉnh núi"},
+        {"Làng Sơn Nam", "Pewter"},
+        {"Thành liên đấu", "Gym liên đấu"},
+    };
 
     private TenMapPokemon() {
     }
@@ -63,6 +110,48 @@ public final class TenMapPokemon {
             }
         }
         return null;
+    }
+
+    private static String traHien(String ten) {
+        for (int i = 0; i < BANG_HIEN.length; i++) {
+            if (bang(BANG_HIEN[i][0], ten)) {
+                return BANG_HIEN[i][1];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Tên bản đồ để HIỆN (thanh tên vùng, bản đồ lớn): doi() + bảng chỉ-client + tên có số khu ở cuối
+     * ("Bạch hạc 1" -> "Goldenrod 1", "Thành liên đấu 3" -> "Gym liên đấu 3", khớp từ điển server).
+     */
+    public static String doiHien(String ten) {
+        if (ten == null || ten.length() == 0) {
+            return ten;
+        }
+        String t = ten.trim();
+        String r = doi(t);
+        if (!r.equals(t)) {
+            return r;
+        }
+        String h = traHien(t);
+        if (h != null) {
+            return h;
+        }
+        int i = t.length();
+        while (i > 0 && t.charAt(i - 1) >= '0' && t.charAt(i - 1) <= '9') {
+            i--;
+        }
+        char tach = i > 1 && i < t.length() ? t.charAt(i - 1) : 'x';
+        if (tach == ' ' || tach == '-' || tach == '_') {
+            // server gửi "Bạch hạc_1" (số khu): đổi tên gốc, hiện "Goldenrod 1"
+            String goc = t.substring(0, i - 1).trim();
+            String d = doiHien(goc);
+            if (!d.equals(goc)) {
+                return d + " " + t.substring(i);
+            }
+        }
+        return ten;
     }
 
     public static String doi(String ten) {

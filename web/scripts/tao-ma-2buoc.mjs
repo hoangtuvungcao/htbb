@@ -13,7 +13,7 @@
  *
  *  Khi dev: `node scripts/tao-ma-2buoc.mjs <tên>` (tự đọc .env nếu có).
  *
- *  Cấu hình đọc y hệt server: server/utils/config.ts (KPAH_* > server.ini > mặc định).
+ *  Cấu hình đọc y hệt server: server/utils/config.ts (HTBB_* > server.ini > mặc định).
  *  Thuật toán: server/utils/haiBuoc.ts (Node chạy thẳng tệp .ts nhờ type stripping).
  *
  *  ------------------------------------------------------------------------
@@ -28,7 +28,7 @@
  *  ------------------------------------------------------------------------
  *   SAU KHI GHI DANH XONG CHO CẢ ĐỘI
  *  ------------------------------------------------------------------------
- *  Đặt biến môi trường KPAH_ADMIN_2FA_BAT_BUOC=1 rồi khởi động lại web. Từ đó tài
+ *  Đặt biến môi trường HTBB_ADMIN_2FA_BAT_BUOC=1 rồi khởi động lại web. Từ đó tài
  *  khoản admin nào chưa có khoá là KHÔNG vào được, kể cả đúng mật khẩu. Chưa đặt
  *  thì người chưa ghi danh vẫn vào được bằng mật khẩu — tức là kẻ trộm mật khẩu
  *  cũng vậy. **Đừng dừng ở bước ghi danh.**
@@ -128,7 +128,7 @@ GHI DANH XAC THUC HAI BUOC (TOTP) CHO TRANG QUAN TRI
     ${LENH} --danh-sach
 
   Go hai buoc cua mot tai khoan (mat dien thoai, het ma du phong):
-    mysql -u root kpah_db
+    mysql -u root htbb_db
     DELETE FROM web_admin_2fa WHERE admin_user = 'ten';
 `)
   process.exit(1)
@@ -153,10 +153,10 @@ if (ten === '--danh-sach' || ten === '--list') {
   }
   console.log('')
   console.log(cfg.admin.batBuoc2fa
-    ? 'KPAH_ADMIN_2FA_BAT_BUOC = 1  -> tai khoan CHUA ghi danh se KHONG vao duoc.'
-    : 'KPAH_ADMIN_2FA_BAT_BUOC chua dat -> tai khoan chua ghi danh VAN vao duoc bang mat khau.\n'
+    ? 'HTBB_ADMIN_2FA_BAT_BUOC = 1  -> tai khoan CHUA ghi danh se KHONG vao duoc.'
+    : 'HTBB_ADMIN_2FA_BAT_BUOC chua dat -> tai khoan chua ghi danh VAN vao duoc bang mat khau.\n'
       + '  Ghi danh xong cho ca doi thi dat bien moi truong:\n'
-      + '      KPAH_ADMIN_2FA_BAT_BUOC=1')
+      + '      HTBB_ADMIN_2FA_BAT_BUOC=1')
   console.log('')
   await thoat(0)
 }
@@ -167,7 +167,7 @@ if (ten === '--danh-sach' || ten === '--list') {
 // Ghi danh cho một tên gõ sai chính tả sẽ tạo ra một dòng mà không đăng nhập nào
 // đọc tới, và người ta sẽ ngồi thắc mắc vì sao quét mã xong vẫn không bị hỏi mã.
 if (!laTaiKhoanAdmin(ten)) {
-  console.log(`[DUNG LAI] '${ten}' khong nam trong KPAH_ADMIN_ACCOUNTS.`)
+  console.log(`[DUNG LAI] '${ten}' khong nam trong HTBB_ADMIN_ACCOUNTS.`)
   console.log(`           Dang cho phep: ${adminAccounts().length ? adminAccounts().join(', ') : '(rong - khong ai vao duoc)'}`)
   console.log('           Them ten vao do truoc, roi chay lai lenh nay.')
   await thoat(1)
@@ -181,7 +181,7 @@ try {
   }
 } catch (e) {
   console.log(`[LOI] Khong doc duoc bang team_user: ${e?.message ?? e}`)
-  console.log('      Kiem tra KPAH_DB_* / server.ini, hoac mo trang Chan doan cua khu quan tri.')
+  console.log('      Kiem tra HTBB_DB_* / server.ini, hoac mo trang Chan doan cua khu quan tri.')
   await thoat(1)
 }
 
@@ -279,7 +279,7 @@ console.log(`
 BUOC 4 - Thu dang nhap NGAY BAY GIO, o mot cua so trinh duyet khac
   Dang nhap thanh cong roi hay dong phien hien tai. Neu ung dung khong sinh
   dung ma, xoa khoa di roi lam lai:
-      mysql -u root kpah_db
+      mysql -u root htbb_db
       DELETE FROM web_admin_2fa WHERE admin_user = '${ten}';
 `)
 
@@ -289,9 +289,9 @@ if (!cfg.admin.batBuoc2fa) {
 ${vach}
   Hien tai tai khoan admin CHUA ghi danh van vao duoc chi bang mat khau -
   ke trom duoc mat khau cung vay. Ghi danh xong cho tat ca moi nguoi trong
-  KPAH_ADMIN_ACCOUNTS roi dat bien moi truong cho dich vu web:
+  HTBB_ADMIN_ACCOUNTS roi dat bien moi truong cho dich vu web:
 
-      KPAH_ADMIN_2FA_BAT_BUOC=1
+      HTBB_ADMIN_2FA_BAT_BUOC=1
 
   Xem ai con thieu:  ${LENH} --danh-sach
 ${vach}

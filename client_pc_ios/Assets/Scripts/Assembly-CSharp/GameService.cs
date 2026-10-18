@@ -378,12 +378,6 @@ public class GameService : Cmd_message
 
 	public void login(string username, string pass, string version)
 	{
-		// mod: nhớ tài khoản cho "tự đăng nhập lại" / nuôi pet đăng nhập lại (như AutoGuard.loginGuard bản jar)
-		if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(pass))
-		{
-			AutoGuard.tkDangNhap = username;
-			AutoGuard.mkDangNhap = pass;
-		}
 		if (KiemServer.chanDangNhap(username, pass, version))
 		{
 			return;
@@ -743,11 +737,6 @@ public class GameService : Cmd_message
 
 	public void requestMonsterInfo(short actorID)
 	{
-		// mod: auto vận tiêu nháy map - không xin thông tin quái thường (tránh chống flood của server)
-		if (AutoGuard.chanXinQuai(actorID))
-		{
-			return;
-		}
 		Message message = init(7);
 		try
 		{
@@ -1250,19 +1239,37 @@ public class GameService : Cmd_message
 		}
 	}
 
-	public void requestRegister(string username, string pass)
+	/// <summary>Đăng ký trong game, bước 0: xin câu hỏi chống bot (DangKyScr / server real.cmd.DangKyTrongGame).</summary>
+	public void dangKyXinCauDo(string maMay)
 	{
 		Message message = init(39);
 		try
 		{
-			message.writer().writeUTF(username);
-			message.writer().writeUTF(pass);
-			GameMidlet.client_Provider.Trim();
-			message.writer().writeUTF(GameMidlet.client_Provider);
-			message.writer().writeUTF(GameMidlet.provider);
-			message.writer().writeUTF(GameMidlet.agent);
-			message.writer().writeUTF(Canvas.IMEI);
-			message.writer().writeInt(GameMidlet.verSionCode);
+			message.writer().writeUTF(DangKyScr.DAU);
+			message.writer().writeByte(0);
+			message.writer().writeUTF(maMay);
+		}
+		catch (IOException)
+		{
+		}
+		session.sendMessage(message);
+		message.cleanup();
+	}
+
+	/// <summary>Đăng ký trong game, bước 1: gửi thông tin + câu trả lời.</summary>
+	public void dangKyGui(string ten, string matKhau, string nhapLai, string email, string traLoi, string maMay)
+	{
+		Message message = init(39);
+		try
+		{
+			message.writer().writeUTF(DangKyScr.DAU);
+			message.writer().writeByte(1);
+			message.writer().writeUTF(ten);
+			message.writer().writeUTF(matKhau);
+			message.writer().writeUTF(nhapLai);
+			message.writer().writeUTF(email);
+			message.writer().writeUTF(traLoi);
+			message.writer().writeUTF(maMay);
 		}
 		catch (IOException)
 		{

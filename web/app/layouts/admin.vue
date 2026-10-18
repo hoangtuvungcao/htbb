@@ -18,13 +18,13 @@ const open = ref(false)
 
 const me = useAdminMe()
 const groups = computed<NavigationMenuItem[][]>(() =>
-  ADMIN_MENU.map(g => ({ ...g, items: g.items.filter(i => !i.vai || i.vai.includes(me.vaiTro.value)) })).filter(g => g.items.length).map(g => [
+  ADMIN_MENU.map(g => ({ ...g, items: g.items.filter(i => thayMucMenu(i, me.vaiTro.value)) })).filter(g => g.items.length).map(g => [
     { label: g.nhom, type: 'label' as const },
     ...g.items.map(i => ({
       label: i.label,
       icon: i.icon,
       to: i.to,
-      active: i.to === '/admin' ? route.path === '/admin' : route.path.startsWith(i.to),
+      active: mucMenuCua(route.path)?.item.key === i.key,
       onSelect: () => { open.value = false },
     })),
   ]),

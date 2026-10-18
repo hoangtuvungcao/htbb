@@ -28,16 +28,16 @@ import java.nio.file.Files;
  */
 public final class TaoPetTrangThai1 {
 
-    static final String MO_TA_49 = "map/d_effect/49";
+    static final String MO_TA_49 = "server/map/d_effect/49";
     /** Do cao bay (diem anh) - khop dai 25-33 cua bang pet-tool 35-44. */
     static final int DO_CAO_BAY = 30;
     /** {id nguon, 3 o dung lam khung, file dich}. */
     static final Object[][] VIEC = {
-        {"map/d_effect/24", new int[]{0, 1, 2}, "map/d_effect/24.pet"},   // Cu
-        {"map/d_effect/25", new int[]{0, 1, 2}, "map/d_effect/25.pet"},   // Rong
-        {"map/d_effect/26", new int[]{0, 1, 2}, "map/d_effect/26.pet"},   // Yeu tinh
-        {"map/d_effect/27", new int[]{0, 1, 2}, "map/d_effect/27.pet"},   // Doi
-        {"map/d_effect/28", new int[]{0, 1, 2}, "map/d_effect/28.pet"},   // Dai bang
+        {"server/map/d_effect/24", new int[]{0, 1, 2}, "server/map/d_effect/24.pet"},   // Cu
+        {"server/map/d_effect/25", new int[]{0, 1, 2}, "server/map/d_effect/25.pet"},   // Rong
+        {"server/map/d_effect/26", new int[]{0, 1, 2}, "server/map/d_effect/26.pet"},   // Yeu tinh
+        {"server/map/d_effect/27", new int[]{0, 1, 2}, "server/map/d_effect/27.pet"},   // Doi
+        {"server/map/d_effect/28", new int[]{0, 1, 2}, "server/map/d_effect/28.pet"},   // Dai bang
     };
 
     public static void main(final String[] args) throws IOException {

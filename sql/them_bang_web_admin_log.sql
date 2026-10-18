@@ -1,8 +1,8 @@
 -- ============================================================================
 -- Bang `web_admin_log` - nhat ky moi thao tac lam tren Trang quan tri web
--- (web/admin/). Chay MOT LAN vao database kpah_db truoc khi dung trang admin.
+-- (HTBB-Web /admin). Chay MOT LAN vao database htbb_db truoc khi dung trang admin.
 --
---     mysql -u root kpah_db < sql/them_bang_web_admin_log.sql
+--     mysql -u root htbb_db < sql/them_bang_web_admin_log.sql
 --   hoac tren Windows:
 --     vps\win\vps-sql.bat < sql\them_bang_web_admin_log.sql
 --
@@ -16,7 +16,7 @@
 --      tan cong chi can xoa cookie).
 --
 -- Bang khong bao gio duoc xoa tu dong. Muon don bot dong cu:
---     DELETE FROM kpah_db.web_admin_log WHERE thoi_gian < DATE_SUB(NOW(), INTERVAL 180 DAY);
+--     DELETE FROM htbb_db.web_admin_log WHERE thoi_gian < DATE_SUB(NOW(), INTERVAL 180 DAY);
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `web_admin_log` (
@@ -37,4 +37,4 @@ CREATE TABLE IF NOT EXISTS `web_admin_log` (
 
 -- Kiem tra lai: phai ra 1 dong.
 SELECT COUNT(*) AS co_bang FROM information_schema.tables
- WHERE table_schema = 'kpah_db' AND table_name = 'web_admin_log';
+ WHERE table_schema = 'htbb_db' AND table_name = 'web_admin_log';

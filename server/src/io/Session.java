@@ -201,6 +201,9 @@ public class Session extends Thread {
                     this.messageHandler.processMessage(this, message);
                 } catch (Exception var10) {
                     server.ChiSoMayChu.LOI_XU_LY.incrementAndGet();
+                    // Truoc day nuot im lang: loi xu ly goi khong de lai dau vet nao. Nhat chi
+                    // in stack LAN DAU moi loai loi / 10 phut, cac lan sau gop thanh so dem.
+                    com.htbb.log.Nhat.loi("XU_LY_GOI", "lenh " + message.command + " cua " + this.charname, var10);
                 }
             }
         } catch (Exception var11) {
@@ -221,6 +224,9 @@ public class Session extends Thread {
      * @return true = vuot nguong, nen cat ket noi
      */
     private boolean quaNhieuGoi(int command) {
+        if (BoDemGoiTin.mienIp(this.ip)) {
+            return false; // sv.tranGoiMienIp: chi may chay bot tai
+        }
         if (!this.boDemGoiTin.vuotNguong(command, System.currentTimeMillis())) {
             return false;
         }
@@ -230,10 +236,10 @@ public class Session extends Thread {
         // noi thi luon ghi: no chi xay ra mot lan cho ca ket noi do.
         if (cat || this.boDemGoiTin.xinPhepBao()) {
             final String chiTiet = this.boDemGoiTin.demHienTai(command) + " goi "
-                    + (BoDemGoiTin.laLenhTaiNguyen(command) ? "tai nguyen" : "thuong")
+                    + BoDemGoiTin.tenLoai(command)
                     + " trong " + BoDemGoiTin.CUA_SO_MS + "ms (tran "
                     + this.boDemGoiTin.tranCua(command) + "), lenh cuoi=" + command;
-            System.out.println("NGAP GOI TIN: " + (cat ? "cat ket noi " : "bo bot goi cua ")
+            com.htbb.log.Nhat.canhBao("NGAP_GOI", (cat ? "cat ket noi " : "bo bot goi cua ")
                     + this.username + " ip=" + this.ip + " (" + chiTiet + ")");
             // Truoc day dau vet nay CHI nam o stdout, tuc la mat sach sau moi lan restart.
             data.NghiVanGianLan.ghiChung(this,
@@ -320,7 +326,7 @@ public class Session extends Thread {
             // ngap that su nhung loi can chu y (logrotate chi lo dung luong,
             // khong lo NOI DUNG). Chi in 1 dong. Ap dung cung kieu cho hai cho
             // khac trong file nay (sendMessageLogin, Sender.run).
-            System.out.println("Session.sendMessage: loi gui du lieu (co the client da ngat ket noi) - " + e);
+            com.htbb.log.Nhat.canhBao("MANG", "Session.sendMessage: loi gui du lieu (co the client da ngat ket noi) - " + e);
         }
 
     }
@@ -391,44 +397,84 @@ public class Session extends Thread {
         this.sender.destroyAll();
     }
 
-    public boolean is12Tuoi() {
-        try {
-            Calendar cl = Calendar.getInstance();
-            int year = cl.get(1);
-            String[] data = Char.split(this.ngaysinh, " ");
-            Integer.parseInt(data[0]);
-            Integer.parseInt(data[1]);
-            if (Integer.parseInt(data[2].trim()) > year - 12) {
-                return false;
-            }
-        } catch (Exception var4) {
-        }
+    // is12Tuoi/is18Tuoi duoc goi o moi tin chat (Char.isAcountTest): truoc day moi lan tao Calendar +
+    // tach chuoi ngaysinh (~150 MB rac / 5 phut o 300 nguoi). Nay nho nam sinh theo chuoi ngaysinh
+    // (doi chuoi thi doc lai) va nam hien tai (lam moi moi phut). Ket qua giu nguyen: ngaysinh sai
+    // dinh dang -> true nhu cu.
+    private String nsDaDoc = null;
+    private int namSinhDaDoc = Integer.MIN_VALUE; // MIN_VALUE = khong doc duoc -> coi nhu du tuoi
+    private static volatile int namHienTai = 0;
+    private static volatile long namHetHanMs = 0L;
 
-        return true;
+    private static int namHienTai() {
+        final long now = System.currentTimeMillis();
+        if (now >= namHetHanMs) {
+            namHienTai = Calendar.getInstance().get(1);
+            namHetHanMs = now + 60000L;
+        }
+        return namHienTai;
+    }
+
+    private int namSinh() {
+        final String ns = this.ngaysinh;
+        if (ns != this.nsDaDoc) {
+            int nam = Integer.MIN_VALUE;
+            try {
+                String[] data = Char.split(ns, " ");
+                Integer.parseInt(data[0]);
+                Integer.parseInt(data[1]);
+                nam = Integer.parseInt(data[2].trim());
+            } catch (Exception var4) {
+                nam = Integer.MIN_VALUE;
+            }
+            this.namSinhDaDoc = nam;
+            this.nsDaDoc = ns;
+        }
+        return this.namSinhDaDoc;
+    }
+
+    public boolean is12Tuoi() {
+        final int nam = this.namSinh();
+        return nam == Integer.MIN_VALUE || nam <= namHienTai() - 12;
     }
 
     public boolean is18Tuoi() {
-        try {
-            Calendar cl = Calendar.getInstance();
-            int year = cl.get(1);
-            String[] data = Char.split(this.ngaysinh, " ");
-            Integer.parseInt(data[0]);
-            Integer.parseInt(data[1]);
-            if (Integer.parseInt(data[2].trim()) > year - 18) {
-                return false;
-            }
-        } catch (Exception var4) {
-        }
-
-        return true;
+        final int nam = this.namSinh();
+        return nam == Integer.MIN_VALUE || nam <= namHienTai() - 18;
     }
 
     public boolean isVersion180() {
         return this.version.compareTo("1.8.0") > -1;
     }
 
+    /**
+     * Tran hang doi gui moi ket noi (so goi). Truoc day KHONG tran: client treo/mang qua cham ma
+     * server van day goi (phat song khu dong nguoi ~20 goi/s) thi hang doi phinh toi khi het heap.
+     * Vuot tran = client khong doc nua -> dong socket (luong READ tu don dep qua disconnect(7)).
+     * -Dhtbb.tranHangDoiGui=N (mac dinh 8192 ~ vai phut goi binh thuong).
+     */
+    public static final int TRAN_HANG_DOI_GUI = Integer.getInteger("htbb.tranHangDoiGui", 8192);
+    /** So ket noi bi dong vi tran hang doi gui (chi so cho trang thai/kiem tai). */
+    public static final java.util.concurrent.atomic.AtomicLong CAT_TRAN_GUI = new java.util.concurrent.atomic.AtomicLong();
+
     private class Sender implements Runnable {
-        private LinkedBlockingQueue<byte[]> sendDatas = new LinkedBlockingQueue();
+        private LinkedBlockingQueue<byte[]> sendDatas = new LinkedBlockingQueue(TRAN_HANG_DOI_GUI);
+        private volatile boolean daBaoTran = false;
+        private boolean daBaoLoiGhi = false;
+
+        /** Them vao hang doi; day = client khong doc -> dong socket MOT lan (khong chan luong game). */
+        private void xepHang(byte[] data) {
+            if (!this.sendDatas.offer(data) && !this.daBaoTran) {
+                this.daBaoTran = true;
+                CAT_TRAN_GUI.incrementAndGet();
+                com.htbb.log.Nhat.canhBao("MANG", "Session: hang doi gui day (" + TRAN_HANG_DOI_GUI
+                        + " goi) - client " + Session.this.username + " ip=" + Session.this.ip + " khong doc nua, dong ket noi");
+                try {
+                    Session.this.socket.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
 
         public Sender() {
             Session.this.lastTimeSendData = System.currentTimeMillis();
@@ -452,7 +498,7 @@ public class Session extends Thread {
                     os.flush();
                 }
             } catch (Exception e) {
-                System.out.println("Session.sendMessageLogin: loi gui du lieu (co the client da ngat ket noi) - " + e);
+                com.htbb.log.Nhat.canhBao("MANG", "Session.sendMessageLogin: loi gui du lieu (co the client da ngat ket noi) - " + e);
             }
 
         }
@@ -462,13 +508,14 @@ public class Session extends Thread {
                 try {
                     byte[] data = m.toByteArray();
                     if (data != null) {
-                        this.sendDatas.add(data);
+                        this.xepHang(data);
+                        server.ChiSoMayChu.GOI_RA.increment();
                         // Goi kem (che do Pokemon, xem Message.kemTheo): xep NGAY SAU goi
                         // chinh trong cung hang doi, client nhan dung thu tu.
                         for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
                             byte[] dataKem = kem.toByteArray();
                             if (dataKem != null) {
-                                this.sendDatas.add(dataKem);
+                                this.xepHang(dataKem);
                             }
                         }
                     }
@@ -516,34 +563,57 @@ public class Session extends Thread {
                 } catch (Exception var27) {
                 }
 
-                long timetest = System.currentTimeMillis();
+                // Gom goi: lay mot goi (cho toi da 1 s nhu cu), roi vet them cac goi DA SAN trong hang
+                // doi (toi da 256) vao MOT bo dem dung lai, ma hoa thang vao bo dem, ghi + flush MOT lan.
+                // Truoc day moi goi: cap phat mang ma hoa moi + write + flush rieng (= 1 syscall/goi,
+                // ~6.000 goi/s o 300 nguoi). Thu tu goi va khoa ma hoa (curW) giu nguyen; goi -40
+                // (gui khoa) van khong ma hoa.
+                byte[] buf = new byte[8192];
 
                 while(Session.this.connected) {
-                    int i = 0;
-                    long l = System.currentTimeMillis();
-
+                    byte[] bytes = null;
                     try {
+                        bytes = (byte[])this.sendDatas.poll(1000L, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException ignored) {
+                    }
+
+                    if (bytes != null && os != null) {
                         try {
-                            byte[] bytes = (byte[])this.sendDatas.poll(1000L, TimeUnit.MILLISECONDS);
-                            if (Session.this.key != null && bytes[0] != -40) {
-                                byte[] sdata = new byte[bytes.length];
-
-                                for(int j = 0; j < bytes.length; ++j) {
-                                    sdata[j] = Session.this.writeKey(bytes[j]);
+                            int n = 0;
+                            int soGoi = 0;
+                            do {
+                                final boolean ma = Session.this.key != null && bytes.length > 0 && bytes[0] != -40;
+                                int off = 0;
+                                final int len = bytes.length;
+                                while (off < len) {
+                                    if (n == buf.length) {
+                                        os.write(buf, 0, n);
+                                        n = 0;
+                                    }
+                                    final int c = Math.min(len - off, buf.length - n);
+                                    if (ma) {
+                                        for (int j = 0; j < c; ++j) {
+                                            buf[n + j] = Session.this.writeKey(bytes[off + j]);
+                                        }
+                                    } else {
+                                        System.arraycopy(bytes, off, buf, n, c);
+                                    }
+                                    n += c;
+                                    off += c;
                                 }
+                            } while (++soGoi < 256 && (bytes = (byte[])this.sendDatas.poll()) != null);
 
-                                os.write(sdata);
-                            } else {
-                                os.write(bytes);
+                            if (n > 0) {
+                                os.write(buf, 0, n);
                             }
-                        } catch (Exception var28) {
-                        }
-
-                        os.flush();
-                    } catch (Exception e) {
-                        System.out.println("Session.Sender.run: loi gui du lieu (co the client da ngat ket noi) - " + e);
-                        if (os == null) {
-                            break;
+                            os.flush();
+                        } catch (Exception e) {
+                            // Socket da dong (client ngat): luong READ se disconnect. Chi bao mot lan
+                            // moi ket noi (truoc day moi goi/moi giay mot dong).
+                            if (!this.daBaoLoiGhi) {
+                                this.daBaoLoiGhi = true;
+                                com.htbb.log.Nhat.canhBao("MANG", "Session.Sender.run: loi gui du lieu (co the client da ngat ket noi) - " + e);
+                            }
                         }
                     }
 

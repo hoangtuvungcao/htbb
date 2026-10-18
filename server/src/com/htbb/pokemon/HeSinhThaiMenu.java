@@ -56,7 +56,7 @@ public final class HeSinhThaiMenu {
 
     /** Chan bam lien tuc (macro chat) - 1,5 giay giua hai hanh dong ton the luc. */
     static boolean quaNhanh(final Char p) {
-        final long now = System.currentTimeMillis();
+        final long now = com.htbb.pokemon.DongHo.bay();
         final Long cu = LAN_CUOI.get(p.charDBID);
         if (cu != null && now - cu < 1500L) {
             return true;
@@ -95,12 +95,12 @@ public final class HeSinhThaiMenu {
         m.add("Khảo cổ: đào tại đây");
         m.add("Nấu ăn, chế thuốc, chế tác");
         m.add("Túi sinh thái");
-        m.add("Nhà trẻ & trứng (" + h.trung.size() + ")");
+        m.add("Nhà trẻ và trứng (" + h.trung.size() + ")");
         m.add("Chợ sinh thái");
-        m.add("Vườn nhà & bạn bè");
-        m.add("Sưu tầm & nghiên cứu");
+        m.add("Vườn nhà và bạn bè");
+        m.add("Sưu tầm và nghiên cứu");
         m.add("Giải trí: đố vui, đua, giải đấu");
-        m.add("Kỹ năng & thể lực (" + h.theLuc + ")");
+        m.add("Kỹ năng và thể lực (" + h.theLuc + ")");
         menu(p, M_GOC, m);
     }
 
@@ -299,12 +299,12 @@ public final class HeSinhThaiMenu {
         for (int i = 0; i < HePokemon.SO_HE; i++) {
             final int pct = SinhThaiTheGioi.satThuongPhanTram(i, tt);
             if (pct != 100) {
-                b.append(b.length() == 0 ? "" : "; ").append("chiêu ").append(HePokemon.ten(i)).append(pct > 100 ? " +" : " ")
+                b.append(b.length() == 0 ? "" : ", ").append("chiêu ").append(HePokemon.ten(i)).append(pct > 100 ? " +" : " ")
                         .append(pct - 100).append('%');
             }
         }
         if (SinhThaiTheGioi.laDem(gio)) {
-            b.append(b.length() == 0 ? "" : "; ").append("đêm: hệ Ma/Bóng tối/Độc hoạt động mạnh");
+            b.append(b.length() == 0 ? "" : ", ").append("đêm: hệ Ma/Bóng tối/Độc hoạt động mạnh");
         }
         return b.length() == 0 ? "Không có ưu thế đặc biệt." : b.toString();
     }
@@ -344,7 +344,7 @@ public final class HeSinhThaiMenu {
         if (cap >= 30) {
             final String[] dh = {"Ngư phủ bậc thầy", "Nhà vườn xanh", "Nhà khảo cổ", "Đầu bếp Poké", "Dược sư"};
             if (h.themDanhHieu(dh[kn])) {
-                HeSinhThaiGame.baoTheGioi(p.charname + " đạt " + KyNangSong.TEN[kn] + " cấp " + cap + " - danh hiệu \"" + dh[kn] + "\"!");
+                HeSinhThaiGame.baoTheGioi(p.charname + " đạt " + KyNangSong.TEN[kn] + " cấp " + cap + ", nhận danh hiệu " + dh[kn] + "!");
             }
         }
     }
@@ -365,7 +365,18 @@ public final class HeSinhThaiMenu {
             }
         }
         if (hoId < 0) {
-            bao(p, "Chỉ có thể câu cá ở hồ.");
+            int[] gan = null;
+            int d = Integer.MAX_VALUE;
+            for (final int[] dc : bd.diemCau) {
+                final int dd = Math.abs(dc[1] - p.x / 16) + Math.abs(dc[2] - p.y / 16);
+                if (dd < d) {
+                    d = dd;
+                    gan = dc;
+                }
+            }
+            // Cau dau giu nguyen (luat nguoi dung); phan sau la goi y diem cau tren ban do nay (neu co ho).
+            bao(p, "Chỉ có thể câu cá ở hồ." + (gan == null || p.mapID == 40 || p.mapID == 42 ? ""
+                    : " Điểm câu gần nhất: (" + gan[1] + "," + gan[2] + ")"));
             return;
         }
         final boolean hoLon = hoId < bd.kichThuocHo.length && bd.kichThuocHo[hoId] >= BanDoSinhThai.HO_LON;
@@ -538,7 +549,7 @@ public final class HeSinhThaiMenu {
             c.ds.add(ct.id);
             final boolean du = duNguyenLieu(h, ct);
             final boolean duCap = h.capKyNang(ct.kyNang) >= ct.capToiThieu;
-            m.add(ct.ten + " [" + KyNangSong.TEN[ct.kyNang] + " " + ct.capToiThieu + "]" + (duCap ? (du ? " - làm được" : "") : " - chưa đủ cấp"));
+            m.add(ct.ten + " (" + KyNangSong.TEN[ct.kyNang] + " " + ct.capToiThieu + ")" + (duCap ? (du ? " - làm được" : "") : " - chưa đủ cấp"));
         }
         menu(p, M_CONG_THUC, m);
     }
@@ -817,6 +828,9 @@ public final class HeSinhThaiMenu {
     }
 
     static void rao(final Char p, final int op) {
+        if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
+            return;
+        }
         final NguCanh c = nc(p);
         if (op >= c.ds.size() || quaNhanh(p)) {
             return;
@@ -850,7 +864,7 @@ public final class HeSinhThaiMenu {
             return;
         }
         final int id = DuLieuHeSinhThai.themTinBan(p.charDBID, p.charname, c.khoa, so, gia, "",
-                System.currentTimeMillis() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
+                com.htbb.pokemon.DongHo.bay() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
         if (id < 0) {
             h.them(c.khoa, so);
             HeSinhThaiGame.congXu(p, phi, "hoan phi dang");
@@ -936,7 +950,7 @@ public final class HeSinhThaiMenu {
                 c.ds.addAll(ds);
                 final List<String> m = new ArrayList<String>();
                 for (final int d : ds) {
-                    m.add(SuuTamSinhThai.tenLoai(d) + " -> trứng " + SuuTamSinhThai.tenLoai(NhaTre.loaiGoc(d)));
+                    m.add(SuuTamSinhThai.tenLoai(d) + ": nở ra " + SuuTamSinhThai.tenLoai(NhaTre.loaiGoc(d)));
                 }
                 menu(p, M_NHA_TRE_GUI, m);
                 break;
@@ -970,7 +984,7 @@ public final class HeSinhThaiMenu {
                     return;
                 }
                 h.ngayPhiNhaTre = h.ngay;
-                bao(p, "Đã trả phí nhà trẻ hôm nay. Mỗi Pokémon bạn hạ = 1 bước; " + HeSinhThai.BUOC_DE_TRUNG + " bước được 1 trứng.");
+                bao(p, "Đã trả phí nhà trẻ hôm nay. Mỗi Pokémon bạn hạ được tính 1 bước, đủ " + HeSinhThai.BUOC_DE_TRUNG + " bước sẽ có 1 trứng.");
                 HeSinhThaiGame.danhDau(p);
                 break;
             }
@@ -1029,7 +1043,7 @@ public final class HeSinhThaiMenu {
     static void chonTrung(final Char p, final int op) {
         final NguCanh c = nc(p);
         c.chiSo = op;
-        menu(p, M_TRUNG_HD, new ArrayList<String>(java.util.Arrays.asList("Ấp nở", "Rao bán trên chợ", "Bỏ trứng")));
+        menu(p, M_TRUNG_HD, new ArrayList<String>(java.util.Arrays.asList("Cho trứng nở", "Rao bán trên chợ", "Bỏ trứng")));
     }
 
     static void hanhDongTrung(final Char p, final int op) {
@@ -1069,7 +1083,7 @@ public final class HeSinhThaiMenu {
                 HeSinhThaiGame.nghienCuu(p, h, t.dex, SuuTamSinhThai.NV_SHINY);
                 HeSinhThaiGame.chupAnh(p, h, t.dex, SuuTamSinhThai.A_SHINY_TRUNG, HeSinhThaiGame.thoiTietMap(p.mapID));
                 h.themDanhHieu("Thợ săn shiny");
-                HeSinhThaiGame.baoTheGioi(p.charname + " vừa ấp nở " + SuuTamSinhThai.tenLoai(t.dex) + " SHINY!");
+                HeSinhThaiGame.baoTheGioi(p.charname + " vừa ấp nở " + SuuTamSinhThai.tenLoai(t.dex) + " shiny!");
             }
             if (t.tongIv() >= 84) {
                 h.themDanhHieu("Nhà nhân giống");
@@ -1098,6 +1112,9 @@ public final class HeSinhThaiMenu {
     }
 
     static void raoTrung(final Char p, final int op) {
+        if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
+            return;
+        }
         final NguCanh c = nc(p);
         final HoSoSinhThai h = hoSo(p);
         if (h == null || quaNhanh(p)) {
@@ -1127,7 +1144,7 @@ public final class HeSinhThaiMenu {
             }
         }
         final int id = DuLieuHeSinhThai.themTinBan(p.charDBID, p.charname, VatLieuSinhThai.khoa(VatLieuSinhThai.TRUNG, 3), 1, gia,
-                t.chuoi(), System.currentTimeMillis() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
+                t.chuoi(), com.htbb.pokemon.DongHo.bay() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
         if (id < 0) {
             synchronized (h) {
                 h.trung.add(t);
@@ -1212,7 +1229,7 @@ public final class HeSinhThaiMenu {
                         continue;
                     }
                     c.ds.add(ma);
-                    m.add(VatLieuSinhThai.ten(ma) + " [" + VatLieuSinhThai.TEN_LOAI[l] + "]");
+                    m.add(VatLieuSinhThai.ten(ma) + " (" + VatLieuSinhThai.TEN_LOAI[l] + ")");
                 }
                 menu(p, M_DON_TAO_MA, m);
                 break;
@@ -1268,6 +1285,9 @@ public final class HeSinhThaiMenu {
     }
 
     static void mua(final Char p) {
+        if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
+            return;
+        }
         final NguCanh c = nc(p);
         final HoSoSinhThai h = hoSo(p);
         if (h == null || quaNhanh(p)) {
@@ -1344,7 +1364,7 @@ public final class HeSinhThaiMenu {
             return;
         }
         nhanHang(h, t.khoaVat, t.soLuong, t.duLieu);
-        bao(p, "Đã huỷ tin, hàng về túi sinh thái (phí đăng không hoàn).");
+        bao(p, "Đã huỷ tin, hàng đã về Túi sinh thái (phí đăng không hoàn).");
         HeSinhThaiGame.danhDau(p);
     }
 
@@ -1366,6 +1386,9 @@ public final class HeSinhThaiMenu {
     }
 
     static void giaoDon(final Char p, final int op) {
+        if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
+            return;
+        }
         final NguCanh c = nc(p);
         final HoSoSinhThai h = hoSo(p);
         if (h == null || op >= c.ds.size() || quaNhanh(p)) {
@@ -1383,7 +1406,7 @@ public final class HeSinhThaiMenu {
         }
         final int so = Math.min(c.ds.get(op), don.soCan - don.soDaGiao);
         if (so <= 0 || h.tongMa(don.maVat) < so) {
-            bao(p, "Bạn cần " + so + " " + VatLieuSinhThai.ten(don.maVat) + " trong túi sinh thái.");
+            bao(p, "Bạn cần " + so + " " + VatLieuSinhThai.ten(don.maVat) + " trong Túi sinh thái.");
             return;
         }
         final int bacThap;
@@ -1405,7 +1428,7 @@ public final class HeSinhThaiMenu {
         if (hm != null) {
             hm.them(VatLieuSinhThai.khoa(don.maVat, bacThap), so);
             HeSinhThaiGame.danhDau(mua);
-            bao(mua, "Đơn đặt hàng: " + p.charname + " giao " + so + " " + VatLieuSinhThai.ten(don.maVat) + " vào túi sinh thái.");
+            bao(mua, "Đơn đặt hàng: " + p.charname + " giao " + so + " " + VatLieuSinhThai.ten(don.maVat) + " vào Túi sinh thái.");
         } else {
             DuLieuHeSinhThai.guiHopThu(don.idMua, 0, VatLieuSinhThai.khoa(don.maVat, bacThap), so, "", "Hàng theo đơn từ " + p.charname);
         }
@@ -1444,6 +1467,9 @@ public final class HeSinhThaiMenu {
     }
 
     static void taoDonGia(final Char p, final int op) {
+        if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
+            return;
+        }
         final NguCanh c = nc(p);
         if (quaNhanh(p) || op < 0 || op >= ChoSinhThai.MUC_GIA_PHAN_TRAM.length) {
             return;
@@ -1459,13 +1485,13 @@ public final class HeSinhThaiMenu {
             return;
         }
         final int id = DuLieuHeSinhThai.themDon(p.charDBID, p.charname, c.ma, c.so, gia,
-                System.currentTimeMillis() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
+                com.htbb.pokemon.DongHo.bay() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
         if (id < 0) {
             HeSinhThaiGame.congXu(p, kq, "hoan ky quy");
             bao(p, "Chợ tạm thời lỗi, thử lại sau.");
             return;
         }
-        bao(p, "Đã tạo đơn: cần " + c.so + " " + VatLieuSinhThai.ten(c.ma) + " giá " + gia + " xu/cái. Hàng giao tới túi sinh thái"
+        bao(p, "Đã tạo đơn: cần " + c.so + " " + VatLieuSinhThai.ten(c.ma) + " giá " + gia + " xu/cái. Hàng giao tới Túi sinh thái"
                 + " (hoặc hộp thư nếu bạn offline).");
     }
 
@@ -1528,7 +1554,7 @@ public final class HeSinhThaiMenu {
 
     /** Tin ban / don het han -> tra hang / ky quy ve hop thu (goi tu nhip 15 giay, toi da 1 lan/phut). */
     static void xuLyHetHanCho() {
-        final long now = System.currentTimeMillis();
+        final long now = com.htbb.pokemon.DongHo.bay();
         if (now - lanXuLyHetHan < 60000L) {
             return;
         }
@@ -1612,7 +1638,7 @@ public final class HeSinhThaiMenu {
                     }
                 }
                 if (m.isEmpty()) {
-                    bao(p, "Vườn chưa có trang trí. Chế tác ở mục Nấu ăn, chế thuốc, chế tác (Khảo cổ).");
+                    bao(p, "Vườn chưa có trang trí. Hãy chế tác đồ trang trí ở mục Nấu ăn, chế thuốc, chế tác (dùng kỹ năng Khảo cổ).");
                     return;
                 }
                 menu(p, M_VUON_CAT, m);
@@ -1641,7 +1667,7 @@ public final class HeSinhThaiMenu {
             }
             case 4:
                 bao(p, "Trồng berry: dùng khu vườn (ô đất) sẵn có của bạn - các hạt giống nay là berry Oran, Pecha, Rawst,"
-                        + " Cheri, Chesto, Leppa, Sitrus, Lum. Mỗi lần thu hoạch nhận thêm berry vào túi sinh thái (bạn bè tưới:"
+                        + " Cheri, Chesto, Leppa, Sitrus, Lum. Mỗi lần thu hoạch nhận thêm berry vào Túi sinh thái (bạn bè tưới:"
                         + " +5%/lần, tối đa +25%). Berry dùng để nấu ăn và chế thuốc.");
                 break;
             default:
@@ -1727,7 +1753,7 @@ public final class HeSinhThaiMenu {
         final List<String> m = new ArrayList<String>();
         m.add("Album ảnh (" + h.album.size() + ")");
         m.add("Nghiên cứu Pokédex (" + h.nghienCuu.size() + " loài)");
-        m.add("Vùng sinh thái: hoàn thành & nhận thưởng");
+        m.add("Nhận thưởng vùng sinh thái");
         m.add("Danh hiệu (" + h.danhHieu.size() + ")");
         menu(p, M_SUU_TAM, m);
     }
@@ -1774,10 +1800,10 @@ public final class HeSinhThaiMenu {
                         for (int i = 0; i < SuuTamSinhThai.BIT_NV.length; i++) {
                             final int bit = SuuTamSinhThai.BIT_NV[i];
                             if ((ad & bit) != 0) {
-                                nv.add(((e.getValue() & bit) != 0 ? "[x] " : "[ ] ") + SuuTamSinhThai.TEN_NV[i]);
+                                nv.add(((e.getValue() & bit) != 0 ? "(x) " : "( ) ") + SuuTamSinhThai.TEN_NV[i]);
                             }
                         }
-                        b.append(String.join("; ", nv)).append('\n');
+                        b.append(String.join(", ", nv)).append('\n');
                     }
                 }
                 bao(p, b.toString().trim());
@@ -1852,7 +1878,7 @@ public final class HeSinhThaiMenu {
             p.sendToNearPlayer(MessageCreator.createCharInfo(p));
         } catch (final Exception ignored) {
         }
-        bao(p, i < 0 ? "Đã tháo danh hiệu sinh thái." : "Đang đeo danh hiệu \"" + HoSoSinhThai.DANH_HIEU[i] + "\".");
+        bao(p, i < 0 ? "Đã tháo danh hiệu sinh thái." : "Đang đeo danh hiệu " + HoSoSinhThai.DANH_HIEU[i] + ".");
     }
 
     static void nhanVung(final Char p, final int op) {
@@ -1887,8 +1913,8 @@ public final class HeSinhThaiMenu {
         HeSinhThaiGame.phatThuong(p, "LUONGKHOA:" + HeSinhThai.THUONG_VUNG_LUONG_KHOA, "hoan thanh vung " + v);
         h.themDanhHieu("Nhà thám hiểm vùng");
         HeSinhThaiGame.baoTheGioi(p.charname + " đã hoàn thành nghiên cứu vùng " + SinhThaiTheGioi.tenVung(v) + "!");
-        bao(p, "Hoàn thành vùng " + SinhThaiTheGioi.tenVung(v) + ": +" + HeSinhThai.THUONG_VUNG_LUONG_KHOA + " lượng khoá, chỉ số vĩnh viễn +"
-                + SuuTamSinhThai.chiSoVinhVien(Integer.bitCount(h.vungXong)) / 10.0 + "% (ghi nhận).");
+        bao(p, "Hoàn thành vùng " + SinhThaiTheGioi.tenVung(v) + ": +" + HeSinhThai.THUONG_VUNG_LUONG_KHOA + " lượng khoá. HP và tấn công vĩnh viễn từ các vùng đã hoàn thành: +"
+                + String.valueOf(SuuTamSinhThai.chiSoVinhVien(Integer.bitCount(h.vungXong)) / 10.0).replace('.', ',') + "%.");
         HeSinhThaiGame.danhDau(p);
     }
 
@@ -1896,7 +1922,7 @@ public final class HeSinhThaiMenu {
 
     static void moGiaiTri(final Char p) {
         final List<String> m = new ArrayList<String>();
-        m.add("Ai là Pokémon? (lịch & thành tích)");
+        m.add("Đố vui: lịch, thành tích");
         m.add("Đua Pokémon: đăng ký");
         m.add("Giải đấu tuần: đăng ký (" + HeSinhThaiGame.GiaiDau.DANG_KY.size() + " người)");
         m.add("Giải đấu tuần: xem cây đấu");
@@ -1917,7 +1943,7 @@ public final class HeSinhThaiMenu {
                 b.append(" mỗi ngày trên kênh thế giới. Gõ tên Pokémon vào chat, người đúng đầu tiên nhận ")
                         .append(HeSinhThai.THUONG_DO_VUI_LUONG_KHOA).append(" lượng khoá.\nBạn đã trả lời đúng: ").append(h.doVuiDung)
                         .append(" lần. Đua Pokémon: thắng ").append(h.duaThang).append(" lần (đua lúc ").append(HeSinhThai.GIO_DUA)
-                        .append("h, gõ \"dua\" để đăng ký).");
+                        .append("h, gõ dua vào khung chat để đăng ký).");
                 bao(p, b.toString());
                 break;
             }
@@ -1930,7 +1956,7 @@ public final class HeSinhThaiMenu {
                     break;
                 }
                 HeSinhThaiGame.GiaiDau.DANG_KY.add(p.charDBID);
-                bao(p, "Đã đăng ký giải đấu tuần. Cây đấu công bố thứ Bảy 20:00; trận đấu tính khi hạ đối thủ ở Liên đấu.");
+                bao(p, "Đã đăng ký giải đấu tuần. Cây đấu công bố lúc 20:00 thứ Bảy, trận đấu được tính khi hạ đối thủ ở Giải Liên minh.");
                 break;
             case 3:
                 bao(p, HeSinhThaiGame.GiaiDau.moTa());

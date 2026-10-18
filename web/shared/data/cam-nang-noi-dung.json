@@ -1,0 +1,6904 @@
+{
+ "shiny": {
+  "mauSo": 4096,
+  "pity": 2000
+ },
+ "vatPham": [
+  {
+   "ten": "Thuốc hồi máu",
+   "nhom": "Hồi máu",
+   "congDung": "Hồi 25% HP tối đa",
+   "cap": "1–20",
+   "gia": 25,
+   "tien": "xu",
+   "nguon": "cửa hàng, nhiệm vụ ngày",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Siêu thuốc hồi máu",
+   "nhom": "Hồi máu",
+   "congDung": "Hồi 35% HP tối đa",
+   "cap": "21–40",
+   "gia": 63,
+   "tien": "xu",
+   "nguon": "cửa hàng, nhiệm vụ ngày",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi máu cực mạnh",
+   "nhom": "Hồi máu",
+   "congDung": "Hồi 45% HP tối đa",
+   "cap": "41–60",
+   "gia": 155,
+   "tien": "xu",
+   "nguon": "cửa hàng, nhiệm vụ ngày",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi máu tối đa",
+   "nhom": "Hồi máu",
+   "congDung": "Hồi 60% HP tối đa",
+   "cap": "61–80",
+   "gia": 373,
+   "tien": "xu",
+   "nguon": "cửa hàng, nhiệm vụ ngày",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi phục toàn diện",
+   "nhom": "Hồi máu",
+   "congDung": "Hồi 80% HP và gỡ mọi trạng thái",
+   "cap": "81–100",
+   "gia": 894,
+   "tien": "xu",
+   "nguon": "cửa hàng, nhiệm vụ ngày",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi PP (Ether)",
+   "nhom": "Hồi PP",
+   "congDung": "Hồi 30% MP (PP chiêu)",
+   "cap": "1–30",
+   "gia": 29,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi PP lớn (Ether lớn)",
+   "nhom": "Hồi PP",
+   "congDung": "Hồi 45% MP",
+   "cap": "31–60",
+   "gia": 109,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi PP tối đa (Ether tối đa)",
+   "nhom": "Hồi PP",
+   "congDung": "Hồi 60% MP",
+   "cap": "61–100",
+   "gia": 508,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi PP cả nhóm (Elixir)",
+   "nhom": "Hồi PP",
+   "congDung": "Hồi 30% MP cho cả nhóm ở gần",
+   "cap": "30–100",
+   "gia": 315,
+   "tien": "xu",
+   "nguon": "cửa hàng, boss Gym",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi PP cả nhóm tối đa (Elixir tối đa)",
+   "nhom": "Hồi PP",
+   "congDung": "Hồi 60% MP cho cả nhóm ở gần",
+   "cap": "60–100",
+   "gia": 5,
+   "tien": "lượng khoá",
+   "nguon": "nhiệm vụ tuần",
+   "gioiHan": "2/tuần",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc giải độc",
+   "nhom": "Chữa trạng thái",
+   "congDung": "Gỡ trạng thái Độc",
+   "cap": "1–100",
+   "gia": 41,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc trị bỏng",
+   "nhom": "Chữa trạng thái",
+   "congDung": "Gỡ trạng thái Bỏng",
+   "cap": "1–100",
+   "gia": 41,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc trị tê liệt",
+   "nhom": "Chữa trạng thái",
+   "congDung": "Gỡ trạng thái Tê liệt",
+   "cap": "1–100",
+   "gia": 41,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc đánh thức",
+   "nhom": "Chữa trạng thái",
+   "congDung": "Gỡ trạng thái Ngủ",
+   "cap": "1–100",
+   "gia": 41,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc rã đông",
+   "nhom": "Chữa trạng thái",
+   "congDung": "Gỡ trạng thái Đóng băng",
+   "cap": "1–100",
+   "gia": 41,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc chữa toàn diện",
+   "nhom": "Chữa trạng thái",
+   "congDung": "Gỡ mọi trạng thái và miễn nhiễm trạng thái trong 5 giây",
+   "cap": "30–100",
+   "gia": 236,
+   "tien": "xu",
+   "nguon": "cửa hàng, boss Gym",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc hồi sinh",
+   "nhom": "Hồi sinh",
+   "congDung": "Hồi sinh tại chỗ với 30% HP",
+   "cap": "1–100",
+   "gia": 407,
+   "tien": "xu",
+   "nguon": "cửa hàng, nhiệm vụ",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc hồi sinh tối đa",
+   "nhom": "Hồi sinh",
+   "congDung": "Hồi sinh tại chỗ với 100% HP",
+   "cap": "40–100",
+   "gia": 5,
+   "tien": "lượng khoá",
+   "nguon": "boss thế giới, nhiệm vụ tuần",
+   "gioiHan": "3/tuần",
+   "sapCo": true
+  },
+  {
+   "ten": "X Tấn công",
+   "nhom": "Tăng cường X",
+   "congDung": "+20% tấn công trong 90 giây",
+   "cap": "10–100",
+   "gia": 202,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "X Phòng thủ",
+   "nhom": "Tăng cường X",
+   "congDung": "+20% phòng thủ trong 90 giây",
+   "cap": "10–100",
+   "gia": 202,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "X Tốc độ",
+   "nhom": "Tăng cường X",
+   "congDung": "+15% tốc đánh trong 90 giây",
+   "cap": "10–100",
+   "gia": 336,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "X Chính xác",
+   "nhom": "Tăng cường X",
+   "congDung": "+15% chính xác trong 90 giây",
+   "cap": "10–100",
+   "gia": 336,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Tăng chí mạng",
+   "nhom": "Tăng cường X",
+   "congDung": "+5% chí mạng trong 90 giây",
+   "cap": "10–100",
+   "gia": 336,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc săn trùm",
+   "nhom": "Tăng cường X",
+   "congDung": "+30% sát thương lên boss trong 60 giây",
+   "cap": "20–100",
+   "gia": 3,
+   "tien": "lượng khoá",
+   "nguon": "boss Gym, nhiệm vụ tuần",
+   "gioiHan": "5/tuần",
+   "sapCo": false
+  },
+  {
+   "ten": "Thuốc xua quái",
+   "nhom": "Xua quái",
+   "congDung": "Quái thấp hơn 5 cấp không chủ động tấn công trong 5 phút",
+   "cap": "5–100",
+   "gia": 147,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Siêu thuốc xua quái",
+   "nhom": "Xua quái",
+   "congDung": "Như Thuốc xua quái, kéo dài 10 phút",
+   "cap": "20–100",
+   "gia": 316,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thuốc xua quái tối đa",
+   "nhom": "Xua quái",
+   "congDung": "Như Thuốc xua quái, kéo dài 20 phút",
+   "cap": "40–100",
+   "gia": 981,
+   "tien": "xu",
+   "nguon": "cửa hàng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Kẹo hiếm",
+   "nhom": "Kẹo kinh nghiệm",
+   "congDung": "Nhận EXP bằng 30 phút đánh quái ở cấp hiện tại; trừ 30 phút năng lượng 100% nên không vượt mức EXP tối đa trong ngày",
+   "cap": "1–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "nhiệm vụ tuần, Pokédex, sự kiện",
+   "gioiHan": "2/tuần",
+   "sapCo": true
+  },
+  {
+   "ten": "Đá Nước",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Vaporeon",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, chương J2, Pokédex",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá Sấm",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Jolteon",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, chương K3, Pokédex",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá Lửa",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Flareon",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, chương K7, Pokédex",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá Mặt Trời",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Espeon (ban ngày)",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, Tháp Sprout",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá Mặt Trăng",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Umbreon (ban đêm)",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, Núi Mặt Trăng",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá Lá",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Leafeon",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, Rừng Ilex",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá Băng",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Glaceon",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, Hồ Phẫn Nộ",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Ruy Băng Tiên",
+   "nhom": "Đá tiến hoá",
+   "congDung": "Tiến hoá Eevee thành Sylveon",
+   "cap": "25–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Ngày cộng đồng Eevee, sự kiện 20/10",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Quả Oran",
+   "nhom": "Quả mọng",
+   "congDung": "Tự dùng khi HP dưới 50%: hồi 10% HP",
+   "cap": "1–100",
+   "gia": 27,
+   "tien": "xu",
+   "nguon": "trang trại, quái đồng cỏ",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Sitrus",
+   "nhom": "Quả mọng",
+   "congDung": "Tự dùng khi HP dưới 50%: hồi 25% HP",
+   "cap": "30–100",
+   "gia": 79,
+   "tien": "xu",
+   "nguon": "trang trại, quái rừng",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Lum",
+   "nhom": "Quả mọng",
+   "congDung": "Tự gỡ trạng thái xấu đầu tiên dính phải",
+   "cap": "20–100",
+   "gia": 127,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Cheri",
+   "nhom": "Quả mọng",
+   "congDung": "Tự gỡ Tê liệt",
+   "cap": "1–100",
+   "gia": 20,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Chesto",
+   "nhom": "Quả mọng",
+   "congDung": "Tự gỡ Ngủ",
+   "cap": "1–100",
+   "gia": 20,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Pecha",
+   "nhom": "Quả mọng",
+   "congDung": "Tự gỡ Độc",
+   "cap": "1–100",
+   "gia": 20,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Rawst",
+   "nhom": "Quả mọng",
+   "congDung": "Tự gỡ Bỏng",
+   "cap": "1–100",
+   "gia": 20,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Aspear",
+   "nhom": "Quả mọng",
+   "congDung": "Tự gỡ Đóng băng",
+   "cap": "1–100",
+   "gia": 20,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Quả Leppa",
+   "nhom": "Quả mọng",
+   "congDung": "Tự dùng khi MP dưới 20%: hồi 15% MP",
+   "cap": "1–100",
+   "gia": 20,
+   "tien": "xu",
+   "nguon": "trang trại",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Thức ăn thừa",
+   "nhom": "Đồ giữ",
+   "congDung": "Hồi 1% HP mỗi 3 giây (thay chỉ số phụ Phiến đá hệ)",
+   "cap": "30–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "boss Gym Celadon",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Chuông vỏ sò",
+   "nhom": "Đồ giữ",
+   "congDung": "Hút 3% sát thương gây ra thành HP",
+   "cap": "40–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "boss Gym Cerulean",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Móng vuốt nhanh",
+   "nhom": "Đồ giữ",
+   "congDung": "10% cơ hội ra đòn nhanh: giảm 10% thời gian hồi chiêu trong 3 giây",
+   "cap": "40–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "boss Gym Violet",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Băng đô tập trung",
+   "nhom": "Đồ giữ",
+   "congDung": "10% cơ hội trụ lại với 1 HP khi trúng đòn hạ gục (120 giây mới kích hoạt lại)",
+   "cap": "50–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "boss Gym Cianwood",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Kính ngắm",
+   "nhom": "Đồ giữ",
+   "congDung": "+3% chí mạng",
+   "cap": "30–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "boss Gym Saffron",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Đai lực sĩ",
+   "nhom": "Đồ giữ",
+   "congDung": "+4% sát thương đòn đánh thường",
+   "cap": "30–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "boss Gym Viridian",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Đá vĩnh cửu",
+   "nhom": "Đồ giữ",
+   "congDung": "Chặn tiến hoá (giữ dạng hiện tại), không cộng chỉ số",
+   "cap": "1–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "nhiệm vụ Pewter",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Trứng may mắn",
+   "nhom": "Đồ giữ",
+   "congDung": "+10% EXP (tính chung vào mức tăng EXP tối đa +100%)",
+   "cap": "20–100",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex 50 loài",
+   "gioiHan": "",
+   "sapCo": true
+  },
+  {
+   "ten": "Bụi sao",
+   "nhom": "Nguyên liệu",
+   "congDung": "Nâng cấp +11 đến +15 cho đồ bậc sơ cấp, đồng, bạc (1 cái mỗi lần thử)",
+   "cap": "",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "quái ở dải cấp của bậc rơi (0,4%), phân rã đồ bậc đó, chế tạo",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Mảnh sao",
+   "nhom": "Nguyên liệu",
+   "congDung": "Nâng cấp +11 đến +15 cho đồ bậc vàng, bạch kim, kim cương (1 cái mỗi lần thử)",
+   "cap": "",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "quái ở dải cấp của bậc rơi (0,4%), phân rã đồ bậc đó, chế tạo",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Mảnh thiên thạch",
+   "nhom": "Nguyên liệu",
+   "congDung": "Nâng cấp +11 đến +15 cho đồ bậc chuyên gia, tinh anh, huyền thoại (1 cái mỗi lần thử)",
+   "cap": "",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "quái ở dải cấp của bậc rơi (0,4%), phân rã đồ bậc đó, chế tạo",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Vảy rồng",
+   "nhom": "Nguyên liệu",
+   "congDung": "Nâng cấp +11 đến +15 cho đồ bậc thần thoại, tối thượng (1 cái mỗi lần thử)",
+   "cap": "",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "quái ở dải cấp của bậc rơi (0,4%), phân rã đồ bậc đó, chế tạo",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Mảnh tinh hoa",
+   "nhom": "Nguyên liệu",
+   "congDung": "Chuyển đồ Hoàn mỹ sang bậc mới (cần 3 mảnh)",
+   "cap": "",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "phân rã đồ Hoàn mỹ",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Đá nâng cấp",
+   "nhom": "Nguyên liệu",
+   "congDung": "Mọi lần nâng cấp: lên +1 đến +5 cần 1 viên, +6 đến +10 cần 2 viên, +11 đến +15 cần 4 viên",
+   "cap": "",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "quái chênh tối đa 5 cấp rơi 1,5%, quái tinh anh chắc chắn rơi, phân rã 1 món được 2 viên",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Bùa bảo hộ",
+   "nhom": "Nguyên liệu",
+   "congDung": "Giữ cấp khi nâng cấp +7 đến +10 thất bại",
+   "cap": "",
+   "gia": 10,
+   "tien": "lượng khoá",
+   "nguon": "cửa hàng lượng khoá",
+   "gioiHan": "",
+   "sapCo": false
+  },
+  {
+   "ten": "Bùa bảo hộ cao cấp",
+   "nhom": "Nguyên liệu",
+   "congDung": "Giữ cấp khi nâng cấp +11 đến +15 thất bại",
+   "cap": "",
+   "gia": 25,
+   "tien": "lượng khoá",
+   "nguon": "cửa hàng lượng khoá",
+   "gioiHan": "",
+   "sapCo": false
+  }
+ ],
+ "cuaHang": [
+  {
+   "ten": "Bronzong (trang bị)",
+   "hang": [
+    {
+     "vatPham": "Khăn quàng sơ cấp",
+     "gia": 5385,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai sơ cấp",
+     "gia": 5385,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô sơ cấp",
+     "gia": 5385,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ sơ cấp",
+     "gia": 5385,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm sơ cấp",
+     "gia": 5385,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng đồng",
+     "gia": 8328,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai đồng",
+     "gia": 8328,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô đồng",
+     "gia": 8328,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ đồng",
+     "gia": 8328,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm đồng",
+     "gia": 8328,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng bạc",
+     "gia": 13527,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai bạc",
+     "gia": 13527,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô bạc",
+     "gia": 13527,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ bạc",
+     "gia": 13527,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm bạc",
+     "gia": 13527,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng vàng",
+     "gia": 20704,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai vàng",
+     "gia": 20704,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô vàng",
+     "gia": 20704,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ vàng",
+     "gia": 20704,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm vàng",
+     "gia": 20704,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng bạch kim",
+     "gia": 32340,
+     "tien": "xu",
+     "cap": 40,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai bạch kim",
+     "gia": 32340,
+     "tien": "xu",
+     "cap": 40,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô bạch kim",
+     "gia": 32340,
+     "tien": "xu",
+     "cap": 40,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ bạch kim",
+     "gia": 32340,
+     "tien": "xu",
+     "cap": 40,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm bạch kim",
+     "gia": 32340,
+     "tien": "xu",
+     "cap": 40,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng kim cương",
+     "gia": 50888,
+     "tien": "xu",
+     "cap": 50,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai kim cương",
+     "gia": 50888,
+     "tien": "xu",
+     "cap": 50,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô kim cương",
+     "gia": 50888,
+     "tien": "xu",
+     "cap": 50,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ kim cương",
+     "gia": 50888,
+     "tien": "xu",
+     "cap": 50,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm kim cương",
+     "gia": 50888,
+     "tien": "xu",
+     "cap": 50,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng chuyên gia",
+     "gia": 79101,
+     "tien": "xu",
+     "cap": 60,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai chuyên gia",
+     "gia": 79101,
+     "tien": "xu",
+     "cap": 60,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô chuyên gia",
+     "gia": 79101,
+     "tien": "xu",
+     "cap": 60,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ chuyên gia",
+     "gia": 79101,
+     "tien": "xu",
+     "cap": 60,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm chuyên gia",
+     "gia": 79101,
+     "tien": "xu",
+     "cap": 60,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng tinh anh",
+     "gia": 122664,
+     "tien": "xu",
+     "cap": 70,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai tinh anh",
+     "gia": 122664,
+     "tien": "xu",
+     "cap": 70,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô tinh anh",
+     "gia": 122664,
+     "tien": "xu",
+     "cap": 70,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ tinh anh",
+     "gia": 122664,
+     "tien": "xu",
+     "cap": 70,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm tinh anh",
+     "gia": 122664,
+     "tien": "xu",
+     "cap": 70,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng huyền thoại",
+     "gia": 190464,
+     "tien": "xu",
+     "cap": 80,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai huyền thoại",
+     "gia": 190464,
+     "tien": "xu",
+     "cap": 80,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô huyền thoại",
+     "gia": 190464,
+     "tien": "xu",
+     "cap": 80,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ huyền thoại",
+     "gia": 190464,
+     "tien": "xu",
+     "cap": 80,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm huyền thoại",
+     "gia": 190464,
+     "tien": "xu",
+     "cap": 80,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng thần thoại",
+     "gia": 294152,
+     "tien": "xu",
+     "cap": 90,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai thần thoại",
+     "gia": 294152,
+     "tien": "xu",
+     "cap": 90,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô thần thoại",
+     "gia": 294152,
+     "tien": "xu",
+     "cap": 90,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ thần thoại",
+     "gia": 294152,
+     "tien": "xu",
+     "cap": 90,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm thần thoại",
+     "gia": 294152,
+     "tien": "xu",
+     "cap": 90,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khăn quàng tối thượng",
+     "gia": 416954,
+     "tien": "xu",
+     "cap": 98,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Đai tối thượng",
+     "gia": 416954,
+     "tien": "xu",
+     "cap": 98,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Băng đô tối thượng",
+     "gia": 416954,
+     "tien": "xu",
+     "cap": 98,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Lông vũ tốc độ tối thượng",
+     "gia": 416954,
+     "tien": "xu",
+     "cap": 98,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Găng đấm tối thượng",
+     "gia": 416954,
+     "tien": "xu",
+     "cap": 98,
+     "gioiHan": ""
+    }
+   ]
+  },
+  {
+   "ten": "Chansey (thuốc)",
+   "hang": [
+    {
+     "vatPham": "Thuốc hồi máu",
+     "gia": 25,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Siêu thuốc hồi máu",
+     "gia": 63,
+     "tien": "xu",
+     "cap": 21,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi máu cực mạnh",
+     "gia": 155,
+     "tien": "xu",
+     "cap": 41,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi máu tối đa",
+     "gia": 373,
+     "tien": "xu",
+     "cap": 61,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi phục toàn diện",
+     "gia": 894,
+     "tien": "xu",
+     "cap": 81,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi PP (Ether)",
+     "gia": 29,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi PP lớn (Ether lớn)",
+     "gia": 109,
+     "tien": "xu",
+     "cap": 31,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi PP tối đa (Ether tối đa)",
+     "gia": 508,
+     "tien": "xu",
+     "cap": 61,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi PP cả nhóm (Elixir)",
+     "gia": 315,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc giải độc",
+     "gia": 41,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc trị bỏng",
+     "gia": 41,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc trị tê liệt",
+     "gia": 41,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc đánh thức",
+     "gia": 41,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc rã đông",
+     "gia": 41,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc chữa toàn diện",
+     "gia": 236,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc hồi sinh",
+     "gia": 407,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "X Tấn công",
+     "gia": 202,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "X Phòng thủ",
+     "gia": 202,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "X Tốc độ",
+     "gia": 336,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "X Chính xác",
+     "gia": 336,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Tăng chí mạng",
+     "gia": 336,
+     "tien": "xu",
+     "cap": 10,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc xua quái",
+     "gia": 147,
+     "tien": "xu",
+     "cap": 5,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Siêu thuốc xua quái",
+     "gia": 316,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Thuốc xua quái tối đa",
+     "gia": 981,
+     "tien": "xu",
+     "cap": 40,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Oran",
+     "gia": 27,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Sitrus",
+     "gia": 79,
+     "tien": "xu",
+     "cap": 30,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Lum",
+     "gia": 127,
+     "tien": "xu",
+     "cap": 20,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Cheri",
+     "gia": 20,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Chesto",
+     "gia": 20,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Pecha",
+     "gia": 20,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Rawst",
+     "gia": 20,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Aspear",
+     "gia": 20,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Quả Leppa",
+     "gia": 20,
+     "tien": "xu",
+     "cap": 1,
+     "gioiHan": ""
+    }
+   ]
+  },
+  {
+   "ten": "Kecleon (lượng khoá)",
+   "hang": [
+    {
+     "vatPham": "Thuốc hồi PP cả nhóm tối đa (Elixir tối đa)",
+     "gia": 5,
+     "tien": "lượng khoá",
+     "cap": 60,
+     "gioiHan": "2/tuần"
+    },
+    {
+     "vatPham": "Thuốc hồi sinh tối đa",
+     "gia": 5,
+     "tien": "lượng khoá",
+     "cap": 40,
+     "gioiHan": "3/tuần"
+    },
+    {
+     "vatPham": "Thuốc săn trùm",
+     "gia": 3,
+     "tien": "lượng khoá",
+     "cap": 20,
+     "gioiHan": "5/tuần"
+    },
+    {
+     "vatPham": "Bùa bảo hộ",
+     "gia": 10,
+     "tien": "lượng khoá",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Bùa bảo hộ cao cấp",
+     "gia": 25,
+     "tien": "lượng khoá",
+     "cap": 1,
+     "gioiHan": ""
+    }
+   ]
+  },
+  {
+   "ten": "Delcatty (trang trí)",
+   "hang": [
+    {
+     "vatPham": "Khung ảnh Pikachu",
+     "gia": 60,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Trang phục Pikachu",
+     "gia": 150,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khung ảnh Togepi",
+     "gia": 60,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Trang phục Togepi",
+     "gia": 150,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khung ảnh Ho-Oh",
+     "gia": 60,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Trang phục Ho-Oh",
+     "gia": 150,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khung ảnh Lugia",
+     "gia": 60,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Trang phục Lugia",
+     "gia": 150,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khung ảnh Latias",
+     "gia": 60,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Trang phục Latias",
+     "gia": 150,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Khung ảnh Rayquaza",
+     "gia": 60,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    },
+    {
+     "vatPham": "Trang phục Rayquaza",
+     "gia": 150,
+     "tien": "lượng",
+     "cap": 1,
+     "gioiHan": ""
+    }
+   ]
+  },
+  {
+   "ten": "Huy chương Gym",
+   "hang": [
+    {
+     "vatPham": "Áo choàng Gym (đổi 40 huy chương)",
+     "gia": 40,
+     "tien": "Huy chương Gym",
+     "cap": 16,
+     "gioiHan": ""
+    }
+   ]
+  }
+ ],
+ "gym": [
+  {
+   "so": 1,
+   "huyHieu": "Huy hiệu Đá (Pewter)",
+   "noi": "Pewter",
+   "he": "Đá",
+   "cap": 12,
+   "truong": "Golem",
+   "hp": 49100,
+   "tanCong": 657,
+   "phongThu": 125,
+   "bacThuong": "đồng"
+  },
+  {
+   "so": 2,
+   "huyHieu": "Huy hiệu Thác (Cerulean)",
+   "noi": "Cerulean",
+   "he": "Nước",
+   "cap": 19,
+   "truong": "Gyarados",
+   "hp": 72800,
+   "tanCong": 813,
+   "phongThu": 185,
+   "bacThuong": "đồng"
+  },
+  {
+   "so": 3,
+   "huyHieu": "Huy hiệu Sấm (Vermilion)",
+   "noi": "Vermilion",
+   "he": "Điện",
+   "cap": 23,
+   "truong": "Luxray",
+   "hp": 86300,
+   "tanCong": 903,
+   "phongThu": 220,
+   "bacThuong": "bạc"
+  },
+  {
+   "so": 4,
+   "huyHieu": "Huy hiệu Cầu Vồng (Celadon)",
+   "noi": "Celadon",
+   "he": "Cỏ",
+   "cap": 35,
+   "truong": "Vileplume",
+   "hp": 126900,
+   "tanCong": 1394,
+   "phongThu": 323,
+   "bacThuong": "vàng"
+  },
+  {
+   "so": 5,
+   "huyHieu": "Huy hiệu Đầm Lầy (Saffron)",
+   "noi": "Saffron",
+   "he": "Đất",
+   "cap": 38,
+   "truong": "Seismitoad",
+   "hp": 137000,
+   "tanCong": 1472,
+   "phongThu": 349,
+   "bacThuong": "vàng"
+  },
+  {
+   "so": 6,
+   "huyHieu": "Huy hiệu Linh Hồn (Fuchsia)",
+   "noi": "Fuchsia",
+   "he": "Ma",
+   "cap": 41,
+   "truong": "Gengar",
+   "hp": 147300,
+   "tanCong": 1550,
+   "phongThu": 374,
+   "bacThuong": "bạch kim"
+  },
+  {
+   "so": 7,
+   "huyHieu": "Huy hiệu Núi Lửa (Cinnabar)",
+   "noi": "Cinnabar",
+   "he": "Lửa",
+   "cap": 46,
+   "truong": "Magcargo",
+   "hp": 164200,
+   "tanCong": 1680,
+   "phongThu": 418,
+   "bacThuong": "bạch kim"
+  },
+  {
+   "so": 8,
+   "huyHieu": "Huy hiệu Đất (Viridian)",
+   "noi": "Viridian",
+   "he": "Đất",
+   "cap": 48,
+   "truong": "Rhydon",
+   "hp": 171000,
+   "tanCong": 1732,
+   "phongThu": 434,
+   "bacThuong": "bạch kim"
+  },
+  {
+   "so": 9,
+   "huyHieu": "Huy hiệu Gió (Violet)",
+   "noi": "Violet",
+   "he": "Bay",
+   "cap": 53,
+   "truong": "Dodrio",
+   "hp": 187900,
+   "tanCong": 1863,
+   "phongThu": 478,
+   "bacThuong": "kim cương"
+  },
+  {
+   "so": 10,
+   "huyHieu": "Huy hiệu Tổ Ong (Azalea)",
+   "noi": "Azalea",
+   "he": "Bọ",
+   "cap": 55,
+   "truong": "Heracross",
+   "hp": 194800,
+   "tanCong": 1916,
+   "phongThu": 494,
+   "bacThuong": "kim cương"
+  },
+  {
+   "so": 11,
+   "huyHieu": "Huy hiệu Đồng Bằng (Goldenrod)",
+   "noi": "Goldenrod",
+   "he": "Thường",
+   "cap": 61,
+   "truong": "Tauros",
+   "hp": 214800,
+   "tanCong": 2073,
+   "phongThu": 547,
+   "bacThuong": "chuyên gia"
+  },
+  {
+   "so": 12,
+   "huyHieu": "Huy hiệu Sương (Ecruteak)",
+   "noi": "Ecruteak",
+   "he": "Ma",
+   "cap": 62,
+   "truong": "Dusknoir",
+   "hp": 218300,
+   "tanCong": 2098,
+   "phongThu": 556,
+   "bacThuong": "chuyên gia"
+  },
+  {
+   "so": 13,
+   "huyHieu": "Huy hiệu Khoáng (Olivine)",
+   "noi": "Olivine",
+   "he": "Thép",
+   "cap": 66,
+   "truong": "Aegislash",
+   "hp": 232000,
+   "tanCong": 2204,
+   "phongThu": 589,
+   "bacThuong": "chuyên gia"
+  },
+  {
+   "so": 14,
+   "huyHieu": "Huy hiệu Bão (Cianwood)",
+   "noi": "Cianwood",
+   "he": "Giác đấu",
+   "cap": 68,
+   "truong": "Crabrawler",
+   "hp": 238600,
+   "tanCong": 2254,
+   "phongThu": 607,
+   "bacThuong": "chuyên gia"
+  },
+  {
+   "so": 15,
+   "huyHieu": "Huy hiệu Băng (Mahogany)",
+   "noi": "Mahogany",
+   "he": "Băng",
+   "cap": 75,
+   "truong": "Abomasnow",
+   "hp": 262300,
+   "tanCong": 2438,
+   "phongThu": 667,
+   "bacThuong": "tinh anh"
+  },
+  {
+   "so": 16,
+   "huyHieu": "Huy hiệu Rồng (Blackthorn)",
+   "noi": "Blackthorn",
+   "he": "Rồng",
+   "cap": 83,
+   "truong": "Salamence",
+   "hp": 289500,
+   "tanCong": 2646,
+   "phongThu": 736,
+   "bacThuong": "huyền thoại"
+  }
+ ],
+ "gymLuat": {
+  "phutGioiHan": 10,
+  "phutNoiGian": 5,
+  "huyChuongTuan": 3,
+  "aoChoang": {
+   "ten": "Áo choàng Gym",
+   "gia": 40
+  }
+ },
+ "cheTao": [
+  {
+   "ten": "Vòng cổ sơ cấp",
+   "cap": 1,
+   "da": 2,
+   "phu": "1 Bụi sao",
+   "xu": 2692,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ sơ cấp",
+   "cap": 1,
+   "da": 2,
+   "phu": "1 Bụi sao",
+   "xu": 2692,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ đồng",
+   "cap": 10,
+   "da": 3,
+   "phu": "1 Bụi sao",
+   "xu": 4164,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ đồng",
+   "cap": 10,
+   "da": 3,
+   "phu": "1 Bụi sao",
+   "xu": 4164,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ bạc",
+   "cap": 20,
+   "da": 4,
+   "phu": "1 Bụi sao",
+   "xu": 6763,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ bạc",
+   "cap": 20,
+   "da": 4,
+   "phu": "1 Bụi sao",
+   "xu": 6763,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ vàng",
+   "cap": 30,
+   "da": 5,
+   "phu": "2 Mảnh sao",
+   "xu": 10352,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ vàng",
+   "cap": 30,
+   "da": 5,
+   "phu": "2 Mảnh sao",
+   "xu": 10352,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ bạch kim",
+   "cap": 40,
+   "da": 6,
+   "phu": "2 Mảnh sao",
+   "xu": 16170,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ bạch kim",
+   "cap": 40,
+   "da": 6,
+   "phu": "2 Mảnh sao",
+   "xu": 16170,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ kim cương",
+   "cap": 50,
+   "da": 7,
+   "phu": "2 Mảnh sao",
+   "xu": 25444,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ kim cương",
+   "cap": 50,
+   "da": 7,
+   "phu": "2 Mảnh sao",
+   "xu": 25444,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ chuyên gia",
+   "cap": 60,
+   "da": 8,
+   "phu": "3 Mảnh thiên thạch",
+   "xu": 39550,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ chuyên gia",
+   "cap": 60,
+   "da": 8,
+   "phu": "3 Mảnh thiên thạch",
+   "xu": 39550,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ tinh anh",
+   "cap": 70,
+   "da": 9,
+   "phu": "3 Mảnh thiên thạch",
+   "xu": 61332,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ tinh anh",
+   "cap": 70,
+   "da": 9,
+   "phu": "3 Mảnh thiên thạch",
+   "xu": 61332,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ huyền thoại",
+   "cap": 80,
+   "da": 10,
+   "phu": "3 Mảnh thiên thạch",
+   "xu": 95232,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ huyền thoại",
+   "cap": 80,
+   "da": 10,
+   "phu": "3 Mảnh thiên thạch",
+   "xu": 95232,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ thần thoại",
+   "cap": 90,
+   "da": 11,
+   "phu": "4 Vảy rồng",
+   "xu": 147076,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ thần thoại",
+   "cap": 90,
+   "da": 11,
+   "phu": "4 Vảy rồng",
+   "xu": 147076,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Vòng cổ tối thượng",
+   "cap": 98,
+   "da": 12,
+   "phu": "4 Vảy rồng",
+   "xu": 208477,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  },
+  {
+   "ten": "Phiến đá hệ tối thượng",
+   "cap": 98,
+   "da": 12,
+   "phu": "4 Vảy rồng",
+   "xu": 208477,
+   "noi": "Machamp (Xưởng chế tạo Pewter)"
+  }
+ ],
+ "nhanhEevee": [
+  {
+   "ten": "Vaporeon",
+   "he": "Nước",
+   "vai": "Hỗ trợ hồi máu nhóm",
+   "chieu": "Súng nước, Vòng nước, Thủy triều",
+   "cap": 25
+  },
+  {
+   "ten": "Jolteon",
+   "he": "Điện",
+   "vai": "Tốc độ",
+   "chieu": "Phóng điện, Gai sấm, Sấm sét",
+   "cap": 25
+  },
+  {
+   "ten": "Flareon",
+   "he": "Lửa",
+   "vai": "Bùng nổ",
+   "chieu": "Nanh lửa, Hỏa diệm, Đại hỏa",
+   "cap": 25
+  },
+  {
+   "ten": "Espeon",
+   "he": "Siêu linh",
+   "vai": "Phép",
+   "chieu": "Tâm niệm, Ảo ảnh tâm linh, Siêu năng",
+   "cap": 25
+  },
+  {
+   "ten": "Umbreon",
+   "he": "Bóng tối",
+   "vai": "Chịu đòn",
+   "chieu": "Đòn hiểm, Ánh trăng, Hồn tối",
+   "cap": 25
+  },
+  {
+   "ten": "Leafeon",
+   "he": "Cỏ",
+   "vai": "Khống chế",
+   "chieu": "Lưỡi lá, Lá dao, Tia mặt trời",
+   "cap": 25
+  },
+  {
+   "ten": "Glaceon",
+   "he": "Băng",
+   "vai": "Khống chế",
+   "chieu": "Gió băng, Tia băng, Bão tuyết",
+   "cap": 25
+  },
+  {
+   "ten": "Sylveon",
+   "he": "Tiên",
+   "vai": "Hỗ trợ",
+   "chieu": "Hôn tiên, Khí tiên, Ánh trăng tiên",
+   "cap": 25
+  }
+ ],
+ "trangTri": [
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Danh hiệu",
+   "ten": "Nhà vô địch mùa Kanto",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Top 100 PvP cuối mùa"
+  },
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Danh hiệu",
+   "ten": "Nhà nghiên cứu mùa Kanto",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex +25 loài trong mùa"
+  },
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Khung",
+   "ten": "Khung ảnh Pikachu",
+   "gia": 60,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Khung",
+   "ten": "Khung bậc Master mùa Kanto",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Bậc Master mùa PvP"
+  },
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Trang phục",
+   "ten": "Trang phục Pikachu",
+   "gia": 150,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Trang phục",
+   "ten": "Áo choàng Gym mùa Kanto",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Đổi 40 Huy chương Gym"
+  },
+  {
+   "mua": "Mùa Kanto",
+   "loai": "Hiệu ứng",
+   "ten": "Hào quang Pikachu",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Hoàn thành 8 Gym của vùng"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Danh hiệu",
+   "ten": "Nhà vô địch mùa Johto giữa",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Top 100 PvP cuối mùa"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Danh hiệu",
+   "ten": "Nhà nghiên cứu mùa Johto giữa",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex +25 loài trong mùa"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Khung",
+   "ten": "Khung ảnh Togepi",
+   "gia": 60,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Khung",
+   "ten": "Khung bậc Master mùa Johto giữa",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Bậc Master mùa PvP"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Trang phục",
+   "ten": "Trang phục Togepi",
+   "gia": 150,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Trang phục",
+   "ten": "Áo choàng Gym mùa Johto giữa",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Đổi 40 Huy chương Gym"
+  },
+  {
+   "mua": "Mùa Johto giữa",
+   "loai": "Hiệu ứng",
+   "ten": "Hào quang Togepi",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Hoàn thành 8 Gym của vùng"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Danh hiệu",
+   "ten": "Nhà vô địch mùa Johto cuối",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Top 100 PvP cuối mùa"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Danh hiệu",
+   "ten": "Nhà nghiên cứu mùa Johto cuối",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex +25 loài trong mùa"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Khung",
+   "ten": "Khung ảnh Ho-Oh",
+   "gia": 60,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Khung",
+   "ten": "Khung bậc Master mùa Johto cuối",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Bậc Master mùa PvP"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Trang phục",
+   "ten": "Trang phục Ho-Oh",
+   "gia": 150,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Trang phục",
+   "ten": "Áo choàng Gym mùa Johto cuối",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Đổi 40 Huy chương Gym"
+  },
+  {
+   "mua": "Mùa Johto cuối",
+   "loai": "Hiệu ứng",
+   "ten": "Hào quang Ho-Oh",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Hoàn thành 8 Gym của vùng"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Danh hiệu",
+   "ten": "Nhà vô địch mùa Đường Victory",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Top 100 PvP cuối mùa"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Danh hiệu",
+   "ten": "Nhà nghiên cứu mùa Đường Victory",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex +25 loài trong mùa"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Khung",
+   "ten": "Khung ảnh Lugia",
+   "gia": 60,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Khung",
+   "ten": "Khung bậc Master mùa Đường Victory",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Bậc Master mùa PvP"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Trang phục",
+   "ten": "Trang phục Lugia",
+   "gia": 150,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Trang phục",
+   "ten": "Áo choàng Gym mùa Đường Victory",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Đổi 40 Huy chương Gym"
+  },
+  {
+   "mua": "Mùa Đường Victory",
+   "loai": "Hiệu ứng",
+   "ten": "Hào quang Lugia",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Hoàn thành 8 Gym của vùng"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Danh hiệu",
+   "ten": "Nhà vô địch mùa Hoenn 1",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Top 100 PvP cuối mùa"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Danh hiệu",
+   "ten": "Nhà nghiên cứu mùa Hoenn 1",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex +25 loài trong mùa"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Khung",
+   "ten": "Khung ảnh Latias",
+   "gia": 60,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Khung",
+   "ten": "Khung bậc Master mùa Hoenn 1",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Bậc Master mùa PvP"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Trang phục",
+   "ten": "Trang phục Latias",
+   "gia": 150,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Trang phục",
+   "ten": "Áo choàng Gym mùa Hoenn 1",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Đổi 40 Huy chương Gym"
+  },
+  {
+   "mua": "Mùa Hoenn 1",
+   "loai": "Hiệu ứng",
+   "ten": "Hào quang Latias",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Hoàn thành 8 Gym của vùng"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Danh hiệu",
+   "ten": "Nhà vô địch mùa Hoenn 2",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Top 100 PvP cuối mùa"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Danh hiệu",
+   "ten": "Nhà nghiên cứu mùa Hoenn 2",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Pokédex +25 loài trong mùa"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Khung",
+   "ten": "Khung ảnh Rayquaza",
+   "gia": 60,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Khung",
+   "ten": "Khung bậc Master mùa Hoenn 2",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Bậc Master mùa PvP"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Trang phục",
+   "ten": "Trang phục Rayquaza",
+   "gia": 150,
+   "tien": "lượng",
+   "nguon": "Cửa hàng lượng (chỉ trang trí)"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Trang phục",
+   "ten": "Áo choàng Gym mùa Hoenn 2",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Đổi 40 Huy chương Gym"
+  },
+  {
+   "mua": "Mùa Hoenn 2",
+   "loai": "Hiệu ứng",
+   "ten": "Hào quang Rayquaza",
+   "gia": null,
+   "tien": "không bán",
+   "nguon": "Hoàn thành 8 Gym của vùng"
+  }
+ ],
+ "suKienVatPham": [
+  {
+   "tuan": 1,
+   "ten": "Tết dương lịch",
+   "ten2": "Tết dương lịch: Pokémon Tuyết",
+   "vatPham": "Kẹo",
+   "toiDaTuan": 20,
+   "doiLay": "Hộp quà khoá, khung avatar năm mới"
+  },
+  {
+   "tuan": 1,
+   "ten": "Tết dương lịch",
+   "ten2": "Tết dương lịch: Pokémon Tuyết",
+   "vatPham": "Hộp quà",
+   "toiDaTuan": 20,
+   "doiLay": "Hộp quà khoá, khung avatar năm mới"
+  },
+  {
+   "tuan": 2,
+   "ten": "Tuần hệ Băng",
+   "ten2": "Tuần hệ Rồng",
+   "vatPham": "Tinh thể hệ",
+   "toiDaTuan": 20,
+   "doiLay": "Phiến đá hệ trang trí"
+  },
+  {
+   "tuan": 3,
+   "ten": "Ngày cộng đồng Charmander",
+   "ten2": "Ngày cộng đồng Squirtle",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục khởi đầu (không chỉ số)"
+  },
+  {
+   "tuan": 4,
+   "ten": "Chuẩn bị Tết: gói bánh",
+   "ten2": "Chuẩn bị Tết: chợ hoa",
+   "vatPham": "Lá dong",
+   "toiDaTuan": 20,
+   "doiLay": "Bánh (thuốc khoá), lì xì khoá"
+  },
+  {
+   "tuan": 4,
+   "ten": "Chuẩn bị Tết: gói bánh",
+   "ten2": "Chuẩn bị Tết: chợ hoa",
+   "vatPham": "Gạo nếp",
+   "toiDaTuan": 20,
+   "doiLay": "Bánh (thuốc khoá), lì xì khoá"
+  },
+  {
+   "tuan": 4,
+   "ten": "Chuẩn bị Tết: gói bánh",
+   "ten2": "Chuẩn bị Tết: chợ hoa",
+   "vatPham": "Bánh chưng",
+   "toiDaTuan": 20,
+   "doiLay": "Bánh (thuốc khoá), lì xì khoá"
+  },
+  {
+   "tuan": 5,
+   "ten": "Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 1/2)",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "vatPham": "Bao lì xì",
+   "toiDaTuan": 20,
+   "doiLay": "Áo Tết (không chỉ số), danh hiệu năm"
+  },
+  {
+   "tuan": 5,
+   "ten": "Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 1/2)",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "vatPham": "Bánh tét",
+   "toiDaTuan": 20,
+   "doiLay": "Áo Tết (không chỉ số), danh hiệu năm"
+  },
+  {
+   "tuan": 5,
+   "ten": "Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 1/2)",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "vatPham": "Pháo hoa tết",
+   "toiDaTuan": 20,
+   "doiLay": "Áo Tết (không chỉ số), danh hiệu năm"
+  },
+  {
+   "tuan": 6,
+   "ten": "Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 2/2)",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "vatPham": "Bao lì xì",
+   "toiDaTuan": 20,
+   "doiLay": "Áo Tết (không chỉ số), danh hiệu năm"
+  },
+  {
+   "tuan": 6,
+   "ten": "Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 2/2)",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "vatPham": "Bánh tét",
+   "toiDaTuan": 20,
+   "doiLay": "Áo Tết (không chỉ số), danh hiệu năm"
+  },
+  {
+   "tuan": 6,
+   "ten": "Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 2/2)",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "vatPham": "Pháo hoa tết",
+   "toiDaTuan": 20,
+   "doiLay": "Áo Tết (không chỉ số), danh hiệu năm"
+  },
+  {
+   "tuan": 7,
+   "ten": "Tuần Shiny",
+   "ten2": "Tuần Shiny: Johto",
+   "vatPham": "Tem nghiên cứu",
+   "toiDaTuan": 20,
+   "doiLay": "Huy hiệu shiny"
+  },
+  {
+   "tuan": 8,
+   "ten": "Valentine: Luvdisc",
+   "ten2": "Valentine: Alomomola",
+   "vatPham": "Hoa hồng",
+   "toiDaTuan": 20,
+   "doiLay": "Khung đôi, hiệu ứng trái tim"
+  },
+  {
+   "tuan": 8,
+   "ten": "Valentine: Luvdisc",
+   "ten2": "Valentine: Alomomola",
+   "vatPham": "Vảy trái tim",
+   "toiDaTuan": 20,
+   "doiLay": "Khung đôi, hiệu ứng trái tim"
+  },
+  {
+   "tuan": 9,
+   "ten": "Đột kích huyền thoại: Zapdos",
+   "ten2": "Đột kích: Articuno",
+   "vatPham": "Lông vũ Zapdos",
+   "toiDaTuan": 20,
+   "doiLay": "Lông vũ Zapdos (nguyên liệu khoá)"
+  },
+  {
+   "tuan": 10,
+   "ten": "Quốc tế Phụ nữ 8/3",
+   "ten2": "8/3: Gardevoir",
+   "vatPham": "Nhánh hoa hồng",
+   "toiDaTuan": 20,
+   "doiLay": "Ruy băng trang trí"
+  },
+  {
+   "tuan": 10,
+   "ten": "Quốc tế Phụ nữ 8/3",
+   "ten2": "8/3: Gardevoir",
+   "vatPham": "Hoa hồng đỏ",
+   "toiDaTuan": 20,
+   "doiLay": "Ruy băng trang trí"
+  },
+  {
+   "tuan": 11,
+   "ten": "Tuần hệ Cỏ",
+   "ten2": "Tuần hệ Tiên",
+   "vatPham": "Tinh thể hệ",
+   "toiDaTuan": 20,
+   "doiLay": "Phiến đá trang trí"
+  },
+  {
+   "tuan": 12,
+   "ten": "Ngày cộng đồng Bulbasaur",
+   "ten2": "Ngày cộng đồng Pichu",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục"
+  },
+  {
+   "tuan": 13,
+   "ten": "Mùa giải PvP 1 kết thúc",
+   "ten2": "Mùa giải PvP 5 kết thúc",
+   "vatPham": "Huy chương mùa giải",
+   "toiDaTuan": 20,
+   "doiLay": "Khung bậc mùa, lượng theo bậc"
+  },
+  {
+   "tuan": 14,
+   "ten": "Lễ hội Pokédex",
+   "ten2": "Lễ hội Pokédex: Johto",
+   "vatPham": "Tem nghiên cứu",
+   "toiDaTuan": 20,
+   "doiLay": "Danh hiệu nghiên cứu"
+  },
+  {
+   "tuan": 15,
+   "ten": "Giỗ Tổ Hùng Vương",
+   "ten2": "Giỗ Tổ: bánh giày",
+   "vatPham": "Đậu xanh",
+   "toiDaTuan": 20,
+   "doiLay": "Pháo hoa trang trí"
+  },
+  {
+   "tuan": 15,
+   "ten": "Giỗ Tổ Hùng Vương",
+   "ten2": "Giỗ Tổ: bánh giày",
+   "vatPham": "Pháo hoa",
+   "toiDaTuan": 20,
+   "doiLay": "Pháo hoa trang trí"
+  },
+  {
+   "tuan": 16,
+   "ten": "Chiến vùng (Kanto/Johto/Hoenn)",
+   "ten2": "Chiến vùng",
+   "vatPham": "Cờ vùng",
+   "toiDaTuan": 20,
+   "doiLay": "Cờ vùng (trang trí)"
+  },
+  {
+   "tuan": 17,
+   "ten": "30/4 - 1/5: Thống nhất",
+   "ten2": "30/4: Diễu hành Pokémon",
+   "vatPham": "Quà lễ 30/4 - 1/5",
+   "toiDaTuan": 20,
+   "doiLay": "Yên thú cưỡi trang trí"
+  },
+  {
+   "tuan": 18,
+   "ten": "Tuần hệ Lửa",
+   "ten2": "Tuần hệ Ma",
+   "vatPham": "Tinh thể hệ",
+   "toiDaTuan": 20,
+   "doiLay": "Phiến đá trang trí"
+  },
+  {
+   "tuan": 19,
+   "ten": "Ngày cộng đồng Squirtle",
+   "ten2": "Ngày cộng đồng Eevee",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục"
+  },
+  {
+   "tuan": 20,
+   "ten": "Đột kích: Entei",
+   "ten2": "Đột kích: Raikou",
+   "vatPham": "Nanh lửa Entei",
+   "toiDaTuan": 20,
+   "doiLay": "Nanh lửa Entei (khoá)"
+  },
+  {
+   "tuan": 21,
+   "ten": "Bùng phát quần thể",
+   "ten2": "Bùng phát: Johto",
+   "vatPham": "Tem nghiên cứu",
+   "toiDaTuan": 20,
+   "doiLay": "Điểm Pokédex"
+  },
+  {
+   "tuan": 22,
+   "ten": "Quốc tế Thiếu nhi 1/6",
+   "ten2": "1/6: Pichu & bạn",
+   "vatPham": "Kẹo",
+   "toiDaTuan": 20,
+   "doiLay": "Mũ trẻ em"
+  },
+  {
+   "tuan": 23,
+   "ten": "Sự kiện Hè: biển Vermilion (tuần 1/2)",
+   "ten2": "Hè: đảo Cinnabar",
+   "vatPham": "Dưa Hấu",
+   "toiDaTuan": 20,
+   "doiLay": "Đồ bơi trang trí"
+  },
+  {
+   "tuan": 23,
+   "ten": "Sự kiện Hè: biển Vermilion (tuần 1/2)",
+   "ten2": "Hè: đảo Cinnabar",
+   "vatPham": "Kem",
+   "toiDaTuan": 20,
+   "doiLay": "Đồ bơi trang trí"
+  },
+  {
+   "tuan": 24,
+   "ten": "Sự kiện Hè: biển Vermilion (tuần 2/2)",
+   "ten2": "Hè: đảo Cinnabar",
+   "vatPham": "Dưa Hấu",
+   "toiDaTuan": 20,
+   "doiLay": "Đồ bơi trang trí"
+  },
+  {
+   "tuan": 24,
+   "ten": "Sự kiện Hè: biển Vermilion (tuần 2/2)",
+   "ten2": "Hè: đảo Cinnabar",
+   "vatPham": "Kem",
+   "toiDaTuan": 20,
+   "doiLay": "Đồ bơi trang trí"
+  },
+  {
+   "tuan": 25,
+   "ten": "Ngày cộng đồng Pichu",
+   "ten2": "Ngày cộng đồng Bulbasaur",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục"
+  },
+  {
+   "tuan": 26,
+   "ten": "Mùa giải PvP 2 kết thúc",
+   "ten2": "Mùa giải PvP 6 kết thúc",
+   "vatPham": "Huy chương mùa giải",
+   "toiDaTuan": 20,
+   "doiLay": "Khung bậc mùa"
+  },
+  {
+   "tuan": 27,
+   "ten": "Tuần hệ Nước",
+   "ten2": "Tuần hệ Đất",
+   "vatPham": "Tinh thể hệ",
+   "toiDaTuan": 20,
+   "doiLay": "Phiến đá"
+  },
+  {
+   "tuan": 28,
+   "ten": "Đột kích: Darkrai",
+   "ten2": "Đột kích: Suicune",
+   "vatPham": "Mảnh bóng tối",
+   "toiDaTuan": 20,
+   "doiLay": "Mảnh bóng tối (khoá)"
+  },
+  {
+   "tuan": 29,
+   "ten": "Hè 2: Hầm ngục bí ẩn mùa hè",
+   "ten2": "Hè 2: Hầm ngục sa mạc",
+   "vatPham": "Dưa Hấu",
+   "toiDaTuan": 20,
+   "doiLay": "Khung hầm ngục"
+  },
+  {
+   "tuan": 29,
+   "ten": "Hè 2: Hầm ngục bí ẩn mùa hè",
+   "ten2": "Hè 2: Hầm ngục sa mạc",
+   "vatPham": "Kem",
+   "toiDaTuan": 20,
+   "doiLay": "Khung hầm ngục"
+  },
+  {
+   "tuan": 30,
+   "ten": "Chiến vùng mùa hè",
+   "ten2": "Chiến vùng",
+   "vatPham": "Cờ vùng",
+   "toiDaTuan": 20,
+   "doiLay": "Cờ vùng"
+  },
+  {
+   "tuan": 31,
+   "ten": "Ngày cộng đồng Eevee",
+   "ten2": "Ngày cộng đồng Charmander",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục Eevee"
+  },
+  {
+   "tuan": 32,
+   "ten": "Vu Lan",
+   "ten2": "Vu Lan: hoa hồng vàng",
+   "vatPham": "Nhánh hoa hồng vàng",
+   "toiDaTuan": 20,
+   "doiLay": "Hoa cài trang trí"
+  },
+  {
+   "tuan": 33,
+   "ten": "Tuần hệ Điện",
+   "ten2": "Tuần hệ Thép",
+   "vatPham": "Tinh thể hệ",
+   "toiDaTuan": 20,
+   "doiLay": "Phiến đá"
+  },
+  {
+   "tuan": 34,
+   "ten": "Tuần Shiny 2",
+   "ten2": "Tuần Shiny: huyền thoại",
+   "vatPham": "Tem nghiên cứu",
+   "toiDaTuan": 20,
+   "doiLay": "Huy hiệu shiny"
+  },
+  {
+   "tuan": 35,
+   "ten": "Quốc khánh 2/9",
+   "ten2": "2/9: lễ hội đèn",
+   "vatPham": "Quà lễ Quốc khánh 2/9",
+   "toiDaTuan": 20,
+   "doiLay": "Pháo hoa trang trí"
+  },
+  {
+   "tuan": 36,
+   "ten": "Đột kích: Rayquaza",
+   "ten2": "Đột kích: Lugia",
+   "vatPham": "Vảy Rayquaza",
+   "toiDaTuan": 20,
+   "doiLay": "Vảy Rayquaza (khoá)"
+  },
+  {
+   "tuan": 37,
+   "ten": "Trung Thu (tuần 1/2)",
+   "ten2": "Trung Thu: Clefairy",
+   "vatPham": "Bánh dẻo",
+   "toiDaTuan": 20,
+   "doiLay": "Lồng đèn trang trí"
+  },
+  {
+   "tuan": 37,
+   "ten": "Trung Thu (tuần 1/2)",
+   "ten2": "Trung Thu: Clefairy",
+   "vatPham": "Bánh nướng",
+   "toiDaTuan": 20,
+   "doiLay": "Lồng đèn trang trí"
+  },
+  {
+   "tuan": 37,
+   "ten": "Trung Thu (tuần 1/2)",
+   "ten2": "Trung Thu: Clefairy",
+   "vatPham": "Nến",
+   "toiDaTuan": 20,
+   "doiLay": "Lồng đèn trang trí"
+  },
+  {
+   "tuan": 38,
+   "ten": "Trung Thu (tuần 2/2)",
+   "ten2": "Trung Thu: Clefairy",
+   "vatPham": "Bánh dẻo",
+   "toiDaTuan": 20,
+   "doiLay": "Lồng đèn trang trí"
+  },
+  {
+   "tuan": 38,
+   "ten": "Trung Thu (tuần 2/2)",
+   "ten2": "Trung Thu: Clefairy",
+   "vatPham": "Bánh nướng",
+   "toiDaTuan": 20,
+   "doiLay": "Lồng đèn trang trí"
+  },
+  {
+   "tuan": 38,
+   "ten": "Trung Thu (tuần 2/2)",
+   "ten2": "Trung Thu: Clefairy",
+   "vatPham": "Nến",
+   "toiDaTuan": 20,
+   "doiLay": "Lồng đèn trang trí"
+  },
+  {
+   "tuan": 39,
+   "ten": "Mùa giải PvP 3 kết thúc",
+   "ten2": "Mùa giải PvP 7 kết thúc",
+   "vatPham": "Huy chương mùa giải",
+   "toiDaTuan": 20,
+   "doiLay": "Khung bậc mùa"
+  },
+  {
+   "tuan": 40,
+   "ten": "Ngày cộng đồng Charmander 2",
+   "ten2": "Ngày cộng đồng Squirtle 2",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục"
+  },
+  {
+   "tuan": 41,
+   "ten": "Phụ nữ Việt Nam 20/10",
+   "ten2": "20/10: Sylveon",
+   "vatPham": "Quà lễ Phụ nữ 20/10",
+   "toiDaTuan": 20,
+   "doiLay": "Ruy băng trang trí"
+  },
+  {
+   "tuan": 42,
+   "ten": "Tuần hệ Siêu linh",
+   "ten2": "Tuần hệ Giác đấu",
+   "vatPham": "Tinh thể hệ",
+   "toiDaTuan": 20,
+   "doiLay": "Phiến đá"
+  },
+  {
+   "tuan": 43,
+   "ten": "Halloween: Gengar (tuần 1/2)",
+   "ten2": "Halloween: Mimikyu",
+   "vatPham": "Bí ngô",
+   "toiDaTuan": 20,
+   "doiLay": "Mặt nạ trang trí"
+  },
+  {
+   "tuan": 43,
+   "ten": "Halloween: Gengar (tuần 1/2)",
+   "ten2": "Halloween: Mimikyu",
+   "vatPham": "Hộp quà halloween",
+   "toiDaTuan": 20,
+   "doiLay": "Mặt nạ trang trí"
+  },
+  {
+   "tuan": 44,
+   "ten": "Halloween: Gengar (tuần 2/2)",
+   "ten2": "Halloween: Mimikyu",
+   "vatPham": "Bí ngô",
+   "toiDaTuan": 20,
+   "doiLay": "Mặt nạ trang trí"
+  },
+  {
+   "tuan": 44,
+   "ten": "Halloween: Gengar (tuần 2/2)",
+   "ten2": "Halloween: Mimikyu",
+   "vatPham": "Hộp quà halloween",
+   "toiDaTuan": 20,
+   "doiLay": "Mặt nạ trang trí"
+  },
+  {
+   "tuan": 45,
+   "ten": "Lễ hội Pokédex 2",
+   "ten2": "Lễ hội Pokédex: Hoenn",
+   "vatPham": "Tem nghiên cứu",
+   "toiDaTuan": 20,
+   "doiLay": "Danh hiệu"
+  },
+  {
+   "tuan": 46,
+   "ten": "Nhà giáo 20/11",
+   "ten2": "20/11: thầy và trò",
+   "vatPham": "Quà lễ Nhà giáo 20/11",
+   "toiDaTuan": 20,
+   "doiLay": "Danh hiệu người thầy"
+  },
+  {
+   "tuan": 47,
+   "ten": "Black Friday (giảm giá cửa hàng xu)",
+   "ten2": "Black Friday",
+   "vatPham": "Phiếu giảm giá trang trí",
+   "toiDaTuan": 20,
+   "doiLay": "—"
+  },
+  {
+   "tuan": 48,
+   "ten": "Đột kích: Groudon & Kyogre",
+   "ten2": "Đột kích: Kyogre & Groudon",
+   "vatPham": "Ngọc đỏ Groudon",
+   "toiDaTuan": 20,
+   "doiLay": "Ngọc đỏ Groudon, Ngọc lam Kyogre (khoá)"
+  },
+  {
+   "tuan": 49,
+   "ten": "Chiến vùng mùa đông",
+   "ten2": "Chiến vùng",
+   "vatPham": "Cờ vùng",
+   "toiDaTuan": 20,
+   "doiLay": "Cờ vùng"
+  },
+  {
+   "tuan": 50,
+   "ten": "Ngày cộng đồng Bulbasaur 2",
+   "ten2": "Ngày cộng đồng Pichu 2",
+   "vatPham": "Huy hiệu ngày cộng đồng",
+   "toiDaTuan": 20,
+   "doiLay": "Trang phục"
+  },
+  {
+   "tuan": 51,
+   "ten": "Giáng sinh: Delibird",
+   "ten2": "Giáng sinh: Abomasnow",
+   "vatPham": "Hộp quà",
+   "toiDaTuan": 20,
+   "doiLay": "Mũ Noel trang trí"
+  },
+  {
+   "tuan": 51,
+   "ten": "Giáng sinh: Delibird",
+   "ten2": "Giáng sinh: Abomasnow",
+   "vatPham": "Sao vàng",
+   "toiDaTuan": 20,
+   "doiLay": "Mũ Noel trang trí"
+  },
+  {
+   "tuan": 52,
+   "ten": "Tổng kết năm + mùa giải PvP 4",
+   "ten2": "Tổng kết năm 2",
+   "vatPham": "Huy chương mùa giải",
+   "toiDaTuan": 20,
+   "doiLay": "Danh hiệu năm"
+  }
+ ],
+ "bossTheGioi": {
+  "lich": [
+   {
+    "tuan": 1,
+    "nam1": "Gyarados",
+    "nam2": "Gyarados",
+    "he": "Nước",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 2,
+    "nam1": "Salamence",
+    "nam2": "Salamence",
+    "he": "Rồng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 3,
+    "nam1": "Sudowoodo",
+    "nam2": "Sudowoodo",
+    "he": "Đá",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 4,
+    "nam1": "Abomasnow",
+    "nam2": "Abomasnow",
+    "he": "Băng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 5,
+    "nam1": "Gengar",
+    "nam2": "Gengar",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 6,
+    "nam1": "Dusknoir",
+    "nam2": "Dusknoir",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 7,
+    "nam1": "Serperior",
+    "nam2": "Serperior",
+    "he": "Cỏ",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 8,
+    "nam1": "Ursaring",
+    "nam2": "Ursaring",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 9,
+    "nam1": "Zapdos",
+    "nam2": "Articuno",
+    "he": "Điện",
+    "luotNgay": 2
+   },
+   {
+    "tuan": 10,
+    "nam1": "Bronzong",
+    "nam2": "Bronzong",
+    "he": "Thép",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 11,
+    "nam1": "Lopunny",
+    "nam2": "Lopunny",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 12,
+    "nam1": "Gyarados",
+    "nam2": "Gyarados",
+    "he": "Nước",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 13,
+    "nam1": "Salamence",
+    "nam2": "Salamence",
+    "he": "Rồng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 14,
+    "nam1": "Sudowoodo",
+    "nam2": "Sudowoodo",
+    "he": "Đá",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 15,
+    "nam1": "Abomasnow",
+    "nam2": "Abomasnow",
+    "he": "Băng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 16,
+    "nam1": "Gengar",
+    "nam2": "Gengar",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 17,
+    "nam1": "Dusknoir",
+    "nam2": "Dusknoir",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 18,
+    "nam1": "Serperior",
+    "nam2": "Serperior",
+    "he": "Cỏ",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 19,
+    "nam1": "Ursaring",
+    "nam2": "Ursaring",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 20,
+    "nam1": "Entei",
+    "nam2": "Raikou",
+    "he": "Lửa",
+    "luotNgay": 2
+   },
+   {
+    "tuan": 21,
+    "nam1": "Bronzong",
+    "nam2": "Bronzong",
+    "he": "Thép",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 22,
+    "nam1": "Lopunny",
+    "nam2": "Lopunny",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 23,
+    "nam1": "Gyarados",
+    "nam2": "Gyarados",
+    "he": "Nước",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 24,
+    "nam1": "Salamence",
+    "nam2": "Salamence",
+    "he": "Rồng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 25,
+    "nam1": "Sudowoodo",
+    "nam2": "Sudowoodo",
+    "he": "Đá",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 26,
+    "nam1": "Abomasnow",
+    "nam2": "Abomasnow",
+    "he": "Băng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 27,
+    "nam1": "Gengar",
+    "nam2": "Gengar",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 28,
+    "nam1": "Darkrai",
+    "nam2": "Suicune",
+    "he": "Bóng tối",
+    "luotNgay": 2
+   },
+   {
+    "tuan": 29,
+    "nam1": "Serperior",
+    "nam2": "Serperior",
+    "he": "Cỏ",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 30,
+    "nam1": "Ursaring",
+    "nam2": "Ursaring",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 31,
+    "nam1": "Gourgeist",
+    "nam2": "Gourgeist",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 32,
+    "nam1": "Bronzong",
+    "nam2": "Bronzong",
+    "he": "Thép",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 33,
+    "nam1": "Lopunny",
+    "nam2": "Lopunny",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 34,
+    "nam1": "Gyarados",
+    "nam2": "Gyarados",
+    "he": "Nước",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 35,
+    "nam1": "Salamence",
+    "nam2": "Salamence",
+    "he": "Rồng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 36,
+    "nam1": "Rayquaza",
+    "nam2": "Lugia",
+    "he": "Rồng",
+    "luotNgay": 2
+   },
+   {
+    "tuan": 37,
+    "nam1": "Abomasnow",
+    "nam2": "Abomasnow",
+    "he": "Băng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 38,
+    "nam1": "Gengar",
+    "nam2": "Gengar",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 39,
+    "nam1": "Dusknoir",
+    "nam2": "Dusknoir",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 40,
+    "nam1": "Serperior",
+    "nam2": "Serperior",
+    "he": "Cỏ",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 41,
+    "nam1": "Ursaring",
+    "nam2": "Ursaring",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 42,
+    "nam1": "Gourgeist",
+    "nam2": "Gourgeist",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 43,
+    "nam1": "Bronzong",
+    "nam2": "Bronzong",
+    "he": "Thép",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 44,
+    "nam1": "Lopunny",
+    "nam2": "Lopunny",
+    "he": "Thường",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 45,
+    "nam1": "Gyarados",
+    "nam2": "Gyarados",
+    "he": "Nước",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 46,
+    "nam1": "Salamence",
+    "nam2": "Salamence",
+    "he": "Rồng",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 47,
+    "nam1": "Sudowoodo",
+    "nam2": "Sudowoodo",
+    "he": "Đá",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 48,
+    "nam1": "Groudon & Kyogre",
+    "nam2": "Kyogre & Groudon",
+    "he": "Đất/Nước",
+    "luotNgay": 2
+   },
+   {
+    "tuan": 49,
+    "nam1": "Gengar",
+    "nam2": "Gengar",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 50,
+    "nam1": "Dusknoir",
+    "nam2": "Dusknoir",
+    "he": "Ma",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 51,
+    "nam1": "Serperior",
+    "nam2": "Serperior",
+    "he": "Cỏ",
+    "luotNgay": 1
+   },
+   {
+    "tuan": 52,
+    "nam1": "Ursaring",
+    "nam2": "Ursaring",
+    "he": "Thường",
+    "luotNgay": 1
+   }
+  ],
+  "gioThuBay": "20:00",
+  "gioDotKich": [
+   "12:30",
+   "20:30"
+  ],
+  "phutNoiGian": 15
+ },
+ "pvp": {
+  "eloBanDau": 1000,
+  "k": 32,
+  "tuanMoiMua": 13,
+  "bac": [
+   {
+    "ten": "Poké Ball",
+    "tuElo": 0
+   },
+   {
+    "ten": "Great Ball",
+    "tuElo": 1200
+   },
+   {
+    "ten": "Ultra Ball",
+    "tuElo": 1400
+   },
+   {
+    "ten": "Master Ball",
+    "tuElo": 1600
+   }
+  ],
+  "daiCap": 10,
+  "phutCungCap": 10
+ },
+ "soTay": {
+  "muc": [
+   "Năng lượng và tinh thông",
+   "Nhiệm vụ tuần",
+   "Hầm ngục bí ẩn",
+   "Thang PvP mùa",
+   "Sư phạm (nhận trò)",
+   "Lịch đăng nhập, vé chương",
+   "Quà hoạt động hôm nay",
+   "Thách đấu Gym",
+   "Nhiệm vụ của tôi",
+   "Cửa hàng và đổi vật phẩm"
+  ],
+  "quaHoatDong": {
+   "phut": [
+    15,
+    30,
+    60,
+    120
+   ],
+   "luongKhoa": [
+    0,
+    0,
+    2,
+    3
+   ],
+   "da": [
+    1,
+    1,
+    0,
+    1
+   ],
+   "xuPhanTramGio": [
+    0,
+    5,
+    0,
+    0
+   ],
+   "nguyenLieu": [
+    0,
+    0,
+    0,
+    3
+   ],
+   "giayDungYen": 60,
+   "ngayThang": 20
+  },
+  "suPham": {
+   "capThay": 30,
+   "cachCap": 20,
+   "expPhanTram": 20,
+   "moc": [
+    20,
+    40
+   ]
+  }
+ },
+ "hamNguc": {
+  "tangToiDa": 30,
+  "lechCap": 5,
+  "expPhanTramGio": 20,
+  "tangDuExp": 10,
+  "tangLuongKhoa": 5,
+  "luongKhoa": 5
+ },
+ "heSinhThai": {
+  "theLucNgay": 100,
+  "theLucToiDa": 200,
+  "tlCauCa": 2,
+  "tlDao": 4,
+  "tlNau": 3,
+  "capKyNangToiDa": 50,
+  "kyNang": [
+   "Câu cá",
+   "Trồng trọt",
+   "Khảo cổ",
+   "Nấu ăn",
+   "Chế thuốc"
+  ],
+  "thayLoaiPhanTram": 15,
+  "bungPhatPhanTram": 40,
+  "thoiTietPhanTram": 10,
+  "heSoSinh": 3,
+  "gioBungPhat": [
+   11,
+   17,
+   20,
+   22
+  ],
+  "gioDemTu": 19,
+  "gioDemDen": 6,
+  "nhaTre": {
+   "buocTrung": 300,
+   "trungNgay": 2,
+   "trungTui": 6,
+   "shinyMau": 512,
+   "shinyPity": 200,
+   "ivToiDa": 31
+  },
+  "cho": {
+   "thue": 6,
+   "phiDang": 1,
+   "npcPhanTram": 40,
+   "giaToiDaLan": 5,
+   "hanNgay": 3,
+   "tinBan": 8,
+   "don": 4
+  },
+  "doVui": {
+   "gio": [
+    "12:30",
+    "21:30"
+   ],
+   "giay": 90,
+   "luongKhoa": 3
+  },
+  "dua": {
+   "gio": "19:00",
+   "phutDangKy": 10,
+   "thuong": [
+    5,
+    3,
+    2
+   ],
+   "giayToiDa": 300
+  },
+  "nghienCuuLuongKhoa": 2,
+  "vung": {
+   "luongKhoa": 20,
+   "phanNghin": 5,
+   "tranPhanNghin": 30
+  },
+  "meThuocNgay": 5,
+  "album": {
+   "toiDa": 200,
+   "loai": [
+    "Quái hiếm",
+    "Bùng phát",
+    "Cá hiếm",
+    "Trứng shiny",
+    "Hoá thạch"
+   ],
+   "moc": [
+    {
+     "anh": 10,
+     "luongKhoa": 10,
+     "danhHieu": "Nhiếp ảnh tập sự"
+    },
+    {
+     "anh": 25,
+     "luongKhoa": 20,
+     "danhHieu": "Thợ săn khoảnh khắc"
+    },
+    {
+     "anh": 50,
+     "luongKhoa": 30,
+     "danhHieu": "Nhà sinh thái học"
+    },
+    {
+     "anh": 100,
+     "luongKhoa": 50,
+     "danhHieu": "Huyền thoại ống kính"
+    }
+   ]
+  },
+  "cauCa": {
+   "bang": [
+    {
+     "ten": "Rác trôi",
+     "trongSo": 250,
+     "capKyNang": 1,
+     "nuoc": "cả hai",
+     "hoLon": false
+    },
+    {
+     "ten": "Vỏ sò",
+     "trongSo": 60,
+     "capKyNang": 1,
+     "nuoc": "cả hai",
+     "hoLon": false
+    },
+    {
+     "ten": "Rong biển",
+     "trongSo": 60,
+     "capKyNang": 1,
+     "nuoc": "cả hai",
+     "hoLon": false
+    },
+    {
+     "ten": "Berry Oran",
+     "trongSo": 40,
+     "capKyNang": 1,
+     "nuoc": "ngọt",
+     "hoLon": false
+    },
+    {
+     "ten": "Vảy Magikarp",
+     "trongSo": 300,
+     "capKyNang": 1,
+     "nuoc": "cả hai",
+     "hoLon": false
+    },
+    {
+     "ten": "Vảy Goldeen",
+     "trongSo": 120,
+     "capKyNang": 1,
+     "nuoc": "ngọt",
+     "hoLon": false
+    },
+    {
+     "ten": "Vảy Poliwag",
+     "trongSo": 100,
+     "capKyNang": 1,
+     "nuoc": "ngọt",
+     "hoLon": false
+    },
+    {
+     "ten": "Xúc tu Tentacool",
+     "trongSo": 120,
+     "capKyNang": 1,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Càng Krabby",
+     "trongSo": 80,
+     "capKyNang": 5,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Vảy Remoraid",
+     "trongSo": 60,
+     "capKyNang": 10,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Vảy Horsea",
+     "trongSo": 50,
+     "capKyNang": 10,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Vỏ Shellder",
+     "trongSo": 50,
+     "capKyNang": 15,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Lõi sao Staryu",
+     "trongSo": 50,
+     "capKyNang": 15,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Đèn Chinchou",
+     "trongSo": 40,
+     "capKyNang": 20,
+     "nuoc": "cả hai",
+     "hoLon": false
+    },
+    {
+     "ten": "Gai Qwilfish",
+     "trongSo": 30,
+     "capKyNang": 20,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "San hô Corsola",
+     "trongSo": 20,
+     "capKyNang": 25,
+     "nuoc": "mặn",
+     "hoLon": false
+    },
+    {
+     "ten": "Ngọc trai nhỏ",
+     "trongSo": 30,
+     "capKyNang": 10,
+     "nuoc": "cả hai",
+     "hoLon": false
+    },
+    {
+     "ten": "Ngọc trai lớn",
+     "trongSo": 6,
+     "capKyNang": 30,
+     "nuoc": "mặn",
+     "hoLon": true
+    },
+    {
+     "ten": "Vảy Feebas",
+     "trongSo": 8,
+     "capKyNang": 30,
+     "nuoc": "ngọt",
+     "hoLon": true
+    },
+    {
+     "ten": "Vảy rồng Dratini",
+     "trongSo": 3,
+     "capKyNang": 40,
+     "nuoc": "ngọt",
+     "hoLon": true
+    },
+    {
+     "ten": "Mai Lapras",
+     "trongSo": 2,
+     "capKyNang": 45,
+     "nuoc": "mặn",
+     "hoLon": true
+    }
+   ],
+   "tongDiem": 332,
+   "ban": [
+    {
+     "map": 0,
+     "ten": "Pewter",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 1,
+     "ten": "Pallet - đồng cỏ",
+     "vung": "Kanto",
+     "soHo": 2,
+     "hoLon": 1,
+     "diem": 8
+    },
+    {
+     "map": 2,
+     "ten": "Viridian - bờ biển",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 3,
+     "ten": "Vermilion - hồ lớn",
+     "vung": "Kanto",
+     "soHo": 4,
+     "hoLon": 2,
+     "diem": 16
+    },
+    {
+     "map": 4,
+     "ten": "Cerulean - rừng",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 5,
+     "ten": "Lavender - đồng cỏ",
+     "vung": "Kanto",
+     "soHo": 2,
+     "hoLon": 1,
+     "diem": 8
+    },
+    {
+     "map": 6,
+     "ten": "Celadon - rừng nhỏ",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 7,
+     "ten": "Saffron - đầm lầy",
+     "vung": "Kanto",
+     "soHo": 2,
+     "hoLon": 1,
+     "diem": 8
+    },
+    {
+     "map": 8,
+     "ten": "Fuchsia - bờ biển",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 9,
+     "ten": "Cinnabar - đồng bằng",
+     "vung": "Kanto",
+     "soHo": 2,
+     "hoLon": 1,
+     "diem": 8
+    },
+    {
+     "map": 10,
+     "ten": "New Bark - rừng lớn",
+     "vung": "Johto",
+     "soHo": 2,
+     "hoLon": 0,
+     "diem": 8
+    },
+    {
+     "map": 12,
+     "ten": "Khu mua bán",
+     "vung": "",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 14,
+     "ten": "Vùng Safari",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 1,
+     "diem": 4
+    },
+    {
+     "map": 15,
+     "ten": "Cherrygrove - hồ",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 17,
+     "ten": "Khu mỏ (sa mạc)",
+     "vung": "",
+     "soHo": 3,
+     "hoLon": 0,
+     "diem": 12
+    },
+    {
+     "map": 19,
+     "ten": "Ecruteak - ven biển",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 20,
+     "ten": "Violet - rừng",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 21,
+     "ten": "Đồng cỏ phía tây",
+     "vung": "",
+     "soHo": 2,
+     "hoLon": 1,
+     "diem": 8
+    },
+    {
+     "map": 22,
+     "ten": "Tàu S.S. Anne - đảo",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 23,
+     "ten": "Azalea - tuyến đường",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 28,
+     "ten": "Mahogany - đồng cỏ",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 1,
+     "diem": 4
+    },
+    {
+     "map": 70,
+     "ten": "Blackthorn",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 80,
+     "ten": "Cianwood",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 106,
+     "ten": "Bến tàu",
+     "vung": "Kanto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 114,
+     "ten": "Hồ Phẫn Nộ (hang)",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 201,
+     "ten": "Cao nguyên Indigo",
+     "vung": "Johto",
+     "soHo": 1,
+     "hoLon": 1,
+     "diem": 4
+    },
+    {
+     "map": 45,
+     "ten": "Rustboro",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 46,
+     "ten": "Bờ biển Dewford",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 49,
+     "ten": "Mauville",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 50,
+     "ten": "Sa mạc Route 111",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 51,
+     "ten": "Lavaridge",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 1,
+     "diem": 4
+    },
+    {
+     "map": 53,
+     "ten": "Rừng mưa Route 119",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 54,
+     "ten": "Fortree",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 55,
+     "ten": "Route 120 - Viện Thời tiết",
+     "vung": "Hoenn",
+     "soHo": 2,
+     "hoLon": 2,
+     "diem": 8
+    },
+    {
+     "map": 56,
+     "ten": "Lilycove",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 58,
+     "ten": "Biển Route 124",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 59,
+     "ten": "Mossdeep",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 1,
+     "diem": 4
+    },
+    {
+     "map": 60,
+     "ten": "Sootopolis",
+     "vung": "Hoenn",
+     "soHo": 2,
+     "hoLon": 1,
+     "diem": 8
+    },
+    {
+     "map": 61,
+     "ten": "Biển Route 131",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 62,
+     "ten": "Ever Grande",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    },
+    {
+     "map": 161,
+     "ten": "Thác Meteor",
+     "vung": "Hoenn",
+     "soHo": 12,
+     "hoLon": 3,
+     "diem": 48
+    },
+    {
+     "map": 162,
+     "ten": "Hang dưới biển",
+     "vung": "Hoenn",
+     "soHo": 7,
+     "hoLon": 1,
+     "diem": 28
+    },
+    {
+     "map": 163,
+     "ten": "Hang Khởi Nguyên",
+     "vung": "Hoenn",
+     "soHo": 10,
+     "hoLon": 1,
+     "diem": 40
+    },
+    {
+     "map": 164,
+     "ten": "Tháp Trời",
+     "vung": "Hoenn",
+     "soHo": 1,
+     "hoLon": 0,
+     "diem": 4
+    }
+   ]
+  },
+  "congThuc": [
+   {
+    "ten": "Bánh Poké",
+    "kyNang": "Nấu ăn",
+    "cap": 1,
+    "nguyenLieu": [
+     "2 Berry Oran",
+     "1 Berry Pecha"
+    ]
+   },
+   {
+    "ten": "Mồi thơm (x3)",
+    "kyNang": "Nấu ăn",
+    "cap": 5,
+    "nguyenLieu": [
+     "1 Rong biển",
+     "1 Vảy Remoraid"
+    ]
+   },
+   {
+    "ten": "Súp berry",
+    "kyNang": "Nấu ăn",
+    "cap": 10,
+    "nguyenLieu": [
+     "3 Berry Rawst",
+     "1 Rong biển"
+    ]
+   },
+   {
+    "ten": "Cà ri cá",
+    "kyNang": "Nấu ăn",
+    "cap": 20,
+    "nguyenLieu": [
+     "2 Vảy Magikarp",
+     "1 Vảy Goldeen",
+     "1 Berry Sitrus"
+    ]
+   },
+   {
+    "ten": "Thuốc xịt",
+    "kyNang": "Chế thuốc",
+    "cap": 1,
+    "nguyenLieu": [
+     "2 Berry Oran",
+     "1 Rong biển"
+    ]
+   },
+   {
+    "ten": "Nước tinh khiết",
+    "kyNang": "Chế thuốc",
+    "cap": 1,
+    "nguyenLieu": [
+     "2 Berry Chesto",
+     "1 Vỏ sò"
+    ]
+   },
+   {
+    "ten": "Siêu thuốc",
+    "kyNang": "Chế thuốc",
+    "cap": 10,
+    "nguyenLieu": [
+     "2 Berry Sitrus",
+     "1 Vảy Poliwag"
+    ]
+   },
+   {
+    "ten": "Nước khoáng",
+    "kyNang": "Chế thuốc",
+    "cap": 15,
+    "nguyenLieu": [
+     "2 Berry Leppa",
+     "1 Lõi sao Staryu"
+    ]
+   },
+   {
+    "ten": "Thuốc cao cấp",
+    "kyNang": "Chế thuốc",
+    "cap": 25,
+    "nguyenLieu": [
+     "1 Berry Lum",
+     "2 Berry Sitrus",
+     "1 Ngọc trai nhỏ"
+    ]
+   },
+   {
+    "ten": "Đá Nước",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Nước"
+    ]
+   },
+   {
+    "ten": "Đá Sấm",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Sấm"
+    ]
+   },
+   {
+    "ten": "Đá Lửa",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Lửa"
+    ]
+   },
+   {
+    "ten": "Đá Mặt Trời",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Mặt Trời"
+    ]
+   },
+   {
+    "ten": "Đá Mặt Trăng",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Mặt Trăng"
+    ]
+   },
+   {
+    "ten": "Đá Lá",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Lá"
+    ]
+   },
+   {
+    "ten": "Đá Băng",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "12 Mảnh Đá Băng"
+    ]
+   },
+   {
+    "ten": "Phục hồi Hoá thạch Vỏ ốc",
+    "kyNang": "Khảo cổ",
+    "cap": 10,
+    "nguyenLieu": [
+     "1 Hoá thạch Vỏ ốc",
+     "3 Xương cổ"
+    ]
+   },
+   {
+    "ten": "Phục hồi Hoá thạch Mai",
+    "kyNang": "Khảo cổ",
+    "cap": 10,
+    "nguyenLieu": [
+     "1 Hoá thạch Mai",
+     "3 Xương cổ"
+    ]
+   },
+   {
+    "ten": "Phục hồi Hoá thạch Rễ",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "1 Hoá thạch Rễ",
+     "3 Xương cổ"
+    ]
+   },
+   {
+    "ten": "Phục hồi Hoá thạch Vuốt",
+    "kyNang": "Khảo cổ",
+    "cap": 20,
+    "nguyenLieu": [
+     "1 Hoá thạch Vuốt",
+     "3 Xương cổ"
+    ]
+   },
+   {
+    "ten": "Phục hồi Hổ phách cổ",
+    "kyNang": "Khảo cổ",
+    "cap": 30,
+    "nguyenLieu": [
+     "1 Hổ phách cổ",
+     "5 Xương cổ"
+    ]
+   },
+   {
+    "ten": "Chậu hoa berry",
+    "kyNang": "Khảo cổ",
+    "cap": 5,
+    "nguyenLieu": [
+     "3 Berry Oran",
+     "2 Berry Cheri",
+     "3 Đá cuội"
+    ]
+   },
+   {
+    "ten": "Hồ cá mini",
+    "kyNang": "Khảo cổ",
+    "cap": 15,
+    "nguyenLieu": [
+     "6 Vảy Magikarp",
+     "4 Vảy Goldeen",
+     "5 Vỏ sò",
+     "2 Ngọc trai nhỏ"
+    ]
+   },
+   {
+    "ten": "Tượng đá Onix",
+    "kyNang": "Khảo cổ",
+    "cap": 25,
+    "nguyenLieu": [
+     "30 Đá cuội",
+     "5 Xương cổ"
+    ]
+   },
+   {
+    "ten": "Đèn lồng Chinchou",
+    "kyNang": "Khảo cổ",
+    "cap": 30,
+    "nguyenLieu": [
+     "5 Đèn Chinchou",
+     "2 Ngọc trai nhỏ"
+    ]
+   },
+   {
+    "ten": "Bộ sưu tập hoá thạch",
+    "kyNang": "Khảo cổ",
+    "cap": 40,
+    "nguyenLieu": [
+     "1 Hoá thạch Vỏ ốc",
+     "1 Hoá thạch Mai",
+     "1 Hoá thạch Rễ",
+     "1 Hoá thạch Vuốt"
+    ]
+   },
+   {
+    "ten": "Lẩu hải sản (Cà ri cá)",
+    "kyNang": "Nấu ăn",
+    "cap": 25,
+    "nguyenLieu": [
+     "2 Xúc tu Tentacool",
+     "1 Vảy Horsea",
+     "1 Vỏ Shellder",
+     "1 Càng Krabby"
+    ]
+   },
+   {
+    "ten": "Mồi thơm biển",
+    "kyNang": "Nấu ăn",
+    "cap": 15,
+    "nguyenLieu": [
+     "1 Gai Qwilfish",
+     "3 Rác trôi"
+    ]
+   },
+   {
+    "ten": "Bể san hô",
+    "kyNang": "Khảo cổ",
+    "cap": 35,
+    "nguyenLieu": [
+     "3 San hô Corsola",
+     "1 Ngọc trai lớn",
+     "5 Rác trôi"
+    ]
+   },
+   {
+    "ten": "Tượng rồng Dratini",
+    "kyNang": "Khảo cổ",
+    "cap": 45,
+    "nguyenLieu": [
+     "1 Vảy rồng Dratini",
+     "1 Vảy Feebas",
+     "1 Mai Lapras",
+     "2 Đá sao rơi",
+     "2 Vảy tim"
+    ]
+   }
+  ]
+ },
+ "cotTruyen": {
+  "tong": 1960,
+  "theoLoai": {
+   "huong_dan": 10,
+   "chinh": 582,
+   "phu": 413,
+   "ngay": 233,
+   "tuan": 103,
+   "pokedex": 194,
+   "doi": 12,
+   "su_pham": 8,
+   "hang_bi_an": 6,
+   "quay_lai": 6,
+   "su_kien": 156,
+   "huyen_thoai": 91,
+   "an": 32,
+   "thanh_tuu": 114
+  },
+  "chuong": [
+   {
+    "so": 1,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Khởi hành từ Pallet",
+    "diaDanh": "Pallet",
+    "cap": 1,
+    "tomTat": "Bạn tỉnh dậy giữa đồng cỏ Pallet sau đêm sao băng, không nhớ mình là ai.",
+    "buoc": [
+     "Tỉnh giấc dưới mưa sao",
+     "Bữa sáng của ông Snorlax",
+     "Lũ sâu trong vườn Oran",
+     "Giỏ Oran cho Chansey",
+     "Nơi ngôi sao rơi",
+     "Viên đá còn ấm"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 2,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Khởi hành từ Pallet",
+    "diaDanh": "Pallet",
+    "cap": 3,
+    "tomTat": "Persian ở đồng cỏ phía bắc mất vòng cổ, và một kẻ giả mạo đang đi khắp làng.",
+    "buoc": [
+     "Persian mất vòng cổ",
+     "Truy dấu kẻ trộm",
+     "Kecleon thấy gì?",
+     "Phục kích ở bụi cỏ cao",
+     "Lém hoá trang",
+     "Lời nói với Persian"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 3,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Khởi hành từ Pallet",
+    "diaDanh": "Viridian",
+    "cap": 5,
+    "tomTat": "Xe hàng của Kecleon bị lật trên lối mòn Viridian, hàng hoá vương vãi.",
+    "buoc": [
+     "Xe hàng lật nghiêng",
+     "Gom hàng rơi",
+     "Lối mòn về Viridian",
+     "Hộ tống xe hàng",
+     "Kẻ phục kích",
+     "Báo tin cho Xatu"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 4,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Khởi hành từ Pallet",
+    "diaDanh": "Rừng Viridian",
+    "cap": 8,
+    "tomTat": "Blaziken mở trại huấn luyện trong Rừng Viridian. Rừng đang có điều bất thường.",
+    "buoc": [
+     "Trại luyện trong rừng",
+     "Bài một: đánh đúng sức",
+     "Bài hai: mặc đồ đàng hoàng",
+     "Sâu trong rừng",
+     "Đầu đàn của khu rừng",
+     "Lông vũ tím rải rác",
+     "Lông vũ và mảnh sao"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 5,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đá xám Pewter",
+    "diaDanh": "Pewter",
+    "cap": 10,
+    "tomTat": "Bạn tới Pewter, thị trấn đá xám có bảo tàng thiên thạch nổi tiếng.",
+    "buoc": [
+     "Thị trấn đá xám",
+     "Bảo tàng thiên thạch",
+     "Machamp và ô kính trống",
+     "Dọn lối vào mỏ đá",
+     "Quặng sắt trong vách",
+     "Ghi chép đá xám"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 6,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đá xám Pewter",
+    "diaDanh": "Pewter",
+    "cap": 12,
+    "tomTat": "Machamp rèn đồ cho bạn trước trận Gym đầu tiên với trưởng Gym Golem.",
+    "buoc": [
+     "Xưởng chế tạo Pewter",
+     "Món đồ tự tay làm",
+     "Rèn thêm hai lần búa",
+     "Tập đánh với đá",
+     "Lời dặn của Blaziken",
+     "Giành Huy hiệu Đá"
+    ],
+    "huyHieu": "Huy hiệu Đá (Pewter)"
+   },
+   {
+    "so": 7,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đá xám Pewter",
+    "diaDanh": "Núi Mặt Trăng",
+    "cap": 14,
+    "tomTat": "Đường lên Núi Mặt Trăng bị chặn bởi một Snorlax ngủ say... chính là ông Snorlax.",
+    "buoc": [
+     "Ông ngủ giữa đường",
+     "Mật ong rừng",
+     "Bánh mật ong thơm lừng",
+     "Đánh thức Snorlax",
+     "Lũ quái chặn chân núi",
+     "Cửa hang Núi Mặt Trăng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 8,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đá xám Pewter",
+    "diaDanh": "Núi Mặt Trăng",
+    "cap": 16,
+    "tomTat": "Trong Núi Mặt Trăng, bầy Clefairy canh giữ một mảnh sao băng lớn.",
+    "buoc": [
+     "Trại trong lòng núi",
+     "Điệu nhảy dưới trăng",
+     "Lũ quái bị kích động",
+     "Alpha trong hang",
+     "Vòng tròn đá cổ",
+     "Ai giữ mảnh sao?",
+     "Bóng đen trên trần hang"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 9,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Dòng nước Cerulean",
+    "diaDanh": "Cerulean",
+    "cap": 18,
+    "tomTat": "Cây cầu Cerulean nổi tiếng với thử thách năm trận liên tiếp.",
+    "buoc": [
+     "Lão Torkoal bên cầu",
+     "Năm trận trên cầu",
+     "Đối thủ thứ năm",
+     "Câu đố của Torkoal",
+     "Hoàng hôn trên cầu",
+     "Chuyện xưa của lão"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 10,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Dòng nước Cerulean",
+    "diaDanh": "Cerulean",
+    "cap": 19,
+    "tomTat": "Lão Torkoal nhờ đưa lá thư cho người bạn cũ, rồi bạn thách đấu Gym Cerulean.",
+    "buoc": [
+     "Lá thư chưa gửi",
+     "Thư gửi Lapras",
+     "Lời hồi âm",
+     "Luyện tập bên bờ ao",
+     "Dòng nước dữ",
+     "Giành Huy hiệu Thác"
+    ],
+    "huyHieu": "Huy hiệu Thác (Cerulean)"
+   },
+   {
+    "so": 11,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Dòng nước Cerulean",
+    "diaDanh": "Vermilion",
+    "cap": 21,
+    "tomTat": "Bến cảng Vermilion nhộn nhịp. Meowth phát hiện hàng lậu trong kho.",
+    "buoc": [
+     "Bến cảng nhộn nhịp",
+     "Phiên chợ đầu tiên",
+     "Kiện hàng cho kho",
+     "Sổ kho bị giấu",
+     "Kẻ canh kho đêm",
+     "Báo cho trưởng làng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 12,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Dòng nước Cerulean",
+    "diaDanh": "Vermilion",
+    "cap": 23,
+    "tomTat": "Sấm sét đánh liên hồi bên bờ biển. Luxray, trưởng Gym Vermilion, đang mất kiểm soát.",
+    "buoc": [
+     "Tiếng sấm bên bờ biển",
+     "Ngọn hải đăng nhỏ",
+     "Bão điện",
+     "Phá lồng sắt",
+     "Luxray bình tĩnh lại",
+     "Giành Huy hiệu Sấm"
+    ],
+    "huyHieu": "Huy hiệu Sấm (Vermilion)"
+   },
+   {
+    "so": 13,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Chuyến tàu S.S. Anne",
+    "diaDanh": "Vermilion",
+    "cap": 25,
+    "tomTat": "Muốn lên tàu S.S. Anne phải có vé. Meowth có vé, nhưng không cho không.",
+    "buoc": [
+     "Tấm vé vàng",
+     "Việc một: dọn đường hàng",
+     "Việc hai: ngọc trai",
+     "Việc ba: thư mời",
+     "Nhận vé",
+     "Lên tàu"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 14,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Chuyến tàu S.S. Anne",
+    "diaDanh": "Tàu S.S. Anne",
+    "cap": 26,
+    "tomTat": "Tiệc trên tàu S.S. Anne. Viên ngọc của Persian biến mất giữa bữa tiệc.",
+    "buoc": [
+     "Bữa tiệc trên boong",
+     "Hỏi chuyện Kangaskhan",
+     "Hỏi chuyện Kecleon",
+     "Dấu vết ở cầu thang",
+     "Ai là thủ phạm?",
+     "Lối xuống boong dưới"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 15,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Chuyến tàu S.S. Anne",
+    "diaDanh": "Tàu S.S. Anne",
+    "cap": 28,
+    "tomTat": "Dưới boong tàu là kho hàng chứa đầy thùng gỗ khắc mặt nạ tím.",
+    "buoc": [
+     "Kho hàng dưới boong",
+     "Thùng hàng bí ẩn",
+     "Trứng lạc giữa kho",
+     "Alpha canh kho",
+     "Vòng cổ của Persian",
+     "Trả vòng cổ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 16,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Chuyến tàu S.S. Anne",
+    "diaDanh": "Tàu S.S. Anne",
+    "cap": 29,
+    "tomTat": "Cơn bão ập tới ngoài khơi. Tàu S.S. Anne chao đảo.",
+    "buoc": [
+     "Bão ngoài khơi",
+     "Giữ boong tàu",
+     "Thuyền trưởng bị thương",
+     "Thuốc cho Lapras",
+     "Quái vật dưới sóng",
+     "Dạt vào bờ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 17,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Sương mù Lavender",
+    "diaDanh": "Lavender",
+    "cap": 30,
+    "tomTat": "Tháp Pokémon ở Lavender. Các hồn ma không chịu yên giấc.",
+    "buoc": [
+     "Thị trấn trong sương",
+     "Bóng ma lúc nửa đêm",
+     "Hồn ma hoảng loạn",
+     "Tầng trên cùng",
+     "Chiếc chuông bạc",
+     "Tiếng chuông xua ác mộng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 18,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Sương mù Lavender",
+    "diaDanh": "Lavender",
+    "cap": 32,
+    "tomTat": "Một Cubone khóc tìm mẹ trong sương Lavender.",
+    "buoc": [
+     "Tiếng khóc trong sương",
+     "Dắt Cubone đi tìm mẹ",
+     "Lũ quái quanh gò đất",
+     "Hồn của Marowak",
+     "Lời hứa với Cubone",
+     "Kể cho ông nghe"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 19,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Sương mù Lavender",
+    "diaDanh": "Celadon",
+    "cap": 33,
+    "tomTat": "Khu thương mại Celadon, nơi Đoàn Mặt Nạ Tím mở một cửa hàng nguỵ trang.",
+    "buoc": [
+     "Khu thương mại sầm uất",
+     "Cửa hàng lạ",
+     "Trò chơi của cửa hàng",
+     "Ông chủ mặt nạ",
+     "Tấm bản đồ bỏ lại",
+     "Kecleon xem bản đồ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 20,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Sương mù Lavender",
+    "diaDanh": "Celadon",
+    "cap": 35,
+    "tomTat": "Vườn hoa Celadon. Gốc Berry thứ bảy giấu một bí mật, và Gym Cỏ đang chờ.",
+    "buoc": [
+     "Vườn hoa của Persian",
+     "Vườn Berry của Persian",
+     "Gốc Berry thứ bảy",
+     "Rễ cây bị nhiễm",
+     "Mảnh sao bị nhuốm",
+     "Hương thơm cho trận đấu",
+     "Giành Huy hiệu Cầu Vồng"
+    ],
+    "huyHieu": "Huy hiệu Cầu Vồng (Celadon)"
+   },
+   {
+    "so": 21,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Saffron và Vùng Safari",
+    "diaDanh": "Saffron",
+    "cap": 36,
+    "tomTat": "Saffron bị bao phủ bởi một bức tường sương tím. Không ai ra vào được.",
+    "buoc": [
+     "Thành phố bị phong toả",
+     "Áo giáp cho trận lớn",
+     "Dọn vòng ngoài",
+     "Vượt tường sương",
+     "Thành phố ngủ say",
+     "Lối vào Toà nhà Silph"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 22,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Saffron và Vùng Safari",
+    "diaDanh": "Saffron",
+    "cap": 38,
+    "tomTat": "Bên trong Toà nhà Silph, Đoàn Mặt Nạ Tím đặt máy khuếch đại ác mộng.",
+    "buoc": [
+     "Toà nhà Silph",
+     "Mật mã thang máy",
+     "Các tầng bị chiếm",
+     "Murkrow lần thứ ba",
+     "Tắt cỗ máy",
+     "Thành phố thức dậy",
+     "Giành Huy hiệu Đầm Lầy"
+    ],
+    "huyHieu": "Huy hiệu Đầm Lầy (Saffron)"
+   },
+   {
+    "so": 23,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Saffron và Vùng Safari",
+    "diaDanh": "Vùng Safari",
+    "cap": 39,
+    "tomTat": "Vùng Safari, nơi Pokémon hiếm sống tự do. Meowth có một phi vụ chụp ảnh.",
+    "buoc": [
+     "Cổng Vùng Safari",
+     "Vào Safari",
+     "Chụp ảnh bình minh",
+     "Chụp ảnh trong mưa",
+     "Đàn Tauros hoảng loạn",
+     "Rửa ảnh"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 24,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Saffron và Vùng Safari",
+    "diaDanh": "Fuchsia",
+    "cap": 41,
+    "tomTat": "Bờ biển Fuchsia và Gym của Gengar, đầy tường ẩn và trò bịp.",
+    "buoc": [
+     "Bờ biển Fuchsia",
+     "Luyện mắt với bóng ma",
+     "Đèn lồng soi tường giả",
+     "Lối đi bí mật",
+     "Câu hỏi của bóng tối",
+     "Giành Huy hiệu Linh Hồn"
+    ],
+    "huyHieu": "Huy hiệu Linh Hồn (Fuchsia)"
+   },
+   {
+    "so": 25,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đảo lửa Cinnabar",
+    "diaDanh": "Cinnabar",
+    "cap": 42,
+    "tomTat": "Chuyến đò ra đảo Cinnabar cùng Lapras, người đã lành vết thương.",
+    "buoc": [
+     "Chuyến đò ra đảo",
+     "Lapras trở lại",
+     "Câu cá trước chuyến đò",
+     "Quái biển chặn đường",
+     "Cập đảo Cinnabar",
+     "Sinh vật trên đảo lửa"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 26,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đảo lửa Cinnabar",
+    "diaDanh": "Cinnabar",
+    "cap": 44,
+    "tomTat": "Phòng thí nghiệm bỏ hoang trên đảo giữ nhật ký về nguồn gốc mảnh sao.",
+    "buoc": [
+     "Phòng thí nghiệm hoang",
+     "Trang nhật ký thứ nhất",
+     "Trang nhật ký giấu kín",
+     "Kẻ canh phòng thí nghiệm",
+     "Mật mã của nhà nghiên cứu",
+     "Trang cuối cùng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 27,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đảo lửa Cinnabar",
+    "diaDanh": "Cinnabar",
+    "cap": 46,
+    "tomTat": "Núi lửa Cinnabar phun trào. Phải sơ tán dân đảo và thắng Gym Lửa.",
+    "buoc": [
+     "Núi lửa thức giấc",
+     "Sơ tán dân đảo",
+     "Chặn dòng quái lửa",
+     "Lên miệng núi lửa",
+     "Rút mảnh sao đen",
+     "Gym giữa tro bụi",
+     "Giành Huy hiệu Núi Lửa"
+    ],
+    "huyHieu": "Huy hiệu Núi Lửa (Cinnabar)"
+   },
+   {
+    "so": 28,
+    "nam": 1,
+    "vung": "Kanto",
+    "cung": "Đảo lửa Cinnabar",
+    "diaDanh": "Viridian",
+    "cap": 48,
+    "tomTat": "Trở về Viridian. Gym cuối cùng của Kanto có một bí mật.",
+    "buoc": [
+     "Gym bị đóng cửa",
+     "Đường về Viridian",
+     "Lính gác Arcanine",
+     "Thử lửa ở đấu trường",
+     "Giành Huy hiệu Đất",
+     "Gió mới phương tây"
+    ],
+    "huyHieu": "Huy hiệu Đất (Viridian)"
+   },
+   {
+    "so": 29,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Gió mới New Bark",
+    "diaDanh": "New Bark",
+    "cap": 49,
+    "tomTat": "Đặt chân đến Johto ở thị trấn New Bark lộng gió.",
+    "buoc": [
+     "Gió mới New Bark",
+     "Natu tò mò",
+     "Làm quen Johto",
+     "Gió đổi chiều",
+     "Ngọn đồi lộng gió",
+     "Hướng về Tháp Sprout"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 30,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Gió mới New Bark",
+    "diaDanh": "Cherrygrove",
+    "cap": 51,
+    "tomTat": "Cherrygrove mùa hoa anh đào. Một cụ Pokémon dẫn đường đang lạc chính mình.",
+    "buoc": [
+     "Hoa anh đào Cherrygrove",
+     "Tìm ông lão dẫn đường",
+     "Dẫn người dẫn đường",
+     "Chiều bên hồ",
+     "Chuyện của ông lão",
+     "Dưới gốc anh đào già"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 31,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Gió mới New Bark",
+    "diaDanh": "Violet",
+    "cap": 53,
+    "tomTat": "Tháp Sprout ở Violet, nơi các Bellsprout thiền định. Gym Bay đang chờ.",
+    "buoc": [
+     "Tháp gỗ đung đưa",
+     "Bài thiền thứ nhất",
+     "Kẻ phá rối tầng hai",
+     "Honchkrow trên đỉnh tháp",
+     "Trước Gym Violet",
+     "Giành Huy hiệu Gió"
+    ],
+    "huyHieu": "Huy hiệu Gió (Violet)"
+   },
+   {
+    "so": 32,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Gió mới New Bark",
+    "diaDanh": "Violet",
+    "cap": 54,
+    "tomTat": "Cánh đồng phía tây Violet có tàn tích cổ khắc chữ Unown.",
+    "buoc": [
+     "Tàn tích phía tây",
+     "Cánh đồng gió",
+     "Phiến đá rơi vãi",
+     "Chữ viết sống",
+     "Đêm trăng ở tàn tích",
+     "Kẻ ngủ dưới trăng non"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 33,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rừng Ilex và Azalea",
+    "diaDanh": "Azalea",
+    "cap": 55,
+    "tomTat": "Giếng Slowpoke ở Azalea: Đoàn Mặt Nạ Tím bắt Slowpoke để lấy giấc mơ của chúng.",
+    "buoc": [
+     "Azalea vắng Slowpoke",
+     "Miệng giếng",
+     "Lính canh dưới giếng",
+     "Murkrow lần thứ tư",
+     "Số phận của Murkrow",
+     "Heracross giữ Gym",
+     "Giành Huy hiệu Tổ Ong"
+    ],
+    "huyHieu": "Huy hiệu Tổ Ong (Azalea)"
+   },
+   {
+    "so": 34,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rừng Ilex và Azalea",
+    "diaDanh": "Rừng Ilex",
+    "cap": 57,
+    "tomTat": "Lạc trong Rừng Ilex, nơi cây nào cũng giống cây nào.",
+    "buoc": [
+     "Rừng không lối ra",
+     "Cành hành thơm",
+     "Rừng nổi giận",
+     "Ngã ba cây cổ thụ",
+     "Gieo lại cho rừng",
+     "Lão Torkoal ra khỏi rừng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 35,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rừng Ilex và Azalea",
+    "diaDanh": "Rừng Ilex",
+    "cap": 59,
+    "tomTat": "Đền thờ Celebi trong Rừng Ilex cho bạn thấy quá khứ một nghìn năm.",
+    "buoc": [
+     "Đền thờ trong rừng",
+     "Lễ vật cho đền",
+     "Trước điện thờ",
+     "Ánh xanh lúc bình minh",
+     "Giấc mơ nghìn năm",
+     "Truyền thuyết trăng non"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 36,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rừng Ilex và Azalea",
+    "diaDanh": "Goldenrod",
+    "cap": 61,
+    "tomTat": "Phố lớn Goldenrod với tháp radio và Gym của Tauros.",
+    "buoc": [
+     "Phố lớn Goldenrod",
+     "Hội chợ Goldenrod",
+     "Đường đua thành phố",
+     "Gánh hàng rong",
+     "Tauros bán sữa",
+     "Giành Huy hiệu Đồng Bằng",
+     "Bài hát ru trên radio"
+    ],
+    "huyHieu": "Huy hiệu Đồng Bằng (Goldenrod)"
+   },
+   {
+    "so": 37,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Tháp chuông Ecruteak",
+    "diaDanh": "Ecruteak",
+    "cap": 62,
+    "tomTat": "Tháp Chuông Ecruteak, nơi Ho-Oh từng đậu. Gym Ma của Dusknoir.",
+    "buoc": [
+     "Thành phố của truyền thống",
+     "Trà dâng tháp",
+     "Bậc thang thứ chín",
+     "Bóng cầu vồng",
+     "Hồn ma quanh tháp",
+     "Giành Huy hiệu Sương"
+    ],
+    "huyHieu": "Huy hiệu Sương (Ecruteak)"
+   },
+   {
+    "so": 38,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Tháp chuông Ecruteak",
+    "diaDanh": "Ecruteak",
+    "cap": 64,
+    "tomTat": "Tháp Cháy, nơi ba huyền thoại Entei, Raikou, Suicune từng ngủ.",
+    "buoc": [
+     "Toà tháp bị lửa thiêu",
+     "Tầng hầm Tháp Cháy",
+     "Than hồng còn ấm",
+     "Lũ quái bị đánh thức",
+     "Bóng lửa Entei",
+     "Hướng về Núi Silver"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 39,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Tháp chuông Ecruteak",
+    "diaDanh": "Olivine",
+    "cap": 66,
+    "tomTat": "Ngọn hải đăng Olivine tắt vì Ampharos bị ốm. Gym Thép của Aegislash.",
+    "buoc": [
+     "Hải đăng tắt đèn",
+     "Tấm phản quang",
+     "Đỉnh hải đăng",
+     "Quái quấy hải đăng",
+     "Giáp thép cho Gym Thép",
+     "Giành Huy hiệu Khoáng"
+    ],
+    "huyHieu": "Huy hiệu Khoáng (Olivine)"
+   },
+   {
+    "so": 40,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Tháp chuông Ecruteak",
+    "diaDanh": "Cianwood",
+    "cap": 68,
+    "tomTat": "Vượt biển sang Cianwood tìm thuốc cho Ampharos. Gym Giác đấu của Crabrawler.",
+    "buoc": [
+     "Thuốc từ Cianwood",
+     "Vượt biển",
+     "Nguyên liệu thuốc",
+     "Giành Huy hiệu Bão",
+     "Mang thuốc qua biển",
+     "Hải đăng sáng lại"
+    ],
+    "huyHieu": "Huy hiệu Bão (Cianwood)"
+   },
+   {
+    "so": 41,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Hồ Phẫn Nộ",
+    "diaDanh": "Mahogany",
+    "cap": 69,
+    "tomTat": "Mahogany đầy tin đồn: cửa hàng lưu niệm có tầng hầm bí mật.",
+    "buoc": [
+     "Tin đồn ở Mahogany",
+     "Hỏi thăm Kecleon",
+     "Rình cửa hàng",
+     "Kẻ canh hầm",
+     "Cuộn băng bí mật",
+     "Báo tin"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 42,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Hồ Phẫn Nộ",
+    "diaDanh": "Hồ Phẫn Nộ",
+    "cap": 71,
+    "tomTat": "Mặt Hồ Phẫn Nộ đỏ rực. Một Gyarados đỏ khổng lồ quẫy sóng.",
+    "buoc": [
+     "Mặt hồ đỏ rực",
+     "Bờ Hồ Phẫn Nộ",
+     "Sóng quái",
+     "Gyarados đỏ",
+     "Câu dưới đáy hồ",
+     "Góc mảnh sao bị cắt"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 43,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Hồ Phẫn Nộ",
+    "diaDanh": "Hang Tối",
+    "cap": 73,
+    "tomTat": "Hang Tối không một tia sáng. Có những Pokémon nhỏ bị lạc bên trong.",
+    "buoc": [
+     "Hang Tối",
+     "Chiếc đèn soi hang",
+     "Vào Hang Tối",
+     "Kẻ rình trong bóng tối",
+     "Dẫn lũ trẻ ra",
+     "Tấm bản đồ ở cuối hang"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 44,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Hồ Phẫn Nộ",
+    "diaDanh": "Mahogany",
+    "cap": 75,
+    "tomTat": "Căn cứ dưới lòng Mahogany phát sóng ác mộng khắp Johto. Gym Băng của Abomasnow.",
+    "buoc": [
+     "Sóng radio lạ",
+     "Lối vào căn cứ",
+     "Khoá cửa phòng phát",
+     "Honchkrow ở trạm phát",
+     "Tắt trạm phát",
+     "Giành Huy hiệu Băng"
+    ],
+    "huyHieu": "Huy hiệu Băng (Mahogany)"
+   },
+   {
+    "so": 45,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rồng Blackthorn",
+    "diaDanh": "Blackthorn",
+    "cap": 76,
+    "tomTat": "Blackthorn, ngôi làng của rồng, nơi các già làng giữ lời thề cổ.",
+    "buoc": [
+     "Ngôi làng của rồng",
+     "Bảo vệ làng rồng",
+     "Dạy dỗ lớp trẻ",
+     "Vảy rồng rụng",
+     "Gặp già làng",
+     "Ngọc hệ của rồng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 46,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rồng Blackthorn",
+    "diaDanh": "Hang Salamence",
+    "cap": 78,
+    "tomTat": "Hang Salamence. Đoàn Mặt Nạ Tím cố đánh thức Salamence bằng mảnh sao.",
+    "buoc": [
+     "Hang Salamence",
+     "Vào hang rồng",
+     "Quái trong hang rồng",
+     "Cùng nhau mạnh hơn",
+     "Alpha canh rồng ngủ",
+     "Rồng tỉnh dậy"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 47,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rồng Blackthorn",
+    "diaDanh": "Tổ Zapdos",
+    "cap": 81,
+    "tomTat": "Tổ Zapdos. Đoàn Mặt Nạ Tím ép Zapdos phóng sấm phá cổng đền rồng.",
+    "buoc": [
+     "Bão sét trên núi",
+     "Lên Tổ Zapdos",
+     "Chạy giữa bão sét",
+     "Phá cột neo xích",
+     "Zapdos hoảng loạn",
+     "Cổng đền bị nứt"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 48,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Rồng Blackthorn",
+    "diaDanh": "Blackthorn",
+    "cap": 83,
+    "tomTat": "Đền rồng Blackthorn. Lời thề cổ và trận Gym thứ mười sáu với Salamence.",
+    "buoc": [
+     "Lời thề ở đền rồng",
+     "Câu hỏi của rồng",
+     "Lời thề",
+     "Thử thách của đền",
+     "Trước trận cuối",
+     "Giành Huy hiệu Rồng"
+    ],
+    "huyHieu": "Huy hiệu Rồng (Blackthorn)"
+   },
+   {
+    "so": 49,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Đường Victory",
+    "diaDanh": "Đường Victory",
+    "cap": 84,
+    "tomTat": "Đường Victory, con đường chỉ dành cho người có đủ mười sáu huy hiệu.",
+    "buoc": [
+     "Cổng Đường Victory",
+     "Trang bị cho đường dài",
+     "Bước vào Đường Victory",
+     "Đối thủ trong bóng tối",
+     "Trận cuối với Lém",
+     "Sẵn sàng cho Cao nguyên"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 50,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Đường Victory",
+    "diaDanh": "Cao nguyên Indigo",
+    "cap": 86,
+    "tomTat": "Cao nguyên Indigo, nơi Hội đồng Tứ Kỳ và Nhà vô địch chờ thách thức.",
+    "buoc": [
+     "Cao nguyên Indigo",
+     "Sảnh đường Indigo",
+     "Tứ Kỳ thứ nhất: Băng",
+     "Tứ Kỳ thứ hai: Giác đấu",
+     "Tứ Kỳ thứ ba: Ma",
+     "Tứ Kỳ thứ tư: Rồng",
+     "Nhà vô địch"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 51,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Đường Victory",
+    "diaDanh": "Núi Silver",
+    "cap": 88,
+    "tomTat": "Leo Núi Silver giữa bão tuyết tím. Honchkrow chặn đường lần cuối.",
+    "buoc": [
+     "Chân núi Silver",
+     "Chân núi phủ tuyết",
+     "Quái trong bão tuyết",
+     "Dấu chân trong tuyết",
+     "Lên Núi Silver",
+     "Honchkrow lần cuối",
+     "Đỉnh Núi Silver"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 52,
+    "nam": 1,
+    "vung": "Johto",
+    "cung": "Đường Victory",
+    "diaDanh": "Núi Silver",
+    "cap": 90,
+    "tomTat": "Đỉnh Núi Silver. Darkrai, Entei thức giấc, và lựa chọn của bạn.",
+    "buoc": [
+     "Huyền thoại thức tỉnh",
+     "Lời của Darkrai",
+     "Entei thức giấc",
+     "Bóng của ác mộng",
+     "Darkrai",
+     "Lựa chọn trên đỉnh núi",
+     "Vùng đất phía nam"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 53,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đất liền Hoenn",
+    "diaDanh": "Bến Littleroot",
+    "cap": 91,
+    "tomTat": "Bạn cập bến Littleroot, quê nhà mà bạn vừa nhớ lại.",
+    "buoc": [
+     "Về quê",
+     "Bến Littleroot",
+     "Lá thư trong nhà cũ",
+     "Quái vùng biển Hoenn",
+     "Xatu ở Hoenn"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 54,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đất liền Hoenn",
+    "diaDanh": "Rừng Petalburg",
+    "cap": 91,
+    "tomTat": "Rừng Petalburg rậm rạp. Đoàn Dung Nham đang chặt cây tìm mảnh sao.",
+    "buoc": [
+     "Rừng Petalburg",
+     "Kẻ chặt cây",
+     "Đoàn Dung Nham",
+     "Trồng lại rừng",
+     "Đoàn Dung Nham"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 55,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đất liền Hoenn",
+    "diaDanh": "Đá Rustboro",
+    "cap": 91,
+    "tomTat": "Thành phố đá Rustboro, nơi có tập đoàn chế tạo lớn nhất Hoenn.",
+    "buoc": [
+     "Đá Rustboro",
+     "Rèn bằng đá Hoenn",
+     "Đỉnh cao nghề rèn",
+     "Bản thiết kế bị đánh cắp",
+     "Hai đoàn đối đầu"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 56,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đất liền Hoenn",
+    "diaDanh": "Hang Granite",
+    "cap": 91,
+    "tomTat": "Hang Granite tối tăm, nơi khắc bích hoạ về Groudon và Kyogre.",
+    "buoc": [
+     "Hang Granite",
+     "Vào hang",
+     "Quái trong hang",
+     "Bích hoạ cổ",
+     "Lời của ông"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 57,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển nóng Slateport",
+    "diaDanh": "Chợ cảng Slateport",
+    "cap": 92,
+    "tomTat": "Chợ cảng Slateport ồn ào, Đoàn Thuỷ Triều trà trộn trong đám đông.",
+    "buoc": [
+     "Chợ cảng Slateport",
+     "Phiên chợ phương nam",
+     "Khách đeo khăn xanh",
+     "Sharpedo khăn xanh",
+     "Cầu tàu"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 58,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển nóng Slateport",
+    "diaDanh": "Bảo tàng biển",
+    "cap": 92,
+    "tomTat": "Bảo tàng biển Slateport trưng bày mảnh sao từ đáy đại dương.",
+    "buoc": [
+     "Bảo tàng biển",
+     "Sinh vật biển sâu",
+     "Kẻ đột nhập",
+     "Vỏ sò biết hát",
+     "Tiếng gọi của biển"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 59,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển nóng Slateport",
+    "diaDanh": "Đường cát Route 111",
+    "cap": 92,
+    "tomTat": "Đường cát Route 111, bão cát và tàn tích sa mạc.",
+    "buoc": [
+     "Đường cát",
+     "Bóng trong bão cát",
+     "Đào tàn tích",
+     "Kẻ canh tàn tích",
+     "Ba người khổng lồ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 60,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển nóng Slateport",
+    "diaDanh": "Thị trấn Mauville",
+    "cap": 92,
+    "tomTat": "Thị trấn Mauville, nơi điện sáng suốt đêm.",
+    "buoc": [
+     "Thị trấn Mauville",
+     "Sòng đố vui",
+     "Đường đua Mauville",
+     "Điện chập chờn",
+     "Tín hiệu radio"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 61,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Núi lửa Chimney",
+    "diaDanh": "Suối nóng Lavaridge",
+    "cap": 93,
+    "tomTat": "Suối nóng Lavaridge dưới chân Núi Chimney.",
+    "buoc": [
+     "Suối nóng",
+     "Bánh Lava",
+     "Bánh cho ông",
+     "Quái suối nóng",
+     "Suối sôi"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 62,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Núi lửa Chimney",
+    "diaDanh": "Miệng núi Chimney",
+    "cap": 93,
+    "tomTat": "Miệng núi Chimney: Đoàn Dung Nham cắm mảnh sao lửa vào núi.",
+    "buoc": [
+     "Leo Núi Chimney",
+     "Leo trong khói",
+     "Camerupt Lớn",
+     "Mảnh sao lửa",
+     "Một mảnh nữa"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 63,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Núi lửa Chimney",
+    "diaDanh": "Sa mạc gió",
+    "cap": 93,
+    "tomTat": "Sa mạc gió, nơi Đoàn Thuỷ Triều tìm lối xuống mạch nước ngầm.",
+    "buoc": [
+     "Sa mạc gió",
+     "Tìm mạch nước",
+     "Đoàn Thuỷ Triều",
+     "Sa mạc ảo ảnh",
+     "Sootopolis"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 64,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Núi lửa Chimney",
+    "diaDanh": "Huy hiệu Nhiệt",
+    "cap": 93,
+    "tomTat": "Huy hiệu Nhiệt: thử thách Gym lửa đầu tiên của Hoenn.",
+    "buoc": [
+     "Gym Lavaridge",
+     "Khởi động",
+     "Giáp chịu nhiệt",
+     "Huy hiệu Nhiệt",
+     "Thư cho anh trai"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 65,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Bầu trời Fortree",
+    "diaDanh": "Nhà trên cây Fortree",
+    "cap": 94,
+    "tomTat": "Nhà trên cây Fortree, thành phố giữa tán rừng.",
+    "buoc": [
+     "Fortree",
+     "Cầu treo",
+     "Kecleon vô hình",
+     "Đuổi kẻ truy đuổi",
+     "Bí mật Viện Thời tiết"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 66,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Bầu trời Fortree",
+    "diaDanh": "Viện Thời tiết",
+    "cap": 94,
+    "tomTat": "Viện Thời tiết, nơi điều khiển thời tiết Hoenn.",
+    "buoc": [
+     "Viện Thời tiết",
+     "Mưa bất thường",
+     "Chiếm lại tháp",
+     "Máy thời tiết",
+     "Mưa vô tận"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 67,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Bầu trời Fortree",
+    "diaDanh": "Cánh rừng mưa",
+    "cap": 94,
+    "tomTat": "Cánh rừng mưa ở Fortree, nơi Pokémon cỏ hồi sinh nhờ mưa.",
+    "buoc": [
+     "Rừng mưa",
+     "Hạt giống rừng mưa",
+     "Quái rừng mưa",
+     "Trứng trong mưa",
+     "Lời của Tropius"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 68,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Bầu trời Fortree",
+    "diaDanh": "Huy hiệu Lông Vũ",
+    "cap": 94,
+    "tomTat": "Huy hiệu Lông Vũ: Gym Bay của Fortree.",
+    "buoc": [
+     "Gym Fortree",
+     "Đường bay",
+     "Thử thách bay",
+     "Huy hiệu Lông Vũ",
+     "Tới Lilycove"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 69,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển sâu Lilycove",
+    "diaDanh": "Cửa hàng Lilycove",
+    "cap": 95,
+    "tomTat": "Cửa hàng bách hoá Lilycove, nơi mọi thứ đều có bán, kể cả tin tức.",
+    "buoc": [
+     "Lilycove",
+     "Kinh doanh",
+     "Kẹo cho tin",
+     "Kẻ theo dõi",
+     "Hang biển"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 70,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển sâu Lilycove",
+    "diaDanh": "Núi Pyre",
+    "cap": 95,
+    "tomTat": "Núi Pyre, ngọn núi linh hồn, nơi giữ hai viên ngọc đỏ và lam.",
+    "buoc": [
+     "Núi Pyre",
+     "Linh hồn trong sương",
+     "Linh hồn hoảng loạn",
+     "Đỉnh núi",
+     "Hai viên ngọc"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 71,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển sâu Lilycove",
+    "diaDanh": "Đảo Mossdeep",
+    "cap": 95,
+    "tomTat": "Đảo Mossdeep, trung tâm vũ trụ của Hoenn.",
+    "buoc": [
+     "Mossdeep",
+     "Mẫu mảnh sao",
+     "Bầu trời Mossdeep",
+     "Kẻ phá trạm",
+     "Nguồn gốc ngôi sao"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 72,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Biển sâu Lilycove",
+    "diaDanh": "Hang dưới biển",
+    "cap": 95,
+    "tomTat": "Hang dưới biển: căn cứ của Đoàn Thuỷ Triều.",
+    "buoc": [
+     "Lặn xuống biển",
+     "Ngọc trai đáy biển",
+     "Căn cứ dưới biển",
+     "Sharpedo Lớn",
+     "Biển dâng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 73,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Thức tỉnh Kyogre và Groudon",
+    "diaDanh": "Thành phố Sootopolis",
+    "cap": 96,
+    "tomTat": "Sootopolis, thành phố trong miệng núi lửa cổ.",
+    "buoc": [
+     "Sootopolis",
+     "Sơ tán",
+     "Giữ thành phố",
+     "Cùng nhau giữ thành phố",
+     "Hai gã khổng lồ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 74,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Thức tỉnh Kyogre và Groudon",
+    "diaDanh": "Cave of Origin",
+    "cap": 96,
+    "tomTat": "Cave of Origin, nơi hai gã khổng lồ sinh ra.",
+    "buoc": [
+     "Hang khởi nguyên",
+     "Vào hang",
+     "Quái khởi nguyên",
+     "Darkrai trở lại",
+     "Ru giấc khổng lồ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 75,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Thức tỉnh Kyogre và Groudon",
+    "diaDanh": "Cơn mưa vô tận",
+    "cap": 96,
+    "tomTat": "Cơn mưa vô tận: Kyogre phủ mưa khắp Hoenn.",
+    "buoc": [
+     "Mưa vô tận",
+     "Bản đồ mưa",
+     "Lương thực",
+     "Lũ quái theo mưa",
+     "Hướng tháp"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 76,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Thức tỉnh Kyogre và Groudon",
+    "diaDanh": "Hạn hán vô tận",
+    "cap": 96,
+    "tomTat": "Hạn hán vô tận: Groudon làm khô cạn đất liền.",
+    "buoc": [
+     "Hạn hán",
+     "Cứu vườn",
+     "Quái đất nóng",
+     "Quả cho Trung tâm",
+     "Chiếc sáo cổ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 77,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Tháp trời",
+    "diaDanh": "Tháp Sky Pillar",
+    "cap": 97,
+    "tomTat": "Tháp Sky Pillar, nơi mẹ bạn từng canh giữ.",
+    "buoc": [
+     "Chân tháp trời",
+     "Leo tháp",
+     "Canh giữ tháp",
+     "Chữ của mẹ",
+     "Lên đỉnh"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 78,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Tháp trời",
+    "diaDanh": "Rayquaza giáng thế",
+    "cap": 97,
+    "tomTat": "Rayquaza giáng thế khi tiếng sáo vang lên.",
+    "buoc": [
+     "Đỉnh tháp",
+     "Rayquaza giáng thế",
+     "Lời của Rayquaza",
+     "Ngôi sao cuối cùng",
+     "Mẹ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 79,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Tháp trời",
+    "diaDanh": "Vùng trời yên bình",
+    "cap": 97,
+    "tomTat": "Vùng trời yên bình sau khi Rayquaza ngăn hai gã khổng lồ.",
+    "buoc": [
+     "Bầu trời trong",
+     "Dọn hậu quả",
+     "Đoàn Dung Nham giải tán",
+     "Trồng rừng ven biển",
+     "Học trò"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 80,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Tháp trời",
+    "diaDanh": "Ngày hội Hoenn",
+    "cap": 97,
+    "tomTat": "Ngày hội Hoenn mừng bình yên trở lại.",
+    "buoc": [
+     "Ngày hội",
+     "Bánh ngày hội",
+     "Đua ngày hội",
+     "Đố vui ngày hội",
+     "Thư mời"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 81,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Liên minh Hoenn",
+    "diaDanh": "Đường Victory Hoenn",
+    "cap": 98,
+    "tomTat": "Đường Victory Hoenn: hang cát dài nhất vùng, cửa ải cuối trước Liên minh.",
+    "buoc": [
+     "Cửa ải cuối",
+     "Hang cát",
+     "Người gác hang",
+     "Vượt hang trong giờ",
+     "Cửa Liên minh"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 82,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Liên minh Hoenn",
+    "diaDanh": "Hội đồng Tứ Kỳ 1",
+    "cap": 98,
+    "tomTat": "Sảnh Liên minh Hoenn. Người thứ nhất trong Tứ Kỳ dùng Pokémon bóng tối.",
+    "buoc": [
+     "Lính gác Liên minh",
+     "Sân đấu thứ nhất",
+     "Đội hình bóng tối",
+     "Luyện tay",
+     "Cửa thứ hai"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 83,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Liên minh Hoenn",
+    "diaDanh": "Hội đồng Tứ Kỳ 2",
+    "cap": 98,
+    "tomTat": "Sân đấu thứ hai và thứ ba của Tứ Kỳ: ma và băng.",
+    "buoc": [
+     "Hồi phục giữa trận",
+     "Sân đấu thứ hai",
+     "Ma và băng",
+     "Cùng đồng đội",
+     "Trước cửa rồng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 84,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Liên minh Hoenn",
+    "diaDanh": "Nhà vô địch",
+    "cap": 98,
+    "tomTat": "Sảnh Nhà vô địch. Người giữ ngôi là một huấn luyện viên rồng đá.",
+    "buoc": [
+     "Trận cuối",
+     "Giữa sân vô địch",
+     "Đội hình nhà vô địch",
+     "Giữ ngôi",
+     "Nhà vô địch mới"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 85,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Vùng chiến đấu",
+    "diaDanh": "Tháp Battle",
+    "cap": 99,
+    "tomTat": "Tháp Battle ở Ever Grande: mỗi tầng một đối thủ, không được nghỉ.",
+    "buoc": [
+     "Tháp Battle",
+     "Cổng tháp",
+     "Mười tầng đầu",
+     "Chủ tháp",
+     "Biểu tượng Tháp"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 86,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Vùng chiến đấu",
+    "diaDanh": "Cung điện Battle",
+    "cap": 99,
+    "tomTat": "Cung điện Battle ở Lilycove: Pokémon tự chọn chiêu, người chỉ được cổ vũ.",
+    "buoc": [
+     "Cung điện",
+     "Sảnh cung điện",
+     "Đấu theo bản năng",
+     "Bánh cho đội",
+     "Biểu tượng Cung"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 87,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Vùng chiến đấu",
+    "diaDanh": "Mái vòm Battle",
+    "cap": 99,
+    "tomTat": "Mái vòm Battle ở chợ cảng Slateport: đấu loại trực tiếp trước đám đông.",
+    "buoc": [
+     "Mái vòm",
+     "Sàn đấu mái vòm",
+     "Vòng loại",
+     "Chung kết mái vòm",
+     "Đường vào sa mạc"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 88,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Vùng chiến đấu",
+    "diaDanh": "Kim tự tháp Battle",
+    "cap": 99,
+    "tomTat": "Kim tự tháp Battle chôn giữa Sa mạc Route 111. Trong tối, không ai biết mình đánh với gì.",
+    "buoc": [
+     "Kim tự tháp",
+     "Đào lối vào",
+     "Trong bóng tối",
+     "Bóng trong bão",
+     "Biểu tượng cuối"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 89,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đảo Navel và Faraway",
+    "diaDanh": "Đảo Navel",
+    "cap": 100,
+    "tomTat": "Đảo Navel: hòn đảo đá giữa Biển Route 131, nơi có tiếng gọi lúc nửa đêm.",
+    "buoc": [
+     "Ra khơi",
+     "Bãi đá Navel",
+     "Chủ đảo",
+     "Tiếng hót nửa đêm",
+     "Hai chiếc lông"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 90,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đảo Navel và Faraway",
+    "diaDanh": "Đảo Faraway",
+    "cap": 100,
+    "tomTat": "Đảo Faraway: cỏ cao bất thường, như có ai đó tàng hình đi qua.",
+    "buoc": [
+     "Đảo Faraway",
+     "Đảo cát",
+     "Câu ven đảo",
+     "Bảo vệ đảo",
+     "Dấu chân mèo"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 91,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đảo Navel và Faraway",
+    "diaDanh": "Đảo Birth",
+    "cap": 100,
+    "tomTat": "Đảo Birth gần Mossdeep: một khối tam giác đá rơi từ trời.",
+    "buoc": [
+     "Khối tam giác",
+     "Bãi đá",
+     "Ngọc trai ven bờ",
+     "Kẻ canh khối đá",
+     "Dữ liệu vũ trụ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 92,
+    "nam": 2,
+    "vung": "Hoenn",
+    "cung": "Đảo Navel và Faraway",
+    "diaDanh": "Đảo Southern",
+    "cap": 100,
+    "tomTat": "Đảo Southern ở cuối Biển Route 131: nơi hai chú rồng đỏ xanh làm tổ.",
+    "buoc": [
+     "Đảo Southern",
+     "Bia đảo",
+     "Sóng dữ",
+     "Vườn cho rồng",
+     "Ba vùng"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 93,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Kết nối ba vùng",
+    "diaDanh": "Cầu nối Kanto",
+    "cap": 100,
+    "tomTat": "Cầu nối Kanto: tàu từ Cinnabar giờ chạy thẳng tới Littleroot mỗi ngày.",
+    "buoc": [
+     "Tuyến tàu mới",
+     "Cầu tàu Littleroot",
+     "Hướng dẫn người mới",
+     "Dọn đường cho khách",
+     "Thư từ Johto"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 94,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Kết nối ba vùng",
+    "diaDanh": "Cầu nối Johto",
+    "cap": 100,
+    "tomTat": "Cầu nối Johto: thương thuyền Olivine cập cảng Slateport.",
+    "buoc": [
+     "Thương thuyền",
+     "Bến hàng",
+     "Mở hàng",
+     "Kẻ trộm hàng",
+     "Quả trứng lạ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 95,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Kết nối ba vùng",
+    "diaDanh": "Cầu nối Hoenn",
+    "cap": 100,
+    "tomTat": "Cầu nối Hoenn: Ever Grande dựng cổng chào cho Đại hội ba vùng.",
+    "buoc": [
+     "Cổng chào",
+     "Chợ lễ hội",
+     "Quả trứng Johto",
+     "Giữ trật tự",
+     "Đại hội"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 96,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Kết nối ba vùng",
+    "diaDanh": "Đại hội ba vùng",
+    "cap": 100,
+    "tomTat": "Đại hội ba vùng ở Liên minh Hoenn.",
+    "buoc": [
+     "Lễ khai mạc",
+     "Sân đấu thứ nhất",
+     "Đấu giao hữu",
+     "Trận biểu diễn",
+     "Mùa giải"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 97,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Mùa giải huyền thoại",
+    "diaDanh": "Mùa giải 1",
+    "cap": 100,
+    "tomTat": "Mùa giải huyền thoại, chặng 1: Thác Meteor.",
+    "buoc": [
+     "Chặng 1",
+     "Chân thác",
+     "Câu dưới thác",
+     "Rồng con",
+     "Chặng 2"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 98,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Mùa giải huyền thoại",
+    "diaDanh": "Mùa giải 2",
+    "cap": 100,
+    "tomTat": "Mùa giải huyền thoại, chặng 2: Núi Chimney.",
+    "buoc": [
+     "Chặng 2",
+     "Cáp treo cũ",
+     "Hơi nóng",
+     "Leo núi lửa",
+     "Chặng 3"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 99,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Mùa giải huyền thoại",
+    "diaDanh": "Mùa giải 3",
+    "cap": 100,
+    "tomTat": "Mùa giải huyền thoại, chặng 3: Hang Khởi Nguyên.",
+    "buoc": [
+     "Chặng 3",
+     "Bờ hồ sâu",
+     "Người gác",
+     "Giữ giấc ngủ",
+     "Chung kết"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 100,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Mùa giải huyền thoại",
+    "diaDanh": "Chung kết",
+    "cap": 100,
+    "tomTat": "Chung kết mùa giải huyền thoại ở Sảnh Nhà vô địch.",
+    "buoc": [
+     "Chung kết",
+     "Sân chung kết",
+     "Đối thủ chung kết",
+     "Chiếc cúp",
+     "Lá thư lạ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 101,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Khúc vĩ thanh",
+    "diaDanh": "Lời mời mới",
+    "cap": 100,
+    "tomTat": "Lời mời mới: lá thư gửi từ Sinnoh.",
+    "buoc": [
+     "Lá thư",
+     "Thư của mẹ",
+     "Gửi lời chào",
+     "Luyện tập",
+     "Bản đồ cổ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 102,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Khúc vĩ thanh",
+    "diaDanh": "Tấm bản đồ cổ",
+    "cap": 100,
+    "tomTat": "Tấm bản đồ cổ trong Hang Granite.",
+    "buoc": [
+     "Bức vẽ cổ",
+     "Đào tìm bản đồ",
+     "Người giữ hang",
+     "Câu đố trên bản đồ",
+     "Bờ biển lạ"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 103,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Khúc vĩ thanh",
+    "diaDanh": "Bờ biển lạ",
+    "cap": 100,
+    "tomTat": "Bờ biển lạ ở Dewford: sóng đánh dạt vào một chiếc thuyền không người lái.",
+    "buoc": [
+     "Chiếc thuyền",
+     "Bãi cát Dewford",
+     "Khách không mời",
+     "Sổ tay thuyền trưởng",
+     "Chân trời"
+    ],
+    "huyHieu": ""
+   },
+   {
+    "so": 104,
+    "nam": 2,
+    "vung": "Liên vùng",
+    "cung": "Khúc vĩ thanh",
+    "diaDanh": "Chân trời Sinnoh",
+    "cap": 100,
+    "tomTat": "Chân trời Sinnoh: từ Đỉnh Tháp Trời nhìn thấy vùng đất phía bắc.",
+    "buoc": [
+     "Đỉnh tháp",
+     "Nơi Rayquaza ngủ",
+     "Thử thách cuối",
+     "Tiễn biệt",
+     "Khúc vĩ thanh"
+    ],
+    "huyHieu": ""
+   }
+  ],
+  "chuoiPhu": [
+   {
+    "noi": "Pallet",
+    "ten": "Pichu sợ sấm",
+    "nhanVat": "Pichu",
+    "capTu": 1,
+    "capDen": 5,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Pallet",
+    "ten": "Lá thư gửi nhầm",
+    "nhanVat": "Luvdisc",
+    "capTu": 3,
+    "capDen": 6,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Pallet",
+    "ten": "Công thức thất lạc",
+    "nhanVat": "Munchlax",
+    "capTu": 5,
+    "capDen": 8,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Pallet",
+    "ten": "Quả trứng lạc",
+    "nhanVat": "Togepi",
+    "capTu": 7,
+    "capDen": 10,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Viridian",
+    "ten": "Trinh sát Viridian",
+    "nhanVat": "Sentret",
+    "capTu": 5,
+    "capDen": 9,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Viridian",
+    "ten": "Con cá khổng lồ",
+    "nhanVat": "Remoraid",
+    "capTu": 7,
+    "capDen": 10,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Viridian",
+    "ten": "Kho báu dưới gốc cây",
+    "nhanVat": "Sandshrew",
+    "capTu": 9,
+    "capDen": 12,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Viridian",
+    "ten": "Giấc mơ của Caterpie",
+    "nhanVat": "Caterpie",
+    "capTu": 8,
+    "capDen": 11,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Viridian",
+    "ten": "Cuộc thi ảnh",
+    "nhanVat": "Smeargle",
+    "capTu": 10,
+    "capDen": 13,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Viridian",
+    "ten": "Người gác đêm",
+    "nhanVat": "Hoothoot",
+    "capTu": 12,
+    "capDen": 15,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Pewter",
+    "ten": "Hòn đá muốn nổi tiếng",
+    "nhanVat": "Geodude",
+    "capTu": 11,
+    "capDen": 15,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Pewter",
+    "ten": "Thợ rèn tập sự",
+    "nhanVat": "Machoke",
+    "capTu": 13,
+    "capDen": 16,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Pewter",
+    "ten": "Ca sĩ mất giọng",
+    "nhanVat": "Jigglypuff",
+    "capTu": 15,
+    "capDen": 18,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Núi Mặt Trăng",
+    "ten": "Đêm ngắm sao",
+    "nhanVat": "Clefairy",
+    "capTu": 15,
+    "capDen": 19,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Núi Mặt Trăng",
+    "ten": "Ba lá thư một buổi sáng",
+    "nhanVat": "Pelipper",
+    "capTu": 17,
+    "capDen": 20,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Núi Mặt Trăng",
+    "ten": "Vườn Berry bị phá",
+    "nhanVat": "Bellossom",
+    "capTu": 19,
+    "capDen": 22,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cerulean",
+    "ten": "Psyduck đau đầu",
+    "nhanVat": "Psyduck",
+    "capTu": 18,
+    "capDen": 22,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Cerulean",
+    "ten": "Ông kể chuyện",
+    "nhanVat": "Slowking",
+    "capTu": 20,
+    "capDen": 23,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cerulean",
+    "ten": "Lời thách đấu của Alpha",
+    "nhanVat": "Pinsir",
+    "capTu": 22,
+    "capDen": 25,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Vermilion",
+    "ten": "Thư lạc giữa biển",
+    "nhanVat": "Wingull",
+    "capTu": 22,
+    "capDen": 26,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Vermilion",
+    "ten": "Bạn mới đến",
+    "nhanVat": "Riolu",
+    "capTu": 24,
+    "capDen": 27,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Vermilion",
+    "ten": "Hộp thư thời gian",
+    "nhanVat": "Bronzor",
+    "capTu": 26,
+    "capDen": 29,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Tàu S.S. Anne",
+    "ten": "Bạn đồng hành dưới tàu",
+    "nhanVat": "Wailmer",
+    "capTu": 27,
+    "capDen": 30,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Tàu S.S. Anne",
+    "ten": "Tiệm bánh nhỏ",
+    "nhanVat": "Slurpuff",
+    "capTu": 29,
+    "capDen": 32,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Lavender",
+    "ten": "Hồn ma cô đơn",
+    "nhanVat": "Duskull",
+    "capTu": 30,
+    "capDen": 34,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Lavender",
+    "ten": "Đội cứu hộ",
+    "nhanVat": "Chansey",
+    "capTu": 32,
+    "capDen": 35,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Lavender",
+    "ten": "Bộ sưu tập vỏ sò",
+    "nhanVat": "Shellder",
+    "capTu": 34,
+    "capDen": 37,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Celadon",
+    "ten": "Bức tranh dang dở",
+    "nhanVat": "Smeargle",
+    "capTu": 33,
+    "capDen": 37,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Celadon",
+    "ten": "Hàng xóm ồn ào",
+    "nhanVat": "Loudred",
+    "capTu": 35,
+    "capDen": 38,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Celadon",
+    "ten": "Bay theo gió",
+    "nhanVat": "Hoppip",
+    "capTu": 37,
+    "capDen": 40,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Saffron",
+    "ten": "Abra ngủ mơ",
+    "nhanVat": "Abra",
+    "capTu": 37,
+    "capDen": 41,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Saffron",
+    "ten": "Bạn đấu tập",
+    "nhanVat": "Pikachu",
+    "capTu": 39,
+    "capDen": 42,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Saffron",
+    "ten": "Rừng nấm sáng",
+    "nhanVat": "Foongus",
+    "capTu": 41,
+    "capDen": 44,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Vùng Safari",
+    "ten": "Đứa con trong túi",
+    "nhanVat": "Kangaskhan con",
+    "capTu": 39,
+    "capDen": 42,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Vùng Safari",
+    "ten": "Đường đua địa phương",
+    "nhanVat": "Ponyta",
+    "capTu": 41,
+    "capDen": 44,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Vùng Safari",
+    "ten": "Câu đố trên tường",
+    "nhanVat": "Unown",
+    "capTu": 43,
+    "capDen": 46,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Fuchsia",
+    "ten": "Đám mây tốt bụng",
+    "nhanVat": "Koffing",
+    "capTu": 40,
+    "capDen": 43,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Fuchsia",
+    "ten": "Cầu mưa",
+    "nhanVat": "Lotad",
+    "capTu": 42,
+    "capDen": 45,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Fuchsia",
+    "ten": "Chăn len mùa đông",
+    "nhanVat": "Mareep",
+    "capTu": 44,
+    "capDen": 47,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cinnabar",
+    "ten": "Sáu chiếc đuôi",
+    "nhanVat": "Vulpix",
+    "capTu": 43,
+    "capDen": 46,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cinnabar",
+    "ten": "Dạo bộ cùng bạn",
+    "nhanVat": "Wigglytuff",
+    "capTu": 45,
+    "capDen": 48,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cinnabar",
+    "ten": "Viên ngọc đẹp nhất",
+    "nhanVat": "Sableye",
+    "capTu": 47,
+    "capDen": 50,
+    "soBuoc": 4
+   },
+   {
+    "noi": "New Bark",
+    "ten": "Mười câu hỏi của Natu",
+    "nhanVat": "Natu",
+    "capTu": 49,
+    "capDen": 53,
+    "soBuoc": 5
+   },
+   {
+    "noi": "New Bark",
+    "ten": "Sổ tay sinh vật",
+    "nhanVat": "Bulbasaur",
+    "capTu": 51,
+    "capDen": 54,
+    "soBuoc": 4
+   },
+   {
+    "noi": "New Bark",
+    "ten": "Lá thư gửi nhầm",
+    "nhanVat": "Skitty",
+    "capTu": 53,
+    "capDen": 56,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Tối",
+    "ten": "Zubat mù đường",
+    "nhanVat": "Zubat",
+    "capTu": 50,
+    "capDen": 53,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Tối",
+    "ten": "Công thức thất lạc",
+    "nhanVat": "Swirlix",
+    "capTu": 52,
+    "capDen": 55,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Tối",
+    "ten": "Quả trứng lạc",
+    "nhanVat": "Happiny",
+    "capTu": 54,
+    "capDen": 57,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cherrygrove",
+    "ten": "Người dẫn đường lạc lối",
+    "nhanVat": "Furret",
+    "capTu": 51,
+    "capDen": 55,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Cherrygrove",
+    "ten": "Con cá khổng lồ",
+    "nhanVat": "Corphish",
+    "capTu": 53,
+    "capDen": 56,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cherrygrove",
+    "ten": "Kho báu dưới gốc cây",
+    "nhanVat": "Diglett",
+    "capTu": 55,
+    "capDen": 58,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Violet",
+    "ten": "Bài thiền của Bellsprout",
+    "nhanVat": "Bellsprout",
+    "capTu": 53,
+    "capDen": 56,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Violet",
+    "ten": "Cuộc thi ảnh",
+    "nhanVat": "Kecleon",
+    "capTu": 55,
+    "capDen": 58,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Violet",
+    "ten": "Người gác đêm",
+    "nhanVat": "Noctowl",
+    "capTu": 57,
+    "capDen": 60,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Azalea",
+    "ten": "Slowpoke đi chợ",
+    "nhanVat": "Slowpoke",
+    "capTu": 56,
+    "capDen": 59,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Azalea",
+    "ten": "Thợ rèn tập sự",
+    "nhanVat": "Timburr",
+    "capTu": 58,
+    "capDen": 61,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Azalea",
+    "ten": "Ca sĩ mất giọng",
+    "nhanVat": "Chatot",
+    "capTu": 60,
+    "capDen": 63,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Ilex",
+    "ten": "Cành hành của Farfetch'd",
+    "nhanVat": "Farfetch'd",
+    "capTu": 58,
+    "capDen": 61,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Ilex",
+    "ten": "Ba lá thư một buổi sáng",
+    "nhanVat": "Delibird",
+    "capTu": 60,
+    "capDen": 63,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Ilex",
+    "ten": "Vườn Berry bị phá",
+    "nhanVat": "Sunkern",
+    "capTu": 62,
+    "capDen": 65,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Goldenrod",
+    "ten": "Quán sữa Miltank",
+    "nhanVat": "Miltank",
+    "capTu": 60,
+    "capDen": 64,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Goldenrod",
+    "ten": "Ông kể chuyện",
+    "nhanVat": "Noctowl",
+    "capTu": 62,
+    "capDen": 65,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Goldenrod",
+    "ten": "Lời thách đấu của Alpha",
+    "nhanVat": "Primeape",
+    "capTu": 64,
+    "capDen": 67,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Ecruteak",
+    "ten": "Tám con đường của Eevee",
+    "nhanVat": "Eevee",
+    "capTu": 63,
+    "capDen": 66,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Ecruteak",
+    "ten": "Bạn mới đến",
+    "nhanVat": "Bunnelby",
+    "capTu": 65,
+    "capDen": 68,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Ecruteak",
+    "ten": "Hộp thư thời gian",
+    "nhanVat": "Natu",
+    "capTu": 67,
+    "capDen": 70,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Cổ",
+    "ten": "Cây giả trong rừng",
+    "nhanVat": "Sudowoodo",
+    "capTu": 65,
+    "capDen": 68,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Cổ",
+    "ten": "Tiệm bánh nhỏ",
+    "nhanVat": "Alcremie",
+    "capTu": 67,
+    "capDen": 70,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Rừng Cổ",
+    "ten": "Đội cứu hộ",
+    "nhanVat": "Audino",
+    "capTu": 69,
+    "capDen": 72,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Olivine",
+    "ten": "Ngọn đèn cho thuyền nhỏ",
+    "nhanVat": "Ampharos",
+    "capTu": 66,
+    "capDen": 69,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Olivine",
+    "ten": "Hàng xóm ồn ào",
+    "nhanVat": "Exploud",
+    "capTu": 68,
+    "capDen": 71,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Olivine",
+    "ten": "Bay theo gió",
+    "nhanVat": "Swablu",
+    "capTu": 70,
+    "capDen": 73,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cianwood",
+    "ten": "Võ sĩ dưới thác",
+    "nhanVat": "Poliwrath",
+    "capTu": 68,
+    "capDen": 71,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cianwood",
+    "ten": "Bạn đấu tập",
+    "nhanVat": "Eevee",
+    "capTu": 70,
+    "capDen": 73,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cianwood",
+    "ten": "Rừng nấm sáng",
+    "nhanVat": "Morelull",
+    "capTu": 72,
+    "capDen": 75,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Mahogany",
+    "ten": "Mũi thính của Swinub",
+    "nhanVat": "Swinub",
+    "capTu": 70,
+    "capDen": 73,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Mahogany",
+    "ten": "Đường đua địa phương",
+    "nhanVat": "Dodrio",
+    "capTu": 72,
+    "capDen": 75,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Mahogany",
+    "ten": "Câu đố trên tường",
+    "nhanVat": "Natu",
+    "capTu": 74,
+    "capDen": 77,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hồ Phẫn Nộ",
+    "ten": "Magikarp không vô dụng",
+    "nhanVat": "Magikarp",
+    "capTu": 71,
+    "capDen": 75,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Hồ Phẫn Nộ",
+    "ten": "Cầu mưa",
+    "nhanVat": "Wooper",
+    "capTu": 73,
+    "capDen": 76,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hồ Phẫn Nộ",
+    "ten": "Chăn len mùa đông",
+    "nhanVat": "Wooloo",
+    "capTu": 75,
+    "capDen": 78,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Blackthorn",
+    "ten": "Rồng con học bay",
+    "nhanVat": "Dratini",
+    "capTu": 77,
+    "capDen": 81,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Blackthorn",
+    "ten": "Dạo bộ cùng bạn",
+    "nhanVat": "Linoone",
+    "capTu": 79,
+    "capDen": 82,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Blackthorn",
+    "ten": "Viên ngọc đẹp nhất",
+    "nhanVat": "Carbink",
+    "capTu": 81,
+    "capDen": 84,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Salamence",
+    "ten": "Bagon muốn có cánh",
+    "nhanVat": "Bagon",
+    "capTu": 79,
+    "capDen": 82,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Salamence",
+    "ten": "Sổ tay sinh vật",
+    "nhanVat": "Oddish",
+    "capTu": 81,
+    "capDen": 84,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Salamence",
+    "ten": "Lá thư gửi nhầm",
+    "nhanVat": "Luvdisc",
+    "capTu": 83,
+    "capDen": 86,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Đường Victory",
+    "ten": "Cậu học trò nhỏ",
+    "nhanVat": "Machop",
+    "capTu": 84,
+    "capDen": 87,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Đường Victory",
+    "ten": "Công thức thất lạc",
+    "nhanVat": "Munchlax",
+    "capTu": 86,
+    "capDen": 89,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Đường Victory",
+    "ten": "Quả trứng lạc",
+    "nhanVat": "Togepi",
+    "capTu": 88,
+    "capDen": 91,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Núi Silver",
+    "ten": "Larvitar ăn núi",
+    "nhanVat": "Larvitar",
+    "capTu": 88,
+    "capDen": 92,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Núi Silver",
+    "ten": "Kho báu dưới gốc cây",
+    "nhanVat": "Sandshrew",
+    "capTu": 90,
+    "capDen": 93,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Núi Silver",
+    "ten": "Cuộc thi ảnh",
+    "nhanVat": "Smeargle",
+    "capTu": 92,
+    "capDen": 95,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cao nguyên Indigo",
+    "ten": "Nhà vô địch nghỉ hưu",
+    "nhanVat": "Dragonite",
+    "capTu": 91,
+    "capDen": 95,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Cao nguyên Indigo",
+    "ten": "Người gác đêm",
+    "nhanVat": "Hoothoot",
+    "capTu": 93,
+    "capDen": 96,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Cao nguyên Indigo",
+    "ten": "Thợ rèn tập sự",
+    "nhanVat": "Machoke",
+    "capTu": 95,
+    "capDen": 98,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Darkrai",
+    "ten": "Lông vũ trăng lưỡi liềm",
+    "nhanVat": "Cresselia",
+    "capTu": 95,
+    "capDen": 99,
+    "soBuoc": 5
+   },
+   {
+    "noi": "Hang Darkrai",
+    "ten": "Ca sĩ mất giọng",
+    "nhanVat": "Jigglypuff",
+    "capTu": 97,
+    "capDen": 100,
+    "soBuoc": 4
+   },
+   {
+    "noi": "Hang Darkrai",
+    "ten": "Ba lá thư một buổi sáng",
+    "nhanVat": "Pelipper",
+    "capTu": 99,
+    "capDen": 100,
+    "soBuoc": 4
+   }
+  ],
+  "ngay": [
+   "Ai là Pokémon?",
+   "Bóng trong sương",
+   "Bếp chung",
+   "Bữa phụ của ông",
+   "Chuyển thuốc cho Chansey",
+   "Chăm vườn nhà",
+   "Chạy đua với đồng hồ",
+   "Câu đố sáng: biến hình",
+   "Câu đố sáng: bài hát",
+   "Câu đố sáng: chậm chạp",
+   "Câu đố sáng: hoá rồng",
+   "Câu đố sáng: má đỏ",
+   "Câu đố sáng: tám ngả",
+   "Câu đố sáng: đau đầu",
+   "Câu đố sáng: đuôi lửa",
+   "Dọn túi đồ",
+   "Ghi một loài mới",
+   "Ghé thăm Cerulean",
+   "Ghé thăm Fuchsia",
+   "Ghé thăm Goldenrod",
+   "Ghé thăm Hang Salamence",
+   "Ghé thăm Pallet",
+   "Giúp người mới",
+   "Góp mặt chiếm Gym",
+   "Góp sức đánh boss",
+   "Hai trận đấu trường",
+   "Hàng thất lạc",
+   "Hạt giống rơi",
+   "Hầm ngục buổi sáng",
+   "Hỏi thăm trưởng làng",
+   "Hộ tống hàng Kecleon",
+   "Khảm một viên ngọc",
+   "Khảo cổ ở khu mỏ",
+   "Mài đồ mỗi ngày",
+   "Mẻ cá buổi chiều",
+   "Một phiên chợ",
+   "Một trận đấu trường",
+   "Nghiên cứu sâu Crabrawler",
+   "Nghiên cứu sâu Galvantula",
+   "Nghiên cứu sâu Kricketot",
+   "Nghiên cứu sâu Tauros",
+   "Quan sát ban đêm",
+   "Quan sát trong mưa",
+   "Săn Crabrawler buổi sáng",
+   "Săn Farfetch'd buổi sáng",
+   "Săn Galvantula buổi sáng",
+   "Săn Growlithe buổi sáng",
+   "Săn Sandshrew buổi sáng",
+   "Săn theo tổ",
+   "Thử thách tốc độ",
+   "Truy nã: Alpha Crabrawler",
+   "Truy nã: Alpha Farfetch'd",
+   "Truy nã: Alpha Galvantula",
+   "Truy nã: Alpha Growlithe",
+   "Truy nã: Alpha Litwick",
+   "Truy nã: Gastly dữ tợn",
+   "Truy nã: Luxray dữ tợn",
+   "Truy nã: Palpitoad dữ tợn",
+   "Truy nã: Rhydon dữ tợn",
+   "Truy nã: Venonat dữ tợn",
+   "Truy nã: kẻ mạnh vượt cấp",
+   "Trưa nắng gắt",
+   "Trứng ở nhà trẻ",
+   "Tuần tra ngang sức",
+   "Điểm ngắm cảnh hôm nay",
+   "Đua buổi tối",
+   "Đơn hàng của Machamp",
+   "Đại truy nã: Alpha Kricketot",
+   "Đại truy nã: Alpha Parasect",
+   "Đại truy nã: Alpha Rhydon",
+   "Đại truy nã: Alpha Vileplume"
+  ],
+  "tuan": [
+   "Biển Olivine",
+   "Bến cảng Vermilion",
+   "Gió Johto",
+   "Goldenrod sầm uất",
+   "Hồ và núi Johto",
+   "Rừng Ilex",
+   "Rừng và núi Kanto",
+   "Sương mù Lavender",
+   "Thành phố lớn Kanto",
+   "Đảo lửa",
+   "Đất rồng",
+   "Đỉnh cao Johto",
+   "Đồng cỏ Kanto"
+  ],
+  "huyenThoai": [
+   "Articuno",
+   "Celebi",
+   "Darkrai",
+   "Entei",
+   "Groudon và Kyogre",
+   "Ho-Oh",
+   "Lugia",
+   "Mew",
+   "Moltres",
+   "Raikou",
+   "Rayquaza",
+   "Suicune",
+   "Zapdos"
+  ],
+  "an": {
+   "soLuong": 32,
+   "goiY": "Có những nhiệm vụ chỉ hiện ra khi bạn làm điều đặc biệt..."
+  }
+ }
+}

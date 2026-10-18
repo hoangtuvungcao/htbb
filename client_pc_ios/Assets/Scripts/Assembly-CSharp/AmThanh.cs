@@ -4,8 +4,8 @@ using UnityEngine;
 /// <summary>
 /// AudioManager cua ban PC: phat hieu ung am thanh (SFX) va nhac nen (BGM) tu Resources/am_thanh/.
 ///
-/// Tep am thanh dat o pc/Assets/Resources/am_thanh/&lt;ten&gt;.ogg|.wav (Unity nhan ca hai), ten tep
-/// dung cac hang so ben duoi - TRUNG ten tep ban jar (j2me/res/am, sinh boi j2me/tools/lam_am_thanh.py
+/// Tep am thanh dat o client_pc_ios/Assets/Resources/am_thanh/&lt;ten&gt;.ogg|.wav (Unity nhan ca hai), ten tep
+/// dung cac hang so ben duoi - TRUNG ten tep ban jar (client_jar/res/am, sinh boi client_jar/tools/lam_am_thanh.py
 /// tu goi Kenney CC0): SFX s_*.wav chep thang duoc; nhac nen ban jar la MIDI (n_*.mid) - Unity KHONG
 /// doc MIDI, can xuat ra n_*.ogg (vd fluidsynth + ffmpeg) roi dat cung ten. Thieu tep thi im lang
 /// (khong loi; ket qua Resources.Load ke ca null duoc nho).
