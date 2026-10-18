@@ -12,12 +12,12 @@ useSeoMeta({ title: 'Xác nhận nạp tiền (Admin)', robots: 'noindex, nofoll
 
 interface DonCho {
   id: number
-  userID: number
-  moc: number
-  amount: number
   ma_don: string
-  created_at: string
-  username: string | null
+  username: string
+  charname: string
+  ten_goi: string
+  so_tien: number
+  tao_luc: string
 }
 
 const KHOA = 'htbb_naptien'
@@ -30,6 +30,7 @@ const dons = ref<DonCho[]>([])
 const dangTai = ref(true)
 const dangXacNhan = ref<number | null>(null)
 const choXacNhan = ref<DonCho | null>(null)
+const maGd = ref('')
 
 function luuToken(t: string | null) {
   token.value = t
@@ -94,7 +95,8 @@ async function xacNhan(d: DonCho) {
   choXacNhan.value = null
   dangXacNhan.value = d.id
   try {
-    const r = await goi<{ message: string }>('/api/xac-nhan-nap/xac-nhan', { method: 'POST', body: { id: d.id } })
+    const r = await goi<{ message: string }>('/api/xac-nhan-nap/xac-nhan', { method: 'POST', body: { id: d.id, ma_gd: maGd.value.trim() } })
+    maGd.value = ''
     toast.add({ title: r.message, color: 'success', icon: 'i-lucide-check' })
   } catch (e: any) {
     if (e?.statusCode === 401) luuToken(null)
@@ -108,10 +110,11 @@ async function xacNhan(d: DonCho) {
 const columns = [
   { accessorKey: 'id', header: '#' },
   { accessorKey: 'username', header: 'Tài khoản' },
-  { accessorKey: 'moc', header: 'Mốc' },
-  { accessorKey: 'amount', header: 'Số tiền' },
+  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'ten_goi', header: 'Gói' },
+  { accessorKey: 'so_tien', header: 'Số tiền' },
   { accessorKey: 'ma_don', header: 'Mã đơn' },
-  { accessorKey: 'created_at', header: 'Thời gian' },
+  { accessorKey: 'tao_luc', header: 'Thời gian' },
   { id: 'hanh_dong', header: '' },
 ]
 
@@ -126,7 +129,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <SitePageBanner title="Xác nhận nạp tiền (Admin)" eyebrow="Quản trị nạp mốc" />
+    <SitePageBanner title="Xác nhận nạp tiền (Admin)" eyebrow="Quản trị nạp tiền" />
 
     <UContainer class="max-w-6xl py-14">
       <div v-if="dangTai && !dons.length" class="flex items-center justify-center gap-3 py-20 text-muted">
@@ -185,11 +188,8 @@ onMounted(() => {
 
         <div v-if="dons.length" class="overflow-hidden rounded-2xl glass">
           <UTable :data="dons" :columns="columns">
-            <template #username-cell="{ row }">
-              {{ row.original.username ?? `userID ${row.original.userID}` }}
-            </template>
-            <template #amount-cell="{ row }">
-              <span class="tabular-nums">{{ vnd(row.original.amount) }}</span>
+            <template #so_tien-cell="{ row }">
+              <span class="tabular-nums">{{ vnd(row.original.so_tien) }}</span>
             </template>
             <template #ma_don-cell="{ row }">
               <strong class="font-mono text-highlighted">{{ row.original.ma_don }}</strong>
@@ -214,19 +214,24 @@ onMounted(() => {
       @update:open="(v: boolean) => { if (!v) choXacNhan = null }"
     >
       <template #body>
-        <p v-if="choXacNhan" class="text-sm text-muted">
-          Chỉ xác nhận khi đã thấy đúng <strong class="text-highlighted">{{ vnd(choXacNhan.amount) }}</strong> với nội dung
-          <strong class="font-mono text-highlighted">{{ choXacNhan.ma_don }}</strong> trong tài khoản TPBank.
-          Sau khi xác nhận, tài khoản <strong class="text-highlighted">{{ choXacNhan.username ?? `userID ${choXacNhan.userID}` }}</strong>
-          nhận được quà mốc {{ choXacNhan.moc }} tại NPC Tổng Quản.
-        </p>
+        <div v-if="choXacNhan" class="space-y-4">
+          <p class="text-sm text-muted">
+            Chỉ xác nhận khi đã thấy đúng <strong class="text-highlighted">{{ vnd(choXacNhan.so_tien) }}</strong> với nội dung
+            <strong class="font-mono text-highlighted">{{ choXacNhan.ma_don }}</strong> trên sao kê ngân hàng.
+            Sau khi xác nhận, server game tự cộng <strong class="text-highlighted">{{ choXacNhan.ten_goi }}</strong> vào
+            <strong class="text-highlighted">{{ choXacNhan.charname }}</strong> khi nhân vật online.
+          </p>
+          <UFormField label="Mã giao dịch trên sao kê" hint="bắt buộc — một giao dịch chỉ xác nhận được một đơn">
+            <UInput v-model="maGd" class="w-full" placeholder="VD FT26290123456" />
+          </UFormField>
+        </div>
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <UButton color="neutral" variant="ghost" @click="choXacNhan = null">
             Huỷ
           </UButton>
-          <UButton icon="i-lucide-check" @click="choXacNhan && xacNhan(choXacNhan)">
+          <UButton icon="i-lucide-check" :disabled="maGd.trim().length < 3" @click="choXacNhan && xacNhan(choXacNhan)">
             Xác nhận
           </UButton>
         </div>

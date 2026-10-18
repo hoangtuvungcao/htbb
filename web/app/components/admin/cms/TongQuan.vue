@@ -39,6 +39,7 @@ const maxTk = computed(() => Math.max(1, ...(data.value?.tkMoi ?? []).map(x => x
         </div>
       </UCard>
     </div>
+    <AdminKinhTeNgay />
     <UCard v-if="data?.tinMoi?.length">
       <template #header><b>Tin sửa gần đây</b></template>
       <ul class="divide-y divide-default text-sm">

@@ -63,7 +63,7 @@ export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
       { vai: SIEU, key: 'dua_top', to: '/admin/dua-top', label: 'Đua top', icon: 'i-lucide-medal' },
       { vai: SIEU, key: 'cauhinh', to: '/admin/cauhinh', label: 'Cấu hình server', icon: 'i-lucide-sliders-horizontal' },
       { vai: SIEU, key: 'server', to: '/admin/server', label: 'Bật/tắt server', icon: 'i-lucide-power' },
-      { vai: SIEU, key: 'naptien', to: '/admin/naptien', label: 'Đơn nạp mốc', icon: 'i-lucide-banknote' },
+      { vai: SIEU, key: 'naptien', to: '/admin/naptien', label: 'Nạp tiền', icon: 'i-lucide-banknote' },
     ],
   },
   {

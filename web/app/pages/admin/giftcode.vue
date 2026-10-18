@@ -17,6 +17,12 @@ import AdminGiftcodeXacNhan from '~/components/admin/giftcode/XacNhan.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
+// Có bảng tob_giftcode (chế độ dài hạn, HTBB/sql/them_bang_lau_dai.sql) -> mặc định trang giftcode
+// an toàn (components/admin/giftcode/AnToan.vue); bảng cũ vẫn xem/sửa được qua nút "Mã kiểu cũ".
+const apiCheDo = useAdminApi()
+const { data: cheDo } = useAsyncData('admin-gc-che-do', () => apiCheDo<{ coBang: boolean }>('/api/admin/giftcode-moi').catch(() => ({ coBang: false })), { server: false })
+const xemCu = ref(false)
+
 interface MaGiftcode {
   id: number
   giftcode: string
@@ -340,7 +346,9 @@ const cotLog: TableColumn<DongLog>[] = [
 </script>
 
 <template>
-  <AdminPage title="Giftcode">
+  <AdminGiftcodeAnToan v-if="cheDo?.coBang && !xemCu" @che-do-cu="xemCu = true" />
+  <AdminPage v-else title="Giftcode">
+    <UAlert v-if="cheDo?.coBang" color="warning" variant="subtle" icon="i-lucide-history" title="Đang xem giftcode kiểu cũ (bảng giftcode)" description="Khi máy chủ chạy chế độ dài hạn, game chỉ đọc mã an toàn (tob_giftcode)." :actions="[{ label: 'Về giftcode an toàn', onClick: () => { xemCu = false } }]" />
     <template #right>
       <UFieldGroup size="sm">
         <UButton

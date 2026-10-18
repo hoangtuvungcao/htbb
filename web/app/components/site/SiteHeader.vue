@@ -26,7 +26,7 @@ const links = computed<NavigationMenuItem[]>(() => {
   })
   if (auth.loggedIn.value) {
     // Nạp tiền tắt mặc định (KPAH_NAP_BAT, quyết định Q10): chỉ hiện khi server bật.
-    if (site.value?.napBat) ds.push({ label: 'Nạp mốc', to: '/naptien', icon: 'i-lucide-gem' })
+    if (site.value?.napBat) ds.push({ label: 'Nạp tiền', to: '/naptien', icon: 'i-lucide-gem' })
     ds.push({ label: 'Kích hoạt', to: '/kichhoat', icon: 'i-lucide-badge-check' })
   }
   return ds

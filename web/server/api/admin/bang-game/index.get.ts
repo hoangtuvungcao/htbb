@@ -1,17 +1,16 @@
 /**
  * Xem CHỈ ĐỌC các bảng kết quả của game (chiếm thành tuần, chiến trường, quà online hằng ngày...).
  * Danh sách trắng cố định — chỉ hiện bảng thật sự có trong CSDL. Bảng mới của giai đoạn 2
- * (quà online, chiếm thành tuần) thêm tên vào BANG khi server tạo xong.
+ * (HTBB/sql/them_bang_lau_dai.sql) đã có tên ở đây.
  * ?bang= tên bảng (phải nằm trong danh sách) -> 200 dòng mới nhất.
  */
 const BANG: { ten: string, moTa: string }[] = [
   { ten: 'tob_chiemthanh', moTa: 'Chiếm thành — đội đang giữ thành' },
-  { ten: 'tob_chiem_thanh_tuan', moTa: 'Chiếm thành theo tuần (giai đoạn 2)' },
+  { ten: 'tob_chiem_thanh_tuan', moTa: 'Chiếm thành tuần — thưởng theo đóng góp' },
   { ten: 'tob_chien_truong', moTa: 'Chiến trường' },
   { ten: 'tob_qua_ct_top', moTa: 'Quà top chiến trường' },
-  { ten: 'tob_qua_online', moTa: 'Quà online hằng ngày (giai đoạn 2)' },
-  { ten: 'tob_thuong_online_ngay', moTa: 'Quà online hằng ngày (giai đoạn 2)' },
-  { ten: 'tob_diem_danh', moTa: 'Điểm danh hằng ngày' },
+  { ten: 'tob_qua_online', moTa: 'Quà online: mốc phút, chuỗi đăng nhập, lịch tháng (theo tài khoản)' },
+  { ten: 'tob_giftcode_log', moTa: 'Nhật ký nhận giftcode (mới)' },
   { ten: 'tob_top_thuong', moTa: 'Thưởng bảng xếp hạng' },
   { ten: 'giftcode_log', moTa: 'Nhật ký nhận giftcode' },
 ]

@@ -1,0 +1,298 @@
+/**
+ * NẠP TIỀN — hàm THUẦN (không database, không auto-import của Nuxt): hằng số, luật gói/món,
+ * trần nạp, máy trạng thái đơn, mã đơn, xác thực chữ ký webhook (SePay / Casso / mock) và
+ * đọc payload. Phần chạm database ở napTien.ts.
+ *
+ * Bản sao phía web của HTBB/src/com/htbb/pokemon/NapTienLogic.java — test
+ * HTBB/test/KiemNapTien.java đối chiếu các hằng số dưới đây (sửa một bên phải sửa cả bên kia).
+ * Thiết kế: HTBB/docs/pokemon/NAP_TIEN.md.
+ */
+import { createHash, createHmac, randomInt, timingSafeEqual } from 'node:crypto'
+
+// ---------------------------------------------------------------- hằng số (khớp Java)
+
+/** 10 lượng / 1.000 đ — cố định, KHÔNG hệ số ngẫu nhiên, KHÔNG khuyến mãi %. */
+export const LUONG_MOI_1000_VND = 10
+export const TRAN_TUAN_VND = 1000000
+export const TRAN_THANG_VND = 2000000
+/** Cấu hình lớn hơn bị kẹp về đây. */
+export const TRAN_CUNG_THANG_VND = 5000000
+/** Nâng trần tự đặt chỉ có hiệu lực sau 72 giờ (người chơi tự bảo vệ mình). */
+export const GIO_CHO_NANG_TRAN = 72
+/** Đơn chờ thanh toán quá 24 giờ thì hết hạn (tiền đến muộn vẫn được nhận). */
+export const GIO_HET_HAN_DON = 24
+
+export const LOAI_GOI = ['luong', 'the_thang', 've_mua'] as const
+export type LoaiGoi = typeof LOAI_GOI[number]
+
+export const TRAO_HOP_LE = ['trang_tri', 'mo_rong_tui', 'doi_ten'] as const
+export const NHOM_CUA_HANG = ['skin', 'hao_quang', 'thu_cuoi', 'mau_ten', 'bieu_cam', 'nha', 'khung', 'tien_ich'] as const
+export const GIA_MON_TOI_THIEU = 10
+export const GIA_MON_TOI_DA = 5000
+export const SO_NHOM_XOAY = 4
+
+/** Bảng chữ của mã đơn — bỏ 0/O, 1/I (người chơi có khi gõ tay). */
+export const KY_TU_MA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+
+export const TRANG_THAI_NAP = ['cho_thanh_toan', 'da_thanh_toan', 'da_cong', 'that_bai', 'hoan_tien', 'cho_thu_hoi', 'da_thu_hoi'] as const
+export type TrangThaiNap = typeof TRANG_THAI_NAP[number]
+
+/** Từ cấm trong tên món bán bằng lượng (thêm cho whitelist cách trao) — khớp NapTienLogic.TU_CAM. */
+export const TU_CAM = ['exp', 'kinh nghiệm', 'kinh nghiem', 'x2', 'x3', 'tấn công', 'tan cong', 'phòng thủ', 'phong thu', 'hp',
+  'chí mạng', 'chi mang', 'tỉ lệ', 'ti le', 'tỷ lệ', 'may mắn', 'may man', 'bảo hộ', 'bao ho', 'cường hoá', 'cuong hoa',
+  'nâng cấp', 'nang cap', 'đá', 'chỉ số', 'chi so', 'sức mạnh', 'suc manh', 'tiềm năng', 'tiem nang', 'vé quay', 've quay',
+  'rương', 'ruong', 'hộp quà', 'hop qua']
+
+// ---------------------------------------------------------------- gói / món
+
+export function luongTheoGia(giaVnd: number): number {
+  return giaVnd > 0 ? Math.trunc(giaVnd * LUONG_MOI_1000_VND / 1000) : 0
+}
+
+/** null = hợp lệ; chuỗi = lý do (giống NapTienLogic.kiemGoi). */
+export function kiemGoi(loai: string, giaVnd: number, luong: number): string | null {
+  if (!Number.isInteger(giaVnd) || giaVnd < 10000 || giaVnd > 2000000) return 'Giá phải trong 10.000 – 2.000.000 đ.'
+  if (giaVnd % 1000 !== 0) return 'Giá phải chẵn nghìn.'
+  if (loai === 'luong') {
+    return luong === luongTheoGia(giaVnd) ? null : `Gói lượng phải đúng tỷ giá ${LUONG_MOI_1000_VND} lượng / 1.000 đ (không khuyến mãi %).`
+  }
+  if (loai === 'the_thang' || loai === 've_mua') return luong === 0 ? null : 'Thẻ tháng / vé mùa không kèm lượng tức thì.'
+  return 'Loại gói không hợp lệ.'
+}
+
+export interface MonCuaHang {
+  ma: string
+  ten: string
+  nhom: string
+  trao: string
+  gia_luong: number
+  han_ngay: number
+  gioi_han: number
+  nhom_xoay: number
+  giao_dich_duoc: number | boolean
+  co_chi_so: number | boolean
+}
+
+function chuaTu(s: string, tu: string): boolean {
+  let i = s.indexOf(tu)
+  while (i >= 0) {
+    const dau = i === 0 || !/[\p{L}\p{N}]/u.test(s[i - 1]!)
+    const j = i + tu.length
+    const cuoi = j >= s.length || !/[\p{L}\p{N}]/u.test(s[j]!)
+    if (dau && cuoi) return true
+    i = s.indexOf(tu, i + 1)
+  }
+  return false
+}
+
+/** null = hợp lệ (giống NapTienLogic.kiemMon): whitelist cách trao, không chỉ số, từ cấm, giá. */
+export function kiemMon(m: MonCuaHang): string | null {
+  if (!/^[a-z0-9_]{2,40}$/.test(m.ma ?? '')) return 'Mã món chỉ gồm a-z 0-9 _ (2–40 ký tự).'
+  if (Number(m.co_chi_so) !== 0 && m.co_chi_so !== false) return 'Cấm bán món có chỉ số.'
+  if (!(TRAO_HOP_LE as readonly string[]).includes(m.trao)) return 'Cách trao phải là trang_tri / mo_rong_tui / doi_ten.'
+  if (!(NHOM_CUA_HANG as readonly string[]).includes(m.nhom)) return 'Nhóm không hợp lệ.'
+  if (!Number.isInteger(m.gia_luong) || m.gia_luong < GIA_MON_TOI_THIEU || m.gia_luong > GIA_MON_TOI_DA) {
+    return `Giá phải trong ${GIA_MON_TOI_THIEU}–${GIA_MON_TOI_DA} lượng.`
+  }
+  if (!Number.isInteger(m.nhom_xoay) || m.nhom_xoay < 0 || m.nhom_xoay > SO_NHOM_XOAY) return `Nhóm xoay 0..${SO_NHOM_XOAY}.`
+  const ten = (m.ten ?? '').toLowerCase()
+  if (ten.trim() === '') return 'Thiếu tên.'
+  for (const c of TU_CAM) {
+    if (chuaTu(ten, c)) return `Tên chứa từ cấm "${c}" (nghi là đồ sức mạnh).`
+  }
+  const gd = Number(m.giao_dich_duoc) === 1 || m.giao_dich_duoc === true
+  if (gd && (m.han_ngay > 0 || m.trao !== 'trang_tri')) return 'Chỉ trang trí vĩnh viễn mới được giao dịch.'
+  return null
+}
+
+// ---------------------------------------------------------------- trần nạp
+
+export function kepTran(cauHinh: number, macDinh: number): number {
+  if (!(cauHinh > 0)) return macDinh
+  return Math.min(cauHinh, TRAN_CUNG_THANG_VND)
+}
+
+/** null = được tạo đơn; chuỗi = lý do (giống NapTienLogic.kiemTran). */
+export function kiemTran(daTuan: number, daThang: number, giaMoi: number, tranTuan: number, tranThang: number, tranTuDat: number): string | null {
+  if (!(giaMoi > 0)) return 'Số tiền không hợp lệ.'
+  let thang = kepTran(tranThang, TRAN_THANG_VND)
+  if (tranTuDat > 0) thang = Math.min(thang, tranTuDat)
+  const tuan = Math.min(kepTran(tranTuan, TRAN_TUAN_VND), thang)
+  if (daTuan + giaMoi > tuan) return `Vượt trần nạp tuần (${vndThuan(tuan)}). Tuần này đã ${vndThuan(daTuan)}.`
+  if (daThang + giaMoi > thang) return `Vượt trần nạp tháng (${vndThuan(thang)}). Tháng này đã ${vndThuan(daThang)}.`
+  return null
+}
+
+function vndThuan(n: number): string {
+  return `${Math.trunc(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')} đ`
+}
+
+// ---------------------------------------------------------------- trạng thái
+
+/** Máy trạng thái (giống NapTienLogic.chuyenHopLe). */
+export function chuyenHopLe(tu: string, den: string): boolean {
+  switch (tu) {
+    case 'cho_thanh_toan': return den === 'da_thanh_toan' || den === 'that_bai'
+    case 'that_bai': return den === 'da_thanh_toan'
+    case 'da_thanh_toan': return den === 'da_cong' || den === 'hoan_tien'
+    case 'da_cong': return den === 'cho_thu_hoi'
+    case 'cho_thu_hoi': return den === 'da_thu_hoi'
+    default: return false
+  }
+}
+
+// ---------------------------------------------------------------- mã đơn
+
+export function taoMaDon(): string {
+  let s = 'HT'
+  for (let i = 0; i < 8; i++) s += KY_TU_MA[randomInt(0, KY_TU_MA.length)]
+  return s
+}
+
+/** Tìm mã HTxxxxxxxx trong nội dung chuyển khoản (giống NapTienLogic.timMaDon). */
+export function timMaDon(noiDung: string | null | undefined): string | null {
+  const m = (noiDung ?? '').match(/(?<![A-Z0-9])HT([A-HJ-NP-Z2-9]{8})(?![A-Z0-9])/i)
+  return m ? `HT${m[1]!.toUpperCase()}` : null
+}
+
+/** Khoá idempotent từ trình duyệt: 8–64 ký tự an toàn, còn lại bỏ. */
+export function khoaIdemHopLe(v: unknown): string | null {
+  return typeof v === 'string' && /^[A-Za-z0-9_-]{8,64}$/.test(v) ? v : null
+}
+
+// ---------------------------------------------------------------- thời gian (ứng dụng ghi, không NOW())
+
+function hai(n: number): string {
+  return n < 10 ? `0${n}` : String(n)
+}
+
+/** 'YYYY-MM-DD HH:MM:SS' giờ máy chủ (VPS đặt Asia/Ho_Chi_Minh) — NOW() của NovaDB là UTC. */
+export function gioDb(d: Date = new Date()): string {
+  return `${d.getFullYear()}-${hai(d.getMonth() + 1)}-${hai(d.getDate())} ${hai(d.getHours())}:${hai(d.getMinutes())}:${hai(d.getSeconds())}`
+}
+
+/** Đầu tuần (thứ Hai 00:00) và đầu tháng của d, dạng gioDb. */
+export function dauTuanThang(d: Date = new Date()): { tuan: string, thang: string } {
+  const t = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  t.setDate(t.getDate() - ((t.getDay() + 6) % 7))
+  return { tuan: gioDb(t), thang: gioDb(new Date(d.getFullYear(), d.getMonth(), 1)) }
+}
+
+// ---------------------------------------------------------------- chữ ký webhook
+
+/** So sánh thời gian hằng (băm về cùng độ dài trước). */
+export function soKhoa(that: string, goiLen: string): boolean {
+  const a = createHash('sha256').update(that, 'utf8').digest()
+  const b = createHash('sha256').update(goiLen, 'utf8').digest()
+  return timingSafeEqual(a, b) && that.length === goiLen.length
+}
+
+/** SePay: header `Authorization: Apikey <key>`. */
+export function xacThucSepay(authHeader: string | null | undefined, apiKey: string): boolean {
+  if (!apiKey) return false
+  const m = (authHeader ?? '').match(/apikey\s+(\S+)/i)
+  return !!m && soKhoa(apiKey, m[1]!)
+}
+
+/** Đọc header dạng `t=<giây>,v1=<hex>`. */
+export function docChuKy(h: string | null | undefined): { t: number, v1: string } | null {
+  const m = (h ?? '').match(/t=(\d{9,13}),\s*v1=([0-9a-f]{32,256})/i)
+  return m ? { t: Number(m[1]), v1: m[2]!.toLowerCase() } : null
+}
+
+function giayTu(t: number): number {
+  return t > 1e12 ? Math.floor(t / 1000) : t
+}
+
+/** Sắp khoá object đệ quy (Casso ký trên JSON đã sắp khoá). */
+export function sapKhoa(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(sapKhoa)
+  if (v && typeof v === 'object') {
+    const o: Record<string, unknown> = {}
+    for (const k of Object.keys(v as Record<string, unknown>).sort()) o[k] = sapKhoa((v as Record<string, unknown>)[k])
+    return o
+  }
+  return v
+}
+
+/**
+ * Casso webhook v2: `X-Casso-Signature: t=<ts>,v1=<hex HMAC-SHA512(secret, ts + "." + JSON đã sắp khoá của data)>`.
+ * PHẢI đối chiếu lại với tài liệu Casso hiện hành trước khi bật thật (NAP_TIEN.md mục 6).
+ * Chênh giờ > 5 phút = từ chối (chống phát lại).
+ */
+export function xacThucCasso(header: string | null | undefined, data: unknown, secret: string, bayGioGiay = Math.floor(Date.now() / 1000)): boolean {
+  if (!secret) return false
+  const ck = docChuKy(header)
+  if (!ck || Math.abs(bayGioGiay - giayTu(ck.t)) > 300) return false
+  const ky = createHmac('sha512', secret).update(`${ck.t}.${JSON.stringify(sapKhoa(data))}`).digest('hex')
+  return soKhoa(ky, ck.v1)
+}
+
+/** Mock / sandbox: `X-HTBB-Signature: t=<ts>,v1=<hex HMAC-SHA256(secret, ts + "." + thân thô)>`. */
+export function kyMock(secret: string, t: number, raw: string): string {
+  return createHmac('sha256', secret).update(`${t}.${raw}`).digest('hex')
+}
+
+export function xacThucMock(header: string | null | undefined, raw: string, secret: string, bayGioGiay = Math.floor(Date.now() / 1000)): boolean {
+  if (!secret) return false
+  const ck = docChuKy(header)
+  if (!ck || Math.abs(bayGioGiay - giayTu(ck.t)) > 300) return false
+  return soKhoa(kyMock(secret, ck.t, raw), ck.v1)
+}
+
+// ---------------------------------------------------------------- đọc payload
+
+export interface GiaoDichVao {
+  /** Mã giao dịch phía cổng (trùng = gọi lặp). */
+  maGd: string
+  soTien: number
+  noiDung: string
+}
+
+function soNguyen(v: unknown): number {
+  if (typeof v === 'number') return Number.isFinite(v) ? Math.trunc(v) : 0
+  if (typeof v === 'string') {
+    const m = v.match(/^\s*([+-]?\d+)/)
+    return m ? Number(m[1]) : 0
+  }
+  return 0
+}
+
+function chuoi(v: unknown): string {
+  return typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '')
+}
+
+/** SePay: { id, transferType: 'in' | 'out', transferAmount, content, code, referenceCode }. Tiền ra -> null. */
+export function docSepay(d: Record<string, unknown>): GiaoDichVao | null | 'bo_qua' {
+  if (d.transferType !== 'in') return 'bo_qua'
+  const maGd = chuoi(d.id) || chuoi(d.referenceCode)
+  if (!maGd) return null
+  return { maGd, soTien: soNguyen(d.transferAmount), noiDung: `${chuoi(d.content)} ${chuoi(d.code)} ${chuoi(d.description)}` }
+}
+
+/** Casso v2: { error: 0, data: { id, reference, description, amount } } (v1: data là mảng — lấy từng phần tử). */
+export function docCasso(d: Record<string, unknown>): GiaoDichVao[] {
+  const ds = Array.isArray(d.data) ? d.data : (d.data && typeof d.data === 'object' ? [d.data] : [])
+  const ra: GiaoDichVao[] = []
+  for (const x of ds as Record<string, unknown>[]) {
+    const soTien = soNguyen(x.amount)
+    if (soTien <= 0) continue // tiền ra
+    const maGd = chuoi(x.id) || chuoi(x.reference) || chuoi(x.tid)
+    if (!maGd) continue
+    ra.push({ maGd, soTien, noiDung: `${chuoi(x.description)} ${chuoi(x.reference)}` })
+  }
+  return ra
+}
+
+/** Mock: { ma_gd, so_tien, noi_dung }. */
+export function docMock(d: Record<string, unknown>): GiaoDichVao | null {
+  const maGd = chuoi(d.ma_gd)
+  if (!/^[A-Za-z0-9_.:-]{1,64}$/.test(maGd)) return null
+  return { maGd, soTien: soNguyen(d.so_tien), noiDung: chuoi(d.noi_dung) }
+}
+
+/** Khớp số tiền: đủ (hoặc dư) = xác nhận; thiếu = KHÔNG xác nhận, admin xử lý tay. */
+export function khopSoTien(phaiTra: number, daNhan: number): 'du' | 'du_thua' | 'thieu' {
+  if (daNhan < phaiTra) return 'thieu'
+  return daNhan === phaiTra ? 'du' : 'du_thua'
+}

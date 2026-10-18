@@ -341,7 +341,8 @@ for (const r of QUAI_CSV) {
   const s = QUAI_SQL[id]
   const dex = Number(r.dex)
   const l = loai(dex)
-  datTen(dex, (s?.ten ?? '').replace(/ Shiny$/, ''), 5)
+  // Quái năm 2 (id 139+, tools/pokemon/sinh_noi_dung.py) có thể chưa nằm trong dump: lấy tên từ ghi_chu "... -> Tên".
+  datTen(dex, (s?.ten ?? r.ghi_chu.split('->').pop().trim()).replace(/ Shiny$/, ''), 5)
   if (!l.he) l.he = [Number(r.he1), Number(r.he2)].filter(h => h >= 0)
   const phanLoai = r.phan_loai
   const shiny = Number(r.shiny) === 1

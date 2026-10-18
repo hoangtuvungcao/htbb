@@ -139,6 +139,14 @@ export interface HtbbConfig {
     accountName: string
     sepayApiKey: string
     adminNaptienPassword: string
+    /** Nạp tiền (HTBB/docs/pokemon/NAP_TIEN.md): khoá ký webhook Casso v2 (KPAH_CASSO_WEBHOOK_SECRET). */
+    cassoSecret: string
+    /** Chế độ thử: bật /api/nap/webhook-mock + nút "Giả lập thanh toán" (KPAH_NAP_SANDBOX=1, KHÔNG bật trên máy thật). */
+    sandbox: boolean
+    /** Khoá ký webhook mock (KPAH_NAP_MOCK_SECRET). */
+    mockSecret: string
+    /** Chủ server xác nhận ĐÃ có giấy phép hình ảnh/IP (NAP_DA_CO_GIAY_PHEP=1). Thiếu thì admin thấy cảnh báo đỏ. */
+    daCoGiayPhep: boolean
   }
   admin: {
     accounts: string[]
@@ -253,11 +261,15 @@ export function useHtbbConfig(): HtbbConfig {
     },
     nap: {
       bat: envBool('KPAH_NAP_BAT', false),
-      bankBin: '970423', // TPBank theo chuẩn VietQR
+      bankBin: env('KPAH_NAP_BANK_BIN') || '970423', // mặc định TPBank theo chuẩn VietQR
       accountNo: env('KPAH_TPBANK_ACCOUNT_NO') || '0000000000',
       accountName: env('KPAH_TPBANK_ACCOUNT_NAME') || 'NGUYEN VAN A',
       sepayApiKey: env('KPAH_SEPAY_WEBHOOK_APIKEY') || '',
       adminNaptienPassword: env('KPAH_ADMIN_NAPTIEN_PASSWORD') || 'doi-mat-khau-nay',
+      cassoSecret: (env('KPAH_CASSO_WEBHOOK_SECRET') ?? '').trim(),
+      sandbox: envBool('KPAH_NAP_SANDBOX', false),
+      mockSecret: (env('KPAH_NAP_MOCK_SECRET') ?? '').trim(),
+      daCoGiayPhep: (env('NAP_DA_CO_GIAY_PHEP') ?? '').trim() === '1',
     },
     admin: {
       accounts: [...new Set(admins)],

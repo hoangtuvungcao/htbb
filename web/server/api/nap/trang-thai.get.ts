@@ -1,21 +1,19 @@
 /**
- * Trạng thái 1 đơn nạp — trang /naptien hỏi lại vài giây một lần.
- * Chỉ chủ đơn mới xem được. Query: ma_don -> { trang_thai }
+ * Trạng thái 1 đơn nạp — trang /naptien hỏi lại vài giây một lần. Chỉ chủ đơn xem được.
+ * Query: ma_don -> { trang_thai, cong_luc }
  */
+import type { DonNap } from '../../utils/napTien'
+
 export default defineEventHandler(async (event) => {
   const u = await requireUser(event)
-  const maDon = str(getQuery(event).ma_don)
-  let don: DonNapMoc | null = null
+  const maDon = str(getQuery(event).ma_don).toUpperCase()
+  let don: DonNap | null = null
   try {
-    don = maDon !== '' && maDon.length <= 20 ? await napMocLayDon(maDon) : null
+    don = /^HT[A-Z0-9]{8}$/.test(maDon) ? await napLayDon(maDon) : null
   } catch (e: any) {
     console.error('[nap] doc trang thai loi:', e?.code ?? e)
     throw apiLoi(503, 'Chưa kiểm tra được đơn nạp lúc này.')
   }
-
-  // Không phân biệt "không có" với "của người khác" — không cho dò mã đơn người khác.
-  if (!don || Number(don.userID) !== u.id) {
-    throw apiLoi(404, 'Không tìm thấy đơn nạp này.', { code: 'not_found' })
-  }
-  return { trang_thai: don.trang_thai }
+  if (!don || Number(don.user_id) !== u.id) throw apiLoi(404, 'Không tìm thấy đơn nạp này.', { code: 'not_found' })
+  return { trang_thai: don.trang_thai, cong_luc: don.cong_luc }
 })

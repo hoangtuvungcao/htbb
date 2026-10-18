@@ -1,46 +1,37 @@
 /**
- * Webhook nhận thông báo biến động số dư từ SePay (https://sepay.vn) khi tài khoản
- * TPBank nhận được tiền.
+ * Webhook SePay (https://sepay.vn) báo tiền vào tài khoản ngân hàng.
  *
- * Cấu hình: SePay > Cấu hình > Webhooks trỏ tới https://<tên-miền>/api/nap/webhook-sepay,
- * đặt API Key ở đó và dán y hệt vào KPAH_SEPAY_WEBHOOK_APIKEY. Để trống thì KHÔNG
- * xác nhận tự động — admin dùng /admin/naptien hoặc /xac-nhan-nap.
+ * Cấu hình: SePay > Webhooks trỏ tới https://<tên-miền>/api/nap/webhook-sepay, kiểu xác thực
+ * "API Key", dán y hệt vào KPAH_SEPAY_WEBHOOK_APIKEY (CHỈ trong biến môi trường máy chủ, không
+ * bao giờ vào bundle trình duyệt). Để trống = không xác nhận tự động (admin xác nhận tay).
  *
- * Luôn trả HTTP 200 (kể cả khi không khớp đơn nào) để SePay không lặp lại gửi mãi;
- * chỉ 401 khi sai API key. Riêng lỗi database (MySQL tắt...) thì trả 500 — lúc đó
- * để SePay gửi lại là điều MONG MUỐN, kẻo tiền đã vào mà đơn không bao giờ được xác nhận.
- *
- * Chống trùng: UPDATE ... WHERE trang_thai='cho_thanh_toan' — gửi lặp bao nhiêu lần
- * cũng chỉ lần đầu có tác dụng.
+ * Luôn 200 khi đã xử lý (kể cả không khớp đơn) để SePay không gửi lại mãi; 401 khi sai khoá;
+ * 500 khi lỗi database (để SePay GỬI LẠI — tiền đã vào thì đơn phải được xác nhận).
+ * Gọi lặp: UNIQUE(nha_cung_cap, ma_gd) ở nap_webhook + chốt trạng thái ở napXacNhanThanhToan.
  */
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Content-Type', 'application/json; charset=utf-8')
-  const respond = (success: boolean, message = '') => {
-    setResponseStatus(event, 200)
-    return { success, message }
-  }
-
   const apiKey = useHtbbConfig().nap.sepayApiKey
   if (apiKey === '') {
-    // Chưa cấu hình SePay -> bỏ qua toàn bộ webhook, dùng xác nhận thủ công.
-    return respond(false, 'SePay chưa được cấu hình')
+    setResponseStatus(event, 200)
+    return { success: false, message: 'SePay chưa được cấu hình' }
   }
-
-  const goiLen = napMocDocApiKey(getRequestHeader(event, 'authorization'))
-  if (goiLen === null || !napMocSoKhoa(apiKey, goiLen)) {
+  if (!xacThucSepay(getRequestHeader(event, 'authorization'), apiKey)) {
     setResponseStatus(event, 401)
     return { success: false, message: 'unauthorized' }
   }
-
   const raw = (await readRawBody(event, 'utf8').catch(() => undefined)) ?? ''
-  const pt = napMocPhanTichWebhook(raw)
-  if (pt.loai === 'tra_loi') return respond(pt.success, pt.message)
-
+  let d: Record<string, unknown> | null = null
   try {
-    const don = await napMocLayDon(pt.maDon)
-    const qd = napMocQuyetDinhWebhook(don, pt.maDon, pt.amount)
-    if (qd.capNhat && don) await napMocDanhDauDaThanhToan(don.id)
-    return respond(qd.success, qd.message)
+    const p = JSON.parse(raw)
+    d = p && typeof p === 'object' ? p : null
+  } catch { d = null }
+  if (!d) return { success: false, message: 'invalid payload' }
+  const gd = docSepay(d)
+  if (gd === 'bo_qua') return { success: true, message: 'ignored (not incoming)' }
+  if (!gd) return { success: false, message: 'missing transaction id' }
+  try {
+    return await napXuLyGiaoDich(event, 'sepay', gd)
   } catch (e: any) {
     console.error('[webhook-sepay] loi database:', e?.code ?? e)
     setResponseStatus(event, 500)
