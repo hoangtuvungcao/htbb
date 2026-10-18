@@ -12,6 +12,7 @@
 import type { H3Event } from 'h3'
 import type { PoolConnection } from 'mysql2/promise'
 import type { GiaoDichVao } from './napTienThuan'
+import { dungTaiKhoan, maDonCuaGiaoDich } from './napTienThuan'
 
 export interface GoiNap {
   ma: string
@@ -267,6 +268,10 @@ export async function napXacNhanThanhToan(a: {
     if (daDung) return { ketQua: 'gd_da_dung' as const, don }
     const khop = khopSoTien(Number(don.so_tien), Math.trunc(a.soTienNhan))
     if (khop === 'thieu') {
+      // Chuyển THIẾU: không xác nhận; ghi "thanh toán một phần" lên đơn để admin thấy ở Đối soát
+      // (xác nhận tay nếu khách chuyển bù, hoặc hoàn lại). Nhiều lần thiếu thì cộng dồn.
+      await exec(conn, 'UPDATE nap_don SET so_tien_nhan = so_tien_nhan + ?, ly_do = ? WHERE id = ? AND trang_thai IN (\'cho_thanh_toan\',\'that_bai\')',
+        [Math.trunc(a.soTienNhan), `THIEU: nhan ${a.soTienNhan} (${a.nhaCungCap} ${a.maGd}), can ${don.so_tien}`.slice(0, 255), don.id])
       await napNhatKy(conn, a.tacNhan, 'thieu_tien', don.ma_don, don.user_id,
         `nhận ${a.soTienNhan} < ${don.so_tien} (${a.nhaCungCap} ${a.maGd}) — KHÔNG xác nhận, xử lý tay`, a.ip ?? '')
       return { ketQua: 'thieu_tien' as const, don }
@@ -274,7 +279,7 @@ export async function napXacNhanThanhToan(a: {
     const res = await exec(conn,
       `UPDATE nap_don SET trang_thai = 'da_thanh_toan', thanh_toan_luc = ?, nha_cung_cap = ?, ma_gd_ncc = ?, so_tien_nhan = ?, ly_do = ?
         WHERE id = ? AND trang_thai IN ('cho_thanh_toan','that_bai')`,
-      [gioDb(), a.nhaCungCap, a.maGd.slice(0, 64), Math.trunc(a.soTienNhan), (a.ghiChu ?? (khop === 'du_thua' ? 'chuyen du' : '')).slice(0, 255), don.id])
+      [gioDb(), a.nhaCungCap, a.maGd.slice(0, 64), Math.trunc(a.soTienNhan), (a.ghiChu ?? (khop === 'du_thua' ? `DU: thua ${Math.trunc(a.soTienNhan) - Number(don.so_tien)} d - admin hoan phan du` : '')).slice(0, 255), don.id])
     if (res.affectedRows !== 1) return { ketQua: 'da_xu_ly' as const, don }
     try {
       await exec(conn,
@@ -310,21 +315,32 @@ export async function napCapNhatWebhook(ncc: string, maGd: string, maDon: string
 }
 
 /**
- * Xử lý MỘT giao dịch tiền vào (chung cho SePay / Casso / mock): ghi webhook (UNIQUE chặn gọi
- * lặp) -> tìm mã đơn trong nội dung -> napXacNhanThanhToan.
+ * Xử lý MỘT giao dịch tiền vào (chung cho webhook SePay / Casso / mock VÀ job dò SePay user API):
+ *   1. ghi nap_webhook — UNIQUE(nha_cung_cap, ma_gd) chặn gọi lặp / webhook + job cùng một giao dịch;
+ *   2. tài khoản nhận phải đúng KPAH_NAP_ACCOUNT_NO (khác -> 'sai_tai_khoan', không xác nhận);
+ *   3. mã đơn: cột `code` của SePay trước, rồi tới nội dung chuyển khoản;
+ *   4. napXacNhanThanhToan (đủ/dư -> da_thanh_toan, dư ghi chú cho admin; thiếu -> ghi một phần, giữ chờ).
+ * Mọi kết quả đã ghi sổ đều trả success=true (để SePay KHÔNG gửi lại); lỗi CSDL ném ra -> 500 -> SePay gửi lại.
  */
-export async function napXuLyGiaoDich(event: H3Event, ncc: 'sepay' | 'casso' | 'mock', gd: GiaoDichVao): Promise<{ success: boolean, message: string }> {
-  const ip = ipKhach(event)
-  const maDon = timMaDon(gd.noiDung)
-  const moi = await napGhiWebhook(ncc, gd.maGd, true, gd.soTien, gd.noiDung, maDon ?? '', 'dang_xu_ly', ip)
-  if (!moi) return { success: true, message: 'duplicate (already received)' }
+export async function napXuLyGiaoDich(nguonIp: H3Event | string, ncc: 'sepay' | 'casso' | 'mock', gd: GiaoDichVao): Promise<{ success: boolean, message: string, ketQua: string }> {
+  const ip = typeof nguonIp === 'string' ? nguonIp : ipKhach(nguonIp)
+  const maDon = maDonCuaGiaoDich(gd)
+  const noiDung = `${gd.maThanhToan ? `[code ${gd.maThanhToan}] ` : ''}${gd.noiDung}`
+  const moi = await napGhiWebhook(ncc, gd.maGd, true, gd.soTien, noiDung, maDon ?? '', 'dang_xu_ly', ip)
+  if (!moi) return { success: true, message: 'duplicate (already received)', ketQua: 'trung' }
+  if (!dungTaiKhoan(gd, useHtbbConfig().nap.accountNo)) {
+    await napCapNhatWebhook(ncc, gd.maGd, maDon ?? '', `sai_tai_khoan ${gd.soTaiKhoan}`)
+    await napNhatKy(null, `webhook:${ncc}`, 'sai_tai_khoan', maDon ?? '', 0, `GD ${gd.maGd} vào TK ${gd.soTaiKhoan} (không phải TK cấu hình) — bỏ qua`, ip)
+    return { success: true, message: 'ignored (other account)', ketQua: 'sai_tai_khoan' }
+  }
   if (!maDon) {
-    await napCapNhatWebhook(ncc, gd.maGd, '', /KP[A-Z0-9]{6,10}/i.test(gd.noiDung) ? 'ma_don_cu_moc_nap_xu_ly_tay' : 'khong_co_ma_don')
-    return { success: true, message: 'no order code in content' }
+    const kq = /KP[A-Z0-9]{6,10}/i.test(gd.noiDung) ? 'ma_don_cu_moc_nap_xu_ly_tay' : 'khong_co_ma_don'
+    await napCapNhatWebhook(ncc, gd.maGd, '', kq)
+    return { success: true, message: 'no order code', ketQua: kq }
   }
   const kq = await napXacNhanThanhToan({ maDon, soTienNhan: gd.soTien, nhaCungCap: ncc, maGd: gd.maGd, tacNhan: `webhook:${ncc}`, ip })
   await napCapNhatWebhook(ncc, gd.maGd, maDon, kq.ketQua)
-  return { success: kq.ketQua === 'ok' || kq.ketQua === 'da_xu_ly', message: `${kq.ketQua} ${maDon}` }
+  return { success: true, message: `${kq.ketQua} ${maDon}`, ketQua: kq.ketQua }
 }
 
 // ---------------------------------------------------------------- hoàn tiền / cộng tay
@@ -376,10 +392,13 @@ export async function napDoiSoat() {
     `SELECT SUBSTR(thanh_toan_luc, 1, 10) AS ngay, COUNT(*) AS so, COALESCE(SUM(so_tien_nhan), 0) AS tien FROM nap_don
       WHERE thanh_toan_luc IS NOT NULL AND thanh_toan_luc >= ? GROUP BY SUBSTR(thanh_toan_luc, 1, 10) ORDER BY ngay DESC`,
     [gioDb(new Date(Date.now() - 30 * 86400_000))])
+  const lechTien = await q<DonNap>(dbGame(),
+    `SELECT ${NAP_DON_COT} FROM nap_don WHERE (so_tien_nhan > so_tien) OR (so_tien_nhan > 0 AND so_tien_nhan < so_tien AND trang_thai IN ('cho_thanh_toan','that_bai'))
+      ORDER BY id DESC LIMIT 50`)
   const soCai = await q<{ loai: string, so: number, luong: number, tien: number }>(dbGame(),
     'SELECT loai, COUNT(*) AS so, COALESCE(SUM(so_luong), 0) AS luong, COALESCE(SUM(so_tien), 0) AS tien FROM nap_so_cai GROUP BY loai')
   const cauHinh = await napCauHinh()
-  return { thongKe, choCongLau, congChuaLuu, webhookLoi, theoNgay, soCai, cauHinh }
+  return { thongKe, choCongLau, congChuaLuu, webhookLoi, theoNgay, soCai, cauHinh, lechTien }
 }
 
 export async function napTenTaiKhoan(ten: string): Promise<{ id: number, username: string } | null> {

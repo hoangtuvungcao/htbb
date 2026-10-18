@@ -40,6 +40,20 @@ const charId = ref<number | undefined>(undefined)
 const don = ref<DonHienThi | null>(null)
 const qr = ref('')
 const nganHang = ref<{ bin: string, soTaiKhoan: string, chuTaiKhoan: string } | null>(null)
+const moApp = ref<{ ten: string, url: string }[]>([])
+const hetHanMs = ref<number | null>(null)
+const lechMs = ref(0)
+const bayGio = ref(Date.now())
+let dongHo: ReturnType<typeof setInterval> | null = null
+const conLai = computed(() => {
+  if (!hetHanMs.value) return ''
+  const ms = hetHanMs.value - (bayGio.value + lechMs.value)
+  if (ms <= 0) return 'đã quá hạn (tiền đến muộn vẫn được nhận)'
+  const h = Math.floor(ms / 3600_000)
+  const m = Math.floor((ms % 3600_000) / 60_000)
+  const sec = Math.floor((ms % 60_000) / 1000)
+  return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+})
 const lichSu = ref<DonHienThi[]>([])
 const loi = ref('')
 const dangTai = ref(false)
@@ -111,10 +125,13 @@ async function taiDon(ma: string) {
   if (!ma) return
   dangTai.value = true
   try {
-    const r = await api<{ don: DonHienThi, qr: string, nganHang: { bin: string, soTaiKhoan: string, chuTaiKhoan: string } }>('/api/nap/don', { query: { ma_don: ma } })
+    const r = await api<{ don: DonHienThi, qr: string, nganHang: { bin: string, soTaiKhoan: string, chuTaiKhoan: string }, hetHanMs: number | null, bayGioMs: number, moApp: { ten: string, url: string }[] }>('/api/nap/don', { query: { ma_don: ma } })
     don.value = r.don
     qr.value = r.qr
     nganHang.value = r.nganHang
+    moApp.value = r.moApp ?? []
+    hetHanMs.value = r.hetHanMs
+    lechMs.value = r.bayGioMs - Date.now()
     henHoi(4000)
   } catch (e) {
     loi.value = loiApi(e)
@@ -181,8 +198,12 @@ watch(maDon, ma => taiDon(ma), { immediate: true })
 onMounted(() => {
   taiDanhMuc()
   taiLichSu()
+  dongHo = setInterval(() => { bayGio.value = Date.now() }, 1000)
 })
-onBeforeUnmount(dungHoi)
+onBeforeUnmount(() => {
+  dungHoi()
+  if (dongHo) clearInterval(dongHo)
+})
 
 const cotLichSu = [
   { accessorKey: 'ma_don', header: 'Mã đơn' },
@@ -227,8 +248,19 @@ const cotLichSu = [
                   <img :src="qr" alt="Mã QR chuyển khoản VietQR" class="block size-64 sm:size-72" width="288" height="288">
                 </div>
                 <p class="mt-4 text-center text-sm text-muted">
-                  Quét bằng app ngân hàng bất kỳ hỗ trợ VietQR.
+                  Quét bằng app ngân hàng bất kỳ hỗ trợ VietQR — số tiền và nội dung đã điền sẵn.
                 </p>
+                <p v-if="conLai" class="mt-1 text-center text-sm" role="timer">
+                  Thời hạn thanh toán: <strong class="tabular-nums text-highlighted">{{ conLai }}</strong>
+                </p>
+                <div v-if="moApp.length" class="mt-4">
+                  <p class="text-center text-xs text-muted">
+                    Đang dùng điện thoại? Mở thẳng app ngân hàng (đã điền sẵn):
+                  </p>
+                  <div class="mt-2 flex flex-wrap justify-center gap-2">
+                    <UButton v-for="a in moApp" :key="a.ten" :to="a.url" external target="_blank" size="xs" color="neutral" variant="outline" :label="a.ten" />
+                  </div>
+                </div>
                 <dl class="mt-6 divide-y divide-default/60 overflow-hidden rounded-xl border border-default/60 text-sm">
                   <div class="flex items-center justify-between gap-4 px-4 py-3">
                     <dt class="text-muted">

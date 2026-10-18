@@ -247,6 +247,10 @@ export interface GiaoDichVao {
   maGd: string
   soTien: number
   noiDung: string
+  /** Mã thanh toán SePay tự nhận ra (cột `code`) — khớp TRƯỚC nội dung. */
+  maThanhToan?: string
+  /** Số tài khoản nhận tiền theo cổng — phải đúng tài khoản của mình. */
+  soTaiKhoan?: string
 }
 
 function soNguyen(v: unknown): number {
@@ -262,12 +266,98 @@ function chuoi(v: unknown): string {
   return typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '')
 }
 
-/** SePay: { id, transferType: 'in' | 'out', transferAmount, content, code, referenceCode }. Tiền ra -> null. */
+/**
+ * SePay webhook (docs.sepay.vn/tich-hop-webhooks.html): { id, gateway, transactionDate, accountNumber,
+ * code, content, transferType: 'in' | 'out', transferAmount, accumulated, subAccount, referenceCode,
+ * description }. Tiền ra -> 'bo_qua'. maGd = `id` của SePay (cũng là id trong user API -> job dò
+ * giao dịch lỡ webhook trùng khoá, không cộng hai lần).
+ */
 export function docSepay(d: Record<string, unknown>): GiaoDichVao | null | 'bo_qua' {
   if (d.transferType !== 'in') return 'bo_qua'
-  const maGd = chuoi(d.id) || chuoi(d.referenceCode)
+  const maGd = chuoi(d.id)
   if (!maGd) return null
-  return { maGd, soTien: soNguyen(d.transferAmount), noiDung: `${chuoi(d.content)} ${chuoi(d.code)} ${chuoi(d.description)}` }
+  return {
+    maGd,
+    soTien: soNguyen(d.transferAmount),
+    noiDung: `${chuoi(d.content)} ${chuoi(d.description)}`.trim(),
+    maThanhToan: chuoi(d.code),
+    soTaiKhoan: chuoi(d.subAccount) || chuoi(d.accountNumber),
+  }
+}
+
+/**
+ * Một dòng SePay user API GET /userapi/transactions/list: { id, account_number, transaction_date,
+ * amount_in, amount_out, transaction_content, reference_number, code, sub_account }.
+ */
+export function docSepayApi(d: Record<string, unknown>): GiaoDichVao | null {
+  const soTien = soNguyen(d.amount_in)
+  const maGd = chuoi(d.id)
+  if (!maGd || soTien <= 0) return null
+  return {
+    maGd,
+    soTien,
+    noiDung: chuoi(d.transaction_content),
+    maThanhToan: chuoi(d.code),
+    soTaiKhoan: chuoi(d.sub_account) || chuoi(d.account_number),
+  }
+}
+
+/** Mã đơn của một giao dịch: cột code (SePay) trước, rồi tới nội dung. */
+export function maDonCuaGiaoDich(gd: GiaoDichVao): string | null {
+  return timMaDon(gd.maThanhToan) ?? timMaDon(gd.noiDung)
+}
+
+/** Tài khoản nhận có đúng của mình không (bỏ khoảng trắng; cổng không gửi số TK = không kiểm được -> chấp nhận). */
+export function dungTaiKhoan(gd: GiaoDichVao, cuaMinh: string): boolean {
+  const a = (gd.soTaiKhoan ?? '').replace(/\s+/g, '')
+  return a === '' || a === cuaMinh.replace(/\s+/g, '')
+}
+
+// ---------------------------------------------------------------- cấu hình máy thật (fail closed)
+
+export const MK_NAP_MAC_DINH = 'doi-mat-khau-nay'
+
+/**
+ * Lý do KHÔNG được bật nạp trên máy thật (rỗng = được). config.ts gọi lúc khởi động: có lý do thì
+ * ép KPAH_NAP_BAT=false và in log rõ ràng.
+ */
+export function kiemCauHinhNapThat(c: {
+  secret: string
+  adminNaptienPassword: string
+  accountNo: string
+  accountName: string
+  bankBin: string
+  sepayApiKey: string
+  sepayApiToken: string
+  sandbox: boolean
+}): string[] {
+  const loi: string[] = []
+  const yeu = (s: string, n: number) => s.length < n || /^(.)\1+$/.test(s) || /^(123|abc|password|changeme|doi)/i.test(s)
+  if (yeu(c.secret, 32)) loi.push('KPAH_SECRET trống/yếu (cần >= 32 ký tự ngẫu nhiên: openssl rand -hex 32)')
+  if (c.adminNaptienPassword === MK_NAP_MAC_DINH || yeu(c.adminNaptienPassword, 12)) {
+    loi.push('KPAH_ADMIN_NAPTIEN_PASSWORD đang là mặc định hoặc < 12 ký tự')
+  }
+  if (!/^\d{6,19}$/.test(c.accountNo) || c.accountNo === '0000000000') loi.push('KPAH_NAP_ACCOUNT_NO (số tài khoản nhận tiền) chưa đặt')
+  if (c.accountName === '' || c.accountName === 'NGUYEN VAN A') loi.push('KPAH_NAP_ACCOUNT_NAME (tên chủ tài khoản, viết hoa không dấu) chưa đặt')
+  if (!/^\d{6}$/.test(c.bankBin)) loi.push('KPAH_NAP_BANK_BIN phải là mã BIN 6 số (VD 970423 TPBank)')
+  if (yeu(c.sepayApiKey, 24)) loi.push('KPAH_SEPAY_WEBHOOK_APIKEY trống/yếu (>= 24 ký tự) — nạp tự động cần webhook SePay')
+  if (c.sepayApiToken !== '' && c.sepayApiToken.length < 20) loi.push('KPAH_SEPAY_API_TOKEN quá ngắn (để trống nếu không dùng job dò giao dịch)')
+  if (c.sandbox) loi.push('KPAH_NAP_SANDBOX=1 không được bật trên máy thật')
+  return loi
+}
+
+// ---------------------------------------------------------------- VietQR deep link (mở app ngân hàng)
+
+/** Vài app phổ biến (mã app theo api.vietqr.io/v2/android-app-deeplinks — kiểm lại khi đổi). */
+export const APP_NGAN_HANG: { app: string, ten: string }[] = [
+  { app: 'vcb', ten: 'Vietcombank' }, { app: 'tcb', ten: 'Techcombank' }, { app: 'mb', ten: 'MB Bank' },
+  { app: 'tpb', ten: 'TPBank' }, { app: 'bidv', ten: 'BIDV' }, { app: 'icb', ten: 'VietinBank' },
+  { app: 'acb', ten: 'ACB' }, { app: 'vpb', ten: 'VPBank' },
+]
+
+/** https://dl.vietqr.io/pay?app=<app>&ba=<số TK>@<BIN>&am=<tiền>&tn=<nội dung>. */
+export function vietQrDeepLink(app: string, bin: string, soTk: string, soTien: number, noiDung: string): string {
+  return `https://dl.vietqr.io/pay?${new URLSearchParams({ app, ba: `${soTk}@${bin}`, am: String(Math.trunc(soTien)), tn: noiDung })}`
 }
 
 /** Casso v2: { error: 0, data: { id, reference, description, amount } } (v1: data là mảng — lấy từng phần tử). */

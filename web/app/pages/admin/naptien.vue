@@ -32,7 +32,7 @@ interface Don {
 }
 interface Goi { ma: string, ten: string, loai: string, gia_vnd: number, luong: number, mo_ta: string, dang_ban: number, thu_tu: number }
 interface Mon { ma: string, ten: string, nhom: string, trao: string, gia_luong: number, han_ngay: number, gioi_han: number, nhom_xoay: number, giao_dich_duoc: number, co_chi_so: number, dang_ban: number, thu_tu: number, mo_ta: string, loi: string | null }
-interface CanhBao { napBat: boolean, daCoGiayPhep: boolean, sandbox: boolean, sepay: boolean, casso: boolean, taiKhoanMacDinh: boolean }
+interface CanhBao { napBat: boolean, daCoGiayPhep: boolean, sandbox: boolean, sepay: boolean, casso: boolean, taiKhoanMacDinh: boolean, yeuCauBat: boolean, lyDoTat: string[], jobSepay: boolean }
 interface TongQuan {
   coBang: boolean
   canhBao: CanhBao
@@ -43,6 +43,7 @@ interface TongQuan {
   theoNgay?: { ngay: string, so: number, tien: number }[]
   soCai?: { loai: string, so: number, luong: number, tien: number }[]
   serverGame?: { lanCuoiMs: number, soGiay: number } | null
+  lechTien?: Don[]
   tran?: { tuan: number, thang: number }
 }
 
@@ -223,6 +224,14 @@ onMounted(() => {
       title="NẠP TIỀN ĐANG BẬT NHƯNG CHƯA XÁC NHẬN GIẤY PHÉP"
       description="Asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo/The Pokémon Company. Thu tiền khi chưa có giấy phép là vi phạm. Tắt KPAH_NAP_BAT ngay, hoặc khi đã có giấy phép bằng văn bản thì đặt NAP_DA_CO_GIAY_PHEP=1 (HTBB/docs/pokemon/NAP_TIEN.md mục 9)."
     />
+    <UAlert
+      v-if="tq?.canhBao.yeuCauBat && tq.canhBao.lyDoTat.length"
+      color="error"
+      variant="solid"
+      icon="i-lucide-shield-x"
+      title="KPAH_NAP_BAT=true nhưng nạp BỊ TẮT (fail closed): cấu hình chưa an toàn"
+      :description="tq.canhBao.lyDoTat.join(' · ')"
+    />
     <UAlert v-else-if="tq && !tq.canhBao.napBat" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (KPAH_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, sql/pokemon_nap_tien.sql, sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
     <UAlert v-if="tq?.canhBao.sandbox" color="warning" variant="subtle" icon="i-lucide-flask-conical" title="Chế độ thử (KPAH_NAP_SANDBOX=1)" description="Có nút Giả lập thanh toán và /api/nap/webhook-mock. KHÔNG bật trên máy thật." />
     <UAlert v-if="tq?.canhBao.napBat && !tq.canhBao.sepay && !tq.canhBao.casso" color="warning" variant="subtle" icon="i-lucide-triangle-alert" title="Chưa cấu hình webhook (SePay / Casso)" description="Đơn KHÔNG tự xác nhận. Đối chiếu sao kê rồi bấm Xác nhận (nhập mã giao dịch)." />
@@ -313,7 +322,7 @@ onMounted(() => {
       </div>
       <p class="text-sm text-muted">
         Trần nạp mỗi tài khoản: {{ vnd(tq.tran?.tuan ?? 0) }}/tuần, {{ vnd(tq.tran?.thang ?? 0) }}/tháng (bảng nap_cau_hinh, kẹp ≤ 5.000.000 đ).
-        Server game: {{ tq.serverGame ? `${tq.serverGame.soGiay} giây trước` : 'chưa báo nhịp' }}.
+        Server game: {{ tq.serverGame ? `${tq.serverGame.soGiay} giây trước` : 'chưa báo nhịp' }}. Job dò SePay (lỡ webhook): {{ tq.canhBao.jobSepay ? 'đang chạy' : 'tắt (KPAH_SEPAY_API_TOKEN trống)' }}.
       </p>
       <UCard v-if="tq.choCongLau?.length">
         <template #header>
@@ -322,6 +331,17 @@ onMounted(() => {
         <ul class="text-sm">
           <li v-for="d in tq.choCongLau" :key="d.id">
             <span class="font-mono">{{ d.ma_don }}</span> · {{ d.username }} → {{ d.charname }} · {{ vnd(d.so_tien) }} · {{ d.thanh_toan_luc }}
+          </li>
+        </ul>
+      </UCard>
+      <UCard v-if="tq.lechTien?.length">
+        <template #header>
+          <b class="text-warning">Chuyển dư / chuyển thiếu</b> <span class="text-sm text-muted">(dư: hoàn phần dư cho khách; thiếu: xác nhận tay khi khách chuyển bù hoặc hoàn lại)</span>
+        </template>
+        <ul class="text-sm">
+          <li v-for="d in tq.lechTien" :key="d.id">
+            <span class="font-mono">{{ d.ma_don }}</span> · {{ d.username }} · phải {{ vnd(d.so_tien) }}, nhận {{ vnd(d.so_tien_nhan) }}
+            ({{ d.so_tien_nhan > d.so_tien ? `dư ${vnd(d.so_tien_nhan - d.so_tien)}` : `thiếu ${vnd(d.so_tien - d.so_tien_nhan)}` }}) · {{ TEN_TRANG_THAI_NAP[d.trang_thai] }}
           </li>
         </ul>
       </UCard>

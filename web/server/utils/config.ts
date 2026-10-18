@@ -8,6 +8,7 @@
  *
  * Bí mật (mật khẩu DB, số tài khoản, API key) KHÔNG bao giờ nằm trong mã nguồn.
  */
+import { kiemCauHinhNapThat } from './napTienThuan'
 import { readFileSync, statSync, accessSync, constants } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { createHash, randomBytes } from 'node:crypto'
@@ -147,6 +148,15 @@ export interface HtbbConfig {
     mockSecret: string
     /** Chủ server xác nhận ĐÃ có giấy phép hình ảnh/IP (NAP_DA_CO_GIAY_PHEP=1). Thiếu thì admin thấy cảnh báo đỏ. */
     daCoGiayPhep: boolean
+    /** Token SePay user API (KPAH_SEPAY_API_TOKEN) cho job dò giao dịch bị lỡ webhook. Trống = tắt job. */
+    sepayApiToken: string
+    /** Phút giữa hai lần dò SePay (2–5, mặc định 3) và số giờ nhìn lại (mặc định 6). */
+    sepayDoPhut: number
+    sepayDoGio: number
+    /** KPAH_NAP_BAT người vận hành đặt (trước khi kiểm cấu hình). */
+    yeuCauBat: boolean
+    /** Lý do bị TẮT cưỡng bức (máy thật, cấu hình yếu) — rỗng = không bị chặn. */
+    lyDoTat: string[]
   }
   admin: {
     accounts: string[]
@@ -262,14 +272,20 @@ export function useHtbbConfig(): HtbbConfig {
     nap: {
       bat: envBool('KPAH_NAP_BAT', false),
       bankBin: env('KPAH_NAP_BANK_BIN') || '970423', // mặc định TPBank theo chuẩn VietQR
-      accountNo: env('KPAH_TPBANK_ACCOUNT_NO') || '0000000000',
-      accountName: env('KPAH_TPBANK_ACCOUNT_NAME') || 'NGUYEN VAN A',
+      // KPAH_NAP_ACCOUNT_* là tên mới; KPAH_TPBANK_* giữ cho cấu hình cũ.
+      accountNo: (env('KPAH_NAP_ACCOUNT_NO') || env('KPAH_TPBANK_ACCOUNT_NO') || '0000000000').trim(),
+      accountName: (env('KPAH_NAP_ACCOUNT_NAME') || env('KPAH_TPBANK_ACCOUNT_NAME') || 'NGUYEN VAN A').trim(),
       sepayApiKey: env('KPAH_SEPAY_WEBHOOK_APIKEY') || '',
       adminNaptienPassword: env('KPAH_ADMIN_NAPTIEN_PASSWORD') || 'doi-mat-khau-nay',
       cassoSecret: (env('KPAH_CASSO_WEBHOOK_SECRET') ?? '').trim(),
       sandbox: envBool('KPAH_NAP_SANDBOX', false),
       mockSecret: (env('KPAH_NAP_MOCK_SECRET') ?? '').trim(),
       daCoGiayPhep: (env('NAP_DA_CO_GIAY_PHEP') ?? '').trim() === '1',
+      sepayApiToken: (env('KPAH_SEPAY_API_TOKEN') ?? '').trim(),
+      sepayDoPhut: Math.min(5, Math.max(2, envInt('KPAH_SEPAY_DO_PHUT', 3))),
+      sepayDoGio: Math.min(48, Math.max(1, envInt('KPAH_SEPAY_DO_GIO', 6))),
+      yeuCauBat: envBool('KPAH_NAP_BAT', false),
+      lyDoTat: [],
     },
     admin: {
       accounts: [...new Set(admins)],
@@ -288,6 +304,26 @@ export function useHtbbConfig(): HtbbConfig {
     secret,
     trustedProxies: (env('KPAH_TRUSTED_PROXIES') ?? '127.0.0.1,::1,::ffff:127.0.0.1')
       .split(',').map(s => s.trim()).filter(Boolean),
+  }
+  // FAIL CLOSED (máy thật): bật nạp với cấu hình yếu = TẮT, in rõ lý do. Máy dev: chỉ cảnh báo.
+  if (cache.nap.yeuCauBat) {
+    const loi = kiemCauHinhNapThat({
+      secret: env('KPAH_SECRET') ?? '',
+      adminNaptienPassword: cache.nap.adminNaptienPassword,
+      accountNo: cache.nap.accountNo,
+      accountName: cache.nap.accountName,
+      bankBin: cache.nap.bankBin,
+      sepayApiKey: cache.nap.sepayApiKey,
+      sepayApiToken: cache.nap.sepayApiToken,
+      sandbox: cache.nap.sandbox,
+    })
+    if (loi.length && !import.meta.dev) {
+      cache.nap.bat = false
+      cache.nap.lyDoTat = loi
+      console.error(`[htbb] NAP TIEN BI TAT (fail closed) - cau hinh chua an toan:\n  - ${loi.join('\n  - ')}\n  Sua bien moi truong roi khoi dong lai. Xem HTBB/docs/pokemon/NAP_TIEN.md muc SePay.`)
+    } else if (loi.length) {
+      console.warn(`[htbb] (dev) cau hinh nap chua dat cho may that:\n  - ${loi.join('\n  - ')}`)
+    }
   }
   return cache
 }

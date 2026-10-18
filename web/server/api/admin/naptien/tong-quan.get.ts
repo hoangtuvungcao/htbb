@@ -12,6 +12,9 @@ export default defineAdminHandler(async () => {
     sepay: n.sepayApiKey !== '',
     casso: n.cassoSecret !== '',
     taiKhoanMacDinh: n.accountNo === '0000000000',
+    yeuCauBat: n.yeuCauBat,
+    lyDoTat: n.lyDoTat,
+    jobSepay: n.bat && n.sepayApiToken !== '',
   }
   if (!(await napCoBang())) return { coBang: false, canhBao }
   const ds = await napDoiSoat()
