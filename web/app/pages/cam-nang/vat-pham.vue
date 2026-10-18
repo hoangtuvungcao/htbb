@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * Vật phẩm — nhóm theo docs/kien-truc.md §6.4; đá Eevee + mốc Pokédex từ pokedex.json;
  * bảng chi tiết (công dụng, cấp, giá, nguồn, giới hạn) từ du_lieu/web/vat_pham.csv (cam-nang-noi-dung.json).

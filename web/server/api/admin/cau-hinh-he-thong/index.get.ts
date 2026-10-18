@@ -1,5 +1,5 @@
 /**
- * Trang "Cấu hình hệ thống": danh mục (bản sinh), giá trị đang lưu, giá trị MÁY CHỦ ĐANG CHẠY (cau_hinh_hieu_luc,
+ * Trang "Cấu hình hệ thống": danh mục (CSDL cau_hinh_danh_muc + cau_hinh_nhom; dự phòng bản sinh), giá trị đang lưu, giá trị MÁY CHỦ ĐANG CHẠY (cau_hinh_hieu_luc,
  * do game ghi sau khi áp dụng), xác nhận áp dụng từng máy chủ, phiên bản, yêu cầu khởi động lại.
  * Đọc: siêu quản trị + Chỉ xem. Không trả bí mật nào (khoá env chỉ là cờ 0/1).
  */
@@ -11,6 +11,7 @@ export default defineAdminHandler(async (_event, admin) => {
   let phienBan = { phien_ban: 0, sua_luc: null as string | null, sua_boi: null as string | null }
   let khoiDongLai: Record<string, any> | null = null
   let giayTuNhip: number | null = null
+  const nguonDanhMuc = await napDanhMucTTServer()
   try {
     await chTaoBang()
     luu = await chDocLuu()
@@ -33,7 +34,7 @@ export default defineAdminHandler(async (_event, admin) => {
   const n = useHtbbConfig().nap
   const giaTri: Record<string, string | null> = {}
   const suaBoi: Record<string, { boi: string | null, luc: string | null }> = {}
-  for (const k of DANH_MUC_TT) {
+  for (const k of danhMucTT()) {
     if (k.bang === 'env') continue
     giaTri[k.khoa] = giaTriLuu(luu, k)
     const d = k.bang === 'nap_cau_hinh' ? luu[`nap_cau_hinh:${k.khoa}`] : luu[k.khoa]
@@ -41,6 +42,9 @@ export default defineAdminHandler(async (_event, admin) => {
   }
   return {
     loiDoc,
+    danhMuc: danhMucTT(),
+    nhom: dsNhomTT(),
+    nguonDanhMuc,
     giaTri,
     suaBoi,
     env: chTrangThaiEnv(),

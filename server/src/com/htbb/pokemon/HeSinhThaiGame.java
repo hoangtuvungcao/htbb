@@ -1273,7 +1273,7 @@ public final class HeSinhThaiGame {
         /** Nhan ho moi o (-1 = khong phai ho) va so o moi ho - phan loai 1 lan khi nap ban do. */
         final int[] ho, kichThuocHo;
 
-        BanDoPhanTich(final int w, final int h, final boolean[] nuoc, final boolean[] diDuoc) {
+        BanDoPhanTich(final int idNap, final int w, final int h, final boolean[] nuoc, final boolean[] diDuoc) {
             this.w = w;
             this.h = h;
             this.nuoc = nuoc;
@@ -1281,10 +1281,10 @@ public final class HeSinhThaiGame {
             this.soNuoc = BanDoSinhThai.demNuoc(nuoc);
             this.ho = nuoc == null ? null : BanDoSinhThai.nhanHo(nuoc, w, h);
             this.kichThuocHo = ho == null ? new int[0] : BanDoSinhThai.kichThuocHo(ho);
-            this.diemCau = ho == null ? new ArrayList<int[]>() : BanDoSinhThai.diemCau(ho, diDuoc, w, h, 4);
+            this.diemCau = ho == null ? new ArrayList<int[]>() : BanDoSinhThai.diemCauCua(idNap);
         }
 
-        /** Diem cau (cung ket qua data_hst_ho_cau / diem_cau_ca.csv): {hoId, x, y}. */
+        /** Diem cau tu bang data_hst_ho_cau (BanDoSinhThai.diemCauCua): {hoId, x, y, so o}. */
         final List<int[]> diemCau;
     }
 
@@ -1301,9 +1301,9 @@ public final class HeSinhThaiGame {
                 final DinhDangBanDo bd = DinhDangBanDo.doc(b);
                 final String bo = DinhDangBanDo.boTile(k);
                 final boolean[] nuoc = BanDoSinhThai.luoiNuoc(bd, bo);
-                return new BanDoPhanTich(bd.w, bd.h, nuoc, BanDoSinhThai.luoiDiDuoc(bd, KieuTile.lay(bo), nuoc));
+                return new BanDoPhanTich(k, bd.w, bd.h, nuoc, BanDoSinhThai.luoiDiDuoc(bd, KieuTile.lay(bo), nuoc));
             } catch (final Exception e) {
-                return new BanDoPhanTich(0, 0, null, null);
+                return new BanDoPhanTich(k, 0, 0, null, null);
             }
         });
     }

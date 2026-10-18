@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /** Pokédex & Shiny — pokedex.json (mốc thưởng, loài shiny) + cam-nang.json (nhiệm vụ nghiên cứu, sự kiện). */
 const soLoaiHaDuoc = POKEDEX.loai.filter(l => l.quai.length).length
 const loaiShiny = POKEDEX.loai.filter(l => l.anhShiny && l.quai.some(q => q.shiny))

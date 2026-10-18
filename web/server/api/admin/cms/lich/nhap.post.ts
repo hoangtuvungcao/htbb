@@ -1,12 +1,12 @@
 /**
- * Nhập lịch 52 tuần từ dữ liệu game (su_kien_nam.csv đã đồng bộ vào shared/data/cam-nang.json).
+ * Nhập lịch 52 tuần từ dữ liệu game (bảng data_su_kien_nam; CSDL không đọc được thì bản cam-nang.json lúc build).
  * Body { ghiDe?: boolean } — mặc định chỉ thêm tuần còn thiếu, không đè tuần đã sửa tay.
  */
 export default defineAdminHandler(async (event) => {
   await canBangCms('web_su_kien_lich')
   const ghiDe = (await bodyObj(event).catch(() => ({} as Record<string, unknown>))).ghiDe === true
   let them = 0
-  for (const s of CAM_NANG.suKien) {
+  for (const s of (await camNangServer()).suKien) {
     const co = await qv(dbGame(), 'SELECT tuan FROM web_su_kien_lich WHERE tuan = ? LIMIT 1', [s.tuan])
     if (co && !ghiDe) continue
     if (co) await exec(dbGame(), 'DELETE FROM web_su_kien_lich WHERE tuan = ?', [s.tuan])

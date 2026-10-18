@@ -7,8 +7,14 @@
  */
 const props = defineProps<{ nhom?: string, khoa?: string[], tieuDe?: string }>()
 const ch = useCauHinhTT(`admin-cau-hinh-tt-nhung-${props.nhom ?? (props.khoa ?? []).join(',')}`)
-const ds = computed(() => DANH_MUC_TT.filter(k => (props.nhom ? k.nhom === props.nhom : true) && (props.khoa ? props.khoa.includes(k.khoa) : true)))
-const ten = computed(() => props.tieuDe ?? NHOM_TT.find(n => n.ma === props.nhom)?.ten ?? 'Cấu hình')
+const ds = computed(() => {
+  void ch.phienDanhMuc.value
+  return danhMucTT().filter(k => (props.nhom ? k.nhom === props.nhom : true) && (props.khoa ? props.khoa.includes(k.khoa) : true))
+})
+const ten = computed(() => {
+  void ch.phienDanhMuc.value
+  return props.tieuDe ?? dsNhomTT().find(n => n.ma === props.nhom)?.ten ?? 'Cấu hình'
+})
 const lyDo = ref('')
 const cuaToi = computed(() => ch.soSanh.value.thayDoi.filter(d => ds.value.some(k => k.khoa === d.khoa)))
 const coLoi = computed(() => ds.value.some(k => ch.loiNhap.value[k.khoa]))

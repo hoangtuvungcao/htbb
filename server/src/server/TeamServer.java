@@ -898,6 +898,12 @@ public class TeamServer {
         // PHAI dung truoc moi viec cham CSDL. Xem kiemTraCSDL().
         kiemTraCSDL(p);
 
+        // DU LIEU THIET KE TU SQL (P1, docs/kien-truc.md muc 4.4): bang EXP / nang cap / so kinh te dai han, lich su
+        // kien 52 tuan, diem cau ca, trang bi giftcode - bang trong CSDL la nguon DUY NHAT (khong con ban chep Java).
+        // PHAI ngay sau kiemTraCSDL va TRUOC SuKien.nap / ChuyenDoiLauDai / startSaveChar (deu dung cac so nay).
+        // Thieu bang quan trong (ke ca danh muc cau hinh CauHinhTrungTam.khoiTao vua doc) -> dung server, in cach sua.
+        data.DatabaseDuLieuSql.napLucKhoiDong();
+
         // Cong bat/tat su kien (bang tob_su_kien). PHAI chay TRUOC Database.startSaveChar()
         // - ham do goi Map.loadAllTemplate() -> Map.loadShop(), va bang shop dat
         // SELL/NOT_SELL theo Char.isSuKien* NGAY LUC NAP roi khong hoi lai nua. Nap cong

@@ -1,6 +1,7 @@
 /**
  * SINH TU HTBB/tools/cauhinh/danh_muc.json boi HTBB/tools/cauhinh/sinh_cau_hinh.py — KHÔNG SỬA TAY.
- * Bản sao web của danh mục cấu hình trung tâm (máy chủ game: com.htbb.cauhinh.DanhMucSinh).
+ * Bản dự phòng của danh mục cấu hình trung tâm: web đọc bảng cau_hinh_danh_muc / cau_hinh_nhom trước
+ * (server/utils/cauHinhDanhMucSql.ts), máy chủ game chỉ đọc bảng (com.htbb.cauhinh.DanhMucSql).
  * Hàm kiểm / so sánh thuần: shared/utils/cauHinhTrungTam.ts.
  */
 

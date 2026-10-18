@@ -3,8 +3,8 @@ package com.htbb.cauhinh;
 import java.util.regex.Pattern;
 
 /**
- * Dinh nghia MOT khoa cau hinh (sinh tu tools/cauhinh/danh_muc.json -> {@link DanhMucSinh}).
- * Bat bien sau khi dung xong (cac ham dat chi goi trong DanhMucSinh / test).
+ * Dinh nghia MOT khoa cau hinh (tools/cauhinh/danh_muc.json -> bang cau_hinh_danh_muc -> {@link DanhMucSql}).
+ * Bat bien sau khi dung xong (cac ham dat chi goi trong DanhMucSql / test).
  */
 public final class DinhNghiaKhoa {
 

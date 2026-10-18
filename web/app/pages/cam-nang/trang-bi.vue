@@ -1,5 +1,6 @@
 <script setup lang="ts">
-/** Trang bị & nâng cấp — mọi số từ cam-nang.json (ThongSoLauDai.java: TI_LE_NC, CHI_PHI_NC, ...). */
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
+/** Trang bị & nâng cấp — bậc/nâng cấp từ CSDL game (data_nang_cap_lau_dai), phần còn lại từ cam-nang.json (ThongSoLauDai.java). */
 const T = CAM_NANG.trangBi
 const bacChon = ref(3)
 const bacItems = T.bac.map(b => ({ label: `${b.ten[0]!.toUpperCase()}${b.ten.slice(1)} (cấp ${b.cap})`, value: b.bac }))

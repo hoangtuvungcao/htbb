@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { noiDung: CAM_NANG_ND } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /** Cửa hàng & chế tạo — du_lieu/web/cua_hang.csv, che_tao.csv (cam-nang-noi-dung.json). */
 const CH = CAM_NANG_ND.cuaHang
 const MO_TA: Record<string, string> = {

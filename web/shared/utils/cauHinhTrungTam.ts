@@ -1,8 +1,9 @@
 /**
  * CẤU HÌNH TRUNG TÂM — hàm THUẦN (không DB, không auto-import Nuxt): kiểm giá trị, nhóm, tìm kiếm, so sánh.
  *
- * Danh mục khoá: shared/utils/cauHinhTrungTam.gen.ts, SINH từ HTBB/tools/cauhinh/danh_muc.json
- * (python3 tools/cauhinh/sinh_cau_hinh.py) — cùng nguồn với máy chủ game (com.htbb.cauhinh.DanhMucSinh).
+ * Danh mục khoá: lúc chạy từ CSDL game (cau_hinh_danh_muc + cau_hinh_nhom — máy chủ game đọc chính hai bảng này);
+ * dự phòng lúc build: shared/utils/cauHinhTrungTam.gen.ts. Cả hai SINH từ HTBB/tools/cauhinh/danh_muc.json
+ * (python3 tools/cauhinh/sinh_cau_hinh.py).
  * Luật kiểm khớp HTBB/src/com/htbb/cauhinh/KiemGiaTri.java; bộ ví dụ dùng chung HTBB/tools/cauhinh/vi_du_kiem.tsv
  * (cả tests/cau-hinh-trung-tam.test.ts lẫn HTBB/test/KiemCauHinhTrungTam.java chạy cùng bộ đó).
  *
@@ -10,8 +11,84 @@
  */
 import { DANH_MUC_TT, NHOM_TT, type KhoaTT } from './cauHinhTrungTam.gen.ts'
 
+/**
+ * Danh mục ĐANG DÙNG. Lúc chạy nạp từ CSDL game (bảng cau_hinh_danh_muc + cau_hinh_nhom, cùng nguồn với máy chủ
+ * game) bằng datDanhMucTT(danhMucTuSqlTT(...)) — phía server: server/utils/cauHinhDanhMucSql.ts, phía trang: dữ liệu
+ * API /api/admin/cau-hinh-he-thong. Bản sinh cauHinhTrungTam.gen.ts chỉ là dự phòng lúc build.
+ */
+export type NhomTT = { ma: string, ten: string, moTa: string }
+let DS_TT: KhoaTT[] = DANH_MUC_TT
+let NHOM_DANG_DUNG: NhomTT[] = NHOM_TT
+let THEO_KHOA: Record<string, KhoaTT> = Object.fromEntries(DANH_MUC_TT.map(k => [k.khoa, k]))
+let PHIEN_DM = 0
 
-const THEO_KHOA: Record<string, KhoaTT> = Object.fromEntries(DANH_MUC_TT.map(k => [k.khoa, k]))
+/** Danh mục khoá đang dùng (CSDL nếu đã nạp, không thì bản sinh). */
+export function danhMucTT(): KhoaTT[] {
+  return DS_TT
+}
+
+/** Nhóm đang dùng, theo thứ tự hiển thị. */
+export function dsNhomTT(): NhomTT[] {
+  return NHOM_DANG_DUNG
+}
+
+/** Tăng mỗi lần danh mục đổi (trang dùng làm phụ thuộc phản ứng). */
+export function phienBanDanhMucTT(): number {
+  return PHIEN_DM
+}
+
+/** Thay danh mục đang dùng (null = về bản sinh). Trả true nếu có đổi. */
+export function datDanhMucTT(dm: { ds: KhoaTT[], nhom: NhomTT[] } | null): boolean {
+  const ds = dm?.ds ?? DANH_MUC_TT
+  const nhom = dm?.nhom ?? NHOM_TT
+  if (ds === DS_TT && nhom === NHOM_DANG_DUNG) return false
+  DS_TT = ds
+  NHOM_DANG_DUNG = nhom
+  THEO_KHOA = Object.fromEntries(ds.map(k => [k.khoa, k]))
+  PHIEN_DM++
+  return true
+}
+
+type DongTT = Record<string, string | number | null | undefined>
+
+/**
+ * Dòng bảng cau_hinh_danh_muc (+ thu_tu) và cau_hinh_nhom -> đúng hình dạng KhoaTT / NHOM_TT (sinh bởi
+ * tools/cauhinh/sinh_cau_hinh.py). Thiếu cột thu_tu (CSDL chưa chạy migration) / dữ liệu lạ -> null (giữ bản sinh).
+ */
+export function danhMucTuSqlTT(dongKhoa: DongTT[] | null | undefined, dongNhom: DongTT[] | null | undefined): { ds: KhoaTT[], nhom: NhomTT[] } | null {
+  if (!dongKhoa?.length || !dongNhom?.length) return null
+  if (dongKhoa.some(r => r.thu_tu == null) || dongNhom.some(r => r.thu_tu == null)) return null
+  const chu = (v: unknown) => (v == null ? '' : String(v))
+  const nhom = [...dongNhom].sort((a, b) => Number(a.thu_tu) - Number(b.thu_tu))
+    .map(r => ({ ma: chu(r.ma), ten: chu(r.ten), moTa: chu(r.mo_ta) }))
+  const ds: KhoaTT[] = []
+  for (const r of [...dongKhoa].sort((a, b) => Number(a.thu_tu) - Number(b.thu_tu))) {
+    let g: Record<string, unknown>
+    try {
+      g = JSON.parse(chu(r.gioi_han) || '{}')
+    }
+    catch {
+      return null
+    }
+    const k: Record<string, unknown> = { khoa: chu(r.khoa), nhom: chu(r.nhom), ten: chu(r.ten), moTa: chu(r.mo_ta), kieu: chu(r.kieu), macDinh: chu(r.mac_dinh) }
+    for (const f of ['min', 'max', 'buoc', 'soPhanTu', 'mau', 'doDai'] as const) if (g[f] !== undefined) k[f] = g[f]
+    if (Array.isArray(g.luaChon)) {
+      const ten = Array.isArray(g.luaChonTen) ? g.luaChonTen as unknown[] : []
+      k.luaChon = (g.luaChon as unknown[]).map((x, i) => [String(x), String(ten[i] ?? x)])
+    }
+    if (g.hoa === true) k.hoa = true
+    if (Number(r.nhay) === 1) k.nhay = true
+    if (Number(r.khoa_prod) === 1) k.khoaProd = true
+    if (Number(r.chi_doc) === 1) k.chiDoc = true
+    k.apDung = chu(r.ap_dung)
+    k.bang = chu(r.bang)
+    k.dungO = chu(r.dung_o)
+    k.nguon = chu(r.nguon)
+    if (!['ngay', 'khoi_dong_lai'].includes(k.apDung as string) || !nhom.some(n => n.ma === k.nhom)) return null
+    ds.push(k as unknown as KhoaTT)
+  }
+  return { ds, nhom }
+}
 
 /** Định nghĩa một khoá (an toàn với __proto__ / toString). */
 export function khoaTT(khoa: unknown): KhoaTT | null {
@@ -163,16 +240,16 @@ export function soSanhTT(dangLuu: Record<string, string | null | undefined>, moi
 }
 
 /** Tìm khoá theo tên khoá / nhãn / mô tả, không phân biệt dấu & hoa thường. */
-export function timTT(q: string, ds: KhoaTT[] = DANH_MUC_TT): KhoaTT[] {
+export function timTT(q: string, ds: KhoaTT[] = DS_TT): KhoaTT[] {
   const bo = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
   const t = bo(q.trim())
   if (!t) return ds
   return ds.filter(k => bo(`${k.khoa} ${k.ten} ${k.moTa}`).includes(t))
 }
 
-/** Nhóm theo thứ tự NHOM_TT. */
-export function nhomTT(ds: KhoaTT[] = DANH_MUC_TT): { ma: string, ten: string, moTa: string, khoa: KhoaTT[] }[] {
-  return NHOM_TT.map(n => ({ ...n, khoa: ds.filter(k => k.nhom === n.ma) })).filter(n => n.khoa.length > 0)
+/** Nhóm theo thứ tự nhóm đang dùng. */
+export function nhomTT(ds: KhoaTT[] = DS_TT): { ma: string, ten: string, moTa: string, khoa: KhoaTT[] }[] {
+  return NHOM_DANG_DUNG.map(n => ({ ...n, khoa: ds.filter(k => k.nhom === n.ma) })).filter(n => n.khoa.length > 0)
 }
 
 /** Giá trị hiển thị (khoá nhạy cảm che đi). */

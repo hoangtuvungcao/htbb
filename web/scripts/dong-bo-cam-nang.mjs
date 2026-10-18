@@ -13,7 +13,8 @@
  *   du_lieu/bang_vat_pham.csv         đếm trang bị theo loại
  *   docs/thiet-ke-game.md       (nếu có) chỉ để ghi nhận đã có tài liệu thiết kế
  *   du_lieu/map_moi/<id>.png          (chỉ khi --anh-map) ảnh xem trước bản đồ mới
- *   src/com/htbb/pokemon/ThongSoLauDai.java  hằng số thiết kế dài hạn (sinh từ sinh_sql_lau_dai.py)
+ *   sql/pokemon_lau_dai.sql           số liệu đã có bảng SQL (data_kinh_te_lau_dai, data_nang_cap_lau_dai)
+ *   src/com/htbb/pokemon/ThongSoLauDai.java  hằng số thiết kế dài hạn CHƯA có bảng SQL (sinh từ sinh_sql_lau_dai.py)
  *
  * Ghi:
  *   shared/data/cam-nang.json   (sắp xếp cố định, không dấu thời gian -> chạy lại ra y hệt)
@@ -29,6 +30,7 @@ import { spawnSync } from 'node:child_process'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { docBangSql } from '../shared/utils/sqlDump.ts'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '..')
@@ -84,8 +86,40 @@ const n = s => (s === '' || s == null ? null : Number(s))
 
 // ---------------------------------------------------------------- ThongSoLauDai.java
 
+// Số liệu ĐÃ CÓ trong SQL (bảng data_kinh_te_lau_dai / data_nang_cap_lau_dai của sql/pokemon_lau_dai.sql — máy chủ
+// game nạp chính các bảng này lúc khởi động) đọc từ SQL; hằng thiết kế chưa có bảng SQL đọc từ ThongSoLauDai.java.
+const SQL_LD = doc('sql/pokemon_lau_dai.sql')
+const KT = new Map(docBangSql(SQL_LD, 'data_kinh_te_lau_dai').map(r => [String(r.khoa), String(r.gia_tri)]))
+const NC = docBangSql(SQL_LD, 'data_nang_cap_lau_dai').sort((a, b) => a.bac - b.bac || a.cong - b.cong)
+const NC0 = NC.filter(r => r.bac === NC[0]?.bac)
+const BAC_NC = [...new Map(NC.map(r => [r.bac, r])).values()]
+const KHOA_KT = {
+  TI_LE_ROI_XU: 'roi.xu.phan_tram', DA_ROI_PHAN_NGHIN: 'roi.da_nang_cap.phan_nghin', NANG_LUONG_PHUT_NGAY: 'exp.nang_luong_phut',
+  NANG_LUONG_PHUT_TICH_TOI_DA: 'exp.nang_luong_tich_phut', THUE_CHO_PHAN_TRAM: 'thue.cho', PHI_DANG_BAN_PHAN_TRAM: 'thue.dang_ban',
+  TIEU_HAO_PHAN_TRAM: 'tieu_hao.thuoc_phan_tram_thu_nhap', SUA_DO_PHAN_TRAM: 'tieu_hao.sua_do_phan_tram_thu_nhap',
+  GIFTCODE_TOI_DA_THANG: 'giftcode.toi_da_thang', VE_CHUONG_TUAN: 've_chuong.tuan', VE_CHUONG_TOI_DA: 've_chuong.toi_da',
+}
+const TU_SQL = {
+  MAT_CAP_TU: () => NC0.find(r => Number(r.mat_cap) === 1)?.cong,
+  TI_LE_NC: () => NC0.map(r => r.ti_le),
+  DA_NC: () => NC0.map(r => r.da),
+  BUA_BAO_HO_LUONG_KHOA: () => NC0.map(r => r.bua_luong_khoa),
+  CHI_SO_NC_PHAN_TRAM: () => NC0.map((r, i) => r.chi_so_phan_tram - (i ? NC0[i - 1].chi_so_phan_tram : 0)),
+  CHI_PHI_NC: () => BAC_NC.map(b => [0, ...NC.filter(r => r.bac === b.bac).map(r => r.xu)]),
+  BAC_TB_TEN: () => BAC_NC.map(b => String(b.ten_bac)),
+  BAC_TB_CAP: () => BAC_NC.map(b => b.cap_bac),
+  BAC_MET: () => KT.get('exp.bac_met')?.split(',').map(p => p.split(':').map(Number)),
+}
+function tuSql(ten) {
+  const v = KHOA_KT[ten] ? KT.get(KHOA_KT[ten]) : TU_SQL[ten]?.()
+  if (v === undefined || (Array.isArray(v) && v.length === 0)) return undefined
+  return Array.isArray(v) ? v : Number(v)
+}
+
 const JAVA = doc('server/src/com/htbb/pokemon/ThongSoLauDai.java')
 function hang(ten) {
+  const s = tuSql(ten)
+  if (s !== undefined) return s
   const m = JAVA.match(new RegExp(`\\b${ten}\\s*=\\s*(-?\\d+)L?;`))
   if (!m) throw new Error(`ThongSoLauDai: thiếu ${ten}`)
   return Number(m[1])
@@ -95,9 +129,9 @@ function mang(ten) {
   if (!m) throw new Error(`ThongSoLauDai: thiếu mảng ${ten}`)
   return m[1]
 }
-const mang1 = ten => [...mang(ten).matchAll(/-?\d+/g)].map(x => Number(x[0]))
-const mang2 = ten => [...mang(ten).matchAll(/\{([^{}]*)\}/g)].map(x => [...x[1].matchAll(/-?\d+/g)].map(y => Number(y[0])))
-const mangChuoi = ten => [...mang(ten).matchAll(/"([^"]*)"/g)].map(x => x[1])
+const mang1 = ten => tuSql(ten) ?? [...mang(ten).matchAll(/-?\d+/g)].map(x => Number(x[0]))
+const mang2 = ten => tuSql(ten) ?? [...mang(ten).matchAll(/\{([^{}]*)\}/g)].map(x => [...x[1].matchAll(/-?\d+/g)].map(y => Number(y[0])))
+const mangChuoi = ten => tuSql(ten) ?? [...mang(ten).matchAll(/"([^"]*)"/g)].map(x => x[1])
 
 // ---------------------------------------------------------------- cấp độ
 

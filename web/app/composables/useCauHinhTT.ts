@@ -20,7 +20,13 @@ export interface DuLieuTT {
   phienBan: { phien_ban: number, sua_luc: string | null, sua_boi: string | null }
   khoiDongLai: { trang_thai: string, giay: number, ly_do: string, yeu_cau_boi: string | null, yeu_cau_luc: string | null, bat_dau_luc: string | null, thoat_luc: string | null, xong_luc: string | null, may_chu: string | null } | null
   quyen: { ghi: boolean, choPhepThuNghiem: boolean }
+  /** Danh mục máy chủ web đang dùng (CSDL cau_hinh_danh_muc + cau_hinh_nhom, hoặc bản sinh). */
+  danhMuc?: KhoaTT[]
+  nhom?: NhomTT[]
+  nguonDanhMuc?: 'sql' | 'gen'
 }
+
+let danhMucCuoi = ''
 
 export function useCauHinhTT(khoaAsyncData = 'admin-cau-hinh-tt') {
   const api = useAdminApi()
@@ -28,6 +34,15 @@ export function useCauHinhTT(khoaAsyncData = 'admin-cau-hinh-tt') {
   const { data, status, error, refresh } = useAsyncData(khoaAsyncData, () => api<DuLieuTT>('/api/admin/cau-hinh-he-thong'), { server: false })
   const sua = ref<Record<string, string | null>>({})
   const dangLuu = ref(false)
+  /** Tăng khi danh mục từ API thay bản sinh: computed nào đọc danhMucTT()/khoaTT() phụ thuộc vào đây. */
+  const phienDanhMuc = useState('htbb-tt-danh-muc', () => 0)
+  watch(data, (d) => {
+    if (!d?.danhMuc?.length || !d.nhom?.length) return
+    const chuoi = JSON.stringify([d.danhMuc, d.nhom])
+    if (chuoi === danhMucCuoi) return
+    danhMucCuoi = chuoi
+    if (datDanhMucTT({ ds: d.danhMuc, nhom: d.nhom })) phienDanhMuc.value++
+  }, { immediate: true, flush: 'sync' })
 
   /** Giá trị đang lưu trong CSDL (null = chưa có dòng). Khoá env: cờ từ biến môi trường. */
   function luu(k: KhoaTT): string | null {
@@ -66,6 +81,7 @@ export function useCauHinhTT(khoaAsyncData = 'admin-cau-hinh-tt') {
     sua.value = m
   }
   const loiNhap = computed<Record<string, string>>(() => {
+    void phienDanhMuc.value
     const ra: Record<string, string> = {}
     for (const [khoa, v] of Object.entries(sua.value)) {
       const k = khoaTT(khoa)
@@ -76,6 +92,7 @@ export function useCauHinhTT(khoaAsyncData = 'admin-cau-hinh-tt') {
     return ra
   })
   const soSanh = computed(() => {
+    void phienDanhMuc.value
     const dang: Record<string, string | null> = {}
     for (const khoa of Object.keys(sua.value)) {
       const k = khoaTT(khoa)
@@ -120,5 +137,5 @@ export function useCauHinhTT(khoaAsyncData = 'admin-cau-hinh-tt') {
     return { mau: 'warning', chu: `Máy chủ ${m.may_chu} đang ở phiên bản ${m.phien_ban} — sắp áp dụng phiên bản ${d.phienBan.phien_ban} (≤ 10 giây)` }
   })
 
-  return { data, status, error, refresh, sua, dangLuu, luu, dangChay, hienTai, datGiaTri, boSua, loiNhap, soSanh, soThayDoi, luuThayDoi, mayChinh, trangThaiApDung }
+  return { data, status, error, refresh, phienDanhMuc, sua, dangLuu, luu, dangChay, hienTai, datGiaTri, boSua, loiNhap, soSanh, soThayDoi, luuThayDoi, mayChinh, trangThaiApDung }
 }

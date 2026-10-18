@@ -154,41 +154,25 @@ public final class BanDoSinhThai {
     }
 
     /**
-     * Diem cau cua moi ho: o DI DUOC sat ho (ke 4 huong), toi da {@code toiDa} diem / ho, chon trai deu
-     * theo thu tu quet. Moi diem {hoId, x, y}.
+     * Diem cau ca theo id ban do (tep cMap/&lt;id&gt;): {hoId, x, y, so o cua ho}, theo ho roi thu tu quet (y, x).
+     * NAP TU bang data_hst_ho_cau (NGUON DUY NHAT, tools/pokemon/sinh_sql_he_sinh_thai.py tinh tu ban do) qua
+     * com.htbb.dulieu.DuLieuSql. Ban do 40 / 42 (MOBA, nui kho bau) khong co dong: khong cau, khong goi y.
      */
-    public static List<int[]> diemCau(final int[] nhan, final boolean[] diDuoc, final int w, final int h, final int toiDa) {
-        final List<int[]> tatCa = new ArrayList<int[]>();
-        for (int y = 1; y < h - 1; y++) {
-            for (int x = 1; x < w - 1; x++) {
-                final int i = y * w + x;
-                if (diDuoc == null || !diDuoc[i] || nhan[i] >= 0) {
-                    continue;
-                }
-                final int[] ke = {i - 1, i + 1, i - w, i + w};
-                for (final int j : ke) {
-                    if (nhan[j] >= 0) {
-                        tatCa.add(new int[]{nhan[j], x, y});
-                        break;
-                    }
-                }
-            }
-        }
-        final List<int[]> ra = new ArrayList<int[]>();
-        final int[] kt = kichThuocHo(nhan);
-        for (int ho = 0; ho < kt.length; ho++) {
-            final List<int[]> cua = new ArrayList<int[]>();
-            for (final int[] d : tatCa) {
-                if (d[0] == ho) {
-                    cua.add(d);
-                }
-            }
-            final int n = Math.min(toiDa, cua.size());
-            for (int k = 0; k < n; k++) {
-                ra.add(cua.get(k * cua.size() / n));
-            }
-        }
-        return ra;
+    private static volatile java.util.Map<Integer, List<int[]>> diemCau = java.util.Collections.emptyMap();
+
+    public static void datDiemCau(final java.util.Map<Integer, List<int[]>> m) {
+        diemCau = m;
+    }
+
+    /** Diem cau cua ban do {@code idNap} (rong neu ban do khong co ho). */
+    public static List<int[]> diemCauCua(final int idNap) {
+        final List<int[]> d = diemCau.get(Integer.valueOf(idNap));
+        return d == null ? new ArrayList<int[]>() : d;
+    }
+
+    /** So ban do co diem cau da nap (log / test). */
+    public static int soBanDoCoDiemCau() {
+        return diemCau.size();
     }
 
     /** Co o nuoc trong ban kinh {@code r} o quanh (x, y) khong. */

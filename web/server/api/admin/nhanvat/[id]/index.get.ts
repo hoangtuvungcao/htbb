@@ -50,7 +50,7 @@ export default defineAdminHandler(async (event) => {
     ct,
     chuTk,
     chuLaAdmin: chuTk !== '' && laTaiKhoanAdmin(chuTk),
-    capDoToiDa: CAPDO_TOI_DA,
+    capDoToiDa: await capDoToiDa(),
     loiVatPham,
     vatPham: {
       mac: kem(vpMac),

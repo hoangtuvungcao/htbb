@@ -171,7 +171,7 @@ public final class KiemCauHinhTrungTam {
         for (final DinhNghiaKhoa d : dm) {
             khoaJava.add(d.khoa);
         }
-        Kiem.bang("DanhMucSinh.java khop danh_muc.json (chay tools/cauhinh/sinh_cau_hinh.py)", khoaJson, khoaJava);
+        Kiem.bang("danh muc nap tu SQL (cau_hinh_danh_muc) khop danh_muc.json (chay tools/cauhinh/sinh_cau_hinh.py)", khoaJson, khoaJava);
         final String sql = doc("../sql/pokemon_cau_hinh_trung_tam.sql");
         boolean du = !sql.isEmpty();
         for (final String x : khoaJson) {

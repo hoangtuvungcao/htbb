@@ -24,7 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * CAU HINH TRUNG TAM (docs/cau-hinh.md) - MOT dich vu cho moi khoa cau hinh chinh duoc luc chay.
  *
  * NGUON: bang {@code cau_hinh} (CSDL) > server.ini > mac dinh trong danh muc (tools/cauhinh/danh_muc.json ->
- * {@link DanhMucSinh}). Kiem kieu / khoang / lua chon ({@link KiemGiaTri}); gia tri sai bi TU CHOI, giu gia
+ * bang cau_hinh_danh_muc, nap boi {@link DanhMucSql}). Kiem kieu / khoang / lua chon ({@link KiemGiaTri}); gia tri sai bi TU CHOI, giu gia
  * tri tot gan nhat ({@link TinhCauHinh}).
  *
  * NAP LAI NONG: luong "CauHinhTrungTam" moi {@link #CHU_KY_MS} hoi 3 truy van re (phien ban, COUNT/MAX(sua_luc)
@@ -57,13 +57,73 @@ public final class CauHinhTrungTam {
     /** Khoa server.ini (chi ini): cho phep khoa thu nghiem nhan gia tri khac mac dinh tu CSDL. */
     public static final String K_CHO_PHEP_THU_NGHIEM = "sv.cho_phep_thu_nghiem";
 
-    private static final DinhNghiaKhoa[] DM = DanhMucSinh.tatCa();
-    private static final Map<String, DinhNghiaKhoa> THEO_KHOA = new LinkedHashMap<String, DinhNghiaKhoa>();
+    /**
+     * DANH MUC khoa + nhom: NAP TU SQL (cau_hinh_danh_muc + cau_hinh_nhom, {@link DanhMucSql}) - rong cho toi khi
+     * nap. May chu: {@link #khoiTao} doc bang ket noi truc tiep; thieu / rong -> {@link #loiDanhMuc()} != null va
+     * data.DatabaseDuLieuSql dung server ngay sau kiemTraCSDL. Test / cong cu: {@link #datDanhMuc} tu tep SQL.
+     * Thay ban chep Java DanhMucSinh (da xoa, P1). Nap lai nong cung chu ky day du ({@link #CHU_KY_DAY_DU_MS}).
+     */
+    private static volatile DinhNghiaKhoa[] DM = new DinhNghiaKhoa[0];
+    private static volatile String[][] NHOM = new String[0][];
+    private static volatile Map<String, DinhNghiaKhoa> THEO_KHOA = Collections.emptyMap();
+    private static volatile String loiDanhMuc = "chua nap danh muc (cau_hinh_danh_muc)";
+    private static volatile String vanTayDanhMuc = "";
 
-    static {
-        for (final DinhNghiaKhoa d : DM) {
-            THEO_KHOA.put(d.khoa, d);
+    /** Dat danh muc (tu {@link DanhMucSql}). Thay ca bo mot lan - nguoi doc dang chay thay ban cu hoac ban moi, khong lai. */
+    public static void datDanhMuc(final DanhMucSql.DanhMuc dm) {
+        final Map<String, DinhNghiaKhoa> m = new LinkedHashMap<String, DinhNghiaKhoa>();
+        for (final DinhNghiaKhoa d : dm.khoa) {
+            m.put(d.khoa, d);
         }
+        THEO_KHOA = Collections.unmodifiableMap(m);
+        NHOM = dm.nhom;
+        DM = dm.khoa;
+        vanTayDanhMuc = vanTay(dm);
+        loiDanhMuc = null;
+    }
+
+    /** null = danh muc da nap tot; khac = ly do (may chu dung khoi dong). */
+    public static String loiDanhMuc() {
+        return loiDanhMuc;
+    }
+
+    /** Doc danh muc tu {@code n}; loi thi giu danh muc cu (neu co) va ghi ly do. Tra true neu nap duoc. */
+    public static boolean napDanhMuc(final com.htbb.dulieu.NguonDuLieu n) {
+        try {
+            final DanhMucSql.DanhMuc dm = DanhMucSql.doc(n);
+            final boolean doi = !vanTay(dm).equals(vanTayDanhMuc);
+            final boolean lanDau = DM.length == 0;
+            datDanhMuc(dm);
+            if (lanDau) {
+                System.out.println("[CAU HINH] danh muc tu " + n.moTa() + ": " + dm.khoa.length + " khoa, " + dm.nhom.length + " nhom.");
+            } else if (doi) {
+                System.out.println("[CAU HINH] DANH MUC DOI (" + n.moTa() + "): " + dm.khoa.length + " khoa, " + dm.nhom.length + " nhom.");
+            }
+            return true;
+        } catch (final Exception e) {
+            final String ly = DanhMucSql.BANG_KHOA + "/" + DanhMucSql.BANG_NHOM + " (" + n.moTa() + "): " + e.getMessage();
+            if (DM.length == 0) {
+                loiDanhMuc = ly;
+            }
+            System.out.println("[CAU HINH] LOI nap danh muc " + ly + (DM.length == 0 ? "" : " - giu danh muc dang chay"));
+            return false;
+        }
+    }
+
+    private static String vanTay(final DanhMucSql.DanhMuc dm) {
+        final StringBuilder b = new StringBuilder();
+        for (final String[] x : dm.nhom) {
+            b.append(x[0]).append('=').append(x[1]).append('\n');
+        }
+        for (final DinhNghiaKhoa d : dm.khoa) {
+            b.append(d.khoa).append('|').append(d.nhom).append('|').append(d.kieu).append('|').append(d.macDinh).append('|')
+                    .append(d.apDungNgay).append('|').append(d.bang).append('|').append(d.ten()).append('|').append(d.moTa())
+                    .append('|').append(d.min()).append('|').append(d.max()).append('|').append(d.buoc()).append('|')
+                    .append(java.util.Arrays.toString(d.luaChon())).append('|').append(d.soPhanTu()).append('|')
+                    .append(d.mauChu()).append('|').append(d.doDai()).append('|').append(d.chuHoa()).append('|')
+                    .append(d.laNhay()).append('|').append(d.laKhoaProd()).append('|').append(d.laChiDoc()).append('\n');
+        }
+        return Integer.toHexString(b.toString().hashCode()) + ":" + b.length();
     }
 
     /** Anh chup bat bien cua cau hinh dang chay. */
@@ -163,7 +223,7 @@ public final class CauHinhTrungTam {
     }
 
     public static String[][] nhom() {
-        return DanhMucSinh.NHOM.clone();
+        return NHOM.clone();
     }
 
     public static DinhNghiaKhoa dinhNghia(final String khoa) {
@@ -272,11 +332,37 @@ public final class CauHinhTrungTam {
         }
         khoiDongLuc = System.currentTimeMillis();
         Map<String, String> db = null;
+        boolean khongToiDuoc = false;
         try {
             db = docTrucTiep(p);
         } catch (final Exception e) {
-            System.out.println("[CAU HINH] khong doc duoc cau_hinh luc khoi dong (" + e.getMessage()
-                    + ") - dung server.ini, se thu lai khi nap lai.");
+            khongToiDuoc = matKetNoi(e);
+            System.out.println("[CAU HINH] khong doc duoc cau_hinh luc khoi dong (" + e.getMessage() + ")"
+                    + (khongToiDuoc ? " - CSDL khong toi duoc, kiemTraCSDL se dung server." : " - thu lai qua pool."));
+        }
+        if (!khongToiDuoc && (db == null || DM.length == 0)) {
+            // Ket noi truc tiep hong (vd "Too many connections" khi pool vua mo het max_connections): thu pool chinh.
+            // Danh muc (P1) BAT BUOC: khong co thi data.DatabaseDuLieuSql dung server sau kiemTraCSDL.
+            Connection c = null;
+            try {
+                c = layKetNoi();
+                if (DM.length == 0) {
+                    napDanhMuc(com.htbb.dulieu.NguonJdbc.mot(c, "CSDL " + p.getProperty("db.name") + " (pool)"));
+                }
+                if (db == null) {
+                    final Map<String, String> m2 = new HashMap<String, String>();
+                    for (final Map.Entry<String, String[]> e : docBang(c).entrySet()) {
+                        m2.put(e.getKey(), e.getValue()[0]);
+                    }
+                    db = m2;
+                    System.out.println("[CAU HINH] doc cau_hinh qua pool: " + m2.size() + " dong.");
+                }
+            } catch (final Exception e) {
+                System.out.println("[CAU HINH] pool cung khong doc duoc (" + e.getMessage() + ") - dung server.ini,"
+                        + " se thu lai khi nap lai.");
+            } finally {
+                traKetNoi(c);
+            }
         }
         final TinhCauHinh.KetQua kq = TinhCauHinh.tinh(DM, ini, db, null, choPhepThuNghiem);
         hienTai = new AnhChup(kq, -1L, System.currentTimeMillis());
@@ -311,6 +397,24 @@ public final class CauHinhTrungTam {
         }
     }
 
+    /**
+     * Loi "khong toi duoc may CSDL" (SQLState 08S01: tu choi ket noi, het gio...). Khi do KHONG thu pool (pool se thu
+     * mo lai tung ket noi, cham) - kiemTraCSDL ngay sau dung server voi thong bao ro. Loi khac (vd 1040 "Too many
+     * connections" khi pool vua mo het max_connections) thi pool van dung duoc.
+     */
+    public static boolean matKetNoi(final Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            if (t instanceof SQLException && "08S01".equals(((SQLException) t).getSQLState())) {
+                return true;
+            }
+            if (t instanceof java.net.ConnectException || t instanceof java.net.SocketTimeoutException
+                    || t instanceof java.net.UnknownHostException) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Doc cau_hinh bang JDBC truc tiep (han gio 5 giay) - chi dung luc khoi dong, truoc khi pool chac chan song. */
     static Map<String, String> docTrucTiep(final Properties p) throws Exception {
         try {
@@ -325,6 +429,8 @@ public final class CauHinhTrungTam {
         final Connection c = DriverManager.getConnection(
                 data.Database.urlJdbc(p.getProperty("db.host"), p.getProperty("db.name"), p.getProperty("db.thamSoJdbc")), tk);
         try {
+            // Danh muc khoa (cau_hinh_danh_muc + cau_hinh_nhom) TRUOC: thieu no thi khong tinh duoc gi.
+            napDanhMuc(com.htbb.dulieu.NguonJdbc.mot(c, "CSDL " + p.getProperty("db.name")));
             final Map<String, String> ra = new HashMap<String, String>();
             final Statement st = c.createStatement();
             try {
@@ -406,6 +512,10 @@ public final class CauHinhTrungTam {
         try {
             c = layKetNoi();
             taoBangNeuThieu(c);
+            if ("dinh-ky".equals(lyDo) || DM.length == 0) {
+                // Nap lai nong danh muc (moi chu ky day du): loi thi giu danh muc dang chay.
+                napDanhMuc(com.htbb.dulieu.NguonJdbc.mot(c, "CSDL"));
+            }
             final String ky = docChuKy(c);
             final long pb = docPhienBan(c);
             final Map<String, String[]> dong = docBang(c);

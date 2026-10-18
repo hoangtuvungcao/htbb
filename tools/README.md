@@ -8,15 +8,17 @@ sửa nguồn (`du_lieu/*.csv`, `tools/cauhinh/danh_muc.json`…) rồi chạy l
 ## `cauhinh/` — cấu hình trung tâm
 
 `danh_muc.json` là nguồn duy nhất của mọi khoá cấu hình chỉnh được từ web. `sinh_cau_hinh.py` sinh
-`server/src/com/htbb/cauhinh/DanhMucSinh.java`, `sql/pokemon_cau_hinh_trung_tam.sql`,
-`web/shared/utils/cauHinhTrungTam.gen.ts` và bảng khoá trong [docs/cau-hinh.md](../docs/cau-hinh.md)
-(`--kiem` = chỉ kiểm lệch). `vi_du_kiem.tsv`: bộ ví dụ kiểm giá trị dùng chung cho test Java và web.
+`sql/pokemon_cau_hinh_trung_tam.sql` (bảng `cau_hinh_danh_muc` + `cau_hinh_nhom`: máy chủ game và web đọc danh mục từ
+hai bảng này lúc chạy, không còn bản Java), `web/shared/utils/cauHinhTrungTam.gen.ts` (bản dự phòng của web) và bảng
+khoá trong [docs/cau-hinh.md](../docs/cau-hinh.md) (`--kiem` = chỉ kiểm lệch). Sửa danh mục: chạy script, nạp tệp SQL
+vào CSDL, rồi `python3 -I tools/pokemon/sinh_them_p1.py` để làm mới migration. `vi_du_kiem.tsv`: bộ ví dụ kiểm giá trị dùng chung cho test Java và web.
 
 ## `pokemon/` — dữ liệu và tài nguyên Pokémon
 
 | Nhóm | Công cụ | Làm gì |
 |---|---|---|
 | CSDL đầy đủ | `xuat_sql_day_du.sh` | dựng lại `sql/htbb_day_du.sql` (account + htbb_db) trên MariaDB trống theo đúng thứ tự migration |
+| Migration P1 | `sinh_them_p1.py` (`--kiem` = chỉ kiểm lệch) | `sql/them_p1_du_lieu_sql.sql`: chép nguyên khối 8 bảng máy chủ nạp lúc khởi động (docs/kien-truc.md mục 4.4) cho CSDL đang chạy |
 | Bảng nội dung | `sinh_bang_quai.py`, `sinh_bang_thu.py`, `sinh_noi_dung.py` | quái / thú / nội dung (trang bị, vật phẩm, Gym, cửa hàng…) → `du_lieu/*.csv` |
 | SQL từ bảng | `sinh_sql_lau_dai.py` (+ `lau_dai_cot_truyen.py`), `sinh_vat_pham_lau_dai.py`, `sinh_sql_he_sinh_thai.py`, `sinh_sql_vat_pham.py`, `SinhSqlChiSo.java`, `sinh_giftcode_an_toan.py` | `du_lieu/*.csv` → `sql/pokemon_*.sql` |
 | Nhiệm vụ | `sinh_nhiem_vu.py` (+ `nv_chung.py`, `nv_cot_truyen.py`, `nv_hoenn.py`, `nv_phu.py`, `nv_lap_lai.py`) | nhiệm vụ → `sql/pokemon_nhiem_vu.sql`, `du_lieu/nhiem_vu_moi.csv`, báo cáo `du_lieu/NHIEM_VU_THIET_KE.md` |

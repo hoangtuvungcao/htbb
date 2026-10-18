@@ -47,7 +47,7 @@ export default defineAdminHandler(async (event, admin) => {
     `SELECT id, charname, lastLv, xp, \`class\`, dex, shiny, gold, luong, luonglock, kho_xu, kho_luong, kho_luong_khoa,
             ban, del, lastLog, totalTimePlay, idClan, pInfo FROM tob_char WHERE userId = ? ORDER BY lastLv DESC, id ASC`, [Number(tk.id)])
   const { tinHieu, viTri } = await ncTinHieuOnline()
-  const expMain = capDoRaExp()
+  const expMain = await capDoRaExp()
   const ids = nv.map(c => Number(c.id))
   const demDex = new Map<number, number>()
   if (ids.length) {

@@ -7,6 +7,7 @@ export default defineAdminHandler(async (event, admin) => {
   const id = int(b.id, 0)
   if (id <= 0) throw apiLoi(400, 'Thiếu mã dòng lịch sử.')
   await chTaoBang()
+  await napDanhMucTTServer()
   const d = await q1<{ id: number, khoa: string, gia_tri_cu: string | null, gia_tri_moi: string | null }>(dbGame(),
     'SELECT id, khoa, gia_tri_cu, gia_tri_moi FROM cau_hinh_lich_su WHERE id = ?', [id])
   if (!d) throw apiLoi(404, 'Không có dòng lịch sử này.')

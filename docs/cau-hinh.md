@@ -18,7 +18,7 @@ dịch vụ cấu hình trung tâm: [kien-truc.md](kien-truc.md). Biến môi tr
 | Phần | Tệp |
 |---|---|
 | Danh mục khoá (nguồn duy nhất) | [`tools/cauhinh/danh_muc.json`](../tools/cauhinh/danh_muc.json) |
-| Bộ sinh | [`tools/cauhinh/sinh_cau_hinh.py`](../tools/cauhinh/sinh_cau_hinh.py) → `server/src/com/htbb/cauhinh/DanhMucSinh.java`, `sql/pokemon_cau_hinh_trung_tam.sql`, `web/shared/utils/cauHinhTrungTam.gen.ts` và bảng ở mục 4 của tài liệu này |
+| Bộ sinh | [`tools/cauhinh/sinh_cau_hinh.py`](../tools/cauhinh/sinh_cau_hinh.py) → `sql/pokemon_cau_hinh_trung_tam.sql` (bảng `cau_hinh_danh_muc` + `cau_hinh_nhom`: máy chủ nạp danh mục từ đây lúc khởi động và mỗi 60 giây, thiếu bảng là không khởi động; CSDL cũ nạp `sql/them_p1_du_lieu_sql.sql`), `web/shared/utils/cauHinhTrungTam.gen.ts` và bảng ở mục 4 của tài liệu này |
 | Dịch vụ máy chủ | `server/src/com/htbb/cauhinh/CauHinhTrungTam.java` (+ `TinhCauHinh`, `KiemGiaTri`, `ApDungMacDinh`, `CongTac`) |
 | Trang web | `/admin/cau-hinh-he-thong`, API `/api/admin/cau-hinh-he-thong/**` |
 | Bộ ví dụ kiểm chung Java ↔ web | [`tools/cauhinh/vi_du_kiem.tsv`](../tools/cauhinh/vi_du_kiem.tsv) |
