@@ -79,6 +79,15 @@ public class doBuySpecialItem {
                         return;
                     }
 
+                    // GD2 2.10 (Q10): shop luong chi con do trang tri; kiem o CHINH noi xu ly (muc 11).
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        final String chan = data.DatabaseLauDai.chanMuaShop(player.charDBID, item.id, LauDaiNhanVat.tuanNay());
+                        if (chan != null) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(chan, ""));
+                            return;
+                        }
+                    }
+
                     if (item.id == 13 && player.idClan == -1) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm chỉ dành cho người đã tham gia bang", ""));
                         return;

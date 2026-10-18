@@ -56,6 +56,42 @@ public class BaoTriDaily implements Runnable {
         System.out.println("Thời gian bảo trì được set: " + maintenanceHour + ":" + maintenanceMinute);
     }
 
+    /** Tat han bao tri tu dong hang ngay (sv.gioBaoTri=tat). */
+    private static volatile boolean tatBaoTri = false;
+
+    /**
+     * Dat gio bao tri tu server.ini (sv.gioBaoTri): "HH:MM" = co dinh, "tat" = khong tu tat may hang
+     * ngay, trong/sai = ngau nhien 4:30-5:30 nhu cu. Goi tu TeamServer luc doc cau hinh. Unit systemd
+     * (vps/kpah-game.service, Restart=always) tu bat lai sau khi bao tri.
+     */
+    public static void datGio(final String s) {
+        if (s == null || s.trim().isEmpty()) {
+            return;
+        }
+        final String v = s.trim();
+        if (v.equalsIgnoreCase("tat") || v.equalsIgnoreCase("off")) {
+            tatBaoTri = true;
+            System.out.println("BAO TRI HANG NGAY -> TAT (sv.gioBaoTri=" + v + ")");
+            return;
+        }
+        try {
+            final String[] hm = v.split(":");
+            final int h = Integer.parseInt(hm[0].trim());
+            final int mi = Integer.parseInt(hm[1].trim());
+            if (h < 0 || h > 23 || mi < 0 || mi > 59) {
+                throw new IllegalArgumentException();
+            }
+            maintenanceHour = h;
+            maintenanceMinute = mi;
+            final int tongPhutCanhBao = (h * 60 + mi - 1 + 24 * 60) % (24 * 60);
+            warnHour = tongPhutCanhBao / 60;
+            warnMinute = tongPhutCanhBao % 60;
+            System.out.println("Thời gian bảo trì (sv.gioBaoTri): " + h + ":" + mi);
+        } catch (final Exception e) {
+            System.out.println("sv.gioBaoTri sai dinh dang \"" + v + "\" (can HH:MM hoac tat) - giu gio ngau nhien");
+        }
+    }
+
     // Bao truoc bao tri cho nguoi dang online. Chi thong bao, KHONG tat server - viec tat
     // de cho systemctl stop (SIGTERM -> shutdown hook luu du lieu), xem vps/deploy-auto.sh.
     //
@@ -120,20 +156,22 @@ public class BaoTriDaily implements Runnable {
                 // day khong bao gi ca (chi deploy moi tu bat co baotri_thongbao o tren), nen
                 // deploy-auto.sh "di nho" gio bao tri nay se lam mat luon canh bao nguoi choi
                 // dang duoc huong moi lan deploy. daBaoTruoc chan gui lap trong 5s dung.
-                if (!daBaoTruoc && d.getHours() == warnHour && d.getMinutes() == warnMinute && d.getSeconds() <= 5) {
+                if (!tatBaoTri && !daBaoTruoc && d.getHours() == warnHour && d.getMinutes() == warnMinute && d.getSeconds() <= 5) {
                     baoTruocBaoTri(60);
                     daBaoTruoc = true;
                 }
                 if (d.getSeconds() == 0) {
                     // SECURITY: disabled external heartbeat call that sent online count to a remote server (api.url).
                 }
+                // GD2: job dem cua thiet ke dai han (tat co: khong lam gi). Xem LauDaiJob.
+                LauDaiJob.nhip(d);
                 if (d.getMinutes() == 0 && d.getSeconds() == 0) {
                     Database.instance.loadTangExp();
                     Database.instance.loadTangNap();
                     Database.instance.loadPercentDrop();
                     Database.instance.loadTileDrop();
                 }
-                if ((d.getHours() == maintenanceHour && d.getMinutes() == maintenanceMinute && d.getSeconds() <= 5) || BaoTriTay) {
+                if ((!tatBaoTri && d.getHours() == maintenanceHour && d.getMinutes() == maintenanceMinute && d.getSeconds() <= 5) || BaoTriTay) {
                     try {
                         this.notifyAll();
                     } catch (final Exception ex) {

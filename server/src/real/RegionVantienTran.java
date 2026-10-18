@@ -360,7 +360,7 @@ public class RegionVantienTran implements Runnable {
                 return;
             }
 
-            if (p.countHit() || p.freeze()) {
+            if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
                 return;
             }
 
@@ -468,6 +468,7 @@ public class RegionVantienTran implements Runnable {
 
             buffAttack = p.getBuffEffAttack();
             int damage = p.attackDam(c, _type, _level, buffAttack);
+            final int damGocLauDai = damage;
             damage /= 5;
             damage -= damage / 3;
             damage = p.subDam(c, damage);
@@ -490,6 +491,15 @@ public class RegionVantienTran implements Runnable {
 
             if (damage > 50000) {
                 damage = '썐' + Map.r.nextInt(100);
+            }
+            if (com.htbb.pokemon.LauDai.bat()) {
+                // GD2 6.1 PvP (chung voi Region): x0,30, chi mang x1,5, tran 8% HP toi da muc tieu.
+                long dLd = (long) damGocLauDai * CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
+                if (critSv || baokich) {
+                    dLd = dLd * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L;
+                    effect = 2;
+                }
+                damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, dLd), c.maxhp);
             }
 
             int mplost = CharManager.SKILL_MP[p.charClass][_type][_level];
@@ -627,6 +637,10 @@ public class RegionVantienTran implements Runnable {
             m.dos.writeByte(CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1]);
             m.dos.writeByte(buffAttack);
             m.dos.writeByte(_level);
+            if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                // PvP (lenh 6): chi goi kem -95
+                m.kemTheo = GoiLauDaiGame.don(p, c, ahp);
+            }
             p.sendMessage(m);
             p.sendToNearPlayer(m);
             m.cleanup();
@@ -642,7 +656,7 @@ public class RegionVantienTran implements Runnable {
                 return;
             }
 
-            if (p.countHit() || p.freeze()) {
+            if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
                 return;
             }
 
@@ -872,19 +886,19 @@ public class RegionVantienTran implements Runnable {
                             a = 3;
                         }
 
-                        dxp /= downPercent[a];
+                        dxp /= ExpLauDai.chiaCu(downPercent[a]);
                     }
 
                     if (dxp <= 0) {
                         dxp = 1;
                     }
 
-                    allXP += dxp;
+                    allXP += ExpLauDai.lechCapMot(dxp, p, mt);
                     mt.hp -= damage;
                     if (p.charthanthu != null && mt.hp > 0) {
                         muctieu.add(mt);
                         int damthanthu = p.getDamtThanThu(mt);
-                        allXP += mt.getXpReceive(damthanthu);
+                        allXP += ExpLauDai.lechCapMot(mt.getXpReceive(damthanthu), p, mt);
                         mt.hp -= damthanthu;
                     }
 
@@ -997,6 +1011,10 @@ public class RegionVantienTran implements Runnable {
             }
 
             if (dxp > 0) {
+                // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    ExpLauDai.traoHaQuai(p, null, dxp, "RegionVantienTran:1000");
+                } else {
                 int newxp = Map.calculatorXpParty(p, dxp);
                 if (newxp == dxp) {
                     int var59 = dxp * Map.doubleALL;
@@ -1005,9 +1023,7 @@ public class RegionVantienTran implements Runnable {
                     Map.addXPForChar(p, (long)(var59 + p.getEffSkillClan(0) * var59 / 100), false, "RegionVantienTran3");
                 } else {
                     int nUser = p.party.userParty.size();
-                    if (nUser > 1) {
-                        nUser = 5;
-                    }
+                    // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                     int xpReceive = newxp * 80 / (nUser * 100);
                     int maxLv = p.lvDetail.lv;
@@ -1046,6 +1062,7 @@ public class RegionVantienTran implements Runnable {
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                     xpReceive = p.expReceive(xpReceive);
                     Map.addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "RegionVantienTran2");
+                }
                 }
             }
 
@@ -1266,13 +1283,17 @@ public class RegionVantienTran implements Runnable {
                                                                                             a = 3;
                                                                                         }
 
-                                                                                        dxp /= downPercent[a];
+                                                                                        dxp /= ExpLauDai.chiaCu(downPercent[a]);
                                                                                         if (dxp <= 0) {
                                                                                             dxp = 1;
                                                                                         }
                                                                                     }
 
                                                                                     if (dxp > 0) {
+                                                                                        // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                                                                                        if (com.htbb.pokemon.LauDai.bat()) {
+                                                                                            ExpLauDai.traoHaQuai(p, mt, dxp, "RegionVantienTran:1274");
+                                                                                        } else {
                                                                                         int newxp = Map.calculatorXpParty(p, dxp);
                                                                                         if (newxp == dxp) {
                                                                                             int var62 = dxp * Map.doubleALL;
@@ -1281,9 +1302,7 @@ public class RegionVantienTran implements Runnable {
                                                                                             Map.addXPForChar(p, (long)(var62 + p.getEffSkillClan(0) * var62 / 100), false, "RegionVantienTran6");
                                                                                         } else {
                                                                                             int nUser = p.party.userParty.size();
-                                                                                            if (nUser > 1) {
-                                                                                                nUser = 5;
-                                                                                            }
+                                                                                            // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                                                                             int xpReceive = newxp * 80 / (100 * nUser);
                                                                                             int maxLv = p.lvDetail.lv;
@@ -1323,6 +1342,7 @@ public class RegionVantienTran implements Runnable {
                                                                                             xpReceive = p.expReceive(xpReceive);
                                                                                             Map.addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "RegionVantienTran5");
                                                                                         }
+                                                                                        }
                                                                                     }
                                                                                 }
 
@@ -1336,6 +1356,10 @@ public class RegionVantienTran implements Runnable {
                                                                                 m.dos.writeByte(CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1 >= 0 ? _level - 1 : 0]);
                                                                                 m.dos.writeByte(buffAttack);
                                                                                 m.dos.writeByte(_level);
+                                                                                if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                                                                                    BossLauDai.sauDon(p, mt, ahp);
+                                                                                    m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
+                                                                                }
                                                                                 p.sendMessage(m);
                                                                                 p.sendToNearPlayer(m);
                                                                                 p.buffSkillKham(mt);
@@ -1392,13 +1416,17 @@ public class RegionVantienTran implements Runnable {
                                                                                             a = 3;
                                                                                         }
 
-                                                                                        dxp /= downPercent[a];
+                                                                                        dxp /= ExpLauDai.chiaCu(downPercent[a]);
                                                                                         if (dxp <= 0) {
                                                                                             dxp = 1;
                                                                                         }
                                                                                     }
 
                                                                                     if (dxp > 0) {
+                                                                                        // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                                                                                        if (com.htbb.pokemon.LauDai.bat()) {
+                                                                                            ExpLauDai.traoHaQuai(p, mt, dxp, "RegionVantienTran:1398");
+                                                                                        } else {
                                                                                         int newxp = Map.calculatorXpParty(p, dxp);
                                                                                         if (newxp == dxp) {
                                                                                             int var66 = dxp * Map.doubleALL;
@@ -1407,9 +1435,7 @@ public class RegionVantienTran implements Runnable {
                                                                                             Map.addXPForChar(p, (long)(var66 + p.getEffSkillClan(0) * var66 / 100), false, "RegionVantienTran9");
                                                                                         } else {
                                                                                             int nUser = p.party.userParty.size();
-                                                                                            if (nUser > 1) {
-                                                                                                nUser = 5;
-                                                                                            }
+                                                                                            // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                                                                             int xpReceive = newxp * 80 / (nUser * 100);
                                                                                             int maxLv = p.lvDetail.lv;
@@ -1449,6 +1475,7 @@ public class RegionVantienTran implements Runnable {
                                                                                             xpReceive = p.expReceive(xpReceive);
                                                                                             Map.addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "RegionVantienTran8");
                                                                                         }
+                                                                                        }
                                                                                     }
                                                                                 } catch (Exception var38) {
                                                                                 }
@@ -1471,6 +1498,10 @@ public class RegionVantienTran implements Runnable {
                                                                                     m.dos.writeByte(xx2);
                                                                                     m.dos.writeByte(buffAttack);
                                                                                     m.dos.writeByte(_level);
+                                                                                    if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                                                                                        BossLauDai.sauDon(p, mt, ahp);
+                                                                                        m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
+                                                                                    }
                                                                                     p.sendMessage(m);
                                                                                     p.sendToNearPlayer(m);
                                                                                     if (p.receiveQuest && QuestTemplate.QUEST_TYPE[p.questID - 1] == 0) {

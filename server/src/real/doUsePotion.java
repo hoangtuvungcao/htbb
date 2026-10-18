@@ -245,6 +245,14 @@ public class doUsePotion {
                             return;
                         }
 
+                        // GD2 (noi dung): bat co sv.lau_dai -> keo EXP cu 10/11/12 (EXP co dinh, pha bang EXP
+                        // moi) ngung dung; tra lai vat pham. Keo Hiem moi (theo nang luong) la viec noi dung.
+                        if (com.htbb.pokemon.LauDai.bat()) {
+                            var10002 = player.potions[potionType]++;
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này đã ngừng sử dụng.", ""));
+                            return;
+                        }
                         int[] expdon = new int[]{100000, 500000, 1000000};
                         addXpCharEvent(player, (long) expdon[potionType - 10], false, "dousepotion type_exp_don");
                         Database.instance.saveOrtherLog("", player.charname, "su dung exp don " + potionType, "expdon");

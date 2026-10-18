@@ -1,0 +1,21 @@
+Dải cấp,Loài,Hệ,Môi trường
+1-5,"Sandshrew(1), Caterpie(2), Wooper(3), Torchic(4), Ekans(5), Litwick(6), Bellsprout(7)","Lửa, Nước, Cỏ, Độc, Đất, Bọ, Ma","Bờ biển, Hang, Núi lửa, Rừng, Tháp"
+6-10,"Torchic(4), Ekans(5), Litwick(6), Bellsprout(7), Venonat(8), Rattata(9), Oddish(10), Weedle(11), Vulpix(12)","Thường, Lửa, Cỏ, Độc, Bọ, Ma","Núi lửa, Rừng, Tháp, Đồng cỏ"
+11-15,"Rattata(9), Oddish(10), Weedle(11), Vulpix(12), Quagsire(13), Torkoal(13), Tepig(14), Skorupi(15), Venipede(15), Paras(16), Gloom(17)","Thường, Lửa, Nước, Cỏ, Độc, Đất, Bọ","Bờ biển, Núi lửa, Rừng, Đồng cỏ"
+16-20,"Tepig(14), Skorupi(15), Venipede(15), Paras(16), Gloom(17), Combusken(18), Butterfree(18), Growlithe(20), Tentacool(21), Gastly(22)","Lửa, Nước, Cỏ, Giác đấu, Độc, Bay, Bọ, Ma","Bờ biển, Núi lửa, Rừng, Tháp"
+21-25,"Growlithe(20), Tentacool(21), Gastly(22), Ariados(24), Cubone(24), Croconaw(26), Croagunk(27)","Lửa, Nước, Giác đấu, Độc, Đất, Bọ, Ma","Bờ biển, Hang, Núi lửa, Rừng, Tháp"
+26-30,"Ariados(24), Cubone(24), Croconaw(26), Croagunk(27), Dodrio(30), Arbok(31), Parasect(32)","Thường, Nước, Cỏ, Giác đấu, Độc, Đất, Bay, Bọ","Bờ biển, Hang, Rừng, Đồng cỏ"
+31-35,"Dodrio(30), Arbok(31), Parasect(32), Kricketune(33), Tauros(34), Scraggy(35), Crawdaunt(36), Duskull(37)","Thường, Nước, Cỏ, Giác đấu, Độc, Bay, Bọ, Ma, Bóng tối","Bờ biển, Rừng, Rừng đêm, Tháp, Đồng cỏ"
+36-40,"Tauros(34), Scraggy(35), Crawdaunt(36), Duskull(37), Whirlipede(38), Farfetch'd(39), Litleo(40), Kricketot(41), Palpitoad(42)","Thường, Lửa, Nước, Giác đấu, Độc, Đất, Bay, Bọ, Ma, Bóng tối","Bờ biển, Núi lửa, Rừng, Rừng đêm, Tháp, Đồng cỏ"
+41-45,"Farfetch'd(39), Litleo(40), Kricketot(41), Palpitoad(42), Whirlipede Shiny(43), Dustox(44), Dusclops(45), Haunter(46), Marowak(47)","Thường, Lửa, Nước, Độc, Đất, Bay, Bọ, Ma","Bờ biển, Hang, Núi lửa, Rừng, Tháp, Đồng cỏ"
+46-50,"Dustox(44), Dusclops(45), Haunter(46), Marowak(47), Seviper(48), Scolipede(49), Luxio(50), Blaziken(51), Breloom(52)","Lửa, Điện, Cỏ, Giác đấu, Độc, Đất, Bọ, Ma","Hang, Núi lửa, Rừng, Tháp, Đồng cỏ"
+51-55,"Scolipede(49), Luxio(50), Blaziken(51), Breloom(52), Golem(54), Magcargo(56)","Lửa, Điện, Cỏ, Giác đấu, Độc, Đất, Bọ, Đá","Hang, Núi lửa, Rừng, Đồng cỏ"
+56-60,"Golem(54), Magcargo(56), Crabrawler(58), Arcanine(60), Rhydon(62)","Lửa, Giác đấu, Đất, Đá","Hang, Núi lửa"
+61-65,"Arcanine(60), Rhydon(62), Pinsir(64), Scyther(66)","Lửa, Đất, Bay, Bọ, Đá","Hang, Núi lửa, Rừng"
+66-70,"Pinsir(64), Scyther(66), Whiscash(68), Kingler(70), Gastrodon(72)","Nước, Đất, Bay, Bọ","Bờ biển, Rừng"
+71-75,"Kingler(70), Gastrodon(72), Trevenant(74), Sharpedo(76)","Nước, Cỏ, Đất, Ma, Bóng tối","Bờ biển, Tháp"
+76-80,"Trevenant(74), Sharpedo(76), Vileplume(78), Galvantula(80), Liepard Shiny(82)","Nước, Điện, Cỏ, Độc, Bọ, Ma, Bóng tối","Bờ biển, Rừng, Rừng đêm, Tháp"
+81-85,"Galvantula(80), Liepard Shiny(82), Luxray(84)","Điện, Bọ, Bóng tối","Rừng, Rừng đêm, Đồng cỏ"
+86-90,Luxray(84),Điện,Đồng cỏ
+91-95,,,
+96-100,,,

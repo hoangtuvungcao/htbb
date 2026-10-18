@@ -1,0 +1,88 @@
+-- SINH RA boi tools/pokemon/sinh_vat_pham_lau_dai.py - KHONG SUA TAY. GD2b (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md).
+-- Vat pham tieu hao / do giu moi = data_item type 28 id 1201..1260 + bang anh xa hieu ung.
+-- Chi co tac dung khi sv.lau_dai=1 (real.VatPhamDungLauDai). SQL portable, chay lai nhieu lan nhu nhau.
+SET NAMES utf8;
+
+DELETE FROM `data_item` WHERE `id` >= 1201 AND `id` <= 1260;
+DROP TABLE IF EXISTS `data_vat_pham_lau_dai`;
+CREATE TABLE `data_vat_pham_lau_dai` (
+  `id_item` int NOT NULL,
+  `ma` varchar(64) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `nhom` varchar(32) NOT NULL,
+  `hieu_ung` varchar(255) NOT NULL,
+  `gioi_han` varchar(32) NOT NULL DEFAULT '',
+  `cap_tu` int NOT NULL DEFAULT 1,
+  `cap_den` int NOT NULL DEFAULT 100,
+  PRIMARY KEY (`id_item`)
+) DEFAULT CHARSET=utf8;
+
+INSERT INTO `data_item` (`id`,`name`,`type`,`style`,`he`,`gender`,`level`,`durable`,`atb0`,`atb1`,`atb2`,`atb3`,`atb4`,`atb5`,`atb6`,`atb7`,`atb8`,`atb9`,`price`,`clazz`,`xstart`,`ystart`,`colortype`,`nloan`,`idUpLevel`,`namein`,`ideff`,`pricecu`) VALUES
+(1201,'Thuốc giải độc',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,41,-1,14429,0,-1,0,-1,'Thuốc giải độc',-1,0),
+(1202,'Thuốc trị bỏng',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,41,-1,14430,0,-1,0,-1,'Thuốc trị bỏng',-1,0),
+(1203,'Thuốc trị tê liệt',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,41,-1,14431,0,-1,0,-1,'Thuốc trị tê liệt',-1,0),
+(1204,'Thuốc đánh thức',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,41,-1,14432,0,-1,0,-1,'Thuốc đánh thức',-1,0),
+(1205,'Thuốc rã đông',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,41,-1,14433,0,-1,0,-1,'Thuốc rã đông',-1,0),
+(1206,'Thuốc chữa toàn diện',28,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,236,-1,14434,0,-1,0,-1,'Thuốc chữa toàn diện',-1,0),
+(1207,'Thuốc hồi sinh tối đa',28,0,0,0,40,0,0,0,0,0,0,0,0,0,0,0,0,-1,14435,0,-1,0,-1,'Thuốc hồi sinh tối đa',-1,0),
+(1208,'X Tốc độ',28,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,336,-1,14436,0,-1,0,-1,'X Tốc độ',-1,0),
+(1209,'X Chính xác',28,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,336,-1,14437,0,-1,0,-1,'X Chính xác',-1,0),
+(1210,'Tăng chí mạng (Dire Hit)',28,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,336,-1,14438,0,-1,0,-1,'Tăng chí mạng (Dire Hit)',-1,0),
+(1211,'Thuốc xua quái',28,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,147,-1,14439,0,-1,0,-1,'Thuốc xua quái',-1,0),
+(1212,'Siêu thuốc xua quái',28,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,316,-1,14440,0,-1,0,-1,'Siêu thuốc xua quái',-1,0),
+(1213,'Thuốc xua quái tối đa',28,0,0,0,40,0,0,0,0,0,0,0,0,0,0,0,981,-1,14441,0,-1,0,-1,'Thuốc xua quái tối đa',-1,0),
+(1214,'Kẹo Hiếm',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14442,0,-1,0,-1,'Kẹo Hiếm',-1,0),
+(1215,'Quả Oran',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,27,-1,14443,0,-1,0,-1,'Quả Oran',-1,0),
+(1216,'Quả Sitrus',28,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,79,-1,14444,0,-1,0,-1,'Quả Sitrus',-1,0),
+(1217,'Quả Lum',28,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,127,-1,14445,0,-1,0,-1,'Quả Lum',-1,0),
+(1218,'Quả Cheri',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,20,-1,14446,0,-1,0,-1,'Quả Cheri',-1,0),
+(1219,'Quả Chesto',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,20,-1,14447,0,-1,0,-1,'Quả Chesto',-1,0),
+(1220,'Quả Pecha',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,20,-1,14448,0,-1,0,-1,'Quả Pecha',-1,0),
+(1221,'Quả Rawst',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,20,-1,14449,0,-1,0,-1,'Quả Rawst',-1,0),
+(1222,'Quả Aspear',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,20,-1,14450,0,-1,0,-1,'Quả Aspear',-1,0),
+(1223,'Quả Leppa',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,20,-1,14451,0,-1,0,-1,'Quả Leppa',-1,0),
+(1224,'Thức ăn thừa',28,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,-1,14452,0,-1,0,-1,'Thức ăn thừa',-1,0),
+(1225,'Chuông vỏ sò',28,0,0,0,40,0,0,0,0,0,0,0,0,0,0,0,0,-1,14453,0,-1,0,-1,'Chuông vỏ sò',-1,0),
+(1226,'Móng vuốt nhanh',28,0,0,0,40,0,0,0,0,0,0,0,0,0,0,0,0,-1,14454,0,-1,0,-1,'Móng vuốt nhanh',-1,0),
+(1227,'Băng đô tập trung',28,0,0,0,50,0,0,0,0,0,0,0,0,0,0,0,0,-1,14455,0,-1,0,-1,'Băng đô tập trung',-1,0),
+(1228,'Kính ngắm',28,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,-1,14456,0,-1,0,-1,'Kính ngắm',-1,0),
+(1229,'Đai lực sĩ',28,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,-1,14457,0,-1,0,-1,'Đai lực sĩ',-1,0),
+(1230,'Đá vĩnh cửu',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14458,0,-1,0,-1,'Đá vĩnh cửu',-1,0),
+(1231,'Trứng may mắn',28,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,-1,14459,0,-1,0,-1,'Trứng may mắn',-1,0),
+(1258,'Bùa bảo hộ',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14460,0,-1,0,-1,'Bùa bảo hộ',-1,0),
+(1259,'Bùa bảo hộ cao cấp',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14460,0,-1,0,-1,'Bùa bảo hộ cao cấp',-1,0);
+
+INSERT INTO `data_vat_pham_lau_dai` VALUES
+(1201,'chua_doc','Thuốc giải độc','trang_thai','go:2','',1,100),
+(1202,'chua_bong','Thuốc trị bỏng','trang_thai','go:1','',1,100),
+(1203,'chua_te','Thuốc trị tê liệt','trang_thai','go:3','',1,100),
+(1204,'chua_ngu','Thuốc đánh thức','trang_thai','go:4','',1,100),
+(1205,'chua_bang','Thuốc rã đông','trang_thai','go:5','',1,100),
+(1206,'chua_tat_ca','Thuốc chữa toàn diện','trang_thai','go:tat_ca,mien:5','',30,100),
+(1207,'hoi_sinh_2','Thuốc hồi sinh tối đa','hoi_sinh','hoi_sinh:100','3/tuần',40,100),
+(1208,'x_toc_do','X Tốc độ','x_tang_cuong','toc_danh:15,giay:90','',10,100),
+(1209,'x_chinh_xac','X Chính xác','x_tang_cuong','chinh_xac:15,giay:90','',10,100),
+(1210,'x_chi_mang','Tăng chí mạng (Dire Hit)','x_tang_cuong','chi_mang:5,giay:90','',10,100),
+(1211,'xua_quai_1','Thuốc xua quái','xua_quai','xua:5,phut:5','',5,100),
+(1212,'xua_quai_2','Siêu thuốc xua quái','xua_quai','xua:5,phut:10','',20,100),
+(1213,'xua_quai_3','Thuốc xua quái tối đa','xua_quai','xua:5,phut:20','',40,100),
+(1214,'keo_hiem','Kẹo Hiếm','keo_exp','exp_phut:30,tru_nang_luong_phut:30','2/tuần',1,100),
+(1215,'qua_oran','Quả Oran','qua_mong','tu_dung:hp50,hp:10','',1,100),
+(1216,'qua_sitrus','Quả Sitrus','qua_mong','tu_dung:hp50,hp:25','',30,100),
+(1217,'qua_lum','Quả Lum','qua_mong','tu_dung:trang_thai,go:tat_ca','',20,100),
+(1218,'qua_cheri','Quả Cheri','qua_mong','tu_dung:te,go:3','',1,100),
+(1219,'qua_chesto','Quả Chesto','qua_mong','tu_dung:ngu,go:4','',1,100),
+(1220,'qua_pecha','Quả Pecha','qua_mong','tu_dung:doc,go:2','',1,100),
+(1221,'qua_rawst','Quả Rawst','qua_mong','tu_dung:bong,go:1','',1,100),
+(1222,'qua_aspear','Quả Aspear','qua_mong','tu_dung:dong_bang,go:5','',1,100),
+(1223,'qua_leppa','Quả Leppa','qua_mong','tu_dung:mp20,mp:15','',1,100),
+(1224,'giu_thuc_an_thua','Thức ăn thừa','do_giu','o:phien_da,hoi_hp_3s:1','',30,100),
+(1225,'giu_chuong_vo_so','Chuông vỏ sò','do_giu','o:phien_da,hut:3','',40,100),
+(1226,'giu_mong_nhanh','Móng vuốt nhanh','do_giu','o:phien_da,toc_danh_ngau_nhien:10','',40,100),
+(1227,'giu_bang_tap_trung','Băng đô tập trung','do_giu','o:phien_da,song_sot:10,hoi:120','',50,100),
+(1228,'giu_kinh_ngam','Kính ngắm','do_giu','o:phien_da,chi_mang:3','',30,100),
+(1229,'giu_dai_luc','Đai lực sĩ','do_giu','o:phien_da,don_thuong:4','',30,100),
+(1230,'giu_da_vinh_cuu','Đá vĩnh cửu','do_giu','o:phien_da,chan_tien_hoa:1','',1,100),
+(1231,'giu_trung_may_man','Trứng may mắn','do_giu','o:phien_da,exp:10','',20,100),
+(1258,'bua_bao_ho_1','Bùa bảo hộ','bua','bua:7-10','',1,100),
+(1259,'bua_bao_ho_2','Bùa bảo hộ cao cấp','bua','bua:11-15','',1,100);

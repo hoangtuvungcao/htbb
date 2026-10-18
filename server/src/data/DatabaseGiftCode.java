@@ -157,14 +157,13 @@ public class DatabaseGiftCode {
         }
         player.timeNhapGiftCode = System.currentTimeMillis();
 
-        // TEST: mã giftcode test, chỉ hoạt động khi bật sv.testMode và khớp sv.testCode.
-        // Tắt mặc định (testMode=0). Có ghi log, dùng lại được để tiện kiểm thử.
-        if (TeamServer.testMode && !TeamServer.testCode.isEmpty() && text.equals(TeamServer.testCode)) {
-            player.addXu(100000000L, "testcode");
-            player.addLuong(10000);
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createServerAlertMessage("[TEST] Đã nhận 100,000,000 xu + 10,000 lượng.", ""));
-            db.saveOrtherLog("", player.charname, "TEST giftcode: +100000000 xu, +10000 luong", "testcode");
+        // Ma test "sv.testCode" (100 trieu xu + 10.000 luong) da XOA (GD2, 17/10/2026): mot dong cau
+        // hinh dat nham tren VPS la mo cua in tien. Kiem thu dung bang tob_giftcode + lenh GM.
+
+        // GD2 / yeu cau 17/10/2026: bat co sv.lau_dai -> he giftcode AN TOAN moi (bang tob_giftcode,
+        // xem GiftcodeAnToan). Bang giftcode cu (cho xu/luong) KHONG con duoc doc.
+        if (com.htbb.pokemon.LauDai.bat()) {
+            real.GiftcodeAnToan.nhap(player, text);
             return;
         }
 
@@ -191,248 +190,13 @@ public class DatabaseGiftCode {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Tài khoản của bạn đã nhập mã quà tặng này rồi.", ""));
                 return;
             }
-            // SECURITY: test/backdoor gift codes (petmax, xuluong, alldanhhieu, ...) permanently disabled.
-            // These granted billions of currency / rare items and returned before logging, so they were
-            // reusable and catastrophic if TeamServer.CodeTest was ever enabled in production.
-            if (false) {
-           switch (text) {
+            // Ma "cua sau" (petmax, xuluong, alldanhhieu, ...) da XOA HAN (yeu cau 17/10/2026, GD2):
+            // truoc day nam trong mot khoi if (false) - xoa de khong ai bat lai duoc.
 
-            case "petmax":
-                int[] idpet = new int[]{693, 698, 708, 703, 713};
-                int[] idtrungpet = new int[]{684, 685, 687, 686, 688};
-                int indexPet = 3;
-                if (indexPet >= 0 && indexPet < idpet.length) {
-                    player.doCreatePetMax(idpet[indexPet], 5, idtrungpet[indexPet], 1008000000);
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Pet Max", ""));
-                } else {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Loại pet không hợp lệ (0-4)", ""));
-                }
-                break;
-
-              case "colon":
-                  player.addDanhHieu(8935, 0);
-                
-
-                  try {
-                      player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
-                      player.sendToNearPlayer(MessageCreator.createCharInfo(player));
-                  } catch (IOException ex) {
-                  }
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được danh hiệu: " + DanhHieu.getName(8935), ""));
-
-                  return;
-              case "rongbang":
-                  player.createRongLon(0, true);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Rồng Băng.", ""));
-                  return;
-            case "alldanhhieu":
-                  // Add all titles from DanhHieu class
-                  int[] allTitles = {
-                      8767, 8768, 8769, 8770, 8771, 8772, 8773, 8774, 8775, 8776, 8777,
-                      8778, 8779, 8785, 8786, 8787, 8788, 8900, 8901, 8902, 8903, 8904,
-                      8905, 8906, 8907, 8908, 8909, 8910, 8911, 8924, 8925, 8935, 8956, 8957, 8983 ,8984,8985,8986,8987,8988,8989,8990,8991,8992,8993,8994,8995,8996,8999
-                  };
-                  
-                  for (int titleId : allTitles) {
-                      player.addDanhHieu(titleId, 0);
-                  }
-                  
-                  try {
-                      player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
-                      player.sendToNearPlayer(MessageCreator.createCharInfo(player));
-                  } catch (IOException ex) {
-                  }
-                  
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được tất cả danh hiệu!", ""));
-                  
-                  Database.instance.saveOrtherLog("", player.charname, "CODE: " + text, "putGiftCode");
-                  pre1.execute("insert into giftcode_log set player = '" + player.charname + "', giftcode = '" + text + "', item = '" + 0 + "', xu = " + 0 + ", luong = " + 0 + ", luongK = " + 0 + ";");
-                  
-                  return;
-
-             
-              case "xuluong":
-                      int xu = 2_000_000_000;
-                      int luong = 2_000_000;
-
-                      player.addXu(xu, "board_created db");
-                      player.addLuong(luong);
-                      player.lockLuong += luong;
-
-                      String msg = "Bạn vừa nhận được 2 tỉ xu và 2 triệu lượng.";
-                      player.sendMessage(MessageCreator.createServerAlertMessage(msg, ""));
-                      return;
-
-              case "hoakylan":
-                  player.map.doCreateHoaKyLan(player, 683, 0L);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Hỏa Kỳ Lân.", ""));
-                  return;
-               case "lansu":
-                  player.map.doCreateLanSuVu(player, 882, 0L);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Lân Sư.", ""));
-                  return;
-              case "duongkhang":
-                  player.createHeo(0, false);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Đương Khang.", ""));
-                  return;
-
-              case "phiphong":
-                  ItemLuckyDraw.createtemCoat(750, player, 0, true, 0);
-                  ItemLuckyDraw.createtemCoat(750, player, 1, true, 0);
-                  return;
-
-              case "phuonghoang":
-                  player.createPhuongHoang(0, Animal.PHUONG_HOANG, true);
-                  player.createPhuongHoang(0, Animal.PHUONG_HOANG_BANG, true);
-                  return;
-
-              case "matna":
-                  Item newitem = Map.doCreateMatNa(player, 525948, 837, 10, 30);
-                  Item newitem2 = Map.doCreateMatNa(player, 525948, 838, 11, 30);
-                  
-
-                  int[] valuemn = {5, 5, 10, 30, 50};
-                  Item newitem3 = Map.doCreateMatNa(player, -1, ID_MAT_NA[0], 0, valuemn[0]);
-                  Item newitem4 = Map.doCreateMatNa(player, -1, ID_MAT_NA[1], 1, valuemn[1]);
-                  Item newitem5 = Map.doCreateMatNa(player, -1, ID_MAT_NA[2], 2, valuemn[2]);
-                  Item newitem6 = Map.doCreateMatNa(player, -1, ID_MAT_NA[3], 3, valuemn[3]);
-                  Item newitem7 = Map.doCreateMatNa(player, -1, ID_MAT_NA[4], 4, valuemn[4]);   
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được tất cả mặt nạ 365 ngày", ""));
-
-                  return;
-
-              case "nguyenlieu":
-
-                        player.doAddGemItem(4, 9999, true); // bao hiem 90
-                        player.doAddGemItem(156, 9999, true); // DA MAY MAN 6
-                        player.doAddGemItem(250, 9999, true); // DA_TIEN_GIAI
-                        player.doAddGemItem(108, 9999, true);
-                        player.doAddGemItem(66, 9999, true);
-                        player.doAddGemItem(73, 9999, true);
-                        player.doAddGemItem(80, 9999, true);
-                        player.doAddGemItem(87, 9999, true);
-                        player.doAddGemItem(94, 9999, true);
-                        player.doAddGemItem(101, 9999, true);
-                        player.doAddGemItem(108, 9999, true);
-                        player.doAddGemItem(24, 100, true);
-                        player.doAddGemItem(25, 100, true);
-                        player.doAddGemItem(26, 100, true);
-                        player.doAddGemItem(27, 100, true);
-                        player.doAddGemItem(60, 100, true);
-                        player.doAddGemItem(61, 100, true);
-                        player.doAddGemItem(62, 100, true);
-                        player.doAddGemItem(63, 100, true);
-                        player.doAddGemItem(64, 100, true);
-                        player.doAddGemItem(65, 100, true);
-                        player.doAddGemItem(122, 9999, true);
-                        player.doAddGemItem(115, 9999, true);
-                        player.doAddGemItem(129, 9999, true);
-                        player.doAddGemItem(136, 9999, true);
-                        player.doAddGemItem(148, 9999, true);
-                        player.doAddGemItem(142, 9999, true);
-                        player.doAddGemItem(154, 9999, true);
-                        player.doAddGemItem(228, 9999, true);
-                        player.doAddGemItem(234, 9999, true);
-                        player.doAddGemItem(240, 9999, true); //NGOC_HUYEN_MINH_6
-
-                        player.doAddGemItem(249, 9999, true); // BOT_XANH_LA
-                        player.doAddGemItem(66, 9999, true); // LKD_35
-                        player.potions[9] = player.potions[9] + 9999; // NHAN SAM
-                        player.calculateAttrib();
-                        for (int j = 0; j < 10; j++) {
-                            GiftCode.AddItem(player, 720, 0, 0, -1); // HLT
-//                        GiftCode.AddItem(player, 714, 0, 0, -1); // THD
-                        }
-                        player.sendMessage(MessageCreator.createCharGemItem(player));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận Full Nguyên Liệu Cần thiết.", ""));
-                        return;
-                        
-                        case "tuhondan":
-                        player.potions[83] = player.potions[83] + 9999; // tuhondan
-                        player.sendMessage(MessageCreator.createCharGemItem(player));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận x9999 tụ hồn đan.", ""));
-                        return;
-                        
-               case "tranh": {
-                        // Tứ Bình – 5 mảnh mỗi loại (ID: 159 → 174, 16 ID)
-                        int[] tuBinh = {
-                            159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170,
-                            171, 172, 173, 174
-                        };
-                        for (int gemId : tuBinh) {
-                            player.doAddGemItem(gemId, 5, true);
-                        }
-
-                        // Tứ Nhạc – 10 mảnh mỗi loại (ID: 179 → 194, 16 ID)
-                        int[] tuNhac = {
-                            179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
-                            191, 192, 193, 194
-                        };
-                        for (int gemId : tuNhac) {
-                            player.doAddGemItem(gemId, 10, true);
-                        }
-
-                        // Tứ Khoái – 15 mảnh mỗi loại (ID: 195 → 210, 16 ID)
-                        int[] tuKhoai = {
-                            195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
-                            207, 208, 209, 210
-                        };
-                        for (int gemId : tuKhoai) {
-                            player.doAddGemItem(gemId, 15, true);
-                        }
-
-                        // Tứ Linh – 20 mảnh mỗi loại (ID: 211 → 226, 16 ID)
-                        int[] tuLinh = {
-                            211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222,
-                            223, 224, 225, 226
-                        };
-                        for (int gemId : tuLinh) {
-                            player.doAddGemItem(gemId, 20, true);
-                        }
-
-                        player.sendMessage(MessageCreator.createCharGemItem(player));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận full tranh!", ""));
-                        return;
-                    }         
-              case "sachpet":
-                  player.potions[Potion.TYPE_SACH_SKILL_PET] += 50;
-                  player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                      return;
-              case "pet":
-                        int[] petEggIds = {684, 685, 686, 687, 688};
-                        for (int id : petEggIds) {
-                            for (int i = 0; i < 10; i++) {
-                                GiftCode.AddItem(player, id, 0, 0, -1);
-                            }
-                        }
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận Trứng Pet", ""));
-                        return;
-              case "sutu":
-                        player.createSuTuBang(0, true);
-                        player.createSuTu(0, true);
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Sư Tử.", ""));
-                  return;
-                        
-              case "lansutu":
-                  // lo #6 loi.xlsx ("khong hien thi chi so ho ve lan su tu"): isAlert
-                  // truoc day la false - MOI giftcode khac trong file nay deu bao
-                  // "Chuc mung ban da nhan duoc..." cho nguoi choi biet vua nhan gi,
-                  // rieng case nay im lang hoan toan. createLan(..., true, ...) tu no
-                  // da co san dung thong bao can ("Chuc mung. Ban da nhan duoc linh
-                  // thu Lan su tu"), chi can bat isAlert len.
-                  player.createLan(525948, true, 95);
-              return;
-               
-               default:
-                   break;
-           }
-        }
-
-            String sql = "select * from giftcode where giftcode='" + text + "' and type = 0 limit 1";
-            pre1 = conn.prepareStatement(sql);
+            // Tham so bind thay cho noi chuoi (CODING_CONVENTION muc 13).
+            pre1.close();
+            pre1 = conn.prepareStatement("select * from giftcode where giftcode = ? and type = 0 limit 1");
+            pre1.setString(1, text);
             rs = pre1.executeQuery();
 
             if (rs.next()) {
@@ -446,6 +210,17 @@ public class DatabaseGiftCode {
                 if (limit == 0) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Mã Quà Tặng đã hết lượt sử dụng.", ""));
                     return;
+                }
+                // GD2 5.4: bat co sv.lau_dai -> toi da 2 ma/thang, chi vat pham (bo xu/luong).
+                final String chanLauDai = real.GiftcodeLauDai.choPhep(player);
+                if (chanLauDai != null) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(chanLauDai, ""));
+                    return;
+                }
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    xu = 0;
+                    luong = 0;
+                    luongkhoa = 0;
                 }
 
                 // GHI NHAN DA DUNG + TRU LUOT TRUOC, cap thuong SAU. Truoc day thu tu nguoc
@@ -469,6 +244,7 @@ public class DatabaseGiftCode {
                         return;
                     }
                 }
+                real.GiftcodeLauDai.ghiNhan(player); // GD2 5.4 (khong lam gi khi tat co)
                 PreparedStatement preLog = conn.prepareStatement(
                         "insert into giftcode_log set player = ?, userId = ?, giftcode = ?, item = ?, xu = ?, luong = ?, luongK = ?");
                 preLog.setString(1, player.charname);
@@ -689,6 +465,12 @@ public class DatabaseGiftCode {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 player.doDropModelClothe(player, Integer.parseInt(tachTime[1]), Integer.parseInt(tachTime[3]));
                             }
+                        } else if (tachTime[0].equals("LUONG")) {
+                            // GD2 2.12: luong tu xep hang tuan (tob_top_thuong, THIET_KE 2.1: top 1 50,
+                            // top 10 20, top 100 8, top 1000 3 - KinhTeLauDai.luongXepHangTuan).
+                            player.addLuong(Math.max(0, Integer.parseInt(tachTime[1])));
+                        } else if (tachTime[0].equals("LUONGKHOA")) {
+                            player.addLuongLock(Math.max(0, Integer.parseInt(tachTime[1])));
                         } else if (tachTime[0].equals("ITEM")) {
                             player.createItemSoLuong(Integer.parseInt(tachTime[1]), Integer.parseInt(tachTime[2]), player);
                         } else if (tachTime[0].equals("MATNA")) {

@@ -154,6 +154,9 @@ public class NpcReceiveCard {
                         // Thuong 10.000 luong + 50tr xu cho thanh vien bang: BO theo yeu cau
                         // nguoi dung 22/09/2026 - khong con thuong khi thang chiem thanh.
                         // ThuongChiemThanh.batDau(this.inCountry, this.idClan, this.nameClan);
+                        // Yeu cau 17/10/2026: bat co sv.lau_dai -> thuong chiem thanh MOI (khong in
+                        // luong/xu: danh hieu, buff EXP, chia lai quy bang, luong khoa theo dong gop).
+                        ChiemThanhLauDai.batDau(this.inCountry, this.idClan, this.nameClan);
                         isFinish[this.inCountry] = true;
                         Map.getTown[this.inCountry] = false;
                         Char pmaster = CharManager.instance.getCharByCharName(cinfo.master.toLowerCase());

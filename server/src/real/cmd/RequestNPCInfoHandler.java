@@ -509,7 +509,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     }
                     if (Qua == 4) {
                         int luongLock = Map.ranDom(100, 1000);
-                        p.lockLuong += luongLock;
+                        // Bo sung kiem toan A6: qua addLuongLock (KHOA_TIEN, tran) + log, khong cong thang.
+                        p.addLuongLock(luongLock);
+                        Database.instance.saveOrtherLog("", p.charname, "doi keo nhan " + luongLock + " luong khoa", "doikeo");
                         p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn đã nhận " + luongLock + " lượng khoá."));
                         return;
                     }
@@ -879,6 +881,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.idxKhoXuLuong = menu.length;
                         menu = menuKho;
                     }
+                    // nap tien: muc "Cửa hàng & Nạp" noi CUOI menu (tat co: menu y nguyen).
+                    menu = com.htbb.pokemon.NapTienGame.noiMenuTongQuan(p, menu);
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }
@@ -900,6 +904,18 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         final String[] menuPokedex = java.util.Arrays.copyOf(menu, menu.length + 1);
                         menuPokedex[menu.length] = real.PokedexPokemon.TEN_MUC;
                         menu = menuPokedex;
+                    }
+                    // GD2: "So tay huan luyen" (thiet ke dai han) noi vao cuoi, dung vi tri MapDoMenu cho.
+                    if (com.htbb.pokemon.LauDai.bat() && menu.length == real.SoTayLauDai.viTri()) {
+                        final String[] menuSoTay = java.util.Arrays.copyOf(menu, menu.length + 1);
+                        menuSoTay[menu.length] = real.SoTayLauDai.TEN_MUC;
+                        menu = menuSoTay;
+                    }
+                    // he sinh thai: muc "He sinh thai" noi vao cuoi, dung vi tri MapDoMenu cho.
+                    if (com.htbb.pokemon.HeSinhThai.bat() && menu.length == com.htbb.pokemon.HeSinhThaiMenu.viTri()) {
+                        final String[] menuHst = java.util.Arrays.copyOf(menu, menu.length + 1);
+                        menuHst[menu.length] = com.htbb.pokemon.HeSinhThaiGame.TEN_MUC;
+                        menu = menuHst;
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);

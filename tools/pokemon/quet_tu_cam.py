@@ -5,7 +5,7 @@ G7.C: quet tu cam (kiem hiep) con sot trong chu nguoi choi thay.
 Quet 3 nguon:
   java  chuoi "..." trong src/**/*.java (bo chu thich, bo dong log System.out/err,
         printStackTrace, saveOrtherLog; bo tool admin src/server/AdminPanel.java, src/server/Panel/)
-  cs    chuoi "..." trong ClientUnity/Assets/Scripts/**/*.cs (bo Debug.Log)
+  cs    chuoi "..." trong <client PC>/Assets/Scripts/**/*.cs (htbb-client/pc; bo Debug.Log)
   sql   CSDL SAU KHI chay dump + cac file sql/pokemon_*.sql (ca sql/pokemon_doi_chu.sql)
 
 Chi tinh chuoi "giong chu" (co ky tu ngoai ASCII hoac bat dau bang chu hoa) - chuoi khoa/SQL/log
@@ -38,7 +38,13 @@ _spec.loader.exec_module(cp)
 GOC = cp.GOC
 RA = os.path.join(GOC, "docs", "pokemon", "tu_cam_con_lai.csv")
 SRC = os.path.join(GOC, "src")
-CS = os.path.join(GOC, "ClientUnity", "Assets", "Scripts")
+_sd = importlib.util.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
+dc = importlib.util.module_from_spec(_sd)
+_sd.loader.exec_module(dc)
+# Ma C# client: client PC chinh htbb-client/pc (doi bang HTBB_CLIENT_ASSETS), ban cu ClientUnity neu chi con no.
+# Nhan file trong bao cao giu dang cu "ClientUnity/Assets/Scripts/Game/<ten>" (BO_QUA / GIO_DAU / CSV cu khop).
+CS = dc.scripts(dc.assets())
+NHAN_CS = "ClientUnity/Assets/Scripts/Game/"
 
 # Khong quet: bang du lieu tu dien (chua tu cam co chu dich) va tool admin (khong phai nguoi choi).
 BO_QUA = {
@@ -136,7 +142,10 @@ def quet_ma(goc_quet, duoi, nguon, td, cam, ra, dem):
             if not f.endswith(duoi):
                 continue
             p = os.path.join(d, f)
-            rel = os.path.relpath(p, GOC).replace(os.sep, "/")
+            if nguon == "cs":
+                rel = NHAN_CS + os.path.relpath(p, CS).replace(os.sep, "/")
+            else:
+                rel = os.path.relpath(p, GOC).replace(os.sep, "/")
             if rel in BO_QUA or rel.startswith(BO_QUA_THU_MUC):
                 continue
             for so, t in chuoi_trong_file(p):

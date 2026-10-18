@@ -99,6 +99,7 @@ public final class MoPhongKinhTe {
         int chieuDaHoc, ngoc;
         boolean laKhaiTruong, batKip;
         double expNgay;
+        NapMoPhong.Nguoi napNguoi; // nap tien (mo-dun cuoi file)
     }
 
     // ============================ RNG TAT DINH ============================
@@ -354,7 +355,7 @@ public final class MoPhongKinhTe {
         tongLkRa = new double[soNgay];
         if (chiChuan) {
             for (int g = 0; g < SO_NHOM; g++) {
-                for (int i = 0; i < SO_CHUAN_MOI_NHOM; i++) {
+                for (int i = 0; i < soChuanMoiNhom; i++) { // nap tien: mac dinh SO_CHUAN_MOI_NHOM
                     themNguoi(0, g, true);
                 }
             }
@@ -402,6 +403,9 @@ public final class MoPhongKinhTe {
         p.ngayCuoiTienBo = ngay;
         p.thanhTuuDat = new boolean[thanhTuu.size()];
         p.coDoi = nhom != BOT && ngauNhien() < 0.6;
+        if (napCheDo != NAP_TAT) {
+            nap().themNguoi(p); // nap tien
+        }
         nguoi.add(p);
     }
 
@@ -484,6 +488,9 @@ public final class MoPhongKinhTe {
                 }
             }
         }
+        if (napCheDo != NAP_TAT) {
+            nap().cuoiNgay(ngay); // nap tien
+        }
     }
 
     boolean biBoChoi(final NguoiChoi p, final int ngay, final int tuan) {
@@ -562,6 +569,38 @@ public final class MoPhongKinhTe {
             }
             p.tuanCuoi = tuanNv;
         }
+        // ---- Module GD2 bo sung 17/10/2026 (server: QuaHoatDong, HamNgucGame, BossLauDai,
+        // ChiemThanhLauDai). Them sau, KHONG sua cac module khac. ----
+        // Qua hoat dong theo tai khoan (ca bot: van "hoat dong"): 15' 1 da, 30' 5% gio xu,
+        // 60' 2 luong khoa, 120' 3 luong khoa + 3 nguyen lieu.
+        {
+            final double phutHd = gio * 60;
+            if (phutHd >= 30) {
+                congXu(p, "su_kien", ngay, ThongSoLauDai.xuMoiGio(p.cap) * 0.05);
+            }
+            final int lkHd = (phutHd >= 60 ? 2 : 0) + (phutHd >= 120 ? 3 : 0);
+            p.lk += lkHd;
+            tongLkVao[ngay] += lkHd;
+        }
+        if (p.nhom != BOT) {
+            // Ham nguc bi an: 1 luot thuong/ngay, tang >= 5 -> 5 luong khoa (~50% nguoi choi >= cap 20).
+            if (p.cap >= 20 && gio >= 1.0 && ngauNhien() < 0.5) {
+                p.lk += 5;
+                tongLkVao[ngay] += 5;
+            }
+            // Tuan: boss the gioi (50% tham gia, hop tham gia 3 luong khoa) + chiem thanh (20% dong
+            // gop: 5 luong khoa; 3% bang thang: 20). Chia quy bang la chuyen tien, khong tinh.
+            if (ngay > p.ngayVao && (ngay - p.ngayVao) % 7 == 0) {
+                if (ngauNhien() < 0.5) {
+                    p.lk += 3;
+                    tongLkVao[ngay] += 3;
+                }
+                final double r = ngauNhien();
+                final int lkCt = r < 0.03 ? 20 : (r < 0.20 ? 5 : 0);
+                p.lk += lkCt;
+                tongLkVao[ngay] += lkCt;
+            }
+        }
         // Chuong chinh.
         if (p.nhom != BOT) {
             int lam = 0;
@@ -627,6 +666,9 @@ public final class MoPhongKinhTe {
                     p.ngayCuoiTienBo = Math.max(p.ngayCuoiTienBo, ngay - 3);
                 }
             }
+        }
+        if (hstBat) {
+            gio -= hst().motNgay(p, ngay, gio); // he sinh thai: cau ca/khao co/nau an truoc khi danh quai
         }
         // Danh quai: nang luong.
         if (gio > 0) {
@@ -705,6 +747,9 @@ public final class MoPhongKinhTe {
             tongLgRa += 70;
         }
         thanhTuu(p, ngay);
+        if (napCheDo != NAP_TAT) {
+            nap().moiNgay(p, ngay); // nap tien
+        }
     }
 
     void congXu(final NguoiChoi p, final String nguon, final int ngay, final double x) {
@@ -1357,11 +1402,584 @@ public final class MoPhongKinhTe {
                 }
             }
         }
+        // nap tien: 6 muc tieu rieng (dung lai dan so hon hop vua chay).
+        chayNapTien(new File("."), soNgay, pct, m);
+        b.append(lastNapTomTat);
+        b.append(HeSinhThaiMoPhong.tomTat(m)); // he sinh thai
         System.out.print(b);
         try (PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(
                 new File("docs/pokemon/mo_phong_tom_tat.txt"), true), StandardCharsets.UTF_8))) {
             w.print(b);
         }
         System.out.printf(Locale.ROOT, "(%.1f giay)%n", (System.nanoTime() - t0) / 1e9);
+    }
+
+    // ============================ NAP TIEN (docs/pokemon/NAP_TIEN.md muc 7) ============================
+    // Mo-dun ROI: 3 nhom nguoi tra tien (khong nap 85%, nap nhe 12%, ca voi 3%), goi luong ty gia co
+    // dinh, the thang, ve mua (free + cao cap), cua hang trang tri (luong bi dot), cho trang tri (xu
+    // chuyen tay, thue 7% dot). RNG RIENG (khong doi chuoi so cua mo phong goc). Kiem: chayKiemNapTien.
+    /** 0 = khong co he thong nap (kich ban so sanh), 1 = hon hop 85/12/3. */
+    static final int NAP_TAT = 0, NAP_HON_HOP = 1;
+    int napCheDo = NAP_HON_HOP;
+    int soChuanMoiNhom = SO_CHUAN_MOI_NHOM;
+    NapMoPhong nap;
+
+    NapMoPhong nap() {
+        if (nap == null) {
+            nap = new NapMoPhong(this, trangThaiRng ^ 0x6E61705469656E31L);
+        }
+        return nap;
+    }
+
+    static final class NapMoPhong {
+        static final int KHONG = 0, NHE_NAP = 1, CA_VOI = 2;
+        static final String[] TEN = {"không nạp", "nạp nhẹ", "cá voi"};
+        static final double[] TI_TRONG = {0.85, 0.12, 0.03};
+        /** Goi luong = NapTienLogic.GOI_MAC_DINH (10 luong / 1.000 d). */
+        static final int[] GOI = {200, 500, 1000, 2000, 5000};
+        /** Gia mon trang tri (luong) - lay tu NapTienLogic.MON_MAC_DINH. */
+        static final int[] GIA_MON;
+        static {
+            final List<Integer> g = new ArrayList<Integer>();
+            for (final com.htbb.pokemon.NapTienLogic.Mon mon : com.htbb.pokemon.NapTienLogic.MON_MAC_DINH) {
+                g.add(mon.giaLuong);
+            }
+            GIA_MON = new int[g.size()];
+            for (int i = 0; i < GIA_MON.length; i++) {
+                GIA_MON[i] = g.get(i);
+            }
+        }
+        /** Xac suat muon mua 1 mon trang tri / ngay choi. */
+        static final double[] MUON_MUA = {0, 0.05, 0.25};
+
+        static final class Nguoi {
+            int nhom, thangVnd = -1, tuanVnd = -1, muaVe = -1, diemVe, bacFree, bacCao, monGiaoDich;
+            double lg, vndThang, vndTuan;
+            int hetHanThe;
+            boolean caoCap;
+        }
+
+        final MoPhongKinhTe m;
+        long rng;
+        double lgVao, lgRa, lgVaoTu90, lgRaTu90, vnd, thueCho, daTuVe;
+        int soGiaoDich, soNguoiNap;
+        final double[] vndThang = new double[40];
+        final double[] soDuTb;
+        final double[] giaGioNgay;
+        double giaGio = 1.0;
+        /** Gia nguoi nap chiu ban (gio thu nhap trung vi): thap hon thi giu mon lai. */
+        static final double GIA_GIU_LAI_GIO = 1.0;
+        final List<Double> giaGanDay = new ArrayList<Double>();
+        final List<NguoiChoi> ban = new ArrayList<NguoiChoi>();
+        final List<NguoiChoi> mua = new ArrayList<NguoiChoi>();
+        final List<Double> nganSachMua = new ArrayList<Double>();
+        /** [thang][nhom choi 0..2][nhom nap 0..2] = {tong suc manh, so nguoi}. */
+        final double[][][][] sucManh = new double[30][3][3][2];
+
+        NapMoPhong(final MoPhongKinhTe m, final long hat) {
+            this.m = m;
+            this.rng = hat;
+            soDuTb = new double[m.soNgay];
+            giaGioNgay = new double[m.soNgay];
+        }
+
+        double ngauNhien() {
+            rng += 0x9E3779B97F4A7C15L;
+            long z = rng;
+            z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
+            z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
+            z = z ^ (z >>> 31);
+            return (z >>> 11) * 0x1.0p-53;
+        }
+
+        void themNguoi(final NguoiChoi p) {
+            final Nguoi n = new Nguoi();
+            final double u = ngauNhien();
+            n.nhom = p.nhom == BOT ? KHONG : (u < TI_TRONG[CA_VOI] ? CA_VOI : (u < TI_TRONG[CA_VOI] + TI_TRONG[NHE_NAP] ? NHE_NAP : KHONG));
+            p.napNguoi = n;
+        }
+
+        /** Tra tien that (VND) neu con trong tran tuan/thang (NapTienLogic.kiemTran). */
+        boolean tra(final Nguoi n, final int ngay, final int vndGia) {
+            final int thang = ngay / 30, tuan = ngay / 7;
+            if (n.thangVnd != thang) {
+                n.thangVnd = thang;
+                n.vndThang = 0;
+            }
+            if (n.tuanVnd != tuan) {
+                n.tuanVnd = tuan;
+                n.vndTuan = 0;
+            }
+            if (com.htbb.pokemon.NapTienLogic.kiemTran((long) n.vndTuan, (long) n.vndThang, vndGia, 0, 0, 0) != null) {
+                return false;
+            }
+            n.vndThang += vndGia;
+            n.vndTuan += vndGia;
+            vnd += vndGia;
+            vndThang[Math.min(vndThang.length - 1, thang)] += vndGia;
+            return true;
+        }
+
+        void vaoLuong(final Nguoi n, final int ngay, final double l) {
+            n.lg += l;
+            lgVao += l;
+            if (ngay >= 90) {
+                lgVaoTu90 += l;
+            }
+        }
+
+        void raLuong(final Nguoi n, final int ngay, final double l) {
+            n.lg -= l;
+            lgRa += l;
+            if (ngay >= 90) {
+                lgRaTu90 += l;
+            }
+        }
+
+        /** Moi ngay choi (khong phai bot), sau nang cap / trang tri cua mo phong goc. */
+        void moiNgay(final NguoiChoi p, final int ngay) {
+            final Nguoi n = p.napNguoi;
+            if (n == null) {
+                return;
+            }
+            // Ve mua: moi nguoi deu co track free; cao cap = tra 99.000 d.
+            final int s = com.htbb.pokemon.NapTienLogic.muaVe(ngay);
+            if (n.muaVe != s) {
+                n.muaVe = s;
+                n.diemVe = 0;
+                n.bacFree = 0;
+                n.bacCao = 0;
+                n.caoCap = (n.nhom == CA_VOI || (n.nhom == NHE_NAP && ngauNhien() < 0.5)) && tra(n, ngay, 99000);
+            }
+            // The thang 50.000 d / 30 ngay: ca voi luon gia han, nap nhe 25% moi thang.
+            if (n.hetHanThe <= ngay && (n.nhom == CA_VOI || (n.nhom == NHE_NAP && ngay % 30 == 0 && ngauNhien() < 0.25))
+                    && tra(n, ngay, 50000)) {
+                n.hetHanThe = ngay + com.htbb.pokemon.NapTienLogic.THE_THANG_SO_NGAY;
+            }
+            final boolean coThe = n.hetHanThe > ngay;
+            if (coThe) {
+                vaoLuong(n, ngay, com.htbb.pokemon.NapTienLogic.THE_THANG_LUONG_NGAY);
+            }
+            // Diem ve: online 1/3 phut (tran 40) + 3 nhiem vu ngay x10 + luot ham nguc the thang 20; tran 120.
+            final int online = (int) Math.min(com.htbb.pokemon.NapTienLogic.VE_MUA_DIEM_ONLINE_NGAY,
+                    GIO_NGAY[p.nhom] * 60 / com.htbb.pokemon.NapTienLogic.VE_MUA_PHUT_MOI_DIEM);
+            final int diem = Math.min(com.htbb.pokemon.NapTienLogic.VE_MUA_DIEM_NGAY_TOI_DA,
+                    online + 30 + (coThe ? com.htbb.pokemon.NapTienLogic.THE_THANG_DIEM_VE_MUA_LUOT_THEM : 0));
+            n.diemVe += diem;
+            final int bac = com.htbb.pokemon.NapTienLogic.bacTuDiem(n.diemVe);
+            while (n.bacFree < bac) {
+                p.da += soDa(com.htbb.pokemon.NapTienLogic.thuongBac(false, ++n.bacFree));
+            }
+            while (n.caoCap && n.bacCao < bac) {
+                final int d = soDa(com.htbb.pokemon.NapTienLogic.thuongBac(true, ++n.bacCao));
+                p.da += d;
+                daTuVe += d;
+            }
+            // Mua trang tri bang luong (luong bi dot). Thieu thi mua goi nho nhat du (ca voi: >= 1.000).
+            if (n.nhom != KHONG) {
+                double q = MUON_MUA[n.nhom] + (n.lg >= 600 ? 0.3 : 0);
+                if (ngauNhien() < q) {
+                    final int gia = GIA_MON[(int) (ngauNhien() * GIA_MON.length)];
+                    if (n.lg < gia) {
+                        int goi = GOI[GOI.length - 1];
+                        for (final int g : GOI) {
+                            if (g >= gia - n.lg && (n.nhom != CA_VOI || g >= 1000)) {
+                                goi = g;
+                                break;
+                            }
+                        }
+                        if (tra(n, ngay, goi * 1000 / com.htbb.pokemon.NapTienLogic.LUONG_MOI_1000_VND)) {
+                            vaoLuong(n, ngay, goi);
+                        }
+                    }
+                    if (n.lg >= gia) {
+                        raLuong(n, ngay, gia);
+                        // Mon giao dich duoc: moi mon toi da 1 lan / nhan vat (gioi_han) -> ton kho co tran 3.
+                        if (ngauNhien() < 0.5 && n.monGiaoDich < 3) {
+                            n.monGiaoDich++;
+                        }
+                    }
+                }
+                // Rao ban mon giao dich duoc (kenh "ban vang" co thue) - chi khi gia >= gia giu lai (1 gio).
+                if (n.monGiaoDich > 0 && giaGio >= GIA_GIU_LAI_GIO && ngauNhien() < 0.05) {
+                    ban.add(p);
+                }
+            } else if (p.xu > 6 * ThongSoLauDai.xuMoiGio(p.cap) && ngauNhien() < 0.05) {
+                // Nguoi khong nap co xu du (> 6 gio thu nhap, nguong ngoc he) muon mua trang tri bang xu.
+                mua.add(p);
+                nganSachMua.add(0.5 * (p.xu - 6 * ThongSoLauDai.xuMoiGio(p.cap)));
+            }
+        }
+
+        static int soDa(final String t) {
+            return t.startsWith("DA:") ? Integer.parseInt(t.substring(3)) : 0;
+        }
+
+        /** Cuoi ngay: khop cho, cap nhat gia (bien 50-200% trung vi), thong ke. */
+        void cuoiNgay(final int ngay) {
+            final double gioTv = ThongSoLauDai.xuMoiGio(Math.max(1, m.trungViCapNgayTruoc[0]));
+            int khop = 0;
+            for (int i = 0, j = 0; i < mua.size() && j < ban.size(); i++) {
+                final NguoiChoi b = mua.get(i);
+                final double gia = giaGio * gioTv;
+                if (nganSachMua.get(i) < gia || b.xu < gia) {
+                    continue;
+                }
+                final NguoiChoi s = ban.get(j++);
+                b.xu -= gia;
+                final double thue = gia * (com.htbb.pokemon.NapTienLogic.THUE_BAN_PHAN_TRAM
+                        + com.htbb.pokemon.NapTienLogic.PHI_DANG_PHAN_TRAM) / 100.0;
+                s.xu += gia - thue;
+                m.ra("thue_cho_trang_tri", ngay, thue);
+                thueCho += thue;
+                s.napNguoi.monGiaoDich--;
+                khop++;
+                giaGanDay.add(giaGio);
+                if (giaGanDay.size() > com.htbb.pokemon.NapTienLogic.SO_GIAO_DICH_THAM_CHIEU) {
+                    giaGanDay.remove(0);
+                }
+            }
+            soGiaoDich += khop;
+            // Cung - cau -> gia (gio thu nhap): con nguoi mua cho -> tang, con hang ton -> giam. Gia rao
+            // trong game chon tu 0,5..8 gio thu nhap (NapTienLogic.HE_SO_GIA_GIO_PHAN_TRAM) va phai trong
+            // 50-200% trung vi giao dich gan day.
+            // Gia "dinh" (nguoi ban doi gia rao tu tu): moi ngay toi da +-0,3% (~9%/thang).
+            if (mua.size() > khop && ban.size() <= khop) {
+                giaGio *= 1.003;
+            } else if (ban.size() > khop) {
+                giaGio *= 0.997;
+            }
+            giaGio = Math.max(com.htbb.pokemon.NapTienLogic.HE_SO_GIA_GIO_PHAN_TRAM[0] / 100.0,
+                    Math.min(com.htbb.pokemon.NapTienLogic.HE_SO_GIA_GIO_PHAN_TRAM[
+                            com.htbb.pokemon.NapTienLogic.HE_SO_GIA_GIO_PHAN_TRAM.length - 1] / 100.0, giaGio));
+            if (giaGanDay.size() >= com.htbb.pokemon.NapTienLogic.SO_GIAO_DICH_TOI_THIEU) {
+                final List<Double> s = new ArrayList<Double>(giaGanDay);
+                java.util.Collections.sort(s);
+                final double tv = s.get(s.size() / 2);
+                giaGio = Math.max(tv * com.htbb.pokemon.NapTienLogic.BIEN_GIA_DUOI_PHAN_TRAM / 100.0,
+                        Math.min(tv * com.htbb.pokemon.NapTienLogic.BIEN_GIA_TREN_PHAN_TRAM / 100.0, giaGio));
+            }
+            giaGioNgay[ngay] = giaGio;
+            ban.clear();
+            mua.clear();
+            nganSachMua.clear();
+            // So du luong nap TB / nguoi nap dang choi + suc manh cuoi thang.
+            double tong = 0;
+            int dem = 0;
+            final boolean cuoiThang = ngay % 30 == 29;
+            for (final NguoiChoi p : m.nguoi) {
+                if (!p.conChoi || ngay < p.ngayVao || p.napNguoi == null || p.nhom == BOT) {
+                    continue;
+                }
+                if (p.napNguoi.nhom != KHONG) {
+                    tong += p.napNguoi.lg;
+                    dem++;
+                }
+                if (cuoiThang && ngay / 30 < sucManh.length) {
+                    final double[] o = sucManh[ngay / 30][p.nhom][p.napNguoi.nhom];
+                    o[0] += sucManhNguoi(p);
+                    o[1]++;
+                }
+            }
+            soNguoiNap = dem;
+            soDuTb[ngay] = dem == 0 ? 0 : tong / dem;
+        }
+
+        /** Chi so suc manh: % chi so tu +k trung binh 11 o x tinh thong x ngoc he (1%/cap/o). */
+        static double sucManhNguoi(final NguoiChoi p) {
+            double pc = 0;
+            for (final int v : p.plus) {
+                for (int k = 0; k < v; k++) {
+                    pc += ThongSoLauDai.CHI_SO_NC_PHAN_TRAM[k];
+                }
+            }
+            pc /= p.plus.length;
+            return (1 + pc / 100.0) * (1 + 0.002 * p.tinhThong) * (1 + 0.01 * p.ngoc / ThongSoLauDai.SO_O_TRANG_BI);
+        }
+
+        /** Chenh suc manh {max moi nhom choi & thang tu 3: nguoi nap (nhe+ca voi), ca voi} so voi khong nap. */
+        double[] chenh(final int soThang) {
+            double maxNap = 0, maxCa = 0;
+            for (int t = 2; t < Math.min(soThang, sucManh.length); t++) {
+                for (int g = 0; g < 3; g++) {
+                    final double[][] o = sucManh[t][g];
+                    if (o[KHONG][1] < 10) {
+                        continue;
+                    }
+                    final double goc = o[KHONG][0] / o[KHONG][1];
+                    final double napN = o[NHE_NAP][1] + o[CA_VOI][1];
+                    if (napN >= 10) {
+                        maxNap = Math.max(maxNap, ((o[NHE_NAP][0] + o[CA_VOI][0]) / napN / goc - 1) * 100);
+                    }
+                    if (o[CA_VOI][1] >= 10) {
+                        maxCa = Math.max(maxCa, (o[CA_VOI][0] / o[CA_VOI][1] / goc - 1) * 100);
+                    }
+                }
+            }
+            return new double[]{maxNap, maxCa};
+        }
+    }
+
+    /** Ti le ra/vao xu tu thang 3 (cung cach kiemKinhTe). */
+    double tiLeXuTuThang3() {
+        double f = 0, s = 0;
+        for (int d = Math.min(90, soNgay / 2); d < soNgay; d++) {
+            f += tongFaucet[d];
+            s += tongSink[d];
+        }
+        return f == 0 ? 0 : s / f * 100;
+    }
+
+    /** Tang xu thuc TB/thang tu thang 4 (cung cach kiemKinhTe). */
+    double tangXuThucTb() {
+        double tong = 0;
+        int dem = 0;
+        for (int t = 4; t < soNgay / 30; t++) {
+            final int a = t * 30 - 1, b = Math.min(soNgay - 1, (t + 1) * 30 - 1);
+            final double ta = xuThuc(a), tb = xuThuc(b);
+            if (ta > 0) {
+                tong += (tb / ta - 1) * 100;
+                dem++;
+            }
+        }
+        return dem == 0 ? 0 : tong / dem;
+    }
+
+    /**
+     * Muc tieu nap tien (docs/pokemon/NAP_TIEN.md muc 7): {ten, "1"/"0", chi tiet}.
+     * chuan = dan chuan hon hop (1.000/nhom), danSo = dan so hon hop, tat = dan so KHONG co nap.
+     */
+    static List<String[]> kiemNapTien(final MoPhongKinhTe chuan, final MoPhongKinhTe danSo, final MoPhongKinhTe tat) {
+        final List<String[]> ra = new ArrayList<String[]>();
+        final double[] c = chuan.nap().chenh(chuan.soNgay / 30);
+        ra.add(new String[]{"Nạp: chênh sức mạnh người nạp / không nạp cùng giờ chơi ≤ 5% (cả cá voi)",
+            c[0] <= 5 && c[1] <= 5 ? "1" : "0",
+            String.format(Locale.ROOT, "người nạp tối đa %.2f%%, cá voi tối đa %.2f%%", c[0], c[1])});
+        final double r1 = danSo.tiLeXuTuThang3(), r0 = tat.tiLeXuTuThang3();
+        ra.add(new String[]{"Nạp: hố hút/nguồn xu vẫn 80–105% và lệch ≤ 2 điểm so với không có nạp",
+            r1 >= ThongSoLauDai.MT_SINK_FAUCET_MIN_PHAN_TRAM && r1 <= ThongSoLauDai.MT_SINK_FAUCET_MAX_PHAN_TRAM
+                && Math.abs(r1 - r0) <= 2 ? "1" : "0",
+            String.format(Locale.ROOT, "%.1f%% (không nạp %.1f%%)", r1, r0)});
+        final double g1 = danSo.tangXuThucTb(), g0 = tat.tangXuThucTb();
+        ra.add(new String[]{"Nạp: xu thực tăng TB/tháng lệch ≤ 1 điểm % so với không có nạp",
+            Math.abs(g1 - g0) <= 1 && g1 <= ThongSoLauDai.MT_TANG_TIEN_THUC_THANG_TOI_DA_PHAN_TRAM ? "1" : "0",
+            String.format(Locale.ROOT, "%.2f%%/tháng (không nạp %.2f%%)", g1, g0)});
+        final NapMoPhong n = danSo.nap();
+        final double dot = n.lgVaoTu90 == 0 ? 0 : 100 * n.lgRaTu90 / n.lgVaoTu90;
+        ra.add(new String[]{"Nạp: lượng nạp bị đốt ≥ 90% (từ tháng 3)", dot >= 90 ? "1" : "0",
+            String.format(Locale.ROOT, "%.1f%% (vào %.0f, đốt %.0f)", dot, n.lgVaoTu90, n.lgRaTu90)});
+        double maxSoDu = 0;
+        for (int d = 90; d < danSo.soNgay; d++) {
+            maxSoDu = Math.max(maxSoDu, n.soDuTb[d]);
+        }
+        final int cuoi = danSo.soNgay - 1;
+        final double dau6 = n.soDuTb[Math.max(90, cuoi - 180)];
+        final double troi = dau6 <= 0 ? 0 : (n.soDuTb[cuoi] / dau6 - 1) * 100 / 6.0;
+        ra.add(new String[]{"Nạp: số dư lượng TB/người nạp ≤ 1 gói (1.000), trôi ≤ 5%/tháng (6 tháng cuối)",
+            maxSoDu <= 1000 && troi <= 5 ? "1" : "0",
+            String.format(Locale.ROOT, "cao nhất %.0f lượng, trôi %.2f%%/tháng", maxSoDu, troi)});
+        double maxDoi = 0, lo = Double.MAX_VALUE, hi = 0;
+        for (int t = 3; t < danSo.soNgay / 30; t++) {
+            final double a = n.giaGioNgay[t * 30 - 1], b = n.giaGioNgay[Math.min(cuoi, (t + 1) * 30 - 1)];
+            if (a > 0) {
+                maxDoi = Math.max(maxDoi, Math.abs(b / a - 1) * 100);
+            }
+            lo = Math.min(lo, b);
+            hi = Math.max(hi, b);
+        }
+        final double moc = n.giaGioNgay[Math.min(cuoi, 89)];
+        ra.add(new String[]{"Nạp: giá chợ trang trí ổn định (≤ 10%/tháng, trong ±50% giá tháng 3)",
+            maxDoi <= 10 && lo >= 0.5 * moc && hi <= 1.5 * moc ? "1" : "0",
+            String.format(Locale.ROOT, "đổi tối đa %.1f%%/tháng, %.2f–%.2f giờ (tháng 3: %.2f), %d giao dịch",
+                    maxDoi, lo, hi, moc, n.soGiaoDich)});
+        return ra;
+    }
+
+    /** Cho test (phan chieu): {ten, dat, chi tiet} cua 6 muc tieu nap tien. */
+    public static String[][] chayKiemNapTien(final String goc, final int soNgay, final int phanTramDanSo) throws Exception {
+        return chayNapTien(new File(goc), soNgay, phanTramDanSo, null).toArray(new String[0][]);
+    }
+
+    static List<String[]> chayNapTien(final File goc, final int soNgay, final int phanTramDanSo, final MoPhongKinhTe danSoCo)
+            throws Exception {
+        final MoPhongKinhTe chuan = new MoPhongKinhTe();
+        chuan.chiChuan = true;
+        chuan.soChuanMoiNhom = 1000;
+        chuan.chay(goc, soNgay, 1.0, 20261017L);
+        MoPhongKinhTe danSo = danSoCo;
+        if (danSo == null) {
+            danSo = new MoPhongKinhTe();
+            danSo.chay(goc, soNgay, phanTramDanSo / 100.0, 20261017L);
+        }
+        final MoPhongKinhTe tat = new MoPhongKinhTe();
+        tat.napCheDo = NAP_TAT;
+        tat.chay(goc, soNgay, phanTramDanSo / 100.0, 20261017L);
+        final List<String[]> kq = kiemNapTien(chuan, danSo, tat);
+        final NapMoPhong n = danSo.nap();
+        final StringBuilder b = new StringBuilder();
+        b.append("\nNAP TIEN (docs/pokemon/NAP_TIEN.md muc 7) - dan so hon hop 85/12/3, so voi khong co nap\n");
+        int dat = 0;
+        for (final String[] r : kq) {
+            b.append(r[1].equals("1") ? "  DAT   " : "  KHONG ").append(r[0]).append(": ").append(r[2]).append('\n');
+            dat += r[1].equals("1") ? 1 : 0;
+        }
+        b.append(String.format("  => %d/%d\n", dat, kq.size()));
+        double vndT = 0;
+        int soThang = 0;
+        for (int t = 1; t < Math.min(n.vndThang.length, soNgay / 30); t++) {
+            vndT += n.vndThang[t];
+            soThang++;
+        }
+        b.append(String.format(Locale.ROOT, "  Doanh thu TB %.0f d/thang (dan so %d%%), nguoi nap dang choi cuoi ky %d,"
+                + " ARPPU %.0f d/thang; thue cho trang tri %.0f xu; da cao cap ve mua %.0f vien\n",
+                soThang == 0 ? 0 : vndT / soThang, phanTramDanSo, n.soNguoiNap,
+                n.soNguoiNap == 0 || soThang == 0 ? 0 : vndT / soThang / n.soNguoiNap, n.thueCho, n.daTuVe));
+        lastNapTomTat = b.toString();
+        return kq;
+    }
+
+    static String lastNapTomTat = "";
+
+    // ============================ HE SINH THAI (docs/pokemon/HE_SINH_THAI.md muc 8) ============================
+    // Mo-dun ROI cua he sinh thai: ky nang song (cau ca la dai dien - gia tri ky vong lay thang tu
+    // com.htbb.pokemon.KyNangSong), phi nguyen lieu bat buoc, NPC mua lai co tran, giao dich giua nguoi
+    // choi (thue 7% dot), phi nha tre, luong khoa tu nghien cuu / do vui. RNG RIENG (khong doi chuoi so
+    // cua mo phong goc). Thoi gian sinh hoat TRU vao thoi gian danh quai (khong cong them gio choi).
+    static boolean HST_MAC_DINH = true;
+    boolean hstBat = HST_MAC_DINH;
+    HeSinhThaiMoPhong hst;
+
+    HeSinhThaiMoPhong hst() {
+        if (hst == null) {
+            hst = new HeSinhThaiMoPhong(this, trangThaiRng ^ 0x4853542D53494D31L);
+        }
+        return hst;
+    }
+
+    static final class HeSinhThaiMoPhong {
+        /** Ti le ngay choi co lam ky nang song: nhe / vua / cay / bot (bot macro cau ca toi tran). */
+        static final double[] THAM_GIA = {0.6, 0.5, 0.35, 1.0};
+        /** The luc muon dung moi ngay (toi da THE_LUC tich luy). */
+        static final int[] THE_LUC_MUON = {60, 80, 100, 100};
+        /** Mo khoa tu cap 10 (khong anh huong tien hoa dau ~1,1 gio). */
+        static final int CAP_MO = 10;
+        /** 1 the luc ~ 10 giay choi (1 lan cau = 2 the luc ~ 20 giay). */
+        static final double GIAY_MOI_THE_LUC = 10.0;
+        /** Phi nguyen lieu tron (cau 1‰/the luc, dao 1‰, bep 1,67‰) ~ 1,2‰ gio / the luc. */
+        static final double PHI_PHAN_NGHIN_MOI_THE_LUC = 1.2;
+        /** Gia dinh XAU NHAT cho lam phat: moi nguoi ban het hang du cho NPC toi tran ngay. */
+        static final double PHAN_BAN_NPC = 1.0, PHAN_GIAO_DICH = 0.3, TI_LE_NHA_TRE = 0.3;
+
+        final MoPhongKinhTe m;
+        long rng;
+        /** {the luc, exp cau ca, ngay cap nhat the luc}. */
+        final Map<NguoiChoi, double[]> st = new java.util.IdentityHashMap<NguoiChoi, double[]>();
+        double vaoNpc, raPhi, raThue, raNhaTre, hangHoa, lkVao, gioDung;
+        long soLuot, soLenMoc;
+
+        HeSinhThaiMoPhong(final MoPhongKinhTe m, final long hat) {
+            this.m = m;
+            this.rng = hat;
+        }
+
+        double ngauNhien() {
+            rng += 0x9E3779B97F4A7C15L;
+            long z = rng;
+            z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
+            z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
+            z = z ^ (z >>> 31);
+            return (z >>> 11) * 0x1.0p-53;
+        }
+
+        /** Mot ngay sinh hoat cua p; tra ve so GIO da dung (tru khoi thoi gian danh quai). */
+        double motNgay(final NguoiChoi p, final int ngay, final double gio) {
+            double[] s = st.get(p);
+            if (s == null) {
+                s = new double[]{com.htbb.pokemon.HeSinhThai.THE_LUC_TOI_DA, 0, ngay};
+                st.put(p, s);
+            }
+            if (ngay > s[2]) {
+                s[0] = com.htbb.pokemon.KyNangSong.theLucNgayMoi((int) s[0], ngay - (int) s[2]);
+                s[2] = ngay;
+            }
+            if (p.cap < CAP_MO || gio <= 0.2 || ngauNhien() > THAM_GIA[p.nhom]) {
+                return 0;
+            }
+            final double dung = Math.min(s[0], THE_LUC_MUON[p.nhom]);
+            if (dung < com.htbb.pokemon.HeSinhThai.TL_CAU_CA) {
+                return 0;
+            }
+            s[0] -= dung;
+            soLuot++;
+            final double h = ThongSoLauDai.xuMoiGio(p.cap);
+            final double lan = dung / com.htbb.pokemon.HeSinhThai.TL_CAU_CA;
+            final int capTruoc = com.htbb.pokemon.KyNangSong.capTuExp((long) s[1]);
+            final double ev = com.htbb.pokemon.KyNangSong.kyVongCauCa(com.htbb.pokemon.KyNangSong.NUOC_NGOT, capTruoc, false);
+            final double hang = lan * ev / 1000.0 * h;
+            hangHoa += hang;
+            s[1] += lan * com.htbb.pokemon.KyNangSong.expKhiLam((int) ev);
+            final int capSau = com.htbb.pokemon.KyNangSong.capTuExp((long) s[1]);
+            if (p.nhom != BOT && capSau / 5 > capTruoc / 5) {
+                p.ngayCuoiTienBo = ngay; // moc ky nang = tien bo (giu chan)
+                soLenMoc++;
+            }
+            // Phi nguyen lieu bat buoc (moi cau / xeng / cui) - ho hut.
+            final double phi = Math.min(p.xu, dung * PHI_PHAN_NGHIN_MOI_THE_LUC / 1000.0 * h);
+            if (phi > 0 && m.tieu(p, "hst_nguyen_lieu", ngay, phi)) {
+                raPhi += phi;
+            }
+            // NPC mua lai: san 40%, tran 0,1 gio thu nhap / ngay.
+            final double npc = Math.min((p.nhom == BOT ? 1.0 : PHAN_BAN_NPC) * hang
+                    * com.htbb.pokemon.HeSinhThai.SAN_NPC_PHAN_TRAM / 100.0,
+                    com.htbb.pokemon.HeSinhThai.TRAN_BAN_NPC_NGAY_PHAN_NGHIN / 1000.0 * h);
+            m.congXu(p, "hst_ban_npc", ngay, npc);
+            vaoNpc += npc;
+            if (p.nhom != BOT) {
+                // Giao dich giua nguoi choi: xu chuyen tay (bu tru), thue 6% + phi dang 1% bi dot.
+                final double thue = Math.min(p.xu, PHAN_GIAO_DICH * hang
+                        * (com.htbb.pokemon.HeSinhThai.THUE_CHO_PHAN_TRAM + com.htbb.pokemon.HeSinhThai.PHI_DANG_PHAN_TRAM) / 100.0);
+                if (thue > 0 && m.tieu(p, "thue_cho", ngay, thue)) {
+                    raThue += thue;
+                }
+                if (ngauNhien() < TI_LE_NHA_TRE) {
+                    final double nt = com.htbb.pokemon.HeSinhThai.PHI_NHA_TRE_NGAY_PHAN_NGHIN / 1000.0 * h;
+                    if (m.tieu(p, "hst_nha_tre", ngay, nt)) {
+                        raNhaTre += nt;
+                    }
+                }
+                // Luong khoa: nghien cuu Pokedex (2/nhiem vu) + do vui / dua (thuong nho).
+                final double lk = p.ngayChoi < 200 ? 1.0 : 0.3;
+                p.lk += lk;
+                m.tongLkVao[ngay] += lk;
+                lkVao += lk;
+            }
+            final double gioDungNgay = Math.min(gio * 0.3, dung * GIAY_MOI_THE_LUC / 3600.0);
+            gioDung += gioDungNgay;
+            return gioDungNgay;
+        }
+
+        /** Dong tom tat cho mo_phong_tom_tat.txt. */
+        static String tomTat(final MoPhongKinhTe m) {
+            if (m == null || m.hst == null) {
+                return "";
+            }
+            final HeSinhThaiMoPhong x = m.hst;
+            double tf = 0;
+            for (final double v : m.tongFaucet) {
+                tf += v;
+            }
+            final double raHst = x.raPhi + x.raThue + x.raNhaTre;
+            final StringBuilder b = new StringBuilder("\nHE SINH THAI (docs/pokemon/HE_SINH_THAI.md muc 8) - dan so day du\n");
+            b.append(String.format(Locale.ROOT, "  luot sinh hoat %d, gio sinh hoat TB %.2f/luot, moc ky nang (5 cap) %d\n",
+                    x.soLuot, x.soLuot == 0 ? 0 : x.gioDung / x.soLuot, x.soLenMoc));
+            b.append(String.format(Locale.ROOT, "  gia tri hang lam ra %.3g xu; NPC mua lai (nguon) %.3g xu = %.2f%% tong nguon xu\n",
+                    x.hangHoa, x.vaoNpc, tf == 0 ? 0 : 100 * x.vaoNpc / tf));
+            b.append(String.format(Locale.ROOT, "  ho hut: nguyen lieu %.3g, thue giao dich %.3g, nha tre %.3g -> ra/vao cua he sinh thai = %.0f%%\n",
+                    x.raPhi, x.raThue, x.raNhaTre, x.vaoNpc == 0 ? 0 : 100 * raHst / x.vaoNpc));
+            b.append(String.format(Locale.ROOT, "  %s NPC mua lai <= 3%% tong nguon xu; %s he sinh thai hut >= nguon (khong lam phat)\n",
+                    tf > 0 && x.vaoNpc / tf <= 0.03 ? "DAT  " : "KHONG", raHst >= x.vaoNpc ? "DAT  " : "KHONG"));
+            b.append(String.format(Locale.ROOT, "  luong khoa tu nghien cuu / mini game: %.0f\n", x.lkVao));
+            return b.toString();
+        }
     }
 }

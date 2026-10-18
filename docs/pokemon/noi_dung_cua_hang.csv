@@ -1,0 +1,107 @@
+stt,cua_hang,vat_pham,ten,gia,tien,cap,ngay_mo,gioi_han,gio_thu_nhap
+1,Bronzong (trang bị),item:1,Khăn quàng sơ cấp,5385,xu,1,0,,1.5
+2,Bronzong (trang bị),item:27,Đai sơ cấp,5385,xu,1,0,,1.5
+3,Bronzong (trang bị),item:53,Băng đô sơ cấp,5385,xu,1,0,,1.5
+4,Bronzong (trang bị),item:138,Lông vũ tốc độ sơ cấp,5385,xu,1,0,,1.5
+5,Bronzong (trang bị),item:150,Găng đấm sơ cấp,5385,xu,1,0,,1.5
+6,Bronzong (trang bị),item:7,Khăn quàng đồng,8328,xu,10,0,,1.5
+7,Bronzong (trang bị),item:33,Đai đồng,8328,xu,10,0,,1.5
+8,Bronzong (trang bị),item:59,Băng đô đồng,8328,xu,10,0,,1.5
+9,Bronzong (trang bị),item:140,Lông vũ tốc độ đồng,8328,xu,10,0,,1.5
+10,Bronzong (trang bị),item:152,Găng đấm đồng,8328,xu,10,0,,1.5
+11,Bronzong (trang bị),item:268,Khăn quàng bạc,13527,xu,20,0,,1.5
+12,Bronzong (trang bị),item:37,Đai bạc,13527,xu,20,0,,1.5
+13,Bronzong (trang bị),item:63,Băng đô bạc,13527,xu,20,0,,1.5
+14,Bronzong (trang bị),item:142,Lông vũ tốc độ bạc,13527,xu,20,0,,1.5
+15,Bronzong (trang bị),item:154,Găng đấm bạc,13527,xu,20,0,,1.5
+16,Bronzong (trang bị),item:272,Khăn quàng vàng,20704,xu,30,0,,1.5
+17,Bronzong (trang bị),item:41,Đai vàng,20704,xu,30,0,,1.5
+18,Bronzong (trang bị),item:67,Băng đô vàng,20704,xu,30,0,,1.5
+19,Bronzong (trang bị),item:144,Lông vũ tốc độ vàng,20704,xu,30,0,,1.5
+20,Bronzong (trang bị),item:156,Găng đấm vàng,20704,xu,30,0,,1.5
+21,Bronzong (trang bị),item:19,Khăn quàng bạch kim,32340,xu,40,0,,1.5
+22,Bronzong (trang bị),item:45,Đai bạch kim,32340,xu,40,0,,1.5
+23,Bronzong (trang bị),item:71,Băng đô bạch kim,32340,xu,40,0,,1.5
+24,Bronzong (trang bị),item:146,Lông vũ tốc độ bạch kim,32340,xu,40,0,,1.5
+25,Bronzong (trang bị),item:158,Găng đấm bạch kim,32340,xu,40,0,,1.5
+26,Bronzong (trang bị),item:23,Khăn quàng kim cương,50888,xu,50,0,,1.5
+27,Bronzong (trang bị),item:49,Đai kim cương,50888,xu,50,0,,1.5
+28,Bronzong (trang bị),item:75,Băng đô kim cương,50888,xu,50,0,,1.5
+29,Bronzong (trang bị),item:148,Lông vũ tốc độ kim cương,50888,xu,50,0,,1.5
+30,Bronzong (trang bị),item:160,Găng đấm kim cương,50888,xu,50,0,,1.5
+31,Bronzong (trang bị),item:467,Khăn quàng chuyên gia,79101,xu,60,0,,1.5
+32,Bronzong (trang bị),item:475,Đai chuyên gia,79101,xu,60,0,,1.5
+33,Bronzong (trang bị),item:483,Băng đô chuyên gia,79101,xu,60,0,,1.5
+34,Bronzong (trang bị),item:491,Lông vũ tốc độ chuyên gia,79101,xu,60,0,,1.5
+35,Bronzong (trang bị),item:495,Găng đấm chuyên gia,79101,xu,60,0,,1.5
+36,Bronzong (trang bị),item:471,Khăn quàng tinh anh,122664,xu,70,60,,1.5
+37,Bronzong (trang bị),item:479,Đai tinh anh,122664,xu,70,60,,1.5
+38,Bronzong (trang bị),item:487,Băng đô tinh anh,122664,xu,70,60,,1.5
+39,Bronzong (trang bị),item:493,Lông vũ tốc độ tinh anh,122664,xu,70,60,,1.5
+40,Bronzong (trang bị),item:497,Găng đấm tinh anh,122664,xu,70,60,,1.5
+41,Bronzong (trang bị),item:641,Khăn quàng huyền thoại,190464,xu,80,150,,1.5
+42,Bronzong (trang bị),item:646,Đai huyền thoại,190464,xu,80,150,,1.5
+43,Bronzong (trang bị),item:649,Băng đô huyền thoại,190464,xu,80,150,,1.5
+44,Bronzong (trang bị),item:660,Lông vũ tốc độ huyền thoại,190464,xu,80,150,,1.5
+45,Bronzong (trang bị),item:664,Găng đấm huyền thoại,190464,xu,80,150,,1.5
+46,Bronzong (trang bị),item:1004,Khăn quàng thần thoại,294152,xu,90,365,,1.5
+47,Bronzong (trang bị),item:1006,Đai thần thoại,294152,xu,90,365,,1.5
+48,Bronzong (trang bị),item:1007,Băng đô thần thoại,294152,xu,90,365,,1.5
+49,Bronzong (trang bị),item:1015,Lông vũ tốc độ thần thoại,294152,xu,90,365,,1.5
+50,Bronzong (trang bị),item:1016,Găng đấm thần thoại,294152,xu,90,365,,1.5
+51,Bronzong (trang bị),item:1019,Khăn quàng tối thượng,416954,xu,98,545,,1.5
+52,Bronzong (trang bị),item:1021,Đai tối thượng,416954,xu,98,545,,1.5
+53,Bronzong (trang bị),item:1022,Băng đô tối thượng,416954,xu,98,545,,1.5
+54,Bronzong (trang bị),item:1030,Lông vũ tốc độ tối thượng,416954,xu,98,545,,1.5
+55,Bronzong (trang bị),item:1031,Găng đấm tối thượng,416954,xu,98,545,,1.5
+56,Chansey (thuốc),thuoc:1,Thuốc hồi máu,25,xu,1,0,,0.0045
+57,Chansey (thuốc),thuoc:2,Siêu thuốc hồi máu,63,xu,21,0,,0.0046
+58,Chansey (thuốc),thuoc:3,Thuốc hồi máu cực mạnh,155,xu,41,0,,0.0046
+59,Chansey (thuốc),thuoc:22,Thuốc hồi máu tối đa,373,xu,61,0,,0.0046
+60,Chansey (thuốc),thuoc:26,Thuốc hồi phục toàn diện,894,xu,81,0,,0.0046
+61,Chansey (thuốc),thuoc:4,Thuốc hồi PP (Ether),29,xu,1,0,,0.0041
+62,Chansey (thuốc),thuoc:5,Thuốc hồi PP lớn (Ether lớn),109,xu,31,0,,0.004
+63,Chansey (thuốc),thuoc:6,Thuốc hồi PP tối đa (Ether tối đa),508,xu,61,0,,0.004
+64,Chansey (thuốc),thuoc:23,Thuốc hồi PP cả đội (Elixir),315,xu,30,0,,0.0048
+65,Kecleon (lượng khoá),thuoc:24,Thuốc hồi PP cả đội tối đa (Elixir tối đa),5,luong_khoa,60,0,2/tuần,0
+66,Chansey (thuốc),moi:chua_doc,Thuốc giải độc,41,xu,1,0,,0.0012
+67,Chansey (thuốc),moi:chua_bong,Thuốc trị bỏng,41,xu,1,0,,0.0012
+68,Chansey (thuốc),moi:chua_te,Thuốc trị tê liệt,41,xu,1,0,,0.0012
+69,Chansey (thuốc),moi:chua_ngu,Thuốc đánh thức,41,xu,1,0,,0.0012
+70,Chansey (thuốc),moi:chua_bang,Thuốc rã đông,41,xu,1,0,,0.0012
+71,Chansey (thuốc),moi:chua_tat_ca,Thuốc chữa toàn diện,236,xu,30,0,,0.0036
+72,Chansey (thuốc),thuoc:119,Thuốc hồi sinh,407,xu,1,0,,0.012
+73,Kecleon (lượng khoá),moi:hoi_sinh_2,Thuốc hồi sinh tối đa,5,luong_khoa,40,0,3/tuần,0
+74,Chansey (thuốc),thuoc:130,X Tấn công,202,xu,10,0,,0.0048
+75,Chansey (thuốc),thuoc:129,X Phòng thủ,202,xu,10,0,,0.0048
+76,Chansey (thuốc),moi:x_toc_do,X Tốc độ,336,xu,10,0,,0.008
+77,Chansey (thuốc),moi:x_chinh_xac,X Chính xác,336,xu,10,0,,0.008
+78,Chansey (thuốc),moi:x_chi_mang,Tăng chí mạng (Dire Hit),336,xu,10,0,,0.008
+79,Kecleon (lượng khoá),thuoc:131,Thuốc săn trùm,3,luong_khoa,20,0,5/tuần,0
+80,Chansey (thuốc),moi:xua_quai_1,Thuốc xua quái,147,xu,5,0,,0.004
+81,Chansey (thuốc),moi:xua_quai_2,Siêu thuốc xua quái,316,xu,20,0,,0.006
+82,Chansey (thuốc),moi:xua_quai_3,Thuốc xua quái tối đa,981,xu,40,0,,0.012
+83,Chansey (thuốc),moi:qua_oran,Quả Oran,27,xu,1,0,,0.0008
+84,Chansey (thuốc),moi:qua_sitrus,Quả Sitrus,79,xu,30,0,,0.0012
+85,Chansey (thuốc),moi:qua_lum,Quả Lum,127,xu,20,0,,0.0024
+86,Chansey (thuốc),moi:qua_cheri,Quả Cheri,20,xu,1,0,,0.0006
+87,Chansey (thuốc),moi:qua_chesto,Quả Chesto,20,xu,1,0,,0.0006
+88,Chansey (thuốc),moi:qua_pecha,Quả Pecha,20,xu,1,0,,0.0006
+89,Chansey (thuốc),moi:qua_rawst,Quả Rawst,20,xu,1,0,,0.0006
+90,Chansey (thuốc),moi:qua_aspear,Quả Aspear,20,xu,1,0,,0.0006
+91,Chansey (thuốc),moi:qua_leppa,Quả Leppa,20,xu,1,0,,0.0006
+92,Kecleon (lượng khoá),ngoc:0/1/2,Bùa bảo hộ,10,luong_khoa,1,0,,0
+93,Kecleon (lượng khoá),ngoc:3/4,Bùa bảo hộ cao cấp,25,luong_khoa,1,0,,0
+94,Delcatty (trang trí),moi:trang_tri,Khung ảnh Pikachu,60,luong,1,0,,0
+95,Delcatty (trang trí),moi:trang_tri,Trang phục Pikachu,150,luong,1,0,,0
+96,Delcatty (trang trí),moi:trang_tri,Khung ảnh Togepi,60,luong,1,60,,0
+97,Delcatty (trang trí),moi:trang_tri,Trang phục Togepi,150,luong,1,60,,0
+98,Delcatty (trang trí),moi:trang_tri,Khung ảnh Ho-Oh,60,luong,1,150,,0
+99,Delcatty (trang trí),moi:trang_tri,Trang phục Ho-Oh,150,luong,1,150,,0
+100,Delcatty (trang trí),moi:trang_tri,Khung ảnh Lugia,60,luong,1,240,,0
+101,Delcatty (trang trí),moi:trang_tri,Trang phục Lugia,150,luong,1,240,,0
+102,Delcatty (trang trí),moi:trang_tri,Khung ảnh Latias,60,luong,1,365,,0
+103,Delcatty (trang trí),moi:trang_tri,Trang phục Latias,150,luong,1,365,,0
+104,Delcatty (trang trí),moi:trang_tri,Khung ảnh Rayquaza,60,luong,1,545,,0
+105,Delcatty (trang trí),moi:trang_tri,Trang phục Rayquaza,150,luong,1,545,,0
+106,Huy chương Gym,item:1039,Áo choàng Gym (đổi 40 huy chương),40,huy_chuong_gym,16,0,,0

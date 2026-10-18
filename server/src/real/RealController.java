@@ -1877,7 +1877,7 @@ public class RealController extends ServerController {
                         case 8:
                         player.sendMessage(MessageCreator.createMsgInputText(
                                 CharDoiTenNhanVat.INPUT_DOI_TEN, 0,
-                                "Nhập tên mới (phí " + CharDoiTenNhanVat.COST_LUONG + " lượng)", 0));
+                                "Nhập tên mới (phí " + com.htbb.pokemon.NapTienGame.giaDoiTen(CharDoiTenNhanVat.COST_LUONG) + " lượng)", 0)); // nap tien: gia cua hang
                         return;
                         case 9:
                         if (!player.checkVuKhiThanBinh()) {
@@ -2108,6 +2108,11 @@ public class RealController extends ServerController {
 
             switch (idMenu) {
                 case 100:
+                    // Yeu cau 17/10/2026: bat co sv.lau_dai -> qua hoat dong theo tai khoan (QuaHoatDong).
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(QuaHoatDong.nhan(player, idOptionMenu), ""));
+                        break;
+                    }
                     int gioHoatDong = player.runtimeCharProperties.getHourOnline();
                     switch (idOptionMenu) {
                         case 0:

@@ -1,0 +1,62 @@
+Tên,Nhóm,Công dụng,Cấp,Giá,Tiền,Nguồn,Giới hạn,Sắp có
+Thuốc hồi máu,Hồi máu,Hồi 25% HP tối đa,1–20,25,xu,"cửa hàng, nhiệm vụ ngày",,
+Siêu thuốc hồi máu,Hồi máu,Hồi 35% HP tối đa,21–40,63,xu,"cửa hàng, nhiệm vụ ngày",,
+Thuốc hồi máu cực mạnh,Hồi máu,Hồi 45% HP tối đa,41–60,155,xu,"cửa hàng, nhiệm vụ ngày",,
+Thuốc hồi máu tối đa,Hồi máu,Hồi 60% HP tối đa,61–80,373,xu,"cửa hàng, nhiệm vụ ngày",,
+Thuốc hồi phục toàn diện,Hồi máu,Hồi 80% HP và gỡ mọi trạng thái,81–100,894,xu,"cửa hàng, nhiệm vụ ngày",,
+Thuốc hồi PP (Ether),Hồi PP,Hồi 30% MP (PP chiêu),1–30,29,xu,cửa hàng,,
+Thuốc hồi PP lớn (Ether lớn),Hồi PP,Hồi 45% MP,31–60,109,xu,cửa hàng,,
+Thuốc hồi PP tối đa (Ether tối đa),Hồi PP,Hồi 60% MP,61–100,508,xu,cửa hàng,,
+Thuốc hồi PP cả đội (Elixir),Hồi PP,Hồi 30% MP cho cả đội gần,30–100,315,xu,"cửa hàng, boss Gym",,
+Thuốc hồi PP cả đội tối đa (Elixir tối đa),Hồi PP,Hồi 60% MP cho cả đội gần,60–100,5,lượng khoá,nhiệm vụ tuần,2/tuần,
+Thuốc giải độc,Chữa trạng thái,Gỡ trạng thái Độc,1–100,41,xu,cửa hàng,,có
+Thuốc trị bỏng,Chữa trạng thái,Gỡ trạng thái Bỏng,1–100,41,xu,cửa hàng,,có
+Thuốc trị tê liệt,Chữa trạng thái,Gỡ trạng thái Tê liệt,1–100,41,xu,cửa hàng,,có
+Thuốc đánh thức,Chữa trạng thái,Gỡ trạng thái Ngủ,1–100,41,xu,cửa hàng,,có
+Thuốc rã đông,Chữa trạng thái,Gỡ trạng thái Đóng băng,1–100,41,xu,cửa hàng,,có
+Thuốc chữa toàn diện,Chữa trạng thái,"Gỡ mọi trạng thái, miễn 5 giây",30–100,236,xu,"cửa hàng, boss Gym",,có
+Thuốc hồi sinh,Hồi sinh,Hồi sinh tại chỗ với 30% HP,1–100,407,xu,"cửa hàng, nhiệm vụ",,
+Thuốc hồi sinh tối đa,Hồi sinh,Hồi sinh tại chỗ với 100% HP,40–100,5,lượng khoá,"boss thế giới, nhiệm vụ tuần",3/tuần,có
+X Tấn công,Tăng cường X,+20% tấn công trong 90 giây,10–100,202,xu,cửa hàng,,
+X Phòng thủ,Tăng cường X,+20% phòng thủ trong 90 giây,10–100,202,xu,cửa hàng,,
+X Tốc độ,Tăng cường X,+15% tốc đánh trong 90 giây,10–100,336,xu,cửa hàng,,có
+X Chính xác,Tăng cường X,+15% chính xác trong 90 giây,10–100,336,xu,cửa hàng,,có
+Tăng chí mạng (Dire Hit),Tăng cường X,+5% chí mạng trong 90 giây,10–100,336,xu,cửa hàng,,có
+Thuốc săn trùm,Tăng cường X,+30% sát thương lên boss trong 60 giây,20–100,3,lượng khoá,"boss Gym, nhiệm vụ tuần",5/tuần,
+Thuốc xua quái,Xua quái,Quái thấp hơn 5 cấp không chủ động tấn công trong 5 phút,5–100,147,xu,cửa hàng,,có
+Siêu thuốc xua quái,Xua quái,"Như trên, 10 phút",20–100,316,xu,cửa hàng,,có
+Thuốc xua quái tối đa,Xua quái,"Như trên, 20 phút",40–100,981,xu,cửa hàng,,có
+Kẹo Hiếm,Kẹo kinh nghiệm,Nhận EXP bằng 30 phút đánh quái ở cấp hiện tại; trừ 30 phút năng lượng 100% (không vượt trần ngày),1–100,,không bán,"nhiệm vụ tuần, Pokédex, sự kiện",2/tuần,có
+Đá Nước,Đá tiến hoá,Tiến hoá Eevee thành Vaporeon,25–100,,không bán,"Ngày cộng đồng Eevee, chương J2, Pokédex",,
+Đá Sấm,Đá tiến hoá,Tiến hoá Eevee thành Jolteon,25–100,,không bán,"Ngày cộng đồng Eevee, chương K3, Pokédex",,
+Đá Lửa,Đá tiến hoá,Tiến hoá Eevee thành Flareon,25–100,,không bán,"Ngày cộng đồng Eevee, chương K7, Pokédex",,
+Đá Mặt Trời,Đá tiến hoá,Tiến hoá Eevee thành Espeon (ban ngày),25–100,,không bán,"Ngày cộng đồng Eevee, Tháp Sprout",,
+Đá Mặt Trăng,Đá tiến hoá,Tiến hoá Eevee thành Umbreon (ban đêm),25–100,,không bán,"Ngày cộng đồng Eevee, Núi Mặt Trăng",,
+Đá Lá,Đá tiến hoá,Tiến hoá Eevee thành Leafeon,25–100,,không bán,"Ngày cộng đồng Eevee, Rừng Ilex",,
+Đá Băng,Đá tiến hoá,Tiến hoá Eevee thành Glaceon,25–100,,không bán,"Ngày cộng đồng Eevee, Hồ Phẫn Nộ",,
+Ruy Băng Tiên,Đá tiến hoá,Tiến hoá Eevee thành Sylveon,25–100,,không bán,"Ngày cộng đồng Eevee, sự kiện 20/10",,
+Quả Oran,Quả mọng,Tự dùng khi HP < 50%: hồi 10% HP,1–100,27,xu,"trang trại, quái đồng cỏ",,có
+Quả Sitrus,Quả mọng,Tự dùng khi HP < 50%: hồi 25% HP,30–100,79,xu,"trang trại, quái rừng",,có
+Quả Lum,Quả mọng,Tự gỡ trạng thái đầu tiên trúng phải,20–100,127,xu,trang trại,,có
+Quả Cheri,Quả mọng,Tự gỡ Tê liệt,1–100,20,xu,trang trại,,có
+Quả Chesto,Quả mọng,Tự gỡ Ngủ,1–100,20,xu,trang trại,,có
+Quả Pecha,Quả mọng,Tự gỡ Độc,1–100,20,xu,trang trại,,có
+Quả Rawst,Quả mọng,Tự gỡ Bỏng,1–100,20,xu,trang trại,,có
+Quả Aspear,Quả mọng,Tự gỡ Đóng băng,1–100,20,xu,trang trại,,có
+Quả Leppa,Quả mọng,Tự dùng khi MP < 20%: hồi 15% MP,1–100,20,xu,trang trại,,có
+Thức ăn thừa,Đồ giữ,Hồi 1% HP mỗi 3 giây (thay chỉ số phụ Phiến đá hệ),30–100,,không bán,boss Gym Celadon,,có
+Chuông vỏ sò,Đồ giữ,Hút 3% sát thương gây ra thành HP,40–100,,không bán,boss Gym Cerulean,,có
+Móng vuốt nhanh,Đồ giữ,"10% ra đòn trước, hồi chiêu −10% trong 3 giây",40–100,,không bán,boss Gym Violet,,có
+Băng đô tập trung,Đồ giữ,10% còn 1 HP khi nhận đòn chí tử (hồi 120 giây),50–100,,không bán,boss Gym Cianwood,,có
+Kính ngắm,Đồ giữ,+3% chí mạng,30–100,,không bán,boss Gym Saffron,,có
+Đai lực sĩ,Đồ giữ,+4% sát thương đòn đánh thường,30–100,,không bán,boss Gym Viridian,,có
+Đá vĩnh cửu,Đồ giữ,"Chặn tiến hoá (giữ dạng hiện tại), không chỉ số",1–100,,không bán,nhiệm vụ Pewter,,có
+Trứng may mắn,Đồ giữ,+10% EXP (cộng vào trần buff +100%),20–100,,không bán,Pokédex 50 loài,,có
+Bụi sao,Nguyên liệu,"Nâng cấp +11..+15 bậc sơ cấp, đồng, bạc (1 cái mỗi lần thử)",,,không bán,"rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",,
+Mảnh sao,Nguyên liệu,"Nâng cấp +11..+15 bậc vàng, bạch kim, kim cương (1 cái mỗi lần thử)",,,không bán,"rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",,
+Mảnh thiên thạch,Nguyên liệu,"Nâng cấp +11..+15 bậc chuyên gia, tinh anh, huyền thoại (1 cái mỗi lần thử)",,,không bán,"rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",,
+Vảy rồng,Nguyên liệu,"Nâng cấp +11..+15 bậc thần thoại, tối thượng (1 cái mỗi lần thử)",,,không bán,"rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",,
+Mảnh tinh hoa,Nguyên liệu,Chuyển đồ Hoàn mỹ sang bậc mới (3 mảnh),,,không bán,phân rã đồ Hoàn mỹ,,
+Đá nâng cấp,Nguyên liệu,"Mọi lần nâng cấp: +1..+5 ×1, +6..+10 ×2, +11..+15 ×4",,,không bán,"rơi 1,5%/quái (lệch cấp ≤ 5), quái tinh anh chắc chắn, phân rã 2/món",,
+Bùa bảo hộ,Nguyên liệu,Giữ cấp khi trượt +7..+10,,10,lượng khoá,cửa hàng lượng khoá,,
+Bùa bảo hộ cao cấp,Nguyên liệu,Giữ cấp khi trượt +11..+15,,25,lượng khoá,cửa hàng lượng khoá,,

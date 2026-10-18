@@ -1507,6 +1507,12 @@ class MapSuKien {
                     if (player.luongxainhanRuong == 0L) {
                         return;
                     }
+                    // Bo sung kiem toan A5: doi diem xai luong -> xu x10000 (chuyen luong thanh xu).
+                    // Bat co sv.lau_dai: tat (THIET_KE 2.1 bo hoan xu khi tieu luong).
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Đổi điểm xài lượng lấy xu đã ngừng.", ""));
+                        return;
+                    }
 
                     if (player.luongxainhanRuong > player.luongxai) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Điểm xài lượng phải nhỏ hơn " + player.luongxai + " mới có thể đổi qua xu", ""));

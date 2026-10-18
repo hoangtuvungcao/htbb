@@ -1,0 +1,139 @@
+# SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY. Chi cau ca o ho (HE_SINH_THAI.md muc 3).
+# loai_ho: ho_lon (>= 60 o, co ca hiem) | ao (chi ca thuong). x,y = o dung cau (don vi o 16 px).
+map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y
+0,Pewter,thi_tran,0,48,ao,43,45
+0,Pewter,thi_tran,0,48,ao,42,46
+0,Pewter,thi_tran,0,48,ao,40,49
+0,Pewter,thi_tran,0,48,ao,43,52
+1,Pallet - dong co,dong_co,0,148,ho_lon,44,64
+1,Pallet - dong co,dong_co,0,148,ho_lon,51,66
+1,Pallet - dong co,dong_co,0,148,ho_lon,39,71
+1,Pallet - dong co,dong_co,0,148,ho_lon,42,76
+1,Pallet - dong co,dong_co,1,13,ao,66,65
+1,Pallet - dong co,dong_co,1,13,ao,64,67
+1,Pallet - dong co,dong_co,1,13,ao,69,68
+1,Pallet - dong co,dong_co,1,13,ao,65,70
+3,Vermilion - ho lon,ho,0,2345,ho_lon,37,7
+3,Vermilion - ho lon,ho,0,2345,ho_lon,24,16
+3,Vermilion - ho lon,ho,0,2345,ho_lon,74,26
+3,Vermilion - ho lon,ho,0,2345,ho_lon,40,39
+3,Vermilion - ho lon,ho,1,813,ho_lon,40,54
+3,Vermilion - ho lon,ho,1,813,ho_lon,43,59
+3,Vermilion - ho lon,ho,1,813,ho_lon,62,71
+3,Vermilion - ho lon,ho,1,813,ho_lon,80,74
+3,Vermilion - ho lon,ho,2,12,ao,21,56
+3,Vermilion - ho lon,ho,2,12,ao,20,57
+3,Vermilion - ho lon,ho,2,12,ao,25,58
+3,Vermilion - ho lon,ho,2,12,ao,21,60
+3,Vermilion - ho lon,ho,3,13,ao,37,73
+3,Vermilion - ho lon,ho,3,13,ao,35,75
+3,Vermilion - ho lon,ho,3,13,ao,40,76
+3,Vermilion - ho lon,ho,3,13,ao,36,78
+4,Cerulean - rung,rung,0,23,ao,17,33
+4,Cerulean - rung,rung,0,23,ao,19,35
+4,Cerulean - rung,rung,0,23,ao,20,37
+4,Cerulean - rung,rung,0,23,ao,19,39
+5,Lavender - dong co,dong_co,0,146,ho_lon,17,6
+5,Lavender - dong co,dong_co,0,146,ho_lon,13,10
+5,Lavender - dong co,dong_co,0,146,ho_lon,10,15
+5,Lavender - dong co,dong_co,0,146,ho_lon,11,20
+5,Lavender - dong co,dong_co,1,12,ao,29,35
+5,Lavender - dong co,dong_co,1,12,ao,28,36
+5,Lavender - dong co,dong_co,1,12,ao,33,37
+5,Lavender - dong co,dong_co,1,12,ao,29,39
+6,Celadon - rung nho,rung,0,21,ao,17,2
+6,Celadon - rung nho,rung,0,21,ao,16,3
+6,Celadon - rung nho,rung,0,21,ao,15,5
+6,Celadon - rung nho,rung,0,21,ao,20,7
+7,Saffron - dam lay,ho,0,2633,ho_lon,28,7
+7,Saffron - dam lay,ho,0,2633,ho_lon,43,35
+7,Saffron - dam lay,ho,0,2633,ho_lon,41,61
+7,Saffron - dam lay,ho,0,2633,ho_lon,52,77
+7,Saffron - dam lay,ho,1,13,ao,13,8
+7,Saffron - dam lay,ho,1,13,ao,11,10
+7,Saffron - dam lay,ho,1,13,ao,16,11
+7,Saffron - dam lay,ho,1,13,ao,12,13
+9,Cinnabar - dong bang,dong_co,0,13,ao,44,14
+9,Cinnabar - dong bang,dong_co,0,13,ao,42,16
+9,Cinnabar - dong bang,dong_co,0,13,ao,47,17
+9,Cinnabar - dong bang,dong_co,0,13,ao,43,19
+9,Cinnabar - dong bang,dong_co,1,93,ho_lon,12,42
+9,Cinnabar - dong bang,dong_co,1,93,ho_lon,16,44
+9,Cinnabar - dong bang,dong_co,1,93,ho_lon,17,48
+9,Cinnabar - dong bang,dong_co,1,93,ho_lon,8,53
+10,New Bark - rung lon,rung,0,13,ao,62,67
+10,New Bark - rung lon,rung,0,13,ao,63,68
+10,New Bark - rung lon,rung,0,13,ao,59,70
+10,New Bark - rung lon,rung,0,13,ao,64,71
+10,New Bark - rung lon,rung,1,20,ao,63,108
+10,New Bark - rung lon,rung,1,20,ao,62,111
+10,New Bark - rung lon,rung,1,20,ao,63,112
+10,New Bark - rung lon,rung,1,20,ao,65,114
+12,Khu mua ban,thi_tran,0,52,ao,27,13
+12,Khu mua ban,thi_tran,0,52,ao,31,15
+12,Khu mua ban,thi_tran,0,52,ao,33,18
+12,Khu mua ban,thi_tran,0,52,ao,31,21
+14,Vung Safari,dong_co,0,121,ho_lon,20,24
+14,Vung Safari,dong_co,0,121,ho_lon,25,27
+14,Vung Safari,dong_co,0,121,ho_lon,13,32
+14,Vung Safari,dong_co,0,121,ho_lon,24,36
+15,Cherrygrove - ho,ho,0,38,ao,50,27
+15,Cherrygrove - ho,ho,0,38,ao,50,29
+15,Cherrygrove - ho,ho,0,38,ao,57,31
+15,Cherrygrove - ho,ho,0,38,ao,53,34
+17,Khu mo (sa mac),sa_mac,0,13,ao,72,8
+17,Khu mo (sa mac),sa_mac,0,13,ao,70,10
+17,Khu mo (sa mac),sa_mac,0,13,ao,75,11
+17,Khu mo (sa mac),sa_mac,0,13,ao,71,13
+17,Khu mo (sa mac),sa_mac,1,13,ao,78,57
+17,Khu mo (sa mac),sa_mac,1,13,ao,76,59
+17,Khu mo (sa mac),sa_mac,1,13,ao,81,60
+17,Khu mo (sa mac),sa_mac,1,13,ao,77,62
+17,Khu mo (sa mac),sa_mac,2,13,ao,98,59
+17,Khu mo (sa mac),sa_mac,2,13,ao,96,61
+17,Khu mo (sa mac),sa_mac,2,13,ao,101,62
+17,Khu mo (sa mac),sa_mac,2,13,ao,97,64
+20,Violet - rung,rung,0,52,ao,59,31
+20,Violet - rung,rung,0,52,ao,57,33
+20,Violet - rung,rung,0,52,ao,55,36
+20,Violet - rung,rung,0,52,ao,58,39
+21,Dong co phia tay,dong_co,0,13,ao,36,34
+21,Dong co phia tay,dong_co,0,13,ao,34,36
+21,Dong co phia tay,dong_co,0,13,ao,39,37
+21,Dong co phia tay,dong_co,0,13,ao,35,39
+21,Dong co phia tay,dong_co,1,101,ho_lon,39,41
+21,Dong co phia tay,dong_co,1,101,ho_lon,36,44
+21,Dong co phia tay,dong_co,1,101,ho_lon,47,48
+21,Dong co phia tay,dong_co,1,101,ho_lon,46,52
+22,Tau S.S. Anne - dao,ho,0,6,ao,42,45
+22,Tau S.S. Anne - dao,ho,0,6,ao,41,46
+22,Tau S.S. Anne - dao,ho,0,6,ao,41,47
+22,Tau S.S. Anne - dao,ho,0,6,ao,44,48
+23,Azalea - tuyen duong,duong,0,53,ao,19,4
+23,Azalea - tuyen duong,duong,0,53,ao,23,6
+23,Azalea - tuyen duong,duong,0,53,ao,24,9
+23,Azalea - tuyen duong,duong,0,53,ao,23,12
+28,Mahogany - dong co,dong_co,0,135,ho_lon,14,33
+28,Mahogany - dong co,dong_co,0,135,ho_lon,20,36
+28,Mahogany - dong co,dong_co,0,135,ho_lon,22,41
+28,Mahogany - dong co,dong_co,0,135,ho_lon,20,46
+70,Blackthorn,thi_tran,0,51,ao,48,46
+70,Blackthorn,thi_tran,0,51,ao,52,47
+70,Blackthorn,thi_tran,0,51,ao,55,50
+70,Blackthorn,thi_tran,0,51,ao,48,53
+80,Cianwood,thi_tran,0,35,ao,39,12
+80,Cianwood,thi_tran,0,35,ao,41,14
+80,Cianwood,thi_tran,0,35,ao,42,17
+80,Cianwood,thi_tran,0,35,ao,37,20
+106,Ben tau,thi_tran,0,52,ao,18,15
+106,Ben tau,thi_tran,0,52,ao,14,17
+106,Ben tau,thi_tran,0,52,ao,23,19
+106,Ben tau,thi_tran,0,52,ao,21,22
+114,Ho Phan No (hang),hang,0,17,ao,68,69
+114,Ho Phan No (hang),hang,0,17,ao,67,70
+114,Ho Phan No (hang),hang,0,17,ao,66,72
+114,Ho Phan No (hang),hang,0,17,ao,71,73
+201,Cao nguyen Indigo,thanh,0,72,ho_lon,61,66
+201,Cao nguyen Indigo,thanh,0,72,ho_lon,66,67
+201,Cao nguyen Indigo,thanh,0,72,ho_lon,57,71
+201,Cao nguyen Indigo,thanh,0,72,ho_lon,59,74

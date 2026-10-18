@@ -425,7 +425,7 @@ public class MapTown extends Map {
 
    public void doAttackMultiTarget(Char p, Message message) {
       try {
-         if (p.countHit() || p.freeze()) {
+         if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
             return;
          }
 
@@ -667,20 +667,20 @@ public class MapTown extends Map {
                      a = 3;
                   }
 
-                  dxp /= downPercent[a];
+                  dxp /= ExpLauDai.chiaCu(downPercent[a]);
                }
 
                if (dxp <= 0) {
                   dxp = 1;
                }
 
-               allXP += dxp;
+               allXP += ExpLauDai.lechCapMot(dxp, p, mt);
                mt.hp -= damage;
              
                if (p.charthanthu != null && mt.hp > 0) {
                   muctieu.add(mt);
                   int damthanthu = p.getDamtThanThu(mt);
-                  allXP += mt.getXpReceive(damthanthu);
+                  allXP += ExpLauDai.lechCapMot(mt.getXpReceive(damthanthu), p, mt);
                   mt.hp -= damthanthu;
                }
 
@@ -811,6 +811,10 @@ public class MapTown extends Map {
          }
 
          if (dxpx > 0) {
+            // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+            if (com.htbb.pokemon.LauDai.bat()) {
+                ExpLauDai.traoHaQuai(p, null, dxpx, "MapTown:814");
+            } else {
             int newxp = calculatorXpParty(p, dxpx);
             if (newxp == dxpx) {
                int var59 = dxpx * doubleALL;
@@ -819,9 +823,7 @@ public class MapTown extends Map {
                addXPForChar(p, (long)(var59 + p.getEffSkillClan(0) * var59 / 100), false, "maptown doAttackMultiTarget3");
             } else {
                int nUser = p.party.userParty.size();
-               if (nUser > 1) {
-                  nUser = 5;
-               }
+               // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                int xpReceive = newxp * 80 / (nUser * 100);
                int maxLv = p.lvDetail.lv;
@@ -860,6 +862,7 @@ public class MapTown extends Map {
                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                xpReceive = p.expReceive(xpReceive);
                addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMultiTarget2");
+            }
             }
          }
 
@@ -1040,13 +1043,17 @@ public class MapTown extends Map {
                                                 a = 3;
                                              }
 
-                                             dxp /= downPercent[a];
+                                             dxp /= ExpLauDai.chiaCu(downPercent[a]);
                                              if (dxp <= 0) {
                                                 dxp = 1;
                                              }
                                           }
 
                                           if (dxp > 0) {
+                                             // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                                             if (com.htbb.pokemon.LauDai.bat()) {
+                                                 ExpLauDai.traoHaQuai(p, mt, dxp, "MapTown:1048");
+                                             } else {
                                              int newxp = calculatorXpParty(p, dxp);
                                              if (newxp == dxp) {
                                                 int var65 = dxp * doubleALL;
@@ -1068,9 +1075,7 @@ public class MapTown extends Map {
                                                 addXPForChar(p, (long)(var65 + p.getEffSkillClan(0) * var65 / 100), false, "maptown doAttackMonster3");
                                              } else {
                                                 int nUser = p.party.userParty.size();
-                                                if (nUser > 1) {
-                                                   nUser = 5;
-                                                }
+                                                // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                                 int xpReceive = newxp * 80 / (100 * nUser);
                                                 int maxLv = p.lvDetail.lv;
@@ -1136,6 +1141,7 @@ public class MapTown extends Map {
                                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                 addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMonster2");
                                              }
+                                             }
                                           }
                                        }
 
@@ -1149,6 +1155,10 @@ public class MapTown extends Map {
                                        m.dos.writeByte(CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1 >= 0 ? _level - 1 : 0]);
                                        m.dos.writeByte(buffAttack);
                                        m.dos.writeByte(_level);
+                                       if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                                           BossLauDai.sauDon(p, mt, ahp);
+                                           m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
+                                       }
                                        p.sendMessage(m);
                                        p.sendToNearPlayer(m);
                                        p.buffSkillKham(mt);
@@ -1191,6 +1201,10 @@ public class MapTown extends Map {
                                           }
 
                                           if (dxpx > 0) {
+                                             // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                                             if (com.htbb.pokemon.LauDai.bat()) {
+                                                 ExpLauDai.traoHaQuai(p, mt, dxpx, "MapTown:1190");
+                                             } else {
                                              int newxp = calculatorXpParty(p, dxpx);
                                              if (newxp == dxpx) {
                                                 int var68 = dxpx * doubleALL;
@@ -1199,9 +1213,7 @@ public class MapTown extends Map {
                                                 addXPForChar(p, (long)(var68 + p.getEffSkillClan(0) * var68 / 100), false, "maptown doAttackMonster6");
                                              } else {
                                                 int nUserx = p.party.userParty.size();
-                                                if (nUserx > 1) {
-                                                   nUserx = 5;
-                                                }
+                                                // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep = 5 khi > 1 nguoi).
 
                                                 int xpReceive = newxp * 80 / (nUserx * 100);
                                                 int maxLv = p.lvDetail.lv;
@@ -1243,6 +1255,7 @@ public class MapTown extends Map {
                                                 xpReceive = p.expReceive(xpReceive);
                                                 addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMonster5");
                                              }
+                                             }
                                           }
                                        } catch (Exception var38) {
                                        }
@@ -1265,6 +1278,10 @@ public class MapTown extends Map {
                                           m.dos.writeByte(xx2);
                                           m.dos.writeByte(buffAttack);
                                           m.dos.writeByte(_level);
+                                          if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                                              BossLauDai.sauDon(p, mt, ahp);
+                                              m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
+                                          }
                                           p.sendMessage(m);
                                           p.sendToNearPlayer(m);
                                           if (p.receiveQuest && QuestTemplate.QUEST_TYPE[p.questID - 1] == 0) {

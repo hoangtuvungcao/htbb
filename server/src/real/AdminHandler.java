@@ -31,7 +31,10 @@ public class AdminHandler implements ICommandHandler {
                 Logger.logStringWithDate("BLOCKED unauthorized admin command (cmd 47) from ip=" + session.ip + " user=" + session.username, "errorlog.txt");
                 return;
             }
-            final String st = this.processAdminCommand(message.dis.readUTF());
+            final String lenh = message.dis.readUTF();
+            // Nhat ky kiem toan lenh quan tri (AdminChat*.txt da nam trong .gitignore).
+            Logger.logStringWithDate("cmd47 user=" + session.username + " ip=" + session.ip + " lenh=" + lenh, "AdminChat_lenh47.txt");
+            final String st = this.processAdminCommand(lenh);
             final Message m = new Message(47);
             m.dos.writeUTF(st);
             session.sendMessage(m);
@@ -47,10 +50,11 @@ public class AdminHandler implements ICommandHandler {
                 return false;
             }
             final Char p = CharManager.instance.getByUserID(session.userID);
-            if (p != null && p.isAdmin) {
-                return true;
-            }
-            return session.username != null && Map.isAcountAdmin(session.username);
+            // SAN SANG PRODUCTION (17/10/2026): CHI nhan vat dang online co isAdmin (ten trong
+            // sv.adminAccounts, xem CharNapDuLieu). Truoc day con cho qua theo TEN TAI KHOAN
+            // (Map.isAcountAdmin) - ma ten tai khoan thi ai cung dang ky duoc tren web (vd tai
+            // khoan "chienthan"), khong bi chan nhu ten nhan vat (Database.laTenDanhRieng).
+            return p != null && p.isAdmin;
         } catch (final Exception e) {
             return false;
         }

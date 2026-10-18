@@ -5746,6 +5746,8 @@ public class Database {
             } catch (Exception thieuCot) {
                 coCotPokemon = false;
             }
+            final java.util.Map<Integer, long[]> chiSoQuaiLauDai = com.htbb.pokemon.LauDai.bat()
+                    ? DatabaseLauDai.napChiSoQuai() : null;
             while (rs.next()) {
                 MonsterTemplate item = new MonsterTemplate();
                 item.id = rs.getInt("id");
@@ -5774,6 +5776,18 @@ public class Database {
                     item.dex = rs.getShort("dex");
                     item.shiny = rs.getByte("shiny");
                     item.he2 = rs.getByte("he2");
+                }
+                // GD2 6.2: chi so quai theo dai cap (data_monster_lau_dai, doc trong bo nho - KHONG
+                // UPDATE data_monster). Chi doi quai co dong trong bang moi (68 quai dang dat).
+                if (chiSoQuaiLauDai != null) {
+                    final long[] q = chiSoQuaiLauDai.get(Integer.valueOf(item.id));
+                    if (q != null) {
+                        item.maxhp = (int) q[0];
+                        item.attack = (int) q[1];
+                        item.defend = (int) q[2];
+                        item.rcvXp = (int) q[3];
+                        item.rcvGold = (int) q[4];
+                    }
                 }
                 list.put(item.id, item);
             }
@@ -5812,19 +5826,29 @@ public class Database {
             conn = this.getConnection();
             stmt = conn.createStatement();
             final String sql = "SELECT * FROM data_shop";
+            // GD2 2.10: gia moi tu data_shop_gia_lau_dai (doc trong bo nho, KHONG UPDATE data_shop).
+            final java.util.Map<Integer, int[]> giaMoi = com.htbb.pokemon.LauDai.bat()
+                    ? DatabaseLauDai.napGiaShop() : java.util.Collections.<Integer, int[]>emptyMap();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
+                int gia = rs.getInt("price");
+                int giaSale = rs.getInt("priceSale");
+                final int[] g = giaMoi.get(Integer.valueOf(rs.getInt("id")));
+                if (g != null && g[1] == g[2]) {
+                    gia = g[0];
+                    giaSale = g[0];
+                }
                 ShopTemplate item = new ShopTemplate(
                     rs.getInt("id"),
                     rs.getInt("idImg"),
                     rs.getString("name"),
                     rs.getString("decript"),
                     rs.getInt("value"),
-                    rs.getInt("price"),
+                    gia,
                     rs.getInt("type"),
                     rs.getInt("tab"),
                     rs.getInt("sell"),
-                    rs.getInt("priceSale")
+                    giaSale
                 );
                 shopTemplates.add(item);
             }
@@ -7088,9 +7112,10 @@ public class Database {
         Statement pre = null;
         ResultSet rs = null;
         try {
-            String sql = "select idClan from tob_char where charname='" + nameChar + "'";
-            pre = conn.createStatement();
-            rs = pre.executeQuery(sql);
+            final PreparedStatement ps = conn.prepareStatement("select idClan from tob_char where charname=?");
+            pre = ps;
+            ps.setString(1, nameChar);
+            rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt("idClan");
             }
@@ -7635,9 +7660,11 @@ public class Database {
         ResultSet rs = null;
         try {
             conn = this.getConnection();
-            String sql = "select * from tob_char where charname='" + name + "'";
-            stm = conn.createStatement();
-            rs = stm.executeQuery(sql);
+            // SAN SANG PRODUCTION: ten lay tu goi tin duoi thanh vien bang (MapBangHoi) -> tham so hoa.
+            final PreparedStatement ps = conn.prepareStatement("select idClan from tob_char where charname=?");
+            stm = ps;
+            ps.setString(1, name);
+            rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt("idClan");
             }
@@ -9456,49 +9483,96 @@ public void addCharXaiNapLuong(Char p, int type) {
      * cuu/khoa duy nhat nua.
      */
     private void damBaoIdCharTopEvent() {
+        // Sua 18/10/2026 (kiem toan san xuat): ban truoc hoi information_schema - NovaDB khong co,
+        // nen MOI lan khoi dong deu ALTER ADD COLUMN (loi "da co cot") va DUNG o do -> khong bao gio
+        // tao khoa duy nhat id_char -> ON DUPLICATE KEY khong an -> dong trung lap. Gio: kiem bang
+        // cach doc thu cot, moi buoc mot try rieng, gop dong trung TRUOC khi tao khoa duy nhat.
         Connection conn = null;
         Statement st = null;
-        ResultSet rs = null;
         try {
             conn = this.getConnection();
             st = conn.createStatement();
-
-            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.COLUMNS"
-                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND COLUMN_NAME = 'id_char'");
-            final boolean coCotIdChar = rs.next() && rs.getInt(1) > 0;
-            rs.close();
-            if (!coCotIdChar) {
-                st.execute("ALTER TABLE tob_top_event ADD COLUMN id_char INT NULL AFTER charname");
+            boolean coCot = true;
+            try {
+                st.executeQuery("SELECT id_char FROM tob_top_event LIMIT 1").close();
+            } catch (final Exception chuaCo) {
+                coCot = false;
+            }
+            if (!coCot) {
+                st.execute("ALTER TABLE tob_top_event ADD COLUMN id_char INT NULL");
                 System.out.println("[TOP EVENT] da them cot id_char vao tob_top_event");
             }
-
             // Subquery tuong quan thay cho "UPDATE .. JOIN .." (NovaDB khong ho tro).
             st.execute("UPDATE tob_top_event SET id_char = (SELECT c.id FROM tob_char c"
                     + " WHERE c.charname = tob_top_event.charname LIMIT 1)"
                     + " WHERE id_char IS NULL AND EXISTS (SELECT 1 FROM tob_char c WHERE c.charname = tob_top_event.charname)");
-
-            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
-                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND INDEX_NAME = 'charname'");
-            final boolean coKhoaCuTheoTen = rs.next() && rs.getInt(1) > 0;
-            rs.close();
-            if (coKhoaCuTheoTen) {
+            gopDongTrungTopEvent(conn);
+            try {
                 st.execute("ALTER TABLE tob_top_event DROP INDEX charname");
+            } catch (final Exception khongCo) {
+                // da bo tu truoc / khong co
             }
-
-            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
-                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND INDEX_NAME = 'idx_id_char'");
-            final boolean coKhoaMoiTheoId = rs.next() && rs.getInt(1) > 0;
-            rs.close();
-            rs = null;
-            if (!coKhoaMoiTheoId) {
+            try {
                 st.execute("ALTER TABLE tob_top_event ADD UNIQUE KEY idx_id_char (id_char)");
+                System.out.println("[TOP EVENT] da tao khoa duy nhat idx_id_char");
+            } catch (final Exception daCo) {
+                // da co khoa (binh thuong tu lan thu hai)
             }
         } catch (final Exception e) {
             System.out.println("[TOP EVENT] loi migrate id_char - " + e);
         } finally {
-            try { if (rs != null) { rs.close(); } } catch (final Exception ignored) { }
             try { if (st != null) { st.close(); } } catch (final Exception ignored) { }
             try { Database.connPool.free(conn); } catch (final Exception ignored) { }
+        }
+    }
+
+    /** Gop cac dong cung id_char (cong xu/luong/point1, giu dong id lon nhat). */
+    private static void gopDongTrungTopEvent(final Connection conn) {
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        try {
+            pre = conn.prepareStatement("SELECT id_char FROM tob_top_event WHERE id_char IS NOT NULL GROUP BY id_char HAVING COUNT(*) > 1");
+            rs = pre.executeQuery();
+            final java.util.List<Integer> trung = new java.util.ArrayList<Integer>();
+            while (rs.next()) {
+                trung.add(Integer.valueOf(rs.getInt(1)));
+            }
+            rs.close();
+            pre.close();
+            for (final Integer idc : trung) {
+                pre = conn.prepareStatement("SELECT MAX(id), SUM(point1), SUM(xu), SUM(luong) FROM tob_top_event WHERE id_char = ?");
+                pre.setInt(1, idc.intValue());
+                rs = pre.executeQuery();
+                if (!rs.next()) {
+                    continue;
+                }
+                final long giu = rs.getLong(1);
+                final long p1 = rs.getLong(2);
+                final long xu = rs.getLong(3);
+                final long lg = rs.getLong(4);
+                rs.close();
+                pre.close();
+                pre = conn.prepareStatement("UPDATE tob_top_event SET point1 = ?, xu = ?, luong = ? WHERE id = ?");
+                pre.setLong(1, p1);
+                pre.setLong(2, xu);
+                pre.setLong(3, lg);
+                pre.setLong(4, giu);
+                pre.executeUpdate();
+                pre.close();
+                pre = conn.prepareStatement("DELETE FROM tob_top_event WHERE id_char = ? AND id <> ?");
+                pre.setInt(1, idc.intValue());
+                pre.setLong(2, giu);
+                pre.executeUpdate();
+                pre.close();
+            }
+            if (!trung.isEmpty()) {
+                System.out.println("[TOP EVENT] da gop dong trung cua " + trung.size() + " nhan vat");
+            }
+        } catch (final Exception e) {
+            System.out.println("[TOP EVENT] loi gop dong trung - " + e);
+        } finally {
+            try { if (rs != null) { rs.close(); } } catch (final Exception ignored) { }
+            try { if (pre != null) { pre.close(); } } catch (final Exception ignored) { }
         }
     }
 
@@ -10732,6 +10806,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             return false;
         }
         real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (tat che do Pokemon: khong lam gi). Bang rieng, khong can KHOA_LUU.
+        real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (tat co sv.lau_dai: khong lam gi).
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveChar(this, p, admindExit);
         }
@@ -10743,6 +10818,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             return false;
         }
         real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (cung ban sao voi saveChar).
+        real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (cung ban sao voi saveChar).
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveCharAuto(this, p);
         }

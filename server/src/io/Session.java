@@ -179,12 +179,15 @@ public class Session extends Thread {
                 if (message == null) {
                     continue;
                 }
+                server.ChiSoMayChu.GOI_VAO.incrementAndGet();
 
                 // Kiem TRUOC khi xu ly: dem sau thi tran ngap da duoc xu ly xong roi.
                 if (this.quaNhieuGoi(message.command)) {
                     if (this.boDemGoiTin.vuotXaNguong(message.command)) {
+                        server.ChiSoMayChu.CAT_NGAP.incrementAndGet();
                         break;   // khoi finally ben duoi se disconnect(7)
                     }
+                    server.ChiSoMayChu.GOI_BO.incrementAndGet();
                     // Chi vuot tran o muc "nhanh tay": BO goi nay, GIU ket noi.
                     // Cat ket noi o day tung van nham nguoi choi luong thien dang
                     // lam do khi hanh trang day, va moi lan cat la mot vong
@@ -197,6 +200,7 @@ public class Session extends Thread {
                 try {
                     this.messageHandler.processMessage(this, message);
                 } catch (Exception var10) {
+                    server.ChiSoMayChu.LOI_XU_LY.incrementAndGet();
                 }
             }
         } catch (Exception var11) {

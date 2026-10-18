@@ -48,7 +48,7 @@ import javax.imageio.ImageIO;
  *   java -cp build/tools DoiTileMap --khong-tai
  *
  * Ra: map/pokemon_tile/{t,t_hang,t_thanh,t_small,t_hang_s,t_thanh_s}.png,
- *     ClientUnity/Assets/Resources/poke_tile/*.bytes (cung noi dung),
+ *     <client>/Assets/Resources/poke_tile/*.bytes (htbb-client/pc + ClientUnity cu; cung noi dung),
  *     docs/pokemon/bang_tile.csv, docs/pokemon/xem_truoc_tile.png.
  * Nguon PMD tai ve tools/pokemon/pmd_raw_tile/ (khong commit, xem .gitignore).
  */
@@ -68,7 +68,7 @@ public final class DoiTileMap {
     static final String[][] THAY_VAT_THE = {{"6", "Tree_Town.Flip"}, {"7", "Tree_Town.Flip"}, {"9", "Tree_Town.Flip"}};
     static final String GOC_OBJECT = "https://raw.githubusercontent.com/PMDCollab/RawAsset/master/Object/";
     static final String THU_MUC_OBJECT = "tools/pokemon/pmd_raw_tile/object/";
-    static final String THU_MUC_CLIENT = "ClientUnity/Assets/Resources/poke_tile/";
+    /** Tile cho client Unity: Resources/poke_tile/ cua moi client (thuMucClient - htbb-client/pc + ClientUnity cu). */
 
     /** Khoi trong tep DTEF tileset_N.png (432x192): 3 khoi 6x8 tile 24px canh nhau. */
     static final int TUONG = 0, PHU = 1, NEN = 2;
@@ -586,7 +586,6 @@ public final class DoiTileMap {
         final StringBuilder csv = new StringBuilder("bo_tile,chi_so,kieu,vat_lieu_chinh,cach,nguon_pmd,ty_le_pixel_giu\n");
         final List<KetQua[]> tatCa = new ArrayList<KetQua[]>();
         new File(THU_MUC_RA).mkdirs();
-        new File(THU_MUC_CLIENT).mkdirs();
         for (final BoTile b : bo) {
             b.cu = ImageIO.read(new File("map/" + b.ten + ".png"));
             b.kieu = docKieu("cMap/" + b.ten + ".type");
@@ -641,7 +640,7 @@ public final class DoiTileMap {
             System.out.println("  " + ten + ".png " + f.length() + " byte > 32767, doi sang bang mau 8 bit");
             ghiPng(bangMau8Bit(anh), f);
         }
-        Files.copy(f.toPath(), new File(THU_MUC_CLIENT + ten + ".bytes").toPath(), StandardCopyOption.REPLACE_EXISTING);
+        ghiClient("poke_tile", ten + ".bytes", Files.readAllBytes(f.toPath()));
     }
 
     /** Luong tu hoa 255 mau (k-means trong Lab, trong so theo tan suat) + chi so 0 trong suot. */
@@ -1420,6 +1419,40 @@ public final class DoiTileMap {
                 throw new IllegalStateException(b.ten + ".png " + kb + " byte, vuot writeShort");
             }
             System.out.println("  kiem " + b.ten + ".png: " + kb + " byte, OK");
+        }
+    }
+
+    /**
+     * Thu muc Resources/&lt;con&gt; cua MOI client can ghi: bien HTBB_CLIENT_ASSETS (chi thu muc do), hoac
+     * client PC chinh ../htbb-client/pc/Assets (canh HTBB/) + ban cu ClientUnity/Assets neu con
+     * (bo bang HTBB_CLIENT_CU=0). Giong tools/pokemon/duong_client.py.
+     */
+    static java.util.List<File> thuMucClient(final String con) {
+        final java.util.List<File> ds = new java.util.ArrayList<File>();
+        final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
+        if (rieng != null && !rieng.isEmpty()) {
+            ds.add(new File(rieng, "Resources/" + con));
+            return ds;
+        }
+        final File pc = new File("../htbb-client/pc/Assets");
+        if (pc.isDirectory()) {
+            ds.add(new File(pc, "Resources/" + con));
+        }
+        final File cu = new File("ClientUnity/Assets");
+        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
+            ds.add(new File(cu, "Resources/" + con));
+        }
+        if (ds.isEmpty()) {
+            ds.add(new File(cu, "Resources/" + con));
+        }
+        return ds;
+    }
+
+    /** Ghi tep ten vao Resources/&lt;con&gt; cua moi client (tao thu muc neu thieu). */
+    static void ghiClient(final String con, final String ten, final byte[] data) throws java.io.IOException {
+        for (final File d : thuMucClient(con)) {
+            d.mkdirs();
+            java.nio.file.Files.write(new File(d, ten).toPath(), data);
         }
     }
 }

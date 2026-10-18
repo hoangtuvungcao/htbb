@@ -59,9 +59,16 @@ public final class CharDoiTenNhanVat {
             player.sendMessage(MessageCreator.createServerAlertMessage("Tên này không thể sử dụng.", ""));
             return;
         }
-        if (player.getLuong() < COST_LUONG) {
+        // nap tien: gia cua hang (500 luong) + moi 30 ngay mot lan. Tat co: COST_LUONG nhu cu.
+        final int gia = com.htbb.pokemon.NapTienGame.giaDoiTen(COST_LUONG);
+        final String chanNap = com.htbb.pokemon.NapTienGame.kiemDoiTen(player);
+        if (chanNap != null) {
+            player.sendMessage(MessageCreator.createServerAlertMessage(chanNap, ""));
+            return;
+        }
+        if (player.getLuong() < gia) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Không đủ lượng (cần " + COST_LUONG + " lượng).", ""));
+                    "Không đủ lượng (cần " + gia + " lượng).", ""));
             return;
         }
         if (CharManager.instance.getCharByCharName(tenMoi) != null || tonTaiTrongCSDL(tenMoi)) {
@@ -74,7 +81,8 @@ public final class CharDoiTenNhanVat {
             return;
         }
 
-        player.subLuong(COST_LUONG);
+        player.subLuong(gia);
+        com.htbb.pokemon.NapTienGame.ghiDoiTen(player, gia); // nap tien: so cai + moc 30 ngay (tat co: khong lam gi)
         player.charname = tenMoi;
 
         // Sua 19/09/2026: "> 0" bo sot clan id = 0 (id_clan la so tu tang bat dau tu 0,

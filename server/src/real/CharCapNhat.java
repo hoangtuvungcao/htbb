@@ -140,7 +140,7 @@ class CharCapNhat {
     }
 
     static void buffAttackSkill(Char self, final Monster mt, final int d) {
-        final Random r = new Random(System.currentTimeMillis());
+        final Random r = java.util.concurrent.ThreadLocalRandom.current(); // GD2 1.1: khong reseed theo ms
         try {
             int damPhan = d * self.attNguHanh[4] / 100;
             if (self.charClass == 0 && self.arrayBuff[4] != -1) {
@@ -574,6 +574,7 @@ class CharCapNhat {
             self.giveMoneyClan = 1;
             self.diemQuaiHomNay = 0;
             self.soQuaiHomNay = 0;
+            LauDaiNhanVat.khiDoiNgay(self); // GD2 7.1 lich dang nhap (tat co: khong lam gi)
             if (self.pointActiveQuest > 300) {
                 self.pointActiveQuest = 300;
             }
@@ -609,8 +610,12 @@ class CharCapNhat {
                     Database.instance.saveOrtherLog("", self.charname, "tang 6 binh tang  toc", "btt");
                 }
             }
-            if (self.lvDetail.lv >= 40) {
-                self.lockLuong += 1000;
+            // Bo sung kiem toan A1: +1000 luong khoa/ngay/nhan vat cap >= 40 truoc day cong thang
+            // vao truong (bo qua Char.KHOA_TIEN, tran, log). Tat co: van 1000 nhung qua addLuongLock
+            // + log. Bat co sv.lau_dai: BO - lich dang nhap 7 ngay (3..15) thay the (LauDaiNhanVat.khiDoiNgay).
+            if (self.lvDetail.lv >= 40 && !com.htbb.pokemon.LauDai.bat()) {
+                self.addLuongLock(1000);
+                Database.instance.saveOrtherLog("", self.charname, "qua doi ngay +1000 luong khoa (cap >= 40)", "luongngay");
             }
             if (self.vip > 0 && self.vip <= 3) {
                 final int[] potions3 = self.potions;
@@ -681,7 +686,16 @@ class CharCapNhat {
         boolean haveData = false;
         if (!self.map.isDun() && self.isBot == -1) {
             for (int j = 0; j < self.nearMons.size(); ++j) {
-                final Monster mt = self.map.getMonster(self.nearMons.get(j), (self.mapID == 225 || self.mapID == 226) ? self.idWedding : self.inCountry, self.region);
+                // nearMons co the bi luong khac don (doi map / dich chuyen) GIUA lan kiem size va
+                // get(j) -> ArrayIndexOutOfBounds (bat duoc khi chay 50 bot, GD2). Doc an toan, het
+                // phan tu thi dung vong lap; moi remove(j) ben duoi cung kiem j < size.
+                final Short idQuaiGan;
+                try {
+                    idQuaiGan = self.nearMons.get(j);
+                } catch (final ArrayIndexOutOfBoundsException hetPhanTu) {
+                    break;
+                }
+                final Monster mt = self.map.getMonster(idQuaiGan, (self.mapID == 225 || self.mapID == 226) ? self.idWedding : self.inCountry, self.region);
                 if (mt != null) {
                     if (mt.isDead || !self.near(mt, self.rangeRemoveMonster[0])) {
                         // Kiem j < size: nearMons co the bi luong khac don (doi map/dich chuyen) giua
@@ -698,15 +712,16 @@ class CharCapNhat {
                             mt.sendEffToChar(self);
                             mt.timeAddBuff = System.currentTimeMillis() + 20000L;
                         }
-                        if ((self.near(mt, self.map.isvanTienTran() ? 240 : 120) || mt.isBoss || mt.idTemplate == 83) && self.hp > 0 && mt.target == null && mt.isActive() && !self.isAdmin && mt.isEnemy(self)) {
+                        if ((self.near(mt, self.map.isvanTienTran() ? 240 : 120) || mt.isBoss || mt.idTemplate == 83) && self.hp > 0 && mt.target == null && mt.isActive() && !self.isAdmin && mt.isEnemy(self)
+                        && !VatPhamDungLauDai.xuaQuai(self, mt)) { // GD2b thuoc xua quai
                             if (mt.region == self.region) {
                                 mt.target = self;
-                            } else {
+                            } else if (j < self.nearMons.size()) {
                                 self.nearMons.remove(j);
                             }
                         }
                     }
-                } else {
+                } else if (j < self.nearMons.size()) {
                     self.nearMons.remove(j);
                 }
             }
@@ -897,6 +912,11 @@ class CharCapNhat {
             if (self.lkdLock || self.BHLock || self.MMLock) {
                 isLock = true;
             }
+            if (item.plus < self.plus && com.htbb.pokemon.LauDai.bat()) {
+                // GD2 2.5: ban dai han - cung ham voi nang cap tay (NangCapLauDaiGame).
+                autoImbueLauDai(self, item);
+                return;
+            }
             if (item.plus < self.plus) {
                 // Kiem TRUOC khi roll: ban cu tru xu/nguyen lieu o CUOI nhip (dong ben duoi)
                 // roi moi kiem "con du cho nhip SAU khong" - nhip HIEN TAI van roll/ap dung
@@ -1035,7 +1055,45 @@ class CharCapNhat {
         }
     }
 
+    /** Mot nhip luyen tu dong khi LauDai.bat(): het xu/da/luong khoa thi dung. */
+    static void autoImbueLauDai(Char self, final Item item) {
+        final String[] ra = {""};
+        final int kieu = self.lkdLock ? 1 : 0;
+        final int kq = NangCapLauDaiGame.thu(self, item, self.idGemLkd, kieu, self.idGemBH > -1, ra);
+        boolean dung = false;
+        String tb = ra[0];
+        if (kq == NangCapLauDaiGame.THIEU) {
+            dung = true;
+            tb = "Dừng luyện tự động: " + ra[0] + " Hiện tại +" + item.plus;
+        } else if (item.plus >= self.plus || kq == NangCapLauDaiGame.DA_TOI_DA) {
+            dung = true;
+            tb = "Hoàn thành +" + item.plus;
+        }
+        final Message m = new Message(-69);
+        try {
+            m.dos.writeByte(1);
+            m.dos.writeUTF(tb);
+            m.dos.writeByte(dung ? 1 : 0);
+            self.sendMessage(m);
+        } catch (final Exception ignored) {
+        }
+        self.sendMessage(MessageCreator.createCharGemItem(self));
+        try {
+            self.sendMessage(MessageCreator.createMsgItemInfo(item));
+        } catch (final Exception ignored) {
+        }
+        self.sendMessage(MessageCreator.createCharInventoryMessage(self, 0));
+        if (dung) {
+            self.startAutoImbue = false;
+            self.idGemLkd = -1;
+            final Char nv = self; // (test KiemMatDoKhiTaoDo dem 3 duong cu dang "luuSauKhiLuyen(self)")
+            luuSauKhiLuyen(nv);
+        }
+    }
+
     static void doPlayerMove(Char self, final Message message) {
+        QuaHoatDong.hanhDong(self); // GD2: giay hoat dong theo tai khoan (tat co: khong lam gi)
+        NhiemVuEngine.khiDiChuyen(self); // GD2b: dung tai diem / den noi
         try {
             final DataInputStream dis = message.dis;
             final long now = System.currentTimeMillis();

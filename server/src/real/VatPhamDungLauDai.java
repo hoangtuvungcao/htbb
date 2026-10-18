@@ -1,0 +1,509 @@
+package real;
+
+import com.htbb.pokemon.CapDoLauDai;
+import com.htbb.pokemon.HoSoLauDai;
+import com.htbb.pokemon.LauDai;
+import com.htbb.pokemon.NhiemVuLauDai;
+import com.htbb.pokemon.ThongSoLauDai;
+import com.htbb.pokemon.TrangThaiPokemon;
+import data.Database;
+import data.DatabaseLauDai;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Vat pham tieu hao / do giu moi (GD2b, NOI_DUNG_DAY_DU.md muc 4 + 9.1): data_item type 28 id
+ * 1201..1260 (sql/pokemon_vat_pham_lau_dai.sql) + bang data_vat_pham_lau_dai (id -> hieu_ung lay
+ * NGUYEN chuoi cua doi noi dung, vd "tc:20,giay:90"). Bo doc hieu ung la DU LIEU: them vat pham moi
+ * chi can them dong, khong sua code, mien la dung cac khoa da ho tro duoi day. Chi chay khi LauDai.bat().
+ *
+ * Khoa ho tro: hp, mp, mp_doi (%); go:<1..5|tat_ca>, mien:<giay>; hoi_sinh:<%HP>;
+ * tc / thu / chi_mang / boss / toc_danh / chinh_xac + giay (buff co han); xua:<cap>, phut (xua quai);
+ * exp_phut + tru_nang_luong_phut (Keo Hiem, 2/tuan); tu_dung:<hp50|mp20|trang_thai|bong|doc|te|ngu|dong_bang>
+ * (qua mong: dung tay hoac TU DUNG khi du dieu kien, LauDaiJob); o:phien_da (do giu: bam dung = mang/thao,
+ * hieu ung exp / chi_mang / hut / hoi_hp_3s / don_thuong / song_sot / chan_tien_hoa); bua:<k1-k2>
+ * (bua bao ho that, NangCapLauDaiGame). toc_danh / chinh_xac / toc_danh_ngau_nhien: CHUA noi vao
+ * cong thuc (ghi nhan buff, chua co tac dung) - xem KE_HOACH_LAU_DAI_GD2.md "Con lai".
+ */
+public final class VatPhamDungLauDai {
+
+    /** id_item -> {ma, nhom, hieu_ung, gioi_han, capTu, capDen}. */
+    static volatile java.util.Map<Integer, Object[]> BANG = java.util.Collections.emptyMap();
+
+    /** Buff co han: charDBID -> (khoa -> {het han ms, gia tri}). */
+    private static final ConcurrentHashMap<Integer, HashMap<String, long[]>> BUFF = new ConcurrentHashMap<Integer, HashMap<String, long[]>>();
+
+    static final String[] KHOA_BUFF = {"tc", "thu", "chi_mang", "boss", "toc_danh", "chinh_xac", "xua"};
+
+    private VatPhamDungLauDai() {
+    }
+
+    /** Nap bang luc khoi dong (TeamServer, bat co). */
+    public static void nap() {
+        BANG = DatabaseLauDai.napVatPhamLauDai();
+        System.out.println("[LAU DAI] vat pham tieu hao / do giu moi: " + BANG.size() + " mau");
+    }
+
+    /** Phan tich "a:1,b:2" -> map. */
+    static HashMap<String, String> hieuUng(final String s) {
+        final HashMap<String, String> m = new HashMap<String, String>();
+        if (s == null) {
+            return m;
+        }
+        for (final String phan : s.split(",")) {
+            final int i = phan.indexOf(':');
+            if (i > 0) {
+                m.put(phan.substring(0, i).trim(), phan.substring(i + 1).trim());
+            }
+        }
+        return m;
+    }
+
+    static int so(final HashMap<String, String> m, final String k, final int macDinh) {
+        try {
+            return m.containsKey(k) ? Integer.parseInt(m.get(k)) : macDinh;
+        } catch (final NumberFormatException e) {
+            return macDinh;
+        }
+    }
+
+    // ------------------------------------------------------------------ dung tay
+
+    /** Map.doUseItem. @return true neu la vat pham cua bang nay (da xu ly, ke ca tu choi). */
+    public static boolean dung(final Char p, final Item item) {
+        if (!LauDai.bat() || p == null || item == null || item.getTemplate() == null) {
+            return false;
+        }
+        final Object[] d = BANG.get(Integer.valueOf(item.getTemplate().id));
+        if (d == null) {
+            return false;
+        }
+        final String nhom = (String) d[1];
+        final HashMap<String, String> hu = hieuUng((String) d[2]);
+        if (p.lvDetail.lv < ((Integer) d[4]).intValue()) {
+            bao(p, "Cần đạt cấp " + d[4] + ".");
+            return true;
+        }
+        if ("bua".equals(nhom)) {
+            bao(p, "Bùa bảo hộ tự dùng khi nâng cấp thất bại (đặt ngọc bảo hiểm hoặc chọn bảo hộ).");
+            return true;
+        }
+        if (hu.containsKey("o")) {
+            doiDoGiu(p, item);
+            return true;
+        }
+        final String loi = kiemDung(p, hu);
+        if (loi != null) {
+            bao(p, loi);
+            return true;
+        }
+        if (hu.containsKey("exp_phut") && !keoHiemDuoc(p)) {
+            bao(p, "Kẹo Hiếm: tối đa 2 viên mỗi tuần.");
+            return true;
+        }
+        // tru vat pham TRUOC (CODING_CONVENTION muc 5)
+        if (!p.iItems.remove(item)) {
+            return true;
+        }
+        apDung(p, hu);
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+        try {
+            Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "dung " + d[0] + " dbid" + item.dbid, "vatphamlaudai");
+        } catch (final Exception ignored) {
+        }
+        bao(p, "Đã dùng " + item.getTemplate().name + ".");
+        return true;
+    }
+
+    /** Ly do khong dung duoc (truoc khi tru vat pham), null neu dung duoc. */
+    static String kiemDung(final Char p, final HashMap<String, String> hu) {
+        if (hu.containsKey("hoi_sinh") && p.hp > 0) {
+            return "Chỉ dùng được khi đã gục.";
+        }
+        if (!hu.containsKey("hoi_sinh") && p.hp <= 0) {
+            return "Không dùng được khi đã gục.";
+        }
+        if (hu.containsKey("go") && !hu.containsKey("hp")) {
+            final TrangThaiPokemon t = TrangThaiGame.lay(p);
+            if (t == null || !t.dangCo(System.currentTimeMillis())) {
+                return "Bạn không bị trạng thái nào.";
+            }
+        }
+        return null;
+    }
+
+    /** Ap mot chuoi hieu ung (vat pham da tru). */
+    static void apDung(final Char p, final HashMap<String, String> hu) {
+        final long bay = System.currentTimeMillis();
+        if (hu.containsKey("hoi_sinh")) {
+            p.hp = Math.max(1, p.maxhp * so(hu, "hoi_sinh", 30) / 100);
+            try {
+                p.desTroy();
+            } catch (final Exception ignored) {
+            }
+            guiHp(p);
+        }
+        if (hu.containsKey("hp")) {
+            p.hp = Math.min(p.maxhp, p.hp + p.maxhp * so(hu, "hp", 0) / 100);
+            guiHp(p);
+        }
+        if (hu.containsKey("mp")) {
+            p.mp = Math.min(p.maxmp, p.mp + p.maxmp * so(hu, "mp", 0) / 100);
+            guiHp(p);
+        }
+        if (hu.containsKey("mp_doi")) {
+            for (final Char c : ExpLauDai.thanhVienGan(p)) {
+                c.mp = Math.min(c.maxmp, c.mp + c.maxmp * so(hu, "mp_doi", 0) / 100);
+                guiHp(c);
+            }
+        }
+        if (hu.containsKey("go")) {
+            TrangThaiGame.go(p, "tat_ca".equals(hu.get("go")) ? 0 : so(hu, "go", 0), so(hu, "mien", 0) * 1000L);
+        }
+        final int giay = so(hu, "giay", so(hu, "phut", 0) * 60);
+        for (final String k : KHOA_BUFF) {
+            if (hu.containsKey(k) && giay > 0) {
+                datBuff(p, k, so(hu, k, 0), bay + giay * 1000L);
+            }
+        }
+        if (hu.containsKey("exp_phut")) {
+            keoHiem(p, so(hu, "exp_phut", 30), so(hu, "tru_nang_luong_phut", 30));
+        }
+    }
+
+    static void guiHp(final Char p) {
+        try {
+            p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+            p.sendToNearPlayer(MessageCreator.createNew_HMP_Message(p, 0));
+        } catch (final Exception ignored) {
+        }
+    }
+
+    static void bao(final Char p, final String s) {
+        p.sendMessage(MessageCreator.createServerAlertMessage(s, ""));
+    }
+
+    // ------------------------------------------------------------------ Keo Hiem
+
+    static boolean keoHiemDuoc(final Char p) {
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return false;
+        }
+        synchronized (h) {
+            final int tuan = NhiemVuLauDai.tuan(System.currentTimeMillis());
+            if (h.khTuan != tuan) {
+                h.khTuan = tuan;
+                h.khSo = 0;
+            }
+            return h.khSo < 2;
+        }
+    }
+
+    /** EXP = {@code phut} phut danh quai o cap hien tai; tru {@code truPhut} phut nang luong 100% (khong vuot tran ngay). */
+    static void keoHiem(final Char p, final int phut, final int truPhut) {
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return;
+        }
+        synchronized (h) {
+            h.khSo++;
+            com.htbb.pokemon.NangLuong.ghiNhan(h, System.currentTimeMillis(), ThongSoLauDai.NANG_LUONG_PHUT_NGAY,
+                    ThongSoLauDai.NANG_LUONG_PHUT_TICH_TOI_DA);
+            h.nlMsDung += truPhut * 60000L;
+            h.ban = true;
+        }
+        final long exp = ThongSoLauDai.expMoiGio(LauDai.kepCap(p.lvDetail.lv)) * phut / 60L;
+        try {
+            Map.addXPForChar(p, exp, false, "keo hiem");
+        } catch (final Exception ignored) {
+        }
+    }
+
+    // ------------------------------------------------------------------ buff co han
+
+    static void datBuff(final Char p, final String k, final int giaTri, final long het) {
+        final HashMap<String, long[]> m = BUFF.computeIfAbsent(Integer.valueOf(p.charDBID), x -> new HashMap<String, long[]>());
+        synchronized (m) {
+            m.put(k, new long[]{het, giaTri});
+        }
+    }
+
+    /** Gia tri buff {@code k} con hieu luc (0 neu khong co). */
+    public static int buff(final Char p, final String k) {
+        if (!LauDai.bat() || p == null) {
+            return 0;
+        }
+        final HashMap<String, long[]> m = BUFF.get(Integer.valueOf(p.charDBID));
+        if (m == null) {
+            return 0;
+        }
+        synchronized (m) {
+            final long[] v = m.get(k);
+            return v != null && v[0] > System.currentTimeMillis() ? (int) v[1] : 0;
+        }
+    }
+
+    // ------------------------------------------------------------------ do giu
+
+    /** Bam dung do giu: mang (thay mon dang mang) hoac thao neu dang mang chinh mon do. */
+    static void doiDoGiu(final Char p, final Item item) {
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return;
+        }
+        final int id = item.getTemplate().id;
+        synchronized (h) {
+            h.doGiu = h.doGiu == id ? 0 : id;
+            h.ban = true;
+        }
+        bao(p, h.doGiu == id ? "Đang mang: " + item.getTemplate().name + "." : "Đã cất " + item.getTemplate().name + ".");
+        try {
+            p.calculateAttrib();
+        } catch (final Exception ignored) {
+        }
+    }
+
+    /** Hieu ung cua do giu dang mang (con trong tui), map rong neu khong co. */
+    static HashMap<String, String> doGiu(final Char p) {
+        final HoSoLauDai h = LauDai.bat() ? LauDaiNhanVat.lay(p) : null;
+        if (h == null || h.doGiu == 0) {
+            return new HashMap<String, String>();
+        }
+        final Object[] d = BANG.get(Integer.valueOf(h.doGiu));
+        if (d == null || demItem(p, h.doGiu) <= 0) {
+            return new HashMap<String, String>();
+        }
+        return hieuUng((String) d[2]);
+    }
+
+    /** Gia tri hieu ung {@code k} cua do giu (0 neu khong mang). */
+    public static int doGiuSo(final Char p, final String k) {
+        if (!LauDai.bat() || p == null) {
+            return 0;
+        }
+        return so(doGiu(p), k, 0);
+    }
+
+    // ------------------------------------------------------------------ diem goi tu chien dau
+
+    /** Char.havecrit: cong them diem chi mang (thang 300 nhu ban cu: 1% = 3). */
+    public static int congChiMang(final Char p) {
+        return (buff(p, "chi_mang") + doGiuSo(p, "chi_mang")) * 3;
+    }
+
+    /** % tan cong cong them (X Tan cong). */
+    public static int congTanCong(final Char p) {
+        return buff(p, "tc");
+    }
+
+    /** % EXP do giu (Trung may man), cong vao tran buff. */
+    public static int congExp(final Char p) {
+        return doGiuSo(p, "exp");
+    }
+
+    /** Quai danh nguoi: giam theo X Phong thu; Bang do tap trung (song sot 10%, hoi 120 giay). */
+    public static int satThuongNhan(final LiveActor muc, final int ahp) {
+        if (!LauDai.bat() || !(muc instanceof Char)) {
+            return ahp;
+        }
+        final Char c = (Char) muc;
+        int d = ahp;
+        final int thu = buff(c, "thu");
+        if (thu > 0) {
+            d = d * (100 - Math.min(80, thu)) / 100;
+        }
+        if (d >= c.hp && c.hp > 1) {
+            final int sot = doGiuSo(c, "song_sot");
+            if (sot > 0 && buff(c, "hoi_song_sot") == 0 && Map.random(100) < sot) {
+                datBuff(c, "hoi_song_sot", 1, System.currentTimeMillis() + doGiuSo(c, "hoi") * 1000L);
+                d = c.hp - 1;
+            }
+        }
+        return Math.max(0, d);
+    }
+
+    /** Sat thuong vao boss (Thuoc san trum +30%). */
+    public static int vaoBoss(final Char p, final int dam) {
+        final int b = buff(p, "boss");
+        return b > 0 ? (int) Math.min(Integer.MAX_VALUE, (long) dam * (100 + b) / 100L) : dam;
+    }
+
+    /** Sau moi don trung (GoiLauDaiGame.don): Chuong vo so hut %. */
+    public static void sauDonDanh(final Char p, final int dam) {
+        final int hut = doGiuSo(p, "hut");
+        if (hut > 0 && dam > 0 && p.hp > 0 && p.hp < p.maxhp) {
+            p.hp = Math.min(p.maxhp, p.hp + Math.max(1, dam * hut / 100));
+        }
+    }
+
+    /** % sat thuong don thuong (idSkill 0) them - Dai luc si. */
+    public static int donThuong(final Char p) {
+        return doGiuSo(p, "don_thuong");
+    }
+
+    /** Xua quai: quai thap hon >= xua cap khong chu dong danh. */
+    public static boolean xuaQuai(final Char p, final Monster mt) {
+        final int x = buff(p, "xua");
+        return x > 0 && mt != null && !mt.isBoss && p.lvDetail.lv - mt.level >= x;
+    }
+
+    /** Da vinh cuu: chan tien hoa. */
+    public static boolean chanTienHoa(final Char p) {
+        return doGiuSo(p, "chan_tien_hoa") > 0;
+    }
+
+    // ------------------------------------------------------------------ tu dung (moi 2-3 giay, LauDaiJob)
+
+    public static void nhip() {
+        if (!LauDai.bat()) {
+            return;
+        }
+        for (int i = 0; i < CharManager.instance.vChars.size(); i++) {
+            final Char p;
+            try {
+                p = CharManager.instance.vChars.elementAt(i);
+            } catch (final Exception e) {
+                break;
+            }
+            if (p == null || p.isBot != -1 || p.hp <= 0) {
+                continue;
+            }
+            try {
+                final int hoi = doGiuSo(p, "hoi_hp_3s");
+                if (hoi > 0 && p.hp < p.maxhp) {
+                    p.hp = Math.min(p.maxhp, p.hp + Math.max(1, p.maxhp * hoi / 100));
+                }
+                tuDungQua(p);
+            } catch (final Exception ignored) {
+                // vong khac
+            }
+        }
+    }
+
+    /** Qua mong trong tui tu dung khi du dieu kien (moi lan toi da 1 qua). */
+    static void tuDungQua(final Char p) {
+        final TrangThaiPokemon t = TrangThaiGame.lay(p);
+        final long bay = System.currentTimeMillis();
+        final int tt = t != null && t.dangCo(bay) ? t.loai : 0;
+        for (final Entry<Integer, Object[]> e : BANG.entrySet()) {
+            final HashMap<String, String> hu = hieuUng((String) e.getValue()[2]);
+            final String dk = hu.get("tu_dung");
+            if (dk == null) {
+                continue;
+            }
+            final boolean du;
+            if ("hp50".equals(dk)) {
+                du = p.hp * 2 < p.maxhp;
+            } else if ("mp20".equals(dk)) {
+                du = p.mp * 5 < p.maxmp;
+            } else if ("trang_thai".equals(dk)) {
+                du = tt != 0;
+            } else {
+                du = tt != 0 && tt == ttTheoTen(dk);
+            }
+            if (!du) {
+                continue;
+            }
+            final Item it = timItem(p, e.getKey().intValue());
+            if (it != null && p.iItems.remove(it)) {
+                apDung(p, hu);
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+                LauDaiNhanVat.bao(p, "Tự dùng " + it.getTemplate().name + ".");
+                return;
+            }
+        }
+    }
+
+    static int ttTheoTen(final String s) {
+        if ("bong".equals(s)) {
+            return TrangThaiPokemon.BONG;
+        }
+        if ("doc".equals(s)) {
+            return TrangThaiPokemon.DOC;
+        }
+        if ("te".equals(s)) {
+            return TrangThaiPokemon.TE;
+        }
+        if ("ngu".equals(s)) {
+            return TrangThaiPokemon.NGU;
+        }
+        if ("dong_bang".equals(s)) {
+            return TrangThaiPokemon.BANG;
+        }
+        return -1;
+    }
+
+    // ------------------------------------------------------------------ tien ich tui
+
+    public static int demItem(final Char p, final int idTemplate) {
+        int n = 0;
+        synchronized (p.iItems) {
+            for (final Item it : p.iItems) {
+                if (it != null && it.getTemplate() != null && it.getTemplate().id == idTemplate && !it.isSelling) {
+                    n++;
+                }
+            }
+        }
+        return n;
+    }
+
+    static Item timItem(final Char p, final int idTemplate) {
+        synchronized (p.iItems) {
+            for (final Item it : p.iItems) {
+                if (it != null && it.getTemplate() != null && it.getTemplate().id == idTemplate && !it.isSelling) {
+                    return it;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Lay ra {@code n} mon theo template (tat ca hoac khong). @return true neu da lay du. */
+    public static boolean truItem(final Char p, final int idTemplate, final int n) {
+        synchronized (p.iItems) {
+            if (demItem(p, idTemplate) < n) {
+                return false;
+            }
+            int da = 0;
+            for (int i = p.iItems.size() - 1; i >= 0 && da < n; i--) {
+                final Item it = p.iItems.get(i);
+                if (it != null && it.getTemplate() != null && it.getTemplate().id == idTemplate && !it.isSelling) {
+                    p.iItems.remove(i);
+                    if (it.dbid != 0) {
+                        try {
+                            Database.instance.deleteItem(it.dbid);
+                        } catch (final Exception ignored) {
+                        }
+                    }
+                    da++;
+                }
+            }
+            return da == n;
+        }
+    }
+
+    /** id bua bao ho that cho muc +k (0 neu khong co bua nao hop). */
+    public static int buaChoMuc(final int k) {
+        for (final Entry<Integer, Object[]> e : BANG.entrySet()) {
+            if (!"bua".equals(e.getValue()[1])) {
+                continue;
+            }
+            final String b = hieuUng((String) e.getValue()[2]).get("bua");
+            if (b == null || b.indexOf('-') < 0) {
+                continue;
+            }
+            final int tu = Integer.parseInt(b.substring(0, b.indexOf('-')));
+            final int den = Integer.parseInt(b.substring(b.indexOf('-') + 1));
+            if (k >= tu && k <= den) {
+                return e.getKey().intValue();
+            }
+        }
+        return 0;
+    }
+
+    static int capQuai(final Monster m) {
+        return m == null ? 0 : CapDoLauDai.CAP_BANG > 0 ? m.level : 0;
+    }
+}

@@ -24,6 +24,22 @@ sua_type_skin_linh_thu xoa_su_kien_trung_lap"
 # Pokemon: PHAI dung thu tu nay (pokemon_doi_chu cuoi cung).
 POKEMON="them_cot_pokemon them_bang_pokedex pokemon_du_lieu_quai pokemon_doi_ten_vat_pham
 pokemon_doi_ten_thu pokemon_vat_pham_eevee pokemon_icon_vat_pham pokemon_doi_chu"
+# Thiet ke dai han - giai doan 2 (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md): bang so lieu (staging)
+# + bang moi cua game + vo hieu giftcode tt (GD2 1.10). Chay SAU POKEMON.
+# pokemon_nhiem_vu: noi dung nhiem vu (hoi thoai, goi y, nhanh, an) - tools/pokemon/sinh_nhiem_vu.py.
+LAU_DAI="pokemon_lau_dai pokemon_nhiem_vu them_bang_lau_dai vo_hieu_giftcode_tt"
+# Noi dung day du 1-2 nam (docs/pokemon/NOI_DUNG_DAY_DU.md, sinh boi tools/pokemon/sinh_noi_dung.py):
+# bang staging data_noi_dung_* + data_item id 1001..1199. Chay SAU LAU_DAI.
+NOI_DUNG="pokemon_noi_dung"
+# Nap tien (docs/pokemon/NAP_TIEN.md): bang nap_* (don, so cai, vi, cua hang, the thang, ve mua...).
+# Tao bang KHONG bat gi (sv.nap_tien=0, KPAH_NAP_BAT=false mac dinh). Chay SAU NOI_DUNG.
+NAP_TIEN="pokemon_nap_tien"
+# He sinh thai game (docs/pokemon/HE_SINH_THAI.md, sinh boi tools/pokemon/sinh_sql_he_sinh_thai.py):
+# bang the gioi data_hst_* + bang nguoi choi tob_hst_* (khong bat gi: sv.he_sinh_thai=0 mac dinh).
+HE_SINH_THAI="pokemon_he_sinh_thai"
+# GD2b vat pham dung / do giu / bua bao ho (sinh boi tools/pokemon/sinh_vat_pham_lau_dai.py):
+# data_item type 28 id 1201..1260 + data_vat_pham_lau_dai. Chi co tac dung khi sv.lau_dai=1.
+VAT_PHAM_LAU_DAI="pokemon_vat_pham_lau_dai"
 
 $MYSQL -e "DROP DATABASE IF EXISTS account; CREATE DATABASE account CHARACTER SET utf8;
 DROP DATABASE IF EXISTS kpah_db; CREATE DATABASE kpah_db CHARACTER SET utf8;"
@@ -34,6 +50,21 @@ for f in $MIGRATION; do
     $MYSQL -f --default-character-set=utf8 kpah_db < sql/$f.sql 2>&1 | grep -v "ERROR 106[02]" || true
 done
 for f in $POKEMON; do
+    $MYSQL --default-character-set=utf8 kpah_db < sql/$f.sql
+done
+for f in $LAU_DAI; do
+    $MYSQL --default-character-set=utf8 kpah_db < sql/$f.sql
+done
+for f in $NOI_DUNG; do
+    $MYSQL --default-character-set=utf8 kpah_db < sql/$f.sql
+done
+for f in $NAP_TIEN; do
+    $MYSQL --default-character-set=utf8 kpah_db < sql/$f.sql
+done
+for f in $HE_SINH_THAI; do
+    $MYSQL --default-character-set=utf8 kpah_db < sql/$f.sql
+done
+for f in $VAT_PHAM_LAU_DAI; do
     $MYSQL --default-character-set=utf8 kpah_db < sql/$f.sql
 done
 

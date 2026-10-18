@@ -604,7 +604,7 @@ Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 
 | Việc | Ghi chú |
 |---|---|
-| Nhạc và âm thanh (M4) | Client chưa từng phát âm thanh; thêm nhạc CC0 là tính năng mới (chưa làm) |
+| Nhạc và âm thanh (M4) | Bản jar J2ME đã có (2026-10-17): tiếng hiệu ứng Kenney CC0 + nhạc chiptune gốc, xem `GHI_CONG_AM_THANH.md`; Unity/Android chưa |
 | Xem bằng mắt trong Unity | Toàn bộ phần hình (sprite, tile, particle, vật thể, tiêu đề) chưa xem trên Unity thật. `Editor/XayDung.cs` không được `cscheck` biên dịch (cần UnityEditor.dll) |
 | Chữ người dùng chọn | Các câu mới (Pokédex, thưởng mốc, Đội phó, Cố vấn, tên bậc Poké Ball…) theo CODING_CONVENTION §10 cần chủ dự án duyệt |
 | Tên vật phẩm còn chất kiếm hiệp của game gốc nhưng không thuộc từ cấm | vd "Mảnh tứ khoái", "Hộ vệ lân sư tử", "Tóc bờm ngựa" — thêm vào `TU_CAM`/`DOI` rồi chạy lại `sinh_sql_chu.py` |
@@ -685,3 +685,16 @@ javac -encoding UTF-8 -d build/tools tools/pokemon/DoiTileMap.java && java -cp b
 tạo nhánh, chạy trên Linux. Một số có thể chỉ hỏng trên Linux (đường dẫn, encoding); hãy chạy
 `test.bat` trên Windows để có con số gốc. Khi thêm việc mới, không được làm tăng con số này.
 Nhóm `com.htbb.pokemon.*` đạt toàn bộ. Khi thêm việc mới, **không được làm tăng** con số 65 này.
+
+## 17. Giai đoạn 2 thiết kế dài hạn (2026-10-17/18) - trạng thái ngắn
+
+Chi tiết: `KE_HOACH_LAU_DAI_GD2.md` mục "Trạng thái thực hiện". Cờ `sv.lau_dai` (mặc định 0 = như cũ) +
+`sv.ngay_khai_truong`. Bước 0–3 xong, 4–7 bản lõi/tối thiểu; sửa lỗi bước 1 áp cho mọi chế độ; giftcode an toàn,
+quà hoạt động theo tài khoản, chiếm thành tuần (yêu cầu bổ sung). Test: 65 lỗi cũ + 0 lỗi mới (nhóm `KiemLauDaiGd2`).
+Mô phỏng sau khi thêm thưởng mới: 12/12. `sql/htbb_day_du.sql` sinh lại trên MariaDB 10.4 riêng (cổng 3320, đã tắt).
+
+Chạy thật (máy dev, server thứ hai cổng 19149 + login 8034 + NovaDB riêng 3329, `sv.lau_dai=1`, dump mới, đã tắt sau khi đo;
+stack đang chơi 19129/8023/3318 không đụng tới): khởi động sạch (14 bảng mới, bảng EXP 91 cấp, 68 mẫu quái mới, hẹn 29 sự kiện),
+50 bot × 10 phút (10 GM): **50/50 vào, 0 rơi kết nối**, 5 549 đòn, 3 212 quái hạ, RAM 665–711 MB; GM lên cấp 25 có EXP mới
+(~800k), năng lượng ghi đúng (`tob_char_lau_dai.nm`), Pokédex 782 lượt hạ, giây hoạt động theo tài khoản (`tob_qua_online`).
+1 exception cũ (`CharCapNhat.subUpdate` nearMons đổi giữa vòng lặp, không do GĐ2).

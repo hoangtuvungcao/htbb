@@ -190,3 +190,8 @@ __pycache__/
 # Sinh lai bang tools/pokemon/GiaiMaMap.java va VeMapMoi.java
 docs/pokemon/map_cu/
 docs/pokemon/map_moi/kiem/
+
+### Sinh boi server/ChiSoMayChu (san sang production): nhip tim cho vps/kiem-suc-khoe.sh + co bao tri
+/trang_thai.json
+/trang_thai.json.tmp
+/bao_tri.txt

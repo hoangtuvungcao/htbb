@@ -463,6 +463,7 @@ public class SelectCharHandler implements ICommandHandler {
             // Vao game trong 1 gio sau khi bang chiem thanh -> nhan thuong chiem thanh
             try {
                 real.ThuongChiemThanh.kiemTraKhiVaoGame(p);
+                real.ChiemThanhLauDai.kiemTraKhiVaoGame(p); // GD2 (tat co: khong lam gi)
             } catch (final Exception exThuong) {
                 exThuong.printStackTrace();
             }

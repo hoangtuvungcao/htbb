@@ -113,8 +113,13 @@ class CharSuKien {
                     // "bot xanh lam" chi la cach goi tat, khong phai ten vat pham thuc su).
                     // Tbt/exp/diem doi thuong KHONG doi - van cho DEU o ca hai phia nguong
                     // nay (yeu cau nguoi dung 13/09/2026).
+                    if (luongadd[colortieu] > 0 && lvOpen < 65 && com.htbb.pokemon.LauDai.bat()) {
+                        // Bo sung kiem toan A2: bat co sv.lau_dai -> chi luong KHOA, trong ngan
+                        // sach (toi da 10 / lan, nhu nhiem vu ngay - THIET_KE 5.1), khong ra luong mo.
+                        luongadd[colortieu] = Math.min(10 * div, luongadd[colortieu]);
+                    }
                     if (luongadd[colortieu] > 0 && lvOpen < 65) {
-                        final boolean notlock = Map.r.nextInt(1000) < 5;
+                        final boolean notlock = !com.htbb.pokemon.LauDai.bat() && Map.r.nextInt(1000) < 5;
                         if (!notlock) {
                             self.addLuongLock(luongadd[colortieu] / div);
                         } else {

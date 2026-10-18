@@ -144,6 +144,42 @@ sv.linkTaiGame=http://180.93.57.30/
 # Xem docs/cau-hinh-server-ini.md muc 7b, docs/pokemon/KE_HOACH_CHUYEN_DOI.md (Q8).
 sv.che_do_pokemon=1
 
+# ==== THIET KE DAI HAN (giai doan 2) ====
+# 1 = bat: kinh te moi (bo luong roi tu quai, xu roi theo cap, nang luong huan luyen, gia nang
+#     cap theo bac + pity, thue cho 6%+1%, phi theo thu nhap), bang EXP moi + tran cap theo mua
+#     + tinh thong, nhiem vu loc theo cap + ve chuong tuan, cong thuc sat thuong moi, boss theo
+#     pha, goi -95..-99. Can chay sql/pokemon_lau_dai.sql + sql/them_bang_lau_dai.sql truoc.
+# 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
+# Xem docs/cau-hinh-server-ini.md muc 7c, docs/pokemon/KE_HOACH_LAU_DAI_GD2.md.
+sv.lau_dai=0
+# Bat/tat TU DONG: khoi dong lai la server tu chuyen EXP nhan vat sang bang dung voi co (ca chieu tat).
+# Ngay khai truong (yyyy-MM-dd, khong bat buoc): ngay 0 cua tran cap theo mua (60 -> 70 -> 80 -> 91).
+# De trong = lan bat dau tien tu ghi hom nay vao cau_hinh lau_dai.ngay_khai_truong va dung lai.
+sv.ngay_khai_truong=
+
+# Gio bao tri tu dong hang ngay: HH:MM (vd 04:45), "tat" = khong tu tat may, de trong = ngau nhien
+# 4:30-5:30 nhu cu. Server tu thoat luc bao tri; vps/kpah-game.service (Restart=always) bat lai.
+sv.gioBaoTri=
+
+# ==== NAP TIEN (docs/pokemon/NAP_TIEN.md) ====
+# 1 = bat: cong luong / the thang / ve mua tu don nap da thanh toan tren web (bang nap_*),
+#     menu "Cửa hàng & Nạp" o NPC Tong Quan (cua hang trang tri + tien ich, tu do, cho trang
+#     tri co thue), tieu luong = dot (khong doi ra xu/diem VIP/ve su kien), chan chuyen luong
+#     truc tiep, bo he so TileNap. CHI BAT KHI sv.lau_dai=1 (fail closed). Can chay
+#     sql/pokemon_nap_tien.sql truoc, va web dat KPAH_NAP_BAT=true.
+# CHI BAT SAU KHI CO GIAY PHEP hinh anh / IP (xem docs/pokemon/NAP_TIEN.md muc 9).
+# 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
+sv.nap_tien=0
+
+# ==== HE SINH THAI GAME (docs/pokemon/HE_SINH_THAI.md) ====
+# 1 = bat: thoi tiet theo vung + ngay/dem + mua doi loai quai khi hoi sinh (khong doi so luong /
+#     vi tri), bung phat, quai hiem; cau ca, khao co, vuon berry, nau an / che thuoc; nha tre + trung;
+#     cho sinh thai + don dat hang; do vui, dua Pokemon; album, nghien cuu, hoan thanh vung.
+#     Menu: muc "He sinh thai" o NPC doi thuong (-90) hoac go "hst" trong chat.
+#     Can chay sql/pokemon_he_sinh_thai.sql truoc (bang tob_hst_* server tu tao neu thieu).
+# 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
+sv.he_sinh_thai=0
+
 # ==== TEST FLAGS ====
 sv.testMode=0
 sv.testCode=
@@ -154,6 +190,20 @@ sv.adminAccounts=admin,admin2,chienthan
 # nhan vat, roi dat lai =0. Nho commit lai =0, khong thi deploy sau van mo.
 sv.choPhepTaoTenGM=0
 sv.reloginWaitSec=0
+
+# ==== SAN SANG PRODUCTION (docs/pokemon/SAN_SANG_PRODUCTION.md) ====
+# sv.gmCanCoPInfo=1: quyen GM can CA ten nhan vat trong sv.adminAccounts LAN pInfo[16]=1 trong
+#   tob_char (0 = chi can ten, nhu cu). Bat sau khi da dat pInfo[16]=1 cho nhan vat GM that.
+sv.gmCanCoPInfo=0
+# sv.banToiThieu=N: tu choi jar/APK co so ban build < N (truong int cuoi goi dang nhap). PC Unity
+#   khong gui so ban nen luon qua. 0 = tat. Dung de ep cap nhat khi ban cu co loi nghiem trong.
+#   So ban = BAN= trong htbb-client/phat-hanh/phien_ban.conf (major*10000 + minor*100 + patch; jar
+#   MANIFEST HTBB-Ban, Android versionCode, PC bundleVersion). Open test 0.9.0-opentest = 900: dat
+#   sv.banToiThieu=900 khi mo cua de chan moi jar/APK thu/dev cu (v54, v98, v99...).
+sv.banToiThieu=0
+# sv.chiSoMayChu=1: ghi bang tob_chi_so_may_chu + trang_thai.json moi 30s (vps/kiem-suc-khoe.sh doc)
+#   va bat che do bao tri bang tep bao_tri.txt canh server.ini. 0 = tat ca hai.
+sv.chiSoMayChu=1
 
 # ==== CHONG DoS ====
 # socketTimeout=0 va connRateWindow=0 nghia la TAT han hai lop bao ve do.

@@ -339,6 +339,9 @@ class CharNapDuLieu {
                 }
             } catch (final Exception ex2) {
             }
+            // GD2: nap ho so dai han + chuyen nhiem vu chinh sang chuoi moi (tat co: khong lam gi).
+            LauDaiNhanVat.khiNap(self);
+            NhiemVuLauDaiGame.khiNapTatCo(self); // tat co sau khi da bat: tra nhiem vu chinh ve cho cu
             self.itemget = "";
             self.monskilled = "";
             self.finish = "";
@@ -406,7 +409,11 @@ class CharNapDuLieu {
             }
             // TEST: cấp quyền admin cho các tài khoản cấu hình trong sv.adminAccounts
             if (TeamServer.adminAccounts.contains(self.charname.toLowerCase())) {
-                self.isAdmin = true;
+                // SAN SANG PRODUCTION: sv.gmCanCoPInfo=1 -> KHONG cap theo ten nua, giu ket qua
+                // tinh tu pInfo[16]=1 VA ten trong danh sach (o tren). 0 = nhu cu (chi can ten).
+                if (!TeamServer.gmCanCoPInfo) {
+                    self.isAdmin = true;
+                }
             }
             // todo sửa map player ở đây
             if (self.lvDetail.lv > 1 && (self.mapID == -1 || self.mapID == 105 || (self.mapID >= 30 && self.mapID <= 39))) {

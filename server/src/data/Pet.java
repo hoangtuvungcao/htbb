@@ -66,7 +66,7 @@ public class Pet extends Actor {
     // co san entry [5]=7% cho tang nay (pet o tier 5 la tier co that, dat duoc binh
     // thuong) nhung MATERIAL_UPDGRADE thieu hang tuong ung nen doUpdrage() nem
     // ArrayIndexOutOfBoundsException ngay dong dau tien khi mot pet da o tier 5 bam nang cap.
-    static int[] MATERIAL_UPDGRADE = new int[]{0, 2, 5, 8, 11};
+    static int[] MATERIAL_UPDGRADE = new int[]{0, 2, 5, 8, 11, 14}; // GD2 1.3: them [5]=14
     static int[] PC_UPDGRADE_OK = new int[]{0, 90, 45, 20, 15, 7};
     byte phamchat = -1;
     byte maxSkill = 0;

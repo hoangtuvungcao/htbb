@@ -91,6 +91,14 @@ class MapChat {
                     SkinLinhThu.thaoSkin(player);
                     return;
                 }
+                // he sinh thai: tra loi "Ai la Pokemon?", lenh tat "hst"/"cauca"/"dao"/"dua". Tat co: false.
+                if (com.htbb.pokemon.HeSinhThaiGame.khiChat(player, msgChat)) {
+                    return;
+                }
+                // GD2b: dap an cau do nhiem vu - dung thi hoan thanh va KHONG phat len kenh.
+                if (NhiemVuEngine.khiChat(player, msgChat)) {
+                    return;
+                }
 
                 // Nguoi choi thuong chi chat, khong di qua chuoi lenh ben duoi.
                 // Ly do: rat nhieu lenh cu trong chuoi nay khong kiem tra quyen admin

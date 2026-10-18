@@ -79,6 +79,18 @@ public final class BaiLuyenCong {
     private BaiLuyenCong() {
     }
 
+    /**
+     * GD2 2.8: khi bat co sv.lau_dai, gia dich chuyen = 3% thu nhap 1 gio o cap nguoi dung
+     * (KinhTeLauDai.phiDichChuyen) thay bang gia co dinh. Dung chung cho xa phu (Map),
+     * bai luyen cong va auto ve map up.
+     */
+    public static long giaDichChuyen(final Char p, final long giaCu) {
+        if (!com.htbb.pokemon.LauDai.bat() || p == null || p.lvDetail == null) {
+            return giaCu;
+        }
+        return com.htbb.pokemon.KinhTeLauDai.phiDichChuyen(p.lvDetail.lv);
+    }
+
     public static String[] danhSachTen() {
         final String[] ten = new String[DANH_SACH.length];
         for (int i = 0; i < DANH_SACH.length; i++) {
@@ -124,9 +136,10 @@ public final class BaiLuyenCong {
 
         // Vip (hang 3) mien phi hoan toan, cac hang con lai (0/1/2) tra dung bang gia.
         if (player.vip < 3) {
-            if (!player.truXuNeuDu(bai.giaXu, false, "bai luyen cong " + bai.ten)) {
+            final long gia = giaDichChuyen(player, bai.giaXu);
+            if (!player.truXuNeuDu(gia, false, "bai luyen cong " + bai.ten)) {
                 player.sendMessage(MessageCreator.createServerAlertMessage(
-                        "Không đủ " + bai.giaXu + " xu để bay đến " + bai.ten + ".", ""));
+                        "Không đủ " + gia + " xu để bay đến " + bai.ten + ".", ""));
                 return;
             }
         }

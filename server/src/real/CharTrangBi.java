@@ -114,7 +114,7 @@ class CharTrangBi {
                             dam.add(d);
                             if (cat == 1)
                             {
-                                totalxp += actor.getXpReceive(d);
+                                totalxp += ExpLauDai.lechCapMot(actor.getXpReceive(d), self, actor);
                                 final Monster ms = (Monster) actor;
                                 if (ms.target == null) {
                                     ms.target = self;
@@ -193,7 +193,7 @@ class CharTrangBi {
                             dam.add(d);
                             if (cat == 1) 
                             {
-                                totalxp += actor.getXpReceive(d);
+                                totalxp += ExpLauDai.lechCapMot(actor.getXpReceive(d), self, actor);
                                 final Monster ms = (Monster) actor;
                                 if (ms.target == null) 
                                 {
@@ -237,7 +237,7 @@ class CharTrangBi {
                             }
                             dam.add(d);
                             if (cat == 1) {
-                                totalxp += actor.getXpReceive(d);
+                                totalxp += ExpLauDai.lechCapMot(actor.getXpReceive(d), self, actor);
                                 final Monster ms = (Monster) actor;
                                 if (ms.target == null) {
                                     ms.target = self;
@@ -295,7 +295,7 @@ class CharTrangBi {
                             d += d * self.getUpDamBangSetDocLuaLan(3) / 100;
                             dam.add(d);
                             if (cat == 1) {
-                                totalxp += actor.getXpReceive(d);
+                                totalxp += ExpLauDai.lechCapMot(actor.getXpReceive(d), self, actor);
                                 final Monster ms = (Monster) actor;
                                 if (ms.target == null) {
                                     ms.target = self;
@@ -366,12 +366,14 @@ class CharTrangBi {
         // 3 diem (2 nhanh party + 1 nhanh khong chia party) de dong bo voi moi luong exp khac.
         if (totalxp > 0) {
             try {
+                // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    ExpLauDai.traoHaQuai(self, null, totalxp, "CharTrangBi:369");
+                } else {
                 final int newxp = Map.calculatorXpParty(self, totalxp);
                 if (newxp != totalxp) {
                     int nUser = self.party.userParty.size();
-                    if (nUser > 1) {
-                        nUser = 5;
-                    }
+                    // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                     int xpReceive = newxp * 80 / (100 * nUser);
                     final int maxLv = self.lvDetail.lv;
@@ -414,6 +416,7 @@ class CharTrangBi {
                     totalxp = Monster.apDungGiamExpTheoCapNV(totalxp, self);
                     totalxp = self.expReceive(totalxp);
                     Map.addXPForChar(self, totalxp + self.getEffSkillClan(0) * totalxp / 100, false, "char checkNewEffectItem3");
+                }
                 }
             } catch (final Exception ex3) {
             }

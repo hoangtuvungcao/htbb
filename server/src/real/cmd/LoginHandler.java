@@ -243,6 +243,12 @@ public class LoginHandler implements ICommandHandler {
         if (uname.length() < 4 || uname.length() > 20 || !this.checkinfo(uname)) {
             return;
         }
+        // Che do bao tri bang tep bao_tri.txt (server/ChiSoMayChu) - nguoi dang choi khong bi da.
+        if (server.ChiSoMayChu.chanDangNhap(uname)) {
+            session.sendMessage(MessageCreator.createServerAlertMessage(server.ChiSoMayChu.cauBaoTri(), ""));
+            message.cleanup();
+            return;
+        }
         String platf = "";
         try {
             platf = dis.readUTF();
@@ -271,6 +277,21 @@ public class LoginHandler implements ICommandHandler {
             session.IMEI = data.CamTheoMay.lamSach(dis.readUTF());
         } catch (final Exception ex3) {
         }
+        // SAN SANG PRODUCTION (17/10/2026): so ban client (jar/Android gui them writeInt(PhienBan.BAN)
+        // sau ma may - shared/mod AutoGuard). PC Unity khong gui -> -1, luon cho qua.
+        int banClient = -1;
+        try {
+            if (dis.available() >= 4) {
+                banClient = dis.readInt();
+            }
+        } catch (final Exception exBan) {
+        }
+        if (TeamServer.banToiThieu > 0 && banClient >= 0 && banClient < TeamServer.banToiThieu) {
+            System.out.println("[CLIENT] tu choi ban cu " + banClient + " < " + TeamServer.banToiThieu + " user=" + uname);
+            session.sendMessage(MessageCreator.createServerAlertMessage(
+                    "Phiên bản game đã cũ (" + banClient + "). Vui lòng tải bản mới tại " + TeamServer.linkTaiGame, ""));
+            return;
+        }
         if (!Map.openLog && TeamServer.server != 1) {
             session.idServer = 0;
         }
@@ -281,7 +302,7 @@ public class LoginHandler implements ICommandHandler {
         // - can khi soi loi hien thi ma khong the tai hien (05/09/2026: nhay man hinh chi xay ra
         // voi client nem loi khi ve vung ngoai bien anh, tuc J2ME; Unity thi khong).
         System.out.println("[CLIENT] " + uname + " ip=" + session.ip + " platf=" + platf
-                + " version=" + version + " agent=" + agent + " firmware=" + firmware
+                + " version=" + version + " ban=" + banClient + " agent=" + agent + " firmware=" + firmware
                 + " w=" + session.w + " vsTile=" + session.vsTile);
         uname = uname.replace('\'', ' ');
         pwd = pwd.replace('\'', ' ');

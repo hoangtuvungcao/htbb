@@ -87,7 +87,27 @@ public final class KiemIconPokemon {
             // CSDL day du sau migration.
             final String db = doc("sql/htbb_day_du.sql");
             final List<List<String>> item = hang(db, "data_item");
-            Kiem.bang("htbb_day_du co 924 data_item", Integer.valueOf(924), Integer.valueOf(item.size()));
+            // Dai id 1001..1199 = noi dung moi (tools/pokemon/sinh_noi_dung.py -> sql/pokemon_noi_dung.sql,
+            // xem test/KiemNoiDung): 0 dong (dump sinh truoc khi gom) hoac du so dong cua noi_dung_item_moi.csv.
+            int goc = 0;
+            int noiDung = 0;
+            for (final List<String> r : item) {
+                final int id = Integer.parseInt(r.get(0));
+                if (id >= 1001 && id <= 1199) {
+                    noiDung++;
+                } else if (id >= 1201 && id <= 1260) {
+                    // Dai 1201..1260 = vat pham dung lau dai (tools/pokemon/sinh_vat_pham_lau_dai.py ->
+                    // sql/pokemon_vat_pham_lau_dai.sql), khong tinh vao bang goc.
+                    continue;
+                } else {
+                    goc++;
+                }
+            }
+            Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1260)", Integer.valueOf(924), Integer.valueOf(goc));
+            final int soNoiDung = Files.readAllLines(new File("docs/pokemon/noi_dung_item_moi.csv").toPath(),
+                    StandardCharsets.UTF_8).size() - 1;
+            Kiem.dung("dai noi dung 1001..1199 trong dump: 0 hoac du " + soNoiDung + " dong (co " + noiDung + ")",
+                    noiDung == 0 || noiDung == soNoiDung);
             final List<String> loiItem = new ArrayList<String>();
             for (final List<String> r : item) {
                 final int xstart = Integer.parseInt(r.get(20));

@@ -89,6 +89,15 @@ class CharChiSo {
             self.maxhp += self.wModel.getHp();
             self.maxmp += self.wModel.getMp();
         }
+        // GD2 3.5: tinh thong (loai 1 = HP) +0,2%/diem, toi da +10%. Tat co = 0.
+        if (com.htbb.pokemon.LauDai.bat()) {
+            self.maxhp += (int) ((long) self.maxhp * LauDaiNhanVat.tinhThongPhanNghin(self, 1) / 1000L);
+        }
+        // He sinh thai (tat sv.he_sinh_thai: 0): hoan thanh vung +0,5%/vung (tran 3%) + IV pet (<= 1%).
+        final int stHp = com.htbb.pokemon.ChiSoSinhThai.vungPhanNghin(self) + com.htbb.pokemon.ChiSoSinhThai.ivPetPhanNghin(self, 0);
+        if (stHp > 0) {
+            self.maxhp += (int) ((long) self.maxhp * stHp / 1000L);
+        }
         
 
 
@@ -511,6 +520,12 @@ class CharChiSo {
         if (self.wModel != null) {
             self.defend_magic += self.defend_magic * (self.wModel.getDefend() + upfullset + defPet) / 100;
             self.defend_physic += self.defend_physic * (self.wModel.getDefend() + upfullset + defPet) / 100;
+            // He sinh thai: IV thu cua pet dang mang (<= 1%, tat sv.he_sinh_thai: 0).
+            final int ivThu = com.htbb.pokemon.ChiSoSinhThai.ivPetPhanNghin(self, 2);
+            if (ivThu > 0) {
+                self.defend_physic += self.defend_physic * ivThu / 1000;
+                self.defend_magic += self.defend_magic * ivThu / 1000;
+            }
             upvP += self.wModel.getDefend() + upfullset + defPet;
             upmP += self.wModel.getDefend() + upfullset + defPet;
             self.baokich += (short) self.wModel.getbaoKich();
@@ -588,7 +603,7 @@ class CharChiSo {
                 return 0;
             }
             if (actor.isBossGetItemByHit()) {
-                if (actor.isBossSonTinh() && !self.wModel.isThuyTinh()) {
+                if (actor.isBossSonTinh() && (self.wModel == null || !self.wModel.isThuyTinh())) {
                     return 0;
                 }
                 if (idSkill > 0) {
@@ -596,7 +611,7 @@ class CharChiSo {
                 }
             }
             if (actor.isBossThuyTinh()) {
-                if (!self.wModel.isSonTinh()) {
+                if (self.wModel == null || !self.wModel.isSonTinh()) { // GD2 1.8: wModel null
                     return 0;
                 }
                 if (idSkill > 0) {
@@ -663,7 +678,7 @@ class CharChiSo {
                         if (((Char) actor).isBatTu()) {
                             return 0;
                         }
-                        if (self.wModel.wpModel != null) {
+                        if (self.wModel != null && self.wModel.wpModel != null) { // GD2 1.8
                             int pcngtuyet = self.wModel.getPCNgtuyet();
                             if (self.isAdmin && Map.adminTest) {
                                 pcngtuyet = 100;
@@ -750,7 +765,9 @@ class CharChiSo {
                     // Che do Pokemon (G7.D2): danh trung quai -> Pokedex "da gap" (tat co: khong lam gi).
                     PokedexPokemon.khiDanh(self, actor);
                     if (!self.map.isMapChienTruongMoba() || (self.map.isMapChienTruongMoba() && !actor.isCharMonster())) {
-                        if (CheDoPokemon.bat()) {
+                        if (CheDoPokemon.bat() && com.htbb.pokemon.LauDai.bat()) {
+                            // GD2 6.1: he AP SAU khi tru thu (xem SatThuongLauDai o duoi), khong o day.
+                        } else if (CheDoPokemon.bat()) {
                             // Che do Pokemon: khac he 18 he thay ngu hanh. G7.D1: he tan cong =
                             // he cua CHIEU idSkill (docs/pokemon/bang_chieu.csv) + STAB x1.2;
                             // skill ngoai bang -> he 1 cua nguoi danh, khong STAB (nhu S4).
@@ -772,7 +789,8 @@ class CharChiSo {
                         att *= 2;
                     }
                     def += def * actor.getValueLua(1) / 100;
-                    att += self.getValueLua(2) * att / 100;
+                    // GD2 1.7: KHONG cong getValueLua(2) lan nua - att = self.getAttack() da cong
+                    // (Char.getAttack). Ban cu cong hai lan.
                     if (self.checkSuyYeu()) {
                         final EffectBuff ef = self.hashEffBuff.get(EffectBuff.SUY_YEU);
                         att -= att * ef.dam / 100;
@@ -812,6 +830,23 @@ class CharChiSo {
                         dam = 5 + Map.r.nextInt(10);
                     }
                     dam = dam * 110 / 100 + Map.r.nextInt() % 10;
+                    self.lauDaiCo = 0;
+                    self.lauDaiHe = -1;
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        // GD2 6.1: co ban = max(5% atk, atk - def); he + STAB SAU thu; dao 95..105%.
+                        // Chi mang x1,5 do noi goi ap (Region...). Ghi co/he cho goi -95.
+                        final int heC = CheDoPokemon.bat() ? com.htbb.pokemon.ChieuPokemon.heChieu(self.charClass, idSkill) : -1;
+                        final int heDung = heC >= 0 ? heC : (CheDoPokemon.bat() ? self.hePokemon1() : -1);
+                        final int[] kqLd = com.htbb.pokemon.SatThuongLauDai.tinh(att, def, 100, heDung,
+                                self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(), 0, false,
+                                95 + Map.r.nextInt(11));
+                        dam = kqLd[0];
+                        if (idSkill == 0) {
+                            dam += dam * VatPhamDungLauDai.donThuong(self) / 100; // Dai luc si
+                        }
+                        self.lauDaiCo = kqLd[1];
+                        self.lauDaiHe = heDung;
+                    }
                     if (bubbAttack > -1 && !actor.isTruMoba() && (self.charClass == 0 || bubbAttack == 1)) {
                         dam = att;
                     }
@@ -827,6 +862,8 @@ class CharChiSo {
                         skillDamPercent = skillDamPercent * c2.getNoiLuc() / 10;
                     }
                     finalDame = finalDame * skillDamPercent / 100;
+                    // he sinh thai: thoi tiet cua vung (mua: Nuoc +10%, Lua -10%...). Tat co: tra nguyen.
+                    finalDame = com.htbb.pokemon.HeSinhThaiGame.satThuongThoiTiet(self, idSkill, finalDame);
                     if (idSkill >= 3 && self.wModel != null) {
                         if (self.wModel.haveDameAnhSang() && Map.r.nextInt(100) < 20 && !actor.haveDamAnhsang()) {
                             finalDame += Map.r.nextInt(5000) + 5001;

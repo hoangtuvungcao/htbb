@@ -240,6 +240,12 @@ def main():
         w.writerow(["id_quai", "ten_cu", "cap", "maxhp", "phan_loai", "dex", "ten_pokemon",
                     "shiny", "he1", "he2", "pmd_sprite(2=du,1=co)", "ghi_chu"])
         w.writerows(dong)
+        # Quai nam 2 (id 139+) do tools/pokemon/sinh_noi_dung.py them (data_monster nam trong
+        # sql/pokemon_noi_dung.sql): noi lai nguyen van de chay lai script nay khong lam mat.
+        them = os.path.join(GOC, "docs", "pokemon", "noi_dung_quai_moi_bang.csv")
+        if os.path.exists(them):
+            with open(them, encoding="utf8", newline="") as g:
+                w.writerows(list(csv.reader(g))[1:])
     with open(RA_SQL, "w", encoding="utf8", newline="\n") as f:
         f.write("-- SINH TU tools/pokemon/sinh_bang_quai.py - KHONG SUA TAY.\n")
         f.write("-- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.htbb.pokemon.HePokemon).\n")

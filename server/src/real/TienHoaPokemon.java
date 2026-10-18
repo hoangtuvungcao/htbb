@@ -68,6 +68,9 @@ public final class TienHoaPokemon {
         if (!CheDoPokemon.bat() || p == null || p.pokeDex <= 0 || p.lvDetail == null) {
             return false;
         }
+        if (VatPhamDungLauDai.chanTienHoa(p)) {
+            return false; // GD2b: Da vinh cuu (do giu) chan tien hoa
+        }
         final int moi = LoaiPokemon.dangTheoCap(p.pokeDex, p.lvDetail.lv);
         if (moi == LoaiPokemon.KHONG || moi == p.pokeDex) {
             return false;

@@ -3,7 +3,9 @@
 #     cp /opt/kpah/vps/loginServer.server.ini.example /opt/kpah/loginServer/server.ini
 #     nano /opt/kpah/loginServer/server.ini
 #     chown kpah:kpah /opt/kpah/loginServer/server.ini && chmod 640 /opt/kpah/loginServer/server.ini
-db.url=jdbc:mysql://localhost:3306/account
+# characterEncoding=UTF-8: Connector/J trong jar rat cu, gap may chu mac dinh utf8mb4_unicode_ci
+# (index 224) se nem "Unknown initial character set index" va KHONG ai dang nhap duoc.
+db.url=jdbc:mysql://localhost:3306/account?characterEncoding=UTF-8
 db.user=kpah
 db.password=DOI_MAT_KHAU_DB
 port=8023

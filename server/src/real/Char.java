@@ -103,6 +103,9 @@ public class Char extends LiveActor {
     public int khoLuongKhoa;
     long xu;
     public long xutim;
+    /** GD2 6.5: co / he cua don vua tinh trong CharChiSo.attackDam (cho goi -95). Khong luu CSDL. */
+    public int lauDaiCo;
+    public int lauDaiHe = -1;
     public long xumat;
     public long xuxai;
     public long luongxai;
@@ -3644,7 +3647,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean havecrit() {
-        return Map.r.nextInt(300) < this.critical + this.getEffSkillClan(1) * this.critical / 100;
+        return Map.r.nextInt(300) < this.critical + this.getEffSkillClan(1) * this.critical / 100
+                + VatPhamDungLauDai.congChiMang(this); // GD2b: X chi mang / Kinh ngam (tat co: 0)
     }
 
     @Override
@@ -3653,7 +3657,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public int getBuffEffAttack() {
-        final Random r = new Random(System.currentTimeMillis());
+        final Random r = java.util.concurrent.ThreadLocalRandom.current(); // GD2 1.1: khong reseed theo ms
         switch (this.charClass) {
             case 0: {
                 if (this.attNguHanh[3] > 0 && r.nextInt(100) < this.attNguHanh[3]) {
@@ -3759,6 +3763,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // Mat na Ong Dia (id 872): +10% sat thuong khi dang mac, luon luon
         if (this.wModel != null && this.wModel.isMatNaOngDia()) {
             att += att * 10 / 100;
+        }
+        // GD2 3.5: tinh thong (loai 0 = tan cong) +0,2%/diem, toi da +10%. Tat co = 0.
+        if (com.htbb.pokemon.LauDai.bat()) {
+            att += (int) ((long) att * LauDaiNhanVat.tinhThongPhanNghin(this, 0) / 1000L);
+            att += (int) ((long) att * VatPhamDungLauDai.congTanCong(this) / 100L); // X Tan cong
+        }
+        // He sinh thai (tat sv.he_sinh_thai: 0): hoan thanh vung (tran 3%) + IV cong cua pet (<= 1%).
+        final int stAtt = com.htbb.pokemon.ChiSoSinhThai.vungPhanNghin(this) + com.htbb.pokemon.ChiSoSinhThai.ivPetPhanNghin(this, 1);
+        if (stAtt > 0) {
+            att += (int) ((long) att * stAtt / 1000L);
         }
         return att;
     }
@@ -4214,6 +4228,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         } else {
             total = pArmo + pWeapone;
         }
+        // GD2 2.8: khi bat co sv.lau_dai, giu cong thuc price/10 nhung chan tren boi 8% thu nhap
+        // 1 gio x so mon dang mac (KinhTeLauDai.phiSuaDo) - "price" cu cua do cao cap qua lon.
+        if (com.htbb.pokemon.LauDai.bat() && this.lvDetail != null) {
+            total = (int) com.htbb.pokemon.KinhTeLauDai.phiSuaDo(total, this.lvDetail.lv, wItems.size());
+        }
         return total;
     }
 
@@ -4430,7 +4449,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * tat ca cac diem tinh chi mang, de mot cho sua la ap dung toan bo.
      */
     public int tkNhanChiMang(final int damage, final int heSo) {
-        long d = (long) damage * heSo;
+        // GD2 6.1: bat co sv.lau_dai -> chi mang x1,5 (bo x2 / bao kich x4). Dung chung moi ban
+        // sao danh (MapTown, MapClan, MapLienDau, MapDanhNhau, RegionVantienTran...).
+        long d = com.htbb.pokemon.LauDai.bat()
+                ? (long) damage * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L
+                : (long) damage * heSo;
+        if (com.htbb.pokemon.LauDai.bat()) {
+            this.lauDaiCo |= com.htbb.pokemon.SatThuongLauDai.CO_CHI_MANG;
+        }
         final int tk = getTkStChiMang();
         if (tk > 0) {
             d += d * tk / 1000L;
@@ -5123,7 +5149,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public static int getIndexRandomXoso(final int... num) {
         try {
-            final Random r = new Random(System.currentTimeMillis());
+            final Random r = java.util.concurrent.ThreadLocalRandom.current(); // GD2 1.1: khong reseed theo ms
             // Cong don bang long: 20 nguoi x 1 ty da vuot tran int
             long max = 0L;
             for (int i = 0; i < num.length; ++i) {
@@ -9155,7 +9181,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
             for (int i = 0; i < this.seedsItem.size(); ++i) {
                 final SeedItem s = this.seedsItem.get(i);
                 if (s.idFarm == idFarm) {
-                    return s.doHavest(this);
+                    // he sinh thai: thu hoach vuon -> berry vao tui sinh thai (tat co: khong lam gi).
+                    final int cayTruoc = s.idTemplate;
+                    final int hangTruoc = s.rankTree;
+                    final String kq = s.doHavest(this);
+                    com.htbb.pokemon.HeSinhThaiGame.khiThuHoach(this, cayTruoc, hangTruoc, kq);
+                    return kq;
                 }
             }
         }
@@ -12270,6 +12301,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public Vector<NewCharQuest> getAllQuestCanReceive() {
+        // GD2 4.2: bat co sv.lau_dai -> loc phu theo cap, toi da 20, tong <= 127 (goi 1 byte).
+        if (com.htbb.pokemon.LauDai.bat()) {
+            return NhiemVuLauDaiGame.locDanhSach(this);
+        }
         final Vector<NewCharQuest> allquest = new Vector<NewCharQuest>();
         if (this.mainQuest.state_quest == NewCharQuest.UN_RECEIVE) {
             allquest.add(this.mainQuest);
@@ -12437,6 +12472,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     if (info.pAvtive > this.pointActiveQuest) 
                     {
                         this.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần " + info.pAvtive + " điểm hoạt động mới có thể nhận nhiệm vụ này. Bạn còn " + this.pointActiveQuest + " điểm.", ""));
+                        return;
+                    }
+                    // GD2 4.1 (sau kiem diem hoat dong, ve chi tru khi chac nhan): cap toi thieu, ngay mo chuong, ve chuong tuan (tat co: null).
+                    final String chanLauDai = NhiemVuLauDaiGame.kiemNhanChinh(this, info);
+                    if (chanLauDai != null) {
+                        this.sendMessage(MessageCreator.createServerAlertMessage(chanLauDai, ""));
                         return;
                     }
                     this.pointActiveQuest -= info.pAvtive; // trừ điểm hoạt động
@@ -14761,6 +14802,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (thieu) {
             Database.instance.saveOrtherLog("", this.charname, "tru " + l + " luong khi khong du", "truthieu");
         }
+        // nap tien: moi luong tieu la ho hut (dot) - KHONG doi ra diem xai VIP / xu / ve su kien
+        // (docs/pokemon/NAP_TIEN.md muc 2). Tat co: y nhu cu.
+        if (com.htbb.pokemon.NapTien.bat()) {
+            com.htbb.pokemon.NapTien.ghiTieu(l);
+            return;
+        }
         this.diemxaiVip = congChan(this.diemxaiVip, (int) Math.min(l, (long) Integer.MAX_VALUE));
         // Database.instance.addCharXaiNapLuong(this, 1);
         isSuKienNoel();
@@ -14786,7 +14833,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.luongxainhanRuong += l;
             Database.instance.addCharEvent(this, 2, 0, (int) l);
 
-            final long a = this.luongxai / 100L;
+            final long a = com.htbb.pokemon.LauDai.bat() ? 0L : this.luongxai / 100L; // GD2 2.11: bo hoan xu khi tieu luong
             if (a > 0L) {
                 final int x = 300000;
                 this.addXu(a * x, "char 11");
@@ -14851,12 +14898,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.luong = truChan(this.luong, l);
             this.luonglost += l;
         }
+        // nap tien: tieu luong = dot, khong doi ra xu / ve su kien (nhu subLuong).
+        if (com.htbb.pokemon.NapTien.bat()) {
+            com.htbb.pokemon.NapTien.ghiTieu(l);
+            return;
+        }
         isSuKienNoel();
         if (((TeamServer.isServerHoaLu() || TeamServer.isServerLocal()) && isSuKienGioTo2016()) || isSuKienMini()) {
             this.luongxai += l;
             this.luongxainhanRuong += l;
             Database.instance.addCharEvent(this, 2, 0, (int) l);
-            final long a = this.luongxai / 100L;
+            final long a = com.htbb.pokemon.LauDai.bat() ? 0L : this.luongxai / 100L; // GD2 2.11: bo hoan xu khi tieu luong
             if (a > 0L) {
                 final int x = 300000;
                 this.addXu(a * x, "char 11");

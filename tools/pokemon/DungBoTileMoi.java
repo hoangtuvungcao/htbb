@@ -28,7 +28,7 @@ import javax.imageio.ImageIO;
  *
  * Ra (cung ten tep/so luong toi da nhu bo cu de client khong phai doi):
  *   map/pokemon_tile/{t,t_hang,t_thanh}.png + {t_small,t_hang_s,t_thanh_s}.png   (server gui t_hang/t_thanh)
- *   ClientUnity/Assets/Resources/poke_tile/*.bytes                                 (Unity + goi J2ME res/pt)
+ *   <client>/Assets/Resources/poke_tile/*.bytes                                   (Unity + goi J2ME res/pt)
  *   cMap_pokemon/{t,t_hang,t_thanh}.type, Resources/poke_map/kieu_*.bytes, tools/pokemon/map_j2me/*.type
  *   docs/pokemon/bang_tile_moi.csv (ten tung tile - VeMapMoi tra theo ten), docs/pokemon/xem_truoc_tile_moi.png
  * Gioi han: so tile &lt;= mang mau ban do nho cua client (t 232, t_hang 116, t_thanh 216); PNG
@@ -662,8 +662,6 @@ public final class DungBoTileMoi {
         final Bo[] bo = {boNgoai("t"), boHang(), boThanh()};
         final String[] nho = {"t_small", "t_hang_s", "t_thanh_s"};
         new File("map/pokemon_tile").mkdirs();
-        new File("ClientUnity/Assets/Resources/poke_tile").mkdirs();
-        new File("ClientUnity/Assets/Resources/poke_map").mkdirs();
         new File("cMap_pokemon").mkdirs();
         new File("tools/pokemon/map_j2me").mkdirs();
         final StringBuilder csv = new StringBuilder("bo_tile,chi_so,ten,kieu,nguon\n");
@@ -700,10 +698,10 @@ public final class DungBoTileMoi {
             }
             Files.write(new File("map/pokemon_tile/" + b.ten + ".png").toPath(), png);
             Files.write(new File("map/pokemon_tile/" + nho[i] + ".png").toPath(), pngNho);
-            Files.write(new File("ClientUnity/Assets/Resources/poke_tile/" + b.ten + ".bytes").toPath(), png);
-            Files.write(new File("ClientUnity/Assets/Resources/poke_tile/" + nho[i] + ".bytes").toPath(), pngNho);
+            ghiClient("poke_tile", b.ten + ".bytes", png);
+            ghiClient("poke_tile", nho[i] + ".bytes", pngNho);
             Files.write(new File("cMap_pokemon/" + b.ten + ".type").toPath(), kieu);
-            Files.write(new File("ClientUnity/Assets/Resources/poke_map/kieu_" + b.ten + ".bytes").toPath(), kieu);
+            ghiClient("poke_map", "kieu_" + b.ten + ".bytes", kieu);
             Files.write(new File("tools/pokemon/map_j2me/" + b.ten + ".type").toPath(), kieu);
             xem.put(b.ten, dai);
             System.out.println(b.ten + ": " + b.anh.size() + " tile, png " + png.length + " byte");
@@ -767,5 +765,39 @@ public final class DungBoTileMoi {
         }
         g.dispose();
         ImageIO.write(a, "png", new File("docs/pokemon/xem_truoc_tile_moi.png"));
+    }
+
+    /**
+     * Thu muc Resources/&lt;con&gt; cua MOI client can ghi: bien HTBB_CLIENT_ASSETS (chi thu muc do), hoac
+     * client PC chinh ../htbb-client/pc/Assets (canh HTBB/) + ban cu ClientUnity/Assets neu con
+     * (bo bang HTBB_CLIENT_CU=0). Giong tools/pokemon/duong_client.py.
+     */
+    static java.util.List<File> thuMucClient(final String con) {
+        final java.util.List<File> ds = new java.util.ArrayList<File>();
+        final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
+        if (rieng != null && !rieng.isEmpty()) {
+            ds.add(new File(rieng, "Resources/" + con));
+            return ds;
+        }
+        final File pc = new File("../htbb-client/pc/Assets");
+        if (pc.isDirectory()) {
+            ds.add(new File(pc, "Resources/" + con));
+        }
+        final File cu = new File("ClientUnity/Assets");
+        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
+            ds.add(new File(cu, "Resources/" + con));
+        }
+        if (ds.isEmpty()) {
+            ds.add(new File(cu, "Resources/" + con));
+        }
+        return ds;
+    }
+
+    /** Ghi tep ten vao Resources/&lt;con&gt; cua moi client (tao thu muc neu thieu). */
+    static void ghiClient(final String con, final String ten, final byte[] data) throws java.io.IOException {
+        for (final File d : thuMucClient(con)) {
+            d.mkdirs();
+            java.nio.file.Files.write(new File(d, ten).toPath(), data);
+        }
     }
 }

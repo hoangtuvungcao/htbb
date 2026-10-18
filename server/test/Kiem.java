@@ -82,6 +82,7 @@ public final class Kiem {
         KiemMapPokemon.chay();
         KiemHinhPokemon.chay();
         KiemLauDai.chay();
+        KiemNhiemVu.chay();
         KiemNovaDB.chay();
         KiemPhienBan.chay();
         KiemGoi26Test.chay();
@@ -158,6 +159,10 @@ public final class Kiem {
         KiemCuocKhuMoAttackDam.chay();
         KiemMaterialMapNhatDo.chay();
         KiemPetTrangThai1LaPetTool.chay();
+        KiemLauDaiGd2.chay();
+        KiemNoiDung.chay();
+        KiemHeSinhThai.chay();
+        KiemNapTien.chay();
 
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

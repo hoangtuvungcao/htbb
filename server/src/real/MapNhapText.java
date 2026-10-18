@@ -194,7 +194,13 @@ class MapNhapText {
 
                 Database.instance.updateValidCodeLixi(text, player.charname);
                 int luong = 10 + Map.r.nextInt(91);
-                player.addLuong(luong);
+                // Bo sung kiem toan A6: bat co sv.lau_dai -> li xi la luong KHOA (luong mo chi tu xep hang).
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    luong = Math.min(luong, 15);
+                    player.addLuongLock(luong);
+                } else {
+                    player.addLuong(luong);
+                }
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn nhận được " + luong + " lượng", ""));
                 Database.instance.saveOrtherLog("", player.charname, "nhap code: " + text + " nhan duoc " + luong + " luong", "codelixi");
@@ -1000,12 +1006,12 @@ class MapNhapText {
                 } catch (Exception var19) {
                 }
 
-                if (n <= 0) {
+                if (n < Map.THUE_DOI_TOI_THIEU) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đặt mức thuế này", ""));
                     return;
                 }
 
-                if (n > 20) {
+                if (n > Map.THUE_DOI_TOI_DA) { // kiem toan D2: chung hang so voi goi tin
                     player.sendMessage(MessageCreator.createServerAlertMessage("Mức thuế tối đa có thể thu là 20 phần trăm", ""));
                     return;
                 }

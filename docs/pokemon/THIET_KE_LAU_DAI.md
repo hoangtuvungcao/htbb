@@ -425,7 +425,10 @@ Dùng lại các lớp `Boss*.java` đã có. Thêm `GiaiDoanBoss` (lớp thuầ
 - Trong PvP, mọi thời lượng ×0,5.
 - Boss chỉ nhận 30% thời lượng, không ngủ và không đóng băng.
 
-**Gói tin cho client** (để nhóm hiệu ứng J2ME/Android/PC móc vào). Số lệnh **phải grep lại trước khi chốt** (CODING_CONVENTION §1) và thống nhất với nhóm hiệu ứng/âm thanh đang làm. Hiện -90..-94 đã dùng; đề xuất -95..-99. Mọi gói đều là **gói kèm** (`Message.kemTheo`), đi ngay sau gói cũ, nên client cũ bỏ qua được.
+**Gói tin cho client** — **ĐÃ CHỐT 17/10/2026, server GĐ2 cài đúng bảng dưới, không đổi trường nào**
+(`com.htbb.pokemon.GoiLauDai`, gửi từ `real.GoiLauDaiGame`; -95 dài 13 byte, -96 18, -97 7, -98 10, -99 1+4n+2).
+-95 hiện chỉ kèm sau lệnh 9 ở đường đánh quái chính (`Region`), -97 kèm sau -95 khi gây trạng thái lên quái, -96/-98
+gửi cho người đánh boss và người ở gần, -99 mỗi 5 giây cho người đóng góp boss thế giới (để nhóm hiệu ứng J2ME/Android/PC móc vào). Số lệnh **phải grep lại trước khi chốt** (CODING_CONVENTION §1) và thống nhất với nhóm hiệu ứng/âm thanh đang làm. Hiện -90..-94 đã dùng; đề xuất -95..-99. Mọi gói đều là **gói kèm** (`Message.kemTheo`), đi ngay sau gói cũ, nên client cũ bỏ qua được.
 
 | Số | Tên | Kèm sau | Nội dung |
 |---|---|---|---|
@@ -444,7 +447,9 @@ Client hiển thị:
 
 ---
 
-## 5. Nhiệm vụ (`nhiem_vu_moi.csv`: 721 dòng)
+## 5. Nhiệm vụ (`nhiem_vu_moi.csv`: 1.864 dòng)
+
+> **Cập nhật 18/10:** bảng nhiệm vụ đã được mở rộng từ 721 lên 1.864 dòng, với 46 kiểu mục tiêu, lời thoại đầy đủ, chuỗi NPC, sự kiện, huyền thoại, nhiệm vụ ẩn và thành tựu theo bậc. Chi tiết, nhịp độ và yêu cầu engine nằm ở **`NHIEM_VU_THIET_KE.md`**. Tổng ngân sách mỗi nhóm giữ bằng bảng 721 dòng cũ. Các số trong mục này mô tả cấu trúc ban đầu và ngân sách mỗi dòng (vẫn đúng).
 
 ### 5.1 Cấu trúc
 
@@ -598,7 +603,8 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 | Huyền thoại lang thang | Mỗi ngày ngẫu nhiên 1 lần, báo trước 5 phút |
 | Bùng phát quần thể | 1 tuyến × 1 loài ×5, đổi mỗi ngày |
 | Thời tiết theo ngày | Mưa: Nước +10%. Nắng: Lửa +10%. Tuyết: Băng +10%. Bão cát: Đá +10%. Quay vòng theo hạt giống ngày |
-| Lịch đăng nhập 7 ngày tăng dần | 3, 4, 5, 6, 8, 10, 15 lượng khoá, lặp lại. **Không mất chuỗi khi nghỉ**, chỉ dừng lại |
+| Lịch đăng nhập 7 ngày tăng dần | 3, 4, 5, 6, 8, 10, 15 lượng khoá, lặp lại, tính theo **tài khoản** (chặn acc phụ). Nghỉ 1 ngày vẫn giữ chuỗi; nghỉ từ 2 ngày liền thì về ngày 1 (yêu cầu 17/10/2026). Đủ 20 ngày/tháng: 1 danh hiệu trang trí 30 ngày |
+| Quà hoạt động (GĐ2) | 15/30/60/120 phút **hoạt động thật** (đứng yên > 60 giây không tính) mỗi ngày/tài khoản: đá khoá, 5% giờ xu, 2 + 3 lượng khoá, 3 nguyên liệu khoá |
 | Trứng bí ẩn | Nở sau 5 km đi bộ hoặc 200 quái. Ra pet trang trí hoặc 1–3 đá |
 | **Hầm ngục bí ẩn** (hợp phong cách PMD) | Tầng ngẫu nhiên. Hạt giống theo ngày, mọi người cùng bản đồ. Bảng xếp hạng tầng. 1 lượt thưởng/ngày, chơi thêm không thưởng. Endgame lặp lại được |
 
@@ -620,6 +626,7 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 - Không có nạp, lượng không bán, không có vé EXP mua bằng tiền thật.
 - Mọi đồ trang trí đều lấy từ việc chơi.
 - Bỏ mốc nạp, bỏ VIP theo nạp (`up_px_xu_vip`).
+- Cập nhật: nếu chủ server có giấy phép và muốn thu tiền, dùng hệ thống nạp **không bán sức mạnh** trong [`NAP_TIEN.md`](NAP_TIEN.md) (tắt mặc định, `sv.nap_tien`).
 
 ### 7.9 Giữ chân trong mô phỏng (proxy)
 
@@ -654,7 +661,7 @@ Kết quả: **D1 68%, D7 49%, D30 29%**. Đây là con số **tương đối** 
 | File | Vai trò |
 |---|---|
 | `tools/pokemon/sinh_sql_lau_dai.py` + `lau_dai_cot_truyen.py` | **Nguồn duy nhất** của bảng thiết kế (chỉ thư viện chuẩn, tất định) |
-| `docs/pokemon/nhiem_vu_moi.csv` | 721 nhiệm vụ |
+| `docs/pokemon/nhiem_vu_moi.csv` | 1.864 nhiệm vụ (sinh bởi `tools/pokemon/sinh_nhiem_vu.py`, xem `NHIEM_VU_THIET_KE.md`) |
 | `docs/pokemon/su_kien_nam.csv` | 52 tuần |
 | `docs/pokemon/bang_cap_do_lau_dai.csv` | EXP, giờ, xu, quái đề xuất theo cấp 1..100 |
 | `src/com/htbb/pokemon/ThongSoLauDai.java` | Hằng số. **Chưa nối vào game** |

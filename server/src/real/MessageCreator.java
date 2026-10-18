@@ -2512,6 +2512,14 @@ public class MessageCreator {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+        // QA 18/10/2026: khong co cu phap (loi cau hinh / chua nap bang SMS) thi gui so luong 0,
+        // khong gui goi rong (client cu doc byte dem -> EOF).
+        try {
+            if (m.dos.size() == 0) {
+                m.dos.writeByte(0);
+            }
+        } catch (final Exception ignored) {
+        }
         return m;
     }
 

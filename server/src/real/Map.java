@@ -3178,7 +3178,7 @@ public class Map implements Runnable {
                                     3000000,
                                     4500000
                                 };
-                                int cp = cost[player.lvDetail.lv / 5];
+                                int cp = cost[Math.min(player.lvDetail.lv / 5, cost.length - 1)];
                                 if (player.mapID == 112 || player.mapID == 2541 || player.mapID == 2542 || player.mapID == 2543 || player.mapID == 2544) {
                                     cp = 500000;
                                 }
@@ -3317,9 +3317,16 @@ public class Map implements Runnable {
     public Map() {
     }
 
+    // GD2 1.1: truoc day "new Random(System.currentTimeMillis())" MOI LAN goi - hai lan goi
+    // trong cung mili-giay ra CUNG so (vd roll thanh cong va roll bao hiem cua nang cap trung
+    // nhau, bao hiem vo dung). Dung ThreadLocalRandom (an toan da luong, khong reseed). n <= 0
+    // van nem IllegalArgumentException nhu Random.nextInt cu.
+    /** Khoang thue cho cua doi chiem thanh (%), chung cho goi tin va nhap chu (kiem toan D2). */
+    public static final int THUE_DOI_TOI_THIEU = 1;
+    public static final int THUE_DOI_TOI_DA = 20;
+
     public static int random(int n) {
-        Random rnd = new Random(System.currentTimeMillis());
-        return Math.abs(rnd.nextInt(n));
+        return java.util.concurrent.ThreadLocalRandom.current().nextInt(n);
     }
 
     public static int ranDom(int min, int max) {
@@ -4363,7 +4370,7 @@ public class Map implements Runnable {
 
     public static Item dropItem(int levelMonster, byte idCountry) {
         try {
-            Random rnd = new Random(System.currentTimeMillis());
+            Random rnd = java.util.concurrent.ThreadLocalRandom.current(); // GD2 1.1: khong reseed theo ms
             int type_clazz = rnd.nextInt(5);
             Vector<ItemTemplates> a = new Vector();
 
@@ -5128,7 +5135,8 @@ public class Map implements Runnable {
               
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     }
-                } else if ((item.belongUser == player.charDBID || item.belongUser == 0) && inRangeActor(player, item, 64)) {
+                } else if ((item.belongUser == player.charDBID || item.belongUser == 0)
+                        && inRangeActor(player, item, 64 + com.htbb.pokemon.NapTienGame.banKinhNhatThemPx(player))) { // nap tien: the thang +2 o
                     if (!this.chiemItem(item, player.inCountry)) {
                         return;
                     }
@@ -10415,9 +10423,13 @@ public class Map implements Runnable {
                     int[] cost = new int[]{
                         1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 60000, 70000, 500000, 1000000, 1300000, 1500000, 2000000, 2500000, 3000000, 4500000
                     };
-                    int cp = cost[player.lvDetail.lv / 5];
+                    int cp = cost[Math.min(player.lvDetail.lv / 5, cost.length - 1)];
                     if (player.myCountry != player.inCountry && player.charthanthu != null) {
-                        cp = cost[player.lastLV / 5];
+                        cp = cost[Math.min(player.lastLV / 5, cost.length - 1)];
+                    }
+                    // GD2 2.8: hoi sinh = 5% thu nhap 1 gio khi bat co sv.lau_dai.
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        cp = (int) Math.min(Integer.MAX_VALUE, com.htbb.pokemon.KinhTeLauDai.phiHoiSinh(player.lvDetail.lv));
                     }
 
                     if (player.charthanthu != null && player.isKiller) {
@@ -10840,12 +10852,12 @@ public class Map implements Runnable {
                                     3000000,
                                     4500000
                                 };
-                                int cpx = costx[player.lvDetail.lv / 5];
+                                int cpx = costx[Math.min(player.lvDetail.lv / 5, costx.length - 1)];
                                 if (player.mapID != 112 && player.mapID != 2541 && player.mapID != 2542 && player.mapID != 2543 && player.mapID != 2544) 
                                 {
                                     if (player.myCountry != player.inCountry && player.charthanthu != null)
                                     {
-                                        cpx = costx[player.lastLV / 5];
+                                        cpx = costx[Math.min(player.lastLV / 5, costx.length - 1)];
                                     }
 
                                     if (player.charthanthu != null && player.isKiller) 
@@ -11596,6 +11608,10 @@ public class Map implements Runnable {
     }
 
     public void doChonMocNap(Char player, int idOptionMenu) {
+        if (com.htbb.pokemon.LauDai.bat()) { // GD2 2.11: chan TRUOC khi danh dau da nhan
+            player.sendMessage(MessageCreator.createServerAlertMessage("Quà mốc nạp đã ngừng.", ""));
+            return;
+        }
         int moc = idOptionMenu + 1;
         if (moc < 1 || moc > 3) {
             return;
@@ -11626,6 +11642,10 @@ public class Map implements Runnable {
     }
 
     public void doChonPhuongHoangMocNap(Char player, int idOptionMenu) {
+        if (com.htbb.pokemon.LauDai.bat()) { // GD2 2.11: chan TRUOC khi danh dau da nhan
+            player.sendMessage(MessageCreator.createServerAlertMessage("Quà mốc nạp đã ngừng.", ""));
+            return;
+        }
         int[] status = Database.instance.getMocNapStatus(player.userID);
         if (status[3] != 1) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Mốc nạp không hợp lệ hoặc đã được nhận.", ""));
@@ -12117,6 +12137,12 @@ public class Map implements Runnable {
                 int daytt = 30;
                 int[] luong = new int[]{5000, 2000, 1000, 0};
                 int[] luongk = new int[]{0, 1000, 1000, 0};
+                // Bo sung kiem toan A3: bat co sv.lau_dai -> theo ngan sach luong xep hang
+                // (THIET_KE 2.1: top 1 = 50, top 10 = 20, top 100 = 8).
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    luong = new int[]{50, 20, 8, 0};
+                    luongk = new int[]{0, 20, 20, 0};
+                }
                 if (player.canReceiveGiftOffline == 0) {
                     day = 0;
                     daytt = 0;
@@ -15198,8 +15224,10 @@ public class Map implements Runnable {
             }
 
             byte tax = message.dis.readByte();
-            if (tax < 0 || tax > 30) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể đặt thuế tối đa là 30%", ""));
+            // Bo sung kiem toan D2: thong nhat khoang thue doi voi duong nhap chu (MapNhapText,
+            // 1..20%) - truoc day goi tin cho 0..30, nhap chu chi 1..20.
+            if (tax < THUE_DOI_TOI_THIEU || tax > THUE_DOI_TOI_DA) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Mức thuế tối đa có thể thu là " + THUE_DOI_TOI_DA + " phần trăm", ""));
                 return;
             }
 
@@ -15906,6 +15934,10 @@ public class Map implements Runnable {
                     // Che do Pokemon (viec I2): 8 da tien hoa Eevee. Tat co -> tra false,
                     // vat pham di tiep duong cu.
                     if (TienHoaPokemon.dungDaTienHoa(player, item)) {
+                        return;
+                    }
+                    // GD2b: vat pham tieu hao / do giu moi (type 28 id 1201..) - tat co: false.
+                    if (VatPhamDungLauDai.dung(player, item)) {
                         return;
                     }
 
@@ -16728,7 +16760,9 @@ public class Map implements Runnable {
         if (TeamServer.adminAccounts.contains(n)) {
             return true;
         }
-        return n.equals("staynight") || n.equals("lamkckc");
+        // SAN SANG PRODUCTION (17/10/2026): bo hai tai khoan cua ngo cung trong ma ("staynight",
+        // "lamkckc") - ai dang ky trung ten tai khoan tren web la gui duoc lenh 47 (shutdown).
+        return false;
     }
 
     public void doCreateBossCharCopy(int region, int team) {
@@ -16871,7 +16905,9 @@ public class Map implements Runnable {
         if (!this.checkTrade(player)) {
             try {
                 if (this.idXaphu != -1 && player.mapID == this.mapId) {
-                    if (player.getxu() < (long) RealController.xaphu[this.idXaphu].price[indexXaphu]) {
+                    // GD2 2.8: gia theo thu nhap khi bat co (BaiLuyenCong.giaDichChuyen).
+                    final long giaXaPhu = BaiLuyenCong.giaDichChuyen(player, (long) RealController.xaphu[this.idXaphu].price[indexXaphu]);
+                    if (player.getxu() < giaXaPhu) {
                         return;
                     }
 
@@ -16906,7 +16942,7 @@ public class Map implements Runnable {
                             this.playerExit(player);
                         }
 
-                        player.subXu((long) RealController.xaphu[this.idXaphu].price[indexXaphu], true, "map 84");
+                        player.subXu(giaXaPhu, true, "map 84");
                         toMap.playerJoin(player);
                         player.nearChars.removeAllElements();
                         player.nearMons.removeAllElements();

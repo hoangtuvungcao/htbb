@@ -407,7 +407,7 @@ public class MaterialMap extends Map {
 
     @Override
     protected void doAttackMonster(Char p, Message message) throws IOException {
-        if (p.countHit() || p.freeze()) {
+        if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
             return;
         }
         if (p.isHoangSo() || p.isHoangLoan()) {

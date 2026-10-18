@@ -281,6 +281,16 @@ class DatabaseXepHang {
                             + " (phai > 0). Tam dung he so 1 cho lan nap nay.");
                     tile = 1;
                 }
+                // Bo sung kiem toan A4: chan tren he so (admin go nham 100 -> x100 luong). Game
+                // khong thu tien (Q10), he so hop ly toi da x3.
+                if (tile > 3) {
+                    System.out.println("CANH BAO 5h_systems: tangnap = " + tile + " qua lon, chan ve 3.");
+                    tile = 3;
+                }
+                // nap tien: ty gia co dinh, KHONG he so nhan (TileNap bi bo qua khi bat).
+                if (com.htbb.pokemon.NapTien.bat()) {
+                    tile = 1;
+                }
                 // Nhan bang long roi chan: `luongGoc * tile` tinh o 32-bit se tran ngay
                 // tai cho, TRUOC khi kip di qua chan tran cua addLuong.
                 final int luong     = Char.nhanChan(luongGoc, tile);
@@ -298,11 +308,14 @@ class DatabaseXepHang {
                 player.vetangluong += ve;
                 // Dung thang so goc trong DB thay vi `luong / tile`: vua khong con phep
                 // chia nao de chia cho 0, vua dung ca khi luong da bi chan o MAX_VALUE.
+                // nap tien: khong tich diem nap / VIP theo nap (VIP mua bang tien = suc manh).
+                if (!com.htbb.pokemon.NapTien.bat()) {
                 player.luongNap += luongGoc / 2;
 
                 Database.instance.updateLuongNap(luong, player);
                 player.diemNapVip += luongGoc;
                 Database.instance.addCharXaiNapLuong(player, 0);
+                }
                 if (luong > 0) {
                     info = info + "SV Get luong: " + luong;
                 }
@@ -474,7 +487,13 @@ class DatabaseXepHang {
         Statement pre = null;
         ResultSet rs = null;
         try {
-            String sql = "select * from data_quest where mainsub=" + type;
+            // GD2 4.3: bat co sv.lau_dai -> chuoi nhiem vu moi (data_quest_moi), ORDER BY id vi
+            // server danh so lai 0,1,2.. theo thu tu doc. Tat co: y nhu cu.
+            final boolean lauDai = com.htbb.pokemon.LauDai.bat();
+            final java.util.Map<Integer, Object[]> meta = lauDai ? DatabaseLauDai.napMetaNhiemVu()
+                    : java.util.Collections.<Integer, Object[]>emptyMap();
+            String sql = lauDai ? "select * from data_quest_moi where mainsub=" + type + " order by id"
+                    : "select * from data_quest where mainsub=" + type;
             conn = db.getConnection();
             pre = conn.createStatement();
             rs = pre.executeQuery(sql);
@@ -539,6 +558,16 @@ class DatabaseXepHang {
                 info.luong = rs.getInt("luong");
                 info.luongLock = rs.getInt("luongLock");
                 info.exp = rs.getInt("exp");
+                if (lauDai) {
+                    info.idGoc = rs.getInt("id");
+                    final Object[] mt = meta.get(Integer.valueOf(info.idGoc));
+                    if (mt != null) {
+                        info.ma = (String) mt[0];
+                        info.ngayMo = ((Integer) mt[1]).intValue();
+                        info.canVe = ((Boolean) mt[2]).booleanValue();
+                        info.dauChuong = ((Boolean) mt[3]).booleanValue();
+                    }
+                }
                 if (type == 0) {
                     Map.allMainQuest.put(id, info);
                 } else if (type == 1) {

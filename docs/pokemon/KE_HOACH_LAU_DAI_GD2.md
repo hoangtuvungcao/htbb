@@ -138,3 +138,107 @@ Thứ tự được xếp theo rủi ro (thấp trước) và theo phụ thuộc
 - 50 bot × 1 giờ, không exception.
 - Mô phỏng chạy lại với số **đọc từ DB đã áp** (không phải từ script) vẫn 12/12.
 - 7 ngày chạy thử: cung tiền thực ≤ 10 giờ; ra/vào xu 90–105%.
+
+---
+
+## Trạng thái thực hiện (17/10/2026)
+
+Bật: `sv.lau_dai=1` trong `server.ini` (+ `sv.ngay_khai_truong=yyyy-MM-dd`, ngày 0 của trần cấp mùa).
+Tắt (mặc định, thiếu dòng) = hành vi cũ; bộ test: 65 lỗi cũ, 0 lỗi mới (6 966 kiểm tra), nhóm mới
+`test/KiemLauDaiGd2.java`. Mọi số đọc đè được qua bảng `cau_hinh` bằng đúng khoá của
+`data_kinh_te_lau_dai` (vd `thue.cho`, `roi.xu.phan_tram`) + khoá thêm: `phi.dich_chuyen_phan_tram_gio`,
+`phi.hoi_sinh_phan_tram_gio`, `phi.ban_npc_phan_tram`, `giftcode.gia_tri_toi_da`, `giftcode.ngan_sach_thang`,
+`boss.the_gioi.map/.mau/.x/.y`, `boss.de.mau`, `chiem_thanh.danh_hieu`, `qua.thang.danh_hieu`.
+
+| Bước | Trạng thái | Ghi chú |
+|---|---|---|
+| 0 | Xong | `LauDai` (cờ, ngày khai trương, đọc đè `cau_hinh`, đếm xu vào/ra); `tob_kinh_te_ngay` ghi từ 04:00 mỗi ngày (`LauDaiJob` ← `BaoTriDaily`); `sql/them_bang_lau_dai.sql` + `pokemon_lau_dai.sql` đã vào `xuat_sql_day_du.sh` (danh sách `LAU_DAI`). |
+| 1 | Xong (không cần cờ) | 1.1 `Map.random`/`dropItem`/3 chỗ `new Random(ms)` → `ThreadLocalRandom`; 1.2 trừ 5.000 xu sau khi kiểm luyện kim dược (`truXuNeuDu`); 1.3 `Pet.MATERIAL_UPDGRADE[5]=14`; 1.4 ép ngọc `<`; 1.5 x2 vàng (`Monster.tinhXuRoi`); 1.6 chia tổ đội theo số người thật (21 bản sao); 1.7 lửa cộng 1 lần; 1.8 `wModel` null; **1.9 dòng chiêu thừa của Bulbasaur (c1) đã bỏ** (đội nội dung: đừng sửa lại); 1.10 `sql/vo_hieu_giftcode_tt.sql`. |
+| 2 | Xong phần lớn | Bỏ lượng rơi; xu rơi 30% × `XU_MOI_QUAI` × lệch cấp × năng lượng; đá 1,5%; năng lượng huấn luyện (`NangLuong`); quà cấp 35 = giá 1 món bậc vàng; nâng cấp giá/pity/bùa/chỉ số % chung 2 đường (`NangCapLauDaiGame`); thuế chợ 6% + phí đăng 1%; chuyển lượng 5%; dịch chuyển 3%, hồi sinh 5%, sửa đồ ≤ 8% giờ/món; bán NPC 5%; phân rã 2 đá + 10%; shop: giá theo `data_shop_gia_lau_dai`, món đổi tiền bị chặn ở shop lượng, giới hạn tuần (`tob_mua_tuan`); bỏ hoàn xu khi tiêu lượng + mốc nạp (**đội nạp tiền: 2.11, A4, A5 đã làm ở đây**); `LUONG:`/`LUONGKHOA:` trong `applyItemString`; giá khảm theo giờ. Còn: bùa bảo hộ là item riêng (đang dùng "đặt ngọc bảo hiểm 0–4 = bùa, trừ lượng khoá"); trần chuyển xu trực tiếp (game không có chuyển xu trực tiếp); chuyển các món shop sang **lượng khoá** (đang chặn bán). |
+| 3 | Xong | Bảng EXP mới 1..91 (`CapDoLauDai`, nạp lúc khởi động); trần cấp theo mùa + tinh thông (+0,2%/điểm tấn công/HP, chọn ở Sổ tay); **một hàm** `ExpLauDai.traoHaQuai` cho 21 chỗ cộng EXP hạ quái (7 file + CharCopy/CharTrangBi); lệch cấp mới, tổ đội +10%/người, buff trần +100%, bắt kịp ×1,5. Chuyển nhân vật cũ: xem "Chuyển đổi" dưới. Cấp 92–100 (năm 2) còn lại. |
+| 4 | Xong phần lõi | `data_quest_moi` + `ORDER BY id` khi bật cờ; kiểm cấp/ngày mở/vé chương (2/tuần, tối đa 4) ở `OnQuest`; lọc phụ theo cấp ≤ 20, tổng ≤ 127; nhiệm vụ tuần (2/tuần, `tob_nhiem_vu_lau_dai`); chuyển nhân vật cũ vào đầu chương theo cấp (1 lần). Còn: engine nhiệm vụ tổng quát (đăng ký kiểu mục tiêu, nhiều phụ cùng lúc, nhánh, mở khoá ẩn, Pokédex/thành tựu) — xem `NHIEM_VU_THIET_KE.md` "Yêu cầu engine"; `ItemQuest` trong jar (10 tên). |
+| 5 | Xong phần lịch | 15 mã `moi:*` trong `SuKien.DANH_MUC`; lịch 52 tuần (`SuKienLauDai`, tuần ISO, thứ Hai 05:00) hẹn lần kế tiếp vào `tob_su_kien.mo_luc/dong_luc` (chỉ khi cả hai trống); shiny ×10/×5, tuần hệ; giftcode 2/tháng, chỉ vật phẩm. Còn: 5.3 thưởng sự kiện cũ (60 chỗ) thành vật phẩm khoá hết hạn. |
+| 6 | Xong bản tối thiểu | Công thức mới trong `CharChiSo.attackDam` (hệ sau thủ, sàn 5%, STAB 1,2), chí mạng ×1,5 + bỏ ×4 (đường đánh quái chính `Region`), PvP ×0,3 trần 8% HP (`Region`); chỉ số quái từ `data_monster_lau_dai` (đọc trong bộ nhớ); boss theo pha 70/40%, báo trước -96, nộ 5/15 phút ×3, gọi đệ (MonsterSumon), boss thế giới thứ Bảy 20:00 (+ tuần đột kích), thưởng theo đóng góp (-99 mỗi 5 giây, `tob_boss_dong_gop`); trạng thái 5 loại trên quái (`TrangThaiGame`); gói -95 kèm sau lệnh 9, -97 kèm -95, -96/-98/-99. Gói **đúng như THIET_KE 4.6, không đổi**. Còn: -95 ở các bản sao đánh quái khác (MapTown, MapLienDau...), PvP trong `MapDanhNhau`/`MapLienDau`, trạng thái lên người, quái alpha, boss Gym. |
+| 7 | Bản tối thiểu | Thang PvP mùa (Elo, 13 tuần, reset mềm, cùng dải 10 cấp, chống cày 10 phút); shiny 1/4096 + pity 2000; Hầm ngục bí ẩn (thử thách hạ quái theo hạt giống ngày, chưa có map riêng); sư phạm (+20% EXP, mốc 20/40); lịch đăng nhập 7 ngày + lịch tháng theo **tài khoản**; quà hoạt động 15/30/60/120 phút; chiếm thành tuần. Cửa vào: NPC đổi thưởng (-90) → "Sổ tay huấn luyện" (npc ảo -527). Còn: thời tiết, bùng phát, huyền thoại lang thang, trứng bí ẩn, bạn bè +5%. |
+
+### Bật / tắt cờ: TỰ ĐỘNG (18/10/2026)
+
+Bật = đặt `sv.lau_dai=1` rồi khởi động lại. Tắt = `sv.lau_dai=0` rồi khởi động lại. Không có bước tay nào
+(`real.ChuyenDoiLauDai.khiKhoiDong`, chạy lúc khởi động ở CẢ HAI trạng thái, trước khi nhận người chơi):
+
+- **Ngày khai trương**: `sv.ngay_khai_truong` trong `server.ini` chỉ dùng khi đặt đúng `yyyy-MM-dd`. Thiếu/sai thì
+  lấy `cau_hinh.lau_dai.ngay_khai_truong`; chưa có thì ghi **hôm nay** vào đó ở lần bật đầu tiên (log ghi ngày dùng).
+- **EXP nhân vật**: `cau_hinh.lau_dai.thang_exp` (`moi`/`cu`) cho biết `tob_char.xp` đang theo bảng nào. Bật mà đang `cu`
+  ⇒ đổi sang bảng mới; tắt mà đang `moi` ⇒ đổi **ngược** về bảng cũ **từ giá trị hiện tại** (giữ cấp, giữ % trong cấp; người
+  chơi đã lên cấp trong lúc bật vẫn giữ cấp đó). Mỗi lần đổi có số lần (`lau_dai.lan_chuyen`) và nhật ký
+  `tob_char_xp_chuyen(lan, id, huong, xp_truoc, xp_sau, lv)`; ghi nhật ký TRƯỚC rồi `UPDATE … WHERE xp = xp_truoc`.
+  Bị ngắt giữa chừng thì lần khởi động sau đọc `lau_dai.dang_chuyen` và làm tiếp đúng lần đó (không đổi hai lần).
+  `tob_char` là MyISAM (không có giao dịch): mỗi dòng là một UPDATE nguyên tử có điều kiện. Test `KiemLauDaiGd2`
+  mô phỏng bật/tắt 4 lần trên nhân vật mẫu: cấp không bao giờ tụt, % trong cấp lệch ≤ 0,5%.
+- **Nhiệm vụ chính**: khi bật, vị trí cũ được lưu (`nq` trong `tob_char_lau_dai`) trước khi đưa vào đầu chương mới; khi tắt,
+  lần nạp nhân vật đầu tiên trả về đúng chỗ cũ và xoá dấu "đã chuyển" (bật lại thì chuyển lại theo cấp).
+- **Lịch sự kiện**: khi tắt, các mốc do lịch 52 tuần hẹn (đúng mốc đã hẹn) bị gỡ khỏi `tob_su_kien`.
+- Các bảng mới khác chỉ thêm dữ liệu, không ảnh hưởng khi tắt; số trong bộ nhớ (quái, shop) tự về bảng cũ.
+
+**Phụ lục khẩn cấp (chỉ khi phần tự động hỏng)**: xem `tob_char_xp_chuyen` (lần cuối, `huong`), đặt tay
+`UPDATE tob_char SET xp = (SELECT c.xp_truoc FROM tob_char_xp_chuyen c WHERE c.lan = <lan> AND c.id = tob_char.id) WHERE id IN (SELECT id FROM tob_char_xp_chuyen WHERE lan = <lan>);`
+rồi sửa `cau_hinh.lau_dai.thang_exp` cho khớp và xoá `lau_dai.dang_chuyen`.
+
+### Giftcode an toàn (cho web admin)
+
+Bật cùng `sv.lau_dai=1` (bảng `giftcode` cũ không còn được đọc). Ma cửa sau (`if (false)`, `xuluong`, `petmax`...) và mã test `sv.testCode` (100 triệu xu) đã **xoá khỏi mã nguồn** (mọi chế độ); tra `giftcode` cũ dùng tham số bind.
+
+```sql
+tob_giftcode(ma VARCHAR(32) PK,          -- chữ thường a-z0-9_- , 3..32 ký tự (người chơi gõ hoa/thường đều được)
+             phan_thuong VARCHAR(500),   -- CHỈ "LUONGKHOA:n", "GEM:id:n" (luôn khoá), "ITEM:id:n" (n<=10, khoá), ngăn bằng ","
+             han DATETIME NULL,          -- NULL = không hạn
+             tong_luot INT, da_dung INT, -- tổng lượt (mọi tài khoản), đã dùng
+             cap_toi_thieu INT, bat TINYINT, ghi_chu VARCHAR(255), tao_boi VARCHAR(50), tao_luc DATETIME)
+tob_giftcode_log(ma, user_id, id_char, charname, phan_thuong, gia_tri, thang /*yyyyMM*/, luc, PRIMARY KEY(ma, user_id))
+```
+- Giá trị mã = lượng khoá + số đá + 5 × số ITEM, ≤ `cau_hinh giftcode.gia_tri_toi_da` (30). Web nên kiểm giống `GiftcodeAnToanLogic.kiem` (server kiểm lại khi phát).
+- Ngân sách toàn máy chủ / tháng: tổng `gia_tri` trong `tob_giftcode_log` của tháng ≤ `giftcode.ngan_sach_thang` (20 000).
+- Mỗi tài khoản 1 lần / mã; mỗi nhân vật ≤ `giftcode.toi_da_thang` (2) mã / tháng; nhập sai 5 lần ⇒ khoá 10 phút.
+
+### Bảng mới (tên dùng cho trang web "kết quả")
+
+`tob_kinh_te_ngay`, `tob_char_lau_dai`, `tob_nhiem_vu_lau_dai`, `tob_mua_tuan`, `tob_boss_dong_gop`,
+`tob_ham_nguc`, `tob_pvp_mua`, `tob_su_pham`, `tob_char_xp_cu`, `tob_pokedex_shiny`, `tob_giftcode`,
+`tob_giftcode_log`, `tob_qua_online` (quà hoạt động + chuỗi đăng nhập + lịch tháng, 1 dòng / tài khoản —
+gộp vai trò của `tob_thuong_online_ngay`/`tob_diem_danh`), `tob_chiem_thanh_tuan` (thưởng chiếm thành).
+
+### Việc còn lại (chưa làm ở GĐ2)
+
+- Engine nhiệm vụ tổng quát cho bộ ≥1 800 nhiệm vụ mới (yêu cầu ở `NHIEM_VU_THIET_KE.md`).
+- Nội dung mới (`NOI_DUNG_DAY_DU.md` §9): vật phẩm tiêu hao kiểu item 28 + handler, nguyên liệu phụ +11..+15 /
+  Mảnh tinh hoa ở 2 đường nâng cấp, ngọc hệ theo dữ liệu, số chiêu mới vào `CharManager`, quái alpha, boss Gym,
+  bảng rơi `data_noi_dung_*`, ô trang trí, đổi tên pet 720. (Đã làm: kẹo EXP cũ 10–12 ngừng dùng khi bật cờ.)
+- Lớp chỉ có trong jar không sửa được: `RegionMapMoba` (addLuong 100×2), `PrivateDataMap` (addXu 40k/50k),
+  `TongKimData`, `ArenaData` — xem `KIEM_TOAN_KINH_TE.md` "Bổ sung"; chỉ bù được bằng đo `tob_kinh_te_ngay`.
+
+## Giai đoạn 2b (18/10/2026)
+
+Tất cả chỉ chạy khi `sv.lau_dai=1` (trừ sửa lỗi). Test: 65 lỗi cũ + 0 lỗi mới / 7 691 kiểm tra (nhóm "GD2b").
+Chạy thật (server thứ hai 19149, NovaDB riêng 3329, cờ bật, dữ liệu 1 864 nhiệm vụ mới): khởi động sạch, 0 exception;
+50 bot × 130 s: 50/50 vào, 0 rớt, 809 quái hạ, RSS 620–730 MB.
+
+| Mục | Trạng thái | Ghi chú |
+|---|---|---|
+| Engine nhiệm vụ §5 | Xong (bản đầu) | `com.htbb.pokemon.NhiemVuMau` (luật thuần) + `real.NhiemVuEngine`; nạp `data_quest_lau_dai` + `data_nhiem_vu_noi_dung` (2 truy vấn, ghép trong Java; 1 368 mẫu ngoài chuỗi chính). Chuỗi chính/hướng dẫn vẫn engine cũ. Khoá `truoc`, `ngay_mo`, ẩn; 3 khe phụ; bảng ngày rút 5 / thưởng 3; tuần chung T-/TV-/TD- 2 lần; hội thoại `{da}`; lựa chọn nhánh + danh hiệu; câu đố kiểm trong chat trước khi phát; `thuong_khac`; vật phẩm nhiệm vụ 10–50 nối mảng `ItemQuest`; thành tựu, alpha, Gym 1–1, tổ đội. Mở từ Sổ tay → "Nhiệm vụ của tôi". |
+| Vật phẩm type 28 + handler | Xong | `sql/pokemon_vat_pham_lau_dai.sql` (sinh bởi `tools/pokemon/sinh_vat_pham_lau_dai.py`), `real.VatPhamDungLauDai`. |
+| Nguyên liệu phụ +11..+15, Mảnh tinh hoa, bùa bảo hộ thật | Xong | `NangCapLauDaiGame` (cả 2 đường). Bùa: item 1258/1259; thiếu bùa → lượng khoá như cũ. |
+| Chiêu mới vào `CharManager`, bảng rơi, alpha, 16 Gym | Xong | `ChieuLauDai`, `NoiDungLauDai`, `GymLauDai`. |
+| Hoenn 139–178, boss thế giới năm 2 | Xong | Hồi sinh quái ≥ 84 sau ngày 365 (1/3), boss theo tuần ISO. |
+| Kẹo EXP 10–12 | Xong | Từ chối khi bật cờ. |
+| Ngọc hệ theo dữ liệu, ô trang trí, đổi tên item 720 | Còn | Cần client / thuộc đội nội dung. |
+| -95 mọi bản tấn công, công thức PvP, trạng thái lên người | Xong | MapTown/LienDau/DanhNhau/Clan/VanTienTran. |
+| Cấp 92–100 | Xong | Bảng EXP 100 cấp; trần theo ngày khai trương: 60 → 70 (ngày 60) → 80 (150) → 91 (240) → 95 (365) → 100 (545). |
+| 5.3 chuyển ~60 thưởng sự kiện cũ | **Chưa làm** | |
+| nearMons race | Xong | `CharCapNhat.subUpdate`. |
+| Danh sách trống (kênh thế giới / top / bang) | Không phải lỗi | DB thật 0 bang; kênh thế giới = loa. |
+| `tob_top_event` trùng + lỗi migration | Xong | `Database.gopDongTrungTopEvent`, không dùng information_schema. |
+| Bảo trì tự động | Xong | `sv.gioBaoTri` (xem `docs/cau-hinh-server-ini.md` 7d). |
+| Bộ thưởng tiền tệ của đội nạp tiền | Ghi chú | A4/A5/2.11 đã làm ở GĐ2 (xem bước 2). |
+
+`tools/pokemon/xuat_sql_day_du.sh` thêm `VAT_PHAM_LAU_DAI` (chạy cuối); `sql/htbb_day_du.sql` sinh lại trên MariaDB 10.4,
+các file mới nạp được với `STRICT_ALL_TABLES`.

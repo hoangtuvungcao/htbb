@@ -6,7 +6,7 @@
 #   tools/pokemon/map_j2me/{t,t_hang,t_thanh}.type -> res/*.type     (kieu di duoc cua BO TILE MOI)
 #   map/pokemon_tile/{t,t_hang,t_thanh,t_small,t_hang_s,t_thanh_s}.png -> res/pt/   (anh tile moi)
 # Ban cu duoc cat 1 lan vao <j2me>/.truoc_map_moi/ (ngoai res/ de khong lot vao jar).
-# Sau do build jar nhu thuong le (j2me/build.sh); neu build voi HTBB_ASSETS=<HTBB>/ClientUnity/Assets thi
+# Sau do build jar nhu thuong le (j2me/build.sh); neu build voi HTBB_ASSETS=pc (htbb-client/pc/Assets) thi
 # DongGoiPokeJ2me chep lai res/pt tu Resources/poke_tile - cung noi dung, khong sao.
 # Cac map khac client nhan tu server (goi 12) nen khong can chep.
 set -e

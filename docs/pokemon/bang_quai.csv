@@ -137,3 +137,43 @@ id_quai,ten_cu,cap,maxhp,phan_loai,dex,ten_pokemon,shiny,he1,he2,"pmd_sprite(2=d
 136,Cọp tím,82,1000000,quai,510,liepard,1,15,-1,1,Cọp tím lv82 -> Liepard shiny
 137,Cọp xanh,84,5000000,quai,405,luxray,0,3,-1,1,Cọp xanh lv84 -> Luxray
 138,Cọp đỏ,86,10000000,boss,244,entei,0,1,-1,1,Cọp đỏ lv86 -> Entei (huyền thoại)
+139,(Hoenn năm 2),80,15960,quai,261,poochyena,0,15,-1,2,Hoenn năm 2 lv80 -> Poochyena
+140,(Hoenn năm 2),81,16150,quai,309,electrike,0,3,-1,2,Hoenn năm 2 lv81 -> Electrike
+141,(Hoenn năm 2),82,16350,quai,322,numel,0,1,8,2,Hoenn năm 2 lv82 -> Numel
+142,(Hoenn năm 2),83,16540,quai,288,vigoroth,0,0,-1,2,Hoenn năm 2 lv83 -> Vigoroth
+143,(Hoenn năm 2),83,16540,quai,333,swablu,0,0,9,2,Hoenn năm 2 lv83 -> Swablu
+144,(Hoenn năm 2),84,16730,quai,318,carvanha,0,2,15,2,Hoenn năm 2 lv84 -> Carvanha
+145,(Hoenn năm 2),85,16920,quai,279,pelipper,0,2,9,2,Hoenn năm 2 lv85 -> Pelipper
+146,(Hoenn năm 2),85,16920,quai,304,aron,0,16,12,2,Hoenn năm 2 lv85 -> Aron
+147,(Hoenn năm 2),86,17120,quai,262,mightyena,0,15,-1,2,Hoenn năm 2 lv86 -> Mightyena
+148,(Hoenn năm 2),86,17120,quai,343,baltoy,0,8,10,2,Hoenn năm 2 lv86 -> Baltoy
+149,(Hoenn năm 2),87,17310,quai,337,lunatone,0,12,10,2,Hoenn năm 2 lv87 -> Lunatone
+150,(Hoenn năm 2),87,17310,quai,361,snorunt,0,5,-1,2,Hoenn năm 2 lv87 -> Snorunt
+151,(Hoenn năm 2),88,17510,quai,302,sableye,0,15,13,2,Hoenn năm 2 lv88 -> Sableye
+152,(Hoenn năm 2),88,17510,quai,310,manectric,0,3,-1,2,Hoenn năm 2 lv88 -> Manectric
+153,(Hoenn năm 2),88,17510,quai,357,tropius,0,4,9,2,Hoenn năm 2 lv88 -> Tropius
+154,(Hoenn năm 2),89,17710,quai,323,camerupt,0,1,8,2,Hoenn năm 2 lv89 -> Camerupt
+155,(Hoenn năm 2),89,17710,quai,363,spheal,0,5,2,2,Hoenn năm 2 lv89 -> Spheal
+156,(Hoenn năm 2),90,17890,quai,305,lairon,0,16,12,2,Hoenn năm 2 lv90 -> Lairon
+157,(Hoenn năm 2),90,17890,quai,371,bagon,0,14,-1,2,Hoenn năm 2 lv90 -> Bagon
+158,(Hoenn năm 2),91,18080,quai,321,wailord,0,2,-1,2,Hoenn năm 2 lv91 -> Wailord
+159,(Hoenn năm 2),91,18080,quai,335,zangoose,0,0,-1,2,Hoenn năm 2 lv91 -> Zangoose
+160,(Hoenn năm 2),92,18280,quai,326,grumpig,0,10,-1,2,Hoenn năm 2 lv92 -> Grumpig
+161,(Hoenn năm 2),92,18280,quai,354,banette,0,13,-1,2,Hoenn năm 2 lv92 -> Banette
+162,(Hoenn năm 2),93,18470,quai,297,hariyama,0,6,-1,2,Hoenn năm 2 lv93 -> Hariyama
+163,(Hoenn năm 2),93,18470,quai,344,claydol,0,8,10,2,Hoenn năm 2 lv93 -> Claydol
+164,(Hoenn năm 2),94,18670,quai,334,altaria,0,14,9,2,Hoenn năm 2 lv94 -> Altaria
+165,(Hoenn năm 2),94,18670,quai,362,glalie,0,5,-1,2,Hoenn năm 2 lv94 -> Glalie
+166,(Hoenn năm 2),95,18870,quai,359,absol,0,15,-1,2,Hoenn năm 2 lv95 -> Absol
+167,(Hoenn năm 2),95,18870,quai,372,shelgon,0,14,-1,2,Hoenn năm 2 lv95 -> Shelgon
+168,(Hoenn năm 2),96,19050,quai,375,metang,0,16,10,2,Hoenn năm 2 lv96 -> Metang
+169,(Hoenn năm 2),97,19240,quai,306,aggron,0,16,12,2,Hoenn năm 2 lv97 -> Aggron
+170,(Hoenn năm 2),97,19240,quai,346,cradily,0,12,4,2,Hoenn năm 2 lv97 -> Cradily
+171,(Hoenn năm 2),98,19440,quai,348,armaldo,0,12,11,2,Hoenn năm 2 lv98 -> Armaldo
+172,(Hoenn năm 2),98,19440,quai,365,walrein,0,5,2,2,Hoenn năm 2 lv98 -> Walrein
+173,(Hoenn năm 2),99,19640,quai,330,flygon,0,8,14,2,Hoenn năm 2 lv99 -> Flygon
+174,(Hoenn năm 2),100,19830,quai,376,metagross,0,16,10,2,Hoenn năm 2 lv100 -> Metagross
+175,(Đột kích năm 2),90,26133000,boss,144,articuno,0,5,9,2,Đột kích năm 2 lv90 -> Articuno
+176,(Đột kích năm 2),90,26133000,boss,243,raikou,0,3,-1,2,Đột kích năm 2 lv90 -> Raikou
+177,(Đột kích năm 2),95,27584000,boss,245,suicune,0,2,-1,2,Đột kích năm 2 lv95 -> Suicune
+178,(Đột kích năm 2),95,27584000,boss,249,lugia,0,10,9,2,Đột kích năm 2 lv95 -> Lugia

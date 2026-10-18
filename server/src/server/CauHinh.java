@@ -303,6 +303,8 @@ public final class CauHinh {
             real.Char.DOI_TIEU_NGUONG_MAU_LUONG = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_LUONG), real.Char.DOI_TIEU_NGUONG_MAU_LUONG);
 
             apDungGioChiemThanh(p);
+            // Thiet ke dai han: doc de so lieu (khoa cua data_kinh_te_lau_dai, vd thue.cho).
+            com.htbb.pokemon.LauDai.apDungCauHinh(p);
             data.Database.CHO_PHEP_TAO_TEN_GM = "1".equals(nhan(p.getProperty(K_TAO_TEN_GM), "0"));
 
             int max = so(p.getProperty("sv.maxCharPerAccount"), data.Database.MAX_CHAR_PER_ACCOUNT);

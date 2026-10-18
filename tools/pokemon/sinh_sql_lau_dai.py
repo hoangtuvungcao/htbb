@@ -10,7 +10,7 @@ cac file sinh ra:
   docs/pokemon/su_kien_nam.csv           lich 52 tuan (nam 1 + xoay vong nam 2)
   docs/pokemon/bang_cap_do_lau_dai.csv   bang EXP de xuat 1..100 + gio muc tieu
   src/com/htbb/pokemon/ThongSoLauDai.java  hang so cho mo phong + giai doan 2 (CHUA noi day)
-  sql/pokemon_lau_dai.sql                bang tam (staging) - KHONG nam trong xuat_sql_day_du.sh
+  sql/pokemon_lau_dai.sql                bang tam (staging) - gom vao xuat_sql_day_du.sh (GD2)
 
 Chay (o thu muc HTBB/):   python3 -I tools/pokemon/sinh_sql_lau_dai.py
 Sau do chay mo phong:      xem tools/pokemon/MoPhongKinhTe.java (dau file).
@@ -136,6 +136,11 @@ NGAN_SACH = {
     "hang_bi_an": (0.20, 0.10, 5, 0),
     "quay_lai": (0.80, 0.30, 15, 0),
     "thanh_tuu": (0.00, 0.00, 20, 10),
+    # Nhom moi (tools/pokemon/sinh_nhiem_vu.py): thuong bang danh hieu/trang tri/truyen; luong khoa
+    # cua chung tru vao quy thanh tuu (tong khong doi). Su kien: thuong nam trong ngan sach su kien tuan.
+    "su_kien": (0.00, 0.00, 0, 0),
+    "huyen_thoai": (0.00, 0.00, 5, 0),
+    "an": (0.00, 0.00, 2, 0),
 }
 CAP_TAN_THU = 16       # duoi cap nay thuong nhiem vu x HE_SO_TAN_THU
 HE_SO_TAN_THU = 3.0
@@ -404,6 +409,12 @@ def so_quai(L, phut):
 
 
 def sinh_nhiem_vu(s):
+    """Bo sinh moi (tools/pokemon/sinh_nhiem_vu.py, noi dung o nv_*.py). Ham cu ben duoi giu de doi chieu."""
+    import sinh_nhiem_vu as NVM
+    NVM.sinh(s)
+
+
+def sinh_nhiem_vu_cu(s):
     # --- 4.1 Huong dan 30 phut dau (10 buoc, chinh, truoc chuong 1) -------------------
     hd = [("Thức giấc ở Pallet", "noi_chuyen", 5), ("Chào Kecleon", "noi_chuyen", 1),
           ("Bài học tấn công", "giet", 1), ("Bình thuốc đầu tiên", "noi_chuyen", 0),
@@ -866,7 +877,7 @@ def ghi_sql(nv, sk, quai):
     o.append("-- SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.\n")
     o.append("-- Thiet ke dai han (docs/pokemon/THIET_KE_LAU_DAI.md). CHI tao TABLE tam (staging):\n")
     o.append("-- KHONG doi table dang chay (data_quest, data_shop, data_monster...). Giai doan 2 moi\n")
-    o.append("-- ap dung (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). KHONG them vao xuat_sql_day_du.sh.\n")
+    o.append("-- ap dung (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). Da gom vao xuat_sql_day_du.sh (GD2, sau POKEMON).\n")
     o.append("SET NAMES utf8;\n\n")
     # 1. Cap do
     o.append("DROP TABLE IF EXISTS `data_cap_do_lau_dai`;\n")
@@ -944,6 +955,9 @@ def ghi_sql(nv, sk, quai):
             MOB_EXP[L], q["rcvgold"], int(round(XU_QUAI[L] * 100 / TI_LE_ROI_XU))))
     o.append("INSERT INTO `data_monster_lau_dai` VALUES\n" + ",\n".join(rows) + ";\n\n")
     # 6. Nhiem vu: (a) day du (moi loai) (b) dang data_quest cho cac dong bieu dien duoc
+    COT_NV_CHUOI = ("ten", "ghi_chu", "cung", "muc_tieu_ten", "truoc", "huy_hieu", "dia_danh", "ten_npc", "vat_pham",
+                    "vung", "ma", "loai", "kieu_muc_tieu", "lap_lai", "muc_tieu_id", "quai_roi", "npc_giao", "chuong",
+                    "buoc", "gioi_han")
     o.append("DROP TABLE IF EXISTS `data_quest_lau_dai`;\n")
     o.append("CREATE TABLE `data_quest_lau_dai` (\n" + "".join(
         "  `%s` %s NOT NULL,\n" % (c, "varchar(255)" if c in ("ten", "ghi_chu", "cung", "muc_tieu_ten", "truoc",
@@ -954,8 +968,11 @@ def ghi_sql(nv, sk, quai):
              "  PRIMARY KEY (`ma`)\n) DEFAULT CHARSET=utf8;\n")
     rows = []
     for d in nv:
-        rows.append("(" + ",".join(sql_chuoi(d[c]) if not isinstance(d[c], (int,)) or c in (
-            "chuong", "buoc", "npc_giao", "muc_tieu_id", "quai_roi", "gioi_han") else str(d[c]) for c in COT_NV) + ")")
+        # Cot bigint de trong ('') -> 0: MariaDB/MySQL strict mode tu choi '' vao cot so (GD2: chay
+        # xuat_sql_day_du.sh tren MariaDB). NovaDB thi nhan ca hai.
+        rows.append("(" + ",".join(
+            ("0" if (d[c] == "" and c not in COT_NV_CHUOI) else (sql_chuoi(d[c]) if not isinstance(d[c], (int,)) or c in (
+                "chuong", "buoc", "npc_giao", "muc_tieu_id", "quai_roi", "gioi_han") else str(d[c]))) for c in COT_NV) + ")")
     for i in range(0, len(rows), 100):
         o.append("INSERT INTO `data_quest_lau_dai` VALUES\n" + ",\n".join(rows[i:i + 100]) + ";\n")
     o.append("\n-- data_quest_moi: CUNG schema voi data_quest. Thu tu chen = thu tu chuoi chinh\n"
@@ -970,7 +987,7 @@ def ghi_sql(nv, sk, quai):
         if str(d["dong_co_tuong_thich"]) != "1" or d["nam"] != 1:
             continue
         ms = {"huong_dan": 0, "chinh": 0, "doi": 2}.get(d["loai"], 1)
-        rows.append(dong_data_quest(d, ms))
+        rows.append(_dong_quest()(d, ms))
     for i in range(0, len(rows), 100):
         o.append("INSERT INTO `data_quest_moi` (`id`,`name`,`npcrcv`,`npcres`,`lv`,`mainsub`,`content`,`scontent`,"
                  "`rescontent`,`idItemget`,`idMonskill`,`type`,`nitemget`,`nmonskill`,`gold`,`exp`,`potiongift`,"
@@ -1029,6 +1046,15 @@ def doc_exp_cu():
     return [int(x.strip().rstrip("L")) for x in m.group(1).split(",") if x.strip()]
 
 
+def _dong_quest():
+    """Dong data_quest_moi: dung ban co hoi thoai cua sinh_nhiem_vu neu co."""
+    try:
+        import sinh_nhiem_vu as NVM
+        return NVM.dong_data_quest
+    except ImportError:
+        return dong_data_quest
+
+
 def main():
     global EXP_CU
     cot, dong = doc_dump()
@@ -1040,10 +1066,12 @@ def main():
             if r["type"].strip().isdigit() and "giữ tên" not in r["ten_moi"] and r["cap"].lstrip("-").isdigit():
                 vp.append((int(r["id"]), int(r["type"]), int(r["cap"]), r["ten_moi"]))
     s = SinhNV({i: (quai[i]["name"], int(quai[i]["level"])) for i in QUAI_DA_DAT}, vp)
+    s.ten_quai_tat_ca = {i: (q["name"], int(q["level"])) for i, q in quai.items()}
     sinh_nhiem_vu(s)
+    import sinh_nhiem_vu as NVM
     sk = sinh_su_kien()
     lap_shop(bang(cot, dong, "data_shop"))
-    ghi_csv(RA_CSV_NV, COT_NV, s.dong)
+    ghi_csv(RA_CSV_NV, COT_NV + NVM.COT_THEM, s.dong)
     ghi_csv(RA_CSV_SK, COT_SK, sk)
     cap_rows = [{"cap": L, "exp_len_cap": EXP_LEN_CAP[L], "exp_cu": EXP_CU[L] if L < len(EXP_CU) else "",
                  "gio_tich_luy": "%.2f" % GIO_TL[L], "gio_cap": "%.2f" % ((GIO_TL[L + 1] - GIO_TL[L]) if L < CAP_TOI_DA else 0),
@@ -1054,6 +1082,7 @@ def main():
     ghi_csv(RA_CSV_CAP, list(cap_rows[0].keys()), cap_rows)
     ghi_java()
     ghi_sql(s.dong, sk, quai)
+    NVM.sau_khi_ghi(s.dong)
     dem = {}
     for d in s.dong:
         dem[d["loai"]] = dem.get(d["loai"], 0) + 1

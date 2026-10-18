@@ -39,6 +39,8 @@ Moi dong ICON = (nguon, [dung cho...]).
           "xs:N"             moi data_item dang co xstart = N (icon goc cu N)
           "potion:K" "gem:K" "thu:K" "nv:K" "trai:K"
                              anh cu 5500+K / 6500+K / 7500+K / 8000+K / 8200+K
+          "nd:KHOA"          noi dung moi (tools/pokemon/sinh_noi_dung.py doc bang_icon.csv, tu ghi
+                             xstart/icon vao sql/pokemon_noi_dung.sql) - KHONG sinh dong SQL o day
           "dp:ID>K"          data_potion id ID chuyen sang o anh thuoc K (K phai la o TRONG -
           "ds:ID>K"          data_shop  ...                       test kiem tren htbb_day_du.sql)
                              (dung de tach hai vat pham khac nghia dang dung chung mot anh cu)
@@ -425,6 +427,63 @@ ICON = [
     ("Berry_Enigma+xanh+treo", ["trai:9"]), ("Berry_Enigma+treo", ["trai:10"]),      # Qua lkd
     ("Berry_Petaya+xanh+treo", ["trai:11"]), ("Berry_Petaya+treo", ["trai:12"]),     # Qua cau vong
     ("Fruit_Brown+xam+toi+treo", ["trai:13"]),                                       # Trai heo
+
+    # ---- noi dung moi (tools/pokemon/sinh_noi_dung.py, docs/pokemon/NOI_DUNG_DAY_DU.md) ----
+    # nguyen lieu nang cap, Huy chuong Gym, hop dot kich, vat pham su kien (data_item 1034..1061)
+    ("Piece_Yellow", ["nd:bui_sao"]), ("Piece_Red", ["nd:manh_sao"]), ("Ore_Purple", ["nd:manh_thien_thach"]),
+    ("Scale_Green", ["nd:vay_rong"]), ("Crystal_Yellow", ["nd:manh_tinh_hoa"]), ("Crown_Yellow", ["nd:huy_chuong_gym"]),
+    ("dex:0145", ["nd:long_vu_zapdos"]), ("dex:0144", ["nd:long_vu_articuno"]), ("dex:0244", ["nd:nanh_lua_entei"]),
+    ("dex:0243", ["nd:long_to_raikou"]), ("dex:0491", ["nd:manh_bong_toi"]), ("dex:0245", ["nd:pha_le_suicune"]),
+    ("dex:0384", ["nd:vay_rayquaza"]), ("dex:0249", ["nd:long_bac_lugia"]), ("dex:0383", ["nd:ngoc_do_groudon"]),
+    ("dex:0382", ["nd:ngoc_lam_kyogre"]), ("Box_Blue", ["nd:hop_tham_gia_dot_kich"]), ("Chest_Gold", ["nd:hop_vang_dot_kich"]),
+    ("Crystal_Blue", ["nd:tinh_the_he"]), ("Bow_Orange", ["nd:huy_hieu_ngay_cong_dong"]), ("Paper_News", ["nd:tem_nghien_cuu"]),
+    ("Crown_Gray", ["nd:huy_chuong_mua_giai"]), ("Tag_Purple", ["nd:co_vung"]), ("Box_Red", ["nd:qua_le_30_4_1_5"]),
+    ("Box_Yellow", ["nd:qua_le_quoc_khanh_2_9"]), ("Flower_Pink", ["nd:qua_le_phu_nu_viet_nam_20_10"]),
+    ("Note_Gold", ["nd:qua_le_nha_giao_20_11"]), ("Tag_White", ["nd:phieu_giam_gia_trang_tri"]),
+    # tieu hao moi (data_noi_dung_vat_pham trang_thai can_code)
+    ("Medicine_Purple", ["nd:chua_doc"]), ("Medicine_Red", ["nd:chua_bong"]), ("Medicine_Yellow", ["nd:chua_te"]),
+    ("Medicine_Orange", ["nd:chua_ngu"]), ("Bottle_DarkBlue", ["nd:chua_bang"]), ("Bottle_Gold", ["nd:chua_tat_ca"]),
+    ("Herb_Yellow", ["nd:hoi_sinh_2"]), ("Gummi_Sky+sang", ["nd:x_toc_do"]), ("Specs_Yellow", ["nd:x_chinh_xac"]),
+    ("Specs_Red", ["nd:x_chi_mang"]), ("Sack_Gray", ["nd:xua_quai_1"]), ("Sack_LightBlue", ["nd:xua_quai_2"]),
+    ("Sack_Red", ["nd:xua_quai_3"]), ("Gummi_Gold", ["nd:keo_hiem"]),
+    ("Berry_Oran", ["nd:qua_oran"]), ("Berry_Sitrus", ["nd:qua_sitrus"]), ("Berry_Lum", ["nd:qua_lum"]),
+    ("Berry_Occa", ["nd:qua_cheri"]), ("Berry_Payapa", ["nd:qua_chesto"]), ("Berry_Kebia", ["nd:qua_pecha"]),
+    ("Berry_Rindo", ["nd:qua_rawst"]), ("Berry_Yache", ["nd:qua_aspear"]), ("Berry_Leppa", ["nd:qua_leppa"]),
+    ("Apple_Red", ["nd:giu_thuc_an_thua"]), ("Egg_Sea", ["nd:giu_chuong_vo_so"]), ("Claw_White+mau:F0C040", ["nd:giu_mong_nhanh"]),
+    ("Band_Green", ["nd:giu_bang_tap_trung"]), ("Specs_DarkBlue", ["nd:giu_kinh_ngam"]), ("Belt_Brown", ["nd:giu_dai_luc"]),
+    ("Rock_Gray", ["nd:giu_da_vinh_cuu"]), ("Egg", ["nd:giu_trung_may_man"]),
+    # ngoc he 18 he (HePokemon 0..17)
+    ("Gummi_White", ["nd:ngoc_he_0"]),
+    ("Gummi_Red", ["nd:ngoc_he_1"]),
+    ("Gummi_Blue", ["nd:ngoc_he_2"]),
+    ("Gummi_Yellow", ["nd:ngoc_he_3"]),
+    ("Gummi_Grass", ["nd:ngoc_he_4"]),
+    ("Gummi_Sky", ["nd:ngoc_he_5"]),
+    ("Gummi_Orange", ["nd:ngoc_he_6"]),
+    ("Gummi_Purple", ["nd:ngoc_he_7"]),
+    ("Gummi_Brown", ["nd:ngoc_he_8"]),
+    ("Gummi_Clear", ["nd:ngoc_he_9"]),
+    ("Gummi_Pink", ["nd:ngoc_he_10"]),
+    ("Gummi_Green", ["nd:ngoc_he_11"]),
+    ("Gummi_Gray", ["nd:ngoc_he_12"]),
+    ("Gummi_Magenta", ["nd:ngoc_he_13"]),
+    ("Gummi_Royal", ["nd:ngoc_he_14"]),
+    ("Gummi_Black", ["nd:ngoc_he_15"]),
+    ("Gummi_Silver", ["nd:ngoc_he_16"]),
+    ("Orb_Pink", ["nd:ngoc_he_17"]),
+    # trang tri theo mua 1..6: danh hieu, khung, trang phuc, hieu ung (0 chi so)
+    ("Tag_Purple+so:1", ["nd:trang_tri_danh_hieu_1"]), ("Slab_Gold+so:1", ["nd:trang_tri_khung_1"]),
+    ("Cape_Red+so:1", ["nd:trang_tri_trang_phuc_1"]), ("Orb_White+so:1", ["nd:trang_tri_hieu_ung_1"]),
+    ("Tag_Purple+so:2", ["nd:trang_tri_danh_hieu_2"]), ("Slab_Gold+so:2", ["nd:trang_tri_khung_2"]),
+    ("Cape_Red+so:2", ["nd:trang_tri_trang_phuc_2"]), ("Orb_White+so:2", ["nd:trang_tri_hieu_ung_2"]),
+    ("Tag_Purple+so:3", ["nd:trang_tri_danh_hieu_3"]), ("Slab_Gold+so:3", ["nd:trang_tri_khung_3"]),
+    ("Cape_Red+so:3", ["nd:trang_tri_trang_phuc_3"]), ("Orb_White+so:3", ["nd:trang_tri_hieu_ung_3"]),
+    ("Tag_Purple+so:4", ["nd:trang_tri_danh_hieu_4"]), ("Slab_Gold+so:4", ["nd:trang_tri_khung_4"]),
+    ("Cape_Red+so:4", ["nd:trang_tri_trang_phuc_4"]), ("Orb_White+so:4", ["nd:trang_tri_hieu_ung_4"]),
+    ("Tag_Purple+so:5", ["nd:trang_tri_danh_hieu_5"]), ("Slab_Gold+so:5", ["nd:trang_tri_khung_5"]),
+    ("Cape_Red+so:5", ["nd:trang_tri_trang_phuc_5"]), ("Orb_White+so:5", ["nd:trang_tri_hieu_ung_5"]),
+    ("Tag_Purple+so:6", ["nd:trang_tri_danh_hieu_6"]), ("Slab_Gold+so:6", ["nd:trang_tri_khung_6"]),
+    ("Cape_Red+so:6", ["nd:trang_tri_trang_phuc_6"]), ("Orb_White+so:6", ["nd:trang_tri_hieu_ung_6"]),
 ]
 
 
@@ -692,7 +751,7 @@ def tach_id(s):
 
 def phan_tich(loi):
     """-> dict ket qua: item_type, item_id, xs, dai{ten:{K:n}}, dp, ds"""
-    kq = {"type": [], "item": {}, "xs": {}, "dai": {k: {} for k in DAI}, "dp": {}, "ds": {}}
+    kq = {"type": [], "item": {}, "xs": {}, "dai": {k: {} for k in DAI}, "dp": {}, "ds": {}, "nd": {}}
     for n, (nguon, dung) in enumerate(ICON):
         for d in dung:
             loai, gt = d.split(":", 1)
@@ -715,6 +774,10 @@ def phan_tich(loi):
                 if k in kq["dai"][loai] and kq["dai"][loai][k] != n:
                     loi.append("%s:%d gan 2 lan (n=%d va n=%d)" % (loai, k, kq["dai"][loai][k], n))
                 kq["dai"][loai].setdefault(k, n)
+            elif loai == "nd":
+                if gt in kq["nd"]:
+                    loi.append("nd:%s gan 2 lan" % gt)
+                kq["nd"][gt] = n
             elif loai in ("dp", "ds"):
                 ident, k = gt.split(">")
                 kq[loai][int(ident)] = int(k)

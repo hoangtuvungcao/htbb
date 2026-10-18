@@ -713,13 +713,17 @@ public class MapClan extends Map {
                                                                         a = 3;
                                                                     }
 
-                                                                    dxp /= downPercent[a];
+                                                                    dxp /= ExpLauDai.chiaCu(downPercent[a]);
                                                                     if (dxp <= 0) {
                                                                         dxp = 1;
                                                                     }
                                                                 }
 
                                                                 if (dxp > 0) {
+                                                                    // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                                                                    if (com.htbb.pokemon.LauDai.bat()) {
+                                                                        ExpLauDai.traoHaQuai(p, mt, dxp, "MapClan:723");
+                                                                    } else {
                                                                     int newxp = calculatorXpParty(p, dxp);
                                                                     if (newxp == dxp) {
                                                                         int var60 = dxp * doubleALL;
@@ -728,9 +732,7 @@ public class MapClan extends Map {
                                                                         addXPForChar(p, (long)(var60 + p.getEffSkillClan(0) * var60 / 100), false, "mapclan doAttackMonster3");
                                                                     } else {
                                                                         int nUser = p.party.userParty.size();
-                                                                        if (nUser > 1) {
-                                                                            nUser = 5;
-                                                                        }
+                                                                        // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                                                         int xpReceive = newxp * 80 / (100 * nUser);
                                                                         int maxLv = p.lvDetail.lv;
@@ -770,6 +772,7 @@ public class MapClan extends Map {
                                                                         xpReceive = p.expReceive(xpReceive);
                                                                         addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapclan doAttackMonster2");
                                                                     }
+                                                                    }
                                                                 }
                                                             }
 
@@ -783,6 +786,10 @@ public class MapClan extends Map {
                                                             m.dos.writeByte(CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1 >= 0 ? _level - 1 : 0]);
                                                             m.dos.writeByte(buffAttack);
                                                             m.dos.writeByte(_level);
+                                                            if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                                                                BossLauDai.sauDon(p, mt, ahp);
+                                                                m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
+                                                            }
                                                             p.sendMessage(m);
                                                             p.sendToNearPlayer(m);
                                                             p.buffSkillKham(mt);
@@ -849,13 +856,17 @@ public class MapClan extends Map {
                                                                             a = 3;
                                                                         }
 
-                                                                        dxp /= downPercent[a];
+                                                                        dxp /= ExpLauDai.chiaCu(downPercent[a]);
                                                                         if (dxp <= 0) {
                                                                             dxp = 1;
                                                                         }
                                                                     }
 
                                                                     if (dxp > 0) {
+                                                                        // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                                                                        if (com.htbb.pokemon.LauDai.bat()) {
+                                                                            ExpLauDai.traoHaQuai(p, mt, dxp, "MapClan:857");
+                                                                        } else {
                                                                         int newxp = calculatorXpParty(p, dxp);
                                                                         if (newxp == dxp) {
                                                                             int var64 = dxp * doubleALL;
@@ -864,9 +875,7 @@ public class MapClan extends Map {
                                                                             addXPForChar(p, (long)(var64 + p.getEffSkillClan(0) * var64 / 100), false, "mapclan doAttackMonster6");
                                                                         } else {
                                                                             int nUser = p.party.userParty.size();
-                                                                            if (nUser > 1) {
-                                                                                nUser = 5;
-                                                                            }
+                                                                            // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                                                             int xpReceive = newxp * 80 / (nUser * 100);
                                                                             int maxLv = p.lvDetail.lv;
@@ -906,6 +915,7 @@ public class MapClan extends Map {
                                                                             xpReceive = p.expReceive(xpReceive);
                                                                             addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapclan doAttackMonster5");
                                                                         }
+                                                                        }
                                                                     }
                                                                 } catch (Exception var37) {
                                                                 }
@@ -929,6 +939,10 @@ public class MapClan extends Map {
                                                                 m.dos.writeByte(xx2);
                                                                 m.dos.writeByte(buffAttack);
                                                                 m.dos.writeByte(_level);
+                                                                if (com.htbb.pokemon.LauDai.bat()) { // GD2 6.5/6.6: goi kem -95 + dong gop/pha boss
+                                                                    BossLauDai.sauDon(p, mt, ahp);
+                                                                    m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
+                                                                }
                                                                 p.sendMessage(m);
                                                                 p.sendToNearPlayer(m);
                                                                 if (p.receiveQuest && QuestTemplate.QUEST_TYPE[p.questID - 1] == 0) {

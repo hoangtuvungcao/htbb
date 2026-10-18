@@ -557,7 +557,7 @@ class MapEpNgoc {
                     return;
                 }
 
-                if (player.getxu() < 5000L) {
+                if (!com.htbb.pokemon.LauDai.bat() && player.getxu() < 5000L) {
                     player.sendStopAutoImbue("Bạn phải có tối thiểu 5000 xu mới có thể sử dụng chức năng này");
                     return;
                 }
@@ -601,7 +601,7 @@ class MapEpNgoc {
             if (ok == -1) {
                 player.itemImbue = 40000;
                 player.gemItemImbue.removeAllElements();
-            } else if (player.getxu() < (long) prizeImbue) {
+            } else if (!com.htbb.pokemon.LauDai.bat() && player.getxu() < (long) prizeImbue) {
                 try {
                     player.itemImbue = 40000;
                     player.gemItemImbue.removeAllElements();
@@ -636,7 +636,6 @@ class MapEpNgoc {
                     } catch (Exception var17) {
                     }
 
-                    player.subXu((long) prizeImbue, true, "map 72");
                     if (item != null) {
                         if (!haveGem(map, player)) {
                             try {
@@ -644,6 +643,24 @@ class MapEpNgoc {
                             } catch (Exception var14) {
                             }
 
+                            return;
+                        }
+
+                        // GD2 2.5: thiet ke dai han - gia theo bac, pity, bua bao ho. Ham chung
+                        // voi CharCapNhat.doAutoImbue (NangCapLauDaiGame).
+                        if (com.htbb.pokemon.LauDai.bat()) {
+                            nangCapLauDai(map, player, item);
+                            return;
+                        }
+
+                        // GD2 1.2: truoc day tru 5.000 xu TRUOC khi kiem tra co luyen kim duoc
+                        // (va ca khi item == null) - thieu da van mat tien. Gio kiem xong moi tru,
+                        // kiem-va-tru trong Char.KHOA_TIEN (truXuNeuDu).
+                        if (!player.truXuNeuDu((long) prizeImbue, true, "map 72")) {
+                            try {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Hết tiền", ""));
+                            } catch (Exception var14b) {
+                            }
                             return;
                         }
 
@@ -768,6 +785,38 @@ class MapEpNgoc {
         }
     }
 
+    /** Nhanh dai han cua doFinishImbue (tay): mot lan thu, roi tra ngoc ve nhu ban cu. */
+    static void nangCapLauDai(Map map, Char player, Item item) {
+        if (!player.iItems.contains(item)) {
+            return;
+        }
+        final int idLkd = getGem(map, player);
+        boolean coBua = false;
+        for (int i = 0; i < player.gemItemImbue.size(); i++) {
+            final GemItem g = (GemItem) player.gemItemImbue.elementAt(i);
+            if (g.idGemTemplate >= 0 && g.idGemTemplate <= 4) {
+                coBua = true;
+            }
+        }
+        final String[] ra = {""};
+        final int kq = NangCapLauDaiGame.thu(player, item, idLkd, player.typeGemImbue, coBua, ra);
+        try {
+            if (kq == NangCapLauDaiGame.THIEU || kq == NangCapLauDaiGame.DA_TOI_DA) {
+                player.sendMessage(MessageCreator.createServerAlertMessage(ra[0], ""));
+            } else {
+                Message m = new Message(77);
+                m.dos.writeUTF(ra[0]);
+                player.sendMessage(m);
+                m.cleanup();
+            }
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createMsgItemInfo(item));
+            player.gemItemImbue.removeAllElements();
+            player.sendMessage(MessageCreator.createCharGemItem(player));
+        } catch (Exception e) {
+        }
+    }
+
     static void doKhamItem(Map map, Char player, int type) {
         int prizeImbue = 10000;
 
@@ -783,6 +832,15 @@ class MapEpNgoc {
             }
         } catch (Exception var5) {
         }
+    }
+
+    /** Ti le ep ngoc 3/4/5 vien = 10/20/100%. {@code roll} 0..99. */
+    static boolean epNgocThanhCong(int roll, int soVien) {
+        final int[] percent = {10, 20, 100};
+        if (soVien < 3 || soVien > 5) {
+            return false;
+        }
+        return roll < percent[soVien - 3];
     }
 
     static void doFinishEpNgoc(Map map, Char player, int ok, Message message) {
@@ -860,7 +918,8 @@ class MapEpNgoc {
                 }
 
                 byte[] percent = new byte[]{10, 20, 100};
-                if (r.nextInt(100) <= percent[gem.size() - 3]) {
+                // GD2 1.4: "<=" cho ti le that 11%/21% (thay vi 10%/20%). Xem epNgocThanhCong.
+                if (epNgocThanhCong(r.nextInt(100), gem.size())) {
                     int gtemplate = ((GemItem) gem.get(0)).idGemTemplate;
 
                     for (int ix = 0; ix < gem.size(); ix++) {
@@ -994,14 +1053,20 @@ class MapEpNgoc {
                 return;
             }
         }
-        if (player.getxu() < PRICE_KHAM) {
+        // GD2 2.13 / THIET_KE 3.3: bat co sv.lau_dai thi gia khảm = 1 gio thu nhap x 1,45^(lan-1)
+        // (lan = so vien da khảm + 1, toi da 10), duc lo = 1 gio. Tat co: 20.000 xu nhu cu.
+        final long giaKham = com.htbb.pokemon.LauDai.bat()
+                ? com.htbb.pokemon.KinhTeLauDai.giaNgocHe(player.lvDetail.lv, drilling ? 1 : item.nhadSock + 1)
+                : PRICE_KHAM;
+        if (player.getxu() < giaKham) {
             finishKhamResult(player, "Hết tiền");
             return;
         }
 
         // Chi thu phi sau khi hop le, va chi tieu hao vien thuc su duoc ap dung.
-        player.subXu(PRICE_KHAM, true, "map 75");
+        player.subXu(giaKham, true, "map 75");
         player.delGem(idGem, 1, useLocked);
+        NhiemVuEngine.suKien(player, "kham_ngoc", "", 1); // GD2b
         if (drilling) {
             item.nSocAdd++;
         } else {

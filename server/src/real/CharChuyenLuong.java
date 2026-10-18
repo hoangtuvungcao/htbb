@@ -35,11 +35,30 @@ public final class CharChuyenLuong {
             new ConcurrentHashMap<Integer, ChoNhapSoLuong>();
 
     public static void moNhapTen(final Char player) {
+        if (chanViNapTien(player)) {
+            return;
+        }
         player.sendMessage(MessageCreator.createMsgInputText(
                 INPUT_TEN_NGUOI_NHAN, 0, "Nhập tên nhân vật muốn chuyển lượng", 0));
     }
 
+    /**
+     * nap tien: khi bat, luong (tien cao cap mua bang tien that) KHONG chuyen truc tiep giua
+     * nguoi choi - mua ban hang cao cap chi qua Cho trang tri co thue (docs/pokemon/NAP_TIEN.md).
+     */
+    static boolean chanViNapTien(final Char player) {
+        if (!com.htbb.pokemon.NapTien.bat()) {
+            return false;
+        }
+        player.sendMessage(MessageCreator.createServerAlertMessage(
+                "Chuyển lượng trực tiếp đã tắt. Mua bán đồ trang trí qua Chợ trang trí (NPC Tổng Quản > Cửa hàng & Nạp).", ""));
+        return true;
+    }
+
     public static void doNhapTen(final Char player, final String tenGoc) {
+        if (chanViNapTien(player)) {
+            return;
+        }
         final String ten = tenGoc == null ? "" : tenGoc.trim();
         if (ten.isEmpty()) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Tên không hợp lệ.", ""));
@@ -64,6 +83,9 @@ public final class CharChuyenLuong {
     }
 
     public static void doNhapSoLuong(final Char player, final String soGoc) {
+        if (chanViNapTien(player)) {
+            return;
+        }
         final ChoNhapSoLuong c = DANG_CHO.remove(Integer.valueOf(player.charDBID));
         if (c == null) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
@@ -103,8 +125,11 @@ public final class CharChuyenLuong {
                     nguoiNhan.charname + " hôm nay chỉ có thể nhận thêm tối đa " + conLai + " lượng nữa.", ""));
             return;
         }
-        if (!player.truLuongChuyenKhoan(soLuong)) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
+        // GD2 2.7: phi chuyen luong 5% (dot, nguoi gui tra them) khi bat co sv.lau_dai.
+        final long phi = com.htbb.pokemon.LauDai.bat() ? com.htbb.pokemon.KinhTeLauDai.phiChuyenLuong(soLuong) : 0L;
+        if (!player.truLuongChuyenKhoan(soLuong + phi)) {
+            player.sendMessage(MessageCreator.createServerAlertMessage(
+                    phi > 0L ? "Không đủ lượng (cần thêm " + phi + " lượng phí chuyển 5%)." : "Không đủ lượng.", ""));
             return;
         }
         final int thucNhan = nguoiNhan.addLuongNhanChuyen((int) soLuong);

@@ -327,7 +327,11 @@ public class Monster extends LiveActor {
         }
 
         final long now = System.currentTimeMillis();
-        if (now - this.lastTimeAttack > this.attackDelay) {
+        // GD2 6.4/6.6: ngu/bang/te liet; boss pha 3 danh nhanh hon 30% (tat co: y nhu cu).
+        if (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(this)) {
+            return;
+        }
+        if (now - this.lastTimeAttack > BossLauDai.treDanh(this, this.attackDelay)) {
             this.lastTimeAttack = now;
             try {
                 final Message m = new Message(10);
@@ -348,6 +352,10 @@ public class Monster extends LiveActor {
                     }
                     ahp /= downPercent[a];
                 }
+                // GD2 6.6: boss no x3, chieu lon bao truoc (-96/-98). Tat co: tra nguyen.
+                ahp = BossLauDai.monsterDanh(this, this.target, ahp);
+                ahp = VatPhamDungLauDai.satThuongNhan(this.target, ahp); // GD2b: X Phong thu / Bang do tap trung
+                TrangThaiGame.quaiGay(this, this.target); // GD2b: trang thai len nguoi (tat co: khong lam gi)
                 ahp -= (int) this.target.checkMagicShield(ahp);
                 if (ahp <= 0) {
                     ahp = 10;
@@ -517,6 +525,9 @@ public class Monster extends LiveActor {
                 this.isDead = false;
                 this.timeOutPoinson = 0L;
                 this.poinson = 0;
+                // he sinh thai: co the doi loai (thoi tiet / ngay dem / mua / bung phat) TRUOC khi dat hp.
+                com.htbb.pokemon.HeSinhThaiGame.khiHoiSinh(this);
+                NoiDungLauDai.khiHoiSinh(this); // GD2b: alpha 1/50, quai Hoenn nam 2 (tat co: khong lam gi)
                 this.hp = this.maxhp;
                 this.xp = Monster.rcvXpSauGiam(this.getMonsterTemplate());
                 this.tDelay = 0;
@@ -817,8 +828,23 @@ public class Monster extends LiveActor {
         return Monster.tile((int) Math.min(xpSauBuff, Integer.MAX_VALUE), (nguoiNhan.lvDetail.lv >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
     }
 
+    /**
+     * So xu mot dong roi (ban cu): ve x2 vang 1 = +50%, 2 = x2; roi nhan doubleALL, chia
+     * receiveXP. Tach ra de test (GD2 1.5 - ban cu tinh x2 roi ghi de mat).
+     */
+    static int tinhXuRoi(final int quantity, final int x2Player, final int doubleALL, final int receiveXP) {
+        int total = quantity;
+        if (x2Player == 1) {
+            total += quantity / 2;
+        } else if (x2Player == 2) {
+            total = quantity * x2Player;
+        }
+        return total * doubleALL / Math.max(1, receiveXP);
+    }
+
     @Override
     public Vector<Actor> onDropItem(final Map m, final Char p) {
+        BossLauDai.khiChet(this); // GD2 6.6: thuong boss the gioi theo dong gop (tat co: khong lam gi)
         final Vector<Actor> droplist = new Vector<Actor>();
         try {
             final int deltlv = Map.abs(p.lvDetail.lv - this.level);
@@ -841,6 +867,7 @@ public class Monster extends LiveActor {
         // Che do Pokemon: nguon phat da tien hoa Eevee (tat che do -> khong lam gi).
         RoiDaTienHoa.khiHaQuai(p, this);
         PokedexPokemon.khiHaQuai(p, this); // G7.D2 Pokedex "da ha" (tat co: khong lam gi)
+        com.htbb.pokemon.HeSinhThaiGame.khiHaQuai(p, this); // he sinh thai: trung/nha tre, nghien cuu, album
         final int x2Drop = p.getValueLua(0);
         Label_5628:
         {
@@ -917,7 +944,11 @@ public class Monster extends LiveActor {
                 // Map.deltaLVAttackMons da dung san cho cac drop khac o duoi. Quai ma (idGhost)
                 // van giu nguyen luon ra (case dac biet co san tu truoc, khong dung vao).
                 final int deltalvXu = Map.abs(p.lvDetail.lv - this.level);
-                if (p.receiveXP() != 3 && ((deltalvXu <= Map.deltaLVAttackMons && Map.randomMillion() < tile(((p.lvDetail.lv < 15) ? (90000 + 90000 * x2Drop / 100) : (80000 + 80000 * x2Drop / 100)) + p.luck * 100, PC_TILE_XU)) || this.idTemplate == Map.idGhost)) {
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    // GD2 2.2/2.3: xu theo XU_MOI_QUAI(cap quai), 30%, he so lech cap + nang luong;
+                    // da luyen kim 1,5%. Thay khoi xu cu ben duoi (khong /chiaXuRoi).
+                    RoiLauDai.roi(this, m, p, droplist);
+                } else if (p.receiveXP() != 3 && ((deltalvXu <= Map.deltaLVAttackMons && Map.randomMillion() < tile(((p.lvDetail.lv < 15) ? (90000 + 90000 * x2Drop / 100) : (80000 + 80000 * x2Drop / 100)) + p.luck * 100, PC_TILE_XU)) || this.idTemplate == Map.idGhost)) {
                     int totalQuantity;
                     int quantity = totalQuantity = Monster.r.nextInt() % 5 + this.getGoldRcv() / Map.getDivDropXu();
                     if (this.idTemplate == Map.idGhost) {
@@ -928,7 +959,8 @@ public class Monster extends LiveActor {
                     } else if (x2Player == 2) {
                         totalQuantity = quantity * x2Player;
                     }
-                    totalQuantity = quantity * Map.doubleALL / p.receiveXP();
+                    // GD2 1.5: truoc day "quantity * ..." ghi de ket qua x2 vang ngay tren.
+                    totalQuantity = tinhXuRoi(quantity, x2Player, Map.doubleALL, p.receiveXP());
                     if (this.idTemplate == Map.idGhost || Monster.r.nextInt(100) <= percentDrop) {
                         pt = new Potion((short) 0, totalQuantity, m);
                         pt.id = m.getIDITEM();
@@ -1088,7 +1120,9 @@ public class Monster extends LiveActor {
                 // moi 3 tieng nen han muc theo ngay se khong bao gio dat toi).
                 // Han muc duoc luu theo ngay trong bang tob_train_luong -> bao tri / restart
                 // khong lam reset. Xem Char.addLuongTrainQuai().
-                boolean DropLuong = true; // false = tat han viec train quai ra luong
+                // GD2 2.1: thiet ke dai han BO luong / luong khoa roi tu quai (nguon in tien cao
+                // cap cua bot). Tat co sv.lau_dai = y nhu cu.
+                boolean DropLuong = !com.htbb.pokemon.LauDai.bat(); // false = tat han viec train quai ra luong
                 if (DropLuong && p.getLevel() >= 40) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= 10) {

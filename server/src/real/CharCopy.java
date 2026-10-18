@@ -227,14 +227,14 @@ public class CharCopy extends Char {
                         a = 3;
                     }
 
-                    dxp /= downPercent[a];
+                    dxp /= ExpLauDai.chiaCu(downPercent[a]);
                 }
 
                 if (dxp <= 0) {
                     dxp = 1;
                 }
 
-                allXP += dxp;
+                allXP += ExpLauDai.lechCapMot(dxp, this.owner, mt);
                 mt.hp -= damage;
                 if (mt.hp <= 0) {
                     if (mt.isMonsterVantieu() && this.owner.myCountry == mt.inCountry) {
@@ -347,12 +347,14 @@ public class CharCopy extends Char {
             }
 
             if (dxp > 0) {
+                // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    ExpLauDai.traoHaQuai(this.owner, null, dxp, "CharCopy:350");
+                } else {
                 int newxp = Map.calculatorXpParty(this.owner, dxp);
                 if (newxp != dxp) {
                     int nUser = this.owner.party.userParty.size();
-                    if (nUser > 1) {
-                        nUser = 5;
-                    }
+                    // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                     int xpReceive = newxp * 80 / (nUser * 100);
                     int maxLv = this.owner.lvDetail.lv;
@@ -396,6 +398,7 @@ public class CharCopy extends Char {
                     var30 = Monster.apDungGiamExpTheoCapNV(var30, this.owner);
                     var30 = this.owner.expReceive(var30);
                     Map.addXPForChar(this.owner, (long)(var30 + this.owner.getEffSkillClan(0) * var30 / 100), false, "charcopy3");
+                }
                 }
             }
         } catch (Exception e) {
@@ -483,13 +486,17 @@ public class CharCopy extends Char {
                                 a = 3;
                             }
 
-                            dxp /= downPercent[a];
+                            dxp /= ExpLauDai.chiaCu(downPercent[a]);
                             if (dxp <= 0) {
                                 dxp = 1;
                             }
                         }
 
                         if (dxp > 0) {
+                            // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                            if (com.htbb.pokemon.LauDai.bat()) {
+                                ExpLauDai.traoHaQuai(this.owner, mt, dxp, "CharCopy:491");
+                            } else {
                             int newxp = Map.calculatorXpParty(this.owner, dxp);
                             if (newxp == dxp) {
                                 int var64 = dxp * Map.doubleALL;
@@ -498,9 +505,7 @@ public class CharCopy extends Char {
                                 Map.addXPForChar(this.owner, (long)(var64 + this.owner.getEffSkillClan(0) * var64 / 100), false, "charcopy6");
                             } else {
                                 int nUser = this.owner.party.userParty.size();
-                                if (nUser > 1) {
-                                    nUser = 5;
-                                }
+                                // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                 int xpReceive = newxp * 80 / (100 * nUser);
                                 int maxLv = this.owner.lvDetail.lv;
@@ -539,6 +544,7 @@ public class CharCopy extends Char {
                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                                 xpReceive = this.owner.expReceive(xpReceive);
                                 Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy5");
+                            }
                             }
                         }
                     }
@@ -607,13 +613,17 @@ public class CharCopy extends Char {
                                 a = 3;
                             }
 
-                            dxp /= downPercent[a];
+                            dxp /= ExpLauDai.chiaCu(downPercent[a]);
                             if (dxp <= 0) {
                                 dxp = 1;
                             }
                         }
 
                         if (dxp > 0) {
+                            // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                            if (com.htbb.pokemon.LauDai.bat()) {
+                                ExpLauDai.traoHaQuai(this.owner, mt, dxp, "CharCopy:613");
+                            } else {
                             int newxp = Map.calculatorXpParty(this.owner, dxp);
                             if (newxp == dxp) {
                                 int var67 = dxp * Map.doubleALL;
@@ -622,9 +632,7 @@ public class CharCopy extends Char {
                                 Map.addXPForChar(this.owner, (long)(var67 + this.owner.getEffSkillClan(0) * var67 / 100), false, "charcopy9");
                             } else {
                                 int nUser = this.owner.party.userParty.size();
-                                if (nUser > 1) {
-                                    nUser = 5;
-                                }
+                                // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
                                 int xpReceive = newxp * 80 / (nUser * 100);
                                 int maxLv = this.owner.lvDetail.lv;
@@ -663,6 +671,7 @@ public class CharCopy extends Char {
                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                                 xpReceive = this.owner.expReceive(xpReceive);
                                 Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy8");
+                            }
                             }
                         }
                     } catch (Exception var30) {

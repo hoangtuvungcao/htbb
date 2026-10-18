@@ -31,6 +31,17 @@ public class InfoQuestTemplate {
     public short[] potiongift;
     public short[] idItemgift;
     public short[] npotiongift;
+    // ---- GD2 buoc 4 (chi dat khi sv.lau_dai=1, nap tu data_quest_lau_dai theo id goc) ----
+    /** id goc trong data_quest_moi (= data_quest_lau_dai.id_so); 0 = bang cu. */
+    public int idGoc;
+    /** Ma nhiem vu (vd C01.1); "" = bang cu. */
+    public String ma = "";
+    /** Ngay mo (tinh tu khai truong). */
+    public int ngayMo;
+    /** Buoc 1 cua chuong chinh: can 1 ve chuong. */
+    public boolean canVe;
+    /** Dau chuong / dau huong dan (de chuyen nhan vat cu). */
+    public boolean dauChuong;
 
     public InfoQuestTemplate() {
         this.id = 0;

@@ -91,6 +91,7 @@ public final class PokedexPokemon {
             if (d != null) {
                 d.ghiGap(dex, bayGio());
             }
+            NhiemVuEngine.suKien(p, "pokedex_gap", String.valueOf(dex), 1); // GD2b (tat co: khong lam gi)
         } catch (final Exception e) {
             System.out.println("PokedexPokemon.khiDanh: " + e);
         }

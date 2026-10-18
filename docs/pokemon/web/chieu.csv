@@ -1,0 +1,48 @@
+Dòng,Chiêu,Hệ,Vai trò,Mở ở,Cấp mở,Sát thương cấp 1 (%),Sát thương cấp 10 (%),Số đòn,Hồi chiêu (giây),PP,Hiệu ứng
+Charmander,Cào,Thường,tấn công,Dạng 1,1,102,120,1,0.7,,
+Charmander,Than hồng,Lửa,tấn công,Dạng 1,4,159,188,1,1.3,35,bỏng 10%
+Charmander,Nanh lửa,Lửa,tấn công,Dạng 1,7,190,224,1,1.7,25,bỏng 10%
+Charmander,Xoáy lửa,Lửa,tấn công lan,Dạng 2,16,163,192,5,6.0,15,bỏng 10%
+Charmander,Màn khói,Thường,né tránh (Màn khói: −20% chính xác quái quanh),Dạng 2,16,,,1,30.0,10,
+Charmander,Múa kiếm,Thường,+5..+20% tấn công 30 giây (Múa kiếm),Dạng 1,6,,,1,60.0,10,
+Charmander,Súng phun lửa,Lửa,tấn công,Dạng 3,36,171,202,1,6.0,15,bỏng 10%
+Charmander,Vuốt rồng,Rồng,tấn công (hệ Rồng),Dạng 3,36,189,223,1,8.0,15,
+Charmander,Đại hỏa,Lửa,tối thượng,Dạng 3,36,263,310,1,15.0,5,bỏng 30%
+Bulbasaur,Húc,Thường,tấn công,Dạng 1,1,106,125,1,0.7,,
+Bulbasaur,Roi dây leo,Cỏ,khống chế,Dạng 1,4,160,189,1,1.3,35,
+Bulbasaur,Lá dao,Cỏ,tấn công,Dạng 1,7,191,225,1,1.7,25,
+Bulbasaur,Bom bùn,Độc,độc lan,Dạng 2,16,164,194,5,6.0,15,độc 15%
+Bulbasaur,Tự vệ,Thường,giảm 30% sát thương nhận 8 giây (Tự vệ),Dạng 2,16,,,1,40.0,10,
+Bulbasaur,Sinh trưởng,Thường,+5..+20% tấn công và thủ 30 giây (Sinh trưởng),Dạng 1,6,,,1,60.0,10,
+Bulbasaur,Bom hạt,Cỏ,ngủ 15% (Bom hạt),Dạng 3,32,175,206,1,6.0,15,ngủ 15%
+Bulbasaur,Bão lá,Cỏ,tấn công lan,Dạng 3,32,194,229,1,6.0,15,
+Bulbasaur,Tia mặt trời,Cỏ,tối thượng + hồi 5% HP,Dạng 3,32,275,324,1,15.0,5,
+Eevee,Húc,Thường,tấn công,Dạng 1,1,125,148,1,0.7,,
+Eevee,Tấn công nhanh,Thường,tấn công nhanh,Dạng 1,4,188,222,1,1.2,35,
+Eevee,Cắn,Bóng tối,tấn công (hệ Bóng tối),Dạng 1,7,225,266,1,1.6,25,
+Eevee,Sao băng,Thường,tấn công lan,Dạng 2,16,224,264,5,6.0,15,
+Eevee,Mong ước,Thường,hồi 10% HP cả đội sau 3 giây (Mong ước),Dạng 2,16,,,1,30.0,10,
+Eevee,Nghỉ ngơi,Siêu linh,"hồi 30% HP bản thân, ngủ 2 giây (Nghỉ ngơi)",Dạng 1,6,,,1,90.0,5,
+Eevee,Phước lành hồi sinh,Thường,hồi sinh đồng đội 30% HP,Dạng 3,25,,,1,120.0,3,
+Eevee,Chia sẻ nỗi đau,Ma,cân bằng HP với mục tiêu (Chia sẻ nỗi đau),Dạng 3,25,,,1,60.0,5,
+Eevee,Đuôi sắt,Thép,tấn công (hệ Thép),Dạng 3,25,187,221,1,6.0,15,
+Eevee,Bứt phá cuối cùng,Thường,bùng nổ,Dạng 3,25,206,243,1,8.0,10,
+Eevee,Tia phá hủy,Thường,"tối thượng, sau đó nghỉ 1 giây",Dạng 3,25,300,354,1,15.0,5,
+Squirtle,Húc,Thường,tấn công,Dạng 1,1,110,130,1,0.7,,
+Squirtle,Súng nước,Nước,tấn công,Dạng 1,4,166,196,1,1.3,35,
+Squirtle,Bong bóng,Nước,làm chậm 15%,Dạng 1,7,193,228,1,1.7,25,
+Squirtle,Xoáy nước,Nước,khiêu khích quái quanh,Dạng 2,16,169,199,5,6.0,15,
+Squirtle,Phá mai,Thường,"+25% tấn công, −15% thủ 20 giây (Phá mai)",Dạng 2,16,,,1,45.0,10,
+Squirtle,Rút vào mai,Nước,"khiên 15% HP, giảm 10% sát thương cả đội 10 giây (Rút vào mai)",Dạng 1,6,,,1,40.0,10,
+Squirtle,Đuôi nước,Nước,tấn công,Dạng 3,36,164,194,1,6.0,15,
+Squirtle,Bơm nước,Nước,đẩy lùi,Dạng 3,36,176,208,1,6.0,15,
+Squirtle,Đại pháo nước,Nước,tối thượng,Dạng 3,36,252,297,1,15.0,5,
+Pichu,Tia lửa điện,Điện,tấn công xa,Dạng 1,1,114,135,1,0.7,,tê 5%
+Pichu,Sóng điện,Điện,tấn công xa,Dạng 1,4,176,208,1,1.3,35,tê 10%
+Pichu,Cầu điện,Điện,tấn công xa,Dạng 1,7,211,249,1,1.7,25,tê 10%
+Pichu,Tia chớp,Điện,sét lan,Dạng 2,10,179,211,5,6.0,15,tê 10%
+Pichu,Nhanh nhẹn,Siêu linh,+20% tốc chạy và né 10 giây (Nhanh nhẹn),Dạng 2,10,,,1,40.0,10,
+Pichu,Nạp điện,Điện,đòn Điện kế tiếp +50% (Nạp điện),Dạng 1,6,,,1,30.0,10,
+Pichu,Lưới điện,Điện,tê liệt 25% (Lưới điện),Dạng 3,30,181,214,1,6.0,15,tê 25%
+Pichu,Sấm sét,Điện,tấn công xa,Dạng 3,30,206,243,1,8.0,15,tê 10%
+Pichu,Đâm sầm điện,Điện,"tối thượng, tự chịu 10% sát thương",Dạng 3,30,294,347,1,15.0,5,tê 30%

@@ -55,11 +55,16 @@ class MapXuLyLenh {
                 }
 
                 int div = 1;
-                if (currentLevel >= 60 && !isNhansam) {
+                if (currentLevel >= 60 && !isNhansam && !com.htbb.pokemon.LauDai.bat()) {
                     div = 3;
                 }
 
-                currentXP += dxp / (long) div + (long) (1 + Map.r.nextInt(5));
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    // GD2 3.2/1.6: bo chia 3, cat theo tran cap mua, phan thua -> tinh thong.
+                    currentXP = ExpLauDai.congTheoTran(p, currentXP, dxp);
+                } else {
+                    currentXP += dxp / (long) div + (long) (1 + Map.r.nextInt(5));
+                }
                 p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpcharevent map");
                 p.expRace = p.expRace + dxp + (long) (1 + Map.r.nextInt(5));
                 int newlevel = p.lvDetail.lv;
@@ -114,6 +119,7 @@ class MapXuLyLenh {
                     // Che do Pokemon (viec S5): tien hoa neu cap moi du moc. Dat TRUOC goi 3
                     // ben duoi de goi 3 kem -90 da mang loai moi.
                     TienHoaPokemon.kiemTienHoaTheoCap(p);
+                    SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
                     if (newlevel > p.lastLV) {
                         p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
                         p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
@@ -189,13 +195,16 @@ class MapXuLyLenh {
             }
 
             int div = 1;
-            if (currentLevel >= 60 && !isNhansam && !isAdminBuff) {
+            if (currentLevel >= 60 && !isNhansam && !isAdminBuff && !com.htbb.pokemon.LauDai.bat()) {
                 div = 3;
             }
 
             // Nếu là admin buff thì không chia, không random
             if (isAdminBuff) {
                 currentXP += dxp;
+            } else if (com.htbb.pokemon.LauDai.bat()) {
+                // GD2 3.2/1.6: bo chia 3, cat theo tran cap mua, phan thua -> tinh thong.
+                currentXP = ExpLauDai.congTheoTran(p, currentXP, dxp);
             } else {
                 currentXP += dxp / (long) div + (long) (1 + Map.r.nextInt(5));
             }
@@ -244,6 +253,7 @@ class MapXuLyLenh {
                 m.cleanup();
                 // Che do Pokemon (viec S5): ban sao thu hai cua khoi len cap - xem tren.
                 TienHoaPokemon.kiemTienHoaTheoCap(p);
+                    SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
                 if (newlevel > p.lastLV) {
                     p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
                     p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
@@ -300,6 +310,10 @@ class MapXuLyLenh {
         }
         p.thuongLv35 = 1;
         p.gif35 = 1;
+        if (com.htbb.pokemon.LauDai.bat()) {
+            thuongLenCap35LauDai(p);
+            return;
+        }
         p.addXu(10000000L, "thuong len cap 35");
         for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
             p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 50, true);
@@ -310,6 +324,24 @@ class MapXuLyLenh {
                 "Bạn đã nhận quà cấp 35: 10.000.000 xu + 50 nguyên liệu khoá mỗi loại cấp 6.", ""));
         Database.instance.saveOrtherLog("", p.charname,
                 "thuong len cap 35: 10tr xu + 50 khoa moi loai nlsc/nlcc cap 6", "thuonglv35");
+    }
+
+    /**
+     * GD2 2.4: qua cap 35 khi bat co - BO 10 trieu xu (= vai thang thu nhap cap 35). Thay bang
+     * gia 1 mon bac vang (BAC_TB_GIA[3], 1,5 gio thu nhap) + 10 nguyen lieu khoa moi loai cap 6.
+     * Ban toi thieu: chua chon template do bac vang cu the cho tung dong (viec doi noi dung).
+     */
+    static void thuongLenCap35LauDai(Char p) {
+        final long xu = com.htbb.pokemon.ThongSoLauDai.BAC_TB_GIA[3];
+        p.addXu(xu, "thuong len cap 35 (lau dai)");
+        for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
+            p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 10, true);
+            p.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 10, true);
+        }
+        p.sendMessage(MessageCreator.createCharGemItem(p));
+        p.sendMessage(MessageCreator.createServerAlertMessage(
+                "Bạn đã nhận quà cấp 35: " + xu + " xu + 10 nguyên liệu khoá mỗi loại cấp 6.", ""));
+        Database.instance.saveOrtherLog("", p.charname, "thuong len cap 35 lau dai: " + xu + " xu + 10 khoa", "thuonglv35");
     }
 
     static void doGetItem(Map map, Char player, short id) {
@@ -370,15 +402,21 @@ class MapXuLyLenh {
                 int sl = item.colorName == Item.COLOR_BLUE ? Map.r.nextInt(2) + 2 :
                         item.colorName == Item.COLOR_RED ? Map.r.nextInt(4) + 2 :
                         item.colorName == Item.COLOR_GREEN ? Map.r.nextInt(6) + 2 : 1;
-                        
-                player.doAddGemItem(246, sl, item.lock == 1);
+                final boolean lauDai = com.htbb.pokemon.LauDai.bat();
+                if (lauDai) {
+                    sl = RoiLauDai.phanRa(player, item); // GD2 2.9: 2 da + 10% gia, khong phi
+                } else {
+                    player.doAddGemItem(246, sl, item.lock == 1);
+                }
                 Database.instance.deleteItem(item.dbid);
                 // Mon do bien mat o day. Ghi ro "vua nhat len" de nguoi tra cuu khong
                 // hieu nham la do trong tui: nhanh nay chi cham vao vat pham vua duoc
                 // nhat tu duoi dat, do da nam trong hanh trang khong di qua day.
                 Database.instance.saveLogMatVatPham(player, item,
-                        "nghien do tu dong (do vua nhat len) nhan " + sl + " bot thuong");
-                player.subXu(2000L, true, "offline map 9");
+                        "nghien do tu dong (do vua nhat len) nhan " + sl + (lauDai ? " da (lau dai)" : " bot thuong"));
+                if (!lauDai) {
+                    player.subXu(2000L, true, "offline map 9");
+                }
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -388,7 +426,7 @@ class MapXuLyLenh {
     
             if (player.isAutoBan) {
                 int price = Map.itemTemplates.get(5).get(item.getTemplate().id).price;
-                int xuban = price / 5;
+                int xuban = com.htbb.pokemon.LauDai.bat() ? (int) com.htbb.pokemon.KinhTeLauDai.giaBanNpc(price) : price / 5; // GD2 2.9
                 player.addXu(xuban, "map 6");
                 // Cung nhu nhanh nghien: chi ban mon VUA NHAT LEN, khong dung toi tui do.
                 Database.instance.saveLogMatVatPham(player, item,

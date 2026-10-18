@@ -275,7 +275,8 @@ public final class KiemLauDai {
         Kiem.sai("SQL KHONG sua bang dang chay (UPDATE/INSERT data_quest that)",
                 Pattern.compile("(?m)^(UPDATE|INSERT INTO `data_quest` |DELETE)").matcher(s).find());
         final String xuat = new String(Files.readAllBytes(Paths.get(F_XUAT)), StandardCharsets.UTF_8);
-        Kiem.sai("pokemon_lau_dai CHUA nam trong xuat_sql_day_du.sh", xuat.contains("pokemon_lau_dai"));
+        // GD2 buoc 0.3: sau khi xong buoc 1 thi gom vao (truoc do phai CHUA co).
+        Kiem.dung("pokemon_lau_dai DA nam trong xuat_sql_day_du.sh (GD2 0.3)", xuat.contains("pokemon_lau_dai"));
     }
 
     // ------------------------------------------------------------------ mo phong

@@ -386,7 +386,10 @@ public class OfflineMap extends Map {
                      clan.updateNewClandata2DB();
                      Database.instance.saveOrtherLog("tob_other_log", clan.name, String.valueOf(money - money * 20L / 100L), "tax");
                   } else {
-                     long money = player.sellerInfo.priceSell * 10L / 100L;
+                     // GD2 2.7: thue cho 6% (dot) khi bat co; thue doi (nhanh tren) giu nguyen.
+                     long money = com.htbb.pokemon.LauDai.bat()
+                        ? com.htbb.pokemon.KinhTeLauDai.thueCho(player.sellerInfo.priceSell)
+                        : player.sellerInfo.priceSell * 10L / 100L;
                      if (money < 0L) {
                         money = 0L;
                      }
@@ -835,6 +838,18 @@ public class OfflineMap extends Map {
                      ((Item)item).prizeSell = prize_sell;
                   }
 
+                  // GD2 2.7: phi dang ban 1% (dot, khong hoan) khi bat co sv.lau_dai.
+                  if (com.htbb.pokemon.LauDai.bat()) {
+                     final long phi = com.htbb.pokemon.KinhTeLauDai.phiDangBan(prize_sell);
+                     if (!player.truXuNeuDu(phi, false, "phi dang ban")) {
+                        item.isSelling = false;
+                        if (type == 0) {
+                           ((Item)item).prizeSell = 0;
+                        }
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Cần " + phi + " xu phí đăng bán (1%).", ""));
+                        return;
+                     }
+                  }
                   item.setCharcanBuy(privatename);
                   if (npcSell[player.myCountry][seller - 11].addItem2Shop(player, shopId, item, type, prize_sell)) {
                      Message m = new Message(92);
@@ -955,6 +970,14 @@ public class OfflineMap extends Map {
          return;
       }
 
+      // GD2 2.7: phi dang ban 1% (dot, khong hoan) khi bat co sv.lau_dai.
+      if (com.htbb.pokemon.LauDai.bat()) {
+         final long phi = com.htbb.pokemon.KinhTeLauDai.phiDangBan((long) prize_sell * soLuong);
+         if (!player.truXuNeuDu(phi, false, "phi dang ban ngoc")) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Cần " + phi + " xu phí đăng bán (1%).", ""));
+            return;
+         }
+      }
       boolean ok = npcSell[player.myCountry][seller - 11].addGemItemSellBulk(player, shopId, idGemTemplate, (int) soLuong, prize_sell, wait.charBuy);
       if (ok) {
          try {
@@ -1168,6 +1191,10 @@ public class OfflineMap extends Map {
                      if (player.iItems.remove(item)) {
                         long xu = (long)(item.getTemplate().price / 5 + item.plus * 1000);
                         xu += xu * (long)Char.up_px_xu_vip[player.vip] / 100L;
+                        // GD2 2.9 / 2.11: ban NPC con 5% gia, khong cong theo plus, khong thuong VIP.
+                        if (com.htbb.pokemon.LauDai.bat()) {
+                           xu = com.htbb.pokemon.KinhTeLauDai.giaBanNpc(item.getTemplate().price);
+                        }
                         player.addXu(xu, "offline map 4");
                         player.removeIDItem(item.id);
                         Database.instance
@@ -1812,7 +1839,7 @@ public class OfflineMap extends Map {
          }
          player.lastTimeNghienBot = currentTime;
 
-         if (player.getxu() < 2000L) 
+         if (!com.htbb.pokemon.LauDai.bat() && player.getxu() < 2000L) 
          {
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 2000 xu mới có thể sử dụng chức năng này", ""));
             return;
@@ -1862,8 +1889,12 @@ public class OfflineMap extends Map {
 //         }
 
          player.iItems.remove(it);
-         player.subXu(2000L, true, "offline map 9");
-         player.doAddGemItem(246, sl, it.lock == 1);
+         if (com.htbb.pokemon.LauDai.bat()) {
+            sl = RoiLauDai.phanRa(player, it); // GD2 2.9: 2 da + 10% gia, khong phi
+         } else {
+            player.subXu(2000L, true, "offline map 9");
+            player.doAddGemItem(246, sl, it.lock == 1);
+         }
          Database.instance.deleteItem(it.dbid);
          player.sendMessage(MessageCreator.createCharGemItem(player));
          player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));

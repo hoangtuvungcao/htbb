@@ -52,7 +52,7 @@ public final class VeMapMoi {
     static final String RA_CMAP = "cMap_pokemon";
     static final String RA_ANH = "docs/pokemon/map_moi";
     static final String RA_QUAI = "map/pokemon_spawn/";
-    static final String RA_UNITY = "ClientUnity/Assets/Resources/poke_map/";
+    /** Ban do 0 cho client Unity: Resources/poke_map/ cua moi client (thuMucClient - htbb-client/pc + ClientUnity cu). */
     static final String RA_J2ME = "tools/pokemon/map_j2me/";
     static final String THU_MUC_TILE = "map/pokemon_tile/";
     static final int O = 13;
@@ -2865,8 +2865,7 @@ public final class VeMapMoi {
             Files.write(new File(RA_ANH, "kiem_tra.txt").toPath(), bao.toString().getBytes(StandardCharsets.UTF_8));
             veTongHop(nho, spec);
             final byte[] m0 = Files.readAllBytes(new File(RA_CMAP, "0").toPath());
-            new File(RA_UNITY).mkdirs();
-            Files.write(new File(RA_UNITY, "0.bytes").toPath(), m0);
+            ghiClient("poke_map", "0.bytes", m0);
             new File(RA_J2ME).mkdirs();
             Files.write(new File(RA_J2ME, "0").toPath(), m0);
         }
@@ -3081,5 +3080,38 @@ public final class VeMapMoi {
         }
         return m;
     }
-}
 
+    /**
+     * Thu muc Resources/&lt;con&gt; cua MOI client can ghi: bien HTBB_CLIENT_ASSETS (chi thu muc do), hoac
+     * client PC chinh ../htbb-client/pc/Assets (canh HTBB/) + ban cu ClientUnity/Assets neu con
+     * (bo bang HTBB_CLIENT_CU=0). Giong tools/pokemon/duong_client.py.
+     */
+    static java.util.List<File> thuMucClient(final String con) {
+        final java.util.List<File> ds = new java.util.ArrayList<File>();
+        final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
+        if (rieng != null && !rieng.isEmpty()) {
+            ds.add(new File(rieng, "Resources/" + con));
+            return ds;
+        }
+        final File pc = new File("../htbb-client/pc/Assets");
+        if (pc.isDirectory()) {
+            ds.add(new File(pc, "Resources/" + con));
+        }
+        final File cu = new File("ClientUnity/Assets");
+        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
+            ds.add(new File(cu, "Resources/" + con));
+        }
+        if (ds.isEmpty()) {
+            ds.add(new File(cu, "Resources/" + con));
+        }
+        return ds;
+    }
+
+    /** Ghi tep ten vao Resources/&lt;con&gt; cua moi client (tao thu muc neu thieu). */
+    static void ghiClient(final String con, final String ten, final byte[] data) throws java.io.IOException {
+        for (final File d : thuMucClient(con)) {
+            d.mkdirs();
+            java.nio.file.Files.write(new File(d, ten).toPath(), data);
+        }
+    }
+}

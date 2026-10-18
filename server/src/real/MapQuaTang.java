@@ -830,6 +830,11 @@ class MapQuaTang {
     }
 
     static void grantMocNapReward(Map map, Char player, int moc, int phoenixChoice) {
+        // GD2 2.11 (Q10): khong co nap -> khong co qua moc nap khi bat co sv.lau_dai.
+        if (com.htbb.pokemon.LauDai.bat()) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Quà mốc nạp đã ngừng.", ""));
+            return;
+        }
         player.addLuong(100000);
         player.addLuongLock(200000);
         if (moc == 2) {

@@ -619,7 +619,7 @@ public class Region {
             if (p.cannotAttackWhenBienhinh()) {
                 return;
             }
-            if (p.countHit() || p.freeze()) {
+            if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
                 return;
             }
             if (p.myCountry == -1) {
@@ -746,6 +746,7 @@ public class Region {
             }
             buffAttack = p.getBuffEffAttack();
             int damage = p.attackDam((LiveActor)c, (int)_type, _level, buffAttack);
+            final int damGocLauDai = damage;
             damage /= 5;
             damage -= damage / 3;
             damage = p.subDam(c, damage);
@@ -753,10 +754,10 @@ public class Region {
             boolean critSv = p.havecrit();
             boolean baokich = p.haveBaoKich();
             if (baokich) {
-                damage *= 4;
+                damage = com.htbb.pokemon.LauDai.bat() ? p.tkNhanChiMang(damage, 4) : damage * 4; // GD2: x1,5 khi bat co
                 effect = 4;
             } else if (critSv) {
-                damage *= 2;
+                damage = com.htbb.pokemon.LauDai.bat() ? p.tkNhanChiMang(damage, 2) : damage * 2;
                 effect = 2;
                 if (p.petUsing != null) {
                     long pcLienKich = p.petUsing.getLienKich();
@@ -765,6 +766,16 @@ public class Region {
             }
             if (damage > 50000) {
                 damage = 50000 + Map.r.nextInt(100);
+            }
+            if (com.htbb.pokemon.LauDai.bat()) {
+                // GD2 6.1 PvP: x0,30, chi mang x1,5, tran 8% HP toi da muc tieu (thay /5, -1/3, x4, tran 50k).
+                long d = (long) damGocLauDai * CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
+                if (critSv || baokich) {
+                    d = d * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100L;
+                    effect = 2;
+                }
+                damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, d), c.maxhp);
+                damage = p.subDam(c, damage);
             }
             if (p.mp + p.percentBuff[1] < (mplost = CharManager.SKILL_MP[p.charClass][_type][_level])) {
                 return;
@@ -792,6 +803,10 @@ public class Region {
                 ahp = 1;
             }
             c.hp = (int)((long)c.hp - ((long)damage - c.checkMagicShield(damage)));
+            ChiemThanhLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
+            if (c.hp <= 0) {
+                ThangPvpGame.ketQua(p, c); // GD2 7.2 Elo mua (tat co: khong lam gi)
+            }
             c.checkNewEffectItem(0, (long)(damage / 10), (LiveActor)p);
             c.downDuarable();
             if (p.charthanthu != null && c.hp > 0) {
@@ -946,7 +961,7 @@ public class Region {
             if (p.cannotAttackWhenBienhinh()) {
                 return;
             }
-            if (p.countHit() || p.freeze()) {
+            if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
                 return;
             }
             if (p.hp <= 0) {
@@ -1077,10 +1092,10 @@ public class Region {
             boolean critSv = p.havecrit();
             boolean baokich = p.haveBaoKich();
             if (baokich) {
-                damage *= 4;
+                damage = com.htbb.pokemon.LauDai.bat() ? p.tkNhanChiMang(damage, 4) : damage * 4; // GD2: x1,5 khi bat co
                 effect = 4;
             } else if (critSv) {
-                damage *= 2;
+                damage = com.htbb.pokemon.LauDai.bat() ? p.tkNhanChiMang(damage, 2) : damage * 2;
                 effect = 2;
                 if (p.petUsing != null) {
                     long pcLienKich = p.petUsing.getLienKich();
@@ -1172,18 +1187,18 @@ public class Region {
                         if (a > 3) {
                             a = 3;
                         }
-                        dxp /= downPercent[a];
+                        dxp /= ExpLauDai.chiaCu(downPercent[a]);
                     }
                     if (dxp <= 0) {
                         dxp = 1;
                     }
-                    allXP += dxp;
+                    allXP += ExpLauDai.lechCapMot(dxp, p, mt);
                     mt.hp -= damage;
                     BossTrungThu.ghiNhanSatThuong(mt, p, damage);
                     if (p.charthanthu != null && mt.hp > 0) {
                         muctieu.add(mt);
                         int damthanthu = p.getDamtThanThu((LiveActor)mt);
-                        allXP += mt.getXpReceive(damthanthu);
+                        allXP += ExpLauDai.lechCapMot(mt.getXpReceive(damthanthu), p, mt);
                         mt.hp -= damthanthu;
                         BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
                     }
@@ -1298,12 +1313,14 @@ public class Region {
                 dxp = 1;
             }
             if ((totalXp = dxp) > 0) {
+                // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                if (com.htbb.pokemon.LauDai.bat()) {
+                    ExpLauDai.traoHaQuai(p, null, totalXp, "Region:1301");
+                } else {
                 int newxp = Map.calculatorXpParty((Char)p, (int)totalXp);
                 if (newxp != totalXp) {
                     int nUser = p.party.userParty.size();
-                    if (nUser > 1) {
-                        nUser = 5;
-                    }
+                    // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
                     int xpReceive = newxp * 80 / (nUser * 100);
                     int maxLv = p.lvDetail.lv;
                     int k = 0;
@@ -1335,6 +1352,7 @@ public class Region {
                     totalXp = p.expReceive(totalXp);
                     Map.addXPForChar((Char)p, (long)(totalXp + p.getEffSkillClan(0) * totalXp / 100), (boolean)false, (String)"Region3");
                 }
+                }
             }
             p.charHireAttackMultiMOnster(mst, (int)_type);
         }
@@ -1353,7 +1371,7 @@ public class Region {
         if (p.cannotAttackWhenBienhinh()) {
             return;
         }
-        if (p.countHit() || p.freeze()) {
+        if (p.countHit() || p.freeze() || (com.htbb.pokemon.LauDai.bat() && TrangThaiGame.khongDanhDuoc(p))) { // GD2b: ngu/bang/te
             return;
         }
         if (p.hp <= 0) {
@@ -1471,7 +1489,18 @@ public class Region {
         damage *= CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
         boolean critSv = p.havecrit();
         boolean baokich = p.haveBaoKich();
-        if (baokich) {
+        if (com.htbb.pokemon.LauDai.bat()) {
+            // GD2 6.1: chi mang x1,5, bo bao kich x4 (chi con o boss "pha giap").
+            if (critSv || baokich) {
+                damage = damage * com.htbb.pokemon.SatThuongLauDai.CHI_MANG_PHAN_TRAM / 100;
+                effect = 2;
+                p.lauDaiCo |= com.htbb.pokemon.SatThuongLauDai.CO_CHI_MANG;
+            }
+            damage = BossLauDai.satThuongVaoBoss(p, mt, damage);
+            if (BossLauDai.laBoss(mt)) {
+                damage = VatPhamDungLauDai.vaoBoss(p, damage); // Thuoc san trum
+            }
+        } else if (baokich) {
             damage *= 4;
             effect = 4;
         } else if (critSv) {
@@ -1554,17 +1583,19 @@ public class Region {
                     if (a > 3) {
                         a = 3;
                     }
-                    if ((dxp /= downPercent[a]) <= 0) {
+                    if ((dxp /= ExpLauDai.chiaCu(downPercent[a])) <= 0) {
                         dxp = 1;
                     }
                 }
                 if ((totalXp = dxp) > 0) {
+                    // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        ExpLauDai.traoHaQuai(p, mt, totalXp, "Region:1560");
+                    } else {
                     int newxp = Map.calculatorXpParty((Char)p, (int)totalXp);
                     if (newxp != totalXp) {
                         int nUser = p.party.userParty.size();
-                        if (nUser > 1) {
-                            nUser = 5;
-                        }
+                        // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
                         int xpReceive = newxp * 80 / (100 * nUser);
                         int maxLv = p.lvDetail.lv;
                         int i = 0;
@@ -1596,6 +1627,7 @@ public class Region {
                         totalXp = p.expReceive(totalXp);
                         Map.addXPForChar((Char)p, (long)(totalXp + p.getEffSkillClan(0) * totalXp / 100), (boolean)false, (String)"Region6");
                     }
+                    }
                 }
             }
             m = new Message(9);
@@ -1608,6 +1640,8 @@ public class Region {
             m.dos.writeByte(CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1 >= 0 ? _level - 1 : 0]);
             m.dos.writeByte(buffAttack);
             m.dos.writeByte(_level);
+            // GD2 6.5: goi kem -95 (co chi mang/khac/STAB) - client cu bo qua.
+            m.kemTheo = GoiLauDaiGame.don(p, mt, ahp);
             p.sendMessage(m);
             p.sendToNearPlayer(m);
             p.buffSkillKham((LiveActor)mt);
@@ -1662,17 +1696,19 @@ public class Region {
                     if (a > 3) {
                         a = 3;
                     }
-                    if ((dxp /= downPercent[a]) <= 0) {
+                    if ((dxp /= ExpLauDai.chiaCu(downPercent[a])) <= 0) {
                         dxp = 1;
                     }
                 }
                 if ((totalXp = dxp) > 0) {
+                    // GD2 3.4: bat co sv.lau_dai -> HAM DUY NHAT ExpLauDai.traoHaQuai (thay ban sao duoi).
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        ExpLauDai.traoHaQuai(p, mt, totalXp, "Region:1666");
+                    } else {
                     int newxp = Map.calculatorXpParty((Char)p, (int)totalXp);
                     if (newxp != totalXp) {
                         int nUser = p.party.userParty.size();
-                        if (nUser > 1) {
-                            nUser = 5;
-                        }
+                        // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
                         int xpReceive = newxp * 80 / (nUser * 100);
                         int maxLv = p.lvDetail.lv;
                         int i = 0;
@@ -1703,6 +1739,7 @@ public class Region {
                         totalXp = Monster.apDungGiamExpTheoCapNV(totalXp, p);
                         totalXp = p.expReceive(totalXp);
                         Map.addXPForChar((Char)p, (long)(totalXp + p.getEffSkillClan(0) * totalXp / 100), (boolean)false, (String)"Region9");
+                    }
                     }
                 }
             }

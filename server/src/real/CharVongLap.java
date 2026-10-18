@@ -107,13 +107,13 @@ class CharVongLap {
             self.timeVeBaiSauChet = 0L;
             if (self.viTriUpMapId > 0) {
                 final boolean mienPhi = self.vip >= 3;
-                if (mienPhi || self.truXuNeuDu(BaiLuyenCong.PHI_AUTO_VE_MAP_UP, false, "auto ve map up")) {
+                if (mienPhi || self.truXuNeuDu(BaiLuyenCong.giaDichChuyen(self, BaiLuyenCong.PHI_AUTO_VE_MAP_UP), false, "auto ve map up")) {
                     self.map.move2Map(self, self.viTriUpTileX, self.viTriUpTileY, self.viTriUpMapId, self.inCountry);
                     self.sendMessage(MessageCreator.createServerAlertMessage(
                             "Đã tự động đưa bạn về vị trí luyện công trước đó.", ""));
                 } else {
                     self.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Không đủ " + BaiLuyenCong.PHI_AUTO_VE_MAP_UP + " xu để tự động bay lại vị trí luyện công.", ""));
+                            "Không đủ " + BaiLuyenCong.giaDichChuyen(self, BaiLuyenCong.PHI_AUTO_VE_MAP_UP) + " xu để tự động bay lại vị trí luyện công.", ""));
                 }
                 self.viTriUpMapId = -1;
             }
@@ -468,14 +468,14 @@ class CharVongLap {
                 if (!MessageCreator.isVersion162(self) && self.timedie > 0L && System.currentTimeMillis() - self.timedie >= 1000L) {
                     if (self.myCountry > -1 && !Map.idMapMONSTER.get(self.myCountry).contains(self.map.mapId)) {
                         final int[] cost = {1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 60000, 70000, 500000, 1000000, 1300000, 1500000, 2000000, 2500000, 3000000, 4500000};
-                        int cp = cost[self.lvDetail.lv / 5];
+                        int cp = cost[Math.min(self.lvDetail.lv / 5, cost.length - 1)];
                         if (self.mapID == 112 || self.mapID == 2541 || self.mapID == 2542 || self.mapID == 2543 || self.mapID == 2544) {
                             cp = 500000;
                         // } else if (self.mapID == 206) {
                         //     cp = 3000000;
                         } else {
                             if (self.myCountry != self.inCountry && self.charthanthu != null) {
-                                cp = cost[self.lastLV / 5];
+                                cp = cost[Math.min(self.lastLV / 5, cost.length - 1)];
                             }
                             if (self.charthanthu != null && self.isKiller) {
                                 cp *= 2;

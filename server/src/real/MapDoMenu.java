@@ -155,6 +155,10 @@ class MapDoMenu {
                 }
                 return;
             }
+            // nap tien: muc "Cửa hàng & Nạp" (NPC -10) + npc ao -540..-549. Tat co: khong bat gi.
+            if (com.htbb.pokemon.NapTienGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             // NPC Tong Quan (-10): muc "Nhan moc nap" luon la muc cuoi menu, vi tri that su
             // duoc RequestNPCInfoHandler ghi lai vao player.idxMocNapMenu khi mo menu.
             if (idNpc == -10 && player.idxMocNapMenu >= 0 && idMenu == player.idxMocNapMenu) {
@@ -246,6 +250,26 @@ class MapDoMenu {
             if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.CheDoPokemon.bat()
                     && idOptionMenu == PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
                 PokedexPokemon.moMenu(player);
+                return;
+            }
+            // GD2: So tay huan luyen (thiet ke dai han) - npc ao SoTayLauDai.NPC_ID (-527).
+            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.LauDai.bat()
+                    && idOptionMenu == SoTayLauDai.viTri()) {
+                SoTayLauDai.moMenu(player);
+                return;
+            }
+            if (idNpc == SoTayLauDai.NPC_ID) {
+                SoTayLauDai.doMenu(player, idMenu, idOptionMenu);
+                return;
+            }
+            // he sinh thai: muc cuoi menu NPC -90 + npc ao HeSinhThaiGame.NPC_ID (-528).
+            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.HeSinhThai.bat()
+                    && idOptionMenu == com.htbb.pokemon.HeSinhThaiMenu.viTri()) {
+                com.htbb.pokemon.HeSinhThaiMenu.moMenu(player);
+                return;
+            }
+            if (idNpc == com.htbb.pokemon.HeSinhThaiGame.NPC_ID) {
+                com.htbb.pokemon.HeSinhThaiMenu.doMenu(player, idMenu, idOptionMenu);
                 return;
             }
             if (idNpc == PokedexPokemon.NPC_ID) {
@@ -569,9 +593,9 @@ class MapDoMenu {
                                 3000000,
                                 4500000
                             };
-                            int cp = cost[player.lvDetail.lv / 5];
+                            int cp = cost[Math.min(player.lvDetail.lv / 5, cost.length - 1)];
                             if (player.myCountry != player.inCountry && player.charthanthu != null) {
-                                cp = cost[player.lastLV / 5];
+                                cp = cost[Math.min(player.lastLV / 5, cost.length - 1)];
                             }
 
                             if (player.charthanthu != null && player.isKiller) {

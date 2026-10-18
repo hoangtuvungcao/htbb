@@ -281,6 +281,18 @@ sv.adminAccounts = ten1,ten2
 **So với TÊN NHÂN VẬT, không phải tên tài khoản.** Không phân biệt hoa/thường, ngăn bằng dấu
 phẩy. Để trống = không cấp cho ai.
 
+Từ 17/10/2026 (sẵn sàng production, xem `docs/pokemon/SAN_SANG_PRODUCTION.md`):
+
+| Khoá | Ý nghĩa |
+|---|---|
+| `sv.gmCanCoPInfo` | `1` = quyền GM cần **cả** tên trong `sv.adminAccounts` **lẫn** `pInfo[16]=1` trong `tob_char`. `0` (mặc định) = chỉ cần tên, như cũ. |
+| `sv.banToiThieu` | `N>0` = từ chối jar/APK có số bản build `< N` (trường int cuối gói đăng nhập). PC Unity không gửi số bản nên luôn qua. `0` = tắt. Số bản = `BAN=` trong `htbb-client/phat-hanh/phien_ban.conf` (quy ước `major*10000 + minor*100 + patch`; jar MANIFEST `HTBB-Ban`, Android versionCode, PC bundleVersion). Open test **0.9.0-opentest = 900** → đặt `sv.banToiThieu=900` khi mở cửa để chặn jar/APK thử cũ; bản vá 0.9.1 = 901 → nâng lên 901 nếu bắt buộc cập nhật. |
+| `sv.chiSoMayChu` | `1` (mặc định) = ghi `tob_chi_so_may_chu` + `trang_thai.json` mỗi 30 s và bật chế độ bảo trì bằng tệp `bao_tri.txt`. `0` = tắt cả hai. |
+
+Lệnh quản trị gói 47 (`AdminHandler`, gồm `shutdown`) giờ chỉ nhận từ **nhân vật đang online có
+quyền GM** (trước đây còn nhận theo tên tài khoản và hai tài khoản cứng `staynight`/`lamkckc`), và
+mọi lệnh được ghi vào `AdminChat_lenh47.txt`.
+
 ## 7b. Chế độ Pokémon
 
 ```ini
@@ -300,6 +312,55 @@ mới có tác dụng: chỉ đọc một lần lúc bật máy, mọi chỗ tro
 Trước khi bật trên một CSDL mới: chạy `sql/them_cot_pokemon.sql` (thêm cột `dex`, `shiny`,
 `he2`; server cũng tự thêm nếu thiếu, nhưng chỉ khi cờ đang bật) rồi
 `sql/pokemon_du_lieu_quai.sql`. Đá tiến hoá Eevee: `sql/pokemon_vat_pham_eevee.sql`.
+
+## 7d. Nạp tiền
+
+```ini
+sv.nap_tien = 0
+```
+
+Nạp tiền không lạm phát, không bán sức mạnh ([`pokemon/NAP_TIEN.md`](pokemon/NAP_TIEN.md)). **Phải
+khởi động lại**; mọi chỗ đọc qua `com.htbb.pokemon.NapTien.bat()`. Chỉ thật sự bật khi **cả**
+`sv.lau_dai=1` (thiếu thì server in cảnh báo và giữ tắt). Trước khi bật: chạy
+`sql/pokemon_nap_tien.sql`, web đặt `KPAH_NAP_BAT=true`, và **phải có giấy phép hình ảnh/IP**
+(`NAP_DA_CO_GIAY_PHEP=1` trên web để tắt cảnh báo). `0` hoặc thiếu dòng = y như trước.
+
+## 7c. Thiết kế dài hạn (giai đoạn 2)
+
+```ini
+sv.lau_dai = 0
+sv.ngay_khai_truong =
+```
+
+Cờ của [`pokemon/KE_HOACH_LAU_DAI_GD2.md`](pokemon/KE_HOACH_LAU_DAI_GD2.md). **Phải khởi động lại**, mọi chỗ đọc
+qua `com.htbb.pokemon.LauDai.bat()`. `0` hoặc thiếu dòng = y như trước. `1` = kinh tế/EXP/nhiệm vụ/chiến đấu mới.
+**Bật/tắt hoàn toàn tự động**: lúc khởi động server tự chuyển EXP nhân vật sang bảng đúng với cờ (giữ cấp, giữ %),
+cả chiều tắt; tự trả nhiệm vụ chính và gỡ lịch sự kiện khi tắt (chi tiết: tài liệu kế hoạch, mục "Bật / tắt cờ").
+`sv.ngay_khai_truong` (yyyy-MM-dd, ngày 0 của trần cấp mùa 60 → 70 → 80 → 91) **không bắt buộc**: thiếu thì lần bật đầu
+tiên tự ghi hôm nay vào `cau_hinh.lau_dai.ngay_khai_truong` và dùng lại về sau; đặt trong `server.ini` thì giá trị đó thắng.
+Số liệu chỉnh không cần build qua bảng `cau_hinh` bằng khoá của `data_kinh_te_lau_dai` (vd `thue.cho`).
+
+## 7d. Giờ bảo trì hằng ngày
+
+```ini
+sv.gioBaoTri =
+```
+
+`BaoTriDaily`: server tự thoát lúc bảo trì (systemd `Restart=always` trong `vps/kpah-game.service` bật lại).
+Trống/thiếu = giờ ngẫu nhiên như cũ; `HH:MM` (vd `04:30`) = giờ cố định; `tat` = không tự bảo trì (cả cảnh báo).
+**Phải khởi động lại.**
+
+## 7e. Hệ sinh thái game
+
+```ini
+sv.he_sinh_thai = 0
+```
+
+Cờ của [`pokemon/HE_SINH_THAI.md`](pokemon/HE_SINH_THAI.md): thời tiết/ngày đêm/mùa đổi loài quái khi hồi sinh,
+bùng phát, câu cá, khảo cổ, vườn berry, nấu ăn/chế thuốc, nhà trẻ và trứng, chợ sinh thái, đố vui, đua, album.
+**Phải khởi động lại**; mọi chỗ đọc qua `com.htbb.pokemon.HeSinhThai.bat()` (đọc sớm từ `server.ini` khi lớp
+được nạp, như `sv.che_do_pokemon`). `0` hoặc thiếu dòng = y như trước. Trước khi bật: chạy
+`sql/pokemon_he_sinh_thai.sql` (bảng `tob_hst_*` server cũng tự tạo nếu thiếu).
 
 ## 8. Chống flood
 

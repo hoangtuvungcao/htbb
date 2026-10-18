@@ -1,0 +1,9 @@
+ma,ten,nhom,anh_xa,dung_cho,nguon,gia,tien
+bui_sao,Bụi sao,nguyen_lieu_phu,item:1034,"Nâng cấp +11..+15 bậc sơ cấp, đồng, bạc (1 cái mỗi lần thử)","rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",0,khong_ban
+manh_sao,Mảnh sao,nguyen_lieu_phu,item:1035,"Nâng cấp +11..+15 bậc vàng, bạch kim, kim cương (1 cái mỗi lần thử)","rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",0,khong_ban
+manh_thien_thach,Mảnh thiên thạch,nguyen_lieu_phu,item:1036,"Nâng cấp +11..+15 bậc chuyên gia, tinh anh, huyền thoại (1 cái mỗi lần thử)","rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",0,khong_ban
+vay_rong,Vảy rồng,nguyen_lieu_phu,item:1037,"Nâng cấp +11..+15 bậc thần thoại, tối thượng (1 cái mỗi lần thử)","rơi ở dải cấp của bậc (0,4%/quái), phân rã đồ bậc đó, chế tạo",0,khong_ban
+manh_tinh_hoa,Mảnh tinh hoa,nguyen_lieu_hoan_my,item:1038,Chuyển đồ Hoàn mỹ sang bậc mới (3 mảnh),phân rã đồ Hoàn mỹ,0,khong_ban
+da_nang_cap,Đá nâng cấp,nguyen_lieu_chinh,ngoc:8,"Mọi lần nâng cấp: +1..+5 ×1, +6..+10 ×2, +11..+15 ×4","rơi 1,5%/quái (lệch cấp ≤ 5), quái tinh anh chắc chắn, phân rã 2/món",0,khong_ban
+bua_bao_ho,Bùa bảo hộ,bua,ngoc:0/1/2,Giữ cấp khi trượt +7..+10,cửa hàng lượng khoá,10,luong_khoa
+bua_bao_ho_cao,Bùa bảo hộ cao cấp,bua,ngoc:3/4,Giữ cấp khi trượt +11..+15,cửa hàng lượng khoá,25,luong_khoa

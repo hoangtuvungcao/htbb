@@ -244,3 +244,30 @@ Không có: nhiệm vụ tuần, chuỗi điều kiện tiên quyết, khoá the
 - Pokédex (`tob_pokedex`, `tob_pokedex_thuong`) ⇒ nền cho nhiệm vụ nghiên cứu.
 - Thuế chợ, thuế xổ số, sửa đồ, hồi sinh theo cấp ⇒ hố hút đúng hướng, chỉ cần chỉnh số.
 - `cau_hinh` (tỉ lệ rơi/EXP chỉnh không cần build) ⇒ nơi đặt tham số mới.
+
+## Bổ sung (kiểm toán tiền tệ, 17/10/2026)
+
+Nguồn/hố bị sót ở bản đầu. "Đã sửa" = trong GĐ2 (`KE_HOACH_LAU_DAI_GD2.md` mục "Trạng thái thực hiện").
+
+| # | Phát hiện | file | Xử lý |
+|---|---|---|---|
+| A1 | **Nghiêm trọng**: khối đổi ngày cộng thẳng `lockLuong += 1000` cho mọi nhân vật cấp ≥ 40 mỗi ngày (bỏ qua `KHOA_TIEN`, trần 50k, không log). 3 nhân vật/tài khoản ⇒ 3 000 lượng khoá/ngày | `CharCapNhat.java` (khối đổi ngày) | Đã sửa: tắt cờ đi qua `addLuongLock` + log; bật cờ thì bỏ, thay bằng lịch đăng nhập 7 ngày theo **tài khoản** (3–15) |
+| A2 | Vận tiêu trả 100–200 lượng (0,5% lượng mở) | `CharSuKien.java` | Đã sửa (cờ): chỉ lượng khoá, ≤ 10/lần |
+| A3 | Quà sự kiện offline 5 000/2 000/1 000 lượng | `Map.java` (quà top offline) | Đã sửa (cờ): 50/20/8 lượng theo ngân sách xếp hạng |
+| A4 | Hệ số `TileNap` admin không kiểm trên | `DatabaseXepHang.java` | Đã sửa: chặn ≤ 3 (đội nạp tiền tiếp quản phần còn lại) |
+| A5 | Đổi điểm xài lượng → xu ×10 000 | `MapSuKien.java` | Đã sửa (cờ): tắt |
+| A6 | Code lì xì (lượng mở), đổi kẹo `lockLuong +=` thẳng, BossTrungThu | `MapNhapText`, `RequestNPCInfoHandler`, `BossTrungThu` | Đổi kẹo: đã đi qua `addLuongLock` + log; lì xì (cờ): lượng khoá ≤ 15; BossTrungThu đã dùng `addLuongLock` |
+| D1 | Lượng train quái dừng khi đang giữ ≥ 50k (`Char.java` ~14506) - bản đầu ghi "không trần" | `Char.java` | Ghi chú: **có** trần giữ 50k; bật cờ thì nguồn này bỏ hẳn (GĐ2 2.1) |
+| D2 | Khoảng thuế chợ 1–20% (nhập chữ) khác 0–30% (gói tin) | `MapNhapText`, `Map.java` | Đã sửa (mọi chế độ): chung `Map.THUE_DOI_TOI_THIEU/TOI_DA` = 1..20 |
+
+**Hố hút còn thiếu trong mô hình** (giữ nguyên, đưa vào chỉ số `tob_kinh_te_ngay` qua `Char.subXu`): đặt lại lỗ khảm,
+nâng cấp thời trang, mở rộng túi, nâng cấp/đổi màu/xoá thú cưỡi, ly hôn/cưới, rời bang, chế tạo, quy đổi, thả đèn,
+xổ số, hộp may mắn, mua EXP Dracula, chuộc lại đồ đã bán, đặt cọc đấu giá.
+
+**Lớp chỉ có trong `lib/NQSH_5h.jar` (không sửa được, CODING_CONVENTION §12)**: `RegionMapMoba` (addLuong 100 × 2),
+`PrivateDataMap` (addXu 40k/50k), `TongKimData`, `ArenaData`. Không bọc được từ ngoài mà không đổi tên lớp; theo dõi bằng
+`tob_kinh_te_ngay` (xu vào/ra) và tắt các bản đồ/sự kiện đó khi chạy thiết kế dài hạn nếu chỉ số đỏ.
+
+**Thưởng mới GĐ2 đã đưa vào mô phỏng** (`MoPhongKinhTe`, module "GD2 bổ sung"): quà hoạt động (≤ 5 lượng khoá + 5% giờ xu/ngày/tài khoản),
+Hầm ngục (5 lượng khoá/ngày), boss thế giới (3/tuần), chiếm thành (5–20/tuần, chia quỹ bang là chuyển tiền). Kết quả vẫn **12/12**,
+xu ra/vào 99,3%, lượng khoá ra/vào 95,0%.

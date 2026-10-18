@@ -27,13 +27,19 @@ TasksMax=infinity
 LimitNPROC=infinity
 LimitNOFILE=65535
 
-# -Xmx theo RAM cua VPS (nho tru phan stack thread o tren):
-#     VPS 1 GB -> -Xmx384m
-#     VPS 2 GB -> -Xmx768m   (mac dinh o day)
-#     VPS 4 GB -> -Xmx2g
-# Dung dat -Xmx sat RAM: JVM con ton metaspace + stack thread + bo dem GC.
+# -Xmx theo RAM cua VPS (nho tru phan stack thread o tren). DO THAT 17/10/2026 (ban Pokemon,
+# docs/pokemon/SAN_SANG_PRODUCTION.md muc 4, -Xmx1g): heap old ~92% va RSS ~1,1-1,2 GB o 300 nguoi,
+# ~3.000-3.800 thread. Nen:
+#     VPS 4 GB -> -Xms1g -Xmx1536m   (toi ~150-200 nguoi)
+#     VPS 8 GB -> -Xms1g -Xmx2g      (mac dinh o day, 300+ nguoi con du)
+# Dung dat -Xmx sat RAM: JVM con ton metaspace + stack thread + bo dem GC; MariaDB can them 0,5-1 GB.
+# -XX:+UseG1GC: ghi ro - tren VPS 1-2 vCPU JVM tu chon SerialGC (dung ca server moi lan GC).
+# -XX:+ExitOnOutOfMemoryError: het bo nho thi THOAT de systemd Restart=always dung lai server sach,
+#   thay vi song do dang (thread chet tung cai, nguoi choi ket). Shutdown hook KHONG chay khi thoat
+#   kieu nay -> mat toi da mot chu ky luu tu dong; chap nhan doi lay server khong treo.
+# -XX:+HeapDumpOnOutOfMemoryError: de lai bang chung (log/ phai du cho trong ~2 GB).
 # -Djava.awt.headless=true: VPS khong co man hinh (AdminPanel tu bo qua).
-ExecStart=/usr/bin/java -Xms256m -Xmx768m -Xss256k -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar KPAH2_patched.jar
+ExecStart=/usr/bin/java -Xms1g -Xmx2g -Xss256k -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/kpah/log -Xlog:gc:file=/opt/kpah/log/gc.log:time:filecount=5,filesize=10m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar KPAH2_patched.jar
 
 # Tat = SIGTERM -> shutdown hook trong TeamServer luu char/clan/market roi moi thoat.
 # TimeoutStopSec phai du dai cho no luu xong, dung ha xuong duoi 60s.

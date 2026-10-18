@@ -444,6 +444,7 @@ class MapCheTao {
                 if (option == 1) {
                     if (map.doUserUpLevelItem(player, message)) {
                         player.subXu(5000L, true, "map 17");
+                        NhiemVuEngine.suKien(player, "che_tao", "", 1); // GD2b (tat co: khong lam gi)
                     }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
@@ -452,6 +453,7 @@ class MapCheTao {
                 if (option == 2) {
                     if (map.doUserUpLevelItemSpecial(player, message)) {
                         player.subXu(5000L, true, "map 18");
+                        NhiemVuEngine.suKien(player, "che_tao", "", 1);
                     }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
