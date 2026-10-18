@@ -2191,7 +2191,7 @@ CREATE TABLE `tob_char_quest` (
   `monskilled` varchar(200) NOT NULL COMMENT 'so luong quai da giet',
   `isfinish` varchar(200) NOT NULL COMMENT 'da hoan thanh nhiem vu hay chua',
   `idsubRcv` varchar(200) DEFAULT NULL,
-  `itemquest` varchar(100) DEFAULT NULL,
+  `itemquest` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`id_char`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
