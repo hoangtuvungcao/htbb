@@ -32,6 +32,18 @@ const banGoiY = computed(() => platforms.value.find(p => p.ma === goiY.value) ??
 const nhanNut = (p: { kieu: string }) => (p.kieu === 'testflight' ? 'Cài qua TestFlight' : p.kieu === 'app-store' ? 'Mở App Store' : p.kieu === 'ipa-manifest' ? 'Cài trên iPhone/iPad' : 'Tải / cài đặt')
 const shaMo = ref<string | null>(null)
 
+/** Tệp phụ của một bản (vd. bản nén, bản Linux, jar nhẹ): admin ghi "/tai/<tệp>" trong ô "Có gì mới". */
+const NHAN_TEP_PHU: [RegExp, string][] = [
+  [/linux.*\.tar\.gz$|\.AppImage$/i, 'Bản Linux (có Java đi kèm)'],
+  [/\.zip$/i, 'Bản nén chạy ngay (.zip)'],
+  [/nhe.*\.jar$/i, 'Bản nhẹ cho máy yếu'],
+  [/\.jad$/i, 'Tệp .jad'],
+]
+function tepPhu(nhatKy: string): { url: string, nhan: string }[] {
+  const ds = [...new Set(nhatKy.match(/\/tai\/[\w.\-]+/g) ?? [])]
+  return ds.map(url => ({ url, nhan: NHAN_TEP_PHU.find(([re]) => re.test(url))?.[1] ?? url.slice(5) }))
+}
+
 const steps = computed(() => [
   { so: '01.', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
   { so: '02.', tieuDe: 'Tải phiên bản phù hợp', mo: 'Chọn nền tảng và làm theo hướng dẫn cài đặt.', link: 'Chọn bản tải', to: '/download#download' },
@@ -141,6 +153,20 @@ const faq = [
                   >
                     {{ nhanNut(p) }}
                   </UButton>
+                  <div v-if="p.href && p.nhatKy && tepPhu(p.nhatKy).length" class="mt-2 flex flex-col gap-1.5">
+                    <UButton
+                      v-for="t in tepPhu(p.nhatKy)"
+                      :key="t.url"
+                      :to="t.url"
+                      external
+                      block
+                      color="neutral"
+                      variant="outline"
+                      icon="i-lucide-download"
+                    >
+                      {{ t.nhan }}
+                    </UButton>
+                  </div>
                   <template v-else-if="p.trangThai === 'sap-ra-mat'">
                     <UBadge color="warning" variant="outline" size="lg" icon="i-lucide-hourglass" class="w-full justify-center py-2">
                       Sắp ra mắt

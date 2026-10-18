@@ -65,15 +65,17 @@ const links = computed<NavigationMenuItem[]>(() => {
       <UColorModeButton color="neutral" variant="ghost" />
       <ClientOnly>
         <template v-if="auth.loggedIn.value">
-          <UButton v-if="adminAuth.loggedIn.value" to="/admin" color="primary" variant="soft" icon="i-lucide-shield-check" class="hidden sm:inline-flex">
-            Quản trị
-          </UButton>
-          <UButton to="/account" color="neutral" variant="ghost" icon="i-lucide-user-round" class="hidden sm:inline-flex">
+          <!-- Thanh trên chật (9 mục menu): Quản trị / Đăng xuất chỉ là icon, chữ nằm ở tooltip;
+               menu điện thoại (#body) vẫn hiện đủ chữ. -->
+          <UTooltip v-if="adminAuth.loggedIn.value" text="Quản trị">
+            <UButton to="/admin" color="primary" variant="soft" icon="i-lucide-shield-check" square aria-label="Quản trị" class="hidden sm:inline-flex" />
+          </UTooltip>
+          <UButton to="/account" color="neutral" variant="ghost" icon="i-lucide-user-round" class="hidden max-w-36 whitespace-nowrap sm:inline-flex" :ui="{ label: 'truncate' }">
             {{ auth.user.value?.username }}
           </UButton>
-          <UButton to="/logout" color="neutral" variant="outline" icon="i-lucide-log-out" class="hidden sm:inline-flex">
-            Đăng xuất
-          </UButton>
+          <UTooltip text="Đăng xuất">
+            <UButton to="/logout" color="neutral" variant="outline" icon="i-lucide-log-out" square aria-label="Đăng xuất" class="hidden sm:inline-flex" />
+          </UTooltip>
         </template>
         <template v-else>
           <UButton to="/login" color="neutral" variant="ghost" class="hidden 2xl:inline-flex">
