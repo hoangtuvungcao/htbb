@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  * duy nhat dam bao bo chon khong bao gio dua ra id ngoai dai.
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
- *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucThu
+ *   java -cp "server/build/classes;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucThu
  *   -> ghi web/shared/data/danh-muc-thu.json (tim ../web hoac web trong monorepo, hoac -Dhtbb.web=<thu muc>).
  *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
@@ -47,7 +47,7 @@ public final class SinhDanhMucThu {
          .append(ds.length - 1).append("), KHONG phai id vat pham: Char.createPet()/createPetVinhVien() doc thang ")
          .append("Map.petTemplate[idpet] khong kiem bien. test/KiemDanhMucThu (repo game) doi chieu tep nay voi mang Java.\",\n");
         s.append("  \"_nguon\": \"real.Map.petTemplate (src/real/Map.java, loadPetTemplate) - repo game HTBB\",\n");
-        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucThu\",\n");
+        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhDanhMucThu\",\n");
         s.append("  \"thu\": {\n");
         int soDong = 0;
         final StringBuilder dong = new StringBuilder();

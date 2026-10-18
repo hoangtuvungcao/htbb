@@ -1079,7 +1079,7 @@ hình; tài liệu thiết kế trong `docs/` (được nêu từ cũ).
 | `XaPhu` | `PidgeotBay` |
 | `NhanVat` | giữ hoặc `Pokemon` (chữ hiện ra đã là "Pokémon") |
 
-Không đổi tên class nằm trong jar gốc (`lib/htbb-core.jar`) — không có mã nguồn.
+Lớp lõi cũ phục hồi từ `lib/htbb-core.jar` ở P3 (đầu tệp `PHUC HOI TU LOI CU`) giữ tên cũ tới P4/P5 rồi mới đổi.
 
 ### 10.3 Quy tắc chữ (rút gọn)
 

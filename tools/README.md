@@ -72,5 +72,5 @@ Thuật ngữ chuẩn: [docs/thiet-ke-game.md](../docs/thiet-ke-game.md).
 | `SinhBangCapDo.java`, `SinhDanhMucDanhHieu.java`, `SinhDanhMucNgoc.java`, `SinhDanhMucThu.java` | `web/shared/data/*.json` từ chính mảng / hàm trong mã server |
 | `SinhSqlTenSkinThu.java` | `sql/ten_mo_ta_skin_linh_thu.sql` từ `real.SkinThuCuoi` |
 | `TaoDataSprite.java`, `CatSpriteSheet.java`, `DichSkinThu.java`, `CanNgangSkinThu.java`, `CanChoNgoiSkinThu.java`, `ThuChoNgoiSkinThu.java`, `XemSkinNhuTrongGame.java`, `TaoIconSkinThu.java`, `TaoPetLan*.java`, `TaoPetTrangThai1.java` | dữ liệu khung sprite trong `server/map/d_effect/`, căn chỉnh và xem trước thú cưỡi / skin |
-| `DoiChuoiClass.java`, `va_mypet_client.py`, `giai-ma-core.bat` | vá chuỗi trong tệp `.class` / jar client, giải mã `htbb-core.jar` để tra cứu |
+| `DoiChuoiClass.java`, `va_mypet_client.py` | vá chuỗi trong tệp `.class` / jar client |
 | `xem_sprite.html` | xem sprite trong trình duyệt |

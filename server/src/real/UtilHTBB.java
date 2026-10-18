@@ -3,8 +3,8 @@ package real;
 /**
  * Ham tien ich dung chung (goc, khoang cach, ngau nhien, gio/ngay) cho code server.
  *
- * Ban cai dat that la lop real.UtilKPAH nam trong lib/htbb-core.jar (KHONG co source). Lop do
- * phai giu nguyen ten: cac lop chi co ban nhi phan trong htbb-core.jar (ItemShop,
+ * Ban cai dat that la lop real.UtilKPAH (lop loi cu phuc hoi tu lib/htbb-core.jar o P3). Lop do
+ * giu nguyen ten toi P4/P5: cac lop loi cu khac (ItemShop,
  * RequestRegisterHandler, data.Logdata...) goi no theo ten. Code trong src/ goi qua lop nay
  * de khong lap lai ten cu; moi ham chi chuyen tiep, dung chung bo sinh so ngau nhien cua jar.
  */

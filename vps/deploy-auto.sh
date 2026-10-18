@@ -204,7 +204,8 @@ if [ "$CO_COMMIT_MOI" = 1 ]; then
             echo "[LOI] htbb-server.jar hong sau khi pull. Server VAN DANG CHAY BAN CU"
             echo "      (chua he dung toi) - phuc hoi ngay de khong ai lo phai bao tri xong roi moi vo"
             echo "      chay ban hong."
-            sudo -u "$USER_SV" git -C "$DIR" checkout "$CU" -- server/htbb-server.jar
+            # Phuc hoi ca server/lib: jar truoc P3 can lib/htbb-core.jar (P3 xoa tep nay).
+            sudo -u "$USER_SV" git -C "$DIR" checkout "$CU" -- server/htbb-server.jar server/lib
             chown_repo
             exit 1
         fi

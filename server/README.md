@@ -5,7 +5,7 @@ mọi đường dẫn trong mã nguồn (`map/`, `cMap/`, `server.ini`, các t�
 
 ```
 src/            mã nguồn (package real, data, io, server, com.htbb.*)    test/        bộ kiểm thử (Kiem.java + Kiem*.java)
-lib/            htbb-core.jar (thư viện đóng của game gốc), jxl, mysql-connector
+lib/            thư viện bên thứ ba: jxl, mysql-connector (lõi cũ htbb-core.jar đã thành mã nguồn ở P3)
 map/            tài nguyên: ảnh, tile pokemon_tile/, trang trí , dữ liệu hiệu ứng
 cMap/   bản đồ Pokémon                                            loginServer/ CheckLoginSocket.jar + server.ini (tạo tay)
 htbb-server.jar jar đang chạy (nằm trong git — VPS chạy đúng tệp này)    chay_novadb/ chạy thử trên NovaDB
@@ -36,12 +36,14 @@ CSDL: [sql/README.md](../sql/README.md). Triển khai: [docs/trien-khai.md](../d
 | `lib/` (đúng tên) | `Class-Path: lib/...` trong MANIFEST |
 | `map/`, `cMap/` | đường dẫn ghi cứng trong mã nguồn |
 | `server.ini`, các `.txt` | đọc/ghi theo thư mục chạy |
-| tên package `real`, `data`, `io`, `server`, `real.cmd` | `lib/htbb-core.jar` (xem dưới) |
+| tên lớp nạp bằng chuỗi (`Class.forName`, tên lớp trong cấu hình/log) | tìm chuỗi trước khi đổi tên |
 
-`lib/htbb-core.jar` chứa hàng trăm lớp đã biên dịch **không có mã nguồn**, trùng package với `src/`. Lúc chạy, lớp nào
-có trong `htbb-server.jar` thì thắng, thiếu thì rơi xuống `htbb-core.jar`; nhiều lớp trong jar đóng gọi ngược lớp của
-`src/` theo tên (vd `real/Char`). Đổi tên package hay tên lớp bị tham chiếu sẽ **biên dịch sạch, test đạt, rồi ném
-`NoClassDefFoundError` lúc chạy**. Muốn đổi phải gỡ phụ thuộc `htbb-core.jar` trước.
+Trước P3 (10/2026) `lib/htbb-core.jar` chứa 190 lớp lõi của game gốc **không có mã nguồn**, trùng package với `src/`
+và gọi ngược lớp của `src/` theo tên, nên không đổi được tên lớp nào. P3 đã dịch ngược 169 lớp chỉ có trong jar thành
+mã nguồn trong `src/` (đầu tệp ghi `PHUC HOI TU LOI CU`; 21 lớp còn lại `src/` đã ghi đè từ trước) và bỏ jar khỏi
+build lẫn classpath: giờ mọi lớp game đều biên dịch từ `src/`, đổi tên package/lớp thì `javac` báo hết chỗ gọi.
+Các lớp phục hồi giữ nguyên tên, package, chuỗi và hành vi cũ; dọn tên và chuỗi là việc của P4/P5. Nguồn gốc mã:
+[docs/giay-phep.md](../docs/giay-phep.md).
 
 Các lớp lớn (`real/Map.java`, `real/Char.java`, `data/Database.java`) đã được tách bớt sang lớp phụ cùng package
 (`MapDoMenu`, `MapSuKien`, `CharChiSo`, `DatabaseNhanVat`…); phần Pokémon và hệ thống mới nằm trong `com.htbb.*`.

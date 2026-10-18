@@ -28,7 +28,7 @@ import com.htbb.pokemon.DinhDangBanDo;
  *
  * Chay (o thu muc HTBB/; can ban build server de doc bang cong/den - neu thieu thi bo qua phan do):
  *   javac -encoding UTF-8 -cp &lt;lop server&gt; -sourcepath src -d build/tools tools/pokemon/GiaiMaMap.java
- *   java -cp build/tools:&lt;lop server&gt;:lib/htbb-core.jar GiaiMaMap [thuMucCMap] [thuMucRa]
+ *   java -cp build/tools:&lt;lop server&gt; GiaiMaMap [thuMucCMap] [thuMucRa]
  *     mac dinh: server/cMap -> du_lieu/map_giai (anh &lt;id&gt;.png + &lt;id&gt;.json, khong commit) + du_lieu/bang_den.json
  */
 public final class GiaiMaMap {

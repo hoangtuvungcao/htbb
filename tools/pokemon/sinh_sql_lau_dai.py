@@ -254,7 +254,7 @@ QUAI_DA_DAT = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
                51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 62, 63, 65, 68, 71, 74, 76, 77, 80, 81, 118,
                136, 137, 138]
 
-# Vat pham nhiem vu dung duoc (data.ItemQuest.NAME_ITEM_QUEST trong lib/htbb-core.jar).
+# Vat pham nhiem vu dung duoc (data.ItemQuest.NAME_ITEM_QUEST, server/src/data/ItemQuest.java).
 VP_NV = {0: "Nọc bọ cạp", 2: "Khúc gỗ", 3: "Rết đỏ", 6: "Lông đuôi Hồng Kê", 7: "Móng cá sấu",
          8: "Da ếch", 9: "Cựa gà"}
 VP_THU = 4  # "Lá thư"

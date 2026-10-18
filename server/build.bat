@@ -18,6 +18,10 @@ REM  khong he goi getResource/getResourceAsStream lan nao - moi file deu
 REM  doc bang new File(...) theo thu muc lam viec.
 REM  => dung jar sach duoc, va nho vay class xoa di trong src\ khong con bi
 REM     ket lai vinh vien trong jar nua.
+REM
+REM  Tu P3 (10/2026) KHONG con lib\htbb-core.jar: 169 lop loi cu da phuc hoi thanh
+REM  ma nguon trong src\ (dau tep "PHUC HOI TU LOI CU"). Classpath chi con thu vien
+REM  ben thu ba: jxl va mysql-connector.
 REM ============================================================
 
 echo ============================================================
@@ -63,7 +67,7 @@ echo.
 
 set "OUT=build\classes"
 set "MF=build\manifest.mf"
-set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\htbb-core.jar"
+set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar"
 set "MAINCLASS=server.TeamServer"
 
 if not exist build mkdir build
@@ -96,7 +100,7 @@ REM /opt/htbb/lib tren VPS (WorkingDirectory=/opt/htbb). Doi ten thu muc lib
 REM la server chet ngay luc khoi dong vi khong thay driver MySQL.
 > "%MF%" echo Manifest-Version: 1.0
 >> "%MF%" echo Main-Class: %MAINCLASS%
->> "%MF%" echo Class-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar lib/htbb-core.jar
+>> "%MF%" echo Class-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar
 >> "%MF%" echo.
 
 if exist HTBB_NEW.jar del /f /q HTBB_NEW.jar

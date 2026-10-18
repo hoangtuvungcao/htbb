@@ -41,8 +41,8 @@ class MapDoi {
     /**
      * Thoi gian cho "giai tan bang" ke tu luc bang chu bam lenh, tinh bang PHUT.
      *
-     * `NewClan.timeDel()`/`timeExpire()` (lib/htbb-core.jar, khong co ma nguon trong src/ nen
-     * KHONG sua truc tiep duoc - xem [[project-htbb-core-jar-khoa-ten-package]]) luon tinh
+     * `NewClan.timeDel()`/`timeExpire()` (lop loi cu; truoc P3 chi co lop loi cu (phuc hoi tu htbb-core.jar o P3) nen
+     * khong sua truc tiep duoc, P3 giu nguyen hanh vi) luon tinh
      * "4320 - (now - timeStartDel)/60000", tuc CO DINH dem nguoc 4320 phut (3 ngay) ke tu
      * moc `timeStartDel`. Muon rut ngan ma khong sua duoc cong thuc do, chi con cach LUI
      * `timeStartDel` ve qua khu dung boi so phut can bot (xem datTimeStartDelGiaiTan) de

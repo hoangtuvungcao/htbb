@@ -25,7 +25,7 @@ NOVA_USER=${NOVA_USER:-htbb}
 NOVA_PASS=${NOVA_PASS:-htbb}
 MYSQL=${MYSQL:-mysql}
 CHAY=${CHAY:-$(pwd)/chay_novadb}
-CP="build/classes:lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
+CP="build/classes:lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar"
 
 dung() {
     for f in game login nova; do
@@ -64,7 +64,7 @@ if [ ! -d build/classes ] || [ -n "$(find src -newer build/classes -name '*.java
     echo "Bien dich server ..."
     rm -rf build/classes && mkdir -p build/classes
     find src -name '*.java' > build/nguon.txt
-    javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar" \
+    javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar" \
         -sourcepath src -d build/classes @build/nguon.txt
 fi
 

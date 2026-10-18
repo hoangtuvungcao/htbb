@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * Che mat khau CSDL trong log, va don xac luong chet cua Region.
  *
- * CHUYEN THAT: data.ConnPool (trong lib/htbb-core.jar, khong co ma nguon) in ra
+ * CHUYEN THAT: data.ConnPool (lop loi cu, truoc P3 chi co bytecode trong lib/htbb-core.jar) in ra
  *     URL: jdbc:mysql://... | USER: htbb | PASS: &lt;mat khau that&gt;
  * moi lan tao pool - bon lan moi khoi dong, thang vao /opt/htbb/log/game.out, ma cac
  * tep log de quyen -rw-r--r--. Khong sua duoc trong jar nen chan o dau ra.

@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
  * that) deu BI LOAI, khong dua vao danh muc.
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
- *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucDanhHieu
+ *   java -cp "server/build/classes;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucDanhHieu
  *   -> ghi web/shared/data/danh-muc-danh-hieu.json (tim ../web hoac web trong monorepo, hoac -Dhtbb.web=<thu muc>).
  *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
@@ -89,7 +89,7 @@ public final class SinhDanhMucDanhHieu {
          .append("MOT trong so nay); ngauNhien=false thi PHAI ghi id that (DH:<id>:...). ")
          .append("test/KiemDanhMucDanhHieu (repo game) doi chieu tep nay voi getName() va mang availableTitles that.\",\n");
         s.append("  \"_nguon\": \"data.DanhHieu.getName() (src/data/DanhHieu.java) - repo game HTBB\",\n");
-        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucDanhHieu\",\n");
+        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhDanhMucDanhHieu\",\n");
         s.append("  \"danhHieu\": {\n");
 
         int soDong = 0;
