@@ -2,7 +2,8 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const auth = useAuth()
-onMounted(() => auth.hydrate())
+const adminAuth = useAdminAuth()
+onMounted(() => { auth.hydrate(); adminAuth.hydrate() })
 
 const route = useRoute()
 const tenSite = useAppConfig().htbb.tenSite
@@ -64,6 +65,9 @@ const links = computed<NavigationMenuItem[]>(() => {
       <UColorModeButton color="neutral" variant="ghost" />
       <ClientOnly>
         <template v-if="auth.loggedIn.value">
+          <UButton v-if="adminAuth.loggedIn.value" to="/admin" color="primary" variant="soft" icon="i-lucide-shield-check" class="hidden sm:inline-flex">
+            Quản trị
+          </UButton>
           <UButton to="/account" color="neutral" variant="ghost" icon="i-lucide-user-round" class="hidden sm:inline-flex">
             {{ auth.user.value?.username }}
           </UButton>
@@ -92,6 +96,9 @@ const links = computed<NavigationMenuItem[]>(() => {
       <SiteHoTroZalo kieu="chan" nhan="Hỗ trợ qua Zalo" block class="mb-4" />
       <ClientOnly>
         <div v-if="auth.loggedIn.value" class="flex flex-col gap-2">
+          <UButton v-if="adminAuth.loggedIn.value" to="/admin" color="primary" variant="soft" icon="i-lucide-shield-check" block>
+            Quản trị
+          </UButton>
           <UButton to="/account" color="neutral" variant="soft" icon="i-lucide-user-round" block>
             Tài khoản ({{ auth.user.value?.username }})
           </UButton>

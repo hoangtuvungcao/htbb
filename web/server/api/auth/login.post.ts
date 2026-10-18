@@ -44,5 +44,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = { id: Number(row.id), username: String(row.username) }
-  return { token: taoTokenNguoiChoi(user.id, user.username, row.password), user }
+  // laAdmin: trang /login đưa thẳng tài khoản quản trị vào /admin (quyền thật vẫn do API admin kiểm).
+  let laAdmin = false
+  try { laAdmin = !!(await vaiTroCua(user.username)) }
+  catch { /* bảng vai trò chưa có: coi như người chơi thường */ }
+  return { token: taoTokenNguoiChoi(user.id, user.username, row.password), user, laAdmin }
 })

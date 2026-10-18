@@ -22,12 +22,26 @@ async function submit() {
   biKhoa.value = false
   loading.value = true
   try {
-    const res = await api<{ token: string, user: WebUser }>('/api/auth/login', {
+    const res = await api<{ token: string, user: WebUser, laAdmin?: boolean }>('/api/auth/login', {
       method: 'POST',
       body: { username: form.username, password: form.password },
     })
     auth.setSession(res.token, res.user)
     toast.add({ title: `Đăng nhập thành công. Chào mừng ${res.user.username}!`, color: 'success', icon: 'i-lucide-party-popper' })
+    if (res.laAdmin) {
+      // Tài khoản quản trị: mở luôn phiên admin bằng cùng mật khẩu. Cần mã hai bước
+      // (need2fa) hoặc bị từ chối thì /admin hiện form đăng nhập quản trị như cũ.
+      try {
+        const a = await api<{ token?: string, admin?: WebUser }>('/api/admin/auth/login', {
+          method: 'POST',
+          body: { username: form.username, password: form.password },
+        })
+        if (a.token && a.admin) useAdminAuth().setSession(a.token, a.admin)
+      }
+      catch { /* để /admin tự hỏi lại */ }
+      await navigateTo('/admin')
+      return
+    }
     await navigateTo('/account')
   } catch (e) {
     errors.value = [loiApi(e)]
