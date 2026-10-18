@@ -19,8 +19,8 @@ set -eu
 DIR_SCRIPT=$(cd "$(dirname "$0")" && pwd)
 
 echo "== 1. Node"
-if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 20 ]; then
-    echo "Can Node >= 20. Cai (Debian/Ubuntu):"
+if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 22 ]; then
+    echo "Can Node >= 22 (xem .nvmrc). Cai (Debian/Ubuntu):"
     echo "  curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs"
     exit 1
 fi

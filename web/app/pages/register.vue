@@ -207,6 +207,11 @@ async function submit() {
             required
           />
         </UFormField>
+        <SiteLuuYTuoi />
+        <p class="text-xs text-muted">
+          Khi tạo tài khoản, bạn đồng ý với <NuxtLink to="/dieu-khoan" class="font-semibold text-primary hover:underline">Điều khoản sử dụng</NuxtLink>
+          và <NuxtLink to="/quyen-rieng-tu" class="font-semibold text-primary hover:underline">Chính sách quyền riêng tư</NuxtLink>.
+        </p>
         <UButton type="submit" size="xl" block :loading="loading" label="Tạo tài khoản" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />
       </form>
 

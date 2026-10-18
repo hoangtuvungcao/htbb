@@ -396,7 +396,8 @@ const faq = computed(() => [
                 </ULink>
               </li>
             </ol>
-            <UAccordion :items="faq" class="mt-12" :ui="{ trigger: 'font-display text-lg font-bold' }">
+            <SiteLuuYTuoi class="mt-10" />
+            <UAccordion :items="faq" class="mt-8" :ui="{ trigger: 'font-display text-lg font-bold' }">
               <template #faq1-body>
                 <p class="text-muted">
                   Tải và cài đặt game, sau đó đăng nhập bằng tài khoản vừa tạo. Nếu tài khoản yêu cầu kích hoạt, hãy truy cập

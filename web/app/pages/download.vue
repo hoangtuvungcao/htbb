@@ -153,6 +153,7 @@ const faq = [
             </tbody>
           </table>
         </div>
+        <SiteLuuYTuoi class="mt-5" />
         <p class="mt-3 text-sm text-muted">
           Cài xong? Làm theo <NuxtLink to="/huong-dan" class="font-semibold text-primary hover:underline">hướng dẫn tân thủ</NuxtLink> để bắt đầu.
         </p>

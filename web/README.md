@@ -118,7 +118,7 @@ cần `HTBB_DIR` + `KPAH_WEB_SRC_DIR`; số liệu đóng gói cần build lại
 
 ## Chạy thử trên máy
 
-Cần **Node ≥ 20** và MariaDB (XAMPP được).
+Cần **Node 22** (≥ 22.12; xem `.nvmrc` — Node 20 build lỗi `Set.prototype.difference`) và MariaDB (XAMPP được) hoặc NovaDB.
 
 ```bash
 npm install
@@ -202,7 +202,7 @@ scp -r deploy root@180.93.57.30:/root/kpah-web-deploy
 ssh root@180.93.57.30 'bash /root/kpah-web-deploy/cai-dat-vps.sh'
 ```
 
-Script kiểm Node ≥ 20, tạo user `kpah-web` (thêm vào nhóm `kpah` để đọc
+Script kiểm Node ≥ 22, tạo user `kpah-web` (thêm vào nhóm `kpah` để đọc
 `server.ini` và log game), cài `kpah-web.service`, tạo khoá SSH bị ép lệnh và in
 private key ra để dán vào secret `VPS_SSH_KEY_WEB`. Rồi đặt các secret và push.
 
