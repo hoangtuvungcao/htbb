@@ -90,13 +90,87 @@ trang Đối soát liệt kê để admin kiểm và cộng tay.
 | Luật thuần (bản TS của `NapTienLogic`, chữ ký webhook) | `server/utils/napTienThuan.ts` |
 | CSDL: tạo đơn, **`napXacNhanThanhToan`**, hoàn tiền, đối soát | `server/utils/napTien.ts` |
 | Người chơi | `/api/nap/goi`, `tao-don`, `don`, `trang-thai`, `lich-su`, `tran`; trang `/naptien` |
-| Webhook | `/api/nap/webhook-sepay` (Apikey), `/webhook-casso` (HMAC-SHA512 `X-Casso-Signature: t=,v1=` trên JSON đã sắp khoá, lệch giờ ≤ 5 phút — **đối chiếu tài liệu Casso trước khi bật**), `/webhook-mock` (HMAC-SHA256, chỉ `KPAH_NAP_SANDBOX=1`) |
+| Webhook | `/api/nap/webhook-sepay` (Apikey, mục 6b), job `server/plugins/do-sepay.ts` (dò user API), `/webhook-casso` (HMAC-SHA512 `X-Casso-Signature: t=,v1=` trên JSON đã sắp khoá, lệch giờ ≤ 5 phút — **đối chiếu tài liệu Casso trước khi bật**), `/webhook-mock` (HMAC-SHA256, chỉ `KPAH_NAP_SANDBOX=1`) |
 | Admin (ghi: Siêu quản trị) | `/admin/naptien`: Đơn (xác nhận theo mã GD sao kê, hoàn tiền/chargeback, giả lập sandbox), Cộng tay, Đối soát, Gói (CMS), Cửa hàng, Nhật ký, Mốc cũ (chỉ xem) |
 | Mật khẩu chung | `/xac-nhan-nap` (đơn mới, bắt buộc mã GD) |
 | Pháp lý (bản nháp) | `/dieu-khoan-thanh-toan`, `/chinh-sach-hoan-tien` |
 
 Bí mật chỉ ở biến môi trường máy chủ: `KPAH_SEPAY_WEBHOOK_APIKEY`, `KPAH_CASSO_WEBHOOK_SECRET`,
 `KPAH_NAP_MOCK_SECRET`. Không có gì về nạp đi vào bundle trình duyệt ngoài `napBat`.
+
+## 6b. SePay — nạp tự động (hướng dẫn cho chủ server)
+
+Đối chiếu tài liệu công khai SePay ngày 18/10/2026: [tích hợp webhook](https://docs.sepay.vn/tich-hop-webhooks.html),
+[API giao dịch](https://docs.sepay.vn/api-giao-dich.html), [API token](https://docs.sepay.vn/tao-api-token.html).
+Tên menu trong trang quản lý SePay có thể đổi theo phiên bản — làm theo ý, kiểm lại trên my.sepay.vn.
+
+**Bước 1 — Đăng ký và liên kết ngân hàng.** Tạo tài khoản ở https://my.sepay.vn, chọn gói, liên kết tài khoản
+ngân hàng nhận tiền (đúng số tài khoản sẽ đặt ở `KPAH_NAP_ACCOUNT_NO`). Ghi lại mã BIN ngân hàng (bảng trong
+`HTBB-Web/.env.example`, `KPAH_NAP_BANK_BIN`) và tên chủ tài khoản viết HOA không dấu (`KPAH_NAP_ACCOUNT_NAME`).
+
+**Bước 2 — Cấu trúc mã thanh toán.** Trong phần cấu hình chung của công ty trên SePay, đặt cấu trúc mã thanh
+toán: **tiền tố `HT`, phần sau 8 ký tự chữ + số**. Mã đơn của web là `HT` + 8 ký tự `A–Z, 2–9` (bỏ 0/O/1/I),
+ví dụ `HT7F3AQ2BX`. Có cấu hình này thì SePay tự điền trường `code` của webhook. Web khớp **`code` trước**,
+không có thì tìm mã trong `content`/`description` (người chơi gõ tay vẫn khớp, không phân biệt hoa thường).
+
+**Bước 3 — Webhook.** SePay › Webhooks › Thêm webhook:
+- Sự kiện: **Có tiền vào**. Tài khoản: tài khoản ở bước 1 (có thể lọc theo tiền tố mã thanh toán `HT`).
+- URL: `https://<tên-miền>/api/nap/webhook-sepay`.
+- Kiểu chứng thực: **API Key**, khoá là chuỗi ngẫu nhiên ≥ 24 ký tự (`openssl rand -hex 24`), đặt **cùng chuỗi** vào
+  `KPAH_SEPAY_WEBHOOK_APIKEY`. SePay gửi header `Authorization: Apikey <khoá>`; sai/thiếu → 401.
+- Content-Type `application/json`. Thân: `id, gateway, transactionDate, accountNumber, code, content, transferType,
+  transferAmount, accumulated, subAccount, referenceCode, description`.
+- SePay coi là thành công khi HTTP 200/201 + `{"success": true}` trong 30 giây, ngược lại gửi lại (tối đa 7 lần / 5 giờ).
+  Web trả `{"success": true}` cho mọi giao dịch đã ghi sổ (kể cả trùng / sai tài khoản / không mã / thiếu tiền) để
+  SePay không gửi lại vô ích; chỉ lỗi CSDL mới trả 500 (để SePay gửi lại).
+
+**Bước 4 (tuỳ chọn) — Job dò giao dịch lỡ webhook.** SePay › Cấu hình công ty › API Access › tạo API token, đặt vào
+`KPAH_SEPAY_API_TOKEN`. Web gọi `GET https://my.sepay.vn/userapi/transactions/list?account_number=…&transaction_date_min=…`
+(header `Authorization: Bearer <token>`) mỗi `KPAH_SEPAY_DO_PHUT` phút (2–5), nhìn lại `KPAH_SEPAY_DO_GIO` giờ;
+giao dịch vào cùng hàm xử lý với webhook, khoá trùng là `id` của SePay ⇒ không bao giờ cộng hai lần. Giới hạn
+SePay 3 lần/giây; nhận 429 thì chờ theo `x-sepay-userapi-retry-after`. Để trống token = tắt job.
+
+**Bước 5 — Biến môi trường** (đủ ở `HTBB-Web/.env.example`; deploy GitHub đã thêm khoá vào `deploy.yml` +
+`deploy/deploy-web.sh`): `KPAH_NAP_BAT=true`, `NAP_DA_CO_GIAY_PHEP=1`, `KPAH_NAP_ACCOUNT_NO`, `KPAH_NAP_ACCOUNT_NAME`,
+`KPAH_NAP_BANK_BIN`, `KPAH_SEPAY_WEBHOOK_APIKEY`, (`KPAH_SEPAY_API_TOKEN`), `KPAH_ADMIN_NAPTIEN_PASSWORD` (≥ 12 ký tự),
+`KPAH_SECRET` (≥ 32 ký tự). **Fail closed**: trên máy thật thiếu/yếu/mặc định một khoá thì web TỰ TẮT nạp, log
+`NAP TIEN BI TAT (fail closed)` kèm danh sách, và /admin/naptien hiện hộp đỏ liệt kê lý do. `KPAH_NAP_SANDBOX` /
+`KPAH_NAP_MOCK_SECRET` không đi qua deploy (chỉ máy dev); bật sandbox trên máy thật cũng làm nạp tắt.
+
+**Bước 6 — Giao dịch thử.** Bật server game (`sv.lau_dai=1`, `sv.nap_tien=1`), vào game bằng một nhân vật. Trên web
+tạo đơn **L20 (20.000 đ)** cho nhân vật đó, quét QR (số tiền + nội dung đã điền sẵn; trên điện thoại có nút mở app
+ngân hàng qua `dl.vietqr.io`). Trong vài giây: trang đổi sang "Đã thanh toán", ~15 giây sau "Đã cộng vào nhân vật",
+trong game +200 lượng. Kiểm /admin/naptien › Nhật ký (webhook `ok`, sổ cái `thanh_toan` + `cong`). SePay › Webhooks
+cũng có nhật ký từng lần gửi.
+
+**Luật khớp tiền** (`napXuLyGiaoDich` + `napXacNhanThanhToan`):
+
+| Tình huống | Kết quả |
+|---|---|
+| Đúng tài khoản, đúng mã, đủ tiền | `da_thanh_toan` → server game cộng (`da_cong`) |
+| Gửi lặp cùng `id` (webhook lặp, hoặc job + webhook) | bỏ qua (`duplicate`), không cộng lại |
+| Tiền vào tài khoản khác (`accountNumber`/`subAccount` ≠ `KPAH_NAP_ACCOUNT_NO`) | bỏ qua, ghi `sai_tai_khoan` |
+| Không có mã đơn / mã không tồn tại | ghi `khong_co_ma_don` / `khong_thay` để admin đối soát (cộng tay nếu cần) |
+| Chuyển **thiếu** | không xác nhận; đơn giữ "chờ", ghi số đã nhận (`so_tien_nhan`, `ly_do THIEU…`); Đối soát liệt kê — admin xác nhận tay khi khách chuyển bù, hoặc hoàn |
+| Chuyển **dư** | xác nhận + giao hàng; ghi `DU: thua N d`, Đối soát liệt kê để admin hoàn phần dư |
+| Đơn đã hết hạn 24 giờ (`that_bai`) rồi mới trả | **vẫn xác nhận và giao hàng** (chính sách: tiền đã vào thì giao) |
+| Đơn đã hoàn / thu hồi | `sai_trang_thai`, không giao — admin xử lý |
+| Một giao dịch dùng cho hai đơn | chặn bằng `UNIQUE(nha_cung_cap, ma_gd_ncc)` |
+
+### Thử đầu-cuối (18/10/2026, máy dev, CSDL nháp NovaDB `kpah_db_nap`, không gọi SePay thật)
+
+Web dev ở cổng riêng + SePay user API giả lập ở cổng riêng; webhook đúng định dạng SePay ở trên (header `Apikey`):
+**23/23 đạt** — tạo 7 đơn; webhook đúng → 200 `{success:true}` + đã thanh toán; gửi lặp → duplicate; sai khoá / thiếu
+header → 401; sai tài khoản → bỏ qua; mã không tồn tại → không xác nhận; `code` rỗng → khớp theo nội dung; chuyển
+thiếu → giữ chờ + ghi 50.000; chuyển dư → xác nhận + ghi phần dư; **10 webhook cùng `id` song song → đúng 1 lần
+xác nhận, 1 dòng sổ cái**; đơn quá hạn trả muộn → vẫn xác nhận; Đối soát liệt kê dư/thiếu; đơn lỡ webhook → job dò
+user API xác nhận trong ≤ 2 phút, giao dịch đã có qua webhook không xử lý lại.
+
+Phía game: `NapTienGame.congDon` chạy với một đối tượng `Char` thật nhưng **không có client/bản đồ** (dựng một tiến
+trình game + đăng nhập client thật trên CSDL nháp không làm được trong môi trường thử): 6 đơn đã thanh toán × 4 luồng
+cộng song song mỗi đơn → **2.800 lượng, mỗi đơn đúng 1 luồng thắng**, 6 dòng sổ cái `cong`, quà lần đầu 1 lần; chạy
+lại lần 2 → 0. (`da_luu_nv=0` vì không có CSDL nhân vật thật — đúng trường hợp Đối soát cảnh báo.) Ảnh:
+[QR trên điện thoại](anh_nap_tien/qr-mobile.png), [đã cộng](anh_nap_tien/thanh-cong.png).
 
 ## 7. Mô phỏng (mô-đun NẠP TIỀN trong `MoPhongKinhTe.java`)
 
@@ -134,9 +208,7 @@ làm ngoài hệ thống, ghi mã giao dịch vào lý do. Trong game: lượng 
 2. Luật sư rà soát `/dieu-khoan-thanh-toan`, `/chinh-sach-hoan-tien` (và cập nhật `/dieu-khoan` đang ghi “không nạp tiền”).
 3. CSDL: `mysql kpah_db < sql/pokemon_nap_tien.sql`.
 4. Server game: `sv.lau_dai=1`, `sv.nap_tien=1`, khởi động lại. Log phải in `NAP TIEN -> BAT`; /admin/naptien › Đối soát thấy nhịp server.
-5. Web: `KPAH_NAP_BAT=true`, `KPAH_TPBANK_ACCOUNT_NO`, `KPAH_TPBANK_ACCOUNT_NAME` (+ `KPAH_NAP_BANK_BIN` nếu không phải TPBank),
-   `KPAH_SEPAY_WEBHOOK_APIKEY` và/hoặc `KPAH_CASSO_WEBHOOK_SECRET`, `KPAH_ADMIN_NAPTIEN_PASSWORD` (nếu dùng /xac-nhan-nap),
-   `NAP_DA_CO_GIAY_PHEP=1`. **Không** đặt `KPAH_NAP_SANDBOX` trên máy thật.
+5. Web: làm theo mục 6b (SePay) bước 1–6. Cấu hình yếu = nạp tự tắt (fail closed). **Không** đặt `KPAH_NAP_SANDBOX` trên máy thật.
 6. Thử trên máy dev trước: `KPAH_NAP_SANDBOX=1 KPAH_NAP_MOCK_SECRET=…` → nút “Giả lập” trong /admin/naptien.
 
 ## 10. Còn lại / giới hạn
