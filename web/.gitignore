@@ -1,0 +1,19 @@
+# Nuxt
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+node_modules
+logs
+*.log
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Bí mật riêng của từng máy (DB pass, số TK ngân hàng, API key, KPAH_SECRET...)
+.env
+.env.*
+!.env.example

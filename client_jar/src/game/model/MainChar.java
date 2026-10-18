@@ -1,0 +1,379 @@
+package game.model;
+
+import game.model.skill.SkillManager;
+import game.networklogic.GameService;
+import game.render.Canvas;
+import game.render.Util;
+import game.render.screen.GameScr;
+import game.render.screen.RMS;
+import game.render.screen.WindowInfoScr;
+import java.util.Vector;
+
+public class MainChar extends Char {
+    public static QuickSlot[][] quickSlot;
+    public boolean isFirstTimeGetItem;
+    public boolean isFirstTimeGetMoney;
+    public boolean isFirstTimeGetPotion;
+    public boolean check;
+    public boolean canMove;
+    public byte limItemBag;
+    public static Vector gemitemImbue = new Vector();
+    public static Vector gemItem = new Vector();
+    public static Vector gemItemKhoa = new Vector();
+    public static Vector shopItem = new Vector();
+    public static Potion[] listPotion;
+    public static short[] itemQuest;
+    public short lastLv;
+    public short xBegin;
+    public short yBegin;
+    public short[] posTransRoad;
+    public short day;
+    public int dedicationPoint;
+    public Quest mainQuest;
+    public int pArena;
+    public byte idSkill = 0;
+    public int idMonster = 0;
+    public Vector tItems = new Vector();
+    public Vector rItems = new Vector();
+    public boolean first = false;
+    public int countRoad = 0;
+    public String nameHusband_wife = "";
+    public boolean stop = false;
+
+    public static void remove() {
+        gemitemImbue.removeAllElements();
+        gemItem.removeAllElements();
+        gemItemKhoa.removeAllElements();
+        shopItem.removeAllElements();
+        quickSlot = null;
+        listPotion = null;
+    }
+
+    @Override
+    public boolean isMainchar() {
+        return true;
+    }
+
+    public void loadQuickSlot() {
+        if (quickSlot != null) {
+            return;
+        }
+        quickSlot = new QuickSlot[2][5];
+        for (int i = 0; i < 5; i++) {
+            quickSlot[0][i] = new QuickSlot();
+            quickSlot[1][i] = new QuickSlot();
+        }
+        if (Char.skillLevelLearnt[1] > 0) {
+            quickSlot[0][0].setIsSkill(1, this.clazz, false);
+        }
+        if (Char.skillLevelLearnt[2] > 0) {
+            quickSlot[0][1].setIsSkill(2, this.clazz, false);
+        }
+        quickSlot[0][2].setIsSkill(0, this.clazz, false);
+        quickSlot[0][3].setIsPotion(1);
+        quickSlot[0][4].setIsPotion(4);
+        quickSlot[1][3].setIsPotion(1);
+        quickSlot[1][4].setIsPotion(4);
+        RMS.loadQuickSlot();
+    }
+
+    public String getPercent() {
+        return new StringBuffer(String.valueOf(this.lvpercent / 10)).append(".").append(this.lvpercent % 10).append("%").toString();
+    }
+
+    public void add2Party(PartyInfo info) {
+        for (int i = 0; i < Char.party.size(); i++) {
+            if (((PartyInfo) Char.party.elementAt(i)).name.equals(info.name)) {
+                return;
+            }
+        }
+        Char.party.addElement(info);
+    }
+
+    public void add2Party(Char info) {
+        if (Char.party.contains(info)) {
+            return;
+        }
+        Char.party.addElement(info);
+    }
+
+    public String removeUserParty(short iduser) {
+        for (int i = 0; i < Char.party.size(); i++) {
+            if (((PartyInfo) Char.party.elementAt(i)).id == iduser) {
+                String name = ((PartyInfo) Char.party.elementAt(i)).name;
+                Char.party.removeElementAt(i);
+                return name;
+            }
+        }
+        return "";
+    }
+
+    public String removeCharParty(short iduser) {
+        for (int i = 0; i < Char.party.size(); i++) {
+            if (((Char) Char.party.elementAt(i)).ID == iduser) {
+                String name = ((Char) Char.party.elementAt(i)).name;
+                Char.party.removeElementAt(i);
+                return name;
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        if (!this.isFreeze && this.posTransRoad != null) {
+            updateWayPointer();
+            this.check = false;
+        }
+        if (!this.stop && System.currentTimeMillis() - GameScr.timeMove >= 0) {
+            GameScr.timeMove = System.currentTimeMillis() + ((long) GameScr.dtmove);
+            this.stop = true;
+            GameService.gI().moveChar(this.x, this.y);
+        }
+        checkChangemapTouch();
+    }
+
+    private void checkChangemapTouch() {
+        if (Canvas.instance.hasPointerEvents() && GameScr.iTaskAuto != 2) {
+            if (this.canMove && !this.check && this.state == 1) {
+                int xx = 0;
+                int yy = 0;
+                if (this.dir == 2) {
+                    xx = -32;
+                } else if (this.dir == 3) {
+                    xx = 32;
+                }
+                if (this.dir == 0) {
+                    yy = 32;
+                } else if (this.dir == 1) {
+                    yy = -32;
+                }
+                if ((Math.abs(this.x - this.xBegin) >= 16 || Math.abs(this.y - this.yBegin) >= 16) && Canvas.gameScr.checkCanChangeMap(this.x + xx, this.y + yy, this.dir)) {
+                    this.posTransRoad = null;
+                    this.check = true;
+                    return;
+                }
+            }
+            if (this.state == 1) {
+                this.canMove = true;
+            } else {
+                this.canMove = false;
+            }
+        }
+    }
+
+    private void updateWayPointer() {
+        if (Util.abs(this.x - this.xTo) <= 3 && Util.abs(this.y - this.yTo) <= 3) {
+            for (int i = (this.posTransRoad.length - 1) - this.countRoad; i >= 0; i--) {
+                if (this.posTransRoad[i] > 0) {
+                    byte xx = (byte) (GameScr.xStart + (this.posTransRoad[i] >> 8));
+                    byte yy = (byte) (GameScr.yStart + (this.posTransRoad[i] & 255));
+                    if (GameScr.iTaskAuto != 2 && ((this.dir == 1 || Tilemap.isOfflineMap) && Canvas.gameScr.checkCanChangeMap((xx * 16) + this.speed, (yy * 16) + this.speed, this.dir))) {
+                        this.posTransRoad = null;
+                        this.countRoad = 0;
+                        return;
+                    } else {
+                        if (Canvas.gameScr.checkMoveLimit((xx * 16) + this.speed, (yy * 16) + this.speed)) {
+                            this.posTransRoad = null;
+                            return;
+                        }
+                        moveTo((short) ((xx * 16) + this.speed), (short) ((yy * 16) + this.speed));
+                        Canvas.gameScr.sendActorMove((short) ((xx * 16) + this.speed), (short) ((yy * 16) + this.speed));
+                        this.posTransRoad[i] = -1;
+                        this.countRoad++;
+                        return;
+                    }
+                }
+                if (i == 0) {
+                    this.posTransRoad = null;
+                    this.countRoad = 0;
+                    return;
+                }
+            }
+        }
+    }
+
+    public String[] getInfoSkill(int idSkill) {
+        String string;
+        String string2;
+        String string3;
+        String string4;
+        String string5;
+        String string6;
+        String string7;
+        String string8;
+        String string9;
+        String[] info = (String[]) null;
+        if (Char.skillLevelLearnt[idSkill] == -1) {
+            info = new String[]{"Chưa học kỹ năng này", new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][1]).toString()};
+        } else if (Char.skillLevelLearnt[idSkill] == 0) {
+            info = new String[]{"Chưa học kỹ năng này", getLvRequest(idSkill)};
+        } else if (!WindowInfoScr.gI().isBuffSkill()) {
+            info = new String[5];
+            info[0] = new StringBuffer("Thời gian đánh: ").append(SkillManager.getSkillCooldown((byte) idSkill, this.clazz, Char.skillLevelLearnt[idSkill])).append(" ms").toString();
+            info[1] = new StringBuffer(String.valueOf(SkillManager.infoString[this.clazz][idSkill])).append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
+            info[2] = new StringBuffer("Phạm vi: ").append(SkillManager.getSkillRange((byte) idSkill, this.clazz)).toString();
+            info[3] = new StringBuffer("MP mất: ").append(SkillManager.getSkillMP(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString();
+            if (Char.skillLevelLearnt[idSkill] < 9) {
+                string9 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+            } else {
+                string9 = "";
+            }
+            info[4] = string9;
+        } else {
+            byte[][] temp = {new byte[]{1, 5}, new byte[]{1, 2}, new byte[]{3, 4, 5, 6}, new byte[]{0, 1}, new byte[]{0, 3}};
+            String mpMat = new StringBuffer("MP mất: ").append(SkillManager.getSkillMP(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString();
+            switch (this.clazz) {
+                case 0:
+                    if (idSkill == 4) {
+                        info = new String[4];
+                        info[0] = "Đánh xuyên giáp";
+                        info[1] = new StringBuffer("Tỷ lệ thành công: ").append((int) SkillManager.SKILL_DAM_PERCENT[this.clazz][idSkill][Char.skillLevelLearnt[idSkill]]).append("%").toString();
+                        info[2] = mpMat;
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string8 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string8 = "";
+                        }
+                        info[3] = string8;
+                    } else if (idSkill == 5) {
+                        info = new String[6];
+                        info[0] = "Gây tác hại lại 1 phần";
+                        info[1] = "sức công cho đối thủ";
+                        info[2] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
+                        info[3] = new StringBuffer("Tỷ lệ: ").append((int) SkillManager.SKILL_DAM_PERCENT[this.clazz][idSkill][Char.skillLevelLearnt[idSkill]]).append("%").toString();
+                        info[4] = mpMat;
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string7 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string7 = "";
+                        }
+                        info[5] = string7;
+                    }
+                    break;
+                case 1:
+                    if (idSkill == 5) {
+                        info = new String[4];
+                        info[0] = "Tăng sức tấn công";
+                        info[1] = "của bản thân";
+                        info[2] = new StringBuffer("Tỷ lệ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string6 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string6 = "";
+                        }
+                        info[3] = string6;
+                    } else if (idSkill == 4) {
+                        info = new String[4];
+                        info[0] = new StringBuffer("Phòng thủ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
+                        info[1] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
+                        info[2] = mpMat;
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string5 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string5 = "";
+                        }
+                        info[3] = string5;
+                    }
+                    break;
+                case 2:
+                    if (idSkill == 5) {
+                        info = new String[4];
+                        info[0] = "Tăng tinh thần";
+                        info[1] = "của bản thân";
+                        info[2] = new StringBuffer("Tỷ lệ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string4 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string4 = "";
+                        }
+                        info[3] = string4;
+                    } else if (idSkill == 4) {
+                        info = new String[4];
+                        info[0] = new StringBuffer("MP + HP tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append(" %").toString();
+                        info[1] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
+                        info[2] = mpMat;
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string3 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string3 = "";
+                        }
+                        info[3] = string3;
+                    } else if (idSkill == 6) {
+                        info = new String[4];
+                        info[0] = "Hồi sinh";
+                        info[1] = new StringBuffer("HP hồi phục: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
+                        info[2] = mpMat;
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string2 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string2 = "";
+                        }
+                        info[3] = string2;
+                    } else if (idSkill == 7) {
+                        info = new String[7];
+                        info[0] = "Khiên MP";
+                        info[1] = "Chuyển 1 lượng hao tổn";
+                        info[2] = "HP sang MP";
+                        info[3] = new StringBuffer("Tỷ lệ chuyển: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
+                        info[4] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
+                        info[5] = mpMat;
+                        if (Char.skillLevelLearnt[idSkill] < 9) {
+                            string = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                        } else {
+                            string = "";
+                        }
+                        info[6] = string;
+                    }
+                    break;
+                case 3:
+                    if (idSkill == 5) {
+                        info = new String[]{"Tăng sức phòng thủ", "của bản thân", new StringBuffer("Tỷ lệ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString(), getLvRequest(idSkill)};
+                    } else if (idSkill == 4) {
+                        info = new String[]{"Gây choáng cho", "đối phương", "Thời gian: 5s", new StringBuffer("Tỷ lệ gây choáng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString(), mpMat, getLvRequest(idSkill)};
+                    }
+                    break;
+                case 4:
+                    if (idSkill == 5) {
+                        info = new String[]{"Tăng độc tính sử dụng", new StringBuffer("Tỷ lệ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString(), getLvRequest(idSkill)};
+                    } else if (idSkill == 4) {
+                        info = new String[]{"Tẩm độc vào tên: ", new StringBuffer("Độc tính: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString(), new StringBuffer("Thời gian: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("s").toString(), mpMat, getLvRequest(idSkill)};
+                    }
+                    break;
+            }
+        }
+        return info;
+    }
+
+    public String getLvRequest(int idSkill) {
+        return new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+    }
+
+    public boolean setWay(int vX, int vY) {
+        short xx = this.x;
+        if (vX != 0) {
+            if (!Tilemap.tileTypeAtPixel(this.x + vX, this.y - 16, 2) && !Tilemap.tileTypeAtPixel(this.x, this.y - 16, 2)) {
+                moveTo(xx, (short) (this.y - 16));
+                return true;
+            }
+            if (!Tilemap.tileTypeAtPixel(this.x + vX, this.y + 16, 2) && !Tilemap.tileTypeAtPixel(this.x, this.y + 16, 2)) {
+                moveTo(xx, (short) (this.y + 16));
+                return true;
+            }
+            return false;
+        }
+        if (vY != 0) {
+            if (!Tilemap.tileTypeAtPixel(this.x - 16, this.y + vY, 2) && !Tilemap.tileTypeAtPixel(this.x - 16, this.y, 2)) {
+                moveTo((short) (this.x - 16), this.y);
+                return true;
+            }
+            if (!Tilemap.tileTypeAtPixel(this.x + 16, this.y + vY, 2) && !Tilemap.tileTypeAtPixel(this.x + 16, this.y, 2)) {
+                moveTo((short) (this.x + 16), this.y);
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+}

@@ -1,0 +1,144 @@
+// APK Huyền Thoại Bảo Bối (Pokémon) = CODE BẢN JAR J2ME chạy trên lớp tương thích MIDP cho Android.
+//   gradlew :pokemon:assembleDebug   [-PmayChu=host:cong] [-PhtbbBan=N] [-PxacThuc=1]
+//   gradlew :pokemon:assembleRelease [-PmayChu=host:cong] [-PhtbbKeyDir=...]
+//
+// - Code game: ../../j2me/src + ../../shared/mod, chép + vá tối thiểu bởi ../port-j2me.py lúc build (một nguồn
+//   duy nhất với bản jar; không sửa tay code sinh ra trong build/generated).
+// - Lớp MIDP (javax.microedition.*) + Activity: src/main/java.
+// - Tài nguyên: ../../j2me/res (bản ĐẦY ĐỦ, không phải res_nhe) làm assets.
+// - Server: bản debug mặc định nối server thử 10.0.2.2:19129 (máy chủ của máy ảo Android = 127.0.0.1 máy
+//   dev), tên "Thử nghiệm". -PmayChu=host:cong đổi server (cả release). Release không đặt mayChu = tải danh sách.
+// - Xác thực -88 tắt (server Pokémon không có lệnh này); -PxacThuc=1 bật lại như XAC_THUC=1 của bản jar.
+plugins {
+    id 'com.android.application'
+}
+
+def ban = (project.findProperty('htbbBan') ?: '1') as int
+def mayChu = project.findProperty('mayChu')
+def xacThuc = (project.findProperty('xacThuc') ?: '0').toString()
+def keyDir = project.findProperty('htbbKeyDir') ?: System.getenv('KEY_DIR')
+def khoa = new Properties()
+if (keyDir && file("$keyDir/key.properties").exists()) {
+    file("$keyDir/key.properties").withInputStream { khoa.load(it) }
+}
+def j2me = rootProject.file('../j2me')
+def codeSinh = layout.buildDirectory.dir('generated/htbb-j2me/java')
+def tsDebug = layout.buildDirectory.dir('generated/htbb-thuoc-tinh/debug')
+def tsRelease = layout.buildDirectory.dir('generated/htbb-thuoc-tinh/release')
+
+android {
+    namespace 'com.htbb.pokemon'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.htbb.pokemon'
+        minSdk 26
+        targetSdk 35
+        versionCode ban
+        versionName "1.$ban"
+    }
+
+    signingConfigs {
+        release {
+            if (khoa.getProperty('keystore')) {
+                storeFile file("$keyDir/${khoa.getProperty('keystore')}")
+                storePassword khoa.getProperty('password')
+                keyAlias khoa.getProperty('alias')
+                keyPassword khoa.getProperty('password')
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.thu'
+            versionNameSuffix '-thu'
+        }
+        release {
+            // code game tìm lớp theo tên (Class.forName("game.GameMidlet")) và dịch ngược: không thu gọn
+            minifyEnabled false
+            signingConfig khoa.getProperty('keystore') ? signingConfigs.release : null
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        encoding 'UTF-8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += codeSinh
+        main.assets.srcDirs += new File(j2me, 'res')
+        // banner màn đăng nhập/chọn Pokémon (agent giao diện jar): nếu bản jar đóng gói thẳng từ shared/banner/res
+        // (thay vì chép vào j2me/res) thì APK lấy cùng thư mục đó; code vẽ banner nằm trong code jar nên tự có
+        def banner = rootProject.file('../shared/banner/res')
+        if (banner.isDirectory()) main.assets.srcDirs += banner
+        debug.assets.srcDirs += tsDebug
+        release.assets.srcDirs += tsRelease
+    }
+
+    androidResources {
+        // ảnh png của game đã nén sẵn; dữ liệu nhỏ - để nguyên cho AssetManager đọc nhanh
+        noCompress += ['png', 'bin', 'dl']
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-nowarn', '-XDsuppressNotes']
+    options.deprecation = false
+}
+
+// j2me/src + shared/mod -> build/generated/htbb-j2me/java (port-j2me.py)
+def portJ2me = tasks.register('portJ2me') {
+    def vaoSrc = new File(j2me, 'src')
+    def vaoMod = rootProject.file('../shared/mod')
+    def script = rootProject.file('port-j2me.py')
+    inputs.dir(vaoSrc)
+    inputs.dir(vaoMod)
+    inputs.file(script)
+    inputs.property('ban', ban)
+    inputs.property('xacThuc', xacThuc)
+    outputs.dir(codeSinh)
+    doLast {
+        def ra = codeSinh.get().asFile
+        ra.mkdirs()
+        def py = System.getenv('PYTHON') ?: (org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'python' : 'python3')
+        def kq = providers.exec {
+            commandLine py, '-I', script.absolutePath, vaoSrc.absolutePath, vaoMod.absolutePath, ra.absolutePath, "$ban", xacThuc
+        }
+        println kq.standardOutput.asText.get().trim()
+    }
+}
+
+// thuộc tính MANIFEST của bản jar (MIDlet.getAppProperty) + server theo kiểu build -> assets/htbb-app.properties
+def thuocTinh = { String kieu, File ra ->
+    def p = new Properties()
+    new File(j2me, 'MANIFEST.MF').eachLine('UTF-8') { dong ->
+        int i = dong.indexOf(':')
+        if (i > 0) p.setProperty(dong.substring(0, i).trim(), dong.substring(i + 1).trim())
+    }
+    def mc = mayChu ?: (kieu == 'debug' ? '10.0.2.2:19129' : null)
+    if (mc) p.setProperty('HTBB-May-Chu', mc.toString())
+    if (kieu == 'debug') p.setProperty('HTBB-Ban-Thu', '1')
+    ra.mkdirs()
+    new File(ra, 'htbb-app.properties').withWriter('UTF-8') { w -> p.store(w, 'Sinh boi Gradle (pokemon/build.gradle) - KHONG sua tay') }
+}
+def thuocTinhDebug = tasks.register('thuocTinhDebug') {
+    inputs.file(new File(j2me, 'MANIFEST.MF'))
+    inputs.property('mayChu', (mayChu ?: '').toString())
+    outputs.dir(tsDebug)
+    doLast { thuocTinh('debug', tsDebug.get().asFile) }
+}
+def thuocTinhRelease = tasks.register('thuocTinhRelease') {
+    inputs.file(new File(j2me, 'MANIFEST.MF'))
+    inputs.property('mayChu', (mayChu ?: '').toString())
+    outputs.dir(tsRelease)
+    doLast { thuocTinh('release', tsRelease.get().asFile) }
+}
+tasks.named('preBuild') { dependsOn portJ2me, thuocTinhDebug, thuocTinhRelease }

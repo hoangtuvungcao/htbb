@@ -1,0 +1,7 @@
+Huyền Thoại Bảo Bối - trò chơi phi thương mại do người hâm mộ làm.
+
+Sprite, chân dung Pokémon và icon (chân dung Pikachu): PMDCollab SpriteCollab
+https://github.com/PMDCollab/SpriteCollab - giấy phép CC BY-NC 4.0, ghi công theo credits.txt của từng
+loài (tác giả cộng đồng PMDCollab). Tileset: PMDCollab RawAsset.
+Pokémon và các tên liên quan thuộc Nintendo / Creatures Inc. / GAME FREAK inc.; trò chơi này không liên
+kết và không được các bên đó bảo trợ. Không dùng cho mục đích thương mại.

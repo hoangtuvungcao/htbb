@@ -1,0 +1,387 @@
+package game.render.screen;
+
+import game.model.CharClassInfo;
+import game.model.Command;
+import game.model.IAction;
+import game.model.MainChar;
+import game.networklogic.GameService;
+import game.render.Canvas;
+import game.render.Res;
+import game.pokemon.LoaiPokemonClient;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
+import javax.microedition.lcdui.Graphics;
+
+public class CreateCharScr extends Screen {
+    public static CreateCharScr me;
+    public static final CharClassInfo[][] clazz = {new CharClassInfo[]{new CharClassInfo((byte) 0, "Kiếm Khách", "Nam", "Kiếm", "Mien Bac", "Kim", 3, 0), new CharClassInfo((byte) 0, "Kiếm Khách", "Nữ", "Kiếm", "Mien Bac", "Kim", 3, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 1, "Chiến Binh", "Nam", "Đại Đao", "Mien Bac", "Hỏa", 4, 0), new CharClassInfo((byte) 1, "Chiến Binh", "Nữ", "Đại Đao", "Mien Bac", "Hỏa", 4, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 2, "Pháp Sư", "Nam", "Đũa thần", "Mien Nam", "Thủy", 5, 0), new CharClassInfo((byte) 2, "Pháp Sư", "Nữ", "Đũa thần", "Mien Nam", "Thủy", 5, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 3, "Đấu sĩ", "Nam", "Rìu", "Mien Nam", "Thổ", 6, 0), new CharClassInfo((byte) 3, "Đấu sĩ", "Nữ", "Rìu", "Mien Nam", "Thổ", 6, 0)}, new CharClassInfo[]{new CharClassInfo((byte) 4, "Cung Thủ", "Nam", "Cung", "Mien Bac", "Mộc", 7, 0), new CharClassInfo((byte) 4, "Cung Thủ", "Nữ", "Cung", "Mien Bac", "Mộc", 7, 0)}};
+    public static String[] hairName = {"Đầu đinh", "Tóc búi", "Tóc cột cao", "Tóc chéo", "Tóc xù", "Tóc ngang vai"};
+    static String[] gender = {"Nam", "Nữ"};
+    public static int selectGender = 0;
+    public static int selectNation = 0;
+    Command cmdClear;
+    int currentClazz;
+    int selected;
+    public MainChar ch = new MainChar();
+    public TField tfChat = new TField(this);
+
+    public static CreateCharScr gI() {
+        if (me != null) {
+            return me;
+        }
+        CreateCharScr createCharScr = new CreateCharScr();
+        me = createCharScr;
+        return createCharScr;
+    }
+
+    @Override
+    public void switchToMe() {
+        loadImg();
+        super.switchToMe();
+    }
+
+    @Override
+    public void init() {
+        this.tfChat.x = Canvas.hw - 28;
+        this.tfChat.y = Canvas.hh - 24;
+        if (PokeBody.CHE_DO_POKEMON) {
+            // pokemon: ô tên nằm trong bảng chọn Pokémon khởi đầu (xem paintPokemon)
+            this.tfChat.x = xBang() + 44;
+            this.tfChat.y = yBang() + 26 + canhAnh() + 6 + 58 + 4;
+            this.tfChat.width = rongBang() - 54;
+        }
+    }
+
+    private static int rongBang() {
+        int w = Canvas.w - 12;
+        return w > 210 ? 210 : w;
+    }
+
+    private static int xBang() {
+        return Canvas.hw - rongBang() / 2;
+    }
+
+    private static int yBang() {
+        int y = Canvas.hh - 100;
+        int duoi = Canvas.h - Screen.deltaY - 4 - caoBang();
+        if (y > duoi) {
+            y = duoi;
+        }
+        return y < 2 ? 2 : y;
+    }
+
+    private static int caoBang() {
+        return 147 + canhAnh();
+    }
+
+    private static int canhAnh() {
+        int c = (rongBang() - 20) / 5 - 6;
+        return c > 30 ? 30 : c;
+    }
+
+    private static int xAnh(int i) {
+        int k = (rongBang() - 20) / 5;
+        return xBang() + 10 + k * i + k / 2;
+    }
+
+    public CreateCharScr() {
+        this.tfChat.width = 80;
+        this.tfChat.height = Screen.ITEM_HEIGHT + 2;
+        this.tfChat.isFocus = true;
+        this.tfChat.setIputType(3);
+        if (PokeBody.CHE_DO_POKEMON) {
+            // pokemon: khong co gioi tinh/kieu toc - luon gui gender = 0, headStyle = 0 (muc 4.2)
+            selectGender = 0;
+        }
+        this.ch.state = (byte) 0;
+        this.currentClazz = 0;
+        this.ch.hatStyle = (short) -1;
+        this.ch.currentHead = clazz[this.currentClazz][selectGender].headID;
+        this.ch.bodyStyle = clazz[this.currentClazz][selectGender].bodyID;
+        this.ch.legStyle = clazz[this.currentClazz][selectGender].legID;
+        this.ch.weaponType = clazz[this.currentClazz][selectGender].weaponType;
+        this.ch.weaponStyle = clazz[this.currentClazz][selectGender].weaponImageID;
+        this.left = new Command("Đóng", new IAction() {
+            @Override
+            public void perform() {
+                CharSelectScr.gI().switchToMe();
+                CreateCharScr.me = null;
+            }
+        });
+        this.cmdClear = new Command("Xóa", new IAction() {
+            @Override
+            public void perform() {
+                CreateCharScr.this.tfChat.clear();
+            }
+        });
+        this.center = new Command("Tạo", new IAction() {
+            @Override
+            public void perform() {
+                if (CreateCharScr.this.tfChat.getText().length() < 4 || CreateCharScr.this.tfChat.getText().length() > 15) {
+                    Canvas.startOKDlg("Tên nhân vật phải từ 4 đến 15 ký tự");
+                } else {
+                    if (PokeBody.CHE_DO_POKEMON) {
+                        GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, 0, 0, CreateCharScr.selectNation);
+                    } else {
+                        GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, CreateCharScr.clazz[CreateCharScr.this.currentClazz][CreateCharScr.selectGender].headID, CreateCharScr.selectGender, CreateCharScr.selectNation);
+                    }
+                    Canvas.startWaitDlg("Xin chờ", true);
+                }
+            }
+        });
+        init();
+    }
+
+    private void changChar() {
+        this.ch.currentHead = clazz[this.currentClazz][selectGender].headID;
+        this.ch.bodyStyle = clazz[this.currentClazz][selectGender].bodyID;
+        this.ch.legStyle = clazz[this.currentClazz][selectGender].legID;
+        this.ch.weaponType = clazz[this.currentClazz][selectGender].weaponType;
+        this.ch.weaponStyle = clazz[this.currentClazz][selectGender].weaponImageID;
+    }
+
+    private void loadImg() {
+        GameService.gI().doRequestWeapone(0, this.ch.weaponType, this.ch.weaponStyle, this.ch.weaponIndex);
+    }
+
+    @Override
+    public boolean keyPress(int keyCode) {
+        boolean isChangeClass = false;
+        if (this.selected == 0) {
+            this.tfChat.keyPressed(keyCode);
+        }
+        // pokemon: chi 3 dong - 0 ten, 1 Pokemon khoi dau (class), 2 lanh tho (dong goc 4)
+        int dongCuoi = PokeBody.CHE_DO_POKEMON ? 2 : 4;
+        if (keyCode == -2) {
+            this.selected++;
+            if (this.selected > dongCuoi) {
+                this.selected = 0;
+            }
+            if (this.selected == 0) {
+                this.tfChat.isFocus = true;
+            } else {
+                this.tfChat.isFocus = false;
+            }
+        }
+        if (keyCode == -1) {
+            this.selected--;
+            if (this.selected < 0) {
+                this.selected = dongCuoi;
+            }
+            if (this.selected == 0) {
+                this.tfChat.isFocus = true;
+            } else {
+                this.tfChat.isFocus = false;
+            }
+        }
+        int selected = this.selected;
+        if (PokeBody.CHE_DO_POKEMON && selected == 2) {
+            selected = 4;
+        }
+        if (keyCode == -3) {
+            if (selected == 1) {
+                this.currentClazz++;
+                if (this.currentClazz >= 5) {
+                    this.currentClazz = 0;
+                }
+                isChangeClass = true;
+            }
+            if (selected == 2) {
+                selectGender = selectGender == 1 ? 0 : 1;
+                changChar();
+            }
+            if (selected == 3) {
+                CharClassInfo charClassInfo = clazz[this.currentClazz][selectGender];
+                charClassInfo.headID = (short) (charClassInfo.headID - 2);
+                if (clazz[this.currentClazz][selectGender].headID < 0) {
+                    clazz[this.currentClazz][selectGender].headID = (byte) (4 + clazz[this.currentClazz][selectGender].headID);
+                }
+                isChangeClass = true;
+            }
+            if (selected == 4) {
+                selectNation--;
+                if (selectNation < 0) {
+                    selectNation = 1;
+                }
+            }
+        }
+        if (keyCode == -4) {
+            if (selected == 1) {
+                this.currentClazz--;
+                if (this.currentClazz < 0) {
+                    this.currentClazz = 4;
+                }
+                isChangeClass = true;
+            }
+            if (selected == 2) {
+                selectGender = selectGender == 0 ? 1 : 0;
+                changChar();
+            }
+            if (selected == 3) {
+                CharClassInfo charClassInfo2 = clazz[this.currentClazz][selectGender];
+                charClassInfo2.headID = (short) (charClassInfo2.headID + 2);
+                if (clazz[this.currentClazz][selectGender].headID > 5) {
+                    clazz[this.currentClazz][selectGender].headID = (byte) (clazz[this.currentClazz][selectGender].headID % 2);
+                }
+                isChangeClass = true;
+            }
+            if (selected == 4) {
+                selectNation++;
+                if (selectNation > 1) {
+                    selectNation = 0;
+                }
+            }
+        }
+        if (isChangeClass) {
+            this.ch.bodyStyle = clazz[this.currentClazz][selectGender].bodyID;
+            this.ch.legStyle = clazz[this.currentClazz][selectGender].legID;
+            this.ch.currentHead = clazz[this.currentClazz][selectGender].headID;
+            this.ch.weaponType = clazz[this.currentClazz][selectGender].weaponType;
+            this.ch.weaponStyle = clazz[this.currentClazz][selectGender].weaponImageID;
+            loadImg();
+        }
+        return super.keyPress(keyCode);
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        // pokemon: banner, Pokémon khởi đầu đang chọn có cột sáng + hào quang màu hệ
+        ServerListScr.gI().paintBg(g, PokeBody.CHE_DO_POKEMON ? this.currentClazz : -1, true);
+        Canvas.resetTrans(g);
+        if (PokeBody.CHE_DO_POKEMON) {
+            paintPokemon(g);
+            this.tfChat.paint(g);
+            g.setClip(0, 0, Canvas.w, Canvas.h);
+            super.paint(g);
+            return;
+        }
+        int x = Canvas.hw - 53;
+        int y = Canvas.hh - 20;
+        Res.paintDlgFull(g, Canvas.hw - 75, Canvas.hh - 60);
+        if (Canvas.gameTick % 20 > 4) {
+            Font.normalFont[0].drawString(g, "*", Canvas.hw - 60, (y + (this.selected * 17)) - 1, 0);
+            Font.normalFont[0].drawString(g, "*", Canvas.hw + 57, (y + (this.selected * 17)) - 1, 0);
+        }
+        Font.normalFont[0].drawString(g, "Tên:", x, y, 0);
+        int y2 = y + 17;
+        Font.normalFont[0].drawString(g, new StringBuffer("Dòng: ").append(clazz[this.currentClazz][selectGender].name).toString(), x, y2, 0);
+        int y3 = y2 + 17;
+        Font.normalFont[0].drawString(g, new StringBuffer("Giới tính: ").append(gender[selectGender]).toString(), x, y3, 0);
+        int y4 = y3 + 17;
+        Font.normalFont[0].drawString(g, new StringBuffer("Tóc: ").append(hairName[clazz[this.currentClazz][selectGender].headID]).toString(), x, y4, 0);
+        int y5 = y4 + 17;
+        Font.normalFont[0].drawString(g, new StringBuffer("L.thổ: ").append(GameScr.nameCountry[selectNation]).toString(), x, y5, 0);
+        Font.normalFont[0].drawString(g, new StringBuffer("Ngũ hành: ").append(clazz[this.currentClazz][selectGender].element).toString(), x, y5 + 17, 0);
+        this.ch.paintAvatar(g, (short) Canvas.hw, (short) (Canvas.hh - 30));
+        if (this.ch.weaponType != -1 && this.ch.weaponStyle != -1 && this.ch.imgWpa != null) {
+            int dy = this.ch.frame == 1 ? 1 : 0;
+            g.drawImage(this.ch.imgWpa, Canvas.hw + this.ch.dxWear, (Canvas.hh - 30) + this.ch.dyWear + dy, 0);
+        }
+        this.tfChat.paint(g);
+        g.setClip(0, 0, Canvas.w, Canvas.h);
+        super.paint(g);
+    }
+
+    /**
+     * pokemon: màn tạo nhân vật - 5 Pokémon khởi đầu thay 5 class (bảng 4.1, ClientUnity CreateCharScr.cs).
+     * Bảng xanh, hàng 5 chân dung (chạm để chọn), Pokémon đang chọn đứng trong vòng sáng + tên + huy hiệu
+     * hệ + vai trò, ô tên và lãnh thổ. Dòng đang chọn (phím lên/xuống) có viền vàng.
+     */
+    private void paintPokemon(Graphics g) {
+        int x0 = xBang();
+        int y0 = yBang();
+        int W = rongBang();
+        game.pokemon.GiaoDien.bangMo(g, x0, y0, W, caoBang());
+        game.pokemon.GiaoDien.dai(g, x0 + 4, y0 + 4, W - 8, 17, "Chọn Pokémon khởi đầu");
+        int c = canhAnh();
+        int yAnh = y0 + 26;
+        for (int i = 0; i < 5; i++) {
+            int dex = LoaiPokemonClient.khoiDau(i);
+            int cx = xAnh(i);
+            boolean dangChon = i == this.currentClazz;
+            // huy hiệu tròn màu hệ (HuyHieuPoke); đang chọn: vòng vàng dày
+            if (dangChon) {
+                g.setColor(game.pokemon.GiaoDien.VANG);
+                g.fillArc(cx - c / 2 - 3, yAnh - 3, c + 6, c + 6, 0, 360);
+            }
+            if (!PokeBody.paintChanDung(g, dex, false, cx, yAnh + c / 2, c)) {
+                game.pokemon.GiaoDien.khoi(g, cx - c / 2, yAnh, c, c, 3, game.pokemon.GiaoDien.mauHe(LoaiPokemonClient.HE_KHOI_DAU[i]));
+            }
+        }
+        if (this.selected == 1) {
+            g.setColor(game.pokemon.GiaoDien.VANG);
+            g.drawRect(x0 + 6, yAnh - 4, W - 13, c + 7);
+        }
+        // Pokémon đang chọn
+        int yGiua = yAnh + c + 6;
+        game.pokemon.GiaoDien.khoi(g, x0 + 6, yGiua, W - 12, 58, 4, game.pokemon.GiaoDien.TRANG);
+        int dex = LoaiPokemonClient.khoiDau(this.currentClazz);
+        int xp = x0 + 34;
+        g.setColor(0xBFE0FF);
+        g.fillArc(xp - 22, yGiua + 40, 44, 14, 0, 360);
+        g.setClip(x0 + 8, yGiua + 2, 54, 54);
+        if (!PokeBody.paint(g, dex, false, xp, yGiua + 48, 0, PokeDuLieu.DUNG, Canvas.gameTick, 150)) {
+            this.ch.paintAvatar(g, (short) xp, (short) (yGiua + 48));
+        }
+        Canvas.resetTrans(g);
+        int xc = x0 + 64;
+        Font.blackFont.drawString(g, LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz], xc, yGiua + 4, 0);
+        game.pokemon.GiaoDien.huyHieuHe(g, xc, yGiua + 21, LoaiPokemonClient.HE_KHOI_DAU[this.currentClazz]);
+        Font.arialFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFont, LoaiPokemonClient.VAI_TRO[this.currentClazz], x0 + W - 10 - xc), xc, yGiua + 40, 0);
+        // mũi tên trái / phải đổi Pokémon
+        g.setColor(game.pokemon.GiaoDien.XANH);
+        g.fillTriangle(x0 + W - 22, yGiua + 10, x0 + W - 22, yGiua + 22, x0 + W - 15, yGiua + 16);
+        // ô tên
+        int yTen = this.tfChat.y;
+        Font.normalFont[0].drawString(g, "Tên:", x0 + 10, yTen + 3, 0);
+        if (this.selected == 0) {
+            game.pokemon.GiaoDien.muiTen(g, x0 + 4, yTen + 5, 8, game.pokemon.GiaoDien.VANG);
+        }
+        // lãnh thổ
+        int yVung = yTen + 26;
+        if (this.selected == 2) {
+            game.pokemon.GiaoDien.chon(g, x0 + 6, yVung - 3, W - 12, 19);
+        }
+        Font.normalFont[0].drawString(g, new StringBuffer("Vùng: ").append(GameScr.nameCountry[selectNation]).toString(), x0 + 12, yVung, 0);
+        g.setColor(game.pokemon.GiaoDien.VANG);
+        g.fillTriangle(x0 + W - 34, yVung + 6, x0 + W - 28, yVung + 1, x0 + W - 28, yVung + 11);
+        g.fillTriangle(x0 + W - 12, yVung + 6, x0 + W - 18, yVung + 1, x0 + W - 18, yVung + 11);
+    }
+
+    /** pokemon: chạm chân dung để chọn Pokémon, chạm dòng vùng để đổi vùng. */
+    private void chamPokemon() {
+        if (!Canvas.isPointerClick || !PokeBody.CHE_DO_POKEMON || Canvas.currentDialog != null) {
+            return;
+        }
+        int c = canhAnh();
+        int yAnh = yBang() + 26;
+        for (int i = 0; i < 5; i++) {
+            if (Canvas.isPointer(xAnh(i) - c / 2 - 2, yAnh - 2, c + 4, c + 4)) {
+                Canvas.isPointerClick = false;
+                if (this.currentClazz != i) {
+                    this.currentClazz = i;
+                    changChar();
+                    loadImg();
+                }
+                this.selected = 1;
+                this.tfChat.isFocus = false;
+                return;
+            }
+        }
+        int yVung = this.tfChat.y + 26;
+        if (Canvas.isPointer(xBang() + 6, yVung - 3, rongBang() - 12, 19)) {
+            Canvas.isPointerClick = false;
+            selectNation = selectNation == 0 ? 1 : 0;
+            this.selected = 2;
+            this.tfChat.isFocus = false;
+        }
+    }
+
+    @Override
+    public void update() {
+        chamPokemon();
+        this.tfChat.update();
+        this.ch.update();
+        super.update();
+    }
+}

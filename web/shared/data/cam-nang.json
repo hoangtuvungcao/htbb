@@ -1,0 +1,4730 @@
+{
+ "capDo": {
+  "capToiDa": 100,
+  "tranCap": [
+   {
+    "ngay": 0,
+    "cap": 60
+   },
+   {
+    "ngay": 60,
+    "cap": 70
+   },
+   {
+    "ngay": 150,
+    "cap": 80
+   },
+   {
+    "ngay": 240,
+    "cap": 91
+   },
+   {
+    "ngay": 365,
+    "cap": 95
+   },
+   {
+    "ngay": 545,
+    "cap": 100
+   }
+  ],
+  "bang": [
+   {
+    "cap": 1,
+    "expLenCap": 215,
+    "gioTichLuy": 0,
+    "gioCap": 0.03,
+    "quaiMoiGio": 359,
+    "expMoiQuai": 20,
+    "xuMoiQuai": 10,
+    "xuMoiGio": 3590
+   },
+   {
+    "cap": 2,
+    "expLenCap": 306,
+    "gioTichLuy": 0.03,
+    "gioCap": 0.03,
+    "quaiMoiGio": 357,
+    "expMoiQuai": 27,
+    "xuMoiQuai": 11,
+    "xuMoiGio": 3927
+   },
+   {
+    "cap": 3,
+    "expLenCap": 443,
+    "gioTichLuy": 0.06,
+    "gioCap": 0.03,
+    "quaiMoiGio": 356,
+    "expMoiQuai": 37,
+    "xuMoiQuai": 12,
+    "xuMoiGio": 4272
+   },
+   {
+    "cap": 4,
+    "expLenCap": 619,
+    "gioTichLuy": 0.1,
+    "gioCap": 0.04,
+    "quaiMoiGio": 355,
+    "expMoiQuai": 49,
+    "xuMoiQuai": 12,
+    "xuMoiGio": 4260
+   },
+   {
+    "cap": 5,
+    "expLenCap": 893,
+    "gioTichLuy": 0.13,
+    "gioCap": 0.04,
+    "quaiMoiGio": 354,
+    "expMoiQuai": 67,
+    "xuMoiQuai": 13,
+    "xuMoiGio": 4602
+   },
+   {
+    "cap": 6,
+    "expLenCap": 1260,
+    "gioTichLuy": 0.17,
+    "gioCap": 0.04,
+    "quaiMoiGio": 352,
+    "expMoiQuai": 90,
+    "xuMoiQuai": 13,
+    "xuMoiGio": 4576
+   },
+   {
+    "cap": 7,
+    "expLenCap": 1810,
+    "gioTichLuy": 0.21,
+    "gioCap": 0.04,
+    "quaiMoiGio": 351,
+    "expMoiQuai": 122,
+    "xuMoiQuai": 14,
+    "xuMoiGio": 4914
+   },
+   {
+    "cap": 8,
+    "expLenCap": 2560,
+    "gioTichLuy": 0.25,
+    "gioCap": 0.04,
+    "quaiMoiGio": 350,
+    "expMoiQuai": 164,
+    "xuMoiQuai": 15,
+    "xuMoiGio": 5250
+   },
+   {
+    "cap": 9,
+    "expLenCap": 3650,
+    "gioTichLuy": 0.3,
+    "gioCap": 0.05,
+    "quaiMoiGio": 348,
+    "expMoiQuai": 222,
+    "xuMoiQuai": 16,
+    "xuMoiGio": 5568
+   },
+   {
+    "cap": 10,
+    "expLenCap": 5210,
+    "gioTichLuy": 0.34,
+    "gioCap": 0.05,
+    "quaiMoiGio": 347,
+    "expMoiQuai": 300,
+    "xuMoiQuai": 16,
+    "xuMoiGio": 5552
+   },
+   {
+    "cap": 11,
+    "expLenCap": 6510,
+    "gioTichLuy": 0.39,
+    "gioCap": 0.06,
+    "quaiMoiGio": 346,
+    "expMoiQuai": 335,
+    "xuMoiQuai": 17,
+    "xuMoiGio": 5882
+   },
+   {
+    "cap": 12,
+    "expLenCap": 8100,
+    "gioTichLuy": 0.45,
+    "gioCap": 0.06,
+    "quaiMoiGio": 344,
+    "expMoiQuai": 374,
+    "xuMoiQuai": 18,
+    "xuMoiGio": 6192
+   },
+   {
+    "cap": 13,
+    "expLenCap": 10100,
+    "gioTichLuy": 0.51,
+    "gioCap": 0.07,
+    "quaiMoiGio": 343,
+    "expMoiQuai": 417,
+    "xuMoiQuai": 19,
+    "xuMoiGio": 6517
+   },
+   {
+    "cap": 14,
+    "expLenCap": 12600,
+    "gioTichLuy": 0.58,
+    "gioCap": 0.08,
+    "quaiMoiGio": 342,
+    "expMoiQuai": 466,
+    "xuMoiQuai": 20,
+    "xuMoiGio": 6840
+   },
+   {
+    "cap": 15,
+    "expLenCap": 15800,
+    "gioTichLuy": 0.66,
+    "gioCap": 0.09,
+    "quaiMoiGio": 340,
+    "expMoiQuai": 520,
+    "xuMoiQuai": 21,
+    "xuMoiGio": 7140
+   },
+   {
+    "cap": 16,
+    "expLenCap": 19700,
+    "gioTichLuy": 0.75,
+    "gioCap": 0.1,
+    "quaiMoiGio": 339,
+    "expMoiQuai": 580,
+    "xuMoiQuai": 22,
+    "xuMoiGio": 7458
+   },
+   {
+    "cap": 17,
+    "expLenCap": 27500,
+    "gioTichLuy": 0.85,
+    "gioCap": 0.13,
+    "quaiMoiGio": 338,
+    "expMoiQuai": 647,
+    "xuMoiQuai": 23,
+    "xuMoiGio": 7774
+   },
+   {
+    "cap": 18,
+    "expLenCap": 38500,
+    "gioTichLuy": 0.98,
+    "gioCap": 0.16,
+    "quaiMoiGio": 337,
+    "expMoiQuai": 722,
+    "xuMoiQuai": 24,
+    "xuMoiGio": 8088
+   },
+   {
+    "cap": 19,
+    "expLenCap": 53700,
+    "gioTichLuy": 1.13,
+    "gioCap": 0.2,
+    "quaiMoiGio": 335,
+    "expMoiQuai": 806,
+    "xuMoiQuai": 25,
+    "xuMoiGio": 8375
+   },
+   {
+    "cap": 20,
+    "expLenCap": 75200,
+    "gioTichLuy": 1.33,
+    "gioCap": 0.25,
+    "quaiMoiGio": 334,
+    "expMoiQuai": 900,
+    "xuMoiQuai": 27,
+    "xuMoiGio": 9018
+   },
+   {
+    "cap": 21,
+    "expLenCap": 92300,
+    "gioTichLuy": 1.58,
+    "gioCap": 0.28,
+    "quaiMoiGio": 333,
+    "expMoiQuai": 975,
+    "xuMoiQuai": 28,
+    "xuMoiGio": 9324
+   },
+   {
+    "cap": 22,
+    "expLenCap": 113000,
+    "gioTichLuy": 1.87,
+    "gioCap": 0.32,
+    "quaiMoiGio": 331,
+    "expMoiQuai": 1056,
+    "xuMoiQuai": 29,
+    "xuMoiGio": 9599
+   },
+   {
+    "cap": 23,
+    "expLenCap": 139000,
+    "gioTichLuy": 2.19,
+    "gioCap": 0.37,
+    "quaiMoiGio": 330,
+    "expMoiQuai": 1144,
+    "xuMoiQuai": 31,
+    "xuMoiGio": 10230
+   },
+   {
+    "cap": 24,
+    "expLenCap": 170000,
+    "gioTichLuy": 2.56,
+    "gioCap": 0.42,
+    "quaiMoiGio": 329,
+    "expMoiQuai": 1239,
+    "xuMoiQuai": 32,
+    "xuMoiGio": 10528
+   },
+   {
+    "cap": 25,
+    "expLenCap": 209000,
+    "gioTichLuy": 2.98,
+    "gioCap": 0.47,
+    "quaiMoiGio": 328,
+    "expMoiQuai": 1342,
+    "xuMoiQuai": 34,
+    "xuMoiGio": 11152
+   },
+   {
+    "cap": 26,
+    "expLenCap": 255000,
+    "gioTichLuy": 3.45,
+    "gioCap": 0.54,
+    "quaiMoiGio": 326,
+    "expMoiQuai": 1453,
+    "xuMoiQuai": 36,
+    "xuMoiGio": 11736
+   },
+   {
+    "cap": 27,
+    "expLenCap": 314000,
+    "gioTichLuy": 3.99,
+    "gioCap": 0.61,
+    "quaiMoiGio": 325,
+    "expMoiQuai": 1574,
+    "xuMoiQuai": 37,
+    "xuMoiGio": 12025
+   },
+   {
+    "cap": 28,
+    "expLenCap": 385000,
+    "gioTichLuy": 4.6,
+    "gioCap": 0.7,
+    "quaiMoiGio": 324,
+    "expMoiQuai": 1705,
+    "xuMoiQuai": 39,
+    "xuMoiGio": 12636
+   },
+   {
+    "cap": 29,
+    "expLenCap": 471000,
+    "gioTichLuy": 5.3,
+    "gioCap": 0.79,
+    "quaiMoiGio": 322,
+    "expMoiQuai": 1847,
+    "xuMoiQuai": 41,
+    "xuMoiGio": 13202
+   },
+   {
+    "cap": 30,
+    "expLenCap": 578000,
+    "gioTichLuy": 6.09,
+    "gioCap": 0.9,
+    "quaiMoiGio": 321,
+    "expMoiQuai": 2000,
+    "xuMoiQuai": 43,
+    "xuMoiGio": 13803
+   },
+   {
+    "cap": 31,
+    "expLenCap": 670000,
+    "gioTichLuy": 6.99,
+    "gioCap": 0.97,
+    "quaiMoiGio": 320,
+    "expMoiQuai": 2149,
+    "xuMoiQuai": 45,
+    "xuMoiGio": 14400
+   },
+   {
+    "cap": 32,
+    "expLenCap": 775000,
+    "gioTichLuy": 7.96,
+    "gioCap": 1.06,
+    "quaiMoiGio": 318,
+    "expMoiQuai": 2309,
+    "xuMoiQuai": 48,
+    "xuMoiGio": 15264
+   },
+   {
+    "cap": 33,
+    "expLenCap": 899000,
+    "gioTichLuy": 9.02,
+    "gioCap": 1.14,
+    "quaiMoiGio": 317,
+    "expMoiQuai": 2481,
+    "xuMoiQuai": 50,
+    "xuMoiGio": 15850
+   },
+   {
+    "cap": 34,
+    "expLenCap": 1040000,
+    "gioTichLuy": 10.16,
+    "gioCap": 1.24,
+    "quaiMoiGio": 316,
+    "expMoiQuai": 2665,
+    "xuMoiQuai": 53,
+    "xuMoiGio": 16748
+   },
+   {
+    "cap": 35,
+    "expLenCap": 1210000,
+    "gioTichLuy": 11.4,
+    "gioCap": 1.34,
+    "quaiMoiGio": 314,
+    "expMoiQuai": 2864,
+    "xuMoiQuai": 55,
+    "xuMoiGio": 17270
+   },
+   {
+    "cap": 36,
+    "expLenCap": 1400000,
+    "gioTichLuy": 12.74,
+    "gioCap": 1.45,
+    "quaiMoiGio": 313,
+    "expMoiQuai": 3077,
+    "xuMoiQuai": 58,
+    "xuMoiGio": 18154
+   },
+   {
+    "cap": 37,
+    "expLenCap": 1620000,
+    "gioTichLuy": 14.2,
+    "gioCap": 1.57,
+    "quaiMoiGio": 312,
+    "expMoiQuai": 3306,
+    "xuMoiQuai": 61,
+    "xuMoiGio": 19032
+   },
+   {
+    "cap": 38,
+    "expLenCap": 1880000,
+    "gioTichLuy": 15.77,
+    "gioCap": 1.7,
+    "quaiMoiGio": 311,
+    "expMoiQuai": 3552,
+    "xuMoiQuai": 64,
+    "xuMoiGio": 19904
+   },
+   {
+    "cap": 39,
+    "expLenCap": 2180000,
+    "gioTichLuy": 17.48,
+    "gioCap": 1.85,
+    "quaiMoiGio": 309,
+    "expMoiQuai": 3816,
+    "xuMoiQuai": 67,
+    "xuMoiGio": 20703
+   },
+   {
+    "cap": 40,
+    "expLenCap": 2530000,
+    "gioTichLuy": 19.32,
+    "gioCap": 2,
+    "quaiMoiGio": 308,
+    "expMoiQuai": 4100,
+    "xuMoiQuai": 70,
+    "xuMoiGio": 21560
+   },
+   {
+    "cap": 41,
+    "expLenCap": 2770000,
+    "gioTichLuy": 21.32,
+    "gioCap": 2.12,
+    "quaiMoiGio": 307,
+    "expMoiQuai": 4255,
+    "xuMoiQuai": 74,
+    "xuMoiGio": 22718
+   },
+   {
+    "cap": 42,
+    "expLenCap": 3030000,
+    "gioTichLuy": 23.44,
+    "gioCap": 2.25,
+    "quaiMoiGio": 305,
+    "expMoiQuai": 4416,
+    "xuMoiQuai": 78,
+    "xuMoiGio": 23790
+   },
+   {
+    "cap": 43,
+    "expLenCap": 3320000,
+    "gioTichLuy": 25.69,
+    "gioCap": 2.39,
+    "quaiMoiGio": 304,
+    "expMoiQuai": 4582,
+    "xuMoiQuai": 81,
+    "xuMoiGio": 24624
+   },
+   {
+    "cap": 44,
+    "expLenCap": 3650000,
+    "gioTichLuy": 28.08,
+    "gioCap": 2.53,
+    "quaiMoiGio": 303,
+    "expMoiQuai": 4755,
+    "xuMoiQuai": 86,
+    "xuMoiGio": 26058
+   },
+   {
+    "cap": 45,
+    "expLenCap": 4000000,
+    "gioTichLuy": 30.61,
+    "gioCap": 2.68,
+    "quaiMoiGio": 302,
+    "expMoiQuai": 4935,
+    "xuMoiQuai": 90,
+    "xuMoiGio": 27180
+   },
+   {
+    "cap": 46,
+    "expLenCap": 4370000,
+    "gioTichLuy": 33.29,
+    "gioCap": 2.85,
+    "quaiMoiGio": 300,
+    "expMoiQuai": 5121,
+    "xuMoiQuai": 94,
+    "xuMoiGio": 28200
+   },
+   {
+    "cap": 47,
+    "expLenCap": 4800000,
+    "gioTichLuy": 36.14,
+    "gioCap": 3.02,
+    "quaiMoiGio": 299,
+    "expMoiQuai": 5315,
+    "xuMoiQuai": 99,
+    "xuMoiGio": 29601
+   },
+   {
+    "cap": 48,
+    "expLenCap": 5260000,
+    "gioTichLuy": 39.16,
+    "gioCap": 3.2,
+    "quaiMoiGio": 298,
+    "expMoiQuai": 5516,
+    "xuMoiQuai": 104,
+    "xuMoiGio": 30992
+   },
+   {
+    "cap": 49,
+    "expLenCap": 5750000,
+    "gioTichLuy": 42.36,
+    "gioCap": 3.39,
+    "quaiMoiGio": 296,
+    "expMoiQuai": 5724,
+    "xuMoiQuai": 109,
+    "xuMoiGio": 32264
+   },
+   {
+    "cap": 50,
+    "expLenCap": 6310000,
+    "gioTichLuy": 45.75,
+    "gioCap": 3.6,
+    "quaiMoiGio": 295,
+    "expMoiQuai": 5940,
+    "xuMoiQuai": 115,
+    "xuMoiGio": 33925
+   },
+   {
+    "cap": 51,
+    "expLenCap": 6920000,
+    "gioTichLuy": 49.35,
+    "gioCap": 3.8,
+    "quaiMoiGio": 294,
+    "expMoiQuai": 6192,
+    "xuMoiQuai": 120,
+    "xuMoiGio": 35280
+   },
+   {
+    "cap": 52,
+    "expLenCap": 7560000,
+    "gioTichLuy": 53.15,
+    "gioCap": 4.01,
+    "quaiMoiGio": 292,
+    "expMoiQuai": 6455,
+    "xuMoiQuai": 126,
+    "xuMoiGio": 36792
+   },
+   {
+    "cap": 53,
+    "expLenCap": 8300000,
+    "gioTichLuy": 57.17,
+    "gioCap": 4.24,
+    "quaiMoiGio": 291,
+    "expMoiQuai": 6729,
+    "xuMoiQuai": 133,
+    "xuMoiGio": 38703
+   },
+   {
+    "cap": 54,
+    "expLenCap": 9100000,
+    "gioTichLuy": 61.4,
+    "gioCap": 4.47,
+    "quaiMoiGio": 290,
+    "expMoiQuai": 7014,
+    "xuMoiQuai": 139,
+    "xuMoiGio": 40310
+   },
+   {
+    "cap": 55,
+    "expLenCap": 9950000,
+    "gioTichLuy": 65.88,
+    "gioCap": 4.72,
+    "quaiMoiGio": 288,
+    "expMoiQuai": 7312,
+    "xuMoiQuai": 146,
+    "xuMoiGio": 42048
+   },
+   {
+    "cap": 56,
+    "expLenCap": 10900000,
+    "gioTichLuy": 70.6,
+    "gioCap": 4.99,
+    "quaiMoiGio": 287,
+    "expMoiQuai": 7622,
+    "xuMoiQuai": 154,
+    "xuMoiGio": 44198
+   },
+   {
+    "cap": 57,
+    "expLenCap": 12000000,
+    "gioTichLuy": 75.59,
+    "gioCap": 5.27,
+    "quaiMoiGio": 286,
+    "expMoiQuai": 7945,
+    "xuMoiQuai": 161,
+    "xuMoiGio": 46046
+   },
+   {
+    "cap": 58,
+    "expLenCap": 13100000,
+    "gioTichLuy": 80.86,
+    "gioCap": 5.56,
+    "quaiMoiGio": 285,
+    "expMoiQuai": 8282,
+    "xuMoiQuai": 169,
+    "xuMoiGio": 48165
+   },
+   {
+    "cap": 59,
+    "expLenCap": 14300000,
+    "gioTichLuy": 86.42,
+    "gioCap": 5.87,
+    "quaiMoiGio": 283,
+    "expMoiQuai": 8634,
+    "xuMoiQuai": 178,
+    "xuMoiGio": 50374
+   },
+   {
+    "cap": 60,
+    "expLenCap": 15700000,
+    "gioTichLuy": 92.29,
+    "gioCap": 6.2,
+    "quaiMoiGio": 282,
+    "expMoiQuai": 9000,
+    "xuMoiQuai": 187,
+    "xuMoiGio": 52734
+   },
+   {
+    "cap": 61,
+    "expLenCap": 17400000,
+    "gioTichLuy": 98.49,
+    "gioCap": 6.57,
+    "quaiMoiGio": 281,
+    "expMoiQuai": 9407,
+    "xuMoiQuai": 196,
+    "xuMoiGio": 55076
+   },
+   {
+    "cap": 62,
+    "expLenCap": 19100000,
+    "gioTichLuy": 105.06,
+    "gioCap": 6.95,
+    "quaiMoiGio": 279,
+    "expMoiQuai": 9831,
+    "xuMoiQuai": 206,
+    "xuMoiGio": 57474
+   },
+   {
+    "cap": 63,
+    "expLenCap": 21000000,
+    "gioTichLuy": 112.01,
+    "gioCap": 7.36,
+    "quaiMoiGio": 278,
+    "expMoiQuai": 10276,
+    "xuMoiQuai": 216,
+    "xuMoiGio": 60048
+   },
+   {
+    "cap": 64,
+    "expLenCap": 23200000,
+    "gioTichLuy": 119.37,
+    "gioCap": 7.8,
+    "quaiMoiGio": 277,
+    "expMoiQuai": 10740,
+    "xuMoiQuai": 227,
+    "xuMoiGio": 62879
+   },
+   {
+    "cap": 65,
+    "expLenCap": 25600000,
+    "gioTichLuy": 127.17,
+    "gioCap": 8.26,
+    "quaiMoiGio": 276,
+    "expMoiQuai": 11225,
+    "xuMoiQuai": 238,
+    "xuMoiGio": 65688
+   },
+   {
+    "cap": 66,
+    "expLenCap": 28100000,
+    "gioTichLuy": 135.43,
+    "gioCap": 8.75,
+    "quaiMoiGio": 274,
+    "expMoiQuai": 11732,
+    "xuMoiQuai": 250,
+    "xuMoiGio": 68500
+   },
+   {
+    "cap": 67,
+    "expLenCap": 31000000,
+    "gioTichLuy": 144.18,
+    "gioCap": 9.26,
+    "quaiMoiGio": 273,
+    "expMoiQuai": 12262,
+    "xuMoiQuai": 263,
+    "xuMoiGio": 71799
+   },
+   {
+    "cap": 68,
+    "expLenCap": 34200000,
+    "gioTichLuy": 153.44,
+    "gioCap": 9.81,
+    "quaiMoiGio": 272,
+    "expMoiQuai": 12816,
+    "xuMoiQuai": 276,
+    "xuMoiGio": 75072
+   },
+   {
+    "cap": 69,
+    "expLenCap": 37600000,
+    "gioTichLuy": 163.25,
+    "gioCap": 10.39,
+    "quaiMoiGio": 270,
+    "expMoiQuai": 13395,
+    "xuMoiQuai": 290,
+    "xuMoiGio": 78300
+   },
+   {
+    "cap": 70,
+    "expLenCap": 41400000,
+    "gioTichLuy": 173.63,
+    "gioCap": 11,
+    "quaiMoiGio": 269,
+    "expMoiQuai": 14000,
+    "xuMoiQuai": 304,
+    "xuMoiGio": 81776
+   },
+   {
+    "cap": 71,
+    "expLenCap": 46000000,
+    "gioTichLuy": 184.63,
+    "gioCap": 11.62,
+    "quaiMoiGio": 268,
+    "expMoiQuai": 14775,
+    "xuMoiQuai": 319,
+    "xuMoiGio": 85492
+   },
+   {
+    "cap": 72,
+    "expLenCap": 50900000,
+    "gioTichLuy": 196.25,
+    "gioCap": 12.27,
+    "quaiMoiGio": 266,
+    "expMoiQuai": 15594,
+    "xuMoiQuai": 335,
+    "xuMoiGio": 89110
+   },
+   {
+    "cap": 73,
+    "expLenCap": 56500000,
+    "gioTichLuy": 208.52,
+    "gioCap": 12.96,
+    "quaiMoiGio": 265,
+    "expMoiQuai": 16457,
+    "xuMoiQuai": 352,
+    "xuMoiGio": 93280
+   },
+   {
+    "cap": 74,
+    "expLenCap": 62800000,
+    "gioTichLuy": 221.48,
+    "gioCap": 13.69,
+    "quaiMoiGio": 264,
+    "expMoiQuai": 17368,
+    "xuMoiQuai": 370,
+    "xuMoiGio": 97680
+   },
+   {
+    "cap": 75,
+    "expLenCap": 69400000,
+    "gioTichLuy": 235.17,
+    "gioCap": 14.46,
+    "quaiMoiGio": 262,
+    "expMoiQuai": 18330,
+    "xuMoiQuai": 388,
+    "xuMoiGio": 101656
+   },
+   {
+    "cap": 76,
+    "expLenCap": 77100000,
+    "gioTichLuy": 249.63,
+    "gioCap": 15.27,
+    "quaiMoiGio": 261,
+    "expMoiQuai": 19345,
+    "xuMoiQuai": 408,
+    "xuMoiGio": 106488
+   },
+   {
+    "cap": 77,
+    "expLenCap": 85600000,
+    "gioTichLuy": 264.9,
+    "gioCap": 16.13,
+    "quaiMoiGio": 260,
+    "expMoiQuai": 20417,
+    "xuMoiQuai": 428,
+    "xuMoiGio": 111280
+   },
+   {
+    "cap": 78,
+    "expLenCap": 95100000,
+    "gioTichLuy": 281.02,
+    "gioCap": 17.03,
+    "quaiMoiGio": 259,
+    "expMoiQuai": 21547,
+    "xuMoiQuai": 450,
+    "xuMoiGio": 116550
+   },
+   {
+    "cap": 79,
+    "expLenCap": 105000000,
+    "gioTichLuy": 298.05,
+    "gioCap": 17.99,
+    "quaiMoiGio": 257,
+    "expMoiQuai": 22741,
+    "xuMoiQuai": 472,
+    "xuMoiGio": 121304
+   },
+   {
+    "cap": 80,
+    "expLenCap": 117000000,
+    "gioTichLuy": 316.04,
+    "gioCap": 19,
+    "quaiMoiGio": 256,
+    "expMoiQuai": 24000,
+    "xuMoiQuai": 496,
+    "xuMoiGio": 126976
+   },
+   {
+    "cap": 81,
+    "expLenCap": 127000000,
+    "gioTichLuy": 335.04,
+    "gioCap": 20.02,
+    "quaiMoiGio": 255,
+    "expMoiQuai": 24909,
+    "xuMoiQuai": 520,
+    "xuMoiGio": 132600
+   },
+   {
+    "cap": 82,
+    "expLenCap": 138000000,
+    "gioTichLuy": 355.06,
+    "gioCap": 21.09,
+    "quaiMoiGio": 253,
+    "expMoiQuai": 25853,
+    "xuMoiQuai": 546,
+    "xuMoiGio": 138138
+   },
+   {
+    "cap": 83,
+    "expLenCap": 150000000,
+    "gioTichLuy": 376.15,
+    "gioCap": 22.22,
+    "quaiMoiGio": 252,
+    "expMoiQuai": 26833,
+    "xuMoiQuai": 574,
+    "xuMoiGio": 144648
+   },
+   {
+    "cap": 84,
+    "expLenCap": 164000000,
+    "gioTichLuy": 398.36,
+    "gioCap": 23.41,
+    "quaiMoiGio": 251,
+    "expMoiQuai": 27850,
+    "xuMoiQuai": 602,
+    "xuMoiGio": 151102
+   },
+   {
+    "cap": 85,
+    "expLenCap": 178000000,
+    "gioTichLuy": 421.77,
+    "gioCap": 24.66,
+    "quaiMoiGio": 250,
+    "expMoiQuai": 28905,
+    "xuMoiQuai": 633,
+    "xuMoiGio": 158250
+   },
+   {
+    "cap": 86,
+    "expLenCap": 193000000,
+    "gioTichLuy": 446.43,
+    "gioCap": 25.98,
+    "quaiMoiGio": 248,
+    "expMoiQuai": 30000,
+    "xuMoiQuai": 664,
+    "xuMoiGio": 164672
+   },
+   {
+    "cap": 87,
+    "expLenCap": 209000000,
+    "gioTichLuy": 472.4,
+    "gioCap": 27.37,
+    "quaiMoiGio": 247,
+    "expMoiQuai": 30954,
+    "xuMoiQuai": 697,
+    "xuMoiGio": 172159
+   },
+   {
+    "cap": 88,
+    "expLenCap": 227000000,
+    "gioTichLuy": 499.77,
+    "gioCap": 28.83,
+    "quaiMoiGio": 246,
+    "expMoiQuai": 31937,
+    "xuMoiQuai": 732,
+    "xuMoiGio": 180072
+   },
+   {
+    "cap": 89,
+    "expLenCap": 244000000,
+    "gioTichLuy": 528.6,
+    "gioCap": 30.37,
+    "quaiMoiGio": 244,
+    "expMoiQuai": 32953,
+    "xuMoiQuai": 769,
+    "xuMoiGio": 187636
+   },
+   {
+    "cap": 90,
+    "expLenCap": 264000000,
+    "gioTichLuy": 558.98,
+    "gioCap": 32,
+    "quaiMoiGio": 243,
+    "expMoiQuai": 34000,
+    "xuMoiQuai": 807,
+    "xuMoiGio": 196101
+   },
+   {
+    "cap": 91,
+    "expLenCap": 281000000,
+    "gioTichLuy": 590.98,
+    "gioCap": 33.18,
+    "quaiMoiGio": 242,
+    "expMoiQuai": 34967,
+    "xuMoiQuai": 848,
+    "xuMoiGio": 205216
+   },
+   {
+    "cap": 92,
+    "expLenCap": 297000000,
+    "gioTichLuy": 624.16,
+    "gioCap": 34.41,
+    "quaiMoiGio": 240,
+    "expMoiQuai": 35960,
+    "xuMoiQuai": 890,
+    "xuMoiGio": 213600
+   },
+   {
+    "cap": 93,
+    "expLenCap": 315000000,
+    "gioTichLuy": 658.57,
+    "gioCap": 35.68,
+    "quaiMoiGio": 239,
+    "expMoiQuai": 36983,
+    "xuMoiQuai": 935,
+    "xuMoiGio": 223465
+   },
+   {
+    "cap": 94,
+    "expLenCap": 335000000,
+    "gioTichLuy": 694.25,
+    "gioCap": 37,
+    "quaiMoiGio": 238,
+    "expMoiQuai": 38034,
+    "xuMoiQuai": 981,
+    "xuMoiGio": 233478
+   },
+   {
+    "cap": 95,
+    "expLenCap": 354000000,
+    "gioTichLuy": 731.25,
+    "gioCap": 38.37,
+    "quaiMoiGio": 236,
+    "expMoiQuai": 39115,
+    "xuMoiQuai": 1030,
+    "xuMoiGio": 243080
+   },
+   {
+    "cap": 96,
+    "expLenCap": 376000000,
+    "gioTichLuy": 769.62,
+    "gioCap": 39.78,
+    "quaiMoiGio": 235,
+    "expMoiQuai": 40227,
+    "xuMoiQuai": 1082,
+    "xuMoiGio": 254270
+   },
+   {
+    "cap": 97,
+    "expLenCap": 399000000,
+    "gioTichLuy": 809.4,
+    "gioCap": 41.25,
+    "quaiMoiGio": 234,
+    "expMoiQuai": 41371,
+    "xuMoiQuai": 1136,
+    "xuMoiGio": 265824
+   },
+   {
+    "cap": 98,
+    "expLenCap": 424000000,
+    "gioTichLuy": 850.66,
+    "gioCap": 42.78,
+    "quaiMoiGio": 233,
+    "expMoiQuai": 42547,
+    "xuMoiQuai": 1193,
+    "xuMoiGio": 277969
+   },
+   {
+    "cap": 99,
+    "expLenCap": 448000000,
+    "gioTichLuy": 893.44,
+    "gioCap": 44.36,
+    "quaiMoiGio": 231,
+    "expMoiQuai": 43756,
+    "xuMoiQuai": 1252,
+    "xuMoiGio": 289212
+   },
+   {
+    "cap": 100,
+    "expLenCap": 0,
+    "gioTichLuy": 937.8,
+    "gioCap": 0,
+    "quaiMoiGio": 230,
+    "expMoiQuai": 45000,
+    "xuMoiQuai": 1315,
+    "xuMoiGio": 302450
+   }
+  ],
+  "nangLuong": {
+   "phutNgay": 180,
+   "phutTichToiDa": 360,
+   "bacMet": [
+    {
+     "phut": 180,
+     "tocDo": 50
+    },
+    {
+     "phut": 240,
+     "tocDo": 20
+    }
+   ]
+  },
+  "batKip": {
+   "heSoPhanTram": 150,
+   "khoangCap": 5
+  },
+  "tanThu": {
+   "duoiCap": 16,
+   "heSoPhanTram": 300
+  },
+  "tinhThong": {
+   "phanTramCap": 50,
+   "diemMoiMua": 10,
+   "toiDa": 50,
+   "phanNghinMoiDiem": 2
+  }
+ },
+ "trangBi": {
+  "soO": 11,
+  "o": [
+   {
+    "ten": "Khăn quàng",
+    "vai": "Thân (HP, phòng thủ)",
+    "loai": "mac",
+    "soMon": 63
+   },
+   {
+    "ten": "Đai",
+    "vai": "Thân (HP, phòng thủ)",
+    "loai": "mac",
+    "soMon": 62
+   },
+   {
+    "ten": "Băng đô",
+    "vai": "Đầu (phòng thủ)",
+    "loai": "mac",
+    "soMon": 62
+   },
+   {
+    "ten": "Vật phẩm cầm theo hệ",
+    "vai": "Tấn công — đúng dòng: Than lửa (Charmander), Hạt giống thần (Bulbasaur), Khăn lụa (Eevee), Nước thần (Squirtle), Nam châm (Pichu)",
+    "loai": "vat-cam",
+    "soMon": 240
+   },
+   {
+    "ten": "Huy hiệu ×2",
+    "vai": "Hai ô nhẫn: chỉ số phụ",
+    "loai": "huy-hieu",
+    "soMon": 32
+   },
+   {
+    "ten": "Vòng cổ",
+    "vai": "Chỉ số phụ",
+    "loai": "mac",
+    "soMon": 32
+   },
+   {
+    "ten": "Lông vũ tốc độ",
+    "vai": "Tốc độ chạy, né",
+    "loai": "mac",
+    "soMon": 32
+   },
+   {
+    "ten": "Găng đấm",
+    "vai": "Chí mạng, tấn công",
+    "loai": "mac",
+    "soMon": 32
+   },
+   {
+    "ten": "Phiến đá hệ",
+    "vai": "Tăng sức mạnh theo hệ",
+    "loai": "mac",
+    "soMon": 32
+   },
+   {
+    "ten": "Ruy băng",
+    "vai": "Ô trang trí có chỉ số nhỏ (không vẽ lên thân)",
+    "loai": "ruy-bang",
+    "soMon": 14
+   }
+  ],
+  "bac": [
+   {
+    "bac": 0,
+    "ten": "sơ cấp",
+    "cap": 1,
+    "ngayMo": 0,
+    "gia": 5385
+   },
+   {
+    "bac": 1,
+    "ten": "đồng",
+    "cap": 10,
+    "ngayMo": 0,
+    "gia": 8328
+   },
+   {
+    "bac": 2,
+    "ten": "bạc",
+    "cap": 20,
+    "ngayMo": 0,
+    "gia": 13527
+   },
+   {
+    "bac": 3,
+    "ten": "vàng",
+    "cap": 30,
+    "ngayMo": 0,
+    "gia": 20704
+   },
+   {
+    "bac": 4,
+    "ten": "bạch kim",
+    "cap": 40,
+    "ngayMo": 0,
+    "gia": 32340
+   },
+   {
+    "bac": 5,
+    "ten": "kim cương",
+    "cap": 50,
+    "ngayMo": 0,
+    "gia": 50888
+   },
+   {
+    "bac": 6,
+    "ten": "chuyên gia",
+    "cap": 60,
+    "ngayMo": 0,
+    "gia": 79101
+   },
+   {
+    "bac": 7,
+    "ten": "tinh anh",
+    "cap": 70,
+    "ngayMo": 60,
+    "gia": 122664
+   },
+   {
+    "bac": 8,
+    "ten": "huyền thoại",
+    "cap": 80,
+    "ngayMo": 150,
+    "gia": 190464
+   },
+   {
+    "bac": 9,
+    "ten": "thần thoại",
+    "cap": 90,
+    "ngayMo": 365,
+    "gia": 294152
+   },
+   {
+    "bac": 10,
+    "ten": "tối thượng",
+    "cap": 98,
+    "ngayMo": 545,
+    "gia": 416954
+   }
+  ],
+  "soMonMuaMoiBac": 5,
+  "nangCap": [
+   {
+    "plus": 1,
+    "tiLe": 100,
+    "da": 1,
+    "buaLuongKhoa": 0,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 2,
+    "tiLe": 100,
+    "da": 1,
+    "buaLuongKhoa": 0,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 3,
+    "tiLe": 95,
+    "da": 1,
+    "buaLuongKhoa": 0,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 4,
+    "tiLe": 90,
+    "da": 1,
+    "buaLuongKhoa": 0,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 5,
+    "tiLe": 85,
+    "da": 1,
+    "buaLuongKhoa": 0,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 6,
+    "tiLe": 75,
+    "da": 2,
+    "buaLuongKhoa": 0,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 7,
+    "tiLe": 65,
+    "da": 2,
+    "buaLuongKhoa": 10,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 8,
+    "tiLe": 55,
+    "da": 2,
+    "buaLuongKhoa": 10,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 9,
+    "tiLe": 45,
+    "da": 2,
+    "buaLuongKhoa": 10,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 10,
+    "tiLe": 38,
+    "da": 2,
+    "buaLuongKhoa": 10,
+    "chiSoPhanTram": 3
+   },
+   {
+    "plus": 11,
+    "tiLe": 30,
+    "da": 4,
+    "buaLuongKhoa": 25,
+    "chiSoPhanTram": 5
+   },
+   {
+    "plus": 12,
+    "tiLe": 24,
+    "da": 4,
+    "buaLuongKhoa": 25,
+    "chiSoPhanTram": 5
+   },
+   {
+    "plus": 13,
+    "tiLe": 18,
+    "da": 4,
+    "buaLuongKhoa": 25,
+    "chiSoPhanTram": 5
+   },
+   {
+    "plus": 14,
+    "tiLe": 13,
+    "da": 4,
+    "buaLuongKhoa": 25,
+    "chiSoPhanTram": 5
+   },
+   {
+    "plus": 15,
+    "tiLe": 10,
+    "da": 4,
+    "buaLuongKhoa": 25,
+    "chiSoPhanTram": 5
+   }
+  ],
+  "chiPhiNangCap": [
+   [
+    215,
+    280,
+    364,
+    473,
+    615,
+    800,
+    1040,
+    1352,
+    1757,
+    2284,
+    2969,
+    3860,
+    5018,
+    6524,
+    8481
+   ],
+   [
+    333,
+    433,
+    563,
+    732,
+    951,
+    1237,
+    1608,
+    2090,
+    2717,
+    3533,
+    4592,
+    5970,
+    7761,
+    10089,
+    13116
+   ],
+   [
+    541,
+    703,
+    914,
+    1189,
+    1545,
+    2009,
+    2612,
+    3395,
+    4414,
+    5738,
+    7459,
+    9697,
+    12606,
+    16388,
+    21304
+   ],
+   [
+    828,
+    1077,
+    1400,
+    1819,
+    2365,
+    3075,
+    3997,
+    5197,
+    6756,
+    8782,
+    11417,
+    14842,
+    19295,
+    25083,
+    32608
+   ],
+   [
+    1294,
+    1682,
+    2186,
+    2842,
+    3695,
+    4803,
+    6244,
+    8117,
+    10552,
+    13718,
+    17833,
+    23183,
+    30138,
+    39180,
+    50934
+   ],
+   [
+    2036,
+    2646,
+    3440,
+    4472,
+    5814,
+    7558,
+    9825,
+    12773,
+    16604,
+    21586,
+    28061,
+    36480,
+    47424,
+    61651,
+    80146
+   ],
+   [
+    3164,
+    4113,
+    5347,
+    6951,
+    9037,
+    11748,
+    15272,
+    19854,
+    25810,
+    33553,
+    43619,
+    56705,
+    73716,
+    95831,
+    124580
+   ],
+   [
+    4907,
+    6379,
+    8292,
+    10780,
+    14014,
+    18218,
+    23683,
+    30788,
+    40024,
+    52032,
+    67641,
+    87933,
+    114313,
+    148607,
+    193190
+   ],
+   [
+    7619,
+    9904,
+    12875,
+    16738,
+    21759,
+    28287,
+    36773,
+    47805,
+    62147,
+    80791,
+    105028,
+    136537,
+    177498,
+    230747,
+    299971
+   ],
+   [
+    11766,
+    15296,
+    19885,
+    25850,
+    33605,
+    43687,
+    56793,
+    73830,
+    95980,
+    124773,
+    162205,
+    210867,
+    274127,
+    356365,
+    463275
+   ],
+   [
+    16678,
+    21682,
+    28186,
+    36642,
+    47634,
+    61925,
+    80502,
+    104653,
+    136049,
+    176864,
+    229923,
+    298899,
+    388569,
+    505140,
+    656682
+   ]
+  ],
+  "pityChia": 3,
+  "matCapTu": 7,
+  "giuCapKhiDoiBac": 2,
+  "daRoiPhanNghin": 15,
+  "daTuPhanRa": 2,
+  "boTrangBi": [
+   {
+    "soMon": 4,
+    "chiSo": "HP",
+    "phanTram": 5
+   },
+   {
+    "soMon": 7,
+    "chiSo": "Tấn công",
+    "phanTram": 5
+   },
+   {
+    "soMon": 11,
+    "chiSo": "Chí mạng",
+    "phanTram": 3
+   }
+  ],
+  "ngocHe": {
+   "capToiDa": 10,
+   "giaGioPhanTram": 100,
+   "tangPhanTram": 145
+  }
+ },
+ "kinhTe": {
+  "tiLeRoiXu": 30,
+  "thueCho": 6,
+  "phiDangBan": 1,
+  "tranGiaoDichGio": 5,
+  "tieuHaoPhanTram": 12,
+  "suaDoPhanTram": 8,
+  "dichChuyenLanNgay": 3,
+  "dichChuyenPhanTramGio": 3,
+  "suKienPhanXu": 25,
+  "giftcodeToiDaThang": 2,
+  "trangTri": {
+   "phanNghinNgay": 20,
+   "nguongGio": 20
+  },
+  "lichDangNhap": [
+   3,
+   4,
+   5,
+   6,
+   8,
+   10,
+   15
+  ],
+  "luongXepHangTuan": [
+   {
+    "top": 1,
+    "luong": 50
+   },
+   {
+    "top": 10,
+    "luong": 20
+   },
+   {
+    "top": 100,
+    "luong": 8
+   },
+   {
+    "top": 1000,
+    "luong": 3
+   }
+  ]
+ },
+ "nhiemVu": {
+  "demLoai": {
+   "huong_dan": 10,
+   "chinh": 260,
+   "phu": 100,
+   "tuyen": 30,
+   "ngay": 80,
+   "tuan": 36,
+   "pokedex": 154,
+   "doi": 8,
+   "su_pham": 5,
+   "hang_bi_an": 5,
+   "quay_lai": 3,
+   "thanh_tuu": 30
+  },
+  "gioiHanNgay": 3,
+  "gioiHanTuan": 2,
+  "veChuongTuan": 2,
+  "veChuongToiDa": 4,
+  "veChuongBanDau": 4,
+  "huongDan": [
+   {
+    "ten": "Thức giấc ở Pallet",
+    "cap": 1,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "",
+    "soLuong": 1,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Chào Kecleon",
+    "cap": 1,
+    "npc": "Kecleon",
+    "diaDanh": "Pallet",
+    "mucTieu": "",
+    "soLuong": 1,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Bài học tấn công",
+    "cap": 2,
+    "npc": "Kecleon",
+    "diaDanh": "Pallet",
+    "mucTieu": "Caterpie",
+    "soLuong": 10,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Bình thuốc đầu tiên",
+    "cap": 2,
+    "npc": "Chansey",
+    "diaDanh": "Pallet",
+    "mucTieu": "",
+    "soLuong": 1,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Bài học chiêu thức",
+    "cap": 3,
+    "npc": "Machamp",
+    "diaDanh": "Pallet",
+    "mucTieu": "Torchic",
+    "soLuong": 10,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Gặp Machamp thợ chế tạo",
+    "cap": 3,
+    "npc": "Machamp",
+    "diaDanh": "Pallet",
+    "mucTieu": "",
+    "soLuong": 1,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Mặc trang bị",
+    "cap": 4,
+    "npc": "Machamp",
+    "diaDanh": "Pallet",
+    "mucTieu": "",
+    "soLuong": 1,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Thử sức ngoài đồng",
+    "cap": 4,
+    "npc": "Chansey",
+    "diaDanh": "Pallet",
+    "mucTieu": "Ekans",
+    "soLuong": 10,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Sổ tay Pokédex",
+    "cap": 5,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "5 loài",
+    "soLuong": 5,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Lời hứa với Xatu",
+    "cap": 5,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "",
+    "soLuong": 1,
+    "lapLai": "khong"
+   }
+  ],
+  "cung": [
+   {
+    "ma": "K1",
+    "ten": "Khởi hành từ Pallet",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 1,
+      "ten": "Buổi sáng ở Pallet",
+      "diaDanh": "Pallet",
+      "cap": 1,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 2,
+      "ten": "Đồng cỏ phía bắc",
+      "diaDanh": "Pallet",
+      "cap": 3,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 3,
+      "ten": "Lối mòn Viridian",
+      "diaDanh": "Viridian",
+      "cap": 5,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 4,
+      "ten": "Bóng cây Rừng Viridian",
+      "diaDanh": "Rừng Viridian",
+      "cap": 8,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 1,
+    "capDen": 8
+   },
+   {
+    "ma": "K2",
+    "ten": "Đá xám Pewter",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 5,
+      "ten": "Thị trấn đá xám",
+      "diaDanh": "Pewter",
+      "cap": 10,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 6,
+      "ten": "Xưởng chế tạo Pewter",
+      "diaDanh": "Pewter",
+      "cap": 12,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 7,
+      "ten": "Đường lên Núi Mặt Trăng",
+      "diaDanh": "Núi Mặt Trăng",
+      "cap": 14,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 8,
+      "ten": "Mảnh sao băng",
+      "diaDanh": "Núi Mặt Trăng",
+      "cap": 16,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 10,
+    "capDen": 16
+   },
+   {
+    "ma": "K3",
+    "ten": "Dòng nước Cerulean",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 9,
+      "ten": "Cây cầu Cerulean",
+      "diaDanh": "Cerulean",
+      "cap": 18,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 10,
+      "ten": "Lá thư của Torkoal",
+      "diaDanh": "Cerulean",
+      "cap": 19,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 11,
+      "ten": "Bến cảng Vermilion",
+      "diaDanh": "Vermilion",
+      "cap": 21,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 12,
+      "ten": "Tiếng sấm bên bờ biển",
+      "diaDanh": "Vermilion",
+      "cap": 23,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 18,
+    "capDen": 23
+   },
+   {
+    "ma": "K4",
+    "ten": "Chuyến tàu S.S. Anne",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 13,
+      "ten": "Tấm vé lên tàu",
+      "diaDanh": "Vermilion",
+      "cap": 25,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 14,
+      "ten": "Hành lang tàu S.S. Anne",
+      "diaDanh": "Tàu S.S. Anne",
+      "cap": 26,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 15,
+      "ten": "Kho hàng dưới boong",
+      "diaDanh": "Tàu S.S. Anne",
+      "cap": 28,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 16,
+      "ten": "Cơn bão ngoài khơi",
+      "diaDanh": "Tàu S.S. Anne",
+      "cap": 29,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 25,
+    "capDen": 29
+   },
+   {
+    "ma": "K5",
+    "ten": "Sương mù Lavender",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 17,
+      "ten": "Tháp Pokémon",
+      "diaDanh": "Lavender",
+      "cap": 30,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 18,
+      "ten": "Tiếng khóc trong sương",
+      "diaDanh": "Lavender",
+      "cap": 32,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 19,
+      "ten": "Khu thương mại Celadon",
+      "diaDanh": "Celadon",
+      "cap": 33,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 20,
+      "ten": "Vườn hoa Celadon",
+      "diaDanh": "Celadon",
+      "cap": 35,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 30,
+    "capDen": 35
+   },
+   {
+    "ma": "K6",
+    "ten": "Saffron và Vùng Safari",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 21,
+      "ten": "Thành phố Saffron",
+      "diaDanh": "Saffron",
+      "cap": 36,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 22,
+      "ten": "Tòa nhà Silph",
+      "diaDanh": "Saffron",
+      "cap": 38,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 23,
+      "ten": "Cổng Vùng Safari",
+      "diaDanh": "Vùng Safari",
+      "cap": 39,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 24,
+      "ten": "Bờ biển Fuchsia",
+      "diaDanh": "Fuchsia",
+      "cap": 41,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 36,
+    "capDen": 41
+   },
+   {
+    "ma": "K7",
+    "ten": "Đảo lửa Cinnabar",
+    "vung": "Kanto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 25,
+      "ten": "Chuyến đò ra đảo",
+      "diaDanh": "Cinnabar",
+      "cap": 42,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 26,
+      "ten": "Phòng thí nghiệm bỏ hoang",
+      "diaDanh": "Cinnabar",
+      "cap": 44,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 27,
+      "ten": "Núi lửa thức giấc",
+      "diaDanh": "Cinnabar",
+      "cap": 46,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 28,
+      "ten": "Trở về Viridian",
+      "diaDanh": "Viridian",
+      "cap": 48,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 42,
+    "capDen": 48
+   },
+   {
+    "ma": "J1",
+    "ten": "Gió mới New Bark",
+    "vung": "Johto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 29,
+      "ten": "Thị trấn New Bark",
+      "diaDanh": "New Bark",
+      "cap": 49,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 30,
+      "ten": "Hoa anh đào Cherrygrove",
+      "diaDanh": "Cherrygrove",
+      "cap": 51,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 31,
+      "ten": "Tháp Sprout ở Violet",
+      "diaDanh": "Violet",
+      "cap": 53,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 32,
+      "ten": "Cánh đồng phía tây",
+      "diaDanh": "Violet",
+      "cap": 54,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 49,
+    "capDen": 54
+   },
+   {
+    "ma": "J2",
+    "ten": "Rừng Ilex và Azalea",
+    "vung": "Johto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 33,
+      "ten": "Giếng Slowpoke",
+      "diaDanh": "Azalea",
+      "cap": 55,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 34,
+      "ten": "Lạc trong Rừng Ilex",
+      "diaDanh": "Rừng Ilex",
+      "cap": 57,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 35,
+      "ten": "Đền thờ trong rừng",
+      "diaDanh": "Rừng Ilex",
+      "cap": 59,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 36,
+      "ten": "Phố lớn Goldenrod",
+      "diaDanh": "Goldenrod",
+      "cap": 61,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 55,
+    "capDen": 61
+   },
+   {
+    "ma": "J3",
+    "ten": "Tháp chuông Ecruteak",
+    "vung": "Johto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 37,
+      "ten": "Tháp Chuông",
+      "diaDanh": "Ecruteak",
+      "cap": 62,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 38,
+      "ten": "Tháp Cháy",
+      "diaDanh": "Ecruteak",
+      "cap": 64,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 39,
+      "ten": "Ngọn hải đăng Olivine",
+      "diaDanh": "Olivine",
+      "cap": 66,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 40,
+      "ten": "Thuốc từ Cianwood",
+      "diaDanh": "Cianwood",
+      "cap": 68,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 62,
+    "capDen": 68
+   },
+   {
+    "ma": "J4",
+    "ten": "Hồ Phẫn Nộ",
+    "vung": "Johto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 41,
+      "ten": "Tin đồn ở Mahogany",
+      "diaDanh": "Mahogany",
+      "cap": 69,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 42,
+      "ten": "Mặt hồ đỏ rực",
+      "diaDanh": "Hồ Phẫn Nộ",
+      "cap": 71,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 43,
+      "ten": "Hang Tối",
+      "diaDanh": "Hang Tối",
+      "cap": 73,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 44,
+      "ten": "Sóng radio lạ",
+      "diaDanh": "Mahogany",
+      "cap": 75,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 69,
+    "capDen": 75
+   },
+   {
+    "ma": "J5",
+    "ten": "Rồng Blackthorn",
+    "vung": "Johto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 45,
+      "ten": "Ngôi làng của rồng",
+      "diaDanh": "Blackthorn",
+      "cap": 76,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 46,
+      "ten": "Hang Salamence",
+      "diaDanh": "Hang Salamence",
+      "cap": 78,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 47,
+      "ten": "Tổ Zapdos",
+      "diaDanh": "Tổ Zapdos",
+      "cap": 81,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 48,
+      "ten": "Lời thề ở đền rồng",
+      "diaDanh": "Blackthorn",
+      "cap": 83,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 76,
+    "capDen": 83
+   },
+   {
+    "ma": "J6",
+    "ten": "Đường Victory",
+    "vung": "Johto",
+    "nam": 1,
+    "chuong": [
+     {
+      "so": 49,
+      "ten": "Cổng Đường Victory",
+      "diaDanh": "Đường Victory",
+      "cap": 84,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 50,
+      "ten": "Cao nguyên Indigo",
+      "diaDanh": "Cao nguyên Indigo",
+      "cap": 86,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 51,
+      "ten": "Đỉnh Núi Silver",
+      "diaDanh": "Núi Silver",
+      "cap": 88,
+      "soBuoc": 4,
+      "ngayMo": 0
+     },
+     {
+      "so": 52,
+      "ten": "Huyền thoại thức tỉnh",
+      "diaDanh": "Núi Silver",
+      "cap": 90,
+      "soBuoc": 4,
+      "ngayMo": 0
+     }
+    ],
+    "capTu": 84,
+    "capDen": 90
+   },
+   {
+    "ma": "H1",
+    "ten": "Đất liền Hoenn",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 53,
+      "ten": "Bến Littleroot",
+      "diaDanh": "",
+      "cap": 91,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 54,
+      "ten": "Rừng Petalburg",
+      "diaDanh": "",
+      "cap": 91,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 55,
+      "ten": "Đá Rustboro",
+      "diaDanh": "",
+      "cap": 91,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 56,
+      "ten": "Hang Granite",
+      "diaDanh": "",
+      "cap": 91,
+      "soBuoc": 0,
+      "ngayMo": 365
+     }
+    ],
+    "capTu": 91,
+    "capDen": 91
+   },
+   {
+    "ma": "H2",
+    "ten": "Biển nóng Slateport",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 57,
+      "ten": "Chợ cảng Slateport",
+      "diaDanh": "",
+      "cap": 92,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 58,
+      "ten": "Bảo tàng biển",
+      "diaDanh": "",
+      "cap": 92,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 59,
+      "ten": "Đường cát Route 111",
+      "diaDanh": "",
+      "cap": 92,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 60,
+      "ten": "Thị trấn Mauville",
+      "diaDanh": "",
+      "cap": 92,
+      "soBuoc": 0,
+      "ngayMo": 365
+     }
+    ],
+    "capTu": 92,
+    "capDen": 92
+   },
+   {
+    "ma": "H3",
+    "ten": "Núi lửa Chimney",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 61,
+      "ten": "Suối nóng Lavaridge",
+      "diaDanh": "",
+      "cap": 93,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 62,
+      "ten": "Miệng núi Chimney",
+      "diaDanh": "",
+      "cap": 93,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 63,
+      "ten": "Sa mạc gió",
+      "diaDanh": "",
+      "cap": 93,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 64,
+      "ten": "Huy hiệu nhiệt",
+      "diaDanh": "",
+      "cap": 93,
+      "soBuoc": 0,
+      "ngayMo": 365
+     }
+    ],
+    "capTu": 93,
+    "capDen": 93
+   },
+   {
+    "ma": "H4",
+    "ten": "Bầu trời Fortree",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 65,
+      "ten": "Nhà trên cây Fortree",
+      "diaDanh": "",
+      "cap": 94,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 66,
+      "ten": "Tháp Weather",
+      "diaDanh": "",
+      "cap": 94,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 67,
+      "ten": "Cánh rừng mưa",
+      "diaDanh": "",
+      "cap": 94,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 68,
+      "ten": "Huy hiệu lông vũ",
+      "diaDanh": "",
+      "cap": 94,
+      "soBuoc": 0,
+      "ngayMo": 365
+     }
+    ],
+    "capTu": 94,
+    "capDen": 94
+   },
+   {
+    "ma": "H5",
+    "ten": "Biển sâu Lilycove",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 69,
+      "ten": "Cửa hàng Lilycove",
+      "diaDanh": "",
+      "cap": 95,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 70,
+      "ten": "Núi Pyre",
+      "diaDanh": "",
+      "cap": 95,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 71,
+      "ten": "Đảo Mossdeep",
+      "diaDanh": "",
+      "cap": 95,
+      "soBuoc": 0,
+      "ngayMo": 365
+     },
+     {
+      "so": 72,
+      "ten": "Hang dưới biển",
+      "diaDanh": "",
+      "cap": 95,
+      "soBuoc": 0,
+      "ngayMo": 365
+     }
+    ],
+    "capTu": 95,
+    "capDen": 95
+   },
+   {
+    "ma": "H6",
+    "ten": "Thức tỉnh Kyogre và Groudon",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 73,
+      "ten": "Thành phố Sootopolis",
+      "diaDanh": "",
+      "cap": 96,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 74,
+      "ten": "Hang Cave of Origin",
+      "diaDanh": "",
+      "cap": 96,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 75,
+      "ten": "Cơn mưa vô tận",
+      "diaDanh": "",
+      "cap": 96,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 76,
+      "ten": "Hạn hán vô tận",
+      "diaDanh": "",
+      "cap": 96,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 96,
+    "capDen": 96
+   },
+   {
+    "ma": "H7",
+    "ten": "Tháp trời",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 77,
+      "ten": "Tháp Sky Pillar",
+      "diaDanh": "",
+      "cap": 97,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 78,
+      "ten": "Rayquaza giáng thế",
+      "diaDanh": "",
+      "cap": 97,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 79,
+      "ten": "Vùng trời yên bình",
+      "diaDanh": "",
+      "cap": 97,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 80,
+      "ten": "Ngày hội Hoenn",
+      "diaDanh": "",
+      "cap": 97,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 97,
+    "capDen": 97
+   },
+   {
+    "ma": "H8",
+    "ten": "Liên minh Hoenn",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 81,
+      "ten": "Đường Victory Hoenn",
+      "diaDanh": "",
+      "cap": 98,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 82,
+      "ten": "Tứ thiên vương 1",
+      "diaDanh": "",
+      "cap": 98,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 83,
+      "ten": "Tứ thiên vương 2",
+      "diaDanh": "",
+      "cap": 98,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 84,
+      "ten": "Nhà vô địch",
+      "diaDanh": "",
+      "cap": 98,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 98,
+    "capDen": 98
+   },
+   {
+    "ma": "H9",
+    "ten": "Vùng chiến đấu",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 85,
+      "ten": "Tháp Battle",
+      "diaDanh": "",
+      "cap": 99,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 86,
+      "ten": "Cung điện Battle",
+      "diaDanh": "",
+      "cap": 99,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 87,
+      "ten": "Mái vòm Battle",
+      "diaDanh": "",
+      "cap": 99,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 88,
+      "ten": "Kim tự tháp Battle",
+      "diaDanh": "",
+      "cap": 99,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 99,
+    "capDen": 99
+   },
+   {
+    "ma": "H10",
+    "ten": "Đảo Navel và Faraway",
+    "vung": "Hoenn",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 89,
+      "ten": "Đảo Navel",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 90,
+      "ten": "Đảo Faraway",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 91,
+      "ten": "Đảo Birth",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 92,
+      "ten": "Đảo Southern",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 100,
+    "capDen": 100
+   },
+   {
+    "ma": "H11",
+    "ten": "Kết nối ba vùng",
+    "vung": "Liên vùng",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 93,
+      "ten": "Cầu nối Kanto",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 94,
+      "ten": "Cầu nối Johto",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 95,
+      "ten": "Cầu nối Hoenn",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 96,
+      "ten": "Đại hội ba vùng",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 100,
+    "capDen": 100
+   },
+   {
+    "ma": "H12",
+    "ten": "Mùa giải huyền thoại",
+    "vung": "Liên vùng",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 97,
+      "ten": "Mùa giải 1",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 98,
+      "ten": "Mùa giải 2",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 99,
+      "ten": "Mùa giải 3",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 100,
+      "ten": "Chung kết",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 100,
+    "capDen": 100
+   },
+   {
+    "ma": "H13",
+    "ten": "Khúc vĩ thanh",
+    "vung": "Liên vùng",
+    "nam": 2,
+    "chuong": [
+     {
+      "so": 101,
+      "ten": "Lời mời mới",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 102,
+      "ten": "Tấm bản đồ cổ",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 103,
+      "ten": "Bờ biển lạ",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     },
+     {
+      "so": 104,
+      "ten": "Chân trời Sinnoh",
+      "diaDanh": "",
+      "cap": 100,
+      "soBuoc": 0,
+      "ngayMo": 545
+     }
+    ],
+    "capTu": 100,
+    "capDen": 100
+   }
+  ],
+  "phu": [
+   {
+    "ten": "Thị trấn Pallet",
+    "vung": "Kanto",
+    "capTu": 2,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Viridian",
+    "vung": "Kanto",
+    "capTu": 6,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Pewter",
+    "vung": "Kanto",
+    "capTu": 11,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Cerulean",
+    "vung": "Kanto",
+    "capTu": 18,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Vermilion",
+    "vung": "Kanto",
+    "capTu": 22,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Lavender",
+    "vung": "Kanto",
+    "capTu": 30,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Celadon",
+    "vung": "Kanto",
+    "capTu": 33,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Saffron",
+    "vung": "Kanto",
+    "capTu": 37,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Fuchsia",
+    "vung": "Kanto",
+    "capTu": 40,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Cinnabar",
+    "vung": "Kanto",
+    "capTu": 43,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn New Bark",
+    "vung": "Johto",
+    "capTu": 49,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Cherrygrove",
+    "vung": "Johto",
+    "capTu": 51,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Violet",
+    "vung": "Johto",
+    "capTu": 53,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Azalea",
+    "vung": "Johto",
+    "capTu": 56,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Goldenrod",
+    "vung": "Johto",
+    "capTu": 60,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Ecruteak",
+    "vung": "Johto",
+    "capTu": 63,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Olivine",
+    "vung": "Johto",
+    "capTu": 66,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Cianwood",
+    "vung": "Johto",
+    "capTu": 68,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Mahogany",
+    "vung": "Johto",
+    "capTu": 70,
+    "soBuoc": 5
+   },
+   {
+    "ten": "Thị trấn Blackthorn",
+    "vung": "Johto",
+    "capTu": 77,
+    "soBuoc": 5
+   }
+  ],
+  "tuyen": [
+   {
+    "ten": "Rừng Viridian",
+    "vung": "Kanto",
+    "capTu": 8,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Núi Mặt Trăng",
+    "vung": "Kanto",
+    "capTu": 15,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Tàu S.S. Anne",
+    "vung": "Kanto",
+    "capTu": 27,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Vùng Safari",
+    "vung": "Kanto",
+    "capTu": 39,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Hang Tối",
+    "vung": "Johto",
+    "capTu": 50,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Rừng Ilex",
+    "vung": "Johto",
+    "capTu": 58,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Rừng Cổ",
+    "vung": "Johto",
+    "capTu": 65,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Hồ Phẫn Nộ",
+    "vung": "Johto",
+    "capTu": 71,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Hang Salamence",
+    "vung": "Johto",
+    "capTu": 79,
+    "soBuoc": 3
+   },
+   {
+    "ten": "Đường Victory",
+    "vung": "Johto",
+    "capTu": 85,
+    "soBuoc": 3
+   }
+  ],
+  "hamNguc": [
+   {
+    "ten": "Hầm ngục bí ẩn: tầng 1-5",
+    "cap": 20,
+    "npc": "Snorlax",
+    "diaDanh": "Hang động",
+    "mucTieu": "tầng",
+    "soLuong": 5,
+    "lapLai": "ngay"
+   },
+   {
+    "ten": "Hầm ngục bí ẩn: tầng 6-10",
+    "cap": 35,
+    "npc": "Snorlax",
+    "diaDanh": "Hang động",
+    "mucTieu": "tầng",
+    "soLuong": 10,
+    "lapLai": "ngay"
+   },
+   {
+    "ten": "Hầm ngục bí ẩn: tầng 11-20",
+    "cap": 50,
+    "npc": "Snorlax",
+    "diaDanh": "Hang động",
+    "mucTieu": "tầng",
+    "soLuong": 15,
+    "lapLai": "ngay"
+   },
+   {
+    "ten": "Hầm ngục bí ẩn: hạt giống ngày",
+    "cap": 65,
+    "npc": "Snorlax",
+    "diaDanh": "Hang động",
+    "mucTieu": "tầng",
+    "soLuong": 20,
+    "lapLai": "ngay"
+   },
+   {
+    "ten": "Hầm ngục bí ẩn: xếp hạng tuần",
+    "cap": 80,
+    "npc": "Snorlax",
+    "diaDanh": "Hang động",
+    "mucTieu": "tầng",
+    "soLuong": 25,
+    "lapLai": "ngay"
+   }
+  ],
+  "suPham": [
+   {
+    "ten": "Dẫn đường người mới",
+    "cap": 35,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "học trò cấp thấp hơn ≥ 20",
+    "soLuong": 1,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Kèm cặp tới cấp 20",
+    "cap": 40,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "học trò cấp thấp hơn ≥ 20",
+    "soLuong": 1,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Kèm cặp tới cấp 40",
+    "cap": 45,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "học trò cấp thấp hơn ≥ 20",
+    "soLuong": 1,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Cùng nhau tiến hoá",
+    "cap": 50,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "học trò cấp thấp hơn ≥ 20",
+    "soLuong": 1,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Người thầy tận tâm",
+    "cap": 55,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "học trò cấp thấp hơn ≥ 20",
+    "soLuong": 1,
+    "lapLai": "tuan"
+   }
+  ],
+  "doi": [
+   {
+    "ten": "Đội săn Gyarados",
+    "cap": 38,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 615,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Đội trinh sát Hang Tối",
+    "cap": 50,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 585,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Đột kích Tổ Zapdos",
+    "cap": 60,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 570,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Đêm Hang Darkrai",
+    "cap": 70,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 540,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Bão Rayquaza",
+    "cap": 80,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 510,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Liên minh ba vùng",
+    "cap": 90,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 480,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Đội hái Berry",
+    "cap": 20,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 675,
+    "lapLai": "tuan"
+   },
+   {
+    "ten": "Đội bảo vệ Pallet",
+    "cap": 15,
+    "npc": "Blaziken",
+    "diaDanh": "Trụ sở đội",
+    "mucTieu": "quái ±5 cấp (cả đội)",
+    "soLuong": 345,
+    "lapLai": "tuan"
+   }
+  ],
+  "quayLai": [
+   {
+    "ten": "Chào mừng trở lại",
+    "cap": 30,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "quái ±5 cấp",
+    "soLuong": 1,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Ôn lại chiêu thức",
+    "cap": 30,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "quái ±5 cấp",
+    "soLuong": 100,
+    "lapLai": "khong"
+   },
+   {
+    "ten": "Bắt kịp bạn bè",
+    "cap": 30,
+    "npc": "Xatu",
+    "diaDanh": "Pallet",
+    "mucTieu": "quái ±5 cấp",
+    "soLuong": 100,
+    "lapLai": "khong"
+   }
+  ],
+  "thanhTuu": [
+   {
+    "ten": "Bước chân đầu tiên",
+    "soLuong": 10,
+    "kieu": "cap",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Nhà huấn luyện đồng",
+    "soLuong": 20,
+    "kieu": "cap",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà huấn luyện bạc",
+    "soLuong": 40,
+    "kieu": "cap",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà huấn luyện vàng",
+    "soLuong": 60,
+    "kieu": "cap",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà huấn luyện bạch kim",
+    "soLuong": 80,
+    "kieu": "cap",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Đỉnh cao ba vùng",
+    "soLuong": 91,
+    "kieu": "cap",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà sưu tầm 10",
+    "soLuong": 10,
+    "kieu": "pokedex",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Nhà sưu tầm 25",
+    "soLuong": 25,
+    "kieu": "pokedex",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà sưu tầm 50",
+    "soLuong": 50,
+    "kieu": "pokedex",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà sưu tầm 75",
+    "soLuong": 75,
+    "kieu": "pokedex",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Nhà sưu tầm 100",
+    "soLuong": 100,
+    "kieu": "pokedex",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Kanto toàn tập",
+    "soLuong": 28,
+    "kieu": "chuong",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Johto toàn tập",
+    "soLuong": 52,
+    "kieu": "chuong",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Thợ rèn tập sự",
+    "soLuong": 5,
+    "kieu": "nang_cap",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Thợ rèn lành nghề",
+    "soLuong": 10,
+    "kieu": "nang_cap",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Thợ rèn bậc thầy",
+    "soLuong": 15,
+    "kieu": "nang_cap",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Người bạn của mọi nhà",
+    "soLuong": 50,
+    "kieu": "phu",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Huyền thoại thị trấn",
+    "soLuong": 100,
+    "kieu": "phu",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Chăm chỉ 30 ngày",
+    "soLuong": 30,
+    "kieu": "ngay",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Chăm chỉ 100 ngày",
+    "soLuong": 100,
+    "kieu": "ngay",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Chăm chỉ 365 ngày",
+    "soLuong": 365,
+    "kieu": "ngay",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Đấu trường: 10 trận thắng",
+    "soLuong": 10,
+    "kieu": "pvp",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Đấu trường: 100 trận thắng",
+    "soLuong": 100,
+    "kieu": "pvp",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Săn huyền thoại",
+    "soLuong": 10,
+    "kieu": "boss",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Thành viên đội",
+    "soLuong": 1,
+    "kieu": "doi",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Đội mạnh nhất tuần",
+    "soLuong": 10,
+    "kieu": "doi",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Đủ bộ trang bị",
+    "soLuong": 1,
+    "kieu": "bo",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Bộ trang bị tinh anh",
+    "soLuong": 3,
+    "kieu": "bo",
+    "luongKhoa": 20,
+    "luong": 0
+   },
+   {
+    "ten": "Thánh sự kiện",
+    "soLuong": 20,
+    "kieu": "su_kien",
+    "luongKhoa": 20,
+    "luong": 10
+   },
+   {
+    "ten": "Người kể chuyện",
+    "soLuong": 13,
+    "kieu": "chuong",
+    "luongKhoa": 20,
+    "luong": 0
+   }
+  ],
+  "ngay": [
+   "Săn bắt buổi sáng",
+   "Giao hàng cho Kecleon",
+   "Tuần tra đồng cỏ",
+   "Thu thập Berry",
+   "Huấn luyện cùng Blaziken",
+   "Dọn tổ Rattata",
+   "Gom gỗ sửa nhà",
+   "Đưa thư liên vùng",
+   "Bảo vệ ruộng lúa",
+   "Thăm Trung tâm Pokémon",
+   "Kiểm tra bẫy",
+   "Đánh dấu bản đồ",
+   "Thử sức lệch cấp",
+   "Chợ phiên Goldenrod",
+   "Hộ tống Chansey",
+   "Quan sát Pokédex",
+   "Tìm trứng thất lạc",
+   "Luyện tập né đòn",
+   "Săn quái tinh anh",
+   "Giúp đỡ người mới"
+  ],
+  "tuan": [
+   "Thử thách tuần: Kanto",
+   "Thử thách tuần: Johto",
+   "Đội tuần tra",
+   "Cúp huấn luyện",
+   "Đợt săn huyền thoại",
+   "Nghiên cứu Pokédex tuần",
+   "Đấu trường tuần",
+   "Chuyến hàng lớn",
+   "Bảo vệ ba vùng",
+   "Mùa thu hoạch",
+   "Thám hiểm hang động",
+   "Trận đấu đội"
+  ],
+  "pokedexSoLoai": 66
+ },
+ "suKien": [
+  {
+   "tuan": 1,
+   "thang": 1,
+   "ten1": "Tết dương lịch",
+   "ten2": "Tết dương lịch: Pokémon Tuyết",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Cây thông đổi 10 kẹo lấy hộp quà (khoá)",
+   "soNgay": 7,
+   "phanThuong": "Hộp quà khoá, khung avatar năm mới",
+   "mocGiuChan": "Đăng nhập 7 ngày"
+  },
+  {
+   "tuan": 2,
+   "thang": 1,
+   "ten1": "Tuần hệ Băng",
+   "ten2": "Tuần hệ Rồng",
+   "phan": "",
+   "loai": "tuan_he",
+   "coChe": "Quái hệ X xuất hiện ×2, chiêu hệ X +10% (thời tiết)",
+   "soNgay": 7,
+   "phanThuong": "Phiến đá hệ trang trí",
+   "mocGiuChan": "Mục tiêu tuần"
+  },
+  {
+   "tuan": 3,
+   "thang": 1,
+   "ten1": "Ngày cộng đồng Charmander",
+   "ten2": "Ngày cộng đồng Squirtle",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5",
+   "soNgay": 7,
+   "phanThuong": "Trang phục khởi đầu (không chỉ số)",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 4,
+   "thang": 1,
+   "ten1": "Chuẩn bị Tết: gói bánh",
+   "ten2": "Chuẩn bị Tết: chợ hoa",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Nồi bánh chưng/bánh tét theo đội",
+   "soNgay": 7,
+   "phanThuong": "Bánh (thuốc khoá), lì xì khoá",
+   "mocGiuChan": "Hoạt động đội"
+  },
+  {
+   "tuan": 5,
+   "thang": 1,
+   "ten1": "Tết Nguyên Đán",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "phan": "1/2",
+   "loai": "le_vn",
+   "coChe": "Cây lì xì Sudowoodo, lì xì khoá, top Tết theo điểm (không theo nạp)",
+   "soNgay": 14,
+   "phanThuong": "Áo Tết (không chỉ số), danh hiệu năm",
+   "mocGiuChan": "Đỉnh năm: quay lại"
+  },
+  {
+   "tuan": 6,
+   "thang": 2,
+   "ten1": "Tết Nguyên Đán",
+   "ten2": "Tết Nguyên Đán: Lân Litleo",
+   "phan": "2/2",
+   "loai": "le_vn",
+   "coChe": "Cây lì xì Sudowoodo, lì xì khoá, top Tết theo điểm (không theo nạp)",
+   "soNgay": 7,
+   "phanThuong": "Áo Tết (không chỉ số), danh hiệu năm",
+   "mocGiuChan": "Đỉnh năm: quay lại"
+  },
+  {
+   "tuan": 7,
+   "thang": 2,
+   "ten1": "Tuần Shiny",
+   "ten2": "Tuần Shiny: Johto",
+   "phan": "",
+   "loai": "pokemon",
+   "coChe": "Tỉ lệ shiny ×10, pity 2.000 lần hạ",
+   "soNgay": 7,
+   "phanThuong": "Huy hiệu shiny",
+   "mocGiuChan": "Sưu tầm"
+  },
+  {
+   "tuan": 8,
+   "thang": 2,
+   "ten1": "Valentine: Luvdisc",
+   "ten2": "Valentine: Alomomola",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Tặng hoa cho bạn (Hoa hồng shop), cặp đôi cùng đội +EXP",
+   "soNgay": 7,
+   "phanThuong": "Khung đôi, hiệu ứng trái tim",
+   "mocGiuChan": "Xã hội"
+  },
+  {
+   "tuan": 9,
+   "thang": 2,
+   "ten1": "Đột kích huyền thoại: Zapdos",
+   "ten2": "Đột kích: Articuno",
+   "phan": "",
+   "loai": "dot_kich",
+   "coChe": "Boss thế giới 2 lần/ngày, đội ≥ 5",
+   "soNgay": 7,
+   "phanThuong": "Lông vũ Zapdos (nguyên liệu khoá)",
+   "mocGiuChan": "Hẹn giờ chung"
+  },
+  {
+   "tuan": 10,
+   "thang": 3,
+   "ten1": "Quốc tế Phụ nữ 8/3",
+   "ten2": "8/3: Gardevoir",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Quà 8/3, hoa hồng; nhiệm vụ tặng hoa",
+   "soNgay": 7,
+   "phanThuong": "Ruy băng trang trí",
+   "mocGiuChan": "Xã hội"
+  },
+  {
+   "tuan": 11,
+   "thang": 3,
+   "ten1": "Tuần hệ Cỏ",
+   "ten2": "Tuần hệ Tiên",
+   "phan": "",
+   "loai": "tuan_he",
+   "coChe": "Quái hệ X xuất hiện ×2, chiêu hệ X +10% (thời tiết)",
+   "soNgay": 7,
+   "phanThuong": "Phiến đá trang trí",
+   "mocGiuChan": "Mục tiêu tuần"
+  },
+  {
+   "tuan": 12,
+   "thang": 3,
+   "ten1": "Ngày cộng đồng Bulbasaur",
+   "ten2": "Ngày cộng đồng Pichu",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5",
+   "soNgay": 7,
+   "phanThuong": "Trang phục",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 13,
+   "thang": 3,
+   "ten1": "Mùa giải PvP 1 kết thúc",
+   "ten2": "Mùa giải PvP 5 kết thúc",
+   "phan": "",
+   "loai": "pvp",
+   "coChe": "Chốt bậc Poké→Master, phát thưởng mùa",
+   "soNgay": 7,
+   "phanThuong": "Khung bậc mùa, lượng theo bậc",
+   "mocGiuChan": "Cạnh tranh"
+  },
+  {
+   "tuan": 14,
+   "thang": 4,
+   "ten1": "Lễ hội Pokédex",
+   "ten2": "Lễ hội Pokédex: Johto",
+   "phan": "",
+   "loai": "pokemon",
+   "coChe": "Mốc Pokédex ×2 điểm nghiên cứu",
+   "soNgay": 7,
+   "phanThuong": "Danh hiệu nghiên cứu",
+   "mocGiuChan": "Sưu tầm"
+  },
+  {
+   "tuan": 15,
+   "thang": 4,
+   "ten1": "Giỗ Tổ Hùng Vương",
+   "ten2": "Giỗ Tổ: bánh giày",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Bánh giày, pháo hoa (EXP theo % cấp, có trần)",
+   "soNgay": 7,
+   "phanThuong": "Pháo hoa trang trí",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 16,
+   "thang": 4,
+   "ten1": "Thế chiến vùng (Kanto/Johto/Hoenn)",
+   "ten2": "Thế chiến vùng",
+   "phan": "",
+   "loai": "chien_vung",
+   "coChe": "Thứ Bảy 20h: 3 vùng giành cờ",
+   "soNgay": 7,
+   "phanThuong": "Cờ vùng (trang trí)",
+   "mocGiuChan": "Đồng đội"
+  },
+  {
+   "tuan": 17,
+   "thang": 4,
+   "ten1": "30/4 - 1/5: Thống nhất",
+   "ten2": "30/4: Diễu hành Pokémon",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Đường đua Ponyta, nhiệm vụ tuyến",
+   "soNgay": 7,
+   "phanThuong": "Yên thú cưỡi trang trí",
+   "mocGiuChan": "Nghỉ lễ"
+  },
+  {
+   "tuan": 18,
+   "thang": 4,
+   "ten1": "Tuần hệ Lửa",
+   "ten2": "Tuần hệ Ma",
+   "phan": "",
+   "loai": "tuan_he",
+   "coChe": "Quái hệ X xuất hiện ×2, chiêu hệ X +10% (thời tiết)",
+   "soNgay": 7,
+   "phanThuong": "Phiến đá trang trí",
+   "mocGiuChan": "Mục tiêu tuần"
+  },
+  {
+   "tuan": 19,
+   "thang": 5,
+   "ten1": "Ngày cộng đồng Squirtle",
+   "ten2": "Ngày cộng đồng Eevee",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5",
+   "soNgay": 7,
+   "phanThuong": "Trang phục",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 20,
+   "thang": 5,
+   "ten1": "Đột kích: Entei",
+   "ten2": "Đột kích: Raikou",
+   "phan": "",
+   "loai": "dot_kich",
+   "coChe": "Boss thế giới 2 lần/ngày, đội ≥ 5",
+   "soNgay": 7,
+   "phanThuong": "Nanh Entei (khoá)",
+   "mocGiuChan": "Hẹn giờ chung"
+  },
+  {
+   "tuan": 21,
+   "thang": 5,
+   "ten1": "Bùng phát quần thể (Mass outbreak)",
+   "ten2": "Bùng phát: Johto",
+   "phan": "",
+   "loai": "pokemon",
+   "coChe": "Mỗi ngày 1 tuyến có 1 loài ×5",
+   "soNgay": 7,
+   "phanThuong": "Điểm Pokédex",
+   "mocGiuChan": "Bất ngờ"
+  },
+  {
+   "tuan": 22,
+   "thang": 5,
+   "ten1": "Quốc tế Thiếu nhi 1/6",
+   "ten2": "1/6: Pichu & bạn",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Nhiệm vụ dẫn người mới (sư phạm ×2)",
+   "soNgay": 7,
+   "phanThuong": "Mũ trẻ em",
+   "mocGiuChan": "Người mới"
+  },
+  {
+   "tuan": 23,
+   "thang": 6,
+   "ten1": "Sự kiện Hè: biển Vermilion",
+   "ten2": "Hè: đảo Cinnabar",
+   "phan": "1/2",
+   "loai": "mua",
+   "coChe": "Kem, dưa hấu, câu cá; thả 50% giờ 100% thêm (năng lượng hè)",
+   "soNgay": 14,
+   "phanThuong": "Đồ bơi trang trí",
+   "mocGiuChan": "Mùa hè: nhiều giờ chơi"
+  },
+  {
+   "tuan": 24,
+   "thang": 6,
+   "ten1": "Sự kiện Hè: biển Vermilion",
+   "ten2": "Hè: đảo Cinnabar",
+   "phan": "2/2",
+   "loai": "mua",
+   "coChe": "Kem, dưa hấu, câu cá; thả 50% giờ 100% thêm (năng lượng hè)",
+   "soNgay": 7,
+   "phanThuong": "Đồ bơi trang trí",
+   "mocGiuChan": "Mùa hè: nhiều giờ chơi"
+  },
+  {
+   "tuan": 25,
+   "thang": 6,
+   "ten1": "Ngày cộng đồng Pichu",
+   "ten2": "Ngày cộng đồng Bulbasaur",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5",
+   "soNgay": 7,
+   "phanThuong": "Trang phục",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 26,
+   "thang": 6,
+   "ten1": "Mùa giải PvP 2 kết thúc",
+   "ten2": "Mùa giải PvP 6 kết thúc",
+   "phan": "",
+   "loai": "pvp",
+   "coChe": "Chốt bậc Poké→Master, phát thưởng mùa",
+   "soNgay": 7,
+   "phanThuong": "Khung bậc mùa",
+   "mocGiuChan": "Cạnh tranh"
+  },
+  {
+   "tuan": 27,
+   "thang": 7,
+   "ten1": "Tuần hệ Nước",
+   "ten2": "Tuần hệ Đất",
+   "phan": "",
+   "loai": "tuan_he",
+   "coChe": "Quái hệ X xuất hiện ×2, chiêu hệ X +10% (thời tiết)",
+   "soNgay": 7,
+   "phanThuong": "Phiến đá",
+   "mocGiuChan": "Mục tiêu tuần"
+  },
+  {
+   "tuan": 28,
+   "thang": 7,
+   "ten1": "Đột kích: Darkrai",
+   "ten2": "Đột kích: Suicune",
+   "phan": "",
+   "loai": "dot_kich",
+   "coChe": "Boss thế giới 2 lần/ngày, đội ≥ 5",
+   "soNgay": 7,
+   "phanThuong": "Mảnh bóng tối (khoá)",
+   "mocGiuChan": "Hẹn giờ chung"
+  },
+  {
+   "tuan": 29,
+   "thang": 7,
+   "ten1": "Hè 2: Hầm ngục bí ẩn mùa hè",
+   "ten2": "Hè 2: Hầm ngục sa mạc",
+   "phan": "",
+   "loai": "mua",
+   "coChe": "Hầm ngục bí ẩn ×2 điểm xếp hạng",
+   "soNgay": 7,
+   "phanThuong": "Khung hầm ngục",
+   "mocGiuChan": "Endgame"
+  },
+  {
+   "tuan": 30,
+   "thang": 7,
+   "ten1": "Thế chiến vùng mùa hè",
+   "ten2": "Thế chiến vùng",
+   "phan": "",
+   "loai": "chien_vung",
+   "coChe": "Thứ Bảy 20h: 3 vùng giành cờ",
+   "soNgay": 7,
+   "phanThuong": "Cờ vùng",
+   "mocGiuChan": "Đồng đội"
+  },
+  {
+   "tuan": 31,
+   "thang": 7,
+   "ten1": "Ngày cộng đồng Eevee",
+   "ten2": "Ngày cộng đồng Charmander",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5 + đá tiến hoá ×2",
+   "soNgay": 7,
+   "phanThuong": "Trang phục Eevee",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 32,
+   "thang": 8,
+   "ten1": "Vu Lan",
+   "ten2": "Vu Lan: hoa hồng vàng",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Nhánh hoa hồng vàng, đổi quà khoá",
+   "soNgay": 7,
+   "phanThuong": "Hoa cài trang trí",
+   "mocGiuChan": "Gia đình"
+  },
+  {
+   "tuan": 33,
+   "thang": 8,
+   "ten1": "Tuần hệ Điện",
+   "ten2": "Tuần hệ Thép",
+   "phan": "",
+   "loai": "tuan_he",
+   "coChe": "Quái hệ X xuất hiện ×2, chiêu hệ X +10% (thời tiết)",
+   "soNgay": 7,
+   "phanThuong": "Phiến đá",
+   "mocGiuChan": "Mục tiêu tuần"
+  },
+  {
+   "tuan": 34,
+   "thang": 8,
+   "ten1": "Tuần Shiny 2",
+   "ten2": "Tuần Shiny: huyền thoại",
+   "phan": "",
+   "loai": "pokemon",
+   "coChe": "Tỉ lệ shiny ×10, pity 2.000 lần hạ",
+   "soNgay": 7,
+   "phanThuong": "Huy hiệu shiny",
+   "mocGiuChan": "Sưu tầm"
+  },
+  {
+   "tuan": 35,
+   "thang": 8,
+   "ten1": "Quốc khánh 2/9",
+   "ten2": "2/9: lễ hội đèn",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Pháo hoa, nhiệm vụ tuyến toàn quốc",
+   "soNgay": 7,
+   "phanThuong": "Pháo hoa trang trí",
+   "mocGiuChan": "Nghỉ lễ"
+  },
+  {
+   "tuan": 36,
+   "thang": 9,
+   "ten1": "Đột kích: Rayquaza",
+   "ten2": "Đột kích: Lugia",
+   "phan": "",
+   "loai": "dot_kich",
+   "coChe": "Boss thế giới 2 lần/ngày, đội ≥ 5",
+   "soNgay": 7,
+   "phanThuong": "Vảy Rayquaza (khoá)",
+   "mocGiuChan": "Hẹn giờ chung"
+  },
+  {
+   "tuan": 37,
+   "thang": 9,
+   "ten1": "Trung Thu",
+   "ten2": "Trung Thu: Clefairy",
+   "phan": "1/2",
+   "loai": "le_vn",
+   "coChe": "Bánh nướng/bánh dẻo, lồng đèn, thả đèn theo đội",
+   "soNgay": 14,
+   "phanThuong": "Lồng đèn trang trí",
+   "mocGiuChan": "Gia đình"
+  },
+  {
+   "tuan": 38,
+   "thang": 9,
+   "ten1": "Trung Thu",
+   "ten2": "Trung Thu: Clefairy",
+   "phan": "2/2",
+   "loai": "le_vn",
+   "coChe": "Bánh nướng/bánh dẻo, lồng đèn, thả đèn theo đội",
+   "soNgay": 7,
+   "phanThuong": "Lồng đèn trang trí",
+   "mocGiuChan": "Gia đình"
+  },
+  {
+   "tuan": 39,
+   "thang": 9,
+   "ten1": "Mùa giải PvP 3 kết thúc",
+   "ten2": "Mùa giải PvP 7 kết thúc",
+   "phan": "",
+   "loai": "pvp",
+   "coChe": "Chốt bậc Poké→Master, phát thưởng mùa",
+   "soNgay": 7,
+   "phanThuong": "Khung bậc mùa",
+   "mocGiuChan": "Cạnh tranh"
+  },
+  {
+   "tuan": 40,
+   "thang": 10,
+   "ten1": "Ngày cộng đồng Charmander 2",
+   "ten2": "Ngày cộng đồng Squirtle 2",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5",
+   "soNgay": 7,
+   "phanThuong": "Trang phục",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 41,
+   "thang": 10,
+   "ten1": "Phụ nữ Việt Nam 20/10",
+   "ten2": "20/10: Sylveon",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Hoa, nhiệm vụ tặng quà",
+   "soNgay": 7,
+   "phanThuong": "Ruy băng trang trí",
+   "mocGiuChan": "Xã hội"
+  },
+  {
+   "tuan": 42,
+   "thang": 10,
+   "ten1": "Tuần hệ Siêu linh",
+   "ten2": "Tuần hệ Giác đấu",
+   "phan": "",
+   "loai": "tuan_he",
+   "coChe": "Quái hệ X xuất hiện ×2, chiêu hệ X +10% (thời tiết)",
+   "soNgay": 7,
+   "phanThuong": "Phiến đá",
+   "mocGiuChan": "Mục tiêu tuần"
+  },
+  {
+   "tuan": 43,
+   "thang": 10,
+   "ten1": "Halloween: Gengar",
+   "ten2": "Halloween: Mimikyu",
+   "phan": "1/2",
+   "loai": "mua",
+   "coChe": "Bí ngô, mặt nạ, boss Darkrai đêm 31/10",
+   "soNgay": 14,
+   "phanThuong": "Mặt nạ trang trí",
+   "mocGiuChan": "Bất ngờ"
+  },
+  {
+   "tuan": 44,
+   "thang": 10,
+   "ten1": "Halloween: Gengar",
+   "ten2": "Halloween: Mimikyu",
+   "phan": "2/2",
+   "loai": "mua",
+   "coChe": "Bí ngô, mặt nạ, boss Darkrai đêm 31/10",
+   "soNgay": 7,
+   "phanThuong": "Mặt nạ trang trí",
+   "mocGiuChan": "Bất ngờ"
+  },
+  {
+   "tuan": 45,
+   "thang": 11,
+   "ten1": "Lễ hội Pokédex 2",
+   "ten2": "Lễ hội Pokédex: Hoenn",
+   "phan": "",
+   "loai": "pokemon",
+   "coChe": "Mốc Pokédex ×2 điểm nghiên cứu",
+   "soNgay": 7,
+   "phanThuong": "Danh hiệu",
+   "mocGiuChan": "Sưu tầm"
+  },
+  {
+   "tuan": 46,
+   "thang": 11,
+   "ten1": "Nhà giáo 20/11",
+   "ten2": "20/11: thầy và trò",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Sư phạm ×2, chổi băng/độc/điện",
+   "soNgay": 7,
+   "phanThuong": "Danh hiệu người thầy",
+   "mocGiuChan": "Người mới"
+  },
+  {
+   "tuan": 47,
+   "thang": 11,
+   "ten1": "Black Friday (giảm giá shop xu)",
+   "ten2": "Black Friday",
+   "phan": "",
+   "loai": "mua",
+   "coChe": "Giảm 30% đồ trang trí bằng xu (là hố hút)",
+   "soNgay": 7,
+   "phanThuong": "",
+   "mocGiuChan": "Hố hút xu"
+  },
+  {
+   "tuan": 48,
+   "thang": 11,
+   "ten1": "Đột kích: Groudon & Kyogre",
+   "ten2": "Đột kích: Kyogre & Groudon",
+   "phan": "",
+   "loai": "dot_kich",
+   "coChe": "2 boss cùng lúc",
+   "soNgay": 7,
+   "phanThuong": "Ngọc lục/ngọc lam (khoá)",
+   "mocGiuChan": "Hẹn giờ chung"
+  },
+  {
+   "tuan": 49,
+   "thang": 12,
+   "ten1": "Thế chiến vùng mùa đông",
+   "ten2": "Thế chiến vùng",
+   "phan": "",
+   "loai": "chien_vung",
+   "coChe": "Thứ Bảy 20h: 3 vùng giành cờ",
+   "soNgay": 7,
+   "phanThuong": "Cờ vùng",
+   "mocGiuChan": "Đồng đội"
+  },
+  {
+   "tuan": 50,
+   "thang": 12,
+   "ten1": "Ngày cộng đồng Bulbasaur 2",
+   "ten2": "Ngày cộng đồng Pichu 2",
+   "phan": "",
+   "loai": "cong_dong",
+   "coChe": "3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5",
+   "soNgay": 7,
+   "phanThuong": "Trang phục",
+   "mocGiuChan": "Giờ vàng chung"
+  },
+  {
+   "tuan": 51,
+   "thang": 12,
+   "ten1": "Giáng sinh: Delibird",
+   "ten2": "Giáng sinh: Abomasnow",
+   "phan": "",
+   "loai": "le_vn",
+   "coChe": "Cây thông Abomasnow, quà Delibird, đêm 24/12",
+   "soNgay": 7,
+   "phanThuong": "Mũ Noel trang trí",
+   "mocGiuChan": "Đỉnh năm"
+  },
+  {
+   "tuan": 52,
+   "thang": 12,
+   "ten1": "Tổng kết năm + mùa giải PvP 4",
+   "ten2": "Tổng kết năm 2",
+   "phan": "",
+   "loai": "pvp",
+   "coChe": "Bảng năm, kỷ niệm máy chủ",
+   "soNgay": 7,
+   "phanThuong": "Danh hiệu năm",
+   "mocGiuChan": "Cạnh tranh"
+  }
+ ],
+ "banDo": [
+  {
+   "id": 0,
+   "loai": "thi_tran",
+   "ten": "Pewter",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 1,
+   "loai": "dong_co",
+   "ten": "Pallet - đồng cỏ",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 2,
+   "loai": "bien",
+   "ten": "Viridian - bờ biển",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 3,
+   "loai": "ho",
+   "ten": "Vermilion - hồ lớn",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 4,
+   "loai": "rung",
+   "ten": "Cerulean - rừng",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 5,
+   "loai": "dong_co",
+   "ten": "Lavender - đồng cỏ",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 6,
+   "loai": "rung",
+   "ten": "Celadon - rừng nhỏ",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 7,
+   "loai": "ho",
+   "ten": "Saffron - đầm lầy",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 8,
+   "loai": "bien",
+   "ten": "Fuchsia - bờ biển",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 9,
+   "loai": "dong_co",
+   "ten": "Cinnabar - đồng bằng",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 10,
+   "loai": "rung",
+   "ten": "New Bark - rừng lớn",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 11,
+   "loai": "rung",
+   "ten": "Rừng Viridian",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 12,
+   "loai": "thi_tran",
+   "ten": "Khu mua bán",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 13,
+   "loai": "nui",
+   "ten": "Núi Mặt Trăng",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 14,
+   "loai": "dong_co",
+   "ten": "Vùng Safari",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 15,
+   "loai": "ho",
+   "ten": "Cherrygrove - hồ",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 17,
+   "loai": "sa_mac",
+   "ten": "Khu mỏ (sa mac)",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 18,
+   "loai": "duong",
+   "ten": "Goldenrod - tuyến đường",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 19,
+   "loai": "bien",
+   "ten": "Ecruteak - ven biển",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 20,
+   "loai": "rung",
+   "ten": "Violet - rừng",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 21,
+   "loai": "dong_co",
+   "ten": "Đồng cỏ phía tây",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 22,
+   "loai": "ho",
+   "ten": "Tàu S.S. Anne - đảo",
+   "vung": "Kanto",
+   "anh": false
+  },
+  {
+   "id": 23,
+   "loai": "duong",
+   "ten": "Azalea - tuyến đường",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 24,
+   "loai": "nui",
+   "ten": "Olivine - đồi đá",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 25,
+   "loai": "dau_truong",
+   "ten": "Tháp luyện tập",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 26,
+   "loai": "rung",
+   "ten": "Rừng Cổ",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 28,
+   "loai": "dong_co",
+   "ten": "Mahogany - đồng cỏ",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 29,
+   "loai": "rung",
+   "ten": "Rừng Ilex",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 30,
+   "loai": "rung",
+   "ten": "Rừng Ilex 2",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 31,
+   "loai": "rung",
+   "ten": "Rừng Ilex 3",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 40,
+   "loai": "dong_co",
+   "ten": "Chiến trường",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 41,
+   "loai": "tuyet",
+   "ten": "Chân núi Silver (tuyet)",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 42,
+   "loai": "tuyet",
+   "ten": "Núi Silver (tuyet)",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 70,
+   "loai": "thi_tran",
+   "ten": "Blackthorn",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 72,
+   "loai": "trong_nha",
+   "ten": "Nhà (Blackthorn)",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 73,
+   "loai": "trong_nha",
+   "ten": "Trung tâm Pokémon",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 74,
+   "loai": "trong_nha",
+   "ten": "Poké Mart",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 78,
+   "loai": "trong_nha",
+   "ten": "Nhà kho",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 79,
+   "loai": "trong_nha",
+   "ten": "Xưởng chế tạo",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 80,
+   "loai": "thi_tran",
+   "ten": "Cianwood",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 82,
+   "loai": "trong_nha",
+   "ten": "Nhà (Cianwood)",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 83,
+   "loai": "trong_nha",
+   "ten": "Trung tâm Pokémon",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 84,
+   "loai": "trong_nha",
+   "ten": "Poké Mart",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 88,
+   "loai": "trong_nha",
+   "ten": "Nhà kho",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 89,
+   "loai": "trong_nha",
+   "ten": "Xưởng chế tạo",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 90,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 1",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 91,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 2",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 92,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 3",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 93,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 4",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 94,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 5",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 95,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 6",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 96,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 7",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 97,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 8",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 98,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 9",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 99,
+   "loai": "trong_nha",
+   "ten": "Cửa hàng 10",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 100,
+   "loai": "trong_nha",
+   "ten": "Nhà (Pewter)",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 101,
+   "loai": "rung",
+   "ten": "Khoảng rừng nhỏ",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 102,
+   "loai": "trong_nha",
+   "ten": "Nhà (Pewter) 2",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 103,
+   "loai": "trong_nha",
+   "ten": "Trung tâm Pokémon",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 104,
+   "loai": "trong_nha",
+   "ten": "Poké Mart",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 105,
+   "loai": "dong_co",
+   "ten": "Sân nhà khởi đầu",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 106,
+   "loai": "thi_tran",
+   "ten": "Bến tàu",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 107,
+   "loai": "tau",
+   "ten": "Thuyền",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 108,
+   "loai": "trong_nha",
+   "ten": "Nhà kho",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 109,
+   "loai": "trong_nha",
+   "ten": "Xưởng chế tạo",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 110,
+   "loai": "hang",
+   "ten": "Hang động",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 111,
+   "loai": "hang",
+   "ten": "Hang Darkrai",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 112,
+   "loai": "hang",
+   "ten": "Hang Salamence",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 113,
+   "loai": "hang",
+   "ten": "Hang Tối",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 114,
+   "loai": "hang",
+   "ten": "Hồ Phẫn Nộ (hang)",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 115,
+   "loai": "hang",
+   "ten": "Hang nhỏ",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 116,
+   "loai": "hang",
+   "ten": "Hang cổ",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 117,
+   "loai": "hang",
+   "ten": "Ngục tối",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 118,
+   "loai": "hang",
+   "ten": "Đường Victory",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 122,
+   "loai": "hang",
+   "ten": "Hang trống",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 201,
+   "loai": "thanh",
+   "ten": "Cao nguyên Indigo",
+   "vung": "Johto",
+   "anh": false
+  },
+  {
+   "id": 202,
+   "loai": "dau_truong",
+   "ten": "Đấu trường",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 203,
+   "loai": "dau_truong",
+   "ten": "Đấu trường La Mã",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 204,
+   "loai": "dau_truong",
+   "ten": "Đấu trường 2",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 205,
+   "loai": "dau_truong",
+   "ten": "Đấu trường 3",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 206,
+   "loai": "thanh",
+   "ten": "Lãnh địa đội",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 207,
+   "loai": "thanh",
+   "ten": "Lãnh địa đội 2",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 208,
+   "loai": "dau_truong",
+   "ten": "Tháp luyện tập",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 225,
+   "loai": "dau_truong",
+   "ten": "Lễ cưới 1",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 226,
+   "loai": "dau_truong",
+   "ten": "Lễ cưới 2",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 227,
+   "loai": "dau_truong",
+   "ten": "Lôi đài",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 228,
+   "loai": "dau_truong",
+   "ten": "Sảnh chờ",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 260,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 1",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 261,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 2",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 262,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 3",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 263,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 4",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 264,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 5",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 265,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 6",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 266,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 7",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 267,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 8",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 268,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 9",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 269,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 10",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 270,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 11",
+   "vung": "",
+   "anh": false
+  },
+  {
+   "id": 271,
+   "loai": "trong_nha",
+   "ten": "Nhà (Indigo) 12",
+   "vung": "",
+   "anh": false
+  }
+ ]
+}

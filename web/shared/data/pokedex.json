@@ -1,0 +1,10998 @@
+{
+ "he": [
+  {
+   "id": 0,
+   "ten": "Thường",
+   "en": "Normal"
+  },
+  {
+   "id": 1,
+   "ten": "Lửa",
+   "en": "Fire"
+  },
+  {
+   "id": 2,
+   "ten": "Nước",
+   "en": "Water"
+  },
+  {
+   "id": 3,
+   "ten": "Điện",
+   "en": "Electric"
+  },
+  {
+   "id": 4,
+   "ten": "Cỏ",
+   "en": "Grass"
+  },
+  {
+   "id": 5,
+   "ten": "Băng",
+   "en": "Ice"
+  },
+  {
+   "id": 6,
+   "ten": "Giác đấu",
+   "en": "Fighting"
+  },
+  {
+   "id": 7,
+   "ten": "Độc",
+   "en": "Poison"
+  },
+  {
+   "id": 8,
+   "ten": "Đất",
+   "en": "Ground"
+  },
+  {
+   "id": 9,
+   "ten": "Bay",
+   "en": "Flying"
+  },
+  {
+   "id": 10,
+   "ten": "Siêu linh",
+   "en": "Psychic"
+  },
+  {
+   "id": 11,
+   "ten": "Bọ",
+   "en": "Bug"
+  },
+  {
+   "id": 12,
+   "ten": "Đá",
+   "en": "Rock"
+  },
+  {
+   "id": 13,
+   "ten": "Ma",
+   "en": "Ghost"
+  },
+  {
+   "id": 14,
+   "ten": "Rồng",
+   "en": "Dragon"
+  },
+  {
+   "id": 15,
+   "ten": "Bóng tối",
+   "en": "Dark"
+  },
+  {
+   "id": 16,
+   "ten": "Thép",
+   "en": "Steel"
+  },
+  {
+   "id": 17,
+   "ten": "Tiên",
+   "en": "Fairy"
+  }
+ ],
+ "khacChinhXac": [
+  [
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   50,
+   0,
+   100,
+   100,
+   50,
+   100
+  ],
+  [
+   100,
+   50,
+   50,
+   100,
+   200,
+   200,
+   100,
+   100,
+   100,
+   100,
+   100,
+   200,
+   50,
+   100,
+   50,
+   100,
+   200,
+   100
+  ],
+  [
+   100,
+   200,
+   50,
+   100,
+   50,
+   100,
+   100,
+   100,
+   200,
+   100,
+   100,
+   100,
+   200,
+   100,
+   50,
+   100,
+   100,
+   100
+  ],
+  [
+   100,
+   100,
+   200,
+   50,
+   50,
+   100,
+   100,
+   100,
+   0,
+   200,
+   100,
+   100,
+   100,
+   100,
+   50,
+   100,
+   100,
+   100
+  ],
+  [
+   100,
+   50,
+   200,
+   100,
+   50,
+   100,
+   100,
+   50,
+   200,
+   50,
+   100,
+   50,
+   200,
+   100,
+   50,
+   100,
+   50,
+   100
+  ],
+  [
+   100,
+   50,
+   50,
+   100,
+   200,
+   50,
+   100,
+   100,
+   200,
+   200,
+   100,
+   100,
+   100,
+   100,
+   200,
+   100,
+   50,
+   100
+  ],
+  [
+   200,
+   100,
+   100,
+   100,
+   100,
+   200,
+   100,
+   50,
+   100,
+   50,
+   50,
+   50,
+   200,
+   0,
+   100,
+   200,
+   200,
+   50
+  ],
+  [
+   100,
+   100,
+   100,
+   100,
+   200,
+   100,
+   100,
+   50,
+   50,
+   100,
+   100,
+   100,
+   50,
+   50,
+   100,
+   100,
+   0,
+   200
+  ],
+  [
+   100,
+   200,
+   100,
+   200,
+   50,
+   100,
+   100,
+   200,
+   100,
+   0,
+   100,
+   50,
+   200,
+   100,
+   100,
+   100,
+   200,
+   100
+  ],
+  [
+   100,
+   100,
+   100,
+   50,
+   200,
+   100,
+   200,
+   100,
+   100,
+   100,
+   100,
+   200,
+   50,
+   100,
+   100,
+   100,
+   50,
+   100
+  ],
+  [
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   200,
+   200,
+   100,
+   100,
+   50,
+   100,
+   100,
+   100,
+   100,
+   0,
+   50,
+   100
+  ],
+  [
+   100,
+   50,
+   100,
+   100,
+   200,
+   100,
+   50,
+   50,
+   100,
+   50,
+   200,
+   100,
+   100,
+   50,
+   100,
+   200,
+   50,
+   50
+  ],
+  [
+   100,
+   200,
+   100,
+   100,
+   100,
+   200,
+   50,
+   100,
+   50,
+   200,
+   100,
+   200,
+   100,
+   100,
+   100,
+   100,
+   50,
+   100
+  ],
+  [
+   0,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   200,
+   100,
+   100,
+   200,
+   100,
+   50,
+   100,
+   100
+  ],
+  [
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   200,
+   100,
+   50,
+   0
+  ],
+  [
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   50,
+   100,
+   100,
+   100,
+   200,
+   100,
+   100,
+   200,
+   100,
+   50,
+   100,
+   50
+  ],
+  [
+   100,
+   50,
+   50,
+   50,
+   100,
+   200,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   200,
+   100,
+   100,
+   100,
+   50,
+   200
+  ],
+  [
+   100,
+   50,
+   100,
+   100,
+   100,
+   100,
+   200,
+   50,
+   100,
+   100,
+   100,
+   100,
+   100,
+   100,
+   200,
+   200,
+   50,
+   100
+  ]
+ ],
+ "lamDiu": {
+  "0": 30,
+  "25": 50,
+  "50": 70,
+  "100": 100,
+  "200": 150,
+  "400": 200
+ },
+ "stabPhanTram": 120,
+ "khoiDau": [
+  {
+   "class": 0,
+   "dex": 4,
+   "dong": "Dòng Charmander"
+  },
+  {
+   "class": 1,
+   "dex": 1,
+   "dong": "Dòng Bulbasaur"
+  },
+  {
+   "class": 2,
+   "dex": 133,
+   "dong": "Dòng Eevee"
+  },
+  {
+   "class": 3,
+   "dex": 7,
+   "dong": "Dòng Squirtle"
+  },
+  {
+   "class": 4,
+   "dex": 172,
+   "dong": "Dòng Pichu"
+  }
+ ],
+ "capNhanhEevee": 25,
+ "phanTramGiaiDoan": {
+  "2": 8,
+  "3": 16,
+  "eevee": 12
+ },
+ "daTienHoa": [
+  {
+   "idItem": 960,
+   "ten": "Đá Nước",
+   "dex": 134
+  },
+  {
+   "idItem": 961,
+   "ten": "Đá Sấm",
+   "dex": 135
+  },
+  {
+   "idItem": 962,
+   "ten": "Đá Lửa",
+   "dex": 136
+  },
+  {
+   "idItem": 963,
+   "ten": "Đá Mặt Trời",
+   "dex": 196
+  },
+  {
+   "idItem": 964,
+   "ten": "Đá Mặt Trăng",
+   "dex": 197
+  },
+  {
+   "idItem": 965,
+   "ten": "Đá Lá",
+   "dex": 470
+  },
+  {
+   "idItem": 966,
+   "ten": "Đá Băng",
+   "dex": 471
+  },
+  {
+   "idItem": 967,
+   "ten": "Ruy Băng Tiên",
+   "dex": 700
+  }
+ ],
+ "tiLeRoiDaPhanNghin": 5,
+ "lechCapRoiDa": 10,
+ "mocPokedex": [
+  {
+   "moc": 10,
+   "thuong": [
+    {
+     "ten": "Thuốc hồi máu cực mạnh",
+     "soLuong": 20
+    },
+    {
+     "ten": "Ether tối đa",
+     "soLuong": 20
+    }
+   ]
+  },
+  {
+   "moc": 25,
+   "thuong": [
+    {
+     "ten": "Thuốc hồi máu cực mạnh",
+     "soLuong": 50
+    },
+    {
+     "ten": "Ether tối đa",
+     "soLuong": 50
+    },
+    {
+     "ten": "Kẹo kinh nghiệm S",
+     "soLuong": 2
+    }
+   ]
+  },
+  {
+   "moc": 50,
+   "thuong": [
+    {
+     "ten": "Thuốc hồi máu cực mạnh",
+     "soLuong": 100
+    },
+    {
+     "ten": "Ether tối đa",
+     "soLuong": 100
+    },
+    {
+     "ten": "Kẹo kinh nghiệm M",
+     "soLuong": 1
+    },
+    {
+     "ten": "1 đá tiến hoá Eevee ngẫu nhiên",
+     "soLuong": 1
+    }
+   ]
+  },
+  {
+   "moc": 100,
+   "thuong": [
+    {
+     "ten": "Thuốc hồi máu cực mạnh",
+     "soLuong": 200
+    },
+    {
+     "ten": "Ether tối đa",
+     "soLuong": 200
+    },
+    {
+     "ten": "Kẹo kinh nghiệm L",
+     "soLuong": 1
+    },
+    {
+     "ten": "1 đá tiến hoá Eevee ngẫu nhiên",
+     "soLuong": 1
+    }
+   ]
+  }
+ ],
+ "vung": [
+  "Kanto",
+  "Johto",
+  "Hoenn"
+ ],
+ "huongDanGame": [
+  "Phím mũi tên hoặc 2,4,6,8: Di chuyển Pokémon của bạn",
+  "Phím 5 hoặc phím chọn giữa: Đánh thường. Phím 1,3: Dùng chiêu khác nếu đã học",
+  "Phím 7: Dùng Thuốc hồi máu, Phím 9: Dùng Ether (nếu còn)",
+  "Phím chọn trái: Mở Menu",
+  "Phím chọn phải: đổi mục tiêu nếu có nhiều đối tượng xung quanh.",
+  "Phím #: Chat.",
+  "Phím *: mở menu mời nhóm, trao đổi, nhắn tin, kết bạn, xem thông tin, xuống thú cưỡi.",
+  "Phím 0: chuyển đổi bảng chiêu.",
+  "Bạn phải làm xong nhiệm vụ chào Trưởng làng (nhiệm vụ đầu tiên) mới có thể đấu với Pokémon hoang dã.",
+  "Bạn có thể mua vật phẩm đặc biệt bằng cách vào Menu chọn Cửa Hàng.",
+  "Bạn có thể mua vật phẩm tại các NPC trong làng.",
+  "Khi lên cấp bạn được thưởng 5 điểm tiềm năng và 1 điểm kỹ năng.",
+  "Hãy vào mục Bản thân để cộng điểm theo ý muốn.",
+  "Pokémon của bạn dưới cấp 10 được bảo hộ và không dùng được chức năng PK.",
+  "Hạ 1 người chơi khi PK sẽ bị cộng 100 điểm PK.",
+  "Muốn giảm điểm PK, hãy dùng Phiếu công ích mua ở Cửa Hàng hoặc hạ Pokémon hoang dã.",
+  "Bạn chỉ có thể nâng cấp vật phẩm khi Pokémon đạt cấp 10.",
+  "Đeo khăn PK để bật chức năng chiến đấu.",
+  "Khi vật phẩm bị hư hại, hãy đến Machamp thợ rèn để sửa.",
+  "Để di chuyển nhanh giữa các vùng, hãy nhờ Pidgeot (Bay).",
+  "Để ra đảo, hãy đến bến tàu mua vé và đi tàu."
+ ],
+ "map": [
+  {
+   "id": 1,
+   "ten": "Pallet",
+   "dex": [
+    10,
+    27,
+    255
+   ],
+   "capThap": 1,
+   "capCao": 4
+  },
+  {
+   "id": 2,
+   "ten": "Viridian",
+   "dex": [
+    10,
+    23,
+    27,
+    194
+   ],
+   "capThap": 1,
+   "capCao": 5
+  },
+  {
+   "id": 3,
+   "ten": "Vermilion",
+   "dex": [
+    19,
+    43,
+    48,
+    69
+   ],
+   "capThap": 7,
+   "capCao": 10
+  },
+  {
+   "id": 4,
+   "ten": "Cerulean",
+   "dex": [
+    48,
+    69,
+    607
+   ],
+   "capThap": 6,
+   "capCao": 8
+  },
+  {
+   "id": 5,
+   "ten": "Lavender",
+   "dex": [
+    13,
+    37,
+    195
+   ],
+   "capThap": 11,
+   "capCao": 13
+  },
+  {
+   "id": 6,
+   "ten": "Celadon",
+   "dex": [
+    256,
+    324,
+    498
+   ],
+   "capThap": 13,
+   "capCao": 18
+  },
+  {
+   "id": 7,
+   "ten": "Saffron",
+   "dex": [
+    12,
+    46,
+    451
+   ],
+   "capThap": 15,
+   "capCao": 18
+  },
+  {
+   "id": 8,
+   "ten": "Fuchsia",
+   "dex": [
+    44,
+    58,
+    543
+   ],
+   "capThap": 15,
+   "capCao": 20
+  },
+  {
+   "id": 9,
+   "ten": "Cinnabar",
+   "dex": [
+    72,
+    159,
+    453
+   ],
+   "capThap": 21,
+   "capCao": 27
+  },
+  {
+   "id": 10,
+   "ten": "New Bark",
+   "dex": [
+    24,
+    47,
+    85
+   ],
+   "capThap": 30,
+   "capCao": 32
+  },
+  {
+   "id": 11,
+   "ten": "Rừng Viridian",
+   "dex": [
+    128,
+    342,
+    402,
+    559
+   ],
+   "capThap": 33,
+   "capCao": 36
+  },
+  {
+   "id": 13,
+   "ten": "Núi Mặt Trăng",
+   "dex": [
+    83,
+    355,
+    544
+   ],
+   "capThap": 37,
+   "capCao": 39
+  },
+  {
+   "id": 14,
+   "ten": "Vùng Safari",
+   "dex": [
+    401,
+    536,
+    667
+   ],
+   "capThap": 40,
+   "capCao": 42
+  },
+  {
+   "id": 15,
+   "ten": "Cherrygrove",
+   "dex": [
+    269,
+    356,
+    544
+   ],
+   "capThap": 43,
+   "capCao": 45
+  },
+  {
+   "id": 18,
+   "ten": "Goldenrod",
+   "dex": [
+    76,
+    286
+   ],
+   "capThap": 52,
+   "capCao": 54
+  },
+  {
+   "id": 19,
+   "ten": "Ecruteak",
+   "dex": [
+    219,
+    739
+   ],
+   "capThap": 56,
+   "capCao": 58
+  },
+  {
+   "id": 20,
+   "ten": "Violet",
+   "dex": [
+    59,
+    112
+   ],
+   "capThap": 60,
+   "capCao": 62
+  },
+  {
+   "id": 21,
+   "ten": "Mahogany",
+   "dex": [
+    123,
+    127
+   ],
+   "capThap": 64,
+   "capCao": 66
+  },
+  {
+   "id": 22,
+   "ten": "Tàu S.S. Anne",
+   "dex": [
+    99,
+    340
+   ],
+   "capThap": 68,
+   "capCao": 70
+  },
+  {
+   "id": 23,
+   "ten": "Azalea",
+   "dex": [
+    423,
+    709
+   ],
+   "capThap": 72,
+   "capCao": 74
+  },
+  {
+   "id": 24,
+   "ten": "Olivine",
+   "dex": [
+    45,
+    319
+   ],
+   "capThap": 76,
+   "capCao": 78
+  },
+  {
+   "id": 26,
+   "ten": "Rừng Cổ",
+   "dex": [
+    596
+   ],
+   "capThap": 80,
+   "capCao": 80
+  },
+  {
+   "id": 28,
+   "ten": "Rừng Ilex",
+   "dex": [
+    244,
+    405,
+    510
+   ],
+   "capThap": 82,
+   "capCao": 86
+  },
+  {
+   "id": 110,
+   "ten": "Hang động",
+   "dex": [
+    92,
+    104,
+    168
+   ],
+   "capThap": 22,
+   "capCao": 24
+  },
+  {
+   "id": 113,
+   "ten": "Hang Tối",
+   "dex": [
+    93,
+    105,
+    336
+   ],
+   "capThap": 46,
+   "capCao": 48
+  },
+  {
+   "id": 114,
+   "ten": "Hồ Phẫn Nộ",
+   "dex": [
+    257,
+    404,
+    545
+   ],
+   "capThap": 49,
+   "capCao": 51
+  }
+ ],
+ "loai": [
+  {
+   "dex": 1,
+   "ten": "Bulbasaur",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/1.png",
+   "anhShiny": null,
+   "giaiDoan": 1,
+   "dong": {
+    "class": 1,
+    "ten": "Dòng Bulbasaur",
+    "dexDau": 1
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 1,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 2,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 3,
+      "dieuKien": "Cấp 32"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Roi dây leo",
+     "he": 4
+    },
+    {
+     "so": 2,
+     "ten": "Lá dao",
+     "he": 4
+    },
+    {
+     "so": 3,
+     "ten": "Bom bùn",
+     "he": 7
+    },
+    {
+     "so": 4,
+     "ten": "Tự vệ",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Sinh trưởng",
+     "he": 0
+    },
+    {
+     "so": 6,
+     "ten": "Bom hạt",
+     "he": 4
+    },
+    {
+     "so": 7,
+     "ten": "Bão lá",
+     "he": 4
+    },
+    {
+     "so": 8,
+     "ten": "Tia mặt trời",
+     "he": 4
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 2,
+   "ten": "Ivysaur",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/2.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 1,
+    "ten": "Dòng Bulbasaur",
+    "dexDau": 1
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 1,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 2,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 3,
+      "dieuKien": "Cấp 32"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Roi dây leo",
+     "he": 4
+    },
+    {
+     "so": 2,
+     "ten": "Lá dao",
+     "he": 4
+    },
+    {
+     "so": 3,
+     "ten": "Bom bùn",
+     "he": 7
+    },
+    {
+     "so": 4,
+     "ten": "Tự vệ",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Sinh trưởng",
+     "he": 0
+    },
+    {
+     "so": 6,
+     "ten": "Bom hạt",
+     "he": 4
+    },
+    {
+     "so": 7,
+     "ten": "Bão lá",
+     "he": 4
+    },
+    {
+     "so": 8,
+     "ten": "Tia mặt trời",
+     "he": 4
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 3,
+   "ten": "Venusaur",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/3.png",
+   "anhShiny": null,
+   "giaiDoan": 3,
+   "dong": {
+    "class": 1,
+    "ten": "Dòng Bulbasaur",
+    "dexDau": 1
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 1,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 2,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 3,
+      "dieuKien": "Cấp 32"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Roi dây leo",
+     "he": 4
+    },
+    {
+     "so": 2,
+     "ten": "Lá dao",
+     "he": 4
+    },
+    {
+     "so": 3,
+     "ten": "Bom bùn",
+     "he": 7
+    },
+    {
+     "so": 4,
+     "ten": "Tự vệ",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Sinh trưởng",
+     "he": 0
+    },
+    {
+     "so": 6,
+     "ten": "Bom hạt",
+     "he": 4
+    },
+    {
+     "so": 7,
+     "ten": "Bão lá",
+     "he": 4
+    },
+    {
+     "so": 8,
+     "ten": "Tia mặt trời",
+     "he": 4
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 4,
+   "ten": "Charmander",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/4.png",
+   "anhShiny": null,
+   "giaiDoan": 1,
+   "dong": {
+    "class": 0,
+    "ten": "Dòng Charmander",
+    "dexDau": 4
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 4,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 5,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 6,
+      "dieuKien": "Cấp 36"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Cào",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Than hồng",
+     "he": 1
+    },
+    {
+     "so": 2,
+     "ten": "Nanh lửa",
+     "he": 1
+    },
+    {
+     "so": 3,
+     "ten": "Xoáy lửa",
+     "he": 1
+    },
+    {
+     "so": 4,
+     "ten": "Màn khói",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Múa kiếm",
+     "he": 0
+    },
+    {
+     "so": 6,
+     "ten": "Súng phun lửa",
+     "he": 1
+    },
+    {
+     "so": 7,
+     "ten": "Vuốt rồng",
+     "he": 14
+    },
+    {
+     "so": 8,
+     "ten": "Đại hỏa",
+     "he": 1
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 5,
+   "ten": "Charmeleon",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/5.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 0,
+    "ten": "Dòng Charmander",
+    "dexDau": 4
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 4,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 5,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 6,
+      "dieuKien": "Cấp 36"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Cào",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Than hồng",
+     "he": 1
+    },
+    {
+     "so": 2,
+     "ten": "Nanh lửa",
+     "he": 1
+    },
+    {
+     "so": 3,
+     "ten": "Xoáy lửa",
+     "he": 1
+    },
+    {
+     "so": 4,
+     "ten": "Màn khói",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Múa kiếm",
+     "he": 0
+    },
+    {
+     "so": 6,
+     "ten": "Súng phun lửa",
+     "he": 1
+    },
+    {
+     "so": 7,
+     "ten": "Vuốt rồng",
+     "he": 14
+    },
+    {
+     "so": 8,
+     "ten": "Đại hỏa",
+     "he": 1
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 6,
+   "ten": "Charizard",
+   "he": [
+    1,
+    9
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/6.png",
+   "anhShiny": null,
+   "giaiDoan": 3,
+   "dong": {
+    "class": 0,
+    "ten": "Dòng Charmander",
+    "dexDau": 4
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 4,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 5,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 6,
+      "dieuKien": "Cấp 36"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Cào",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Than hồng",
+     "he": 1
+    },
+    {
+     "so": 2,
+     "ten": "Nanh lửa",
+     "he": 1
+    },
+    {
+     "so": 3,
+     "ten": "Xoáy lửa",
+     "he": 1
+    },
+    {
+     "so": 4,
+     "ten": "Màn khói",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Múa kiếm",
+     "he": 0
+    },
+    {
+     "so": 6,
+     "ten": "Súng phun lửa",
+     "he": 1
+    },
+    {
+     "so": 7,
+     "ten": "Vuốt rồng",
+     "he": 14
+    },
+    {
+     "so": 8,
+     "ten": "Đại hỏa",
+     "he": 1
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 7,
+   "ten": "Squirtle",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/7.png",
+   "anhShiny": null,
+   "giaiDoan": 1,
+   "dong": {
+    "class": 3,
+    "ten": "Dòng Squirtle",
+    "dexDau": 7
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 7,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 8,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 9,
+      "dieuKien": "Cấp 36"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Súng nước",
+     "he": 2
+    },
+    {
+     "so": 2,
+     "ten": "Bong bóng",
+     "he": 2
+    },
+    {
+     "so": 3,
+     "ten": "Xoáy nước",
+     "he": 2
+    },
+    {
+     "so": 4,
+     "ten": "Phá mai",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Rút vào mai",
+     "he": 2
+    },
+    {
+     "so": 6,
+     "ten": "Đuôi nước",
+     "he": 2
+    },
+    {
+     "so": 7,
+     "ten": "Bơm nước",
+     "he": 2
+    },
+    {
+     "so": 8,
+     "ten": "Đại pháo nước",
+     "he": 2
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 8,
+   "ten": "Wartortle",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/8.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 3,
+    "ten": "Dòng Squirtle",
+    "dexDau": 7
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 7,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 8,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 9,
+      "dieuKien": "Cấp 36"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Súng nước",
+     "he": 2
+    },
+    {
+     "so": 2,
+     "ten": "Bong bóng",
+     "he": 2
+    },
+    {
+     "so": 3,
+     "ten": "Xoáy nước",
+     "he": 2
+    },
+    {
+     "so": 4,
+     "ten": "Phá mai",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Rút vào mai",
+     "he": 2
+    },
+    {
+     "so": 6,
+     "ten": "Đuôi nước",
+     "he": 2
+    },
+    {
+     "so": 7,
+     "ten": "Bơm nước",
+     "he": 2
+    },
+    {
+     "so": 8,
+     "ten": "Đại pháo nước",
+     "he": 2
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 9,
+   "ten": "Blastoise",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/9.png",
+   "anhShiny": null,
+   "giaiDoan": 3,
+   "dong": {
+    "class": 3,
+    "ten": "Dòng Squirtle",
+    "dexDau": 7
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 7,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 8,
+      "dieuKien": "Cấp 16"
+     },
+     {
+      "dex": 9,
+      "dieuKien": "Cấp 36"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Súng nước",
+     "he": 2
+    },
+    {
+     "so": 2,
+     "ten": "Bong bóng",
+     "he": 2
+    },
+    {
+     "so": 3,
+     "ten": "Xoáy nước",
+     "he": 2
+    },
+    {
+     "so": 4,
+     "ten": "Phá mai",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Rút vào mai",
+     "he": 2
+    },
+    {
+     "so": 6,
+     "ten": "Đuôi nước",
+     "he": 2
+    },
+    {
+     "so": 7,
+     "ten": "Bơm nước",
+     "he": 2
+    },
+    {
+     "so": 8,
+     "ten": "Đại pháo nước",
+     "he": 2
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 10,
+   "ten": "Caterpie",
+   "he": [
+    11
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/10.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 10,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 12,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 2,
+     "cap": 2,
+     "hp": 300,
+     "exp": 30,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 1,
+       "ten": "Pallet",
+       "soLuong": 32
+      },
+      {
+       "map": 2,
+       "ten": "Viridian",
+       "soLuong": 12
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 12,
+   "ten": "Butterfree",
+   "he": [
+    11,
+    9
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/12.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 10,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 12,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 24,
+     "cap": 18,
+     "hp": 9960,
+     "exp": 996,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 7,
+       "ten": "Saffron",
+       "soLuong": 67
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 13,
+   "ten": "Weedle",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/13.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 11,
+     "cap": 11,
+     "hp": 3660,
+     "exp": 366,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 5,
+       "ten": "Lavender",
+       "soLuong": 44
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 18,
+   "ten": "Pidgeot",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "thu-cuoi",
+    "npc"
+   ],
+   "anh": "/pokemon/18.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 4
+    }
+   ],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Pidgeot (Bay)",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 19,
+   "ten": "Rattata",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/19.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 9,
+     "cap": 9,
+     "hp": 2400,
+     "exp": 240,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 3,
+       "ten": "Vermilion",
+       "soLuong": 39
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 23,
+   "ten": "Ekans",
+   "he": [
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/23.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 23,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 24,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 5,
+     "cap": 5,
+     "hp": 900,
+     "exp": 90,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 2,
+       "ten": "Viridian",
+       "soLuong": 43
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 24,
+   "ten": "Arbok",
+   "he": [
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/24.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 23,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 24,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 23,
+     "cap": 31,
+     "hp": 32630,
+     "exp": 2090,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 10,
+       "ten": "New Bark",
+       "soLuong": 27
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 25,
+   "ten": "Pikachu",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/25.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 4,
+    "ten": "Dòng Pichu",
+    "dexDau": 172
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 172,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 25,
+      "dieuKien": "Cấp 10"
+     },
+     {
+      "dex": 26,
+      "dieuKien": "Cấp 30"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Tia lửa điện",
+     "he": 3
+    },
+    {
+     "so": 1,
+     "ten": "Sóng điện",
+     "he": 3
+    },
+    {
+     "so": 2,
+     "ten": "Cầu điện",
+     "he": 3
+    },
+    {
+     "so": 3,
+     "ten": "Tia chớp",
+     "he": 3
+    },
+    {
+     "so": 4,
+     "ten": "Nhanh nhẹn",
+     "he": 10
+    },
+    {
+     "so": 5,
+     "ten": "Nạp điện",
+     "he": 3
+    },
+    {
+     "so": 6,
+     "ten": "Lưới điện",
+     "he": 3
+    },
+    {
+     "so": 7,
+     "ten": "Sấm sét",
+     "he": 3
+    },
+    {
+     "so": 8,
+     "ten": "Đâm sầm điện",
+     "he": 3
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 26,
+   "ten": "Raichu",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/26.png",
+   "anhShiny": null,
+   "giaiDoan": 3,
+   "dong": {
+    "class": 4,
+    "ten": "Dòng Pichu",
+    "dexDau": 172
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 172,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 25,
+      "dieuKien": "Cấp 10"
+     },
+     {
+      "dex": 26,
+      "dieuKien": "Cấp 30"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Tia lửa điện",
+     "he": 3
+    },
+    {
+     "so": 1,
+     "ten": "Sóng điện",
+     "he": 3
+    },
+    {
+     "so": 2,
+     "ten": "Cầu điện",
+     "he": 3
+    },
+    {
+     "so": 3,
+     "ten": "Tia chớp",
+     "he": 3
+    },
+    {
+     "so": 4,
+     "ten": "Nhanh nhẹn",
+     "he": 10
+    },
+    {
+     "so": 5,
+     "ten": "Nạp điện",
+     "he": 3
+    },
+    {
+     "so": 6,
+     "ten": "Lưới điện",
+     "he": 3
+    },
+    {
+     "so": 7,
+     "ten": "Sấm sét",
+     "he": 3
+    },
+    {
+     "so": 8,
+     "ten": "Đâm sầm điện",
+     "he": 3
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 27,
+   "ten": "Sandshrew",
+   "he": [
+    8
+   ],
+   "vaiTro": [
+    "quai",
+    "pet"
+   ],
+   "anh": "/pokemon/27.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 1,
+     "cap": 1,
+     "hp": 200,
+     "exp": 20,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 2,
+       "ten": "Viridian",
+       "soLuong": 36
+      },
+      {
+       "map": 1,
+       "ten": "Pallet",
+       "soLuong": 35
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Sandshrew đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 29,
+   "ten": "Nidoran♀",
+   "he": [
+    7
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/29.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Nidoran♀ đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 35,
+   "ten": "Clefairy",
+   "he": [
+    17
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/35.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 173,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 35,
+      "dieuKien": "Pet cấp 2"
+     },
+     {
+      "dex": 36,
+      "dieuKien": "Pet cấp 4"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 700,
+     "ten": "Clefairy cấp 2",
+     "cap": 2,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 701,
+     "ten": "Clefairy cấp 3",
+     "cap": 3,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 36,
+   "ten": "Clefable",
+   "he": [
+    17
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/36.png",
+   "anhShiny": "/pokemon/36s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 173,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 35,
+      "dieuKien": "Pet cấp 2"
+     },
+     {
+      "dex": 36,
+      "dieuKien": "Pet cấp 4"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 702,
+     "ten": "Clefable cấp 4",
+     "cap": 4,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 703,
+     "ten": "Clefable Shiny cấp 5",
+     "cap": 5,
+     "trung": false,
+     "shiny": true
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 37,
+   "ten": "Vulpix",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/37.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 12,
+     "cap": 12,
+     "hp": 4380,
+     "exp": 438,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 5,
+       "ten": "Lavender",
+       "soLuong": 37
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 41,
+   "ten": "Zubat",
+   "he": [
+    7,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/41.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 41,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 42,
+      "dieuKien": "Pet cấp 3"
+     },
+     {
+      "dex": 169,
+      "dieuKien": "Pet cấp 5"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Zubat đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 687,
+     "ten": "Trứng Zubat",
+     "cap": 0,
+     "trung": true,
+     "shiny": false
+    },
+    {
+     "idItem": 704,
+     "ten": "Zubat cấp 1",
+     "cap": 1,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 705,
+     "ten": "Zubat cấp 2",
+     "cap": 2,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 42,
+   "ten": "Golbat",
+   "he": [
+    7,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/42.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 41,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 42,
+      "dieuKien": "Pet cấp 3"
+     },
+     {
+      "dex": 169,
+      "dieuKien": "Pet cấp 5"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 706,
+     "ten": "Golbat cấp 3",
+     "cap": 3,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 707,
+     "ten": "Golbat cấp 4",
+     "cap": 4,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 43,
+   "ten": "Oddish",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/43.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 43,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 44,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 45,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 10,
+     "cap": 10,
+     "hp": 3000,
+     "exp": 300,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 3,
+       "ten": "Vermilion",
+       "soLuong": 61
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 44,
+   "ten": "Gloom",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/44.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 43,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 44,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 45,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 20,
+     "cap": 17,
+     "hp": 8880,
+     "exp": 888,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 8,
+       "ten": "Fuchsia",
+       "soLuong": 47
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 45,
+   "ten": "Vileplume",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/45.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 43,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 44,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 45,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 58,
+     "cap": 78,
+     "hp": 800530,
+     "exp": 22000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 24,
+       "ten": "Olivine",
+       "soLuong": 14
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 46,
+   "ten": "Paras",
+   "he": [
+    11,
+    4
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/46.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 46,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 47,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 19,
+     "cap": 16,
+     "hp": 7860,
+     "exp": 786,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 7,
+       "ten": "Saffron",
+       "soLuong": 54
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 47,
+   "ten": "Parasect",
+   "he": [
+    11,
+    4
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/47.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 46,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 47,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 32,
+     "cap": 32,
+     "hp": 35190,
+     "exp": 2190,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 10,
+       "ten": "New Bark",
+       "soLuong": 44
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 48,
+   "ten": "Venonat",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/48.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 8,
+     "cap": 8,
+     "hp": 1950,
+     "exp": 195,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 4,
+       "ten": "Cerulean",
+       "soLuong": 45
+      },
+      {
+       "map": 3,
+       "ten": "Vermilion",
+       "soLuong": 19
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 52,
+   "ten": "Meowth",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/52.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 52,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 53,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Meowth thương nhân",
+     "suKien": false
+    },
+    {
+     "ten": "Meowth",
+     "suKien": false
+    },
+    {
+     "ten": "Meowth (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 53,
+   "ten": "Persian",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/53.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 52,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 53,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Persian",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 58,
+   "ten": "Growlithe",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "quai",
+    "pet"
+   ],
+   "anh": "/pokemon/58.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 58,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 59,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 28,
+     "cap": 20,
+     "hp": 12300,
+     "exp": 890,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 8,
+       "ten": "Fuchsia",
+       "soLuong": 50
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 804,
+     "ten": "Growlithe",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 59,
+   "ten": "Arcanine",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "quai",
+    "thu-cuoi",
+    "npc"
+   ],
+   "anh": "/pokemon/59.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 58,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 59,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 48,
+     "cap": 60,
+     "hp": 193830,
+     "exp": 9020,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 20,
+       "ten": "Violet",
+       "soLuong": 18
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 1
+    }
+   ],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Arcanine gác cổng",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 68,
+   "ten": "Machamp",
+   "he": [
+    6
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/68.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Machamp thợ rèn",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 69,
+   "ten": "Bellsprout",
+   "he": [
+    4,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/69.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 7,
+     "cap": 7,
+     "hp": 1550,
+     "exp": 155,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 4,
+       "ten": "Cerulean",
+       "soLuong": 52
+      },
+      {
+       "map": 3,
+       "ten": "Vermilion",
+       "soLuong": 24
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 72,
+   "ten": "Tentacool",
+   "he": [
+    2,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/72.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 26,
+     "cap": 21,
+     "hp": 13770,
+     "exp": 1090,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 9,
+       "ten": "Cinnabar",
+       "soLuong": 19
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 76,
+   "ten": "Golem",
+   "he": [
+    12,
+    8
+   ],
+   "vaiTro": [
+    "quai",
+    "npc"
+   ],
+   "anh": "/pokemon/76.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 74,
+     "cap": 54,
+     "hp": 158414,
+     "exp": 6776,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 18,
+       "ten": "Goldenrod",
+       "soLuong": 24
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Golem 1",
+     "suKien": false
+    },
+    {
+     "ten": "Golem 2",
+     "suKien": false
+    },
+    {
+     "ten": "Golem 3",
+     "suKien": false
+    },
+    {
+     "ten": "Golem 4",
+     "suKien": false
+    },
+    {
+     "ten": "Golem 5",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 77,
+   "ten": "Ponyta",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "thu-cuoi",
+    "pet"
+   ],
+   "anh": "/pokemon/77.png",
+   "anhShiny": "/pokemon/77s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 77,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 78,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi cá nhân (trắng)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 95
+    },
+    {
+     "ten": "Thú cưỡi cá nhân (xanh)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 96
+    },
+    {
+     "ten": "Thú cưỡi cá nhân (đỏ)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 97
+    },
+    {
+     "ten": "Thú cưỡi cá nhân (xanh lá)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 98
+    },
+    {
+     "ten": "Thú cưỡi cá nhân (vàng)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 99
+    },
+    {
+     "ten": "Thú cưỡi cá nhân (tím)",
+     "shiny": true,
+     "nguon": "template",
+     "id": 100
+    }
+   ],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Ponyta đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 681,
+     "ten": "Ponyta lửa",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 78,
+   "ten": "Rapidash",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "thu-cuoi",
+    "pet"
+   ],
+   "anh": "/pokemon/78.png",
+   "anhShiny": "/pokemon/78s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 77,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 78,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 0
+    },
+    {
+     "ten": "Thú cưỡi đội (trắng)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 101
+    },
+    {
+     "ten": "Thú cưỡi đội (xanh)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 102
+    },
+    {
+     "ten": "Thú cưỡi đội (đỏ)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 103
+    },
+    {
+     "ten": "Thú cưỡi đội (xanh lá)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 104
+    },
+    {
+     "ten": "Thú cưỡi đội (vàng)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 105
+    },
+    {
+     "ten": "Thú cưỡi đội (tím)",
+     "shiny": true,
+     "nguon": "template",
+     "id": 106
+    }
+   ],
+   "pet": [
+    {
+     "idItem": 682,
+     "ten": "Rapidash lửa",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 683,
+     "ten": "Rapidash lửa Shiny",
+     "cap": 0,
+     "trung": false,
+     "shiny": true
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 83,
+   "ten": "Farfetch'd",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "quai",
+    "npc"
+   ],
+   "anh": "/pokemon/83.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 45,
+     "cap": 39,
+     "hp": 57634,
+     "exp": 3956,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 13,
+       "ten": "Núi Mặt Trăng",
+       "soLuong": 36
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Farfetch'd",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 85,
+   "ten": "Dodrio",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/85.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 22,
+     "cap": 30,
+     "hp": 30150,
+     "exp": 1990,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 10,
+       "ten": "New Bark",
+       "soLuong": 31
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 92,
+   "ten": "Gastly",
+   "he": [
+    13,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/92.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 92,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 93,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 94,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 25,
+     "cap": 22,
+     "hp": 15310,
+     "exp": 1190,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 110,
+       "ten": "Hang động",
+       "soLuong": 19
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 93,
+   "ten": "Haunter",
+   "he": [
+    13,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/93.png",
+   "anhShiny": "/pokemon/93s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 92,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 93,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 94,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 52,
+     "cap": 46,
+     "hp": 90030,
+     "exp": 5160,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 113,
+       "ten": "Hang Tối",
+       "soLuong": 42
+      }
+     ],
+     "ghiChuNoi": ""
+    },
+    {
+     "id": 133,
+     "cap": 46,
+     "hp": 90030,
+     "exp": 5160,
+     "shiny": true,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 94,
+   "ten": "Gengar",
+   "he": [
+    13,
+    7
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/94.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 92,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 93,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 94,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 93,
+     "cap": 55,
+     "hp": 100000000,
+     "exp": 1000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 99,
+   "ten": "Kingler",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/99.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 54,
+     "cap": 70,
+     "hp": 360530,
+     "exp": 14048,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 22,
+       "ten": "Tàu S.S. Anne",
+       "soLuong": 16
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 100,
+   "ten": "Voltorb",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": null,
+   "anhShiny": "/pokemon/100s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 790,
+     "ten": "Voltorb vàng",
+     "cap": 0,
+     "trung": false,
+     "shiny": true
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 104,
+   "ten": "Cubone",
+   "he": [
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/104.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 104,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 105,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 27,
+     "cap": 24,
+     "hp": 18600,
+     "exp": 1390,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 110,
+       "ten": "Hang động",
+       "soLuong": 9
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 105,
+   "ten": "Marowak",
+   "he": [
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/105.png",
+   "anhShiny": "/pokemon/105s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 104,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 105,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 59,
+     "cap": 47,
+     "hp": 95378,
+     "exp": 5348,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 113,
+       "ten": "Hang Tối",
+       "soLuong": 44
+      }
+     ],
+     "ghiChuNoi": ""
+    },
+    {
+     "id": 132,
+     "cap": 47,
+     "hp": 95378,
+     "exp": 5348,
+     "shiny": true,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 112,
+   "ten": "Rhydon",
+   "he": [
+    8,
+    12
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/112.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 60,
+     "cap": 62,
+     "hp": 240878,
+     "exp": 9622,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 20,
+       "ten": "Violet",
+       "soLuong": 17
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 113,
+   "ten": "Chansey",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/113.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Y tá Chansey",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 115,
+   "ten": "Kangaskhan",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/115.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Kangaskhan thủ kho",
+     "suKien": false
+    },
+    {
+     "ten": "Kangaskhan",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 120,
+   "ten": "Staryu",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/120.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 120,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 121,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Staryu đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 121,
+   "ten": "Starmie",
+   "he": [
+    2,
+    10
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/121.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 120,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 121,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Starmie đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 123,
+   "ten": "Scyther",
+   "he": [
+    11,
+    9
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/123.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 81,
+     "cap": 66,
+     "hp": 290530,
+     "exp": 11848,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 21,
+       "ten": "Mahogany",
+       "soLuong": 27
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 127,
+   "ten": "Pinsir",
+   "he": [
+    11
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/127.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 77,
+     "cap": 64,
+     "hp": 268350,
+     "exp": 11640,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 21,
+       "ten": "Mahogany",
+       "soLuong": 31
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 128,
+   "ten": "Tauros",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "quai",
+    "thu-cuoi",
+    "npc"
+   ],
+   "anh": "/pokemon/128.png",
+   "anhShiny": "/pokemon/128s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 33,
+     "cap": 34,
+     "hp": 40550,
+     "exp": 2390,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 11,
+       "ten": "Rừng Viridian",
+       "soLuong": 45
+      }
+     ],
+     "ghiChuNoi": ""
+    },
+    {
+     "id": 73,
+     "cap": 69,
+     "hp": 268694,
+     "exp": 10496,
+     "shiny": true,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 2
+    }
+   ],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Tauros 1",
+     "suKien": false
+    },
+    {
+     "ten": "Tauros 2",
+     "suKien": false
+    },
+    {
+     "ten": "Tauros 3",
+     "suKien": false
+    },
+    {
+     "ten": "Tauros 4",
+     "suKien": false
+    },
+    {
+     "ten": "Tauros 5",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 129,
+   "ten": "Magikarp",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/129.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 129,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 130,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Magikarp đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 130,
+   "ten": "Gyarados",
+   "he": [
+    2,
+    9
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/130.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 129,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 130,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 38,
+     "cap": 38,
+     "hp": 500000,
+     "exp": 50000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 131,
+   "ten": "Lapras",
+   "he": [
+    2,
+    5
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/131.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Lapras hoa tiêu",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 133,
+   "ten": "Eevee",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/133.png",
+   "anhShiny": null,
+   "giaiDoan": 1,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 134,
+   "ten": "Vaporeon",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/134.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 135,
+   "ten": "Jolteon",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/135.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 136,
+   "ten": "Flareon",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/136.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 143,
+   "ten": "Snorlax",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/143.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Ông Snorlax",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 144,
+   "ten": "Articuno",
+   "he": [
+    5,
+    9
+   ],
+   "vaiTro": [
+    "boss",
+    "thu-cuoi",
+    "pet"
+   ],
+   "anh": "/pokemon/144.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 175,
+     "cap": 90,
+     "hp": 26133000,
+     "exp": 1700000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 8
+    }
+   ],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Articuno đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 145,
+   "ten": "Zapdos",
+   "he": [
+    3,
+    9
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/145.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 82,
+     "cap": 40,
+     "hp": 200000000,
+     "exp": 200000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Tổ Zapdos"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 146,
+   "ten": "Moltres",
+   "he": [
+    1,
+    9
+   ],
+   "vaiTro": [
+    "thu-cuoi",
+    "pet"
+   ],
+   "anh": "/pokemon/146.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 5
+    }
+   ],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Moltres đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 147,
+   "ten": "Dratini",
+   "he": [
+    14
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/147.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 147,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 148,
+      "dieuKien": "Pet cấp 3"
+     },
+     {
+      "dex": 149,
+      "dieuKien": "Pet cấp 5"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 685,
+     "ten": "Trứng Dratini",
+     "cap": 0,
+     "trung": true,
+     "shiny": false
+    },
+    {
+     "idItem": 694,
+     "ten": "Dratini cấp 1",
+     "cap": 1,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 695,
+     "ten": "Dratini cấp 2",
+     "cap": 2,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 148,
+   "ten": "Dragonair",
+   "he": [
+    14
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/148.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 147,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 148,
+      "dieuKien": "Pet cấp 3"
+     },
+     {
+      "dex": 149,
+      "dieuKien": "Pet cấp 5"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 696,
+     "ten": "Dragonair cấp 3",
+     "cap": 3,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 697,
+     "ten": "Dragonair cấp 4",
+     "cap": 4,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 149,
+   "ten": "Dragonite",
+   "he": [
+    14,
+    9
+   ],
+   "vaiTro": [
+    "thu-cuoi",
+    "pet"
+   ],
+   "anh": "/pokemon/149.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 147,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 148,
+      "dieuKien": "Pet cấp 3"
+     },
+     {
+      "dex": 149,
+      "dieuKien": "Pet cấp 5"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 13
+    }
+   ],
+   "pet": [
+    {
+     "idItem": 698,
+     "ten": "Dragonite cấp 5",
+     "cap": 5,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 159,
+   "ten": "Croconaw",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/159.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 159,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 160,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 29,
+     "cap": 26,
+     "hp": 22170,
+     "exp": 1590,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 9,
+       "ten": "Cinnabar",
+       "soLuong": 28
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 160,
+   "ten": "Feraligatr",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/160.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 159,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 160,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 66,
+     "cap": 62,
+     "hp": 200878,
+     "exp": 8648,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 163,
+   "ten": "Hoothoot",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/163.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 163,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 164,
+      "dieuKien": "Pet cấp 3"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 684,
+     "ten": "Trứng Hoothoot",
+     "cap": 0,
+     "trung": true,
+     "shiny": false
+    },
+    {
+     "idItem": 689,
+     "ten": "Hoothoot cấp 1",
+     "cap": 1,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 690,
+     "ten": "Hoothoot cấp 2",
+     "cap": 2,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 164,
+   "ten": "Noctowl",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/164.png",
+   "anhShiny": "/pokemon/164s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 163,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 164,
+      "dieuKien": "Pet cấp 3"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 691,
+     "ten": "Noctowl cấp 3",
+     "cap": 3,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 692,
+     "ten": "Noctowl cấp 4",
+     "cap": 4,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 693,
+     "ten": "Noctowl Shiny cấp 5",
+     "cap": 5,
+     "trung": false,
+     "shiny": true
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 165,
+   "ten": "Ledyba",
+   "he": [
+    11,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/165.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Ledyba đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 168,
+   "ten": "Ariados",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/168.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 18,
+     "cap": 24,
+     "hp": 18600,
+     "exp": 1390,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 110,
+       "ten": "Hang động",
+       "soLuong": 15
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 169,
+   "ten": "Crobat",
+   "he": [
+    7,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/169.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 41,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 42,
+      "dieuKien": "Pet cấp 3"
+     },
+     {
+      "dex": 169,
+      "dieuKien": "Pet cấp 5"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 708,
+     "ten": "Crobat cấp 5",
+     "cap": 5,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 172,
+   "ten": "Pichu",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/172.png",
+   "anhShiny": null,
+   "giaiDoan": 1,
+   "dong": {
+    "class": 4,
+    "ten": "Dòng Pichu",
+    "dexDau": 172
+   },
+   "tienHoa": {
+    "kieu": "cap",
+    "buoc": [
+     {
+      "dex": 172,
+      "dieuKien": "Khởi đầu"
+     },
+     {
+      "dex": 25,
+      "dieuKien": "Cấp 10"
+     },
+     {
+      "dex": 26,
+      "dieuKien": "Cấp 30"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Tia lửa điện",
+     "he": 3
+    },
+    {
+     "so": 1,
+     "ten": "Sóng điện",
+     "he": 3
+    },
+    {
+     "so": 2,
+     "ten": "Cầu điện",
+     "he": 3
+    },
+    {
+     "so": 3,
+     "ten": "Tia chớp",
+     "he": 3
+    },
+    {
+     "so": 4,
+     "ten": "Nhanh nhẹn",
+     "he": 10
+    },
+    {
+     "so": 5,
+     "ten": "Nạp điện",
+     "he": 3
+    },
+    {
+     "so": 6,
+     "ten": "Lưới điện",
+     "he": 3
+    },
+    {
+     "so": 7,
+     "ten": "Sấm sét",
+     "he": 3
+    },
+    {
+     "so": 8,
+     "ten": "Đâm sầm điện",
+     "he": 3
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 173,
+   "ten": "Cleffa",
+   "he": [
+    17
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/173.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 173,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 35,
+      "dieuKien": "Pet cấp 2"
+     },
+     {
+      "dex": 36,
+      "dieuKien": "Pet cấp 4"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 686,
+     "ten": "Trứng Cleffa",
+     "cap": 0,
+     "trung": true,
+     "shiny": false
+    },
+    {
+     "idItem": 699,
+     "ten": "Cleffa cấp 1",
+     "cap": 1,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 178,
+   "ten": "Xatu",
+   "he": [
+    10,
+    9
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/178.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Trưởng làng Xatu",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 179,
+   "ten": "Mareep",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/179.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Mareep đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 185,
+   "ten": "Sudowoodo",
+   "he": [
+    12
+   ],
+   "vaiTro": [
+    "boss",
+    "npc"
+   ],
+   "anh": "/pokemon/185.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 43,
+     "cap": 39,
+     "hp": 20000000,
+     "exp": 3956,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Sudowoodo (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 190,
+   "ten": "Aipom",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/190.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Aipom đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 194,
+   "ten": "Wooper",
+   "he": [
+    2,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/194.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 194,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 195,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 3,
+     "cap": 3,
+     "hp": 450,
+     "exp": 45,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 2,
+       "ten": "Viridian",
+       "soLuong": 37
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 195,
+   "ten": "Quagsire",
+   "he": [
+    2,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/195.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 194,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 195,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 13,
+     "cap": 13,
+     "hp": 5160,
+     "exp": 516,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 5,
+       "ten": "Lavender",
+       "soLuong": 61
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 196,
+   "ten": "Espeon",
+   "he": [
+    10
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/196.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 197,
+   "ten": "Umbreon",
+   "he": [
+    15
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/197.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 214,
+   "ten": "Heracross",
+   "he": [
+    11,
+    6
+   ],
+   "vaiTro": [
+    "quai",
+    "npc"
+   ],
+   "anh": "/pokemon/214.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 72,
+     "cap": 68,
+     "hp": 258198,
+     "exp": 10220,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Heracross",
+     "suKien": false
+    },
+    {
+     "ten": "Heracross (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 217,
+   "ten": "Ursaring",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/217.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 217,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 901,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 115,
+     "cap": 1,
+     "hp": 400000000,
+     "exp": 1000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 219,
+   "ten": "Magcargo",
+   "he": [
+    1,
+    12
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/219.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 76,
+     "cap": 56,
+     "hp": 152630,
+     "exp": 7220,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 19,
+       "ten": "Ecruteak",
+       "soLuong": 19
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 221,
+   "ten": "Piloswine",
+   "he": [
+    5,
+    8
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/221.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 221,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 473,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 11
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 225,
+   "ten": "Delibird",
+   "he": [
+    5,
+    9
+   ],
+   "vaiTro": [
+    "pet",
+    "npc"
+   ],
+   "anh": "/pokemon/225.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 728,
+     "ten": "Delibird",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": [
+    {
+     "ten": "Delibird (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 227,
+   "ten": "Skarmory",
+   "he": [
+    16,
+    9
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/227.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 16
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 234,
+   "ten": "Stantler",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/234.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 7
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 243,
+   "ten": "Raikou",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/243.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 176,
+     "cap": 90,
+     "hp": 26133000,
+     "exp": 1700000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 244,
+   "ten": "Entei",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "boss",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/244.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 138,
+     "cap": 86,
+     "hp": 10000000,
+     "exp": 55000,
+     "shiny": false,
+     "boss": true,
+     "noi": [
+      {
+       "map": 28,
+       "ten": "Rừng Ilex",
+       "soLuong": 17
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 19
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 245,
+   "ten": "Suicune",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "boss",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/245.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 177,
+     "cap": 95,
+     "hp": 27584000,
+     "exp": 1955750,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 10
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 249,
+   "ten": "Lugia",
+   "he": [
+    10,
+    9
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/249.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 178,
+     "cap": 95,
+     "hp": 27584000,
+     "exp": 1955750,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 250,
+   "ten": "Ho-Oh",
+   "he": [
+    1,
+    9
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/250.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 14
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 255,
+   "ten": "Torchic",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/255.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 255,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 256,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 257,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 4,
+     "cap": 4,
+     "hp": 650,
+     "exp": 65,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 1,
+       "ten": "Pallet",
+       "soLuong": 39
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 256,
+   "ten": "Combusken",
+   "he": [
+    1,
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/256.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 255,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 256,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 257,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 14,
+     "cap": 18,
+     "hp": 9960,
+     "exp": 996,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 6,
+       "ten": "Celadon",
+       "soLuong": 49
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 257,
+   "ten": "Blaziken",
+   "he": [
+    1,
+    6
+   ],
+   "vaiTro": [
+    "quai",
+    "npc"
+   ],
+   "anh": "/pokemon/257.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 255,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 256,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 257,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 44,
+     "cap": 51,
+     "hp": 118730,
+     "exp": 6140,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 114,
+       "ten": "Hồ Phẫn Nộ",
+       "soLuong": 38
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Blaziken",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 261,
+   "ten": "Poochyena",
+   "he": [
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/261.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 139,
+     "cap": 80,
+     "hp": 15960,
+     "exp": 24000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 262,
+   "ten": "Mightyena",
+   "he": [
+    15
+   ],
+   "vaiTro": [
+    "quai",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/262.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 147,
+     "cap": 86,
+     "hp": 17120,
+     "exp": 30000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 3
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 269,
+   "ten": "Dustox",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/269.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 50,
+     "cap": 44,
+     "hp": 79894,
+     "exp": 4796,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 15,
+       "ten": "Cherrygrove",
+       "soLuong": 25
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 270,
+   "ten": "Lotad",
+   "he": [
+    2,
+    4
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/270.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Lotad đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 276,
+   "ten": "Taillow",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/276.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Taillow đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 279,
+   "ten": "Pelipper",
+   "he": [
+    2,
+    9
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/279.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 145,
+     "cap": 85,
+     "hp": 16920,
+     "exp": 28905,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 282,
+   "ten": "Gardevoir",
+   "he": [
+    10,
+    17
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/282.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Gardevoir (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 286,
+   "ten": "Breloom",
+   "he": [
+    4,
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/286.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 80,
+     "cap": 52,
+     "hp": 125078,
+     "exp": 6348,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 18,
+       "ten": "Goldenrod",
+       "soLuong": 23
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 288,
+   "ten": "Vigoroth",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/288.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 142,
+     "cap": 83,
+     "hp": 16540,
+     "exp": 26833,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 297,
+   "ten": "Hariyama",
+   "he": [
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/297.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 162,
+     "cap": 93,
+     "hp": 18470,
+     "exp": 36983,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 302,
+   "ten": "Sableye",
+   "he": [
+    15,
+    13
+   ],
+   "vaiTro": [
+    "quai",
+    "npc"
+   ],
+   "anh": "/pokemon/302.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 151,
+     "cap": 88,
+     "hp": 17510,
+     "exp": 31937,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Sableye",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 304,
+   "ten": "Aron",
+   "he": [
+    16,
+    12
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/304.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 146,
+     "cap": 85,
+     "hp": 16920,
+     "exp": 28905,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 305,
+   "ten": "Lairon",
+   "he": [
+    16,
+    12
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/305.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 156,
+     "cap": 90,
+     "hp": 17890,
+     "exp": 34000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 306,
+   "ten": "Aggron",
+   "he": [
+    16,
+    12
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/306.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 169,
+     "cap": 97,
+     "hp": 19240,
+     "exp": 41371,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 309,
+   "ten": "Electrike",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/309.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 140,
+     "cap": 81,
+     "hp": 16150,
+     "exp": 24909,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 310,
+   "ten": "Manectric",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/310.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 152,
+     "cap": 88,
+     "hp": 17510,
+     "exp": 31937,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 318,
+   "ten": "Carvanha",
+   "he": [
+    2,
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/318.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 144,
+     "cap": 84,
+     "hp": 16730,
+     "exp": 27850,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 319,
+   "ten": "Sharpedo",
+   "he": [
+    2,
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/319.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 56,
+     "cap": 76,
+     "hp": 680530,
+     "exp": 20000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 24,
+       "ten": "Olivine",
+       "soLuong": 14
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 321,
+   "ten": "Wailord",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/321.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 158,
+     "cap": 91,
+     "hp": 18080,
+     "exp": 34967,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 322,
+   "ten": "Numel",
+   "he": [
+    1,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/322.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 141,
+     "cap": 82,
+     "hp": 16350,
+     "exp": 25853,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 323,
+   "ten": "Camerupt",
+   "he": [
+    1,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/323.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 154,
+     "cap": 89,
+     "hp": 17710,
+     "exp": 32953,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 324,
+   "ten": "Torkoal",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "quai",
+    "npc"
+   ],
+   "anh": "/pokemon/324.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 17,
+     "cap": 13,
+     "hp": 5160,
+     "exp": 516,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 6,
+       "ten": "Celadon",
+       "soLuong": 26
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Torkoal",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 326,
+   "ten": "Grumpig",
+   "he": [
+    10
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/326.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 160,
+     "cap": 92,
+     "hp": 18280,
+     "exp": 35960,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 330,
+   "ten": "Flygon",
+   "he": [
+    8,
+    14
+   ],
+   "vaiTro": [
+    "quai",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/330.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 173,
+     "cap": 99,
+     "hp": 19640,
+     "exp": 43756,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 17
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 333,
+   "ten": "Swablu",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/333.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 143,
+     "cap": 83,
+     "hp": 16540,
+     "exp": 26833,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 334,
+   "ten": "Altaria",
+   "he": [
+    14,
+    9
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/334.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 164,
+     "cap": 94,
+     "hp": 18670,
+     "exp": 38034,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 335,
+   "ten": "Zangoose",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/335.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 159,
+     "cap": 91,
+     "hp": 18080,
+     "exp": 34967,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 336,
+   "ten": "Seviper",
+   "he": [
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/336.png",
+   "anhShiny": "/pokemon/336s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 47,
+     "cap": 48,
+     "hp": 100918,
+     "exp": 5540,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 113,
+       "ten": "Hang Tối",
+       "soLuong": 40
+      }
+     ],
+     "ghiChuNoi": ""
+    },
+    {
+     "id": 134,
+     "cap": 48,
+     "hp": 100918,
+     "exp": 5540,
+     "shiny": true,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 337,
+   "ten": "Lunatone",
+   "he": [
+    12,
+    10
+   ],
+   "vaiTro": [
+    "quai",
+    "pet"
+   ],
+   "anh": "/pokemon/337.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 149,
+     "cap": 87,
+     "hp": 17310,
+     "exp": 30954,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Lunatone đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 340,
+   "ten": "Whiscash",
+   "he": [
+    2,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/340.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 53,
+     "cap": 68,
+     "hp": 330530,
+     "exp": 12848,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 22,
+       "ten": "Tàu S.S. Anne",
+       "soLuong": 18
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 342,
+   "ten": "Crawdaunt",
+   "he": [
+    2,
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/342.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 35,
+     "cap": 36,
+     "hp": 46230,
+     "exp": 3500,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 11,
+       "ten": "Rừng Viridian",
+       "soLuong": 44
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 343,
+   "ten": "Baltoy",
+   "he": [
+    8,
+    10
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/343.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 148,
+     "cap": 86,
+     "hp": 17120,
+     "exp": 30000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 344,
+   "ten": "Claydol",
+   "he": [
+    8,
+    10
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/344.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 163,
+     "cap": 93,
+     "hp": 18470,
+     "exp": 36983,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 346,
+   "ten": "Cradily",
+   "he": [
+    12,
+    4
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/346.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 170,
+     "cap": 97,
+     "hp": 19240,
+     "exp": 41371,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 348,
+   "ten": "Armaldo",
+   "he": [
+    12,
+    11
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/348.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 171,
+     "cap": 98,
+     "hp": 19440,
+     "exp": 42547,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 352,
+   "ten": "Kecleon",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/352.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Kecleon tạp hoá",
+     "suKien": false
+    },
+    {
+     "ten": "Kecleon",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 353,
+   "ten": "Shuppet",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/353.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 114,
+     "cap": 1,
+     "hp": 1,
+     "exp": 1,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 354,
+   "ten": "Banette",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/354.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 161,
+     "cap": 92,
+     "hp": 18280,
+     "exp": 35960,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 355,
+   "ten": "Duskull",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/355.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 355,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 356,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 477,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 55,
+     "cap": 37,
+     "hp": 49878,
+     "exp": 3648,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 13,
+       "ten": "Núi Mặt Trăng",
+       "soLuong": 24
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 356,
+   "ten": "Dusclops",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/356.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 355,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 356,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 477,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 57,
+     "cap": 45,
+     "hp": 84870,
+     "exp": 4976,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 15,
+       "ten": "Cherrygrove",
+       "soLuong": 21
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 357,
+   "ten": "Tropius",
+   "he": [
+    4,
+    9
+   ],
+   "vaiTro": [
+    "quai",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/357.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 153,
+     "cap": 88,
+     "hp": 17510,
+     "exp": 31937,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 15
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 359,
+   "ten": "Absol",
+   "he": [
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/359.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 166,
+     "cap": 95,
+     "hp": 18870,
+     "exp": 39115,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 361,
+   "ten": "Snorunt",
+   "he": [
+    5
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/361.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 150,
+     "cap": 87,
+     "hp": 17310,
+     "exp": 30954,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 362,
+   "ten": "Glalie",
+   "he": [
+    5
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/362.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 165,
+     "cap": 94,
+     "hp": 18670,
+     "exp": 38034,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 363,
+   "ten": "Spheal",
+   "he": [
+    5,
+    2
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/363.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 155,
+     "cap": 89,
+     "hp": 17710,
+     "exp": 32953,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 365,
+   "ten": "Walrein",
+   "he": [
+    5,
+    2
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/365.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 172,
+     "cap": 98,
+     "hp": 19440,
+     "exp": 42547,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 370,
+   "ten": "Luvdisc",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/370.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Luvdisc đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 371,
+   "ten": "Bagon",
+   "he": [
+    14
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/371.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 157,
+     "cap": 90,
+     "hp": 17890,
+     "exp": 34000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 372,
+   "ten": "Shelgon",
+   "he": [
+    14
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/372.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 167,
+     "cap": 95,
+     "hp": 18870,
+     "exp": 39115,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 373,
+   "ten": "Salamence",
+   "he": [
+    14,
+    9
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/373.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 39,
+     "cap": 39,
+     "hp": 200000000,
+     "exp": 400000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Hang Salamence"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 375,
+   "ten": "Metang",
+   "he": [
+    16,
+    10
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/375.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 168,
+     "cap": 96,
+     "hp": 19050,
+     "exp": 40227,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 376,
+   "ten": "Metagross",
+   "he": [
+    16,
+    10
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/376.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 174,
+     "cap": 100,
+     "hp": 19830,
+     "exp": 45000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 382,
+   "ten": "Kyogre",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/382.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 129,
+     "cap": 1,
+     "hp": 1,
+     "exp": 0,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 383,
+   "ten": "Groudon",
+   "he": [
+    8
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/383.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 130,
+     "cap": 1,
+     "hp": 1,
+     "exp": 0,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 384,
+   "ten": "Rayquaza",
+   "he": [
+    14,
+    9
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/384.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 120,
+     "cap": 50,
+     "hp": 100000000,
+     "exp": 1000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 385,
+   "ten": "Jirachi",
+   "he": [
+    16,
+    10
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/385.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Jirachi đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 393,
+   "ten": "Piplup",
+   "he": [
+    2
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/393.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Piplup đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 399,
+   "ten": "Bidoof",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/399.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 873,
+     "ten": "Bidoof",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 401,
+   "ten": "Kricketot",
+   "he": [
+    11
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/401.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 401,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 402,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 71,
+     "cap": 41,
+     "hp": 66030,
+     "exp": 4280,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 14,
+       "ten": "Vùng Safari",
+       "soLuong": 20
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 402,
+   "ten": "Kricketune",
+   "he": [
+    11
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/402.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 401,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 402,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 31,
+     "cap": 33,
+     "hp": 37830,
+     "exp": 2290,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 11,
+       "ten": "Rừng Viridian",
+       "soLuong": 43
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 403,
+   "ten": "Shinx",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": null,
+   "anhShiny": "/pokemon/403s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 403,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 404,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 405,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 802,
+     "ten": "Shinx vàng",
+     "cap": 0,
+     "trung": false,
+     "shiny": true
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 404,
+   "ten": "Luxio",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/404.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 403,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 404,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 405,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 62,
+     "cap": 50,
+     "hp": 112590,
+     "exp": 5936,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 114,
+       "ten": "Hồ Phẫn Nộ",
+       "soLuong": 47
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 405,
+   "ten": "Luxray",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/405.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 403,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 404,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 405,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 137,
+     "cap": 84,
+     "hp": 5000000,
+     "exp": 54000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 28,
+       "ten": "Rừng Ilex",
+       "soLuong": 17
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 417,
+   "ten": "Pachirisu",
+   "he": [
+    3
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/417.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Pachirisu đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 727,
+     "ten": "Pachirisu",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 423,
+   "ten": "Gastrodon",
+   "he": [
+    2,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/423.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 49,
+     "cap": 72,
+     "hp": 460530,
+     "exp": 16000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 23,
+       "ten": "Azalea",
+       "soLuong": 22
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 428,
+   "ten": "Lopunny",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "boss",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/428.png",
+   "anhShiny": "/pokemon/428s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 113,
+     "cap": 1,
+     "hp": 200000000,
+     "exp": 1000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": true,
+     "nguon": "linh-thu",
+     "id": 6
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 436,
+   "ten": "Bronzor",
+   "he": [
+    16,
+    10
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/436.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 436,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 437,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 37,
+     "cap": 37,
+     "hp": 25000000,
+     "exp": 3800,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 437,
+   "ten": "Bronzong",
+   "he": [
+    16,
+    10
+   ],
+   "vaiTro": [
+    "boss",
+    "npc"
+   ],
+   "anh": "/pokemon/437.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 436,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 437,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 36,
+     "cap": 33,
+     "hp": 50000000,
+     "exp": 2290,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Bronzong thợ giáp",
+     "suKien": false
+    },
+    {
+     "ten": "Bronzong",
+     "suKien": false
+    }
+   ]
+  },
+  {
+   "dex": 448,
+   "ten": "Lucario",
+   "he": [
+    6,
+    16
+   ],
+   "vaiTro": [
+    "npc"
+   ],
+   "anh": "/pokemon/448.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Lucario (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 451,
+   "ten": "Skorupi",
+   "he": [
+    7,
+    11
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/451.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 16,
+     "cap": 15,
+     "hp": 6900,
+     "exp": 690,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 7,
+       "ten": "Saffron",
+       "soLuong": 68
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 453,
+   "ten": "Croagunk",
+   "he": [
+    7,
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/453.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 453,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 454,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 30,
+     "cap": 27,
+     "hp": 24060,
+     "exp": 1690,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 9,
+       "ten": "Cinnabar",
+       "soLuong": 24
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 454,
+   "ten": "Toxicroak",
+   "he": [
+    7,
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/454.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 453,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 454,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 69,
+     "cap": 65,
+     "hp": 228350,
+     "exp": 9416,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 460,
+   "ten": "Abomasnow",
+   "he": [
+    4,
+    5
+   ],
+   "vaiTro": [
+    "boss",
+    "npc"
+   ],
+   "anh": "/pokemon/460.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 90,
+     "cap": 40,
+     "hp": 150000000,
+     "exp": 2000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": [
+    {
+     "ten": "Abomasnow (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 470,
+   "ten": "Leafeon",
+   "he": [
+    4
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/470.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 471,
+   "ten": "Glaceon",
+   "he": [
+    5
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/471.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 473,
+   "ten": "Mamoswine",
+   "he": [
+    5,
+    8
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/473.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 221,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 473,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 18
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 477,
+   "ten": "Dusknoir",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/477.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 355,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 356,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 477,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 94,
+     "cap": 60,
+     "hp": 150000000,
+     "exp": 2000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 491,
+   "ten": "Darkrai",
+   "he": [
+    15
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/491.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 116,
+     "cap": 1,
+     "hp": 500000000,
+     "exp": 20000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Hang Darkrai"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 496,
+   "ten": "Servine",
+   "he": [
+    4
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/496.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 496,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 497,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 92,
+     "cap": 50,
+     "hp": 150000000,
+     "exp": 1000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Hang Serperior"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 497,
+   "ten": "Serperior",
+   "he": [
+    4
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/497.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 496,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 497,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 91,
+     "cap": 50,
+     "hp": 150000000,
+     "exp": 1000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Hang Serperior"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 498,
+   "ten": "Tepig",
+   "he": [
+    1
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/498.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 15,
+     "cap": 14,
+     "hp": 6000,
+     "exp": 600,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 6,
+       "ten": "Celadon",
+       "soLuong": 24
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 510,
+   "ten": "Liepard",
+   "he": [
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/510.png",
+   "anhShiny": "/pokemon/510s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 61,
+     "cap": 57,
+     "hp": 160078,
+     "exp": 7448,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    },
+    {
+     "id": 136,
+     "cap": 82,
+     "hp": 1000000,
+     "exp": 53000,
+     "shiny": true,
+     "boss": false,
+     "noi": [
+      {
+       "map": 28,
+       "ten": "Rừng Ilex",
+       "soLuong": 8
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 536,
+   "ten": "Palpitoad",
+   "he": [
+    2,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/536.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 536,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 537,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 68,
+     "cap": 42,
+     "hp": 70478,
+     "exp": 4448,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 14,
+       "ten": "Vùng Safari",
+       "soLuong": 13
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 537,
+   "ten": "Seismitoad",
+   "he": [
+    2,
+    8
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/537.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 536,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 537,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 67,
+     "cap": 63,
+     "hp": 209778,
+     "exp": 8900,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 543,
+   "ten": "Venipede",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/543.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 543,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 544,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 545,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 21,
+     "cap": 15,
+     "hp": 6900,
+     "exp": 690,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 8,
+       "ten": "Fuchsia",
+       "soLuong": 72
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 544,
+   "ten": "Whirlipede",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/544.png",
+   "anhShiny": "/pokemon/544s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 543,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 544,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 545,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 40,
+     "cap": 38,
+     "hp": 53678,
+     "exp": 3800,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 13,
+       "ten": "Núi Mặt Trăng",
+       "soLuong": 37
+      }
+     ],
+     "ghiChuNoi": ""
+    },
+    {
+     "id": 42,
+     "cap": 43,
+     "hp": 75098,
+     "exp": 4620,
+     "shiny": true,
+     "boss": false,
+     "noi": [
+      {
+       "map": 15,
+       "ten": "Cherrygrove",
+       "soLuong": 25
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 545,
+   "ten": "Scolipede",
+   "he": [
+    11,
+    7
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/545.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 543,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 544,
+      "dieuKien": "Dạng sau"
+     },
+     {
+      "dex": 545,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 41,
+     "cap": 49,
+     "hp": 106654,
+     "exp": 5736,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 114,
+       "ten": "Hồ Phẫn Nộ",
+       "soLuong": 27
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 552,
+   "ten": "Krokorok",
+   "he": [
+    8,
+    15
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/552.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 64,
+     "cap": 60,
+     "hp": 183830,
+     "exp": 8156,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 559,
+   "ten": "Scraggy",
+   "he": [
+    15,
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/559.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 559,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 560,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 34,
+     "cap": 35,
+     "hp": 43350,
+     "exp": 3000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 11,
+       "ten": "Rừng Viridian",
+       "soLuong": 40
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 560,
+   "ten": "Scrafty",
+   "he": [
+    15,
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/560.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 559,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 560,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 78,
+     "cap": 74,
+     "hp": 325454,
+     "exp": 11936,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 562,
+   "ten": "Yamask",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/562.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 84,
+     "cap": 40,
+     "hp": 5000,
+     "exp": 5000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 585,
+   "ten": "Deerling",
+   "he": [
+    0,
+    4
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/585.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 832,
+     "ten": "Deerling",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 596,
+   "ten": "Galvantula",
+   "he": [
+    11,
+    3
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/596.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 118,
+     "cap": 80,
+     "hp": 900530,
+     "exp": 32000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 26,
+       "ten": "Rừng Cổ",
+       "soLuong": 33
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 607,
+   "ten": "Litwick",
+   "he": [
+    13,
+    1
+   ],
+   "vaiTro": [
+    "quai",
+    "pet"
+   ],
+   "anh": "/pokemon/607.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 6,
+     "cap": 6,
+     "hp": 1200,
+     "exp": 120,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 4,
+       "ten": "Cerulean",
+       "soLuong": 60
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Litwick đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 615,
+   "ten": "Cryogonal",
+   "he": [
+    5
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/615.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 0,
+     "ten": "Cryogonal đi theo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 627,
+   "ten": "Rufflet",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/627.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 627,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 628,
+      "dieuKien": "Pet cấp 3"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 688,
+     "ten": "Trứng Rufflet",
+     "cap": 0,
+     "trung": true,
+     "shiny": false
+    },
+    {
+     "idItem": 709,
+     "ten": "Rufflet cấp 1",
+     "cap": 1,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 710,
+     "ten": "Rufflet cấp 2",
+     "cap": 2,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 628,
+   "ten": "Braviary",
+   "he": [
+    0,
+    9
+   ],
+   "vaiTro": [
+    "pet"
+   ],
+   "anh": "/pokemon/628.png",
+   "anhShiny": "/pokemon/628s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "pet",
+    "buoc": [
+     {
+      "dex": 627,
+      "dieuKien": "Trứng / cấp 1"
+     },
+     {
+      "dex": 628,
+      "dieuKien": "Pet cấp 3"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 711,
+     "ten": "Braviary cấp 3",
+     "cap": 3,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 712,
+     "ten": "Braviary cấp 4",
+     "cap": 4,
+     "trung": false,
+     "shiny": false
+    },
+    {
+     "idItem": 713,
+     "ten": "Braviary Shiny cấp 5",
+     "cap": 5,
+     "trung": false,
+     "shiny": true
+    }
+   ],
+   "npc": []
+  },
+  {
+   "dex": 637,
+   "ten": "Volcarona",
+   "he": [
+    11,
+    1
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/637.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 70,
+     "cap": 66,
+     "hp": 238030,
+     "exp": 9680,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 667,
+   "ten": "Litleo",
+   "he": [
+    1,
+    0
+   ],
+   "vaiTro": [
+    "quai",
+    "pet",
+    "npc"
+   ],
+   "anh": "/pokemon/667.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 63,
+     "cap": 40,
+     "hp": 61750,
+     "exp": 4116,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 14,
+       "ten": "Vùng Safari",
+       "soLuong": 12
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [
+    {
+     "idItem": 803,
+     "ten": "Litleo",
+     "cap": 0,
+     "trung": false,
+     "shiny": false
+    }
+   ],
+   "npc": [
+    {
+     "ten": "Litleo (NPC sự kiện)",
+     "suKien": true
+    }
+   ]
+  },
+  {
+   "dex": 681,
+   "ten": "Aegislash",
+   "he": [
+    16,
+    13
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/681.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 46,
+     "cap": 42,
+     "hp": 80000000,
+     "exp": 4448,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Sự kiện / boss thế giới"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 700,
+   "ten": "Sylveon",
+   "he": [
+    17
+   ],
+   "vaiTro": [
+    "khoi-dau"
+   ],
+   "anh": "/pokemon/700.png",
+   "anhShiny": null,
+   "giaiDoan": 2,
+   "dong": {
+    "class": 2,
+    "ten": "Dòng Eevee",
+    "dexDau": 133
+   },
+   "tienHoa": {
+    "kieu": "eevee",
+    "buoc": [
+     {
+      "dex": 133,
+      "dieuKien": "Khởi đầu"
+     }
+    ],
+    "nhanh": [
+     {
+      "dex": 134,
+      "dieuKien": "Đá Nước (từ cấp 25)"
+     },
+     {
+      "dex": 135,
+      "dieuKien": "Đá Sấm (từ cấp 25)"
+     },
+     {
+      "dex": 136,
+      "dieuKien": "Đá Lửa (từ cấp 25)"
+     },
+     {
+      "dex": 196,
+      "dieuKien": "Đá Mặt Trời (từ cấp 25)"
+     },
+     {
+      "dex": 197,
+      "dieuKien": "Đá Mặt Trăng (từ cấp 25)"
+     },
+     {
+      "dex": 470,
+      "dieuKien": "Đá Lá (từ cấp 25)"
+     },
+     {
+      "dex": 471,
+      "dieuKien": "Đá Băng (từ cấp 25)"
+     },
+     {
+      "dex": 700,
+      "dieuKien": "Ruy Băng Tiên (từ cấp 25)"
+     }
+    ]
+   },
+   "chieu": [
+    {
+     "so": 0,
+     "ten": "Húc",
+     "he": 0
+    },
+    {
+     "so": 1,
+     "ten": "Tấn công nhanh",
+     "he": 0
+    },
+    {
+     "so": 2,
+     "ten": "Cắn",
+     "he": 15
+    },
+    {
+     "so": 3,
+     "ten": "Sao băng",
+     "he": 0
+    },
+    {
+     "so": 4,
+     "ten": "Mong ước",
+     "he": 0
+    },
+    {
+     "so": 5,
+     "ten": "Nghỉ ngơi",
+     "he": 10
+    },
+    {
+     "so": 6,
+     "ten": "Phước lành hồi sinh",
+     "he": 0
+    },
+    {
+     "so": 7,
+     "ten": "Chia sẻ nỗi đau",
+     "he": 13
+    },
+    {
+     "so": 8,
+     "ten": "Đuôi sắt",
+     "he": 16
+    },
+    {
+     "so": 9,
+     "ten": "Bứt phá cuối cùng",
+     "he": 0
+    },
+    {
+     "so": 10,
+     "ten": "Tia phá hủy",
+     "he": 0
+    }
+   ],
+   "quai": [],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 709,
+   "ten": "Trevenant",
+   "he": [
+    13,
+    4
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/709.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 51,
+     "cap": 74,
+     "hp": 560530,
+     "exp": 18000,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 23,
+       "ten": "Azalea",
+       "soLuong": 23
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 711,
+   "ten": "Gourgeist",
+   "he": [
+    13,
+    4
+   ],
+   "vaiTro": [
+    "boss"
+   ],
+   "anh": "/pokemon/711.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 117,
+     "cap": 1,
+     "hp": 500000000,
+     "exp": 20000000,
+     "shiny": false,
+     "boss": true,
+     "noi": [],
+     "ghiChuNoi": "Hang Darkrai"
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 739,
+   "ten": "Crabrawler",
+   "he": [
+    6
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/739.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 65,
+     "cap": 58,
+     "hp": 172230,
+     "exp": 8400,
+     "shiny": false,
+     "boss": false,
+     "noi": [
+      {
+       "map": 19,
+       "ten": "Ecruteak",
+       "soLuong": 22
+      }
+     ],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 750,
+   "ten": "Mudsdale",
+   "he": [
+    8
+   ],
+   "vaiTro": [
+    "quai",
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/750.png",
+   "anhShiny": "/pokemon/750s.png",
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 75,
+     "cap": 71,
+     "hp": 290530,
+     "exp": 11060,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi vùng (trắng)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 107
+    },
+    {
+     "ten": "Thú cưỡi vùng (xanh)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 108
+    },
+    {
+     "ten": "Thú cưỡi vùng (đỏ)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 109
+    },
+    {
+     "ten": "Thú cưỡi vùng (xanh lá)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 110
+    },
+    {
+     "ten": "Thú cưỡi vùng (vàng)",
+     "shiny": false,
+     "nguon": "template",
+     "id": 111
+    },
+    {
+     "ten": "Thú cưỡi vùng (tím)",
+     "shiny": true,
+     "nguon": "template",
+     "id": 112
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 781,
+   "ten": "Dhelmise",
+   "he": [
+    13,
+    4
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/781.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [
+    {
+     "id": 79,
+     "cap": 75,
+     "hp": 337690,
+     "exp": 12236,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 831,
+   "ten": "Wooloo",
+   "he": [
+    0
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/831.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 9
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 896,
+   "ten": "Glastrier",
+   "he": [
+    5
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/896.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 20
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 897,
+   "ten": "Spectrier",
+   "he": [
+    13
+   ],
+   "vaiTro": [
+    "thu-cuoi"
+   ],
+   "anh": "/pokemon/897.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": null,
+   "chieu": null,
+   "quai": [],
+   "thuCuoi": [
+    {
+     "ten": "Thú cưỡi",
+     "shiny": false,
+     "nguon": "linh-thu",
+     "id": 12
+    }
+   ],
+   "pet": [],
+   "npc": []
+  },
+  {
+   "dex": 901,
+   "ten": "Ursaluna",
+   "he": [
+    8,
+    0
+   ],
+   "vaiTro": [
+    "quai"
+   ],
+   "anh": "/pokemon/901.png",
+   "anhShiny": null,
+   "giaiDoan": 0,
+   "dong": null,
+   "tienHoa": {
+    "kieu": "ho",
+    "buoc": [
+     {
+      "dex": 217,
+      "dieuKien": "Dạng đầu"
+     },
+     {
+      "dex": 901,
+      "dieuKien": "Dạng sau"
+     }
+    ],
+    "nhanh": []
+   },
+   "chieu": null,
+   "quai": [
+    {
+     "id": 135,
+     "cap": 90,
+     "hp": 2000530,
+     "exp": 75000,
+     "shiny": false,
+     "boss": false,
+     "noi": [],
+     "ghiChuNoi": ""
+    }
+   ],
+   "thuCuoi": [],
+   "pet": [],
+   "npc": []
+  }
+ ]
+}

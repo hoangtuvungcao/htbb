@@ -1,0 +1,4 @@
+# du lieu game nhi phan (ten *.sh, *.type... khong phai van ban) va MANIFEST: giu nguyen tung byte
+res/** -text
+MANIFEST.MF -text
+*.jar binary

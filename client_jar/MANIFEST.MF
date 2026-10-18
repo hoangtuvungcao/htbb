@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+MIDlet-Vendor: TeaM
+MIDlet-Version: 1.5.9
+MIDlet-1: Huyen Thoai Bao Boi,/icon.png,game.GameMidlet
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-Name: Huyen Thoai Bao Boi
+MicroEdition-Profile: MIDP-2.0
+

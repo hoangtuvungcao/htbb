@@ -1,0 +1,101 @@
+# Build IPA iOS cho pc (chưa ký - ký bằng Sideloadly / AltStore / Apple Developer).
+# Bước 1 (Ubuntu, tính phút x1): Unity xuất project Xcode qua GameCI.
+# Bước 2 (macOS, tính phút x10 với repo private): xcodebuild -> .ipa.
+# Cần secrets: UNITY_LICENSE (nội dung Unity_lic.ulf), UNITY_EMAIL, UNITY_PASSWORD.
+name: Build iOS (pc/)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Phiên bản hiển thị (CFBundleShortVersionString)"
+        default: "1.0"
+      build_number:
+        description: "Số build (CFBundleVersion)"
+        default: "1"
+
+env:
+  PROJECT_PATH: pc
+  UNITY_VERSION: 6000.5.9f1
+
+jobs:
+  xcode:
+    name: Xuất project Xcode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Dọn ổ đĩa (image Unity iOS ~6 GB)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/cache@v6
+        with:
+          path: ${{ env.PROJECT_PATH }}/Library
+          key: Library-iOS-${{ hashFiles(format('{0}/Assets/**', env.PROJECT_PATH), format('{0}/Packages/**', env.PROJECT_PATH), format('{0}/ProjectSettings/**', env.PROJECT_PATH)) }}
+          restore-keys: Library-iOS-
+
+      - uses: game-ci/unity-builder@v5
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          HTBB_VERSION: ${{ inputs.version }}
+          HTBB_VERSION_CODE: ${{ inputs.build_number }}
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: iOS
+          buildMethod: BuildCli.iOS
+          buildName: HTBB276
+          buildsPath: build
+
+      # tar giữ quyền thực thi / symlink của project Xcode
+      - name: Đóng gói project Xcode
+        run: sudo tar -czf xcode.tgz -C build/iOS/HTBB276 .
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: xcode-project
+          path: xcode.tgz
+          retention-days: 1
+
+  ipa:
+    name: Biên dịch IPA
+    needs: xcode
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: xcode-project
+
+      - name: Giải nén
+        run: mkdir xcode && tar -xzf xcode.tgz -C xcode
+
+      - name: xcodebuild (không ký)
+        working-directory: xcode
+        run: |
+          xcodebuild -project Unity-iPhone.xcodeproj -scheme Unity-iPhone \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath ../dd \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM="" \
+            build | tail -n 200
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Tạo .ipa
+        run: |
+          APP=$(find dd/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -n 1)
+          test -n "$APP"
+          mkdir Payload && cp -R "$APP" Payload/
+          zip -qry "HTBB276-NQSH-H2-${{ inputs.version }}-unsigned.ipa" Payload
+          ls -la *.ipa
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: HTBB276-NQSH-H2-ipa
+          path: "*.ipa"
+          retention-days: 14

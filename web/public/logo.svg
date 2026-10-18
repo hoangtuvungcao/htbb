@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" role="img" aria-label="Huyền Thoại Bảo Bối">
+  <!-- Wordmark gốc của dự án (không dùng font/hình logo Pokémon chính thức).
+       Chữ là <text>: hiển thị bằng font hệ thống khi mở file riêng; trên website dùng
+       component SiteLogo (font Baloo 2). Đổi tên site thì sửa tay ở đây. -->
+  <g transform="translate(8 8)">
+    <circle cx="42" cy="42" r="38" fill="#fff" stroke="#1b2233" stroke-width="6"/>
+    <path d="M4 42a38 38 0 0 1 76 0Z" fill="#e3350d" stroke="#1b2233" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M14 28a31 31 0 0 1 18-16" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+    <path d="M4 42h76" stroke="#1b2233" stroke-width="7"/>
+    <circle cx="42" cy="42" r="12" fill="#fff" stroke="#1b2233" stroke-width="6"/>
+  </g>
+  <g font-family="'Baloo 2','Arial Rounded MT Bold','Nunito',Arial,sans-serif" font-weight="800" paint-order="stroke fill" stroke-linejoin="round">
+    <text x="104" y="42" font-size="30" fill="#ffcb05" stroke="#22508f" stroke-width="7">Huyền Thoại</text>
+    <text x="104" y="86" font-size="40" fill="#ffcb05" stroke="#22508f" stroke-width="8">Bảo Bối</text>
+  </g>
+</svg>
