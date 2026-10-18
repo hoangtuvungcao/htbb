@@ -16,7 +16,7 @@
 #   - Eclipse Temurin 21 JRE x64 Windows + Linux (adoptium.net, GPLv2 + Classpath Exception): mã băm SHA-256 lấy từ
 #     API Adoptium, lệch là DỪNG. Ghim phiên bản bằng JRE_BAN (mặc định 21.0.12.1+1).
 #   - Inno Setup 6.7.3 (miễn phí, jrsoftware.org, SHA-256 kiểm theo GitHub release) cài vào WINEPREFIX riêng out/cong_cu/wine nếu có wine.
-# Dùng tệp có sẵn: LAUNCH4J_DIR=..., JRE_WIN_ZIP=..., JRE_LINUX_TGZ=..., ISCC=... (đường dẫn ISCC.exe trong wine).
+# Dùng tệp có sẵn: LAUNCH4J_DIR=..., JRE_WIN_ZIP=..., JRE_LINUX_TGZ=..., WINEPREFIX=... + ISCC=... (đường dẫn ISCC.exe trong wine).
 #
 # Trên Windows (không có Linux): xem README.md mục "Windows" (jpackage --type exe/msi + WiX, hoặc Launch4j Windows).
 set -e
@@ -137,7 +137,8 @@ echo "OK $W/HTBB.exe ($(wc -c < "$W/HTBB.exe") byte)"
 
 # ---- 5. thư mục chơi Windows: jre\ + dữ liệu + giấy phép ----
 rm -rf "$GOI/tam_jre" && mkdir -p "$GOI/tam_jre"
-(cd "$GOI/tam_jre" && unzip -q "$GOC/$JRE_WIN_ZIP")
+case "$JRE_WIN_ZIP" in /*) JW=$JRE_WIN_ZIP ;; *) JW=$GOC/$JRE_WIN_ZIP ;; esac   # JRE_WIN_ZIP tuyệt đối hoặc tương đối client_pc/
+(cd "$GOI/tam_jre" && unzip -q "$JW")
 mv "$GOI"/tam_jre/*/ "$W/jre"
 rm -rf "$GOI/tam_jre"
 cp -r out/am "$W/am"
@@ -169,7 +170,7 @@ echo "OK $ZIP ($(wc -c < "$ZIP") byte)"
 
 # ---- 6. bộ cài Inno Setup (wine) ----
 if [ "${CAI_DAT:-1}" = 1 ] && command -v wine >/dev/null 2>&1; then
-    export WINEPREFIX="$GOC/$CC/wine"
+    export WINEPREFIX="${WINEPREFIX:-$GOC/$CC/wine}"   # WINEPREFIX có sẵn (đã cài Inno Setup) thì dùng lại
     export WINEDEBUG=-all
     if [ -z "$ISCC" ]; then
         ISCC="$WINEPREFIX/drive_c/InnoSetup6/ISCC.exe"

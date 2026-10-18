@@ -2,7 +2,7 @@
 # Build APK Huyền Thoại Bảo Bối (Pokémon) - code bản jar (client_jar/src + client_jar/shared/mod) chạy trên lớp MIDP Android.
 #   sh build-pokemon.sh                         -> out/HTBB-android-thu.apk   (debug, server thử 10.0.2.2:19129)
 #   MAY_CHU=192.168.1.5:19129 sh build-pokemon.sh  -> debug nối server khác (máy thật trong mạng LAN...)
-#   KIEU=release [BAN=900] [MAY_CHU=host:cong] [KEY_DIR=...] sh build-pokemon.sh -> out/HTBB-android-900.apk
+#   KIEU=release [BAN=900] [MAY_CHU=host:cong] [KEY_DIR=... | HTBB_KEY_PROPERTIES=<tệp>] sh build-pokemon.sh -> out/HTBB-android-900.apk
 #       release BẮT BUỘC có máy chủ: MAY_CHU / MAY_CHU_CHINH hoặc MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf
 #       (thiếu là dừng). BAN mặc định = BAN= trong ../tools/phat-hanh/phien_ban.conf (versionName = PHIEN_BAN=).
 # Cần: JDK 17/21 (JAVA_HOME), Android SDK (ANDROID_HOME, mặc định ~/Android/Sdk), python3.
@@ -21,6 +21,7 @@ fi
 THAM="-PhtbbBan=$BAN"
 [ -n "$MAY_CHU" ] && THAM="$THAM -PmayChu=$MAY_CHU"
 [ -n "$KEY_DIR" ] && THAM="$THAM -PhtbbKeyDir=$KEY_DIR"
+# HTBB_KEY_PROPERTIES (tệp storeFile/storePassword/keyAlias/keyPassword ngoài repo): Gradle đọc thẳng biến môi trường
 mkdir -p out
 if [ "$KIEU" = release ]; then
     sh ./gradlew -q --no-daemon :pokemon:assembleRelease $THAM

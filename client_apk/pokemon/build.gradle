@@ -1,6 +1,6 @@
 // APK Huyền Thoại Bảo Bối (Pokémon) = CODE BẢN JAR J2ME chạy trên lớp tương thích MIDP cho Android.
 //   gradlew :pokemon:assembleDebug   [-PmayChu=host:cong] [-PhtbbBan=N]
-//   gradlew :pokemon:assembleRelease [-PmayChu=host:cong] [-PhtbbKeyDir=...]
+//   gradlew :pokemon:assembleRelease [-PmayChu=host:cong] [-PhtbbKeyDir=... | -PhtbbKeyProps=<tệp .properties>]
 //
 // - Code game: ../../client_jar/src + ../../client_jar/shared/mod, chép + vá tối thiểu bởi ../port-j2me.py lúc build (một nguồn
 //   duy nhất với bản jar; không sửa tay code sinh ra trong build/generated).
@@ -31,9 +31,28 @@ def ban = (project.findProperty('htbbBan') ?: docConf('phien_ban.conf', 'BAN') ?
 def phienBan = docConf('phien_ban.conf', 'PHIEN_BAN') ?: "1.$ban"
 def mayChu = project.findProperty('mayChu') ?: System.getenv('MAY_CHU')
 def mayChuRelease = mayChu ?: System.getenv('MAY_CHU_CHINH') ?: docConf('may_chu.conf', 'MAY_CHU_CHINH')
+// Khoá ký release (luôn NGOÀI repo), một trong hai:
+//   A) -PhtbbKeyProps=<tệp> hoặc biến HTBB_KEY_PROPERTIES=<tệp>: storeFile= (tuyệt đối hoặc tương đối với thư mục tệp),
+//      storePassword=, keyAlias=, keyPassword= (thiếu = storePassword)
+//   B) -PhtbbKeyDir / KEY_DIR chứa key.properties: keystore=, alias=, password=
 def keyDir = project.findProperty('htbbKeyDir') ?: System.getenv('KEY_DIR')
+def keyProps = project.findProperty('htbbKeyProps') ?: System.getenv('HTBB_KEY_PROPERTIES')
 def khoa = new Properties()
-if (keyDir && file("$keyDir/key.properties").exists()) {
+if (keyProps) {
+    def tk = new File(keyProps.toString())
+    if (!tk.isFile()) throw new GradleException("HTBB_KEY_PROPERTIES / htbbKeyProps: khong thay tep $tk")
+    if (tk.canonicalPath.startsWith(rootProject.file('..').canonicalPath + File.separator))
+        throw new GradleException("Tep khoa $tk nam TRONG repo - chuyen ra ngoai repo")
+    def k = new Properties()
+    tk.withInputStream { k.load(it) }
+    def sf = new File(k.getProperty('storeFile', ''))
+    if (!sf.isAbsolute()) sf = new File(tk.parentFile, sf.path)
+    keyDir = sf.parentFile.absolutePath
+    khoa.setProperty('keystore', sf.name)
+    khoa.setProperty('password', k.getProperty('storePassword', ''))
+    khoa.setProperty('keyPassword', k.getProperty('keyPassword') ?: k.getProperty('storePassword', ''))
+    khoa.setProperty('alias', k.getProperty('keyAlias', ''))
+} else if (keyDir && file("$keyDir/key.properties").exists()) {
     file("$keyDir/key.properties").withInputStream { khoa.load(it) }
 }
 def j2me = rootProject.file('../client_jar')
@@ -59,7 +78,7 @@ android {
                 storeFile file("$keyDir/${khoa.getProperty('keystore')}")
                 storePassword khoa.getProperty('password')
                 keyAlias khoa.getProperty('alias')
-                keyPassword khoa.getProperty('password')
+                keyPassword khoa.getProperty('keyPassword') ?: khoa.getProperty('password')
             }
         }
     }
