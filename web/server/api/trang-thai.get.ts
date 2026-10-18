@@ -1,7 +1,8 @@
 /**
  * Trạng thái máy chủ công khai cho trang chủ: số người online + máy chủ còn sống không.
  *
- * Đọc bảng `tob_vi_tri_online` (game server xoá & ghi lại mỗi 30 giây — xem
+ * Ưu tiên nhịp tim `tob_chi_so_may_chu` (game ghi mỗi 30 giây, kể cả khi 0 người online);
+ * dự phòng: bảng `tob_vi_tri_online` (game server xoá & ghi lại mỗi 30 giây — xem
  * server/api/admin/online.get.ts). Bảng được ghi trong 2 phút gần đây => máy chủ đang chạy.
  * Không đọc được CSDL => `song: null` (website vẫn hiện "chưa rõ" thay vì lỗi).
  * Kết quả giữ 30 giây trong bộ nhớ để không truy vấn CSDL mỗi lượt xem trang.
@@ -24,6 +25,23 @@ export default defineEventHandler(async (): Promise<TrangThai> => {
     cache = { luc: Date.now(), kq }
     return kq
   }
+  // Nhịp tim tob_chi_so_may_chu (server ghi mỗi 30 giây kể cả khi không ai online).
+  // Tuổi mẫu tính trong CSDL để không lệch múi giờ giữa MariaDB và Node.
+  try {
+    if (await coBang(dbGame(), 'tob_chi_so_may_chu')) {
+      const r = await q1<{ cach: number | null, nv: number, luc: string | Date | null }>(
+        dbGame(),
+        'SELECT UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(thoi_gian) AS cach, nhan_vat AS nv, thoi_gian AS luc FROM `tob_chi_so_may_chu` ORDER BY id DESC LIMIT 1',
+      )
+      if (r && r.cach != null) {
+        const song = Number(r.cach) < 120
+        kq = { song, online: song ? Math.max(0, Number(r.nv ?? 0)) : 0, capNhat: r.luc ? new Date(Date.now() - Number(r.cach) * 1000).toISOString() : null }
+        cache = { luc: Date.now(), kq }
+        return kq
+      }
+    }
+  }
+  catch { /* thử nguồn cũ bên dưới */ }
   try {
     const r = await q1<{ n: number, moi: string | Date | null }>(
       dbGame(),
