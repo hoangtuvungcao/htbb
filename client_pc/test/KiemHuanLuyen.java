@@ -6,8 +6,8 @@ import java.io.File;
 import javax.microedition.lcdui.NenPc;
 
 /**
- * KIỂM HỌC CHIÊU THEO LOÀI + ĐIỂM HUẤN LUYỆN (0.9.7, game.pokemon.HocChieu / BangHuanLuyen, máy chủ real.HocChieuGame):
- * dựng gói -120 giả (bảng chiêu dòng Charmander + Điểm huấn luyện) qua đúng bộ đọc của client, rồi
+ * KIỂM HỌC CHIÊU THEO LOÀI + ĐIỂM HUẤN LUYỆN (0.9.8, game.pokemon.HocChieu / BangHuanLuyen, máy chủ real.HocChieuGame):
+ * dựng gói -122 giả (bảng chiêu dòng Charmander + Điểm huấn luyện) qua đúng bộ đọc của client, rồi
  * <ul>
  *   <li>trạng thái từng ô theo loài (Charmeleon cấp 24): đã học / tự học cấp N / NPC khi tiến hoá, lý do NPC chưa dạy;</li>
  *   <li>nút tab Chỉ số thành "Huấn luyện", chấm đỏ khi còn điểm chưa phân bổ và tắt khi hết (ChamMoi DIEM_TN);</li>
@@ -240,7 +240,7 @@ public class KiemHuanLuyen {
         game.pokemon.VungCham.MIN = 16;
         game.pokemon.VungCham.CACH = 4;
 
-        // ---------------- máy chủ cũ (không gói -120): giữ "Tiềm năng"
+        // ---------------- máy chủ cũ (không gói -122): giữ "Tiềm năng"
         game.pokemon.HocChieu.xoa();
         kiem(!game.pokemon.HocChieu.batHL && !game.pokemon.HocChieu.dung(0), "máy chủ cũ: không bật học theo loài / Điểm huấn luyện");
         kiem("Cào".equals(game.pokemon.HocChieu.tenChieu(0, 0)), "máy chủ cũ: tên chiêu theo PokeChieu");

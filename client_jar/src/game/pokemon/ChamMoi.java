@@ -65,7 +65,7 @@ public final class ChamMoi {
                 case THU:
                     return Math.max(0, game.render.screen.MessageScr.nMSG);
                 case DIEM_TN:
-                    // 0.9.7: Điểm huấn luyện chưa phân bổ (máy chủ bật), không thì điểm tiềm năng cũ
+                    // 0.9.8: Điểm huấn luyện chưa phân bổ (máy chủ bật), không thì điểm tiềm năng cũ
                     return m == null ? 0 : HocChieu.batHL ? HocChieu.conLai() : Math.max(0, m.basePointLeft);
                 case DIEM_KN:
                     return m == null ? 0 : Math.max(0, m.skillPointLeft);

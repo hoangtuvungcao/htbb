@@ -8,7 +8,7 @@ import java.io.DataInputStream;
 import network.Message;
 
 /**
- * HỌC CHIÊU THEO LOÀI + ĐIỂM HUẤN LUYỆN (0.9.7, máy chủ real.HocChieuGame). Lệnh -120 (server chỉ gửi cho bản >= 907):
+ * HỌC CHIÊU THEO LOÀI + ĐIỂM HUẤN LUYỆN (0.9.8, máy chủ real.HocChieuGame). Lệnh -122 (server chỉ gửi cho bản >= 908):
  *
  * <pre>
  * S->C byte 0 BẢNG CHIÊU: short dex hiện tại, byte dòng, byte số ô, byte n, n x {byte ô, short loài, UTF tên loài,
@@ -20,10 +20,10 @@ import network.Message;
  * </pre>
  *
  * Cấp chiêu (Char.skillLevelLearnt, gói 3 như cũ): -1 = học ở NPC, 0 = chưa học (tự học khi đủ cấp), 1..9 = đã học.
- * Máy chủ cũ không gửi -120: mọi hàm trả "chưa có" và giao diện giữ luật cũ.
+ * Máy chủ cũ không gửi -122: mọi hàm trả "chưa có" và giao diện giữ luật cũ.
  */
 public final class HocChieu {
-    public static final int LENH = -120;
+    public static final int LENH = -122;
     public static final int NGUON_CAP = 0, NGUON_NPC = 1;
 
     /** đã nhận bảng chiêu theo loài */
@@ -60,7 +60,7 @@ public final class HocChieu {
 
     // ---------------------------------------------------------------- mạng
 
-    /** Gói -120 (gọi ở đầu MessageHandler). true = đã xử lý. */
+    /** Gói -122 (gọi ở đầu MessageHandler). true = đã xử lý. */
     public static boolean nhan(Message msg) {
         if (msg == null || msg.command != LENH) {
             return false;

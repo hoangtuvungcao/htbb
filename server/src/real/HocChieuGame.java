@@ -29,16 +29,16 @@ import java.util.concurrent.ConcurrentHashMap;
  *       loai (go chieu loai chua hoc duoc, hoan diem ky nang tu dong, hoan xu chieu NPC mot lan);</li>
  *   <li>len cap / tien hoa: tu hoc chieu moi + the "X da hoc Y!", +Diem huan luyen;</li>
  *   <li>NPC Blaziken (lenh 80): kiem dung loai + du cap; cong diem ky nang (lenh 75): chi nang chieu da hoc;</li>
- *   <li>lenh -120 (client ban &gt;= {@link #BAN}): bang chieu theo loai, trang thai / phan bo / tay Diem huan luyen.</li>
+ *   <li>lenh -122 (client ban &gt;= {@link #BAN}): bang chieu theo loai, trang thai / phan bo / tay Diem huan luyen.</li>
  * </ul>
  * Tat (khoa chieu.learnset.bat / huan_luyen.bat = 0, sv.lau_dai = 0, hoac CSDL chua co du lieu): luat cu nguyen ven.
  */
 public final class HocChieuGame {
 
     /** Lenh rieng (grep server + client truoc khi doi). */
-    public static final int LENH = -120;
-    /** Ban client dau tien biet lenh -120 (0.9.7). Client cu (906) chi nhan goi cu. */
-    public static final int BAN = 907;
+    public static final int LENH = -122;
+    /** Ban client dau tien biet lenh -122 (0.9.8). Client cu (906) chi nhan goi cu. */
+    public static final int BAN = 908;
 
     /** C -&gt; S. */
     static final int XIN = 0, PHAN_BO = 1, TAY = 2;
@@ -680,7 +680,7 @@ public final class HocChieuGame {
         }
     }
 
-    // ================================================================== lenh -120
+    // ================================================================== lenh -122
 
     public static void xuLy(final Char p, final Message msg) {
         if (!laNguoi(p)) {
@@ -714,7 +714,7 @@ public final class HocChieuGame {
                     break;
             }
         } catch (final Throwable t) {
-            System.out.println("[HOC CHIEU] LOI lenh -120 " + p.charname + ": " + t);
+            System.out.println("[HOC CHIEU] LOI lenh -122 " + p.charname + ": " + t);
         }
     }
 

@@ -113,7 +113,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.DungDo.nhan(msg)) {
             return;
         }
-        // pokemon: lenh -120 hoc chieu theo loai + diem huan luyen (HocChieu, server >= 0.9.7)
+        // pokemon: lenh -122 hoc chieu theo loai + diem huan luyen (HocChieu, server >= 0.9.8)
         if (game.pokemon.HocChieu.nhan(msg)) {
             return;
         }

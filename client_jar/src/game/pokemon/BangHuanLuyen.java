@@ -6,10 +6,10 @@ import game.render.screen.Dialog;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * 0.9.7: bảng ĐIỂM HUẤN LUYỆN (thay bảng cộng điểm tiềm năng tự do khi máy chủ bật - HocChieu.batHL). Mỗi dòng chỉ số
+ * 0.9.8: bảng ĐIỂM HUẤN LUYỆN (thay bảng cộng điểm tiềm năng tự do khi máy chủ bật - HocChieu.batHL). Mỗi dòng chỉ số
  * (HP, Tấn công, Phòng thủ, PP - máy chủ gửi): điểm / trần, hiệu quả "+12,0%" và mức tăng của điểm kế tiếp (giảm dần
- * sau ngưỡng), − / + chọn điểm định cộng; "Xác nhận" gửi -120 loại 1; "Tẩy điểm" (lần đầu miễn phí, sau đó giá xu, chờ)
- * hỏi lại rồi gửi -120 loại 2. Máy chủ kiểm trần / tổng, trả thông báo + gói mới.
+ * sau ngưỡng), − / + chọn điểm định cộng; "Xác nhận" gửi -122 loại 1; "Tẩy điểm" (lần đầu miễn phí, sau đó giá xu, chờ)
+ * hỏi lại rồi gửi -122 loại 2. Máy chủ kiểm trần / tổng, trả thông báo + gói mới.
  */
 public final class BangHuanLuyen extends Dialog {
     static BangHuanLuyen me;

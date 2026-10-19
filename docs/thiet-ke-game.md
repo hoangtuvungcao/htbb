@@ -563,8 +563,8 @@ nào đọc; chúng bị lọc khỏi mô tả món (`ChiSoTrangBiGame.locHienTh
   của cấp; điểm đã cộng được quy đổi theo đúng tỉ lệ cách cộng cũ (Sức mạnh / Tinh thần / Khéo léo của dòng → Tấn công,
   Khéo léo → Phòng thủ, Sức khoẻ → HP, Tinh thần → PP), trần 80 mỗi dòng; May mắn, điểm chưa cộng, phần vượt trần → điểm
   chưa dùng; kèm 1 lần tẩy miễn phí. Hộp thoại "Thay đổi hệ thống chiêu và chỉ số" hiện một lần khi vào game.
-- Client 0.9.7 (gói -120): nút "Huấn luyện" (tab Chỉ số) với chấm đỏ khi còn điểm, bảng phân bổ (−/+, hiệu ứng %, điểm kế
-  tiếp giảm dần), nút Tẩy điểm (miễn phí / giá / thời gian chờ). Client 0.9.6 không có bảng phân bổ: điểm để dành, chỉ số
+- Client 0.9.8 (gói -122, BAN ≥ 908): nút "Huấn luyện" (tab Chỉ số) với chấm đỏ khi còn điểm, bảng phân bổ (−/+, hiệu ứng %, điểm kế
+  tiếp giảm dần), nút Tẩy điểm (miễn phí / giá / thời gian chờ). Client ≤ 0.9.7 không có bảng phân bổ: điểm để dành, chỉ số
   gốc mới vẫn áp dụng, lệnh cộng điểm tiềm năng cũ nhận thông báo.
 
 ### 4.5 `GioiHanChiSo`: trần, giảm dần, sàn sát thương
@@ -1322,6 +1322,6 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
-| -120 | Học chiêu + Điểm huấn luyện | hai chiều | **chỉ client BAN ≥ 907** (`real.HocChieuGame`). C→S byte 0 xin / 1 phân bổ `u8 n, n × (i8 id, i16 thêm)` / 2 tẩy điểm. S→C byte 0 bảng chiêu cả dòng: `i16 dex, i8 dòng, i8 số ô, u8 n, n × (i8 ô, i16 loài, UTF tên loài, UTF tên chiêu, i8 hệ, i8 nguồn 0 cấp / 1 NPC, i8 cấp học, i32 giá xu)`; byte 1 Điểm huấn luyện: `i8 bật`, rồi `i16 tổng, i16 đã dùng, u8 n, n × (i8 id, UTF tên, UTF mô tả, i16 điểm, i16 trần, i16 ngưỡng, i16 ‰ trước, i16 ‰ sau), i64 giá tẩy, i32 giây chờ, i8 miễn phí, i8 điểm / cấp, i8 huy hiệu, i8 trần thưởng` (mục 2.3, 4.4b) |
+| -122 | Học chiêu + Điểm huấn luyện | hai chiều | **chỉ client BAN ≥ 908** (`real.HocChieuGame`). C→S byte 0 xin / 1 phân bổ `u8 n, n × (i8 id, i16 thêm)` / 2 tẩy điểm. S→C byte 0 bảng chiêu cả dòng: `i16 dex, i8 dòng, i8 số ô, u8 n, n × (i8 ô, i16 loài, UTF tên loài, UTF tên chiêu, i8 hệ, i8 nguồn 0 cấp / 1 NPC, i8 cấp học, i32 giá xu)`; byte 1 Điểm huấn luyện: `i8 bật`, rồi `i16 tổng, i16 đã dùng, u8 n, n × (i8 id, UTF tên, UTF mô tả, i16 điểm, i16 trần, i16 ngưỡng, i16 ‰ trước, i16 ‰ sau), i64 giá tẩy, i32 giây chờ, i8 miễn phí, i8 điểm / cấp, i8 huy hiệu, i8 trần thưởng` (mục 2.3, 4.4b) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).

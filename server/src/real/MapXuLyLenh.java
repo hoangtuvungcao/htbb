@@ -544,7 +544,7 @@ class MapXuLyLenh {
             case -101: // Guc / hoi sinh (com.htbb.pokemon.HoiSinh): xin / chon trong hop thoai
                 HoiSinhGame.xuLy(player, message);
                 break;
-            case HocChieuGame.LENH: // -120 hoc chieu theo loai + Diem huan luyen (client >= 907)
+            case HocChieuGame.LENH: // -122 hoc chieu theo loai + Diem huan luyen (client >= 908)
                 HocChieuGame.xuLy(player, message);
                 break;
             case -71:

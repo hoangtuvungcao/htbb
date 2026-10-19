@@ -49,7 +49,7 @@ public final class ThanhNhanh {
         }
         daDem = n;
         daTen = mc.name;
-        // 0.9.7: chiêu bị gỡ (loài chưa học được - máy chủ chuyển đổi học chiêu theo loài) -> chiêu gần nhất còn học
+        // 0.9.8: chiêu bị gỡ (loài chưa học được - máy chủ chuyển đổi học chiêu theo loài) -> chiêu gần nhất còn học
         for (int b = 0; b < MainChar.quickSlot.length; b++) {
             thayChieuMat(MainChar.quickSlot[b], Canvas_lop());
         }

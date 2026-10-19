@@ -675,7 +675,7 @@ public final class KiemHocChieu {
                 db.contains("INSERT IGNORE INTO tob_chuyen_doi_can_bang") && db.contains("conn.commit()") && db.contains("conn.rollback()"));
         Kiem.dung("hoan xu: luu nhan vat TRUOC khi danh dau da_hoan", g.indexOf("saveCharAuto(p);") < g.indexOf("\"da_hoan\")")
                 && g.indexOf("saveCharAuto(p);") > 0);
-        Kiem.dung("goi -120 chi gui client >= 907", g.contains("BAN = 907") && g.contains("banClient >= BAN"));
+        Kiem.dung("goi -122 chi gui client >= 908", g.contains("BAN = 908") && g.contains("banClient >= BAN"));
         final String xl = doc("src/real/MapXuLyLenh.java");
         Kiem.bang("hai khoi len cap dung HocChieuGame.congLenCap", 2, dem(xl, "HocChieuGame.congLenCap(p, newlevel)"));
         Kiem.sai("MapXuLyLenh khong con tu cong 5 diem tiem nang", xl.contains("p.basepoint + 5 * (newlevel - p.lastLV)"));
@@ -691,7 +691,7 @@ public final class KiemHocChieu {
         Kiem.sai("chuoi chieu tao nhan vat khong con lech mot o (mainSkill[k - 7])", nv.contains("mainSkill[k - 7]"));
         Kiem.dung("idSkill[dong][0] la o NPC dau (6 / Eevee 8) - Learnset.chuanHoa oLoi",
                 Arrays.deepToString(idSkill()).equals("[[6, 7, 8], [6, 7, 8], [8, 9, 10], [6, 7, 8], [6, 7, 8]]"));
-        Kiem.bang("so lenh -120 khong trung lenh khac cua server", 1, dem(doc("src/real/MapXuLyLenh.java"), "case HocChieuGame.LENH"));
+        Kiem.bang("so lenh -122 khong trung lenh khac cua server", 1, dem(doc("src/real/MapXuLyLenh.java"), "case HocChieuGame.LENH"));
     }
 
     /** Mot dong CSV (co ngoac kep). */

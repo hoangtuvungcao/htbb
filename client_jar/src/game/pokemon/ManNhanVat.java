@@ -1427,7 +1427,7 @@ public final class ManNhanVat extends Screen {
         final MainChar m = mc();
         int k = Bang.cach();
         final int lop = m.clazz;
-        HocChieu.xinNeuChua();   // 0.9.7: bảng chiêu theo loài (máy chủ mới)
+        HocChieu.xinNeuChua();   // 0.9.8: bảng chiêu theo loài (máy chủ mới)
         final boolean theoLoai = HocChieu.dung(lop);
         // hàng ô nhanh (gán chiêu: một chạm) + điểm kỹ năng còn lại
         if (MainChar.quickSlot == null) {
@@ -1517,7 +1517,7 @@ public final class ManNhanVat extends Screen {
                     final game.model.skill.InfoSkillLearn sk = (game.model.skill.InfoSkillLearn) moi.elementAt(i);
                     final boolean daHoc = theoLoai ? capChieu(sk.idSkill) >= 1 : capChieu(sk.idSkill) >= 0;
                     final String tenSk = theoLoai ? HocChieu.tenChieu(lop, sk.idSkill) : sk.name;
-                    // 0.9.7: loài / cấp chưa học được -> mờ + lý do (máy chủ cũng từ chối)
+                    // 0.9.8: loài / cấp chưa học được -> mờ + lý do (máy chủ cũng từ chối)
                     final String lyDo = theoLoai && !daHoc ? HocChieu.lyDoNpc(sk.idSkill, m.level) : null;
                     Bang.hang(g, x, y, w, h, i, false, new IAction() {
                         public void perform() {
@@ -1599,7 +1599,7 @@ public final class ManNhanVat extends Screen {
                     String tt;
                     int mau;
                     if (theoLoai) {
-                        // 0.9.7 học theo loài: Cấp n | Tự học cấp N | NPC · cấp N | Tiến hoá: cấp N
+                        // 0.9.8 học theo loài: Cấp n | Tự học cấp N | NPC · cấp N | Tiến hoá: cấp N
                         tt = HocChieu.trangThai(i, cap, m.level);
                         mau = cap > 0 ? ChuDe.CHINH : HocChieu.laNpc(lop, i) && HocChieu.capHocLoai(i) > 0 ? ChuDe.CAM : ChuDe.XAM;
                     } else if (cap > 0) {
@@ -1695,7 +1695,7 @@ public final class ManNhanVat extends Screen {
             return;
         }
         if (theoLoai && cap == 0) {
-            // 0.9.7: chiêu tự học khi đủ cấp của loài (không tốn điểm) - không có nút học
+            // 0.9.8: chiêu tự học khi đủ cấp của loài (không tốn điểm) - không có nút học
             final String tb = HocChieu.moTaTrangThai(i, cap, m.level);
             int ch = HocChieu.capHocLoai(i);
             Bang.nut(g, x + 6 + wb + k, yn, w - 12 - wb - k, nh, ch > 0 ? "Tự học cấp " + ch : "Chưa học được", Bang.TAT, new IAction() {
@@ -1718,7 +1718,7 @@ public final class ManNhanVat extends Screen {
     static int demHocMoi(int lop) {
         if (HocChieu.dung(lop)) {
             MainChar m = mc();
-            return HocChieu.demNpcNgay(m == null ? 0 : m.level);   // 0.9.7: chỉ chiêu loài học được NGAY
+            return HocChieu.demNpcNgay(m == null ? 0 : m.level);   // 0.9.8: chỉ chiêu loài học được NGAY
         }
         Vector moi = chieuHocMoi();
         int n = 0;
