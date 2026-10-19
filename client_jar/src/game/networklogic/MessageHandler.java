@@ -109,6 +109,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.HopHoiSinh.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -104 ket qua dung vat pham (DungDo, thong bao nhanh)
+        if (game.pokemon.DungDo.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;

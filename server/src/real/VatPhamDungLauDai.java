@@ -23,8 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * exp_phut + tru_nang_luong_phut (Keo Hiem, 2/tuan); tu_dung:<hp50|mp20|trang_thai|bong|doc|te|ngu|dong_bang>
  * (qua mong: dung tay hoac TU DUNG khi du dieu kien, LauDaiJob); o:phien_da (do giu: bam dung = mang/thao,
  * hieu ung exp / chi_mang / hut / hoi_hp_3s / don_thuong / song_sot / chan_tien_hoa); bua:<k1-k2>
- * (bua bao ho that, NangCapLauDaiGame); nhom 'hop' + mo_hop:<id> (hop dot kich 1050/1051 -> NoiDungLauDai.moHop). toc_danh / chinh_xac / toc_danh_ngau_nhien: CHUA noi vao
- * cong thuc (ghi nhan buff, chua co tac dung) - xem docs/thiet-ke-game.md "Con lai".
+ * (bua bao ho that, NangCapLauDaiGame); nhom 'hop' + mo_hop:<id> (hop dot kich 1050/1051 -> NoiDungLauDai.moHop). toc_danh: giam hoi chieu (Char.calculateAttrib + goi 35 cho client);
+ * chinh_xac: don danh quai khong truot nen ap thanh xuyen giap diem/3 % (xuyenGiap); het han -> nhip() tinh lai.
+ * toc_danh_ngau_nhien (Mong vuot nhanh): CHUA noi vao cong thuc - xem docs/thiet-ke-game.md "Con lai".
+ * Moi phan hoi qua DungVatPham (thong bao nhanh -104 / hop thoai 37).
  */
 public final class VatPhamDungLauDai {
 
@@ -85,11 +87,11 @@ public final class VatPhamDungLauDai {
         final String nhom = (String) d[1];
         final HashMap<String, String> hu = hieuUng((String) d[2]);
         if (p.lvDetail.lv < ((Integer) d[4]).intValue()) {
-            bao(p, "Cần đạt cấp " + d[4] + ".");
+            DungVatPham.loi(p, "Cần đạt cấp " + d[4] + " để dùng " + DungVatPham.ten(item) + ".");
             return true;
         }
         if ("bua".equals(nhom)) {
-            bao(p, "Bùa bảo hộ tự dùng khi nâng cấp thất bại (đặt ngọc bảo hiểm hoặc chọn bảo hộ).");
+            DungVatPham.loi(p, "Bùa bảo hộ tự dùng khi nâng cấp thất bại (đặt ngọc bảo hiểm hoặc chọn bảo hộ).");
             return true;
         }
         if ("hop".equals(nhom)) {
@@ -102,24 +104,24 @@ public final class VatPhamDungLauDai {
         }
         final String loi = kiemDung(p, hu);
         if (loi != null) {
-            bao(p, loi);
+            DungVatPham.loi(p, loi);
             return true;
         }
         if (hu.containsKey("exp_phut") && !keoHiemDuoc(p)) {
-            bao(p, "Kẹo hiếm: tối đa 2 viên mỗi tuần.");
+            DungVatPham.loi(p, "Kẹo hiếm: tối đa 2 viên mỗi tuần.");
             return true;
         }
         if (hu.containsKey("exp_phut")) {
             final String tg = TangTocGame.kiemKeo(p); // chung tran diem tang toc ngay/tuan, khong dung o cap toi da
             if (tg != null) {
-                bao(p, tg);
+                DungVatPham.loi(p, tg);
                 return true;
             }
         }
         if (hu.containsKey("hoi_sinh")) {
             final String hs = HoiSinhGame.chanDungTuTui(p); // cam / cho / hoi chieu cua co che hoi sinh
             if (hs != null) {
-                bao(p, hs);
+                DungVatPham.loi(p, hs);
                 return true;
             }
         }
@@ -127,6 +129,7 @@ public final class VatPhamDungLauDai {
         if (!p.iItems.remove(item)) {
             return true;
         }
+        p.removeIDItem(item.id);
         apDung(p, hu);
         if (hu.containsKey("hoi_sinh")) {
             HoiSinhGame.daHoiSinh(p);
@@ -139,8 +142,63 @@ public final class VatPhamDungLauDai {
             Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "dung " + d[0] + " dbid" + item.dbid, "vatphamlaudai");
         } catch (final Exception ignored) {
         }
-        bao(p, "Đã dùng " + item.getTemplate().name + ".");
+        final String mt = moTa(hu);
+        DungVatPham.bao(p, "Đã dùng " + DungVatPham.ten(item) + (mt.isEmpty() ? "." : ": " + mt + "."));
         return true;
+    }
+
+    /** Mo ta ngan hieu ung cho thong bao "Da dung X: ...". */
+    static String moTa(final HashMap<String, String> hu) {
+        final StringBuilder sb = new StringBuilder();
+        if (hu.containsKey("hoi_sinh")) {
+            noi(sb, "hồi sinh với " + so(hu, "hoi_sinh", 30) + "% HP");
+        }
+        if (hu.containsKey("hp")) {
+            noi(sb, "+" + so(hu, "hp", 0) + "% HP");
+        }
+        if (hu.containsKey("mp")) {
+            noi(sb, "+" + so(hu, "mp", 0) + "% PP");
+        }
+        if (hu.containsKey("mp_doi")) {
+            noi(sb, "+" + so(hu, "mp_doi", 0) + "% PP cho cả đội");
+        }
+        if (hu.containsKey("go")) {
+            noi(sb, "giải trạng thái" + (so(hu, "mien", 0) > 0 ? ", miễn " + so(hu, "mien", 0) + " giây" : ""));
+        }
+        final int giay = so(hu, "giay", so(hu, "phut", 0) * 60);
+        final String trong = giay >= 120 && giay % 60 == 0 ? " trong " + giay / 60 + " phút" : " trong " + giay + " giây";
+        if (hu.containsKey("tc")) {
+            noi(sb, "+" + so(hu, "tc", 0) + "% tấn công" + trong);
+        }
+        if (hu.containsKey("thu")) {
+            noi(sb, "+" + so(hu, "thu", 0) + "% phòng thủ" + trong);
+        }
+        if (hu.containsKey("chi_mang")) {
+            noi(sb, "+" + so(hu, "chi_mang", 0) + "% chí mạng" + trong);
+        }
+        if (hu.containsKey("boss")) {
+            noi(sb, "+" + so(hu, "boss", 0) + "% sát thương boss" + trong);
+        }
+        if (hu.containsKey("toc_danh")) {
+            noi(sb, "+" + so(hu, "toc_danh", 0) + "% tốc đánh" + trong);
+        }
+        if (hu.containsKey("chinh_xac")) {
+            noi(sb, "+" + Math.max(1, so(hu, "chinh_xac", 0) / 3) + "% xuyên giáp" + trong);
+        }
+        if (hu.containsKey("xua")) {
+            noi(sb, "quái yếu hơn " + so(hu, "xua", 0) + " cấp không tấn công" + trong);
+        }
+        if (hu.containsKey("exp_phut")) {
+            noi(sb, "+EXP bằng " + so(hu, "exp_phut", 30) + " phút đánh quái");
+        }
+        return sb.toString();
+    }
+
+    static void noi(final StringBuilder sb, final String s) {
+        if (sb.length() > 0) {
+            sb.append(", ");
+        }
+        sb.append(s);
     }
 
     /** Ly do khong dung duoc (truoc khi tru vat pham), null neu dung duoc. */
@@ -151,6 +209,14 @@ public final class VatPhamDungLauDai {
         if (!hu.containsKey("hoi_sinh") && p.hp <= 0) {
             return "Không dùng được khi đã gục.";
         }
+        // Chi hoi HP / PP (qua Oran, Sitrus, Leppa...): day roi thi khong tru vat pham.
+        final boolean chiHoi = !hu.containsKey("go") && !hu.containsKey("exp_phut") && !coBuff(hu);
+        if (chiHoi && hu.containsKey("hp") && !hu.containsKey("mp") && p.hp >= p.maxhp) {
+            return "HP đã đầy, chưa cần dùng.";
+        }
+        if (chiHoi && hu.containsKey("mp") && !hu.containsKey("hp") && p.mp >= p.maxmp) {
+            return "PP đã đầy, chưa cần dùng.";
+        }
         if (hu.containsKey("go") && !hu.containsKey("hp")) {
             final TrangThaiPokemon t = TrangThaiGame.lay(p);
             if (t == null || !t.dangCo(com.htbb.pokemon.DongHo.bay())) {
@@ -158,6 +224,15 @@ public final class VatPhamDungLauDai {
             }
         }
         return null;
+    }
+
+    static boolean coBuff(final HashMap<String, String> hu) {
+        for (final String k : KHOA_BUFF) {
+            if (hu.containsKey(k)) {
+                return true;
+            }
+        }
+        return hu.containsKey("mp_doi");
     }
 
     /** Ap mot chuoi hieu ung (vat pham da tru). */
@@ -189,10 +264,15 @@ public final class VatPhamDungLauDai {
             TrangThaiGame.go(p, "tat_ca".equals(hu.get("go")) ? 0 : so(hu, "go", 0), so(hu, "mien", 0) * 1000L);
         }
         final int giay = so(hu, "giay", so(hu, "phut", 0) * 60);
+        boolean tinhLai = false;
         for (final String k : KHOA_BUFF) {
             if (hu.containsKey(k) && giay > 0) {
                 datBuff(p, k, so(hu, k, 0), bay + giay * 1000L);
+                tinhLai |= laBuffChiSo(k);
             }
+        }
+        if (tinhLai) {
+            tinhLaiChiSo(p);
         }
         if (hu.containsKey("exp_phut")) {
             keoHiem(p, so(hu, "exp_phut", 30), so(hu, "tru_nang_luong_phut", 30));
@@ -202,12 +282,13 @@ public final class VatPhamDungLauDai {
     /** Hop dot kich (1050/1051, nhom 'hop'): tru hop TRUOC roi mo theo data_noi_dung_roi nguon mo_hop. */
     static void moHop(final Char p, final Item item) {
         if (p.countSlotInventory() < 2) {
-            bao(p, "Hành trang cần 2 ô trống để mở hộp.");
+            DungVatPham.loi(p, "Hành trang cần 2 ô trống để mở hộp.");
             return;
         }
         if (!p.iItems.remove(item)) {
             return;
         }
+        p.removeIDItem(item.id);
         if (item.dbid != 0) {
             try {
                 Database.instance.deleteItem(item.dbid);
@@ -222,7 +303,7 @@ public final class VatPhamDungLauDai {
                     + ": " + kq, "vatphamlaudai");
         } catch (final Exception ignored) {
         }
-        bao(p, kq.isEmpty() ? "Hộp trống." : "Mở " + item.getTemplate().name + ": " + kq + ".");
+        DungVatPham.bao(p, kq.isEmpty() ? "Hộp trống." : "Mở " + DungVatPham.ten(item) + ": " + kq + ".");
     }
 
     static void guiHp(final Char p) {
@@ -276,6 +357,51 @@ public final class VatPhamDungLauDai {
 
     // ------------------------------------------------------------------ buff co han
 
+    /** Buff doi chi so luu san (calculateAttrib): toc danh -> hoi chieu, chinh xac -> xuyen giap. */
+    static boolean laBuffChiSo(final String k) {
+        return "toc_danh".equals(k) || "chinh_xac".equals(k);
+    }
+
+    /** Tinh lai chi so + gui bang hoi chieu moi (client tu dem hoi chieu theo goi 35) va thong tin nhan vat. */
+    static void tinhLaiChiSo(final Char p) {
+        try {
+            p.calculateAttrib();
+            p.sendMessage(MessageCreator.createSkillInfoMessage(p));
+            p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+        } catch (final Exception ignored) {
+        }
+    }
+
+    /** % xuyen giap tu X Chinh xac (diem chinh xac / 3), 0 neu khong co. */
+    public static int xuyenGiap(final Char p) {
+        final int cx = buff(p, "chinh_xac");
+        return cx <= 0 ? 0 : Math.max(1, cx / 3);
+    }
+
+    /** nhip(): buff doi chi so vua het han -> xoa + tinh lai (khong thi hoi chieu / xuyen giap giu mai). */
+    static void hetHanBuffChiSo(final Char p) {
+        final HashMap<String, long[]> m = BUFF.get(Integer.valueOf(p.charDBID));
+        if (m == null) {
+            return;
+        }
+        boolean het = false;
+        synchronized (m) {
+            final long bay = com.htbb.pokemon.DongHo.bay();
+            final java.util.Iterator<Entry<String, long[]>> it = m.entrySet().iterator();
+            while (it.hasNext()) {
+                final Entry<String, long[]> e = it.next();
+                if (laBuffChiSo(e.getKey()) && e.getValue()[0] <= bay) {
+                    it.remove();
+                    het = true;
+                }
+            }
+        }
+        if (het) {
+            tinhLaiChiSo(p);
+            DungVatPham.baoNhe(p, "Hết hiệu lực vật phẩm tăng cường.");
+        }
+    }
+
     static void datBuff(final Char p, final String k, final int giaTri, final long het) {
         final HashMap<String, long[]> m = BUFF.computeIfAbsent(Integer.valueOf(p.charDBID), x -> new HashMap<String, long[]>());
         synchronized (m) {
@@ -304,6 +430,7 @@ public final class VatPhamDungLauDai {
     static void doiDoGiu(final Char p, final Item item) {
         final HoSoLauDai h = LauDaiNhanVat.lay(p);
         if (h == null) {
+            DungVatPham.loi(p, "Tạm thời không dùng được, thử lại sau.");
             return;
         }
         final int id = item.getTemplate().id;
@@ -311,7 +438,7 @@ public final class VatPhamDungLauDai {
             h.doGiu = h.doGiu == id ? 0 : id;
             h.ban = true;
         }
-        bao(p, h.doGiu == id ? "Đang mang: " + item.getTemplate().name + "." : "Đã cất " + item.getTemplate().name + ".");
+        DungVatPham.bao(p, h.doGiu == id ? "Đang mang: " + DungVatPham.ten(item) + "." : "Đã cất " + DungVatPham.ten(item) + ".");
         try {
             p.calculateAttrib();
         } catch (final Exception ignored) {
@@ -429,6 +556,7 @@ public final class VatPhamDungLauDai {
             }
             try {
                 TangTocGame.nhip(p); // EXP uy thac luyen tap (tinh luc dang nhap)
+                hetHanBuffChiSo(p);
                 final int hoi = doGiuSo(p, "hoi_hp_3s");
                 if (hoi > 0 && p.hp < p.maxhp) {
                     p.hp = Math.min(p.maxhp, p.hp + Math.max(1, p.maxhp * hoi / 100));
@@ -466,9 +594,10 @@ public final class VatPhamDungLauDai {
             }
             final Item it = timItem(p, e.getKey().intValue());
             if (it != null && p.iItems.remove(it)) {
+                p.removeIDItem(it.id);
                 apDung(p, hu);
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
-                LauDaiNhanVat.bao(p, "Tự dùng " + it.getTemplate().name + ".");
+                DungVatPham.baoNhe(p, "Tự dùng " + DungVatPham.ten(it) + ".");
                 return;
             }
         }

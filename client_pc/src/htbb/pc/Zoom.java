@@ -12,9 +12,8 @@ import javax.microedition.lcdui.NenPc;
 /**
  * Thu phóng THẾ GIỚI riêng với giao diện (bản PC). Giao diện (HUD, menu, hộp thoại) vẫn ở độ phân giải logic
  * NenPc (vd 640x360 x2); lớp thế giới (ô bản đồ, nhân vật, hiệu ứng, thời tiết, đêm) phóng m điểm ảnh thật / px
- * thế giới, m NGUYÊN (pixel art sắc nét), chọn để thấy ~20 x 11 ô (ô = 16 px):
- *   1280x720 -> m 4 (320x180 px thế giới), 1366x768 -> 4, 1920x1080 -> 6, 2560x1440 -> 8, 2560x1080 -> 6 (21:9).
- * Con lăn chuột / phím + - trong màn chơi đổi m (giới hạn [k, 3k]), lưu trong cài đặt (zoom_bu).
+ * thế giới, m = 2k NGUYÊN (pixel art sắc nét): vùng nhìn CỐ ĐỊNH 320x180 px thế giới (20 x 11,25 ô) ở mọi
+ * cỡ cửa sổ - thấy thêm bản đồ là lợi thế không công bằng nên KHÔNG có thu phóng (bỏ con lăn / + - / zoom_bu).
  *
  * Camera của game dùng sẵn bề rộng "gsw/gsh" (vùng nhìn thế giới) tách khỏi Canvas.w/h: port-j2me.py đặt
  * gsw = Zoom.gsw(), bọc phần vẽ thế giới của GameScr.paint bằng vaoTheGioi/raTheGioi, đổi toạ độ chạm
@@ -22,29 +21,17 @@ import javax.microedition.lcdui.NenPc;
  * (chính bản đồ thu nhỏ + làm mờ + tối dần) thay cho màu đen.
  */
 public final class Zoom {
-    /** chênh lệch người chơi chỉnh so với mức tự động (lưu cai_dat) */
-    public static volatile int bu;
+    /** Phóng thế giới so với giao diện: CỐ ĐỊNH 2 (vùng nhìn 320x180 px thế giới = 20 x 11,25 ô) - không ai thấy hơn. */
+    public static final int TI_LE = 2;
 
-    private Zoom() {
-    }
-
-    /** Phóng thế giới tự động theo cửa sổ (điểm ảnh thật / px thế giới). */
-    static int mTuDong() {
-        int H = NenPc.thatH, W = NenPc.thatW;
-        int m = Math.round(Math.min(H / 180f, W / 300f));
-        return Math.max(NenPc.heSo, m);
-    }
-
-    /** Phóng thế giới hiện tại (nguyên). */
+    /** Phóng thế giới hiện tại (điểm ảnh thật / px thế giới, nguyên). */
     public static int m() {
-        int k = NenPc.heSo;
-        int m = mTuDong() + bu;
-        return Math.max(k, Math.min(k * 3, m));
+        return TI_LE * Math.max(1, NenPc.heSo);
     }
 
-    /** z = m / k (tỉ lệ thế giới so với giao diện). */
+    /** z = m / k (tỉ lệ thế giới so với giao diện) = TI_LE. */
     public static float z() {
-        return m() / (float) NenPc.heSo;
+        return TI_LE;
     }
 
     /** Bề rộng vùng nhìn thế giới (px thế giới) - GameScr.loadCamera. */
@@ -152,17 +139,4 @@ public final class Zoom {
         g2.setClip(cu);
     }
 
-    /** Đổi phóng thế giới (+1 / -1). */
-    public static void doi(int d) {
-        int truoc = m();
-        bu += d;
-        int sau = m();
-        bu = sau - mTuDong();
-        if (sau != truoc) {
-            CaiDat.zoomBu = bu;
-            CaiDat.luu();
-            NenPc.baoDoiCo();
-            LopPhu.bao("Thu phóng bản đồ: ×" + sau + " (" + (NenPc.thatW / sau / 16) + "×" + (NenPc.thatH / sau / 16) + " ô)");
-        }
-    }
 }

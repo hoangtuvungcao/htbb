@@ -668,6 +668,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             if (menu.showMenu) {
                 menu.paintMenu(g);
             }
+            game.pokemon.DungDo.ve(g);   // pokemon: kết quả dùng vật phẩm (thông báo nhanh, mọi màn)
             if (isLoad) {
                 resetTrans(g);
                 // pokemon: màn tải = trời xanh + đồi cỏ, biển tên game, Poké Ball lắc chờ

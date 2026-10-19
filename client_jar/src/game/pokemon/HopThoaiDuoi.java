@@ -15,6 +15,15 @@ public final class HopThoaiDuoi {
     private static int tuTick;
     private static boolean bat;
     private static long hetLuc;
+    /** giữ mở (đang trò chuyện có bước tiếp: mở đầu, nhận / trả nhiệm vụ) - không tự tắt theo giờ */
+    private static boolean giu;
+    /** bản đồ + vị trí người chơi lúc hiện lời: đổi map / đi xa thì tắt lời thông tin */
+    private static int mapLuc = -1;
+    private static int xLuc, yLuc;
+    /** số lần đặt lời (GameScr biết chạm có làm sang lời mới không) */
+    private static int soLan;
+    /** hiện hết chữ ngay (chạm lần đầu khi máy chữ đang chạy) */
+    private static boolean hienHet;
 
     private HopThoaiDuoi() {
     }
@@ -22,25 +31,98 @@ public final class HopThoaiDuoi {
     /** Lời mới của người nói (ten có thể rỗng). */
     public static void dat(String nguoiNoi, String loi, int tickSong) {
         ten = nguoiNoi;
-        // ChatPopup đếm tick (~25/giây); giữ tối thiểu 4 giây, tối đa 25 giây
-        long ms = tickSong * 40L;
-        hetLuc = System.currentTimeMillis() + (ms < 4000L ? 4000L : (ms > 25000L ? 25000L : ms));
+        hetLuc = System.currentTimeMillis() + thoiGianDoc(loi == null ? 0 : loi.length(), tickSong);
         int w = rongLong();
         dong = Font.arialFont.splitFontBStrInLine(loi == null ? "" : loi, w);
         tuTick = Canvas.gameTick;
+        hienHet = false;
         bat = true;
+        soLan++;
+        mapLuc = game.model.Tilemap.lv;
+        if (Canvas.gameScr != null && Canvas.gameScr.mainChar != null) {
+            xLuc = Canvas.gameScr.mainChar.x;
+            yLuc = Canvas.gameScr.mainChar.y;
+        }
+    }
+
+    /**
+     * Thời gian lời THÔNG TIN còn trên màn (ms): đủ đọc (~70 ms / ký tự + 2.5 giây), 3..10 giây; không
+     * vượt thời gian bong bóng gốc (tickSong ~ 40 ms) nếu dài hơn 3 giây.
+     */
+    public static long thoiGianDoc(int soKyTu, int tickSong) {
+        long ms = 2500L + soKyTu * 70L;
+        if (ms > 10000L) {
+            ms = 10000L;
+        }
+        long goc = tickSong * 40L;
+        if (goc >= 3000L && goc < ms) {
+            ms = goc;
+        }
+        return ms < 3000L ? 3000L : ms;
+    }
+
+    /** Đang trò chuyện có bước tiếp (GameScr đặt mỗi khung): hộp không tự tắt, hiện gợi ý "Chạm để tiếp". */
+    public static void giu(boolean g) {
+        if (giu && !g) {
+            // hết trò chuyện: lời cuối thành lời thông tin, tự tắt sau ít giây
+            hetLuc = Math.min(hetLuc, System.currentTimeMillis() + 3000L);
+        }
+        giu = g;
+    }
+
+    public static boolean dangGiu() {
+        return giu;
+    }
+
+    public static int soLan() {
+        return soLan;
+    }
+
+    /** Máy chữ đã hiện hết lời. */
+    public static boolean xongChu() {
+        if (hienHet || dong == null) {
+            return true;
+        }
+        int tong = 0;
+        for (int i = 0; i < dong.length && i < soDong(); i++) {
+            tong += dong[i].length();
+        }
+        int tick = Canvas.gameTick - tuTick;
+        if (tick < 0) {
+            tick += 10001;
+        }
+        return tick * 2 >= tong;
+    }
+
+    public static void hienHetChu() {
+        hienHet = true;
     }
 
     public static void tat() {
         bat = false;
         dong = null;
+        hienHet = false;
     }
 
     public static boolean dangBat() {
-        if (bat && System.currentTimeMillis() > hetLuc) {
+        if (bat && !giu) {
+            if (System.currentTimeMillis() > hetLuc || mapLuc != game.model.Tilemap.lv || diXa()) {
+                tat();
+            }
+        } else if (bat && mapLuc != game.model.Tilemap.lv) {
             tat();
         }
         return bat && dong != null;
+    }
+
+    /** Người chơi đã đi xa chỗ nghe lời (> 3 ô). */
+    private static boolean diXa() {
+        if (Canvas.gameScr == null || Canvas.gameScr.mainChar == null) {
+            return false;
+        }
+        int dx = Canvas.gameScr.mainChar.x - xLuc;
+        int dy = Canvas.gameScr.mainChar.y - yLuc;
+        return dx * dx + dy * dy > 48 * 48;
     }
 
     private static int rongLong() {
@@ -79,7 +161,7 @@ public final class HopThoaiDuoi {
         if (tick < 0) {
             tick += 10001;
         }
-        int conLai = tick * 2;
+        int conLai = hienHet ? 1 << 20 : tick * 2;
         boolean xong = true;
         int yy = y + 7;
         for (int i = 0; i < dong.length && i < n; i++) {
@@ -94,6 +176,10 @@ public final class HopThoaiDuoi {
         }
         if (xong) {
             GiaoDien.muiXuong(g, x + w - 12, y + h - 9);
+            if (giu) {
+                // gợi ý rõ: chạm / bấm bất kỳ đâu (phím: chọn / 5) để nghe tiếp
+                Font.arialFont.drawString(g, Canvas.instance != null && Canvas.instance.hasPointerEvents() ? "Chạm để tiếp" : "Bấm để tiếp", x + w - 18, y + h - 15, Font.RIGHT);
+            }
         }
     }
 }

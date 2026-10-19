@@ -119,12 +119,81 @@ public class MainChar extends Char {
         return "";
     }
 
+    // ---------------------------------------------------------------- đo / sửa vị trí (bao 0.9.2 đi giật)
+    /** Số lệnh 4 máy chủ gửi cho chính mình (= máy chủ sửa vị trí) / số lần lệch lớn phải đặt lại. */
+    public static int soSuaViTri, soNhayViTri;
+    /** Số khung cập nhật chậm (> 80 ms giữa hai khung) và khung chậm nhất (ms). */
+    public static int soKhungCham, khungChamNhat;
+    private long lucKhungTruoc;
+    /** Đang lướt tới vị trí máy chủ đặt (không gửi vị trí giữa đường - kẻo kéo máy chủ lùi lại). */
+    private boolean theoMayChu;
+    /** Lệch quá ngưỡng này (px) khi đang đi thì đặt lại ngay; nhỏ hơn thì giữ vị trí client (gói sau tự khớp). */
+    static final int LECH_LON = 48;
+
+    /**
+     * Lệnh 4 cho chính mình: máy chủ không nhận bước đi (tường, quá nhanh, choáng...) hoặc dời mình (dịch chuyển).
+     * Cũ (Char.setPosTo -> moveTo): luôn ĐI NGƯỢC về điểm cũ với tốc độ tăng dần, trong lúc đó lại gửi các vị trí
+     * giữa đường -> kéo lùi rồi giật tới (rubber-band). Mới: đang đi mà lệch <= 48 px thì giữ nguyên (máy chủ khớp
+     * ở gói sau); lệch lớn thì đặt lại ngay (không đi lùi); đứng yên thì lướt tới điểm máy chủ, không gửi gì.
+     */
+    @Override
+    public void setPosTo(short x, short y) {
+        soSuaViTri++;
+        int lech = Math.max(Math.abs(x - this.x), Math.abs(y - this.y));
+        if (lech == 0) {
+            return;
+        }
+        if (this.state == 1 && lech <= LECH_LON) {
+            return;
+        }
+        if (lech > LECH_LON || this.state == 1) {
+            soNhayViTri++;
+            this.x = x;
+            this.y = y;
+            this.xTo = x;
+            this.yTo = y;
+            this.posTransRoad = null;
+            this.countRoad = 0;
+            if (this.state == 1) {
+                this.state = (byte) 0;
+            }
+            this.theoMayChu = false;
+            return;
+        }
+        this.theoMayChu = true;
+        moveTo(x, y);
+    }
+
     @Override
     public void update() {
+        long bay = System.currentTimeMillis();
+        if (this.lucKhungTruoc != 0L) {
+            int kc = (int) (bay - this.lucKhungTruoc);
+            if (kc > 80) {
+                soKhungCham++;
+                if (kc > khungChamNhat) {
+                    khungChamNhat = kc;
+                }
+            }
+        }
+        this.lucKhungTruoc = bay;
         super.update();
         if (!this.isFreeze && this.posTransRoad != null) {
             updateWayPointer();
             this.check = false;
+        }
+        try {
+            Canvas.gameScr.capNhatDuoi();
+        } catch (Exception e) {
+        }
+        if (this.state != 1) {
+            this.theoMayChu = false;
+        } else if (!this.theoMayChu) {
+            // đang đi (phím, chạm đất, đuổi quái): gửi VỊ TRÍ THẬT mỗi GameScr.dtmove, không gửi điểm đích
+            this.stop = false;
+        }
+        if (this.theoMayChu) {
+            this.stop = true;
         }
         if (!this.stop && System.currentTimeMillis() - GameScr.timeMove >= 0) {
             GameScr.timeMove = System.currentTimeMillis() + ((long) GameScr.dtmove);
@@ -163,24 +232,31 @@ public class MainChar extends Char {
         }
     }
 
+    /**
+     * Đi theo đường (DuongDi.tim): tới gần điểm hiện tại (<= tốc độ) thì nhận ô kế tiếp. Điểm đường mã hoá
+     * DuongDi.ma (ô tuyệt đối, đúng cả map > 127 ô). Không gửi điểm đích nữa: update() gửi vị trí thật khi đang đi.
+     */
     private void updateWayPointer() {
-        if (Util.abs(this.x - this.xTo) <= 3 && Util.abs(this.y - this.yTo) <= 3) {
+        int gan = Math.max(3, this.speed + this.upSpeed);
+        if (Util.abs(this.x - this.xTo) <= gan && Util.abs(this.y - this.yTo) <= gan) {
             for (int i = (this.posTransRoad.length - 1) - this.countRoad; i >= 0; i--) {
-                if (this.posTransRoad[i] > 0) {
-                    byte xx = (byte) (GameScr.xStart + (this.posTransRoad[i] >> 8));
-                    byte yy = (byte) (GameScr.yStart + (this.posTransRoad[i] & 255));
-                    if (GameScr.iTaskAuto != 2 && ((this.dir == 1 || Tilemap.isOfflineMap) && Canvas.gameScr.checkCanChangeMap((xx * 16) + this.speed, (yy * 16) + this.speed, this.dir))) {
+                if (DuongDi.co(this.posTransRoad[i])) {
+                    int xx = DuongDi.maX(this.posTransRoad[i]);
+                    int yy = DuongDi.maY(this.posTransRoad[i]);
+                    int px = (xx * 16) + 8;
+                    int py = (yy * 16) + 8;
+                    if (GameScr.iTaskAuto != 2 && ((this.dir == 1 || Tilemap.isOfflineMap) && Canvas.gameScr.checkCanChangeMap(px, py, this.dir))) {
                         this.posTransRoad = null;
                         this.countRoad = 0;
                         return;
                     } else {
-                        if (Canvas.gameScr.checkMoveLimit((xx * 16) + this.speed, (yy * 16) + this.speed)) {
+                        if (Canvas.gameScr.checkMoveLimit(px, py)) {
                             this.posTransRoad = null;
                             return;
                         }
-                        moveTo((short) ((xx * 16) + this.speed), (short) ((yy * 16) + this.speed));
-                        Canvas.gameScr.sendActorMove((short) ((xx * 16) + this.speed), (short) ((yy * 16) + this.speed));
-                        this.posTransRoad[i] = -1;
+                        moveTo((short) px, (short) py);
+                        this.stop = false;
+                        this.posTransRoad[i] = 0;
                         this.countRoad++;
                         return;
                     }

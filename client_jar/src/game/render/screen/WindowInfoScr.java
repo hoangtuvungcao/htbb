@@ -4632,18 +4632,9 @@ public class WindowInfoScr extends Screen {
     }
 
     protected void doUseItem(ItemInInventory item) {
-        ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
-        if (it.gender != 0 && it.gender != Canvas.gameScr.mainChar.gender) {
-            Canvas.startOKDlg(new StringBuffer("Vật phẩm này chỉ dành cho ").append(Res.GENDERNAME[it.gender]).append(".").toString());
-            return;
-        }
-        if (it.clazz != -1 && it.clazz != Canvas.gameScr.mainChar.clazz && isWeapone(it.type)) {
-            Canvas.startOKDlg(new StringBuffer("Vật phẩm này chỉ dành cho ").append(CreateCharScr.clazz[it.clazz][CreateCharScr.selectGender].name).append(".").toString());
-        } else if (it.level > Canvas.gameScr.mainChar.level) {
-            Canvas.startOKDlg(new StringBuffer("Bạn phải đạt cấp ").append((int) it.level).append(" để có thể dùng.").toString());
-        } else {
-            GameService.gI().useItem(item.itemID);
-        }
+        // pokemon: server kiểm cấp / hệ / điều kiện và LUÔN trả lời (thông báo nhanh -104, DungDo). Bản cũ chặn cấp
+        // theo cấp MẪU (khác cấp món) và ném NPE khi thiếu mẫu -> bấm "Sử dụng" không có gì xảy ra.
+        game.pokemon.DungDo.dungItem(item);
     }
 
     private boolean isWeapone(int type) {
@@ -4693,7 +4684,7 @@ public class WindowInfoScr extends Screen {
                 for (int i2 = 0; i2 < size1; i2++) {
                     ItemInInventory item2 = (ItemInInventory) charWearing.wearingItems.elementAt(i2);
                     if (Res.getItem(item2.charClazz, item2.idTemplate).type == 19) {
-                        showItemInventoryInfo(item2, false, posWearChar[9][0] + 5, posWearChar[9][1] - 2);
+                        xemMonDangMac(item2, Res.getItem(item2.charClazz, item2.idTemplate), posWearChar[9][0] + 5, posWearChar[9][1] - 2);
                         return;
                     }
                 }
@@ -4724,7 +4715,7 @@ public class WindowInfoScr extends Screen {
             for (int i3 = 0; i3 < size2; i3++) {
                 ItemInInventory item3 = (ItemInInventory) charWearing.wearingItems.elementAt(i3);
                 if (Res.getItem(item3.charClazz, item3.idTemplate).type == 19) {
-                    showItemInventoryInfo(item3, false, posWearChar[9][0] + 5, posWearChar[9][1] - 2);
+                    xemMonDangMac(item3, Res.getItem(item3.charClazz, item3.idTemplate), posWearChar[9][0] + 5, posWearChar[9][1] - 2);
                     return;
                 }
             }
@@ -4735,14 +4726,49 @@ public class WindowInfoScr extends Screen {
         for (int i4 = 0; i4 < size3; i4++) {
             ItemInInventory item4 = (ItemInInventory) charWearing.wearingItems.elementAt(i4);
             ItemTemplate it = Res.getItem(item4.charClazz, item4.idTemplate);
+            if (it == null) {
+                continue;
+            }
             if (it.type == idWearChar[bb2] || (idWearChar[bb2] == -1 && it.type > 2 && it.type < 8)) {
                 aa++;
                 if (bb2 != 7 || aa != 1) {
-                    showItemInventoryInfo(item4, false, posWearChar[bb2][0] + 5, posWearChar[bb2][1] - 2);
+                    xemMonDangMac(item4, it, posWearChar[bb2][0] + 5, posWearChar[bb2][1] - 2);
                     return;
                 }
             }
         }
+    }
+
+    /** pokemon: món đang chọn ở tab Trang bị (bấm lần hai cùng món = menu Tháo ra). */
+    private ItemInInventory monDangMacXem;
+    private long lucXemMonDangMac;
+
+    /**
+     * pokemon: bấm một ô trang bị của CHÍNH MÌNH: lần đầu hiện thông tin (như cũ), bấm lại cùng ô trong 6 giây = menu
+     * "Tháo ra" (server DungVatPham.thaoTrangBi: lệnh 29 với id món đang mặc). Game gốc không có cách tháo đồ.
+     */
+    private void xemMonDangMac(final ItemInInventory item, ItemTemplate it, int x, int y) {
+        showItemInventoryInfo(item, false, x, y);
+        if (charWearing != Canvas.gameScr.mainChar || this.isSell) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (this.monDangMacXem == item && now - this.lucXemMonDangMac < 6000) {
+            Vector menu = new Vector();
+            boolean vuKhi = it != null && isWeapone(it.type);
+            menu.addElement(new Command(vuKhi ? "Tháo ra (đổi món cầm tay)" : "Tháo ra", new IAction() {
+                @Override
+                public void perform() {
+                    game.pokemon.DungDo.thao(item);
+                    WindowInfoScr.this.closeText();
+                }
+            }));
+            Canvas.menu.startAt(menu, 3);
+            this.monDangMacXem = null;
+            return;
+        }
+        this.monDangMacXem = item;
+        this.lucXemMonDangMac = now;
     }
 
     public void showInfoWearingAnimal() {

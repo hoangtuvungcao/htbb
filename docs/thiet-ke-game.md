@@ -905,8 +905,28 @@ Một tính năng **Tự động đánh** do **máy chủ** điều khiển thay
 6. **Gục khi đang tự động**: chỉ tự dùng vật phẩm hồi sinh nếu người chơi bật "Tự hồi sinh", có thuốc, bản đồ không cấm và
    còn lượt `tu_dong.hoi_sinh_moi_gio` (2 / giờ); còn lại thì dừng và về Trung tâm (có phạt).
 
-Bảng Tự động đánh trên client: thứ tự 4 chiêu, ngưỡng thuốc HP / PP, kiểu nhặt đồ, về hồi phục, vùng đánh 4..20 ô, tự hồi
-sinh; mọi thao tác đi qua đúng hàm như bấm tay (có hoạt ảnh, không lướt). Bấm di chuyển thì tự động nhường 3 giây.
+7. **Máy chủ điều khiển từng bước** (`tu_dong.ke_hoach=1`, client 0.9.2+, `com.htbb.pokemon.TuDongKeHoach`): client xin
+   kế hoạch ~0,6 giây / lần (gói -100 loại 4), máy chủ trả một việc (đánh / uống thuốc / nhặt / về điểm bắt đầu / chờ /
+   dừng) kèm lý do hiện trên thanh trạng thái. Thứ tự: đầy túi → dừng (`dung_khi_day_tui`); HP / PP dưới ngưỡng người
+   chơi chọn (mặc định `nguong_thuoc_hp` 50 / `nguong_thuoc_mp` 30) → bình nhỏ nhất đủ bù; HP dưới `nguong_hp_thap` (25)
+   mà hết thuốc → rút về điểm bắt đầu nghỉ tới `hoi_phuc_toi` (80) % (hoặc dừng, `hp_thap_dung`); người khác bật PK
+   trong `tranh_pk_px` → lùi về chờ; đồ rơi của mình trong `nhat_ban_kinh` → nhặt; mục tiêu = Pokémon hoang dã **gần
+   nhất theo đường đi** (BFS trên ô đi được, không xuyên tường) trong vùng, không cao hơn quá `chenh_cap_tren` (5) cấp /
+   thấp hơn quá `chenh_cap_duoi`, không boss (`danh_boss=0`), không quá trâu (`hp_quai_toi_da_pt` 500 %), không phải xe
+   giao hàng của người khác; giữ mục tiêu đang đánh. Chiêu = sát thương × khắc hệ × STAB (`chon_chieu_theo_he`), bỏ chiêu
+   đang hồi / thiếu PP. Không có mục tiêu thì báo rõ vì sao (mạnh hơn quá nhiều / chỉ có boss / bị chắn / chờ). Client
+   cũ (0.9.1) vẫn tự chọn như trước; máy chủ vẫn giới hạn giờ, nhịp, vùng.
+8. **Không im lặng**: mọi lần từ chối bật / dừng đều có câu trong gói -100 và chữ trên đầu nhân vật (cả client cũ, cả
+   khi Tiện ích "Thông báo: tắt"); `tu_dong.cap_toi_thieu` (0) và `tu_dong.map_cam` báo rõ cấp / bản đồ. Không có khoá
+   Thành viên / kích hoạt nào chặn Tự động đánh (`thanh_vien.chuc_nang`, `kich_hoat.chuc_nang` không có mục này).
+9. **Tự di chuyển**: bấm phím di chuyển khi đang tự động thì dừng hẳn (`dung_khi_tu_di=1`, lý do gửi máy chủ); 0 = nhường
+   3 giây như cũ. Đổi bản đồ / ra khỏi vùng vẫn dừng.
+10. **Hồi sinh**: chỉ Thuốc hồi sinh thường (mua bằng xu) khi bật "Tự hồi sinh"; Thuốc hồi sinh tối đa (lượng khoá) chỉ
+    khi `tu_dong.hoi_sinh_tra_phi=1` **và** người chơi chọn "Tự hồi sinh: cả đồ lượng". Không bao giờ tự trả xu / lượng.
+
+Bảng Tự động đánh trên client: thứ tự 4 chiêu (khi máy chủ không điều khiển), ngưỡng thuốc HP / PP, kiểu nhặt đồ, về
+hồi phục, vùng đánh 4..20 ô, tự hồi sinh (tắt / thuốc thường / cả đồ lượng); mọi thao tác đi qua đúng hàm như bấm tay
+(có hoạt ảnh, không lướt).
 
 ---
 
@@ -1128,7 +1148,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -93 | `POKE_CUOI` | S→C | `i16 charId, i16 dexThu (0 = không cưỡi), u8 shiny` — sau mỗi -90 |
 | -94 | `POKE_PET` | S→C | `i16 charId, i16 dexPet (0 = không có), u8 shiny` — sau mỗi -93 |
 | -95..-99 | `POKE_DON`, `POKE_CANH_BAO`, `POKE_TRANG_THAI`, `POKE_BOSS`, `POKE_DONG_GOP` | S→C | chiến đấu, **đã chốt** (mục 5.8) |
-| -100 | Tự động đánh | hai chiều | xin trạng thái / bật / tắt / nhịp; server trả giờ còn lại, bán kính, cờ, thông báo (mục 8.2) |
+| -100 | Tự động đánh | hai chiều | xin trạng thái / bật / tắt / nhịp / xin kế hoạch (4); server trả byte 0 trạng thái (giờ còn lại, bán kính, cờ, thông báo) hoặc byte 1 kế hoạch (hành động, id, số, x, y, lý do) (mục 8.2) |
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |

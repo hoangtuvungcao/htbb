@@ -83,10 +83,9 @@ defineShortcuts({
 <template>
   <UModal v-model:open="mo" title="Tìm kiếm" description="Tìm trang, cẩm nang, Pokémon, tin tức" :ui="{ content: 'sm:max-w-xl', header: 'sr-only', body: 'p-0 sm:p-0' }">
     <span class="flex">
-      <UButton color="neutral" variant="ghost" icon="i-lucide-search" aria-label="Tìm kiếm (Ctrl+K)" class="xl:hidden" />
-      <UButton color="neutral" variant="outline" icon="i-lucide-search" class="hidden w-36 justify-start rounded-full text-muted 2xl:w-44 xl:inline-flex" aria-label="Tìm kiếm (Ctrl+K)">
+      <UButton color="neutral" variant="ghost" icon="i-lucide-search" aria-label="Tìm kiếm" aria-keyshortcuts="Control+K" class="xl:hidden" />
+      <UButton color="neutral" variant="outline" icon="i-lucide-search" class="hidden w-36 justify-start rounded-full text-muted 2xl:w-44 xl:inline-flex" aria-label="Tìm kiếm" aria-keyshortcuts="Control+K">
       <span class="flex-1 whitespace-nowrap text-left text-sm font-semibold">Tìm kiếm…</span>
-        <span class="hidden gap-0.5 2xl:flex"><UKbd value="meta" size="sm" /><UKbd value="K" size="sm" /></span>
       </UButton>
     </span>
     <template #body>

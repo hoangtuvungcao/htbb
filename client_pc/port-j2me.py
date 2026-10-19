@@ -47,11 +47,6 @@ VA_RIENG = [
      "            htbb.pc.BanPhim.coONhap(this.inputType == 1);   // pc: đang gõ chữ\n"
      "        }\n",
      1),
-    # nhãn phím trên 5 ô chiêu: phím PC (1..5 / đổi trong cài đặt) thay "1,3,5,7,9" của máy bấm phím
-    ("game/render/screen/GameScr.java",
-     "String.valueOf(1 + (k * 2)), k == 2);",
-     "htbb.pc.BanPhim.nhanO(k), k == 2);",
-     1),
     # màn đăng nhập: bấm chuột chọn ô nhập -> đồng bộ chỉ số focus (Tab / Enter đúng ô, Enter = Đăng nhập)
     ("game/render/screen/LoginScr.java",
      "        boolean is = false;\n",
@@ -109,8 +104,8 @@ VA_RIENG = [
      "        game.pokemon.SinhThai.veDem(g);\n",
      "        game.pokemon.SinhThai.veDem(g);\n        htbb.pc.Zoom.raTheGioi(g);   // pc: hết lớp thế giới -> HUD\n",
      1),
-    ("game/render/screen/GameScr.java", "cmx + Canvas.px", "cmx + htbb.pc.Zoom.theGioiX(Canvas.px)", 4),
-    ("game/render/screen/GameScr.java", "cmy + Canvas.py", "cmy + htbb.pc.Zoom.theGioiY(Canvas.py)", 4),
+    ("game/render/screen/GameScr.java", "cmx + Canvas.px", "cmx + htbb.pc.Zoom.theGioiX(Canvas.px)", 3),
+    ("game/render/screen/GameScr.java", "cmy + Canvas.py", "cmy + htbb.pc.Zoom.theGioiY(Canvas.py)", 3),
     # hạt / cánh hoa của mod (HieuUng, vẽ toạ độ màn) chỉ trong vùng bản đồ khi bản đồ nhỏ hơn màn
     ("game/render/screen/HieuUng.java",
      "        int w = Canvas.w;\n        int h = Canvas.h;\n        graphics.setClip(0, 0, w, h);\n",
@@ -168,6 +163,11 @@ VA_RIENG = [
      "            Font.borderFont.drawString(g, \"Đóng\", 5, Canvas.h - Screen.deltaY, 0);\n"
      "            Font.borderFont.drawString(g, \"Xóa\", Canvas.w - 5, Canvas.h - Screen.deltaY, 1);\n        }\n",
      1),
+    # HUD màn rộng (game.render.screen.HudRong / game.pokemon.HanhDong): toạ độ chạm -> thế giới theo thu phóng riêng,
+    # nút cài đặt trên HUD = bảng Cài đặt của cửa sổ (LopPhu) thay Menu nhanh của jar
+    ("game/pokemon/HanhDong.java", "return GameScr.cmx + px;", "return GameScr.cmx + htbb.pc.Zoom.theGioiX(px);   // pc", 1),
+    ("game/pokemon/HanhDong.java", "return GameScr.cmy + py;", "return GameScr.cmy + htbb.pc.Zoom.theGioiY(py);   // pc", 1),
+    ("game/render/screen/HudRong.java", "MenuNhanh.moBang();   // jar: Menu nhanh", "htbb.pc.LopPhu.moCaiDat();   // pc: bảng Cài đặt", 1),
     # font ảnh -> font thật HD
     ("game/render/screen/Font.java",
      "        st = ChuPokemon.D(st);\n        int x1;\n",

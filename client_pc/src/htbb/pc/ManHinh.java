@@ -51,6 +51,8 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     private boolean dungVolatile = !"false".equals(System.getProperty("htbb.volatile"));
     private volatile boolean toanMan;
     private Rectangle cuaSoCu;
+    /** cửa sổ đang phóng to trước khi vào toàn màn (ra toàn màn thì phóng to lại) */
+    private boolean phongToCu;
     /** chuột thật (cho lớp phủ di chuột) */
     volatile int chuotX = -1;
     volatile int chuotY = -1;
@@ -68,14 +70,25 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         khung.setIgnoreRepaint(true);
         setFocusTraversalKeysEnabled(false); // Tab = đổi mục tiêu
         khung.setFocusTraversalKeysEnabled(false);
-        enableInputMethods(true);            // bộ gõ tiếng Việt (KEY_TYPED)
+        enableInputMethods(true);            // bộ gõ tiếng Việt (KEY_TYPED / InputMethodEvent)
         addKeyListener(this);
+        // bộ gõ (ibus / fcitx / Unikey...): chữ đã chốt có thể đến bằng InputMethodEvent thay vì KEY_TYPED
+        addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent e) {
+                String s = NhapChu.chuDaChot(e);
+                if (s.length() > 0) goChuoi(s);
+                e.consume();
+            }
+
+            public void caretPositionChanged(java.awt.event.InputMethodEvent e) {
+            }
+        });
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         setPreferredSize(new Dimension(CaiDat.cuaSoRong, CaiDat.cuaSoCao));
+        setMinimumSize(new Dimension(NenPc.LOGIC_W, NenPc.LOGIC_H));
         khung.add(this);
-        khung.setMinimumSize(new Dimension(640, 400));
         khung.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 Chay.thoat();
@@ -89,8 +102,24 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                 NenPc.anHien(true);
             }
         });
+        // phóng to / thu nhỏ (trình quản lý cửa sổ có thể báo cỡ muộn): tính lại + lấy lại focus gõ phím
+        khung.addWindowStateListener(new java.awt.event.WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                if (!toanMan) CaiDat.phongTo = (e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH;
+                doiCoMuon();
+            }
+        });
+        khung.addWindowFocusListener(new java.awt.event.WindowAdapter() {
+            public void windowGainedFocus(WindowEvent e) {
+                requestFocusInWindow();
+            }
+        });
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
+                doiCo();
+            }
+
+            public void componentShown(ComponentEvent e) {
                 doiCo();
             }
         });
@@ -108,20 +137,44 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
 
     void hien() {
         khung.pack();
+        Insets in = khung.getInsets();
+        khung.setMinimumSize(new Dimension(NenPc.LOGIC_W + in.left + in.right, NenPc.LOGIC_H + in.top + in.bottom));
         khung.setLocationRelativeTo(null);
         khung.setVisible(true);
+        if (CaiDat.phongTo && !CaiDat.toanMan) khung.setExtendedState(Frame.MAXIMIZED_BOTH);
         createBufferStrategy(2);
         requestFocus();
         if (CaiDat.toanMan) datToanMan(true);
         doiCo();
     }
 
-    /** Cửa sổ đổi cỡ -> tính lại độ phân giải logic, báo game. */
+    /** Cỡ đổi theo trạng thái cửa sổ: tính ngay + lại sau 150 / 600 ms (trình quản lý cửa sổ báo cỡ muộn). */
+    void doiCoMuon() {
+        doiCo();
+        final int[] cho = {150, 600};
+        for (int i = 0; i < cho.length; i++) {
+            javax.swing.Timer t = new javax.swing.Timer(cho[i], new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    doiCo();
+                    requestFocusInWindow();
+                }
+            });
+            t.setRepeats(false);
+            t.start();
+        }
+    }
+
+    /**
+     * Cửa sổ đổi cỡ -> tính lại hệ số phóng + viền (vùng chơi logic CỐ ĐỊNH 640x360), vẽ lại ngay. Lưu cỡ cửa sổ
+     * chỉ khi ở trạng thái thường (không phóng to / toàn màn) - mở lại đúng cỡ người chơi kéo.
+     */
     void doiCo() {
-        int w = Math.max(1, getWidth());
-        int h = Math.max(1, getHeight());
+        int w = getWidth();
+        int h = getHeight();
+        if (w <= 0 || h <= 0) return;
         if (NenPc.tinhKichThuoc(w, h)) NenPc.baoDoiCo();
-        if (!toanMan && w > 1) {
+        else NenPc.luong().yeuCauVe();
+        if (!toanMan && (khung.getExtendedState() & Frame.MAXIMIZED_BOTH) == 0) {
             CaiDat.cuaSoRong = w;
             CaiDat.cuaSoCao = h;
         }
@@ -132,6 +185,9 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 if (toanMan) datToanMan(false);
+                // đang phóng to: về cửa sổ thường trước (pack() không đổi cỡ cửa sổ phóng to -> lệch cỡ / đen)
+                if ((khung.getExtendedState() & Frame.MAXIMIZED_BOTH) != 0) khung.setExtendedState(Frame.NORMAL);
+                CaiDat.phongTo = false;
                 setPreferredSize(new Dimension(w, h));
                 khung.pack();
                 Rectangle man = khung.getGraphicsConfiguration().getBounds();
@@ -141,7 +197,7 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                     khung.setSize(Math.min(r.width, man.width), Math.min(r.height, man.height - in.top));
                 }
                 khung.setLocationRelativeTo(null);
-                doiCo();
+                doiCoMuon();
             }
         });
     }
@@ -155,12 +211,18 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 if (bat == toanMan) return;
-                GraphicsDevice gd = khung.getGraphicsConfiguration().getDevice();
-                khung.dispose();
+                GraphicsConfiguration gcf = khung.getGraphicsConfiguration();
+                Rectangle manHinh = gcf != null ? gcf.getBounds() : new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+                int trangThai = khung.getExtendedState();
+                synchronized (khoaTruoc) {
+                    khung.dispose();
+                }
                 if (bat) {
-                    cuaSoCu = khung.getBounds();
+                    phongToCu = (trangThai & Frame.MAXIMIZED_BOTH) != 0;
+                    if (!phongToCu) cuaSoCu = khung.getBounds();
+                    khung.setExtendedState(Frame.NORMAL);
                     khung.setUndecorated(true);
-                    khung.setBounds(gd.getDefaultConfiguration().getBounds());
+                    khung.setBounds(manHinh);
                 } else {
                     khung.setUndecorated(false);
                     if (cuaSoCu != null) khung.setBounds(cuaSoCu);
@@ -169,9 +231,10 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                 toanMan = bat;
                 CaiDat.toanMan = bat;
                 khung.setVisible(true);
+                if (!bat && phongToCu) khung.setExtendedState(Frame.MAXIMIZED_BOTH);
                 createBufferStrategy(2);
                 requestFocus();
-                doiCo();
+                doiCoMuon();
             }
         });
     }
@@ -308,7 +371,16 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     private void hopThanh(Graphics2D g, int W, int H) {
         synchronized (khoaTruoc) {
             Image t = truoc();
-            if (t != null) g.drawImage(t, 0, 0, null);
+            int tw = t == null ? 0 : t.getWidth(null), th = t == null ? 0 : t.getHeight(null);
+            if (t == null) {
+                g.setPaint(new java.awt.GradientPaint(0, 0, new Color(0x0B1630), 0, Math.max(1, H), new Color(0x1B2F5C)));
+                g.fillRect(0, 0, W, H);
+            } else if (tw == W && th == H) {
+                g.drawImage(t, 0, 0, null);
+            } else {
+                // vừa đổi hệ số (khung game cũ khác cỡ): phóng khung cũ cho kín tới khi có khung mới - không đen / rác
+                g.drawImage(t, 0, 0, W, H, null);
+            }
             khungMoi = false;
         }
         HieuUngHD.ve(g, W, H);
@@ -316,24 +388,63 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     }
 
     /** Đưa khung lên cửa sổ (luồng trình bày). */
+    /** ảnh hợp thành (khung game + hiệu ứng HD + lớp phủ) cỡ bộ đệm, rồi phóng / thu vào khung trình bày */
+    private VolatileImage hopV;
+
     private void trinhBay() {
-        int W = javax.microedition.lcdui.NenPc.thatW, H = javax.microedition.lcdui.NenPc.thatH;
+        int W = getWidth(), H = getHeight();
+        if (W <= 0 || H <= 0) return;
+        if (W != NenPc.cuaSoW || H != NenPc.cuaSoH) {
+            // cỡ đổi mà chưa có sự kiện (trình quản lý cửa sổ báo muộn): tự tính lại
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    doiCo();
+                }
+            });
+        }
+        int bw = NenPc.thatW, bh = NenPc.thatH;
+        int hx = NenPc.hienX, hy = NenPc.hienY, hw = NenPc.hienW, hh = NenPc.hienH;
         String chup = chupVao;
         if (chup != null) {
-            BufferedImage b = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+            BufferedImage b = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = b.createGraphics();
-            hopThanh(g, W, H);
+            hopThanh(g, bw, bh);
             g.dispose();
             luuAnh(b, chup);
             chupVao = null;
         }
         BufferStrategy bs = getBufferStrategy();
         if (bs == null || !isDisplayable()) return;
+        boolean thang = hw == bw && hh == bh;   // vừa khít hệ số nguyên: vẽ thẳng, không qua ảnh trung gian
         try {
+            Image hop = null;
+            if (!thang) {
+                GraphicsConfiguration gc = getGraphicsConfiguration();
+                if (hopV == null || hopV.getWidth() != bw || hopV.getHeight() != bh
+                        || (gc != null && hopV.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE)) {
+                    if (hopV != null) hopV.flush();
+                    hopV = createVolatileImage(bw, bh);
+                }
+                if (hopV != null) {
+                    Graphics2D g = hopV.createGraphics();
+                    hopThanh(g, bw, bh);
+                    g.dispose();
+                    hop = hopV;
+                }
+            }
             do {
                 do {
                     Graphics2D g = (Graphics2D) bs.getDrawGraphics();
-                    hopThanh(g, W, H);
+                    NenPc.veVien(g, W, H, hx, hy, hw, hh);
+                    if (thang) {
+                        g.translate(hx, hy);
+                        g.clipRect(0, 0, bw, bh);
+                        hopThanh(g, bw, bh);
+                    } else if (hop != null) {
+                        g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                        g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+                        g.drawImage(hop, hx, hy, hw, hh, null);
+                    }
                     g.dispose();
                 } while (bs.contentsRestored());
                 bs.show();
@@ -420,12 +531,19 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     }
 
     public void keyTyped(KeyEvent e) {
-        final char c = e.getKeyChar();
-        if (c == KeyEvent.CHAR_UNDEFINED) return;
+        if (!NhapChu.laChuGo(e)) return;   // Ctrl+V... là phím tắt, không phải chữ
+        goChuoi(String.valueOf(e.getKeyChar()));
+    }
+
+    /** Chữ gõ (KEY_TYPED hoặc chữ bộ gõ đã chốt) -> lớp phủ (hộp nhập) hoặc ô nhập của game. */
+    void goChuoi(final String s) {
         NenPc.luong().them(new Runnable() {
             public void run() {
-                if (LopPhu.goChu(c)) return;
-                BanPhim.goChu(c);
+                for (int i = 0; i < s.length(); i++) {
+                    char c = s.charAt(i);
+                    if (LopPhu.goChu(c)) continue;
+                    BanPhim.goChu(c);
+                }
             }
         });
     }
@@ -449,16 +567,26 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         if (GHI_NHAP) NhatKy.ghi("chuot " + e.getButton() + " " + e.getX() + "," + e.getY() + " focus=" + isFocusOwner());
         if (e.getButton() != MouseEvent.BUTTON1) {
             if (e.getButton() == MouseEvent.BUTTON3) {
-                final int x = e.getX(), y = e.getY();
+                final int x = NenPc.vaoBoDemX(e.getX()), y = NenPc.vaoBoDemY(e.getY());
                 NenPc.luong().them(new Runnable() {
                     public void run() {
-                        if (!LopPhu.chuotPhai(x, y)) BanPhim.nhanPhim(KeyEvent.VK_ESCAPE, 0, false);
+                        if (LopPhu.chuotPhai(x, y)) return;
+                        // chuột phải = menu ngữ cảnh TUỲ CHỌN (người chơi: giao dịch / tổ đội / nhắn); trống = Esc
+                        boolean xong = false;
+                        if (NenPc.trongKhung(x, y) && BanPhim.trongTheGioi()) {
+                            try {
+                                xong = game.pokemon.HanhDong.chuotPhai(NenPc.logicX(x), NenPc.logicY(y));
+                            } catch (Throwable t) {
+                                NhatKy.loi("chuot phai", t);
+                            }
+                        }
+                        if (!xong) BanPhim.nhanPhim(KeyEvent.VK_ESCAPE, 0, false);
                     }
                 });
             }
             return;
         }
-        final int x = e.getX(), y = e.getY();
+        final int x = NenPc.vaoBoDemX(e.getX()), y = NenPc.vaoBoDemY(e.getY());
         chuotX = x;
         chuotY = y;
         if (LopPhu.chuot(0, x, y)) {
@@ -466,13 +594,14 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
             return;
         }
         chuotTrongLopPhu = false;
+        if (!NenPc.trongKhung(x, y)) return;   // bấm vào viền ngoài khung game: bỏ qua
         dangKeo = true;
         NenPc.cham(0, x, y);
     }
 
     public void mouseReleased(MouseEvent e) {
         if (e.getButton() != MouseEvent.BUTTON1) return;
-        int x = e.getX(), y = e.getY();
+        int x = NenPc.vaoBoDemX(e.getX()), y = NenPc.vaoBoDemY(e.getY());
         if (chuotTrongLopPhu) {
             LopPhu.chuot(2, x, y);
             chuotTrongLopPhu = false;
@@ -485,8 +614,8 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     }
 
     public void mouseDragged(MouseEvent e) {
-        chuotX = e.getX();
-        chuotY = e.getY();
+        chuotX = NenPc.vaoBoDemX(e.getX());
+        chuotY = NenPc.vaoBoDemY(e.getY());
         if (chuotTrongLopPhu) {
             LopPhu.chuot(1, chuotX, chuotY);
             return;
@@ -495,22 +624,32 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     }
 
     public void mouseMoved(MouseEvent e) {
-        chuotX = e.getX();
-        chuotY = e.getY();
-        setCursor(LopPhu.diQua(chuotX, chuotY) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+        chuotX = NenPc.vaoBoDemX(e.getX());
+        chuotY = NenPc.vaoBoDemY(e.getY());
+        boolean bam = LopPhu.diQua(chuotX, chuotY);
+        if (!bam && NenPc.trongKhung(chuotX, chuotY)) {
+            try {
+                bam = game.pokemon.HanhDong.laVungBam(NenPc.logicX(chuotX), NenPc.logicY(chuotY));
+            } catch (Throwable t) {
+                bam = false;
+            }
+        }
+        Cursor c = bam ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor();
+        if (getCursor() != c) setCursor(c);
+        if (!NenPc.trongKhung(chuotX, chuotY) && !bam) {
+            chuotX = -1;   // trên viền: không di chuột lớp phủ
+            chuotY = -1;
+        }
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
         final int n = e.getWheelRotation();
-        final int x = e.getX(), y = e.getY();
+        final int x = NenPc.vaoBoDemX(e.getX()), y = NenPc.vaoBoDemY(e.getY());
         if (n == 0) return;
         NenPc.luong().them(new Runnable() {
             public void run() {
                 if (LopPhu.cuon(n, x, y)) return;
-                if (BanPhim.trongTheGioi()) {
-                    Zoom.doi(n < 0 ? 1 : -1);   // con lăn trong màn chơi = thu phóng bản đồ
-                    return;
-                }
+                if (BanPhim.trongTheGioi()) return;   // bản đồ không thu phóng (vùng nhìn cố định)
                 // danh sách / menu của game: con lăn = mũi tên lên / xuống
                 int vk = n < 0 ? KeyEvent.VK_UP : KeyEvent.VK_DOWN;
                 for (int i = 0; i < Math.min(3, Math.abs(n)); i++) {

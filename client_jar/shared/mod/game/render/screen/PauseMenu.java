@@ -654,6 +654,11 @@ extends Screen {
         ShopNew.gI().setImageCharWear();
     }
 
+    /** Bản đồ lớn của vùng (HUD: nút bản đồ / game.pokemon.HanhDong.moBanDoLon). */
+    public static void moBanDoLon() {
+        gI().doBigMap();
+    }
+
     private void doBigMap() {
         final short[][] sArrayArray = new short[][]{{28, 105}, {55, 100}, {24, 138}, {61, 148}, {105, 76}, {80, 128}, {112, 132}, {136, 111}, {76, 60}, {129, 158}, {173, 155}, {153, 160}, {145, 60}, {127, 87}, {126, 62}, {35, 60}, {35, 60}};
         short[] sArray = new short[17];

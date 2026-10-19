@@ -104,7 +104,11 @@ public class MsgDlg extends Dialog {
             }
         }
         this.hHop = this.dis + 18;
-        this.y = (Canvas.hh - 42) - ((this.dis - 90) / 2);
+        // pokemon: hộp (đỉnh = y + 12, cao hHop) canh giữa vùng trên thanh phím mềm đáy (~28 px), trong màn
+        this.y = ((Canvas.h - 28 - this.hHop) / 2) - 12;
+        if (this.y < -8) {
+            this.y = -8;
+        }
         this.ySt = 15;
         if (this.isIcon) {
             this.dis -= 50;

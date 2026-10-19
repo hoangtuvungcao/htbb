@@ -17,7 +17,7 @@ import javax.microedition.lcdui.TextField;
 
 /**
  * Hộp nhập chữ (MIDP TextBox) của bản PC: bảng kính giữa cửa sổ, gõ bằng bàn phím thật (cả tiếng Việt từ bộ gõ),
- * Ctrl+V dán, Enter = OK, Esc = Huỷ. Mọi hàm chạy trên luồng sự kiện NenPc.
+ * Ctrl+V dán, Enter = OK, Esc = Huỷ (phím không ghi trên nút; xem thẻ "Phím tắt" của Cài đặt). Mọi hàm chạy trên luồng sự kiện NenPc.
  */
 public final class HopNhap {
     static volatile boolean mo;
@@ -151,8 +151,8 @@ public final class HopNhap {
         float bw = 130 * u, bh = 36 * u, by2 = py + ph - bh - 20 * u;
         float bOk = px + pw - 24 * u - bw, bHuy = bOk - bw - 12 * u;
         Font fb = PhongChu.thuong(true).deriveFont(14 * u);
-        Kinh.nut(g, bHuy, by2, bw, bh, "Huỷ (Esc)", fb, false, tro(bHuy, by2, bw, bh), false);
-        Kinh.nut(g, bOk, by2, bw, bh, "Xong (Enter)", fb, true, tro(bOk, by2, bw, bh), false);
+        Kinh.nut(g, bHuy, by2, bw, bh, "Huỷ", fb, false, tro(bHuy, by2, bw, bh), false);
+        Kinh.nut(g, bOk, by2, bw, bh, "Xong", fb, true, tro(bOk, by2, bw, bh), false);
         vung.add(new LopPhu.Vung(bHuy, by2, bw, bh, new Runnable() {
             public void run() {
                 xong(false);
@@ -164,7 +164,7 @@ public final class HopNhap {
             }
         }, null));
         g.setFont(PhongChu.thuong(false).deriveFont(11.5f * u));
-        Kinh.chu(g, "Gõ tiếng Việt bằng bộ gõ của máy (Unikey, EVKey, ibus...) · Ctrl+V dán", px + 24 * u, by2 + bh * 0.62f, Kinh.CHU_MO);
+        Kinh.chu(g, "Gõ tiếng Việt bằng bộ gõ của máy (Unikey, EVKey, ibus...)", px + 24 * u, by2 + bh * 0.62f, Kinh.CHU_MO);
     }
 
     private static boolean tro(float x, float y, float w, float h) {

@@ -753,6 +753,8 @@ public final class HeSinhThaiMenu {
                 HeSinhThaiGame.phatThuong(p, thuoc, "dung thuoc " + ma);
                 bao(p, "Đã mở " + VatLieuSinhThai.ten(ma) + ".");
                 HeSinhThaiGame.danhDau(p);
+            } else {
+                bao(p, "Không còn " + VatLieuSinhThai.tenKhoa(khoa) + " trong túi sinh thái."); // truoc: im lang
             }
             return;
         }
@@ -761,6 +763,7 @@ public final class HeSinhThaiMenu {
             return;
         }
         if (!h.bot(khoa, 1)) {
+            bao(p, "Không còn " + VatLieuSinhThai.tenKhoa(khoa) + " trong túi sinh thái."); // truoc: im lang
             return;
         }
         synchronized (h) {

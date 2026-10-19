@@ -39,15 +39,63 @@ const khoiDau = [0, 1, 3, 4, 2].map((cls) => {
 })
 
 const DIEU_KHIEN = [
-  { viec: 'Di chuyển', dt: 'Phím mũi tên / 2·4·6·8', pc: 'Phím mũi tên', cam: 'Cần điều khiển ảo hoặc chạm vào bản đồ' },
-  { viec: 'Đánh thường / xác nhận', dt: 'Phím 5 / phím giữa', pc: 'Enter hoặc 5', cam: 'Nút đánh' },
-  { viec: 'Dùng chiêu', dt: 'Phím 1 · 3 (và 7 · 9 nếu gán)', pc: 'Phím số 1 · 3 · 7 · 9', cam: 'Nút chiêu quanh nút đánh' },
-  { viec: 'Đổi bảng chiêu', dt: 'Phím 0', pc: 'Phím 0', cam: 'Nút đổi bảng' },
-  { viec: 'Thuốc hồi máu / Ether', dt: 'Phím 7 / phím 9', pc: 'Phím 7 / 9', cam: 'Ô thuốc trên thanh chiêu' },
-  { viec: 'Mở menu', dt: 'Phím chọn trái', pc: 'F1', cam: 'Nút menu' },
-  { viec: 'Đổi mục tiêu', dt: 'Phím chọn phải', pc: 'F2 / Tab', cam: 'Chạm vào mục tiêu' },
-  { viec: 'Chat', dt: 'Phím #', pc: 'Nút chat', cam: 'Nút chat' },
-  { viec: 'Tương tác người chơi', dt: 'Phím * (mời nhóm, giao dịch, kết bạn, xuống thú)', pc: 'Chạm/nhấp vào người chơi', cam: 'Chạm vào người chơi' },
+  { viec: 'Di chuyển', dt: 'Phím mũi tên / 2·4·6·8', cam: 'Cần điều khiển ảo hoặc chạm vào bản đồ' },
+  { viec: 'Đánh thường / xác nhận', dt: 'Phím 5 / phím giữa', cam: 'Nút đánh' },
+  { viec: 'Dùng chiêu', dt: 'Phím 1 · 3 (và 7 · 9 nếu gán)', cam: 'Nút chiêu quanh nút đánh' },
+  { viec: 'Đổi bảng chiêu', dt: 'Phím 0', cam: 'Nút đổi bảng' },
+  { viec: 'Thuốc hồi máu / Ether', dt: 'Phím 7 / phím 9', cam: 'Ô thuốc trên thanh chiêu' },
+  { viec: 'Mở menu', dt: 'Phím chọn trái', cam: 'Nút menu' },
+  { viec: 'Đổi mục tiêu', dt: 'Phím chọn phải', cam: 'Chạm vào mục tiêu' },
+  { viec: 'Chat', dt: 'Phím #', cam: 'Nút chat' },
+  { viec: 'Tương tác người chơi', dt: 'Phím * (mời nhóm, giao dịch, kết bạn, xuống thú)', cam: 'Chạm vào người chơi' },
+]
+/**
+ * Phím tắt bản PC (Java) — NƠI DUY NHẤT trên web liệt kê phím PC. Trong game các nút không ghi phím;
+ * danh sách đầy đủ (theo phím đã đổi) ở Cài đặt (F10) → thẻ "Phím tắt", hoặc bấm F1.
+ * Phím mặc định: client_pc/src/htbb/pc/BanPhim.java (MAC_DINH) — đổi ở đó thì sửa cả bảng này.
+ */
+const PHIM_PC: { nhom: string, ds: { phim: string[], viec: string }[] }[] = [
+  {
+    nhom: 'Di chuyển & tương tác',
+    ds: [
+      { phim: ['W A S D', 'Mũi tên'], viec: 'Đi' },
+      { phim: ['Enter'], viec: 'Hành động theo ngữ cảnh: nói chuyện với NPC, đánh, nhặt đồ, tương tác · tiếp / xác nhận lời thoại' },
+      { phim: ['Chuột trái'], viec: 'Làm mọi thứ: đi tới, chọn, nói chuyện, đánh, tiếp lời thoại, bấm nút' },
+      { phim: ['Chuột phải'], viec: 'Menu ngữ cảnh (tuỳ chọn)' },
+      { phim: ['Lăn chuột'], viec: 'Cuộn danh sách' },
+    ],
+  },
+  {
+    nhom: 'Chiến đấu (đổi được ở Cài đặt → Đổi phím)',
+    ds: [
+      { phim: ['Space'], viec: 'Đánh thường' },
+      { phim: ['1 – 5'], viec: 'Dùng chiêu 1 – 5 trên thanh chiêu' },
+      { phim: ['Q', 'E'], viec: 'Bình HP / Bình MP' },
+      { phim: ['Tab'], viec: 'Đổi mục tiêu' },
+      { phim: ['Shift + Tab'], viec: 'Mục tiêu trước' },
+      { phim: ['R'], viec: 'Đổi bộ chiêu' },
+    ],
+  },
+  {
+    nhom: 'Giao diện',
+    ds: [
+      { phim: ['T', '/'], viec: 'Mở chat (đang gõ: Enter gửi tin)' },
+      { phim: ['Esc'], viec: 'Menu · quay lại · đóng hộp thoại' },
+      { phim: ['M'], viec: 'Menu nhanh' },
+      { phim: ['P'], viec: 'Tổ đội' },
+      { phim: ['F3', 'F2'], viec: 'Phím mềm trái / phải' },
+      { phim: ['Ctrl + V'], viec: 'Dán chữ vào ô nhập' },
+    ],
+  },
+  {
+    nhom: 'Hệ thống',
+    ds: [
+      { phim: ['F10'], viec: 'Cài đặt' },
+      { phim: ['F1'], viec: 'Mở trang Phím tắt trong game' },
+      { phim: ['F11', 'Alt + Enter'], viec: 'Toàn màn hình' },
+      { phim: ['F12'], viec: 'Chụp màn hình' },
+    ],
+  },
 ]
 const meo = POKEDEX.huongDanGame.filter(t => !/^Phím/.test(t))
 
@@ -167,19 +215,46 @@ const tienHoaDau = (() => {
             </p>
           </WikiSection>
 
-          <WikiSection id="dieu-khien" title="4. Điều khiển" lead="Bố cục phím theo điện thoại phím số; bản PC dùng bàn phím tương ứng, bản Android có nút cảm ứng.">
+          <WikiSection id="dieu-khien" title="4. Điều khiển" lead="Bố cục phím theo điện thoại phím số, bản Android có nút cảm ứng. Bản PC có bộ phím tắt riêng (bảng bên dưới).">
             <div class="bang-cuon">
               <table class="bang-wiki">
                 <thead>
                   <tr>
-                    <th>Việc</th><th>Điện thoại phím / Java</th><th>PC</th><th>Cảm ứng (Android)</th>
+                    <th>Việc</th><th>Điện thoại phím / Java</th><th>Cảm ứng (Android)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="d in DIEU_KHIEN" :key="d.viec">
                     <td class="font-semibold text-highlighted">
                       {{ d.viec }}
-                    </td><td>{{ d.dt }}</td><td>{{ d.pc }}</td><td>{{ d.cam }}</td>
+                    </td><td>{{ d.dt }}</td><td>{{ d.cam }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 id="phim-tat-pc" class="mt-8 font-display text-xl font-bold text-highlighted">
+              Phím tắt bản PC
+            </h3>
+            <p class="mt-1 text-sm text-muted">
+              Chỉ cần chuột trái là chơi được hết; bàn phím cho nhanh tay. Bản đồ không thu phóng (lăn chuột chỉ cuộn
+              danh sách). Nút trong game chỉ ghi tên lệnh, không ghi phím — xem lại bất cứ lúc nào: bấm <UKbd value="F1" />
+              (hoặc Cài đặt <UKbd value="F10" /> → thẻ "Phím tắt"); đổi phím ở thẻ "Đổi phím".
+            </p>
+            <div v-for="n in PHIM_PC" :key="n.nhom" class="bang-cuon mt-4">
+              <table class="bang-wiki">
+                <thead>
+                  <tr>
+                    <th>Phím</th><th>{{ n.nhom }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="d in n.ds" :key="d.viec">
+                    <td class="whitespace-nowrap">
+                      <template v-for="(p, i) in d.phim" :key="p">
+                        <span v-if="i" class="text-muted"> / </span><UKbd :value="p" />
+                      </template>
+                    </td><td>{{ d.viec }}</td>
                   </tr>
                 </tbody>
               </table>

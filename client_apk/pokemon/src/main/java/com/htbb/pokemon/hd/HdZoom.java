@@ -1,61 +1,45 @@
 package com.htbb.pokemon.hd;
 
-import game.model.Tilemap;
 import game.render.screen.GameScr;
 import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.NenAndroid;
+import javax.microedition.lcdui.KhungCoDinh;
 
 /**
- * Bản đồ nhỏ hơn màn (nhà, hang, map mở đầu...): bản jar vẽ bản đồ 1x giữa khoảng đen. Bản APK phóng phần
- * THẾ GIỚI của GameScr.paint (nền, nhân vật, hiệu ứng, thời tiết) cho kín màn: hệ số làm tròn để
- * hệ số * NenAndroid.heSo là số nguyên (pixel art không méo), camera theo nhân vật, kẹp trong mép bản đồ
- * -> không còn khoảng đen, hạt / thời tiết nằm gọn trong bản đồ. HUD + bảng vẽ sau (không phóng).
- * Chạm vào thế giới đổi ngược qua wx / wy (GameScr.updatePoint / findRoad).
+ * CAMERA CỐ ĐỊNH (quyết định chủ game - chống lợi thế màn to, giống bản PC): giao diện logic 640x360, thế giới
+ * phóng ĐÚNG 2 lần -> vùng nhìn 320x180 px thế giới (20 x 11,25 ô) trên mọi máy. Không thu phóng (bỏ tuỳ chọn
+ * "Phóng" và phóng theo cỡ bản đồ của bản cũ).
+ *
+ * port-j2me.py (vá BẮT BUỘC): GameScr.loadCamera đặt gsw / gsh = gsw(Canvas.w) / gsh(Canvas.h) để camera của game
+ * theo vùng nhìn 320x180; GameScr.paint gọi batDau sau g.translate(-cmx, -cmy) và ket trước HUD; toạ độ chạm
+ * thế giới cmx + Canvas.px -> wx(cmx, Canvas.px). Bản đồ nhỏ hơn vùng nhìn: game tự canh giữa, lề vẽ nền().
  */
 public final class HdZoom {
-    private static float z = 1f, dx, dy;
-    private static float camX = Float.NaN, camY;
-    private static int mapW, mapH;
+    /** phóng thế giới so với giao diện logic (cố định) */
+    static final float Z = KhungCoDinh.THE_GIOI_Z;
+    private static boolean dang;
 
     private HdZoom() {
     }
 
-    /** Gọi ngay sau g.translate(-cmx, -cmy) của GameScr.paint. */
+    /** Vùng nhìn thế giới (px thế giới) - GameScr.loadCamera (gsw). */
+    public static int gsw(int canvasW) {
+        return KhungCoDinh.nhinW(canvasW);
+    }
+
+    public static int gsh(int canvasH) {
+        return KhungCoDinh.nhinH(canvasH);
+    }
+
+    /** Gọi ngay sau g.translate(-cmx, -cmy) của GameScr.paint: lớp thế giới phóng Z. */
     public static void batDau(Graphics g, GameScr gs) {
-        z = 1f;
-        dx = 0;
-        dy = 0;
-        if (!Hud.BAT || gs == null || gs.mainChar == null) return;
-        int mw = Tilemap.w * 16, mh = Tilemap.h * 16;
-        int W = game.render.Canvas.w, H = game.render.Canvas.h;
-        int k = Math.max(1, NenAndroid.heSo);
-        // thu phóng thế giới kiểu game di động: thấy ~16 ô chiều cao (nhân vật to, dễ chạm); map nhỏ hơn màn
-        // thì phóng cho kín. Hệ số * heSo nguyên -> pixel art không méo. Camera theo nhân vật, kẹp mép map.
-        float muon = Hud.zoomTheGioi ? Math.max(1f, (float) Math.floor(H / (16f * 16f) * k) / k) : 1f;
-        float r = mw > 0 && mh > 0 ? Math.max(W / (float) mw, H / (float) mh) : 1f;
-        float zz = Math.max(muon, (float) Math.ceil(r * k - 0.01f) / k);
-        if (mw <= 0 || mh <= 0 || zz <= 1.001f) {
-            camX = Float.NaN;
-            return;
-        }
-        float vw = W / zz, vh = H / zz;
-        float tx = gs.mainChar.x - vw / 2, ty = gs.mainChar.y - 16 - vh / 2;
-        tx = Math.max(0, Math.min(mw - vw, tx));
-        ty = Math.max(0, Math.min(mh - vh, ty));
-        if (Float.isNaN(camX) || mw != mapW || mh != mapH) {
-            camX = tx;
-            camY = ty;
-            mapW = mw;
-            mapH = mh;
-        } else {
-            camX += (tx - camX) * 0.22f;
-            camY += (ty - camY) * 0.22f;
-        }
-        // điểm ảnh thật nguyên: làm tròn dịch theo 1/heSo
-        z = zz;
-        dx = Math.round(zz * (GameScr.cmx - camX) * k) / (float) k;
-        dy = Math.round(zz * (GameScr.cmy - camY) * k) / (float) k;
-        g.datBienDoi(z, dx, dy);
+        dang = true;
+        g.datBienDoi(Z, 0, 0);
+    }
+
+    /** Nền sau bản đồ (thay fillRect đen của jar): navy theo chủ đề - lề quanh bản đồ nhỏ hơn vùng nhìn. */
+    public static void nen(Graphics g, int x, int y, int w, int h) {
+        g.setColor(0x0A1426);
+        g.fillRect(x, y, w, h);
     }
 
     /** Hết phần thế giới (trước khung thông tin / HUD): vẽ thời tiết HD trong khung thế giới rồi bỏ phóng. */
@@ -65,40 +49,39 @@ public final class HdZoom {
         } catch (Throwable e) {
             // bỏ qua
         }
-        if (z != 1f || dx != 0 || dy != 0) g.datBienDoi(1f, 0, 0);
+        if (dang) g.datBienDoi(1f, 0, 0);
+        dang = false;
     }
 
     /** Vùng thế giới đang thấy (px thế giới): trái, trên, rộng, cao - khung camera trên bản đồ nhỏ. */
     static float[] vungThay() {
-        int W = game.render.Canvas.w, H = game.render.Canvas.h;
-        if (z <= 1.001f || Float.isNaN(camX)) return new float[]{GameScr.cmx, GameScr.cmy, W, H};
-        return new float[]{camX, camY, W / z, H / z};
+        return new float[]{GameScr.cmx, GameScr.cmy, GameScr.gsw, GameScr.gsh};
     }
 
     /** Tạm bỏ phóng thế giới để vẽ phủ cả màn (đêm, thời tiết); khoiPhuc trả lại. */
     static void boTam(Graphics g) {
-        if (z != 1f || dx != 0 || dy != 0) g.datBienDoi(1f, 0, 0);
+        if (dang) g.datBienDoi(1f, 0, 0);
     }
 
     static void khoiPhuc(Graphics g) {
-        if (z != 1f || dx != 0 || dy != 0) g.datBienDoi(z, dx, dy);
+        if (dang) g.datBienDoi(Z, 0, 0);
     }
 
-    /** Toạ độ màn của điểm thế giới (lớp phủ: nổ lên cấp quanh nhân vật). */
+    /** Toạ độ màn (logic) của điểm thế giới (lớp phủ: nổ lên cấp quanh nhân vật). */
     static float manX(int wx) {
-        return (wx - GameScr.cmx) * z + dx;
+        return (wx - GameScr.cmx) * Z;
     }
 
     static float manY(int wy) {
-        return (wy - GameScr.cmy) * z + dy;
+        return (wy - GameScr.cmy) * Z;
     }
 
     /** Toạ độ thế giới của điểm chạm (thay cmx + Canvas.px). */
     public static int wx(int cmx, int px) {
-        return cmx + (int) ((px - dx) / z);
+        return cmx + KhungCoDinh.theGioi(px);
     }
 
     public static int wy(int cmy, int py) {
-        return cmy + (int) ((py - dy) / z);
+        return cmy + KhungCoDinh.theGioi(py);
     }
 }

@@ -23,17 +23,18 @@ import java.util.ArrayDeque;
 /**
  * Cầu nối MIDP <-> Android cho bản APK Huyền Thoại Bảo Bối (code game = code bản jar J2ME).
  *
- * - Độ phân giải logic: màn thật chia một HỆ SỐ NGUYÊN (cạnh ngắn ~ 320..400 px logic) rồi phóng lên
- *   bằng láng giềng gần nhất -> pixel art sắc nét, không méo; phần dư (< hệ số) là viền đen.
+ * - CAMERA CỐ ĐỊNH (KhungCoDinh): giao diện logic luôn 640x360, thế giới phóng đúng 2 (vùng nhìn 320x180 px
+ *   thế giới) trên mọi máy - không phóng to / thu nhỏ. Khung phóng hệ số nguyên khi được (720p x2, 1080p x3,
+ *   1440p x4), không thì hệ số lẻ (láng giềng gần nhất); phần dư là viền theo chủ đề (không đen).
  * - Một luồng sự kiện (LuongSuKien) chạy tuần tự: chạm, phím, callSerially, paint - giống máy J2ME.
  * - Khung hình vẽ vào Bitmap logic rồi đưa lên SurfaceView (lockHardwareCanvas, không lọc).
  */
 public final class NenAndroid {
     public static final String TAG = "HTBB";
-    /** cạnh ngắn logic nhỏ nhất (px): hệ số = cạnh ngắn thật / CANH_NGAN (làm tròn xuống) */
-    public static int CANH_NGAN = 320;
-    /** cạnh dài logic nhỏ nhất (px): máy tính bảng 4:3 không bị phóng quá to (2048x1536 -> 682x512 x3) */
-    public static int CANH_DAI = 640;
+    /** cạnh ngắn logic CỐ ĐỊNH (px) - camera cố định, không đổi theo máy */
+    public static final int CANH_NGAN = KhungCoDinh.LOGIC_H;
+    /** cạnh dài logic CỐ ĐỊNH (px) */
+    public static final int CANH_DAI = KhungCoDinh.LOGIC_W;
     /** vùng an toàn (tai thỏ / bo góc) theo px logic: trái, trên, phải, dưới - HUD tránh các vùng này */
     public static volatile int anToanTrai, anToanTren, anToanPhai, anToanDuoi;
     private static volatile int[] anToanThat = new int[4];
@@ -41,9 +42,14 @@ public final class NenAndroid {
     public static volatile Activity hoatDong;
     /** Context ứng dụng (đọc assets, lưu RMS) - còn sống cả khi Activity bị tạo lại. */
     public static volatile Context ungDung;
-    public static volatile int rong = 360;
-    public static volatile int cao = 640;
+    public static volatile int rong = KhungCoDinh.LOGIC_W;
+    public static volatile int cao = KhungCoDinh.LOGIC_H;
+    /** hệ số nguyên gần nhất (chỗ cũ cần số nguyên); phép biến đổi thật dùng tiLe */
     public static volatile int heSo = 1;
+    /** hệ số màn thật / px logic (có thể lẻ) */
+    public static volatile float tiLe = 1f;
+    /** khung cố định hiện tại (lệch, cỡ, biến đổi chạm) */
+    public static volatile KhungCoDinh khung = KhungCoDinh.tinh(KhungCoDinh.LOGIC_W, KhungCoDinh.LOGIC_H);
     public static volatile int lechX;
     public static volatile int lechY;
     private static volatile int thatW;
@@ -67,22 +73,20 @@ public final class NenAndroid {
 
     // ---------------- kích thước ----------------
 
-    /** Tính độ phân giải logic từ cỡ vùng vẽ thật. true = đổi so với trước. */
+    /** Khung cố định 640x360 cho cỡ vùng vẽ thật (hệ số + viền). true = cỡ logic đổi so với trước. */
     public static boolean tinhKichThuoc(int w, int h) {
         if (w <= 0 || h <= 0) return false;
-        int ngan = Math.min(w, h);
-        int dai = Math.max(w, h);
-        int s = Math.max(1, Math.min(ngan / CANH_NGAN, dai / CANH_DAI));
-        int lw = w / s;
-        int lh = h / s;
+        KhungCoDinh k = KhungCoDinh.tinh(w, h);
         thatW = w;
         thatH = h;
-        lechX = (w - lw * s) / 2;
-        lechY = (h - lh * s) / 2;
-        heSo = s;
-        boolean doi = lw != rong || lh != cao;
-        rong = lw;
-        cao = lh;
+        lechX = k.lechX;
+        lechY = k.lechY;
+        tiLe = k.tiLe;
+        heSo = k.heSoNguyen();
+        khung = k;
+        boolean doi = rong != KhungCoDinh.LOGIC_W || cao != KhungCoDinh.LOGIC_H;
+        rong = KhungCoDinh.LOGIC_W;
+        cao = KhungCoDinh.LOGIC_H;
         tinhAnToan();
         return doi;
     }
@@ -93,13 +97,23 @@ public final class NenAndroid {
         tinhAnToan();
     }
 
+    /** Vùng an toàn logic tính từ mép khung: phần tai thỏ / bo góc đã nằm trong viền thì không chừa nữa. */
     private static void tinhAnToan() {
-        int s = Math.max(1, heSo);
         int[] a = anToanThat;
-        anToanTrai = (a[0] + s - 1) / s;
-        anToanTren = (a[1] + s - 1) / s;
-        anToanPhai = (a[2] + s - 1) / s;
-        anToanDuoi = (a[3] + s - 1) / s;
+        int[] l = khung.anToanLogic(a[0], a[1], a[2], a[3]);
+        anToanTrai = l[0];
+        anToanTren = l[1];
+        anToanPhai = l[2];
+        anToanDuoi = l[3];
+    }
+
+    /** Toạ độ màn thật -> logic (float, không kẹp) - HUD đa chạm dùng cùng phép biến đổi. */
+    public static float logicX(float x) {
+        return khung.logicX(x);
+    }
+
+    public static float logicY(float y) {
+        return khung.logicY(y);
     }
 
     /** Lớp vẽ đè (HUD cảm ứng HD) - vẽ sau khung game, có thể vẽ lại 60 hình/giây độc lập với game. */
@@ -173,15 +187,9 @@ public final class NenAndroid {
 
     /** Chạm: kieu 0 = nhấn, 1 = kéo, 2 = thả. Toạ độ màn thật. */
     public static void cham(final int kieu, float x, float y) {
-        int s = heSo;
-        int lx = (int) ((x - lechX) / s);
-        int ly = (int) ((y - lechY) / s);
-        if (lx < 0) lx = 0;
-        if (ly < 0) ly = 0;
-        if (lx >= rong) lx = rong - 1;
-        if (ly >= cao) ly = cao - 1;
-        final int fx = lx;
-        final int fy = ly;
+        KhungCoDinh k = khung;
+        final int fx = k.logicXKep(x);
+        final int fy = k.logicYKep(y);
         luong().them(new Runnable() {
             public void run() {
                 Displayable d = Display.hienTai;
@@ -557,10 +565,9 @@ public final class NenAndroid {
                 android.graphics.Canvas sc = khoaMat();
                 if (sc == null) return;
                 try {
-                    sc.drawColor(0xFF000000);
+                    veVien(sc);
                     int sv = sc.save();
-                    sc.translate(lechX, lechY);
-                    sc.scale(heSo, heSo);
+                    vaoKhung(sc);
                     try {
                         if (g == null) g = new Graphics(sc, w, h);
                         g.ganCanvas(sc, w, h);
@@ -586,10 +593,9 @@ public final class NenAndroid {
                 android.graphics.Canvas sc = khoaMat();
                 if (sc == null) return;
                 try {
-                    sc.drawColor(0xFF000000);
+                    veVien(sc);
                     int sv = sc.save();
-                    sc.translate(lechX, lechY);
-                    sc.scale(heSo, heSo);
+                    vaoKhung(sc);
                     sc.drawRenderNode(nutGame);
                     sc.restoreToCount(sv);
                     veLopPhu(sc, w, h);
@@ -603,8 +609,7 @@ public final class NenAndroid {
             LopPhu lp = lopPhu;
             if (lp == null) return;
             int sv = sc.save();
-            sc.translate(lechX, lechY);
-            sc.scale(heSo, heSo);
+            vaoKhung(sc);
             try {
                 if (gPhu == null) gPhu = new Graphics(sc, w, h);
                 gPhu.ganCanvas(sc, w, h);
@@ -613,6 +618,53 @@ public final class NenAndroid {
                 if (loiVe++ < 20) Log.e(TAG, "loi ve lop phu", e);
             }
             sc.restoreToCount(sv);
+        }
+
+        private final Paint pVien = new Paint();
+        private final Paint pVienNet = new Paint();
+        private int vienW = -1, vienH = -1, vienLX = -1, vienLY = -1;
+
+        /** Dịch + phóng vào khung cố định và cắt trong khung (HUD / game không tràn ra viền). */
+        private void vaoKhung(android.graphics.Canvas sc) {
+            KhungCoDinh k = khung;
+            sc.clipRect(k.lechX, k.lechY, k.lechX + k.khungW, k.lechY + k.khungH);
+            sc.translate(k.lechX, k.lechY);
+            sc.scale(k.tiLe, k.tiLe);
+        }
+
+        /** Nền màn + viền theo chủ đề quanh khung (letterbox / pillarbox): navy đậm dần, mép khung viền vàng mờ. */
+        private void veVien(android.graphics.Canvas sc) {
+            KhungCoDinh k = khung;
+            if (k.lechX <= 0 && k.lechY <= 0) {
+                sc.drawColor(0xFF0A1426);
+                return;
+            }
+            int W = sc.getWidth(), H = sc.getHeight();
+            if (W != vienW || H != vienH || k.lechX != vienLX || k.lechY != vienLY) {
+                vienW = W;
+                vienH = H;
+                vienLX = k.lechX;
+                vienLY = k.lechY;
+                pVien.setShader(new android.graphics.RadialGradient(W / 2f, H / 2f, Math.max(W, H) * 0.62f,
+                        new int[]{0xFF1B2D52, 0xFF0F1B33, 0xFF060C1A}, new float[]{0f, 0.55f, 1f},
+                        android.graphics.Shader.TileMode.CLAMP));
+            }
+            pVien.setStyle(Paint.Style.FILL);
+            sc.drawRect(0, 0, W, H, pVien);
+            Paint p = pVienNet;
+            p.setAntiAlias(true);
+            p.setStyle(Paint.Style.STROKE);
+            float t = Math.max(1f, k.tiLe * 0.75f);
+            p.setStrokeWidth(t);
+            p.setColor(0x66FFCB05);
+            sc.drawRect(k.lechX - t / 2, k.lechY - t / 2, k.lechX + k.khungW + t / 2, k.lechY + k.khungH + t / 2, p);
+            p.setStrokeWidth(t * 3);
+            p.setColor(0x40000000);
+            sc.drawRect(k.lechX - t * 2.5f, k.lechY - t * 2.5f, k.lechX + k.khungW + t * 2.5f, k.lechY + k.khungH + t * 2.5f, p);
+            // nền trong khung (game vẽ đè)
+            p.setStyle(Paint.Style.FILL);
+            p.setColor(0xFF0A1426);
+            sc.drawRect(k.lechX, k.lechY, k.lechX + k.khungW, k.lechY + k.khungH, p);
         }
 
         private android.graphics.Canvas khoaMat() {

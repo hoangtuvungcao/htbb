@@ -413,6 +413,56 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("tu_dong.hoi_sinh_moi_gio", "tu_dong", "so", "2", true, "cau_hinh")
                     .nhan("Tự hồi sinh tối đa / giờ", "Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật \"Tự hồi sinh\", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ.")
                     .khoang(0L, 20L),
+            new DinhNghiaKhoa("tu_dong.ke_hoach", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Máy chủ điều khiển từng bước", "1 = máy chủ chọn mục tiêu, chiêu, thuốc, nhặt đồ, rút lui cho client 0.9.2+ (client chỉ thực hiện). 0 = client tự chọn như bản 0.9.1 (máy chủ vẫn giới hạn giờ / nhịp / vùng)."),
+            new DinhNghiaKhoa("tu_dong.cap_toi_thieu", "tu_dong", "so", "0", true, "cau_hinh")
+                    .nhan("Cấp tối thiểu để bật", "0 = mọi cấp. Dưới cấp này bấm Bắt đầu thì được báo rõ cấp cần.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("tu_dong.chenh_cap_tren", "tu_dong", "so", "5", true, "cau_hinh")
+                    .nhan("Bỏ Pokémon cao hơn quá N cấp", "Không đánh Pokémon hoang dã cao hơn cấp mình quá ngần này. -1 = không giới hạn.")
+                    .khoang(-1L, 1000L),
+            new DinhNghiaKhoa("tu_dong.chenh_cap_duoi", "tu_dong", "so", "0", true, "cau_hinh")
+                    .nhan("Bỏ Pokémon thấp hơn quá N cấp", "0 = không giới hạn dưới (vẫn đánh Pokémon yếu).")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("tu_dong.danh_boss", "tu_dong", "co", "0", true, "cau_hinh")
+                    .nhan("Cho đánh boss", "0 = không chọn boss / Pokémon huyền thoại làm mục tiêu (đánh trúng boss vẫn dừng theo tu_dong.tat_khi_pvp)."),
+            new DinhNghiaKhoa("tu_dong.hp_quai_toi_da_pt", "tu_dong", "so", "500", true, "cau_hinh")
+                    .nhan("Bỏ Pokémon quá trâu (% HP mình)", "Bỏ Pokémon có HP tối đa lớn hơn ngần này % HP tối đa của mình. 0 = tắt.")
+                    .khoang(0L, 100000L),
+            new DinhNghiaKhoa("tu_dong.chon_chieu_theo_he", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Chọn chiêu theo khắc hệ", "1 = điểm chiêu = sát thương × khắc hệ × STAB, bỏ chiêu đang hồi / thiếu PP. 0 = chỉ theo sát thương."),
+            new DinhNghiaKhoa("tu_dong.nguong_thuoc_hp", "tu_dong", "so", "50", true, "cau_hinh")
+                    .nhan("Ngưỡng thuốc HP mặc định (%)", "Uống thuốc HP khi HP dưới ngưỡng người chơi chọn trong bảng; client cũ dùng số này. 0 = máy chủ không cho tự uống thuốc HP.")
+                    .khoang(0L, 90L),
+            new DinhNghiaKhoa("tu_dong.nguong_thuoc_mp", "tu_dong", "so", "30", true, "cau_hinh")
+                    .nhan("Ngưỡng thuốc PP mặc định (%)", "Như trên cho PP. 0 = tắt.")
+                    .khoang(0L, 90L),
+            new DinhNghiaKhoa("tu_dong.nguong_hp_thap", "tu_dong", "so", "25", true, "cau_hinh")
+                    .nhan("HP thấp thì rút lui (%)", "HP dưới ngưỡng mà hết thuốc: rút về điểm bắt đầu nghỉ (hoặc dừng nếu tu_dong.hp_thap_dung=1). 0 = tắt.")
+                    .khoang(0L, 90L),
+            new DinhNghiaKhoa("tu_dong.hp_thap_dung", "tu_dong", "co", "0", true, "cau_hinh")
+                    .nhan("HP thấp thì dừng hẳn", "1 = dừng Tự động đánh thay vì rút lui nghỉ hồi phục."),
+            new DinhNghiaKhoa("tu_dong.hoi_phuc_toi", "tu_dong", "so", "80", true, "cau_hinh")
+                    .nhan("Nghỉ hồi phục tới (%)", "Rút lui nghỉ tới khi HP đạt ngần này % rồi đánh tiếp.")
+                    .khoang(10L, 100L),
+            new DinhNghiaKhoa("tu_dong.nhat_ban_kinh", "tu_dong", "so", "96", true, "cau_hinh")
+                    .nhan("Bán kính nhặt đồ (px)", "Chỉ đi nhặt đồ rơi của mình trong bán kính này quanh Pokémon (và trong vùng). 0 = không nhặt. 1 ô = 16 px.")
+                    .khoang(0L, 480L)
+                    .buoc(16L),
+            new DinhNghiaKhoa("tu_dong.dung_khi_day_tui", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Dừng khi hành trang đầy", "1 = hành trang đầy thì dừng và báo."),
+            new DinhNghiaKhoa("tu_dong.dung_khi_tu_di", "tu_dong", "co", "1", true, "cau_hinh")
+                    .nhan("Dừng khi người chơi tự di chuyển", "1 = bấm phím di chuyển / chạm bản đồ thì dừng Tự động đánh. 0 = nhường 3 giây rồi chạy tiếp."),
+            new DinhNghiaKhoa("tu_dong.tranh_pk_px", "tu_dong", "so", "160", true, "cau_hinh")
+                    .nhan("Tránh người bật PK (px)", "Có người chơi khác bật PK trong bán kính này thì lùi về điểm bắt đầu chờ. 0 = tắt.")
+                    .khoang(0L, 960L)
+                    .buoc(16L),
+            new DinhNghiaKhoa("tu_dong.map_cam", "tu_dong", "chuoi", "", true, "cau_hinh")
+                    .nhan("Bản đồ cấm Tự động đánh thêm (id)", "Ngoài sàn đấu / Gym / chiến trường / mê cung / bản đồ boss. Cách nhau dấu phẩy; trống = không.")
+                    .mau("^[0-9, ]*$")
+                    .doDai(255),
+            new DinhNghiaKhoa("tu_dong.hoi_sinh_tra_phi", "tu_dong", "co", "0", true, "cau_hinh")
+                    .nhan("Cho tự dùng vật phẩm hồi sinh trả phí", "1 = khi người chơi đồng ý riêng (bảng Tự động: Tự hồi sinh \"cả vật phẩm lượng\") mới được tự dùng Thuốc hồi sinh tối đa (lượng khoá). 0 = chỉ Thuốc hồi sinh thường; không bao giờ tự trả xu / lượng."),
             new DinhNghiaKhoa("hoi_sinh.bat", "hoi_sinh", "co", "1", true, "cau_hinh")
                     .nhan("Bật cơ chế hồi sinh mới", "0 = luồng cũ (popup hồi sinh tại chỗ 5% giờ thu nhập, tự hồi sinh dưới cấp 50)."),
             new DinhNghiaKhoa("hoi_sinh.xu_phan_tram_gio", "hoi_sinh", "so", "40", true, "cau_hinh")

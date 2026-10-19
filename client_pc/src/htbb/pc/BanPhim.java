@@ -10,10 +10,12 @@ import java.util.Properties;
  * Bàn phím PC -> phím J2ME của code game (chạy trên luồng sự kiện NenPc).
  *
  * Trong màn chơi (không hộp thoại / menu): WASD + mũi tên đi, Space đánh (phím 5), 1..5 = ô chiêu 1,3,5,7,9,
- * Q / E = bình HP / MP (ô 7 / 9), Tab đổi mục tiêu, Enter mở chat, Esc menu (phím mềm trái), R đổi bộ chiêu
- * (phím 0), M menu nhanh (phím #), P tổ đội (phím *). F1/F2 = phím mềm trái/phải, F10 cài đặt, F11 toàn màn,
- * F12 chụp màn. Đổi phím trong Cài đặt (F10) -> lưu cai_dat.properties (phim.<ma>=mã phím Java).
- * Đang gõ chữ (ô nhập của game đang chọn): mọi chữ (cả tiếng Việt từ bộ gõ) vào ô nhập.
+ * Q / E = bình HP / MP (ô 7 / 9), Tab đổi mục tiêu, ENTER = hành động ngữ cảnh (tiếp lời thoại, nói chuyện NPC,
+ * đánh, nhặt, câu cá - HanhDong.nguCanh), T hoặc "/" mở chat (Enter gửi khi đang gõ), Esc menu (phím mềm trái),
+ * R đổi bộ chiêu (phím 0), M menu nhanh (phím #), P tổ đội (phím *). F1 trang Phím tắt, F2/F3 phím mềm phải/trái,
+ * F10 cài đặt, F11 toàn màn, F12 chụp màn. KHÔNG thu phóng (vùng nhìn cố định). Đổi phím trong Cài đặt (F10)
+ * -> lưu cai_dat.properties (phim.<ma>=mã phím Java).
+ * Đang gõ chữ (ô nhập của game đang chọn): mọi chữ (cả tiếng Việt từ bộ gõ) vào ô nhập, Ctrl+V dán.
  */
 public final class BanPhim {
     // ---- hành động đổi được phím ----
@@ -25,7 +27,7 @@ public final class BanPhim {
         "Đổi bộ chiêu", "Menu nhanh", "Tổ đội", "Cài đặt", "Toàn màn hình", "Chụp màn hình"};
     public static final int[] MAC_DINH = {KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE,
         KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_Q, KeyEvent.VK_E,
-        KeyEvent.VK_TAB, KeyEvent.VK_ENTER, KeyEvent.VK_ESCAPE, KeyEvent.VK_R, KeyEvent.VK_M, KeyEvent.VK_P,
+        KeyEvent.VK_TAB, KeyEvent.VK_T, KeyEvent.VK_ESCAPE, KeyEvent.VK_R, KeyEvent.VK_M, KeyEvent.VK_P,
         KeyEvent.VK_F10, KeyEvent.VK_F11, KeyEvent.VK_F12};
     public static final int LEN = 0, XUONG = 1, TRAI = 2, PHAI = 3, DANH = 4, CHIEU1 = 5, BINH_HP = 10, BINH_MP = 11,
         MUC_TIEU = 12, CHAT = 13, MENU = 14, DOI_BO = 15, MENU_NHANH = 16, TO_DOI = 17, CAI_DAT = 18, TOAN_MAN = 19,
@@ -89,6 +91,10 @@ public final class BanPhim {
     public static boolean dangGo() {
         if (Canvas.gameScr != null && Canvas.currentScreen == Canvas.gameScr && Canvas.gameScr.chatMode) return true;
         if (Canvas.currentDialog != null && !(Canvas.currentDialog instanceof game.model.InputDlg)) return false; // hộp thoại đè lên ô nhập
+        // màn có ô nhập + dòng chọn (Tạo nhân vật: Tên / Pokémon / Vùng; Đăng nhập: ô Nhớ mật khẩu): chữ luôn là chữ
+        // (màn tự đưa chữ về ô nhập), mũi tên / Tab / Enter / Esc vẫn điều khiển
+        if (Canvas.currentDialog == null && !Canvas.menu.showMenu && (Canvas.currentScreen instanceof game.render.screen.CreateCharScr
+                || Canvas.currentScreen instanceof game.render.screen.LoginScr)) return true;
         return javax.microedition.lcdui.NenPc.soKhung - khungONhap <= 2;
     }
 
@@ -96,7 +102,7 @@ public final class BanPhim {
     public static boolean trongTheGioi() {
         GameScr gs = Canvas.gameScr;
         return gs != null && Canvas.currentScreen == gs && Canvas.currentDialog == null && !Canvas.menu.showMenu
-                && !gs.chatMode && !Canvas.isLoad;
+                && !gs.chatMode && !Canvas.isLoad && !game.render.screen.TuDong.bangDangMo();
     }
 
     static int hanhDong(int vk) {
@@ -169,15 +175,26 @@ public final class BanPhim {
                 case KeyEvent.VK_TAB:
                     go(-2);
                     return;
+                case KeyEvent.VK_V:
+                case KeyEvent.VK_INSERT:
+                    if ((mod & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.META_DOWN_MASK)) != 0
+                            || vk == KeyEvent.VK_INSERT && (mod & KeyEvent.SHIFT_DOWN_MASK) != 0) {
+                        dan();   // Ctrl+V / Shift+Insert: dán vào ô nhập
+                    }
+                    return;
                 default:
-                    return; // chữ đi qua KEY_TYPED
+                    return; // chữ đi qua KEY_TYPED / bộ gõ
             }
         }
         boolean theGioi = trongTheGioi();
         int hd = hanhDong(vk);
-        if (theGioi && !lap && (vk == KeyEvent.VK_EQUALS || vk == KeyEvent.VK_PLUS || vk == KeyEvent.VK_ADD
-                || vk == KeyEvent.VK_MINUS || vk == KeyEvent.VK_SUBTRACT)) {
-            Zoom.doi(vk == KeyEvent.VK_MINUS || vk == KeyEvent.VK_SUBTRACT ? -1 : 1);   // + / - thu phóng bản đồ
+        if (theGioi && !lap && vk == KeyEvent.VK_ENTER && hd != CHAT) {
+            // Enter = PHÍM HÀNH ĐỘNG NGỮ CẢNH (kiểu NRO): tiếp lời thoại / nói chuyện NPC / đánh / nhặt / câu cá
+            hanhDongNguCanh(vk);
+            return;
+        }
+        if (theGioi && !lap && vk == KeyEvent.VK_SLASH && hd < 0) {
+            moChat();   // "/" mở chat (gõ lệnh)
             return;
         }
         if (theGioi) {
@@ -207,11 +224,7 @@ public final class BanPhim {
                     }
                     return;
                 case CHAT:
-                    GameScr.typechat = GameScr.CHAT_NORMAL;
-                    Canvas.gameScr.chatMode = true;
-                    Canvas.gameScr.tfChat.setIputType(0);
-                    Canvas.gameScr.tfChat.isFocus = true;
-                    Canvas.clearKeyHold();
+                    moChat();
                     return;
                 default:
                     break;
@@ -254,8 +267,47 @@ public final class BanPhim {
         if (ma != null && Canvas.instance != null) Canvas.instance.keyReleased(ma.intValue());
     }
 
+    /** Mở ô chat (phím Chat - mặc định T - hoặc "/"); Enter gửi khi đang gõ chat. */
+    static void moChat() {
+        GameScr.typechat = GameScr.CHAT_NORMAL;
+        Canvas.gameScr.chatMode = true;
+        Canvas.gameScr.tfChat.setIputType(0);
+        Canvas.gameScr.tfChat.isFocus = true;
+        Canvas.clearKeyHold();
+        BO_KY_TU_MO_CHAT[0] = true;   // ký tự của chính phím mở chat (t / /) không vào ô chat
+    }
+
+    /** bỏ đúng một KEY_TYPED ngay sau khi mở chat bằng phím chữ */
+    private static final boolean[] BO_KY_TU_MO_CHAT = new boolean[1];
+
+    /** Enter trong màn chơi: hành động ngữ cảnh (HanhDong) hoặc phím chọn (5) của game. */
+    static void hanhDongNguCanh(int vk) {
+        try {
+            if (game.pokemon.HanhDong.nguCanh()) return;
+        } catch (Throwable e) {
+            NhatKy.loi("hanh dong ngu canh", e);
+        }
+        nhan(vk, -5);
+    }
+
+    /** Ctrl+V: dán chữ trong khay nhớ vào ô nhập đang gõ (lọc xuống dòng / ký tự điều khiển). */
+    static void dan() {
+        try {
+            Object o = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().getData(java.awt.datatransfer.DataFlavor.stringFlavor);
+            String d = NhapChu.locDan(o == null ? null : String.valueOf(o), 200);
+            for (int i = 0; i < d.length(); i++) goChu(d.charAt(i));
+        } catch (Throwable e) {
+            // khay nhớ trống / không phải chữ
+        }
+    }
+
     /** Ký tự gõ (KEY_TYPED, cả chữ tiếng Việt từ bộ gõ). */
     static void goChu(char c) {
+        if (BO_KY_TU_MO_CHAT[0]) {
+            BO_KY_TU_MO_CHAT[0] = false;
+            int ma = PHIM[CHAT];
+            if (c == '/' || ma >= KeyEvent.VK_A && ma <= KeyEvent.VK_Z && Character.toUpperCase(c) == (char) ma) return;
+        }
         if (c < 32 || c == 127 || !dangGo()) return;
         if (oNhapSo && (c < '0' || c > '9')) return;
         game.render.screen.TField.isQwerty = true;

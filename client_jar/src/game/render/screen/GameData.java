@@ -20,10 +20,8 @@ public class GameData {
     private static GameData me;
     public static FrameImage imgSkillIcon;
     private boolean loadData = false;
-    static Image imgWait;
     public static Vector imgHorse = new Vector();
     public static Hashtable listImgIcon = new Hashtable();
-    static byte idWait = 0;
 
     public static GameData gI() {
         if (me != null) {
@@ -34,15 +32,6 @@ public class GameData {
         return gameData;
     }
 
-    static {
-        try {
-            if (imgWait == null) {
-                imgWait = Image.createImage("/waiting.png");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void getImage() {
         if (!this.loadData) {
@@ -157,10 +146,9 @@ public class GameData {
         GameService.gI().doGetImage((byte) 3, ver);
     }
 
-    public static void setIndexWait() {
-        if (Canvas.gameTick % 5 == 0) {
-            idWait = (byte) ((idWait + 1) % (imgWait.getHeight() / 18));
-        }
+    /** pokemon: icon đang tải (thay ảnh waiting.png của game gốc) = Poké Ball nhỏ quay, tâm (x, y). */
+    public static void veCho(Graphics g, int x, int y) {
+        game.pokemon.GiaoDien.pokeBall(g, x, y, 6, -(Canvas.gameTick * 30) % 360);
     }
 
     public static void paintIcon(Graphics g, short id, int x, int y) {
@@ -180,8 +168,7 @@ public class GameData {
                 g.drawRegion(img.img, 0, img.indexFrame * h, w, h, 0, x, y, 3);
                 return;
             }
-            g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
-            setIndexWait();
+            veCho(g, x, y);
         }
     }
 
@@ -202,8 +189,7 @@ public class GameData {
                 g.drawRegion(img.img, 0, img.indexFrame * h, w, h, 0, x, y, align);
                 return;
             }
-            g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
-            setIndexWait();
+            veCho(g, x, y);
         }
     }
 
@@ -213,8 +199,7 @@ public class GameData {
             if (!img.isLoad) {
                 g.drawImage(img.img, x, y, 3);
             } else {
-                g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
-                setIndexWait();
+                veCho(g, x, y);
             }
         }
     }
@@ -225,8 +210,7 @@ public class GameData {
             if (!img.isLoad) {
                 g.drawImage(img.img, x, y, align);
             } else {
-                g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
-                setIndexWait();
+                veCho(g, x, y);
             }
         }
     }

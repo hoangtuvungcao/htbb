@@ -22,6 +22,8 @@ public class CreateCharScr extends Screen {
     Command cmdClear;
     int currentClazz;
     int selected;
+    /** pokemon: đã báo "ký tự không nhận" (một lần mỗi lần mở màn) */
+    boolean daBaoKyTu;
     public MainChar ch = new MainChar();
     public TField tfChat = new TField(this);
 
@@ -38,6 +40,27 @@ public class CreateCharScr extends Screen {
     public void switchToMe() {
         loadImg();
         super.switchToMe();
+        // pokemon: mở màn = ô Tên đang gõ (không kẹt ở dòng Vùng); bỏ cú chạm còn sót từ màn trước
+        this.selected = 0;
+        this.tfChat.isFocus = true;
+        this.right = this.cmdClear;
+        this.daBaoKyTu = false;
+        Canvas.isPointerClick = false;
+    }
+
+    /** pokemon: phím là chữ gõ (bàn phím QWERTY / PC / Android), không phải phím số điều khiển. */
+    static boolean laChuGo(int keyCode) {
+        if (keyCode >= 65 && keyCode <= 90 || keyCode >= 97 && keyCode <= 122) {
+            return true;
+        }
+        return TField.isQwerty && keyCode >= 32 && keyCode != 127;
+    }
+
+    /** pokemon: đưa con trỏ gõ về ô Tên (dòng 0). */
+    void chonOTen() {
+        this.selected = 0;
+        this.tfChat.isFocus = true;
+        this.right = this.cmdClear;
     }
 
     @Override
@@ -139,7 +162,20 @@ public class CreateCharScr extends Screen {
     @Override
     public boolean keyPress(int keyCode) {
         boolean isChangeClass = false;
+        // pokemon: chữ gõ / xoá khi đang ở dòng khác (Pokémon, Vùng) -> vào ô Tên (không nuốt mất phím)
+        if (this.selected != 0 && (laChuGo(keyCode) || keyCode == -8 || keyCode == 8)) {
+            chonOTen();
+        }
         if (this.selected == 0) {
+            if (keyCode > 32 && keyCode != 127 && laChuGo(keyCode) && !(keyCode >= 48 && keyCode <= 57
+                    || keyCode >= 65 && keyCode <= 90 || keyCode >= 97 && keyCode <= 122)) {
+                // pokemon: ký tự không nhận (dấu tiếng Việt, ký hiệu): báo rõ một lần thay vì nuốt im lặng
+                if (!this.daBaoKyTu && Canvas.currentDialog == null) {
+                    this.daBaoKyTu = true;
+                    Canvas.startOKDlg("Tên chỉ gồm chữ cái KHÔNG DẤU (a-z, A-Z) và số 0-9, dài 4-15 ký tự.");
+                }
+                return true;
+            }
             this.tfChat.keyPressed(keyCode);
         }
         // pokemon: chi 3 dong - 0 ten, 1 Pokemon khoi dau (class), 2 lanh tho (dong goc 4)
@@ -154,6 +190,7 @@ public class CreateCharScr extends Screen {
             } else {
                 this.tfChat.isFocus = false;
             }
+            this.right = this.selected == 0 ? this.cmdClear : null;
         }
         if (keyCode == -1) {
             this.selected--;
@@ -165,6 +202,7 @@ public class CreateCharScr extends Screen {
             } else {
                 this.tfChat.isFocus = false;
             }
+            this.right = this.selected == 0 ? this.cmdClear : null;
         }
         int selected = this.selected;
         if (selected == 2) {
@@ -311,9 +349,18 @@ public class CreateCharScr extends Screen {
         int yVung = this.tfChat.y + 26;
         if (Canvas.isPointer(xBang() + 6, yVung - 3, rongBang() - 12, 19)) {
             Canvas.isPointerClick = false;
-            selectNation = selectNation == 0 ? 1 : 0;
+            // pokemon: chạm lần đầu chỉ CHỌN dòng Vùng, chạm lần nữa mới đổi vùng (không đổi nhầm)
+            if (this.selected == 2) {
+                selectNation = selectNation == 0 ? 1 : 0;
+            }
             this.selected = 2;
             this.tfChat.isFocus = false;
+            this.right = null;
+            return;
+        }
+        // chạm vào hàng ô Tên (cả nhãn "Tên:") = gõ tên
+        if (Canvas.isPointer(xBang() + 6, this.tfChat.y - 2, rongBang() - 12, this.tfChat.height + 4) && this.selected != 0) {
+            chonOTen();
         }
     }
 
@@ -321,6 +368,9 @@ public class CreateCharScr extends Screen {
     public void update() {
         chamPokemon();
         this.tfChat.update();
+        if (this.tfChat.isFocus && this.selected != 0) {
+            chonOTen();   // pokemon: TField tự bật focus khi chạm ô -> đồng bộ dòng đang chọn
+        }
         this.ch.update();
         super.update();
     }

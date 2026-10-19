@@ -905,6 +905,12 @@ public class Canvas
 				{
 					g.drawImage(imgLogo, w / 2, h / 2, 3);
 				}
+				// HTBB: Poké Ball quay + "Đang tải..." sát đáy (= client_jar Canvas màn tải)
+				GiaoDien.dangTai(g, w / 2, h - 44, 12);
+				if (MFont.borderFont != null)
+				{
+					MFont.borderFont.drawString(g, "Đang tải...", w / 2, h - 26, 2);
+				}
 			}
 			resetTrans(g);
 			if (!infoDisConnect.Equals(string.Empty))

@@ -27,6 +27,7 @@ public class BotChucNang {
     static int PORT;
     static String TIEN_TO;
     static final String DB = System.getProperty("db", "");
+    static final int BAN = Integer.getInteger("ban", -1);
     static final boolean GM = !"0".equals(System.getProperty("gm", "1"));
     static final String NOI = System.getProperty("noi", "/home/vantrong/Downloads/pokemon/HTBB");
     static int soTk = Integer.getInteger("tu", 1);
@@ -302,6 +303,12 @@ public class BotChucNang {
                     case 77:
                         e.chu = "NANG CAP: " + r.readUTF();
                         break;
+                    case -104: { // ket qua dung vat pham (thong bao nhanh, ban >= 902)
+                        int loai = r.readByte();
+                        e.so = new int[]{loai};
+                        e.chu = (loai == 1 ? "DUNG LOI: " : loai == 0 ? "DUNG OK: " : "DUNG TIN: ") + r.readUTF();
+                        break;
+                    }
                     case -35:
                         e.chu = "KHAM: " + r.readUTF();
                         break;
@@ -563,7 +570,9 @@ public class BotChucNang {
         String dangNhap(String mk) throws IOException {
             ketNoi();
             int m = moc();
-            gui(1, user, mk, "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + user);
+            // -Dban=N: gui them so ban client sau ma may nhu client that (AutoGuard) - ban >= 902 nhan thong bao nhanh -104
+            if (BAN >= 0) gui(1, user, mk, "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + user, BAN);
+            else gui(1, user, mk, "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + user);
             cho(b -> b.coLenh(m, 13) || b.coLenh(m, 2) || b.dut, 8000);
             if (coLenh(m, 13)) return null;
             String t = chuTu(m);

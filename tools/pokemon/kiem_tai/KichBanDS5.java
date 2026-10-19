@@ -9,6 +9,7 @@ class KichBanDS5 {
     }
 
     static void dangKy() {
+        KichBanDungVatPham.dangKy();
         BotChucNang.dk("nhan_vat", false, KichBanDS5::nhanVat);
         BotChucNang.dk("boss", true, KichBanDS5::boss);
         BotChucNang.dk("he_sinh_thai", true, KichBanDS5::heSinhThai);

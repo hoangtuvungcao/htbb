@@ -16,20 +16,19 @@ public final class CaiDat {
     public static int cuaSoRong = 1280;
     public static int cuaSoCao = 720;
     public static boolean toanMan;
+    /** cửa sổ đang phóng to (maximize) lúc thoát - mở lại phóng to; cua_so_rong/cao = cỡ cửa sổ thường */
+    public static boolean phongTo;
     public static int amNhac = 80;
     public static int amHieuUng = 90;
     public static boolean tatTieng;
-    /** cạnh ngắn logic tối thiểu: 240 = giao diện lớn, 320 = vừa (mặc định), 400 = nhỏ */
-    public static int coGiaoDien = 320;
     public static boolean chuHD = true;
     public static boolean khungHD = true;
-    public static boolean goiYPhim = true;
+    /** cũ: dải gợi ý phím tắt (đã bỏ - mọi phím ở trang "Phím tắt" của Cài đặt, F1); luôn tắt */
+    public static boolean goiYPhim = false;
     public static boolean hienFps;
     /** Hiệu ứng cao: hiệu ứng HD + trình bày 60 khung/giây; thấp: chỉ khung game (máy yếu) */
     public static boolean hieuUngCao = true;
-    /** thu phóng bản đồ: chênh so với mức tự động (htbb.pc.Zoom) */
-    public static int zoomBu;
-    /** dải gợi ý phím đang mở (F1) */
+    /** cũ (F1 bật/tắt dải gợi ý phím; nay F1 mở trang Phím tắt) - giữ để đọc/ghi tệp cũ */
     public static boolean goiYMo = true;
     /** máy chủ ghi trong cài đặt (rỗng = theo bản build) */
     public static String mayChu = "";
@@ -103,17 +102,16 @@ public final class CaiDat {
         cuaSoRong = so(p, "cua_so_rong", 1280, 640, 7680);
         cuaSoCao = so(p, "cua_so_cao", 720, 400, 4320);
         toanMan = co(p, "toan_man", false);
+        phongTo = co(p, "phong_to", false);
         amNhac = so(p, "am_nhac", 80, 0, 100);
         amHieuUng = so(p, "am_hieu_ung", 90, 0, 100);
         tatTieng = co(p, "tat_tieng", false);
-        coGiaoDien = so(p, "co_giao_dien", 320, 240, 480);
+        // co_giao_dien / zoom_bu của tệp cũ: bỏ qua (cỡ giao diện + thu phóng đã bỏ)
         chuHD = co(p, "chu_hd", true);
         khungHD = co(p, "khung_hd", true);
-        goiYPhim = co(p, "goi_y_phim", true);
+        // goi_y_phim của tệp cũ: bỏ qua (dải gợi ý phím đã bỏ)
         hienFps = co(p, "hien_fps", false);
         hieuUngCao = co(p, "hieu_ung_cao", true);
-        zoomBu = so(p, "zoom_bu", 0, -8, 8);
-        Zoom.bu = zoomBu;
         goiYMo = co(p, "goi_y_mo", true);
         mayChu = p.getProperty("may_chu", "").trim();
         BanPhim.nap(p);
@@ -124,16 +122,15 @@ public final class CaiDat {
         p.setProperty("cua_so_rong", String.valueOf(cuaSoRong));
         p.setProperty("cua_so_cao", String.valueOf(cuaSoCao));
         p.setProperty("toan_man", toanMan ? "1" : "0");
+        p.setProperty("phong_to", phongTo ? "1" : "0");
         p.setProperty("am_nhac", String.valueOf(amNhac));
         p.setProperty("am_hieu_ung", String.valueOf(amHieuUng));
         p.setProperty("tat_tieng", tatTieng ? "1" : "0");
-        p.setProperty("co_giao_dien", String.valueOf(coGiaoDien));
         p.setProperty("chu_hd", chuHD ? "1" : "0");
         p.setProperty("khung_hd", khungHD ? "1" : "0");
-        p.setProperty("goi_y_phim", goiYPhim ? "1" : "0");
+        p.setProperty("goi_y_phim", "0");
         p.setProperty("hien_fps", hienFps ? "1" : "0");
         p.setProperty("hieu_ung_cao", hieuUngCao ? "1" : "0");
-        p.setProperty("zoom_bu", String.valueOf(zoomBu));
         p.setProperty("goi_y_mo", goiYMo ? "1" : "0");
         if (mayChu.length() > 0) p.setProperty("may_chu", mayChu);
         BanPhim.luu(p);

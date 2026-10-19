@@ -179,6 +179,7 @@ biến thể của Java).
 | `-100` | Tự động đánh | C↔S | Tự động đánh do máy chủ điều khiển ([TuDong.java](../server/src/com/htbb/pokemon/TuDong.java)) | |
 | `-101` | Hồi sinh | C↔S | Hộp chọn cách hồi sinh ([HoiSinhGame.java](../server/src/real/HoiSinhGame.java)) | Client cũ dùng menu `-30` |
 | `-102` / `-103` | Ngoại hình | S→C / C→S | Phụ kiện hiển thị trên thân Pokémon và cài đặt ẩn/hiện ([NgoaiHinh.java](../server/src/com/htbb/pokemon/NgoaiHinh.java)) | |
+| `-104` | Kết quả dùng vật phẩm | S→C | `u8 loại (0 xong, 1 không dùng được, 2 tin), UTF nội dung` — thông báo nhanh sau lệnh `29` / `22` ([DungVatPham.java](../server/src/real/DungVatPham.java), client [DungDo.java](../client_jar/src/game/pokemon/DungDo.java)) | Chỉ gửi cho client bản ≥ 902; bản cũ / Unity nhận hộp thoại `37` |
 
 Sprite Pokémon **đóng gói sẵn trong client**. Server chỉ gửi số `dex` và cờ `shiny`. Lý do: đường gửi ảnh cũ của server
 dùng toạ độ u8 và kích thước sbyte, không chứa nổi khung hình PMD.

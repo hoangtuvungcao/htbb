@@ -18,6 +18,8 @@ public class ChangScr : MyScreen
 
 	private int lastTime;
 
+	private long batDau;
+
 	private mVector list = new mVector();
 
 	private int map = -1;
@@ -45,7 +47,6 @@ public class ChangScr : MyScreen
 			lastTime = Environment.TickCount / 1000;
 			GameService.gI().changeMap(map, xMap, yMap);
 		}
-		updateWaiting();
 	}
 
 	public void disConnectWhenTimeLimit()
@@ -69,33 +70,41 @@ public class ChangScr : MyScreen
 
 	public override void paint(MyGraphics g)
 	{
+		// HTBB: màn chuyển bản đồ kiểu Pokémon (= client_jar ChangScr): nền key art, thẻ chờ có Poké Ball quay,
+		// "Đang tải bản đồ..." + thanh tiến trình ước lượng theo thời gian (chậm dần tới ~95%)
+		Canvas.resetTrans(g);
 		g.setColor(0);
 		g.fillRect(0, 0, Canvas.w, Canvas.h);
-		for (int i = 0; i < list.size(); i++)
+		BannerParallax.ve(g, false);
+		Canvas.resetTrans(g);
+		int cw = System.Math.Min(Canvas.w - 24, 220);
+		int ch = 46;
+		int cx = (Canvas.w - cw) / 2;
+		int cy = System.Math.Min(Canvas.h * 2 / 3 - ch / 2, Canvas.h - 8 - ch);
+		GiaoDien.hop(g, cx, cy, cw, ch);
+		int r = 12;
+		int bx = cx + 10 + r;
+		GiaoDien.dangTai(g, bx, cy + ch / 2, r);
+		int tx = bx + r + 10;
+		int tw = cx + cw - 12 - tx;
+		string chu = "Đang tải bản đồ" + new string('.', (Environment.TickCount / 400) & 3);
+		MFont f = MFont.arialFont != null ? MFont.arialFont : MFont.normalFont[0];
+		if (f != null)
 		{
-			Position position = (Position)list.elementAt(i);
-			if (Res.imgEffect[8] == null)
-			{
-				Res.getImgEffect(8);
-			}
-			g.drawRegion(Res.imgEffect[8], 0, position.index / 2 * 10, 10, 10, 0, position.x, position.y, 3);
+			f.drawString(g, chu, tx, cy + 8, 0);
 		}
-		if (Res.imgArrow[3] == null)
-		{
-			Res.loadImgArrow(3);
-		}
-		if (Res.imgArrow[3] != null)
-		{
-			g.drawRegion(Res.imgArrow[3], 0, index * 24, 24, 24, trans, x, y, 3);
-		}
+		long t = System.Math.Max(0L, (long)Environment.TickCount - batDau);
+		int hy = cy + ch - 15;
+		GiaoDien.khoi(g, tx, hy, tw, 7, 3, GiaoDien.VIEN);
+		GiaoDien.khoi(g, tx + 1, hy + 1, tw - 2, 5, 2, 0x3A4258);
+		int dai = System.Math.Max(3, (int)((tw - 2) * (950L * t / (t + 1200L)) / 1000));
+		GiaoDien.khoiDoc(g, tx + 1, hy + 1, dai, 5, 2, GiaoDien.VANG_NHAT, 0xFF9F1C);
 	}
 
 	public override void switchToMe()
 	{
-		ang = 0;
-		dis = 5;
-		list.removeAllElements();
 		lastTime = Environment.TickCount / 1000;
+		batDau = Environment.TickCount;
 		base.switchToMe();
 	}
 

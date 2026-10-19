@@ -74,7 +74,7 @@ final class BangTuDong {
             case VUNG:
                 return "Vùng: " + TuDong.banKinh() / 16 + " ô";
             case HOI_SINH:
-                return TuDong.tuHoiSinh ? "Tự hồi sinh: bật" : "Tự hồi sinh: tắt";
+                return !TuDong.tuHoiSinh ? "Tự hồi sinh: tắt" : (TuDong.hoiSinhLuong ? "Tự hồi sinh: cả đồ lượng" : "Tự hồi sinh: thuốc thường");
             default:
                 return (m - CHIEU + 1) + ". " + tenChieu(TuDong.thuTu[m - CHIEU]);
         }
@@ -166,7 +166,16 @@ final class BangTuDong {
                 TuDong.veHoiPhuc = !TuDong.veHoiPhuc;
                 break;
             case HOI_SINH:
-                TuDong.tuHoiSinh = !TuDong.tuHoiSinh;
+                // tắt -> thuốc thường (xu) -> cả vật phẩm lượng (đồng ý riêng, máy chủ còn phải cho) -> tắt
+                if (!TuDong.tuHoiSinh) {
+                    TuDong.tuHoiSinh = true;
+                    TuDong.hoiSinhLuong = false;
+                } else if (!TuDong.hoiSinhLuong) {
+                    TuDong.hoiSinhLuong = true;
+                } else {
+                    TuDong.tuHoiSinh = false;
+                    TuDong.hoiSinhLuong = false;
+                }
                 break;
             case VUNG: {
                 int toiDa = TuDong.svBanKinh > 0 ? TuDong.svBanKinh / 16 : 99;

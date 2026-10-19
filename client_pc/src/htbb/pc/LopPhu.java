@@ -8,12 +8,15 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import javax.microedition.lcdui.NenPc;
 
 /**
- * Lớp phủ HD của bản PC, vẽ sau game ở toạ độ THẬT (khử răng cưa): dải gợi ý phím tắt trong màn chơi, nút
- * cài đặt, bảng Cài đặt (độ phân giải / toàn màn / cỡ giao diện / âm lượng / đổi phím / giới thiệu), hộp nhập
+ * Lớp phủ HD của bản PC, vẽ sau game ở toạ độ THẬT (khử răng cưa): nút cài đặt, bảng Cài đặt kiểu Pokémon (thẻ
+ * Hiển thị / Âm thanh / Đổi phím / Phím tắt (mọi phím, F1) / Giới thiệu; biểu tượng vẽ bằng nét vì phông đi kèm
+ * không có ký hiệu ✕ ⚙ ▶ ♪...), hộp nhập
  * chữ (TextBox), thông báo nhanh, FPS. Giao diện kiểu "immediate mode": mỗi khung vẽ lại + ghi vùng bấm;
  * chuột (luồng AWT) đọc bản chụp vùng bấm, hành động chạy trên luồng sự kiện NenPc.
  */
@@ -63,12 +66,11 @@ public final class LopPhu {
     private static long htKhung;
     private static final long BAT_DAU = System.currentTimeMillis();
 
-    private static volatile long moGoiYLuc = System.currentTimeMillis();
-
-    /** F1: mở dải phím tắt (đếm lại thời gian tự thu gọn). */
+    /** F1 (BanPhim gọi, luồng sự kiện): mở Cài đặt ở trang "Phím tắt". Nút / ô chiêu không ghi phím nữa. */
     static void moGoiY() {
-        moGoiYLuc = System.currentTimeMillis();
-        CaiDat.luu();
+        caiDatMo = true;
+        tab = TAB_PHIM_TAT;
+        doiPhim = -1;
     }
 
     public static void bao(String s) {
@@ -103,12 +105,12 @@ public final class LopPhu {
         Kinh.min(g);
         float u = Math.max(0.75f, Math.min(W / 1280f, H / 720f));
         try {
-            if (BanPhim.trongTheGioi() && !caiDatMo && !HopNhap.mo) {
-                if (CaiDat.goiYPhim) veGoiY(g, W, H, u);
-            }
             if (!caiDatMo && !HopNhap.mo) {
                 ThanhLenh.ve(g, W, H, u, dangVe);
-                veNutCaiDat(g, W, H, u);
+                // màn chơi có HUD màn rộng: nút cài đặt nằm trong hàng nút phải trên (HudRong) -> không vẽ đè khung mục tiêu
+                boolean hudCo = game.render.Canvas.gameScr != null && game.render.Canvas.currentScreen == game.render.Canvas.gameScr
+                        && game.render.screen.HudRong.bat();
+                if (!hudCo) veNutCaiDat(g, W, H, u);
             }
             if (HopNhap.mo) HopNhap.ve(g, W, H, u, dangVe);
             if (caiDatMo) veCaiDat(g, W, H, u);
@@ -180,7 +182,7 @@ public final class LopPhu {
         if (sang) {
             g.setFont(f(true, 12 * u));
             FontMetrics fm = g.getFontMetrics();
-            String s = "Cài đặt (" + BanPhim.tenPhim(BanPhim.PHIM[BanPhim.CAI_DAT]) + ") · phím tắt (F1)";
+            String s = "Cài đặt";
             float w = fm.stringWidth(s) + 16 * u;
             Kinh.bang(g, cx + r + 6 * u, cy - 12 * u, w, 24 * u, 12 * u, 255);
             Kinh.chuGiua(g, s, cx + r + 6 * u + w / 2, cy, Kinh.CHU, true);
@@ -192,261 +194,287 @@ public final class LopPhu {
         });
     }
 
-    /** Dải gợi ý phím tắt (màn chơi): 30 s đầu hiện đủ, sau đó thu gọn còn một dòng nhỏ; di chuột vào để mở. */
-    private static void veGoiY(Graphics2D g, int W, int H, float u) {
-        String[][] ds = {
-            {ten(BanPhim.LEN) + ten(BanPhim.TRAI) + ten(BanPhim.XUONG) + ten(BanPhim.PHAI), "Đi"},
-            {ten(BanPhim.DANH), "Đánh"},
-            {ten(BanPhim.CHIEU1) + "–" + ten(BanPhim.CHIEU1 + 4), "Chiêu"},
-            {ten(BanPhim.BINH_HP) + "/" + ten(BanPhim.BINH_MP), "Bình HP/MP"},
-            {ten(BanPhim.MUC_TIEU), "Mục tiêu"},
-            {ten(BanPhim.CHAT), "Chat"},
-            {ten(BanPhim.MENU), "Menu"},
-            {ten(BanPhim.MENU_NHANH), "Menu nhanh"},
-            {"Lăn / + -", "Thu phóng"},
-            {"F1", "Ẩn gợi ý"},
-        };
-        float h = 18 * u;
-        Font fp = f(true, 10.5f * u);
-        Font fc = f(false, 11.5f * u);
-        g.setFont(fc);
-        FontMetrics fm = g.getFontMetrics();
-        // bề rộng
-        float tong = 10 * u;
-        float[] wp = new float[ds.length];
-        for (int i = 0; i < ds.length; i++) {
-            g.setFont(fp);
-            wp[i] = Math.max(h, g.getFontMetrics().stringWidth(ds[i][0]) + h * 0.6f);
-            tong += wp[i] + 5 * u + fm.stringWidth(ds[i][1]) + 12 * u;
-        }
-        float x0 = NenPc.lechX + 8 * u;
-        // dưới nút Poké Ball (Menu nhanh) ở mép trái giữa màn
-        float y0 = NenPc.lechY + NenPc.cao * NenPc.heSo * 0.5f + 34 * u;
-        // tự thu gọn sau 60 giây (F1 mở lại / tắt hẳn); thu gọn = một phím nhỏ "F1" mờ
-        boolean gon = !CaiDat.goiYMo || System.currentTimeMillis() - moGoiYLuc > 60000;
-        if (gon) {
-            if (!CaiDat.goiYMo) return;
-            float wPhim = Kinh.phim(g, x0, y0, h * 0.9f, "F1", fp);
-            g.setFont(f(false, 10.5f * u));
-            Kinh.chu(g, "phím tắt", x0 + wPhim + 4 * u, y0 + h * 0.66f, Kinh.mo(Kinh.CHU, 170));
-            return;
-        }
-        // cột dọc mép trái dưới Poké Ball (không đè HP góc trái trên, ô chiêu giữa dưới)
-        float hang = h * 1.22f;
-        float rongCot = 0;
-        for (int i = 0; i < ds.length; i++) {
-            rongCot = Math.max(rongCot, wp[i] + 6 * u + fm.stringWidth(ds[i][1]));
-        }
-        float yTop = y0 + 4 * u;
-        Kinh.bang(g, x0 - 4 * u, yTop - 5 * u, rongCot + 16 * u, hang * ds.length + 8 * u, 12 * u, 150);
-        for (int i = 0; i < ds.length; i++) {
-            float y = yTop + i * hang;
-            Kinh.phim(g, x0 + 2 * u, y, h, ds[i][0], fp);
-            g.setFont(fc);
-            Kinh.chu(g, ds[i][1], x0 + 2 * u + wp[i] + 6 * u, y + h * 0.74f, Kinh.CHU);
-        }
-    }
-
-    private static String ten(int hd) {
-        String s = BanPhim.tenPhim(BanPhim.PHIM[hd]);
-        return s;
-    }
-
     // ================================================================ bảng cài đặt
-    private static final String[] TAB = {"Hiển thị", "Âm thanh", "Phím", "Giới thiệu"};
+    private static final String[] TAB = {"Hiển thị", "Âm thanh", "Đổi phím", "Phím tắt", "Giới thiệu"};
+    private static final int[] TAB_BT = {Kinh.BT_MAN_HINH, Kinh.BT_LOA, Kinh.BT_BAN_PHIM, Kinh.BT_SET, Kinh.BT_THONG_TIN};
+    private static final int TAB_PHIM_TAT = 3;
     private static final int[][] DO_PHAN_GIAI = {{1280, 720}, {1600, 900}, {1920, 1080}, {2560, 1440}, {2560, 1080}, {1024, 768}, {1440, 1080}};
-    private static final String[] TEN_DPG = {"1280×720", "1600×900", "1920×1080", "2560×1440", "2560×1080 (21:9)", "1024×768 (4:3)", "1440×1080 (4:3)"};
+    private static final String[] TEN_DPG = {"1280×720", "1600×900", "1920×1080", "2560×1440", "2560×1080", "1024×768", "1440×1080"};
+    private static final Color NEN_THE = new Color(255, 255, 255, 16);
+    private static final Color VIEN_THE = new Color(255, 255, 255, 34);
+    private static final Color KE = new Color(255, 255, 255, 22);
+    private static java.awt.image.BufferedImage bieuTuongGame;
+    private static boolean daNapBieuTuong;
 
     private static void veCaiDat(Graphics2D g, int W, int H, float u) {
-        // nền tối mờ
-        g.setColor(new Color(4, 8, 20, 150));
+        // nền tối mờ + chặn bấm xuống game
+        g.setColor(new Color(4, 8, 20, 165));
         g.fillRect(0, 0, W, H);
-        them(0, 0, W, H, null); // chặn bấm xuống game
-        float pw = Math.min(W - 40 * u, 760 * u);
-        float ph = Math.min(H - 40 * u, 520 * u);
-        float px = (W - pw) / 2;
-        float py = (H - ph) / 2;
-        Kinh.bang(g, px, py, pw, ph, 22 * u, 255);
-        // tiêu đề
-        g.setFont(PhongChu.tieuDe().deriveFont(Font.BOLD, 26 * u));
-        Kinh.chu(g, "Cài đặt", px + 26 * u, py + 42 * u, Kinh.VANG);
-        g.setFont(f(false, 12 * u));
-        Kinh.chu(g, "Huyền Thoại Bảo Bối · bản PC", px + 136 * u, py + 40 * u, Kinh.CHU_MO);
-        // nút đóng
-        float bx = px + pw - 46 * u, by = py + 16 * u, bs = 30 * u;
-        boolean sx = tro(bx, by, bs, bs);
-        Kinh.nut(g, bx, by, bs, bs, "✕", f(true, 14 * u), false, sx, false);
-        them(bx, by, bs, bs, new Runnable() {
+        them(0, 0, W, H, null);
+        float pw = Math.min(W - 24 * u, 860 * u);
+        float ph = Math.min(H - 24 * u, 580 * u);
+        float px = Math.round((W - pw) / 2);
+        float py = Math.round((H - ph) / 2);
+        float r = 22 * u;
+        Kinh.bang(g, px, py, pw, ph, r, 255);
+        // ---- đầu bảng: dải đỏ Poké + gạch vàng, Poké Ball, tiêu đề
+        float hh = 70 * u;
+        java.awt.Shape cu = g.getClip();
+        g.clip(new RoundRectangle2D.Float(px, py, pw, ph, r, r));
+        g.setPaint(new GradientPaint(0, py, Kinh.DO_SANG, 0, py + hh, new Color(0xB8290A)));
+        g.fill(new Rectangle2D.Float(px, py, pw, hh));
+        g.setPaint(new GradientPaint(0, py, new Color(255, 255, 255, 60), 0, py + hh * 0.5f, new Color(255, 255, 255, 0)));
+        g.fill(new Rectangle2D.Float(px, py, pw, hh * 0.5f));
+        g.setColor(Kinh.VANG);
+        g.fill(new Rectangle2D.Float(px, py + hh - 3 * u, pw, 3 * u));
+        g.setColor(new Color(0, 0, 0, 90));
+        g.fill(new Rectangle2D.Float(px, py + hh, pw, Math.max(1, u)));
+        g.setClip(cu);
+        float bR = 19 * u;
+        Kinh.pokeBall(g, px + 26 * u + bR, py + hh / 2 - 1 * u, bR);
+        float tx = px + 26 * u + 2 * bR + 16 * u;
+        g.setFont(PhongChu.tieuDe().deriveFont(Font.BOLD, 27 * u));
+        Kinh.chu(g, "Cài đặt", tx, py + 38 * u, Color.WHITE);
+        g.setFont(f(false, 12.5f * u));
+        Kinh.chu(g, "Huyền Thoại Bảo Bối · bản PC", tx, py + 56 * u, new Color(255, 236, 214));
+        // nút đóng: vòng tròn + dấu X vẽ bằng nét (phông không có ký tự ✕)
+        float br = 18 * u;
+        float bcx = px + pw - 24 * u - br, bcy = py + hh / 2 - 1 * u;
+        boolean sx = tro(bcx - br, bcy - br, 2 * br, 2 * br);
+        g.setColor(sx ? new Color(255, 255, 255, 235) : new Color(0, 0, 0, 60));
+        g.fill(new Ellipse2D.Float(bcx - br, bcy - br, 2 * br, 2 * br));
+        g.setColor(new Color(255, 255, 255, sx ? 255 : 150));
+        g.setStroke(new BasicStroke(1.2f * u));
+        g.draw(new Ellipse2D.Float(bcx - br, bcy - br, 2 * br, 2 * br));
+        Kinh.bieuTuong(g, Kinh.BT_DONG, bcx, bcy, 2 * br * 0.62f, sx ? Kinh.DO : Color.WHITE);
+        them(bcx - br, bcy - br, 2 * br, 2 * br, new Runnable() {
             public void run() {
                 moCaiDat();
             }
         });
-        // tab
-        float tx = px + 24 * u, ty = py + 60 * u, th = 32 * u;
+        // ---- thanh thẻ: rãnh tối bo tròn, thẻ đang chọn vàng Pikachu
+        float trX = px + 22 * u, trY = py + hh + 16 * u, trW = pw - 44 * u, trH = 46 * u;
+        g.setColor(new Color(0, 0, 0, 80));
+        g.fill(new RoundRectangle2D.Float(trX, trY, trW, trH, trH, trH));
+        g.setColor(new Color(255, 255, 255, 26));
+        g.setStroke(new BasicStroke(1f));
+        g.draw(new RoundRectangle2D.Float(trX + 0.5f, trY + 0.5f, trW - 1, trH - 1, trH, trH));
+        float o = 4 * u;
+        float tw = (trW - 2 * o) / TAB.length;
+        Font ft = f(true, 13.5f * u);
         for (int i = 0; i < TAB.length; i++) {
-            g.setFont(f(true, 13 * u));
-            float tw = g.getFontMetrics().stringWidth(TAB[i]) + 34 * u;
+            float x = trX + o + i * tw, y = trY + o, w = tw, h = trH - 2 * o;
+            boolean dang = tab == i;
+            boolean sang = !dang && tro(x, y, w, h);
+            if (dang) {
+                g.setColor(new Color(0, 0, 0, 70));
+                g.fill(new RoundRectangle2D.Float(x, y + 2 * u, w, h, h, h));
+                g.setPaint(new GradientPaint(0, y, new Color(0xFFDD4A), 0, y + h, new Color(0xF2B600)));
+                g.fill(new RoundRectangle2D.Float(x, y, w, h, h, h));
+                g.setColor(new Color(255, 255, 255, 160));
+                g.draw(new RoundRectangle2D.Float(x + 0.5f, y + 0.5f, w - 1, h - 1, h, h));
+            } else if (sang) {
+                g.setColor(new Color(255, 255, 255, 30));
+                g.fill(new RoundRectangle2D.Float(x, y, w, h, h, h));
+            }
+            Color mau = dang ? Kinh.VIEN : sang ? Kinh.CHU : Kinh.CHU_MO;
+            g.setFont(ft);
+            FontMetrics fm = g.getFontMetrics();
+            float s = 18 * u;
+            float cw = s + 8 * u + fm.stringWidth(TAB[i]);
+            float x0 = x + (w - cw) / 2;
+            Kinh.bieuTuong(g, TAB_BT[i], x0 + s / 2, y + h / 2, s, mau);
+            float by = y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent();
+            g.setColor(mau);
+            g.drawString(TAB[i], x0 + s + 8 * u, by);
             final int ii = i;
-            Kinh.nut(g, tx, ty, tw, th, TAB[i], f(true, 13 * u), false, tro(tx, ty, tw, th), tab == i);
-            them(tx, ty, tw, th, new Runnable() {
+            them(x, y, w, h, new Runnable() {
                 public void run() {
                     tab = ii;
                     doiPhim = -1;
                 }
             });
-            tx += tw + 8 * u;
         }
-        g.setColor(new Color(255, 255, 255, 40));
-        g.fillRect((int) (px + 24 * u), (int) (ty + th + 10 * u), (int) (pw - 48 * u), Math.max(1, (int) u));
-        float cx = px + 30 * u, cy = ty + th + 26 * u, cw = pw - 60 * u;
+        // ---- nội dung (cắt trong vùng nội dung)
+        float cx = px + 24 * u, cy = trY + trH + 18 * u, cw = pw - 48 * u, ch = py + ph - 20 * u - cy;
+        java.awt.Shape cu2 = g.getClip();
+        g.clip(new Rectangle2D.Float(cx - 4 * u, cy - 4 * u, cw + 8 * u, ch + 8 * u));
         switch (tab) {
-            case 0: veHienThi(g, cx, cy, cw, u); break;
-            case 1: veAmThanh(g, cx, cy, cw, u); break;
-            case 2: vePhim(g, cx, cy, cw, py + ph - cy - 20 * u, u); break;
-            default: veGioiThieu(g, cx, cy, cw, u); break;
+            case 0: veHienThi(g, cx, cy, cw, ch, u); break;
+            case 1: veAmThanh(g, cx, cy, cw, ch, u); break;
+            case 2: vePhim(g, cx, cy, cw, ch, u); break;
+            case TAB_PHIM_TAT: vePhimTat(g, cx, cy, cw, ch, u); break;
+            default: veGioiThieu(g, cx, cy, cw, ch, u); break;
         }
-        g.setFont(f(false, 11 * u));
-        Kinh.chu(g, "Esc / " + BanPhim.tenPhim(BanPhim.PHIM[BanPhim.CAI_DAT]) + ": đóng · cài đặt tự lưu", px + 26 * u, py + ph - 14 * u, Kinh.CHU_MO);
-        // giấy phép / ghi công (yêu cầu CC BY-NC 4.0 + OFL): mục nhỏ góc phải dưới
-        String gp = "Giấy phép";
-        float gw = g.getFontMetrics().stringWidth(gp) + 16 * u;
-        float gx = px + pw - 26 * u - gw, gy = py + ph - 30 * u;
-        boolean gs = tro(gx, gy, gw, 22 * u);
-        Kinh.nut(g, gx, gy, gw, 22 * u, gp, f(false, 11 * u), false, gs, false);
-        them(gx, gy, gw, 22 * u, new Runnable() {
-            public void run() {
-                caiDatMo = false;
-                CaiDat.luu();
-                try {
-                    game.render.screen.GhiCongScr.mo();
-                } catch (Throwable e) {
-                    NhatKy.loi("giay phep", e);
-                }
-            }
-        });
+        g.setClip(cu2);
     }
 
-    private static float nhan(Graphics2D g, String s, float x, float y, float u) {
+    // ---------------------------------------------------------------- khối dựng giao diện
+    /** Tiêu đề nhóm (vàng, đậm) - trả y đỉnh thẻ. */
+    private static float tieuDeNhom(Graphics2D g, String s, float x, float y, float u) {
+        g.setFont(f(true, 12.5f * u));
+        Kinh.chu(g, s.toUpperCase(), x + 4 * u, y + 13 * u, Kinh.VANG);
+        return y + 22 * u;
+    }
+
+    /** Thẻ nhóm: nền trắng mờ bo góc + viền mảnh. */
+    private static void the(Graphics2D g, float x, float y, float w, float h, float u) {
+        RoundRectangle2D.Float rr = new RoundRectangle2D.Float(x, y, w, h, 16 * u, 16 * u);
+        g.setColor(NEN_THE);
+        g.fill(rr);
+        g.setColor(VIEN_THE);
+        g.setStroke(new BasicStroke(1f));
+        g.draw(new RoundRectangle2D.Float(x + 0.5f, y + 0.5f, w - 1, h - 1, 16 * u, 16 * u));
+    }
+
+    private static void ke(Graphics2D g, float x, float y, float w, float u) {
+        g.setColor(KE);
+        g.fill(new Rectangle2D.Float(x + 16 * u, y, w - 32 * u, Math.max(1, u * 0.8f)));
+    }
+
+    /** Nhãn hàng (đậm) + mô tả (nhạt, dưới) căn giữa dọc trong hàng [y, y + h). */
+    private static void nhanHang(Graphics2D g, String nhan, String moTa, float x, float y, float h, float u) {
+        g.setFont(f(true, 14 * u));
+        if (moTa == null) {
+            FontMetrics fm = g.getFontMetrics();
+            Kinh.chu(g, nhan, x + 16 * u, y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent(), Kinh.CHU);
+            return;
+        }
+        Kinh.chu(g, nhan, x + 16 * u, y + h / 2 - 3 * u, Kinh.CHU);
+        g.setFont(f(false, 11.5f * u));
+        Kinh.chu(g, moTa, x + 16 * u, y + h / 2 + 14 * u, Kinh.CHU_MO);
+    }
+
+    /** Hàng công tắc: nhãn trái, công tắc phải. Cả hàng bấm được. */
+    private static void hangCongTac(Graphics2D g, String nhan, String moTa, float x, float y, float w, float h, float u,
+                                    boolean bat, Runnable doi) {
+        boolean sang = tro(x, y, w, h);
+        if (sang) {
+            g.setColor(new Color(255, 255, 255, 12));
+            g.fill(new RoundRectangle2D.Float(x + 4 * u, y + 2 * u, w - 8 * u, h - 4 * u, 12 * u, 12 * u));
+        }
+        nhanHang(g, nhan, moTa, x, y, h, u);
+        float th = 24 * u;
+        Kinh.congTac(g, x + w - 16 * u - th * 1.9f, y + (h - th) / 2, th, bat, sang);
+        them(x, y, w, h, doi);
+    }
+
+    /** Nhóm nút chọn một (phân đoạn) căn phải trong hàng; trả bề rộng đã dùng. */
+    private static void hangChon(Graphics2D g, String nhan, String moTa, float x, float y, float w, float h, float u,
+                                 String[] ten, int dang, final Runnable[] bam) {
+        nhanHang(g, nhan, moTa, x, y, h, u);
+        Font fb = f(true, 12.5f * u);
+        g.setFont(fb);
+        FontMetrics fm = g.getFontMetrics();
+        float bh = 30 * u;
+        float tong = 0;
+        float[] rong = new float[ten.length];
+        for (int i = 0; i < ten.length; i++) {
+            rong[i] = Math.max(84 * u, fm.stringWidth(ten[i]) + 28 * u);
+            tong += rong[i];
+        }
+        float bx = x + w - 16 * u - tong - 4 * u * (ten.length - 1);
+        float by = y + (h - bh) / 2;
+        for (int i = 0; i < ten.length; i++) {
+            Kinh.nut(g, bx, by, rong[i], bh, ten[i], fb, false, tro(bx, by, rong[i], bh), dang == i);
+            them(bx, by, rong[i], bh, bam[i]);
+            bx += rong[i] + 4 * u;
+        }
+    }
+
+    private static void hangTruot(Graphics2D g, String nhan, float x, float y, float w, float h, float u, int gt, Keo k) {
+        nhanHang(g, nhan, null, x, y, h, u);
+        float tw = Math.min(380 * u, w * 0.5f);
+        float tx = x + w - 16 * u - 56 * u - tw;
+        float th = 8 * u;
+        float ty = y + (h - th) / 2;
+        boolean sang = tro(tx - 10 * u, y, tw + 20 * u, h);
+        Kinh.thanhTruot(g, tx, ty, tw, th, gt, sang);
         g.setFont(f(true, 13.5f * u));
-        Kinh.chu(g, s, x, y + 19 * u, Kinh.CHU);
-        return x + 170 * u;
+        FontMetrics fm = g.getFontMetrics();
+        String s = gt + "%";
+        Kinh.chu(g, s, x + w - 16 * u - fm.stringWidth(s), y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent(), Kinh.CHU);
+        dangVe.add(new Vung(tx - 10 * u, y, tw + 20 * u, h, null, new KeoTheo(tx, tw, k)));
     }
 
-    private static float congTac(Graphics2D g, String s, String moTa, float x, float y, float u, boolean bat, Runnable doi) {
-        float xx = nhan(g, s, x, y, u);
-        float h = 22 * u;
-        boolean sang = tro(xx, y + 4 * u, h * 1.9f, h);
-        Kinh.congTac(g, xx, y + 4 * u, h, bat, sang);
-        if (moTa != null) {
-            g.setFont(f(false, 11.5f * u));
-            Kinh.chu(g, moTa, xx + h * 1.9f + 12 * u, y + 20 * u, Kinh.CHU_MO);
-        }
-        them(xx, y + 4 * u, h * 1.9f, h, doi);
-        return y + 36 * u;
-    }
-
-    private static void veHienThi(Graphics2D g, float x, float y, float w, float u) {
-        float xx = nhan(g, "Độ phân giải", x, y, u);
-        float bx = xx, by = y;
+    // ---------------------------------------------------------------- thẻ Hiển thị
+    private static void veHienThi(Graphics2D g, float x, float y, float w, float hMax, float u) {
         ManHinh m = ManHinh.me;
+        final boolean tm = m != null && m.laToanMan();
+        // nhóm Cửa sổ
+        y = tieuDeNhom(g, "Cửa sổ", x, y, u);
+        float hKich = 92 * u, hHang = 52 * u;
+        the(g, x, y, w, hKich + hHang, u);
+        nhanHang(g, "Kích thước cửa sổ", tm ? "Đang toàn màn hình - chọn một cỡ để về chế độ cửa sổ" : "Hình luôn sắc nét, tự canh giữa",
+                x, y + 4 * u, 46 * u, u);
+        Font fb = f(true, 12.5f * u);
+        g.setFont(fb);
+        FontMetrics fm = g.getFontMetrics();
+        float bx = x + 16 * u, by = y + 52 * u, bh = 30 * u;
         for (int i = 0; i < DO_PHAN_GIAI.length; i++) {
-            g.setFont(f(true, 12 * u));
-            float bw = g.getFontMetrics().stringWidth(TEN_DPG[i]) + 22 * u;
-            if (bx + bw > x + w) {
-                bx = xx;
-                by += 34 * u;
+            float bw = fm.stringWidth(TEN_DPG[i]) + 26 * u;
+            if (bx + bw > x + w - 16 * u) {
+                bx = x + 16 * u;
+                by += bh + 6 * u;
             }
             final int dw = DO_PHAN_GIAI[i][0], dh = DO_PHAN_GIAI[i][1];
-            boolean dang = m != null && !m.laToanMan() && m.getWidth() == dw && m.getHeight() == dh;
-            Kinh.nut(g, bx, by + 2 * u, bw, 28 * u, TEN_DPG[i], f(true, 12 * u), false, tro(bx, by, bw, 28 * u), dang);
-            them(bx, by, bw, 28 * u, new Runnable() {
+            boolean dang = m != null && !tm && m.getWidth() == dw && m.getHeight() == dh;
+            Kinh.nut(g, bx, by, bw, bh, TEN_DPG[i], fb, false, tro(bx, by, bw, bh), dang);
+            them(bx, by, bw, bh, new Runnable() {
                 public void run() {
                     ManHinh mm = ManHinh.me;
                     if (mm != null) mm.datCo(dw, dh);
                 }
             });
-            bx += bw + 8 * u;
+            bx += bw + 6 * u;
         }
-        y = by + 42 * u;
-        final boolean tm = m != null && m.laToanMan();
-        y = congTac(g, "Toàn màn hình", "F11 hoặc Alt+Enter", x, y, u, tm, new Runnable() {
+        float yy = y + hKich;
+        ke(g, x, yy, w, u);
+        hangCongTac(g, "Toàn màn hình", "Phủ kín màn hình, không viền", x, yy, w, hHang, u, tm, new Runnable() {
             public void run() {
                 ManHinh mm = ManHinh.me;
-                if (mm != null) mm.datToanMan(!tm);
+                if (mm != null) mm.datToanMan(!mm.laToanMan());
             }
         });
-        xx = nhan(g, "Cỡ giao diện", x, y, u);
-        String[] ten = {"Lớn", "Vừa", "Nhỏ"};
-        final int[] gt = {240, 320, 400};
-        bx = xx;
-        for (int i = 0; i < 3; i++) {
-            float bw = 70 * u;
-            final int v = gt[i];
-            Kinh.nut(g, bx, y + 2 * u, bw, 28 * u, ten[i], f(true, 12 * u), false, tro(bx, y, bw, 28 * u), CaiDat.coGiaoDien == v);
-            them(bx, y, bw, 28 * u, new Runnable() {
-                public void run() {
-                    CaiDat.coGiaoDien = v;
-                    NenPc.canhNgan = v;
-                    ManHinh mm = ManHinh.me;
-                    if (mm != null) mm.doiCo();
-                }
-            });
-            bx += bw + 8 * u;
-        }
-        g.setFont(f(false, 11.5f * u));
-        Kinh.chu(g, "logic " + NenPc.rong + "×" + NenPc.cao + " · phóng ×" + NenPc.heSo, bx + 6 * u, y + 20 * u, Kinh.CHU_MO);
-        y += 40 * u;
-        y = congTac(g, "Chữ HD", "font thật Noto Sans (tắt = font điểm ảnh gốc)", x, y, u, ChuHD.bat, new Runnable() {
+        y = yy + hHang + 14 * u;
+        // nhóm Hình ảnh
+        y = tieuDeNhom(g, "Hình ảnh", x, y, u);
+        the(g, x, y, w, 4 * hHang, u);
+        hangCongTac(g, "Chữ HD", "Phông Noto Sans mịn (tắt = phông điểm ảnh gốc)", x, y, w, hHang, u, ChuHD.bat, new Runnable() {
             public void run() {
                 CaiDat.chuHD = !CaiDat.chuHD;
                 ChuHD.bat = CaiDat.chuHD;
-                ManHinh mm = ManHinh.me;
-                if (mm != null) NenPc.baoDoiCo();
+                NenPc.baoDoiCo();
             }
         });
-        y = congTac(g, "Khung HD", "khung, bảng, thanh máu vẽ mịn", x, y, u, GiaoDienHD.bat, new Runnable() {
+        y += hHang;
+        ke(g, x, y, w, u);
+        hangCongTac(g, "Khung HD", "Bảng, nút, thanh máu vẽ mịn ở độ phân giải thật", x, y, w, hHang, u, GiaoDienHD.bat, new Runnable() {
             public void run() {
                 CaiDat.khungHD = !CaiDat.khungHD;
                 GiaoDienHD.bat = CaiDat.khungHD;
             }
         });
-        xx = nhan(g, "Hiệu ứng", x, y, u);
-        String[] tenHu = {"Cao (60 FPS)", "Thấp"};
-        bx = xx;
-        for (int i = 0; i < 2; i++) {
-            final boolean cao = i == 0;
-            float bw = 120 * u;
-            Kinh.nut(g, bx, y + 2 * u, bw, 28 * u, tenHu[i], f(true, 12 * u), false, tro(bx, y, bw, 28 * u), CaiDat.hieuUngCao == cao);
-            them(bx, y, bw, 28 * u, new Runnable() {
-                public void run() {
-                    CaiDat.hieuUngCao = cao;
-                }
-            });
-            bx += bw + 8 * u;
-        }
-        y += 40 * u;
-        y = congTac(g, "Gợi ý phím tắt", "dải phím bên trái màn chơi", x, y, u, CaiDat.goiYPhim, new Runnable() {
-            public void run() {
-                CaiDat.goiYPhim = !CaiDat.goiYPhim;
-            }
-        });
-        congTac(g, "Hiện FPS", null, x, y, u, CaiDat.hienFps, new Runnable() {
+        y += hHang;
+        ke(g, x, y, w, u);
+        hangChon(g, "Hiệu ứng", "Cao: hiệu ứng HD, 60 khung/giây · Thấp: cho máy yếu", x, y, w, hHang, u,
+                new String[]{"Cao", "Thấp"}, CaiDat.hieuUngCao ? 0 : 1, new Runnable[]{
+                    new Runnable() {
+                        public void run() {
+                            CaiDat.hieuUngCao = true;
+                        }
+                    }, new Runnable() {
+                        public void run() {
+                            CaiDat.hieuUngCao = false;
+                        }
+                    }});
+        y += hHang;
+        ke(g, x, y, w, u);
+        hangCongTac(g, "Hiện FPS", "Số khung hình/giây ở góc dưới", x, y, w, hHang, u, CaiDat.hienFps, new Runnable() {
             public void run() {
                 CaiDat.hienFps = !CaiDat.hienFps;
             }
         });
-    }
-
-    private static float thanhTruot(Graphics2D g, String s, float x, float y, float w, float u, int gt, final Keo k) {
-        float xx = nhan(g, s, x, y, u);
-        float tw = Math.min(320 * u, x + w - xx - 60 * u);
-        float h = 8 * u;
-        float ty = y + 12 * u;
-        Kinh.thanhTruot(g, xx, ty, tw, h, gt, tro(xx - 8 * u, y, tw + 16 * u, 30 * u));
-        g.setFont(f(true, 13 * u));
-        Kinh.chu(g, gt + "%", xx + tw + 16 * u, y + 19 * u, Kinh.CHU);
-        dangVe.add(new Vung(xx - 8 * u, y, tw + 16 * u, 30 * u, null, new KeoTheo(xx, tw, k)));
-        return y + 40 * u;
     }
 
     /** Kéo thanh trượt: tỉ lệ theo x thật. */
@@ -465,100 +493,347 @@ public final class LopPhu {
         }
     }
 
-    private static void veAmThanh(Graphics2D g, float x, float y, float w, float u) {
-        y = thanhTruot(g, "Nhạc nền", x, y, w, u, CaiDat.amNhac, new Keo() {
+    // ---------------------------------------------------------------- thẻ Âm thanh
+    private static void veAmThanh(Graphics2D g, float x, float y, float w, float hMax, float u) {
+        float hHang = 54 * u;
+        y = tieuDeNhom(g, "Âm lượng", x, y, u);
+        the(g, x, y, w, 3 * hHang, u);
+        hangTruot(g, "Nhạc nền", x, y, w, hHang, u, CaiDat.amNhac, new Keo() {
             public void keo(float t) {
                 CaiDat.amNhac = Math.round(t * 100);
                 CaiDat.apAmThanh();
             }
         });
-        y = thanhTruot(g, "Hiệu ứng", x, y, w, u, CaiDat.amHieuUng, new Keo() {
+        y += hHang;
+        ke(g, x, y, w, u);
+        hangTruot(g, "Hiệu ứng", x, y, w, hHang, u, CaiDat.amHieuUng, new Keo() {
             public void keo(float t) {
                 CaiDat.amHieuUng = Math.round(t * 100);
                 CaiDat.apAmThanh();
             }
         });
-        y = congTac(g, "Tắt tiếng", null, x, y, u, CaiDat.tatTieng, new Runnable() {
+        y += hHang;
+        ke(g, x, y, w, u);
+        hangCongTac(g, "Tắt tiếng", "Tắt cả nhạc nền và tiếng hiệu ứng", x, y, w, hHang, u, CaiDat.tatTieng, new Runnable() {
             public void run() {
                 CaiDat.tatTieng = !CaiDat.tatTieng;
                 CaiDat.apAmThanh();
             }
         });
-        g.setFont(f(false, 12 * u));
+        y += hHang + 14 * u;
+        y = tieuDeNhom(g, "Thiết bị", x, y, u);
+        the(g, x, y, w, hHang, u);
         int loi = javax.microedition.media.Manager.soLoiThietBi;
-        String tt = loi > 0 ? "Thiết bị âm thanh: không mở được (" + loi + " lần) - game chạy không tiếng"
-                : "Thiết bị âm thanh: sẵn sàng (WAV + MIDI)";
-        Kinh.chu(g, tt, x, y + 18 * u, loi > 0 ? new Color(0xFFB0A0) : Kinh.CHU_MO);
-        Kinh.chu(g, "Bật/tắt nhạc và tiếng trong game: Menu nhanh (" + ten(BanPhim.MENU_NHANH) + ") của game.", x, y + 42 * u, Kinh.CHU_MO);
+        boolean tot = loi <= 0;
+        nhanHang(g, tot ? "Sẵn sàng" : "Không mở được thiết bị âm thanh",
+                tot ? "WAV + MIDI · bật/tắt nhạc riêng trong Menu nhanh của game" : "Đã thử " + loi + " lần - game vẫn chạy, không có tiếng",
+                x + 20 * u, y, hHang, u);
+        float d = 12 * u;
+        g.setColor(tot ? new Color(0x48D058) : new Color(0xF04830));
+        g.fill(new Ellipse2D.Float(x + 18 * u, y + (hHang - d) / 2, d, d));
     }
 
-    private static void vePhim(Graphics2D g, float x, float y, float w, float h, float u) {
-        int n = BanPhim.MA.length;
-        int cot = 2;
-        int moiCot = (n + cot - 1) / cot;
-        float hang = Math.min(30 * u, (h - 40 * u) / moiCot);
-        float cw = (w - 20 * u) / cot;
-        for (int i = 0; i < n; i++) {
-            float cx = x + (i / moiCot) * (cw + 20 * u);
-            float cy = y + (i % moiCot) * hang;
-            g.setFont(f(false, 12.5f * u));
-            Kinh.chu(g, BanPhim.TEN[i], cx, cy + hang * 0.62f, Kinh.CHU);
-            float bw = 110 * u;
-            float bx = cx + cw - bw;
-            final int ii = i;
-            boolean cho = doiPhim == i;
-            String nhan = cho ? "Nhấn phím…" : BanPhim.tenPhim(BanPhim.PHIM[i]);
-            Kinh.nut(g, bx, cy + 2 * u, bw, hang - 5 * u, nhan, f(true, 12 * u), cho, tro(bx, cy, bw, hang), false);
-            them(bx, cy, bw, hang, new Runnable() {
-                public void run() {
-                    doiPhim = doiPhim == ii ? -1 : ii;
-                }
-            });
-        }
-        float by = y + moiCot * hang + 8 * u;
-        Kinh.nut(g, x, by, 150 * u, 28 * u, "Phím mặc định", f(true, 12 * u), false, tro(x, by, 150 * u, 28 * u), false);
-        them(x, by, 150 * u, 28 * u, new Runnable() {
+    // ---------------------------------------------------------------- thẻ Đổi phím
+    private static void vePhim(Graphics2D g, float x, float y, float w, float hMax, float u) {
+        float y0 = y;
+        tieuDeNhom(g, "Phím điều khiển", x, y, u);
+        // nút khôi phục: góc phải dòng tiêu đề
+        Font fb = f(true, 12 * u);
+        g.setFont(fb);
+        String md = "Khôi phục mặc định";
+        float mw = g.getFontMetrics().stringWidth(md) + 26 * u, mh = 24 * u;
+        float mx = x + w - mw, my = y - 4 * u;
+        Kinh.nut(g, mx, my, mw, mh, md, fb, false, tro(mx, my, mw, mh), false);
+        them(mx, my, mw, mh, new Runnable() {
             public void run() {
                 System.arraycopy(BanPhim.MAC_DINH, 0, BanPhim.PHIM, 0, BanPhim.PHIM.length);
                 doiPhim = -1;
                 CaiDat.luu();
             }
         });
-        g.setFont(f(false, 11 * u));
-        Kinh.chu(g, "Mũi tên luôn đi/chọn · F1 gợi ý · F3/F2 phím mềm trái/phải · chuột phải = quay lại · lăn = cuộn / thu phóng",
-                x + 162 * u, by + 19 * u, Kinh.CHU_MO);
+        g.setFont(f(false, 11.5f * u));
+        String hd = "Bấm vào một phím rồi nhấn phím mới";
+        FontMetrics fmh = g.getFontMetrics();
+        Kinh.chu(g, hd, mx - 14 * u - fmh.stringWidth(hd), y + 13 * u, Kinh.CHU_MO);
+        y += 22 * u;
+        int n = BanPhim.MA.length;
+        int cot = 2;
+        int moiCot = (n + cot - 1) / cot;
+        float pad = 8 * u;
+        float hang = Math.min(34 * u, (y0 + hMax - y - 2 * pad) / moiCot);
+        the(g, x, y, w, moiCot * hang + 2 * pad, u);
+        float gap = 20 * u;
+        float cw = (w - gap) / cot;
+        g.setColor(KE);
+        g.fill(new Rectangle2D.Float(x + cw + gap / 2, y + pad + 4 * u, Math.max(1, u * 0.8f), moiCot * hang - 8 * u));
+        Font fc = f(false, 13 * u);
+        Font fp = f(true, 12 * u);
+        for (int i = 0; i < n; i++) {
+            float cx = x + (i / moiCot) * (cw + gap);
+            float cy = y + pad + (i % moiCot) * hang;
+            g.setFont(fc);
+            FontMetrics fm = g.getFontMetrics();
+            Kinh.chu(g, BanPhim.TEN[i], cx + 16 * u, cy + (hang - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent(), Kinh.CHU);
+            float bw = 118 * u, bh = Math.min(26 * u, hang - 6 * u);
+            float bx = cx + cw - 12 * u - bw, by = cy + (hang - bh) / 2;
+            final int ii = i;
+            boolean cho = doiPhim == i;
+            String nhan = cho ? "Nhấn phím…" : BanPhim.tenPhim(BanPhim.PHIM[i]);
+            Kinh.nut(g, bx, by, bw, bh, nhan, fp, cho, tro(bx, by, bw, bh), false);
+            them(bx, by, bw, bh, new Runnable() {
+                public void run() {
+                    doiPhim = doiPhim == ii ? -1 : ii;
+                }
+            });
+        }
     }
 
-    private static void veGioiThieu(Graphics2D g, float x, float y, float w, float u) {
-        g.setFont(PhongChu.tieuDe().deriveFont(Font.BOLD, 22 * u));
-        Kinh.chu(g, "Huyền Thoại Bảo Bối", x, y + 22 * u, Kinh.CHU);
-        g.setFont(f(false, 12.5f * u));
+    // ---------------------------------------------------------------- thẻ Phím tắt
+    /** Phím đang gán cho hành động (đổi được trong thẻ Đổi phím). */
+    private static String ten(int hd) {
+        return BanPhim.tenPhim(BanPhim.PHIM[hd]);
+    }
+
+    /** Hai cột Phím tắt. Mỗi mục {phím, việc, mô tả phụ}; {null, tiêu đề} = tiêu đề nhóm. Phím: "@0" chuột trái,
+     *  "@1" chuột phải, "@2" con lăn; còn lại các phím cách nhau "|" (hoặc), "+" (tổ hợp). */
+    private static ArrayList<String[]> danhSachPhimTat(boolean trai) {
+        ArrayList<String[]> ds = new ArrayList<String[]>();
+        boolean wasd = BanPhim.PHIM[BanPhim.LEN] == KeyEvent.VK_W && BanPhim.PHIM[BanPhim.TRAI] == KeyEvent.VK_A
+                && BanPhim.PHIM[BanPhim.XUONG] == KeyEvent.VK_S && BanPhim.PHIM[BanPhim.PHAI] == KeyEvent.VK_D;
+        String di = wasd ? "W A S D" : ten(BanPhim.LEN) + " " + ten(BanPhim.TRAI) + " " + ten(BanPhim.XUONG) + " " + ten(BanPhim.PHAI);
+        boolean so = true;
+        for (int i = 0; i < 5; i++) so &= BanPhim.PHIM[BanPhim.CHIEU1 + i] == KeyEvent.VK_1 + i;
+        String chieu = so ? "1 – 5" : ten(BanPhim.CHIEU1) + " … " + ten(BanPhim.CHIEU1 + 4);
+        int kc = BanPhim.PHIM[BanPhim.CHAT];
+        String chat = kc == 0 || kc == KeyEvent.VK_ENTER || kc == KeyEvent.VK_T || kc == KeyEvent.VK_SLASH ? "T" : ten(BanPhim.CHAT);
+        if (trai) {
+            ds.add(new String[]{null, "Di chuyển & tương tác"});
+            ds.add(new String[]{di + "|Mũi tên", "Đi", null});
+            ds.add(new String[]{"Enter", "Hành động theo ngữ cảnh", "Nói chuyện, đánh, nhặt đồ, tiếp lời thoại"});
+            ds.add(new String[]{"@0", "Làm mọi thứ", "Đi, chọn, nói chuyện, đánh, bấm nút"});
+            ds.add(new String[]{"@1", "Menu ngữ cảnh (tuỳ chọn)", null});
+            ds.add(new String[]{"@2", "Cuộn danh sách", null});
+            ds.add(new String[]{null, "Chiến đấu"});
+            ds.add(new String[]{ten(BanPhim.DANH), "Đánh thường", null});
+            ds.add(new String[]{chieu, "Dùng chiêu 1 – 5", null});
+            ds.add(new String[]{ten(BanPhim.BINH_HP) + "|" + ten(BanPhim.BINH_MP), "Bình HP / Bình MP", null});
+            ds.add(new String[]{ten(BanPhim.MUC_TIEU), "Đổi mục tiêu", null});
+            ds.add(new String[]{"Shift+" + ten(BanPhim.MUC_TIEU), "Mục tiêu trước", null});
+            ds.add(new String[]{ten(BanPhim.DOI_BO), "Đổi bộ chiêu", null});
+        } else {
+            ds.add(new String[]{null, "Giao diện"});
+            ds.add(new String[]{chat + "|/", "Mở chat", "Enter gửi tin khi đang gõ"});
+            ds.add(new String[]{ten(BanPhim.MENU), "Menu · quay lại · đóng", null});
+            ds.add(new String[]{ten(BanPhim.MENU_NHANH), "Menu nhanh", null});
+            ds.add(new String[]{ten(BanPhim.TO_DOI), "Tổ đội", null});
+            ds.add(new String[]{"F3|F2", "Phím mềm trái / phải", null});
+            ds.add(new String[]{"Ctrl+V", "Dán chữ vào ô nhập", null});
+            ds.add(new String[]{null, "Hệ thống"});
+            ds.add(new String[]{ten(BanPhim.CAI_DAT), "Cài đặt", null});
+            ds.add(new String[]{"F1", "Trang Phím tắt này", null});
+            ds.add(new String[]{ten(BanPhim.TOAN_MAN), "Toàn màn hình", null});
+            ds.add(new String[]{"Alt+Enter", "Toàn màn hình", null});
+            ds.add(new String[]{ten(BanPhim.CHUP), "Chụp màn hình", null});
+        }
+        return ds;
+    }
+
+    /** Trang "Phím tắt": MỘT nơi liệt kê mọi phím (phím đổi được theo cài đặt hiện tại + phím cố định). */
+    private static void vePhimTat(Graphics2D g, float x, float y, float w, float h, float u) {
+        float gap = 16 * u;
+        float cw = (w - gap) / 2;
+        for (int c = 0; c < 2; c++) {
+            ArrayList<String[]> ds = danhSachPhimTat(c == 0);
+            float cx = x + c * (cw + gap);
+            // đo chiều cao cần, co hàng nếu thiếu chỗ
+            float tieu = 0, hang = 0, phu = 0;
+            for (int i = 0; i < ds.size(); i++) {
+                String[] d = ds.get(i);
+                if (d[0] == null) tieu++;
+                else if (d[2] == null) hang++;
+                else phu++;
+            }
+            float can = 2 * 10 * u + tieu * 30 * u + hang * 28 * u + phu * 42 * u;
+            float k = Math.min(1f, h / can);
+            the(g, cx, y, cw, Math.min(h, can * k), u);
+            float yy = y + 10 * u * k;
+            for (int i = 0; i < ds.size(); i++) {
+                String[] d = ds.get(i);
+                if (d[0] == null) {
+                    g.setFont(f(true, 12.5f * u));
+                    Kinh.chu(g, d[1].toUpperCase(), cx + 16 * u, yy + 20 * u * k, Kinh.VANG);
+                    yy += 30 * u * k;
+                    continue;
+                }
+                float hh = (d[2] == null ? 28 : 42) * u * k;
+                float kh = Math.min(22 * u, 22 * u * k);
+                float ky = yy + (28 * u * k - kh) / 2;
+                float het = vePhimGop(g, d[0], cx + 16 * u, ky, kh, u);
+                float tx = Math.max(cx + 16 * u + 136 * u, het + 10 * u);
+                g.setFont(f(false, 13 * u));
+                FontMetrics fm = g.getFontMetrics();
+                float by = ky + (kh - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent();
+                Kinh.chu(g, d[1], tx, by, Kinh.CHU);
+                if (d[2] != null) {
+                    g.setFont(f(false, 11 * u));
+                    Kinh.chu(g, catChu(g, d[2], cx + cw - 12 * u - tx), tx, by + 16 * u * k, Kinh.CHU_MO);
+                }
+                yy += hh;
+            }
+        }
+    }
+
+    private static String catChu(Graphics2D g, String s, float w) {
+        FontMetrics fm = g.getFontMetrics();
+        if (fm.stringWidth(s) <= w) return s;
+        while (s.length() > 1 && fm.stringWidth(s + "…") > w) s = s.substring(0, s.length() - 1);
+        return s.trim() + "…";
+    }
+
+    /** Vẽ nhóm phím: "a|b" = a hoặc b (chữ "/" giữa), "Shift+Tab" = hai phím nối "+", "@n" = chuột. */
+    private static float vePhimGop(Graphics2D g, String s, float x, float y, float h, float u) {
+        Font fp = f(true, h * 0.52f);
+        if (s.startsWith("@")) {
+            int nut = s.charAt(1) - '0';
+            Kinh.chuot(g, x + h * 0.4f, y + h / 2, h * 1.1f, nut);
+            g.setFont(f(true, 12 * u));
+            FontMetrics fm = g.getFontMetrics();
+            String t = nut == 0 ? "Chuột trái" : nut == 1 ? "Chuột phải" : "Lăn chuột";
+            Kinh.chu(g, t, x + h + 6 * u, y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent(), Kinh.CHU_MO);
+            return x + h + 6 * u + fm.stringWidth(t);
+        }
+        String[] hoac = s.split("\\|");
+        float xx = x;
+        for (int i = 0; i < hoac.length; i++) {
+            if (i > 0) {
+                g.setFont(f(false, 12 * u));
+                FontMetrics fm = g.getFontMetrics();
+                Kinh.chu(g, "/", xx + 3 * u, y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent(), Kinh.CHU_MO);
+                xx += fm.stringWidth("/") + 6 * u;
+            }
+            String[] to = hoac[i].length() > 1 ? hoac[i].split("\\+") : new String[]{hoac[i]};
+            for (int j = 0; j < to.length; j++) {
+                if (j > 0) {
+                    g.setFont(f(true, 11 * u));
+                    FontMetrics fm = g.getFontMetrics();
+                    Kinh.chu(g, "+", xx + 2 * u, y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent(), Kinh.CHU_MO);
+                    xx += fm.stringWidth("+") + 4 * u;
+                }
+                xx += Kinh.phim(g, xx, y, h, to[j], fp) + 2 * u;
+            }
+        }
+        return xx;
+    }
+
+    // ---------------------------------------------------------------- thẻ Giới thiệu
+    private static java.awt.image.BufferedImage bieuTuong() {
+        if (!daNapBieuTuong) {
+            daNapBieuTuong = true;
+            try {
+                java.io.InputStream in = LopPhu.class.getResourceAsStream("/htbb-pc/icon_128.png");
+                if (in != null) {
+                    try {
+                        bieuTuongGame = javax.imageio.ImageIO.read(in);
+                    } finally {
+                        in.close();
+                    }
+                }
+            } catch (Throwable e) {
+                bieuTuongGame = null;
+            }
+        }
+        return bieuTuongGame;
+    }
+
+    private static void veGioiThieu(Graphics2D g, float x, float y, float w, float hMax, float u) {
+        // thẻ đầu: biểu tượng game + tên + phiên bản
+        float hDau = 104 * u;
+        the(g, x, y, w, hDau, u);
+        float s = 76 * u;
+        java.awt.image.BufferedImage bt = bieuTuong();
+        if (bt != null) {
+            g.drawImage(bt, Math.round(x + 18 * u), Math.round(y + (hDau - s) / 2), Math.round(s), Math.round(s), null);
+        } else {
+            Kinh.pokeBall(g, x + 18 * u + s / 2, y + hDau / 2, s * 0.45f);
+        }
+        float tx = x + 18 * u + s + 20 * u;
+        g.setFont(PhongChu.tieuDe().deriveFont(Font.BOLD, 26 * u));
+        Kinh.chu(g, "Huyền Thoại Bảo Bối", tx, y + 42 * u, Kinh.CHU);
         String pb = javax.microedition.midlet.MIDlet.thuocTinh("HTBB-Phien-Ban");
         String ban = javax.microedition.midlet.MIDlet.thuocTinh("HTBB-Ban");
-        String mc = javax.microedition.midlet.MIDlet.thuocTinh("HTBB-May-Chu");
         boolean thu = "1".equals(javax.microedition.midlet.MIDlet.thuocTinh("HTBB-Ban-Thu"));
-        String[] dong = {
-            "Phiên bản: " + (pb == null ? "?" : pb) + (ban == null ? "" : " (bản " + ban + ")") + (thu ? " · bản THỬ" : ""),
-            "Máy chủ: " + (mc == null ? "danh sách máy chủ" : mc),
-            "Java: " + System.getProperty("java.version") + " · " + System.getProperty("os.name"),
-            "Dữ liệu: " + CaiDat.thuMucDuLieu().getAbsolutePath(),
-            "Phông chữ: Noto Sans, Baloo 2 (SIL OFL 1.1)",
-            "Hình Pokémon: PMDCollab (CC BY-NC 4.0) - xem Giấy phép (dưới bảng)",
+        g.setFont(f(true, 13 * u));
+        Kinh.chu(g, (pb == null ? "Bản phát triển" : "Phiên bản " + pb) + (ban == null ? "" : " (bản " + ban + ")") + (thu ? " · bản thử" : ""),
+                tx, y + 66 * u, Kinh.VANG);
+        g.setFont(f(false, 12 * u));
+        Kinh.chu(g, "Game fan Pokémon phi thương mại · bản PC", tx, y + 86 * u, Kinh.CHU_MO);
+        y += hDau + 14 * u;
+        // thông tin
+        String mc = javax.microedition.midlet.MIDlet.thuocTinh("HTBB-May-Chu");
+        String[][] tt = {
+            {"Máy chủ", mc == null ? "Theo danh sách máy chủ" : mc},
+            {"Hệ thống", "Java " + System.getProperty("java.version") + " · " + System.getProperty("os.name")},
+            {"Phông chữ", "Noto Sans, Baloo 2 (SIL OFL 1.1)"},
+            {"Hình Pokémon", "PMDCollab (CC BY-NC 4.0)"},
+            {"Bản quyền", "Pokémon © Nintendo / Game Freak / Creatures"},
         };
-        for (int i = 0; i < dong.length; i++) {
-            Kinh.chu(g, dong[i], x, y + 52 * u + i * 22 * u, Kinh.CHU_MO);
+        float hh = 30 * u;
+        y = tieuDeNhom(g, "Thông tin", x, y, u);
+        the(g, x, y, w, tt.length * hh + 12 * u, u);
+        for (int i = 0; i < tt.length; i++) {
+            float yy = y + 6 * u + i * hh;
+            g.setFont(f(false, 12.5f * u));
+            FontMetrics fm = g.getFontMetrics();
+            float by = yy + (hh - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent();
+            Kinh.chu(g, tt[i][0], x + 16 * u, by, Kinh.CHU_MO);
+            g.setFont(f(true, 12.5f * u));
+            Kinh.chu(g, tt[i][1], x + 150 * u, by, Kinh.CHU);
         }
-        float by = y + 52 * u + dong.length * 22 * u + 10 * u;
-        Kinh.nut(g, x, by, 190 * u, 32 * u, "Mở thư mục dữ liệu", f(true, 13 * u), false, tro(x, by, 190 * u, 32 * u), false);
-        them(x, by, 190 * u, 32 * u, new Runnable() {
+        y += tt.length * hh + 12 * u + 16 * u;
+        // nút: Giấy phép & ghi công (chính) + Mở thư mục dữ liệu (nhỏ)
+        Font fb = f(true, 13 * u);
+        g.setFont(fb);
+        float bh = 34 * u;
+        String gp = "Giấy phép & ghi công";
+        float gw = g.getFontMetrics().stringWidth(gp) + 36 * u;
+        Kinh.nut(g, x, y, gw, bh, gp, fb, true, tro(x, y, gw, bh), false);
+        them(x, y, gw, bh, new Runnable() {
             public void run() {
+                caiDatMo = false;
+                CaiDat.luu();
                 try {
-                    java.awt.Desktop.getDesktop().open(CaiDat.thuMucDuLieu());
+                    game.render.screen.GhiCongScr.mo();
                 } catch (Throwable e) {
-                    bao("Không mở được thư mục");
+                    NhatKy.loi("giay phep", e);
                 }
             }
         });
+        String tm = "Mở thư mục dữ liệu";
+        float tw = g.getFontMetrics().stringWidth(tm) + 36 * u;
+        float tmx = x + gw + 10 * u;
+        Kinh.nut(g, tmx, y, tw, bh, tm, fb, false, tro(tmx, y, tw, bh), false);
+        them(tmx, y, tw, bh, new Runnable() {
+            public void run() {
+                moThuMuc();
+            }
+        });
+    }
+
+    private static void moThuMuc() {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    if (!java.awt.Desktop.isDesktopSupported()
+                            || !java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.OPEN)) {
+                        bao("Máy này không hỗ trợ mở thư mục");
+                        return;
+                    }
+                    java.awt.Desktop.getDesktop().open(CaiDat.thuMucDuLieu());
+                } catch (Throwable e) {
+                    bao("Không mở được thư mục dữ liệu");
+                }
+            }
+        }, "mo-thu-muc").start();
     }
 
     // ================================================================ nhập
@@ -578,6 +853,11 @@ public final class LopPhu {
                 CaiDat.luu();
             }
             doiPhim = -1;
+            return true;
+        }
+        if (vk == KeyEvent.VK_F1) {   // F1: trang Phím tắt <-> đóng
+            if (tab == TAB_PHIM_TAT) moCaiDat();
+            else tab = TAB_PHIM_TAT;
             return true;
         }
         if (vk == KeyEvent.VK_ESCAPE || vk == BanPhim.PHIM[BanPhim.CAI_DAT]) {
@@ -654,8 +934,5 @@ public final class LopPhu {
             if (v.trong(x, y)) return v.bam != null || v.keo != null;
         }
         return false;
-    }
-
-    static void unused(GradientPaint p) {
     }
 }

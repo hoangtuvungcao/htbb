@@ -112,10 +112,18 @@ VA_HD = [
      "Font.smallFont.drawString(g, new StringBuffer(String.valueOf(this.mainChar.x / 16))",
      "if (!%s) Font.smallFont.drawString(g, new StringBuffer(String.valueOf(this.mainChar.x / 16))" % HUD),
     ("TRONG", "game/render/screen/GameScr.java", r"\n    public void paintMiniMap\(Graphics g\)",
-     "Font.normalFontColor.drawString(g, nameCountry[", "if (!%s) Font.normalFontColor.drawString(g, nameCountry[" % HUD),
+     "Font.normalFontColor.drawString(g, vungMap,", "if (!%s) Font.normalFontColor.drawString(g, vungMap," % HUD),
     # bản đồ nhỏ: thẻ HD của HUD vẽ cả bản đồ (phóng vừa khung) -> jar không vẽ ảnh / điểm trong ô nữa
     ("TRONG", "game/render/screen/GameScr.java", r"\n    public void paintMiniMap\(Graphics g\)",
      "g.setClip(3, 3, wMiniMap - 5, hMiniMap - 5);", "g.setClip(3, 3, %s ? 0 : wMiniMap - 5, %s ? 0 : hMiniMap - 5);" % (HUD, HUD)),
+    # HUD màn rộng chung (HudRong, bản PC): APK có HUD HD riêng (Hud.java) -> tắt, khỏi vẽ / nhận chạm chồng
+    ("DAU", "game/render/screen/HudRong.java", r"\n    public static boolean bat\(\)", " if (%s) { return false; }" % HUD),
+    # toạ độ chạm logic -> thế giới (HanhDong: chọn quái / NPC khi chạm): camera cố định phóng 2 (HdZoom)
+    ("DAU", "game/pokemon/HanhDong.java", r"\n    public static int wx\(int px\)", " if (true) { return %sHdZoom.wx(GameScr.cmx, px); }" % HD),
+    ("DAU", "game/pokemon/HanhDong.java", r"\n    public static int wy\(int py\)", " if (true) { return %sHdZoom.wy(GameScr.cmy, py); }" % HD),
+    # thanh ô nhanh của jar ẩn khi có HUD: chạm vùng đó không mở bảng gán chiêu (HUD tự mở qua nút chiêu)
+    ("TEP", "game/render/screen/GameScr.java", "game.pokemon.ChonChieuNhanh.thanhJar(",
+     "!%s && game.pokemon.ChonChieuNhanh.thanhJar(" % HUD),
     # ô chat: chữ Đóng / Xoá của jar -> nút viên của HUD (Hud.veNutChat)
     ("TEP", "game/render/screen/GameScr.java", 'Font.borderFont.drawString(g, "Đóng", 5, Canvas.h - Screen.deltaY, 0);',
      'if (!%s) Font.borderFont.drawString(g, "Đóng", 5, Canvas.h - Screen.deltaY, 0);' % HUD),
@@ -134,20 +142,6 @@ VA_HD = [
     ("TRONG", "game/render/screen/GameScr.java", r"\n    private void updatePoint\(\)",
      "if (Canvas.isPointerClick) {\n                int wSlot = buocO() * 5;",
      "if (Canvas.isPointerClick && !%s) {\n                int wSlot = buocO() * 5;" % HUD),
-    # bản đồ nhỏ hơn màn: phóng phần thế giới cho kín màn (HdZoom), chạm thế giới đổi ngược
-    ("TRONG", "game/render/screen/GameScr.java", r"\n    public void paint\(Graphics g\)",
-     "g.translate((-cmx) + rung + game.pokemon.HieuUngDanh.rungX(), (-cmy) - rung + game.pokemon.HieuUngDanh.rungY());",
-     "g.translate((-cmx) + rung + game.pokemon.HieuUngDanh.rungX(), (-cmy) - rung + game.pokemon.HieuUngDanh.rungY()); %sHdZoom.batDau(g, this);" % HD),
-    ("TRONG", "game/render/screen/GameScr.java", r"\n    public void paint\(Graphics g\)",
-     "            paintFocusActorInfo(g);", "            %sHdZoom.ket(g);\n            paintFocusActorInfo(g);" % HD),
-    ("TRONG", "game/render/screen/GameScr.java", r"\n    private void updatePoint\(\)",
-     "cmx + Canvas.px", "%sHdZoom.wx(cmx, Canvas.px)" % HD),
-    ("TRONG", "game/render/screen/GameScr.java", r"\n    private void updatePoint\(\)",
-     "cmy + Canvas.py", "%sHdZoom.wy(cmy, Canvas.py)" % HD),
-    ("TRONG", "game/render/screen/GameScr.java", r"\n    public void findRoad\(int aa, int bb\)",
-     "cmx + Canvas.px", "%sHdZoom.wx(cmx, Canvas.px)" % HD),
-    ("TRONG", "game/render/screen/GameScr.java", r"\n    public void findRoad\(int aa, int bb\)",
-     "cmy + Canvas.py", "%sHdZoom.wy(cmy, Canvas.py)" % HD),
     # hiệu ứng HD (HdHieuUng): hạt phát sáng, số sát thương lò xo, đêm mượt, nổ lên cấp / tiến hoá
     ("DAU", "game/pokemon/HieuUngDanh.java", r"\n    private static void veHat\(Graphics g\)",
      " if (%sHdHieuUng.veHat(g, hK, hX, hY, hVX, hVY, hTuoi, hMax, hMau, hMau2, hCo, soHat)) { return; }" % HD),
@@ -206,6 +200,42 @@ VA_HD = [
     ("DAU", "game/render/screen/MenuNhanh.java", r"\n    private static boolean anBong\(\)", " if (%s) { return true; }" % HUD),
     ("DAU", "game/render/screen/Nen.java", r"\n    static int yTrangThai\(int macDinh\)", " if (%s) { return %sHud.yTrangThai(macDinh); }" % (HUD, HD)),
 ]
+
+
+# CAMERA CỐ ĐỊNH (HdZoom, KhungCoDinh): vá BẮT BUỘC - lệch là dừng build (máy nào cũng thấy đúng 320x180 px thế giới;
+# vá mềm bị bỏ qua sẽ cho camera sai -> không được phép). (tệp, chuỗi gốc, chuỗi thay, số lần phải gặp)
+VA_CAMERA = [
+    ("game/render/screen/GameScr.java",
+     "        gsw = Canvas.w;\n        gsh = Canvas.h;\n",
+     "        gsw = %sHdZoom.gsw(Canvas.w);   // apk: camera cố định 320x180 px thế giới\n"
+     "        gsh = %sHdZoom.gsh(Canvas.h);\n" % (HD, HD),
+     1),
+    ("game/render/screen/GameScr.java",
+     "g.translate((-cmx) + rung + game.pokemon.HieuUngDanh.rungX(), (-cmy) - rung + game.pokemon.HieuUngDanh.rungY());\n"
+     "        g.setColor(0);\n        g.fillRect(cmx - 5, cmy - 5, Canvas.w + 10, Canvas.h + 10);\n",
+     "g.translate((-cmx) + rung + game.pokemon.HieuUngDanh.rungX(), (-cmy) - rung + game.pokemon.HieuUngDanh.rungY());\n"
+     "        %sHdZoom.batDau(g, this);   // apk: lớp thế giới phóng 2\n"
+     "        %sHdZoom.nen(g, cmx - 5, cmy - 5, gsw + 10, gsh + 10);\n" % (HD, HD),
+     1),
+    ("game/render/screen/GameScr.java",
+     "            paintFocusActorInfo(g);\n            paintMainCharInfo(g);\n",
+     "            %sHdZoom.ket(g);   // apk: hết lớp thế giới -> HUD\n"
+     "            paintFocusActorInfo(g);\n            paintMainCharInfo(g);\n" % HD,
+     1),
+    ("game/render/screen/GameScr.java", "cmx + Canvas.px", "%sHdZoom.wx(cmx, Canvas.px)" % HD, 3),
+    ("game/render/screen/GameScr.java", "cmy + Canvas.py", "%sHdZoom.wy(cmy, Canvas.py)" % HD, 3),
+]
+
+
+def va_camera(tuong_doi, s):
+    for tep, a, b, n in VA_CAMERA:
+        if tep != tuong_doi:
+            continue
+        if s.count(a) != n:
+            sys.exit("port-j2me: %s: mẫu camera cố định gặp %d lần (cần %d) - code jar đã đổi, sửa VA_CAMERA: %r"
+                     % (tuong_doi, s.count(a), n, a[:70]))
+        s = s.replace(a, b)
+    return s
 
 
 def _than_ham(s, mau):
@@ -287,6 +317,7 @@ def main():
                 s = open(duong, encoding="utf-8").read()
                 for mau, thay, _ in VA_CHUNG:
                     s = re.sub(mau, thay, s)
+                s = va_camera(tuong_doi, s)
                 s = va_hd(tuong_doi, s, bao_hd)
                 if tuong_doi in va_rieng:
                     a, b, n = va_rieng[tuong_doi]

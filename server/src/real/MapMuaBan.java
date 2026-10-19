@@ -510,6 +510,7 @@ class MapMuaBan {
                     player.sendMessage(m);
                     m.cleanup();
                     Database.instance.saveOrtherLog("tob_other_log", player.charname, "Sử dụng " + info, "usb");
+                    DungVatPham.bao(player, "Đã dùng " + info + ": +" + (player.x2 == 1 ? "50%" : "100%") + " kinh nghiệm."); // truoc: khong chu nao
                 } else {
                     Message m = MessageCreator.createServerAlertMessage("Không tìm thấy vật phẩm trên", "");
                     player.sendMessage(m);
