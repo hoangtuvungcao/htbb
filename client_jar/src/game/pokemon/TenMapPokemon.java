@@ -70,7 +70,8 @@ public final class TenMapPokemon {
     /**
      * Chỉ client (KHÔNG có trong bảng server - KiemPokeDuLieu chỉ đối chiếu BANG): tên riêng kiếm hiệp còn
      * sót trong Map.namMap của server / tên ghép số khu. Dùng qua doiHien() khi HIỆN tên bản đồ.
-     * Tên chung (Bến tàu, Khu mua bán, Hang phía đông, Thuyền...) giữ nguyên.
+     * Tên chung (Bến tàu, Khu mua bán, Hang phía đông, Thuyền...) giữ nguyên. Tên thiết kế server gửi từ bảng SQL
+     * data_map_ten (Ngục tối, Khu mỏ, Chiến trường, Đấu trường La Mã) KHÔNG đổi ở đây - client hiện đúng tên server.
      */
     public static final String[][] BANG_HIEN = {
         {"Hang Dracula phía đông", "Hang Darkrai phía đông"},
@@ -85,12 +86,8 @@ public final class TenMapPokemon {
         {"TYT 5x", "Tháp luyện 5x"},
         {"TYT 6x", "Tháp luyện 6x"},
         {"TYT 7x", "Tháp luyện 7x"},
-        {"Chien truong", "Chiến trường Pokémon"},
-        {"Chiến trường", "Chiến trường Pokémon"},
-        {"Đấu trường la mã", "Đấu trường Colosseum"},
+        {"Chien truong", "Chiến trường"},
         {"Lôi đài", "Sàn đấu"},
-        {"Ngục tối", "Ngục Team Rocket"},
-        {"Khu mỏ", "Mỏ Oreburgh"},
         {"Cân núi", "Đỉnh núi"},
         {"Làng Sơn Nam", "Pewter"},
         {"Thành liên đấu", "Gym liên đấu"},
@@ -147,7 +144,8 @@ public final class TenMapPokemon {
             // server gửi "Bạch hạc_1" (số khu): đổi tên gốc, hiện "Goldenrod 1"
             String goc = t.substring(0, i - 1).trim();
             String d = doiHien(goc);
-            if (!d.equals(goc)) {
+            if (!d.equals(goc) || tach == '_') {
+                // server (bảng data_map_ten) gửi sẵn tên Pokémon "Goldenrod_1": vẫn hiện "Goldenrod 1"
                 return d + " " + t.substring(i);
             }
         }

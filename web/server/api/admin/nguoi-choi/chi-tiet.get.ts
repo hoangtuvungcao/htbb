@@ -47,6 +47,7 @@ export default defineAdminHandler(async (event, admin) => {
     `SELECT id, charname, lastLv, xp, \`class\`, dex, shiny, gold, luong, luonglock, kho_xu, kho_luong, kho_luong_khoa,
             ban, del, lastLog, totalTimePlay, idClan, pInfo FROM tob_char WHERE userId = ? ORDER BY lastLv DESC, id ASC`, [Number(tk.id)])
   const { tinHieu, viTri } = await ncTinHieuOnline()
+  const tenSql = await bangTenBanDoSql() // tên bản đồ từ data_map_ten (nguồn duy nhất)
   const expMain = capDoRaExp()
   const ids = nv.map(c => Number(c.id))
   const demDex = new Map<number, number>()
@@ -73,8 +74,8 @@ export default defineAdminHandler(async (event, admin) => {
       dangCamChat: camChatDen !== '' && camChatDen > gioHienTai(),
       online: onl.online, onlineLyDo: onl.lyDo,
       viTri: vtOn
-        ? { nguon: 'online', map: vtOn.map_id, ten: vtOn.map_ten || hsTenBanDo(vtOn.map_id), khu: vtOn.khu, x: vtOn.x, y: vtOn.y }
-        : vtLuu ? { nguon: 'da_luu', map: vtLuu.map, ten: hsTenBanDo(vtLuu.map), khu: null, x: vtLuu.x, y: vtLuu.y } : null,
+        ? { nguon: 'online', map: vtOn.map_id, ten: vtOn.map_ten || tenSql.get(Number(vtOn.map_id)) || hsTenBanDo(vtOn.map_id), khu: vtOn.khu, x: vtOn.x, y: vtOn.y }
+        : vtLuu ? { nguon: 'da_luu', map: vtLuu.map, ten: tenSql.get(Number(vtLuu.map)) ?? hsTenBanDo(vtLuu.map), khu: null, x: vtLuu.x, y: vtLuu.y } : null,
     }
   })
 

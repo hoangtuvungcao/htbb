@@ -8,6 +8,7 @@
  *   du_lieu/bang_quai.csv, bang_chieu.csv, bang_thu.csv, bang_npc.csv,
  *   bang_npc_su_kien.csv, bang_pet_cu.csv, kiem_ke_sprite.csv
  *   src/com/htbb/pokemon/{HePokemon,LoaiPokemon,DaTienHoa,Pokedex,TenMapPokemon,ChuPokemon}.java
+ *   sql/pokemon_ten_hien.sql (tên NPC data_npc + tên bản đồ data_map_ten)
  *   src/real/Map.java (bảng tên map), client_pc_ios/Assets/.../Tilemap.cs (tên map client)
  *   sql/htbb_day_du.sql (data_monster: cấp, HP, exp; data_potion: tên thuốc thưởng)
  *   map/map<N> (lưới quái: 2 byte rộng/cao + rộng×cao byte id template; 0/255 = trống)
@@ -184,6 +185,35 @@ for (const r of CHIEU) {
 
 // ---------------------------------------------------------------- Tên map
 
+/**
+ * Dòng INSERT của bảng tên NGƯỜI CHƠI THẤY trong sql/pokemon_ten_hien.sql (data_npc / data_map_ten — cùng dữ liệu
+ * với sql/htbb_day_du.sql; CSDL + /admin/ten-hien là nguồn). Mỗi dòng: mảng cột (chuỗi đã bỏ nháy).
+ */
+function* dongSqlTen(bang) {
+  const sql = doc('sql/pokemon_ten_hien.sql')
+  const a = sql.indexOf('INSERT INTO `' + bang + '`')
+  const b = sql.indexOf('ON DUPLICATE KEY', a)
+  if (a < 0 || b < 0) throw new Error('thiếu bảng ' + bang + ' trong sql/pokemon_ten_hien.sql')
+  for (const l of sql.slice(sql.indexOf('\n', a) + 1, b).split('\n')) {
+    if (!l.startsWith('(')) continue
+    const x = l.slice(1, l.lastIndexOf(')'))
+    const o = []
+    let cur = ''
+    let nhay = false
+    for (let i = 0; i < x.length; i++) {
+      const c = x[i]
+      if (c === "'") {
+        if (nhay && x[i + 1] === "'") { cur += "'"; i++ }
+        else nhay = !nhay
+      } else if (c === ',' && !nhay) { o.push(cur); cur = '' }
+      else cur += c
+    }
+    o.push(cur)
+    yield o
+  }
+}
+const TEN_MAP_SQL = Object.fromEntries([...dongSqlTen('data_map_ten')].map(o => [Number(o[0]), o[1]]))
+
 const tenMapJava = doc('server/src/com/htbb/pokemon/TenMapPokemon.java')
 const BANG_TEN_MAP = dongCon(khoi(tenMapJava, 'String[][] BANG =')).map(r => chuoi(r))
 const HUONG = chuoi(khoi(tenMapJava, 'String[] HUONG ='))
@@ -220,6 +250,7 @@ const vietHoa = s => s.charAt(0).toLocaleUpperCase('vi') + s.slice(1)
 /** Map không có trong hai bảng trên (tên lấy từ chú thích RealController.java). */
 const TEN_MAP_THEM = { 28: 'Cánh Rừng Đông' }
 function tenMap(id) {
+  if (TEN_MAP_SQL[id]) return TEN_MAP_SQL[id]
   if (BAN_DO_HOENN[id]) return BAN_DO_HOENN[id].ten
   const cu = tenMapClient[id] || tenMapServer[id] || TEN_MAP_THEM[id]
   return cu ? vietHoa(doiTenMap(cu)) : `Khu vực ${id}`
@@ -291,7 +322,7 @@ const NPC_SK = docCsv('du_lieu/bang_npc_su_kien.csv')
 const PET_CU = docCsv('du_lieu/bang_pet_cu.csv')
 const KIEM_KE = docCsv('du_lieu/kiem_ke_sprite.csv')
 const chuJava = doc('server/src/com/htbb/pokemon/ChuPokemon.java')
-const TEN_NPC = chuoi(khoi(chuJava, 'String[] TEN_NPC ='))
+const TEN_NPC = Object.fromEntries([...dongSqlTen('data_npc')].map(o => [Number(o[0]), o[1]]))
 const TEN_VUNG = chuoi(khoi(chuJava, 'String[] TEN_VUNG ='))
 const TEN_DONG = chuoi(khoi(chuJava, 'String[] TEN_DONG ='))
 const HUONG_DAN_GAME = chuoi(khoi(chuJava, 'String[] HUONG_DAN ='))

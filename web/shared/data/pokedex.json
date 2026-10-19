@@ -627,7 +627,7 @@
   "Phím #: Chat.",
   "Phím *: mở menu mời nhóm, trao đổi, nhắn tin, kết bạn, xem thông tin, xuống thú cưỡi.",
   "Phím 0: chuyển đổi bảng chiêu.",
-  "Bạn phải làm xong nhiệm vụ chào Trưởng làng (nhiệm vụ đầu tiên) mới có thể đấu với Pokémon hoang dã.",
+  "Bạn phải làm xong nhiệm vụ chào Trưởng làng Xatu (nhiệm vụ đầu tiên) mới có thể đấu với Pokémon hoang dã.",
   "Bạn có thể mua vật phẩm đặc biệt bằng cách vào Menu chọn Cửa Hàng.",
   "Bạn có thể mua vật phẩm tại các NPC trong làng.",
   "Khi lên cấp bạn được thưởng 5 điểm tiềm năng và 1 điểm kỹ năng.",
@@ -638,7 +638,7 @@
   "Bạn chỉ có thể nâng cấp vật phẩm khi Pokémon đạt cấp 10.",
   "Đeo khăn PK để bật chức năng chiến đấu.",
   "Khi vật phẩm bị hư hại, hãy đến Machamp thợ rèn để sửa.",
-  "Để di chuyển nhanh giữa các vùng, hãy nhờ Pidgeot (Bay).",
+  "Để di chuyển nhanh giữa các vùng, hãy nhờ Pidgeot chở bay.",
   "Để ra đảo, hãy đến bến tàu mua vé và đi tàu."
  ],
  "map": [
@@ -848,7 +848,7 @@
   },
   {
    "id": 21,
-   "ten": "Mahogany",
+   "ten": "Đồng cỏ phía tây",
    "vung": "",
    "dex": [
     123,
@@ -902,7 +902,7 @@
   },
   {
    "id": 28,
-   "ten": "Rừng Ilex",
+   "ten": "Mahogany",
    "vung": "",
    "dex": [
     244,
@@ -2118,7 +2118,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Pidgeot (Bay)",
+     "ten": "Pidgeot chở bay",
      "suKien": false
     }
    ]
@@ -3121,7 +3121,7 @@
      "suKien": false
     },
     {
-     "ten": "Meowth",
+     "ten": "Meowth đổi xu",
      "suKien": false
     },
     {
@@ -3163,7 +3163,11 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Persian",
+     "ten": "Ngài Persian",
+     "suKien": false
+    },
+    {
+     "ten": "Persian quản gia",
      "suKien": false
     }
    ]
@@ -3436,23 +3440,23 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Golem 1",
+     "ten": "Golem bán hàng 1",
      "suKien": false
     },
     {
-     "ten": "Golem 2",
+     "ten": "Golem bán hàng 2",
      "suKien": false
     },
     {
-     "ten": "Golem 3",
+     "ten": "Golem bán hàng 3",
      "suKien": false
     },
     {
-     "ten": "Golem 4",
+     "ten": "Golem bán hàng 4",
      "suKien": false
     },
     {
-     "ten": "Golem 5",
+     "ten": "Golem bán hàng 5",
      "suKien": false
     }
    ]
@@ -3674,7 +3678,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Farfetch'd",
+     "ten": "Farfetch'd thợ cả",
      "suKien": false
     }
    ]
@@ -4148,7 +4152,7 @@
      "suKien": false
     },
     {
-     "ten": "Kangaskhan",
+     "ten": "Kangaskhan quản kho",
      "suKien": false
     }
    ]
@@ -4263,7 +4267,7 @@
      "noi": [
       {
        "map": 21,
-       "ten": "Mahogany",
+       "ten": "Đồng cỏ phía tây",
        "soLuong": 27
       }
      ],
@@ -4300,7 +4304,7 @@
      "noi": [
       {
        "map": 21,
-       "ten": "Mahogany",
+       "ten": "Đồng cỏ phía tây",
        "soLuong": 31
       }
      ],
@@ -4367,23 +4371,23 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Tauros 1",
+     "ten": "Tauros bán hàng 1",
      "suKien": false
     },
     {
-     "ten": "Tauros 2",
+     "ten": "Tauros bán hàng 2",
      "suKien": false
     },
     {
-     "ten": "Tauros 3",
+     "ten": "Tauros bán hàng 3",
      "suKien": false
     },
     {
-     "ten": "Tauros 4",
+     "ten": "Tauros bán hàng 4",
      "suKien": false
     },
     {
-     "ten": "Tauros 5",
+     "ten": "Tauros bán hàng 5",
      "suKien": false
     }
    ]
@@ -4495,7 +4499,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Lapras hoa tiêu",
+     "ten": "Lapras chở đò",
      "suKien": false
     }
    ]
@@ -6252,7 +6256,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Heracross",
+     "ten": "Chỉ huy Heracross",
      "suKien": false
     },
     {
@@ -6532,7 +6536,7 @@
      "noi": [
       {
        "map": 28,
-       "ten": "Rừng Ilex",
+       "ten": "Mahogany",
        "soLuong": 17
       }
      ],
@@ -6814,7 +6818,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Blaziken",
+     "ten": "Huấn luyện viên Blaziken",
      "suKien": false
     }
    ]
@@ -7215,7 +7219,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Sableye",
+     "ten": "Sableye buôn đá quý",
      "suKien": false
     }
    ]
@@ -7643,7 +7647,7 @@
    "pet": [],
    "npc": [
     {
-     "ten": "Torkoal",
+     "ten": "Lão Torkoal",
      "suKien": false
     }
    ]
@@ -8240,7 +8244,7 @@
      "suKien": false
     },
     {
-     "ten": "Kecleon",
+     "ten": "Kecleon bán lẻ",
      "suKien": false
     }
    ]
@@ -9294,7 +9298,7 @@
      "noi": [
       {
        "map": 28,
-       "ten": "Rừng Ilex",
+       "ten": "Mahogany",
        "soLuong": 17
       }
      ],
@@ -9512,7 +9516,7 @@
      "suKien": false
     },
     {
-     "ten": "Bronzong",
+     "ten": "Bronzong bán giáp",
      "suKien": false
     }
    ]
@@ -10240,7 +10244,7 @@
      "noi": [
       {
        "map": 28,
-       "ten": "Rừng Ilex",
+       "ten": "Mahogany",
        "soLuong": 8
       }
      ],

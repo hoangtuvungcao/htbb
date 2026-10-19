@@ -14,7 +14,12 @@ public class NPC extends Actor {
     public int idLinhGac;
     private Image[] img;
     public String name;
-    public static final String[] NPCNAME = {"Y tá Chansey", "Kecleon tạp hoá", "Machamp", "Bronzong", "Arcanine gác cổng", "Trưởng làng", "Persian", "Pidgeot (Bay)", "ông nội", "Kangaskhan", "Hoa tiêu", "Golem 1", "Golem 2", "Golem 3", "Golem 4", "Golem 5", "Tauros 1", "Tauros 2", "Tauros 3", "Tauros 4", "Tauros 5", "Blaziken", "Meowth thương nhân", "Torkoal", "Bảo ngọc", "Heracross", "Kim hoa", "Bronzong", "Farfetch'd", "Persian", "An Tâm", "Meowth"};
+    /**
+     * Tên NPC tĩnh theo type 0..31 = bảng SQL data_npc (sql/pokemon_ten_hien.sql, sửa ở web /admin/ten-hien). Giao
+     * thức chưa có gói gửi tên NPC tĩnh nên bản sao này vẫn nằm trong client: server test KiemTenHien bắt lệch với SQL
+     * (sửa tên NPC tĩnh -> sửa ở đây + NPC.cs rồi phát hành client).
+     */
+    public static final String[] NPCNAME = {"Y tá Chansey", "Kecleon tạp hoá", "Machamp thợ rèn", "Bronzong thợ giáp", "Arcanine gác cổng", "Trưởng làng Xatu", "Ngài Persian", "Pidgeot chở bay", "Ông Snorlax", "Kangaskhan thủ kho", "Lapras chở đò", "Golem bán hàng 1", "Golem bán hàng 2", "Golem bán hàng 3", "Golem bán hàng 4", "Golem bán hàng 5", "Tauros bán hàng 1", "Tauros bán hàng 2", "Tauros bán hàng 3", "Tauros bán hàng 4", "Tauros bán hàng 5", "Huấn luyện viên Blaziken", "Meowth thương nhân", "Lão Torkoal", "Sableye buôn đá quý", "Chỉ huy Heracross", "Kecleon bán lẻ", "Bronzong bán giáp", "Farfetch'd thợ cả", "Persian quản gia", "Kangaskhan quản kho", "Meowth đổi xu"};
     static byte[] idImg = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 14, 13, 15, 16, 17, 1, 3, 2, 6, 9, 13};
     public static byte[] NPCX;
     public static byte[] NPCY;

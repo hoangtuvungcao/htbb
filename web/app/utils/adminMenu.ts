@@ -44,6 +44,7 @@ export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
     items: [
       { key: 'kinh_te', to: '/admin/kinh-te', label: 'Kinh tế', icon: 'i-lucide-chart-line', api: '/api/admin/kinh-te/tong-quan', moTa: 'Nguồn vào/ra, lạm phát, người giữ nhiều, cảnh báo' },
       { key: 'du_lieu_game', to: '/admin/du-lieu-game', label: 'Dữ liệu game', icon: 'i-lucide-database', api: '/api/admin/du-lieu-game/tong-quan', moTa: 'Vật phẩm, quái, bản đồ, nhiệm vụ, cửa hàng, rơi đồ (chỉ đọc)' },
+      { key: 'ten_hien', to: '/admin/ten-hien', label: 'Tên NPC & bản đồ', icon: 'i-lucide-map-pin', api: '/api/admin/ten-hien', moTa: 'Sửa tên NPC và tên bản đồ người chơi thấy (game tự nạp trong 30 giây)' },
       { key: 'bang_game', to: '/admin/bang-game', label: 'Kết quả trong game', icon: 'i-lucide-castle', api: '/api/admin/bang-game' },
       { key: 'xep_hang', to: '/admin/xep-hang', label: 'Bảng xếp hạng web', icon: 'i-lucide-trophy', api: '/api/admin/xep-hang', moTa: 'Bảng nào hiện, thứ tự, làm mới, loại trừ' },
       { key: 'dua_top', to: '/admin/dua-top', label: 'Đua top', icon: 'i-lucide-medal', api: '/api/admin/dua-top' },

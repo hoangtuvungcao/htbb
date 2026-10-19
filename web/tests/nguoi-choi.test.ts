@@ -159,9 +159,10 @@ test('thư báo quà ≤ 800 ký tự và luôn có mã', () => {
 })
 
 test('tên bản đồ', () => {
-  assert.equal(hsTenBanDo(0), 'Pewter')
-  assert.equal(hsTenBanDo(105), 'Sân nhà khởi đầu')
+  // tên thật ở bảng SQL data_map_ten (server/utils/tenHien.ts); đây chỉ là dự phòng
+  assert.equal(hsTenBanDo(0), 'Bản đồ #0')
   assert.equal(hsTenBanDo(301), 'Bản đồ #301')
+  assert.equal(hsTenBanDo(-1), 'Chưa có (Pokémon mới)')
 })
 
 test('tìm "Tất cả" nhận ra mã máy client HTBB (j2me-…), bỏ chuỗi quá ngắn / ký tự lạ', () => {

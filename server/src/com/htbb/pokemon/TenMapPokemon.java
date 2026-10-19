@@ -73,6 +73,43 @@ public final class TenMapPokemon {
 
     private static final String[] HUONG = {"Đông ", "Tây ", "Nam ", "Bắc "};
 
+    // ================================================================ ten khu (ban sao) cua ban do
+
+    /*
+     * Ten ban do theo ID KHONG con o day: bang SQL data_map_ten (sql/pokemon_ten_hien.sql, sua o web
+     * /admin/ten-hien), doc boi com.htbb.pokemon.TenHien, ap vao Map boi real.TenBanDoMayChu.
+     * Lop nay chi con quy tac dat ten khu (ban sao) va tu dien ten goc cho chu tu do (doi()).
+     */
+
+    /** Huong cua khu 1..4 (thu tu cot Map.mapID: goc, dong, tay, nam, bac). */
+    public static final String[] TEN_HUONG = {"Đông", "Tây", "Nam", "Bắc"};
+
+    /**
+     * Ten dau la danh tu chung (Hang, Bến, Khu...): khu ghi "Bến tàu phía bắc"; dia danh rieng (Pallet...) ghi
+     * "Bắc Pallet" nhu cu.
+     */
+    private static final String[] DAU_CHUNG = {
+        "Hang ", "Bến ", "Khu ", "Thuyền", "Hồ ", "Núi ", "Rừng ", "Vùng ", "Tàu ", "Đấu trường", "Sân ", "Tháp ",
+        "Chiến trường", "Đường ", "Cao nguyên ", "Lãnh địa ", "Ngục ", "Đồng cỏ ", "Chân núi ", "Tổ ",
+    };
+
+    /**
+     * Ten khu {@code khu} (1..4 = dong/tay/nam/bac, 0 = chinh ban do) cua ban do ten {@code goc}. Khu ngoai
+     * 1..4 (dau truong 7 khu) giu ten goc.
+     */
+    public static String tenKhu(final String goc, final int khu) {
+        if (goc == null || goc.isEmpty() || khu < 1 || khu > TEN_HUONG.length) {
+            return goc;
+        }
+        final String h = TEN_HUONG[khu - 1];
+        for (final String d : DAU_CHUNG) {
+            if (goc.startsWith(d)) {
+                return goc + " phía " + h.toLowerCase(java.util.Locale.ROOT);
+            }
+        }
+        return h + " " + goc;
+    }
+
     private TenMapPokemon() {
     }
 
