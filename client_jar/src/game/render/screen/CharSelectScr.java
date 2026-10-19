@@ -47,7 +47,7 @@ public class CharSelectScr extends Screen {
         this.cmdSelect = new Command("Chọn", new IAction() {
             @Override
             public void perform() {
-                Canvas.startWaitDlg("Xin chờ..", true);
+                game.pokemon.ManTai.batDau(game.pokemon.ManTai.NHAN_VAT, null);
                 game.pokemon.TuNoiLai.daChon(CharSelectScr.this.charInfos[CharSelectScr.this.selected].IDDB);
                 GameService.gI().selectChar(CharSelectScr.this.charInfos[CharSelectScr.this.selected].IDDB, 1);
                 Canvas.gameScr.mainChar.imgWpa = CharSelectScr.this.chars[CharSelectScr.this.selected].imgWpa;
@@ -160,6 +160,15 @@ public class CharSelectScr extends Screen {
 
     @Override
     public void paint(Graphics g) {
+        if (game.pokemon.TuNoiLai.dangNoi) {
+            // 0.9.5: đang tự kết nối lại - giữ màn tải (không lộ màn chọn Pokémon trước khi tự chọn lại)
+            game.pokemon.ManTai.ve(g, Math.max(game.pokemon.ManTai.buoc, game.pokemon.ManTai.DANG_NHAP));
+            return;
+        }
+        if (game.pokemon.KhungVao.moi()) {
+            veMoi(g);
+            return;
+        }
         // pokemon: banner; Pokémon khởi đầu cùng dòng với nhân vật đang chọn được chiếu sáng
         int chonDong = -1;
         try {
@@ -261,6 +270,154 @@ public class CharSelectScr extends Screen {
             Font.borderFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.borderFont, "Ô trống: bấm để tạo Pokémon", Canvas.w - 24), Canvas.hw, yDuoi, 2);
         }
         super.paint(g);
+    }
+
+    private IAction viecVao, viecTao, viecXoa, viecThoat;
+
+    private boolean coO(int i) {
+        return this.charInfos != null && i >= 0 && i < this.charInfos.length && this.chars != null && i < this.chars.length;
+    }
+
+    /**
+     * 0.9.5 PC / APK: Pokémon đang chọn đứng TO trên đường banner (tên + cấp dưới chân), hàng 3 thẻ gọn trong bảng sáng,
+     * nút thật Vào game / Tạo mới / Xoá (X trên đầu bảng = về đăng nhập). Không vẽ chip phím mềm.
+     */
+    private void veMoi(Graphics g) {
+        this.anNutLenh = true;
+        if (this.viecVao == null) {
+            this.viecVao = new IAction() {
+                public void perform() {
+                    if (coO(CharSelectScr.this.selected)) {
+                        CharSelectScr.this.cmdSelect.action.perform();
+                    }
+                }
+            };
+            this.viecTao = new IAction() {
+                public void perform() {
+                    CharSelectScr.this.cmdNew.action.perform();
+                }
+            };
+            this.viecXoa = new IAction() {
+                public void perform() {
+                    if (coO(CharSelectScr.this.selected)) {
+                        CharSelectScr.this.cmdDel.action.perform();
+                    }
+                }
+            };
+            this.viecThoat = new IAction() {
+                public void perform() {
+                    CharSelectScr.this.cmdClose.action.perform();
+                }
+            };
+        }
+        ServerListScr.gI().paintBg(g, -1, false);
+        Canvas.resetTrans(g);
+        game.pokemon.KhungVao.logoDuoi = 0;   // màn này không vẽ logo: bảng lên trên, Pokémon đứng giữa đường
+        game.pokemon.KhungVao.logoTrai = Canvas.hw;
+        game.pokemon.KhungVao.logoPhai = Canvas.hw;
+        int sel = this.selected;
+        boolean co = coO(sel);
+        // Pokémon đang chọn: to, giữa đường
+        int[] p = game.pokemon.Banner.viTriKhoiDau(2);
+        int t = p[2] * 3 / 2;
+        if (co) {
+            MainChar c = this.chars[sel];
+            MainChar ci = this.charInfos[sel];
+            int lv = ci.lastLv > 0 ? ci.lastLv : 1;
+            int dex = duDoanDex(c, lv);
+            g.setColor(0x16301F);
+            g.fillArc(p[0] - 16 * t / 100, p[1] - 4 * t / 100, 32 * t / 100, 9 * t / 100, 0, 360);
+            int nhun = (Canvas.gameTick % 24) < 12 ? 0 : -1;
+            if (dex <= 0 || !PokeBody.paint(g, dex, false, p[0], p[1] + nhun, 0, PokeDuLieu.DUNG, Canvas.gameTick, t)) {
+                c.x = (short) p[0];
+                c.y = (short) p[1];
+                c.paintAvatar(g, c.x, c.y);
+            }
+            Canvas.resetTrans(g);
+            String ten = ci.name == null ? "" : ci.name;
+            String dong = ten + " · Cấp " + lv;
+            if (dex > 0) {
+                dong = dong + " · " + LoaiPokemonClient.ten(dex);
+            }
+            if (ci.using == 0) {
+                dong = dong + " · còn " + (int) ci.day + " ngày";
+            }
+            int ht = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN) + 6;
+            int wt = Math.min(Canvas.w - 20, game.pokemon.ChuDe.rong(dong, game.pokemon.ChuDe.NHAN) + 20);
+            int yt = Math.min(Canvas.h - Screen.deltaY - ht - 4, p[1] + 6);
+            game.pokemon.ChuDe.the(g, p[0] - wt / 2, yt, wt, ht, ht / 2);
+            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(dong, game.pokemon.ChuDe.NHAN, wt - 16), p[0], yt, ht, game.pokemon.ChuDe.NHAN,
+                    game.pokemon.ChuDe.CHU, 2);
+        }
+        // bảng: hàng 3 thẻ + nút
+        int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
+        int lh = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN), lp = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU);
+        int hChip = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN_NHO) + 2;
+        int hThe = 44 + lh + lp + hChip + 12;
+        int dau = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM;
+        int hc = dau + hThe + k + hb;
+        int[] r = game.pokemon.KhungVao.dat(360, hc, hc, 220);
+        int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Chọn Pokémon", null, 0, null, this.viecThoat);
+        int x0 = n[0], w = n[2], y = n[1];
+        int wThe = (w - 2 * k) / 3;
+        boolean conTrong = false;
+        for (int i = 0; i < 3; i++) {
+            int x = x0 + i * (wThe + k);
+            boolean dang = i == sel;
+            boolean coI = coO(i);
+            if (!coI) {
+                conTrong = true;
+            }
+            final int the = i;
+            game.pokemon.Bang.hang(g, x, y, wThe, hThe, 0, dang, new IAction() {
+                public void perform() {
+                    CharSelectScr.this.chamThe(the);
+                }
+            }, "the-" + i);
+            int cx = x + wThe / 2;
+            if (!coI) {
+                game.pokemon.GiaoDien.khoi(g, cx - 14, y + 10, 28, 28, 14, game.pokemon.ChuDe.NEN_PHU_TOI);
+                game.pokemon.ChuDe.chuGiua(g, "+", cx, y + 10, 28, game.pokemon.ChuDe.TIEU_DE, game.pokemon.ChuDe.CHU_PHU, 2);
+                game.pokemon.ChuDe.chuGiua(g, "Ô trống", cx, y + 44, lh, game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU_PHU, 2);
+                game.pokemon.ChuDe.chuGiua(g, "Tạo Pokémon mới", cx, y + 44 + lh, lp, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 2);
+                continue;
+            }
+            MainChar c = this.chars[i];
+            MainChar ci = this.charInfos[i];
+            int lv = ci.lastLv > 0 ? ci.lastLv : 1;
+            int dex = duDoanDex(c, lv);
+            g.setClip(x + 2, y + 2, wThe - 4, 42);
+            g.setColor(dang ? 0xCFE3FA : 0xE4ECF7);
+            g.fillArc(cx - 18, y + 34, 36, 9, 0, 360);
+            if (dex <= 0 || !PokeBody.paint(g, dex, false, cx, y + 40, 0, PokeDuLieu.DUNG, Canvas.gameTick, 100)) {
+                c.x = (short) cx;
+                c.y = (short) (y + 40);
+                c.paintAvatar(g, c.x, c.y);
+            }
+            Canvas.resetTrans(g);
+            g.setClip(0, 0, Canvas.w, Canvas.h);
+            int yy = y + 44;
+            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(ci.name == null ? "" : ci.name, game.pokemon.ChuDe.NHAN, wThe - 8), cx, yy, lh,
+                    game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 2);
+            yy += lh;
+            game.pokemon.ChuDe.chuGiua(g, ci.using != 1 ? "Cấp " + lv + " · khoá" : "Cấp " + lv, cx, yy, lp, game.pokemon.ChuDe.PHU,
+                    ci.using != 1 ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.CHU_PHU, 2);
+            yy += lp + 2;
+            if (c.weaponType >= 3 && c.weaponType <= 7) {
+                String he = LoaiPokemonClient.HE_KHOI_DAU[c.weaponType - 3];
+                String chu = he.startsWith("Hệ ") ? he.substring(3) : he;
+                int wb = Math.min(wThe - 8, game.pokemon.ChuDe.rong(chu, game.pokemon.ChuDe.NHAN_NHO) + 12);
+                game.pokemon.GiaoDien.khoi(g, cx - wb / 2, yy, wb, hChip, hChip / 2, game.pokemon.GiaoDien.mauHe(he));
+                game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(chu, game.pokemon.ChuDe.NHAN_NHO, wb - 6), cx, yy, hChip, game.pokemon.ChuDe.NHAN_NHO,
+                        0xFFFFFF, 2);
+            }
+        }
+        y += hThe + k;
+        String xoa = co && this.charInfos[sel].using != 1 ? "Khôi phục" : "Xoá";
+        game.pokemon.KhungVao.hangNut(g, x0, y, w, new String[]{xoa, "Tạo mới", "Vào game"},
+                new int[]{co ? game.pokemon.Bang.TRUNG : game.pokemon.Bang.TAT, conTrong ? game.pokemon.Bang.TRUNG : game.pokemon.Bang.TAT,
+                    co ? game.pokemon.Bang.CHINH : game.pokemon.Bang.TAT},
+                new Object[]{this.viecXoa, this.viecTao, this.viecVao}, "chon");
     }
 
     /**

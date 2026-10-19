@@ -21,13 +21,13 @@ CREATE TABLE IF NOT EXISTS `data_npc` (
   PRIMARY KEY (`type`)
 ) DEFAULT CHARSET=utf8;
 INSERT INTO `data_npc` (`type`,`ten`,`chuc_vu`,`pokemon`,`dex`,`id_anh`,`ban_do`) VALUES
-(0,'Y tá Chansey','Bán thuốc hồi phục','Chansey',113,0,'43,45,47,49,51,54,56,59,60,62,100,281'),
+(0,'Y tá Chansey','Trung tâm Pokémon: hồi phục, bán thuốc','Chansey',113,0,'43,45,47,49,51,54,56,59,60,62,100,281'),
 (1,'Kecleon tạp hoá','Tạp hoá','Kecleon',352,1,'0,45,47,49,54,56,62,70,72,80,82,102'),
 (2,'Machamp thợ rèn','Thợ rèn: chế tạo, sửa, khảm đồ','Machamp',68,2,'0,45,70,73,80,83,103'),
 (3,'Bronzong thợ giáp','Bán trang bị','Bronzong',437,3,'0,47,55,59,70,74,80,84,104'),
 (4,'Arcanine gác cổng','Gác cổng','Arcanine',59,4,'0,70,80,201,281'),
 (5,'Trưởng làng Xatu','Trưởng làng, giao nhiệm vụ','Xatu',178,5,'0,43,45,50,56,59,60,70,80,101,163,164,280,282'),
-(6,'Ngài Persian','Giữ đồ','Persian',53,6,'0,53,70,79,80,89,109'),
+(6,'Ngài Persian','Bán đá quý, nguyên liệu','Persian',53,6,'0,53,70,79,80,89,109'),
 (7,'Pidgeot chở bay','Chở bay tới bản đồ khác','Pidgeot',18,7,'0,3,4,5,6,7,8,9,54,70,80'),
 (8,'Ông Snorlax','Giao nhiệm vụ','Snorlax',143,8,'51,57,60,105,160'),
 (9,'Kangaskhan thủ kho','Giữ đồ','Kangaskhan',115,9,'0,70,78,80,88,108'),
@@ -43,16 +43,16 @@ INSERT INTO `data_npc` (`type`,`ten`,`chuc_vu`,`pokemon`,`dex`,`id_anh`,`ban_do`
 (19,'Tauros bán hàng 4','Bán hàng','Tauros',128,12,'91'),
 (20,'Tauros bán hàng 5','Bán hàng','Tauros',128,12,'90'),
 (21,'Huấn luyện viên Blaziken','Huấn luyện viên','Blaziken',257,14,'0,44,50,51,52,62,70,80,163,282'),
-(22,'Meowth thương nhân','Nạp xu','Meowth',52,13,'0,47,49,56,62,70,80'),
+(22,'Meowth thương nhân','Ngân hàng xu, lượng','Meowth',52,13,'0,47,49,56,62,70,80'),
 (23,'Lão Torkoal','Giao nhiệm vụ','Torkoal',324,15,'4,51'),
 (24,'Sableye buôn đá quý','Bán đá quý','Sableye',302,16,'201,265'),
-(25,'Chỉ huy Heracross','Chỉ huy giải Liên minh','Heracross',214,17,''),
+(25,'Chỉ huy Heracross','Nhiệm vụ đội, Chiếm Gym','Heracross',214,17,'201'),
 (26,'Kecleon bán lẻ','Tạp hoá','Kecleon',352,1,'201,263'),
 (27,'Bronzong bán giáp','Bán trang bị','Bronzong',437,3,'201,260'),
 (28,'Farfetch''d thợ cả','Bán vật phẩm, thợ rèn','Farfetch''d',83,2,'201,261'),
-(29,'Persian quản gia','Giữ đồ','Persian',53,6,'201,264'),
+(29,'Persian quản gia','Bán đá quý, nguyên liệu','Persian',53,6,'201,264'),
 (30,'Kangaskhan quản kho','Giữ đồ','Kangaskhan',115,9,'201,262'),
-(31,'Meowth đổi xu','Nạp xu','Meowth',52,13,'')
+(31,'Meowth đổi xu','Ngân hàng xu, lượng','Meowth',52,13,'')
 ON DUPLICATE KEY UPDATE `pokemon`=VALUES(`pokemon`), `dex`=VALUES(`dex`), `id_anh`=VALUES(`id_anh`), `ban_do`=VALUES(`ban_do`);
 
 CREATE TABLE IF NOT EXISTS `data_map_ten` (

@@ -1,5 +1,6 @@
 package game.pokemon;
 
+import game.model.IAction;
 import game.model.ItemInInventory;
 import game.model.ItemTemplate;
 import game.model.MainChar;
@@ -30,6 +31,8 @@ public final class DungDo {
     /** Dòng đã ngắt theo bề ngang màn (tính lúc vẽ, Font cần màn đã dựng). */
     private static final String[][] DONG = new String[SO_DONG][];
     private static final int[] RONG_NGAT = new int[SO_DONG];
+    /** số lần gộp (cùng chữ còn đang hiện) */
+    private static final int[] DEM = new int[SO_DONG];
 
     /** Đếm chẩn đoán (kiểm thử / F9 bản PC). */
     public static int soNhan, soGui;
@@ -127,19 +130,26 @@ public final class DungDo {
             return;
         }
         long now = System.currentTimeMillis();
-        // trùng dòng mới nhất (bấm liên tục): chỉ làm mới thời gian
-        if (CHU[0] != null && CHU[0].equals(s) && now - LUC[0] < SONG[0]) {
-            LUC[0] = now;
-            return;
+        // trùng một dòng đang hiện (bấm liên tục / server gửi lặp): gộp thành "×n", đưa lên đầu, làm mới thời gian
+        int dem = 1;
+        int tu = SO_DONG - 1;
+        for (int i = 0; i < SO_DONG; i++) {
+            if (CHU[i] != null && CHU[i].equals(s) && now - LUC[i] < SONG[i]) {
+                dem = DEM[i] + 1;
+                tu = i;
+                break;
+            }
         }
-        for (int i = SO_DONG - 1; i > 0; i--) {
+        for (int i = tu; i > 0; i--) {
             CHU[i] = CHU[i - 1];
             LOAI[i] = LOAI[i - 1];
             LUC[i] = LUC[i - 1];
             SONG[i] = SONG[i - 1];
             DONG[i] = DONG[i - 1];
             RONG_NGAT[i] = RONG_NGAT[i - 1];
+            DEM[i] = DEM[i - 1];
         }
+        DEM[0] = dem;
         CHU[0] = s;
         LOAI[0] = loai;
         LUC[0] = now;
@@ -147,6 +157,15 @@ public final class DungDo {
         SONG[0] = Math.min(7000, 2500 + s.length() * 45);
         DONG[0] = null;
         RONG_NGAT[0] = 0;
+    }
+
+    /** Xoá mọi thông báo đang hiện (đăng xuất / kiểm thử). */
+    public static void xoaHet() {
+        for (int i = 0; i < SO_DONG; i++) {
+            CHU[i] = null;
+            DONG[i] = null;
+            DEM[i] = 0;
+        }
     }
 
     /** Còn thông báo đang hiện (để màn tự vẽ lại). */
@@ -160,19 +179,90 @@ public final class DungDo {
         return false;
     }
 
-    /** Vẽ trên cùng (Canvas.paint, sau màn / hộp thoại / menu). */
+    // ------------------------------------------------------------------ biểu ngữ / dòng sức khoẻ (0.9.5)
+    /** Biểu ngữ (thông báo máy chủ dài, vd "Tài khoản chưa kích hoạt..."): không chặn, 2 dòng + "Xem" mở đủ. */
+    public static void bieuNgu(String s) {
+        bao(s, TIN);
+        if (CHU[0] != null) {
+            SONG[0] = Math.max(SONG[0], 9000);
+        }
+    }
+
+    private static String sucKhoe;
+    private static long sucKhoeLuc, sucKhoeHien = -1;
+    static final long GIO = 3600000L;
+
+    /** Dòng nhắc sức khoẻ (máy chủ gửi khi vào game + định kỳ): hiện mờ 6 giây lúc vào game, rồi tối đa mỗi giờ. */
+    public static void sucKhoe(String s) {
+        long now = System.currentTimeMillis();
+        if (sucKhoeHien >= 0 && now - sucKhoeHien < GIO) {
+            return;
+        }
+        sucKhoe = s;
+        sucKhoeHien = now;
+        sucKhoeLuc = now;
+    }
+
+    /** Câu máy chủ (-26) là lời nhắc sức khoẻ / độ tuổi? */
+    public static boolean laSucKhoe(String s) {
+        return s != null && (s.indexOf("phút mỗi ngày") >= 0 || s.indexOf("sức khoẻ") >= 0 || s.indexOf("sức khỏe") >= 0);
+    }
+
+    private static final IAction[] BO_QUA = new IAction[SO_DONG];
+    private static final IAction[] XEM = new IAction[SO_DONG];
+
+    static {
+        for (int i = 0; i < SO_DONG; i++) {
+            final int k = i;
+            BO_QUA[i] = new IAction() {
+                public void perform() {
+                    CHU[k] = null;
+                    DONG[k] = null;
+                }
+            };
+            XEM[i] = new IAction() {
+                public void perform() {
+                    String t = CHU[k];
+                    int l = LOAI[k];
+                    CHU[k] = null;
+                    DONG[k] = null;
+                    if (t != null) {
+                        HopThongBao.bao(l == LOI ? "Không thực hiện được" : "Thông báo", t);
+                    }
+                }
+            };
+        }
+    }
+
+    /** Vẽ trên cùng (Canvas.paint, sau màn / hộp thoại / menu): thẻ thông báo GIỮA TRÊN (không che nhân vật). */
     public static void ve(Graphics g) {
+        veSucKhoe(g);
         if (CHU[0] == null && CHU[1] == null && CHU[2] == null) {
             return;
         }
-        Font f = Font.borderFont;
-        if (f == null) {
-            return;
+        if (Canvas.currentDialog != null) {
+            return;   // hộp thoại đang mở: không đè lên đầu hộp (thông báo vẫn đếm giờ)
         }
         Canvas.resetTrans(g);
+        int lopCu = VungCham.lopDangVe();
+        VungCham.lop(VungCham.NOI);
         long now = System.currentTimeMillis();
-        int rongToiDa = Math.max(80, Canvas.w - 24);
-        int y = Math.max(22, Canvas.h / 6);
+        // giữa trên, dưới hàng nút / khung mục tiêu của HUD; tránh thẻ trạng thái (trái) và nút (phải)
+        int rongToiDa = Math.max(160, Math.min(ChuDe.dt() ? 380 : 340, Canvas.w - 2 * 150));
+        // màn chơi: giữa trên (dưới hàng nút HUD), chạm = tắt / "Xem"; đang mở bảng: sát đáy, KHÔNG nhận chạm (không
+        // che tab / nút của bảng), tự tắt
+        boolean theGioi = Canvas.currentScreen == Canvas.gameScr;
+        int y = Bang.anTren + 40;
+        int lh = ChuDe.cao(ChuDe.THUONG);
+        if (!theGioi) {
+            int tong = 0;
+            for (int i = 0; i < SO_DONG; i++) {
+                if (CHU[i] != null) {
+                    tong += Math.max(VungCham.MIN, 2 * lh + 10) + 4;
+                }
+            }
+            y = Canvas.h - Bang.anDuoi - 10 - tong;
+        }
         for (int i = 0; i < SO_DONG; i++) {
             if (CHU[i] == null) {
                 continue;
@@ -183,40 +273,109 @@ public final class DungDo {
                 DONG[i] = null;
                 continue;
             }
+            int wChu = rongToiDa - 34;
             if (DONG[i] == null || RONG_NGAT[i] != rongToiDa) {
-                try {
-                    DONG[i] = f.splitFontBStrInLine(CHU[i], rongToiDa - 14);
-                } catch (Throwable e) {
-                    DONG[i] = new String[]{CHU[i]};
-                }
+                DONG[i] = ChuDe.ngat(CHU[i], ChuDe.THUONG, wChu, 3);
                 RONG_NGAT[i] = rongToiDa;
             }
             String[] d = DONG[i];
+            // dài hơn 2 dòng: biểu ngữ 2 dòng + "Xem"
+            boolean xem = d.length > 2 && theGioi;
+            int soDong = Math.min(2, d.length);
+            int wXem = xem ? ChuDe.rong("Xem", ChuDe.NHAN) + 14 : 0;
             int rong = 0;
-            for (int k = 0; k < d.length; k++) {
-                rong = Math.max(rong, f.getWidth(d[k]));
+            for (int k = 0; k < soDong; k++) {
+                rong = Math.max(rong, ChuDe.rong(d[k], ChuDe.THUONG));
             }
-            rong = Math.min(rongToiDa, rong + 14);
-            int cao = d.length * 13 + 4;
+            rong = Math.min(rongToiDa, rong + 30 + wXem);
+            int cao = Math.max(VungCham.MIN, soDong * lh + 10);
             int x = Canvas.hw - rong / 2;
             int yy = y - (int) (tuoi < 160 ? (160 - tuoi) / 20 : 0);
-            int tren, duoi;
-            if (LOAI[i] == LOI) {
-                tren = 0xB8322A;
-                duoi = 0x7E1A16;
-            } else if (LOAI[i] == TIN) {
-                tren = 0x3A64D0;
-                duoi = 0x24418C;
-            } else {
-                tren = 0x2E8A3A;
-                duoi = 0x1E5E28;
+            int ic = cao - 8;
+            int loaiIc = bieuTuong(CHU[i], LOAI[i]);
+            int mau = LOAI[i] == LOI ? ChuDe.DO : loaiIc == BieuTuong.CANH_BAO ? ChuDe.CAM : LOAI[i] == TIN || loaiIc == BieuTuong.CAMERA ? ChuDe.XANH
+                    : loaiIc == BieuTuong.XU ? 0xD99A00 : ChuDe.LA;
+            String sl = DEM[i] > 1 ? " ×" + DEM[i] : null;
+            int wSl = sl == null ? 0 : ChuDe.rong(sl, ChuDe.NHAN) + 4;
+            rong = Math.min(rongToiDa, rong + ic - 8 + wSl);
+            x = Canvas.hw - rong / 2;
+            // kiểu A: viên trắng, bóng mềm, đĩa tròn màu loại + biểu tượng trắng ở đầu
+            int r = cao / 2;
+            KieuO.phu(g, x + 2, yy + 3, rong - 4, cao, 0x20101828);
+            GiaoDien.khoi(g, x - 1, yy + 1, rong + 2, cao, r + 1, 0xD5DBE6);
+            GiaoDien.khoi(g, x, yy, rong, cao, r, 0xFFFFFF);
+            Font.nenSang = true;
+            int dkd = cao - 8;
+            GiaoDien.khoiDoc(g, x + 4, yy + 4, dkd, dkd, dkd / 2, GiaoDien.pha(mau, 0xFFFFFF, 1, 4), mau);
+            int ici = dkd * 3 / 5;
+            BieuTuong.ve(g, loaiIc, x + 4 + (dkd - ici) / 2, yy + 4 + (dkd - ici) / 2, ici, 0xFFFFFF, mau);
+            int xc = x + 10 + dkd;
+            int yt = yy + (cao - soDong * lh) / 2;
+            int wd = rong - (xc - x) - 6 - wXem - wSl;
+            for (int k = 0; k < soDong; k++) {
+                String dk = k == soDong - 1 && xem ? ChuDe.cat(d[k] + "…", ChuDe.THUONG, wd) : ChuDe.cat(d[k], ChuDe.THUONG, wd);
+                ChuDe.chu(g, dk, xc, yt + k * lh, ChuDe.THUONG, ChuDe.CHU, 0);
             }
-            GiaoDien.khoi(g, x, yy, rong, cao, 7, GiaoDien.VIEN);
-            GiaoDien.khoiDoc(g, x + 1, yy + 1, rong - 2, cao - 2, 6, tren, duoi);
-            for (int k = 0; k < d.length; k++) {
-                f.drawString(g, d[k], Canvas.hw, yy + 2 + k * 13, Font.CENTER);
+            if (sl != null) {
+                ChuDe.chu(g, sl, x + rong - wXem - 6, yt, ChuDe.NHAN, ChuDe.CHU_PHU, 1);
             }
-            y = yy + cao + 3;
+            if (theGioi) {
+                VungCham.them(g, x, yy, rong - wXem, cao, BO_QUA[i], "thong-bao-" + i);
+            }
+            if (xem) {
+                int xx = x + rong - wXem - 4;
+                ChuDe.chuGiua(g, "Xem", xx + wXem / 2, yy, cao, ChuDe.NHAN, ChuDe.XANH, 2);
+                VungCham.them(g, xx, yy, wXem + 4, cao, XEM[i], "thong-bao-xem-" + i);
+            }
+            y = yy + cao + 4;
         }
+        VungCham.lop(lopCu);
+    }
+
+    /** Biểu tượng thông báo theo nội dung / loại. */
+    static int bieuTuong(String s, int loai) {
+        if (loai == LOI) {
+            return BieuTuong.LOI;
+        }
+        String t = s.toLowerCase();
+        if (t.indexOf("album") >= 0 || t.indexOf("chụp") >= 0 || t.indexOf("sưu tầm") >= 0 || t.indexOf("bộ sưu tập") >= 0) {
+            return BieuTuong.CAMERA;
+        }
+        if (t.indexOf("nhiệm vụ") >= 0) {
+            return BieuTuong.NHIEM_VU;
+        }
+        if (t.indexOf(" xu") >= 0 || t.startsWith("xu") || t.indexOf("lượng") >= 0 || t.indexOf("tiền") >= 0) {
+            return BieuTuong.XU;
+        }
+        if (t.indexOf("không") >= 0 || t.indexOf("chưa") >= 0 || t.indexOf("hết") >= 0 || t.indexOf("đầy") >= 0) {
+            return BieuTuong.CANH_BAO;
+        }
+        if (t.indexOf("nhận") >= 0 || t.indexOf("dùng") >= 0 || t.indexOf("mặc") >= 0 || t.indexOf("tháo") >= 0 || t.indexOf("nhặt") >= 0) {
+            return BieuTuong.HOP_DO;
+        }
+        return loai == TIN ? BieuTuong.TIN : BieuTuong.HOP_DO;
+    }
+
+    /** Dòng sức khoẻ: chữ nhỏ trắng trên viên mờ, giữa đáy (phía trên thanh chiêu, không che nút), 6 giây rồi tắt. */
+    static void veSucKhoe(Graphics g) {
+        if (sucKhoe == null) {
+            return;
+        }
+        long tuoi = System.currentTimeMillis() - sucKhoeLuc;
+        if (tuoi > 6000) {
+            sucKhoe = null;
+            return;
+        }
+        if (Canvas.currentScreen != Canvas.gameScr) {
+            return;
+        }
+        Canvas.resetTrans(g);
+        int a = tuoi > 5000 ? (int) (0x60 * (6000 - tuoi) / 1000) : 0x60;
+        int w = Math.min(Canvas.w - 2 * 120, ChuDe.rong(sucKhoe, ChuDe.PHU) + 16);
+        String t = ChuDe.cat(sucKhoe, ChuDe.PHU, w - 12);
+        int h = ChuDe.cao(ChuDe.PHU) + 4;
+        int y = Canvas.h - Bang.anDuoi - h - 4;
+        KieuO.phu(g, Canvas.hw - w / 2, y, w, h, a << 24 | 0x101828);
+        ChuDe.chuGiua(g, t, Canvas.hw, y, h, ChuDe.PHU, a > 0x30 ? 0xFFFFFF : 0xC8CDD8, 2);
     }
 }

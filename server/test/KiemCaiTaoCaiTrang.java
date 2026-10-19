@@ -205,7 +205,7 @@ public final class KiemCaiTaoCaiTrang {
                 case10.contains("player.map.showCaiTaoMaterialList(player);"));
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
-        Kiem.dung("menu NPC -8 van co muc \"Cải Tạo Cải Trang\"", menuNpc.contains("\"Cải Tạo Cải Trang\""));
+        Kiem.dung("menu NPC -8 van co muc \"Cải tạo cải trang\"", menuNpc.contains("\"Cải tạo cải trang\""));
         Kiem.sai("menu NPC -8 khong co muc rieng \"Tinh Hoa Trang Phục\"", menuNpc.contains("\"Tinh Hoa Trang Phục\""));
     }
 

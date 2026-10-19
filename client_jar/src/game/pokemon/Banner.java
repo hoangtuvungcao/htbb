@@ -402,6 +402,47 @@ public final class Banner {
         }
     }
 
+    /** {cx, yChan, tiLe} của đội hình 5 Pokémon khởi đầu ở cỡ màn hiện tại (cùng phép tính với ve / veHd). */
+    private static int[] doiHinh() {
+        nap();
+        int w = Canvas.w, h = Canvas.h;
+        if (hdNen != null) {
+            int ox = (w - hdW) / 2;
+            int oy = yCo() - hdKhoi;
+            if (oy + hdH < h) {
+                oy = h - hdH;
+            }
+            return new int[]{ox + hdCx, oy + hdKhoi, hdK * 100};
+        }
+        return new int[]{w / 2, yCo(), 100};
+    }
+
+    /** Chỗ đứng (chân) Pokémon khởi đầu i: {x, y, tiLe}. */
+    public static int[] viTriKhoiDau(int i) {
+        int[] d = doiHinh();
+        if (i < 0 || i >= DX.length) {
+            return new int[]{d[0], d[1], d[2]};
+        }
+        return new int[]{d[0] + DX[i] * d[2] / 200, d[1] - LUI[i] * d[2] / 200, d[2]};
+    }
+
+    /** Vùng đội hình khởi đầu {x0, y0, x1, y1} (để bảng không che); null = không có banner. */
+    public static int[] vungKhoiDau() {
+        if (!co()) {
+            return null;
+        }
+        int[] d = doiHinh();
+        int t = d[2];
+        int minX = 0, maxX = 0, lui = 0;
+        for (int i = 0; i < DX.length; i++) {
+            minX = Math.min(minX, DX[i]);
+            maxX = Math.max(maxX, DX[i]);
+            lui = Math.max(lui, LUI[i]);
+        }
+        int pad = 10 * t / 100;
+        return new int[]{d[0] + minX * t / 200 - pad, d[1] - lui * t / 200 - 34 * t / 100, d[0] + maxX * t / 200 + pad, d[1] + 4 * t / 100};
+    }
+
     /** 5 Pokémon khởi đầu theo đội hình chữ V quanh (cx, yChan); tiLe 100 = 1x, 200 = 2x. */
     private static void veKhoiDau(Graphics g, int chon, int cx, int yChan, int tiLe) {
         int n = ThuongHieu.SO_KHOI_DAU;

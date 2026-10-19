@@ -140,7 +140,7 @@ public final class BanDoVung {
         g.setClip(cx, cy, cw, ch);
         // nhãn tên điểm đang đứng (đáy khung)
         if (nhan != null || (cur >= 0 && cur < Res.nameBigMap.length)) {
-            String ten = nhan != null ? nhan : TenMapPokemon.doiHien(Res.nameBigMap[cur]);
+            String ten = nhan != null ? nhan : TenBanDoBang.ten(cur, Res.nameBigMap[cur]);
             int tw = Font.borderFont.getWidth(ten) + 12;
             GiaoDien.khoi(g, w / 2 - tw / 2, h - 20, tw, 15, 6, GiaoDien.VIEN);
             GiaoDien.khoiDoc(g, w / 2 - tw / 2 + 1, h - 19, tw - 2, 13, 5, GiaoDien.XANH_SANG, GiaoDien.NAVY);

@@ -102,7 +102,7 @@ public final class ManGiaoDich extends Screen {
 
     public void paint(Graphics g) {
         try {
-            Canvas.gameScr.paint(g);
+            game.render.screen.GameScr.veNen(g);   // 0.9.5: chỉ lớp thế giới (HUD sau bảng không vẽ)
         } catch (Throwable e) {
             // bỏ qua
         }
@@ -117,7 +117,7 @@ public final class ManGiaoDich extends Screen {
         int k = Bang.cach();
         int s = Bang.co(30);
         int wOi = 4 * s + 3 * k;
-        int wl = Math.min(w * 58 / 100, 2 * wOi + 3 * k + 16);
+        int wl = Math.min(w * (ChuDe.dt() ? 66 : 58) / 100, 2 * wOi + 3 * k + 16);
         int nh = Bang.caoHang();
         int hO = h - nh - k;
         int wb = (wl - k) / 2;
@@ -218,8 +218,8 @@ public final class ManGiaoDich extends Screen {
                             game.render.Canvas.inputDlg.show();
                         }
                     }, "gd-thuoc-" + i);
-                    int s = h - 6;
-                    KieuO.oChieu(g, x + 3, y + 3, s, s, 1, KieuO.HINH_GIOT, false);
+                    int s = ManNhanVat.oDau(g, x, y, h);
+                    ManNhanVat.veThuoc(g, loai, x + 3 + s / 2, y + 3 + s / 2, s);
                     ManNhanVat.chuHang(g, x, y, w, h, s, ManCuaHang.tenThuoc(loai), "x" + con, "Chạm để thêm");
                 }
             }
@@ -240,6 +240,14 @@ public final class ManGiaoDich extends Screen {
             if (s3 > s) {
                 cot = 3;
                 s = s3;
+            }
+        }
+        if (s < VungCham.MIN) {
+            // 0.9.6 (tấm ~78 % bề ngang trên điện thoại): 2 cột x 6 hàng (cuộn mắt: chỉ hàng vừa khung)
+            int s2 = Math.min(Bang.co(30), (w - 12 - k) / 2);
+            if (s2 > s) {
+                cot = 2;
+                s = s2;
             }
         }
         for (int i = 0; i < 12; i++) {
@@ -268,7 +276,7 @@ public final class ManGiaoDich extends Screen {
                 }
             } else if (o instanceof Potion) {
                 Potion p = (Potion) o;
-                GameData.paintIcon(g, (short) (p.index + 5500), xi + s / 2, yi + s / 2);
+                IconVatPham.ve(g, (short) (p.index + 5500), xi + s / 2, yi + s / 2, s, IconVatPham.DP_THUOC);
                 KieuO.soLuong(g, xi + s - 2, yi + s - 2, String.valueOf(p.number));
             }
         }

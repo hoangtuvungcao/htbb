@@ -66,7 +66,15 @@ public final class VungCham {
         lopHien = 0;
     }
 
-    /** Canvas.paint: 0 màn, 1 hộp thoại, 2 menu. */
+    /** Lớp NỔI (0.9.5): thông báo / biểu ngữ không chặn - trúng thì thắng, không trúng thì cú chạm đi xuống lớp modal. */
+    public static final int NOI = -1;
+
+    /** Lớp đang đăng ký (để đặt lại sau lớp nổi). */
+    public static int lopDangVe() {
+        return lopHien;
+    }
+
+    /** Canvas.paint: 0 màn, 1 hộp thoại, 2 menu, NOI = nổi. */
     public static void lop(int l) {
         lopHien = l;
         if (l > dang.lopMax) {
@@ -165,6 +173,12 @@ public final class VungCham {
     }
 
     private static int timTrong(Bo b, int px, int py) {
+        for (int i = b.n - 1; i >= 0; i--) {
+            // lớp nổi: chỉ trúng thật (không nới), thắng mọi lớp
+            if (b.lop[i] == NOI && px >= b.x[i] && py >= b.y[i] && px < b.x[i] + b.w[i] && py < b.y[i] + b.h[i]) {
+                return i;
+            }
+        }
         int tot = -1;
         long dTot = Long.MAX_VALUE;
         for (int i = b.n - 1; i >= 0; i--) {

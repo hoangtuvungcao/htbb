@@ -52,8 +52,14 @@ public final class HudBoTri {
         return Math.max(29f, 2 * rTren() + cach());
     }
 
+    /** Nút i của hàng trên (0 = sát mép phải). 0.9.6: Menu (Poké Ball) rời hàng trên xuống GIỮA ĐÁY (kiểu GO). */
     public static float xNutTren(int i) {
         return R - rTren() - 1 - i * buocTren();
+    }
+
+    /** Bán kính nút Menu (Poké Ball) giữa đáy. */
+    public static float rMenu() {
+        return Math.max(rTren() * 1.35f, rMin() + dp(2));
     }
 
     public static float yNutTren() {
@@ -108,8 +114,10 @@ public final class HudBoTri {
         float yHp = cy + 20 * s1 + gy[2];
         dat(N_HP, xHp, yHp, rHp);
         dat(N_PP, xHp - Math.max(33 * s2, 2 * rHp + k), yHp, rHp);
-        int[] tren = {N_MENU, N_TU_DONG, N_CHAT, N_THEM, N_CHINH};
-        for (int i = 0; i < SO_NUT_TREN; i++) dat(tren[i], xNutTren(i), yNutTren(), rTren());
+        int[] tren = {N_TU_DONG, N_CHAT, N_THEM, N_CHINH};
+        for (int i = 0; i < tren.length; i++) dat(tren[i], xNutTren(i), yNutTren(), rTren());
+        float rMn = rMenu();
+        dat(N_MENU, (L + R) / 2f, B - rMn - dp(4), rMn);
         float s3 = gs[3] * kd;
         float rCb = Math.max(12 * s3, rm);
         float s0 = gs[0] * kd;
@@ -126,7 +134,7 @@ public final class HudBoTri {
                 int m = di[q];
                 kep(m);
                 for (int n = 0; n < N_MINIMAP; n++) {
-                    if (n == m) continue;
+                    if (n == m || n == N_MENU) continue;   // Poké Ball đặt SAU vòng đẩy (khe giữa cần điều khiển và cụm)
                     float dx = NX[m] - NX[n], dy = NY[m] - NY[n];
                     float can = NR[m] + NR[n] + k;
                     float d2 = dx * dx + dy * dy;
@@ -145,6 +153,24 @@ public final class HudBoTri {
                 kep(m);
             }
             if (!doi) break;
+        }
+        // 0.9.6 Poké Ball (Menu) giữa đáy: trong khe giữa cần điều khiển và nút trái nhất của cụm đáy, gần giữa màn nhất;
+        // khe hẹp thì thu về cỡ chạm tối thiểu
+        float trai = jx0 + jr + k, phai = R;
+        int[] cum = {N_DANH, N_C0, N_C1, N_C3, N_C4, N_DOI_BO, N_HP, N_PP};
+        float yM = NY[N_MENU];
+        for (int q = 0; q < cum.length; q++) {
+            int n = cum[q];
+            if (NY[n] + NR[n] > yM - NR[N_MENU] - k) {
+                phai = Math.min(phai, NX[n] - NR[n] - k);
+            }
+        }
+        if (phai - trai >= 2 * rm) {
+            float rM = Math.max(rm, Math.min(NR[N_MENU], (phai - trai) / 2f));
+            float xM = Math.max(trai + rM, Math.min(phai - rM, (L + R) / 2f));
+            dat(N_MENU, xM, B - rM - dp(4), rM);
+        } else {
+            dat(N_MENU, xNutTren(4), yNutTren(), rTren());   // cụm đáy phóng quá to (người chơi chỉnh): về hàng trên
         }
     }
 

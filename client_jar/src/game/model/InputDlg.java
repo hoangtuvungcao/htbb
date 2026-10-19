@@ -102,33 +102,62 @@ public class InputDlg extends Dialog {
         this.tfInput.setText(String.valueOf(v));
     }
 
+    private final IAction[] bamNut = new IAction[2];
+    private static final String[] NUT = {"Đóng", "Xác nhận"};
+    private static final int[] KIEU_NUT = {game.pokemon.Bang.TRUNG, game.pokemon.Bang.CHINH};
+    private static final String[] TEN_NUT = {"so-dong", "so-ok"};
+
+    /** 0.9.5 (APK / PC): ô nhập CHỮ trong khung hộp chung: tiêu đề, ô nhập, Đóng / Xác nhận. */
+    void paintChu(Graphics g) {
+        this.anNutLenh = true;
+        this.bamNut[0] = this.backAction;
+        this.bamNut[1] = this.okAction;
+        int nh = game.pokemon.HopThongBao.caoNut(), pad = 8;
+        int ho = Math.max(game.render.screen.Screen.ITEM_HEIGHT + 4, game.pokemon.VungCham.MIN);
+        int ww = Math.max(220, Math.min(Canvas.w - 24, Math.min(320, game.pokemon.ChuDe.rong(this.title, game.pokemon.ChuDe.TIEU_DE) + 80)));
+        String tl = this.title == null ? "" : this.title.toLowerCase();
+        if (tl.indexOf("giftcode") >= 0 || tl.indexOf("quà") >= 0) {
+            game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.QUA, 0xF2B705, false);
+        } else {
+            game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.TIN, game.pokemon.ChuDe.XANH, true);
+        }
+        int[] kh = game.pokemon.HopThongBao.khung(g, ww, ho + pad + nh + game.pokemon.HopThongBao.pad(), this.title, this.backAction, false);
+        this.tfInput.x = kh[5];
+        this.tfInput.y = kh[4];
+        this.tfInput.width = kh[6];
+        this.tfInput.height = ho;
+        this.tfInput.paint(g);
+        g.setClip(0, 0, Canvas.w, Canvas.h);
+        game.pokemon.HopThongBao.hangNut(g, kh[0], kh[1] + kh[3] - game.pokemon.HopThongBao.pad() - nh, kh[2], NUT, KIEU_NUT, this.bamNut, TEN_NUT);
+    }
+
     void paintSo(Graphics g) {
-        game.pokemon.Bang.phuNen(g);
+        this.anNutLenh = true;
         int k = game.pokemon.Bang.cach();
         int nh = game.pokemon.Bang.caoHang();
-        int ww = Math.min(Canvas.w - 24, 340);
-        int hh = 26 + nh + k + nh + k + nh + 14;
-        int x = Canvas.hw - ww / 2, y = Canvas.hh - hh / 2;
-        game.pokemon.Bang.the(g, x, y, ww, hh);
-        String t = game.pokemon.GiaoDien.catChu(Font.blackFont, this.title, ww - 16);
-        Font.blackFont.drawString(g, t, Canvas.hw, y + 6, 2);
-        int yy = y + 26;
+        int nhNut = game.pokemon.HopThongBao.caoNut();
+        int ww = Math.min(Canvas.w - 24, game.pokemon.ChuDe.dt() ? 340 : 260);
+        game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.CUA_HANG, game.pokemon.ChuDe.TEAL, true);
+        int[] kh = game.pokemon.HopThongBao.khung(g, ww, nh + k + nh + k + nhNut + game.pokemon.HopThongBao.pad(), this.title, this.backAction, false);
+        int x = kh[5] - 10, y = kh[1];
+        ww = kh[6] + 20;
+        int yy = kh[4];
         // [-] [ô số] [+]
         this.tfInput.x = x + 10 + nh + k;
         this.tfInput.width = ww - 20 - 2 * (nh + k);
         this.tfInput.height = nh;
         this.tfInput.y = yy;
-        game.pokemon.Bang.nut(g, x + 10, yy, nh, nh, "", game.pokemon.Bang.PHU, new IAction() {
+        game.pokemon.Bang.nut(g, x + 10, yy, nh, nh, "", game.pokemon.Bang.TRUNG, new IAction() {
             public void perform() {
                 InputDlg.this.datSo(InputDlg.this.giaTri() - 1);
             }
         }, "so-tru");
-        game.pokemon.Bang.nut(g, x + ww - 10 - nh, yy, nh, nh, "", game.pokemon.Bang.PHU, new IAction() {
+        game.pokemon.Bang.nut(g, x + ww - 10 - nh, yy, nh, nh, "", game.pokemon.Bang.TRUNG, new IAction() {
             public void perform() {
                 InputDlg.this.datSo(InputDlg.this.giaTri() + 1);
             }
         }, "so-cong");
-        g.setColor(0xFFFFFF);
+        g.setColor(game.pokemon.ChuDe.CHU);
         int a = nh / 4, cy = yy + nh / 2;
         g.fillRect(x + 10 + nh / 2 - a, cy - 1, 2 * a, 3);
         int cxp = x + ww - 10 - nh / 2;
@@ -143,16 +172,15 @@ public class InputDlg extends Dialog {
         for (int i = 0; i < nhanh.length; i++) {
             final int v = nhanh[i] < 0 ? toiDa() : Math.min(nhanh[i], toiDa());
             game.pokemon.Bang.nut(g, x + 10 + i * (wc + k), yy, wc, nh, nhanh[i] < 0 ? "Tối đa" : String.valueOf(v),
-                    nhanh[i] < 0 ? game.pokemon.Bang.TRUNG : game.pokemon.Bang.PHU, new IAction() {
+                    game.pokemon.Bang.TRUNG, new IAction() {
                 public void perform() {
                     InputDlg.this.datSo(v);
                 }
             }, "so-nhanh-" + i);
         }
-        yy += nh + k;
-        int wb = (ww - 20 - k) / 2;
-        game.pokemon.Bang.nut(g, x + 10, yy, wb, nh, "Đóng", game.pokemon.Bang.TRUNG, this.backAction, "so-dong");
-        game.pokemon.Bang.nut(g, x + 10 + wb + k, yy, ww - 20 - wb - k, nh, "Xác nhận", game.pokemon.Bang.XAC_NHAN, this.okAction, "so-ok");
+        this.bamNut[0] = this.backAction;
+        this.bamNut[1] = this.okAction;
+        game.pokemon.HopThongBao.hangNut(g, kh[0], kh[1] + kh[3] - game.pokemon.HopThongBao.pad() - nhNut, kh[2], NUT, KIEU_NUT, this.bamNut, TEN_NUT);
     }
 
     @Override
@@ -168,6 +196,11 @@ public class InputDlg extends Dialog {
             paintSo(g);
             return;
         }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            paintChu(g);
+            return;
+        }
+        this.anNutLenh = false;
         Res.paintDlgFull(g, Canvas.hw - (this.w / 2), Canvas.h - 90, this.w, 69);
         Font.borderFont.drawString(g, this.title, Canvas.hw, Canvas.h - 86, 2);
         this.tfInput.paint(g);

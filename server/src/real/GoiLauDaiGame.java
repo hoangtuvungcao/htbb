@@ -18,7 +18,11 @@ public final class GoiLauDaiGame {
     static Message don(final Char p, final LiveActor dich, final int dam) {
         try {
             VatPhamDungLauDai.sauDonDanh(p, dam);
-            int co = p.lauDaiCo;
+            // Co khac he tinh lai theo DUNG muc tieu cua goi (lauDaiCo la cua lan tinh sat thuong gan nhat,
+            // co the cua muc tieu khac); giu co chi mang / STAB.
+            int co = p.lauDaiCo & ~(com.htbb.pokemon.SatThuongLauDai.CO_KHAC | com.htbb.pokemon.SatThuongLauDai.CO_KEM
+                    | com.htbb.pokemon.SatThuongLauDai.CO_GAN_MIEN);
+            co |= com.htbb.pokemon.SatThuongLauDai.coHe(p.lauDaiHe, dich.hePokemon1(), dich.hePokemon2());
             int tt = 0;
             final int st = TrangThaiGame.thuGay(p, dich, p.lauDaiHe);
             if (st > 0) {

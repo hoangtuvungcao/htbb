@@ -39,7 +39,9 @@ public final class ChongSpam {
     }
 
     public enum KetQua {
-        CHO_PHEP, DANG_CAM, QUA_NHANH, TRUNG_LAP, QUANG_CAO, KENH_BAN
+        CHO_PHEP, DANG_CAM, QUA_NHANH, TRUNG_LAP, QUANG_CAO, KENH_BAN,
+        /** 0.9.5: tin rỗng sau khi bỏ khoảng trắng / ký tự vô hình - không phát, KHÔNG tính nhịp / vi phạm */
+        RONG
     }
 
     /** Thao tac co gioi han nhip rieng. */
@@ -194,6 +196,9 @@ public final class ChongSpam {
         if (!bat || t == null) {
             return KetQua.CHO_PHEP;
         }
+        if (rong(tin)) {
+            return KetQua.RONG;   // không ghi nhận gì (không tính nhịp, không vi phạm)
+        }
         synchronized (t) {
             t.dungCuoi = bayGio;
             if (t.camDen > bayGio) {
@@ -243,6 +248,30 @@ public final class ChongSpam {
             t.mocBac = bayGio;
             t.viPham = 0;
         }
+    }
+
+    /**
+     * 0.9.5: tin RỖNG - không còn ký tự thấy được sau khi bỏ khoảng trắng (cả NBSP, U+2000..U+200A...), ký tự vô hình
+     * (zero-width U+200B..U+200D, U+2060, U+FEFF, ký tự định dạng), ký tự điều khiển và dấu kết hợp đứng một mình.
+     */
+    public static boolean rong(final String tin) {
+        if (tin == null) {
+            return true;
+        }
+        for (int i = 0; i < tin.length(); ) {
+            final int c = tin.codePointAt(i);
+            i += Character.charCount(c);
+            if (Character.isWhitespace(c) || Character.isSpaceChar(c) || Character.isISOControl(c)) {
+                continue;
+            }
+            final int loai = Character.getType(c);
+            if (loai == Character.FORMAT || loai == Character.NON_SPACING_MARK || loai == Character.ENCLOSING_MARK
+                    || loai == Character.COMBINING_SPACING_MARK || loai == Character.CONTROL || c == 0xFEFF) {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 
     /** Cau bao cho nguoi gui (tieng Viet), null = khong can bao. */

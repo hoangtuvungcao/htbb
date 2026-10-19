@@ -54,7 +54,7 @@ if [ -n "$JAVA_HOME" ]; then JB="$JAVA_HOME/bin/"; else JB=""; fi
 "${JB}javac" --release 8 -version >/dev/null 2>&1 || { echo "LOI: can JDK 9+ (javac --release 8) - dat JAVA_HOME"; exit 1; }
 PY=${PYTHON:-python3}
 
-OUT=out
+OUT=${HTBB_PC_OUT:-out}   # HTBB_PC_OUT=<thư mục tuyệt đối>: build vào chỗ khác (nhiều người build song song)
 B=$OUT/build
 rm -rf "$B/cls" "$B/res" && mkdir -p "$B/gen" "$B/cls" "$B/res" "$OUT"
 
@@ -63,7 +63,10 @@ rm -rf "$B/cls" "$B/res" && mkdir -p "$B/gen" "$B/cls" "$B/res" "$OUT"
 
 # ---- 2. biên dịch (Java 8) ----
 find src "$B/gen" -name '*.java' > "$B/nguon.txt"
-"${JB}javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/cls" @"$B/nguon.txt" 2>&1 | grep -v '^Note:\|^warning: \[options\]\|^1 warning' || true
+if ! "${JB}javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/cls" @"$B/nguon.txt" > "$B/javac.log" 2>&1; then
+    grep -v '^Note:\|^warning: \[options\]\|^1 warning' "$B/javac.log" | head -60
+    echo "LOI: bien dich that bai"; exit 1
+fi
 [ -f "$B/cls/htbb/pc/Chay.class" ] && [ -f "$B/cls/game/GameMidlet.class" ] || { echo "LOI: bien dich that bai"; exit 1; }
 
 # ---- 3. tài nguyên ----

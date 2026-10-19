@@ -26,6 +26,8 @@ public final class CaiDat {
     /** cũ: dải gợi ý phím tắt (đã bỏ - mọi phím ở trang "Phím tắt" của Cài đặt, F1); luôn tắt */
     public static boolean goiYPhim = false;
     public static boolean hienFps;
+    /** 0.9.5: bộ đo khung (nhà phát triển): ms từng pha, GC, cấp phát */
+    public static boolean doKhung;
     /** Hiệu ứng cao: hiệu ứng HD + trình bày 60 khung/giây; thấp: chỉ khung game (máy yếu) */
     public static boolean hieuUngCao = true;
     /** cũ (F1 bật/tắt dải gợi ý phím; nay F1 mở trang Phím tắt) - giữ để đọc/ghi tệp cũ */
@@ -111,6 +113,7 @@ public final class CaiDat {
         khungHD = co(p, "khung_hd", true);
         // goi_y_phim của tệp cũ: bỏ qua (dải gợi ý phím đã bỏ)
         hienFps = co(p, "hien_fps", false);
+        doKhung = co(p, "do_khung", false);
         hieuUngCao = co(p, "hieu_ung_cao", true);
         goiYMo = co(p, "goi_y_mo", true);
         mayChu = p.getProperty("may_chu", "").trim();
@@ -130,6 +133,7 @@ public final class CaiDat {
         p.setProperty("khung_hd", khungHD ? "1" : "0");
         p.setProperty("goi_y_phim", "0");
         p.setProperty("hien_fps", hienFps ? "1" : "0");
+        p.setProperty("do_khung", doKhung ? "1" : "0");
         p.setProperty("hieu_ung_cao", hieuUngCao ? "1" : "0");
         p.setProperty("goi_y_mo", goiYMo ? "1" : "0");
         if (mayChu.length() > 0) p.setProperty("may_chu", mayChu);

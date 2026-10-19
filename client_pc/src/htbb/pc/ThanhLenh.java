@@ -66,7 +66,7 @@ public final class ThanhLenh {
         } else {
             m = game.render.Canvas.currentScreen;
         }
-        if (m == null) return;
+        if (m == null || m.anNutLenh) return;
         boolean theGioi = m == game.render.Canvas.gameScr;
         if (theGioi && !laMenu && !laHop) {
             game.render.screen.GameScr gs = game.render.Canvas.gameScr;
@@ -74,9 +74,14 @@ public final class ThanhLenh {
                 int k = NenPc.heSo;
                 float bh = 26 * u;
                 float y = NenPc.lechY + gs.tfChat.y * k - bh - 6 * u;
-                Font f = PhongChu.thuong(true).deriveFont(12 * u);
+                Font f = PhongChu.co(true, 12 * u);
                 float x = NenPc.lechX + (gs.tfChat.x + gs.tfChat.width) * k;
-                x = nut(g, x, y, bh, "Gửi", f, true, -5, vung, u);
+                // 0.9.5: ô rỗng / chỉ khoảng trắng: nút Gửi mờ, không bấm được
+                if (game.networklogic.GameService.chuChat(gs.tfChat.getText()) != null) {
+                    x = nut(g, x, y, bh, "Gửi", f, true, -5, vung, u);
+                } else {
+                    x = nutTat(g, x, y, bh, "Gửi", f, u);
+                }
                 x = nut(g, x, y, bh, "Xoá", f, false, -7, vung, u);
                 nut(g, x, y, bh, "Đóng", f, false, -6, vung, u);
             }
@@ -124,7 +129,7 @@ public final class ThanhLenh {
         float bh = 30 * u;
         float y = Math.min(ay1, H - bh - 6 * u);
         if (!laMenu && !laHop) y = ay1 - bh;
-        Font f = PhongChu.thuong(true).deriveFont(13 * u);
+        Font f = PhongChu.co(true, 13 * u);
         float x = ax1;
         if (co(giua)) x = nut(g, x, y, bh, giua.caption, f, true, traiLaChinh ? -6 : -5, vung, u);
         if (co(phai)) x = nut(g, x, y, bh, phai.caption, f, false, -7, vung, u);
@@ -146,6 +151,17 @@ public final class ThanhLenh {
     }
 
     /** Nút căn PHẢI tại xPhai; trả x trái mới (cho nút kế tiếp). */
+    /** Nút tắt (mờ, không vùng chạm). */
+    private static float nutTat(Graphics2D g, float xPhai, float y, float bh, String cap, Font f, float u) {
+        String s = chu(cap);
+        float w = rongNut(g, s, f, bh);
+        java.awt.Composite cu = g.getComposite();
+        g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.4f));
+        veNut(g, xPhai - w, y, w, bh, s, f, true, u);
+        g.setComposite(cu);
+        return xPhai - w - 8 * u;
+    }
+
     private static float nut(Graphics2D g, float xPhai, float y, float bh, String cap, Font f,
                              boolean chinh, final int ma, ArrayList<LopPhu.Vung> vung, float u) {
         String s = chu(cap);
@@ -180,27 +196,17 @@ public final class ThanhLenh {
         ManHinh mh = ManHinh.me;
         boolean sang = mh != null && mh.chuotX >= x && mh.chuotX < x + w && mh.chuotY >= y && mh.chuotY < y + h;
         if (sang) {
-            g.setColor(new Color(255, 203, 5, 70));   // quầng vàng khi trỏ chuột (như chọn ▶ của bản APK)
+            g.setColor(new Color(31, 181, 168, 60));   // 0.9.6: quầng teal khi trỏ chuột
             g.fill(new java.awt.geom.RoundRectangle2D.Float(x - 3 * u, y - 3 * u, w + 6 * u, h + 6 * u, h + 6 * u, h + 6 * u));
         }
-        Kinh.nut(g, x, y, w, h, null, f, chinh, sang, !chinh);
-        // sọc chéo nhẹ kiểu Pokémon trên nút chính
-        if (chinh) {
-            java.awt.Shape cu = g.getClip();
-            g.clip(new java.awt.geom.RoundRectangle2D.Float(x, y, w, h, Math.min(h, 14), Math.min(h, 14)));
-            g.setColor(new Color(255, 255, 255, 26));
-            g.setStroke(new java.awt.BasicStroke(3 * u));
-            for (float sx = x - h; sx < x + w; sx += 9 * u) {
-                g.draw(new java.awt.geom.Line2D.Float(sx, y + h, sx + h, y));
-            }
-            g.setClip(cu);
-        }
+        Kinh.nut(g, x, y, w, h, null, f, chinh, sang, false);
+        // 0.9.6: viên phẳng kiểu GO (bỏ sọc chéo)
         // chỉ tên lệnh, căn giữa nút (không nhãn phím)
         g.setFont(f);
         FontMetrics fm = g.getFontMetrics();
         float tx = x + (w - fm.stringWidth(s)) / 2f;
         float ty = y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent();
-        Kinh.chu(g, s, tx, ty, Kinh.CHU);
+        Kinh.chu(g, s, tx, ty, chinh ? Color.WHITE : Kinh.CHU);
     }
 
     /** Bấm nút = phím mềm J2ME (luồng sự kiện). */

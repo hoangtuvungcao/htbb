@@ -31,7 +31,7 @@ public final class HopXacNhan extends Dialog {
     public static void hoi(String tieuDe, String noiDung, String chuChinh, IAction co, IAction khong) {
         HopXacNhan h = gI();
         h.tieuDe = tieuDe;
-        h.noiDung = noiDung;
+        h.noiDung = noiDung == null ? "" : noiDung;
         h.chuChinh = chuChinh == null ? "Đồng ý" : chuChinh;
         h.chuPhu = "Huỷ";
         h.co = co;
@@ -71,48 +71,57 @@ public final class HopXacNhan extends Dialog {
         }
     }
 
+    /** việc dựng sẵn (không tạo đối tượng mỗi khung) */
+    final IAction bamHuy = new IAction() {
+        public void perform() {
+            HopXacNhan.this.xong(HopXacNhan.this.khong);
+        }
+    };
+    final IAction bamCo = new IAction() {
+        public void perform() {
+            HopXacNhan.this.xong(HopXacNhan.this.co);
+        }
+    };
+    String khoaNgat;
+    int rongNgat;
+    String[] dong;
+    final String[] nut = new String[2];
+    final int[] kieuNut = new int[2];
+    final IAction[] bam = new IAction[2];
+    final int[] hPhu = new int[1];
+    static final String[] TEN_NUT = {"xn-huy", "xn-dong-y"};
+
+    /** 0.9.5: vẽ bằng hộp thông báo chung (HopThongBao.ve) - đầu + X, thân tự co, hai nút. */
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
-        Bang.phuNen(g);
-        // 0.9.4: chạm ra ngoài hộp = Huỷ (luôn thoát được; vùng đăng ký trước nên nút trong hộp thắng)
-        VungCham.them(g, 0, 0, Canvas.w, Canvas.h, new IAction() {
-            public void perform() {
-                HopXacNhan.this.xong(HopXacNhan.this.khong);
-            }
-        }, "nen-ngoai");
-        int k = Bang.cach();
-        int nh = Bang.caoHang();
-        int ww = Math.min(Canvas.w - 24, 380);
-        int wt = ww - 24;
-        // đo cao nội dung
-        int lh = Font.blackFont.getHeight() + 1;
-        int soDong = demDong(Font.blackFont, this.noiDung, wt);
-        int hGia = this.loaiTien >= 0 ? TienTe.coTheoChu(Font.blackFont) + 6 : 0;
-        int hh = 10 + Font.borderFont.getHeight() + 10 + soDong * lh + hGia + 10 + nh + 10;
-        if (hh > Canvas.h - 16) {
-            hh = Canvas.h - 16;
+        this.nut[0] = this.chuPhu;
+        this.nut[1] = this.chuChinh;
+        int wGia = this.loaiTien >= 0 ? TienTe.rongGia(this.loaiTien, this.gia, Font.blackFont, false) : 0;
+        int ww = HopThongBao.rongHop(this.tieuDe == null ? "Xác nhận" : this.tieuDe, this.noiDung, this.nut, wGia);
+        if (this.dong == null || !this.noiDung.equals(this.khoaNgat) || this.rongNgat != ww) {
+            this.dong = ChuDe.ngat(this.noiDung, ChuDe.THUONG, ww - 2 * HopThongBao.pad(), 40);
+            this.khoaNgat = this.noiDung;
+            this.rongNgat = ww;
         }
-        int x = Canvas.hw - ww / 2, y = Canvas.hh - hh / 2;
-        Bang.the(g, x, y, ww, hh);
-        GiaoDien.dai(g, x + 4, y + 4, ww - 8, Font.borderFont.getHeight() + 8, this.tieuDe == null ? "Xác nhận" : this.tieuDe);
-        int yy = y + 4 + Font.borderFont.getHeight() + 8 + 8;
-        yy = Bang.doan(g, Font.blackFont, this.noiDung, x + 12, yy, wt, true);
+        this.kieuNut[0] = Bang.TRUNG;
+        this.kieuNut[1] = this.nguyHiem ? Bang.NGUY : Bang.XAC_NHAN;
+        this.bam[0] = this.bamHuy;
+        this.bam[1] = this.bamCo;
+        this.hPhu[0] = this.loaiTien >= 0 ? TienTe.coTheoChu(Font.blackFont) + 8 : 0;
+        String td = this.tieuDe == null ? "" : this.tieuDe;
+        if (this.nguyHiem) {
+            HopThongBao.datHuyHieu(BieuTuong.CANH_BAO, ChuDe.DO, false);
+        } else if (td.startsWith("Mua") || td.startsWith("Bán") || this.loaiTien >= 0) {
+            HopThongBao.datHuyHieu(BieuTuong.CUA_HANG, ChuDe.TEAL, true);
+        } else {
+            HopThongBao.chonHuyHieu(td, this.noiDung, HopThongBao.HOI);
+        }
+        int[] r = HopThongBao.ve(g, ww, this.tieuDe == null ? "Xác nhận" : this.tieuDe, this.nguyHiem ? ChuDe.DO : ChuDe.CHINH, this.dong,
+                this.hPhu, this.nut, this.kieuNut, this.bam, this.bamHuy, true, null, TEN_NUT);
         if (this.loaiTien >= 0) {
             int wg = TienTe.rongGia(this.loaiTien, this.gia, Font.blackFont, false);
-            TienTe.veGia(g, this.loaiTien, this.gia, Canvas.hw - wg / 2, yy + 2, Font.blackFont, false);
+            TienTe.veGia(g, this.loaiTien, this.gia, r[0] + r[2] / 2 - wg / 2, r[4] + 4, Font.blackFont, false);
         }
-        int yn = y + hh - 10 - nh;
-        int wb = (ww - 24 - k) / 2;
-        Bang.nut(g, x + 12, yn, wb, nh, this.chuPhu, Bang.TRUNG, new IAction() {
-            public void perform() {
-                HopXacNhan.this.xong(HopXacNhan.this.khong);
-            }
-        }, "xn-huy");
-        Bang.nut(g, x + 12 + wb + k, yn, ww - 24 - wb - k, nh, this.chuChinh, this.nguyHiem ? Bang.CHINH : Bang.XAC_NHAN, new IAction() {
-            public void perform() {
-                HopXacNhan.this.xong(HopXacNhan.this.co);
-            }
-        }, "xn-dong-y");
     }
 
     static int demDong(Font f, String s, int w) {

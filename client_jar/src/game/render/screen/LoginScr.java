@@ -173,12 +173,13 @@ public class LoginScr extends Screen {
                 } catch (InterruptedException e) {
                 }
                 Canvas.connect();
+                game.pokemon.ManTai.toi(game.pokemon.ManTai.DANG_NHAP);
                 GameService.gI().setClientType();
                 GameService.gI().login(user, pass, GameMidlet.version);
                 GameScr.saveAutoFight = false;
             }
         }).start();
-        Canvas.startWaitDlg("Đang kết nối", true);
+        game.pokemon.ManTai.batDau(game.pokemon.ManTai.KET_NOI, null);   // 0.9.5: màn tải duy nhất (không hộp chờ riêng)
     }
 
     public void reloadData() {
@@ -216,6 +217,10 @@ public class LoginScr extends Screen {
 
     @Override
     public void paint(Graphics g) {
+        if (game.pokemon.KhungVao.moi()) {
+            veMoi(g);
+            return;
+        }
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
         // pokemon: tieu de ThuongHieu thay logo game goc
@@ -225,6 +230,95 @@ public class LoginScr extends Screen {
             g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 70, 3);
         }
         paintPanel(g);
+    }
+
+    private IAction viecDangNhap, viecDangKy, viecQuen, viecMayChu;
+
+    /**
+     * 0.9.5 PC / APK: bảng sáng chung giữa logo và đội hình khởi đầu (hoặc cột bên), nút thật trong bảng: Đăng nhập /
+     * Đăng ký / Quên mật khẩu; dòng máy chủ chạm được (thay lệnh "Menu" -> Chọn máy chủ). Không vẽ chip phím mềm.
+     */
+    void veMoi(Graphics g) {
+        this.anNutLenh = true;
+        if (this.viecDangNhap == null) {
+            this.viecDangNhap = new IAction() {
+                public void perform() {
+                    LoginScr.this.doLogin();
+                }
+            };
+            this.viecDangKy = new IAction() {
+                public void perform() {
+                    LoginScr.this.doRegister();
+                }
+            };
+            this.viecQuen = new IAction() {
+                public void perform() {
+                    game.pokemon.KhungVao.moWeb(game.pokemon.KhungVao.WEB + "/quen-mat-khau");
+                }
+            };
+            this.viecMayChu = new IAction() {
+                public void perform() {
+                    ServerListScr.gI().switchToMe();
+                }
+            };
+        }
+        ServerListScr.gI().paintBg(g);
+        int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
+        int hn = game.pokemon.KhungVao.caoNhan(), ho = game.pokemon.KhungVao.caoO();
+        int hDong = Math.max(20, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + 6);
+        int dau = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM;
+        int than = 2 * (hn + ho) + k + k + hDong + k;
+        int hRong = dau + than + hb;
+        int hHep = dau + than + 2 * hb + k;
+        int[] r = game.pokemon.KhungVao.logoVaBang(g, 300, hRong, hHep, 150);
+        int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Đăng nhập", null, 0, null, null);
+        int x = n[0] + 2, w = n[2] - 4, y = n[1];
+        y = game.pokemon.KhungVao.oNhap(g, this.tfUser, "Tài khoản", x, y, w, false) + k;
+        y = game.pokemon.KhungVao.oNhap(g, this.tfPass, "Mật khẩu", x, y, w, false) + k;
+        // nhớ mật khẩu (trái) + "Quên mật khẩu?" (phải, mở trang web)
+        int xo = x + 1, s = 14, yo = y + (hDong - s) / 2;
+        game.pokemon.GiaoDien.khoi(g, xo, yo, s, s, 3, this.focus == 2 ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.VIEN);
+        game.pokemon.GiaoDien.khoi(g, xo + 1, yo + 1, s - 2, s - 2, 2, this.isRememPass ? game.pokemon.ChuDe.LA : 0xFFFFFF);
+        if (this.isRememPass) {
+            g.setColor(0xFFFFFF);
+            for (int d = 0; d < 2; d++) {
+                g.drawLine(xo + 3, yo + 7 + d, xo + 6, yo + 10 + d);
+                g.drawLine(xo + 6, yo + 10 + d, xo + 11, yo + 4 + d);
+            }
+        }
+        String quen = "Quên mật khẩu?";
+        int wQuen = game.pokemon.ChuDe.rong(quen, game.pokemon.ChuDe.PHU) + 8;
+        int wNho = Math.min(w - wQuen - 4, s + 10 + game.pokemon.ChuDe.rong("Nhớ mật khẩu", game.pokemon.ChuDe.PHU));
+        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat("Nhớ mật khẩu", game.pokemon.ChuDe.PHU, wNho - s - 8), xo + s + 6, y, hDong,
+                game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU, 0);
+        game.pokemon.VungCham.them(g, x, y, wNho, hDong, this.cmdRemem, "nho-mat-khau");
+        game.pokemon.ChuDe.chuGiua(g, quen, x + w - 2, y, hDong, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.XANH, 1);
+        game.pokemon.VungCham.them(g, x + w - wQuen, y, wQuen, hDong, this.viecQuen, "quen-mat-khau");
+        y += hDong + k;
+        int kieuP = game.pokemon.Bang.CHINH, kieuT = game.pokemon.Bang.TRUNG;
+        if (w >= 220) {
+            y = game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Đăng ký", "Đăng nhập"}, new int[]{kieuT, kieuP},
+                    new Object[]{this.viecDangKy, this.viecDangNhap}, "dang-nhap") + k;
+        } else {
+            y = game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Đăng nhập"}, new int[]{kieuP}, new Object[]{this.viecDangNhap}, "dang-nhap") + k;
+            y = game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Đăng ký"}, new int[]{kieuT}, new Object[]{this.viecDangKy}, "dang-ky") + k;
+        }
+        // máy chủ (chạm = danh sách máy chủ) - chỉ khi còn chỗ dưới bảng (không che logo / đội hình)
+        String mc = ServerListScr.nameServer != null && ServerListScr.index >= 0 && ServerListScr.index < ServerListScr.nameServer.length
+                ? TaiDanhSach.tenHien(ServerListScr.nameServer[ServerListScr.index], ServerListScr.index) : "Huyền Thoại Bảo Bối";
+        int[] kd = game.pokemon.Banner.vungKhoiDau();
+        int yMc = r[1] + r[3] + 4;
+        boolean choDuoi = yMc + hDong <= Canvas.h - Screen.deltaY - 4
+                && (kd == null || yMc + hDong <= kd[1] || r[0] >= kd[2] || r[0] + r[2] <= kd[0]);
+        if (choDuoi) {
+            int wm = Math.min(r[2], game.pokemon.ChuDe.rong("Máy chủ: " + mc, game.pokemon.ChuDe.PHU) + 30);
+            int xm = r[0] + (r[2] - wm) / 2;
+            game.pokemon.ChuDe.the(g, xm, yMc, wm, hDong, hDong / 2);
+            game.pokemon.GiaoDien.pokeBall(g, xm + 11, yMc + hDong / 2, 5, 0);
+            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat("Máy chủ: " + mc, game.pokemon.ChuDe.PHU, wm - 26), xm + 20, yMc, hDong,
+                    game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU, 0);
+            game.pokemon.VungCham.them(g, xm, yMc, wm, hDong, this.viecMayChu, "may-chu");
+        }
     }
 
     void paintPanel(Graphics g) {

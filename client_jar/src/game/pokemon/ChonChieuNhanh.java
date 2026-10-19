@@ -144,6 +144,7 @@ public final class ChonChieuNhanh extends Dialog {
         }
         this.cuon = 0;
         this.bc = null;
+        this.anNutLenh = ChuUI.bo != null;   // bảng mới: X + chạm hàng thay "Gán" / "Đóng"
         Canvas.isPointerClick = false;
         Canvas.isPointerDown = false;
         AmThanh.phat(AmThanh.MO);
@@ -191,6 +192,9 @@ public final class ChonChieuNhanh extends Dialog {
     }
 
     private String[] nutChan() {
+        if (ChuUI.bo != null) {   // bảng mới: đóng bằng X trên đầu (không lặp nút "Đóng")
+            return this.coChinh ? new String[]{"Bỏ trống", "Dời sang trái", "Dời sang phải"} : new String[0];
+        }
         return this.coChinh ? new String[]{"Bỏ trống", "< Dời trái", "Dời phải >", "Đóng"} : new String[]{"Đóng"};
     }
 
@@ -275,6 +279,10 @@ public final class ChonChieuNhanh extends Dialog {
         if (this.bc == null) {
             this.bc = OChieuNhanh.boCuc(Canvas.w, Canvas.h, n);
         }
+        if (ChuUI.bo != null) {
+            veMoi(g, n);
+            return;
+        }
         int x = this.bc[0], y = this.bc[1], w = this.bc[2], h = this.bc[3];
         int cot = this.bc[4], hang = this.bc[5], hHang = this.bc[6], yDau = this.bc[7];
         KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, 0x90050B18);
@@ -304,7 +312,7 @@ public final class ChonChieuNhanh extends Dialog {
                         GiaoDien.khoi(g, rx, ry + 1, wCot - 2, hHang - 2, 4, (r & 1) == 0 ? GiaoDien.HANG_CHAN : GiaoDien.HANG_LE);
                     }
                     int oc = hHang - 6;
-                    KieuO.oChieu(g, rx + 3, ry + 3, oc, oc, PokeChieu.he(this.lop, sk), PokeChieu.hinh(this.lop, sk), false);
+                    KieuO.oChieuSk(g, rx + 3, ry + 3, oc, oc, this.lop, sk, false);
                     String ten = PokeChieu.ten(this.lop, sk);
                     if (ten == null) {
                         ten = "Chiêu " + sk;
@@ -361,5 +369,100 @@ public final class ChonChieuNhanh extends Dialog {
         }
         Font.nenSang = false;
         super.paint(g);
+    }
+
+    /** 0.9.5 PC / APK: bảng sáng chung (đầu đỏ mảnh + X), hàng thẻ chạm được, icon chiêu PNG, nút phẳng. */
+    private void veMoi(Graphics g, int n) {
+        int x = this.bc[0], y = this.bc[1], w = this.bc[2], h = this.bc[3];
+        int cot = this.bc[4], hang = this.bc[5], hHang = this.bc[6], yDau = this.bc[7];
+        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, ChuDe.PHU_NEN);
+        Bang.khung(g, x, y, w, h, (this.coChinh ? "Chỉnh ô " : "Gán chiêu vào ô ") + (this.o + 1), null, 0, null, new IAction() {
+            public void perform() {
+                dong();
+            }
+        });
+        MainChar mc = Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
+        if (n == 0 || mc == null) {
+            ChuDe.chuGiua(g, "Chưa học chiêu nào để gán.", x + w / 2, yDau, hHang, ChuDe.THUONG, ChuDe.CHU_PHU, 2);
+        } else {
+            int wCot = (w - 12) / cot;
+            long now = System.currentTimeMillis();
+            QuickSlot hienTai = MainChar.quickSlot[GameScr.indexTabSlot][this.o];
+            int k = Math.max(2, Bang.cach());
+            for (int r = 0; r < hang; r++) {
+                for (int c = 0; c < cot; c++) {
+                    final int i = (r + this.cuon) * cot + c;
+                    if (i >= n) {
+                        break;
+                    }
+                    final int sk = this.ds[i];
+                    int rx = x + 6 + c * wCot, ry = yDau + r * hHang;
+                    boolean dangGan = hienTai != null && hienTai.quickslotType == QuickSlot.TYPE_SKILL && hienTai.skillType == sk;
+                    Bang.hang(g, rx + k / 2, ry + k / 2, wCot - k, hHang - k, r, i == this.chon, new IAction() {
+                        public void perform() {
+                            ChonChieuNhanh.this.chon = i;
+                            gan(sk);
+                        }
+                    }, "chon-chieu-" + i);
+                    int oc = hHang - k - 8;
+                    KieuO.oChieuSk(g, rx + k / 2 + 4, ry + k / 2 + 4, oc, oc, this.lop, sk, false);
+                    String ten = PokeChieu.ten(this.lop, sk);
+                    if (ten == null) {
+                        ten = "Chiêu " + (sk + 1);
+                    }
+                    int cap = Char.skillLevelLearnt != null && sk < Char.skillLevelLearnt.length ? Char.skillLevelLearnt[sk] : 0;
+                    int pp = 0;
+                    long hoi = 0;
+                    try {
+                        pp = SkillManager.getSkillMP(sk, cap, this.lop);
+                        hoi = SkillManager.getSkillCooldown((byte) sk, (byte) this.lop, cap);
+                    } catch (Throwable e) {
+                        // bảng chiêu chưa nạp
+                    }
+                    long con = 0;
+                    if (mc.timeLastUseSkills != null && sk < mc.timeLastUseSkills.length && sk < mc.coolDownSkill.length) {
+                        con = mc.coolDownSkill[sk] - (now - mc.timeLastUseSkills[sk]);
+                    }
+                    int tx = rx + k / 2 + oc + 10;
+                    int wChu = wCot - k - oc - 16;
+                    String nhan = dangGan ? "Đang ở ô này" : null;
+                    int wNhan = nhan == null ? 0 : ChuDe.rong(nhan, ChuDe.NHAN_NHO) + 6;
+                    ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN, wChu - wNhan), tx, ry + k / 2 + 3, ChuDe.NHAN, ChuDe.CHU, 0);
+                    if (nhan != null) {
+                        ChuDe.chu(g, nhan, rx + wCot - k / 2 - 6, ry + k / 2 + 4, ChuDe.NHAN_NHO, ChuDe.LA_TOI, 1);
+                    }
+                    StringBuffer b = new StringBuffer(KieuO.tenHe(PokeChieu.he(this.lop, sk))).append(" · Cấp ").append(cap);
+                    if (pp > 0) {
+                        b.append(" · PP ").append(pp);
+                    }
+                    if (hoi > 0) {
+                        b.append(" · hồi ").append(OChieuNhanh.giay(hoi));
+                    }
+                    if (con > 0) {
+                        b.append(" (còn ").append(OChieuNhanh.giay(con)).append(')');
+                    }
+                    ChuDe.chu(g, ChuDe.cat(b.toString(), ChuDe.PHU, wChu), tx, ry + k / 2 + 3 + ChuDe.cao(ChuDe.NHAN), ChuDe.PHU, ChuDe.CHU_PHU, 0);
+                }
+            }
+            int cmax = OChieuNhanh.cuonToiDa(this.bc, n);
+            if (cmax > 0) {
+                int hThanh = hang * hHang;
+                int hNut = Math.max(8, hThanh * hang / (hang + cmax));
+                int yNut = yDau + (hThanh - hNut) * this.cuon / cmax;
+                GiaoDien.khoi(g, x + w - 6, yDau, 3, hThanh, 1, ChuDe.KE);
+                GiaoDien.khoi(g, x + w - 6, yNut, 3, hNut, 1, ChuDe.XANH);
+            }
+        }
+        String[] nut = nutChan();
+        for (int i = 0; i < nut.length; i++) {
+            final int j = i;
+            int[] r = OChieuNhanh.nutChan(this.bc, i, nut.length);
+            boolean khoa = (i == 1 && this.o == 0) || (i == 2 && this.o == OChieuNhanh.SO_O - 1);
+            Bang.nut(g, r[0], r[1], r[2], r[3], nut[i], khoa ? Bang.TAT : i == 0 ? Bang.TRUNG : Bang.PHU, new IAction() {
+                public void perform() {
+                    bamNutChan(j);
+                }
+            }, "chon-nut-" + i);
+        }
     }
 }

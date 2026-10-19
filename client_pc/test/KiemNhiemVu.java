@@ -165,7 +165,27 @@ public class KiemNhiemVu {
             phim(co ? -6 : -7);   // phím mềm trái "Có" / phải "Không"
             return true;
         }
+        if (d instanceof game.pokemon.HopThongBao) {
+            // 0.9.5: hộp thông báo chung (MsgDlg trên máy cảm ứng / chuột): nút cuối = Có, nút đầu = Không
+            if (KIEU.equals("phim")) phim(co ? -5 : -7);
+            else chamVung(co ? "hop-nut-1" : "hop-nut-0");
+            return true;
+        }
         return false;
+    }
+
+    /** Có hộp hỏi đang mở (HopXacNhan / MsgDlg / hộp thông báo chung). */
+    static boolean coHopHoi() {
+        Object d = game.render.Canvas.currentDialog;
+        return d instanceof game.pokemon.HopXacNhan || d instanceof game.render.screen.MsgDlg || d instanceof game.pokemon.HopThongBao;
+    }
+
+    /** Thông báo server 37 trong game: máy chạm / chuột = biểu ngữ không chặn (0.9.5); J2ME phím = hộp MsgDlg. */
+    static boolean coThongBao37() {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
+        }
+        return game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg;
     }
 
     static boolean coLenhGui(int lenh, int byteDau) {
@@ -377,7 +397,7 @@ public class KiemNhiemVu {
         nhan(-64, goiNhan(2, 0, "Bài học tấn công", 5, "1Xatu: Hãy hạ 3 Rattata ngoài làng.", 0));
         moNpcChonDau();
         q = game.render.screen.GameScr.currQuest;
-        for (int i = 0; i < 6 && !(game.render.Canvas.currentDialog instanceof game.pokemon.HopXacNhan || game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg); i++) {
+        for (int i = 0; i < 6 && !coHopHoi(); i++) {
             tiep();
             ngu(250);
         }
@@ -394,7 +414,7 @@ public class KiemNhiemVu {
         nhan(-64, goiNhan(3, 0, "Ngắm sấm từ xa", 5, "1Xatu: Trời sắp mưa.>0Vâng.>1Xatu: Con có muốn đi ngắm sấm không?", 0));
         moNpcChonDau();
         q = game.render.screen.GameScr.currQuest;
-        for (int i = 0; i < 6 && !(game.render.Canvas.currentDialog instanceof game.pokemon.HopXacNhan || game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg); i++) {
+        for (int i = 0; i < 6 && !coHopHoi(); i++) {
             tiep();
             ngu(250);
         }
@@ -432,14 +452,20 @@ public class KiemNhiemVu {
         // 6. thông báo server (37): Esc / chạm ngoài đóng
         nhan(37, goi37("Đã nhận nhiệm vụ Bài học tấn công"));
         ngu(200);
-        kiem(game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg, "6: hien thong bao 37 " + trangThai());
+        kiem(coThongBao37(), "6: hien thong bao 37 " + trangThai());
         phim(-7);
         ngu(300);
         kiem(game.render.Canvas.currentDialog == null, "6: Back / Esc dong thong bao " + trangThai());
         nhan(37, goi37("Tài khoản chưa kích hoạt: vẫn chơi bình thường."));
         ngu(200);
         ve();
-        cham(4, 40);   // chạm góc trên trái - ngoài hộp
+        if (game.pokemon.MenuNguCanh.bat()) {
+            // 0.9.5: biểu ngữ không chặn - chạm vào biểu ngữ = tắt (chạm ra ngoài đi xuống màn chơi như thường)
+            ve();
+            kiem(chamVung("thong-bao-0") || chamVung("thong-bao-1"), "6: cham bieu ngu " + trangThai());
+        } else {
+            cham(4, 40);   // chạm góc trên trái - ngoài hộp
+        }
         ngu(300);
         kiem(game.render.Canvas.currentDialog == null, "6: cham ngoai dong thong bao " + trangThai());
 
@@ -509,7 +535,7 @@ public class KiemNhiemVu {
         nhan(-30, new byte[]{0, 1});
         nhan(37, goi37("Sau goi loi"));
         ngu(200);
-        kiem(game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg, "9: goi sau goi loi van xu ly " + trangThai());
+        kiem(coThongBao37(), "9: goi sau goi loi van xu ly " + trangThai());
         phim(-7);
         ngu(300);
         diDuoc("9");

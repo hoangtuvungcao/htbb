@@ -48,7 +48,13 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     final Frame khung;
     private VolatileImage demV;
     private BufferedImage demB;
-    private boolean dungVolatile = !"false".equals(System.getProperty("htbb.volatile"));
+    /**
+     * 0.9.5: bộ đệm vẽ game = ảnh BỘ NHỚ (BufferedImage). Vẽ khử răng cưa (bảng, chữ HD, khung) vào VolatileImage
+     * (bộ nhớ đồ hoạ) bắt Java2D đọc ngược điểm ảnh từ GPU cho mỗi hình -> mở bảng còn ~3 khung/giây trên Windows (D3D),
+     * ~13 trên Linux. Ảnh bộ nhớ: vẽ phần mềm nhanh, chỉ chép lên GPU một lần mỗi khung trình bày.
+     * -Dhtbb.volatile=true để thử lại đường cũ.
+     */
+    private boolean dungVolatile = "true".equals(System.getProperty("htbb.volatile"));
     private volatile boolean toanMan;
     private Rectangle cuaSoCu;
     /** cửa sổ đang phóng to trước khi vào toàn màn (ra toàn màn thì phóng to lại) */
@@ -390,6 +396,11 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     /** Đưa khung lên cửa sổ (luồng trình bày). */
     /** ảnh hợp thành (khung game + hiệu ứng HD + lớp phủ) cỡ bộ đệm, rồi phóng / thu vào khung trình bày */
     private VolatileImage hopV;
+    /** 0.9.5: ảnh hợp thành trong bộ nhớ (lớp phủ khử răng cưa vẽ phần mềm, một lần chép lên GPU) */
+    private BufferedImage hopB;
+    /** thời gian trình bày trung bình (µs, cửa sổ 1 giây) - bộ đo khung */
+    public static volatile long tbTrinhBay;
+    private long tbCong, tbDem, tbMoc;
 
     private void trinhBay() {
         int W = getWidth(), H = getHeight();
@@ -415,10 +426,21 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         }
         BufferStrategy bs = getBufferStrategy();
         if (bs == null || !isDisplayable()) return;
-        boolean thang = hw == bw && hh == bh;   // vừa khít hệ số nguyên: vẽ thẳng, không qua ảnh trung gian
+        boolean thang = hw == bw && hh == bh;   // vừa khít hệ số nguyên: chép thẳng, không phóng
+        long t0 = System.nanoTime();
         try {
             Image hop = null;
-            if (!thang) {
+            if (!dungVolatile) {
+                // 0.9.5: hợp thành trong ảnh bộ nhớ (vẽ khử răng cưa nhanh), rồi chép / phóng lên bộ đệm cửa sổ một lần
+                if (hopB == null || hopB.getWidth() != bw || hopB.getHeight() != bh) {
+                    hopB = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_RGB);
+                }
+                Graphics2D g = hopB.createGraphics();
+                hopThanh(g, bw, bh);
+                g.dispose();
+                hop = hopB;
+                thang = false;
+            } else if (!thang) {
                 GraphicsConfiguration gc = getGraphicsConfiguration();
                 if (hopV == null || hopV.getWidth() != bw || hopV.getHeight() != bh
                         || (gc != null && hopV.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE)) {
@@ -441,9 +463,13 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                         g.clipRect(0, 0, bw, bh);
                         hopThanh(g, bw, bh);
                     } else if (hop != null) {
-                        g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                        g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
-                        g.drawImage(hop, hx, hy, hw, hh, null);
+                        if (hw == bw && hh == bh) {
+                            g.drawImage(hop, hx, hy, null);
+                        } else {
+                            g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                            g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+                            g.drawImage(hop, hx, hy, hw, hh, null);
+                        }
                     }
                     g.dispose();
                 } while (bs.contentsRestored());
@@ -451,6 +477,15 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
             } while (bs.contentsLost());
             Toolkit.getDefaultToolkit().sync();
             soTrinhBay++;
+            tbCong += System.nanoTime() - t0;
+            tbDem++;
+            long ms = System.currentTimeMillis();
+            if (ms - tbMoc >= 1000) {
+                tbTrinhBay = tbDem == 0 ? 0 : tbCong / tbDem / 1000;
+                tbCong = 0;
+                tbDem = 0;
+                tbMoc = ms;
+            }
         } catch (Throwable e) {
             // cửa sổ đang đổi chế độ
         }

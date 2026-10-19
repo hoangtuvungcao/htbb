@@ -132,6 +132,10 @@ class MapDoMenu {
             if (HoiSinhGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // NPC tinh co menu dich vu (Y ta Chansey 0, Meowth ngan hang 22/31) - real.NpcDichVu.
+            if (NpcDichVu.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             if (map.isNpcThanh(idNpc) && map.mapId != 201 && !map.isMapLienDau()) {
                 return;
             }
@@ -165,7 +169,7 @@ class MapDoMenu {
             }
             // NPC Tong Quan (-10): muc "Nhan moc nap" luon la muc cuoi menu, vi tri that su
             // duoc RequestNPCInfoHandler ghi lai vao player.idxMocNapMenu khi mo menu.
-            if (idNpc == -10 && player.idxMocNapMenu >= 0 && idMenu == player.idxMocNapMenu) {
+            if (idNpc == -10 && player.idxMocNapMenu >= 0 && idMenu == 0 && idOptionMenu == player.idxMocNapMenu) {
                 map.showMenuMocNap(player);
                 return;
             }
@@ -310,13 +314,13 @@ class MapDoMenu {
                             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                             player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                           
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã tắt hiển thị cải trang.", ""));
                         }else{
                             player.setBatCaiTrang();
                             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                             player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                           
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã bật hiển thị cải trang.", ""));
                         }
                             break;
                        
@@ -888,7 +892,7 @@ class MapDoMenu {
                     player.posRing = -1;
                     break;
                 case -506:
-                    if (!map.isMapOffline) {
+                    if (!NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
                         return;
                     }
 
@@ -908,7 +912,7 @@ class MapDoMenu {
                     player.sendMessage(m1);
                     break;
                 case -505:
-                    if (!map.isMapOffline) {
+                    if (!NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
                         return;
                     }
 
@@ -1351,51 +1355,9 @@ class MapDoMenu {
                     }
                     break;
                 case -49:
-                    if (!Char.isFinishSuKienMiniChucNu()) {
-                        MapSuKien.doMenuSuKienMiniChucNu(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-
-//              
-                    
-                    if (!Char.isFinishAllSuKienGioTo2016()) {
-                        MapSuKien.doMenuGioTo2020(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-                    
-                    
-                    
-
-                    if (!Char.isFinishAllSuKienTet2017()) {
-                        MapSuKien.domenuTet2017(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-
-                    if (!Char.isFinishAllSuKienNoel()) {
-                        MapSuKien.doMenuNoel2016(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-
-                    if (Char.isSuKienWordcup2017()) {
-                        MapSuKien.domenuWorldcup2017(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-
-                    if (!Char.isFinishAllSuKienHe2017()) {
-                        MapSuKien.doMenuSuKienHe2017(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-
-                    if (!Char.isFinishAllSuKienHaloween2016()) {
-                        MapSuKien.doMenuHalloween2016(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-
-                    if (!Char.isFinishAllSuKienTrungThul2016()) {
-                        MapSuKien.doMenuTrungThu2016(map, player, idNpc, idMenu, idOptionMenu);
-                        return;
-                    }
-                    break;
+                    // RealController da xu ly -49 (SuKienNpc); giu nhanh nay cho goi tu noi khac toi Map.doMenu.
+                    SuKienNpc.xuLy(map, player, idNpc, idMenu, idOptionMenu);
+                    return;
                 case -101:
                 case -100: {
                     // Hoa Tieu moi cho map 26/113 (lo #4 loi.xlsx) - tu kiem tra map goc
@@ -1492,10 +1454,16 @@ class MapDoMenu {
                 case -32:
                     if (idMenu == 0) {
                         if (player.monster != null) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể chuyển vùng khi đang giao hàng", ""));
                             return;
                         }
 
                         if (player.myCountry < 2) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Chỉ Pokémon vùng Hoenn mới chọn vùng ở đây. Muốn đổi vùng hãy gặp Tổng quản (mục Chuyển vùng).", ""));
+                            return;
+                        }
+                        if (idOptionMenu < 0 || idOptionMenu > 1) {
                             return;
                         }
 
@@ -1570,7 +1538,7 @@ class MapDoMenu {
                     }
                     break;
                 case -31:
-                    if (player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 201) {
+                    if (!isMapLang(player.map) && player.map.mapIDLoadMap != 201) { // ca Cianwood (80): bot dau truong dung o ca 3 thi tran
                         return;
                     }
 
@@ -1908,9 +1876,15 @@ class MapDoMenu {
                             return;
                         }
 
+                        if (player.lvDetail.lv < 50) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Mê cung dành cho Pokémon từ cấp 50 trở lên.", ""));
+                            return;
+                        }
                         item = player.getLenhBaiTranYeu();
                         if (item == null && !player.canJoinTranYeuTran) {
-                            break;
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Cần có Vé Mê cung đúng cấp (" + (player.lvDetail.lv >= 70 ? "7x" : player.lvDetail.lv >= 60 ? "6x" : "5x") + ") để vào Mê cung.", ""));
+                            return;
                         }
 
                         Map mapTran = null;
@@ -2071,17 +2045,23 @@ class MapDoMenu {
                         }
 
                         if (idOptionMenu == 0) {
-                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đơn giản", "Náo nhiệt (500L)", "Hoành tráng (1000L)"}, idNpc, 1));
+                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đơn giản", "Náo nhiệt (500 lượng)", "Hoành tráng (1000 lượng)"}, idNpc, 1));
                             break;
                         }
 
                         if (idOptionMenu != 1) {
                             if (idOptionMenu == 2) {
                                 Wedding wd = (Wedding) allWedding.get(player.idWedding);
+                                if (wd == null || wd.action != 0) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa đăng ký tiệc cưới nào để khai tiệc.", ""));
+                                    return;
+                                }
                                 if (wd != null && wd.action == 0) {
                                     if (wd.dayParty.equals(Char.getDayOpen(0L))) {
                                         if (wd.idP1 == player.charDBID || wd.idP2 == player.charDBID) {
                                             map.startWedding(player.idWedding);
+                                        } else {
+                                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ đôi bạn tổ chức tiệc mới khai tiệc được.", ""));
                                         }
                                     } else {
                                         wd.action = 1;
@@ -2179,7 +2159,9 @@ class MapDoMenu {
                         }
 
                         if (abs(player.x / 16 - 58) <= rangeNpc && abs(player.y / 16 - 125) <= rangeNpc) {
-                            int idVilage = mapstart[player.inCountry][r.nextInt(mapstart[player.inCountry].length)];
+                            // Di dung thi tran nguoi choi chon (truoc day bo qua lua chon, chon ngau nhien).
+                            int[] langNha = mapstart[Math.max(0, Math.min(2, player.inCountry))];
+                            int idVilage = (idOptionMenu >= 0 && idOptionMenu < langNha.length) ? langNha[idOptionMenu] : langNha[0];
                             if (Char.isSuKienMiniChucNu()) {
                                 player.isDoChangeMap = true;
                             }
@@ -2840,11 +2822,11 @@ class MapDoMenu {
                                 }
                             } else if (idOptionMenu != 0) {
                                 if (idOptionMenu == 1) {
-                                    String[] menu = new String[]{"Chiến hạm", "Đông Chiến hạm", "Tây Chiến hạm", "Nam Chiến hạm", "Bắc Chiến hạm"};
+                                    String[] menu = NpcDichVu.tenBanDo(22, 741, 742, 743, 744);
                                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 2));
                                 }
                             } else {
-                                String[] menu = new String[]{"Bình kiều", "Đông bình kiều", "Tây bình kiều", "Nam bình kiều", "Bắc bình kiều"};
+                                String[] menu = NpcDichVu.tenBanDo(21, 721, 722, 723, 724);
                                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
                             }
                             break;
@@ -3158,7 +3140,7 @@ class MapDoMenu {
                                                                                                 MessageCreator.createServerAlertMessage("Chưa mở bán hoặc bạn không thể mua thêm", "")
                                                                                         );
                                                                                     } else {
-                                                                                        String[][] namett = new String[][]{{"Absol", "Zoroark"}, {"Thuý Vũ Hồng Sam", "Gardevoir"}};
+                                                                                        String[][] namett = new String[][]{{"Áo Absol", "Áo Zoroark"}, {"Áo Oricorio", "Áo Gardevoir"}};
                                                                                         player.sendMessage(
                                                                                                 MessageCreator.createMsgMenu(!player.isCharNam() ? namett[1] : namett[0], idNpc, 13)
                                                                                         );
@@ -3449,16 +3431,23 @@ class MapDoMenu {
                                     }
 
                                     player.setItemChange5();
+                                    if (player.itemChange5.isEmpty()) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không có vật phẩm nào đổi hệ được trong hành trang.", ""));
+                                        return;
+                                    }
                                     String[] menu = new String[player.itemChange5.size()];
 
                                     for (int ixxx = 0; ixxx < menu.length; ixxx++) {
                                         Item it = (Item) player.itemChange5.get(ixxx);
-                                        menu[ixxx] = it.getTemplate().name + " " + he[it.heItem] + " " + gia + "L";
+                                        menu[ixxx] = it.getTemplate().name + " " + he[it.heItem] + " (" + gia + " lượng)";
                                     }
 
                                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
                                 }
                             } else {
+                                if (idOptionMenu < 0 || idOptionMenu >= player.itemResetSock.size()) {
+                                    return;
+                                }
                                 Item it = (Item) player.itemResetSock.get(idOptionMenu);
                                 it.resetAtbKham(player);
                             }
@@ -3617,6 +3606,10 @@ class MapDoMenu {
                             }
                         } else {
                             player.getItemResetSock();
+                            if (player.itemResetSock.isEmpty()) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không có vật phẩm nào đã khảm ngọc để tháo.", ""));
+                                return;
+                            }
                             String[] menu = new String[player.itemResetSock.size()];
 
                             for (int ixxx = 0; ixxx < menu.length; ixxx++) {
@@ -3979,6 +3972,10 @@ class MapDoMenu {
                     if (!isMapLang(player.map)) {
                         return;
                     }
+                    // Menu goc da bo muc "Dang ky giai Lien minh" (RequestNPCInfoHandler): hien thi -> vi tri goc.
+                    if (idMenu == 0 && player.boMucTongQuan >= 0 && idOptionMenu >= player.boMucTongQuan) {
+                        idOptionMenu++;
+                    }
 
                     if (idMenu != 0) {
                         if (idMenu == 1) {
@@ -4261,7 +4258,7 @@ class MapDoMenu {
                             }
 
                             player.typeBox = (byte) idOptionMenu;
-                            String[][] menu = new String[][]{{"5 hộp 200k xu", "7 hộp 500k xu", "9 hộp 1000000 xu"}, {"5 hộp 20l", "7 hộp 35l", "9 hộp 50l"}};
+                            String[][] menu = new String[][]{{"5 hộp (200.000 xu)", "7 hộp (500.000 xu)", "9 hộp (1.000.000 xu)"}, {"5 hộp (20 lượng)", "7 hộp (35 lượng)", "9 hộp (50 lượng)"}};
                             player.sendMessage(MessageCreator.createMsgMenu(menu[idOptionMenu], idNpc, 3));
                         }
                     } else if (idOptionMenu != 0) {
@@ -4995,7 +4992,7 @@ class MapDoMenu {
                         player.buyAnimalArmor = -1;
                         if (idOptionMenu != 0) {
                             if (idOptionMenu == 1) {
-                                String[] menu = new String[]{"Trang bị ma", "Trang bị vật"};
+                                String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
                             }
                         } else {
@@ -5005,7 +5002,9 @@ class MapDoMenu {
                     break;
                 case 3:
                 case 27:
-                    if (!map.isMapOffline) {
+                    // Bronzong ban giap: trong nha hoac dung canh Bronzong o thi tran (truoc chi trong nha).
+                    if (!NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_BAN_GIAP)) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Hãy đến gần Bronzong để mua trang bị.", ""));
                         return;
                     }
 

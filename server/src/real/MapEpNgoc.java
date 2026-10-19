@@ -417,7 +417,7 @@ class MapEpNgoc {
 
     static void doAddGemItemImbue(Map map, Char player, short id, Message msg) {
         try {
-            if (!player.map.isMapOffline) {
+            if (!NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
                 return;
             }
 
@@ -596,7 +596,7 @@ class MapEpNgoc {
     }
 
     static void doFinishImbue(Map map, Char player, int ok) {
-        if (player.map.isMapOffline) {
+        if (NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
             int prizeImbue = 5000;
             if (ok == -1) {
                 player.itemImbue = 40000;

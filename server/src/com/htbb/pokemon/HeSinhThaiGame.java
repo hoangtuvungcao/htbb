@@ -579,7 +579,7 @@ public final class HeSinhThaiGame {
                     final NhaTre.Trung t = deTrung(p, h);
                     if (t != null) {
                         h.trung.add(t);
-                        bao(p, "Nhà trẻ: " + SuuTamSinhThai.tenLoai(t.dex) + " vừa đẻ một quả trứng! (Xem ở Hệ sinh thái, mục Nhà trẻ và trứng.)");
+                        bao(p, "Nhà trẻ: " + SuuTamSinhThai.tenLoai(t.dex) + " vừa đẻ trứng · xem ở Hệ sinh thái › Nhà trẻ và trứng");
                         doi = true;
                     }
                 } else if (h.buocNhaTre >= HeSinhThai.BUOC_DE_TRUNG) {
@@ -588,7 +588,7 @@ public final class HeSinhThaiGame {
             }
         }
         for (final NhaTre.Trung t : no) {
-            bao(p, "Trứng " + SuuTamSinhThai.tenLoai(t.dex) + " đã sẵn sàng nở! Vào Hệ sinh thái, mục Nhà trẻ và trứng để cho trứng nở.");
+            bao(p, "Trứng " + SuuTamSinhThai.tenLoai(t.dex) + " sắp nở · vào Hệ sinh thái › Nhà trẻ và trứng để nở");
             doi = true;
         }
         return doi;
@@ -636,7 +636,7 @@ public final class HeSinhThaiGame {
         final int truoc = h.album.size();
         final int sau = h.themAnh(SuuTamSinhThai.anh(dex, kieu, tt, homNay()));
         if (sau > truoc) {
-            bao(p, "Album: đã chụp " + SuuTamSinhThai.tenLoai(dex) + " (" + SuuTamSinhThai.TEN_ANH[kieu] + "). Album: " + sau + " ảnh.");
+            bao(p, "Đã chụp " + SuuTamSinhThai.tenLoai(dex) + " (" + SuuTamSinhThai.tenAnhNgan(kieu) + ") · Album " + sau + " ảnh");
         }
         final int moc = SuuTamSinhThai.mocVuaDat(truoc, sau);
         if (moc >= 0 && (h.mocAlbum & (1 << moc)) == 0) {

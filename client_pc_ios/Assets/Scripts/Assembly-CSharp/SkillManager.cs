@@ -72,7 +72,7 @@ public class SkillManager : MyHashTable
 
 	public static readonly string[][] SKILL_NAME = new string[5][]
 	{
-		new string[9] { "Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Múa kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa" },
+		new string[9] { "Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Vũ điệu kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa" },
 		new string[9] { "Húc", "Roi dây leo", "Lá dao", "Bom bùn", "Tự vệ", "Sinh trưởng", "Bom hạt", "Bão lá", "Tia mặt trời" },
 		new string[11] { "Húc", "Tấn công nhanh", "Cắn", "Sao băng", "Mong ước", "Nghỉ ngơi", "Phước lành hồi sinh", "Chia sẻ nỗi đau", "Đuôi sắt", "Bứt phá cuối cùng", "Tia phá hủy" },
 		new string[9] { "Húc", "Súng nước", "Bong bóng", "Xoáy nước", "Phá mai", "Rút vào mai", "Đuôi nước", "Bơm nước", "Đại pháo nước" },

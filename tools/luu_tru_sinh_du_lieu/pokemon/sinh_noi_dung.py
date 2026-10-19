@@ -348,7 +348,7 @@ KHUNG_CHIEU = {
     0: [(0, "thuong", 1, "tấn công", 1.00, 0.7, 0, ""), (1, "tan_cong", 1, "tấn công", 1.55, 1.3, 35, "bỏng 10%"),
         (2, "tan_cong", 1, "tấn công", 1.85, 1.7, 25, "bỏng 10%"), (3, "nhieu_don", 2, "tấn công lan", 5.50, 6.0, 15, "bỏng 10%"),
         (4, "buff", 2, "né tránh (Màn khói: −20% chính xác quái quanh)", 0, 30.0, 10, ""),
-        (5, "bi_dong", 1, "+5..+20% tấn công 30 giây (Múa kiếm)", 0, 60.0, 10, ""),
+        (5, "bi_dong", 1, "+5..+20% tấn công 30 giây (Vũ điệu kiếm)", 0, 60.0, 10, ""),
         (6, "tan_cong", 3, "tấn công", 3.00, 6.0, 15, "bỏng 10%"), (7, "tan_cong", 3, "tấn công (hệ Rồng)", 3.30, 8.0, 15, ""),
         (8, "toi_thuong", 3, "tối thượng", 4.60, 15.0, 5, "bỏng 30%")],
     1: [(0, "thuong", 1, "tấn công", 1.00, 0.7, 0, ""), (1, "tan_cong", 1, "khống chế", 1.50, 1.3, 35, ""),

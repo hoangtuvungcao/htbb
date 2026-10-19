@@ -215,11 +215,11 @@ public final class NgoaiHinhVe {
     }
 
     /** Thu tu huong xoay tren the trang bi: xuong, phai, len, trai. */
-    private static final int[] XOAY = {0, 3, 1, 2};
 
     /** Huong ve Pokemon tren the trang bi (doi moi 1,5 giay) - xem trang bi tung phia. */
     public static int huongThe(int tick) {
-        return XOAY[(tick / 38) & 3];
+        // 0.9.5: chân dung / xem trước LUÔN quay mặt ra người xem (Char.DOWN) - không xoay vòng (từng hiện lưng)
+        return 0;
     }
 
     /**

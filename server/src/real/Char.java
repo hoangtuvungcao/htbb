@@ -127,6 +127,9 @@ public class Char extends LiveActor {
     // RequestNPCInfoHandler gan lai moi lan mo menu de Map.doMenu nhan dung click du menu
     // co bao nhieu muc tuy theo co/khong co cac dong "Nhan qua top"/"Nhan qua" phia truoc.
     public int idxMocNapMenu = -1;
+    // NPC Tong quan (-10): vi tri muc da bo khoi menu goc (Dang ky giai Lien minh khi khong co may chu Lien minh),
+    // -1 = khong bo. MapDoMenu doi vi tri hien thi -> vi tri goc. Xem RequestNPCInfoHandler case -10.
+    public int boMucTongQuan = -1;
     // Vi tri (idOptionMenu) cua muc "Su kien World Cup" trong menu NPC Tong Quan, cung
     // duoc RequestNPCInfoHandler gan lai moi lan mo menu. -1 = su kien dang tat nen
     // menu khong co dong nay. Xem real/SuKienWorldCup.
@@ -12514,7 +12517,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             q.state_quest = NewCharQuest.FINISH;
                             MessageCreator.createMsgCharQuest(this, 1);
                             Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                            this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ " + info.name + " đã hoàn thành. Hãy đi trả nhiệm vụ", ""));
+                            this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                         }
                     } else if (info.type == 4 && iskillMons) {
                         if (Map.abs(this.lvDetail.lv - lv) <= info.deltaLv) {
@@ -12536,7 +12539,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 q.state_quest = NewCharQuest.FINISH;
                                 MessageCreator.createMsgCharQuest(this, 1);
                                 Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                                this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ " + info.name + " đã hoàn thành. Hãy đi trả nhiệm vụ", ""));
+                                this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                             }
                         }
                     } else if (info.type == 2 && !iskillMons) {
@@ -12560,7 +12563,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             MessageCreator.createMsgCharQuest(this, 1);
                             MessageCreator.createMsgCharQuest(this, 2);
                             Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                            this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ " + info.name + " đã hoàn thành. Hãy đi trả nhiệm vụ", ""));
+                            this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                         }
                     }
                 }

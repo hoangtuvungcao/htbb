@@ -285,25 +285,45 @@ public final class KieuO {
         }
     }
 
+    /**
+     * Ô chiêu sk của dòng lop: icon PNG riêng từng chiêu (bản PC / APK, AnhUI.oChieu) canh giữa ô w x h; J2ME / thiếu
+     * ảnh -> ô màu hệ + hình 12x12 cũ.
+     */
+    public static void oChieuSk(Graphics g, int x, int y, int w, int h, int lop, int sk, boolean khoa) {
+        int s = w < h ? w : h;
+        int o = AnhUI.oChieu(lop, sk);
+        if (o >= 0 && ChuUI.bo != null && ChuUI.bo.chieu(g, o, false, x + (w - s) / 2, y + (h - s) / 2, s, khoa)) {
+            return;
+        }
+        oChieu(g, x, y, w, h, PokeChieu.he(lop, sk), PokeChieu.hinh(lop, sk), khoa);
+    }
+
     /** Viên hệ (pill) màu hệ, chữ trắng; trả về bề ngang. */
+    /** Viên hệ kiểu GO: viên màu hệ đặc, chữ trắng đậm (HD); J2ME: font viền như cũ. */
     public static int vienHe(Graphics g, int x, int y, int he) {
         String chu = tenHe(he);
-        Font f = Font.borderFont;
         int w = rongVienHe(he);
         int h = 15;
-        GiaoDien.khoi(g, x, y, w, h, 7, GiaoDien.VIEN);
         int mau = mauHe(he);
+        if (ChuUI.bo != null) {
+            GiaoDien.khoiDoc(g, x, y, w, h, h / 2, GiaoDien.pha(mau, 0xFFFFFF, 1, 6), mau);
+            ChuDe.chuGiua(g, chu, x + w / 2, y, h, ChuDe.SO, 0xFFFFFF, 2);
+            return w;
+        }
+        Font f = Font.borderFont;
+        GiaoDien.khoi(g, x, y, w, h, 7, GiaoDien.pha(mau, 0, 1, 3));
         GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 6, mau, GiaoDien.pha(mau, 0x000000, 2, 5));
         f.drawString(g, chu, x + w / 2, y + 1, Font.CENTER);
         return w;
     }
 
     public static int rongVienHe(int he) {
+        if (ChuUI.bo != null) {
+            return ChuDe.rong(tenHe(he), ChuDe.SO) + 16;
+        }
         return Font.borderFont.getWidth(tenHe(he)) + 10;
     }
 
-    // ------------------------------------------------------------ huy hiệu
-    /** Chuỗi số gọn: 1234 -> "1k", 25000 -> "25k". */
     public static String soGon(long n) {
         if (n >= 100000000L) {
             return String.valueOf(n / 1000000L) + "m";
@@ -338,9 +358,9 @@ public final class KieuO {
 
     // ------------------------------------------------------------ ô lưới đồ
     /** Nền ô (chẵn/lẻ xen kẽ) */
-    public static final int O_CHAN = 0x28397E;
-    public static final int O_LE = 0x213070;
-    public static final int O_TRONG = 0x1A2658;
+    public static final int O_CHAN = 0x3E4D5A;   // 0.9.6: xám đá (không navy)
+    public static final int O_LE = 0x37444F;
+    public static final int O_TRONG = 0x2E3943;
 
     /**
      * Ô lưới đồ s x s tại (x, y) (gồm khe 1 px bên phải/dưới): co = có đồ, le = sọc xen kẽ.

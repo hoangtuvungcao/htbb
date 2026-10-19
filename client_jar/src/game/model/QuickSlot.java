@@ -41,7 +41,7 @@ public class QuickSlot {
             if (loai == TYPE_SKILL) {
                 int lop = mc.clazz;
                 int sk = qs.skillType;
-                game.pokemon.KieuO.oChieu(g, x, y, w, h, game.pokemon.PokeChieu.he(lop, sk), game.pokemon.PokeChieu.hinh(lop, sk), false);
+                game.pokemon.KieuO.oChieuSk(g, x, y, w, h, lop, sk, false);
                 long da = System.currentTimeMillis() - mc.timeLastUseSkills[sk];
                 tong = mc.coolDownSkill[sk];
                 if (da < tong) {

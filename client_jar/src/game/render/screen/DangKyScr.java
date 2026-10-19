@@ -158,7 +158,7 @@ public class DangKyScr extends Screen {
         if (!Session_ME.gI().connected) {
             Canvas.connect();
         }
-        Canvas.startWaitDlg("Đang kết nối máy chủ...", true);
+        game.pokemon.ManTai.batDau(game.pokemon.ManTai.KET_NOI, null);
         GameService.gI().dangKyXinCauDo(maMay());
     }
 
@@ -342,7 +342,54 @@ public class DangKyScr extends Screen {
         super.update();
     }
 
+    private IAction viecDangKy, viecLui;
+
+    /** 0.9.5 PC / APK: bảng sáng chung (không che logo / đội hình), nút Đăng ký / Quay lại trong bảng. */
+    private void veMoi(Graphics g) {
+        this.anNutLenh = true;
+        if (this.viecDangKy == null) {
+            this.viecDangKy = new IAction() {
+                public void perform() {
+                    DangKyScr.this.guiDangKy();
+                }
+            };
+            this.viecLui = new IAction() {
+                public void perform() {
+                    Canvas.loginScr.switchToMe();
+                }
+            };
+        }
+        ServerListScr.gI().paintBg(g);
+        int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
+        int hn = game.pokemon.KhungVao.caoNhan(), ho = game.pokemon.KhungVao.caoO();
+        int dau = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM;
+        int hHep = dau + 4 * (hn + ho) + 4 * k + hb;
+        int hRong = dau + 2 * (hn + ho) + 2 * k + hb;   // bảng rộng: ô xếp 2 cột
+        int[] r = game.pokemon.KhungVao.logoVaBang(g, 420, hRong, hHep, 150);
+        int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Đăng ký tài khoản", null, 0, null, null);
+        int x = n[0] + 2, w = n[2] - 4, y = n[1];
+        if (r[2] >= 220) {
+            int wc = (w - k) / 2;
+            int y2 = y;
+            for (int i = 0; i < 4; i++) {
+                int yy = game.pokemon.KhungVao.oNhap(g, this.o[i], NHAN[i], x + (i % 2) * (wc + k), y + (i / 2) * (hn + ho + k), wc, i == this.loiO);
+                y2 = Math.max(y2, yy + k);
+            }
+            y = y2;
+        } else {
+            for (int i = 0; i < 4; i++) {
+                y = game.pokemon.KhungVao.oNhap(g, this.o[i], NHAN[i], x, y, w, i == this.loiO) + k;
+            }
+        }
+        game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Quay lại", "Đăng ký"}, new int[]{game.pokemon.Bang.TRUNG, game.pokemon.Bang.CHINH},
+                new Object[]{this.viecLui, this.viecDangKy}, "dang-ky");
+    }
+
     public void paint(Graphics g) {
+        if (game.pokemon.KhungVao.moi()) {
+            veMoi(g);
+            return;
+        }
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
         int w = rong();

@@ -86,7 +86,7 @@ public class MessageCreator {
         MessageCreator.msglogin = null;
         MessageCreator.msgXaphu = null;
         MessageCreator.infoString = new String[][]{{"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Phòng thủ tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Phòng thủ tăng: ", "Tăng sức công: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "HP+MP tăng: ", "MP tăng: ", "Hồi sinh: ", "Chia sẻ thiệt hại: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tốc độ tăng: ", "Phòng thủ tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tốc độ tăng: ", "HP tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}};
-        SKILL_NAME = new String[][]{{"Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Múa kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa"}, {"Húc", "Roi dây leo", "Lá dao", "Bom bùn", "Tự vệ", "Sinh trưởng", "Bom hạt", "Bão lá", "Tia mặt trời"}, {"Húc", "Tấn công nhanh", "Cắn", "Sao băng", "Mong ước", "Nghỉ ngơi", "Phước lành hồi sinh", "Chia sẻ nỗi đau", "Đuôi sắt", "Bứt phá cuối cùng", "Tia phá hủy"}, {"Húc", "Súng nước", "Bong bóng", "Xoáy nước", "Phá mai", "Rút vào mai", "Đuôi nước", "Bơm nước", "Đại pháo nước"}, {"Tia lửa điện", "Sóng điện", "Cầu điện", "Tia chớp", "Nhanh nhẹn", "Nạp điện", "Lưới điện", "Sấm sét", "Đâm sầm điện"}};
+        SKILL_NAME = new String[][]{{"Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Vũ điệu kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa"}, {"Húc", "Roi dây leo", "Lá dao", "Bom bùn", "Tự vệ", "Sinh trưởng", "Bom hạt", "Bão lá", "Tia mặt trời"}, {"Húc", "Tấn công nhanh", "Cắn", "Sao băng", "Mong ước", "Nghỉ ngơi", "Phước lành hồi sinh", "Chia sẻ nỗi đau", "Đuôi sắt", "Bứt phá cuối cùng", "Tia phá hủy"}, {"Húc", "Súng nước", "Bong bóng", "Xoáy nước", "Phá mai", "Rút vào mai", "Đuôi nước", "Bơm nước", "Đại pháo nước"}, {"Tia lửa điện", "Sóng điện", "Cầu điện", "Tia chớp", "Nhanh nhẹn", "Nạp điện", "Lưới điện", "Sấm sét", "Đâm sầm điện"}};
         MessageCreator.nclone = 5;
         MessageCreator.ALL_ID_ITEM_NPC_SELL = null;
         MessageCreator.nameTuBinh = new String[]{"Bộ Berry", "Bộ Flute", "Bộ huy hiệu", "Bộ huyền thoại"};
@@ -1114,7 +1114,14 @@ public class MessageCreator {
             }
             m.dos.writeInt(p.getLuong());
             if (type == 2) {
-                m.dos.writeByte(p.animal.size() - ((p.animalRide != null) ? 1 : 0));
+                // so dong = dung so con duoc ghi (place != 1) - khong suy tu animalRide (lech thi client doc sai ca pet)
+                int soThu = 0;
+                for (int l = 0; l < p.animal.size(); ++l) {
+                    if (p.animal.get(l).place != 1) {
+                        ++soThu;
+                    }
+                }
+                m.dos.writeByte(soThu);
                 for (int l = 0; l < p.animal.size(); ++l) {
                     final Animal animal = p.animal.get(l);
                     if (animal.place != 1) {
@@ -2330,6 +2337,10 @@ public class MessageCreator {
             }
             m.dos.writeShort(p.map.getMapLoad(p.mapID));
             String name = Map.getNameMap(p.mapID);
+            if (name == null || name.isEmpty()) {
+                // ban do khong co trong nhom Map.mapID (vd 21 / 721..724): ten tu SQL (data_map_ten) thay vi "" + "_khu"
+                name = TenBanDoMayChu.tenDayDu(p.mapID);
+            }
             if (p.map.isvanTienTran()) {
                 name = String.valueOf(name) + "_" + (p.region + 1);
             } else if (p.map.nRegion > 0) {

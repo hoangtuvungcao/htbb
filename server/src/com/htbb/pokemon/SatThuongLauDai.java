@@ -39,6 +39,15 @@ public final class SatThuongLauDai {
         return Math.max(a * SAN_PHAN_TRAM_ATK / 100L, a - Math.max(0L, def));
     }
 
+    /** Co khac he (CO_KHAC / CO_KEM / CO_GAN_MIEN) cua chieu he {@code heChieu} vao muc tieu he1/he2; 0 = x1. */
+    public static int coHe(final int heChieu, final int heThu1, final int heThu2) {
+        if (heChieu < 0 || heChieu >= HePokemon.SO_HE) {
+            return 0;
+        }
+        final int he = HePokemon.heSoTrongGame(heChieu, heThu1, heThu2);
+        return he >= 150 ? CO_KHAC : he <= 30 ? CO_GAN_MIEN : he <= 70 ? CO_KEM : 0;
+    }
+
     /**
      * Ket qua mot don. {@code dao} = 95..105 (bien dong, test truyen 100).
      * @return {dam, co}
@@ -52,13 +61,7 @@ public final class SatThuongLauDai {
         if (heChieu >= 0 && heChieu < HePokemon.SO_HE) {
             final int he = HePokemon.heSoTrongGame(heChieu, heThu1, heThu2);
             d = d * he / 100.0;
-            if (he >= 150) {
-                co |= CO_KHAC;
-            } else if (he <= 30) {
-                co |= CO_GAN_MIEN;
-            } else if (he <= 70) {
-                co |= CO_KEM;
-            }
+            co |= coHe(heChieu, heThu1, heThu2);
             if (ChieuPokemon.coStab(heChieu, heDanh1, heDanh2)) {
                 d = d * ChieuPokemon.PT_STAB / 100.0;
                 co |= CO_STAB;

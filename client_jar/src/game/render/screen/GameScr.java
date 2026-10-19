@@ -358,6 +358,7 @@ public class GameScr extends Screen {
         Canvas.keyHold[2] = false;
         super.switchToMe();
         init();
+        game.pokemon.ManTai.xong();   // 0.9.5: đã vào thế giới - hết màn tải
     }
 
     public void addChat(ChatInfo ci) {
@@ -437,9 +438,8 @@ public class GameScr extends Screen {
     }
 
     public final void paintFlyText(Graphics g) {
-        // pokemon: hieu ung chien dau + so bay kieu moi (toa do the gioi)
+        // pokemon: hieu ung chien dau (toa do the gioi); so bay kieu moi ve o lop giao dien (NhanTheGioi.ve)
         game.pokemon.HieuUngDanh.ve(g);
-        game.pokemon.SoBay.ve(g);
         for (int i = 0; i < 15; i++) {
             if (this.flyTextState[i] != -1) {
                 if (this.flyTextColor[i] != 0) {
@@ -1036,6 +1036,10 @@ public class GameScr extends Screen {
     }
 
     private void setRemoveIconImg() {
+        if (Canvas.gameTick % 250 != 0) {
+            return;   // 0.9.5: dọn ~10 giây một lần (trước: duyệt bảng băm mỗi nhịp)
+        }
+        GameData.donIcon(System.currentTimeMillis() / 1000);
         Enumeration k = GameData.listImgIcon.keys();
         while (k.hasMoreElements()) {
             String key = (String) k.nextElement();
@@ -2545,13 +2549,8 @@ public class GameScr extends Screen {
                                 public void perform() {
                                     GameScr.this.mainChar.chat = null;
                                     GameScr.this.focusedActor.chat = null;
-                                    if (!GameScr.this.focusedActor.isNpcChar() && GameScr.this.focusedActor.getTypeNpc() != 7 && GameScr.this.focusedActor.getTypeNpc() != 10 && GameScr.this.focusedActor.getTypeNpc() != 22 && GameScr.this.focusedActor.getTypeNpc() != 31 && GameScr.this.focusedActor.getTypeNpc() != 21 && GameScr.this.focusedActor.getTypeNpc() != 25) {
-                                        GameScr.addChat(GameScr.this.focusedActor, Res.getDefaultChat(GameScr.this.focusedActor.getTypeNpc()), 500);
-                                    } else {
-                                        if (GameScr.this.focusedActor.isNpcChar()) {
-                                            return;
-                                        }
-                                        GameScr.this.showNpcMenu(GameScr.this.focusedActor.getTypeNpc(), new Vector());
+                                    if (!GameScr.this.focusedActor.isNpcChar()) {
+                                        GameScr.this.moChucNangNpc(GameScr.this.focusedActor.getTypeNpc());
                                     }
                                 }
                             }));
@@ -2559,15 +2558,11 @@ public class GameScr extends Screen {
                             return;
                         }
                         this.focusedActor.chat = null;
-                        if (!this.focusedActor.isNpcChar() && this.focusedActor.getTypeNpc() != 7 && this.focusedActor.getTypeNpc() != 10 && this.focusedActor.getTypeNpc() != 22 && this.focusedActor.getTypeNpc() != 31 && this.focusedActor.getTypeNpc() != 21 && this.focusedActor.getTypeNpc() != 25) {
-                            addChat(this.focusedActor, Res.getDefaultChat(this.focusedActor.getTypeNpc()), 500);
-                        } else if (!this.focusedActor.isNpcChar()) {
-                            showNpcMenu(this.focusedActor.getTypeNpc(), new Vector());
+                        if (!this.focusedActor.isNpcChar()) {
+                            moChucNangNpc(this.focusedActor.getTypeNpc());
                         }
-                    } else if (this.focusedActor.getTypeNpc() == 2 || ((this.focusedActor.getTypeNpc() > 10 && this.focusedActor.getTypeNpc() != 29 && this.focusedActor.getTypeNpc() != 24 && this.focusedActor.getTypeNpc() != 26 && this.focusedActor.getTypeNpc() != 30) || this.focusedActor.getTypeNpc() == 3 || this.focusedActor.getTypeNpc() == 27 || this.focusedActor.getTypeNpc() == 28)) {
-                        showNpcMenu(this.focusedActor.getTypeNpc(), new Vector());
                     } else {
-                        GameService.gI().requestNPCInfo(this.focusedActor.getTypeNpc());
+                        moChucNangNpc(this.focusedActor.getTypeNpc());
                     }
                 }
                 if (this.focusedActor.catagory == 10) {
@@ -2849,6 +2844,21 @@ public class GameScr extends Screen {
         doUseSkillToFocusActor(this.duoiChieu);
     }
 
+    /**
+     * Bấm NPC tĩnh (cMap): mở đúng chức năng của NPC ở MỌI bản đồ (trước đây ở bản đồ ngoài trời
+     * chỉ hiện câu chào, nên Chansey, Kecleon, Machamp, Bronzong... ở các thị trấn Hoenn không dùng
+     * được). NPC chỉ để trò chuyện (gác cổng, trưởng làng, giao nhiệm vụ) vẫn nói câu chào.
+     */
+    public void moChucNangNpc(int type) {
+        if (type == 4 || type == 5 || type == 8 || type == 23) {
+            addChat(this.focusedActor, Res.getDefaultChat(type), 500);
+        } else if (type == 2 || type == 3 || type == 7 || type == 10 || type == 27 || type == 28 || (type > 10 && type != 24 && type != 26 && type != 29 && type != 30)) {
+            showNpcMenu(type, new Vector());
+        } else {
+            GameService.gI().requestNPCInfo(type);
+        }
+    }
+
     public void showNpcMenu(final int type, Vector menu) {
         if (type == 3 || type == 27) {
             for (int i = 0; i < Res.nameClazz.length; i++) {
@@ -2985,10 +2995,10 @@ public class GameScr extends Screen {
                 }
             }));
         } else if (type == 22 || type == 31) {
-            menu.addElement(new Command("Nạp xu", new IAction() {
+            menu.addElement(new Command("Ngân hàng xu, lượng", new IAction() {
                 @Override
                 public void perform() {
-                    GameScr.this.doNapXu();
+                    GameService.gI().requestNPCInfo(type);
                 }
             }));
             menu.addElement(new Command("Nói chuyện", new IAction() {
@@ -3004,12 +3014,8 @@ public class GameScr extends Screen {
                     GameScr.addChat(GameScr.this.focusedActor, Res.getDefaultChat(type), 500);
                 }
             }));
-            menu.addElement(new Command("Chuyển thẻ", new IAction() {
-                @Override
-                public void perform() {
-                    GameScr.this.gameService.giveCard2NPC(GameScr.this.focusedActor.x / 16, GameScr.this.focusedActor.y / 16);
-                }
-            }));
+            // "Chuyển thẻ" (goi -25) da go: server khong xu ly (Map/MapTown.doGiveCardTown rong); giao the Chiem Gym o
+            // NPC doi (-29/-4/-5). Heracross nay giao / tra nhiem vu doi o Cao nguyen Indigo.
         } else if (type == 21) {
             menu.addElement(new Command("Học kỹ năng", new IAction() {
                 @Override
@@ -3155,7 +3161,7 @@ public class GameScr extends Screen {
                 for (int i = 0; i < xp.mapID.length; i++) {
                     final int aa = i;
                     final int idm = xp.mapID[aa];
-                    Command cmd = new Command(game.pokemon.TenMapPokemon.doiHien(Res.nameBigMap[xp.mapID[aa]]), new IAction() {
+                    Command cmd = new Command(game.pokemon.TenBanDoBang.ten(xp.mapID[aa], Res.nameBigMap[xp.mapID[aa]]), new IAction() {
                         @Override
                         public void perform() {
                             if (xp.price[aa] <= GameScr.this.mainChar.charXu) {
@@ -3169,6 +3175,9 @@ public class GameScr extends Screen {
                     menuItem.addElement(cmd);
                 }
                 Canvas.menu.startAt(menuItem, 3);
+            } else {
+                // Ban do khong co tuyen bay san (vd Pidgeot o Fortree, Hoenn): xin server danh sach diem bay.
+                GameService.gI().requestNPCInfo(7);
             }
         }
     }
@@ -3467,6 +3476,20 @@ public class GameScr extends Screen {
         }
     }
 
+    /** Đang vẽ thế giới làm nền cho bảng (ManMenu, Nhân vật, Cửa hàng...): chỉ lớp thế giới. */
+    public static boolean laNen;
+
+    /** Bảng gọi: vẽ thế giới phía sau (không HUD). */
+    public static void veNen(Graphics g) {
+        laNen = true;
+        try {
+            Canvas.gameScr.paint(g);
+        } finally {
+            laNen = false;
+            Canvas.resetTrans(g);
+        }
+    }
+
     @Override
     public void paint(Graphics g) {
         Font.nenSang = false;   // pokemon: HUD / bản đồ: chữ trắng
@@ -3634,6 +3657,10 @@ public class GameScr extends Screen {
         game.pokemon.SinhThai.veDem(g);
         if (charcountdonw != null) {
             charcountdonw.paint(g, objcountDown.x - 30, (objcountDown.y - 40) - objcountDown.getyHorse());
+        }
+        game.pokemon.NhipVe.hetTheGioi();
+        if (laNen) {
+            return;   // 0.9.5: vẽ làm nền cho bảng - bỏ HUD / thẻ / bản đồ nhỏ (bị bảng che, tốn khung)
         }
         try {
             paintFocusActorInfo(g);
@@ -3852,14 +3879,24 @@ public class GameScr extends Screen {
         return false;
     }
 
+    /** tin chat mình vừa gõ (bỏ bản máy chủ gửi lại) */
+    private String tinVuaGo;
+    private long lucVuaGo;
+
     private void doChatFromMe(String text) {
-        if (text != null && "cauca".equals(text.trim().toLowerCase())) {
+        text = GameService.chuChat(text);
+        if (text == null) {
+            return;   // 0.9.5: tin rỗng / chỉ khoảng trắng: không gửi, không bong bóng (ô chat vẫn mở)
+        }
+        if ("cauca".equals(text.toLowerCase())) {
             // hệ sinh thái: chỉ câu ở HỒ - xa hồ thì báo, không gửi, không ném cần
             if (!game.pokemon.SinhThai.thuCau()) {
                 return;
             }
         }
         if (typechat == CHAT_NORMAL) {
+            this.tinVuaGo = text;
+            this.lucVuaGo = System.currentTimeMillis();
             this.mainChar.chat = null;
             addChat(this.mainChar, text, 200);
             MessageScr.gI().addTab(new StringBuffer(String.valueOf(this.mainChar.name)).append(": ").append(text).toString(), null, 0);
@@ -4044,6 +4081,9 @@ public class GameScr extends Screen {
     }
 
     private void paintFocusActorInfo(Graphics g) {
+        // 0.9.5: nhãn tên / Lv quái + số bay ở lớp giao diện (đã hết lớp thế giới phóng)
+        game.pokemon.NhanTheGioi.ve(g);
+        game.pokemon.VienTrangThai.macDinh(rongKhungHp());
         if (this.hideGUI == 2) {
             return;
         }
@@ -4064,7 +4104,8 @@ public class GameScr extends Screen {
                 return;
             }
             int W = rongKhungHp();
-            int H = coMau ? 34 : 22;
+            // 0.9.5: chữ thật - thêm hàng số HP / Lv dưới thanh
+            int H = coMau ? (game.pokemon.ChuUI.bo != null ? 37 : 34) : 22;
             int x0 = Canvas.w - W;
             game.pokemon.GiaoDien.khoi(g, x0 + 1, 2, W - 1, H - 1, 5, 0x0B1222);
             game.pokemon.GiaoDien.khoi(g, x0, 0, W, H - 1, 5, game.pokemon.GiaoDien.VIEN);
@@ -4093,15 +4134,24 @@ public class GameScr extends Screen {
             }
             if (coMau) {
                 long hp = la.hp <= 0 ? 0 : la.hp;
-                game.pokemon.GiaoDien.thanhHP(g, x0 + 5, 18, W - 40, 6, hp, la.maxhp);
-                String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
-                int wSo = Font.smallFont.getWidth(so) + 6;
-                game.pokemon.GiaoDien.khoi(g, x0 + 5, 25, wSo, 7, 2, game.pokemon.GiaoDien.VIEN);
-                Font.smallFont.drawString(g, so, x0 + 8, 26, 0);
-                String sLv = new StringBuffer("lv").append((int) la.level).toString();
-                int xLv = x0 + 8 + wSo;
-                if (xLv + Font.smallFontColor[2].getWidth(sLv) <= Canvas.w - 32) {
-                    Font.smallFontColor[2].drawString(g, sLv, xLv, 24, 0);
+                game.pokemon.GiaoDien.thanhHP(g, x0 + 5, 17, W - 40, 6, hp, la.maxhp);
+                if (game.pokemon.ChuUI.bo != null) {
+                    // 0.9.5: số HP / Lv chữ thật DƯỚI thanh (không đè thanh)
+                    int yS = 23, hS = H - 3 - yS;
+                    game.pokemon.ChuDe.chuGiua(g, game.pokemon.NhanTheGioi.hpMax(la.hp > 0 ? la.hp : 1, la.maxhp), x0 + W - 37, yS, hS,
+                            game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU, 1);
+                    game.pokemon.ChuDe.chuGiua(g, game.pokemon.NhanTheGioi.lv(la.level), x0 + 5, yS, hS,
+                            game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 0);
+                } else {
+                    String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
+                    int wSo = Font.smallFont.getWidth(so) + 6;
+                    game.pokemon.GiaoDien.khoi(g, x0 + 5, 25, wSo, 7, 2, game.pokemon.GiaoDien.VIEN);
+                    Font.smallFont.drawString(g, so, x0 + 8, 26, 0);
+                    String sLv = new StringBuffer("lv").append((int) la.level).toString();
+                    int xLv = x0 + 8 + wSo;
+                    if (xLv + Font.smallFontColor[2].getWidth(sLv) <= Canvas.w - 32) {
+                        Font.smallFontColor[2].drawString(g, sLv, xLv, 24, 0);
+                    }
                 }
             }
         }
@@ -4633,6 +4683,7 @@ public class GameScr extends Screen {
     }
 
     public void onMainCharInfo() {
+        game.pokemon.ManTai.toi(game.pokemon.ManTai.BAN_DO);
         int aa;
         // mod: tạo ô skill nhanh trước, lỗi ở đoạn dưới không để quickSlot null (thanh skill thành ô đen)
         this.mainChar.loadQuickSlot();
@@ -4838,7 +4889,11 @@ public class GameScr extends Screen {
     }
 
     public void onConnectOK() {
-        Canvas.startWaitDlg("Xin chờ..", true);
+        if (game.pokemon.ManTai.dangVao) {
+            game.pokemon.ManTai.toi(game.pokemon.ManTai.DANG_NHAP);   // 0.9.5: cùng màn tải, sang bước đăng nhập
+        } else {
+            Canvas.startWaitDlg("Xin chờ..", true);
+        }
     }
 
     public void onConnectFail() {
@@ -5618,6 +5673,15 @@ public class GameScr extends Screen {
     }
 
     public void onChat(short chatFromID, String text) {
+        // 0.9.5.1: máy chủ gửi thông báo trạng thái cho CHÍNH mình bằng tin chat (tự động đánh dừng, không dùng được...):
+        // hiện thành thông báo nhanh nhỏ ở giữa trên (DungDo), không phải bong bóng chữ to theo thế giới (bị cắt mép).
+        // Tin mình vừa gõ máy chủ gửi lại (bị cấm chat...) thì bỏ - client đã tự hiện bong bóng.
+        if (this.mainChar != null && chatFromID == this.mainChar.ID && text != null) {
+            if (!text.equals(this.tinVuaGo) || System.currentTimeMillis() - this.lucVuaGo > 5000L) {
+                game.pokemon.DungDo.bao(text, game.pokemon.DungDo.TIN);
+            }
+            return;
+        }
         Actor a = findActorByID(chatFromID);
         if (a != null) {
             a.chat = null;
@@ -7617,11 +7681,20 @@ public class GameScr extends Screen {
     }
 
     public void onMSGServer(String readUTF) {
+        MessageScr.gI().addTab(readUTF, null, 0);
+        if (game.pokemon.MenuNguCanh.bat()) {
+            // 0.9.5: không còn dải tối chạy chữ ở đáy - nhắc sức khoẻ = dòng mờ ngắn, tin khác = biểu ngữ trên
+            if (game.pokemon.DungDo.laSucKhoe(readUTF)) {
+                game.pokemon.DungDo.sucKhoe(readUTF);
+            } else {
+                game.pokemon.DungDo.bieuNgu(readUTF);
+            }
+            return;
+        }
         if (this.listMSGServer == null) {
             this.listMSGServer = new Vector();
         }
         this.listMSGServer.addElement(readUTF);
-        MessageScr.gI().addTab(readUTF, null, 0);
     }
 
     public void onDropItem2Ground(Message msg) {
@@ -8392,13 +8465,30 @@ public class GameScr extends Screen {
 
     public static void paint12plus(Graphics g) {
         Canvas.resetTrans(g);
-        if (img12plus != null) {
-            // pokemon: trong game nằm dưới khung HP; màn khác ở góc trái dưới (không đè biển tên / khung HP)
-            int dy = Canvas.h - 20 - img12plus.getHeight();
-            if (Canvas.currentScreen == Canvas.gameScr) {
-                dy = 40;
-            }
-            g.drawImage(img12plus, 0, dy, 0);
+        if (img12plus == null) {
+            return;
         }
+        // 0.9.5: nhãn độ tuổi MỘT chỗ, nhỏ, trọn trong vùng an toàn; ẩn khi có bảng / menu / hộp thoại đang mở
+        if (Canvas.currentDialog != null || Canvas.menu.showMenu || Canvas.isLoad) {
+            return;
+        }
+        Screen m = Canvas.currentScreen;
+        if (m != Canvas.gameScr && !(m instanceof LoginScr || m instanceof ServerListScr || m instanceof CharSelectScr
+                || m instanceof CreateCharScr || m instanceof DangKyScr)) {
+            return;   // bảng (Nhân vật, Menu, Cửa hàng...) / màn khác đang mở
+        }
+        // 0.9.6: cách mép dưới / trái >= 16 px logic (góc bo màn điện thoại không cắt nhãn)
+        int dy = Canvas.h - 16 - game.pokemon.Bang.anDuoi - 12;
+        if (Canvas.currentScreen == Canvas.gameScr) {
+            if (Canvas.gameScr.hideGUI == 2 || HudRong.banDoTo) {
+                return;
+            }
+            dy = 40;
+            dy += 4;
+        }
+        int x = (Canvas.currentScreen == Canvas.gameScr ? 4 : 16) + game.pokemon.Bang.anTrai;
+        int w = 20, h = 11;
+        game.pokemon.GiaoDien.khoi(g, x, dy, w, h, 4, 0xE8412C);
+        game.pokemon.ChuDe.chuGiua(g, "12+", x + w / 2, dy, h, game.pokemon.ChuDe.SO, 0xFFFFFF, 2);
     }
 }

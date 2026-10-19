@@ -85,6 +85,7 @@ public final class HdNut {
         boolean h = Hud.BAT && !Hud.anPhimMem() && !dungPhimMemJar() && !game.render.Canvas.isLoad;
         Main m = h ? chu() : null;
         if (m == game.render.Canvas.gameScr) m = null;   // màn chơi: lệnh đã có trên HUD
+        if (m != null && m.anNutLenh) m = null;   // 0.9.5: bảng có nút thật (màn trước game, chọn chiêu...)
         if (m == null) {
             hien = false;
             return;

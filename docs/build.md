@@ -9,6 +9,7 @@ Cách build từng thành phần từ mã nguồn. Mọi lệnh viết **từ g�
 | Client J2ME | JDK 9+, `rt.jar` của JRE 8, python3 | `sh client_jar/build.sh` | `client_jar/out/HTBB-v<N>*.jar` |
 | Android | JDK 17/21, Android SDK, python3 | `sh client_apk/build-pokemon.sh` | `client_apk/out/HTBB-android-*.apk` |
 | PC Java | JDK 9+, python3 | `sh client_pc/build.sh` | `client_pc/out/HTBB-PC.jar` |
+| PC Windows / Linux (gói phát hành) | JDK 17+, python3, wine (bộ cài) | `KIEU=phat-hanh sh client_pc/dong_goi_windows.sh` | `client_pc/out/goi/` (Setup .exe, .AppImage) |
 | PC Windows / iOS (Unity) | Unity 6000.5.9f1 | `Unity -batchmode … -executeMethod BuildCli.Win64` | thư mục `HTBB_OUT` |
 | Website | Node 22 | `cd web && npm ci && npm run build` | `web/.output/` |
 | Dữ liệu / SQL | MariaDB | `vps/xuat_csdl_day_du.sh` (xuất từ CSDL) | `sql/htbb_day_du.sql` |
@@ -124,12 +125,24 @@ lần build.
 ```sh
 sh client_pc/build.sh                                          # bản thử: server 127.0.0.1:19129
 KIEU=phat-hanh MAY_CHU_CHINH=host:cong sh client_pc/build.sh   # bản phát hành
-sh client_pc/dong_goi_windows.sh                               # HTBB.exe (Launch4j) + JRE Temurin 21 -> zip / bộ cài / tar.gz
+KIEU=phat-hanh sh client_pc/dong_goi_windows.sh                # bộ cài Windows + AppImage Linux (+ zip, tar.gz, jar)
 java -jar client_pc/out/HTBB-PC.jar --may-chu host:cong        # chạy thử
 ```
 
-`dong_goi_windows.sh` tải công cụ một lần vào `client_pc/out/cong_cu/` (kiểm mã băm SHA-256, lệch là dừng) và ra
-`client_pc/out/goi/`. Chi tiết: [client_pc/README.md](../client_pc/README.md).
+`dong_goi_windows.sh` (0.9.5) tải công cụ một lần vào `client_pc/out/cong_cu/` (ghim phiên bản, kiểm SHA-256, lệch là
+dừng: Launch4j 3.50, Temurin 21 JDK Windows + Linux để lấy jmods, appimagetool 1.9.1 + type2-runtime 20251108, Inno
+Setup 6.7.3 qua wine) rồi:
+
+- làm rối mã game bằng ProGuard (`client_pc/release-pc.pro`, bản đồ tên `out/goi/mapping-pc.txt` giữ riêng);
+- dựng Java TỐI GIẢN bằng `jlink` (module theo `jdeps`: java.base, java.desktop, jdk.management + jdk.crypto.ec,
+  jdk.localedata en/vi; `--strip-debug --no-header-files --no-man-pages --compress=zip-9`), ~50-60 MB thay JRE đầy đủ;
+- Windows: `HTBB.exe` (Launch4j, jar game nhúng trong exe) + `runtime\` -> `HTBB-PC-Setup-<ver>.exe` (+ zip cùng bố cục);
+- Linux: `HTBB-PC-Linux-<ver>.AppImage` một tệp (AppRun + runtime + jar trong squashfs), thêm tar.gz (`HTBB/HTBB` +
+  `runtime/`, jar game ở `runtime/lib/htbb/`).
+
+Không còn tệp `.jar` rời của game trong gói phát hành (jlink luôn để lại `runtime/lib/jrt-fs.jar` - tệp của JDK).
+Dữ liệu người chơi: `%APPDATA%\HTBB` (Windows), `~/.local/share/htbb` (Linux). Chi tiết:
+[client_pc/README.md](../client_pc/README.md).
 
 ## 5. Unity: PC Windows và iOS (`client_pc_ios/`)
 
@@ -188,3 +201,15 @@ REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh pc      "ghi ch�
 `day-len.sh` đẩy bản build lên GitHub Releases của repo phát hành và ghi `phienban.json`. Trước mỗi đợt: tăng `BAN`
 + `PHIEN_BAN`; muốn ép cập nhật thì đặt `sv.banToiThieu=<BAN>` ở server (jar/APK cũ hơn bị từ chối kèm link tải).
 Biến và secret của workflow: [tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
+
+### Tài nguyên giao diện sinh tự động (0.9.5)
+
+| Lệnh | Ra | Ghi chú |
+|---|---|---|
+| `python3 tools/pokemon/sinh_icon_chieu.py` (`--kiem` chỉ kiểm) | `client_jar/res/ui/chieu{,_tron}_{32,64,96}.png`, `web/public/chieu/*.png` | icon chiêu CHỈ cho giao diện (hiệu ứng trận không đổi); mỗi chiêu gán họ hình + hệ, thiếu là lỗi |
+| `python3 tools/pokemon/sinh_icon_ui.py` | `client_jar/res/ui/ui_96.png`, `nut_96.png` | icon / da nút giao diện |
+| `python3 tools/pokemon/sinh_icon_client.py` | `client_jar/res/pk_icon.png`, `IconBang.java` | icon vật phẩm |
+| `python3 -I tools/pokemon/sinh_ten_ban_do_client.py` (`--kiem`) | `client_jar/src/game/pokemon/TenBanDoBang.java` | tên bản đồ client lấy từ SQL `data_map_ten` (sửa tên trên web rồi chạy lại trước khi build client) |
+| `python3 -I tools/pokemon/kiem_chuoi_ui.py [chuoi_da_ve.txt]` | — | soát chữ giao diện còn sót (tĩnh + lúc chạy) |
+
+`client_jar/res/ui/` chỉ đóng vào PC / APK; jar J2ME bỏ thư mục này (giữ jar thường <= 5,5 MB).

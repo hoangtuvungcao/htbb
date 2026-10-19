@@ -24,6 +24,9 @@ public abstract class Actor {
     public byte catagory;
     public short x;
     public short y;
+    /** 0.9.5 (NhipVe): vị trí đầu nhịp logic + số nhịp ghi (nội suy khi vẽ 60 khung) */
+    public short xTruoc, yTruoc;
+    public int nhipTruoc;
     public short height;
     public short width;
     public short xFirst;

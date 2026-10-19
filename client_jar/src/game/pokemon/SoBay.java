@@ -12,14 +12,16 @@ import javax.microedition.lcdui.Image;
  *   sat thuong gay ra trang, nhan vao do, chi mang vang to hon kem "!", hieu qua cao cam + nhan
  *   "Hiệu quả cao!", it hieu qua xam + "Kém hiệu quả", truot = nhan "Trượt", hoi mau xanh la "+HP",
  *   EXP xanh lam "+N EXP", xu vang kim + dong xu, len cap = bang "Lên cấp!".
- * So ve bang bo chu so 3x5 tu ve (phong 2/3/4 lan, ANH CHUAN BI SAN theo mau - khong cap phat
- * moi khung hinh); nhan chu dung Font.borderFont (co dau tieng Viet) tren vien mau (GiaoDien.vien).
- * Hook: GameScr.startFlyText / updateFlyText / paintFlyText (// pokemon:).
+ * 0.9.5: ve o LOP GIAO DIEN (NhanTheGioi.ve doi toa do the gioi -> man): so chu that NHO (~8 px logic) vien toi,
+ * trang thuong / vang chi mang / xanh la hoi mau / xam it hieu qua; nhan khac he la THE NHO canh so ("Siêu hiệu
+ * quả!" cam, "Không hiệu quả lắm" / "Không tác dụng" xam) - khong con vien to giua man. "+N EXP" khong bay giua man
+ * nua: VienTrangThai.themExp (canh thanh EXP). May J2ME (khong ChuUI): bo chu so 3x5 tu ve nhu cu.
+ * Hook: GameScr.startFlyText / updateFlyText / paintFocusActorInfo (NhanTheGioi.ve).
  */
 public final class SoBay {
     // ------------------------------------------------------------------ kieu
     static final int TRANG = 0, DO = 1, VANG = 2, CAM = 3, XAM = 4, LUC = 5, LAM = 6, KIM = 7;
-    private static final int[] MAU = {0xFFFFFF, 0xFF5A4A, 0xFFE040, 0xFF9A2E, 0xC4CAD4, 0x6CF06A, 0x6CB8FF, 0xFFD23A};
+    private static final int[] MAU = {0xFFFFFF, 0xFF6A58, 0xFFD84A, 0xFFC07A, 0xAEB6C4, 0x7CF07A, 0x8CC8FF, 0xFFD23A};
     private static final int[] MAU_SANG = {0xFFFFFF, 0xFFB0A0, 0xFFFFC0, 0xFFD8A0, 0xF0F2F6, 0xD0FFC8, 0xD0EAFF, 0xFFF4B0};
     private static final int VIEN = 0x101420;
 
@@ -27,7 +29,7 @@ public final class SoBay {
     private static final int SO = 0, NHAN = 1, BANG_LEN_CAP = 2;
 
     private static final int TOI_DA = 24;
-    private static final int TUOI_SO = 26;
+    private static final int TUOI_SO = 20;
     private static final int TUOI_NHAN = 30;
     private static final int TUOI_LEN_CAP = 45;
 
@@ -44,6 +46,9 @@ public final class SoBay {
     private static final int[] tuoi = new int[TOI_DA];
     private static final int[] tuoiMax = new int[TOI_DA];
     private static final boolean[] xu = new boolean[TOI_DA];
+    /** the nho canh so (khac he) */
+    private static final String[] the = new String[TOI_DA];
+    private static final int[] mauThe = new int[TOI_DA];
     private static final int[] luc = new int[TOI_DA];
     private static int soMuc;
     private static int hat = 12345;
@@ -104,7 +109,7 @@ public final class SoBay {
                 }
             }
             if (t.equals("miss")) {
-                themNhan("Trượt", 0x7C8698, x, y - 4, TUOI_NHAN);
+                themNhan("Trượt", MAU_KEM, x, y - 4, TUOI_NHAN);
                 AmThanh.phat(AmThanh.TRUOT);
                 return true;
             }
@@ -114,7 +119,7 @@ public final class SoBay {
             }
             if (t.equals("hieu qua cao")) {
                 // AttackResult.EFF_HIEU_QUA_CAO (5) - server da tinh khac he
-                nangSoGan(x, y, CAM, "Hiệu quả cao!", AmThanh.HIEU_QUA);
+                nangSoGan(x, y, CAM, SIEU, AmThanh.HIEU_QUA);
                 return true;
             }
             if (t.equals("xuyen giap")) {
@@ -149,7 +154,11 @@ public final class SoBay {
                 String duoi = t.substring(k).trim();
                 if (so.length() > 0) {
                     if (duoi.equals("xp")) {
-                        themSo(new StringBuffer("+").append(so).append(" EXP").toString(), LAM, 2, x, y - 6, false);
+                        VienTrangThai.themExp(Integer.parseInt(so));
+                        return true;
+                    }
+                    if (duoi.length() == 0) {
+                        themSo(t, LUC, 2, x, y, false);   // hoi mau "+123"
                         return true;
                     }
                     if (duoi.equals("xu") || duoi.equals("vàng") || duoi.equals("poké xu")) {
@@ -225,11 +234,11 @@ public final class SoBay {
             coChu = 3;
             hien = so + "!";
         }
-        themSo(hien, k, coChu, x, y, false);
-        if (heSo >= 150) {
-            themNhan("Hiệu quả cao!", 0xE8641A, x, y + 8, TUOI_NHAN);
-        } else if (heSo <= 70) {
-            themNhan("Kém hiệu quả", 0x7C8698, x, y + 8, TUOI_NHAN);
+        int i = themSo(hien, k, coChu, x, y, false);
+        if (i >= 0 && heSo >= 150) {
+            datThe(i, SIEU, MAU_SIEU);
+        } else if (i >= 0 && heSo <= 70) {
+            datThe(i, KEM, MAU_KEM);
         }
         // tieng
         if (chiMang) {
@@ -290,9 +299,9 @@ public final class SoBay {
     /** Nang so vua hien gan (x, y) sang kieu k (+ nhan); khong thay so thi chi hien nhan. */
     private static boolean nangSoGan(int x, int y, int k, String nhanChu, int tieng) {
         for (int i = soMuc - 1; i >= 0; i--) {
-            if (loai[i] == SO && tuoi[i] <= 3 && (kieu[i] == TRANG || kieu[i] == DO || kieu[i] == CAM || kieu[i] == XAM)
-                    && gan(x8[i] >> 3, y8[i] >> 3, x, y)) {
-                if (kieu[i] == k && k != VANG) {
+            if (loai[i] == SO && tuoi[i] <= 3 && (kieu[i] == TRANG || kieu[i] == DO || kieu[i] == CAM || kieu[i] == XAM
+                    || (kieu[i] == VANG && nhanChu != null)) && gan(x8[i] >> 3, y8[i] >> 3, x, y)) {
+                if (kieu[i] == k && k != VANG && (nhanChu == null || nhanChu == the[i])) {
                     return true;   // da to mau + nhan (goi y client) roi
                 }
                 if (k == VANG) {
@@ -303,16 +312,25 @@ public final class SoBay {
                 }
                 kieu[i] = k;
                 if (nhanChu != null) {
-                    themNhan(nhanChu, k == CAM ? 0xE8641A : 0x7C8698, x8[i] >> 3, (y8[i] >> 3) + 8, TUOI_NHAN);
+                    datThe(i, nhanChu, nhanChu == SIEU ? MAU_SIEU : MAU_KEM);
                 }
                 AmThanh.phat(tieng);
                 return true;
             }
         }
         if (nhanChu != null) {
-            themNhan(nhanChu, k == CAM ? 0xE8641A : 0x7C8698, x, y + 8, TUOI_NHAN);
+            themNhan(nhanChu, nhanChu == SIEU ? MAU_SIEU : MAU_KEM, x, y, TUOI_NHAN);
         }
         return false;
+    }
+
+    /** Chu the khac he (server quyet dinh qua co -95; client khong tu tinh). */
+    static final String SIEU = "Siêu hiệu quả!", KEM = "Không hiệu quả lắm", VO_HIEU = "Không tác dụng";
+    static final int MAU_SIEU = 0xFF9A3C, MAU_KEM = 0xB4BCC8;
+
+    private static void datThe(int i, String s, int mau) {
+        the[i] = s;
+        mauThe[i] = mau;
     }
 
     /**
@@ -323,7 +341,7 @@ public final class SoBay {
         mayChuCoDon = true;
         if ((co & 2) != 0) {
             // ne: so da hien la "-0"/MISS - them nhan neu chua co
-            themNhan("Né!", 0x7C8698, x, y - 4, TUOI_NHAN);
+            themNhan("Né!", MAU_KEM, x, y - 4, TUOI_NHAN);
             AmThanh.phat(AmThanh.TRUOT);
             return;
         }
@@ -331,9 +349,9 @@ public final class SoBay {
             nangSoGan(x, y, VANG, null, AmThanh.CHI_MANG);
         }
         if ((co & 4) != 0) {
-            nangSoGan(x, y, (co & 1) != 0 ? VANG : CAM, "Hiệu quả cao!", AmThanh.HIEU_QUA);
+            nangSoGan(x, y, (co & 1) != 0 ? VANG : CAM, SIEU, AmThanh.HIEU_QUA);
         } else if ((co & 24) != 0) {
-            nangSoGan(x, y, (co & 1) != 0 ? VANG : XAM, (co & 16) != 0 ? "Gần như vô hiệu" : "Kém hiệu quả", AmThanh.IT_HIEU_QUA);
+            nangSoGan(x, y, (co & 1) != 0 ? VANG : XAM, (co & 16) != 0 ? VO_HIEU : KEM, AmThanh.IT_HIEU_QUA);
         }
     }
 
@@ -364,17 +382,29 @@ public final class SoBay {
         tuoiMax[i] = tMax;
         xu[i] = false;
         luc[i] = 0;
+        the[i] = null;
     }
 
-    private static void themSo(String s, int k, int c, int x, int y, boolean laXu) {
+    private static int themSo(String s, int k, int c, int x, int y, boolean laXu) {
+        // nhieu don lien tiep cung cho: so moi dat cao hon so con moi (khong de len nhau)
+        int chong = 0;
+        for (int j = 0; j < soMuc; j++) {
+            if (loai[j] == SO && tuoi[j] < 8) {
+                int dx = (x8[j] >> 3) - x, dy = (y8[j] >> 3) - y;
+                if (dx > -24 && dx < 24 && dy > -30 && dy < 12) {
+                    chong++;
+                }
+            }
+        }
         int i = cho();
         if (i < 0) {
-            return;
+            return -1;
         }
-        int lech = ngauNhien(13) - 6;
-        int vx = (ngauNhien(2) == 0 ? -1 : 1) * (4 + ngauNhien(6));
-        dat(i, SO, k, c, s, x + lech, y, vx, -34 - ngauNhien(8), TUOI_SO);
+        int lech = ngauNhien(11) - 5;
+        int vx = (ngauNhien(2) == 0 ? -1 : 1) * (3 + ngauNhien(5));
+        dat(i, SO, k, c, s, x + lech, y - (chong > 3 ? 3 : chong) * 6, vx, -18 - ngauNhien(5), TUOI_SO);
         xu[i] = laXu;
+        return i;
     }
 
     private static void themNhan(String s, int mau, int x, int y, int tMax) {
@@ -398,9 +428,9 @@ public final class SoBay {
             if (loai[i] == SO) {
                 x8[i] += vx8[i];
                 y8[i] += vy8[i];
-                vy8[i] += 3;          // trong luc nhe: len nhanh, cham dan, roi chut
-                if (vy8[i] > 10) {
-                    vy8[i] = 10;
+                vy8[i] += 2;          // bay len nhanh roi cham dan (van troi len nhe toi luc tat)
+                if (vy8[i] > -3) {
+                    vy8[i] = -3;
                 }
                 vx8[i] = vx8[i] * 7 / 8;
             } else {
@@ -414,6 +444,7 @@ public final class SoBay {
         }
         for (int i = j; i < soMuc; i++) {
             chu[i] = null;
+            the[i] = null;
         }
         soMuc = j;
     }
@@ -432,27 +463,39 @@ public final class SoBay {
         tuoiMax[b] = tuoiMax[a];
         xu[b] = xu[a];
         luc[b] = luc[a];
+        the[b] = the[a];
+        mauThe[b] = mauThe[a];
     }
 
-    /** Ve trong toa do the gioi (GameScr.paintFlyText, sau hieu ung). */
+    /**
+     * Ve o LOP GIAO DIEN (NhanTheGioi.ve, sau lop the gioi): x8/y8 la toa do the gioi, doi ra man o day.
+     */
     public static void ve(Graphics g) {
+        boolean that = ChuUI.bo != null;
         for (int i = 0; i < soMuc; i++) {
             try {
                 int t = tuoi[i];
                 int con = tuoiMax[i] - t;
-                // mo dan = nhap nhay o 6 tick cuoi
-                if (con < 6 && (t & 1) == 1) {
+                // may J2ME: mo dan = nhap nhay o 6 tick cuoi; chu that: toi dan ve mau vien (veSoChu)
+                if (!that && con < 6 && (t & 1) == 1) {
                     continue;
                 }
-                int x = x8[i] >> 3, y = y8[i] >> 3;
+                int x = NhanTheGioi.sx(x8[i] >> 3), y = NhanTheGioi.sy(y8[i] >> 3);
+                if (x < -60 || x > Canvas.w + 60 || y < -20 || y > Canvas.h + 40) {
+                    continue;
+                }
                 if (loai[i] == SO) {
                     int c = co[i];
                     if (t < 2) {
                         c++;   // "bat" ra to roi thu ve
                     }
+                    conVe = con;
                     veSo(g, chu[i], kieu[i], c, x, y, xu[i]);
+                    if (the[i] != null) {
+                        veThe(g, i, c, x, y, con);
+                    }
                 } else if (loai[i] == NHAN) {
-                    veNhan(g, chu[i], mauNhan[i], x, y);
+                    veNhan(g, chu[i], mauNhan[i], x, y, con);
                 } else {
                     veLenCap(g, x, y, t);
                 }
@@ -462,18 +505,60 @@ public final class SoBay {
         }
     }
 
-    private static void veNhan(Graphics g, String s, int mau, int x, int y) {
-        Font f = Font.borderFont;
-        if (f == null) {
+    /** so tick con lai cua so dang ve (veSoChu toi dan) */
+    private static int conVe = TUOI_SO;
+
+    /** Co chu so (px logic) theo bac c: 2 thuong, 3 chi mang, +1 luc "bat" ra. */
+    private static float coSo(int c) {
+        return (ChuDe.dt() ? 6.1f : 5.5f) + c * 1.2f;
+    }
+
+    /** 4 tick cuoi: mau toi dan ve vien (thay mo dan - chu that khong co alpha). */
+    private static int mo(int mau, int con) {
+        return con >= 4 ? mau : GiaoDien.pha(mau, NhanTheGioi.VIEN, 4 - con, 5);
+    }
+
+    /** The khac he canh phai so (cung dong). */
+    private static void veThe(Graphics g, int i, int c, int x, int y, int con) {
+        String s = chu[i];
+        float cs = coSo(c);
+        int w = s == null ? 0 : NhanTheGioi.rong(s, cs, 2) + (xu[i] ? 10 : 0);
+        float ct = ChuDe.dt() ? 6.8f : 6.0f;
+        int h = NhanTheGioi.cao(cs), ht = NhanTheGioi.cao(ct);
+        NhanTheGioi.chuVien(g, the[i], x + w / 2 + 3, y - h + (h - ht) / 2 + 1, ct, 1, mo(mauThe[i], con), NhanTheGioi.VIEN, 0);
+    }
+
+    private static void veNhan(Graphics g, String s, int mau, int x, int y, int con) {
+        if (ChuUI.bo == null) {
+            Font f = Font.borderFont;
+            if (f == null) {
+                return;
+            }
+            int w = f.getWidth(s) + 10;
+            int h = f.getHeight() + 2;
+            GiaoDien.vien(g, x - w / 2, y - h, w, h, mau, s);
             return;
         }
-        int w = f.getWidth(s) + 10;
-        int h = f.getHeight() + 2;
-        GiaoDien.vien(g, x - w / 2, y - h, w, h, mau, s);
+        // nhan chu nho vien toi (mau nhat de doc tren nen ban do)
+        float c = ChuDe.dt() ? 7.0f : 6.4f;
+        int sang = GiaoDien.doSang(mau) < 150 ? GiaoDien.pha(mau, 0xFFFFFF, 2, 5) : mau;
+        NhanTheGioi.chuVien(g, s, x, y - NhanTheGioi.cao(c), c, 1, mo(sang, con), NhanTheGioi.VIEN, 2);
     }
 
     private static void veLenCap(Graphics g, int x, int y, int t) {
         String s = "Lên cấp!";
+        if (ChuUI.bo != null) {
+            float c = ChuDe.dt() ? 9.0f : 8.2f;
+            int h = NhanTheGioi.cao(c);
+            int w = NhanTheGioi.rong(s, c, 2);
+            int mau = (t / 3) % 2 == 0 ? 0xFFD23A : 0xFFF1A0;
+            g.setColor(mau);
+            int r = w / 2 + 3 + (t % 6) / 2;
+            g.drawLine(x - r, y - h / 2, x - r - 5, y - h / 2);
+            g.drawLine(x + r, y - h / 2, x + r + 5, y - h / 2);
+            NhanTheGioi.chuVien(g, s, x, y - h, c, 2, mau, NhanTheGioi.VIEN, 2);
+            return;
+        }
         Font f = Font.borderFont;
         if (f == null) {
             return;
@@ -565,6 +650,10 @@ public final class SoBay {
     }
 
     private static void veSo(Graphics g, String s, int k, int c, int x, int y, boolean laXu) {
+        if (ChuUI.bo != null) {
+            veSoChu(g, s, k, c, x, y, laXu);
+            return;
+        }
         if (c > 4) {
             c = 4;
         }
@@ -596,5 +685,25 @@ public final class SoBay {
             g.drawRegion(img, gi * gw, 0, gw, gh, 0, xx, yy, Graphics.TOP | Graphics.LEFT);
             xx += gw - 1 + (c > 2 ? 1 : 0);
         }
+    }
+
+    /** So chu that nho vien toi; x = giua, y = day. */
+    private static void veSoChu(Graphics g, String s, int k, int c, int x, int y, boolean laXu) {
+        float cs = coSo(c);
+        int w = NhanTheGioi.rong(s, cs, 2) + (laXu ? 10 : 0);
+        int h = NhanTheGioi.cao(cs);
+        int xx = x - w / 2, yy = y - h;
+        int con = conVe;
+        if (laXu) {
+            int cy = yy + h / 2;
+            g.setColor(NhanTheGioi.VIEN);
+            g.fillArc(xx, cy - 4, 9, 9, 0, 360);
+            g.setColor(0xF0B400);
+            g.fillArc(xx + 1, cy - 3, 7, 7, 0, 360);
+            g.setColor(0xFFF0A0);
+            g.fillRect(xx + 3, cy - 2, 2, 3);
+            xx += 10;
+        }
+        NhanTheGioi.chuVien(g, s, xx, yy, cs, 2, mo(MAU[k], con), NhanTheGioi.VIEN, 0);
     }
 }

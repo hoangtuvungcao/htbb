@@ -421,7 +421,36 @@ public class Graphics {
         else if ((anchor & RIGHT) != 0) x -= w;
         if ((anchor & VCENTER) != 0) y -= h / 2;
         else if ((anchor & BOTTOM) != 0) y -= h;
+        if (veThang(img, 0, 0, w, h, x + tx, y + ty, false)) return;
         g.drawImage(b, x + tx, y + ty, null);
+    }
+
+    /** thời điểm khung (cho bộ nhớ đệm ảnh phóng) */
+    private long luc = System.currentTimeMillis();
+
+    /**
+     * 0.9.5: vẽ vùng ảnh bằng BẢN PHÓNG SẴN khi phép biến đổi gốc là phóng nguyên k (không xoay): chép điểm ảnh 1:1 ở
+     * toạ độ thật. false = để đường Java2D thường vẽ.
+     */
+    private boolean veThang(Image img, int xs, int ys, int w, int h, int xd, int yd, boolean lat) {
+        double sx = goc.getScaleX();
+        int k = (int) Math.round(sx);
+        if (k < 2 || Math.abs(sx - k) > 1e-6 || Math.abs(goc.getScaleY() - sx) > 1e-6 || goc.getShearX() != 0 || goc.getShearY() != 0) {
+            return false;
+        }
+        double ox = goc.getTranslateX(), oy = goc.getTranslateY();
+        if (Math.abs(ox - Math.rint(ox)) > 1e-6 || Math.abs(oy - Math.rint(oy)) > 1e-6) return false;
+        BufferedImage p = img.phong(k, luc);
+        if (p == null) return false;
+        int dx = (int) Math.rint(ox) + xd * k, dy = (int) Math.rint(oy) + yd * k;
+        g.setTransform(DON_VI);
+        if (lat) {
+            g.drawImage(p, dx + w * k, dy, dx, dy + h * k, xs * k, ys * k, (xs + w) * k, (ys + h) * k, null);
+        } else {
+            g.drawImage(p, dx, dy, dx + w * k, dy + h * k, xs * k, ys * k, (xs + w) * k, (ys + h) * k, null);
+        }
+        g.setTransform(goc);
+        return true;
     }
 
     public void drawRegion(Image img, int xs, int ys, int w, int h, int transform, int xd, int yd, int anchor) {
@@ -439,9 +468,11 @@ public class Graphics {
         yd += ty;
         switch (transform) {
             case 0:
+                if (veThang(img, xs, ys, w, h, xd, yd, false)) return;
                 g.drawImage(b, xd, yd, xd + w, yd + h, xs, ys, xs + w, ys + h, null);
                 return;
             case 2: // MIRROR
+                if (veThang(img, xs, ys, w, h, xd, yd, true)) return;
                 g.drawImage(b, xd + w, yd, xd, yd + h, xs, ys, xs + w, ys + h, null);
                 return;
             case 1: // MIRROR_ROT180 = lật dọc
@@ -478,6 +509,26 @@ public class Graphics {
 
     public void copyArea(int xs, int ys, int w, int h, int xd, int yd, int anchor) {
         // hiếm dùng trong game: bỏ qua
+    }
+
+    private static final AffineTransform DON_VI = new AffineTransform();
+
+    /** Hệ số phóng thật hiện tại (logic -> điểm ảnh bộ đệm) - lớp HD. */
+    public double tiLeThat() {
+        return goc.getScaleX();
+    }
+
+    /**
+     * 0.9.5 (bộ nhớ đệm chữ HD): vẽ ảnh ĐÃ Ở ĐỘ PHÂN GIẢI THẬT (1 điểm ảnh ảnh = 1 điểm ảnh bộ đệm), góc trên trái tại
+     * toạ độ logic (lx, ly) + translate, làm tròn tới điểm ảnh thật. Không cấp phát.
+     */
+    public void veAnhThat(BufferedImage anh, double lx, double ly) {
+        double s = goc.getScaleX();
+        int dx = (int) Math.round(goc.getTranslateX() + (lx + tx) * s);
+        int dy = (int) Math.round(goc.getTranslateY() + (ly + ty) * goc.getScaleY());
+        g.setTransform(DON_VI);
+        g.drawImage(anh, dx, dy, null);
+        g.setTransform(goc);
     }
 
     /** Vẽ ảnh mờ (alpha 0..255) - cho lớp HD. */

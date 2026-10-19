@@ -63,18 +63,10 @@ public class MainChar extends Char {
             quickSlot[0][i] = new QuickSlot();
             quickSlot[1][i] = new QuickSlot();
         }
-        if (Char.skillLevelLearnt[1] > 0) {
-            quickSlot[0][0].setIsSkill(1, this.clazz, false);
-        }
-        if (Char.skillLevelLearnt[2] > 0) {
-            quickSlot[0][1].setIsSkill(2, this.clazz, false);
-        }
+        // 0.9.5: bộ 1 = chiêu cơ bản + chiêu đã học (ThanhNhanh tự điền), thuốc có nút HP / PP riêng trên HUD
         quickSlot[0][2].setIsSkill(0, this.clazz, false);
-        quickSlot[0][3].setIsPotion(1);
-        quickSlot[0][4].setIsPotion(4);
-        quickSlot[1][3].setIsPotion(1);
-        quickSlot[1][4].setIsPotion(4);
         RMS.loadQuickSlot();
+        game.pokemon.ThanhNhanh.dien(quickSlot[0]);
     }
 
     public String getPercent() {

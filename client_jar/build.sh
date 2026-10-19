@@ -103,8 +103,11 @@ else
     printf 'HTBB-May-Chu: %s\n' "$MAY_CHU_CHINH" >> "$B/MANIFEST.MF"
 fi
 
+# res/ui (ảnh PNG giao diện + icon chiêu 0.9.5) chỉ dành cho PC / APK: J2ME vẽ vector / hình 12x12 -> bỏ khỏi jar
+rm -rf "$B/res_j2me" && mkdir -p "$B/res_j2me"
+for e in res/*; do [ "$(basename "$e")" = ui ] || cp -r "$e" "$B/res_j2me/"; done
 rm -f "$OUT"
-"$J/jar" cfm "$OUT" "$B/MANIFEST.MF" -C "$B/cls45" . -C res .
+"$J/jar" cfm "$OUT" "$B/MANIFEST.MF" -C "$B/cls45" . -C "$B/res_j2me" .
 echo "OK -> $OUT"
 
 if [ -n "$MAY_CHU" ]; then
@@ -112,7 +115,7 @@ if [ -n "$MAY_CHU" ]; then
     grep -v '^HTBB-May-Chu:\|^HTBB-Ban-Thu:' "$B/MANIFEST.MF" > "$B/MANIFEST-thu.MF"
     printf 'HTBB-May-Chu: %s\nHTBB-Ban-Thu: 1\n' "$MAY_CHU" >> "$B/MANIFEST-thu.MF"
     rm -f "$THU"
-    "$J/jar" cfm "$THU" "$B/MANIFEST-thu.MF" -C "$B/cls45" . -C res .
+    "$J/jar" cfm "$THU" "$B/MANIFEST-thu.MF" -C "$B/cls45" . -C "$B/res_j2me" .
     echo "OK -> $THU (server thu: $MAY_CHU)"
 fi
 
@@ -132,7 +135,7 @@ if [ "$GOI" = nhe ]; then
     [ -f res_nhe/pk/chu.bin ] || { echo "Thieu res_nhe/pk - chay voi HTBB_ASSETS=... de dong goi ban nhe"; exit 1; }
     NHE="out/HTBB-v$V-nhe.jar"
     rm -rf "$B/res_nhe" && mkdir -p "$B/res_nhe"
-    for e in res/*; do case "$(basename "$e")" in pk|am) ;; *) cp -r "$e" "$B/res_nhe/" ;; esac; done
+    for e in res/*; do case "$(basename "$e")" in pk|am|ui) ;; *) cp -r "$e" "$B/res_nhe/" ;; esac; done
     cp -r res_nhe/pk "$B/res_nhe/pk"
     # banner bản nhẹ: chỉ lớp cỏ tiền cảnh + logo nhỏ (trời vẽ bằng code) - bỏ núi / rừng / mây / khung
     rm -f "$B/res_nhe/bn/nui.png" "$B/res_nhe/bn/rung.png" "$B/res_nhe/bn/may.png" "$B/res_nhe/bn/rong.png" "$B/res_nhe/bn/khung.png" "$B/res_nhe/bn/logo.png"

@@ -126,6 +126,58 @@ public class Image {
         return new Image(chuan(b), false);
     }
 
+    // ---- 0.9.5: bản phóng sẵn (láng giềng gần nhất) theo hệ số nguyên của bộ đệm: vẽ = chép thẳng, không phép biến đổi
+    // (Java2D vẽ ảnh qua phép phóng mỗi lần: chậm + cấp phát AffineTransform / double[] mỗi lệnh vẽ) ----
+    /** bản phóng theo hệ số k (chỉ số k, 2..8) - một ảnh có thể vẽ ở nhiều hệ số (icon 1x / 1,5x) */
+    private BufferedImage[] phong;
+    private long phongPx;
+    long dungLuc;
+    /** tổng điểm ảnh các bản phóng đang giữ; trần ~16 M điểm ảnh (~64 MB) */
+    static long tongPhong;
+    static final long TRAN_PHONG = 16L * 1024 * 1024;
+    static final java.util.ArrayList<Image> DS_PHONG = new java.util.ArrayList<Image>();
+
+    /** Bản phóng k lần (null = không giữ được: ảnh sửa được / quá to / hết trần). Gọi trên luồng vẽ. */
+    BufferedImage phong(int k, long now) {
+        if (mutable || k < 2 || k > 8) return null;
+        if (phong != null && phong[k] != null) {
+            dungLuc = now;
+            return phong[k];
+        }
+        long px = (long) anh.getWidth() * anh.getHeight() * k * k;
+        if (px > 2L * 1024 * 1024) return null;
+        if (tongPhong + px > TRAN_PHONG && !donPhong(now, px)) return null;
+        BufferedImage b = new BufferedImage(anh.getWidth() * k, anh.getHeight() * k, BufferedImage.TYPE_INT_ARGB_PRE);
+        Graphics2D g = b.createGraphics();
+        g.setComposite(java.awt.AlphaComposite.Src);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g.drawImage(anh, 0, 0, b.getWidth(), b.getHeight(), null);
+        g.dispose();
+        if (phong == null) {
+            phong = new BufferedImage[9];
+            DS_PHONG.add(this);
+        }
+        phong[k] = b;
+        phongPx += px;
+        dungLuc = now;
+        tongPhong += px;
+        return b;
+    }
+
+    /** Bỏ bản phóng không dùng > 5 giây cho tới khi đủ chỗ (không xoá cái đang dùng: tránh phóng lại liên tục). */
+    private static boolean donPhong(long now, long can) {
+        for (int i = DS_PHONG.size() - 1; i >= 0 && tongPhong + can > TRAN_PHONG; i--) {
+            Image m = DS_PHONG.get(i);
+            if (now - m.dungLuc > 5000) {
+                tongPhong -= m.phongPx;
+                m.phong = null;
+                m.phongPx = 0;
+                DS_PHONG.remove(i);
+            }
+        }
+        return tongPhong + can <= TRAN_PHONG;
+    }
+
     public Graphics getGraphics() {
         if (!mutable) throw new IllegalStateException("Anh khong sua duoc");
         return new Graphics(anh.createGraphics(), anh.getWidth(), anh.getHeight(), 1);

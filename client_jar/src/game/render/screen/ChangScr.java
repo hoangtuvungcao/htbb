@@ -1,7 +1,6 @@
 package game.render.screen;
 
 import game.networklogic.GameService;
-import game.pokemon.GiaoDien;
 import game.render.Canvas;
 import javax.microedition.lcdui.Graphics;
 
@@ -44,87 +43,29 @@ public class ChangScr extends Screen {
         }
     }
 
-    /** Tiến trình ước lượng 0..1000: nhanh lúc đầu, chậm dần, không quá 950 (phần nghìn). */
-    private int tienTrinh() {
-        long t = System.currentTimeMillis() - this.batDau;
-        if (t < 0) {
-            t = 0;
-        }
-        // 950 * t / (t + 1200): ~0.5 s -> 28%, 1.2 s -> 47%, 3 s -> 68%, 10 s -> 85%
-        return (int) (950L * t / (t + 1200L));
-    }
+    /** tên bản đồ lúc bắt đầu chờ: GameScr.nameMap khác đi = đã biết tên bản đồ đích */
+    private String tenCu;
 
     @Override
     public void paint(Graphics g) {
-        Canvas.resetTrans(g);
-        int w = Canvas.w;
-        int h = Canvas.h;
-        g.setClip(0, 0, w, h);
-        boolean coBanner = false;
-        try {
-            coBanner = game.pokemon.Banner.ve(g, -1, false);
-        } catch (Throwable e) {
-            // thiếu ảnh banner
+        // 0.9.5: màn tải duy nhất (game.pokemon.ManTai) - đường vào game hiện dãy bước, đổi bản đồ hiện tên bản đồ đích
+        if (!game.pokemon.ManTai.dangVao) {
+            String t = GameScr.nameMap;
+            game.pokemon.ManTai.tenMap = t != null && t.length() > 0 && !t.equals(this.tenCu) ? t : null;
         }
-        Canvas.resetTrans(g);
-        if (!coBanner) {
-            GiaoDien.nenTroi(g, w, h);
-        }
-        // thẻ chờ: Poké Ball trái, chữ + thanh phải
-        int cw = w - 24;
-        if (cw > 220) {
-            cw = 220;
-        }
-        int ch = 46;
-        int cx = (w - cw) / 2;
-        int cy = h * 2 / 3 - ch / 2;
-        if (cy + ch > h - 8) {
-            cy = h - 8 - ch;
-        }
-        GiaoDien.theMo(g, cx, cy, cw, ch);
-        int r = 12;
-        int bx = cx + 10 + r;
-        int by = cy + ch / 2;
-        GiaoDien.dangTai(g, bx, by, r);
-        int tx = bx + r + 10;
-        int tw = cx + cw - 12 - tx;
-        String chu = "Đang tải bản đồ";
-        int cham = (int) ((System.currentTimeMillis() / 400) % 4);
-        for (int i = 0; i < cham; i++) {
-            chu = chu + ".";
-        }
-        try {
-            Font f = Font.arialFont != null ? Font.arialFont : Font.normalFont[0];
-            f.drawString(g, chu, tx, cy + 8, 0);
-        } catch (Throwable e) {
-            // font chưa nạp
-        }
-        // thanh tiến trình kiểu Pokémon: viền tối, nền xám, phần chạy vàng -> cam + ánh trắng
-        int hy = cy + ch - 15;
-        int hh = 7;
-        GiaoDien.khoi(g, tx, hy, tw, hh, 3, GiaoDien.VIEN);
-        GiaoDien.khoi(g, tx + 1, hy + 1, tw - 2, hh - 2, 2, 0x3A4258);
-        int dai = (tw - 2) * tienTrinh() / 1000;
-        if (dai < 3) {
-            dai = 3;
-        }
-        GiaoDien.khoiDoc(g, tx + 1, hy + 1, dai, hh - 2, 2, GiaoDien.VANG_NHAT, GiaoDien.CAM);
-        g.setColor(0xFFF7B0);
-        if (dai > 4) {
-            g.fillRect(tx + 3, hy + 2, dai - 4, 1);
-        }
-        // vệt sáng chạy trên phần đã đầy
-        int vt = (Canvas.gameTick * 3) % (dai + 12) - 6;
-        if (vt > 0 && vt < dai - 2) {
-            g.setColor(0xFFFFFF);
-            g.fillRect(tx + 1 + vt, hy + 1, 2, hh - 2);
-        }
+        game.pokemon.ManTai.ve(g, game.pokemon.ManTai.dangVao ? game.pokemon.ManTai.buoc : game.pokemon.ManTai.BAN_DO);
     }
 
     @Override
     public void switchToMe() {
         this.lastTime = (int) (System.currentTimeMillis() / 1000);
         this.batDau = System.currentTimeMillis();
+        this.tenCu = GameScr.nameMap;
+        if (!game.pokemon.ManTai.dangVao) {
+            game.pokemon.ManTai.doiMap(-1);   // đổi bản đồ / dịch chuyển trong game
+        } else if (game.pokemon.ManTai.dangMo()) {
+            Canvas.endDlg();   // màn này vẽ màn tải - bỏ hộp chặn (một lớp, một vòng quay)
+        }
         super.switchToMe();
     }
 }

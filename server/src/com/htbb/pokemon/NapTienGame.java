@@ -634,7 +634,7 @@ public final class NapTienGame implements Runnable {
 
     // ================================================================== menu goc
 
-    static void moGoc(final Char p) {
+    public static void moGoc(final Char p) {
         String the = "Thẻ tháng: chưa có";
         String ve = "Vé mùa";
         long no = 0L;

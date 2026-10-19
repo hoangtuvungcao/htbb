@@ -211,189 +211,8 @@ public class Map implements Runnable {
     public static String[] nameCountry = new String[]{"Kanto", "Johto", "Hoenn"};
     public static Vector<ClanInfo> allClan = new Vector();
     public static Hashtable<Short, Short> locationId = new Hashtable();
-    public static String[][][] nameMap = new String[][][]{
-        {
-            {"Dao Châu", "Đông Dao Châu", "Tây Dao Châu", "Nam Dao Châu", "Bắc Dao Châu"},
-            {"Bến tàu", "Bến đông", "Bến tây", "Bến nam", "Bến bắc"},
-            {"Tiên du", "Đông Tiên Du", "Tây Tiên Du", "Nam Tiên Du", "Bắc Tiên Du"},
-            {"Khu mua bán", "Khu đông", "Khu tây", "Khu nam", "Khu bắc"}
-        },
-        {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}, {"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"}},
-        {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}, {"Phù liệt", "Đông Phù liệt", "Tây Phù liệt", "Nam Phù liệt", "Bắc Phù liệt"}},
-        {
-            {"Tiên du", "Đông Tiên du", "Tây Tiên du", "Nam Tiên du", "Bắc Tiên du"},
-            {"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"},
-            {"Hàm tử", "Đông Hàm tử", "Tây Hàm tử", "Nam Hàm tử", "Bắc Hàm tử"}
-        },
-        {
-            {"Dao Châu", "Đông Dao Châu", "Tây Dao Châu", "Nam Dao Châu", "Bắc Dao Châu"},
-            {"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"},
-            {"Phù liệt", "Đông Phù liệt", "Tây Phù liệt", "Nam Phù liệt", "Bắc Phù liệt"}
-        },
-        {
-            {"Phù liệt", "Đông Phù liệt", "Tây Phù liệt", "Nam Phù liệt", "Bắc Phù liệt"},
-            {"Thạch giang", "Đông Thạch giang", "Tây Thạch giang", "Nam Thạch giang", "Bắc Thạch giang"}
-        },
-        {{"Hàm tử", "Đông Hàm tử", "Tây Hàm tử", "Nam Hàm tử", "Bắc Hàm tử"}, {"Đông sơn", "Đông Đông sơn", "Tây Đông sơn", "Nam Đông sơn", "Bắc Đông sơn"}},
-        {
-            {"Thạch giang", "Đông Thạch giang", "Tây Thạch giang", "Nam Thạch giang", "Bắc Thạch giang"},
-            {"Tử quan", "Đông Tử quan", "Tây Tử quan", "Nam Tử quan", "Bắc Tử quan"}
-        },
-        {
-            {"Đông sơn", "Đông Đông sơn", "Tây Đông sơn", "Nam Đông sơn", "Bắc Đông sơn"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"}
-        },
-        {{"Tử quan", "Đông Tử quan", "Tây Tử quan", "Nam Tử quan", "Bắc Tử quan"}, {"Cao nguyên Indigo", "Biên giới", "", "", ""}},
-        {
-            {"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"},
-            {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
-            {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"}
-        },
-        {
-            {"Lộc trĩ", "Đông Lộc trĩ", "Tây Lộc trĩ", "Nam Lộc trĩ", "Bắc Lộc trĩ"},
-            {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"},
-            {"Hầm tối", "Đông Hầm tối", "Tây Hầm tối", "Nam Hầm tối", "Bắc Hầm tối"},
-            {"Hồi hồ", "Đông Hồi hồ", "Tây Hồi hồ", "Nam Hồi hồ", "Bắc Hồi hồ"}
-        },
-        {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}},
-        {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}},
-        {{"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"}, {"Hang thằn lằn", "Hang Đại Bàng", "", "", ""}, {"Hang Darkrai", "", "", "", ""}},
-        new String[0][],
-        {{"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"}},
-        {{"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"}},
-        {{"Sơn Nam", "Đông Sơn Nam", "", "", ""}},
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Lộc trĩ", "Đông Lộc trĩ", "Tây Lộc trĩ", "Nam Lộc trĩ", "Bắc Lộc trĩ"},
-            {"Siêu loại", "Đông Siêu loại", "Tây Siêu loại", "Nam Siêu loại", "Bắc Siêu loại"}
-        },
-        {
-            {"Lộc trĩ", "Đông Lộc trĩ", "Tây Lộc trĩ", "Nam Lộc trĩ", "Bắc Lộc trĩ"},
-            {"Cẩm khê", "Đông Cẩm khê", "Tây Cẩm khê", "Nam Cẩm khê", "Bắc Cẩm khê"},
-            {"Bạch hạc", "Đông Bạch hạc", "Tây Bạch hạc", "Nam Bạch hạc", "Bắc Bạch hạc"}
-        },
-        {
-            {"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"},
-            {"Tế giang", "Đông Tế giang", "Tây Tế giang", "Nam Tế giang", "Bắc Tế giang"},
-            {"Đỗ đông", "Đông Đỗ đông", "Tây Đỗ đông", "Nam Đỗ đông", "Bắc Đỗ đông"},
-            {"Rừng già", "", "", "", ""}
-        },
-        {{"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"}},
-        {
-            {"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"},
-            {"Siêu loại", "Đông Siêu loại", "Tây Siêu loại", "Nam Siêu loại", "Bắc Siêu loại"}
-        },
-        {
-            {"Bạch hạc", "Đông Bạch hạc", "Tây Bạch hạc", "Nam Bạch hạc", "Bắc Bạch hạc"},
-            {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"},
-            {"Siêu loại", "Đông Siêu loại", "Tây Siêu loại", "Nam Siêu loại", "Bắc Siêu loại"}
-        },
-        {
-            {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"},
-            {"Tế giang", "Đông Tế giang", "Tây Tế giang", "Nam Tế giang", "Bắc Tế giang"}
-        },
-        {
-            {"Tế giang", "Đông Tế giang", "Tây Tế giang", "Nam Tế giang", "Bắc Tế giang"},
-            {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
-            {"Hồi hồ", "Đông Hồi hồ", "Tây Hồi hồ", "Nam Hồi hồ", "Bắc Hồi hồ"}
-        },
-        new String[0][],
-        new String[0][],
-        new String[0][],
-        new String[0][],
-        {{"Cẩm khê", "Đông Cẩm khê", "Tây Cẩm khê", "Nam Cẩm khê", "Bắc Cẩm khê"}, {"Đỗ đông", "Đông Đỗ đông", "Tây Đỗ đông", "Nam Đỗ đông", "Bắc Đỗ đông"}},
-        new String[0][],
-        {
-            {"Dao Châu", "Đông Dao Châu", "Tây Dao Châu", "Nam Dao Châu", "Bắc Dao Châu"},
-            {"Bến tàu", "Bến đông", "Bến tây", "Bến nam", "Bến bắc"},
-            {"Tiên du", "Đông Tiên Du", "Tây Tiên Du", "Nam Tiên Du", "Bắc Tiên Du"},
-            {"Khu mua bán", "Khu đông", "Khu tây", "Khu nam", "Khu bắc"}
-        },
-        {
-            {"Dao Châu", "Đông Dao Châu", "Tây Dao Châu", "Nam Dao Châu", "Bắc Dao Châu"},
-            {"Bến tàu", "Bến đông", "Bến tây", "Bến nam", "Bến bắc"},
-            {"Tiên du", "Đông Tiên Du", "Tây Tiên Du", "Nam Tiên Du", "Bắc Tiên Du"},
-            {"Khu mua bán", "Khu đông", "Khu tây", "Khu nam", "Khu bắc"}
-        },
-        {{"Biên giới", "", "", "", ""}, {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"}},
-        {{"Biên giới", "", "", "", ""}, {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"}},
-        {{"Cao nguyên Indigo", "", "", "", ""}},
-        {{"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"}},
-        new String[0][],
-        new String[0][],
-        new String[0][],
-        new String[0][],
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-            {"", "", "", "", ""}
-        },
-        {{"", "", "", "", ""}, {"", "", "", "", ""}, {"", "", "", "", ""}},
-        {{"Về làng", "", "", "", ""}, {"Về làng", "", "", "", ""}, {"Về làng", "", "", "", ""}},
-        {{"", "", "", "", ""}, {"", "", "", "", ""}, {"", "", "", "", ""}},
-        {{"", "", "", "", ""}, {"", "", "", "", ""}, {"", "", "", "", ""}},
-        {{"", "", "", "", ""}, {"", "", "", "", ""}, {"", "", "", "", ""}}
-    };
+    /** Tên cổng theo locationMap - RealController dựng, real.TenBanDoMayChu ghi tên SQL (data_map_ten). */
+    public static String[][][] nameMap = new String[0][][];
     public static short[][][] locationMap = new short[][][]{
         {
             {1, 1, 61, 321, 1, 61, 322, 1, 61, 323, 1, 61, 324, 1, 61},
@@ -585,67 +404,8 @@ public class Map implements Runnable {
         {202, 0, 0, 4341, 0, 0, 4342, 0, 0, 4343, 0, 0, 4344, 0, 0},
         {201, 0, 0, 4321, 0, 0, 4322, 0, 0, 4323, 0, 0, 4324, 0, 0}
     };
-    public static String[][] namMap = new String[][]{
-        {"Sơn Nam", "Đông Sơn Nam", "Tây Sơn Nam", "Nam Sơn Nam", "Bắc Sơn Nam"},
-        {"Dao Châu", "Đông Dao Châu", "Tây Dao Châu", "Nam Dao Châu", "Bắc Dao Châu"},
-        {"Tiên du", "Đông Tiên Du", "Tây Tiên Du", "Nam Tiên Du", "Bắc Tiên Du"},
-        {"Phù liệt", "Đông Phù liệt", "Tây Phù liệt", "Nam Phù liệt", "Bắc Phù liệt"},
-        {"Kỳ bố", "Đông Kỳ bố", "Tây Kỳ bố", "Nam Kỳ bố", "Bắc Kỳ bố"},
-        {"Hàm tử", "Đông Hàm tử", "Tây Hàm tử", "Nam Hàm tử", "Bắc Hàm tử"},
-        {"Thạch giang", "Đông Thạch giang", "Tây Thạch giang", "Nam Thạch giang", "Bắc Thạch giang"},
-        {"Đông sơn", "Đông Đông sơn", "Tây Đông sơn", "Nam Đông sơn", "Bắc Đông sơn"},
-        {"Tử quan", "Đông Tử quan", "Tây Tử quan", "Nam Tử quan", "Bắc Tử quan"},
-        {"Trường giang", "Đông Trường giang", "Tây Trường giang", "Nam Trường giang", "Bắc Trường giang"},
-        {"Lộc trĩ", "Đông Lộc trĩ", "Tây Lộc trĩ", "Nam Lộc trĩ", "Bắc Lộc trĩ"},
-        {"Sơn lâm", "Đông Sơn lâm", "Tây Sơn lâm", "Nam Sơn lâm", "Bắc Sơn lâm"},
-        {"Khu mua bán", "Khu đông", "Khu tây", "Khu nam", "Khu bắc"},
-        {"Bến tàu", "Bến đông", "Bến tây", "Bến nam", "Bến bắc"},
-        {"Hang động", "Hang phía đông", "Hang phía tây", "Hang phía nam", "Hang phía bắc"},
-        {"Thuyền", "Thuyền bến đông", "Thuyền bến tây", "Thuyền bến nam", "Thuyền bến bắc"},
-        {"Hang Thằn Lằn", "Hang Đại Bàng", "Hang thằn lằn tây", "Hang thằn lằn nam", "Hang thằn lằn bắc"},
-        {"Hang Darkrai", "Hang Darkrai phía đông", "Hang Darkrai phía tây", "Hang Darkrai phía nam", "Hang Darkrai phía bắc"},
-        {"Đấu trường", "", "", "", ""},
-        {"Cao nguyên Indigo", "", "", "", ""},
-        {"Phong châu", "Đông Phong châu", "Tây Phong châu", "Nam Phong châu", "Bắc Phong châu"},
-        {"Bình lục", "Đông Bình lục", "Tây Bình lục", "Nam Bình lục", "Bắc Bình lục"},
-        {"Bảo thái", "Đông Bảo thái", "Tây Bảo thái", "Nam Bảo thái", "Bắc Bảo thái"},
-        {"Hầm tối", "Đông Hầm tối", "Tây Hầm tối", "Nam Hầm tối", "Bắc Hầm tối"},
-        {"Hồi hồ", "Đông Hồi hồ", "Tây Hồi hồ", "Nam Hồi hồ", "Bắc Hồi hồ"},
-        {"Tế giang", "Đông Tế giang", "Tây Tế giang", "Nam Tế giang", "Bắc Tế giang"},
-        {"Bạch hạc", "Đông Bạch hạc", "Tây Bạch hạc", "Nam Bạch hạc", "Bắc Bạch hạc"},
-        {"Siêu Loại", "Đông Siêu Loại", "Tây Siêu Loại", "Nam Siêu Loại", "Bắc Siêu Loại"},
-        {"Bình Kiều", "Đông Bình Kiều", "Tây Bình Kiều", "Nam Bình Kiều", "Bắc Bình Kiều"},
-        {"Chiến hạm", "Đông Chiến hạm", "Tây Chiến hạm", "Nam Chiến hạm", "Bắc Chiến hạm"},
-        {"Đấu trường la mã", "Đấu trường la mã", "Đấu trường la mã", "Đấu trường la mã", "Đấu trường la mã", "Đấu trường la mã", "Đấu trường la mã"},
-        {"Ngục tối", "", "", "", ""},
-        {"Biên giới", "", "", "", ""},
-        {"Khu mỏ", "", "", "", ""},
-        {"Dương đông", "Đông Dương đông", "Tây Dương đông", "Nam Dương đông", "Bắc Dương đông"},
-        {"Lâm tây", "Đông Lâm tây", "Tây Lâm tây", "Nam Lâm tây", "Bắc Lâm tây"},
-        {"Cẩm khê", "Đông Cẩm khê", "Tây Cẩm khê", "Nam Cẩm khê", "Bắc Cẩm khê"},
-        {"Đỗ đông", "Đông Đỗ đông", "Tây Đỗ đông", "Nam Đỗ đông", "Bắc Đỗ đông"},
-        {"Lãnh địa đội", "", "", "", ""},
-        {"Rừng già", "", "", "", ""},
-        {"TYT 5x", "", "", "", ""},
-        {"TYT 6x", "", "", "", ""},
-        {"TYT 7x", "", "", "", ""},
-        {"Chien truong", "", "", "", ""},
-        {"Sân Liên minh 1", "", "", "", ""},
-        {"Sân Liên minh 2", "", "", "", ""},
-        {"Sân Liên minh 3", "", "", "", ""},
-        {"Sân Liên minh 4", "", "", "", ""},
-        {"Sân Liên minh 5", "", "", "", ""},
-        {"Sân Liên minh 6", "", "", "", ""},
-        {"Sân Liên minh 7", "", "", "", ""},
-        {"Sân Liên minh 8", "", "", "", ""},
-        {"Sân Liên minh 9", "", "", "", ""},
-        {"Sân Liên minh 10", "", "", "", ""},
-        {"Chiến trường", "", "", "", ""},
-        {"Cân núi", "", "", "", ""},
-        {"Núi kho báu", "", "", "", ""},
-        {"Sàn đấu", "", "", "", ""},
-        {"Sảnh chờ", "", "", "", ""}
-    };
+    /** Tên bản đồ theo nhóm mapID - RealController.add_more_idMapSend2Client dựng, real.TenBanDoMayChu ghi tên SQL (data_map_ten). */
+    public static String[][] namMap = new String[0][];
     byte idXaphu = -1;
     static short[] idArrMap = new short[]{
         0,
@@ -2891,40 +2651,19 @@ public class Map implements Runnable {
         for (short i = 0; i < nameMap.length; i++) {
             name[i] = nameMap[i];
         }
-
-        if (idCountry == 0) {
-            name[1][0] = new String[]{"Dương đông", "Đông Dương đông", "", "", ""};
-            name[2][0] = new String[]{"Dương đông", "Đông Dương đông", "", "", ""};
-            name[12][0] = new String[]{"Dương đông", "Đông Dương đông", "", "", ""};
-            name[13][0] = new String[]{"Dương đông", "Đông Dương đông", "", "", ""};
-            if (TeamServer.isServerIndo()) {
-                name[1][0] = new String[]{"Duong dong", "Duong dong Timur", "", "", ""};
-                name[2][0] = new String[]{"Duong dong", "Duong dong Timur", "", "", ""};
-                name[12][0] = new String[]{"Duong dong", "Duong dong Timur", "", "", ""};
-                name[13][0] = new String[]{"Duong dong", "Duong dong Timur", "", "", ""};
+        // 0.9.5: cổng đầu của 4 bản đồ theo vùng (Kanto / Johto / Hoenn) dẫn về thành phố khởi đầu của vùng: tên lấy
+        // từ SQL (data_map_ten, real.TenBanDoMayChu) theo đúng id trong getLocaltion - không còn tên viết cứng.
+        short[][][] loc = getLocaltion(idCountry);
+        int[] nhom = {1, 2, 12, 13};
+        for (int n = 0; n < nhom.length; n++) {
+            int i = nhom[n];
+            if (i >= name.length || i >= loc.length || loc[i] == null || loc[i].length == 0 || loc[i][0].length < 6 || name[i] == null
+                    || name[i].length == 0) {
+                continue;
             }
-        } else if (idCountry == 2) {
-            name[1][0] = new String[]{"Lâm tây", "Đông Lâm tây", "", "", ""};
-            name[2][0] = new String[]{"Lâm tây", "Đông Lâm tây", "", "", ""};
-            name[12][0] = new String[]{"Lâm tây", "Đông Lâm tây", "", "", ""};
-            name[13][0] = new String[]{"Lâm tây", "Đông Lâm tây", "", "", ""};
-            if (TeamServer.isServerIndo()) {
-                name[1][0] = new String[]{"Lam Tay", "Lam Tay Timur", "", "", ""};
-                name[2][0] = new String[]{"Lam Tay", "Lam Tay Timur", "", "", ""};
-                name[12][0] = new String[]{"Lam Tay", "Lam Tay Timur", "", "", ""};
-                name[13][0] = new String[]{"Lam Tay", "Lam Tay Timur", "", "", ""};
-            }
-        } else if (idCountry == 1) {
-            name[1][0] = new String[]{"Sơn nam", "Đông Sơn nam", "", "", ""};
-            name[2][0] = new String[]{"Sơn nam", "Đông Sơn nam", "", "", ""};
-            name[12][0] = new String[]{"Sơn nam", "Đông Sơn nam", "", "", ""};
-            name[13][0] = new String[]{"Sơn nam", "Đông Sơn nam", "", "", ""};
-            if (TeamServer.isServerIndo()) {
-                name[1][0] = new String[]{"Son Nam", "Ðông Son Nam", "", "", ""};
-                name[2][0] = new String[]{"Son Nam", "Ðông Son Nam", "", "", ""};
-                name[12][0] = new String[]{"Son Nam", "Ðông Son Nam", "", "", ""};
-                name[13][0] = new String[]{"Son Nam", "Ðông Son Nam", "", "", ""};
-            }
+            String[][] ban = name[i].clone();
+            ban[0] = new String[]{TenBanDoMayChu.ten(loc[i][0][0]), TenBanDoMayChu.ten(loc[i][0][3]), "", "", ""};
+            name[i] = ban;
         }
 
         return name;
@@ -2980,6 +2719,11 @@ public class Map implements Runnable {
     }
 
     public static String getNameMap(int idm) {
+        // 0.9.5: tên SQL (data_map_ten) cho mọi bản đồ, cả bản đồ trong nhà (gói 12)
+        String sql = TenBanDoMayChu.ten(idm);
+        if (sql != null && sql.length() > 0) {
+            return sql;
+        }
         for (short i = 0; i < mapID.length; i++) {
             for (short j = 0; j < mapID[i].length; j++) {
                 if (idm == mapID[i][j]) {
@@ -8723,7 +8467,7 @@ public class Map implements Runnable {
     }
 
     void doAddNewAttribute(Char player, short idItem, short idMaterial, byte lock) {
-        if (player.map.isMapOffline) {
+        if (NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
             if (!player.isCorrectPass && !player.passWord.equals("")) {
                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
             } else {
@@ -9074,6 +8818,7 @@ public class Map implements Runnable {
                     }
                 }
 
+                SkinThuCuoi.dongBoTheoTrangBi(player); // 0.9.5: nhu doCuoiThu - skin thu chi tinh khi da co animalRide
                 player.calculateAttrib();
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
@@ -11623,7 +11368,7 @@ public class Map implements Runnable {
      * RealController xu ly het, khong bao gio xuong doMenu.
      */
     public void showMenuHoTro(Char player) {
-        String[] menuHoTro = new String[]{"Xóa Pet (500L)", "Xóa Thú Cưỡi (500L)"};
+        String[] menuHoTro = new String[]{"Xóa pet (500 lượng)", "Xóa thú cưỡi (500 lượng)"};
         player.sendMessage(MessageCreator.createMsgMenu(menuHoTro, -519, 0));
     }
 
@@ -13798,7 +13543,22 @@ public class Map implements Runnable {
 
 
 
+    /**
+     * NPC cho (-37, ban do nap 10): mo cua so cho nguoi choi. Truoc chi MapTown co than ham nay, con ban do 10 la Map
+     * thuong nen bam "Mua ban" khong co gi xay ra.
+     */
     public void doMenuTown(Char player, int idNpc, int idMenu, int idOptionMenu) {
+        if (!openMarket) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chợ đang bảo trì.", ""));
+            return;
+        }
+        if (idMenu == 0 && idOptionMenu == 0) {
+            createListItemMarket(player, null, -1);
+            createListItemMarket(player, player.getAllistItemSell(), 2);
+            createListItemMarket(player, player.getAllListItemBid(), 4);
+            createListItemMarket(player, player.getAllistItemExpire(), 3);
+            createListItemMarket(player, player.getAllistNewItemSell(), 0);
+        }
     }
 
     void doHoaTieu(Char player, int idNpc, int idMenu, int idOptionMenu) {
@@ -14667,6 +14427,11 @@ public class Map implements Runnable {
             }
 
             long now = System.currentTimeMillis();
+            if (!(this.mapId == 106 || this.mapId == 2421 || this.mapId == 2422 || this.mapId == 2423 || this.mapId == 2424)) {
+                // Ben Lapras khac (Hoenn...): cho do toi ben khac thay vi im lang (real.NpcDichVu).
+                NpcDichVu.moBenDo(player);
+                return;
+            }
             if (this.mapId == 106 || this.mapId == 2421 || this.mapId == 2422 || this.mapId == 2423 || this.mapId == 2424) {
                 player.gotoIsland = true;
                 player.timeWait = TeamServer.timUpBoard;
@@ -15331,7 +15096,9 @@ public class Map implements Runnable {
         }
     }
 
+    /** Goi -25 "Chuyển thẻ" (client cu, NPC tinh 25): khong con xu ly o day - bao noi giao the thay vi im lang. */
     protected void doGiveCardTown(Char player, Message message) {
+        player.sendMessage(MessageCreator.createServerAlertMessage("Giao thẻ Chiếm Gym ở NPC của đội (Lucario / Heracross) khi trận Chiếm Gym diễn ra.", ""));
     }
 
 
@@ -17064,9 +16831,20 @@ public class Map implements Runnable {
                 player.sendMessage(
                         MessageCreator.createMsgNpc("Meowth", posNpcThanTai[player.inCountry][0], posNpcThanTai[player.inCountry][1], 28, 31, 2, 14, -24, (byte) 1)
                 );
-                if (!Char.isFinishAllSuKienHe2017()) {
+                // NPC su kien -49 theo su kien dang chay (real.SuKienNpc - cung thu tu voi menu / xu ly). Truoc day chi
+                // He 2017 ("Mẹ hiền") va Noel ("ông Già Noel") co NPC o day; Tet / Halloween / Gio To chi co trong
+                // plugins/addNPC.java (khong ai goi) nen su kien bat ma khong co NPC de doi qua.
+                final Object[] npcSuKien = SuKienNpc.tenNpcGoi50();
+                if (npcSuKien != null) {
+                    final short[] vt = ((Integer) npcSuKien[1]) == 24 ? posNpcSANTA[player.inCountry] : posNpcVuLan[player.inCountry];
                     player.sendMessage(
-                            MessageCreator.createMsgNpc("Mẹ hiền", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 15, 31, 2, 20, -49, (byte) 1)
+                            MessageCreator.createMsgNpc((String) npcSuKien[0], vt[0], vt[1], 28, 31, 2, (Integer) npcSuKien[1], -49, (byte) 1)
+                    );
+                }
+                // Tet duong lich: NPC doi keo lay qua (-35, RequestNPCInfoHandler) - truoc chi co trong addNPC.java.
+                if (Char.isSuKienTetduonglich2024()) {
+                    player.sendMessage(
+                            MessageCreator.createMsgNpc("Meowth chúc mừng năm mới", posNpcThanTai[player.inCountry][0] + 48, posNpcThanTai[player.inCountry][1], 28, 31, 2, 14, -35, (byte) 1)
                     );
                 }
 
@@ -17088,9 +16866,7 @@ public class Map implements Runnable {
                                     "Cây thông Noel", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 86, 127, 2, 23, -65, (byte) 1
                             )
                     );
-                    player.sendMessage(
-                            MessageCreator.createMsgNpc("ông Già Noel", posNpcSANTA[player.inCountry][0], posNpcSANTA[player.inCountry][1], 20, 31, 2, 24, -49, (byte) 1)
-                    );
+                    // ong gia Noel (-49): da gui o khoi NPC su kien phia tren (SuKienNpc.tenNpcGoi50).
                 }
 
                 if (!Char.isFinishAllSuKienTet2017()) {

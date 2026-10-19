@@ -8,35 +8,35 @@ import game.render.screen.Screen;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * MENU CHÍNH dạng lưới ô to (0.9.3): thay chuỗi menu chữ "Menu -> Bản thân -> ..." (menu chỉ liệt kê menu con).
- * Mỗi việc thường dùng cách HUD đúng HAI chạm: nút Menu -> ô. Ô "Khác" mở menu chữ cũ cho các việc hiếm.
- * Đóng: nút X góc phải trên, phím Back / Esc, hoặc chạm ra ngoài lưới.
+ * MENU CHÍNH (0.9.3 lưới ô to; 0.9.6 kiểu Pokémon GO): Poké Ball giữa đáy mở vòng cung nút tròn to + hàng viên phụ.
+ * Mỗi việc thường dùng cách HUD đúng HAI chạm: nút Menu -> nút. Viên "Tiện ích & PK" mở menu chữ cũ cho việc hiếm.
+ * Đóng: Poké Ball (X) giữa đáy, phím Back / Esc, hoặc chạm ra ngoài.
  */
 public final class ManMenu extends Screen {
     public static ManMenu me;
 
-    static final String[] TEN = {"Pokémon", "Hành trang", "Kỹ năng", "Nhiệm vụ", "Pokédex", "Đội/Bạn bè", "Bản đồ", "Sự kiện",
-        "Hệ sinh thái", "Cửa hàng", "Thư/Quà", "Xếp hạng", "Cài đặt", "Khác"};
-    /** màu ô */
-    static final int[] MAU = {0xE8312B, 0xF08030, 0x7038F8, 0xE8B800, 0xD8342C, 0x6890F0, 0x48A858, 0xF85888,
-        0x78C850, 0x30B0B0, 0x5D93FF, 0xC97A10, 0x8A94A6, 0x5E6A80};
-    /** hình ảnh mặc định (KieuO.HINH_*) cho ô không vẽ tay */
-    static final byte[] HINH = {KieuO.HINH_SAO, KieuO.HINH_KHIEN, KieuO.HINH_SET, KieuO.HINH_TIM, KieuO.HINH_SAO,
-        KieuO.HINH_VONG, KieuO.HINH_LOC, KieuO.HINH_SAO, KieuO.HINH_LA, KieuO.HINH_BOM, KieuO.HINH_BONG, KieuO.HINH_TANG,
-        KieuO.HINH_TANG, KieuO.HINH_CONG};
-    static final int I_POKEMON = 0, I_TUI = 1, I_KY_NANG = 2, I_NHIEM_VU = 3, I_DEX = 4, I_DOI = 5, I_BAN_DO = 6, I_SU_KIEN = 7,
-        I_SINH_THAI = 8, I_CUA_HANG = 9, I_THU = 10, I_XEP_HANG = 11, I_CAI_DAT = 12, I_KHAC = 13;
+    /**
+     * 0.9.5: MỘT lối vào cho mỗi tính năng. Hành trang, Nhiệm vụ, Bản đồ có nút riêng trên HUD (không lặp ở đây);
+     * Kỹ năng là tab của màn Pokémon (bỏ ô riêng); ô cuối mở menu chữ cũ cho việc hiếm (Tiện ích, PK, Đội nhóm...).
+     */
+    static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
+        "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh"};
+    /** màu ô (nền nhạt + biểu tượng màu) */
+    static final int[] MAU = {ChuDe.DO, ChuDe.TIM, ChuDe.LA, ChuDe.HONG, 0x6DAA2C, ChuDe.TEAL, ChuDe.XANH, 0xE09B00, ChuDe.XAM,
+        0x5C6BC0, ChuDe.CHINH_TOI};
+    static final int[] HINH = {BieuTuong.POKEBALL, BieuTuong.DEX, BieuTuong.DOI, BieuTuong.SU_KIEN, BieuTuong.SINH_THAI,
+        BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH, BieuTuong.TU_DONG};
+    static final int I_POKEMON = 0, I_DEX = 1, I_DOI = 2, I_SU_KIEN = 3, I_SINH_THAI = 4, I_CUA_HANG = 5, I_THU = 6,
+        I_XEP_HANG = 7, I_CAI_DAT = 8, I_KHAC = 9, I_TU_DONG = 10;
 
     /** Chấm đỏ ô i (dữ liệu client có): nhiệm vụ mới / đủ để trả, thư chưa đọc, điểm kỹ năng chưa cộng. */
     public static boolean cham(int i) {
         try {
             switch (i) {
-                case I_NHIEM_VU:
-                    return ManNhiemVu.coMoi();
                 case I_THU:
-                    return game.render.screen.MessageScr.nMSG > 0;
-                case I_KY_NANG:
-                    return Canvas.gameScr.mainChar.skillPointLeft > 0;
+                    return ChamMoi.menuThu();
+                case I_POKEMON:
+                    return ChamMoi.menuPokemon();   // 0.9.6: nguồn chung ChamMoi (điểm kỹ năng / tiềm năng, chiêu mới)
                 default:
                     return false;
             }
@@ -86,24 +86,11 @@ public final class ManMenu extends Screen {
             case I_POKEMON:
                 ManNhanVat.mo(ManNhanVat.TAB_TRANG_BI);
                 break;
-            case I_TUI:
-                ManNhanVat.moHanhTrang();
-                break;
-            case I_KY_NANG:
-                ManNhanVat.mo(ManNhanVat.TAB_KY_NANG);
-                break;
-            case I_NHIEM_VU:
-                ManNhiemVu.mo();
-                break;
             case I_DEX:
                 ManPokedex.mo();
                 break;
             case I_DOI:
                 ManDoi.mo(0);
-                break;
-            case I_BAN_DO:
-                ve();
-                HanhDong.moBanDoLon();
                 break;
             case I_SU_KIEN:
                 // sự kiện do máy chủ điều khiển: gói -76 (-10000) trả menu sự kiện -> menu nút to (MenuNguCanh)
@@ -131,10 +118,26 @@ public final class ManMenu extends Screen {
                 ManCuaHang.mo(ManCuaHang.DAC_BIET, cu);
                 break;
             }
-            case I_THU:
+            case I_THU: {
+                // 0.9.6: Thư/Quà = thẻ 2 hàng: Hộp thư (số thư chưa đọc) + Nhập giftcode (một chỗ dễ tìm)
                 ve();
-                game.render.screen.MessageScr.gI().switchToMe();
+                boolean chamThu = ChamMoi.menuThu();
+                java.util.Vector v = new java.util.Vector();
+                int n = game.render.screen.MessageScr.nMSG;
+                v.addElement(new game.model.Command(n > 0 ? "Hộp thư (" + n + " mới)" : "Hộp thư", new IAction() {
+                    public void perform() {
+                        game.render.screen.MessageScr.gI().switchToMe();
+                    }
+                }));
+                v.addElement(new game.model.Command("Nhập giftcode", new IAction() {
+                    public void perform() {
+                        HanhDong.moGiftcode();
+                    }
+                }));
+                MenuNguCanh.mo(v, "Thư / Quà");
+                MenuNguCanh.gI().cham = new boolean[]{chamThu, false};
                 break;
+            }
             case I_XEP_HANG:
                 ManXepHang.mo();
                 break;
@@ -142,11 +145,21 @@ public final class ManMenu extends Screen {
                 ve();
                 CauGiaoDien.moCaiDat();
                 break;
+            case I_TU_DONG:
+                // 0.9.6: bảng cài đặt Tự động đánh (cùng bảng của nút bánh răng cạnh viên AUTO trên HUD)
+                ve();
+                game.render.screen.CauGiaoDien.moTuDong();
+                break;
             default:
                 ve();
                 HanhDong.moMenuChinh();
                 break;
         }
+    }
+
+    /** Đích của ô i (kiểm "không hai lối vào cùng một việc" - KiemTrungLap). */
+    public static String dich(int i) {
+        return i >= 0 && i < TEN.length ? "menu:" + i : null;
     }
 
     public void update() {
@@ -176,194 +189,154 @@ public final class ManMenu extends Screen {
         return false;
     }
 
+    /**
+     * 0.9.6 MENU KIỂU POKÉMON GO: thế giới mờ 55 %, Poké Ball giữa đáy (cùng chỗ nút Menu của HUD) thành nút ĐÓNG
+     * (đĩa trắng X), 5 nút TRÒN to xếp vòng cung trên nó (việc dùng nhiều nhất) + hàng 5 viên phụ phía trên (việc ít
+     * dùng). Không còn bảng trắng to với ô nhỏ trôi nổi.
+     */
+    static final int[] CHINH = {I_POKEMON, I_DEX, I_CUA_HANG, I_DOI, I_SU_KIEN};
+    static final int[] PHU = {I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+    static final int[] GOC = {166, 128, 90, 52, 14};
+
+    static int rNut() {
+        return Math.max(VungCham.MIN / 2 + 1, ChuDe.dt() ? 25 : 21);
+    }
+
+    /** Tâm Poké Ball / nút đóng (= nút Menu giữa đáy HUD). */
+    static int yBong() {
+        return Canvas.h - 17 - 5;
+    }
+
+    /** Bán kính vòng cung (theo cao màn: đủ chỗ hàng phụ phía trên). */
+    static int banKinhCung() {
+        int r = rNut();
+        int k = Math.max(ChuDe.KHE, Bang.cach()), hv = caoVienPhu();
+        int[] wv = new int[PHU.length];
+        for (int q = 0; q < PHU.length; q++) {
+            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
+        }
+        int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
+        int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
+        return Math.max(2 * r + 30, Math.min(ChuDe.dt() ? 150 : 132, conCho));
+    }
+
+    static int soHangPhu(int[] wv, int k, int wMax) {
+        int n = 1, tong = 0;
+        for (int q = 0; q < wv.length; q++) {
+            if (q > 0 && tong + k + wv[q] > wMax) {
+                n++;
+                tong = wv[q];
+            } else {
+                tong += wv[q] + (q > 0 ? k : 0);
+            }
+        }
+        return n;
+    }
+
+    static int caoVienPhu() {
+        return Bang.co(ChuDe.dt() ? 26 : 22);
+    }
+
     public void paint(Graphics g) {
         try {
-            Canvas.gameScr.paint(g);
+            game.render.screen.GameScr.veNen(g);   // 0.9.5: chỉ lớp thế giới (HUD sau bảng không vẽ)
         } catch (Throwable e) {
             // bỏ qua
         }
-        Bang.phuNen(g);
-        // chạm ra ngoài lưới = đóng (vùng phủ cả màn, đăng ký TRƯỚC: ô vẽ sau thắng)
-        VungCham.them(g, 0, 0, Canvas.w, Canvas.h, new IAction() {
+        Canvas.resetTrans(g);
+        Bang.khungMoTam();
+        int t = Bang.tuoiTam();
+        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, (0x8C * (60 + t * 40 / 140) / 100) << 24 | 0x101828);
+        // chạm ra ngoài = đóng (vùng phủ cả màn, đăng ký TRƯỚC: nút vẽ sau thắng)
+        IAction dong = new IAction() {
             public void perform() {
                 ManMenu.ve();
             }
-        }, "nen-ngoai");
-        int[] c = Bang.khung(g, "Menu", null, 0, null, new IAction() {
-            public void perform() {
-                ManMenu.ve();
-            }
-        });
-        int x = c[0], y = c[1], w = c[2], h = c[3];
-        int k = Bang.cach();
-        int n = TEN.length;
-        // lưới: 4-5 cột (màn rộng PC tới 7), ô vuông >= 64 dp, vừa chiều cao
-        int cotMax = Canvas.w > 640 || !MenuNguCanh.bat() ? 7 : 5;
-        int cot = 4;
-        int s = 0;
-        for (int cc = 4; cc <= cotMax; cc++) {
-            int hang = (n + cc - 1) / cc;
-            int sw = (w - k * (cc + 1)) / cc;
-            int sh = (h - k * (hang + 1)) / hang;
-            int ss = Math.min(sw, sh);
-            if (ss > s) {
-                s = ss;
-                cot = cc;
-            }
-        }
-        s = Math.min(s, 104);
-        int hang = (n + cot - 1) / cot;
-        int wLuoi = cot * s + (cot - 1) * k, hLuoi = hang * s + (hang - 1) * k;
-        int x0 = x + (w - wLuoi) / 2, y0 = y + (h - hLuoi) / 2;
-        for (int i = 0; i < n; i++) {
-            final int m = i;
-            int xi = x0 + (i % cot) * (s + k), yi = y0 + (i / cot) * (s + k);
-            o(g, xi, yi, s, i, new IAction() {
+        };
+        VungCham.them(g, 0, 0, Canvas.w, Canvas.h, dong, "nen-ngoai");
+        int cx = Canvas.hw, cy = yBong();
+        int r = rNut(), R = banKinhCung();
+        // hiệu ứng mở: vòng cung bung ra từ Poké Ball (140 ms)
+        int Rv = R * (70 + t * 30 / 140) / 100;
+        for (int q = 0; q < CHINH.length; q++) {
+            final int i = CHINH[q];
+            int a = GOC[q];
+            int x = cx + cos(a) * Rv / 1024, y = cy - sin(a) * Rv / 1024;
+            nutTo(g, x, y, r, i, new IAction() {
                 public void perform() {
-                    ManMenu.lam(m);
+                    ManMenu.lam(i);
                 }
             });
         }
-    }
-
-    /** Biểu tượng nét trắng trong vòng màu (cỡ theo r). */
-    static void veIcon(Graphics g, int i, int cx, int cy, int r) {
-        int u = r * 11 / 20;
-        int vien = GiaoDien.pha(MAU[i], 0x000000, 1, 2);
-        switch (i) {
-            case I_POKEMON:   // Pokémon: Poké Ball
-                GiaoDien.pokeBall(g, cx, cy, u + 2, 0);
-                return;
-            case I_TUI: {   // hành trang: ba lô
-                g.setColor(GiaoDien.TRANG);
-                g.fillRoundRect(cx - u, cy - u + 4, 2 * u, 2 * u - 2, 8, 8);
-                g.drawArc(cx - u / 2, cy - u - 2, u, u + 2, 0, 180);
-                g.setColor(vien);
-                g.fillRect(cx - u + 3, cy, 2 * u - 6, 2);
-                g.fillRect(cx - 2, cy - 2, 4, 6);
-                return;
-            }
-            case I_NHIEM_VU: {   // nhiệm vụ: cuộn giấy + chấm than
-                g.setColor(GiaoDien.TRANG);
-                g.fillRect(cx - u + 2, cy - u, 2 * u - 4, 2 * u);
-                g.fillRoundRect(cx - u - 1, cy - u - 3, 2 * u + 2, 6, 4, 4);
-                g.fillRoundRect(cx - u - 1, cy + u - 3, 2 * u + 2, 6, 4, 4);
-                g.setColor(MAU[i]);
-                g.fillRect(cx - 2, cy - u + 4, 4, u);
-                g.fillRect(cx - 2, cy + u / 2 + 1, 4, 4);
-                return;
-            }
-            case I_BAN_DO: {   // bản đồ: tờ gấp 3 + ghim
-                g.setColor(GiaoDien.TRANG);
-                g.fillTriangle(cx - u, cy - u + 3, cx - u / 3, cy - u, cx - u / 3, cy + u - 3);
-                g.fillTriangle(cx - u, cy - u + 3, cx - u, cy + u, cx - u / 3, cy + u - 3);
-                g.fillTriangle(cx - u / 3, cy - u, cx + u / 3, cy - u + 3, cx + u / 3, cy + u);
-                g.fillTriangle(cx - u / 3, cy - u, cx - u / 3, cy + u - 3, cx + u / 3, cy + u);
-                g.fillTriangle(cx + u / 3, cy - u + 3, cx + u, cy - u, cx + u, cy + u - 3);
-                g.fillTriangle(cx + u / 3, cy - u + 3, cx + u / 3, cy + u, cx + u, cy + u - 3);
-                g.setColor(GiaoDien.DO);
-                g.fillArc(cx - 4, cy - 6, 8, 8, 0, 360);
-                return;
-            }
-            case I_DOI: {   // đội / bạn bè: ba người
-                g.setColor(GiaoDien.TRANG);
-                int a = u * 2 / 3;
-                g.fillArc(cx - u, cy - u + 1, a, a, 0, 360);
-                g.fillArc(cx - u - a / 3, cy, a + 2 * a / 3, u, 0, 180);
-                g.fillArc(cx + u - a, cy - u + 1, a, a, 0, 360);
-                g.fillArc(cx + u - a - a / 3, cy, a + 2 * a / 3, u, 0, 180);
-                g.fillArc(cx - a / 2, cy - u - 2, a, a, 0, 360);
-                g.fillArc(cx - a / 2 - a / 3, cy - 1, a + 2 * a / 3, u + 2, 0, 180);
-                return;
-            }
-            case I_THU: {   // thư / quà: phong bì
-                g.setColor(GiaoDien.TRANG);
-                g.fillRect(cx - u, cy - u * 2 / 3, 2 * u, u * 4 / 3);
-                g.setColor(vien);
-                g.drawLine(cx - u, cy - u * 2 / 3, cx, cy + 2);
-                g.drawLine(cx + u - 1, cy - u * 2 / 3, cx, cy + 2);
-                return;
-            }
-            case I_DEX: {   // Pokédex: máy đỏ + màn tròn xanh
-                g.setColor(GiaoDien.TRANG);
-                g.fillRoundRect(cx - u * 3 / 4, cy - u, u * 3 / 2, 2 * u, 6, 6);
-                g.setColor(0x5D93FF);
-                g.fillArc(cx - u / 2, cy - u + 3, u, u, 0, 360);
-                g.setColor(vien);
-                g.fillRect(cx - u / 2, cy + u / 3, u, 2);
-                g.fillRect(cx - u / 2, cy + u / 3 + 4, u * 2 / 3, 2);
-                return;
-            }
-            case I_CUA_HANG: {   // cửa hàng: mái hiên sọc + quầy
-                g.setColor(GiaoDien.TRANG);
-                g.fillRect(cx - u, cy - u / 3, 2 * u, u + u / 3);
-                for (int k = 0; k < 4; k++) {
-                    g.setColor(k % 2 == 0 ? GiaoDien.TRANG : GiaoDien.DO);
-                    g.fillRect(cx - u + k * u / 2, cy - u, u / 2 + 1, u * 2 / 3);
-                }
-                g.setColor(vien);
-                g.fillRect(cx - u / 4, cy + u / 4, u / 2, u * 3 / 4);
-                return;
-            }
-            case I_XEP_HANG: {   // xếp hạng: cúp
-                g.setColor(GiaoDien.TRANG);
-                g.fillArc(cx - u * 3 / 4, cy - u, u * 3 / 2, u * 3 / 2, 180, 180);
-                g.fillRect(cx - u * 3 / 4, cy - u, u * 3 / 2, u * 3 / 4);
-                g.fillRect(cx - 2, cy + u / 3, 5, u / 2);
-                g.fillRect(cx - u / 2, cy + u * 3 / 4, u, 3);
-                return;
-            }
-            case I_CAI_DAT: {   // cài đặt: bánh răng
-                g.setColor(GiaoDien.TRANG);
-                for (int k = 0; k < 8; k++) {
-                    double t = Math.PI * k / 4;
-                    int dx = (int) (Math.cos(t) * u), dy = (int) (Math.sin(t) * u);
-                    g.fillArc(cx + dx - 3, cy + dy - 3, 7, 7, 0, 360);
-                }
-                g.fillArc(cx - u + 2, cy - u + 2, 2 * u - 4, 2 * u - 4, 0, 360);
-                g.setColor(MAU[i]);
-                g.fillArc(cx - u / 3, cy - u / 3, 2 * (u / 3), 2 * (u / 3), 0, 360);
-                return;
-            }
-            case I_KHAC: {   // khác: ba chấm
-                g.setColor(GiaoDien.TRANG);
-                for (int k = -1; k <= 1; k++) {
-                    g.fillArc(cx + k * (u * 2 / 3) - 3, cy - 3, 7, 7, 0, 360);
-                }
-                return;
-            }
-            default: {
-                javax.microedition.lcdui.Image a = KieuO.anhHinh(HINH[i], r >= 16 ? 2 : 1);
-                if (a != null) {
-                    g.drawImage(a, cx, cy, Graphics.HCENTER | Graphics.VCENTER);
-                }
-            }
+        // viên phụ phía trên vòng cung (xuống dòng khi không vừa bề ngang, mỗi hàng canh giữa)
+        int hv = caoVienPhu();
+        int k = Math.max(ChuDe.KHE, Bang.cach());
+        int wMax = Bang.phai() - Bang.trai() - 8;
+        int[] wv = new int[PHU.length];
+        for (int q = 0; q < PHU.length; q++) {
+            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
         }
+        int soHang = soHangPhu(wv, k, wMax);
+        int yv = Math.max(Bang.tren() + 4, cy - R - r - 14 - hv - (soHang - 1) * (hv + k));
+        int q0 = 0;
+        while (q0 < PHU.length) {
+            int tong = 0, q1 = q0;
+            while (q1 < PHU.length && (q1 == q0 || tong + k + wv[q1] <= wMax)) {
+                tong += wv[q1] + (q1 > q0 ? k : 0);
+                q1++;
+            }
+            int xv = cx - tong / 2;
+            for (int q = q0; q < q1; q++) {
+                final int i = PHU[q];
+                vienPhu(g, xv, yv, wv[q], hv, i, new IAction() {
+                    public void perform() {
+                        ManMenu.lam(i);
+                    }
+                });
+                xv += wv[q] + k;
+            }
+            yv += hv + k;
+            q0 = q1;
+        }
+        // Poké Ball giữa đáy -> nút đóng (đĩa trắng, X tối)
+        int sb = Math.max(VungCham.MIN, 38);
+        Bang.nutDong(g, cx - sb / 2, cy - sb / 2, sb, dong);
     }
 
-    static void o(Graphics g, int x, int y, int s, int i, Object viec) {
-        GiaoDien.khoi(g, x, y + 2, s, s, 10, 0x0A0F2C);
-        GiaoDien.khoi(g, x, y, s, s, 10, GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, x + 1, y + 1, s - 2, s - 2, 9, Bang.NEN_THE, Bang.NEN_THE_DUOI);
-        int fh = Font.blackFont.getHeight();
-        int r = Math.max(10, (s - fh - 14) / 2);
-        int cx = x + s / 2, cy = y + 6 + r;
-        g.setColor(GiaoDien.VIEN);
-        g.fillArc(cx - r - 1, cy - r - 1, 2 * r + 2, 2 * r + 2, 0, 360);
-        g.setColor(MAU[i]);
-        g.fillArc(cx - r, cy - r, 2 * r, 2 * r, 0, 360);
-        g.setColor(GiaoDien.pha(MAU[i], 0xFFFFFF, 1, 2));
-        g.fillArc(cx - r + 3, cy - r + 2, 2 * r - 6, r, 0, 180);
-        veIcon(g, i, cx, cy, r);
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, TEN[i], s - 4), cx, y + s - fh - 4, Font.CENTER);
+    /** Nút tròn to vòng cung: đĩa trắng + icon màu, nhãn đậm dưới; chấm đỏ khi có mới. */
+    static void nutTo(Graphics g, int x, int y, int r, int i, Object viec) {
+        Bang.nutTron(g, x, y, r, HINH[i], MAU[i], false, null, viec, "menu-" + TEN[i]);
+        // nhãn: viên trắng mờ dưới đĩa (đọc rõ trên thế giới tối)
+        String ten = TEN[i];
+        int wt = ChuDe.rong(ten, ChuDe.SO) + 12, ht = ChuDe.cao(ChuDe.SO) + 2;
+        KieuO.phu(g, x - wt / 2, y + r + 4, wt, ht, 0x66101828);
+        ChuDe.chuGiua(g, ten, x, y + r + 4, ht, ChuDe.SO, 0xFFFFFF, 2);
         if (cham(i)) {
-            // chấm đỏ: có mục mới
-            int rd = Math.max(5, s / 12);
-            g.setColor(0xFFFFFF);
-            g.fillArc(x + s - 2 * rd - 6, y + 4, 2 * rd + 2, 2 * rd + 2, 0, 360);
-            g.setColor(GiaoDien.DO);
-            g.fillArc(x + s - 2 * rd - 5, y + 5, 2 * rd, 2 * rd, 0, 360);
+            ChuDe.cham(g, x + r * 7 / 10, y - r * 7 / 10);
         }
-        VungCham.them(g, x, y, s, s, viec, "menu-" + TEN[i]);
+    }
+
+    /** Viên phụ (việc ít dùng): viên trắng, đĩa icon nhỏ màu nhạt + nhãn. */
+    static void vienPhu(Graphics g, int x, int y, int w, int h, int i, Object viec) {
+        boolean an = Bang.dangAn(g, x, y, w, h);
+        GiaoDien.khoi(g, x, y + 1, w, h, h / 2, ChuDe.BONG);
+        GiaoDien.khoi(g, x, y, w, h, h / 2, an ? ChuDe.NEN_PHU : ChuDe.NEN);
+        int s = h - 6, mau = MAU[i];
+        GiaoDien.khoi(g, x + 3, y + 3, s, s, s / 2, GiaoDien.pha(mau, 0xFFFFFF, 5, 6));
+        int ic = s * 2 / 3;
+        BieuTuong.ve(g, HINH[i], x + 3 + (s - ic) / 2, y + 3 + (s - ic) / 2, ic, mau, GiaoDien.pha(mau, 0xFFFFFF, 5, 6));
+        ChuDe.chuGiua(g, TEN[i], x + s + 8, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
+        if (cham(i)) {
+            ChuDe.cham(g, x + 3 + s - 1, y + 4);
+        }
+        VungCham.them(g, x, y, w, h, viec, "menu-" + TEN[i]);
+    }
+
+    static int sin(int goc) {
+        return (int) (Math.sin(Math.toRadians(goc)) * 1024);
+    }
+
+    static int cos(int goc) {
+        return (int) (Math.cos(Math.toRadians(goc)) * 1024);
     }
 }

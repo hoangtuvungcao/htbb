@@ -32,6 +32,11 @@ class MapXaHoi {
      * @return true = duoc phat; false = da chan (va da bao nguoi gui, toi da 1 lan / 5 giay).
      */
     static boolean kiemSpamChat(Char player, com.htbb.chongspam.ChongSpam.Kenh kenh, String noiDungGoc) {
+        // 0.9.5: tin rỗng / chỉ khoảng trắng / ký tự vô hình: bỏ im lặng (không phát, không tính spam, không báo -
+        // client 0.9.5 không gửi tin rỗng, client cũ không cần thông báo)
+        if (com.htbb.chongspam.ChongSpam.rong(noiDungGoc)) {
+            return false;
+        }
         if (player == null || player.isAdmin) {
             return true;
         }

@@ -11,8 +11,9 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * MENU NGỮ CẢNH (0.9.3): chạm NPC / người chơi / ô đất... -> cột NÚT TO có biểu tượng cạnh mục tiêu (hoặc giữa đáy
- * màn), tối đa 6 nút mỗi trang ("Thêm" sang trang sau), thay danh sách chữ + phím mềm "Chọn / Đóng" của J2ME.
+ * MENU NGỮ CẢNH (0.9.3; 0.9.6 thẻ trắng kiểu GO): chạm NPC / người chơi / ô đất... -> thẻ trắng nhỏ neo cạnh mục tiêu
+ * (không chồng HUD), mỗi lệnh một hàng đĩa icon + nhãn, tối đa 6 hàng mỗi trang ("Thêm" sang trang sau), thay danh
+ * sách chữ + phím mềm "Chọn / Đóng" của J2ME.
  *
  * Không sửa từng chỗ gọi: GameScr.update gọi tiepQuan() mỗi nhịp - menu chữ (Canvas.menu) vừa mở trên MÀN CHƠI ở
  * máy cảm ứng / chuột thì lấy danh sách lệnh của nó, tắt nó, mở bảng này (lệnh con mở menu chữ lại được tiếp quản
@@ -27,6 +28,8 @@ public final class MenuNguCanh extends Dialog {
     int chon;
     String tieuDe;
     int mx = -1, my = -1;
+    /** chấm báo mới theo hàng lệnh (ChamMoi) - null = không */
+    public boolean[] cham;
 
     public static MenuNguCanh gI() {
         if (me == null) {
@@ -60,10 +63,39 @@ public final class MenuNguCanh extends Dialog {
         mo(lenh, true);
     }
 
+    /**
+     * 0.9.5: bỏ mục TRÙNG (cùng một việc) - màn cũ đôi khi thêm hai lần cùng một lệnh. Giữ mục đầu. (Cùng chữ mà
+     * khác việc - vd "Nói chuyện" của hai nhiệm vụ - vẫn giữ cả hai.)
+     */
+    public static Vector boTrung(Vector lenh) {
+        if (lenh == null) {
+            return null;
+        }
+        Vector r = new Vector();
+        for (int i = 0; i < lenh.size(); i++) {
+            Object o = lenh.elementAt(i);
+            boolean trung = false;
+            if (o instanceof game.model.Command) {
+                game.model.Command c = (game.model.Command) o;
+                for (int k = 0; k < r.size() && !trung; k++) {
+                    Object q = r.elementAt(k);
+                    if (q instanceof game.model.Command) {
+                        game.model.Command d = (game.model.Command) q;
+                        trung = c.action != null && c.action == d.action;
+                    }
+                }
+            }
+            if (!trung) {
+                r.addElement(o);
+            }
+        }
+        return r;
+    }
+
     /** ganMucTieu = đặt cạnh mục tiêu đang chọn trên bản đồ (false: giữa đáy màn - mở từ bảng). */
     public static void mo(Vector lenh, boolean ganMucTieu) {
         MenuNguCanh m = gI();
-        m.lenh = lenh;
+        m.lenh = boTrung(lenh);
         m.trang = 0;
         m.chon = 0;
         m.left = null;
@@ -72,6 +104,7 @@ public final class MenuNguCanh extends Dialog {
         GameScr gs = Canvas.gameScr;
         Actor a = gs == null || !ganMucTieu || Canvas.currentScreen != gs ? null : gs.focusedActor;
         m.tieuDe = null;
+        m.cham = null;
         m.mx = -1;
         if (a != null) {
             try {
@@ -86,6 +119,12 @@ public final class MenuNguCanh extends Dialog {
         }
         m.show();
         AmThanh.phat(AmThanh.MO);
+    }
+
+    /** 0.9.6: thẻ lệnh có tiêu đề riêng, giữa đáy (mở từ Menu: Thư/Quà...). */
+    public static void mo(Vector lenh, String tieuDe) {
+        mo(lenh, false);
+        gI().tieuDe = tieuDe;
     }
 
     void dong() {
@@ -133,6 +172,14 @@ public final class MenuNguCanh extends Dialog {
         return r;
     }
 
+    /** Khung thẻ vừa vẽ {x, y, w, h} (kiểm thử: trong vùng an toàn, không chồng HUD). */
+    public static final int[] VUA_VE = new int[4];
+
+    /**
+     * 0.9.6 (kiểu GO): THẺ TRẮNG nhỏ neo cạnh mục tiêu - tên đậm trên, mỗi lệnh một hàng (đĩa icon màu + nhãn), mũi
+     * nhọn chỉ về mục tiêu. Vị trí: thử phải / trái / trên / dưới mục tiêu, chọn chỗ KHÔNG chồng phần HUD nào (thẻ trạng
+     * thái, nút trên, bản đồ nhỏ, cụm chiêu, chat...) và nằm trong vùng an toàn; cao quá thì xếp 2 cột.
+     */
     public void paint(Graphics g) {
         if (this.lenh == null) {
             dong();
@@ -140,7 +187,7 @@ public final class MenuNguCanh extends Dialog {
         }
         Canvas.resetTrans(g);
         // phủ nhẹ: chạm ra ngoài = đóng
-        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, 0x50060B1A);
+        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, 0x38101828);
         VungCham.them(g, 0, 0, Canvas.w, Canvas.h, new IAction() {
             public void perform() {
                 MenuNguCanh.this.dong();
@@ -149,33 +196,63 @@ public final class MenuNguCanh extends Dialog {
         int[] ds = dsTrang();
         int k = Bang.cach();
         int nh = Bang.caoHang();
-        int w = 0;
+        int ic = nh - 10;
+        int wNhan = 0;
         for (int i = 0; i < ds.length; i++) {
-            String s = ds[i] < 0 ? "Thêm" : chu(ds[i]);
-            w = Math.max(w, Font.borderFont.getWidth(s));
+            wNhan = Math.max(wNhan, ChuDe.rong(ds[i] < 0 ? "Thêm" : chu(ds[i]), ChuDe.NHAN));
         }
-        w = Math.min(Canvas.w - 16 - Bang.anTrai - Bang.anPhai, Math.max(150, w + nh + 34));
-        int hTieu = this.tieuDe != null && this.tieuDe.length() > 0 ? Font.borderFont.getHeight() + 8 : 0;
-        int h = hTieu + ds.length * (nh + k) - k;
-        int x, y;
-        if (this.mx >= 0 && this.mx < Canvas.w && this.my >= 0 && this.my < Canvas.h) {
-            // cạnh mục tiêu: bên phải nếu đủ chỗ, không thì bên trái; dọc canh theo mục tiêu
-            x = this.mx + 30 + w <= Canvas.w - 8 - Bang.anPhai ? this.mx + 30 : this.mx - 30 - w;
-            y = this.my - h / 2 - 10;
-        } else {
-            x = Canvas.hw - w / 2;
-            y = Canvas.h - 8 - h;
+        int L = Bang.trai(), T = Bang.tren(), R = Bang.phai(), B = Bang.duoi();
+        int wc = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
+        String tieu = this.tieuDe != null && this.tieuDe.length() > 0 ? this.tieuDe : null;
+        int hTieu = tieu != null ? ChuDe.cao(ChuDe.TIEU_DE) + 8 : 4;
+        int cot = 1;
+        int hang = ds.length;
+        if (hTieu + hang * (nh + k) + 6 > B - T - 4 && ds.length > 1) {
+            cot = 2;
+            hang = (ds.length + 1) / 2;
         }
-        x = Math.max(8 + Bang.anTrai, Math.min(Canvas.w - 8 - Bang.anPhai - w, x));
-        y = Math.max(8, Math.min(Canvas.h - 8 - h, y));
-        if (hTieu > 0) {
-            String t = GiaoDien.catChu(Font.borderFont, this.tieuDe, w - 12);
-            GiaoDien.vien(g, x, y, w, hTieu - 2, GiaoDien.DO, t);
+        int w = cot * wc + (cot - 1) * k + 8, h = hTieu + hang * (nh + k) - k + 6;
+        int[] o = viTri(w, h, L, T, R, B);
+        if (o[3] > 0 && cot == 1 && ds.length > 1) {
+            // một cột không có chỗ trống không chồng HUD: thử 2 cột (thẻ thấp hơn)
+            int hang2 = (ds.length + 1) / 2, w2 = 2 * wc + k + 8, h2 = hTieu + hang2 * (nh + k) - k + 6;
+            int[] o2 = viTri(w2, h2, L, T, R, B);
+            if (o2[3] < o[3]) {
+                cot = 2;
+                hang = hang2;
+                w = w2;
+                h = h2;
+                o = o2;
+            }
         }
-        int yy = y + hTieu;
+        int x = o[0], y = o[1];
+        VUA_VE[0] = x;
+        VUA_VE[1] = y;
+        VUA_VE[2] = w;
+        VUA_VE[3] = h;
+        // mũi nhọn về mục tiêu (bên trái / phải thẻ)
+        if (this.mx >= 0 && (this.mx < x || this.mx > x + w)) {
+            int yt = Math.max(y + 12, Math.min(y + h - 12, this.my));
+            g.setColor(ChuDe.NEN);
+            if (this.mx < x) {
+                g.fillTriangle(x - 6, yt, x + 1, yt - 6, x + 1, yt + 6);
+            } else {
+                g.fillTriangle(x + w + 6, yt, x + w - 1, yt - 6, x + w - 1, yt + 6);
+            }
+        }
+        GiaoDien.khoi(g, x, y + 2, w, h, ChuDe.BO_THE, ChuDe.BONG);
+        GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_THE, ChuDe.NEN);
+        Font.nenSang = true;
+        if (tieu != null) {
+            ChuDe.chuGiua(g, ChuDe.cat(tieu, ChuDe.TIEU_DE, w - 16), x + w / 2, y + 2, hTieu - 2, ChuDe.TIEU_DE, ChuDe.CHU, 2);
+            g.setColor(ChuDe.KE);
+            g.fillRect(x + 8, y + hTieu, w - 16, 1);
+        }
         for (int i = 0; i < ds.length; i++) {
             final int li = ds[i];
-            nutLenh(g, x, yy, w, nh, li < 0 ? "Thêm" : chu(li), i == this.chon, new IAction() {
+            int c = i / hang, r = i % hang;
+            int xr = x + 4 + c * (wc + k), yr = y + hTieu + 2 + r * (nh + k);
+            nutLenh(g, xr, yr, wc, nh, li < 0 ? "Thêm" : chu(li), i == this.chon, new IAction() {
                 public void perform() {
                     if (li < 0) {
                         MenuNguCanh.this.trang = (MenuNguCanh.this.trang + 1) % MenuNguCanh.this.soTrang();
@@ -185,8 +262,66 @@ public final class MenuNguCanh extends Dialog {
                     }
                 }
             }, i);
-            yy += nh + k;
+            if (this.cham != null && li >= 0 && li < this.cham.length && this.cham[li]) {
+                ChuDe.cham(g, xr + wc - 10, yr + nh / 2);
+            }
+            if (r > 0) {
+                g.setColor(ChuDe.NEN_PHU);
+                g.fillRect(xr + ic + 14, yr - (k + 1) / 2, wc - ic - 20, 1);
+            }
         }
+    }
+
+    /** Vị trí thẻ (w x h): gần mục tiêu, trong vùng an toàn, ít chồng HUD nhất. */
+    int[] viTri(int w, int h, int L, int T, int R, int B) {
+        Object[][] hud = null;
+        try {
+            if (game.render.screen.HudRong.bat() && Canvas.gameScr != null) {
+                hud = game.render.screen.HudRong.cacVung(Canvas.gameScr);
+            }
+        } catch (Throwable e) {
+            hud = null;
+        }
+        boolean coMt = this.mx >= 0 && this.mx < Canvas.w && this.my >= 0 && this.my < Canvas.h;
+        int ax = coMt ? this.mx : Canvas.hw, ay = coMt ? this.my : B - h / 2;
+        int[] xs = {ax + 26, ax - 26 - w, ax - w / 2, ax - w / 2, (L + R - w) / 2};
+        int[] ys = {ay - h / 2, ay - h / 2, ay - 30 - h, ay + 20, (T + B - h) / 2};
+        int tot = -1;
+        long diemTot = Long.MAX_VALUE;
+        int bx = 0, by = 0;
+        long chongTot = 0;
+        for (int i = 0; i < xs.length; i++) {
+            for (int dy = 0; dy < 5; dy++) {
+                int x = Math.max(L + 2, Math.min(R - 2 - w, xs[i]));
+                int y = Math.max(T + 2, Math.min(B - 2 - h, ys[i] + (dy == 0 ? 0 : (dy % 2 == 1 ? 1 : -1) * ((dy + 1) / 2) * h / 3)));
+                long chong = 0;
+                for (int q = 0; hud != null && q < hud.length; q++) {
+                    String ten = (String) hud[q][0];
+                    if ("ten_chieu".equals(ten) || "muc_tieu".equals(ten)) {
+                        continue;
+                    }
+                    int[] a = (int[]) hud[q][1];
+                    int ox = Math.min(x + w, a[0] + a[2]) - Math.max(x, a[0]);
+                    int oy = Math.min(y + h, a[1] + a[3]) - Math.max(y, a[1]);
+                    if (ox > 0 && oy > 0) {
+                        chong += (long) ox * oy;
+                    }
+                }
+                // che mục tiêu cũng tính phạt (thẻ không đè lên NPC)
+                if (coMt && ax >= x - 8 && ax <= x + w + 8 && ay >= y - 8 && ay <= y + h + 8) {
+                    chong += 400;
+                }
+                long diem = chong * 1000 + Math.abs(x + w / 2 - ax) + Math.abs(y + h / 2 - ay) + i * 4;
+                if (diem < diemTot) {
+                    diemTot = diem;
+                    chongTot = chong;
+                    tot = i;
+                    bx = x;
+                    by = y;
+                }
+            }
+        }
+        return new int[]{bx, by, tot, (int) Math.min(Integer.MAX_VALUE, chongTot)};
     }
 
     String chu(int i) {
@@ -194,18 +329,51 @@ public final class MenuNguCanh extends Dialog {
         return c.caption == null ? "" : ChuPokemon.D(c.caption);
     }
 
-    static void nutLenh(Graphics g, int x, int y, int w, int h, String chu, boolean chon, Object viec, int i) {
-        GiaoDien.khoi(g, x, y + 1, w, h, 10, 0x0A0F2C);
-        GiaoDien.khoi(g, x, y, w, h, 10, chon ? GiaoDien.VANG : GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, x + 2, y + 2, w - 4, h - 4, 8, 0x3B66B8, 0x1F3A7A);
-        int s = h - 10;
-        byte[] hinh = GiaoDien.hinhMuc(chu);
-        if (hinh != null) {
-            KieuO.oChieu(g, x + 5, y + 5, s, s, hinh[1], hinh[0], false);
-        } else {
-            GiaoDien.pokeBall(g, x + 5 + s / 2, y + h / 2, s / 2 - 1, 0);
+    /** Biểu tượng + màu theo chữ lệnh. */
+    static int[] bieuLenh(String chu) {
+        String t = ChuPokemon.thuong(chu == null ? "" : chu);
+        String[] khoa = {"nói chuyện", "trò chuyện", "hỏi", "nhắn", "chat", "mua", "bán", "cửa hàng", "nhiệm vụ", "giao dịch",
+            "đổi", "đội", "nhóm", "bạn", "thêm", "thông tin", "xem", "pk", "đấu", "thách", "hồi", "dịch chuyển", "đi tới",
+            "bản đồ", "nhận", "quà", "học", "chiêu", "gửi", "thoát", "huỷ", "hủy", "hộp thư", "giftcode"};
+        int[][] kq = {{BieuTuong.CHAT, ChuDe.XANH}, {BieuTuong.CHAT, ChuDe.XANH}, {BieuTuong.CHAT, ChuDe.XANH},
+            {BieuTuong.CHAT, ChuDe.XANH}, {BieuTuong.CHAT, ChuDe.XANH}, {BieuTuong.CUA_HANG, ChuDe.CHINH},
+            {BieuTuong.CUA_HANG, ChuDe.CHINH}, {BieuTuong.CUA_HANG, ChuDe.CHINH}, {BieuTuong.NHIEM_VU, ChuDe.NUT_NV},
+            {BieuTuong.XU, ChuDe.CAM}, {BieuTuong.XU, ChuDe.CAM}, {BieuTuong.DOI, ChuDe.LA}, {BieuTuong.DOI, ChuDe.LA},
+            {BieuTuong.DOI, ChuDe.HONG}, {BieuTuong.TIEN_ICH, ChuDe.XAM}, {BieuTuong.TIN, ChuDe.XANH},
+            {BieuTuong.TIN, ChuDe.XANH}, {BieuTuong.SU_KIEN, ChuDe.DO}, {BieuTuong.SU_KIEN, ChuDe.DO},
+            {BieuTuong.SU_KIEN, ChuDe.DO}, {BieuTuong.THUOC, ChuDe.LA}, {BieuTuong.BAN_DO, ChuDe.CHINH},
+            {BieuTuong.BAN_DO, ChuDe.CHINH}, {BieuTuong.BAN_DO, ChuDe.CHINH}, {BieuTuong.QUA, ChuDe.VANG_TOI},
+            {BieuTuong.QUA, ChuDe.VANG_TOI}, {BieuTuong.CHIEU, ChuDe.TIM}, {BieuTuong.CHIEU, ChuDe.TIM},
+            {BieuTuong.THU, ChuDe.XANH}, {BieuTuong.DONG, ChuDe.XAM}, {BieuTuong.DONG, ChuDe.XAM}, {BieuTuong.DONG, ChuDe.XAM},
+            {BieuTuong.THU, ChuDe.XANH}, {BieuTuong.QUA, ChuDe.VANG_TOI}};
+        int dai = 0;
+        int[] r = {BieuTuong.POKEBALL, ChuDe.DO};
+        for (int i = 0; i < khoa.length; i++) {
+            if (khoa[i].length() > dai && t.indexOf(khoa[i]) >= 0) {
+                r = kq[i];
+                dai = khoa[i].length();
+            }
         }
-        Font.borderFont.drawString(g, GiaoDien.catChu(Font.borderFont, chu, w - s - 18), x + s + 12, y + (h - Font.borderFont.getHeight()) / 2, 0);
+        return r;
+    }
+
+    /** Một hàng lệnh: đĩa icon nhạt màu + nhãn; chọn / nhấn = nền teal nhạt. */
+    static void nutLenh(Graphics g, int x, int y, int w, int h, String chu, boolean chon, Object viec, int i) {
+        boolean an = viec != null && Bang.dangAn(g, x, y, w, h);
+        if (chon || an) {
+            GiaoDien.khoi(g, x, y + 1, w, h - 2, ChuDe.BO_O, an ? ChuDe.NEN_PHU : ChuDe.CHINH_NHAT);
+        }
+        int s = h - 10;
+        int[] b = bieuLenh(chu);
+        int cx = x + 6 + s / 2, cy = y + h / 2;
+        if (b[0] == BieuTuong.POKEBALL) {
+            GiaoDien.pokeBall(g, cx, cy, s / 2 - 1, 0);
+        } else {
+            GiaoDien.khoi(g, cx - s / 2, cy - s / 2, s, s, s / 2, GiaoDien.pha(b[1], 0xFFFFFF, 5, 6));
+            int q = s * 3 / 5;
+            BieuTuong.ve(g, b[0], cx - q / 2, cy - q / 2, q, b[1], GiaoDien.pha(b[1], 0xFFFFFF, 5, 6));
+        }
+        ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - s - 22), x + s + 14, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
         VungCham.them(g, x, y, w, h, viec, "lenh-" + i);
     }
 

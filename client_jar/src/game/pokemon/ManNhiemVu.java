@@ -78,6 +78,46 @@ public final class ManNhiemVu extends Screen {
         return v;
     }
 
+    /** Tên NPC theo loại (NPC.NPCNAME, cùng chỉ số với Quest.idNpcReceive / idNpcResponse); null nếu ngoài bảng. */
+    static String tenNpc(int loaiNpc) {
+        return loaiNpc >= 0 && loaiNpc < game.model.NPC.NPCNAME.length ? game.model.NPC.NPCNAME[loaiNpc] : null;
+    }
+
+    /** "Blaziken (bản đồ này)" / "Blaziken" / "NPC nhiệm vụ". */
+    static String noiNpc(int loaiNpc) {
+        String t = tenNpc(loaiNpc);
+        if (t == null) {
+            return "NPC nhiệm vụ";
+        }
+        return npc(loaiNpc) != null ? t + " (bản đồ này)" : t;
+    }
+
+    /** Biểu tượng theo loại nhiệm vụ: đánh quái = chiêu, thu thập = túi, nói chuyện = chat, tiến hoá = Pokédex. */
+    static int hinhLoai(Quest q) {
+        switch (q.type) {
+            case Quest.TYPE_KILL_MONS:
+            case Quest.TYPE_KILL_MONSTER_LEVEL:
+                return BieuTuong.CHIEU;
+            case Quest.TYPE_GET_ITEM:
+                return BieuTuong.TUI;
+            case Quest.TYPE_TALK:
+                return BieuTuong.CHAT;
+            case Quest.TYPE_TRANSFORM:
+                return BieuTuong.DEX;
+            default:
+                return BieuTuong.NHIEM_VU;
+        }
+    }
+
+    /** Ô biểu tượng nhiệm vụ cạnh s: nền màu theo tuyến (chính đỏ, đội xanh lá, phụ xanh; xong = vàng). */
+    static void veIcon(Graphics g, Quest q, int x, int y, int s) {
+        int mau = xong(q) ? ChuDe.VANG : (q == GameScr.mainQuest ? ChuDe.DO : (q == GameScr.clanQuest ? ChuDe.LA : ChuDe.XANH));
+        GiaoDien.khoi(g, x, y, s, s, ChuDe.BO_O, GiaoDien.VIEN);
+        GiaoDien.khoiDoc(g, x + 1, y + 1, s - 2, s - 2, ChuDe.BO_O - 1, GiaoDien.pha(mau, GiaoDien.TRANG, 1, 3), mau);
+        int k = s * 3 / 5;
+        BieuTuong.ve(g, xong(q) ? BieuTuong.NHIEM_VU : hinhLoai(q), x + (s - k) / 2, y + (s - k) / 2, k, 0xFFFFFF, mau);
+    }
+
     static String loai(Quest q) {
         return q == GameScr.mainQuest ? "Chính tuyến" : (q == GameScr.clanQuest ? "Đội" : "Phụ");
     }
@@ -178,7 +218,7 @@ public final class ManNhiemVu extends Screen {
 
     public void paint(Graphics g) {
         try {
-            Canvas.gameScr.paint(g);
+            game.render.screen.GameScr.veNen(g);   // 0.9.5: chỉ lớp thế giới (HUD sau bảng không vẽ)
         } catch (Throwable e) {
             // bỏ qua
         }
@@ -196,6 +236,7 @@ public final class ManNhiemVu extends Screen {
                 ManNhiemVu.this.ds.den(0);
             }
         }};
+        Bang.chamTab = new boolean[]{ChamMoi.tabNhiemVu(0), ChamMoi.tabNhiemVu(1)};
         int[] c = Bang.khung(g, "Nhiệm vụ", new String[]{"Đang làm", "Có thể nhận"}, this.tab, vt, new IAction() {
             public void perform() {
                 ManNhiemVu.this.dong();
@@ -224,15 +265,23 @@ public final class ManNhiemVu extends Screen {
                         }
                     }, "nv-" + i);
                     int s = h - 6;
-                    KieuO.oChieu(g, x + 3, y + 3, s, s, xong(q) ? 4 : (q == GameScr.mainQuest ? 1 : 2), xong(q) ? KieuO.HINH_SAO : KieuO.HINH_TIM, false);
+                    veIcon(g, q, x + 3, y + 3, s);
+                    if (ChamMoi.hangNhiemVu(ManNhiemVu.this.tab, q)) {
+                        ChuDe.cham(g, x + 3 + s - 2, y + 5);
+                    }
                     int[] td = tienDo(q);
                     String so = xong(q) ? "Xong" : (td != null ? td[0] + "/" + td[1] : null);
-                    ManNhanVat.chuHang(g, x, y, w, h, s, q.name, so, ManNhiemVu.this.tab == 0 ? loai(q) : (q.deltaLv > 0 ? "Cần cấp " + q.deltaLv : "Nhận ở NPC"));
+                    String phu = ManNhiemVu.this.tab == 0 ? loai(q) + (xong(q) ? " · trả ở " + noiNpc(q.idNpcResponse) : "")
+                            : (q.deltaLv > 0 ? "Cần cấp " + q.deltaLv + " · " : "") + "Nhận ở " + noiNpc(q.idNpcReceive);
+                    ManNhanVat.chuHang(g, x, y, w, h, s, q.name, so, phu);
                 }
             });
         }
         if (hai) {
             int xr = x + wl + k, wr = w - wl - k;
+            if ((this.chon == null || !v.contains(this.chon)) && v.size() > 0) {
+                this.chon = (Quest) v.elementAt(0);   // hai cột: luôn có nhiệm vụ đang xem (cái đầu tiên)
+            }
             if (this.chon != null && v.contains(this.chon)) {
                 veChiTiet(g, xr, y, wr, h);
             } else {
@@ -252,10 +301,16 @@ public final class ManNhiemVu extends Screen {
                 ManNhiemVu.this.chon = null;
             }
         });
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, q.name, w - hd - 16), x + hd + 10, y + 4 + (hd - Font.blackFont.getHeight()) / 2, 0);
+        veIcon(g, q, x + hd + 10, y + 4, hd);
+        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, q.name, w - 2 * hd - 22), x + 2 * hd + 16, y + 4 + (hd - Font.blackFont.getHeight()) / 2, 0);
         int nh = Bang.caoHang();
         int yn = y + h - 6 - nh;
         int yy = y + 4 + hd + k;
+        boolean dangLam = dangLam().contains(q);
+        final int idNpc = dangLam ? q.idNpcResponse : q.idNpcReceive;
+        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, (dangLam ? (xong(q) ? "Trả ở: " : "Báo lại: ") : "Nhận ở: ") + noiNpc(idNpc), w - 20),
+                x + 10, yy, 0);
+        yy += Font.blackFont.getHeight() + 3;
         yy = Bang.doan(g, Font.arialFont, q.decript, x + 10, yy, w - 20, false) + 2;
         // tiến độ từng mục tiêu
         try {
@@ -275,9 +330,8 @@ public final class ManNhiemVu extends Screen {
             Font.blackFont.drawString(g, "Phần thưởng:", x + 10, yy + 2, 0);
             Bang.doan(g, Font.arialFont, q.infoGift, x + 10, yy + 4 + Font.blackFont.getHeight(), w - 20, false);
         }
-        boolean dangLam = dangLam().contains(q);
-        final int idNpc = dangLam ? q.idNpcResponse : q.idNpcReceive;
         final Actor a = npc(idNpc);
+        String tn = tenNpc(idNpc);
         int wb = dangLam && q == GameScr.mainQuest ? (w - 12 - k) / 2 : w - 12;
         if (dangLam && q == GameScr.mainQuest) {
             Bang.nut(g, x + 6, yn, wb, nh, "Huỷ nhiệm vụ", Bang.TRUNG, new IAction() {
@@ -293,7 +347,7 @@ public final class ManNhiemVu extends Screen {
                 }
             }, "huy-nv");
         }
-        Bang.nut(g, x + w - 6 - wb, yn, wb, nh, a != null ? "Đi tới NPC" : "NPC ở bản đồ khác", a != null ? Bang.XAC_NHAN : Bang.TAT, new IAction() {
+        Bang.nut(g, x + w - 6 - wb, yn, wb, nh, a != null ? "Đi tới " + (tn != null ? tn : "NPC") : (tn != null ? tn + " ở bản đồ khác" : "NPC ở bản đồ khác"), a != null ? Bang.XAC_NHAN : Bang.TAT, new IAction() {
             public void perform() {
                 try {
                     Canvas.gameScr.switchToMe();

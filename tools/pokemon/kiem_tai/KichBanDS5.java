@@ -15,6 +15,7 @@ class KichBanDS5 {
         BotChucNang.dk("he_sinh_thai", true, KichBanDS5::heSinhThai);
         BotChucNang.dk("su_kien", false, KichBanDS5::suKien);
         BotChucNang.dk("chiem_thanh", true, KichBanDS5::chiemThanh);
+        KichBanNPC.dangKy();
     }
 
     /** Tai khoan thuong (kt101..): tao them nhan vat, ten sai, toi da 3, xoa + khoi phuc. */

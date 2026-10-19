@@ -116,13 +116,13 @@ public final class HopNhap {
         Kinh.bang(g, px, py, pw, ph, 20 * u, 255);
         String tieuDe = tb != null && tb.getTitle() != null && tb.getTitle().length() > 0 ? tb.getTitle()
                 : laMatKhau() ? "Nhập mật khẩu" : "Nhập chữ";
-        g.setFont(PhongChu.thuong(true).deriveFont(17 * u));
-        Kinh.chu(g, tieuDe, px + 24 * u, py + 38 * u, Kinh.VANG);
+        g.setFont(PhongChu.co(true, 17 * u));
+        Kinh.chu(g, tieuDe, px + 24 * u, py + 38 * u, Kinh.CHU);
         // ô nhập
         float ox = px + 24 * u, oy = py + 56 * u, ow = pw - 48 * u, oh = 44 * u;
         g.setColor(new Color(255, 255, 255, 235));
         g.fill(new RoundRectangle2D.Float(ox, oy, ow, oh, 12 * u, 12 * u));
-        g.setColor(Kinh.XANH);
+        g.setColor(Kinh.CHINH);
         g.setStroke(new java.awt.BasicStroke(2f * u));
         g.draw(new RoundRectangle2D.Float(ox, oy, ow, oh, 12 * u, 12 * u));
         String s = chu.toString();
@@ -131,7 +131,7 @@ public final class HopNhap {
             for (int i = 0; i < s.length(); i++) b.append('•');
             s = b.toString();
         }
-        Font f = PhongChu.thuong(false).deriveFont(17 * u);
+        Font f = PhongChu.co(false, 17 * u);
         g.setFont(f);
         FontMetrics fm = g.getFontMetrics();
         java.awt.Shape cu = g.getClip();
@@ -143,14 +143,14 @@ public final class HopNhap {
         g.setColor(new Color(0x1E2A44));
         g.drawString(s, tx, by);
         if (System.currentTimeMillis() / 500 % 2 == 0) {
-            g.setColor(Kinh.DO);
+            g.setColor(Kinh.CHINH_TOI);
             g.fillRect((int) (tx + tw + 2 * u), (int) (oy + 10 * u), Math.max(2, (int) (2 * u)), (int) (oh - 20 * u));
         }
         g.setClip(cu);
         // nút
         float bw = 130 * u, bh = 36 * u, by2 = py + ph - bh - 20 * u;
         float bOk = px + pw - 24 * u - bw, bHuy = bOk - bw - 12 * u;
-        Font fb = PhongChu.thuong(true).deriveFont(14 * u);
+        Font fb = PhongChu.co(true, 14 * u);
         Kinh.nut(g, bHuy, by2, bw, bh, "Huỷ", fb, false, tro(bHuy, by2, bw, bh), false);
         Kinh.nut(g, bOk, by2, bw, bh, "Xong", fb, true, tro(bOk, by2, bw, bh), false);
         vung.add(new LopPhu.Vung(bHuy, by2, bw, bh, new Runnable() {
@@ -163,7 +163,7 @@ public final class HopNhap {
                 xong(true);
             }
         }, null));
-        g.setFont(PhongChu.thuong(false).deriveFont(11.5f * u));
+        g.setFont(PhongChu.co(false, 11.5f * u));
         Kinh.chu(g, "Gõ tiếng Việt bằng bộ gõ của máy (Unikey, EVKey, ibus...)", px + 24 * u, by2 + bh * 0.62f, Kinh.CHU_MO);
     }
 

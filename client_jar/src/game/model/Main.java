@@ -13,6 +13,8 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 public abstract class Main {
+    /** 0.9.5: bảng tự có nút X / nút chạm riêng -> bản PC không vẽ nút lệnh ngữ cảnh (phím Enter / Esc vẫn chạy). */
+    public boolean anNutLenh;
     public Command left;
     public Command center;
     public Command right;
@@ -23,6 +25,9 @@ public abstract class Main {
         Canvas.resetTrans(g);
         Font.nenSang = false;
         // pokemon: phím mềm dạng viên (trái xanh / giữa vàng / phải đỏ), lún khi đang bấm
+        if (this.anNutLenh) {
+            return;   // 0.9.5: màn có nút thật trong bảng - không vẽ chip phím mềm (phím vẫn chạy)
+        }
         int vung = Canvas.isPointerDown ? Canvas.collisionCmdBar() : -1;
         // chia chỗ: phím giữa theo chữ (tối đa 2/5 màn), hai bên chia phần còn lại -> không đè nhau
         int wGiua = this.center == null ? 0 : Math.min(game.pokemon.GiaoDien.rongNutMem(this.center.caption, 1), Canvas.w * 2 / 5);
@@ -125,7 +130,7 @@ public abstract class Main {
                     Canvas.isPointerClick = false;
                 }
             }
-            if (Math.abs(Canvas.pyLast - Canvas.py) <= 10 && Math.abs(Canvas.pxLast - Canvas.px) <= 10) {
+            if (!this.anNutLenh && Math.abs(Canvas.pyLast - Canvas.py) <= 10 && Math.abs(Canvas.pxLast - Canvas.px) <= 10) {
                 switch (Canvas.collisionCmdBar()) {
                     case 0:
                         if (this.left != null && this.left.action != null) {

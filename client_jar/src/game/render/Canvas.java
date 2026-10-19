@@ -224,6 +224,8 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         while (bRun) {
             try {
                 long l1 = System.currentTimeMillis();
+                game.pokemon.NhipVe.batDau();
+                game.pokemon.NhipVe.dauNhip(l1);   // 0.9.5: ghi vị trí đầu nhịp (nội suy khi vẽ thêm khung)
                 gameTick++;
                 if (gameTick > 10000) {
                     gameTick = 0;
@@ -235,6 +237,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 game.pokemon.VungCham.xuLy();
                 game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
                 game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
+                game.pokemon.NhipVe.xong(game.pokemon.NhipVe.NHAP);
                 if (menu.showMenu) {
                     menu.updateMenuKey();
                     menu.updateMenu();
@@ -256,6 +259,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 }
                 clearKeyPressed();
                 game.pokemon.GiamSat.nhipOk();
+                game.pokemon.NhipVe.xong(game.pokemon.NhipVe.LOGIC);
                 repaint();
                 if (isBB) {
                     synchronized (LOCK) {
@@ -267,6 +271,9 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                     }
                 } else {
                     serviceRepaints();
+                }
+                if (game.pokemon.NhipVe.veThem(this, l1)) {
+                    continue;   // 0.9.5: đã vẽ thêm khung (60 khung/giây) và ngủ hết nhịp 40 ms
                 }
                 long l2 = System.currentTimeMillis() - l1;
                 if (l2 < 40) {
@@ -666,7 +673,19 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
 
     protected void paint(Graphics g) {
         game.render.screen.Font.nenSang = false;
+        game.pokemon.NhipVe.dauKhung();
+        try {
+            ve0(g);
+        } finally {
+            game.pokemon.NhipVe.cuoiKhung();
+        }
+    }
+
+    private void ve0(Graphics g) {
         game.pokemon.VungCham.khungMoi();
+        if (game.pokemon.ChuUI.bo != null) {
+            game.pokemon.ChuUI.bo.khungMoi();
+        }
         try {
             // 0.9.4: mỗi lớp vẽ trong try riêng - màn bên dưới ném lỗi không được làm mất hộp thoại / menu đang mở
             // (hộp vô hình nhưng vẫn chặn chạm = treo màn); lỗi ghi qua GiamSat
@@ -705,27 +724,11 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             if (isLoad) {
                 game.pokemon.VungCham.lop(3);   // màn tải phủ: không điều khiển nào bên dưới nhận chạm
                 resetTrans(g);
-                // pokemon: màn tải = trời xanh + đồi cỏ, biển tên game, Poké Ball lắc chờ
-                {
-                    w = getWidth();
-                    h = getHeight();
-                    if (game.pokemon.Banner.ve(g, -1, true)) {
-                        // banner nhiều lớp + logo; Poké Ball chờ giữa trời
-                        try {
-                            game.pokemon.ThuongHieu.veLogo(g, w >> 1, Math.max(8, (h >> 1) - 90), w);
-                        } catch (Throwable th) {
-                            // font chưa nạp
-                        }
-                    } else {
-                        game.pokemon.GiaoDien.nenTroi(g, w, h);
-                        game.pokemon.ThuongHieu.veTieuDe(g, w >> 1, (h >> 1) - 60, w);
-                    }
-                    game.pokemon.GiaoDien.dangTai(g, w >> 1, (h >> 1) - 10, 12);
-                    try {
-                        game.render.screen.Font.borderFont.drawString(g, "Đang tải...", w >> 1, (h >> 1) + 8, 2);
-                    } catch (Throwable th) {
-                        // font chưa nạp
-                    }
+                // pokemon 0.9.5: màn tải khởi động = cùng thành phần màn tải đăng nhập / đổi bản đồ (ManTai)
+                try {
+                    game.pokemon.ManTai.ve(g, game.pokemon.ManTai.KHOI_DONG);
+                } catch (Throwable th) {
+                    // font / ảnh chưa nạp
                 }
             }
             if (isVirTualKey) {
@@ -821,6 +824,9 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     public static void startWaitDlg(String info, boolean isIcon) {
+        if (game.pokemon.ManTai.dangMo() || currentScreen instanceof game.render.screen.ChangScr) {
+            return;   // 0.9.5: màn tải đang hiện - không chồng hộp chờ thứ hai
+        }
         msgdlg.isIcon = isIcon;
         msgdlg.setInfo(info, (game.model.Command) null, new game.model.Command("Cancel", new IAction() {
             @Override
@@ -832,6 +838,9 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     public static void startWaitDlg() {
+        if (game.pokemon.ManTai.dangMo() || currentScreen instanceof game.render.screen.ChangScr) {
+            return;
+        }
         msgdlg.isIcon = false;
         msgdlg.setInfo("Xin chờ...", (game.model.Command) null, new game.model.Command("Cancel", new IAction() {
             @Override

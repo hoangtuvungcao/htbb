@@ -153,8 +153,8 @@ VA_RIENG = [
      "        if (htbb.pc.TheTrangThai.ve(g, this.mainChar)) {\n            return;   // pc: thẻ HD\n        }\n",
      1),
     ("game/render/screen/GameScr.java",
-     "                dy = 40;\n",
-     "                dy = htbb.pc.TheTrangThai.y12();   // pc: dưới thẻ trạng thái\n",
+     "            dy = 40;\n",
+     "            dy = htbb.pc.TheTrangThai.y12();   // pc: dưới thẻ trạng thái\n",
      1),
     # chế độ chat: chữ phím mềm "Đóng"/"Xóa" ở đáy -> nút của ThanhLenh trên ô chat
     ("game/render/screen/GameScr.java",
@@ -168,6 +168,9 @@ VA_RIENG = [
     ("game/pokemon/HanhDong.java", "return GameScr.cmx + px;", "return GameScr.cmx + htbb.pc.Zoom.theGioiX(px);   // pc", 1),
     ("game/pokemon/HanhDong.java", "return GameScr.cmy + py;", "return GameScr.cmy + htbb.pc.Zoom.theGioiY(py);   // pc", 1),
     ("game/render/screen/HudRong.java", "MenuNhanh.moBang();   // jar: Menu nhanh", "htbb.pc.LopPhu.moCaiDat();   // pc: bảng Cài đặt", 1),
+    # 0.9.5: ô "Cài đặt" của Menu lưới = bảng Cài đặt của cửa sổ (một lối vào; Menu nhanh của jar không dùng trên PC)
+    ("game/render/screen/CauGiaoDien.java", "    public static void moCaiDat() {\n        MenuNhanh.moBang();",
+     "    public static void moCaiDat() {\n        htbb.pc.LopPhu.moCaiDat();   // pc: bảng Cài đặt", 1),
     # font ảnh -> font thật HD
     ("game/render/screen/Font.java",
      "        st = ChuPokemon.D(st);\n        int x1;\n",
@@ -198,6 +201,7 @@ VA_DAU = [
     (GD, "khoi", "Graphics g, int x, int y, int w, int h, int r, int mau"),
     (GD, "khoiDoc", "Graphics g, int x, int y, int w, int h, int r, int tren, int duoi"),
     (GD, "hop", "Graphics g, int x, int y, int w, int h"),
+    (GD, "theSang", "Graphics g, int x, int y, int w, int h, int r"),
     (GD, "bang", "Graphics g, int x, int y, int w, int h"),
     (GD, "theMo", "Graphics g, int x, int y, int w, int h"),
     (GD, "bangMo", "Graphics g, int x, int y, int w, int h"),

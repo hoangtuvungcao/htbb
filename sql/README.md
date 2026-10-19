@@ -45,6 +45,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
 4. cấu hình hệ thống chạy lại được: `5h_systems.tangnap = 1`, công tắc sự kiện của lịch năm (`tob_su_kien`).
 5. tên người chơi thấy: `data_npc` (tên NPC) + `data_map_ten` (tên bản đồ) — thêm dòng thiếu, dòng đã có chỉ cập nhật
    cột kỹ thuật, **giữ tên admin đã sửa** ở `/admin/ten-hien`.
+6. 0.9.6: chức năng NPC đúng (Heracross đứng ở Cao nguyên Indigo 201, `chuc_vu` Chansey / Persian / Meowth) và tên
+   chiêu kiểu Pokémon ("Múa kiếm" → "Vũ điệu kiếm") — chỉ đổi dòng còn giá trị mặc định cũ.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở

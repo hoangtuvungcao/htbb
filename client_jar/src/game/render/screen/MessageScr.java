@@ -197,9 +197,11 @@ public class MessageScr extends Screen {
     }
 
     protected void doChat() {
-        if (this.tfInput.getText().equals("")) {
-            return;
+        String t = game.networklogic.GameService.chuChat(this.tfInput.getText());
+        if (t == null) {
+            return;   // 0.9.5: rỗng / chỉ khoảng trắng: không gửi
         }
+        this.tfInput.setText(t);
         chatDelay = (int) (System.currentTimeMillis() / 100);
         if (this.focusT.name.equals("Đội")) {
             GameService.gI().chatToClan(this.tfInput.getText());

@@ -198,7 +198,7 @@ public final class TuDong {
                     dungTaiCho();
                 }
                 if (dangChay && tb != null && tb.length() > 0) {
-                    game.render.Canvas.startOKDlg(tb);
+                    game.pokemon.DungDo.bao(tb, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh, không hộp
                 }
             }
         } catch (Throwable e) {
@@ -251,12 +251,12 @@ public final class TuDong {
         }
         if (gs.mainChar.hp <= 0) {
             thongBao = "Pokémon đang gục, hồi sinh rồi bật lại.";
-            Canvas.startOKDlg(thongBao);
+            game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh
             return;
         }
         if (coServer && (svCo & CO_TINH_NANG) == 0) {
             thongBao = "Tự động đánh đang tạm khoá trên máy chủ.";
-            Canvas.startOKDlg(thongBao);
+            game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh
             return;
         }
         thongBao = "";
@@ -323,8 +323,8 @@ public final class TuDong {
         if (choBat && l - lucChoBat > 6000L) {
             choBat = false;
             thongBao = coServer ? "Máy chủ không phản hồi Tự động đánh, thử lại sau ít giây." : "Máy chủ chưa hỗ trợ Tự động đánh.";
-            // bảng đã đóng khi bấm Bắt đầu: báo bằng hộp thoại, không im lặng
-            Canvas.startOKDlg(thongBao);
+            // bảng đã đóng khi bấm Bắt đầu: báo bằng thông báo nhanh, không im lặng
+            game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh
         }
         if (!dang) {
             return;
@@ -872,11 +872,17 @@ public final class TuDong {
         return new StringBuffer("Tự động ").append(gio(conLai())).append(" - ").append(trangThai).toString();
     }
 
+    /** 0.9.5: viên nhỏ dưới thẻ hồ sơ "Auto · 4:41 · đang đánh" (game.pokemon.VienTrangThai) + chữ "+N EXP". */
     static void ve(Graphics g, int y) {
-        String s = chuThanh();
-        if (s != null) {
-            Nen.veThanhTuDong(g, s, y);
+        String s = null;
+        if (!BangTuDong.mo) {
+            if (choBat) {
+                s = game.pokemon.VienTrangThai.chuAuto(-1, null);
+            } else if (dang) {
+                s = game.pokemon.VienTrangThai.chuAuto(conLai(), trangThai);
+            }
         }
+        game.pokemon.VienTrangThai.ve(g, s, dang, y);
     }
 
     // ================================================================ lưu cài đặt

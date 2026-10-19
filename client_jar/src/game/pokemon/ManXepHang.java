@@ -64,26 +64,34 @@ public final class ManXepHang extends ManBang {
         return new String[]{"Sức mạnh", "Đại gia", "Bảng vàng"};
     }
 
+    /** 0.9.6: danh sách gọn (tấm hẹp), cao theo số hàng (tối thiểu 4, tối đa vùng an toàn). */
+    protected int rongMuon() {
+        return ChuDe.dt() ? 470 : 420;
+    }
+
+    protected int caoMuon(int wNoi) {
+        Vector v = DS[this.tab];
+        int n = v == null ? 0 : v.size();
+        return Math.max(4, n) * (Bang.caoHang() + Bang.cach()) + 4;
+    }
+
     protected void veNoiDung(Graphics g, int x, int y, int w, int h) {
-        Bang.the(g, x, y, w, h);
         final Vector v = DS[this.tab];
         if (v == null || v.size() == 0) {
             Bang.trong(g, x, y, w, h, cho[this.tab] ? "Đang tải bảng xếp hạng..." : "Chưa có dữ liệu", null);
             return;
         }
         final int t = this.tab;
-        Bang.danhSach(g, this.ds, x + 4, y + 4, w - 8, h - 8, v.size(), Bang.caoHang(), new Bang.Hang() {
+        Bang.danhSach(g, this.ds, x, y + 2, w, h - 2, v.size(), Bang.caoHang(), new Bang.Hang() {
             public void ve(Graphics g, int i, int x, int y, int w, int h) {
                 Char c = (Char) v.elementAt(i);
                 Bang.hang(g, x, y, w, h, i, c.name != null && c.name.equals(Canvas.gameScr.mainChar.name), null, "hang-" + i);
                 // hạng: 1-3 huy chương màu
                 int r = h / 2 - 4;
-                int mau = i == 0 ? GiaoDien.VANG : (i == 1 ? 0xC8D0DC : (i == 2 ? 0xD08A4C : GiaoDien.XANH_NHAT));
-                g.setColor(GiaoDien.VIEN);
-                g.fillArc(x + 4, y + 3, 2 * r + 2, 2 * r + 2, 0, 360);
-                g.setColor(mau);
-                g.fillArc(x + 5, y + 4, 2 * r, 2 * r, 0, 360);
-                Font.blackFont.drawString(g, String.valueOf(i + 1), x + 5 + r, y + 4 + r - Font.blackFont.getHeight() / 2, Font.CENTER);
+                // 0.9.6: huy chương tròn (vàng / bạc / đồng, còn lại xám xanh nhạt), số đậm
+                int mau = i == 0 ? ChuDe.VANG : (i == 1 ? 0xC9D2DA : (i == 2 ? 0xE0A15E : ChuDe.NEN_PHU_TOI));
+                GiaoDien.khoiDoc(g, x + 5, y + 4, 2 * r, 2 * r, r, GiaoDien.pha(mau, 0xFFFFFF, 1, 3), mau);
+                ChuDe.chuGiua(g, String.valueOf(i + 1), x + 5 + r, y + 4, 2 * r, ChuDe.SO, i < 3 ? GiaoDien.pha(mau, 0, 3, 5) : ChuDe.CHU_PHU, 2);
                 int xs = x + 2 * r + 12;
                 int s = h - 6;
                 PokeBody.paintChanDung(g, LoaiPokemonClient.khoiDau(Math.max(0, Math.min(4, c.clazz))), false, xs + s / 2, y + 3 + s / 2, s);

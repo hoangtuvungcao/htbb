@@ -39,6 +39,7 @@ const taiNguyen = [
   { ten: 'Kenney — Tiny Dungeon', url: 'https://kenney.nl/assets/tiny-dungeon', dung: 'Tile hang động, đồ nội thất, rương', gp: 'CC0 1.0' },
   { ten: 'Ninja Adventure (Pixel-boy & AAA)', url: 'https://pixel-boy.itch.io/ninja-adventure-asset-pack', dung: 'Sàn gỗ, tường và đồ trong nhà', gp: 'CC0 1.0' },
   { ten: 'Kenney — Interface / Impact / RPG / Digital Audio, Music Jingles', url: 'https://kenney.nl/assets', dung: 'Tiếng hiệu ứng trong game', gp: 'CC0 1.0' },
+  { ten: 'game-icons.net (Lorc, Delapouite, Skoll, sbed, darkzaitzev)', url: 'https://game-icons.net', dung: 'Hình trên icon chiêu (game, trang Cẩm nang Chiêu thức) — đã sửa đổi thành huy hiệu pixel', gp: 'CC BY 3.0' },
   { ten: 'Nhạc nền chiptune', url: 'https://creativecommons.org/publicdomain/zero/1.0/', dung: 'Nhạc nền trong game (sáng tác riêng cho dự án, không dùng nhạc Pokémon)', gp: 'CC0 1.0' },
   { ten: 'TimGM6mb (Tim Brechbill, David Bolton)', url: 'https://github.com/musescore/musescore-old', dung: 'Bộ âm thanh MIDI của bản PC Java (tệp riêng, đi kèm nguyên vẹn)', gp: 'GNU GPL v2' },
   { ten: 'Phông Nunito, Baloo 2, Press Start 2P, Noto Sans', url: 'https://fonts.google.com', dung: 'Chữ trên website (tự host) và trong bản PC', gp: 'SIL Open Font License 1.1' },
