@@ -1785,6 +1785,11 @@ class MapXuLyLenh {
                 default:
                     break;
                 case 7:
+                    final int mucBv = XepHangBangVang.muc(player.session == null ? -1 : player.session.banClient, player.myCountry);
+                    if (mucBv >= 0) {
+                        map.doSendTopNation(player, mucBv);
+                        return;
+                    }
                     player.sendMessage(
                             MessageCreator.createMsgMenu(
                                     new String[]{

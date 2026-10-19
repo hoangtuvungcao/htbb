@@ -1027,7 +1027,7 @@ public class RegionVantienTran implements Runnable {
                     int nUser = p.party.userParty.size();
                     // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                    int xpReceive = newxp * 80 / (nUser * 100);
+                    int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                     int maxLv = p.lvDetail.lv;
 
                     for(int k = 0; k < p.party.userParty.size(); ++k) {
@@ -1060,7 +1060,7 @@ public class RegionVantienTran implements Runnable {
                         }
                     }
 
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                     xpReceive = p.expReceive(xpReceive);
                     Map.addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "RegionVantienTran2");
@@ -1306,7 +1306,7 @@ public class RegionVantienTran implements Runnable {
                                                                                             int nUser = p.party.userParty.size();
                                                                                             // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                                            int xpReceive = newxp * 80 / (100 * nUser);
+                                                                                            int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                                             int maxLv = p.lvDetail.lv;
 
                                                                                             for(int i = 0; i < p.party.userParty.size(); ++i) {
@@ -1339,7 +1339,7 @@ public class RegionVantienTran implements Runnable {
                                                                                                 }
                                                                                             }
 
-                                                                                            xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                                                                            xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                                             xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                                             xpReceive = p.expReceive(xpReceive);
                                                                                             Map.addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "RegionVantienTran5");
@@ -1439,7 +1439,7 @@ public class RegionVantienTran implements Runnable {
                                                                                             int nUser = p.party.userParty.size();
                                                                                             // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                                            int xpReceive = newxp * 80 / (nUser * 100);
+                                                                                            int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                                             int maxLv = p.lvDetail.lv;
 
                                                                                             for(int i = 0; i < p.party.userParty.size(); ++i) {
@@ -1472,7 +1472,7 @@ public class RegionVantienTran implements Runnable {
                                                                                                 }
                                                                                             }
 
-                                                                                            xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                                                                            xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                                             xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                                             xpReceive = p.expReceive(xpReceive);
                                                                                             Map.addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "RegionVantienTran8");

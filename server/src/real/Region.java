@@ -1338,7 +1338,7 @@ public class Region {
                 if (newxp != totalXp) {
                     int nUser = p.party.userParty.size();
                     // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
-                    int xpReceive = newxp * 80 / (nUser * 100);
+                    int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                     int maxLv = p.lvDetail.lv;
                     int k = 0;
                     while (k < p.party.userParty.size()) {
@@ -1359,7 +1359,7 @@ public class Region {
                         }
                         ++k;
                     }
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                     xpReceive = p.expReceive(xpReceive);
                     Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region2");
@@ -1615,7 +1615,7 @@ public class Region {
                     if (newxp != totalXp) {
                         int nUser = p.party.userParty.size();
                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
-                        int xpReceive = newxp * 80 / (100 * nUser);
+                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                         int maxLv = p.lvDetail.lv;
                         int i = 0;
                         while (i < p.party.userParty.size()) {
@@ -1636,7 +1636,7 @@ public class Region {
                             }
                             ++i;
                         }
-                        xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                         xpReceive = p.expReceive(xpReceive);
                         Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region5");
@@ -1728,7 +1728,7 @@ public class Region {
                     if (newxp != totalXp) {
                         int nUser = p.party.userParty.size();
                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
-                        int xpReceive = newxp * 80 / (nUser * 100);
+                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                         int maxLv = p.lvDetail.lv;
                         int i = 0;
                         while (i < p.party.userParty.size()) {
@@ -1749,7 +1749,7 @@ public class Region {
                             }
                             ++i;
                         }
-                        xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                         xpReceive = p.expReceive(xpReceive);
                         Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region8");

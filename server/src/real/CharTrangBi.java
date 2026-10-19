@@ -378,7 +378,7 @@ class CharTrangBi {
                     int nUser = self.party.userParty.size();
                     // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                    int xpReceive = newxp * 80 / (100 * nUser);
+                    int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                     final int maxLv = self.lvDetail.lv;
 
                     for (int j = 0; j < self.party.userParty.size(); ++j) {
@@ -410,7 +410,7 @@ class CharTrangBi {
                             }
                         }
                     }
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, self);
                     xpReceive = self.expReceive(xpReceive);
                     Map.addXPForChar(self, xpReceive + self.getEffSkillClan(0) * xpReceive / 100, false, "char checkNewEffectItem2");
