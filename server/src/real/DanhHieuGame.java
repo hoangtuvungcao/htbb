@@ -603,6 +603,7 @@ public final class DanhHieuGame {
                 guiSoMoi(p, t);
             }
             XepHangPvpGame.thuongMuaCu(p); // thuong cac mua PvP da ket thuc chua phat (mot lan / mua)
+            DiemMocNhiemVu.apChoCho(p); // ban hang tren cho luc offline: cong tien do nhiem vu cho_ban
         } catch (final Exception e) {
             System.out.println("DanhHieuGame.khiVaoBanDo: " + e);
         }

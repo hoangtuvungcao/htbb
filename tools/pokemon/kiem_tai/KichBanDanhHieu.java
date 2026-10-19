@@ -11,6 +11,7 @@ import java.util.List;
  *   dh_bang    xin bang (-111 0): co danh hieu da co / chua co, danh hieu an "???" khong lo ten
  *   dh_deo     deo (-111 1) -> nhan moi; deo danh hieu chua co -> tu choi; thao (-111 2) -> nhan rong; da xem -> so moi 0
  *   dh_nguoi   bot thu hai den canh: nhan danh hieu cua bot dau den nguoi gan
+ *   dh_cho     dong cho tob_nhiem_vu_cho (ban cho luc offline) -> vao game: da_ap = 1; vao lai: khong ap lan nua
  *   dh_luu     guc 1 lan, thoat -> tob_danh_hieu_dem co 'guc' = 1, tob_danh_hieu co danh hieu, tob_danh_hieu_log co dong
  *
  *   javac -encoding UTF-8 -d /tmp/bot tools/pokemon/kiem_tai/*.java
@@ -232,7 +233,37 @@ public final class KichBanDanhHieu {
         BotChucNang.ket("dh.luu.da_xem", moi == null || moi.trim().isEmpty(), "moi=" + moi);
     }
 
+    static void cho() throws Exception {
+        BotChucNang.Bot b = BotChucNang.botMoi(0);
+        String user = b.user;
+        int db = b.charDb;
+        b.close();
+        Thread.sleep(4000);
+        BotChucNang.sql("DELETE FROM tob_nhiem_vu_cho WHERE id_char = " + db);
+        BotChucNang.sql("INSERT INTO tob_nhiem_vu_cho (id_char, so, ghi_chu, da_ap, luc) VALUES (" + db + ", 1, 'kiem 1', 0, NOW()), ("
+                + db + ", 1, 'kiem 2', 0, NOW())");
+        for (int lan = 0; lan < 2; lan++) {
+            BotChucNang.Bot c = null;
+            for (int t = 0; t < 5 && c == null; t++) {
+                BotChucNang.Bot x = new BotChucNang.Bot(user);
+                String l = x.dangNhap("123456");
+                if (l == null) l = x.vaoGame(0);
+                if (l == null) c = x;
+                else {
+                    x.close();
+                    Thread.sleep(3000);
+                }
+            }
+            c.bom(4000);
+            String da = BotChucNang.sql1("SELECT CONCAT(SUM(da_ap = 1), '/', COUNT(*), '/', SUM(ap_luc IS NOT NULL)) FROM tob_nhiem_vu_cho WHERE id_char = " + db);
+            BotChucNang.ket("dh.cho.lan_" + (lan + 1), "2/2/2".equals(da == null ? null : da.trim()), "da_ap/tong/ap_luc=" + da);
+            c.close();
+            Thread.sleep(4000);
+        }
+    }
+
     public static void main(String[] a) throws Exception {
+        BotChucNang.dk("dh_cho", false, KichBanDanhHieu::cho);
         BotChucNang.dk("dh_cap", true, KichBanDanhHieu::cap);
         BotChucNang.dk("dh_bang", true, KichBanDanhHieu::bangDh);
         BotChucNang.dk("dh_deo", true, KichBanDanhHieu::deo);

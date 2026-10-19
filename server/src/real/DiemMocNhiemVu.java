@@ -15,11 +15,13 @@ package real;
  *  ap_trung          HeSinhThaiMenu.hanhDongTrung (no)     {@link #khiNoTrung}    dex
  *  do_vui            HeSinhThaiGame.DoVui.traLoi (dung)     {@link #khiDoVui}      ""
  *  dua_pokemon       HeSinhThaiGame.Dua.ketThuc (ve dich)   {@link #khiDua}        hang (1..)
- *  cho_ban           HeSinhThaiMenu.banNpc / traTienNguoiBan (nguoi ban online) {@link #khiBan}  ""
+ *  cho_ban           HeSinhThaiMenu.banNpc / traTienNguoiBan {@link #khiBan}; nguoi ban OFFLINE: ghi
+ *                    tob_nhiem_vu_cho ({@link #ghiChoNguoiBan}), ap luc vao ban do lan dau ({@link #apChoCho})  ""
  *  nang_cap          Map.doUseItemGoc (mac do nhan vat)     {@link #khiMacDo}      id template
  *  bo_trang_bi       cung cho (datMuc so mon cung bac cao nhat dang mac)       -
  *  pokedex_vung      PokedexPokemon.khiHaQuai (loai moi)    {@link #khiLoaiMoi}    vung 0 Kanto / 1 Johto / 2 Hoenn
- *  su_kien_vat_pham  NhiemVuEngine.khiHaQuai khi co su kien dang bat (roi vat pham su kien) {@link #khiHaQuaiSuKien}  ""
+ *  su_kien_vat_pham  vat pham cua su kien DANG BAT vao tui (Map.doGetPotion nhat, NPC su kien, giao hang...)
+ *                    {@link #khiNhanVatPhamSuKien}                                id vat pham (data_su_kien_vat_pham)
  *  giao_hang/dua_thu Char.OnQuest tra nhiem vu chinh cu giao vat pham (type 1) {@link #khiGiaoVatPham}  id vat pham NV / ""
  *  ho_tong           Char.doResponseTieu (ve dich, khong bi cuop)       {@link #khiHoTong}  ""
  * </pre>
@@ -126,31 +128,17 @@ public final class DiemMocNhiemVu {
         }
     }
 
-    /** Ti le (phan tram) mot lan ha quai trong luc co su kien bat tinh la nhat duoc vat pham su kien. */
-    static final int TI_LE_SU_KIEN = 35;
-
-    /** NhiemVuEngine.khiHaQuai: neu co su kien dang bat, 35% lan ha tinh "su_kien_vat_pham". */
-    public static void khiHaQuaiSuKien(final Char p, final java.util.Random r) {
-        if (p == null || !coSuKien()) {
+    /**
+     * Vat pham su kien VAO TUI (nhat tu quai roi Map.doGetPotion, NPC su kien, giao hang, che do / tien giai Vu Lan):
+     * chi tinh khi vat pham thuoc mot su kien DANG BAT (bang data_su_kien_vat_pham, real.SuKienVatPham). Tham so = id vat
+     * pham: nhiem vu dat muc_tieu_id = id de nham mot vat pham, de trong = bat ky vat pham cua su kien dang dien ra.
+     */
+    public static void khiNhanVatPhamSuKien(final Char p, final int idVatPham, final int soLuong) {
+        if (p == null || soLuong <= 0) {
             return;
         }
-        if ((r == null ? Map.random(100) : r.nextInt(100)) < TI_LE_SU_KIEN) {
-            ban(p, "su_kien_vat_pham", "", 1);
-        }
-    }
-
-    /** Co su kien dang bat (lich su kien nam / su kien dai han). */
-    static boolean coSuKien() {
-        try {
-            for (final String ma : com.htbb.pokemon.SuKienLauDai.MA_MOI) {
-                if (SuKien.bat("moi:" + ma)) {
-                    return true;
-                }
-            }
-            return SuKien.bat(SuKien.HALLOWEEN) || SuKien.bat(SuKien.NOEL) || SuKien.bat(SuKien.TRUNG_THU)
-                    || SuKien.bat(SuKien.TET_DUONG_LICH);
-        } catch (final Exception e) {
-            return false;
+        if (SuKienVatPham.suKienDangBat(idVatPham, SuKienVatPham::dangBat) != null) {
+            ban(p, "su_kien_vat_pham", String.valueOf(idVatPham), soLuong);
         }
     }
 
@@ -169,5 +157,59 @@ public final class DiemMocNhiemVu {
     /** Ho tong (van tieu) ve dich, khong bi cuop. */
     public static void khiHoTong(final Char p) {
         ban(p, "ho_tong", "", 1);
+    }
+
+    // ================================================================== cho_ban cho nguoi ban offline
+
+    public static void taoBang() {
+        data.DatabaseLauDai.ghiCong("CREATE TABLE IF NOT EXISTS tob_nhiem_vu_cho (id BIGINT NOT NULL AUTO_INCREMENT,"
+                + " id_char INT NOT NULL, so INT NOT NULL DEFAULT 1, ghi_chu VARCHAR(128) NOT NULL DEFAULT '',"
+                + " da_ap TINYINT NOT NULL DEFAULT 0, luc DATETIME NOT NULL, ap_luc DATETIME NULL, PRIMARY KEY (id),"
+                + " KEY idx_nvc_char (id_char, da_ap)) DEFAULT CHARSET=utf8");
+    }
+
+    /** Nguoi ban OFFLINE ban duoc hang tren cho: ghi tien do cho (ap o lan vao ban do ke tiep). */
+    public static void ghiChoNguoiBan(final int idChar, final String ghiChu) {
+        if (idChar <= 0) {
+            return;
+        }
+        data.DatabaseLauDai.ghiCong("INSERT INTO tob_nhiem_vu_cho (id_char, so, ghi_chu, da_ap, luc) VALUES (?, 1, ?, 0, NOW())",
+                Integer.valueOf(idChar), ghiChu == null ? "" : (ghiChu.length() > 120 ? ghiChu.substring(0, 120) : ghiChu));
+    }
+
+    /**
+     * Vao ban do lan dau trong phien (DanhHieuGame.khiVaoBanDo): ap moi dong tob_nhiem_vu_cho chua ap. Moi dong chi ap
+     * khi UPDATE da_ap 0 -&gt; 1 doi dung 1 dong (hai phien / khoi dong lai khong ap hai lan).
+     */
+    public static int apChoCho(final Char p) {
+        if (p == null || p.isBot != -1 || p.charDBID <= 0) {
+            return 0;
+        }
+        final java.util.List<long[]> ds = new java.util.ArrayList<long[]>();
+        java.sql.Connection conn = null;
+        java.sql.PreparedStatement pre = null;
+        java.sql.ResultSet rs = null;
+        try {
+            conn = data.Database.instance.getConnection();
+            pre = conn.prepareStatement("SELECT id, so FROM tob_nhiem_vu_cho WHERE id_char = ? AND da_ap = 0 ORDER BY id LIMIT 200");
+            pre.setInt(1, p.charDBID);
+            rs = pre.executeQuery();
+            while (rs.next()) {
+                ds.add(new long[]{rs.getLong(1), rs.getInt(2)});
+            }
+        } catch (final Exception e) {
+            return 0;
+        } finally {
+            XepHangPvpGame.dong(rs, pre, conn);
+        }
+        int n = 0;
+        for (final long[] d : ds) {
+            if (data.DatabaseLauDai.ghiCong("UPDATE tob_nhiem_vu_cho SET da_ap = 1, ap_luc = NOW() WHERE id = ? AND da_ap = 0",
+                    Long.valueOf(d[0])) == 1) {
+                ban(p, "cho_ban", "", (int) Math.max(1L, d[1]));
+                n++;
+            }
+        }
+        return n;
     }
 }
