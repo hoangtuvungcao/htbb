@@ -472,7 +472,7 @@ public final class SinhThai {
         if (choBao != null) {
             String s = choBao;
             choBao = null;
-            Canvas.startOKDlg(s);
+            ThongBao.xongCau(s);   // 0.9.6.1: thẻ nhanh (không chặn), gặp Pokémon là thẻ riêng
         }
     }
 

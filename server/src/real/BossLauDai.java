@@ -422,7 +422,7 @@ public final class BossLauDai {
             map.addMonster(b, 0, 0);
             datTheGioi(b);
             com.htbb.chongspam.ThongBaoGop.dua("boss",
-                    "Boss thế giới " + t.name + " đã xuất hiện! Thưởng theo mức đóng góp.");
+                    com.htbb.thongbao.ThongBao.noi(com.htbb.thongbao.ThongBao.bossXuatHien(t.name, com.htbb.thongbao.ThongBao.banDo(map)), "Boss thế giới: thưởng theo mức đóng góp sát thương"));
             System.out.println("[LAU DAI] boss the gioi " + t.name + " id " + b.id + " o ban do " + map.mapId);
             return b;
         } catch (final Exception e) {

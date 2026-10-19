@@ -790,6 +790,11 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         if (AutoGuard.autoEatDlg(info)) {
             return;
         }
+        // 0.9.6.1: trong game, hộp "OK" chỉ để báo tin (kết quả, lỗi, nhắc) -> thẻ nhanh không chặn (game.pokemon.ThongBao);
+        // việc nghiêm trọng / nội dung dài vẫn là hộp
+        if (!isIcon && game.pokemon.ThongBao.tuHopOK(info)) {
+            return;
+        }
         msgdlg.isIcon = isIcon;
         msgdlg.setInfo(info, new game.model.Command("OK", new IAction() {
             @Override

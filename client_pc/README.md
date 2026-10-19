@@ -72,6 +72,10 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
+- `KiemThongBao` (0.9.6.1): thông báo (game.pokemon.ThongBao + DungDo) - phân loại câu máy chủ thật, thời gian hiện
+  >= tối thiểu theo loại / độ dài, hàng đợi (tối đa 3 thẻ, không mất thẻ nào, mỗi thẻ hiện đủ thời gian đọc), gói -104 có
+  hình, kết quả câu cá hiện lúc kéo cần (không hộp chặn), và vẽ mọi kiểu thẻ / biểu ngữ ở 11 cỡ (trong vùng an toàn, không
+  chồng nhau / nút HUD);
 - `KiemNhiemVu`: hội thoại / nhận nhiệm vụ bằng chạm / chuột / phím;
 - `KiemHopChiTiet` (0.9.6.1): thẻ chi tiết vật phẩm chung (game.pokemon.HopChiTiet - cửa hàng / cửa hàng đá / hành trang)
   ở 11 cỡ + J2ME: trong vùng an toàn, giữa, <= 80 %, chữ + nút trong thẻ, nút không đè chữ, tên một đoạn, có giá;

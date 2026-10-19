@@ -457,7 +457,7 @@ public class BossDotKich extends Boss {
                     }
 
                     try {
-                        Message m = MessageCreator.createServerAlertAutoOffMessage("Đại bàng đã xuất hiện");
+                        Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossXuatHien("Zapdos", com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                         for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                             ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);
