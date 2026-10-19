@@ -1680,7 +1680,7 @@ class MapDoMenu {
                                 return;
                             }
 
-                            player.sendMessage(MessageCreator.createMsgInputText(player.id, 5, "Nhập tiền cược", 1));
+                            player.sendMessage(MessageCreator.createMsgInputText(player.id, 5, "Nhập xu cược (" + ThachDauCuoc.moTaMuc(player) + ", phí " + ThachDauCuoc.cauHinh().phiPhanTram + "% bên thắng)", 1));
                         } else {
                             ArenaData arena = ArenaMap.getArenaData(player);
                             if (arena == null) {

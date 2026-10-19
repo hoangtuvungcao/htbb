@@ -68,6 +68,23 @@ public final class KiemThuatNgu {
                 Integer.valueOf(0), Integer.valueOf(LOI.size()));
     }
 
+    /** Dau hieu o dau tep cua lop dich nguoc tu lib/htbb-core.jar (P3, xem docs/giay-phep.md). */
+    static final String DAU_PHUC_HOI = "PHUC HOI TU LOI CU";
+
+    /**
+     * Lop phuc hoi tu jar loi cu: chuoi trong do giu NGUYEN nhu bytecode cu (P3 khong doi hanh vi,
+     * ChuPokemon.doi van dich luc chay nhu truoc). Lam sach chuoi thuoc P4/P5, nen cac phep quet chu
+     * hien cho nguoi choi bo qua chung. Chi xet 10 dong dau: mot chuoi trong than lop khong lot qua.
+     */
+    static boolean laLopPhucHoi(final List<String> dong) {
+        for (int i = 0; i < Math.min(10, dong.size()); i++) {
+            if (dong.get(i).contains(DAU_PHUC_HOI)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Tu cam con trong chuoi (bo "bang" cua chu khong dau). */
     static List<String> conTu(final String s0) {
         final String s = Normalizer.normalize(s0, Normalizer.Form.NFC);
@@ -107,6 +124,10 @@ public final class KiemThuatNgu {
             }
             final String s = doc(f);
             final String rel = f.getPath();
+            // Lop phuc hoi tu lib/htbb-core.jar (P3) giu nguyen chuoi cu - xem laLopPhucHoi.
+            if (n.endsWith(".java") && laLopPhucHoi(Arrays.asList(s.split("\n", 11)))) {
+                continue;
+            }
             if (n.endsWith(".java") || n.endsWith(".cs")) {
                 chuoiJava(rel, s);
             } else if (n.endsWith(".sql")) {

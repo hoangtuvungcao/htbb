@@ -2651,6 +2651,7 @@ public class Database {
 
         // Vong quay gop hu (sua 19/10/2026): bang tob_vong_quay_*, hoan cuoc dang cho cua he cu (nin_xoso*).
         real.VongQuay.napLucKhoiDong();
+        real.ThachDauCuoc.napLucKhoiDong(); // ky quy thach dau con lai (may tat giua tran) -> hoan du
 
 
         Database.instance.loadCharChienTruong();

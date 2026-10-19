@@ -1187,7 +1187,8 @@ public class Char extends LiveActor {
         Char.timeExpireAutoGetItem = new long[]{2592000000L, 3600000L};
         Char.lixilucky = new byte[]{-1, -1, -1, -1, -1};
         Char.totalLixiOpened = 0;
-        Char.XU_LI_XI = new int[]{1000000, 1000000, 1000000, 2000000, 5000000};
+        // Gia tri cu cua 5 giai lon (khong con dung - giai lon = li_xi.tui_giai_lon_phan_tram_gio, LiXiLogic.giaiLon).
+        Char.XU_LI_XI = new int[]{0, 0, 0, 0, 0};
         Char.daysomaymm = "";
         Char.numberLucky = 5300;
         Char.numberRandom = 4067;
@@ -10163,7 +10164,75 @@ public int applyRongLonReleaseTo(int baseDamage) {
         Map.MAX_LI_XI = 100;
     }
 
+    /**
+     * Dot li xi (moi nam mot dot, khoa o dem tob_gioi_han_qua) - xem com.htbb.pokemon.LiXiLogic.
+     */
+    static String dotLiXi() {
+        return String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    static String ngayLiXi() {
+        return new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date());
+    }
+
+    public static com.htbb.pokemon.LiXiLogic.CauHinh cauHinhLiXi() {
+        final com.htbb.pokemon.LiXiLogic.CauHinh d = com.htbb.pokemon.LiXiLogic.CauHinh.macDinh();
+        try {
+            return new com.htbb.pokemon.LiXiLogic.CauHinh(
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_nhan_ngay_toi_da", d.tuiNhanNgay),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_mo_ngay_toi_da", d.tuiMoNgay),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_mo_dot_toi_da", d.tuiMoDot),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_xu_phan_tram_gio_min", d.xuPhanTramGioMin),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_xu_phan_tram_gio_max", d.xuPhanTramGioMax),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_giai_lon_phan_tram_gio", d.giaiLonPhanTramGio),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_luong_khoa_min", d.maLuongKhoaMin),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_luong_khoa_max", d.maLuongKhoaMax),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_tai_khoan_moi_may", d.maTaiKhoanMoiMay),
+                    com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_tong_luong_khoa_dot", d.maTongLuongKhoaDot));
+        } catch (final Throwable t) {
+            return d;
+        }
+    }
+
+    /**
+     * Phan XU cua tui li xi: chi tra khi qua cong chong clone (cap / tuoi tai khoan / gio choi) va thiet bi / IP chua
+     * qua N Pokemon mo li xi hom nay. @return so xu da tra (0 = khong tra, da bao ly do).
+     */
+    static long traXuLiXi(final Char p, final long xu, final String lyDo) {
+        if (xu <= 0L) {
+            return 0L;
+        }
+        final String chan = com.htbb.pokemon.ChongClone.lyDo(p, true);
+        if (chan != null) {
+            p.sendMessage(MessageCreator.createServerAlertMessage("Bao lì xì có " + xu + " xu nhưng chưa nhận được: "
+                    + chan.replace("giao dịch / mua bán xu với người chơi khác", "nhận xu lì xì").replace("giao dịch xu", "nhận xu lì xì"), ""));
+            return 0L;
+        }
+        final com.htbb.pokemon.ChongCloneLogic.Ben b = com.htbb.pokemon.ChongClone.ben(p, false);
+        final String ngay = ngayLiXi();
+        final String may = VongQuay.SO_NGAY.kiemMay(ngay, p.charname, b.may, b.ip,
+                com.htbb.pokemon.ChongClone.cauHinh().nvCungMayToiDa);
+        if (may != null) {
+            p.sendMessage(MessageCreator.createServerAlertMessage(may.replace("tham gia vòng quay", "nhận xu lì xì"), ""));
+            return 0L;
+        }
+        VongQuay.SO_NGAY.ghi(ngay, 10, p.charname, b.may, b.ip, xu);
+        p.addXu(xu, lyDo);
+        Database.instance.saveOrtherLog("", p.charname, "li xi tra " + xu + " xu (" + lyDo + ")", "olixixu");
+        return xu;
+    }
+
     public static synchronized void doOpenLixi2021(final Char p) {
+        // 19/10/2026: tran mo tui (ngay + ca dot) - vuot thi tra lai tui, khong mo.
+        final com.htbb.pokemon.LiXiLogic.CauHinh cfgLiXi = cauHinhLiXi();
+        final String chanMo = com.htbb.pokemon.LiXiLogic.moTui(cfgLiXi, data.DatabaseGioiHanQua.KHO, dotLiXi(), ngayLiXi(), p.charname);
+        if (chanMo != null) {
+            p.potions[159]++;
+            p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+            p.sendMessage(MessageCreator.createServerAlertMessage(chanMo, ""));
+            return;
+        }
+        final long xuGioLiXi = com.htbb.pokemon.LauDai.xuMoiGio(Math.max(1, p.lvDetail == null ? 1 : p.lvDetail.lv));
         if (Char.lixilucky[0] == -1) {
             final Vector<Byte> number = new Vector<Byte>();
             for (int i = 0; i < 100; ++i) {
@@ -10187,20 +10256,27 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (TeamServer.isServerLocal()) {
             info = String.valueOf(Char.daysomaymm) + " số hộp dc mở: " + Char.totalLixiOpened + ". " + info;
         }
+        // 19/10/2026: giai lon = 1 gio thu nhap o cap nguoi mo (truoc 1.000.000 - 5.000.000 xu), toi da so giai cu (5) moi
+        // dot toan may chu; tui thuong = 5-10% gio (truoc 10.000 - 20.000). Phan xu qua cong chong clone (traXuLiXi).
         boolean isXu = false;
         for (int j = 0; j < Char.lixilucky.length; ++j) {
-            if (Char.lixilucky[j] == Char.totalLixiOpened) {
-                p.addXu(Char.XU_LI_XI[j], "char 6");
-                info = String.valueOf(info) + Char.XU_LI_XI[j] + " xu. ";
+            if (Char.lixilucky[j] == Char.totalLixiOpened
+                    && data.DatabaseGioiHanQua.KHO.thu(com.htbb.pokemon.LiXiLogic.maGiaiLon(dotLiXi()), "*", 1L,
+                            com.htbb.pokemon.GioiHanQua.VO_HAN, Char.lixilucky.length, ngayLiXi())) {
+                final long xu = traXuLiXi(p, com.htbb.pokemon.LiXiLogic.giaiLon(cfgLiXi, xuGioLiXi), "li xi giai lon");
+                if (xu > 0L) {
+                    info = String.valueOf(info) + xu + " xu (giải lớn). ";
+                }
                 isXu = true;
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 break;
             }
         }
         if (!isXu) {
-            final int xu = UtilHTBB.getRandomMinMax(10000, 20000);
-            p.addXu(xu, "char 6");
-            info = String.valueOf(info) + xu + " xu. ";
+            final long xu = traXuLiXi(p, com.htbb.pokemon.LiXiLogic.xuTui(cfgLiXi, xuGioLiXi, Map.r), "li xi");
+            if (xu > 0L) {
+                info = String.valueOf(info) + xu + " xu. ";
+            }
             isXu = true;
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
         }
@@ -10235,8 +10311,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
         } else if (typegift[index] == 3) {
             if (p.isFullInventory()) {
-                final int xu2 = 5000 + Map.r.nextInt(100000);
-                p.addXu(xu2, "char 7");
+                // hanh trang day: doi mon do bang xu cung muc tui thuong (truoc 5.000 - 105.000 xu)
+                final long xu2 = traXuLiXi(p, com.htbb.pokemon.LiXiLogic.xuTui(cfgLiXi, xuGioLiXi, Map.r), "li xi (day tui)");
                 info = String.valueOf(info) + xu2 + " xu";
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             } else {
