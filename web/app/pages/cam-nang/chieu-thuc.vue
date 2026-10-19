@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** Chiêu thức theo dòng — tên + hệ chiêu từ pokedex.json (bang_chieu.csv / ChieuPokemon.java). */
-const HO_TRO = new Set(['Màn khói', 'Múa kiếm', 'Tự vệ', 'Sinh trưởng', 'Mong ước', 'Nghỉ ngơi', 'Phước lành hồi sinh', 'Chia sẻ nỗi đau', 'Phá mai', 'Rút vào mai', 'Nhanh nhẹn', 'Nạp điện'])
+const HO_TRO = new Set(['Màn khói', 'Vũ điệu kiếm', 'Tự vệ', 'Sinh trưởng', 'Mong ước', 'Nghỉ ngơi', 'Phước lành hồi sinh', 'Chia sẻ nỗi đau', 'Phá mai', 'Rút vào mai', 'Nhanh nhẹn', 'Nạp điện'])
 
 const dong = POKEDEX.khoiDau.map((k) => {
   const dau = loaiTheoDex(k.dex)!

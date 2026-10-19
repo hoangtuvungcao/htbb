@@ -8477,7 +8477,8 @@ public class GameScr extends Screen {
                 || m instanceof CreateCharScr || m instanceof DangKyScr)) {
             return;   // bảng (Nhân vật, Menu, Cửa hàng...) / màn khác đang mở
         }
-        int dy = Canvas.h - 6 - game.pokemon.Bang.anDuoi - 12;
+        // 0.9.6: cách mép dưới / trái >= 16 px logic (góc bo màn điện thoại không cắt nhãn)
+        int dy = Canvas.h - 16 - game.pokemon.Bang.anDuoi - 12;
         if (Canvas.currentScreen == Canvas.gameScr) {
             if (Canvas.gameScr.hideGUI == 2 || HudRong.banDoTo) {
                 return;
@@ -8485,7 +8486,7 @@ public class GameScr extends Screen {
             dy = 40;
             dy += 4;
         }
-        int x = 4 + game.pokemon.Bang.anTrai;
+        int x = (Canvas.currentScreen == Canvas.gameScr ? 4 : 16) + game.pokemon.Bang.anTrai;
         int w = 20, h = 11;
         game.pokemon.GiaoDien.khoi(g, x, dy, w, h, 4, 0xE8412C);
         game.pokemon.ChuDe.chuGiua(g, "12+", x + w / 2, dy, h, game.pokemon.ChuDe.SO, 0xFFFFFF, 2);

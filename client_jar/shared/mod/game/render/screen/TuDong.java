@@ -323,7 +323,7 @@ public final class TuDong {
         if (choBat && l - lucChoBat > 6000L) {
             choBat = false;
             thongBao = coServer ? "Máy chủ không phản hồi Tự động đánh, thử lại sau ít giây." : "Máy chủ chưa hỗ trợ Tự động đánh.";
-            // bảng đã đóng khi bấm Bắt đầu: báo bằng hộp thoại, không im lặng
+            // bảng đã đóng khi bấm Bắt đầu: báo bằng thông báo nhanh, không im lặng
             game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh
         }
         if (!dang) {

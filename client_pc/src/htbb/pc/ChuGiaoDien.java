@@ -13,7 +13,7 @@ import java.util.HashMap;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * Chữ giao diện 0.9.5 (game.pokemon.ChuUI) của bản PC: Noto Sans thường / đậm đúng cỡ (px logic, có phần lẻ), khử răng
+ * Chữ giao diện 0.9.5 (game.pokemon.ChuUI) của bản PC: Noto Sans thường / đậm (dam 3 = Baloo 2 tiêu đề, 0.9.6) đúng cỡ (px logic, có phần lẻ), khử răng
  * cưa ở độ phân giải thật. Bề ngang và ẢNH chữ đã dựng được nhớ (vẽ lại = một lần chép ảnh, không dựng chữ / không cấp
  * phát mỗi khung).
  */
@@ -22,11 +22,11 @@ public final class ChuGiaoDien extends game.pokemon.ChuUI {
     private static final FontRenderContext FRC = new FontRenderContext(new AffineTransform(), true, true);
 
     /** chỉ số kiểu = round(co*10)*3 + dam */
-    private final Font[] font = new Font[3 * 512];
+    private final Font[] font = new Font[4 * 512];
     @SuppressWarnings("unchecked")
-    private final HashMap<String, Integer>[] rong = new HashMap[3 * 512];
+    private final HashMap<String, Integer>[] rong = new HashMap[4 * 512];
     @SuppressWarnings("unchecked")
-    private final HashMap<String, Anh>[] anh = new HashMap[3 * 512];
+    private final HashMap<String, Anh>[] anh = new HashMap[4 * 512];
     private long soDiemAnh;
     static final long TOI_DA_DIEM_ANH = 6000000L;
 
@@ -47,13 +47,13 @@ public final class ChuGiaoDien extends game.pokemon.ChuUI {
 
     private static int chiSo(float co, int dam) {
         int c = Math.max(1, Math.min(511, Math.round(co * 10)));
-        return c * 3 + Math.max(0, Math.min(2, dam));
+        return c * 4 + Math.max(0, Math.min(3, dam));
     }
 
     private Font f(int k) {
         Font r = font[k];
         if (r == null) {
-            r = PhongChu.thuong(k % 3 != 0).deriveFont((k / 3) / 10f);
+            r = (k % 4 == 3 ? PhongChu.tieuDe() : PhongChu.thuong(k % 4 != 0)).deriveFont((k / 4) / 10f);   // 0.9.6: dam 3 = Baloo 2 (tiêu đề)
             font[k] = r;
         }
         return r;
@@ -120,7 +120,7 @@ public final class ChuGiaoDien extends game.pokemon.ChuUI {
     }
 
     private Anh dung(int k, String s, int mau, double tl) {
-        float co = (k / 3) / 10f;
+        float co = (k / 4) / 10f;
         String t = ChuHD.thayKyHieu(s);
         Font fo = f(k);
         float w = (float) fo.getStringBounds(t, FRC).getWidth();
@@ -350,6 +350,9 @@ public final class ChuGiaoDien extends game.pokemon.ChuUI {
         int[] co = game.pokemon.AnhUI.CO_CHIEU;
         int t = co.length - 1;
         for (int i = 0; i < co.length; i++) if (co[i] >= px) { t = i; break; }
+        // 0.9.6 icon pixel-art: cỡ thật là bội số nguyên của một tấm -> phóng LÁNG GIỀNG GẦN NHẤT (mép sắc)
+        boolean ganNhat = false;
+        for (int i = co.length - 1; i >= 0; i--) if (px >= co[i] && px % co[i] == 0) { t = i; ganNhat = true; break; }
         long k1 = 3L << 61 | (long) o << 40 | (long) px << 8 | (tron ? 2 : 0) | (khoa ? 1 : 0), k2 = 0;
         BufferedImage img = nho(k1, k2);
         if (img == null) {
@@ -385,7 +388,15 @@ public final class ChuGiaoDien extends game.pokemon.ChuUI {
             }
             BufferedImage b = new BufferedImage(n, n, BufferedImage.TYPE_INT_ARGB);
             b.setRGB(0, 0, n, n, p, 0, n);
-            img = thu(b, px, px);
+            if (ganNhat && px != n) {
+                img = new BufferedImage(px, px, BufferedImage.TYPE_INT_ARGB_PRE);
+                Graphics2D g2 = img.createGraphics();
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                g2.drawImage(b, 0, 0, px, px, null);
+                g2.dispose();
+            } else {
+                img = px == n ? b : thu(b, px, px);
+            }
             giu(k1, k2, img);
         }
         g.veAnhThat(img, x, y);

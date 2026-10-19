@@ -196,27 +196,17 @@ public final class ThanhLenh {
         ManHinh mh = ManHinh.me;
         boolean sang = mh != null && mh.chuotX >= x && mh.chuotX < x + w && mh.chuotY >= y && mh.chuotY < y + h;
         if (sang) {
-            g.setColor(new Color(255, 203, 5, 70));   // quầng vàng khi trỏ chuột (như chọn ▶ của bản APK)
+            g.setColor(new Color(31, 181, 168, 60));   // 0.9.6: quầng teal khi trỏ chuột
             g.fill(new java.awt.geom.RoundRectangle2D.Float(x - 3 * u, y - 3 * u, w + 6 * u, h + 6 * u, h + 6 * u, h + 6 * u));
         }
-        Kinh.nut(g, x, y, w, h, null, f, chinh, sang, !chinh);
-        // sọc chéo nhẹ kiểu Pokémon trên nút chính
-        if (chinh) {
-            java.awt.Shape cu = g.getClip();
-            g.clip(new java.awt.geom.RoundRectangle2D.Float(x, y, w, h, Math.min(h, 14), Math.min(h, 14)));
-            g.setColor(new Color(255, 255, 255, 26));
-            g.setStroke(new java.awt.BasicStroke(3 * u));
-            for (float sx = x - h; sx < x + w; sx += 9 * u) {
-                g.draw(new java.awt.geom.Line2D.Float(sx, y + h, sx + h, y));
-            }
-            g.setClip(cu);
-        }
+        Kinh.nut(g, x, y, w, h, null, f, chinh, sang, false);
+        // 0.9.6: viên phẳng kiểu GO (bỏ sọc chéo)
         // chỉ tên lệnh, căn giữa nút (không nhãn phím)
         g.setFont(f);
         FontMetrics fm = g.getFontMetrics();
         float tx = x + (w - fm.stringWidth(s)) / 2f;
         float ty = y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent();
-        Kinh.chu(g, s, tx, ty, Kinh.CHU);
+        Kinh.chu(g, s, tx, ty, chinh ? Color.WHITE : Kinh.CHU);
     }
 
     /** Bấm nút = phím mềm J2ME (luồng sự kiện). */

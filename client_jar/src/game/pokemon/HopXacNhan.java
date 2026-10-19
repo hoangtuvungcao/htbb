@@ -104,7 +104,7 @@ public final class HopXacNhan extends Dialog {
             this.rongNgat = ww;
         }
         this.kieuNut[0] = Bang.TRUNG;
-        this.kieuNut[1] = this.nguyHiem ? Bang.CHINH : Bang.XAC_NHAN;
+        this.kieuNut[1] = this.nguyHiem ? Bang.NGUY : Bang.XAC_NHAN;
         this.bam[0] = this.bamHuy;
         this.bam[1] = this.bamCo;
         this.hPhu[0] = this.loaiTien >= 0 ? TienTe.coTheoChu(Font.blackFont) + 8 : 0;
@@ -116,7 +116,7 @@ public final class HopXacNhan extends Dialog {
         } else {
             HopThongBao.chonHuyHieu(td, this.noiDung, HopThongBao.HOI);
         }
-        int[] r = HopThongBao.ve(g, ww, this.tieuDe == null ? "Xác nhận" : this.tieuDe, this.nguyHiem ? ChuDe.DO : ChuDe.XANH, this.dong,
+        int[] r = HopThongBao.ve(g, ww, this.tieuDe == null ? "Xác nhận" : this.tieuDe, this.nguyHiem ? ChuDe.DO : ChuDe.CHINH, this.dong,
                 this.hPhu, this.nut, this.kieuNut, this.bam, this.bamHuy, true, null, TEN_NUT);
         if (this.loaiTien >= 0) {
             int wg = TienTe.rongGia(this.loaiTien, this.gia, Font.blackFont, false);

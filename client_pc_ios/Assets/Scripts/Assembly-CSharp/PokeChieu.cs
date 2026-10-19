@@ -10,7 +10,7 @@ public static class PokeChieu {
     public const int CAP_TOI_DA = 9;
 
     public static readonly string[][] TEN = new string[][] {
-        new string[] {"Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Múa kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa"},
+        new string[] {"Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Vũ điệu kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa"},
         new string[] {"Húc", "Roi dây leo", "Lá dao", "Bom bùn", "Tự vệ", "Sinh trưởng", "Bom hạt", "Bão lá", "Tia mặt trời"},
         new string[] {"Húc", "Tấn công nhanh", "Cắn", "Sao băng", "Mong ước", "Nghỉ ngơi", "Phước lành hồi sinh", "Chia sẻ nỗi đau", "Đuôi sắt", "Bứt phá cuối cùng", "Tia phá hủy"},
         new string[] {"Húc", "Súng nước", "Bong bóng", "Xoáy nước", "Phá mai", "Rút vào mai", "Đuôi nước", "Bơm nước", "Đại pháo nước"},
@@ -37,7 +37,7 @@ public static class PokeChieu {
 
     /** Câu mô tả ngắn từng chiêu (hiện trong bảng kỹ năng). */
     public static readonly string[][] MO_TA = new string[][] {
-        new string[] {"Cào bằng móng vuốt sắc.", "Phun tàn lửa nhỏ vào đối thủ.", "Cắn bằng nanh rực lửa.", "Cuốn đối thủ trong xoáy lửa.", "Tung màn khói che mắt, đánh xuyên giáp.", "Múa kiếm, phản một phần sát thương.", "Phun luồng lửa dữ dội.", "Cào bằng vuốt rồng sắc bén.", "Ngọn lửa hình chữ đại thiêu rụi mọi thứ."},
+        new string[] {"Cào bằng móng vuốt sắc.", "Phun tàn lửa nhỏ vào đối thủ.", "Cắn bằng nanh rực lửa.", "Cuốn đối thủ trong xoáy lửa.", "Tung màn khói che mắt, đánh xuyên giáp.", "Xoay lưỡi kiếm quanh mình, phản một phần sát thương.", "Phun luồng lửa dữ dội.", "Cào bằng vuốt rồng sắc bén.", "Ngọn lửa hình chữ đại thiêu rụi mọi thứ."},
         new string[] {"Lao vào húc đối thủ.", "Quất đối thủ bằng dây leo.", "Phóng lá sắc như dao.", "Ném bùn độc vào đối thủ.", "Thủ thế tăng phòng thủ.", "Hấp thụ ánh nắng, tăng sức tấn công.", "Bắn mưa hạt giống nổ tung.", "Cuốn đối thủ trong bão lá.", "Gom ánh nắng rồi bắn tia mặt trời."},
         new string[] {"Lao vào húc đối thủ.", "Lao tới cực nhanh, ra đòn trước.", "Cắn bằng răng sắc.", "Bắn sao không bao giờ trượt.", "Ước nguyện hồi HP và MP.", "Ngủ một giấc hồi tinh thần.", "Hồi sinh đồng đội đã gục.", "Chia sẻ thiệt hại sang MP.", "Quất đuôi cứng như thép.", "Tung đòn quyết định cuối cùng.", "Bắn tia năng lượng hủy diệt."},
         new string[] {"Lao vào húc đối thủ.", "Phun tia nước mạnh.", "Thổi bong bóng vào đối thủ.", "Nhốt đối thủ trong xoáy nước.", "Phá mai, choáng đối thủ.", "Rút vào mai tăng phòng thủ.", "Quất đuôi tạo sóng nước.", "Bơm nước áp lực cực mạnh.", "Pháo nước công suất tối đa."},

@@ -68,11 +68,15 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần);
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
+- `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
+  mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
 - `KiemNhiemVu`: hội thoại / nhận nhiệm vụ bằng chạm / chuột / phím;
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`
-  (chữ thô "ID:", "null", %s, toạ độ, từ cấm) và kiểm mọi hộp thoại canh giữa / trong giới hạn cỡ;
+  (chữ thô "ID:", "null", %s, toạ độ, từ cấm) và kiểm mọi hộp thoại canh giữa / trong giới hạn cỡ; 0.9.6: mọi TẤM
+  (Bang.khungTam) canh giữa ±2 px, rộng <= 80 % vùng an toàn, trong vùng an toàn ở 11 cỡ; menu ngữ cảnh NPC trong vùng
+  an toàn và không chồng phần HUD nào;
 - `DoKhung`: thời gian vẽ một khung (p50 / p99 / max), KB cấp phát mỗi khung, GC - thế giới 24 người chơi, Menu,
   Nhân vật + Hành trang, Cửa hàng, chat, ở 1280x720 và 1920x1080 (`--j2me`: tắt chữ / khung HD);
 - `DoCuaSo`: FPS trong CỬA SỔ THẬT (cần màn hình): khung game / khung trình bày mỗi giây + bộ đo khung.

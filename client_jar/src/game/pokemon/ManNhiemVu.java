@@ -236,6 +236,7 @@ public final class ManNhiemVu extends Screen {
                 ManNhiemVu.this.ds.den(0);
             }
         }};
+        Bang.chamTab = new boolean[]{ChamMoi.tabNhiemVu(0), ChamMoi.tabNhiemVu(1)};
         int[] c = Bang.khung(g, "Nhiệm vụ", new String[]{"Đang làm", "Có thể nhận"}, this.tab, vt, new IAction() {
             public void perform() {
                 ManNhiemVu.this.dong();
@@ -265,6 +266,9 @@ public final class ManNhiemVu extends Screen {
                     }, "nv-" + i);
                     int s = h - 6;
                     veIcon(g, q, x + 3, y + 3, s);
+                    if (ChamMoi.hangNhiemVu(ManNhiemVu.this.tab, q)) {
+                        ChuDe.cham(g, x + 3 + s - 2, y + 5);
+                    }
                     int[] td = tienDo(q);
                     String so = xong(q) ? "Xong" : (td != null ? td[0] + "/" + td[1] : null);
                     String phu = ManNhiemVu.this.tab == 0 ? loai(q) + (xong(q) ? " · trả ở " + noiNpc(q.idNpcResponse) : "")

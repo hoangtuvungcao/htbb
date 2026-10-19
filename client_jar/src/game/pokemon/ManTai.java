@@ -200,7 +200,7 @@ public final class ManTai {
         if (dai < hh) {
             dai = hh;
         }
-        GiaoDien.khoiDoc(g, tx, y, dai, hh, 3, GiaoDien.pha(ChuDe.XANH, 0xFFFFFF, 1, 3), ChuDe.XANH);
+        GiaoDien.khoiDoc(g, tx, y, dai, hh, 3, GiaoDien.pha(ChuDe.CHINH, 0xFFFFFF, 1, 3), ChuDe.CHINH);
         y += hh + 6;
         if (day) {
             // dãy bước: xong = xanh lá, đang làm = xanh dương, chưa = xám
@@ -208,7 +208,7 @@ public final class ManTai {
             int kc = tw / n;
             for (int i = 0; i < n; i++) {
                 int bi = KET_NOI + i;
-                int mau = bi < b ? ChuDe.LA : bi == b ? ChuDe.XANH : ChuDe.KE;
+                int mau = bi < b ? ChuDe.LA : bi == b ? ChuDe.CHINH : ChuDe.KE;
                 int xc = tx + kc * i + kc / 2;
                 GiaoDien.khoi(g, xc - 3, y, 7, 7, 3, mau);
                 if (i > 0) {

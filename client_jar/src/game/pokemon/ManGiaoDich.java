@@ -117,7 +117,7 @@ public final class ManGiaoDich extends Screen {
         int k = Bang.cach();
         int s = Bang.co(30);
         int wOi = 4 * s + 3 * k;
-        int wl = Math.min(w * 58 / 100, 2 * wOi + 3 * k + 16);
+        int wl = Math.min(w * (ChuDe.dt() ? 66 : 58) / 100, 2 * wOi + 3 * k + 16);
         int nh = Bang.caoHang();
         int hO = h - nh - k;
         int wb = (wl - k) / 2;
@@ -240,6 +240,14 @@ public final class ManGiaoDich extends Screen {
             if (s3 > s) {
                 cot = 3;
                 s = s3;
+            }
+        }
+        if (s < VungCham.MIN) {
+            // 0.9.6 (tấm ~78 % bề ngang trên điện thoại): 2 cột x 6 hàng (cuộn mắt: chỉ hàng vừa khung)
+            int s2 = Math.min(Bang.co(30), (w - 12 - k) / 2);
+            if (s2 > s) {
+                cot = 2;
+                s = s2;
             }
         }
         for (int i = 0; i < 12; i++) {

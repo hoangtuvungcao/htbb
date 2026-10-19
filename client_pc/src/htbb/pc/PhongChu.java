@@ -81,7 +81,7 @@ public final class PhongChu {
 
     /** Baloo 2 (tiêu đề, logo chữ) - đậm giả bằng deriveFont(BOLD). */
     public static synchronized Font tieuDe() {
-        if (tieuDe == null) tieuDe = nap("Baloo2-wght.ttf", Font.SANS_SERIF, Font.BOLD);
+        if (tieuDe == null) tieuDe = nap("Baloo2-wght.ttf", Font.SANS_SERIF, Font.BOLD).deriveFont(Font.BOLD);   // 0.9.6: đậm thật (ảnh chữ dựng đậm)
         return tieuDe;
     }
 }

@@ -5,9 +5,9 @@ import game.render.screen.Font;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * CHỦ ĐỀ GIAO DIỆN 0.9.5 (một nơi duy nhất: bảng màu + số đo + kiểu chữ) cho HUD, bảng, hộp thoại, thông báo, nút và
- * dòng đáy. Hướng "Pokémon sáng, thân thiện": thẻ TRẮNG / kem, dải đầu đỏ Poké Ball (hoặc xanh), bo góc, bóng mềm,
- * viền tối mảnh; chữ tối trên nền sáng. Bản PC (htbb.pc.GiaoDienHD / ChuHD) và APK (HdVe / HdChu) đọc cùng hằng số này
+ * CHỦ ĐỀ GIAO DIỆN 0.9.6 "kiểu Pokémon GO" (một nơi duy nhất: bảng màu + số đo + kiểu chữ) cho HUD, tấm, bảng,
+ * hộp thoại, thông báo, nút và dòng đáy: mặt TRẮNG / nền tấm dải teal rất nhạt, KHÔNG dải đầu màu, tiêu đề tròn đậm
+ * canh giữa, nút viên dải TEAL (đỏ chỉ cho nguy hiểm + Poké Ball, vàng cho phần thưởng), bóng mềm, không viền tối. Bản PC (htbb.pc.GiaoDienHD / ChuHD) và APK (HdVe / HdChu) đọc cùng hằng số này
  * nên ba bản cùng một kiểu.
  *
  * Chữ giao diện: {@link #chu} / {@link #rong} theo VAI (tiêu đề, nhãn, thường, phụ, số). Bản PC / APK vẽ bằng phông
@@ -20,25 +20,35 @@ public final class ChuDe {
     // ------------------------------------------------------------------ bảng màu (RGB)
     /** thân thẻ / bảng: trắng -> trắng xanh rất nhạt */
     public static final int NEN = 0xFFFFFF;
-    public static final int NEN_DUOI = 0xF5F7FB;
+    public static final int NEN_DUOI = 0xF6F9FA;
     /** kem ấm (thẻ thông tin, hộp lời thoại) */
     public static final int KEM = 0xFFF8EA;
     /** vùng phụ trong bảng (khung con, rãnh tab, ô trống) */
-    public static final int NEN_PHU = 0xEEF2F8;
-    public static final int NEN_PHU_TOI = 0xE2E8F1;
+    public static final int NEN_PHU = 0xEEF3F6;
+    public static final int NEN_PHU_TOI = 0xE2E9EE;
     /** viền tối mảnh quanh thẻ / nút */
     public static final int VIEN = 0x2F3A5A;
     /** đường kẻ / viền hàng nhạt */
-    public static final int KE = 0xD6DDE8;
-    /** chữ */
-    public static final int CHU = 0x1F2740;
-    public static final int CHU_PHU = 0x5E6A85;
-    public static final int CHU_NHAT = 0x9AA3B8;
+    public static final int KE = 0xDFE6EB;
+    /** chữ (xám đá đậm, không navy) */
+    public static final int CHU = 0x24323F;
+    public static final int CHU_PHU = 0x687887;
+    public static final int CHU_NHAT = 0xA3AEB8;
+    /** 0.9.6 MÀU CHÍNH teal / ngọc lam (nút chính, tab chọn, công tắc bật, thanh trượt): dải CHINH_SANG -> CHINH */
+    public static final int CHINH = 0x1FB5A8;
+    public static final int CHINH_SANG = 0x2FCDBE;
+    public static final int CHINH_TOI = 0x138C82;
+    public static final int CHINH_NHAT = 0xE2F6F3;
+    /** nền tấm (sheet) toàn màn: dải teal rất nhạt -> gần trắng */
+    public static final int TAM_TREN = 0xE3F5F2;
+    public static final int TAM_DUOI = 0xF7FAFB;
+    /** vàng thưởng đậm (chữ / viền trên nền vàng nhạt) */
+    public static final int VANG_TOI = 0xD99A00;
     /** nhấn: đỏ Poké Ball, xanh, vàng Pikachu */
     public static final int DO = 0xE8412C;
     public static final int DO_TOI = 0xC9301E;
     public static final int DO_NHAT = 0xFDE7E3;
-    public static final int XANH = 0x3B7DD8;
+    public static final int XANH = 0x2D8FD6;   // xanh thông tin (biểu tượng tin, chat) - nút chính dùng CHINH
     public static final int XANH_TOI = 0x2B64B8;
     public static final int XANH_NHAT = 0xE3EEFC;
     public static final int VANG = 0xFFC93C;
@@ -46,7 +56,7 @@ public final class ChuDe {
     public static final int CAM = 0xF39A2B;
     public static final int LA = 0x43B05C;
     public static final int LA_TOI = 0x2F8F45;
-    public static final int TEAL = 0x22A699;
+    public static final int TEAL = CHINH;
     public static final int XAM = 0x8A94A6;
     public static final int TIM = 0x8E6BE8;
     public static final int HONG = 0xEF6A93;
@@ -63,12 +73,12 @@ public final class ChuDe {
     /** rãnh thanh trên thẻ sáng */
     public static final int RANH = 0xDDE3EC;
 
-    /** Màu nút tròn HUD (mỗi nút một màu): túi cam, Pokémon đỏ, nhiệm vụ vàng, đội xanh lá, bản đồ teal, cài đặt xám. */
+    /** Màu ICON nút tròn HUD (0.9.6: đĩa trắng, icon màu): túi cam, Pokémon đỏ, nhiệm vụ vàng, đội xanh lá, bản đồ teal, cài đặt xám. */
     public static final int NUT_TUI = CAM, NUT_POKE = DO, NUT_NV = 0xF2B417, NUT_DOI = LA, NUT_BAN_DO = TEAL, NUT_CAI_DAT = XAM;
 
     // ------------------------------------------------------------------ số đo (px logic, khung 640x360)
     /** bo góc thẻ lớn / ô / nút */
-    public static final int BO = 10, BO_O = 7, BO_NUT = 8;
+    public static final int BO = 14, BO_O = 10, BO_NUT = 8, BO_THE = 12;
     /** lề trong thẻ */
     public static final int DEM = 8;
     /** khe giữa ô lưới (~12 px thật trên PC 1280) */
@@ -85,12 +95,16 @@ public final class ChuDe {
     }
 
     // ------------------------------------------------------------------ chữ theo vai
-    public static final int TIEU_DE = 0, NHAN = 1, THUONG = 2, PHU = 3, SO = 4, NHAN_NHO = 5;
-    /** cỡ chữ (px logic) theo vai: PC / máy cảm ứng */
-    static final float[] CO_PC = {8.6f, 7.4f, 7.2f, 6.3f, 6.6f, 6.6f};
-    static final float[] CO_DT = {9.6f, 8.4f, 8.2f, 7.2f, 7.4f, 7.6f};
-    /** 0 thường, 1 đậm vừa, 2 đậm */
-    static final int[] DAM = {2, 1, 0, 0, 2, 1};
+    /**
+     * TIEU_DE = tiêu đề hộp / thẻ, TIEU_DE_TO = tiêu đề tấm (sheet) lớn, SO_TO = số lớn ("Sức mạnh"); hai vai tiêu đề
+     * dùng phông HIỂN THỊ tròn đậm (dam 3: PC Baloo 2, APK Baloo 2 / Be Vietnam Pro ExtraBold).
+     */
+    public static final int TIEU_DE = 0, NHAN = 1, THUONG = 2, PHU = 3, SO = 4, NHAN_NHO = 5, TIEU_DE_TO = 6, SO_TO = 7;
+    /** cỡ chữ (px logic) theo vai: PC / máy cảm ứng (tiêu đề tấm ~22-24 px ở màn tham chiếu 1280x720) */
+    static final float[] CO_PC = {9.4f, 7.4f, 7.2f, 6.3f, 6.6f, 6.6f, 11.2f, 13.5f};
+    static final float[] CO_DT = {10.4f, 8.4f, 8.2f, 7.2f, 7.4f, 7.6f, 12.2f, 14.5f};
+    /** 0 thường, 1 đậm vừa, 2 đậm, 3 phông hiển thị (tròn đậm) */
+    static final int[] DAM = {3, 1, 0, 0, 2, 1, 3, 3};
 
     public static float co(int vai) {
         return (dt() ? CO_DT : CO_PC)[vai];
@@ -99,7 +113,7 @@ public final class ChuDe {
     /** Font ảnh J2ME cho vai (khi không có chữ thật). */
     static Font fontAnh(int vai, int mau) {
         boolean sang = GiaoDien.doSang(mau) > 150;
-        if (vai == TIEU_DE) {
+        if (vai == TIEU_DE || vai == TIEU_DE_TO || vai == SO_TO) {
             return sang ? Font.borderFont : Font.blackFont;
         }
         if (vai == SO || vai == PHU) {
@@ -169,9 +183,9 @@ public final class ChuDe {
         return r;
     }
 
-    private static final String[] CAT_KHOA = new String[6];
-    private static final String[] CAT_KQ = new String[6];
-    private static final int[] CAT_W = new int[6];
+    private static final String[] CAT_KHOA = new String[8];
+    private static final String[] CAT_KQ = new String[8];
+    private static final int[] CAT_W = new int[8];
 
     /** Ngắt dòng theo bề ngang w (tối đa toiDa dòng; dòng cuối thừa thì cắt "…"). */
     public static String[] ngat(String s, int vai, int w, int toiDa) {
@@ -246,8 +260,15 @@ public final class ChuDe {
         }
     }
 
-    /** Chấm đỏ báo mới (8-10 px thật) tâm (cx, cy). */
+    /** Chấm đã vẽ (toạ độ tuyệt đối) - kiểm thử KiemChamMoi đọc (vòng 64 chấm, demCham tăng mãi). */
+    public static final int[] CHAM_X = new int[64], CHAM_Y = new int[64];
+    public static int demCham;
+
+    /** Chấm đỏ báo mới (8-10 px thật) tâm (cx, cy) - nguồn: ChamMoi. */
     public static void cham(Graphics g, int cx, int cy) {
+        CHAM_X[demCham & 63] = cx + g.getTranslateX();
+        CHAM_Y[demCham & 63] = cy + g.getTranslateY();
+        demCham++;
         // ~8-10 px thật (PC 1280: 5 px logic x 2), điện thoại to hơn chút
         int d = dt() ? 6 : 5;
         g.setColor(0xFFFFFF);

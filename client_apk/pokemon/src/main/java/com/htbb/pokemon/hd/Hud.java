@@ -413,10 +413,11 @@ public final class Hud implements NenAndroid.LopPhu {
             float l = i == 2 ? Wl - Math.max(4, NenAndroid.anToanPhai + 2) - w : x0[i];
             float rr = h / 2;
             HdVe.bong(c, l, y, l + w, y + h, rr, 1f);
-            if (i == 1) HdVe.tronDoc(c, l, y, l + w, y + h, rr, 0xFFF4613A, 0xFFC2290A);
-            else HdVe.tronDoc(c, l, y, l + w, y + h, rr, 0xF0FFFFFF, 0xF0DCE6F4);
-            HdVe.vienTron(c, l, y, l + w, y + h, rr, 1f, i == 1 ? 0xFF7A1505 : 0xFF1E2A44);
-            chu(c, ten[i], l + w / 2, y + h / 2 + 3.6f, 10f, i == 1 ? 0xFFFFFFFF : 0xFF1E2A44, 0, 2);
+            // 0.9.6: Gửi = viên teal, Đóng / Xoá = viên trắng viền kẻ nhạt
+            if (i == 1) HdVe.tronDoc(c, l, y, l + w, y + h, rr, 0xFF2FCDBE, 0xFF1FB5A8);
+            else HdVe.tronDoc(c, l, y, l + w, y + h, rr, 0xF8FFFFFF, 0xF8F6F9FA);
+            if (i != 1) HdVe.vienTron(c, l, y, l + w, y + h, rr, 0.8f, 0xFFDFE6EB);
+            chu(c, ten[i], l + w / 2, y + h / 2 + 3.6f, 10f, i == 1 ? 0xFFFFFFFF : 0xFF24323F, 0, 2);
             HdKiem.ghi(1, l, y, l + w, y + h, ten[i]);
         }
     }
@@ -470,8 +471,8 @@ public final class Hud implements NenAndroid.LopPhu {
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
         HdVe.bong(c, l, t, l + w, t + h, h / 2f, 1f);
-        HdVe.tronDoc(c, l, t, l + w, t + h, h / 2f, 0xD0213F6E, 0xD80E1D38);
-        HdVe.vienTron(c, l, t, l + w, t + h, h / 2f, 0.7f, 0x60A9C8FF);
+        // 0.9.6: viên xám đá trong mờ (không navy)
+        HdVe.tronDoc(c, l, t, l + w, t + h, h / 2f, 0xD0323E4A, 0xD8222C36);
     }
 
     // --- thẻ trạng thái
@@ -482,8 +483,7 @@ public final class Hud implements NenAndroid.LopPhu {
         float l = L, t = T, r = L + RONG_THE, b = T + CAO_THE;
         // 0.9.5: thẻ SÁNG mờ (trắng ~90 %), viền tối mảnh, chữ tối (game.pokemon.ChuDe)
         HdVe.bong(c, l, t, r, b, 13, 1.5f);
-        HdVe.tronDoc(c, l, t, r, b, 13, 0xE8FFFFFF, 0xE0F3F6FB);
-        HdVe.vienTron(c, l, t, r, b, 13, 0.8f, 0x90000000 | game.pokemon.ChuDe.VIEN);
+        HdVe.tronDoc(c, l, t, r, b, 13, 0xF2FFFFFF, 0xEAF6F9FA);   // 0.9.6: thẻ trắng, không viền tối
         // huy hiệu chân dung (vòng trắng - đỏ Poké Ball)
         float ax = l + 22, ay = t + 21, ar = 17.5f;
         P.setShader(null);
@@ -492,7 +492,7 @@ public final class Hud implements NenAndroid.LopPhu {
         RF.set(ax - ar - 1.6f, ay - ar - 1.6f, ax + ar + 1.6f, ay + ar + 1.6f);
         P.setColor(0xFFE3350D);
         c.drawArc(RF, 180, 180, true, P);
-        P.setShader(HdVe.doc(0xFFE9F2FF, 0xFFBFD6F5, ay - ar, ay + ar));
+        P.setShader(HdVe.doc(0xFFE6F7F4, 0xFFBFE9E3, ay - ar, ay + ar));
         c.drawCircle(ax, ay, ar, P);
         P.setShader(null);
         int svc = c.save();
@@ -715,7 +715,7 @@ public final class Hud implements NenAndroid.LopPhu {
         c.restoreToCount(sv2);
         c.restoreToCount(sv);
         // viền thẻ mảnh tối (như thẻ trạng thái)
-        PV.setShader(HdVe.doc(0x90000000 | game.pokemon.ChuDe.VIEN, 0x90000000 | game.pokemon.ChuDe.VIEN, t, b));
+        PV.setShader(HdVe.doc(0x30000000 | game.pokemon.ChuDe.CHU, 0x30000000 | game.pokemon.ChuDe.CHU, t, b));
         PV.setStrokeWidth(0.8f);
         RF.set(l + 0.65f, t + 0.65f, r - 0.65f, b - 0.65f);
         c.drawRoundRect(RF, 9, 9, PV);
@@ -749,9 +749,9 @@ public final class Hud implements NenAndroid.LopPhu {
         Canvas c = g.androidCanvas();
         float l = x + g.getTranslateX(), t = y + g.getTranslateY();
         float m = Math.min(26, w / 5f);
-        P.setShader(new android.graphics.LinearGradient(l + 4, 0, l + 4 + m, 0, 0xF0182F58, 0x00182F58, android.graphics.Shader.TileMode.CLAMP));
+        P.setShader(new android.graphics.LinearGradient(l + 4, 0, l + 4 + m, 0, 0xF0222C36, 0x00222C36, android.graphics.Shader.TileMode.CLAMP));
         c.drawRect(l + 4, t + 1.5f, l + 4 + m, t + h - 1.5f, P);
-        P.setShader(new android.graphics.LinearGradient(l + w - 4 - m, 0, l + w - 4, 0, 0x00182F58, 0xF0182F58, android.graphics.Shader.TileMode.CLAMP));
+        P.setShader(new android.graphics.LinearGradient(l + w - 4 - m, 0, l + w - 4, 0, 0x00222C36, 0xF0222C36, android.graphics.Shader.TileMode.CLAMP));
         c.drawRect(l + w - 4 - m, t + 1.5f, l + w - 4, t + h - 1.5f, P);
         P.setShader(null);
     }
@@ -761,7 +761,7 @@ public final class Hud implements NenAndroid.LopPhu {
         TXT.setTextSize(7.2f);
         float w = TXT.measureText(s) + 17;
         HdVe.tronDoc(c, x, y, x + w, y + 12, 6, 0xFAFFFFFF, 0xF2F3F6FB);
-        HdVe.vienTron(c, x, y, x + w, y + 12, 6, 0.7f, 0xC0000000 | game.pokemon.ChuDe.VIEN);
+        HdVe.vienTron(c, x, y, x + w, y + 12, 6, 0.6f, 0x30000000 | game.pokemon.ChuDe.CHU);
         P.setShader(null);
         P.setColor(mau);
         c.drawCircle(x + 7, y + 6, 3, P);
@@ -804,6 +804,10 @@ public final class Hud implements NenAndroid.LopPhu {
         nenNut(c, x, y, r, HdVe.pha(m, 0xFFFFFFFF, 0.25f), m, sang);
     }
 
+    /**
+     * 0.9.6 kiểu GO: hàng trên = đĩa TRẮNG icon màu (Tự động: đĩa teal khi đang chạy); Menu = Poké Ball to giữa đáy.
+     * Chấm đỏ theo ChamMoi (Menu: điểm / thư / chiêu mới; Nhiệm vụ: nhiệm vụ mới / đủ để trả).
+     */
     static void veNutTren(Graphics g, Canvas c) {
         long now = System.currentTimeMillis();
         int[] tren = {N_MENU, N_TU_DONG, N_CHAT, N_THEM, N_CHINH};
@@ -813,27 +817,19 @@ public final class Hud implements NenAndroid.LopPhu {
             float s = nhun(n, now);
             float x = NX[n], y = NY[n], r = NR[n] * s;
             if (n == N_TU_DONG && tuDong) {
-                P.setColor(0x6048D058);
+                P.setColor(0x601FB5A8);
                 c.drawCircle(x, y, r + 2.5f + (float) Math.sin(now / 180.0) * 0.8f, P);
-                nenMau(c, x, y, r, game.pokemon.ChuDe.LA, true);
-            } else if (n == N_MENU) {
-                nenNut(c, x, y, r, 0xFFFFFFFF, 0xFFFFFFFF, false);
+                nenMau(c, x, y, r, game.pokemon.ChuDe.CHINH, false);
             } else {
-                nenMau(c, x, y, r, MAU_TREN(n), false);
+                nenNut(c, x, y, r, 0xFFFFFFFF, 0xFFF6F9FA, false);
             }
             veIcon(g, c, n, x, y, r);
-            if (n == N_CHINH && game.pokemon.ManNhiemVu.coMoi()) {
+            boolean cham = n == N_CHINH ? game.pokemon.ChamMoi.hudNhiemVu() : n == N_MENU && game.pokemon.ManMenu.coChamDo();
+            if (cham) {
                 P.setColor(0xFFFFFFFF);
-                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.32f + 1f, P);
-                P.setColor(0xFFE8312B);
-                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.32f, P);
-            }
-            if (n == N_MENU && game.pokemon.ManMenu.coChamDo()) {
-                // chấm đỏ: Menu có mục mới (nhiệm vụ, thư, điểm kỹ năng)
-                P.setColor(0xFFFFFFFF);
-                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.32f + 1f, P);
-                P.setColor(0xFFE8312B);
-                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.32f, P);
+                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.3f + 1f, P);
+                P.setColor(0xFFE8412C);
+                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.3f, P);
             }
         }
     }
@@ -858,9 +854,10 @@ public final class Hud implements NenAndroid.LopPhu {
         int bt = n == N_THEM ? game.pokemon.BieuTuong.TUI : n == N_CHINH ? game.pokemon.BieuTuong.NHIEM_VU
                 : n == N_MENU ? game.pokemon.BieuTuong.POKEBALL : n == N_CHAT || n == N_CHAT_BONG ? game.pokemon.BieuTuong.CHAT : -1;
         if (bt >= 0) {
-            int s = (int) (r * 1.25f);
-            int nen = n == N_CHAT_BONG ? 0xFFFFFF : MAU_TREN(n);
-            int mau = n == N_CHAT_BONG ? game.pokemon.ChuDe.XANH : 0xFFFFFF;
+            // 0.9.6: icon MÀU trên đĩa trắng (Poké Ball giữ màu thật)
+            int s = (int) (r * (n == N_MENU ? 1.45f : 1.25f));
+            int nen = 0xFFFFFF;
+            int mau = n == N_CHAT_BONG ? game.pokemon.ChuDe.XANH : MAU_TREN(n);
             int tx = g.getTranslateX(), ty = g.getTranslateY();
             g.translate(-tx, -ty);
             game.pokemon.BieuTuong.ve(g, bt, (int) (x - s / 2f), (int) (y - s / 2f), s, mau, nen);
@@ -903,7 +900,7 @@ public final class Hud implements NenAndroid.LopPhu {
                 PATH.lineTo(x + u * 0.75f, y - u * 0.2f);
                 PATH.lineTo(x + u * 0.05f, y - u * 0.2f);
                 PATH.close();
-                P.setColor(0xFFFFD23A);
+                P.setColor(HdCau.tuDongDang() ? 0xFFFFFFFF : 0xFF138C82);   // 0.9.6: sét teal trên đĩa trắng
                 c.drawPath(PATH, P);
                 break;
             case N_THEM:
@@ -986,11 +983,11 @@ public final class Hud implements NenAndroid.LopPhu {
             float s = nhun(n, now);
             float x = NX[n], y = NY[n], r = NR[n] * s;
             QuickSlot qs = bo[o[i]];
-            int mau = 0xFF2A4C80;
+            int mau = 0xFF8C99A5;   // 0.9.6: ô không chiêu = xám đá (không navy)
             if (qs != null && qs.quickslotType == QuickSlot.TYPE_SKILL) {
                 mau = HdVe.argb(game.pokemon.KieuO.mauHe(game.pokemon.PokeChieu.he(mc.clazz, qs.skillType)));
             } else if (qs != null && qs.quickslotType == QuickSlot.TYPE_POTION) {
-                mau = 0xFF3A72B8;
+                mau = 0xFF1FB5A8;
             }
             boolean trong = qs == null || qs.quickslotType < 0;
             if (trong) {
@@ -1010,7 +1007,7 @@ public final class Hud implements NenAndroid.LopPhu {
         veNutNho(c, N_DOI_BO, now);
         // 2 chấm bộ ô đang dùng cạnh nút đổi bộ
         for (int k = 0; k < 2; k++) {
-            P.setColor(k == GameScr.indexTabSlot ? 0xFFFFCB05 : 0x805E7AA8);
+            P.setColor(k == GameScr.indexTabSlot ? 0xFF1FB5A8 : 0x80A3AEB8);
             c.drawCircle(NX[N_DOI_BO] - 3 + k * 6, NY[N_DOI_BO] + NR[N_DOI_BO] + 4, 1.6f, P);
         }
         if (gs.focusedActor != null || gs.actors.size() > 1) veNutNho(c, N_MUC_TIEU, now);
@@ -1072,9 +1069,9 @@ public final class Hud implements NenAndroid.LopPhu {
             }
         }
         if (thieuPP) {
-            P.setColor(0x902040A0);
+            P.setColor(0x902D8FD6);
             c.drawCircle(x, y, r, P);
-            chu(c, "PP", x, y + r * 0.75f, Math.max(6f, r * 0.34f), 0xFF9FD8FF, 0xC0000000, 2);
+            chu(c, "PP", x, y + r * 0.75f, Math.max(6f, r * 0.34f), 0xFFFFFFFF, 0xC0000000, 2);
         }
         if (conLai > 0 && tong > 0) {
             dangHoiChieu = true;
@@ -1095,7 +1092,7 @@ public final class Hud implements NenAndroid.LopPhu {
         String s = game.pokemon.KieuO.soGon(so);
         TXT.setTextSize(6.5f);
         float w = Math.max(9, TXT.measureText(s) + 5);
-        HdVe.tron(c, x - w / 2, y - 4.5f, x + w / 2, y + 4.5f, 4.5f, 0xF0101828);
+        HdVe.tron(c, x - w / 2, y - 4.5f, x + w / 2, y + 4.5f, 4.5f, 0xF024323F);
         chu(c, s, x, y + 2.3f, 6.5f, 0xFFFFFFFF, 0, 2);
     }
 
@@ -1208,8 +1205,7 @@ public final class Hud implements NenAndroid.LopPhu {
         float x0 = bx + br + 5, w = Math.min(230 * GS[3], W * 0.34f), lh = 11.5f * GS[3];
         float h = dong * lh + 6;
         float y0 = by - h / 2;
-        HdVe.tronDoc(c, x0, y0, x0 + w, y0 + h, 8, 0x9A0E1D38, 0xA00E1D38);
-        HdVe.vienTron(c, x0, y0, x0 + w, y0 + h, 8, 0.6f, 0x40A9C8FF);
+        HdVe.tronDoc(c, x0, y0, x0 + w, y0 + h, 8, 0x9A222C36, 0xA0222C36);
         float co = 8f * GS[3];
         for (int i = 0; i < dong; i++) {
             Object o = ls.elementAt(n - dong + i);
@@ -1777,9 +1773,12 @@ public final class Hud implements NenAndroid.LopPhu {
                 game.pokemon.HanhDong.moMenu();
                 break;
             case N_TU_DONG:
-                if (!HdCau.moTuDong()) {
-                    NenAndroid.phimNgay(0, 35);
-                    NenAndroid.phimNgay(2, 35);
+                // 0.9.6: chạm ngắn = bật / tắt Tự động; nhấn giữ >= 0,45 s = bảng cài đặt Tự động (cũng ở Menu)
+                if (giu >= 450 || !HdCau.batTatTuDong()) {
+                    if (!HdCau.moTuDong()) {
+                        NenAndroid.phimNgay(0, 35);
+                        NenAndroid.phimNgay(2, 35);
+                    }
                 }
                 break;
             case N_CHAT:

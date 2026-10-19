@@ -28,8 +28,10 @@ final class MenuNhanh {
     private static final int NHAC = 9;
     private static final int HIEU_UNG = 10;
     private static final int AM_LUONG = 11;
+    /** 0.9.6: Tài khoản -> nhập giftcode (cùng hộp nhập của NPC quà tặng) */
+    private static final int GIFTCODE = 12;
 
-    private static final String[] TEN = {"Tự động đánh", "", "", "", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng"};
+    private static final String[] TEN = {"Tự động đánh", "", "", "", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode"};
 
     /** Tên mục (âm lượng kèm %). */
     private static String ten(int m) {
@@ -54,7 +56,7 @@ final class MenuNhanh {
         }
     }
 
-    private static final int[] DS = {TU_DONG, AN, NHAC, HIEU_UNG, AM_LUONG};
+    private static final int[] DS = {TU_DONG, AN, NHAC, HIEU_UNG, AM_LUONG, GIFTCODE};
 
     private static int[] dsMuc() {
         return DS;
@@ -97,6 +99,10 @@ final class MenuNhanh {
             }
             case TU_DONG:
                 BangTuDong.mo();
+                break;
+            case GIFTCODE:
+                mo = false;
+                game.pokemon.HanhDong.moGiftcode();
                 break;
             case AN:
                 anKhiDanh = !anKhiDanh;

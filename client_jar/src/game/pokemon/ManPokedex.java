@@ -93,12 +93,29 @@ public final class ManPokedex extends ManBang {
         return v;
     }
 
+    /** "#025" */
+    static String soDex(int dex) {
+        return dex < 10 ? "#00" + dex : dex < 100 ? "#0" + dex : "#" + dex;
+    }
+
     protected void lui() {
         if (this.chon >= 0) {
             this.chon = -1;
         } else {
             dong();
         }
+    }
+
+    /** 0.9.6: cao theo số hàng lưới (cột theo bề ngang); chi tiết = tấm cao tối đa. */
+    protected int caoMuon(int wNoi) {
+        if (this.chon >= 0) {
+            return 0;
+        }
+        int k = Bang.cach(), o = Bang.coO() + 12;
+        int cot = Math.max(3, (wNoi + k) / (o + k));
+        int n = Math.max(1, loc().size());
+        int hang = Math.max(2, (n + cot - 1) / cot);
+        return Bang.co(22) + 2 * k + hang * (o + 14 + k) + 4;
     }
 
     protected void veNoiDung(Graphics g, int x, int y, int w, int h) {
@@ -108,7 +125,6 @@ public final class ManPokedex extends ManBang {
             veChiTiet(g, x, y, w, h);
             return;
         }
-        Bang.the(g, x, y, w, h);
         Object[] vl = new Object[CHIP.length];
         for (int i = 0; i < CHIP.length; i++) {
             final int li = i;
@@ -119,19 +135,19 @@ public final class ManPokedex extends ManBang {
                 }
             };
         }
-        int yl = y + 6;
-        yl += Bang.hangChip(g, x + 6, yl, w - 12, CHIP, this.loc, vl) + k;
+        int yl = y + 2;
+        yl += Bang.hangChip(g, x, yl, w, CHIP, this.loc, vl) + k;
         if (v.size() == 0) {
             Bang.trong(g, x, yl, w, y + h - yl, "Chưa biết loài nào", "Đi khám phá bản đồ: Pokémon hoang dã sẽ hiện trong Pokédex.");
             return;
         }
-        final int o = Bang.coO();
-        final int cot = Math.max(3, (w - 16 + k) / (o + k));
+        final int o = Bang.coO() + 12;
+        final int cot = Math.max(3, (w + k) / (o + k));
         int hang = (v.size() + cot - 1) / cot;
-        Bang.danhSach(g, this.ds, x + 6, yl, w - 12, y + h - 6 - yl, hang, o, new Bang.Hang() {
+        Bang.danhSach(g, this.ds, x, yl, w, y + h - 2 - yl, hang, o + 14, new Bang.Hang() {
             public void ve(Graphics g, int r, int x, int y, int w, int h) {
                 int kk = Bang.cach();
-                int s = Math.min(h, (w - (cot - 1) * kk) / cot);
+                int s = (w - (cot - 1) * kk) / cot;
                 for (int c = 0; c < cot; c++) {
                     final int i = r * cot + c;
                     if (i >= v.size()) {
@@ -139,12 +155,17 @@ public final class ManPokedex extends ManBang {
                     }
                     final int[] lt = (int[]) v.elementAt(i);
                     int xi = x + c * (s + kk);
-                    GiaoDien.khoi(g, xi, y, s, h, 8, GiaoDien.VIEN);
-                    GiaoDien.khoiDoc(g, xi + 1, y + 1, s - 2, h - 2, 7, 0xFFFFFF, 0xE4EAF5);
-                    int fh = Font.arialFont.getHeight();
-                    PokeBody.paintChanDung(g, lt[0], false, xi + s / 2, y + (h - fh) / 2, Math.min(s, h - fh) - 8);
+                    // 0.9.6 thẻ GO: trắng bóng mềm, đĩa nhạt màu hệ sau hình, tên đậm + số Pokédex
+                    Bang.hang(g, xi, y, s, h, i, false, null, null);
+                    int mh = KieuO.mauHe(HePoke.he1(lt[0]));
+                    int lh1 = ChuDe.cao(ChuDe.NHAN), lh2 = ChuDe.cao(ChuDe.PHU);
+                    int hi = h - lh1 - lh2 - 6;
+                    int rd = Math.min(s, hi) / 2 - 3;
+                    GiaoDien.khoi(g, xi + s / 2 - rd, y + 4 + hi / 2 - rd, 2 * rd, 2 * rd, rd, GiaoDien.pha(mh, 0xFFFFFF, 4, 5));
+                    PokeBody.paintChanDung(g, lt[0], false, xi + s / 2, y + 4 + hi / 2, 2 * rd);
                     String ten = Res.monsterTemplates[lt[1]].name;
-                    Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, ten, s - 4), xi + s / 2, y + h - fh - 2, Font.CENTER);
+                    ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN, s - 6), xi + s / 2, y + 4 + hi, ChuDe.NHAN, ChuDe.CHU, 2);
+                    ChuDe.chu(g, soDex(lt[0]), xi + s / 2, y + 4 + hi + lh1, ChuDe.PHU, ChuDe.CHU_PHU, 2);
                     Bang.dangKy(g, xi, y, s, h, new IAction() {
                         public void perform() {
                             ManPokedex.this.chon = i;
@@ -164,11 +185,13 @@ public final class ManPokedex extends ManBang {
         int[] lt = (int[]) v.elementAt(this.chon);
         int k = Bang.cach();
         int lw = Math.min(w * 45 / 100, 260);
-        GiaoDien.khoiDoc(g, x, y, lw, h, 8, 0x2C4A86, 0x16285A);
+        // 0.9.6: sân khấu sáng theo màu hệ (đĩa tròn dải nhạt) thay khối navy
+        int mh = KieuO.mauHe(HePoke.he1(lt[0]));
         float z = Math.max(1.5f, Math.min(3.2f, Math.min(lw / 56f, h / 44f)));
         int cx = x + lw / 2, yChan = y + h - (int) (14 * z);
-        g.setColor(0x9FC4FF);
-        g.fillArc(cx - (int) (26 * z), yChan - (int) (3.5f * z), (int) (52 * z), (int) (7 * z), 0, 360);
+        int rd = Math.min(lw, h) / 2 - 4;
+        GiaoDien.khoiDoc(g, cx - rd, y + h / 2 - rd, 2 * rd, 2 * rd, rd, GiaoDien.pha(mh, 0xFFFFFF, 5, 6), GiaoDien.pha(mh, 0xFFFFFF, 2, 4));
+        ManNhanVat.veSanKhau(g, cx, yChan, z);
         if (PhongVe.co()) {
             int tx = g.getTranslateX(), ty = g.getTranslateY();
             PhongVe.bo.bat(g, z);
@@ -186,7 +209,8 @@ public final class ManPokedex extends ManBang {
                 ManPokedex.this.chon = -1;
             }
         });
-        Font.blackFont.drawString(g, "#" + lt[0] + "  " + Res.monsterTemplates[lt[1]].name, xr + hd + 10, y + 4 + (hd - Font.blackFont.getHeight()) / 2, 0);
+        ChuDe.chuGiua(g, ChuDe.cat(Res.monsterTemplates[lt[1]].name, ChuDe.TIEU_DE, wr - hd - 60), xr + hd + 10, y + 4, hd, ChuDe.TIEU_DE, ChuDe.CHU, 0);
+        ChuDe.chuGiua(g, soDex(lt[0]), xr + wr - 10, y + 4, hd, ChuDe.SO, ChuDe.CHU_PHU, 1);
         int yy = y + 8 + hd;
         int xb = xr + 10;
         int h1 = HePoke.he1(lt[0]), h2 = HePoke.he2(lt[0]);

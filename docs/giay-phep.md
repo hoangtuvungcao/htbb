@@ -69,12 +69,16 @@ mục `giay_phep/` (phông, Launch4j, âm thanh).
 13 huy hiệu hệ, máy ảnh, xu, thông tin, cảnh báo, lỗi, đóng, lùi, hộp đồ) và `nut_96.png` (da nút thường / nhấn / tắt /
 tròn) do dự án **tự vẽ**: `tools/pokemon/sinh_icon_ui.py` render offline bằng Pillow từ thiết kế vector của
 `game.pokemon.BieuTuong` (khối có độ sáng, ánh, viền tối mềm, bóng đổ). Không dùng tệp icon bên ngoài (không Kenney, không
-game-icons.net), không cần ghi công; phát hành theo CC0 1.0. Bản J2ME không dùng các ảnh này (vẽ vector).
+game-icons.net cho các biểu tượng này - riêng hình trên icon CHIÊU xem đoạn dưới), không cần ghi công; phát hành theo CC0 1.0. Bản J2ME không dùng các ảnh này (vẽ vector).
 
-Icon CHIÊU (0.9.5, chỉ dùng trong giao diện: nút chiêu HUD, đòn chính, tab Kỹ năng / Ô nhanh, chọn chiêu, gợi ý, bảng
+Icon CHIÊU (0.9.6, chỉ dùng trong giao diện: nút chiêu HUD, đòn chính, tab Kỹ năng / Ô nhanh, chọn chiêu, gợi ý, bảng
 Tự động, trang cẩm nang Chiêu thức): `client_jar/res/ui/chieu_{32,64,96}.png`, `chieu_tron_{32,64,96}.png` và
-`web/public/chieu/*.png` — huy hiệu màu hệ + hình theo họ chiêu (cào, cắn, lửa, sét, lá, nước...) do dự án **tự vẽ**
-bằng `tools/pokemon/sinh_icon_chieu.py` (Pillow, vẽ vector siêu mẫu), CC0 1.0. Hiệu ứng chiêu trong trận không đổi.
+`web/public/chieu/*.png` — huy hiệu pixel-art màu hệ (dự án tự vẽ, CC0 1.0) mang **hình bóng từ game-icons.net**
+(https://game-icons.net), giấy phép **CC BY 3.0** (https://creativecommons.org/licenses/by/3.0/), tác giả: **Lorc,
+Delapouite, Skoll, sbed, darkzaitzev**. 45 tệp SVG nguyên bản ở `tools/pokemon/icon_chieu_svg/` (`nguon.txt` = URL ghim
+commit `82d94881` của github.com/game-icons/icons); `tools/pokemon/sinh_icon_chieu.py` vẽ SVG (ImageMagick) rồi dựng
+huy hiệu và thu BOX + cắt ngưỡng (đã sửa đổi: tô màu, viền, thu nhỏ). Ghi công trong game: màn Giấy phép (GHI_CONG.txt).
+Hiệu ứng chiêu trong trận không đổi.
 
 ## 5. Âm thanh
 

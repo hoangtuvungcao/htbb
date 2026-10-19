@@ -28,6 +28,8 @@ public final class HdChu {
     private static Typeface tfVua;
     private static Typeface tfDam;
     private static Typeface tfDamHon;
+    /** 0.9.6: phông hiển thị tròn đậm (Baloo 2, SIL OFL) cho tiêu đề - dam 3 */
+    private static Typeface tfTieuDe;
     private static boolean daNapFont;
     private static final IdentityHashMap<Object, Kieu> KIEU = new IdentityHashMap<Object, Kieu>();
     private static final Paint BONG = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -57,18 +59,25 @@ public final class HdChu {
             tfVua = Typeface.createFromAsset(am, "fonts/BeVietnamPro-SemiBold.ttf");
             tfDam = Typeface.createFromAsset(am, "fonts/BeVietnamPro-Bold.ttf");
             tfDamHon = Typeface.createFromAsset(am, "fonts/BeVietnamPro-ExtraBold.ttf");
+            try {
+                tfTieuDe = new Typeface.Builder(am, "fonts/Baloo2-wght.ttf").setFontVariationSettings("'wght' 700").build();
+            } catch (Throwable e2) {
+                tfTieuDe = null;
+            }
+            if (tfTieuDe == null) tfTieuDe = tfDamHon;
         } catch (Throwable e) {
             Log.e(NenAndroid.TAG, "khong nap duoc font HD", e);
             tfVua = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
             tfDam = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
             tfDamHon = tfDam;
+            tfTieuDe = tfDam;
         }
     }
 
-    /** Typeface dùng cho HUD / bảng HD (0 = vừa, 1 = đậm, 2 = rất đậm). */
+    /** Typeface dùng cho HUD / bảng HD (0 = vừa, 1 = đậm, 2 = rất đậm, 3 = tiêu đề tròn Baloo 2). */
     public static Typeface typeface(int dam) {
         napFont();
-        return dam >= 2 ? tfDamHon : dam == 1 ? tfDam : tfVua;
+        return dam >= 3 ? tfTieuDe : dam == 2 ? tfDamHon : dam == 1 ? tfDam : tfVua;
     }
 
     private static int doSang(int c) {

@@ -8,9 +8,9 @@ import game.render.screen.Screen;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * MENU CHÍNH dạng lưới ô to (0.9.3): thay chuỗi menu chữ "Menu -> Bản thân -> ..." (menu chỉ liệt kê menu con).
- * Mỗi việc thường dùng cách HUD đúng HAI chạm: nút Menu -> ô. Ô "Khác" mở menu chữ cũ cho các việc hiếm.
- * Đóng: nút X góc phải trên, phím Back / Esc, hoặc chạm ra ngoài lưới.
+ * MENU CHÍNH (0.9.3 lưới ô to; 0.9.6 kiểu Pokémon GO): Poké Ball giữa đáy mở vòng cung nút tròn to + hàng viên phụ.
+ * Mỗi việc thường dùng cách HUD đúng HAI chạm: nút Menu -> nút. Viên "Tiện ích & PK" mở menu chữ cũ cho việc hiếm.
+ * Đóng: Poké Ball (X) giữa đáy, phím Back / Esc, hoặc chạm ra ngoài.
  */
 public final class ManMenu extends Screen {
     public static ManMenu me;
@@ -20,23 +20,23 @@ public final class ManMenu extends Screen {
      * Kỹ năng là tab của màn Pokémon (bỏ ô riêng); ô cuối mở menu chữ cũ cho việc hiếm (Tiện ích, PK, Đội nhóm...).
      */
     static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
-        "Xếp hạng", "Cài đặt", "Tiện ích & PK"};
+        "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh"};
     /** màu ô (nền nhạt + biểu tượng màu) */
     static final int[] MAU = {ChuDe.DO, ChuDe.TIM, ChuDe.LA, ChuDe.HONG, 0x6DAA2C, ChuDe.TEAL, ChuDe.XANH, 0xE09B00, ChuDe.XAM,
-        0x5C6BC0};
+        0x5C6BC0, ChuDe.CHINH_TOI};
     static final int[] HINH = {BieuTuong.POKEBALL, BieuTuong.DEX, BieuTuong.DOI, BieuTuong.SU_KIEN, BieuTuong.SINH_THAI,
-        BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH};
+        BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH, BieuTuong.TU_DONG};
     static final int I_POKEMON = 0, I_DEX = 1, I_DOI = 2, I_SU_KIEN = 3, I_SINH_THAI = 4, I_CUA_HANG = 5, I_THU = 6,
-        I_XEP_HANG = 7, I_CAI_DAT = 8, I_KHAC = 9;
+        I_XEP_HANG = 7, I_CAI_DAT = 8, I_KHAC = 9, I_TU_DONG = 10;
 
     /** Chấm đỏ ô i (dữ liệu client có): nhiệm vụ mới / đủ để trả, thư chưa đọc, điểm kỹ năng chưa cộng. */
     public static boolean cham(int i) {
         try {
             switch (i) {
                 case I_THU:
-                    return game.render.screen.MessageScr.nMSG > 0;
+                    return ChamMoi.menuThu();
                 case I_POKEMON:
-                    return Canvas.gameScr.mainChar.skillPointLeft > 0 || Canvas.gameScr.mainChar.basePointLeft > 0;
+                    return ChamMoi.menuPokemon();   // 0.9.6: nguồn chung ChamMoi (điểm kỹ năng / tiềm năng, chiêu mới)
                 default:
                     return false;
             }
@@ -118,16 +118,37 @@ public final class ManMenu extends Screen {
                 ManCuaHang.mo(ManCuaHang.DAC_BIET, cu);
                 break;
             }
-            case I_THU:
+            case I_THU: {
+                // 0.9.6: Thư/Quà = thẻ 2 hàng: Hộp thư (số thư chưa đọc) + Nhập giftcode (một chỗ dễ tìm)
                 ve();
-                game.render.screen.MessageScr.gI().switchToMe();
+                boolean chamThu = ChamMoi.menuThu();
+                java.util.Vector v = new java.util.Vector();
+                int n = game.render.screen.MessageScr.nMSG;
+                v.addElement(new game.model.Command(n > 0 ? "Hộp thư (" + n + " mới)" : "Hộp thư", new IAction() {
+                    public void perform() {
+                        game.render.screen.MessageScr.gI().switchToMe();
+                    }
+                }));
+                v.addElement(new game.model.Command("Nhập giftcode", new IAction() {
+                    public void perform() {
+                        HanhDong.moGiftcode();
+                    }
+                }));
+                MenuNguCanh.mo(v, "Thư / Quà");
+                MenuNguCanh.gI().cham = new boolean[]{chamThu, false};
                 break;
+            }
             case I_XEP_HANG:
                 ManXepHang.mo();
                 break;
             case I_CAI_DAT:
                 ve();
                 CauGiaoDien.moCaiDat();
+                break;
+            case I_TU_DONG:
+                // 0.9.6: bảng cài đặt Tự động đánh (cùng bảng của nút bánh răng cạnh viên AUTO trên HUD)
+                ve();
+                game.render.screen.CauGiaoDien.moTuDong();
                 break;
             default:
                 ve();
@@ -168,30 +189,52 @@ public final class ManMenu extends Screen {
         return false;
     }
 
-    /** Khung bảng menu {x, y, w, h}: PC = thẻ gọn giữa màn; máy cảm ứng = bảng phải ~65 % bề ngang, cao trọn vùng an toàn. */
-    static int[] khungBang() {
-        int n = TEN.length;
-        boolean dt = ChuDe.dt();
-        int k = Math.max(ChuDe.KHE, Bang.cach());   // khe >= khoảng cách chạm tối thiểu
-        if (dt) {
-            int w = Math.max(300, (Bang.phai() - Bang.trai()) * 65 / 100);
-            return new int[]{Bang.phai() - w, Bang.tren(), w, Bang.duoi() - Bang.tren()};
+    /**
+     * 0.9.6 MENU KIỂU POKÉMON GO: thế giới mờ 55 %, Poké Ball giữa đáy (cùng chỗ nút Menu của HUD) thành nút ĐÓNG
+     * (đĩa trắng X), 5 nút TRÒN to xếp vòng cung trên nó (việc dùng nhiều nhất) + hàng 5 viên phụ phía trên (việc ít
+     * dùng). Không còn bảng trắng to với ô nhỏ trôi nổi.
+     */
+    static final int[] CHINH = {I_POKEMON, I_DEX, I_CUA_HANG, I_DOI, I_SU_KIEN};
+    static final int[] PHU = {I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+    static final int[] GOC = {166, 128, 90, 52, 14};
+
+    static int rNut() {
+        return Math.max(VungCham.MIN / 2 + 1, ChuDe.dt() ? 25 : 21);
+    }
+
+    /** Tâm Poké Ball / nút đóng (= nút Menu giữa đáy HUD). */
+    static int yBong() {
+        return Canvas.h - 17 - 5;
+    }
+
+    /** Bán kính vòng cung (theo cao màn: đủ chỗ hàng phụ phía trên). */
+    static int banKinhCung() {
+        int r = rNut();
+        int k = Math.max(ChuDe.KHE, Bang.cach()), hv = caoVienPhu();
+        int[] wv = new int[PHU.length];
+        for (int q = 0; q < PHU.length; q++) {
+            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
         }
-        int cot = 5, hang = (n + cot - 1) / cot;
-        int w = cot * O_W + (cot - 1) * k + 2 * ChuDe.DEM + 8;
-        int h = ChuDe.caoDau() + 1 + ChuDe.DEM + hang * oCao() + (hang - 1) * k + ChuDe.DEM + 6;
-        return new int[]{(Canvas.w - w) / 2, (Canvas.h - h) / 2, w, h};
+        int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
+        int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
+        return Math.max(2 * r + 30, Math.min(ChuDe.dt() ? 150 : 132, conCho));
     }
 
-    /** bề ngang / cạnh biểu tượng ô (PC); máy cảm ứng tính theo bảng */
-    static final int O_W = 74;
-
-    static int oCao() {
-        return 8 + coIcon() + 6 + 2 * ChuDe.cao(ChuDe.NHAN) + 4;
+    static int soHangPhu(int[] wv, int k, int wMax) {
+        int n = 1, tong = 0;
+        for (int q = 0; q < wv.length; q++) {
+            if (q > 0 && tong + k + wv[q] > wMax) {
+                n++;
+                tong = wv[q];
+            } else {
+                tong += wv[q] + (q > 0 ? k : 0);
+            }
+        }
+        return n;
     }
 
-    static int coIcon() {
-        return ChuDe.dt() ? 30 : 26;
+    static int caoVienPhu() {
+        return Bang.co(ChuDe.dt() ? 26 : 22);
     }
 
     public void paint(Graphics g) {
@@ -200,66 +243,100 @@ public final class ManMenu extends Screen {
         } catch (Throwable e) {
             // bỏ qua
         }
-        Bang.phuNen(g);
-        // chạm ra ngoài bảng = đóng (vùng phủ cả màn, đăng ký TRƯỚC: ô vẽ sau thắng)
+        Canvas.resetTrans(g);
+        Bang.khungMoTam();
+        int t = Bang.tuoiTam();
+        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, (0x8C * (60 + t * 40 / 140) / 100) << 24 | 0x101828);
+        // chạm ra ngoài = đóng (vùng phủ cả màn, đăng ký TRƯỚC: nút vẽ sau thắng)
         IAction dong = new IAction() {
             public void perform() {
                 ManMenu.ve();
             }
         };
         VungCham.them(g, 0, 0, Canvas.w, Canvas.h, dong, "nen-ngoai");
-        int[] kb = khungBang();
-        int[] c = Bang.khung(g, kb[0], kb[1], kb[2], kb[3], "Menu", null, 0, null, dong);
-        int x = c[0], y = c[1], w = c[2], h = c[3];
-        int k = Math.max(ChuDe.KHE, Bang.cach());   // khe >= khoảng cách chạm tối thiểu
-        int n = TEN.length;
-        int cot, tw, th = oCao();
-        if (ChuDe.dt()) {
-            cot = w >= 5 * 70 ? 5 : 4;
-            tw = (w - (cot - 1) * k) / cot;
-            th = Math.max(th, Math.min(tw, (h - k) / ((n + cot - 1) / cot)));
-        } else {
-            cot = 5;
-            tw = O_W;
-        }
-        int hang = (n + cot - 1) / cot;
-        int hLuoi = hang * th + (hang - 1) * k;
-        int y0 = y + Math.max(0, (h - hLuoi) / 2);
-        for (int i = 0; i < n; i++) {
-            final int m = i;
-            int r = i / cot;
-            int trongHang = Math.min(cot, n - r * cot);   // hàng cuối thiếu ô: canh giữa
-            int wHang = trongHang * tw + (trongHang - 1) * k;
-            int x0 = x + (w - wHang) / 2;
-            o(g, x0 + (i % cot) * (tw + k), y0 + r * (th + k), tw, th, i, new IAction() {
+        int cx = Canvas.hw, cy = yBong();
+        int r = rNut(), R = banKinhCung();
+        // hiệu ứng mở: vòng cung bung ra từ Poké Ball (140 ms)
+        int Rv = R * (70 + t * 30 / 140) / 100;
+        for (int q = 0; q < CHINH.length; q++) {
+            final int i = CHINH[q];
+            int a = GOC[q];
+            int x = cx + cos(a) * Rv / 1024, y = cy - sin(a) * Rv / 1024;
+            nutTo(g, x, y, r, i, new IAction() {
                 public void perform() {
-                    ManMenu.lam(m);
+                    ManMenu.lam(i);
                 }
             });
         }
+        // viên phụ phía trên vòng cung (xuống dòng khi không vừa bề ngang, mỗi hàng canh giữa)
+        int hv = caoVienPhu();
+        int k = Math.max(ChuDe.KHE, Bang.cach());
+        int wMax = Bang.phai() - Bang.trai() - 8;
+        int[] wv = new int[PHU.length];
+        for (int q = 0; q < PHU.length; q++) {
+            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
+        }
+        int soHang = soHangPhu(wv, k, wMax);
+        int yv = Math.max(Bang.tren() + 4, cy - R - r - 14 - hv - (soHang - 1) * (hv + k));
+        int q0 = 0;
+        while (q0 < PHU.length) {
+            int tong = 0, q1 = q0;
+            while (q1 < PHU.length && (q1 == q0 || tong + k + wv[q1] <= wMax)) {
+                tong += wv[q1] + (q1 > q0 ? k : 0);
+                q1++;
+            }
+            int xv = cx - tong / 2;
+            for (int q = q0; q < q1; q++) {
+                final int i = PHU[q];
+                vienPhu(g, xv, yv, wv[q], hv, i, new IAction() {
+                    public void perform() {
+                        ManMenu.lam(i);
+                    }
+                });
+                xv += wv[q] + k;
+            }
+            yv += hv + k;
+            q0 = q1;
+        }
+        // Poké Ball giữa đáy -> nút đóng (đĩa trắng, X tối)
+        int sb = Math.max(VungCham.MIN, 38);
+        Bang.nutDong(g, cx - sb / 2, cy - sb / 2, sb, dong);
     }
 
-    /** Ô phẳng: biểu tượng trong ô vuông bo góc màu nhạt + nhãn dưới (tối đa 2 dòng), chấm đỏ nhỏ khi có mới. */
-    static void o(Graphics g, int x, int y, int w, int h, int i, Object viec) {
-        boolean an = Canvas.isPointerDown && Canvas.px >= x && Canvas.px < x + w && Canvas.py >= y && Canvas.py < y + h;
-        if (an) {
-            GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_O, ChuDe.NEN_PHU);
-        }
-        int s = coIcon() + 10;
-        int xi = x + (w - s) / 2, yi = y + 6;
-        int mau = MAU[i];
-        GiaoDien.khoi(g, xi, yi, s, s, ChuDe.BO_O + 2, GiaoDien.pha(mau, 0xFFFFFF, 6, 7));
-        int ic = coIcon() - 4;
-        BieuTuong.ve(g, HINH[i], xi + (s - ic) / 2, yi + (s - ic) / 2, ic, mau, GiaoDien.pha(mau, 0xFFFFFF, 6, 7));
-        String[] d = ChuDe.ngat(TEN[i], ChuDe.NHAN, w - 4, 2);
-        int lh = ChuDe.cao(ChuDe.NHAN);
-        int yt = yi + s + 4;
-        for (int q = 0; q < d.length; q++) {
-            ChuDe.chu(g, d[q], x + w / 2, yt + q * lh, ChuDe.NHAN, ChuDe.CHU, 2);
-        }
+    /** Nút tròn to vòng cung: đĩa trắng + icon màu, nhãn đậm dưới; chấm đỏ khi có mới. */
+    static void nutTo(Graphics g, int x, int y, int r, int i, Object viec) {
+        Bang.nutTron(g, x, y, r, HINH[i], MAU[i], false, null, viec, "menu-" + TEN[i]);
+        // nhãn: viên trắng mờ dưới đĩa (đọc rõ trên thế giới tối)
+        String ten = TEN[i];
+        int wt = ChuDe.rong(ten, ChuDe.SO) + 12, ht = ChuDe.cao(ChuDe.SO) + 2;
+        KieuO.phu(g, x - wt / 2, y + r + 4, wt, ht, 0x66101828);
+        ChuDe.chuGiua(g, ten, x, y + r + 4, ht, ChuDe.SO, 0xFFFFFF, 2);
         if (cham(i)) {
-            ChuDe.cham(g, xi + s - 2, yi + 2);
+            ChuDe.cham(g, x + r * 7 / 10, y - r * 7 / 10);
+        }
+    }
+
+    /** Viên phụ (việc ít dùng): viên trắng, đĩa icon nhỏ màu nhạt + nhãn. */
+    static void vienPhu(Graphics g, int x, int y, int w, int h, int i, Object viec) {
+        boolean an = Bang.dangAn(g, x, y, w, h);
+        GiaoDien.khoi(g, x, y + 1, w, h, h / 2, ChuDe.BONG);
+        GiaoDien.khoi(g, x, y, w, h, h / 2, an ? ChuDe.NEN_PHU : ChuDe.NEN);
+        int s = h - 6, mau = MAU[i];
+        GiaoDien.khoi(g, x + 3, y + 3, s, s, s / 2, GiaoDien.pha(mau, 0xFFFFFF, 5, 6));
+        int ic = s * 2 / 3;
+        BieuTuong.ve(g, HINH[i], x + 3 + (s - ic) / 2, y + 3 + (s - ic) / 2, ic, mau, GiaoDien.pha(mau, 0xFFFFFF, 5, 6));
+        ChuDe.chuGiua(g, TEN[i], x + s + 8, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
+        if (cham(i)) {
+            ChuDe.cham(g, x + 3 + s - 1, y + 4);
         }
         VungCham.them(g, x, y, w, h, viec, "menu-" + TEN[i]);
+    }
+
+    static int sin(int goc) {
+        return (int) (Math.sin(Math.toRadians(goc)) * 1024);
+    }
+
+    static int cos(int goc) {
+        return (int) (Math.cos(Math.toRadians(goc)) * 1024);
     }
 }

@@ -21,7 +21,7 @@ public final class ChuApk extends game.pokemon.ChuUI {
     private final Path duong = new Path();
     private final RectF rf = new RectF();
     @SuppressWarnings("unchecked")
-    private final HashMap<String, Integer>[] rong = new HashMap[3 * 512];
+    private final HashMap<String, Integer>[] rong = new HashMap[4 * 512];
 
     private ChuApk() {
         net.setStyle(Paint.Style.STROKE);
@@ -43,7 +43,7 @@ public final class ChuApk extends game.pokemon.ChuUI {
     }
 
     public int rong(String s, float co, int dam) {
-        int k = Math.max(1, Math.min(511, Math.round(co * 10))) * 3 + Math.max(0, Math.min(2, dam));
+        int k = Math.max(1, Math.min(511, Math.round(co * 10))) * 4 + Math.max(0, Math.min(3, dam));
         HashMap<String, Integer> m = rong[k];
         if (m == null) {
             m = new HashMap<String, Integer>();
@@ -225,6 +225,9 @@ public final class ChuApk extends game.pokemon.ChuUI {
         int[] co = game.pokemon.AnhUI.CO_CHIEU;
         int t = co.length - 1;
         for (int i = 0; i < co.length; i++) if (co[i] >= px) { t = i; break; }
+        // 0.9.6 icon pixel-art: cỡ thật là bội số nguyên của một tấm -> phóng LÁNG GIỀNG GẦN NHẤT (mép sắc)
+        boolean ganNhat = false;
+        for (int i = co.length - 1; i >= 0; i--) if (px >= co[i] && px % co[i] == 0) { t = i; ganNhat = true; break; }
         long k1 = 3L << 61 | (long) o << 40 | (long) px << 8 | (tron ? 2 : 0) | (khoa ? 1 : 0), k2 = 0;
         Bitmap img = nho(k1, k2);
         if (img == null) {
@@ -258,7 +261,9 @@ public final class ChuApk extends game.pokemon.ChuUI {
                     p[i] = (a * 3 / 4) << 24 | l << 16 | l << 8 | l;
                 }
             }
-            img = thu(Bitmap.createBitmap(p, n, n, Bitmap.Config.ARGB_8888), px, px);
+            Bitmap bm = Bitmap.createBitmap(p, n, n, Bitmap.Config.ARGB_8888);
+            // 0.9.6 icon pixel-art: bội số nguyên -> phóng láng giềng gần nhất (filter = false), mép sắc
+            img = ganNhat ? (px == n ? bm : Bitmap.createScaledBitmap(bm, px, px, false)) : thu(bm, px, px);
             giu(k1, k2, img);
         }
         veAnh(g, img, x, y, s, s);

@@ -72,15 +72,15 @@ public final class TheTrangThai {
         float l = L, t = T, r = L + RONG, b = T + CAO;
         // 0.9.5: thẻ SÁNG mờ (trắng ~88 %), viền tối mảnh, chữ tối (ChuDe)
         GiaoDienHD.bong(g2, l, t, r, b, 12, 1.5f);
-        GiaoDienHD.tronDoc(g2, l, t, r, b, 12, 0xE6FFFFFF, 0xDEF3F6FB);
-        GiaoDienHD.vienTron(g2, l, t, r, b, 12, 0.7f, 0x90000000 | game.pokemon.ChuDe.VIEN);
+        // 0.9.6 (kiểu GO): thẻ trắng, không viền tối
+        GiaoDienHD.tronDoc(g2, l, t, r, b, 12, 0xF2FFFFFF, 0xEAF6F9FA);
         // chân dung trong vòng vàng -> cam
         float ax = l + 23, ay = t + 22, ar = 19;
         g2.setPaint(new GradientPaint(0, ay - ar, new Color(0xFFD23A), 0, ay + ar, new Color(0xFF7A1A)));
         g2.fill(new Ellipse2D.Float(ax - ar, ay - ar, 2 * ar, 2 * ar));
         g2.setColor(Color.WHITE);
         g2.fill(new Ellipse2D.Float(ax - ar + 2.2f, ay - ar + 2.2f, 2 * ar - 4.4f, 2 * ar - 4.4f));
-        g2.setPaint(new GradientPaint(0, ay - ar, new Color(0xE9F2FF), 0, ay + ar, new Color(0xBFD6F5)));
+        g2.setPaint(new GradientPaint(0, ay - ar, new Color(0xE6F7F4), 0, ay + ar, new Color(0xBFE9E3)));
         g2.fill(new Ellipse2D.Float(ax - ar + 3, ay - ar + 3, 2 * ar - 6, 2 * ar - 6));
         java.awt.Shape cu2 = g2.getClip();
         g2.clip(new Ellipse2D.Float(ax - ar + 3, ay - ar + 3, 2 * ar - 6, 2 * ar - 6));
@@ -99,8 +99,7 @@ public final class TheTrangThai {
         g2.setFont(fLv);
         float wl = g2.getFontMetrics().stringWidth(lv) + 8;
         GiaoDienHD.tronDoc(g2, ax - wl / 2, ay + ar - 7, ax + wl / 2, ay + ar + 3, 5, 0xFFFFD23A, 0xFFFF8A1A);
-        GiaoDienHD.vienTron(g2, ax - wl / 2, ay + ar - 7, ax + wl / 2, ay + ar + 3, 5, 0.7f, 0xFF15284A);
-        chu(g2, lv, ax, ay + ar + 0.9f, fLv, 0xFF15284A, false, 2);
+        chu(g2, lv, ax, ay + ar + 0.9f, fLv, 0xFF000000 | game.pokemon.ChuDe.CHU, false, 2);
         if ((mc.basePointLeft > 0 || mc.skillPointLeft > 0) && System.currentTimeMillis() % 1000 < 650) {
             g2.setColor(new Color(mc.basePointLeft > 0 ? 0xFF7A1A : 0x40C8F8));
             // 0.9.5.1: chấm điểm chưa dùng ở góc TRÁI trên chân dung (không đè chữ tên bên phải)

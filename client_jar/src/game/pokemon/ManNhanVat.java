@@ -113,7 +113,14 @@ public final class ManNhanVat extends Screen {
         return Canvas.gameScr.mainChar;
     }
 
+    /** đã mở danh sách "Học chiêu mới" (rời đi = đã xem chiêu mới, ChamMoi) */
+    boolean daMoHocMoi;
+
     public void dong() {
+        if (this.daMoHocMoi) {
+            ChamMoi.daXemChieuMoi();
+            this.daMoHocMoi = false;
+        }
         AmThanh.phat(AmThanh.XAC_NHAN);
         Canvas.gameScr.switchToMe();
     }
@@ -320,6 +327,8 @@ public final class ManNhanVat extends Screen {
             };
         }
         MainChar m = mc();
+        Bang.mauTam = mauHePoke(m);   // 0.9.6: tấm nhuốm màu hệ Pokémon (kiểu GO)
+        Bang.chamTab = ChamMoi.tabsNhanVat(TABS.length);
         int[] c = Bang.khung(g, m.name == null ? "Hồ sơ" : m.name, TABS, this.tab, vt, new IAction() {
             public void perform() {
                 ManNhanVat.this.dong();
@@ -343,6 +352,7 @@ public final class ManNhanVat extends Screen {
                 veNgoaiHinh(g, x, y, w, h);
                 break;
         }
+        Bang.moDan(g);
         Canvas.resetTrans(g);
     }
 
@@ -404,66 +414,119 @@ public final class ManNhanVat extends Screen {
         }
     }
 
-    /** Nền sáng sân khấu (mọi tab - 0.9.5 bỏ khối navy). */
-    static void nenSanKhau(Graphics g, int x, int y, int w, int h) {
-        GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_O + 1, ChuDe.KE);
-        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, ChuDe.BO_O, 0xF4F9FF, 0xDCEAF9);
+    /** Màu hệ chính của Pokémon người chơi (sân khấu, tấm). */
+    static int mauHePoke(Char m) {
+        int he = m == null ? -1 : HePoke.he1(m.pokeDex);
+        return he < 0 ? ChuDe.CHINH : KieuO.mauHe(he);
     }
 
-    /** Sân khấu dưới chân Pokémon: bệ tròn nhiều lớp (xanh băng -> trắng) + bóng mềm. */
+    /** "Sức mạnh" hiển thị (chỉ để xem, kiểu CP): từ chỉ số thật của Pokémon. */
+    static int sucManh(MainChar m) {
+        long v = (long) m.getAttack() * 3 + m.defend + m.defend_magic + m.maxhp / 8 + m.maxmp / 16 + m.accurate + m.dodge + m.level * 12L;
+        return (int) Math.max(10, Math.min(999999, v));
+    }
+
+    /**
+     * Sân khấu kiểu GO (mọi tab): KHÔNG khung - đĩa tròn lớn dải màu hệ nhạt phía sau Pokémon trên nền tấm nhuốm màu.
+     */
+    static void nenSanKhau(Graphics g, int x, int y, int w, int h) {
+        int mau = mauHePoke(mc());
+        int r = Math.min(w, h) * 9 / 20;
+        int cx = x + w / 2, cy = y + h / 2 + h / 20;
+        GiaoDien.khoiDoc(g, cx - r, cy - r, 2 * r, 2 * r, r, GiaoDien.pha(mau, 0xFFFFFF, 3, 5), GiaoDien.pha(mau, 0xFFFFFF, 6, 8));
+        int r2 = r * 7 / 10;
+        GiaoDien.khoiDoc(g, cx - r2, cy - r2, 2 * r2, 2 * r2, r2, GiaoDien.pha(mau, 0xFFFFFF, 5, 8), GiaoDien.pha(mau, 0xFFFFFF, 4, 7));
+    }
+
+    /** Đĩa màu hệ + Pokémon người chơi đứng giữa (tab Chỉ số / Ngoại hình). */
+    static void sanKhauNguoi(Graphics g, int x, int y, int w, int h) {
+        nenSanKhau(g, x, y, w, h);
+        int r = Math.min(w, h) * 9 / 20, cy = y + h / 2 + h / 20;
+        float z = Math.max(1.5f, Math.min(4.2f, Math.min(w / 46f, r * 2 / 38f)));
+        banRongBe = r;
+        veNguoiChoi(g, mc(), x + w / 2, Math.min(y + h - (int) (4 * z), cy + r * 6 / 10), z);
+        banRongBe = 1000;
+    }
+
+    /** Bệ dưới chân Pokémon (kiểu GO): elip trắng mềm + vành màu hệ nhạt + bóng dưới chân. */
     /** nửa bề ngang tối đa của bệ (khoảng giữa hai cột ô) - người gọi đặt */
     static int banRongBe = 1000;
 
     static void veSanKhau(Graphics g, int cx, int yChan, float z) {
-        int rw = Math.min((int) (30 * z), banRongBe), rh = Math.max(6, rw * 3 / 10);
-        g.setColor(0xB9D3F0);
-        g.fillArc(cx - rw, yChan - rh / 2 + 2, 2 * rw, rh, 0, 360);
-        g.setColor(0xD5E6F8);
-        g.fillArc(cx - rw + 2, yChan - rh / 2, 2 * rw - 4, rh - 2, 0, 360);
-        g.setColor(0xEAF3FD);
-        g.fillArc(cx - rw * 3 / 4, yChan - rh / 3, rw * 3 / 2, rh * 2 / 3 - 1, 0, 360);
-        // bóng ngay dưới chân
-        g.setColor(0x9DB8DA);
-        int bw = (int) (14 * z), bh = Math.max(3, (int) (4 * z));
+        int mau = mauHePoke(mc());
+        int rw = Math.min((int) (28 * z), banRongBe), rh = Math.max(6, rw * 3 / 10);
+        g.setColor(GiaoDien.pha(mau, 0xFFFFFF, 2, 4));
+        g.fillArc(cx - rw, yChan - rh / 2 + 1, 2 * rw, rh, 0, 360);
+        g.setColor(0xFFFFFF);
+        g.fillArc(cx - rw + 2, yChan - rh / 2, 2 * rw - 4, rh - 3, 0, 360);
+        g.setColor(GiaoDien.pha(mau, 0xFFFFFF, 4, 6));
+        int bw = (int) (13 * z), bh = Math.max(3, (int) (3.5f * z));
         g.fillArc(cx - bw, yChan - bh / 2, 2 * bw, bh, 0, 360);
     }
 
+    /**
+     * Trang bị kiểu chi tiết Pokémon GO: "Sức mạnh" lớn trên, Pokémon to trên bệ tròn màu hệ, 12 ô trang bị TRÒN quanh
+     * (4 trái, 4 phải xếp cung, 4 dưới); bên phải: thẻ chỉ số / hành trang lọc / chi tiết món.
+     */
     private void veTrangBi(Graphics g, int x, int y, int w, int h) {
         MainChar m = mc();
         int s = canhO(), k = Bang.cach();
+        int rs = (s + 1) / 2;
         int lw = rongKhoiNv(w);
-        // nền khối nhân vật: trời sáng nhạt (0.9.5 - không còn khối navy)
-        nenSanKhau(g, x, y, lw, h);
-        int nHang = 4;
-        int caoCot = nHang * s + (nHang - 1) * k;
-        int yDuoi = y + h - s - k;
-        int y0 = y + k + Math.max(0, (yDuoi - k - (y + k) - caoCot) / 2);
-        int xT = x + k, xP = x + lw - k - s;
-        for (int i = 0; i < 4; i++) {
-            veO(g, i, xT, y0 + i * (s + k), s);
-            veO(g, 4 + i, xP, y0 + i * (s + k), s);
+        // Sức mạnh (hoặc tên ô đang chọn) trên cùng
+        int hSm = ChuDe.cao(ChuDe.PHU) + ChuDe.cao(ChuDe.SO_TO) - 2;
+        int cxS = x + lw / 2;
+        if (this.o >= 0 && this.o < TEN_O.length) {
+            String ten = TEN_O[this.o];
+            int wt = ChuDe.rong(ten, ChuDe.NHAN) + 18, ht = ChuDe.cao(ChuDe.NHAN) + 6;
+            GiaoDien.khoi(g, cxS - wt / 2, y + (hSm - ht) / 2, wt, ht, ht / 2, ChuDe.CHINH);
+            ChuDe.chuGiua(g, ten, cxS, y + (hSm - ht) / 2, ht, ChuDe.NHAN, 0xFFFFFF, 2);
+        } else {
+            ChuDe.chu(g, "SỨC MẠNH", cxS, y, ChuDe.PHU, ChuDe.CHU_PHU, 2);
+            ChuDe.chu(g, String.valueOf(sucManh(m)), cxS, y + ChuDe.cao(ChuDe.PHU) - 3, ChuDe.SO_TO, ChuDe.CHU, 2);
         }
-        int wDuoi = 4 * s + 3 * k;
-        int xd = x + (lw - wDuoi) / 2;
-        for (int i = 0; i < 4; i++) {
-            veO(g, 8 + i, xd + i * (s + k), yDuoi, s);
+        int yTren = y + hSm + 2;
+        int d = 2 * rs, b = d + k + 1;   // đường kính ô tròn, bước (khe >= cach)
+        boolean gon = 4 * b - k + k + d > y + h - yTren;   // không đủ cao cho 4 hàng + hàng dưới: 2 cột x 3 hàng mỗi bên
+        int yDuoi = gon ? y + h : y + h - d;
+        // sân khấu: đĩa màu hệ giữa vùng ô
+        int coCot = gon ? 2 * b : b;
+        nenSanKhau(g, x + coCot - 4, yTren, lw - 2 * coCot + 8, yDuoi - k - yTren);
+        if (gon) {
+            int caoCot = 3 * b - k - 1;
+            int y0 = yTren + Math.max(0, (yDuoi - yTren - caoCot) / 2);
+            for (int i = 0; i < 6; i++) {
+                int c = i / 3, r = i % 3;
+                veO(g, i, x + rs + 1 + c * b, y0 + r * b + rs, rs);
+                veO(g, 6 + i, x + lw - rs - 1 - c * b, y0 + r * b + rs, rs);
+            }
+        } else {
+            int caoCot = 4 * b - k - 1;
+            int y0 = yTren + Math.max(0, (yDuoi - k - yTren - caoCot) / 2);
+            for (int i = 0; i < 4; i++) {
+                int lech = i == 1 || i == 2 ? rs / 3 : 0;   // cung nhẹ ôm lấy Pokémon
+                veO(g, i, x + rs + 2 + lech, y0 + i * b + rs, rs);
+                veO(g, 4 + i, x + lw - rs - 2 - lech, y0 + i * b + rs, rs);
+            }
+            int wDuoi = 4 * d + 3 * (k + 5);
+            int xd = x + (lw - wDuoi) / 2;
+            for (int i = 0; i < 4; i++) {
+                veO(g, 8 + i, xd + i * (d + k + 5) + rs, yDuoi + rs, rs);
+            }
         }
+        int s0 = s;
+        s = coCot;
         // Pokémon to ở giữa
-        int giuaL = xT + s + k, giuaR = xP - k;
-        int cao = yDuoi - k - (y + k);
-        float z = Math.max(1.5f, Math.min(3.2f, Math.min((giuaR - giuaL) / 44f, cao / 40f)));
+        int giuaL = x + s + 4, giuaR = x + lw - s - 4;
+        int cao = yDuoi - k - yTren;
+        // đứng giữa đĩa màu hệ (cùng phép tính nenSanKhau), chân hơi dưới tâm
+        int wD = lw - 2 * s + 8, rD = Math.min(wD, cao) * 9 / 20, cyD = yTren + cao / 2 + cao / 20;
+        float z = Math.max(1.5f, Math.min(4.2f, Math.min((giuaR - giuaL) / 40f, rD * 2 / 38f)));
         int cx = (giuaL + giuaR) / 2;
-        int yChan = yDuoi - k - (int) (6 * z);
+        int yChan = Math.min(yDuoi - k - (int) (4 * z), cyD + rD * 6 / 10);
         banRongBe = (giuaR - giuaL) / 2 - 2;
         veNguoiChoi(g, m, cx, yChan, z);
         banRongBe = 1000;
-        // tên ô đang chọn trên đầu Pokémon
-        if (this.o >= 0 && this.o < TEN_O.length) {
-            String ten = TEN_O[this.o];
-            int wt = ChuDe.rong(ten, ChuDe.NHAN) + 16, ht = ChuDe.cao(ChuDe.NHAN) + 6;
-            GiaoDien.khoi(g, cx - wt / 2, y + k, wt, ht, ht / 2, ChuDe.DO);
-            ChuDe.chuGiua(g, ten, cx, y + k, ht, ChuDe.NHAN, 0xFFFFFF, 2);
-        }
         if (nhanO >= 0 && nhanO < TEN_O.length) {
             String ten = TEN_O[nhanO];
             int wt = ChuDe.rong(ten, ChuDe.NHAN_NHO) + 12, ht = ChuDe.cao(ChuDe.NHAN_NHO) + 4;
@@ -483,10 +546,12 @@ public final class ManNhanVat extends Screen {
         }
     }
 
-    private void veO(Graphics g, final int i, int x, int y, int s) {
+    /** Ô trang bị TRÒN tâm (cx, cy) bán kính r. */
+    private void veO(Graphics g, final int i, int cx, int cy, int r) {
+        int s = 2 * r, x = cx - r, y = cy - r;
         ItemInInventory it = i == O_THU ? null : dangMac(i);
         boolean co = it != null || (i == O_THU && dangCuoi(mc()));
-        Bang.oDo(g, x, y, s, co, this.o == i, new IAction() {
+        Bang.oTron(g, cx, cy, r, co, this.o == i, new IAction() {
             public void perform() {
                 ManNhanVat.this.chonO(i);
             }
@@ -495,7 +560,7 @@ public final class ManNhanVat extends Screen {
         if (!co) {
             // ô trống: bóng mờ kiểu ô (mũ, vòng cổ, găng...) thay dấu "+"
             int ic = s * 11 / 20;
-            BieuTuong.ve(g, HINH_O[i], x + (s - ic) / 2, y + (s - ic) / 2, ic, 0xC3CCDA, ChuDe.NEN_PHU);
+            BieuTuong.ve(g, HINH_O[i], x + (s - ic) / 2, y + (s - ic) / 2, ic, 0xB3BFC9, ChuDe.NEN_PHU);
         }
         if (Canvas.isPointerDown && Canvas.px >= x && Canvas.px < x + s && Canvas.py >= y && Canvas.py < y + s) {
             nhanO = i;   // nhấn giữ / di chuột: nhãn tên ô
@@ -506,13 +571,16 @@ public final class ManNhanVat extends Screen {
             ItemTemplate t = mau(it);
             int hiem = KieuO.mauHiem(it.colorName);
             if (hiem >= 0) {
-                KieuO.khungHiem(g, x + 2, y + 2, s - 4, hiem);
+                // độ hiếm: vành màu quanh đĩa
+                g.setColor(hiem);
+                g.drawArc(x, y, s - 1, s - 1, 0, 360);
+                g.drawArc(x + 1, y + 1, s - 3, s - 3, 0, 360);
             }
             if (t != null) {
                 Bang.icon(g, t.idIcon, x + s / 2, y + s / 2, z);
             }
             if (it.plusTemplate > 0) {
-                KieuO.capCuong(g, x + 2, y + 2, it.plusTemplate);
+                KieuO.capCuong(g, x + r / 3, y, it.plusTemplate);
             }
         } else if (co) {
             MainChar m = mc();
@@ -635,7 +703,7 @@ public final class ManNhanVat extends Screen {
         if (cap != null && cap.length() > 0) {
             String c = "Cấp " + cap;
             wv = Font.borderFont.getWidth(c) + 14;
-            GiaoDien.vien(g, x + w - 8 - wv, y + 3, wv, hv, dangDung ? ChuDe.LA : ChuDe.XANH, c);
+            GiaoDien.vien(g, x + w - 8 - wv, y + 3, wv, hv, dangDung ? ChuDe.LA : ChuDe.CHINH, c);
             wv += 6;
         }
         String so = id != null && id.length() > 0 ? "#" + id : null;
@@ -675,14 +743,27 @@ public final class ManNhanVat extends Screen {
         }, null);
     }
 
-    /** Khối chỉ số (tên, cấp, hệ, HP/PP/EXP, chỉ số chính). gon = kèm nút Hành trang / Tiềm năng. */
+    /**
+     * Khối chỉ số kiểu GO: loài to + viên hệ + Lv, thanh HP / PP / EXP mảnh có nhãn, hàng chỉ số sạch (nhãn xám, số
+     * đậm, kẻ mờ), nút viên. gon = kèm nút Hành trang / Tiềm năng.
+     */
     private void veChiSo(Graphics g, int x, int y, int w, int h, boolean gon) {
         MainChar m = mc();
         int k = Bang.cach();
         Bang.the(g, x, y, w, h);
-        int xx = x + 8, yy = y + 6, ww = w - 16;
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, m.name + "  Lv." + m.level, ww), xx, yy, 0);
-        yy += Font.blackFont.getHeight() + 3;
+        int xx = x + 10, yy = y + 6, ww = w - 20;
+        // loài + Lv
+        String loai = LoaiPokemonClient.ten(m.pokeDex);
+        if (loai == null || loai.length() == 0) {
+            loai = m.name;
+        }
+        String lv = "Lv." + m.level;
+        int wlv = ChuDe.rong(lv, ChuDe.SO) + 14, hlv = ChuDe.cao(ChuDe.SO) + 2;
+        ChuDe.chu(g, ChuDe.cat(loai, ChuDe.TIEU_DE, ww - wlv - 8), xx, yy, ChuDe.TIEU_DE, ChuDe.CHU, 0);
+        int ytd = yy + (ChuDe.cao(ChuDe.TIEU_DE) - hlv) / 2;
+        GiaoDien.khoi(g, xx + ww - wlv, ytd, wlv, hlv, hlv / 2, ChuDe.CHINH_NHAT);
+        ChuDe.chuGiua(g, lv, xx + ww - wlv / 2, ytd, hlv, ChuDe.SO, ChuDe.CHINH_TOI, 2);
+        yy += ChuDe.cao(ChuDe.TIEU_DE) + 1;
         int he1 = HePoke.he1(m.pokeDex), he2 = HePoke.he2(m.pokeDex);
         int xb = xx;
         if (he1 >= 0) {
@@ -691,26 +772,23 @@ public final class ManNhanVat extends Screen {
         if (he2 >= 0 && he2 != he1) {
             xb += KieuO.vienHe(g, xb, yy, he2) + 4;
         }
-        String loai = LoaiPokemonClient.ten(m.pokeDex);
-        if (loai != null && xb + Font.arialFont.getWidth(loai) < xx + ww) {
-            Font.arialFont.drawString(g, loai, xb, yy + 1, 0);
-        }
         yy += 17;
-        int hb = Math.max(11, Font.borderFont.getHeight() + 2);
-        if (ww >= 300) {
-            // HP | PP một hàng: chừa chỗ cho đủ chỉ số
-            int wt = (ww - 6) / 2;
-            Bang.thanh(g, xx, yy, wt, hb, m.hp, m.maxhp, 0, "HP " + m.hp + "/" + m.maxhp);
-            Bang.thanh(g, xx + ww - wt, yy, wt, hb, m.mp, m.maxmp, 1, "PP " + m.mp + "/" + m.maxmp);
+        // thanh mảnh có nhãn
+        int hb = ChuDe.dt() ? 6 : 5;
+        int lh = ChuDe.cao(ChuDe.PHU);
+        if (ww >= 260) {
+            int wt = (ww - 12) / 2;
+            thanhNhan(g, xx, yy, wt, hb, "HP", m.hp + " / " + m.maxhp, m.hp, m.maxhp, 0);
+            thanhNhan(g, xx + ww - wt, yy, wt, hb, "PP", m.mp + " / " + m.maxmp, m.mp, m.maxmp, 1);
         } else {
-            Bang.thanh(g, xx, yy, ww, hb, m.hp, m.maxhp, 0, "HP " + m.hp + "/" + m.maxhp);
-            yy += hb + 3;
-            Bang.thanh(g, xx, yy, ww, hb, m.mp, m.maxmp, 1, "PP " + m.mp + "/" + m.maxmp);
+            thanhNhan(g, xx, yy, ww, hb, "HP", m.hp + " / " + m.maxhp, m.hp, m.maxhp, 0);
+            yy += lh + hb + 4;
+            thanhNhan(g, xx, yy, ww, hb, "PP", m.mp + " / " + m.maxmp, m.mp, m.maxmp, 1);
         }
-        yy += hb + 3;
+        yy += lh + hb + 4;
         // máy chủ chỉ gửi % kinh nghiệm (gói 3: lvpercent phần nghìn), không gửi số EXP
-        Bang.thanh(g, xx, yy, ww, hb, m.lvpercent, 1000, 2, "EXP " + phanNghin(m.lvpercent));
-        yy += hb + 5;
+        thanhNhan(g, xx, yy, ww, hb, "EXP", phanNghin(m.lvpercent), m.lvpercent, 1000, 2);
+        yy += lh + hb + 6;
         String[][] cs = {
             {"Tấn công", String.valueOf(m.getAttack())},
             {"Phòng thủ", String.valueOf(m.defend)},
@@ -722,15 +800,15 @@ public final class ManNhanVat extends Screen {
         };
         int nutH = gon ? Bang.co(26) : 0;
         int day = y + h - 6 - (gon ? nutH + k : 0);
-        int lh = Font.arialFont.getHeight() + 2;
+        int lhs = ChuDe.cao(ChuDe.THUONG) + 3;
         int cot = ww >= 520 ? 3 : (ww >= 200 ? 2 : 1);
-        int ke = cot == 3 ? 14 : 8;
+        int ke = cot == 3 ? 16 : 12;
         int wc = (ww - (cot - 1) * ke) / cot;
         int n = 0;
         for (int i = 0; i < cs.length; i++) {
             int cc = n % cot, hh = n / cot;
-            int yc = yy + hh * lh;
-            if (yc + lh > day) {
+            int yc = yy + hh * lhs;
+            if (yc + lhs > day) {
                 break;
             }
             hangChiSo(g, xx + cc * (wc + ke), yc, wc, cs[i][0], cs[i][1]);
@@ -741,8 +819,8 @@ public final class ManNhanVat extends Screen {
         if (sv != null) {
             for (int i = 0; i < sv.length; i++) {
                 int cc = n % cot, hh = n / cot;
-                int yc = yy + hh * lh;
-                if (yc + lh > day) {
+                int yc = yy + hh * lhs;
+                if (yc + lhs > day) {
                     break;
                 }
                 String s = sv[i];
@@ -762,13 +840,21 @@ public final class ManNhanVat extends Screen {
                     ManNhanVat.this.chonO(O_TAT_CA);
                 }
             }, "hanh-trang");
-            Bang.nut(g, xx + wn + k, y + h - 6 - nutH, wn, nutH, "Tiềm năng", Bang.PHU, new IAction() {
+            Bang.nut(g, xx + wn + k, y + h - 6 - nutH, wn, nutH, "Tiềm năng", m.basePointLeft > 0 ? Bang.CHINH : Bang.PHU, new IAction() {
                 public void perform() {
                     HanhDong.moTiemNang();
                 }
             }, "tiem-nang");
             BangTiemNangHD.chamDo(g, xx + wn + k, y + h - 6 - nutH, wn);
         }
+    }
+
+    /** Thanh mảnh kiểu GO: nhãn trái + giá trị phải (chữ phụ) trên, thanh bo tròn cao hb dưới. */
+    static void thanhNhan(Graphics g, int x, int y, int w, int hb, String nhan, String gt, long a, long b, int loai) {
+        int lh = ChuDe.cao(ChuDe.PHU);
+        ChuDe.chu(g, nhan, x, y, ChuDe.SO, ChuDe.CHU_PHU, 0);
+        ChuDe.chu(g, gt, x + w, y, ChuDe.PHU, ChuDe.CHU, 1);
+        GiaoDien.thanh(g, x, y + lh + 1, w, hb, a, b, loai);
     }
 
     /** Phần nghìn -> "12,5%". */
@@ -806,9 +892,13 @@ public final class ManNhanVat extends Screen {
         return l.indexOf("chiến trường") >= 0 || l.indexOf("trụ") >= 0 || l.indexOf("giáp") >= 0;
     }
 
+    /** Hàng chỉ số kiểu GO: nhãn xám trái, số đậm phải, đường kẻ mờ dưới. */
     static void hangChiSo(Graphics g, int x, int y, int w, String ten, String gt) {
-        Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, ten, w - Font.blackFont.getWidth(gt) - 6), x, y, 0);
-        Font.blackFont.drawString(g, gt, x + w, y, 1);
+        int wg = ChuDe.rong(gt, ChuDe.SO);
+        ChuDe.chu(g, ChuDe.cat(ten, ChuDe.THUONG, w - wg - 6), x, y, ChuDe.THUONG, ChuDe.CHU_PHU, 0);
+        ChuDe.chu(g, gt, x + w, y, ChuDe.SO, ChuDe.CHU, 1);
+        g.setColor(ChuDe.NEN_PHU);
+        g.fillRect(x, y + ChuDe.cao(ChuDe.THUONG) + 1, w, 1);
     }
 
     static final String[] LOC = {"Tất cả", "Thuốc", "Trang bị", "Nguyên liệu", "Nhiệm vụ"};
@@ -1224,7 +1314,7 @@ public final class ManNhanVat extends Screen {
         boolean coGo = this.xemDangMac;
         boolean duCap = t == null || capCan(it, t) <= mc().level;
         if (coGo) {
-            Bang.nut(g, x + 6, yn, wn, nutH, "Gỡ trang bị", Bang.CHINH, new IAction() {
+            Bang.nut(g, x + 6, yn, wn, nutH, "Gỡ trang bị", Bang.PHU, new IAction() {
                 public void perform() {
                     DungDo.thao(it);
                     ManNhanVat.this.xem = null;
@@ -1319,9 +1409,7 @@ public final class ManNhanVat extends Screen {
     private void veChiSoDay(Graphics g, int x, int y, int w, int h) {
         int k = Bang.cach();
         int lw = Math.min(w * 40 / 100, 220);
-        nenSanKhau(g, x, y, lw, h);
-        float z = Math.max(1.5f, Math.min(3.4f, Math.min(lw / 48f, h / 40f)));
-        veNguoiChoi(g, mc(), x + lw / 2, y + h - (int) (12 * z), z);
+        sanKhauNguoi(g, x, y, lw, h);
         veChiSo(g, x + lw + k, y, w - lw - k, h, true);
     }
 
@@ -1405,9 +1493,17 @@ public final class ManNhanVat extends Screen {
                 ManNhanVat.this.ds.den(0);
             }
         }};
+        // 0.9.6 dấu dẫn đường: chip có chấm theo ChamMoi; danh sách chiêu mới đã MỞ rồi rời đi = đã xem
+        if (!this.hocMoi && this.daMoHocMoi) {
+            ChamMoi.daXemChieuMoi();
+            this.daMoHocMoi = false;
+        }
+        final boolean chamMoi = ChamMoi.co(ChamMoi.CHIEU_MOI);
+        Bang.chamChip = new boolean[]{ChamMoi.chipKyNang(0), chamMoi};
         yl += Bang.hangChip(g, x, yl, w, new String[]{"Chiêu của Pokémon", "Học chiêu mới (" + demHocMoi(lop) + ")"}, this.hocMoi ? 1 : 0, vc) + k;
         int hl = y + h - yl;
         if (this.hocMoi) {
+            this.daMoHocMoi = true;
             final Vector moi = chieuHocMoi();
             if (moi.size() == 0) {
                 Bang.trong(g, x, yl, w, hl, "Chưa có chiêu mới để học", "Gặp NPC dạy chiêu ở thành phố khi đủ cấp.");
@@ -1434,6 +1530,9 @@ public final class ManNhanVat extends Screen {
                     int s = h - 6;
                     int he = PokeChieu.he(lop, sk.idSkill);
                     KieuO.oChieuSk(g, x + 3, y + 3, s, s, lop, sk.idSkill, daHoc);
+                    if (chamMoi && !daHoc) {
+                        ChuDe.cham(g, x + 3 + s - 2, y + 5);
+                    }
                     int wg;
                     if (daHoc) {
                         int hv = Math.max(14, Font.borderFont.getHeight() + 2);
@@ -1458,6 +1557,12 @@ public final class ManNhanVat extends Screen {
         }
         final int cot = w >= 420 ? 2 : 1;
         final int wc0 = w;
+        // hàng có chấm (điểm kỹ năng): chiêu học được bằng 1 điểm; không có thì chiêu đã học chưa tối đa (cộng điểm)
+        boolean coHoc0 = false;
+        for (int i = 0; i < so && m.skillPointLeft > 0; i++) {
+            coHoc0 |= capChieu(i) == 0 && m.level >= capCanChieu(lop, i, 0);
+        }
+        final boolean coHoc = coHoc0;
         Bang.danhSach(g, this.ds, x, yl, w, hl, (so + cot - 1) / cot, Bang.caoHang(), new Bang.Hang() {
             public void ve(Graphics g, int hang, int x, int y, int w, int h) {
                 int kk = Bang.cach();
@@ -1482,7 +1587,7 @@ public final class ManNhanVat extends Screen {
                     int mau;
                     if (cap > 0) {
                         tt = cap >= PokeChieu.CAP_TOI_DA ? "Tối đa" : "Cấp " + cap;
-                        mau = ChuDe.XANH;
+                        mau = ChuDe.CHINH;
                     } else if (cap == 0) {
                         int can = capCanChieu(lop, i, 0);
                         boolean du = m.level >= can;
@@ -1495,6 +1600,9 @@ public final class ManNhanVat extends Screen {
                     int hv = Math.max(14, Font.borderFont.getHeight() + 2);
                     int wv = Font.borderFont.getWidth(tt) + 14;
                     GiaoDien.vien(g, xr + wc - 8 - wv, y + 3, wv, hv, mau, tt);
+                    if (m.skillPointLeft > 0 && (coHoc ? cap == 0 && m.level >= capCanChieu(lop, i, 0) : cap > 0 && cap < PokeChieu.CAP_TOI_DA)) {
+                        ChuDe.cham(g, xr + wc - 8, y + 4);
+                    }
                     int xt = xr + s + 9;
                     Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, PokeChieu.ten(lop, i), wc - s - 22 - wv), xt, y + 2, 0);
                     int yp = y + 3 + Font.blackFont.getHeight();
@@ -1624,8 +1732,9 @@ public final class ManNhanVat extends Screen {
         nenSanKhau(g, x, y, lw, h);
         // người chơi (cưỡi thú nếu đang cưỡi - veNguoiChoi) + Pokémon đi theo (-94 pokePetDex) bên cạnh
         boolean coPet = m.pokePetDex > 0 && PokeBody.coSprite(m.pokePetDex, m.pokePetShiny);
-        float z = Math.max(1.4f, Math.min(3.2f, Math.min(lw / (coPet ? 90f : 56f), h / 42f)));
-        int yChan = y + h - (int) (12 * z);
+        int rD = Math.min(lw, h) * 9 / 20, cyD = y + h / 2 + h / 20;
+        float z = Math.max(1.4f, Math.min(4f, Math.min(lw / (coPet ? 90f : 50f), rD * 2 / 40f)));
+        int yChan = Math.min(y + h - (int) (4 * z), cyD + rD * 6 / 10);
         int xNv = coPet ? x + lw * 40 / 100 : x + lw / 2;
         banRongBe = coPet ? lw * 30 / 100 : 1000;
         veNguoiChoi(g, m, xNv, yChan, z);
@@ -1649,9 +1758,7 @@ public final class ManNhanVat extends Screen {
     private void veNgoaiHinh(Graphics g, int x, int y, int w, int h) {
         int k = Bang.cach();
         int lw = Math.min(w * 42 / 100, 240);
-        nenSanKhau(g, x, y, lw, h);
-        float z = Math.max(1.5f, Math.min(3.4f, Math.min(lw / 48f, h / 40f)));
-        veNguoiChoi(g, mc(), x + lw / 2, y + h - (int) (12 * z), z);
+        sanKhauNguoi(g, x, y, lw, h);
         int xr = x + lw + k, wr = w - lw - k;
         Bang.the(g, xr, y, wr, h);
         NgoaiHinhMenu.nap();

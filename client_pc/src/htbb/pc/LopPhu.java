@@ -235,7 +235,7 @@ public final class LopPhu {
         float x = (W - w) / 2;
         float y = 64 * u;
         Kinh.bang(g, x, y, w, h, h, a);
-        Kinh.chuGiua(g, s, W / 2f, y + h / 2, Kinh.mo(Kinh.CHU, a), true);
+        Kinh.chuGiua(g, s, W / 2f, y + h / 2, Kinh.mo(Kinh.CHU, a), false);
     }
 
     /** Nút bánh răng nhỏ (mở Cài đặt) - giữa mép trên, cạnh nút bàn phím ảo của game. */
@@ -245,13 +245,13 @@ public final class LopPhu {
         float cy = NenPc.lechY + 4 * u + r;
         boolean sang = tro(cx - r, cy - r, 2 * r, 2 * r);
         int a = sang ? 255 : 150;
-        g.setColor(new Color(10, 20, 44, a * 200 / 255));
-        g.fill(new Ellipse2D.Float(cx - r, cy - r, 2 * r, 2 * r));
-        g.setColor(new Color(255, 255, 255, a * 140 / 255));
-        g.setStroke(new BasicStroke(1.2f * u));
-        g.draw(new Ellipse2D.Float(cx - r, cy - r, 2 * r, 2 * r));
-        // bánh răng
+        // 0.9.6: đĩa trắng bóng mềm, bánh răng xám đá
+        g.setColor(new Color(0, 0, 0, a * 40 / 255));
+        g.fill(new Ellipse2D.Float(cx - r, cy - r + 1.5f * u, 2 * r, 2 * r));
         g.setColor(new Color(255, 255, 255, a));
+        g.fill(new Ellipse2D.Float(cx - r, cy - r, 2 * r, 2 * r));
+        // bánh răng
+        g.setColor(Kinh.mo(Kinh.CHU_MO, a));
         float rr = r * 0.52f;
         g.setStroke(new BasicStroke(2.6f * u, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         for (int i = 0; i < 8; i++) {
@@ -267,7 +267,7 @@ public final class LopPhu {
             String s = "Cài đặt";
             float w = fm.stringWidth(s) + 16 * u;
             Kinh.bang(g, cx + r + 6 * u, cy - 12 * u, w, 24 * u, 12 * u, 255);
-            Kinh.chuGiua(g, s, cx + r + 6 * u + w / 2, cy, Kinh.CHU, true);
+            Kinh.chuGiua(g, s, cx + r + 6 * u + w / 2, cy, Kinh.CHU, false);
         }
         them(cx - r, cy - r, 2 * r, 2 * r, new Runnable() {
             public void run() {
@@ -277,20 +277,22 @@ public final class LopPhu {
     }
 
     // ================================================================ bảng cài đặt
-    private static final String[] TAB = {"Hiển thị", "Âm thanh", "Đổi phím", "Phím tắt", "Giới thiệu"};
-    private static final int[] TAB_BT = {Kinh.BT_MAN_HINH, Kinh.BT_LOA, Kinh.BT_BAN_PHIM, Kinh.BT_SET, Kinh.BT_THONG_TIN};
+    private static final String[] TAB = {"Hiển thị", "Âm thanh", "Đổi phím", "Phím tắt", "Tài khoản", "Giới thiệu"};
+    private static final int[] TAB_BT = {Kinh.BT_MAN_HINH, Kinh.BT_LOA, Kinh.BT_BAN_PHIM, Kinh.BT_SET, Kinh.BT_TAI_KHOAN, Kinh.BT_THONG_TIN};
+    private static final int TAB_TAI_KHOAN = 4;
     private static final int TAB_PHIM_TAT = 3;
     private static final int[][] DO_PHAN_GIAI = {{1280, 720}, {1600, 900}, {1920, 1080}, {2560, 1440}, {2560, 1080}, {1024, 768}, {1440, 1080}};
     private static final String[] TEN_DPG = {"1280×720", "1600×900", "1920×1080", "2560×1440", "2560×1080", "1024×768", "1440×1080"};
-    private static final Color NEN_THE = new Color(255, 255, 255, 16);
-    private static final Color VIEN_THE = new Color(255, 255, 255, 34);
-    private static final Color KE = new Color(255, 255, 255, 22);
+    // 0.9.6 (kiểu GO): thẻ trắng viền kẻ nhạt trên tấm sáng
+    private static final Color NEN_THE = Color.WHITE;
+    private static final Color VIEN_THE = new Color(game.pokemon.ChuDe.KE);
+    private static final Color KE = new Color(game.pokemon.ChuDe.NEN_PHU_TOI);
     private static java.awt.image.BufferedImage bieuTuongGame;
     private static boolean daNapBieuTuong;
 
     private static void veCaiDat(Graphics2D g, int W, int H, float u) {
         // nền tối mờ + chặn bấm xuống game
-        g.setColor(new Color(4, 8, 20, 165));
+        g.setColor(new Color(16, 24, 40, 115));
         g.fillRect(0, 0, W, H);
         them(0, 0, W, H, null);
         float pw = Math.min(W - 24 * u, 860 * u);
@@ -299,48 +301,32 @@ public final class LopPhu {
         float py = Math.round((H - ph) / 2);
         float r = 22 * u;
         Kinh.bang(g, px, py, pw, ph, r, 255);
-        // ---- đầu bảng: dải đỏ Poké + gạch vàng, Poké Ball, tiêu đề
+        // ---- đầu tấm (0.9.6 kiểu GO): KHÔNG dải màu - tiêu đề tròn đậm canh giữa, phụ đề nhạt, nút tròn trắng X trái
         float hh = 70 * u;
-        java.awt.Shape cu = g.getClip();
-        g.clip(new RoundRectangle2D.Float(px, py, pw, ph, r, r));
-        g.setPaint(new GradientPaint(0, py, Kinh.DO_SANG, 0, py + hh, new Color(0xB8290A)));
-        g.fill(new Rectangle2D.Float(px, py, pw, hh));
-        g.setPaint(new GradientPaint(0, py, new Color(255, 255, 255, 60), 0, py + hh * 0.5f, new Color(255, 255, 255, 0)));
-        g.fill(new Rectangle2D.Float(px, py, pw, hh * 0.5f));
-        g.setColor(Kinh.VANG);
-        g.fill(new Rectangle2D.Float(px, py + hh - 3 * u, pw, 3 * u));
-        g.setColor(new Color(0, 0, 0, 90));
-        g.fill(new Rectangle2D.Float(px, py + hh, pw, Math.max(1, u)));
-        g.setClip(cu);
-        float bR = 19 * u;
-        Kinh.pokeBall(g, px + 26 * u + bR, py + hh / 2 - 1 * u, bR);
-        float tx = px + 26 * u + 2 * bR + 16 * u;
         g.setFont(PhongChu.tieuDe().deriveFont(Font.BOLD, 27 * u));
-        Kinh.chu(g, "Cài đặt", tx, py + 38 * u, Color.WHITE);
+        FontMetrics ftd = g.getFontMetrics();
+        Kinh.chu(g, "Cài đặt", px + (pw - ftd.stringWidth("Cài đặt")) / 2, py + 40 * u, Kinh.CHU);
         g.setFont(f(false, 12.5f * u));
-        Kinh.chu(g, "Huyền Thoại Bảo Bối · bản PC", tx, py + 56 * u, new Color(255, 236, 214));
-        // nút đóng: vòng tròn + dấu X vẽ bằng nét (phông không có ký tự ✕)
+        FontMetrics fpd = g.getFontMetrics();
+        String pd = "Huyền Thoại Bảo Bối · bản PC";
+        Kinh.chu(g, pd, px + (pw - fpd.stringWidth(pd)) / 2, py + 58 * u, Kinh.CHU_MO);
         float br = 18 * u;
-        float bcx = px + pw - 24 * u - br, bcy = py + hh / 2 - 1 * u;
+        float bcx = px + 24 * u + br, bcy = py + hh / 2 - 1 * u;
         boolean sx = tro(bcx - br, bcy - br, 2 * br, 2 * br);
-        g.setColor(sx ? new Color(255, 255, 255, 235) : new Color(0, 0, 0, 60));
+        g.setColor(new Color(0, 0, 0, 30));
+        g.fill(new Ellipse2D.Float(bcx - br, bcy - br + 1.5f * u, 2 * br, 2 * br));
+        g.setColor(sx ? new Color(game.pokemon.ChuDe.NEN_PHU) : Color.WHITE);
         g.fill(new Ellipse2D.Float(bcx - br, bcy - br, 2 * br, 2 * br));
-        g.setColor(new Color(255, 255, 255, sx ? 255 : 150));
-        g.setStroke(new BasicStroke(1.2f * u));
-        g.draw(new Ellipse2D.Float(bcx - br, bcy - br, 2 * br, 2 * br));
-        Kinh.bieuTuong(g, Kinh.BT_DONG, bcx, bcy, 2 * br * 0.62f, sx ? Kinh.DO : Color.WHITE);
+        Kinh.bieuTuong(g, Kinh.BT_DONG, bcx, bcy, 2 * br * 0.55f, Kinh.CHU);
         them(bcx - br, bcy - br, 2 * br, 2 * br, new Runnable() {
             public void run() {
                 moCaiDat();
             }
         });
-        // ---- thanh thẻ: rãnh tối bo tròn, thẻ đang chọn vàng Pikachu
-        float trX = px + 22 * u, trY = py + hh + 16 * u, trW = pw - 44 * u, trH = 46 * u;
-        g.setColor(new Color(0, 0, 0, 80));
+        // ---- chip phân đoạn: rãnh xám xanh viên, thẻ đang chọn = viên trắng nổi chữ teal
+        float trX = px + 22 * u, trY = py + hh + 10 * u, trW = pw - 44 * u, trH = 46 * u;
+        g.setColor(new Color(game.pokemon.ChuDe.NEN_PHU_TOI));
         g.fill(new RoundRectangle2D.Float(trX, trY, trW, trH, trH, trH));
-        g.setColor(new Color(255, 255, 255, 26));
-        g.setStroke(new BasicStroke(1f));
-        g.draw(new RoundRectangle2D.Float(trX + 0.5f, trY + 0.5f, trW - 1, trH - 1, trH, trH));
         float o = 4 * u;
         float tw = (trW - 2 * o) / TAB.length;
         Font ft = f(true, 13.5f * u);
@@ -349,17 +335,15 @@ public final class LopPhu {
             boolean dang = tab == i;
             boolean sang = !dang && tro(x, y, w, h);
             if (dang) {
-                g.setColor(new Color(0, 0, 0, 70));
-                g.fill(new RoundRectangle2D.Float(x, y + 2 * u, w, h, h, h));
-                g.setPaint(new GradientPaint(0, y, new Color(0xFFDD4A), 0, y + h, new Color(0xF2B600)));
+                g.setColor(new Color(0, 0, 0, 26));
+                g.fill(new RoundRectangle2D.Float(x, y + 1.5f * u, w, h, h, h));
+                g.setColor(Color.WHITE);
                 g.fill(new RoundRectangle2D.Float(x, y, w, h, h, h));
-                g.setColor(new Color(255, 255, 255, 160));
-                g.draw(new RoundRectangle2D.Float(x + 0.5f, y + 0.5f, w - 1, h - 1, h, h));
             } else if (sang) {
-                g.setColor(new Color(255, 255, 255, 30));
+                g.setColor(new Color(255, 255, 255, 120));
                 g.fill(new RoundRectangle2D.Float(x, y, w, h, h, h));
             }
-            Color mau = dang ? Kinh.VIEN : sang ? Kinh.CHU : Kinh.CHU_MO;
+            Color mau = dang ? Kinh.CHINH_TOI : Kinh.CHU_MO;
             g.setFont(ft);
             FontMetrics fm = g.getFontMetrics();
             float s = 18 * u;
@@ -386,6 +370,7 @@ public final class LopPhu {
             case 1: veAmThanh(g, cx, cy, cw, ch, u); break;
             case 2: vePhim(g, cx, cy, cw, ch, u); break;
             case TAB_PHIM_TAT: vePhimTat(g, cx, cy, cw, ch, u); break;
+            case TAB_TAI_KHOAN: veTaiKhoan(g, cx, cy, cw, ch, u); break;
             default: veGioiThieu(g, cx, cy, cw, ch, u); break;
         }
         g.setClip(cu2);
@@ -395,7 +380,7 @@ public final class LopPhu {
     /** Tiêu đề nhóm (vàng, đậm) - trả y đỉnh thẻ. */
     private static float tieuDeNhom(Graphics2D g, String s, float x, float y, float u) {
         g.setFont(f(true, 12.5f * u));
-        Kinh.chu(g, s.toUpperCase(), x + 4 * u, y + 13 * u, Kinh.VANG);
+        Kinh.chu(g, s.toUpperCase(), x + 4 * u, y + 13 * u, Kinh.CHINH_TOI);
         return y + 22 * u;
     }
 
@@ -432,7 +417,7 @@ public final class LopPhu {
                                     boolean bat, Runnable doi) {
         boolean sang = tro(x, y, w, h);
         if (sang) {
-            g.setColor(new Color(255, 255, 255, 12));
+            g.setColor(new Color(0, 0, 0, 10));
             g.fill(new RoundRectangle2D.Float(x + 4 * u, y + 2 * u, w - 8 * u, h - 4 * u, 12 * u, 12 * u));
         }
         nhanHang(g, nhan, moTa, x, y, h, u);
@@ -751,7 +736,7 @@ public final class LopPhu {
                 String[] d = ds.get(i);
                 if (d[0] == null) {
                     g.setFont(f(true, 12.5f * u));
-                    Kinh.chu(g, d[1].toUpperCase(), cx + 16 * u, yy + 20 * u * k, Kinh.VANG);
+                    Kinh.chu(g, d[1].toUpperCase(), cx + 16 * u, yy + 20 * u * k, Kinh.CHINH_TOI);
                     yy += 30 * u * k;
                     continue;
                 }
@@ -854,7 +839,7 @@ public final class LopPhu {
         boolean thu = "1".equals(javax.microedition.midlet.MIDlet.thuocTinh("HTBB-Ban-Thu"));
         g.setFont(f(true, 13 * u));
         Kinh.chu(g, (pb == null ? "Bản phát triển" : "Phiên bản " + pb) + (ban == null ? "" : " (bản " + ban + ")") + (thu ? " · bản thử" : ""),
-                tx, y + 66 * u, Kinh.VANG);
+                tx, y + 66 * u, Kinh.CHINH_TOI);
         g.setFont(f(false, 12 * u));
         Kinh.chu(g, "Game fan Pokémon phi thương mại · bản PC", tx, y + 86 * u, Kinh.CHU_MO);
         y += hDau + 14 * u;
@@ -907,6 +892,40 @@ public final class LopPhu {
                 moThuMuc();
             }
         });
+    }
+
+    /**
+     * 0.9.6 Tài khoản: tên nhân vật / tài khoản + "Nhập giftcode" (mở hộp nhập kiểu A của game - gói -31 mục 7, cùng
+     * đường với NPC quà tặng) + gợi ý nơi nhập trong game (Menu -> Thư/Quà).
+     */
+    private static void veTaiKhoan(Graphics2D g, float x, float y, float w, float hMax, float u) {
+        game.model.MainChar mc = game.render.Canvas.gameScr == null ? null : game.render.Canvas.gameScr.mainChar;
+        float hh = 58 * u;
+        y = tieuDeNhom(g, "Tài khoản", x, y, u);
+        the(g, x, y, w, 2 * hh, u);
+        nhanHang(g, mc == null || mc.name == null ? "Chưa vào game" : mc.name,
+                mc == null ? "Đăng nhập rồi chọn Pokémon để xem tài khoản" : "Pokémon cấp " + mc.level, x, y, hh, u);
+        ke(g, x, y + hh, w, u);
+        nhanHang(g, "Nhập giftcode", "Mã quà tặng từ sự kiện, fanpage, Zalo · cũng có ở Menu → Thư/Quà", x, y + hh, hh, u);
+        Font fb = f(true, 13 * u);
+        g.setFont(fb);
+        float bh = 34 * u, bw = g.getFontMetrics().stringWidth("Nhập mã") + 44 * u;
+        float bx = x + w - 16 * u - bw, by = y + hh + (hh - bh) / 2;
+        boolean coGame = mc != null;
+        Kinh.nut(g, bx, by, bw, bh, "Nhập mã", fb, coGame, coGame && tro(bx, by, bw, bh), false);
+        if (coGame) {
+            them(bx, by, bw, bh, new Runnable() {
+                public void run() {
+                    caiDatMo = false;
+                    CaiDat.luu();
+                    NenPc.luong().them(new Runnable() {
+                        public void run() {
+                            game.pokemon.HanhDong.moGiftcode();
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private static void moThuMuc() {

@@ -23,8 +23,8 @@ import javax.microedition.lcdui.Image;
  * MMO nhập vai, giao diện Pokémon của game:
  *  - trái trên: thẻ trạng thái (GameScr.paintMainCharInfo / thẻ HD của PC) - chạm = hồ sơ nhân vật;
  *  - giữa trên: khung mục tiêu (GameScr.paintFocusActorInfo dời vào giữa) + thông báo nhặt đồ;
- *  - phải trên: hàng nút biểu tượng (menu Poké Ball, hành trang, Pokémon / chiêu, nhiệm vụ, nhóm, bản đồ, hệ sinh
- *    thái, cài đặt), bản đồ nhỏ ngay dưới (chạm = bản đồ cả map, chạm điểm trên đó = đi tới);
+ *  - phải trên: hàng nút tròn TRẮNG icon màu (hành trang, nhiệm vụ, bản đồ - 0.9.6 kiểu GO), bản đồ nhỏ ngay dưới;
+ *  - GIỮA ĐÁY (0.9.6 kiểu Pokémon GO): nút Poké Ball to = Menu;
  *  - phải dưới: nút đánh lớn (phím 5) + 4 nút chiêu tròn (phím 1/3/7/9: màu hệ, quạt hồi chiêu, PP), đổi bộ ô (phím 0),
  *    2 nút thuốc HP / PP, công tắc Tự động (TuDong.batTat), nút ngữ cảnh (câu cá cạnh hồ);
  *  - trái dưới: nút chat + 3 dòng chat mới nhất mờ dần.
@@ -58,8 +58,23 @@ public final class HudRong {
     static final int Y_DAU_MM = 29, Y_MM = 45;
     static final int MM_W = 132, MM_H = 82;
 
+    /** Nút Menu (Poké Ball) giữa đáy: bán kính. */
+    static final int R_MENU = 17;
+
+    /** Tâm x nút i: 0..2 hàng phải trên (sát mép phải), N_MENU = giữa đáy. */
     static int xNutTren(int i) {
-        return Canvas.w - 16 - (SO_NUT_TREN - 1 - i) * BUOC_TREN;
+        if (i == N_MENU) {
+            return Canvas.hw;
+        }
+        return Canvas.w - 16 - (SO_NUT_TREN - 2 - i) * BUOC_TREN;
+    }
+
+    static int yNut(int i) {
+        return i == N_MENU ? Canvas.h - R_MENU - 5 : Y_TREN;
+    }
+
+    static int rNut(int i) {
+        return i == N_MENU ? R_MENU : R_TREN;
     }
 
     /** Thẻ trạng thái (vùng chạm). */
@@ -129,6 +144,20 @@ public final class HudRong {
     static int yTuDong() {
         return yChieu(3) - R_CHIEU - H_TU_DONG - 6;
     }
+
+    /** 0.9.6: nút bánh răng nhỏ cạnh viên AUTO = bảng cài đặt Tự động đánh (chạm ngắn viên = bật / tắt). */
+    static final int R_TD_CAI = 9;
+
+    static int xTdCai() {
+        return xTuDong() - R_TD_CAI - 8;
+    }
+
+    static int yTdCai() {
+        return yTuDong() + H_TU_DONG / 2;
+    }
+
+    /** lúc bắt đầu giữ viên AUTO (nhấn giữ >= 0,45 giây = mở cài đặt thay vì bật / tắt) */
+    static long giuTdLuc;
 
     // chat
     static final int R_CHAT = 12;
@@ -214,12 +243,16 @@ public final class HudRong {
      */
     static void dangKyCham(GameScr gs) {
         Object t = game.pokemon.VungCham.TAM;
-        if (Canvas.currentScreen != gs) {
-            return;   // màn chơi đang làm nền cho bảng khác: nút HUD phía sau không nhận chạm
+        if (Canvas.currentScreen != gs || BangTuDong.mo) {
+            return;   // màn chơi đang làm nền cho bảng khác / tấm Tự động: nút HUD phía sau không nhận chạm
         }
         if (gs.hideGUI != 2) {
             for (int i = 0; i < SO_NUT_TREN; i++) {
-                game.pokemon.VungCham.themTuyetDoi(xNutTren(i) - R_TREN, Y_TREN - R_TREN, 2 * R_TREN + 1, 2 * R_TREN + 1, t, TEN_VUNG_TREN[i]);
+                if (i == N_MENU && !hienDuoi(gs)) {
+                    continue;
+                }
+                int rn = rNut(i);
+                game.pokemon.VungCham.themTuyetDoi(xNutTren(i) - rn, yNut(i) - rn, 2 * rn + 1, 2 * rn + 1, t, TEN_VUNG_TREN[i]);
             }
             game.pokemon.VungCham.themTuyetDoi(0, 0, rongThe(), caoThe(), t, "hud-the");
         }
@@ -243,6 +276,7 @@ public final class HudRong {
             game.pokemon.VungCham.themTuyetDoi(xNguCanh() - R_NGU_CANH, yNguCanh() - R_NGU_CANH, 2 * R_NGU_CANH + 1, 2 * R_NGU_CANH + 1, t, "hud-ngu-canh");
         }
         game.pokemon.VungCham.themTuyetDoi(xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG, t, "hud-tu-dong");
+        game.pokemon.VungCham.themTuyetDoi(xTdCai() - R_TD_CAI, yTdCai() - R_TD_CAI, 2 * R_TD_CAI + 1, 2 * R_TD_CAI + 1, t, "hud-tu-dong-cai-dat");
         game.pokemon.VungCham.themTuyetDoi(xChat() - R_CHAT, yChat() - R_CHAT, 2 * R_CHAT + 1, 2 * R_CHAT + 1, t, "hud-chat");
     }
 
@@ -258,10 +292,10 @@ public final class HudRong {
         return dx * dx + dy * dy <= r * r;
     }
 
-    /** Nút tròn 0.9.5: viền trắng sáng + thân màu (dải nhẹ) + bóng mềm; không còn đĩa navy tối. */
+    /** Nút tròn (0.9.6 kiểu GO): vành trắng (sáng = vành vàng) + thân dải + bóng mềm. */
     static void nen(Graphics g, int x, int y, int r, int tren, int duoi, boolean sang) {
         GiaoDien.khoi(g, x - r - 1, y - r, 2 * r + 3, 2 * r + 3, r + 1, game.pokemon.ChuDe.BONG);
-        GiaoDien.khoi(g, x - r - 1, y - r - 1, 2 * r + 3, 2 * r + 3, r + 1, sang ? GiaoDien.VANG : 0xFFFFFF);
+        GiaoDien.khoi(g, x - r - 1, y - r - 1, 2 * r + 3, 2 * r + 3, r + 1, sang ? game.pokemon.ChuDe.VANG : 0xFFFFFF);
         GiaoDien.khoiDoc(g, x - r + 1, y - r + 1, 2 * r - 1, 2 * r - 1, r, tren, duoi);
     }
 
@@ -272,29 +306,36 @@ public final class HudRong {
 
     static void veNutTren(Graphics g) {
         boolean tuDong = TuDong.dang;
+        GameScr gs = Canvas.gameScr;
         for (int i = 0; i < SO_NUT_TREN; i++) {
-            int x = xNutTren(i), y = Y_TREN;
-            int r = R_TREN - (tro(x, y, R_TREN + 2) ? 1 : 0);
+            int x = xNutTren(i), y = yNut(i), r0 = rNut(i);
             if (i == N_MENU) {
-                GiaoDien.khoi(g, x - r - 1, y - r, 2 * r + 3, 2 * r + 3, r + 1, game.pokemon.ChuDe.BONG);
-                GiaoDien.khoi(g, x - r - 1, y - r - 1, 2 * r + 3, 2 * r + 3, r + 1, 0xFFFFFF);
+                if (gs == null || !hienDuoi(gs)) {
+                    continue;   // hộp thoại đáy / chat mở: Poké Ball ẩn cùng phần dưới HUD
+                }
+                // Poké Ball to giữa đáy (kiểu GO): vành trắng + bóng mềm
+                int r = r0 - (tro(x, y, r0 + 2) ? 1 : 0);
+                GiaoDien.khoi(g, x - r - 2, y - r - 1, 2 * r + 4, 2 * r + 4, r + 2, game.pokemon.ChuDe.BONG);
+                GiaoDien.khoi(g, x - r - 2, y - r - 2, 2 * r + 4, 2 * r + 4, r + 2, 0xFFFFFF);
                 GiaoDien.pokeBall(g, x, y, r - 1, 0);
-            } else {
-                nenMau(g, x, y, r, MAU_TREN[i], false);
-                int s = r * 6 / 5;
-                game.pokemon.BieuTuong.ve(g, HINH_TREN[i], x - s / 2, y - s / 2, s, 0xFFFFFF, MAU_TREN[i]);
+                continue;
             }
+            int r = r0 - (tro(x, y, r0 + 2) ? 1 : 0);
+            // 0.9.6: đĩa TRẮNG bóng mềm + icon màu
+            nen(g, x, y, r, 0xFFFFFF, game.pokemon.ChuDe.NEN_DUOI, false);
+            int s = r * 6 / 5;
+            game.pokemon.BieuTuong.ve(g, HINH_TREN[i], x - s / 2, y - s / 2, s, MAU_TREN[i], 0xFFFFFF);
         }
         // chấm đỏ: Menu (mục mới trong lưới), Nhiệm vụ (nhiệm vụ mới / đủ để trả)
-        if (game.pokemon.ManMenu.coChamDo()) {
-            game.pokemon.ChuDe.cham(g, xNutTren(N_MENU) + R_TREN - 3, Y_TREN - R_TREN + 3);
+        if (game.pokemon.ManMenu.coChamDo() && gs != null && hienDuoi(gs)) {
+            game.pokemon.ChuDe.cham(g, xNutTren(N_MENU) + R_MENU - 4, yNut(N_MENU) - R_MENU + 4);
         }
-        if (game.pokemon.ManNhiemVu.coMoi()) {
+        if (game.pokemon.ChamMoi.hudNhiemVu()) {
             game.pokemon.ChuDe.cham(g, xNutTren(N_NV) + R_TREN - 3, Y_TREN - R_TREN + 3);
         }
         if (tuDong) {
-            // đèn nhỏ cạnh nút menu khi Tự động đang chạy
-            g.setColor(game.pokemon.ChuDe.HP_XANH);
+            // đèn nhỏ cạnh hàng nút khi Tự động đang chạy
+            g.setColor(game.pokemon.ChuDe.CHINH);
             g.fillArc(xNutTren(0) - R_TREN - 7, Y_TREN - 3, 6, 6, 0, 360);
         }
     }
@@ -396,17 +437,33 @@ public final class HudRong {
         int xt = xTuDong(), yt = yTuDong();
         int hp = H_TU_DONG;
         if (td) {
-            GiaoDien.khoi(g, xt - 2, yt - 2, W_TU_DONG + 4, hp + 4, hp / 2 + 2, GiaoDien.pha(game.pokemon.ChuDe.LA, 0xFFFFFF, 1, 2));
+            GiaoDien.khoi(g, xt - 2, yt - 2, W_TU_DONG + 4, hp + 4, hp / 2 + 2, GiaoDien.pha(game.pokemon.ChuDe.CHINH, 0xFFFFFF, 1, 2));
         }
         GiaoDien.khoi(g, xt, yt + 1, W_TU_DONG, hp, hp / 2, game.pokemon.ChuDe.BONG);
-        GiaoDien.khoi(g, xt, yt, W_TU_DONG, hp, hp / 2, td ? game.pokemon.ChuDe.LA_TOI : game.pokemon.ChuDe.KE);
-        GiaoDien.khoiDoc(g, xt + 1, yt + 1, W_TU_DONG - 2, hp - 2, hp / 2 - 1, td ? GiaoDien.pha(game.pokemon.ChuDe.LA, 0xFFFFFF, 1, 4) : cho ? 0xFFF4D2 : 0xFFFFFF,
-                td ? game.pokemon.ChuDe.LA : cho ? game.pokemon.ChuDe.VANG : game.pokemon.ChuDe.NEN_PHU);
+        GiaoDien.khoi(g, xt, yt, W_TU_DONG, hp, hp / 2, td ? game.pokemon.ChuDe.CHINH_TOI : game.pokemon.ChuDe.KE);
+        GiaoDien.khoiDoc(g, xt + 1, yt + 1, W_TU_DONG - 2, hp - 2, hp / 2 - 1, td ? game.pokemon.ChuDe.CHINH_SANG : cho ? 0xFFF4D2 : 0xFFFFFF,
+                td ? game.pokemon.ChuDe.CHINH : cho ? game.pokemon.ChuDe.VANG : game.pokemon.ChuDe.NEN_DUOI);
         int rn = hp / 2 - 3;
         int xn = td ? xt + W_TU_DONG - 3 - rn : xt + 3 + rn;
         GiaoDien.khoi(g, xn - rn, yt + hp / 2 - rn, 2 * rn + 1, 2 * rn + 1, rn, td ? 0xFFFFFF : game.pokemon.ChuDe.CHU_NHAT);
         game.pokemon.ChuDe.chuGiua(g, "AUTO", td ? xt + (W_TU_DONG - 2 * rn - 4) / 2 + 2 : xt + 2 * rn + 6 + (W_TU_DONG - 2 * rn - 8) / 2, yt, hp,
                 td ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.NHAN_NHO, td ? 0xFFFFFF : game.pokemon.ChuDe.CHU_PHU, 2);
+        // bánh răng cài đặt Tự động (đĩa trắng nhỏ)
+        int xc = xTdCai(), yc2 = yTdCai(), rc = R_TD_CAI - (tro(xc, yc2, R_TD_CAI + 2) ? 1 : 0);
+        nen(g, xc, yc2, rc, 0xFFFFFF, game.pokemon.ChuDe.NEN_DUOI, false);
+        int sc2 = rc * 7 / 5;
+        game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.CAI_DAT, xc - sc2 / 2, yc2 - sc2 / 2, sc2, game.pokemon.ChuDe.CHU_PHU, 0xFFFFFF);
+        // nhấn giữ viên AUTO: vòng tiến độ (0,45 s) rồi mở cài đặt
+        if (Canvas.isPointerDown && trongO(Canvas.px, Canvas.py, xt - 2, yt - 2, W_TU_DONG + 4, hp + 4)) {
+            if (giuTdLuc == 0) {
+                giuTdLuc = now;
+            }
+            int p = (int) Math.min(360, (now - giuTdLuc) * 360 / 450);
+            g.setColor(game.pokemon.ChuDe.CHINH);
+            g.drawArc(xc - rc - 2, yc2 - rc - 2, 2 * rc + 4, 2 * rc + 4, 90, -p);
+        } else if (!Canvas.isPointerClick) {
+            giuTdLuc = 0;
+        }
         // tên chiêu vừa dùng
         veTenChieu(g, gs, bo, now);
         veGoiYChieu(g, gs, bo);
@@ -423,8 +480,12 @@ public final class HudRong {
             // 0.9.5: icon PNG riêng từng chiêu (huy hiệu tròn màu hệ, tools/pokemon/sinh_icon_chieu.py) + tên viết tắt
             // phía dưới; J2ME / thiếu ảnh -> đĩa màu hệ + biểu tượng hệ
             int oc = game.pokemon.AnhUI.oChieu(lop, sk);
+            // 0.9.6: vành trắng + bóng mềm quanh huy hiệu chiêu pixel-art (đĩa màu hệ viền tối có sẵn trong ảnh)
+            GiaoDien.khoi(g, x - r - 3, y - r - 2, 2 * r + 6, 2 * r + 6, r + 3, game.pokemon.ChuDe.BONG);
+            GiaoDien.khoi(g, x - r - 3, y - r - 3, 2 * r + 6, 2 * r + 6, r + 3, 0xFFFFFF);
+            GiaoDien.khoi(g, x - r - 1, y - r - 1, 2 * r + 2, 2 * r + 2, r + 1, mau);
             boolean anh = oc >= 0 && game.pokemon.ChuUI.bo != null
-                    && game.pokemon.ChuUI.bo.chieu(g, oc, true, x - r - 1, y - r - 1, 2 * r + 2, false);
+                    && game.pokemon.ChuUI.bo.chieu(g, oc, true, x - r, y - r, 2 * r, false);
             if (!anh) {
                 nen(g, x, y, r, GiaoDien.pha(mau, GiaoDien.TRANG, 1, 4), mau, false);
                 int ic = r * 9 / 10;
@@ -432,7 +493,9 @@ public final class HudRong {
             }
             String vt = vietTat(lop, sk);
             if (vt != null) {
-                game.pokemon.ChuDe.chu(g, vt, x, anh ? y + r * 2 / 5 : y + r / 4 - 1, r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU, 0xFFFFFF, 2);
+                // 0.9.6: huy hiệu hệ Thường là đĩa kem -> nhãn tối cho dễ đọc
+                game.pokemon.ChuDe.chu(g, vt, x, anh ? y + r * 2 / 5 : y + r / 4 - 1, r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU,
+                        anh && he == 0 ? 0x3A3020 : 0xFFFFFF, 2);
             }
             long da = now - mc.timeLastUseSkills[sk];
             long tong = mc.coolDownSkill[sk];
@@ -655,14 +718,20 @@ public final class HudRong {
         if (ten == null) {
             return;
         }
-        Font f = Font.borderFont;
-        int wt = f.getWidth(ten) + 14;
+        // 0.9.6: viên trắng + chấm màu hệ, trên nút Poké Ball
+        int wt = Math.min(118, game.pokemon.ChuDe.rong(ten, game.pokemon.ChuDe.NHAN) + 22);
         int xt = Canvas.hw - wt / 2;
-        int yt = Canvas.h - 36;
+        int yt = yTenChieu();
         int mau = KieuO.mauHe(PokeChieu.he(lop, qs.skillType));
-        GiaoDien.khoi(g, xt, yt, wt, 16, 7, GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, xt + 1, yt + 1, wt - 2, 14, 6, mau, GiaoDien.pha(mau, 0, 2, 5));
-        f.drawString(g, ten, xt + wt / 2, yt + 1, Font.CENTER);
+        GiaoDien.khoi(g, xt, yt + 1, wt, 16, 8, game.pokemon.ChuDe.BONG);
+        GiaoDien.khoi(g, xt, yt, wt, 16, 8, 0xFFFFFF);
+        GiaoDien.khoi(g, xt + 5, yt + 5, 6, 6, 3, mau);
+        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(ten, game.pokemon.ChuDe.NHAN, wt - 20), xt + 14, yt, 16, game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 0);
+    }
+
+    /** Đỉnh viên tên chiêu vừa dùng (trên nút Poké Ball giữa đáy). */
+    static int yTenChieu() {
+        return yNut(N_MENU) - R_MENU - 24;
     }
 
     // ------------------------------------------------------------------ chat thu gọn (trái dưới)
@@ -954,7 +1023,7 @@ public final class HudRong {
 
     /**
      * Mã thứ trúng tại (x, y) toạ độ logic: 0..7 nút trên, 10 thẻ trạng thái, 11 bản đồ nhỏ, 20..23 chiêu, 24 đánh,
-     * 25 đổi bộ, 26 / 27 thuốc HP / PP, 28 ngữ cảnh, 29 tự động, 30 chat, 40 bản đồ to (trong ảnh), 41 bản đồ to (đóng);
+     * 25 đổi bộ, 26 / 27 thuốc HP / PP, 28 ngữ cảnh, 29 tự động, 31 cài đặt tự động, 30 chat, 40 bản đồ to (trong ảnh), 41 bản đồ to (đóng);
      * -1 = không trúng.
      */
     static int trung(GameScr gs, int x, int y) {
@@ -970,7 +1039,10 @@ public final class HudRong {
         }
         if (gs.hideGUI != 2) {
             for (int i = 0; i < SO_NUT_TREN; i++) {
-                if (trongTron(x, y, xNutTren(i), Y_TREN, R_TREN + 2)) {
+                if (i == N_MENU && !hienDuoi(gs)) {
+                    continue;
+                }
+                if (trongTron(x, y, xNutTren(i), yNut(i), rNut(i) + 2)) {
                     return i;
                 }
             }
@@ -1005,6 +1077,9 @@ public final class HudRong {
         }
         if (trongO(x, y, xTuDong() - 2, yTuDong() - 2, W_TU_DONG + 4, H_TU_DONG + 4)) {
             return 29;
+        }
+        if (trongTron(x, y, xTdCai(), yTdCai(), R_TD_CAI + 2)) {
+            return 31;
         }
         if (trongTron(x, y, xChat(), yChat(), R_CHAT + 3)) {
             return 30;
@@ -1092,7 +1167,15 @@ public final class HudRong {
                 HanhDong.cauCa();
                 break;
             case 29:
-                TuDong.batTat();
+                if (giuTdLuc > 0 && System.currentTimeMillis() - giuTdLuc >= 450) {
+                    BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt
+                } else {
+                    TuDong.batTat();
+                }
+                giuTdLuc = 0;
+                break;
+            case 31:
+                BangTuDong.mo();
                 break;
             case 30:
                 GameScr.typechat = GameScr.CHAT_NORMAL;
@@ -1162,22 +1245,24 @@ public final class HudRong {
         v.addElement(new Object[]{"muc_tieu", new int[]{(Canvas.w - 140) / 2, 0, 140, 34}});
         int xt = xNutTren(0) - R_TREN - 1;
         v.addElement(new Object[]{"nut_tren", new int[]{xt, Y_TREN - R_TREN - 1, Canvas.w - xt, 2 * R_TREN + 3}});
+        v.addElement(new Object[]{"menu", tron(xNutTren(N_MENU), yNut(N_MENU), R_MENU + 2)});
         Position p = gs == null ? null : gs.posMiniMapHud();
         int wm = GameScr.wMiniMap > 0 ? GameScr.wMiniMap : MM_W, hm = GameScr.hMiniMap > 0 ? GameScr.hMiniMap : MM_H;
         int xm = p != null ? p.x : Canvas.w - wm - 4;
         v.addElement(new Object[]{"ban_do_nho", new int[]{xm - 2, Y_DAU_MM, wm + 4, Y_MM + hm + 14 - Y_DAU_MM}});
         for (int i = 0; i < 4; i++) {
-            v.addElement(new Object[]{"chieu" + i, tron(xChieu(i), yChieu(i), R_CHIEU + 1)});
+            v.addElement(new Object[]{"chieu" + i, tron(xChieu(i), yChieu(i), R_CHIEU + 3)});
         }
-        v.addElement(new Object[]{"danh", tron(xDanh(), yDanh(), R_DANH + 1)});
+        v.addElement(new Object[]{"danh", tron(xDanh(), yDanh(), R_DANH + 3)});
         v.addElement(new Object[]{"doi_bo", tron(xDoiBo(), yDoiBo(), R_DOI_BO + 1)});
         v.addElement(new Object[]{"thuoc_hp", tron(xThuoc(), yThuoc(true), R_THUOC + 1)});
         v.addElement(new Object[]{"thuoc_pp", tron(xThuoc(), yThuoc(false), R_THUOC + 1)});
         v.addElement(new Object[]{"ngu_canh", tron(xNguCanh(), yNguCanh(), R_NGU_CANH + 1)});
         v.addElement(new Object[]{"tu_dong", new int[]{xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG}});
+        v.addElement(new Object[]{"tu_dong_cai_dat", tron(xTdCai(), yTdCai(), R_TD_CAI + 1)});
         v.addElement(new Object[]{"chat", tron(xChat(), yChat(), R_CHAT + 1)});
         v.addElement(new Object[]{"dong_chat", new int[]{xChat() + R_CHAT + 6, Canvas.h - 4 - DONG_CHAT * LH_CHAT, W_CHAT, DONG_CHAT * LH_CHAT}});
-        v.addElement(new Object[]{"ten_chieu", new int[]{Canvas.hw - 60, Canvas.h - 36, 120, 16}});
+        v.addElement(new Object[]{"ten_chieu", new int[]{Canvas.hw - 60, yTenChieu(), 120, 16}});
         Object[][] r = new Object[v.size()][];
         for (int i = 0; i < r.length; i++) {
             r[i] = (Object[]) v.elementAt(i);

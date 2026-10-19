@@ -186,7 +186,7 @@ public final class HdVe {
     static void theSang(Canvas c, float l, float t, float r, float b, float rad) {
         bong(c, l, t, r, b, rad, 1.5f);
         tronDoc(c, l, t, r, b, rad, argb(game.pokemon.ChuDe.NEN), argb(game.pokemon.ChuDe.NEN_DUOI));
-        vienTron(c, l, t, r, b, rad, 0.8f, 0xC0000000 | game.pokemon.ChuDe.VIEN);
+        vienTron(c, l, t, r, b, rad, 0.6f, 0x1A000000 | game.pokemon.ChuDe.CHU);
     }
 
     /**
@@ -225,7 +225,7 @@ public final class HdVe {
         // 0.9.5: thẻ nhấn XANH tươi (chữ trắng đọc rõ) thay kính navy tối
         bong(c, l, t, l + w, t + h, 9, 1.5f);
         tronDoc(c, l, t, l + w, t + h, 9, pha(argb(game.pokemon.ChuDe.XANH), 0xFFFFFFFF, 0.2f), argb(game.pokemon.ChuDe.XANH_TOI));
-        vienTron(c, l, t, l + w, t + h, 9, 0.8f, 0xC0000000 | game.pokemon.ChuDe.VIEN);
+        vienTron(c, l, t, l + w, t + h, 9, 0.6f, 0x1A000000 | game.pokemon.ChuDe.CHU);
         game.render.screen.Font.nenSang = false;
         ghiNen(g, x, y, w, h, 90);
         return true;
@@ -281,7 +281,7 @@ public final class HdVe {
         float t = y + g.getTranslateY();
         bong(c, l, t, l + w, t + h, 10, 1.5f);
         tronDoc(c, l, t, l + w, t + h, 10, 0xF2FFFFFF, 0xEAF3F6FB);
-        vienTron(c, l, t, l + w, t + h, 10, 0.8f, 0xA0000000 | game.pokemon.ChuDe.VIEN);
+        vienTron(c, l, t, l + w, t + h, 10, 0.6f, 0x1A000000 | game.pokemon.ChuDe.CHU);
         return true;
     }
 
@@ -297,7 +297,7 @@ public final class HdVe {
         float t = y + g.getTranslateY();
         float rad = h / 2f;
         bong(c, l, t, l + w, t + h, rad, 1f);
-        int m = argb(doiTab ? game.pokemon.ChuDe.XANH : game.pokemon.ChuDe.DO);
+        int m = argb(doiTab ? game.pokemon.ChuDe.CHINH_TOI : game.pokemon.ChuDe.CHINH);
         tronDoc(c, l, t, l + w, t + h, rad, pha(m, 0xFFFFFFFF, 0.15f), m);
         return true;
     }
@@ -313,8 +313,8 @@ public final class HdVe {
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
         float rad = Math.min(6, h / 2f);
-        tronDoc(c, l, t, l + w, t + h, rad, 0xFFFFFBEA, argb(game.pokemon.ChuDe.VANG_NHAT));
-        vienTron(c, l, t, l + w, t + h, rad, 1.1f, argb(game.pokemon.ChuDe.CAM));
+        tronDoc(c, l, t, l + w, t + h, rad, 0xFFF4FCFB, argb(game.pokemon.ChuDe.CHINH_NHAT));
+        vienTron(c, l, t, l + w, t + h, rad, 1.1f, argb(game.pokemon.ChuDe.CHINH));
         return true;
     }
 
@@ -347,7 +347,7 @@ public final class HdVe {
             tronDoc(c, l + 0.6f, t + 0.6f, l + 0.6f + dai, t + h - 0.6f, rad - 0.6f, pha(mau, 0xFFFFFFFF, 0.35f), pha(mau, 0xFF000000, 0.12f));
             if (h >= 4) tron(c, l + 1.5f, t + 1f, l + 0.6f + dai - 1f, t + Math.max(1.6f, h * 0.32f), h * 0.2f, 0x50FFFFFF);
         }
-        vienTron(c, l, t, l + w, t + h, rad, 0.6f, 0x50000000 | game.pokemon.ChuDe.VIEN);
+        vienTron(c, l, t, l + w, t + h, rad, 0.5f, 0x22000000 | game.pokemon.ChuDe.CHU);
     }
 
     /** Viên (pill) màu: dải màu + viền + chữ (chữ HD). */
@@ -358,11 +358,13 @@ public final class HdVe {
         float t = y + g.getTranslateY();
         float rad = h / 2f;
         bong(c, l, t, l + w, t + h, rad, 0.8f);
-        tronDoc(c, l, t, l + w, t + h, rad, pha(argb(mau), 0xFFFFFFFF, 0.3f), pha(argb(mau), 0xFF000000, 0.15f));
-        tronDoc(c, l + 1, t + 0.6f, l + w - 1, t + h * 0.5f, rad, 0x38FFFFFF, 0x00FFFFFF);
-        vienTron(c, l, t, l + w, t + h, rad, 0.8f, 0xC0101830);
-        game.render.screen.Font f = game.render.screen.Font.borderFont;
-        if (chu != null && f != null) {
+        // 0.9.6 (kiểu GO): viên màu đặc dải nhẹ, không ánh kính / viền tối
+        tronDoc(c, l, t, l + w, t + h, rad, pha(argb(mau), 0xFFFFFFFF, 0.18f), argb(mau));
+        if (chu != null && game.pokemon.ChuUI.bo != null) {
+            // chữ giao diện trắng đậm (không viền)
+            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(chu, game.pokemon.ChuDe.SO, w - 6), x + w / 2, y, h, game.pokemon.ChuDe.SO, 0xFFFFFF, 2);
+        } else if (chu != null && game.render.screen.Font.borderFont != null) {
+            game.render.screen.Font f = game.render.screen.Font.borderFont;
             f.drawString(g, chu, x + w / 2, y + (h - f.getHeight()) / 2 + 1, game.render.screen.Font.CENTER);
         }
         return true;

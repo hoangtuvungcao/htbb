@@ -117,12 +117,12 @@ public final class HopNhap {
         String tieuDe = tb != null && tb.getTitle() != null && tb.getTitle().length() > 0 ? tb.getTitle()
                 : laMatKhau() ? "Nhập mật khẩu" : "Nhập chữ";
         g.setFont(PhongChu.co(true, 17 * u));
-        Kinh.chu(g, tieuDe, px + 24 * u, py + 38 * u, Kinh.VANG);
+        Kinh.chu(g, tieuDe, px + 24 * u, py + 38 * u, Kinh.CHU);
         // ô nhập
         float ox = px + 24 * u, oy = py + 56 * u, ow = pw - 48 * u, oh = 44 * u;
         g.setColor(new Color(255, 255, 255, 235));
         g.fill(new RoundRectangle2D.Float(ox, oy, ow, oh, 12 * u, 12 * u));
-        g.setColor(Kinh.XANH);
+        g.setColor(Kinh.CHINH);
         g.setStroke(new java.awt.BasicStroke(2f * u));
         g.draw(new RoundRectangle2D.Float(ox, oy, ow, oh, 12 * u, 12 * u));
         String s = chu.toString();
@@ -143,7 +143,7 @@ public final class HopNhap {
         g.setColor(new Color(0x1E2A44));
         g.drawString(s, tx, by);
         if (System.currentTimeMillis() / 500 % 2 == 0) {
-            g.setColor(Kinh.DO);
+            g.setColor(Kinh.CHINH_TOI);
             g.fillRect((int) (tx + tw + 2 * u), (int) (oy + 10 * u), Math.max(2, (int) (2 * u)), (int) (oh - 20 * u));
         }
         g.setClip(cu);

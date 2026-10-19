@@ -22,6 +22,21 @@ public abstract class ManBang extends Screen {
 
     protected abstract void veNoiDung(Graphics g, int x, int y, int w, int h);
 
+    /** 0.9.6: bề ngang tấm muốn (<= 0 = tối đa ~78 % vùng an toàn). */
+    protected int rongMuon() {
+        return 0;
+    }
+
+    /** 0.9.6: cao NỘI DUNG muốn cho bề ngang nội dung wNoi (<= 0 = tấm cao tối đa) - tấm cao theo nội dung. */
+    protected int caoMuon(int wNoi) {
+        return 0;
+    }
+
+    /** Màu ngữ cảnh của tấm (-1 = teal). */
+    protected int mauTam() {
+        return -1;
+    }
+
     protected void chonTab(int t) {
         this.tab = t;
         this.ds.den(0);
@@ -111,12 +126,16 @@ public abstract class ManBang extends Screen {
                 };
             }
         }
-        int[] c = Bang.khung(g, tieuDe(), t, this.tab, vt, new IAction() {
+        int wT = Bang.oTam(rongMuon(), 0)[2];
+        int hn = caoMuon(wT - 2 * ChuDe.DEM);
+        Bang.mauTam = mauTam();
+        int[] c = Bang.khungTam(g, wT, hn > 0 ? Bang.caoDauTam(t != null && t.length > 0) + hn : 0, tieuDe(), t, this.tab, vt, new IAction() {
             public void perform() {
                 ManBang.this.dong();
             }
         });
         veNoiDung(g, c[0], c[1], c[2], c[3]);
+        Bang.moDan(g);
         Canvas.resetTrans(g);
     }
 }

@@ -438,7 +438,8 @@ public final class KiemTuDongKeHoach {
         Kiem.dung("client gui giao thuc 2 khi xin / bat", c.contains("m.writer().writeByte(GIAO_THUC);"));
         Kiem.dung("client xin ke hoach (lenh 4) khi may chu bat co 16", c.contains("(svCo & CO_KE_HOACH) != 0") && c.contains("gui(4, 0);"));
         Kiem.dung("client doc goi ke hoach byte 1", c.contains("if (r.readByte() == 1) {"));
-        Kiem.dung("het 6 giay khong phan hoi: hien hop thoai (khong im lang)", c.contains("Canvas.startOKDlg(thongBao);\n        }"));
+        // 0.9.5.1+: bao bang thong bao nhanh (toast DungDo) thay hop thoai - van khong im lang
+        Kiem.dung("het 6 giay khong phan hoi: bao nguoi choi (khong im lang)", c.contains("game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);"));
         Kiem.dung("tu di chuyen: dung + bao may chu ly do 13", c.contains("gui(2, TAT_TU_DI);") && c.contains("TAT_TU_DI = 13"));
         Kiem.sai("state 3 (Pokemon dang danh tra) khong con bi coi la chet", c.contains("a.state != 3"));
         Kiem.dung("dong y rieng hoi sinh bang do luong", c.contains("tuHoiSinh && hoiSinhLuong ? 1 : 0"));

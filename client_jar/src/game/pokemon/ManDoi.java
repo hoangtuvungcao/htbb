@@ -51,8 +51,21 @@ public final class ManDoi extends ManBang {
         return Canvas.gameScr.mainChar;
     }
 
+    /** 0.9.6: tấm hẹp, cao theo số người (tối thiểu 3 hàng + nút). */
+    protected int rongMuon() {
+        return ChuDe.dt() ? 470 : 420;
+    }
+
+    protected int caoMuon(int wNoi) {
+        int k = Bang.cach(), nh = Bang.caoHang();
+        if (this.tab == 0) {
+            return Math.max(3, Char.party.size()) * (nh + k) + 8 + nh + k;
+        }
+        java.util.Vector b = ListScr.gI().freindList;
+        return Math.max(4, b == null ? 0 : b.size()) * (nh + k) + 8;
+    }
+
     protected void veNoiDung(Graphics g, int x, int y, int w, int h) {
-        Bang.the(g, x, y, w, h);
         int k = Bang.cach();
         int nh = Bang.caoHang();
         if (this.tab == 0) {
@@ -62,7 +75,7 @@ public final class ManDoi extends ManBang {
                 Bang.trong(g, x, y, w, h, "Chưa vào đội", "Chạm một người chơi ngoài bản đồ rồi chọn Mời vào đội.");
                 return;
             }
-            Bang.danhSach(g, this.ds, x + 4, y + 4, w - 8, hl, p.size(), nh, new Bang.Hang() {
+            Bang.danhSach(g, this.ds, x, y + 2, w, hl, p.size(), nh, new Bang.Hang() {
                 public void ve(Graphics g, int i, int x, int y, int w, int h) {
                     Object o = p.elementAt(i);
                     String ten = o instanceof PartyInfo ? ((PartyInfo) o).name : ((Char) o).name;
@@ -85,7 +98,7 @@ public final class ManDoi extends ManBang {
                 }
             });
             boolean truong = mc().ID == mc().IDMasterParty;
-            Bang.nut(g, x + 6, y + h - 6 - nh, w - 12, nh, truong ? "Giải tán đội" : "Rời đội", Bang.CHINH, new IAction() {
+            Bang.nut(g, x + w / 6, y + h - 2 - nh, w * 2 / 3, nh, truong ? "Giải tán đội" : "Rời đội", Bang.NGUY, new IAction() {
                 public void perform() {
                     final boolean tr = ManDoi.mc().ID == ManDoi.mc().IDMasterParty;
                     HopXacNhan.hoiNguyHiem(tr ? "Giải tán đội" : "Rời đội", tr ? "Giải tán đội của bạn?" : "Rời khỏi đội?", tr ? "Giải tán" : "Rời đội", new IAction() {
@@ -106,7 +119,7 @@ public final class ManDoi extends ManBang {
             Bang.trong(g, x, y, w, h, "Chưa có bạn", "Chạm một người chơi ngoài bản đồ rồi chọn Kết bạn.");
             return;
         }
-        Bang.danhSach(g, this.ds, x + 4, y + 4, w - 8, h - 8, b.size(), nh, new Bang.Hang() {
+        Bang.danhSach(g, this.ds, x, y + 2, w, h - 4, b.size(), nh, new Bang.Hang() {
             public void ve(Graphics g, int i, int x, int y, int w, int h) {
                 final Char c = (Char) b.elementAt(i);
                 Bang.hang(g, x, y, w, h, i, false, new IAction() {

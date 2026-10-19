@@ -139,7 +139,17 @@ public final class HdCau {
         }
     }
 
-    /** Tự động đánh đang chạy (đèn xanh trên nút). */
+    /** 0.9.6: chạm ngắn nút Tự động = bật / tắt (TuDong.batTat, máy chủ điều khiển). true = đã gọi. */
+    public static boolean batTatTuDong() {
+        try {
+            TuDong.batTat();
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+        /** Tự động đánh đang chạy (đèn xanh trên nút). */
     public static boolean tuDongDang() {
         tim();
         try {

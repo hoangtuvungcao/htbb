@@ -88,6 +88,21 @@ public final class HanhDong {
         }
     }
 
+    /**
+     * 0.9.6: hộp NHẬP GIFTCODE (kiểu A) từ Menu -> Thư/Quà và Cài đặt -> Tài khoản: cùng gói -31 mục 7 với NPC quà tặng
+     * (máy chủ RealController: idMenu 7 = DatabaseGiftCode.newDoGetGiftCode, giới hạn mỗi tháng ở GiftcodeLauDai).
+     */
+    public static void moGiftcode() {
+        game.render.screen.GameScr g = gs();
+        if (g == null || g.mainChar == null) {
+            return;
+        }
+        if (Canvas.currentScreen != g) {
+            g.switchToMe();
+        }
+        g.onTextBox(g.mainChar.ID, (byte) 7, "Nhập giftcode", 0);
+    }
+
     public static void moBanDoLon() {
         if (gs() == null) {
             return;

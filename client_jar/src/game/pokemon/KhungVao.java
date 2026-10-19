@@ -56,6 +56,10 @@ public final class KhungVao {
      */
     public static int[] logoVaBang(Graphics g, int wCan, int hRong, int hHep, int wMin) {
         Canvas.resetTrans(g);
+        int[] rr = ngang(g, wCan, hRong, hHep, wMin);
+        if (rr != null) {
+            return rr;
+        }
         javax.microedition.lcdui.Image lg = datLogoThuong();
         int[] r = dat(wCan, hRong, hHep, wMin);
         boolean gon = false;
@@ -85,6 +89,56 @@ public final class KhungVao {
             ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 54);
         }
         return r;
+    }
+
+    /**
+     * 0.9.6 bố cục NGANG cho màn rộng thấp (điện thoại 19.5:9 - 21:9): logo canh giữa nửa TRÁI, bảng canh giữa nửa PHẢI,
+     * cả hai canh giữa theo chiều dọc trong dải trên đội hình khởi đầu (đội hình không bị che), trong vùng an toàn.
+     * null = không dùng (màn không đủ rộng / bảng không vừa) -> bố cục cũ.
+     */
+    static int[] ngang(Graphics g, int wCan, int hRong, int hHep, int wMin) {
+        int W = Canvas.w, H = Canvas.h - game.render.screen.Screen.deltaY;
+        if (W * 10 < H * 19 || !Banner.co()) {
+            return null;
+        }
+        int L = le() + Bang.anTrai, R = W - le() - Bang.anPhai;
+        int T = le() + Bang.anTren, B = H - le() - Bang.anDuoi;
+        int[] k = Banner.vungKhoiDau();
+        int yb = k == null ? B : Math.min(B, k[1] - 4);
+        int mid = (L + R) / 2;
+        int wc = Math.min(wCan, R - mid - 8);
+        if (wc < Math.max(wMin, 200)) {
+            return null;
+        }
+        int hc = wc >= 220 ? hRong : hHep;
+        int xp = mid + (R - mid - wc) / 2;
+        int yTren = T, yDay = yb;
+        if (yb - T < hc) {
+            // bảng không vừa dải trên đội hình: được xuống cạnh đội hình nếu không che (nằm bên phải đội hình)
+            if (k == null || B - T < hc) {
+                return null;
+            }
+            if (xp < k[2] + 6) {
+                xp = Math.max(mid, R - wc);
+                if (xp < k[2] + 6) {
+                    return null;
+                }
+            }
+            yDay = B;
+        }
+        int xLogoPhai = Math.min(mid, xp - 8);
+        javax.microedition.lcdui.Image lg = Banner.logo(xLogoPhai - L - 16, yb - T - 8);
+        if (lg == null) {
+            return null;
+        }
+        int cxL = (L + xLogoPhai) / 2;
+        int yl = T + (yb - T - lg.getHeight()) / 2;
+        logoDuoi = yl + lg.getHeight();
+        logoTrai = cxL - lg.getWidth() / 2;
+        logoPhai = cxL + lg.getWidth() / 2;
+        GiaoDien.moClip(g);
+        g.drawImage(lg, cxL, yl, Graphics.HCENTER | Graphics.TOP);
+        return new int[]{xp, yTren + (yDay - yTren - hc) / 2, wc, hc};
     }
 
     static int le() {

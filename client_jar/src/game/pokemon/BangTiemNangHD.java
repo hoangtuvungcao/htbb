@@ -88,9 +88,7 @@ public final class BangTiemNangHD extends Dialog {
         if (diemChuaDung() <= 0) {
             return;
         }
-        int r = ChuDe.dt() ? 5 : 4;
-        GiaoDien.khoi(g, x + w - r - 1, y - r + 2, 2 * r + 2, 2 * r + 2, r + 1, 0xFFFFFF);
-        GiaoDien.khoi(g, x + w - r, y - r + 3, 2 * r, 2 * r, r, ChuDe.DO);
+        ChuDe.cham(g, x + w - 4, y + 4);   // 0.9.6: chấm chung (ChamMoi / KiemChamMoi)
     }
 
     int tong() {

@@ -452,9 +452,10 @@ public final class ManCuaHang extends Screen {
                     ManCuaHang.this.soLuong = Math.max(1, ManCuaHang.this.soLuong - 1);
                 }
             }, "sl-tru");
-            GiaoDien.khoi(g, x + 10 + sb + k, yy, wo, sb, 6, GiaoDien.VIEN);
-            GiaoDien.khoi(g, x + 11 + sb + k, yy + 1, wo - 2, sb - 2, 5, 0xFFFBE6);
-            Font.blackFont.drawString(g, String.valueOf(this.soLuong), x + 10 + sb + k + wo / 2, yy + (sb - Font.blackFont.getHeight()) / 2, Font.CENTER);
+            // 0.9.6: ô số trắng viền teal nhạt, số lớn đậm
+            GiaoDien.khoi(g, x + 10 + sb + k, yy, wo, sb, sb / 2, GiaoDien.pha(ChuDe.CHINH, 0xFFFFFF, 3, 5));
+            GiaoDien.khoi(g, x + 11 + sb + k, yy + 1, wo - 2, sb - 2, sb / 2 - 1, ChuDe.NEN);
+            ChuDe.chuGiua(g, String.valueOf(this.soLuong), x + 10 + sb + k + wo / 2, yy, sb, ChuDe.TIEU_DE, ChuDe.CHU, 2);
             Bang.nut(g, x + 10 + sb + k + wo + k, yy, sb, sb, "", Bang.PHU, new IAction() {
                 public void perform() {
                     ManCuaHang.this.soLuong = Math.min(Math.max(1, max), ManCuaHang.this.soLuong + 1);
@@ -465,7 +466,7 @@ public final class ManCuaHang extends Screen {
                     ManCuaHang.this.soLuong = Math.max(1, max);
                 }
             }, "sl-max");
-            g.setColor(0xFFFFFF);
+            g.setColor(ChuDe.CHINH_TOI);
             int cy = yy + sb / 2, a = sb / 4;
             g.fillRect(x + 10 + sb / 2 - a, cy - 1, 2 * a, 3);
             int cxp = x + 10 + sb + k + wo + k + sb / 2;

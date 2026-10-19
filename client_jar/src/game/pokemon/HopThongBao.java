@@ -171,9 +171,9 @@ public final class HopThongBao extends Dialog {
             case LOI:
                 return ChuDe.DO;
             case HOI:
-                return ChuDe.XANH;
+                return ChuDe.CHINH;
             default:
-                return ChuDe.XANH;
+                return ChuDe.CHINH;
         }
     }
 
@@ -289,7 +289,7 @@ public final class HopThongBao extends Dialog {
     }
 
     /** màu nhấn thương hiệu (dải trên, nút chính), chữ tiêu đề */
-    static final int MAU_NHAN = 0xE8504A, MAU_TIEU_DE = 0x2B2B2B;
+    static final int MAU_NHAN = ChuDe.CHINH_TOI, MAU_TIEU_DE = ChuDe.CHU;
     /** biểu tượng loại cho lần vẽ kế (BieuTuong id, -1 = không) - người gọi đặt trước ve() */
     static int bieuTuong = -1;
     /** biểu tượng tính vào bề ngang (rongHop) */
@@ -393,8 +393,12 @@ public final class HopThongBao extends Dialog {
         GiaoDien.khoi(g, x - 1, y + 2, ww + 2, hh + 1, bo + 1, 0xD5DBE6);
         GiaoDien.khoi(g, x, y, ww, hh, bo, 0xFFFFFF);
         game.render.screen.Font.nenSang = true;
-        // huy hiệu tròn đè mép trên
+        // huy hiệu tròn đè mép trên (0.9.6: phần thưởng nảy nhẹ lúc mở)
         int cx = x + ww / 2, cy = y;
+        long tt = now - lucMo;
+        if ((huyHieu == BieuTuong.QUA || huyHieu == BieuTuong.SU_KIEN) && tt < 520) {
+            cy -= (int) (Math.sin(Math.PI * tt / 520.0) * 5);
+        }
         GiaoDien.khoi(g, cx - dk / 2 - 3, cy - dk / 2 - 3, dk + 6, dk + 6, dk / 2 + 3, 0xFFFFFF);
         int mau = mauHuy;
         if (huyNhat) {
@@ -405,7 +409,7 @@ public final class HopThongBao extends Dialog {
         int ic = dk * 3 / 5;
         BieuTuong.ve(g, huyHieu, cx - ic / 2, cy - ic / 2, ic, huyNhat ? mau : 0xFFFFFF, huyNhat ? GiaoDien.pha(mau, 0xFFFFFF, 6, 8) : mau);
         huyHieu = BieuTuong.TIN;
-        mauHuy = ChuDe.XANH;
+        mauHuy = ChuDe.CHINH;
         huyNhat = false;
         // tiêu đề
         int yTieu = y + dk / 2 + 4;
@@ -422,18 +426,14 @@ public final class HopThongBao extends Dialog {
         return Math.max(VungCham.MIN, ChuDe.dt() ? Bang.caoHang() : 17);
     }
 
-    /** Nút VIÊN (kiểu A): bo tròn hẳn, dải dọc mềm, lún khi nhấn. chinh = đỏ san hô thương hiệu, phụ = xám nhạt chữ tối. */
+    /** Nút VIÊN (kiểu A, 0.9.6 = Bang.vienNut): chính = teal, nguy hiểm = đỏ, phụ = trắng chữ tối; nhấn co 0,96. */
     public static void nutVien(Graphics g, int x, int y, int w, int h, String chu, boolean chinh, Object viec, String ten) {
+        nutVien(g, x, y, w, h, chu, chinh ? Bang.CHINH : Bang.TRUNG, viec, ten);
+    }
+
+    public static void nutVien(Graphics g, int x, int y, int w, int h, String chu, int kieu, Object viec, String ten) {
         boolean an = viec != null && Bang.dangAn(g, x, y, w, h);
-        int r = h / 2;
-        int dy = an ? 1 : 0;
-        if (chinh) {
-            GiaoDien.khoi(g, x, y + 2, w, h, r, 0xC9D0DC);
-            GiaoDien.khoiDoc(g, x, y + dy, w, h, r, an ? 0xD93F3A : 0xF0675F, an ? 0xC23530 : 0xD93F3A);
-        } else {
-            GiaoDien.khoiDoc(g, x, y + dy, w, h, r, an ? 0xE2E6EE : 0xF3F5F9, an ? 0xD8DDE6 : 0xE6EAF1);
-        }
-        ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - 12), x + w / 2, y + dy, h, ChuDe.NHAN, chinh ? 0xFFFFFF : 0x3C4458, 2);
+        Bang.vienNut(g, x, y, w, h, chu, kieu, an);
         Bang.dangKy(g, x, y, w, h, viec, ten);
     }
 
@@ -449,7 +449,7 @@ public final class HopThongBao extends Dialog {
         int xb = x + (ww - tong) / 2;
         for (int i = 0; i < n; i++) {
             int kh = kieuHop(kieuNut, i, n);
-            nutVien(g, xb, yn, wb[i], nh, nut[i], kh == Bang.CHINH, bam[i], tenNut != null && i < tenNut.length ? tenNut[i] : "hop-nut-" + i);
+            nutVien(g, xb, yn, wb[i], nh, nut[i], kh, bam[i], tenNut != null && i < tenNut.length ? tenNut[i] : "hop-nut-" + i);
             xb += wb[i] + k;
         }
     }
@@ -510,7 +510,7 @@ public final class HopThongBao extends Dialog {
     /** Kiểu nút trong hộp: nút chính = đỏ thương hiệu (không xanh lá neon), phụ = trắng viền xám. */
     static int kieuHop(int[] kieuNut, int i, int n) {
         int k = kieuNut == null ? (i == n - 1 ? Bang.CHINH : Bang.TRUNG) : kieuNut[i];
-        return k == Bang.XAC_NHAN || k == Bang.PHU ? Bang.CHINH : k;
+        return k == Bang.XAC_NHAN || k == Bang.PHU ? Bang.CHINH : k == Bang.NGUY ? Bang.NGUY : k == Bang.CHINH ? Bang.CHINH : Bang.TRUNG;
     }
 
     static void veDong(Graphics g, String d, int x, int y, boolean giua) {

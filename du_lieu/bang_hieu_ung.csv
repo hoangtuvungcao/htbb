@@ -4,7 +4,7 @@ class,so_hieu_skill,ten_moi,particle,file_client,rong_khung,cao_khung,so_khung,s
 0,2,Nanh lửa,Fire_Fang_Fang.None.png,hu_fire_fang_fang.bytes,56,56,8,1,8,D,2
 0,3,Xoáy lửa,Fire_Spin_Front.None.png,hu_fire_spin_front.bytes,88,88,57,1,23,D,1
 0,4,Màn khói,Smoke_Black.None.png,hu_smoke_black.bytes,32,32,12,1,12,T,2
-0,5,Múa kiếm,Swords_Dance.None.png,hu_swords_dance.bytes,64,64,5,1,5,T,2
+0,5,Vũ điệu kiếm,Swords_Dance.None.png,hu_swords_dance.bytes,64,64,5,1,5,T,2
 0,6,Súng phun lửa,Flamethrower.None.png,hu_flamethrower.bytes,54,54,12,1,12,D,2
 0,7,Vuốt rồng,Shadow_Claw.None.png,hu_shadow_claw.bytes,64,64,14,1,14,D,2
 0,8,Đại hỏa,Fire_Blast.None.png,hu_fire_blast.bytes,40,40,15,1,15,D,2

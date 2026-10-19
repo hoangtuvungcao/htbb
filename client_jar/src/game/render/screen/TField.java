@@ -461,7 +461,7 @@ public class TField extends ObjGame {
         if (isFocus) {
             if (this.paintFocus) {
                 game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 3, game.pokemon.GiaoDien.XANH);
-                game.pokemon.GiaoDien.khoi(g, this.x + 2, this.y + 2, this.width - 3, this.height - 3, 2, 0xFFFBE6);
+                game.pokemon.GiaoDien.khoi(g, this.x + 2, this.y + 2, this.width - 3, this.height - 3, 2, 0xFFFFFF);
             }
         } else {
             game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 3, game.pokemon.GiaoDien.XAM_TOI);
