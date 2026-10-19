@@ -69,6 +69,9 @@ Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `serv
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần);
+- `KiemChamHud`: chạm HUD màn chơi ở 11 cỡ - vùng chạm thật mọi nút (kể cả viên "1/2", câu cá, ô "+") không chồng
+  nhau, chạm ô chiêu = đúng chiêu đó (ô "+" = bảng gán), nhắm NPC thì chiêu không mở cửa hàng / menu NPC, viên "1/2" /
+  phím R / phím 0 đổi bộ chiêu;
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
@@ -82,7 +85,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemTruotDoiCo` (0.9.6.1): thanh trượt (Bang.thanhTruot - bảng Tự động đánh) theo ngón / chuột từng lần kéo, lưu khi
   thả (kể cả thả ngoài thanh); đổi cỡ cửa sổ nhỏ -> TO HƠN cỡ đầu -> phóng to / 21:9 / 4:3 / toàn màn: khung đúng cỡ mới,
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
-- `KiemHuanLuyen` (0.9.7): học chiêu theo loài + Điểm huấn luyện (game.pokemon.HocChieu / BangHuanLuyen, gói -120 giả):
+- `KiemCapNhat` (0.9.7): cập nhật trong game (game.pokemon.CapNhat + htbb.capnhat / htbb.pc.CapNhatPc) - gói -115, hộp nhắc /
+  bắt buộc ở mọi cỡ, tải qua máy chủ HTTP cục bộ (SHA-256 lệch / 404 / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài /SILENT);
+- `KiemHuanLuyen` (0.9.8): học chiêu theo loài + Điểm huấn luyện (game.pokemon.HocChieu / BangHuanLuyen, gói -122 giả):
   trạng thái chiêu theo loài, nút "Huấn luyện" có / hết chấm, bảng ở 6 cỡ (điện thoại / PC / J2ME) đủ nút, trong vùng an
   toàn, <= 80 %, hàng không chồng nút, trần + / −, ô nhanh giữ chiêu bị gỡ được thay;
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;

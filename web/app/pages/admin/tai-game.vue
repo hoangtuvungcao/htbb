@@ -122,7 +122,7 @@ const luaTep = computed(() => (kho.value?.ds ?? []).map(t => ({ label: `${t.ten}
     <UAlert v-if="!duocGhi" color="info" variant="subtle" icon="i-lucide-eye" title="Chế độ chỉ đọc" description="Chỉ Siêu quản trị và Biên tập sửa được bản tải." />
     <UAlert
       color="neutral" variant="subtle" icon="i-lucide-info"
-      description="Thẻ hiện trên trang Tải game theo thứ tự dưới đây. Mỗi nền tảng phát đúng một tệp: Java J2ME .jar (bản thường), Windows .exe (bộ cài), Linux .AppImage hoặc .tar.gz, Android .apk. “Sắp ra mắt” hiện thẻ có nhãn chờ, không có nút tải. Nút chính trên trang tự chọn theo thiết bị của người xem. Link trống thì dùng biến môi trường HTBB_LINK_* (nếu có)."
+      description="Ra bản mới: tải tệp lên (tự điền link, dung lượng, SHA-256) → sửa Phiên bản, Số bản, Có gì mới → Lưu. Trong ≤ 60 giây người chơi bản cũ thấy “Đã có bản mới” và cập nhật một chạm (APK / PC tự tải + kiểm SHA-256). Thẻ hiện trên trang Tải game theo thứ tự dưới đây. Mỗi nền tảng phát đúng một tệp: Java J2ME .jar (bản thường), Windows .exe (bộ cài), Linux .AppImage hoặc .tar.gz, Android .apk. “Sắp ra mắt” hiện thẻ có nhãn chờ, không có nút tải. Nút chính trên trang tự chọn theo thiết bị của người xem. Link trống thì dùng biến môi trường HTBB_LINK_* (nếu có)."
     />
 
     <div class="grid gap-4 xl:grid-cols-2">
@@ -144,6 +144,12 @@ const luaTep = computed(() => (kho.value?.ds ?? []).map(t => ({ label: `${t.ten}
           <UFormField label="Trạng thái"><USelect v-model="b.trangThai" :items="LUA_TRANG_THAI" :disabled="!duocGhi" class="w-full" /></UFormField>
           <UFormField label="Kiểu link"><USelect v-model="b.kieu" :items="luaKieu(b.ma)" :disabled="!duocGhi || luaKieu(b.ma).length < 2" class="w-full" /></UFormField>
           <UFormField label="Phiên bản"><UInput v-model="b.phienBan" placeholder="1.0.3" :disabled="!duocGhi" class="w-full" /></UFormField>
+          <UFormField
+            label="Số bản (BAN)" class="sm:col-span-2"
+            :help="b.ma === 'ios' ? 'iOS chưa có nhắc cập nhật trong game.' : 'Số bản của tệp này (BAN trong tools/phat-hanh/phien_ban.conf, vd 907). Máy chủ coi là bản mới nhất: client cũ hơn thấy “Đã có bản mới” (≤ 60 giây sau khi lưu). Bắt buộc cập nhật: Cấu hình hệ thống → Bản tối thiểu. 0 = không nhắc theo nền tảng này.'"
+          >
+            <UInput v-model.number="b.ban" type="number" :min="0" step="1" placeholder="907" :disabled="!duocGhi" class="w-40" />
+          </UFormField>
           <UFormField
             :label="b.kieu === 'testflight' ? 'Link TestFlight' : b.kieu === 'app-store' ? 'Link App Store' : b.kieu === 'ipa-manifest' ? 'URL manifest.plist (https)' : 'Link tải'"
             class="sm:col-span-2"

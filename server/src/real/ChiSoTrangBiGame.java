@@ -139,7 +139,8 @@ public final class ChiSoTrangBiGame {
     /** Phan nghin chi mang THO (chua giam dan): diem /300 (+ bang hoi, do giu, buff) + bao kich. */
     static long chiMangTho(final Char p) {
         final int diem = p.critical + p.getEffSkillClan(1) * p.critical / 100 + VatPhamDungLauDai.congChiMang(p);
-        return GioiHanChiSo.chiMangTho(diem, p.baokich);
+        // + dong Chi mang cua danh hieu dang deo (phan nghin), roi giam dan / tran nhu moi nguon
+        return GioiHanChiSo.chiMangTho(diem, p.baokich + DanhHieuGame.phanNghin(p, com.htbb.pokemon.DanhHieuLogic.CHI_MANG));
     }
 
     /** Thay Char.havecrit khi bat: mot lan quay cho ca chi mang + bao kich, tran 40% giam dan. */
@@ -391,6 +392,11 @@ public final class ChiSoTrangBiGame {
         final int[] gay = {p.khamMu(), p.khamDoc(), p.khamChoang(), p.khamBang(), p.khamHoathach()};
         final int[] khang = {muc.khamKhangMu(), muc.khamKhangDoc(), muc.khamKhangChoang(), muc.khamKhangBang(),
             muc.khamKhangHoathach()};
+        // danh hieu dang deo cua muc tieu: Khang trang thai (phan nghin) cong vao MOI trang thai, roi giam dan / tran 50%
+        final int khangDh = pvp ? DanhHieuGame.phanNghin((Char) muc, com.htbb.pokemon.DanhHieuLogic.KHANG_TRANG_THAI) : 0;
+        for (int i = 0; i < khang.length; i++) {
+            khang[i] += khangDh;
+        }
         for (int i = 0; i < gay.length; i++) {
             if (gay[i] <= 0) {
                 continue;

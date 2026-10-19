@@ -450,3 +450,9 @@ export function xhChonBoLoc(bang: XhBangDinhNghia, query: Record<string, unknown
   }
   return ra
 }
+
+/** 0.9.7: id danh hiệu đang đeo trong tob_char.pInfo (vị trí 103, real.CharVongLap); -1 = không đeo / lỗi. */
+export function xhIdDanhHieu(pInfo: unknown): number {
+  const v = Number(String(pInfo ?? '').split(',')[103] ?? '')
+  return Number.isInteger(v) && v > 0 ? v : -1
+}

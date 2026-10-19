@@ -566,6 +566,7 @@ class MapMenuNpc {
 
                 player.nBinhTra = 0;
                 player.potions[142]++;
+                DiemMocNhiemVu.khiNhanVatPhamSuKien(player, 142, 1); // hop qua NPC su kien
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được hộp quà trung thu", ""));
             }

@@ -14,6 +14,11 @@ import java.util.function.Predicate;
  *     args: host cong tienTo [ten kich ban | all]   (tai khoan <tienTo>NNN / 123456)
  *     -Ddb      CSDL nhan vat de doi chieu (bo trong = khong kiem CSDL)
  *     -Dtu=N    so thu tu tai khoan dau tien (mac dinh 1); moi kich ban lay tai khoan rieng
+ *     -Dden=N   so thu tu tai khoan GM cuoi (mac dinh 40, het thi quay vong). Tai khoan GM <tienTo>001..040 phai co
+ *               ten trong sv.adminAccounts - o do toi da 255 ky tu (cot cau_hinh.gia_tri, gioi_han doDai 255):
+ *               "admin,kt001,...,kt040" = 245 ky tu. Danh sach dai hon truoc day bi CSDL cat im lang (kt042.. mat GM,
+ *               pvp / dung_vat_pham / chiem_thanh FAIL); nay server khong chep va bao "[CAUHINH] KHONG chep".
+ *               Tai khoan thuong: <tienTo>101..120 (-DtuThuong / -DdenThuong).
  *     -Dgm=0    server khong cho bot quyen GM (vd server that): bo qua kich ban can GM
  *     -Dnoi=... thu muc monorepo htbb (doc server/cMap/ de kiem o di duoc)
  * Ket qua tong: in cuoi + ghi file -Dra=<tep> (mac dinh khong ghi).
@@ -34,7 +39,7 @@ public class BotChucNang {
     static final List<String> KET_QUA = new ArrayList<>();
     static int nPass, nFail, nBo;
 
-    static final int TK_DAU = Integer.getInteger("tu", 1), TK_CUOI = Integer.getInteger("den", 100);
+    static final int TK_DAU = Integer.getInteger("tu", 1), TK_CUOI = Integer.getInteger("den", 40);
 
     /** Tai khoan ke tiep trong [tu, den], quay vong (moi kich ban mot tai khoan, khong dung chung cung luc). */
     static synchronized String tkMoi() {
@@ -808,7 +813,21 @@ public class BotChucNang {
         if (l != null) throw new IllegalStateException(b.user + " dang nhap: " + l);
         l = b.vaoGame(0);
         if (l != null) throw new IllegalStateException(b.user + " " + l);
+        duTuoiChongClone(b);
         return b;
+    }
+
+    /**
+     * Tai khoan thu vua tao nhan vat: chong clone (com.htbb.pokemon.ChongCloneLogic) chan moi giao dich / ky gui khi
+     * tai khoan chua du chong_clone.tuoi_tai_khoan_gio (24 gio) hoac nhan vat chua choi du
+     * chong_clone.gio_choi_toi_thieu (10 gio). Day la DUNG thiet ke; bot khong ha cong ma lui ngay dang ky va cong
+     * gio choi tren CSDL thu (server cong don totalTimePlay=totalTimePlay+?, doc lai sau toi da 5 phut - lam ngay khi
+     * vao game, truoc lan doc dau tien). Khong cau hinh -Ddb (server that) thi khong lam gi.
+     */
+    static void duTuoiChongClone(Bot b) {
+        if (DB.isEmpty() || b.charDb <= 0) return;
+        sql("UPDATE tob_char SET totalTimePlay = GREATEST(totalTimePlay, 900) WHERE id = " + b.charDb);
+        sql("UPDATE account.team_user SET regdate = LEAST(regdate, DATE_SUB(NOW(), INTERVAL 30 DAY)) WHERE username = '" + b.user.replace("'", "") + "'");
     }
 
     /** Bot moi da vao game (tai khoan rieng). lop -1 = mac dinh 0. */
@@ -824,6 +843,7 @@ public class BotChucNang {
         if (l != null) throw new IllegalStateException(b.user + " dang nhap: " + l);
         l = b.vaoGame(lop < 0 ? 0 : lop);
         if (l != null) throw new IllegalStateException(b.user + " " + l);
+        duTuoiChongClone(b);
         return b;
     }
 

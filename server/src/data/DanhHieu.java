@@ -62,6 +62,11 @@ public class DanhHieu {
     }
 
     public static String getName(int idEff) {
+        // 0.9.7: ten trong data_danh_hieu (real.DanhHieuGame) neu co mau; khong co thi ten cu ben duoi
+        final String tenMau = real.DanhHieuGame.ten(idEff);
+        if (tenMau != null) {
+            return tenMau;
+        }
         switch (idEff) {
             case 8767:
                 return "Anh hùng";
@@ -176,6 +181,10 @@ public class DanhHieu {
     }
 
     public String getName() {
+        final String tenMau = real.DanhHieuGame.ten(this.ideff);
+        if (tenMau != null) {
+            return tenMau;
+        }
         switch (this.ideff) {
             case 8767:
                 return "Anh hùng";

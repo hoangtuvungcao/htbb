@@ -176,6 +176,7 @@ public final class TienHoaPokemon {
             final Message pet = taoPokePet(ch);
             // ... -> -102 ngoai hinh trang bi (NgoaiHinhGame): phu kien + vang sang hien cho moi nguoi
             Message duoi = NgoaiHinhGame.tao(ch);
+            duoi = DanhHieuGame.noiDuoi(duoi, ch); // ... -> -110 nhan danh hieu dang deo (ten + do hiem) cho moi nguoi
             if (pet != null) {
                 pet.kemTheo = duoi;
                 duoi = pet;

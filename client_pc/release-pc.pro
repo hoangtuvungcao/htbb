@@ -10,6 +10,10 @@
 -keep public class htbb.pc.Chay {
     public static void main(java.lang.String[]);
 }
+# bộ giải nén gói -127 tạo bằng Class.forName("network.GiaiNenZip") (Session_ME)
+-keep public class network.GiaiNenZip {
+    public <init>();
+}
 # MIDlet tạo bằng Class.forName("game.GameMidlet")
 -keep public class game.GameMidlet {
     public <init>();
@@ -33,6 +37,8 @@
 # lớp nền PC (cửa sổ, MIDP trên Java2D) giữ tên: ít bí mật, và kiểm thử KiemPc chạy được trên bản đã làm rối.
 # Mã GAME (game.**, network.**, effect.**) bị đổi tên hết trừ 3 hàm KiemPc gọi.
 -keep class htbb.pc.** { *; }
+# bộ cập nhật (0.9.7): game.pokemon.CapNhat tạo htbb.pc.CapNhatPc bằng Class.forName; lớp chung SE giữ tên cho dễ đọc log
+-keep class htbb.capnhat.** { *; }
 -keep class javax.microedition.** { *; }
 -keep class javax.wireless.** { *; }
 -keep class game.model.Char {

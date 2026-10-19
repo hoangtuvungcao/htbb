@@ -30,6 +30,28 @@ public class Session_ME implements ISession {
     private final Sender sender = new Sender();
     public byte[] key = null;
     public String strRecvByteCount = "";
+
+    /** Lệnh gói nén (server io.GoiNen.LENH_NEN). */
+    public static final byte GOI_NEN = -127;
+    /** Bit khả năng gửi kèm gói đăng nhập: giải nén được gói -127. */
+    public static final int KHA_NANG_NEN = 1;
+    /** 0.9.7: bộ giải nén - PC / Android có java.util.zip (network.GiaiNenZip), J2ME không có lớp đó -> null, không báo khả năng. */
+    static GiaiNen giaiNen;
+    /** số gói nén đã nhận (kiểm thử) */
+    public static int soGoiNen;
+
+    static {
+        try {
+            giaiNen = (GiaiNen) Class.forName("network.GiaiNenZip").newInstance();
+        } catch (Throwable e) {
+            giaiNen = null;
+        }
+    }
+
+    /** Số nguyên khả năng gửi sau số bản ở gói đăng nhập (server LoginHandler -> Session.khaNang). */
+    public static int khaNang() {
+        return giaiNen != null ? KHA_NANG_NEN : 0;
+    }
     int countMsg = 0;
 
     public static Session_ME gI() {
@@ -316,8 +338,31 @@ public class Session_ME implements ISession {
                     data[i] = Session_ME.this.readKey(data[i]);
                 }
             }
+            if (cmd == GOI_NEN && giaiNen != null) {
+                return moGoiNen(data);
+            }
             Message msg = new Message(cmd, data);
             return msg;
+        }
+
+        /** Gói -127: zlib của MỘT khung gói gốc chưa mã hoá ([-128] lệnh, độ dài 4 / 2 byte, dữ liệu) - server io.GoiNen. */
+        private Message moGoiNen(byte[] nen) throws Exception {
+            byte[] k = giaiNen.giai(nen);
+            int i = 0;
+            byte c = k[i++];
+            int n;
+            if (c == -128) {
+                c = k[i++];
+                n = ((k[i] & 255) << 24) | ((k[i + 1] & 255) << 16) | ((k[i + 2] & 255) << 8) | (k[i + 3] & 255);
+                i += 4;
+            } else {
+                n = ((k[i] & 255) << 8) | (k[i + 1] & 255);
+                i += 2;
+            }
+            byte[] d = new byte[n];
+            System.arraycopy(k, i, d, 0, n);
+            soGoiNen++;
+            return new Message(c, d);
         }
     }
 

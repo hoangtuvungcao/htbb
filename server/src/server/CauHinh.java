@@ -215,6 +215,15 @@ public final class CauHinh {
                     "INSERT IGNORE INTO `" + BANG + "` (khoa, gia_tri, sua_boi, sua_luc) VALUES (?, ?, 'khoi-dong-lan-dau', NOW())");
             for (final String k : TAT_CA_KHOA) {
                 final String v = pFile.getProperty(k);
+                if (v != null && !vuaCotCsdl(v)) {
+                    // 19/10/2026: truoc day chep thang -> MariaDB (che do khong strict) cat con 255 ky tu, gia tri CAT
+                    // thanh "nguon that" (CSDL > server.ini): vd. sv.adminAccounts dai -> mat moi ten GM sau ky tu 255
+                    // (BotChucNang: kt042.. het quyen GM). Nay khong chep, bao ro; cau hinh trung tam se tu choi gia
+                    // tri server.ini qua dai (canh bao) va dung mac dinh.
+                    System.out.println("[CAUHINH] KHONG chep " + k + " vao CSDL: dai " + v.trim().length() + " > "
+                            + com.htbb.cauhinh.KiemGiaTri.DO_DAI_COT + " ky tu (cot cau_hinh.gia_tri) - rut gon trong server.ini");
+                    continue;
+                }
                 if (v != null) {
                     pre.setString(1, k);
                     pre.setString(2, v.trim());
@@ -265,6 +274,11 @@ public final class CauHinh {
      *
      * @return mo ta ket qua de hien cho admin
      */
+    /** Gia tri server.ini chep duoc vao cot cau_hinh.gia_tri ma khong bi cat (KiemGiaTri.DO_DAI_COT ky tu). */
+    public static boolean vuaCotCsdl(final String v) {
+        return v == null || v.trim().length() <= com.htbb.cauhinh.KiemGiaTri.DO_DAI_COT;
+    }
+
     public static String napLai() {
         // Doc + kiem + ap dung qua cau hinh trung tam (CSDL > server.ini > mac dinh); no goi apDung() ben duoi.
         return com.htbb.cauhinh.CauHinhTrungTam.napLaiNgay("lenh-nap-lai");

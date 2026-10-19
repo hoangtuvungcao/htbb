@@ -256,6 +256,8 @@ Name: "desktopicon"; Description: "Tạo biểu tượng trên màn hình nền"
 
 [Run]
 Filename: "{app}\\HTBB.exe"; Description: "Chơi Huyền Thoại Bảo Bối"; Flags: nowait postinstall skipifsilent
+; cập nhật trong game (htbb.pc.CapNhatPc chạy bộ cài /SILENT): xong thì mở lại game
+Filename: "{app}\\HTBB.exe"; Flags: nowait runasoriginaluser; Check: WizardSilent
 EOF
         # Inno Setup đọc .iss UTF-8 khi có BOM
         printf '\357\273\277' | cat - "$GOI/htbb.iss" > "$GOI/htbb-bom.iss" && mv "$GOI/htbb-bom.iss" "$GOI/htbb.iss"

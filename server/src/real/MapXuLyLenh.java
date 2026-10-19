@@ -538,6 +538,9 @@ class MapXuLyLenh {
             case -100: // Tu dong danh chinh thuc (com.htbb.pokemon.TuDong)
                 TuDongGame.xuLy(player, message);
                 break;
+            case -111: // Danh hieu: xin bang / deo / thao / da xem (real.DanhHieuGame, com.htbb.pokemon.DanhHieuLogic)
+                DanhHieuGame.xuLy(player, message);
+                break;
             case -103: // Ngoai hinh trang bi: an/hien phu kien, trang phuc (com.htbb.pokemon.NgoaiHinh)
                 NgoaiHinhGame.xuLy(player, message);
                 break;
@@ -937,26 +940,42 @@ class MapXuLyLenh {
                 // hoac ca hai ben tra it hon/khong tra gi trong khi arena van tra thuong DUNG
                 // gap doi so cuoc goc cho nguoi thang - sinh xu tu khong khi. Hoan lai ben da
                 // tru neu ben kia thieu, huy tran dau thay vi tao arena.
+                // 19/10/2026: ky quy nguyen tu qua real.ThachDauCuoc (truoc: tru hai doi truong nhung arena kieu 4 KHONG
+                // tra ai - ca hai cuoc bien mat). Muc cuoc theo cap thap nhat cua CA HAI nhom, cong chong clone moi
+                // thanh vien, nguoi thang nhan 2 x cuoc - phi.
                 final long cuoc = (long) p.moneyThachdau;
-                if (!p.truXuNeuDu(cuoc, false, "map 32")) {
+                final java.util.List<Char> moiNguoi = new java.util.ArrayList<Char>();
+                for (final Object o : p.party.userParty) {
+                    moiNguoi.add((Char) o);
+                }
+                for (final Object o : player.party.userParty) {
+                    moiNguoi.add((Char) o);
+                }
+                String loiTran = cuoc > 0L ? ThachDauCuoc.kiemCuoc(cuoc, moiNguoi.toArray(new Char[0])) : "Số tiền cược không hợp lệ.";
+                if (loiTran == null) {
+                    for (final Char o : moiNguoi) {
+                        if (com.htbb.pokemon.ChongClone.chanCaHai(o, o, player, com.htbb.pokemon.ChongClone.KIEU_THACH_DAU)) {
+                            loiTran = "";
+                            break;
+                        }
+                    }
+                }
+                final int idTran = Map.IDARENA;
+                if (loiTran == null) {
+                    loiTran = ThachDauCuoc.kyQuy(p, player, cuoc, 4, idTran);
+                }
+                if (loiTran != null) {
                     p.nameCompetitor = "";
                     p.moneyThachdau = 0;
                     player.nameCompetitor = "";
                     player.moneyThachdau = 0;
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu để thách đấu, trận đấu đã huỷ.", ""));
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Đối thủ không đủ xu, trận đấu đã huỷ.", ""));
+                    if (!loiTran.isEmpty()) {
+                        p.sendMessage(MessageCreator.createServerAlertMessage(loiTran, ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage(loiTran, ""));
+                    }
                     return;
                 }
-                if (!player.truXuNeuDu(cuoc, false, "map 33")) {
-                    p.addXu(cuoc, "map 32 hoan lai");
-                    p.nameCompetitor = "";
-                    p.moneyThachdau = 0;
-                    player.nameCompetitor = "";
-                    player.moneyThachdau = 0;
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu để thách đấu, trận đấu đã huỷ.", ""));
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Đối thủ không đủ xu, trận đấu đã huỷ.", ""));
-                    return;
-                }
+                Map.IDARENA = (idTran + 1) % 2000000000;
 
                 TeamArena team1 = new TeamArena(TeamArena.genIDTeam());
                 TeamArena team2 = new TeamArena(TeamArena.genIDTeam());
@@ -964,14 +983,14 @@ class MapXuLyLenh {
                 ArenaData arena = new ArenaData();
                 arena.addTeam(team1);
                 arena.addTeam(team2);
-                arena.idArena = Map.IDARENA;
+                arena.idArena = idTran;
                 arena.typeArena = 4;
                 arena.start();
                 mm.doAddArena(arena);
-                p.idArena = Map.IDARENA;
-                player.idArena = Map.IDARENA;
-                arena.moneyThachdau = p.moneyThachdau * 2;
-                arena.moneyThachdau = arena.moneyThachdau - arena.moneyThachdau / 5;
+                p.idArena = idTran;
+                player.idArena = idTran;
+                arena.moneyThachdau = (int) Math.min(Integer.MAX_VALUE,
+                        com.htbb.pokemon.ThachDauLogic.chia(ThachDauCuoc.cauHinh(), cuoc, 0).tra0);
                 team1.addMember(p);
                 team2.addMember(player);
                 Message m = null;
@@ -995,7 +1014,7 @@ class MapXuLyLenh {
                         pp.timeUsePK = System.currentTimeMillis();
                         pp.sendMessage(m);
                         pp.sendToNearPlayer(m);
-                        pp.idArena = Map.IDARENA;
+                        pp.idArena = idTran;
                         team1.addMember(pp);
                     }
                 }
@@ -1011,7 +1030,7 @@ class MapXuLyLenh {
                         pp.timeUsePK = System.currentTimeMillis();
                         pp.sendMessage(m);
                         pp.sendToNearPlayer(m);
-                        pp.idArena = Map.IDARENA;
+                        pp.idArena = idTran;
                         team2.addMember(pp);
                     }
                 }
@@ -1026,7 +1045,6 @@ class MapXuLyLenh {
                 player.sendToNearPlayer(m);
                 arena.sendInfoMatch = true;
                 arena.timeWaitFight = System.currentTimeMillis() + 30000L;
-                Map.IDARENA = (Map.IDARENA + 1) % 2000000000;
                 player.nameCompetitor = "";
                 p.nameCompetitor = "";
                 p.moneyThachdau = 0;
@@ -1776,6 +1794,11 @@ class MapXuLyLenh {
                 default:
                     break;
                 case 7:
+                    final int mucBv = XepHangBangVang.muc(player.session == null ? -1 : player.session.banClient, player.myCountry);
+                    if (mucBv >= 0) {
+                        map.doSendTopNation(player, mucBv);
+                        return;
+                    }
                     player.sendMessage(
                             MessageCreator.createMsgMenu(
                                     new String[]{
@@ -1902,6 +1925,8 @@ class MapXuLyLenh {
 
                 player.sendInfoNuiChauBau();
                 player.isDoChangeMap = false;
+                NhiemVuEngine.suKien(player, "den_ban_do", String.valueOf(player.mapID), 1); // danh hieu kham pha
+                DanhHieuGame.khiVaoBanDo(player); // lan dau trong phien: nhan danh hieu, so moi, thuong mua PvP
                 map.doJoinMapOk(player);
             } else if (player.mapID == Map.idMapChanNui) {
                 map.doReturnVillage(player);

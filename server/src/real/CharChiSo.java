@@ -113,6 +113,8 @@ class CharChiSo {
         }
         self.maxhp += (int) (self.maxhp * pcUphp / 100L);
         self.maxmp += (int) (self.maxmp * pcUpmp / 100L);
+        // Danh hieu dang deo: dong HP phan nghin - TRUOC kepPhanTram (trong chi_so.tran_phan_tram_cong).
+        self.maxhp += (int) ((long) self.maxhp * DanhHieuGame.phanNghin(self, com.htbb.pokemon.DanhHieuLogic.HP) / 1000L);
         int atkTubinh = 0;
         int atkTubinh2 = 0;
         for (int j = 0; j < self.tubinh.size(); ++j) {

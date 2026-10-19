@@ -113,12 +113,20 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.DungDo.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -110 danh hieu (bang, nhan tren dau, so moi) - DanhHieuKho
+        if (game.pokemon.DanhHieuKho.nhan(msg)) {
+            return;
+        }
         // pokemon: lenh -122 hoc chieu theo loai + diem huan luyen (HocChieu, server >= 0.9.8)
         if (game.pokemon.HocChieu.nhan(msg)) {
             return;
         }
         // pokemon: lenh -105 trang thai server sau moi thao tac vat pham (kho trang thai client)
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
+            return;
+        }
+        // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
+        if (game.pokemon.CapNhat.nhan(msg)) {
             return;
         }
         int i;
@@ -1612,8 +1620,12 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             int len2 = 0;
                             int byteRead = 0;
                             byteMap = new byte[msg.reader().available()];
-                            while (len2 != -1 && byteRead < byteMap.length) {
-                                len2 = msg.reader().read(byteMap, 0, byteMap.length - byteRead);
+                            // 0.9.6.1: đọc nối tiếp (trước đây luôn ghi đè từ ô 0 nếu một lần đọc không đủ)
+                            while (byteRead < byteMap.length) {
+                                len2 = msg.reader().read(byteMap, byteRead, byteMap.length - byteRead);
+                                if (len2 <= 0) {
+                                    break;
+                                }
                                 byteRead += len2;
                             }
                         }
