@@ -103,7 +103,8 @@ public final class TheTrangThai {
         chu(g2, lv, ax, ay + ar + 0.9f, fLv, 0xFF15284A, false, 2);
         if ((mc.basePointLeft > 0 || mc.skillPointLeft > 0) && System.currentTimeMillis() % 1000 < 650) {
             g2.setColor(new Color(mc.basePointLeft > 0 ? 0xFF7A1A : 0x40C8F8));
-            g2.fill(new Ellipse2D.Float(ax + ar * 0.72f - 3.6f, ay - ar * 0.72f - 3.6f, 7.2f, 7.2f));
+            // 0.9.5.1: chấm điểm chưa dùng ở góc TRÁI trên chân dung (không đè chữ tên bên phải)
+            g2.fill(new Ellipse2D.Float(ax - ar * 0.72f - 3.6f, ay - ar * 0.72f - 3.6f, 7.2f, 7.2f));
         }
         // tên + chip hệ + % EXP
         float x0 = l + 47, wB = r - x0 - 7;

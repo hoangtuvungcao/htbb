@@ -79,6 +79,15 @@ public final class HanhDong {
         AmThanh.phat(AmThanh.MO);
     }
 
+    /** Nút "Tiềm năng" (tab Chỉ số): PC / APK = bảng cộng điểm HD; J2ME = tab Tiềm năng của bảng cũ. */
+    public static void moTiemNang() {
+        if (KhungVao.moi()) {
+            BangTiemNangHD.mo();
+        } else {
+            moBang(2);
+        }
+    }
+
     public static void moBanDoLon() {
         if (gs() == null) {
             return;

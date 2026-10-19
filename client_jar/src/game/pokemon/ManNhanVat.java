@@ -764,9 +764,10 @@ public final class ManNhanVat extends Screen {
             }, "hanh-trang");
             Bang.nut(g, xx + wn + k, y + h - 6 - nutH, wn, nutH, "Tiềm năng", Bang.PHU, new IAction() {
                 public void perform() {
-                    HanhDong.moBang(2);
+                    HanhDong.moTiemNang();
                 }
             }, "tiem-nang");
+            BangTiemNangHD.chamDo(g, xx + wn + k, y + h - 6 - nutH, wn);
         }
     }
 

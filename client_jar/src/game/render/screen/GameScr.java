@@ -3874,6 +3874,10 @@ public class GameScr extends Screen {
         return false;
     }
 
+    /** tin chat mình vừa gõ (bỏ bản máy chủ gửi lại) */
+    private String tinVuaGo;
+    private long lucVuaGo;
+
     private void doChatFromMe(String text) {
         text = GameService.chuChat(text);
         if (text == null) {
@@ -3886,6 +3890,8 @@ public class GameScr extends Screen {
             }
         }
         if (typechat == CHAT_NORMAL) {
+            this.tinVuaGo = text;
+            this.lucVuaGo = System.currentTimeMillis();
             this.mainChar.chat = null;
             addChat(this.mainChar, text, 200);
             MessageScr.gI().addTab(new StringBuffer(String.valueOf(this.mainChar.name)).append(": ").append(text).toString(), null, 0);
@@ -5662,6 +5668,15 @@ public class GameScr extends Screen {
     }
 
     public void onChat(short chatFromID, String text) {
+        // 0.9.5.1: máy chủ gửi thông báo trạng thái cho CHÍNH mình bằng tin chat (tự động đánh dừng, không dùng được...):
+        // hiện thành thông báo nhanh nhỏ ở giữa trên (DungDo), không phải bong bóng chữ to theo thế giới (bị cắt mép).
+        // Tin mình vừa gõ máy chủ gửi lại (bị cấm chat...) thì bỏ - client đã tự hiện bong bóng.
+        if (this.mainChar != null && chatFromID == this.mainChar.ID && text != null) {
+            if (!text.equals(this.tinVuaGo) || System.currentTimeMillis() - this.lucVuaGo > 5000L) {
+                game.pokemon.DungDo.bao(text, game.pokemon.DungDo.TIN);
+            }
+            return;
+        }
         Actor a = findActorByID(chatFromID);
         if (a != null) {
             a.chat = null;
