@@ -84,15 +84,15 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'cua-hang', ten: 'Cửa hàng & chế tạo', nhom: 'Kinh tế & vật phẩm', icon: 'i-lucide-store',
-    moTa: 'Giá bán ở Chansey, Kecleon, Bronzong, Delcatty, đổi Huy chương Gym và công thức chế tạo ở Machamp.',
+    moTa: 'Giá bán ở Chansey, Kecleon, Bronzong, cửa hàng trang trí, đổi Huy chương Gym và công thức chế tạo ở Machamp.',
     muc: [{ id: 'tien', ten: 'Trả bằng gì?' }, { id: 'chansey-thuoc', ten: 'Chansey (thuốc)' }, { id: 'kecleon-luong-khoa', ten: 'Kecleon (lượng khoá)' }, { id: 'bronzong-trang-bi', ten: 'Bronzong (trang bị)' }, { id: 'che-tao', ten: 'Chế tạo' }],
-    tuKhoa: 'shop cua hang gia mua ban chansey kecleon bronzong delcatty machamp che tao xu luong khoa',
+    tuKhoa: 'shop cua hang gia mua ban chansey kecleon bronzong trang tri machamp che tao xu luong khoa',
   },
   {
     slug: 'kinh-te', ten: 'Kinh tế & tiền tệ', nhom: 'Kinh tế & vật phẩm', icon: 'i-lucide-coins',
-    moTa: 'Xu, lượng khoá, lượng: kiếm ở đâu, tiêu vào đâu, thuế chợ và vì sao giá cả ổn định.',
+    moTa: 'Xu, lượng khoá, lượng: kiếm ở đâu, tiêu vào đâu, thuế chợ, chốt chống clone khi chuyển xu và vì sao giá cả ổn định.',
     muc: [{ id: 'tien', ten: 'Ba loại tiền' }, { id: 'kiem', ten: 'Cách kiếm tiền' }, { id: 'tieu', ten: 'Tiêu tiền' }, { id: 'cho', ten: 'Chợ & giao dịch' }, { id: 'lam-phat', ten: 'Vì sao giá cả ổn định?' }],
-    tuKhoa: 'xu luong luong khoa tien te thue cho giao dich lam phat khong nap',
+    tuKhoa: 'xu luong luong khoa tien te thue cho giao dich lam phat chong clone chuyen xu nap khoi dau 5000 xu',
   },
   {
     slug: 'pokedex-shiny', ten: 'Pokédex & Shiny', nhom: 'Nội dung', icon: 'i-lucide-book-open',
@@ -110,7 +110,7 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     slug: 'doi-su-pham', ten: 'Đội, vùng & sư phạm', nhom: 'Cộng đồng', icon: 'i-lucide-users',
     moTa: 'Lập đội, nhiệm vụ đội, ba vùng Kanto/Johto/Hoenn, chế độ thầy–trò.',
     muc: [{ id: 'to-doi', ten: 'Tổ đội' }, { id: 'doi', ten: 'Đội' }, { id: 'vung', ten: 'Vùng' }, { id: 'su-pham', ten: 'Sư phạm (thầy – trò)' }],
-    tuKhoa: 'bang hoi guild doi truong to doi su phu hoc tro vung kanto johto hoenn',
+    tuKhoa: 'doi guild doi truong to doi thay tro hoc tro vung kanto johto hoenn',
   },
   {
     slug: 'pvp', ten: 'PvP xếp hạng mùa', nhom: 'Cộng đồng', icon: 'i-lucide-trophy',
@@ -132,9 +132,9 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'su-kien', ten: 'Sự kiện năm', nhom: 'Nội dung', icon: 'i-lucide-calendar-days',
-    moTa: 'Lịch 52 tuần: lễ Việt Nam, Ngày cộng đồng, tuần hệ, Tuần Shiny, đột kích, mùa PvP.',
+    moTa: 'Lễ hội theo ngày thật (cả âm lịch), tuần Pokémon, Ngày cộng đồng, Tuần Shiny, đột kích, mùa PvP.',
     muc: [{ id: 'dang-dien-ra', ten: 'Đang diễn ra' }, { id: 'lich', ten: 'Lịch cả năm' }, { id: 'loai', ten: 'Các loại sự kiện' }],
-    tuKhoa: 'event su kien tet trung thu halloween noel cong dong tuan he lich',
+    tuKhoa: 'event su kien tet trung thu halloween noel gio to vu lan am lich cong dong tuan he lich',
   },
   {
     slug: 'nhiem-vu', ten: 'Nhiệm vụ', nhom: 'Nội dung', icon: 'i-lucide-scroll-text',
@@ -144,9 +144,9 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'ban-do', ten: 'Bản đồ thế giới', nhom: 'Thế giới', icon: 'i-lucide-map',
-    moTa: 'Các vùng, thị trấn, khu luyện cấp theo cấp độ và Pokémon hoang dã ở từng nơi.',
-    muc: [{ id: 'vung', ten: 'Các vùng' }, { id: 'luyen-cap', ten: 'Khu luyện cấp' }, { id: 'danh-sach', ten: 'Mọi bản đồ' }],
-    tuKhoa: 'map ban do khu vuc luyen cap pallet viridian kanto johto',
+    moTa: 'Các vùng, thị trấn, NPC và chức năng, khu luyện cấp theo cấp độ và Pokémon hoang dã ở từng nơi.',
+    muc: [{ id: 'vung', ten: 'Các vùng' }, { id: 'npc', ten: 'NPC & chức năng' }, { id: 'luyen-cap', ten: 'Khu luyện cấp' }, { id: 'danh-sach', ten: 'Mọi bản đồ' }],
+    tuKhoa: 'map ban do khu vuc luyen cap pallet viridian kanto johto npc chansey kecleon kangaskhan meowth ngan hang lapras pidgeot cho bay cho do',
   },
   {
     slug: 'he-sinh-thai', ten: 'Hệ sinh thái', nhom: 'Thế giới', icon: 'i-lucide-leaf',
@@ -190,11 +190,20 @@ export const LOAI_SU_KIEN: Record<string, { ten: string, mau: string, icon: stri
   mua: { ten: 'Theo mùa', mau: '#f08030', icon: 'i-lucide-sun' },
 }
 
-/** Tuần trong năm (1..52) của một ngày — đơn giản: ngày thứ n trong năm / 7. */
+/**
+ * "Tuần Pokémon" (1..52) đang chạy lúc `d` — CÙNG cách tính với máy chủ game (com.htbb.pokemon.LichNam):
+ * tuần ISO (bắt đầu thứ Hai, tuần 1 chứa ngày thứ Năm đầu năm), đổi tuần lúc 04:00 giờ Việt Nam.
+ * Tuần ISO 53 (một số năm) dùng chung dòng tuần 52 của lịch.
+ */
 export function tuanTrongNam(d: Date): number {
-  const dau = Date.UTC(d.getFullYear(), 0, 1)
-  const ngay = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - dau) / 86400000)
-  return Math.min(52, Math.floor(ngay / 7) + 1)
+  // giờ Việt Nam (UTC+7), lùi 4 giờ: 00:00–03:59 thứ Hai vẫn thuộc tuần trước
+  const t = new Date(d.getTime() + 7 * 3600_000 - 4 * 3600_000)
+  const ngay = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate())
+  const thu = (t.getUTCDay() + 6) % 7 // 0 = thứ Hai
+  const thuNam = ngay + (3 - thu) * 86400000 // thứ Năm cùng tuần
+  const nam = new Date(thuNam).getUTCFullYear()
+  const tuan = Math.floor((thuNam - Date.UTC(nam, 0, 1)) / (7 * 86400000)) + 1
+  return Math.min(52, Math.max(1, tuan))
 }
 
 // ---------------------------------------------------------------- tiện ích số

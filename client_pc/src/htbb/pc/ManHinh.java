@@ -1,15 +1,19 @@
 package htbb.pc;
 
+import java.awt.AWTException;
+import java.awt.BufferCapabilities;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.ImageCapabilities;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -45,7 +49,7 @@ import javax.microedition.lcdui.NenPc;
 public final class ManHinh extends Canvas implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
     public static volatile ManHinh me;
 
-    final Frame khung;
+    final Frame khung;   // null = kiểm thử không cửa sổ (khongCuaSo)
     private VolatileImage demV;
     private BufferedImage demB;
     /**
@@ -68,6 +72,21 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     volatile String chupVao;
 
     ManHinh(String tieuDe, List<Image> bieuTuong) {
+        this(tieuDe, bieuTuong, true);
+    }
+
+    /** Kiểm thử headless (không cửa sổ): đúng đường vẽ / hợp thành / trình bày, bề mặt là ảnh (trinhBayVaoAnh). */
+    public static ManHinh khongCuaSo() {
+        return new ManHinh(null, null, false);
+    }
+
+    private ManHinh(String tieuDe, List<Image> bieuTuong, boolean coCuaSo) {
+        if (!coCuaSo) {
+            khung = null;
+            setBackground(Color.BLACK);
+            me = this;
+            return;
+        }
         khung = new Frame(tieuDe);
         if (bieuTuong != null && !bieuTuong.isEmpty()) khung.setIconImages(bieuTuong);
         khung.setBackground(Color.BLACK);
@@ -148,7 +167,7 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         khung.setLocationRelativeTo(null);
         khung.setVisible(true);
         if (CaiDat.phongTo && !CaiDat.toanMan) khung.setExtendedState(Frame.MAXIMIZED_BOTH);
-        createBufferStrategy(2);
+        taoBs(getWidth(), getHeight());
         requestFocus();
         if (CaiDat.toanMan) datToanMan(true);
         doiCo();
@@ -180,7 +199,7 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
         if (w <= 0 || h <= 0) return;
         if (NenPc.tinhKichThuoc(w, h)) NenPc.baoDoiCo();
         else NenPc.luong().yeuCauVe();
-        if (!toanMan && (khung.getExtendedState() & Frame.MAXIMIZED_BOTH) == 0) {
+        if (khung != null && !toanMan && (khung.getExtendedState() & Frame.MAXIMIZED_BOTH) == 0) {
             CaiDat.cuaSoRong = w;
             CaiDat.cuaSoCao = h;
         }
@@ -220,8 +239,10 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                 GraphicsConfiguration gcf = khung.getGraphicsConfiguration();
                 Rectangle manHinh = gcf != null ? gcf.getBounds() : new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
                 int trangThai = khung.getExtendedState();
-                synchronized (khoaTruoc) {
-                    khung.dispose();
+                synchronized (khoaBs) {
+                    synchronized (khoaTruoc) {
+                        khung.dispose();
+                    }
                 }
                 if (bat) {
                     phongToCu = (trangThai & Frame.MAXIMIZED_BOTH) != 0;
@@ -238,7 +259,7 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                 CaiDat.toanMan = bat;
                 khung.setVisible(true);
                 if (!bat && phongToCu) khung.setExtendedState(Frame.MAXIMIZED_BOTH);
-                createBufferStrategy(2);
+                taoBs(getWidth(), getHeight());
                 requestFocus();
                 doiCoMuon();
             }
@@ -249,7 +270,7 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
 
     /** Graphics2D của bộ đệm cỡ W x H (tạo lại khi đổi cỡ / mất nội dung). null = chưa vẽ được. */
     public Graphics2D batDauVe(int W, int H) {
-        if (!isDisplayable()) return null;
+        if (khung != null && !isDisplayable()) return null;
         if (dungVolatile) {
             try {
                 GraphicsConfiguration gc = getGraphicsConfiguration();
@@ -291,6 +312,14 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
 
     private Image truoc() {
         return dungVolatile ? truocV : truocB;
+    }
+
+    /** Kiểm thử: cỡ khung game gần nhất đã chép sang bộ đệm trước {rộng, cao}, null = chưa có. */
+    public int[] coKhungTruoc() {
+        synchronized (khoaTruoc) {
+            Image t = truoc();
+            return t == null ? null : new int[]{t.getWidth(null), t.getHeight(null)};
+        }
     }
 
     /** Game vẽ xong một khung (luồng sự kiện): chép bộ đệm sau -> trước cho luồng trình bày. */
@@ -402,6 +431,138 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
     public static volatile long tbTrinhBay;
     private long tbCong, tbDem, tbMoc;
 
+    // ---- bề mặt trình bày (BufferStrategy) ----
+    /**
+     * 0.9.6.1 - SỬA ĐEN MÀN KHI CỬA SỔ TO RA. Trước đây BufferStrategy tạo MỘT lần (hien / datToanMan) bằng
+     * createBufferStrategy(2): trên Linux AWT chọn chiến lược LẬT TRANG XDBE (back buffer của X server gắn với cửa sổ).
+     * Khi cửa sổ to hơn cỡ lúc tạo (phóng to, chọn cỡ lớn hơn trong Cài đặt), FlipBufferStrategy tự cấp lại back buffer
+     * XDBE ngay trên luồng trình bày, nhưng trên Xwayland (COSMIC / GNOME / KDE Wayland) bộ đệm cấp lại không lên màn:
+     * show() vẫn chạy 60 lần / giây không lỗi (F12 chụp vẫn có hình) mà cửa sổ đen; thu nhỏ thì không cấp lại nên vẫn
+     * thấy hình. Nay: Linux / macOS dùng chiến lược CHÉP (Blt: ảnh VolatileImage + vẽ lên cửa sổ, đường của Swing),
+     * TẠO LẠI bề mặt mỗi khi cỡ cửa sổ khác cỡ lúc tạo hoặc vừa lỗi (cùng luồng trình bày, có khoá), lỗi thì ghi nhật ký
+     * một lần và vẽ thẳng lên cửa sổ khung đó. Windows giữ mặc định (D3D). -Dhtbb.lat=true / false để ép kiểu.
+     */
+    private static final boolean DUNG_LAT;
+    static {
+        String p = System.getProperty("htbb.lat");
+        DUNG_LAT = p != null ? "true".equals(p) : System.getProperty("os.name", "").toLowerCase().startsWith("windows");
+    }
+    private final Object khoaBs = new Object();
+    /** cỡ cửa sổ lúc tạo bề mặt hiện tại; bsHong = khung trước lỗi -> tạo lại */
+    private int bsW = -1, bsH = -1;
+    private boolean bsHong;
+    /** số lần tạo bề mặt (kiểm thử / nhật ký) */
+    public static volatile int soTaoBs;
+    private static volatile boolean daGhiLoiBs;
+
+    /** Có phải tạo lại bề mặt trình bày: chưa có, cửa sổ đổi cỡ (to hơn HAY nhỏ hơn) so với lúc tạo, hoặc vừa lỗi. */
+    public static boolean canTaoLai(boolean co, int bsW, int bsH, int W, int H, boolean hong) {
+        return !co || hong || W != bsW || H != bsH;
+    }
+
+    /** Tạo (lại) BufferStrategy cho cỡ cửa sổ W x H. Gọi được từ luồng nào cũng được (khoá khoaBs). */
+    boolean taoBs(int W, int H) {
+        synchronized (khoaBs) {
+            if (khung == null || !isDisplayable()) return false;
+            try {
+                if (DUNG_LAT) {
+                    createBufferStrategy(2);
+                } else {
+                    try {
+                        createBufferStrategy(2, new BufferCapabilities(new ImageCapabilities(true), new ImageCapabilities(true), null));
+                    } catch (AWTException e) {
+                        try {
+                            createBufferStrategy(2, new BufferCapabilities(new ImageCapabilities(false), new ImageCapabilities(false), null));
+                        } catch (AWTException e2) {
+                            createBufferStrategy(2);
+                        }
+                    }
+                }
+                bsW = W;
+                bsH = H;
+                bsHong = false;
+                if (soTaoBs++ == 0) {
+                    BufferStrategy bs = getBufferStrategy();
+                    NhatKy.ghi("trinh bay: " + (bs == null ? "?" : bs.getClass().getSimpleName()) + " " + W + "x" + H
+                            + (DUNG_LAT ? " (lat trang)" : " (chep)"));
+                }
+                return true;
+            } catch (Throwable e) {
+                ghiLoiBs("tao BufferStrategy", e);
+                return false;
+            }
+        }
+    }
+
+    private static void ghiLoiBs(String viec, Throwable e) {
+        if (daGhiLoiBs) return;
+        daGhiLoiBs = true;
+        NhatKy.loi("trinh bay - " + viec, e);
+    }
+
+    /**
+     * Đưa ảnh hợp thành lên bề mặt cỡ W x H: viền + khung game (bộ đệm bw x bh) vào (hx, hy, hw, hh), phóng mượt
+     * khi không vừa khít. Cùng một hàm cho cửa sổ thật (BufferStrategy / vẽ thẳng) và kiểm thử (trinhBayVaoAnh).
+     */
+    private void veLenBeMat(Graphics2D g, int W, int H, Image hop, boolean thang, int bw, int bh, int hx, int hy, int hw, int hh) {
+        NenPc.veVien(g, W, H, hx, hy, hw, hh);
+        if (thang) {
+            g.translate(hx, hy);
+            g.clipRect(0, 0, bw, bh);
+            hopThanh(g, bw, bh);
+        } else if (hop != null) {
+            if (hw == bw && hh == bh) {
+                g.drawImage(hop, hx, hy, null);
+            } else {
+                g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+                g.drawImage(hop, hx, hy, hw, hh, null);
+            }
+        }
+    }
+
+    /** Ảnh hợp thành cỡ bộ đệm (khung game + hiệu ứng HD + lớp phủ); null = vẽ thẳng (thang) lên bề mặt. */
+    private Image hopThanhAnh(int bw, int bh, boolean thang) {
+        if (!dungVolatile) {
+            // 0.9.5: hợp thành trong ảnh bộ nhớ (vẽ khử răng cưa nhanh), rồi chép / phóng lên bộ đệm cửa sổ một lần
+            if (hopB == null || hopB.getWidth() != bw || hopB.getHeight() != bh) {
+                hopB = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_RGB);
+            }
+            Graphics2D g = hopB.createGraphics();
+            hopThanh(g, bw, bh);
+            g.dispose();
+            return hopB;
+        }
+        if (thang) return null;
+        GraphicsConfiguration gc = getGraphicsConfiguration();
+        if (hopV == null || hopV.getWidth() != bw || hopV.getHeight() != bh
+                || (gc != null && hopV.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE)) {
+            if (hopV != null) hopV.flush();
+            hopV = createVolatileImage(bw, bh);
+        }
+        if (hopV == null) return null;
+        Graphics2D g = hopV.createGraphics();
+        hopThanh(g, bw, bh);
+        g.dispose();
+        return hopV;
+    }
+
+    /**
+     * Kiểm thử: trình bày một khung vào ảnh cỡ cửa sổ hiện tại (getWidth x getHeight) - đúng phép tính khung, hợp
+     * thành và vẽ như trên cửa sổ thật.
+     */
+    public BufferedImage trinhBayVaoAnh() {
+        int W = getWidth(), H = getHeight();
+        BufferedImage ra = new BufferedImage(Math.max(1, W), Math.max(1, H), BufferedImage.TYPE_INT_RGB);
+        int bw = NenPc.thatW, bh = NenPc.thatH;
+        int hx = NenPc.hienX, hy = NenPc.hienY, hw = NenPc.hienW, hh = NenPc.hienH;
+        Image hop = hopThanhAnh(bw, bh, false);
+        Graphics2D g = ra.createGraphics();
+        veLenBeMat(g, W, H, hop, hop == null, bw, bh, hx, hy, hw, hh);
+        g.dispose();
+        return ra;
+    }
+
     private void trinhBay() {
         int W = getWidth(), H = getHeight();
         if (W <= 0 || H <= 0) return;
@@ -424,70 +585,69 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
             luuAnh(b, chup);
             chupVao = null;
         }
-        BufferStrategy bs = getBufferStrategy();
-        if (bs == null || !isDisplayable()) return;
-        boolean thang = hw == bw && hh == bh;   // vừa khít hệ số nguyên: chép thẳng, không phóng
+        if (!isDisplayable()) return;
+        boolean thang = dungVolatile && hw == bw && hh == bh;   // vừa khít hệ số nguyên: chép thẳng, không phóng
         long t0 = System.nanoTime();
+        Image hop;
         try {
-            Image hop = null;
-            if (!dungVolatile) {
-                // 0.9.5: hợp thành trong ảnh bộ nhớ (vẽ khử răng cưa nhanh), rồi chép / phóng lên bộ đệm cửa sổ một lần
-                if (hopB == null || hopB.getWidth() != bw || hopB.getHeight() != bh) {
-                    hopB = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_RGB);
-                }
-                Graphics2D g = hopB.createGraphics();
-                hopThanh(g, bw, bh);
-                g.dispose();
-                hop = hopB;
-                thang = false;
-            } else if (!thang) {
-                GraphicsConfiguration gc = getGraphicsConfiguration();
-                if (hopV == null || hopV.getWidth() != bw || hopV.getHeight() != bh
-                        || (gc != null && hopV.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE)) {
-                    if (hopV != null) hopV.flush();
-                    hopV = createVolatileImage(bw, bh);
-                }
-                if (hopV != null) {
-                    Graphics2D g = hopV.createGraphics();
-                    hopThanh(g, bw, bh);
-                    g.dispose();
-                    hop = hopV;
-                }
-            }
-            do {
-                do {
-                    Graphics2D g = (Graphics2D) bs.getDrawGraphics();
-                    NenPc.veVien(g, W, H, hx, hy, hw, hh);
-                    if (thang) {
-                        g.translate(hx, hy);
-                        g.clipRect(0, 0, bw, bh);
-                        hopThanh(g, bw, bh);
-                    } else if (hop != null) {
-                        if (hw == bw && hh == bh) {
-                            g.drawImage(hop, hx, hy, null);
-                        } else {
-                            g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                            g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
-                            g.drawImage(hop, hx, hy, hw, hh, null);
-                        }
-                    }
-                    g.dispose();
-                } while (bs.contentsRestored());
-                bs.show();
-            } while (bs.contentsLost());
-            Toolkit.getDefaultToolkit().sync();
-            soTrinhBay++;
-            tbCong += System.nanoTime() - t0;
-            tbDem++;
-            long ms = System.currentTimeMillis();
-            if (ms - tbMoc >= 1000) {
-                tbTrinhBay = tbDem == 0 ? 0 : tbCong / tbDem / 1000;
-                tbCong = 0;
-                tbDem = 0;
-                tbMoc = ms;
-            }
+            hop = hopThanhAnh(bw, bh, thang);
         } catch (Throwable e) {
-            // cửa sổ đang đổi chế độ
+            return;
+        }
+        if (hop == null) thang = dungVolatile;
+        synchronized (khoaBs) {
+            BufferStrategy bs = getBufferStrategy();
+            if (canTaoLai(bs != null, bsW, bsH, W, H, bsHong)) {
+                // cửa sổ to ra / nhỏ lại / toàn màn / vừa lỗi: bề mặt mới đúng cỡ (không dùng bộ đệm cỡ cũ)
+                bs = taoBs(W, H) ? getBufferStrategy() : null;
+            }
+            boolean xong = false;
+            if (bs != null) {
+                try {
+                    do {
+                        do {
+                            Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+                            veLenBeMat(g, W, H, hop, thang, bw, bh, hx, hy, hw, hh);
+                            g.dispose();
+                        } while (bs.contentsRestored());
+                        bs.show();
+                    } while (bs.contentsLost());
+                    xong = true;
+                } catch (Throwable e) {
+                    // cửa sổ đang đổi chế độ / bề mặt hỏng: khung sau tạo lại
+                    bsHong = true;
+                    ghiLoiBs("ve len BufferStrategy", e);
+                }
+            }
+            if (!xong) {
+                // không có / hỏng bề mặt: vẽ thẳng lên cửa sổ khung này (không để đen)
+                try {
+                    Graphics g0 = getGraphics();
+                    if (g0 != null) {
+                        veLenBeMat((Graphics2D) g0, W, H, hop, thang, bw, bh, hx, hy, hw, hh);
+                        g0.dispose();
+                        xong = true;
+                    }
+                } catch (Throwable e) {
+                    // cửa sổ đang đổi chế độ
+                }
+            }
+            if (!xong) return;
+        }
+        try {
+            Toolkit.getDefaultToolkit().sync();
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        soTrinhBay++;
+        tbCong += System.nanoTime() - t0;
+        tbDem++;
+        long ms = System.currentTimeMillis();
+        if (ms - tbMoc >= 1000) {
+            tbTrinhBay = tbDem == 0 ? 0 : tbCong / tbDem / 1000;
+            tbCong = 0;
+            tbDem = 0;
+            tbMoc = ms;
         }
     }
 

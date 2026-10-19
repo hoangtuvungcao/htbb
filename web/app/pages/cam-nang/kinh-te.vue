@@ -9,8 +9,10 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
 
 <template>
   <WikiShell slug="kinh-te">
-    <WikiCallout kieu="luu-y" title="Không nạp tiền, không bán sức mạnh">
-      {{ tenSite }} là dự án fan phi thương mại: không có nạp tiền, không có cửa hàng bán chỉ số. Mọi thứ trong game đều kiếm được bằng cách chơi.
+    <WikiCallout kieu="luu-y" title="Không bán sức mạnh">
+      {{ tenSite }} là dự án fan phi thương mại: không có cửa hàng bán chỉ số, mọi thứ ảnh hưởng sức mạnh đều kiếm được bằng cách chơi.
+      Nạp (nếu máy chủ bật) có tỷ giá cố định ×1 và chỉ mua đồ trang trí, tiện ích. Pokémon mới bắt đầu với
+      <strong>5.000 xu, 0 lượng, 0 lượng khoá</strong> — không có quà khi tạo Pokémon mới.
     </WikiCallout>
 
     <WikiSection id="tien" title="Ba loại tiền">
@@ -45,13 +47,13 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
             Giao dịch được · hiếm
           </p>
           <p class="mt-3 text-sm text-muted">
-            Không mua được bằng tiền thật. Chỉ có từ đua top, thành tựu lớn và top sự kiện — phần thưởng cho người chơi giỏi.
+            Có từ đua top, thành tựu lớn và top sự kiện; khi máy chủ bật nạp thì mua được trên website với tỷ giá cố định ×1. Chỉ dùng cho trang trí và tiện ích.
           </p>
         </div>
       </div>
       <p class="mt-4 text-sm text-muted">
         Lượng đến từ các đợt <strong>đua top</strong> do ban quản trị công bố (nhận ở NPC Tổng quản → "Nhận thưởng đua top"), thành tựu lớn và top sự kiện.
-        Lượng dùng cho đồ trang trí ở <NuxtLink to="/cam-nang/cua-hang#delcatty-trang-tri" class="lien-ket">Delcatty</NuxtLink> và tiện ích, không mua được sức mạnh.
+        Lượng dùng cho đồ trang trí ở <NuxtLink to="/cam-nang/cua-hang#cua-hang-trang-tri-luong" class="lien-ket">Cửa hàng trang trí</NuxtLink> và tiện ích, không mua được sức mạnh.
       </p>
     </WikiSection>
 
@@ -60,7 +62,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
         <li><strong>Đánh quái gần cấp mình</strong> — nguồn xu chính, tỉ lệ thuận với cấp (xem cột "Xu / giờ" ở <NuxtLink to="/cam-nang/cap-do#bang-exp" class="lien-ket">bảng EXP</NuxtLink>). Chịu giới hạn <NuxtLink to="/cam-nang/cap-do#nang-luong" class="lien-ket">năng lượng huấn luyện</NuxtLink>.</li>
         <li><strong>Nhiệm vụ</strong> trả xu + EXP theo "giờ thu nhập" ở cấp của nhiệm vụ, nên luôn đáng làm dù bạn cấp nào.</li>
         <li><strong>Sự kiện</strong>: chỉ {{ K.suKienPhanXu }}% giá trị phần thưởng là xu; phần lớn là vật phẩm khoá, đồ trang trí, vật phẩm hết hạn.</li>
-        <li><strong>Giftcode</strong>: tối đa {{ K.giftcodeToiDaThang }} mã/tháng, giá trị nhỏ — không có mã "phá game".</li>
+        <li><strong>Giftcode</strong>: tối đa {{ K.giftcodeToiDaThang }} mã/tháng, giá trị nhỏ — không có mã "phá game". Nhập ở Menu → Thư/Quà → Nhập giftcode (từ 0.9.6).</li>
       </ul>
     </WikiSection>
 
@@ -85,15 +87,40 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
           <b>{{ K.tranGiaoDichGio }} giờ</b><span>thu nhập: trần chuyển xu trực tiếp / ngày</span>
         </div>
       </div>
+      <h3 class="mt-6 font-display text-lg font-bold text-highlighted">
+        Chốt chống clone khi chuyển xu
+      </h3>
+      <p class="mt-1 text-sm text-muted">
+        Chuyển xu cho người khác (giao dịch, ký gửi, thú cưng, thách đấu cược) chỉ mở khi Pokémon gửi đủ cả ba điều kiện
+        (mặc định, ban quản trị chỉnh được):
+      </p>
+      <div class="mt-3 grid gap-3 sm:grid-cols-4">
+        <div class="the-so">
+          <b>Cấp 20</b><span>Pokémon gửi từ cấp 20 trở lên</span>
+        </div>
+        <div class="the-so">
+          <b>24 giờ</b><span>tài khoản đã tạo đủ 24 giờ</span>
+        </div>
+        <div class="the-so">
+          <b>10 giờ</b><span>Pokémon đã chơi ít nhất 10 giờ</span>
+        </div>
+        <div class="the-so">
+          <b>2 / ngày</b><span>mỗi người nhận: tối đa 2 Pokémon cùng thiết bị / IP gửi cho</span>
+        </div>
+      </div>
+      <ul class="cham mt-4">
+        <li><strong>Lượng khoá</strong> không bao giờ giao dịch được.</li>
+        <li><strong>Trang bị khoá khi mặc</strong>: món đã mặc vào không bán, không trao đổi được nữa.</li>
+      </ul>
       <WikiCallout kieu="vi-sao">
-        Giới hạn chuyển xu trực tiếp giúp chống mua bán xu bằng tiền thật và chống lừa đảo. Mua bán vật phẩm qua chợ vẫn tự do.
+        Giới hạn chuyển xu trực tiếp và chốt chống clone giúp chống mua bán xu bằng tiền thật, chống nuôi tài khoản phụ và chống lừa đảo.
       </WikiCallout>
     </WikiSection>
 
     <WikiSection id="lam-phat" title="Vì sao giá cả ổn định?" lead="Mục tiêu: đồng xu bạn kiếm hôm nay vẫn có giá trị sau nhiều tháng chơi.">
       <ul class="cham">
         <li>Chi phí (nâng cấp, thuốc, bay, ngọc) <strong>tăng theo cấp</strong> giống như thu nhập — người mới không bị đắt, người chơi lâu năm vẫn có chỗ tiêu xu.</li>
-        <li>Không có xu hay lượng "từ trên trời": không nạp tiền, không giftcode khổng lồ. Sự kiện thưởng chủ yếu vật phẩm khoá và đồ trang trí.</li>
+        <li>Không có xu hay lượng "từ trên trời": không quà khi tạo Pokémon mới, không giftcode khổng lồ, nạp chỉ mua trang trí. Sự kiện thưởng chủ yếu vật phẩm khoá và đồ trang trí.</li>
         <li>Năng lượng huấn luyện giới hạn số giờ đánh quái hiệu quả mỗi ngày, nên treo máy cả ngày không làm xu mất giá.</li>
         <li>Đồ trang trí bằng xu là nơi để người chơi giàu tiêu tiền mà không ảnh hưởng sức mạnh của người khác.</li>
       </ul>

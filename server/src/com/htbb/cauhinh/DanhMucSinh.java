@@ -16,6 +16,7 @@ final class DanhMucSinh {
         {"nap_tien", "Nạp tiền"},
         {"thanh_vien", "Thành viên & kích hoạt"},
         {"chong_clone", "Chống clone & chuyển xu"},
+        {"vong_quay", "Vòng quay may mắn (cố định)"},
         {"tu_dong", "Tự động đánh & hồi sinh"},
         {"bao_tri", "Máy chủ, đăng ký & bảo trì"},
         {"che_do", "Chế độ game (cố định)"},
@@ -260,6 +261,107 @@ final class DanhMucSinh {
                     .lop("co_dinh"),
             new DinhNghiaKhoa("chong_clone.ban_npc_do_khoa", "chong_clone", "co", "0", true, "cau_hinh")
                     .nhan("Bán đồ / nguyên liệu khoá cho NPC lấy xu", "0 = cấm (đồ khoá mua bằng lượng khoá không đổi ra xu được). 1 = cho như cũ.")
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.giay_moi_vong", "vong_quay", "so", "120", true, "cau_hinh")
+                    .nhan("Thời gian một lượt (giây)", "Đếm từ lúc có người đặt đầu tiên. Hết giờ: từ 2 người trở lên thì quay, chỉ 1 người thì hoàn lại đủ.")
+                    .khoang(30L, 3600L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.giay_khoa", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Khoá đặt cuối lượt (giây)", "Mấy giây cuối không nhận thêm cược.")
+                    .khoang(0L, 120L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.bat", "vong_quay", "co", "1", true, "cau_hinh")
+                    .nhan("Vòng quay thường: bật", "0 = đóng (người đang chờ vẫn được quay / hoàn như thường).")
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.cap_toi_thieu", "vong_quay", "so", "20", true, "cau_hinh")
+                    .nhan("Vòng quay thường: cấp tối thiểu", "Luôn cộng thêm cổng chống clone (chong_clone.cap_toi_thieu, tuổi tài khoản, giờ chơi): cấp hiệu lực = max(hai số).")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.cuoc_toi_thieu", "vong_quay", "so", "1000", true, "cau_hinh")
+                    .nhan("Vòng quay thường: đặt tối thiểu mỗi lượt (xu)", "Mỗi người đặt 1 lần / lượt.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.cuoc_toi_da", "vong_quay", "so", "10000", true, "cau_hinh")
+                    .nhan("Vòng quay thường: đặt tối đa mỗi lượt (xu)", "Trần hũ = số này × số người tối đa.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.cuoc_ngay_toi_da", "vong_quay", "so", "30000", true, "cau_hinh")
+                    .nhan("Vòng quay thường: tổng đặt tối đa mỗi ngày (xu)", "Mỗi Pokémon của người chơi, tính theo ngày.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.luot_ngay_toi_da", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Vòng quay thường: số lượt tối đa mỗi ngày", "Mỗi Pokémon của người chơi.")
+                    .khoang(1L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.so_nguoi_toi_da", "vong_quay", "so", "20", true, "cau_hinh")
+                    .nhan("Vòng quay thường: số người tối đa mỗi lượt", "")
+                    .khoang(2L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.thuong.phi_phan_tram", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Vòng quay thường: phí hũ (%)", "Phần trăm hũ bị huỷ (hố hút xu) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển xu rẻ hơn giao dịch.")
+                    .khoang(5L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.bat", "vong_quay", "co", "1", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: bật", "0 = đóng (người đang chờ vẫn được quay / hoàn như thường).")
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.cap_toi_thieu", "vong_quay", "so", "50", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: cấp tối thiểu", "Luôn cộng thêm cổng chống clone (chong_clone.cap_toi_thieu, tuổi tài khoản, giờ chơi): cấp hiệu lực = max(hai số).")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.cuoc_toi_thieu", "vong_quay", "so", "10000", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: đặt tối thiểu mỗi lượt (xu)", "Mỗi người đặt 1 lần / lượt.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.cuoc_toi_da", "vong_quay", "so", "50000", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: đặt tối đa mỗi lượt (xu)", "Trần hũ = số này × số người tối đa.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.cuoc_ngay_toi_da", "vong_quay", "so", "100000", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: tổng đặt tối đa mỗi ngày (xu)", "Mỗi Pokémon của người chơi, tính theo ngày.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.luot_ngay_toi_da", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: số lượt tối đa mỗi ngày", "Mỗi Pokémon của người chơi.")
+                    .khoang(1L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.so_nguoi_toi_da", "vong_quay", "so", "20", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: số người tối đa mỗi lượt", "")
+                    .khoang(2L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.vip.phi_phan_tram", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Vòng quay VIP: phí hũ (%)", "Phần trăm hũ bị huỷ (hố hút xu) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển xu rẻ hơn giao dịch.")
+                    .khoang(5L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.bat", "vong_quay", "co", "1", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: bật", "0 = đóng (người đang chờ vẫn được quay / hoàn như thường).")
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.cap_toi_thieu", "vong_quay", "so", "20", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: cấp tối thiểu", "Luôn cộng thêm cổng chống clone (chong_clone.cap_toi_thieu, tuổi tài khoản, giờ chơi): cấp hiệu lực = max(hai số).")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.cuoc_toi_thieu", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: đặt tối thiểu mỗi lượt (lượng)", "Mỗi người đặt 1 lần / lượt.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.cuoc_toi_da", "vong_quay", "so", "100", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: đặt tối đa mỗi lượt (lượng)", "Trần hũ = số này × số người tối đa.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.cuoc_ngay_toi_da", "vong_quay", "so", "300", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: tổng đặt tối đa mỗi ngày (lượng)", "Mỗi Pokémon của người chơi, tính theo ngày.")
+                    .khoang(1L, 2000000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.luot_ngay_toi_da", "vong_quay", "so", "10", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: số lượt tối đa mỗi ngày", "Mỗi Pokémon của người chơi.")
+                    .khoang(1L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.so_nguoi_toi_da", "vong_quay", "so", "20", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: số người tối đa mỗi lượt", "")
+                    .khoang(2L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("vong_quay.luong.phi_phan_tram", "vong_quay", "so", "15", true, "cau_hinh")
+                    .nhan("Vòng quay lượng: phí hũ (%)", "Phần trăm hũ bị huỷ (hố hút lượng) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển lượng rẻ hơn giao dịch.")
+                    .khoang(5L, 50L)
                     .lop("co_dinh"),
             new DinhNghiaKhoa("sv.dangKyTrongGame", "bao_tri", "co", "1", true, "cau_hinh")
                     .nhan("Đăng ký trong game", "0 = nút Đăng ký trong game báo 'đăng ký trên web'."),

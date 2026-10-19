@@ -1,5 +1,8 @@
 <script setup lang="ts">
-/** Sự kiện năm — lịch 52 tuần từ su_kien_nam.csv (qua cam-nang.json). */
+/**
+ * Sự kiện năm — lễ hội theo NGÀY THẬT (máy chủ game ghi tob_su_kien_lich, có âm lịch; /api/su-kien) + bảng chủ đề
+ * 52 tuần Pokémon (data_su_kien_nam / cam-nang.json). Tuần tính như máy chủ: tuần ISO, đổi lúc 04:00 thứ Hai.
+ */
 const lich = useLichSuKien()
 const SK = computed(() => lich.value)
 const nam = ref<1 | 2>(1)
@@ -35,8 +38,10 @@ const moTaLoai: Record<string, string> = {
 <template>
   <WikiShell slug="su-kien">
     <p class="van">
-      Mỗi tuần trong năm đều có một sự kiện. Lịch lặp lại hằng năm, năm thứ hai đổi chủ đề (ví dụ Ngày cộng đồng Charmander → Squirtle).
-      Phần thưởng sự kiện chủ yếu là <strong>đồ trang trí không chỉ số</strong> và vật phẩm khoá — vui mà không làm lệch sức mạnh.
+      Lịch sự kiện chạy <strong>tự động cả năm</strong>: các dịp lễ (Tết, Giỗ Tổ, Vu Lan, Trung Thu, Halloween, Noel…) tự mở đúng
+      ngày thật mỗi năm — kể cả ngày âm lịch — và website tự đăng thông báo. Xen giữa là các <strong>tuần Pokémon</strong> (tuần hệ,
+      Ngày cộng đồng, Tuần Shiny, đột kích…), năm thứ hai đổi chủ đề. Phần thưởng chủ yếu là <strong>đồ trang trí không chỉ số</strong>
+      và vật phẩm khoá — vui mà không làm lệch sức mạnh.
     </p>
 
     <WikiSection v-if="skNam.coDuLieu.value" id="lich-that" title="Lịch lễ hội 12 tháng tới">
@@ -91,7 +96,8 @@ const moTaLoai: Record<string, string> = {
         </template>
       </ClientOnly>
       <p class="mt-2 text-xs text-dimmed">
-        Tuần tính theo lịch dương (tuần 1 = 1–7/1) — bảng chủ đề tuần Pokémon. Ngày giờ chính xác của các dịp lễ xem mục Lịch lễ hội ở trên.
+        Tuần Pokémon tính theo tuần ISO, đổi tuần lúc 04:00 thứ Hai (giờ Việt Nam) — trùng với máy chủ. Ô "lễ Việt Nam" trong bảng
+        chỉ là vị trí gần đúng; ngày giờ thật của các dịp lễ xem mục Lịch lễ hội ở trên.
       </p>
     </WikiSection>
 

@@ -441,7 +441,7 @@ public class SelectCharHandler implements ICommandHandler {
                 }
                 final String infoBoss = Map.getNameBossApear(p.inCountry);
                 if (!infoBoss.equals("")) {
-                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(infoBoss) + " đã xuất hiện"));
+                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Boss đang xuất hiện: " + infoBoss + "."));
                 }
                 p.sendMessage(MessageCreator.createSkillClan(p));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));

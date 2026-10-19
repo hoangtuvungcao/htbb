@@ -38,15 +38,22 @@ const khoiDau = [0, 1, 3, 4, 2].map((cls) => {
   return { ...k, l, ...MO_KD[cls]! }
 })
 
+/**
+ * Điều khiển kiểu NRO (0.9.5+): chạm / bấm để đi tới hoặc chọn mục tiêu, nút chiêu to góc phải dưới,
+ * hai nút thuốc HP / PP, nút Tự động. Java (J2ME) vẫn dùng phím số.
+ * Nguồn: client_jar GameScr (phím #: menu nhanh), client_apk hd/Hud.java (hàng nút, N_HP / N_PP).
+ */
 const DIEU_KHIEN = [
-  { viec: 'Di chuyển', dt: 'Phím mũi tên / 2·4·6·8', cam: 'Cần điều khiển ảo hoặc chạm vào bản đồ' },
-  { viec: 'Đánh thường / xác nhận', dt: 'Phím 5 / phím giữa', cam: 'Nút đánh' },
-  { viec: 'Dùng chiêu', dt: 'Phím 1 · 3 (và 7 · 9 nếu gán)', cam: 'Nút chiêu quanh nút đánh' },
+  { viec: 'Di chuyển', dt: 'Phím mũi tên / 2·4·6·8', cam: 'Chạm vào chỗ muốn tới trên bản đồ' },
+  { viec: 'Chọn mục tiêu', dt: 'Phím chọn phải (đổi mục tiêu)', cam: 'Chạm vào quái, NPC hoặc người chơi' },
+  { viec: 'Đánh thường / nói chuyện / xác nhận', dt: 'Phím 5 / phím giữa', cam: 'Nút đánh lớn (chạm NPC để nói chuyện)' },
+  { viec: 'Dùng chiêu', dt: 'Phím 1 · 3 (và 7 · 9 nếu gán)', cam: '4 nút chiêu quanh nút đánh' },
   { viec: 'Đổi bảng chiêu', dt: 'Phím 0', cam: 'Nút đổi bảng' },
-  { viec: 'Thuốc hồi máu / Ether', dt: 'Phím 7 / phím 9', cam: 'Ô thuốc trên thanh chiêu' },
-  { viec: 'Mở menu', dt: 'Phím chọn trái', cam: 'Nút menu' },
-  { viec: 'Đổi mục tiêu', dt: 'Phím chọn phải', cam: 'Chạm vào mục tiêu' },
-  { viec: 'Chat', dt: 'Phím #', cam: 'Nút chat' },
+  { viec: 'Thuốc HP / PP (Ether)', dt: 'Phím 7 / phím 9', cam: '2 nút thuốc nhanh HP / PP cạnh cụm chiêu' },
+  { viec: 'Tự động đánh', dt: 'Phím # → Tự động đánh', cam: 'Viên AUTO bật / tắt; bánh răng cạnh AUTO (hoặc Menu → Tự động đánh) mở bảng cài đặt' },
+  { viec: 'Mở menu', dt: 'Phím chọn trái', cam: 'Nút Poké Ball (Menu)' },
+  { viec: 'Chat', dt: 'Phím # → Chat (menu nhanh)', cam: 'Nút chat (bong bóng)' },
+  { viec: 'Nhập giftcode', dt: 'Menu → Thư/Quà → Nhập giftcode (từ 0.9.6)', cam: 'Menu → Thư/Quà → Nhập giftcode (từ 0.9.6)' },
   { viec: 'Tương tác người chơi', dt: 'Phím * (mời nhóm, giao dịch, kết bạn, xuống thú)', cam: 'Chạm vào người chơi' },
 ]
 /**
@@ -70,7 +77,7 @@ const PHIM_PC: { nhom: string, ds: { phim: string[], viec: string }[] }[] = [
     ds: [
       { phim: ['Space'], viec: 'Đánh thường' },
       { phim: ['1 – 5'], viec: 'Dùng chiêu 1 – 5 trên thanh chiêu' },
-      { phim: ['Q', 'E'], viec: 'Bình HP / Bình MP' },
+      { phim: ['Q', 'E'], viec: 'Thuốc HP / thuốc PP (Ether)' },
       { phim: ['Tab'], viec: 'Đổi mục tiêu' },
       { phim: ['Shift + Tab'], viec: 'Mục tiêu trước' },
       { phim: ['R'], viec: 'Đổi bộ chiêu' },
@@ -191,7 +198,7 @@ const tienHoaDau = (() => {
               </li>
             </ol>
             <WikiCallout kieu="luu-y">
-              Không chia sẻ mật khẩu với ai — kể cả người xưng là quản trị viên. Game không bán gì, nên mọi lời mời "nạp tiền nhận quà" đều là lừa đảo.
+              Không chia sẻ mật khẩu với ai — kể cả người xưng là quản trị viên. Game không bán sức mạnh; mọi lời mời "nạp qua người trung gian", "bán xu, bán lượng" đều là lừa đảo.
             </WikiCallout>
           </WikiSection>
 
@@ -215,7 +222,17 @@ const tienHoaDau = (() => {
             </p>
           </WikiSection>
 
-          <WikiSection id="dieu-khien" title="4. Điều khiển" lead="Bố cục phím theo điện thoại phím số, bản Android có nút cảm ứng. Bản PC có bộ phím tắt riêng (bảng bên dưới).">
+          <WikiSection id="dieu-khien" title="4. Điều khiển" lead="Điều khiển kiểu chạm-là-làm: chạm (hoặc bấm chuột) để đi tới, chọn mục tiêu, nói chuyện với NPC. Bản Java dùng phím số; bản PC có bộ phím tắt riêng (bảng bên dưới).">
+            <figure class="mb-6 grid items-center gap-4 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+              <div class="overflow-hidden rounded-3xl shadow-[0_14px_30px_-18px_rgb(10_26_51/.55)]">
+                <SiteAnhGame ma="tu-dong" sizes="(min-width: 1024px) 560px, 100vw" alt="Ảnh trong game: bảng cài đặt Tự động đánh" />
+              </div>
+              <figcaption class="text-sm text-muted">
+                <strong class="block font-display text-base text-highlighted">Tự động đánh có bảng cài đặt riêng</strong>
+                Chọn chiêu, ngưỡng uống thuốc HP / PP, nhặt đồ, vùng đánh và tự hồi sinh. Giờ tự động mỗi ngày có hạn —
+                xem <NuxtLink to="/cam-nang/tu-dong" class="lien-ket">Tự động đánh</NuxtLink>.
+              </figcaption>
+            </figure>
             <div class="bang-cuon">
               <table class="bang-wiki">
                 <thead>
@@ -301,12 +318,12 @@ const tienHoaDau = (() => {
                 { to: '/cam-nang/he-khac-che', icon: 'i-lucide-flame', t: 'Học khắc hệ', m: 'Đánh đúng hệ = nhanh gấp đôi.' },
                 { to: '/cam-nang/nhiem-vu', icon: 'i-lucide-scroll-text', t: 'Theo chính tuyến', m: 'EXP và xu đều đặn mỗi tuần.' },
                 { to: '/cam-nang/ban-do#luyen-cap', icon: 'i-lucide-map', t: 'Tìm khu luyện cấp', m: 'Quái gần cấp bạn nhất.' },
-                { to: '/cam-nang/trang-bi', icon: 'i-lucide-shield', t: 'Nâng trang bị', m: 'Nâng cấp ở Machamp bằng đá nâng cấp và xu.' },
+                { to: '/cam-nang/trang-bi', icon: 'i-lucide-shield', t: 'Nâng trang bị', m: 'Nâng cấp ở Machamp bằng đá nâng cấp và xu. Đồ đã mặc bị khoá, không trao đổi được.' },
                 { to: '/cam-nang/doi-su-pham', icon: 'i-lucide-users', t: 'Tìm đội & thầy', m: 'Trò được +20% EXP.' },
-                { to: '/cam-nang/su-kien', icon: 'i-lucide-calendar-days', t: 'Xem sự kiện tuần này', m: 'Mỗi tuần một sự kiện.' },
+                { to: '/cam-nang/su-kien', icon: 'i-lucide-calendar-days', t: 'Xem lịch sự kiện', m: 'Lễ hội theo ngày thật, tuần Pokémon.' },
               ]" :key="x.to">
-                <NuxtLink :to="x.to" class="group flex h-full gap-3 rounded-2xl glass p-4 transition hover:-translate-y-0.5">
-                  <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-pikachu-400 text-navy-950"><UIcon :name="x.icon" class="size-5" /></span>
+                <NuxtLink :to="x.to" class="the-go group flex h-full gap-3 p-4 hover:-translate-y-0.5">
+                  <SiteHinhCamNang :slug="x.to.replace('/cam-nang/', '').split('#')[0]!" :icon="x.icon" class="size-11" />
                   <span><strong class="font-display text-highlighted group-hover:text-primary">{{ x.t }}</strong><span class="block text-sm text-muted">{{ x.m }}</span></span>
                 </NuxtLink>
               </li>

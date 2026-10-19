@@ -291,7 +291,10 @@ public class ChupTrongGame {
                 // màn chơi: HUD PC (HudRong) chỉ ở cỡ PC; HUD APK (Hud.java) kiểm riêng bằng client_jar/tools/KiemCoCham
                 boolean theGioi = ten.startsWith("the_gioi") || "thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)
                         || "goi_y_chieu".equals(ten) || ten.startsWith("tu_dong") || "hop_vat_pham".equals(ten) || ten.startsWith("npc_")
-                        || "cai_dat_tai_khoan".equals(ten);
+                        || "cai_dat_tai_khoan".equals(ten)
+                        // 0.9.6.1: hộp "OK" báo tin trong game (lên cấp, phần thưởng...) nay là thẻ nhanh trên màn chơi
+                        || ten.startsWith("hop_") && game.render.Canvas.currentDialog == null
+                        && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
                 if (!theGioi || dpi == 0) {
                     kiemCham(ten + " " + TEN_CO[c], min, cach);
                 }

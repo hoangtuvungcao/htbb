@@ -32,6 +32,7 @@ rồi sinh lại `htbb_day_du.sql`. Server tự tạo thêm bảng theo kỳ và
 | Chống clone | `them_bang_chong_clone.sql` | bảng `tob_log_chuyen_gia_tri` (mọi lần chuyển xu / giá trị giữa hai người chơi, lần bị chặn, cờ "nghi clone") cho /admin/kinh-te; server game cũng tự tạo; chạy lại được |
 | Lịch sự kiện năm | `them_lich_su_kien_nam.sql` | bảng `tob_su_kien_lich` + cột `tob_su_kien.tu_dong`, xoá mốc hẹn cũ theo tuần ISO, xoá dòng sự kiện kiếm hiệp đã bỏ; server game cũng tự tạo; chạy lại được |
 | Kinh tế | `sua_he_so_nap_va_qua_tao_nv.sql` | `5h_systems.tangnap` về 1 (server đã cố định hệ số nạp = 1) và xoá quà tạo nhân vật chưa nhận trong `board_created`; không đụng số dư. Thu hồi quà đã nhận: `vps/van_hanh/thu_hoi_qua_tao_nv.sql` (tuỳ chọn, chủ game quyết) |
+| Vòng quay | `sua_vong_quay.sql` | bảng `tob_vong_quay_*` (cược đang chờ, tiền chờ nhận khi offline, giới hạn ngày / thiết bị, lịch sử lượt) + danh mục cấu hình nhóm `vong_quay` (mức cược theo dải cấp, trần ngày, phí hũ là hố hút). Server game cũng tự tạo bảng và hoàn cược đang chờ của hệ cũ (`nin_xoso*`) lúc khởi động; chạy lại được |
 | Dọn dữ liệu cũ | `vo_hieu_giftcode_cu.sql` | khoá mọi mã của bảng `giftcode` kiểu cũ (game chế độ dài hạn chỉ đọc `tob_giftcode`); in danh sách mã còn mở rồi khoá, chạy lại được |
 | Web CMS | `web_cms.sql` | bảng nội dung website (thiếu thì web dùng nội dung mặc định) |
 | Thao tác tay | `wipe_player_data.sql`, `wipe_sau_open_test.sql` | xoá dữ liệu người chơi — **sao lưu trước** |

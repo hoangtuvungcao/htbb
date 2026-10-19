@@ -233,12 +233,10 @@ class MapDoMenu {
                 BaiLuyenTap.doMenu(player, idOptionMenu);
                 return;
             }
-            // NPC Tong Quan (-10), muc "Vong quay luong": cung la muc cuoi menu, vi tri
-            // ghi trong player.idxVongQuayLuong. Xem real/VongQuayLuong.
-            // "Vong quay luong" mo tu nhanh idOptionMenu==2 cua muc "Vong quay" co san
-            // o NPC "-15" (thay ngu hanh/ruong) - xem case -15 ben duoi va real/VongQuayLuong.
-            if (idNpc == -15 && idMenu == VongQuayLuong.MENU_GOC) {
-                VongQuayLuong.doMenu(player, idOptionMenu);
+            // NPC Ruong (-15), muc "Vong quay": chon loai (idMenu 4), menu con VIP/thuong/luong (5/6/103), bang chon
+            // muc dat (104/105/106) - tat ca o real.VongQuay (sua 19/10/2026: nut Dong y chet, muc cuoc lam phat).
+            if (idNpc == VongQuay.NPC && isMapLang(player.map)
+                    && VongQuay.doMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
             if (idNpc == -520) {
@@ -3150,9 +3148,7 @@ class MapDoMenu {
                                                                                 map.sendListItemSell2Shop(player);
                                                                             }
                                                                         } else {
-                                                                            player.sendMessage(
-                                                                                    MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường", "Vòng quay lượng"}, idNpc, 4)
-                                                                            );
+                                                                            VongQuay.moChonLoai(player, idNpc);
                                                                         }
                                                                     } else if (!player.passWord.equals("")) {
                                                                         player.sendMessage(MessageCreator.createMsgInputText(player.id, 3, "Nhập mật khẩu", 0));
@@ -3352,7 +3348,7 @@ class MapDoMenu {
                                                                         map.sendListItemSell2Shop(player);
                                                                     }
                                                                 } else {
-                                                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường", "Vòng quay lượng"}, idNpc, 4));
+                                                                    VongQuay.moChonLoai(player, idNpc);
                                                                 }
                                                             } else if (!player.passWord.equals("")) {
                                                                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 3, "Nhập mật khẩu", 0));
@@ -3378,43 +3374,13 @@ class MapDoMenu {
                                                     return;
                                                 }
                                             } else {
-                                                String HD_VONG_XOAY_MAY_MAN_LOW = "Giá trị nhập vàng thấp nhất của mỗi người là 10.000 xu\nGiá trị nhập xu cao nhất của mỗi người là 100.000 xu\nMỗi người chơi chỉ được phép nhập xu 1 lần/ 1 lượt quay.\nMỗi 2 phút là bắt đầu vòng quay một lần.\nKhi có 2 người tham gia thì mới bắt đầu đếm ngược thời gian.\nCòn 10 giây cuối sẽ bắt đầu khóa không cho tham gia.\nNgười chiến thắng sẽ nhận hết tổng số tiền tất cả người chơi khác đặt cược sau khi đã trừ thuế cố định " + Char.TAX_PC_XOSO_XU + "%.";
-                                                if (idOptionMenu != 0) {
-                                                    if (idOptionMenu != 1) {
-                                                        if (idOptionMenu == 2) {
-                                                            player.sendMessage(MessageCreator.createMsgPopUp(player.id, 100, HD_VONG_XOAY_MAY_MAN_LOW));
-                                                        }
-                                                    } else {
-                                                        player.sendMessage(MessageCreator.createMsgInputText(-32041, 0, "Vong quay", 1));
-                                                    }
-                                                } else {
-                                                    player.infoXoso(1);
-                                                }
+                                                // idMenu 4/5/6 (+103..106) cua NPC -15 = vong quay: real.VongQuay, chan o dau doMenu.
                                             }
                                         } else {
-                                            String HD_VONG_XOAY_MAY_MAN = "Giá trị nhập vàng thấp nhất của mỗi người là 1.000.000 xu\nGiá trị nhập xu cao nhất của mỗi người là 50.000.000 xu\nMỗi người chơi chỉ được phép nhập xu 1 lần/ 1 lượt quay.\nMỗi 2 phút là bắt đầu vòng quay một lần.\nKhi có 2 người tham gia thì mới bắt đầu đếm ngược thời gian.\nCòn 10 giây cuối sẽ bắt đầu khóa không cho tham gia.\nNgười chiến thắng sẽ nhận hết tổng số tiền tất cả người chơi khác đặt cược sau khi đã trừ thuế cố định " + Char.TAX_PC_XOSO_XU + "%.";
-                                            if (idOptionMenu != 0) {
-                                                if (idOptionMenu != 1) {
-                                                    if (idOptionMenu == 2) {
-                                                        player.sendMessage(MessageCreator.createMsgPopUp(player.id, 100, HD_VONG_XOAY_MAY_MAN));
-                                                    }
-                                                } else {
-                                                    player.sendMessage(MessageCreator.createMsgInputText(-32040, 0, "Vong quay", 1));
-                                                }
-                                            } else {
-                                                player.infoXoso(0);
-                                            }
+                                            // idMenu 4/5/6 (+103..106) cua NPC -15 = vong quay: real.VongQuay, chan o dau doMenu.
                                         }
-                                    } else if (idOptionMenu == 2) {
-                                        // "Vong quay luong" (them 19/09/2026, theo yeu cau nguoi dung):
-                                        // dung LAI dung menu con {"Thong tin","Tham gia","Huong dan"} +
-                                        // logic cua real/VongQuayLuong thay vi cong thuc "5+idOptionMenu"
-                                        // (idOptionMenu=2 se ra idMenu=7, TRUNG voi idMenu=7 co san o duoi
-                                        // (menu "Do thoi trang"/"Long den" cua Char.isOpenDauGiaChoiBlackFriday) -
-                                        // xem real/VongQuayLuong.MENU_GOC (103, khong trung idMenu nao khac).
-                                        VongQuayLuong.moMenuGoc(player, idNpc);
                                     } else {
-                                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Thông tin", "Tham gia", "Hướng dẫn"}, idNpc, 5 + idOptionMenu));
+                                        // idMenu 4/5/6 (+103..106) cua NPC -15 = vong quay: real.VongQuay, chan o dau doMenu.
                                     }
                                 } else {
                                     // Chi hop le 0 (dung luong mo) hoac 1 (dung luong khoa). Ban cu
@@ -3597,7 +3563,7 @@ class MapDoMenu {
                                         map.sendListItemSell2Shop(player);
                                     }
                                 } else {
-                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường", "Vòng quay lượng"}, idNpc, 4));
+                                    VongQuay.moChonLoai(player, idNpc);
                                 }
                             } else if (!player.passWord.equals("")) {
                                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 3, "Nhập mật khẩu", 0));

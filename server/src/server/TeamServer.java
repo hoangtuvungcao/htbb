@@ -1035,9 +1035,8 @@ public class TeamServer {
         Map.initGiftCode();
         Char.timeGetPhuongHoang = System.currentTimeMillis() + 36000000L;
         Map.ThreadProcessHoiSinh();
-        Char.startThreadXoso();
-        Char.startThreadXosoLow();
-        Char.startThreadXosoLuong();
+        Char.startThreadXoso(); // chi con nhac "choi qua 180 phut" moi 15 phut
+        real.VongQuay.khoiDong();
         Char.startNauBanh();
         if (!real.BaoTriDaily.Running) {
             new Thread(new real.BaoTriDaily()).start();

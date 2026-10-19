@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Nhãn của Nuxt UI (nút menu, đổi màu, đóng hộp thoại…) bằng tiếng Việt cho trình đọc màn hình.
+import { vi } from '@nuxt/ui/locale'
 const tenSite = useAppConfig().htbb.tenSite
 // Địa chỉ gốc: MỘT nguồn là HTBB_SITE_URL (qua /api/site), không theo Host của request.
 const { data: siteCfg } = useSite()
@@ -41,7 +43,7 @@ useHead(computed(() => ({
 </script>
 
 <template>
-  <UApp :toaster="{ position: 'top-right' }" :tooltip="{ delayDuration: 200 }">
+  <UApp :locale="vi" :toaster="{ position: 'top-right' }" :tooltip="{ delayDuration: 200 }">
     <NuxtLoadingIndicator color="linear-gradient(90deg,#ffe452,#ff9f1c,#f26a1b)" />
     <NuxtLayout>
       <NuxtPage />

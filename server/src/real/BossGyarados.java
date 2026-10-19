@@ -149,7 +149,7 @@ public class BossGyarados extends Boss {
                     }
 
                     try {
-                        Message m = MessageCreator.createServerAlertAutoOffMessage("Gyarados đã xuất hiện");
+                        Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossXuatHien("Gyarados", com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                         for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                             ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);
@@ -161,7 +161,7 @@ public class BossGyarados extends Boss {
                 this.actorDie();
 
                 try {
-                    Message m = MessageCreator.createServerAlertAutoOffMessage("Gyarados đã biến mất");
+                    Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossBienMat("Gyarados", com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                     for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                         ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);
