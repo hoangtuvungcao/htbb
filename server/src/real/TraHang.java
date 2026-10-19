@@ -48,7 +48,9 @@ public class TraHang {
                 
                 player.typeTieu = -1;
                 if (Char.isSuKienWordcup2017()) {
-                    player.potions[160] += Map.ranDom(1, 2);
+                    final int bongBac = Map.ranDom(1, 2);
+                    player.potions[160] += bongBac;
+                    DiemMocNhiemVu.khiNhanVatPhamSuKien(player, 160, bongBac);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 }
                 return;

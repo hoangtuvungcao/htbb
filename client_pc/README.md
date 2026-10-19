@@ -69,6 +69,9 @@ Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `serv
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần);
+- `KiemChamHud`: chạm HUD màn chơi ở 11 cỡ - vùng chạm thật mọi nút (kể cả viên "1/2", câu cá, ô "+") không chồng
+  nhau, chạm ô chiêu = đúng chiêu đó (ô "+" = bảng gán), nhắm NPC thì chiêu không mở cửa hàng / menu NPC, viên "1/2" /
+  phím R / phím 0 đổi bộ chiêu;
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
@@ -84,6 +87,8 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
 - `KiemPhongRieng` (0.9.7): thẻ phòng riêng (game.pokemon.PhongRieng - Phó bản Hầm ngục / trận Cúp PvP, gói -112): đọc gói,
   gói hỏng không vỡ, tự ẩn khi đổi bản đồ, vẽ ở 11 cỡ trong vùng an toàn, canh giữa, không chồng nút HUD, chạm >= cỡ tối thiểu;
+- `KiemCapNhat` (0.9.7): cập nhật trong game (game.pokemon.CapNhat + htbb.capnhat / htbb.pc.CapNhatPc) - gói -115, hộp nhắc /
+  bắt buộc ở mọi cỡ, tải qua máy chủ HTTP cục bộ (SHA-256 lệch / 404 / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài /SILENT);
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

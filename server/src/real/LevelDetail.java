@@ -171,8 +171,8 @@ public class LevelDetail {
    public long getXPLost(int killer, Char p) {
       try {
          if (!p.map.isvanTienTran() && !p.isNotDownExp()) {
-            long exp = expRequire[this.lv] / (long)(killer > 0 ? 100 : 1000);
-            return exp;
+            // 0.9.7 (real.LuatPkGame): bang EXP dang dung, KHONG tut cap (kep ve moc dau cap hien tai)
+            return LuatPkGame.expMat(this, killer);
          } else {
             return 0L;
          }

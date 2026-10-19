@@ -228,7 +228,7 @@ class MapCheTao {
             }
 
             item.lockItem(material[1]);
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac] khoa thuoc tinh: khong con pha khoa duoc
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
             player.sendMessage(MessageCreator.createServerAlertMessage("Khoá thành công.", ""));
             String gemUse = MapEpNgoc.deleteGemItem(map,
@@ -806,6 +806,7 @@ class MapCheTao {
                     }
                     if (r.nextInt(100) < tlVuLan) {
                         player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                        DiemMocNhiemVu.khiNhanVatPhamSuKien(player, Potion.TYPE_NHANH_HOA_HONG_VANG, 1);
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi tien giai", "vulan");
                     }

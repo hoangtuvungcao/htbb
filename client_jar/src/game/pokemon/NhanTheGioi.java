@@ -26,6 +26,9 @@ public final class NhanTheGioi {
     private static final Object[] AI = new Object[TOI_DA];
     private static final String[] CHU = new String[TOI_DA];
     private static final String[] TIEN = new String[TOI_DA];
+    /** 0.9.7 danh hiệu đang đeo của người chơi (dòng nhỏ trên tên, màu độ hiếm), null = không */
+    private static final String[] DH = new String[TOI_DA];
+    private static final int[] DHH = new int[TOI_DA], WCHU = new int[TOI_DA], HDH = new int[TOI_DA];
     private static final int[] LOAI = new int[TOI_DA];
     private static final int[] WX = new int[TOI_DA], WY = new int[TOI_DA], WCHAN = new int[TOI_DA];
     /** HP phần nghìn (-1 = không thanh) */
@@ -79,6 +82,14 @@ public final class NhanTheGioi {
         HP[i] = hp;
         CHON[i] = chon;
         NONG[i] = nong;
+        DH[i] = null;
+        if (loai != QUAI && ai instanceof game.model.Char) {
+            game.model.Char c = (game.model.Char) ai;
+            if (c.danhHieuTen != null && c.danhHieuTen.length() > 0) {
+                DH[i] = c.danhHieuTen;
+                DHH[i] = c.danhHieuHiem;
+            }
+        }
         return true;
     }
 
@@ -87,6 +98,7 @@ public final class NhanTheGioi {
             AI[i] = null;
             CHU[i] = null;
             TIEN[i] = null;
+            DH[i] = null;
         }
         so = 0;
     }
@@ -191,6 +203,19 @@ public final class NhanTheGioi {
         return ChuDe.dt() ? 7.0f : 6.2f;
     }
 
+    /** Cỡ chữ dòng danh hiệu (nhỏ hơn tên). */
+    static float coDanhHieu() {
+        return ChuDe.dt() ? 6.2f : 5.6f;
+    }
+
+    /**
+     * J2ME (không có chữ thật): danh hiệu vẽ trong lớp thế giới - viên màu độ hiếm canh giữa x, đáy yDay (Char.paintName).
+     */
+    public static void danhHieuJ2me(Graphics g, String ten, int hiem, int x, int yDay) {
+        int w = ChuDe.rong(ten, ChuDe.NHAN) + 14;
+        ManDanhHieu.vien(g, x - w / 2, yDay - 2 - ManDanhHieu.hVien(), ten, hiem, null, w + 20);
+    }
+
     static float coChon() {
         return ChuDe.dt() ? 7.6f : 6.8f;
     }
@@ -246,6 +271,7 @@ public final class NhanTheGioi {
                 w += wt;
             }
             WTIEN[i] = wt;
+            WCHU[i] = w;
             int hh = CHON[i] ? hC : h;
             int day = sy(WY[i]);
             if (HP[i] >= 0) {
@@ -256,6 +282,19 @@ public final class NhanTheGioi {
             H[i] = hh + (HP[i] >= 0 ? 5 : 0);
             X[i] = cx - W[i] / 2;
             Y[i] = day - hh;
+            HDH[i] = 0;
+            if (DH[i] != null) {
+                // danh hiệu: dòng nhỏ hơn ngay trên tên, nhãn rộng theo dòng dài hơn (xếp chỗ tính cả hai dòng)
+                float cd = coDanhHieu();
+                HDH[i] = cao(cd) + 1;
+                int wd = rong(DH[i], cd, 2) + 4;
+                if (wd > W[i]) {
+                    X[i] = cx - wd / 2;
+                    W[i] = wd;
+                }
+                H[i] += HDH[i];
+                Y[i] -= HDH[i];
+            }
             TT[i] = X[i] + W[i] < 0 || X[i] > Canvas.w || Y[i] + H[i] < 0 || Y[i] > Canvas.h ? 0 : 1;
             if (LOAI[i] == BAN_THAN) {
                 int r = 9 * zx >> 10;
@@ -331,8 +370,14 @@ public final class NhanTheGioi {
         int l = LOAI[i];
         int x = X[i] + 2, y = Y[i];
         int hh = cao(co);
+        if (DH[i] != null) {
+            // dòng danh hiệu (màu độ hiếm, token ChuDe) trên tên; tên canh giữa dưới
+            chuVien(g, DH[i], X[i] + W[i] / 2, y, coDanhHieu(), 2, mo ? 0xAEB6C4 : ChuDe.nhanDanhHieu(DHH[i]), VIEN, 2);
+            y += HDH[i];
+            x = X[i] + (W[i] - WCHU[i]) / 2 + 2;
+        }
         if (chon) {
-            vien(g, X[i] - 2, y, W[i] + 4, hh);
+            vien(g, x - 4, y, WCHU[i] + 8, hh);
         }
         int dam = chon ? 2 : 1;
         int mau;

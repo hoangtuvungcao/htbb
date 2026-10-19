@@ -712,6 +712,10 @@ public class Region {
             if (p.lvDetail.lv < 40 && c.monster != null) {
                 return;
             }
+            // 0.9.7 luat PK the gioi (real.LuatPkGame): thi tran an toan, chenh cap > 10, nghiep qua nang
+            if (LuatPkGame.chan(this.map, p, c) != null) {
+                return;
+            }
             if (!Map.inRangeActor((LiveActor)p, (LiveActor)c, (int)MAX_RANGE_CHAR[p.charClass])) {
                 return;
             }
@@ -833,6 +837,7 @@ public class Region {
                 ahp = 1;
             }
             c.hp = (int)((long)c.hp - ((long)damage - c.checkMagicShield(damage)));
+            XepHangPvpGame.khiSatThuong(p, c, damage); // tran xep hang: sat thuong ben thua gay (chong cay Elo)
             ChiemGymLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
             if (c.hp <= 0 && !cupTran) {
                 ThangPvpGame.ketQua(p, c); // GD2 7.2 Elo mua (tat co: khong lam gi) - tran cup KHONG tinh Elo
@@ -1354,7 +1359,7 @@ public class Region {
                 if (newxp != totalXp) {
                     int nUser = p.party.userParty.size();
                     // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
-                    int xpReceive = newxp * 80 / (nUser * 100);
+                    int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                     int maxLv = p.lvDetail.lv;
                     int k = 0;
                     while (k < p.party.userParty.size()) {
@@ -1375,7 +1380,7 @@ public class Region {
                         }
                         ++k;
                     }
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                     xpReceive = p.expReceive(xpReceive);
                     Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region2");
@@ -1631,7 +1636,7 @@ public class Region {
                     if (newxp != totalXp) {
                         int nUser = p.party.userParty.size();
                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
-                        int xpReceive = newxp * 80 / (100 * nUser);
+                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                         int maxLv = p.lvDetail.lv;
                         int i = 0;
                         while (i < p.party.userParty.size()) {
@@ -1652,7 +1657,7 @@ public class Region {
                             }
                             ++i;
                         }
-                        xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                         xpReceive = p.expReceive(xpReceive);
                         Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region5");
@@ -1744,7 +1749,7 @@ public class Region {
                     if (newxp != totalXp) {
                         int nUser = p.party.userParty.size();
                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
-                        int xpReceive = newxp * 80 / (nUser * 100);
+                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                         int maxLv = p.lvDetail.lv;
                         int i = 0;
                         while (i < p.party.userParty.size()) {
@@ -1765,7 +1770,7 @@ public class Region {
                             }
                             ++i;
                         }
-                        xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                         xpReceive = p.expReceive(xpReceive);
                         Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region8");

@@ -53,7 +53,9 @@ java -cp /tmp/bot -Dgm=10 BotTai 127.0.0.1 19129 50 600 tai      # 50 bot, 10 GM
 ```
 
 Tài khoản bot tạo trước trong `account.team_user` (mật khẩu `PASSWORD(...)`) kèm dòng `htbb_db.5h_active`; bot GM cần
-tên nhân vật trong `sv.adminAccounts` và `pInfo[16]=1` — chỉ làm trên server thử. Sau khi chạy: log server không có
+tên nhân vật trong `sv.adminAccounts` và `pInfo[16]=1` — chỉ làm trên server thử. `sv.adminAccounts` tối đa 255 ký tự
+(cột `cau_hinh.gia_tri`): `BotChucNang` dùng GM `kt001..kt040` (`-Dden`, mặc định 40) và tài khoản thường `kt101..kt120`;
+tài khoản thử nên có `regdate` lùi ≥ 24 giờ (chống clone) — bot tự cộng giờ chơi `tob_char.totalTimePlay` khi có `-Ddb`. Sau khi chạy: log server không có
 `Exception`, dữ liệu đã lưu (`tob_char`, `tob_pokedex`). Máy dùng chung: ≤ 100 bot, server headless.
 
 ## `phat-hanh/` — phát hành client

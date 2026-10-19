@@ -221,7 +221,13 @@ public class ChupTrongGame {
             "hop_phan_thuong", "hop_nhan_nhiem_vu", "hop_bao_tri", "hop_loi", "hop_mat_ket_noi", "hop_hoi_sinh", "hop_giftcode",
             "hop_giftcode_ket_qua", "hop_moi_giao_dich", "hop_moi_doi", "hop_dang_xuat", "hop_cho", "hop_nhap_chu", "hop_vat_pham",
             // 0.9.6
-            "tu_dong_dang", "thu_qua", "cai_dat_tai_khoan", "npc_chansey", "npc_kecleon", "npc_kangaskhan"};
+            "tu_dong_dang", "thu_qua", "cai_dat_tai_khoan", "npc_chansey", "npc_kecleon", "npc_kangaskhan",
+            // 0.9.6.1: hệ sinh thái / câu cá (menu máy chủ NPC ảo -528 + thông báo 37 qua MessageHandler thật)
+            "hst_menu", "hst_menu_trang2", "hst_cong_thuc", "hst_suu_tam", "hst_vung", "hst_cho", "hst_cho_loai", "hst_tui", "hst_tui_day",
+            "hst_tui_hanh_dong", "hst_ky_nang", "hst_tu_man", "hop_hst_ky_nang", "hop_hst_nghien_cuu", "hop_hst_the_gioi",
+            "hop_cau_ket_qua", "cau_can",
+            // 0.9.7
+            "danh_hieu", "danh_hieu_chua_co", "danh_hieu_an", "danh_hieu_chi_tiet"};
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -286,10 +292,13 @@ public class ChupTrongGame {
                 if ("menu_ngu_canh".equals(ten)) {
                     kiemMenuNguCanh(ten + " " + TEN_CO[c]);
                 }
+                if (ten.startsWith("hst_") && !"hst_ky_nang".equals(ten)) {
+                    kiemMenuMayChu(ten + " " + TEN_CO[c]);
+                }
                 // màn chơi: HUD PC (HudRong) chỉ ở cỡ PC; HUD APK (Hud.java) kiểm riêng bằng client_jar/tools/KiemCoCham
                 boolean theGioi = ten.startsWith("the_gioi") || "thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)
                         || "goi_y_chieu".equals(ten) || ten.startsWith("tu_dong") || "hop_vat_pham".equals(ten) || ten.startsWith("npc_")
-                        || "cai_dat_tai_khoan".equals(ten)
+                        || "cai_dat_tai_khoan".equals(ten) || "hst_ky_nang".equals(ten) || "cau_can".equals(ten)
                         // 0.9.6.1: hộp "OK" báo tin trong game (lên cấp, phần thưởng...) nay là thẻ nhanh trên màn chơi
                         || ten.startsWith("hop_") && game.render.Canvas.currentDialog == null
                         && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
@@ -535,7 +544,65 @@ public class ChupTrongGame {
         game.render.screen.GameScr.infoNewSkill.removeAllElements();
         game.render.screen.GameScr.infoNewSkill.addElement(hoc);
         TOP = top;
+        giaLapDanhHieu();
         gs.switchToMe();
+    }
+
+    /** 0.9.7: bảng danh hiệu giả như máy chủ gửi (-110 loại 0) + nhãn danh hiệu của nhân vật chính. */
+    static void giaLapDanhHieu() {
+        try {
+            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o = new java.io.DataOutputStream(b);
+            o.writeByte(0);
+            o.writeByte(0);
+            o.writeShort(9713);
+            String[] hiem = {"Thường", "Hiếm", "Sử thi", "Huyền thoại"};
+            o.writeByte(hiem.length);
+            for (String h : hiem) o.writeUTF(h);
+            Object[][] d = {
+                // id, tên, mô tả, gợi ý, độ hiếm, hình, trạng thái, ẩn, tiến độ, cần, phút còn, chỉ số, nguồn, mới
+                {9713, "Ngư phủ Magikarp", "Câu cá 300 lần ở hồ.", "", 1, "song", 2, 0, 300, 300, -1, "+0,7% Né tránh", "thanh_tuu", 0},
+                {9720, "Master Ball mùa này", "Đạt bậc Master Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.", "", 3, "khien", 1, 0, 3, 3, 3 * 1440 + 200, "+1% Chí mạng", "xep_hang", 1},
+                {9707, "Nhà Pokédex học", "Nghiên cứu 50% số loài trong Pokédex.", "", 2, "sao", 1, 0, 50, 50, -1, "+0,9% Chí mạng", "pokedex", 0},
+                {9700, "Huấn luyện viên tập sự", "Đạt cấp 10.", "", 0, "sao", 1, 0, 10, 10, -1, "+0,5% HP tối đa", "thanh_tuu", 0},
+                {9702, "Huấn luyện viên tinh anh", "Đạt cấp 50.", "", 1, "nhanh", 0, 0, 24, 50, -1, "+0,7% Chí mạng", "thanh_tuu", 0},
+                {9710, "Thợ săn trùm", "Góp sức hạ 25 trùm thế giới.", "", 1, "nanh", 0, 0, 7, 25, -1, "+0,7% Chí mạng", "boss", 0},
+                {9734, "Bí ngô đêm hội", "Có mặt trong lễ Halloween. Hết hạn sau 30 ngày.", "", 1, "ma", 0, 0, 0, 1, 43200, "+0,7% Né tránh", "su_kien", 0},
+                {9704, "Đỉnh cao huấn luyện", "Đạt cấp tối đa của năm đầu (91).", "", 3, "mat_troi", 0, 0, 24, 91, -1, "+1% HP tối đa", "thanh_tuu", 0},
+                {9714, "???", "???", "Mặt hồ chỉ trả lời người đủ kiên nhẫn...", 2, "", 0, 1, 0, 1000, -1, "", "an", 0},
+                {9738, "???", "???", "Ngã nhiều lần cũng là một kiểu bản lĩnh.", 0, "", 0, 1, 0, 100, -1, "", "an", 0},
+                {9740, "???", "???", "Đã đặt chân tới mọi miền chưa?", 3, "", 0, 1, 0, 120, -1, "", "an", 0},
+            };
+            o.writeShort(d.length);
+            for (Object[] r : d) {
+                o.writeShort((Integer) r[0]);
+                o.writeUTF((String) r[1]);
+                o.writeUTF((String) r[2]);
+                o.writeUTF((String) r[3]);
+                o.writeByte((Integer) r[4]);
+                o.writeUTF((String) r[5]);
+                o.writeByte((Integer) r[6]);
+                o.writeByte((Integer) r[7]);
+                o.writeInt((Integer) r[8]);
+                o.writeInt((Integer) r[9]);
+                o.writeInt((Integer) r[10]);
+                o.writeUTF((String) r[11]);
+                o.writeUTF((String) r[12]);
+                o.writeByte((Integer) r[13]);
+            }
+            game.pokemon.DanhHieuKho.doc(new java.io.DataInputStream(new java.io.ByteArrayInputStream(b.toByteArray())));
+            game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+            java.io.ByteArrayOutputStream b2 = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o2 = new java.io.DataOutputStream(b2);
+            o2.writeByte(1);
+            o2.writeShort(mc.ID);
+            o2.writeShort(9713);
+            o2.writeUTF("Ngư phủ Magikarp");
+            o2.writeByte(1);
+            game.pokemon.DanhHieuKho.doc(new java.io.DataInputStream(new java.io.ByteArrayInputStream(b2.toByteArray())));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     static java.util.Vector TOP;
@@ -734,6 +801,11 @@ public class ChupTrongGame {
             game.pokemon.ManXepHang.nhan(4, TOP);
         } else if ("doi".equals(ten)) {
             game.pokemon.ManDoi.mo(0);
+        } else if (ten.startsWith("danh_hieu")) {
+            game.pokemon.ManDanhHieu.moTab(ten.endsWith("chua_co") ? 1 : ten.endsWith("_an") ? 2 : 0);
+            if (ten.endsWith("chi_tiet")) {
+                dat(game.pokemon.ManDanhHieu.gI(), "xem", game.pokemon.DanhHieuKho.loc(0).elementAt(1));
+            }
         } else if ("ky_nang_hoc".equals(ten)) {
             game.pokemon.ManNhanVat.mo(2);
             dat(nv, "hocMoi", Boolean.TRUE);
@@ -828,6 +900,8 @@ public class ChupTrongGame {
                     + "Lưu ý: phần thưởng gửi vào hộp thư, nhận trong 7 ngày.\n"
                     + "Đổi quà: mang 10 Đèn lồng tới NPC Trưởng làng để đổi 1 Hộp quà Trăng.\n"
                     + "Bảng xếp hạng: xem tại menu Xếp hạng, cập nhật mỗi 10 phút.");
+        } else if (ten.startsWith("hst_") || ten.startsWith("cau_") || ten.startsWith("hop_hst_") || ten.startsWith("hop_cau_")) {
+            moSinhThai(ten);
         } else if (ten.startsWith("hop_") && hopMau(ten)) {
             // đã mở trong hopMau
         } else if ("so_luong".equals(ten)) {
@@ -1009,6 +1083,140 @@ public class ChupTrongGame {
             int[] a = (int[]) v[i][1];
             boolean giao = r[0] < a[0] + a[2] && a[0] < r[0] + r[2] && r[1] < a[1] + a[3] && a[1] < r[1] + r[3];
             kiem(!giao, nhan + " menu ngu canh khong chong HUD " + t);
+        }
+    }
+
+    // ------------------------------------------------------------------ 0.9.6.1 hệ sinh thái / câu cá (gói giả)
+
+    /** Gói máy chủ giả qua MessageHandler.onMessage thật (cùng đường đọc như mạng). */
+    static void goi(int lenh, byte[] duLieu) {
+        try {
+            java.lang.reflect.Constructor<network.Message> k = network.Message.class.getDeclaredConstructor(byte.class, byte[].class);
+            k.setAccessible(true);
+            game.networklogic.MessageHandler.gI().onMessage(k.newInstance((byte) lenh, duLieu));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** -30 menu máy chủ (HeSinhThaiMenu.menu -> MessageCreator.createMsgMenu). */
+    static void menuMayChu(int npc, int idMenu, String[] ds) {
+        try {
+            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o = new java.io.DataOutputStream(b);
+            o.writeShort(npc);
+            o.writeByte(idMenu);
+            o.writeByte(ds.length);
+            for (int i = 0; i < ds.length; i++) o.writeUTF(ds[i]);
+            goi(-30, b.toByteArray());
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+        game.pokemon.MenuNguCanh.tiepQuan();   // GameScr.update làm mỗi nhịp
+    }
+
+    /** 37 thông báo máy chủ (HeSinhThaiGame.bao -> createServerAlertMessage(s, "")). */
+    static void thongBaoMayChu(String s) {
+        try {
+            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o = new java.io.DataOutputStream(b);
+            o.writeUTF(s);
+            o.writeUTF("");
+            goi(37, b.toByteArray());
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static final String[] HST_GOC = {"Thời tiết: Mưa rào (ngày)", "Khảo cổ: đào tại đây", "Nấu ăn, chế thuốc, chế tác", "Túi sinh thái",
+        "Nhà trẻ và trứng (2)", "Chợ sinh thái", "Vườn nhà và bạn bè", "Sưu tầm và nghiên cứu", "Giải trí: đố vui, đua, giải đấu",
+        "Kỹ năng và thể lực (96)"};
+    static final String HST_KY_NANG = "Kỹ năng sống\n- Câu cá: cấp 12 (340/1200)\n- Trồng trọt: cấp 3 (40/300)\n- Khảo cổ: cấp 7 (95/700)\n"
+            + "- Nấu ăn: cấp 5 (10/500)\n- Chế thuốc: cấp 1 (0/100)\nThể lực sinh hoạt: 96 (+100/ngày, tích tối đa 200)\n"
+            + "Câu cá 2, đào 4, nấu/chế 3 thể lực\nHiệu ứng: mồi thơm 2 lần, súp berry 0 lần\nĐã bán NPC hôm nay: 1250/20000 xu";
+    static final String HST_NGHIEN_CUU = "Nghiên cứu: 14 loài đã có ghi chép, 3 loài hoàn tất.\nGần đây:\n"
+            + "- Magikarp: (x) Gặp, (x) Câu được, ( ) Chụp ảnh lúc mưa, ( ) Chụp ảnh ban đêm\n"
+            + "- Goldeen: (x) Gặp, ( ) Câu được, ( ) Chụp ảnh hiếm\n- Poliwag: (x) Gặp, (x) Câu được\n"
+            + "- Tentacool: (x) Gặp, ( ) Câu được, ( ) Chụp ảnh ban đêm\n- Horsea: ( ) Gặp, ( ) Câu được\n"
+            + "- Shellder: (x) Gặp, (x) Câu được, (x) Chụp ảnh hiếm\n- Staryu: (x) Gặp, ( ) Câu được\n"
+            + "- Krabby: (x) Gặp, (x) Câu được\n- Chinchou: (x) Gặp, ( ) Câu được, ( ) Chụp ảnh ban đêm\n"
+            + "- Remoraid: (x) Gặp, ( ) Câu được";
+    static final String HST_THE_GIOI = "Hồ - Hồ Phẫn Nộ\nThời tiết: Mưa rào, ban ngày, mùa Thu\n"
+            + "Pokémon hệ Nước/Điện xuất hiện nhiều hơn, chiêu Nước +50%, chiêu Lửa -50%\nBùng phát mỗi ngày lúc 12h, 20h\n"
+            + "Hôm nay:\n- Đồng cỏ: Nắng\n- Rừng: Sương mù\n- Hồ: Mưa rào\n- Biển: Gió mạnh\n- Núi: Nắng gắt\n- Tuyết: Bão tuyết\n- Sa mạc: Bão cát";
+
+    static void moSinhThai(String ten) {
+        game.render.screen.GameScr gs = game.render.Canvas.gameScr;
+        gs.switchToMe();
+        gs.focusedActor = null;   // menu -528 mở từ Menu / nút: không neo NPC
+        int N = game.render.screen.TuiSinhThaiScr.NPC_ID;
+        if ("hst_menu".equals(ten) || "hst_menu_trang2".equals(ten)) {
+            menuMayChu(N, 0, HST_GOC);
+            if (ten.endsWith("2")) dat(game.pokemon.MenuNguCanh.gI(), "trang", Integer.valueOf(1));
+        } else if ("hst_tu_man".equals(ten)) {
+            // mở từ Menu lưới (ManMenu -> Hệ sinh thái): gói tới khi màn Menu còn đang hiện
+            game.pokemon.ManMenu.mo();
+            menuMayChu(N, 0, HST_GOC);
+        } else if ("hst_cong_thuc".equals(ten)) {
+            String[] t = {"Bánh Poké (Nấu ăn 1) - làm được", "Mồi thơm (x3) (Nấu ăn 5) - làm được", "Súp berry (Nấu ăn 10) - chưa đủ cấp",
+                "Cà ri cá (Nấu ăn 20) - chưa đủ cấp", "Thuốc xịt (Chế thuốc 1)", "Nước tinh khiết (Chế thuốc 1)",
+                "Phục hồi Hoá thạch Vỏ ốc (Khảo cổ 10) - chưa đủ cấp", "Lẩu hải sản (Cà ri cá) (Nấu ăn 25) - chưa đủ cấp",
+                "Mồi thơm biển (Nấu ăn 15) - chưa đủ cấp", "Tượng rồng Dratini (Khảo cổ 45) - chưa đủ cấp"};
+            menuMayChu(N, 1, t);
+        } else if ("hst_suu_tam".equals(ten)) {
+            menuMayChu(N, 22, new String[]{"Album ảnh (7)", "Nghiên cứu Pokédex (14 loài)", "Nhận thưởng vùng sinh thái", "Danh hiệu (1)"});
+        } else if ("hst_vung".equals(ten)) {
+            menuMayChu(N, 26, new String[]{"Đồng cỏ: 2/12", "Rừng: 0/15", "Hồ: 3/9 (đã nhận)", "Biển: 1/14", "Núi: 0/10", "Tuyết: 0/8",
+                "Sa mạc: 0/9", "Tàu: 0/6"});
+        } else if ("hst_cho".equals(ten)) {
+            menuMayChu(N, 10, new String[]{"Mua: Cá", "Mua: Berry", "Mua: Khoáng", "Mua: Hoá thạch", "Mua: Món ăn", "Mua: Thuốc", "Mua: Trứng",
+                "Mua: Trang trí", "Tin bán của tôi (huỷ)", "Đơn đặt hàng đang mở (giao hàng)", "Tạo đơn đặt hàng", "Đơn của tôi (huỷ)",
+                "Hộp thư: nhận tiền/hàng"});
+        } else if ("hst_cho_loai".equals(ten)) {
+            menuMayChu(N, 11, new String[]{"Vảy rồng Dratini (bậc 3) x2 - 12.500 xu - Pikachu88", "Vảy Magikarp (bậc 1) x40 - 900 xu - Bulba77",
+                "Mai Lapras (bậc 4) x1 - 48.000 xu - NguPhuBacThay2024", "Gai Qwilfish (bậc 2) x5 - 1.500 xu - Ash"});
+        } else if ("hst_tui".equals(ten)) {
+            menuMayChu(N, 2, new String[]{"Vảy Magikarp (bậc 2) x37", "Vảy Goldeen (bậc 2) x5", "Rác trôi (bậc 1) x3", "Vỏ sò (bậc 2) x12",
+                "Ngọc trai nhỏ (bậc 2) x1", "Berry Oran (bậc 1) x8", "Mồi thơm (bậc 2) x3", "Vảy rồng Dratini (bậc 3) x1",
+                "Xúc tu Tentacool (bậc 2) x4", "Càng Krabby (bậc 2) x2", "Rong biển (bậc 1) x9", "Đèn Chinchou (bậc 3) x1"});
+        } else if ("hst_tui_day".equals(ten)) {
+            // túi đầy (máy chủ gửi tối đa 40 dòng): tấm cao tối đa, lưới cuộn bên trong
+            String[] t = new String[40];
+            String[] loai = {"Vảy Magikarp", "Vảy Goldeen", "Vỏ sò", "Berry Oran", "Mồi thơm", "Càng Krabby", "Rong biển", "Đèn Chinchou"};
+            for (int i = 0; i < t.length; i++) t[i] = loai[i % loai.length] + " (bậc " + (1 + i % 4) + ") x" + (i * 7 + 1);
+            menuMayChu(N, 2, t);
+            dat(game.render.screen.TuiSinhThaiScr.gI(), "chon", Integer.valueOf(0));
+        } else if ("hst_tui_hanh_dong".equals(ten)) {
+            menuMayChu(N, 3, new String[]{"Dùng", "Bán cho NPC (12 xu/cái)", "Rao bán ở chợ", "Gửi tặng bạn bè"});
+        } else if ("hst_ky_nang".equals(ten)) {
+            thongBaoMayChu(HST_KY_NANG);
+        } else if ("hop_hst_ky_nang".equals(ten) || "hop_hst_nghien_cuu".equals(ten) || "hop_hst_the_gioi".equals(ten)) {
+            // biểu ngữ -> "Xem": thông báo đủ
+            String s = ten.endsWith("ky_nang") ? HST_KY_NANG : ten.endsWith("nghien_cuu") ? HST_NGHIEN_CUU : HST_THE_GIOI;
+            game.pokemon.HopThongBao.bao("Thông báo", s);
+        } else if ("hop_cau_ket_qua".equals(ten)) {
+            // kết quả câu cá sau hoạt cảnh kéo cần (SinhThai.ketThucCau -> Canvas.startOKDlg)
+            game.render.Canvas.startOKDlg("Câu được: 1 Vảy rồng Dratini (bậc 3). Gặp Magikarp! Thể lực còn 96.");
+        } else if ("cau_can".equals(ten)) {
+            game.pokemon.HanhDong.bao("Cá cắn câu! Bấm nút câu để kéo cần ngay trước khi cá thoát mất.");
+        }
+    }
+
+    /**
+     * 0.9.6.1 menu máy chủ (hệ sinh thái -528...): đã mở (thẻ lệnh / màn túi), thẻ trong vùng an toàn, rộng <= 80 %
+     * vùng an toàn, không chồng HUD (kiemMenuNguCanh).
+     */
+    static void kiemMenuMayChu(String nhan) {
+        Object d = game.render.Canvas.currentDialog;
+        if (d instanceof game.pokemon.MenuNguCanh) {
+            int[] r = game.pokemon.MenuNguCanh.VUA_VE;
+            int sw = game.pokemon.Bang.phai() - game.pokemon.Bang.trai();
+            kiem(r[2] <= sw * 80 / 100 + 1, nhan + " the lenh rong " + r[2] + " <= 80% vung an toan " + sw);
+            kiemMenuNguCanh(nhan);
+        } else {
+            kiem(game.render.Canvas.currentScreen instanceof game.render.screen.TuiSinhThaiScr || game.render.Canvas.menu.showMenu,
+                    nhan + " menu may chu da mo (" + d + ", " + game.render.Canvas.currentScreen + ")");
+            kiem(!game.render.Canvas.menu.showMenu, nhan + " khong con menu chu J2ME (Canvas.menu) tren may cham");
         }
     }
 

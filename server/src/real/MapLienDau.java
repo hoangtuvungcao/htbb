@@ -1717,7 +1717,7 @@ public class MapLienDau extends Map {
                                                                         nUser = p.party.userParty.size();
                                                                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                        xpReceive = newxp * 80 / (nUser * 100);
+                                                                        xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                         x2Player = p.lvDetail.lv;
 
                                                                         for (int k = 0; k < p.party.userParty.size(); ++k) {
@@ -1750,7 +1750,7 @@ public class MapLienDau extends Map {
                                                                             }
                                                                         }
 
-                                                                        xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                         xpReceive = p.expReceive(xpReceive);
                                                                         addXPForChar(p, (long) (xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapliendau doAttackMultiTarget2");
@@ -1979,7 +1979,7 @@ public class MapLienDau extends Map {
                                                                         exp50 = p.party.userParty.size();
                                                                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep = 5 khi > 1 nguoi).
 
-                                                                        xpReceive = newxp * 80 / (100 * exp50);
+                                                                        xpReceive = Map.chiaExpDoi(newxp, 80, exp50, 1);
                                                                         xpReceive = p.lvDetail.lv;
 
                                                                         for (exp50 = 0; exp50 < p.party.userParty.size(); ++exp50) {
@@ -2026,7 +2026,7 @@ public class MapLienDau extends Map {
                                                                         }
 
                                                                         x2Player = p.getX2();
-                                                                        xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                         if (doubleALL > 1) {
                                                                             x2Player = 0;
                                                                         }

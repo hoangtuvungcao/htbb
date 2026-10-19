@@ -1,12 +1,12 @@
 package game.render.screen;
 
-import game.model.Command;
 import game.model.IAction;
+import game.pokemon.Bang;
+import game.pokemon.ChuDe;
 import game.pokemon.GiaoDien;
 import game.pokemon.KieuO;
 import game.render.Canvas;
 import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
 
 /**
  * "Túi sinh thái" dạng lưới ô kiểu Pokémon (thay menu danh sách tối đa 40 dòng của server).
@@ -14,8 +14,12 @@ import javax.microedition.lcdui.Image;
  * "Tên (bậc N) xSố". Chọn ô = gửi đúng lựa chọn đó như menu cũ (server mở menu Dùng / Bán / Rao...).
  * Mở từ menu Bản thân -> "Túi sinh thái" (gửi lựa chọn 4 của menu gốc -528 như khi bấm trong menu
  * Hệ sinh thái). Server không bật hệ sinh thái thì không có gói -> không có gì xảy ra.
+ *
+ * 0.9.6.1: TẤM chung (ManBang / Bang.khungTam) thay bảng J2ME cao kín màn: canh giữa vùng an toàn, rộng <= ~78 %,
+ * cao THEO SỐ Ô (hàng = số món / số cột), dài hơn chỗ trống thì lưới cuộn bên trong; ô chạm cỡ >= 44 dp (VungCham),
+ * thẻ chi tiết + nút "Chọn" dưới lưới. Chạm ô = chọn, chạm lại / "Chọn" / phím 5 = gửi lựa chọn như menu cũ.
  */
-public class TuiSinhThaiScr extends Screen {
+public class TuiSinhThaiScr extends game.pokemon.ManBang {
     public static final int NPC_ID = -528;
     public static final byte MENU_GOC = 0;
     public static final byte MENU_TUI = 2;
@@ -27,8 +31,9 @@ public class TuiSinhThaiScr extends Screen {
     private int npc;
     private byte idMenu;
     private int chon;
-    private int cuon;
     private Screen truoc;
+    /** bố cục lần vẽ trước (phím lên / xuống giữ ô chọn trong khung nhìn) */
+    private int cotVe = 8, hLuoiVe;
 
     public static TuiSinhThaiScr gI() {
         return me == null ? (me = new TuiSinhThaiScr()) : me;
@@ -104,24 +109,12 @@ public class TuiSinhThaiScr extends Screen {
         Canvas.endDlg();
         if (Canvas.currentScreen != this) {
             this.truoc = Canvas.currentScreen;
-            switchToMe();
+            moBang();
         }
     }
 
-    public TuiSinhThaiScr() {
-        this.right = new Command("Đóng", new IAction() {
-            public void perform() {
-                TuiSinhThaiScr.this.dong();
-            }
-        });
-        this.center = new Command("Chọn", new IAction() {
-            public void perform() {
-                TuiSinhThaiScr.this.chonO();
-            }
-        });
-    }
-
-    void dong() {
+    public void dong() {
+        game.pokemon.AmThanh.phat(game.pokemon.AmThanh.XAC_NHAN);
         if (this.truoc != null && this.truoc != this) {
             this.truoc.switchToMe();
         } else {
@@ -142,26 +135,40 @@ public class TuiSinhThaiScr extends Screen {
 
     // ------------------------------------------------------------------ bố cục
 
-    private int o() {
-        return Canvas.w >= 220 ? 24 : 20;
+    protected String tieuDe() {
+        return "Túi sinh thái";
     }
 
-    private int soCot() {
-        int c = (Canvas.w - 24) / o();
+    /** Cạnh ô (px logic): >= cỡ chạm tối thiểu. */
+    private static int o() {
+        return Bang.co(ChuDe.dt() ? 40 : 34);
+    }
+
+    private static int soCot(int w) {
+        int k = Bang.cach();
+        int c = (w - 10 + k) / (o() + k);
         return c < 4 ? 4 : (c > 8 ? 8 : c);
     }
 
-    private int x0() {
-        return (Canvas.w - soCot() * o()) / 2;
+    /** Thẻ chi tiết dưới lưới: tên + bậc / số lượng, nút "Chọn". */
+    private static int caoThe() {
+        return Math.max(Bang.co(26) + 2 * ChuDe.DEM, ChuDe.cao(ChuDe.NHAN) + ChuDe.cao(ChuDe.PHU) + 14);
     }
 
-    private int y0() {
-        return 40;
+    private int so() {
+        return this.ten == null ? 0 : this.ten.length;
     }
 
-    private int soHang() {
-        int h = (Canvas.h - Screen.deltaY - y0() - 48) / o();
-        return h < 2 ? 2 : h;
+    protected int rongMuon() {
+        int k = Bang.cach();
+        return 8 * (o() + k) - k + 10 + 2 * ChuDe.DEM;
+    }
+
+    protected int caoMuon(int wNoi) {
+        int k = Bang.cach();
+        int cot = soCot(wNoi);
+        int hang = Math.max(1, (so() + cot - 1) / cot);
+        return hang * (o() + k) - k + k + caoThe() + 2;
     }
 
     /** Hình + hệ (màu) theo tên nguyên liệu. */
@@ -200,98 +207,108 @@ public class TuiSinhThaiScr extends Screen {
         return new int[]{KieuO.HINH_GIOT, 2};     // cá (tên loài Pokémon) và còn lại
     }
 
-    public void paint(Graphics g) {
-        Canvas.gameScr.paint(g);
-        Canvas.resetTrans(g);
-        int s = o();
-        int cot = soCot();
-        int hang = soHang();
-        int x0 = x0();
-        int y0 = y0();
-        int w = cot * s + 16;
-        int h = hang * s + 70;
-        GiaoDien.bangTieuDe(g, x0 - 8, y0 - 30, w, h, 26, "Túi sinh thái");
-        int n = this.ten == null ? 0 : this.ten.length;
-        if (this.chon / cot < this.cuon) {
-            this.cuon = this.chon / cot;
-        } else if (this.chon / cot >= this.cuon + hang) {
-            this.cuon = this.chon / cot - hang + 1;
-        }
-        for (int r = 0; r < hang; r++) {
-            for (int c = 0; c < cot; c++) {
-                int i = (r + this.cuon) * cot + c;
-                int x = x0 + c * s;
-                int y = y0 + r * s;
-                KieuO.oDo(g, x, y, s, i < n, ((r + c) & 1) == 1);
-                if (i >= n) {
-                    continue;
-                }
-                int[] k = kieu(this.ten[i]);
-                KieuO.oChieu(g, x + 3, y + 3, s - 6, s - 6, k[1], k[0], false);
-                KieuO.soLuong(g, x + s - 1, y + s - 1, KieuO.soGon(this.soLuong[i]));
-                // bậc: chấm vàng góc trên-trái
-                for (int b = 0; b < this.bac[i] && b < 5; b++) {
-                    g.setColor(GiaoDien.VIEN);
-                    g.fillRect(x + 2 + b * 3, y + 1, 3, 3);
-                    g.setColor(GiaoDien.VANG);
-                    g.fillRect(x + 3 + b * 3, y + 2, 1, 1);
-                }
-            }
-        }
-        if (n > 0) {
-            int c = this.chon % cot;
-            int r = this.chon / cot - this.cuon;
-            KieuO.chonO(g, x0 + c * s, y0 + r * s, s);
-        }
-        KieuO.thanhCuon(g, x0 + cot * s + 2, y0, hang * s, (n + cot - 1) / cot, this.cuon, hang);
-        // thẻ chi tiết
-        int yThe = y0 + hang * s + 4;
-        GiaoDien.khoi(g, x0 - 2, yThe, cot * s + 4, 32, 4, GiaoDien.XANH);
-        GiaoDien.khoiDoc(g, x0 - 1, yThe + 1, cot * s + 2, 30, 3, GiaoDien.TRANG, GiaoDien.HANG_CHAN);
+    protected void veNoiDung(Graphics g, int x, int y, int w, int h) {
+        final int n = so();
+        int k = Bang.cach();
+        int hThe = caoThe();
         if (n == 0) {
-            Font.arialFontW.drawString(g, "Túi trống", Canvas.hw, yThe + 9, Font.CENTER);
-        } else {
-            String tn = GiaoDien.catChu(Font.normalFont[0], this.ten[this.chon], cot * s - 4);
-            Font.normalFont[0].drawString(g, tn, x0 + 2, yThe + 2, Font.LEFT);
-            Font.arialFontW.drawString(g, new StringBuffer("Bậc ").append(this.bac[this.chon]).append("  -  Số lượng: ").append(this.soLuong[this.chon]).toString(), x0 + 2, yThe + 17, Font.LEFT);
+            Bang.trong(g, x, y, w, h, "Túi trống", "Câu cá, đào, trồng berry để có nguyên liệu.");
+            return;
         }
-        super.paint(g);
-    }
-
-    public void update() {
-        Canvas.gameScr.update();
-    }
-
-    public void updateKey() {
-        int n = this.ten == null ? 0 : this.ten.length;
-        int cot = soCot();
-        if (n > 0) {
-            if (Canvas.isKeyPressed(4)) {
-                this.chon = this.chon > 0 ? this.chon - 1 : n - 1;
-            } else if (Canvas.isKeyPressed(6)) {
-                this.chon = this.chon < n - 1 ? this.chon + 1 : 0;
-            } else if (Canvas.isKeyPressed(2)) {
-                this.chon = this.chon - cot >= 0 ? this.chon - cot : this.chon;
-            } else if (Canvas.isKeyPressed(8)) {
-                this.chon = this.chon + cot < n ? this.chon + cot : this.chon;
-            }
-            if (Canvas.isPointerClick) {
-                int s = o();
-                int c = (Canvas.px - x0()) / s;
-                int r = (Canvas.py - y0()) / s;
-                if (Canvas.px >= x0() && c < cot && Canvas.py >= y0() && r < soHang()) {
-                    int i = (r + this.cuon) * cot + c;
-                    if (i < n) {
-                        Canvas.isPointerClick = false;
-                        if (i == this.chon) {
-                            chonO();
-                            return;
+        if (this.chon >= n) {
+            this.chon = n - 1;
+        }
+        final int s = o();
+        final int cot = soCot(w);
+        int hang = (n + cot - 1) / cot;
+        int wLuoi = cot * (s + k) - k + 10;
+        int hLuoi = Math.max(s, h - hThe - k);
+        this.cotVe = cot;
+        this.hLuoiVe = hLuoi;
+        int xl = x + (w - wLuoi) / 2;
+        Bang.danhSach(g, this.ds, xl, y, wLuoi, hLuoi, hang, s, new Bang.Hang() {
+            public void ve(Graphics g, int r, int x, int y, int w, int h) {
+                int kk = Bang.cach();
+                for (int c = 0; c < cot; c++) {
+                    final int i = r * cot + c;
+                    if (i >= n) {
+                        break;
+                    }
+                    int xi = x + c * (s + kk);
+                    Bang.oDo(g, xi, y, s, true, i == TuiSinhThaiScr.this.chon, new IAction() {
+                        public void perform() {
+                            if (i == TuiSinhThaiScr.this.chon) {
+                                TuiSinhThaiScr.this.chonO();
+                            } else {
+                                TuiSinhThaiScr.this.chon = i;
+                            }
                         }
-                        this.chon = i;
+                    }, "tui-" + i);
+                    int[] kq = kieu(TuiSinhThaiScr.this.ten[i]);
+                    int p = Math.max(3, s / 8);
+                    KieuO.oChieu(g, xi + p, y + p, s - 2 * p, s - 2 * p, kq[1], kq[0], false);
+                    KieuO.soLuong(g, xi + s - 2, y + s - 2, KieuO.soGon(TuiSinhThaiScr.this.soLuong[i]));
+                    // bậc: chấm vàng góc trên-trái
+                    for (int b = 0; b < TuiSinhThaiScr.this.bac[i] && b < 5; b++) {
+                        g.setColor(GiaoDien.VIEN);
+                        g.fillRect(xi + 3 + b * 4, y + 2, 4, 4);
+                        g.setColor(GiaoDien.VANG);
+                        g.fillRect(xi + 4 + b * 4, y + 3, 2, 2);
                     }
                 }
             }
+        });
+        // thẻ chi tiết món đang chọn + nút gửi lựa chọn
+        int yThe = y + h - hThe;
+        Bang.the(g, x, yThe, w, hThe);
+        int hn = Bang.co(26);
+        int wn = Math.max(hn * 2, ChuDe.rong("Chọn", ChuDe.SO) + 32);
+        Bang.nut(g, x + w - ChuDe.DEM - wn, yThe + (hThe - hn) / 2, wn, hn, "Chọn", Bang.CHINH, new IAction() {
+            public void perform() {
+                TuiSinhThaiScr.this.chonO();
+            }
+        }, "tui-chon");
+        int wc = w - wn - 3 * ChuDe.DEM;
+        int l1 = ChuDe.cao(ChuDe.NHAN), l2 = ChuDe.cao(ChuDe.PHU);
+        int yc = yThe + (hThe - l1 - l2 - 2) / 2;
+        ChuDe.chu(g, ChuDe.cat(this.ten[this.chon], ChuDe.NHAN, wc), x + ChuDe.DEM, yc, ChuDe.NHAN, ChuDe.CHU, 0);
+        String phu = new StringBuffer("Bậc ").append(this.bac[this.chon]).append("  ·  Số lượng: ").append(this.soLuong[this.chon]).toString();
+        ChuDe.chu(g, ChuDe.cat(phu, ChuDe.PHU, wc), x + ChuDe.DEM, yc + l1 + 2, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+    }
+
+    public void update() {
+        super.update();
+        if (Canvas.currentScreen != this || Canvas.currentDialog != null) {
+            return;
         }
-        super.updateKey();
+        int n = so();
+        if (n == 0) {
+            return;
+        }
+        int cot = this.cotVe;
+        int cu = this.chon;
+        if (Canvas.isKeyPressed(4)) {
+            this.chon = this.chon > 0 ? this.chon - 1 : n - 1;
+        } else if (Canvas.isKeyPressed(6)) {
+            this.chon = this.chon < n - 1 ? this.chon + 1 : 0;
+        } else if (Canvas.isKeyPressed(2)) {
+            this.chon = this.chon - cot >= 0 ? this.chon - cot : this.chon;
+        } else if (Canvas.isKeyPressed(8)) {
+            this.chon = this.chon + cot < n ? this.chon + cot : this.chon;
+        } else if (Canvas.isKeyPressed(5)) {
+            Canvas.clearKeyPressed();
+            chonO();
+            return;
+        }
+        if (this.chon != cu || Canvas.isKeyPressed(2) || Canvas.isKeyPressed(8)) {
+            // giữ hàng của ô chọn trong khung nhìn lưới
+            int k = Bang.cach();
+            int yr = (this.chon / Math.max(1, cot)) * (o() + k);
+            if (yr < this.ds.lech()) {
+                this.ds.den(yr);
+            } else if (yr + o() > this.ds.lech() + this.hLuoiVe) {
+                this.ds.den(yr + o() - this.hLuoiVe);
+            }
+        }
     }
 }

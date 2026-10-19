@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import {
   XH_CAI_DAT_MAC_DINH, XH_DANH_MUC, xhBacPvp, xhBang, xhBangDuocHien, xhCapKyNang, xhChonBoLoc, xhChuanHoaCaiDat,
   xhDauTuanGame, xhDocSinhThai, xhGopDem, xhKhopLuatTen, xhLuatTen, xhMuaPvp, xhSoHuyHieu, xhSqlLoaiTru, xhTachMau,
-  xhTenGiaoThe, xhVungTuInfotop,
+  xhIdDanhHieu, xhTenGiaoThe, xhVungTuInfotop,
 } from '../shared/utils/xepHangThuan.ts'
 
 test('danh mục: mã duy nhất, mỗi bảng có bảng CSDL', () => {
@@ -96,4 +96,14 @@ test('bộ lọc: giá trị lạ về mặc định, mùa chỉ nhận số', (
   assert.deepEqual(xhChonBoLoc(xhBang('pokedex')!, { kieu: 'DROP TABLE' }), { kieu: 'da-ha' })
   assert.deepEqual(xhChonBoLoc(xhBang('pvp')!, { mua: '3' }), { mua: '3' })
   assert.deepEqual(xhChonBoLoc(xhBang('pvp')!, { mua: '1;--' }), { mua: '' })
+})
+
+test('danh hiệu đang đeo: đọc pInfo[103] (real.CharVongLap), không đeo = -1', () => {
+  const p = Array.from({ length: 110 }, () => '0')
+  p[103] = '9713'
+  assert.equal(xhIdDanhHieu(p.join(',')), 9713)
+  p[103] = '-1'
+  assert.equal(xhIdDanhHieu(p.join(',')), -1)
+  assert.equal(xhIdDanhHieu('1,2,3'), -1)
+  assert.equal(xhIdDanhHieu(null), -1)
 })

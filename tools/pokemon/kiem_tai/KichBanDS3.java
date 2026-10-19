@@ -152,6 +152,8 @@ class KichBanDS3 {
     // ------------------------------------------------------------------ shop luong (85)
     static void shopLuong() throws Exception {
         try (BotChucNang.Bot b = botLang(10)) {
+            // mon 2 tra bang LUONG KHOA (data_shop_gia_lau_dai.tien_moi=2); nhan vat moi khong co luong khoa -> GM cap
+            if (b.lk < 5000) { b.gm("smn " + b.ten + " 0 0 " + (5000 - b.lk), 600); b.lamMoi(); }
             int lk0 = b.lk, l0 = b.luong;
             int t0 = b.soThuoc(2) + b.soThuoc(8);
             int m = b.moc();
@@ -487,8 +489,9 @@ class KichBanDS3 {
     static void cho() throws Exception {
         try (BotChucNang.Bot a = botNha(20); BotChucNang.Bot c = KichBanDS4.botCungQuoc(20, a)) {
             KichBanDS2.vaoNha(c, 103);
+            int mMua = a.moc();
             int id = muaVuKhi(a, 80);
-            if (id == KHONG) { ket("cho", false, "khong mua duoc do"); return; }
+            if (id == KHONG) { ket("cho", false, a.user + " khong mua duoc do (map " + a.mapId + ", tui " + a.doDung.size() + ", xu " + a.xu + ") " + a.chuTu(mMua)); return; }
             int npc = 11, shop = 0, m = a.moc();
             for (npc = 11; npc <= 20; npc++) {
                 m = a.moc();

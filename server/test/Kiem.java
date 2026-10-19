@@ -163,6 +163,7 @@ public final class Kiem {
         KiemDongBoMyCountryKhiVaoBang.chay();
         KiemThuongTanThuVaLenCap35.chay();
         KiemChiemGymDoiDiemGiaoHang.chay();
+        KiemLoiBotChucNang.chay();
         KiemCuocKhuMoAttackDam.chay();
         KiemMaterialMapNhatDo.chay();
         KiemPetTrangThai1LaPetTool.chay();
@@ -189,12 +190,23 @@ public final class Kiem {
         KiemChongClone.chay();
         KiemVongQuay.chay(); // vong quay gop hu: muc cuoc, phi, bao toan hu, nut Dong y (chu game 19/10/2026)
         KiemPhoBanCup.chay(); // 0.9.7 Pho ban Ham nguc + Cup PvP tuan: xoay tuan, Thuy Si, chong clone, vong doi phong, thuong mot lan
+        KiemThachDauCuoc.chay(); // thach dau cuoc xu: ky quy, phi, muc theo cap (19/10/2026)
+        KiemLiXi.chay(); // li xi Tet: tran, xu theo gio, ma luong khoa theo tai khoan (19/10/2026)
         KiemLichNam.chay(); // lich su kien nam theo ngay that + am lich (chu game 19/10/2026)
         KiemVungNhinCoDinh.chay(); // camera co dinh: kep be rong man client (com.htbb.mang.VungNhinCoDinh)
         KiemTenHien.chay(); // ten NPC + ten ban do tu SQL data_npc / data_map_ten, co dau, khong tu cam (P6)
         KiemHeHieuQua.chay(); // 0.9.5: he so khac he (server quyet), Normal vs Water/Ground x1, Grass x4, Electric vs Ground x0
-        KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
+        KiemSuaLogic096.chay(); // 0.9.6: sua logic server - ban ngoc NPC, ky gui, EXP doi / ha quai, nhiem vu, nhom
         KiemNpc.chay(); // moi NPC + moi muc menu NPC dung duoc: NPC tinh ngoai troi, su kien -49, muc da go (npcfix)
+        KiemTaiDuLieu096.chay(); // 0.9.6.1 loi tai: Bang vang khong treo, ban do / tai nguyen / id map SQL tai duoc
+        KiemMenu096.chay(); // 0.9.6.1 menu He sinh thai: khong muc cau ca (chi nut ngu canh), chi so menu goc khop xu ly
+        KiemGiapVoHan.chay(); // 0.9.6.1: giap / khien khong vo han - het han dung luc, hoi chieu > thoi luong (real.ChieuHoTro)
+        KiemCauCaNhip.chay(); // 0.9.6.1 cau ca: cho ngau nhien, khung keo can, 30% khong duoc gi, nghi + giam theo gio, phao xuong nuoc
+        KiemKhoaKhiMac.chay(); // 0.9.6.1: do da mac bi khoa (khong giao dich), pha khoa o Machamp (ho hut xu), Da pha khoa 1295
+        KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
+        KiemPvpPk.chay(); // 0.9.7 PvP xep hang (Elo chi trong tran ghep, chong nick phu), thuong mua, luat PK, diem moc nhiem vu
+        KiemDanhHieu.chay(); // 0.9.7 danh hieu: mo khoa, an "???", het han, mot danh hieu dang deo, tran chi so, sql/them_danh_hieu.sql
+        KiemCapNhatClient.chay(); // 0.9.7: cap nhat client - hai nguong, goi -115, hop 37 client cu co link
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

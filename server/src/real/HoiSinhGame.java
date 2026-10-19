@@ -179,6 +179,7 @@ public final class HoiSinhGame {
                 t.daChoDongDoi = false;
             }
             SO_GUC.incrementAndGet();
+            NhiemVuEngine.suKien(p, "guc", "", 1); // diem moc guc (danh hieu an "gục ngã trăm lần")
             don(bay, c);
             p.timeHoiSinh = 0L; // khong tu hoi sinh tai cho theo gio nua (truoc day: duoi cap 50 o moi bai luyen)
             if (TuDongGame.dangTuDong(p)) {
