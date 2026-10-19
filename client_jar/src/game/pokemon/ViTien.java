@@ -70,6 +70,16 @@ public final class ViTien {
         if (mc == null) {
             return;
         }
+        boolean nenCu = game.render.screen.Font.nenSang;
+        game.render.screen.Font.nenSang = false;   // nền tối: font ảnh J2ME giữ bản chữ sáng
+        try {
+            hang0(g, x, y, w, h, mc);
+        } finally {
+            game.render.screen.Font.nenSang = nenCu;
+        }
+    }
+
+    static void hang0(Graphics g, int x, int y, int w, int h, MainChar mc) {
         int n = coKhoa(mc) ? 3 : 2;
         int[] loai = {TienTe.XU, TienTe.LUONG, TienTe.LUONG_KHOA};
         long[] gt = {mc.charXu, mc.luong, mc.luongKhoa};

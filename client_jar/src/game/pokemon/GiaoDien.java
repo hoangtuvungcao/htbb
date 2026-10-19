@@ -299,7 +299,7 @@ public final class GiaoDien {
         }
         if (tieuDe != null && tieuDe.length() > 0) {
             tieuDe = tieuDe(tieuDe);
-            tieuDe = ChuDe.cat(tieuDe, ChuDe.TIEU_DE, w - 2 * h - 4);
+            tieuDe = ChuDe.cat(tieuDe, ChuDe.TIEU_DE, w - 2 * Math.min(h, 16) - 12);   // chừa chỗ nút X nhỏ hai bên
             int wb = Math.min(w, ChuDe.rong(tieuDe, ChuDe.TIEU_DE) + 40);
             ChuDe.bien(g, x + (w - wb) / 2, y, wb, h);
             ChuDe.chuVienGiua(g, tieuDe, x + w / 2, y, h, ChuDe.TIEU_DE, 0xFFFFFF, ChuDe.VIEN, 2);

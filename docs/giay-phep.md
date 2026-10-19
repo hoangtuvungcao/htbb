@@ -15,6 +15,7 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 | [Ninja Adventure – Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack) (Pixel-boy & AAA) | bộ tile bản đồ | CC0 1.0 | không (dự án vẫn ghi) |
 | Phần vẽ bằng code của dự án | mép chuyển tiếp autotile, nền / vách hang, biển hiệu, chữ và giao diện kiểu Pokémon, logo | CC0 | — |
 | Bộ icon + da nút giao diện PNG của dự án (`client_jar/res/ui/`, 0.9.5) | icon HUD / menu / thông báo / hệ / ô trang bị, da nút 9-slice (PC, APK) | CC0 1.0 | — |
+| Bộ giao diện kiểu NRO của dự án (`client_jar/res/nro/`, 0.9.7; sinh bởi `tools/giao_dien_nro/sinh_khung_nro.py` + `icon_nro.py`) | khung gỗ / giấy da 9-slice, biển tiêu đề, nút khối, tab, ô đồ, thanh HP / PP / EXP, công tắc, 62 icon pixel 16x16 (mọi client) | CC0 1.0 (tự vẽ, không lấy hình của TeaMobi hay trò chơi khác) | — |
 | [Kenney](https://kenney.nl/assets) — Interface Sounds, Impact Sounds, RPG Audio, Digital Audio, Music Jingles | tiếng hiệu ứng | CC0 1.0 | không (dự án vẫn ghi) |
 | Nhạc nền chiptune soạn riêng (`client_jar/tools/lam_am_thanh.py`) | nhạc nền MIDI | CC0 1.0 | — |
 | Noto Sans (© Google), Baloo 2 (© The Baloo 2 Project Authors / Ek Type), Nunito, Press Start 2P | chữ bản PC, logo, website | SIL Open Font License 1.1 | giữ nguyên tệp giấy phép |
