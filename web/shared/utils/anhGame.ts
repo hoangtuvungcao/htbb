@@ -15,7 +15,7 @@ export const ANH_GAME: Record<string, AnhGame> = {
   'tu-dong': { ma: 'tu-dong', tieuDe: 'Tự động đánh', moTa: 'Bảng cài đặt: thứ tự chiêu, ngưỡng thuốc HP / PP, vùng đánh, về hồi phục, tự hồi sinh, nhặt đồ.' },
   'khoi-dau': { ma: 'khoi-dau', tieuDe: 'Chọn Pokémon khởi đầu', moTa: 'Charmander, Bulbasaur, Squirtle, Pichu hay Eevee — chính bạn là Pokémon đó.' },
   'ky-nang': { ma: 'ky-nang', tieuDe: 'Kỹ năng', moTa: 'Học và nâng chiêu bằng điểm kỹ năng, gán vào ô nhanh.' },
-  'trang-bi': { ma: 'trang-bi', tieuDe: 'Nhân vật & trang bị', moTa: 'Ô trang bị, chỉ số thật, EXP và Tiềm năng.' },
+  'trang-bi': { ma: 'trang-bi', tieuDe: 'Pokémon & trang bị', moTa: 'Ô trang bị, chỉ số thật, EXP và Tiềm năng.' },
   'cua-hang': { ma: 'cua-hang', tieuDe: 'Poké Mart', moTa: 'Mua thuốc hồi máu, Ether bằng xu — icon vật phẩm thật.' },
   'cua-hang-do': { ma: 'cua-hang-do', tieuDe: 'Cửa hàng trang bị', moTa: 'So sánh chỉ số với món đang mặc trước khi mua.' },
   'pokedex': { ma: 'pokedex', tieuDe: 'Pokédex', moTa: 'Lọc theo hệ, xem loài đã gặp / đã hạ.' },

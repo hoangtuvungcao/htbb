@@ -12,7 +12,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
     <WikiCallout kieu="luu-y" title="Không bán sức mạnh">
       {{ tenSite }} là dự án fan phi thương mại: không có cửa hàng bán chỉ số, mọi thứ ảnh hưởng sức mạnh đều kiếm được bằng cách chơi.
       Nạp (nếu máy chủ bật) có tỷ giá cố định ×1 và chỉ mua đồ trang trí, tiện ích. Pokémon mới bắt đầu với
-      <strong>5.000 xu, 0 lượng, 0 lượng khoá</strong> — không có quà tạo nhân vật.
+      <strong>5.000 xu, 0 lượng, 0 lượng khoá</strong> — không có quà khi tạo Pokémon mới.
     </WikiCallout>
 
     <WikiSection id="tien" title="Ba loại tiền">
@@ -120,7 +120,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
     <WikiSection id="lam-phat" title="Vì sao giá cả ổn định?" lead="Mục tiêu: đồng xu bạn kiếm hôm nay vẫn có giá trị sau nhiều tháng chơi.">
       <ul class="cham">
         <li>Chi phí (nâng cấp, thuốc, bay, ngọc) <strong>tăng theo cấp</strong> giống như thu nhập — người mới không bị đắt, người chơi lâu năm vẫn có chỗ tiêu xu.</li>
-        <li>Không có xu hay lượng "từ trên trời": không quà tạo nhân vật, không giftcode khổng lồ, nạp chỉ mua trang trí. Sự kiện thưởng chủ yếu vật phẩm khoá và đồ trang trí.</li>
+        <li>Không có xu hay lượng "từ trên trời": không quà khi tạo Pokémon mới, không giftcode khổng lồ, nạp chỉ mua trang trí. Sự kiện thưởng chủ yếu vật phẩm khoá và đồ trang trí.</li>
         <li>Năng lượng huấn luyện giới hạn số giờ đánh quái hiệu quả mỗi ngày, nên treo máy cả ngày không làm xu mất giá.</li>
         <li>Đồ trang trí bằng xu là nơi để người chơi giàu tiêu tiền mà không ảnh hưởng sức mạnh của người khác.</li>
       </ul>
