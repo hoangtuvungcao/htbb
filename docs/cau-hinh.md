@@ -325,17 +325,17 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **213 khoá** trong **15 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **223 khoá** trong **16 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 123 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 72 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 129 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 22 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (69)
+### Khoá chỉnh trên web (72)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -455,7 +455,17 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (144)
+#### Thẻ đặt tên Pokémon (`dat_ten_pet`)
+
+Giá bán (lượng), số lần mua / tuần và tỉ lệ các mức của dòng chỉ số ngẫu nhiên. Trần một dòng và trần tổng trang trí 5% là cố định. Bảng chỉ số trong data_dong_the_ten, từ cấm trong data_tu_cam_ten.
+
+| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|---|
+| `dat_ten_pet.gia_luong` | Giá thẻ (lượng) | số | `100` | 10..5000 | ngay | game | Cửa hàng lượng (mục Tiện ích). Bản kiếm được: đổi Tem nghiên cứu / lượng khoá ở Sổ tay (data_cua_hang_lau_dai). |
+| `dat_ten_pet.muc_phan_nghin` | Các mức của dòng (‰) | danh sách số | `10,15,20,30` | 1..30 | ngay | game | Tăng dần, mỗi mức ≤ trần một dòng. 10 = +1%. Chí mạng / né nhân thêm hệ số của bảng data_dong_the_ten. |
+| `dat_ten_pet.trong_so_muc` | Trọng số từng mức | danh sách số | `55,30,12,3` | 1..1000 | ngay | game | Cùng số phần tử với các mức, KHÔNG tăng (mức thấp luôn ra nhiều hơn). Sai luật thì máy chủ dùng mặc định 55,30,12,3. |
+
+### Khoá ẩn: cố định & luôn bật (151)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -677,5 +687,17 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `sv.choPhepTaoTenGM` | Cho tạo Pokémon tên GM | Cố định (ẩn) | `0` | ngay | game | Chỉ bật tạm thời. |
 | `sv.testMode` | Chế độ thử (testMode) | Cố định (ẩn) | `0` | ngay | game | Mã test cấp tài nguyên miễn phí. Khoá ở máy thật. (máy thật chỉ nhận mặc định) |
 | `sv.testCode` | Mã test | Cố định (ẩn) | *(trống)* | ngay | game | Chuỗi gõ trong game khi testMode=1. (máy thật chỉ nhận mặc định) |
+
+#### Thẻ đặt tên Pokémon (`dat_ten_pet`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `dat_ten_pet.bat` | Bật thẻ đặt tên Pokémon | Luôn bật (ẩn) | `1` | ngay | game | Khẩn cấp (server.ini): 0 = không dùng / không bán thẻ (dòng đã có vẫn tính, vẫn trong trần). |
+| `dat_ten_pet.mua_tuan_toi_da` | Số thẻ mua bằng lượng / tuần | Cố định (ẩn) | `3` | ngay | game | Mỗi Pokémon, mở lại thứ Hai. 0 = tạm ngừng bán. Giới hạn số lần quay lại dòng bằng tiền. |
+| `dat_ten_pet.tran_dong_phan_nghin` | Trần một dòng thẻ tên (‰) | Cố định (ẩn) | `30` | ngay | game | Ngân sách ô thẻ tên pet. 30 = +3%. |
+| `trang_tri.tran_tong_phan_nghin` | Trần tổng chỉ số trang trí (‰) | Cố định (ẩn) | `50` | ngay | game | Mọi ô trang trí cộng lại (thiết kế cân bằng 4.5), nằm trong chi_so.tran_phan_tram_cong. 50 = 5%. |
+| `dat_ten_pet.do_dai_toi_thieu` | Tên pet: ít nhất (ký tự) | Cố định (ẩn) | `2` | ngay | game |  |
+| `dat_ten_pet.do_dai_toi_da` | Tên pet: nhiều nhất (ký tự) | Cố định (ẩn) | `12` | ngay | game | Cột tob_pet_dat_ten.ten dài 40. |
+| `dat_ten_pet.ban_client_popup` | Bản client có hộp kết quả thẻ tên | Cố định (ẩn) | `906` | ngay | game | Client có số bản ≥ giá trị này nhận gói -106 (thẻ trắng kiểu Pokémon GO); cũ hơn / Unity nhận hộp thông báo 37. |
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: KET THUC -->

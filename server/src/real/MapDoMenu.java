@@ -132,6 +132,10 @@ class MapDoMenu {
             if (HoiSinhGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // The dat ten Pokemon: menu chon pet (NPC ao -561)
+            if (DatTenPetGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             if (map.isNpcThanh(idNpc) && map.mapId != 201 && !map.isMapLienDau()) {
                 return;
             }

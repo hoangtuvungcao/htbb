@@ -9,6 +9,7 @@ Doc (khong ket noi CSDL):
   sql/htbb_day_du.sql            data_item, data_potion, data_shop (trang thai seed)
   sql/pokemon_noi_dung.sql       data_item 1001..1199 (de len ban seed, giong thu tu xuat_sql_day_du.sh)
   sql/pokemon_vat_pham_lau_dai.sql  data_item 1201..1260 + data_vat_pham_lau_dai + data_cua_hang_lau_dai
+  sql/them_the_dat_ten_pet.sql   the dat ten Pokemon 1261 (dong data_vat_pham_lau_dai + data_cua_hang_lau_dai them)
   sql/pokemon_doi_chu.sql        UPDATE ten (data_item/data_potion)
   sql/pokemon_lau_dai.sql        data_quest_moi (chuoi chinh, engine cu), data_shop_gia_lau_dai
   sql/pokemon_nhiem_vu.sql       data_vat_pham_nhiem_vu (vat pham nhiem vu 10..50)
@@ -895,6 +896,8 @@ def he_sinh_thai(d):
 def vat_pham_lau_dai(d):
     """Bang data_vat_pham_lau_dai (cong dung that cua 1201..1260 + vat pham doi/mo) va data_cua_hang_lau_dai."""
     s = doc(os.path.join(SQL, "pokemon_vat_pham_lau_dai.sql"))
+    # migration chay SAU tep tren (the dat ten Pokemon 1261: cong dung + 2 dong doi kiem duoc)
+    s += "\n" + doc(os.path.join(SQL, "them_the_dat_ten_pet.sql")).replace("INSERT IGNORE INTO", "INSERT INTO")
     d.bang_vp_ld = {}
     for r in doc_insert(s, "data_vat_pham_lau_dai", ["id_item", "ma", "ten", "nhom", "hieu_ung", "gioi_han", "cap_tu",
                                                        "cap_den"]):
@@ -1099,7 +1102,7 @@ def tu_cam(d, kq, cam):
 # khi SQL/CSV doi ma bao cao cu. (Khong gom .java: doi nhom khac sua code lien tuc.)
 DAU_VAO = ["sql/htbb_day_du.sql", "sql/pokemon_noi_dung.sql", "sql/pokemon_vat_pham_lau_dai.sql", "sql/pokemon_lau_dai.sql",
            "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
-           "du_lieu/nhiem_vu_moi.csv"]
+           "du_lieu/nhiem_vu_moi.csv", "sql/them_the_dat_ten_pet.sql"]
 
 
 def dau_van_tay():

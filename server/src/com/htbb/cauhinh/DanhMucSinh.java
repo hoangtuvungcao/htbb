@@ -26,6 +26,7 @@ final class DanhMucSinh {
         {"hoi_sinh", "Hồi sinh — luật (cố định)"},
         {"thong_bao", "Thông báo (cố định)"},
         {"quan_tri", "Quản trị & thử nghiệm (cố định)"},
+        {"dat_ten_pet", "Thẻ đặt tên Pokémon"},
     };
 
     static DinhNghiaKhoa[] tatCa() {
@@ -765,6 +766,42 @@ final class DanhMucSinh {
                     .doDai(64)
                     .nhay()
                     .khoaProd()
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("dat_ten_pet.bat", "dat_ten_pet", "co", "1", true, "cau_hinh")
+                    .nhan("Bật thẻ đặt tên Pokémon", "Khẩn cấp (server.ini): 0 = không dùng / không bán thẻ (dòng đã có vẫn tính, vẫn trong trần).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("dat_ten_pet.gia_luong", "dat_ten_pet", "so", "100", true, "cau_hinh")
+                    .nhan("Giá thẻ (lượng)", "Cửa hàng lượng (mục Tiện ích). Bản kiếm được: đổi Tem nghiên cứu / lượng khoá ở Sổ tay (data_cua_hang_lau_dai).")
+                    .khoang(10L, 5000L),
+            new DinhNghiaKhoa("dat_ten_pet.mua_tuan_toi_da", "dat_ten_pet", "so", "3", true, "cau_hinh")
+                    .nhan("Số thẻ mua bằng lượng / tuần", "Mỗi Pokémon, mở lại thứ Hai. 0 = tạm ngừng bán. Giới hạn số lần quay lại dòng bằng tiền.")
+                    .khoang(0L, 20L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("dat_ten_pet.muc_phan_nghin", "dat_ten_pet", "ds_so", "10,15,20,30", true, "cau_hinh")
+                    .nhan("Các mức của dòng (‰)", "Tăng dần, mỗi mức ≤ trần một dòng. 10 = +1%. Chí mạng / né nhân thêm hệ số của bảng data_dong_the_ten.")
+                    .khoang(1L, 30L),
+            new DinhNghiaKhoa("dat_ten_pet.trong_so_muc", "dat_ten_pet", "ds_so", "55,30,12,3", true, "cau_hinh")
+                    .nhan("Trọng số từng mức", "Cùng số phần tử với các mức, KHÔNG tăng (mức thấp luôn ra nhiều hơn). Sai luật thì máy chủ dùng mặc định 55,30,12,3.")
+                    .khoang(1L, 1000L),
+            new DinhNghiaKhoa("dat_ten_pet.tran_dong_phan_nghin", "dat_ten_pet", "so", "30", true, "cau_hinh")
+                    .nhan("Trần một dòng thẻ tên (‰)", "Ngân sách ô thẻ tên pet. 30 = +3%.")
+                    .khoang(0L, 60L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trang_tri.tran_tong_phan_nghin", "dat_ten_pet", "so", "50", true, "cau_hinh")
+                    .nhan("Trần tổng chỉ số trang trí (‰)", "Mọi ô trang trí cộng lại (thiết kế cân bằng 4.5), nằm trong chi_so.tran_phan_tram_cong. 50 = 5%.")
+                    .khoang(0L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("dat_ten_pet.do_dai_toi_thieu", "dat_ten_pet", "so", "2", true, "cau_hinh")
+                    .nhan("Tên pet: ít nhất (ký tự)", "")
+                    .khoang(1L, 12L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("dat_ten_pet.do_dai_toi_da", "dat_ten_pet", "so", "12", true, "cau_hinh")
+                    .nhan("Tên pet: nhiều nhất (ký tự)", "Cột tob_pet_dat_ten.ten dài 40.")
+                    .khoang(2L, 20L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("dat_ten_pet.ban_client_popup", "dat_ten_pet", "so", "906", true, "cau_hinh")
+                    .nhan("Bản client có hộp kết quả thẻ tên", "Client có số bản ≥ giá trị này nhận gói -106 (thẻ trắng kiểu Pokémon GO); cũ hơn / Unity nhận hộp thông báo 37.")
+                    .khoang(0L, 100000L)
                     .lop("co_dinh"),
         };
     }

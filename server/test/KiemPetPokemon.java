@@ -116,9 +116,12 @@ public final class KiemPetPokemon {
                 || (pet.kemTheo != null && (pet.kemTheo.command != -102 || pet.kemTheo.kemTheo != null))) {
             return -1;
         }
-        // toByteArray = u8 lenh, i16 do dai, roi 5 byte noi dung.
+        // toByteArray = u8 lenh, i16 do dai, roi 5 byte noi dung + (0.9.6 the dat ten, DatTenPet.ghiTenPet) u8 phien ban,
+        // UTF ten hien, u8 co ten rieng - client cu doc 5 byte dau roi bo qua.
         final byte[] b = pet.toByteArray();
-        if (b.length != 8 || b[0] != (byte) -94 || (((b[1] & 0xff) << 8) | (b[2] & 0xff)) != 5
+        final int dai = ((b[1] & 0xff) << 8) | (b[2] & 0xff);
+        if (b.length != 3 + dai || dai < 5 + 4 || b[0] != (byte) -94 || b[8] != 1
+                || dai != 5 + 1 + 2 + (((b[9] & 0xff) << 8) | (b[10] & 0xff)) + 1
                 || (((b[3] & 0xff) << 8) | (b[4] & 0xff)) != c.id) {
             return -1;
         }

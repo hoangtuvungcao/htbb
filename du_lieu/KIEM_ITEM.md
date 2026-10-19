@@ -5,16 +5,16 @@
 ## 0. Tóm tắt
 | Cấu hình | Đủ nguồn + công dụng | Mồ côi (có nguồn, không công dụng) | Chỉ bán NPC (không công dụng thật) | Không lấy được (có công dụng / thiết kế nhưng không nguồn nào chạy) | Không tồn tại (không nguồn, không cần) |
 |---|---|---|---|---|---|
-| A (`lau_dai=1 he_sinh_thai=0`) | 808 | 0 | 0 | 0 | 760 |
-| B (`lau_dai=1 he_sinh_thai=1`) | 875 | 0 | 0 | 0 | 693 |
-| C (`lau_dai=0 he_sinh_thai=0`) — chỉ báo cáo | 678 | 1 | 0 | 102 | 787 |
+| A (`lau_dai=1 he_sinh_thai=0`) | 809 | 0 | 0 | 0 | 760 |
+| B (`lau_dai=1 he_sinh_thai=1`) | 876 | 0 | 0 | 0 | 693 |
+| C (`lau_dai=0 he_sinh_thai=0`) — chỉ báo cáo | 678 | 1 | 0 | 102 | 788 |
 
-Vật phẩm theo loại: data_item 1026, data_potion 162, ngọc 270, vật phẩm nhiệm vụ 49, túi sinh thái 61.
+Vật phẩm theo loại: data_item 1027, data_potion 162, ngọc 270, vật phẩm nhiệm vụ 49, túi sinh thái 61.
 Tham chiếu treo: **0**. Quy tắc lỗi thời: **0**. Trùng tên: **0**. Tên kiếm hiệp còn lấy được: **0**.
 
 Lỗi bị test chặn (cấu hình A + B): **0**.
 
-Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `bfddcb112064d5e6397a467f7e4abc14a8503a64`
+Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, `sql/them_the_dat_ten_pet.sql`, bỏ `\r`): `6566db57e183270aae29b48a300102f1eaf8ad04`
 
 ## 1. Cấu hình A: `sv.lau_dai=1`, `sv.he_sinh_thai=0`
 
@@ -862,7 +862,7 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `item:1051` | Hộp vàng đột kích | ok | ok | boss thế giới theo tuần (NoiDungLauDai.roiBossTheGioi) | mở hộp (VatPhamDungLauDai.moHop) |
 | `item:1052` | Tinh thể hệ | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: Thuốc chữa toàn diện; đổi tại Sổ tay → Cửa hàng: X Tốc độ + X Chính xác |
 | `item:1053` | Huy hiệu ngày cộng đồng | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: Ruy Băng Tiên; đổi tại Sổ tay → Cửa hàng: Đá Băng …(+6) |
-| `item:1054` | Tem nghiên cứu | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: Kẹo hiếm; đổi tại Sổ tay → Cửa hàng: Trứng may mắn |
+| `item:1054` | Tem nghiên cứu | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: Kẹo hiếm; đổi tại Sổ tay → Cửa hàng: Thẻ đặt tên Pokémon …(+1) |
 | `item:1055` | Huy chương mùa giải | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: 2 Tăng chí mạng; đổi tại Sổ tay → Cửa hàng: Móng vuốt nhanh …(+1) |
 | `item:1056` | Cờ vùng | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: Thuốc hồi sinh tối đa |
 | `item:1057` | Quà lễ 30/4 - 1/5 | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | đổi tại Sổ tay → Cửa hàng: Quà 30/4: 3 Quả Oran, 2 Quả Cheri |
@@ -911,6 +911,7 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `item:1257` | Phiếu ủy thác luyện tập (1 giờ) - khoá | ok | ok | Sổ tay → Cửa hàng & đổi vật phẩm (Lượng khoá (Kecleon)); bản khoá: nhiệm vụ tuần / lịch đăng nhập / vé mùa (TangTocGame.thuongKhoa) | dùng theo bảng data_vat_pham_lau_dai (VatPhamDungLauDai); tăng tốc luyện cấp (TangTocGame.dung, chung trần điểm) |
 | `item:1258` | Bùa bảo hộ | ok | ok | Sổ tay → Cửa hàng & đổi vật phẩm (Lượng khoá (Kecleon)) | bùa bảo hộ khi nâng cấp thất bại (NangCapLauDaiGame.buaChoMuc); dùng theo bảng data_vat_pham_lau_dai (VatPhamDungLauDai) |
 | `item:1259` | Bùa bảo hộ cao cấp | ok | ok | Sổ tay → Cửa hàng & đổi vật phẩm (Lượng khoá (Kecleon)) | bùa bảo hộ khi nâng cấp thất bại (NangCapLauDaiGame.buaChoMuc); dùng theo bảng data_vat_pham_lau_dai (VatPhamDungLauDai) |
+| `item:1261` | Thẻ đặt tên Pokémon | ok | ok | Sổ tay → Cửa hàng & đổi vật phẩm (Lượng khoá (Kecleon)); Sổ tay → Cửa hàng & đổi vật phẩm (Đổi Tem nghiên cứu) | dùng theo data_vat_pham_lau_dai (tien_ich) |
 | `thuoc:0` | Xu | ok | ok | new Potion | xu (tiền) |
 | `thuoc:1` | Thuốc hồi máu | ok | ok | chuỗi thưởng PT; cửa hàng thuốc NPC (OfflineMap.doBuyItem nhóm 4, price>0) | dùng thuốc (doUsePotion) |
 | `thuoc:2` | Siêu thuốc hồi máu | ok | ok | cửa hàng thuốc NPC (OfflineMap.doBuyItem nhóm 4, price>0) | dùng thuốc (doUsePotion) |

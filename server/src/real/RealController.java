@@ -1327,7 +1327,12 @@ public class RealController extends ServerController {
                                 case -31: // doProcessInputText()
                                     int idActor = message.dis.readShort();
                                     int idMenuInputText = message.dis.readByte();
-                                    String text = message.dis.readUTF().trim().toLowerCase();
+                                    final String textGoc = message.dis.readUTF();
+                                    // The dat ten Pokemon: can chuoi GOC (chu hoa, co dau) - goi dong goi lai ben duoi ha chu thuong
+                                    if (DatTenPetGame.xuLyNhap(p, idActor, textGoc)) {
+                                        break;
+                                    }
+                                    String text = textGoc.trim().toLowerCase();
                                     // TODO hàm xử lý input
 
                                     //System.out.println("noi dung nhap: " + idActor + " / " +idMenuInputText+ " / " + text + " / " + p.id);

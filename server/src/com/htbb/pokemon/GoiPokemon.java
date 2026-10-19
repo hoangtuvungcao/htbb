@@ -28,7 +28,8 @@ public final class GoiPokemon {
     public static final int POKE_CUOI = -93;
 
     /**
-     * -94 POKE_PET: i16 charId, i16 dexPet (0 = khong co pet / pet khong phai Pokemon), u8 shiny.
+     * -94 POKE_PET: i16 charId, i16 dexPet (0 = khong co pet / pet khong phai Pokemon), u8 shiny
+     * [+ 0.9.6: u8 phienBan = 1, UTF tenHien, u8 coTenRieng - DatTenPet.ghiTenPet, client cu bo qua].
      * Gui ngay sau moi -93 (chuoi -90 -> -93 -> -94). -94 da grep src/ va client Unity: chua
      * dung lam so lenh (chi co -99 la id NPC o gan).
      */

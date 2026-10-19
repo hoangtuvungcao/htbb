@@ -70,6 +70,10 @@ public class Char extends LiveActor {
     /** Pet di theo dang Pokemon (lenh -94 POKE_PET), 0 = pet kieu cu. */
     public short pokePetDex;
     public boolean pokePetShiny;
+    /** 0.9.6 tên hiện của pet (đuôi -94: tên thẻ đặt tên hoặc tên loài), null = server cũ (tự lấy tên loài). */
+    public String pokePetTen;
+    /** Nhãn "tên pet · tên chủ" nhớ sẵn (game.pokemon.NhanPet, không tạo chuỗi mỗi khung). */
+    public String nhanPet, nhanPetTenCu, nhanPetChuCu;
     /** Ngoai hinh trang bi (lenh -102 POKE_NGOAI_HINH): phu kien, vang sang, trang phuc. null = chua co. */
     public game.pokemon.NgoaiHinhCua ngoaiHinh;
     /** 1,5 giay o 25 tick/giay (Unity: 75 tick o 50/giay). */

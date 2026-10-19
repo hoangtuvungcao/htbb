@@ -47,6 +47,17 @@ public final class VatPhamDungLauDai {
         System.out.println("[LAU DAI] vat pham tieu hao / do giu moi: " + BANG.size() + " mau");
     }
 
+    /** Id vat pham dau tien (nho nhat) co khoa hieu ung {@code khoa} (vd "dat_ten"), 0 neu chua co dong. */
+    public static int idTheoHieuUng(final String khoa) {
+        int id = 0;
+        for (final java.util.Map.Entry<Integer, Object[]> e : BANG.entrySet()) {
+            if (hieuUng((String) e.getValue()[2]).containsKey(khoa) && (id == 0 || e.getKey().intValue() < id)) {
+                id = e.getKey().intValue();
+            }
+        }
+        return id;
+    }
+
     /** Phan tich "a:1,b:2" -> map. */
     static HashMap<String, String> hieuUng(final String s) {
         final HashMap<String, String> m = new HashMap<String, String>();
@@ -100,6 +111,10 @@ public final class VatPhamDungLauDai {
         }
         if (hu.containsKey("o")) {
             doiDoGiu(p, item);
+            return true;
+        }
+        if (hu.containsKey(DatTenPetGame.HIEU_UNG)) {
+            DatTenPetGame.batDau(p, item); // the dat ten Pokemon: menu chon pet -> o nhap ten (the tru khi dat xong)
             return true;
         }
         final String loi = kiemDung(p, hu);

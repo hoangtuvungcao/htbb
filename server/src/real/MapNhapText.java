@@ -25,7 +25,12 @@ class MapNhapText {
         try {
             int idActor = message.dis.readShort();
             int idMenu = message.dis.readByte();
-            String text = message.dis.readUTF().trim().toLowerCase();
+            final String textGoc = message.dis.readUTF();
+            // The dat ten Pokemon: can chuoi GOC (giu chu hoa, co dau) - truoc khi ha chu thuong
+            if (DatTenPetGame.xuLyNhap(player, idActor, textGoc)) {
+                return;
+            }
+            String text = textGoc.trim().toLowerCase();
             if (idActor == MapSuKien.INPUT_VU_LAN_DOI_NHIEU_HOA) {
                 MapSuKien.nhapSoBoHoaVuLan(player, idMenu, text);
                 return;

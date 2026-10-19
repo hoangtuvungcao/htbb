@@ -113,6 +113,8 @@ class CharChiSo {
         }
         self.maxhp += (int) (self.maxhp * pcUphp / 100L);
         self.maxmp += (int) (self.maxmp * pcUpmp / 100L);
+        // The dat ten (pet dang di theo): dong HP phan nghin - TRUOC kepPhanTram ben duoi (trong chi_so.tran_phan_tram_cong).
+        self.maxhp += (int) ((long) self.maxhp * DatTenPetGame.phanNghin(self, com.htbb.pokemon.DatTenPet.HP) / 1000L);
         int atkTubinh = 0;
         int atkTubinh2 = 0;
         for (int j = 0; j < self.tubinh.size(); ++j) {
@@ -549,6 +551,16 @@ class CharChiSo {
             self.defend_magic += defen4 + defendMa;
             self.defendVatPlayer += defend1 + defendVat;
             self.defendMaPlayer += defen4 + defendMa;
+        }
+        // The dat ten (pet dang di theo): dong Phong thu phan nghin - TRUOC kep ben duoi.
+        {
+            final int ptTen = DatTenPetGame.phanNghin(self, com.htbb.pokemon.DatTenPet.PHONG_THU);
+            if (ptTen > 0) {
+                self.defend_physic += (int) ((long) self.defend_physic * ptTen / 1000L);
+                self.defend_magic += (int) ((long) self.defend_magic * ptTen / 1000L);
+                self.defendVatPlayer += (int) ((long) self.defendVatPlayer * ptTen / 1000L);
+                self.defendMaPlayer += (int) ((long) self.defendMaPlayer * ptTen / 1000L);
+            }
         }
         // Gioi han chi so (sv.lau_dai): tong % cong them (pet, thu cuoi, thoi trang, bo, VIP, chuc vu, skin...)
         // <= +50% tren phong thu goc (nhan vat + do da kep + do thu cuoi + tu binh). Tat co: khong doi.
@@ -1440,6 +1452,14 @@ class CharChiSo {
                     self.attack = (int) (self.attack * noiluc / 10L + (self.attack / 20));
                     self.attackPlayer = (int) (self.attackPlayer * noiluc / 10L + (self.attackPlayer / 20));
                 }
+            }
+        }
+        // The dat ten (pet dang di theo): dong Tan cong phan nghin - TRUOC kep ben duoi.
+        {
+            final int tcTen = DatTenPetGame.phanNghin(self, com.htbb.pokemon.DatTenPet.TAN_CONG);
+            if (tcTen > 0) {
+                self.attack += (int) ((long) self.attack * tcTen / 1000L);
+                self.attackPlayer += (int) ((long) self.attackPlayer * tcTen / 1000L);
             }
         }
         // Gioi han chi so (sv.lau_dai): tong % cong them tu MOI nguon ngoai do (pet, thu cuoi, thoi trang, bo,

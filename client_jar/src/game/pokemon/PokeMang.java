@@ -18,6 +18,8 @@ public final class PokeMang {
     public static final int POKE_TIEN_HOA = -92;
     public static final int POKE_CUOI = -93;
     public static final int POKE_PET = -94;
+    /** S->C 0.9.6: u8 kiểu (0 thành công, 1 lỗi), UTF tiêu đề, UTF nội dung (server com.htbb.pokemon.DatTenPet). */
+    public static final int DAT_TEN_KET_QUA = -106;
     /** -102 ngoai hinh trang bi (S->C, NgoaiHinhCua); -103 cai dat an/hien (C->S, NgoaiHinhMenu). */
     public static final int POKE_NGOAI_HINH = -102;
 
@@ -60,6 +62,20 @@ public final class PokeMang {
                 }
             } catch (Throwable e) {
                 // goi hong: bo qua
+            }
+            return true;
+        }
+        if (lenh == DAT_TEN_KET_QUA) {
+            // 0.9.6 thẻ đặt tên Pokémon: kết quả (server quay dòng) -> thẻ trắng kiểu Pokémon GO (HopThongBao)
+            try {
+                DataInputStream r = msg.reader();
+                int kieu = r.readUnsignedByte();
+                String tieuDe = r.readUTF();
+                String noiDung = r.readUTF();
+                HopThongBao.mo(tieuDe, noiDung, kieu == 0 ? HopThongBao.THONG_TIN : HopThongBao.LOI, new String[]{"OK"},
+                        new int[]{Bang.XAC_NHAN}, new game.model.IAction[]{null}, null);
+            } catch (Throwable e) {
+                // gói hỏng: bỏ qua
             }
             return true;
         }
@@ -122,10 +138,19 @@ public final class PokeMang {
                     short id = r.readShort();
                     short dexPet = r.readShort();
                     boolean shiny = r.readUnsignedByte() != 0;
+                    // 0.9.6 đuôi -94 (thẻ đặt tên): u8 phiên bản, UTF tên hiện, u8 có tên riêng; server cũ không gửi
+                    String tenPet = null;
+                    if (r.available() > 0 && r.readUnsignedByte() >= 1) {
+                        tenPet = r.readUTF();
+                        if (tenPet.length() == 0) {
+                            tenPet = null;
+                        }
+                    }
                     Char c = timChar(id);
                     if (c != null) {
                         c.pokePetDex = dexPet;
                         c.pokePetShiny = shiny;
+                        c.pokePetTen = tenPet;
                         TrangThaiNguoiChoi.doi(TrangThaiNguoiChoi.PET);
                     }
                     break;

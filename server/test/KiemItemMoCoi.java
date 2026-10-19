@@ -34,7 +34,7 @@ public final class KiemItemMoCoi {
     private static final String F_GC_JSON = "../web/shared/data/giftcode-an-toan.json";
     private static final String[] DAU_VAO = {"sql/htbb_day_du.sql", "sql/pokemon_noi_dung.sql", "sql/pokemon_vat_pham_lau_dai.sql",
         "sql/pokemon_lau_dai.sql", "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
-        "du_lieu/nhiem_vu_moi.csv"};
+        "du_lieu/nhiem_vu_moi.csv", "sql/them_the_dat_ten_pet.sql"};
 
     private KiemItemMoCoi() {
     }

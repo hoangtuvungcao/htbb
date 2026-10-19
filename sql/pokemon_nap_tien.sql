@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `nap_cau_hinh` (
 ) DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------- cua hang luong (trong game)
--- trao: CHI trang_tri | mo_rong_tui | doi_ten (whitelist trong NapTienLogic.TRAO_HOP_LE).
+-- trao: CHI trang_tri | mo_rong_tui | doi_ten | tang_toc | dat_ten_pet (whitelist trong NapTienLogic.TRAO_HOP_LE).
 -- co_chi_so PHAI = 0: server bo qua dong co co_chi_so <> 0 hoac sai luat (NapTienLogic.kiemMon).
 -- nhom_xoay: 0 = luon ban; 1..4 = ban vao tuan (tuan % 4 == nhom_xoay - 1).
 CREATE TABLE IF NOT EXISTS `nap_cua_hang` (
@@ -264,7 +264,8 @@ INSERT IGNORE INTO `nap_cua_hang` (`ma`,`ten`,`nhom`,`trao`,`gia_luong`,`han_nga
 ('ve_exp_2','Vé EXP x2 (30 phút)','tang_toc','tang_toc',40,0,7,0,0,0,1,19),
 ('bua_the_luc','Bùa thể lực (+60 phút)','tang_toc','tang_toc',60,0,4,0,0,0,1,20),
 ('uy_thac','Phiếu ủy thác luyện tập (1 giờ)','tang_toc','tang_toc',15,0,17,0,0,0,1,21),
-('keo_hiem','Kẹo hiếm','tang_toc','tang_toc',40,0,2,0,0,0,1,22);
+('keo_hiem','Kẹo hiếm','tang_toc','tang_toc',40,0,2,0,0,0,1,22),
+('the_dat_ten_pet','Thẻ đặt tên Pokémon','tien_ich','dat_ten_pet',100,0,0,0,0,0,1,23);
 
 INSERT IGNORE INTO `nap_cau_hinh` (`khoa`,`gia_tri`) VALUES
 ('tran_tuan_vnd','1000000'),

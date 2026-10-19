@@ -191,6 +191,7 @@ public final class Kiem {
         KiemVungNhinCoDinh.chay(); // camera co dinh: kep be rong man client (com.htbb.mang.VungNhinCoDinh)
         KiemTenHien.chay(); // ten NPC + ten ban do tu SQL data_npc / data_map_ten, co dau, khong tu cam (P6)
         KiemHeHieuQua.chay(); // 0.9.5: he so khac he (server quyet), Normal vs Water/Ground x1, Grass x4, Electric vs Ground x0
+        KiemDatTenPet.chay(); // 0.9.6 the dat ten Pokemon: nhan pet, ten, mot dong chi so co tran, khong cong don, nhat ky
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

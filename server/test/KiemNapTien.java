@@ -465,7 +465,7 @@ public final class KiemNapTien {
         Kiem.dung("web: tran tuan", ts.contains("TRAN_TUAN_VND = " + NapTienLogic.TRAN_TUAN_VND));
         Kiem.dung("web: tran thang", ts.contains("TRAN_THANG_VND = " + NapTienLogic.TRAN_THANG_VND));
         Kiem.dung("web: tran cung", ts.contains("TRAN_CUNG_THANG_VND = " + NapTienLogic.TRAN_CUNG_THANG_VND));
-        Kiem.dung("web: whitelist cach trao giong server", ts.contains("'trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc'"));
+        Kiem.dung("web: whitelist cach trao giong server", ts.contains("'trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc', 'dat_ten_pet'"));
         Kiem.dung("web: bang chu ma don giong server", ts.contains("'" + NapTienLogic.KY_TU_MA + "'"));
         Kiem.dung("web: trang thai don giong server", ts.contains("'cho_thu_hoi'") && ts.contains("'da_thu_hoi'") && ts.contains("'da_cong'"));
     }
