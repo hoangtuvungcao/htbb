@@ -88,6 +88,7 @@ export const QUY_TAC_QUYEN: QuyTacQuyen[] = [
 
   // --- Trò chơi & kinh tế ---
   { mau: '/api/admin/du-lieu-game/**', nhom: 'Trò chơi & kinh tế', viec: 'Tra cứu dữ liệu game (vật phẩm, quái, bản đồ, nhiệm vụ, cửa hàng, rơi đồ) — chỉ đọc', doc: TAT_CA, ghi: KHONG_AI },
+  { mau: '/api/admin/ten-hien/**', nhom: 'Trò chơi & kinh tế', viec: 'Tên NPC & tên bản đồ người chơi thấy (bảng data_npc / data_map_ten, có nhật ký)', doc: TAT_CA, ghi: KHONG_AI },
   { mau: '/api/admin/bang-game/**', nhom: 'Trò chơi & kinh tế', viec: 'Kết quả trong game (đua top, chiếm Gym…)', doc: TAT_CA, ghi: KHONG_AI },
   { mau: '/api/admin/kinh-te-ngay', nhom: 'Trò chơi & kinh tế', viec: 'Chỉ số kinh tế theo ngày', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/kinh-te/**', nhom: 'Trò chơi & kinh tế', viec: 'Bảng kinh tế: nguồn vào/ra, lạm phát, người giữ nhiều, cảnh báo', doc: SIEU_XEM, ghi: KHONG_AI },

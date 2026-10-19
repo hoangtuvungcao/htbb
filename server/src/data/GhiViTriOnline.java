@@ -6,7 +6,6 @@ import java.sql.Statement;
 import java.util.Vector;
 import real.Char;
 import real.CharManager;
-import real.Map;
 import server.TeamServer;
 
 /**
@@ -137,7 +136,7 @@ public final class GhiViTriOnline implements Runnable {
                     }
                     ps.setString(1, c.charname);
                     ps.setInt(2, c.mapID);
-                    ps.setString(3, Map.getNameMap(c.mapID));
+                    ps.setString(3, real.TenBanDoMayChu.ten(c.mapID)); // ten Pokemon theo ID (ca ban sao theo khu, map trong nha)
                     ps.setInt(4, c.region);
                     ps.setInt(5, c.x);
                     ps.setInt(6, c.y);

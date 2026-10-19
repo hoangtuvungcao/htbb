@@ -49,7 +49,8 @@ trap 'rm -f "$TAM"' EXIT
     echo "-- NGUON DUY NHAT cua du lieu game (khong con bo sinh). Sua du lieu: tren trang quan tri / CSDL, roi xuat lai tep nay"
     echo "-- bang vps/xuat_csdl_day_du.sh (xem sql/README.md). Nap: mysql < sql/htbb_day_du.sql"
     echo "-- ======== 1. Schema moi bang"
-    "${DUMP[@]}" "${CHUNG[@]}" --no-data --databases account htbb_db
+    # Bo AUTO_INCREMENT=N: xuat -> nap -> xuat phai ra CUNG tep (tai khoan admin cua lan nap truoc khong day so len).
+    "${DUMP[@]}" "${CHUNG[@]}" --no-data --databases account htbb_db | sed -E 's/^(\).*) AUTO_INCREMENT=[0-9]+/\1/'
     echo "-- ======== 2. Du lieu thiet ke / cau hinh ($(echo $CO_DU_LIEU | wc -w) bang)"
     echo "USE \`htbb_db\`;"
     # shellcheck disable=SC2086

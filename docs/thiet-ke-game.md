@@ -1142,7 +1142,8 @@ nguồn đã mang thuật ngữ mới; từ điển lúc chạy vẫn giữ đ�
 | chết (nhân vật) / về làng, hồi thành | **gục** / **về Trung tâm Pokémon** | quái thì "hạ" |
 | tiên đan / cỏ hồi sinh (khi gục); suy yếu sau khi chết | Thuốc hồi sinh, Thuốc hồi sinh tối đa; **Mệt mỏi** | |
 
-Tên NPC, pet, thú cưỡi, thời trang, danh hiệu, bộ sưu tập kiểu cũ đổi theo `ChuPokemon.DOI` và các bảng
+Tên NPC tĩnh và tên bản đồ nằm ở CSDL (`data_npc`, `data_map_ten` — [sql/htbb_day_du.sql](../sql/README.md), CSDL cũ: phần 5 của `sql/nang_cap.sql`, sửa ở
+/admin/ten-hien). Tên pet, thú cưỡi, thời trang, danh hiệu, bộ sưu tập kiểu cũ đổi theo `ChuPokemon.DOI` và các bảng
 [bang_npc.csv](../du_lieu/bang_npc.csv), [bang_thu.csv](../du_lieu/bang_thu.csv), [bang_pet_cu.csv](../du_lieu/bang_pet_cu.csv).
 Đối chiếu từng ô CSDL đã đổi: [bang_chu.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_chu.csv).
 

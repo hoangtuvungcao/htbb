@@ -742,17 +742,6 @@ public final class ChuPokemon {
         {"hỏa kỳ lân", "Ponyta"},
     };
 
-    /** Ten NPC tinh theo type 0..31 (thu tu NPC.cs / bang_npc.csv). */
-    public static final String[] TEN_NPC = {
-        "Y tá Chansey", "Kecleon tạp hoá", "Machamp thợ rèn", "Bronzong thợ giáp", "Arcanine gác cổng",
-        "Trưởng làng Xatu", "Persian", "Pidgeot (Bay)", "Ông Snorlax", "Kangaskhan thủ kho",
-        "Lapras hoa tiêu", "Golem 1", "Golem 2", "Golem 3", "Golem 4",
-        "Golem 5", "Tauros 1", "Tauros 2", "Tauros 3", "Tauros 4",
-        "Tauros 5", "Blaziken", "Meowth thương nhân", "Torkoal", "Sableye",
-        "Heracross", "Kecleon", "Bronzong", "Farfetch'd", "Persian",
-        "Kangaskhan", "Meowth",
-    };
-
     /** CharManager.NAME_CLASS (class 0..4, bang 4.1). */
     public static final String[] TEN_DONG = {
         "Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu",
@@ -771,7 +760,7 @@ public final class ChuPokemon {
         "Phím #: Chat.",
         "Phím *: mở menu mời nhóm, trao đổi, nhắn tin, kết bạn, xem thông tin, xuống thú cưỡi.",
         "Phím 0: chuyển đổi bảng chiêu.",
-        "Bạn phải làm xong nhiệm vụ chào Trưởng làng (nhiệm vụ đầu tiên) mới có thể đấu với Pokémon hoang dã.",
+        "Bạn phải làm xong nhiệm vụ chào Trưởng làng Xatu (nhiệm vụ đầu tiên) mới có thể đấu với Pokémon hoang dã.",
         "Bạn có thể mua vật phẩm đặc biệt bằng cách vào Menu chọn Cửa Hàng.",
         "Bạn có thể mua vật phẩm tại các NPC trong làng.",
         "Khi lên cấp bạn được thưởng 5 điểm tiềm năng và 1 điểm kỹ năng.",
@@ -782,7 +771,7 @@ public final class ChuPokemon {
         "Bạn chỉ có thể nâng cấp vật phẩm khi Pokémon đạt cấp 10.",
         "Đeo khăn PK để bật chức năng chiến đấu.",
         "Khi vật phẩm bị hư hại, hãy đến Machamp thợ rèn để sửa.",
-        "Để di chuyển nhanh giữa các vùng, hãy nhờ Pidgeot (Bay).",
+        "Để di chuyển nhanh giữa các vùng, hãy nhờ Pidgeot chở bay.",
         "Để ra đảo, hãy đến bến tàu mua vé và đi tàu.",
     };
 
@@ -1055,9 +1044,13 @@ public final class ChuPokemon {
         return doiLuon(ten);
     }
 
-    /** Ten NPC tinh moi theo type; ngoai bang thi doi theo tu dien. */
+    /**
+     * Ten NPC tinh theo type tu bang SQL data_npc (com.htbb.pokemon.TenHien);
+     * chua nap / ngoai bang thi doi {@code cu} theo tu dien.
+     */
     public static String tenNpc(final int type, final String cu) {
-        return type >= 0 && type < TEN_NPC.length ? TEN_NPC[type] : doiLuon(cu);
+        final String t = TenHien.tenNpc(type);
+        return t != null ? t : doiLuon(cu);
     }
 
     // ==================== AP MOT LAN LUC BAT MAY ====================

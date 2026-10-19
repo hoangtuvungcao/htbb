@@ -5,7 +5,7 @@
 #      sudo bash /opt/htbb/vps/nang_cap_csdl.sh
 #
 #  Lam theo thu tu: (1) kiem may la MariaDB, (2) SAO LUU htbb_db + account bang vps/backup_db.sh
-#  (hong la DUNG, khong nap gi), (3) nap sql/nang_cap.sql vao htbb_db, (4) kiem 8 bang du lieu
+#  (hong la DUNG, khong nap gi), (3) nap sql/nang_cap.sql vao htbb_db, (4) kiem 10 bang du lieu
 #  thiet ke + danh muc cau hinh co du dong.
 #
 #  CHAY LAI DUOC: moi lenh trong sql/nang_cap.sql la CREATE TABLE IF NOT EXISTS / ADD COLUMN IF NOT
@@ -79,7 +79,7 @@ my "$DB" < "$SQL" || loi "nap that bai giua chung - xem loi tren; chay lai scrip
 echo "== 4/4 Kiem"
 SAI=0
 for B in data_cap_do_lau_dai data_nang_cap_lau_dai data_kinh_te_lau_dai data_su_kien_nam data_hst_ho_cau \
-         data_noi_dung_trang_bi cau_hinh_danh_muc cau_hinh_nhom; do
+         data_noi_dung_trang_bi cau_hinh_danh_muc cau_hinh_nhom data_npc data_map_ten; do
     N=$(my -N -e "SELECT COUNT(*) FROM \`$DB\`.\`$B\`" 2>/dev/null || echo 0)
     if [ "${N:-0}" -gt 0 ]; then echo "   ok  $B: $N dong"; else echo "   SAI $B: rong / thieu"; SAI=1; fi
 done

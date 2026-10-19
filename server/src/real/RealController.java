@@ -925,6 +925,8 @@ public class RealController extends ServerController {
         }
         // Vung Hoenn: noi hang vao cac bang tren (sau khi da gan lai) + loi vao o cong bac map 9.
         VungHoenn.dangKyBang();
+        // Ten ban do: ghi de ten kiem hiep goc o tren bang ten trong SQL data_map_ten (P6, real.TenBanDoMayChu).
+        TenBanDoMayChu.batDau();
     }
 
     public void initData() {

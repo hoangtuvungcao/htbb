@@ -35,7 +35,7 @@ CREATE TABLE `team_user` (
   KEY `Index_3` (`email`) USING BTREE,
   KEY `Index_4` (`regdate`) USING BTREE,
   KEY `Index_5` (`phone`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `htbb_db` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci */;
@@ -52,7 +52,7 @@ CREATE TABLE `5h_active` (
   PRIMARY KEY (`id`),
   KEY `idx_5h_active_username` (`username`),
   KEY `idx_5h_active_userid` (`userID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `5h_notify`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -73,7 +73,7 @@ CREATE TABLE `5h_systems` (
   `command` varchar(255) DEFAULT NULL,
   `status` int(255) DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `admin_msg`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -82,7 +82,7 @@ CREATE TABLE `admin_msg` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `msg` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `bad_word`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -91,7 +91,7 @@ CREATE TABLE `bad_word` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `word` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=170 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `board_created`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -393,6 +393,20 @@ CREATE TABLE `data_kinh_te_lau_dai` (
   PRIMARY KEY (`khoa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `data_map_ten`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `data_map_ten` (
+  `map_id` int(11) NOT NULL,
+  `ten` varchar(64) NOT NULL,
+  `vung` varchar(16) NOT NULL DEFAULT '',
+  `loai` varchar(16) NOT NULL DEFAULT '',
+  `mo_ta` varchar(128) NOT NULL DEFAULT '',
+  `sua_boi` varchar(50) NOT NULL DEFAULT '',
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`map_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `data_monster`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -425,7 +439,7 @@ CREATE TABLE `data_monster` (
   `shiny` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Pokemon: 1 = shiny',
   `he2` tinyint(4) NOT NULL DEFAULT -1 COMMENT 'Pokemon: he thu hai, -1 = khong co',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=179 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `data_monster_lau_dai`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -906,6 +920,22 @@ CREATE TABLE `data_noi_dung_vat_pham` (
   PRIMARY KEY (`ma`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `data_npc`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `data_npc` (
+  `type` int(11) NOT NULL,
+  `ten` varchar(64) NOT NULL,
+  `chuc_vu` varchar(64) NOT NULL DEFAULT '',
+  `pokemon` varchar(32) NOT NULL DEFAULT '',
+  `dex` int(11) NOT NULL DEFAULT 0,
+  `id_anh` int(11) NOT NULL DEFAULT 0,
+  `ban_do` varchar(255) NOT NULL DEFAULT '',
+  `sua_boi` varchar(50) NOT NULL DEFAULT '',
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `data_potion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -951,7 +981,7 @@ CREATE TABLE `data_quest` (
   `luong` int(10) DEFAULT 0,
   `luongLock` int(10) DEFAULT 100,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `data_quest_lau_dai`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1020,7 +1050,7 @@ CREATE TABLE `data_quest_moi` (
   `luong` int(10) DEFAULT 0,
   `luongLock` int(10) DEFAULT 100,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5013 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `data_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1140,7 +1170,7 @@ CREATE TABLE `giftcode` (
   `limit_use` int(11) NOT NULL DEFAULT 0,
   `type` int(11) DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `giftcode_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1938,7 +1968,7 @@ CREATE TABLE `tob_event` (
   `lixi` varchar(100) DEFAULT '100,18,30',
   `vip` varchar(100) DEFAULT '500,100,5',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tob_event_top`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -2013,7 +2043,7 @@ CREATE TABLE `tob_fruit` (
   `time5` int(10) unsigned DEFAULT NULL,
   `tfruit` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tob_gem_new`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -2911,7 +2941,7 @@ CREATE TABLE `tob_tubinh` (
   `level` int(10) unsigned NOT NULL,
   `nmanh` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tob_vantieu`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -3308,7 +3338,7 @@ CREATE TABLE `web_trang` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- ======== 2. Du lieu thiet ke / cau hinh (61 bang)
+-- ======== 2. Du lieu thiet ke / cau hinh (63 bang)
 USE `htbb_db`;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -3427,6 +3457,12 @@ LOCK TABLES `data_kinh_te_lau_dai` WRITE;
 /*!40000 ALTER TABLE `data_kinh_te_lau_dai` DISABLE KEYS */;
 INSERT INTO `data_kinh_te_lau_dai` VALUES ('exp.bac_met','120:20,120:5','0','Sau giờ 100%: 120 phút 20%, 120 phút 5%, rồi 0'),('exp.chia3_lv60','0','1','Bỏ chia 3 từ cấp 60'),('exp.lech_cap','100,100,100,100,80,80,80,50,50,50,20,20,20,20,20,5','1/5/10/20','% EXP theo lệch cấp người - quái = 0..15+'),('exp.nang_luong_phut','90','0','Phút 100% mỗi ngày'),('exp.nang_luong_tich_phut','180','0','Tích luỹ tối đa'),('exp.tang_exp','1','3','Bỏ x3 toàn cục (CharCapNhat.java:127)'),('exp.tile_duoi_lv50','100','50','Bỏ giảm 50%'),('exp.tile_lv50','100','10','Bỏ giảm 90% từ cấp 50 (bảng EXP mới đã tính)'),('giftcode.toi_da_thang','2','-','Chỉ vật phẩm khoá, ≤ 0,5 giờ thu nhập'),('nang_cap.xu_moi_lan_cu','0','5000','Thay bằng data_nang_cap_lau_dai.xu'),('qua.cap35_xu','0','10000000','Bỏ (MapXuLyLenh.java:303); thay bằng trang bị bậc vàng'),('roi.da_nang_cap.phan_nghin','15','0','Đá nâng cấp khi |lệch cấp| <= 5'),('roi.luong.phan_tram','0','2.5','Bỏ lượng rơi từ quái (Monster.java:1091-1108)'),('roi.luong_khoa.phan_tram','0','2.5','Bỏ lượng khoá rơi từ quái'),('roi.trang_bi.ppm','150','150','Giữ; thêm phân rã đồ trùng'),('roi.xu.phan_tram','30','0.32','Xu rơi mỗi quái (%); lượng = xu_moi_quai/0.3'),('thue.cho','6','10','Thuế chợ ký gửi (đốt)'),('thue.chuyen_luong','5','0','Phí chuyển lượng NPC (%)'),('thue.dang_ban','1','0','Phí đăng bán (đốt, không hoàn)'),('tieu_hao.sua_do_phan_tram_thu_nhap','8','-','Σ price/10 giữ, price theo bậc'),('tieu_hao.thuoc_phan_tram_thu_nhap','12','-','Giá thuốc chỉnh theo bậc'),('ve_chuong.toi_da','4','-',''),('ve_chuong.tuan','2','-','Vé mở chương chính / tuần');
 /*!40000 ALTER TABLE `data_kinh_te_lau_dai` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `data_map_ten` WRITE;
+/*!40000 ALTER TABLE `data_map_ten` DISABLE KEYS */;
+INSERT INTO `data_map_ten` VALUES (0,'Pewter','Kanto','thi_tran','Thị trấn','',NULL),(1,'Pallet','Kanto','dong_co','Đồng cỏ','',NULL),(2,'Viridian','Kanto','bien','Biển','',NULL),(3,'Vermilion','Kanto','ho','Hồ','',NULL),(4,'Cerulean','Kanto','rung','Rừng','',NULL),(5,'Lavender','Kanto','dong_co','Đồng cỏ','',NULL),(6,'Celadon','Kanto','rung','Rừng','',NULL),(7,'Saffron','Kanto','ho','Hồ','',NULL),(8,'Fuchsia','Kanto','bien','Biển','',NULL),(9,'Cinnabar','Kanto','dong_co','Đồng cỏ','',NULL),(10,'New Bark','Johto','rung','Rừng','',NULL),(11,'Rừng Viridian','Kanto','rung','Rừng','',NULL),(12,'Khu mua bán','','thi_tran','Thị trấn','',NULL),(13,'Núi Mặt Trăng','Kanto','nui','Núi','',NULL),(14,'Vùng Safari','Kanto','dong_co','Đồng cỏ','',NULL),(15,'Cherrygrove','Johto','ho','Hồ','',NULL),(17,'Khu mỏ','','sa_mac','Sa mạc','',NULL),(18,'Goldenrod','Johto','duong','Tuyến đường','',NULL),(19,'Ecruteak','Johto','bien','Biển','',NULL),(20,'Violet','Johto','rung','Rừng','',NULL),(21,'Đồng cỏ phía tây','','dong_co','Đồng cỏ','',NULL),(22,'Tàu S.S. Anne','Kanto','ho','Hồ','',NULL),(23,'Azalea','Johto','duong','Tuyến đường','',NULL),(24,'Olivine','Johto','nui','Núi','',NULL),(25,'Tháp luyện tập','','dau_truong','Đấu trường','',NULL),(26,'Rừng Cổ','','rung','Rừng','',NULL),(27,'Chiến trường','','dau_truong','Đấu trường','',NULL),(28,'Mahogany','Johto','dong_co','Đồng cỏ','',NULL),(29,'Rừng Ilex','Johto','rung','Rừng','',NULL),(30,'Sân Liên minh 1','Johto','rung','Rừng','',NULL),(31,'Sân Liên minh 2','Johto','rung','Rừng','',NULL),(32,'Sân Liên minh 3','','dau_truong','Đấu trường','',NULL),(33,'Sân Liên minh 4','','dau_truong','Đấu trường','',NULL),(34,'Sân Liên minh 5','','dau_truong','Đấu trường','',NULL),(35,'Sân Liên minh 6','','dau_truong','Đấu trường','',NULL),(36,'Sân Liên minh 7','','dau_truong','Đấu trường','',NULL),(37,'Sân Liên minh 8','','dau_truong','Đấu trường','',NULL),(38,'Sân Liên minh 9','','dau_truong','Đấu trường','',NULL),(39,'Sân Liên minh 10','','dau_truong','Đấu trường','',NULL),(40,'Chiến trường','','dong_co','Đồng cỏ','',NULL),(41,'Chân núi Silver','','tuyet','Vùng tuyết','',NULL),(42,'Núi Silver','','tuyet','Vùng tuyết','',NULL),(43,'Littleroot','Hoenn','thi_tran','Thị trấn','',NULL),(44,'Rừng Petalburg','Hoenn','rung','Rừng','',NULL),(45,'Rustboro','Hoenn','thi_tran','Thị trấn','',NULL),(46,'Bờ biển Dewford','Hoenn','bien','Biển','',NULL),(47,'Slateport','Hoenn','thi_tran','Thị trấn','',NULL),(48,'Route 110','Hoenn','duong','Tuyến đường','',NULL),(49,'Mauville','Hoenn','thi_tran','Thị trấn','',NULL),(50,'Sa mạc Route 111','Hoenn','sa_mac','Sa mạc','',NULL),(51,'Lavaridge','Hoenn','thi_tran','Thị trấn','',NULL),(52,'Núi Chimney','Hoenn','nui','Núi','',NULL),(53,'Rừng mưa Route 119','Hoenn','rung','Rừng','',NULL),(54,'Fortree','Hoenn','thi_tran','Thị trấn','',NULL),(55,'Route 120 - Viện Thời tiết','Hoenn','dong_co','Đồng cỏ','',NULL),(56,'Lilycove','Hoenn','thi_tran','Thị trấn','',NULL),(57,'Núi Pyre','Hoenn','nui','Núi','',NULL),(58,'Biển Route 124','Hoenn','bien','Biển','',NULL),(59,'Mossdeep','Hoenn','thi_tran','Thị trấn','',NULL),(60,'Sootopolis','Hoenn','thi_tran','Thị trấn','',NULL),(61,'Biển Route 131','Hoenn','bien','Biển','',NULL),(62,'Ever Grande','Hoenn','thi_tran','Thị trấn','',NULL),(70,'Blackthorn','Johto','thi_tran','Thị trấn','',NULL),(72,'Nhà (Blackthorn)','Johto','trong_nha','Trong nhà','',NULL),(73,'Trung tâm Pokémon','Johto','trong_nha','Trong nhà','',NULL),(74,'Poké Mart','Johto','trong_nha','Trong nhà','',NULL),(78,'Nhà kho','Johto','trong_nha','Trong nhà','',NULL),(79,'Xưởng chế tạo','Johto','trong_nha','Trong nhà','',NULL),(80,'Cianwood','Johto','thi_tran','Thị trấn','',NULL),(82,'Nhà (Cianwood)','Johto','trong_nha','Trong nhà','',NULL),(83,'Trung tâm Pokémon','Johto','trong_nha','Trong nhà','',NULL),(84,'Poké Mart','Johto','trong_nha','Trong nhà','',NULL),(88,'Nhà kho','Johto','trong_nha','Trong nhà','',NULL),(89,'Xưởng chế tạo','Johto','trong_nha','Trong nhà','',NULL),(90,'Cửa hàng 1','','trong_nha','Trong nhà','',NULL),(91,'Cửa hàng 2','','trong_nha','Trong nhà','',NULL),(92,'Cửa hàng 3','','trong_nha','Trong nhà','',NULL),(93,'Cửa hàng 4','','trong_nha','Trong nhà','',NULL),(94,'Cửa hàng 5','','trong_nha','Trong nhà','',NULL),(95,'Cửa hàng 6','','trong_nha','Trong nhà','',NULL),(96,'Cửa hàng 7','','trong_nha','Trong nhà','',NULL),(97,'Cửa hàng 8','','trong_nha','Trong nhà','',NULL),(98,'Cửa hàng 9','','trong_nha','Trong nhà','',NULL),(99,'Cửa hàng 10','','trong_nha','Trong nhà','',NULL),(100,'Nhà (Pewter)','Kanto','trong_nha','Trong nhà','',NULL),(101,'Khoảng rừng nhỏ','','rung','Rừng','',NULL),(102,'Nhà (Pewter) 2','Kanto','trong_nha','Trong nhà','',NULL),(103,'Trung tâm Pokémon','Kanto','trong_nha','Trong nhà','',NULL),(104,'Poké Mart','Kanto','trong_nha','Trong nhà','',NULL),(105,'Sân nhà khởi đầu','','dong_co','Đồng cỏ','',NULL),(106,'Bến tàu','','thi_tran','Thị trấn','',NULL),(107,'Thuyền','','tau','Tàu','',NULL),(108,'Nhà kho','','trong_nha','Trong nhà','',NULL),(109,'Xưởng chế tạo','','trong_nha','Trong nhà','',NULL),(110,'Hang động','','hang','Hang động','',NULL),(111,'Hang Darkrai','','hang','Hang động','',NULL),(112,'Hang Salamence','','hang','Hang động','',NULL),(113,'Hang Tối','Johto','hang','Hang động','',NULL),(114,'Hồ Phẫn Nộ','Johto','hang','Hang động','',NULL),(115,'Hang nhỏ','','hang','Hang động','',NULL),(116,'Hang cổ','','hang','Hang động','',NULL),(117,'Ngục tối','','hang','Hang động','',NULL),(118,'Đường Victory','','hang','Hang động','',NULL),(122,'Hang trống','','hang','Hang động','',NULL),(160,'Hang Granite','Hoenn','hang','Hang động','',NULL),(161,'Thác Meteor','Hoenn','hang','Hang động','',NULL),(162,'Hang dưới biển','Hoenn','hang','Hang động','',NULL),(163,'Hang Khởi Nguyên','Hoenn','hang','Hang động','',NULL),(164,'Tháp Trời','Hoenn','hang','Hang động','',NULL),(165,'Đường Victory Hoenn','Hoenn','hang','Hang động','',NULL),(201,'Cao nguyên Indigo','Kanto','thanh','Lãnh địa','',NULL),(202,'Đấu trường','','dau_truong','Đấu trường','',NULL),(203,'Đấu trường La Mã','','dau_truong','Đấu trường','',NULL),(204,'Đấu trường 2','','dau_truong','Đấu trường','',NULL),(205,'Đấu trường 3','','dau_truong','Đấu trường','',NULL),(206,'Lãnh địa đội','','thanh','Lãnh địa','',NULL),(207,'Lãnh địa đội 2','','thanh','Lãnh địa','',NULL),(208,'Tháp luyện tập 5x','','dau_truong','Đấu trường','',NULL),(209,'Tháp luyện tập 6x','','dau_truong','Đấu trường','',NULL),(210,'Tháp luyện tập 7x','','dau_truong','Đấu trường','',NULL),(225,'Lễ cưới 1','','dau_truong','Đấu trường','',NULL),(226,'Lễ cưới 2','','dau_truong','Đấu trường','',NULL),(227,'Sàn đấu','','dau_truong','Đấu trường','',NULL),(228,'Sảnh chờ','','dau_truong','Đấu trường','',NULL),(260,'Nhà (Indigo) 1','Kanto','trong_nha','Trong nhà','',NULL),(261,'Nhà (Indigo) 2','Kanto','trong_nha','Trong nhà','',NULL),(262,'Nhà (Indigo) 3','Kanto','trong_nha','Trong nhà','',NULL),(263,'Nhà (Indigo) 4','Kanto','trong_nha','Trong nhà','',NULL),(264,'Nhà (Indigo) 5','Kanto','trong_nha','Trong nhà','',NULL),(265,'Nhà (Indigo) 6','Kanto','trong_nha','Trong nhà','',NULL),(266,'Nhà (Indigo) 7','Kanto','trong_nha','Trong nhà','',NULL),(267,'Nhà (Indigo) 8','Kanto','trong_nha','Trong nhà','',NULL),(268,'Nhà (Indigo) 9','Kanto','trong_nha','Trong nhà','',NULL),(269,'Nhà (Indigo) 10','Kanto','trong_nha','Trong nhà','',NULL),(270,'Nhà (Indigo) 11','Kanto','trong_nha','Trong nhà','',NULL),(271,'Nhà (Indigo) 12','Kanto','trong_nha','Trong nhà','',NULL),(280,'Đỉnh Tháp Trời','Hoenn','dau_truong','Đấu trường','',NULL),(281,'Liên minh Hoenn','Hoenn','thanh','Lãnh địa','',NULL),(282,'Sảnh Nhà vô địch','Hoenn','dau_truong','Đấu trường','',NULL),(2541,'Tổ Zapdos','','hang','Hang động','',NULL);
+/*!40000 ALTER TABLE `data_map_ten` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `data_monster` WRITE;
@@ -3579,6 +3615,12 @@ INSERT INTO `data_noi_dung_vat_pham` VALUES ('chua_bang','Thuốc rã đông','t
 /*!40000 ALTER TABLE `data_noi_dung_vat_pham` ENABLE KEYS */;
 UNLOCK TABLES;
 
+LOCK TABLES `data_npc` WRITE;
+/*!40000 ALTER TABLE `data_npc` DISABLE KEYS */;
+INSERT INTO `data_npc` VALUES (0,'Y tá Chansey','Bán thuốc hồi phục','Chansey',113,0,'43,45,47,49,51,54,56,59,60,62,100,281','',NULL),(1,'Kecleon tạp hoá','Tạp hoá','Kecleon',352,1,'0,45,47,49,54,56,62,70,72,80,82,102','',NULL),(2,'Machamp thợ rèn','Thợ rèn: chế tạo, sửa, khảm đồ','Machamp',68,2,'0,45,70,73,80,83,103','',NULL),(3,'Bronzong thợ giáp','Bán trang bị','Bronzong',437,3,'0,47,55,59,70,74,80,84,104','',NULL),(4,'Arcanine gác cổng','Gác cổng','Arcanine',59,4,'0,70,80,201,281','',NULL),(5,'Trưởng làng Xatu','Trưởng làng, giao nhiệm vụ','Xatu',178,5,'0,43,45,50,56,59,60,70,80,101,163,164,280,282','',NULL),(6,'Ngài Persian','Giữ đồ','Persian',53,6,'0,53,70,79,80,89,109','',NULL),(7,'Pidgeot chở bay','Chở bay tới bản đồ khác','Pidgeot',18,7,'0,3,4,5,6,7,8,9,54,70,80','',NULL),(8,'Ông Snorlax','Giao nhiệm vụ','Snorlax',143,8,'51,57,60,105,160','',NULL),(9,'Kangaskhan thủ kho','Giữ đồ','Kangaskhan',115,9,'0,70,78,80,88,108','',NULL),(10,'Lapras chở đò','Chở đò, bán vé tàu','Lapras',131,10,'43,58,60,106,162','',NULL),(11,'Golem bán hàng 1','Bán hàng','Golem',76,11,'99,201,266','',NULL),(12,'Golem bán hàng 2','Bán hàng','Golem',76,11,'98,201,267','',NULL),(13,'Golem bán hàng 3','Bán hàng','Golem',76,11,'97,201,268','',NULL),(14,'Golem bán hàng 4','Bán hàng','Golem',76,11,'96,201,269','',NULL),(15,'Golem bán hàng 5','Bán hàng','Golem',76,11,'95,201,270','',NULL),(16,'Tauros bán hàng 1','Bán hàng','Tauros',128,12,'94,201,271','',NULL),(17,'Tauros bán hàng 2','Bán hàng','Tauros',128,12,'93','',NULL),(18,'Tauros bán hàng 3','Bán hàng','Tauros',128,12,'92','',NULL),(19,'Tauros bán hàng 4','Bán hàng','Tauros',128,12,'91','',NULL),(20,'Tauros bán hàng 5','Bán hàng','Tauros',128,12,'90','',NULL),(21,'Huấn luyện viên Blaziken','Huấn luyện viên','Blaziken',257,14,'0,44,50,51,52,62,70,80,163,282','',NULL),(22,'Meowth thương nhân','Nạp xu','Meowth',52,13,'0,47,49,56,62,70,80','',NULL),(23,'Lão Torkoal','Giao nhiệm vụ','Torkoal',324,15,'4,51','',NULL),(24,'Sableye buôn đá quý','Bán đá quý','Sableye',302,16,'201,265','',NULL),(25,'Chỉ huy Heracross','Chỉ huy giải Liên minh','Heracross',214,17,'','',NULL),(26,'Kecleon bán lẻ','Tạp hoá','Kecleon',352,1,'201,263','',NULL),(27,'Bronzong bán giáp','Bán trang bị','Bronzong',437,3,'201,260','',NULL),(28,'Farfetch\'d thợ cả','Bán vật phẩm, thợ rèn','Farfetch\'d',83,2,'201,261','',NULL),(29,'Persian quản gia','Giữ đồ','Persian',53,6,'201,264','',NULL),(30,'Kangaskhan quản kho','Giữ đồ','Kangaskhan',115,9,'201,262','',NULL),(31,'Meowth đổi xu','Nạp xu','Meowth',52,13,'','',NULL);
+/*!40000 ALTER TABLE `data_npc` ENABLE KEYS */;
+UNLOCK TABLES;
+
 LOCK TABLES `data_potion` WRITE;
 /*!40000 ALTER TABLE `data_potion` DISABLE KEYS */;
 INSERT INTO `data_potion` VALUES (0,237,0,0,'Xu','xu',0,0),(1,1,350,1,'Thuốc hồi máu','thuochoimau',100,80),(2,2,350,1,'Siêu thuốc hồi máu','sieuthuochoimau',500,300),(3,3,350,1,'Thuốc hồi máu cực mạnh','thuochoimaucucmanh',800,1000),(4,4,350,1,'Ether','ether',50,160),(5,5,350,1,'Ether lớn','etherlon',150,600),(6,6,350,1,'Ether tối đa','ethertoida',500,2000),(7,22,350,0,'Bình tăng tốc thường','binhtangtocthuong',500,1),(8,88,350,0,'Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng','binhtangtocvanggiamthoigianchincuatraivang',500,2),(9,26,350,0,'Rễ năng lượng','renangluong',500,1),(10,62,350,0,'Kẹo kinh nghiệm S: cộng 100k exp','keokinhnghiemscongkexp',500,2),(11,40,0,0,'Kẹo kinh nghiệm M: cộng 500k exp','keokinhnghiemmcongkexp',500,1),(12,36,0,0,'Kẹo kinh nghiệm L: cộng 1t exp','keokinhnghiemlcongtexp',500,0),(13,23,0,0,'Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc','binhtangtocbacgiamthoigianchincuatraibac',500,0),(14,15,0,0,'Khăn đỏ','khando',500,0),(15,16,0,0,'Khăn xanh','khanxanh',500,0),(16,17,0,0,'Khăn vàng','khanvang',500,0),(17,18,0,0,'Khăn xanh lá','khanxanhla',500,0),(18,19,0,0,'Khăn tím','khantim',500,0),(19,13,0,0,'Dây thoát hiểm','daythoathiem',1000,-1),(20,13,0,0,'Vé tàu','vetau',15000,-1),(21,9,350,1,'Siêu thuốc hồi máu đặc biệt','sieuthuochoimaudacbiet',0,0),(22,10,350,1,'Thuốc hồi máu tối đa','thuochoimautoida',0,0),(23,7,350,1,'Elixir','elixir',0,0),(24,8,350,1,'Elixir tối đa','elixirtoida',0,0),(25,20,350,0,'Thuốc khôi phục tiềm năng','thuockhoiphuctiemnang',0,0),(26,21,350,0,'Thuốc hồi phục toàn diện','thuochoiphuctoandien',0,0),(27,32,0,0,'Vé bay Pidgeot','vebaypidgeot',0,0),(28,32,0,0,'Thẻ cấm chat','thecamchat',0,0),(29,32,0,0,'Phiếu công ích','phieucongich',0,0),(30,27,0,1,'Sáo gọi Ponyta','saogoiponyta',0,0),(31,33,0,0,'Huy hiệu lập đội','huyhieulapdoi',0,0),(32,13,0,0,'Thẻ đấu trường','thedautruong',0,0),(33,39,0,0,'Thẻ chiếm Gym','thechiemgym',0,0),(34,37,0,0,'Sáo gọi Ponyta lửa','saogoiponytalua',0,0),(35,11,0,0,'Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi','vegiovangxkinhnghiemtrongmotgiochoitinhtheothoigianchoi',0,0),(36,236,0,0,'Sáo gọi Stantler','saogoistantler',0,0),(37,113,0,1,'Lông đinh','longdinh',0,0),(38,114,0,1,'Lông búi','longbui',0,0),(39,115,0,1,'Lông cột cao','longcotcao',0,0),(40,116,0,1,'Lông chéo','longcheo',0,0),(41,117,0,1,'Lông xù','longxu',0,0),(42,118,0,1,'Lông ngang vai','longngangvai',0,0),(43,119,0,1,'Lông đinh so le','longdinhsole',0,0),(44,120,0,1,'Lông so le','longsole',0,0),(45,121,0,1,'Lông gọn gàng','longgongang',0,0),(46,122,0,1,'Lông cài hoa','longcaihoa',0,0),(47,123,0,1,'Bờm Ponyta','bomponyta',0,0),(48,124,0,1,'Lông Clefairy','longclefairy',0,0),(49,125,0,1,'Lông dựng đứng','longdungdung',0,0),(50,43,0,0,'Hoa mai','hoamai',0,0),(51,43,0,0,'Hoa mai','hoamai',0,0),(52,43,0,0,'Hoa mai','hoamai',0,0),(53,43,0,0,'Hoa mai','hoamai',0,0),(54,44,0,0,'Hoa đào','hoadao',0,0),(55,44,0,0,'Hoa đào','hoadao',0,0),(56,44,0,0,'Hoa đào','hoadao',0,0),(57,44,0,0,'Hoa đào','hoadao',0,0),(58,45,0,0,'Hoa hồng','hoahong',0,0),(59,45,0,0,'Hoa hồng','hoahong',0,0),(60,45,0,0,'Hoa hồng','hoahong',0,0),(61,45,0,0,'Hoa hồng','hoahong',0,0),(62,240,0,0,'Bí ma','bima',0,0),(63,42,0,0,'Hộp may mắn','hopmayman',0,0),(64,47,0,1,'Sáo gọi Tauros','saogoitauros',0,0),(65,46,0,1,'Sáo gọi Arcanine','saogoiarcanine',0,0),(66,48,0,1,'Sáo gọi Mightyena','saogoimightyena',0,0),(67,49,0,1,'Sáo gọi Pidgeot','saogoipidgeot',0,0),(68,38,0,1,'Sáo gọi Rapidash','saogoirapidash',0,0),(69,32,0,0,'Vé quay số','vequayso',0,0),(70,24,0,1,'Trứng Articuno','trungarticuno',0,0),(71,227,0,1,'Trứng Ponyta','trungponyta',0,0),(72,146,0,1,'Trứng Piloswine','trungpiloswine',0,0),(73,141,0,0,'Túi nhặt ngọc','tuinhatngoc',0,0),(74,145,0,1,'Trứng Spectrier','trungspectrier',0,0),(75,11,1000,0,'Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi','vegiovangxkinhnghiemtronggiochoitinhtheothoigianchoi',0,0),(76,32,0,0,'Vé quay số đặc biệt','vequaysodacbiet',0,0),(77,213,0,0,'Mảnh bản đồ 1','manhbando',0,0),(78,32,0,0,'Thẻ liên hoa','thelienhoa',0,0),(79,42,0,0,'Hộp thần kỳ','hopthanky',0,0),(80,60,0,0,'Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày','binhtanglucntangcacchisotrongngay',0,0),(81,11,0,0,'Vé giờ vàng tăng 150% kinh nghiệm.','vegiovangtangkinhnghiem',0,0),(82,107,0,0,'Thẻ giao hàng. Thêm một lượt giao hàng khi sử dụng','thegiaohangthemmotluotgiaohangkhisudung',0,0),(83,245,0,0,'Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.','keopoketangkinhnghiemchothunuoikhichoan',0,0),(84,31,0,0,'Thuốc X','thuocx',0,0),(85,32,0,0,'Thẻ triệu hồi','thetrieuhoi',0,0),(86,65,0,1,'Sáo gọi Moltres','saogoimoltres',0,0),(87,32,0,0,'Thẻ phong chức','thephongchuc',0,0),(88,73,0,0,'Nhẫn Trái tim đồng 2%pt','nhantraitimdongpt',0,0),(89,74,0,0,'Nhẫn Trái tim bạc 4%pt','nhantraitimbacpt',0,0),(90,75,0,0,'Nhẫn Trái tim vàng 7%pt','nhantraitimvangpt',0,0),(91,32,0,0,'Vé vào mỏ','vevaomo',0,0),(92,76,0,0,'Thiệp cưới','thiepcuoi',0,0),(93,10,350,1,'Thuốc hồi máu 7k','thuochoimauk',0,0),(94,10,350,1,'Thuốc hồi máu 15k','thuochoimauk',0,0),(95,238,350,1,'Ether 7k','etherk',0,0),(96,238,350,1,'Ether 15k','etherk',0,0),(97,105,0,0,'Thẻ đổi hàng','thedoihang',0,0),(98,93,0,0,'Vảy trái tim','vaytraitim',0,0),(99,64,0,0,'Pháo hoa','phaohoa',0,0),(100,77,0,0,'loa','loa',0,0),(101,67,0,0,'Rương vàng','ruongvang',0,0),(102,68,0,0,'Rương bạc','ruongbac',0,0),(103,43,0,0,'Lá vàng','lavang',0,0),(104,246,0,0,'Poké Ball. Dùng để bắt thú nuôi','pokeballdungdebatthunuoi',0,0),(105,214,0,0,'Mảnh bản đồ 2','manhbando',0,0),(106,45,0,0,'Nhánh hoa hồng vàng','nhanhhoahongvang',0,0),(107,45,0,0,'Hoa hồng đỏ','hoahongdo',0,0),(108,220,0,0,'Hộp quà may mắn\nQuà bình chọn World Cup.\nBấm hai lần để mở, nhận ngẫu nhiên ruy băng, nguyên liệu, xu/lượng hoặc pet.','hopquamaymanquabinhchonworldcupbamhailandemonhanngaunhienruybangnguyenlieuxuluonghoacpet',0,0),(109,45,0,1,'Bó hoa vàng','bohoavang',0,0),(110,45,0,0,'Bó hoa đỏ','bohoado',0,0),(111,95,0,1,'Đĩa chiêu (TM) cho pet','diachieutmchopet',0,0),(112,85,0,0,'Thức ăn tươi','thucantuoi',0,0),(113,86,0,0,'Thức ăn khô','thucankho',0,0),(114,87,0,0,'Thức ăn tổng hợp','thucantonghop',0,0),(115,166,0,1,'Trứng Suicune','trungsuicune',0,0),(116,106,0,0,'Thẻ đổi hàng cao cấp','thedoihangcaocap',0,0),(117,215,0,0,'Mảnh bản đồ 3','manhbando',0,0),(118,32,0,0,'Vé Moltres.\nDùng quay số Moltres','vemoltresdungquaysomoltres',0,0),(119,152,0,0,'Thuốc hồi sinh\nHồi sinh bản thân.','thuochoisinhhoisinhbanthan',0,0),(120,91,0,0,'Thịt','thit',0,0),(121,89,0,0,'Trứng','trung',0,0),(122,199,0,0,'Đậu xanh','dauxanh',0,0),(123,31,0,0,'Thuốc X siêu cấp','thuocxsieucap',0,0),(124,66,0,0,'Bánh dẻo','banhdeo',0,0),(125,92,0,0,'Bánh nướng','banhnuong',0,0),(126,162,0,0,'Thuốc hồi máu chiến trường.\nHồi 10.000 hp','thuochoimauchientruonghoihp',0,0),(127,239,0,0,'Ether chiến trường.\nHồi 10.000 mp','etherchientruonghoimp',0,0),(128,163,0,0,'Thuốc X chiến trường','thuocxchientruong',0,0),(129,156,0,0,'X Phòng thủ.\nTăng 20% giáp trong 90s','xphongthutanggiaptrongs',0,0),(130,158,0,0,'X Tấn công.\nTăng 20% sát thương.','xtancongtangsatthuong',0,0),(131,159,0,0,'Thuốc săn trùm.\nTăng 50% sát thương boss.','thuocsantrumtangsatthuongboss',0,0),(132,157,0,0,'Bom lửa. Gây sát thương theo x10% năng lượng bản thân lên toàn bộ mục tiêu trong bán kính 5m.','bomluagaysatthuongtheoxnangluongbanthanlentoanbomuctieutrongbankinhm',0,0),(133,171,0,0,'Hộp bánh thập cẩm','hopbanhthapcam',0,0),(134,212,0,0,'Hộp bánh đặc biệt','hopbanhdacbiet',0,0),(135,108,0,0,'Hạt mầm','hatmam',0,0),(136,28,0,0,'Nến','nen',0,0),(137,208,0,0,'Kẹo','keo',0,0),(138,207,0,0,'Bí ngô','bingo',0,0),(139,35,0,0,'Hộp quà','hopqua',0,0),(140,222,0,0,'Hộp quà halloween','hopquahalloween',0,0),(141,223,0,0,'Hộp quà tặng halloween','hopquatanghalloween',0,0),(142,30,0,0,'Bột mỳ','botmy',0,0),(143,0,0,0,'Hộp quà bí mật','hopquabimat',0,0),(144,230,0,0,'Sao vàng','saovang',0,0),(145,14,0,0,'Dưa Hấu','duahau',0,0),(146,99,0,0,'Kem','kem',0,0),(147,220,0,0,'Túi quà may mắn','tuiquamayman',0,0),(148,177,0,0,'Gạo nếp','gaonep',0,0),(149,233,0,0,'Thịt mỡ','thitmo',0,0),(150,172,0,0,'Lá dong','ladong',0,0),(151,180,0,0,'Bánh chưng','banhchung',0,0),(152,175,0,0,'Bánh tét','banhtet',0,0),(153,170,0,0,'Giấy','giay',0,0),(154,174,0,0,'Thuốc pháo','thuocphao',0,0),(155,64,0,0,'Pháo hoa tết','phaohoatet',0,0),(156,200,0,0,'Lửa thường','luathuong',0,0),(157,201,0,0,'Lửa vừa','luavua',0,0),(158,202,0,0,'Lửa to','luato',0,0),(159,76,0,0,'Bao lì xì','baolixi',0,0),(160,247,0,0,'Quả bóng bạc','quabongbac',0,0),(161,248,0,0,'Quả bóng vàng','quabongvang',0,0);
@@ -3697,6 +3739,6 @@ UNLOCK TABLES;
 
 -- ======== 3. Tai khoan admin (mat khau ngau nhien - DOI NGAY sau khi nap)
 INSERT INTO `account`.`team_user` (`username`, `password`, `phone`, `regdate`, `ban`, `provider`, `fromgame`)
-  VALUES ('admin', PASSWORD('ea7c36a7322023d40b5e4d6b'), '', NOW(), 0, 0, 0);
+  VALUES ('admin', PASSWORD('570fef04f579c324a7e72d54'), '', NOW(), 0, 0, 0);
 INSERT INTO `htbb_db`.`5h_active` (`userID`, `username`, `time_end`)
   SELECT u.`id`, u.`username`, '1894945812' FROM `account`.`team_user` u WHERE u.`username` = 'admin';

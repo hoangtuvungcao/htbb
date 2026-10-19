@@ -115,8 +115,7 @@ public final class ThaoTacMayChu {
 
     public static String tenMap(final int id) {
         try {
-            final String t = real.Map.getNameMap(id);
-            return t == null || t.isEmpty() ? "Map " + id : t;
+            return real.TenBanDoMayChu.tenHien(id);
         } catch (final Throwable e) {
             return "Map " + id;
         }

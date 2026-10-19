@@ -30,7 +30,8 @@ import java.util.regex.Pattern;
 public final class KiemThuatNgu {
 
     private static final Set<String> BO_QUA_TEN = new HashSet<>(Arrays.asList(
-            "ChuPokemon.java", "ChuPokemon.cs", "ChuPokemonDuLieu.cs", "TenMapPokemon.java", "TenMapPokemon.cs"));
+            "ChuPokemon.java", "ChuPokemon.cs", "ChuPokemonDuLieu.cs", "TenMapPokemon.java", "TenMapPokemon.cs",
+            "kiemTenHien.ts")); // kiemTenHien.ts: danh sach tu cu de CHAN khi admin dat ten (web /admin/ten-hien)
     private static final Pattern LOG = Pattern.compile(
             "System\\.(out|err)|printStackTrace|saveOrtherLog|saveLogThongKe|Debug\\.Log|Logdata|LOGGER|logger\\.|Log\\.[dewiv]\\(");
     private static final Set<String> BO_THU_MUC = new HashSet<>(Arrays.asList(

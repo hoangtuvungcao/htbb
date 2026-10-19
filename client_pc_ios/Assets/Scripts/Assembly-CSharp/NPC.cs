@@ -14,10 +14,10 @@ public class NPC : Actor
 
 	public static readonly string[] NPCNAME = new string[32]
 	{
-		"Y tá Chansey", "Kecleon tạp hoá", "Machamp", "Bronzong", "Arcanine gác cổng", "Trưởng làng", "Persian", "Pidgeot (Bay)", "ông nội", "Kangaskhan",
-		"Hoa tiêu", "Golem 1", "Golem 2", "Golem 3", "Golem 4", "Golem 5", "Tauros 1", "Tauros 2", "Tauros 3", "Tauros 4",
-		"Tauros 5", "Blaziken", "Meowth thương nhân", "Torkoal", "Bảo ngọc", "Heracross", "Kim hoa", "Bronzong", "Farfetch'd", "Persian",
-		"An Tâm", "Meowth"
+		"Y tá Chansey", "Kecleon tạp hoá", "Machamp thợ rèn", "Bronzong thợ giáp", "Arcanine gác cổng", "Trưởng làng Xatu", "Ngài Persian", "Pidgeot chở bay", "Ông Snorlax", "Kangaskhan thủ kho",
+		"Lapras chở đò", "Golem bán hàng 1", "Golem bán hàng 2", "Golem bán hàng 3", "Golem bán hàng 4", "Golem bán hàng 5", "Tauros bán hàng 1", "Tauros bán hàng 2", "Tauros bán hàng 3", "Tauros bán hàng 4",
+		"Tauros bán hàng 5", "Huấn luyện viên Blaziken", "Meowth thương nhân", "Lão Torkoal", "Sableye buôn đá quý", "Chỉ huy Heracross", "Kecleon bán lẻ", "Bronzong bán giáp", "Farfetch'd thợ cả", "Persian quản gia",
+		"Kangaskhan quản kho", "Meowth đổi xu"
 	};
 
 	private static sbyte[] idImg = new sbyte[32]

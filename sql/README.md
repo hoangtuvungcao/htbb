@@ -32,7 +32,7 @@ bảng phụ (`CREATE TABLE IF NOT EXISTS`) lúc chạy lần đầu.
 sudo bash /opt/htbb/vps/nang_cap_csdl.sh
 ```
 
-Script sao lưu (`vps/backup_db.sh`, hỏng là dừng) → nạp `sql/nang_cap.sql` → kiểm 8 bảng máy chủ đọc lúc khởi động,
+Script sao lưu (`vps/backup_db.sh`, hỏng là dừng) → nạp `sql/nang_cap.sql` → kiểm 10 bảng máy chủ đọc lúc khởi động,
 số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.sql` gồm:
 
 0. `CREATE TABLE IF NOT EXISTS` cho **mọi** bảng của `htbb_day_du.sql` (bảng đã có giữ nguyên, cả dữ liệu);
@@ -43,6 +43,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
    `cau_hinh_danh_muc`, `cau_hinh_nhom`) — từng dòng giống `htbb_day_du.sql` (`server/test/KiemDuLieuSql` kiểm);
 3. chỉ mục bảng nóng (`CREATE INDEX IF NOT EXISTS`);
 4. cấu hình hệ thống chạy lại được: `5h_systems.tangnap = 1`, công tắc sự kiện của lịch năm (`tob_su_kien`).
+5. tên người chơi thấy: `data_npc` (tên NPC) + `data_map_ten` (tên bản đồ) — thêm dòng thiếu, dòng đã có chỉ cập nhật
+   cột kỹ thuật, **giữ tên admin đã sửa** ở `/admin/ten-hien`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở
@@ -50,7 +52,7 @@ của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nh�
 nhận ở `vps/van_hanh/thu_hoi_qua_tao_nv.sql`. Phải chạy **trước** khi jar mới khởi động, không thì máy chủ có thể dừng
 với dòng `THIEU DU LIEU SQL QUAN TRONG - DUNG SERVER`.
 
-Kiểm đã làm (19/10/2026): dump trước P1 + `nang_cap.sql` (chạy 2 lần) → xuất lại = `htbb_day_du.sql` (194 bảng cùng
+Kiểm đã làm (19/10/2026): dump trước P1 + `nang_cap.sql` (chạy 2 lần) → xuất lại = `htbb_day_du.sql` (196 bảng cùng
 schema, mọi bảng thiết kế cùng dữ liệu; bảng người chơi giữ nguyên số dòng + CHECKSUM).
 
 ## Xuất lại từ CSDL (đưa chỉnh sửa trên trang quản trị về repo)
