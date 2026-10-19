@@ -15,6 +15,11 @@ export default defineAdminHandler(async () => {
     yeuCauBat: n.yeuCauBat,
     lyDoTat: n.lyDoTat,
     jobSepay: n.bat && n.sepayApiToken !== '',
+    demo: n.demo,
+    demoYeuCau: n.demoYeuCau,
+    demoChiAdmin: n.demoChiAdmin,
+    demoLyDoTuChoi: n.demoLyDoTuChoi,
+    demoSoTaiKhoan: n.demoSoTaiKhoan,
   }
   if (!(await napCoBang())) return { coBang: false, canhBao }
   const ds = await napDoiSoat()

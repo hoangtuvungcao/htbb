@@ -21,6 +21,8 @@ interface DonCho {
 }
 
 const KHOA = 'htbb_naptien'
+// Bản DEMO (HTBB_NAP_DEMO=1): server từ chối mọi xác nhận tay — trang chỉ hiện banner + giải thích.
+const napDemo = useNapDemo()
 const toast = useToast()
 const token = ref<string | null>(null)
 const matKhau = ref('')
@@ -118,7 +120,11 @@ const columns = [
   { id: 'hanh_dong', header: '' },
 ]
 
-onMounted(() => {
+onMounted(async () => {
+  if ((await napDemo.tai()).demo) {
+    dangTai.value = false
+    return
+  }
   try {
     token.value = sessionStorage.getItem(KHOA)
   } catch { token.value = null }
@@ -132,7 +138,11 @@ onMounted(() => {
     <SitePageBanner title="Xác nhận nạp tiền (Admin)" eyebrow="Quản trị nạp tiền" />
 
     <UContainer class="max-w-6xl py-14">
-      <div v-if="dangTai && !dons.length" class="flex items-center justify-center gap-3 py-20 text-muted">
+      <template v-if="napDemo.xem.value">
+        <NapDemoBanner :chi-admin="napDemo.info.value?.chiAdmin" />
+        <UAlert color="neutral" variant="subtle" icon="i-lucide-lock" title="Xác nhận tay bị tắt trong bản DEMO" description="Đơn demo không có tiền thật nên không có gì để xác nhận. Muốn xem màn hình thành công: /admin/naptien › Đơn DEMO › Giả lập thanh toán (chỉ hiển thị, không cộng gì)." />
+      </template>
+      <div v-else-if="dangTai && !dons.length" class="flex items-center justify-center gap-3 py-20 text-muted">
         <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" /> Đang tải...
       </div>
 

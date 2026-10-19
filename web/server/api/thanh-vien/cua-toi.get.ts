@@ -3,6 +3,11 @@ import type { DonNap } from '../../utils/napTien'
 
 export default defineEventHandler(async (event) => {
   const u = await requireUser(event)
+  if (napDemoBat() && napDemoXem(u.username)) {
+    // DEMO: trạng thái Thành viên THẬT (chỉ đọc, demo không cấp gì) + đơn demo trong bộ nhớ.
+    const trangThai = (await tvCoBang().catch(() => false)) ? await tvTrangThai(u.id).catch(() => null) : null
+    return { coBang: true, trangThai, dons: napDemoKho().cuaToi(u.id, 'thanh_vien').map(donDemoCongKhai), demo: true }
+  }
   if (!(await tvCoBang())) return { coBang: false, trangThai: null, dons: [] }
   const trangThai = await tvTrangThai(u.id)
   const dons = (await napCoBang())

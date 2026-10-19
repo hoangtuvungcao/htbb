@@ -3,6 +3,10 @@ import type { DonNap } from '../../utils/napTien'
 import { APP_NGAN_HANG, GIO_HET_HAN_DON, vietQrDeepLink } from '../../utils/napTienThuan'
 
 export default defineEventHandler(async (event) => {
+  if (napDemoBat() && napDemoXem(napDemoTenNguoiXem(event))) {
+    const u = await napDemoRequireUser(event)
+    return napDemoChiTiet(napDemoDonCuaToi(u.id, str(getQuery(event).ma_don).toUpperCase(), 'thanh_vien'))
+  }
   const u = await requireUser(event)
   const maDon = str(getQuery(event).ma_don).toUpperCase()
   const don: DonNap | null = /^HT[A-Z0-9]{8}$/.test(maDon) ? await napLayDon(maDon) : null

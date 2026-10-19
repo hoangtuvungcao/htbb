@@ -9,6 +9,7 @@
  * Bí mật (mật khẩu DB, số tài khoản, API key) KHÔNG bao giờ nằm trong mã nguồn.
  */
 import { kiemCauHinhNapThat } from './napTienThuan'
+import { quyetDinhCheDoNap } from './napDemoThuan'
 import { readFileSync, statSync, accessSync, constants } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { createHash, randomBytes } from 'node:crypto'
@@ -174,6 +175,20 @@ export interface HtbbConfig {
     congAnToan: boolean
     /** Lỗi cấu hình cổng thanh toán (kể cả khi HTBB_NAP_BAT tắt) — trang admin hiện. */
     loiCauHinh: string[]
+    /** HTBB_NAP_DEMO=1 người vận hành đặt (trước khi xét loại trừ với nạp thật). */
+    demoYeuCau: boolean
+    /**
+     * CHẾ ĐỘ DEMO đang bật (napDemoThuan.ts): hiện luồng nạp / Thành viên với số TK minh hoạ, KHÔNG thu tiền.
+     * Khi demo: bat = false, congAnToan = false; webhook + xác nhận tay bị từ chối. Không bao giờ cùng lúc với nạp thật.
+     */
+    demo: boolean
+    /** HTBB_NAP_DEMO_CHI_ADMIN (mặc định 1): chỉ tài khoản trong HTBB_ADMIN_ACCOUNTS thấy demo. */
+    demoChiAdmin: boolean
+    /** Lý do HTBB_NAP_DEMO=1 bị từ chối (trang admin hiện). */
+    demoLyDoTuChoi: string[]
+    /** Số / tên tài khoản minh hoạ hiển thị khi demo (VD 0123456xxx / DEMO HTBB). */
+    demoSoTaiKhoan: string
+    demoTenTaiKhoan: string
   }
   admin: {
     accounts: string[]
@@ -310,6 +325,12 @@ export function useHtbbConfig(): HtbbConfig {
       lyDoTat: [],
       congAnToan: true,
       loiCauHinh: [],
+      demoYeuCau: envBool('HTBB_NAP_DEMO', false),
+      demo: false,
+      demoChiAdmin: envBool('HTBB_NAP_DEMO_CHI_ADMIN', true),
+      demoLyDoTuChoi: [],
+      demoSoTaiKhoan: '',
+      demoTenTaiKhoan: '',
     },
     admin: {
       accounts: [...new Set(admins)],
@@ -331,6 +352,7 @@ export function useHtbbConfig(): HtbbConfig {
       .split(',').map(s => s.trim()).filter(Boolean),
   }
   // FAIL CLOSED (máy thật): bật nạp với cấu hình yếu = TẮT, in rõ lý do. Máy dev: chỉ cảnh báo.
+  // DEMO (HTBB_NAP_DEMO=1): loại trừ với nạp thật — luật ở napDemoThuan.quyetDinhCheDoNap.
   {
     const loi = kiemCauHinhNapThat({
       secret: env('HTBB_SECRET') ?? '',
@@ -342,17 +364,23 @@ export function useHtbbConfig(): HtbbConfig {
       sepayApiToken: cache.nap.sepayApiToken,
       sandbox: cache.nap.sandbox,
     })
+    const cd = quyetDinhCheDoNap({
+      yeuCauBat: cache.nap.yeuCauBat,
+      yeuCauDemo: cache.nap.demoYeuCau,
+      loiThat: loi,
+      dev: !!import.meta.dev,
+      accountNo: cache.nap.accountNo,
+      accountName: cache.nap.accountName,
+    })
     cache.nap.loiCauHinh = loi
-    cache.nap.congAnToan = loi.length === 0 || !!import.meta.dev
-    if (!cache.nap.yeuCauBat) {
-      // Không bật nạp lượng: chỉ ghi nhận lỗi (bán Thành viên cũng đọc congAnToan).
-    } else if (loi.length && !import.meta.dev) {
-      cache.nap.bat = false
-      cache.nap.lyDoTat = loi
-      console.error(`[htbb] NAP TIEN BI TAT (fail closed) - cau hinh chua an toan:\n  - ${loi.join('\n  - ')}\n  Sua bien moi truong roi khoi dong lai. Xem docs/van-hanh.md.`)
-    } else if (loi.length) {
-      console.warn(`[htbb] (dev) cau hinh nap chua dat cho may that:\n  - ${loi.join('\n  - ')}`)
-    }
+    cache.nap.bat = cd.bat
+    cache.nap.congAnToan = cd.congAnToan
+    cache.nap.lyDoTat = cd.lyDoTat
+    cache.nap.demo = cd.demo
+    cache.nap.demoLyDoTuChoi = cd.lyDoTuChoiDemo
+    cache.nap.demoSoTaiKhoan = cd.soTkDemo
+    cache.nap.demoTenTaiKhoan = cd.tenTkDemo
+    for (const [muc, dong] of cd.log) console[muc](dong)
   }
   return cache
 }

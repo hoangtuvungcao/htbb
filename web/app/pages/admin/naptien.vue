@@ -32,7 +32,7 @@ interface Don {
 }
 interface Goi { ma: string, ten: string, loai: string, gia_vnd: number, luong: number, mo_ta: string, dang_ban: number, thu_tu: number }
 interface Mon { ma: string, ten: string, nhom: string, trao: string, gia_luong: number, han_ngay: number, gioi_han: number, nhom_xoay: number, giao_dich_duoc: number, co_chi_so: number, dang_ban: number, thu_tu: number, mo_ta: string, loi: string | null }
-interface CanhBao { napBat: boolean, daCoGiayPhep: boolean, sandbox: boolean, sepay: boolean, casso: boolean, taiKhoanMacDinh: boolean, yeuCauBat: boolean, lyDoTat: string[], jobSepay: boolean }
+interface CanhBao { napBat: boolean, daCoGiayPhep: boolean, sandbox: boolean, sepay: boolean, casso: boolean, taiKhoanMacDinh: boolean, yeuCauBat: boolean, lyDoTat: string[], jobSepay: boolean, demo?: boolean, demoYeuCau?: boolean, demoChiAdmin?: boolean, demoLyDoTuChoi?: string[], demoSoTaiKhoan?: string }
 interface TongQuan {
   coBang: boolean
   canhBao: CanhBao
@@ -61,6 +61,7 @@ const tabs = [
   { label: 'Nhật ký', value: 'nhat_ky', icon: 'i-lucide-scroll-text' },
   { label: 'Mốc cũ', value: 'moc_cu', icon: 'i-lucide-archive' },
 ]
+const tabsHien = computed(() => tq.value?.canhBao.demo ? [{ label: 'Đơn DEMO', value: 'demo', icon: 'i-lucide-flask-conical' }, ...tabs] : tabs)
 
 // ---------------------------------------------------------------- tổng quan
 const tq = ref<TongQuan | null>(null)
@@ -182,6 +183,20 @@ function xemNhatKy(d: Don) {
   tab.value = 'nhat_ky'
 }
 
+// ---------------------------------------------------------------- đơn DEMO (HTBB_NAP_DEMO=1)
+// Đơn demo chỉ nằm trong bộ nhớ web; "Giả lập thanh toán" chỉ đổi màn hình người tạo đơn sang thành công,
+// KHÔNG ghi database, KHÔNG cộng lượng / Thành viên.
+interface DonDemo { ma_don: string, username: string, ten_goi: string, loai: string, so_tien: number, charname: string, trang_thai: string, tao_luc: string, cong_luc: string | null, gia_lap_boi: string }
+const demo = ref<{ demo: boolean, dons: DonDemo[], webhook: { luc: string, duongDan: string, ip: string }[] } | null>(null)
+async function taiDemo() {
+  try {
+    demo.value = await api('/api/admin/naptien/demo-don')
+  } catch (e) {
+    toast.add({ title: loiApi(e), color: 'error' })
+  }
+}
+const giaLapDemo = (d: DonDemo) => gui('/api/admin/naptien/demo-gia-lap', { ma_don: d.ma_don }, () => { taiDemo() })
+
 // ---------------------------------------------------------------- mốc cũ
 const mocCu = ref<any[]>([])
 async function taiMocCu() {
@@ -198,6 +213,10 @@ watch(tab, (t) => {
   if (t === 'cua_hang') taiMon()
   if (t === 'nhat_ky') taiNhatKy()
   if (t === 'moc_cu') taiMocCu()
+  if (t === 'demo') taiDemo()
+})
+watch(() => tq.value?.canhBao.demo, (b) => {
+  if (b && tab.value === 'don') tab.value = 'demo'
 })
 onMounted(() => {
   taiTongQuan()
@@ -217,6 +236,22 @@ onMounted(() => {
 
     <!-- ============ CẢNH BÁO ============ -->
     <UAlert
+      v-if="tq?.canhBao.demo"
+      color="error"
+      variant="solid"
+      icon="i-lucide-flask-conical"
+      title="BẢN DEMO — không chuyển tiền. Số tài khoản chỉ để minh hoạ."
+      :description="`HTBB_NAP_DEMO=1: /naptien và /thanh-vien hiện luồng minh hoạ (TK ${tq.canhBao.demoSoTaiKhoan}, hình QR giả, không mở app ngân hàng) cho ${tq.canhBao.demoChiAdmin ? 'tài khoản trong HTBB_ADMIN_ACCOUNTS' : 'MỌI người'}. Đơn demo chỉ nằm trong bộ nhớ, không vào nap_don; webhook và xác nhận tay bị từ chối; không cộng gì vào game.`"
+    />
+    <UAlert
+      v-if="tq?.canhBao.demoYeuCau && !tq.canhBao.demo"
+      color="warning"
+      variant="subtle"
+      icon="i-lucide-flask-conical-off"
+      title="HTBB_NAP_DEMO=1 bị TỪ CHỐI — giữ chế độ hiện tại"
+      :description="(tq.canhBao.demoLyDoTuChoi ?? []).join(' · ')"
+    />
+    <UAlert
       v-if="tq?.canhBao.napBat && !tq.canhBao.daCoGiayPhep"
       color="error"
       variant="solid"
@@ -232,7 +267,7 @@ onMounted(() => {
       title="HTBB_NAP_BAT=true nhưng nạp BỊ TẮT (fail closed): cấu hình chưa an toàn"
       :description="tq.canhBao.lyDoTat.join(' · ')"
     />
-    <UAlert v-else-if="tq && !tq.canhBao.napBat" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (HTBB_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, sql/pokemon_nap_tien.sql, sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
+    <UAlert v-else-if="tq && !tq.canhBao.napBat && !tq.canhBao.demo" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (HTBB_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, sql/pokemon_nap_tien.sql, sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
     <UAlert v-if="tq?.canhBao.sandbox" color="warning" variant="subtle" icon="i-lucide-flask-conical" title="Chế độ thử (HTBB_NAP_SANDBOX=1)" description="Có nút Giả lập thanh toán và /api/nap/webhook-mock. KHÔNG bật trên máy thật." />
     <UAlert v-if="tq?.canhBao.napBat && !tq.canhBao.sepay && !tq.canhBao.casso" color="warning" variant="subtle" icon="i-lucide-triangle-alert" title="Chưa cấu hình webhook (SePay / Casso)" description="Đơn KHÔNG tự xác nhận. Đối chiếu sao kê rồi bấm Xác nhận (nhập mã giao dịch)." />
     <UAlert v-if="tq?.canhBao.napBat && tq.canhBao.taiKhoanMacDinh" color="error" variant="subtle" icon="i-lucide-landmark" title="Chưa đặt tài khoản nhận tiền" description="Đặt HTBB_TPBANK_ACCOUNT_NO / HTBB_TPBANK_ACCOUNT_NAME (và HTBB_NAP_BANK_BIN nếu không phải TPBank)." />
@@ -244,10 +279,53 @@ onMounted(() => {
       <summary class="cursor-pointer select-none px-4 py-2 text-sm font-medium">Công tắc bán, hoàn tiền, trần chi tiêu (Cấu hình hệ thống)</summary>
       <div class="p-3"><AdminHethongCauHinhNhom nhom="nap_tien" /></div>
     </details>
-    <UTabs v-model="tab" :items="tabs" :content="false" class="w-full" />
+    <UTabs v-model="tab" :items="tabsHien" :content="false" class="w-full" />
+
+    <!-- ============ ĐƠN DEMO ============ -->
+    <template v-if="tab === 'demo'">
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between gap-3">
+            <b>Đơn DEMO (bộ nhớ, mất khi khởi động lại web)</b>
+            <UButton size="xs" color="neutral" variant="outline" icon="i-lucide-refresh-cw" @click="taiDemo">
+              Tải lại
+            </UButton>
+          </div>
+        </template>
+        <p class="mb-3 text-sm text-muted">
+          "Giả lập thanh toán" chỉ đổi màn hình của người tạo đơn sang thành công — không ghi database, không cộng lượng, không cấp Thành viên.
+        </p>
+        <ul v-if="demo?.dons.length" class="divide-y divide-default/60 text-sm">
+          <li v-for="d in demo.dons" :key="d.ma_don" class="flex flex-wrap items-center justify-between gap-2 py-2">
+            <span>
+              <span class="font-mono">{{ d.ma_don }}</span> · {{ d.username }}{{ d.charname ? ` → ${d.charname}` : '' }} · {{ d.ten_goi }} · {{ vnd(d.so_tien) }} · <span class="text-muted">{{ d.tao_luc }}</span>
+            </span>
+            <span class="flex items-center gap-2">
+              <UBadge :color="d.trang_thai === 'da_cong' ? 'success' : 'warning'" variant="subtle" :label="d.trang_thai === 'da_cong' ? `Đã giả lập (${d.gia_lap_boi})` : 'Chờ (demo)'" />
+              <UButton v-if="laSieu && d.trang_thai === 'cho_thanh_toan'" size="xs" color="warning" variant="soft" icon="i-lucide-flask-conical" :loading="dangGui" @click="giaLapDemo(d)">
+                Giả lập thanh toán
+              </UButton>
+            </span>
+          </li>
+        </ul>
+        <p v-else class="text-sm text-muted">
+          Chưa có đơn demo. Đăng nhập website bằng tài khoản quản trị, vào /naptien hoặc /thanh-vien để tạo.
+        </p>
+      </UCard>
+      <UCard v-if="demo?.webhook.length">
+        <template #header>
+          <b>Webhook bị từ chối khi đang demo</b>
+        </template>
+        <ul class="text-sm">
+          <li v-for="(w, i) in demo.webhook" :key="i">
+            {{ w.luc }} · <span class="font-mono">{{ w.duongDan }}</span> · {{ w.ip }}
+          </li>
+        </ul>
+      </UCard>
+    </template>
 
     <!-- ============ ĐƠN ============ -->
-    <template v-if="tab === 'don'">
+    <template v-else-if="tab === 'don'">
       <UCard>
         <form class="flex flex-wrap items-end gap-3" @submit.prevent="page = 1; taiDon()">
           <UFormField label="Trạng thái">

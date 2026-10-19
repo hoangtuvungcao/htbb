@@ -15,7 +15,7 @@ useSeoMeta({
 interface Goi { ma: string, ten: string, loai: string, gia_vnd: number, luong: number, mo_ta: string }
 interface NhanVat { id: number, charname: string, lastLv: number }
 interface Tran { tuan: number, thang: number, tuDat: number, cho: number, choLuc: string | null, daTuan: number, daThang: number }
-interface DanhMuc { goi: Goi[], nhanVat: NhanVat[], tran: Tran, khoaNap: boolean, noLuong: number, mua: { so: number, conNgay: number } | null, tyGia: number }
+interface DanhMuc { goi: Goi[], nhanVat: NhanVat[], tran: Tran, khoaNap: boolean, noLuong: number, mua: { so: number, conNgay: number } | null, tyGia: number, demo?: boolean }
 interface DonHienThi {
   ma_don: string
   ma_goi: string
@@ -34,6 +34,10 @@ const api = useApi()
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
+// Bản DEMO (HTBB_NAP_DEMO=1): banner, hình QR giả, không nút mở app ngân hàng, không cộng gì.
+const napDemo = useNapDemo()
+const donDemo = ref(false)
+const laDemo = computed(() => napDemo.xem.value || !!dm.value?.demo || donDemo.value)
 
 const maDon = computed(() => (typeof route.query.ma_don === 'string' ? route.query.ma_don : ''))
 const dm = ref<DanhMuc | null>(null)
@@ -106,7 +110,9 @@ async function hoiTrangThai() {
       toast.add({ title: 'Đã nhận được thanh toán!', description: `Đang chuyển vào Pokémon ${don.value.charname} (cần đang online trong game).`, color: 'success', icon: 'i-lucide-party-popper' })
     }
     if (cu !== r.trang_thai && r.trang_thai === 'da_cong') {
-      toast.add({ title: `Quà đã vào ${don.value.charname}!`, color: 'success', icon: 'i-lucide-check' })
+      toast.add(donDemo.value
+        ? { title: 'DEMO: giả lập thành công', description: 'Không có gì được cộng vào game.', color: 'warning', icon: 'i-lucide-flask-conical' }
+        : { title: `Quà đã vào ${don.value.charname}!`, color: 'success', icon: 'i-lucide-check' })
       taiLichSu()
       return
     }
@@ -126,11 +132,12 @@ async function taiDon(ma: string) {
   if (!ma) return
   dangTai.value = true
   try {
-    const r = await api<{ don: DonHienThi, qr: string, nganHang: { bin: string, soTaiKhoan: string, chuTaiKhoan: string }, hetHanMs: number | null, bayGioMs: number, moApp: { ten: string, url: string }[] }>('/api/nap/don', { query: { ma_don: ma } })
+    const r = await api<{ don: DonHienThi, qr: string, nganHang: { bin: string, soTaiKhoan: string, chuTaiKhoan: string }, hetHanMs: number | null, bayGioMs: number, moApp: { ten: string, url: string }[], demo?: boolean }>('/api/nap/don', { query: { ma_don: ma } })
+    donDemo.value = !!r.demo
     don.value = r.don
     qr.value = r.qr
     nganHang.value = r.nganHang
-    moApp.value = r.moApp ?? []
+    moApp.value = r.demo ? [] : (r.moApp ?? [])
     hetHanMs.value = r.hetHanMs
     lechMs.value = r.bayGioMs - Date.now()
     henHoi(4000)
@@ -197,6 +204,7 @@ const tranThang = computed(() => {
 
 watch(maDon, ma => taiDon(ma), { immediate: true })
 onMounted(() => {
+  napDemo.tai()
   taiDanhMuc()
   taiLichSu()
   dongHo = setInterval(() => { bayGio.value = Date.now() }, 1000)
@@ -225,6 +233,7 @@ const cotLichSu = [
     />
 
     <UContainer class="max-w-6xl py-14">
+      <NapDemoBanner v-if="laDemo" :chi-admin="napDemo.info.value?.chiAdmin" />
       <UAlert v-if="loi" class="mb-8" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="loi" role="alert" />
 
       <!-- ============ ĐANG XEM 1 ĐƠN ============ -->
@@ -245,16 +254,20 @@ const cotLichSu = [
 
               <!-- Chờ thanh toán -->
               <div v-if="chuaThanhToan" class="mt-6">
-                <div class="mx-auto w-fit rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(10,26,51,.14)]">
+                <NapQrDemo v-if="donDemo || !qr" :ma="don.ma_don" />
+                <div v-else class="mx-auto w-fit rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(10,26,51,.14)]">
                   <img :src="qr" alt="Mã QR chuyển khoản VietQR" class="block size-64 sm:size-72" width="288" height="288">
                 </div>
-                <p class="mt-4 text-center text-sm text-muted">
+                <p v-if="donDemo" class="mt-4 text-center text-sm font-semibold text-error">
+                  Bản DEMO: hình trên KHÔNG phải mã QR, không quét được. Đừng chuyển khoản.
+                </p>
+                <p v-else class="mt-4 text-center text-sm text-muted">
                   Quét bằng app ngân hàng bất kỳ hỗ trợ VietQR — số tiền và nội dung đã điền sẵn.
                 </p>
                 <p v-if="conLai" class="mt-1 text-center text-sm" role="timer">
                   Thời hạn thanh toán: <strong class="tabular-nums text-highlighted">{{ conLai }}</strong>
                 </p>
-                <div v-if="moApp.length" class="mt-4">
+                <div v-if="moApp.length && !donDemo" class="mt-4">
                   <p class="text-center text-xs text-muted">
                     Đang dùng điện thoại? Mở thẳng app ngân hàng (đã điền sẵn):
                   </p>
@@ -286,10 +299,21 @@ const cotLichSu = [
                     </dt>
                     <dd class="text-right text-highlighted">
                       {{ nganHang.soTaiKhoan }} · {{ nganHang.chuTaiKhoan }}
+                      <UBadge v-if="donDemo" class="ml-1" color="error" variant="solid" size="sm" label="minh hoạ" />
                     </dd>
                   </div>
                 </dl>
                 <UAlert
+                  v-if="donDemo"
+                  class="mt-6"
+                  color="error"
+                  variant="subtle"
+                  icon="i-lucide-octagon-x"
+                  title="Đơn DEMO — không chuyển tiền"
+                  description="Tài khoản trên chỉ để minh hoạ. Đơn này không được ghi nhận và không cộng gì vào game. Quản trị có thể bấm Giả lập thanh toán ở /admin/naptien để xem màn hình thành công."
+                />
+                <UAlert
+                  v-else
                   class="mt-6"
                   color="warning"
                   variant="subtle"
@@ -301,7 +325,7 @@ const cotLichSu = [
                     <span class="absolute inline-flex size-full animate-ping rounded-full bg-primary/70" />
                     <span class="relative inline-flex size-2.5 rounded-full bg-primary" />
                   </span>
-                  Đang chờ thanh toán... trang sẽ tự cập nhật.
+                  {{ donDemo ? 'Đang chờ (DEMO)... trang sẽ tự cập nhật khi quản trị bấm Giả lập thanh toán.' : 'Đang chờ thanh toán... trang sẽ tự cập nhật.' }}
                 </p>
               </div>
 
@@ -311,11 +335,14 @@ const cotLichSu = [
                   <UIcon :name="dangChoVaoGame ? 'i-lucide-hourglass' : 'i-lucide-check'" class="size-10" />
                 </div>
                 <h3 class="mt-6 font-display text-2xl font-bold text-highlighted">
-                  {{ TEN_TRANG_THAI_NAP[don.trang_thai] ?? don.trang_thai }}
+                  {{ donDemo ? 'Giả lập thanh toán thành công (DEMO)' : (TEN_TRANG_THAI_NAP[don.trang_thai] ?? don.trang_thai) }}
                 </h3>
                 <p v-if="dangChoVaoGame" class="mt-3 text-muted">
                   Vào game bằng Pokémon <strong class="text-highlighted">{{ don.charname }}</strong> — quà tự vào trong khoảng 15 giây.
                   Thẻ tháng / Vé mùa: nhận thưởng ở <strong class="text-highlighted">NPC Tổng Quản › Cửa hàng &amp; Nạp</strong>.
+                </p>
+                <p v-else-if="don.trang_thai === 'da_cong' && donDemo" class="mt-3 font-semibold text-error">
+                  BẢN DEMO: đây chỉ là màn hình minh hoạ lúc {{ don.cong_luc }} — KHÔNG có lượng / quà nào được cộng vào {{ don.charname }}.
                 </p>
                 <p v-else-if="don.trang_thai === 'da_cong'" class="mt-3 text-muted">
                   Đã cộng vào {{ don.charname }} lúc {{ don.cong_luc }}.
@@ -428,7 +455,10 @@ const cotLichSu = [
             <p v-if="dm?.tran.choLuc" class="mt-1 text-xs text-warning">
               Đang chờ đổi thành {{ dm.tran.cho ? vnd(dm.tran.cho) : 'mặc định' }} lúc {{ dm.tran.choLuc }}.
             </p>
-            <form class="mt-4 flex gap-2" @submit.prevent="datTran">
+            <p v-if="laDemo" class="mt-2 text-xs text-error">
+              Bản DEMO: không lưu trần nạp.
+            </p>
+            <form v-else class="mt-4 flex gap-2" @submit.prevent="datTran">
               <UInputNumber v-model="tranMoi" :min="0" :step="50000" placeholder="VD: 200000 (0 = bỏ trần)" class="flex-1" />
               <UButton type="submit" :loading="dangDatTran" icon="i-lucide-shield-check">
                 Đặt

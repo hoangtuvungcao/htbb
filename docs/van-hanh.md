@@ -515,6 +515,7 @@ phần sau. Không phát lượng lớn qua bảng cũ: lượng là `int`, trà
 | Giấy phép | `NAP_DA_CO_GIAY_PHEP=1` | chưa có → `/admin/naptien` hiện cảnh báo đỏ |
 | Cấu hình cổng | `HTBB_NAP_ACCOUNT_NO`, `HTBB_NAP_ACCOUNT_NAME`, `HTBB_NAP_BANK_BIN`, `HTBB_SEPAY_WEBHOOK_APIKEY`, `HTBB_ADMIN_NAPTIEN_PASSWORD` (≥ 12 ký tự), `HTBB_SECRET` (≥ 32 ký tự) | thiếu/yếu/mặc định một khoá → web tự tắt, log `NAP TIEN BI TAT (fail closed)`, hộp đỏ liệt kê lý do |
 | Sandbox | `HTBB_NAP_SANDBOX` **không** được đặt trên máy thật | đặt trên máy thật cũng làm nạp tắt |
+| Demo | `HTBB_NAP_DEMO=1` (mục 9.6) | demo chạy = nạp thật tắt; cấu hình thật hợp lệ = demo bị từ chối |
 | Game | `sv.lau_dai=1` **và** `sv.nap_tien=1` (cần khởi động lại) | log `NAP TIEN -> BAT` |
 | Công tắc từng loại (áp dụng ngay, `/admin/cau-hinh-he-thong` nhóm Nạp tiền) | `nap.luong.bat`, `nap.the_thang.bat`, `nap.ve_mua.bat` (ẩn gói + chặn đơn mới), `nap.tang_toc.bat` (cửa hàng tăng tốc trong game), `nap.hoan_tien.thu_cong`, `nap.hoan_tien.tu_dong` | đọc lỗi = coi như tắt |
 
@@ -573,6 +574,40 @@ Xác nhận tay theo mã giao dịch sao kê: `/admin/naptien` › Đơn, hoặc
   thành **nợ** của tài khoản (`da_thu_hoi`): trừ dần vào lượng đang có, lượng nạp sau trả nợ trước; thẻ tháng −30 ngày,
   vé mùa mất track cao cấp. Nợ > 0 khoá cửa hàng và đổi tên. Chargeback còn khoá tạo đơn mới.
 - Mọi thao tác ghi `nap_nhat_ky` + nhật ký admin.
+
+### 9.6 Bản DEMO (xem luồng nạp + Thành viên, không thu tiền)
+
+> **CẢNH BÁO**: bản demo chỉ để chủ server XEM giao diện trên máy thật. Không dùng thay nạp thật, không đưa số tài
+> khoản thật vào demo. Tắt demo (`HTBB_NAP_DEMO=0`) **trước** khi điền cấu hình thật ở 9.3.
+
+| Biến | Giá trị demo | Ý nghĩa |
+|---|---|---|
+| `HTBB_NAP_DEMO` | `1` | bật bản demo (mặc định `0`) |
+| `HTBB_NAP_DEMO_CHI_ADMIN` | `1` (mặc định) | chỉ tài khoản người chơi có tên trong `HTBB_ADMIN_ACCOUNTS` (đăng nhập website) thấy menu + trang Nạp / Thành viên; người khác thấy trạng thái "đang tắt" như thường. `0` = mọi người thấy bản demo |
+| `HTBB_NAP_ACCOUNT_NO` | `0123456xxx` | số **minh hoạ**: chỉ số và chữ `x`, có ít nhất một `x` (trống = `0123456xxx`). Số thật (toàn chữ số) → demo bị từ chối |
+| `HTBB_NAP_ACCOUNT_NAME` | `DEMO HTBB` | tên hiển thị (trống = `DEMO HTBB`) |
+| `HTBB_NAP_BANK_BIN` | `970422` | chỉ để hiển thị |
+
+Khi demo chạy (log `NAP TIEN CHE DO DEMO`):
+
+- Mọi trang `/naptien`, `/thanh-vien`, `/xac-nhan-nap`, `/admin/naptien`, `/admin/thanh-vien` có banner
+  **"BẢN DEMO — không chuyển tiền. Số tài khoản chỉ để minh hoạ."**
+- Không có mã VietQR thật: trình duyệt vẽ một hình giả (không mã hoá gì, không quét được) đè chữ **DEMO**; không
+  gọi `img.vietqr.io`; không có nút mở app ngân hàng.
+- Luồng đầy đủ: chọn gói / Pokémon nhận, mã nội dung chuyển khoản, màn hình chờ. Đơn demo mã `DM` + 8 ký tự (không
+  bao giờ khớp mã thật `HT…`), **chỉ nằm trong bộ nhớ** tiến trình web (mất khi khởi động lại, sống 24 giờ, tối đa 20
+  đơn/tài khoản). Không ghi `nap_*`, `tv_*`; không cộng lượng, không cấp Thành viên, không chạm database game.
+  Server game (`sv.nap_tien`) không liên quan.
+- `/admin/naptien` › tab **Đơn DEMO** › **Giả lập thanh toán** (Siêu quản trị): đổi đơn demo sang "đã giả lập" để
+  người tạo đơn thấy màn hình thành công (ghi rõ "không cộng gì"). Không đi qua `napXacNhanThanhToan`.
+- Đường thu tiền thật đều đóng: `HTBB_NAP_BAT` coi như tắt, `congAnToan=false` (Thành viên thật không bán được);
+  `/api/nap/webhook-sepay|casso|mock` trả **403** và ghi log `DEMO: tu choi webhook` (tab Đơn DEMO liệt kê);
+  `/api/xac-nhan-nap/**` trả 403; `napXacNhanThanhToan` / `napXuLyGiaoDich` / `napTaoDon` tự từ chối khi demo
+  (lớp chặn thứ hai); job dò SePay không chạy.
+- **Loại trừ với nạp thật**: cấu hình thật đã hợp lệ (đủ 9.2) hoặc `HTBB_NAP_BAT` đang chạy thật → demo **bị từ
+  chối**, log `HTBB_NAP_DEMO=1 BI TU CHOI`, giữ chế độ thật; `/admin/naptien` hiện lý do.
+
+Chuyển từ demo sang thật: đặt `HTBB_NAP_DEMO=0`, điền số tài khoản thật + các khoá ở 9.2, khởi động lại `htbb-web`.
 
 ---
 

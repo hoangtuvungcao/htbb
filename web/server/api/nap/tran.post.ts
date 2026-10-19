@@ -3,6 +3,10 @@
  * HẠ có hiệu lực ngay; NÂNG / bỏ chỉ có hiệu lực sau 72 giờ. -> { ngay, hieuLucLuc }
  */
 export default defineEventHandler(async (event) => {
+  if (napDemoBat()) {
+    await napDemoRequireUser(event)
+    throw apiLoi(409, 'Bản DEMO: không lưu trần nạp.', { code: 'demo' })
+  }
   const u = await requireUser(event)
   if (!(await napCoBang())) napThieuBang(true)
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))

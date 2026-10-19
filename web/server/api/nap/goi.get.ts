@@ -3,6 +3,7 @@
  * Cần đăng nhập (trang /naptien chỉ cho người đã đăng nhập). -> { goi, nhanVat, tran, mua }
  */
 export default defineEventHandler(async (event) => {
+  if (napDemoBat()) return napDemoDanhMuc((await napDemoRequireUser(event)).id) // DEMO: chỉ đọc, không ghi nap_vi
   const u = await requireUser(event)
   if (!(await napCoBang())) napThieuBang(true)
   try {
