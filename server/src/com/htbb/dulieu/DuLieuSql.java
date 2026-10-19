@@ -370,7 +370,7 @@ public final class DuLieuSql {
             final NangCap c = docNangCap(b);
             if (c.tenBac.length != ThongSoLauDai.BAC_TB_GIA.length || c.tenBac.length != ThongSoLauDai.BAC_TB_NGAY_MO.length) {
                 throw new IllegalStateException(c.tenBac.length + " bac, ThongSoLauDai co " + ThongSoLauDai.BAC_TB_GIA.length
-                        + " bac gia/ngay mo (chay lai tools/pokemon/sinh_sql_lau_dai.py)");
+                        + " bac gia/ngay mo (sua bang data_nang_cap_lau_dai / data_kinh_te_lau_dai trong CSDL, xem sql/README.md)");
             }
             for (int k = 1; k <= SO_CONG; k++) {
                 if (c.pity[k - 1] != (c.tiLe[k - 1] + ThongSoLauDai.PITY_CHIA - 1) / ThongSoLauDai.PITY_CHIA) {

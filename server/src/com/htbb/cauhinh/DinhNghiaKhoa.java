@@ -3,7 +3,7 @@ package com.htbb.cauhinh;
 import java.util.regex.Pattern;
 
 /**
- * Dinh nghia MOT khoa cau hinh (tools/cauhinh/danh_muc.json -> bang cau_hinh_danh_muc -> {@link DanhMucSql}).
+ * Dinh nghia MOT khoa cau hinh (tools/luu_tru_sinh_du_lieu/cauhinh/danh_muc.json -> bang cau_hinh_danh_muc -> {@link DanhMucSql}).
  * Bat bien sau khi dung xong (cac ham dat chi goi trong DanhMucSql / test).
  */
 public final class DinhNghiaKhoa {

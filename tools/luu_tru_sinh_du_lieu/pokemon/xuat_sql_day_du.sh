@@ -13,16 +13,16 @@
 set -e
 MYSQL=${MYSQL:-mysql -uroot}
 MYSQLDUMP=${MYSQLDUMP:-mysqldump -uroot}
-RA=sql/htbb_day_du.sql
+RA=${RA:-sql/htbb_day_du.sql}
 # Tep nguon (seed, migration, pokemon_*.sql sinh): du_lieu/sql_nguon/. sql/ chi con tep day du nay.
-NGUON=du_lieu/sql_nguon
+NGUON=tools/luu_tru_sinh_du_lieu/sql_nguon   # (da luu tru 10/2026; lan chay cuoi sinh ban day du hien tai)
 
 # Migration cu: loi "da co" (1060 trung cot, 1062 trung khoa) la binh thuong vi seed da gom san.
 MIGRATION="them_bang_2buoc them_bang_cam_may them_bang_dieu_khien_server them_bang_su_kien
 them_bang_tob_log_online them_bang_tob_top_thuong them_bang_web_admin_log them_bang_web_chan_spam
 them_bang_web_lenh_nhan_vat them_bang_tob_client_dang_nhap them_cot_kho_xu_luong them_khoa_duy_nhat_giftcode_log
 them_phi_phong_vo_hinh them_su_kien_world_cup skin_linh_thu ten_mo_ta_skin_linh_thu
-sua_type_skin_linh_thu xoa_su_kien_trung_lap them_bang_chong_clone them_lich_su_kien_nam"
+sua_type_skin_linh_thu xoa_su_kien_trung_lap them_bang_chong_clone them_lich_su_kien_nam them_bang_top_boss web_cms"
 # Pokemon: PHAI dung thu tu nay (pokemon_doi_chu cuoi cung).
 POKEMON="them_cot_pokemon them_bang_pokedex pokemon_du_lieu_quai pokemon_doi_ten_vat_pham
 pokemon_doi_ten_thu pokemon_vat_pham_eevee pokemon_icon_vat_pham pokemon_doi_chu"
@@ -59,11 +59,11 @@ CHI_MUC="them_chi_muc_production"
 $MYSQL -e "DROP DATABASE IF EXISTS account; CREATE DATABASE account CHARACTER SET utf8;
 DROP DATABASE IF EXISTS htbb_db; CREATE DATABASE htbb_db CHARACTER SET utf8;"
 $MYSQL --default-character-set=utf8 account < server/loginServer/account.sql > /dev/null
-$MYSQL --default-character-set=utf8 htbb_db < du_lieu/sql_nguon/gamedb7_clean.sql
+$MYSQL --default-character-set=utf8 htbb_db < $NGUON/gamedb7_clean.sql
 # Admin trong ban dump co mat khau NGAU NHIEN (khong ai biet): sau khi nap, dat lai mat khau admin
 # (docs/trien-khai.md). Khong bao gio commit mat khau that vao repo.
 MK_NGAU_NHIEN=$(od -An -N12 -tx1 /dev/urandom | tr -d ' \n')
-sed "s/^SET @admin_pass = .*/SET @admin_pass = '$MK_NGAU_NHIEN';/" vps/db_new_server.sql \
+sed "s/^SET @admin_pass = .*/SET @admin_pass = '$MK_NGAU_NHIEN';/" $NGUON/db_new_server.sql \
     | $MYSQL --default-character-set=utf8 htbb_db > /dev/null
 for f in $MIGRATION; do
     $MYSQL -f --default-character-set=utf8 htbb_db < $NGUON/$f.sql 2>&1 | grep -v "ERROR 106[02]" || true

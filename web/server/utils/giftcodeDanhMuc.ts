@@ -374,8 +374,7 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
     ma: 'ngoc',
     ten: `Tất cả ngọc (${mucNgoc.length})`,
     loai: 'GEM',
-    ghiChu: 'Tên ngọc không có trong CSDL — bảng này sinh từ mã nguồn, xem '
-      + 'tools/SinhDanhMucNgoc.java.',
+    ghiChu: 'Tên ngọc không có trong CSDL — bảng này là tệp tĩnh dựng từ mã nguồn máy chủ (giftcodeNgoc.gen.ts).',
     muc: mucNgoc,
   })
 

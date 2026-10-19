@@ -167,10 +167,10 @@ public final class KiemProxyTinCay {
     }
 
     private static void dongBoCauHinh() {
-        final String dm = doc("../tools/cauhinh/danh_muc.json");
-        Kiem.dung("danh_muc.json: sv.proxyTinCay mac dinh 127.0.0.1,::1",
+        final String dm = DayDu.danhMucJson();
+        Kiem.dung("danh muc cau hinh (CSDL): sv.proxyTinCay mac dinh 127.0.0.1,::1",
                 dm.contains("\"khoa\": \"sv.proxyTinCay\"") && dm.contains("\"macDinh\": \"" + ProxyTinCay.MAC_DINH + "\""));
-        Kiem.dung("danh_muc.json: sv.dangNhapIpNguong / sv.dangNhapIpChoMs",
+        Kiem.dung("danh muc cau hinh (CSDL): sv.dangNhapIpNguong / sv.dangNhapIpChoMs",
                 dm.contains("\"khoa\": \"sv.dangNhapIpNguong\"") && dm.contains("\"khoa\": \"sv.dangNhapIpChoMs\""));
         final String tmpl = doc("../vps/server.ini.tmpl");
         // Ban mau chi tin loopback (Nova agent cung may); dai WAF them qua cau hinh trung tam

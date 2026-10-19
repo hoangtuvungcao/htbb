@@ -14,7 +14,7 @@ import java.util.Locale;
 /**
  * MO PHONG CHI SO / TTK (docs/thiet-ke-game.md). TAT DINH (khong ngau nhien: ky vong).
  *
- * Mo hinh = mo hinh noi dung (tools/pokemon/sinh_sql_lau_dai.py quai_de_xuat + sinh_noi_dung.py Gym/boss):
+ * Mo hinh = mo hinh noi dung (tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py quai_de_xuat + sinh_noi_dung.py Gym/boss):
  *   tan cong nguoi  = (30 + 12L) x (1 + 0,6 x he so nang cap(+p)) x he so dong
  *   thu nguoi       = 0,25 x tan cong (+6) x he so dong;  HP nguoi = 70(25+L) x (1 + 0,6 x nang cap) x he so dong
  *   quai thuong     = quai_de_xuat(L): TTK muc tieu 4/5/6 giay o +6, 15/12 don ha nguoi
@@ -24,12 +24,12 @@ import java.util.Locale;
  * giam ST 85%, ne 60%, % cong +150%), TOI DA SAU TRAN (cung so lieu qua GioiHanChiSo).
  *
  * Chay o HTBB/: javac -encoding UTF-8 -cp &lt;lop src&gt; -d &lt;ra&gt; tools/pokemon/MoPhongChiSo.java
- *              java -cp &lt;ra&gt;:&lt;lop src&gt; MoPhongChiSo        -> du_lieu/mo_phong_chi_so.txt
+ *              java -cp &lt;ra&gt;:&lt;lop src&gt; MoPhongChiSo        -> tools/luu_tru_sinh_du_lieu/du_lieu/mo_phong_chi_so.txt
  * test/KiemChiSo goi chayKiem(".") qua phan chieu.
  */
 public final class MoPhongChiSo {
 
-    static final String RA = "du_lieu/mo_phong_chi_so.txt";
+    static final String RA = "tools/luu_tru_sinh_du_lieu/du_lieu/mo_phong_chi_so.txt";
     /** {ten, HP, tan cong, thu} tuong doi (THIET_KE 4.4). */
     static final String[] DONG = {"Charmander", "Bulbasaur", "Eevee", "Squirtle", "Pichu"};
     static final int[][] HE_DONG = {{100, 105, 90}, {115, 90, 115}, {90, 100, 95}, {120, 85, 125}, {85, 110, 85}};
@@ -349,7 +349,7 @@ public final class MoPhongChiSo {
         }
         k.p("6. DATA_ITEM (sql/htbb_day_du.sql): %d dong trang bi nhan vat; vuot ngan sach TRUOC migration %d, SAU %d", soMau, truoc, sau);
         k.bao.append(vd);
-        k.muc("Moi dong data_item trang bi nhan vat trong ngan sach sau du_lieu/sql_nguon/pokemon_chi_so.sql", soMau > 100 && sau == 0,
+        k.muc("Moi dong data_item trang bi nhan vat trong ngan sach sau tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_chi_so.sql", soMau > 100 && sau == 0,
                 soMau + " dong, truoc " + truoc + " vuot, sau " + sau);
         k.p("");
         k.p("MUC TIEU");
@@ -395,7 +395,7 @@ public final class MoPhongChiSo {
 
     /** THIET_KE 3.6 tren danh muc (don vi thiet ke): (goc + do bac b) / (goc + 1,55 x do bac b-1) lon nhat. */
     static double bacMoiTrenCuThietKe(final String goc, final Kq k) {
-        final String csv = SinhSqlChiSo.doc(new File(goc, "du_lieu/noi_dung_trang_bi.csv").getPath());
+        final String csv = SinhSqlChiSo.doc(new File(goc, "tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_trang_bi.csv").getPath());
         if (csv.isEmpty()) {
             return 0;
         }

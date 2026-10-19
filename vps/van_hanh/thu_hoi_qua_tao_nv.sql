@@ -2,7 +2,7 @@
 --  TUY CHON - THU HOI QUA TAO NHAN VAT CU (40.000.000 xu + 20.000 luong + 30.000 luong khoa)
 --
 --  CHUA DUOC CHAY. Chu game quyet dinh rieng. Ma may chu tu ban 19/10/2026 khong phat qua nay nua
---  (data/DatabaseNhanVat.java, du_lieu/sql_nguon/sua_he_so_nap_va_qua_tao_nv.sql); tep nay chi danh cho nhan vat
+--  (data/DatabaseNhanVat.java, tools/luu_tru_sinh_du_lieu/sql_nguon/sua_he_so_nap_va_qua_tao_nv.sql); tep nay chi danh cho nhan vat
 --  TAO TRUOC do va da NHAN qua.
 --
 --  NHAN DIEN: dong nhat ky tob_log_all_item aclog='nhanxu' co chu "tu vi tri board_created db"

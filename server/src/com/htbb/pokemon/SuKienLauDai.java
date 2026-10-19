@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Lich su kien 52 tuan (docs/thiet-ke-game.md, du_lieu/su_kien_nam.csv). Lop THUAN.
+ * Lich su kien 52 tuan (docs/thiet-ke-game.md, tools/luu_tru_sinh_du_lieu/du_lieu/su_kien_nam.csv). Lop THUAN.
  *
  * Tuan theo LICH (tuan ISO cua nam: tuan 1 = Tet duong lich), mo luc thu Hai 05:00 cua tuan,
  * dong sau {@code so_ngay}. tob_su_kien chi co MOT cap mo_luc/dong_luc moi ma, nen moi ma chi
  * hen LAN KE TIEP (lan dang dien ra hoac sap toi gan nhat) - job dem goi lai de hen lan sau.
  *
- * LICH nap tu bang data_su_kien_nam (NGUON DUY NHAT, sinh boi tools/pokemon/sinh_sql_lau_dai.py) qua
+ * LICH nap tu bang data_su_kien_nam (NGUON DUY NHAT, sinh boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py) qua
  * com.htbb.dulieu.DuLieuSql luc khoi dong; test nap tu sql/htbb_day_du.sql (test/KiemDuLieuSql ghim van tay
  * cua ban chep Java cu).
  */

@@ -3,7 +3,7 @@
  *
  * DỮ LIỆU: shared/data/danh-muc-ngoc.json — SINH TỰ ĐỘNG, ĐỪNG SỬA TAY.
  *   Nguồn gốc : mảng real.Map.gemTemplate (src/real/MapNapTaiNguyen.java), repo game HTBB.
- *   Công cụ   : tools/SinhDanhMucNgoc.java trong repo game HTBB (chạy bằng Java trên mã nguồn đã
+ *   Công cụ   : tools/luu_tru_sinh_du_lieu/java/SinhDanhMucNgoc.java trong repo game HTBB (chạy bằng Java trên mã nguồn đã
  *               biên dịch); công cụ GHI THẲNG tệp JSON trên vào HTBB-Web (../HTBB-Web hoặc
  *               ../web trong monorepo). test/KiemDanhMucNgoc.java bên repo game đối chiếu lại tệp đó
  *               với mảng Java — quên sinh lại là bộ kiểm đỏ, không âm thầm lệch.

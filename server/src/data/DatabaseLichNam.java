@@ -20,7 +20,7 @@ import java.util.Set;
  * la gio Viet Nam (LichNam.MUI_GIO) - CSDL tren VPS chay gio he thong Asia/Ho_Chi_Minh.
  *
  * Web doc bang nay: /api/su-kien (trang chu, cam nang), tin tu dong (web/server/plugins/tin-su-kien.ts),
- * /admin/sukien (ghi de). SQL tay: du_lieu/sql_nguon/them_lich_su_kien_nam.sql.
+ * /admin/sukien (ghi de). SQL tay: tools/luu_tru_sinh_du_lieu/sql_nguon/them_lich_su_kien_nam.sql.
  */
 public final class DatabaseLichNam {
 

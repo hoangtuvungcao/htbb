@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * CAU HINH TRUNG TAM (docs/cau-hinh.md) - MOT dich vu cho moi khoa cau hinh chinh duoc luc chay.
  *
- * NGUON: bang {@code cau_hinh} (CSDL) > server.ini > mac dinh trong danh muc (tools/cauhinh/danh_muc.json ->
+ * NGUON: bang {@code cau_hinh} (CSDL) > server.ini > mac dinh trong danh muc (tools/luu_tru_sinh_du_lieu/cauhinh/danh_muc.json ->
  * bang cau_hinh_danh_muc, nap boi {@link DanhMucSql}). Khoa AN (lop co_dinh / luon_bat, cot lop): may that bo qua CSDL -
  * server.ini > gia tri co dinh ({@link TinhCauHinh}, docs/cau-hinh.md). Kiem kieu / khoang / lua chon ({@link KiemGiaTri}); gia tri sai bi TU CHOI, giu gia
  * tri tot gan nhat ({@link TinhCauHinh}).

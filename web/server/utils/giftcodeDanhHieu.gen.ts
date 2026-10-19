@@ -3,7 +3,7 @@
  *
  * DỮ LIỆU: shared/data/danh-muc-danh-hieu.json — SINH TỰ ĐỘNG, ĐỪNG SỬA TAY.
  *   Nguồn gốc : data.DanhHieu.getName() (src/data/DanhHieu.java), repo game HTBB.
- *   Công cụ   : tools/SinhDanhMucDanhHieu.java trong repo game HTBB (chạy bằng Java trên mã nguồn đã
+ *   Công cụ   : tools/luu_tru_sinh_du_lieu/java/SinhDanhMucDanhHieu.java trong repo game HTBB (chạy bằng Java trên mã nguồn đã
  *               biên dịch); công cụ GHI THẲNG tệp JSON trên vào HTBB-Web (../HTBB-Web hoặc
  *               ../web trong monorepo). test/KiemDanhMucDanhHieu.java bên repo game đối chiếu lại tệp đó
  *               với mảng Java — quên sinh lại là bộ kiểm đỏ, không âm thầm lệch.

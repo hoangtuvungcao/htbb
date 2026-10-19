@@ -37,7 +37,7 @@ public final class KiemNangCapDoCamTayLv86 {
     private static final String F_MAP = "src/real/Map.java";
     private static final String F_CHETAO = "src/real/MapCheTao.java";
     private static final String F_REALCTRL = "src/real/RealController.java";
-    private static final String F_SQL = "../du_lieu/sql_nguon/gamedb7_clean.sql";
+    private static final String F_SQL = "../sql/htbb_day_du.sql";
 
     public static void chay() {
         Kiem.nhom("Nang cap vu khi lv81 -> lv86 (NPC Tho Ren Than Bi, npcType -8)");
@@ -163,24 +163,13 @@ public final class KiemNangCapDoCamTayLv86 {
                     thanChot.contains("bacTren != null"));
         }
 
-        // ---- 5. du_lieu/sql_nguon/gamedb7_clean.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
+        // ---- 5. sql/htbb_day_du.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
         // idUpLevel tro DUNG toi id level-86 tuong ung, khong con -1 (mac dinh id+1 SAI). ----
-        final String[][] chuoiNangCap = {
-            {"(412,'Phá giáp kiếm'", "893"},
-            {"(425,'Gia cát đao'", "894"},
-            {"(438,'Y tơ bút'", "895"},
-            {"(451,'Viên đỉnh búa'", "896"},
-            {"(464,'Anh vũ cung'", "897"},
-        };
+        final String[][] chuoiNangCap = {{"412", "893"}, {"425", "894"}, {"438", "895"}, {"451", "896"}, {"464", "897"}};
         for (final String[] dong : chuoiNangCap) {
-            final int mocDong = sql.indexOf(dong[0]);
-            Kiem.dung("sql: tim thay dong " + dong[0], mocDong > 0);
-            if (mocDong > 0) {
-                final int mocHetDong = sql.indexOf('\n', mocDong);
-                final String dongDay = sql.substring(mocDong, mocHetDong > mocDong ? mocHetDong : sql.length());
-                Kiem.dung("sql: " + dong[0] + " co idUpLevel=" + dong[1] + " (khong con -1)",
-                        dongDay.contains("," + dong[1] + ",NULL,-1,0)"));
-            }
+            Kiem.bang("data_item " + dong[0] + " (vu khi bac 81) co idUpLevel=" + dong[1] + " (khong con -1)", dong[1],
+                    DayDu.giaTri("data_item", "id", dong[0], "iduplevel"));
+            Kiem.bang("data_item " + dong[1] + " la bac 86", "86", DayDu.giaTri("data_item", "id", dong[1], "level"));
         }
     }
 

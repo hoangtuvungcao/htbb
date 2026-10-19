@@ -81,7 +81,7 @@ defineExpose({ refresh })
     </template>
     <UAlert v-if="data && !data.coLich" color="warning" variant="subtle" icon="i-lucide-calendar-x"
       title="Chưa có bảng tob_su_kien_lich"
-      description="Máy chủ game bản mới tự tạo và ghi lịch lúc khởi động; hoặc chạy du_lieu/sql_nguon/them_lich_su_kien_nam.sql." />
+      description="Máy chủ game bản mới tự tạo và ghi lịch lúc khởi động; hoặc chạy sql/nang_cap.sql." />
     <div v-else class="divide-y divide-default">
       <div v-for="l in ds" :key="khoa(l)" class="flex flex-col gap-2 py-3 lg:flex-row lg:items-center lg:justify-between">
         <div class="min-w-0">

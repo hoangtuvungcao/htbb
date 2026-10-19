@@ -1,6 +1,6 @@
 /**
  * Tên bản đồ theo id để hiện "vị trí đã lưu" trong hồ sơ người chơi. File THUẦN (không import).
- * Nguồn: bảng data_hst_vung trong HTBB/du_lieu/sql_nguon/pokemon_he_sinh_thai.sql (tên đã thêm dấu tiếng Việt).
+ * Nguồn: bảng data_hst_vung trong HTBB/tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_he_sinh_thai.sql (tên đã thêm dấu tiếng Việt).
  * Khi nhân vật đang online, tên thật lấy từ tob_vi_tri_online.map_ten (game tự ghi) — bảng này chỉ là dự phòng.
  * id lạ (bản sao theo khu, ví dụ 301, 1701) -> "Bản đồ #id".
  */

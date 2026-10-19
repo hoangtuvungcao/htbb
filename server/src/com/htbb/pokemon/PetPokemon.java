@@ -5,7 +5,7 @@ package com.htbb.pokemon;
  * data_item type 25/26/27). Gui xuong client bang lenh -94 POKE_PET (GoiPokemon.ghiPet).
  *
  * Nguon: cac dong loai=pet_item cua du_lieu/bang_thu.csv (sinh boi
- * tools/pokemon/sinh_bang_thu.py). test/KiemPetPokemon doi chieu TUNG dong CSV voi bang nay.
+ * tools/luu_tru_sinh_du_lieu/pokemon/sinh_bang_thu.py). test/KiemPetPokemon doi chieu TUNG dong CSV voi bang nay.
  *
  * "Cap" cua pet nuoi (Cu/Rong/Yeu tinh/Doi/Dai bang cap 1..5) KHONG phai mot truong rieng:
  * moi cap la mot item template khac (Pet.capPet() = atb[0] cua template, nang cap

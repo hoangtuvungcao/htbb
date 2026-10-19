@@ -210,22 +210,27 @@ public final class KiemTangToc {
     }
 
     static void duLieu() throws Exception {
-        final String nv = new String(Files.readAllBytes(Paths.get("../du_lieu/nhiem_vu_moi.csv")), StandardCharsets.UTF_8);
+        final java.util.List<java.util.Map<String, String>> nvDs = DayDu.bangThietKe("nhiem_vu_moi.csv");
+        final String nv = nvDs.toString();
         Kiem.sai("nhiem vu: het khoa 'cach buoc truoc 7 ngay' (thay bang cap)", nv.contains("cach_buoc_truoc_ngay"));
         Kiem.sai("nhiem vu: khong con chu 'chờ tới ngày thứ'", nv.contains("chờ tới ngày thứ") || nv.contains("Mở vào ngày thứ"));
-        Kiem.dung("huyen thoai: buoc sau can cap cao hon (HT-ZAP.2 cap 42)", nv.contains("HT-ZAP.2,5502,huyen_thoai,1,Mọi vùng,Huyền thoại: Zapdos,,2,")
-                && nv.split("HT-ZAP.2,5502,")[1].split("\n")[0].contains(",42,"));
-        final String vp = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql")), StandardCharsets.UTF_8);
+        final java.util.Map<String, String> zap = DayDu.tim("data_quest_lau_dai", "ma", "HT-ZAP.2");
+        Kiem.dung("huyen thoai: buoc sau can cap cao hon (HT-ZAP.2 cap 42)", zap != null && "5502".equals(zap.get("id_so"))
+                && "huyen_thoai".equals(zap.get("loai")) && "42".equals(zap.get("cap_toi_thieu")));
         boolean du = true;
         for (int i = 0; i < 4; i++) {
-            du &= vp.contains("(" + TangToc.ID_CAO_CAP[i] + ",'" + TangToc.MA[i] + "',") && vp.contains("(" + TangToc.ID_KHOA[i] + ",'"
-                    + TangToc.MA[i] + "_khoa',");
+            du &= TangToc.MA[i].equals(DayDu.giaTri("data_vat_pham_lau_dai", "id_item", String.valueOf(TangToc.ID_CAO_CAP[i]), "ma"))
+                    && (TangToc.MA[i] + "_khoa").equals(DayDu.giaTri("data_vat_pham_lau_dai", "id_item", String.valueOf(TangToc.ID_KHOA[i]), "ma"));
         }
-        Kiem.dung("sql vat pham: du 8 mau tang toc (nhom tang_toc)", du);
-        Kiem.dung("Kecleon ban ban khoa (luong khoa, gioi han tuan)", vp.contains("'luong_khoa:15','ITEM:1251:1'"));
-        final String nt = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_nap_tien.sql")), StandardCharsets.UTF_8);
+        Kiem.dung("data_vat_pham_lau_dai: du 8 mau tang toc", du);
+        boolean kec = false;
+        for (final java.util.Map<String, String> r : DayDu.dong("data_cua_hang_lau_dai")) {
+            kec |= "luong_khoa:15".equals(r.get("chi_phi")) && "ITEM:1251:1".equals(r.get("thuong"));
+        }
+        Kiem.dung("Kecleon ban ban khoa (luong khoa, gioi han tuan)", kec);
         for (final String ma : new String[]{"ve_exp_15", "ve_exp_2", "bua_the_luc", "uy_thac", "keo_hiem"}) {
-            Kiem.dung("nap_cua_hang co " + ma + " (trao tang_toc)", nt.contains("('" + ma + "',") && nt.contains("'tang_toc','tang_toc'"));
+            final java.util.Map<String, String> r = DayDu.tim("nap_cua_hang", "ma", ma);
+            Kiem.dung("nap_cua_hang co " + ma + " (trao tang_toc)", r != null && "tang_toc".equals(r.get("trao")) && "tang_toc".equals(r.get("nhom")));
         }
         Kiem.bang("bang EXP: tong 1->100 ~ 880 gio (x1000)", Boolean.TRUE,
                 Boolean.valueOf(Math.abs(ThongSoLauDai.GIO_TICH_LUY_PHAN_NGHIN[100] - 882389) < 20000));

@@ -93,7 +93,7 @@ const TEN_LOAI_NV: Record<string, string> = {
         </template>
 
         <UAlert v-if="ct.data.value && !ct.data.value.coBang" color="warning" variant="subtle" icon="i-lucide-database-zap"
-          :title="`CSDL chưa có bảng ${ct.data.value.bang}`" description="Bảng được tạo khi nạp SQL tương ứng bên mã game (HTBB/du_lieu/sql_nguon/)." />
+          :title="`CSDL chưa có bảng ${ct.data.value.bang}`" description="Bảng được tạo bởi sql/nang_cap.sql bên mã game (sudo bash /opt/htbb/vps/nang_cap_csdl.sh)." />
         <template v-else>
           <UAlert v-if="ct.data.value?.catBot" color="warning" variant="subtle" icon="i-lucide-scissors" class="mb-3"
             :title="`Bảng có ${so(ct.data.value.tong)} dòng — chỉ hiện ${so(ct.data.value.dong.length)} dòng đầu.`" />

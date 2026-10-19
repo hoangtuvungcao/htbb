@@ -233,13 +233,15 @@ public final class KiemThanhVien {
     }
 
     static void sqlVaWeb() {
-        Kiem.nhom("Thanh vien - du_lieu/sql_nguon/pokemon_thanh_vien.sql + web");
-        final String s = doc("../du_lieu/sql_nguon/pokemon_thanh_vien.sql");
-        Kiem.dung("mac dinh TAT", s.contains("('thanh_vien.bat','0'") && s.contains("('thanh_vien.ban_bat','0'"));
-        Kiem.dung("chuc_nang mac dinh trung Java", s.contains("('thanh_vien.chuc_nang','" + ThanhVienLogic.CHUC_NANG_MAC_DINH + "'"));
-        Kiem.dung("goi THANH_VIEN khong ban mac dinh", s.contains("'thanh_vien',20000,0,") && s.contains(",0,0);"));
-        Kiem.sai("INSERT IGNORE (khong ghi de admin)", s.replaceAll("(?m)--.*$", "").matches("(?s).*\\b(REPLACE|UPDATE|DELETE)\\b.*"));
-        Kiem.dung("xuat_sql_day_du.sh gom pokemon_thanh_vien", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_thanh_vien"));
+        Kiem.nhom("Thanh vien - bang tv_* / cau_hinh / nap_goi trong sql/htbb_day_du.sql + web");
+        Kiem.bang("mac dinh TAT (cau_hinh thanh_vien.bat / ban_bat)", "0|0", DayDu.giaTri("cau_hinh", "khoa", "thanh_vien.bat", "gia_tri")
+                + "|" + DayDu.giaTri("cau_hinh", "khoa", "thanh_vien.ban_bat", "gia_tri"));
+        Kiem.bang("chuc_nang mac dinh trung Java", ThanhVienLogic.CHUC_NANG_MAC_DINH,
+                DayDu.giaTri("cau_hinh", "khoa", "thanh_vien.chuc_nang", "gia_tri"));
+        final java.util.Map<String, String> g = DayDu.tim("nap_goi", "loai", "thanh_vien");
+        Kiem.dung("goi THANH_VIEN 20.000 d, khong ban mac dinh", g != null && "20000".equals(g.get("gia_vnd")) && "0".equals(g.get("dang_ban")));
+        Kiem.dung("bang tv_thanh_vien / tv_nhat_ky co trong CSDL day du (rong)", DayDu.coBang("tv_thanh_vien") && DayDu.coBang("tv_nhat_ky")
+                && DayDu.soDong("tv_thanh_vien") <= 0);
         final String ts = doc("../web/server/utils/thanhVienThuan.ts");
         if (ts.isEmpty()) {
             System.out.println("   (bo qua doi chieu web)");
@@ -254,7 +256,7 @@ public final class KiemThanhVien {
         Kiem.dung("web khoa cau_hinh trung", ts.contains("'" + ThanhVienLogic.K_BAN_BAT + "'") && ts.contains("'" + ThanhVienLogic.K_CHUC_NANG + "'"));
         Kiem.dung("web khoa kich hoat trung", ts.contains("'" + ThanhVienLogic.K_KH_CHAN_DANG_NHAP + "'") && ts.contains("'" + ThanhVienLogic.K_KH_TV_LA_KH + "'")
                 && ts.contains("'" + ThanhVienLogic.KH_CHUC_NANG_MAC_DINH + "'"));
-        final String dm = doc("../tools/cauhinh/danh_muc.json");
+        final String dm = DayDu.danhMucJson();
         Kiem.dung("danh muc cau hinh trung tam co 4 khoa kich_hoat.*", dm.contains("\"kich_hoat.chan_dang_nhap\"") && dm.contains("\"kich_hoat.chuc_nang\"")
                 && dm.contains("\"kich_hoat.thong_bao\"") && dm.contains("\"kich_hoat.thanh_vien_la_kich_hoat\""));
     }

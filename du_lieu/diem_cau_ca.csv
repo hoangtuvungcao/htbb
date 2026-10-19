@@ -1,4 +1,4 @@
-# SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY. Chi cau ca o ho (docs/thiet-ke-game.md).
+# SINH RA boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY. Chi cau ca o ho (docs/thiet-ke-game.md).
 # loai_ho: ho_lon (>= 60 o, co ca hiem) | ao (chi ca thuong). x,y = o dung cau (don vi o 16 px).
 map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y
 0,Pewter,thi_tran,0,48,ao,43,45

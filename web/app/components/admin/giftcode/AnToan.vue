@@ -54,7 +54,7 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
 
 <template>
   <AdminPage title="Giftcode">
-    <UAlert v-if="data && !data.coBang" color="warning" variant="subtle" icon="i-lucide-database" title="Chưa có bảng tob_giftcode" description="Chạy du_lieu/sql_nguon/them_bang_lau_dai.sql (hoặc khởi động máy chủ game bản mới) rồi tải lại trang." />
+    <UAlert v-if="data && !data.coBang" color="warning" variant="subtle" icon="i-lucide-database" title="Chưa có bảng tob_giftcode" description="Chạy sql/nang_cap.sql (hoặc khởi động máy chủ game bản mới) rồi tải lại trang." />
     <div class="grid gap-4 md:grid-cols-3">
       <UCard>
         <p class="text-sm text-muted">Ngân sách tháng {{ String(data?.thang ?? '').replace(/(\d{4})(\d{2})/, '$2/$1') }}</p>

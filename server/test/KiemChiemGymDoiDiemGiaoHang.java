@@ -147,10 +147,16 @@ public final class KiemChiemGymDoiDiemGiaoHang {
         // Doi chieu voi danh muc item: trang bi thu THAP NHAT that su la lv30 (tien de
         // cho ca bug tren) - neu ai do them mau thap hon 30 thi ham van an toan, nhung
         // neu con so nay tang len (vd xoa het mau lv30) thi khoang trong con rong hon.
-        final String danhMuc = doc("../du_lieu/danh_muc_item.md");
-        Kiem.dung("(tien de) trang bi thu thap nhat trong danh muc la lv30 (Giap/Non/Yen cuong/Ban dap/Ho uyen Vu Dung)",
-                danhMuc.contains("| 521 | Giáp Vủ dũng | 14 | 30 |")
-                && !Pattern.compile("\\| \\d+ \\|[^|]*\\| (14|15|16|17|18) \\| ([12]?\\d) \\|").matcher(danhMuc).find());
+        int capThapNhat = Integer.MAX_VALUE;
+        for (final java.util.Map<String, String> r : DayDu.dong("data_item")) {
+            final int t = Integer.parseInt(r.get("type"));
+            if (t >= 14 && t <= 18) {
+                capThapNhat = Math.min(capThapNhat, Integer.parseInt(r.get("level")));
+            }
+        }
+        Kiem.bang("(tien de) trang bi thu (type 14..18) thap nhat trong data_item la lv30", 30, capThapNhat);
+        Kiem.bang("(tien de) 521 la trang bi thu type 14 cap 30", "14|30",
+                DayDu.giaTri("data_item", "id", "521", "type") + "|" + DayDu.giaTri("data_item", "id", "521", "level"));
     }
 
     private static void kiemLanChongLan() {

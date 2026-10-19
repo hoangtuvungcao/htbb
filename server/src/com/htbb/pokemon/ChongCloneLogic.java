@@ -71,7 +71,7 @@ public final class ChongCloneLogic {
             this.banNpcDoKhoa = banNpcDoKhoa;
         }
 
-        /** Mac dinh san xuat (khop tools/cauhinh/danh_muc.json). */
+        /** Mac dinh san xuat (khop mac_dinh cua bang cau_hinh_danh_muc trong sql/htbb_day_du.sql). */
         public static CauHinh macDinh() {
             return new CauHinh(true, 20, 24, 10, 2, 3, 10, 200, 5, false);
         }

@@ -57,13 +57,13 @@ fi
 export MYSQL_PWD="$DB_PASS"
 sql() { mysql -u"$DB_USER" -N -B "$DB_NAME" -e "$1" 2>&1; }
 
-# Bang chua co (chua chay du_lieu/sql_nguon/them_bang_dieu_khien_server.sql) thi im lang bo
+# Bang chua co (chua chay sql/nang_cap.sql) thi im lang bo
 # qua - KHONG coi la loi nghiem trong, vi day la lan dau cai dat watcher truoc
 # khi ai kip tao bang.
 CO_BANG=$(sql "SELECT COUNT(*) FROM information_schema.TABLES
                WHERE TABLE_SCHEMA='$DB_NAME' AND TABLE_NAME='dieu_khien_server';")
 if [ "$CO_BANG" != "1" ]; then
-    echo "$(date '+%F %T') chua co bang dieu_khien_server, bo qua (chay du_lieu/sql_nguon/them_bang_dieu_khien_server.sql truoc)"
+    echo "$(date '+%F %T') chua co bang dieu_khien_server, bo qua (chay sql/nang_cap.sql truoc)"
     exit 0
 fi
 

@@ -29,7 +29,7 @@ export interface NhanVatDong {
   userId: number
   lastLv: number
   class: number
-  /** Loài Pokémon (0 = suy ra từ class + cấp). Cột thêm bởi HTBB/du_lieu/sql_nguon/them_cot_pokemon.sql. */
+  /** Loài Pokémon (0 = suy ra từ class + cấp). Cột thêm bởi HTBB/tools/luu_tru_sinh_du_lieu/sql_nguon/them_cot_pokemon.sql. */
   dex: number
   xp: number | string
   gold: number

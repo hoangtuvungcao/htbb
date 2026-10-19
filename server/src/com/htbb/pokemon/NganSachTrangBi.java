@@ -9,7 +9,7 @@ import java.util.List;
  * du lieu (test/KiemChiSo, tools/pokemon/MoPhongChiSo) va sinh SQL (tools/pokemon/SinhSqlChiSo).
  *
  * CHUAN = chi so (don vi engine, cot data_item.atb0..6) cua mon TRANG +0 trong danh muc 11 bac
- * (data_noi_dung_trang_bi -> data_item, du_lieu/noi_dung_trang_bi.csv), noi suy tuyen tinh theo cap.
+ * (data_noi_dung_trang_bi -> data_item, tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_trang_bi.csv), noi suy tuyen tinh theo cap.
  * Hai dong khan quang bac/vang trong danh muc tro nham vao khung che tao (id 268, 272: thu 75/85, cao hon
  * ca bac bach kim 55) -> chuan dung dong ban thuong cung cap (31 / 41), xem tai lieu muc 1.6.
  *

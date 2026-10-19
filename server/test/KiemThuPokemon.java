@@ -109,25 +109,23 @@ public final class KiemThuPokemon {
         Kiem.sai("13999 (skin thu) khong thuoc dai", com.htbb.pokemon.IconPokemon.thuocDai(13999));
         Kiem.sai("15000 ngoai dai", com.htbb.pokemon.IconPokemon.thuocDai(15000));
         try {
-            final List<String> sql = Files.readAllLines(new File("../du_lieu/sql_nguon/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
-            for (final String d : sql) {
-                final java.util.regex.Matcher m = java.util.regex.Pattern.compile("xstart=(\\d+)").matcher(d);
-                if (!m.find()) {
+            for (final java.util.Map<String, String> r : DayDu.dong("data_item")) {
+                final int id = Integer.parseInt(r.get("xstart"));
+                if (!com.htbb.pokemon.IconPokemon.thuocDai(id)) {
                     continue;
                 }
-                final int id = Integer.parseInt(m.group(1));
                 dem++;
-                Kiem.dung("xstart " + id + " thuoc dai icon Pokemon", com.htbb.pokemon.IconPokemon.thuocDai(id));
-                Kiem.dung("co file icon cho " + id, new File(com.htbb.pokemon.IconPokemon.THU_MUC
-                        + (id - com.htbb.pokemon.IconPokemon.ID_DAU) + ".png").isFile());
+                if (!new File(com.htbb.pokemon.IconPokemon.THU_MUC + (id - com.htbb.pokemon.IconPokemon.ID_DAU) + ".png").isFile()) {
+                    Kiem.dung("co file icon cho " + id + " (data_item " + r.get("id") + ")", false);
+                }
             }
-            Kiem.dung("co dong UPDATE icon (dem chi tiet o KiemIconPokemon)", dem >= 22);
+            Kiem.dung("data_item dung icon Pokemon (dai 14000+, du file) - " + dem + " dong", dem >= 22);
             final String dg = new String(Files.readAllBytes(new File("src/data/DataGame.java").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("sendByteImg phuc vu dai icon Pokemon", dg.contains("IconPokemon.thuocDai(idImg)"));
             Kiem.dung("nIconItem van la 866 (khong dung dai cu)", dg.contains("nIconItem = 866;"));
         } catch (final Exception e) {
-            Kiem.dung("doc du_lieu/sql_nguon/pokemon_icon_vat_pham.sql: " + e, false);
+            Kiem.dung("doc data_item tu sql/htbb_day_du.sql: " + e, false);
         }
 
         Kiem.nhom("com.htbb.pokemon.TenMapPokemon - doi ten dia danh");

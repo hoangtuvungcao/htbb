@@ -1,7 +1,7 @@
 /**
  * Biến đổi THUẦN: dòng bảng SQL của game (htbb_db) -> đúng hình dạng JSON mà website đang dùng.
  *
- * Nguồn duy nhất của các con số này là CSDL game (bảng sinh bởi tools/pokemon/sinh_sql_lau_dai.py /
+ * Nguồn duy nhất của các con số này là CSDL game (bảng sinh bởi tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py /
  * sinh_noi_dung.py). Lúc chạy, web đọc bảng qua server/utils/duLieuSql.ts (có cache) rồi gọi các hàm ở
  * đây; JSON trong shared/data/ chỉ còn là bản dự phòng lúc build (CSDL không có / bảng trống).
  *
@@ -28,7 +28,7 @@ const theo = (...k: string[]) => (a: DongSql, b: DongSql) => {
   return 0
 }
 
-/** Tiền / kiểu trang trí: cùng bảng tên với tools/pokemon/sinh_noi_dung.py (ghi_web). */
+/** Tiền / kiểu trang trí: cùng bảng tên với tools/luu_tru_sinh_du_lieu/pokemon/sinh_noi_dung.py (ghi_web). */
 const TEN_TIEN: Record<string, string> = { xu: 'xu', luong_khoa: 'lượng khoá', luong: 'lượng', khong_ban: 'không bán', huy_chuong_gym: 'Huy chương Gym' }
 const TEN_KIEU_TRANG_TRI: Record<string, string> = { danh_hieu: 'Danh hiệu', khung: 'Khung', trang_phuc: 'Trang phục', hieu_ung: 'Hiệu ứng' }
 

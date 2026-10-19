@@ -90,7 +90,7 @@ public final class KiemGoi26SetDanh {
         final String item = doc("src/real/Item.java");
         Kiem.dung("Item.isChoiSet = template 614 hoac 618",
                 item.contains("return this.tempateID == 614 || this.tempateID == 618;"));
-        final String sql = doc("../du_lieu/sql_nguon/gamedb7_clean.sql");
+        final String sql = doc("../sql/htbb_day_du.sql");
         Kiem.dung("data_item 618 'Choi set' co type 13 (vat pham model, khong phai thu cuoi)",
                 sql.contains("(618,'Chổi set',13,"));
         Kiem.dung("data_item 614 'Choi dien anh' co type 13",

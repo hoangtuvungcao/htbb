@@ -1,5 +1,5 @@
 /**
- * NẠP TIỀN THEO MỐC (bảng tob_nap_moc trong htbb_db, xem vps/db_new_server.sql PHẦN 2I).
+ * NẠP TIỀN THEO MỐC (bảng tob_nap_moc trong htbb_db, xem tools/luu_tru_sinh_du_lieu/sql_nguon/db_new_server.sql PHẦN 2I).
  * Tạo / đọc đơn, và phần "xác nhận đã nhận tiền" mà webhook SePay, trang
  * /xac-nhan-nap (mật khẩu chung) và trang /admin/naptien (khu quản trị) cùng dùng.
  *

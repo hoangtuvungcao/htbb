@@ -83,7 +83,7 @@ sống" nghĩa là cron chưa cài:
 * * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/logs/dieu-khien-server.log 2>&1
 ```
 
-(Bảng tạo bằng `du_lieu/sql_nguon/them_bang_dieu_khien_server.sql`.) Nút "Khởi động lại ngay" trên trang này bật cờ
+(Bảng có sẵn trong `sql/htbb_day_du.sql`; CSDL cũ tạo bằng `sql/nang_cap.sql`.) Nút "Khởi động lại ngay" trên trang này bật cờ
 `5h_systems.restart` — server lưu dữ liệu và thoát trong ≤ 5 giây **không báo trước**; muốn báo người chơi thì
 dùng mục 4.4.
 
@@ -325,7 +325,7 @@ Tham số thứ 7 `chiaXu` (`sv.chiaXuRoi`) là khoá cố định: máy thật 
   log `CANH BAO 5h_systems: tangnap = … bi bo qua`. Khuyến mãi nạp (nếu có) phải là sự kiện có thời hạn riêng.
 - Nhân vật đầu tiên của tài khoản bắt đầu với **5.000 xu, 0 lượng, 0 lượng khoá** (`data.Database.XU_KHOI_DAU`);
   bỏ quà tạo nhân vật 40.000.000 xu / 20.000 lượng / 30.000 lượng khoá (`board_created`). Tiền đầu tiên kiếm từ
-  chuỗi nhiệm vụ tân thủ. SQL: `du_lieu/sql_nguon/sua_he_so_nap_va_qua_tao_nv.sql`; thu hồi quà đã phát (tuỳ chọn):
+  chuỗi nhiệm vụ tân thủ. SQL: `tools/luu_tru_sinh_du_lieu/sql_nguon/sua_he_so_nap_va_qua_tao_nv.sql`; thu hồi quà đã phát (tuỳ chọn):
   `vps/van_hanh/thu_hoi_qua_tao_nv.sql`.
 
 Sau khi đổi `server.ini` (qua deploy), luôn kiểm:
@@ -436,7 +436,7 @@ của các dịp lễ lấy từ lịch năm (`/api/su-kien`).
 ### 7.2 World Cup (bình chọn) — đã bỏ
 
 Sự kiện bình chọn Messi/Ronaldo của game kiếm hiệp cũ đã bỏ khỏi danh mục (19/10/2026, cùng Sinh nhật Ngudẻ, Đua top
-Hoa Lư): ba khoá `sv.worldCup*` không còn bật gì. `du_lieu/sql_nguon/them_lich_su_kien_nam.sql` xoá các dòng cũ khỏi `tob_su_kien`.
+Hoa Lư): ba khoá `sv.worldCup*` không còn bật gì. `sql/nang_cap.sql` (mục 4) xoá các dòng cũ khỏi `tob_su_kien`.
 
 ### 7.3 Chiếm Gym
 
@@ -455,7 +455,7 @@ Tạm đóng thách đấu Gym (không phải chiếm Gym): `gym.bat=0`. Kết q
 
 Máy chủ thật chạy chế độ dài hạn (`sv.lau_dai=1`), nên game dùng **giftcode an toàn** (bảng `tob_giftcode` +
 `tob_giftcode_log`). Bảng `giftcode` kiểu cũ (phát xu/lượng/đồ tuỳ ý) **không còn được game đọc**; trang web đã bỏ
-phần "Mã kiểu cũ"; khoá hẳn các mã cũ còn mở bằng `du_lieu/sql_nguon/vo_hieu_giftcode_cu.sql`.
+phần "Mã kiểu cũ"; khoá hẳn các mã cũ còn mở bằng `tools/luu_tru_sinh_du_lieu/sql_nguon/vo_hieu_giftcode_cu.sql`.
 
 ### 8.1 Tạo / tắt mã ở `/admin/giftcode` (Siêu quản trị)
 
@@ -543,7 +543,7 @@ phần sau. Không phát lượng lớn qua bảng cũ: lượng là `int`, trà
 
 1. **Giấy phép** đã có bằng văn bản → mới làm tiếp. Luật sư rà `/dieu-khoan-thanh-toan`, `/chinh-sach-hoan-tien`, và
    sửa `/dieu-khoan` (đang ghi "không nạp tiền").
-2. **CSDL**: bảng nạp đã có chưa? Nếu chưa: `sudo mysql htbb_db < /opt/htbb/du_lieu/sql_nguon/pokemon_nap_tien.sql` (chạy lại an toàn).
+2. **CSDL**: bảng nạp đã có chưa? Nếu chưa: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` (sao lưu rồi nạp `sql/nang_cap.sql`, chạy lại an toàn).
    Sao lưu trước.
 3. **SePay** (my.sepay.vn — tên menu có thể đổi theo phiên bản):
    - Đăng ký, liên kết **đúng** tài khoản ngân hàng nhận tiền (số tài khoản → `HTBB_NAP_ACCOUNT_NO`, tên chủ tài khoản
@@ -660,8 +660,8 @@ nhắn trỏ về `/kichhoat` hoặc `/thanh-vien`. `kich_hoat.thanh_vien_la_kic
 
 **Bật Thành viên khi mở chính thức**
 
-1. Cổng thanh toán đã chạy an toàn (mục 9.3 bước 2–4; Thành viên dùng chung đơn/sổ cái/webhook). Chạy
-   `du_lieu/sql_nguon/pokemon_thanh_vien.sql` **sau** `du_lieu/sql_nguon/pokemon_nap_tien.sql` nếu chưa có bảng.
+1. Cổng thanh toán đã chạy an toàn (mục 9.3 bước 2–4; Thành viên dùng chung đơn/sổ cái/webhook). Thiếu bảng
+   `tv_*` / `nap_*` thì chạy `sudo bash /opt/htbb/vps/nang_cap_csdl.sh`.
 2. `/admin/thanh-vien` › Cấu hình: chọn tính năng, giá (`thanh_vien.gia`, đồng bộ gói `THANH_VIEN`), thời hạn
    (`thanh_vien.thoi_han_ngay`, 0 = vĩnh viễn), miễn cho nhân vật dưới cấp N (`thanh_vien.mien_cap`) → bật **Mở BÁN**
    (`thanh_vien.ban_bat`). Bán thật chỉ khi đủ giấy phép + cổng an toàn — hộp đỏ cho biết thiếu gì. Mở bán Thành viên

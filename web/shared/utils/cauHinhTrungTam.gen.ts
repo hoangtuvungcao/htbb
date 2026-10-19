@@ -1,5 +1,6 @@
 /**
- * SINH TU HTBB/tools/cauhinh/danh_muc.json boi HTBB/tools/cauhinh/sinh_cau_hinh.py — KHÔNG SỬA TAY.
+ * Bản chụp TĨNH bảng cau_hinh_danh_muc / cau_hinh_nhom (bộ sinh cũ đã lưu trữ: tools/luu_tru_sinh_du_lieu/cauhinh/).
+ * Đổi danh mục thì sửa CSDL rồi sửa tệp này cho khớp sql/htbb_day_du.sql (web/tests/cau-hinh-danh-muc-sql.test.ts kiểm).
  * Bản dự phòng của danh mục cấu hình trung tâm: web đọc bảng cau_hinh_danh_muc / cau_hinh_nhom trước
  * (server/utils/cauHinhDanhMucSql.ts), máy chủ game chỉ đọc bảng (com.htbb.cauhinh.DanhMucSql).
  * Hàm kiểm / so sánh thuần: shared/utils/cauHinhTrungTam.ts.

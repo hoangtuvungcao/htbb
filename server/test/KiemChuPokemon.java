@@ -22,9 +22,22 @@ public final class KiemChuPokemon {
 
     private static final String F_CS = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs";
     private static final String F_MFONT = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/MFont.cs";
-    private static final String F_SQL = "../du_lieu/sql_nguon/pokemon_doi_chu.sql";
-    private static final String F_CON_LAI = "../du_lieu/tu_cam_con_lai.csv";
-    private static final String F_CSV = "../du_lieu/bang_chu.csv";
+    /** Cot chu nguoi choi thay trong CSDL day du (tung doi bang pokemon_doi_chu.sql, nay du lieu nam san trong CSDL). */
+    private static final String[][] COT_CHU = {{"data_attribute", "name"}, {"data_item", "name"}, {"data_potion", "name"},
+        {"data_potion", "name2"}, {"data_quest", "content"}, {"data_quest", "infofinish"}, {"data_quest", "infogift"},
+        {"data_quest", "name"}, {"data_quest", "rescontent"}, {"data_quest", "scontent"}, {"data_shop", "decript"},
+        {"data_shop", "name"}, {"tob_fruit", "decript"}, {"tob_fruit", "name"}};
+
+    /** Moi o chu (bang.cot#id -> gia tri) cua COT_CHU. */
+    static java.util.Map<String, String> oChu() {
+        final java.util.Map<String, String> ra = new java.util.LinkedHashMap<String, String>();
+        for (final String[] bc : COT_CHU) {
+            for (final java.util.Map<String, String> r : DayDu.dongChu(bc[0])) {
+                ra.put(bc[0] + "." + bc[1] + "#" + r.get("id"), r.get(bc[1]));
+            }
+        }
+        return ra;
+    }
     private static final String F_TFIELD = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/TField.cs";
 
     /** Nhom "gio choi dau tien" - phai sach tu cam SAU khi doi (giong GIO_DAU cua quet_tu_cam.py). */
@@ -151,23 +164,6 @@ public final class KiemChuPokemon {
         Kiem.dung("TField do chu NGUYEN VAN (khong qua tu dien) - con tro khong lech",
                 tf != null && tf.contains("getWidthNguyenVan(") && !tf.contains("normalFont[0].getWidth(")
                         && !tf.contains("arialFont.getWidth("));
-        final String csv = doc(F_CSV);
-        final String sql = doc(F_SQL);
-        if (csv != null && sql != null) {
-            int soCsv = 0;
-            for (final String d : csv.split("\n")) {
-                if (d.matches("^(data_|tob_)\\w+,\\d+,.*")) {
-                    soCsv++;
-                }
-            }
-            int soSql = 0;
-            for (final String d : sql.split("\n")) {
-                if (d.startsWith("UPDATE ")) {
-                    soSql++;
-                }
-            }
-            Kiem.bang("bang_chu.csv ghi du moi o pokemon_doi_chu.sql doi", Integer.valueOf(soSql), Integer.valueOf(soCsv));
-        }
     }
 
     /** Chu HOA thuoc U+1EA0..U+1EF8 - font client khong ve duoc (cung quy uoc KiemChuHoaCoDau). */
@@ -203,17 +199,14 @@ public final class KiemChuPokemon {
             }
         }
         Kiem.bang("tu dien: khong gia tri nao (ke ca viet hoa dau tu) co chu HOA co dau", Integer.valueOf(0), Integer.valueOf(sai));
-        final String sql = doc(F_SQL);
         int saiSql = 0;
-        if (sql != null) {
-            for (final String d : sql.split("\n")) {
-                if (d.startsWith("UPDATE ") && !chuHoaCoDau(d).isEmpty()) {
-                    saiSql++;
-                    System.out.println("        SQL co chu HOA co dau: " + d.substring(0, Math.min(120, d.length())));
-                }
+        for (final java.util.Map.Entry<String, String> e : oChu().entrySet()) {
+            if (!chuHoaCoDau(e.getValue()).isEmpty()) {
+                saiSql++;
+                System.out.println("        CSDL co chu HOA co dau: " + e.getKey() + " = " + e.getValue().substring(0, Math.min(100, e.getValue().length())));
             }
         }
-        Kiem.bang("pokemon_doi_chu.sql: khong chu HOA co dau", Integer.valueOf(0), Integer.valueOf(saiSql));
+        Kiem.bang("CSDL (ten / mo ta vat pham, thuoc, nhiem vu, shop): khong chu HOA co dau", Integer.valueOf(0), Integer.valueOf(saiSql));
     }
 
     private static void kiemBatCo() {
@@ -402,51 +395,22 @@ public final class KiemChuPokemon {
         // Tu 18/10/2026 nguon da sach (tools/pokemon/ap_thuat_ngu.py): TRUOC khi doi cung phai 0.
         Kiem.bang("file gio dau: tu cam THO (truoc khi doi) = 0", Integer.valueOf(0), Integer.valueOf(tho));
         Kiem.bang("file gio dau: tu cam con lai SAU doi", Integer.valueOf(0), Integer.valueOf(con));
-        final String csv = doc(F_CON_LAI);
-        Kiem.dung("co " + F_CON_LAI + " (python3 -I tools/pokemon/quet_tu_cam.py)", csv != null);
-        if (csv != null) {
-            int gioDau = 0;
-            for (final String dong : csv.split("\n")) {
-                // cot gio_dau la cot ke cuoi; dong CSV co the chua dau phay trong ngoac kep
-                if (dong.matches(".*,1,[^,]*$") && !dong.startsWith("nguon,")) {
-                    gioDau++;
-                }
-            }
-            Kiem.bang("tu_cam_con_lai.csv: khong o nao thuoc gio dau", Integer.valueOf(0), Integer.valueOf(gioDau));
-        }
     }
 
-    /** du_lieu/sql_nguon/pokemon_doi_chu.sql: chi UPDATE don gian, nhay don da thoat, gia tri sach tu cam. */
+    /** O chu trong CSDL: sach tu cam, thuoc HP / MP mang ten Pokemon. */
     private static void kiemSql() {
-        final String s = doc(F_SQL);
-        Kiem.dung("co " + F_SQL, s != null);
-        if (s == null) {
-            return;
-        }
-        final Pattern dung = Pattern.compile("^UPDATE (\\w+) SET (\\w+)='((?:[^'\\\\]|\\\\.)*)' WHERE id=\\d+;$");
-        int sai = 0;
         int ban = 0;
         int n = 0;
-        for (final String d : s.split("\n")) {
-            if (d.isEmpty() || d.startsWith("--") || d.equals("SET NAMES utf8;")) {
-                continue;
-            }
-            final Matcher m = dung.matcher(d);
-            if (!m.matches()) {
-                sai++;
-                System.out.println("        dong SQL la: " + d);
-                continue;
-            }
+        for (final java.util.Map.Entry<String, String> e : oChu().entrySet()) {
             n++;
-            if (!"name2".equals(m.group(2)) && !ChuPokemon.tuCamTrong(boThoat(m.group(3))).isEmpty()) {
+            if (!e.getKey().contains(".name2#") && !ChuPokemon.tuCamTrong(e.getValue()).isEmpty()) {
                 ban++;
-                System.out.println("        con tu cam: " + d);
+                System.out.println("        con tu cam: " + e.getKey() + " = " + e.getValue());
             }
         }
-        Kiem.dung("pokemon_doi_chu.sql co UPDATE", n > 100);
-        Kiem.bang("pokemon_doi_chu.sql chi gom UPDATE don gian", Integer.valueOf(0), Integer.valueOf(sai));
-        Kiem.bang("pokemon_doi_chu.sql: gia tri moi sach tu cam", Integer.valueOf(0), Integer.valueOf(ban));
-        Kiem.dung("thuoc HP doi ten", s.contains("UPDATE data_potion SET name='Thuốc hồi máu' WHERE id=1;"));
-        Kiem.dung("thuoc MP doi ten", s.contains("UPDATE data_potion SET name='Ether' WHERE id=4;"));
+        Kiem.dung("doc duoc cac o chu CSDL (" + n + ")", n > 1000);
+        Kiem.bang("CSDL: chu nguoi choi thay sach tu cam", Integer.valueOf(0), Integer.valueOf(ban));
+        Kiem.bang("thuoc HP doi ten", "Thuốc hồi máu", DayDu.giaTri("data_potion", "id", "1", "name"));
+        Kiem.bang("thuoc MP doi ten", "Ether", DayDu.giaTri("data_potion", "id", "4", "name"));
     }
 }

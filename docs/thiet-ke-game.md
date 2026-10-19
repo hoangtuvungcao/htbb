@@ -1,9 +1,10 @@
 # Thiết kế game Huyền Thoại Bảo Bối
 
 Tài liệu thiết kế và cơ chế cho người phát triển / thiết kế mới vào dự án. Mô tả **luật đang chạy** trong máy chủ
-(`server/src`), số liệu lấy từ code (`com.htbb.pokemon.*`, `real.*`), bảng dữ liệu `du_lieu/*.csv` và danh mục cấu hình
-[`tools/cauhinh/danh_muc.json`](../tools/cauhinh/danh_muc.json). Khi tài liệu và code lệch nhau, **code thắng**: sửa
-tài liệu cho khớp.
+(`server/src`), số liệu lấy từ code (`com.htbb.pokemon.*`, `real.*`), bảng dữ liệu trong CSDL (`sql/htbb_day_du.sql`:
+`data_*`, danh mục cấu hình `cau_hinh_danh_muc`) và bảng tài nguyên `du_lieu/*.csv`. Các liên kết tới
+`tools/luu_tru_sinh_du_lieu/du_lieu/*.csv` là bảng tính thiết kế **ban đầu** (đã thành bảng CSDL, chỉ để tra cứu). Khi
+tài liệu và code / CSDL lệch nhau, **code và CSDL thắng**: sửa tài liệu cho khớp.
 
 Tài liệu liên quan: cấu hình từng khoá ở [cau-hinh.md](cau-hinh.md), vận hành (nạp tiền, giftcode, bảo trì, GM) ở
 [van-hanh.md](van-hanh.md), kiến trúc mã nguồn ở [kien-truc.md](kien-truc.md).
@@ -102,8 +103,8 @@ khi nhận người chơi):
 | N9 | Không ép đăng nhập mỗi ngày | Năng lượng, vé chương, lịch đăng nhập đều tích / ân hạn |
 
 Mô phỏng kiểm các mục tiêu trên: `tools/pokemon/MoPhongKinhTe.java` (tất định), kết quả ở
-[mo_phong_kinh_te.csv](../du_lieu/mo_phong_kinh_te.csv) và `du_lieu/mo_phong_tom_tat.txt`. Đổi số thì sửa generator
-(`tools/pokemon/sinh_sql_lau_dai.py` là nguồn duy nhất của bảng thiết kế), chạy lại, rồi chạy mô phỏng và bộ test.
+[mo_phong_kinh_te.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/mo_phong_kinh_te.csv) và `tools/luu_tru_sinh_du_lieu/du_lieu/mo_phong_tom_tat.txt`. Đổi số thì sửa generator
+(`tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py` là nguồn duy nhất của bảng thiết kế), chạy lại, rồi chạy mô phỏng và bộ test.
 
 ### 1.5 Bảng dữ liệu (`du_lieu/`)
 
@@ -115,21 +116,21 @@ Phần lớn là **file sinh ra** từ `tools/pokemon/*.py`: không sửa tay, s
 | [bang_chieu.csv](../du_lieu/bang_chieu.csv), [bang_hieu_ung.csv](../du_lieu/bang_hieu_ung.csv) | Tên và hệ chiêu theo dòng / ô; hiệu ứng hình |
 | [bang_thu.csv](../du_lieu/bang_thu.csv), [bang_pet_cu.csv](../du_lieu/bang_pet_cu.csv) | Thú cưỡi, pet cũ → Pokémon |
 | [bang_npc.csv](../du_lieu/bang_npc.csv), [bang_npc_su_kien.csv](../du_lieu/bang_npc_su_kien.csv) | NPC → Pokémon |
-| [bang_vat_pham.csv](../du_lieu/bang_vat_pham.csv), [bang_chu.csv](../du_lieu/bang_chu.csv) | Tên vật phẩm, mọi ô chữ đã đổi |
-| [bang_cap_do_lau_dai.csv](../du_lieu/bang_cap_do_lau_dai.csv) | EXP, giờ, xu, chỉ số quái đề xuất theo cấp 1..100 |
-| [chi_so_trang_bi.csv](../du_lieu/chi_so_trang_bi.csv) | 198 dòng chỉ số trang bị: tên, đơn vị, trạng thái, nơi áp dụng |
-| [noi_dung_trang_bi.csv](../du_lieu/noi_dung_trang_bi.csv), [noi_dung_bo.csv](../du_lieu/noi_dung_bo.csv) | Danh mục 11 bậc × ô, bộ trang bị |
-| [noi_dung_vat_lieu_nang_cap.csv](../du_lieu/noi_dung_vat_lieu_nang_cap.csv), [noi_dung_ngoc_he.csv](../du_lieu/noi_dung_ngoc_he.csv), [noi_dung_phan_ra.csv](../du_lieu/noi_dung_phan_ra.csv), [noi_dung_che_tao.csv](../du_lieu/noi_dung_che_tao.csv), [noi_dung_nguyen_lieu.csv](../du_lieu/noi_dung_nguyen_lieu.csv) | Nâng cấp, ngọc hệ, phân rã, chế tạo, nguyên liệu phụ |
-| [noi_dung_vat_pham.csv](../du_lieu/noi_dung_vat_pham.csv), [noi_dung_item_moi.csv](../du_lieu/noi_dung_item_moi.csv) | Vật phẩm tiêu hao (giá theo thu nhập), vật phẩm mới |
-| [noi_dung_chieu.csv](../du_lieu/noi_dung_chieu.csv), [noi_dung_chieu_ttk.csv](../du_lieu/noi_dung_chieu_ttk.csv), [noi_dung_chieu_nhanh_eevee.csv](../du_lieu/noi_dung_chieu_nhanh_eevee.csv) | Cây chiêu, cân bằng TTK, nhánh Eevee |
-| [noi_dung_quai_dai_cap.csv](../du_lieu/noi_dung_quai_dai_cap.csv), [noi_dung_quai_tinh_anh.csv](../du_lieu/noi_dung_quai_tinh_anh.csv), [noi_dung_quai_moi.csv](../du_lieu/noi_dung_quai_moi.csv) | Quái theo dải cấp, quái tinh anh, quái Hoenn |
-| [noi_dung_gym.csv](../du_lieu/noi_dung_gym.csv), [noi_dung_boss_the_gioi.csv](../du_lieu/noi_dung_boss_the_gioi.csv) | 16 Gym, boss thế giới 52 tuần |
-| [noi_dung_roi.csv](../du_lieu/noi_dung_roi.csv) | Bảng rơi (dải cấp, tinh anh, Gym, boss, mở hộp) |
-| [noi_dung_cua_hang.csv](../du_lieu/noi_dung_cua_hang.csv), [noi_dung_trang_tri.csv](../du_lieu/noi_dung_trang_tri.csv) | Cửa hàng, trang trí theo mùa (0 chỉ số) |
-| [nhiem_vu_moi.csv](../du_lieu/nhiem_vu_moi.csv), [nhiem_vu_nhip_do.csv](../du_lieu/nhiem_vu_nhip_do.csv) | Toàn bộ nhiệm vụ, nhịp độ theo cấp (báo cáo: [NHIEM_VU_THIET_KE.md](../du_lieu/NHIEM_VU_THIET_KE.md)) |
-| [su_kien_nam.csv](../du_lieu/su_kien_nam.csv), [noi_dung_su_kien_vat_pham.csv](../du_lieu/noi_dung_su_kien_vat_pham.csv) | Lịch 52 tuần, vật phẩm sự kiện |
+| [bang_vat_pham.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_vat_pham.csv), [bang_chu.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_chu.csv) | Tên vật phẩm, mọi ô chữ đã đổi |
+| [bang_cap_do_lau_dai.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_cap_do_lau_dai.csv) | EXP, giờ, xu, chỉ số quái đề xuất theo cấp 1..100 |
+| [chi_so_trang_bi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/chi_so_trang_bi.csv) | 198 dòng chỉ số trang bị: tên, đơn vị, trạng thái, nơi áp dụng |
+| [noi_dung_trang_bi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_trang_bi.csv), [noi_dung_bo.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_bo.csv) | Danh mục 11 bậc × ô, bộ trang bị |
+| [noi_dung_vat_lieu_nang_cap.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_vat_lieu_nang_cap.csv), [noi_dung_ngoc_he.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_ngoc_he.csv), [noi_dung_phan_ra.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_phan_ra.csv), [noi_dung_che_tao.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_che_tao.csv), [noi_dung_nguyen_lieu.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_nguyen_lieu.csv) | Nâng cấp, ngọc hệ, phân rã, chế tạo, nguyên liệu phụ |
+| [noi_dung_vat_pham.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_vat_pham.csv), [noi_dung_item_moi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_item_moi.csv) | Vật phẩm tiêu hao (giá theo thu nhập), vật phẩm mới |
+| [noi_dung_chieu.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_chieu.csv), [noi_dung_chieu_ttk.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_chieu_ttk.csv), [noi_dung_chieu_nhanh_eevee.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_chieu_nhanh_eevee.csv) | Cây chiêu, cân bằng TTK, nhánh Eevee |
+| [noi_dung_quai_dai_cap.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_dai_cap.csv), [noi_dung_quai_tinh_anh.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_tinh_anh.csv), [noi_dung_quai_moi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_moi.csv) | Quái theo dải cấp, quái tinh anh, quái Hoenn |
+| [noi_dung_gym.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_gym.csv), [noi_dung_boss_the_gioi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_boss_the_gioi.csv) | 16 Gym, boss thế giới 52 tuần |
+| [noi_dung_roi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_roi.csv) | Bảng rơi (dải cấp, tinh anh, Gym, boss, mở hộp) |
+| [noi_dung_cua_hang.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_cua_hang.csv), [noi_dung_trang_tri.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_trang_tri.csv) | Cửa hàng, trang trí theo mùa (0 chỉ số) |
+| [nhiem_vu_moi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_moi.csv), [nhiem_vu_nhip_do.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_nhip_do.csv) | Toàn bộ nhiệm vụ, nhịp độ theo cấp (báo cáo: [NHIEM_VU_THIET_KE.md](../du_lieu/NHIEM_VU_THIET_KE.md)) |
+| [su_kien_nam.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/su_kien_nam.csv), [noi_dung_su_kien_vat_pham.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_su_kien_vat_pham.csv) | Lịch 52 tuần, vật phẩm sự kiện |
 | [diem_cau_ca.csv](../du_lieu/diem_cau_ca.csv), [thiet_ke_map.csv](../du_lieu/thiet_ke_map.csv), [diem_co_dinh.csv](../du_lieu/diem_co_dinh.csv) | Điểm câu cá, thiết kế bản đồ (cột `loai` = vùng sinh thái), điểm cố định server |
-| [kiem_item.csv](../du_lieu/kiem_item.csv) | Kiểm "không vật phẩm mồ côi": mọi vật phẩm có nguồn và công dụng |
+| [kiem_item.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/kiem_item.csv) | Kiểm "không vật phẩm mồ côi": mọi vật phẩm có nguồn và công dụng |
 
 ---
 
@@ -277,7 +278,7 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 
 ### 3.1 Bảng EXP
 
-Bảng `ThongSoLauDai.EXP_LEN_CAP` (bản đầy đủ: [bang_cap_do_lau_dai.csv](../du_lieu/bang_cap_do_lau_dai.csv)), cấp tối đa
+Bảng `ThongSoLauDai.EXP_LEN_CAP` (bản đầy đủ: [bang_cap_do_lau_dai.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_cap_do_lau_dai.csv)), cấp tối đa
 **100**. Dựng từ số **giờ hiệu dụng** để lên một cấp `h(L)` (nội suy log): EXP lên cấp = `h(L) × quái/giờ(L) × EXP một
 quái(L)`, quái/giờ = `360 − 1,3·L`.
 
@@ -438,7 +439,7 @@ vụ, Gym, chế tạo, rơi, boss.
 - **Độ hiếm**: Trắng 100%, Xanh 110%, Đỏ 120%, **Hoàn mỹ 130%** (chỉ từ quái tinh anh, Gym, boss thế giới), Vàng (sự
   kiện, chỉ trang trí).
 - **Bộ trang bị** (số món cùng bậc): 4 món +5% HP, 7 món +5% tấn công, 11 món +3% chí mạng. Thưởng giống nhau mọi bậc nên
-  không gây leo thang ([noi_dung_bo.csv](../du_lieu/noi_dung_bo.csv)).
+  không gây leo thang ([noi_dung_bo.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_bo.csv)).
 - **Đồ cầm tay cùng hệ chiêu**: thiết kế +10% (+1%/bậc, ≤ 20%) — **chưa nối vào sát thương** (nối vào sẽ làm TTK đã
   hiệu chỉnh ngắn đi; cần hiệu chỉnh lại HP quái cùng lúc).
 - Đổi bậc: đồ cũ **phân rã** ra 2 đá + 10% giá; bán NPC chỉ được 5% giá, nên phân rã luôn đáng hơn bán.
@@ -447,7 +448,7 @@ vụ, Gym, chế tạo, rơi, boss.
 
 ### 4.2 Nâng cấp +1..+15
 
-`NangCapLauDaiGame` (hai đường nâng cấp dùng chung luật), bảng [noi_dung_vat_lieu_nang_cap.csv](../du_lieu/noi_dung_vat_lieu_nang_cap.csv):
+`NangCapLauDaiGame` (hai đường nâng cấp dùng chung luật), bảng [noi_dung_vat_lieu_nang_cap.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_vat_lieu_nang_cap.csv):
 
 | +k | Tỉ lệ gốc | Đá | Bùa bảo hộ (lượng khoá) | Trượt | Chỉ số món |
 |---|---|---|---|---|---|
@@ -470,7 +471,7 @@ vụ, Gym, chế tạo, rơi, boss.
 
 - **Ngọc hệ** (khảm): mỗi ô 1 ngọc, cấp 1..10, +1% chỉ số món mỗi cấp (≤ 10%); giá bước n = 1,45^(n−1) giờ thu nhập.
   Đây là hố hút thứ hai (thiếu nó thì mô phỏng cho cung tiền thực tăng ~12%/tháng). Thiết kế 18 hệ × 10 cấp ở
-  [noi_dung_ngoc_he.csv](../du_lieu/noi_dung_ngoc_he.csv); hiện giá khảm đã theo giờ thu nhập, ngọc theo hệ cần thêm code /
+  [noi_dung_ngoc_he.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_ngoc_he.csv); hiện giá khảm đã theo giờ thu nhập, ngọc theo hệ cần thêm code /
   client.
 - **Phân rã**: đồ thường → 2 đá + 10% giá; đồ Hoàn mỹ thêm 1 Mảnh tinh hoa + 1 nguyên liệu phụ (3 Mảnh tinh hoa để chuyển
   đồ Hoàn mỹ sang bậc mới); ngọc thừa → đá theo cấp ngọc.
@@ -482,7 +483,7 @@ vụ, Gym, chế tạo, rơi, boss.
 ### 4.4 Mô hình chỉ số Pokémon
 
 `data_attribute` có 198 dòng (id 0..186 và 200..210), nguồn duy nhất là `ChiSoTrangBi.BANG`, xuất ra
-[chi_so_trang_bi.csv](../du_lieu/chi_so_trang_bi.csv). Giữ id, đổi nghĩa sang chỉ số Pokémon; mỗi dòng có trạng thái
+[chi_so_trang_bi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/chi_so_trang_bi.csv). Giữ id, đổi nghĩa sang chỉ số Pokémon; mỗi dòng có trạng thái
 **dùng / hiện / nội bộ / ngừng**. Nhóm chính:
 
 | Chỉ số | Ghi chú |
@@ -576,7 +577,7 @@ hình, **không đổi chỉ số**.
     móc ở một chỗ mọi đường sát thương đều qua (`Char.checkHapthuSatThuong`). Khi bật `sv.lau_dai`, phản đòn / hấp thụ /
     xuyên giáp của skin chịu trần `GioiHanChiSo`.
   - Nguồn: đổi điểm ở NPC đổi thưởng (5 skin đầu), giftcode / quà `DB:<id>:1:<phút>` (0 = vĩnh viễn). Tên kèm mô tả
-    sinh từ chính bảng số (`tools/SinhSqlTenSkinThu.java`), không sửa tay SQL.
+    sinh từ chính bảng số (`tools/luu_tru_sinh_du_lieu/java/SinhSqlTenSkinThu.java`), không sửa tay SQL.
 
 ---
 
@@ -584,7 +585,7 @@ hình, **không đổi chỉ số**.
 
 ### 5.1 Gym (16 trưởng Gym)
 
-`real.GymLauDai`, dữ liệu [noi_dung_gym.csv](../du_lieu/noi_dung_gym.csv). Vào từ Sổ tay huấn luyện → "Thách đấu Gym":
+`real.GymLauDai`, dữ liệu [noi_dung_gym.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_gym.csv). Vào từ Sổ tay huấn luyện → "Thách đấu Gym":
 triệu hồi boss tại chỗ, **1 đấu 1** (chỉ người thách đấu gây được sát thương), nộ sau 5 phút, quá 10 phút chưa hạ thì thua.
 Bật / tắt: `gym.bat`.
 
@@ -656,16 +657,16 @@ vào bằng **vé Mê cung**, quái ra theo đợt kèm boss Mê cung, giới h�
 
 **Quái tinh anh** (chữ người chơi thấy là "quái tinh anh", không dùng "Alpha"): 1/50 lần hồi sinh, to ×1,3, HP ×4, tấn
 công ×1,3, rơi ×3, chắc chắn rơi 1 đá, 2% đồ Hoàn mỹ, TTK ~20 giây, có thông báo bản đồ
-([noi_dung_quai_tinh_anh.csv](../du_lieu/noi_dung_quai_tinh_anh.csv)).
+([noi_dung_quai_tinh_anh.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_tinh_anh.csv)).
 
 **Họ quái theo vùng**: mỗi tuyến 3–4 loài thuộc ít nhất 2 hệ, theo môi trường (Đồng cỏ: Thường / Cỏ / Bọ; Rừng: Bọ / Cỏ / Độc;
 Hang: Đá / Đất / Ma; Bờ biển: Nước / Bay; Núi lửa: Lửa / Đá; Hồ: Nước / Băng; Tháp: Ma / Siêu linh). 20 dải 5 cấp ở
-[noi_dung_quai_dai_cap.csv](../du_lieu/noi_dung_quai_dai_cap.csv); dải 86–100 dùng 36 loài Hoenn (template 139–174).
+[noi_dung_quai_dai_cap.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_dai_cap.csv); dải 86–100 dùng 36 loài Hoenn (template 139–174).
 
 ### 5.7 Boss thế giới
 
 - Triệu hồi **thứ Bảy 20:00**, tuần đột kích thêm 12:30. Vị trí / mẫu cấu hình bằng khoá `boss.the_gioi.*`.
-- Lịch 52 tuần ([noi_dung_boss_the_gioi.csv](../du_lieu/noi_dung_boss_the_gioi.csv)): 5 đột kích huyền thoại ở tuần 9 / 20 /
+- Lịch 52 tuần ([noi_dung_boss_the_gioi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_boss_the_gioi.csv)): 5 đột kích huyền thoại ở tuần 9 / 20 /
   28 / 36 / 48 (Zapdos, Entei, Darkrai, Rayquaza, Groudon & Kyogre; năm 2 xoay sang Articuno, Raikou, Suicune, Lugia,
   Kyogre & Groudon), các tuần khác 11 boss xoay vòng. HP cho ~10 phút với 20 người; nộ sau 15 phút.
 - **Thưởng theo % đóng góp** (sát thương), không theo đòn cuối: ≥ 0,5% → Hộp tham gia (2–4 đá) + 1–3 vật phẩm đặc trưng
@@ -701,9 +702,9 @@ Lưu ý: "-99" trong `RequestNPCInfoHandler` và -90..-92 trong `MapDoMenu` là 
 
 ### 6.1 Nhiệm vụ
 
-Toàn bộ nhiệm vụ nằm ở [nhiem_vu_moi.csv](../du_lieu/nhiem_vu_moi.csv) (khoảng 1.900 dòng, hơn 40 kiểu mục tiêu, đủ lời
+Toàn bộ nhiệm vụ nằm ở [nhiem_vu_moi.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_moi.csv) (khoảng 1.900 dòng, hơn 40 kiểu mục tiêu, đủ lời
 thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn chữ là `tools/pokemon/nv_*.py`, bộ sinh
-`tools/pokemon/sinh_nhiem_vu.py`. Báo cáo sinh tự động (số lượng, nhịp độ, yêu cầu engine):
+`tools/luu_tru_sinh_du_lieu/pokemon/sinh_nhiem_vu.py`. Báo cáo sinh tự động (số lượng, nhịp độ, yêu cầu engine):
 [NHIEM_VU_THIET_KE.md](../du_lieu/NHIEM_VU_THIET_KE.md).
 
 | Loại | Cấu trúc |
@@ -762,7 +763,7 @@ Thay đổi tay của admin (hay lịch lúc bảo trì còn xa / đã tắt) v�
 | `demnoel` | Đêm Noel | 24/12 → 26/12 | 24/12 → 26/12 | 24/12 → 26/12 |
 | `moi:tongket` | Tổng kết năm | 28/12 → 04/01 | 28/12/2026 → 04/01/2027 | 28/12/2027 → 04/01/2028 |
 
-Tuần Pokémon (bảng dưới) vẫn theo tuần ISO (`SuKienLauDai.LICH`, [su_kien_nam.csv](../du_lieu/su_kien_nam.csv)), thứ Hai
+Tuần Pokémon (bảng dưới) vẫn theo tuần ISO (`SuKienLauDai.LICH`, [su_kien_nam.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/su_kien_nam.csv)), thứ Hai
 04:00 → thứ Hai tuần sau 04:00, vì hệ của tuần hệ và huyền thoại đột kích gắn với số tuần. Bật tay (không có lịch):
 `noel2023`, `halloween2015`, `he2015` (bản cũ), `mini*`, `anxuluongtop`. **Đã bỏ** (sự kiện riêng của game kiếm hiệp cũ):
 World Cup bình chọn Messi/Ronaldo (`worldcup*`), Sinh nhật Ngudẻ, Đua top Hoa Lư.
@@ -785,7 +786,7 @@ chính. Trang chủ có mục "Sự kiện" (đang diễn ra + 30 ngày tới, �
 
 - **Ngân sách**: cả năm 66,5 giờ thu nhập (test chặn ≤ 70). Chỉ **25%** trả bằng xu; còn lại là vật phẩm **khoá, hết hạn
   khi sự kiện kết thúc** hoặc đồ trang trí, nên sự kiện không tích tiền. Mỗi tuần 1–3 vật phẩm, tối đa 20 cái / tuần
-  ([noi_dung_su_kien_vat_pham.csv](../du_lieu/noi_dung_su_kien_vat_pham.csv)).
+  ([noi_dung_su_kien_vat_pham.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_su_kien_vat_pham.csv)).
 - **Năm 2 xoay vòng** (cột `ten_nam2`): đổi huyền thoại, hệ của tuần hệ, dòng của ngày cộng đồng, linh vật ngày lễ.
 - Mã sự kiện mới có tiền tố `moi:*` trong `SuKien.DANH_MUC`; các cờ sự kiện kiếm hiệp cũ (`sv.isSuKien*`) chỉ còn để tương
   thích (mặc định khi bảng chưa có dòng).
@@ -814,7 +815,7 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 
 ## 7. Hệ sinh thái
 
-Bật bằng `sv.he_sinh_thai=1` (cần chạy `du_lieu/sql_nguon/pokemon_he_sinh_thai.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
+Bật bằng `sv.he_sinh_thai=1` (cần chạy `sql/nang_cap.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
 menu NPC đổi thưởng, hoặc gõ `hst`; phím tắt `cauca`, `dao`, `dua`. Đơn vị tiền là **‰H** = phần nghìn giờ thu nhập ở cấp
 người chơi. Mục tiêu: mỗi kiểu người chơi (chiến đấu, sưu tầm, xã hội, chế tác / thương nhân, chơi nhẹ) có việc dài hạn,
 và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính nó).
@@ -1090,7 +1091,7 @@ trong mô phỏng — vừa lạm phát vừa là mồi nuôi clone). 5.000 xu =
 Áp cho **mọi chữ người chơi và admin thấy**: chuỗi server, CSDL, client J2ME / Android / PC, web. Nguồn máy duy nhất:
 `server/src/com/htbb/pokemon/ChuPokemon.java` (`TU_CAM` từ cấm, `DOI` cặp cũ → mới, `CHO_PHEP` cụm hợp lệ chứa từ cấm). Mã
 nguồn đã mang thuật ngữ mới; từ điển lúc chạy vẫn giữ để đổi phần động (tên từ CSDL cũ, chữ người chơi gửi lên). Test
-`KiemThuatNgu` và `tools/pokemon/quet_tu_cam.py` phải báo **0** từ cấm.
+`KiemThuatNgu` và `tools/luu_tru_sinh_du_lieu/pokemon/quet_tu_cam.py` phải báo **0** từ cấm.
 
 ### 10.1 Bảng thuật ngữ chính (kiếm hiệp → Pokémon)
 
@@ -1143,7 +1144,7 @@ nguồn đã mang thuật ngữ mới; từ điển lúc chạy vẫn giữ đ�
 
 Tên NPC, pet, thú cưỡi, thời trang, danh hiệu, bộ sưu tập kiểu cũ đổi theo `ChuPokemon.DOI` và các bảng
 [bang_npc.csv](../du_lieu/bang_npc.csv), [bang_thu.csv](../du_lieu/bang_thu.csv), [bang_pet_cu.csv](../du_lieu/bang_pet_cu.csv).
-Đối chiếu từng ô CSDL đã đổi: [bang_chu.csv](../du_lieu/bang_chu.csv).
+Đối chiếu từng ô CSDL đã đổi: [bang_chu.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_chu.csv).
 
 **Ngoại lệ giữ nguyên**: động từ "kiếm" ("kiếm được", "tìm kiếm"; chỉ "Kiếm" viết hoa là tên vũ khí cũ); tên chiêu "Múa
 kiếm"; "thành phố", "thành công", "hoàn thành", "thành viên"; "hệ kim cương"; "võ sĩ" (lớp nhà huấn luyện); lễ hội Việt Nam

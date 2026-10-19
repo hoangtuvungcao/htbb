@@ -128,7 +128,7 @@ const cot: TableColumn<DongNhatKy>[] = [
       </template>
       <div class="space-y-2 text-sm">
         <p>Chạy một lần trên máy chủ, vào database <code>{{ data.dbGame }}</code>:</p>
-        <pre class="overflow-x-auto rounded-md bg-elevated p-3 font-mono text-xs">mysql -u root {{ data.dbGame }} &lt; du_lieu/sql_nguon/them_bang_web_admin_log.sql</pre>
+        <pre class="overflow-x-auto rounded-md bg-elevated p-3 font-mono text-xs">sudo bash /opt/htbb/vps/nang_cap_csdl.sh</pre>
         <p class="text-muted">
           Cho tới lúc đó, mọi thao tác trên trang quản trị vẫn chạy bình thường nhưng không để lại dấu vết,
           và việc chặn dò mật khẩu chỉ đếm trong bộ nhớ tiến trình web — khởi động lại website là hết, gần như vô hiệu.

@@ -1,31 +1,24 @@
-# tools — công cụ sinh dữ liệu, tài nguyên và phát hành
+# tools — công cụ tài nguyên, kiểm thử và phát hành
 
 Chạy **ở gốc repo** (đường dẫn trong công cụ viết từ gốc): Python `python3 -I tools/pokemon/<tên>.py`, Java
-`javac -d /tmp/htbb-tools tools/<...>.java && java -cp /tmp/htbb-tools <Lớp>`. Đừng sửa tay tệp do công cụ sinh ra —
-sửa nguồn (`du_lieu/*.csv`, `tools/cauhinh/danh_muc.json`…) rồi chạy lại. Luồng dữ liệu tổng thể:
+`javac -d /tmp/htbb-tools tools/<...>.java && java -cp /tmp/htbb-tools <Lớp>`. Dữ liệu game **không** còn sinh bằng công
+cụ: nó nằm trong CSDL (sửa trên trang quản trị) và bản đầy đủ `sql/htbb_day_du.sql` — xem [sql/README.md](../sql/README.md).
+Bộ sinh dữ liệu cũ (CSV → SQL, danh mục cấu hình, JSON tĩnh cho web) đã chạy lần cuối và nằm ở
+[`luu_tru_sinh_du_lieu/`](luu_tru_sinh_du_lieu/README.md), không thuộc build. Luồng dữ liệu tổng thể:
 [docs/kien-truc.md](../docs/kien-truc.md); lệnh build: [docs/build.md](../docs/build.md).
 
-## `cauhinh/` — cấu hình trung tâm
+## `cauhinh/`
 
-`danh_muc.json` là nguồn duy nhất của mọi khoá cấu hình chỉnh được từ web. `sinh_cau_hinh.py` sinh
-`du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql` (bảng `cau_hinh_danh_muc` + `cau_hinh_nhom`: máy chủ game và web đọc danh mục từ
-hai bảng này lúc chạy, không còn bản Java), `web/shared/utils/cauHinhTrungTam.gen.ts` (bản dự phòng của web) và bảng
-khoá trong [docs/cau-hinh.md](../docs/cau-hinh.md) (`--kiem` = chỉ kiểm lệch). Sửa danh mục: chạy script, nạp tệp SQL
-vào CSDL, rồi `python3 -I tools/pokemon/sinh_nang_cap_csdl.py` để làm mới migration. `vi_du_kiem.tsv`: bộ ví dụ kiểm giá trị dùng chung cho test Java và web.
+`vi_du_kiem.tsv`: bộ ví dụ kiểm giá trị cấu hình dùng chung cho test Java và web. Danh mục khoá cấu hình là bảng
+`cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL ([docs/cau-hinh.md](../docs/cau-hinh.md)).
 
-## `pokemon/` — dữ liệu và tài nguyên Pokémon
+## `pokemon/` — tài nguyên Pokémon
 
 | Nhóm | Công cụ | Làm gì |
 |---|---|---|
-| CSDL đầy đủ | `xuat_sql_day_du.sh` | dựng lại `sql/htbb_day_du.sql` (account + htbb_db) trên MariaDB trống theo đúng thứ tự migration |
-| Migration P1 | `sinh_nang_cap_csdl.py` (`--kiem` = chỉ kiểm lệch) | `vps/nang_cap_csdl.sql`: chép nguyên khối 8 bảng máy chủ nạp lúc khởi động (docs/kien-truc.md mục 4.4) cho CSDL đang chạy |
-| Bảng nội dung | `sinh_bang_quai.py`, `sinh_bang_thu.py`, `sinh_noi_dung.py` | quái / thú / nội dung (trang bị, vật phẩm, Gym, cửa hàng…) → `du_lieu/*.csv` |
-| SQL từ bảng | `sinh_sql_lau_dai.py` (+ `lau_dai_cot_truyen.py`), `sinh_vat_pham_lau_dai.py`, `sinh_sql_he_sinh_thai.py`, `sinh_sql_vat_pham.py`, `SinhSqlChiSo.java`, `sinh_giftcode_an_toan.py` | `du_lieu/*.csv` → `du_lieu/sql_nguon/pokemon_*.sql` |
-| Nhiệm vụ | `sinh_nhiem_vu.py` (+ `nv_chung.py`, `nv_cot_truyen.py`, `nv_hoenn.py`, `nv_phu.py`, `nv_lap_lai.py`) | nhiệm vụ → `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`, `du_lieu/nhiem_vu_moi.csv`, báo cáo `du_lieu/NHIEM_VU_THIET_KE.md` |
-| Chữ và thuật ngữ | `sinh_sql_chu.py`, `sinh_sql_thuat_ngu.py`, `ap_thuat_ngu.py`, `ap_thuat_ngu_web.py`, `quet_tu_cam.py`, `chu_pokemon.py` | đổi chữ người chơi thấy từ kiếm hiệp sang Pokémon (CSDL, mã nguồn, web); quét từ cấm còn sót |
-| Kiểm dữ liệu | `kiem_item_mo_coi.py` | mọi vật phẩm phải có chỗ dùng → `du_lieu/KIEM_ITEM.md`, `du_lieu/kiem_item.csv` |
-| Mô phỏng | `MoPhongKinhTe.java`, `MoPhongChiSo.java` | mô phỏng kinh tế / tiến trình và chỉ số / TTK → `du_lieu/mo_phong_*` |
-| Sprite và hiệu ứng | `tai_sprite_pmd.py`, `tai_hieu_ung_pmd.py`, `tai_vat_the.py`, `DongGoiSprite.java`, `TinhNeoPoke.java`, `SinhPhuKien.java`, `sinh_icon_pokemon.py` | tải tài nguyên PMDCollab (vào `pmd_raw*/`, không đưa vào git), đóng gói cho client, điểm neo phụ kiện, icon vật phẩm |
+| Chữ và thuật ngữ | `ap_thuat_ngu.py`, `ap_thuat_ngu_web.py` | đổi chữ người chơi thấy trong mã nguồn / web từ kiếm hiệp sang Pokémon |
+| Mô phỏng | `MoPhongKinhTe.java` | mô phỏng kinh tế / tiến trình, đọc bảng thiết kế trong `sql/htbb_day_du.sql` → `mo_phong_ra/` (không commit) |
+| Sprite và hiệu ứng | `tai_sprite_pmd.py`, `tai_hieu_ung_pmd.py`, `tai_vat_the.py`, `DongGoiSprite.java`, `TinhNeoPoke.java`, `SinhPhuKien.java` | tải tài nguyên PMDCollab (vào `pmd_raw*/`, không đưa vào git), đóng gói cho client, điểm neo phụ kiện |
 | Bản đồ và tile | `DungBoTileMoi.java`, `VeMapMoi.java`, `GiaiMaMap.java`, `cai_map_j2me.sh` | dựng bộ tile mới, vẽ lại bản đồ `server/cMap`, giải mã bản đồ ra JSON/ảnh xem trước, cài bản đồ vào client J2ME. **Đừng chạy** `DoiTileMap.java` (công cụ cũ, ghi đè tile) |
 | Đường dẫn client | `duong_client.py` | tìm thư mục `Assets` của client Unity (đặt `HTBB_CLIENT_ASSETS=client_pc_ios/Assets` nếu cần) |
 | Chạy thử | `chay_tren_novadb.sh` | chạy toàn bộ server (NovaDB + login + game) trên máy dev; `dung` để tắt |
@@ -71,9 +64,6 @@ Thuật ngữ chuẩn: [docs/thiet-ke-game.md](../docs/thiet-ke-game.md).
 
 | Công cụ | Làm gì |
 |---|---|
-| `SinhDanhMucItem.java` | `du_lieu/danh_muc_item.md` từ `data_item` trong `du_lieu/sql_nguon/gamedb7_clean.sql` |
-| `SinhBangCapDo.java`, `SinhDanhMucDanhHieu.java`, `SinhDanhMucNgoc.java`, `SinhDanhMucThu.java` | `web/shared/data/*.json` từ chính mảng / hàm trong mã server |
-| `SinhSqlTenSkinThu.java` | `du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql` từ `real.SkinThuCuoi` |
 | `TaoDataSprite.java`, `CatSpriteSheet.java`, `DichSkinThu.java`, `CanNgangSkinThu.java`, `CanChoNgoiSkinThu.java`, `ThuChoNgoiSkinThu.java`, `XemSkinNhuTrongGame.java`, `TaoIconSkinThu.java`, `TaoPetLan*.java`, `TaoPetTrangThai1.java` | dữ liệu khung sprite trong `server/map/d_effect/`, căn chỉnh và xem trước thú cưỡi / skin |
 | `DoiChuoiClass.java`, `va_mypet_client.py` | vá chuỗi trong tệp `.class` / jar client |
 | `xem_sprite.html` | xem sprite trong trình duyệt |

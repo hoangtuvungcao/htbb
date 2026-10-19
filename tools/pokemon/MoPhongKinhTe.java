@@ -25,8 +25,8 @@ import java.util.Map;
  * MO PHONG KINH TE + TIEN TRINH 730 NGAY (docs/thiet-ke-game.md).
  *
  * TAT DINH: cung hat giong -> cung ket qua tung so (RNG SplitMix64 rieng, khong dung
- * Math.random / thoi gian). Doc so tu com.htbb.pokemon.ThongSoLauDai (sinh boi
- * tools/pokemon/sinh_sql_lau_dai.py) + du_lieu/nhiem_vu_moi.csv + su_kien_nam.csv.
+ * Math.random / thoi gian). Doc so tu CSDL day du sql/htbb_day_du.sql (nguon duy nhat): ThongSoLauDai (nap tu
+ * data_*_lau_dai), nhiem vu data_quest_lau_dai, lich su kien data_su_kien_nam.
  *
  * Mo hinh (rut gon co chu dich - muc tieu la SO SANH tham so, khong phai du doan tuyet doi):
  *   - 4 nhom nguoi choi: NHE 1-2 gio/ngay, VUA ~3 gio, CAY 5-7 gio, BOT 20 gio (treo may).
@@ -46,8 +46,8 @@ import java.util.Map;
  *   javac -encoding UTF-8 -cp build/src -d build/tools tools/pokemon/MoPhongKinhTe.java
  *   java -cp build/tools:build/src MoPhongKinhTe            (730 ngay, 100% dan so)
  *   java -cp build/tools:build/src MoPhongKinhTe 365 50     (365 ngay, 50% dan so)
- * Ra: du_lieu/mo_phong_kinh_te.csv, du_lieu/mo_phong_tom_tat.txt,
- *     du_lieu/mo_phong_*.png. test/KiemLauDai goi chayKiem(...) qua phan chieu.
+ * Ra (chi khi chay tay): mo_phong_ra/mo_phong_kinh_te.csv, mo_phong_tom_tat.txt, mo_phong_*.png o thu muc hien tai.
+ * test/KiemLauDai goi chayKiem(...) qua phan chieu (khong ghi tep).
  */
 public final class MoPhongKinhTe {
 
@@ -235,11 +235,32 @@ public final class MoPhongKinhTe {
         return s == null || s.isEmpty() ? 0L : Long.parseLong(s);
     }
 
-    void napNhiemVu(final File f) throws Exception {
+    /** Moi dong cua mot bang trong sql/htbb_day_du.sql (cot -> gia tri, NULL -> ""). */
+    private static final Map<String, com.htbb.dulieu.DocDumpSql> DUMP = new HashMap<String, com.htbb.dulieu.DocDumpSql>();
+
+    static synchronized List<Map<String, String>> docBang(final File goc, final String ten) throws Exception {
+        final String p = new File(goc, "sql/htbb_day_du.sql").getPath();
+        if (!DUMP.containsKey(p)) {
+            DUMP.put(p, com.htbb.dulieu.DocDumpSql.tuTep(p));
+        }
+        final com.htbb.dulieu.DocDumpSql d = DUMP.get(p);
+        final com.htbb.dulieu.BangSql b = d.doc(ten, d.cotCua(ten));
+        final List<Map<String, String>> ra = new ArrayList<Map<String, String>>();
+        for (int r = 0; r < b.soDong(); r++) {
+            final Map<String, String> m = new HashMap<String, String>();
+            for (final String c : b.cot()) {
+                m.put(c, b.chu(r, c));
+            }
+            ra.add(m);
+        }
+        return ra;
+    }
+
+    void napNhiemVu(final List<Map<String, String>> bang) throws Exception {
         final Map<Integer, Chuong> theoSo = new HashMap<Integer, Chuong>();
         final Map<Integer, List<NvDon>> ngay = new HashMap<Integer, List<NvDon>>();
         final Map<Integer, List<NvDon>> tuan = new HashMap<Integer, List<NvDon>>();
-        for (final Map<String, String> d : docCsv(f)) {
+        for (final Map<String, String> d : bang) {
             final String loai = d.get("loai");
             final NvDon n = new NvDon();
             n.cap = so(d.get("cap_toi_thieu"));
@@ -318,8 +339,8 @@ public final class MoPhongKinhTe {
         }
     }
 
-    void napSuKien(final File f) throws Exception {
-        for (final Map<String, String> d : docCsv(f)) {
+    void napSuKien(final List<Map<String, String>> bang) throws Exception {
+        for (final Map<String, String> d : bang) {
             final int t = so(d.get("tuan"));
             nganSachTuan[t] = Double.parseDouble(d.get("ngan_sach_gio"));
             final String loai = d.get("loai");
@@ -372,8 +393,8 @@ public final class MoPhongKinhTe {
         this.soNgay = soNgay;
         this.heSoDanSo = heSoDanSo;
         this.trangThaiRng = hat;
-        napNhiemVu(new File(goc, "du_lieu/nhiem_vu_moi.csv"));
-        napSuKien(new File(goc, "du_lieu/su_kien_nam.csv"));
+        napNhiemVu(docBang(goc, "data_quest_lau_dai"));
+        napSuKien(docBang(goc, "data_su_kien_nam"));
         xuTb = new double[soNgay][5];
         capTb = new double[soNgay][5];
         xongNam1 = new double[soNgay][5];
@@ -1374,7 +1395,8 @@ public final class MoPhongKinhTe {
     MoPhongKinhTe chuanDi;
 
     void ghi(final File goc) throws Exception {
-        final File d = new File(goc, "du_lieu");
+        final File d = new File(goc, "mo_phong_ra");
+        d.mkdirs();
         try (PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(new File(d, "mo_phong_kinh_te.csv")),
                 StandardCharsets.UTF_8))) {
             w.print(String.join(",", COT) + "\n");
@@ -1576,7 +1598,7 @@ public final class MoPhongKinhTe {
         b.append(HeSinhThaiMoPhong.tomTat(m)); // he sinh thai
         System.out.print(b);
         try (PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(
-                new File("du_lieu/mo_phong_tom_tat.txt"), true), StandardCharsets.UTF_8))) {
+                new File("mo_phong_ra/mo_phong_tom_tat.txt"), true), StandardCharsets.UTF_8))) {
             w.print(b);
         }
         System.out.printf(Locale.ROOT, "(%.1f giay)%n", (System.nanoTime() - t0) / 1e9);

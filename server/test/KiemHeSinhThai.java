@@ -666,16 +666,16 @@ public final class KiemHeSinhThai {
     // ------------------------------------------------------------------ SQL sinh ra
 
     static void duLieuSql() {
-        Kiem.nhom("He sinh thai - du_lieu/sql_nguon/pokemon_he_sinh_thai.sql (sinh tu tools/pokemon/sinh_sql_he_sinh_thai.py)");
+        Kiem.nhom("He sinh thai - bang data_hst_* / tob_hst_* trong sql/htbb_day_du.sql");
         try {
-            final String sql = new String(Files.readAllBytes(new File("../du_lieu/sql_nguon/pokemon_he_sinh_thai.sql").toPath()), StandardCharsets.UTF_8);
-            Kiem.dung("co dau SINH RA / KHONG SUA TAY", sql.startsWith("-- SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py"));
             for (final String b : new String[]{"data_hst_vung", "data_hst_thay_quai", "data_hst_bung_phat", "data_hst_vung_loai", "data_hst_ho_cau",
                 "tob_hst_nhan_vat", "tob_hst_cho", "tob_hst_don", "tob_hst_hop_thu"}) {
-                Kiem.dung("co bang " + b, sql.contains("`" + b + "`"));
+                Kiem.dung("co bang " + b, DayDu.coBang(b));
             }
-            Kiem.sai("khong dung CREATE TABLE ... LIKE (NovaDB)", sql.contains(" LIKE "));
-            Kiem.sai("bang nguoi choi khong bi DROP", sql.contains("DROP TABLE IF EXISTS `tob_hst"));
+            for (final String b : new String[]{"tob_hst_nhan_vat", "tob_hst_cho", "tob_hst_don", "tob_hst_hop_thu"}) {
+                Kiem.dung("bang nguoi choi " + b + " rong trong ban day du", DayDu.soDong(b) <= 0);
+            }
+            Kiem.sai("sql/nang_cap.sql khong DROP bang nguoi choi tob_hst", DayDu.nangCap().contains("DROP TABLE IF EXISTS `tob_hst"));
             // Quai: id -> cap, phan loai
             final Map<Integer, int[]> quai = new HashMap<Integer, int[]>();
             for (final String d : Files.readAllLines(new File("../du_lieu/bang_quai.csv").toPath(), StandardCharsets.UTF_8)) {
@@ -684,26 +684,27 @@ public final class KiemHeSinhThai {
                     quai.put(Integer.parseInt(c[0]), new int[]{Integer.parseInt(c[2]), "quai".equals(c[4]) ? 1 : 0});
                 }
             }
-            final String khoi = sql.substring(sql.indexOf("INSERT INTO `data_hst_thay_quai`"), sql.indexOf("DROP TABLE IF EXISTS `data_hst_bung_phat`"));
-            final java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\((\\d+),(\\d+),(\\d+),(\\d+),(-?\\d+),(-?\\d+),(\\d+)\\)").matcher(khoi);
+            final java.util.List<java.util.Map<String, String>> tq = DayDu.dong("data_hst_thay_quai");
+            final String[] cot = DayDu.bang("data_hst_thay_quai").cot();
             int n = 0, sai = 0, hiem = 0;
             final Set<String> khoa = new HashSet<String>();
             int trung = 0;
-            while (m.find()) {
+            for (final java.util.Map<String, String> r : tq) {
                 n++;
-                if (!khoa.add(m.group(1) + "-" + m.group(2))) {
+                final String a = r.get(cot[0]), b = r.get(cot[1]), tron = r.get(cot[2]), h = r.get(cot[3]);
+                if (!khoa.add(a + "-" + b)) {
                     trung++;
                 }
-                final int[] g = quai.get(Integer.parseInt(m.group(1)));
-                final int[] t = quai.get(Integer.parseInt(m.group(2)));
-                final boolean laHiem = "1".equals(m.group(4));
+                final int[] g = quai.get(Integer.parseInt(a));
+                final int[] t = quai.get(Integer.parseInt(b));
+                final boolean laHiem = "1".equals(h);
                 hiem += laHiem ? 1 : 0;
                 if (g == null || t == null || g[1] != 1 || t[1] != 1) {
                     sai++;
                     continue;
                 }
                 final int dc = t[0] - g[0];
-                if (laHiem ? (dc < 3 || dc > 8 || Integer.parseInt(m.group(3)) > 5) : Math.abs(dc) > 4) {
+                if (laHiem ? (dc < 3 || dc > 8 || Integer.parseInt(tron) > 5) : Math.abs(dc) > 4) {
                     sai++;
                 }
             }
@@ -711,16 +712,14 @@ public final class KiemHeSinhThai {
             Kiem.dung("co dong thay loai (" + n + ", " + hiem + " hiem)", n > 100 && hiem > 0);
             Kiem.bang("moi dong thay loai: ca hai la quai thuong, cung dai cap (+-4; hiem +3..+8, trong so nho)", Integer.valueOf(0),
                     Integer.valueOf(sai));
-            final String bp = sql.substring(sql.indexOf("INSERT INTO `data_hst_bung_phat`"), sql.indexOf("DROP TABLE IF EXISTS `data_hst_vung_loai`"));
-            Kiem.sai("bung phat khong o map 40 (MOBA) / 42", bp.contains("\n(40,") || bp.contains("\n(42,"));
+            boolean map4042 = false;
+            final String cotMap = DayDu.bang("data_hst_bung_phat").cot()[0];
+            for (final java.util.Map<String, String> r : DayDu.dong("data_hst_bung_phat")) {
+                map4042 |= "40".equals(r.get(cotMap)) || "42".equals(r.get(cotMap));
+            }
+            Kiem.sai("bung phat khong o map 40 (MOBA) / 42", map4042);
         } catch (final Exception e) {
-            Kiem.dung("doc du_lieu/sql_nguon/pokemon_he_sinh_thai.sql: " + e, false);
-        }
-        try {
-            final String sh = new String(Files.readAllBytes(new File("../tools/pokemon/xuat_sql_day_du.sh").toPath()), StandardCharsets.UTF_8);
-            Kiem.dung("xuat_sql_day_du.sh gom pokemon_he_sinh_thai", sh.contains("pokemon_he_sinh_thai"));
-        } catch (final Exception e) {
-            Kiem.dung("doc xuat_sql_day_du.sh: " + e, false);
+            Kiem.dung("doc bang he sinh thai trong sql/htbb_day_du.sql: " + e, false);
         }
     }
 

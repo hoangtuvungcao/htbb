@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  *  - {@link #doi(String)} doi chu o cac cua ngo gui chu xuong client (MessageCreator: thong
  *    bao, menu, hop thoai, NPC, nhiem vu...).
  *
- * MOT NGUON cho ca 3 noi: tools/pokemon/sinh_sql_chu.py doc DOI/TEN_THU_CUOI/CHO_PHEP/TU_CAM
+ * MOT NGUON cho ca 3 noi: tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_chu.py doc DOI/TEN_THU_CUOI/CHO_PHEP/TU_CAM
  * ngay trong file nay (regex tren ma nguon) de doi chu trong CSDL va sinh ban C# cho client
  * (client_pc_ios/.../ChuPokemonDuLieu.cs). Sua bang o day roi chay lai tool, khong sua tay
  * hai file sinh ra. test/KiemChuPokemon doi chieu ban C# voi ban Java.
@@ -37,7 +37,7 @@ public final class ChuPokemon {
 
     /**
      * Tu cam: con xuat hien trong chuoi nguoi choi thay la con sot. Dung boi
-     * tools/pokemon/quet_tu_cam.py va test. "=" dau = phan biet hoa thuong.
+     * tools/luu_tru_sinh_du_lieu/pokemon/quet_tu_cam.py va test. "=" dau = phan biet hoa thuong.
      */
     public static final String[] TU_CAM = {
         "giang hồ", "võ lâm", "môn phái", "bang hội", "bang chủ", "phó bang", "bang",
@@ -1180,7 +1180,7 @@ public final class ChuPokemon {
 
     /**
      * LoginHandler.PORTION_NAME (ten thuoc trong thong bao server) lay theo ten CSDL da doi
-     * (du_lieu/sql_nguon/pokemon_doi_chu.sql), roi qua tu dien (phong khi chua chay SQL).
+     * (tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_doi_chu.sql), roi qua tu dien (phong khi chua chay SQL).
      */
     private static void apTenThuoc() {
         final String[] ten = real.cmd.LoginHandler.PORTION_NAME;

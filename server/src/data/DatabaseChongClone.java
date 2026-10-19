@@ -12,7 +12,7 @@ import java.util.List;
  * CSDL cua chong clone (com.htbb.pokemon.ChongClone): bang nhat ky tob_log_chuyen_gia_tri (moi lan chuyen xu /
  * gia tri giua hai nguoi choi, ke ca lan bi chan) + doc ngay dang ky tai khoan va tong phut choi.
  *
- * Bang cung co trong du_lieu/sql_nguon/them_bang_chong_clone.sql (chay tay duoc, idempotent); may chu tu tao neu thieu.
+ * Bang cung co trong tools/luu_tru_sinh_du_lieu/sql_nguon/them_bang_chong_clone.sql (chay tay duoc, idempotent); may chu tu tao neu thieu.
  * Web doc bang nay o /admin/kinh-te (muc "Nghi clone"): web/server/api/admin/kinh-te/nghi-clone.get.ts.
  */
 public final class DatabaseChongClone {

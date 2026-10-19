@@ -14,7 +14,7 @@ const { data } = useAsyncData('admin-me', () => api<{ coBangNhatKy: boolean }>('
   >
     <template #description>
       Mọi thao tác đang <strong>không được ghi nhật ký</strong> và đăng nhập chỉ chặn dò mật khẩu ở mức yếu. Chạy một lần:
-      <code>mysql -u root htbb_db &lt; du_lieu/sql_nguon/them_bang_web_admin_log.sql</code>
+      <code>sudo bash /opt/htbb/vps/nang_cap_csdl.sh</code>
     </template>
   </UAlert>
 </template>

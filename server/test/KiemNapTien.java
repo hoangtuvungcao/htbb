@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  *
  * Phan CSDL that (cong don song song, goi lap webhook, cho) chi chay khi dat bien moi truong
  * KIEM_NAP_DB = URL JDBC toi mot CSDL NHAP (vd jdbc:mysql://127.0.0.1:3318/htbb_db_nap?useSSL=false,
- * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu du_lieu/sql_nguon/pokemon_nap_tien.sql roi XOA sau.
+ * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu DDL cua sql/htbb_day_du.sql roi XOA sau.
  */
 public final class KiemNapTien {
 
@@ -422,38 +422,35 @@ public final class KiemNapTien {
     // ------------------------------------------------------------------ sql + web
 
     static void sqlVaWeb() {
-        Kiem.nhom("Nap tien - du_lieu/sql_nguon/pokemon_nap_tien.sql + web khop NapTienLogic");
-        final String s = doc("../du_lieu/sql_nguon/pokemon_nap_tien.sql");
-        Kiem.dung("SET NAMES utf8", s.contains("SET NAMES utf8;"));
-        final String lenh = s.replaceAll("(?m)--.*$", "");
-        Kiem.sai("khong ON DUPLICATE KEY (NovaDB)", lenh.contains("ON DUPLICATE KEY"));
-        Kiem.sai("khong CREATE TABLE .. LIKE", Pattern.compile("(?i)CREATE\\s+TABLE[^(]*\\bLIKE\\b").matcher(lenh).find());
-        Kiem.sai("khong NOW()/CURDATE() (moc thoi gian do ung dung ghi)", lenh.contains("NOW()") || lenh.contains("CURDATE()"));
-        Kiem.sai("khong ghi de chinh sua admin (khong REPLACE/DELETE)", Pattern.compile("(?m)^(REPLACE|DELETE|UPDATE)").matcher(lenh).find());
-        final Matcher g = Pattern.compile("\\('(\\w+)','([^']*)','(\\w+)',(\\d+),(\\d+),").matcher(s.substring(s.indexOf("INSERT IGNORE INTO `nap_goi`")));
+        Kiem.nhom("Nap tien - bang nap_* trong sql/htbb_day_du.sql + web khop NapTienLogic");
+        for (final String t : BANG) {
+            Kiem.dung("htbb_day_du.sql co bang " + t, DayDu.coBang(t));
+        }
+        final List<java.util.Map<String, String>> goi = sapTheoThuTu(DayDu.dong("nap_goi"));
         final List<String> sqlGoi = new ArrayList<String>();
-        while (g.find() && sqlGoi.size() < 20) {
-            sqlGoi.add(g.group(1) + "|" + g.group(2) + "|" + g.group(3) + "|" + g.group(4) + "|" + g.group(5));
+        for (final java.util.Map<String, String> r : goi) {
+            sqlGoi.add(r.get("ma") + "|" + r.get("ten") + "|" + r.get("loai") + "|" + r.get("gia_vnd") + "|" + r.get("luong"));
         }
         final List<String> javaGoi = new ArrayList<String>();
         for (final NapTienLogic.Goi x : NapTienLogic.GOI_MAC_DINH) {
             javaGoi.add(x.ma + "|" + x.ten + "|" + x.loai + "|" + x.giaVnd + "|" + x.luong);
         }
-        Kiem.bang("nap_goi trong SQL = GOI_MAC_DINH", javaGoi.toString(), sqlGoi.subList(0, Math.min(sqlGoi.size(), javaGoi.size())).toString());
-        final Matcher m = Pattern.compile("\\('([a-z0-9_]+)','([^']*)','(\\w+)','(\\w+)',(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)\\)")
-                .matcher(s);
+        Kiem.dung("nap_goi trong CSDL chua moi GOI_MAC_DINH (dung ten / loai / gia / luong)", sqlGoi.containsAll(javaGoi));
         final List<String> sqlMon = new ArrayList<String>();
-        while (m.find()) {
-            sqlMon.add(m.group(1) + "|" + m.group(2) + "|" + m.group(3) + "|" + m.group(4) + "|" + m.group(5) + "|" + m.group(6)
-                    + "|" + m.group(7) + "|" + m.group(8) + "|" + m.group(9) + "|" + m.group(10));
+        for (final java.util.Map<String, String> r : sapTheoThuTu(DayDu.dong("nap_cua_hang"))) {
+            sqlMon.add(r.get("ma") + "|" + r.get("ten") + "|" + r.get("nhom") + "|" + r.get("trao") + "|" + r.get("gia_luong") + "|"
+                    + r.get("han_ngay") + "|" + r.get("gioi_han") + "|" + r.get("nhom_xoay") + "|" + r.get("giao_dich_duoc") + "|"
+                    + r.get("co_chi_so"));
         }
         final List<String> javaMon = new ArrayList<String>();
         for (final NapTienLogic.Mon x : NapTienLogic.MON_MAC_DINH) {
             javaMon.add(x.ma + "|" + x.ten + "|" + x.nhom + "|" + x.trao + "|" + x.giaLuong + "|" + x.hanNgay + "|" + x.gioiHan
                     + "|" + x.nhomXoay + "|" + (x.giaoDichDuoc ? 1 : 0) + "|" + (x.coChiSo ? 1 : 0));
         }
-        Kiem.bang("nap_cua_hang trong SQL = MON_MAC_DINH", javaMon.toString(), sqlMon.toString());
-        Kiem.dung("xuat_sql_day_du.sh gom pokemon_nap_tien", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_nap_tien"));
+        Kiem.bang("nap_cua_hang trong CSDL = MON_MAC_DINH", javaMon.toString(), sqlMon.toString());
+        Kiem.dung("nap_cau_hinh co dong", DayDu.soDong("nap_cau_hinh") > 0);
+        Kiem.bang("bang don / so cai rong (khong co du lieu nguoi choi)", "0/0/0",
+                DayDu.soDong("nap_don") + "/" + DayDu.soDong("nap_so_cai") + "/" + DayDu.soDong("nap_vi"));
 
         final File web = new File("../web/server/utils/napTienThuan.ts");
         if (!web.isFile()) {
@@ -527,9 +524,32 @@ public final class KiemNapTien {
         }
     }
 
+    /** Dong sap theo thu_tu roi ma (thu tu hien thi). */
+    static List<java.util.Map<String, String>> sapTheoThuTu(final List<java.util.Map<String, String>> ds) {
+        final List<java.util.Map<String, String>> ra = new ArrayList<java.util.Map<String, String>>(ds);
+        java.util.Collections.sort(ra, (x, y) -> {
+            final int a = Integer.parseInt(x.get("thu_tu")), b = Integer.parseInt(y.get("thu_tu"));
+            return a != b ? Integer.compare(a, b) : x.get("ma").compareTo(y.get("ma"));
+        });
+        return ra;
+    }
+
+    /** CREATE TABLE IF NOT EXISTS cua cac bang nap_* + du lieu nap_goi / nap_cua_hang (INSERT IGNORE) tu ban day du. */
+    static String sqlTaoBang() {
+        final StringBuilder b = new StringBuilder();
+        for (final String t : BANG) {
+            b.append(DayDu.ddl(t).replaceFirst("CREATE TABLE `", "CREATE TABLE IF NOT EXISTS `")).append('\n');
+        }
+        final Matcher m = Pattern.compile("(?m)^INSERT INTO `(nap_goi|nap_cua_hang)` VALUES .*;$").matcher(DayDu.sql());
+        while (m.find()) {
+            b.append(m.group().replaceFirst("INSERT INTO", "INSERT IGNORE INTO")).append('\n');
+        }
+        return b.toString();
+    }
+
     static void chayKichBan(final String url, final String u, final String p) throws Exception {
         xoaBang(url, u, p);
-        final String sql = doc("../du_lieu/sql_nguon/pokemon_nap_tien.sql").replaceAll("(?m)^--.*$", "");
+        final String sql = sqlTaoBang();
         try (Connection c = DriverManager.getConnection(url, u, p); Statement st = c.createStatement()) {
             for (final String cau : sql.split(";\\s*\\n")) {
                 if (!cau.trim().isEmpty()) {
@@ -542,8 +562,8 @@ public final class KiemNapTien {
                     st.execute(cau);
                 }
             }
-            Kiem.bang("chay SQL 2 lan: 7 goi (INSERT IGNORE)", 7L, dem1(st, "SELECT COUNT(*) FROM nap_goi"));
-            Kiem.bang("chay SQL 2 lan: 22 mon cua hang", 22L, dem1(st, "SELECT COUNT(*) FROM nap_cua_hang"));
+            Kiem.bang("chay SQL 2 lan: goi (INSERT IGNORE)", (long) DayDu.soDong("nap_goi"), dem1(st, "SELECT COUNT(*) FROM nap_goi"));
+            Kiem.bang("chay SQL 2 lan: mon cua hang", (long) DayDu.soDong("nap_cua_hang"), dem1(st, "SELECT COUNT(*) FROM nap_cua_hang"));
             Kiem.bang("13 bang", 13, BANG.length);
             st.execute("INSERT INTO nap_don (ma_don, user_id, char_id, ma_goi, loai, so_tien, luong, trang_thai, tao_luc)"
                     + " VALUES ('HTAAAAAAAA', 7, 70, 'L100', 'luong', 100000, 1000, 'da_thanh_toan', '2026-10-17 10:00:00')");

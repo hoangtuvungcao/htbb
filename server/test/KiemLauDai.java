@@ -20,19 +20,14 @@ import java.util.regex.Pattern;
  * Thiet ke dai han (docs/thiet-ke-game.md): du lieu sinh ra NHAT QUAN va mo
  * phong kinh te DAT muc tieu.
  *
- * VI SAO: bang nhiem vu (nhiem_vu_moi.csv), lich su kien, ThongSoLauDai.java va
- * du_lieu/sql_nguon/pokemon_lau_dai.sql deu sinh tu tools/pokemon/sinh_sql_lau_dai.py; mo phong
- * (tools/pokemon/MoPhongKinhTe.java) doc lai chung. Sua mot so trong script ma quen chay
- * lai, hoac chinh so lam vo can bang (lam phat, nguoi choi nhe xong cot truyen qua som)
- * -> test nay do. Chi doc file, khong can CSDL.
+ * VI SAO: bang nhiem vu (data_quest_lau_dai), lich su kien (data_su_kien_nam) va so lieu ThongSoLauDai (nap tu
+ * data_*_lau_dai) nam trong CSDL day du sql/htbb_day_du.sql (nguon duy nhat, sua tren trang quan tri); mo phong
+ * (tools/pokemon/MoPhongKinhTe.java) doc lai chung. Sua mot so lam vo can bang (lam phat, nguoi choi nhe xong cot
+ * truyen qua som) hoac sai tham chieu -> test nay do. Chi doc tep, khong can CSDL.
  */
 public final class KiemLauDai {
 
-    private static final String F_NV = "../du_lieu/nhiem_vu_moi.csv";
-    private static final String F_SK = "../du_lieu/su_kien_nam.csv";
-    private static final String F_SQL = "../du_lieu/sql_nguon/pokemon_lau_dai.sql";
-    private static final String F_DUMP = "../sql/htbb_day_du.sql";
-    private static final String F_XUAT = "../tools/pokemon/xuat_sql_day_du.sh";
+    private static final String F_DUMP = DayDu.TEP;
     private static final String F_MO_PHONG = "../tools/pokemon/MoPhongKinhTe.java";
 
     private KiemLauDai() {
@@ -42,9 +37,9 @@ public final class KiemLauDai {
         Kiem.nhom("Thiet ke lau dai: bang EXP, nang cap, nhiem vu, su kien, mo phong kinh te");
         try {
             kiemThongSo();
-            final List<Map<String, String>> nv = docCsv(F_NV);
+            final List<Map<String, String>> nv = DayDu.bangThietKe("nhiem_vu_moi.csv");
             kiemNhiemVu(nv);
-            kiemSuKien(docCsv(F_SK));
+            kiemSuKien(DayDu.dongChu("data_su_kien_nam"));
             kiemSql(nv);
             kiemMoPhong();
         } catch (final Exception e) {
@@ -257,29 +252,17 @@ public final class KiemLauDai {
 
     // ------------------------------------------------------------------ sql
     private static void kiemSql(final List<Map<String, String>> nv) throws Exception {
-        final String s = new String(Files.readAllBytes(Paths.get(F_SQL)), StandardCharsets.UTF_8);
         int tuongThich = 0;
         for (final Map<String, String> d : nv) {
             if ("1".equals(d.get("dong_co_tuong_thich")) && "1".equals(d.get("nam"))) {
                 tuongThich++;
             }
         }
-        final Matcher m = Pattern.compile("INSERT INTO `data_quest_moi`[^\\n]*\\n((?:\\(.*\\)[,;]\\n)+)").matcher(s);
-        int dong = 0;
-        while (m.find()) {
-            for (final String l : m.group(1).split("\n")) {
-                if (l.startsWith("(")) {
-                    dong++;
-                }
-            }
-        }
-        Kiem.bang("data_quest_moi co dung so dong tuong thich", tuongThich, dong);
-        Kiem.dung("SQL bat dau bang SET NAMES utf8", s.contains("SET NAMES utf8;"));
-        Kiem.sai("SQL KHONG sua bang dang chay (UPDATE/INSERT data_quest that)",
-                Pattern.compile("(?m)^(UPDATE|INSERT INTO `data_quest` |DELETE)").matcher(s).find());
-        final String xuat = new String(Files.readAllBytes(Paths.get(F_XUAT)), StandardCharsets.UTF_8);
-        // GD2 buoc 0.3: sau khi xong buoc 1 thi gom vao (truoc do phai CHUA co).
-        Kiem.dung("pokemon_lau_dai DA nam trong xuat_sql_day_du.sh (GD2 0.3)", xuat.contains("pokemon_lau_dai"));
+        Kiem.bang("data_quest_moi co dung so dong tuong thich (data_quest_lau_dai nam 1, dong_co_tuong_thich=1)", tuongThich,
+                DayDu.soDong("data_quest_moi"));
+        Kiem.bang("data_quest goc giu nguyen 49 dong (khong sua bang dang chay)", 49, DayDu.soDong("data_quest"));
+        Kiem.dung("bang thiet ke lau dai co trong CSDL day du", DayDu.soDong("data_cap_do_lau_dai") == 100
+                && DayDu.soDong("data_nang_cap_lau_dai") > 0 && DayDu.soDong("data_kinh_te_lau_dai") > 0);
     }
 
     // ------------------------------------------------------------------ mo phong
@@ -314,6 +297,9 @@ public final class KiemLauDai {
 
     // ------------------------------------------------------------------ csv
     static List<Map<String, String>> docCsv(final String f) throws Exception {
+        if (!new File(f).isFile()) {
+            return DayDu.bangThietKe(f); // bang thiet ke cu nay chi con trong CSDL day du
+        }
         final List<String> dong = Files.readAllLines(Paths.get(f), StandardCharsets.UTF_8);
         final List<Map<String, String>> ra = new ArrayList<Map<String, String>>();
         final List<String> cot = tach(dong.get(0));

@@ -44,7 +44,7 @@ query_cache_size        = 0
 max_allowed_packet      = 64M
 wait_timeout            = 28800
 
-# Che do SQL: GIU STRICT_TRANS_TABLES mac dinh cua MariaDB >= 10.2. Neu mot file du_lieu/sql_nguon/*.sql bao
+# Che do SQL: GIU STRICT_TRANS_TABLES mac dinh cua MariaDB >= 10.2. Neu mot file tools/luu_tru_sinh_du_lieu/sql_nguon/*.sql bao
 # "Incorrect integer value: ''" thi sua FILE SQL do, dung tat strict.
 
 # Nhat ky truy van cham: tim truy van can chi muc.

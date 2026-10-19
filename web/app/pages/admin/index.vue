@@ -208,7 +208,7 @@ const cotNhatKy = [
           <p class="mt-1.5 text-sm text-muted">
             Server game tự tạo bảng này lúc khởi động (<code>data/GhiSoOnline.java</code>).
             Khởi động lại server một lần là bắt đầu ghi, 5 phút một mẫu, và giữ lại 30 ngày.
-            Muốn có bảng ngay thì chạy <code>du_lieu/sql_nguon/them_bang_tob_log_online.sql</code>.
+            Muốn có bảng ngay thì chạy <code>sql/nang_cap.sql</code>.
           </p>
         </UCard>
         <UCard v-else-if="data.online.soMau === 0">

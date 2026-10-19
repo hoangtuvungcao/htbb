@@ -76,7 +76,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
       <template #description>
         Chưa có dữ liệu client: máy chủ game đang chạy bản chưa ghi bảng <code>tob_client_dang_nhap</code>.
         Cập nhật <code>htbb-server.jar</code> rồi khởi động lại (bảng được tạo ngay lúc khởi động), hoặc chạy
-        <code>du_lieu/sql_nguon/them_bang_tob_client_dang_nhap.sql</code>. Số liệu bắt đầu từ lần đăng nhập kế tiếp.
+        <code>sql/nang_cap.sql</code>. Số liệu bắt đầu từ lần đăng nhập kế tiếp.
       </template>
     </UAlert>
     <UAlert v-else-if="data?.loiDoc" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="`Lỗi đọc dữ liệu: ${data.loiDoc}`" />

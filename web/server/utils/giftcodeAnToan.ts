@@ -1,5 +1,5 @@
 /**
- * Giftcode AN TOÀN (bảng tob_giftcode / tob_giftcode_log, HTBB/du_lieu/sql_nguon/them_bang_lau_dai.sql).
+ * Giftcode AN TOÀN (bảng tob_giftcode / tob_giftcode_log, HTBB/tools/luu_tru_sinh_du_lieu/sql_nguon/them_bang_lau_dai.sql).
  * Bản TS của com.htbb.pokemon.GiftcodeAnToanLogic — sửa bên Java thì sửa cả ở đây. Server game
  * kiểm lại y hệt khi phát quà, web kiểm trước để báo lỗi sớm.
  *   Phần thưởng chỉ gồm: LUONGKHOA:n | GEM:id:n (luôn khoá) | ITEM:id:n (n ≤ 10, khoá).

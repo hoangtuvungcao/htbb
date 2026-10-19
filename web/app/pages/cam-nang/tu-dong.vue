@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Tự động đánh chính thức (máy chủ điều khiển) — docs/thiet-ke-game.md,
- * com.htbb.pokemon.TuDong / real.TuDongGame. Số mặc định theo tools/cauhinh/danh_muc.json (nhóm tu_dong);
+ * com.htbb.pokemon.TuDong / real.TuDongGame. Số mặc định theo tools/luu_tru_sinh_du_lieu/cauhinh/danh_muc.json (nhóm tu_dong);
  * admin đổi được ở trang Cấu hình hệ thống.
  */
 </script>

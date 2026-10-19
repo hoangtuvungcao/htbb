@@ -6,7 +6,7 @@ Website + khu quản trị (CMS) của game, viết bằng **Nuxt 4** (Vue 3, Nu
 - Trang công khai: trang chủ, giới thiệu, hướng dẫn tân thủ, tải game (6 nền tảng), cẩm nang, Pokédex, tin tức,
   bảng xếp hạng, tài khoản, giấy phép (`/giay-phep`).
 - Khu quản trị `/admin`: người chơi, cấu hình hệ thống, sự kiện, giftcode, nội dung CMS, bản tải game, nhật ký.
-  Bảng CMS tạo bằng `du_lieu/sql_nguon/web_cms.sql` (chưa chạy thì web dùng nội dung mặc định).
+  Bảng CMS tạo bằng `tools/luu_tru_sinh_du_lieu/sql_nguon/web_cms.sql` (chưa chạy thì web dùng nội dung mặc định).
 
 ## Cấu hình
 
@@ -25,7 +25,7 @@ Chép `.env.example` thành `.env` (dev); trên VPS là `/etc/htbb/htbb.env` (d�
 | `HTBB_NAP_BAT` + `HTBB_NAP_*`, `HTBB_SEPAY_*`, `HTBB_CASSO_*` | Nạp tiền — mặc định **tắt** |
 | `HTBB_GMAIL_*`, `HTBB_MAIL_FROM_NAME` | Gửi email (Gmail API); lấy refresh token: `node scripts/lay-gmail-refresh-token.mjs` |
 | `HTBB_UPLOAD_DIR` | Thư mục ảnh/tệp tải lên (mặc định `./uploads`) |
-| `HTBB_DIR`, `HTBB_WEB_SRC_DIR` | Đường dẫn monorepo cho script đồng bộ dữ liệu (`npm run dong-bo-du-lieu`, chạy lúc build — trang `/admin/dong-bo` đã bỏ) |
+| `HTBB_DIR`, `HTBB_WEB_SRC_DIR` | Đường dẫn monorepo cho script tài nguyên (`npm run sinh-anim-khoi-dau`) |
 
 Giải thích đầy đủ từng biến nằm trong `.env.example`. Các khoá cấu hình game (`cau_hinh`): `docs/cau-hinh.md`.
 
@@ -39,10 +39,12 @@ npm run dev                 # chạy thử (http://localhost:3000)
 npm run build               # bản chạy thật ở .output/  ->  npm start
 npm test                    # kiểm thử đơn vị (node --test tests/*.test.ts)
 npm run typecheck
-HTBB_DIR=.. npm run dong-bo-du-lieu   # sinh lại shared/data/*.json + public/pokemon từ du_lieu/ và mã server
+HTBB_DIR=.. npm run sinh-anim-khoi-dau   # ảnh động màn khởi đầu từ tài nguyên client
 ```
 
-Không sửa tay `shared/data/*.json` và `shared/utils/*.gen.ts` — đổi nguồn rồi chạy lại script sinh.
+`shared/data/*.json` và `shared/utils/*.gen.ts` là **bản dự phòng tĩnh** (bộ sinh cũ đã lưu trữ ở
+`tools/luu_tru_sinh_du_lieu/`): dữ liệu game nằm trong CSDL (`sql/htbb_day_du.sql`), web đọc CSDL trước; test đối chiếu
+các tệp tĩnh với `sql/htbb_day_du.sql`.
 `node scripts/dev-token.mjs admin admin 1` in token admin để thử API khi dev.
 
 ## Dữ liệu game: CSDL trước, JSON dự phòng

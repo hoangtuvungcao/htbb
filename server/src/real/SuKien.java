@@ -130,7 +130,7 @@ public final class SuKien {
      *     Xoa co y, khong phai do nham voi ban cu.
      * Xoa Muc khoi DANH_MUC KHONG xoa dong cu con lai trong bang tob_su_kien (ghiAnhChup()
      * chi INSERT/UPDATE cac ma con trong DANH_MUC, khong bao gio DELETE) - phai chay
-     * du_lieu/sql_nguon/xoa_su_kien_trung_lap.sql de don dong cu, khong thi trang admin van con hien
+     * tools/luu_tru_sinh_du_lieu/sql_nguon/xoa_su_kien_trung_lap.sql de don dong cu, khong thi trang admin van con hien
      * (du bam nut cung khong con tac dung, vi SuKien.dat() da loai ma la khong con trong
      * danh muc).
      */
@@ -187,7 +187,7 @@ public final class SuKien {
                 "Lồng đèn hoa sen, chổi băng / chổi độc / chổi điện ở NPC sự kiện."),
 
 
-        // ---- GD2 buoc 5.1: ma moi cua lich 52 tuan (du_lieu/su_kien_nam.csv). Chi co hieu
+        // ---- GD2 buoc 5.1: ma moi cua lich 52 tuan (tools/luu_tru_sinh_du_lieu/du_lieu/su_kien_nam.csv). Chi co hieu
         // ung khi sv.lau_dai=1 (SuKienLauDaiGame); tat co thi bat cung khong lam gi. ----
         new Muc("moi:congdong", "Ngày cộng đồng", "Pokémon",
                 "3 giờ: dòng khởi đầu xuất hiện dày, shiny x5 (cần sv.lau_dai=1)."),

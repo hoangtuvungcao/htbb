@@ -11,7 +11,7 @@ Cách build từng thành phần từ mã nguồn. Mọi lệnh viết **từ g�
 | PC Java | JDK 9+, python3 | `sh client_pc/build.sh` | `client_pc/out/HTBB-PC.jar` |
 | PC Windows / iOS (Unity) | Unity 6000.5.9f1 | `Unity -batchmode … -executeMethod BuildCli.Win64` | thư mục `HTBB_OUT` |
 | Website | Node 22 | `cd web && npm ci && npm run build` | `web/.output/` |
-| Dữ liệu / SQL | python3, Java | `tools/pokemon/*`, `tools/cauhinh/sinh_cau_hinh.py` | `sql/*.sql`, tệp sinh |
+| Dữ liệu / SQL | MariaDB | `vps/xuat_csdl_day_du.sh` (xuất từ CSDL) | `sql/htbb_day_du.sql` |
 
 ## 1. Game server (`server/`)
 
@@ -156,19 +156,20 @@ npm run dev          # http://localhost:3000, đọc .env (chép từ .env.examp
 npm run build        # -> .output/ ; chạy: node .output/server/index.mjs
 npm test             # node --test tests/*.test.ts
 npm run typecheck
-HTBB_DIR=.. npm run dong-bo-du-lieu   # sinh lại shared/data/*.json + public/pokemon từ du_lieu/ và mã server
+HTBB_DIR=.. npm run sinh-anim-khoi-dau   # ảnh động màn khởi đầu từ sprite client
 ```
 
-Không sửa tay `web/shared/data/*.json` và `web/shared/utils/*.gen.ts`. Trên CI, `.github/workflows/web-deploy.yml`
+`web/shared/data/*.json` và `web/shared/utils/*.gen.ts` là bản dự phòng tĩnh (web đọc CSDL trước; test đối chiếu với
+`sql/htbb_day_du.sql`). Trên CI, `.github/workflows/web-deploy.yml`
 build rồi đẩy `.output` lên VPS. Chi tiết: [web/README.md](../web/README.md).
 
 ## 7. Dữ liệu, SQL và tệp sinh
 
-- **Cấu hình trung tâm:** sửa `tools/cauhinh/danh_muc.json` → `python3 tools/cauhinh/sinh_cau_hinh.py` (sinh Java,
-  SQL, TS và bảng trong [cau-hinh.md](cau-hinh.md); `--kiem` để kiểm lệch).
-- **Dữ liệu game:** bảng nguồn `du_lieu/*.csv` → bộ sinh trong `tools/pokemon/` → `du_lieu/sql_nguon/pokemon_*.sql`;
-  `sh tools/pokemon/xuat_sql_day_du.sh` gộp mọi thứ thành `sql/htbb_day_du.sql`. Xem
-  [du_lieu/README.md](../du_lieu/README.md), [tools/README.md](../tools/README.md), [sql/README.md](../sql/README.md).
+- **Dữ liệu game và cấu hình trung tâm** nằm trong CSDL (sửa trên trang quản trị). Không có bước sinh: repo giữ bản chụp
+  `sql/htbb_day_du.sql` (xuất bằng `vps/xuat_csdl_day_du.sh`) và `sql/nang_cap.sql` cho CSDL đang chạy — xem
+  [sql/README.md](../sql/README.md). Bộ sinh cũ: `tools/luu_tru_sinh_du_lieu/` (lưu trữ).
+- `du_lieu/*.csv` chỉ còn bảng tài nguyên (sprite, tile, bản đồ) — [du_lieu/README.md](../du_lieu/README.md),
+  [tools/README.md](../tools/README.md).
 - Chạy công cụ Python **ở gốc repo**: `python3 -I tools/pokemon/<tên>.py`.
 
 ## 8. Phát hành client (`tools/phat-hanh/`)

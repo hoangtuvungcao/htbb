@@ -68,7 +68,7 @@ public final class KiemLenhWeb {
 
         // --- hop dong Java / web (HTBB-Web) / SQL ---
         final String java = doc("src/data/LenhWeb.java");
-        final String sql = doc("../du_lieu/sql_nguon/them_bang_web_lenh_nhan_vat.sql");
+        final String sql = DayDu.ddl("web_lenh_nhan_vat");
         Kiem.bang("loai lenh xoa", "xoa_vat_pham", LenhWeb.LOAI_XOA_VAT_PHAM);
         if (!WebHtbb.boQua("hop dong xoa vat pham voi HTBB-Web")) {
             final String tsLenh = WebHtbb.doc(TS_LENH);
@@ -255,7 +255,7 @@ public final class KiemLenhWeb {
         final String java = doc("src/data/LenhWeb.java");
         final boolean coWeb = !WebHtbb.boQua("hop dong lenh voi HTBB-Web");
         final String php = WebHtbb.doc(TS_LENH);
-        final String sql = doc("../du_lieu/sql_nguon/them_bang_web_lenh_nhan_vat.sql");
+        final String sql = DayDu.ddl("web_lenh_nhan_vat");
         final String bang = LenhWeb.TEN_BANG;
 
         Kiem.bang("ten bang Java", "web_lenh_nhan_vat", bang);
@@ -263,7 +263,7 @@ public final class KiemLenhWeb {
             Kiem.dung("web dung cung ten bang", php.contains("export const LENH_BANG = '" + bang + "'")
                     && php.contains("INSERT INTO " + bang + " ") && php.contains("FROM " + bang + " "));
         }
-        Kiem.dung("file SQL tao cung ten bang", sql.contains("CREATE TABLE IF NOT EXISTS `" + bang + "`"));
+        Kiem.dung("htbb_day_du.sql co cung ten bang", sql.contains("CREATE TABLE `" + bang + "`"));
 
         final String[] cot = {"id", "loai", "char_id", "charname", "cap_do", "phan_nghin", "tham_so", "admin_user",
             "trang_thai", "ket_qua", "tao_luc", "xu_ly_luc"};
@@ -315,10 +315,8 @@ public final class KiemLenhWeb {
                     php.contains("CREATE TABLE IF NOT EXISTS \\`${LENH_BANG}\\`")
                     && php.contains("'`tham_so`    TEXT         NULL,'") && php.contains("'KEY `idx_trang_thai` (`trang_thai`)'"));
         }
-        Kiem.dung("du_lieu/sql_nguon/README.md liet ke file migration moi",
-                doc("../du_lieu/sql_nguon/README.md").contains("them_bang_web_lenh_nhan_vat.sql"));
-        Kiem.dung("vps/nang_cap_csdl.sql tao bang web_lenh_nhan_vat (CSDL dang chay)",
-                doc("../vps/nang_cap_csdl.sql").contains("CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat`"));
+        Kiem.dung("sql/nang_cap.sql tao bang web_lenh_nhan_vat (CSDL dang chay)",
+                DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat`"));
     }
 
     private static void apDungOnlineDungDuongTuNhienVaLuuNgay() {

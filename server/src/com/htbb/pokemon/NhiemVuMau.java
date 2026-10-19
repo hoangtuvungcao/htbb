@@ -248,7 +248,7 @@ public final class NhiemVuMau {
     }
 
     /**
-     * Toa do o "x;y" (dang chuan, sinh boi tools/pokemon/sinh_nhiem_vu.py) hoac "x,y".
+     * Toa do o "x;y" (dang chuan, sinh boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_nhiem_vu.py) hoac "x,y".
      * @return {x, y} (>= 0) hoac null neu rong / hong
      */
     public static int[] docToaDo(final String s) {

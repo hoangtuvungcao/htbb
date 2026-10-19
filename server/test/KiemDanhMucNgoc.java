@@ -127,11 +127,8 @@ public final class KiemDanhMucNgoc {
         Kiem.bang("NLCC cap 6 dung id 108,115,122,129,136",
                 "108,115,122,129,136", idCuaNhom(nhomJava, "NLCC6"));
 
-        // ---- Bo sinh phai con dung, va tep phai ghi ro la tep sinh ----
-        final String tool = doc("../tools/SinhDanhMucNgoc.java");
-        Kiem.dung("con bo sinh tools/SinhDanhMucNgoc.java", !tool.isEmpty());
-        Kiem.dung("tep sinh co ghi ro DUNG SUA TAY", php.contains("DUNG SUA TAY"));
-        Kiem.dung("tep sinh co ghi cach sinh lai", php.contains("SinhDanhMucNgoc"));
+        // Tep JSON tinh cua web (bo sinh cu da luu tru: tools/luu_tru_sinh_du_lieu/java/SinhDanhMucNgoc.java):
+        // phep doi chieu tren giu no khop mang Java dang chay.
     }
 
     /** Gop xuong dong y het bo sinh, de so sanh cong bang. */

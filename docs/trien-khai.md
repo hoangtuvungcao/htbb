@@ -249,12 +249,13 @@ trở đi khởi động (deploy-auto không tự chạy SQL), không thì máy 
 DUNG SERVER` (systemd báo `failed`, bản cũ đã tắt):
 
 ```sh
-sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # sao lưu → nạp vps/nang_cap_csdl.sql → kiểm; chạy lại được
+sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # sao lưu → nạp sql/nang_cap.sql → kiểm; chạy lại được
 ```
 
-Script tự sao lưu (`vps/backup_db.sh`, hỏng là dừng), chỉ **thêm** bảng / cột / chỉ mục cho bảng người chơi và nạp lại
-các bảng thiết kế máy chủ đọc lúc khởi động (gồm danh mục cấu hình trung tâm). Jar cũ vẫn chạy được sau bước này. Chi
-tiết: [sql/README.md](../sql/README.md).
+Script tự sao lưu (`vps/backup_db.sh`, hỏng là dừng), chỉ **thêm** bảng / cột / chỉ mục cho bảng người chơi, nạp lại
+các bảng thiết kế máy chủ đọc lúc khởi động (gồm danh mục cấu hình trung tâm có phân loại `lop`) và chạy vài lệnh cấu hình
+hệ thống chạy lại được (hệ số nạp = 1, công tắc sự kiện của lịch năm). Không xoá hay sửa dòng người chơi. Jar cũ vẫn chạy
+được sau bước này. Chi tiết: [sql/README.md](../sql/README.md).
 
 Từ P1 máy chủ đọc dữ liệu thiết kế (bảng EXP, nâng cấp, kinh tế dài hạn, lịch 52 tuần, danh mục cấu hình…) từ CSDL
 ([kien-truc.md mục 4.4](kien-truc.md)): đổi các bảng đó bằng SQL rồi khởi động lại, không cần build jar.

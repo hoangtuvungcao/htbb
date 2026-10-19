@@ -4,7 +4,7 @@ import { gcChuanHoaMa, gcChuanHoaThuong, gcGiaTri, gcGioiHan, gcKiemVatPham, gcM
  * Sửa: không đổi được tên mã; giữ nguyên da_dung.
  */
 export default defineAdminHandler(async (event, admin) => {
-  if (!(await coBang(dbGame(), 'tob_giftcode'))) throw apiLoi(409, 'Chưa có bảng tob_giftcode (chạy HTBB/du_lieu/sql_nguon/them_bang_lau_dai.sql).')
+  if (!(await coBang(dbGame(), 'tob_giftcode'))) throw apiLoi(409, 'Chưa có bảng tob_giftcode (chạy sql/nang_cap.sql).')
   const b = await bodyObj(event)
   const ma = gcChuanHoaMa(b.ma)
   if (!ma) throw apiLoi(400, 'Mã: 3–32 ký tự a-z, 0-9, _ hoặc -.')

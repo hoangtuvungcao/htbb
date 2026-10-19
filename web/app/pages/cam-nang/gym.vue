@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { noiDung: CAM_NANG_ND } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
- * Gym & huy hiệu — 16 Gym từ du_lieu/web/gym.csv + noi_dung_gym.csv, luật trận từ
+ * Gym & huy hiệu — 16 Gym từ tools/luu_tru_sinh_du_lieu/du_lieu/web/gym.csv + noi_dung_gym.csv, luật trận từ
  * GymLauDai.java / GiaiDoanBoss.java (qua cam-nang-noi-dung.json).
  */
 const G = CAM_NANG_ND.gym

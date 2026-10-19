@@ -162,16 +162,11 @@ public final class KiemSuKienWorldCup {
                 cauHinh.contains("apDungSuKienWorldCup(p);"));
 
         // ================= 8. SQL =================
-        final String sql = doc("../du_lieu/sql_nguon/them_su_kien_world_cup.sql");
-        Kiem.dung("co tep migrate sql", !sql.isEmpty());
-        Kiem.dung("migrate dat ten cho dong thuoc 108", sql.contains("WHERE `id` = 108"));
-        Kiem.dung("migrate tao bang diem",
-                sql.contains("CREATE TABLE IF NOT EXISTS `tob_top_event_world_cup`"));
-        Kiem.dung("migrate tao bang trang thai",
-                sql.contains("CREATE TABLE IF NOT EXISTS `tob_event_world_cup_state`"));
+        Kiem.dung("thuoc 108 co ten (data_potion)", !String.valueOf(DayDu.giaTri("data_potion", "id", "108", "name")).trim().isEmpty());
+        Kiem.dung("htbb_day_du.sql co bang diem tob_top_event_world_cup", DayDu.coBang("tob_top_event_world_cup"));
+        Kiem.dung("htbb_day_du.sql co bang trang thai tob_event_world_cup_state", DayDu.coBang("tob_event_world_cup_state"));
         // Them dong moi vao data_potion la doi so o thuoc cua client -> cam.
-        Kiem.sai("migrate KHONG them dong moi vao data_potion",
-                sql.contains("INSERT INTO `data_potion`"));
+        Kiem.bang("data_potion dung 162 dong (client cap phat theo so nay)", 162, DayDu.soDong("data_potion"));
     }
 
     /** Tim "case <n>:" nam trong nhom roi vao "default: break;" (khong co than xu ly). */

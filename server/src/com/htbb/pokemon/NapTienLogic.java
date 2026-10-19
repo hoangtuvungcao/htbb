@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * Luat nap tien - HAM THUAN (khong CSDL, khong Char), test/KiemNapTien.java goi truc tiep.
  * Nguon so lieu DUY NHAT phia server; web (HTBB-Web server/utils/napTienThuan.ts) giu ban sao
- * cac hang so can thiet va du_lieu/sql_nguon/pokemon_nap_tien.sql giu ban sao danh muc - test doi chieu ca ba.
+ * cac hang so can thiet va tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_nap_tien.sql giu ban sao danh muc - test doi chieu ca ba.
  * Thiet ke: docs/van-hanh.md.
  *
  * Nguyen tac (N-NAP):
@@ -51,7 +51,7 @@ public final class NapTienLogic {
         }
     }
 
-    /** Danh muc mac dinh - trung 100% voi INSERT trong du_lieu/sql_nguon/pokemon_nap_tien.sql (test doi chieu). */
+    /** Danh muc mac dinh - trung 100% voi bang nap_goi cua sql/htbb_day_du.sql (test doi chieu). */
     public static final Goi[] GOI_MAC_DINH = {
         new Goi("L20", "200 lượng", LOAI_LUONG, 20000, 200),
         new Goi("L50", "500 lượng", LOAI_LUONG, 50000, 500),
@@ -429,7 +429,7 @@ public final class NapTienLogic {
         }
     }
 
-    /** Danh muc mac dinh - trung voi INSERT trong du_lieu/sql_nguon/pokemon_nap_tien.sql (test doi chieu). */
+    /** Danh muc mac dinh - trung voi bang nap_cua_hang cua sql/htbb_day_du.sql (test doi chieu). */
     public static final Mon[] MON_MAC_DINH = {
         new Mon("mo_rong_tui", "Mở rộng hành trang (+42 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_MO_RONG_TUI, 0, 4, 0, false),
         new Mon("doi_ten", "Đổi tên Pokémon", "tien_ich", TRAO_DOI_TEN, GIA_DOI_TEN, 0, 0, 0, false),

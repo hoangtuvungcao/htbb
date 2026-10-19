@@ -163,16 +163,11 @@ public final class KiemPokemonServer {
                 Integer.valueOf(DaTienHoa.ketQuaDung(134, 50, 961)));
         Kiem.bang("thong bao", "Chỉ Eevee từ cấp 25 mới dùng được", DaTienHoa.THONG_BAO_KHONG_DUNG_DUOC);
 
-        // Doi chieu file SQL: dung id, dung ten, type 28.
-        final String sql = doc("../du_lieu/sql_nguon/pokemon_vat_pham_eevee.sql");
-        Kiem.dung("doc duoc du_lieu/sql_nguon/pokemon_vat_pham_eevee.sql", sql.length() > 100);
+        // Doi chieu CSDL: dung id, dung ten, type 28.
         for (int i = 0; i < DaTienHoa.ID_ITEM.length; i++) {
-            Kiem.dung("SQL co dong " + DaTienHoa.ID_ITEM[i] + " '" + DaTienHoa.TEN[i] + "' type 28",
-                    sql.contains("(" + DaTienHoa.ID_ITEM[i] + ",'" + DaTienHoa.TEN[i] + "',28,"));
-        }
-        final String seed = doc("../du_lieu/sql_nguon/gamedb7_clean.sql");
-        for (final int id : DaTienHoa.ID_ITEM) {
-            Kiem.sai("ban seed chua dung id " + id, seed.contains("\n(" + id + ",'"));
+            final String id = String.valueOf(DaTienHoa.ID_ITEM[i]);
+            Kiem.bang("data_item " + id + " = '" + DaTienHoa.TEN[i] + "' type 28", DaTienHoa.TEN[i] + "|28",
+                    DayDu.giaTri("data_item", "id", id, "name") + "|" + DayDu.giaTri("data_item", "id", id, "type"));
         }
 
         // Tien hoa theo cap (S5) - dung chung bang LoaiPokemon.
@@ -195,11 +190,11 @@ public final class KiemPokemonServer {
         final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.sai("ban mau khong con sv.che_do_pokemon", tmpl.contains("sv.che_do_pokemon"));
 
-        final String mig = doc("../du_lieu/sql_nguon/them_cot_pokemon.sql");
-        Kiem.dung("migration: tob_char.dex SMALLINT DEFAULT 0", mig.contains("`dex`   SMALLINT NOT NULL DEFAULT 0"));
-        Kiem.dung("migration: data_monster.he2 DEFAULT -1", mig.contains("`he2`   TINYINT  NOT NULL DEFAULT -1"));
-        Kiem.dung("migration: ALTER ca tob_char lan data_monster",
-                mig.contains("ALTER TABLE `tob_char`") && mig.contains("ALTER TABLE `data_monster`"));
+        Kiem.dung("CSDL: tob_char co cot dex + shiny", DayDu.cot("tob_char").contains("dex") && DayDu.cot("tob_char").contains("shiny"));
+        Kiem.dung("CSDL: data_monster.he2 DEFAULT -1", DayDu.ddl("data_monster").contains("`he2` tinyint(4) NOT NULL DEFAULT -1"));
+        final String mig = DayDu.nangCap();
+        Kiem.dung("nang cap: them cot tob_char.dex / data_monster.he2 (IF NOT EXISTS)",
+                mig.contains("ADD COLUMN IF NOT EXISTS `dex`") && mig.contains("ADD COLUMN IF NOT EXISTS `he2`"));
 
         // Moi spawn quai trong src/ (tru Moba - lop jar CharChienTruong.setTimeBuff dung he
         // 0..4 lam chi so) di qua heKhiSinh, khong con gan random thang.

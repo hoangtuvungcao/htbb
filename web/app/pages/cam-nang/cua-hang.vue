@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { noiDung: CAM_NANG_ND } = await useCamNang() // số liệu CSDL game, dự phòng JSON
-/** Cửa hàng & chế tạo — du_lieu/web/cua_hang.csv, che_tao.csv (cam-nang-noi-dung.json). */
+/** Cửa hàng & chế tạo — tools/luu_tru_sinh_du_lieu/du_lieu/web/cua_hang.csv, che_tao.csv (cam-nang-noi-dung.json). */
 const CH = CAM_NANG_ND.cuaHang
 const MO_TA: Record<string, string> = {
   'Chansey (thuốc)': 'Ở Trung tâm Pokémon mỗi thị trấn. Bán thuốc hồi máu, Ether, thuốc chữa trạng thái, thuốc tăng cường X.',

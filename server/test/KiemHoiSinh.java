@@ -308,7 +308,7 @@ public final class KiemHoiSinh {
     }
 
     static void cauHinh() throws Exception {
-        final String j = doc("../tools/cauhinh/danh_muc.json");
+        final String j = DayDu.danhMucJson();
         for (final String k : new String[]{HoiSinh.K_BAT, HoiSinh.K_XU_PHAN_TRAM_GIO, HoiSinh.K_HE_SO_LAP, HoiSinh.K_CUA_SO_PHUT,
                 HoiSinh.K_LUONG_KHOA, HoiSinh.K_LUONG_KHOA_TOI_DA, HoiSinh.K_CHO_SAU_GUC, HoiSinh.K_HOI_CHIEU, HoiSinh.K_EXP_MAT,
                 HoiSinh.K_EXP_MAT_TOI_DA_PHUT, HoiSinh.K_DO_BEN, HoiSinh.K_MET_PHUT, HoiSinh.K_MET_EXP, HoiSinh.K_MET_TAN_CONG,

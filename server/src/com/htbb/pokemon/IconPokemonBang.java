@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * SINH TU tools/pokemon/sinh_icon_pokemon.py - KHONG SUA TAY.
+ * SINH TU tools/luu_tru_sinh_du_lieu/pokemon/sinh_icon_pokemon.py - KHONG SUA TAY.
  *
  * Chi so anh cu (dai khong co cot DB) -> so thu tu icon PMD n (anh map/icon_pokemon/n.png,
  * id 14000+n). -1 = giu anh cu. Dung qua IconPokemon.doiAnh.

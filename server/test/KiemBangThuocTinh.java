@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  */
 public final class KiemBangThuocTinh {
 
-    private static final String NGUON = "../du_lieu/sql_nguon/gamedb7_clean.sql";
+    private static final String NGUON = "../sql/htbb_day_du.sql";
 
     /** Module Than Khi dung toi id 186, nen 0..186 phai co du. */
     private static final int ID_CAN_LIEN_TUC_DEN = 186;

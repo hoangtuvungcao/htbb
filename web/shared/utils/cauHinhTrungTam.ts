@@ -2,8 +2,7 @@
  * CẤU HÌNH TRUNG TÂM — hàm THUẦN (không DB, không auto-import Nuxt): kiểm giá trị, nhóm, tìm kiếm, so sánh.
  *
  * Danh mục khoá: lúc chạy từ CSDL game (cau_hinh_danh_muc + cau_hinh_nhom — máy chủ game đọc chính hai bảng này);
- * dự phòng lúc build: shared/utils/cauHinhTrungTam.gen.ts. Cả hai SINH từ HTBB/tools/cauhinh/danh_muc.json
- * (python3 tools/cauhinh/sinh_cau_hinh.py).
+ * dự phòng lúc build: shared/utils/cauHinhTrungTam.gen.ts (bản chụp tĩnh, test đối chiếu với sql/htbb_day_du.sql).
  * Luật kiểm khớp HTBB/src/com/htbb/cauhinh/KiemGiaTri.java; bộ ví dụ dùng chung HTBB/tools/cauhinh/vi_du_kiem.tsv
  * (cả tests/cau-hinh-trung-tam.test.ts lẫn HTBB/test/KiemCauHinhTrungTam.java chạy cùng bộ đó).
  *
@@ -56,8 +55,8 @@ export function datDanhMucTT(dm: { ds: KhoaTT[], nhom: NhomTT[] } | null): boole
 type DongTT = Record<string, string | number | null | undefined>
 
 /**
- * Dòng bảng cau_hinh_danh_muc (+ thu_tu, lop) và cau_hinh_nhom -> đúng hình dạng KhoaTT / NHOM_TT (sinh bởi
- * tools/cauhinh/sinh_cau_hinh.py). Thiếu cột thu_tu / lop (CSDL chưa chạy vps/nang_cap_csdl.sh) / dữ liệu lạ -> null
+ * Dòng bảng cau_hinh_danh_muc (+ thu_tu, lop) và cau_hinh_nhom -> đúng hình dạng KhoaTT / NHOM_TT
+ * (bản chụp cauHinhTrungTam.gen.ts). Thiếu cột thu_tu / lop (CSDL chưa chạy vps/nang_cap_csdl.sh) / dữ liệu lạ -> null
  * (giữ bản sinh): không đoán lớp 'chinh' cho khoá ẩn.
  */
 export function danhMucTuSqlTT(dongKhoa: DongTT[] | null | undefined, dongNhom: DongTT[] | null | undefined): { ds: KhoaTT[], nhom: NhomTT[] } | null {

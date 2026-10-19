@@ -12,7 +12,7 @@ import java.util.Random;
  *   - Mua (xuan/ha/thu/dong) doi trong so thoi tiet; loai "di cu" chi co mat mot so thang (mat na
  *     thang trong data_hst_thay_quai).
  *   - Thay loai khi quai hoi sinh: KHONG doi so luong / vi tri quai, chi doi template theo bang ung
- *     vien (sinh boi tools/pokemon/sinh_sql_he_sinh_thai.py).
+ *     vien (sinh boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_he_sinh_thai.py).
  *   - Bung phat: moi khung gio trong {@link HeSinhThai#GIO_BUNG_PHAT} chon 1 cap (tuyen, loai cua
  *     chinh tuyen do) theo hat giong ngay.
  */

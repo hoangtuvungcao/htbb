@@ -194,14 +194,14 @@ public final class Pokedex {
         }
     }
 
-    /** Keo hiem (data_item 1214, du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql) va Trung may man (1231). */
+    /** Keo hiem (data_item 1214, tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql) va Trung may man (1231). */
     public static final int ID_KEO_HIEM = 1214;
     public static final int ID_TRUNG_MAY_MAN = 1231;
 
     /**
      * Ban dai han (sv.lau_dai=1): keo EXP co dinh 10/11/12 bi tu choi khi dung (doUsePotion) nen moc Pokedex
      * doi sang Keo hiem (EXP theo nang luong, 2/tuan); moc 50 them Trung may man (do giu thiet ke "Pokedex
-     * 50 loai"). Luat "khong item mo coi" (tools/pokemon/kiem_item_mo_coi.py).
+     * 50 loai"). Luat "khong item mo coi" (tools/luu_tru_sinh_du_lieu/pokemon/kiem_item_mo_coi.py).
      */
     public static String doiThuongLauDai(final String thuong, final int moc) {
         String s = thuong.replaceAll("PT:1[012]:(\\d+)", "ITEM:" + ID_KEO_HIEM + ":$1");

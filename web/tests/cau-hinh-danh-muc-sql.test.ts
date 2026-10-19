@@ -1,7 +1,7 @@
 /**
- * Danh mục cấu hình trung tâm lúc chạy đọc từ CSDL (cau_hinh_danh_muc + cau_hinh_nhom, sinh bởi
- * tools/cauhinh/sinh_cau_hinh.py -> du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql) phải ra ĐÚNG bản sinh
- * shared/utils/cauHinhTrungTam.gen.ts (dự phòng lúc build). Không cần CSDL. Chạy: npm test.
+ * Danh mục cấu hình trung tâm lúc chạy đọc từ CSDL (cau_hinh_danh_muc + cau_hinh_nhom — nguồn duy nhất, bản chụp
+ * sql/htbb_day_du.sql) phải ra ĐÚNG bản tĩnh shared/utils/cauHinhTrungTam.gen.ts (dự phòng lúc build).
+ * Không cần CSDL. Chạy: npm test.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -59,16 +59,12 @@ test('datDanhMucTT: thay danh mục đang dùng, null = về bản sinh', () => 
   assert.equal(dsNhomTT(), NHOM_TT)
 })
 
-const SQL_TT = doc('../../du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql')
 const SQL_DAY_DU = doc('../../sql/htbb_day_du.sql')
-const coBangMoi = /CREATE TABLE[^;]*`cau_hinh_nhom`/.test(SQL_TT)
 
-for (const [ten, sql] of [['du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql', SQL_TT], ['sql/htbb_day_du.sql', SQL_DAY_DU]] as const) {
-  test(`${ten}: cau_hinh_danh_muc + cau_hinh_nhom == cauHinhTrungTam.gen.ts`,
-    { skip: coBangMoi ? false : 'tệp SQL chưa có cau_hinh_nhom (chạy python3 tools/cauhinh/sinh_cau_hinh.py)' }, () => {
-      const dm = danhMucTuSqlTT(docBangSql(sql, 'cau_hinh_danh_muc'), docBangSql(sql, 'cau_hinh_nhom'))
-      assert.ok(dm, 'đọc được danh mục từ SQL')
-      assert.deepEqual(dm.nhom, NHOM_TT)
-      assert.deepEqual(dm.ds, DANH_MUC_TT)
-    })
-}
+test('sql/htbb_day_du.sql: cau_hinh_danh_muc + cau_hinh_nhom == cauHinhTrungTam.gen.ts', () => {
+  assert.ok(/CREATE TABLE[^;]*`cau_hinh_nhom`/.test(SQL_DAY_DU), 'bản đầy đủ phải có bảng cau_hinh_nhom')
+  const dm = danhMucTuSqlTT(docBangSql(SQL_DAY_DU, 'cau_hinh_danh_muc'), docBangSql(SQL_DAY_DU, 'cau_hinh_nhom'))
+  assert.ok(dm, 'đọc được danh mục từ SQL')
+  assert.deepEqual(dm.nhom, NHOM_TT)
+  assert.deepEqual(dm.ds, DANH_MUC_TT)
+})

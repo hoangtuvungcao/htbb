@@ -19,7 +19,7 @@ import com.htbb.cauhinh.TinhCauHinh;
 /**
  * Cau hinh trung tam (com.htbb.cauhinh): thu tu uu tien CSDL > ini > mac dinh, kiem gia tri, tu choi gia tri
  * sai (giu gia tri tot gan nhat), khoa thu nghiem bi khoa o may that, khoa khoi dong lai dong bang + cho,
- * nap lai nong bao dung nguoi nghe, tep sinh dong bo voi tools/cauhinh/danh_muc.json.
+ * nap lai nong bao dung nguoi nghe, danh muc trong CSDL day du (cau_hinh_danh_muc) khop danh muc dang dung.
  *
  * Ham chi-cho-test cua CauHinhTrungTam: datChoTest / napLaiChoTest / xoaNgheChoTest (khong cham CSDL).
  */
@@ -165,29 +165,24 @@ public final class KiemCauHinhTrungTam {
             }
         }
 
-        // ---- 11. Tep sinh dong bo voi danh_muc.json ----
-        final String json = doc("../tools/cauhinh/danh_muc.json");
-        final List<String> khoaJson = new ArrayList<String>();
-        final Matcher mk = Pattern.compile("\\{ \"khoa\": \"([^\"]+)\"").matcher(json);
-        while (mk.find()) {
-            khoaJson.add(mk.group(1));
+        // ---- 11. Danh muc trong CSDL day du = danh muc dang dung ----
+        final List<String> khoaSql = new ArrayList<String>();
+        for (final java.util.Map<String, String> r : DayDu.dong("cau_hinh_danh_muc")) {
+            khoaSql.add(r.get("khoa"));
         }
         final List<String> khoaJava = new ArrayList<String>();
         for (final DinhNghiaKhoa d : dm) {
             khoaJava.add(d.khoa);
         }
-        Kiem.bang("danh muc nap tu SQL (cau_hinh_danh_muc) khop danh_muc.json (chay tools/cauhinh/sinh_cau_hinh.py)", khoaJson, khoaJava);
-        final String sql = doc("../du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql");
-        boolean du = !sql.isEmpty();
-        for (final String x : khoaJson) {
-            du &= sql.contains("('" + x + "'");
-        }
-        Kiem.dung("du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql co du khoa", du);
+        java.util.Collections.sort(khoaSql);
+        final List<String> khoaJavaSap = new ArrayList<String>(khoaJava);
+        java.util.Collections.sort(khoaJavaSap);
+        Kiem.bang("danh muc nap tu SQL = dong cau_hinh_danh_muc cua sql/htbb_day_du.sql", khoaSql, khoaJavaSap);
         for (final String b : new String[]{"cau_hinh_phien_ban", "cau_hinh_lich_su", "cau_hinh_ap_dung", "cau_hinh_hieu_luc",
-            "cau_hinh_khoi_dong_lai", "cau_hinh_danh_muc"}) {
-            Kiem.dung("sql tao bang " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
+            "cau_hinh_khoi_dong_lai", "cau_hinh_danh_muc", "cau_hinh_nhom"}) {
+            Kiem.dung("htbb_day_du.sql co bang " + b, DayDu.coBang(b));
+            Kiem.dung("sql/nang_cap.sql tao bang " + b, DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
         }
-        Kiem.dung("xuat_sql_day_du.sh nap pokemon_cau_hinh_trung_tam", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_cau_hinh_trung_tam"));
 
         // ---- 12. Noi day ----
         final String ts = doc("src/server/TeamServer.java");

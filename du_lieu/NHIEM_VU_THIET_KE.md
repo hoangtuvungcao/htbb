@@ -4,14 +4,14 @@
 > Bảng mới có khoảng 1.860 dòng, dùng 45 kiểu mục tiêu. Mọi dòng đều có tên, mô tả ngắn, lời thoại lúc nhận,
 > lúc đang làm và lúc xong, văn bản mục tiêu, gợi ý và dòng thưởng.
 >
-> **Nguồn duy nhất** là các bảng chữ trong `tools/pokemon/nv_*.py`. Bộ sinh là `tools/pokemon/sinh_nhiem_vu.py`,
+> **Nguồn duy nhất** là các bảng chữ trong `tools/pokemon/nv_*.py`. Bộ sinh là `tools/luu_tru_sinh_du_lieu/pokemon/sinh_nhiem_vu.py`,
 > được gọi từ `sinh_sql_lau_dai.py`, nên chỉ cần chạy:
 >
 > ```
-> python3 -I tools/pokemon/sinh_nhiem_vu.py
+> python3 -I tools/luu_tru_sinh_du_lieu/pokemon/sinh_nhiem_vu.py
 > ```
 >
-> Lệnh này sinh lại `nhiem_vu_moi.csv`, `du_lieu/sql_nguon/pokemon_lau_dai.sql`, `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`,
+> Lệnh này sinh lại `nhiem_vu_moi.csv`, `tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_lau_dai.sql`, `tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_nhiem_vu.sql`,
 > `nhiem_vu_nhip_do.csv`, `web/nhiem_vu_tom_tat.json` và các bảng nằm giữa `<!-- SINH -->` trong file này.
 > Kiểm thử: `test/KiemNhiemVu.java` (đã đăng ký trong `test/Kiem.java`) và `test/KiemLauDai.java`.
 >
@@ -86,7 +86,7 @@ Các chặng chính:
 **Năm 2: Hoenn.** Bạn nhớ lại mình sinh ra ở Littleroot.
 - Đoàn Dung Nham muốn mở rộng đất liền, Đoàn Thủy Triều muốn mở rộng biển; cả hai đều cần mảnh sao.
 - Câu chuyện đi qua Groudon, Kyogre và Sootopolis rồi tới Tháp Sky Pillar. Mẹ bạn từng canh giữ tháp này; Rayquaza cho biết chính bạn là mảnh sao cuối cùng.
-- Cả 52 chương (C53–C104) viết đầy đủ trên 29 bản đồ Hoenn mới (`src/com/htbb/pokemon/BanDoHoenn.java`; C53–C80 ở `nv_cot_truyen.NAM2`, C81–C104 ở `tools/pokemon/nv_hoenn.py`). Mỗi bước có `map_id` + toạ độ (điểm nhiệm vụ Hoenn trong `diem_co_dinh.csv`, câu cá lấy ô hồ trong `diem_cau_ca.csv`); quái mục tiêu là loài Hoenn mọc trên bản đồ đó (`nv_hoenn.chuan_buoc`).
+- Cả 52 chương (C53–C104) viết đầy đủ trên 29 bản đồ Hoenn mới (`src/com/htbb/pokemon/BanDoHoenn.java`; C53–C80 ở `nv_cot_truyen.NAM2`, C81–C104 ở `tools/luu_tru_sinh_du_lieu/pokemon/nv_hoenn.py`). Mỗi bước có `map_id` + toạ độ (điểm nhiệm vụ Hoenn trong `diem_co_dinh.csv`, câu cá lấy ô hồ trong `diem_cau_ca.csv`); quái mục tiêu là loài Hoenn mọc trên bản đồ đó (`nv_hoenn.chuan_buoc`).
 
 **Giọng nhân vật.** Mỗi NPC có câu mở đầu và cách xưng hô riêng, khai báo trong `nv_chung.NPC`:
 - Xatu "...", Snorlax "Oáp...", Blaziken "Lửa lên nào!"
@@ -143,7 +143,7 @@ Số lựa chọn có ý nghĩa tại mỗi cấp, đếm trong cửa sổ lọc
 Ít lựa chọn nhất: cấp 1 (12). Gói danh sách phụ lớn nhất (trước khi engine cắt 20): cấp 73 (76 ≤ 127).
 <!-- /SINH:LUA_CHON -->
 
-`goi_danh_sach_phu` là số nhiệm vụ phụ cộng nhiệm vụ Đội lọt cửa sổ trước khi engine cắt còn 20. Con số này luôn ≤ 127, tức trong giới hạn gói ghi số lượng 1 byte. Toàn bộ số liệu theo từng cấp nằm ở `du_lieu/nhiem_vu_nhip_do.csv`.
+`goi_danh_sach_phu` là số nhiệm vụ phụ cộng nhiệm vụ Đội lọt cửa sổ trước khi engine cắt còn 20. Con số này luôn ≤ 127, tức trong giới hạn gói ghi số lượng 1 byte. Toàn bộ số liệu theo từng cấp nằm ở `tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_nhip_do.csv`.
 
 ## 4. Ngân sách thưởng
 
@@ -183,7 +183,7 @@ Engine nhiệm vụ do người làm GĐ2 viết trong `src`; tài liệu này c
 - Mỗi dòng có **kiểu dự phòng** (cột `du_phong`, dạng `type:tham_số`). Nhờ vậy engine cũ type 0–4 vẫn chơi trọn chuỗi chính dù chưa có kiểu mới: một bước "đứng tại điểm" sẽ thành "gặp NPC", và một bước "hạ Alpha" sẽ thành "hạ quái mạnh gần cấp".
 - `content` được dựng từ lời thoại thật. Câu của NPC có tên người nói ở đầu; câu của người chơi đi theo tiền tố `0`.
 - Nhiệm vụ lặp lại (ngày, tuần, sự kiện) **không** vào `data_quest_moi`. Engine mới xoay vòng các nhiệm vụ này.
-- `data_nhiem_vu_noi_dung` (trong `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`) lấy khoá theo `ma`. Bảng giữ hội thoại 3 giai đoạn, gợi ý, `muc_tieu_text`, `dong_thuong`, `thuong_khac`, `nhanh_lua_chon`, `an`, `dieu_kien_mo`, `dieu_kien`, `map_id`, `toa_do`, `dap_an`, `phut`.
+- `data_nhiem_vu_noi_dung` (trong `tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_nhiem_vu.sql`) lấy khoá theo `ma`. Bảng giữ hội thoại 3 giai đoạn, gợi ý, `muc_tieu_text`, `dong_thuong`, `thuong_khac`, `nhanh_lua_chon`, `an`, `dieu_kien_mo`, `dieu_kien`, `map_id`, `toa_do`, `dap_an`, `phut`.
 - `data_nhiem_vu_kieu` là danh mục kiểu mục tiêu kèm số dòng của từng kiểu.
 - `data_vat_pham_nhiem_vu` liệt kê 41 vật phẩm nhiệm vụ mới, id 10..50.
 
@@ -309,11 +309,11 @@ Các phần không trùng nhau:
 
 | File | Nội dung |
 |---|---|
-| `tools/pokemon/nv_chung.py` | NPC và giọng nói, địa danh → bản đồ, kiểu mục tiêu (cơ chế, dự phòng, mẫu chữ), vật phẩm nhiệm vụ |
-| `tools/pokemon/nv_cot_truyen.py` | 52 chương năm 1 và 28 chương năm 2 (dàn ý H8–H13 lấy từ `lau_dai_cot_truyen.py`) |
-| `tools/pokemon/nv_phu.py` | 33 nơi; chuỗi đặc trưng mỗi nơi; 29 chuỗi mẫu |
-| `tools/pokemon/nv_lap_lai.py` | Ngày/truy nã, tuần, chuỗi vùng, tổ đội, Đội, sư phạm, hầm ngục, quay lại, sự kiện, huyền thoại, ẩn, thành tựu |
-| `tools/pokemon/sinh_nhiem_vu.py` | Bộ sinh: ngân sách, dự phòng, hội thoại, kiểm từ cấm, ghi file phụ |
-| `du_lieu/nhiem_vu_moi.csv` | 30 cột cũ cộng 19 cột mới |
-| `du_lieu/sql_nguon/pokemon_nhiem_vu.sql` | Bảng staging nội dung, đã thêm vào `xuat_sql_day_du.sh` sau `pokemon_lau_dai` |
-| `du_lieu/web/nhiem_vu_tom_tat.json` | Bản cho website: không có id, ngân sách hay đáp án |
+| `tools/luu_tru_sinh_du_lieu/pokemon/nv_chung.py` | NPC và giọng nói, địa danh → bản đồ, kiểu mục tiêu (cơ chế, dự phòng, mẫu chữ), vật phẩm nhiệm vụ |
+| `tools/luu_tru_sinh_du_lieu/pokemon/nv_cot_truyen.py` | 52 chương năm 1 và 28 chương năm 2 (dàn ý H8–H13 lấy từ `lau_dai_cot_truyen.py`) |
+| `tools/luu_tru_sinh_du_lieu/pokemon/nv_phu.py` | 33 nơi; chuỗi đặc trưng mỗi nơi; 29 chuỗi mẫu |
+| `tools/luu_tru_sinh_du_lieu/pokemon/nv_lap_lai.py` | Ngày/truy nã, tuần, chuỗi vùng, tổ đội, Đội, sư phạm, hầm ngục, quay lại, sự kiện, huyền thoại, ẩn, thành tựu |
+| `tools/luu_tru_sinh_du_lieu/pokemon/sinh_nhiem_vu.py` | Bộ sinh: ngân sách, dự phòng, hội thoại, kiểm từ cấm, ghi file phụ |
+| `tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_moi.csv` | 30 cột cũ cộng 19 cột mới |
+| `tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_nhiem_vu.sql` | Bảng staging nội dung, đã thêm vào `xuat_sql_day_du.sh` sau `pokemon_lau_dai` |
+| `tools/luu_tru_sinh_du_lieu/du_lieu/web/nhiem_vu_tom_tat.json` | Bản cho website: không có id, ngân sách hay đáp án |

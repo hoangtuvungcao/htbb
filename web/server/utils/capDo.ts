@@ -4,7 +4,7 @@
  * NGUỒN LÚC CHẠY: bảng data_cap_do_lau_dai (cột exp_cu = real.LevelDetail.expRequire, bảng EXP cũ cấp 1..90) trong
  *   CSDL game, đọc qua server/utils/duLieuSql.ts (cache 5 phút) và biến đổi bằng bangCapDoTuSql
  *   (shared/utils/duLieuSqlThuan.ts).
- * DỰ PHÒNG LÚC BUILD: shared/data/bang-cap-do.json — SINH TỰ ĐỘNG (tools/SinhBangCapDo.java), ĐỪNG SỬA TAY. Dùng khi
+ * DỰ PHÒNG LÚC BUILD: shared/data/bang-cap-do.json — SINH TỰ ĐỘNG (tools/luu_tru_sinh_du_lieu/java/SinhBangCapDo.java), ĐỪNG SỬA TAY. Dùng khi
  *   CSDL/bảng không đọc được. tests/du-lieu-sql.test.ts kiểm SQL == JSON; test/KiemBangCapDo.java bên server đối
  *   chiếu JSON với mảng Java và ghim CAPDO_TOI_DA với data.LenhWeb.CAP_TOI_DA.
  *

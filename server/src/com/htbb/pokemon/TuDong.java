@@ -26,7 +26,7 @@ public final class TuDong {
     private TuDong() {
     }
 
-    // ================================================================== khoa cau hinh (tools/cauhinh/danh_muc.json)
+    // ================================================================== khoa cau hinh (tools/luu_tru_sinh_du_lieu/cauhinh/danh_muc.json)
 
     public static final String K_BAT = "tu_dong.bat";
     public static final String K_GIO_NGAY = "tu_dong.gio_moi_ngay";

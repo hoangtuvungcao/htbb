@@ -1,5 +1,5 @@
 /**
- * Cấu hình trung tâm (web): danh mục sinh khớp tools/cauhinh/danh_muc.json, luật kiểm khớp máy chủ game
+ * Cấu hình trung tâm (web): bản tĩnh khớp bảng cau_hinh_danh_muc của sql/htbb_day_du.sql, luật kiểm khớp máy chủ game
  * (bộ ví dụ dùng chung tools/cauhinh/vi_du_kiem.tsv — server/test/KiemCauHinhTrungTam.java chạy cùng bộ),
  * so sánh trước khi lưu, khoá env / thử nghiệm, tìm kiếm, phân quyền. Chạy: npm test.
  */
@@ -8,6 +8,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { DANH_MUC_TT, NHOM_TT } from '../shared/utils/cauHinhTrungTam.gen.ts'
+import { docBangSql } from '../shared/utils/sqlDump.ts'
 import {
   hienThiTT, khoaTT, kiemGiaTriTT, kiemYeuCauKhoiDongLai, nhomTT, soSanhTT, suaDuocTT, timTT,
 } from '../shared/utils/cauHinhTrungTam.ts'
@@ -41,17 +42,21 @@ test('danh mục: khoá duy nhất, nhóm hợp lệ, mặc định hợp lệ t
   assert.ok(k('sv.testCode').nhay)
 })
 
-test('bản sinh khớp tools/cauhinh/danh_muc.json', { skip: !existsSync(`${HTBB}tools/cauhinh/danh_muc.json`) }, () => {
-  const j = JSON.parse(readFileSync(`${HTBB}tools/cauhinh/danh_muc.json`, 'utf8')) as { nhom: { ma: string }[], khoa: Record<string, any>[] }
-  assert.deepEqual(DANH_MUC_TT.map(x => x.khoa), j.khoa.map(x => x.khoa), 'chạy python3 tools/cauhinh/sinh_cau_hinh.py')
-  assert.deepEqual(NHOM_TT.map(x => x.ma), j.nhom.map(x => x.ma))
-  for (const x of j.khoa) {
-    const t = k(x.khoa)
-    assert.equal(t.macDinh, x.macDinh ?? '', x.khoa)
-    assert.equal(t.kieu, x.kieu, x.khoa)
-    assert.equal(t.apDung, x.apDung ?? 'ngay', x.khoa)
-    assert.equal(t.min, x.min, x.khoa)
-    assert.equal(t.max, x.max, x.khoa)
+test('bản tĩnh khớp cau_hinh_danh_muc / cau_hinh_nhom của sql/htbb_day_du.sql', () => {
+  const sql = readFileSync(`${HTBB}sql/htbb_day_du.sql`, 'utf8')
+  const theoThuTu = (a: Record<string, unknown>, b: Record<string, unknown>) => Number(a.thu_tu) - Number(b.thu_tu)
+  const khoa = docBangSql(sql, 'cau_hinh_danh_muc').sort(theoThuTu)
+  const nhom = docBangSql(sql, 'cau_hinh_nhom').sort(theoThuTu)
+  assert.deepEqual(DANH_MUC_TT.map(x => x.khoa), khoa.map(x => x.khoa))
+  assert.deepEqual(NHOM_TT.map(x => x.ma), nhom.map(x => x.ma))
+  for (const x of khoa) {
+    const t = k(String(x.khoa))
+    const g = JSON.parse(String(x.gioi_han ?? '{}')) as Record<string, unknown>
+    assert.equal(t.macDinh, String(x.mac_dinh ?? ''), String(x.khoa))
+    assert.equal(t.kieu, x.kieu, String(x.khoa))
+    assert.equal(t.apDung, x.ap_dung, String(x.khoa))
+    assert.equal(t.min, g.min, String(x.khoa))
+    assert.equal(t.max, g.max, String(x.khoa))
   }
 })
 

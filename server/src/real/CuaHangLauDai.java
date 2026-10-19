@@ -10,12 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * "Cửa hàng & đổi vật phẩm" trong Sổ tay huấn luyện (chỉ khi sv.lau_dai=1). Dữ liệu:
- * data_cua_hang_lau_dai (sinh bởi tools/pokemon/sinh_vat_pham_lau_dai.py). Mỗi dòng: chi phí
+ * data_cua_hang_lau_dai (sinh bởi tools/luu_tru_sinh_du_lieu/pokemon/sinh_vat_pham_lau_dai.py). Mỗi dòng: chi phí
  * (xu:N / luong_khoa:N / item:IDxN / thuoc:IDxN / ngoc:IDxN, ngăn ';') -> thưởng (ITEM:id:n /
  * GEM:id:n / PT:id:n, ngăn ','). Thưởng KHÔNG BAO GIỜ là tiền tệ (sinh_vat_pham_lau_dai chặn).
  *
- * Vì sao có lớp này: luật "không vật phẩm mồ côi" (tools/pokemon/kiem_item_mo_coi.py,
- * du_lieu/KIEM_ITEM.md) - thuốc / quả mọng / đồ giữ / bùa mới (1201..) chưa có nguồn,
+ * Vì sao có lớp này: luật "không vật phẩm mồ côi" (tools/luu_tru_sinh_du_lieu/pokemon/kiem_item_mo_coi.py,
+ * tools/luu_tru_sinh_du_lieu/du_lieu/KIEM_ITEM.md) - thuốc / quả mọng / đồ giữ / bùa mới (1201..) chưa có nguồn,
  * huy chương / tín vật sự kiện (1039..1061) chưa có công dụng, trang bị năm 2 chưa có nơi bán / chế tạo.
  *
  * Trừ và kiểm trong MỘT khối Char.truNeuDu (KHOA_TIEN): thiếu một thứ thì không trừ gì. Chỗ trống hành

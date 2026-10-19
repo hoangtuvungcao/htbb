@@ -68,7 +68,7 @@ public final class KiemTatCaiTrang {
         // 05/09/2026: them cot isSkinThu (xem KiemSkinThuCuoi) chen truoc charDBID, day
         // charDBID tu tham so 29 sang 30.
         // 21/09/2026: them 3 cot kho_xu/kho_luong/kho_luong_khoa (Database.themCotKhoXuLuong,
-        // du_lieu/sql_nguon/them_cot_kho_xu_luong.sql) -> 30 sang 33. Thay vi chot cung mot con so (lan
+        // sql/nang_cap.sql) -> 30 sang 33. Thay vi chot cung mot con so (lan
         // nao them cot cung phai sua test), DEM so "?" trong chinh cau UPDATE cua saveChar
         // va doi charDBID phai dung o "?" cuoi cung (where id=?). Chi xet THAN saveChar:
         // saveCharAuto co cau UPDATE ngan hon nen setInt(27, p.charDBID) o do la DUNG.

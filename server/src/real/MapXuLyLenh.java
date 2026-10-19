@@ -305,10 +305,10 @@ class MapXuLyLenh {
 
     /**
      * Qua NPC cap 35 (mot lan moi nhan vat). Chu game duyet 19/10/2026: bo 10 trieu xu thoi thu nghiem (= ~580 gio thu
-     * nhap o cap 35, ~1.300 lan so xu trung vi nguoi choi cap 35 dang giu trong du_lieu/mo_phong_kinh_te.csv - ca mot
+     * nhap o cap 35, ~1.300 lan so xu trung vi nguoi choi cap 35 dang giu trong tools/luu_tru_sinh_du_lieu/du_lieu/mo_phong_kinh_te.csv - ca mot
      * nguon lam phat lan mot muc tieu nuoi clone). Nay mot gia tri cho ca hai che do:
      *   - {@link #XU_CAP_35} xu = von khoi dau (Database.XU_KHOI_DAU), ~0,3 gio thu nhap o cap 35 (17.270 xu/gio);
-     *   - {@link #LUONG_KHOA_CAP_35} luong khoa = giua thanh tuu cap 30 (5) va cap 40 (6) (du_lieu/nhiem_vu_moi.csv A-003/A-004);
+     *   - {@link #LUONG_KHOA_CAP_35} luong khoa = giua thanh tuu cap 30 (5) va cap 40 (6) (tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_moi.csv A-003/A-004);
      *   - {@link #NGUYEN_LIEU_CAP_35} nguyen lieu KHOA moi loai cap 6 (giu nhu thiet ke GD2 2.4; khoa = khong ban NPC / cho).
      * Test: test/KiemThuongTanThuVaLenCap35.java.
      */

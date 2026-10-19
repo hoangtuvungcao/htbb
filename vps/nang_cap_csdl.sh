@@ -5,10 +5,10 @@
 #      sudo bash /opt/htbb/vps/nang_cap_csdl.sh
 #
 #  Lam theo thu tu: (1) kiem may la MariaDB, (2) SAO LUU htbb_db + account bang vps/backup_db.sh
-#  (hong la DUNG, khong nap gi), (3) nap vps/nang_cap_csdl.sql vao htbb_db, (4) kiem 8 bang du lieu
+#  (hong la DUNG, khong nap gi), (3) nap sql/nang_cap.sql vao htbb_db, (4) kiem 8 bang du lieu
 #  thiet ke + danh muc cau hinh co du dong.
 #
-#  CHAY LAI DUOC: moi lenh trong nang_cap_csdl.sql la CREATE TABLE IF NOT EXISTS / ADD COLUMN IF NOT
+#  CHAY LAI DUOC: moi lenh trong sql/nang_cap.sql la CREATE TABLE IF NOT EXISTS / ADD COLUMN IF NOT
 #  EXISTS / CREATE INDEX IF NOT EXISTS, hoac DROP+CREATE+INSERT cua bang thiet ke (data_*, cau_hinh_danh_muc,
 #  cau_hinh_nhom - bang sinh, khong co du lieu nguoi choi). Bang nguoi choi chi duoc them bang / them cot /
 #  noi cot. Gia tri cau hinh admin da dat (bang cau_hinh, cau_hinh_lich_su...) KHONG bi dong toi.
@@ -24,7 +24,7 @@
 set -euo pipefail
 
 DIR=$(cd "$(dirname "$0")/.." && pwd)
-SQL="$DIR/vps/nang_cap_csdl.sql"
+SQL="$DIR/sql/nang_cap.sql"
 DB=${HTBB_DB:-htbb_db}
 ENV_FILE=${HTBB_ENV_FILE:-/etc/htbb/htbb.env}
 

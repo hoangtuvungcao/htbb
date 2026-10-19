@@ -34,7 +34,7 @@ public final class KiemKinhTeKhoiDau {
         final String than = iHam < 0 ? "" : db.substring(iHam, db.indexOf("\n    public ", iHam + 10));
         Kiem.sai("loadTangNap KHONG gan TileNap tu CSDL", than.contains("TileNap = rs.getInt"));
 
-        final String[] seed = {"../du_lieu/sql_nguon/gamedb7_clean.sql", "../sql/htbb_day_du.sql"};
+        final String[] seed = {"../sql/htbb_day_du.sql"};
         for (final String f : seed) {
             final String sq = doc(f);
             Kiem.sai(f + ": tangnap khong con = 2", sq.contains("'tangnap', 2)") || sq.contains("'tangnap',2)"));
@@ -53,10 +53,10 @@ public final class KiemKinhTeKhoiDau {
         Kiem.bang("cat chuoi client", "abc", data.GhiClient.cat("abcdef", 3));
         Kiem.bang("cat bo xuong dong", "a b", data.GhiClient.cat("a\nb", 10));
 
-        final String sql = doc("../du_lieu/sql_nguon/them_bang_tob_client_dang_nhap.sql").replaceAll("\\s+", " ");
+        final String sql = DayDu.nangCap().replaceAll("\\s+", " "); // sql/nang_cap.sql giu DDL nguyen ban cua bang
         for (final String cot : new String[]{"`tai_khoan` VARCHAR(45) NOT NULL", "`loai` VARCHAR(10)", "`chinh_chu` TINYINT",
                 "`ban_jar` INT", "`lan_cuoi` DATETIME NOT NULL", "PRIMARY KEY (`tai_khoan`, `loai`)"}) {
-            Kiem.dung("SQL va GhiClient.DDL cung cot " + cot, sql.contains(cot) && ghiClientDdl().contains(cot));
+            Kiem.dung("sql/nang_cap.sql va GhiClient.DDL cung cot " + cot, sql.contains(cot) && ghiClientDdl().contains(cot));
         }
 
         final String login = doc("src/real/cmd/LoginHandler.java");

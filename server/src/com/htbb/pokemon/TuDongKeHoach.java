@@ -10,7 +10,7 @@ import java.util.List;
  * doUsePotion, getDropableFromGround). Lop THUAN (khong Char / Map / CSDL): real.TuDongGame dung {@link TinhHinh} tu
  * trang thai that roi goi {@link #lap}; test/KiemTuDongKeHoach.java goi truc tiep.
  *
- * Thu tu uu tien moi buoc (tu_dong.* trong tools/cauhinh/danh_muc.json):
+ * Thu tu uu tien moi buoc (tu_dong.* trong tools/luu_tru_sinh_du_lieu/cauhinh/danh_muc.json):
  *   1. tui day (tu_dong.dung_khi_day_tui) -> DUNG;
  *   2. HP / PP duoi nguong (nguoi choi chon; tu_dong.nguong_thuoc_* la mac dinh, 0 = may chu tat) va con thuoc ->
  *      THUOC (binh nho nhat du bu phan thieu, khong phi binh lon);

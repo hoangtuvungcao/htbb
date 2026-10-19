@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CSDL cua thiet ke dai han (giai doan 2). Bang: du_lieu/sql_nguon/them_bang_lau_dai.sql (cung tu tao o
+ * CSDL cua thiet ke dai han (giai doan 2). Bang: tools/luu_tru_sinh_du_lieu/sql_nguon/them_bang_lau_dai.sql (cung tu tao o
  * {@link #taoBang} luc khoi dong khi sv.lau_dai=1). MOI cau SQL dung PreparedStatement
  * (CODING_CONVENTION muc 13). Loi CSDL khong nem ra ngoai: in log va tra gia tri an toan.
  */
@@ -470,7 +470,7 @@ public final class DatabaseLauDai {
 
     /**
      * Cua hang & doi vat pham (real.CuaHangLauDai): {id, nhom, ten, chi_phi, thuong, cap, ngay_mo, lop,
-     * gioi_han_tuan} tu data_cua_hang_lau_dai (du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql). Thieu bang -> rong.
+     * gioi_han_tuan} tu data_cua_hang_lau_dai (tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql). Thieu bang -> rong.
      */
     public static List<Object[]> napCuaHangLauDai() {
         final List<Object[]> kq = new ArrayList<Object[]>();

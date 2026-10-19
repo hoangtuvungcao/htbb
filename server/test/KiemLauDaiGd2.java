@@ -111,22 +111,18 @@ public final class KiemLauDaiGd2 {
         Kiem.dung("top 1% (1 nguoi) giu > 99% xu", c.phanTramTop1X100 > 9900);
         Kiem.bang("khong ai hoat dong: 0 nguoi", Integer.valueOf(0), Integer.valueOf(ChiSoKinhTe.tinh(new int[0], new long[0], new long[0], new long[0]).soNguoi));
 
-        final String sql = doc("../du_lieu/sql_nguon/them_bang_lau_dai.sql");
         for (final String b : new String[]{"tob_kinh_te_ngay", "tob_char_lau_dai", "tob_nhiem_vu_lau_dai", "tob_mua_tuan",
             "tob_boss_dong_gop", "tob_ham_nguc", "tob_pvp_mua", "tob_su_pham", "tob_char_xp_cu", "tob_pokedex_shiny",
             "tob_giftcode", "tob_giftcode_log", "tob_qua_online", "tob_chiem_thanh_tuan"}) {
-            Kiem.dung("du_lieu/sql_nguon/them_bang_lau_dai.sql tao " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
+            Kiem.dung("htbb_day_du.sql co bang " + b + " (rong: du lieu nguoi choi)", DayDu.coBang(b) && DayDu.soDong(b) <= 0);
+            Kiem.dung("sql/nang_cap.sql tao " + b + " cho CSDL dang chay", DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
             Kiem.dung("DatabaseLauDai cung tu tao " + b, doc("src/data/DatabaseLauDai.java").contains("CREATE TABLE IF NOT EXISTS " + b + " "));
         }
-        for (final String f : new String[]{"../du_lieu/sql_nguon/them_bang_lau_dai.sql", "../du_lieu/sql_nguon/pokemon_lau_dai.sql", "../du_lieu/sql_nguon/vo_hieu_giftcode_tt.sql"}) {
-            final String s = doc(f).toUpperCase();
-            Kiem.sai(f + " khong dung CREATE TABLE ... LIKE", s.matches("(?s).*CREATE TABLE[^;]*\\sLIKE\\s.*"));
-            Kiem.sai(f + " khong dung TIMESTAMPDIFF", s.contains("TIMESTAMPDIFF"));
-        }
-        final String xuat = doc("../tools/pokemon/xuat_sql_day_du.sh");
-        Kiem.dung("xuat_sql_day_du.sh gom pokemon_lau_dai", xuat.contains("pokemon_lau_dai"));
-        Kiem.dung("xuat_sql_day_du.sh gom them_bang_lau_dai", xuat.contains("them_bang_lau_dai"));
-        Kiem.dung("xuat_sql_day_du.sh gom vo_hieu_giftcode_tt", xuat.contains("vo_hieu_giftcode_tt"));
+        final String nc = DayDu.nangCap().toUpperCase();
+        Kiem.sai("sql/nang_cap.sql khong dung CREATE TABLE ... LIKE", nc.matches("(?s).*CREATE TABLE[^;]*\\sLIKE\\s.*"));
+        Kiem.sai("sql/nang_cap.sql khong dung TIMESTAMPDIFF", nc.contains("TIMESTAMPDIFF"));
+        Kiem.dung("htbb_day_du.sql co du lieu lau dai (data_quest_lau_dai, data_shop_gia_lau_dai)",
+                DayDu.soDong("data_quest_lau_dai") > 1000 && DayDu.soDong("data_shop_gia_lau_dai") > 0);
         Kiem.dung("BaoTriDaily goi job kinh te dem", doc("src/real/BaoTriDaily.java").contains("LauDaiJob"));
 
         final HoSoLauDai h = new HoSoLauDai();
@@ -246,8 +242,7 @@ public final class KiemLauDaiGd2 {
         }
 
         // 1.10 giftcode tt
-        final String gc = doc("../du_lieu/sql_nguon/vo_hieu_giftcode_tt.sql");
-        Kiem.dung("sql vo hieu giftcode tt", gc.contains("UPDATE giftcode SET limit_use = 0 WHERE giftcode = 'tt'"));
+        Kiem.bang("giftcode 'tt' da vo hieu trong CSDL (limit_use = 0)", "0", DayDu.giaTri("giftcode", "giftcode", "tt", "limit_use"));
         Kiem.dung("limit_use = 0 nghia la het luot (DatabaseGiftCode)", doc("src/data/DatabaseGiftCode.java").contains("if (limit == 0) {"));
     }
 
@@ -557,14 +552,14 @@ public final class KiemLauDaiGd2 {
 
     static void buoc5() {
         Kiem.nhom("GD2 buoc 5 - su kien: ma moi + lich 52 tuan");
-        final String csv = doc("../du_lieu/su_kien_nam.csv");
-        final List<String[]> dong = docCsv(csv);
-        Kiem.bang("CSV 52 tuan", Integer.valueOf(52), Integer.valueOf(dong.size()));
-        Kiem.bang("bang Java 52 tuan", Integer.valueOf(52), Integer.valueOf(SuKienLauDai.LICH.length));
+        final List<Map<String, String>> dong = DayDu.dongChu("data_su_kien_nam");
+        Kiem.bang("data_su_kien_nam 52 tuan", Integer.valueOf(52), Integer.valueOf(dong.size()));
+        Kiem.bang("SuKienLauDai.LICH (nap tu CSDL) 52 tuan", Integer.valueOf(52), Integer.valueOf(SuKienLauDai.LICH.length));
         for (int i = 0; i < Math.min(52, dong.size()); i++) {
-            final String[] d = dong.get(i);
+            final Map<String, String> d = dong.get(i);
             final Object[] j = SuKienLauDai.LICH[i];
-            Kiem.bang("tuan " + d[0] + " khop CSV", d[0] + "|" + d[6] + "|" + d[7], j[0] + "|" + j[1] + "|" + j[2]);
+            Kiem.bang("tuan " + d.get("tuan") + ": LICH khop dong CSDL", d.get("tuan") + "|" + d.get("so_ngay") + "|" + d.get("ma_su_kien"),
+                    j[0] + "|" + j[1] + "|" + j[2]);
         }
         for (final String ma : SuKienLauDai.MA_MOI) {
             Kiem.dung("ma " + ma + " co trong SuKien.DANH_MUC", real.SuKien.timMuc(ma) != null);
@@ -927,8 +922,8 @@ public final class KiemLauDaiGd2 {
         final String dl = doc("src/data/DatabaseLauDai.java");
         Kiem.dung("nap mau khong JOIN", dl.contains("napMauNhiemVu") && !dl.toUpperCase().contains(" JOIN "));
         // vat pham dung + noi dung
-        final String vp = doc("../du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql");
-        Kiem.dung("type 28 + bang hieu ung", vp.contains("data_vat_pham_lau_dai") && vp.contains("Bùa bảo hộ"));
+        Kiem.dung("data_vat_pham_lau_dai co dong + data_item type 28 'Bùa bảo hộ'", DayDu.soDong("data_vat_pham_lau_dai") > 0
+                && DayDu.dong("data_item").stream().anyMatch(r -> "28".equals(r.get("type")) && String.valueOf(r.get("name")).startsWith("Bùa bảo hộ")));
         Kiem.dung("map dung vat pham goi VatPhamDungLauDai", docThuMuc("src/real").contains("VatPhamDungLauDai.dung("));
         Kiem.dung("keo EXP 10-12 bi chan khi bat co", docThuMuc("src/real").contains("keo EXP"));
         final String nc = doc("src/real/NangCapLauDaiGame.java");

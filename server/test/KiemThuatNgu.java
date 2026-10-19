@@ -15,15 +15,15 @@ import java.util.regex.Pattern;
  * Thuat ngu chuan (docs/thiet-ke-game.md): KHONG con thuat ngu kiem hiep cu (ChuPokemon.TU_CAM) trong
  * chu nguoi choi / admin thay - quet THO (truoc tu dien luc chay), phai 0.
  *
- * VI SAO: tu 18/10/2026 ma nguon da mang thuat ngu moi (tools/pokemon/ap_thuat_ngu.py, ap_thuat_ngu_web.py,
- * du_lieu/sql_nguon/pokemon_thuat_ngu.sql). Tu dien luc chay chi con la luoi an toan; chuoi moi viet them ma dung tu cu
+ * VI SAO: tu 18/10/2026 ma nguon da mang thuat ngu moi (tools/pokemon/ap_thuat_ngu.py, ap_thuat_ngu_web.py; du lieu
+ * trong CSDL da doi san). Tu dien luc chay chi con la luoi an toan; chuoi moi viet them ma dung tu cu
  * (vd "chiếm thành", "phi phong", "bang hội") se do o day thay vi lot ra nguoi choi / trang admin.
  *
  * Quet:
  *   - chuoi "..." trong src/**.java (bo chu thich, dong log, bang tu dien ChuPokemon/TenMapPokemon);
  *   - client: J2ME, Android (.java), PC/iOS Unity client_pc_ios/Assets (.cs);
  *   - web canh HTBB/ (../HTBB-Web: .vue/.ts/.js/.mjs/.sql) (web PHP cu web/ da bo - docs/kien-truc.md);
- *   - chuoi '...' trong du_lieu/sql_nguon/pokemon_*.sql (tru pokemon_thuat_ngu.sql chi xet gia tri SET) va sql/htbb_day_du.sql.
+ *   - chuoi '...' trong sql/htbb_day_du.sql va sql/nang_cap.sql (du lieu game).
  * Khong co thu muc client/web (vd may chu chi co repo game) thi bo qua phan do, in ra.
  * "bang" trong chu KHONG dau (bảng/băng/khoa 'bang') khong tinh - xem docs/thiet-ke-game.md.
  */
@@ -311,28 +311,15 @@ public final class KiemThuatNgu {
     }
 
     private static void quetSql() {
-        // sql/ chi con tep day du; tep sinh pokemon_*.sql nam o du_lieu/sql_nguon/.
-        final File[] nguon = new File("../du_lieu/sql_nguon").listFiles();
-        Kiem.dung("doc duoc thu muc du_lieu/sql_nguon/", nguon != null);
-        if (nguon == null) {
-            return;
-        }
-        final File[] ds = Arrays.copyOf(nguon, nguon.length + 1);
-        ds[nguon.length] = new File("../sql/htbb_day_du.sql");
-        Arrays.sort(ds);
+        // Du lieu game nam trong MOT tep day du (va tep nang cap) - quet chu nguoi choi thay o hai tep do.
         int n = 0;
-        for (final File f : ds) {
-            final String t = f.getName();
-            if (!t.endsWith(".sql") || !(t.startsWith("pokemon_") || t.equals("htbb_day_du.sql"))) {
-                continue;
+        for (final File f : new File[]{new File("../sql/htbb_day_du.sql"), new File("../sql/nang_cap.sql")}) {
+            if (f.isFile()) {
+                n++;
+                chuoiSql(f.getPath(), doc(f), false);
             }
-            n++;
-            chuoiSql(f.getPath(), doc(f), t.equals("pokemon_thuat_ngu.sql"));
         }
-        Kiem.dung("co sql/htbb_day_du.sql va du_lieu/sql_nguon/pokemon_*.sql", n > 5 && new File("../sql/htbb_day_du.sql").isFile());
-        final String sh = doc(new File("../tools/pokemon/xuat_sql_day_du.sh"));
-        Kiem.dung("xuat_sql_day_du.sh chay pokemon_thuat_ngu (cuoi cung)", sh.contains("THUAT_NGU=\"pokemon_thuat_ngu\"")
-                && sh.indexOf("for f in $THUAT_NGU") > sh.indexOf("for f in $CAU_HINH_TT"));
+        Kiem.bang("co sql/htbb_day_du.sql va sql/nang_cap.sql", 2, n);
     }
 
     // ---------------- web (ban Java don gian cua tools/pokemon/ap_thuat_ngu_web.py) ----------------

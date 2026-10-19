@@ -1,14 +1,2506 @@
--- NANG CAP CSDL dang chay (htbb_db) len schema + du lieu thiet ke hien tai. CHAY LAI DUOC.
--- SINH RA boi tools/pokemon/sinh_nang_cap_csdl.py - KHONG SUA TAY. Nguon: du_lieu/sql_nguon/.
--- Chay:  sudo bash /opt/htbb/vps/nang_cap_csdl.sh   (sao luu -> nap tep nay -> kiem)
---    hoac:  mysql -u root htbb_db < vps/nang_cap_csdl.sql
+-- NANG CAP CSDL DANG CHAY (htbb_db) len cung schema + du lieu thiet ke voi sql/htbb_day_du.sql. CHAY LAI DUOC.
+-- Tep VIET TAY (khong con bo sinh). Chay:  sudo bash /opt/htbb/vps/nang_cap_csdl.sh   (sao luu -> nap tep nay -> kiem)
+--                                   hoac:  mysql -u root htbb_db < sql/nang_cap.sql
 -- CSDL moi khong can tep nay: sql/htbb_day_du.sql da gom san.
--- Bang nguoi choi chi duoc THEM bang / THEM cot / NOI cot; khong DROP / DELETE / UPDATE du lieu nguoi choi.
+-- Luat (server/test/KiemDuLieuSql kiem): bang nguoi choi chi duoc THEM bang / THEM cot / NOI cot / THEM chi muc
+-- (CREATE TABLE IF NOT EXISTS, ADD COLUMN IF NOT EXISTS, MODIFY noi cot, CREATE INDEX IF NOT EXISTS, INSERT IGNORE);
+-- khong DROP / DELETE / UPDATE du lieu nguoi choi. Phan 2 (bang thiet ke may chu doc luc khoi dong) phai giong TUNG
+-- DONG sql/htbb_day_du.sql. Them bang / cot moi vao htbb_day_du.sql thi them lenh tuong ung vao day (xem sql/README.md).
 SET NAMES utf8mb4;
+
+-- ======== 0. MOI bang cua sql/htbb_day_du.sql (htbb_db): CREATE TABLE IF NOT EXISTS - bang da co giu nguyen (ca du lieu).
+--          Cung DDL voi ban day du; cot moi cua bang da co them o phan 1 (ADD COLUMN IF NOT EXISTS).
+
+CREATE TABLE IF NOT EXISTS `5h_active` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userID` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `time_end` varchar(50) DEFAULT '-1',
+  PRIMARY KEY (`id`),
+  KEY `idx_5h_active_username` (`username`),
+  KEY `idx_5h_active_userid` (`userID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `5h_notify` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `time_end` int(11) NOT NULL DEFAULT 1702874482,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `5h_systems` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `command` varchar(255) DEFAULT NULL,
+  `status` int(255) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `admin_msg` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `msg` varchar(1000) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `bad_word` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `word` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=170 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `board_created` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `xu` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `luong` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `luongK` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `svID` int(11) NOT NULL DEFAULT -1,
+  `username` varchar(45) NOT NULL,
+  `ve` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `Index_2` (`username`) USING BTREE,
+  KEY `Index_3` (`svID`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `board_naptien` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `xu` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `luong` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `svID` int(11) NOT NULL DEFAULT -1,
+  `username` varchar(45) NOT NULL,
+  `ve` int(10) unsigned NOT NULL DEFAULT 0,
+  `luongKhoa` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `Index_2` (`username`) USING BTREE,
+  KEY `Index_3` (`svID`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `cau_hinh` (
+  `khoa` varchar(64) NOT NULL COMMENT 'ten setting, khop hang so K_* trong src/server/CauHinh.java',
+  `gia_tri` varchar(255) NOT NULL DEFAULT '',
+  `sua_boi` varchar(50) DEFAULT NULL COMMENT 'ten dang nhap admin (web) hoac "game" (bang setting trong game)',
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_ap_dung` (
+  `may_chu` varchar(40) NOT NULL,
+  `phien_ban` bigint(20) NOT NULL DEFAULT 0,
+  `ap_dung_luc` datetime DEFAULT NULL,
+  `khoi_dong_luc` datetime DEFAULT NULL,
+  `nhip_luc` datetime DEFAULT NULL,
+  `so_khoa` int(11) NOT NULL DEFAULT 0,
+  `so_loi` int(11) NOT NULL DEFAULT 0,
+  `loi` text DEFAULT NULL,
+  `cho_khoi_dong_lai` text DEFAULT NULL,
+  `thay_doi_cuoi` text DEFAULT NULL,
+  PRIMARY KEY (`may_chu`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_danh_muc` (
+  `khoa` varchar(64) NOT NULL,
+  `nhom` varchar(20) NOT NULL,
+  `ten` varchar(160) NOT NULL DEFAULT '',
+  `mo_ta` text NOT NULL,
+  `kieu` varchar(12) NOT NULL,
+  `mac_dinh` varchar(255) NOT NULL DEFAULT '',
+  `gioi_han` text NOT NULL,
+  `ap_dung` varchar(16) NOT NULL,
+  `nhay` tinyint(4) NOT NULL DEFAULT 0,
+  `khoa_prod` tinyint(4) NOT NULL DEFAULT 0,
+  `chi_doc` tinyint(4) NOT NULL DEFAULT 0,
+  `bang` varchar(16) NOT NULL DEFAULT 'cau_hinh',
+  `dung_o` varchar(10) NOT NULL DEFAULT 'server',
+  `nguon` varchar(255) NOT NULL DEFAULT '',
+  `thu_tu` int(11) NOT NULL DEFAULT 0,
+  `lop` varchar(10) NOT NULL DEFAULT 'chinh',
+  `an` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_hieu_luc` (
+  `may_chu` varchar(40) NOT NULL,
+  `khoa` varchar(64) NOT NULL,
+  `gia_tri` varchar(255) DEFAULT NULL,
+  `nguon` varchar(12) NOT NULL DEFAULT '',
+  `cho_khoi_dong_lai` varchar(255) DEFAULT NULL,
+  `loi` varchar(255) DEFAULT NULL,
+  `cap_nhat_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`may_chu`,`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_khoi_dong_lai` (
+  `id` tinyint(4) NOT NULL,
+  `trang_thai` varchar(12) NOT NULL DEFAULT '',
+  `giay` int(11) NOT NULL DEFAULT 60,
+  `ly_do` varchar(200) NOT NULL DEFAULT '',
+  `yeu_cau_boi` varchar(50) DEFAULT NULL,
+  `yeu_cau_luc` datetime DEFAULT NULL,
+  `bat_dau_luc` datetime DEFAULT NULL,
+  `thoat_luc` datetime DEFAULT NULL,
+  `xong_luc` datetime DEFAULT NULL,
+  `may_chu` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_lich_su` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `khoa` varchar(64) NOT NULL,
+  `bang` varchar(16) NOT NULL DEFAULT 'cau_hinh',
+  `gia_tri_cu` varchar(255) DEFAULT NULL,
+  `gia_tri_moi` varchar(255) DEFAULT NULL,
+  `nguoi_sua` varchar(50) DEFAULT NULL,
+  `nguon` varchar(20) NOT NULL DEFAULT '',
+  `ly_do` varchar(255) NOT NULL DEFAULT '',
+  `phien_ban` bigint(20) NOT NULL DEFAULT 0,
+  `luc` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_chls_khoa` (`khoa`),
+  KEY `idx_chls_luc` (`luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_nhom` (
+  `ma` varchar(20) NOT NULL,
+  `ten` varchar(160) NOT NULL DEFAULT '',
+  `mo_ta` text NOT NULL,
+  `thu_tu` int(11) NOT NULL DEFAULT 0,
+  `an` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `cau_hinh_phien_ban` (
+  `id` tinyint(4) NOT NULL,
+  `phien_ban` bigint(20) NOT NULL DEFAULT 0,
+  `sua_luc` datetime DEFAULT NULL,
+  `sua_boi` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `data_attribute` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `idcolor` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `ispercent` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `decript` varchar(100) NOT NULL,
+  `namein` varchar(45) DEFAULT '""',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_cap_do_lau_dai` (
+  `cap` int(11) NOT NULL,
+  `exp_len_cap` bigint(20) NOT NULL,
+  `gio_tich_luy_phan_nghin` int(11) NOT NULL,
+  `mob_exp` int(11) NOT NULL,
+  `quai_moi_gio` int(11) NOT NULL,
+  `xu_moi_quai` int(11) NOT NULL,
+  `exp_cu` bigint(20) NOT NULL,
+  PRIMARY KEY (`cap`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_cua_hang_lau_dai` (
+  `id` int(11) NOT NULL,
+  `nhom` varchar(64) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `chi_phi` varchar(255) NOT NULL,
+  `thuong` varchar(255) NOT NULL,
+  `cap` int(11) NOT NULL DEFAULT 1,
+  `ngay_mo` int(11) NOT NULL DEFAULT 0,
+  `lop` int(11) NOT NULL DEFAULT -1,
+  `gioi_han_tuan` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_hst_bung_phat` (
+  `map_id` int(11) NOT NULL,
+  `id_quai` int(11) NOT NULL,
+  PRIMARY KEY (`map_id`,`id_quai`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_hst_ho_cau` (
+  `map_id` int(11) NOT NULL,
+  `ho_id` int(11) NOT NULL,
+  `so_o` int(11) NOT NULL,
+  `x` int(11) NOT NULL,
+  `y` int(11) NOT NULL,
+  PRIMARY KEY (`map_id`,`ho_id`,`x`,`y`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_hst_thay_quai` (
+  `id_goc` int(11) NOT NULL,
+  `id_thay` int(11) NOT NULL,
+  `trong_so` int(11) NOT NULL,
+  `hiem` int(11) NOT NULL,
+  `thoi_tiet` int(11) NOT NULL,
+  `ngay_dem` int(11) NOT NULL,
+  `mat_na_thang` int(11) NOT NULL,
+  PRIMARY KEY (`id_goc`,`id_thay`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_hst_vung` (
+  `map_id` int(11) NOT NULL,
+  `vung` int(11) NOT NULL,
+  `ten` varchar(64) NOT NULL,
+  PRIMARY KEY (`map_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_hst_vung_loai` (
+  `vung` int(11) NOT NULL,
+  `dex` int(11) NOT NULL,
+  PRIMARY KEY (`vung`,`dex`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_item` (
+  `id` int(4) unsigned NOT NULL,
+  `name` text NOT NULL,
+  `type` int(1) unsigned NOT NULL,
+  `style` int(1) unsigned NOT NULL DEFAULT 0,
+  `he` int(1) NOT NULL DEFAULT 0,
+  `gender` int(1) unsigned NOT NULL DEFAULT 0,
+  `level` int(1) unsigned NOT NULL DEFAULT 0,
+  `durable` int(2) unsigned NOT NULL DEFAULT 0,
+  `atb0` int(2) NOT NULL DEFAULT 0,
+  `atb1` int(2) NOT NULL DEFAULT 0,
+  `atb2` int(2) NOT NULL DEFAULT 0,
+  `atb3` int(2) NOT NULL DEFAULT 0,
+  `atb4` int(2) NOT NULL DEFAULT 0,
+  `atb5` int(2) NOT NULL DEFAULT 0,
+  `atb6` int(2) NOT NULL DEFAULT 0,
+  `atb7` int(2) NOT NULL DEFAULT 0,
+  `atb8` int(2) NOT NULL DEFAULT 0,
+  `atb9` int(2) NOT NULL DEFAULT 0,
+  `price` int(4) NOT NULL DEFAULT 0,
+  `clazz` int(1) NOT NULL DEFAULT -1,
+  `xstart` int(10) unsigned NOT NULL DEFAULT 0,
+  `ystart` int(10) unsigned NOT NULL DEFAULT 0,
+  `colortype` int(10) NOT NULL DEFAULT -1,
+  `nloan` int(10) unsigned NOT NULL DEFAULT 0,
+  `idUpLevel` int(11) NOT NULL DEFAULT -1,
+  `namein` varchar(45) DEFAULT NULL,
+  `ideff` int(11) DEFAULT -1,
+  `pricecu` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_kinh_te_lau_dai` (
+  `khoa` varchar(64) NOT NULL,
+  `gia_tri` varchar(64) NOT NULL,
+  `gia_tri_cu` varchar(64) NOT NULL,
+  `ghi_chu` varchar(255) NOT NULL,
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_monster` (
+  `id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `style` int(1) unsigned NOT NULL,
+  `he` int(1) NOT NULL,
+  `level` int(1) NOT NULL,
+  `maxhp` int(2) NOT NULL,
+  `attack` int(2) NOT NULL DEFAULT 0,
+  `defent` int(2) NOT NULL DEFAULT 0,
+  `accurate` int(1) NOT NULL DEFAULT 0,
+  `dodge` int(2) NOT NULL DEFAULT 0,
+  `rcvxp` int(4) unsigned NOT NULL DEFAULT 0,
+  `rcvgold` int(2) unsigned NOT NULL DEFAULT 0,
+  `active` int(2) unsigned NOT NULL DEFAULT 0,
+  `palate` int(10) unsigned NOT NULL DEFAULT 0,
+  `spalate` int(10) unsigned NOT NULL DEFAULT 0,
+  `isuse` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `move` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `speed` int(10) unsigned NOT NULL DEFAULT 1,
+  `h` int(10) unsigned NOT NULL DEFAULT 20,
+  `w` int(10) unsigned NOT NULL DEFAULT 20,
+  `xcenter` int(10) unsigned NOT NULL DEFAULT 8,
+  `ycenter` int(10) unsigned NOT NULL DEFAULT 8,
+  `height` int(10) unsigned NOT NULL DEFAULT 20,
+  `isnew` int(10) unsigned NOT NULL DEFAULT 0,
+  `dex` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Pokemon: so Pokedex cua template',
+  `shiny` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Pokemon: 1 = shiny',
+  `he2` tinyint(4) NOT NULL DEFAULT -1 COMMENT 'Pokemon: he thu hai, -1 = khong co',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=179 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_monster_lau_dai` (
+  `id` int(11) NOT NULL,
+  `ten` varchar(45) NOT NULL,
+  `cap` int(11) NOT NULL,
+  `maxhp_cu` int(11) NOT NULL,
+  `maxhp` int(11) NOT NULL,
+  `attack_cu` int(11) NOT NULL,
+  `attack` int(11) NOT NULL,
+  `defent_cu` int(11) NOT NULL,
+  `defent` int(11) NOT NULL,
+  `rcvxp_cu` int(11) NOT NULL,
+  `rcvxp` int(11) NOT NULL,
+  `rcvgold_cu` int(11) NOT NULL,
+  `rcvgold` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_nang_cap_lau_dai` (
+  `bac` int(11) NOT NULL,
+  `ten_bac` varchar(20) NOT NULL,
+  `cap_bac` int(11) NOT NULL,
+  `cong` int(11) NOT NULL,
+  `ti_le` int(11) NOT NULL,
+  `pity_moi_lan` int(11) NOT NULL,
+  `xu` bigint(20) NOT NULL,
+  `da` int(11) NOT NULL,
+  `bua_luong_khoa` int(11) NOT NULL,
+  `mat_cap` tinyint(4) NOT NULL,
+  `chi_so_phan_tram` int(11) NOT NULL,
+  PRIMARY KEY (`bac`,`cong`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_nhiem_vu_kieu` (
+  `ma` varchar(32) NOT NULL,
+  `ten` varchar(64) NOT NULL,
+  `co_che` varchar(255) NOT NULL,
+  `du_phong` varchar(4) NOT NULL,
+  `trang_thai` varchar(16) NOT NULL,
+  `so_dong` int(11) NOT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_nhiem_vu_noi_dung` (
+  `ma` varchar(32) NOT NULL,
+  `loai` varchar(32) NOT NULL,
+  `nhom` varchar(32) NOT NULL,
+  `nhan_vat` text NOT NULL,
+  `map_id` varchar(8) NOT NULL,
+  `toa_do` varchar(16) NOT NULL,
+  `dieu_kien` text NOT NULL,
+  `du_phong` text NOT NULL,
+  `mo_ta` text NOT NULL,
+  `muc_tieu_text` text NOT NULL,
+  `hoi_thoai_bat_dau` text NOT NULL,
+  `hoi_thoai_dang_lam` text NOT NULL,
+  `hoi_thoai_xong` text NOT NULL,
+  `goi_y` text NOT NULL,
+  `dong_thuong` text NOT NULL,
+  `thuong_khac` text NOT NULL,
+  `nhanh_lua_chon` text NOT NULL,
+  `an` tinyint(4) NOT NULL DEFAULT 0,
+  `dieu_kien_mo` text NOT NULL,
+  `dap_an` text NOT NULL,
+  `phut` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_bo` (
+  `bac` bigint(20) NOT NULL,
+  `ten_bo` varchar(255) NOT NULL,
+  `vung` varchar(255) NOT NULL,
+  `so_mon` bigint(20) NOT NULL,
+  `chi_so` varchar(255) NOT NULL,
+  `phan_tram` bigint(20) NOT NULL,
+  `mo_ta` varchar(255) NOT NULL,
+  PRIMARY KEY (`bac`,`so_mon`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_boss_the_gioi` (
+  `tuan` bigint(20) NOT NULL,
+  `loai` varchar(255) NOT NULL,
+  `ten_nam1` varchar(255) NOT NULL,
+  `ten_nam2` varchar(255) NOT NULL,
+  `template_quai` bigint(20) NOT NULL,
+  `he` varchar(255) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `hp` bigint(20) NOT NULL,
+  `tan_cong` bigint(20) NOT NULL,
+  `phong_thu` bigint(20) NOT NULL,
+  `so_nguoi_chuan` bigint(20) NOT NULL,
+  `phut_muc_tieu` bigint(20) NOT NULL,
+  `no_sau_phut` bigint(20) NOT NULL,
+  `lan_moi_ngay` bigint(20) NOT NULL,
+  `vat_pham_dac_trung` varchar(255) NOT NULL,
+  `vat_pham_dac_trung_nam2` varchar(255) NOT NULL,
+  `template_nam2` bigint(20) NOT NULL,
+  PRIMARY KEY (`tuan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_che_tao` (
+  `thanh_pham` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `bac` bigint(20) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `da` bigint(20) NOT NULL,
+  `nguyen_lieu_phu` varchar(255) NOT NULL,
+  `so_nl_phu` bigint(20) NOT NULL,
+  `anh_xa_nl_phu` varchar(255) NOT NULL,
+  `xu` bigint(20) NOT NULL,
+  `npc` varchar(255) NOT NULL,
+  PRIMARY KEY (`thanh_pham`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_chieu` (
+  `dong` bigint(20) NOT NULL,
+  `ten_dong` varchar(255) NOT NULL,
+  `so_hieu` bigint(20) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `he` varchar(255) NOT NULL,
+  `kieu` varchar(255) NOT NULL,
+  `vai_tro` varchar(255) NOT NULL,
+  `giai_doan` bigint(20) NOT NULL,
+  `cap_mo` bigint(20) NOT NULL,
+  `cap_moi_cap_chieu` varchar(255) NOT NULL,
+  `phan_tram_cap1` bigint(20) NOT NULL,
+  `phan_tram_cap10` bigint(20) NOT NULL,
+  `so_don` bigint(20) NOT NULL,
+  `phan_tram_moi_don_cap10` bigint(20) NOT NULL,
+  `hoi_chieu_giay` double NOT NULL,
+  `pp` bigint(20) NOT NULL,
+  `mp_phan_tram` bigint(20) NOT NULL,
+  `trang_thai` varchar(255) NOT NULL,
+  PRIMARY KEY (`dong`,`so_hieu`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_chieu_nhanh_eevee` (
+  `dex` bigint(20) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `he` varchar(255) NOT NULL,
+  `vai_tro` varchar(255) NOT NULL,
+  `chieu_o2` varchar(255) NOT NULL,
+  `chieu_o8` varchar(255) NOT NULL,
+  `chieu_o10` varchar(255) NOT NULL,
+  `cap_mo` bigint(20) NOT NULL,
+  `ghi_chu` varchar(255) NOT NULL,
+  PRIMARY KEY (`dex`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_chieu_ttk` (
+  `dong` bigint(20) NOT NULL,
+  `ten_dong` varchar(255) NOT NULL,
+  `giai_doan` bigint(20) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `he_so_xoay_chieu` double NOT NULL,
+  `ttk_giay` double NOT NULL,
+  `ttk_muc_tieu` double NOT NULL,
+  `ti_le` double NOT NULL,
+  `chi_so_suc_manh` double NOT NULL,
+  PRIMARY KEY (`dong`,`giai_doan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_cua_hang` (
+  `stt` bigint(20) NOT NULL,
+  `cua_hang` varchar(255) NOT NULL,
+  `vat_pham` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `gia` bigint(20) NOT NULL,
+  `tien` varchar(255) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `ngay_mo` bigint(20) NOT NULL,
+  `gioi_han` varchar(255) NOT NULL,
+  `gio_thu_nhap` double NOT NULL,
+  PRIMARY KEY (`stt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_gym` (
+  `stt` bigint(20) NOT NULL,
+  `ma_nhiem_vu` varchar(255) NOT NULL,
+  `huy_hieu` varchar(255) NOT NULL,
+  `dia_danh` varchar(255) NOT NULL,
+  `he` varchar(255) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `template_quai` bigint(20) NOT NULL,
+  `ten_boss` varchar(255) NOT NULL,
+  `hp` bigint(20) NOT NULL,
+  `tan_cong` bigint(20) NOT NULL,
+  `phong_thu` bigint(20) NOT NULL,
+  `ttk_giay` bigint(20) NOT NULL,
+  `no_sau_phut` bigint(20) NOT NULL,
+  `thuong_lan_dau` varchar(255) NOT NULL,
+  `thuong_tuan` varchar(255) NOT NULL,
+  `bac_thuong` bigint(20) NOT NULL,
+  PRIMARY KEY (`stt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_ngoc_he` (
+  `he` bigint(20) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `chi_so_phan_tram` bigint(20) NOT NULL,
+  `gio_thu_nhap` double NOT NULL,
+  `xu_vi_du_cap60` bigint(20) NOT NULL,
+  `phan_ra_da` bigint(20) NOT NULL,
+  `anh_xa` varchar(255) NOT NULL,
+  `trang_thai` varchar(255) NOT NULL,
+  `icon` bigint(20) NOT NULL,
+  PRIMARY KEY (`he`,`cap`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_nguyen_lieu` (
+  `ma` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `nhom` varchar(255) NOT NULL,
+  `anh_xa` varchar(255) NOT NULL,
+  `dung_cho` varchar(255) NOT NULL,
+  `nguon` varchar(255) NOT NULL,
+  `gia` bigint(20) NOT NULL,
+  `tien` varchar(255) NOT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_phan_ra` (
+  `nguon` varchar(255) NOT NULL,
+  `bac` bigint(20) NOT NULL,
+  `da` bigint(20) NOT NULL,
+  `xu` bigint(20) NOT NULL,
+  `them` varchar(255) NOT NULL,
+  PRIMARY KEY (`nguon`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_quai_dai_cap` (
+  `dai` varchar(255) NOT NULL,
+  `cap_tu` bigint(20) NOT NULL,
+  `cap_den` bigint(20) NOT NULL,
+  `loai_co_san` varchar(255) NOT NULL,
+  `so_loai` bigint(20) NOT NULL,
+  `so_he` bigint(20) NOT NULL,
+  `he` varchar(255) NOT NULL,
+  `moi_truong` varchar(255) NOT NULL,
+  `du` bigint(20) NOT NULL,
+  `de_xuat_moi` varchar(1000) NOT NULL,
+  `so_de_xuat` bigint(20) NOT NULL,
+  `template_nam2` varchar(1000) NOT NULL,
+  `so_template_nam2` bigint(20) NOT NULL,
+  PRIMARY KEY (`dai`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_quai_moi` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `style` bigint(20) NOT NULL,
+  `he` bigint(20) NOT NULL,
+  `level` bigint(20) NOT NULL,
+  `maxhp` bigint(20) NOT NULL,
+  `attack` bigint(20) NOT NULL,
+  `defent` bigint(20) NOT NULL,
+  `accurate` bigint(20) NOT NULL,
+  `dodge` bigint(20) NOT NULL,
+  `rcvxp` bigint(20) NOT NULL,
+  `rcvgold` bigint(20) NOT NULL,
+  `active` bigint(20) NOT NULL,
+  `palate` bigint(20) NOT NULL,
+  `spalate` bigint(20) NOT NULL,
+  `isuse` bigint(20) NOT NULL,
+  `move` bigint(20) NOT NULL,
+  `speed` bigint(20) NOT NULL,
+  `h` bigint(20) NOT NULL,
+  `w` bigint(20) NOT NULL,
+  `xcenter` bigint(20) NOT NULL,
+  `ycenter` bigint(20) NOT NULL,
+  `height` bigint(20) NOT NULL,
+  `isnew` bigint(20) NOT NULL,
+  `dex` bigint(20) NOT NULL,
+  `shiny` bigint(20) NOT NULL,
+  `he2` bigint(20) NOT NULL,
+  `phan_loai` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_quai_tinh_anh` (
+  `id_goc` bigint(20) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `cap` bigint(20) NOT NULL,
+  `ti_le_xuat_hien` varchar(255) NOT NULL,
+  `kich_thuoc_phan_tram` bigint(20) NOT NULL,
+  `hp` bigint(20) NOT NULL,
+  `tan_cong` bigint(20) NOT NULL,
+  `phong_thu` bigint(20) NOT NULL,
+  `exp` bigint(20) NOT NULL,
+  `nhan_roi` bigint(20) NOT NULL,
+  `ttk_giay` double NOT NULL,
+  PRIMARY KEY (`id_goc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_roi` (
+  `stt` bigint(20) NOT NULL,
+  `nguon` varchar(255) NOT NULL,
+  `khoa_nguon` varchar(255) NOT NULL,
+  `vat_pham` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `ppm` bigint(20) NOT NULL,
+  `sl_min` bigint(20) NOT NULL,
+  `sl_max` bigint(20) NOT NULL,
+  `do_hiem` varchar(255) NOT NULL,
+  `khoa` bigint(20) NOT NULL,
+  `het_han` bigint(20) NOT NULL,
+  PRIMARY KEY (`stt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_su_kien_vat_pham` (
+  `stt` bigint(20) NOT NULL,
+  `tuan` bigint(20) NOT NULL,
+  `su_kien` varchar(255) NOT NULL,
+  `su_kien_nam2` varchar(255) NOT NULL,
+  `loai` varchar(255) NOT NULL,
+  `vat_pham` varchar(255) NOT NULL,
+  `anh_xa` varchar(255) NOT NULL,
+  `so_luong_toi_da_tuan` bigint(20) NOT NULL,
+  `gio_thu_nhap_moi_cai` double NOT NULL,
+  `ngan_sach_gio` double NOT NULL,
+  `phan_xu_phan_tram` bigint(20) NOT NULL,
+  `khoa` bigint(20) NOT NULL,
+  `het_han_khi_ket_thuc` bigint(20) NOT NULL,
+  `doi_lay` varchar(255) NOT NULL,
+  PRIMARY KEY (`stt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_trang_bi` (
+  `ma` varchar(255) NOT NULL,
+  `bac` bigint(20) NOT NULL,
+  `ten_bac` varchar(255) NOT NULL,
+  `o` varchar(255) NOT NULL,
+  `type_item` bigint(20) NOT NULL,
+  `dong` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `id_item` bigint(20) NOT NULL,
+  `trang_thai` varchar(255) NOT NULL,
+  `cap_yeu_cau` bigint(20) NOT NULL,
+  `cap_item` bigint(20) NOT NULL,
+  `ngay_mo` bigint(20) NOT NULL,
+  `tran_cap_khi_mo` bigint(20) NOT NULL,
+  `so_o` bigint(20) NOT NULL,
+  `tan_cong` bigint(20) NOT NULL,
+  `phong_thu` bigint(20) NOT NULL,
+  `hp` bigint(20) NOT NULL,
+  `chi_so_phu` varchar(255) NOT NULL,
+  `he` varchar(255) NOT NULL,
+  `gia_xu` bigint(20) NOT NULL,
+  `ban_npc_xu` bigint(20) NOT NULL,
+  `phan_ra` varchar(255) NOT NULL,
+  `nguon` varchar(255) NOT NULL,
+  `ghi_chu` varchar(255) NOT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_trang_tri` (
+  `stt` bigint(20) NOT NULL,
+  `mua` bigint(20) NOT NULL,
+  `ten_mua` varchar(255) NOT NULL,
+  `ngay_mo` bigint(20) NOT NULL,
+  `tran_cap` bigint(20) NOT NULL,
+  `kieu` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `gia` bigint(20) NOT NULL,
+  `tien` varchar(255) NOT NULL,
+  `nguon` varchar(255) NOT NULL,
+  `chi_so` bigint(20) NOT NULL,
+  `trang_thai` varchar(255) NOT NULL,
+  `icon` bigint(20) NOT NULL,
+  PRIMARY KEY (`stt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_vat_lieu_nang_cap` (
+  `bac` bigint(20) NOT NULL,
+  `ten_bac` varchar(255) NOT NULL,
+  `cong` bigint(20) NOT NULL,
+  `ti_le` bigint(20) NOT NULL,
+  `da` bigint(20) NOT NULL,
+  `nguyen_lieu_phu` varchar(255) NOT NULL,
+  `so_nl_phu` bigint(20) NOT NULL,
+  `xu` bigint(20) NOT NULL,
+  `bua_luong_khoa` bigint(20) NOT NULL,
+  `ky_vong_lan` double NOT NULL,
+  PRIMARY KEY (`bac`,`cong`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_noi_dung_vat_pham` (
+  `ma` varchar(255) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `nhom` varchar(255) NOT NULL,
+  `mo_ta` varchar(255) NOT NULL,
+  `cap_tu` bigint(20) NOT NULL,
+  `cap_den` bigint(20) NOT NULL,
+  `hieu_ung` varchar(255) NOT NULL,
+  `so_dung_moi_gio` double NOT NULL,
+  `phan_ngan_sach` double NOT NULL,
+  `gia` bigint(20) NOT NULL,
+  `tien` varchar(255) NOT NULL,
+  `gia_tren_thu_nhap_gio` double NOT NULL,
+  `nguon` varchar(255) NOT NULL,
+  `gioi_han` varchar(255) NOT NULL,
+  `anh_xa` varchar(255) NOT NULL,
+  `trang_thai` varchar(255) NOT NULL,
+  `icon` bigint(20) NOT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_potion` (
+  `id` smallint(6) NOT NULL,
+  `idImage` smallint(6) DEFAULT NULL,
+  `delay` smallint(6) DEFAULT NULL,
+  `isTrade` tinyint(1) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `name2` varchar(255) DEFAULT NULL,
+  `price` int(11) DEFAULT NULL,
+  `recovered` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `data_quest` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `npcrcv` int(10) NOT NULL,
+  `npcres` int(10) NOT NULL,
+  `lv` int(10) unsigned NOT NULL DEFAULT 1,
+  `mainsub` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT '0-main-1sub',
+  `content` varchar(1000) NOT NULL COMMENT 'noi dung oi chuyen nhan nhiem vu',
+  `scontent` varchar(500) NOT NULL DEFAULT '32000' COMMENT 'mo ta ngan gon nhiem vu',
+  `rescontent` varchar(500) NOT NULL DEFAULT '32000',
+  `idItemget` varchar(45) NOT NULL DEFAULT '32000',
+  `idMonskill` varchar(45) NOT NULL DEFAULT '32000',
+  `type` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `nitemget` varchar(45) NOT NULL DEFAULT '32000' COMMENT 'so luong item can lay tuong ung',
+  `nmonskill` varchar(45) NOT NULL DEFAULT '32000' COMMENT 'so luong quai can giet tuong ung',
+  `gold` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `exp` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `potiongift` varchar(45) NOT NULL DEFAULT '32000',
+  `npotion` varchar(45) NOT NULL DEFAULT '32000',
+  `itemgift` varchar(45) NOT NULL DEFAULT '32000',
+  `deltaLv` int(10) unsigned NOT NULL DEFAULT 0,
+  `infogift` varchar(200) DEFAULT NULL,
+  `infofinish` varchar(200) NOT NULL DEFAULT 'Nhiệm vụ hoàn thành',
+  `pactive` int(10) unsigned NOT NULL DEFAULT 0,
+  `luong` int(10) DEFAULT 0,
+  `luongLock` int(10) DEFAULT 100,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_quest_lau_dai` (
+  `ma` varchar(32) NOT NULL,
+  `id_so` bigint(20) NOT NULL,
+  `loai` varchar(32) NOT NULL,
+  `nam` bigint(20) NOT NULL,
+  `vung` varchar(255) NOT NULL,
+  `cung` varchar(255) NOT NULL,
+  `chuong` varchar(32) NOT NULL,
+  `buoc` varchar(32) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `npc_giao` varchar(32) NOT NULL,
+  `ten_npc` varchar(255) NOT NULL,
+  `dia_danh` varchar(255) NOT NULL,
+  `cap_toi_thieu` bigint(20) NOT NULL,
+  `ngay_mo` bigint(20) NOT NULL,
+  `truoc` varchar(255) NOT NULL,
+  `kieu_muc_tieu` varchar(32) NOT NULL,
+  `muc_tieu_id` varchar(32) NOT NULL,
+  `muc_tieu_ten` varchar(255) NOT NULL,
+  `so_luong` bigint(20) NOT NULL,
+  `quai_roi` varchar(32) NOT NULL,
+  `lap_lai` varchar(32) NOT NULL,
+  `gioi_han` varchar(32) NOT NULL,
+  `exp` bigint(20) NOT NULL,
+  `xu` bigint(20) NOT NULL,
+  `luong_khoa` bigint(20) NOT NULL,
+  `luong` bigint(20) NOT NULL,
+  `vat_pham` varchar(255) NOT NULL,
+  `huy_hieu` varchar(255) NOT NULL,
+  `dong_co_tuong_thich` bigint(20) NOT NULL,
+  `ghi_chu` varchar(255) NOT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_quest_moi` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `npcrcv` int(10) NOT NULL,
+  `npcres` int(10) NOT NULL,
+  `lv` int(10) unsigned NOT NULL DEFAULT 1,
+  `mainsub` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT '0-main-1sub',
+  `content` varchar(1000) NOT NULL COMMENT 'noi dung oi chuyen nhan nhiem vu',
+  `scontent` varchar(500) NOT NULL DEFAULT '32000' COMMENT 'mo ta ngan gon nhiem vu',
+  `rescontent` varchar(500) NOT NULL DEFAULT '32000',
+  `idItemget` varchar(45) NOT NULL DEFAULT '32000',
+  `idMonskill` varchar(45) NOT NULL DEFAULT '32000',
+  `type` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `nitemget` varchar(45) NOT NULL DEFAULT '32000' COMMENT 'so luong item can lay tuong ung',
+  `nmonskill` varchar(45) NOT NULL DEFAULT '32000' COMMENT 'so luong quai can giet tuong ung',
+  `gold` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `exp` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `potiongift` varchar(45) NOT NULL DEFAULT '32000',
+  `npotion` varchar(45) NOT NULL DEFAULT '32000',
+  `itemgift` varchar(45) NOT NULL DEFAULT '32000',
+  `deltaLv` int(10) unsigned NOT NULL DEFAULT 0,
+  `infogift` varchar(200) DEFAULT NULL,
+  `infofinish` varchar(200) NOT NULL DEFAULT 'Nhiệm vụ hoàn thành',
+  `pactive` int(10) unsigned NOT NULL DEFAULT 0,
+  `luong` int(10) DEFAULT 0,
+  `luongLock` int(10) DEFAULT 100,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5013 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_shop` (
+  `id` int(11) NOT NULL,
+  `idImg` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `decript` varchar(255) DEFAULT NULL,
+  `value` int(11) DEFAULT NULL,
+  `price` int(11) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  `tab` int(11) DEFAULT NULL,
+  `sell` int(11) DEFAULT NULL,
+  `priceSale` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `data_shop_gia_lau_dai` (
+  `id_shop` int(11) NOT NULL,
+  `ten` varchar(100) NOT NULL,
+  `gia_cu` bigint(20) NOT NULL,
+  `tien_cu` tinyint(4) NOT NULL,
+  `gia_moi` bigint(20) NOT NULL,
+  `tien_moi` tinyint(4) NOT NULL COMMENT '0 luong,1 xu,2 luong khoa,9 ngung ban',
+  `gioi_han_tuan` int(11) NOT NULL,
+  `ly_do` varchar(255) NOT NULL,
+  PRIMARY KEY (`id_shop`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_su_kien_nam` (
+  `tuan` int(11) NOT NULL,
+  `thang` int(11) NOT NULL,
+  `ten_nam1` varchar(255) NOT NULL,
+  `ten_nam2` varchar(255) NOT NULL,
+  `loai` varchar(255) NOT NULL,
+  `co_che` varchar(255) NOT NULL,
+  `so_ngay` int(11) NOT NULL,
+  `ma_su_kien` varchar(255) NOT NULL,
+  `tai_dung` varchar(255) NOT NULL,
+  `ngan_sach_gio` decimal(5,2) NOT NULL,
+  `phan_xu_phan_tram` int(11) NOT NULL,
+  `phan_thuong` varchar(255) NOT NULL,
+  `moc_giu_chan` varchar(255) NOT NULL,
+  PRIMARY KEY (`tuan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_vat_pham_lau_dai` (
+  `id_item` int(11) NOT NULL,
+  `ma` varchar(64) NOT NULL,
+  `ten` varchar(255) NOT NULL,
+  `nhom` varchar(32) NOT NULL,
+  `hieu_ung` varchar(255) NOT NULL,
+  `gioi_han` varchar(32) NOT NULL DEFAULT '',
+  `cap_tu` int(11) NOT NULL DEFAULT 1,
+  `cap_den` int(11) NOT NULL DEFAULT 100,
+  PRIMARY KEY (`id_item`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_vat_pham_nhiem_vu` (
+  `id` int(11) NOT NULL,
+  `ten` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `dieu_khien_server` (
+  `id` tinyint(3) unsigned NOT NULL,
+  `muon_chay` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1 = muon server dang chay, 0 = muon tat han',
+  `gio_hen` datetime DEFAULT NULL COMMENT 'NULL = ap dung ngay; co gio = doi den gio nay watcher moi ap dung',
+  `da_ap_dung` tinyint(1) NOT NULL DEFAULT 1 COMMENT '0 = dang cho watcher xu ly, 1 = da xong (khong con viec gi cho watcher)',
+  `trang_thai_thuc_te` varchar(20) DEFAULT NULL COMMENT 'watcher tu ghi lai: active/inactive/failed/... (ket qua systemctl is-active)',
+  `lan_kiem_cuoi` datetime DEFAULT NULL COMMENT 'nhip tim: lan watcher chay gan nhat - web dung de biet watcher con song khong',
+  `yeu_cau_boi` varchar(50) DEFAULT NULL COMMENT 'ten admin vua bam nut',
+  `yeu_cau_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `even_online_game` (
+  `playerId` int(11) NOT NULL,
+  `lastLoginTime` datetime DEFAULT NULL,
+  `totalOnlineTimeInSeconds` bigint(20) DEFAULT 0,
+  `lastResetTime` datetime DEFAULT NULL,
+  `nhanQuaOnline` text DEFAULT '0,0,0,0',
+  PRIMARY KEY (`playerId`),
+  UNIQUE KEY `unique_player` (`playerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `giftcode` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `giftcode` varchar(255) NOT NULL,
+  `xu` int(11) NOT NULL DEFAULT 0,
+  `luong` int(11) NOT NULL DEFAULT 0,
+  `luongLock` int(11) NOT NULL DEFAULT 0,
+  `item` varchar(255) DEFAULT NULL,
+  `expire` int(11) NOT NULL DEFAULT 0,
+  `limit_use` int(11) NOT NULL DEFAULT 0,
+  `type` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+CREATE TABLE IF NOT EXISTS `giftcode_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `giftcode` text DEFAULT NULL,
+  `player` text DEFAULT NULL,
+  `userId` int(11) NOT NULL DEFAULT 0,
+  `item` text DEFAULT NULL,
+  `xu` int(11) DEFAULT 0,
+  `luong` int(11) DEFAULT 0,
+  `luongK` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_giftcode_userid` (`giftcode`(191),`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `history_win_xoso` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_user` int(11) NOT NULL,
+  `money_win` bigint(20) NOT NULL DEFAULT 0,
+  `time_win` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_cau_hinh` (
+  `khoa` varchar(60) NOT NULL,
+  `gia_tri` varchar(255) NOT NULL DEFAULT '',
+  `cap_nhat_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_cho` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `so_huu_id` bigint(20) NOT NULL,
+  `ma` varchar(40) NOT NULL,
+  `nguoi_ban` int(11) NOT NULL,
+  `ten_nguoi_ban` varchar(50) NOT NULL DEFAULT '',
+  `gia_xu` bigint(20) NOT NULL,
+  `phi_dang` bigint(20) NOT NULL DEFAULT 0 COMMENT '1% dot luc dang',
+  `trang_thai` varchar(12) NOT NULL DEFAULT 'dang_ban' COMMENT 'dang_ban | da_ban | huy',
+  `nguoi_mua` int(11) NOT NULL DEFAULT 0,
+  `thue` bigint(20) NOT NULL DEFAULT 0 COMMENT '6% dot luc ban',
+  `da_tra` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = da cong xu cho nguoi ban',
+  `tao_luc` datetime NOT NULL,
+  `ban_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_nap_cho_tt` (`trang_thai`,`ma`),
+  KEY `idx_nap_cho_ban` (`nguoi_ban`,`da_tra`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_cua_hang` (
+  `ma` varchar(40) NOT NULL,
+  `ten` varchar(100) NOT NULL,
+  `nhom` varchar(20) NOT NULL,
+  `trao` varchar(20) NOT NULL,
+  `gia_luong` int(11) NOT NULL,
+  `han_ngay` int(11) NOT NULL DEFAULT 0 COMMENT '0 = vinh vien',
+  `gioi_han` int(11) NOT NULL DEFAULT 0 COMMENT 'so lan mua toi da / nhan vat (0 = khong gioi han); trao tang_toc: / TUAN',
+  `nhom_xoay` int(11) NOT NULL DEFAULT 0,
+  `giao_dich_duoc` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = rao duoc tren Cho trang tri (co thue)',
+  `co_chi_so` tinyint(4) NOT NULL DEFAULT 0,
+  `dang_ban` tinyint(4) NOT NULL DEFAULT 1,
+  `thu_tu` int(11) NOT NULL DEFAULT 0,
+  `mo_ta` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_don` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ma_don` varchar(16) NOT NULL COMMENT 'HTxxxxxxxx = noi dung chuyen khoan',
+  `khoa_idem` varchar(64) DEFAULT NULL COMMENT 'trinh duyet sinh moi lan bam (chong tao trung)',
+  `user_id` int(11) NOT NULL COMMENT 'account.team_user.id',
+  `username` varchar(50) NOT NULL DEFAULT '',
+  `char_id` int(11) NOT NULL DEFAULT 0 COMMENT 'tob_char.id nhan (0 = nhan vat dau tien vao game)',
+  `charname` varchar(50) NOT NULL DEFAULT '',
+  `ma_goi` varchar(20) NOT NULL,
+  `loai` varchar(12) NOT NULL,
+  `ten_goi` varchar(100) NOT NULL DEFAULT '',
+  `so_tien` int(11) NOT NULL COMMENT 'VND phai tra (chot luc tao don)',
+  `luong` int(11) NOT NULL DEFAULT 0 COMMENT 'chot luc tao don - admin doi gia sau khong anh huong',
+  `trang_thai` varchar(16) NOT NULL DEFAULT 'cho_thanh_toan',
+  `nguon` varchar(16) NOT NULL DEFAULT 'web' COMMENT 'web | admin (cong tay)',
+  `nha_cung_cap` varchar(16) DEFAULT NULL COMMENT 'sepay | casso | mock | admin',
+  `ma_gd_ncc` varchar(64) DEFAULT NULL COMMENT 'ma giao dich ben cong thanh toan',
+  `so_tien_nhan` int(11) NOT NULL DEFAULT 0,
+  `tao_luc` datetime NOT NULL,
+  `thanh_toan_luc` datetime DEFAULT NULL,
+  `cong_luc` datetime DEFAULT NULL,
+  `char_cong` int(11) NOT NULL DEFAULT 0 COMMENT 'tob_char.id thuc nhan',
+  `da_luu_nv` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = server da saveCharAuto sau khi cong',
+  `hoan_luc` datetime DEFAULT NULL,
+  `ly_do` varchar(255) NOT NULL DEFAULT '',
+  `admin_user` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_nap_don_ma` (`ma_don`),
+  UNIQUE KEY `uq_nap_don_idem` (`user_id`,`khoa_idem`),
+  UNIQUE KEY `uq_nap_don_gd` (`nha_cung_cap`,`ma_gd_ncc`),
+  KEY `idx_nap_don_tt` (`trang_thai`),
+  KEY `idx_nap_don_user` (`user_id`,`tao_luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_goi` (
+  `ma` varchar(20) NOT NULL,
+  `ten` varchar(100) NOT NULL,
+  `loai` varchar(12) NOT NULL COMMENT 'luong | the_thang | ve_mua',
+  `gia_vnd` int(11) NOT NULL,
+  `luong` int(11) NOT NULL DEFAULT 0,
+  `mo_ta` varchar(500) NOT NULL DEFAULT '',
+  `dang_ban` tinyint(4) NOT NULL DEFAULT 1,
+  `thu_tu` int(11) NOT NULL DEFAULT 0,
+  `cap_nhat_luc` datetime DEFAULT NULL,
+  `admin_user` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_mua_dem` (
+  `char_id` int(11) NOT NULL,
+  `ma` varchar(40) NOT NULL,
+  `so_lan` int(11) NOT NULL DEFAULT 0,
+  `lan_cuoi_ms` bigint(20) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`char_id`,`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_nhat_ky` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tac_nhan` varchar(60) NOT NULL COMMENT 'web | webhook:<ncc> | admin:<ten> | server',
+  `hanh_dong` varchar(40) NOT NULL,
+  `ma_don` varchar(16) NOT NULL DEFAULT '',
+  `user_id` int(11) NOT NULL DEFAULT 0,
+  `chi_tiet` varchar(500) NOT NULL DEFAULT '',
+  `ip` varchar(64) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_nap_nk_don` (`ma_don`),
+  KEY `idx_nap_nk_luc` (`tao_luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_so_cai` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT 0,
+  `char_id` int(11) NOT NULL DEFAULT 0,
+  `loai` varchar(20) NOT NULL COMMENT 'thanh_toan | cong | the_thang_ngay | tieu | tra_no | thu_hoi | no | cho_ban | cho_mua',
+  `so_luong` bigint(20) NOT NULL DEFAULT 0,
+  `so_tien` int(11) NOT NULL DEFAULT 0,
+  `ma_don` varchar(16) NOT NULL DEFAULT '',
+  `ma_tham_chieu` varchar(80) NOT NULL,
+  `ghi_chu` varchar(255) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_nap_so_cai_tc` (`ma_tham_chieu`),
+  KEY `idx_nap_so_cai_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_so_huu` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `char_id` int(11) NOT NULL,
+  `ma` varchar(40) NOT NULL,
+  `nguon` varchar(16) NOT NULL DEFAULT 'mua' COMMENT 'mua | ve_mua | lan_dau | cho | admin',
+  `giao_dich_duoc` tinyint(4) NOT NULL DEFAULT 0,
+  `dang_dung` tinyint(4) NOT NULL DEFAULT 0,
+  `dang_rao` tinyint(4) NOT NULL DEFAULT 0,
+  `het_han_ms` bigint(20) NOT NULL DEFAULT 0 COMMENT '0 = vinh vien',
+  `tao_luc` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_nap_so_huu_char` (`char_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_the_thang` (
+  `char_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL DEFAULT 0,
+  `het_han_ms` bigint(20) NOT NULL DEFAULT 0,
+  `ngay_nhan_cuoi` varchar(10) NOT NULL DEFAULT '',
+  `so_ngay_da_nhan` int(11) NOT NULL DEFAULT 0,
+  `cap_nhat_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`char_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_ve_mua` (
+  `char_id` int(11) NOT NULL,
+  `mua` int(11) NOT NULL,
+  `cao_cap` tinyint(4) NOT NULL DEFAULT 0,
+  `diem` int(11) NOT NULL DEFAULT 0,
+  `diem_ngay` int(11) NOT NULL DEFAULT 0,
+  `ngay` varchar(10) NOT NULL DEFAULT '',
+  `bac_free` int(11) NOT NULL DEFAULT 0 COMMENT 'bac free da nhan',
+  `bac_cao_cap` int(11) NOT NULL DEFAULT 0 COMMENT 'bac cao cap da nhan',
+  PRIMARY KEY (`char_id`,`mua`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_vi` (
+  `user_id` int(11) NOT NULL,
+  `tong_nap_vnd` bigint(20) NOT NULL DEFAULT 0,
+  `so_don` int(11) NOT NULL DEFAULT 0,
+  `no_luong` bigint(20) NOT NULL DEFAULT 0 COMMENT 'thu hoi chua tru duoc (hoan tien sau khi da cong)',
+  `khoa_nap` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = chargeback: khong tao don moi',
+  `thuong_dau` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = da nhan thuong lan dau (trang tri)',
+  `tran_tu_dat` bigint(20) NOT NULL DEFAULT 0 COMMENT 'tran thang nguoi choi tu dat (0 = khong)',
+  `tran_cho` bigint(20) NOT NULL DEFAULT 0 COMMENT 'muc tran moi dang cho 72 gio',
+  `tran_cho_luc` datetime DEFAULT NULL,
+  `cap_nhat_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nap_webhook` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nha_cung_cap` varchar(16) NOT NULL,
+  `ma_gd` varchar(64) NOT NULL COMMENT 'ma giao dich ben cong (trung = goi lap, bo qua)',
+  `chu_ky_hop_le` tinyint(4) NOT NULL DEFAULT 0,
+  `so_tien` int(11) NOT NULL DEFAULT 0,
+  `noi_dung` varchar(500) NOT NULL DEFAULT '',
+  `ma_don` varchar(16) NOT NULL DEFAULT '',
+  `ket_qua` varchar(120) NOT NULL DEFAULT '',
+  `ip` varchar(64) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_nap_webhook_gd` (`nha_cung_cap`,`ma_gd`),
+  KEY `idx_nap_webhook_luc` (`tao_luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `ngude_giftcode` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL DEFAULT 'dangky',
+  `xu` int(11) NOT NULL DEFAULT 0,
+  `luong` int(11) NOT NULL DEFAULT 0,
+  `luongLock` int(11) NOT NULL DEFAULT 0,
+  `item` varchar(255) DEFAULT NULL,
+  `charname` varchar(255) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 0,
+  `level` int(11) DEFAULT 40,
+  `userId` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nin_xoso` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `money` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `win` int(10) unsigned NOT NULL DEFAULT 0,
+  `moneywin` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneyBid` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneyTax` bigint(20) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `nin_xoso_low` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `money` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `win` int(10) unsigned NOT NULL DEFAULT 0,
+  `moneywin` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneyBid` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneyTax` bigint(20) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `team_user` (
+  `id` int(4) NOT NULL AUTO_INCREMENT,
+  `userid` int(10) unsigned NOT NULL,
+  `provider` int(2) unsigned NOT NULL,
+  `agent` int(2) NOT NULL DEFAULT -1,
+  `newagent` varchar(45) NOT NULL DEFAULT '-1',
+  `newprovider` varchar(45) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`userid`) USING BTREE,
+  KEY `Index_3` (`provider`),
+  KEY `Index_4` (`agent`),
+  KEY `newagent` (`newagent`),
+  KEY `newprovider` (`newprovider`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_animal` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `owner` int(10) unsigned NOT NULL,
+  `att` varchar(500) NOT NULL,
+  `place` int(10) unsigned NOT NULL DEFAULT 0,
+  `id_img` int(10) unsigned NOT NULL,
+  `lv` int(2) unsigned NOT NULL DEFAULT 1,
+  `name` varchar(45) NOT NULL,
+  `texpire` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `del` int(10) unsigned NOT NULL DEFAULT 0,
+  `isHoaHinh` int(11) DEFAULT 0,
+  `timeHoaHinh` bigint(20) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`owner`),
+  KEY `Index_4` (`place`),
+  KEY `Index_5` (`id_img`),
+  KEY `Index_6` (`lv`),
+  KEY `Index_7` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci PACK_KEYS=1;
+CREATE TABLE IF NOT EXISTS `tob_boss_dong_gop` (
+  `lan` bigint(20) NOT NULL COMMENT 'millis luc boss xuat hien',
+  `id_char` int(11) NOT NULL,
+  `phan_nghin` int(11) NOT NULL DEFAULT 0,
+  `hang` int(11) NOT NULL DEFAULT 0,
+  `bac_thuong` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0 khong 1 hop tham gia 2 hop vang',
+  `ghi_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`lan`,`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_buy_ruong` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `dateLog` varchar(100) DEFAULT NULL,
+  `timeBuy` datetime DEFAULT NULL,
+  `soluong` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_buy_ruong_ngay_ten` (`dateLog`,`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_cam_may` (
+  `ma_may` varchar(64) NOT NULL COMMENT 'SystemInfo.deviceUniqueIdentifier do client gửi',
+  `ly_do` varchar(255) NOT NULL DEFAULT '',
+  `boi_ai` varchar(64) NOT NULL DEFAULT '' COMMENT 'admin nào cấm',
+  `luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`ma_may`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Danh sách máy bị cấm đăng nhập';
+CREATE TABLE IF NOT EXISTS `tob_char` (
+  `id` int(4) NOT NULL AUTO_INCREMENT,
+  `charname` varchar(20) NOT NULL,
+  `userId` int(4) NOT NULL,
+  `xp` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `lastLv` int(2) unsigned NOT NULL DEFAULT 0,
+  `hp` int(4) NOT NULL DEFAULT 0,
+  `mp` int(4) NOT NULL DEFAULT 0,
+  `map` int(4) NOT NULL DEFAULT -1,
+  `x` int(4) NOT NULL DEFAULT 0,
+  `y` int(4) NOT NULL DEFAULT 0,
+  `gold` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `headStyle` int(1) NOT NULL DEFAULT 0,
+  `class` int(1) NOT NULL DEFAULT 0,
+  `nHP1` int(2) NOT NULL DEFAULT 0,
+  `nHP2` int(2) NOT NULL DEFAULT 0,
+  `nHP3` int(2) NOT NULL DEFAULT 0,
+  `nMP1` int(2) NOT NULL DEFAULT 0,
+  `nMP2` int(2) NOT NULL DEFAULT 0,
+  `nMP3` int(2) NOT NULL DEFAULT 0,
+  `nAr1` int(2) NOT NULL DEFAULT 0,
+  `nAr2` int(2) NOT NULL DEFAULT 0,
+  `nAr3` int(2) NOT NULL DEFAULT 0,
+  `skill1` int(1) NOT NULL DEFAULT 0,
+  `skill2` int(1) NOT NULL DEFAULT 0,
+  `skill3` int(1) NOT NULL DEFAULT 0,
+  `skill4` int(1) NOT NULL DEFAULT 0,
+  `skill5` int(11) NOT NULL DEFAULT 0,
+  `strength` int(2) NOT NULL DEFAULT 0,
+  `agitity` int(2) NOT NULL DEFAULT 0,
+  `spirit` int(2) NOT NULL DEFAULT 0,
+  `dexterity` int(2) NOT NULL DEFAULT 0,
+  `luck` int(2) NOT NULL DEFAULT 0,
+  `basepoint` int(2) NOT NULL DEFAULT 3,
+  `skillpoint` int(2) NOT NULL DEFAULT 0,
+  `itemq1` int(2) unsigned NOT NULL DEFAULT 0,
+  `itemq2` int(2) unsigned NOT NULL DEFAULT 0,
+  `itemq3` int(2) unsigned NOT NULL DEFAULT 0,
+  `itemq4` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill6` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill7` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill8` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill9` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill10` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill11` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill12` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill13` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill14` int(2) unsigned NOT NULL DEFAULT 0,
+  `skill15` int(2) unsigned NOT NULL DEFAULT 0,
+  `killer` int(2) unsigned NOT NULL DEFAULT 0,
+  `khan1` int(2) unsigned NOT NULL DEFAULT 0,
+  `khan2` int(2) unsigned NOT NULL DEFAULT 0,
+  `khan3` int(2) unsigned NOT NULL DEFAULT 0,
+  `khan4` int(2) unsigned NOT NULL DEFAULT 0,
+  `khan5` int(2) unsigned NOT NULL DEFAULT 0,
+  `book` int(2) unsigned NOT NULL DEFAULT 0,
+  `timeKiller` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `nPKill` int(2) unsigned NOT NULL DEFAULT 0,
+  `gender` int(2) unsigned NOT NULL DEFAULT 0,
+  `ticket` int(2) unsigned NOT NULL DEFAULT 0,
+  `totalTimePlay` int(2) unsigned NOT NULL DEFAULT 0,
+  `fullGoldTime` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `halfGoldTime` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `luong` int(10) unsigned NOT NULL DEFAULT 0,
+  `isAdmin` int(2) unsigned NOT NULL DEFAULT 0,
+  `nHP4` int(2) unsigned NOT NULL DEFAULT 0,
+  `nHP5` int(2) unsigned NOT NULL DEFAULT 0,
+  `nMP4` int(2) unsigned NOT NULL DEFAULT 0,
+  `nMP5` int(2) unsigned NOT NULL DEFAULT 0,
+  `potion` varchar(2000) DEFAULT NULL,
+  `skill` varchar(2000) DEFAULT NULL,
+  `basic` varchar(2000) DEFAULT NULL,
+  `pInfo` varchar(2000) DEFAULT NULL,
+  `del` int(1) unsigned NOT NULL DEFAULT 1,
+  `tDelChar` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `blacklist` int(1) unsigned NOT NULL DEFAULT 0,
+  `nhack` int(1) unsigned NOT NULL DEFAULT 0,
+  `newiddb` int(10) unsigned NOT NULL DEFAULT 0,
+  `newuserid` int(10) unsigned NOT NULL DEFAULT 0,
+  `ban` int(10) unsigned NOT NULL DEFAULT 0,
+  `idClan` int(10) NOT NULL DEFAULT -1,
+  `reupclass` int(10) unsigned NOT NULL DEFAULT 0,
+  `lastLog` datetime NOT NULL DEFAULT '2010-01-01 00:00:00',
+  `infotop` varchar(2000) NOT NULL DEFAULT '-1',
+  `itemquest` varchar(200) DEFAULT NULL,
+  `allitem` text DEFAULT NULL,
+  `equip` mediumtext DEFAULT NULL,
+  `inven` mediumtext DEFAULT NULL,
+  `bag` mediumtext DEFAULT NULL,
+  `killme` varchar(600) DEFAULT NULL,
+  `luonglock` int(10) unsigned DEFAULT 0,
+  `idserver` int(10) unsigned NOT NULL DEFAULT 0,
+  `tuido` mediumtext DEFAULT NULL,
+  `tichluy` int(11) DEFAULT 0,
+  `tichluy_bosung` int(11) NOT NULL DEFAULT 0,
+  `tichluy_tuan` int(11) DEFAULT 0,
+  `topNap` int(11) NOT NULL DEFAULT 0,
+  `qua_npc` int(11) DEFAULT 0,
+  `isPP` int(11) DEFAULT 0,
+  `isMN` int(11) NOT NULL DEFAULT 0,
+  `diemluong` int(11) DEFAULT 0,
+  `kho_xu` bigint(20) NOT NULL DEFAULT 0 COMMENT 'Kho xu o NPC Tong Quan',
+  `kho_luong` int(11) NOT NULL DEFAULT 0 COMMENT 'Kho luong mo o NPC Tong Quan',
+  `kho_luong_khoa` int(11) NOT NULL DEFAULT 0 COMMENT 'Kho luong khoa o NPC Tong Quan',
+  `dex` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Pokemon: so Pokedex, 0 = suy tu class+cap',
+  `shiny` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Pokemon: 1 = shiny',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `charname` (`charname`),
+  KEY `Index_3` (`userId`),
+  KEY `Index_6` (`idClan`),
+  KEY `Index_5` (`pInfo`(333)),
+  KEY `Index_7` (`gold`),
+  KEY `Index_8` (`xp`),
+  KEY `Index_9` (`ticket`),
+  KEY `Index_10` (`basepoint`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_fruit` (
+  `id_char` int(10) unsigned NOT NULL,
+  `listidfruit` varchar(200) NOT NULL,
+  `stFruit` varchar(100) NOT NULL,
+  `tFruit` varchar(500) NOT NULL,
+  `gift` varchar(500) NOT NULL COMMENT 'vi tri ve tren cay',
+  `theo` varchar(500) NOT NULL,
+  `tkho` varchar(500) NOT NULL,
+  PRIMARY KEY (`id_char`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_lau_dai` (
+  `id_char` int(11) NOT NULL,
+  `du_lieu` varchar(2000) NOT NULL DEFAULT '',
+  `cap_nhat` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_luong` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `country` tinyint(4) NOT NULL DEFAULT -1,
+  `exp` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `idclan` int(11) NOT NULL DEFAULT -1,
+  `honor` int(10) unsigned NOT NULL,
+  `lv` int(10) unsigned NOT NULL DEFAULT 1,
+  `nPK` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `wearing` varchar(500) NOT NULL DEFAULT '""',
+  `luong` int(10) unsigned NOT NULL DEFAULT 0,
+  `gold` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `headStyle` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `charname` (`charname`) USING BTREE,
+  KEY `country` (`country`),
+  KEY `exp` (`exp`),
+  KEY `Index_5` (`honor`),
+  KEY `Index_6` (`nPK`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_quest` (
+  `id_char` int(10) unsigned NOT NULL,
+  `itemget` varchar(200) NOT NULL COMMENT 'cac loai item cach nhau = dau , item cua cac nhiem vu khac nhau cach nhau bang dau |',
+  `monskilled` varchar(200) NOT NULL COMMENT 'so luong quai da giet',
+  `isfinish` varchar(200) NOT NULL COMMENT 'da hoan thanh nhiem vu hay chua',
+  `idsubRcv` varchar(200) DEFAULT NULL,
+  `itemquest` varchar(1000) DEFAULT NULL,
+  PRIMARY KEY (`id_char`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_thach_dau` (
+  `id` int(10) unsigned NOT NULL,
+  `charname` varchar(45) NOT NULL,
+  `point` int(10) unsigned NOT NULL DEFAULT 0,
+  `lv` int(10) unsigned NOT NULL DEFAULT 1,
+  `timeupdate` datetime NOT NULL,
+  `timeReg` datetime NOT NULL,
+  `nhom` int(10) unsigned NOT NULL DEFAULT 0,
+  `pointrank` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`),
+  KEY `Index_3` (`point`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_char_tubinh` (
+  `id_char` int(10) unsigned NOT NULL,
+  `listid` varchar(200) NOT NULL,
+  `listmanh` varchar(200) NOT NULL,
+  PRIMARY KEY (`id_char`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_vip` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `vip` int(10) unsigned DEFAULT 0,
+  `timeRcv` datetime NOT NULL,
+  `reset` int(10) unsigned DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_char_vip_charname` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_char_xp_cu` (
+  `id` int(11) NOT NULL,
+  `xp` bigint(20) NOT NULL DEFAULT 0,
+  `lastLv` int(11) NOT NULL DEFAULT 0,
+  `xp_moi` bigint(20) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_chiem_thanh_tuan` (
+  `lan` bigint(20) NOT NULL,
+  `id_char` int(11) NOT NULL,
+  `id_clan` int(11) NOT NULL DEFAULT -1,
+  `diem` bigint(20) NOT NULL DEFAULT 0,
+  `thuong` varchar(255) NOT NULL DEFAULT '',
+  `luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`lan`,`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_chiemthanh` (
+  `clan` varchar(255) NOT NULL,
+  `bangchu` varchar(255) NOT NULL,
+  `win` int(11) NOT NULL DEFAULT 0,
+  `xu` varchar(255) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`clan`,`bangchu`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_chien_truong` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `sttru` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `lientram` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_clan` (
+  `id_clan` int(10) unsigned NOT NULL,
+  `clanName` varchar(45) DEFAULT NULL,
+  `charMaster` varchar(45) DEFAULT NULL,
+  `lvClan` int(10) unsigned DEFAULT NULL,
+  `member` varchar(8000) DEFAULT NULL,
+  `money` bigint(20) unsigned DEFAULT NULL,
+  `xp` bigint(20) unsigned DEFAULT NULL,
+  `datecreate` datetime NOT NULL,
+  `slogan` varchar(300) NOT NULL,
+  `isdel` int(10) unsigned NOT NULL DEFAULT 0,
+  `timedel` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `town` int(10) unsigned NOT NULL DEFAULT 0,
+  `tax` int(10) unsigned NOT NULL DEFAULT 0,
+  `devote` int(10) unsigned NOT NULL DEFAULT 0,
+  `otherinfo` varchar(800) NOT NULL DEFAULT '""',
+  `skillclan` varchar(800) NOT NULL DEFAULT '""',
+  `country` int(11) NOT NULL DEFAULT -1,
+  `tcheckdel` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `id_cu` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_clan`) USING BTREE,
+  KEY `Index_2` (`lvClan`),
+  KEY `Index_3` (`clanName`),
+  KEY `Index_4` (`charMaster`),
+  KEY `Index_5` (`money`),
+  KEY `Index_6` (`xp`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_clan_msg` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `info` varchar(1000) NOT NULL,
+  `datesend` datetime NOT NULL,
+  `id_clan` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`charname`),
+  KEY `Index_3` (`id_clan`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_client_dang_nhap` (
+  `tai_khoan` varchar(45) NOT NULL,
+  `loai` varchar(10) NOT NULL DEFAULT 'jar',
+  `platf` varchar(100) NOT NULL DEFAULT '',
+  `phien_ban` varchar(20) NOT NULL DEFAULT '',
+  `ban_jar` int(11) NOT NULL DEFAULT 0,
+  `chinh_chu` tinyint(4) NOT NULL DEFAULT 0,
+  `so_lan` int(11) NOT NULL DEFAULT 0,
+  `lan_dau` datetime NOT NULL,
+  `lan_cuoi` datetime NOT NULL,
+  PRIMARY KEY (`tai_khoan`,`loai`),
+  KEY `idx_tcdn_lan_cuoi` (`lan_cuoi`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_code_lixi` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(100) NOT NULL,
+  `nhan` int(10) unsigned DEFAULT 0,
+  `timeNhan` datetime DEFAULT NULL,
+  `charnhan` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`code`) USING BTREE,
+  KEY `Index_3` (`charnhan`),
+  KEY `Index_4` (`nhan`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_danh_hieu` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(80) NOT NULL,
+  `iddh` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_dau_gia` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `luongbid` int(10) unsigned NOT NULL DEFAULT 0,
+  `luongcoc` int(10) unsigned NOT NULL DEFAULT 0,
+  `timebid` datetime DEFAULT NULL,
+  `hang` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '0 la chua xep hang, 1 la dc quyen mua, 2 la nhan lai tien',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_dau_gia2` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `luongbid` int(10) unsigned NOT NULL DEFAULT 0,
+  `luongcoc` int(10) unsigned NOT NULL DEFAULT 0,
+  `timebid` datetime DEFAULT NULL,
+  `hang` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '0 la chua xep hang, 1 la dc quyen mua, 2 la nhan lai tien',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_event` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `part1` varchar(450) NOT NULL,
+  `part2` varchar(450) NOT NULL,
+  `part3` varchar(850) NOT NULL,
+  `part4` varchar(450) NOT NULL,
+  `shield` varchar(45) NOT NULL DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0',
+  `gov1` varchar(200) NOT NULL DEFAULT '""',
+  `gov2` varchar(200) NOT NULL DEFAULT '""',
+  `gov3` varchar(200) NOT NULL DEFAULT '""',
+  `quayso` varchar(200) NOT NULL,
+  `topluong` varchar(500) NOT NULL DEFAULT '0',
+  `topNapLuong` varchar(500) DEFAULT NULL,
+  `phaohoa` varchar(100) NOT NULL DEFAULT '0,0',
+  `iditemsell` int(10) unsigned NOT NULL DEFAULT 0,
+  `openphuonghoang` varchar(100) NOT NULL DEFAULT '5000,5,0,0',
+  `trung` varchar(45) NOT NULL DEFAULT '0|10000|0',
+  `ruongmm` varchar(200) DEFAULT NULL,
+  `lixi` varchar(100) DEFAULT '100,18,30',
+  `vip` varchar(100) DEFAULT '500,100,5',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_event_top` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `luongnap` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `toppoint` bigint(20) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_event_world_cup_state` (
+  `event_key` varchar(64) NOT NULL,
+  `winner_side` tinyint(4) NOT NULL DEFAULT 0,
+  `is_finalized` tinyint(4) NOT NULL DEFAULT 0,
+  `finalized_by` varchar(100) DEFAULT NULL,
+  `timeupdate` datetime DEFAULT NULL,
+  PRIMARY KEY (`event_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_farm` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner` int(11) NOT NULL,
+  `farmId` tinyint(4) NOT NULL,
+  `treeId` int(11) NOT NULL DEFAULT -1,
+  `timeBegin` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `lv` tinyint(4) NOT NULL,
+  `buy` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `lvPlot` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `rank` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`treeId`),
+  KEY `Index_3` (`lv`) USING BTREE,
+  KEY `Index_4` (`lvPlot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_friendlist` (
+  `charId` int(11) NOT NULL,
+  `friendId` varchar(200) NOT NULL,
+  `name` varchar(1000) NOT NULL,
+  `ischange` int(10) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`charId`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_fruit` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `id1` int(10) unsigned DEFAULT NULL,
+  `id2` int(10) unsigned DEFAULT NULL,
+  `id3` int(10) unsigned DEFAULT NULL,
+  `id4` int(10) unsigned DEFAULT NULL,
+  `id5` int(10) unsigned DEFAULT NULL,
+  `decript` varchar(200) DEFAULT NULL,
+  `time1` int(10) unsigned DEFAULT NULL,
+  `time2` int(10) unsigned DEFAULT NULL,
+  `time3` int(10) unsigned DEFAULT NULL,
+  `time4` int(10) unsigned DEFAULT NULL,
+  `time5` int(10) unsigned DEFAULT NULL,
+  `tfruit` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_gem_new` (
+  `owner` int(10) unsigned NOT NULL,
+  `listtemplate` mediumtext NOT NULL,
+  `soluong` mediumtext NOT NULL,
+  `slock` mediumtext NOT NULL,
+  PRIMARY KEY (`owner`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_get_board_nap` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `info` varchar(45) NOT NULL,
+  `dateGet` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `Index_2` (`charname`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_giftcode` (
+  `ma` varchar(32) NOT NULL,
+  `phan_thuong` varchar(500) NOT NULL,
+  `han` datetime DEFAULT NULL,
+  `tong_luot` int(11) NOT NULL DEFAULT 1,
+  `da_dung` int(11) NOT NULL DEFAULT 0,
+  `cap_toi_thieu` int(11) NOT NULL DEFAULT 1,
+  `bat` tinyint(4) NOT NULL DEFAULT 1,
+  `ghi_chu` varchar(255) NOT NULL DEFAULT '',
+  `tao_boi` varchar(50) DEFAULT NULL,
+  `tao_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_giftcode_log` (
+  `ma` varchar(32) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `id_char` int(11) NOT NULL,
+  `charname` varchar(30) NOT NULL DEFAULT '',
+  `phan_thuong` varchar(500) NOT NULL DEFAULT '',
+  `gia_tri` int(11) NOT NULL DEFAULT 0,
+  `thang` int(11) NOT NULL DEFAULT 0,
+  `luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`ma`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_ham_nguc` (
+  `ngay` int(11) NOT NULL COMMENT 'yyyyMMdd',
+  `id_char` int(11) NOT NULL,
+  `tang` int(11) NOT NULL DEFAULT 0,
+  `ghi_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`ngay`,`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_hst_cho` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ban` int(11) NOT NULL,
+  `ten_ban` varchar(64) NOT NULL,
+  `khoa_vat` int(11) NOT NULL,
+  `so_luong` int(11) NOT NULL,
+  `gia_moi` bigint(20) NOT NULL,
+  `du_lieu` varchar(64) NOT NULL,
+  `het_han` bigint(20) NOT NULL,
+  `trang_thai` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_hst_don` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_mua` int(11) NOT NULL,
+  `ten_mua` varchar(64) NOT NULL,
+  `ma_vat` int(11) NOT NULL,
+  `so_can` int(11) NOT NULL,
+  `so_da_giao` int(11) NOT NULL,
+  `gia_moi` bigint(20) NOT NULL,
+  `het_han` bigint(20) NOT NULL,
+  `trang_thai` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_hst_hop_thu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_char` int(11) NOT NULL,
+  `xu` bigint(20) NOT NULL,
+  `khoa_vat` int(11) NOT NULL,
+  `so_luong` int(11) NOT NULL,
+  `du_lieu` varchar(64) NOT NULL,
+  `ghi_chu` varchar(128) NOT NULL,
+  `tao_luc` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_hst_nhan_vat` (
+  `id_char` int(11) NOT NULL,
+  `du_lieu` text NOT NULL,
+  `cap_nhat` bigint(20) NOT NULL,
+  PRIMARY KEY (`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_inbox` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `sender` varchar(45) NOT NULL,
+  `info` varchar(800) NOT NULL,
+  `dateSend` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=FIXED;
+CREATE TABLE IF NOT EXISTS `tob_kinh_te_ngay` (
+  `ngay` date NOT NULL,
+  `so_nguoi` int(11) NOT NULL DEFAULT 0 COMMENT 'nguoi hoat dong 7 ngay',
+  `cap_trung_vi` int(11) NOT NULL DEFAULT 0,
+  `chi_so_gia` bigint(20) NOT NULL DEFAULT 0 COMMENT 'xuMoiGio(cap trung vi)',
+  `tong_xu` bigint(20) NOT NULL DEFAULT 0 COMMENT 'gold + kho_xu',
+  `tong_luong` bigint(20) NOT NULL DEFAULT 0,
+  `tong_luong_khoa` bigint(20) NOT NULL DEFAULT 0,
+  `cung_tien_thuc_x100` bigint(20) NOT NULL DEFAULT 0 COMMENT 'gio thu nhap / nguoi x100',
+  `top1_phan_tram_x100` int(11) NOT NULL DEFAULT 0,
+  `xu_vao` bigint(20) NOT NULL DEFAULT 0 COMMENT 'Char.addXu trong ngay (tu lan ghi truoc)',
+  `xu_ra` bigint(20) NOT NULL DEFAULT 0 COMMENT 'Char.subXu trong ngay',
+  `muc` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0 xanh 1 vang 2 do',
+  `ghi_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`ngay`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_all_gem` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `aclog` varchar(45) NOT NULL DEFAULT '""',
+  `info` varchar(8000) NOT NULL DEFAULT '""',
+  `timelog` datetime NOT NULL,
+  `charname2` varchar(45) NOT NULL DEFAULT '""',
+  PRIMARY KEY (`id`),
+  KEY `charname` (`charname`),
+  KEY `aclog` (`aclog`),
+  KEY `timelog` (`timelog`),
+  KEY `charname2` (`charname2`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_all_item` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `aclog` varchar(45) NOT NULL DEFAULT '""',
+  `info` varchar(8000) NOT NULL DEFAULT '""',
+  `timelog` datetime NOT NULL,
+  `charname2` varchar(45) NOT NULL DEFAULT '""',
+  `idchar` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `charname` (`charname`),
+  KEY `aclog` (`aclog`),
+  KEY `timelog` (`timelog`),
+  KEY `charname2` (`charname2`),
+  KEY `idchar` (`idchar`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_buy_shop` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `info` varchar(450) NOT NULL,
+  `timeBuy` datetime NOT NULL,
+  `typeitem` int(10) unsigned NOT NULL DEFAULT 0,
+  `price` int(10) unsigned NOT NULL,
+  `money` varchar(450) NOT NULL DEFAULT '""',
+  `soluong` int(10) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`charname`),
+  KEY `Index_4` (`timeBuy`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_log_buy_store` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `info` varchar(500) NOT NULL,
+  `timeBuy` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_chuyen_gia_tri` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `luc` datetime NOT NULL,
+  `kieu` varchar(20) NOT NULL,
+  `gui_id` int(11) NOT NULL DEFAULT 0,
+  `gui_ten` varchar(40) NOT NULL DEFAULT '',
+  `gui_tk` int(11) NOT NULL DEFAULT 0,
+  `gui_cap` int(11) NOT NULL DEFAULT 0,
+  `gui_may` varchar(64) NOT NULL DEFAULT '',
+  `gui_ip` varchar(64) NOT NULL DEFAULT '',
+  `nhan_id` int(11) NOT NULL DEFAULT 0,
+  `nhan_ten` varchar(40) NOT NULL DEFAULT '',
+  `nhan_tk` int(11) NOT NULL DEFAULT 0,
+  `nhan_cap` int(11) NOT NULL DEFAULT 0,
+  `nhan_may` varchar(64) NOT NULL DEFAULT '',
+  `nhan_ip` varchar(64) NOT NULL DEFAULT '',
+  `xu` bigint(20) NOT NULL DEFAULT 0,
+  `chi_tiet` varchar(255) NOT NULL DEFAULT '',
+  `bi_chan` tinyint(4) NOT NULL DEFAULT 0,
+  `nghi` tinyint(4) NOT NULL DEFAULT 0,
+  `ly_do` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `k_nhan` (`nhan_id`,`luc`),
+  KEY `k_luc` (`luc`),
+  KEY `k_nghi` (`nghi`,`luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_clan` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `actioninfo` varchar(45) NOT NULL,
+  `timeLog` datetime NOT NULL,
+  `info` varchar(8000) NOT NULL DEFAULT '""',
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`charname`),
+  KEY `Index_3` (`actioninfo`),
+  KEY `Index_4` (`timeLog`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_online` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `thoi_gian` datetime NOT NULL COMMENT 'luc lay mau',
+  `ket_noi` int(11) NOT NULL DEFAULT 0 COMMENT 'so socket dang mo',
+  `nhan_vat` int(11) NOT NULL DEFAULT 0 COMMENT 'so nhan vat that trong game',
+  `pc` int(11) NOT NULL DEFAULT 0,
+  `android` int(11) NOT NULL DEFAULT 0,
+  `jar` int(11) NOT NULL DEFAULT 0,
+  `khac` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_thoi_gian` (`thoi_gian`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong_1_7_2025` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong_2_6_2025` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong_2_7_2025` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong_3_6_2025` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong_4_6_2025` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_use_luong_5_6_2025` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `idtemplate` int(10) unsigned NOT NULL DEFAULT 0,
+  `soluong` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `solanmua` int(10) unsigned NOT NULL DEFAULT 1,
+  `totalmoney` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `moneytype` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`name`) USING BTREE,
+  KEY `Index_3` (`idtemplate`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_log_xoso` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `win` int(10) unsigned NOT NULL,
+  `timelog` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`win`),
+  KEY `Index_3` (`timelog`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_market` (
+  `charname` varchar(45) NOT NULL,
+  `itemsell` text NOT NULL COMMENT 'danh sach item dang ban',
+  `money` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT 'tien ban duoc',
+  `items` text NOT NULL,
+  `listBid` text NOT NULL,
+  PRIMARY KEY (`charname`) USING BTREE,
+  KEY `money` (`money`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_may_dang_nhap` (
+  `ma_may` varchar(64) NOT NULL,
+  `username` varchar(64) NOT NULL,
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'dài 45 để chứa được cả IPv6',
+  `lan_dau` datetime NOT NULL DEFAULT current_timestamp(),
+  `lan_cuoi` datetime NOT NULL DEFAULT current_timestamp(),
+  `so_lan` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`ma_may`,`username`),
+  KEY `k_username` (`username`),
+  KEY `k_lan_cuoi` (`lan_cuoi`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Máy nào đã đăng nhập tài khoản nào';
+CREATE TABLE IF NOT EXISTS `tob_mua_tuan` (
+  `id_char` int(11) NOT NULL,
+  `id_shop` int(11) NOT NULL,
+  `tuan` int(11) NOT NULL,
+  `so_luong` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_char`,`id_shop`,`tuan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_nap_moc` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `userID` int(11) NOT NULL COMMENT 'team_user.id / player.userID',
+  `moc` tinyint(3) unsigned NOT NULL COMMENT '1 = 49k, 2 = 99k, 3 = 299k',
+  `amount` int(10) unsigned NOT NULL COMMENT 'so tien VND',
+  `ma_don` varchar(20) NOT NULL COMMENT 'noi dung chuyen khoan, dung de doi chieu voi SePay',
+  `phuong_hoang` tinyint(4) NOT NULL DEFAULT -1 COMMENT 'moc 3 only: 0=Phuong Hoang, 1=Phuong Hoang Bang, -1=chua chon',
+  `trang_thai` enum('cho_thanh_toan','da_thanh_toan','da_nhan') NOT NULL DEFAULT 'cho_thanh_toan',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `paid_at` datetime DEFAULT NULL,
+  `claimed_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_ma_don` (`ma_don`),
+  KEY `idx_user_moc` (`userID`,`moc`,`trang_thai`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_nap_xai_luong` (
+  `int` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `luongxai` int(10) unsigned NOT NULL DEFAULT 0,
+  `luongnap` int(10) unsigned NOT NULL DEFAULT 0,
+  `tnap` datetime DEFAULT NULL,
+  `txai` datetime DEFAULT NULL,
+  PRIMARY KEY (`int`),
+  UNIQUE KEY `Index_2` (`charname`),
+  KEY `Index_3` (`luongxai`),
+  KEY `Index_4` (`luongnap`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_nap_xai_luong_62025` (
+  `int` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `luongxai` int(10) unsigned NOT NULL DEFAULT 0,
+  `luongnap` int(10) unsigned NOT NULL DEFAULT 0,
+  `tnap` datetime DEFAULT NULL,
+  `txai` datetime DEFAULT NULL,
+  PRIMARY KEY (`int`),
+  UNIQUE KEY `Index_2` (`charname`),
+  KEY `Index_3` (`luongxai`),
+  KEY `Index_4` (`luongnap`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_nap_xai_luong_72025` (
+  `int` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `luongxai` int(10) unsigned NOT NULL DEFAULT 0,
+  `luongnap` int(10) unsigned NOT NULL DEFAULT 0,
+  `tnap` datetime DEFAULT NULL,
+  `txai` datetime DEFAULT NULL,
+  PRIMARY KEY (`int`),
+  UNIQUE KEY `Index_2` (`charname`),
+  KEY `Index_3` (`luongxai`),
+  KEY `Index_4` (`luongnap`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_nau_banh` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `listchar` text NOT NULL,
+  `timecook` int(10) unsigned NOT NULL DEFAULT 60,
+  `water` int(10) unsigned NOT NULL DEFAULT 0,
+  `chamnc` int(10) unsigned NOT NULL DEFAULT 0,
+  `listCharGift` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_nhiem_vu_lau_dai` (
+  `id_char` int(11) NOT NULL,
+  `ma` varchar(32) NOT NULL COMMENT 'ma trong data_quest_lau_dai (vd T-1.01)',
+  `tien_do` int(11) NOT NULL DEFAULT 0,
+  `trang_thai` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0 dang lam 1 xong chua nhan 2 da nhan',
+  `tuan` int(11) NOT NULL DEFAULT 0 COMMENT 'chi so tuan (NhiemVuLauDai.tuan) khi nhan',
+  PRIMARY KEY (`id_char`,`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_pet` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(300) NOT NULL,
+  `idImg` tinyint(3) unsigned NOT NULL,
+  `owner` int(10) unsigned NOT NULL,
+  `info` varchar(200) NOT NULL COMMENT 'thong tin ve thoi gian mua, tong thoi gian ton tai',
+  `place` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `itPet` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`),
+  KEY `idimg` (`idImg`),
+  KEY `owner` (`owner`),
+  KEY `place` (`place`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_pokedex` (
+  `id_char` int(11) NOT NULL,
+  `dex` smallint(6) NOT NULL,
+  `so_ha` int(11) NOT NULL DEFAULT 0,
+  `lan_dau` datetime NOT NULL,
+  PRIMARY KEY (`id_char`,`dex`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_pokedex_shiny` (
+  `id_char` int(11) NOT NULL,
+  `dex` smallint(6) NOT NULL,
+  `so_shiny` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_char`,`dex`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_pokedex_thuong` (
+  `id_char` int(11) NOT NULL,
+  `moc` int(11) NOT NULL,
+  `thoi_gian` datetime NOT NULL,
+  PRIMARY KEY (`id_char`,`moc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_pvp_mua` (
+  `mua` int(11) NOT NULL,
+  `id_char` int(11) NOT NULL,
+  `elo` int(11) NOT NULL DEFAULT 1000,
+  `thang` int(11) NOT NULL DEFAULT 0,
+  `thua` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`mua`,`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `qua` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `typeQua` bigint(20) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua_ct` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `soluong` int(10) unsigned NOT NULL DEFAULT 1,
+  `nhan` int(10) unsigned NOT NULL DEFAULT 0,
+  `tlog` datetime DEFAULT NULL,
+  `tset` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua_ct_bk` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `soluong` int(10) unsigned NOT NULL DEFAULT 1,
+  `nhan` int(10) unsigned NOT NULL DEFAULT 0,
+  `tlog` datetime DEFAULT NULL,
+  `tset` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua_ct_top` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `soluong` int(10) unsigned NOT NULL DEFAULT 1 COMMENT '1-lien tram, 2 dam tru',
+  `nhan` int(10) unsigned NOT NULL DEFAULT 0,
+  `tlog` datetime DEFAULT NULL,
+  `tset` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_qua_ct_top_charname` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua_ct_top_bk` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `soluong` int(10) unsigned NOT NULL DEFAULT 1,
+  `nhan` int(10) unsigned NOT NULL DEFAULT 0,
+  `tlog` datetime DEFAULT NULL,
+  `tset` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua_loi_dai` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(100) NOT NULL,
+  `qua` int(10) unsigned NOT NULL DEFAULT 0,
+  `typeQua` int(10) unsigned NOT NULL DEFAULT 0,
+  `nhom` int(10) unsigned NOT NULL DEFAULT 0,
+  `diem` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_qua_online` (
+  `user_id` int(11) NOT NULL,
+  `ngay` int(11) NOT NULL DEFAULT 0 COMMENT 'yyyyMMdd cua giay/moc',
+  `giay` int(11) NOT NULL DEFAULT 0 COMMENT 'giay hoat dong (khong AFK) trong ngay',
+  `moc` int(11) NOT NULL DEFAULT 0 COMMENT 'bitmask moc 15/30/60/120 phut da nhan',
+  `chuoi_buoc` int(11) NOT NULL DEFAULT 0,
+  `chuoi_ngay` int(11) NOT NULL DEFAULT 0,
+  `thang` int(11) NOT NULL DEFAULT 0,
+  `ngay_thang` int(11) NOT NULL DEFAULT 0,
+  `thang_da_thuong` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_quest` (
+  `idchar` int(10) unsigned NOT NULL,
+  `idquest` int(10) unsigned NOT NULL,
+  `state` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT '0 chua nhan, 1 nhan, 2 hoan thanh',
+  `totalmonskill` varchar(100) NOT NULL DEFAULT '0',
+  `totalitemget` varchar(100) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`idchar`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_quest_clan` (
+  `id_char` int(10) unsigned NOT NULL,
+  `idquest` int(10) unsigned NOT NULL,
+  `rcv` int(10) unsigned NOT NULL DEFAULT 0,
+  `finish` int(10) unsigned NOT NULL DEFAULT 0,
+  `nitem1` int(10) unsigned NOT NULL DEFAULT 0,
+  `nitem2` int(10) unsigned NOT NULL DEFAULT 0,
+  `nitem3` int(10) unsigned NOT NULL DEFAULT 0,
+  `nmons1` int(10) unsigned NOT NULL DEFAULT 0,
+  `nmons2` int(10) unsigned NOT NULL DEFAULT 0,
+  `nmons3` int(10) unsigned NOT NULL DEFAULT 0,
+  `id_clan` int(10) unsigned NOT NULL DEFAULT 0,
+  `n` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `timeEnd` bigint(20) unsigned zerofill NOT NULL DEFAULT 00000000000000000000,
+  PRIMARY KEY (`id_char`) USING BTREE,
+  KEY `Index_2` (`idquest`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_reg_chientruong` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(45) NOT NULL,
+  `timeReg` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_smsnap` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `text` varchar(50) NOT NULL,
+  `syntax` varchar(100) NOT NULL,
+  `port` varchar(10) NOT NULL,
+  `provider` int(1) NOT NULL,
+  `game` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `agent` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_sp_new` (
+  `owner` int(10) unsigned NOT NULL,
+  `listtemplate` varchar(300) NOT NULL,
+  `soluong` varchar(500) NOT NULL,
+  PRIMARY KEY (`owner`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_su_kien` (
+  `ma` varchar(40) NOT NULL COMMENT 'khoa, khop hang so trong src/real/SuKien.java',
+  `bat` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'WEB ghi: 1 = bat su kien',
+  `ten` varchar(100) DEFAULT NULL COMMENT 'SERVER ghi',
+  `nhom` varchar(40) DEFAULT NULL COMMENT 'SERVER ghi',
+  `mo_ta` varchar(500) DEFAULT NULL COMMENT 'SERVER ghi',
+  `dang_bat` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'SERVER ghi: trang thai that luc khoi dong',
+  `sua_boi` varchar(50) DEFAULT NULL COMMENT 'WEB ghi',
+  `sua_luc` datetime DEFAULT NULL COMMENT 'WEB ghi',
+  `may_chu_luc` datetime DEFAULT NULL COMMENT 'SERVER ghi: lan khoi dong gan nhat',
+  `mo_luc` datetime DEFAULT NULL,
+  `dong_luc` datetime DEFAULT NULL,
+  `tu_dong` tinyint(4) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_su_kien_lich` (
+  `ma` varchar(40) NOT NULL,
+  `nam` smallint(6) NOT NULL,
+  `lan` tinyint(4) NOT NULL DEFAULT 0,
+  `ten` varchar(100) NOT NULL DEFAULT '',
+  `nhom` varchar(40) NOT NULL DEFAULT '',
+  `ngay_le` varchar(60) NOT NULL DEFAULT '',
+  `mo_ta` varchar(500) NOT NULL DEFAULT '',
+  `phan_thuong` varchar(300) NOT NULL DEFAULT '',
+  `lich_mo` datetime NOT NULL,
+  `lich_dong` datetime NOT NULL,
+  `mo_luc` datetime NOT NULL,
+  `dong_luc` datetime NOT NULL,
+  `ghi_de` tinyint(4) NOT NULL DEFAULT 0,
+  `sua_boi` varchar(50) DEFAULT NULL,
+  `sua_luc` datetime DEFAULT NULL,
+  `cap_nhat` datetime DEFAULT NULL,
+  PRIMARY KEY (`ma`,`nam`,`lan`),
+  KEY `k_mo` (`mo_luc`),
+  KEY `k_dong` (`dong_luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_su_pham` (
+  `id_tro` int(11) NOT NULL,
+  `id_thay` int(11) NOT NULL,
+  `bat_dau` datetime DEFAULT NULL,
+  `moc` varchar(64) NOT NULL DEFAULT '' COMMENT 'moc da thuong, vd 20,40',
+  PRIMARY KEY (`id_tro`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_top_event` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(50) NOT NULL,
+  `point1` int(11) NOT NULL DEFAULT 0,
+  `timeupdate` datetime DEFAULT current_timestamp(),
+  `xu` bigint(20) DEFAULT 0,
+  `luong` int(11) DEFAULT 0,
+  `datexu` datetime DEFAULT current_timestamp(),
+  `dateluong` datetime DEFAULT current_timestamp(),
+  `crtime` bigint(20) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `charname` (`charname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_top_event_wc` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `charname` varchar(200) NOT NULL,
+  `point1` int(10) unsigned NOT NULL DEFAULT 1,
+  `timeupdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `xu` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `luong` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `datexu` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `dateluong` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `crtime` bigint(20) unsigned DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Index_2` (`charname`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_top_event_world_cup` (
+  `charname` varchar(100) NOT NULL,
+  `point_messi` int(11) NOT NULL DEFAULT 0,
+  `point_ronaldo` int(11) NOT NULL DEFAULT 0,
+  `claim_normal` tinyint(4) NOT NULL DEFAULT 0,
+  `claim_top` tinyint(4) NOT NULL DEFAULT 0,
+  `timeupdate` datetime DEFAULT NULL,
+  PRIMARY KEY (`charname`),
+  KEY `idx_messi` (`point_messi`),
+  KEY `idx_ronaldo` (`point_ronaldo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_top_thuong` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `vi_tri` tinyint(4) NOT NULL COMMENT 'hang 1..10',
+  `charname` varchar(50) NOT NULL COMMENT 'nhan vat duoc thuong',
+  `item` text DEFAULT NULL COMMENT 'chuoi phan thuong co dinh, cu phap giong giftcode.item',
+  `item_chon` text DEFAULT NULL COMMENT 'phan thuong de nguoi choi tu chon: "nhan=chuoi|nhan=chuoi|..."',
+  `da_nhan` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0 cho nhan, 1 da nhan',
+  `admin_user` varchar(50) NOT NULL DEFAULT '' COMMENT 'team_user.username nguoi tao',
+  `tao_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  `nhan_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_charname_da_nhan` (`charname`,`da_nhan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_tubinh` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `attack` int(10) unsigned NOT NULL,
+  `def` int(10) unsigned NOT NULL,
+  `dog` int(10) unsigned NOT NULL,
+  `crit` int(10) unsigned NOT NULL,
+  `hp` int(10) unsigned NOT NULL,
+  `mp` int(10) unsigned NOT NULL,
+  `level` int(10) unsigned NOT NULL,
+  `nmanh` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_vantieu` (
+  `idchar` int(10) unsigned NOT NULL,
+  `namechar` varchar(45) NOT NULL,
+  `typetieu` int(10) unsigned NOT NULL,
+  `tReceive` bigint(20) unsigned NOT NULL,
+  `lv` int(10) unsigned NOT NULL,
+  `mapid` int(10) unsigned NOT NULL,
+  `x` int(10) unsigned NOT NULL,
+  `y` int(10) unsigned NOT NULL,
+  `idcountry` tinyint(3) unsigned NOT NULL,
+  `hp` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `maxhp` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `count` int(11) DEFAULT 0,
+  PRIMARY KEY (`idchar`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_vi_tri_online` (
+  `charname` varchar(45) NOT NULL,
+  `map_id` int(11) NOT NULL DEFAULT 0,
+  `map_ten` varchar(100) NOT NULL DEFAULT '',
+  `khu` int(11) NOT NULL DEFAULT 0,
+  `x` int(11) NOT NULL DEFAULT 0,
+  `y` int(11) NOT NULL DEFAULT 0,
+  `cap_nhat_luc` datetime NOT NULL,
+  `tai_khoan` varchar(45) NOT NULL DEFAULT '',
+  `client` varchar(10) NOT NULL DEFAULT '',
+  `chinh_chu` tinyint(4) NOT NULL DEFAULT 0,
+  `client_ban` varchar(20) NOT NULL DEFAULT '',
+  `platf` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`charname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_web_info_char` (
+  `charname` varchar(45) NOT NULL,
+  `infoWearing` varchar(150) NOT NULL,
+  `otherInfo` varchar(300) NOT NULL,
+  `userid` int(10) unsigned NOT NULL,
+  `lv` int(10) unsigned NOT NULL DEFAULT 0,
+  `acountname` varchar(45) NOT NULL,
+  PRIMARY KEY (`charname`) USING BTREE,
+  KEY `userid` (`userid`) USING BTREE,
+  KEY `lv` (`lv`),
+  KEY `acountname` (`acountname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+CREATE TABLE IF NOT EXISTS `tob_wedding` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `idhusband` int(10) unsigned NOT NULL,
+  `idwife` int(10) unsigned NOT NULL,
+  `married` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `timeParty` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `dayparty` varchar(45) NOT NULL DEFAULT '""',
+  `typeparty` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `idwedding` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `husband` (`idhusband`),
+  KEY `idwife` (`idwife`),
+  KEY `Index_4` (`married`),
+  KEY `Index_5` (`typeparty`),
+  KEY `Index_6` (`idwedding`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_x2exp` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `dayopenx2` varchar(500) DEFAULT NULL,
+  `dayopenx3` varchar(500) DEFAULT NULL,
+  `dayopenx50` varchar(500) DEFAULT NULL,
+  `badwod` text NOT NULL,
+  `tradepet` int(10) unsigned NOT NULL DEFAULT 0,
+  `thamdinh` int(10) unsigned NOT NULL DEFAULT 0,
+  `banchoi` int(11) NOT NULL DEFAULT 20,
+  `itemevent` varchar(100) DEFAULT NULL,
+  `pause` int(10) unsigned NOT NULL DEFAULT 1,
+  `pauseT` int(10) unsigned NOT NULL DEFAULT 0,
+  `vxmm` int(10) unsigned NOT NULL DEFAULT 1,
+  `gopbang` int(10) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_xoso` (
+  `owner` int(10) unsigned NOT NULL,
+  `vsxu` varchar(500) NOT NULL,
+  `vsl` varchar(500) NOT NULL,
+  `open` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`owner`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `top_boss` (
+  `charname` varchar(45) NOT NULL,
+  `count` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`charname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `top_char_quest` (
+  `id_char` int(10) unsigned NOT NULL,
+  `id_quest` int(10) unsigned NOT NULL DEFAULT 1,
+  `receive` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'cho biet da nhan quest hay chua',
+  `finish` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'cho biet da hoan thanh quest hay chua, neu roi thi gui thong tin reponse ',
+  `nmonster1` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'so luogn quai da giet',
+  `nmonster2` int(10) unsigned NOT NULL DEFAULT 0,
+  `nmonster3` int(10) unsigned NOT NULL DEFAULT 0,
+  `nitem1` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'so luong item da lay',
+  `nitem2` int(10) unsigned NOT NULL DEFAULT 0,
+  `nitem3` int(10) unsigned NOT NULL DEFAULT 0,
+  `currentnpc` int(10) unsigned NOT NULL DEFAULT 0,
+  `ischeck` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'da kt roi thi ko kiem tra nua',
+  PRIMARY KEY (`id_char`),
+  KEY `Index_2` (`id_quest`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tv_nhat_ky` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL DEFAULT '',
+  `hanh_dong` varchar(20) NOT NULL COMMENT 'cap | gia_han | thu_hoi | hoan_tien',
+  `ngay` int(11) NOT NULL DEFAULT 0 COMMENT 'số ngày cấp (0 = vĩnh viễn)',
+  `het_han_cu` bigint(20) NOT NULL DEFAULT 0,
+  `het_han_moi` bigint(20) NOT NULL DEFAULT 0,
+  `ma_don` varchar(16) NOT NULL DEFAULT '',
+  `tac_nhan` varchar(60) NOT NULL DEFAULT '' COMMENT 'web:mua | admin:<tên> | webhook:<ncc>',
+  `ly_do` varchar(255) NOT NULL DEFAULT '',
+  `ip` varchar(64) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_tv_nk_user` (`user_id`),
+  KEY `idx_tv_nk_don` (`ma_don`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tv_thanh_vien` (
+  `user_id` int(11) NOT NULL COMMENT 'account.team_user.id',
+  `username` varchar(50) NOT NULL DEFAULT '',
+  `het_han_ms` bigint(20) NOT NULL DEFAULT 0,
+  `nguon` varchar(16) NOT NULL DEFAULT '' COMMENT 'mua | admin | hang_loat',
+  `so_lan` int(11) NOT NULL DEFAULT 0 COMMENT 'số lần được cấp / gia hạn',
+  `cap_luc` datetime DEFAULT NULL,
+  `cap_nhat_luc` datetime DEFAULT NULL,
+  `ghi_chu` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`user_id`),
+  KEY `idx_tv_username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `web_admin_2fa` (
+  `admin_user` varchar(50) NOT NULL COMMENT 'team_user.username, chu thuong. Khop ADMIN_ACCOUNTS trong config.local.php',
+  `khoa_bimat` varchar(64) NOT NULL COMMENT 'Khoa TOTP dang Base32 (20 byte = 32 ky tu). CHI sinh boi tao_ma_2buoc.php',
+  `kich_hoat` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = tai khoan nay BUOC PHAI go ma hai buoc, khong co cach bo qua',
+  `buoc_da_dung` bigint(20) NOT NULL DEFAULT 0 COMMENT 'Buoc thoi gian cao nhat da dung. Chong dung lai mot ma da bi doc len',
+  `ma_du_phong` text DEFAULT NULL COMMENT '8 ma du phong DA BAM, ngan nhau bang \\n. Moi ma dung dung mot lan',
+  `tao_luc` datetime DEFAULT NULL COMMENT 'Luc ghi danh',
+  `dung_luc` datetime DEFAULT NULL COMMENT 'Lan cuoi go ma thanh cong',
+  PRIMARY KEY (`admin_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_admin_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `admin_user` varchar(50) NOT NULL DEFAULT '' COMMENT 'team_user.username cua nguoi thao tac',
+  `hanh_dong` varchar(50) NOT NULL DEFAULT '' COMMENT 'khoa_tk, mo_tk, tao_giftcode, dang_nhap_that_bai...',
+  `doi_tuong` varchar(100) NOT NULL DEFAULT '' COMMENT 'ten tai khoan / ten nhan vat / ma giftcode bi tac dong',
+  `chi_tiet` varchar(1000) NOT NULL DEFAULT '' COMMENT 'mo ta ro hon, vd gia tri cu -> gia tri moi',
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IPv6 dai nhat 45 ky tu',
+  `thoi_gian` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_thoi_gian` (`thoi_gian`),
+  KEY `idx_admin_user` (`admin_user`),
+  KEY `idx_hanh_dong` (`hanh_dong`),
+  KEY `idx_doi_tuong` (`doi_tuong`),
+  KEY `idx_chan_do_mk` (`ip`,`hanh_dong`,`thoi_gian`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_admin_thay_doi` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `admin_user` varchar(50) NOT NULL DEFAULT '',
+  `hanh_dong` varchar(50) NOT NULL DEFAULT '',
+  `doi_tuong` varchar(150) NOT NULL DEFAULT '',
+  `truoc` mediumtext NOT NULL,
+  `sau` mediumtext NOT NULL,
+  `ip` varchar(45) NOT NULL DEFAULT '',
+  `thoi_gian` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_thoi_gian` (`thoi_gian`),
+  KEY `idx_doi_tuong` (`doi_tuong`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_admin_vai_tro` (
+  `username` varchar(50) NOT NULL COMMENT 'account.team_user.username (chu thuong)',
+  `vai_tro` varchar(20) NOT NULL DEFAULT 'xem',
+  `ghi_chu` varchar(200) NOT NULL DEFAULT '',
+  `tao_boi` varchar(50) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_cai_dat` (
+  `khoa` varchar(64) NOT NULL,
+  `gia_tri` mediumtext NOT NULL,
+  `cap_nhat_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  `cap_nhat_boi` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_chan_spam` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IPv6 dai nhat 45 ky tu',
+  `hanh_dong` varchar(30) NOT NULL DEFAULT '' COMMENT 'dang_ky, tao_don_nap...',
+  `thoi_gian` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_dem` (`ip`,`hanh_dong`,`thoi_gian`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_faq` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nhom` varchar(60) NOT NULL DEFAULT 'Chung',
+  `cau_hoi` varchar(300) NOT NULL DEFAULT '',
+  `tra_loi` mediumtext NOT NULL COMMENT 'Markdown',
+  `thu_tu` int(11) NOT NULL DEFAULT 100,
+  `hien` tinyint(4) NOT NULL DEFAULT 1,
+  `sua_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_khoa_tai_khoan` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `loai` varchar(20) NOT NULL DEFAULT 'khoa' COMMENT 'khoa | cam_chat',
+  `ly_do` varchar(300) NOT NULL DEFAULT '',
+  `het_han` datetime DEFAULT NULL,
+  `admin_user` varchar(50) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  `mo_luc` datetime DEFAULT NULL COMMENT 'NULL = con hieu luc',
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`username`),
+  KEY `idx_het_han` (`mo_luc`,`het_han`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `loai` varchar(30) NOT NULL COMMENT 'dat_cap_do | xoa_vat_pham',
+  `char_id` int(11) NOT NULL COMMENT 'tob_char.id',
+  `charname` varchar(50) NOT NULL DEFAULT '' COMMENT 'de doc log, khong dung de tim',
+  `cap_do` int(11) NOT NULL DEFAULT 0,
+  `phan_nghin` int(11) NOT NULL DEFAULT 0 COMMENT '% vao cap x10, 0..999',
+  `tham_so` text DEFAULT NULL COMMENT 'xoa_vat_pham: "<cot>><mau>"',
+  `admin_user` varchar(50) NOT NULL DEFAULT '' COMMENT 'team_user.username nguoi bam',
+  `trang_thai` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0 cho, 1 online da xong, 2 (cu) da ghi CSDL, 3 loi, 4 cho vao game, 5 huy',
+  `ket_qua` varchar(255) NOT NULL DEFAULT '' COMMENT 'server ghi: viec da lam, hoac ly do loi',
+  `tao_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  `xu_ly_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_trang_thai` (`trang_thai`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_media` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ten_file` varchar(120) NOT NULL COMMENT 'ten luu tren dia (ngau nhien)',
+  `ten_goc` varchar(200) NOT NULL DEFAULT '',
+  `mime` varchar(40) NOT NULL DEFAULT '',
+  `kich_thuoc` int(11) NOT NULL DEFAULT 0,
+  `rong` int(11) NOT NULL DEFAULT 0,
+  `cao` int(11) NOT NULL DEFAULT 0,
+  `tai_boi` varchar(50) NOT NULL DEFAULT '',
+  `tai_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_ten_file` (`ten_file`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_su_kien_lich` (
+  `tuan` int(11) NOT NULL,
+  `thang` int(11) NOT NULL DEFAULT 1,
+  `ten1` varchar(200) NOT NULL DEFAULT '',
+  `ten2` varchar(200) NOT NULL DEFAULT '',
+  `phan` varchar(10) NOT NULL DEFAULT '',
+  `loai` varchar(30) NOT NULL DEFAULT 'pokemon',
+  `co_che` varchar(500) NOT NULL DEFAULT '',
+  `so_ngay` int(11) NOT NULL DEFAULT 7,
+  `phan_thuong` varchar(300) NOT NULL DEFAULT '',
+  `moc` varchar(100) NOT NULL DEFAULT '',
+  `sua_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`tuan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_tin_tuc` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `slug` varchar(120) NOT NULL,
+  `tieu_de` varchar(200) NOT NULL DEFAULT '',
+  `tom_tat` varchar(500) NOT NULL DEFAULT '',
+  `anh_bia` varchar(300) NOT NULL DEFAULT '',
+  `loai` varchar(40) NOT NULL DEFAULT 'Thông báo',
+  `the` varchar(300) NOT NULL DEFAULT '' COMMENT 'tag, cach nhau dau phay',
+  `noi_dung` mediumtext NOT NULL COMMENT 'Markdown',
+  `trang_thai` tinyint(4) NOT NULL DEFAULT 0,
+  `dang_luc` datetime DEFAULT NULL,
+  `ghim` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = ghim len trang chu',
+  `tac_gia` varchar(50) NOT NULL DEFAULT '',
+  `tao_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  `sua_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_slug` (`slug`),
+  KEY `idx_dang` (`trang_thai`,`dang_luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_trang` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `slug` varchar(120) NOT NULL,
+  `tieu_de` varchar(200) NOT NULL DEFAULT '',
+  `nhom` varchar(60) NOT NULL DEFAULT 'Thế giới',
+  `icon` varchar(60) NOT NULL DEFAULT 'i-lucide-file-text',
+  `mo_ta` varchar(500) NOT NULL DEFAULT '',
+  `tu_khoa` varchar(300) NOT NULL DEFAULT '',
+  `thu_tu` int(11) NOT NULL DEFAULT 100,
+  `noi_dung` mediumtext NOT NULL COMMENT 'Markdown; ## tieu de muc -> muc luc + tim kiem',
+  `trang_thai` tinyint(4) NOT NULL DEFAULT 1 COMMENT '0 nhap/an, 1 hien',
+  `tac_gia` varchar(50) NOT NULL DEFAULT '',
+  `sua_luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- ======== 1. Schema (khong pha, chay lai duoc)
 
--- du_lieu/sql_nguon/them_bang_2buoc.sql
+-- them_bang_2buoc.sql
 CREATE TABLE IF NOT EXISTS `web_admin_2fa` (
   `admin_user`   VARCHAR(50) NOT NULL
       COMMENT 'team_user.username, chu thuong. Khop ADMIN_ACCOUNTS trong config.local.php',
@@ -25,7 +2517,7 @@ CREATE TABLE IF NOT EXISTS `web_admin_2fa` (
   PRIMARY KEY (`admin_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_bang_cam_may.sql
+-- them_bang_cam_may.sql
 CREATE TABLE IF NOT EXISTS `tob_cam_may` (
     `ma_may`  VARCHAR(64)  NOT NULL COMMENT 'SystemInfo.deviceUniqueIdentifier do client gửi',
     `ly_do`   VARCHAR(255) NOT NULL DEFAULT '',
@@ -47,7 +2539,7 @@ CREATE TABLE IF NOT EXISTS `tob_may_dang_nhap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   COMMENT='Máy nào đã đăng nhập tài khoản nào';
 
--- du_lieu/sql_nguon/them_bang_dieu_khien_server.sql
+-- them_bang_dieu_khien_server.sql
 CREATE TABLE IF NOT EXISTS `dieu_khien_server` (
   `id` TINYINT UNSIGNED NOT NULL,
   `muon_chay` TINYINT(1) NOT NULL DEFAULT 1
@@ -66,7 +2558,7 @@ CREATE TABLE IF NOT EXISTS `dieu_khien_server` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `dieu_khien_server` (`id`, `muon_chay`, `da_ap_dung`) VALUES (1, 1, 1);
 
--- du_lieu/sql_nguon/them_bang_su_kien.sql
+-- them_bang_su_kien.sql
 CREATE TABLE IF NOT EXISTS `tob_su_kien` (
   `ma`          VARCHAR(40)  NOT NULL COMMENT 'khoa, khop hang so trong src/real/SuKien.java',
   `bat`         TINYINT      NOT NULL DEFAULT 0 COMMENT 'WEB ghi: 1 = bat su kien',
@@ -82,7 +2574,7 @@ CREATE TABLE IF NOT EXISTS `tob_su_kien` (
   PRIMARY KEY (`ma`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_bang_tob_log_online.sql
+-- them_bang_tob_log_online.sql
 CREATE TABLE IF NOT EXISTS `tob_log_online` (
   `id`        int(10) unsigned NOT NULL AUTO_INCREMENT,
   `thoi_gian` datetime         NOT NULL                COMMENT 'luc lay mau',
@@ -92,7 +2584,7 @@ CREATE TABLE IF NOT EXISTS `tob_log_online` (
   KEY `idx_thoi_gian` (`thoi_gian`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- du_lieu/sql_nguon/them_bang_tob_top_thuong.sql
+-- them_bang_tob_top_thuong.sql
 CREATE TABLE IF NOT EXISTS `tob_top_thuong` (
   `id`         bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `vi_tri`     tinyint(4)   NOT NULL                          COMMENT 'hang 1..10',
@@ -107,7 +2599,7 @@ CREATE TABLE IF NOT EXISTS `tob_top_thuong` (
   KEY `idx_charname_da_nhan` (`charname`, `da_nhan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_bang_web_admin_log.sql
+-- them_bang_web_admin_log.sql
 CREATE TABLE IF NOT EXISTS `web_admin_log` (
   `id`         bigint(20)    NOT NULL AUTO_INCREMENT,
   `admin_user` varchar(50)   NOT NULL DEFAULT ''   COMMENT 'team_user.username cua nguoi thao tac',
@@ -124,7 +2616,7 @@ CREATE TABLE IF NOT EXISTS `web_admin_log` (
   KEY `idx_chan_do_mk` (`ip`, `hanh_dong`, `thoi_gian`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- du_lieu/sql_nguon/them_bang_web_chan_spam.sql
+-- them_bang_web_chan_spam.sql
 CREATE TABLE IF NOT EXISTS `web_chan_spam` (
   `id`        bigint(20)  NOT NULL AUTO_INCREMENT,
   `ip`        varchar(45) NOT NULL DEFAULT ''  COMMENT 'IPv6 dai nhat 45 ky tu',
@@ -134,7 +2626,7 @@ CREATE TABLE IF NOT EXISTS `web_chan_spam` (
   KEY `idx_dem` (`ip`, `hanh_dong`, `thoi_gian`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- du_lieu/sql_nguon/them_bang_web_lenh_nhan_vat.sql
+-- them_bang_web_lenh_nhan_vat.sql
 CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat` (
   `id`         bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `loai`       varchar(30)  NOT NULL                          COMMENT 'dat_cap_do | xoa_vat_pham',
@@ -152,7 +2644,7 @@ CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat` (
   KEY `idx_trang_thai` (`trang_thai`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_bang_tob_client_dang_nhap.sql
+-- them_bang_tob_client_dang_nhap.sql
 CREATE TABLE IF NOT EXISTS `tob_client_dang_nhap` (
   `tai_khoan` VARCHAR(45) NOT NULL,
   `loai` VARCHAR(10) NOT NULL DEFAULT 'jar',
@@ -188,7 +2680,7 @@ ALTER TABLE `tob_log_online`
   ADD COLUMN IF NOT EXISTS `jar` INT NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS `khac` INT NOT NULL DEFAULT 0;
 
--- du_lieu/sql_nguon/them_bang_chong_clone.sql
+-- them_bang_chong_clone.sql
 CREATE TABLE IF NOT EXISTS tob_log_chuyen_gia_tri (
   id BIGINT NOT NULL AUTO_INCREMENT,
   luc DATETIME NOT NULL,
@@ -205,19 +2697,19 @@ CREATE TABLE IF NOT EXISTS tob_log_chuyen_gia_tri (
   PRIMARY KEY (id), KEY k_nhan (nhan_id, luc), KEY k_luc (luc), KEY k_nghi (nghi, luc)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_cot_kho_xu_luong.sql
+-- them_cot_kho_xu_luong.sql
 ALTER TABLE `tob_char` ADD COLUMN IF NOT EXISTS `kho_xu`         BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Kho xu o NPC Tong Quan';
 ALTER TABLE `tob_char` ADD COLUMN IF NOT EXISTS `kho_luong`      INT(11)    NOT NULL DEFAULT 0 COMMENT 'Kho luong mo o NPC Tong Quan';
 ALTER TABLE `tob_char` ADD COLUMN IF NOT EXISTS `kho_luong_khoa` INT(11)    NOT NULL DEFAULT 0 COMMENT 'Kho luong khoa o NPC Tong Quan';
 
--- du_lieu/sql_nguon/them_cot_pokemon.sql
+-- them_cot_pokemon.sql
 ALTER TABLE `tob_char` ADD COLUMN IF NOT EXISTS `dex`   SMALLINT NOT NULL DEFAULT 0 COMMENT 'Pokemon: so Pokedex, 0 = suy tu class+cap',
                        ADD COLUMN IF NOT EXISTS `shiny` TINYINT  NOT NULL DEFAULT 0 COMMENT 'Pokemon: 1 = shiny';
 ALTER TABLE `data_monster` ADD COLUMN IF NOT EXISTS `dex`   SMALLINT NOT NULL DEFAULT 0  COMMENT 'Pokemon: so Pokedex cua template',
                            ADD COLUMN IF NOT EXISTS `shiny` TINYINT  NOT NULL DEFAULT 0  COMMENT 'Pokemon: 1 = shiny',
                            ADD COLUMN IF NOT EXISTS `he2`   TINYINT  NOT NULL DEFAULT -1 COMMENT 'Pokemon: he thu hai, -1 = khong co';
 
--- du_lieu/sql_nguon/them_bang_pokedex.sql
+-- them_bang_pokedex.sql
 CREATE TABLE IF NOT EXISTS `tob_pokedex` (
   `id_char` INT NOT NULL,
   `dex`     SMALLINT NOT NULL,
@@ -232,7 +2724,7 @@ CREATE TABLE IF NOT EXISTS `tob_pokedex_thuong` (
   PRIMARY KEY (`id_char`, `moc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_bang_lau_dai.sql
+-- them_bang_lau_dai.sql
 CREATE TABLE IF NOT EXISTS `tob_kinh_te_ngay` (
   `ngay` date NOT NULL,
   `so_nguoi` int NOT NULL DEFAULT 0 COMMENT 'nguoi hoat dong 7 ngay',
@@ -360,12 +2852,134 @@ CREATE TABLE IF NOT EXISTS `tob_chiem_thanh_tuan` (
   PRIMARY KEY (`lan`,`id_char`)
 ) DEFAULT CHARSET=utf8;
 
--- du_lieu/sql_nguon/sua_cot_itemquest.sql
+-- them_bang_top_boss.sql
+CREATE TABLE IF NOT EXISTS `top_boss` (
+  `charname` varchar(45) NOT NULL,
+  `count` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`charname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- web_cms.sql
+CREATE TABLE IF NOT EXISTS `web_cai_dat` (
+  `khoa`         varchar(64)  NOT NULL,
+  `gia_tri`      mediumtext   NOT NULL,
+  `cap_nhat_luc` datetime     NOT NULL DEFAULT current_timestamp(),
+  `cap_nhat_boi` varchar(50)  NOT NULL DEFAULT '',
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_tin_tuc` (
+  `id`        bigint(20)   NOT NULL AUTO_INCREMENT,
+  `slug`      varchar(120) NOT NULL,
+  `tieu_de`   varchar(200) NOT NULL DEFAULT '',
+  `tom_tat`   varchar(500) NOT NULL DEFAULT '',
+  `anh_bia`   varchar(300) NOT NULL DEFAULT '',
+  `loai`      varchar(40)  NOT NULL DEFAULT 'Thông báo',
+  `the`       varchar(300) NOT NULL DEFAULT '' COMMENT 'tag, cach nhau dau phay',
+  `noi_dung`  mediumtext   NOT NULL COMMENT 'Markdown',
+  `trang_thai` tinyint(4)  NOT NULL DEFAULT 0,
+  `dang_luc`  datetime     DEFAULT NULL,
+  `ghim`      tinyint(4)   NOT NULL DEFAULT 0 COMMENT '1 = ghim len trang chu',
+  `tac_gia`   varchar(50)  NOT NULL DEFAULT '',
+  `tao_luc`   datetime     NOT NULL DEFAULT current_timestamp(),
+  `sua_luc`   datetime     NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_slug` (`slug`),
+  KEY `idx_dang` (`trang_thai`, `dang_luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_trang` (
+  `id`        bigint(20)   NOT NULL AUTO_INCREMENT,
+  `slug`      varchar(120) NOT NULL,
+  `tieu_de`   varchar(200) NOT NULL DEFAULT '',
+  `nhom`      varchar(60)  NOT NULL DEFAULT 'Thế giới',
+  `icon`      varchar(60)  NOT NULL DEFAULT 'i-lucide-file-text',
+  `mo_ta`     varchar(500) NOT NULL DEFAULT '',
+  `tu_khoa`   varchar(300) NOT NULL DEFAULT '',
+  `thu_tu`    int(11)      NOT NULL DEFAULT 100,
+  `noi_dung`  mediumtext   NOT NULL COMMENT 'Markdown; ## tieu de muc -> muc luc + tim kiem',
+  `trang_thai` tinyint(4)  NOT NULL DEFAULT 1 COMMENT '0 nhap/an, 1 hien',
+  `tac_gia`   varchar(50)  NOT NULL DEFAULT '',
+  `sua_luc`   datetime     NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_faq` (
+  `id`       bigint(20)    NOT NULL AUTO_INCREMENT,
+  `nhom`     varchar(60)   NOT NULL DEFAULT 'Chung',
+  `cau_hoi`  varchar(300)  NOT NULL DEFAULT '',
+  `tra_loi`  mediumtext    NOT NULL COMMENT 'Markdown',
+  `thu_tu`   int(11)       NOT NULL DEFAULT 100,
+  `hien`     tinyint(4)    NOT NULL DEFAULT 1,
+  `sua_luc`  datetime      NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_media` (
+  `id`         bigint(20)   NOT NULL AUTO_INCREMENT,
+  `ten_file`   varchar(120) NOT NULL COMMENT 'ten luu tren dia (ngau nhien)',
+  `ten_goc`    varchar(200) NOT NULL DEFAULT '',
+  `mime`       varchar(40)  NOT NULL DEFAULT '',
+  `kich_thuoc` int(11)      NOT NULL DEFAULT 0,
+  `rong`       int(11)      NOT NULL DEFAULT 0,
+  `cao`        int(11)      NOT NULL DEFAULT 0,
+  `tai_boi`    varchar(50)  NOT NULL DEFAULT '',
+  `tai_luc`    datetime     NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_ten_file` (`ten_file`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_su_kien_lich` (
+  `tuan`        int(11)       NOT NULL,
+  `thang`       int(11)       NOT NULL DEFAULT 1,
+  `ten1`        varchar(200)  NOT NULL DEFAULT '',
+  `ten2`        varchar(200)  NOT NULL DEFAULT '',
+  `phan`        varchar(10)   NOT NULL DEFAULT '',
+  `loai`        varchar(30)   NOT NULL DEFAULT 'pokemon',
+  `co_che`      varchar(500)  NOT NULL DEFAULT '',
+  `so_ngay`     int(11)       NOT NULL DEFAULT 7,
+  `phan_thuong` varchar(300)  NOT NULL DEFAULT '',
+  `moc`         varchar(100)  NOT NULL DEFAULT '',
+  `sua_luc`     datetime      NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`tuan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_admin_vai_tro` (
+  `username`  varchar(50)  NOT NULL COMMENT 'account.team_user.username (chu thuong)',
+  `vai_tro`   varchar(20)  NOT NULL DEFAULT 'xem',
+  `ghi_chu`   varchar(200) NOT NULL DEFAULT '',
+  `tao_boi`   varchar(50)  NOT NULL DEFAULT '',
+  `tao_luc`   datetime     NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_khoa_tai_khoan` (
+  `id`         bigint(20)   NOT NULL AUTO_INCREMENT,
+  `username`   varchar(50)  NOT NULL,
+  `loai`       varchar(20)  NOT NULL DEFAULT 'khoa' COMMENT 'khoa | cam_chat',
+  `ly_do`      varchar(300) NOT NULL DEFAULT '',
+  `het_han`    datetime     DEFAULT NULL,
+  `admin_user` varchar(50)  NOT NULL DEFAULT '',
+  `tao_luc`    datetime     NOT NULL DEFAULT current_timestamp(),
+  `mo_luc`     datetime     DEFAULT NULL COMMENT 'NULL = con hieu luc',
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`username`),
+  KEY `idx_het_han` (`mo_luc`, `het_han`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `web_admin_thay_doi` (
+  `id`         bigint(20)   NOT NULL AUTO_INCREMENT,
+  `admin_user` varchar(50)  NOT NULL DEFAULT '',
+  `hanh_dong`  varchar(50)  NOT NULL DEFAULT '',
+  `doi_tuong`  varchar(150) NOT NULL DEFAULT '',
+  `truoc`      mediumtext   NOT NULL,
+  `sau`        mediumtext   NOT NULL,
+  `ip`         varchar(45)  NOT NULL DEFAULT '',
+  `thoi_gian`  datetime     NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_thoi_gian` (`thoi_gian`),
+  KEY `idx_doi_tuong` (`doi_tuong`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- sua_cot_itemquest.sql
 ALTER TABLE `tob_char_quest` MODIFY `itemquest` varchar(1000) DEFAULT NULL;
 
 -- ======== 2. Du lieu thiet ke may chu doc luc khoi dong (P1): bang sinh, DROP + CREATE + INSERT
 
--- data_cap_do_lau_dai (du_lieu/sql_nguon/pokemon_lau_dai.sql, tools/pokemon/sinh_sql_lau_dai.py)
+-- data_cap_do_lau_dai (tung la pokemon_lau_dai.sql, bo sinh tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py - da luu tru)
 DROP TABLE IF EXISTS `data_cap_do_lau_dai`;
 CREATE TABLE `data_cap_do_lau_dai` (
   `cap` int NOT NULL,
@@ -479,7 +3093,7 @@ INSERT INTO `data_cap_do_lau_dai` VALUES
 (99,421000000,840722,43756,231,1252,0),
 (100,0,882389,45000,230,1315,0);
 
--- data_nang_cap_lau_dai (du_lieu/sql_nguon/pokemon_lau_dai.sql, tools/pokemon/sinh_sql_lau_dai.py)
+-- data_nang_cap_lau_dai (tung la pokemon_lau_dai.sql, bo sinh tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py - da luu tru)
 DROP TABLE IF EXISTS `data_nang_cap_lau_dai`;
 CREATE TABLE `data_nang_cap_lau_dai` (
   `bac` int NOT NULL,
@@ -662,7 +3276,7 @@ INSERT INTO `data_nang_cap_lau_dai` VALUES
 (10,'tối thượng',98,14,13,5,505140,4,25,1,50),
 (10,'tối thượng',98,15,10,4,656682,4,25,1,55);
 
--- data_kinh_te_lau_dai (du_lieu/sql_nguon/pokemon_lau_dai.sql, tools/pokemon/sinh_sql_lau_dai.py)
+-- data_kinh_te_lau_dai (tung la pokemon_lau_dai.sql, bo sinh tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py - da luu tru)
 DROP TABLE IF EXISTS `data_kinh_te_lau_dai`;
 CREATE TABLE `data_kinh_te_lau_dai` (
   `khoa` varchar(64) NOT NULL,
@@ -696,7 +3310,7 @@ INSERT INTO `data_kinh_te_lau_dai` VALUES
 ('ve_chuong.tuan','2','-','Vé mở chương chính / tuần'),
 ('ve_chuong.toi_da','4','-','');
 
--- data_su_kien_nam (du_lieu/sql_nguon/pokemon_lau_dai.sql, tools/pokemon/sinh_sql_lau_dai.py)
+-- data_su_kien_nam (tung la pokemon_lau_dai.sql, bo sinh tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py - da luu tru)
 DROP TABLE IF EXISTS `data_su_kien_nam`;
 CREATE TABLE `data_su_kien_nam` (
   `tuan` int NOT NULL,
@@ -768,7 +3382,7 @@ INSERT INTO `data_su_kien_nam` VALUES
 (51,12,'Giáng sinh: Delibird','Giáng sinh: Abomasnow','le_vn','Cây thông Abomasnow, quà Delibird, đêm 24/12',7,'noel,demnoel','SuKien.NOEL',2.0,25,'Mũ Noel trang trí','Đỉnh năm'),
 (52,12,'Tổng kết năm + mùa giải PvP 4','Tổng kết năm 2','pvp','Bảng xếp hạng năm, kỷ niệm máy chủ',7,'moi:tongket','SuKienDuaTop, tob_top_thuong',2.0,25,'Danh hiệu năm','Cạnh tranh');
 
--- data_hst_ho_cau (du_lieu/sql_nguon/pokemon_he_sinh_thai.sql, tools/pokemon/sinh_sql_he_sinh_thai.py)
+-- data_hst_ho_cau (tung la pokemon_he_sinh_thai.sql, bo sinh tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_he_sinh_thai.py - da luu tru)
 DROP TABLE IF EXISTS `data_hst_ho_cau`;
 CREATE TABLE `data_hst_ho_cau` (
   `map_id` int NOT NULL,
@@ -1112,7 +3726,7 @@ INSERT INTO `data_hst_ho_cau` VALUES
 (164,0,11,35,22),
 (164,0,11,32,24);
 
--- data_noi_dung_trang_bi (du_lieu/sql_nguon/pokemon_noi_dung.sql, tools/pokemon/sinh_noi_dung.py)
+-- data_noi_dung_trang_bi (tung la pokemon_noi_dung.sql, bo sinh tools/luu_tru_sinh_du_lieu/pokemon/sinh_noi_dung.py - da luu tru)
 DROP TABLE IF EXISTS `data_noi_dung_trang_bi`;
 CREATE TABLE `data_noi_dung_trang_bi` (
   `ma` varchar(255) NOT NULL,
@@ -1297,7 +3911,7 @@ INSERT INTO `data_noi_dung_trang_bi` (`ma`,`bac`,`ten_bac`,`o`,`type_item`,`dong
 ('phien_da_10',10,'tối thượng','phien_da',12,'','Phiến đá hệ tối thượng',1032,'moi',98,98,545,100,1,72,0,0,'Chọn 1 trong 18 hệ: +5% sát thương gây ra hoặc -5% sát thương nhận vào','',416954,20847,'2 Đá nâng cấp + 41695 xu','che_tao,su_kien','sinh mới (id 1032)'),
 ('ruy_bang_10',10,'tối thượng','ruy_bang',19,'','Ruy băng tối thượng',1033,'moi',98,98,545,100,1,0,18,1033,'','',416954,20847,'2 Đá nâng cấp + 41695 xu','nhiem_vu,boss_the_gioi','sinh mới (id 1033)');
 
--- cau_hinh_danh_muc (du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql, tools/cauhinh/sinh_cau_hinh.py)
+-- cau_hinh_danh_muc (tung la pokemon_cau_hinh_trung_tam.sql, bo sinh tools/luu_tru_sinh_du_lieu/cauhinh/sinh_cau_hinh.py - da luu tru)
 DROP TABLE IF EXISTS `cau_hinh_danh_muc`;
 CREATE TABLE IF NOT EXISTS `cau_hinh_danh_muc` (`khoa` VARCHAR(64) NOT NULL, `nhom` VARCHAR(20) NOT NULL, `ten` VARCHAR(160) NOT NULL DEFAULT '', `mo_ta` TEXT NOT NULL, `kieu` VARCHAR(12) NOT NULL, `mac_dinh` VARCHAR(255) NOT NULL DEFAULT '', `gioi_han` TEXT NOT NULL, `ap_dung` VARCHAR(16) NOT NULL, `nhay` TINYINT NOT NULL DEFAULT 0, `khoa_prod` TINYINT NOT NULL DEFAULT 0, `chi_doc` TINYINT NOT NULL DEFAULT 0, `bang` VARCHAR(16) NOT NULL DEFAULT 'cau_hinh', `dung_o` VARCHAR(10) NOT NULL DEFAULT 'server', `nguon` VARCHAR(255) NOT NULL DEFAULT '', `thu_tu` INT NOT NULL DEFAULT 0, `lop` VARCHAR(10) NOT NULL DEFAULT 'chinh', `an` TINYINT NOT NULL DEFAULT 0, PRIMARY KEY (`khoa`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.lau_dai', 'che_do', 'Thiết kế dài hạn', '1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động.', 'co', '1', '{}', 'khoi_dong_lai', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.LauDai / real.ChuyenDoiLauDai', 1, 'luon_bat', 1);
@@ -1514,7 +4128,7 @@ INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_di
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.testMode', 'quan_tri', 'Chế độ thử (testMode)', 'Mã test cấp tài nguyên miễn phí. Khoá ở máy thật.', 'co', '0', '{}', 'ngay', 0, 1, 0, 'cau_hinh', 'server', 'TeamServer.testMode', 212, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.testCode', 'quan_tri', 'Mã test', 'Chuỗi gõ trong game khi testMode=1.', 'chuoi', '', '{"mau": "^[ -~]*$", "doDai": 64}', 'ngay', 1, 1, 0, 'cau_hinh', 'server', 'TeamServer.testCode', 213, 'co_dinh', 1);
 
--- cau_hinh_nhom (du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql, tools/cauhinh/sinh_cau_hinh.py)
+-- cau_hinh_nhom (tung la pokemon_cau_hinh_trung_tam.sql, bo sinh tools/luu_tru_sinh_du_lieu/cauhinh/sinh_cau_hinh.py - da luu tru)
 DROP TABLE IF EXISTS `cau_hinh_nhom`;
 CREATE TABLE IF NOT EXISTS `cau_hinh_nhom` (`ma` VARCHAR(20) NOT NULL, `ten` VARCHAR(160) NOT NULL DEFAULT '', `mo_ta` TEXT NOT NULL, `thu_tu` INT NOT NULL DEFAULT 0, `an` TINYINT NOT NULL DEFAULT 0, PRIMARY KEY (`ma`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('kinh_te', 'Kinh tế: tỉ lệ rơi & EXP', 'Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, phí và công thức kinh tế cốt lõi đã cố định (không hiện ở đây).', 1, 0);
@@ -1535,7 +4149,7 @@ INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('quan
 
 -- ======== 3. Chi muc bang nong
 
--- du_lieu/sql_nguon/them_chi_muc_production.sql
+-- them_chi_muc_production.sql
 CREATE INDEX IF NOT EXISTS idx_5h_active_username ON `5h_active` (username);
 CREATE INDEX IF NOT EXISTS idx_5h_active_userid ON `5h_active` (userID);
 CREATE INDEX IF NOT EXISTS idx_char_vip_charname ON tob_char_vip (charname);
@@ -1544,10 +4158,10 @@ CREATE INDEX IF NOT EXISTS idx_qua_ct_top_charname ON tob_qua_ct_top (charname);
 
 -- ======== 4. Cau hinh he thong / cong tac su kien (khong phai du lieu nguoi choi), chay lai duoc
 
--- du_lieu/sql_nguon/sua_he_so_nap_va_qua_tao_nv.sql (chi lenh nay)
+-- sua_he_so_nap_va_qua_tao_nv.sql (chi lenh nay)
 UPDATE `5h_systems` SET status = 1 WHERE command = 'tangnap' AND status <> 1;
 
--- du_lieu/sql_nguon/them_lich_su_kien_nam.sql (chi lenh nay)
+-- them_lich_su_kien_nam.sql (chi lenh nay)
 CREATE TABLE IF NOT EXISTS tob_su_kien_lich (
   ma VARCHAR(40) NOT NULL,
   nam SMALLINT NOT NULL,
@@ -1568,10 +4182,10 @@ CREATE TABLE IF NOT EXISTS tob_su_kien_lich (
   PRIMARY KEY (ma, nam, lan), KEY k_mo (mo_luc), KEY k_dong (dong_luc)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- du_lieu/sql_nguon/them_lich_su_kien_nam.sql (chi lenh nay)
+-- them_lich_su_kien_nam.sql (chi lenh nay)
 ALTER TABLE tob_su_kien ADD COLUMN IF NOT EXISTS tu_dong TINYINT NOT NULL DEFAULT 1;
 
--- du_lieu/sql_nguon/them_lich_su_kien_nam.sql (chi lenh nay)
+-- them_lich_su_kien_nam.sql (chi lenh nay)
 UPDATE tob_su_kien SET mo_luc = NULL, dong_luc = NULL
  WHERE tu_dong = 1 AND (sua_boi IS NULL OR sua_boi = 'lich hen')
    AND ma IN ('tetduonglich','tet2017','tet123','moi:valentine','quocte83','gioto','moi:3004','moi:thieunhi','he2017',
@@ -1579,5 +4193,5 @@ UPDATE tob_su_kien SET mo_luc = NULL, dong_luc = NULL
               'blackfriday','blackfridaydaugia','blackfridayban','noel','demnoel','moi:tongket','moi:tuanhe',
               'moi:congdong','moi:shiny','moi:dotkich','moi:muapvp','moi:pokedex','moi:chienvung','moi:bungphat');
 
--- du_lieu/sql_nguon/them_lich_su_kien_nam.sql (chi lenh nay)
+-- them_lich_su_kien_nam.sql (chi lenh nay)
 DELETE FROM tob_su_kien WHERE ma IN ('worldcup','worldcupnhanqua','worldcup2017','snngude','duatophoalu');

@@ -9,7 +9,7 @@ import java.util.Vector;
  * Luu diem binh chon su kien World Cup (Messi / Ronaldo).
  *
  * Hai bang, deu tu tao lan dau chay (xem {@link #taoBang()}), va cung co ban
- * migrate tay trong du_lieu/sql_nguon/them_su_kien_world_cup.sql:
+ * migrate tay trong tools/luu_tru_sinh_du_lieu/sql_nguon/them_su_kien_world_cup.sql:
  *
  *   tob_top_event_world_cup  - moi nhan vat mot dong: diem cho Messi, diem cho
  *                              Ronaldo, da nhan qua thuong / qua top chua.

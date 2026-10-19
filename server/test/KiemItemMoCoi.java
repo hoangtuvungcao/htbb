@@ -12,29 +12,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Luat "cac item khong bi mo coi, deu su dung vao 1 viec nao do" (tools/pokemon/kiem_item_mo_coi.py ->
- * du_lieu/KIEM_ITEM.md + kiem_item.csv). Voi co da giao (sv.lau_dai=1, sv.he_sinh_thai=0 va =1):
- * 0 vat pham mo coi (co nguon, khong cong dung), 0 chi-ban-NPC, 0 khong lay duoc, 0 tham chieu treo, 0 trung ten,
- * 0 ten kiem hiep con lay duoc, 0 quy tac viet tay loi thoi.
+ * Luat "cac item khong bi mo coi, deu su dung vao 1 viec nao do", kiem THANG tren CSDL day du sql/htbb_day_du.sql (nguon
+ * duy nhat; cong cu phan tich cu tools/luu_tru_sinh_du_lieu/pokemon/kiem_item_mo_coi.py + bao cao KIEM_ITEM.md da luu tru).
+ * Cac bat bien: bang cua hang doc duoc bang dung bo doc cua server, khong ra tien te, moi id ton tai; moi tin vat co cho
+ * doi; vat pham 1201..1259 co nguon; itemgift chuoi chinh du 6 gia tri; vat lieu sinh thai deu vao cong thuc; giftcode an
+ * toan chi phat vat pham co that.
  *
  * VI SAO: truoc ban nay 24 vat pham co nguon ma khong dung duoc (huy chuong Gym, tin vat su kien, keo EXP cu khi
  * bat dai han...), 65 vat pham thiet ke khong co nguon nao chay (thuoc / qua mong / do giu / bua 1201..1259,
  * trang bi nam 2), 13 vat lieu sinh thai chi ban NPC, 2 cap trung ten (Keo hiem 720/1214, Manh sao).
- * Script doc SQL/CSV/Java; test nay (chi doc file) chan bao cao cu (dau van tay dau vao) va kiem doc lap cac bat
- * bien de bao cao khong the "dat" nho du lieu sai: bang cua hang doc duoc bang dung bo doc cua server, khong ra tien
- * te, moi id ton tai; moi tin vat co cho doi; itemgift chuoi chinh du 6 gia tri; vat lieu sinh thai deu vao cong thuc.
  */
 public final class KiemItemMoCoi {
 
-    private static final String F_MD = "../du_lieu/KIEM_ITEM.md";
-    private static final String F_CSV = "../du_lieu/kiem_item.csv";
-    private static final String F_VP = "../du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql";
-    private static final String F_ND = "../du_lieu/sql_nguon/pokemon_noi_dung.sql";
-    private static final String F_LD = "../du_lieu/sql_nguon/pokemon_lau_dai.sql";
     private static final String F_GC_JSON = "../web/shared/data/giftcode-an-toan.json";
-    private static final String[] DAU_VAO = {"sql/htbb_day_du.sql", "du_lieu/sql_nguon/pokemon_noi_dung.sql", "du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql",
-        "du_lieu/sql_nguon/pokemon_lau_dai.sql", "du_lieu/sql_nguon/pokemon_doi_chu.sql", "du_lieu/sql_nguon/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
-        "du_lieu/nhiem_vu_moi.csv"};
 
     private KiemItemMoCoi() {
     }
@@ -47,111 +37,46 @@ public final class KiemItemMoCoi {
         }
     }
 
-    static String sha1DauVao() {
-        try {
-            final MessageDigest md = MessageDigest.getInstance("SHA-1");
-            for (final String f : DAU_VAO) {
-                md.update(f.getBytes(StandardCharsets.UTF_8));
-                final byte[] b = Files.readAllBytes(Paths.get("..", f));
-                final java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream(b.length);
-                for (final byte x : b) {
-                    if (x != '\r') {
-                        o.write(x);
-                    }
-                }
-                md.update(o.toByteArray());
-            }
-            final StringBuilder s = new StringBuilder();
-            for (final byte x : md.digest()) {
-                s.append(String.format("%02x", x & 0xff));
-            }
-            return s.toString();
-        } catch (final Exception e) {
-            return "loi: " + e;
-        }
-    }
-
     public static void chay() {
-        Kiem.nhom("Item mo coi: moi vat pham co nguon + cong dung (tools/pokemon/kiem_item_mo_coi.py)");
-        final String md = doc(F_MD);
-        final String csv = doc(F_CSV);
-        Kiem.dung(F_MD + " + " + F_CSV + " co (python3 -I tools/pokemon/kiem_item_mo_coi.py)", md != null && csv != null);
-        if (md == null || csv == null) {
-            return;
+        Kiem.nhom("Item mo coi: moi vat pham co nguon + cong dung (kiem tren sql/htbb_day_du.sql)");
+        final Set<Integer> item = new HashSet<Integer>();
+        for (final java.util.Map<String, String> r : DayDu.dong("data_item")) {
+            item.add(Integer.valueOf(r.get("id")));
         }
-        // 1. bao cao khop du lieu hien tai
-        final Matcher dv = Pattern.compile("Dấu vân tay đầu vào .*?`([0-9a-f]{40})`").matcher(md);
-        final boolean coDv = dv.find();
-        Kiem.dung("bao cao co dau van tay dau vao", coDv);
-        Kiem.bang("bao cao KHONG cu (SQL/CSV doi -> chay lai tools/pokemon/kiem_item_mo_coi.py)", sha1DauVao(), coDv ? dv.group(1) : "");
-        for (final String f : DAU_VAO) {
-            Kiem.dung("danh sach dau van tay trong bao cao co " + f, md.contains("`" + f + "`"));
-        }
-        // 2. tom tat: cau hinh A, B = 0 loi
-        for (final String ch : new String[]{"A", "B"}) {
-            final Matcher m = Pattern.compile("\\| " + ch + " \\(`lau_dai=1 he_sinh_thai=\\d`\\) \\| (\\d+) \\| (\\d+) \\| (\\d+) \\| (\\d+) \\|")
-                    .matcher(md);
-            final boolean co = m.find();
-            Kiem.dung("tom tat cau hinh " + ch + " doc duoc", co);
-            if (!co) {
-                continue;
-            }
-            Kiem.bang("cau hinh " + ch + ": mo coi", "0", m.group(2));
-            Kiem.bang("cau hinh " + ch + ": chi ban NPC", "0", m.group(3));
-            Kiem.bang("cau hinh " + ch + ": khong lay duoc", "0", m.group(4));
-            Kiem.dung("cau hinh " + ch + ": co vat pham ton tai (> 700)", Integer.parseInt(m.group(1)) > 700);
-        }
-        final Matcher t = Pattern.compile("Tham chiếu treo: \\*\\*(\\d+)\\*\\*\\. Quy tắc lỗi thời: \\*\\*(\\d+)\\*\\*\\. Trùng tên: \\*\\*(\\d+)\\*\\*\\."
-                + " Tên kiếm hiệp còn lấy được: \\*\\*(\\d+)\\*\\*").matcher(md);
-        final boolean coT = t.find();
-        Kiem.dung("dong tham chieu treo / quy tac / trung ten doc duoc", coT);
-        if (coT) {
-            Kiem.bang("tham chieu treo (id khong ton tai)", "0", t.group(1));
-            Kiem.bang("quy tac viet tay loi thoi (mau khong con trong code)", "0", t.group(2));
-            Kiem.bang("trung ten giua vat pham khac loai / chuc nang", "0", t.group(3));
-            Kiem.bang("ten kiem hiep con lay duoc", "0", t.group(4));
-        }
-        Kiem.dung("bao cao: tong loi bi chan = 0", md.contains("Lỗi bị test chặn (cấu hình A + B): **0**."));
-        int loiCsv = 0;
-        for (final String d : csv.split("\n")) {
-            final String[] c = d.split(",", -1);
-            if (c.length > 7 && !d.startsWith("khoa,") && (laLoi(c[5]) || laLoi(c[6]))) {
-                loiCsv++;
+        Kiem.dung("data_item doc duoc (> 1000 dong)", item.size() > 1000);
+        // ten vat pham: khong trung giua cac id dang dung (Keo hiem 720/1214, Manh sao ...)
+        final java.util.Map<String, Integer> ten = new java.util.HashMap<String, Integer>();
+        final java.util.List<String> trung = new java.util.ArrayList<String>();
+        for (final java.util.Map<String, String> r : DayDu.dong("data_vat_pham_lau_dai")) {
+            final Integer cu = ten.put(r.get("ten"), Integer.valueOf(r.get("id_item")));
+            if (cu != null) {
+                trung.add(r.get("ten") + " " + cu + "/" + r.get("id_item"));
             }
         }
-        Kiem.bang("kiem_item.csv: dong loi o cau hinh A/B", Integer.valueOf(0), Integer.valueOf(loiCsv));
+        Kiem.bang("data_vat_pham_lau_dai: ten khong trung", "[]", trung.toString());
         // 3. bang cua hang & doi vat pham (doc bang dung bo doc cua server)
-        final String vp = doc(F_VP);
-        final String nd = doc(F_ND);
-        Kiem.dung(F_VP + " co data_cua_hang_lau_dai", vp != null && vp.contains("CREATE TABLE `data_cua_hang_lau_dai`"));
-        if (vp == null || nd == null) {
-            return;
-        }
-        final Set<Integer> item = idItem(csv); // vu tru data_item cua script (dump + file sinh sau dump)
-        final Matcher r = Pattern.compile("\\n\\((\\d+),'((?:[^'\\\\]|\\\\.)*)','((?:[^'\\\\]|\\\\.)*)','([^']*)','([^']*)',(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)\\)")
-                .matcher(vp.substring(vp.indexOf("INSERT INTO `data_cua_hang_lau_dai`")));
+        final java.util.List<java.util.Map<String, String>> ch = DayDu.dong("data_cua_hang_lau_dai");
         int so = 0;
         final Set<Integer> chiItem = new HashSet<Integer>();
         final Set<Integer> raItem = new HashSet<Integer>();
-        while (r.find()) {
+        for (final java.util.Map<String, String> r : ch) {
             so++;
-            final List<long[]> chi = real.CuaHangLauDai.docChiPhi(r.group(4));
-            final List<int[]> ra = real.CuaHangLauDai.docThuong(r.group(5));
-            Kiem.dung("cua hang " + r.group(1) + ": chi phi doc duoc (" + r.group(4) + ")",
-                    !chi.isEmpty() && chi.size() == r.group(4).split(";").length);
-            Kiem.dung("cua hang " + r.group(1) + ": thuong doc duoc (" + r.group(5) + ")",
-                    !ra.isEmpty() && ra.size() == r.group(5).split(",").length);
-            Kiem.dung("cua hang " + r.group(1) + ": khong ra tien te", !r.group(5).matches(".*\\b(XU|LUONG|LUONGKHOA|DN|MN)\\b.*"));
+            final String id = r.get("id"), cp = r.get("chi_phi"), th = r.get("thuong");
+            final List<long[]> chi = real.CuaHangLauDai.docChiPhi(cp);
+            final List<int[]> ra = real.CuaHangLauDai.docThuong(th);
+            Kiem.dung("cua hang " + id + ": chi phi doc duoc (" + cp + ")", !chi.isEmpty() && chi.size() == cp.split(";").length);
+            Kiem.dung("cua hang " + id + ": thuong doc duoc (" + th + ")", !ra.isEmpty() && ra.size() == th.split(",").length);
+            Kiem.dung("cua hang " + id + ": khong ra tien te", !th.matches(".*\\b(XU|LUONG|LUONGKHOA|DN|MN)\\b.*"));
             for (final long[] c : chi) {
                 if (c[0] == 2) {
                     chiItem.add(Integer.valueOf((int) c[1]));
-                    Kiem.dung("cua hang " + r.group(1) + ": chi phi item " + c[1] + " ton tai", item.contains(Integer.valueOf((int) c[1])));
+                    Kiem.dung("cua hang " + id + ": chi phi item " + c[1] + " ton tai", item.contains(Integer.valueOf((int) c[1])));
                 }
             }
             for (final int[] x : ra) {
                 if (x[0] == 0) {
                     raItem.add(Integer.valueOf(x[1]));
-                    Kiem.dung("cua hang " + r.group(1) + ": thuong item " + x[1] + " ton tai", item.contains(Integer.valueOf(x[1])));
+                    Kiem.dung("cua hang " + id + ": thuong item " + x[1] + " ton tai", item.contains(Integer.valueOf(x[1])));
                 }
             }
         }
@@ -163,14 +88,16 @@ public final class KiemItemMoCoi {
             Kiem.dung("tin vat / huy chuong " + i + " co cho doi (cong dung)", chiItem.contains(Integer.valueOf(i)));
         }
         for (final int i : new int[]{1050, 1051}) {
-            Kiem.dung("hop dot kich " + i + " mo duoc (data_vat_pham_lau_dai nhom hop)", vp.contains("(" + i + ",'") && vp.contains("'hop','mo_hop:" + i + "'"));
+            Kiem.bang("hop dot kich " + i + " mo duoc (data_vat_pham_lau_dai nhom hop)", "hop|mo_hop:" + i,
+                    DayDu.giaTri("data_vat_pham_lau_dai", "id_item", String.valueOf(i), "nhom") + "|"
+                    + DayDu.giaTri("data_vat_pham_lau_dai", "id_item", String.valueOf(i), "hieu_ung"));
         }
         for (int i = 1201; i <= 1259; i++) {
-            if (!vp.contains("\n(" + i + ",'") || i == 1214 || i == 1231) {
+            if (DayDu.tim("data_vat_pham_lau_dai", "id_item", String.valueOf(i)) == null || i == 1214 || i == 1231) {
                 continue;
             }
             if (com.htbb.pokemon.TangToc.loaiCuaItem(i) >= 0) {
-                continue; // tang toc: nguon trong code (Cua hang & Nap / TangTocGame.thuongKhoa) - kiem_item_mo_coi.py + KiemTangToc
+                continue; // tang toc: nguon trong code (Cua hang & Nap / TangTocGame.thuongKhoa) - KiemTangToc
             }
             Kiem.dung("vat pham " + i + " co nguon (cua hang / doi)", raItem.contains(Integer.valueOf(i)));
         }
@@ -183,21 +110,20 @@ public final class KiemItemMoCoi {
                 .contains("ITEM:" + Pokedex.ID_TRUNG_MAY_MAN + ":1"));
         Kiem.bang("Pokedex 10 (dai han) khong doi", Pokedex.phanThuong(10, 0), Pokedex.doiThuongLauDai(Pokedex.phanThuong(10, 0), 10));
         // 5. chuoi chinh (data_quest_moi): itemgift 6 gia tri (5 lop + cong), vat pham nhiem vu hop le
-        final String ld = doc(F_LD);
-        Kiem.dung(F_LD + " co data_quest_moi", ld != null && ld.contains("INSERT INTO `data_quest_moi`"));
-        if (ld != null) {
-            final Matcher q = Pattern.compile("'32000','32000','([0-9,]+)',\\d+,'").matcher(ld.substring(ld.indexOf("INSERT INTO `data_quest_moi`")));
-            int dem = 0;
-            int sai = 0;
-            while (q.find()) {
-                dem++;
-                if (!"32000".equals(q.group(1)) && q.group(1).split(",").length != 6) {
-                    sai++;
-                }
+        int dem = 0;
+        int sai = 0;
+        for (final java.util.Map<String, String> r : DayDu.dong("data_quest_moi")) {
+            if (!"32000".equals(r.get("potiongift")) || !"32000".equals(r.get("npotion"))) {
+                continue;
             }
-            Kiem.dung("data_quest_moi: doc duoc itemgift (" + dem + " dong)", dem > 500);
-            Kiem.bang("data_quest_moi: itemgift khong du 6 gia tri (InfoQuestTemplate.addGift AIOOBE)", Integer.valueOf(0), Integer.valueOf(sai));
+            dem++;
+            final String g = r.get("itemgift");
+            if (!"32000".equals(g) && g.split(",").length != 6) {
+                sai++;
+            }
         }
+        Kiem.dung("data_quest_moi: doc duoc itemgift (" + dem + " dong)", dem > 500);
+        Kiem.bang("data_quest_moi: itemgift khong du 6 gia tri (InfoQuestTemplate.addGift AIOOBE)", Integer.valueOf(0), Integer.valueOf(sai));
         // 6. vat lieu he sinh thai: moi thu cau / dao duoc deu vao it nhat mot cong thuc (khong chi ban NPC)
         final Set<Integer> vao = new HashSet<Integer>();
         for (final KyNangSong.CongThuc ct : KyNangSong.CONG_THUC) {
@@ -228,11 +154,11 @@ public final class KiemItemMoCoi {
         Kiem.dung("nam 2: co ban do + tran 91 -> chay", n2.kiemNam2(91, true) == null);
         n2.kieu = "dan_y";
         Kiem.dung("nam 2: kieu dan_y (dan y) -> khong chay", n2.kiemNam2(100, true) != null);
-        giftcode(csv);
+        giftcode(item);
     }
 
     /** Giftcode an toan: danh sach trang chung web + game (HTBB-Web/shared/data/giftcode-an-toan.json). */
-    static void giftcode(final String csv) {
+    static void giftcode(final Set<Integer> item) {
         Kiem.nhom("Giftcode an toan: chi vat pham khoa, khong cao cap, trang bi khong vuot cap (chung web + game)");
         final byte[] raw;
         try {
@@ -273,49 +199,14 @@ public final class KiemItemMoCoi {
                     Boolean.valueOf(loi == null));
         }
         Kiem.dung("JSON co >= 10 ca thu nghiem (" + so + ")", so >= 10);
-        // moi vat pham trong danh sach trang ma CO THAT deu co cong dung (giftcode khong tao vat pham mo coi)
+        // moi trang bi trong danh sach trang deu CO THAT trong data_item (giftcode khong phat id treo)
         int khong = 0;
-        for (final String d : csv.split("\n")) {
-            final Matcher r = Pattern.compile("^item:(\\d+),").matcher(d);
-            if (!r.find()) {
-                continue;
-            }
-            final int id = Integer.parseInt(r.group(1));
-            boolean trong = java.util.Arrays.binarySearch(com.htbb.pokemon.GiftcodeAnToanDuLieu.TRANG_BI, id) >= 0;
-            for (final int[] x : com.htbb.pokemon.GiftcodeAnToanDuLieu.VAT_PHAM) {
-                trong |= id >= x[0] && id <= x[1];
-            }
-            if (trong && !coCongDung(d)) {
+        for (final int id : com.htbb.pokemon.GiftcodeAnToanDuLieu.TRANG_BI) {
+            if (!item.contains(Integer.valueOf(id))) {
                 khong++;
-                System.out.println("   giftcode phat duoc nhung khong co cong dung: " + d);
+                System.out.println("   giftcode trang bi khong co trong data_item: " + id);
             }
         }
-        Kiem.bang("vat pham giftcode phat duoc deu co cong dung that", Integer.valueOf(0), Integer.valueOf(khong));
-    }
-
-    /** Cot cong_dung (cuoi) cua kiem_item.csv co it nhat mot cong dung khong phai "(bán)". */
-    static boolean coCongDung(final String dong) {
-        final int i = dong.lastIndexOf(',');
-        final String cd = dong.substring(i + 1);
-        for (final String x : cd.split(" ; ")) {
-            if (!x.trim().isEmpty() && !x.endsWith("(bán)")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    static boolean laLoi(final String lop) {
-        return "mo_coi".equals(lop) || "chi_ban".equals(lop) || "khong_lay_duoc".equals(lop);
-    }
-
-    /** Moi id data_item trong kiem_item.csv (cot khoa "item:N"). */
-    static Set<Integer> idItem(final String csv) {
-        final Set<Integer> ra = new HashSet<Integer>();
-        final Matcher m = Pattern.compile("(?m)^item:(\\d+),").matcher(csv);
-        while (m.find()) {
-            ra.add(Integer.valueOf(m.group(1)));
-        }
-        return ra;
+        Kiem.bang("trang bi giftcode deu co trong data_item", Integer.valueOf(0), Integer.valueOf(khong));
     }
 }

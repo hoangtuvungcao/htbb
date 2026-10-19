@@ -396,9 +396,9 @@ public final class KiemTuDongKeHoach {
         } finally {
             CauHinhTrungTam.datChoTest(null, null, false);
         }
-        final String dm = KiemTuDong.doc("../tools/cauhinh/danh_muc.json");
-        Kiem.dung("danh_muc.json co tu_dong.ke_hoach + tu_dong.hoi_sinh_tra_phi", dm.contains("\"tu_dong.ke_hoach\"") && dm.contains("\"tu_dong.hoi_sinh_tra_phi\""));
-        Kiem.dung("SQL cau hinh trung tam sinh lai (co tu_dong.chenh_cap_tren)", KiemTuDong.doc("../du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql").contains("tu_dong.chenh_cap_tren"));
+        final String dm = DayDu.danhMucJson();
+        Kiem.dung("danh muc cau hinh (CSDL) co tu_dong.ke_hoach + tu_dong.hoi_sinh_tra_phi", dm.contains("\"tu_dong.ke_hoach\"") && dm.contains("\"tu_dong.hoi_sinh_tra_phi\""));
+        Kiem.dung("CSDL day du co khoa tu_dong.chenh_cap_tren", DayDu.tim("cau_hinh_danh_muc", "khoa", "tu_dong.chenh_cap_tren") != null);
     }
 
     static void hoiSinhTraPhi() {

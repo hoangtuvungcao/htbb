@@ -16,7 +16,7 @@ import java.util.Map;
  * Hieu dung hai dang tep cua repo:
  *   - mysqldump (sql/htbb_day_du.sql): {@code CREATE TABLE `t` (...)} roi
  *     {@code INSERT INTO `t` VALUES (..),(..);}, chuoi thoat bang dau gach nguoc;
- *   - tep sinh (du_lieu/sql_nguon/pokemon_*.sql): co hoac khong co danh sach cot sau ten bang, chuoi thoat bang
+ *   - tep sinh (tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_*.sql): co hoac khong co danh sach cot sau ten bang, chuoi thoat bang
  *     {@code ''} hoac gach nguoc.
  * Lenh khac (SET, LOCK, ALTER, UPDATE...) va chu thich ({@code --}, {@code #}, {@code /* *}{@code /}) bi bo
  * qua. {@code DROP TABLE} / {@code CREATE TABLE} (khong IF NOT EXISTS) / {@code DELETE FROM `t`} (khong WHERE)

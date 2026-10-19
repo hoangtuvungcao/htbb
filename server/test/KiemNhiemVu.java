@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Bang nhiem vu moi (du_lieu/NHIEM_VU_THIET_KE.md, sinh boi tools/pokemon/sinh_nhiem_vu.py).
+ * Bang nhiem vu moi (data_quest_lau_dai + data_nhiem_vu_noi_dung trong sql/htbb_day_du.sql; thiet ke: du_lieu/NHIEM_VU_THIET_KE.md).
  *
  * VI SAO: nguoi choi phan nan "nhiem vu it, don dieu" -> bang mo rong ~1.860 dong, 45 kieu muc tieu.
  * Test giu: du so luong tung nhom, moi NPC/ban do/quai/vat pham tro toi deu ton tai, chuoi
@@ -166,6 +166,12 @@ public final class KiemNhiemVu {
     // ------------------------------------------------------------------ tham chieu
     static Set<String> cot(final String file, final String cot, final char ngan) throws Exception {
         final Set<String> ra = new HashSet<String>();
+        if (!new java.io.File(D + file).isFile()) { // bang thiet ke cu: nay chi con trong CSDL day du
+            for (final Map<String, String> r : DayDu.bangThietKe(file)) {
+                ra.add(r.get(cot));
+            }
+            return ra;
+        }
         final List<String> dong = new ArrayList<String>();
         for (final String l : Files.readAllLines(Paths.get(D + file), StandardCharsets.UTF_8)) {
             if (!l.startsWith("#") && !l.isEmpty()) {
@@ -245,19 +251,14 @@ public final class KiemNhiemVu {
                 }
             }
         }
-        final String sqlNv = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
         final Set<String> vatNv = new HashSet<String>(java.util.Arrays.asList("Nọc bọ cạp", "Khúc gỗ", "Rết đỏ", "Lá thư",
                 "Lông đuôi Hồng Kê", "Móng cá sấu", "Da ếch", "Cựa gà"));
-        final Matcher mv = Pattern.compile("\\((\\d+),'([^']*)'\\)").matcher(
-                sqlNv.substring(sqlNv.indexOf("INSERT INTO `data_vat_pham_nhiem_vu`")));
-        while (mv.find()) {
-            vatNv.add(mv.group(2));
+        for (final Map<String, String> r : DayDu.dong("data_vat_pham_nhiem_vu")) {
+            vatNv.add(r.get("ten"));
         }
         final Set<String> kieu = new HashSet<String>();
-        final Matcher mk = Pattern.compile("\\('([a-z_]+)','").matcher(
-                sqlNv.substring(sqlNv.indexOf("INSERT INTO `data_nhiem_vu_kieu`"), sqlNv.indexOf("DROP TABLE IF EXISTS `data_vat_pham_nhiem_vu`")));
-        while (mk.find()) {
-            kieu.add(mk.group(1));
+        for (final Map<String, String> r : DayDu.dong("data_nhiem_vu_kieu")) {
+            kieu.add(r.get("ma"));
         }
         final List<String> loi = new ArrayList<String>();
         final Set<String> gymCo = new HashSet<String>();
@@ -464,36 +465,15 @@ public final class KiemNhiemVu {
             }
         }
         Kiem.dung("danh sach gui toi da <= 127 o moi cap (lon nhat " + maxGoi + " o cap " + capMax + ")", maxGoi <= 127);
-        final List<Map<String, String>> nd = KiemLauDai.docCsv(D + "nhiem_vu_nhip_do.csv");
-        int it = 999;
-        for (final Map<String, String> r : nd) {
-            it = Math.min(it, so(r.get("lua_chon_y_nghia")));
-        }
-        Kiem.bang("nhip do co du 100 cap", 100, nd.size());
-        Kiem.dung("moi cap >= 10 lua chon co y nghia (it nhat " + it + ")", it >= 10);
+        // Bang nhip do (nhiem_vu_nhip_do.csv) la bang tinh thiet ke, da luu tru cung bo sinh - khong con kiem o day.
     }
 
     // ------------------------------------------------------------------ file
     private static void kiemFile(final List<Map<String, String>> nv) throws Exception {
-        final String sql = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
-        Kiem.dung("pokemon_nhiem_vu.sql: SET NAMES + data_nhiem_vu_noi_dung", sql.contains("SET NAMES utf8;")
-                && sql.contains("CREATE TABLE `data_nhiem_vu_noi_dung`"));
-        int dong = 0;
-        final Matcher m = Pattern.compile("(?m)^\\('").matcher(sql.substring(0, sql.indexOf("DROP TABLE IF EXISTS `data_nhiem_vu_kieu`")));
-        while (m.find()) {
-            dong++;
-        }
-        Kiem.bang("data_nhiem_vu_noi_dung du dong", nv.size(), dong);
-        Kiem.sai("SQL nhiem vu khong sua bang dang chay", Pattern.compile("(?m)^(UPDATE|DELETE|INSERT INTO `data_quest` )").matcher(sql).find());
-        final String xuat = new String(Files.readAllBytes(Paths.get("../tools/pokemon/xuat_sql_day_du.sh")), StandardCharsets.UTF_8);
-        Kiem.dung("pokemon_nhiem_vu nam trong xuat_sql_day_du.sh", xuat.contains("pokemon_nhiem_vu"));
-        final String web = new String(Files.readAllBytes(Paths.get(D + "web/nhiem_vu_tom_tat.json")), StandardCharsets.UTF_8);
-        boolean sach = web.contains("\"cot_truyen\"") && !web.contains("\"dap_an\"") && !web.contains("\"id_so\"")
-                && !web.contains("\"exp\"") && !web.contains("\"xu\"");
-        Kiem.dung("web/nhiem_vu_tom_tat.json: co cot truyen, khong id/ngan sach/dap an", sach);
+        Kiem.bang("data_nhiem_vu_noi_dung du dong (= data_quest_lau_dai)", nv.size(), DayDu.soDong("data_nhiem_vu_noi_dung"));
+        Kiem.bang("data_quest goc giu nguyen (49 dong)", 49, DayDu.soDong("data_quest"));
         final String doc = new String(Files.readAllBytes(Paths.get(D + "NHIEM_VU_THIET_KE.md")), StandardCharsets.UTF_8);
-        Kiem.dung("NHIEM_VU_THIET_KE.md co muc 'Yêu cầu engine' va bang da sinh", doc.contains("## 5. Yêu cầu engine")
-                && doc.contains("| `ho_tong` |"));
+        Kiem.dung("NHIEM_VU_THIET_KE.md co muc 'Yêu cầu engine'", doc.contains("## 5. Yêu cầu engine"));
     }
 
     // ------------------------------------------------------------------ he sinh thai

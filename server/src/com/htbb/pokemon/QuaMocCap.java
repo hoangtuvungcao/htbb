@@ -3,8 +3,8 @@ package com.htbb.pokemon;
 /**
  * Qua moc cap (chu game duyet 19/10/2026): bo gia tri thoi thu nghiem. Qua NPC cap 35 (real.MapXuLyLenh.thuongLenCap35)
  * truoc la 10.000.000 xu (~580 gio thu nhap o cap 35, ~1.300 lan so xu trung vi nguoi choi cap 35 dang giu trong
- * du_lieu/mo_phong_kinh_te.csv). Nay mot gia tri cho moi che do, khop cac moc cap khac (thanh tuu cap trong
- * du_lieu/nhiem_vu_moi.csv: 0 xu, 1..15 luong khoa). Test: test/KiemThuongTanThuVaLenCap35.java.
+ * tools/luu_tru_sinh_du_lieu/du_lieu/mo_phong_kinh_te.csv). Nay mot gia tri cho moi che do, khop cac moc cap khac (thanh tuu cap trong
+ * tools/luu_tru_sinh_du_lieu/du_lieu/nhiem_vu_moi.csv: 0 xu, 1..15 luong khoa). Test: test/KiemThuongTanThuVaLenCap35.java.
  */
 public final class QuaMocCap {
 

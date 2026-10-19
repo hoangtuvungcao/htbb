@@ -128,7 +128,6 @@ public final class Kiem {
         KiemDanhMucNgoc.chay();
         KiemDanhMucThu.chay();
         KiemDanhMucDanhHieu.chay();
-        KiemDanhMucItem.chay();
         KiemBangThuocTinh.chay();
         KiemLienKetTaiLieu.chay();
         KiemAnhHieuUng.chay();
@@ -177,7 +176,7 @@ public final class Kiem {
         KiemLauDaiGd2.chay();
         KiemNoiDung.chay();
         KiemHeSinhThai.chay();
-        KiemItemMoCoi.chay(); // luat khong item mo coi (tools/pokemon/kiem_item_mo_coi.py)
+        KiemItemMoCoi.chay(); // luat khong item mo coi (kiem tren sql/htbb_day_du.sql)
         KiemNapTien.chay();
         KiemTangToc.chay();
         KiemTuDong.chay();

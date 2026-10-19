@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * SINH RA boi tools/pokemon/sinh_giftcode_an_toan.py - KHONG SUA TAY. Ban Java cua
+ * SINH RA boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_giftcode_an_toan.py - KHONG SUA TAY. Ban Java cua
  * HTBB-Web/shared/data/giftcode-an-toan.json (danh sach vat pham giftcode an toan duoc phat). Dung o
  * GiftcodeAnToanLogic.kiemVatPham; test/KiemItemMoCoi.java so SHA-256 voi file JSON.
  */

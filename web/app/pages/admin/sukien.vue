@@ -215,7 +215,7 @@ const lichCot = [
       <template #description>
         <p>Server tự tạo bảng này lần đầu khởi động sau khi cập nhật. Muốn tạo trước thì chạy:</p>
         <p class="mt-1">
-          <code>mysql -u root htbb_db &lt; du_lieu/sql_nguon/them_bang_su_kien.sql</code>
+          <code>sudo bash /opt/htbb/vps/nang_cap_csdl.sh</code>
         </p>
         <p class="mt-1 text-xs">
           Lỗi đọc được: {{ data.loiDoc }}
@@ -549,7 +549,7 @@ const lichCot = [
             </dt>
             <dd class="mt-1 text-muted">
               Hai dòng <em>World Cup</em> ở đây đè lên cửa sổ <code>sv.worldCup*</code> trong <code>server.ini</code>. Lần đầu
-              chạy sự kiện này còn phải chạy <code>du_lieu/sql_nguon/them_su_kien_world_cup.sql</code> một lần.
+              chạy sự kiện này còn phải chạy <code>sql/nang_cap.sql</code> một lần.
             </dd>
           </div>
           <div>

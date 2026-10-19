@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 /**
- * Noi bang noi dung cua doi noi dung (du_lieu/sql_nguon/pokemon_noi_dung.sql, data_noi_dung_*) vao game (GD2b,
+ * Noi bang noi dung cua doi noi dung (tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_noi_dung.sql, data_noi_dung_*) vao game (GD2b,
  * docs/thiet-ke-game.md, 7, 9.5-9.6). Nap luc khoi dong (TeamServer, bat co, sau template).
  *
  *   - Bang roi (data_noi_dung_roi): nguon dai_cap / alpha (theo dai cap quai), vat pham type 28

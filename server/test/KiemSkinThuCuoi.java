@@ -1375,28 +1375,20 @@ public final class KiemSkinThuCuoi {
     private static void kiemMoTaVatPham() {
         Kiem.nhom("Skin linh thu - mo ta vat pham khop voi bang so");
 
-        final String sql = doc("../du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql");
-        Kiem.dung("doc duoc du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql", sql.length() > 100);
-        Kiem.dung("tep sql ghi ro la duoc sinh ra", sql.contains("DUNG SUA TAY"));
-
         for (int s = 0; s < real.SkinThuCuoi.SO_SKIN; s++) {
             final String moTa = real.SkinThuCuoi.moTaVatPham(s);
             Kiem.dung("mo ta skin " + s + " co ten skin", moTa.contains(real.SkinThuCuoi.TEN[s]));
             Kiem.dung("mo ta skin " + s + " co dong he",
                     moTa.contains("[hệ " + real.SkinThuCuoi.TEN_HE[real.SkinThuCuoi.HE[s]] + "]"));
-            // Chuoi trong sql phai la CHINH chuoi ma ma nguon sinh ra, tung ky tu.
-            Kiem.dung("sql chua dung mo ta skin " + s + " (khong lech mot ky tu nao)",
-                    sql.contains(moTa.replace("'", "''")));
-            Kiem.dung("sql cap nhat dung id " + real.SkinThuCuoi.ID_ITEM[s],
-                    sql.contains("WHERE `id` = " + real.SkinThuCuoi.ID_ITEM[s]));
+            // Mo ta (tu dong 2: he, so, dac tinh) trong CSDL phai la CHINH chuoi ma ma nguon sinh ra, tung ky tu.
+            // Dong 1 (ten skin) da doi sang ten Pokemon trong CSDL (doi chu) - chi can mo dau "Skin thu cuoi".
+            final String db = String.valueOf(DayDu.giaTri("data_item", "id", String.valueOf(real.SkinThuCuoi.ID_ITEM[s]), "name"));
+            Kiem.dung("data_item " + real.SkinThuCuoi.ID_ITEM[s] + ": dong 1 la ten skin thu cuoi", db.startsWith("Skin thú cưỡi "));
+            Kiem.bang("data_item " + real.SkinThuCuoi.ID_ITEM[s] + ": mo ta = SkinThuCuoi.moTaVatPham(" + s + ") (tu dong 2)",
+                    moTa.substring(moTa.indexOf('\n') + 1), db.substring(db.indexOf('\n') + 1));
         }
         Kiem.bang("mo ta cua skin khong hop le la chuoi rong", "", real.SkinThuCuoi.moTaVatPham(9));
 
-        // Tep cai dat goc phai chi sang tep nay, khong thi nguoi cai chi chay mot tep va
-        // vat pham mang ten ngan khong co mo ta.
-        final String goc = doc("../du_lieu/sql_nguon/skin_linh_thu.sql");
-        Kiem.dung("skin_linh_thu.sql chi sang tep ten/mo ta",
-                goc.contains("ten_mo_ta_skin_linh_thu.sql"));
     }
 
     /**
@@ -1531,27 +1523,16 @@ public final class KiemSkinThuCuoi {
         Kiem.sai("TYPE_ITEM khong duoc nam trong dai isWearingAnimal (14..18)",
                 real.SkinThuCuoi.TYPE_ITEM >= 14 && real.SkinThuCuoi.TYPE_ITEM <= 18);
 
-        // sql: ca 5 dong INSERT phai mang dung so type do.
-        final String sql = doc("../du_lieu/sql_nguon/skin_linh_thu.sql");
-        Kiem.dung("doc duoc du_lieu/sql_nguon/skin_linh_thu.sql", sql.length() > 0);
+        // CSDL: ca 5 vat pham skin phai mang dung so type do.
         int soDong = 0;
-        for (final String dong : sql.split("\n")) {
-            if (!dong.contains("'Skin linh thú")) {
-                continue;
+        for (int i = 0; i < real.SkinThuCuoi.SO_SKIN; i++) {
+            final String t = DayDu.giaTri("data_item", "id", String.valueOf(real.SkinThuCuoi.ID_ITEM[i]), "type");
+            if (t != null) {
+                soDong++;
             }
-            soDong++;
-            // cot type la so dau tien sau ten trong ngoac nhay
-            final String sau = dong.substring(dong.lastIndexOf('\'') + 1).trim();
-            final String so = sau.startsWith(",") ? sau.substring(1).trim().split(",")[0].trim() : "?";
-            Kiem.bang("sql dong " + soDong + " co type " + TYPE, String.valueOf(TYPE), so);
+            Kiem.bang("data_item " + real.SkinThuCuoi.ID_ITEM[i] + " co type " + TYPE, String.valueOf(TYPE), t);
         }
-        Kiem.bang("sql co du 5 dong INSERT", real.SkinThuCuoi.SO_SKIN, soDong);
-
-        // Phai co san file chuyen doi cho may da chay ban sql cu.
-        final String vaSql = doc("../du_lieu/sql_nguon/sua_type_skin_linh_thu.sql");
-        Kiem.dung("co du_lieu/sql_nguon/sua_type_skin_linh_thu.sql", vaSql.length() > 0);
-        Kiem.dung("file chuyen doi dat type ve " + TYPE,
-                vaSql.contains("SET `type` = " + TYPE));
+        Kiem.bang("CSDL co du 5 vat pham skin", real.SkinThuCuoi.SO_SKIN, soDong);
 
         // Ba man hinh Unity phai dung cach danh so cua ban JAR.
         for (final String ten : new String[] { "MenuWindows", "WindowInfoScr", "ShopNew" }) {
@@ -1616,21 +1597,25 @@ public final class KiemSkinThuCuoi {
     private static void kiemDaiIcon() {
         Kiem.nhom("Skin linh thu - dai icon khong dam vao Canh");
 
-        final String sql = doc("../du_lieu/sql_nguon/skin_linh_thu.sql");
-        Kiem.dung("doc duoc du_lieu/sql_nguon/skin_linh_thu.sql", sql.length() > 0);
-
         int lonNhat = -1;
+        final java.util.Set<String> iconSkin = new java.util.HashSet<String>();
         for (int i = 0; i < real.SkinThuCuoi.SO_SKIN; i++) {
             final int idIcon = 860 + i;
             Kiem.dung("co map/icon/" + idIcon + ".png",
                     new java.io.File("map/icon/" + idIcon + ".png").isFile());
-            Kiem.dung("SQL dat icon " + idIcon + " cho vat pham " + real.SkinThuCuoi.ID_ITEM[i],
-                    sql.contains("-1, " + idIcon + ", " + idIcon + ","));
+            final String id = String.valueOf(real.SkinThuCuoi.ID_ITEM[i]);
+            final String x = DayDu.giaTri("data_item", "id", id, "xstart");
+            final String y = DayDu.giaTri("data_item", "id", id, "ystart");
+            iconSkin.add(x);
+            iconSkin.add(y);
+            // ystart = anh skin goc (860+); xstart = icon hanh trang (icon Pokemon dai 14000+ - IconPokemon)
+            Kiem.bang("CSDL dat anh " + idIcon + " cho vat pham " + id + " (ystart)", String.valueOf(idIcon), y);
+            Kiem.dung("vat pham " + id + ": icon hanh trang (xstart " + x + ") thuoc dai icon Pokemon co file",
+                    x != null && com.htbb.pokemon.IconPokemon.thuocDai(Integer.parseInt(x)));
             lonNhat = Math.max(lonNhat, idIcon);
         }
         for (int idCanh = 855; idCanh <= 859; idCanh++) {
-            Kiem.sai("KHONG lay id " + idCanh + " cua canh lam icon skin",
-                    sql.contains("-1, " + idCanh + ", " + idCanh + ","));
+            Kiem.sai("KHONG lay id " + idCanh + " cua canh lam icon skin", iconSkin.contains(String.valueOf(idCanh)));
         }
 
         final String dg = doc("src/data/DataGame.java");

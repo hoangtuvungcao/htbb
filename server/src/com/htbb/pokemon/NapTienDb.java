@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Truy cap CSDL cua nap tien (bang nap_* trong du_lieu/sql_nguon/pokemon_nap_tien.sql). CHI PreparedStatement.
+ * Truy cap CSDL cua nap tien (bang nap_* trong tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_nap_tien.sql). CHI PreparedStatement.
  * Moi buoc doi trang thai la mot cau UPDATE co dieu kien tren trang thai cu ("cong" chi
  * thanh cong cho DUNG MOT luong goi) - khong dua vao khoa hang, khong transaction: chay y
  * het tren MariaDB va NovaDB. So cai co UNIQUE(ma_tham_chieu) lam chot cuoi.

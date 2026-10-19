@@ -33,8 +33,9 @@ Trên VPS, `/opt/htbb` là bản checkout monorepo này (người dùng hệ th�
 | `kiem-suc-khoe.sh` | cron root mỗi phút — kiểm cổng game, `trang_thai.json`, login, CSDL, web |
 | `don-log.sh` | cron 03:20 — dọn bảng nhật ký CSDL và tệp `.txt` lẻ |
 | `server.ini.linux.example`, `loginServer.server.ini.example` | mẫu tạo tay (máy không dùng pipeline) |
-| `db_new_server.sql`, `doi_ten_nhan_vat.sql` | SQL dựng CSDL máy chủ mới / đổi tên nhân vật |
-| `nang_cap_csdl.sh` + `nang_cap_csdl.sql` | nâng cấp CSDL đang chạy lên bản hiện tại: sao lưu → nạp → kiểm, chạy lại được (`sudo bash /opt/htbb/vps/nang_cap_csdl.sh`; `.sql` sinh bởi `tools/pokemon/sinh_nang_cap_csdl.py`) |
+| `doi_ten_nhan_vat.sql` | SQL đổi tên nhân vật |
+| `nang_cap_csdl.sh` | nâng cấp CSDL đang chạy lên bản hiện tại: sao lưu → nạp `sql/nang_cap.sql` → kiểm, chạy lại được (`sudo bash /opt/htbb/vps/nang_cap_csdl.sh`) |
+| `xuat_csdl_day_du.sh` | xuất CSDL đang chạy thành `htbb_day_du.sql` (schema mọi bảng + dữ liệu thiết kế, bảng người chơi rỗng) để chép về `sql/` (`sudo bash /opt/htbb/vps/xuat_csdl_day_du.sh /tmp/htbb_day_du.sql`) |
 | `van_hanh/` | SQL thao tác tay xoá dữ liệu người chơi (`wipe_*.sql`) — **tắt server và sao lưu trước**, không hoàn tác được |
 | `win/` | tệp `.bat` xem log, chạy SQL, tải CSDL từ Windows qua SSH — [win/README.md](win/README.md) |
 

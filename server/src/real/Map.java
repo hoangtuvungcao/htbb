@@ -2703,7 +2703,7 @@ public class Map implements Runnable {
             System.out.println(" Vi du: sach ky nang pet la thuoc id "
                     + Potion.TYPE_SACH_SKILL_PET + ".");
         }
-        System.out.println(" Sua: chay vps/db_new_server.sql PHAN 2H roi bat lai server.");
+        System.out.println(" Sua: nap lai cac dong data_potion tu sql/htbb_day_du.sql (hoac sua tren trang quan tri) roi bat lai server.");
         System.out.println("=================================================================");
     }
 

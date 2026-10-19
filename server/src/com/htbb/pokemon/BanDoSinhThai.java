@@ -155,7 +155,7 @@ public final class BanDoSinhThai {
 
     /**
      * Diem cau ca theo id ban do (tep cMap/&lt;id&gt;): {hoId, x, y, so o cua ho}, theo ho roi thu tu quet (y, x).
-     * NAP TU bang data_hst_ho_cau (NGUON DUY NHAT, tools/pokemon/sinh_sql_he_sinh_thai.py tinh tu ban do) qua
+     * NAP TU bang data_hst_ho_cau (NGUON DUY NHAT, tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_he_sinh_thai.py tinh tu ban do) qua
      * com.htbb.dulieu.DuLieuSql. Ban do 40 / 42 (MOBA, nui kho bau) khong co dong: khong cau, khong goi y.
      */
     private static volatile java.util.Map<Integer, List<int[]>> diemCau = java.util.Collections.emptyMap();

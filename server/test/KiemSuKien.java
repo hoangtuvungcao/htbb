@@ -273,8 +273,8 @@ public final class KiemSuKien {
         // May chu tu tao bang, con tep sql/ la ban chep tay de chay truoc. Hai ban lech
         // cot thi ai chay tep sql se co mot bang ma may chu khong ghi duoc - va loi do chi
         // lo ra thanh mot dong log lang le luc khoi dong.
-        final String sql = doc("../du_lieu/sql_nguon/them_bang_su_kien.sql");
-        Kiem.dung("co tep du_lieu/sql_nguon/them_bang_su_kien.sql", !sql.isEmpty());
+        final String sql = DayDu.ddl("tob_su_kien");
+        Kiem.dung("htbb_day_du.sql co bang tob_su_kien", !sql.isEmpty());
         final String[] cot = {"ma", "bat", "ten", "nhom", "mo_ta", "dang_bat",
             "sua_boi", "sua_luc", "may_chu_luc", "mo_luc", "dong_luc"};
         for (final String c : cot) {
@@ -282,7 +282,7 @@ public final class KiemSuKien {
                     dbSuKien.contains("\"" + c + " ") || dbSuKien.contains("+ \"" + c + " ")
                             || dbSuKien.contains(c + " VARCHAR") || dbSuKien.contains(c + " TINYINT")
                             || dbSuKien.contains(c + " DATETIME"));
-            Kiem.dung("cot " + c + " co trong tep sql", sql.contains("`" + c + "`"));
+            Kiem.dung("cot " + c + " co trong bang tob_su_kien cua htbb_day_du.sql", sql.contains("`" + c + "`"));
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Phân loại cấu hình (docs/cau-hinh.md, trường `lop` của tools/cauhinh/danh_muc.json):
+ * Phân loại cấu hình (docs/cau-hinh.md, cột `lop` của bảng cau_hinh_danh_muc trong sql/htbb_day_du.sql):
  *   chinh    — hiện trên /admin/cau-hinh-he-thong, sửa được
  *   co_dinh  — ẩn, máy thật luôn chạy giá trị cố định (macDinh), API lưu từ chối
  *   luon_bat — ẩn, luôn "1"
@@ -10,6 +10,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { DANH_MUC_TT, NHOM_TT } from '../shared/utils/cauHinhTrungTam.gen.ts'
+import { docBangSql } from '../shared/utils/sqlDump.ts'
 import { anTT, demLopTT, hieuLucWebTT, khoaTT, nhomTT, soSanhTT, suaDuocTT } from '../shared/utils/cauHinhTrungTam.ts'
 
 const HTBB = fileURLToPath(new URL('../../', import.meta.url))
@@ -99,12 +100,15 @@ test('giá trị hiệu lực phía web: khoá ẩn bỏ qua CSDL trên máy th�
   assert.equal(hieuLucWebTT(k('thanh_vien.gia'), 'abc'), k('thanh_vien.gia').macDinh)
 })
 
-test('tệp sinh mang phân loại (SQL cho bảng cau_hinh_danh_muc / cau_hinh_nhom, tài liệu)', { skip: !existsSync(`${HTBB}du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql`) }, () => {
-  const sql = readFileSync(`${HTBB}du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql`, 'utf8')
-  assert.ok(sql.includes('`lop` VARCHAR(10)') && sql.includes('`an` TINYINT'))
-  assert.ok(sql.includes('CREATE TABLE IF NOT EXISTS `cau_hinh_nhom`'))
-  const j = JSON.parse(readFileSync(`${HTBB}tools/cauhinh/danh_muc.json`, 'utf8')) as { khoa: { khoa: string, lop?: string }[] }
-  for (const x of j.khoa) assert.equal(k(x.khoa).lop, x.lop, x.khoa)
+test('CSDL mang phân loại (cột lop / an của cau_hinh_danh_muc / cau_hinh_nhom, tài liệu)', () => {
+  for (const f of ['sql/htbb_day_du.sql', 'sql/nang_cap.sql']) {
+    const sql = readFileSync(`${HTBB}${f}`, 'utf8')
+    assert.ok(/`lop` varchar\(10\)/i.test(sql) && /`an` tinyint/i.test(sql), `${f}: cột lop / an`)
+    assert.ok(/CREATE TABLE[^;]*`cau_hinh_nhom`/.test(sql), `${f}: bảng cau_hinh_nhom`)
+  }
+  const dong = docBangSql(readFileSync(`${HTBB}sql/htbb_day_du.sql`, 'utf8'), 'cau_hinh_danh_muc')
+  assert.equal(dong.length, DANH_MUC_TT.length)
+  for (const x of dong) assert.equal(k(String(x.khoa)).lop ?? 'chinh', x.lop, String(x.khoa))
   const md = readFileSync(`${HTBB}docs/cau-hinh.md`, 'utf8')
   const d = demLopTT()
   assert.ok(md.includes(`| **Chỉnh trên web** (\`chinh\`) | ${d.chinh} |`))

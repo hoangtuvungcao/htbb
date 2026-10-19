@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *    dang nhap, gui id vuot tran la NGUOI CHOI THAY HANH TRANG RONG (xem chu thich o
  *    Char.getAllPotion). Nen dung lai dong 108, von la mot dong TRONG san co:
  *        161 = Qua bong vang     (da co san)
- *        108 = Hop qua may man   (dong trong, du_lieu/sql_nguon/them_su_kien_world_cup.sql dat ten)
+ *        108 = Hop qua may man   (dong trong, tools/luu_tru_sinh_du_lieu/sql_nguon/them_su_kien_world_cup.sql dat ten)
  *        143 = Hop qua bi mat    (da co san)
  *    Vi the KHONG port applyPotionMeta() cua ban goc: ban do doc ten/icon thuoc tu
  *    mang LoginHandler.PORTION_NAME, ban nay doc tu BANG data_potion

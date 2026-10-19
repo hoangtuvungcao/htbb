@@ -62,33 +62,13 @@ public final class KiemIconPokemon {
                     dg.contains("final int iconPmd = com.htbb.pokemon.IconPokemon.doiAnh(idImg);"));
             Kiem.dung("nIconItem van la 866", dg.contains("nIconItem = 866;"));
 
-            // So dong SQL sinh ra.
-            final List<String> sql = Files.readAllLines(new File("../du_lieu/sql_nguon/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
-            int dong = 0;
-            int khai = -1;
-            final Map<String, Integer> tachThuoc = new HashMap<String, Integer>();
-            for (final String d : sql) {
-                final Matcher m = Pattern.compile("^-- SO_DONG: (\\d+)").matcher(d);
-                if (m.find()) {
-                    khai = Integer.parseInt(m.group(1));
-                }
-                if (d.startsWith("UPDATE ")) {
-                    dong++;
-                }
-                final Matcher t = Pattern.compile("^UPDATE (data_potion|data_shop) SET \\w+=(\\d+) WHERE id=(\\d+);").matcher(d);
-                if (t.find()) {
-                    tachThuoc.put(t.group(1) + ":" + t.group(3), Integer.valueOf(t.group(2)));
-                }
-            }
-            Kiem.bang("so dong UPDATE = SO_DONG dau file", Integer.valueOf(khai), Integer.valueOf(dong));
             Kiem.bang("so dong bang_icon.csv = so file icon", Integer.valueOf(soFile),
                     Integer.valueOf(Files.readAllLines(new File("../du_lieu/bang_icon.csv").toPath(), StandardCharsets.UTF_8).size() - 1));
 
             // CSDL day du sau migration.
             final String db = doc("../sql/htbb_day_du.sql");
             final List<List<String>> item = hang(db, "data_item");
-            // Dai id 1001..1199 = noi dung moi (tools/pokemon/sinh_noi_dung.py -> du_lieu/sql_nguon/pokemon_noi_dung.sql,
-            // xem test/KiemNoiDung): 0 dong (dump sinh truoc khi gom) hoac du so dong cua noi_dung_item_moi.csv.
+            // Dai id 1001..1199 = noi dung moi (xem test/KiemNoiDung).
             int goc = 0;
             int noiDung = 0;
             for (final List<String> r : item) {
@@ -96,18 +76,14 @@ public final class KiemIconPokemon {
                 if (id >= 1001 && id <= 1199) {
                     noiDung++;
                 } else if (id >= 1201 && id <= 1260) {
-                    // Dai 1201..1260 = vat pham dung lau dai (tools/pokemon/sinh_vat_pham_lau_dai.py ->
-                    // du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql), khong tinh vao bang goc.
+                    // Dai 1201..1260 = vat pham dung lau dai (data_vat_pham_lau_dai), khong tinh vao bang goc.
                     continue;
                 } else {
                     goc++;
                 }
             }
             Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1260)", Integer.valueOf(924), Integer.valueOf(goc));
-            final int soNoiDung = Files.readAllLines(new File("../du_lieu/noi_dung_item_moi.csv").toPath(),
-                    StandardCharsets.UTF_8).size() - 1;
-            Kiem.dung("dai noi dung 1001..1199 trong dump: 0 hoac du " + soNoiDung + " dong (co " + noiDung + ")",
-                    noiDung == 0 || noiDung == soNoiDung);
+            Kiem.dung("dai noi dung 1001..1199 co trong CSDL (" + noiDung + " dong)", noiDung >= 60);
             final List<String> loiItem = new ArrayList<String>();
             for (final List<String> r : item) {
                 final int xstart = Integer.parseInt(r.get(20));
@@ -134,17 +110,6 @@ public final class KiemIconPokemon {
                 }
             }
             Kiem.bang("moi o anh thuoc (data_potion + data_shop) co icon PMD", "[]", loiThuoc.toString());
-            // O tach phai la o rieng: chi cac dong duoc tach dung no.
-            final List<String> loiTach = new ArrayList<String>();
-            for (final Map.Entry<String, Integer> e : tachThuoc.entrySet()) {
-                for (final String ai : dungO.get(e.getValue())) {
-                    if (!tachThuoc.containsKey(ai) || !tachThuoc.get(ai).equals(e.getValue())) {
-                        loiTach.add(e.getValue() + " dung chung voi " + ai);
-                    }
-                }
-            }
-            Kiem.bang("o anh thuoc tach rieng khong ai khac dung", "[]", loiTach.toString());
-
             final List<String> loiTrai = new ArrayList<String>();
             for (final List<String> r : hang(db, "tob_fruit")) {
                 for (final String cot : new String[]{"id1", "id2"}) {

@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 
 /**
  * Chi so trang bi + chong lam phat (docs/thiet-ke-game.md): tran / giam dan, san sat thuong, PvP,
- * ngan sach mon, bang 198 dong chi so, SQL sinh dong bo, mo phong TTK (tools/pokemon/MoPhongChiSo.java).
+ * ngan sach mon, bang 198 dong chi so (data_attribute trong sql/htbb_day_du.sql). Mo phong TTK cu (MoPhongChiSo) da luu
+ * tru cung bo sinh (tools/luu_tru_sinh_du_lieu/pokemon/).
  */
 public final class KiemChiSo {
 
@@ -33,14 +34,8 @@ public final class KiemChiSo {
         kiemNganSach();
         Kiem.nhom("Chi so trang bi - bang chi so 198 dong (com.htbb.pokemon.ChiSoTrangBi)");
         kiemBang();
-        Kiem.nhom("Chi so trang bi - SQL / CSV sinh + noi vao xuat_sql_day_du.sh + code goi");
+        Kiem.nhom("Chi so trang bi - bang data_attribute trong CSDL + code goi");
         kiemSqlVaCode();
-        Kiem.nhom("Chi so trang bi - mo phong TTK / bat tu / bac do (tools/pokemon/MoPhongChiSo.java)");
-        try {
-            kiemMoPhong();
-        } catch (final Exception e) {
-            Kiem.dung("mo phong chi so chay duoc: " + e, false);
-        }
     }
 
     // ------------------------------------------------------------------ giam dan
@@ -238,32 +233,20 @@ public final class KiemChiSo {
 
     // ------------------------------------------------------------------ SQL / code
     static void kiemSqlVaCode() {
-        final String sql = doc("../du_lieu/sql_nguon/pokemon_chi_so.sql");
-        Kiem.dung("co du_lieu/sql_nguon/pokemon_chi_so.sql", sql.length() > 1000);
         int dem = 0;
         boolean khop = true;
         for (final ChiSoTrangBi.Dong d : ChiSoTrangBi.BANG) {
-            final String moc = "UPDATE data_attribute SET name='" + d.ten.replace("'", "''") + "', ispercent=" + d.phanTram;
-            if (sql.contains(moc) && sql.contains("namein='' WHERE id=" + d.id + ";")) {
+            final java.util.Map<String, String> r = DayDu.tim("data_attribute", "id", String.valueOf(d.id));
+            if (r != null && d.ten.equals(r.get("name")) && String.valueOf(d.phanTram).equals(r.get("ispercent"))) {
                 dem++;
             } else {
                 khop = false;
+                System.out.println("   data_attribute " + d.id + " lech: " + r);
             }
         }
-        Kiem.bang("SQL co UPDATE cho moi dong chi so (khop ChiSoTrangBi)", ChiSoTrangBi.BANG.length, dem);
-        Kiem.dung("SQL khop ten / don vi", khop);
-        Kiem.sai("SQL khong INSERT/DELETE data_attribute (giu so dong)", Pattern.compile("(?i)(INSERT INTO|DELETE FROM)\\s+`?data_attribute")
-                .matcher(sql).find());
-        Kiem.sai("SQL data_item chi dung LEAST (chi giam)", Pattern.compile("UPDATE data_item SET atb\\d=(?!LEAST)").matcher(sql).find());
-        final Matcher m = Pattern.compile("UPDATE data_item SET ").matcher(sql);
-        int n = 0;
-        while (m.find()) {
-            n++;
-        }
-        Kiem.dung("SQL co quy tac kep data_item theo (o, cap)", n > 100);
-        Kiem.dung("pokemon_chi_so nam trong xuat_sql_day_du.sh", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_chi_so"));
-        final String csv = doc("../du_lieu/chi_so_trang_bi.csv");
-        Kiem.dung("CSV 198 dong + tieu de", csv.split("\n").length == 199);
+        Kiem.bang("CSDL co dong data_attribute cho moi dong chi so (khop ChiSoTrangBi: ten, ispercent)", ChiSoTrangBi.BANG.length, dem);
+        Kiem.dung("CSDL khop ten / don vi", khop);
+        Kiem.bang("data_attribute dung 198 dong (client tra theo vi tri)", 198, DayDu.soDong("data_attribute"));
         Kiem.dung("tai lieu thiet-ke-game.md co GioiHanChiSo", doc("../docs/thiet-ke-game.md").contains("GioiHanChiSo"));
         // code goi dung cho
         final String ch = doc("src/real/Char.java");
@@ -282,7 +265,7 @@ public final class KiemChiSo {
         Kiem.dung("lan ngung khi bat", doc("src/real/CharTrangBi.java").contains("if (ChiSoTrangBiGame.bat()) {\n            return; // \"lan\""));
         Kiem.dung("EXP tu trang bi kep tran", doc("src/real/ExpLauDai.java").contains("ChiSoTrangBiGame.expTrangBi(tb)"));
         Kiem.dung("tooltip loc dong ngung", doc("src/real/Item.java").contains("ChiSoTrangBiGame.locHienThi(this, allAtb"));
-        Kiem.dung("khoa cau hinh chi_so.* dang ky", doc("../tools/cauhinh/danh_muc.json").contains("\"chi_so.san_sat_thuong\""));
+        Kiem.dung("khoa cau hinh chi_so.* dang ky", DayDu.danhMucJson().contains("\"chi_so.san_sat_thuong\""));
     }
 
     static String doc(final String p) {
@@ -290,36 +273,6 @@ public final class KiemChiSo {
             return new String(Files.readAllBytes(Paths.get(p)), StandardCharsets.UTF_8);
         } catch (final Exception e) {
             return "";
-        }
-    }
-
-    // ------------------------------------------------------------------ mo phong
-    static void kiemMoPhong() throws Exception {
-        final javax.tools.JavaCompiler jc = javax.tools.ToolProvider.getSystemJavaCompiler();
-        if (jc == null) {
-            System.out.println("   (bo qua mo phong: JVM khong co javac)");
-            return;
-        }
-        final File ra = Files.createTempDirectory("mophongchiso").toFile();
-        final int kq = jc.run(null, null, null, "-encoding", "UTF-8", "-nowarn", "-cp", System.getProperty("java.class.path"),
-                "-d", ra.getPath(), "../tools/pokemon/MoPhongChiSo.java", "../tools/pokemon/SinhSqlChiSo.java");
-        Kiem.bang("bien dich MoPhongChiSo + SinhSqlChiSo", 0, kq);
-        if (kq != 0) {
-            return;
-        }
-        try (URLClassLoader cl = new URLClassLoader(new URL[]{ra.toURI().toURL()}, KiemChiSo.class.getClassLoader())) {
-            final Method m = cl.loadClass("MoPhongChiSo").getMethod("chayKiem", String.class);
-            final String[][] r = (String[][]) m.invoke(null, "..");
-            Kiem.dung("mo phong co >= 10 muc tieu", r.length >= 10);
-            for (final String[] x : r) {
-                Kiem.bang("mo phong chi so: " + x[0] + " (" + x[2] + ")", "1", x[1]);
-            }
-            // SQL trong repo = sinh lai tu nguon
-            final Class<?> s = cl.loadClass("SinhSqlChiSo");
-            final Object items = s.getMethod("docDataItem", String.class).invoke(null, doc("../sql/htbb_day_du.sql"));
-            final String sinh = (String) s.getMethod("sinhSql", List.class).invoke(null, items);
-            Kiem.dung("du_lieu/sql_nguon/pokemon_chi_so.sql dong bo voi nguon (chay lai tools/pokemon/SinhSqlChiSo neu lech)",
-                    sinh.equals(doc("../du_lieu/sql_nguon/pokemon_chi_so.sql")));
         }
     }
 }

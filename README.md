@@ -17,9 +17,9 @@ Monorepo gồm máy chủ, bốn client, website và công cụ. Website: `https
 | `client_pc/` | bản PC Java SE chạy code jar (Windows / macOS / Linux) | [client_pc/README.md](client_pc/README.md) |
 | `client_pc_ios/` | client Unity 6000.5.9f1 (PC Windows, iOS) | [client_pc_ios/README.md](client_pc_ios/README.md) |
 | `web/` | website + khu quản trị Nuxt 4 (Node 22) | [web/README.md](web/README.md) |
-| `sql/` | MỘT tệp CSDL đầy đủ `htbb_day_du.sql` (sinh; nguồn ở `du_lieu/sql_nguon/`) | [sql/README.md](sql/README.md) |
-| `du_lieu/` | bảng thiết kế game (CSV) — nguồn cho bộ sinh dữ liệu; `sql_nguon/`: seed, migration, tệp SQL sinh | [du_lieu/README.md](du_lieu/README.md) |
-| `tools/` | công cụ sinh dữ liệu / tài nguyên, cấu hình trung tâm, phát hành client | [tools/README.md](tools/README.md) |
+| `sql/` | MỘT tệp CSDL đầy đủ `htbb_day_du.sql` (bản chụp CSDL — dữ liệu game sửa trong CSDL) + `nang_cap.sql` cho CSDL đang chạy | [sql/README.md](sql/README.md) |
+| `du_lieu/` | bảng tài nguyên client / bản đồ (sprite, tile, NPC) mà mã đọc trực tiếp | [du_lieu/README.md](du_lieu/README.md) |
+| `tools/` | công cụ tài nguyên, bot kiểm thử, phát hành client; `luu_tru_sinh_du_lieu/`: bộ sinh dữ liệu cũ (lưu trữ) | [tools/README.md](tools/README.md) |
 | `vps/` | tệp triển khai VPS: systemd, nginx, MariaDB, deploy, sao lưu | [vps/README.md](vps/README.md) |
 | `docs/` | tài liệu dự án (bên dưới) | |
 

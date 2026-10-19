@@ -33,7 +33,7 @@ public final class HoiSinh {
     private HoiSinh() {
     }
 
-    // ================================================================== khoa cau hinh (tools/cauhinh/danh_muc.json)
+    // ================================================================== khoa cau hinh (tools/luu_tru_sinh_du_lieu/cauhinh/danh_muc.json)
 
     public static final String K_BAT = "hoi_sinh.bat";
     public static final String K_XU_PHAN_TRAM_GIO = "hoi_sinh.xu_phan_tram_gio";

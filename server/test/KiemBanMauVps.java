@@ -81,7 +81,7 @@ public final class KiemBanMauVps {
     /** Khoa danh muc + khoa ma nguon server doc (getProperty / hang chuoi "sv.*"...), moi dong mot khoa. */
     private static String khoaBiet() {
         final StringBuilder b = new StringBuilder("\n");
-        final Matcher dm = Pattern.compile("\"khoa\": \"([^\"]+)\"").matcher(doc("../tools/cauhinh/danh_muc.json"));
+        final Matcher dm = Pattern.compile("\"khoa\": \"([^\"]+)\"").matcher(DayDu.danhMucJson());
         while (dm.find()) {
             b.append(dm.group(1)).append('\n');
         }

@@ -81,9 +81,9 @@ public final class KiemBangMaNguon {
      * bat duoc file MOI bi hong.
      */
     private static final List<String> BO_QUA = Arrays.asList(
-        "../du_lieu/sql_nguon/them_bang_cam_may.sql",
-        "../du_lieu/sql_nguon/gamedb7_clean.sql",
-        "../vps/db_new_server.sql"
+        "../tools/luu_tru_sinh_du_lieu/sql_nguon/them_bang_cam_may.sql",
+        "../tools/luu_tru_sinh_du_lieu/sql_nguon/gamedb7_clean.sql",
+        "../tools/luu_tru_sinh_du_lieu/sql_nguon/db_new_server.sql"
         // web/admin/*.php (5 tep) da ra khoi danh sach: website PHP da bo (docs/kien-truc.md).
     );
 

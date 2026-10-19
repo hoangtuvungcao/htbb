@@ -1,5 +1,5 @@
 /**
- * THÀNH VIÊN HTBB — phần chạm database (bảng tv_thanh_vien, tv_nhat_ky của HTBB/du_lieu/sql_nguon/pokemon_thanh_vien.sql
+ * THÀNH VIÊN HTBB — phần chạm database (bảng tv_thanh_vien, tv_nhat_ky của HTBB/tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_thanh_vien.sql
  * + cau_hinh thanh_vien.* + nap_goi THANH_VIEN). Thiết kế: docs/van-hanh.md.
  *
  * Thành viên theo TÀI KHOẢN. Cấp / gia hạn / thu hồi CHỈ qua tvCap / tvThuHoi (mua, hoàn tiền, admin,
@@ -17,7 +17,7 @@ export async function tvCoBang(): Promise<boolean> {
 }
 
 export function tvThieuBang(): never {
-  throw apiLoi(409, 'Chưa có bảng thành viên — chạy HTBB/du_lieu/sql_nguon/pokemon_nap_tien.sql rồi HTBB/du_lieu/sql_nguon/pokemon_thanh_vien.sql.', { code: 'thieu_bang' })
+  throw apiLoi(409, 'Chưa có bảng thành viên — chạy sql/nang_cap.sql.', { code: 'thieu_bang' })
 }
 
 // ---------------------------------------------------------------- cấu hình (cau_hinh, nhớ 5 giây)

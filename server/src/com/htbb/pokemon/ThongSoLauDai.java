@@ -3,10 +3,10 @@ package com.htbb.pokemon;
 /**
  * THONG SO THIET KE DAI HAN (docs/thiet-ke-game.md).
  *
- * FILE SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.
+ * FILE SINH RA boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.
  * Hai loai so:
  *   - HANG (static final): so thiet ke CHUA co bang SQL (tran cap theo mua, ngan sach nhiem vu, muc tieu
- *     mo phong...). Sinh tu bang trong tools/pokemon/sinh_sql_lau_dai.py.
+ *     mo phong...). Sinh tu bang trong tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py.
  *   - NAP TU SQL (static volatile, RONG cho toi khi nap): so co bang data_cap_do_lau_dai /
  *     data_nang_cap_lau_dai / data_kinh_te_lau_dai - bang la NGUON DUY NHAT. com.htbb.dulieu.DuLieuSql nap
  *     luc khoi dong (data.DatabaseDuLieuSql, thieu bang = server tu choi chay) hoac tu sql/htbb_day_du.sql

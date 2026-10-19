@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CSDL cua he sinh thai (du_lieu/sql_nguon/pokemon_he_sinh_thai.sql). Moi SQL dung PreparedStatement, cu phap
+ * CSDL cua he sinh thai (tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_he_sinh_thai.sql). Moi SQL dung PreparedStatement, cu phap
  * portable (MariaDB + NovaDB). Moi thao tac "tranh mua" (mua tin ban, giao don, nhan hop thu) dung
  * UPDATE/DELETE co dieu kien roi kiem so dong - chi mot ben thang.
  *

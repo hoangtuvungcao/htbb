@@ -10,7 +10,7 @@ Tài liệu tra cứu mọi khoá cấu hình của máy chủ game và website.
 Thứ tự ưu tiên: **bảng `cau_hinh` > `server.ini` > mặc định trong danh mục** — riêng **khoá ẩn** (cố định / luôn bật,
 xem dưới) máy thật bỏ qua bảng `cau_hinh`: **`server.ini` > giá trị cố định**.
 
-**Phân loại (19/10/2026).** Mỗi khoá có trường `lop` trong `danh_muc.json`:
+**Phân loại (19/10/2026).** Mỗi khoá có cột `lop` trong bảng `cau_hinh_danh_muc`:
 
 - **Chỉnh trên web** (`chinh`) — thứ người vận hành thật sự chỉnh: tỉ lệ rơi / EXP, giờ chiếm Gym, giftcode, công tắc bán
   hàng nạp tiền, Thành viên / kích hoạt, giới hạn Tự động đánh, giá hồi sinh, bảo trì, đăng ký, link, GM. Hiện trên
@@ -23,7 +23,7 @@ xem dưới) máy thật bỏ qua bảng `cau_hinh`: **`server.ini` > giá trị
 
 Đổi khẩn cấp một khoá ẩn: thêm `khoa=gia_tri` vào [`vps/server.ini.tmpl`](../vps/server.ini.tmpl) (máy nhà: `server.ini`)
 rồi khởi động lại máy chủ game. Máy thử (`sv.cho_phep_thu_nghiem=1`; web: dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc
-`cau_hinh` cho mọi khoá và trang có nút *Hiện khoá cố định*. Bảng đầy đủ ở mục 4 (sinh từ danh mục).
+`cau_hinh` cho mọi khoá và trang có nút *Hiện khoá cố định*. Bảng đầy đủ ở mục 4 (bản chụp danh mục).
 
 Vận hành hằng ngày (đổi cấu hình từ web, khởi động lại an toàn): [van-hanh.md](van-hanh.md). Kiến trúc của
 dịch vụ cấu hình trung tâm: [kien-truc.md](kien-truc.md). Biến môi trường của website: `web/.env.example` và
@@ -33,14 +33,16 @@ dịch vụ cấu hình trung tâm: [kien-truc.md](kien-truc.md). Biến môi tr
 
 | Phần | Tệp |
 |---|---|
-| Danh mục khoá (nguồn duy nhất) | [`tools/cauhinh/danh_muc.json`](../tools/cauhinh/danh_muc.json) |
-| Bộ sinh | [`tools/cauhinh/sinh_cau_hinh.py`](../tools/cauhinh/sinh_cau_hinh.py) → `du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql` (bảng `cau_hinh_danh_muc` + `cau_hinh_nhom`: máy chủ nạp danh mục từ đây lúc khởi động và mỗi 60 giây, thiếu bảng là không khởi động; CSDL cũ nạp `vps/nang_cap_csdl.sql`), `web/shared/utils/cauHinhTrungTam.gen.ts` và bảng ở mục 4 của tài liệu này |
+| Danh mục khoá (nguồn duy nhất) | bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL (bản chụp `sql/htbb_day_du.sql`; CSDL cũ nạp `sql/nang_cap.sql`). Máy chủ nạp danh mục từ đây lúc khởi động và mỗi 60 giây, thiếu bảng là không khởi động |
+| Bản dự phòng của web | `web/shared/utils/cauHinhTrungTam.gen.ts` (tệp tĩnh, test đối chiếu với `sql/htbb_day_du.sql`) |
 | Dịch vụ máy chủ | `server/src/com/htbb/cauhinh/CauHinhTrungTam.java` (+ `TinhCauHinh`, `KiemGiaTri`, `ApDungMacDinh`, `CongTac`) |
 | Trang web | `/admin/cau-hinh-he-thong` (trang cấu hình DUY NHẤT; trang cũ `/admin/cauhinh` đã gỡ), API `/api/admin/cau-hinh-he-thong/**` |
 | Bộ ví dụ kiểm chung Java ↔ web | [`tools/cauhinh/vi_du_kiem.tsv`](../tools/cauhinh/vi_du_kiem.tsv) |
 
-Thêm / sửa khoá: chỉnh `danh_muc.json` → `python3 tools/cauhinh/sinh_cau_hinh.py` ở gốc repo (kiểm lệch:
-thêm `--kiem`, mã thoát 1 nếu tệp sinh khác danh mục). Đừng sửa tay các tệp sinh ra, kể cả bảng ở mục 4.
+Thêm / sửa khoá: sửa dòng trong `cau_hinh_danh_muc` (SQL; khoá mới cần mã đọc nó), khởi động lại máy chủ, xuất lại
+`sql/htbb_day_du.sql` ([sql/README.md](../sql/README.md)) và chép các dòng mới vào khối `cau_hinh_danh_muc` của
+`sql/nang_cap.sql`; cập nhật bảng ở mục 4 và `cauHinhTrungTam.gen.ts` cho khớp (test báo lệch). Bộ sinh cũ
+`sinh_cau_hinh.py` + `danh_muc.json` đã lưu trữ ở `tools/luu_tru_sinh_du_lieu/cauhinh/`.
 
 Luật áp dụng:
 
@@ -321,11 +323,11 @@ server chỉ cho vào khi region là 0/9).
 
 ## 4. Bảng tra cứu khoá trong danh mục
 
-Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
+Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nhom` (sinh lần cuối 19/10/2026; CSDL thắng nếu lệch).
 
-<!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
+<!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **213 khoá** trong **15 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **213 khoá** trong **15 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
@@ -678,4 +680,4 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `sv.testMode` | Chế độ thử (testMode) | Cố định (ẩn) | `0` | ngay | game | Mã test cấp tài nguyên miễn phí. Khoá ở máy thật. (máy thật chỉ nhận mặc định) |
 | `sv.testCode` | Mã test | Cố định (ẩn) | *(trống)* | ngay | game | Chuỗi gõ trong game khi testMode=1. (máy thật chỉ nhận mặc định) |
 
-<!-- SINH TU tools/cauhinh/danh_muc.json: KET THUC -->
+<!-- BAN CHUP cau_hinh_danh_muc: KET THUC -->

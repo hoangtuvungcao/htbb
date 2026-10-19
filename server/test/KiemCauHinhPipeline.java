@@ -78,9 +78,9 @@ public final class KiemCauHinhPipeline {
             Kiem.dung("ban mau co khoa " + k + " (khong thi van phai sua tay tren VPS)",
                     banMau.containsKey(k));
         }
-        // Khoa cua danh muc cau hinh trung tam (tools/cauhinh/danh_muc.json: tu_dong.*, hoi_sinh.*...)
+        // Khoa cua danh muc cau hinh trung tam (bang cau_hinh_danh_muc trong CSDL: tu_dong.*, hoi_sinh.*...)
         // cung la khoa that: CauHinhTrungTam doc server.ini (CSDL > server.ini > mac dinh).
-        final String danhMuc = doc("../tools/cauhinh/danh_muc.json");
+        final String danhMuc = DayDu.danhMucJson();
         for (final String k : banMau.keySet()) {
             Kiem.dung("khoa " + k + " trong ban mau that su duoc ma nguon doc",
                     maNguonDoc.contains(k) || danhMuc.contains("\"khoa\": \"" + k + "\"")

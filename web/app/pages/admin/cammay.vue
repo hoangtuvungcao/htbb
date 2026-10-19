@@ -141,7 +141,7 @@ const cotCam: CotBang[] = [
       title="Chưa có bảng dữ liệu."
     >
       <template #description>
-        <p>Chạy một lần trên máy chủ: <code>mysql -u root htbb_db &lt; du_lieu/sql_nguon/them_bang_cam_may.sql</code></p>
+        <p>Chạy một lần trên máy chủ: <code>sudo bash /opt/htbb/vps/nang_cap_csdl.sh</code></p>
         <p class="mt-1 text-xs">
           Lỗi đọc được: {{ data.loiDoc }}
         </p>

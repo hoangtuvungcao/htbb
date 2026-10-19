@@ -29,7 +29,7 @@ public final class KiemXoaVinhVien {
     private static final String F_NHANVAT = "server/api/admin/nhanvat/[id]/xoa.post.ts";
     private static final String F_TAIKHOAN = "server/api/admin/taikhoan/[id].post.ts";
     private static final String F_TK_UTIL = "server/utils/taiKhoanAdmin.ts";
-    private static final String F_SQL = "../du_lieu/sql_nguon/gamedb7_clean.sql";
+    private static final String F_SQL = "../sql/htbb_day_du.sql";
 
     /** {ten bang, cot dung de khoa theo nhan vat} - dung THEO DUNG THU TU LenhWeb da xoa. */
     private static final String[][] BANG_CON_THEO_THU_TU = {

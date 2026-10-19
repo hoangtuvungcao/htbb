@@ -1,5 +1,5 @@
 /**
- * Đọc dòng của một bảng trong tệp SQL (mysqldump `sql/htbb_day_du.sql` hoặc tệp sinh `du_lieu/sql_nguon/pokemon_*.sql`).
+ * Đọc dòng của một bảng trong tệp SQL (mysqldump `sql/htbb_day_du.sql` hoặc tệp sinh `tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_*.sql`).
  *
  * Thuần (không fs, không CSDL): nhận chuỗi SQL, trả mảng object { cột: giá trị }. Dùng cho
  *   - test đối chiếu (tests/du-lieu-sql.test.ts): biến đổi dòng SQL phải ra đúng JSON đóng gói;

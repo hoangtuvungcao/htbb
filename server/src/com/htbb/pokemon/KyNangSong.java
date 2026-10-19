@@ -278,7 +278,7 @@ public final class KyNangSong {
         new CongThuc(23, "Tượng đá Onix", KHAO_CO, 25, new int[][]{{50, 30}, {65, 5}}, 112, 1, null),
         new CongThuc(24, "Đèn lồng Chinchou", KHAO_CO, 30, new int[][]{{14, 5}, {4, 2}}, 113, 1, null),
         new CongThuc(25, "Bộ sưu tập hoá thạch", KHAO_CO, 40, new int[][]{{60, 1}, {61, 1}, {63, 1}, {64, 1}}, 114, 1, null),
-        // Cong dung cho vat lieu cau / dao truoc chi ban NPC (luat "khong item mo coi", tools/pokemon/kiem_item_mo_coi.py).
+        // Cong dung cho vat lieu cau / dao truoc chi ban NPC (luat "khong item mo coi", tools/luu_tru_sinh_du_lieu/pokemon/kiem_item_mo_coi.py).
         // Gia tri dau ra <= tong gia tri nguyen lieu (VatLieuSinhThai ‰ gio): khong tao gia tri moi.
         new CongThuc(26, "Lẩu hải sản (Cà ri cá)", NAU_AN, 25, new int[][]{{9, 2}, {10, 1}, {11, 1}, {13, 1}}, VatLieuSinhThai.CA_RI, 1, null),
         new CongThuc(27, "Mồi thơm biển", NAU_AN, 15, new int[][]{{16, 1}, {1, 3}}, VatLieuSinhThai.MOI_THOM, 1, null),

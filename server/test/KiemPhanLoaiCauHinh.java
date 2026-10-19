@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PHAN LOAI CAU HINH (docs/cau-hinh.md, truong "lop" trong tools/cauhinh/danh_muc.json):
+ * PHAN LOAI CAU HINH (docs/cau-hinh.md, cot "lop" cua bang cau_hinh_danh_muc):
  *   chinh    - hien tren /admin/cau-hinh-he-thong, CSDL > server.ini > mac dinh
  *   co_dinh  - an; may that BO QUA dong CSDL: server.ini (khan cap) > gia tri co dinh
  *   luon_bat - an; nhu co_dinh, gia tri luon "1"
@@ -101,11 +101,14 @@ public final class KiemPhanLoaiCauHinh {
         Kiem.dung("... bao dung khoa", kq.loi.containsKey("sv.spam.chat.gan"));
         Kiem.bang("doc khoa luon bat khi khong co CSDL / ini", "1", CauHinhTrungTam.chuoi("sv.lau_dai"));
 
-        // ---- Tep sinh mang phan loai ----
-        final String sql = doc("../du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql");
-        Kiem.dung("sql: cau_hinh_danh_muc co cot lop + an", sql.contains("`lop` VARCHAR(10)") && sql.contains("`an` TINYINT"));
-        Kiem.dung("sql: tao bang cau_hinh_nhom", sql.contains("CREATE TABLE IF NOT EXISTS `cau_hinh_nhom`"));
-        Kiem.dung("sql: sv.lau_dai ghi lop luon_bat", sql.contains("'luon_bat', 1);") && sql.contains("('sv.lau_dai'"));
+        // ---- CSDL day du + nang cap mang phan loai ----
+        Kiem.dung("htbb_day_du.sql: cau_hinh_danh_muc co cot lop + an", DayDu.cot("cau_hinh_danh_muc").contains("lop")
+                && DayDu.cot("cau_hinh_danh_muc").contains("an"));
+        Kiem.dung("htbb_day_du.sql: co bang cau_hinh_nhom (cot an)", DayDu.cot("cau_hinh_nhom").contains("an"));
+        Kiem.bang("htbb_day_du.sql: sv.lau_dai lop luon_bat, an = 1", "luon_bat|1",
+                DayDu.giaTri("cau_hinh_danh_muc", "khoa", "sv.lau_dai", "lop") + "|" + DayDu.giaTri("cau_hinh_danh_muc", "khoa", "sv.lau_dai", "an"));
+        final String nc = DayDu.nangCap();
+        Kiem.dung("sql/nang_cap.sql tao lai cau_hinh_danh_muc co lop + an", nc.contains("`lop` VARCHAR(10)") && nc.contains("`an` TINYINT"));
         final String ts = doc("../web/shared/utils/cauHinhTrungTam.gen.ts");
         Kiem.dung("web gen.ts mang lop", ts.contains("lop: \"luon_bat\"") && ts.contains("lop: \"co_dinh\""));
         final String md = doc("../docs/cau-hinh.md");

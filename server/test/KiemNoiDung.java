@@ -17,17 +17,15 @@ import java.util.regex.Pattern;
  * Noi dung day du 1-2 nam (docs/thiet-ke-game.md): trang bi 11 bac, vat pham,
  * chieu, quai/Gym/boss, bang roi, su kien, trang tri, cua hang, che tao.
  *
- * VI SAO: tat ca sinh tu tools/pokemon/sinh_noi_dung.py (doc so tu sinh_sql_lau_dai.py) ra
- * du_lieu/sql_nguon/pokemon_noi_dung.sql + du_lieu/noi_dung_*.csv + du_lieu/web/*.csv. Sua so
- * trong script ma quen chay lai, hoac chinh so pha ngan sach (bac moi manh hon 1,1 x bac cu
- * +15, gia ngoai tam thu nhap, do Hoan my roi tu quai thuong, chieu lech TTK...) -> test do.
- * Chi doc file, khong can CSDL.
+ * VI SAO: noi dung nam trong CSDL day du sql/htbb_day_du.sql (bang data_noi_dung_*, data_item 1001..1199,
+ * data_monster nam 2 ...) - nguon duy nhat, sua tren trang quan tri. Chinh so pha ngan sach (bac moi manh hon
+ * 1,1 x bac cu +15, gia ngoai tam thu nhap, do Hoan my roi tu quai thuong, chieu lech TTK...) hoac sai tham chieu
+ * -> test do. Bang tai nguyen client (du_lieu/bang_*.csv, kiem_ke_sprite.csv) doi chieu them. Chi doc tep.
  */
 public final class KiemNoiDung {
 
     private static final String D = "../du_lieu/";
-    private static final String F_SQL = "../du_lieu/sql_nguon/pokemon_noi_dung.sql";
-    private static final String F_DUMP = "../sql/htbb_day_du.sql";
+    private static final String F_DUMP = DayDu.TEP;
     private static final int ID_TU = 1001;
     private static final int ID_DEN = 1199;
     private static final int SO_THUOC = 162;
@@ -66,7 +64,6 @@ public final class KiemNoiDung {
             kiemRoi();
             kiemSuKienTrangTri();
             kiemTen(moi);
-            kiemWeb();
             kiemSql(moi);
         } catch (final Exception e) {
             Kiem.dung("khong nem loi: " + e, false);
@@ -657,7 +654,8 @@ public final class KiemNoiDung {
         Kiem.bang("40 template quai nam 2 (36 Hoenn + 4 huyen thoai)", Integer.valueOf(40), Integer.valueOf(moi.size()));
         Kiem.bang("quai nam 2: id lien tiep sau " + maxCu + ", co trong bang_quai.csv, du sprite + chan dung", "[]",
                 loi.toString());
-        Kiem.dung("SQL chen data_monster nam 2", doc(F_SQL).contains("DELETE FROM `data_monster` WHERE `id` >= 139 AND `id` <= 199;"));
+        Kiem.dung("CSDL co data_monster nam 2 (id 139..199)", DayDu.dong("data_monster").stream()
+                .anyMatch(r -> { final int id = Integer.parseInt(r.get("id")); return id >= 139 && id <= 199; }));
     }
 
     // ------------------------------------------------------------------ icon
@@ -820,52 +818,28 @@ public final class KiemNoiDung {
         Kiem.bang("ten noi dung la tieng Viet co dau", "[]", khongViet.toString());
     }
 
-    // ------------------------------------------------------------------ web
-    private static void kiemWeb() throws Exception {
-        final String[] tep = {"trang_bi", "bo_trang_bi", "vat_pham", "nang_cap", "ngoc_he", "chieu", "nhanh_eevee",
-            "quai", "gym", "boss_the_gioi", "su_kien", "trang_tri", "cua_hang", "che_tao"};
-        final List<String> loi = new ArrayList<String>();
-        final Pattern noiBo = Pattern.compile("\\b(item|thuoc|ngoc|moi):|\\bppm\\b|\\b(id|ma|anh_xa)\\b|_");
-        for (final String t : tep) {
-            final String s = doc(D + "web/" + t + ".csv");
-            final String dau = s.substring(0, s.indexOf('\n'));
-            if (noiBo.matcher(dau).find()) {
-                loi.add(t + " cot noi bo: " + dau);
-            }
-            final Matcher m = Pattern.compile("\\b(item|thuoc|ngoc|moi):\\w+").matcher(s);
-            if (m.find()) {
-                loi.add(t + " lo id: " + m.group());
-            }
-            if (csv(D + "web/" + t + ".csv").isEmpty()) {
-                loi.add(t + " rong");
-            }
-        }
-        Kiem.bang("du_lieu/web/*.csv chi cot nguoi choi (khong id/cong thuc)", "[]", loi.toString());
-    }
-
     // ------------------------------------------------------------------ sql
     private static void kiemSql(final List<Map<String, String>> moi) throws Exception {
-        final String sql = doc(F_SQL);
-        Kiem.dung("SQL xoa dai id truoc khi chen (chay lai duoc)",
-                sql.contains("DELETE FROM `data_item` WHERE `id` >= " + ID_TU + " AND `id` <= " + ID_DEN + ";"));
-        boolean du = true;
-        for (final Map<String, String> r : moi) {
-            du &= sql.contains("(" + r.get("id") + ", '");
+        final Set<String> id = new HashSet<String>();
+        for (final Map<String, String> r : DayDu.dong("data_item")) {
+            id.add(r.get("id"));
         }
-        Kiem.dung("SQL chen du " + moi.size() + " item moi", du);
-        final Matcher m = Pattern.compile("CREATE TABLE `(data_noi_dung_\\w+)`").matcher(sql);
+        boolean du = !moi.isEmpty();
+        for (final Map<String, String> r : moi) {
+            du &= id.contains(r.get("id"));
+        }
+        Kiem.dung("CSDL co " + moi.size() + " item noi dung (data_item " + ID_TU + ".." + ID_DEN + ")", du);
         int n = 0;
-        final List<String> thieuDrop = new ArrayList<String>();
+        final List<String> rong = new ArrayList<String>();
+        final java.util.regex.Matcher m = Pattern.compile("(?m)^CREATE TABLE `(data_noi_dung_\\w+)`").matcher(DayDu.sql());
         while (m.find()) {
             n++;
-            if (!sql.contains("DROP TABLE IF EXISTS `" + m.group(1) + "`;")) {
-                thieuDrop.add(m.group(1));
+            if (DayDu.soDong(m.group(1)) <= 0) {
+                rong.add(m.group(1));
             }
         }
-        Kiem.dung("SQL co >= 19 bang staging data_noi_dung_* (" + n + ")", n >= 19);
-        Kiem.bang("moi bang staging co DROP IF EXISTS", "[]", thieuDrop.toString());
-        Kiem.sai("SQL portable: khong CREATE TABLE ... LIKE / ENGINE=", sql.contains(" LIKE ") || sql.contains("ENGINE="));
-        Kiem.dung("xuat_sql_day_du.sh gom pokemon_noi_dung", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_noi_dung"));
+        Kiem.dung("CSDL co >= 19 bang noi dung data_noi_dung_* (" + n + ")", n >= 19);
+        Kiem.bang("moi bang noi dung co du lieu", "[]", rong.toString());
     }
 
     // ================================================================== tien ich
@@ -899,10 +873,28 @@ public final class KiemNoiDung {
         return s.size();
     }
 
+    /**
+     * So lieu theo cap dung cho kiem ngan sach / TTK: xu_moi_gio tu ThongSoLauDai (nap tu data_cap_do_lau_dai), tan cong
+     * tran + quai de xuat theo CONG THUC THIET KE (giong bang tinh cu tools/luu_tru_sinh_du_lieu/du_lieu/
+     * bang_cap_do_lau_dai.csv: tan_cong_tran = 30 + 12L, quai_hp / quai_thu tu TTK 4 / 5 / 6 giay).
+     */
     private static Map<Integer, Map<String, String>> theoCap() throws Exception {
         final Map<Integer, Map<String, String>> m = new HashMap<Integer, Map<String, String>>();
-        for (final Map<String, String> r : csv(D + "bang_cap_do_lau_dai.csv")) {
-            m.put(Integer.valueOf(r.get("cap")), r);
+        final double nc6 = tongNc(6) / 100.0;
+        for (int L = 1; L <= ThongSoLauDai.CAP_TOI_DA; L++) {
+            final Map<String, String> r = new HashMap<String, String>();
+            final double tct = 30 + 12 * L;
+            final double atk = tct * (1 + 0.6 * (1 + nc6));
+            final long thu = (long) Math.rint(0.35 * atk);
+            final double ttk = L <= 30 ? 4.0 : (L <= 60 ? 5.0 : 6.0);
+            final double dps = (atk - thu) * 1.1 * 2.2;
+            final long hp = (long) Math.rint(ttk * dps / 10.0) * 10;
+            r.put("cap", String.valueOf(L));
+            r.put("xu_moi_gio", String.valueOf(ThongSoLauDai.xuMoiGio(L)));
+            r.put("tan_cong_tran", String.valueOf((long) tct));
+            r.put("quai_hp", String.valueOf(hp));
+            r.put("quai_thu", String.valueOf(thu));
+            m.put(Integer.valueOf(L), r);
         }
         return m;
     }
@@ -928,7 +920,11 @@ public final class KiemNoiDung {
     }
 
     /** CSV (RFC 4180, dau phay, nhay kep) -> list map theo header. */
+    /** Bang tai nguyen client con trong du_lieu/ doc tu tep; bang thiet ke cu (nay o CSDL) doc tu htbb_day_du.sql. */
     static List<Map<String, String>> csv(final String p) throws Exception {
+        if (!new java.io.File(p).isFile()) {
+            return DayDu.bangThietKe(p);
+        }
         final String s = doc(p);
         final List<List<String>> hang = new ArrayList<List<String>>();
         List<String> cur = new ArrayList<String>();

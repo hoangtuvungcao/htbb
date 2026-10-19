@@ -269,8 +269,8 @@ public final class KiemTuDong {
         } finally {
             CauHinhTrungTam.datChoTest(null, null, false);
         }
-        final String dm = doc("../tools/cauhinh/danh_muc.json");
-        Kiem.dung("danh_muc.json co nhom tu_dong", dm.contains("\"ma\": \"tu_dong\""));
+        final String dm = DayDu.danhMucJson();
+        Kiem.dung("danh muc cau hinh (CSDL) co nhom tu_dong", dm.contains("\"ma\": \"tu_dong\""));
     }
 
     static void khongThuongThem() {

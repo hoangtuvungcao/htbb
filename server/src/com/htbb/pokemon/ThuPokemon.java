@@ -3,7 +3,7 @@ package com.htbb.pokemon;
 /**
  * Thu cuoi (data.Animal, so hieu 0..20 = Animal.idImg) -> Pokemon thu cuoi.
  *
- * Nguon: du_lieu/bang_thu.csv (sinh boi tools/pokemon/sinh_bang_thu.py). Sua bang
+ * Nguon: du_lieu/bang_thu.csv (sinh boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_bang_thu.py). Sua bang
  * o script roi cap nhat mang nay - test/KiemPokemon doi chieu hai noi voi nhau.
  * Lop THUAN. Gui xuong client bang lenh -93 POKE_CUOI (GoiPokemon).
  */

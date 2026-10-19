@@ -1,7 +1,7 @@
 /**
  * Xem CHỈ ĐỌC các bảng kết quả của game (chiếm thành tuần, chiến trường, quà online hằng ngày...).
  * Danh sách trắng cố định — chỉ hiện bảng thật sự có trong CSDL. Bảng mới của giai đoạn 2
- * (HTBB/du_lieu/sql_nguon/them_bang_lau_dai.sql) đã có tên ở đây.
+ * (HTBB/tools/luu_tru_sinh_du_lieu/sql_nguon/them_bang_lau_dai.sql) đã có tên ở đây.
  * ?bang= tên bảng (phải nằm trong danh sách) -> 200 dòng mới nhất.
  */
 const BANG: { ten: string, moTa: string }[] = [

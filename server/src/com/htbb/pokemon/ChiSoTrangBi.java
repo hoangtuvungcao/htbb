@@ -2,8 +2,8 @@ package com.htbb.pokemon;
 
 /**
  * MO HINH CHI SO POKEMON cho bang data_attribute (docs/thiet-ke-game.md). Lop THUAN, NGUON
- * DUY NHAT cua ten / don vi / mo ta / trang thai moi dong chi so: tools/pokemon/SinhSqlChiSo.java sinh ra
- * du_lieu/sql_nguon/pokemon_chi_so.sql + du_lieu/chi_so_trang_bi.csv tu day; server dung {@link #an} de an dong khi bat
+ * DUY NHAT cua ten / don vi / mo ta / trang thai moi dong chi so: tools/luu_tru_sinh_du_lieu/pokemon/SinhSqlChiSo.java sinh ra
+ * tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_chi_so.sql + tools/luu_tru_sinh_du_lieu/du_lieu/chi_so_trang_bi.csv tu day; server dung {@link #an} de an dong khi bat
  * sv.lau_dai.
  *
  * GIU NGUYEN ID (client tra ten theo VI TRI dong, xem test/KiemBangThuocTinh): khong them, khong xoa, chi doi
