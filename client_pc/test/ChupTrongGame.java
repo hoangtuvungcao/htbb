@@ -15,7 +15,9 @@ import javax.microedition.midlet.MIDlet;
  * trên cùng: cỡ >= tối thiểu, hai vùng không chồng + cách nhau >= 8 dp (PC 8 px), nằm trong màn, bấm giả tâm trúng đúng.
  *
  *   APP_IMAGE=0 sh client_pc/build.sh && javac -cp client_pc/out/build/cls -d $O client_pc/test/ChupTrongGame.java \
- *     && java -Djava.awt.headless=true -cp client_pc/out/build/cls:client_pc/out/build/res:$O ChupTrongGame <thư mục ảnh>
+ *       server/src/com/htbb/pokemon/IconPokemon.java server/src/com/htbb/pokemon/IconPokemonBang.java \
+ *     && java -Djava.awt.headless=true [-Dhtbb.mayChu=server] -cp client_pc/out/build/cls:client_pc/out/build/res:$O ChupTrongGame <thư mục ảnh>
+ * (0.9.5: máy chủ ảnh giả - icon vật phẩm nạp từ server/map như lệnh -51 thật; -Dchup.co / -Dchup.man chạy một phần)
  * Mã thoát 1 = có lỗi.
  */
 public class ChupTrongGame {
@@ -92,6 +94,39 @@ public class ChupTrongGame {
         g.dispose();
         return ra;
     }
+
+    private static BufferedImage demDo;
+
+    /** Vẽ một khung vào bộ đệm dùng lại (gọi TRÊN luồng sự kiện NenPc) - DoKhung đo thời gian / cấp phát. */
+    static void veThang() {
+        if (demDo == null || demDo.getWidth() != NenPc.thatW || demDo.getHeight() != NenPc.thatH) {
+            demDo = new BufferedImage(NenPc.thatW, NenPc.thatH, BufferedImage.TYPE_INT_RGB);
+        }
+        Graphics2D g2 = demDo.createGraphics();
+        Graphics2D gg = (Graphics2D) g2.create();
+        int k = NenPc.heSo;
+        gg.scale(k, k);
+        gg.clipRect(0, 0, NenPc.rong, NenPc.cao);
+        Graphics g = new Graphics(gg, NenPc.rong, NenPc.cao, k);
+        try {
+            if (veM == null) {
+                veM = javax.microedition.lcdui.Canvas.class.getDeclaredMethod("paint", Graphics.class);
+                veM.setAccessible(true);
+            }
+            veM.invoke(game.render.Canvas.instance, g);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        gg.dispose();
+        try {
+            htbb.pc.LopPhu.ve(g2, demDo.getWidth(), demDo.getHeight());
+        } catch (Throwable e) {
+            // bỏ
+        }
+        g2.dispose();
+    }
+
+    private static java.lang.reflect.Method veM;
 
     /** Kiểm mọi vùng chạm lớp trên cùng: cỡ, khoảng cách, trong màn, bấm tâm trúng. */
     static void kiemCham(String nhan, int min, int cach) {
@@ -170,12 +205,19 @@ public class ChupTrongGame {
             }
         });
         Thread.sleep(800);
+        htbb.pc.ChuHD.ghi = java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
         String[] man = {"the_gioi", "menu", "nv_trang_bi", "nv_o_co_do", "nv_o_trong", "nv_chi_tiet", "nv_hanh_trang", "nv_chi_so",
-            "nv_ky_nang", "nv_thu", "nv_ngoai_hinh", "so_luong",
+            "nv_ky_nang", "nv_thu", "nv_ngoai_hinh", "nv_cuoi_trang_bi", "nv_cuoi_ds_thu", "nv_cuoi_thu", "the_gioi_cuoi", "so_luong",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
             "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
-            "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet"};
+            "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
+            "hop_thong_bao_dai", "suc_khoe", "chon_chieu", "goi_y_chieu", "tu_dong", "hop_ban", "hop_mac_do", "hop_len_cap", "hop_tien_hoa",
+            "hop_phan_thuong", "hop_nhan_nhiem_vu", "hop_bao_tri", "hop_loi", "hop_mat_ket_noi", "hop_hoi_sinh", "hop_giftcode",
+            "hop_giftcode_ket_qua", "hop_moi_giao_dich", "hop_moi_doi", "hop_dang_xuat", "hop_cho", "hop_nhap_chu", "hop_vat_pham"};
+        // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
+        String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
+            if (locCo != null && !("," + locCo + ",").contains("," + TEN_CO[c] + ",")) continue;
             final int W = CO[c][0], H = CO[c][1], dpi = CO[c][2];
             NenPc.tinhKichThuoc(W, H);
             chay(new Runnable() {
@@ -200,6 +242,7 @@ public class ChupTrongGame {
             game.pokemon.VungCham.CACH = cach;
             for (int m = 0; m < man.length; m++) {
                 final String ten = man[m];
+                if (locMan != null && !("," + locMan + ",").contains("," + ten + ",")) continue;
                 chay(new Runnable() {
                     public void run() {
                         moMan(ten);
@@ -210,21 +253,38 @@ public class ChupTrongGame {
                     public void run() {
                         // hộp thoại mạng (không có máy chủ khi kiểm) đè lên màn đang kiểm: bỏ
                         Object d = game.render.Canvas.currentDialog;
-                        if (d instanceof game.render.screen.MsgDlg) {
+                        if (!ten.startsWith("hop_") && !ten.equals("xac_nhan") && !ten.equals("so_luong")
+                                && (d instanceof game.render.screen.MsgDlg || d instanceof game.pokemon.HopThongBao)) {
                             game.render.Canvas.endDlg();
                         }
                     }
                 });
                 ve(W, H);
+                chay(new Runnable() {
+                    public void run() {
+                        giaMayChuAnh();
+                    }
+                });
                 Thread.sleep(150);
                 BufferedImage anh = ve(W, H);
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
+                if (ten.startsWith("hop_") || ten.equals("xac_nhan") || ten.equals("so_luong")) {
+                    kiemHop(ten + " " + TEN_CO[c]);
+                }
                 // màn chơi: HUD PC (HudRong) chỉ ở cỡ PC; HUD APK (Hud.java) kiểm riêng bằng client_jar/tools/KiemCoCham
-                if (!"the_gioi".equals(ten) || dpi == 0) {
+                boolean theGioi = ten.startsWith("the_gioi") || "thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)
+                        || "goi_y_chieu".equals(ten) || "tu_dong".equals(ten) || "hop_vat_pham".equals(ten);
+                if (!theGioi || dpi == 0) {
                     kiemCham(ten + " " + TEN_CO[c], min, cach);
                 }
             }
         }
+        // soát chữ đã vẽ: mọi chuỗi ra màn (ChuHD / ChuGiaoDien) -> chuoi_da_ve.txt (tools/pokemon/kiem_chuoi_ui.py đọc)
+        java.util.TreeSet<String> ds = new java.util.TreeSet<String>(htbb.pc.ChuHD.ghi);
+        java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(new File(ra, "chuoi_da_ve.txt")), "UTF-8"));
+        for (String x : ds) pw.println(x.replace('\n', ' '));
+        pw.close();
+        System.out.println("ChupTrongGame: " + ds.size() + " chuoi da ve -> chuoi_da_ve.txt");
         System.out.println("ChupTrongGame: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }
@@ -255,11 +315,15 @@ public class ChupTrongGame {
         mc.dodge = 41;
         mc.critical = 15;
         mc.baokich = 75;
+        mc.attack = 186;   // 0.9.5: trước đây không đặt -> "Tấn công 0"
+        mc.speed = 5;
         mc.potions[1] = 12;
         mc.potions[4] = 5;
         mc.x = 200;
         mc.y = 200;
-        game.render.screen.WindowInfoScr.infoMainCharServer = new String[]{"Tốc độ: 118", "Kháng Lửa: 12%", "Hút máu: 3%"};
+        // như máy chủ thật gửi (Char.getInfoServer: dòng chiến trường của game gốc) + chỉ số có nghĩa -> màn lọc dòng rác
+        game.render.screen.WindowInfoScr.infoMainCharServer = game.render.Util.split(
+                "Thông tin chiến trường:@Sát thương trụ: Lớp giáp: 20@Giáp quái: 10@Kháng Lửa: 12%@Hút máu: 3%@", "@");
         // mẫu đồ
         String[] tenDo = {"Than lửa hồng", "Khăn quàng đỏ", "Băng đô gió", "Đai sức mạnh", "Vòng cổ ngọc", "Huy hiệu Đá",
             "Găng đấm thép", "Lông vũ tốc độ", "Phiến đá Lửa", "Ruy băng vàng", "Khăn quàng xanh", "Đai bạc", "Hạt giống thần"};
@@ -271,7 +335,7 @@ public class ChupTrongGame {
             t.name = tenDo[i];
             t.type = (short) loai[i];
             t.level = (short) (i == 11 ? 40 : 5 + i);
-            t.idIcon = (short) (100 + i);
+            t.idIcon = (short) (14000 + ICON_PMD[i]);
             mau[i] = t;
         }
         game.render.Res.itemTemplates.removeAllElements();
@@ -335,6 +399,45 @@ public class ChupTrongGame {
         mc.charXu = 1250000;
         mc.luong = 320;
         mc.skillPointLeft = 2;
+        // 0.9.5: nhân vật đã học 3 chiêu (thanh chiêu tự điền: đánh = chiêu 0, ô 1-3 = chiêu đã học)
+        // -1 = phải học ở NPC (chiêu 6-8), 0 = cộng 1 điểm khi đủ cấp
+        game.model.Char.skillLevelLearnt = new byte[]{1, 2, 1, 1, 0, 0, -1, -1, -1};
+        game.model.MainChar.quickSlot = null;
+        // bảng cấp cộng điểm chiêu (gói vào game) - dòng Charmander của máy chủ CharManager.LEVEL_ADD_SKILL[0]
+        short[][] capCong = {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10}, {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15}, {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20},
+            {17, 20, 22, 24, 26, 30, 33, 36, 39, 42, 42}, {3, 6, 9, 12, 18, 24, 26, 28, 30, 32, 32}, {26, 29, 32, 34, 36, 38, 40, 42, 44, 46, 46},
+            {25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 43}, {30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 48}, {45, 45, 47, 49, 51, 53, 55, 57, 59, 61, 61}};
+        game.model.skill.SkillManager.LEVEL_ADD_SKILL = new byte[15][11];
+        for (int i = 0; i < capCong.length; i++) for (int k = 0; k < 11; k++) game.model.skill.SkillManager.LEVEL_ADD_SKILL[i][k] = (byte) capCong[i][k];
+        // thú cưỡi + pet trong túi thú (gói 16 loại 2, tên đúng như máy chủ gửi)
+        game.model.Char.animal.removeAllElements();
+        String[][] thu = {{"0", "2", "3", "Tauros lv 3", "0"}, {"1", "13", "1", "Dragonite", "0"}, {"2", "4", "0", "Hoothoot cấp 1\nID: 2", "1"},
+            {"3", "6", "0", "Trứng Dratini\nID: 7\nhh: 21/10/2026\n-18:00", "1"}};
+        for (int i = 0; i < thu.length; i++) {
+            game.model.AnimalInfo an = new game.model.AnimalInfo();
+            an.id = (short) Integer.parseInt(thu[i][0]);
+            an.idImg = (byte) Integer.parseInt(thu[i][1]);
+            an.idPaint = an.idImg;
+            an.level = (byte) Integer.parseInt(thu[i][2]);
+            an.name = thu[i][3];
+            an.typeAnimal = (byte) Integer.parseInt(thu[i][4]);
+            game.model.Char.animal.addElement(an);
+        }
+        // bảng thuốc (tên + chỉ số ảnh 5500+K như máy chủ gửi)
+        try {
+            String[] tenThuoc = {"", "Thuốc hồi HP", "Siêu thuốc HP", "Thuốc hồi máu tối đa", "Ether", "Ether lớn", "Elixir tối đa"};
+            int[] anh = {0, 0, 1, 2, 3, 4, 5};
+            game.model.Potion[] lp = new game.model.Potion[120];
+            for (int i = 0; i < lp.length; i++) {
+                lp[i] = new game.model.Potion();
+                lp[i].index = (short) (i < anh.length ? anh[i] : 0);
+                lp[i].name = i < tenThuoc.length ? tenThuoc[i] : "Thuốc " + i;
+                lp[i].delay = 3000;
+            }
+            game.model.MainChar.listPotion = lp;
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
         // giá thuốc
         try {
             for (int i = 0; i < game.render.Res.potionTemplates.length; i++) {
@@ -355,11 +458,14 @@ public class ChupTrongGame {
         q.idMonsKill = new short[]{0};
         q.allMonsKilled = new short[]{6};
         q.totalMonskill = new short[]{10};
+        q.idNpcReceive = 5;     // Trưởng làng (NPC.NPCNAME)
+        q.idNpcResponse = 5;
         game.render.screen.GameScr.mainQuest = q;
         game.model.Quest q2 = new game.model.Quest(2);
         q2.name = "Thư gửi giáo sư";
         q2.decript = "Mang thư tới phòng thí nghiệm.";
         q2.stateQuest = 0;
+        q2.idNpcReceive = 21;   // Blaziken
         game.render.screen.GameScr.allQuestCanReceive.removeAllElements();
         game.render.screen.GameScr.allQuestCanReceive.addElement(q2);
         // mẫu quái (Pokédex)
@@ -414,6 +520,44 @@ public class ChupTrongGame {
     }
 
     static java.util.Vector TOP;
+    /** icon PMD (server map/icon_pokemon/n.png = id 14000+n) cho 13 món mẫu: khăn, đai, băng đô, đá, hạt, lụa, chai... */
+    static final int[] ICON_PMD = {7, 0, 2, 3, 4, 5, 6, 7, 16, 21, 13, 1, 4};
+
+    /**
+     * Giả MÁY CHỦ ẢNH (lệnh -51): ô icon đang chờ -> nạp đúng tệp server sẽ gửi (server/map/icon_pokemon theo
+     * com.htbb.pokemon.IconPokemon.doiAnh, id 14000+n, hoặc map/icon/id.png). Gọi trên luồng sự kiện trước mỗi ảnh.
+     */
+    static void giaMayChuAnh() {
+        try {
+            java.lang.reflect.Field f = game.render.screen.GameData.class.getDeclaredField("BANG");
+            f.setAccessible(true);
+            game.model.ImageIcon[] b = (game.model.ImageIcon[]) f.get(null);
+            java.io.File goc = new java.io.File(System.getProperty("htbb.mayChu", "../server"));
+            for (int id = 0; id < b.length; id++) {
+                game.model.ImageIcon ic = b[id];
+                if (ic == null || !ic.isLoad) continue;
+                java.io.File t = null;
+                if (id >= 14000 && id < 15000) {
+                    t = new java.io.File(goc, "map/icon_pokemon/" + (id - 14000) + ".png");
+                } else {
+                    int n = -1;
+                    try {
+                        n = com.htbb.pokemon.IconPokemon.doiAnh(id);
+                    } catch (Throwable e) {
+                        n = -1;
+                    }
+                    t = n >= 0 ? new java.io.File(goc, "map/icon_pokemon/" + n + ".png") : new java.io.File(goc, "map/icon/" + id + ".png");
+                }
+                if (t.isFile()) {
+                    byte[] d = java.nio.file.Files.readAllBytes(t.toPath());
+                    ic.img = javax.microedition.lcdui.Image.createImage(d, 0, d.length);
+                    ic.isLoad = false;
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
 
     static void shopThuoc() {
         game.render.screen.GameScr gs = game.render.Canvas.gameScr;
@@ -444,8 +588,16 @@ public class ChupTrongGame {
     }
 
     static void moMan(String ten) {
+        game.render.Canvas.isPointerDown = false;
+        game.pokemon.DungDo.xoaHet();   // thông báo của màn trước không lọt sang màn này
+        try {
+            datTinh(Class.forName("game.render.screen.BangTuDong"), "mo", Boolean.FALSE);
+        } catch (Throwable e) {
+            // không có bảng tự động
+        }
         game.render.Canvas.endDlg();
         game.render.Canvas.menu.showMenu = false;
+        datCuoi(ten.indexOf("cuoi") >= 0);
         game.pokemon.ManNhanVat nv = game.pokemon.ManNhanVat.gI();
         if ("the_gioi".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
@@ -477,6 +629,31 @@ public class ChupTrongGame {
             game.pokemon.ManNhanVat.mo(2);
         } else if ("nv_thu".equals(ten)) {
             game.pokemon.ManNhanVat.mo(3);
+        } else if ("nv_cuoi_trang_bi".equals(ten)) {
+            game.pokemon.ManNhanVat.mo(0);
+        } else if ("nv_cuoi_ds_thu".equals(ten)) {
+            game.pokemon.ManNhanVat.mo(0);
+            dat(nv, "o", 11);
+        } else if ("nv_cuoi_thu".equals(ten)) {
+            game.pokemon.ManNhanVat.mo(3);
+        } else if ("the_gioi_cuoi".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            // đặt người chơi (cưỡi Rapidash) + pet cạnh NPC đầu tiên trong khung nhìn
+            game.render.screen.GameScr gs = game.render.Canvas.gameScr;
+            for (int i = 0; i < gs.actors.size(); i++) {
+                game.model.Actor ac = (game.model.Actor) gs.actors.elementAt(i);
+                if (ac.isNPC()) {
+                    gs.mainChar.x = (short) (ac.x + 90);
+                    gs.mainChar.y = (short) (ac.y + 10);
+                    break;
+                }
+            }
+            if (gs.mainChar.petCanh != null) {
+                gs.mainChar.petCanh.x = (short) (gs.mainChar.x - 34);
+                gs.mainChar.petCanh.y = gs.mainChar.y;
+            }
+            if (!gs.actors.contains(gs.mainChar)) gs.actors.addElement(gs.mainChar);
+            game.render.Util.quickSort(gs.actors);   // khung vẽ đi theo thứ tự y (GameScr.update sắp mỗi nhịp)
         } else if ("nv_ngoai_hinh".equals(ten)) {
             game.pokemon.ManNhanVat.mo(4);
         } else if ("menu_ngu_canh".equals(ten)) {
@@ -541,6 +718,66 @@ public class ChupTrongGame {
         } else if ("ky_nang_chi_tiet".equals(ten)) {
             game.pokemon.ManNhanVat.mo(2);
             dat(nv, "chieu", Integer.valueOf(1));
+        } else if ("thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            if (ten.startsWith("thong")) {
+                game.pokemon.DungDo.bieuNgu("Tài khoản chưa kích hoạt: vẫn chơi bình thường, chỉ tạm khoá giao dịch, chợ, tặng quà. "
+                        + "Kích hoạt tại https://huyenthoaibaoboi.fun/kichhoat.");
+                game.pokemon.DungDo.bao("Đã dùng Thuốc hồi HP (+200 HP).");
+            } else {
+                game.render.Canvas.gameScr.onMSGServer("Chơi quá 180 phút mỗi ngày sẽ hại sức khoẻ.");
+            }
+        } else if ("chon_chieu".equals(ten)) {
+            // bộ chọn chiêu cho ô nhanh (chạm ô trong tab Kỹ năng)
+            game.pokemon.ManNhanVat.mo(2);
+            game.pokemon.ChonChieuNhanh.moO(1);
+        } else if ("goi_y_chieu".equals(ten)) {
+            // giữ nút đòn chính 1 s -> gợi ý tên / hệ / PP / hồi chiêu
+            game.render.Canvas.gameScr.switchToMe();
+            try {
+                Class<?> h = Class.forName("game.render.screen.HudRong");
+                java.lang.reflect.Method mx = h.getDeclaredMethod("xDanh"), my = h.getDeclaredMethod("yDanh");
+                mx.setAccessible(true);
+                my.setAccessible(true);
+                game.render.Canvas.px = ((Integer) mx.invoke(null)).intValue();
+                game.render.Canvas.py = ((Integer) my.invoke(null)).intValue();
+                game.render.Canvas.isPointerDown = true;
+                datTinh(h, "giuO", Integer.valueOf(4));
+                datTinh(h, "giuLuc", Long.valueOf(System.currentTimeMillis() - 1000));
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        } else if ("tu_dong".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            try {
+                java.lang.reflect.Field f = game.render.screen.TuDong.class.getDeclaredField("thuTu");
+                f.setAccessible(true);
+                byte[] t = (byte[]) f.get(null);
+                t[0] = 1;
+                t[1] = 2;
+                t[2] = 0;
+                java.lang.reflect.Method m = Class.forName("game.render.screen.BangTuDong").getDeclaredMethod("mo");
+                m.setAccessible(true);
+                m.invoke(null);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        } else if ("hop_thong_bao".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            game.render.Canvas.startOKDlg("Bạn chưa đủ cấp để vào khu vực này. Hãy luyện thêm rồi quay lại nhé!");
+        } else if ("hop_thong_bao_dai".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            // thông báo dài của máy chủ (biểu ngữ -> "Xem"): danh sách mục, mỗi mục tiêu đề đậm + mô tả
+            game.pokemon.HopThongBao.bao("Sự kiện Trung thu", "Đăng nhập mỗi ngày: nhận 1 Bánh trung thu và 2.000 xu.\n"
+                    + "Săn đèn lồng: hạ Pokémon hoang dã ở Rừng Viridian để nhặt Đèn lồng, đổi quà ở NPC Trưởng làng.\n"
+                    + "Đua top cấp: 10 người cấp cao nhất nhận Huy hiệu Trăng rằm và 50 lượng khoá.\n"
+                    + "Hộp quà Trăng: mở ra ngẫu nhiên Thuốc hồi HP lớn, Ether lớn hoặc Cỏ hồi sinh.\n"
+                    + "Thời gian: từ 15/10 đến 25/10, máy chủ tự kết thúc lúc 04:00 sáng ngày 26/10.\n"
+                    + "Lưu ý: phần thưởng gửi vào hộp thư, nhận trong 7 ngày.\n"
+                    + "Đổi quà: mang 10 Đèn lồng tới NPC Trưởng làng để đổi 1 Hộp quà Trăng.\n"
+                    + "Bảng xếp hạng: xem tại menu Xếp hạng, cập nhật mỗi 10 phút.");
+        } else if (ten.startsWith("hop_") && hopMau(ten)) {
+            // đã mở trong hopMau
         } else if ("so_luong".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
             game.render.Canvas.inputDlg.setInfo("Số lượng mua: Thuốc hồi HP", new game.model.IAction() {
@@ -552,7 +789,117 @@ public class ChupTrongGame {
         }
     }
 
-    static void dat(Object o, String ten, Object gt) {
+    /** Đang cưỡi Rapidash (gói 15 idAnimal + -93 dex 78) + Hoothoot đi theo (-94) / hay không cưỡi gì. */
+    static void datCuoi(boolean cuoi) {
+        game.render.screen.GameScr gs = game.render.Canvas.gameScr;
+        game.model.MainChar mc = gs.mainChar;
+        mc.idAnimal = (byte) (cuoi ? 0 : -1);
+        mc.idPaintIconAnimal = 0;
+        mc.infoAnimal = cuoi ? "Rapidash lv 5\nTốc độ +2" : "";
+        mc.pokeThuDex = (short) (cuoi ? 78 : 0);
+        mc.pokePetDex = (short) (cuoi ? 163 : 0);
+        game.pokemon.PetDuyNhat.cat(gs.actors, mc);
+        if (cuoi) {
+            game.model.AnimalMove p = new game.model.AnimalMove();
+            p.myOwner = mc;
+            p.idSameMyOwnerID = mc.ID;
+            p.x = (short) (mc.x - 24);
+            p.y = mc.y;
+            p.catagory = (byte) 12;
+            p.totalTime = 600;   // phút còn hạn (gói 15) - 0 = hết hạn, pet mờ dần
+            p.timeStart = System.currentTimeMillis();
+            game.pokemon.PetDuyNhat.dat(gs.actors, mc, p);
+        }
+    }
+
+    static final game.model.IAction KHONG = new game.model.IAction() {
+        public void perform() {
+            game.render.Canvas.endDlg();
+        }
+    };
+
+    /** Mọi loại hộp thoại (0.9.5): mở đúng đường gọi của game. true = đã mở. */
+    static boolean hopMau(String ten) {
+        game.render.Canvas.gameScr.switchToMe();
+        if ("hop_ban".equals(ten)) {
+            game.pokemon.HopXacNhan.hoiGia("Bán vật phẩm", "Bán 3 Khăn quàng xanh?", "Bán", game.pokemon.TienTe.XU, 900, null);
+        } else if ("hop_mac_do".equals(ten)) {
+            game.render.Canvas.startYesNoDlg("Mặc Khăn quàng xanh? Trang bị sẽ gắn với Pokémon này.", KHONG, KHONG);
+        } else if ("hop_len_cap".equals(ten)) {
+            game.render.Canvas.startOKDlg("Chúc mừng! Charmander99 đã lên cấp 25 và nhận 1 điểm kỹ năng.");
+        } else if ("hop_tien_hoa".equals(ten)) {
+            game.render.Canvas.startOKDlg("Charmander đang tiến hoá... Chúc mừng! Charmander đã tiến hoá thành Charmeleon.");
+        } else if ("hop_phan_thuong".equals(ten)) {
+            game.render.Canvas.startOKDlg("Hoàn thành nhiệm vụ Dẹp loạn Rattata: +500 xu, +120 điểm kinh nghiệm, +2 Thuốc hồi HP.");
+        } else if ("hop_nhan_nhiem_vu".equals(ten)) {
+            game.render.Canvas.startYesNoDlg("Nhận nhiệm vụ Dẹp loạn Rattata? Hạ 10 Rattata ở Tuyến đường 1 rồi báo lại Trưởng làng.", KHONG, KHONG);
+        } else if ("hop_bao_tri".equals(ten)) {
+            game.render.Canvas.startOKDlg("Máy chủ sẽ bảo trì lúc 04:00 (còn 10 phút). Vui lòng thoát game để không mất dữ liệu.");
+        } else if ("hop_loi".equals(ten)) {
+            game.pokemon.HopThongBao.mo("Không thực hiện được", "Túi đã đầy, hãy bỏ bớt vật phẩm rồi thử lại.", game.pokemon.HopThongBao.LOI,
+                    new String[]{"Đóng"}, new int[]{game.pokemon.Bang.TRUNG}, new game.model.IAction[]{KHONG}, KHONG);
+        } else if ("hop_mat_ket_noi".equals(ten)) {
+            game.pokemon.HopThongBao.mo("Mất kết nối", "Đã thử kết nối lại 3 lần nhưng chưa được. Kiểm tra mạng rồi bấm Kết nối lại.",
+                    game.pokemon.HopThongBao.CANH_BAO, new String[]{"Thoát", "Kết nối lại"}, null, new game.model.IAction[]{KHONG, KHONG}, KHONG);
+        } else if ("hop_hoi_sinh".equals(ten)) {
+            game.render.Canvas.startYesNoDlg("Bạn muốn hồi sinh tại chỗ không? Chi phí 1 Cỏ hồi sinh.", KHONG, KHONG);
+        } else if ("hop_giftcode".equals(ten)) {
+            game.render.Canvas.inputDlg.setInfo("Nhập giftcode", KHONG, game.render.screen.TField.INPUT_TYPE_ANY, 20, false);
+            game.render.Canvas.inputDlg.show();
+        } else if ("hop_giftcode_ket_qua".equals(ten)) {
+            game.render.Canvas.startOKDlg("Đổi giftcode thành công: +5.000 xu, +3 Thuốc hồi HP lớn.");
+        } else if ("hop_moi_giao_dich".equals(ten)) {
+            game.render.Canvas.startYesNoDlg("Pikachu88 đề nghị giao dịch với bạn.", KHONG, KHONG);
+        } else if ("hop_moi_doi".equals(ten)) {
+            game.render.Canvas.startYesNoDlg("Bulba77 mời bạn vào đội. Đồng ý?", KHONG, KHONG);
+        } else if ("hop_dang_xuat".equals(ten)) {
+            game.pokemon.HopXacNhan.hoi("Đăng xuất", "Thoát về màn đăng nhập?", "Đăng xuất", KHONG, KHONG);
+        } else if ("hop_cho".equals(ten)) {
+            game.render.Canvas.startWaitDlg("Đang gửi yêu cầu...", true);
+        } else if ("hop_nhap_chu".equals(ten)) {
+            game.render.Canvas.inputDlg.setInfo("Đặt tên cho thú cưỡi", KHONG, game.render.screen.TField.INPUT_TYPE_ANY, 15, false);
+            game.render.Canvas.inputDlg.show();
+        } else if ("hop_vat_pham".equals(ten)) {
+            game.pokemon.DungDo.bao("Đã dùng Thuốc hồi HP: +200 HP.");
+            game.pokemon.DungDo.loi("Không dùng được: HP đã đầy.");
+            game.pokemon.DungDo.bao("Nhận được 2 Ether lớn.");
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    static final String[] HOP = {"hop_ban", "hop_mac_do", "hop_len_cap", "hop_tien_hoa", "hop_phan_thuong", "hop_nhan_nhiem_vu", "hop_bao_tri",
+        "hop_loi", "hop_mat_ket_noi", "hop_hoi_sinh", "hop_giftcode", "hop_giftcode_ket_qua", "hop_moi_giao_dich", "hop_moi_doi", "hop_dang_xuat",
+        "hop_cho", "hop_nhap_chu", "hop_vat_pham"};
+
+    /** Hộp vừa vẽ canh giữa vùng an toàn (±2 px) và trong giới hạn cỡ. */
+    static void kiemHop(String nhan) {
+        Object d = game.render.Canvas.currentDialog;
+        if (d == null) {
+            return;   // thông báo nhanh (không phải hộp)
+        }
+        int[] r = game.pokemon.HopThongBao.VUA_VE;
+        int cx = r[0] + r[2] / 2, cy = r[1] + r[3] / 2;
+        int tx = (game.pokemon.Bang.trai() + game.pokemon.Bang.phai()) / 2, ty = (game.pokemon.Bang.tren() + game.pokemon.Bang.duoi()) / 2;
+        kiem(Math.abs(cx - tx) <= 2 && Math.abs(cy - ty) <= 2, nhan + " hop canh giua: tam " + cx + "," + cy + " / " + tx + "," + ty);
+        kiem(r[2] <= Math.max(game.pokemon.HopThongBao.rongToiDa(), 340) + 1, nhan + " hop rong " + r[2] + " <= toi da " + game.pokemon.HopThongBao.rongToiDa());
+        kiem(r[3] <= game.pokemon.HopThongBao.caoToiDa() + 1, nhan + " hop cao " + r[3] + " <= 70% " + game.pokemon.HopThongBao.caoToiDa());
+        kiem(r[0] >= game.pokemon.Bang.trai() && r[0] + r[2] <= game.pokemon.Bang.phai() && r[1] >= game.pokemon.Bang.tren()
+                && r[1] + r[3] <= game.pokemon.Bang.duoi(), nhan + " hop trong vung an toan");
+    }
+
+    static void datTinh(Class<?> c, String ten, Object gt) {
+        try {
+            java.lang.reflect.Field f = c.getDeclaredField(ten);
+            f.setAccessible(true);
+            f.set(null, gt);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+        static void dat(Object o, String ten, Object gt) {
         try {
             java.lang.reflect.Field f = o.getClass().getDeclaredField(ten);
             f.setAccessible(true);

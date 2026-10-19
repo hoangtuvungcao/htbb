@@ -872,11 +872,17 @@ public final class TuDong {
         return new StringBuffer("Tự động ").append(gio(conLai())).append(" - ").append(trangThai).toString();
     }
 
+    /** 0.9.5: viên nhỏ dưới thẻ hồ sơ "Auto · 4:41 · đang đánh" (game.pokemon.VienTrangThai) + chữ "+N EXP". */
     static void ve(Graphics g, int y) {
-        String s = chuThanh();
-        if (s != null) {
-            Nen.veThanhTuDong(g, s, y);
+        String s = null;
+        if (!BangTuDong.mo) {
+            if (choBat) {
+                s = game.pokemon.VienTrangThai.chuAuto(-1, null);
+            } else if (dang) {
+                s = game.pokemon.VienTrangThai.chuAuto(conLai(), trangThai);
+            }
         }
+        game.pokemon.VienTrangThai.ve(g, s, dang, y);
     }
 
     // ================================================================ lưu cài đặt

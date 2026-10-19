@@ -12514,7 +12514,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             q.state_quest = NewCharQuest.FINISH;
                             MessageCreator.createMsgCharQuest(this, 1);
                             Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                            this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ " + info.name + " đã hoàn thành. Hãy đi trả nhiệm vụ", ""));
+                            this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                         }
                     } else if (info.type == 4 && iskillMons) {
                         if (Map.abs(this.lvDetail.lv - lv) <= info.deltaLv) {
@@ -12536,7 +12536,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 q.state_quest = NewCharQuest.FINISH;
                                 MessageCreator.createMsgCharQuest(this, 1);
                                 Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                                this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ " + info.name + " đã hoàn thành. Hãy đi trả nhiệm vụ", ""));
+                                this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                             }
                         }
                     } else if (info.type == 2 && !iskillMons) {
@@ -12560,7 +12560,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             MessageCreator.createMsgCharQuest(this, 1);
                             MessageCreator.createMsgCharQuest(this, 2);
                             Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                            this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ " + info.name + " đã hoàn thành. Hãy đi trả nhiệm vụ", ""));
+                            this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                         }
                     }
                 }

@@ -1114,7 +1114,14 @@ public class MessageCreator {
             }
             m.dos.writeInt(p.getLuong());
             if (type == 2) {
-                m.dos.writeByte(p.animal.size() - ((p.animalRide != null) ? 1 : 0));
+                // so dong = dung so con duoc ghi (place != 1) - khong suy tu animalRide (lech thi client doc sai ca pet)
+                int soThu = 0;
+                for (int l = 0; l < p.animal.size(); ++l) {
+                    if (p.animal.get(l).place != 1) {
+                        ++soThu;
+                    }
+                }
+                m.dos.writeByte(soThu);
                 for (int l = 0; l < p.animal.size(); ++l) {
                     final Animal animal = p.animal.get(l);
                     if (animal.place != 1) {

@@ -37,7 +37,7 @@ public final class BangChieu {
     /** Ô chiêu s x s (góc trên-trái x, y) của chiêu sk thuộc dòng của nhân vật đang chơi. */
     public static void icon(Graphics g, int x, int y, int s, int sk) {
         int lop = Canvas.gameScr != null && Canvas.gameScr.mainChar != null ? Canvas.gameScr.mainChar.clazz : 0;
-        KieuO.oChieu(g, x, y, s, s, PokeChieu.he(lop, sk), PokeChieu.hinh(lop, sk), false);
+        KieuO.oChieuSk(g, x, y, s, s, lop, sk, false);
     }
 
     private static int cap(int sk) {
@@ -96,7 +96,7 @@ public final class BangChieu {
         for (int i = 0; i < soChieu; i++) {
             int x = i * 23 + 1;
             int c = cap(i);
-            KieuO.oChieu(g, x, 3, 21, 21, PokeChieu.he(lop, i), PokeChieu.hinh(lop, i), c <= 0);
+            KieuO.oChieuSk(g, x, 3, 21, 21, lop, i, c <= 0);
             if (c > 0) {
                 KieuO.soLuong(g, x + 21, 3 + 21, c >= PokeChieu.CAP_TOI_DA ? "max" : String.valueOf(c));
             }

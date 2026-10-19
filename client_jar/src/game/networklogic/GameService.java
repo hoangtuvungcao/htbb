@@ -807,7 +807,38 @@ public class GameService extends Cmd_message {
         }
     }
 
+    /**
+     * 0.9.5: chuẩn hoá tin chat trước khi gửi - bỏ khoảng trắng đầu / cuối và ký tự vô hình (zero-width U+200B..U+200D,
+     * U+FEFF, NBSP, ký tự điều khiển). null = rỗng sau khi bỏ (KHÔNG gửi). Máy chủ kiểm lại (ChongSpam).
+     */
+    public static String chuChat(String s) {
+        if (s == null) {
+            return null;
+        }
+        StringBuffer b = new StringBuffer(s.length());
+        boolean co = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= 0x200B && c <= 0x200D || c == 0xFEFF || c == 0x2060) {
+                continue;
+            }
+            if (c == 0xA0 || c < 32 || c == 127) {
+                c = ' ';
+            }
+            if (c != ' ' && !(c >= 0x0300 && c <= 0x036F)) {
+                co = true;   // có ký tự thấy được (không chỉ dấu kết hợp)
+            }
+            b.append(c);
+        }
+        String t = b.toString().trim();
+        return co && t.length() > 0 ? t : null;
+    }
+
     public void chat(String text) {
+        text = chuChat(text);
+        if (text == null) {
+            return;
+        }
         Message m = init((byte) 27);
         try {
             m.writer().writeUTF(text);
@@ -1003,6 +1034,10 @@ public class GameService extends Cmd_message {
     }
 
     public void sendMsgPrivate(String name, String text) {
+        text = chuChat(text);
+        if (text == null) {
+            return;
+        }
         Message m = init((byte) -5);
         try {
             m.writer().writeUTF(name);
@@ -1109,6 +1144,10 @@ public class GameService extends Cmd_message {
     }
 
     public void chatToClan(String str) {
+        str = chuChat(str);
+        if (str == null) {
+            return;
+        }
         Message m = init((byte) -18);
         try {
             m.writer().writeUTF(str);

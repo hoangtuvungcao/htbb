@@ -40,8 +40,9 @@ public final class LopPhu {
         };
     }
 
-    /** Nạp lớp sớm (đặt PhongVe trước khung đầu). */
+    /** Nạp lớp sớm (đặt PhongVe + chữ giao diện trước khung đầu). */
     public static void nap() {
+        game.pokemon.ChuUI.bo = ChuHD.bat ? ChuGiaoDien.I : null;
     }
 
     /** Vùng bấm của khung vừa vẽ. */
@@ -116,11 +117,15 @@ public final class LopPhu {
     }
 
     private static Font f(boolean dam, float co) {
-        return PhongChu.thuong(dam).deriveFont(co);
+        return PhongChu.co(dam, co);
     }
 
     // ================================================================ vẽ
     public static void ve(Graphics2D g, int W, int H) {
+        game.pokemon.ChuUI.bo = ChuHD.bat ? ChuGiaoDien.I : null;
+        // 0.9.5: Hiệu ứng cao = vẽ 60 khung/giây (nội suy vị trí giữa hai nhịp logic 25/giây); thấp = 25
+        game.pokemon.NhipVe.fps = CaiDat.hieuUngCao ? 60 : 25;
+        game.pokemon.NhipVe.doBat = CaiDat.doKhung;
         dangVe = new ArrayList<Vung>();
         Kinh.min(g);
         float u = Math.max(0.75f, Math.min(W / 1280f, H / 720f));
@@ -138,26 +143,80 @@ public final class LopPhu {
             if (HopNhap.mo) HopNhap.ve(g, W, H, u, dangVe);
             if (caiDatMo) veCaiDat(g, W, H, u);
             veThongBao(g, W, H, u);
-            if (CaiDat.hienFps) veFps(g, W, H, u);
+            if (CaiDat.hienFps || CaiDat.doKhung) veFps(g, W, H, u);
         } catch (Throwable e) {
             NhatKy.loi("lop phu", e);
         }
         vung = dangVe;
     }
 
+    private static final java.lang.management.ThreadMXBean TMX = java.lang.management.ManagementFactory.getThreadMXBean();
+    private static long gcMoc, capMoc;
+    private static int gcGiay;
+    private static long capGiay;
+    private static String dongDo = "", dongDo2 = "";
+
+    /** Byte đã cấp phát của cả tiến trình (tổng các luồng sống) - -1 nếu JVM không hỗ trợ. */
+    static long daCapPhat() {
+        try {
+            if (TMX instanceof com.sun.management.ThreadMXBean) {
+                com.sun.management.ThreadMXBean t = (com.sun.management.ThreadMXBean) TMX;
+                long[] id = t.getAllThreadIds();
+                long[] b = t.getThreadAllocatedBytes(id);
+                long s = 0;
+                for (long x : b) if (x > 0) s += x;
+                return s;
+            }
+        } catch (Throwable e) {
+            // JVM khác
+        }
+        return -1;
+    }
+
+    static long soGc() {
+        long n = 0;
+        for (java.lang.management.GarbageCollectorMXBean b : java.lang.management.ManagementFactory.getGarbageCollectorMXBeans()) {
+            n += Math.max(0, b.getCollectionCount());
+        }
+        return n;
+    }
+
     private static void veFps(Graphics2D g, int W, int H, float u) {
         long now = System.currentTimeMillis();
         if (now - fpsMoc >= 1000) {
             fps = (int) ((NenPc.soKhung - fpsKhung) * 1000 / Math.max(1, now - fpsMoc));
+            long dt = Math.max(1, now - fpsMoc);
             fpsMoc = now;
             fpsKhung = NenPc.soKhung;
             fpsHt = (int) ((ManHinh.soTrinhBay - htKhung) * 1000 / Math.max(1, now - htMoc));
             htMoc = now;
             htKhung = ManHinh.soTrinhBay;
+            if (CaiDat.doKhung) {
+                long gc = soGc(), cap = daCapPhat();
+                gcGiay = (int) (gc - gcMoc);
+                capGiay = cap < 0 || capMoc <= 0 ? -1 : (cap - capMoc) * 1000 / dt;
+                gcMoc = gc;
+                capMoc = cap;
+                long[] tb = game.pokemon.NhipVe.TB, mx = game.pokemon.NhipVe.MAX;
+                dongDo = String.format("nhập %.2f · logic %.2f · thế giới %.2f · giao diện %.2f · trình bày %.2f ms (tb)",
+                        tb[0] / 1000f, tb[1] / 1000f, tb[2] / 1000f, tb[3] / 1000f, ManHinh.tbTrinhBay / 1000f);
+                dongDo2 = String.format("khung p50 %.1f · p99 %.1f ms · max vẽ %.1f ms · GC %d/s · cấp phát %s/s",
+                        game.pokemon.NhipVe.p50x10 / 10f, game.pokemon.NhipVe.p99x10 / 10f,
+                        Math.max(mx[2], 0) / 1000f + Math.max(mx[3], 0) / 1000f, gcGiay,
+                        capGiay < 0 ? "?" : capGiay > 1048576 ? String.format("%.1f MB", capGiay / 1048576f) : (capGiay / 1024) + " KB");
+            }
         }
         g.setFont(f(true, 12 * u));
         String s = "game " + fps + " · hiển thị " + fpsHt + " FPS  " + W + "×" + H + "  logic " + NenPc.rong + "×" + NenPc.cao + " ×" + NenPc.heSo;
-        Kinh.chu(g, s, 8 * u, H - 8 * u, Kinh.VANG);
+        // 0.9.5: trên nút chat (góc trái dưới), không che điều khiển; chỉ hiện khi bật trong Cài đặt
+        float y0 = H - 78 * u;
+        if (CaiDat.doKhung) {
+            Kinh.chu(g, dongDo2, 8 * u, y0, Kinh.VANG);
+            Kinh.chu(g, dongDo, 8 * u, y0 - 16 * u, Kinh.VANG);
+            Kinh.chu(g, s, 8 * u, y0 - 32 * u, Kinh.VANG);
+        } else {
+            Kinh.chu(g, s, 8 * u, y0, Kinh.VANG);
+        }
     }
 
     private static void veThongBao(Graphics2D g, int W, int H, float u) {
@@ -462,7 +521,7 @@ public final class LopPhu {
         y = yy + hHang + 14 * u;
         // nhóm Hình ảnh
         y = tieuDeNhom(g, "Hình ảnh", x, y, u);
-        the(g, x, y, w, 4 * hHang, u);
+        the(g, x, y, w, 5 * hHang, u);
         hangCongTac(g, "Chữ HD", "Phông Noto Sans mịn (tắt = phông điểm ảnh gốc)", x, y, w, hHang, u, ChuHD.bat, new Runnable() {
             public void run() {
                 CaiDat.chuHD = !CaiDat.chuHD;
@@ -498,6 +557,14 @@ public final class LopPhu {
                 CaiDat.hienFps = !CaiDat.hienFps;
             }
         });
+        y += hHang;
+        ke(g, x, y, w, u);
+        hangCongTac(g, "Đo khung (nhà phát triển)", "ms nhập / logic / vẽ thế giới / giao diện / trình bày, p99, GC, cấp phát", x, y, w, hHang, u,
+                CaiDat.doKhung, new Runnable() {
+                    public void run() {
+                        CaiDat.doKhung = !CaiDat.doKhung;
+                    }
+                });
     }
 
     /** Kéo thanh trượt: tỉ lệ theo x thật. */

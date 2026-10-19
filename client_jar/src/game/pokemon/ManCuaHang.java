@@ -124,8 +124,24 @@ public final class ManCuaHang extends Screen {
         return v;
     }
 
-    /** Danh sách hàng của tab hiện tại (đã lọc). */
+    private Vector dsDem;
+    private int khoaDs = 1;
+
+    /** Danh sách hàng của tab hiện tại (đã lọc) - nhớ giữa các khung, dựng lại khi dữ liệu / bộ lọc đổi. */
     Vector dsHang() {
+        int k = TrangThaiNguoiChoi.phienBan * 31 + this.tab * 7 + this.kieu * 3 + this.loc;
+        k = k * 31 + Bang.vanTay(Char.inventory);
+        k = k * 31 + Bang.vanTay(Res.shopTemplate);
+        k = k * 31 + Bang.vanTay(Canvas.gameScr == null ? null : Canvas.gameScr.shop);
+        if (this.dsDem != null && k == this.khoaDs) {
+            return this.dsDem;
+        }
+        this.dsDem = dsHang0();
+        this.khoaDs = k;
+        return this.dsDem;
+    }
+
+    private Vector dsHang0() {
         Vector v = new Vector();
         if (this.tab == 1) {
             for (int i = 0; i < Char.inventory.size(); i++) {
@@ -231,7 +247,7 @@ public final class ManCuaHang extends Screen {
 
     public void paint(Graphics g) {
         try {
-            Canvas.gameScr.paint(g);
+            game.render.screen.GameScr.veNen(g);   // 0.9.5: chỉ lớp thế giới (HUD sau bảng không vẽ)
         } catch (Throwable e) {
             // bỏ qua
         }
@@ -259,6 +275,14 @@ public final class ManCuaHang extends Screen {
             veChiTiet(g, x, y, w, h);
             return;
         }
+        if (hai && this.chon == null) {
+            // 0.9.5: hai cột -> chọn sẵn món đầu (khung chi tiết + bộ chọn số lượng hiện ngay, không để trống)
+            Vector v = dsHang();
+            if (v.size() > 0) {
+                this.chon = v.elementAt(0);
+                this.soLuong = 1;
+            }
+        }
         veDanhSach(g, x, y, wl, h);
         if (hai) {
             int xr = x + wl + k, wr = w - wl - k;
@@ -280,14 +304,7 @@ public final class ManCuaHang extends Screen {
         int xx = x + 6;
         xx += TienTe.vePill(g, TienTe.XU, mc().charXu, xx, y + 4, hd, Font.blackFont) + k;
         TienTe.vePill(g, TienTe.LUONG, mc().luong, xx, y + 4, hd, Font.blackFont);
-        if (this.chiSoCu != null) {
-            int wc = Math.min(Font.borderFont.getWidth("Bảng cũ") + 20, w / 3);
-            Bang.nut(g, x + w - 6 - wc, y + 4, wc, hd, "Bảng cũ", Bang.TRUNG, new IAction() {
-                public void perform() {
-                    ManCuaHang.this.moCu();
-                }
-            }, "bang-cu");
-        }
+        // 0.9.5: bỏ nút "Bảng cũ" - màn mới đã có Mua / Bán (một lối vào mỗi việc)
         int yl = y + 4 + hd + k;
         String[] ch = chips();
         if (ch != null) {
@@ -310,7 +327,9 @@ public final class ManCuaHang extends Screen {
             Bang.trong(g, x + 4, yl, w - 8, hl, this.tab == 0 ? "Cửa hàng chưa có hàng" : "Hành trang không có đồ để bán", null);
             return;
         }
-        Bang.danhSach(g, this.ds, x + 4, yl, w - 8, hl, v.size(), Bang.caoHang(), new Bang.Hang() {
+        // hàng gọn hơn (vẫn >= cỡ chạm tối thiểu) để thấy nhiều món hơn
+        int rh = Math.max(VungCham.MIN + 2, Bang.caoHang() * 5 / 6);
+        Bang.danhSach(g, this.ds, x + 4, yl, w - 8, hl, v.size(), rh, new Bang.Hang() {
             public void ve(Graphics g, int i, int x, int y, int w, int h) {
                 final Object o = v.elementAt(i);
                 Bang.hang(g, x, y, w, h, i, o == ManCuaHang.this.chon, new IAction() {
@@ -335,7 +354,8 @@ public final class ManCuaHang extends Screen {
             if (t == null) {
                 t = (GemTemp) o;
             }
-            Res.paintGem(g, t.idImage, x + 3 + s / 2, y + 3 + s / 2);
+            // gói cửa hàng (data_shop.idImg) dùng dải ảnh thuốc 5500 (như cửa sổ cũ Res.paintPotion), không phải ngọc
+            IconVatPham.ve(g, (short) (t.idImage + 5500), x + 3 + s / 2, y + 3 + s / 2, s, IconVatPham.DP_DO);
             ten = t.name;
             phu = t.decript;
             gia = t.price;
@@ -343,7 +363,7 @@ public final class ManCuaHang extends Screen {
         } else {
             ItemInInventory it = (ItemInInventory) o;
             if (this.kieu == THUOC && this.tab == 0) {
-                KieuO.oChieu(g, x + 3, y + 3, s, s, it.potionType >= 4 && it.potionType <= 6 ? 2 : 1, KieuO.HINH_GIOT, false);
+                ManNhanVat.veThuoc(g, it.potionType, x + 3 + s / 2, y + 3 + s / 2, s);
                 ten = tenThuoc(it.potionType);
                 gia = giaThuoc(it.potionType);
                 phu = "Đang có " + mc().potions[it.potionType];

@@ -436,9 +436,16 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     short idImg3 = msg.reader().readShort();
                     byte[] arrayImg1 = new byte[msg.reader().available()];
                     msg.reader().read(arrayImg1);
-                    ImageIcon img = (ImageIcon) GameData.listImgIcon.get(new StringBuffer().append((int) idImg3).toString());
-                    img.isLoad = false;
-                    img.img = Image.createImage(arrayImg1, 0, arrayImg1.length);
+                    // 0.9.5: giải mã trên luồng mạng (không phải luồng vẽ) + ghi kho đĩa cho lần mở game sau
+                    ImageIcon img = GameData.coIcon(idImg3);
+                    if (img == null) {
+                        img = GameData.getImgIcon(idImg3);
+                    }
+                    if (arrayImg1.length > 0) {
+                        img.img = Image.createImage(arrayImg1, 0, arrayImg1.length);
+                        img.isLoad = false;
+                        game.pokemon.IconVatPham.luu(idImg3, arrayImg1);
+                    }
                     break;
                 case -50:
                     Canvas.gameScr.setNPC_server(msg.reader().readUTF(), msg.reader().readShort(), msg.reader().readShort(), msg.reader().readShort(), msg.reader().readShort(), msg.reader().readShort(), msg.reader().readShort(), msg.reader().readByte(), msg.reader().readByte());
@@ -2365,7 +2372,14 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         break;
                     }
                     if (url.equals("")) {
-                        Canvas.startOKDlg(message);
+                        if (game.pokemon.MenuNguCanh.bat() && Canvas.gameScr != null && Canvas.gameScr.mainChar != null
+                                && (Canvas.currentScreen == Canvas.gameScr || Canvas.currentScreen instanceof game.pokemon.ManBang
+                                || Canvas.currentScreen != null && Canvas.currentScreen.getClass().getName().startsWith("game.pokemon.Man"))) {
+                            // 0.9.5: trong game, thông báo thông tin = biểu ngữ không chặn (dài: 2 dòng + "Xem")
+                            game.pokemon.DungDo.bieuNgu(message);
+                        } else {
+                            Canvas.startOKDlg(message);
+                        }
                     } else {
                         Canvas.gameScr.isNewVersionAvailable = true;
                         IAction actionOpenURL = new IAction() {

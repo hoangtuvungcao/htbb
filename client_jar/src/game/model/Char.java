@@ -1617,7 +1617,14 @@ public class Char extends LiveActor {
             if (dhSinhThai >= 0) {
                 game.pokemon.SinhThai.veDanhHieu(g, this.x, ((this.y - 42 + dyTen) + bb) - this.dyThanthu, dhSinhThai);
             }
-            if (this.ID == Canvas.gameScr.mainChar.ID || this.nationID == Canvas.gameScr.mainChar.nationID || this.idBoss != -1) {
+            // 0.9.5: tên ở lớp giao diện (game.pokemon.NhanTheGioi: chữ nhỏ viền tối, chống chồng); J2ME vẽ kiểu cũ
+            MainChar mcTen = Canvas.gameScr.mainChar;
+            int loaiTen = this.ID == mcTen.ID ? game.pokemon.NhanTheGioi.BAN_THAN : this.idBoss != -1 ? game.pokemon.NhanTheGioi.TRUM
+                    : this.nationID == mcTen.nationID ? game.pokemon.NhanTheGioi.NGUOI : game.pokemon.NhanTheGioi.KHAC_PHE;
+            if (game.pokemon.NhanTheGioi.nguoi(this, this.name, this.x + aa, ((this.y - 31 + dyTen) + bb) - this.dyThanthu, this.y,
+                    loaiTen, Canvas.gameScr.focusedActor == this)) {
+                // đã ghi
+            } else if (this.ID == Canvas.gameScr.mainChar.ID || this.nationID == Canvas.gameScr.mainChar.nationID || this.idBoss != -1) {
                 Font.smallFont.drawString(g, this.name, this.x + aa, ((this.y - 40 + dyTen) + bb) - this.dyThanthu, 2);
             } else {
                 Font.smallFontColor[4].drawString(g, this.name, this.x + aa, ((this.y - 43 + dyTen) + bb) - this.dyThanthu, 2);

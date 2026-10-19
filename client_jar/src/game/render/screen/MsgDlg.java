@@ -145,9 +145,47 @@ public class MsgDlg extends Dialog {
         g.translate(0, this.y);
     }
 
+    private game.model.IAction huyCho;
+
+    /** 0.9.5 (APK / PC): hộp CHỜ cùng khung hộp chung - vòng quay + chữ, X = huỷ (lệnh phải cũ). */
+    private void veCho(Graphics g) {
+        this.anNutLenh = true;
+        if (this.huyCho == null) {
+            this.huyCho = new game.model.IAction() {
+                public void perform() {
+                    if (MsgDlg.this.right != null && MsgDlg.this.right.action != null) {
+                        MsgDlg.this.right.action.perform();
+                    } else {
+                        Canvas.endDlg();
+                    }
+                }
+            };
+        }
+        StringBuffer b = new StringBuffer();
+        for (int i = 0; this.info != null && i < this.info.length; i++) {
+            if (this.info[i] != null && this.info[i].trim().length() > 0) {
+                b.append(b.length() > 0 ? " " : "").append(this.info[i].trim());
+            }
+        }
+        String chu = b.length() > 0 ? b.toString() : "Xin chờ...";
+        int r = 10;
+        int ww = Math.max(140, Math.min(260, game.pokemon.ChuDe.rong(chu, game.pokemon.ChuDe.THUONG) + 2 * r + 40));
+        int lh = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.THUONG);
+        game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.TIN, game.pokemon.ChuDe.XANH, true);
+        int[] k = game.pokemon.HopThongBao.khung(g, ww, Math.max(2 * r + 4, lh), "Đang xử lý", this.huyCho, false);
+        game.pokemon.GiaoDien.dangTai(g, k[5] + r, k[4] + r + 2, r);
+        game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat(chu, game.pokemon.ChuDe.THUONG, k[6] - 2 * r - 10), k[5] + 2 * r + 10,
+                k[4] + r + 2 - lh / 2, game.pokemon.ChuDe.THUONG, game.pokemon.ChuDe.CHU, 0);
+    }
+
     @Override
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
+        if (this.isIcon && !this.isUseArr && game.pokemon.MenuNguCanh.bat()) {
+            veCho(g);
+            return;
+        }
+        this.anNutLenh = false;
         g.translate(0, this.y);
         if (this.isUseArr) {
             paintArr(g);
@@ -167,6 +205,16 @@ public class MsgDlg extends Dialog {
             }
         }
         super.paint(g);
+    }
+
+    /** 0.9.5: máy cảm ứng / chuột (APK, PC): hộp chữ -> HỘP THÔNG BÁO CHUNG (game.pokemon.HopThoaiBao); hộp chờ giữ. */
+    @Override
+    public void show() {
+        if (!this.isIcon && !this.isUseArr && game.pokemon.MenuNguCanh.bat()
+                && game.pokemon.HopThongBao.tuMsgDlg(this.info, this.left, this.center, this.right)) {
+            return;
+        }
+        super.show();
     }
 
     /** 0.9.4: hộp THÔNG TIN (chỉ một lệnh "OK" bên trái, không phải hộp chờ). */

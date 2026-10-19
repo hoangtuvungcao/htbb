@@ -136,6 +136,39 @@ public class Monster extends LiveActor {
         return (byte) HePokemon.nguHanhCu(this.hePokemon);
     }
 
+    /**
+     * 0.9.5: quai hoi sinh voi loai KHAC (he sinh thai / alpha). Client giu actor cu cung id (tu hoi sinh
+     * tai cho theo timeLive) va lenh 4 voi id da co chi doi vi tri, khong doi type -> van ve loai cu (vd ve
+     * Wooper trong khi may chu la Litwick: Huc hien "Gan nhu vo hieu"). Gui lenh 20 (go actor) va bo id khoi
+     * nearMons cua nguoi choi cung map/nuoc/vung: vong Region gui lai lenh 4 voi type moi, client tao actor moi.
+     */
+    void baoDoiLoai() {
+        try {
+            if (this.map == null) {
+                return;
+            }
+            final java.util.Vector<Char> ds = this.map.getAllPlayer(this.inCountry, this.region);
+            if (ds == null) {
+                return;
+            }
+            final Short id = Short.valueOf(this.id);
+            for (final Char p : new java.util.ArrayList<Char>(ds)) {
+                if (p == null || p.isBot != -1) {
+                    continue;
+                }
+                if (p.nearMons != null) {
+                    p.nearMons.remove(id);
+                }
+                final Message m = new Message(20);
+                m.dos.writeByte(this.cat);
+                m.dos.writeShort(this.id);
+                p.sendMessage(m);
+            }
+        } catch (final Exception e) {
+            // khong de loi bao doi loai lam hong vong hoi sinh
+        }
+    }
+
     public MonsterTemplate getMonsterTemplate() {
         return Map.monsterTemplates.get(this.idTemplate);
     }
@@ -598,8 +631,12 @@ public class Monster extends LiveActor {
                 this.timeOutPoinson = 0L;
                 this.poinson = 0;
                 // he sinh thai: co the doi loai (thoi tiet / ngay dem / mua / bung phat) TRUOC khi dat hp.
+                final int loaiCu = this.idTemplate;
                 com.htbb.pokemon.HeSinhThaiGame.khiHoiSinh(this);
                 NoiDungLauDai.khiHoiSinh(this); // GD2b: alpha 1/50, quai Hoenn nam 2 (tat co: khong lam gi)
+                if (this.idTemplate != loaiCu) {
+                    this.baoDoiLoai();
+                }
                 this.hp = this.maxhp;
                 this.xp = Monster.rcvXpSauGiam(this.getMonsterTemplate());
                 this.tDelay = 0;

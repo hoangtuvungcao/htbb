@@ -250,8 +250,102 @@ public class CreateCharScr extends Screen {
         return super.keyPress(keyCode);
     }
 
+    private IAction viecTao, viecLui, viecVung;
+
+    /**
+     * 0.9.5 PC / APK: 5 Pokémon khởi đầu TRÊN ĐƯỜNG banner là nút chọn (chạm = chọn, vòng sáng + nhảy); bảng chỉ còn
+     * thông tin Pokémon đang chọn, ô Tên, Vùng, Tạo / Quay lại - đặt bằng KhungVao nên không che đội hình / logo.
+     */
+    private void veMoi(Graphics g) {
+        this.anNutLenh = true;
+        if (this.viecTao == null) {
+            this.viecTao = new IAction() {
+                public void perform() {
+                    if (CreateCharScr.this.center != null && CreateCharScr.this.center.action != null) {
+                        CreateCharScr.this.center.action.perform();
+                    }
+                }
+            };
+            this.viecLui = new IAction() {
+                public void perform() {
+                    if (CreateCharScr.this.left != null && CreateCharScr.this.left.action != null) {
+                        CreateCharScr.this.left.action.perform();
+                    }
+                }
+            };
+            this.viecVung = new IAction() {
+                public void perform() {
+                    selectNation = selectNation == 0 ? 1 : 0;
+                    CreateCharScr.this.selected = 2;
+                    CreateCharScr.this.tfChat.isFocus = false;
+                    CreateCharScr.this.right = null;
+                }
+            };
+        }
+        ServerListScr.gI().paintBg(g, this.currentClazz, true);
+        // Pokémon trên đường = nút chọn; tên nổi trên Pokémon đang chọn
+        for (int i = 0; i < 5; i++) {
+            int[] p = game.pokemon.Banner.viTriKhoiDau(i);
+            int t = p[2];
+            final int khoi = i;
+            int rw = Math.max(game.pokemon.VungCham.MIN, 40 * t / 100), rh = Math.max(game.pokemon.VungCham.MIN, 44 * t / 100);
+            game.pokemon.VungCham.them(g, p[0] - rw / 2, p[1] - rh + 4 * t / 100, rw, rh, new IAction() {
+                public void perform() {
+                    CreateCharScr.this.chonKhoiDau(khoi);
+                }
+            }, "khoi-dau-" + i);
+        }
+        {
+            int[] p = game.pokemon.Banner.viTriKhoiDau(this.currentClazz);
+            String ten = LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz];
+            int wt = game.pokemon.ChuDe.rong(ten, game.pokemon.ChuDe.NHAN_NHO) + 12;
+            int ht = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN_NHO) + 4;
+            int yt = p[1] - 44 * p[2] / 100 - ht - 2;
+            game.pokemon.ChuDe.the(g, p[0] - wt / 2, yt, wt, ht, ht / 2);
+            game.pokemon.ChuDe.chuGiua(g, ten, p[0], yt, ht, game.pokemon.ChuDe.NHAN_NHO, game.pokemon.ChuDe.CHU, 2);
+        }
+        int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
+        int hn = game.pokemon.KhungVao.caoNhan(), ho = game.pokemon.KhungVao.caoO();
+        int lh = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN), lp = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU);
+        int hVung = Math.max(game.pokemon.VungCham.MIN, lp + 10);
+        int dau = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM;
+        int hc = dau + lh + lp + lp + k + hn + ho + k + hVung + k + hb;
+        int[] r = game.pokemon.KhungVao.logoVaBang(g, 300, hc, hc, 160);
+        int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Tạo Pokémon", null, 0, null, null);
+        int x = n[0] + 2, w = n[2] - 4, y = n[1];
+        int c = this.currentClazz;
+        String he = LoaiPokemonClient.HE_KHOI_DAU[c];
+        String chuHe = he.startsWith("Hệ ") ? he.substring(3) : he;
+        int wHe = game.pokemon.ChuDe.rong(chuHe, game.pokemon.ChuDe.NHAN_NHO) + 12;
+        game.pokemon.ChuDe.chu(g, LoaiPokemonClient.TEN_KHOI_DAU[c], x, y, game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 0);
+        int xHe = x + game.pokemon.ChuDe.rong(LoaiPokemonClient.TEN_KHOI_DAU[c], game.pokemon.ChuDe.NHAN) + 6;
+        if (xHe + wHe <= x + w) {
+            int hHe = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN_NHO) + 2;
+            game.pokemon.GiaoDien.khoi(g, xHe, y + (lh - hHe) / 2, wHe, hHe, hHe / 2, game.pokemon.GiaoDien.mauHe(he));
+            game.pokemon.ChuDe.chuGiua(g, chuHe, xHe + wHe / 2, y + (lh - hHe) / 2, hHe, game.pokemon.ChuDe.NHAN_NHO, 0xFFFFFF, 2);
+        }
+        y += lh;
+        game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat(LoaiPokemonClient.VAI_TRO[c], game.pokemon.ChuDe.PHU, w), x, y, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 0);
+        y += lp;
+        game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat("Chạm Pokémon trên đường để chọn", game.pokemon.ChuDe.PHU, w), x, y, game.pokemon.ChuDe.PHU,
+                game.pokemon.ChuDe.XANH, 0);
+        y += lp + k;
+        y = game.pokemon.KhungVao.oNhap(g, this.tfChat, "Tên (4-15 chữ cái không dấu, số)", x, y, w, false) + k;
+        // vùng: chạm = đổi
+        game.pokemon.Bang.hang(g, x, y, w, hVung, 0, this.selected == 2, this.viecVung, "vung");
+        game.pokemon.ChuDe.chuGiua(g, "Vùng: " + GameScr.nameCountry[selectNation], x + 10, y, hVung, game.pokemon.ChuDe.THUONG, game.pokemon.ChuDe.CHU, 0);
+        game.pokemon.ChuDe.chuGiua(g, "đổi", x + w - 10, y, hVung, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.XANH, 1);
+        y += hVung + k;
+        game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Quay lại", "Tạo"}, new int[]{game.pokemon.Bang.TRUNG, game.pokemon.Bang.CHINH},
+                new Object[]{this.viecLui, this.viecTao}, "tao");
+    }
+
     @Override
     public void paint(Graphics g) {
+        if (game.pokemon.KhungVao.moi()) {
+            veMoi(g);
+            return;
+        }
         // pokemon: banner, Pokémon khởi đầu đang chọn có cột sáng + hào quang màu hệ
         ServerListScr.gI().paintBg(g, this.currentClazz, true);
         Canvas.resetTrans(g);
@@ -406,7 +500,9 @@ public class CreateCharScr extends Screen {
 
     @Override
     public void update() {
-        chamPokemon();
+        if (!game.pokemon.KhungVao.moi()) {
+            chamPokemon();
+        }
         this.tfChat.update();
         if (this.tfChat.isFocus && this.selected != 0) {
             chonOTen();   // pokemon: TField tự bật focus khi chạm ô -> đồng bộ dòng đang chọn

@@ -113,7 +113,7 @@ public final class TuNoiLai {
         final int n = lan++;
         dangNoi = true;
         GiamSat.ghi("tu ket noi lai lan " + (n + 1) + "/" + TOI_DA + " sau " + CHO[n] + " ms");
-        Canvas.startWaitDlg("Mất kết nối - đang kết nối lại (" + (n + 1) + "/" + TOI_DA + ")...", true);
+        ManTai.batDau(ManTai.KET_NOI, "Mất kết nối · đang thử lại " + (n + 1) + "/" + TOI_DA);
         Thread t = new Thread(new Runnable() {
             public void run() {
                 try {

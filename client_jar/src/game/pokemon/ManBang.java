@@ -93,7 +93,7 @@ public abstract class ManBang extends Screen {
 
     public void paint(Graphics g) {
         try {
-            Canvas.gameScr.paint(g);
+            game.render.screen.GameScr.veNen(g);   // 0.9.5: chỉ lớp thế giới (HUD sau bảng không vẽ)
         } catch (Throwable e) {
             // bỏ qua
         }

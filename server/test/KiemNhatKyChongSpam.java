@@ -34,6 +34,7 @@ public final class KiemNhatKyChongSpam {
         duongDiNhat();
         stackTrace();
         chatNhip();
+        chatRong();
         chatTrungLapQuangCao();
         camTangDan();
         theGioiVaThaoTac();
@@ -241,6 +242,38 @@ public final class KiemNhatKyChongSpam {
             Nhat.datDauRaKiemThu(null);
             Nhat.datLaiChoKiemThu(null);
         }
+    }
+
+    /** 0.9.5: tin rỗng / chỉ khoảng trắng / ký tự vô hình bị bỏ, không tính nhịp, không vi phạm. */
+    private static void chatRong() {
+        ChongSpam.datLaiChoKiemThu();
+        final String[] rong = {null, "", " ", "   \t ", "\u00a0\u00a0", "\u200b", "\u200c\u200d", "\ufeff", " \u200b \u00a0 ",
+            "\u0301\u0300", "\u0007\n\r", "\u2003\u2009", "\u2060"};
+        for (int i = 0; i < rong.length; i++) {
+            Kiem.dung("tin rong #" + i + " -> rong()", ChongSpam.rong(rong[i]));
+        }
+        final String[] thuong = {"a", " chào ", "...", "?", "1", "\u200bhi", "Pikachu\u00a0ơi", "😀"};
+        for (int i = 0; i < thuong.length; i++) {
+            Kiem.dung("tin co chu #" + i + " khong rong", !ChongSpam.rong(thuong[i]));
+        }
+        final ChongSpam.TrangThai t = new ChongSpam.TrangThai();
+        long now = 2000000L;
+        int soRong = 0;
+        for (int i = 0; i < 50; i++) {
+            if (ChongSpam.kiemChat(t, ChongSpam.Kenh.GAN, i % 2 == 0 ? "   " : "\u200b\u00a0", now + i) == ChongSpam.KetQua.RONG) {
+                soRong++;
+            }
+        }
+        Kiem.bang("50 tin rong lien tiep: deu RONG", Integer.valueOf(50), Integer.valueOf(soRong));
+        Kiem.bang("tin rong khong gay cam chat", Long.valueOf(0L), Long.valueOf(t.conCam(now + 60)));
+        int qua = 0;
+        for (int i = 0; i < 5; i++) {
+            if (ChongSpam.kiemChat(t, ChongSpam.Kenh.GAN, "tin that " + (char) ('a' + i), now + 100 + i) == ChongSpam.KetQua.CHO_PHEP) {
+                qua++;
+            }
+        }
+        Kiem.bang("tin rong khong an vao nhip: 5 tin that ngay sau van qua", Integer.valueOf(5), Integer.valueOf(qua));
+        Kiem.dung("RONG khong co cau bao", ChongSpam.lyDo(ChongSpam.KetQua.RONG, t, now) == null);
     }
 
     private static void chatNhip() {

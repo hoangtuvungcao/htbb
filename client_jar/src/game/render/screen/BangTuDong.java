@@ -199,18 +199,29 @@ final class BangTuDong {
         return Canvas.w >= 200 ? 2 : 1;
     }
 
+    private static boolean moi() {
+        return game.pokemon.ChuUI.bo != null;
+    }
+
+    /** khe giữa các ô (bảng mới: đủ khoảng cách chạm) */
+    private static int khe() {
+        return moi() ? Math.max(4, game.pokemon.VungCham.CACH) : 3;
+    }
+
     private static int rongBang() {
         int w = Canvas.w - 12;
-        return w > 260 ? 260 : w;
+        int max = moi() ? 340 : 260;
+        return w > max ? max : w;
     }
 
     private static int rongO() {
         int c = cot();
-        return (rongBang() - 12 - (c - 1) * 4) / c;
+        return (rongBang() - 12 - (c - 1) * Math.max(4, khe())) / c;
     }
 
     private static int caoO() {
-        return Font.blackFont.getHeight() + 5;
+        int h = Font.blackFont.getHeight() + 5;
+        return moi() && game.pokemon.VungCham.MIN > h ? game.pokemon.VungCham.MIN : h;
     }
 
     private static int caoChu() {
@@ -227,12 +238,12 @@ final class BangTuDong {
     }
 
     private static int dauBang() {
-        return 24 + 2 * caoChu() + 4;
+        return (moi() ? game.pokemon.ChuDe.caoDau() + 4 : 24) + 2 * caoChu() + 4;
     }
 
     private static int hangHien() {
         int conCho = Canvas.h - Screen.deltaY - 8 - dauBang() - 6;
-        int n = conCho / (caoO() + 3);
+        int n = conCho / (caoO() + khe());
         if (n < 2) {
             n = 2;
         }
@@ -240,7 +251,7 @@ final class BangTuDong {
     }
 
     private static int caoBang() {
-        return dauBang() + hangHien() * (caoO() + 3) + 4;
+        return dauBang() + hangHien() * (caoO() + khe()) + 4;
     }
 
     private static int xBang() {
@@ -256,7 +267,7 @@ final class BangTuDong {
         if (m == BAT) {
             return xBang() + 6;
         }
-        return xBang() + 6 + ((m - 1) % cot()) * (rongO() + 4);
+        return xBang() + 6 + ((m - 1) % cot()) * (rongO() + Math.max(4, khe()));
     }
 
     private static int rongMuc(int m) {
@@ -265,7 +276,7 @@ final class BangTuDong {
 
     /** y của mục (có thể ngoài vùng hiện nếu cuộn). */
     private static int yO(int m) {
-        return yBang() + dauBang() + (hangCua(m) - dau) * (caoO() + 3);
+        return yBang() + dauBang() + (hangCua(m) - dau) * (caoO() + khe());
     }
 
     private static boolean hien(int m) {
@@ -291,6 +302,10 @@ final class BangTuDong {
 
     static void ve(Graphics g) {
         Canvas.resetTrans(g);
+        if (moi()) {
+            veMoi(g);
+            return;
+        }
         int x0 = xBang();
         int y0 = yBang();
         int w = rongBang();
@@ -343,8 +358,15 @@ final class BangTuDong {
             GiaoDien.khoi(g, x, y, wO, hO, hO / 2, GiaoDien.VIEN);
             GiaoDien.khoiDoc(g, x + 1, y + 1, wO - 2, hO - 2, hO / 2 - 1, mau2, mau);
             Font f = tt == 0 ? Font.blackFont : Font.borderFont;
-            String s = GiaoDien.catChu(f, ten(m), wO - 10);
-            f.drawString(g, s, x + wO / 2, y + (hO - f.getHeight()) / 2 + 1, Font.CENTER);
+            // ô chiêu: icon chiêu (PNG) bên trái chữ
+            int ic = 0;
+            if (m >= CHIEU && m < HP && TuDong.thuTu[m - CHIEU] >= 0 && mc() != null && game.pokemon.ChuUI.bo != null) {
+                ic = hO - 4;
+                game.pokemon.KieuO.oChieuSk(g, x + hO / 2 - 2, y + 2, ic, ic, mc().clazz, TuDong.thuTu[m - CHIEU], false);
+                ic += 2;
+            }
+            String s = GiaoDien.catChu(f, ten(m), wO - 10 - ic);
+            f.drawString(g, s, x + ic + (wO - ic) / 2, y + (hO - f.getHeight()) / 2 + 1, Font.CENTER);
         }
         // mũi tên cuộn (màn nhỏ)
         if (dau > 0 || dau + hangHien() < soHang()) {
@@ -365,6 +387,65 @@ final class BangTuDong {
         Font.borderFont.drawString(g, "Đóng", Canvas.w - 5, Canvas.h - Screen.deltaY, Font.RIGHT);
     }
 
+    /** 0.9.5 PC / APK: bảng sáng chung (đầu đỏ mảnh + X), nút phẳng theo trạng thái, icon chiêu PNG. */
+    private static void veMoi(Graphics g) {
+        int x0 = xBang(), y0 = yBang(), w = rongBang(), hB = caoBang();
+        game.pokemon.KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, game.pokemon.ChuDe.PHU_NEN);
+        game.pokemon.Bang.khung(g, x0, y0, w, hB, "Tự động đánh", null, 0, null, null);
+        int hd = game.pokemon.ChuDe.caoDau();
+        // X (chạm xử lý ở tick: góc phải trên 24x24 -> đóng)
+        game.pokemon.Bang.nutDong(g, x0 + w - 1 - hd, y0 + 1, hd, null, true);
+        String d1;
+        if (!TuDong.coServer) {
+            d1 = System.currentTimeMillis() - TuDong.lucXin > 5000L ? "Máy chủ chưa hỗ trợ Tự động đánh" : "Đang hỏi máy chủ...";
+        } else if ((TuDong.svCo & TuDong.CO_TINH_NANG) == 0) {
+            d1 = "Máy chủ đang tạm khoá";
+        } else {
+            d1 = "Hôm nay còn " + TuDong.gio(TuDong.conLai()) + " / " + TuDong.gio(TuDong.svToiDa);
+        }
+        String d2 = TuDong.dang ? "Đang chạy: " + TuDong.trangThai : TuDong.thongBao;
+        if (d2 == null || d2.length() == 0) {
+            d2 = "Chỉ khi online · EXP theo năng lượng";
+        }
+        int yChu = y0 + hd + 4;
+        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(d1, game.pokemon.ChuDe.NHAN, w - 12), x0 + w / 2, yChu, caoChu(),
+                game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 2);
+        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(d2, game.pokemon.ChuDe.PHU, w - 12), x0 + w / 2, yChu + caoChu(), caoChu(),
+                game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 2);
+        int hO = caoO();
+        for (int m = 0; m < SO_MUC; ++m) {
+            if (!hien(m)) {
+                continue;
+            }
+            int tt = trangThai(m);
+            int x = xO(m), y = yO(m), wO = rongMuc(m);
+            if (m == chon && (dungPhim || !Nen.coNutUp())) {
+                GiaoDien.khoi(g, x - 2, y - 2, wO + 4, hO + 4, game.pokemon.ChuDe.BO_NUT + 2, game.pokemon.ChuDe.VANG);
+            }
+            int kieu = tt == 1 ? game.pokemon.Bang.XAC_NHAN : tt == 0 ? game.pokemon.Bang.TRUNG : tt == -2 ? game.pokemon.Bang.CHINH : game.pokemon.Bang.PHU;
+            game.pokemon.Bang.nut(g, x, y, wO, hO, "", kieu, null, null);
+            int ic = 0;
+            if (m >= CHIEU && m < HP && TuDong.thuTu[m - CHIEU] >= 0 && mc() != null) {
+                ic = hO - 6;
+                game.pokemon.KieuO.oChieuSk(g, x + 4, y + 3, ic, ic, mc().clazz, TuDong.thuTu[m - CHIEU], false);
+                ic += 4;
+            }
+            int mau = tt == 0 ? game.pokemon.ChuDe.CHU : 0xFFFFFF;
+            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(ten(m), game.pokemon.ChuDe.NHAN, wO - 10 - ic), x + ic + (wO - ic) / 2, y, hO,
+                    game.pokemon.ChuDe.NHAN, mau, 2);
+        }
+        if (dau > 0 || dau + hangHien() < soHang()) {
+            g.setColor(game.pokemon.ChuDe.CHU_PHU);
+            int xm = x0 + w - 10;
+            if (dau > 0) {
+                g.fillTriangle(xm, y0 + dauBang() - 6, xm - 4, y0 + dauBang() - 1, xm + 4, y0 + dauBang() - 1);
+            }
+            if (dau + hangHien() < soHang()) {
+                g.fillTriangle(xm, y0 + hB - 1, xm - 4, y0 + hB - 6, xm + 4, y0 + hB - 6);
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ chạm
 
     static void tick() {
@@ -381,7 +462,8 @@ final class BangTuDong {
         int y0 = yBang();
         int w = rongBang();
         int hB = caoBang();
-        if (!trong(Canvas.px, Canvas.py, x0, y0, w, hB) || trong(Canvas.px, Canvas.py, x0 + w - 24, y0, 24, 24)) {
+        int sx = moi() ? game.pokemon.ChuDe.caoDau() + 2 : 24;
+        if (!trong(Canvas.px, Canvas.py, x0, y0, w, hB) || trong(Canvas.px, Canvas.py, x0 + w - sx, y0, sx, sx)) {
             mo = false;
             return;
         }

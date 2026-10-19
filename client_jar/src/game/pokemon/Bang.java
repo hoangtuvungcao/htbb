@@ -28,6 +28,44 @@ public final class Bang {
     private Bang() {
     }
 
+    /**
+     * "Vân tay" rẻ của danh sách (0.9.5): đổi khi phần tử / thứ tự đổi - danh sách đã lọc của bảng chỉ dựng lại khi
+     * dữ liệu thật sự đổi (gói -105 / túi đồ), không dựng Vector mới mỗi khung vẽ. Không cấp phát.
+     */
+    public static int vanTay(java.util.Vector v) {
+        if (v == null) {
+            return 0;
+        }
+        int h = v.size();
+        for (int i = 0; i < v.size(); i++) {
+            h = h * 31 + System.identityHashCode(v.elementAt(i));
+        }
+        return h;
+    }
+
+    /** Vân tay mảng số (thuốc, vật phẩm nhiệm vụ). */
+    public static int vanTay(int[] a) {
+        if (a == null) {
+            return 0;
+        }
+        int h = a.length;
+        for (int i = 0; i < a.length; i++) {
+            h = h * 31 + a[i];
+        }
+        return h;
+    }
+
+    public static int vanTay(short[] a) {
+        if (a == null) {
+            return 0;
+        }
+        int h = a.length;
+        for (int i = 0; i < a.length; i++) {
+            h = h * 31 + a[i];
+        }
+        return h;
+    }
+
     /** Cỡ chạm tối thiểu (px logic) cho thiết kế cỡ d. */
     public static int co(int d) {
         return Math.max(VungCham.MIN, d);
@@ -38,14 +76,14 @@ public final class Bang {
         return Math.max(VungCham.CACH, Math.max(4, VungCham.MIN / 5));
     }
 
-    /** Cao đầu bảng. */
+    /** Cao đầu bảng (0.9.5: đầu mảnh - ChuDe). */
     public static int caoDau() {
-        return co(28);
+        return ChuDe.caoDau();
     }
 
-    /** Cao thanh tab. */
+    /** Cao thanh tab (điều khiển phân đoạn). */
     public static int caoTab() {
-        return co(26);
+        return co(22);
     }
 
     /** Cao hàng danh sách: >= 48 dp (MIN = 44 dp -> x 12/11), PC >= 30 px logic. */
@@ -125,11 +163,15 @@ public final class Bang {
 
     /** Chip lọc (viên nhỏ chọn / không chọn) - trả bề ngang. */
     public static int chip(Graphics g, int x, int y, String chu, boolean chon, Object viec, String ten) {
-        int h = co(24);
-        int w = Math.max(h, Font.blackFont.getWidth(chu) + 18);
-        GiaoDien.khoi(g, x, y, w, h, h / 2, chon ? GiaoDien.VANG_TOI : 0x9AA6BC);
-        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, h / 2 - 1, chon ? GiaoDien.VANG_NHAT : 0xFFFFFF, chon ? GiaoDien.VANG : 0xE6EAF4);
-        Font.blackFont.drawString(g, chu, x + w / 2, y + (h - Font.blackFont.getHeight()) / 2, Font.CENTER);
+        int h = co(22);
+        int w = Math.max(h, ChuDe.rong(chu, ChuDe.NHAN) + 18);
+        if (chon) {
+            GiaoDien.khoiDoc(g, x, y, w, h, h / 2, GiaoDien.pha(ChuDe.DO, 0xFFFFFF, 1, 6), ChuDe.DO);
+        } else {
+            GiaoDien.khoi(g, x, y, w, h, h / 2, ChuDe.KE);
+            GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, h / 2 - 1, ChuDe.NEN);
+        }
+        ChuDe.chuGiua(g, chu, x + w / 2, y, h, ChuDe.NHAN, chon ? 0xFFFFFF : ChuDe.CHU_PHU, 2);
         VungCham.them(g, x, y, w, h, viec, ten);
         return w;
     }
@@ -137,10 +179,10 @@ public final class Bang {
     /** Hàng chip lọc (tự xuống dòng khi hết bề ngang): trả cao đã dùng. chon = chip đang chọn; viec[i] chạm chip i. */
     public static int hangChip(Graphics g, int x, int y, int w, String[] chu, int chon, Object[] viec) {
         int k = cach();
-        int hc = co(24);
+        int hc = co(22);
         int xx = x, yy = y;
         for (int i = 0; i < chu.length; i++) {
-            int wc = Math.max(hc, Font.blackFont.getWidth(chu[i]) + 18);
+            int wc = Math.max(hc, ChuDe.rong(chu[i], ChuDe.NHAN) + 18);
             if (xx + wc > x + w && xx > x) {
                 xx = x;
                 yy += hc + k;
@@ -166,164 +208,209 @@ public final class Bang {
         return Canvas.h - anDuoi - 3;
     }
 
-    /** Phủ mờ nền game phía sau. */
+    /** Phủ mờ nền game phía sau (0.9.5: ~45 %, thế giới vẫn thấy). */
     public static void phuNen(Graphics g) {
-        Canvas.resetTrans(g);
-        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, 0xB0060B1A);
+        ChuDe.phuMan(g);
     }
 
     /**
-     * Khung bảng phủ cả vùng an toàn: đầu bảng (tiêu đề + nút đóng) + thanh tab (tabs null = không có tab).
-     * Trả {x, y, w, h} vùng nội dung bên dưới.
+     * Khung bảng (0.9.5): thẻ SÁNG trong vùng an toàn, đầu mảnh đỏ (Poké Ball + tiêu đề chữ giao diện + X vẽ nét ở
+     * góc phải), tab = điều khiển phân đoạn (segmented) ngay dưới đầu. Trả {x, y, w, h} vùng nội dung.
      */
     public static int[] khung(Graphics g, String tieuDe, String[] tabs, int tabChon, Object[] viecTab, Object dong) {
         Canvas.resetTrans(g);
-        int x = trai(), y = tren(), r = phai(), b = duoi();
-        int w = r - x, h = b - y;
-        // thân bảng kính xanh đậm (vẽ tay: không qua GiaoDien.bangMo - APK phóng bảng đó như màn trước game)
-        GiaoDien.khoi(g, x + 1, y + 2, w, h, 10, 0x0A0F2C);
-        GiaoDien.khoi(g, x, y, w, h, 10, GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 9, 0x2A4C8C, 0x13224E);
-        g.setColor(0x6E8FD8);
-        g.drawRoundRect(x + 2, y + 2, w - 5, h - 5, 14, 14);
-        Font.nenSang = false;
-        int hd = caoDau();
-        int sDong = hd;   // nút đóng vuông bằng cao đầu bảng
-        GiaoDien.dai(g, x + 4, y + 4, w - 8 - sDong - cach(), hd - 6, tieuDe);
-        nutDong(g, r - 3 - sDong, y + 2, sDong, dong);
-        int yNoi = y + 2 + hd + cach();
-        if (tabs != null && tabs.length > 0) {
-            int ht = caoTab();
-            int n = tabs.length;
-            int gap = cach();
-            int wt = (w - 8 - gap * (n - 1)) / n;
-            for (int i = 0; i < n; i++) {
-                int xt = x + 4 + i * (wt + gap);
-                tab(g, xt, yNoi, wt, ht, tabs[i], i == tabChon, viecTab == null ? null : viecTab[i], "tab-" + i);
-            }
-            yNoi += ht + cach();
-        }
-        return new int[]{x + 4, yNoi, w - 8, b - 4 - yNoi};
+        return khung(g, trai(), tren(), phai() - trai(), duoi() - tren(), tieuDe, tabs, tabChon, viecTab, dong);
     }
 
-    /** Nút đóng tròn đỏ dấu X (góc phải trên mọi bảng). */
-    public static void nutDong(Graphics g, int x, int y, int s, Object viec) {
-        int c = s / 2;
-        int r = Math.max(9, s / 2 - 2);
-        g.setColor(GiaoDien.VIEN);
-        g.fillArc(x + c - r - 1, y + c - r - 1, 2 * r + 2, 2 * r + 2, 0, 360);
-        g.setColor(GiaoDien.DO);
-        g.fillArc(x + c - r, y + c - r, 2 * r, 2 * r, 0, 360);
-        g.setColor(GiaoDien.DO_SANG);
-        g.fillArc(x + c - r + 2, y + c - r + 1, 2 * r - 4, r, 0, 180);
-        int k = Math.max(3, r / 2);
-        g.setColor(GiaoDien.TRANG);
-        for (int d = -1; d <= 1; d++) {
-            g.drawLine(x + c - k + d, y + c - k, x + c + k + d, y + c + k);
-            g.drawLine(x + c + k + d, y + c - k, x + c - k + d, y + c + k);
+    /** Khung bảng ở (x, y, w, h) bất kỳ (bảng gọn: Menu, hộp thông báo). */
+    public static int[] khung(Graphics g, int x, int y, int w, int h, String tieuDe, String[] tabs, int tabChon, Object[] viecTab, Object dong) {
+        Canvas.resetTrans(g);
+        ChuDe.the(g, x, y, w, h, ChuDe.BO);
+        int hd = ChuDe.caoDau();
+        ChuDe.dau(g, x + 1, y + 1, w - 2, hd, tieuDe, ChuDe.DO);
+        Font.nenSang = true;
+        if (dong != null) {
+            nutDong(g, x + w - 1 - hd, y + 1, hd, dong, true);
         }
+        int yNoi = y + 1 + hd + ChuDe.DEM;
+        if (tabs != null && tabs.length > 0) {
+            int ht = caoTab();
+            phanDoan(g, x + ChuDe.DEM, yNoi, w - 2 * ChuDe.DEM, ht, tabs, tabChon, viecTab);
+            yNoi += ht + cach();
+        }
+        return new int[]{x + ChuDe.DEM, yNoi, w - 2 * ChuDe.DEM, y + h - ChuDe.DEM - yNoi};
+    }
+
+    /** Điều khiển phân đoạn (tab): rãnh xám nhạt, đoạn chọn = thẻ trắng nổi, chữ đậm đỏ. */
+    public static void phanDoan(Graphics g, int x, int y, int w, int h, String[] chu, int chon, Object[] viec) {
+        int n = chu.length;
+        GiaoDien.khoi(g, x, y, w, h, Math.min(ChuDe.BO_NUT, h / 2), ChuDe.NEN_PHU_TOI);
+        int pad = 2;
+        int wt = (w - 2 * pad) / n;
+        for (int i = 0; i < n; i++) {
+            int xt = x + pad + i * wt;
+            int ww = i == n - 1 ? x + w - pad - xt : wt;
+            if (i == chon) {
+                GiaoDien.khoi(g, xt, y + pad + 1, ww, h - 2 * pad, ChuDe.BO_NUT - 2, ChuDe.BONG);
+                GiaoDien.khoi(g, xt, y + pad, ww, h - 2 * pad, ChuDe.BO_NUT - 2, ChuDe.NEN);
+            } else if (i > 0 && i - 1 != chon) {
+                g.setColor(ChuDe.KE);
+                g.fillRect(xt, y + h / 4, 1, h / 2);
+            }
+            ChuDe.chuGiua(g, ChuDe.cat(chu[i], ChuDe.NHAN, ww - 6), xt + ww / 2, y, h, ChuDe.NHAN, i == chon ? ChuDe.DO_TOI : ChuDe.CHU_PHU, 2);
+            // đoạn liền nhau khi vẽ; vùng chạm chừa khe cach() giữa hai đoạn (không bấm nhầm đoạn bên cạnh)
+            int kh = cach();
+            int l = i == 0 ? xt : xt + (kh + 1) / 2, r = i == n - 1 ? xt + ww : xt + ww - kh / 2;
+            VungCham.them(g, l, y, r - l, h, viec == null ? null : viec[i], "tab-" + i);
+        }
+    }
+
+    /** Nút đóng (X vẽ nét 12-14 px logic, vùng chạm cỡ s). Mặc định trên đầu bảng đỏ (X trắng). */
+    public static void nutDong(Graphics g, int x, int y, int s, Object viec) {
+        nutDong(g, x, y, s, viec, false);
+    }
+
+    public static void nutDong(Graphics g, int x, int y, int s, Object viec, boolean trenDau) {
+        int c = s / 2;
+        int r = Math.min(c - 2, ChuDe.dt() ? 11 : 9);
+        boolean an = viec != null && dangAn(g, x, y, s, s);
+        ChuUI b = ChuUI.bo;
+        if (trenDau) {
+            KieuO.phu(g, x + c - r, y + c - r, 2 * r, 2 * r, an ? 0x60FFFFFF : 0x30FFFFFF);
+        } else if (b == null || !b.hinh(g, AnhUI.NUT[an ? AnhUI.NUT_TRON_NHAN : AnhUI.NUT_TRON], x + c - r, y + c - r,
+                2 * r << 16 | 2 * r, ChuDe.NEN_PHU_TOI, 0x9AA6BA)) {
+            GiaoDien.khoi(g, x + c - r, y + c - r, 2 * r, 2 * r, r, ChuDe.NEN_PHU_TOI);
+        }
+        ChuDe.dauX(g, x + c, y + c, Math.max(3, r * 9 / 20), trenDau ? 0xFFFFFF : ChuDe.CHU);
         VungCham.them(g, x, y, s, s, viec, "dong");
     }
 
-    /** Tab (viên): đang chọn = vàng chữ tối, còn lại = kính xanh chữ trắng. */
+    /** Tab đơn (giữ cho màn cũ): đoạn của điều khiển phân đoạn. */
     public static void tab(Graphics g, int x, int y, int w, int h, String chu, boolean chon, Object viec, String ten) {
-        GiaoDien.khoi(g, x, y, w, h, 6, GiaoDien.VIEN);
         if (chon) {
-            GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 5, GiaoDien.VANG_NHAT, GiaoDien.VANG);
+            GiaoDien.khoi(g, x, y + 1, w, h, ChuDe.BO_NUT, ChuDe.BONG);
+            GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_NUT, ChuDe.NEN);
         } else {
-            GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 5, 0x34508E, 0x22396E);
+            GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_NUT, ChuDe.NEN_PHU_TOI);
         }
-        Font f = chon ? Font.blackFont : Font.borderFont;
-        String s = GiaoDien.catChu(f, chu, w - 6);
-        f.drawString(g, s, x + w / 2, y + (h - f.getHeight()) / 2 + 1, Font.CENTER);
+        ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - 6), x + w / 2, y, h, ChuDe.NHAN, chon ? ChuDe.DO_TOI : ChuDe.CHU_PHU, 2);
         VungCham.them(g, x, y, w, h, viec, ten);
     }
 
-    /** Thẻ trắng (khối nội dung). */
+    /** Thẻ nội dung (khối con sáng, viền kẻ nhạt). */
     public static void the(Graphics g, int x, int y, int w, int h) {
-        GiaoDien.khoi(g, x, y, w, h, 7, GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 6, NEN_THE, NEN_THE_DUOI);
+        GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_O, ChuDe.KE);
+        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, ChuDe.BO_O - 1, ChuDe.NEN, ChuDe.NEN_DUOI);
+        Font.nenSang = true;
     }
 
-    /** kiểu nút: 0 phụ (xanh), 1 chính (đỏ), 2 xác nhận (xanh lá), 3 tắt (xám) */
+    /** kiểu nút: 0 phụ (xanh), 1 chính (đỏ), 2 xác nhận (xanh lá), 3 tắt (xám), 4 trung tính (trắng viền) */
     public static final int PHU = 0, CHINH = 1, XAC_NHAN = 2, TAT = 3, TRUNG = 4;
-    /** chữ nút trung tính (nền xám sáng, chữ tối) */
 
-    /** Nút viên to, chữ giữa. */
-    public static void nut(Graphics g, int x, int y, int w, int h, String chu, int kieu, Object viec, String ten) {
-        int tren, duoi;
+    /** Màu thân nút theo kiểu. */
+    static int mauNut(int kieu) {
         switch (kieu) {
             case CHINH:
-                tren = GiaoDien.DO_SANG;
-                duoi = GiaoDien.DO_TOI;
-                break;
+                return ChuDe.DO;
             case XAC_NHAN:
-                tren = 0x6CD86A;
-                duoi = 0x2E8E3E;
-                break;
+                return 0xE8504A;   // 0.9.5: nút chính = đỏ san hô thương hiệu (không xanh lá neon)
             case TAT:
-                tren = 0xB4BDCA;
-                duoi = 0x7A8496;
-                break;
+                return 0xB9C1CF;
             case TRUNG:
-                tren = 0xFFFFFF;
-                duoi = 0xD9DFEA;
-                break;
+                return ChuDe.NEN;
             default:
-                tren = GiaoDien.XANH_SANG;
-                duoi = GiaoDien.XANH;
-                break;
+                return ChuDe.XANH;
         }
-        int r = Math.min(h / 2, 10);
-        GiaoDien.khoi(g, x, y + 1, w, h, r, 0x0A0F2C);
-        GiaoDien.khoi(g, x, y, w, h, r, GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, r - 1, tren, duoi);
-        g.setColor(0xFFFFFF);
-        g.fillRect(x + r, y + 2, w - 2 * r, 1);
-        Font f = kieu == TRUNG ? Font.blackFont : Font.borderFont;
-        String s = GiaoDien.catChu(f, chu, w - 8);
-        f.drawString(g, s, x + w / 2, y + (h - f.getHeight()) / 2 + 1, Font.CENTER);
+    }
+
+    /** Nút phẳng bo góc, chữ nhãn giữa. */
+    public static void nut(Graphics g, int x, int y, int w, int h, String chu, int kieu, Object viec, String ten) {
+        int mau = mauNut(kieu);
+        int r = Math.min(h / 2, ChuDe.BO_NUT);
+        boolean an = viec != null && kieu != TAT && dangAn(g, x, y, w, h);
+        // PC / APK: da nút PNG 9-slice (AnhUI, thường / nhấn / tắt); J2ME: khối vẽ
+        ChuUI b = ChuUI.bo;
+        int da = kieu == TAT ? AnhUI.NUT_TAT : an ? AnhUI.NUT_NHAN : AnhUI.NUT_THUONG;
+        if (b != null && w > 0 && h > 0 && w < 4096 && h < 65536
+                && b.hinh(g, AnhUI.NUT[da], x, y, w << 16 | h, mau, kieu == TRUNG ? 0x9AA6BA : AnhUI.toi(mau))) {
+            // đã vẽ
+        } else if (kieu == TRUNG) {
+            GiaoDien.khoi(g, x, y, w, h, r, ChuDe.KE);
+            GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, r - 1, an ? ChuDe.NEN_PHU : ChuDe.NEN, an ? ChuDe.NEN_PHU_TOI : ChuDe.NEN_DUOI);
+        } else {
+            GiaoDien.khoi(g, x, y + 1, w, h, r, ChuDe.BONG);
+            int tren = an ? mau : GiaoDien.pha(mau, 0xFFFFFF, 1, 6);
+            int duoi = an ? GiaoDien.pha(mau, 0, 1, 6) : mau;
+            GiaoDien.khoiDoc(g, x, y, w, h, r, tren, duoi);
+        }
+        if (chu != null && chu.length() > 0) {
+            int mc = kieu == TRUNG ? ChuDe.CHU : 0xFFFFFF;
+            ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - 8), x + w / 2, y + (an ? 1 : 0), h, ChuDe.NHAN, mc, 2);
+        }
         if (kieu != TAT) {
             dangKy(g, x, y, w, h, viec, ten);
         }
     }
 
-    /** Nút lùi (mũi tên trái vẽ tay) cỡ s. */
+    /** Ngón tay đang giữ trong ô (x, y, w, h) (toạ độ sau translate). */
+    static boolean dangAn(Graphics g, int x, int y, int w, int h) {
+        return Canvas.isPointerDown && Canvas.px >= x + g.getTranslateX() && Canvas.px < x + g.getTranslateX() + w
+                && Canvas.py >= y + g.getTranslateY() && Canvas.py < y + g.getTranslateY() + h;
+    }
+
+    /** Nút lùi (mũi tên trái vẽ nét) cỡ s. */
     public static void nutLui(Graphics g, int x, int y, int s, Object viec) {
-        nut(g, x, y, s, s, "", PHU, viec, "lui");
+        nut(g, x, y, s, s, "", TRUNG, viec, "lui");
         int cx = x + s / 2, cy = y + s / 2, a = Math.max(4, s / 5);
-        g.setColor(GiaoDien.TRANG);
-        g.fillTriangle(cx - a, cy, cx + a / 2 + 1, cy - a, cx + a / 2 + 1, cy + a);
+        ChuUI b = ChuUI.bo;
+        if (b == null || !b.net(g, cx, cy, a, ChuDe.CHU, 1)) {
+            g.setColor(ChuDe.CHU);
+            g.fillTriangle(cx - a, cy, cx + a / 2 + 1, cy - a, cx + a / 2 + 1, cy + a);
+        }
     }
 
     /** Cột cuộn (hai nút lên / xuống) bề ngang w ở (x, y, h). */
     public static void cotCuon(Graphics g, int x, int y, int w, int h, Object len, Object xuong) {
         int k = cach();
         int hc = (h - k) / 2, mx = x + w / 2;
-        nut(g, x, y, w, hc, "", PHU, len, "cuon-len");
-        nut(g, x, y + hc + k, w, hc, "", PHU, xuong, "cuon-xuong");
-        g.setColor(GiaoDien.TRANG);
+        nut(g, x, y, w, hc, "", TRUNG, len, "cuon-len");
+        nut(g, x, y + hc + k, w, hc, "", TRUNG, xuong, "cuon-xuong");
+        g.setColor(ChuDe.CHU_PHU);
         g.fillTriangle(mx - 5, y + hc / 2 + 3, mx + 5, y + hc / 2 + 3, mx, y + hc / 2 - 3);
         int yd = y + hc + k + hc / 2;
         g.fillTriangle(mx - 5, yd - 3, mx + 5, yd - 3, mx, yd + 3);
     }
 
-    /** Hàng danh sách (nền chẵn / lẻ, đang chọn viền vàng); đăng ký chạm cả hàng. */
+    /** Hàng danh sách (thẻ trắng viền kẻ; đang chọn vàng nhạt viền cam); đăng ký chạm cả hàng. */
     public static void hang(Graphics g, int x, int y, int w, int h, int i, boolean chon, Object viec, String ten) {
-        GiaoDien.khoi(g, x, y, w, h, 6, chon ? GiaoDien.VANG : 0xC9D2E2);
-        GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, 5, chon ? 0xFFF6C8 : (i % 2 == 0 ? GiaoDien.HANG_CHAN : GiaoDien.HANG_LE));
+        GiaoDien.khoi(g, x, y, w, h, ChuDe.BO_O, chon ? ChuDe.CAM : ChuDe.KE);
+        GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, ChuDe.BO_O - 1, chon ? ChuDe.VANG_NHAT : (i % 2 == 0 ? ChuDe.NEN : 0xF9FAFD));
         dangKy(g, x, y, w, h, viec, ten);
     }
 
-    /** Trạng thái trống: biểu tượng Poké Ball mờ + dòng chính + dòng gợi ý (chữ tự xuống dòng). */
+    /** Trạng thái trống: Poké Ball + dòng chính (đậm) + dòng gợi ý (chữ tự xuống dòng). */
     public static void trong(Graphics g, int x, int y, int w, int h, String chinh, String phu) {
         int cy = y + h / 2 - 22;
         GiaoDien.pokeBall(g, x + w / 2, cy, 12, 0);
         int yy = cy + 18;
-        yy = doan(g, Font.blackFont, chinh, x + 6, yy, w - 12, true);
+        yy = doan(g, ChuDe.NHAN, chinh, x + 6, yy, w - 12, true, ChuDe.CHU);
         if (phu != null) {
-            doan(g, Font.arialFont, phu, x + 6, yy + 2, w - 12, true);
+            doan(g, ChuDe.PHU, phu, x + 6, yy + 2, w - 12, true, ChuDe.CHU_PHU);
         }
+    }
+
+    /** Đoạn chữ giao diện tự xuống dòng; trả y sau đoạn. */
+    public static int doan(Graphics g, int vai, String s, int x, int y, int w, boolean giua, int mau) {
+        if (s == null) {
+            return y;
+        }
+        String[] d = ChuDe.ngat(s, vai, w, 8);
+        int lh = ChuDe.cao(vai);
+        for (int i = 0; i < d.length; i++) {
+            ChuDe.chu(g, d[i], giua ? x + w / 2 : x, y, vai, mau, giua ? 2 : 0);
+            y += lh;
+        }
+        return y;
     }
 
     /** Đoạn chữ tự xuống dòng theo bề ngang w; trả y sau đoạn. */
@@ -349,22 +436,20 @@ public final class Bang {
         return y;
     }
 
-    /** Ô đồ (vuông bo góc) cỡ s, đăng ký chạm. */
+    /** Ô đồ (vuông bo góc, nền xám nhạt) cỡ s, đăng ký chạm. */
     public static void oDo(Graphics g, int x, int y, int s, boolean co, boolean chon, Object viec, String ten) {
-        GiaoDien.khoi(g, x, y + 1, s, s, 6, 0x0A0F2C);
-        GiaoDien.khoi(g, x, y, s, s, 6, chon ? GiaoDien.VANG : GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, x + 2, y + 2, s - 4, s - 4, 4, co ? 0x3B5AA8 : 0x26386E, co ? 0x22397A : 0x1A2658);
-        if (!co) {
-            g.setColor(0x4C64A8);
-            int c = s / 2;
-            g.fillRect(x + c - 4, y + c, 9, 1);
-            g.fillRect(x + c, y + c - 4, 1, 9);
-        }
+        GiaoDien.khoi(g, x, y, s, s, ChuDe.BO_O, chon ? ChuDe.CAM : ChuDe.KE);
+        GiaoDien.khoiDoc(g, x + 1, y + 1, s - 2, s - 2, ChuDe.BO_O - 1, co ? ChuDe.NEN : ChuDe.NEN_PHU, co ? ChuDe.NEN_PHU : ChuDe.NEN_PHU_TOI);
         dangKy(g, x, y, s, s, viec, ten);
     }
 
-    /** Icon vật phẩm phóng z quanh tâm (cx, cy) nếu nền phóng được; không thì cỡ thường. */
+    /** Icon vật phẩm thật (IconVatPham: đĩa / máy chủ, thiếu thì biểu tượng loại) cỡ ~22*z quanh tâm (cx, cy). */
     public static void icon(Graphics g, short id, int cx, int cy, float z) {
+        IconVatPham.ve(g, id, cx, cy, (int) (22 * z), IconVatPham.DP_DO);
+    }
+
+    /** Vẽ ảnh icon đã nạp, phóng z quanh tâm (cx, cy) nếu nền phóng được; không thì cỡ thường. */
+    static void veAnhIcon(Graphics g, short id, int cx, int cy, float z) {
         if (z > 1.05f && PhongVe.co()) {
             int tx = g.getTranslateX(), ty = g.getTranslateY();
             int kx = g.getClipX(), ky = g.getClipY(), kw = g.getClipWidth(), kh = g.getClipHeight();
@@ -382,7 +467,7 @@ public final class Bang {
     public static void thanh(Graphics g, int x, int y, int w, int h, long gt, long max, int loai, String chu) {
         GiaoDien.thanh(g, x, y, w, h, gt, max, loai);
         if (chu != null) {
-            Font.borderFont.drawString(g, chu, x + w / 2, y + (h - Font.borderFont.getHeight()) / 2 + 1, Font.CENTER);
+            ChuDe.chuGiua(g, chu, x + w / 2, y, h, ChuDe.SO, ChuDe.CHU, 2);
         }
     }
 }

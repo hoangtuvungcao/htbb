@@ -412,7 +412,8 @@ public class Tilemap {
                 break;
         }
         // pokemon (W2): ten dia danh viet cung -> dia danh Pokemon
-        mapName = game.pokemon.TenMapPokemon.doiHien(mapName);
+        // 0.9.5: tên bản đồ từ SQL data_map_ten (game.pokemon.TenBanDoBang); bảng tên cũ trên chỉ còn dự phòng
+        mapName = game.pokemon.TenBanDoBang.ten(idmap, mapName);
     }
 
     public static final void paintTile(Graphics g) {

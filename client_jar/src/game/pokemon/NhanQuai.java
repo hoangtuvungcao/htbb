@@ -46,6 +46,13 @@ public final class NhanQuai {
             cao = m.height < 16 ? 16 : m.height;
         }
         int yDinh = m.y + m.dy + m.z - cao;
+        if (NhanTheGioi.bat()) {
+            // 0.9.5: nhãn ở lớp giao diện (chữ nhỏ viền tối, xếp chỗ chống chồng) - NhanTheGioi
+            int hp = (chon || vuaTrung) && m.maxhp > 0 ? (int) ((long) (m.hp < 0 ? 0 : m.hp) * 1000 / m.maxhp) : -1;
+            String ten = m.getDisplayName();
+            NhanTheGioi.quai(m, m.level > 0 ? NhanTheGioi.lv(m.level) : null, ten == null ? "" : ten, m.x, yDinh - 1, m.y + m.dy + m.z, hp, chon, vuaTrung);
+            return;
+        }
         int y = yDinh - 3;
         if (chon || vuaTrung) {
             if (m.maxhp > 0) {

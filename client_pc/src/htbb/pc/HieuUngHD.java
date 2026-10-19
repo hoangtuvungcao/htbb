@@ -43,6 +43,7 @@ public final class HieuUngHD {
     }
 
     private static final ArrayList<HU> DS = new ArrayList<HU>();
+    private static final ArrayList<HU> RONG = new ArrayList<HU>();
     /** dịch camera (logic) của lớp hiệu ứng thế giới trong khung game vừa vẽ */
     private static volatile int camX, camY;
     private static volatile long khungCam = -10;
@@ -132,13 +133,13 @@ public final class HieuUngHD {
         try {
             boolean theGioi = coTheGioi && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
             if (theGioi) {
-                veVignette(g, W, H);
+                // 0.9.5: bỏ viền tối (vignette) - làm màn chơi tối đi và tốn ~8 ms/khung (phóng ảnh mờ cả màn)
                 ArrayList<HU> ds;
                 synchronized (DS) {
                     for (int i = DS.size() - 1; i >= 0; i--) {
                         if (now - DS.get(i).t0 > DS.get(i).ms) DS.remove(i);
                     }
-                    ds = new ArrayList<HU>(DS);
+                    ds = DS.isEmpty() ? RONG : new ArrayList<HU>(DS);
                 }
                 java.awt.Shape clip = g.getClip();
                 g.clipRect(NenPc.lechX, NenPc.lechY, NenPc.rong * k, NenPc.cao * k);

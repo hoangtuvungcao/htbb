@@ -66,6 +66,19 @@ public final class PhongChu {
         return thuong;
     }
 
+    private static final Font[] DEM = new Font[2 * 1024];
+
+    /** Noto Sans cỡ co (nhớ sẵn theo 0,1 px: deriveFont mỗi khung rất tốn + cấp phát). */
+    public static Font co(boolean dam0, float co) {
+        int k = Math.max(0, Math.min(1023, Math.round(co * 10))) * 2 + (dam0 ? 1 : 0);
+        Font r = DEM[k];
+        if (r == null) {
+            r = thuong(dam0).deriveFont(k / 2 / 10f);
+            DEM[k] = r;
+        }
+        return r;
+    }
+
     /** Baloo 2 (tiêu đề, logo chữ) - đậm giả bằng deriveFont(BOLD). */
     public static synchronized Font tieuDe() {
         if (tieuDe == null) tieuDe = nap("Baloo2-wght.ttf", Font.SANS_SERIF, Font.BOLD);

@@ -450,7 +450,7 @@ class CharVongLap {
                 if (self.timeXP == 179) {
                     self.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã chơi được " + self.timeXP + " phút. Bạn sẽ không thể tiếp tục chơi sau 1 phút nữa.", ""));
                 } else if (self.timeXP == 180) {
-                    self.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã chơi được " + self.timeXP + " phút. Bạn không thể tiếp tục chơi tiếp.", ""));
+                    self.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã chơi được " + self.timeXP + " phút. Bạn không thể chơi tiếp.", ""));
                     CharManager.instance.kickPlayer(self, "char 4");
                 }
             }

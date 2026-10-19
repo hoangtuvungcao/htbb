@@ -132,6 +132,7 @@ public class ChupTruocGame {
         htbb.pc.GiaoDienHD.bat = true;
         htbb.pc.CaiDat.tatTieng = true;
         MIDlet.GHI_DE.put("HTBB-May-Chu", "127.0.0.1:1");   // không có máy chủ: chỉ màn trước game
+        MIDlet.GHI_DE.put("HTBB-Ban-Thu", "0");   // chụp như bản phát hành (tên máy chủ chính thức)
         NenPc.tinhKichThuoc(CO[0][0], CO[0][1]);
         chay(new Runnable() {
             public void run() {

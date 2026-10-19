@@ -165,9 +165,7 @@ public final class HdVe {
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
         float rad = Math.min(r, Math.min(w, h) / 2f);
-        tronDoc(c, l, t, l + w, t + h, rad, argb(tren), argb(duoi));
-        // ánh bóng kính nửa trên
-        if (h >= 8) tronDoc(c, l + 1, t + 0.5f, l + w - 1, t + h * 0.5f, rad, 0x30FFFFFF, 0x00FFFFFF);
+        tronDoc(c, l, t, l + w, t + h, rad, argb(tren), argb(duoi));   // 0.9.5: phẳng (bỏ ánh kính)
         return true;
     }
 
@@ -179,11 +177,16 @@ public final class HdVe {
         Canvas c = cv(g);
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
-        bong(c, l, t, l + w, t + h, 9, 1.5f);
-        tronDoc(c, l, t, l + w, t + h, 9, 0xFFFFFFFF, 0xFFE9F0FA);
-        vienTron(c, l, t, l + w, t + h, 9, 1f, 0xB01E2A44);
-        vienTron(c, l + 1, t + 1, l + w - 1, t + h - 1, 8, 0.6f, 0xFFFFFFFF);
+        theSang(c, l, t, l + w, t + h, 9);
+        game.render.screen.Font.nenSang = true;
         return true;
+    }
+
+    /** Thẻ sáng 0.9.5 (game.pokemon.ChuDe): bóng mềm, thân trắng, viền tối mảnh. */
+    static void theSang(Canvas c, float l, float t, float r, float b, float rad) {
+        bong(c, l, t, r, b, rad, 1.5f);
+        tronDoc(c, l, t, r, b, rad, argb(game.pokemon.ChuDe.NEN), argb(game.pokemon.ChuDe.NEN_DUOI));
+        vienTron(c, l, t, r, b, rad, 0.8f, 0xC0000000 | game.pokemon.ChuDe.VIEN);
     }
 
     /**
@@ -197,7 +200,7 @@ public final class HdVe {
         Canvas c = cv(g);
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
-        bangSang(c, l, t, l + w, t + h, 10);
+        theSang(c, l, t, l + w, t + h, 9);
         ghiNen(g, x, y, w, h, 240);
         game.render.screen.Font.nenSang = true;
         return true;
@@ -219,9 +222,12 @@ public final class HdVe {
         Canvas c = cv(g);
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
-        bangKinh(c, l, t, l + w, t + h, 9);
+        // 0.9.5: thẻ nhấn XANH tươi (chữ trắng đọc rõ) thay kính navy tối
+        bong(c, l, t, l + w, t + h, 9, 1.5f);
+        tronDoc(c, l, t, l + w, t + h, 9, pha(argb(game.pokemon.ChuDe.XANH), 0xFFFFFFFF, 0.2f), argb(game.pokemon.ChuDe.XANH_TOI));
+        vienTron(c, l, t, l + w, t + h, 9, 0.8f, 0xC0000000 | game.pokemon.ChuDe.VIEN);
         game.render.screen.Font.nenSang = false;
-        ghiNen(g, x, y, w, h, 40);
+        ghiNen(g, x, y, w, h, 90);
         return true;
     }
 
@@ -265,54 +271,23 @@ public final class HdVe {
 
     public static boolean bangMo(Graphics g, int x, int y, int w, int h) {
         moClip(g);
-        ghiNen(g, x, y, w, h, 50);
-        game.render.screen.Font.nenSang = false;
+        // 0.9.5: thẻ trắng mờ (chữ tối) - cùng kiểu theMo
+        ghiNen(g, x, y, w, h, 238);
+        game.render.screen.Font.nenSang = true;
         phongManTruocGame(g, x, y, w, h);
         HdNut.ghiThe(g, x, y, w, h);
         Canvas c = cv(g);
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
         bong(c, l, t, l + w, t + h, 10, 1.5f);
-        tronDoc(c, l, t, l + w, t + h, 10, 0xD8213F6E, 0xE00E1D38);
-        tronDoc(c, l + 1, t + 1, l + w - 1, t + Math.min(26, h * 0.4f), 9, 0x26FFFFFF, 0x00FFFFFF);
-        vienTron(c, l, t, l + w, t + h, 10, 1f, 0xFF0A1428);
-        vienTron(c, l + 1, t + 1, l + w - 1, t + h - 1, 9, 0.6f, 0x60A9C8FF);
+        tronDoc(c, l, t, l + w, t + h, 10, 0xF2FFFFFF, 0xEAF3F6FB);
+        vienTron(c, l, t, l + w, t + h, 10, 0.8f, 0xA0000000 | game.pokemon.ChuDe.VIEN);
         return true;
     }
 
-    /** Dải tiêu đề đỏ: dải màu + ánh kính + Poké Ball + chữ tiêu đề (chữ HD). */
+    /** Dải tiêu đề (0.9.5): jar GiaoDien.dai vẽ bằng khoiDoc / pokeBall / chữ giao diện (đều HD). */
     public static boolean dai(Graphics g, int x, int y, int w, int h, String tieuDe) {
-        if (h < 6) return true;
-        ghiNen(g, x, y, w, h, 90);
-        Canvas c = cv(g);
-        float l = x + g.getTranslateX();
-        float t = y + g.getTranslateY();
-        float rad = Math.min(7, h / 2f);
-        tronDoc(c, l, t, l + w, t + h, rad, DO_SANG, 0xFFB8260A);
-        socCheo(c, l, t, l + w, t + h, rad, 0x1CFFFFFF, 7f);
-        tronDoc(c, l + 1, t + 0.6f, l + w - 1, t + h * 0.55f, rad, 0x40FFFFFF, 0x08FFFFFF);
-        P.setColor(0x60000000);
-        c.drawRect(l + 2, t + h - 0.6f, l + w - 2, t + h, P);
-        boolean coBong = h >= 12 && w > 60;
-        game.render.screen.Font f = game.render.screen.Font.borderFont;
-        if (tieuDe != null && tieuDe.length() > 0 && f != null) {
-            tieuDe = game.pokemon.GiaoDien.tieuDe(tieuDe);
-            int fh = f.getHeight();
-            int fw = f.getWidth(tieuDe);
-            int r = Math.min(6, h / 2 - 2);
-            int choBong = 2 * r + 8;
-            int xTam = x + w / 2;
-            if (coBong && fw + 2 * choBong > w) {
-                if (fw + choBong + 4 <= w) xTam = x + choBong + (w - choBong) / 2;
-                else coBong = false;
-            }
-            f.drawString(g, tieuDe, xTam, y + (h - fh) / 2 + 1, game.render.screen.Font.CENTER);
-        }
-        if (coBong) {
-            int r = Math.min(6, h / 2 - 2);
-            pokeBall(g, x + 4 + r, y + h / 2, r, 0);
-        }
-        return true;
+        return false;
     }
 
     public static boolean vienTab(Graphics g, int x, int y, int w, int h, boolean doiTab) {
@@ -322,37 +297,14 @@ public final class HdVe {
         float t = y + g.getTranslateY();
         float rad = h / 2f;
         bong(c, l, t, l + w, t + h, rad, 1f);
-        tronDoc(c, l, t, l + w, t + h, rad, doiTab ? XANH_SANG : DO_SANG, doiTab ? XANH : DO_TOI);
-        tronDoc(c, l + 1, t + 0.6f, l + w - 1, t + h * 0.55f, rad, 0x40FFFFFF, 0x08FFFFFF);
-        vienTron(c, l, t, l + w, t + h, rad, 0.8f, 0xC0101830);
+        int m = argb(doiTab ? game.pokemon.ChuDe.XANH : game.pokemon.ChuDe.DO);
+        tronDoc(c, l, t, l + w, t + h, rad, pha(m, 0xFFFFFFFF, 0.15f), m);
         return true;
     }
 
+    /** Ô đang chọn 0.9.5: vàng nhạt viền cam (cả nền sáng lẫn thẻ nhấn). */
     public static boolean chon(Graphics g, int x, int y, int w, int h) {
-        ghiNen(g, x, y, w, h, 110);
-        Canvas c = cv(g);
-        float l = x + g.getTranslateX();
-        float t = y + g.getTranslateY();
-        float rad = Math.min(6, h / 2f);
-        // quầng sáng vàng + thân xanh sáng + viền vàng
-        tron(c, l - 1.2f, t - 1.2f, l + w + 1.2f, t + h + 1.2f, rad + 1.2f, 0x40FFCB05);
-        tronDoc(c, l, t, l + w, t + h, rad, 0xFF7DB3F2, 0xFF2F6CB8);
-        socCheo(c, l, t, l + w, t + h, rad, 0x14FFFFFF, 8f);
-        tronDoc(c, l + 1, t + 0.6f, l + w - 1, t + h * 0.5f, rad, 0x38FFFFFF, 0x00FFFFFF);
-        vienTron(c, l, t, l + w, t + h, rad, 1.2f, VANG);
-        // ▶ con trỏ nhấp nháy nhẹ bên trái ô đang chọn
-        if (h >= 10 && w >= 40) {
-            float ax = l + 5 + (float) Math.sin(System.currentTimeMillis() / 160.0) * 0.8f, ay = t + h / 2f, s = Math.min(4f, h * 0.22f);
-            PATH.reset();
-            PATH.moveTo(ax, ay - s);
-            PATH.lineTo(ax + s * 1.3f, ay);
-            PATH.lineTo(ax, ay + s);
-            PATH.close();
-            P.setShader(null);
-            P.setColor(0xFFFFE066);
-            c.drawPath(PATH, P);
-        }
-        return true;
+        return chonSang(g, x, y, w, h);
     }
 
     public static boolean chonSang(Graphics g, int x, int y, int w, int h) {
@@ -361,8 +313,8 @@ public final class HdVe {
         float l = x + g.getTranslateX();
         float t = y + g.getTranslateY();
         float rad = Math.min(6, h / 2f);
-        tronDoc(c, l, t, l + w, t + h, rad, 0xFFFFF1B0, 0xFFFFD53A);
-        vienTron(c, l, t, l + w, t + h, rad, 1f, 0xFFB98A00);
+        tronDoc(c, l, t, l + w, t + h, rad, 0xFFFFFBEA, argb(game.pokemon.ChuDe.VANG_NHAT));
+        vienTron(c, l, t, l + w, t + h, rad, 1.1f, argb(game.pokemon.ChuDe.CAM));
         return true;
     }
 
@@ -381,21 +333,21 @@ public final class HdVe {
     static int mauThanh(int loai, long gt, long max) {
         if (loai == 0) {
             long p = max <= 0 ? 100 : gt * 100 / max;
-            return p > 50 ? 0xFF48D058 : p > 20 ? 0xFFF8C020 : 0xFFF04830;
+            return argb(p > 50 ? game.pokemon.ChuDe.HP_XANH : p > 20 ? game.pokemon.ChuDe.HP_VANG : game.pokemon.ChuDe.HP_DO);
         }
-        return loai == 1 ? 0xFF3FA0F0 : 0xFF40C8F8;
+        return argb(loai == 1 ? game.pokemon.ChuDe.PP : game.pokemon.ChuDe.EXP);
     }
 
     static void veThanh(Canvas c, float l, float t, float w, float h, float tiLe, int mau) {
         float rad = h / 2f;
-        tron(c, l, t, l + w, t + h, rad, 0xD0101828);
+        tron(c, l, t, l + w, t + h, rad, 0xE0000000 | game.pokemon.ChuDe.RANH);
         float dai = (w - 1.2f) * Math.max(0f, Math.min(1f, tiLe));
         if (dai > 0) {
             if (dai < h - 1.2f) dai = Math.min(w - 1.2f, h - 1.2f);
             tronDoc(c, l + 0.6f, t + 0.6f, l + 0.6f + dai, t + h - 0.6f, rad - 0.6f, pha(mau, 0xFFFFFFFF, 0.35f), pha(mau, 0xFF000000, 0.12f));
             if (h >= 4) tron(c, l + 1.5f, t + 1f, l + 0.6f + dai - 1f, t + Math.max(1.6f, h * 0.32f), h * 0.2f, 0x50FFFFFF);
         }
-        vienTron(c, l, t, l + w, t + h, rad, 0.7f, 0x90000000);
+        vienTron(c, l, t, l + w, t + h, rad, 0.6f, 0x50000000 | game.pokemon.ChuDe.VIEN);
     }
 
     /** Viên (pill) màu: dải màu + viền + chữ (chữ HD). */

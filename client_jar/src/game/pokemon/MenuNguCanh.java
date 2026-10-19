@@ -60,10 +60,39 @@ public final class MenuNguCanh extends Dialog {
         mo(lenh, true);
     }
 
+    /**
+     * 0.9.5: bỏ mục TRÙNG (cùng một việc) - màn cũ đôi khi thêm hai lần cùng một lệnh. Giữ mục đầu. (Cùng chữ mà
+     * khác việc - vd "Nói chuyện" của hai nhiệm vụ - vẫn giữ cả hai.)
+     */
+    public static Vector boTrung(Vector lenh) {
+        if (lenh == null) {
+            return null;
+        }
+        Vector r = new Vector();
+        for (int i = 0; i < lenh.size(); i++) {
+            Object o = lenh.elementAt(i);
+            boolean trung = false;
+            if (o instanceof game.model.Command) {
+                game.model.Command c = (game.model.Command) o;
+                for (int k = 0; k < r.size() && !trung; k++) {
+                    Object q = r.elementAt(k);
+                    if (q instanceof game.model.Command) {
+                        game.model.Command d = (game.model.Command) q;
+                        trung = c.action != null && c.action == d.action;
+                    }
+                }
+            }
+            if (!trung) {
+                r.addElement(o);
+            }
+        }
+        return r;
+    }
+
     /** ganMucTieu = đặt cạnh mục tiêu đang chọn trên bản đồ (false: giữa đáy màn - mở từ bảng). */
     public static void mo(Vector lenh, boolean ganMucTieu) {
         MenuNguCanh m = gI();
-        m.lenh = lenh;
+        m.lenh = boTrung(lenh);
         m.trang = 0;
         m.chon = 0;
         m.left = null;

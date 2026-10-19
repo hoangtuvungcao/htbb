@@ -69,7 +69,10 @@ const coStab = (he: number) => loaiDang.value.he.includes(he)
                 {{ c.so + 1 }}
               </td>
               <td class="font-semibold text-highlighted">
-                {{ c.ten }}
+                <span class="inline-flex items-center gap-2">
+                  <img :src="`/chieu/${d.class}-${c.so}.png`" alt="" width="28" height="28" class="size-7 shrink-0" loading="lazy">
+                  {{ c.ten }}
+                </span>
               </td>
               <td><PokeHeBadge :he="c.he" size="sm" /></td>
               <td>{{ HO_TRO.has(c.ten) ? 'Hỗ trợ / tăng sức' : c.so === 0 ? 'Đánh thường' : 'Tấn công' }}</td>

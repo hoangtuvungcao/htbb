@@ -206,8 +206,9 @@ public final class HdHieuUng {
         float ox = g.getTranslateX(), oy = g.getTranslateY();
         // lò xo: bật to rồi dao động tắt dần quanh 1
         float tt = t / 2.2f;
-        float k = 1f + 0.85f * (float) (Math.exp(-tt * 1.1) * Math.cos(tt * 2.4));
-        float co = (6.5f + coSo * 2.2f) * Math.max(0.3f, k);
+        // 0.9.5: số NHỎ (~8 px logic như SoBay.coSo của jar, lớp giao diện), nảy nhẹ
+        float k = 1f + 0.35f * (float) (Math.exp(-tt * 1.1) * Math.cos(tt * 2.4));
+        float co = (6.1f + coSo * 1.2f) * Math.max(0.6f, k);
         PT.setTypeface(HdChu.typeface(2));
         PT.setTextSize(co);
         PT.setTextAlign(Paint.Align.CENTER);
@@ -218,7 +219,7 @@ public final class HdHieuUng {
         int con = tMax - t;
         int a = con < 6 ? Math.max(0, con * 42) : 255;
         float cx = x + ox, cy = y + oy;
-        if (coSo >= 3) quang(c, cx, cy - co * 0.35f, co * 1.2f, mau, a / 255f * 0.55f);
+        if (coSo >= 3) quang(c, cx, cy - co * 0.35f, co * 0.9f, mau, a / 255f * 0.4f);
         PTV.setColor(0xFF101420);
         PTV.setAlpha(a);
         c.drawText(s, cx, cy, PTV);

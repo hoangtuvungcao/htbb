@@ -182,6 +182,9 @@ public class ServerListScr extends Screen {
             }
         }
         super.updateKey();
+        if (game.pokemon.KhungVao.moi()) {
+            return;   // bảng mới: chạm qua VungCham (hàng / nút), không dùng phép thử chạm cũ
+        }
         if (Canvas.isPointerDown && Canvas.isPointer(Canvas.hw - 61, Canvas.hh - 19, 120, 100)) {
             if (!this.trans) {
                 this.pa = cmy;
@@ -262,8 +265,62 @@ public class ServerListScr extends Screen {
         Tilemap.paintTileTop(g);
     }
 
+    private IAction viecChon;
+
+    /** 0.9.5 PC / APK: bảng sáng chung, hàng máy chủ (tên + trạng thái) chạm để chọn, nút "Vào máy chủ" trong bảng. */
+    private void veMoi(Graphics g) {
+        this.anNutLenh = true;
+        if (this.viecChon == null) {
+            this.viecChon = new IAction() {
+                public void perform() {
+                    if (ServerListScr.index != -1) {
+                        Canvas.loginScr.switchToMe();
+                    }
+                }
+            };
+        }
+        paintBg(g);
+        int n = nameServer == null ? 0 : nameServer.length;
+        int hs = n > 4 ? 4 : n < 1 ? 1 : n;
+        int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
+        int hh = Math.max(hb + 8, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN) + game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + 10);
+        int hc = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM + hs * (hh + k) + hb;
+        int[] r = game.pokemon.KhungVao.logoVaBang(g, 300, hc, hc, 150);
+        int[] c = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Chọn máy chủ", null, 0, null, null);
+        int x = c[0], w = c[2], y = c[1];
+        for (int i = 0; i < n && i < hs; i++) {
+            final int j = i;
+            game.pokemon.Bang.hang(g, x, y, w, hh, i, i == index, new IAction() {
+                public void perform() {
+                    if (ServerListScr.index == j) {
+                        Canvas.loginScr.switchToMe();
+                    } else {
+                        ServerListScr.index = j;
+                    }
+                }
+            }, "may-chu-" + i);
+            game.pokemon.GiaoDien.pokeBall(g, x + 16, y + hh / 2, 7, 0);
+            String ten = TaiDanhSach.tenHien(nameServer[i], i);
+            boolean thu = ten.indexOf("Thử nghiệm") >= 0;
+            int ty = y + (hh - game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN) - game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU)) / 2;
+            game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat(ten, game.pokemon.ChuDe.NHAN, w - 40), x + 30, ty, game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 0);
+            game.pokemon.ChuDe.chu(g, thu ? "Bản thử nghiệm nội bộ" : "Máy chủ chính thức", x + 30, ty + game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN),
+                    game.pokemon.ChuDe.PHU, thu ? game.pokemon.ChuDe.CAM : game.pokemon.ChuDe.LA_TOI, 0);
+            y += hh + k;
+        }
+        if (n == 0) {
+            game.pokemon.ChuDe.chuGiua(g, "Chưa có máy chủ", x + w / 2, y, hh, game.pokemon.ChuDe.THUONG, game.pokemon.ChuDe.CHU_PHU, 2);
+            y += hh + k;
+        }
+        game.pokemon.Bang.nut(g, x, c[1] + c[3] - hb, w, hb, "Vào máy chủ", game.pokemon.Bang.CHINH, this.viecChon, "chon-may-chu");
+    }
+
     @Override
     public void paint(Graphics g) {
+        if (game.pokemon.KhungVao.moi()) {
+            veMoi(g);
+            return;
+        }
         paintBg(g);
         Canvas.resetTrans(g);
         // pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo game goc

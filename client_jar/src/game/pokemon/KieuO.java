@@ -285,6 +285,19 @@ public final class KieuO {
         }
     }
 
+    /**
+     * Ô chiêu sk của dòng lop: icon PNG riêng từng chiêu (bản PC / APK, AnhUI.oChieu) canh giữa ô w x h; J2ME / thiếu
+     * ảnh -> ô màu hệ + hình 12x12 cũ.
+     */
+    public static void oChieuSk(Graphics g, int x, int y, int w, int h, int lop, int sk, boolean khoa) {
+        int s = w < h ? w : h;
+        int o = AnhUI.oChieu(lop, sk);
+        if (o >= 0 && ChuUI.bo != null && ChuUI.bo.chieu(g, o, false, x + (w - s) / 2, y + (h - s) / 2, s, khoa)) {
+            return;
+        }
+        oChieu(g, x, y, w, h, PokeChieu.he(lop, sk), PokeChieu.hinh(lop, sk), khoa);
+    }
+
     /** Viên hệ (pill) màu hệ, chữ trắng; trả về bề ngang. */
     public static int vienHe(Graphics g, int x, int y, int he) {
         String chu = tenHe(he);

@@ -14,6 +14,7 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 | [PMDCollab RawAsset](https://github.com/PMDCollab/RawAsset) | hiệu ứng chiêu (Particle), icon vật phẩm, vật thể trên bản đồ (Object, Item) | không có tệp LICENSE; trích từ Pokémon Mystery Dungeon (© Nintendo / Chunsoft) | chỉ dùng phi thương mại; vẫn ghi nguồn |
 | [Ninja Adventure – Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack) (Pixel-boy & AAA) | bộ tile bản đồ | CC0 1.0 | không (dự án vẫn ghi) |
 | Phần vẽ bằng code của dự án | mép chuyển tiếp autotile, nền / vách hang, biển hiệu, chữ và giao diện kiểu Pokémon, logo | CC0 | — |
+| Bộ icon + da nút giao diện PNG của dự án (`client_jar/res/ui/`, 0.9.5) | icon HUD / menu / thông báo / hệ / ô trang bị, da nút 9-slice (PC, APK) | CC0 1.0 | — |
 | [Kenney](https://kenney.nl/assets) — Interface Sounds, Impact Sounds, RPG Audio, Digital Audio, Music Jingles | tiếng hiệu ứng | CC0 1.0 | không (dự án vẫn ghi) |
 | Nhạc nền chiptune soạn riêng (`client_jar/tools/lam_am_thanh.py`) | nhạc nền MIDI | CC0 1.0 | — |
 | Noto Sans (© Google), Baloo 2 (© The Baloo 2 Project Authors / Ek Type), Nunito, Press Start 2P | chữ bản PC, logo, website | SIL Open Font License 1.1 | giữ nguyên tệp giấy phép |
@@ -62,7 +63,20 @@ Trong game: Menu màn đăng nhập → **Ghi công** (jar/APK), nút **Ghi côn
 phép** (PC Java). Bản PC Windows đóng gói (`client_pc/dong_goi_windows.sh`) kèm `GHI_CONG.txt` cạnh `HTBB.exe` và thư
 mục `giay_phep/` (phông, Launch4j, âm thanh).
 
-## 4. Âm thanh
+## 4. Icon giao diện PNG (0.9.5)
+
+`client_jar/res/ui/ui_96.png` (53 icon 96x96: Poké Ball, túi, nhiệm vụ, bản đồ, menu, chat, thuốc, 16 bóng trang bị,
+13 huy hiệu hệ, máy ảnh, xu, thông tin, cảnh báo, lỗi, đóng, lùi, hộp đồ) và `nut_96.png` (da nút thường / nhấn / tắt /
+tròn) do dự án **tự vẽ**: `tools/pokemon/sinh_icon_ui.py` render offline bằng Pillow từ thiết kế vector của
+`game.pokemon.BieuTuong` (khối có độ sáng, ánh, viền tối mềm, bóng đổ). Không dùng tệp icon bên ngoài (không Kenney, không
+game-icons.net), không cần ghi công; phát hành theo CC0 1.0. Bản J2ME không dùng các ảnh này (vẽ vector).
+
+Icon CHIÊU (0.9.5, chỉ dùng trong giao diện: nút chiêu HUD, đòn chính, tab Kỹ năng / Ô nhanh, chọn chiêu, gợi ý, bảng
+Tự động, trang cẩm nang Chiêu thức): `client_jar/res/ui/chieu_{32,64,96}.png`, `chieu_tron_{32,64,96}.png` và
+`web/public/chieu/*.png` — huy hiệu màu hệ + hình theo họ chiêu (cào, cắn, lửa, sét, lá, nước...) do dự án **tự vẽ**
+bằng `tools/pokemon/sinh_icon_chieu.py` (Pillow, vẽ vector siêu mẫu), CC0 1.0. Hiệu ứng chiêu trong trận không đổi.
+
+## 5. Âm thanh
 
 | Tệp trong jar (`/am/`) | Nguồn | Giấy phép |
 |---|---|---|
@@ -82,7 +96,7 @@ Soundbank TimGM6mb (GPL-2) được phát hành **nguyên vẹn, tách riêng** 
 jar) và chỉ đọc lúc chạy — gộp đơn thuần, không làm game thành tác phẩm phái sinh. Bỏ được bằng cách xoá tệp (game dùng
 soundbank mặc định của Java) hoặc chạy với `-Dhtbb.soundbank=<tệp .sf2>`.
 
-## 5. Tải lại bộ tile bản đồ
+## 6. Tải lại bộ tile bản đồ
 
 Tệp tải về nằm trong `.gitignore`. Chạy ở gốc repo:
 
@@ -99,7 +113,7 @@ javac -d /tmp/htbb-tools tools/pokemon/DungBoTileMoi.java && java -cp /tmp/htbb-
 
 `tileset_interior_floor.png` lấy từ repo của chính tác giả (`pixel-boy/NinjaAdventure`).
 
-## 6. Phần mềm
+## 7. Phần mềm
 
 - `server/lib/htbb-core.jar` và `server/loginServer/CheckLoginSocket.jar` là thư viện đóng của game gốc, không có mã
   nguồn: không phát hành lại riêng, giữ repo private.

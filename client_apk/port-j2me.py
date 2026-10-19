@@ -116,6 +116,8 @@ VA_HD = [
     # bản đồ nhỏ: thẻ HD của HUD vẽ cả bản đồ (phóng vừa khung) -> jar không vẽ ảnh / điểm trong ô nữa
     ("TRONG", "game/render/screen/GameScr.java", r"\n    public void paintMiniMap\(Graphics g\)",
      "g.setClip(3, 3, wMiniMap - 5, hMiniMap - 5);", "g.setClip(3, 3, %s ? 0 : wMiniMap - 5, %s ? 0 : hMiniMap - 5);" % (HUD, HUD)),
+    # 0.9.5: ô Cài đặt của Menu = bảng chỉnh của HUD APK (âm thanh, hiệu ứng, rung, bố cục) - một lối vào
+    ("DAU", "game/render/screen/CauGiaoDien.java", r"\n    public static void moCaiDat\(\)", " if (%s) { %sHud.moCaiDat(); return; }" % (HUD, HD)),
     # HUD màn rộng chung (HudRong, bản PC): APK có HUD HD riêng (Hud.java) -> tắt, khỏi vẽ / nhận chạm chồng
     ("DAU", "game/render/screen/HudRong.java", r"\n    public static boolean bat\(\)", " if (%s) { return false; }" % HUD),
     # toạ độ chạm logic -> thế giới (HanhDong: chọn quái / NPC khi chạm): camera cố định phóng 2 (HdZoom)
@@ -184,11 +186,11 @@ VA_HD = [
     ("DAU", "game/render/Canvas.java", r"\n    public static int collisionCmdBar\(\)", " if (%s) { return %sHdVe.vungPhimMem(); }" % (HUD, HD)),
     _gd("thanhPhim", r"Graphics g, int w, int h", "g, w, h"),
     # cửa sổ cỡ cố định -> thẻ lớn giữa màn (HdPhong)
-    ("TRONG", "game/render/Canvas.java", r"\n    protected void paint\(Graphics g\)",
+    ("TRONG", "game/render/Canvas.java", r"\n    private void ve0\(Graphics g\)",
      "currentScreen.paint(g);", "currentScreen.paint(g);\n                %sHdPhong.ket(g);" % HD),
     ("TRONG", "game/render/screen/WindowInfoScr.java", r"\n    public void paint\(Graphics g\)",
      "Canvas.gameScr.paint(g);", "Canvas.gameScr.paint(g); %sHdPhong.batDau(g, this, this.x - 10, this.y - 10, 145, 144, 2.2f);" % HD),
-    ("TRONG", "game/render/Canvas.java", r"\n    protected void paint\(Graphics g\)",
+    ("TRONG", "game/render/Canvas.java", r"\n    private void ve0\(Graphics g\)",
      "dlg.paint(g);", "dlg.paint(g);\n                    %sHdPhong.ket(g);" % HD),   # 0.9.4: Canvas vẽ hộp qua biến dlg (try riêng)
     ("TRONG", "game/render/screen/MsgDlg.java", r"\n    public void paint\(Graphics g\)",
      "game.pokemon.GiaoDien.hop(g, Canvas.hw - (this.wHop / 2), 12, this.wHop, this.hHop);",

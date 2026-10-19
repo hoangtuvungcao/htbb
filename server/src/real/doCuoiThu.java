@@ -32,37 +32,47 @@ public class doCuoiThu {
             short idPet;
             if (type == 0) {
                 idPet = id;
-
+                // 0.9.5: kiem HET dieu kien TRUOC khi doi place. Ban cu dat place = 0 cho moi con dung
+                // truoc con duoc chon trong danh sach roi moi kiem "dang cuoi thu khac" / menu Tang -> con
+                // dang cuoi mat place = 1 trong khi animalRide van tro toi no: goi tui thu (createCharInventory
+                // type 2) ghi so dong = size - 1 nhung lai ghi size dong -> client doc lech ca phan pet.
+                int viTri = -1;
                 for (int i = 0; i < player.animal.size(); ++i) {
-                    Animal animal = (Animal) player.animal.get(i);
-                    if (animal.id != idPet) {
-                        animal.place = 0;
-                    } else {
-                        if (player.map.isMapOffline) {
-                            if ((animal.isPoro() || animal.isLan()) && animal.place == 0) {
-                                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Bán"}, -800 - type, i));
-                                return;
-                            }
-                        } else if (animal.isAnimalCanTang() && animal.place == 0) {
-                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Tặng"}, -800 - type, i));
-                            return;
-                        }
-
-                        if (player.rideHorse > 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng khi đang cưỡi thú khác.", ""));
-                            return;
-                        }
-
-//                        System.out.println("CƯỠI CON LỒN GÌ ĐÂY ????? : " + animal.name);
-
-                        player.rideHorse = 0;
-                        player.animalRide = null;
-                        animal.place = 1;
-                        player.animalRide = animal;
-                        player.rideHorse = Animal.rideHorse[animal.idImg];
-                        player.idImgHorse = Animal.rideHorse[animal.idImg];
+                    if (((Animal) player.animal.get(i)).id == idPet) {
+                        viTri = i;
+                        break;
                     }
                 }
+                if (viTri < 0) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy thú cưỡi.", ""));
+                    return;
+                }
+                final Animal chon = (Animal) player.animal.get(viTri);
+                if (player.map.isMapOffline) {
+                    if ((chon.isPoro() || chon.isLan()) && chon.place == 0) {
+                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Bán"}, -800 - type, viTri));
+                        return;
+                    }
+                } else if (chon.isAnimalCanTang() && chon.place == 0) {
+                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Tặng"}, -800 - type, viTri));
+                    return;
+                }
+                if (player.rideHorse > 0) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(player.animalRide == chon
+                            ? "Đang cưỡi thú này." : "Không thể dùng khi đang cưỡi thú khác.", ""));
+                    return;
+                }
+                if (chon.idImg < 0 || chon.idImg >= Animal.rideHorse.length) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi lỗi hình, không cưỡi được.", ""));
+                    return;
+                }
+                for (int i = 0; i < player.animal.size(); ++i) {
+                    ((Animal) player.animal.get(i)).place = 0;
+                }
+                chon.place = 1;
+                player.animalRide = chon;
+                player.rideHorse = Animal.rideHorse[chon.idImg];
+                player.idImgHorse = Animal.rideHorse[chon.idImg];
 
                 // Skin gan theo NHAN VAT nen doi con thu van giu skin cu. Van phai goi
                 // dong bo o day: luc chua cuoi thu thi getAnimalWearing khong chay nen

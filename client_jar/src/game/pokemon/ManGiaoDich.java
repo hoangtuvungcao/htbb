@@ -102,7 +102,7 @@ public final class ManGiaoDich extends Screen {
 
     public void paint(Graphics g) {
         try {
-            Canvas.gameScr.paint(g);
+            game.render.screen.GameScr.veNen(g);   // 0.9.5: chỉ lớp thế giới (HUD sau bảng không vẽ)
         } catch (Throwable e) {
             // bỏ qua
         }
@@ -218,8 +218,8 @@ public final class ManGiaoDich extends Screen {
                             game.render.Canvas.inputDlg.show();
                         }
                     }, "gd-thuoc-" + i);
-                    int s = h - 6;
-                    KieuO.oChieu(g, x + 3, y + 3, s, s, 1, KieuO.HINH_GIOT, false);
+                    int s = ManNhanVat.oDau(g, x, y, h);
+                    ManNhanVat.veThuoc(g, loai, x + 3 + s / 2, y + 3 + s / 2, s);
                     ManNhanVat.chuHang(g, x, y, w, h, s, ManCuaHang.tenThuoc(loai), "x" + con, "Chạm để thêm");
                 }
             }
@@ -268,7 +268,7 @@ public final class ManGiaoDich extends Screen {
                 }
             } else if (o instanceof Potion) {
                 Potion p = (Potion) o;
-                GameData.paintIcon(g, (short) (p.index + 5500), xi + s / 2, yi + s / 2);
+                IconVatPham.ve(g, (short) (p.index + 5500), xi + s / 2, yi + s / 2, s, IconVatPham.DP_THUOC);
                 KieuO.soLuong(g, xi + s - 2, yi + s - 2, String.valueOf(p.number));
             }
         }

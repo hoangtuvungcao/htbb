@@ -213,37 +213,100 @@ public final class ChuHD {
 
     private static final float[][] HUONG = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-0.7f, -0.7f}, {0.7f, -0.7f}, {-0.7f, 0.7f}, {0.7f, 0.7f}};
 
+    /** Ảnh chữ đã dựng (độ phân giải thật) - vẽ lại chỉ là chép ảnh. */
+    static final class Anh {
+        int bien;          // 0 thường, 1 tối (chữ sáng trên nền sáng), 2 trắng (chữ tối trên nền tối)
+        double tiLe;
+        BufferedImage img;
+        Anh sau;
+    }
+
+    private static final HashMap<Object, HashMap<String, Anh>> ANH = new HashMap<Object, HashMap<String, Anh>>();
+    private static long soDiemAnh;
+    private static final Color CHU_TOI = new Color(game.pokemon.ChuDe.CHU);
+
+    private static synchronized Anh layAnh(Kieu k, String s, int bien, double tl, int w, int cao) {
+        HashMap<String, Anh> m = ANH.get(k);
+        if (m == null) {
+            m = new HashMap<String, Anh>();
+            ANH.put(k, m);
+        }
+        Anh dau = m.get(s);
+        for (Anh a = dau; a != null; a = a.sau) {
+            if (a.bien == bien && a.tiLe == tl) return a;
+        }
+        Anh a = new Anh();
+        a.bien = bien;
+        a.tiLe = tl;
+        a.img = dung(k, s, bien, tl, w, cao);
+        a.sau = dau;
+        if (soDiemAnh > 8000000L) {
+            for (HashMap<String, Anh> x : ANH.values()) x.clear();
+            soDiemAnh = 0;
+            a.sau = null;
+        }
+        soDiemAnh += (long) a.img.getWidth() * a.img.getHeight();
+        m.put(s, a);
+        return a;
+    }
+
+    /** Dựng ảnh chữ: góc ảnh = (x - 1, y - 1) logic; chân chữ tại 1 + k.chan. */
+    private static BufferedImage dung(Kieu k, String s, int bien, double tl, int w, int cao) {
+        String t = thayKyHieu(s);
+        int iw = (int) Math.ceil((w + 3) * tl) + 1, ih = (int) Math.ceil((cao + 3) * tl) + 1;
+        BufferedImage b = new BufferedImage(Math.max(1, iw), Math.max(1, ih), BufferedImage.TYPE_INT_ARGB_PRE);
+        Graphics2D g = b.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g.scale(tl, tl);
+        g.setFont(k.font);
+        float bx = 1 + (k.vien != null ? 0.5f : 0f), by = 1 + k.chan;
+        if (k.vien != null && bien == 0) {
+            g.setColor(k.vien);
+            float d = k.doVien;
+            for (int i = 0; i < HUONG.length; i++) g.drawString(t, bx + HUONG[i][0] * d, by + HUONG[i][1] * d);
+        } else if (bien == 2) {
+            g.setColor(new Color(0, 0, 0, 110));
+            g.drawString(t, bx + 0.35f, by + 0.6f);
+        }
+        g.setColor(bien == 1 ? CHU_TOI : bien == 2 ? Color.WHITE : k.mau);
+        g.drawString(t, bx, by);
+        g.dispose();
+        return b;
+    }
+
+    /** Kiểm thử (ChupTrongGame): ghi mọi chuỗi đã vẽ để soát chữ thô / từ cấm; null = tắt. */
+    public static volatile java.util.Set<String> ghi;
+
     /** Vẽ chữ HD (align: 0 trái, 1 phải, 2 giữa như game). false = để font ảnh vẽ. */
     public static boolean ve(Object f, Image anh, int cao, Graphics g, String s, int x, int y, int align) {
+        java.util.Set<String> gh = ghi;
+        if (gh != null && s != null) gh.add(s);
         Kieu k = kieu(f, anh, cao);
         if (!k.dung) return false;
         if (s.length() == 0) return true;
         int w = rong(f, anh, cao, s);
         int x1 = align == 0 ? x : align == 1 ? x - w : x - (w >> 1);
-        s = thayKyHieu(s);
-        Graphics2D g2 = g.g2d();
-        Object aa = g2.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setFont(k.font);
-        float bx = x1 + g.getTranslateX() + (k.vien != null ? 0.5f : 0f);
-        float by = y + g.getTranslateY() + k.chan;
-        if (k.vien != null) {
-            g2.setColor(k.vien);
-            float d = k.doVien;
-            for (int i = 0; i < HUONG.length; i++) {
-                g2.drawString(s, bx + HUONG[i][0] * d, by + HUONG[i][1] * d);
-            }
+        // tương phản tự động (như APK HdChu): nền dưới tâm chữ do GiaoDienHD ghi; không biết thì theo Font.nenSang
+        double tl = g.tiLeThat();
+        int bien = 0;
+        int lum = choiSang(k.mau.getRGB());
+        if (g.tiLeTheGioi() == 1f) {
+            int nen = GiaoDienHD.soNen == 0 ? -1 : GiaoDienHD.sangTai((float) ((x1 + g.getTranslateX() + w / 2f) * tl),
+                    (float) ((y + g.getTranslateY() + cao / 2f) * tl));
+            boolean nenSang = nen >= 0 ? nen > 165 : game.render.screen.Font.nenSang;
+            if (nenSang && lum > 150) bien = 1;
+            else if (nen >= 0 && nen < 130 && lum < 90 && k.vien == null) bien = 2;
         }
-        g2.setColor(k.mau);
-        g2.drawString(s, bx, by);
+        Anh a = layAnh(k, s, bien, tl, w, cao);
+        g.veAnhThat(a.img, x1 - 1, y - 1);
         if (KiemChong.bat) {
+            Graphics2D g2 = g.g2d();
             java.awt.Rectangle r = g2.getTransform().createTransformedShape(
-                    new java.awt.geom.Rectangle2D.Float(bx, by - k.chan + 1, w, cao - 2)).getBounds();
+                    new java.awt.geom.Rectangle2D.Float(x1 + g.getTranslateX(), y + g.getTranslateY() + 1, w, cao - 2)).getBounds();
             java.awt.Shape cl = g2.getClip();
             KiemChong.ghi(s, r, cl == null ? null : g2.getTransform().createTransformedShape(cl).getBounds(), g.tiLeTheGioi() != 1f);
         }
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, aa);
-        g.setColor(g.getColor());
         return true;
     }
 }

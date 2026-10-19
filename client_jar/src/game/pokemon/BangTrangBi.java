@@ -166,7 +166,7 @@ public final class BangTrangBi {
                 if (hiem >= 0) {
                     KieuO.khungHiem(g, p[0] - 9, p[1] - 9, 18, hiem);
                 }
-                GameData.paintIcon(g, it.idIcon, p[0], p[1]);
+                IconVatPham.ve(g, it.idIcon, p[0], p[1], 22, IconVatPham.DP_DO);
                 if (item.plusTemplate > 0) {
                     KieuO.capCuong(g, p[0] - 9, p[1] - 9, item.plusTemplate);
                 }

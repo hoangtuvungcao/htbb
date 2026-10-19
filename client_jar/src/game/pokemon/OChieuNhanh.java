@@ -65,6 +65,11 @@ public final class OChieuNhanh {
         int hHang = Hd >= 280 ? 30 : 24;
         int hDau = 26;
         int hChan = 30;
+        if (ChuUI.bo != null) {   // 0.9.5 PC / APK: bảng sáng chung (Bang.khung), hàng / nút đủ cỡ chạm
+            hHang = Math.max(34, VungCham.MIN + Bang.cach() + 2);
+            hDau = ChuDe.caoDau() + ChuDe.DEM;
+            hChan = Math.max(30, VungCham.MIN + 8);
+        }
         int toiDaHang = Math.max(1, (Hd - 8 - hDau - hChan - 10) / hHang);
         if (hang > toiDaHang) {
             hang = toiDaHang;
@@ -98,7 +103,7 @@ public final class OChieuNhanh {
     /** Nút ở chân bảng: {x, y, w, h} của nút thứ i trong k nút (chia đều). */
     public static int[] nutChan(int[] bc, int i, int k) {
         int x = bc[0] + 8, w = bc[2] - 16, y = bc[1] + bc[3] - bc[8] - 2, h = bc[8] - 6;
-        int gap = 4;
+        int gap = ChuUI.bo != null ? Math.max(4, Bang.cach()) : 4;
         int wn = (w - gap * (k - 1)) / k;
         return new int[]{x + i * (wn + gap), y, wn, h};
     }

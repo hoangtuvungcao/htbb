@@ -64,6 +64,12 @@ public final class SuuTamSinhThai {
 
     public static final int A_HIEM = 0, A_BUNG_PHAT = 1, A_CA_HIEM = 2, A_SHINY_TRUNG = 3, A_HOA_THACH = 4;
     public static final String[] TEN_ANH = {"Quái hiếm", "Bùng phát", "Cá hiếm", "Trứng shiny", "Hoá thạch"};
+    /** Nhan ngan trong thong bao chup anh ("Đã chụp Litwick (hiếm) · Album 3 ảnh"). */
+    public static final String[] TEN_ANH_NGAN = {"hiếm", "bùng phát", "cá hiếm", "trứng shiny", "hoá thạch"};
+
+    public static String tenAnhNgan(final int kieu) {
+        return kieu >= 0 && kieu < TEN_ANH_NGAN.length ? TEN_ANH_NGAN[kieu] : "?";
+    }
     public static final int ALBUM_TOI_DA = 200;
     /** Moc album: so anh -> luong khoa; danh hieu chu. */
     public static final int[] MOC_ALBUM = {10, 25, 50, 100};

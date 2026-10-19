@@ -146,12 +146,16 @@ public class GameData {
         GameService.gI().doGetImage((byte) 3, ver);
     }
 
-    /** pokemon: icon đang tải (thay ảnh waiting.png của game gốc) = Poké Ball nhỏ quay, tâm (x, y). */
+    /** pokemon 0.9.5: icon đang tải = ô sáng nhấp nháy nhẹ (không còn Poké Ball quay chung chung), tâm (x, y). */
     public static void veCho(Graphics g, int x, int y) {
-        game.pokemon.GiaoDien.pokeBall(g, x, y, 6, -(Canvas.gameTick * 30) % 360);
+        int a = (Canvas.gameTick % 20) < 10 ? 0x20 : 0x38;
+        game.pokemon.KieuO.phu(g, x - 7, y - 7, 14, 14, a << 24 | 0x8090B0);
     }
 
     public static void paintIcon(Graphics g, short id, int x, int y) {
+        if (game.pokemon.IconVatPham.veGoiId(g, id, x, y)) {
+            return;   // 0.9.5: icon PMD trong gói client (không chờ máy chủ)
+        }
         ImageIcon img = getImgIcon(id);
         if (img != null) {
             if (!img.isLoad) {
@@ -173,6 +177,9 @@ public class GameData {
     }
 
     public static void paintIcon(Graphics g, short id, int x, int y, int align) {
+        if (align == 3 && game.pokemon.IconVatPham.veGoiId(g, id, x, y)) {
+            return;
+        }
         ImageIcon img = getImgIcon(id);
         if (img != null) {
             if (!img.isLoad) {
@@ -215,22 +222,49 @@ public class GameData {
         }
     }
 
+    /** 0.9.5: bảng icon theo id (không tạo chuỗi khoá mỗi lần vẽ như Hashtable cũ); id ngoài dải dùng bảng băm. */
+    static final ImageIcon[] BANG = new ImageIcon[16384];
+
+    /** Ô icon id đã có (không tạo, không hỏi máy chủ). */
+    public static ImageIcon coIcon(short id) {
+        if (id >= 0 && id < BANG.length) {
+            return BANG[id];
+        }
+        return (ImageIcon) listImgIcon.get(String.valueOf((int) id));
+    }
+
     public static ImageIcon getImgIcon(short id) {
-        ImageIcon img = (ImageIcon) listImgIcon.get(new StringBuffer(String.valueOf((int) id)).toString());
+        ImageIcon img = coIcon(id);
+        int now = (int) (System.currentTimeMillis() / 1000);
         if (img == null) {
             img = new ImageIcon();
             img.id = id;
             img.isLoad = true;
-            listImgIcon.put(new StringBuffer().append((int) id).toString(), img);
-            GameService.gI().doGetImgIcon(id);
-            img.timeGetBack = (int) (System.currentTimeMillis() / 1000);
-        } else {
-            if (img.img == null && (System.currentTimeMillis() / 1000) - img.timeGetBack > 30) {
-                GameService.gI().doGetImgIcon(id);
-                img.timeGetBack = (int) (System.currentTimeMillis() / 1000);
+            img.timeGetBack = now;
+            img.timeRemove = now;
+            if (id >= 0 && id < BANG.length) {
+                BANG[id] = img;
+            } else {
+                listImgIcon.put(String.valueOf((int) id), img);
             }
-            img.timeRemove = (int) (System.currentTimeMillis() / 1000);
+            game.pokemon.IconVatPham.tai(img);   // đĩa (luồng nền) rồi mới hỏi máy chủ
+        } else {
+            if (img.img == null && now - img.timeGetBack > 30) {
+                GameService.gI().doGetImgIcon(id);
+                img.timeGetBack = now;
+            }
+            img.timeRemove = now;
         }
         return img;
+    }
+
+    /** Bỏ icon lâu không dùng (GameScr, mỗi ~10 giây). */
+    public static void donIcon(long nowGiay) {
+        for (int i = 0; i < BANG.length; i++) {
+            ImageIcon img = BANG[i];
+            if (img != null && !img.isLoad && nowGiay - img.timeRemove > 120) {
+                BANG[i] = null;
+            }
+        }
     }
 }
