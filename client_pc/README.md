@@ -82,6 +82,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemTruotDoiCo` (0.9.6.1): thanh trượt (Bang.thanhTruot - bảng Tự động đánh) theo ngón / chuột từng lần kéo, lưu khi
   thả (kể cả thả ngoài thanh); đổi cỡ cửa sổ nhỏ -> TO HƠN cỡ đầu -> phóng to / 21:9 / 4:3 / toàn màn: khung đúng cỡ mới,
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
+- `KiemBoNgocBat` (0.9.7): màn Chế tạo / Khảm ngọc hệ (tấm, vùng chạm, nút, tỉ lệ + pity), nút "Ném Poké Ball" (chỉ khi
+  Pokémon hoang dã yếu, trong màn, không chồng HUD), hiệu ứng ném (bay / trong bóng / thoát / bắt được), Pokédex "Đã bắt",
+  dòng bộ / lỗ ngọc trên thẻ chi tiết đồ, chữ nút "Đập" có tỉ lệ thật;
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

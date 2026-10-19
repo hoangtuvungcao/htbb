@@ -136,6 +136,19 @@ class MapDoMenu {
             if (NpcDichVu.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // [bo-ngoc] Machamp tho ren (loai 2): muc "Che tao & kham ngoc" noi cuoi menu (BoNgocGame.themMucThoRen)
+            if (idNpc == 2 && idMenu == 0 && idOptionMenu == BoNgocGame.viTriThoRen) {
+                BoNgocGame.moMenu(player);
+                return;
+            }
+            if (idNpc == BoNgocGame.NPC_ID) {
+                BoNgocGame.doMenu(player, idMenu, idOptionMenu);
+                return;
+            }
+            // [bat-pokemon] menu bong / Hop PC (npc ao -581..-584)
+            if (BatPokemonGame.doMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             if (map.isNpcThanh(idNpc) && map.mapId != 201 && !map.isMapLienDau()) {
                 return;
             }

@@ -194,6 +194,8 @@ public final class Kiem {
         KiemHeHieuQua.chay(); // 0.9.5: he so khac he (server quyet), Normal vs Water/Ground x1, Grass x4, Electric vs Ground x0
         KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
         KiemNpc.chay(); // moi NPC + moi muc menu NPC dung duoc: NPC tinh ngoai troi, su kien -49, muc da go (npcfix)
+        KiemBoNgocCheTao.chay(); // bo trang bi cung bac, ngoc he, che tao, moc neo nang cap (bo-ngoc-bat)
+        KiemBatPokemon.chay(); // thu phuc Pokemon, Hop PC, Keo loai, Pokedex "Da bat" (bo-ngoc-bat)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

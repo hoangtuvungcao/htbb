@@ -75,6 +75,7 @@ public final class ChiSoTrangBiGame {
                 }
                 cong(g, it, it.getTemplate() != null && it.getTemplate().type == 12);
             }
+            BoNgocGame.capNhat(p, ws); // [bo-ngoc] dem bo cung bac + ngoc he dang khảm
             if (p.wModel != null && p.wModel.matNa != null) {
                 cong(g, p.wModel.matNa, false);
             }
@@ -123,15 +124,39 @@ public final class ChiSoTrangBiGame {
     /** Chi so atb[idx] (0..6) cua mon {@code it} dang mac, sau khi kep ngan sach (tat co: tra nguyen). */
     public static int atb(final Char p, final Item it, final int idx) {
         final int v = it.atb[idx];
-        if (v <= 0 || idx >= NganSachTrangBi.SO_CHI_SO || !kepTrangBi() || it.getTemplate() == null) {
+        if (v <= 0 || idx >= NganSachTrangBi.SO_CHI_SO || it.getTemplate() == null) {
             return v;
         }
         final ItemTemplates t = it.getTemplate();
         if (t.atb != null && t.atb.length > 9 && t.atb[9] != 0) {
             return v; // thoi trang: atb4..8 la so hieu hinh
         }
-        final int capNv = p != null && p.lvDetail != null ? p.lvDetail.lv : t.level;
-        return NganSachTrangBi.kep(t.type, idx, t.level, it.plus, capNv, v);
+        int kq = v;
+        if (kepTrangBi()) {
+            final int capNv = p != null && p.lvDetail != null ? p.lvDetail.lv : t.level;
+            kq = NganSachTrangBi.kep(t.type, idx, t.level, it.plus, capNv, v);
+        }
+        return congNgoc(it, kq);
+    }
+
+    /** [bo-ngoc] chi so chinh mon (da kep) + % ngoc he khảm tren mon (tran 10% / mon). Tat co: tra nguyen. */
+    static int congNgoc(final Item it, final int v) {
+        if (v <= 0 || !bat()) {
+            return v;
+        }
+        final int pct = BoNgocGame.phanTramNgocMon(it);
+        return pct <= 0 ? v : (int) Math.min(Short.MAX_VALUE, v + (long) v * pct / 100L);
+    }
+
+    /**
+     * [bo-ngoc] Thuong bo tong (%): thuong bo nang cap cu (+10/+13/+15 du bo, {@code cuPhanTram}) + bo cung bac
+     * (data_noi_dung_bo, BoNgocGame) - CHUNG mot tran 5% (GioiHanChiSo.thuongBo). Tat co: chi phan cu.
+     */
+    static int thuongBoTong(final Char p, final int chiSo, final int cuPhanTram) {
+        if (!bat()) {
+            return cuPhanTram;
+        }
+        return GioiHanChiSo.thuongBo(cuPhanTram + BoNgocGame.boPhanNghin(p, chiSo) / 10);
     }
 
     // ------------------------------------------------------------------ chi mang
@@ -139,7 +164,8 @@ public final class ChiSoTrangBiGame {
     /** Phan nghin chi mang THO (chua giam dan): diem /300 (+ bang hoi, do giu, buff) + bao kich. */
     static long chiMangTho(final Char p) {
         final int diem = p.critical + p.getEffSkillClan(1) * p.critical / 100 + VatPhamDungLauDai.congChiMang(p);
-        return GioiHanChiSo.chiMangTho(diem, p.baokich);
+        // [bo-ngoc] + chi mang bo 11 mon cung bac (phan nghin, <= 3%) - van qua tran chi mang 40% o diem quay
+        return GioiHanChiSo.chiMangTho(diem, p.baokich) + BoNgocGame.boPhanNghin(p, com.htbb.pokemon.BoTrangBi.CHI_MANG);
     }
 
     /** Thay Char.havecrit khi bat: mot lan quay cho ca chi mang + bao kich, tran 40% giam dan. */
@@ -264,6 +290,7 @@ public final class ChiSoTrangBiGame {
                 batDauDon(bidanh);
                 // khang he theo he CHIEU dang danh (thay khang theo dong cu), tran 60%
                 dam = giam(bidanh, dam, khangHe(bidanh, self.lauDaiHe));
+                dam = khuechDaiHe(bidanh, dam, self.lauDaiHe); // [bo-ngoc] ngoc tru khang qua muc
                 // giam ST tu nguoi choi (bao vat) + khang cua thu cuoi: mot lop PvP tran 40%
                 final long g = Math.max(0, bidanh.getTkGiamStPlayer()) + Math.max(0, bidanh.getKhangNguHanhThuCuoi(self.charClass));
                 dam = giam(bidanh, dam, tranGiam(g, true));
@@ -365,8 +392,29 @@ public final class ChiSoTrangBiGame {
         if (c.ldGiaTri == null) {
             return 0;
         }
-        final long tho = he >= 0 ? ChiSoTrangBi.khangHeTho(c.ldGiaTri, he) : gt(c, ChiSoTrangBi.ID_KHANG_MOI_HE);
-        return giamDan(tho, GioiHanChiSo.KHANG_HE_GOI, GioiHanChiSo.KHANG_HE_TRAN, K_TRAN_KHANG_HE);
+        long tho = he >= 0 ? ChiSoTrangBi.khangHeTho(c.ldGiaTri, he) : gt(c, ChiSoTrangBi.ID_KHANG_MOI_HE);
+        if (he >= 0) {
+            tho -= BoNgocGame.khangTruPhanNghin(c, he); // [bo-ngoc] phan "hai" cua ngoc he (Ngoc Lua -> -khang Nuoc)
+        }
+        return giamDan(Math.max(0L, tho), GioiHanChiSo.KHANG_HE_GOI, GioiHanChiSo.KHANG_HE_TRAN, K_TRAN_KHANG_HE);
+    }
+
+    /** Tran phan khuech dai khi tru khang cua ngoc vuot khang dang co (phan nghin). */
+    public static final int TRAN_KHUECH_DAI_HE = 150;
+
+    /**
+     * [bo-ngoc] Phan tru khang cua ngoc vuot qua khang he dang co -&gt; don cua he do manh hon (toi da +15%). Goi SAU lop
+     * khang he (cung noi goi khangHe). Tat co / khong co ngoc: tra nguyen.
+     */
+    public static int khuechDaiHe(final Char c, final int dam, final int he) {
+        if (dam <= 0 || he < 0 || c == null || c.ldGiaTri == null || !bat()) {
+            return dam;
+        }
+        final long du = BoNgocGame.khangTruPhanNghin(c, he) - ChiSoTrangBi.khangHeTho(c.ldGiaTri, he);
+        if (du <= 0) {
+            return dam;
+        }
+        return (int) Math.min(Integer.MAX_VALUE, dam + (long) dam * Math.min(TRAN_KHUECH_DAI_HE, du) / 1000L);
     }
 
     /** % do he (ST he 163..167 + phien da), kep THIET_KE 3.4 = 20%. Truyen vao SatThuongLauDai.tinh. */
@@ -374,7 +422,9 @@ public final class ChiSoTrangBiGame {
         if (!bat() || p == null || p.ldGiaTri == null || he < 0 || he >= HePokemon.SO_HE) {
             return 0;
         }
-        return (int) Math.min(ChiSoTrangBi.TRAN_DO_HE_PHAN_TRAM, ChiSoTrangBi.stHeTho(p.ldGiaTri, he) / 10L);
+        // [bo-ngoc] + ST he cua ngoc he khảm (n x 1,5 phan nghin) - cung tran 20%
+        return (int) Math.min(ChiSoTrangBi.TRAN_DO_HE_PHAN_TRAM,
+                (ChiSoTrangBi.stHeTho(p.ldGiaTri, he) + BoNgocGame.stHePhanNghin(p, he)) / 10L);
     }
 
     // ------------------------------------------------------------------ trang thai tu do khảm (thay buffSkillKham)

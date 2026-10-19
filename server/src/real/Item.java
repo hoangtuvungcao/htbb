@@ -304,6 +304,11 @@ public class Item extends Actor {
     public int CaiTao;
     /** So lan tinh luyen that bai LIEN TIEP o cung 1 moc - reset ve 0 khi tinh luyen thanh cong. */
     public int soLanTinhLuyenThatBai;
+    /**
+     * [bo-ngoc] Ngoc he da khảm (com.htbb.pokemon.NgocHe.maHoa, "nh..."; "" = khong co). Luu thanh MOT truong CO TIEN TO
+     * o cuoi getDBInfo (initInfoFromDB tim theo tien to, khong theo vi tri) nen khong lech voi truong cuoi them sau.
+     */
+    public String ngocHe = "";
 
     static {
         Item.COLOR_WHITE = 0;
@@ -1241,6 +1246,13 @@ public class Item extends Actor {
                 this.soLanTinhLuyenThatBai = Integer.parseInt(data[33]);
             } catch (final Exception ex) {
             }
+            // [bo-ngoc] truong co tien to "nh" (ngoc he) o bat ky vi tri nao sau truong 33
+            for (int i = data.length - 1; i >= 34; i--) {
+                if (data[i] != null && data[i].startsWith(com.htbb.pokemon.NgocHe.TIEN_TO)) {
+                    this.ngocHe = data[i].trim();
+                    break;
+                }
+            }
             if (this.typetieu > 6) {
                 this.typetieu = 0;
             }
@@ -1825,6 +1837,9 @@ public class Item extends Actor {
         info = String.valueOf(info) + "," + this.GiaHan;
         info = String.valueOf(info) + "," + this.CaiTao;
         info = String.valueOf(info) + "," + this.soLanTinhLuyenThatBai;
+        if (this.ngocHe != null && this.ngocHe.startsWith(com.htbb.pokemon.NgocHe.TIEN_TO)) {
+            info = String.valueOf(info) + "," + this.ngocHe; // [bo-ngoc] truong co tien to, LUON o cuoi
+        }
         return info;
     }
 
@@ -1863,6 +1878,7 @@ public class Item extends Actor {
         newItem.slotWearing = this.slotWearing;
         newItem.idSellMarket = this.idSellMarket;
         newItem.isItemShop = this.isItemShop;
+        newItem.ngocHe = this.ngocHe; // [bo-ngoc] ngoc da khảm di theo mon
         return newItem;
     }
 

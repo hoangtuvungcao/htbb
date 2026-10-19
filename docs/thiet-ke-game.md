@@ -280,7 +280,8 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 ### 2.6 Pokédex, shiny, sưu tầm
 
 - **Pokédex nghiên cứu** theo loài (`tob_pokedex`, `tob_pokedex_thuong`): gặp → hạ 50 → thấy shiny; mốc 10 / 25 / 50 /
-  75 / 100 loài cho danh hiệu. Hệ sinh thái thêm 6 kiểu nghiên cứu (mục 7.6).
+  75 / 100 loài cho danh hiệu. Hệ sinh thái thêm 6 kiểu nghiên cứu (mục 7.6). 0.9.7: thêm trạng thái **Đã bắt**
+  (`so_bat`, `bat_shiny`) khi thu phục (mục 7.7).
 - **Shiny** (quái): 1/4.096 lần hạ, pity 2.000 (lần thứ 2.000 không ra thì chắc chắn ra). Tuần Shiny ×10, Ngày cộng đồng
   ×5. Shiny chỉ đổi màu và cho danh hiệu, **không cộng chỉ số**. Shiny trứng nhà trẻ có tỉ lệ riêng (mục 7.4).
 - 16 huy hiệu Gym là mốc cốt truyện, hiện trong hồ sơ.
@@ -463,7 +464,12 @@ vụ, Gym, chế tạo, rơi, boss.
 - **Độ hiếm**: Trắng 100%, Xanh 110%, Đỏ 120%, **Hoàn mỹ 130%** (chỉ từ quái tinh anh, Gym, boss thế giới), Vàng (sự
   kiện, chỉ trang trí).
 - **Bộ trang bị** (số món cùng bậc): 4 món +5% HP, 7 món +5% tấn công, 11 món +3% chí mạng. Thưởng giống nhau mọi bậc nên
-  không gây leo thang ([noi_dung_bo.csv](../du_lieu/noi_dung_bo.csv)).
+  không gây leo thang ([noi_dung_bo.csv](../du_lieu/noi_dung_bo.csv)). 0.9.7: server đọc bảng `data_noi_dung_bo`
+  (`real.BoNgocGame`, lớp thuần `BoTrangBi`): đếm 11 ô trang bị đang mặc theo bậc (cấp món ≤ cấp người chơi, bỏ thời
+  trang / đồ trang trí), mỗi chỉ số lấy **mức cao nhất** trong các bộ đang kích (hai bộ khác bậc không cộng dồn), rồi cộng
+  CHUNG với thưởng bộ nâng cấp cũ (+10/+13/+15 đủ bộ) vào một trần 5% (`bo.tran_phan_tram`); chí mạng bộ ≤ 3%
+  (`bo.tran_chi_mang_phan_nghin`) và vẫn qua trần chí mạng 40%. Thẻ chi tiết món hiện "Bộ Pallet: đang mặc x/11 món" và
+  từng mốc (đang kích / chưa).
 - **Đồ cầm tay cùng hệ chiêu**: thiết kế +10% (+1%/bậc, ≤ 20%) — **chưa nối vào sát thương** (nối vào sẽ làm TTK đã
   hiệu chỉnh ngắn đi; cần hiệu chỉnh lại HP quái cùng lúc).
 - Đổi bậc: đồ cũ **phân rã** ra 2 đá + 10% giá; bán NPC chỉ được 5% giá, nên phân rã luôn đáng hơn bán.
@@ -487,6 +493,13 @@ vụ, Gym, chế tạo, rơi, boss.
 - **Pity**: mỗi lần trượt liên tiếp ở cùng ô cộng `ceil(tỉ lệ gốc / 3)` điểm % (`ThongSoLauDai.tiLeNangCap`); về 0 khi
   thành công hoặc đổi bậc.
 - **Không bao giờ vỡ đồ.** Bùa bảo hộ là item 1258 / 1259; thiếu bùa thì trả lượng khoá như cũ.
+- **Mốc neo +7 / +10 / +13** (0.9.7, bảng `data_nang_cap_moc`, khoá `nang_cap.moc_neo`): đã đạt mốc thì nâng hỏng vẫn −1
+  nhưng **không rơi dưới mốc** cao nhất đã đạt (đang +8 hỏng lên +9 → giữ +7; đang +10 hỏng → giữ +10). Bước +11..+15 đắt
+  thêm 6% (`nang_cap.he_so_xu_bac_cao` = 1060‰) để bù. Mô phỏng (bậc 5, `test/KiemBoNgocCheTao`): người dùng bùa từ +11 thì
+  mốc neo giảm xu +0 → +15 còn 97,4%, có hệ số 1,06 thì 102%; người dùng bùa từ +7 tiết kiệm bùa lượng khoá 15,6 → 10,4
+  mỗi món (xu +5,3%); người không dùng bùa thôi "rơi vô tận" (trung bình 11.540 → 131 lần thử).
+- **Hiện tỉ lệ thật + pity trên nút** (gói -120 kiểu 1, client 0.9.7): nút "Đập 55%" và dòng dưới ô nâng cấp "Lên +8: tỉ lệ
+  55% (gồm +10% pity) · xu · đá · giữ mốc +7".
 - Từ +11 cần thêm 1 **nguyên liệu phụ** theo nhóm bậc: Bụi sao (bậc 0–2), Mảnh sao (3–5), Mảnh thiên thạch (6–8), Vảy rồng
   (9–10). Nguyên liệu phụ rơi 0,4%/quái từ cấp 40, có trong phân rã và hộp boss.
 - Trừ tiền **sau** khi kiểm đủ điều kiện (quy tắc chung của server).
@@ -495,12 +508,27 @@ vụ, Gym, chế tạo, rơi, boss.
 
 - **Ngọc hệ** (khảm): mỗi ô 1 ngọc, cấp 1..10, +1% chỉ số món mỗi cấp (≤ 10%); giá bước n = 1,45^(n−1) giờ thu nhập.
   Đây là hố hút thứ hai (thiếu nó thì mô phỏng cho cung tiền thực tăng ~12%/tháng). Thiết kế 18 hệ × 10 cấp ở
-  [noi_dung_ngoc_he.csv](../du_lieu/noi_dung_ngoc_he.csv); hiện giá khảm đã theo giờ thu nhập, ngọc theo hệ cần thêm code /
-  client.
+  [noi_dung_ngoc_he.csv](../du_lieu/noi_dung_ngoc_he.csv). 0.9.7 (`real.BoNgocGame`, lớp thuần `NgocHe`, màn
+  `ManKhamNgoc` ở Machamp thợ rèn):
+  - **Số lỗ theo bậc hiếm** (`data_ngoc_he_lo` theo `colorName`): Thường / Hiếm 1, Quý / Sử thi (Hoàn mỹ) 2, Huyền thoại 3
+    (món chế tạo "Huyền thoại" mang thêm lỗ). Đồ trang trí (vàng) không khảm.
+  - **Lợi**: ngọc hệ A cấp n = +n% chỉ số chính của món (tổng mọi ngọc trên một món ≤ 10%, `ngoc_he.tran_phan_tram_mon`) và
+    +n × 1,5‰ sát thương hệ A (chiêu hệ A mạnh hơn; cộng vào ST hệ nên vẫn chung trần 20%).
+  - **Hại**: −n‰ kháng hệ khắc A (`data_ngoc_he_khac`: Lửa → Nước, Nước → Điện, Cỏ → Lửa...). Trừ quá kháng đang có thì
+    đòn hệ đó mạnh hơn, tối đa +15%. "Mài ngọc" (0,3 giờ thu nhập) giảm phần hại một nửa.
+  - **Giá** (xu, theo giờ thu nhập ở cấp người chơi): khảm mới cấp 1 = 1 giờ; nâng lên cấp n = `gio_thu_nhap` của bảng
+    (1,45^(n−1) giờ; một lỗ lên cấp 10 ≈ 89 giờ); tháo 0,5 giờ (ngọc giữ cấp, vào **túi ngọc**, khảm lại món khác miễn phí);
+    phân rã một viên trong túi = số Đá nâng cấp theo `phan_ra_da`. Ngọc lưu trên món (trường `nh…` cuối chuỗi lưu) nên đi
+    theo món khi giao dịch / ký gửi.
 - **Phân rã**: đồ thường → 2 đá + 10% giá; đồ Hoàn mỹ thêm 1 Mảnh tinh hoa + 1 nguyên liệu phụ (3 Mảnh tinh hoa để chuyển
   đồ Hoàn mỹ sang bậc mới); ngọc thừa → đá theo cấp ngọc.
 - **Chế tạo** ở Machamp (Xưởng Pewter): Vòng cổ và Phiến đá hệ mỗi bậc cần (2 + bậc) đá, (1 + bậc/3) nguyên liệu phụ và
-  50% giá xu.
+  50% giá xu. 0.9.7 (`real.CheTaoGame`, lớp thuần `CheTaoLogic`, màn `ManCheTao`): công thức đọc `data_noi_dung_che_tao`
+  (+ cột `loi_che_tao` = số Lõi chế tạo cần, mặc định 0 cho tới khi phân rã ra Lõi; `bat`), cấp người chơi ≥ cấp công thức.
+  Bậc thành phẩm theo `data_che_tao_bac`: Hiếm 60% (×110% chỉ số) / Quý 30% (×120%) / Sử thi 9% (×130%, Hoàn mỹ) /
+  Huyền thoại 1% (×130% + 3 lỗ ngọc); **pity**: 20 lần liên tiếp không ra Sử thi thì lần thứ 20 chắc Sử thi
+  (`che_tao.pity`). Phiến đá hệ: người chơi chọn 1 trong 18 hệ, +5% sát thương hệ đó hoặc −5% sát thương nhận từ hệ đó.
+  Món chế ra chưa mặc nên bán được; dùng Đá nâng cấp khoá thì món khoá.
 - Phiến đá hệ: dòng chỉ số 93 / 94 mang giá trị `hệ × 1000 + phần nghìn` (ví dụ Băng 5% = `5050`); tên món tự thêm
   " (hệ X)". Còn thiếu đường ghi giá trị lúc tạo món (NPC chọn hệ / ngẫu nhiên).
 
@@ -922,6 +950,48 @@ vào `tob_hst_hop_thu`.
   cộng vào chỉ số).
 - Danh hiệu sinh thái: `idEffDanhHieu` 9600..9615.
 
+### 7.7 Thu phục Pokémon (0.9.7)
+
+Người chơi **là** một Pokémon; quái là Pokémon hoang dã. Vòng thu phục nhẹ, không đổi mô hình đó và **không cộng chỉ số
+thô** (đề xuất 9 / S2 của rà soát lối chơi). Mã: lớp thuần `com.htbb.pokemon.BatPokemon` + `HopPc`, game `real.BatPokemonGame`,
+client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` ([sql/them_bo_ngoc_che_tao_bat.sql](../sql/them_bo_ngoc_che_tao_bat.sql)).
+
+- **Ném bóng**: đánh một Pokémon hoang dã xuống ≤ 25% HP (`bat.nguong_hp_phan_tram`) thì dưới khung mục tiêu hiện nút
+  "Ném Poké Ball ×n" (chạm "Đổi" để đổi loại bóng). Bóng bay tới, Pokémon vào bóng, bóng lắc 0..3 lần rồi bắt được (sao
+  vàng) / thoát (bóng bật mở) / bỏ chạy (khói). Máy chủ kiểm lại mọi điều kiện và quyết định kết quả.
+- **Tỉ lệ** (phần nghìn): `gốc loài × (3M − 2H)/3M × lệch cấp × (tinh anh ×25%) × hệ số bóng + 5% mỗi lần trượt trước`, kẹp
+  [1%, trần bóng]. Gốc theo độ hiếm loài: thường 45%, hiếm 20%, rất hiếm 8%. Lệch cấp (quái − người chơi): ≤ 0 ×100%,
+  1..5 ×80%, 6..10 ×50%, > 10 không ném được. Ví dụ loài thường ở 25% HP cùng cấp: Poké Ball 37,4%, Great 56,1%, Ultra
+  74,8%; trung bình ~2,4 bóng / con, ~81% bắt được trước khi nó bỏ chạy.
+- **Bóng** (vật phẩm tiêu hao, mua ở Y tá Chansey theo gói 5, giá theo giờ thu nhập ở cấp người mua = hố hút xu nhỏ):
+
+  | Bóng | Hệ số | Trần tỉ lệ | Giá / quả | Mở từ |
+  |---|---|---|---|---|
+  | Poké Ball | ×1,0 | 60% | 2% giờ thu nhập | cấp 1 |
+  | Great Ball | ×1,5 | 75% | 5% | cấp 20 |
+  | Ultra Ball | ×2,0 | 90% | 12% | cấp 40 |
+
+  Bóng nằm trong Hộp PC (không chiếm ô hành trang, không giao dịch được).
+- **Không bắt được**: boss, boss thế giới, Gym, tinh anh cỡ boss (HP ≥ 10 triệu), quái vật thể / nguyên liệu, huyền thoại
+  (mọi loài chỉ có ở boss không có dòng `data_bat_loai` hoặc `bat_duoc = 0`). Loài `chi_su_kien = 1` chỉ bắt được khi bật
+  `bat.su_kien`.
+- **Bỏ chạy**: trượt 3 lần trên cùng một con (`bat.so_lan_bo_chay`) thì nó biến mất (hồi sinh như bình thường, không thưởng).
+- **Bắt được**: Pokémon biến mất như bị hạ nhưng **không rơi đồ / xu / EXP thêm** (EXP đã nhận theo sát thương), Pokédex ghi
+  "Đã bắt" (`tob_pokedex.so_bat`, `bat_shiny`), Hộp PC thêm một con (loài, cấp = min(cấp quái, cấp người chơi), sắc màu,
+  ngày, loại bóng), **+3 Kẹo loài** (sắc màu +6). Bắt Pokémon sắc màu báo toàn máy chủ. Sự kiện nhiệm vụ / danh hiệu:
+  `NhiemVuEngine.suKien(p, "bat_pokemon", dex, 1)`.
+- **Chống bot**: Tự động đánh không bao giờ ném bóng (không có hành động đó); chỉ ném được Pokémon mà chính người đó vừa đánh
+  trong 30 giây, cách ≤ 160 px; nhịp ném ≥ 1,5 giây (`bat.cach_ms`, gói sớm hơn bị bỏ qua); tối đa 150 lần ném và 30 con
+  bắt được mỗi ngày (`bat.tran_nem_ngay`, `bat.tran_ngay`); mọi lần ném ghi nhật ký `batpokemon`.
+- **Hộp PC** (menu Pokédex → "Hộp PC", hoặc Chansey): 30 ô, mở rộng +10 ô bằng xu (2 giờ thu nhập × 1,5^lần), tối đa 100.
+  Mỗi con: **Cho đi theo** (bạn đồng hành chỉ để nhìn: đi sau lưng người chơi khi không có pet, mọi người thấy - gói -121
+  kiểu 3, **0 chỉ số**), **Luyện cấp** (1 + cấp/10 Kẹo mỗi cấp, ≤ cấp người chơi), **Tiến hoá** (đủ cấp + 25 / 50 Kẹo, loài
+  hiếm ×2; loài sau tiến hoá cũng ghi "Đã bắt"), **Thả về tự nhiên** (+1 Kẹo). Kẹo loài dùng chung cả họ tiến hoá
+  (Torchic / Combusken / Blaziken cùng kẹo Torchic). Kẹo và bóng không bán, không giao dịch.
+- **Pokédex** client: dấu Poké Ball ở loài đã bắt, chip lọc "Đã bắt", số "Đã bắt: n / m loài".
+- **Ngân sách**: thu phục không thêm sức mạnh cho người chơi (bạn đồng hành 0 chỉ số; thiết kế cân bằng 4.6 để "đồng điệu"
+  +2..4% một chỉ số cho bản 1.1, chủ game quyết). Xu vào: không; xu ra: bóng + mở rộng Hộp PC.
+
 ---
 
 ## 8. Hồi sinh và Tự động đánh
@@ -1280,5 +1350,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
+| -120 | `TRANG_BI` (0.9.7) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |
+| -121 | `THU_PHUC` (0.9.7) | hai chiều | C→S: xin trạng thái, ném bóng (idQuai, loại bóng), xin Pokédex; S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102) (mục 7.7) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).

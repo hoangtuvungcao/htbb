@@ -1308,6 +1308,8 @@ public final class ManNhanVat extends Screen {
             Font.blackFont.drawString(g, gt, xv, yy, 1);
             yy += lh;
         }
+        // 0.9.7: bộ cùng bậc đang mặc x/11 + lỗ ngọc hệ (máy chủ -120 kiểu 0)
+        yy = TrangBiThem.veDong(g, it.itemID, x + 10, yy, w - 20, day);
         // nút to
         int yn = y + h - 6 - nutH;
         int wn = w - 12;

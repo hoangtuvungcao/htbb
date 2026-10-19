@@ -24,6 +24,7 @@ final class DanhMucSinh {
         {"chong_spam", "Chống spam, DoS & nhật ký (cố định)"},
         {"pvp", "PvP / Gym / Hầm Ngục (luôn bật)"},
         {"chi_so", "Chỉ số & chống lạm phát (cố định)"},
+        {"trang_bi", "Trang bị, ngọc hệ, chế tạo & thu phục (cố định)"},
         {"hoi_sinh", "Hồi sinh — luật (cố định)"},
         {"thong_bao", "Thông báo (cố định)"},
         {"quan_tri", "Quản trị & thử nghiệm (cố định)"},
@@ -589,6 +590,82 @@ final class DanhMucSinh {
                     .nhan("Trần tổng % cộng thêm (‰)", "Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc.")
                     .khoang(0L, 5000L)
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("bo.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật bộ trang bị cùng bậc", "4 / 7 / 11 món cùng bậc (data_noi_dung_bo): +5% HP / +5% tấn công / +3% chí mạng. 0 = tắt thưởng bộ cùng bậc (thưởng bộ nâng cấp cũ vẫn giữ).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("bo.tran_phan_tram", "trang_bi", "so", "5", true, "cau_hinh")
+                    .nhan("Trần thưởng bộ HP / tấn công (%)", "Chung cho bộ cùng bậc + bộ nâng cấp cũ (+10/+13/+15). Thiết kế: ≤ 5%.")
+                    .khoang(0L, 5L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bo.tran_chi_mang_phan_nghin", "trang_bi", "so", "30", true, "cau_hinh")
+                    .nhan("Trần chí mạng từ bộ (‰)", "Bộ 11 món: +3% chí mạng, vẫn qua trần chí mạng chung 40%.")
+                    .khoang(0L, 30L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("ngoc_he.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật ngọc hệ", "Khảm ngọc 18 hệ vào lỗ trang bị ở Machamp: +% chỉ số món, + sát thương hệ, − kháng hệ khắc. 0 = ngọc đã khảm không còn tác dụng (vẫn giữ trên món).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("ngoc_he.tran_phan_tram_mon", "trang_bi", "so", "10", true, "cau_hinh")
+                    .nhan("Trần % chỉ số món từ ngọc", "Tổng % chỉ số chính của một món từ mọi ngọc trên món. Thiết kế: ≤ 10%.")
+                    .khoang(0L, 10L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("ngoc_he.st_he_phan_van_moi_cap", "trang_bi", "so", "15", true, "cau_hinh")
+                    .nhan("Sát thương hệ mỗi cấp ngọc (phần vạn)", "15 = 1,5‰ mỗi cấp; cộng vào ST hệ, trần chung 20%.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("ngoc_he.khang_tru_phan_nghin_moi_cap", "trang_bi", "so", "1", true, "cau_hinh")
+                    .nhan("Kháng hệ khắc bị trừ mỗi cấp ngọc (‰)", "Phần “hại” của ngọc (Ngọc Lửa → −kháng Nước). Mài ngọc giảm một nửa.")
+                    .khoang(0L, 10L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("ngoc_he.gia_thao_phan_nghin_gio", "trang_bi", "so", "500", true, "cau_hinh")
+                    .nhan("Giá tháo ngọc (‰ giờ thu nhập)", "500 = 0,5 giờ thu nhập ở cấp người chơi. Ngọc giữ cấp, vào túi ngọc.")
+                    .khoang(0L, 5000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("ngoc_he.gia_mai_phan_nghin_gio", "trang_bi", "so", "300", true, "cau_hinh")
+                    .nhan("Giá mài ngọc (‰ giờ thu nhập)", "300 = 0,3 giờ thu nhập.")
+                    .khoang(0L, 5000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("che_tao.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật chế tạo", "Machamp thợ rèn: công thức data_noi_dung_che_tao, bậc hiếm data_che_tao_bac.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("che_tao.pity", "trang_bi", "so", "20", true, "cau_hinh")
+                    .nhan("Pity chế tạo Sử thi (lần)", "Lần thứ N liên tiếp không ra Sử thi trở lên thì chắc Sử thi. 0 = tắt.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("nang_cap.moc_neo", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Mốc neo nâng cấp", "Đã đạt +7 / +10 / +13 (data_nang_cap_moc) thì nâng hỏng không rơi dưới mốc. 0 = luật cũ (−1 từ +7).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("nang_cap.he_so_xu_bac_cao", "trang_bi", "so", "1060", true, "cau_hinh")
+                    .nhan("Hệ số xu nâng +11..+15 (‰)", "Bù phần kỳ vọng giảm do mốc neo (thiết kế: +6%). Chỉ áp khi bật mốc neo.")
+                    .khoang(1000L, 2000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật thu phục Pokémon", "Làm Pokémon hoang dã yếu đi rồi ném bóng (Hộp PC, Kẹo loài, Pokédex “Đã bắt”). 0 = tạm khoá ném bóng / mua bóng.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("bat.nguong_hp_phan_tram", "trang_bi", "so", "25", true, "cau_hinh")
+                    .nhan("Ngưỡng HP để ném bóng (%)", "Pokémon phải còn ≤ chừng này % HP.")
+                    .khoang(1L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.tran_ngay", "trang_bi", "so", "30", true, "cau_hinh")
+                    .nhan("Trần thu phục / ngày", "Số Pokémon bắt được tối đa mỗi người chơi mỗi ngày (chống bot).")
+                    .khoang(0L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.tran_nem_ngay", "trang_bi", "so", "150", true, "cau_hinh")
+                    .nhan("Trần ném bóng / ngày", "Số lần ném tối đa mỗi ngày.")
+                    .khoang(0L, 5000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.cach_ms", "trang_bi", "so", "1500", true, "cau_hinh")
+                    .nhan("Nhịp ném tối thiểu (ms)", "Hai lần ném cách nhau ít nhất chừng này (gói đến sớm hơn bị bỏ qua).")
+                    .khoang(300L, 60000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.so_lan_bo_chay", "trang_bi", "so", "3", true, "cau_hinh")
+                    .nhan("Số lần trượt thì Pokémon bỏ chạy", "Mỗi lần trượt trên cùng một con: lần sau +5%; đến lần này thì nó bỏ chạy.")
+                    .khoang(1L, 10L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.su_kien", "trang_bi", "co", "0", true, "cau_hinh")
+                    .nhan("Mở loài chỉ bắt trong sự kiện", "1 = cho bắt các loài data_bat_loai.chi_su_kien = 1 (bật trong thời gian sự kiện)."),
+            new DinhNghiaKhoa("bat.dong_hanh", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bạn đồng hành đi theo (chỉ hình)", "Một Pokémon trong Hộp PC đi theo người chơi (0 chỉ số). 0 = ẩn.")
+                    .lop("luon_bat"),
             new DinhNghiaKhoa("pvp.tinh_diem.bat", "pvp", "co", "1", true, "cau_hinh")
                     .nhan("Tính điểm thang PvP", "0 = trận PvP không cộng/trừ điểm thang.")
                     .lop("luon_bat"),

@@ -325,17 +325,17 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **239 khoá** trong **16 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **260 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 149 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 163 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 27 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (69)
+### Khoá chỉnh trên web (70)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -455,7 +455,15 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (170)
+#### Trang bị, ngọc hệ, chế tạo & thu phục (cố định) (`trang_bi`)
+
+Bộ cùng bậc, ngọc hệ, chế tạo, mốc neo nâng cấp, thu phục Pokémon (docs/thiet-ke-game.md 4.2, 4.3, 7.7).
+
+| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|---|
+| `bat.su_kien` | Mở loài chỉ bắt trong sự kiện | cờ 0/1 | `0` |  | ngay | game | 1 = cho bắt các loài data_bat_loai.chi_su_kien = 1 (bật trong thời gian sự kiện). |
+
+### Khoá ẩn: cố định & luôn bật (190)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -660,6 +668,31 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chi_so.tran_khang_he` | Trần kháng một hệ (‰) | Cố định (ẩn) | `600` | ngay | game | Kháng hệ + kháng mọi hệ + phiến đá. |
 | `chi_so.san_sat_thuong` | Sàn sát thương mỗi đòn (‰) | Cố định (ẩn) | `400` | ngay | game | Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử). |
 | `chi_so.tran_phan_tram_cong` | Trần tổng % cộng thêm (‰) | Cố định (ẩn) | `500` | ngay | game | Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc. |
+
+#### Trang bị, ngọc hệ, chế tạo & thu phục (cố định) (`trang_bi`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `bo.bat` | Bật bộ trang bị cùng bậc | Luôn bật (ẩn) | `1` | ngay | game | 4 / 7 / 11 món cùng bậc (data_noi_dung_bo): +5% HP / +5% tấn công / +3% chí mạng. 0 = tắt thưởng bộ cùng bậc (thưởng bộ nâng cấp cũ vẫn giữ). |
+| `bo.tran_phan_tram` | Trần thưởng bộ HP / tấn công (%) | Cố định (ẩn) | `5` | ngay | game | Chung cho bộ cùng bậc + bộ nâng cấp cũ (+10/+13/+15). Thiết kế: ≤ 5%. |
+| `bo.tran_chi_mang_phan_nghin` | Trần chí mạng từ bộ (‰) | Cố định (ẩn) | `30` | ngay | game | Bộ 11 món: +3% chí mạng, vẫn qua trần chí mạng chung 40%. |
+| `ngoc_he.bat` | Bật ngọc hệ | Luôn bật (ẩn) | `1` | ngay | game | Khảm ngọc 18 hệ vào lỗ trang bị ở Machamp: +% chỉ số món, + sát thương hệ, − kháng hệ khắc. 0 = ngọc đã khảm không còn tác dụng (vẫn giữ trên món). |
+| `ngoc_he.tran_phan_tram_mon` | Trần % chỉ số món từ ngọc | Cố định (ẩn) | `10` | ngay | game | Tổng % chỉ số chính của một món từ mọi ngọc trên món. Thiết kế: ≤ 10%. |
+| `ngoc_he.st_he_phan_van_moi_cap` | Sát thương hệ mỗi cấp ngọc (phần vạn) | Cố định (ẩn) | `15` | ngay | game | 15 = 1,5‰ mỗi cấp; cộng vào ST hệ, trần chung 20%. |
+| `ngoc_he.khang_tru_phan_nghin_moi_cap` | Kháng hệ khắc bị trừ mỗi cấp ngọc (‰) | Cố định (ẩn) | `1` | ngay | game | Phần “hại” của ngọc (Ngọc Lửa → −kháng Nước). Mài ngọc giảm một nửa. |
+| `ngoc_he.gia_thao_phan_nghin_gio` | Giá tháo ngọc (‰ giờ thu nhập) | Cố định (ẩn) | `500` | ngay | game | 500 = 0,5 giờ thu nhập ở cấp người chơi. Ngọc giữ cấp, vào túi ngọc. |
+| `ngoc_he.gia_mai_phan_nghin_gio` | Giá mài ngọc (‰ giờ thu nhập) | Cố định (ẩn) | `300` | ngay | game | 300 = 0,3 giờ thu nhập. |
+| `che_tao.bat` | Bật chế tạo | Luôn bật (ẩn) | `1` | ngay | game | Machamp thợ rèn: công thức data_noi_dung_che_tao, bậc hiếm data_che_tao_bac. |
+| `che_tao.pity` | Pity chế tạo Sử thi (lần) | Cố định (ẩn) | `20` | ngay | game | Lần thứ N liên tiếp không ra Sử thi trở lên thì chắc Sử thi. 0 = tắt. |
+| `nang_cap.moc_neo` | Mốc neo nâng cấp | Luôn bật (ẩn) | `1` | ngay | game | Đã đạt +7 / +10 / +13 (data_nang_cap_moc) thì nâng hỏng không rơi dưới mốc. 0 = luật cũ (−1 từ +7). |
+| `nang_cap.he_so_xu_bac_cao` | Hệ số xu nâng +11..+15 (‰) | Cố định (ẩn) | `1060` | ngay | game | Bù phần kỳ vọng giảm do mốc neo (thiết kế: +6%). Chỉ áp khi bật mốc neo. |
+| `bat.bat` | Bật thu phục Pokémon | Luôn bật (ẩn) | `1` | ngay | game | Làm Pokémon hoang dã yếu đi rồi ném bóng (Hộp PC, Kẹo loài, Pokédex “Đã bắt”). 0 = tạm khoá ném bóng / mua bóng. |
+| `bat.nguong_hp_phan_tram` | Ngưỡng HP để ném bóng (%) | Cố định (ẩn) | `25` | ngay | game | Pokémon phải còn ≤ chừng này % HP. |
+| `bat.tran_ngay` | Trần thu phục / ngày | Cố định (ẩn) | `30` | ngay | game | Số Pokémon bắt được tối đa mỗi người chơi mỗi ngày (chống bot). |
+| `bat.tran_nem_ngay` | Trần ném bóng / ngày | Cố định (ẩn) | `150` | ngay | game | Số lần ném tối đa mỗi ngày. |
+| `bat.cach_ms` | Nhịp ném tối thiểu (ms) | Cố định (ẩn) | `1500` | ngay | game | Hai lần ném cách nhau ít nhất chừng này (gói đến sớm hơn bị bỏ qua). |
+| `bat.so_lan_bo_chay` | Số lần trượt thì Pokémon bỏ chạy | Cố định (ẩn) | `3` | ngay | game | Mỗi lần trượt trên cùng một con: lần sau +5%; đến lần này thì nó bỏ chạy. |
+| `bat.dong_hanh` | Bạn đồng hành đi theo (chỉ hình) | Luôn bật (ẩn) | `1` | ngay | game | Một Pokémon trong Hộp PC đi theo người chơi (0 chỉ số). 0 = ẩn. |
 
 #### Hồi sinh — luật (cố định) (`hoi_sinh`)
 

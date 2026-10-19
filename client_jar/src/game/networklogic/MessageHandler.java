@@ -117,6 +117,14 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
             return;
         }
+        // pokemon 0.9.7: lenh -120 bo trang bi / ngoc he / che tao / ti le nang cap (TrangBiThem)
+        if (game.pokemon.TrangBiThem.nhan(msg)) {
+            return;
+        }
+        // pokemon 0.9.7: lenh -121 thu phuc Pokemon, Pokedex "Da bat", ban dong hanh (BatPokemon)
+        if (game.pokemon.BatPokemon.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;

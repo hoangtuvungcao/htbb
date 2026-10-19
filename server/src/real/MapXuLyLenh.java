@@ -556,6 +556,12 @@ class MapXuLyLenh {
             case -101: // Guc / hoi sinh (com.htbb.pokemon.HoiSinh): xin / chon trong hop thoai
                 HoiSinhGame.xuLy(player, message);
                 break;
+            case -120: // [bo-ngoc] che tao / khảm ngoc he (real.BoNgocGame, real.CheTaoGame)
+                BoNgocGame.xuLy(player, message);
+                break;
+            case -121: // [bat-pokemon] thu phuc: trang thai / nem bong / Pokedex (real.BatPokemonGame)
+                BatPokemonGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;
