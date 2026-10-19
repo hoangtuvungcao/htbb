@@ -9485,9 +9485,8 @@ public class Map implements Runnable {
                     // (Map.doGiveItemToGround) - ham do DA SAN CO chan theo item.lock != 0
                     // ("Khong the bo vat pham da khoa ra dat"), nen chi can dat co nay la du,
                     // khong can sua rieng cho giao dich.
-                    if (player.itemVukhiThoiTrang.lock == 0) {
-                        player.itemVukhiThoiTrang.lock = 1;
-                    }
+                    // [khoa-khi-mac] khoa VINH VIEN (xoa co "khoa do mac": tinh luyen roi thi khong pha khoa duoc).
+                    player.itemVukhiThoiTrang.khoaVinhVien();
 
                     // Tỷ lệ thành công TĂNG dần theo mốc: càng gần 0% càng khó, càng gần
                     // 100% càng dễ. Đường cong BẬC HAI nên đoạn đầu rất chậm rồi mới bứt
@@ -15799,6 +15798,7 @@ public class Map implements Runnable {
                             player.iItems.add(player.itemThanKhi);
                         }
                         player.itemThanKhi = item;
+                        PhaKhoaGame.macVao(player, item); // [khoa-khi-mac]
                         
                         player.calculateAttrib();
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
@@ -16288,6 +16288,9 @@ public class Map implements Runnable {
         iItem.idAnimal = player.animalRide.dbid;
         player.awItems.add(iItem);
         player.iItems.remove(iItem);
+        if (!SkinThuCuoi.laItemSkin(iItem.getTemplate().id)) {
+            PhaKhoaGame.macVao(player, iItem); // [khoa-khi-mac] trang bi thu (skin la trang tri, khong khoa)
+        }
         Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "Sử dụng " + sub, "change");
     }
 

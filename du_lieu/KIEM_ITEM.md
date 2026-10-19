@@ -5,16 +5,16 @@
 ## 0. Tóm tắt
 | Cấu hình | Đủ nguồn + công dụng | Mồ côi (có nguồn, không công dụng) | Chỉ bán NPC (không công dụng thật) | Không lấy được (có công dụng / thiết kế nhưng không nguồn nào chạy) | Không tồn tại (không nguồn, không cần) |
 |---|---|---|---|---|---|
-| A (`lau_dai=1 he_sinh_thai=0`) | 808 | 0 | 0 | 0 | 760 |
-| B (`lau_dai=1 he_sinh_thai=1`) | 875 | 0 | 0 | 0 | 693 |
-| C (`lau_dai=0 he_sinh_thai=0`) — chỉ báo cáo | 678 | 1 | 0 | 102 | 787 |
+| A (`lau_dai=1 he_sinh_thai=0`) | 808 | 0 | 0 | 0 | 761 |
+| B (`lau_dai=1 he_sinh_thai=1`) | 875 | 0 | 0 | 0 | 694 |
+| C (`lau_dai=0 he_sinh_thai=0`) — chỉ báo cáo | 678 | 1 | 0 | 102 | 788 |
 
-Vật phẩm theo loại: data_item 1026, data_potion 162, ngọc 270, vật phẩm nhiệm vụ 49, túi sinh thái 61.
+Vật phẩm theo loại: data_item 1027, data_potion 162, ngọc 270, vật phẩm nhiệm vụ 49, túi sinh thái 61.
 Tham chiếu treo: **0**. Quy tắc lỗi thời: **0**. Trùng tên: **0**. Tên kiếm hiệp còn lấy được: **0**.
 
 Lỗi bị test chặn (cấu hình A + B): **0**.
 
-Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `ddfe025da919857fc8eae74d899f6ff8da08434a`
+Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `e939f26e863daff99535f6b610f40b41504bb0ff`
 
 ## 1. Cấu hình A: `sv.lau_dai=1`, `sv.he_sinh_thai=0`
 

@@ -136,6 +136,11 @@ class MapDoMenu {
             if (NpcDichVu.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // [khoa-khi-mac] NPC ao pha khoa trang bi (mo tu muc 3 cua Machamp tho ren, case 2 ben duoi).
+            if (idNpc == PhaKhoaGame.NPC_ID) {
+                PhaKhoaGame.doMenu(player, idMenu, idOptionMenu);
+                return;
+            }
             if (map.isNpcThanh(idNpc) && map.mapId != 201 && !map.isMapLienDau()) {
                 return;
             }
@@ -4990,7 +4995,9 @@ class MapDoMenu {
                         }
                     } else {
                         player.buyAnimalArmor = -1;
-                        if (idOptionMenu != 0) {
+                        if (idOptionMenu == PhaKhoaGame.VI_TRI_MUC_THO_REN) {
+                            PhaKhoaGame.moMenu(player); // [khoa-khi-mac]
+                        } else if (idOptionMenu != 0) {
                             if (idOptionMenu == 1) {
                                 String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));

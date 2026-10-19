@@ -914,6 +914,9 @@ class CharTrangBi {
                                             if (index2 > -1 && self.wItems[item.slotWearing][index2] == null) {
                                                 self.wItems[item.slotWearing][index2] = item;
                                                 item.pos = (byte) posNhan;
+                                                // [khoa-khi-mac] migration idempotent: do DANG MAC tu truoc khi co luat
+                                                // (cot tob_char.equip la chuoi ghep, SQL thuan khong sua duoc) khoa luc nap.
+                                                item.khoaKhiMac();
                                             } else {
                                                 item.slotWearing = 0;
                                                 item.place = 0;
@@ -934,6 +937,9 @@ class CharTrangBi {
                                     if (SkinThuCuoi.laItemSkin(item.getTemplate().id)
                                             || self.checkExistAnimal(item.idAnimal)) {
                                         self.awItems.add(item);
+                                        if (!SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
+                                            item.khoaKhiMac(); // [khoa-khi-mac] migration trang bi thu dang mac
+                                        }
                                     } else {
                                         item.place = 0;
                                         item.slotWearing = 0;

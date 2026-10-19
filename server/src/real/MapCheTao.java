@@ -228,7 +228,7 @@ class MapCheTao {
             }
 
             item.lockItem(material[1]);
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac] khoa thuoc tinh: khong con pha khoa duoc
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
             player.sendMessage(MessageCreator.createServerAlertMessage("Khoá thành công.", ""));
             String gemUse = MapEpNgoc.deleteGemItem(map,

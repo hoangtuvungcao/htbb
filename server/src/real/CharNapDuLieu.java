@@ -1434,6 +1434,9 @@ class CharNapDuLieu {
                                         if (Map.isWearingAnimal(t)
                                                 || SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
                                             self.awItems.add(item);
+                                            if (!SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
+                                                item.khoaKhiMac(); // [khoa-khi-mac] migration
+                                            }
                                             break;
                                         }
                                         boolean vk = false;
@@ -1465,6 +1468,7 @@ class CharNapDuLieu {
                                         final int index2 = Char.getIndexItemWearing(t, posNhan);
                                         if (index2 > -1 && self.wItems[item.slotWearing][index2] == null) {
                                             self.wItems[item.slotWearing][index2] = item;
+                                            item.khoaKhiMac(); // [khoa-khi-mac] migration
                                             break;
                                         }
                                         item.slotWearing = 0;

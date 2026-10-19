@@ -1256,7 +1256,8 @@ public class OfflineMap extends Map {
                      }
 
                      // chong clone: vat pham KHOA (mua bang luong khoa, qua nhiem vu...) khong doi ra xu o NPC.
-                     if (item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
+                     // [khoa-khi-mac] tru do CHI khoa vi da mac (Item.laKhoaDoMac): truoc khi mac von ban NPC duoc.
+                     if (!item.laKhoaDoMac() && item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm khoá không bán cho NPC lấy xu được (chỉ dùng hoặc vứt bỏ).", ""));
                         return;
                      }
@@ -1861,7 +1862,7 @@ public class OfflineMap extends Map {
             byte[] material = new byte[6];
             material[idMaterial - 229] = 1;
             item.lockItemAnimal(material);
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac]
             player.sendMessage(MessageCreator.createServerAlertMessage("Đã khóa thành công", ""));
             player.sendMessage(MessageCreator.createMsgItemInfo(item));
             player.delGem(idMaterial, 1, lock == 1);
@@ -1899,7 +1900,7 @@ public class OfflineMap extends Map {
             }
 
             item.lockItem(idMaterial - 235);
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac]
             player.sendMessage(MessageCreator.createServerAlertMessage("Đã khóa thành công", ""));
             player.sendMessage(MessageCreator.createMsgItemInfo(item));
             player.delGem(idMaterial, 1, lock == 1);

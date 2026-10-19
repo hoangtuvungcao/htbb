@@ -2063,6 +2063,20 @@ public class Char extends LiveActor {
 
     /** @return false neu buoc chuyen thuoc bi tu choi (xem doAddPotionTrad2Inventory) - nguoi goi phai huy giao dich. */
     public boolean doAddItemTrad2Inventory() {
+        // [khoa-khi-mac] chot cuoi: vat pham khoa (da mac / khoa vi ly do khac) khong bao gio doi chu qua giao dich.
+        // (Hien MapMuaBan.doTrade tu choi moi vat pham - goi 66/2 kieu 0 - nen tItems luon rong; chan them cho chac.)
+        for (int i = 0; i < this.tItems.size(); ++i) {
+            if (!this.tItems.elementAt(i).giaoDichDuoc()) {
+                return false;
+            }
+        }
+        if (this.userTrade.size() > 0) {
+            for (int i = 0; i < this.userTrade.get(0).tItems.size(); ++i) {
+                if (!this.userTrade.get(0).tItems.elementAt(i).giaoDichDuoc()) {
+                    return false;
+                }
+            }
+        }
         String info = String.valueOf(this.charname) + " chuyển_";
         for (int i = 0; i < this.tItems.size(); ++i) {
             final Item item = this.tItems.elementAt(i);

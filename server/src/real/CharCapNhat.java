@@ -985,7 +985,7 @@ class CharCapNhat {
                     }
                 }
                 if (isLock) {
-                    item.lock = 1;
+                    item.khoaVinhVien(); // [khoa-khi-mac] ep bang ngoc khoa
                 }
                 self.delGem(self.idGemLkd, 1, self.lkdLock);
                 if (self.idGemBH > -1) {
