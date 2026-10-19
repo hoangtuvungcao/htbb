@@ -299,6 +299,7 @@ public class MapTown extends Map {
    }
 
    protected void doGiveCardTown(Char player, Message message) {
+      super.doGiveCardTown(player, message);
    }
 
    public synchronized void playerGiveCard(Char player, int posNpc) {

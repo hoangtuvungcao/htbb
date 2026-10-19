@@ -36,6 +36,25 @@ public final class TenBanDoMayChu {
         });
     }
 
+    /**
+     * Nhu {@link #ten} nhung ban sao theo khu khong nam trong nhom Map.mapID (vd 721..724 cua 21 - nhom 21 khong co
+     * trong RealController.Map.mapID) lay ten ban goc (mapIDLoadMap) + khu (id % 10). "" neu van khong biet.
+     */
+    public static String tenDayDu(final int id) {
+        final String t = ten(id);
+        if (!t.isEmpty()) {
+            return t;
+        }
+        final Map m = RealController.mapList.get(id);
+        if (m != null && m.mapIDLoadMap != id) {
+            final String goc = ten(m.mapIDLoadMap);
+            if (!goc.isEmpty()) {
+                return TenMapPokemon.tenKhu(goc, id % 10);
+            }
+        }
+        return "";
+    }
+
     /** Ten theo id ban do bat ky (ban goc hoac ban sao theo khu); "" neu khong biet. */
     public static String ten(final int id) {
         final String rieng = TenHien.tenMap(id);

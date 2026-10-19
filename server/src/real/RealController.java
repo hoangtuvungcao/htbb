@@ -1203,7 +1203,11 @@ public class RealController extends ServerController {
                                                         p.sendMessage(MessageCreator.createMsgMenu((String[]) ld, idNpc, 11));
                                                     }
                                                 } else {
-                                                    doXuongThuCuoi.doXuongThuCuoi(p, 0);
+                                                    if (p.rideHorse <= 0) {
+                                                        p.sendMessage(MessageCreator.createServerAlertMessage("Bạn đang không cưỡi Pokémon nào.", ""));
+                                                    } else {
+                                                        doXuongThuCuoi.doXuongThuCuoi(p, 0);
+                                                    }
                                                 }
                                             } else if (idOptionMenu != 0) {
                                                 if (idOptionMenu != 1) {
@@ -1272,7 +1276,11 @@ public class RealController extends ServerController {
                                                         p.sendMessage(MessageCreator.createMsgMenu((String[]) ld, idNpc, 11));
                                                     }
                                                 } else {
-                                                    doXuongThuCuoi.doXuongThuCuoi(p, 0);
+                                                    if (p.rideHorse <= 0) {
+                                                        p.sendMessage(MessageCreator.createServerAlertMessage("Bạn đang không cưỡi Pokémon nào.", ""));
+                                                    } else {
+                                                        doXuongThuCuoi.doXuongThuCuoi(p, 0);
+                                                    }
                                                 }
                                             } else if (p.map.mapIDLoadMap != 0 || p.map.mapIDLoadMap != 70) {
                                                 doMenuNpcNhanTieu(p, idNpc, idMenu, idOptionMenu);
@@ -1282,21 +1290,16 @@ public class RealController extends ServerController {
                                         case -51:
                                             TraHang.excecute(p);
                                             break;
-                                        case -49: // todo do menu su kien word cup
-                                            if (!Char.isFinishAllSuKienHe2017()) {
-                                                doMenuSuKienHe2017.doMenuSuKienHe2017(p, idNpc, idMenu, idOptionMenu);
-                                            } else if (Char.isSuKienWordcup2017()) {
-                                                domenuWorldcup2017.domenuWorldcup2017(p, idNpc, idMenu, idOptionMenu);
-                                            } else if (Char.isSuKienMiniChucNu()) {
-
-                                                doMenuSuKienMiniChucNu.doMenuSuKienMiniChucNu(p, idNpc, idMenu, idOptionMenu);
-                                            } else {
-                                                defHandle = true;
-                                            }
+                                        case -49: // NPC su kien: cung thu tu uu tien voi menu (real.SuKienNpc)
+                                            SuKienNpc.xuLy(p.map, p, idNpc, idMenu, idOptionMenu);
                                             break;
                                         case -8:
                                             if (!Map.isMapThanh(p.map) && !Map.isMapLang(p.map)) {
                                                 return;
+                                            }
+                                            // Menu goc da bo "Hoat dong gio" (vi tri 4, chi bao "Sap ra mat"): hien thi -> goc.
+                                            if (idMenu == 0 && idOptionMenu >= 4 && !TeamServer.isServerLienDau()) {
+                                                idOptionMenu++;
                                             }
                                             this.doCreateItem(p, idNpc, idMenu, idOptionMenu);
                                             break;
@@ -1984,7 +1987,7 @@ public class RealController extends ServerController {
                     case 16:
                         String[] menu = new String[]
                         {
-                            "Tạo","Nâng cấp","Đổi dòng","Tháo","Khóa"
+                            "Tạo", "Nâng cấp", "Đổi dòng", "Tháo"
                         };
 
                         player.sendMessage(MessageCreator.createMsgMenu(menu, -517, 0));
@@ -2308,10 +2311,10 @@ public class RealController extends ServerController {
             if (idMenu == 0) {
                 player.infoItemCreate = null;
                 if (idOptionMenu == 0) {
-                    menu = new String[]{"Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung"};
+                    menu = new String[]{"Than lửa", "Hạt giống thần", "Khăn lụa", "Nước thần", "Nam châm"};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 1));
                 } else if (idOptionMenu == 1) {
-                    menu = new String[]{"Trang bị đặc biệt", "Trang bị vât lý"};
+                    menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                     player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, idNpc, 3));
                 } else if (idOptionMenu == 2) {
                     menu = new String[]{"Cấp độ 30", "Cấp độ 35", "Cấp độ 40", "Cấp độ 45", "Cấp độ 50", "Cấp độ 55", "Cấp độ 60", "Cấp độ 65", "Cấp độ 70", "Cấp độ 75", "Cấp độ 80", "Cấp độ 85"};

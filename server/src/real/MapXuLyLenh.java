@@ -445,6 +445,13 @@ class MapXuLyLenh {
     }
 
     static void processMessage(Map map, Char player, Message message) throws IOException {
+        // NPC tinh co dich vu dat tren ban do ngoai troi (Chansey, Kecleon, Machamp, Kangaskhan... o thi tran Hoenn):
+        // lenh mua / ban / ren / kho cua nguoi choi dung canh NPC do chay bang than OfflineMap nhu trong nha.
+        final Map banDoDv = NpcTinhBanDo.banDoDichVu(map, player, message.command);
+        if (banDoDv != null) {
+            processMessage(banDoDv, player, message);
+            return;
+        }
         // Chong spam thao tac lap (menu NPC 53/55, rao ban 62/92, mua ban 24/28/95): moi lenh
         // nay cham CSDL / tao popup; bot bam lien tuc thi bo bot, khong cat ket noi. Xem ChongSpam.
         final com.htbb.chongspam.ChongSpam.HanhDong hdSpam = com.htbb.chongspam.ChongSpam.hanhDongCuaLenh(message.command);

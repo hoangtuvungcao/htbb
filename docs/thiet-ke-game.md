@@ -57,6 +57,31 @@ Lớp thuần nằm ở `server/src/com/htbb/pokemon/`, lớp nối vào game �
 **Sổ tay huấn luyện** (NPC đổi thưởng → mục Sổ tay, `real.SoTayLauDai`): nhiệm vụ, Gym, Hầm ngục, cửa hàng, năng lượng,
 tinh thông, thang PvP. Hệ sinh thái có menu riêng (gõ `hst`).
 
+#### NPC và vai trò
+
+Mọi NPC có mặt trong game đều dùng được, ở **mọi bản đồ** (thị trấn ngoài trời lẫn trong nhà). NPC tĩnh (cMap, tên ở
+`data_npc`) mở đúng chức năng khi bấm (client `GameScr.moChucNangNpc`); lệnh dịch vụ của người chơi đứng cạnh NPC (≤ 7 ô,
+`real.NpcTinhBanDo`) chạy như trong nhà, đứng xa thì bị từ chối.
+
+| NPC (type) | Vai trò |
+|---|---|
+| Y tá Chansey (0) | Trung tâm Pokémon: hồi phục HP / PP miễn phí, mua thuốc (`real.NpcDichVu`) |
+| Kecleon (1, 26), Golem / Tauros (11–20), Sableye (24) | Bán thuốc, gian hàng, đá quý |
+| Machamp (2), Farfetch'd (28) | Thợ rèn: mua đồ cầm tay / trang bị thú, luyện, khảm, sửa, khoá, nghiền bột |
+| Bronzong (3, 27) | Bán trang bị theo dòng |
+| Persian (6, 29) | Bán đá quý, nguyên liệu |
+| Kangaskhan (9, 30) | Kho đồ |
+| Pidgeot (7) | Bay: tuyến Kanto / Johto có sẵn; ở Hoenn bay tới các Trung tâm Pokémon (750 xu, giảm theo thu nhập) |
+| Lapras (10) | Bán vé tàu; bến 106 ra đảo, các bến khác chở đò tới bến Lapras khác (1 vé / chuyến) |
+| Blaziken (21) | Huấn luyện viên: học chiêu |
+| Meowth (22, 31) | Ngân hàng: kho xu / lượng, chuyển lượng, cửa hàng và nạp (khi bật nạp) |
+| Arcanine (4), Xatu (5), Snorlax (8), Torkoal (23), Heracross (25) | Giao / trả nhiệm vụ (Heracross: nhiệm vụ đội, ở Cao nguyên Indigo) |
+| NPC server ở thị trấn (-8, -10, -11, -12, -15, -31, -50, -90, -24) | Thợ rèn bí ẩn, Tổng quản, hợp thành, đổi hệ, đấu trường, giao hàng, đổi thưởng + Sổ tay (Gym, nhiệm vụ, Hầm ngục), xổ số |
+| NPC sự kiện (-49, -65, -66, -67, -35) | Theo sự kiện đang chạy, **một** thứ tự ưu tiên cho menu và xử lý (`real.SuKienNpc`) |
+
+Kiểm: `server/test/KiemNpc` (dữ liệu, client, thứ tự sự kiện) và bot `tools/pokemon/kiem_tai/KichBanNPC` (`npc_tat_ca`,
+`npc_dich_vu`, `npc_su_kien`: mở mọi NPC, chọn mọi mục, không mục nào im lặng).
+
 ### 1.3 Cờ lớn và cấu hình
 
 Ba cờ chế độ, **chỉ có tác dụng sau khi khởi động lại máy chủ**. Bật / tắt ở web quản trị **/admin → Cấu hình hệ thống**
