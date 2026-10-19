@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  * nen KHONG can va KHONG duoc dong vao cot nao khac.
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
- *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhBangCapDo
+ *   java -cp "server/build/classes;server/lib/mysql-connector-java-5.1.49.jar" SinhBangCapDo
  *   -> ghi web/shared/data/bang-cap-do.json (tim ../web hoac web trong monorepo, hoac -Dhtbb.web=<thu muc>).
  *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
@@ -74,7 +74,7 @@ public final class SinhBangCapDo {
          .append("moi chi so khac do may chu tu tinh lai tu cap luc chon nhan vat (src/real/cmd/SelectCharHandler.java, ")
          .append("p.calculateAttrib()). test/KiemBangCapDo (repo game) doi chieu tung so voi mang Java.\",\n");
         s.append("  \"_nguon\": \"real.LevelDetail.expMain / expRequire (src/real/LevelDetail.java) - repo game HTBB\",\n");
-        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhBangCapDo\",\n");
+        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhBangCapDo\",\n");
         s.append("  \"capDoToiDa\": ").append(tranCap).append(",\n");
         s.append("  \"expMain\": [\n");
         noiMang(s, expMain);

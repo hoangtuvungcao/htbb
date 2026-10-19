@@ -12,8 +12,8 @@ import java.util.Properties;
 /**
  * Che mat khau CSDL trong moi thu di ra System.out / System.err.
  *
- * VI SAO PHAI CO. data.ConnPool (nam trong lib/htbb-core.jar, KHONG co ma nguon nen khong
- * sua duoc) in ra dong nay ngay trong ham dung, moi lan tao pool:
+ * VI SAO PHAI CO. data.ConnPool (lop loi cu, truoc P3 chi co lop loi cu (phuc hoi tu htbb-core.jar o P3) nen
+ * khong sua duoc; P3 giu nguyen hanh vi) in ra dong nay ngay trong ham dung, moi lan tao pool:
  *
  *     URL: jdbc:mysql://localhost:3306/htbb_db | USER: htbb | PASS: &lt;mat khau that&gt;
  *

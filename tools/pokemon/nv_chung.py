@@ -77,7 +77,7 @@ VAT_NV = [
 ]
 VAT_NV_ID = {t: 10 + i for i, t in enumerate(VAT_NV)}
 
-# Vat pham nhiem vu CU dung duoc (data.ItemQuest.NAME_ITEM_QUEST trong lib/htbb-core.jar).
+# Vat pham nhiem vu CU dung duoc (data.ItemQuest.NAME_ITEM_QUEST, server/src/data/ItemQuest.java).
 VAT_NV_CU = {0: "Nọc bọ cạp", 2: "Khúc gỗ", 3: "Rết đỏ", 4: "Lá thư", 6: "Lông đuôi Hồng Kê",
              7: "Móng cá sấu", 8: "Da ếch", 9: "Cựa gà"}
 

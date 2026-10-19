@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * tao...) - khong phai nguon du lieu that (nguon that van la DB dang chay qua
  * data_item, file nay chi la ban chup tu SQL dump).
  *
- * Cach dung: java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucItem
+ * Cach dung: java -cp "server/build/classes;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucItem
  *
  * Chay lai khi sql/gamedb7_clean.sql doi (them/sua vat pham). test/KiemDanhMucItem.java
  * doi chieu so luong + vai id moc voi chinh file SQL, phong sinh thieu/sinh sai.
@@ -80,7 +80,7 @@ public final class SinhDanhMucItem {
         s.append("# Danh mục vật phẩm (data_item)\n\n");
         s.append("File này được **sinh ra**, đừng sửa tay.\n");
         s.append("  Nguồn  : ").append(NGUON).append(", bảng `data_item`\n");
-        s.append("  Sinh lại: java -cp \"build/classes;lib/htbb-core.jar;");
+        s.append("  Sinh lại: java -cp \"build/classes;");
         s.append("server/lib/mysql-connector-java-5.1.49.jar\" SinhDanhMucItem\n\n");
         s.append("Mục đích: tra nhanh **id ↔ tên vật phẩm** khi đọc/viết code (giftcode, shop,\n");
         s.append("chế tạo, danh sách vật phẩm sự kiện...) thay vì tự query DB hay đoán từ magic\n");

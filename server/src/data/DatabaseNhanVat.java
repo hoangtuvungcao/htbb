@@ -20,7 +20,7 @@ import java.util.*;
  * danh sach nhan vat cua tai khoan.
  *
  * Tach tu data/Database.java. Cac method VAN CON trong Database, giu NGUYEN
- * chu ky cu, chi than chuyen sang day - nen bytecode trong lib/htbb-core.jar
+ * chu ky cu, chi than chuyen sang day - nen lop loi cu (phuc hoi tu htbb-core.jar o P3)
  * goi Database.getChar/saveChar... van chay binh thuong.
  * Tham so "Database db" thay cho "this" truoc day.
  */

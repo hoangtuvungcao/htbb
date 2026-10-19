@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
  *    kho nay. Xem test/KiemBangMaNguon.
  *
  * Cach dung (sau khi da bien dich src/):
- *   java -cp build/sb-src;lib/htbb-core.jar SinhSqlTenSkinThu
+ *   java -cp build/sb-src SinhSqlTenSkinThu
  *
  * Chay lai bat cu luc nao doi so trong SkinThuCuoi, roi chay tep sql tren may chu.
  */

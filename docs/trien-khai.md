@@ -322,7 +322,7 @@ Từ máy ngoài: mở `https://huyenthoaibaoboi.fun/`, đăng nhập game bằn
 | Server tự tắt, log chỉ có `Killed` | hết RAM — giảm heap / buffer pool hoặc nâng VPS; `dmesg \| grep -i "killed process"` |
 | `BindException: Address already in use` | còn tiến trình cũ giữ cổng 19129 |
 | `/bin/bash^M: bad interpreter` | tệp `.sh` bị CRLF; repo ép `*.sh eol=lf`, sửa: `sed -i 's/\r$//' /opt/htbb/vps/*.sh` |
-| `HeadlessException` trong log | vô hại (đến từ `lib/htbb-core.jar`, chỉ giết luồng AWT) |
+| `HeadlessException` trong log | vô hại (đến từ lớp lõi cũ phục hồi ở P3, chỉ giết luồng AWT) |
 
 Tắt server luôn bằng `systemctl stop htbb-game` (SIGTERM → shutdown hook lưu nhân vật, bang, chợ; `TimeoutStopSec=180`).
 **Đừng `kill -9`** — mất dữ liệu chưa lưu.
@@ -334,5 +334,6 @@ Tắt server luôn bằng `systemctl stop htbb-game` (SIGTERM → shutdown hook 
   chạy được đúng script deploy.
 - `server.ini`, `loginServer/server.ini`, `/etc/htbb/htbb.env` chứa mật khẩu: `chmod 640`/`600`, không đưa vào git,
   không dán cho ai.
-- Repo giữ private: `server/lib/htbb-core.jar` là thư viện đóng của bên thứ ba, lịch sử git từng có dữ liệu nhạy cảm.
+- Repo giữ private: mã lõi cũ phục hồi trong `server/src` và `server/loginServer/CheckLoginSocket.jar` thuộc game gốc
+  ([giay-phep.md](giay-phep.md)), lịch sử git từng có dữ liệu nhạy cảm.
 - Bật `HTBB_ADMIN_2FA_BAT_BUOC=true`; giới hạn IP admin bằng `HTBB_ADMIN_IP_CHO_PHEP` nếu được.

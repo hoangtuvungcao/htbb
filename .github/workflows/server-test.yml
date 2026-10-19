@@ -75,7 +75,7 @@ jobs:
       - name: Bien dich src/ va test/
         run: |
           set -euo pipefail
-          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
+          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar"
           mkdir -p build/ci-classes
           find src test -name '*.java' > build/ci-sources.txt
           echo "So file .java: $(wc -l < build/ci-sources.txt)"
@@ -86,6 +86,6 @@ jobs:
       - name: Chay bo kiem thu
         run: |
           set -euo pipefail
-          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
+          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar"
           # Kiem.tongKet() tra ve 1 khi co phep hong, nen ma thoat cua java la ket luan.
           java -cp "build/ci-classes:$LIBCP" Kiem

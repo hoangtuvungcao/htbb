@@ -1,7 +1,7 @@
 {
   "_ghiChu": "TEP SINH TU DONG - DUNG SUA TAY. Danh muc danh hieu cho o chon phan thuong giftcode (loai DH). ngauNhien = true CHI cho dung 34 id trung mang availableTitles ghi cung trong src/data/DatabaseGiftCode.java (nhanh DH, id=0 -> chon ngau nhien MOT trong so nay); ngauNhien=false thi PHAI ghi id that (DH:<id>:...). test/KiemDanhMucDanhHieu (repo game) doi chieu tep nay voi getName() va mang availableTitles that.",
   "_nguon": "data.DanhHieu.getName() (src/data/DanhHieu.java) - repo game HTBB",
-  "_sinhLai": "(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucDanhHieu",
+  "_sinhLai": "(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhDanhMucDanhHieu",
   "danhHieu": {
     "8767": {"ten": "Anh hùng", "ngauNhien": true},
     "8768": {"ten": "Bá chủ", "ngauNhien": true},

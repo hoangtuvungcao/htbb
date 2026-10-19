@@ -4589,7 +4589,7 @@ public class Map implements Runnable {
 
 
     // Than method (593 dong) da chuyen sang real/MapDanhNhau.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
+    // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doAttackPlayer(Char p, Message message) {
         MapDanhNhau.doAttackPlayer(this, p,message);
@@ -4749,7 +4749,7 @@ public class Map implements Runnable {
     }
 
     // Than method (509 dong) da chuyen sang real/MapDanhNhau.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
+    // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     public void doAttackMultiTarget(Char p, Message message) {
         MapDanhNhau.doAttackMultiTarget(this, p,message);
@@ -4815,7 +4815,7 @@ public class Map implements Runnable {
 
     /// TODO Đánh Quái
     // Than method (470 dong) da chuyen sang real/MapDanhNhau.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
+    // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doAttackMonster(Char p, Message message) throws IOException {
         MapDanhNhau.doAttackMonster(this, p,message);
@@ -5748,7 +5748,7 @@ public class Map implements Runnable {
     }
 
     // Than method (760 dong) da chuyen sang real/MapDungThuoc.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
+    // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doUsePotion(Char player, Message message) throws IOException {
         MapDungThuoc.doUsePotion(this, player,message);
@@ -11459,7 +11459,7 @@ public class Map implements Runnable {
     }
 
     // Than method (1432 dong) da chuyen sang real/MapNhapText.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
+    // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doProcessInputText(Char player, Message message) {
         MapNhapText.doProcessInputText(this, player,message);
@@ -11800,7 +11800,7 @@ public class Map implements Runnable {
 
 
     // Than method (4.601 dong) da chuyen sang real/MapDoMenu.java.
-    // Chu ky va tinh protected GIU NGUYEN: bytecode trong lib/htbb-core.jar goi
+    // Chu ky va tinh protected GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi
     // Map.doMenu, va lop con van override duoc nhu cu.
     protected void doMenu(Char player, Message message) {
         MapDoMenu.doMenu(this, player, message);
@@ -16797,7 +16797,7 @@ public class Map implements Runnable {
     }
 
     // Than method (1497 dong) da chuyen sang real/MapChat.java.
-    // Chu ky GIU NGUYEN: bytecode trong lib/htbb-core.jar goi method nay,
+    // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     public void doChat(Char player, Message message) throws IOException {
         MapChat.doChat(this, player,message);

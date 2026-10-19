@@ -15,19 +15,20 @@ Cách build từng thành phần từ mã nguồn. Mọi lệnh viết **từ g�
 
 ## 1. Game server (`server/`)
 
-Mã Java trong `server/src`, thư viện trong `server/lib` (`htbb-core.jar` là thư viện đóng của game gốc, không có mã
-nguồn), bản đồ `server/cMap`, tài nguyên `server/map`. Biên dịch ở **class version 52** (`--release 8`) để jar
+Mã Java trong `server/src` (kể cả 169 lớp lõi cũ phục hồi từ `htbb-core.jar` ở P3, xem
+[giay-phep.md](giay-phep.md)), thư viện bên thứ ba trong `server/lib` (`jxl`, Connector/J 5.1.49), bản đồ `server/cMap`,
+tài nguyên `server/map`. Biên dịch ở **class version 52** (`--release 8`) để jar
 chạy được trên mọi JVM ≥ 8; VPS chạy OpenJDK 17 (cờ `-Xlog:gc` của `htbb-game.service` cần Java ≥ 9).
 
 Linux / macOS (chạy ở `server/`):
 
 ```sh
 cd server
-LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
+LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar"
 OUT=/tmp/htbb-classes; rm -rf "$OUT"; mkdir -p "$OUT"
 find src -name '*.java' > /tmp/htbb-src.txt
 javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "$LIBCP" -sourcepath src -d "$OUT" @/tmp/htbb-src.txt
-printf 'Main-Class: server.TeamServer\nClass-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar lib/htbb-core.jar\n' > /tmp/htbb-mf.txt
+printf 'Main-Class: server.TeamServer\nClass-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar\n' > /tmp/htbb-mf.txt
 jar cfm HTBB_NEW.jar /tmp/htbb-mf.txt -C "$OUT" .
 unzip -t HTBB_NEW.jar >/dev/null && mv HTBB_NEW.jar htbb-server.jar
 ```
@@ -49,7 +50,7 @@ tương đối từ `server/`, nên **phải chạy ở `server/`**). Giống `.
 
 ```sh
 cd server
-LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/htbb-core.jar"
+LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar"
 OUT=/tmp/htbb-test; rm -rf "$OUT"; mkdir -p "$OUT"
 find src test -name '*.java' > /tmp/htbb-test-src.txt
 javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "$LIBCP" -sourcepath "src:test" -d "$OUT" @/tmp/htbb-test-src.txt

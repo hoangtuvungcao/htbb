@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  *    (xem test/KiemBangMaNguon).
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
- *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucNgoc
+ *   java -cp "server/build/classes;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucNgoc
  *   -> ghi web/shared/data/danh-muc-ngoc.json (tim ../web hoac web trong monorepo, hoac -Dhtbb.web=<thu muc>).
  *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
@@ -64,7 +64,7 @@ public final class SinhDanhMucNgoc {
          .append("Ten ngoc KHONG co trong CSDL, mot nua la hang so data.Text.* nen phai sinh bang Java. ")
          .append("test/KiemDanhMucNgoc (repo game) doi chieu tep nay voi mang Java.\",\n");
         s.append("  \"_nguon\": \"real.Map.gemTemplate (src/real/MapNapTaiNguyen.java) - repo game HTBB\",\n");
-        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucNgoc\",\n");
+        s.append("  \"_sinhLai\": \"(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhDanhMucNgoc\",\n");
         s.append("  \"ngoc\": {\n");
 
         int soDong = 0;

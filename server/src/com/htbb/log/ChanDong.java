@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * Chan System.out / System.err CU (698 cho println + 782 cho printStackTrace trong src/, them
- * ca lib/htbb-core.jar khong co ma nguon) va dua TUNG DONG vao {@link Nhat} de phan loai, gioi
+ * ca cac lop loi cu phuc hoi tu htbb-core.jar o P3) va dua TUNG DONG vao {@link Nhat} de phan loai, gioi
  * han, gop. Nho vay khong phai sua tay tung cho goi ma van khong mat dong loi nao.
  *
  * Gom STACK TRACE: printStackTrace() in dong dau ("java.lang.X: ...") roi tung dong "\tat ...".

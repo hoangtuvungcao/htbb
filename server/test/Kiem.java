@@ -188,6 +188,7 @@ public final class Kiem {
 
         KiemChiSo.chay(); // chi so trang bi + chong lam phat (docs/thiet-ke-game.md)
         KiemAdminPanel.chay();
+        KiemKhongLoiCu.chay(); // P3: khong con lib/htbb-core.jar (docs/giay-phep.md)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

@@ -5,7 +5,7 @@ package com.htbb.pokemon;
  *
  * Moi class cu cua game goc (CharManager.KIEM..CUNG_THU) anh xa sang mot dong
  * Pokemon khoi dau, nho vay KHONG phai doi cot `class` trong tob_char hay
- * CreateCharHandler (chi co bytecode trong lib/htbb-core.jar, khong co source).
+ * CreateCharHandler (lop loi cu, phuc hoi tu lib/htbb-core.jar o P3).
  * Chi tiet ly do: docs/kien-truc.md, bang "Class -> Pokemon".
  *
  * So hieu loai = so Pokedex quoc gia = ten thu muc sprite PMDCollab

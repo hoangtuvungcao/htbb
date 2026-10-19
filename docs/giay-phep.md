@@ -101,8 +101,26 @@ javac -d /tmp/htbb-tools tools/pokemon/DungBoTileMoi.java && java -cp /tmp/htbb-
 
 ## 6. Phần mềm
 
-- `server/lib/htbb-core.jar` và `server/loginServer/CheckLoginSocket.jar` là thư viện đóng của game gốc, không có mã
-  nguồn: không phát hành lại riêng, giữ repo private.
+- `server/loginServer/CheckLoginSocket.jar` là thư viện đóng của game gốc, không có mã nguồn: không phát hành lại
+  riêng, giữ repo private.
+- Thư viện bên thứ ba còn lại trong `server/lib`: Connector/J 5.1.49, `jxl-2.6.jar`, `json-20250107.jar`. Bản
+  Connector/J 5.0.8 và `jxl` mà jar lõi cũ gói kèm đã bỏ cùng jar (Connector/J 5.0.8 vốn bị 5.1.49 che trên classpath,
+  `jxl` gói kèm giống hệt `lib/jxl-2.6.jar`).
+
+### Mã nguồn lõi cũ
+
+- Tới 10/2026 server chạy kèm `server/lib/htbb-core.jar`: 190 lớp lõi **đã biên dịch** của game kiếm hiệp gốc
+  (mạng `io.SessionManager`, `server.ServerController`, `real.Actor`, `real.cmd.CreateCharHandler`, `real.ItemTemplates`,
+  `real.QuestTemplate`, `data.NewClan`, chợ, lôi đài, MOBA, áp tiêu, xổ số…), không có mã nguồn. Bytecode phiên bản 50
+  (Java 6), có dấu hiệu dịch bằng trình biên dịch Eclipse (ECJ: tên `access$0`, mảng hằng bỏ phần tử 0).
+- P3 dịch ngược 169 lớp chỉ có trong jar thành mã nguồn trong `server/src` (cùng package và tên lớp) bằng
+  **Vineflower 1.11.1** (`org.vineflower:vineflower:1.11.1` từ Maven Central, SHA-256
+  `a615d07ddbbcd489369674f40e42df639c32be95410890b38f173d5c1e2ea39c`), sửa tay tối thiểu để biên dịch `--release 8`.
+  21 lớp còn lại đã có bản ghi đè trong `src/` từ trước nên bỏ bản trong jar. Mỗi tệp phục hồi mở đầu bằng chú thích
+  `PHUC HOI TU LOI CU`.
+- Bản quyền: mã này **thuộc tác giả game gốc**, không phải của dự án và không đổi giấy phép khi chuyển thành mã nguồn.
+  Cùng điều kiện như client gốc ở dưới: chỉ dùng cho dự án fan phi thương mại, không phát hành lại riêng, giữ repo
+  private. Jar gốc còn trong lịch sử git (commit trước P3) nếu cần đối chiếu bytecode.
 - Client gốc TeaMobi (J2ME, Unity) đã được dịch ngược và sửa thành HTBB; dự án không có quyền với mã gốc ngoài mục
   đích fan phi thương mại.
 - Thư viện server: MySQL Connector/J 5.1 (GPL v2 + FOSS exception), JExcelAPI `jxl` (LGPL). Công cụ build client J2ME:

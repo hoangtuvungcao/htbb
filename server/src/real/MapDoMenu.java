@@ -28,7 +28,7 @@ import BaoVatHuyenThoai.ThoRenBiAn;
  * 4.601 dong nay truoc nam trong real/Map.java. Map.doMenu VAN CON, giu
  * NGUYEN chu ky protected cu, chi uy nhiem sang day:
  *     protected void doMenu(Char p, Message m) { MapDoMenu.doMenu(this, p, m); }
- * Nho vay bytecode trong lib/htbb-core.jar goi Map.doMenu van chay binh thuong,
+ * Nho vay lop loi cu (phuc hoi tu htbb-core.jar o P3) goi Map.doMenu van chay binh thuong,
  * va lop con van override duoc nhu cu (hien khong lop nao override).
  */
 // Thanh vien static cua Map ma than doMenu dung khong dinh danh.

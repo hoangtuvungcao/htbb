@@ -12,9 +12,9 @@ package data;
  *   Net.getHttpADV(...) moi vong lap -> ben kia co the day link tai game va noi dung tuy y
  *   vao chat NPC cua server nay.
  *
- *   Trong manifest, htbb-server.jar dung TRUOC lib/htbb-core.jar trong Class-Path,
- *   nen class nay se duoc nap thay cho class trong lib. Moi ket noi ra ngoai qua data.Net
- *   vi vay bi vo hieu, ke ca phan goi tu trong lib.
+ *   Truoc P3, htbb-server.jar dung TRUOC lib/htbb-core.jar trong Class-Path nen class nay
+ *   duoc nap thay cho class trong lib. Tu P3 jar lib bi bo; ban goc cua data.Net KHONG duoc
+ *   phuc hoi (chi co shim nay), nen moi ket noi ra ngoai qua data.Net van bi vo hieu.
  *
  * LUU Y KHI SUA:
  *   Phai giu nguyen ten + chu ky (signature) cua tat ca thanh vien, dung nhu class goc:

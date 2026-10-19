@@ -81,11 +81,11 @@ ghi rõ khác. Server và bộ kiểm thử server chạy với thư mục làm 
 
 ### 1.3 Ghi chú về mã nguồn gốc
 
-- Server là mã dịch ngược từ game gốc rồi sửa tiếp. Một phần lớn lớp chỉ có ở dạng bytecode trong
-  [lib/htbb-core.jar](../server/lib/htbb-core.jar) (ví dụ `CreateCharHandler`, `Market`, nhiều lớp `real.*`, `data.*`).
-  Lớp trong `src/` cùng package sẽ **ghi đè** lớp trong jar lúc chạy. Lớp trong jar gọi ngược theo tên, nên không được
-  đổi tên package/class có sẵn (xem mục 11).
-- Server biên dịch `--release 8` (bytecode Java 8). Thư viện: `htbb-core.jar`, Connector/J 5.1, `jxl`, `json`.
+- Server là mã dịch ngược từ game gốc rồi sửa tiếp. Tới P3 (10/2026) 169 lớp lõi (ví dụ `CreateCharHandler`, `Market`,
+  `SessionManager`, `Actor`, nhiều lớp `real.*`, `data.*`) chỉ có dạng bytecode trong `lib/htbb-core.jar`; P3 đã dịch
+  ngược chúng thành mã nguồn trong `src/` (đầu tệp `PHUC HOI TU LOI CU`, nguồn gốc ở [giay-phep.md](giay-phep.md)) và
+  bỏ jar. Mọi lớp game giờ biên dịch từ `src/`; tên cũ vẫn giữ tới P4/P5 (xem mục 11).
+- Server biên dịch `--release 8` (bytecode Java 8). Thư viện: Connector/J 5.1, `jxl`, `json`.
 - Client J2ME là jar gốc dịch ngược bằng jadx rồi viết lại các hàm dựng sai. Phần Pokémon nằm trong
   `client_jar/src/game/pokemon/`. Chỗ móc vào mã gốc có chú thích `// pokemon:`.
 - Client Unity là bản Unity gốc giải nén ra (AssetRipper/ILSpy), đã chuyển hẳn sang Pokémon.
@@ -604,7 +604,7 @@ số thì đổi bên game rồi chạy lại, không sửa tay JSON.
 | `server/map/tree/<i>`, `server/map/cay/<j>.png`, `server/map/*.png` | Vật trang trí (`tree/<i>` lệnh `-48`, `cay/`, ảnh dịp lễ) | Server gửi theo yêu cầu |
 
 Bản đồ, lưới quái và vật trang trí kiếm hiệp cũ đã xoá: `cMap/`, `map/map<N>`, `map/tree`, `map/cay` giờ chỉ chứa bản Pokémon,
-nên cả mã nguồn lẫn các lớp trong `lib/htbb-core.jar` (đọc thẳng `cMap/<id>`) đều dùng đúng bản Pokémon.
+nên mọi lớp (kể cả lớp lõi cũ phục hồi ở P3, đọc thẳng `cMap/<id>`) đều dùng đúng bản Pokémon.
 [BanDoPokemon.java](../server/src/com/htbb/pokemon/BanDoPokemon.java) chỉ còn danh sách map gửi thêm cho client.
 Không nhầm: `map/pokemon_tile` (ảnh tile nền) và `cMap` (bố cục).
 
@@ -890,8 +890,9 @@ riêng** (cổng và CSDL khác), không chạy trên server thật.
    cũ, test bất biến khi gọi lặp.
 8. **Ẩn ở giao diện không phải là khoá ở server**: điều kiện bật/tắt (sự kiện, VIP, cấp, cờ tính năng) phải kiểm lại ở
    chính nơi xử lý lệnh cuối cùng. Client luôn gửi thẳng gói tin được.
-9. **Không đổi tên package/class có sẵn** trong `real`, `data`, `server`, `io`, `real/cmd`… khi chưa xác nhận
-   `lib/htbb-core.jar` không gọi tới tên cũ. Đổi tên biên dịch vẫn sạch nhưng chạy sẽ ném `NoClassDefFoundError`.
+9. **Đổi tên package/class có sẵn** trong `real`, `data`, `server`, `io`, `real/cmd`… chỉ sau khi tìm hết chỗ nạp lớp
+   bằng chuỗi (`Class.forName`, tên lớp trong cấu hình/log). Từ P3 không còn jar lõi đóng gọi ngược theo tên, nên
+   `javac` báo mọi chỗ gọi trực tiếp; đổi tên hàng loạt để dành P4/P5.
 10. **SQL mới luôn dùng PreparedStatement**. Tên cột/bảng ghép vào SQL phải lấy từ danh sách trắng (như `COT_VAT_PHAM` của
     `LenhWeb`). Không chép các đoạn SQL ghép chuỗi cũ làm mẫu.
 11. **Sửa cùng một chỗ lần thứ hai trong thời gian ngắn**: dừng lại xem có phải sai loại nguyên nhân (cấu trúc dữ liệu

@@ -31,7 +31,7 @@ if not defined JDKBIN (
     exit /b 1
 )
 
-set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\htbb-core.jar"
+set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar"
 set "OUTSRC=build\test-classes-src"
 set "OUTTEST=build\test-classes"
 

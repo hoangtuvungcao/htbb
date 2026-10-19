@@ -19,7 +19,7 @@ import server.TeamServer;
  * tile map, boss, vi tri, anh vu khi.
  *
  * Tach tu real/Map.java. Cac method VAN CON trong Map, giu NGUYEN chu ky cu,
- * chi than chuyen sang day - nen bytecode trong lib/htbb-core.jar va cac lop
+ * chi than chuyen sang day - nen lop loi cu (phuc hoi tu htbb-core.jar o P3) va cac lop
  * con (OfflineMap override loadTileMap) khong bi anh huong.
  * Tham so "Map map" thay cho "this" truoc day.
  */

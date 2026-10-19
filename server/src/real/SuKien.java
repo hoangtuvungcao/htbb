@@ -27,7 +27,7 @@ import server.TeamServer;
  * Trang quan tri HTBB-Web /admin/sukien la cho bat/tat.
  *
  * Cac ham Char.isSuKien* / Char.isFinishAllSuKien* van con nguyen ten va chu ky - hon
- * 400 cho trong ma nguon lan bytecode trong lib/htbb-core.jar goi chung - chi doi than
+ * 400 cho trong ma nguon lan lop loi cu (phuc hoi tu htbb-core.jar o P3) goi chung - chi doi than
  * thanh mot dong goi sang day.
  *
  * ==== MAC DINH GIU NGUYEN HANH VI CU ====

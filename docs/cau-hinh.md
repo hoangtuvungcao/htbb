@@ -214,7 +214,7 @@ không có độ trễ nên client vừa xoá cache có thể chạm trần mộ
 
 ### 3.2 Nhật ký `sv.log.*`
 
-Mọi `System.out`/`System.err` (kể cả stack trace và dòng in từ `lib/htbb-core.jar`) đi qua một bộ chặn: phân loại
+Mọi `System.out`/`System.err` (kể cả stack trace và dòng in từ các lớp lõi cũ phục hồi ở P3) đi qua một bộ chặn: phân loại
 theo tiền tố `[LOẠI]`, lọc theo mức, gộp dòng lặp, ghi bất đồng bộ. Dòng có dạng
 `10-18 19:02:11.532 W [NGAP_GOI] ...` (E/W/I/D).
 

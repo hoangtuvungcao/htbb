@@ -1,7 +1,7 @@
 {
   "_ghiChu": "TEP SINH TU DONG - DUNG SUA TAY. Danh muc ngoc cho o chon phan thuong giftcode (loai GEM). ten = nhan hien thi (xuong dong trong ten goc doi thanh ' · '); ban = co ban trong cua hang NPC khong (false = chi phat duoc bang giftcode); nhom = NLSC1..6 / NLCC1..6 neu la ngoc nguyen lieu. Ten ngoc KHONG co trong CSDL, mot nua la hang so data.Text.* nen phai sinh bang Java. test/KiemDanhMucNgoc (repo game) doi chieu tep nay voi mang Java.",
   "_nguon": "real.Map.gemTemplate (src/real/MapNapTaiNguyen.java) - repo game HTBB",
-  "_sinhLai": "(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucNgoc",
+  "_sinhLai": "(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhDanhMucNgoc",
   "ngoc": {
     "0": {"ten": "Bảo hiểm 20%", "ban": true, "nhom": ""},
     "1": {"ten": "Bảo hiểm 30%", "ban": true, "nhom": ""},

@@ -1,7 +1,7 @@
 {
   "_ghiChu": "TEP SINH TU DONG - DUNG SUA TAY. Khoa la CHI SO MANG Map.petTemplate (0..30), KHONG phai id vat pham: Char.createPet()/createPetVinhVien() doc thang Map.petTemplate[idpet] khong kiem bien. test/KiemDanhMucThu (repo game) doi chieu tep nay voi mang Java.",
   "_nguon": "real.Map.petTemplate (src/real/Map.java, loadPetTemplate) - repo game HTBB",
-  "_sinhLai": "(trong repo game) java -cp build/classes;lib/htbb-core.jar;lib/mysql-connector-java-5.1.49.jar SinhDanhMucThu",
+  "_sinhLai": "(trong repo game) java -cp build/classes;lib/mysql-connector-java-5.1.49.jar SinhDanhMucThu",
   "thu": {
     "0": "Lồng đèn xếp",
     "1": "Taillow",

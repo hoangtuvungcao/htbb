@@ -5,9 +5,9 @@
 ## 0. Tóm tắt
 | Cấu hình | Đủ nguồn + công dụng | Mồ côi (có nguồn, không công dụng) | Chỉ bán NPC (không công dụng thật) | Không lấy được (có công dụng / thiết kế nhưng không nguồn nào chạy) | Không tồn tại (không nguồn, không cần) |
 |---|---|---|---|---|---|
-| A (`lau_dai=1 he_sinh_thai=0`) | 808 | 0 | 0 | 0 | 760 |
-| B (`lau_dai=1 he_sinh_thai=1`) | 875 | 0 | 0 | 0 | 693 |
-| C (`lau_dai=0 he_sinh_thai=0`) — chỉ báo cáo | 678 | 1 | 0 | 102 | 787 |
+| A (`lau_dai=1 he_sinh_thai=0`) | 810 | 0 | 0 | 0 | 758 |
+| B (`lau_dai=1 he_sinh_thai=1`) | 877 | 0 | 0 | 0 | 691 |
+| C (`lau_dai=0 he_sinh_thai=0`) — chỉ báo cáo | 680 | 1 | 0 | 102 | 785 |
 
 Vật phẩm theo loại: data_item 1026, data_potion 162, ngọc 270, vật phẩm nhiệm vụ 49, túi sinh thái 61.
 Tham chiếu treo: **0**. Quy tắc lỗi thời: **0**. Trùng tên: **0**. Tên kiếm hiệp còn lấy được: **0**.
@@ -966,9 +966,9 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `thuoc:75` | Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo  | ok | ok | new Potion | dùng thuốc (doUsePotion) |
 | `thuoc:76` | Vé quay số đặc biệt | ok | ok | potions[N] = potions[N] + | kiểm số thuốc (đổi / nộp) (doStartLuckDraw) |
 | `thuoc:83` | Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn. | ok | ok | potions[N]+= | kiểm số thuốc (đổi / nộp) (doChoKeo); kiểm số thuốc (đổi / nộp) (doMenu) …(+4) |
-| `thuoc:84` | Thuốc X | ok | ok | cửa hàng data_shop slot 65 | dùng thuốc (doUsePotion) |
+| `thuoc:84` | Thuốc X | ok | ok | cửa hàng data_shop slot 65; potions[N] = potions[N] + | dùng thuốc (doUsePotion) |
 | `thuoc:86` | Sáo gọi Moltres | ok | ok | potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenu); kiểm số thuốc (đổi / nộp) (onDropItem) …(+1) |
-| `thuoc:91` | Vé vào mỏ | ok | ok | cửa hàng data_shop slot 72 | dùng thuốc (doUsePotion) |
+| `thuoc:91` | Vé vào mỏ | ok | ok | cửa hàng data_shop slot 72; potions[N]+= | dùng thuốc (doUsePotion) |
 | `thuoc:94` | Thuốc hồi máu 15k | ok | ok | new Potion; potions[N] = potions[N] + | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doMenuNpcNoel) …(+2) |
 | `thuoc:96` | Ether 15k | ok | ok | new Potion; potions[N] = potions[N] + | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doMenuNpcNoel) …(+2) |
 | `thuoc:97` | Thẻ đổi hàng | ok | ok | new Potion | dùng thuốc (doUsePotion) |
@@ -976,7 +976,9 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `thuoc:100` | loa | ok | ok | cửa hàng data_shop slot 81; potions[N] = potions[N] + | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doProcessInputText) …(+1) |
 | `thuoc:101` | Rương vàng | ok | ok | potions[N]+= | dùng thuốc (doUsePotion) |
 | `thuoc:102` | Rương bạc | ok | ok | potions[N]+= | dùng thuốc (doUsePotion) |
-| `thuoc:105` | Mảnh bản đồ 2 | ok | ok | potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenuGioTo2016); kiểm số thuốc (đổi / nộp) (doMenuGioTo2020) …(+5) |
+| `thuoc:103` | Lá vàng | ok | ok | potions[N] = potions[N] + | kiểm số thuốc (đổi / nộp) (upLevelPlot); potions[N] = potions[N] - |
+| `thuoc:104` | Poké Ball. Dùng để bắt thú nuôi | ok | ok | potions[N] = potions[N] + | kiểm số thuốc (đổi / nộp) (doGetItem); kiểm số thuốc (đổi / nộp) (upLevelPlot) …(+2) |
+| `thuoc:105` | Mảnh bản đồ 2 | ok | ok | potions[N] = potions[N] +; potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenuGioTo2016); kiểm số thuốc (đổi / nộp) (doMenuGioTo2020) …(+6) |
 | `thuoc:106` | Nhánh hoa hồng vàng | ok | ok | potions[N]+=; thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | kiểm số thuốc (đổi / nộp) (doVuLanDoiNguyenLieu); potions[N]-= …(+1) |
 | `thuoc:107` | Hoa hồng đỏ | ok | ok | potions[N]+= | đổi bó hoa Vu Lan (MapSuKien.doVuLanDoiHoa) |
 | `thuoc:111` | Đĩa chiêu (TM) cho pet | ok | ok | potions[N]+= | dùng thuốc (doUsePotion) |
@@ -985,7 +987,7 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `thuoc:114` | Thức ăn tổng hợp | ok | ok | new Potion; potions[N] = potions[N] + | dùng thuốc (doUsePotion) |
 | `thuoc:116` | Thẻ đổi hàng cao cấp | ok | ok | new Potion | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doMenuNpcVaoHa) …(+1) |
 | `thuoc:117` | Mảnh bản đồ 3 | ok | ok | potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenuGioTo2020); kiểm số thuốc (đổi / nộp) (doMenuNpcTet2015) …(+4) |
-| `thuoc:118` | Vé Moltres. | ok | ok | potions[N] = potions[N] +; potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenuNpcTet2015); kiểm số thuốc (đổi / nộp) (doMenuNpcVaoHa) …(+4) |
+| `thuoc:118` | Vé Moltres. | ok | ok | new Potion; potions[N] = potions[N] + …(+1) | kiểm số thuốc (đổi / nộp) (doMenuNpcTet2015); kiểm số thuốc (đổi / nộp) (doMenuNpcVaoHa) …(+4) |
 | `thuoc:119` | Thuốc hồi sinh | ok | ok | potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenuNpcVaoHa); potions[N] = potions[N] - …(+1) |
 | `thuoc:120` | Thịt | ok | ok | potions[N]+= | kiểm số thuốc (đổi / nộp) (doMenuNpcTet2015); kiểm số thuốc (đổi / nộp) (doMenuTet2016) …(+7) |
 | `thuoc:122` | Đậu xanh | ok | ok | thưởng khác nhiệm vụ (NhiemVuEngine.thuongKhac) | kiểm số thuốc (đổi / nộp) (doChamNuoc); kiểm số thuốc (đổi / nộp) (doMenuNpcTet2015) …(+6) |
