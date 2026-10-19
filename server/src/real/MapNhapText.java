@@ -406,8 +406,8 @@ class MapNhapText {
                     return;
                 }
 
-                if (idActor == VongQuayLuong.INPUT_SO_LUONG) {
-                    VongQuayLuong.doNhapSoLuong(player, text);
+                if (VongQuay.theoO(idActor) != null) { // o nhap so cuoc cua 3 vong quay (-32040 / -32041 / -32056)
+                    VongQuay.theoO(idActor).nhapSo(player, text);
                     return;
                 }
 
@@ -677,15 +677,8 @@ class MapNhapText {
                 }
             }
 
-            if (idActor == -32040) {
-                String moneyxx = text.trim().toLowerCase();
-                MapQuaTang.doVongQuayMayMan(map, player, moneyxx, 0);
-                return;
-            }
-
-            if (idActor == -32041) {
-                String moneyxx = text.trim().toLowerCase();
-                MapQuaTang.doVongQuayMayMan(map, player, moneyxx, 1);
+            if (VongQuay.theoO(idActor) != null) {
+                VongQuay.theoO(idActor).nhapSo(player, text);
                 return;
             }
 

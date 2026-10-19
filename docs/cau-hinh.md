@@ -325,12 +325,12 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **213 khoá** trong **15 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **239 khoá** trong **16 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 123 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 149 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -455,7 +455,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (144)
+### Khoá ẩn: cố định & luôn bật (170)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -521,6 +521,37 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chong_clone.ky_gui_gia_toi_da_gio` | Giá ký gửi tối đa (giờ thu nhập) | Cố định (ẩn) | `200` | ngay | game | Trần cho món không có giá gốc (và sàn của trần trên). |
 | `chong_clone.ky_gui_gia_toi_thieu_phan_tram` | Giá ký gửi tối thiểu (% giá gốc) | Cố định (ẩn) | `5` | ngay | game | Chặn bán phá giá cho clone. |
 | `chong_clone.ban_npc_do_khoa` | Bán đồ / nguyên liệu khoá cho NPC lấy xu | Cố định (ẩn) | `0` | ngay | game | 0 = cấm (đồ khoá mua bằng lượng khoá không đổi ra xu được). 1 = cho như cũ. |
+
+#### Vòng quay may mắn (cố định) (`vong_quay`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `vong_quay.giay_moi_vong` | Thời gian một lượt (giây) | Cố định (ẩn) | `120` | ngay | game | Đếm từ lúc có người đặt đầu tiên. Hết giờ: từ 2 người trở lên thì quay, chỉ 1 người thì hoàn lại đủ. |
+| `vong_quay.giay_khoa` | Khoá đặt cuối lượt (giây) | Cố định (ẩn) | `10` | ngay | game | Mấy giây cuối không nhận thêm cược. |
+| `vong_quay.thuong.bat` | Vòng quay thường: bật | Cố định (ẩn) | `1` | ngay | game | 0 = đóng (người đang chờ vẫn được quay / hoàn như thường). |
+| `vong_quay.thuong.cap_toi_thieu` | Vòng quay thường: cấp tối thiểu | Cố định (ẩn) | `20` | ngay | game | Luôn cộng thêm cổng chống clone (chong_clone.cap_toi_thieu, tuổi tài khoản, giờ chơi): cấp hiệu lực = max(hai số). |
+| `vong_quay.thuong.cuoc_toi_thieu` | Vòng quay thường: đặt tối thiểu mỗi lượt (xu) | Cố định (ẩn) | `1000` | ngay | game | Mỗi người đặt 1 lần / lượt. |
+| `vong_quay.thuong.cuoc_toi_da` | Vòng quay thường: đặt tối đa mỗi lượt (xu) | Cố định (ẩn) | `10000` | ngay | game | Trần hũ = số này × số người tối đa. |
+| `vong_quay.thuong.cuoc_ngay_toi_da` | Vòng quay thường: tổng đặt tối đa mỗi ngày (xu) | Cố định (ẩn) | `30000` | ngay | game | Mỗi Pokémon của người chơi, tính theo ngày. |
+| `vong_quay.thuong.luot_ngay_toi_da` | Vòng quay thường: số lượt tối đa mỗi ngày | Cố định (ẩn) | `10` | ngay | game | Mỗi Pokémon của người chơi. |
+| `vong_quay.thuong.so_nguoi_toi_da` | Vòng quay thường: số người tối đa mỗi lượt | Cố định (ẩn) | `20` | ngay | game |  |
+| `vong_quay.thuong.phi_phan_tram` | Vòng quay thường: phí hũ (%) | Cố định (ẩn) | `10` | ngay | game | Phần trăm hũ bị huỷ (hố hút xu) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển xu rẻ hơn giao dịch. |
+| `vong_quay.vip.bat` | Vòng quay VIP: bật | Cố định (ẩn) | `1` | ngay | game | 0 = đóng (người đang chờ vẫn được quay / hoàn như thường). |
+| `vong_quay.vip.cap_toi_thieu` | Vòng quay VIP: cấp tối thiểu | Cố định (ẩn) | `50` | ngay | game | Luôn cộng thêm cổng chống clone (chong_clone.cap_toi_thieu, tuổi tài khoản, giờ chơi): cấp hiệu lực = max(hai số). |
+| `vong_quay.vip.cuoc_toi_thieu` | Vòng quay VIP: đặt tối thiểu mỗi lượt (xu) | Cố định (ẩn) | `10000` | ngay | game | Mỗi người đặt 1 lần / lượt. |
+| `vong_quay.vip.cuoc_toi_da` | Vòng quay VIP: đặt tối đa mỗi lượt (xu) | Cố định (ẩn) | `50000` | ngay | game | Trần hũ = số này × số người tối đa. |
+| `vong_quay.vip.cuoc_ngay_toi_da` | Vòng quay VIP: tổng đặt tối đa mỗi ngày (xu) | Cố định (ẩn) | `100000` | ngay | game | Mỗi Pokémon của người chơi, tính theo ngày. |
+| `vong_quay.vip.luot_ngay_toi_da` | Vòng quay VIP: số lượt tối đa mỗi ngày | Cố định (ẩn) | `10` | ngay | game | Mỗi Pokémon của người chơi. |
+| `vong_quay.vip.so_nguoi_toi_da` | Vòng quay VIP: số người tối đa mỗi lượt | Cố định (ẩn) | `20` | ngay | game |  |
+| `vong_quay.vip.phi_phan_tram` | Vòng quay VIP: phí hũ (%) | Cố định (ẩn) | `10` | ngay | game | Phần trăm hũ bị huỷ (hố hút xu) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển xu rẻ hơn giao dịch. |
+| `vong_quay.luong.bat` | Vòng quay lượng: bật | Cố định (ẩn) | `1` | ngay | game | 0 = đóng (người đang chờ vẫn được quay / hoàn như thường). |
+| `vong_quay.luong.cap_toi_thieu` | Vòng quay lượng: cấp tối thiểu | Cố định (ẩn) | `20` | ngay | game | Luôn cộng thêm cổng chống clone (chong_clone.cap_toi_thieu, tuổi tài khoản, giờ chơi): cấp hiệu lực = max(hai số). |
+| `vong_quay.luong.cuoc_toi_thieu` | Vòng quay lượng: đặt tối thiểu mỗi lượt (lượng) | Cố định (ẩn) | `10` | ngay | game | Mỗi người đặt 1 lần / lượt. |
+| `vong_quay.luong.cuoc_toi_da` | Vòng quay lượng: đặt tối đa mỗi lượt (lượng) | Cố định (ẩn) | `100` | ngay | game | Trần hũ = số này × số người tối đa. |
+| `vong_quay.luong.cuoc_ngay_toi_da` | Vòng quay lượng: tổng đặt tối đa mỗi ngày (lượng) | Cố định (ẩn) | `300` | ngay | game | Mỗi Pokémon của người chơi, tính theo ngày. |
+| `vong_quay.luong.luot_ngay_toi_da` | Vòng quay lượng: số lượt tối đa mỗi ngày | Cố định (ẩn) | `10` | ngay | game | Mỗi Pokémon của người chơi. |
+| `vong_quay.luong.so_nguoi_toi_da` | Vòng quay lượng: số người tối đa mỗi lượt | Cố định (ẩn) | `20` | ngay | game |  |
+| `vong_quay.luong.phi_phan_tram` | Vòng quay lượng: phí hũ (%) | Cố định (ẩn) | `15` | ngay | game | Phần trăm hũ bị huỷ (hố hút lượng) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển lượng rẻ hơn giao dịch. |
 
 #### Tự động đánh & hồi sinh (`tu_dong`)
 

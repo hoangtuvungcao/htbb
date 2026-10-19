@@ -2649,11 +2649,8 @@ public class Database {
             Database.instance.checkDropTable();
         }
 
-        Database.instance.loadAllXoso();
-
-        Database.instance.loadAllXosoLow();
-        Database.instance.createTableXosoLuong();
-        Database.instance.loadAllXosoLuong();
+        // Vong quay gop hu (sua 19/10/2026): bang tob_vong_quay_*, hoan cuoc dang cho cua he cu (nin_xoso*).
+        real.VongQuay.napLucKhoiDong();
 
 
         Database.instance.loadCharChienTruong();
