@@ -73,6 +73,8 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
 - `KiemNhiemVu`: hội thoại / nhận nhiệm vụ bằng chạm / chuột / phím;
+- `KiemHopChiTiet` (0.9.6.1): thẻ chi tiết vật phẩm chung (game.pokemon.HopChiTiet - cửa hàng / cửa hàng đá / hành trang)
+  ở 11 cỡ + J2ME: trong vùng an toàn, giữa, <= 80 %, chữ + nút trong thẻ, nút không đè chữ, tên một đoạn, có giá;
 - `KiemTruotDoiCo` (0.9.6.1): thanh trượt (Bang.thanhTruot - bảng Tự động đánh) theo ngón / chuột từng lần kéo, lưu khi
   thả (kể cả thả ngoài thanh); đổi cỡ cửa sổ nhỏ -> TO HƠN cỡ đầu -> phóng to / 21:9 / 4:3 / toàn màn: khung đúng cỡ mới,
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
