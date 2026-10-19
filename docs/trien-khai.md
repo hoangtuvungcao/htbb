@@ -245,6 +245,18 @@ Có `flock` chống hai lần deploy chồng nhau và `trap` SIGHUP để bật 
 Nhớ: VPS chạy **tệp jar đã commit**. Sửa `server/src` thì phải build lại `server/htbb-server.jar` ([build.md](build.md))
 và commit cả jar.
 
+**Lần đầu deploy jar build từ mã P1 trở đi** lên CSDL dựng trước P1 (19/10/2026): nạp migration **trước** khi jar mới
+khởi động (deploy-auto không tự chạy SQL), không thì máy chủ dừng ngay với dòng `THIEU DU LIEU SQL QUAN TRONG - DUNG
+SERVER` (systemd báo `failed`, bản cũ đã tắt):
+
+```sh
+sudo /opt/htbb/vps/backup_db.sh
+mysql -u root htbb_db < /opt/htbb/sql/them_p1_du_lieu_sql.sql   # chạy lại được; jar cũ vẫn chạy được sau bước này
+```
+
+Từ P1 máy chủ đọc dữ liệu thiết kế (bảng EXP, nâng cấp, kinh tế dài hạn, lịch 52 tuần, danh mục cấu hình…) từ CSDL
+([kien-truc.md mục 4.4](kien-truc.md)): đổi các bảng đó bằng SQL rồi khởi động lại, không cần build jar.
+
 Cập nhật tay không qua Actions: `sudo /opt/htbb/vps/update.sh` (tắt có trật tự → pull → kiểm jar → bật lại);
 thay một jar chép tay để thử gấp: `sudo /opt/htbb/vps/capnhat.sh` (lần `update.sh` sau sẽ báo tệp bị sửa tay —
 `sudo -u htbb git -C /opt/htbb checkout -- server/htbb-server.jar`).

@@ -20,8 +20,8 @@ export default defineAdminHandler(async (event, admin) => {
   // Ô % để trống hoặc gõ rác thì coi như 0%, không báo lỗi.
   const phanTramTho = laBuff ? Number.parseFloat(String(body?.phan_tram ?? '0')) : 0
   const phanTram = Number.isFinite(phanTramTho) ? phanTramTho : 0
-  if (capDoMoi < 1 || capDoMoi > CAPDO_TOI_DA) {
-    throw apiLoi(400, `Cấp độ phải từ 1 đến ${CAPDO_TOI_DA}.`)
+  if (capDoMoi < 1 || capDoMoi > (await capDoToiDa())) {
+    throw apiLoi(400, `Cấp độ phải từ 1 đến ${await capDoToiDa()}.`)
   }
   // Bảng lưu phần nghìn (bước 0,1%) nên chỉ nhận tới 99,9 — nhập 99,95 sẽ bị làm tròn
   // thành 100,0% = sang cấp sau, không đúng ý người bấm.

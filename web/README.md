@@ -45,6 +45,26 @@ HTBB_DIR=.. npm run dong-bo-du-lieu   # sinh lại shared/data/*.json + public/p
 Không sửa tay `shared/data/*.json` và `shared/utils/*.gen.ts` — đổi nguồn rồi chạy lại script sinh.
 `node scripts/dev-token.mjs admin admin 1` in token admin để thử API khi dev.
 
+## Dữ liệu game: CSDL trước, JSON dự phòng
+
+Dữ liệu đã có bảng SQL trong `htbb_db` được web đọc **lúc chạy** qua `server/utils/duLieuSql.ts` (danh sách trắng
+tên bảng, cache 5 phút, bảng thiếu/trống thì một dòng `[du-lieu-sql]` cảnh báo rồi dùng JSON đóng gói lúc build):
+
+| Dữ liệu web | Bảng SQL | Nơi đọc |
+|---|---|---|
+| Giới hạn cấp + bảng EXP cũ của trang quản trị (`bang-cap-do.json`) | `data_cap_do_lau_dai.exp_cu` | `server/utils/capDo.ts` (`await capDoToiDa()`) |
+| Trang bị phát được bằng giftcode (`giftcode-an-toan.json` → `trangBi`) | `data_noi_dung_trang_bi.id_item` | `server/utils/giftcodeAnToan.ts` (`gcDuLieu()`) |
+| Cẩm nang: bảng cấp, năng lượng, kinh tế, nâng cấp, lịch 52 tuần (`cam-nang.json`) | `data_cap_do_lau_dai`, `data_kinh_te_lau_dai`, `data_nang_cap_lau_dai`, `data_su_kien_nam` | `/api/cam-nang/du-lieu` → `useCamNang()` |
+| Cẩm nang: cửa hàng, Gym, chế tạo, nhánh Eevee, trang trí, vật phẩm sự kiện, lịch boss (`cam-nang-noi-dung.json`) | `data_noi_dung_*` | như trên |
+| Danh mục cấu hình trung tâm (`cauHinhTrungTam.gen.ts`) | `cau_hinh_danh_muc`, `cau_hinh_nhom` | `server/utils/cauHinhDanhMucSql.ts`, API `/api/admin/cau-hinh-he-thong` |
+
+Biến đổi dòng SQL → hình dạng JSON nằm ở `shared/utils/duLieuSqlThuan.ts`; `tests/du-lieu-sql.test.ts` và
+`tests/cau-hinh-danh-muc-sql.test.ts` đọc `../sql/htbb_day_du.sql` (bằng `shared/utils/sqlDump.ts`) và đòi kết quả
+khớp từng phần tử với JSON đóng gói. Trang dùng `const { camNang: CAM_NANG } = await useCamNang()` thay cho `CAM_NANG`
+tĩnh khi cần số liệu có bảng SQL. Vẫn chỉ là JSON (không có bảng SQL): `pokedex.json`, `sprite-anim.json`,
+`quy-tac-dang-ky.json` (nguồn viết tay), `danh-muc-thu/ngoc/danh-hieu.json` (sinh từ mảng Java), và các mục cẩm nang
+lấy từ hằng Java / CSV (nhiệm vụ, bản đồ, PvP, sổ tay, hầm ngục, hệ sinh thái, cốt truyện, vật phẩm tiêu hao).
+
 ## Triển khai
 
 Xem `docs/trien-khai.md` (VPS, systemd `deploy/htbb-web.service`, nginx `../vps/htbb-nginx.conf`,

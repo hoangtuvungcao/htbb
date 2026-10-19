@@ -742,46 +742,70 @@ def mang_java(ten, kieu, gt, moi_dong=10):
     return s + "    };\n\n"
 
 
+# Ten mang / so cua ThongSoLauDai NAP TU SQL (bang data_*_lau_dai la NGUON DUY NHAT, P1): file Java chi khai bao
+# truong rong, com.htbb.dulieu.DuLieuSql dien luc khoi dong (CSDL) hoac tu sql/htbb_day_du.sql (test, cong cu).
+# Doi ten o day phai doi ca DuLieuSql.apDung*.
+NAP_SQL_MANG = [
+    ("EXP_LEN_CAP", "long[]", "data_cap_do_lau_dai.exp_len_cap: EXP tu L len L+1 (L=1..99); [0] va [100] = 0"),
+    ("MOB_EXP", "int[]", "data_cap_do_lau_dai.mob_exp: EXP 1 quai cung cap (de xuat rcvxp)"),
+    ("QUAI_MOI_GIO", "int[]", "data_cap_do_lau_dai.quai_moi_gio"),
+    ("XU_MOI_QUAI", "int[]", "data_cap_do_lau_dai.xu_moi_quai: xu ky vong / quai"),
+    ("GIO_TICH_LUY_PHAN_NGHIN", "int[]", "data_cap_do_lau_dai.gio_tich_luy_phan_nghin: gio hieu dung tich luy de dat cap L (x1000)"),
+    ("BAC_TB_CAP", "int[]", "data_nang_cap_lau_dai.cap_bac theo bac"),
+    ("BAC_TB_TEN", "String[]", "data_nang_cap_lau_dai.ten_bac theo bac"),
+    ("TI_LE_NC", "int[]", "data_nang_cap_lau_dai.ti_le: [k-1] = % len +k"),
+    ("DA_NC", "int[]", "data_nang_cap_lau_dai.da"),
+    ("BUA_BAO_HO_LUONG_KHOA", "int[]", "data_nang_cap_lau_dai.bua_luong_khoa"),
+    ("CHI_SO_NC_PHAN_TRAM", "int[]", "data_nang_cap_lau_dai.chi_so_phan_tram (bang luu luy ke; day la phan them moi cap)"),
+    ("CHI_PHI_NC", "long[][]", "data_nang_cap_lau_dai.xu: CHI_PHI_NC[bac][k] = xu cho 1 lan thu len +k (k=1..15), [bac][0] = 0"),
+    ("BAC_MET", "int[][]", "data_kinh_te_lau_dai exp.bac_met: {so phut, % toc do} sau khi het gio 100%. Sau bac cuoi: 0"),
+]
+NAP_SQL_SO = [
+    ("MAT_CAP_TU", "data_nang_cap_lau_dai.mat_cap: truot tu +MAT_CAP_TU tro len thi tut 1 cap"),
+    ("TI_LE_ROI_XU", "data_kinh_te_lau_dai roi.xu.phan_tram"),
+    ("DA_ROI_PHAN_NGHIN", "data_kinh_te_lau_dai roi.da_nang_cap.phan_nghin"),
+    ("NANG_LUONG_PHUT_NGAY", "data_kinh_te_lau_dai exp.nang_luong_phut"),
+    ("NANG_LUONG_PHUT_TICH_TOI_DA", "data_kinh_te_lau_dai exp.nang_luong_tich_phut"),
+    ("THUE_CHO_PHAN_TRAM", "data_kinh_te_lau_dai thue.cho"),
+    ("PHI_DANG_BAN_PHAN_TRAM", "data_kinh_te_lau_dai thue.dang_ban"),
+    ("TIEU_HAO_PHAN_TRAM", "data_kinh_te_lau_dai tieu_hao.thuoc_phan_tram_thu_nhap"),
+    ("SUA_DO_PHAN_TRAM", "data_kinh_te_lau_dai tieu_hao.sua_do_phan_tram_thu_nhap"),
+    ("GIFTCODE_TOI_DA_THANG", "data_kinh_te_lau_dai giftcode.toi_da_thang"),
+    ("VE_CHUONG_TUAN", "data_kinh_te_lau_dai ve_chuong.tuan"),
+    ("VE_CHUONG_TOI_DA", "data_kinh_te_lau_dai ve_chuong.toi_da"),
+]
+
+
 def ghi_java():
     j = []
     j.append("package com.htbb.pokemon;\n\n")
     j.append("/**\n * THONG SO THIET KE DAI HAN (docs/thiet-ke-game.md).\n *\n"
              " * FILE SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.\n"
-             " * CHUA NOI vao game (giai doan 2: docs/thiet-ke-game.md). Hien chi\n"
-             " * tools/pokemon/MoPhongKinhTe.java va test/KiemLauDai.java doc.\n"
-             " * KHONG nham voi real.LevelDetail (bang EXP DANG chay).\n */\n")
+             " * Hai loai so:\n"
+             " *   - HANG (static final): so thiet ke CHUA co bang SQL (tran cap theo mua, ngan sach nhiem vu, muc tieu\n"
+             " *     mo phong...). Sinh tu bang trong tools/pokemon/sinh_sql_lau_dai.py.\n"
+             " *   - NAP TU SQL (static volatile, RONG cho toi khi nap): so co bang data_cap_do_lau_dai /\n"
+             " *     data_nang_cap_lau_dai / data_kinh_te_lau_dai - bang la NGUON DUY NHAT. com.htbb.dulieu.DuLieuSql nap\n"
+             " *     luc khoi dong (data.DatabaseDuLieuSql, thieu bang = server tu choi chay) hoac tu sql/htbb_day_du.sql\n"
+             " *     (test, cong cu mo phong). KHONG gan truong nay ngoai DuLieuSql.\n"
+             " * KHONG nham voi real.LevelDetail (bang EXP game goc).\n */\n")
     j.append("public final class ThongSoLauDai {\n\n    private ThongSoLauDai() {\n    }\n\n")
     j.append("    public static final int CAP_TOI_DA = %d;\n\n" % CAP_TOI_DA)
     j.append(mang_java("TRAN_CAP_NGAY", "int", [a for a, b in TRAN_CAP_THEO_NGAY]))
     j.append(mang_java("TRAN_CAP_GIA_TRI", "int", [b for a, b in TRAN_CAP_THEO_NGAY]))
-    j.append("    /** EXP_LEN_CAP[L] = EXP tu L len L+1 (L=1..99); [0] va [100] = 0. */\n")
-    j.append(mang_java("EXP_LEN_CAP", "long", EXP_LEN_CAP))
-    j.append("    /** EXP 1 quai cung cap (de xuat rcvxp). */\n")
-    j.append(mang_java("MOB_EXP", "int", MOB_EXP))
-    j.append(mang_java("QUAI_MOI_GIO", "int", KPH))
-    j.append("    /** Xu ky vong / quai (roi " + str(TI_LE_ROI_XU) + "%). */\n")
-    j.append(mang_java("XU_MOI_QUAI", "int", XU_QUAI))
-    j.append("    /** Gio hieu dung tich luy de dat cap L (x1000). */\n")
-    j.append(mang_java("GIO_TICH_LUY_PHAN_NGHIN", "int", [int(round(x * 1000)) for x in GIO_TL]))
-    for ten, v in [("TI_LE_ROI_XU", TI_LE_ROI_XU),
-                   ("NANG_LUONG_PHUT_NGAY", int(NANG_LUONG_GIO_NGAY * 60)),
-                   ("NANG_LUONG_PHUT_TICH_TOI_DA", int(NANG_LUONG_TICH_TOI_DA * 60)),
-                   ("HE_SO_BAT_KIP", HE_SO_BAT_KIP), ("KHOANG_BAT_KIP", KHOANG_BAT_KIP),
+    for ten, v in [("HE_SO_BAT_KIP", HE_SO_BAT_KIP), ("KHOANG_BAT_KIP", KHOANG_BAT_KIP),
                    ("TINH_THONG_PHAN_TRAM_CAP", TINH_THONG_PHAN_TRAM_CAP),
                    ("TINH_THONG_DIEM_MOI_MUA", TINH_THONG_DIEM_MOI_MUA),
                    ("TINH_THONG_TOI_DA", TINH_THONG_TOI_DA),
                    ("TINH_THONG_PHAN_NGHIN_MOI_DIEM", TINH_THONG_PHAN_NGHIN_MOI_DIEM),
                    ("SO_O_TRANG_BI", SO_O_TRANG_BI), ("SO_MON_MUA_MOI_BAC", SO_MON_MUA_MOI_BAC),
-                   ("PITY_CHIA", PITY_CHIA), ("MAT_CAP_TU", MAT_CAP_TU),
-                   ("GIU_CAP_KHI_DOI_BAC", GIU_CAP_KHI_DOI_BAC), ("DA_ROI_PHAN_NGHIN", DA_ROI_PHAN_NGHIN),
+                   ("PITY_CHIA", PITY_CHIA),
+                   ("GIU_CAP_KHI_DOI_BAC", GIU_CAP_KHI_DOI_BAC),
                    ("DA_TU_PHAN_RA", DA_TU_PHAN_RA),
-                   ("TIEU_HAO_PHAN_TRAM", TIEU_HAO_PHAN_TRAM), ("SUA_DO_PHAN_TRAM", SUA_DO_PHAN_TRAM),
                    ("DICH_CHUYEN_LAN_NGAY", DICH_CHUYEN_LAN_NGAY),
                    ("DICH_CHUYEN_PHAN_TRAM_GIO", DICH_CHUYEN_PHAN_TRAM_GIO),
-                   ("THUE_CHO_PHAN_TRAM", THUE_CHO_PHAN_TRAM), ("PHI_DANG_BAN_PHAN_TRAM", PHI_DANG_BAN_PHAN_TRAM),
                    ("TRAN_GIAO_DICH_TRUC_TIEP_GIO", TRAN_GIAO_DICH_TRUC_TIEP_GIO),
                    ("GIOI_HAN_NGAY", GIOI_HAN_NGAY), ("GIOI_HAN_TUAN", GIOI_HAN_TUAN),
-                   ("VE_CHUONG_TUAN", VE_CHUONG_TUAN), ("VE_CHUONG_TOI_DA", VE_CHUONG_TOI_DA),
                    ("VE_CHUONG_BAN_DAU", VE_CHUONG_BAN_DAU),
                    ("GIO_MOI_CHUONG_PHAN_NGHIN", int(GIO_MOI_CHUONG * 1000)),
                    ("GIO_MOI_PHU_PHAN_NGHIN", int(GIO_MOI_PHU * 1000)),
@@ -791,25 +815,12 @@ def ghi_java():
                    ("NGOC_HE_GIA_GIO_PHAN_TRAM", NGOC_HE_GIA_GIO_PHAN_TRAM),
                    ("NGOC_HE_TANG_PHAN_TRAM", NGOC_HE_TANG_PHAN_TRAM),
                    ("TRANG_TRI_PHAN_NGHIN_NGAY", TRANG_TRI_PHAN_NGHIN_NGAY),
-                   ("TRANG_TRI_NGUONG_GIO", TRANG_TRI_NGUONG_GIO), ("GIFTCODE_TOI_DA_THANG", GIFTCODE_TOI_DA_THANG)]:
+                   ("TRANG_TRI_NGUONG_GIO", TRANG_TRI_NGUONG_GIO)]:
         j.append("    public static final int %s = %d;\n" % (ten, v))
-    j.append("\n    /** Bac met: {so phut, % toc do} sau khi het gio 100%. Sau bac cuoi: 0. */\n")
-    j.append("    public static final int[][] BAC_MET = {%s};\n\n" % ", ".join(
-        "{%d, %d}" % (int(a * 60), b) for a, b in BAC_MET))
+    j.append("\n")
     j.append(mang_java("LICH_DANG_NHAP", "int", LICH_DANG_NHAP))
-    j.append(mang_java("BAC_TB_CAP", "int", [b[2] for b in BAC_TB]))
     j.append(mang_java("BAC_TB_NGAY_MO", "int", [b[3] for b in BAC_TB]))
     j.append(mang_java("BAC_TB_GIA", "long", [gia_bac(b[0]) for b in BAC_TB]))
-    j.append("    public static final String[] BAC_TB_TEN = {%s};\n\n" % ", ".join('"%s"' % b[1] for b in BAC_TB))
-    j.append(mang_java("TI_LE_NC", "int", TI_LE_NC, 15))
-    j.append(mang_java("DA_NC", "int", DA_NC, 15))
-    j.append(mang_java("BUA_BAO_HO_LUONG_KHOA", "int", BUA_BAO_HO_LUONG_KHOA, 15))
-    j.append(mang_java("CHI_SO_NC_PHAN_TRAM", "int", CHI_SO_NC_PHAN_TRAM, 15))
-    j.append("    /** CHI_PHI_NC[bac][k] = xu cho 1 lan thu len +k (k=1..15). */\n")
-    j.append("    public static final long[][] CHI_PHI_NC = {\n")
-    for b in BAC_TB:
-        j.append("        {0L, " + ", ".join("%dL" % chi_phi_nc(b[0], k) for k in range(1, 16)) + "},\n")
-    j.append("    };\n\n")
     j.append("    /** Ngan sach thuong theo loai nhiem vu: {gio EXP x1000, gio xu x1000, luong khoa, luong}. */\n")
     j.append("    public static final String[] NGAN_SACH_LOAI = {%s};\n" % ", ".join('"%s"' % k for k in NGAN_SACH))
     j.append("    public static final int[][] NGAN_SACH = {%s};\n\n" % ", ".join(
@@ -822,6 +833,15 @@ def ghi_java():
             j.append("    public static final int MT_%s_PHAN_TRAM = %d;\n" % (k.upper(), int(round(v * 100))))
         else:
             j.append("    public static final int MT_%s = %d;\n" % (k.upper(), v))
+    j.append("\n    // ---- NAP TU SQL (com.htbb.dulieu.DuLieuSql) - rong / 0 cho toi khi nap ----\n\n")
+    for ten, kieu, mo_ta in NAP_SQL_MANG:
+        rong = "new %s[0]%s" % (kieu.replace("[]", "", 1).replace("[]", ""), "[]" if kieu.count("[]") == 2 else "")
+        j.append("    /** %s. */\n" % mo_ta)
+        j.append("    public static volatile %s %s = %s;\n" % (kieu, ten, rong))
+    j.append("\n")
+    for ten, mo_ta in NAP_SQL_SO:
+        j.append("    /** %s. */\n" % mo_ta)
+        j.append("    public static volatile int %s;\n" % ten)
     j.append("\n    /** EXP 1 gio danh quai o cap L (100%). */\n")
     j.append("    public static long expMoiGio(final int L) {\n        return (long) QUAI_MOI_GIO[L] * MOB_EXP[L];\n    }\n\n")
     j.append("    /** Xu 1 gio danh quai o cap L (100%). */\n")

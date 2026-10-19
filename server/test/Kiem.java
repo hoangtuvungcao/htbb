@@ -64,6 +64,14 @@ public final class Kiem {
         System.out.println(" Exception o duoi - do la BINH THUONG khi chay ngoai server,");
         System.out.println(" Map van nap duoc va cac ham thuan van chay dung.)");
 
+        // P1: so lieu thiet ke (bang EXP, nang cap, kinh te, lich su kien, diem cau, trang bi giftcode, danh muc cau
+        // hinh) NAP TU sql/htbb_day_du.sql TRUOC moi nhom - giong may chu nap tu CSDL (data.DatabaseDuLieuSql).
+        try {
+            KiemDuLieuSql.napKiem = com.htbb.dulieu.DuLieuSql.napTuDumpDayDu();
+        } catch (final RuntimeException e) {
+            System.out.println("!!! KHONG NAP DUOC DU LIEU SQL: " + e.getMessage());
+        }
+        KiemDuLieuSql.chay();
         KiemChuoi.chay();
         KiemVatPham.chay();
         KiemNhanhHoaDao.chay();

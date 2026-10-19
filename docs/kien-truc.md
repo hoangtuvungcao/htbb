@@ -283,7 +283,7 @@ che mật khẩu khỏi stdout. Web đọc thông số CSDL từ `server.ini` v�
 | Nhóm | Ví dụ | Ai ghi | Ghi chú |
 |---|---|---|---|
 | `data_*` template gốc | `data_item`, `data_monster`, `data_potion`, `data_shop`, `data_quest`, `data_attribute` | SQL sinh ra (`sql/pokemon_*.sql`) | Server nạp **một lần lúc khởi động** (`Database.startSaveChar` → `Map.loadAllTemplate`). Sửa xong phải khởi động lại |
-| `data_*` nội dung mới | `data_noi_dung_*`, `data_*_lau_dai`, `data_hst_*`, `data_nhiem_vu_*`, `data_su_kien_nam` | Bộ sinh `tools/pokemon/*` | Bảng "staging" cho nội dung dài hạn, hệ sinh thái, nhiệm vụ |
+| `data_*` nội dung mới | `data_noi_dung_*`, `data_*_lau_dai`, `data_hst_*`, `data_nhiem_vu_*`, `data_su_kien_nam` | Bộ sinh `tools/pokemon/*` | Bảng "staging" cho nội dung dài hạn, hệ sinh thái, nhiệm vụ. Một số là nguồn duy nhất máy chủ nạp lúc khởi động (mục 4.4) |
 | `tob_*` dữ liệu người chơi | `tob_char` (cột `pInfo`, `equip`/`inven`/`bag` dạng chuỗi, `dex`, `shiny`), `tob_clan`, `tob_animal`, `tob_pet`, `tob_market`, `tob_friendlist`, `tob_pokedex*`, `tob_char_lau_dai`, `tob_hst_*` | Game server | Ghi đè bằng bản trong RAM khi lưu, nên **web không được ghi thẳng** vào nhân vật đang chơi (mục 5.1) |
 | Bật/tắt sự kiện | `tob_su_kien` | Web `/admin/sukien` | Game đọc lúc khởi động (`real.SuKien`) và theo lịch (`real.LichSuKien`) |
 | Cấu hình | `cau_hinh`, `cau_hinh_*`, `nap_cau_hinh` | Web, game | Mục 6 |
@@ -307,6 +307,46 @@ chơi, vì câu lưu nhân vật ghi các cột mới.
   `them_*` → các tệp `pokemon_*.sql` theo thứ tự cố định → mysqldump ra một tệp. **Không bao giờ trỏ script này vào CSDL
   thật**: nó xoá và tạo lại hai CSDL.
 - Các tệp lẻ trong `sql/` vẫn giữ vì test, tool và trang quản trị đọc chúng ([sql/README.md](../sql/README.md)).
+- CSDL đang chạy dựng trước P1: nạp [`sql/them_p1_du_lieu_sql.sql`](../sql/them_p1_du_lieu_sql.sql) trước khi deploy jar
+  mới (mục 4.4).
+
+### 4.4 Dữ liệu thiết kế đọc từ SQL (nguồn duy nhất)
+
+Từ P1 (19/10/2026) các bảng dưới đây là **nguồn duy nhất**: máy chủ nạp chúng lúc khởi động, không còn bản chép trong
+Java. Bộ sinh trong `tools/` vẫn sinh các bảng này vào `sql/pokemon_*.sql` → `sql/htbb_day_du.sql`.
+
+| Bảng | Nạp vào (Java) | Thay bản chép cũ | Quan trọng |
+|---|---|---|---|
+| `data_cap_do_lau_dai` | `ThongSoLauDai.EXP_LEN_CAP`, `MOB_EXP`, `QUAI_MOI_GIO`, `XU_MOI_QUAI`, `GIO_TICH_LUY_PHAN_NGHIN` | mảng trong `ThongSoLauDai.java` | có |
+| `data_nang_cap_lau_dai` | `ThongSoLauDai.TI_LE_NC`, `DA_NC`, `BUA_BAO_HO_LUONG_KHOA`, `CHI_SO_NC_PHAN_TRAM`, `CHI_PHI_NC`, `BAC_TB_TEN`, `BAC_TB_CAP`, `MAT_CAP_TU` | mảng trong `ThongSoLauDai.java` | có |
+| `data_kinh_te_lau_dai` | `ThongSoLauDai.TI_LE_ROI_XU`, `THUE_CHO_PHAN_TRAM`, `PHI_DANG_BAN_PHAN_TRAM`, `NANG_LUONG_PHUT_*`, `BAC_MET`… (12 số) | hằng trong `ThongSoLauDai.java` | có |
+| `data_su_kien_nam` | `SuKienLauDai.LICH` | mảng `LICH` | có |
+| `cau_hinh_danh_muc` + `cau_hinh_nhom` | `CauHinhTrungTam` (qua `com.htbb.cauhinh.DanhMucSql`) | `DanhMucSinh.java` (đã xoá) | có |
+| `data_hst_ho_cau` | `BanDoSinhThai.diemCauCua` (gợi ý điểm câu cá) | thuật toán `BanDoSinhThai.diemCau` chép từ bộ sinh | không |
+| `data_noi_dung_trang_bi` | `GiftcodeAnToanDuLieu.TRANG_BI` (trang bị phát qua giftcode) | mảng `TRANG_BI` | không |
+
+- Mã: [`com.htbb.dulieu.DuLieuSql`](../server/src/com/htbb/dulieu/DuLieuSql.java) (lớp thuần: đổi bảng → cấu trúc Java,
+  kiểm hình dạng: đủ cấp 1..100, đủ 15 cấp nâng mỗi bậc, giá trị theo cấp nâng giống nhau ở mọi bậc, đủ 52 tuần…),
+  [`data.DatabaseDuLieuSql`](../server/src/data/DatabaseDuLieuSql.java) (đọc qua pool chính `Database.connPool`). Tên bảng
+  / cột chỉ lấy từ danh sách trắng trong mã.
+- Thứ tự: danh mục cấu hình nạp trong `CauHinhTrungTam.khoiTao` (bước 5, mục 9.1), các bảng còn lại ngay sau
+  `kiemTraCSDL` (bước 7), **trước** `SuKien.nap`, `ChuyenDoiLauDai` (đổi EXP nhân vật theo bảng cấp) và `startSaveChar`.
+- Hỏng: bảng **quan trọng** thiếu / rỗng / thiếu cột / sai hình dạng → in `THIEU DU LIEU SQL QUAN TRONG - DUNG SERVER`
+  kèm bảng, lý do và cách sửa (`mysql htbb_db < sql/them_p1_du_lieu_sql.sql`), thoát mã 1 (systemd báo `failed`). Chạy
+  tiếp với bảng EXP = 0 sẽ đổi sai EXP nhân vật, tệ hơn không chạy. Bảng phụ thiếu chỉ in `[DU LIEU SQL] CANH BAO`
+  (tắt gợi ý điểm câu, giftcode không phát được trang bị). Không bao giờ gán nửa vời: một bảng đọc và kiểm xong toàn bộ
+  mới thay vào trường Java.
+- Nạp lại: danh mục cấu hình tự nạp lại mỗi 60 giây (chu kỳ đầy đủ của `CauHinhTrungTam`, lỗi thì giữ danh mục đang
+  chạy). Bảng số liệu (`data_*`) vẫn như mọi template `data_*` khác: đổi xong khởi động lại máy chủ (`napSoLieu` thay
+  nguyên khối nên gọi lại được nếu sau này cần lệnh nạp nóng).
+- Test và công cụ không có CSDL nạp cùng bảng từ `sql/htbb_day_du.sql` ([`DocDumpSql`](../server/src/com/htbb/dulieu/DocDumpSql.java):
+  `Kiem.main` trước mọi nhóm, `tools/pokemon/MoPhongKinhTe.java`). [`KiemDuLieuSql`](../server/test/KiemDuLieuSql.java)
+  ghim vân tay SHA-256 của bản chép Java cũ (tính ngay trước khi xoá), đòi tệp sinh, dump đầy đủ và migration cùng
+  dòng, và kiểm các đường hỏng.
+- Bảng `data_noi_dung_*` khác mà máy chủ không đọc (`bo`, `che_tao`, `chieu_nhanh_eevee`, `chieu_ttk`, `cua_hang`,
+  `ngoc_he`, `nguyen_lieu`, `phan_ra`, `quai_moi`, `su_kien_vat_pham`, `trang_tri`, `vat_pham`) không có bản chép
+  Java: chúng là bảng thiết kế cho web (Cẩm nang) và công cụ; vật phẩm / quái mới của chúng đã vào `data_item` /
+  `data_monster` mà máy chủ đọc sẵn.
 
 ---
 
@@ -395,13 +435,21 @@ Chi tiết vận hành ở [van-hanh.md](van-hanh.md).
 ### 5.6 Dữ liệu dùng chung web ↔ server
 
 Một số quy tắc phải giống hệt ở hai bên. Nguồn là JSON trong `web/shared/data/`, sinh ra bản Java vì server không có thư
-viện JSON lúc chạy. Hai bên so mã băm SHA-256 trong test, quên sinh lại là test báo hỏng.
+viện JSON lúc chạy. Hai bên so mã băm SHA-256 trong test, quên sinh lại là test báo hỏng. Dữ liệu đã có bảng SQL thì cả
+hai bên đọc bảng (mục 4.4 và đoạn dưới bảng).
 
 | Dữ liệu | Nguồn | Bản Java | Bộ sinh |
 |---|---|---|---|
 | Quy tắc đăng ký | `web/shared/data/quy-tac-dang-ky.json` | `server/src/data/QuyTacDangKyDuLieu.java` | `web/scripts/sinh-quy-tac-dang-ky-java.mjs` |
-| Danh sách trắng giftcode | `web/shared/data/giftcode-an-toan.json` | `server/src/com/htbb/pokemon/GiftcodeAnToanDuLieu.java` | `tools/pokemon/sinh_giftcode_an_toan.py` |
-| Danh mục cấu hình | `tools/cauhinh/danh_muc.json` | `DanhMucSinh.java` | `tools/cauhinh/sinh_cau_hinh.py` |
+| Danh sách trắng giftcode | `web/shared/data/giftcode-an-toan.json` | `server/src/com/htbb/pokemon/GiftcodeAnToanDuLieu.java` (trang bị: bảng `data_noi_dung_trang_bi`) | `tools/pokemon/sinh_giftcode_an_toan.py` |
+| Danh mục cấu hình | `tools/cauhinh/danh_muc.json` | không còn: máy chủ đọc bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` | `tools/cauhinh/sinh_cau_hinh.py` |
+
+Web đọc dữ liệu game đã có bảng SQL lúc chạy qua `web/server/utils/duLieuSql.ts` (danh sách trắng, cache 5 phút; bảng
+thiếu / trống → một dòng `[du-lieu-sql]` rồi dùng JSON đóng gói lúc build): `data_cap_do_lau_dai` (giới hạn cấp quản
+trị, bảng cấp cẩm nang), `data_noi_dung_trang_bi` (trang bị giftcode), `data_kinh_te_lau_dai`, `data_nang_cap_lau_dai`,
+`data_su_kien_nam`, `data_noi_dung_*` (cẩm nang, qua `/api/cam-nang/du-lieu` + `useCamNang()`), `cau_hinh_danh_muc` +
+`cau_hinh_nhom` (danh mục cấu hình trung tâm). Biến đổi: `web/shared/utils/duLieuSqlThuan.ts`;
+`web/tests/du-lieu-sql.test.ts` đòi SQL (`sql/htbb_day_du.sql`) == JSON.
 
 ---
 
@@ -414,7 +462,7 @@ Danh sách khoá và ý nghĩa: [cau-hinh.md](cau-hinh.md). Mục này chỉ nó
 | Phần | Tệp |
 |---|---|
 | Danh mục khoá (nguồn duy nhất) | [tools/cauhinh/danh_muc.json](../tools/cauhinh/danh_muc.json) |
-| Bộ sinh | [tools/cauhinh/sinh_cau_hinh.py](../tools/cauhinh/sinh_cau_hinh.py) → [DanhMucSinh.java](../server/src/com/htbb/cauhinh/DanhMucSinh.java), [cauHinhTrungTam.gen.ts](../web/shared/utils/cauHinhTrungTam.gen.ts), [pokemon_cau_hinh_trung_tam.sql](../sql/pokemon_cau_hinh_trung_tam.sql) |
+| Bộ sinh | [tools/cauhinh/sinh_cau_hinh.py](../tools/cauhinh/sinh_cau_hinh.py) → bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` (máy chủ nạp qua [DanhMucSql.java](../server/src/com/htbb/cauhinh/DanhMucSql.java), mục 4.4), [cauHinhTrungTam.gen.ts](../web/shared/utils/cauHinhTrungTam.gen.ts), [pokemon_cau_hinh_trung_tam.sql](../sql/pokemon_cau_hinh_trung_tam.sql) |
 | Dịch vụ máy chủ | [CauHinhTrungTam.java](../server/src/com/htbb/cauhinh/CauHinhTrungTam.java) (+ `TinhCauHinh`, `KiemGiaTri`, `ApDungMacDinh`, `CongTac`, `ThongBaoKhoiDong`) |
 | Lớp cũ còn dùng | [server/CauHinh.java](../server/src/server/CauHinh.java): bảng setting trong game, hằng `K_*`; nạp lại uỷ quyền cho dịch vụ trung tâm |
 | Trang web | `/admin/cau-hinh-he-thong`, API `/api/admin/cau-hinh-he-thong/**` ([cauHinhTrungTam.ts](../web/server/utils/cauHinhTrungTam.ts)) |
@@ -476,7 +524,8 @@ tools/pokemon/*.py, *.java ────────▶ sql/pokemon_*.sql (UPDATE
    │                                     ▼
    │                          tools/pokemon/xuat_sql_day_du.sh ──▶ sql/htbb_day_du.sql ──▶ MariaDB ──▶ game server
    │
-   ├──▶ server/src/com/htbb/pokemon/*.java (bảng thuần sinh ra: ThongSoLauDai, IconPokemonBang, GiftcodeAnToanDuLieu…)
+   ├──▶ server/src/com/htbb/pokemon/*.java (hằng sinh ra CHƯA có bảng SQL: ThongSoLauDai, IconPokemonBang…; số đã có
+   │        bảng SQL thì máy chủ nạp từ CSDL lúc khởi động, mục 4.4)
    ├──▶ server/map/*, server/cMap/* (icon, tile, bản đồ, lưới quái)
    ├──▶ du_lieu/web/*, du_lieu/map_moi/*, báo cáo du_lieu/KIEM_ITEM.md, du_lieu/NHIEM_VU_THIET_KE.md
    │        │
@@ -510,7 +559,8 @@ cùng tệp, không dấu thời gian).
 | `sinh_sql_vat_pham.py` | `sql/pokemon_doi_ten_vat_pham.sql`, `du_lieu/bang_vat_pham.csv` |
 | `sinh_icon_pokemon.py` | `server/map/icon_pokemon/<n>.png` (ảnh id 14000+n), `sql/pokemon_icon_vat_pham.sql`, `IconPokemonBang.java` |
 | `sinh_sql_chu.py`, `sinh_sql_thuat_ngu.py` | `sql/pokemon_doi_chu.sql`, `sql/pokemon_thuat_ngu.sql` (đổi chữ kiếm hiệp → Pokémon trong dữ liệu) |
-| `sinh_sql_lau_dai.py` | Thiết kế dài hạn: `sql/pokemon_lau_dai.sql`, `ThongSoLauDai.java`, các CSV liên quan |
+| `sinh_sql_lau_dai.py` | Thiết kế dài hạn: `sql/pokemon_lau_dai.sql`, `ThongSoLauDai.java` (chỉ hằng chưa có bảng + khai báo trường nạp từ SQL), các CSV liên quan |
+| `sinh_them_p1.py` | `sql/them_p1_du_lieu_sql.sql` (migration P1 cho CSDL đang chạy, chép nguyên khối bảng từ các tệp `pokemon_*.sql`, mục 4.4) |
 | `sinh_nhiem_vu.py` (+ `nv_*.py` là dữ liệu) | `sql/pokemon_nhiem_vu.sql`, `du_lieu/NHIEM_VU_THIET_KE.md`, `du_lieu/web/nhiem_vu_tom_tat.json` |
 | `sinh_noi_dung.py` | `sql/pokemon_noi_dung.sql` (bảng `data_noi_dung_*`, vật phẩm mới), `du_lieu/noi_dung_*.csv`, `du_lieu/web/*.csv` |
 | `sinh_vat_pham_lau_dai.py` | `sql/pokemon_vat_pham_lau_dai.sql` |
@@ -533,9 +583,10 @@ trong script đó.
 |---|---|---|
 | `scripts/sinh-du-lieu-pokemon.mjs` | `du_lieu/bang_*.csv`, `kiem_ke_sprite.csv`, các lớp Pokémon trong `server/src`, `sql/htbb_day_du.sql`, lưới quái `server/map/map<N>`, chân dung trong tài nguyên client | `shared/data/pokedex.json`, `public/pokemon/*.png` |
 | `scripts/sinh-anim-khoi-dau.mjs` | Sprite Pokémon khởi đầu | `shared/data/sprite-anim.json` |
-| `scripts/dong-bo-cam-nang.mjs` | `du_lieu/*.csv`, `du_lieu/web/*`, `ThongSoLauDai.java`, `tools/pokemon/sinh_sql_lau_dai.py`; `--anh-map` thêm ảnh `du_lieu/map_moi` | `shared/data/cam-nang.json`, `cam-nang-noi-dung.json`, `public/ban-do/*.webp` |
+| `scripts/dong-bo-cam-nang.mjs` | `du_lieu/*.csv`, `du_lieu/web/*`, `sql/pokemon_lau_dai.sql` (`data_kinh_te_lau_dai`, `data_nang_cap_lau_dai`), `ThongSoLauDai.java` (hằng chưa có bảng), `tools/pokemon/sinh_sql_lau_dai.py`; `--anh-map` thêm ảnh `du_lieu/map_moi` | `shared/data/cam-nang.json`, `cam-nang-noi-dung.json`, `public/ban-do/*.webp` |
 
-JSON sinh ra có thứ tự cố định, không dấu thời gian. Mọi con số trên trang Cẩm nang và Pokédex đọc từ JSON này: muốn đổi
+JSON sinh ra có thứ tự cố định, không dấu thời gian, và chỉ còn là bản **dự phòng**: lúc chạy, các mục có bảng SQL
+lấy từ CSDL (mục 5.6). Mọi con số trên trang Cẩm nang và Pokédex đọc từ JSON này: muốn đổi
 số thì đổi bên game rồi chạy lại, không sửa tay JSON.
 
 ---
@@ -675,9 +726,11 @@ hành bắt buộc có máy chủ, thiếu là build dừng. Chi tiết build �
 2. Mở bảng quản trị Swing (`AdminPanel`) chỉ khi có màn hình. Trên VPS (headless) thì bỏ qua.
 3. Đăng ký shutdown hook (mục 9.4).
 4. Đọc `server.ini`; bật `LocBiMat` (che bí mật trong stdout) và cấu hình nhật ký `com.htbb.log.Nhat` (`sv.log.*`).
-5. Đọc cổng, giới hạn, tham số; tạo các pool CSDL; `CauHinhTrungTam.khoiTao(p)` ghi đè giá trị từ CSDL.
+5. Đọc cổng, giới hạn, tham số; tạo các pool CSDL; `CauHinhTrungTam.khoiTao(p)` nạp danh mục khoá từ
+   `cau_hinh_danh_muc` + `cau_hinh_nhom` rồi ghi đè giá trị từ CSDL.
 6. Đọc các cờ (`sv.lau_dai`, `sv.nap_tien`, `sv.he_sinh_thai`, giờ bảo trì, chống DoS, ngưỡng gói…).
-7. `kiemTraCSDL`: dừng sớm nếu không nối được CSDL.
+7. `kiemTraCSDL`: dừng sớm nếu không nối được CSDL. Ngay sau đó `DatabaseDuLieuSql.napLucKhoiDong()` nạp dữ liệu thiết
+   kế từ SQL (mục 4.4); thiếu bảng quan trọng thì dừng.
 8. `SuKien.nap()` (phải trước khi nạp shop, vì shop chốt trạng thái bán theo cờ sự kiện lúc nạp).
 9. Tự thêm bảng/cột mới (Pokémon, kho xu/lượng, dài hạn, giftcode…). Tất cả **trước khi nhận người chơi**.
 10. `CauHinh.dongBoLucKhoiDong` + `CauHinh.batDau`; `Database.startSaveChar()` nạp toàn bộ template; nội dung dài hạn;
@@ -759,7 +812,8 @@ Kết quả: cỡ 170–190 luồng khi server rỗng, cộng 2 luồng cho mỗ
 - Phần lớn là **characterization test**: ghi lại hành vi hiện tại để bắt thay đổi ngoài ý muốn khi refactor, không khẳng
   định hành vi "đúng".
 - Không cần CSDL, không cần mạng. Chạy với thư mục làm việc `server/`, test đọc tệp trong repo qua `../docs`, `../sql`,
-  `../vps`, `../tools`, `../web/shared/data`…
+  `../vps`, `../tools`, `../web/shared/data`… Dữ liệu thiết kế máy chủ đọc từ SQL (mục 4.4) được `Kiem.main` nạp từ
+  `../sql/htbb_day_du.sql` trước mọi nhóm, nên test chạy trên đúng số liệu máy chủ nạp từ CSDL.
 - Ngoài logic thuần, nhiều test kiểm **tính nhất quán của repo**: tệp sinh ra khớp bộ sinh (cấu hình trung tâm, quy tắc
   đăng ký, giftcode), bản đồ Pokémon đủ và đi được (`KiemMapPokemon`, `KiemVungHoenn`), mojibake trong mã nguồn
   (`KiemBangMaNguon`), mọi liên kết trong tài liệu `.md` trỏ tới tệp có thật (`KiemLienKetTaiLieu`), mẫu cấu hình VPS
@@ -813,6 +867,8 @@ riêng** (cổng và CSDL khác), không chạy trên server thật.
 - Bộ sinh phải tất định (không dấu thời gian, thứ tự cố định) để diff sạch và test so được.
 - Mỗi số liệu có **một nguồn**. Ví dụ: danh mục cấu hình ở `danh_muc.json`, khung vùng Hoenn ở `BanDoHoenn.java`, số liệu
   dài hạn ở `sinh_sql_lau_dai.py`, từ điển đổi chữ ở `ChuPokemon.java`.
+- Số liệu đã có bảng SQL thì máy chủ và web **đọc bảng** lúc chạy, không sinh thêm bản chép Java/TS (mục 4.4, 5.6). Bộ
+  sinh mới ghi bảng SQL; nếu máy chủ cần thì thêm vào danh sách trắng của `DuLieuSql` kèm phép kiểm hình dạng.
 
 ### 11.3 Quy tắc rút từ bug thật
 

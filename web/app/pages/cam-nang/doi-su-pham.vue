@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /** Đội, vùng & sư phạm — nhiệm vụ đội/sư phạm từ cam-nang.json (nhiem_vu_moi.csv). */
 const N = CAM_NANG.nhiemVu
 const chienVung = CAM_NANG.suKien.filter(s => s.loai === 'chien_vung')

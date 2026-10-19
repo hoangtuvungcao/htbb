@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * Sổ tay huấn luyện — menu "Sổ tay huấn luyện" trong game (SoTayLauDai.java). Số liệu: năng lượng,
  * lịch đăng nhập, vé chương từ cam-nang.json (ThongSoLauDai.java); quà hoạt động, sư phạm, hầm ngục

@@ -570,41 +570,41 @@ public final class KiemHeSinhThai {
         Kiem.bang("1 ho, 48 o", "[48]", java.util.Arrays.toString(BanDoSinhThai.kichThuocHo(nh)));
         Kiem.bang("dung sat ho (cach 2 o) -> ho 0", Integer.valueOf(0), Integer.valueOf(BanDoSinhThai.hoGan(nh, w, h, 6, 8, 2)));
         Kiem.bang("dung sat bien -> khong cau duoc", Integer.valueOf(-1), Integer.valueOf(BanDoSinhThai.hoGan(nh, w, h, 5, 15, 2)));
-        final boolean[] di = new boolean[w * h];
-        for (int i = 0; i < di.length; i++) {
-            di[i] = !n[i];
-        }
-        final List<int[]> dc = BanDoSinhThai.diemCau(nh, di, w, h, 4);
-        Kiem.bang("4 diem cau cho ho", Integer.valueOf(4), Integer.valueOf(dc.size()));
-        boolean sat = true;
-        for (final int[] d : dc) {
-            sat &= BanDoSinhThai.hoGan(nh, w, h, d[1], d[2], 1) == 0 && di[d[2] * w + d[1]];
-        }
-        Kiem.dung("diem cau: o di duoc, sat ho", sat);
         Kiem.sai("ao nho (< " + BanDoSinhThai.HO_LON + " o): khong co ca hiem (Dratini)", coCa(false, 19));
         Kiem.dung("ho lon: co Dratini (cap 50)", coCa(true, 19));
-        // Java (luc chay) va bang sinh (diem_cau_ca.csv / data_hst_ho_cau) phai cung mot ket qua.
+        // Diem cau ca nap tu data_hst_ho_cau (P1: bang la nguon duy nhat, bo thuat toan chep trong Java). Bat bien tren
+        // ban do that: diem di duoc, khong nam trong ho, sat (4 huong) o cua dung ho, so o khop nhan ho luc chay, <= 4
+        // diem / ho, moi ho co bo di duoc deu co diem. Va bang SQL == du_lieu/diem_cau_ca.csv (cung bo sinh).
         try {
-            final Map<String, List<String>> csvHo = new HashMap<String, List<String>>();
-            final Set<String> mapCsv = new HashSet<String>();
+            final List<String> csv = new ArrayList<String>();
             for (final String d : Files.readAllLines(new File("../du_lieu/diem_cau_ca.csv").toPath(), StandardCharsets.UTF_8)) {
                 if (d.startsWith("#") || d.startsWith("map_id")) {
                     continue;
                 }
                 final String[] c = d.split(",");
-                mapCsv.add(c[0]);
-                csvHo.computeIfAbsent(c[0], (k) -> new ArrayList<String>()).add(c[3] + ":" + c[4] + ":" + c[6] + ":" + c[7]);
+                csv.add(c[0] + ":" + c[3] + ":" + c[4] + ":" + c[6] + ":" + c[7]);
             }
-            Kiem.dung("diem_cau_ca.csv co ho (" + mapCsv.size() + " map)", mapCsv.size() >= 10);
-            int lech = 0, soMap = 0;
+            final List<String> sql = new ArrayList<String>();
+            int lech = 0, soMap = 0, soDiem = 0;
             for (final String d : Files.readAllLines(new File("../du_lieu/thiet_ke_map.csv").toPath(), StandardCharsets.UTF_8)) {
                 final String[] c = d.split(";");
-                if (c.length < 3 || !c[0].matches("\\d+") || "40".equals(c[0]) || "42".equals(c[0])) {
+                if (c.length < 3 || !c[0].matches("\\d+")) {
                     continue;
                 }
                 final int id = Integer.parseInt(c[0]);
                 final File f = new File("cMap/" + id);
                 if (!f.isFile()) {
+                    continue;
+                }
+                final List<int[]> ds = BanDoSinhThai.diemCauCua(id);
+                for (final int[] p : ds) {
+                    sql.add(id + ":" + p[0] + ":" + p[3] + ":" + p[1] + ":" + p[2]);
+                }
+                if ("40".equals(c[0]) || "42".equals(c[0])) {
+                    if (!ds.isEmpty()) {
+                        lech++;
+                        System.out.println("        map " + id + " (khong cau) co diem cau");
+                    }
                     continue;
                 }
                 soMap++;
@@ -614,18 +614,42 @@ public final class KiemHeSinhThai {
                 final boolean[] dd = BanDoSinhThai.luoiDiDuoc(bd, Files.readAllBytes(new File("cMap/" + bo + ".type").toPath()), nuoc);
                 final int[] nhan = BanDoSinhThai.nhanHo(nuoc, bd.w, bd.h);
                 final int[] kt = BanDoSinhThai.kichThuocHo(nhan);
-                final List<String> java = new ArrayList<String>();
-                for (final int[] p : BanDoSinhThai.diemCau(nhan, dd, bd.w, bd.h, 4)) {
-                    java.add(p[0] + ":" + kt[p[0]] + ":" + p[1] + ":" + p[2]);
+                final int[] demHo = new int[kt.length];
+                for (final int[] p : ds) {
+                    soDiem++;
+                    final int i = p[2] * bd.w + p[1];
+                    final boolean ok = p[0] >= 0 && p[0] < kt.length && kt[p[0]] == p[3] && p[1] > 0 && p[2] > 0
+                            && p[1] < bd.w - 1 && p[2] < bd.h - 1 && dd[i] && nhan[i] < 0
+                            && (nhan[i - 1] == p[0] || nhan[i + 1] == p[0] || nhan[i - bd.w] == p[0] || nhan[i + bd.w] == p[0]);
+                    if (!ok) {
+                        lech++;
+                        System.out.println("        map " + id + ": diem cau sai " + java.util.Arrays.toString(p));
+                    } else {
+                        demHo[p[0]]++;
+                    }
                 }
-                if (!java.equals(csvHo.getOrDefault(String.valueOf(id), new ArrayList<String>()))) {
-                    lech++;
-                    System.out.println("        lech map " + id + ": java " + java + " / csv " + csvHo.get(String.valueOf(id)));
+                for (int ho = 0; ho < kt.length; ho++) {
+                    boolean coBo = false;
+                    for (int y = 1; y < bd.h - 1 && !coBo; y++) {
+                        for (int x = 1; x < bd.w - 1 && !coBo; x++) {
+                            final int i = y * bd.w + x;
+                            coBo = dd[i] && nhan[i] < 0 && (nhan[i - 1] == ho || nhan[i + 1] == ho || nhan[i - bd.w] == ho
+                                    || nhan[i + bd.w] == ho);
+                        }
+                    }
+                    if (demHo[ho] > 4 || (coBo && demHo[ho] == 0)) {
+                        lech++;
+                        System.out.println("        map " + id + " ho " + ho + ": " + demHo[ho] + " diem cau (bo di duoc: " + coBo + ")");
+                    }
                 }
             }
-            Kiem.bang("ho + diem cau: Java khop bang sinh tren " + soMap + " map", Integer.valueOf(0), Integer.valueOf(lech));
+            Kiem.dung("diem cau (data_hst_ho_cau) co tren >= 10 map, >= 40 diem", sql.size() >= 40 && soMap >= 10);
+            Kiem.bang("diem cau tu SQL dung bat bien tren " + soMap + " map (" + soDiem + " diem)", Integer.valueOf(0), Integer.valueOf(lech));
+            java.util.Collections.sort(csv);
+            java.util.Collections.sort(sql);
+            Kiem.bang("data_hst_ho_cau == du_lieu/diem_cau_ca.csv", csv, sql);
         } catch (final Exception e) {
-            Kiem.dung("doi chieu diem_cau_ca.csv: " + e, false);
+            Kiem.dung("doi chieu diem cau ca: " + e, false);
         }
     }
 

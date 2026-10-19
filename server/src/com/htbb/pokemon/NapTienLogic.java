@@ -574,9 +574,17 @@ public final class NapTienLogic {
 
     // ================================================================== cho trang tri
 
-    /** Thue ban (dot) + phi dang (dot, tra luc dang) - cung muc cho ky gui thiet ke dai han. */
-    public static final int THUE_BAN_PHAN_TRAM = ThongSoLauDai.THUE_CHO_PHAN_TRAM;
-    public static final int PHI_DANG_PHAN_TRAM = ThongSoLauDai.PHI_DANG_BAN_PHAN_TRAM;
+    /**
+     * Thue ban (dot) + phi dang (dot, tra luc dang) - cung muc cho ky gui thiet ke dai han. HAM, khong phai hang: so
+     * nap tu data_kinh_te_lau_dai luc khoi dong (ThongSoLauDai), chep vao hang static se giu 0 neu lop nap truoc.
+     */
+    public static int thueBanPhanTram() {
+        return ThongSoLauDai.THUE_CHO_PHAN_TRAM;
+    }
+
+    public static int phiDangPhanTram() {
+        return ThongSoLauDai.PHI_DANG_BAN_PHAN_TRAM;
+    }
     /** Gia rao phai trong [50%, 200%] trung vi 20 giao dich gan nhat (khi da co >= 3 giao dich). */
     public static final int BIEN_GIA_DUOI_PHAN_TRAM = 50;
     public static final int BIEN_GIA_TREN_PHAN_TRAM = 200;
@@ -588,11 +596,11 @@ public final class NapTienLogic {
     public static final int[] HE_SO_GIA_GIO_PHAN_TRAM = {50, 100, 200, 400, 800};
 
     public static long thueBan(final long gia) {
-        return Math.max(0L, gia) * THUE_BAN_PHAN_TRAM / 100L;
+        return Math.max(0L, gia) * thueBanPhanTram() / 100L;
     }
 
     public static long phiDang(final long gia) {
-        return Math.max(1L, Math.max(0L, gia) * PHI_DANG_PHAN_TRAM / 100L);
+        return Math.max(1L, Math.max(0L, gia) * phiDangPhanTram() / 100L);
     }
 
     /** Trung vi (khong doi danh sach goc). 0 khi rong. */

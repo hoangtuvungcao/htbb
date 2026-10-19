@@ -6,11 +6,22 @@
  *   Giá trị mã = lượng khoá + số đá + 5 × số ITEM ≤ giftcode.gia_tri_toi_da (30).
  *   Ngân sách tháng: tổng gia_tri trong tob_giftcode_log của tháng ≤ giftcode.ngan_sach_thang (20 000).
  *   Vật phẩm: danh sách trắng gcKiemVatPham (shared/data/giftcode-an-toan.json), server game kiểm lại theo cấp nhân vật.
+ *   Danh sách TRANG BỊ phát được đọc lúc chạy từ data_noi_dung_trang_bi (id_item, cùng nguồn với server game);
+ *   bản trangBi trong JSON chỉ là dự phòng lúc build khi CSDL không đọc được.
  */
 import duLieuGiftcode from '../../shared/data/giftcode-an-toan.json'
 import { kiemVatPhamGiftcode, type DuLieuGiftcodeAnToan } from '../../shared/giftcode/kiem-vat-pham'
+import { trangBiGiftcodeTuSql } from '../../shared/utils/duLieuSqlThuan'
+import { docBangGame } from './duLieuSql'
 
+/** Bản dự phòng (JSON lúc build). */
 export const GC_DU_LIEU = duLieuGiftcode as unknown as DuLieuGiftcodeAnToan
+
+/** Danh sách trắng đang dùng: trangBi từ data_noi_dung_trang_bi nếu đọc được, phần còn lại từ JSON. */
+export async function gcDuLieu(): Promise<DuLieuGiftcodeAnToan> {
+  const trangBi = trangBiGiftcodeTuSql(await docBangGame('data_noi_dung_trang_bi'))
+  return trangBi ? { ...GC_DU_LIEU, trangBi } : GC_DU_LIEU
+}
 
 export const GC_GIA_TRI_ITEM = 5
 export const GC_MAC_DINH = { giaTriToiDa: 30, nganSachThang: 20000, toiDaThang: 2 }
@@ -72,7 +83,7 @@ export async function gcKiemVatPham(chuan: string, capToiThieu: number): Promise
       .catch(() => [] as { id: number, level: number }[])
     for (const r of rows) cap[Number(r.id)] = Number(r.level)
   }
-  return kiemVatPhamGiftcode(GC_DU_LIEU, chuan, capToiThieu, id => cap[id] ?? -1)
+  return kiemVatPhamGiftcode(await gcDuLieu(), chuan, capToiThieu, id => cap[id] ?? -1)
 }
 
 /** Giới hạn đang dùng: cau_hinh (nếu có khoá) đè mặc định. */

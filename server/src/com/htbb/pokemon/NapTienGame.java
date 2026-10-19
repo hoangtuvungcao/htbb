@@ -659,7 +659,7 @@ public final class NapTienGame implements Runnable {
             the,
             ve,
             "Tủ đồ trang trí",
-            "Chợ trang trí (thuế " + (NapTienLogic.THUE_BAN_PHAN_TRAM + NapTienLogic.PHI_DANG_PHAN_TRAM) + "%)",
+            "Chợ trang trí (thuế " + (NapTienLogic.thueBanPhanTram() + NapTienLogic.phiDangPhanTram()) + "%)",
             "Hướng dẫn nạp",
         };
         p.sendMessage(MessageCreator.createMsgMenu(menu, NPC_GOC, 0));
@@ -985,7 +985,7 @@ public final class NapTienGame implements Runnable {
         NapTienDb.ghiNhatKy("cho_rao", "", p.userID, p.charname + " rao " + s.ma + " #" + s.id + " gia " + g + " phi " + phi);
         capNhatTui(p);
         bao(p, "Đã rao " + tenMa(s.ma) + " giá " + g + " xu (phí đăng " + phi + " xu, thuế bán "
-                + NapTienLogic.THUE_BAN_PHAN_TRAM + "%).");
+                + NapTienLogic.thueBanPhanTram() + "%).");
     }
 
     // ================================================================== cho

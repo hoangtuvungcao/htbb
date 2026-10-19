@@ -13,8 +13,8 @@ export default defineAdminHandler(async (event, admin) => {
   // Chỉ nhận số nguyên viết đúng dạng (không nhận "5.0", "5abc"), trong khoảng cho phép.
   const soCapTho = str(body?.so_cap)
   const soCap = /^[+-]?\d+$/.test(soCapTho) ? Number(soCapTho) : Number.NaN
-  if (!Number.isInteger(soCap) || soCap < 1 || soCap > CAPDO_TOI_DA) {
-    throw apiLoi(400, `Số level phải là số nguyên từ 1 đến ${CAPDO_TOI_DA}.`)
+  if (!Number.isInteger(soCap) || soCap < 1 || soCap > (await capDoToiDa())) {
+    throw apiLoi(400, `Số level phải là số nguyên từ 1 đến ${await capDoToiDa()}.`)
   }
 
   let names: string[]

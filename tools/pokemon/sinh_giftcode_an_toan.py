@@ -3,7 +3,9 @@
 
 Ra:
   web/shared/data/giftcode-an-toan.json     nguon chung (web: server/utils/giftcodeAnToan.ts doc truc tiep)
-  src/com/htbb/pokemon/GiftcodeAnToanDuLieu.java    ban Java (server khong co thu vien JSON), kem SHA-256 cua JSON
+  server/src/com/htbb/pokemon/GiftcodeAnToanDuLieu.java    ban Java (server khong co thu vien JSON), kem SHA-256 cua JSON
+Danh sach TRANG BI (trangBi) KHONG chep vao Java nua (P1): server va web doc bang data_noi_dung_trang_bi (CSDL) luc
+chay; JSON chi con trangBi lam ban du phong cho web khi CSDL loi.
 Ca hai ben chay CUNG bo ca "thuNghiem" (HTBB-Web: npm test; HTBB: test/KiemItemMoCoi.java).
 
 Quy tac (yeu cau 18/10/2026, luat "khong item mo coi" - tools/pokemon/kiem_item_mo_coi.py):
@@ -22,7 +24,7 @@ import os
 import re
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-WEB = os.path.join(os.path.dirname(GOC), "HTBB-Web")
+WEB = os.path.join(GOC, "web")
 RA_JSON = os.path.join(WEB, "shared", "data", "giftcode-an-toan.json")
 RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "GiftcodeAnToanDuLieu.java")
 
@@ -104,8 +106,9 @@ def main():
          "    public static final String SHA256_JSON = \"%s\";\n" % sha,
          "    /** Dai id [tu, den] tieu hao / nguyen lieu / tin vat phat duoc. */\n",
          "    public static final int[][] VAT_PHAM = {%s};\n" % ", ".join(mang(x) for x in VAT_PHAM),
-         "    /** Trang bi catalog (noi_dung_trang_bi.csv): phat duoc khi cap mon <= cap nguoi nhan. */\n",
-         "    public static final int[] TRANG_BI = %s;\n" % mang(d["trangBi"]),
+         "    /**\n     * Trang bi catalog (id_item cua data_noi_dung_trang_bi): phat duoc khi cap mon <= cap nguoi nhan. NAP TU SQL\n",
+         "     * (com.htbb.dulieu.DuLieuSql, tang dan) - rong cho toi khi nap; JSON giu ban du phong cho web.\n     */\n",
+         "    public static volatile int[] TRANG_BI = new int[0];\n",
          "    public static final int NGOC_TOI_DA = %d;\n" % NGOC_TOI_DA,
          "    /** Ngoc ban bang luong / da nghi huu: khong phat. */\n",
          "    public static final int[] NGOC_CAM = %s;\n\n" % mang(d["ngocCam"]),

@@ -1327,7 +1327,23 @@ public final class MoPhongKinhTe {
         return tongHop(m[0], m[1]).toArray(new String[0][]);
     }
 
+    /**
+     * So lieu dai han (ThongSoLauDai, lich su kien, danh muc cau hinh...) nap tu SQL (P1: bang la nguon duy nhat).
+     * Chay rieng cong cu: doc {@code <goc>/sql/htbb_day_du.sql}; chay trong test: Kiem.main da nap, bo qua.
+     */
+    static void napDuLieuSql(final File goc) throws Exception {
+        if (com.htbb.pokemon.ThongSoLauDai.EXP_LEN_CAP.length > 0) {
+            return;
+        }
+        final com.htbb.dulieu.DuLieuSql.KetQua kq = com.htbb.dulieu.DuLieuSql.napTatCa(
+                com.htbb.dulieu.DocDumpSql.tuTep(new File(goc, "sql/htbb_day_du.sql").getPath()));
+        if (!kq.dat()) {
+            throw new IllegalStateException("du lieu SQL hong: " + kq.loi);
+        }
+    }
+
     static MoPhongKinhTe[] chayHai(final File goc, final int soNgay, final int phanTramDanSo) throws Exception {
+        napDuLieuSql(goc);
         final MoPhongKinhTe chuan = new MoPhongKinhTe();
         chuan.chiChuan = true;
         chuan.chay(goc, soNgay, 1.0, 20261017L);
@@ -1779,8 +1795,8 @@ public final class MoPhongKinhTe {
                 }
                 final NguoiChoi s = ban.get(j++);
                 b.xu -= gia;
-                final double thue = gia * (com.htbb.pokemon.NapTienLogic.THUE_BAN_PHAN_TRAM
-                        + com.htbb.pokemon.NapTienLogic.PHI_DANG_PHAN_TRAM) / 100.0;
+                final double thue = gia * (com.htbb.pokemon.NapTienLogic.thueBanPhanTram()
+                        + com.htbb.pokemon.NapTienLogic.phiDangPhanTram()) / 100.0;
                 s.xu += gia - thue;
                 m.ra("thue_cho_trang_tri", ngay, thue);
                 thueCho += thue;
@@ -1955,6 +1971,7 @@ public final class MoPhongKinhTe {
 
     static List<String[]> chayNapTien(final File goc, final int soNgay, final int phanTramDanSo, final MoPhongKinhTe danSoCo)
             throws Exception {
+        napDuLieuSql(goc);
         final MoPhongKinhTe chuan = new MoPhongKinhTe();
         chuan.chiChuan = true;
         chuan.soChuanMoiNhom = 1000;

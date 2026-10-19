@@ -4,9 +4,14 @@ package com.htbb.pokemon;
  * THONG SO THIET KE DAI HAN (docs/thiet-ke-game.md).
  *
  * FILE SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.
- * CHUA NOI vao game (giai doan 2: docs/thiet-ke-game.md). Hien chi
- * tools/pokemon/MoPhongKinhTe.java va test/KiemLauDai.java doc.
- * KHONG nham voi real.LevelDetail (bang EXP DANG chay).
+ * Hai loai so:
+ *   - HANG (static final): so thiet ke CHUA co bang SQL (tran cap theo mua, ngan sach nhiem vu, muc tieu
+ *     mo phong...). Sinh tu bang trong tools/pokemon/sinh_sql_lau_dai.py.
+ *   - NAP TU SQL (static volatile, RONG cho toi khi nap): so co bang data_cap_do_lau_dai /
+ *     data_nang_cap_lau_dai / data_kinh_te_lau_dai - bang la NGUON DUY NHAT. com.htbb.dulieu.DuLieuSql nap
+ *     luc khoi dong (data.DatabaseDuLieuSql, thieu bang = server tu choi chay) hoac tu sql/htbb_day_du.sql
+ *     (test, cong cu mo phong). KHONG gan truong nay ngoai DuLieuSql.
+ * KHONG nham voi real.LevelDetail (bang EXP game goc).
  */
 public final class ThongSoLauDai {
 
@@ -23,83 +28,6 @@ public final class ThongSoLauDai {
         60, 70, 80, 91, 95, 100,
     };
 
-    /** EXP_LEN_CAP[L] = EXP tu L len L+1 (L=1..99); [0] va [100] = 0. */
-    public static final long[] EXP_LEN_CAP = {
-        0L, 215L, 306L, 443L, 619L, 893L, 1260L, 1810L, 2560L, 3650L,
-        5210L, 6510L, 8100L, 10100L, 12600L, 15800L, 19700L, 27500L, 38500L, 53700L,
-        75200L, 92300L, 113000L, 139000L, 170000L, 209000L, 255000L, 314000L, 385000L, 471000L,
-        578000L, 667000L, 767000L, 886000L, 1020000L, 1180000L, 1360000L, 1570000L, 1810000L, 2080000L,
-        2400000L, 2630000L, 2870000L, 3150000L, 3450000L, 3790000L, 4140000L, 4540000L, 4970000L, 5430000L,
-        5960000L, 6530000L, 7130000L, 7810000L, 8560000L, 9350000L, 10200000L, 11200000L, 12300000L, 13400000L,
-        14700000L, 16200000L, 17800000L, 19700000L, 21700000L, 23900000L, 26300000L, 29000000L, 32000000L, 35200000L,
-        38800000L, 43100000L, 47700000L, 53000000L, 58900000L, 65200000L, 72500000L, 80500000L, 89400000L, 99000000L,
-        110000000L, 120000000L, 130000000L, 141000000L, 154000000L, 168000000L, 182000000L, 197000000L, 213000000L, 230000000L,
-        249000000L, 264000000L, 279000000L, 297000000L, 315000000L, 333000000L, 353000000L, 375000000L, 398000000L, 421000000L,
-        0L,
-    };
-
-    /** EXP 1 quai cung cap (de xuat rcvxp). */
-    public static final int[] MOB_EXP = {
-        0, 20, 27, 37, 49, 67, 90, 122, 164, 222,
-        300, 335, 374, 417, 466, 520, 580, 647, 722, 806,
-        900, 975, 1056, 1144, 1239, 1342, 1453, 1574, 1705, 1847,
-        2000, 2149, 2309, 2481, 2665, 2864, 3077, 3306, 3552, 3816,
-        4100, 4255, 4416, 4582, 4755, 4935, 5121, 5315, 5516, 5724,
-        5940, 6192, 6455, 6729, 7014, 7312, 7622, 7945, 8282, 8634,
-        9000, 9407, 9831, 10276, 10740, 11225, 11732, 12262, 12816, 13395,
-        14000, 14775, 15594, 16457, 17368, 18330, 19345, 20417, 21547, 22741,
-        24000, 24909, 25853, 26833, 27850, 28905, 30000, 30954, 31937, 32953,
-        34000, 34967, 35960, 36983, 38034, 39115, 40227, 41371, 42547, 43756,
-        45000,
-    };
-
-    public static final int[] QUAI_MOI_GIO = {
-        0, 359, 357, 356, 355, 354, 352, 351, 350, 348,
-        347, 346, 344, 343, 342, 340, 339, 338, 337, 335,
-        334, 333, 331, 330, 329, 328, 326, 325, 324, 322,
-        321, 320, 318, 317, 316, 314, 313, 312, 311, 309,
-        308, 307, 305, 304, 303, 302, 300, 299, 298, 296,
-        295, 294, 292, 291, 290, 288, 287, 286, 285, 283,
-        282, 281, 279, 278, 277, 276, 274, 273, 272, 270,
-        269, 268, 266, 265, 264, 262, 261, 260, 259, 257,
-        256, 255, 253, 252, 251, 250, 248, 247, 246, 244,
-        243, 242, 240, 239, 238, 236, 235, 234, 233, 231,
-        230,
-    };
-
-    /** Xu ky vong / quai (roi 30%). */
-    public static final int[] XU_MOI_QUAI = {
-        0, 10, 11, 12, 12, 13, 13, 14, 15, 16,
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-        27, 28, 29, 31, 32, 34, 36, 37, 39, 41,
-        43, 45, 48, 50, 53, 55, 58, 61, 64, 67,
-        70, 74, 78, 81, 86, 90, 94, 99, 104, 109,
-        115, 120, 126, 133, 139, 146, 154, 161, 169, 178,
-        187, 196, 206, 216, 227, 238, 250, 263, 276, 290,
-        304, 319, 335, 352, 370, 388, 408, 428, 450, 472,
-        496, 520, 546, 574, 602, 633, 664, 697, 732, 769,
-        807, 848, 890, 935, 981, 1030, 1082, 1136, 1193, 1252,
-        1315,
-    };
-
-    /** Gio hieu dung tich luy de dat cap L (x1000). */
-    public static final int[] GIO_TICH_LUY_PHAN_NGHIN = {
-        0, 0, 30, 62, 95, 131, 169, 208, 251, 295,
-        342, 392, 449, 512, 582, 662, 751, 851, 976, 1135,
-        1333, 1583, 1868, 2191, 2558, 2975, 3449, 3989, 4601, 5298,
-        6090, 6990, 7960, 9005, 10131, 11344, 12652, 14061, 15580, 17216,
-        18979, 20879, 22893, 25027, 27290, 29688, 32229, 34923, 37779, 40805,
-        44013, 47413, 51000, 54783, 58774, 62983, 67424, 72108, 77050, 82262,
-        87761, 93561, 99703, 106209, 113100, 120398, 128127, 136313, 144983, 154165,
-        163890, 174190, 185076, 196579, 208737, 221585, 235163, 249513, 264678, 280705,
-        297643, 315543, 334398, 354258, 375179, 397215, 420427, 444877, 470631, 497760,
-        526335, 556435, 587643, 619998, 653545, 688325, 724385, 761771, 800534, 840722,
-        882389,
-    };
-
-    public static final int TI_LE_ROI_XU = 30;
-    public static final int NANG_LUONG_PHUT_NGAY = 90;
-    public static final int NANG_LUONG_PHUT_TICH_TOI_DA = 180;
     public static final int HE_SO_BAT_KIP = 150;
     public static final int KHOANG_BAT_KIP = 5;
     public static final int TINH_THONG_PHAN_TRAM_CAP = 50;
@@ -109,21 +37,13 @@ public final class ThongSoLauDai {
     public static final int SO_O_TRANG_BI = 11;
     public static final int SO_MON_MUA_MOI_BAC = 5;
     public static final int PITY_CHIA = 3;
-    public static final int MAT_CAP_TU = 7;
     public static final int GIU_CAP_KHI_DOI_BAC = 2;
-    public static final int DA_ROI_PHAN_NGHIN = 15;
     public static final int DA_TU_PHAN_RA = 2;
-    public static final int TIEU_HAO_PHAN_TRAM = 12;
-    public static final int SUA_DO_PHAN_TRAM = 8;
     public static final int DICH_CHUYEN_LAN_NGAY = 3;
     public static final int DICH_CHUYEN_PHAN_TRAM_GIO = 3;
-    public static final int THUE_CHO_PHAN_TRAM = 6;
-    public static final int PHI_DANG_BAN_PHAN_TRAM = 1;
     public static final int TRAN_GIAO_DICH_TRUC_TIEP_GIO = 5;
     public static final int GIOI_HAN_NGAY = 3;
     public static final int GIOI_HAN_TUAN = 2;
-    public static final int VE_CHUONG_TUAN = 2;
-    public static final int VE_CHUONG_TOI_DA = 4;
     public static final int VE_CHUONG_BAN_DAU = 4;
     public static final int GIO_MOI_CHUONG_PHAN_NGHIN = 600;
     public static final int GIO_MOI_PHU_PHAN_NGHIN = 250;
@@ -135,18 +55,9 @@ public final class ThongSoLauDai {
     public static final int NGOC_HE_TANG_PHAN_TRAM = 145;
     public static final int TRANG_TRI_PHAN_NGHIN_NGAY = 20;
     public static final int TRANG_TRI_NGUONG_GIO = 20;
-    public static final int GIFTCODE_TOI_DA_THANG = 2;
-
-    /** Bac met: {so phut, % toc do} sau khi het gio 100%. Sau bac cuoi: 0. */
-    public static final int[][] BAC_MET = {{120, 20}, {120, 5}};
 
     public static final int[] LICH_DANG_NHAP = {
         3, 4, 5, 6, 8, 10, 15,
-    };
-
-    public static final int[] BAC_TB_CAP = {
-        1, 10, 20, 30, 40, 50, 60, 70, 80, 90,
-        98,
     };
 
     public static final int[] BAC_TB_NGAY_MO = {
@@ -157,39 +68,6 @@ public final class ThongSoLauDai {
     public static final long[] BAC_TB_GIA = {
         5385L, 8328L, 13527L, 20704L, 32340L, 50888L, 79101L, 122664L, 190464L, 294152L,
         416954L,
-    };
-
-    public static final String[] BAC_TB_TEN = {"sơ cấp", "đồng", "bạc", "vàng", "bạch kim", "kim cương", "chuyên gia", "tinh anh", "huyền thoại", "thần thoại", "tối thượng"};
-
-    public static final int[] TI_LE_NC = {
-        100, 100, 95, 90, 85, 75, 65, 55, 45, 38, 30, 24, 18, 13, 10,
-    };
-
-    public static final int[] DA_NC = {
-        1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4,
-    };
-
-    public static final int[] BUA_BAO_HO_LUONG_KHOA = {
-        0, 0, 0, 0, 0, 0, 10, 10, 10, 10, 25, 25, 25, 25, 25,
-    };
-
-    public static final int[] CHI_SO_NC_PHAN_TRAM = {
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5,
-    };
-
-    /** CHI_PHI_NC[bac][k] = xu cho 1 lan thu len +k (k=1..15). */
-    public static final long[][] CHI_PHI_NC = {
-        {0L, 215L, 280L, 364L, 473L, 615L, 800L, 1040L, 1352L, 1757L, 2284L, 2969L, 3860L, 5018L, 6524L, 8481L},
-        {0L, 333L, 433L, 563L, 732L, 951L, 1237L, 1608L, 2090L, 2717L, 3533L, 4592L, 5970L, 7761L, 10089L, 13116L},
-        {0L, 541L, 703L, 914L, 1189L, 1545L, 2009L, 2612L, 3395L, 4414L, 5738L, 7459L, 9697L, 12606L, 16388L, 21304L},
-        {0L, 828L, 1077L, 1400L, 1819L, 2365L, 3075L, 3997L, 5197L, 6756L, 8782L, 11417L, 14842L, 19295L, 25083L, 32608L},
-        {0L, 1294L, 1682L, 2186L, 2842L, 3695L, 4803L, 6244L, 8117L, 10552L, 13718L, 17833L, 23183L, 30138L, 39180L, 50934L},
-        {0L, 2036L, 2646L, 3440L, 4472L, 5814L, 7558L, 9825L, 12773L, 16604L, 21586L, 28061L, 36480L, 47424L, 61651L, 80146L},
-        {0L, 3164L, 4113L, 5347L, 6951L, 9037L, 11748L, 15272L, 19854L, 25810L, 33553L, 43619L, 56705L, 73716L, 95831L, 124580L},
-        {0L, 4907L, 6379L, 8292L, 10780L, 14014L, 18218L, 23683L, 30788L, 40024L, 52032L, 67641L, 87933L, 114313L, 148607L, 193190L},
-        {0L, 7619L, 9904L, 12875L, 16738L, 21759L, 28287L, 36773L, 47805L, 62147L, 80791L, 105028L, 136537L, 177498L, 230747L, 299971L},
-        {0L, 11766L, 15296L, 19885L, 25850L, 33605L, 43687L, 56793L, 73830L, 95980L, 124773L, 162205L, 210867L, 274127L, 356365L, 463275L},
-        {0L, 16678L, 21682L, 28186L, 36642L, 47634L, 61925L, 80502L, 104653L, 136049L, 176864L, 229923L, 298899L, 388569L, 505140L, 656682L},
     };
 
     /** Ngan sach thuong theo loai nhiem vu: {gio EXP x1000, gio xu x1000, luong khoa, luong}. */
@@ -220,6 +98,60 @@ public final class ThongSoLauDai {
     public static final int MT_MUC_NANG_CAP_NHE = 12;
     public static final int MT_MUC_NANG_CAP_VUA = 14;
     public static final int MT_MUC_NANG_CAP_CAY = 15;
+
+    // ---- NAP TU SQL (com.htbb.dulieu.DuLieuSql) - rong / 0 cho toi khi nap ----
+
+    /** data_cap_do_lau_dai.exp_len_cap: EXP tu L len L+1 (L=1..99); [0] va [100] = 0. */
+    public static volatile long[] EXP_LEN_CAP = new long[0];
+    /** data_cap_do_lau_dai.mob_exp: EXP 1 quai cung cap (de xuat rcvxp). */
+    public static volatile int[] MOB_EXP = new int[0];
+    /** data_cap_do_lau_dai.quai_moi_gio. */
+    public static volatile int[] QUAI_MOI_GIO = new int[0];
+    /** data_cap_do_lau_dai.xu_moi_quai: xu ky vong / quai. */
+    public static volatile int[] XU_MOI_QUAI = new int[0];
+    /** data_cap_do_lau_dai.gio_tich_luy_phan_nghin: gio hieu dung tich luy de dat cap L (x1000). */
+    public static volatile int[] GIO_TICH_LUY_PHAN_NGHIN = new int[0];
+    /** data_nang_cap_lau_dai.cap_bac theo bac. */
+    public static volatile int[] BAC_TB_CAP = new int[0];
+    /** data_nang_cap_lau_dai.ten_bac theo bac. */
+    public static volatile String[] BAC_TB_TEN = new String[0];
+    /** data_nang_cap_lau_dai.ti_le: [k-1] = % len +k. */
+    public static volatile int[] TI_LE_NC = new int[0];
+    /** data_nang_cap_lau_dai.da. */
+    public static volatile int[] DA_NC = new int[0];
+    /** data_nang_cap_lau_dai.bua_luong_khoa. */
+    public static volatile int[] BUA_BAO_HO_LUONG_KHOA = new int[0];
+    /** data_nang_cap_lau_dai.chi_so_phan_tram (bang luu luy ke; day la phan them moi cap). */
+    public static volatile int[] CHI_SO_NC_PHAN_TRAM = new int[0];
+    /** data_nang_cap_lau_dai.xu: CHI_PHI_NC[bac][k] = xu cho 1 lan thu len +k (k=1..15), [bac][0] = 0. */
+    public static volatile long[][] CHI_PHI_NC = new long[0][];
+    /** data_kinh_te_lau_dai exp.bac_met: {so phut, % toc do} sau khi het gio 100%. Sau bac cuoi: 0. */
+    public static volatile int[][] BAC_MET = new int[0][];
+
+    /** data_nang_cap_lau_dai.mat_cap: truot tu +MAT_CAP_TU tro len thi tut 1 cap. */
+    public static volatile int MAT_CAP_TU;
+    /** data_kinh_te_lau_dai roi.xu.phan_tram. */
+    public static volatile int TI_LE_ROI_XU;
+    /** data_kinh_te_lau_dai roi.da_nang_cap.phan_nghin. */
+    public static volatile int DA_ROI_PHAN_NGHIN;
+    /** data_kinh_te_lau_dai exp.nang_luong_phut. */
+    public static volatile int NANG_LUONG_PHUT_NGAY;
+    /** data_kinh_te_lau_dai exp.nang_luong_tich_phut. */
+    public static volatile int NANG_LUONG_PHUT_TICH_TOI_DA;
+    /** data_kinh_te_lau_dai thue.cho. */
+    public static volatile int THUE_CHO_PHAN_TRAM;
+    /** data_kinh_te_lau_dai thue.dang_ban. */
+    public static volatile int PHI_DANG_BAN_PHAN_TRAM;
+    /** data_kinh_te_lau_dai tieu_hao.thuoc_phan_tram_thu_nhap. */
+    public static volatile int TIEU_HAO_PHAN_TRAM;
+    /** data_kinh_te_lau_dai tieu_hao.sua_do_phan_tram_thu_nhap. */
+    public static volatile int SUA_DO_PHAN_TRAM;
+    /** data_kinh_te_lau_dai giftcode.toi_da_thang. */
+    public static volatile int GIFTCODE_TOI_DA_THANG;
+    /** data_kinh_te_lau_dai ve_chuong.tuan. */
+    public static volatile int VE_CHUONG_TUAN;
+    /** data_kinh_te_lau_dai ve_chuong.toi_da. */
+    public static volatile int VE_CHUONG_TOI_DA;
 
     /** EXP 1 gio danh quai o cap L (100%). */
     public static long expMoiGio(final int L) {

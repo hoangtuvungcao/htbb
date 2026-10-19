@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Sinh danh muc cau hinh trung tam tu tools/cauhinh/danh_muc.json (NGUON DUY NHAT).
 
-Ra 4 tep (KHONG sua tay, chay lai script nay sau khi sua danh_muc.json):
-  1. server/src/com/htbb/cauhinh/DanhMucSinh.java - may chu game (kiem kieu/khoang, ap dung ngay/khoi dong lai)
-  2. sql/pokemon_cau_hinh_trung_tam.sql            - bang + danh muc (idempotent, chay lai bao nhieu lan cung duoc)
-  3. web/shared/utils/cauHinhTrungTam.gen.ts       - ban sao cho web
-  4. docs/cau-hinh.md                              - CHI phan bang giua hai dong danh dau MOC_DAU / MOC_CUOI;
+Ra 3 tep (KHONG sua tay, chay lai script nay sau khi sua danh_muc.json):
+  1. sql/pokemon_cau_hinh_trung_tam.sql            - bang + danh muc cau_hinh_danh_muc / cau_hinh_nhom (idempotent).
+                                                     May chu game NAP danh muc tu hai bang nay luc khoi dong
+                                                     (com.htbb.cauhinh.DanhMucSql) - khong con ban chep Java (P1).
+                                                     Sua danh_muc.json -> chay script -> nap tep SQL vao CSDL -> khoi
+                                                     dong lai (hoac doi <= 60 giay: may chu nap lai danh muc nong).
+  2. web/shared/utils/cauHinhTrungTam.gen.ts       - ban du phong cho web (web doc CSDL truoc, xem
+                                                     web/server/utils/cauHinhDanhMucSql.ts)
+  3. docs/cau-hinh.md                              - CHI phan bang giua hai dong danh dau MOC_DAU / MOC_CUOI;
                                                      phan con lai cua tai lieu viet tay, script khong dung toi
 
 Chay o goc monorepo:     python3 tools/cauhinh/sinh_cau_hinh.py
@@ -18,7 +22,6 @@ import sys
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 NGUON = os.path.join(GOC, 'tools', 'cauhinh', 'danh_muc.json')
-RA_JAVA = os.path.join(GOC, 'server', 'src', 'com', 'htbb', 'cauhinh', 'DanhMucSinh.java')
 RA_SQL = os.path.join(GOC, 'sql', 'pokemon_cau_hinh_trung_tam.sql')
 RA_TS = os.path.join(GOC, 'web', 'shared', 'utils', 'cauHinhTrungTam.gen.ts')
 RA_MD = os.path.join(GOC, 'docs', 'cau-hinh.md')
@@ -68,65 +71,6 @@ def j(s):
     return json.dumps(s, ensure_ascii=False)
 
 
-def sinh_java(d):
-    o = []
-    o.append('package com.htbb.cauhinh;')
-    o.append('')
-    o.append('/**')
-    o.append(' * SINH TU tools/cauhinh/danh_muc.json boi tools/cauhinh/sinh_cau_hinh.py - KHONG SUA TAY.')
-    o.append(' * Danh muc moi khoa cau hinh trung tam (xem {@link CauHinhTrungTam}).')
-    o.append(' */')
-    o.append('final class DanhMucSinh {')
-    o.append('')
-    o.append('    private DanhMucSinh() {')
-    o.append('    }')
-    o.append('')
-    o.append('    /** {ma, ten} theo thu tu hien thi. */')
-    o.append('    static final String[][] NHOM = {')
-    for n in d['nhom']:
-        o.append('        {%s, %s},' % (j(n['ma']), j(n['ten'])))
-    o.append('    };')
-    o.append('')
-    o.append('    static DinhNghiaKhoa[] tatCa() {')
-    o.append('        return new DinhNghiaKhoa[]{')
-    for k in d['khoa']:
-        dong = 'new DinhNghiaKhoa(%s, %s, %s, %s, %s, %s)' % (
-            j(k['khoa']), j(k['nhom']), j(k['kieu']), j(k.get('macDinh', '')),
-            'true' if k.get('apDung', 'ngay') == 'ngay' else 'false', j(k.get('bang', 'cau_hinh')))
-        them = []
-        them.append('.nhan(%s, %s)' % (j(k['ten']), j(k.get('moTa', ''))))
-        if 'min' in k or 'max' in k:
-            them.append('.khoang(%s, %s)' % (
-                ('%dL' % k['min']) if 'min' in k else 'Long.MIN_VALUE',
-                ('%dL' % k['max']) if 'max' in k else 'Long.MAX_VALUE'))
-        if k.get('buoc'):
-            them.append('.buoc(%dL)' % k['buoc'])
-        if k.get('luaChon'):
-            them.append('.luaChon(new String[]{%s})' % ', '.join(j(x[0]) for x in k['luaChon']))
-        if k.get('soPhanTu'):
-            them.append('.soPhanTu(%d)' % k['soPhanTu'])
-        if k.get('mau'):
-            them.append('.mau(%s)' % j(k['mau']))
-        if k.get('doDai'):
-            them.append('.doDai(%d)' % k['doDai'])
-        if k.get('hoa'):
-            them.append('.hoa()')
-        if k.get('nhay'):
-            them.append('.nhay()')
-        if k.get('khoaProd'):
-            them.append('.khoaProd()')
-        if k.get('chiDoc'):
-            them.append('.chiDoc()')
-        o.append('            ' + dong)
-        for t in them:
-            o.append('                    ' + t)
-        o[-1] += ','
-    o.append('        };')
-    o.append('    }')
-    o.append('}')
-    return '\n'.join(o) + '\n'
-
-
 def sq(s):
     return "'" + str(s).replace('\\', '\\\\').replace("'", "''") + "'"
 
@@ -152,22 +96,41 @@ def sinh_sql(d):
     o.append("INSERT IGNORE INTO `cau_hinh_phien_ban` (`id`, `phien_ban`) VALUES (1, 1);")
     o.append("INSERT IGNORE INTO `cau_hinh_khoi_dong_lai` (`id`, `trang_thai`) VALUES (1, '');")
     o.append('')
-    o.append('-- Danh muc (chi de tra cuu / cong cu ngoai; may chu va web dung ban sinh trong ma nguon).')
-    o.append('DELETE FROM `cau_hinh_danh_muc`;')
-    for k in d['khoa']:
-        gioi = {}
-        for f in ('min', 'max', 'buoc', 'soPhanTu', 'mau', 'doDai'):
-            if f in k:
-                gioi[f] = k[f]
-        if k.get('luaChon'):
-            gioi['luaChon'] = [x[0] for x in k['luaChon']]
+    o.append('-- Danh muc khoa + nhom: NGUON LUC CHAY cua may chu game (com.htbb.cauhinh.DanhMucSql, nap luc khoi dong;')
+    o.append('-- thieu / rong = may chu tu choi khoi dong) va web (web/server/utils/cauHinhDanhMucSql.ts). DROP roi tao lai:')
+    o.append('-- day la du lieu sinh, khong ai ghi tay; CSDL cu (truoc P1) chua co cot thu_tu / bang cau_hinh_nhom.')
+    o.append('DROP TABLE IF EXISTS `cau_hinh_danh_muc`;')
+    o.append(DDL_DANH_MUC + ';')
+    o.append('DROP TABLE IF EXISTS `cau_hinh_nhom`;')
+    o.append(DDL_NHOM + ';')
+    o.append('')
+    for i, n in enumerate(d['nhom']):
+        o.append('INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`) VALUES (%s, %s, %s, %d);' % (
+            sq(n['ma']), sq(n['ten']), sq(n.get('moTa', '')[:500]), i + 1))
+    for i, k in enumerate(d['khoa']):
         o.append('INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`,'
-                 ' `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`) VALUES (%s);' % ', '.join([
-                     sq(k['khoa']), sq(k['nhom']), sq(k['ten']), sq(k.get('moTa', '')[:500]), sq(k['kieu']),
-                     sq(k.get('macDinh', '')), sq(json.dumps(gioi, ensure_ascii=False)[:500]), sq(k.get('apDung', 'ngay')),
+                 ' `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`) VALUES (%s);' % ', '.join([
+                     sq(k['khoa']), sq(k['nhom']), sq(k['ten']), sq(k.get('moTa', '')), sq(k['kieu']),
+                     sq(k.get('macDinh', '')), sq(gioi_han(k)), sq(k.get('apDung', 'ngay')),
                      '1' if k.get('nhay') else '0', '1' if k.get('khoaProd') else '0', '1' if k.get('chiDoc') else '0',
-                     sq(k.get('bang', 'cau_hinh')), sq(k.get('dungO', 'server')), sq(k.get('nguon', '')[:120])]))
+                     sq(k.get('bang', 'cau_hinh')), sq(k.get('dungO', 'server')), sq(k.get('nguon', '')), str(i + 1)]))
     return '\n'.join(o) + '\n'
+
+
+def gioi_han(k):
+    """Cot gioi_han (JSON): moi rang buoc kiem gia tri ma may chu (DanhMucSql) va web can."""
+    gioi = {}
+    for f in ('min', 'max', 'buoc', 'soPhanTu', 'mau', 'doDai'):
+        if f in k:
+            gioi[f] = k[f]
+    if k.get('luaChon'):
+        gioi['luaChon'] = [x[0] for x in k['luaChon']]
+        gioi['luaChonTen'] = [x[1] for x in k['luaChon']]
+    if k.get('hoa'):
+        gioi['hoa'] = True
+    # ASCII (\\uXXXX cho chu co dau): ma lua chon "bang" (doi) nam canh nhan tieng Viet khong bi bo quet thuat
+    # ngu (test/KiemThuatNgu) coi la chu nguoi choi; JSON.parse / com.htbb.dulieu.JsonNho deu giai \\u.
+    return json.dumps(gioi, ensure_ascii=True)
 
 
 # Cung DDL voi CauHinhTrungTam.taoBang() (test/KiemCauHinhTrungTam doi chieu ten bang).
@@ -190,20 +153,29 @@ DDL = [
     " `giay` INT NOT NULL DEFAULT 60, `ly_do` VARCHAR(200) NOT NULL DEFAULT '', `yeu_cau_boi` VARCHAR(50) NULL,"
     ' `yeu_cau_luc` DATETIME NULL, `bat_dau_luc` DATETIME NULL, `thoat_luc` DATETIME NULL, `xong_luc` DATETIME NULL,'
     ' `may_chu` VARCHAR(40) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4',
+]
+
+# Danh muc (cau_hinh_danh_muc) + nhom (cau_hinh_nhom): may chu game nap luc khoi dong (P1). Tep migration
+# sql/them_p1_du_lieu_sql.sql chep dung hai DDL nay (test/KiemDuLieuSql doi chieu).
+DDL_DANH_MUC = (
     'CREATE TABLE IF NOT EXISTS `cau_hinh_danh_muc` (`khoa` VARCHAR(64) NOT NULL, `nhom` VARCHAR(20) NOT NULL,'
-    " `ten` VARCHAR(160) NOT NULL DEFAULT '', `mo_ta` VARCHAR(500) NOT NULL DEFAULT '', `kieu` VARCHAR(12) NOT NULL,"
-    " `mac_dinh` VARCHAR(255) NOT NULL DEFAULT '', `gioi_han` VARCHAR(500) NOT NULL DEFAULT '', `ap_dung` VARCHAR(16) NOT NULL,"
+    " `ten` VARCHAR(160) NOT NULL DEFAULT '', `mo_ta` TEXT NOT NULL, `kieu` VARCHAR(12) NOT NULL,"
+    " `mac_dinh` VARCHAR(255) NOT NULL DEFAULT '', `gioi_han` TEXT NOT NULL, `ap_dung` VARCHAR(16) NOT NULL,"
     ' `nhay` TINYINT NOT NULL DEFAULT 0, `khoa_prod` TINYINT NOT NULL DEFAULT 0, `chi_doc` TINYINT NOT NULL DEFAULT 0,'
     " `bang` VARCHAR(16) NOT NULL DEFAULT 'cau_hinh', `dung_o` VARCHAR(10) NOT NULL DEFAULT 'server',"
-    " `nguon` VARCHAR(120) NOT NULL DEFAULT '', PRIMARY KEY (`khoa`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
-]
+    " `nguon` VARCHAR(255) NOT NULL DEFAULT '', `thu_tu` INT NOT NULL DEFAULT 0, PRIMARY KEY (`khoa`))"
+    ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4')
+DDL_NHOM = (
+    'CREATE TABLE IF NOT EXISTS `cau_hinh_nhom` (`ma` VARCHAR(20) NOT NULL, `ten` VARCHAR(160) NOT NULL DEFAULT \'\','
+    ' `mo_ta` TEXT NOT NULL, `thu_tu` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ma`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4')
 
 
 def sinh_ts(d):
     o = []
     o.append('/**')
     o.append(' * SINH TU HTBB/tools/cauhinh/danh_muc.json boi HTBB/tools/cauhinh/sinh_cau_hinh.py — KHÔNG SỬA TAY.')
-    o.append(' * Bản sao web của danh mục cấu hình trung tâm (máy chủ game: com.htbb.cauhinh.DanhMucSinh).')
+    o.append(' * Bản dự phòng của danh mục cấu hình trung tâm: web đọc bảng cau_hinh_danh_muc / cau_hinh_nhom trước')
+    o.append(' * (server/utils/cauHinhDanhMucSql.ts), máy chủ game chỉ đọc bảng (com.htbb.cauhinh.DanhMucSql).')
     o.append(' * Hàm kiểm / so sánh thuần: shared/utils/cauHinhTrungTam.ts.')
     o.append(' */')
     o.append('')
@@ -336,7 +308,7 @@ def main():
         print(__doc__)
         return
     d = doc()
-    ra = [(RA_JAVA, sinh_java(d)), (RA_SQL, sinh_sql(d))]
+    ra = [(RA_SQL, sinh_sql(d))]
     if os.path.isdir(os.path.dirname(RA_TS)):
         ra.append((RA_TS, sinh_ts(d)))
     if os.path.exists(RA_MD):

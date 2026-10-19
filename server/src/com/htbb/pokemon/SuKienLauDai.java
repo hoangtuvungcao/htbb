@@ -13,27 +13,14 @@ import java.util.Map;
  * dong sau {@code so_ngay}. tob_su_kien chi co MOT cap mo_luc/dong_luc moi ma, nen moi ma chi
  * hen LAN KE TIEP (lan dang dien ra hoac sap toi gan nhat) - job dem goi lai de hen lan sau.
  *
- * Bang duoi CHEP tu su_kien_nam.csv (test/KiemLauDaiGd2 doi chieu tung dong).
+ * LICH nap tu bang data_su_kien_nam (NGUON DUY NHAT, sinh boi tools/pokemon/sinh_sql_lau_dai.py) qua
+ * com.htbb.dulieu.DuLieuSql luc khoi dong; test nap tu sql/htbb_day_du.sql (test/KiemDuLieuSql ghim van tay
+ * cua ban chep Java cu).
  */
 public final class SuKienLauDai {
 
-    /** {tuan, so ngay, ma (co the nhieu ma ngan boi dau phay)}. */
-    public static final Object[][] LICH = {
-        {1, 7, "tetduonglich"}, {2, 7, "moi:tuanhe"}, {3, 7, "moi:congdong"}, {4, 7, "tet2017"},
-        {5, 14, "tet2017,tet123"}, {6, 7, "tet2017,tet123"}, {7, 7, "moi:shiny"}, {8, 7, "moi:valentine"},
-        {9, 7, "moi:dotkich"}, {10, 7, "quocte83"}, {11, 7, "moi:tuanhe"}, {12, 7, "moi:congdong"},
-        {13, 7, "moi:muapvp"}, {14, 7, "moi:pokedex"}, {15, 7, "gioto"}, {16, 7, "moi:chienvung"},
-        {17, 7, "moi:3004"}, {18, 7, "moi:tuanhe"}, {19, 7, "moi:congdong"}, {20, 7, "moi:dotkich"},
-        {21, 7, "moi:bungphat"}, {22, 7, "moi:thieunhi"}, {23, 14, "he2017"}, {24, 7, "he2017"},
-        {25, 7, "moi:congdong"}, {26, 7, "moi:muapvp"}, {27, 7, "moi:tuanhe"}, {28, 7, "moi:dotkich"},
-        {29, 7, "moi:hamngucmua"}, {30, 7, "moi:chienvung"}, {31, 7, "moi:congdong"}, {32, 7, "vulan"},
-        {33, 7, "moi:tuanhe"}, {34, 7, "moi:shiny"}, {35, 7, "moi:quockhanh"}, {36, 7, "moi:dotkich"},
-        {37, 14, "trungthu"}, {38, 7, "trungthu"}, {39, 7, "moi:muapvp"}, {40, 7, "moi:congdong"},
-        {41, 7, "moi:2010"}, {42, 7, "moi:tuanhe"}, {43, 14, "halloween,demhalloween"},
-        {44, 7, "halloween,demhalloween"}, {45, 7, "moi:pokedex"}, {46, 7, "sinhnhat2011"},
-        {47, 7, "blackfriday"}, {48, 7, "moi:dotkich"}, {49, 7, "moi:chienvung"}, {50, 7, "moi:congdong"},
-        {51, 7, "noel,demnoel"}, {52, 7, "moi:tongket"},
-    };
+    /** {tuan (Integer), so ngay (Integer), ma (String, co the nhieu ma ngan boi dau phay)}; rong cho toi khi nap. */
+    public static volatile Object[][] LICH = new Object[0][];
 
     /** He cua "tuan he" theo tuan (THIET_KE muc 6: 2 Bang, 11 Co, 18 Lua, 27 Nuoc, 33 Dien, 42 Sieu linh). */
     public static final int[][] HE_TUAN = {

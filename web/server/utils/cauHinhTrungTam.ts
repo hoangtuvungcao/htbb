@@ -7,6 +7,8 @@
  * cau_hinh_ap_dung (phiên bản + giờ áp dụng) và cau_hinh_hieu_luc (giá trị đang chạy từng khoá) — trang đọc lại
  * hai bảng đó để admin thấy "đã có hiệu lực".
  *
+ * Danh mục khoá: cau_hinh_danh_muc + cau_hinh_nhom trong CSDL (server/utils/cauHinhDanhMucSql.ts), dự phòng bản sinh.
+ *
  * Bí mật (HTBB_NAP_*, khoá webhook, mật khẩu) KHÔNG BAO GIỜ vào CSDL: khoá bang='env' chỉ hiển thị trạng thái.
  */
 import type { H3Event } from 'h3'
@@ -50,7 +52,8 @@ let nho: { gt: Record<string, string>, luc: number } | null = null
 async function docNho(): Promise<Record<string, string>> {
   if (nho && Date.now() - nho.luc < 5000) return nho.gt
   const gt: Record<string, string> = {}
-  const can = DANH_MUC_TT.filter(k => k.bang === 'cau_hinh' && k.dungO !== 'server').map(k => k.khoa)
+  await napDanhMucTTServer()
+  const can = danhMucTT().filter(k => k.bang === 'cau_hinh' && k.dungO !== 'server').map(k => k.khoa)
   if (can.length) {
     for (const r of await q<{ khoa: string, gia_tri: string }>(dbGame(), `SELECT khoa, gia_tri FROM cau_hinh WHERE khoa IN (${can.map(() => '?').join(',')})`, can)) {
       gt[r.khoa] = String(r.gia_tri ?? '')
@@ -65,6 +68,7 @@ async function docNho(): Promise<Record<string, string>> {
  * Lỗi CSDL / giá trị sai: `khiLoi` (công tắc thu tiền truyền '0' = FAIL CLOSED).
  */
 export async function chGiaTri(khoa: string, khiLoi?: string): Promise<string> {
+  await napDanhMucTTServer()
   const k = khoaTT(khoa)
   if (!k) throw new Error(`Khoá không có trong danh mục: ${khoa}`)
   let tho: string | undefined
@@ -104,11 +108,12 @@ export function chXoaNho() {
 export interface DongLuuTT { giaTri: string, suaBoi: string | null, suaLuc: string | null }
 
 export async function chDocLuu(): Promise<Record<string, DongLuuTT>> {
+  await napDanhMucTTServer()
   const ra: Record<string, DongLuuTT> = {}
   for (const r of await q<{ khoa: string, gia_tri: string, sua_boi: string | null, sua_luc: string | null }>(dbGame(), 'SELECT khoa, gia_tri, sua_boi, sua_luc FROM cau_hinh')) {
     ra[r.khoa] = { giaTri: String(r.gia_tri ?? ''), suaBoi: r.sua_boi, suaLuc: r.sua_luc }
   }
-  const nap = DANH_MUC_TT.filter(k => k.bang === 'nap_cau_hinh').map(k => k.khoa)
+  const nap = danhMucTT().filter(k => k.bang === 'nap_cau_hinh').map(k => k.khoa)
   if (nap.length && await coBang(dbGame(), 'nap_cau_hinh')) {
     for (const r of await q<{ khoa: string, gia_tri: string, cap_nhat_luc: string | null }>(dbGame(), `SELECT khoa, gia_tri, cap_nhat_luc FROM nap_cau_hinh WHERE khoa IN (${nap.map(() => '?').join(',')})`, nap)) {
       ra[`nap_cau_hinh:${r.khoa}`] = { giaTri: String(r.gia_tri ?? ''), suaBoi: null, suaLuc: r.cap_nhat_luc }
@@ -148,6 +153,7 @@ export interface KetQuaLuuTT { phienBan: number, thayDoi: ThayDoiTT[], canKhoiDo
 export async function chLuu(event: H3Event, admin: AdminUser, thayDoiTho: Record<string, unknown>, lyDo: string,
   nguon: string, phienBanMongDoi?: number): Promise<KetQuaLuuTT> {
   await chTaoBang()
+  await napDanhMucTTServer()
   const luu = await chDocLuu()
   const dangLuu: Record<string, string | null> = {}
   for (const khoa of Object.keys(thayDoiTho)) {

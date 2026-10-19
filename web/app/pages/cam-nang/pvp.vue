@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * PvP xếp hạng mùa — luật thang từ ThangPvp.java / ThangPvpGame.java (cam-nang-noi-dung.json),
  * lịch chốt mùa từ su_kien_nam.csv, luật PK từ ChuPokemon.HUONG_DAN (pokedex.json).

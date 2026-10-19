@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /** Kinh tế & tiền tệ — chỉ những gì người chơi cần biết (số liệu từ cam-nang.json). */
 const K = CAM_NANG.kinhTe
 const T = CAM_NANG.trangBi

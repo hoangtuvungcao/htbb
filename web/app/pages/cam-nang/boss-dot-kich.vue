@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG, noiDung: CAM_NANG_ND } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * Boss & đột kích — boss từ pokedex.json (bang_quai.csv), lịch đột kích từ su_kien_nam.csv,
  * boss thế giới theo tuần từ du_lieu/web/boss_the_gioi.csv + giờ triệu hồi trong LauDaiJob.java.

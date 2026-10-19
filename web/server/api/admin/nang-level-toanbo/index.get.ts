@@ -20,5 +20,5 @@ export default defineAdminHandler(async () => {
   } catch (e: any) {
     loiDoc = String(e?.message ?? e)
   }
-  return { capDoToiDa: CAPDO_TOI_DA, soNhanVat, soLenhChoXuLy, lenhs, loiDoc }
+  return { capDoToiDa: await capDoToiDa(), soNhanVat, soLenhChoXuLy, lenhs, loiDoc }
 })

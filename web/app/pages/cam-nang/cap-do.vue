@@ -1,5 +1,6 @@
 <script setup lang="ts">
-/** Cấp độ, năng lượng & tăng tốc — số từ cam-nang.json (ThongSoLauDai.java + bang_cap_do_lau_dai.csv); bảng tăng tốc khớp com.htbb.pokemon.TangToc. */
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
+/** Cấp độ, năng lượng & tăng tốc — bảng cấp + năng lượng từ CSDL game (data_cap_do_lau_dai, data_kinh_te_lau_dai), còn lại cam-nang.json; bảng tăng tốc khớp com.htbb.pokemon.TangToc. */
 const C = CAM_NANG.capDo
 const nl = C.nangLuong
 const gioNgay = nl.phutNgay / 60

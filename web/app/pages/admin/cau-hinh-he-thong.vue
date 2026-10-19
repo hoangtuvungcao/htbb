@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * CẤU HÌNH HỆ THỐNG — mọi công tắc & tham số máy chủ ở MỘT chỗ (docs/cau-hinh.md).
- * Form sinh từ danh mục (HTBB/tools/cauhinh/danh_muc.json -> shared/utils/cauHinhTrungTam.gen.ts), kiểm ngay khi gõ,
+ * Form sinh từ danh mục (CSDL cau_hinh_danh_muc + cau_hinh_nhom do API trả về; dự phòng shared/utils/cauHinhTrungTam.gen.ts), kiểm ngay khi gõ,
  * xem trước thay đổi trước khi lưu, badge "áp dụng ngay" / "cần khởi động lại", nút khởi động lại an toàn
  * (đếm ngược + lý do), lịch sử + hoàn tác, tìm kiếm. Máy chủ game xác nhận phiên bản đã áp dụng (cau_hinh_ap_dung).
  * Siêu quản trị sửa; Chỉ xem đọc. Tự tải lại mỗi 10 giây (trừ khi đang sửa).
@@ -19,12 +19,16 @@ const tim = ref('')
 const nhomChon = ref<string>('tat_ca')
 const chiDaSua = ref(false)
 const ds = computed(() => {
+  void ch.phienDanhMuc.value
   let k = timTT(tim.value)
   if (nhomChon.value !== 'tat_ca') k = k.filter(x => x.nhom === nhomChon.value)
   if (chiDaSua.value) k = k.filter(x => Object.prototype.hasOwnProperty.call(ch.sua.value, x.khoa) || (data.value?.giaTri[x.khoa] ?? null) !== null)
   return nhomTT(k)
 })
-const mucNhom = computed(() => [{ label: 'Tất cả nhóm', value: 'tat_ca' }, ...NHOM_TT.map(n => ({ label: n.ten, value: n.ma }))])
+const mucNhom = computed(() => {
+  void ch.phienDanhMuc.value
+  return [{ label: 'Tất cả nhóm', value: 'tat_ca' }, ...dsNhomTT().map(n => ({ label: n.ten, value: n.ma }))]
+})
 const ghiDuoc = computed(() => !!data.value?.quyen.ghi)
 
 useIntervalFn(() => {

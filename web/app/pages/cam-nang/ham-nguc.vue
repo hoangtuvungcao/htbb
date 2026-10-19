@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * Hầm Ngục Bí Ẩn — luật từ HamNgucGame.java / CuonHut.java (cam-nang-noi-dung.json); các chặng
  * nhiệm vụ "hang_bi_an" từ nhiem_vu_moi.csv (cam-nang.json).

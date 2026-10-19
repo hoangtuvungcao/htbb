@@ -8,8 +8,8 @@ export default defineAdminHandler(async (event, admin) => {
   // Chỉ nhận số nguyên viết đúng dạng (không nhận "5.0", "5abc"), trong khoảng cho phép.
   const tho = str(body?.cap_do_dich)
   const capDich = /^[+-]?\d+$/.test(tho) ? Number(tho) : Number.NaN
-  if (!Number.isInteger(capDich) || capDich < 1 || capDich > CAPDO_TOI_DA) {
-    throw apiLoi(400, `Cấp độ đích phải là số nguyên từ 1 đến ${CAPDO_TOI_DA}.`)
+  if (!Number.isInteger(capDich) || capDich < 1 || capDich > (await capDoToiDa())) {
+    throw apiLoi(400, `Cấp độ đích phải là số nguyên từ 1 đến ${await capDoToiDa()}.`)
   }
 
   const db = dbGame()
