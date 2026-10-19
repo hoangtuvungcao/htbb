@@ -31,6 +31,8 @@ public class Session extends Thread {
     public int banClient = -1;
     /** platf (microedition.platform) client gui luc dang nhap - nen tang cho com.htbb.capnhat.CapNhatClient. */
     public String platfClient = "";
+    /** Kha nang client tu bao (so nguyen sau so ban o goi dang nhap; 0 = client cu). Bit io.GoiNen.KHA_NANG_NEN. */
+    public volatile int khaNang = 0;
     public byte vsTile = 0;
     public byte firmWareReg = 0;
     public boolean isLogin = false;
@@ -187,18 +189,28 @@ public class Session extends Thread {
                 server.ChiSoMayChu.GOI_VAO.incrementAndGet();
 
                 // Kiem TRUOC khi xu ly: dem sau thi tran ngap da duoc xu ly xong roi.
-                if (this.quaNhieuGoi(message.command)) {
-                    if (this.boDemGoiTin.vuotXaNguong(message.command)) {
-                        server.ChiSoMayChu.CAT_NGAP.incrementAndGet();
-                        this.lyDoNgat = "ngap goi tin (lenh " + message.command + ")";
-                        break;   // khoi finally ben duoi se disconnect(7)
-                    }
+                final int quyet = this.quaNhieuGoi(message.command);
+                if (quyet == BoDemGoiTin.CAT) {
+                    server.ChiSoMayChu.CAT_NGAP.incrementAndGet();
+                    this.lyDoNgat = "ngap goi tin (lenh " + message.command + ")";
+                    break;   // khoi finally ben duoi se disconnect(7)
+                }
+                if (quyet == BoDemGoiTin.BO) {
                     server.ChiSoMayChu.GOI_BO.incrementAndGet();
                     // Chi vuot tran o muc "nhanh tay": BO goi nay, GIU ket noi.
                     // Cat ket noi o day tung van nham nguoi choi luong thien dang
                     // lam do khi hanh trang day, va moi lan cat la mot vong
                     // luu/nap nhan vat - dung cho co hoi mat du lieu.
                     continue;
+                }
+                if (quyet == BoDemGoiTin.HOAN) {
+                    // Lenh tai nguyen vuot tran: ha nhip chinh ket noi nay, KHONG bo goi (xem
+                    // BoDemGoiTin.phanLoai - goi tai nguyen bi bo la anh mat han / cho 30 s).
+                    HOAN_TAI_NGUYEN.incrementAndGet();
+                    try {
+                        Thread.sleep(BoDemGoiTin.hoanMs(message.command));
+                    } catch (InterruptedException ignored) {
+                    }
                 }
 
                 // Bo dem chan doan chieu client -> server (xem DemGoiTin).
@@ -227,6 +239,9 @@ public class Session extends Thread {
 
     }
 
+    /** So goi tai nguyen da duoc HOAN (cho roi xu ly, khong bo) tu luc khoi dong - chi so chan doan. */
+    public static final java.util.concurrent.atomic.AtomicLong HOAN_TAI_NGUYEN = new java.util.concurrent.atomic.AtomicLong();
+
     /**
      * Ket noi nay co dang gui qua nhieu goi tin khong?
      *
@@ -235,16 +250,18 @@ public class Session extends Thread {
      * dem RIENG voi han muc rong hon, vi luc vao ban do moi chung tra ve hang loat
      * mot cach hoan toan binh thuong — nhung khong con la khong gioi han nhu truoc.
      *
-     * @return true = vuot nguong, nen cat ket noi
+     * @return BoDemGoiTin.QUA / BO / CAT / HOAN (xem BoDemGoiTin.phanLoai)
      */
-    private boolean quaNhieuGoi(int command) {
+
+    private int quaNhieuGoi(int command) {
         if (BoDemGoiTin.mienIp(this.ip)) {
-            return false; // sv.tranGoiMienIp: chi may chay bot tai
+            return BoDemGoiTin.QUA; // sv.tranGoiMienIp: chi may chay bot tai
         }
-        if (!this.boDemGoiTin.vuotNguong(command, System.currentTimeMillis())) {
-            return false;
+        final int quyet = this.boDemGoiTin.phanLoai(command, System.currentTimeMillis());
+        if (quyet == BoDemGoiTin.QUA) {
+            return quyet;
         }
-        final boolean cat = this.boDemGoiTin.vuotXaNguong(command);
+        final boolean cat = quyet == BoDemGoiTin.CAT;
         // Khi chi BO BOT goi thi ket noi con song, nen moi goi vuot tran deu se sinh
         // ra mot dong log. Chan lai con 1 dong moi cua so 5 giay. Rieng lan CAT ket
         // noi thi luon ghi: no chi xay ra mot lan cho ca ket noi do.
@@ -253,14 +270,18 @@ public class Session extends Thread {
                     + BoDemGoiTin.tenLoai(command)
                     + " trong " + BoDemGoiTin.CUA_SO_MS + "ms (tran "
                     + this.boDemGoiTin.tranCua(command) + "), lenh cuoi=" + command;
-            com.htbb.log.Nhat.canhBao("NGAP_GOI", (cat ? "cat ket noi " : "bo bot goi cua ")
-                    + this.username + " ip=" + this.ip + " (" + chiTiet + ")");
+            final String viec = cat ? "cat ket noi " : quyet == BoDemGoiTin.HOAN ? "ha nhip (khong bo) tai nguyen cua " : "bo bot goi cua ";
+            com.htbb.log.Nhat.canhBao("NGAP_GOI", viec + this.username + " ip=" + this.ip + " (" + chiTiet + ")");
             // Truoc day dau vet nay CHI nam o stdout, tuc la mat sach sau moi lan restart.
-            data.NghiVanGianLan.ghiChung(this,
-                    (this.charname == null || this.charname.isEmpty()) ? this.username : this.charname,
-                    "ngapgoi", (cat ? "CAT KET NOI - " : "bo bot goi - ") + chiTiet);
+            // Ha nhip tai nguyen KHONG ghi nghi van gian lan: client cache rong vao ban do dong
+            // nguoi cham tran nay mot cach luong thien.
+            if (quyet != BoDemGoiTin.HOAN) {
+                data.NghiVanGianLan.ghiChung(this,
+                        (this.charname == null || this.charname.isEmpty()) ? this.username : this.charname,
+                        "ngapgoi", (cat ? "CAT KET NOI - " : "bo bot goi - ") + chiTiet);
+            }
         }
-        return true;
+        return quyet;
     }
 
     private Message readMessage(DataInputStream dis) throws Exception {
@@ -522,6 +543,19 @@ public class Session extends Thread {
             }
         }
 
+        /** Goi lon cho client co giai nen: boc thanh goi nen (io.GoiNen). Mang goc KHONG bi sua (goi phat chung). */
+        private byte[] nenNeuDuoc(final byte[] data) {
+            if ((Session.this.khaNang & GoiNen.KHA_NANG_NEN) == 0 || data.length < GoiNen.NGUONG) {
+                return data;
+            }
+            try {
+                final byte[] nen = GoiNen.boc(data);
+                return nen != null ? nen : data;
+            } catch (Throwable e) {
+                return data;
+            }
+        }
+
         public Sender() {
             Session.this.lastTimeSendData = System.currentTimeMillis();
             (new Thread(this)).start();
@@ -554,14 +588,14 @@ public class Session extends Thread {
                 try {
                     byte[] data = m.toByteArray();
                     if (data != null) {
-                        this.xepHang(data);
+                        this.xepHang(this.nenNeuDuoc(data));
                         server.ChiSoMayChu.GOI_RA.increment();
                         // Goi kem (xem Message.kemTheo): xep NGAY SAU goi
                         // chinh trong cung hang doi, client nhan dung thu tu.
                         for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
                             byte[] dataKem = kem.toByteArray();
                             if (dataKem != null) {
-                                this.xepHang(dataKem);
+                                this.xepHang(this.nenNeuDuoc(dataKem));
                             }
                         }
                     }

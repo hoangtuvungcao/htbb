@@ -28,6 +28,73 @@ public final class KiemBoDemGoiTin {
         ngapThatSuThiBiCat();
         nguongDoiDuocMaMacDinhKhongDoi();
         tranBangKhongLaTat();
+        taiNguyenVuotTranHoanKhongBo();
+        dotDangNhapCacheRongKhongMatGoi();
+        lenhThuongVanBoVaCat();
+        KiemGoiNen.chay();
+    }
+
+    /** Lenh tai nguyen vuot tran: HOAN (cho roi xu ly), KHONG BAO GIO bo / cat. */
+    private static void taiNguyenVuotTranHoanKhongBo() {
+        final BoDemGoiTin bo = new BoDemGoiTin(0L);
+        int qua = 0, hoan = 0, khac = 0;
+        for (int i = 0; i < 5000; i++) {
+            final int q = bo.phanLoai(LENH_TAI_NGUYEN, 0L);
+            if (q == BoDemGoiTin.QUA) qua++;
+            else if (q == BoDemGoiTin.HOAN) hoan++;
+            else khac++;
+        }
+        Kiem.bang("600 goi tai nguyen dau qua thang", Integer.valueOf(600), Integer.valueOf(qua));
+        Kiem.bang("phan vuot tran duoc HOAN", Integer.valueOf(4400), Integer.valueOf(hoan));
+        Kiem.bang("khong goi tai nguyen nao bi BO hay CAT (ca khi gap 8 lan tran)", Integer.valueOf(0), Integer.valueOf(khac));
+        Kiem.bang("hoanMs voi tran 600/5 s = 8 ms", Long.valueOf(8L), Long.valueOf(BoDemGoiTin.hoanMs(LENH_TAI_NGUYEN)));
+    }
+
+    /**
+     * Dot dang nhap cua client cache rong qua loopback (khong do tre): N = 2000 goi tai nguyen ban
+     * lien. Gia lap luong doc: moi goi HOAN thi dong ho tien hoanMs. Phai: xu ly du 2000 goi, khong
+     * bo goi nao, xong trong T = 600 goi dau + phan con lai * hoanMs (~11.7 s) - va client that chi
+     * xin vai chuc goi luc vao game (KiemTaiThat do duoc 3 goi -48).
+     */
+    private static void dotDangNhapCacheRongKhongMatGoi() {
+        final BoDemGoiTin bo = new BoDemGoiTin(0L);
+        long gio = 0L;
+        int xuLy = 0, mat = 0;
+        final int n = 2000;
+        for (int i = 0; i < n; i++) {
+            final int q = bo.phanLoai(i % 2 == 0 ? -51 : -48, gio);
+            if (q == BoDemGoiTin.HOAN) {
+                gio += BoDemGoiTin.hoanMs(-51);
+            }
+            if (q == BoDemGoiTin.BO || q == BoDemGoiTin.CAT) mat++;
+            else xuLy++;
+        }
+        Kiem.bang("dot 2000 goi tai nguyen: xu ly du", Integer.valueOf(n), Integer.valueOf(xuLy));
+        Kiem.bang("dot 2000 goi tai nguyen: khong mat goi", Integer.valueOf(0), Integer.valueOf(mat));
+        final long t = (n - 600) * BoDemGoiTin.hoanMs(-51);
+        Kiem.dung("dot 2000 goi xong trong " + t + " ms gia lap (" + gio + " ms)", gio <= t);
+        // vua phai: 300 goi (vao ban do dong nguoi) di thang, khong cho mot ms nao
+        final BoDemGoiTin bo2 = new BoDemGoiTin(0L);
+        boolean thang = true;
+        for (int i = 0; i < 300; i++) thang &= bo2.phanLoai(-51, 0L) == BoDemGoiTin.QUA;
+        Kiem.dung("300 goi tai nguyen trong 1 tich tac: khong cho", thang);
+    }
+
+    /** Lenh thuong giu nguyen hanh vi cu: vuot tran BO, vuot 4 lan CAT. */
+    private static void lenhThuongVanBoVaCat() {
+        final BoDemGoiTin bo = new BoDemGoiTin(0L);
+        for (int i = 0; i < 300; i++) bo.phanLoai(LENH_THUONG, 0L);
+        Kiem.bang("lenh thuong goi 301 -> BO", Integer.valueOf(BoDemGoiTin.BO), Integer.valueOf(bo.phanLoai(LENH_THUONG, 0L)));
+        for (int i = 302; i <= 1200; i++) bo.phanLoai(LENH_THUONG, 0L);
+        Kiem.bang("lenh thuong goi 1201 -> CAT", Integer.valueOf(BoDemGoiTin.CAT), Integer.valueOf(bo.phanLoai(LENH_THUONG, 0L)));
+        Kiem.bang("lenh tra cuu (7) vuot tran van BO (khong phai tai nguyen)", Integer.valueOf(BoDemGoiTin.BO),
+                Integer.valueOf(vuotTranTraCuu()));
+    }
+
+    private static int vuotTranTraCuu() {
+        final BoDemGoiTin bo = new BoDemGoiTin(0L);
+        for (int i = 0; i < 600; i++) bo.phanLoai(7, 0L);
+        return bo.phanLoai(7, 0L);
     }
 
     /**
