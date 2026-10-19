@@ -137,7 +137,7 @@ public class InputDlg extends Dialog {
         int nh = game.pokemon.Bang.caoHang();
         int nhNut = game.pokemon.HopThongBao.caoNut();
         int ww = Math.min(Canvas.w - 24, game.pokemon.ChuDe.dt() ? 340 : 260);
-        game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.CUA_HANG, game.pokemon.ChuDe.TEAL, true);
+        game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.CUA_HANG, game.pokemon.ChuDe.CHINH, true);
         int[] kh = game.pokemon.HopThongBao.khung(g, ww, nh + k + nh + k + nhNut + game.pokemon.HopThongBao.pad(), this.title, this.backAction, false);
         int x = kh[5] - 10, y = kh[1];
         ww = kh[6] + 20;

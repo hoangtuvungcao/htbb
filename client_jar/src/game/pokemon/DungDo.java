@@ -299,32 +299,36 @@ public final class DungDo {
             int wSl = sl == null ? 0 : ChuDe.rong(sl, ChuDe.NHAN) + 4;
             rong = Math.min(rongToiDa, rong + ic - 8 + wSl);
             x = Canvas.hw - rong / 2;
-            // kiểu A: viên trắng, bóng mềm, đĩa tròn màu loại + biểu tượng trắng ở đầu
-            int r = cao / 2;
-            KieuO.phu(g, x + 2, yy + 3, rong - 4, cao, 0x20101828);
-            GiaoDien.khoi(g, x - 1, yy + 1, rong + 2, cao, r + 1, 0xD5DBE6);
-            GiaoDien.khoi(g, x, yy, rong, cao, r, 0xFFFFFF);
-            Font.nenSang = true;
+            // 0.9.7 (NRO): bảng tối chỉ vàng, viền màu theo loại (lỗi đỏ, cảnh báo cam, tin xanh, xu vàng, nhận xanh lá),
+            // ô icon pixel trái, chữ giấy da
+            KhungNro.bong(g, x, yy, rong, cao);
+            g.setColor(mau);
+            g.fillRect(x - 1, yy - 1, rong + 2, cao + 2);
+            if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, x, yy, rong, cao)) {
+                GiaoDien.khoi(g, x, yy, rong, cao, 2, 0x2B1A10);
+            }
+            Font.nenSang = false;
             int dkd = cao - 8;
-            GiaoDien.khoiDoc(g, x + 4, yy + 4, dkd, dkd, dkd / 2, GiaoDien.pha(mau, 0xFFFFFF, 1, 4), mau);
-            int ici = dkd * 3 / 5;
-            BieuTuong.ve(g, loaiIc, x + 4 + (dkd - ici) / 2, yy + 4 + (dkd - ici) / 2, ici, 0xFFFFFF, mau);
+            if (!KhungNro.ve(g, KhungNroBang.O, x + 4, yy + 4, dkd, dkd)) {
+                GiaoDien.khoiPixel(g, x + 4, yy + 4, dkd, dkd, mau);
+            }
+            BieuTuong.ve(g, loaiIc, x + 4, yy + 4, dkd, mau, 0x2E1E14);
             int xc = x + 10 + dkd;
             int yt = yy + (cao - soDong * lh) / 2;
             int wd = rong - (xc - x) - 6 - wXem - wSl;
             for (int k = 0; k < soDong; k++) {
                 String dk = k == soDong - 1 && xem ? ChuDe.cat(d[k] + "…", ChuDe.THUONG, wd) : ChuDe.cat(d[k], ChuDe.THUONG, wd);
-                ChuDe.chu(g, dk, xc, yt + k * lh, ChuDe.THUONG, ChuDe.CHU, 0);
+                ChuDe.chu(g, dk, xc, yt + k * lh, ChuDe.THUONG, 0xF6E6C0, 0);
             }
             if (sl != null) {
-                ChuDe.chu(g, sl, x + rong - wXem - 6, yt, ChuDe.NHAN, ChuDe.CHU_PHU, 1);
+                ChuDe.chu(g, sl, x + rong - wXem - 6, yt, ChuDe.NHAN, ChuDe.VANG, 1);
             }
             if (theGioi) {
                 VungCham.them(g, x, yy, rong - wXem, cao, BO_QUA[i], "thong-bao-" + i);
             }
             if (xem) {
                 int xx = x + rong - wXem - 4;
-                ChuDe.chuGiua(g, "Xem", xx + wXem / 2, yy, cao, ChuDe.NHAN, ChuDe.XANH, 2);
+                ChuDe.chuGiua(g, "Xem", xx + wXem / 2, yy, cao, ChuDe.NHAN, ChuDe.VANG, 2);
                 VungCham.them(g, xx, yy, wXem + 4, cao, XEM[i], "thong-bao-xem-" + i);
             }
             y = yy + cao + 4;
@@ -375,7 +379,7 @@ public final class DungDo {
         String t = ChuDe.cat(sucKhoe, ChuDe.PHU, w - 12);
         int h = ChuDe.cao(ChuDe.PHU) + 4;
         int y = Canvas.h - Bang.anDuoi - h - 4;
-        KieuO.phu(g, Canvas.hw - w / 2, y, w, h, a << 24 | 0x101828);
+        KieuO.phu(g, Canvas.hw - w / 2, y, w, h, a << 24 | 0x1B0E06);
         ChuDe.chuGiua(g, t, Canvas.hw, y, h, ChuDe.PHU, a > 0x30 ? 0xFFFFFF : 0xC8CDD8, 2);
     }
 }

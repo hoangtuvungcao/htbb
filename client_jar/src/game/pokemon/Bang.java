@@ -332,7 +332,8 @@ public final class Bang {
             int ht = caoTab();
             int wt = Math.min(w - 2 * ChuDe.DEM, tabs.length * (ChuDe.dt() ? 150 : 110));
             ranhTab(g, x + ChuDe.DEM, yNoi + ht - 2, w - 2 * ChuDe.DEM);
-            phanDoan(g, x + (w - wt) / 2, yNoi, wt, ht, tabs, tabChon, viecTab);
+            // 0.9.7: tab gỗ canh TRÁI (như sổ tab NRO), thẳng hàng với nội dung bên dưới
+            phanDoan(g, x + ChuDe.DEM + 2, yNoi, wt - 2, ht, tabs, tabChon, viecTab);
             yNoi += ht + cach();
         }
         return new int[]{x + ChuDe.DEM, yNoi, w - 2 * ChuDe.DEM, y + h - ChuDe.DEM - yNoi};
@@ -378,7 +379,12 @@ public final class Bang {
     public static boolean[] chamTab, chamChip;
 
     /** Chip phân đoạn mềm (0.9.6): rãnh viên xám xanh, đoạn chọn = viên trắng nổi (bóng mềm), chữ teal đậm. */
+    /** Tiền tố tên vùng chạm của tab (kiểm thử phân biệt hàng tab lồng nhau) - đặt ngay trước phanDoan, tự trả về "tab-". */
+    public static String tienToTab = "tab-";
+
     public static void phanDoan(Graphics g, int x, int y, int w, int h, String[] chu, int chon, Object[] viec) {
+        String tienTo = tienToTab;
+        tienToTab = "tab-";
         int n = chu.length;
         boolean[] cham = chamTab;
         chamTab = null;
@@ -413,7 +419,7 @@ public final class Bang {
             // vùng chạm chừa khe cach() giữa hai tab (không bấm nhầm tab bên cạnh)
             int kh = cach();
             int l = i == 0 ? xt : xt + (kh + 1) / 2, r = i == n - 1 ? xt + ww : xt + ww - kh / 2;
-            VungCham.them(g, l, y, r - l, h, viec == null ? null : viec[i], "tab-" + i);
+            VungCham.them(g, l, y, r - l, h, viec == null ? null : viec[i], tienTo + i);
         }
     }
 

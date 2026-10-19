@@ -48,20 +48,18 @@ public final class LuoiTui {
         return o instanceof GemTemplate && MainChar.shopItem != null && MainChar.shopItem.contains(o);
     }
 
-    /** Số ô đang dùng (cùng cách đếm máy chủ: đồ + loại bình + nguyên liệu + đặc biệt). */
+    /**
+     * Số ô đang dùng = số mục của lưới "Tất cả" trừ vật phẩm nhiệm vụ (mảng riêng của máy chủ, không chiếm ô); mỗi chồng
+     * (bình cùng loại, nguyên liệu) = 1 ô - đếm khớp đúng số ô có đồ người chơi thấy.
+     */
     public static int soDung() {
-        MainChar m = mc();
-        int n = Char.inventory == null ? 0 : Char.inventory.size();
-        if (m != null && m.potions != null) {
-            for (int i = 1; i < m.potions.length; i++) {
-                if (m.potions[i] > 0) {
-                    n++;
-                }
+        Vector v = ds(LOC_TAT_CA);
+        int n = 0;
+        for (int i = 0; i < v.size(); i++) {
+            if (!(v.elementAt(i) instanceof int[])) {
+                n++;
             }
         }
-        n += MainChar.gemItem == null ? 0 : MainChar.gemItem.size();
-        n += MainChar.gemItemKhoa == null ? 0 : MainChar.gemItemKhoa.size();
-        n += MainChar.shopItem == null ? 0 : MainChar.shopItem.size();
         return n;
     }
 
@@ -203,6 +201,7 @@ public final class LuoiTui {
         int hc = Bang.caoTab();
         if (viecLoc != null && (w - 10) / LOC.length >= VungCham.MIN + k + 4) {
             Bang.ranhTab(g, x + 4, yy + hc - 2, w - 8);
+            Bang.tienToTab = "loc-";
             Bang.phanDoan(g, x + 5, yy, w - 10, hc, LOC, loc, viecLoc);
             yy += hc + k;
         } else if (viecLoc != null) {
@@ -224,12 +223,13 @@ public final class LuoiTui {
         final int cot = Math.max(1, (gw + k) / (s + k));
         final int n = mon.size();
         int tran = TrangThaiNguoiChoi.tran(m);
-        final int soTrong = coKhoa ? Math.max(0, suc - soDung()) : 0;
-        final int soKhoa = coKhoa ? Math.max(0, tran - Math.max(suc, n)) : 0;
+        int hl0 = yVi - k - yy;
+        int hangDay = Math.max(1, (hl0 + k) / (s + k));   // số hàng lấp đầy bảng (lưới đủ ô như NRO)
+        int dung = coKhoa ? soDung() : n;
+        final int soTrong = coKhoa ? Math.max(0, suc - dung) : 0;
+        final int soKhoa = coKhoa ? Math.max(0, tran - Math.max(suc, dung)) : 0;
         int tong = n + soTrong + soKhoa;
-        if (!coKhoa) {
-            tong = ((n + cot - 1) / cot) * cot;   // lấp đầy hàng cuối bằng ô trống
-        }
+        tong = Math.max(((tong + cot - 1) / cot) * cot, hangDay * cot);   // lấp hàng cuối + đủ hàng phủ bảng
         final int tongO = tong;
         final Object chonO = chon;
         int xl = x + 6 + (gw - (cot * (s + k) - k)) / 2;
@@ -238,11 +238,6 @@ public final class LuoiTui {
         luoiLuc = System.currentTimeMillis();
         soO = 0;
         final int x0 = xl;
-        if (n == 0 && !coKhoa) {
-            Bang.trong(g, x + 6, yy, w - 12, hl, loc == LOC_TAT_CA ? "Hành trang trống" : "Không có " + LOC[loc].toLowerCase(),
-                    "Nhặt đồ rơi từ Pokémon hoang dã hoặc mua ở Poké Mart.");
-            return;
-        }
         Bang.danhSach(g, c, xl - 1, yy, cot * (s + k) - k + 12, hl, (tongO + cot - 1) / cot, s, new Bang.Hang() {
             public void ve(Graphics g, int i, int xr, int yr, int wr, int hr) {
                 for (int q = 0; q < cot; q++) {
@@ -265,7 +260,7 @@ public final class LuoiTui {
                             OM[soO] = o;
                             soO++;
                         }
-                    } else if (j < n + soTrong) {
+                    } else if (j < n + soTrong || j >= n + soTrong + soKhoa) {
                         Bang.oDo(g, xo, yr, s, false, false, null, null);
                     } else {
                         Bang.oKhoa(g, xo, yr, s, new IAction() {
@@ -277,6 +272,37 @@ public final class LuoiTui {
                 }
             }
         });
+        if (n == 0 && viecLoc != null) {
+            dongTrong(g, x + 14, yy + Math.min(hl / 3, 2 * (s + k)), w - 28, loc);
+        }
+        yLuoi = yy;
+        hLuoi = hl;
+    }
+
+    /** Dòng trống thân thiện (bộ lọc không có món) giữa lưới: bảng tối chỉ vàng + chữ. */
+    static void dongTrong(Graphics g, int x, int y, int w, int loc) {
+        String c = loc == LOC_TAT_CA ? "Hành trang trống - nhặt đồ từ Pokémon hoang dã hoặc mua ở Poké Mart."
+                : loc == LOC_THUOC ? "Chưa có bình thuốc - mua ở Poké Mart (Chansey)."
+                : loc == LOC_DO ? "Chưa có trang bị - đánh Pokémon hoang dã hoặc mua ở cửa hàng."
+                : loc == LOC_NGUYEN_LIEU ? "Chưa có nguyên liệu - rơi từ Pokémon hoang dã, khai thác."
+                : "Không có vật phẩm khác.";
+        dongTrong(g, x, y, w, c);
+    }
+
+    /** Đỉnh / cao vùng lưới vừa vẽ (màn đặt dòng trống riêng). */
+    public static int yLuoi, hLuoi;
+
+    /** Dòng trống với chữ c. */
+    public static void dongTrong(Graphics g, int x, int y, int w, String c) {
+        String[] d = ChuDe.ngat(c, ChuDe.NHAN, w - 24, 2);
+        int lh = ChuDe.cao(ChuDe.NHAN);
+        int h = d.length * lh + 10;
+        if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 2, 0x2B1A10);
+        }
+        for (int i = 0; i < d.length; i++) {
+            ChuDe.chu(g, d[i], x + w / 2, y + 5 + i * lh, ChuDe.NHAN, 0xF6E6C0, 2);
+        }
     }
 
     private static void Font_nenSang() {

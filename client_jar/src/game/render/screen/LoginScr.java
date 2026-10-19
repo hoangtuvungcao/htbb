@@ -278,7 +278,7 @@ public class LoginScr extends Screen {
         // nhớ mật khẩu (trái) + "Quên mật khẩu?" (phải, mở trang web)
         int xo = x + 1, s = 14, yo = y + (hDong - s) / 2;
         game.pokemon.GiaoDien.khoi(g, xo, yo, s, s, 3, this.focus == 2 ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.VIEN);
-        game.pokemon.GiaoDien.khoi(g, xo + 1, yo + 1, s - 2, s - 2, 2, this.isRememPass ? game.pokemon.ChuDe.LA : 0xFFFFFF);
+        game.pokemon.GiaoDien.khoi(g, xo + 1, yo + 1, s - 2, s - 2, 2, this.isRememPass ? game.pokemon.ChuDe.LA : 0xFAEECF);
         if (this.isRememPass) {
             g.setColor(0xFFFFFF);
             for (int d = 0; d < 2; d++) {

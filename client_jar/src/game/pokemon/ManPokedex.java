@@ -161,7 +161,10 @@ public final class ManPokedex extends ManBang {
                     int lh1 = ChuDe.cao(ChuDe.NHAN), lh2 = ChuDe.cao(ChuDe.PHU);
                     int hi = h - lh1 - lh2 - 6;
                     int rd = Math.min(s, hi) / 2 - 3;
-                    GiaoDien.khoi(g, xi + s / 2 - rd, y + 4 + hi / 2 - rd, 2 * rd, 2 * rd, rd, GiaoDien.pha(mh, 0xFFFFFF, 4, 5));
+                    // 0.9.7: ô chân dung hộp gỗ lõm (viền màu hệ)
+                    Bang.oDo(g, xi + s / 2 - rd - 2, y + 2 + hi / 2 - rd, 2 * rd + 4, true, false, null, null);
+                    g.setColor(mh);
+                    g.drawRect(xi + s / 2 - rd - 1, y + 3 + hi / 2 - rd, 2 * rd + 1, 2 * rd + 1);
                     PokeBody.paintChanDung(g, lt[0], false, xi + s / 2, y + 4 + hi / 2, 2 * rd);
                     String ten = Res.monsterTemplates[lt[1]].name;
                     ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN, s - 6), xi + s / 2, y + 4 + hi, ChuDe.NHAN, ChuDe.CHU, 2);
@@ -190,7 +193,7 @@ public final class ManPokedex extends ManBang {
         float z = Math.max(1.5f, Math.min(3.2f, Math.min(lw / 56f, h / 44f)));
         int cx = x + lw / 2, yChan = y + h - (int) (14 * z);
         int rd = Math.min(lw, h) / 2 - 4;
-        GiaoDien.khoiDoc(g, cx - rd, y + h / 2 - rd, 2 * rd, 2 * rd, rd, GiaoDien.pha(mh, 0xFFFFFF, 5, 6), GiaoDien.pha(mh, 0xFFFFFF, 2, 4));
+        ManNhanVat.nenSanKhau(g, x, y, lw, h);   // 0.9.7: sân khấu giấy da lõm + dải màu hệ
         ManNhanVat.veSanKhau(g, cx, yChan, z);
         if (PhongVe.co()) {
             int tx = g.getTranslateX(), ty = g.getTranslateY();

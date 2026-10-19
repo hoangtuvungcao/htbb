@@ -448,7 +448,7 @@ public final class ManNhanVat extends Screen {
         if (!KhungNro.ve(g, KhungNroBang.THE, x, y, w, h)) {
             GiaoDien.khoi(g, x, y, w, h, 3, ChuDe.NEN_DUOI);
         }
-        int hd = Math.max(6, h / 6);
+        int hd = 4;
         g.setColor(GiaoDien.pha(mau, 0xE9D2A0, 3, 5));
         g.fillRect(x + 3, y + h - 3 - hd, w - 6, hd);
         g.setColor(GiaoDien.pha(mau, 0x1B0E06, 1, 3));
@@ -489,7 +489,15 @@ public final class ManNhanVat extends Screen {
         int lw = rongKhoiNv(w);
         // Sức mạnh (hoặc tên ô đang chọn) trên cùng
         int hSm = ChuDe.cao(ChuDe.PHU) + ChuDe.cao(ChuDe.SO_TO) - 2;
-        int cxS = x + lw / 2;
+        // 0.9.7: nút Tiềm năng (cộng điểm) góc trái trên khối nhân vật - kiểu NRO, cạnh "Sức mạnh"
+        int hTn = Bang.co(22), wTn = ChuDe.rong("Tiềm năng", ChuDe.SO) + 20;
+        Bang.nut(g, x + 2, y + 1, wTn, hTn, "Tiềm năng", m.basePointLeft > 0 ? Bang.CHINH : Bang.GO, new IAction() {
+            public void perform() {
+                HanhDong.moTiemNang();
+            }
+        }, "tiem-nang");
+        BangTiemNangHD.chamDo(g, x + 2, y + 1, wTn);
+        int cxS = x + 2 + wTn + (lw - wTn - 2) / 2;
         if (this.o >= 0 && this.o < TEN_O.length) {
             String ten = TEN_O[this.o];
             int wt = ChuDe.rong(ten, ChuDe.NHAN) + 18, ht = ChuDe.cao(ChuDe.NHAN) + 6;
@@ -1040,8 +1048,8 @@ public final class ManNhanVat extends Screen {
                 if (dem[0] > 0) {
                     phu = dem[0] + " món cần cấp cao hơn. " + phu;
                 }
-                int yt = y + 5 + hd + Bang.cach();
-                Bang.trong(g, x + 6, yt, w - 12, y + h - ViTien.cao() - 10 - yt, "Chưa có trang bị phù hợp cho ô này", phu);
+                LuoiTui.dongTrong(g, x + 14, LuoiTui.yLuoi + Math.min(LuoiTui.hLuoi / 4, 40), w - 28,
+                        "Chưa có trang bị phù hợp cho ô này. " + phu);
             }
         }
     }

@@ -512,10 +512,10 @@ final class BangTuDong {
             int r = an ? rc * 24 / 25 : rc;
             if (sk >= 0 && m != null) {
                 int mau = game.pokemon.KieuO.mauHe(PokeChieu.he(m.clazz, sk));
-                GiaoDien.khoi(g, cx - r - 2, cy - r - 1, 2 * r + 4, 2 * r + 4, r + 2, game.pokemon.ChuDe.BONG);
-                GiaoDien.khoi(g, cx - r - 2, cy - r - 2, 2 * r + 4, 2 * r + 4, r + 2, 0xFFFFFF);
+                // 0.9.7: ô hộp gỗ vuông + icon chiêu bo góc
+                game.pokemon.Bang.oDo(g, cx - r - 2, cy - r - 2, 2 * r + 4, true, false, null, null);
                 int oc = game.pokemon.AnhUI.oChieu(m.clazz, sk);
-                if (oc < 0 || game.pokemon.ChuUI.bo == null || !game.pokemon.ChuUI.bo.chieu(g, oc, true, cx - r, cy - r, 2 * r, false)) {
+                if (oc < 0 || game.pokemon.ChuUI.bo == null || !game.pokemon.ChuUI.bo.chieu(g, oc, false, cx - r + 3, cy - r + 3, 2 * r - 6, false)) {
                     GiaoDien.khoi(g, cx - r, cy - r, 2 * r, 2 * r, r, mau);
                     game.pokemon.KieuO.oChieuSk(g, cx - r * 7 / 10, cy - r * 7 / 10, r * 7 / 5, r * 7 / 5, m.clazz, sk, false);
                 }
@@ -530,9 +530,8 @@ final class BangTuDong {
             }
             // huy hiệu số thứ tự
             int rs = game.pokemon.ChuDe.dt() ? 7 : 6;
-            GiaoDien.khoi(g, cx + r * 7 / 10 - rs, cy - r * 7 / 10 - rs, 2 * rs, 2 * rs, rs, 0xFFFFFF);
-            GiaoDien.khoi(g, cx + r * 7 / 10 - rs + 1, cy - r * 7 / 10 - rs + 1, 2 * rs - 2, 2 * rs - 2, rs - 1, game.pokemon.ChuDe.CHINH);
-            game.pokemon.ChuDe.chuGiua(g, String.valueOf(i + 1), cx + r * 7 / 10, cy - r * 7 / 10 - rs, 2 * rs, game.pokemon.ChuDe.NHAN_NHO, 0xFFFFFF, 2);
+            GiaoDien.khoiPixel(g, cx + r * 7 / 10 - rs, cy - r * 7 / 10 - rs, 2 * rs, 2 * rs, game.pokemon.ChuDe.CHINH);
+            game.pokemon.ChuDe.chuVienGiua(g, String.valueOf(i + 1), cx + r * 7 / 10, cy - r * 7 / 10 - rs, 2 * rs, game.pokemon.ChuDe.NHAN_NHO, 0xFFFFFF, game.pokemon.ChuDe.VIEN, 2);
             String ten = tenChieu(sk);
             game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat(ten, game.pokemon.ChuDe.PHU, buoc - 4), cx, cy + rc + 4, game.pokemon.ChuDe.PHU,
                     sk >= 0 ? game.pokemon.ChuDe.CHU : game.pokemon.ChuDe.CHU_PHU, 2);

@@ -31,9 +31,9 @@ public final class GiaoDien {
     public static final int CAM_TOI = 0xF26A1B;
     public static final int KEM_VANG = 0xFFF7B0;
     public static final int VANG_TOI = 0xC97A10;
-    public static final int XANH = 0x1FB5A8;   // 0.9.6: nhấn = teal chính (ChuDe.CHINH)
-    public static final int XANH_SANG = 0x2FCDBE;
-    public static final int XANH_NHAT = 0xD9F1EE;
+    public static final int XANH = 0x2F66C4;   // 0.9.7: xanh dương NRO (0.9.6: teal)
+    public static final int XANH_SANG = 0x5A94EA;
+    public static final int XANH_NHAT = 0xC8DCF4;
     public static final int NAVY = 0x34434F;   // 0.9.6: xám đá (không còn navy)
     public static final int LA = 0x78C850;
     public static final int LA_TOI = 0x3E8A30;
@@ -621,7 +621,7 @@ public final class GiaoDien {
             int[] lac = {0, 15, 30, 15, 0, -15, -30, -15, 0, 15, 30, 15, 0, -15, -30, -15};
             goc = lac[l % lac.length];
         }
-        g.setColor(0x0B1222);
+        g.setColor(0x1B0E06);
         g.fillArc(cx - r + 2, cy + r - 1, r * 2 - 4, 4, 0, 360);   // bóng dưới bóng
         pokeBall(g, cx, cy, r, goc);
     }

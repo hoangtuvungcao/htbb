@@ -479,8 +479,10 @@ public final class ManCuaHang extends Screen {
                 }
             }, "sl-tru");
             // 0.9.6: ô số trắng viền teal nhạt, số lớn đậm
-            GiaoDien.khoi(g, x + 10 + sb + k, yy, wo, sb, sb / 2, GiaoDien.pha(ChuDe.CHINH, 0xFFFFFF, 3, 5));
-            GiaoDien.khoi(g, x + 11 + sb + k, yy + 1, wo - 2, sb - 2, sb / 2 - 1, ChuDe.NEN);
+            // 0.9.7: ô số = giấy da lõm (mảnh THE)
+            if (!KhungNro.ve(g, KhungNroBang.THE, x + 10 + sb + k, yy, wo, sb)) {
+                GiaoDien.khoi(g, x + 10 + sb + k, yy, wo, sb, 2, ChuDe.NEN_DUOI);
+            }
             ChuDe.chuGiua(g, String.valueOf(this.soLuong), x + 10 + sb + k + wo / 2, yy, sb, ChuDe.TIEU_DE, ChuDe.CHU, 2);
             Bang.nut(g, x + 10 + sb + k + wo + k, yy, sb, sb, "", Bang.PHU, new IAction() {
                 public void perform() {

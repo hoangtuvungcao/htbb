@@ -90,8 +90,9 @@ public final class ManXepHang extends ManBang {
                 int r = h / 2 - 4;
                 // 0.9.6: huy chương tròn (vàng / bạc / đồng, còn lại xám xanh nhạt), số đậm
                 int mau = i == 0 ? ChuDe.VANG : (i == 1 ? 0xC9D2DA : (i == 2 ? 0xE0A15E : ChuDe.NEN_PHU_TOI));
-                GiaoDien.khoiDoc(g, x + 5, y + 4, 2 * r, 2 * r, r, GiaoDien.pha(mau, 0xFFFFFF, 1, 3), mau);
-                ChuDe.chuGiua(g, String.valueOf(i + 1), x + 5 + r, y + 4, 2 * r, ChuDe.SO, i < 3 ? GiaoDien.pha(mau, 0, 3, 5) : ChuDe.CHU_PHU, 2);
+                // 0.9.7: huy chương = khối pixel (vàng / bạc / đồng / gỗ) số trắng viền
+                GiaoDien.khoiPixel(g, x + 5, y + 4, 2 * r, 2 * r, i < 3 ? mau : 0x8E4A1E);
+                ChuDe.chuVienGiua(g, String.valueOf(i + 1), x + 5 + r, y + 4, 2 * r, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
                 int xs = x + 2 * r + 12;
                 int s = h - 6;
                 PokeBody.paintChanDung(g, LoaiPokemonClient.khoiDau(Math.max(0, Math.min(4, c.clazz))), false, xs + s / 2, y + 3 + s / 2, s);

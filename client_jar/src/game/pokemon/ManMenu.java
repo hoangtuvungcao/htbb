@@ -23,7 +23,7 @@ public final class ManMenu extends Screen {
     static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
         "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh"};
     /** màu ô (nền nhạt + biểu tượng màu) */
-    static final int[] MAU = {ChuDe.DO, ChuDe.TIM, ChuDe.LA, ChuDe.HONG, 0x6DAA2C, ChuDe.TEAL, ChuDe.XANH, 0xE09B00, ChuDe.XAM,
+    static final int[] MAU = {ChuDe.DO, ChuDe.TIM, ChuDe.LA, ChuDe.HONG, 0x6DAA2C, ChuDe.CAM, ChuDe.XANH, 0xE09B00, ChuDe.XAM,
         0x5C6BC0, ChuDe.CHINH_TOI};
     static final int[] HINH = {BieuTuong.POKEBALL, BieuTuong.DEX, BieuTuong.DOI, BieuTuong.SU_KIEN, BieuTuong.SINH_THAI,
         BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH, BieuTuong.TU_DONG};
