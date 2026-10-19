@@ -3316,13 +3316,9 @@ public class GameScr : MyScreen
 						{
 							mainChar.chat = null;
 							focusedActor.chat = null;
-							if (!focusedActor.isNpcChar() && focusedActor.getTypeNpc() != 7 && focusedActor.getTypeNpc() != 10 && focusedActor.getTypeNpc() != 22 && focusedActor.getTypeNpc() != 31 && focusedActor.getTypeNpc() != 21 && focusedActor.getTypeNpc() != 25)
+							if (!focusedActor.isNpcChar())
 							{
-								addChat(focusedActor, Res.getDefaultChat(focusedActor.getTypeNpc()), 500);
-							}
-							else if (!focusedActor.isNpcChar())
-							{
-								showNpcMenu(focusedActor.getTypeNpc(), new mVector());
+								moChucNangNpc(focusedActor.getTypeNpc());
 							}
 						};
 						mVector3.addElement(command2);
@@ -3330,22 +3326,14 @@ public class GameScr : MyScreen
 						return;
 					}
 					focusedActor.chat = null;
-					if (!focusedActor.isNpcChar() && focusedActor.getTypeNpc() != 7 && focusedActor.getTypeNpc() != 10 && focusedActor.getTypeNpc() != 22 && focusedActor.getTypeNpc() != 31 && focusedActor.getTypeNpc() != 21 && focusedActor.getTypeNpc() != 25)
+					if (!focusedActor.isNpcChar())
 					{
-						addChat(focusedActor, Res.getDefaultChat(focusedActor.getTypeNpc()), 500);
+						moChucNangNpc(focusedActor.getTypeNpc());
 					}
-					else if (!focusedActor.isNpcChar())
-					{
-						showNpcMenu(focusedActor.getTypeNpc(), new mVector());
-					}
-				}
-				else if (focusedActor.getTypeNpc() == 2 || (focusedActor.getTypeNpc() > 10 && focusedActor.getTypeNpc() != 29 && focusedActor.getTypeNpc() != 24 && focusedActor.getTypeNpc() != 26 && focusedActor.getTypeNpc() != 30) || focusedActor.getTypeNpc() == 3 || focusedActor.getTypeNpc() == 27 || focusedActor.getTypeNpc() == 28)
-				{
-					showNpcMenu(focusedActor.getTypeNpc(), new mVector());
 				}
 				else
 				{
-					GameService.gI().requestNPCInfo(focusedActor.getTypeNpc());
+					moChucNangNpc(focusedActor.getTypeNpc());
 				}
 			}
 			if (focusedActor.catagory != Actor.CAT_MY_GROUND)
@@ -3501,6 +3489,27 @@ public class GameScr : MyScreen
 		if (!autoFight || flag)
 		{
 			sendActorMove((short)(mainChar.x + num3), (short)(mainChar.y + num4));
+		}
+	}
+
+	/// <summary>
+	/// Bấm NPC tĩnh (cMap): mở đúng chức năng của NPC ở MỌI bản đồ (trước đây ở bản đồ ngoài trời chỉ hiện câu
+	/// chào, nên Chansey, Kecleon, Machamp, Bronzong... ở các thị trấn Hoenn không dùng được). NPC chỉ để trò
+	/// chuyện (gác cổng, trưởng làng, giao nhiệm vụ) vẫn nói câu chào. Giống client J2ME (GameScr.moChucNangNpc).
+	/// </summary>
+	private void moChucNangNpc(int type)
+	{
+		if (type == 4 || type == 5 || type == 8 || type == 23)
+		{
+			addChat(focusedActor, Res.getDefaultChat(type), 500);
+		}
+		else if (type == 2 || type == 3 || type == 7 || type == 10 || type == 27 || type == 28 || (type > 10 && type != 24 && type != 26 && type != 29 && type != 30))
+		{
+			showNpcMenu(type, new mVector());
+		}
+		else
+		{
+			GameService.gI().requestNPCInfo(type);
 		}
 	}
 
@@ -3738,6 +3747,11 @@ public class GameScr : MyScreen
 					}
 					Canvas.menu.startAt(mVector2, 3);
 				}
+				else
+				{
+					// Ban do khong co tuyen bay san (vd Pidgeot o Fortree, Hoenn): xin server danh sach diem bay.
+					GameService.gI().requestNPCInfo(type);
+				}
 			};
 			command14.action = action10;
 			menu.addElement(command14);
@@ -3784,10 +3798,10 @@ public class GameScr : MyScreen
 		}
 		else if (type == 22 || type == 31)
 		{
-			Command command19 = new Command("Nạp xu");
+			Command command19 = new Command("Ngân hàng xu, lượng");
 			ActionPerform action15 = () =>
 			{
-				doNapXu();
+				GameService.gI().requestNPCInfo(type);
 			};
 			command19.action = action15;
 			menu.addElement(command19);
@@ -3808,13 +3822,7 @@ public class GameScr : MyScreen
 			};
 			command21.action = action17;
 			menu.addElement(command21);
-			Command command22 = new Command("Chuyển thẻ");
-			ActionPerform action18 = () =>
-			{
-				gameService.giveCard2NPC(focusedActor.x / 16, focusedActor.y / 16);
-			};
-			command22.action = action18;
-			menu.addElement(command22);
+			// "Chuyển thẻ" (goi -25) da go: server khong xu ly; giao the Chiem Gym o NPC doi (-29/-4/-5). Giong client J2ME.
 		}
 		else if (type == 21)
 		{

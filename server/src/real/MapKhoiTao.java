@@ -467,10 +467,9 @@ class MapKhoiTao {
                 CharManager.instance.put(bot);
             }
 
-            if (map.mapId == 5 || map.mapId == 401 || map.mapId == 402 || map.mapId == 403 || map.mapId == 404) {
-                map.addPlayer(0, (Char) Map.npcHoatieu.get(14), 0);
-                map.addPlayer(1, (Char) Map.npcHoatieu.get(14), 0);
-            }
+            // NPC "doi tieu" (-52, Map.npcHoatieu.get(14)) tung dat o map 5: khong co menu (RequestNPCInfoHandler) va
+            // khong co xu ly (MapDoMenu) -> bam vao khong co gi. Go khoi ban do 19/10/2026; doi tuong bot van tao
+            // trong MapNapTaiNguyen de chi so 15/16 cua npcHoatieu (hoa tieu -100/-101) giu nguyen.
 
             map.startWindVilage();
             map.startSandVilage();

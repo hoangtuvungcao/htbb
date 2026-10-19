@@ -8467,7 +8467,7 @@ public class Map implements Runnable {
     }
 
     void doAddNewAttribute(Char player, short idItem, short idMaterial, byte lock) {
-        if (player.map.isMapOffline) {
+        if (NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
             if (!player.isCorrectPass && !player.passWord.equals("")) {
                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
             } else {
@@ -11368,7 +11368,7 @@ public class Map implements Runnable {
      * RealController xu ly het, khong bao gio xuong doMenu.
      */
     public void showMenuHoTro(Char player) {
-        String[] menuHoTro = new String[]{"Xóa Pet (500L)", "Xóa Thú Cưỡi (500L)"};
+        String[] menuHoTro = new String[]{"Xóa pet (500 lượng)", "Xóa thú cưỡi (500 lượng)"};
         player.sendMessage(MessageCreator.createMsgMenu(menuHoTro, -519, 0));
     }
 
@@ -13543,7 +13543,22 @@ public class Map implements Runnable {
 
 
 
+    /**
+     * NPC cho (-37, ban do nap 10): mo cua so cho nguoi choi. Truoc chi MapTown co than ham nay, con ban do 10 la Map
+     * thuong nen bam "Mua ban" khong co gi xay ra.
+     */
     public void doMenuTown(Char player, int idNpc, int idMenu, int idOptionMenu) {
+        if (!openMarket) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chợ đang bảo trì.", ""));
+            return;
+        }
+        if (idMenu == 0 && idOptionMenu == 0) {
+            createListItemMarket(player, null, -1);
+            createListItemMarket(player, player.getAllistItemSell(), 2);
+            createListItemMarket(player, player.getAllListItemBid(), 4);
+            createListItemMarket(player, player.getAllistItemExpire(), 3);
+            createListItemMarket(player, player.getAllistNewItemSell(), 0);
+        }
     }
 
     void doHoaTieu(Char player, int idNpc, int idMenu, int idOptionMenu) {
@@ -14412,6 +14427,11 @@ public class Map implements Runnable {
             }
 
             long now = System.currentTimeMillis();
+            if (!(this.mapId == 106 || this.mapId == 2421 || this.mapId == 2422 || this.mapId == 2423 || this.mapId == 2424)) {
+                // Ben Lapras khac (Hoenn...): cho do toi ben khac thay vi im lang (real.NpcDichVu).
+                NpcDichVu.moBenDo(player);
+                return;
+            }
             if (this.mapId == 106 || this.mapId == 2421 || this.mapId == 2422 || this.mapId == 2423 || this.mapId == 2424) {
                 player.gotoIsland = true;
                 player.timeWait = TeamServer.timUpBoard;
@@ -15076,7 +15096,9 @@ public class Map implements Runnable {
         }
     }
 
+    /** Goi -25 "Chuyển thẻ" (client cu, NPC tinh 25): khong con xu ly o day - bao noi giao the thay vi im lang. */
     protected void doGiveCardTown(Char player, Message message) {
+        player.sendMessage(MessageCreator.createServerAlertMessage("Giao thẻ Chiếm Gym ở NPC của đội (Lucario / Heracross) khi trận Chiếm Gym diễn ra.", ""));
     }
 
 
@@ -16809,9 +16831,20 @@ public class Map implements Runnable {
                 player.sendMessage(
                         MessageCreator.createMsgNpc("Meowth", posNpcThanTai[player.inCountry][0], posNpcThanTai[player.inCountry][1], 28, 31, 2, 14, -24, (byte) 1)
                 );
-                if (!Char.isFinishAllSuKienHe2017()) {
+                // NPC su kien -49 theo su kien dang chay (real.SuKienNpc - cung thu tu voi menu / xu ly). Truoc day chi
+                // He 2017 ("Mẹ hiền") va Noel ("ông Già Noel") co NPC o day; Tet / Halloween / Gio To chi co trong
+                // plugins/addNPC.java (khong ai goi) nen su kien bat ma khong co NPC de doi qua.
+                final Object[] npcSuKien = SuKienNpc.tenNpcGoi50();
+                if (npcSuKien != null) {
+                    final short[] vt = ((Integer) npcSuKien[1]) == 24 ? posNpcSANTA[player.inCountry] : posNpcVuLan[player.inCountry];
                     player.sendMessage(
-                            MessageCreator.createMsgNpc("Mẹ hiền", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 15, 31, 2, 20, -49, (byte) 1)
+                            MessageCreator.createMsgNpc((String) npcSuKien[0], vt[0], vt[1], 28, 31, 2, (Integer) npcSuKien[1], -49, (byte) 1)
+                    );
+                }
+                // Tet duong lich: NPC doi keo lay qua (-35, RequestNPCInfoHandler) - truoc chi co trong addNPC.java.
+                if (Char.isSuKienTetduonglich2024()) {
+                    player.sendMessage(
+                            MessageCreator.createMsgNpc("Meowth chúc mừng năm mới", posNpcThanTai[player.inCountry][0] + 48, posNpcThanTai[player.inCountry][1], 28, 31, 2, 14, -35, (byte) 1)
                     );
                 }
 
@@ -16833,9 +16866,7 @@ public class Map implements Runnable {
                                     "Cây thông Noel", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 86, 127, 2, 23, -65, (byte) 1
                             )
                     );
-                    player.sendMessage(
-                            MessageCreator.createMsgNpc("ông Già Noel", posNpcSANTA[player.inCountry][0], posNpcSANTA[player.inCountry][1], 20, 31, 2, 24, -49, (byte) 1)
-                    );
+                    // ong gia Noel (-49): da gui o khoi NPC su kien phia tren (SuKienNpc.tenNpcGoi50).
                 }
 
                 if (!Char.isFinishAllSuKienTet2017()) {
