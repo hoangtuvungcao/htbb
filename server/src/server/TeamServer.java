@@ -110,6 +110,10 @@ public class TeamServer {
     // sv.banToiThieu=N (>0): tu choi client jar/Android gui so ban (truong int cuoi goi dang nhap) < N.
     // Client khong gui so ban (PC Unity) luon duoc qua. 0 = tat (mac dinh).
     public static int banToiThieu = 0;
+    // 0.9.7 cap nhat client (com.htbb.capnhat.CapNhatClient): ban moi nhat = so ban tung nen tang trong danh muc tai game
+    // (web /admin/tai-game); sv.banMoiNhat = du phong khi danh muc chua ghi so ban; sv.nhacCapNhat=0 tat nhac ban moi.
+    public static int banMoiNhat = 0;
+    public static boolean nhacCapNhat = true;
     // sv.chiSoMayChu=0: tat bo ghi chi so + che do bao tri bang tep (mac dinh BAT).
     public static boolean batChiSoMayChu = true;
     public static String testCode = "";                     // sv.testCode: mã giftcode test (chỉ chạy khi testMode)
@@ -785,6 +789,8 @@ public class TeamServer {
             TeamServer.testMode = "1".equals(p.getProperty("sv.testMode", "0").trim());
             TeamServer.gmCanCoPInfo = parseIntDefault(p.getProperty("sv.gmCanCoPInfo"), 0) == 1;
             TeamServer.banToiThieu = parseIntDefault(p.getProperty("sv.banToiThieu"), 0);
+            TeamServer.banMoiNhat = parseIntDefault(p.getProperty("sv.banMoiNhat"), 0);
+            TeamServer.nhacCapNhat = parseIntDefault(p.getProperty("sv.nhacCapNhat"), 1) != 0;
             TeamServer.batChiSoMayChu = parseIntDefault(p.getProperty("sv.chiSoMayChu"), 1) != 0;
             TeamServer.testCode = p.getProperty("sv.testCode", "").trim().toLowerCase();
             TeamServer.adminAccounts.clear();
@@ -955,6 +961,8 @@ public class TeamServer {
         // dong da co) roi bat vong lap tu nap lai moi 10 giay. Xem server.CauHinh.
         CauHinh.dongBoLucKhoiDong(p);
         CauHinh.batDau();
+        // 0.9.7: doc danh muc tai game (web_cai_dat 'taiGame') moi 60 giay - nhac / bat buoc cap nhat client
+        com.htbb.capnhat.CapNhatClient.batDau();
         Database.startSaveChar();
         // GD2b: du lieu dai han can template vat pham / quai da nap (nguyen lieu phu, bang roi, alpha,
         // Gym, chieu moi). Tat co: khong lam gi.

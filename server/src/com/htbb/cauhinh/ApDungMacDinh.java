@@ -59,7 +59,7 @@ final class ApDungMacDinh {
 
         CauHinhTrungTam.dangKyNghe(new String[]{"sv.socketTimeout", "sv.maxConnPerIp", "sv.connRateMax", "sv.connRateWindow",
             "sv.dosBanSec", "sv.reloginWaitSec", "sv.tranGoiThuong", "sv.tranGoiTaiNguyen", "sv.tranGoiTraCuu",
-            "sv.gmCanCoPInfo", "sv.banToiThieu", "sv.giaXuBoHoaDoVuLan"}, new NgheThayDoi() {
+            "sv.gmCanCoPInfo", "sv.banToiThieu", "sv.banMoiNhat", "sv.nhacCapNhat", "sv.giaXuBoHoaDoVuLan"}, new NgheThayDoi() {
             public void khiDoi(final Set<String> k, final CauHinhTrungTam.AnhChup m) {
                 server.TeamServer.SOCKET_TIMEOUT_MS = (int) so(m, "sv.socketTimeout", 180) * 1000;
                 server.TeamServer.MAX_CONN_PER_IP = (int) so(m, "sv.maxConnPerIp", 50);
@@ -72,6 +72,8 @@ final class ApDungMacDinh {
                 io.BoDemGoiTin.GOI_TRA_CUU_TOI_DA = (int) so(m, "sv.tranGoiTraCuu", io.BoDemGoiTin.GOI_TRA_CUU_MAC_DINH);
                 server.TeamServer.gmCanCoPInfo = so(m, "sv.gmCanCoPInfo", 0) == 1;
                 server.TeamServer.banToiThieu = (int) so(m, "sv.banToiThieu", 0);
+                server.TeamServer.banMoiNhat = (int) so(m, "sv.banMoiNhat", 0);
+                server.TeamServer.nhacCapNhat = so(m, "sv.nhacCapNhat", 1) != 0;
                 server.TeamServer.giaXuBoHoaDoVuLan = (int) so(m, "sv.giaXuBoHoaDoVuLan", 150000);
             }
         }, "TeamServer (DoS / goi tin / GM)");

@@ -287,10 +287,10 @@ public class LoginHandler implements ICommandHandler {
         } catch (final Exception exBan) {
         }
         session.banClient = banClient;
-        if (TeamServer.banToiThieu > 0 && banClient >= 0 && banClient < TeamServer.banToiThieu) {
-            com.htbb.log.Nhat.thongTin("CLIENT", "tu choi ban cu " + banClient + " < " + TeamServer.banToiThieu + " user=" + com.htbb.log.Nhat.sach(uname));
-            session.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Phiên bản game đã cũ (" + banClient + "). Vui lòng tải bản mới tại " + TeamServer.linkTaiGame, ""));
+        session.platfClient = platf == null ? "" : platf;
+        // 0.9.7 cap nhat client: ban < sv.banToiThieu (va nen tang da co ban tai dat nguong) -> BAT BUOC cap nhat.
+        // Client >= 907: goi -115 (hop "Cần cập nhật" co nut Tải bản mới); client cu: hop 37 co chu + link tai (nut Mo).
+        if (com.htbb.capnhat.CapNhatClient.chanKhiDangNhap(session, uname)) {
             return;
         }
         if (!Map.openLog && TeamServer.server != 1) {
@@ -450,6 +450,7 @@ public class LoginHandler implements ICommandHandler {
         session.sendMessage(MessageCreator.createMsgMonsterTemplate(session.version));
         session.sendMessage(createMsgLogin(session.vsTile));
         session.sendMessage(MessageCreator.createXaphu());
+        com.htbb.capnhat.CapNhatClient.sauDangNhap(session);   // 0.9.7: co ban moi -> nhac (khong chan)
         try {
             if (Map.openLog) {
                 // SECURITY: disabled external user-activity logger that sent userID/username to third-party (27.0.14.121:8032).
@@ -614,6 +615,7 @@ public class LoginHandler implements ICommandHandler {
             s.sendMessage(MessageCreator.createMsgMonsterTemplate(s.version));
             s.sendMessage(createMsgLogin(s.vsTile));
             s.sendMessage(MessageCreator.createXaphu());
+            com.htbb.capnhat.CapNhatClient.sauDangNhap(s);   // 0.9.7: co ban moi -> nhac (khong chan)
         } catch (final Exception e) {
             e.printStackTrace();
         }

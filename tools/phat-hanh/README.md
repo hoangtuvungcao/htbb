@@ -32,8 +32,12 @@ REPO=<chu>/<repo-phat-hanh-htbb> sh tools/phat-hanh/phat-hanh.sh pc      "ghi ch
   [docs/build.md](../../docs/build.md) mục Android. Mọi bản sau phải ký cùng khoá.
 - Ghi công PMDCollab (CC BY-NC 4.0): `client_jar/res/GHI_CONG.txt` có trong jar/APK; PC có `GHI_CONG.txt` cạnh `.exe`.
   Script và workflow kiểm có tệp này trước khi phát hành.
-- Trước mỗi bản: tăng `BAN` + `PHIEN_BAN`, ghi thay đổi vào tin tức trên web và `ghiChu` của `phienban.json`; bắt buộc cập nhật thì đặt
-  `sv.banToiThieu=<BAN>` ở server.
+- Trước mỗi bản: tăng `BAN` + `PHIEN_BAN` (MỌI bản công khai kể cả vá nóng: `BAN` mới lớn hơn, `PHIEN_BAN` 3 phần số
+  khớp `BAN` - vá của 0.9.7 là 0.9.8 / `BAN=908`, không dùng 0.9.7.1), ghi thay đổi vào tin tức trên web.
+- **Phát hành cho người chơi (0.9.7+)**: tải tệp lên `/admin/tai-game`, điền *Số bản* = `BAN`, *Phiên bản*, *Có gì mới*,
+  Lưu -> client cũ hơn thấy "Đã có bản mới" và cập nhật một chạm (APK / PC tự tải + kiểm SHA-256). Bắt buộc cập nhật:
+  *Bản tối thiểu* (`sv.banToiThieu`) ở `/admin/cau-hinh-he-thong`. Chi tiết: [docs/build.md](../../docs/build.md) mục
+  "Số bản và cập nhật client".
 
 ### GitHub Actions — workflow "Phát hành HTBB" (`.github/workflows/phat-hanh-htbb.yml`)
 

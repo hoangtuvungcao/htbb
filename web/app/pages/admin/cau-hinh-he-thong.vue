@@ -11,6 +11,7 @@
  * Máy thử (dev / HTBB_CHO_PHEP_THU_NGHIEM=1) có nút "Hiện khoá cố định".
  */
 import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
+import type { BanTai } from '#shared/utils/taiGame'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 const api = useAdminApi()
@@ -35,6 +36,10 @@ const mucNhom = computed(() => [{ label: 'Tất cả nhóm', value: 'tat_ca' },
   ...NHOM_TT.filter(n => xemAn.value || !n.an).map(n => ({ label: n.ten, value: n.ma }))])
 const demLop = demLopTT()
 const ghiDuoc = computed(() => !!data.value?.quyen.ghi)
+
+// ---- bản đang phát từng nền tảng (web_cai_dat 'taiGame') - giải thích "Bản mới nhất / Bản tối thiểu" ----
+const { data: cmsCk } = useAsyncData('admin-cau-hinh-tai-game', () => $fetch<{ taiGame?: { ban?: BanTai[] } }>('/api/cong-khai'), { server: false })
+const banTai = computed(() => (cmsCk.value?.taiGame?.ban ?? []).filter(b => b.ma !== 'ios' && b.hien))
 
 useIntervalFn(() => {
   if (document.visibilityState === 'visible' && ch.soThayDoi.value === 0 && !moXemTruoc.value) refresh()
@@ -224,6 +229,13 @@ async function hoanTac(d: DongLs) {
               <p class="text-xs text-muted">{{ n.moTa }}</p>
               <p v-if="n.ma === 'su_kien'" class="mt-1 text-xs"><NuxtLink to="/admin/sukien" class="text-primary hover:underline">Bật/tắt từng sự kiện →</NuxtLink></p>
               <p v-if="n.ma === 'nap_tien'" class="mt-1 text-xs"><NuxtLink to="/admin/naptien" class="text-primary hover:underline">Đơn, gói, hoàn tiền →</NuxtLink></p>
+              <div v-if="n.ma === 'bao_tri'" class="mt-2 rounded-md border border-default bg-elevated/40 p-2 text-xs text-muted">
+                <p><b class="text-highlighted">Cập nhật client — hai mức:</b> <b>Bản mới nhất</b> = “Số bản” từng nền tảng ở trang
+                  <NuxtLink to="/admin/tai-game" class="text-primary hover:underline">Bản tải game</NuxtLink>
+                  (client cũ hơn thấy “Đã có bản mới — Cập nhật ngay / Để sau”, nhắc 1 lần/ngày, vẫn chơi được).
+                  <b>Bản tối thiểu</b> = ô “Bản tối thiểu (bắt buộc cập nhật)” dưới đây (cũ hơn thì không vào được game, hiện nút Tải bản mới).</p>
+                <p v-if="banTai.length" class="mt-1">Đang phát: <span v-for="(b, i) in banTai" :key="b.ma">{{ i ? ' · ' : '' }}{{ b.ten }} <b>{{ b.ban || '—' }}</b><template v-if="b.phienBan"> ({{ b.phienBan }})</template></span></p>
+              </div>
             </div>
           </template>
           <AdminHethongCauHinhKhoa v-for="k in n.khoa" :key="k.khoa" :k="k" :ch="ch" />

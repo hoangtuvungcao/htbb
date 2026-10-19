@@ -242,6 +242,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 game.pokemon.VungCham.xuLy();
                 game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
                 game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
+                game.pokemon.CapNhat.tick();   // 0.9.7: hộp bắt buộc cập nhật luôn trên cùng, thẻ "Đã có bản mới" khi vào thế giới
                 game.pokemon.NhipVe.xong(game.pokemon.NhipVe.NHAP);
                 if (menu.showMenu) {
                     menu.updateMenuKey();
