@@ -219,10 +219,13 @@ VA_CAMERA = [
      "        %sHdZoom.batDau(g, this);   // apk: lớp thế giới phóng 2\n"
      "        %sHdZoom.nen(g, cmx - 5, cmy - 5, gsw + 10, gsh + 10);\n" % (HD, HD),
      1),
+    # 0.9.6.2: hết lớp thế giới TRƯỚC "if (laNen) return" - GameScr.veNen (thế giới làm nền cho Menu / bảng) trước đây
+    # thoát sớm khi phép phóng x2 còn bật -> Menu chính / bảng vẽ phóng x2 tràn màn, chạm lệch (không bấm được)
     ("game/render/screen/GameScr.java",
-     "            paintFocusActorInfo(g);\n            paintMainCharInfo(g);\n",
-     "            %sHdZoom.ket(g);   // apk: hết lớp thế giới -> HUD\n"
-     "            paintFocusActorInfo(g);\n            paintMainCharInfo(g);\n" % HD,
+     "        game.pokemon.NhipVe.hetTheGioi();\n        if (laNen) {\n",
+     "        game.pokemon.NhipVe.hetTheGioi();\n"
+     "        %sHdZoom.ket(g);   // apk: hết lớp thế giới -> HUD / bảng phía trên (cả khi chỉ vẽ làm nền)\n"
+     "        if (laNen) {\n" % HD,
      1),
     ("game/render/screen/GameScr.java", "cmx + Canvas.px", "%sHdZoom.wx(cmx, Canvas.px)" % HD, 3),
     ("game/render/screen/GameScr.java", "cmy + Canvas.py", "%sHdZoom.wy(cmy, Canvas.py)" % HD, 3),
