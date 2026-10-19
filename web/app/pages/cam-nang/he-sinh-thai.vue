@@ -18,7 +18,7 @@ const KY_NANG_MO: Record<string, string> = {
   'Trồng trọt': 'Vườn berry trên bản đồ nhà riêng; bạn bè tưới giúp được thêm sản lượng.',
   'Khảo cổ': 'Đào ở hang, núi, sa mạc, vùng tuyết: mảnh đá tiến hoá, hoá thạch, đá sao rơi.',
   'Nấu ăn': 'Bánh Poké hồi thể lực, mồi thơm cho câu cá, súp berry tăng EXP kỹ năng.',
-  'Chế thuốc': `Thuốc hồi HP/MP từ berry, tối đa ${H.meThuocNgay} mẻ mỗi ngày.`,
+  'Chế thuốc': `Thuốc hồi HP/PP từ berry, tối đa ${H.meThuocNgay} mẻ mỗi ngày.`,
 }
 const nhomCongThuc = computed(() => H.kyNang.map(k => ({ kyNang: k, ds: H.congThuc.filter(c => c.kyNang === k).sort((a, b) => a.cap - b.cap) })).filter(g => g.ds.length))
 const gioKhung = (g: number) => `${String(g).padStart(2, '0')}:00–${String(g + 1).padStart(2, '0')}:00`

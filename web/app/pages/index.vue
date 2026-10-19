@@ -33,16 +33,6 @@ const { data: site } = await useSite()
 const hoTro = useHoTro().link
 const tenSite = useAppConfig().htbb.tenSite
 
-const stats = [
-  { so: '05', tieuDe: 'Pokémon khởi đầu', mo: 'Chính bạn là Pokémon đó', to: '/huong-dan#khoi-dau' },
-  { so: String(POKEDEX.he.length), tieuDe: 'Hệ Pokémon', mo: 'Nắm khắc hệ là nắm phần thắng', to: '/cam-nang/he-khac-che' },
-  { so: String(POKEDEX.loai.length), tieuDe: 'Loài trong Pokédex', mo: 'Săn, sưu tầm, săn Shiny', to: '/pokedex' },
-  { so: String(CAM_NANG.suKien.length), tieuDe: 'Tuần sự kiện / năm', mo: 'Tuần nào cũng có chuyện vui', to: '/cam-nang/su-kien' },
-]
-
-// Trạng thái máy chủ: chỉ gọi phía trình duyệt (không làm chậm SSR khi CSDL chậm).
-const { data: trangThai, status: ttStatus } = useFetch<{ song: boolean | null, online: number | null }>('/api/trang-thai', { server: false, lazy: true, key: 'trang-thai' })
-
 // Sự kiện thật theo lịch năm (đang diễn ra + 30 ngày tới, đếm ngược theo giờ máy chủ). Chưa có lịch năm (máy chủ game
 // cũ) thì lùi về lịch 52 tuần như trước.
 const skNam = useSuKienNam(30)
@@ -50,6 +40,25 @@ const skHien = computed(() => [
   ...skNam.dang.value.map(l => ({ l, dang: true })),
   ...skNam.sap.value.map(l => ({ l, dang: false })),
 ].slice(0, 4))
+// Dải số liệu: số THẬT (Pokédex sinh từ dữ liệu game, số sự kiện đếm từ lịch năm tự động /api/su-kien).
+// Đếm theo dữ liệu (không theo đồng hồ) để SSR và trình duyệt ra cùng một số.
+const soSuKienNam = computed(() => new Set(skNam.ds.value.map(l => l.ma)).size)
+const stats = computed(() => [
+  { so: String(DEX_KHOI_DAU.length), tieuDe: 'Pokémon khởi đầu', mo: 'Chính bạn là Pokémon đó', to: '/huong-dan#khoi-dau', hinh: 'khoi-dau' },
+  { so: String(POKEDEX.he.length), tieuDe: 'Hệ Pokémon', mo: 'Nắm khắc hệ là nắm phần thắng', to: '/cam-nang/he-khac-che', hinh: 'he' },
+  { so: String(POKEDEX.loai.length), tieuDe: 'Loài trong Pokédex', mo: 'Săn, sưu tầm, săn Shiny', to: '/pokedex', hinh: 'dex' },
+  soSuKienNam.value
+    ? { so: String(soSuKienNam.value), tieuDe: 'Sự kiện trong lịch năm', mo: 'Lễ hội theo ngày thật, cả âm lịch', to: '/cam-nang/su-kien', hinh: 'su-kien' }
+    : { so: '365', tieuDe: 'Ngày có lịch sự kiện', mo: 'Lễ hội theo ngày thật, cả âm lịch', to: '/cam-nang/su-kien', hinh: 'su-kien' },
+])
+const HE_DAI = [1, 2, 4, 3]
+const BO_SUU_TAP = ['trang-bi', 'ky-nang', 'cua-hang', 'pokedex', 'menu', 'npc', 'thu-qua', 'tien-hoa'] as const
+const anhMo = ref<string | null>(null)
+const DEX_DAI = [25, 133, 384]
+
+// Trạng thái máy chủ: chỉ gọi phía trình duyệt (không làm chậm SSR khi CSDL chậm).
+const { data: trangThai, status: ttStatus } = useFetch<{ song: boolean | null, online: number | null }>('/api/trang-thai', { server: false, lazy: true, key: 'trang-thai' })
+
 // Sự kiện tuần này + 2 tuần tới (tính theo ngày trên máy người xem)
 const suKien = ref<SuKienTuan[]>([])
 const lich = useLichSuKien()
@@ -192,22 +201,33 @@ const faq = computed(() => [
       </UContainer>
     </section>
 
-    <!-- ============ DẢI SỐ LIỆU ============ -->
-    <div class="bg-[#1a3528] pb-2 pt-1">
+    <!-- ============ DẢI SỐ LIỆU: thẻ trắng, số thật + hình thật (không đè cảnh 5 Pokémon ở đáy hero) ============ -->
+    <div class="relative z-10 pt-8 sm:pt-10">
       <UContainer class="max-w-6xl">
-        <FxReveal>
-          <div class="grid grid-cols-2 overflow-hidden rounded-2xl glass ring-gilded lg:grid-cols-4">
-            <NuxtLink v-for="s in stats" :key="s.tieuDe" :to="s.to" class="flex items-center gap-3 border-[var(--ui-border)] p-4 transition-colors hover:bg-elevated/60 sm:gap-4 sm:p-5 [&:nth-child(-n+2)]:border-b-2 lg:[&:nth-child(-n+2)]:border-b-0 [&:not(:last-child)]:border-r-2 max-lg:[&:nth-child(2)]:border-r-0">
-              <b class="grid size-12 shrink-0 place-items-center rounded-xl bg-screen font-pixel text-sm text-pokered-600 sm:size-14 sm:text-base dark:text-pikachu-300">{{ s.so }}</b>
+        <ul class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+          <li v-for="s in stats" :key="s.tieuDe">
+            <NuxtLink :to="s.to" class="the-go group flex h-full items-center gap-3 p-3 sm:gap-4 sm:p-4">
+              <span class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#e6f7f5] sm:size-16 dark:bg-[#123a3a]" aria-hidden="true">
+                <span v-if="s.hinh === 'khoi-dau'" class="flex -space-x-3">
+                  <img v-for="d in DEX_KHOI_DAU.slice(0, 3)" :key="d" :src="anhChanDung(d)" width="40" height="40" alt="" class="pixelated size-8 rounded-full bg-white ring-2 ring-white">
+                </span>
+                <span v-else-if="s.hinh === 'he'" class="grid grid-cols-2 gap-1">
+                  <span v-for="h in HE_DAI" :key="h" class="size-5 rounded-full border-2 border-white" :style="{ background: mauHe(h).backgroundColor }" />
+                </span>
+                <span v-else-if="s.hinh === 'dex'" class="flex -space-x-3">
+                  <img v-for="d in DEX_DAI" :key="d" :src="anhChanDung(d)" width="40" height="40" alt="" class="pixelated size-8 rounded-full bg-white ring-2 ring-white">
+                </span>
+                <img v-else src="/tien/su_kien_64.png" width="64" height="64" alt="" class="size-10">
+              </span>
               <span class="min-w-0">
-                <strong class="block font-display text-base leading-tight text-highlighted sm:text-lg">{{ s.tieuDe }}</strong>
-                <span class="text-xs text-muted sm:text-sm">{{ s.mo }}</span>
+                <b class="block font-display text-3xl font-extrabold leading-none text-[#127f77] sm:text-4xl dark:text-[#5fe0d4]">{{ s.so }}</b>
+                <strong class="mt-1 block font-display text-sm leading-tight text-highlighted group-hover:text-primary sm:text-base">{{ s.tieuDe }}</strong>
+                <span class="hidden text-xs text-muted sm:block">{{ s.mo }}</span>
               </span>
             </NuxtLink>
-          </div>
-        </FxReveal>
+          </li>
+        </ul>
       </UContainer>
-      <div class="h-10" />
     </div>
 
     <!-- ============ CẢNH PHIM + TÍNH NĂNG ============ -->
@@ -233,8 +253,9 @@ const faq = computed(() => [
             <button v-for="(b, k) in bannerHien" :key="k" type="button" class="size-2.5 rounded-full" :class="k === iBanner ? 'bg-white' : 'bg-white/45'" :aria-label="`Banner ${k + 1}`" @click="iBanner = k" />
           </div>
         </div>
+        <!-- Ảnh chụp thật trong game (thay cảnh đồng cỏ vẽ bằng CSS). Bật / tắt: /admin/trang-chu "Cảnh phim". -->
         <FxReveal v-if="tc.hienCanhPhim">
-          <SiteCanhPhim />
+          <SiteTrinhChieu />
         </FxReveal>
         <FxReveal class="mt-14 text-center">
           <p class="eyebrow">
@@ -247,9 +268,9 @@ const faq = computed(() => [
         <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="(f, i) in tc.tinhNang" :key="f.t">
             <FxReveal :delay="(i % 3) * 0.08" class="h-full">
-              <NuxtLink :to="lienKetAnToan(f.to) || '/'" class="group flex h-full gap-4 rounded-3xl glass p-5 transition hover:-translate-y-1">
-                <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-pikachu-400 text-navy-950 ring-2 ring-[color-mix(in_oklab,var(--poke-outline)_70%,transparent)]"><UIcon :name="f.icon" class="size-6" /></span>
-                <span>
+              <NuxtLink :to="lienKetAnToan(f.to) || '/'" class="the-go group flex h-full flex-col p-3 transition hover:-translate-y-1">
+                <SiteTinhNangHinh :to="lienKetAnToan(f.to) || '/'" :icon="f.icon" />
+                <span class="px-2 pb-2 pt-4">
                   <span class="block font-display text-xl font-bold text-highlighted group-hover:text-primary">{{ f.t }}</span>
                   <span class="mt-1 block text-sm text-muted">{{ f.m }}</span>
                 </span>
@@ -257,6 +278,34 @@ const faq = computed(() => [
             </FxReveal>
           </li>
         </ul>
+
+        <!-- ============ ẢNH TRONG GAME ============ -->
+        <FxReveal class="mt-20 text-center">
+          <p class="eyebrow">
+            Ảnh trong game
+          </p>
+          <h2 id="anh-game-title" class="section-title mt-4 text-4xl text-highlighted sm:text-5xl">
+            Nhìn tận mắt trước khi tải
+          </h2>
+          <p class="mx-auto mt-4 max-w-2xl text-muted">
+            Ảnh chụp thật từ bản {{ BAN_ANH_GAME }} trên PC (1920×1080), cùng giao diện với bản Android và Java.
+          </p>
+        </FxReveal>
+        <ul class="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-labelledby="anh-game-title">
+          <li v-for="m in BO_SUU_TAP" :key="m">
+            <button type="button" class="the-go group block w-full overflow-hidden p-1.5 text-left" :aria-label="`Xem lớn: ${ANH_GAME[m]!.tieuDe}`" @click="anhMo = m">
+              <span class="block overflow-hidden rounded-2xl">
+                <SiteAnhGame :ma="m" sizes="(min-width: 1024px) 300px, 50vw" class="transition-transform duration-300 group-hover:scale-105" />
+              </span>
+              <span class="block px-2 pb-1.5 pt-2.5 font-display text-sm font-bold text-highlighted sm:text-base">{{ ANH_GAME[m]!.tieuDe }}</span>
+            </button>
+          </li>
+        </ul>
+        <UModal :open="!!anhMo" :title="anhMo ? ANH_GAME[anhMo]!.tieuDe : ''" :description="anhMo ? ANH_GAME[anhMo]!.moTa : ''" :ui="{ content: 'sm:max-w-5xl' }" @update:open="v => { if (!v) anhMo = null }">
+          <template #body>
+            <SiteAnhGame v-if="anhMo" :ma="anhMo" sizes="(min-width: 1024px) 1024px, 100vw" class="rounded-xl" />
+          </template>
+        </UModal>
       </UContainer>
     </section>
 

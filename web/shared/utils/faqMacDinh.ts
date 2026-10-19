@@ -34,7 +34,7 @@ export const FAQ_MAC_DINH: { ten: string, hoi: { label: string, content: string 
   {
     ten: 'Chính sách',
     hoi: [
-      { label: 'Có nạp tiền không?', content: 'Không. Đây là dự án fan phi thương mại; không bán vật phẩm, không nhận nạp. Ai nhận tiền nhân danh máy chủ đều là lừa đảo.' },
+      { label: 'Có nạp tiền không?', content: 'Nạp là tuỳ chọn và chỉ mở khi máy chủ bật — duy nhất trên trang Nạp tiền của website, tỷ giá cố định ×1, chỉ mua đồ trang trí và tiện ích. Không có cửa hàng bán sức mạnh. Ai nhận tiền nhân danh máy chủ ở ngoài website đều là lừa đảo.' },
       { label: 'Có bị xoá dữ liệu khi cập nhật không?', content: 'Không có kế hoạch xoá. Nếu cần bảo trì lớn, ban quản trị sẽ thông báo trước trên trang Tin tức.' },
       { label: 'Dùng phần mềm thứ ba, bot có bị khoá?', content: 'Có. Bot, treo máy tự động, lợi dụng lỗi đều bị khoá tài khoản. Hệ thống năng lượng cũng làm bot không có lợi.' },
       { label: 'Website có theo dõi tôi không?', content: 'Không dùng công cụ theo dõi hay quảng cáo bên thứ ba. Xem Chính sách quyền riêng tư.' },

@@ -41,9 +41,9 @@ const taiNguyen = [
   { ten: 'Kenney — Interface / Impact / RPG / Digital Audio, Music Jingles', url: 'https://kenney.nl/assets', dung: 'Tiếng hiệu ứng trong game', gp: 'CC0 1.0' },
   { ten: 'game-icons.net (Lorc, Delapouite, Skoll, sbed, darkzaitzev)', url: 'https://game-icons.net', dung: 'Hình trên icon chiêu (game, trang Cẩm nang Chiêu thức) — đã sửa đổi thành huy hiệu pixel', gp: 'CC BY 3.0' },
   { ten: 'Nhạc nền chiptune', url: 'https://creativecommons.org/publicdomain/zero/1.0/', dung: 'Nhạc nền trong game (sáng tác riêng cho dự án, không dùng nhạc Pokémon)', gp: 'CC0 1.0' },
-  { ten: 'TimGM6mb (Tim Brechbill, David Bolton)', url: 'https://github.com/musescore/musescore-old', dung: 'Bộ âm thanh MIDI của bản PC Java (tệp riêng, đi kèm nguyên vẹn)', gp: 'GNU GPL v2' },
+  { ten: 'TimGM6mb (Tim Brechbill, David Bolton)', url: 'https://github.com/musescore/musescore-old', dung: 'Bộ âm thanh MIDI của bản Windows (.exe) và Linux (.AppImage) — tệp riêng, đi kèm nguyên vẹn', gp: 'GNU GPL v2' },
   { ten: 'Phông Nunito, Baloo 2, Press Start 2P, Noto Sans', url: 'https://fonts.google.com', dung: 'Chữ trên website (tự host) và trong bản PC', gp: 'SIL Open Font License 1.1' },
-  { ten: 'Eclipse Temurin JRE', url: 'https://adoptium.net', dung: 'Java đi kèm bản PC Windows (bản Java)', gp: 'GPL v2 + Classpath Exception' },
+  { ten: 'Eclipse Temurin JRE', url: 'https://adoptium.net', dung: 'Java đi kèm bản Windows (.exe) và Linux (.AppImage)', gp: 'GPL v2 + Classpath Exception' },
   { ten: 'Lucide Icons', url: 'https://lucide.dev', dung: 'Biểu tượng giao diện website', gp: 'ISC' },
 ]
 

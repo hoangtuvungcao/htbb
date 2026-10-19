@@ -3,7 +3,7 @@
 const DONG = [
   { cls: 0, dex: 4, chinh: 'Sức mạnh', tc: 'Khá', hp: 'Cao', loi: 'Cận chiến cân bằng, sát thương ổn định.' },
   { cls: 1, dex: 1, chinh: 'Sức mạnh', tc: 'Rất cao', hp: 'Khá', loi: 'Tấn công cao nhất khi dồn điểm, trụ tốt.' },
-  { cls: 2, dex: 133, chinh: 'Tinh thần', tc: 'Cao', hp: 'Thấp', loi: 'Máu thấp, bù bằng năng lượng (MP) dồi dào và chiêu hỗ trợ.' },
+  { cls: 2, dex: 133, chinh: 'Tinh thần', tc: 'Cao', hp: 'Thấp', loi: 'Máu thấp, bù bằng PP (điểm dùng chiêu) dồi dào và chiêu hỗ trợ.' },
   { cls: 3, dex: 7, chinh: 'Sức mạnh', tc: 'Rất cao', hp: 'Khá', loi: 'Thủ chắc, phản công mạnh.' },
   { cls: 4, dex: 172, chinh: 'Nhanh nhẹn', tc: 'Cao', hp: 'Thấp', loi: 'Đánh xa, cơ động; máu thấp nên giữ khoảng cách.' },
 ].map(d => ({ ...d, loai: loaiTheoDex(d.dex)! }))

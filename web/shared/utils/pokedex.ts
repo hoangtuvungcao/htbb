@@ -77,6 +77,12 @@ export function anhLoaiDex(l: Pick<LoaiDex, 'anh' | 'anhShiny'>): string {
   return l.anh ?? l.anhShiny ?? ''
 }
 
+/** Chân dung của MỌI loài có trong Pokédex (cả boss, quái, NPC); '' khi không có ảnh. */
+export function anhChanDung(dex: number): string {
+  const l = loaiTheoDex(dex)
+  return l ? anhLoaiDex(l) : ''
+}
+
 export const TEN_VAI_TRO: Record<VaiTroLoai, string> = {
   'khoi-dau': 'Khởi đầu',
   'quai': 'Quái',
