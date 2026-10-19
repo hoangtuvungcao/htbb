@@ -2,19 +2,20 @@
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Giới thiệu game',
-  description: `${tenSite}: MMORPG thời gian thực nơi bạn là một Pokémon. Thế giới Kanto, Johto, Hoenn; 18 hệ, tiến hoá, đội, PvP mùa, sự kiện mỗi tuần — miễn phí, không nạp tiền.`,
+  description: `${tenSite}: MMORPG thời gian thực nơi bạn là một Pokémon. Thế giới Kanto, Johto, Hoenn; 18 hệ, tiến hoá, đội, PvP mùa, lễ hội theo lịch năm — miễn phí, không bán sức mạnh.`,
 })
 const N = CAM_NANG.nhiemVu
 const cung1 = N.cung.filter(c => c.nam === 1)
-const DIEM = [
-  { icon: 'i-lucide-paw-print', t: 'Bạn chính là Pokémon', m: 'Thế giới không có con người. Bạn sinh ra là Charmander, Bulbasaur, Squirtle, Pichu hoặc Eevee — lên cấp và tiến hoá ngay trên bản đồ.' },
-  { icon: 'i-lucide-swords', t: 'Đánh thời gian thực', m: 'MMO hành động: di chuyển, né, xoay chiêu. Không đánh theo lượt.' },
-  { icon: 'i-lucide-flame', t: '18 hệ, khắc hệ dịu hơn', m: `Đủ 18 hệ như bản gốc, hệ số tối đa ×2 và không miễn nhiễm — luôn có cách đánh, luôn có lợi thế.` },
-  { icon: 'i-lucide-heart-handshake', t: 'Công bằng tuyệt đối', m: 'Phi thương mại: không nạp tiền, không bán sức mạnh. Ai chăm chơi, chơi giỏi thì mạnh.' },
-  { icon: 'i-lucide-calendar-heart', t: '52 tuần sự kiện', m: 'Tết, Trung Thu, Ngày cộng đồng, Tuần Shiny, đột kích huyền thoại — mỗi tuần một điều mới.' },
-  { icon: 'i-lucide-hourglass', t: 'Không trần cấp theo mùa', m: `Cấp ${CAM_NANG.capDo.capToiDa} mở cho mọi người ngay từ đầu; lên cấp chậm, năng lượng huấn luyện và bắt kịp giúp người chơi ít giờ không bị bỏ lại.` },
-  { icon: 'i-lucide-palette', t: 'Phong cách Mystery Dungeon', m: 'Sprite PMD động 4 hướng từ cộng đồng PMDCollab, bản đồ vẽ lại tông màu tươi sáng.' },
-  { icon: 'i-lucide-users', t: 'Đội, vùng & thầy trò', m: 'Lập đội, tranh cờ giữa ba vùng, kèm người mới để cùng nhận thưởng.' },
+/** Điểm độc đáo — mỗi thẻ một hình THẬT: chân dung PMD, ảnh chụp trong game hoặc icon tiền tệ / sự kiện của game. */
+const DIEM: { t: string, m: string, dex?: number[], anh?: string, img?: string[], he?: number[] }[] = [
+  { dex: [...DEX_KHOI_DAU], t: 'Bạn chính là Pokémon', m: 'Thế giới không có con người. Bạn sinh ra là Charmander, Bulbasaur, Squirtle, Pichu hoặc Eevee — lên cấp và tiến hoá ngay trên bản đồ.' },
+  { anh: 'chien-dau', t: 'Đánh thời gian thực', m: 'Chạm để đi tới và chọn mục tiêu, nút chiêu to, thuốc HP / PP một chạm. Không đánh theo lượt.' },
+  { he: [1, 2, 4, 3, 10, 14], t: '18 hệ, khắc hệ dịu hơn', m: `Đủ 18 hệ như bản gốc, hệ số tối đa ×2 và không miễn nhiễm — luôn có cách đánh, luôn có lợi thế.` },
+  { img: ['/tien/xu_64.png', '/tien/luong_khoa_64.png', '/tien/luong_64.png'], t: 'Không bán sức mạnh', m: 'Không cửa hàng bán chỉ số. Lượng khoá không giao dịch được, trang bị khoá khi mặc, chuyển xu có chốt chống clone.' },
+  { img: ['/tien/su_kien_64.png'], t: 'Lễ hội theo lịch năm', m: 'Tết, Giỗ Tổ, Vu Lan, Trung Thu, Halloween, Noel tự mở đúng ngày (cả âm lịch); xen giữa là tuần Pokémon, Ngày cộng đồng, đột kích.' },
+  { anh: 'tien-hoa', t: 'Không trần cấp theo mùa', m: `Cấp ${CAM_NANG.capDo.capToiDa} mở cho mọi người ngay từ đầu; lên cấp chậm, năng lượng huấn luyện và bắt kịp giúp người chơi ít giờ không bị bỏ lại.` },
+  { anh: 'the-gioi', t: 'Phong cách Mystery Dungeon', m: 'Sprite PMD động 4 hướng từ cộng đồng PMDCollab, bản đồ vẽ lại tông màu tươi sáng, camera cố định cho mọi người.' },
+  { anh: 'doi', t: 'Đội, vùng & thầy trò', m: 'Lập đội, tranh cờ giữa ba vùng, kèm người mới để cùng nhận thưởng.' },
 ]
 const VUNG = [
   { ten: 'Kanto', dex: 4, mo: 'Nơi mọi hành trình bắt đầu. Đồng cỏ Pallet, Rừng Viridian rậm rạp, Núi Mặt Trăng đầy sao băng, con tàu S.S. Anne và đảo lửa Cinnabar.' },
@@ -55,12 +56,12 @@ const VUNG = [
               </UButton>
             </div>
           </div>
-          <div class="relative isolate overflow-hidden rounded-3xl glass ring-gilded">
-            <SiteHeroSky class="-z-10" />
-            <div class="relative pt-6">
-              <SiteStarterStage nho />
-            </div>
-          </div>
+          <figure class="the-go overflow-hidden p-1.5">
+            <span class="block overflow-hidden rounded-[1.2rem]">
+              <SiteAnhGame ma="khoi-dau" sizes="(min-width: 1024px) 560px, 100vw" alt="Ảnh trong game: màn chọn Pokémon khởi đầu bên hồ lúc hoàng hôn" />
+            </span>
+            <figcaption class="px-3 py-2 text-xs text-dimmed">Màn tạo Pokémon trong game: chạm vào Pokémon trên đường để chọn.</figcaption>
+          </figure>
         </div>
       </UContainer>
     </section>
@@ -103,12 +104,23 @@ const VUNG = [
         <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <li v-for="(d, i) in DIEM" :key="d.t">
             <FxReveal :delay="(i % 4) * 0.06" class="h-full">
-              <div class="h-full rounded-3xl glass p-5">
-                <span class="grid size-11 place-items-center rounded-2xl bg-pikachu-400 text-navy-950 ring-2 ring-[color-mix(in_oklab,var(--poke-outline)_70%,transparent)]"><UIcon :name="d.icon" class="size-5" /></span>
-                <h3 class="mt-4 font-display text-lg font-bold text-highlighted">
+              <div class="the-go h-full p-2.5">
+                <div class="grid h-28 place-items-center overflow-hidden rounded-2xl bg-screen" aria-hidden="true">
+                  <SiteAnhGame v-if="d.anh" :ma="d.anh" sizes="(min-width: 1024px) 270px, (min-width: 640px) 50vw, 100vw" class="h-full" />
+                  <span v-else-if="d.dex" class="flex -space-x-2">
+                    <img v-for="x in d.dex" :key="x" :src="anhChanDung(x)" width="40" height="40" alt="" loading="lazy" class="pixelated size-12 rounded-full bg-white ring-2 ring-white">
+                  </span>
+                  <span v-else-if="d.he" class="flex flex-wrap justify-center gap-1 px-2">
+                    <PokeHeBadge v-for="h in d.he" :key="h" :he="h" size="sm" />
+                  </span>
+                  <span v-else class="flex gap-3">
+                    <img v-for="x in d.img" :key="x" :src="x" width="64" height="64" alt="" loading="lazy" class="size-12">
+                  </span>
+                </div>
+                <h3 class="mt-3 px-2 font-display text-lg font-bold text-highlighted">
                   {{ d.t }}
                 </h3>
-                <p class="mt-1 text-sm text-muted">
+                <p class="mt-1 px-2 pb-2 text-sm text-muted">
                   {{ d.m }}
                 </p>
               </div>

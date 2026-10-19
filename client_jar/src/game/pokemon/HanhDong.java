@@ -118,19 +118,37 @@ public final class HanhDong {
         GameService.gI().chat("hst");
     }
 
-    /** Câu cá tại chỗ (đứng cạnh hồ): hoạt cảnh + lệnh "cauca" như gõ chat. */
+    /**
+     * Nút câu / Enter cạnh hồ: chưa câu -> thả phao xuống mặt nước + "cauca2" (server 0.9.6.1: chờ cá cắn, phải kéo
+     * đúng lúc); đang câu -> kéo cần ("keocan", một lần mỗi lượt - kéo sớm / muộn thì cá thoát). Xa mặt nước: báo ngắn.
+     */
     public static boolean cauCa() {
         if (gs() == null) {
             return false;
         }
         if (SinhThai.dangCau()) {
+            if (SinhThai.keoCan()) {
+                GameService.gI().chat("keocan");
+            }
             return true;
         }
         if (!SinhThai.thuCau()) {
-            return true;   // đã báo "Chỉ có thể câu cá ở hồ."
+            return true;   // đã báo "Hãy đứng gần mặt nước để câu cá"
         }
-        GameService.gI().chat("cauca");
+        GameService.gI().chat("cauca2");
         return true;
+    }
+
+    /** APK (nút đánh lớn kiêm nút câu): đang câu, hoặc cạnh hồ mà không nhắm gì. */
+    public static boolean nutDanhLaCau() {
+        GameScr g = Canvas.gameScr;
+        if (g == null || g.mainChar == null) {
+            return false;
+        }
+        if (SinhThai.dangCau()) {
+            return true;
+        }
+        return g.focusedActor == null && SinhThai.coCho();
     }
 
     // ------------------------------------------------------------------ chạm trong thế giới
@@ -345,6 +363,9 @@ public final class HanhDong {
         if (g == null || g.mainChar == null) {
             return 0;
         }
+        if (SinhThai.dangCau()) {
+            return 3;   // đang câu: nút câu giữ nguyên chỗ (bấm = kéo cần)
+        }
         Actor f = g.focusedActor;
         if (f != null && (f.isNPC() || f.catagory == 2)) {
             return 1;
@@ -352,7 +373,7 @@ public final class HanhDong {
         if (f != null && f.isItemCanGet()) {
             return 2;
         }
-        if ((f == null || f != chon && f.isMonster()) && !SinhThai.dangCau() && SinhThai.ganHo()) {
+        if ((f == null || f != chon && f.isMonster()) && SinhThai.coCho()) {
             return 3;   // cạnh hồ, không tự chọn quái nào: nút câu cá (quái chỉ được tự nhắm theo hướng thì không tính)
         }
         return 0;
@@ -364,12 +385,15 @@ public final class HanhDong {
         if (g == null || Canvas.currentDialog != null || Canvas.menu.showMenu || g.chatMode || HopThoaiDuoi.dangBat()) {
             return false;
         }
+        if (SinhThai.dangCau()) {
+            return cauCa();   // đang câu: Enter = kéo cần
+        }
         Actor f = g.focusedActor;
         if (f != null && (f.isNPC() || f.catagory == 2)) {
             noiVoi(g, f);
             return true;
         }
-        if (f != null && (f == chon || !f.isMonster() || !SinhThai.ganHo() || SinhThai.dangCau())) {
+        if (f != null && (f == chon || !f.isMonster() || !SinhThai.coCho())) {
             return false;   // quái người chơi chọn / đồ / người: phím 5 của game (đánh / nhặt)
         }
         if (f != null) {
@@ -389,7 +413,7 @@ public final class HanhDong {
             chon = doRoi;
             return false;
         }
-        if (!SinhThai.dangCau() && SinhThai.ganHo()) {
+        if (SinhThai.coCho()) {
             return cauCa();
         }
         Actor quai = ganNhat(g, 3, 120);
@@ -402,6 +426,32 @@ public final class HanhDong {
     }
 
     /** Nút đánh khi chưa có mục tiêu: chọn quái gần nhất (tầm ~10 ô). */
+    /**
+     * HUD có nút chiêu RIÊNG (màn rộng HudRong; bản APK vá thêm HUD HD): chiêu không bao giờ là "nói chuyện". J2ME màn
+     * nhỏ giữ hành vi gốc (khi nhắm NPC, thanh ô đáy thành nút "Giao tiếp" - phím ô nào cũng nói chuyện).
+     */
+    public static boolean nutChieuRieng() {
+        return HudRong.bat();
+    }
+
+    /**
+     * GameScr.doFire với phím chiêu (khác 5): đang nhắm NPC -> bỏ nhắm NPC, tự nhắm quái gần nhất (không có thì
+     * không mục tiêu: chiêu bổ trợ dùng cho mình, chiêu đánh không làm gì) - không mở cửa hàng / menu NPC.
+     * Ô thuốc giữ nguyên mục tiêu.
+     */
+    public static void boNhamNpcKhiDungChieu(GameScr g, game.model.QuickSlot qs) {
+        Actor f = g.focusedActor;
+        if (f == null || !(f.isNPC() || f.isNpcChar() || f.catagory == 2)) {
+            return;
+        }
+        if (qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_POTION) {
+            return;
+        }
+        boChon();
+        g.focusedActor = null;
+        tuChonQuai(g);
+    }
+
     public static void tuChonQuai(GameScr g) {
         Actor q = ganNhat(g, 3, 160);
         if (q != null) {

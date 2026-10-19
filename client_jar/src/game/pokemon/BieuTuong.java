@@ -27,14 +27,14 @@ public final class BieuTuong {
             H_BONG_TOI = 41, H_THEP = 42, H_DAT = 43, H_BANG = 44,
             // thông báo / điều khiển (0.9.5): máy ảnh (album), xu, thông tin, cảnh báo, lỗi, đóng (X), lùi, hộp đồ
             CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52,
-            // 0.9.7 (icon pixel NRO, chỉ có ảnh /nro/icon.png - không có lệnh vector): thú cưng (bàn chân), cần câu, ổ
-            // khoá, mở rộng (+), lượng (ngọc), vứt, trận đấu, bạn bè, thoát
-            THU_CUNG = 53, CAN_CAU = 54, KHOA = 55, MO_RONG = 56, LUONG = 57, VUT = 58, TRAN = 59, BAN_BE = 60, THOAT = 61;
+            // 0.9.6.1: cần câu (nút câu cạnh hồ). 0.9.7 (icon pixel NRO, chỉ có ảnh /nro/icon.png - không có lệnh vector):
+            // thú cưng (bàn chân), ổ khoá, mở rộng (+), lượng (ngọc), vứt, trận đấu, bạn bè, thoát
+            CAN_CAU = 53, THU_CUNG = 54, KHOA = 55, MO_RONG = 56, LUONG = 57, VUT = 58, TRAN = 59, BAN_BE = 60, THOAT = 61;
 
     /** số id biểu tượng (kể cả id chỉ có icon pixel) */
     public static final int SO = 62;
 
-    static final float[][] HINH = new float[53][];
+    static final float[][] HINH = new float[54][];
 
     /** Biểu tượng hệ theo số hệ (PokeChieu.he / KieuO.mauHe). */
     public static int heIcon(int he) {
@@ -166,6 +166,10 @@ public final class BieuTuong {
         HINH[DONG] = new float[]{MAU, c, NET, 20, 20, 80, 80, 18, NET, 80, 20, 20, 80, 18};
         HINH[LUI] = new float[]{MAU, c, DUONG, 3, 18, 66, 14, 30, 50, 66, 86};
         HINH[HOP_DO] = new float[]{MAU, c, CHU_NHAT, 14, 32, 72, 56, 8, MAU, d, CHU_NHAT, 8, 20, 84, 22, 7, MAU, n, CHU_NHAT, 44, 20, 12, 68, 0};
+        // cần câu chéo + guồng + dây + phao (nửa trên màu chính, nửa dưới trắng)
+        HINH[CAN_CAU] = new float[]{MAU, d, NET, 14, 88, 66, 14, 10, MAU, c, NET, 16, 86, 64, 16, 6, MAU, d, TRON, 30, 68, 11,
+            MAU, l, TRON, 30, 68, 6, MAU, d, NET, 66, 14, 80, 56, 3, MAU, d, TRON, 80, 70, 13, MAU, t, TRON, 80, 70, 10,
+            MAU, c, CUNG, 80, 70, 10, 0, 180, 10};
         HINH[DOI_BO] = new float[]{MAU, c, CUNG, 50, 50, 30, 30, 260, 9, DA_GIAC, 3, 78, 14, 86, 44, 56, 36};
     }
 

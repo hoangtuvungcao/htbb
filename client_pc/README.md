@@ -53,6 +53,8 @@ Ra `client_pc/out/`: `HTBB-PC.jar` (fat jar), `HTBB.sh` / `HTBB.bat` / `HTBB.com
 - Vùng chơi CỐ ĐỊNH 640x360 logic, thế giới phóng cố định x2 (thấy 20 x 11,25 ô ở mọi cỡ cửa sổ - không thu phóng):
   cửa sổ to / phóng to / toàn màn chỉ làm hình to hơn (hệ số nguyên khi vừa, không thì thu vừa), phần dư là viền.
   Cỡ cửa sổ thường + trạng thái phóng to lưu ở `cua_so_rong` / `cua_so_cao` / `phong_to`.
+- Trình bày (0.9.6.1): Linux / macOS dùng BufferStrategy kiểu CHÉP (Blt), tạo lại mỗi khi cỡ cửa sổ đổi hoặc vừa lỗi
+  (lật trang XDBE trên Xwayland đen màn khi cửa sổ to ra); Windows giữ mặc định. `-Dhtbb.lat=true|false` để ép.
 
 ## Kiểm thử (không cần màn hình)
 
@@ -67,10 +69,24 @@ Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `serv
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần);
+- `KiemChamHud`: chạm HUD màn chơi ở 11 cỡ - vùng chạm thật mọi nút (kể cả viên "1/2", câu cá, ô "+") không chồng
+  nhau, chạm ô chiêu = đúng chiêu đó (ô "+" = bảng gán), nhắm NPC thì chiêu không mở cửa hàng / menu NPC, viên "1/2" /
+  phím R / phím 0 đổi bộ chiêu;
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
+- `KiemThongBao` (0.9.6.1): thông báo (game.pokemon.ThongBao + DungDo) - phân loại câu máy chủ thật, thời gian hiện
+  >= tối thiểu theo loại / độ dài, hàng đợi (tối đa 3 thẻ, không mất thẻ nào, mỗi thẻ hiện đủ thời gian đọc), gói -104 có
+  hình, kết quả câu cá hiện lúc kéo cần (không hộp chặn), và vẽ mọi kiểu thẻ / biểu ngữ ở 11 cỡ (trong vùng an toàn, không
+  chồng nhau / nút HUD);
 - `KiemNhiemVu`: hội thoại / nhận nhiệm vụ bằng chạm / chuột / phím;
+- `KiemHopChiTiet` (0.9.6.1): thẻ chi tiết vật phẩm chung (game.pokemon.HopChiTiet - cửa hàng / cửa hàng đá / hành trang)
+  ở 11 cỡ + J2ME: trong vùng an toàn, giữa, <= 80 %, chữ + nút trong thẻ, nút không đè chữ, tên một đoạn, có giá;
+- `KiemTruotDoiCo` (0.9.6.1): thanh trượt (Bang.thanhTruot - bảng Tự động đánh) theo ngón / chuột từng lần kéo, lưu khi
+  thả (kể cả thả ngoài thanh); đổi cỡ cửa sổ nhỏ -> TO HƠN cỡ đầu -> phóng to / 21:9 / 4:3 / toàn màn: khung đúng cỡ mới,
+  phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
+- `KiemCapNhat` (0.9.7): cập nhật trong game (game.pokemon.CapNhat + htbb.capnhat / htbb.pc.CapNhatPc) - gói -115, hộp nhắc /
+  bắt buộc ở mọi cỡ, tải qua máy chủ HTTP cục bộ (SHA-256 lệch / 404 / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài /SILENT);
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

@@ -772,9 +772,12 @@ public final class TheVatPham extends Dialog {
             }
         }, "sl-max");
         yy += sb + k;
-        Bang.ghiKeo();
         // giá trị kéo áp ngay mỗi khung (thanhTruot trả giá trị đang hiện)
-        this.so = Bang.thanhTruot(g, x + pad, yy, w - 2 * pad, hn, this.so, 1, max, 1, max <= 1, IAction_KHONG, "sl-truot");
+        this.so = Bang.thanhTruot(g, x + pad, yy, w - 2 * pad, hn, this.so, 1, max, 1, max <= 1, new IAction() {
+            public void perform() {
+                t.so = Bang.giaTriTha();
+            }
+        }, "sl-truot");
         yy += hn + k;
         if (this.chonSo == 2) {
             long tong = Math.max(0, giaBan()) * this.so;

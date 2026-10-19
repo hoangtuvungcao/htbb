@@ -1634,6 +1634,11 @@ public class MessageCreator {
      */
     static short hoiChieuGui(final Char p, final int j, final int k) {
         final int goc = CharManager.SKILL_COOLDOWN[p.charClass][j][k];
+        // chieu ho tro: hoi chieu that cua server (ChieuHoTro, >= thoi luong + bien), khong theo bang
+        final long hoTro = ChieuHoTro.hoiChieuOMs(p.charClass, j, k);
+        if (hoTro >= 0) {
+            return (short) Math.min(Short.MAX_VALUE, Math.max(goc, (hoTro + 99) / 100));
+        }
         // goc > 327: goc * 100 tran kieu short cua Char.coolDown (chieu buff 600..1700) -> giu bang goc.
         if (goc <= 0 || goc > 327) {
             return (short) goc;

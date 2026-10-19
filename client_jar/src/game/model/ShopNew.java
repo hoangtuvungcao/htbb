@@ -3468,47 +3468,39 @@ public class ShopNew extends Screen {
     }
 
     private void paintShowText(Graphics g) {
-        // pokemon: hộp chi tiết đồ kiểu Pokémon (bảng xanh viền trắng), dải màu độ hiếm trên cùng,
-        // vạch ngăn dưới dòng tên
-        int hHop = this.hShow + (this.countPop * 15);
-        game.pokemon.GiaoDien.bang(g, this.xShow - 3, this.yShow - 3, this.wShow + 6, hHop + 6);
-        int mauTen = -1;
-        if (this.showText != null && this.showText.length > 0 && this.showText[0].length() > 0 && isDegit(this.showText[0].charAt(0))) {
-            mauTen = game.pokemon.KieuO.mauHiem(this.showText[0].charAt(0) - '0');
+        // 0.9.6.1: thẻ chi tiết chung (tên ngắt cả cụm + biểu tượng, thân đo theo phông thật, giá có biểu tượng tiền,
+        // nút ở hàng chân TRONG thẻ - không còn phím mềm đáy màn đè lên chữ)
+        int[] r = game.pokemon.HopChiTiet.ve(g, this.textShow, this.arrayKhamNgoc, this.iconShow, this.left, this.center, this.right, cmyText);
+        this.xShow = r[0];
+        this.yShow = r[1];
+        this.wShow = r[2];
+        this.hShow = r[3];
+        this.countPop = 0;
+        cmyLimText = r[4];
+        if (cmtoYText > cmyLimText) {
+            cmtoYText = cmyLimText;
         }
-        game.pokemon.GiaoDien.khoi(g, this.xShow + 6, this.yShow - 1, this.wShow - 12, 3, 1, mauTen >= 0 ? mauTen : game.pokemon.GiaoDien.DO);
-        int yy = 0;
-        g.setClip(this.xShow, this.yShow, this.wShow, (this.hShow + (this.countPop * 15)) - 2);
-        g.translate(0, -cmyText);
-        for (int i = 0; i < this.showText.length + this.countPop; i++) {
-            if (i == 1 && this.arrayKhamNgoc != null && this.arrayKhamNgoc.length > 0) {
-                for (int j = 0; j < this.arrayKhamNgoc.length; j++) {
-                    g.drawImage(Res.imgKham, this.xShow + 12 + (j * 20), this.yShow + 12 + yy, 3);
-                    if (this.arrayKhamNgoc[j] != -1) {
-                        Res.paintGem(g, this.arrayKhamNgoc[j], this.xShow + 12 + (j * 20), this.yShow + 12 + yy);
-                    }
-                }
-                yy += 18;
-            }
-            if (!this.showText[i].equals("")) {
-                byte color = (byte) (this.showText[i].charAt(0) - '0');
-                byte indexsub = 1;
-                if (!isDegit(this.showText[i].charAt(0))) {
-                    color = 0;
-                    indexsub = 0;
-                }
-                Font.normalFont[color >= 6 ? (byte) 0 : color].drawString(g, this.showText[i].substring(indexsub), this.xShow + 4, this.yShow + 4 + yy, 0);
-                yy += 15;
-                if (i == 0) {
-                    g.setColor(game.pokemon.GiaoDien.XANH_SANG);
-                    g.fillRect(this.xShow + 4, this.yShow + 3 + yy, this.wShow - 8, 1);
-                    yy += 2;
+    }
+
+    /** Chuỗi chi tiết đang hiện (thô, có tiền tố màu) + biểu tượng ô đang chọn; phím mềm trước khi mở thẻ. */
+    private String textShow;
+    private Command iconShow;
+    private boolean anNutCu;
+
+    /** Lệnh ô đang chọn (có paint vẽ biểu tượng) - biểu tượng đầu thẻ chi tiết; null = không. */
+    private Command iconChon() {
+        try {
+            int e = this.selected + (this.countTabMyitem * this.numCell);
+            if (e >= 0 && e < this.list.size()) {
+                Object o = this.list.elementAt(e);
+                if (game.pokemon.HopChiTiet.coHinh(o)) {
+                    return (Command) o;
                 }
             }
+        } catch (Throwable t) {
+            // không có biểu tượng
         }
-        if (this.countPop < 0) {
-            this.countPop++;
-        }
+        return null;
     }
 
     public static boolean isDegit(char c) {
@@ -3544,6 +3536,9 @@ public class ShopNew extends Screen {
     }
 
     public void closeText() {
+        if (this.isShowText) {
+            this.anNutLenh = this.anNutCu;
+        }
         this.isShowText = false;
         this.arrayKhamNgoc = null;
     }
@@ -3552,6 +3547,10 @@ public class ShopNew extends Screen {
         if (!this.isShowText) {
             this.isShowText = true;
             String text3 = text2.replace((char) 194, (char) 226);
+            this.textShow = text3;
+            this.iconShow = iconChon();
+            this.anNutCu = this.anNutLenh;
+            this.anNutLenh = true;
             this.wShow = 125;
             this.xShow = (((x1 + this.x) + this.x0) - (this.wShow / 2)) + 9;
             this.yShow = y1 + this.y + this.y0 + 18;

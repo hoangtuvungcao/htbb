@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   DS_NEN_TANG, MA_NEN_TANG, banTaiMacDinh, banTaiSanSang, boDongTepPhu, chuKyTepHopLe, chuanHoaBanTai, hrefCaiDat,
-  loiBanTai, nenTang, nenTangTheoUa, tenTepGameAnToan, urlTaiHopLe,
+  loiBanTai, nenTang, nenTangTheoUa, soBanHopLe, tenTepGameAnToan, urlTaiHopLe,
 } from '../shared/utils/taiGame.ts'
 
 test('chuẩn hoá: dữ liệu (không trangThai) -> đủ 5 nền tảng, giữ thứ tự đã lưu', () => {
@@ -30,7 +30,7 @@ test('đúng 5 bản tải: Java J2ME, Windows, Linux, Android, iOS (chỉ iOS "
   assert.deepEqual(DS_NEN_TANG.filter(n => n.trangThai === 'sap-ra-mat').map(n => n.ma), ['ios'])
   assert.equal(nenTang('android')!.heDieuHanh, 'Android 8.0 trở lên') // client_apk/pokemon minSdk 26
   assert.deepEqual(nenTang('windows')!.duoi, ['exe'])
-  assert.deepEqual(nenTang('linux')!.duoi, ['appimage', 'tar.gz', 'tgz'])
+  assert.deepEqual(nenTang('linux')!.duoi, ['appimage'])
   assert.deepEqual(nenTang('jar')!.duoi, ['jar'])
   assert.deepEqual(nenTang('android')!.duoi, ['apk'])
   for (const ma of ['pc', 'pc-java', 'pc-jar', 'pc-linux', 'macos']) assert.equal(nenTang(ma), undefined, ma)
@@ -62,10 +62,12 @@ test('đổi mã cũ: pc-java -> windows, bỏ pc (Unity) và pc-jar, Linux lấ
   const j = ds.find(b => b.ma === 'jar')!
   assert.equal(j.url, '/tai/HTBB-0.9.4-opentest-thuong.jar')
   assert.equal(j.nhatKy, 'Bản 0.9.4.') // bỏ jar nhẹ
-  // Không còn link tệp phụ nào ở bất kỳ thẻ nào; mọi thẻ hợp lệ để lưu lại.
+  // Không còn link tệp phụ nào ở bất kỳ thẻ nào; mọi thẻ hợp lệ để lưu lại — trừ link Linux .tar.gz cũ:
+  // từ 0.9.5 bản Linux chỉ là .AppImage, admin phải đổi sang tệp mới trước khi lưu.
   for (const b of ds) {
     assert.ok(!/\/tai\//.test(b.nhatKy), b.ma)
-    assert.equal(loiBanTai(b), null, b.ma)
+    if (b.ma === 'linux') assert.match(loiBanTai(b)!, /AppImage/)
+    else assert.equal(loiBanTai(b), null, b.ma)
   }
   // Chuẩn hoá lần hai không đổi gì (dữ liệu mới giữ nguyên thứ tự admin đã xếp).
   assert.deepEqual(chuanHoaBanTai(JSON.parse(JSON.stringify(ds))), ds)
@@ -85,7 +87,8 @@ test('mỗi nền tảng một loại tệp', () => {
   assert.match(loiBanTai({ ...w, url: '/tai/HTBB-PC-Windows-0.9.5.zip' })!, /\.exe/)
   const l = banTaiMacDinh(nenTang('linux')!)
   assert.equal(loiBanTai({ ...l, url: '/tai/HTBB-0.9.5-x86_64.AppImage' }), null)
-  assert.equal(loiBanTai({ ...l, url: 'https://cdn.vn/HTBB-PC-Linux-0.9.5.tar.gz?x=1' }), null)
+  // Từ 0.9.5 bản Linux chỉ là .AppImage: link .tar.gz bị từ chối khi lưu.
+  assert.match(loiBanTai({ ...l, url: 'https://cdn.vn/HTBB-PC-Linux-0.9.5.tar.gz?x=1' })!, /AppImage/)
   assert.match(loiBanTai({ ...l, url: '/tai/HTBB-PC-0.9.5.jar' })!, /AppImage/)
   const j = banTaiMacDinh(nenTang('jar')!)
   assert.equal(loiBanTai({ ...j, url: '/tai/HTBB-0.9.5-opentest-thuong.jar' }), null)
@@ -144,4 +147,27 @@ test('tên tệp + chữ ký byte', () => {
   assert.ok(chuKyTepHopLe('exe', new Uint8Array([0x4D, 0x5A])))
   assert.ok(chuKyTepHopLe('plist', new TextEncoder().encode('<?xml version="1.0"?>')))
   assert.ok(!chuKyTepHopLe('plist', new Uint8Array([0x3C, 0, 1])))
+})
+
+test('số bản (BAN) từng nền tảng: máy chủ game đọc làm bản mới nhất', () => {
+  const ds = chuanHoaBanTai([
+    { ma: 'android', url: '/tai/HTBB-907.apk', ban: 907, phienBan: '0.9.7', trangThai: 'san-sang', hien: true },
+    { ma: 'jar', url: '/tai/HTBB.jar', ban: '908', trangThai: 'san-sang', hien: true },
+    { ma: 'windows', url: '/tai/a.exe', ban: -3 },
+    { ma: 'linux', url: '/tai/a.AppImage', ban: 9.5 },
+  ])
+  const b = (ma: string) => ds.find(x => x.ma === ma)!
+  assert.equal(b('android').ban, 907)
+  assert.equal(b('jar').ban, 908, 'chuỗi số được nhận')
+  assert.equal(b('windows').ban, 0, 'số âm -> 0')
+  assert.equal(b('linux').ban, 0, 'số lẻ -> 0')
+  assert.equal(b('ios').ban, 0, 'thiếu -> 0')
+  assert.equal(banTaiMacDinh(nenTang('jar')!).ban, 0)
+  // dữ liệu cũ đổi mã (pc-java -> windows) không mang số bản cũ sang
+  assert.equal(chuanHoaBanTai([{ ma: 'pc-java', url: '/tai/a.exe', ban: 905 }]).find(x => x.ma === 'windows')!.ban, 0)
+  assert.equal(soBanHopLe(' 907 '), 907)
+  assert.equal(soBanHopLe('9a'), 0)
+  assert.equal(soBanHopLe(1e9), 0)
+  assert.equal(loiBanTai({ ...b('android'), ban: 1.5 }) !== null, true, 'lưu số lẻ bị từ chối')
+  assert.equal(loiBanTai(b('android')), null)
 })

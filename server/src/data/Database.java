@@ -2649,11 +2649,9 @@ public class Database {
             Database.instance.checkDropTable();
         }
 
-        Database.instance.loadAllXoso();
-
-        Database.instance.loadAllXosoLow();
-        Database.instance.createTableXosoLuong();
-        Database.instance.loadAllXosoLuong();
+        // Vong quay gop hu (sua 19/10/2026): bang tob_vong_quay_*, hoan cuoc dang cho cua he cu (nin_xoso*).
+        real.VongQuay.napLucKhoiDong();
+        real.ThachDauCuoc.napLucKhoiDong(); // ky quy thach dau con lai (may tat giua tran) -> hoan du
 
 
         Database.instance.loadCharChienTruong();
@@ -10847,6 +10845,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             return false;
         }
         real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex . Bang rieng, khong can KHOA_LUU.
+        real.DanhHieuGame.luu(p); // danh hieu: bo dem tob_danh_hieu_dem (bang rieng)
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (tat co sv.lau_dai: khong lam gi).
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveChar(this, p, admindExit);
@@ -10859,6 +10858,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             return false;
         }
         real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (cung ban sao voi saveChar).
+        real.DanhHieuGame.luu(p); // danh hieu: bo dem (cung ban sao voi saveChar)
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (cung ban sao voi saveChar).
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveCharAuto(this, p);

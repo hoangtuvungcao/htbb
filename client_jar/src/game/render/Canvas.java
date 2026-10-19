@@ -41,6 +41,11 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     public static boolean isPointerClick;
     public static boolean isPointerDownNj;
     public static boolean isPointerJustRelease;
+    /**
+     * 0.9.6.1: ngón / chuột ĐANG GIỮ thật (nhấn -> thả). Khác isPointerDown: màn / bảng không xoá cờ này mỗi nhịp,
+     * nên điều khiển kéo (thanh trượt Bang.thanhTruot) theo được ngón suốt lúc kéo.
+     */
+    public static boolean dangGiu;
     public static int px;
     public static int py;
     public static int isCheat;
@@ -237,6 +242,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 game.pokemon.VungCham.xuLy();
                 game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
                 game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
+                game.pokemon.CapNhat.tick();   // 0.9.7: hộp bắt buộc cập nhật luôn trên cùng, thẻ "Đã có bản mới" khi vào thế giới
                 game.pokemon.NhipVe.xong(game.pokemon.NhipVe.NHAP);
                 if (menu.showMenu) {
                     menu.updateMenuKey();
@@ -633,6 +639,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     protected void pointerPressed(int x, int y) {
+        dangGiu = true;
         isPointerDown = true;
         isPointerDownNj = true;
         px = x;
@@ -642,6 +649,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     protected void pointerReleased(int x, int y) {
+        dangGiu = false;
         isPointerDown = false;
         isPointerClick = true;
         isPointerRelease = true;
@@ -781,6 +789,11 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
 
     public static void startOKDlg(String info, boolean isIcon) {
         if (AutoGuard.autoEatDlg(info)) {
+            return;
+        }
+        // 0.9.6.1: trong game, hộp "OK" chỉ để báo tin (kết quả, lỗi, nhắc) -> thẻ nhanh không chặn (game.pokemon.ThongBao);
+        // việc nghiêm trọng / nội dung dài vẫn là hộp
+        if (!isIcon && game.pokemon.ThongBao.tuHopOK(info)) {
             return;
         }
         msgdlg.isIcon = isIcon;

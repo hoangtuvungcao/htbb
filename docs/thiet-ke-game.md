@@ -1110,6 +1110,51 @@ trong mô phỏng — vừa lạm phát vừa là mồi nuôi clone). 5.000 xu =
 6 lượng khoá nằm giữa thành tựu cấp 30 (5) và cấp 40 (6). Các mốc cấp khác (thành tựu cấp 10..100) đã đúng thang: 0 xu,
 1–15 lượng khoá.
 
+### 9.7 Vòng quay góp hũ (NPC Rương, mục "Vòng quay")
+
+Chủ game báo 19/10/2026: bấm "Đồng ý" ở hộp *Vòng quay vip* không có gì xảy ra, và "sao giới hạn xu cao vậy?". Hộp đó là
+popup 100, nút Đồng ý chỉ gửi lại đúng hộp đó (khi chưa đủ 2 người, đồng hồ còn bị đặt lại 02:00); 1.100.000 xu trên hộp là
+**hũ** = cược của chính người xem (mức cũ: VIP 1.000.000 – 1.000.000.000 xu / lượt, phải giữ ≥ 5.000.000 xu). Bản mới
+(`real.VongQuay`, luật thuần `com.htbb.pokemon.VongQuayLogic`, test `KiemVongQuay`, `sql/sua_vong_quay.sql`):
+
+- Mỗi loại một hộp riêng (97 VIP / 98 thường / 99 lượng). Đồng ý: chưa đặt → bảng chọn mức (tối thiểu / giữa / tối đa /
+  nhập số khác), đã đặt → làm mới. Hộp ghi rõ hũ, số người, thời gian còn lại, mức bạn đã đặt và cơ hội thắng, giới hạn hôm
+  nay, phí, lượt trước.
+- **Không in tiền:** hũ = tổng cược; người thắng nhận hũ − phí, phí bị huỷ (hố hút). Hết giờ mà chỉ 1 người: **hoàn đủ**,
+  không phí. Lượt 120 giây tính từ người đặt đầu tiên, 10 giây cuối khoá. Người thắng chọn theo trọng số cược trong mọi
+  người đặt (cả người đã thoát game: tiền vào `tob_vong_quay_cho_nhan`, cộng khi đăng nhập).
+- Mức cược theo dải cấp (thu nhập 1 giờ: cấp 20 ≈ 9.000 xu, cấp 50 ≈ 34.000 xu, mục 1.6 của thiết kế cân bằng):
+
+| Loại | Cấp | Mỗi lượt | Mỗi ngày | Phí hũ |
+|---|---|---|---|---|
+| Thường | 20 | 1.000 – 10.000 xu (≤ 1,1 giờ cấp 20) | 10 lượt, 30.000 xu | 10% |
+| VIP | 50 | 10.000 – 50.000 xu (≤ 1,5 giờ cấp 50) | 10 lượt, 100.000 xu | 10% |
+| Lượng | 20 | 10 – 100 lượng (lượng mở, không lượng khoá) | 10 lượt, 300 lượng | 15% |
+
+- Vòng quay chuyển tiền giữa người chơi nên đi qua cổng chống clone (mục 9.6: cấp, tuổi tài khoản, giờ chơi) và mỗi thiết
+  bị / IP tối đa `chong_clone.nv_cung_may_toi_da` (2) Pokémon tham gia mỗi ngày; mỗi lần thua → thắng ghi
+  `tob_log_chuyen_gia_tri` (kiểu `vong_quay`). Phí xu 10% ≥ thuế chợ 6% + 1%, phí lượng 15% ≥ phí chuyển lượng 5%, nên
+  vòng quay không phải đường chuyển rẻ hơn. Khoá cấu hình nhóm `vong_quay.*` (lớp cố định, như thuế / phí khác).
+
+### 9.8 Thách đấu cược xu, lì xì Tết (19/10/2026)
+
+Ba nguồn in / mất xu còn lại sau rà soát vòng quay (chủ game duyệt sửa). Khoá cấu hình nhóm `cuoc_xu` (lớp cố định),
+`sql/sua_vong_quay_2.sql`, test `KiemThachDauCuoc`, `KiemLiXi`.
+
+- **Thách đấu cược xu** (1-1 và nhóm, `real.ThachDauCuoc` + `com.htbb.pokemon.ThachDauLogic`): **ký quỹ** cả hai bên
+  trong một khoá lúc chấp nhận (bên sau thiếu → hoàn bên trước, huỷ trận); thắng → bên thắng nhận 2 × cược − phí 10%
+  (hố hút, ≥ thuế chợ); hoà → hoàn đủ; người nhận offline → cộng khi đăng nhập; máy tắt giữa trận → hoàn đủ lúc khởi động
+  (`tob_thach_dau_ky_quy`). Mức cược 1.000 – min(100.000, 2 giờ thu nhập ở cấp thấp nhất trong trận), cấp 40 + cổng chống
+  clone mọi người trong trận. Trước: 1-1 kiểm số dư rồi trừ riêng (100.000 – 10.000.000 xu), nhóm trừ hai đội trưởng nhưng
+  không trả ai; `Map.doChallenge` cũ (trả 2 lần, không thuế) đã bỏ. Chia tiền nằm trong `real.ArenaData` (lớp phục hồi từ
+  jar cũ, nhánh khoa-map).
+- **Bao lì xì** (sự kiện Tết): mỗi Pokémon nhận 2 bao / ngày, mở 3 / ngày và 15 / đợt (vượt thì trả lại bao); xu = 5 – 10%
+  thu nhập 1 giờ ở cấp người mở, giải lớn = 1 giờ (trước 1.000.000 – 5.000.000 xu), vẫn 5 giải / đợt; phần xu qua cổng chống
+  clone và tối đa 2 Pokémon / thiết bị / IP / ngày.
+- **Mã lì xì**: **lượng khoá** 5 – 15 (trước 10 – 100 lượng mở mỗi Pokémon), mỗi tài khoản 1 mã / đợt, mỗi thiết bị và IP 1
+  tài khoản / đợt, quỹ 20.000 lượng khoá / đợt, cần qua cổng chống clone; chốt mã nguyên tử (hai người gõ cùng mã chỉ một
+  người nhận).
+
 ## 10. Thuật ngữ và quy tắc chữ
 
 Áp cho **mọi chữ người chơi và admin thấy**: chuỗi server, CSDL, client J2ME / Android / PC, web. Nguồn máy duy nhất:
@@ -1254,5 +1299,60 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
+| -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
+
+## Danh hiệu (0.9.7)
+
+- **Dữ liệu:** `sql/them_danh_hieu.sql` (idempotent). `data_danh_hieu` là danh mục duy nhất: tên, mô tả điều kiện, gợi ý
+  (danh hiệu ẩn), độ hiếm (`data_danh_hieu_do_hiem`: Thường / Hiếm / Sử thi / Huyền thoại), hình, **một** dòng chỉ số
+  nhỏ (`chi_so` = `ne_tranh` / `chi_mang` / `khang_trang_thai` / `hp`, `phan_nghin`), điều kiện (`dieu_kien`,
+  `tham_so`, `so_luong`), `an` (0 hiện, 1 ẩn "???" tới khi mở, 2 chỉ hiện khi đang có), `thoi_han_phut` (0 vĩnh viễn).
+  394 dòng: 46 danh hiệu thành tựu / xếp hạng mùa / sự kiện / ẩn (id 9700..), 16 danh hiệu sinh thái (9600..), 48 danh
+  hiệu cũ giftcode / sự kiện (8767..), 284 danh hiệu thưởng nhiệm vụ (10000.., trước đây chỉ là chữ trong tiến độ).
+- **Sở hữu:** kho cũ `tob_danh_hieu` (id, hết hạn) + đang đeo `Char.idEffDanhHieu`; bộ đếm `tob_danh_hieu_dem`, nhật ký
+  `tob_danh_hieu_log`.
+- **Mở khoá** phía máy chủ: mọi điểm móc `NhiemVuEngine.suKien` / `datMuc` (hạ trùm, câu cá, thắng PvP, nâng cấp +N,
+  Hầm ngục, chế tạo, khảm, gục, đến bản đồ...) cộng bộ đếm; trạng thái sống (cấp, Pokédex %, huy hiệu Gym, bậc / hạng
+  PvP mùa, sự kiện đang bật, danh hiệu sinh thái / nhiệm vụ) đánh giá mỗi phút, khi lên cấp và khi mở bảng. Danh hiệu có
+  hạn (bậc mùa, top 10, sự kiện) tự gia hạn khi còn giữ điều kiện, hết hạn thì mất chỉ số và có thể mở lại.
+- **Chỉ số:** chỉ danh hiệu **đang đeo** được tính, kẹp về trần ô `danh_hieu.tran_phan_nghin` (10‰ = 1%, trần cứng 3%)
+  và trần tổng trang trí `trang_tri.tran_tong_phan_nghin` (5%), rồi đi qua `GioiHanChiSo` như mọi nguồn. Danh hiệu trao
+  qua giftcode / gói nạp chỉ có mức Thường (5‰), không vượt danh hiệu tự cày.
+- **Giao diện:** Hồ sơ (bảng Pokémon) → viên "Danh hiệu" cạnh huy hiệu hệ (lối vào duy nhất; menu Sưu tầm sinh thái
+  → Danh hiệu mở cùng bảng) → tấm Danh hiệu: Đã có / Chưa có / Bí ẩn, thanh tiến độ, đếm ngược hạn, nút Đeo / Tháo,
+  chấm đỏ `ChamMoi.DANH_HIEU` khi có danh hiệu mới. Nhãn danh hiệu vẽ trên tên mọi người chơi, màu theo độ hiếm
+  (token `ChuDe.mauDanhHieu` / `nhanDanhHieu`). Web: bảng xếp hạng hiện danh hiệu đang đeo.
+
+## PvP xếp hạng, thưởng mùa và luật PK (0.9.7)
+
+- **Elo chỉ trong trận xếp hạng** (`real.XepHangPvpGame`, `com.htbb.pokemon.XepHangPvp`): NPC Đấu trường → "Đấu xếp
+  hạng" vào hàng chờ (chọn lại = rời hàng). Máy chủ ghép mỗi 2 giây: lệch ≤ 10 cấp, |Elo| ≤ 100 (+50 mỗi 15 giây chờ, tối
+  đa 400), không cùng tài khoản / thiết bị / IP (`ChongClone.ben`), không gặp lại cùng đối thủ trong 10 phút; hai bên
+  được đưa vào Đấu trường 202, đếm ngược 5 giây, tối đa 180 giây (hết giờ / rời bản đồ = huỷ, không Elo). Trận chỉ
+  tính khi ≥ 20 giây và bên thua gây ≥ 10% HP tối đa của bên thắng; không đạt = huỷ, ghi `tob_pvp_tran` (lý do) và nhật
+  ký "pvpnghi". Gặp lại cùng đối thủ trong 24 giờ: Elo ×1 → ×1/2 → ×1/4, lần 4 không ghép. Giết người ngoài thế giới
+  **không** còn đổi Elo, và thắng PvP (nhiệm vụ, danh hiệu "Đấu sĩ") chỉ đếm trận xếp hạng hợp lệ.
+- **Thưởng cuối mùa** (13 tuần): lần đầu vào bản đồ ở mùa sau, mọi mùa đã kết thúc chưa phát được phát một lần — khoá
+  `tob_pvp_thuong (mua, id_char)` chèn trước rồi mới phát nên không phát hai lần kể cả khi khởi động lại. Cần ≥ 10 trận
+  trong mùa; Great / Ultra / Master = 15 / 40 / 100 lượng khoá (`ThangPvp.LUONG_BAC`) + danh hiệu "… Ball mùa trước"
+  giữ 91 ngày (chỉ số trong ngân sách ô danh hiệu). Không thưởng chỉ số, không lượng thường.
+- **Luật PK thế giới** (`real.LuatPkGame`, `com.htbb.pokemon.LuatPk`): thị trấn (`data_map_ten.loai = thi_tran`) và
+  làng là vùng an toàn; ngoài vùng PvP (đấu trường, lôi đài, chiến trường, Cao nguyên chiến thành, chiến tranh / đưa
+  thẻ) không đánh được người thấp hơn quá 10 cấp trừ khi người đó đang tên đỏ / bật cờ PK; nghiệp ≥ 3000 thì không PK
+  thêm người vô tội (ngưỡng cũ 319000 không bao giờ tới vì nghiệp có trần 32000). Nghiệp giảm 5 / phút online (một lần
+  giết vô tội +100 ≈ 20 phút), không còn −200 mỗi ngày đăng nhập. Gục trong PK mất 1% (tên đỏ) / 0,1% EXP cần của cấp
+  hiện tại theo bảng EXP đang dùng, **không tụt cấp**; VIP 3 không còn được miễn (VIP theo điểm nạp = mua sức mạnh).
+- **Điểm móc nhiệm vụ** (`real.DiemMocNhiemVu`): mọi kiểu trong `data_nhiem_vu_kieu` đều có nơi gọi `NhiemVuEngine.suKien`
+  (đào, nấu ăn, làm vườn, ấp trứng, đố vui, đua, chợ, mặc đồ / bộ trang bị, Pokédex vùng, vật phẩm sự kiện, giao hàng /
+  đưa thư, hộ tống). Câu cá có điểm móc **duy nhất** ở `HeSinhThaiMenu.cauCa`.
+  - `su_kien_vat_pham`: đếm vật phẩm THẬT của sự kiện đang bật khi vào túi (nhặt quái rơi, NPC sự kiện, giao hàng,
+    chế đồ / tiến giải Vu Lan). Bảng `data_su_kien_vat_pham` (`sql/them_moc_nhiem_vu.sql`) lấy từ code rơi / thưởng:
+    Trung Thu (Thịt, Trứng, Bột mỳ, Đậu xanh), Tết (Gạo nếp, Đậu xanh, Thịt mỡ, Lá dong, Giấy, Thuốc pháo), Halloween
+    (Kẹo, Bí ngô), Tết Dương lịch (Kẹo), Noel 2023 (Dưa Hấu), Hè (Kem), Vu Lan (Nhánh hoa hồng vàng), World Cup (Quả bóng
+    bạc / vàng), Núi châu báu (Mảnh bản đồ). Nhiệm vụ để `muc_tieu_id` = id vật phẩm hoặc trống (bất kỳ vật phẩm của
+    sự kiện đang chạy).
+  - `cho_ban`: người bán online tính ngay; offline thì ghi `tob_nhiem_vu_cho`, áp khi vào bản đồ lần đầu (mỗi dòng một
+    lần, `UPDATE … da_ap = 0`).
+

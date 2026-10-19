@@ -163,6 +163,8 @@ class CharVongLap {
             } catch (final Exception ex2) {
             }
             ++self.minuteOnline;
+            LuatPkGame.nhipPhut(self); // nghiep (ten do) phai theo gio online (0.9.7, thay -200 / ngay dang nhap)
+            DanhHieuGame.nhip(self); // danh hieu: mo khoa theo trang thai song (cap, Pokedex, bac PvP...) + gia han
             if (self.minuteOnline > 120) {
                 self.minuteOnline = 0;
                 boolean conSuatFanCung;
@@ -645,44 +647,8 @@ class CharVongLap {
                 self.nPKill = 0;
                 self.timeKiller = 0L;
             }
-            for (int i2 = 0; i2 < self.arrayBuff.length; ++i2) {
-                if (self.arrayBuff[i2] != -1) {
-                    final long t = System.currentTimeMillis() - self.timeUseBuff[i2];
-                    if (t / 1000L > self.countDown[i2]) {
-                        final short[] countDown = self.countDown;
-                        final int n2 = i2;
-                        ++countDown[n2];
-                        if (self.countDown[i2] >= self.timeOut[i2]) {
-                            if (self.arrayBuff[i2] == 25 || self.arrayBuff[i2] == 20) {
-                                Message m3 = null;
-                                try {
-                                    if (self.arrayBuff[i2] == 25) {
-                                        self.percentBuff[1] = 0;
-                                        self.percentBuff[2] = 0;
-                                        self.calculatorHPMP();
-                                    } else if (self.arrayBuff[i2] == 20) {
-                                        self.percentBuff[0] = 0;
-                                    }
-                                    m3 = MessageCreator.createMainCharInfoMessage(self);
-                                    self.sendMessage(m3);
-                                } catch (final Exception ex16) {
-                                } finally {
-                                    try {
-                                        m3.cleanup();
-                                    } catch (final Exception ex17) {
-                                    }
-                                }
-                                try {
-                                    m3.cleanup();
-                                } catch (final Exception ex18) {
-                                }
-                            }
-                            self.arrayBuff[i2] = -1;
-                            self.countDown[i2] = 0;
-                        }
-                    }
-                }
-            }
+            // het han chieu ho tro theo dong ho (go chi so + bao client xoa bieu tuong) - ChieuHoTro
+            ChieuHoTro.capNhatHetHan(self, System.currentTimeMillis());
             self.updateNearChar();
             self.subUpdate();
         } catch (final Exception e) {
@@ -1639,6 +1605,7 @@ class CharVongLap {
         }
     }
 
+    /** Nhac suc khoe moi 15 phut. Vong quay VIP cu (luong thu hai o day) da chuyen sang real.VongQuay (19/10/2026). */
     static void startThreadXoso() {
         new Thread() {
             @Override
@@ -1649,95 +1616,6 @@ class CharVongLap {
                         Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Trò chơi dành cho người chơi trên 12 tuổi. Chơi quá 180 phút mỗi ngày sẽ hại sức khỏe"));
                     } catch (final Exception e) {
                         e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
-        new Thread() {
-            @Override
-            public void run() {
-                while (!AdminHandler.isStopServer) {
-                    try {
-                        if ((System.currentTimeMillis() - Char.timeXoso) / 1000L >= 120L) {
-                            if (Char.ALL_PLAYER_XOSO.size() > 1) {
-                                final int[] value = new int[Char.ALL_PLAYER_XOSO.size()];
-                                final String[] namexoso = new String[Char.ALL_PLAYER_XOSO.size()];
-                                final Vector<PlayerXoso> allplayer = new Vector<PlayerXoso>();
-                                int i = 0;
-                                for (final PlayerXoso pxs : Char.ALL_PLAYER_XOSO.values()) {
-                                    value[i] = pxs.money;
-                                    namexoso[i] = pxs.name;
-                                    pxs.index = i;
-                                    allplayer.add(pxs);
-                                    ++i;
-                                }
-                                int tempindex;
-                                int index;
-                                Char pwin;
-                                int[] value2;
-                                PlayerXoso pxs2;
-                                for (index = (tempindex = Char.getIndexRandomXoso(value)), pwin = CharManager.instance.getCharByCharName(namexoso[index]); pwin == null && allplayer.size() > 0; pwin = CharManager.instance.getCharByCharName(namexoso[index])) {
-                                    allplayer.remove(tempindex);
-                                    if (allplayer.size() == 0) {
-                                        break;
-                                    }
-                                    value2 = new int[allplayer.size()];
-                                    for (i = 0; i < allplayer.size(); ++i) {
-                                        pxs2 = allplayer.get(i);
-                                        value2[i] = pxs2.money;
-                                    }
-                                    tempindex = Char.getIndexRandomXoso(value2);
-                                    if (tempindex == -1) {
-                                        break;
-                                    }
-                                    index = allplayer.get(tempindex).index;
-                                }
-                                // Sua 20/09/2026 (theo yeu cau nguoi dung): thue CO DINH
-                                // Char.TAX_PC_XOSO_XU, khong con scale theo so nguoi choi nhu truoc.
-                                final int tax = Char.TAX_PC_XOSO_XU;
-                                // Chup lai hu tien va DONG VONG NGAY, truoc khi phat thuong - xem
-                                // chu thich day du o Char.startThreadXosoLow (ban thuong) cho cung
-                                // loi: saveCharAuto co the nem loi tu doan dau ham khong boc
-                                // try/catch, catch cua vong lap nuot loi ma khong dong vong, va
-                                // 100ms sau lai addXu them mot lan nua cho cung nguoi thang.
-                                final long huTien = Char.MONEY_XOSO;
-                                final long moneyWin = huTien - huTien * tax / 100L;
-                                final long moneytest = value[index];
-                                final long tl = moneytest * 100L / huTien;
-                                Char.MONEY_XOSO = 0L;
-                                Char.timeXoso = System.currentTimeMillis();
-                                Char.ALL_PLAYER_XOSO.clear();
-                                String info = "Không tìm thấy người chiến thắng";
-                                if (pwin != null) {
-                                    info = "Chúc mừng " + namexoso[index].toUpperCase() + " đã chiến thắng " + Map.getDotNumber(moneyWin) + " vàng trong trò chơi Vòng xoay may mắn";
-                                    if (tl <= 2L) {
-                                        info = "Chúc mừng " + namexoso[index].toUpperCase() + " đặt " + Map.getDotNumber(moneytest) + " vàng và chiến thắng " + Map.getDotNumber(moneyWin) + " vàng trong trò chơi Vòng xoay may mắn";
-                                    }
-                                    Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(info));
-                                    Database.instance.resetXoso(namexoso[index], value[index], moneyWin, huTien * tax / 100L);
-                                    Char.charNameXosoWin = namexoso[index];
-                                    Char.moneyCharXosowin = moneyWin;
-                                    Char.moneyCharXosoBid = value[index];
-                                    pwin.addXu(moneyWin, "vxmm vip");
-                                    pwin.sendMessage(MessageCreator.createCharInventoryMessage(pwin, 0));
-                                    Database.instance.addCharWinXoSo(pwin, moneyWin);
-                                    Database.instance.saveCharAuto(pwin);
-                                } else {
-                                    Char.charNameXosoWin = "";
-                                    Char.moneyCharXosowin = 0;
-                                    Char.moneyCharXosoBid = 0;
-                                    Database.instance.resetXoso("ko char win", value[index], moneyWin, huTien * tax / 100L);
-                                }
-                            } else {
-                                Char.timeXoso = System.currentTimeMillis();
-                            }
-                        }
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Thread.sleep(100L);
-                    } catch (final Exception ex) {
                     }
                 }
             }

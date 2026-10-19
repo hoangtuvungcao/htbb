@@ -75,7 +75,7 @@ const links = computed<NavigationMenuItem[]>(() => {
       icon: 'i-lucide-ellipsis',
       active: don.some(m => m.to !== '/' && route.path.startsWith(m.to)),
       children: don.map(m => ({ label: m.label, icon: m.icon || 'i-lucide-chevron-right', to: lienKetAnToan(m.to) || '/' })),
-      // Danh sách gọn một cột (icon + nhãn), không dùng lưới 2 cột rộng 34rem của "Cẩm nang".
+      // Danh sách gọn một cột (icon + nhãn), không dùng lưới 2 cột rộng 44rem của "Cẩm nang".
       ui: { content: 'sm:w-60', childList: 'grid-cols-1 gap-0.5', childLink: 'items-center' },
     })
   }
@@ -162,11 +162,17 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
             list: 'min-w-0 overflow-x-clip',
             link: 'font-display font-bold text-[15px] px-2 whitespace-nowrap',
             linkLeadingIcon: 'size-4',
-            childLinkDescription: 'line-clamp-1',
-            content: 'sm:w-[34rem]',
+            // Cẩm nang ▾: lưới 2 cột rộng 44rem, mô tả tối đa 2 dòng có dấu … (không bao giờ cắt giữa chữ).
+            childList: 'grid-cols-[repeat(2,minmax(0,1fr))]',
+            childLink: 'min-w-0',
+            childLinkWrapper: 'min-w-0 flex-1',
+            childLinkDescription: 'line-clamp-2 text-xs/5 break-words',
+            content: 'sm:w-[min(44rem,calc(100vw-2rem))]',
             // Khung thả xuống mở ngay dưới mục được bấm (mặc định Nuxt UI căn giữa cả thanh).
+            // shrink-0: khung bọc (viewportWrapper) chỉ rộng bằng thanh menu; không có shrink-0 thì
+            // khung thả xuống bị ép hẹp hơn nội dung -> cột phải bị cắt ngang chữ (lỗi 0.9.5.1).
             viewportWrapper: 'justify-start',
-            viewport: 'sm:w-(--reka-navigation-menu-viewport-width) left-(--reka-navigation-menu-viewport-left)',
+            viewport: 'shrink-0 sm:w-(--reka-navigation-menu-viewport-width) left-(--reka-navigation-menu-viewport-left)',
           }"
         />
       </div>

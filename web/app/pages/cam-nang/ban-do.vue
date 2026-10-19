@@ -41,6 +41,21 @@ const trongNha = CAM_NANG.banDo.filter(m => m.loai === 'trong_nha')
 const dsMap = computed(() => ngoaiTroi.filter(m => !loaiChon.value || m.loai === loaiChon.value))
 const capCuaMap = (id: number) => POKEDEX.map.find(m => m.id === id)
 const coAnh = CAM_NANG.banDo.some(m => m.anh)
+
+// NPC & chức năng: đọc từ bảng data_npc của game (/api/npc); CSDL chưa có bảng thì dùng danh sách tĩnh (0.9.6).
+const NPC_TINH = [
+  { ten: 'Y tá Chansey', chucVu: 'Trung tâm Pokémon: hồi phục, bán thuốc', dex: 113, soBanDo: 0 },
+  { ten: 'Kecleon tạp hoá', chucVu: 'Tạp hoá', dex: 352, soBanDo: 0 },
+  { ten: 'Machamp thợ rèn', chucVu: 'Thợ rèn: chế tạo, sửa, khảm đồ', dex: 68, soBanDo: 0 },
+  { ten: 'Bronzong thợ giáp', chucVu: 'Bán trang bị', dex: 437, soBanDo: 0 },
+  { ten: 'Kangaskhan thủ kho', chucVu: 'Giữ đồ', dex: 115, soBanDo: 0 },
+  { ten: 'Meowth thương nhân', chucVu: 'Ngân hàng xu, lượng', dex: 52, soBanDo: 0 },
+  { ten: 'Pidgeot chở bay', chucVu: 'Chở bay tới bản đồ khác', dex: 18, soBanDo: 0 },
+  { ten: 'Lapras chở đò', chucVu: 'Chở đò, bán vé tàu', dex: 131, soBanDo: 0 },
+  { ten: 'Ngài Persian', chucVu: 'Bán đá quý, nguyên liệu', dex: 53, soBanDo: 0 },
+]
+const { data: npcDb } = await useFetch<{ ten: string, chucVu: string, dex: number, soBanDo: number }[] | null>('/api/npc', { key: 'htbb-npc', default: () => null })
+const dsNpc = computed(() => (npcDb.value?.length ? npcDb.value : NPC_TINH))
 </script>
 
 <template>
@@ -60,10 +75,23 @@ const coAnh = CAM_NANG.banDo.some(m => m.anh)
         </div>
       </div>
       <ul class="cham mt-5">
-        <li>Di chuyển nhanh: nhờ <strong>Pidgeot</strong> (Pidgeot (Bay)) ở thị trấn đưa tới bản đồ khác — mỗi lần tốn xu bằng {{ CAM_NANG.kinhTe.dichChuyenPhanTramGio }}% thu nhập một giờ ở cấp của bạn.</li>
-        <li>Ra đảo: gặp <strong>Lapras</strong> (hoa tiêu) ở bến tàu mua vé và đi thuyền.</li>
-        <li>NPC trong thị trấn: Chansey bán thuốc, Kecleon tạp hoá, Bronzong bán trang bị, Machamp rèn/sửa/chế tạo, Kangaskhan giữ đồ — giá xem ở <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng</NuxtLink>.</li>
+        <li>Di chuyển nhanh: nhờ <strong>Pidgeot chở bay</strong> đưa tới bản đồ khác — mỗi lần tốn xu bằng {{ CAM_NANG.kinhTe.dichChuyenPhanTramGio }}% thu nhập một giờ ở cấp của bạn.</li>
+        <li>Ra đảo: gặp <strong>Lapras chở đò</strong> ở bến tàu mua vé tàu và đi thuyền.</li>
+        <li>NPC dùng được cả ngoài trời (từ 0.9.6), không chỉ trong nhà — danh sách ở mục <a href="#npc" class="lien-ket">NPC & chức năng</a>, giá xem ở <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng</NuxtLink>.</li>
         <li>Muốn câu cá? Chỉ câu được ở hồ — xem <NuxtLink to="/cam-nang/cau-ca#ban-do" class="lien-ket">bản đồ có hồ</NuxtLink>.</li>
+      </ul>
+    </WikiSection>
+
+    <WikiSection id="npc" title="NPC & chức năng" lead="Chạm (hoặc đi tới rồi bấm Enter trên PC) để nói chuyện. Từ bản 0.9.6, NPC ngoài trời mở đúng chức năng như NPC trong nhà.">
+      <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <li v-for="n in dsNpc" :key="n.ten + n.chucVu" class="the-go flex items-center gap-3 p-3">
+          <img v-if="anhChanDung(n.dex)" :src="anhChanDung(n.dex)" width="40" height="40" alt="" loading="lazy" class="pixelated size-12 shrink-0 rounded-2xl bg-screen">
+          <span v-else class="grid size-12 shrink-0 place-items-center rounded-2xl bg-screen"><PokeBall class="size-6 opacity-50" /></span>
+          <span class="min-w-0">
+            <strong class="block font-display text-highlighted">{{ n.ten }}</strong>
+            <span class="block text-sm text-muted">{{ n.chucVu }}<template v-if="n.soBanDo"> · {{ n.soBanDo }} bản đồ</template></span>
+          </span>
+        </li>
       </ul>
     </WikiSection>
 

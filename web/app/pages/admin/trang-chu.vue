@@ -80,7 +80,7 @@ async function hoiKhoiPhuc() {
           <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Xoá" @click="f.banner.splice(i, 1)" />
         </div>
       </div>
-      <USwitch v-model="f.hienCanhPhim" label="Hiện cảnh phim Pokémon chạy qua đồng cỏ" class="mt-3" />
+      <USwitch v-model="f.hienCanhPhim" label="Hiện trình chiếu ảnh chụp trong game" class="mt-3" />
     </UCard>
 
     <UCard>

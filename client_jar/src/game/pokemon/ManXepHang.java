@@ -28,6 +28,11 @@ public final class ManXepHang extends ManBang {
         if (Canvas.gameScr == null) {
             return;
         }
+        // 0.9.6.1: mỗi lần mở xin lại (lần trước có thể đã kẹt chờ / trả lời tới lúc màn đã đóng -> bị bỏ)
+        for (int i = 0; i < DS.length; i++) {
+            DS[i] = null;
+            cho[i] = false;
+        }
         gI().moBang();
         gI().chonTab(0);
     }
@@ -48,12 +53,48 @@ public final class ManXepHang extends ManBang {
         super.chonTab(t);
         if (DS[t] == null && !cho[t]) {
             cho[t] = true;
+            luc[t] = System.currentTimeMillis();
             try {
-                GameService.gI().requestTopStronger_Righer(KIEU[t], 0);
+                if (KIEU[t] == 7) {
+                    // 0.9.6.1 "lỗi tải": xin top kiểu 7 thì máy chủ cũ trả MENU -504 (10 mục top theo vùng) chứ không
+                    // trả danh sách -> màn này chờ mãi "Đang tải bảng xếp hạng...". Chọn thẳng mục -504 "Top công trạng"
+                    // vùng của mình (3 + vùng): máy chủ trả -19 kiểu 7 (cột công trạng) - đúng với máy chủ cũ lẫn mới.
+                    GameService.gI().doMenuOption(NPC_TOP_VUNG, (byte) 0, MUC_CONG_TRANG + vung());
+                } else {
+                    GameService.gI().requestTopStronger_Righer(KIEU[t], 0);
+                }
             } catch (Throwable e) {
                 cho[t] = false;
             }
         }
+    }
+
+    /** menu top theo vùng của máy chủ (MapDoMenu case -504 -> Map.doSendTopNation) */
+    static final int NPC_TOP_VUNG = -504;
+    /** mục đầu của "Top công trạng Kanto / Johto / Hoenn" trong menu -504 */
+    static final int MUC_CONG_TRANG = 3;
+    /** Chờ máy chủ tối đa (ms): quá thì thôi "Đang tải" (hiện "Chưa có dữ liệu"), chạm lại tab / mở lại để xin lại. */
+    static final long CHO_TOI_DA = 8000L;
+    static final long[] luc = new long[3];
+
+    /** vùng (0 Kanto, 1 Johto, 2 Hoenn) của nhân vật; chưa có vùng -> Kanto */
+    static int vung() {
+        int v = -1;
+        try {
+            v = Canvas.gameScr.mainChar.nationID;
+        } catch (Throwable e) {
+            // chưa vào game
+        }
+        return v >= 0 && v < 3 ? v : 0;
+    }
+
+    /** Hết thời gian chờ máy chủ cho tab t (không treo màn "Đang tải" mãi). */
+    static boolean hetCho(int t, long bay) {
+        if (cho[t] && bay - luc[t] > CHO_TOI_DA) {
+            cho[t] = false;
+            return true;
+        }
+        return false;
     }
 
     protected String tieuDe() {
@@ -78,6 +119,7 @@ public final class ManXepHang extends ManBang {
     protected void veNoiDung(Graphics g, int x, int y, int w, int h) {
         final Vector v = DS[this.tab];
         if (v == null || v.size() == 0) {
+            hetCho(this.tab, System.currentTimeMillis());
             Bang.trong(g, x, y, w, h, cho[this.tab] ? "Đang tải bảng xếp hạng..." : "Chưa có dữ liệu", null);
             return;
         }

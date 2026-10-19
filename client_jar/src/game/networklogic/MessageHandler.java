@@ -113,8 +113,16 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.DungDo.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -110 danh hieu (bang, nhan tren dau, so moi) - DanhHieuKho
+        if (game.pokemon.DanhHieuKho.nhan(msg)) {
+            return;
+        }
         // pokemon: lenh -105 trang thai server sau moi thao tac vat pham (kho trang thai client)
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
+            return;
+        }
+        // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
+        if (game.pokemon.CapNhat.nhan(msg)) {
             return;
         }
         int i;
@@ -1608,8 +1616,12 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             int len2 = 0;
                             int byteRead = 0;
                             byteMap = new byte[msg.reader().available()];
-                            while (len2 != -1 && byteRead < byteMap.length) {
-                                len2 = msg.reader().read(byteMap, 0, byteMap.length - byteRead);
+                            // 0.9.6.1: đọc nối tiếp (trước đây luôn ghi đè từ ô 0 nếu một lần đọc không đủ)
+                            while (byteRead < byteMap.length) {
+                                len2 = msg.reader().read(byteMap, byteRead, byteMap.length - byteRead);
+                                if (len2 <= 0) {
+                                    break;
+                                }
                                 byteRead += len2;
                             }
                         }
@@ -2372,11 +2384,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         break;
                     }
                     if (url.equals("")) {
-                        if (game.pokemon.MenuNguCanh.bat() && Canvas.gameScr != null && Canvas.gameScr.mainChar != null
-                                && (Canvas.currentScreen == Canvas.gameScr || Canvas.currentScreen instanceof game.pokemon.ManBang
-                                || Canvas.currentScreen != null && Canvas.currentScreen.getClass().getName().startsWith("game.pokemon.Man"))) {
-                            // 0.9.5: trong game, thông báo thông tin = biểu ngữ không chặn (dài: 2 dòng + "Xem")
-                            game.pokemon.DungDo.bieuNgu(message);
+                        if (game.pokemon.ThongBao.trongGame()) {
+                            // 0.9.6.1: trong game, phân loại theo nội dung (game.pokemon.ThongBao): kết quả / lỗi / hiếm
+                            // = thẻ nhanh không chặn, boss = biểu ngữ trên; chỉ việc nghiêm trọng / tin dài mới là hộp
+                            game.pokemon.ThongBao.tuMayChu(message);
                         } else {
                             Canvas.startOKDlg(message);
                         }

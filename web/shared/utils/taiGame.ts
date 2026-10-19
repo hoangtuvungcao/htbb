@@ -9,7 +9,7 @@
  * Đúng 5 bản tải (chủ game chốt 19/10/2026), mỗi nền tảng MỘT tệp:
  *   jar      client_jar (J2ME) bản "thuong" — điện thoại Java và giả lập J2ME (J2ME Loader trên Android)
  *   windows  client_pc bộ cài Windows (HTBB-PC-Setup-<bản>.exe, có Java đi kèm)
- *   linux    client_pc bản Linux (.AppImage hoặc .tar.gz, có Java đi kèm)
+ *   linux    client_pc bản Linux — MỘT tệp .AppImage có Java đi kèm (từ 0.9.5 không còn .tar.gz)
  *   android  client_apk (APK)
  *   ios      client_pc_ios (Unity iOS) — sắp ra mắt
  * Đã bỏ khỏi website: jar "nhẹ", bản Windows .zip, thẻ "PC Java (.jar)", thẻ Unity "PC Windows".
@@ -35,6 +35,11 @@ export interface BanTai {
   url: string
   kieu: KieuLinkTai
   phienBan: string
+  /**
+   * Số bản (BAN của tools/phat-hanh/phien_ban.conf, vd 907) của tệp đang phát — máy chủ game coi đây là BẢN MỚI NHẤT
+   * của nền tảng: client gửi số bản nhỏ hơn thấy "Đã có bản mới" (com.htbb.capnhat.CapNhatClient). 0 = chưa ghi.
+   */
+  ban: number
   dungLuong: string
   capNhat: string
   nhatKy: string
@@ -68,7 +73,7 @@ export interface NenTang {
 export const DS_NEN_TANG: readonly NenTang[] = [
   { ma: 'jar', ten: 'Java (J2ME)', moTa: 'Một file .jar cho điện thoại Java và giả lập J2ME (J2ME Loader trên Android)', icon: 'i-lucide-cpu', kieu: ['tep'], duoi: ['jar'], heDieuHanh: 'Java MIDP 2.0, hoặc J2ME Loader trên Android', chiTiet: ['File .jar', 'Điện thoại Java · giả lập J2ME', 'Phím số'], buoc: ['Dành cho điện thoại hỗ trợ Java (J2ME), hoặc điện thoại Android cài giả lập J2ME Loader (miễn phí).', 'Tải file .jar của game.', 'Điện thoại Java: mở file .jar để cài. J2ME Loader: bấm dấu + rồi chọn file .jar vừa tải.', 'Mở game và đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
   { ma: 'windows', ten: 'Windows', moTa: 'Bộ cài .exe có sẵn Java đi kèm, không phải cài thêm gì', icon: 'i-lucide-monitor', kieu: ['tep'], duoi: ['exe'], heDieuHanh: 'Windows 10 / 11 (64-bit)', chiTiet: ['Bộ cài .exe', 'Không cần cài Java', 'Bàn phím + chuột'], buoc: ['Tải bộ cài Windows (file .exe).', 'Chạy bộ cài và bấm Tiếp cho tới khi xong. Nếu Windows SmartScreen cảnh báo: "Thông tin thêm" → "Vẫn chạy".', 'Mở game bằng lối tắt Huyền Thoại Bảo Bối trên màn hình nền hoặc menu Start.', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
-  { ma: 'linux', ten: 'Linux', moTa: 'Bản Linux 64-bit có sẵn Java đi kèm (.AppImage hoặc .tar.gz)', icon: 'i-lucide-terminal', kieu: ['tep'], duoi: ['appimage', 'tar.gz', 'tgz'], heDieuHanh: 'Linux x86-64 (Ubuntu 20.04 trở lên hoặc tương đương)', chiTiet: ['Một file', 'Không cần cài Java', 'Bàn phím + chuột'], buoc: ['Tải bản Linux.', 'File .AppImage: cho phép chạy (chmod +x HTBB-*.AppImage) rồi bấm đúp. File .tar.gz: giải nén (tar xzf HTBB-*.tar.gz) rồi chạy HTBB/HTBB.sh.', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
+  { ma: 'linux', ten: 'Linux', moTa: 'Bản Linux 64-bit một tệp .AppImage, có sẵn Java đi kèm', icon: 'i-lucide-terminal', kieu: ['tep'], duoi: ['appimage'], heDieuHanh: 'Linux x86-64 (Ubuntu 20.04 trở lên hoặc tương đương)', chiTiet: ['Một file .AppImage', 'Không cần cài Java', 'Bàn phím + chuột'], buoc: ['Tải tệp .AppImage của game.', 'Cho phép chạy: chuột phải → Thuộc tính → Cho phép chạy như chương trình, hoặc gõ chmod +x HTBB-*.AppImage.', 'Bấm đúp tệp để mở game (không cần cài đặt).', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
   { ma: 'android', ten: 'Android', moTa: 'Bản cài đặt APK — đồ hoạ đầy đủ, điều khiển cảm ứng', icon: 'i-lucide-smartphone', kieu: ['tep'], duoi: ['apk'], heDieuHanh: 'Android 8.0 trở lên', chiTiet: ['File .apk', 'Cài ngoài CH Play', 'Cảm ứng + bàn phím'], buoc: ['Mở trang Tải game trên điện thoại, bấm tải bản Android.', 'Khi được hỏi, cho phép "Cài ứng dụng không rõ nguồn" cho trình duyệt.', 'Mở file .apk vừa tải và bấm Cài đặt.', 'Mở game, chọn máy chủ và đăng nhập.'], hien: true, trangThai: 'san-sang' },
   { ma: 'ios', ten: 'iOS', moTa: 'iPhone / iPad', icon: 'i-lucide-tablet-smartphone', kieu: ['testflight', 'app-store', 'ipa-manifest'], duoi: [], heDieuHanh: 'iOS 15 trở lên', chiTiet: ['TestFlight / App Store'], buoc: [], hien: true, trangThai: 'sap-ra-mat' },
 ]
@@ -117,12 +122,18 @@ export function nenTang(ma: string): NenTang | undefined {
 
 export function banTaiMacDinh(n: NenTang): BanTai {
   return {
-    ma: n.ma, ten: n.ten, moTa: n.moTa, url: '', kieu: n.kieu[0]!, phienBan: '', dungLuong: '', capNhat: '', nhatKy: '',
+    ma: n.ma, ten: n.ten, moTa: n.moTa, url: '', kieu: n.kieu[0]!, phienBan: '', ban: 0, dungLuong: '', capNhat: '', nhatKy: '',
     sha256: '', heDieuHanh: n.heDieuHanh, trangThai: n.trangThai, hien: n.hien,
   }
 }
 
 const chuoi = (v: unknown, max: number, macDinh = '') => (typeof v === 'string' ? v.trim().slice(0, max) : macDinh)
+
+/** Số bản hợp lệ: số nguyên 0..99 999 999 (chuỗi số cũng nhận); sai -> 0. */
+export function soBanHopLe(v: unknown): number {
+  const n = typeof v === 'string' && /^\s*\d+\s*$/.test(v) ? Number(v) : v
+  return typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < 100_000_000 ? n : 0
+}
 
 /** Link được nhận: https://…, http://localhost (dev), hoặc đường dẫn trong site (/tai/…, /huong-dan…). Sai -> ''. */
 export function urlTaiHopLe(u: unknown): string {
@@ -151,13 +162,15 @@ export function loiBanTai(b: BanTai): string | null {
   if (!n.kieu.includes(b.kieu)) return `${n.ten}: kiểu link "${b.kieu}" không dùng được cho nền tảng này.`
   if (b.url) {
     const u = urlTaiHopLe(b.url)
-    if (!u) return `${n.ten}: link tải phải là https://… hoặc đường dẫn trong website (vd. /tai/ten-tep.zip).`
+    if (!u) return `${n.ten}: link tải phải là https://… hoặc đường dẫn trong website (vd. /tai/HTBB-PC-Setup-0.9.6.exe).`
     const host = HOST_KIEU[b.kieu]
     if (host && !host.includes(new URL(u, 'https://x.invalid').hostname)) return `${n.ten}: link ${TEN_KIEU_LINK[b.kieu]} phải thuộc ${host.join(' / ')}.`
     if (b.kieu === 'ipa-manifest' && !u.startsWith('https://')) return `${n.ten}: manifest .ipa phải là URL https:// đầy đủ (iOS bắt buộc).`
     if (b.kieu === 'tep' && n.duoi.length && !dungDuoi(n, u)) return `${n.ten}: tệp phải có đuôi ${n.duoi.map(d => (d === 'appimage' ? '.AppImage' : `.${d}`)).join(' / ')}.`
   }
   if (b.sha256 && !/^[0-9a-f]{64}$/.test(b.sha256)) return `${n.ten}: SHA-256 phải gồm đúng 64 ký tự 0-9 a-f.`
+  const ban = b.ban as unknown
+  if (ban !== '' && ban != null && ban !== 0 && soBanHopLe(ban) === 0) return `${n.ten}: số bản phải là số nguyên ≥ 0 (vd 907).`
   return null
 }
 
@@ -214,6 +227,7 @@ export function chuanHoaBanTai(raw: unknown): BanTai[] {
       url: url === '#' ? '' : url,
       kieu,
       phienBan: chuoi(r.phienBan, 40),
+      ban: doiMa ? 0 : soBanHopLe(r.ban),
       dungLuong: chuoi(r.dungLuong, 40),
       capNhat: chuoi(r.capNhat, 40),
       nhatKy: boDongTepPhu(chuoi(r.nhatKy, 3000)),

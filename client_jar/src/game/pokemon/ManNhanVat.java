@@ -796,6 +796,20 @@ public final class ManNhanVat extends Screen {
         if (he2 >= 0 && he2 != he1) {
             xb += KieuO.vienHe(g, xb, yy, he2) + 4;
         }
+        // 0.9.7 lối vào DUY NHẤT của bảng Danh hiệu: viên danh hiệu đang đeo (hoặc "Danh hiệu") cạnh huy hiệu hệ
+        {
+            boolean coDh = m.danhHieuTen != null;
+            String chu = coDh ? m.danhHieuTen : "Danh hiệu";
+            int wv = ManDanhHieu.vien(g, xb + 2, yy, chu + " ›", coDh ? m.danhHieuHiem : 0, null, xx + ww - xb - 4);
+            VungCham.them(g, xb, yy - 4, Math.max(wv + 4, VungCham.MIN), Math.max(ManDanhHieu.hVien() + 8, VungCham.MIN), new IAction() {
+                public void perform() {
+                    ManDanhHieu.moTuHoSo();
+                }
+            }, "danh-hieu");
+            if (ChamMoi.co(ChamMoi.DANH_HIEU)) {
+                ChuDe.cham(g, xb + 2 + wv - 2, yy + 1);
+            }
+        }
         yy += 17;
         // thanh mảnh có nhãn
         int hb = ChuDe.dt() ? 6 : 5;

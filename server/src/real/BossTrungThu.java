@@ -115,7 +115,7 @@ public class BossTrungThu extends Boss {
                 }
                 try {
                     Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
-                            "Boss Trung Thu đã xuất hiện tại Cinnabar! Phải đeo Mặt nạ Snorlax mới nhận được quà khi hạ gục."));
+                            com.htbb.thongbao.ThongBao.noi(com.htbb.thongbao.ThongBao.bossXuatHien("Trung Thu", "Cinnabar"), "Đeo Mặt nạ Snorlax để nhận quà khi hạ gục")));
                 } catch (final java.io.IOException ex) {
                 }
             }

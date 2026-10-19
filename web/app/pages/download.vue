@@ -56,7 +56,7 @@ const faq = [
   <div>
     <SitePageBanner
       title="Tải game"
-      eyebrow="Miễn phí · không nạp tiền"
+      eyebrow="Miễn phí · không bán sức mạnh"
       intro="Một lần tải game. Mở ra cả một thế giới để khám phá, kết giao và viết nên câu chuyện của bạn."
     />
 
@@ -114,7 +114,7 @@ const faq = [
                   <UIcon name="i-lucide-info" class="size-3.5 align-[-2px]" /> Cần: {{ p.heDieuHanh }}
                 </p>
                 <p v-if="p.phienBan || p.dungLuong || p.capNhat" class="mt-2 text-xs font-semibold text-dimmed">
-                  <span v-if="p.phienBan">Phiên bản {{ p.phienBan }}</span>
+                  <span v-if="p.phienBan">Phiên bản {{ p.phienBan }}<template v-if="p.ban"> (bản {{ p.ban }})</template></span>
                   <span v-if="p.dungLuong"> · {{ p.dungLuong }}</span>
                   <span v-if="p.capNhat"> · cập nhật {{ p.capNhat }}</span>
                 </p>

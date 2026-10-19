@@ -196,9 +196,36 @@ REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh android "ghi ch�
 REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh pc      "ghi chú"   # máy Windows có Unity
 ```
 
-`day-len.sh` đẩy bản build lên GitHub Releases của repo phát hành và ghi `phienban.json`. Trước mỗi đợt: tăng `BAN`
-+ `PHIEN_BAN`; muốn ép cập nhật thì đặt `sv.banToiThieu=<BAN>` ở server (jar/APK cũ hơn bị từ chối kèm link tải).
-Biến và secret của workflow: [tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
+`day-len.sh` đẩy bản build lên GitHub Releases của repo phát hành và ghi `phienban.json`. Biến và secret của workflow:
+[tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
+
+### Số bản và cập nhật client (0.9.7)
+
+- **Mọi bản phát hành công khai, kể cả bản vá nóng, có `BAN` mới lớn hơn bản trước** (máy chủ chỉ phân biệt client bằng
+  số này: 0.9.5.1 và 0.9.6.1 từng giữ nguyên `BAN` nên máy chủ không tách được). Quy ước `BAN = major*10000 + minor*100
+  + patch` và `PHIEN_BAN` chỉ còn **3 phần số** khớp `BAN` (+ hậu tố tuỳ ý): bản vá của 0.9.7 là 0.9.8 (`BAN=908`), không
+  dùng 0.9.7.1. Nhờ vậy `MIDlet-Version` của jar (MIDP chỉ nhận a.b.c, lấy phần số của `PHIEN_BAN`) luôn tăng theo.
+  Sau 0.9.6.1 (`BAN=906`) là 0.9.7 (`BAN=907`) - bản đầu tiên có hộp cập nhật trong game.
+- Máy chủ (`com.htbb.capnhat.CapNhatClient`) so số bản client gửi lúc đăng nhập với hai mức đặt trên web:
+  **bản mới nhất** = ô *Số bản* từng nền tảng ở `/admin/tai-game` (dự phòng `sv.banMoiNhat`) -> thẻ "Đã có bản mới" (Cập
+  nhật ngay / Để sau, nhắc một lần mỗi ngày); **bản tối thiểu** = `sv.banToiThieu` ở `/admin/cau-hinh-he-thong` -> hộp
+  "Cần cập nhật để tiếp tục chơi", không vào được game. Gói -115 (client >= 907); client cũ nhận hộp chữ kèm link tải.
+- "Cập nhật ngay": APK tải trong game (tiến độ, kiểm SHA-256) rồi mở trình cài Android (cùng khoá ký = giữ dữ liệu); PC
+  Windows tải bộ cài rồi chạy `/SILENT` (nâng cấp tại chỗ, tự mở lại); PC Linux tải AppImage vào cạnh `$APPIMAGE`, thay
+  nguyên tử rồi mở lại; J2ME (và khi thiếu SHA-256 / không cài được tại chỗ) mở link bằng trình duyệt.
+
+**Ra một bản mới:**
+
+1. Tăng `BAN` + `PHIEN_BAN` trong `tools/phat-hanh/phien_ban.conf` (và `ThuongHieu.PHIEN_BAN` của Unity), build các gói.
+2. `/admin/tai-game`: với từng nền tảng bấm *Tải tệp lên* (tự điền link, dung lượng, **SHA-256**), sửa *Phiên bản*,
+   *Số bản* (= `BAN`), *Có gì mới* rồi **Lưu**. Trong ≤ 60 giây người chơi bản cũ thấy "Đã có bản mới".
+3. Cần ép (bản cũ lỗi nặng / đổi giao thức): đặt *Bản tối thiểu* = `BAN` ở `/admin/cau-hinh-he-thong` sau khi mọi nền tảng
+   đã có tệp mới (nền tảng chưa có tệp đạt mức thì máy chủ chỉ nhắc, không khoá người chơi).
+4. Muốn tắt nhắc tạm thời: đặt *Số bản* của nền tảng về 0 (hoặc `sv.nhacCapNhat=0` trong server.ini).
+
+Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ); `client_pc/test/KiemCapNhat` (máy chủ HTTP
+cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
+mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
 ### Tài nguyên giao diện sinh tự động (0.9.5)
 

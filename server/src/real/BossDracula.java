@@ -386,7 +386,7 @@ public class BossDracula extends Boss {
                     }
 
                     try {
-                        Message m = MessageCreator.createServerAlertAutoOffMessage(this.getName() + " đã xuất hiện.");
+                        Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossXuatHien(this.getName(), com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                         for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                             ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);
@@ -446,7 +446,7 @@ public class BossDracula extends Boss {
                 this.toY = this.y;
 
                 try {
-                    Message m = MessageCreator.createServerAlertAutoOffMessage(this.getName() + " đã xuất hiện.");
+                    Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossXuatHien(this.getName(), com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                     for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                         ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);

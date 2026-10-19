@@ -760,7 +760,7 @@ class MapEpNgoc {
                             }
 
                             if (isLock) {
-                                item.lock = 1;
+                                item.khoaVinhVien(); // [khoa-khi-mac]
                                 Database.instance
                                         .saveOrtherLog(
                                                 "", player.charname, "khoa item khi ch dung lkd tim khoa " + item.getName() + " > " + item.getInfoSave(), "khoaitemch"

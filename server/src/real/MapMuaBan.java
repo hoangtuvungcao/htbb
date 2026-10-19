@@ -620,6 +620,7 @@ class MapMuaBan {
                 iItem.slotWearing = player.slotWearing;
                 wItems[index] = iItem;
                 player.iItems.remove(iItem);
+                PhaKhoaGame.macVao(player, iItem); // [khoa-khi-mac]
                 if (iItem.getType() == 0 || iItem.getType() == 1 || iItem.getType() == 2) {
                     Database.instance.addInfoWebChar(player);
                 }
@@ -663,6 +664,7 @@ class MapMuaBan {
                 iItem.slotWearing = player.slotWearing;
                 wItems[index] = iItem;
                 player.iItems.remove(iItem);
+                PhaKhoaGame.macVao(player, iItem); // [khoa-khi-mac]
             }
 
             try {

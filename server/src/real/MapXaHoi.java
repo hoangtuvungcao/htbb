@@ -86,17 +86,23 @@ class MapXaHoi {
         if (idMenu == 0) {
             int money;
             try {
-                money = Integer.parseInt(text.trim());
+                money = Integer.parseInt(text.trim().replace(".", "").replace(",", ""));
             } catch (Exception exNum) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thách đấu với số tiền này", ""));
-                return;
-            }
-            if (money < 0 || money > 10000000) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thách đấu với số tiền này", ""));
                 return;
             }
 
             if (player.partyID == -1) {
+                return;
+            }
+            // 19/10/2026: muc cuoc theo cap thap nhat trong nhom (real.ThachDauCuoc), truoc 0 - 10.000.000 xu.
+            final java.util.List<Char> nhom = new java.util.ArrayList<Char>();
+            for (final Object o : player.party.userParty) {
+                nhom.add((Char) o);
+            }
+            final String loiMuc = ThachDauCuoc.kiemCuoc(money, nhom.toArray(new Char[0]));
+            if (loiMuc != null) {
+                player.sendMessage(MessageCreator.createServerAlertMessage(loiMuc, ""));
                 return;
             }
 
@@ -149,6 +155,19 @@ class MapXaHoi {
                 return;
             }
 
+            final java.util.List<Char> moiNguoi = new java.util.ArrayList<Char>();
+            for (final Object o : player.party.userParty) {
+                moiNguoi.add((Char) o);
+            }
+            for (final Object o : p.party.userParty) {
+                moiNguoi.add((Char) o);
+            }
+            final String loiMucHai = ThachDauCuoc.kiemCuoc(player.moneyThachdau, moiNguoi.toArray(new Char[0]));
+            if (loiMucHai != null) {
+                player.sendMessage(MessageCreator.createServerAlertMessage(loiMucHai, ""));
+                return;
+            }
+
             // chong clone: moi thanh vien hai nhom deu phai du cap / tuoi (thua co y = chuyen xu).
             for (final Object o : player.party.userParty) {
                 if (com.htbb.pokemon.ChongClone.chanCaHai((Char) o, (Char) o, player, com.htbb.pokemon.ChongClone.KIEU_THACH_DAU)) {
@@ -163,7 +182,9 @@ class MapXaHoi {
 
             p.sendMessage(
                     MessageCreator.createMsgPopUp(
-                            p.id, 11, player.charname + " gửi lời thách đấu tới nhóm của bạn với số tiền cược là " + player.moneyThachdau + " xu. Bạn có đồng ý không?"
+                            p.id, 11, player.charname + " gửi lời thách đấu tới nhóm của bạn với số tiền cược là " + player.moneyThachdau
+                                    + " xu (đội trưởng hai bên đặt; bên thắng nhận gấp đôi trừ phí " + ThachDauCuoc.cauHinh().phiPhanTram
+                                    + "%, hoà thì hoàn lại). Bạn có đồng ý không?"
                     )
             );
             p.nameCompetitor = player.charname;

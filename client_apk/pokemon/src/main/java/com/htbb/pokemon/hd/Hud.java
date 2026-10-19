@@ -869,10 +869,21 @@ public final class Hud implements NenAndroid.LopPhu {
             if (!noiNpc && qs != null && qs.quickslotType == QuickSlot.TYPE_SKILL) {
                 mau = HdVe.argb(game.pokemon.KieuO.mauHe(game.pokemon.PokeChieu.he(mc.clazz, qs.skillType)));
             }
+            if (!noiNpc && game.pokemon.HanhDong.nutDanhLaCau()) {
+                mau = HdVe.argb(game.pokemon.ChuDe.CHINH);
+            }
             nenNut(c, x, y, r, HdVe.pha(mau, 0xFFFFFFFF, 0.25f), HdVe.pha(mau, 0xFF000000, 0.3f), true);
             if (noiNpc) {
                 veIcon(c, N_CHAT, x, y - 3, r * 0.9f);
                 chu(c, "Nói", x, y + r * 0.62f, 8f, 0xFFFFFFFF, 0x90000000, 2);
+            } else if (game.pokemon.HanhDong.nutDanhLaCau()) {
+                // 0.9.6.1: cạnh hồ / đang câu: nút đánh lớn = nút câu (thả phao / kéo cần) - icon chung jar
+                boolean can = game.pokemon.SinhThai.dangCan() && !game.pokemon.SinhThai.daKeo();
+                boolean cho = game.pokemon.SinhThai.dangCau() && !can;
+                int sIc = (int) (r * 1.1f);
+                game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.CAN_CAU, (int) x - sIc / 2, (int) y - 3 - sIc / 2, sIc,
+                        0xFFFFFF, game.pokemon.ChuDe.CHINH);
+                chu(c, can ? "Kéo!" : (cho ? "Chờ" : "Câu"), x, y + r * 0.62f, 8f, can ? 0xFFFFE066 : 0xFFFFFFFF, 0x90000000, 2);
             } else {
                 veO(g, c, qs, mc, x, y, r, now, true);
             }
@@ -1608,6 +1619,9 @@ public final class Hud implements NenAndroid.LopPhu {
     /** nút chiêu vừa mở bảng gán chiêu lúc nhấn (ô trống "+"): lúc thả không gửi phím */
     static final boolean[] MO_BANG = new boolean[SO_NUT];
 
+    /** Lần nhấn nút đánh hiện tại là câu cá (HanhDong.nutDanhLaCau lúc nhấn). */
+    static boolean CAU_NHAN;
+
     static void batNut(int n, int id, long now) {
         PTR_NUT[id] = n;
         NPTR[n] = id;
@@ -1617,6 +1631,13 @@ public final class Hud implements NenAndroid.LopPhu {
         int o = oCua(n);
         MO_BANG[n] = false;
         GameScr gs0 = game.render.Canvas.gameScr;
+        CAU_NHAN = false;
+        if (n == N_DANH && gs0 != null && !(gs0.focusedActor != null && gs0.focusedActor.catagory == 2)
+                && game.pokemon.HanhDong.nutDanhLaCau()) {
+            CAU_NHAN = true;   // nút đánh đang là nút câu: thả phao / kéo cần, không gửi phím 5, không bấm lặp
+            game.pokemon.HanhDong.cauCa();
+            return;
+        }
         if (n == N_DANH && gs0 != null && !(gs0.focusedActor != null && gs0.focusedActor.catagory == 2)) {
             o = 2;   // nút đánh lớn = ô 5 (giữa); ô trống thì cũng mở bảng gán (giữ lâu = đánh lặp, không chỉnh)
         }
@@ -1654,6 +1675,10 @@ public final class Hud implements NenAndroid.LopPhu {
         int o = oCua(n);
         if (MO_BANG[n]) {
             MO_BANG[n] = false;
+            return;
+        }
+        if (n == N_DANH && CAU_NHAN) {
+            CAU_NHAN = false;
             return;
         }
         if (ma != 0) {
@@ -1702,7 +1727,7 @@ public final class Hud implements NenAndroid.LopPhu {
 
     /** Nút đánh giữ = bấm lặp (như bấm liên tục phím 5). Gọi mỗi khung vẽ. */
     static void lapDanh(long now) {
-        if (NPTR[N_DANH] >= 0 && now - tLapDanh > 380) {
+        if (NPTR[N_DANH] >= 0 && !CAU_NHAN && now - tLapDanh > 380) {
             tLapDanh = now;
             NenAndroid.phimNgay(2, 53);
             NenAndroid.phimNgay(0, 53);

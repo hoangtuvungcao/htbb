@@ -28,12 +28,24 @@ public final class CaiDat {
     public static boolean hienFps;
     /** 0.9.5: bộ đo khung (nhà phát triển): ms từng pha, GC, cấp phát */
     public static boolean doKhung;
+    /** cờ nhà phát triển (--fps hoặc -Dhtbb.dev=1): cho lớp FPS / đo khung chạy cả ở bản phát hành */
+    public static boolean dev = "1".equals(System.getProperty("htbb.dev"));
     /** Hiệu ứng cao: hiệu ứng HD + trình bày 60 khung/giây; thấp: chỉ khung game (máy yếu) */
     public static boolean hieuUngCao = true;
     /** cũ (F1 bật/tắt dải gợi ý phím; nay F1 mở trang Phím tắt) - giữ để đọc/ghi tệp cũ */
     public static boolean goiYMo = true;
     /** máy chủ ghi trong cài đặt (rỗng = theo bản build) */
     public static String mayChu = "";
+
+    /** bản thử (build.sh mặc định: HTBB-Ban-Thu=1) hoặc cờ dev - mới có công tắc / lớp FPS, đo khung */
+    public static boolean choDo() {
+        return dev || "1".equals(javax.microedition.midlet.MIDlet.thuocTinh("HTBB-Ban-Thu"));
+    }
+
+    /** 0.9.6.1: lớp chữ FPS / độ phân giải góc trái dưới - bản phát hành TẮT (kể cả hien_fps=1 lưu từ bản cũ). */
+    public static boolean hienLopDo() {
+        return (hienFps || doKhung) && choDo();
+    }
 
     private static File thuMuc;
     /** lần chạy đầu (chưa có cai_dat.properties) */

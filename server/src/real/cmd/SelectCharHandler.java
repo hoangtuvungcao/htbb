@@ -443,7 +443,7 @@ public class SelectCharHandler implements ICommandHandler {
                 }
                 final String infoBoss = Map.getNameBossApear(p.inCountry);
                 if (!infoBoss.equals("")) {
-                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(infoBoss) + " đã xuất hiện"));
+                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Boss đang xuất hiện: " + infoBoss + "."));
                 }
                 p.sendMessage(MessageCreator.createSkillClan(p));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
@@ -460,7 +460,10 @@ public class SelectCharHandler implements ICommandHandler {
                 }
                 message.cleanup();
                 // TODO fixx hảo kì luân
-                session.sendMessage(createMsgLogin(session.vsTile));
+                // Gui lai goi 1 sau khi chon nhan vat, nhung KHONG kem hai anh tile: client cache rong
+                // (vsTile=-1) da nhan va luu tile o goi 1 luc dang nhap (LoginHandler). Truoc day gui lai
+                // ~24 KB tile lan nua ngay tren duong vao ban do cua dung nguoi dang co mang cham nhat.
+                session.sendMessage(createMsgLogin(0));
             } catch (final Exception ex4) {
             }
 

@@ -122,9 +122,10 @@ class MapDanhNhau {
                 return;
             }
 
+            // 0.9.7: nguong cu (ba tram muoi chin nghin + 500 lan PK) khong bao gio toi vi killer la short, tran 32000
+            // -> com.htbb.pokemon.LuatPk.NGUONG_KHOA_PK
             if ((map.mapIDLoadMap == Map.idMapMateria || !timeAutoPK)
-                    && p.killer >= 319000
-                    && p.nPKill >= 500
+                    && com.htbb.pokemon.LuatPk.khoaPk(p.killer)
                     && p.isKiller
                     && map.mapId != Map.idMapDautruong
                     && !((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId)) {
@@ -158,6 +159,10 @@ class MapDanhNhau {
             }
 
             if (((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId) && !p.isMonster && !c.isMonster) {
+                return;
+            }
+            // 0.9.7 luat PK the gioi: thi tran an toan, chenh cap > 10, nghiep qua nang (vung PvP khong ap dung)
+            if (LuatPkGame.chan(map, p, c) != null) {
                 return;
             }
 
@@ -340,6 +345,7 @@ class MapDanhNhau {
             }
 
             c.hp = (int) ((long) c.hp - ((long) damage - c.checkMagicShield(damage)));
+            XepHangPvpGame.khiSatThuong(p, c, damage); // tran xep hang: sat thuong ben thua gay (chong cay Elo)
             c.downDuarable();
             c.checkNewEffectItem(0, (long) (damage / 10), p);
             if (p.charthanthu != null && c.hp > 0) {
@@ -873,7 +879,7 @@ class MapDanhNhau {
                                                                                                         int nUser = p.party.userParty.size();
                                                                                                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                                                        int xpReceive = newxp * 80 / (100 * nUser);
+                                                                                                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                                                         int maxLv = p.lvDetail.lv;
 
                                                                                                         for (int i = 0; i < p.party.userParty.size(); i++) {
@@ -915,7 +921,7 @@ class MapDanhNhau {
                                                                                                             }
                                                                                                         }
 
-                                                                                                        xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                                                                                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                                                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                                                         xpReceive = p.expReceive(xpReceive);
                                                                                                         Map.addXPForChar(
@@ -976,10 +982,10 @@ class MapDanhNhau {
                                                                                                     dxpx = 1;
                                                                                                 }
 
-                                                                                                int[] downPercentx = new int[]{1, 5, 10, dxpx};
+                                                                                                int[] downPercentx = new int[]{1, 5, 10, 20}; // 0.9.6: nhu nhanh don danh (truoc: dxpx -> dxpx/dxpx = 1, va chia them lan nua trong traoHaQuai)
                                                                                                 int targetLvx = p.getLevel();
                                                                                                 if (targetLvx < 40) {
-                                                                                                    downPercentx = new int[]{1, 2, 3, dxpx};
+                                                                                                    downPercentx = new int[]{1, 2, 3, 4};
                                                                                                 }
 
                                                                                                 int deltax = targetLvx - mt.level;
@@ -993,7 +999,7 @@ class MapDanhNhau {
                                                                                                         ax = 3;
                                                                                                     }
 
-                                                                                                    dxpx /= downPercentx[ax];
+                                                                                                    dxpx /= ExpLauDai.chiaCu(downPercentx[ax]);
                                                                                                     if (dxpx <= 0) {
                                                                                                         dxpx = 1;
                                                                                                     }
@@ -1019,7 +1025,7 @@ class MapDanhNhau {
                                                                                                         int nUser = p.party.userParty.size();
                                                                                                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                                                        int xpReceive = newxp * 80 / (nUser * 100);
+                                                                                                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                                                         int maxLv = p.lvDetail.lv;
 
                                                                                                         for (int ix = 0; ix < p.party.userParty.size(); ix++) {
@@ -1061,7 +1067,7 @@ class MapDanhNhau {
                                                                                                             }
                                                                                                         }
 
-                                                                                                        xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                                                                                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                                                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                                                         xpReceive = p.expReceive(xpReceive);
                                                                                                         Map.addXPForChar(
@@ -1608,7 +1614,7 @@ class MapDanhNhau {
                                 int nUser = p.party.userParty.size();
                                 // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                int xpReceive = newxp * 80 / (nUser * 100);
+                                int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                 int maxLv = p.lvDetail.lv;
 
                                 for (int k = 0; k < p.party.userParty.size(); k++) {
@@ -1641,7 +1647,7 @@ class MapDanhNhau {
                                     }
                                 }
 
-                                xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                 xpReceive = p.expReceive(xpReceive);
                                 Map.addXPForChar(p, (long) (xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "map doAttackMultiTarget2");

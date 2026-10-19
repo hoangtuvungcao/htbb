@@ -6,7 +6,7 @@ useSeoMeta({
 })
 const muc = [
   { id: 'phi-thuong-mai', ten: 'Dự án fan phi thương mại', noi: [
-    `${tenSite} là dự án do cộng đồng người hâm mộ thực hiện, hoàn toàn miễn phí. Không có nạp tiền, không bán vật phẩm, không quảng cáo.`,
+    `${tenSite} là dự án do cộng đồng người hâm mộ thực hiện, chơi hoàn toàn miễn phí, không quảng cáo và không bán sức mạnh. Nạp (nếu máy chủ bật) là tuỳ chọn, chỉ mua đồ trang trí và tiện ích, theo Điều khoản thanh toán riêng.`,
     'Pokémon, tên các loài Pokémon và mọi hình ảnh, thương hiệu liên quan thuộc về Nintendo, Creatures Inc., GAME FREAK inc. và The Pokémon Company. Dự án không liên kết, không được tài trợ hay xác nhận bởi các công ty này.',
     'Sprite và chân dung Pokémon dùng theo giấy phép Creative Commons BY-NC 4.0 của PMDCollab (bắt buộc ghi công, cấm thương mại). Danh sách tác giả ở trang Giấy phép & nguồn tài nguyên (/giay-phep).',
     'Nếu bạn là chủ sở hữu quyền và muốn gỡ nội dung, hãy liên hệ ban quản trị qua kênh hỗ trợ — chúng tôi sẽ xử lý nhanh nhất có thể.',
@@ -23,7 +23,7 @@ const muc = [
     'Tên Pokémon/đội không được phản cảm, mạo danh ban quản trị hay người khác.',
   ] },
   { id: 'dich-vu', ten: 'Dịch vụ & thay đổi', noi: [
-    'Máy chủ được vận hành "như hiện có", có thể bảo trì, thay đổi cân bằng, hoặc ngừng hoạt động mà không bồi hoàn — vì không có giao dịch tiền nào.',
+    'Máy chủ được vận hành "như hiện có", có thể bảo trì, thay đổi cân bằng, hoặc ngừng hoạt động mà không bồi hoàn — trừ các khoản thanh toán (nếu có) được xử lý theo Chính sách hoàn tiền.',
     'Nội dung cẩm nang trên website có thể khác với game trong thời gian cập nhật; thông báo trong game là chuẩn.',
     'Điều khoản có thể được cập nhật; ngày cập nhật ghi ở cuối trang.',
   ] },

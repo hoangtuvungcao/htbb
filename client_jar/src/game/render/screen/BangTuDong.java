@@ -605,9 +605,7 @@ final class BangTuDong {
         int gt = loai == 0 ? TuDong.nguongHp : loai == 1 ? TuDong.nguongMp : chiSoVung();
         int hien = game.pokemon.Bang.thanhTruot(g, o[0], o[1], o[2], o[3], gt, 0, max, buoc, !bat, new game.model.IAction() {
             public void perform() {
-                int[] q = loai == 0 ? O_HP : loai == 1 ? O_MP : O_VUNG;
-                int m = loai == 2 ? soVung() - 1 : 90, b = loai == 2 ? 1 : 10;
-                int v = game.pokemon.Bang.giaTriTruot(Canvas.px, q[0], q[2], q[3], 0, m, b);
+                int v = game.pokemon.Bang.giaTriTha();
                 if (loai == 0) {
                     TuDong.nguongHp = v;
                 } else if (loai == 1) {
@@ -641,8 +639,7 @@ final class BangTuDong {
             dungPhim = false;
         }
         if (moi()) {
-            // 0.9.6: mọi chạm qua VungCham (đăng ký lúc vẽ); điểm giữ ghi lại cho thanh trượt kéo
-            game.pokemon.Bang.ghiKeo();
+            // 0.9.6: mọi chạm qua VungCham (đăng ký lúc vẽ); thanh trượt đọc Canvas.dangGiu (không bị xoá ở đây)
             Canvas.isPointerDown = false;
             Canvas.isPointerClick = false;
             return;

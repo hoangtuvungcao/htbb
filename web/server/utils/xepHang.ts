@@ -15,7 +15,7 @@
 import {
   XH_KHOA_CAI_DAT, XH_KY_NANG, XH_TEN_BAC_PVP, XH_VUNG, xhBacPvp, xhBang, xhBangDuocHien, xhCapKyNang, xhChonBoLoc, xhChuanHoaCaiDat,
   xhDauTuanGame, xhKhopLuatTen, xhDocNgay, xhDocSinhThai, xhGioChuoi, xhGopDem, xhLuatTen, xhMuaPvp, xhNgaySo, xhSoHuyHieu, xhSqlLoaiTru,
-  xhTenGiaoThe, xhVungTuInfotop,
+  xhIdDanhHieu, xhTenGiaoThe, xhVungTuInfotop,
 } from '../../shared/utils/xepHangThuan'
 import type { XhBangDinhNghia, XhCaiDat, XhDongDem, XhLuaChon, XhLuatTen, XhMaBang } from '../../shared/utils/xepHangThuan'
 import { dexHienTai, speciesName } from '../../shared/utils/pokemon'
@@ -38,6 +38,8 @@ export interface XhDong {
   phu: string
   /** Bậc PvP (Poké/Great/Ultra/Master Ball). */
   bac?: string
+  /** 0.9.7 danh hiệu đang đeo (data_danh_hieu): tên + độ hiếm 0..3. */
+  danhHieu?: { ten: string, doHiem: number }
 }
 
 export interface XhKetQua {
@@ -480,6 +482,40 @@ async function docBang(ma: XhMaBang, loc: Record<string, string>, cd: XhCaiDat):
  * Một bảng đã lọc, có đệm `lamMoiGiay` giây (mặc định 60 — bằng chu kỳ game làm mới top).
  * null = bảng không tồn tại / đang ẩn / thiếu bảng CSDL.
  */
+/**
+ * 0.9.7: gắn danh hiệu đang đeo (tên + độ hiếm từ data_danh_hieu) cho các dòng nhân vật. Không có bảng
+ * data_danh_hieu (chưa chạy sql/them_danh_hieu.sql) hoặc lỗi -> bỏ qua, bảng vẫn hiện bình thường.
+ */
+async function xhGanDanhHieu(dong: Omit<XhDong, 'hang'>[]): Promise<void> {
+  try {
+    const g = dbGame()
+    const ten = [...new Set(dong.map(d => d.ten).filter(Boolean))].slice(0, 200)
+    if (!ten.length || !(await coBang(g, 'data_danh_hieu'))) return
+    const nv = await q<{ charname: string, pInfo: string }>(g,
+      `SELECT charname, pInfo FROM tob_char WHERE charname IN (${ten.map(() => '?').join(',')}) LIMIT ${ten.length * 2}`, ten)
+    const idTheoTen = new Map<string, number>()
+    for (const r of nv) {
+      const id = xhIdDanhHieu(r.pInfo)
+      if (id > 0) idTheoTen.set(String(r.charname).toLowerCase(), id)
+    }
+    const ids = [...new Set(idTheoTen.values())]
+    if (!ids.length) return
+    const dh = new Map<number, { ten: string, doHiem: number }>()
+    for (const r of await q<{ id: number, ten: string, do_hiem: number }>(g,
+      `SELECT id, ten, do_hiem FROM data_danh_hieu WHERE bat = 1 AND id IN (${ids.map(() => '?').join(',')}) LIMIT ${ids.length}`, ids)) {
+      dh.set(soNguyen(r.id), { ten: String(r.ten ?? ''), doHiem: soNguyen(r.do_hiem) })
+    }
+    for (const d of dong) {
+      const id = idTheoTen.get(d.ten.toLowerCase())
+      const x = id ? dh.get(id) : undefined
+      if (x?.ten) d.danhHieu = x
+    }
+  }
+  catch (e: any) {
+    console.error('[xep-hang] danh hieu:', e?.code ?? '', e?.message ?? e)
+  }
+}
+
 export async function xhLayBang(ma: string, query: Record<string, unknown>): Promise<XhKetQua | null> {
   const b = xhBang(ma)
   if (!b) return null
@@ -497,6 +533,7 @@ export async function xhLayBang(ma: string, query: Record<string, unknown>): Pro
     const capNhatLuc = new Date().toISOString()
     try {
       const t = await docBang(b.ma, loc, cd)
+      if (!t.laDoi) await xhGanDanhHieu(t.dong)
       return { ma: b.ma, ten: b.ten, laDoi: !!t.laDoi, cot: t.cot, loc, ghiChu: t.ghiChu ?? '', capNhatLuc, loi: false,
         dong: t.dong.map((d, i) => ({ hang: i + 1, ...d })) }
     }

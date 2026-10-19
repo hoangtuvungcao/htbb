@@ -34,8 +34,10 @@ GOC=$(pwd)
 doc_conf() { [ -f "../tools/phat-hanh/$1" ] && sed -n "s/^$2=//p" "../tools/phat-hanh/$1" | tail -1 | tr -d '\r" ' || true; }
 PHIEN_BAN=${PHIEN_BAN:-$(doc_conf phien_ban.conf PHIEN_BAN)}
 PHIEN_BAN=${PHIEN_BAN:-0.9.0}
-SO_PB=$(printf '%s' "$PHIEN_BAN" | sed -n 's/^\([0-9]*\.[0-9]*\(\.[0-9]*\)\{0,1\}\).*/\1/p')
+# phần số của phiên bản, tối đa 4 nhóm (bản vá 0.9.6.1 -> tên tệp 0.9.6.1); Launch4j cần đúng 4 nhóm (SO_PB4)
+SO_PB=$(printf '%s' "$PHIEN_BAN" | sed -n 's/^\([0-9]*\(\.[0-9]*\)\{1,3\}\).*/\1/p')
 SO_PB=${SO_PB:-0.9.0}
+SO_PB4=$(printf '%s.0.0.0' "$SO_PB" | cut -d. -f1-4)
 TEN_PB=$SO_PB
 JRE_BAN=${JRE_BAN:-21.0.12.1+1}
 JRE_TEP=$(printf '%s' "$JRE_BAN" | tr '+' '_')
@@ -155,11 +157,11 @@ cat > "$GOI/launch4j.xml" <<EOF
     <opt>-Dsun.java2d.noddraw=false</opt>
   </jre>
   <versionInfo>
-    <fileVersion>$SO_PB.0</fileVersion>
+    <fileVersion>$SO_PB4</fileVersion>
     <txtFileVersion>$PHIEN_BAN</txtFileVersion>
     <fileDescription>Huyen Thoai Bao Boi</fileDescription>
     <copyright>HTBB</copyright>
-    <productVersion>$SO_PB.0</productVersion>
+    <productVersion>$SO_PB4</productVersion>
     <txtProductVersion>$PHIEN_BAN</txtProductVersion>
     <productName>Huyen Thoai Bao Boi $TEN_PB</productName>
     <companyName>HTBB</companyName>
@@ -254,6 +256,8 @@ Name: "desktopicon"; Description: "Tạo biểu tượng trên màn hình nền"
 
 [Run]
 Filename: "{app}\\HTBB.exe"; Description: "Chơi Huyền Thoại Bảo Bối"; Flags: nowait postinstall skipifsilent
+; cập nhật trong game (htbb.pc.CapNhatPc chạy bộ cài /SILENT): xong thì mở lại game
+Filename: "{app}\\HTBB.exe"; Flags: nowait runasoriginaluser; Check: WizardSilent
 EOF
         # Inno Setup đọc .iss UTF-8 khi có BOM
         printf '\357\273\277' | cat - "$GOI/htbb.iss" > "$GOI/htbb-bom.iss" && mv "$GOI/htbb-bom.iss" "$GOI/htbb.iss"

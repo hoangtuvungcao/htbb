@@ -16,6 +16,7 @@ import java.util.Vector;
  *  DIEM_TN  điểm tiềm năng chưa cộng  HUD Menu -> "Pokémon" -> tab Trang bị / Chỉ số -> nút "Tiềm năng"
  *  DIEM_KN  điểm kỹ năng chưa dùng    HUD Menu -> "Pokémon" -> tab Kỹ năng -> chip "Chiêu của Pokémon" -> hàng "Học: 1 điểm"
  *  CHIEU_MOI chiêu mới học được ở NPC  HUD Menu -> "Pokémon" -> tab Kỹ năng -> chip "Học chiêu mới" -> hàng chiêu (chưa xem)
+ *  DANH_HIEU danh hiệu mới mở khoá    HUD Menu -> "Pokémon" -> tab Trang bị / Chỉ số -> viên "Danh hiệu" -> hàng (0.9.7)
  * </pre>
  *
  * Xoá: làm xong việc (đọc thư, cộng điểm, nhận / trả nhiệm vụ) làm nguồn về 0 - chấm mọi cấp tắt theo; chiêu mới tắt
@@ -23,9 +24,9 @@ import java.util.Vector;
  * Kiểm thử: client_pc/test/KiemChamMoi (mỗi nguồn: chấm có trên đủ mọi cấp của đường).
  */
 public final class ChamMoi {
-    public static final int NV_NHAN = 0, NV_TRA = 1, THU = 2, DIEM_TN = 3, DIEM_KN = 4, CHIEU_MOI = 5, SO_NGUON = 6;
+    public static final int NV_NHAN = 0, NV_TRA = 1, THU = 2, DIEM_TN = 3, DIEM_KN = 4, CHIEU_MOI = 5, DANH_HIEU = 6, SO_NGUON = 7;
     public static final String[] TEN = {"nhiệm vụ mới", "nhiệm vụ đủ để trả", "thư chưa đọc", "điểm tiềm năng", "điểm kỹ năng",
-        "chiêu mới"};
+        "chiêu mới", "danh hiệu mới"};
 
     /** số chiêu mới đã xem (danh sách "Học chiêu mới" đã mở) - theo dòng Pokémon */
     private static int daXemChieu = -1, daXemLop = -1;
@@ -75,6 +76,8 @@ public final class ChamMoi {
                     int n = ManNhanVat.demHocMoi(m.clazz);
                     return daXemLop == m.clazz && n <= daXemChieu ? 0 : n;
                 }
+                case DANH_HIEU:
+                    return Math.max(0, DanhHieuKho.soMoi);
                 default:
                     return 0;
             }
@@ -115,7 +118,7 @@ public final class ChamMoi {
 
     /** Ô "Pokémon" ở Menu. */
     public static boolean menuPokemon() {
-        return co(DIEM_TN) || co(DIEM_KN) || co(CHIEU_MOI);
+        return co(DIEM_TN) || co(DIEM_KN) || co(CHIEU_MOI) || co(DANH_HIEU);
     }
 
     /** Viên "Thư/Quà" ở Menu. */
@@ -133,7 +136,7 @@ public final class ChamMoi {
         switch (tab) {
             case ManNhanVat.TAB_TRANG_BI:
             case ManNhanVat.TAB_CHI_SO:
-                return co(DIEM_TN);
+                return co(DIEM_TN) || co(DANH_HIEU);
             case ManNhanVat.TAB_KY_NANG:
                 return co(DIEM_KN) || co(CHIEU_MOI);
             default:

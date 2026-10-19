@@ -734,7 +734,7 @@ public class MapClan extends Map {
                                                                         int nUser = p.party.userParty.size();
                                                                         // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                        int xpReceive = newxp * 80 / (100 * nUser);
+                                                                        int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                         int maxLv = p.lvDetail.lv;
 
                                                                         for(int i = 0; i < p.party.userParty.size(); ++i) {
@@ -767,7 +767,7 @@ public class MapClan extends Map {
                                                                             }
                                                                         }
 
-                                                                        xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                        xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                         xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                         xpReceive = p.expReceive(xpReceive);
                                                                         addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapclan doAttackMonster2");
@@ -877,7 +877,7 @@ public class MapClan extends Map {
                                                                             int nUser = p.party.userParty.size();
                                                                             // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                                            int xpReceive = newxp * 80 / (nUser * 100);
+                                                                            int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                                             int maxLv = p.lvDetail.lv;
 
                                                                             for(int i = 0; i < p.party.userParty.size(); ++i) {
@@ -910,7 +910,7 @@ public class MapClan extends Map {
                                                                                 }
                                                                             }
 
-                                                                            xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                            xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                                             xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                             xpReceive = p.expReceive(xpReceive);
                                                                             addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapclan doAttackMonster5");
