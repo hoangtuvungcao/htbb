@@ -55,7 +55,51 @@ public class Quest {
         }
     }
 
+    /** Lời thoại bỏ ký tự người nói đầu dòng ("1" NPC / "0" người chơi). */
+    static String loi(Object o) {
+        String s = o == null ? "" : (String) o;
+        return s.length() > 0 && (s.charAt(0) == '0' || s.charAt(0) == '1') ? s.substring(1) : s;
+    }
+
+    /** 0.9.4: hỏi nhận nhiệm vụ (lời cuối làm câu hỏi). Có / Không đều đóng hội thoại. */
+    void hoiNhan() {
+        String hoi = this.content.size() > 0 ? loi(this.content.elementAt(this.content.size() - 1)) : "";
+        if (hoi.length() == 0) {
+            hoi = "Nhận nhiệm vụ " + this.name + "?";
+        }
+        Canvas.startYesNoDlg(hoi, new IAction() {
+            @Override
+            public void perform() {
+                GameService.gI().onSendInfoQuest(0, Quest.this.idQuest, Quest.this.main_sub);
+                Quest.this.isShow = false;
+                Quest.this.index = (byte) 0;
+                Canvas.endDlg();
+            }
+        }, new IAction() {
+            @Override
+            public void perform() {
+                Quest.this.isShow = false;
+                Quest.this.index = (byte) 0;
+                Canvas.endDlg();
+            }
+        });
+    }
+
+    /** 0.9.4: đóng hội thoại nhiệm vụ (Back / Esc / phím mềm) - người chơi luôn thoát được. */
+    public void dong() {
+        this.isShow = false;
+        this.index = (byte) 0;
+        game.pokemon.HopThoaiDuoi.giu(false);
+        game.pokemon.HopThoaiDuoi.tat();
+    }
+
     private void capNhat(Actor mychar, Actor npc) {
+        if (Canvas.keyPressed[12] || Canvas.keyPressed[13]) {
+            Canvas.keyPressed[12] = false;
+            Canvas.keyPressed[13] = false;
+            dong();
+            return;
+        }
         if (Canvas.keyPressed[5]) {
             Canvas.keyPressed[5] = false;
             if (npc != null && ((npc.getTypeNpc() != this.idNpcReceive && this.stateQuest == 0) || (npc.getTypeNpc() != this.idNpcResponse && this.stateQuest == 1))) {
@@ -78,8 +122,9 @@ public class Quest {
                         this.index = (byte) 0;
                         return;
                     }
-                    this.isShow = false;       // không phải loại 3: kết thúc hội thoại (trước đây kẹt isShow)
-                    this.index = (byte) 0;
+                    // không phải loại 3, hết lời mà chưa hỏi (nhiệm vụ 1 dòng): hỏi nhận - trước 0.9.4 đóng luôn,
+                    // nhiệm vụ đánh quái / nhặt đồ 1 dòng không bao giờ nhận được
+                    hoiNhan();
                     return;
                 }
                 String info = (String) this.content.elementAt(this.index);
@@ -90,21 +135,7 @@ public class Quest {
                 }
                 if (this.type != 3 && this.index >= this.content.size() - 2 && this.index + 1 < this.content.size()) {
                     this.index = (byte) (this.index + 1);
-                    Canvas.startYesNoDlg((String) this.content.elementAt(this.index), new IAction() {
-                        @Override
-                        public void perform() {
-                            GameService.gI().onSendInfoQuest(0, Quest.this.idQuest, Quest.this.main_sub);
-                            Quest.this.isShow = false;
-                            Canvas.endDlg();
-                        }
-                    }, new IAction() {
-                        @Override
-                        public void perform() {
-                            Quest.this.isShow = false;
-                            Quest.this.index = (byte) 0;
-                            Canvas.endDlg();
-                        }
-                    });
+                    hoiNhan();
                     return;
                 }
                 return;
@@ -157,29 +188,15 @@ public class Quest {
         } else if (state == 1) {
             info = (String) this.rescontent.elementAt(this.index);
         }
+        this.isShow = true;   // 0.9.4: bật trước addChat - lời của người chơi cũng vào hộp đáy (GameScr.dangTroChuyen)
         if (info.startsWith("1")) {
             GameScr.addChat(npc, info.substring(1), 100);
         } else {
             GameScr.addChat(mychar, info.substring(1), 100);
         }
-        this.isShow = true;
-        if (this.stateQuest == 0 && this.type != 3 && this.content.size() <= 2 && this.content.size() > 1) {
-            this.index = (byte) (this.index + 1);
-            Canvas.startYesNoDlg((String) this.content.elementAt(this.index), new IAction() {
-                @Override
-                public void perform() {
-                    GameService.gI().onSendInfoQuest(0, Quest.this.idQuest, Quest.this.main_sub);
-                    Quest.this.isShow = false;
-                    Canvas.endDlg();
-                }
-            }, new IAction() {
-                @Override
-                public void perform() {
-                    Quest.this.isShow = false;
-                    Quest.this.index = (byte) 0;
-                    Canvas.endDlg();
-                }
-            });
+        if (this.stateQuest == 0 && this.type != 3 && this.content.size() <= 2) {
+            this.index = (byte) (this.content.size() - 1);
+            hoiNhan();
         } else if (this.stateQuest == 1 && this.type != 3 && this.rescontent.size() <= 2) {
             this.index = (byte) (this.index + 1);
             GameService.gI().onSendInfoQuest(1, this.idQuest, this.main_sub);

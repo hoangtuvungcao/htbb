@@ -233,6 +233,8 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 }
                 // pokemon: cú chạm trúng điều khiển đã đăng ký lúc vẽ (VungCham) - chạy trước, nuốt cú chạm
                 game.pokemon.VungCham.xuLy();
+                game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
+                game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
                 if (menu.showMenu) {
                     menu.updateMenuKey();
                     menu.updateMenu();
@@ -253,6 +255,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                     }
                 }
                 clearKeyPressed();
+                game.pokemon.GiamSat.nhipOk();
                 repaint();
                 if (isBB) {
                     synchronized (LOCK) {
@@ -274,8 +277,14 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 } else {
                     Thread.sleep(1L);
                 }
-            } catch (Exception e3) {
-                e3.printStackTrace();
+            } catch (Throwable e3) {
+                // 0.9.4: mọi lỗi (cả Error) trong một nhịp chỉ bỏ nhịp đó, không giết vòng lặp game
+                game.pokemon.GiamSat.loiNhip(e3);
+                clearKeyPressed();
+                try {
+                    Thread.sleep(40L);   // nhịp lỗi không được thành vòng quay bận (trước: bỏ qua sleep -> 100% CPU)
+                } catch (InterruptedException e4) {
+                }
             }
         }
     }
@@ -659,19 +668,37 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         game.render.screen.Font.nenSang = false;
         game.pokemon.VungCham.khungMoi();
         try {
-            if (currentScreen != null) {
-                currentScreen.paint(g);
+            // 0.9.4: mỗi lớp vẽ trong try riêng - màn bên dưới ném lỗi không được làm mất hộp thoại / menu đang mở
+            // (hộp vô hình nhưng vẫn chặn chạm = treo màn); lỗi ghi qua GiamSat
+            try {
+                if (currentScreen != null) {
+                    currentScreen.paint(g);
+                }
+                if (currentScreen == gameScr) {
+                    game.pokemon.HopThoaiDuoi.ve(g);   // pokemon: hộp thoại NPC đáy màn
+                }
+            } catch (Throwable e) {
+                game.pokemon.GiamSat.loi("ve man " + currentScreen, e);
             }
-            if (currentScreen == gameScr) {
-                game.pokemon.HopThoaiDuoi.ve(g);   // pokemon: hộp thoại NPC đáy màn
-            }
-            if (currentDialog != null) {
+            Dialog dlg = currentDialog;
+            if (dlg != null) {
                 game.pokemon.VungCham.lop(1);
-                currentDialog.paint(g);
+                try {
+                    resetTrans(g);
+                    dlg.paint(g);
+                    game.pokemon.GiamSat.daVeHop(dlg);
+                } catch (Throwable e) {
+                    game.pokemon.GiamSat.loi("ve hop thoai " + dlg, e);
+                }
             }
             if (menu.showMenu) {
                 game.pokemon.VungCham.lop(2);
-                menu.paintMenu(g);
+                try {
+                    resetTrans(g);
+                    menu.paintMenu(g);
+                } catch (Throwable e) {
+                    game.pokemon.GiamSat.loi("ve menu", e);
+                }
             }
             game.pokemon.DungDo.ve(g);   // pokemon: kết quả dùng vật phẩm (thông báo nhanh, mọi màn)
             game.pokemon.TienTe.veGoiY(g);   // pokemon: chú thích biểu tượng tiền (chạm biểu tượng)
@@ -713,8 +740,13 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         } catch (Exception e) {
         }
         resetTrans(g);
-        AutoGuard.paint(g);
+        try {
+            AutoGuard.paint(g);
+        } catch (Throwable e) {
+            game.pokemon.GiamSat.loi("ve AutoGuard", e);
+        }
         game.pokemon.VungCham.khungXong();
+        game.pokemon.GiamSat.xongKhung();
     }
 
     public static int abs(int i) {

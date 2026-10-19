@@ -169,8 +169,30 @@ public class MsgDlg extends Dialog {
         super.paint(g);
     }
 
+    /** 0.9.4: hộp THÔNG TIN (chỉ một lệnh "OK" bên trái, không phải hộp chờ). */
+    boolean laThongTin() {
+        return this.left != null && this.left.action != null && this.center == null && this.right == null && !this.isIcon;
+    }
+
     @Override
     public void update() {
+        // 0.9.4: hộp thông tin luôn đóng được - Back / Esc (phím mềm phải), hoặc chạm ra ngoài hộp
+        if (laThongTin()) {
+            if (Canvas.keyPressed[13]) {
+                Canvas.keyPressed[13] = false;
+                this.left.action.perform();
+                return;
+            }
+            if (Canvas.isPointerClick && !this.isUseArr) {
+                int bx = Canvas.hw - (this.wHop / 2), by = this.y + 12;
+                boolean trong = Canvas.px >= bx && Canvas.px < bx + this.wHop && Canvas.py >= by && Canvas.py < by + this.hHop;
+                if (!trong && Canvas.collisionCmdBar() < 0) {
+                    Canvas.isPointerClick = false;
+                    this.left.action.perform();
+                    return;
+                }
+            }
+        }
         this.state++;
         if (this.state > 3) {
             this.state = 0;

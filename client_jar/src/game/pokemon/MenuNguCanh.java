@@ -100,6 +100,7 @@ public final class MenuNguCanh extends Dialog {
         }
         Command c = (Command) this.lenh.elementAt(i);
         dong();
+        Canvas.clearKeyPressed();   // 0.9.4: phím chọn không lọt xuống màn chơi (bỏ qua lời thoại đầu)
         AmThanh.phat(AmThanh.XAC_NHAN);
         if (c.action != null) {
             c.action.perform();

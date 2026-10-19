@@ -65,6 +65,7 @@ public final class HopXacNhan extends Dialog {
         if (Canvas.currentDialog == this) {
             Canvas.currentDialog = null;
         }
+        Canvas.clearKeyPressed();   // 0.9.4: Enter / OK không lọt xuống màn bên dưới
         if (a != null) {
             a.perform();
         }
@@ -73,6 +74,12 @@ public final class HopXacNhan extends Dialog {
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
         Bang.phuNen(g);
+        // 0.9.4: chạm ra ngoài hộp = Huỷ (luôn thoát được; vùng đăng ký trước nên nút trong hộp thắng)
+        VungCham.them(g, 0, 0, Canvas.w, Canvas.h, new IAction() {
+            public void perform() {
+                HopXacNhan.this.xong(HopXacNhan.this.khong);
+            }
+        }, "nen-ngoai");
         int k = Bang.cach();
         int nh = Bang.caoHang();
         int ww = Math.min(Canvas.w - 24, 380);

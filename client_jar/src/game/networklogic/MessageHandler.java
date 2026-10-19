@@ -2357,6 +2357,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     Canvas.endDlg();
                     break;
                 case 37:
+                    game.pokemon.TuNoiLai.coThongBao();   // 0.9.4: server vừa báo lý do -> rớt ngay sau không tự nối lại
                     String message = msg.reader().readUTF();
                     final String url = msg.reader().readUTF();
                     // pokemon (hệ sinh thái): kết quả câu cá hiện sau hoạt cảnh cá cắn; đọc mốc đua / điểm đào
