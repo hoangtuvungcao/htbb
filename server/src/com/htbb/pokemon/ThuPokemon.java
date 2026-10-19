@@ -40,7 +40,35 @@ public final class ThuPokemon {
         SHINY[6] = true;
     }
 
+    /**
+     * P2: skin linh thu (real.SkinThuCuoi 0..5, TEN cung thu tu) -> Pokemon thu cuoi ve thay con thu
+     * khi skin dang HIEN (SkinThuCuoi.hienThi). Nguon: dong loai=skin cua du_lieu/bang_thu.csv.
+     */
+    static final int[] DEX_SKIN = {
+        879,  // 0 Copperajah (PMDCollab chi co Idle + Walk - du cho thu cuoi)
+        675,  // 1 Gau Truc -> Pangoro
+        716,  // 2 Tien Loc -> Xerneas
+        323,  // 3 Camerupt
+        745,  // 4 Lycanroc
+        483,  // 5 Kim Cang Long -> Dialga
+    };
+
+    /**
+     * P2: thu cuoi dang hoa hinh (data.Animal.isHoaHinh == 1, anh cu Ky Lan 8965/8966) -> Entei.
+     * Truoc day -93 gui 0 (khong cuoi) luc hoa hinh nen thu bien mat tren client Pokemon.
+     */
+    public static final int DEX_HOA_HINH = 244;
+
     private ThuPokemon() {
+    }
+
+    public static int soSkin() {
+        return DEX_SKIN.length;
+    }
+
+    /** Dex Pokemon cho skin linh thu {@code skin}, 0 neu ngoai bang. */
+    public static int dexSkin(final int skin) {
+        return skin >= 0 && skin < DEX_SKIN.length ? DEX_SKIN[skin] : 0;
     }
 
     public static int soLoai() {

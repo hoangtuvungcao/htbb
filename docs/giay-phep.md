@@ -12,11 +12,11 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 |---|---|---|---|
 | [PMDCollab SpriteCollab](https://github.com/PMDCollab/SpriteCollab) | sprite động + chân dung Pokémon (mọi client, website), biểu tượng ứng dụng | **CC BY-NC 4.0** (một số tệp cũ ghi PMDCollab v1/v2 hoặc không ghi) | **Có** — từng người vẽ |
 | [PMDCollab RawAsset](https://github.com/PMDCollab/RawAsset) | hiệu ứng chiêu (Particle), icon vật phẩm, vật thể trên bản đồ (Object, Item) | không có tệp LICENSE; trích từ Pokémon Mystery Dungeon (© Nintendo / Chunsoft) | chỉ dùng phi thương mại; vẫn ghi nguồn |
-| [Ninja Adventure – Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack) (Pixel-boy & AAA) | bộ tile bản đồ | CC0 1.0 | không (dự án vẫn ghi) |
-| Phần vẽ bằng code của dự án | mép chuyển tiếp autotile, nền / vách hang, biển hiệu, chữ và giao diện kiểu Pokémon, logo | CC0 | — |
+| [Ninja Adventure – Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack) (Pixel-boy & AAA) | bộ tile bản đồ, vật trang trí bản đồ máy chủ gửi (`server/map/tree`, P2) | CC0 1.0 | không (dự án vẫn ghi) |
+| Phần vẽ bằng code của dự án | mép chuyển tiếp autotile, nền / vách hang, biển hiệu, chữ và giao diện kiểu Pokémon, logo; **P2**: Poké Ball, quả mọng, 1344 huy hiệu đội, icon kỹ năng đội, huy hiệu hệ, khung tranh, đèn lồng / tượng / ô vườn / rương, mảnh băng, băng-rôn danh hiệu, vầng sáng, nút và khung giao diện, khiên vùng, vòng quay (mục 7) | CC0 | — |
 | [Kenney](https://kenney.nl/assets) — Interface Sounds, Impact Sounds, RPG Audio, Digital Audio, Music Jingles | tiếng hiệu ứng | CC0 1.0 | không (dự án vẫn ghi) |
 | Nhạc nền chiptune soạn riêng (`client_jar/tools/lam_am_thanh.py`) | nhạc nền MIDI | CC0 1.0 | — |
-| Noto Sans (© Google), Baloo 2 (© The Baloo 2 Project Authors / Ek Type), Nunito, Press Start 2P | chữ bản PC, logo, website | SIL Open Font License 1.1 | giữ nguyên tệp giấy phép |
+| Noto Sans (© Google), Baloo 2 (© The Baloo 2 Project Authors / Ek Type), Nunito, Press Start 2P | chữ bản PC, logo, website; chữ vẽ sẵn vào ảnh băng-rôn danh hiệu (Noto Sans Bold, P2 — không kèm tệp font) | SIL Open Font License 1.1 | giữ nguyên tệp giấy phép |
 | TimGM6mb.sf2 (Tim Brechbill, David Bolton) | soundbank MIDI của bản PC Java | GNU GPL v2 | giữ nguyên tệp + GPL-2 |
 | Eclipse Temurin JRE 21 | Java đi kèm bản PC Windows / Linux | GPL v2 + Classpath Exception | giữ tệp giấy phép của JRE |
 | Launch4j | `HTBB.exe` bọc jar | BSD-3 | chép `LICENSE.txt` |
@@ -51,7 +51,7 @@ Sprite và chân dung PMDCollab theo [CC BY-NC 4.0](https://creativecommons.org/
 | `client_pc_ios/Assets/Resources/poke/GHI_CONG.txt` | ghi công **từng loài**: thời điểm, người vẽ, trạng thái, giấy phép, động tác (nguồn chính) | `DongGoiSprite` (`tools/pokemon/`) khi đóng gói sprite |
 | `client_pc_ios/Assets/Resources/poke/GHI_CONG_MAP.txt` | nguồn bộ tile bản đồ | `tools/pokemon/DungBoTileMoi.java` |
 | `client_pc_ios/Assets/Resources/poke/GHI_CONG_VAT_THE.txt` | nguồn hình vật thể (RawAsset) | `tools/pokemon/tai_vat_the.py` |
-| `client_pc_ios/Assets/Resources/ghicong/GHI_CONG.txt` | bản gộp dễ đọc cho người chơi: tuyên bố không liên kết, danh sách 42 người vẽ, người vẽ theo loài, hiệu ứng, bản đồ, âm thanh, phông | công cụ ghi công của client |
+| `client_pc_ios/Assets/Resources/ghicong/GHI_CONG.txt` | bản gộp dễ đọc cho người chơi: tuyên bố không liên kết, danh sách người vẽ (43 sau P2), người vẽ theo loài, hiệu ứng, bản đồ, âm thanh, phông | công cụ ghi công của client |
 | `client_jar/res/GHI_CONG.txt` | bản cho jar và APK (bắt buộc có, build dừng nếu thiếu) | `client_jar/tools/sinh_ghi_cong.py` (+ `client_jar/tools/pmdcollab_credit_names.txt`) |
 | `client_jar/res/LICENSE-audio.txt` | nguồn và giấy phép từng tệp âm thanh | — |
 | `client_pc/res/phong/GIAY_PHEP.txt`, `OFL-NotoSans.txt`, `OFL-Baloo2.txt` | phông bản PC | — |
@@ -107,3 +107,27 @@ javac -d /tmp/htbb-tools tools/pokemon/DungBoTileMoi.java && java -cp /tmp/htbb-
   đích fan phi thương mại.
 - Thư viện server: MySQL Connector/J 5.1 (GPL v2 + FOSS exception), JExcelAPI `jxl` (LGPL). Công cụ build client J2ME:
   ProGuard (GPL v2), xem `client_jar/tools/LICENSE`.
+
+## 7. Thay toàn bộ hình của máy chủ cũ (P2)
+
+Mọi hình của game kiếm hiệp gốc (KPAH / NQSH) mà client Pokémon còn có thể vẽ đã được thay **tại chỗ** (giữ tên tệp, kích
+thước, bảng khung) bằng hình Pokémon PMDCollab hoặc hình dự án tự vẽ bằng code. Không dùng sprite vật phẩm chính thức của
+Nintendo (Bulbapedia / Serebii...) ở bất kỳ đâu.
+
+| Nhóm | Nguồn hình mới | Công cụ sinh lại |
+|---|---|---|
+| Thú cưỡi, pet, skin linh thú, hoá hình (ô dự phòng `d_effect`, `pet/`, `avtathu/`, `skinthu/`); 5 loài mới 0483 Dialga, 0675 Pangoro, 0716 Xerneas, 0745 Lycanroc, 0879 Copperajah | PMDCollab SpriteCollab (CC BY-NC 4.0, ghi công theo loài) | `tools/pokemon/sinh_bang_thu.py`, `tai_sprite_pmd.py`, `DongGoiSprite.java`, `ve_thu_pet_thay_cu.py` |
+| NPC dự phòng (`npc.sh`), quái / boss dự phòng (`map/monster`, `thanthu`, `rong/`), tranh Tủ bình, icon skin | PMDCollab SpriteCollab | `sinh_npc_sh.py`, `sinh_anh_quai_cu.py`, `sinh_icon_thay_cu.py` |
+| Icon vật phẩm còn ở dải cũ (`map/icon`, `images_*`, `iconquest`, `fruit`) | PMDCollab RawAsset (đã dùng từ trước) | `sinh_icon_pokemon.py` → `sinh_icon_thay_cu.py` |
+| Huy hiệu đội, icon kỹ năng đội, huy hiệu hệ, Poké Ball, quả mọng; hiệu ứng kiếm (mảnh băng), băng-rôn danh hiệu, vầng sáng, icon chiêu `sk0..4`; đèn lồng, tượng, ô vườn, rương; nút / khung giao diện Unity, khiên vùng, vòng quay | tự vẽ bằng code (CC0) | `sinh_icon_thay_cu.py`, `ve_hieu_ung_thay_cu.py`, `ve_giao_dien_thay_cu.py`, `ve_vong_quay.py` |
+| Vật trang trí bản đồ `map/tree`; đèn lồng, tượng, ô vườn, rương | Ninja Adventure (CC0); tự vẽ (CC0) | `tools/pokemon/p2_ban_do/tree_moi.py`, `ve_trang_tri.py`, `ve_dat.py` |
+| Bộ phận người / vũ khí paper-doll (`c/`, `wpa/`, `wpsplash/`, ngựa cũ gửi trong `-8`) | làm trong suốt, giữ định dạng (client Pokémon không vẽ) | `xoa_hinh_nguoi_cu.py` |
+
+**Kiểm tra:** `python3 -I tools/pokemon/kiem_tai_nguyen_cu.py` (và test `KiemTaiNguyenCu` trong bộ kiểm server) so dấu
+vân tay của mọi tệp / ảnh trong gói đang phát hành với `du_lieu/tai_nguyen_cu.txt` (tệp của máy chủ cũ, sinh từ lịch sử
+git); hình cũ chỉ được giữ khi có dòng lý do trong `du_lieu/tai_nguyen_cu_giu.csv` (hiệu ứng chiến đấu chủ game cho
+giữ, khung giao diện chung, phông chữ, dải `d_effect` còn lại).
+
+**Lưu ý giấy phép cho chủ game:** sprite SpriteCollab ghi `CHUNSOFT` và toàn bộ PMDCollab RawAsset là hình trích từ game
+Pokémon Mystery Dungeon (© Nintendo / Chunsoft) — giống sprite chính thức, phải nằm trong giấy phép chủ game định xin.
+

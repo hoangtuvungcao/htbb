@@ -63,7 +63,72 @@ public final class PetPokemon {
         {873, 399, 0},  // Bidoof
     };
 
+    /**
+     * P2: pet dang hoa hinh (data.Pet.dangHoaHinh(), ten cu "Lan cap n") -> Pokemon theo capHoaHinh
+     * (index = cap 0..5; cap 0 coi nhu cap 1). Truoc day -94 gui 0 luc hoa hinh nen client ve anh Ky Lan
+     * cu (map/d_effect/67-69). Nguon: dong loai=hoa_hinh_pet cua du_lieu/bang_thu.csv.
+     */
+    static final int[] DEX_HOA_HINH = {58, 58, 58, 58, 59, 244};
+
+    /**
+     * P2: pet kieu cu khong co itemPet (data.PetTemplate.idImg 0..20) -> {idImg, dex, ten Pokemon}.
+     * Nguon: du_lieu/bang_pet_cu.csv; client co cung bang dex (AnimalMove.POKE_DEX_PET_CU). Ten dung de
+     * doi ten mau pet cu (Map.petTemplate[].name) sang ten Pokemon luc bat may (ChuPokemon.ap).
+     */
+    static final Object[][] PET_CU = {
+        {0, 607, "Litwick"}, {1, 276, "Taillow"}, {2, 165, "Ledyba"}, {3, 41, "Zubat"},
+        {4, 370, "Luvdisc"}, {5, 270, "Lotad"}, {6, 120, "Staryu"}, {7, 615, "Cryogonal"},
+        {8, 77, "Ponyta"}, {9, 27, "Sandshrew"}, {10, 417, "Pachirisu"}, {11, 29, "Nidoran♀"},
+        {12, 129, "Magikarp"}, {13, 393, "Piplup"}, {14, 179, "Mareep"}, {15, 385, "Jirachi"},
+        {16, 146, "Moltres"}, {17, 144, "Articuno"}, {18, 121, "Starmie"}, {19, 337, "Lunatone"},
+        {20, 190, "Aipom"},
+    };
+
     private PetPokemon() {
+    }
+
+    /** Dex Pokemon cua pet dang hoa hinh o cap {@code cap} (ngoai 1..5 thi lay cap gan nhat). */
+    public static int dexHoaHinh(final int cap) {
+        return DEX_HOA_HINH[Math.max(0, Math.min(DEX_HOA_HINH.length - 1, cap))];
+    }
+
+    public static int soPetCu() {
+        return PET_CU.length;
+    }
+
+    /** Dex Pokemon cua pet kieu cu theo idImg cua mau (PetTemplate.idImg), 0 neu ngoai bang. */
+    public static int dexPetCu(final int idImg) {
+        for (final Object[] d : PET_CU) {
+            if (((Integer) d[0]).intValue() == idImg) {
+                return ((Integer) d[1]).intValue();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Mau pet 23..27 (Cu / Rong / Yeu tinh / Doi / Dai bang) muon anh cua mau khac (xem Map.loadPetTemplate)
+     * nhung la dong pet co item (Hoothoot / Dratini / Cleffa / Zubat / Rufflet - PetPokemon.BANG), nen ten mau
+     * theo dong do chu khong theo anh muon.
+     */
+    static final String[] TEN_MAU_PET_ITEM = {"Hoothoot", "Dratini", "Cleffa", "Zubat", "Rufflet"};
+
+    /** Ten Pokemon cho mau pet {@code idTemplate} (anh {@code idImg}), null = giu ten cu. */
+    public static String tenMauPet(final int idTemplate, final int idImg) {
+        if (idTemplate >= 23 && idTemplate < 23 + TEN_MAU_PET_ITEM.length) {
+            return TEN_MAU_PET_ITEM[idTemplate - 23];
+        }
+        return tenPetCu(idImg);
+    }
+
+    /** Ten Pokemon cua pet kieu cu theo idImg, null neu ngoai bang. */
+    public static String tenPetCu(final int idImg) {
+        for (final Object[] d : PET_CU) {
+            if (((Integer) d[0]).intValue() == idImg) {
+                return (String) d[2];
+            }
+        }
+        return null;
     }
 
     public static int soDong() {

@@ -140,6 +140,15 @@ public class Pet extends AnimalMove {
     public void paint(Graphics g) {
         ImageIcon pimg;
         try {
+            // pokemon (P2): pet co vat pham (kieu 5 = pet-tool: trung, Hoothoot/Dratini/Cleffa/Zubat/Rufflet, Lan hoa
+            // hinh...) ve Pokemon theo lenh -94 nhu AnimalMove; khong co dex/sprite thi moi ve anh hieu ung cu (Unity Pet.cs)
+            game.model.Char chu = this.myOwner;
+            if (chu == null && this.owner instanceof game.model.Char) {
+                chu = (game.model.Char) this.owner;
+            }
+            if (vePokePet(g, chu)) {
+                return;
+            }
             mDataEffect deff = (mDataEffect) ALL_PET_DATA.get(new StringBuffer().append(this.idTemplate).toString());
             if (deff != null && deff != null) {
                 int status = this.mAction;
@@ -171,6 +180,12 @@ public class Pet extends AnimalMove {
             }
         } catch (Exception e) {
         }
+    }
+
+    /** Pet-tool: imgID/idTemplate la id hieu ung, khong tra bang pet kieu cu (Unity Pet.dexPetCu). */
+    @Override
+    protected int dexPetCu() {
+        return 0;
     }
 
     public boolean isFly() {

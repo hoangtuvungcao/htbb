@@ -38,13 +38,15 @@ NGUON = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master"
 
 # Dong tac game can -> danh sach ten anim PMD theo thu tu uu tien (cai dau co thi dung).
 # Thu tu khop trang thai ve cua client (xem bang "Trang thai ve" trong ke hoach).
+# Walk/Idle o CUOI moi danh sach (P2): loai chi co Idle + Walk tren PMDCollab (vd Copperajah 0879, chi
+# dung lam thu cuoi) van dong goi duoc; loai da du dong tac khong doi gi vi luon gap ten truoc.
 DONG_TAC = [
     ("dung", ["Idle", "Walk"]),
     ("chay", ["Walk"]),
-    ("danh_gan", ["Attack", "Strike", "QuickStrike", "Swing"]),
-    ("danh_xa", ["Shoot", "Charge", "Attack"]),
-    ("trung_don", ["Hurt", "Pain"]),
-    ("guc_nga", ["Faint", "Sleep", "Hurt"]),
+    ("danh_gan", ["Attack", "Strike", "QuickStrike", "Swing", "Walk"]),
+    ("danh_xa", ["Shoot", "Charge", "Attack", "Walk"]),
+    ("trung_don", ["Hurt", "Pain", "Idle"]),
+    ("guc_nga", ["Faint", "Sleep", "Hurt", "Idle"]),
 ]
 
 

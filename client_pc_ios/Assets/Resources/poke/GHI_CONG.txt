@@ -500,6 +500,8 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2026-03-04 17:29:11.819902	<@!330751862590406656>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2026-05-10 17:58:06.092429	<@!330751862590406656>	CUR	CC_BY-NC_4	Wake,Eat,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,LostBalance,HitGround,Faint
 2026-05-10 17:58:13.861556	<@!330751862590406656>	CUR	CC_BY-NC_4	Wake,Eat,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,LostBalance,HitGround,Faint
+== 0483
+2022-11-08 03:48:38.415287	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Scratch,Rumble,RearUp,Swing,Double,Rotate,Hop
 == 0491
 2022-11-08 03:47:19.670949	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,RearUp,Swing,Double,Rotate,Hop,QuickStrike
 2022-11-08 04:14:41.871948	<@!544245909639397378>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
@@ -584,6 +586,9 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2024-03-30 22:34:35.718338	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Shake,Swing,Double,Rotate,Hop
 == 0667
 2022-09-12 11:47:15.992097	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0675
+2024-11-15 04:22:36.815136	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
+2024-11-15 20:44:17.173703	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,Double,Hop
 == 0681
 2022-08-08 02:03:56.145569	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Special0
 2024-01-25 18:55:21.038925	<@!276369635304275968>	CUR	PMDCollab_2	Special0
@@ -595,8 +600,16 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 == 0711
 2021-10-27 10:41:13.342875	<@!702275233125630042>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 2023-12-07 07:37:38.582996	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover
+== 0716
+2022-12-30 03:09:13.109323	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
 == 0739
 2024-03-05 03:38:02.560496	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Emit,SpAttack,Swing,Double,Rotate,Hop
+== 0745
+2023-01-20 21:32:06.515769	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
+2023-08-31 09:16:59.266350	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
+2023-09-02 17:31:59.271914	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Hop
+2026-08-02 07:18:48.756985	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2026-08-24 23:52:11.235808	<@!702275233125630042>	CUR	CC_BY-NC_4	Wake,Sink,Trip,Head,HitGround,Faint
 == 0750
 2025-07-21 00:37:43.834450	<@!193530896211509248>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
 2025-09-29 03:39:52.211295	<@!193530896211509248>	CUR	CC_BY-NC_4	Idle,Attack,Charge,Shoot,RearUp,Double,Hop
@@ -607,6 +620,9 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 == 0831
 2021-04-15 04:56:38.679221	<@!356635814668664832>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Stomp,Swing,Walk
 2021-04-20 02:05:28.355998	<@!702275233125630042>	CUR	PMDCollab_1	Cringe,DeepBreath,Eat,EventSleep,Faint,Float,Head,HitGround,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Sink,Sit,Trip,Tumble,TumbleBack,Wake
+== 0879
+2024-09-02 00:44:50.981513	NATANIEL_SAMA	CUR	CC_BY-NC_4	Idle,Walk,Rotate
+2024-09-02 08:14:07.456846	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Rotate
 == 0896
 2026-09-14 12:12:41.443465	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
 == 0897

@@ -72,7 +72,11 @@ public final class Kiem {
         KiemPokemon.chay();
         KiemThuPokemon.chay();
         KiemIconPokemon.chay();
+        KiemIconThayCu.chay();
+        KiemQuaiPokemon.chay(); // moi quai/boss ve bang Pokemon o jar + Unity, het anh quai cu (P2)
         KiemPetPokemon.chay();
+        KiemTaiNguyenCu.chay(); // khong con hinh may chu cu trong tai nguyen phat hanh (du_lieu/tai_nguyen_cu*.{txt,csv}, P2)
+        KiemThuPetP2.chay(); // thu cuoi / pet / skin / hoa hinh -> Pokemon: SQL data_thu_pokemon = Java = CSV = client (P2)
         KiemLoiChoiPokemon.chay();
         KiemPokemonServer.chay();
         KiemPokemonClient.chay();
@@ -84,6 +88,7 @@ public final class Kiem {
         KiemVungHoenn.chay();
         KiemTanThu.chay();
         KiemHinhPokemon.chay();
+        KiemNpcSprite.chay(); // anh NPC = Pokemon: SQL pokemon_npc_sprite.sql = jar = Unity = csv, npc.sh khong con anh cu (P2)
         KiemLauDai.chay();
         KiemNhiemVu.chay();
         KiemNovaDB.chay();

@@ -173,8 +173,8 @@ biến thể của Java).
 | `-90` | POKE_THAN | S→C | `i16 charId, i16 dex, u8 shiny` | Kèm sau mỗi gói 5 về một nhân vật (cả bot NPC), sau gói 3 về chính mình, khi tiến hoá |
 | `-91` | POKE_QUAI | S→C | `u8 n`, n × (`u8 idTemplate, i16 dex, u8 shiny, u8 tiLe%`) | Kèm sau gói 26 |
 | `-92` | POKE_TIEN_HOA | S→C | `i16 charId, i16 dexCu, i16 dexMoi` | Khi tiến hoá, gửi trước `-90` cho mình và người ở gần |
-| `-93` | POKE_CUOI | S→C | `i16 charId, i16 dexThu (0 = không cưỡi), u8 shiny` | Kèm sau mỗi `-90` |
-| `-94` | POKE_PET | S→C | `i16 charId, i16 dexPet (0 = không có), u8 shiny` | Kèm sau mỗi `-93` (chuỗi `-90 → -93 → -94`) |
+| `-93` | POKE_CUOI | S→C | `i16 charId, i16 dexThu (0 = không cưỡi), u8 shiny`; dex: hoá hình → Entei, skin linh thú đang hiện → `ThuPokemon.dexSkin`, còn lại theo `Animal.idImg` (`TienHoaPokemon.dexCuoi`, bảng SQL `data_thu_pokemon`) | Kèm sau mỗi `-90` |
+| `-94` | POKE_PET | S→C | `i16 charId, i16 dexPet (0 = không có), u8 shiny`; pet hoá hình → `PetPokemon.dexHoaHinh(cap)`. Client vẽ cả pet-tool (lớp `monster/Pet`, kiểu 5) bằng PokeBody | Kèm sau mỗi `-93` (chuỗi `-90 → -93 → -94`) |
 | `-95..-99` | Chiến đấu | S→C | Đơn sát thương, cảnh báo vùng boss, trạng thái, pha boss, đóng góp | Gói kèm sau gói cũ. Server chưa gửi thì client tự đoán hiệu ứng như cũ |
 | `-100` | Tự động đánh | C↔S | Tự động đánh do máy chủ điều khiển ([TuDong.java](../server/src/com/htbb/pokemon/TuDong.java)) | |
 | `-101` | Hồi sinh | C↔S | Hộp chọn cách hồi sinh ([HoiSinhGame.java](../server/src/real/HoiSinhGame.java)) | Client cũ dùng menu `-30` |
@@ -553,7 +553,7 @@ số thì đổi bên game rồi chạy lại, không sửa tay JSON.
 | `server/map/pokemon_tile/*.png` | Ảnh bộ tile (dải 16 × 16n) | Server gửi `t_hang`, `t_thanh` trong gói đăng nhập; client đóng gói sẵn |
 | `server/map/tree/<i>`, `server/map/cay/<j>.png`, `server/map/*.png` | Vật trang trí (`tree/<i>` lệnh `-48`, `cay/`, ảnh dịp lễ) | Server gửi theo yêu cầu |
 
-Bản đồ, lưới quái và vật trang trí kiếm hiệp cũ đã xoá: `cMap/`, `map/map<N>`, `map/tree`, `map/cay` giờ chỉ chứa bản Pokémon,
+Bản đồ, lưới quái và vật trang trí kiếm hiệp cũ đã xoá: `cMap/`, `map/map<N>`, `map/tree` (vẽ lại từ Ninja Adventure, P2), `map/cay` giờ chỉ chứa bản Pokémon; `map/farm` cố ý để trống (dự phòng NPC sự kiện, server trả ảnh trong suốt),
 nên cả mã nguồn lẫn các lớp trong `lib/htbb-core.jar` (đọc thẳng `cMap/<id>`) đều dùng đúng bản Pokémon.
 [BanDoPokemon.java](../server/src/com/htbb/pokemon/BanDoPokemon.java) chỉ còn danh sách map gửi thêm cho client.
 Không nhầm: `map/pokemon_tile` (ảnh tile nền) và `cMap` (bố cục).
@@ -650,6 +650,9 @@ client_jar/res ──▶ assets của APK (client_apk/pokemon) và tài nguyên 
 - Vẽ: đặt khung sao cho điểm chân trùng toạ độ `(x, y)` của actor (`PokeBody` ở mọi client).
 - Icon vật phẩm Pokémon do server phục vụ ở dải ảnh 14000+ (`server/map/icon_pokemon`), không ghi đè icon gốc.
 - `client_jar/tools/KiemPokeDuLieu.java` kiểm sprite/hiệu ứng/âm thanh của jar khớp bản Unity và từ điển chữ khớp server.
+- Không còn hình của máy chủ cũ (P2): `tools/pokemon/kiem_tai_nguyen_cu.py` + test `KiemTaiNguyenCu` so dấu vân tay mọi tệp /
+  ảnh trong gói phát hành với `du_lieu/tai_nguyen_cu.txt`; chỉ giữ hình cũ có lý do trong `du_lieu/tai_nguyen_cu_giu.csv`.
+  Công cụ vẽ lại: [giay-phep.md](giay-phep.md) mục 7.
 
 Lưu ý đường dẫn: một số tool sinh tài nguyên (`DongGoiSprite.java`, `tools/pokemon/duong_client.py`) mặc định còn trỏ vị
 trí client từ trước khi gộp monorepo. Đặt `HTBB_CLIENT_ASSETS=client_pc_ios/Assets` khi chạy chúng.

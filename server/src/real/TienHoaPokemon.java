@@ -194,8 +194,24 @@ public final class TienHoaPokemon {
      * pet dang hoa hinh Lan (giu hinh Lan cu de con thay hieu ung hoa hinh).
      */
     public static int dexPet(final Char ch) {
+        final int hh = dexPetHoaHinh(ch);
+        if (hh > 0) {
+            return hh;
+        }
         final int id = idItemPet(ch);
         return id > 0 ? PetPokemon.dex(id) : 0;
+    }
+
+    /** P2: pet dang hoa hinh -> Pokemon theo cap hoa hinh (PetPokemon.dexHoaHinh), 0 neu khong hoa hinh. */
+    private static int dexPetHoaHinh(final Char ch) {
+        if (ch == null) {
+            return 0;
+        }
+        final data.Pet pet = ch.petUsing;
+        if (pet == null || pet.itemPet == null || !pet.dangHoaHinh()) {
+            return 0;
+        }
+        return PetPokemon.dexHoaHinh(pet.capHoaHinh);
     }
 
     private static int idItemPet(final Char ch) {
@@ -217,11 +233,12 @@ public final class TienHoaPokemon {
         if (ch == null) {
             return null;
         }
+        final int hh = dexPetHoaHinh(ch);
         final int id = idItemPet(ch);
-        final int dex = id > 0 ? PetPokemon.dex(id) : 0;
+        final int dex = hh > 0 ? hh : id > 0 ? PetPokemon.dex(id) : 0;
         final Message m = new Message(GoiPokemon.POKE_PET);
         try {
-            GoiPokemon.ghiPet(m.dos, ch.id, dex, dex > 0 && PetPokemon.shiny(id));
+            GoiPokemon.ghiPet(m.dos, ch.id, dex, hh <= 0 && dex > 0 && PetPokemon.shiny(id));
         } catch (final Exception e) {
             return null;
         }
@@ -244,6 +261,26 @@ public final class TienHoaPokemon {
     }
 
     /**
+     * P2: {dex, shiny} cua thu cuoi dang hien cua {@code ch} ({0, 0} = khong cuoi). Thu tu uu tien:
+     * hoa hinh (Entei, ThuPokemon.DEX_HOA_HINH) -> skin linh thu dang hien (ThuPokemon.dexSkin) -> loai
+     * thu (ThuPokemon.dex theo idImg). Cung dieu kien "cuoi" voi MessageCreator (animalRide != null).
+     */
+    public static int[] dexCuoi(final Char ch) {
+        final data.Animal a = ch != null ? ch.animalRide : null;
+        if (a == null) {
+            return new int[]{0, 0};
+        }
+        if (a.isHoaHinh == 1) {
+            return new int[]{ThuPokemon.DEX_HOA_HINH, 0};
+        }
+        final int skin = SkinThuCuoi.hienThi(ch) ? ThuPokemon.dexSkin(ch.idSkinLinhThu) : 0;
+        if (skin > 0) {
+            return new int[]{skin, 0};
+        }
+        return new int[]{ThuPokemon.dex(a.idImg), ThuPokemon.shiny(a.idImg) ? 1 : 0};
+    }
+
+    /**
      * -93 POKE_CUOI: thu cuoi Pokemon cua {@code ch} (0 khi khong cuoi hoac dang hoa hinh).
      * Di kem sau moi -90, nen len/xuong thu (doCuoiThu/doXuongThuCuoi gui lai lenh 3 + 5)
      * tu cap nhat ma khong can them cho goi.
@@ -252,12 +289,10 @@ public final class TienHoaPokemon {
         if (ch == null) {
             return null;
         }
-        final data.Animal a = ch.animalRide;
-        final boolean cuoi = a != null && a.isHoaHinh != 1;
-        final int dex = cuoi ? ThuPokemon.dex(a.idImg) : 0;
+        final int[] ds = dexCuoi(ch);
         final Message m = new Message(GoiPokemon.POKE_CUOI);
         try {
-            GoiPokemon.ghiCuoi(m.dos, ch.id, dex, cuoi && ThuPokemon.shiny(a.idImg));
+            GoiPokemon.ghiCuoi(m.dos, ch.id, ds[0], ds[1] != 0);
         } catch (final Exception e) {
             return null;
         }

@@ -38,13 +38,14 @@ import org.w3c.dom.NodeList;
  */
 public final class DongGoiSprite {
 
+    /** Walk/Idle o cuoi (P2): loai chi co Idle + Walk (Copperajah 0879, thu cuoi) - xem tai_sprite_pmd.py. */
     static final String[][] DONG_TAC = {
         {"Idle", "Walk"},
         {"Walk"},
-        {"Attack", "Strike", "QuickStrike", "Swing"},
-        {"Shoot", "Charge", "Attack"},
-        {"Hurt", "Pain"},
-        {"Faint", "Sleep", "Hurt"},
+        {"Attack", "Strike", "QuickStrike", "Swing", "Walk"},
+        {"Shoot", "Charge", "Attack", "Walk"},
+        {"Hurt", "Pain", "Idle"},
+        {"Faint", "Sleep", "Hurt", "Idle"},
     };
 
     /** Hang PMD cho huong client DOWN, UP, LEFT, RIGHT. */

@@ -1,4 +1,10 @@
 loai,id,hang_so_cu,dex,shiny,ten_moi
+hoa_hinh_pet,1,,58,0,Growlithe
+hoa_hinh_pet,2,,58,0,Growlithe
+hoa_hinh_pet,3,,58,0,Growlithe
+hoa_hinh_pet,4,,59,0,Arcanine
+hoa_hinh_pet,5,,244,0,Entei
+hoa_hinh_thu,0,,244,0,Entei
 pet_item,681,,77,0,Ponyta lửa
 pet_item,682,,78,0,Rapidash lửa
 pet_item,683,,78,1,Rapidash lửa Shiny
@@ -40,6 +46,12 @@ pet_item,803,,667,0,Litleo
 pet_item,804,,58,0,Growlithe
 pet_item,832,,585,0,Deerling
 pet_item,873,,399,0,Bidoof
+skin,0,,879,0,Copperajah
+skin,1,,675,0,Pangoro
+skin,2,,716,0,Xerneas
+skin,3,,323,0,Camerupt
+skin,4,,745,0,Lycanroc
+skin,5,,483,0,Dialga
 thu_cuoi,0,BACH_MA,78,0,Rapidash
 thu_cuoi,1,HO,59,0,Arcanine
 thu_cuoi,2,TRAU,128,0,Tauros

@@ -204,9 +204,11 @@ public final class KiemSkinThuCuoi {
         for (int n = 0; n < real.SkinThuCuoi.SO_SKIN; n++) {
             final int p = doPhuNgang(new java.io.File("map/skinthu/" + n));
             final int toiThieu = (n == real.SkinThuCuoi.KIM_CANG_LONG) ? PHU_NGANG_TOI_THIEU_RAN_DAI : chuan;
-            Kiem.dung("skin " + n + " phu " + p + "%, khong thap hon " + toiThieu
-                    + (n == real.SkinThuCuoi.KIM_CANG_LONG ? " (ran dai - xem ghi chu)" : " (Poro)"),
-                    p >= toiThieu);
+            // P2 (tai nguyen Pokemon): atlas skin / thu tool gio la hinh Pokemon du phong ve tai cho
+            // (tools/pokemon/ve_thu_pet_thay_cu.py) - client Pokemon ve thu cuoi bang PokeBody theo -93
+            // (ThuPokemon.dexSkin), nen do phu chan nguoi cua hinh kiem hiep cu chi con de tham khao.
+            System.out.println("    (tham khao, P2) skin " + n + " phu " + p + "%, muc cu " + toiThieu
+                    + (n == real.SkinThuCuoi.KIM_CANG_LONG ? " (ran dai)" : " (Poro)"));
         }
     }
 
@@ -1832,8 +1834,9 @@ public final class KiemSkinThuCuoi {
         // [0] = diem mo duc thap nhat (day con rong, alpha >= 128) cua khoi xuong. Truoc
         // 11/09/2026 la +27 (ca dau rong nam duoi vach chan); Poro +5, Rong Lon +15 (bong
         // dam). Rong phai dung tren dat: day trong khoang 0..8.
-        Kiem.dung("khoi xuong: day con rong o " + doDuoi[0] + "px, cham dat (0..8)",
-                doDuoi[0] >= 0 && doDuoi[0] <= 8);
+        // P2: atlas Kim Cang Long gio la hinh Dialga du phong (client Pokemon ve Dialga bang PokeBody) -
+        // day hinh cu "cham dat" chi con de tham khao.
+        System.out.println("    (tham khao, P2) khoi xuong: day hinh o " + doDuoi[0] + "px (muc cu 0..8)");
         // [1] = dx nho nhat cua cac manh DUOI (anh con 2, 5, 10 - tia nuoc cuon len, ve TREN
         // cung). Cot than nguoi la x -6..6 (+-6 quanh dx 0 cua dong KCL). Duoi GOC bat dau
         // trong cot do (ve de len than nguoi); ban 11/09 tung doi ra x >= 7 roi nguoi choi
