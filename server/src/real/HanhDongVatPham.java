@@ -26,11 +26,12 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * <p>Goi -105 (S-&gt;C, chi client &gt;= {@link #BAN_TRANG_THAI}): byte phien ban (1), byte kieu, int hp, int maxhp,
  * int mp, int maxmp, long xu, int luong, int luongKhoa, short cap, long exp, byte so binh, (byte id, int so)*, short so mon
- * trong tui, short so mon dang mac.
+ * trong tui, short so mon dang mac; 19/10/2026 noi them (client cu bo qua): short oDaMo, short oToiDaVe, byte oMoiVe,
+ * int giaXuBuocKe, int soVe, short idVe, byte loaiVe - xem {@link MoRongTuiGame}.
  */
 public final class HanhDongVatPham {
 
-    public static final byte KHAC = 0, MUA = 1, BAN = 2, DUNG = 3, TRANG_BI = 4, THAO = 5, VUT = 6, TACH = 7, GIAO_DICH = 8, TANG = 9;
+    public static final byte KHAC = 0, MUA = 1, BAN = 2, DUNG = 3, TRANG_BI = 4, THAO = 5, VUT = 6, TACH = 7, GIAO_DICH = 8, TANG = 9, MO_RONG = 10;
     public static final int LENH_TRANG_THAI = -105;
     /** Ban client dau tien doc goi -105 + byte kieu cua -104 (client_jar/build.sh 903). */
     public static final int BAN_TRANG_THAI = 903;
@@ -64,6 +65,25 @@ public final class HanhDongVatPham {
     }
 
     private static final ThreadLocal<NguCanh> DANG = new ThreadLocal<NguCanh>();
+
+    /**
+     * So luong TUY CHON o cuoi goi (19/10/2026: -21 / -23 / 78 co o chon so luong ben client moi): short soLuong neu
+     * con &gt;= 2 byte, nguoc lai 0 = "ca chong" (hanh vi cu, client cu khong gui).
+     */
+    public static int docSoLuong(final Message m) {
+        try {
+            if (m != null && m.dis != null && m.dis.available() >= 2) {
+                return Math.max(0, m.dis.readShort());
+            }
+        } catch (final IOException ignored) {
+        }
+        return 0;
+    }
+
+    /** So luong thuc lay: xin &lt;= 0 = ca chong {@code co}; nguoc lai min(xin, co). */
+    public static int kepSoLuong(final int xin, final int co) {
+        return xin <= 0 ? Math.max(0, co) : Math.min(xin, Math.max(0, co));
+    }
 
     /** Kieu thao tac dang chay tren luong nay (cho byte kieu cua -104), KHAC neu khong co. */
     public static byte kieuDang() {
@@ -396,10 +416,15 @@ public final class HanhDongVatPham {
         }
         m.dos.writeShort(p.iItems == null ? 0 : p.iItems.size());
         m.dos.writeShort(soMac(p));
+        MoRongTuiGame.ghiTrangThai(m.dos, p); // 19/10/2026: suc chua hanh trang + ve mo rong (noi them cuoi goi)
         return m;
     }
 
-    /** Doc goi -105 (kiem thu / client tham chieu): {kieu, hp, maxhp, mp, maxmp, xu, luong, luongKhoa, cap, exp, soTui, soMac} + binh. */
+    /**
+     * Doc goi -105 (kiem thu / client tham chieu): {kieu, hp, maxhp, mp, maxmp, xu, luong, luongKhoa, cap, exp, soTui,
+     * soMac, oDaMo, oToiDaVe, oMoiVe, giaXuBuocKe, soVe, idVe, loaiVe} + binh. Goi cu (thieu phan noi them): 7 truong
+     * cuoi = -1.
+     */
     public static long[] docTrangThai(final Message m, final int[] binhRa) throws IOException {
         final byte[] b = m.toByteArray();
         final int dau = (b.length > 0 && b[0] == (byte) -128) ? 6 : 3;
@@ -420,6 +445,17 @@ public final class HanhDongVatPham {
             }
         }
         final long soTui = r.readShort(), soMac = r.readShort();
-        return new long[]{kieu, hp, maxhp, mp, maxmp, xu, luong, khoa, cap, exp, soTui, soMac};
+        long oDaMo = -1, oToiDaVe = -1, oMoiVe = -1, giaXu = -1, soVe = -1, idVe = -1, loaiVe = -1;
+        if (r.available() > 0) {
+            oDaMo = r.readShort();
+            oToiDaVe = r.readShort();
+            oMoiVe = r.readByte();
+            giaXu = r.readInt();
+            soVe = r.readInt();
+            idVe = r.readShort();
+            loaiVe = r.readByte();
+        }
+        return new long[]{kieu, hp, maxhp, mp, maxmp, xu, luong, khoa, cap, exp, soTui, soMac,
+            oDaMo, oToiDaVe, oMoiVe, giaXu, soVe, idVe, loaiVe};
     }
 }

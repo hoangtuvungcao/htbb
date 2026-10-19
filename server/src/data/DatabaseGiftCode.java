@@ -225,6 +225,13 @@ public class DatabaseGiftCode {
                     luong = 0;
                     luongkhoa = 0;
                 }
+                // 19/10/2026: kiem o trong TRUOC khi tru luot (truoc day ma bi tieu roi moi cap, tui day thi mat qua
+                // hoac tran tui). Uoc luong tren: moi muc 1 o, muc DB: so luong; danh hieu / pet khong vao tui.
+                final int canO = uocLuongO(item);
+                if (canO > 0 && player.countSlotInventory() < canO) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang cần " + canO + " ô trống để nhận quà.", ""));
+                    return;
+                }
 
                 // GHI NHAN DA DUNG + TRU LUOT TRUOC, cap thuong SAU. Truoc day thu tu nguoc
                 // lai: neu bat ky buoc cap thuong nao o duoi nem ngoai le (id vat pham khong
@@ -304,6 +311,32 @@ public class DatabaseGiftCode {
      * top tu trang quan tri (xem real/SuKienDuaTop.java). Ham nay KHONG dung gi den
      * giftcode/giftcode_log/limit_use - noi goi tu lo ghi log/tru luot rieng.
      */
+    /** So o hanh trang (uoc luong tren) chuoi qua {@code item} can - xem applyItemString. */
+    public static int uocLuongO(final String item) {
+        if (item == null || item.equals("NULL") || item.trim().isEmpty()) {
+            return 0;
+        }
+        int can = 0;
+        for (final String muc : item.trim().split(",")) {
+            final String[] t = muc.trim().split(":");
+            if (t.length == 0 || t[0].isEmpty()) {
+                continue;
+            }
+            if (t[0].equals("DANHHIEU2") || t[0].equals("DH") || t[0].equals("PET") || t[0].equals("PETV")) {
+                continue;
+            }
+            int so = 1;
+            if (t[0].equals("DB") && t.length > 2) {
+                try {
+                    so = Math.max(1, Math.min(1000, Integer.parseInt(t[2].trim())));
+                } catch (final NumberFormatException ignored) {
+                }
+            }
+            can += so;
+        }
+        return can;
+    }
+
     public static void applyItemString(final Char player, final String item) {
         if (item == null || item.equals("NULL") || item.isEmpty()) {
             return;

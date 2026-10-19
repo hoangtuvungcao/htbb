@@ -75,6 +75,29 @@ public class InfoQuestTemplate {
         return this.infofinish;
     }
 
+    /**
+     * So o hanh trang phan thuong nay can (19/10/2026): 1 vat pham (neu co) + moi loai binh MOI. Char.OnQuest kiem
+     * truoc khi danh dau DONE - truoc day addGift them thang vao tui, khong kiem suc chua.
+     */
+    public int soOCanThuong(final Char p) {
+        int can = 0;
+        try {
+            if (this.idItemgift != null && this.idItemgift.length > 0 && this.idItemgift[0] < 32000) {
+                can++;
+            }
+            if (this.potiongift != null && this.potiongift.length > 0 && this.potiongift[0] < 32000) {
+                for (int k = 0; k < this.potiongift.length; ++k) {
+                    final int id = this.potiongift[k];
+                    if (id > 0 && id < p.potions.length && p.potions[id] <= 0 && this.npotiongift[k] > 0) {
+                        can++;
+                    }
+                }
+            }
+        } catch (final Exception ignored) {
+        }
+        return can;
+    }
+
     public void addGift(final Char p) {
         try {
             if (this.type == 4) {

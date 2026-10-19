@@ -56,6 +56,30 @@ public final class GiaoDichThuoc {
     }
 
     /**
+     * So o hanh trang THEM ma mot ben can sau giao dich thuoc (19/10/2026): loai nhan ve ma chua co (+1 o moi loai)
+     * tru loai dua di het (-1). Char.countSlotInventory KHONG tinh rPotions nen phai kiem rieng luc chot: truoc day
+     * dua N loai moi cho nguoi con 1 o thi moi lan dua deu qua, chot xong tui vuot suc chua.
+     */
+    public static int soOThemCan(final int[] pot, final int[] dua, final int[] nhan) {
+        if (pot == null) {
+            return 0;
+        }
+        int can = 0;
+        for (int i = 1; i < pot.length; i++) {
+            final int d = dua != null && i < dua.length ? Math.max(0, dua[i]) : 0;
+            final int r = nhan != null && i < nhan.length ? Math.max(0, nhan[i]) : 0;
+            final boolean truoc = pot[i] > 0;
+            final boolean sau = pot[i] - d + r > 0;
+            if (!truoc && sau) {
+                can++;
+            } else if (truoc && !sau) {
+                can--;
+            }
+        }
+        return can;
+    }
+
+    /**
      * Kiem tra mot giao dich sap hoan tat.
      *
      * @param potA thuoc dang co trong tui A; tA thuoc A bo vao; rA thuoc B bo cho A

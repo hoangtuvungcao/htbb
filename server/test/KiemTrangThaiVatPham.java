@@ -34,6 +34,12 @@ public final class KiemTrangThaiVatPham {
      */
     static final String MAU_HEX = "010300000190000003e8000000fa000001f400000000000004d2000000000000000000320000000000000000"
             + "020100000005040000000200000000";
+    /**
+     * 19/10/2026: phan NOI THEM cuoi goi -105 (real.MoRongTuiGame): short oDaMo 42, short oToiDaVe 126, byte oMoiVe 10,
+     * int giaXuBuocKe 20000, int soVe 0, short idVe -1 (mau nguyen lieu ngoai server), byte loaiVe 1. Client cu doc het
+     * MAU_HEX roi dung - phan nay bo qua.
+     */
+    static final String MAU_HEX_MO_RONG = "002a007e0a00004e2000000000ffff01";
 
     public static void chay() {
         Kiem.nhom("Trang thai tuc thi sau thao tac vat pham (HanhDongVatPham -105, -104 co kieu)");
@@ -88,12 +94,21 @@ public final class KiemTrangThaiVatPham {
     /** Dinh dang goi -105 khop chuoi mau ma client kiem (luong / luong khoa / exp ngoai server = gia tri mac dinh). */
     static void mau() throws Exception {
         final Char p = mauNhanVat();
-        final Message m = HanhDongVatPham.taoTrangThai(p, HanhDongVatPham.DUNG);
+        // idVe phu thuoc Map.gemTemplate da nap chua (thu tu nhom kiem): co dinh "chua co ve" (-1) cho chuoi mau.
+        final real.GemTemplate[] gemCu = real.Map.gemTemplate;
+        real.Map.gemTemplate = new real.GemTemplate[0];
+        final Message m;
+        try {
+            m = HanhDongVatPham.taoTrangThai(p, HanhDongVatPham.DUNG);
+        } finally {
+            real.Map.gemTemplate = gemCu;
+        }
         final byte[] b = m.toByteArray();
         final String h = hex(b, dau(b));
         // phan dau (kieu, HP, max, PP, max, xu) khong phu thuoc CSDL
         Kiem.bang("-105: lenh", Integer.valueOf(-105), Integer.valueOf(m.command));
-        Kiem.bang("-105: goi khop mau client (KiemTrangThai doc cung chuoi)", MAU_HEX, h);
+        Kiem.bang("-105: goi khop mau client (KiemTrangThai doc cung chuoi)", MAU_HEX, h.substring(0, Math.min(h.length(), MAU_HEX.length())));
+        Kiem.bang("-105: phan noi them (mo rong hanh trang)", MAU_HEX_MO_RONG, h.length() > MAU_HEX.length() ? h.substring(MAU_HEX.length()) : "");
         final int[] binh = new int[256];
         final long[] v = HanhDongVatPham.docTrangThai(m, binh);
         Kiem.bang("-105: doc lai HP", Long.valueOf(400), Long.valueOf(v[1]));

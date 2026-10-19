@@ -397,6 +397,14 @@ public final class NapTienLogic {
     public static final int GIA_MON_TOI_THIEU = 10;
     public static final int GIA_MON_TOI_DA = 5000;
     public static final int GIA_MO_RONG_TUI = 300;
+    /** Ve mo rong hanh trang +10 o (nap_cua_hang.ma). 80 luong ~ 8 luong / o (trang 42 o: 300 luong ~ 7,1 / o). */
+    public static final String MA_VE_MO_RONG = "ve_mo_rong_tui";
+    public static final int GIA_VE_MO_RONG = 80;
+
+    /** Mon cua hang la ve mo rong (trao mo_rong_tui + ma ve_mo_rong_tui) - trao 1 ve thay vi +1 trang. */
+    public static boolean laVeMoRong(final Mon m) {
+        return m != null && TRAO_MO_RONG_TUI.equals(m.trao) && MA_VE_MO_RONG.equals(m.ma);
+    }
     public static final int GIA_DOI_TEN = 500;
     public static final int DOI_TEN_CACH_NGAY = 30;
     /** So nhom xoay vong (tuan). Mon co nhom_xoay = 0 luon ban; k > 0 ban khi tuan % 4 == k-1. */
@@ -454,6 +462,9 @@ public final class NapTienLogic {
         new Mon("bua_the_luc", "Bùa thể lực (+60 phút)", "tang_toc", TRAO_TANG_TOC, 60, 0, 4, 0, false),
         new Mon("uy_thac", "Phiếu ủy thác luyện tập (1 giờ)", "tang_toc", TRAO_TANG_TOC, 15, 0, 17, 0, false),
         new Mon("keo_hiem", "Kẹo hiếm", "tang_toc", TRAO_TANG_TOC, 40, 0, 2, 0, false),
+        // Ve +10 o hanh trang (real.MoRongTuiGame): trao mo_rong_tui + ma nay = 1 ve KHOA vao tui. Toi da 9 lan (84 o
+        // le = 8 ve x 10 + 1 ve 4 o). Tien loi, khong chi so.
+        new Mon(MA_VE_MO_RONG, "Vé mở rộng hành trang (+10 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_VE_MO_RONG, 0, 9, 0, false),
     };
 
     /** Thuong lan nap dau (moi tai khoan 1 lan): CHI trang tri, khong giao dich duoc. */

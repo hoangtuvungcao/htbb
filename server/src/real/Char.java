@@ -78,6 +78,11 @@ public class Char extends LiveActor {
     public short idPotionUsed;
     public short idTongKim;
     public byte maxBag;
+    /**
+     * O hanh trang mo rong le (ve mo rong / mua xu, cot tob_char.o_mo_rong). Suc chua = MAX_INVENTORY * maxBag +
+     * oMoRong - xem {@link #sucChuaTui()}, com.htbb.pokemon.MoRongHanhTrang, real.MoRongTuiGame.
+     */
+    public short oMoRong;
     public byte idTeamTongKim;
     public String dbSkill;
     public String dbPotion;
@@ -1851,12 +1856,17 @@ public class Char extends LiveActor {
 
     public int countSlotInventory() {
         final int n = this.iItems.size() + this.countPotion() + this.tItems.size() + this.rItems.size() + this.countGemLock() + this.countGem() + this.countSpecial();
-        return this.MAX_INVENTORY * this.maxBag - n;
+        return this.sucChuaTui() - n;
+    }
+
+    /** Suc chua that cua hanh trang: MAX_INVENTORY * maxBag (trang) + oMoRong (o le tu ve / xu). */
+    public int sucChuaTui() {
+        return com.htbb.pokemon.MoRongHanhTrang.sucChua(this.MAX_INVENTORY, this.maxBag, this.oMoRong);
     }
 
     public boolean isFullInventory() {
         final int n = this.iItems.size() + this.countPotion() + this.tItems.size() + this.rItems.size() + this.countGemLock() + this.countGem() + this.countSpecial();
-        return n >= this.MAX_INVENTORY * this.maxBag;
+        return n >= this.sucChuaTui();
     }
 
     public short countPotion() {
@@ -8842,7 +8852,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * chuoi. +16 la bien do cho 3 o dac biet, 6 mon model va vai duong them
      * item khong kiem tra day tui (vd ThoRenBiAn.CreateThanKhi).
      */
-    public static final int MAX_ENTRY_INVEN_LOAD = 42 * MAX_BAG_LIMIT + 16;
+    // 19/10/2026: + MoRongHanhTrang.O_LE_TOI_DA (84 o le tu ve / xu): suc chua lon nhat la 42 * 5 + 84 = 294 o
+    // (mua du 5 trang luong SAU khi da mo 84 o le). Thieu phan nay thi lan login sau XOA cac mon tu vi tri 226.
+    public static final int MAX_ENTRY_INVEN_LOAD = 42 * MAX_BAG_LIMIT + com.htbb.pokemon.MoRongHanhTrang.O_LE_TOI_DA + 16;
 
     // Than method (180 dong) da chuyen sang CharTrangBi.java. Chu ky GIU NGUYEN.
     public void setitemInvenBag(final int place) {
@@ -12021,7 +12033,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.indexItemLuckyDraw > -1) {
             return;
         }
-
+        // 19/10/2026: phan thuong vong quay vao hanh trang (ItemLuckyDraw.addGif khong kiem) -> can 1 o trong.
+        if (this.countSlotInventory() < 1) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+            return;
+        }
 
         final boolean isPPWorldCup = Char.allItemLuckyDraw.get(index).isPPWorldCup();
         if (isPPWorldCup) {
@@ -12613,6 +12629,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
             } else if (type == 1) {
                 try {
                     if (this.mainQuest.state_quest != NewCharQuest.DONE && (this.mainQuest.state_quest == NewCharQuest.FINISH || info.type == 1 || info.type == 3)) {
+                        // 19/10/2026: thuong vao tui phai con cho (giu nguyen trang thai nhiem vu de tra lai sau).
+                        final int canO = this.mainQuest.getTemplate().soOCanThuong(this);
+                        if (canO > 0 && this.countSlotInventory() < canO) {
+                            this.sendMessage(MessageCreator.createServerAlertMessage("Hành trang cần " + canO + " ô trống để nhận thưởng nhiệm vụ.", ""));
+                            return;
+                        }
                         this.mainQuest.state_quest = NewCharQuest.DONE;
                         this.mainQuest.addGift(this);
                         NhiemVuEngine.khiXongChuoiCu(this, info.ma); // thuong_khac chuoi chinh (dai han, kiem_item_mo_coi)
@@ -12695,6 +12717,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
                 info = this.subQuest.getTemplate();
                 if (this.subQuest.state_quest != NewCharQuest.DONE && (info.type == 3 || info.type == 1 || this.subQuest.state_quest == NewCharQuest.FINISH)) {
+                    // 19/10/2026: thuong vao tui phai con cho (giu nguyen trang thai nhiem vu de tra lai sau).
+                    final int canO = info.soOCanThuong(this);
+                    if (canO > 0 && this.countSlotInventory() < canO) {
+                        this.sendMessage(MessageCreator.createServerAlertMessage("Hành trang cần " + canO + " ô trống để nhận thưởng nhiệm vụ.", ""));
+                        return;
+                    }
                     this.subQuest.state_quest = NewCharQuest.DONE;
                     this.subQuest.addGift(this);
                     boolean sendInfo = true;

@@ -8150,6 +8150,11 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                         return;
                     }
+                    // 19/10/2026: kiem tui TRUOC khi tru tien (truoc day tru tien roi them do khong kiem -> tran tui).
+                    if (player.isFullInventory() && !(it.isPhuPhuThe() && player.potions[98] > 0)) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                        return;
+                    }
 
                     String money = "xu";
                     if (luong > 0) {
@@ -8286,6 +8291,14 @@ public class Map implements Runnable {
                     Database.instance.saveOrtherLog("", player.charname, "bo " + itx.getName() + "_" + itx.getInfoSave() + " vao tui do", "inven2tui");
                     Database.instance.saveChar(player, false);
                 } else if (type == TYPE_SHOP_NEW_TUI_DO) {
+                    // 19/10/2026: lay ra hanh trang phai con o trong + chi so hop le (truoc day khong kiem -> tran tui).
+                    if (iditem < 0 || iditem >= player.bagItems.size()) {
+                        return;
+                    }
+                    if (player.isFullInventory()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                        return;
+                    }
                     Item itx = (Item) player.bagItems.remove(iditem);
                     player.iItems.add(itx);
                     player.sendMessage(MessageCreator.createMessageShopNew(player, player.bagItems, "Lấy ra", "Túi Đồ", TYPE_SHOP_NEW_TUI_DO));
@@ -8557,6 +8570,11 @@ public class Map implements Runnable {
         try {
             short idGem = message.dis.readShort();
             boolean lock = message.dis.readByte() == 1;
+            // Ve mo rong hanh trang (nguyen lieu kieu 4 -> moi client deu co nut "Dung"): real.MoRongTuiGame.
+            if (MoRongTuiGame.laVe(idGem)) {
+                MoRongTuiGame.dungVeTuGoiCu(player, lock);
+                return;
+            }
             if (this.isGemTuBinh(idGem)) {
                 player.doAddManhTubinh(idGem, lock);
             } else {
@@ -10281,11 +10299,15 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    if (player.maxBag < Char.MAX_BAG_LIMIT && player.getLuong() >= player.luongOpenInventory) {
-                        player.subLuong((long) player.luongOpenInventory);
+                    // truNeuDu: kiem + tru luong (mo) nguyen tu (ban cu getLuong() >= roi subLuong: hai goi gan nhau tru 1 lan
+                    // ma mo 2 trang). luongOpenInventory > 0 moi hop le (chi dat khi mo hop xac nhan o NPC -10).
+                    if (player.maxBag < Char.MAX_BAG_LIMIT && player.luongOpenInventory > 0
+                            && player.truNeuDu(() -> player.getLuong() >= player.luongOpenInventory,
+                                    () -> player.subLuong((long) player.luongOpenInventory))) {
                         player.maxBag++;
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                        MoRongTuiGame.guiTrangThai(player); // -105: suc chua moi (client >= 903)
                         player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng, hành trang của bạn đã thêm được 42 ô.", ""));
                         Database.instance.saveOrtherLog("tob_other_log", player.charname, "mo rong hanh trang " + player.luongOpenInventory, "mi");
                         Database.instance.saveLogThongKeChiTieu("mo rong hanh trang", 0, 1, (long) player.luongOpenInventory, "luong");
@@ -14200,6 +14222,11 @@ public class Map implements Runnable {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
                                 return;
                             }
+                            // 19/10/2026: mua lai do da ban phai con o trong (truoc day khong kiem -> tran tui).
+                            if (player.isFullInventory()) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                                return;
+                            }
 
                             long xuold = player.getxu();
                             player.subXu((long) it.prizeSell, false, "doBuyItemOfUser map");
@@ -14808,6 +14835,11 @@ public class Map implements Runnable {
 
     protected void doGetItemFromBag(Char player, short itemID) {
         if (player.isVip()) {
+            // 19/10/2026: lay do tu kho ra hanh trang phai con o trong (truoc day khong kiem -> tran tui).
+            if (player.isPutItem2Bag && player.isFullInventory()) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                return;
+            }
             if (player.isPutItem2Bag) {
                 for (int i = 0; i < player.bItem.size(); i++) {
                     Item item = (Item) player.bItem.get(i);
@@ -15455,8 +15487,18 @@ public class Map implements Runnable {
         } else if (!this.checkTrade(player)) {
             try {
                 short potionID = msg.dis.readShort();
+                // 19/10/2026: so luong TUY CHON (client moi co o chon so luong). Thieu = bo ca chong (nhu cu).
+                final int soLuongXin = HanhDongVatPham.docSoLuong(msg);
+                if (potionID <= 0 || potionID >= player.potions.length) {
+                    DungVatPham.loi(player, "Vật phẩm không hợp lệ.");
+                    return;
+                }
+                if (player.potions[potionID] <= 0) {
+                    DungVatPham.loi(player, "Bạn không còn vật phẩm này.");
+                    return;
+                }
                 if (potionID == 88 || potionID == 89 || potionID == 90) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể bỏ", ""));
+                    DungVatPham.loi(player, "Nhẫn Trái tim không bỏ được.");
                     return;
                 }
 
@@ -15464,7 +15506,7 @@ public class Map implements Runnable {
                     Wedding wd = (Wedding) allWedding.get(player.idWedding);
                     if (wd != null) {
                         if (wd.idP1 == player.charDBID || wd.idP2 == player.charDBID) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể bỏ", ""));
+                            DungVatPham.loi(player, "Thiệp cưới của tiệc cưới bạn tổ chức không bỏ được.");
                             return;
                         }
 
@@ -15474,8 +15516,9 @@ public class Map implements Runnable {
                     }
                 }
 
-                String sub = player.potions[potionID] + " " + LoginHandler.PORTION_NAME[potionID] + " potion " + potionID;
-                player.potions[potionID] = 0;
+                final int boDi = HanhDongVatPham.kepSoLuong(soLuongXin, player.potions[potionID]);
+                String sub = boDi + "/" + player.potions[potionID] + " " + DungVatPham.tenThuoc(potionID) + " potion " + potionID;
+                player.potions[potionID] -= boDi;
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "Bỏ " + sub + " ra đất", "delP");
             } catch (Exception var5) {
@@ -15495,12 +15538,12 @@ public class Map implements Runnable {
                     Item item = (Item) player.iItems.get(i);
                     if (item.id == itemID) {
                         if (item.isSelling) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang được bán trong gian hàng", ""));
+                            DungVatPham.loi(player, "Vật phẩm đang rao bán trong gian hàng, không bỏ được.");
                             return;
                         }
 
                         if (item.lock != 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ vật phẩm đã khoá ra đất", ""));
+                            DungVatPham.loi(player, "Vật phẩm khoá không bỏ được.");
                             return;
                         }
 
@@ -15525,6 +15568,7 @@ public class Map implements Runnable {
                         return;
                     }
                 }
+                DungVatPham.loi(player, "Vật phẩm không còn trong hành trang.");
             }
         }
     }
@@ -15537,6 +15581,8 @@ public class Map implements Runnable {
                 try {
                     short id = messge.dis.readShort();
                     byte typeMaterial = messge.dis.readByte();
+                    // 19/10/2026: so luong TUY CHON (thieu = ban ca chong, nhu cu)
+                    final int soLuongXin = HanhDongVatPham.docSoLuong(messge);
 
                     for (int i = 0; i < player.gemItem.size(); i++) {
                         GemItem gem = (GemItem) player.gemItem.elementAt(i);
@@ -15547,6 +15593,11 @@ public class Map implements Runnable {
                             int n = player.listGemitem[gem.idGemTemplate] - player.listGemitemSell[gem.idGemTemplate];
                             if (typeMaterial == 1) {
                                 n = player.listGemitemLock[gem.idGemTemplate];
+                            }
+                            n = HanhDongVatPham.kepSoLuong(soLuongXin, n);
+                            if (MoRongTuiGame.laVe(gem.idGemTemplate)) {
+                                DungVatPham.loi(player, MoRongTuiGame.TEN_VE + " không bán được.");
+                                return;
                             }
 
                             // chong clone: ngoc KHOA (mua bang luong khoa, qua cap 35...) khong doi ra xu o NPC.

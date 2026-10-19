@@ -810,7 +810,14 @@ public final class NapTienGame implements Runnable {
         if (tangToc && (!LauDai.bat() || p.countSlotInventory() < 1)) {
             return "Hành trang cần 1 ô trống.";
         }
-        if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao) && p.maxBag >= Char.MAX_BAG_LIMIT) {
+        final boolean veMoRong = NapTienLogic.laVeMoRong(m);
+        if (veMoRong) {
+            // Ve +10 o (real.MoRongTuiGame): chi ban khi ve con dung duoc (tinh ca ve dang giu), tui can cho cho ve.
+            final String loiVe = real.MoRongTuiGame.kiemMuaVe(p);
+            if (loiVe != null) {
+                return loiVe;
+            }
+        } else if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao) && p.maxBag >= Char.MAX_BAG_LIMIT) {
             return "Hành trang đã mở rộng tối đa.";
         }
         if (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) && NapTienDb.soHuu(p.charDBID, System.currentTimeMillis()).size()
@@ -825,7 +832,9 @@ public final class NapTienGame implements Runnable {
             return "Thao tác quá nhanh, vui lòng thử lại.";
         }
         try {
-            if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao)) {
+            if (veMoRong) {
+                real.MoRongTuiGame.traoVe(p, 1);
+            } else if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao)) {
                 if (p.maxBag >= Char.MAX_BAG_LIMIT) {
                     throw new IllegalStateException("tui toi da");
                 }
@@ -860,6 +869,7 @@ public final class NapTienGame implements Runnable {
         capNhatTui(p);
         return "Đã mua " + m.ten + " (-" + m.giaLuong + " lượng)."
                 + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "")
+                + (veMoRong ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + MoRongHanhTrang.O_MOI_VE + " ô." : "")
                 + (tangToc ? " Vật phẩm đã vào hành trang; dùng chung giới hạn " + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, "
                         + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "");
     }
@@ -1104,5 +1114,6 @@ public final class NapTienGame implements Runnable {
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
         } catch (final Exception ignored) {
         }
+        real.MoRongTuiGame.guiTrangThai(p); // -105: suc chua / so ve moi (client >= 903)
     }
 }
