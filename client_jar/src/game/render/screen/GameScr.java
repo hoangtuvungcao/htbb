@@ -1943,6 +1943,12 @@ public class GameScr extends Screen {
         return false;
     }
 
+    /** pokemon: đổi bộ ô chiêu 1 <-> 2 (phím 0, phím PC "Đổi bộ chiêu", viên "1/2" của HUD) - nút chiêu đổi ngay khung sau. */
+    public static void doiBoChieu() {
+        indexTabSlot = indexTabSlot == 0 ? 1 : 0;
+        xSlot = Res.wKhung;
+    }
+
     private void doFire(int key, int index) {
         if (this.mainChar.state == 3) {
             Canvas.msgdlg.isIcon = false;
@@ -1989,6 +1995,11 @@ public class GameScr extends Screen {
             return;
         }
         this.mainChar.stand = System.currentTimeMillis();
+        // 0.9.6.1: J2ME phím (không HUD rộng, không nút câu): phím 5 cạnh hồ khi không nhắm gì / đang câu = câu cá
+        if (key == 5 && !HudRong.bat() && game.pokemon.HanhDong.nutDanhLaCau()) {
+            game.pokemon.HanhDong.cauCa();
+            return;
+        }
         if (this.mainChar.state == 3) {
             Canvas.msgdlg.isIcon = false;
             this.indexBuff = -1;
@@ -2033,7 +2044,19 @@ public class GameScr extends Screen {
             Canvas.currentDialog = Canvas.msgdlg;
             return;
         }
-        if (this.focusedActor != null && this.focusedActor.isNpcChar()) {
+        // pokemon: HUD có nút chiêu riêng - phím / nút CHIÊU (1 3 7 9) khi đang nhắm NPC = nhắm quái gần nhất, không mở
+        // cửa hàng / menu NPC (trước: chạm chiêu cạnh NPC bán hàng mở gian hàng); "nói chuyện" chỉ còn ở phím 5
+        boolean chieuRieng = key != 5 && game.pokemon.HanhDong.nutChieuRieng();
+        if (chieuRieng) {
+            QuickSlot o = null;
+            try {
+                o = MainChar.quickSlot[index][this.SLOTINDEXOFKEY[key]];
+            } catch (Throwable e) {
+                // chưa có ô nhanh
+            }
+            game.pokemon.HanhDong.boNhamNpcKhiDungChieu(this, o);
+        }
+        if (!chieuRieng && this.focusedActor != null && this.focusedActor.isNpcChar()) {
             Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
             if (allquest.size() > 0 && this.focusedActor.isNpcChar()) {
                 allquest.addElement(new Command("Nói chuyện", new IAction() {
@@ -3832,12 +3855,7 @@ public class GameScr extends Screen {
         if (PageScr.me != Canvas.currentScreen) {
             switch (keyCode) {
                 case 48:
-                    if (indexTabSlot == 0) {
-                        indexTabSlot = 1;
-                    } else {
-                        indexTabSlot = 0;
-                    }
-                    xSlot = Res.wKhung;
+                    doiBoChieu();
                     return false;
                 case 98:
                     Canvas.keyPressed[8] = true;
@@ -3892,10 +3910,10 @@ public class GameScr extends Screen {
             return;   // 0.9.5: tin rỗng / chỉ khoảng trắng: không gửi, không bong bóng (ô chat vẫn mở)
         }
         if ("cauca".equals(text.toLowerCase())) {
-            // hệ sinh thái: chỉ câu ở HỒ - xa hồ thì báo, không gửi, không ném cần
-            if (!game.pokemon.SinhThai.thuCau()) {
-                return;
-            }
+            // hệ sinh thái: chỉ câu ở HỒ - xa mặt nước thì báo, không gửi, không ném cần; gõ tay = như nút câu
+            // (thả "cauca2" hoặc kéo cần nếu đang câu), không gửi chữ lên kênh chat
+            game.pokemon.HanhDong.cauCa();
+            return;
         }
         if (typechat == CHAT_NORMAL) {
             this.tinVuaGo = text;
@@ -5993,6 +6011,7 @@ public class GameScr extends Screen {
                         game.pokemon.PokeHieuUng.khiNhanBuff(this.mainChar, buffID);
                         return;
                     }
+                    this.mainChar.lamMoiBuff(buffID, timeOut); // server la nguon thoi luong
                     return;
                 }
                 int size1 = this.actors.size();
@@ -6008,6 +6027,7 @@ public class GameScr extends Screen {
                             game.pokemon.PokeHieuUng.khiNhanBuff(ch2, buffID);
                             return;
                         }
+                        ((Char) ch2).lamMoiBuff(buffID, timeOut);
                         return;
                     }
                 }
@@ -7520,22 +7540,24 @@ public class GameScr extends Screen {
         int size0 = listStr.length;
         for (int i = 0; i < size0; i++) {
             final int ii = i;
-            // hệ sinh thái: "Câu cá tại đây" chỉ hiện khi đứng sát hồ (luật chỉ câu ở hồ)
-            if (userId1 == TuiSinhThaiScr.NPC_ID && idMenu == 0 && listStr[i] != null && listStr[i].startsWith("Câu cá") && !game.pokemon.SinhThai.ganHo()) {
-                continue;
-            }
+            // 0.9.6.1: hệ sinh thái không còn mục "Câu cá" (chỉ nút ngữ cảnh cạnh hồ) - chỉ số = vị trí trong danh sách máy chủ gửi
             menu.addElement(new Command(listStr[i], new IAction() {
                 @Override
                 public void perform() {
-                    if (userId1 == TuiSinhThaiScr.NPC_ID && idMenu == 0 && ii == 1) {
-                        game.pokemon.SinhThai.batDauCau();   // "Câu cá tại đây"
-                    }
                     GameScr.this.gameService.doMenuOption(userId1, idMenu, ii);
                 }
             }));
         }
         Canvas.menu.startAt(menu, 3);
         Canvas.currentDialog = null;
+        // 0.9.6.1: máy cảm ứng, menu máy chủ tới lúc đang mở một TẤM (Menu lưới, Pokédex... - MenuNguCanh.tiepQuan chỉ
+        // tiếp quản trên màn chơi): thẻ lệnh chung luôn, không để lộ menu chữ J2ME (không vùng chạm, không theo vùng an toàn)
+        Screen m = Canvas.currentScreen;
+        if (game.pokemon.MenuNguCanh.bat() && m != null && m != this
+                && (m instanceof game.pokemon.ManBang || m.getClass().getName().startsWith("game.pokemon.Man"))) {
+            Canvas.menu.showMenu = false;
+            game.pokemon.MenuNguCanh.mo(menu, false);
+        }
     }
 
     public void onTextBox(final int userID, final byte idMenu, String nameText, int typeInput) {

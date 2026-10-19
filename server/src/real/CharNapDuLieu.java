@@ -544,11 +544,8 @@ class CharNapDuLieu {
                 self.doAddGiftSn();
             }
             if (self.subpk == 0) {
-                self.killer -= 200;
-                if (self.killer < 0) {
-                    self.killer = 0;
-                    self.isKiller = false;
-                }
+                // 0.9.7: nghiep KHONG con -200 moi ngay dang nhap (dang nhap ngay moi la het ten do); phai theo gio
+                // online o real.LuatPkGame.nhipPhut.
                 self.subpk = 1;
             }
             if (self.pointActiveQuest > 300) {
@@ -1436,6 +1433,9 @@ class CharNapDuLieu {
                                         if (Map.isWearingAnimal(t)
                                                 || SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
                                             self.awItems.add(item);
+                                            if (!SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
+                                                item.khoaKhiMac(); // [khoa-khi-mac] migration
+                                            }
                                             break;
                                         }
                                         boolean vk = false;
@@ -1467,6 +1467,7 @@ class CharNapDuLieu {
                                         final int index2 = Char.getIndexItemWearing(t, posNhan);
                                         if (index2 > -1 && self.wItems[item.slotWearing][index2] == null) {
                                             self.wItems[item.slotWearing][index2] = item;
+                                            item.khoaKhiMac(); // [khoa-khi-mac] migration
                                             break;
                                         }
                                         item.slotWearing = 0;

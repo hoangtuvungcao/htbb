@@ -42,6 +42,91 @@ extends Screen {
     boolean trans = false;
     int pa = 0;
     byte frame;
+    /** 0.9.6.1: dòng hiện thứ i -> chỉ số gốc (hàng đầu: name[g]; menu con: mục name[index][g + 1]). */
+    int[] hien = new int[0];
+
+    /**
+     * 0.9.6.1 MỘT LỐI VÀO MỖI VIỆC: game.pokemon.ManMenu đặt cờ này ngay trước khi mở menu chữ từ viên "Tiện ích & PK"
+     * (HUD PC / Android) -> ẩn mục đã có lối vào riêng ở Menu kiểu GO / HUD. Mở bằng phím mềm (J2ME bấm phím): đủ mục.
+     */
+    public static boolean moTuMenu;
+    /** lần mở này là từ Menu kiểu GO */
+    boolean gonLan;
+
+    boolean gon() {
+        return this.gonLan;
+    }
+
+    /** true = ẩn (chỉ khi gon): hang = hàng gốc; muc = mục con gốc, -1 = chính hàng. */
+    boolean an(int hang, int muc) {
+        if (!gon()) {
+            return false;
+        }
+        switch (hang) {
+            case 0:   // Tự động đánh = viên AUTO + bánh răng HUD; Ngoại hình = tab Ngoại hình màn Pokémon
+                return muc == 0 || muc == 3;
+            case 1:   // Bản đồ lớn = nút Bản đồ / bản đồ nhỏ HUD; auto đánh = nút Tự động HUD;
+                      // âm thanh = Cài đặt -> Âm thanh (bảng Cài đặt PC; HUD APK giữ)
+                return muc == 1 || muc == 6 || muc == 4 && HudRong.bat();
+            case 2:   // Hành trang (HUD), Kỹ năng / Tiềm năng / Trang bị / Thông tin / Trang bị thú (màn Pokémon),
+                      // Khác (= Menu -> Sự kiện), Túi sinh thái (= Menu -> Hệ sinh thái)
+                return muc >= 0 && muc <= 5 || muc == 8 || muc == 9;
+            case 3:   // Nạp xu SMS: máy chủ không gửi cú pháp -> chỉ báo "tạm khóa"
+                return Canvas.gameScr == null || Canvas.gameScr.decriptNap == null || Canvas.gameScr.decriptNap.size() == 0;
+            case 4:   // Nhiệm vụ = nút HUD
+            case 8:   // Cửa hàng = Menu -> Cửa hàng
+                return true;
+            case 6:   // Tin nhắn (Thư/Quà), Nhóm + Bạn bè (Đội/Bạn bè), 3 bảng Top (Xếp hạng), Rời đội (hàng Đội);
+                      // Diễn đàn khi máy chủ không gửi địa chỉ (bấm không làm gì)
+                return muc >= 0 && muc <= 5 || muc == 8 || muc == 7 && (GameMidlet.url == null || GameMidlet.url.length() == 0);
+            default:
+                return false;
+        }
+    }
+
+    /** Hàng gốc i ẩn: tự nó ẩn hoặc mọi mục con đều ẩn. */
+    boolean anHang(int i) {
+        if (an(i, -1)) {
+            return true;
+        }
+        if (this.name[i].length <= 1) {
+            return false;
+        }
+        for (int j = 0; j < this.name[i].length - 1; ++j) {
+            if (!an(i, j)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Tính dòng hiện của cấp đang mở (gon: Limit / cmyLim theo số dòng hiện; không gon: như cũ). */
+    void tinhHien() {
+        int n = this.index == -1 ? 9 : Math.max(0, this.name[this.index].length - 1);
+        int[] t = new int[n];
+        int k = 0;
+        for (int i = 0; i < n; ++i) {
+            if (this.index == -1 ? !anHang(i) : !an(this.index, i)) {
+                t[k++] = i;
+            }
+        }
+        this.hien = new int[k];
+        System.arraycopy(t, 0, this.hien, 0, k);
+        if (gon()) {
+            this.Limit = k;
+            this.cmyLim = Math.max(0, k * this.hText - this.h);
+        }
+    }
+
+    /** Chỉ số gốc -> dòng hiện (không thấy: 0). */
+    int viTri(int goc) {
+        for (int i = 0; i < this.hien.length; ++i) {
+            if (this.hien[i] == goc) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
     public static PauseMenu gI() {
         return me == null ? (me = new PauseMenu()) : me;
@@ -166,6 +251,8 @@ extends Screen {
                     PauseMenu.this.index = -1;
                     PauseMenu.this.Limit = 9;
                     PauseMenu.this.cmyLim = PauseMenu.this.Limit * PauseMenu.this.hText - PauseMenu.this.h;
+                    PauseMenu.this.tinhHien();
+                    PauseMenu.this.selected = PauseMenu.this.viTri(PauseMenu.this.selected);
                     PauseMenu.this.cmtoY = PauseMenu.this.selected * PauseMenu.this.hText - PauseMenu.this.h / 2;
                 } else {
                     Canvas.gameScr.switchToMe();
@@ -182,7 +269,8 @@ extends Screen {
         int n = this.y;
         graphics.translate(0, -this.cmy);
         for (int i = 0; i < this.Limit; ++i) {
-            String muc = this.index == -1 ? this.name[i][0] : this.name[this.index][i + 1];
+            int gi = i < this.hien.length ? this.hien[i] : i;
+            String muc = this.index == -1 ? this.name[gi][0] : this.name[this.index][gi + 1];
             if (i == this.selected) {
                 Res.paintSelected(graphics, this.x, n, this.w, this.hText);
                 Nen.conTroMenu(graphics, this.x + 5, n + this.hText / 2 - 4, 8);
@@ -291,7 +379,22 @@ extends Screen {
         super.updateKey();
     }
 
+    /** Dòng hiện -> chỉ số gốc, chạy doSelect0 (xử lý theo chỉ số gốc như cũ), rồi về dòng hiện. */
     private void doSelect() {
+        if (this.selected < 0 || this.selected >= this.hien.length) {
+            return;
+        }
+        int cap = this.index;
+        this.selected = this.hien[this.selected];
+        this.doSelect0();
+        if (this.index != cap) {
+            this.tinhHien();
+        } else {
+            this.selected = this.viTri(this.selected);
+        }
+    }
+
+    private void doSelect0() {
         if (this.index == -1) {
             if (this.name[this.selected].length == 1) {
                 switch (this.selected) {
@@ -712,6 +815,8 @@ extends Screen {
     }
 
     public void switchToMe() {
+        this.gonLan = moTuMenu;
+        moTuMenu = false;
         this.Limit = 9;
         this.selected = 0;
         this.index = -1;
@@ -719,11 +824,14 @@ extends Screen {
         this.cmy = 0;
         this.cmtoY = 0;
         this.name[0][0] = Canvas.gameScr.mainChar.name;
+        // gon: hàng này chỉ còn tùy chọn game cũ (lời mời, focus, giấy phép...) - không trùng tên viên "Cài đặt" của Menu
+        this.name[1][0] = gon() ? "T\u00f9y ch\u1ecdn kh\u00e1c" : "C\u00e0i \u0111\u1eb7t";
         if (Nen.coAmThanh()) {
             this.name[1][5] = Nen.amThanhBat() ? "T\u1ea5t \u00e2m thanh" : "B\u1eadt \u00e2m thanh";
         }
         super.switchToMe();
         this.init();
+        this.tinhHien();
     }
 
 }

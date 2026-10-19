@@ -163,6 +163,7 @@ class CharVongLap {
             } catch (final Exception ex2) {
             }
             ++self.minuteOnline;
+            LuatPkGame.nhipPhut(self); // nghiep (ten do) phai theo gio online (0.9.7, thay -200 / ngay dang nhap)
             DanhHieuGame.nhip(self); // danh hieu: mo khoa theo trang thai song (cap, Pokedex, bac PvP...) + gia han
             if (self.minuteOnline > 120) {
                 self.minuteOnline = 0;
@@ -646,44 +647,8 @@ class CharVongLap {
                 self.nPKill = 0;
                 self.timeKiller = 0L;
             }
-            for (int i2 = 0; i2 < self.arrayBuff.length; ++i2) {
-                if (self.arrayBuff[i2] != -1) {
-                    final long t = System.currentTimeMillis() - self.timeUseBuff[i2];
-                    if (t / 1000L > self.countDown[i2]) {
-                        final short[] countDown = self.countDown;
-                        final int n2 = i2;
-                        ++countDown[n2];
-                        if (self.countDown[i2] >= self.timeOut[i2]) {
-                            if (self.arrayBuff[i2] == 25 || self.arrayBuff[i2] == 20) {
-                                Message m3 = null;
-                                try {
-                                    if (self.arrayBuff[i2] == 25) {
-                                        self.percentBuff[1] = 0;
-                                        self.percentBuff[2] = 0;
-                                        self.calculatorHPMP();
-                                    } else if (self.arrayBuff[i2] == 20) {
-                                        self.percentBuff[0] = 0;
-                                    }
-                                    m3 = MessageCreator.createMainCharInfoMessage(self);
-                                    self.sendMessage(m3);
-                                } catch (final Exception ex16) {
-                                } finally {
-                                    try {
-                                        m3.cleanup();
-                                    } catch (final Exception ex17) {
-                                    }
-                                }
-                                try {
-                                    m3.cleanup();
-                                } catch (final Exception ex18) {
-                                }
-                            }
-                            self.arrayBuff[i2] = -1;
-                            self.countDown[i2] = 0;
-                        }
-                    }
-                }
-            }
+            // het han chieu ho tro theo dong ho (go chi so + bao client xoa bieu tuong) - ChieuHoTro
+            ChieuHoTro.capNhatHetHan(self, System.currentTimeMillis());
             self.updateNearChar();
             self.subUpdate();
         } catch (final Exception e) {

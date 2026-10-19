@@ -40,6 +40,7 @@ public final class DanhHieuGame {
     static volatile HashMap<String, List<Mau>> THEO_KIEU = new HashMap<String, List<Mau>>();
     static volatile List<Mau> SONG = Collections.emptyList();
     static volatile HashMap<String, Mau> THEO_TEN_NV = new HashMap<String, Mau>();
+    static volatile HashMap<String, Mau> THEO_MA = new HashMap<String, Mau>();
     static volatile HashMap<Integer, Integer> THU_TU = new HashMap<Integer, Integer>();
     static volatile String[] TEN_DO_HIEM = {"Thường", "Hiếm", "Sử thi", "Huyền thoại"};
 
@@ -50,7 +51,9 @@ public final class DanhHieuGame {
         final List<Mau> song = new ArrayList<Mau>();
         final HashMap<String, Mau> nv = new HashMap<String, Mau>();
         final HashMap<Integer, Integer> tt = new HashMap<Integer, Integer>();
+        final HashMap<String, Mau> theoMa = new HashMap<String, Mau>();
         for (final Mau x : ds) {
+            theoMa.put(x.ma, x);
             m.put(Integer.valueOf(x.id), x);
             tt.put(Integer.valueOf(x.id), Integer.valueOf(x.thuTu));
             final String kieu = x.kieuSuKien();
@@ -67,6 +70,7 @@ public final class DanhHieuGame {
         THEO_KIEU = k;
         SONG = song;
         THEO_TEN_NV = nv;
+        THEO_MA = theoMa;
         THU_TU = tt;
         if (tenDoHiem != null && tenDoHiem.length > 0) {
             TEN_DO_HIEM = tenDoHiem;
@@ -75,6 +79,11 @@ public final class DanhHieuGame {
 
     public static Mau mau(final int id) {
         return MAU.get(Integer.valueOf(id));
+    }
+
+    /** Mau theo ma (data_danh_hieu.ma), null neu khong co / dang tat. */
+    public static Mau mauTheoMa(final String ma) {
+        return ma == null ? null : THEO_MA.get(ma);
     }
 
     public static int soMau() {
@@ -574,10 +583,44 @@ public final class DanhHieuGame {
         }
     }
 
+    /**
+     * Vao ban do (MapXuLyLenh sau doi map / vao game): lan dau trong phien gui nhan + so moi, phat thuong mua PvP cu
+     * (khong doi nhip phut ~90 giay).
+     */
+    public static void khiVaoBanDo(final Char p) {
+        try {
+            if (p == null || p.isBot != -1 || p.charDBID <= 0) {
+                return;
+            }
+            final TT t = tt(p);
+            if (t.daGuiDau) {
+                return;
+            }
+            t.daGuiDau = true;
+            if (bat() && !MAU.isEmpty()) {
+                kiemTra(p, t, SONG);
+                guiNhan(p);
+                guiSoMoi(p, t);
+            }
+            XepHangPvpGame.thuongMuaCu(p); // thuong cac mua PvP da ket thuc chua phat (mot lan / mua)
+            DiemMocNhiemVu.apChoCho(p); // ban hang tren cho luc offline: cong tien do nhiem vu cho_ban
+        } catch (final Exception e) {
+            System.out.println("DanhHieuGame.khiVaoBanDo: " + e);
+        }
+    }
+
     /** Moi phut (CharVongLap): danh gia mau song + lan dau gui nhan / so moi. */
     public static void nhip(final Char p) {
         try {
-            if (p == null || p.isBot != -1 || p.charDBID <= 0 || !bat() || MAU.isEmpty()) {
+            if (p == null || p.isBot != -1 || p.charDBID <= 0) {
+                return;
+            }
+            if (!bat() || MAU.isEmpty()) {
+                final TT t0 = tt(p);
+                if (!t0.daGuiDau) {
+                    t0.daGuiDau = true;
+                    XepHangPvpGame.thuongMuaCu(p);
+                }
                 return;
             }
             final TT t = tt(p);
@@ -586,6 +629,7 @@ public final class DanhHieuGame {
                 t.daGuiDau = true;
                 guiNhan(p);
                 guiSoMoi(p, t);
+                XepHangPvpGame.thuongMuaCu(p); // thuong cac mua PvP da ket thuc chua phat (mot lan / mua)
             }
         } catch (final Exception e) {
             System.out.println("DanhHieuGame.nhip: " + e);
@@ -632,8 +676,10 @@ public final class DanhHieuGame {
         }
         ghiLog(p, m.id, lyDo);
         final String hiem = m.doHiem < TEN_DO_HIEM.length ? TEN_DO_HIEM[m.doHiem] : "";
-        DungVatPham.bao(p, "Danh hiệu mới" + (hiem.isEmpty() ? "" : " (" + hiem + ")") + ": " + m.ten
-                + (m.coHan() ? " - " + DanhHieuLogic.chuConLai(m.thoiHanPhut) : "") + ". Xem ở Hồ sơ → Danh hiệu.");
+        // thong bao HIEM (the vang, com.htbb.thongbao.ThongBao): dong 1 ten, dong 2 do hiem / han / noi xem
+        com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.HIEM, "Danh hiệu mới: " + m.ten,
+                (hiem.isEmpty() ? "" : hiem + " · ") + (m.coHan() ? "còn " + DanhHieuLogic.chuConLai(m.thoiHanPhut) + " · " : "")
+                        + "Hồ sơ → Danh hiệu", com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
         if (deoTruoc != p.idEffDanhHieu) {
             sauKhiDoi(p); // chua deo gi: Char.addDanhHieu tu deo danh hieu dau tien
         }
@@ -849,17 +895,18 @@ public final class DanhHieuGame {
                 case DanhHieuLogic.K_DEO: {
                     final int id = msg.dis.readShort();
                     if (!deo(p, id)) {
-                        DungVatPham.loi(p, "Bạn chưa có danh hiệu này hoặc đã hết hạn.");
+                        com.htbb.thongbao.ThongBao.loi(p, "Bạn chưa có danh hiệu này hoặc đã hết hạn.", null);
                     } else {
                         final Mau m = mau(id);
-                        DungVatPham.bao(p, "Đang đeo danh hiệu " + (m == null ? DanhHieu.getName(id) : m.ten) + ".");
+                        com.htbb.thongbao.ThongBao.ketQua(p, "Đang đeo danh hiệu " + (m == null ? DanhHieu.getName(id) : m.ten), null);
                     }
                     guiBang(p, false);
                     break;
                 }
                 case DanhHieuLogic.K_THAO:
                     thao(p);
-                    DungVatPham.baoNhe(p, "Đã tháo danh hiệu.");
+                    com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.TIN, "Đã tháo danh hiệu", null,
+                            com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
                     guiBang(p, false);
                     break;
                 case DanhHieuLogic.K_DA_XEM: {

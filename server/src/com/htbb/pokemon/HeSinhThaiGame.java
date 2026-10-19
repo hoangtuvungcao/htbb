@@ -96,6 +96,7 @@ public final class HeSinhThaiGame {
                 });
                 lich.scheduleWithFixedDelay(HeSinhThaiGame::nhipCham, 20, 15, TimeUnit.SECONDS);
                 lich.scheduleWithFixedDelay(HeSinhThaiGame::nhipNhanh, 5, 1, TimeUnit.SECONDS);
+                lich.scheduleWithFixedDelay(HeSinhThaiGame::nhipCauCa, 5000, 200, TimeUnit.MILLISECONDS);
                 System.out.println("[HE SINH THAI] da bat: " + vungTheoMap.size() + " vung, " + ungVien.size()
                         + " loai co ung vien thay, " + capBungPhat.size() + " cap bung phat, " + quaiBaoVe.size()
                         + " loai bao ve (nhiem vu chinh).");
@@ -701,6 +702,7 @@ public final class HeSinhThaiGame {
             final int len = h.congExp(KyNangSong.TRONG_TROT, KyNangSong.expKhiLam(VatLieuSinhThai.giaPhanNghin(ma)) * 3);
             bao(p, "Vườn berry: +" + so + " " + VatLieuSinhThai.ten(ma) + " vào Túi sinh thái." + (len > 0
                     ? " Trồng trọt lên cấp " + len + "!" : ""));
+            real.DiemMocNhiemVu.khiThuHoach(p, idCay); // diem moc lam_vuon
             danhDau(p);
         } catch (final Exception e) {
             System.out.println("[HE SINH THAI] khiThuHoach: " + e);
@@ -726,6 +728,14 @@ public final class HeSinhThaiGame {
             }
             if ("cauca".equals(c)) {
                 HeSinhThaiMenu.cauCa(p);
+                return true;
+            }
+            if ("cauca2".equals(c)) {
+                HeSinhThaiMenu.thaCau(p, true);   // client 0.9.6.1+: phai keo can dung luc
+                return true;
+            }
+            if ("keocan".equals(c)) {
+                HeSinhThaiMenu.keoCan(p);
                 return true;
             }
             if ("dao".equals(c) || "khaoco".equals(c)) {
@@ -853,6 +863,18 @@ public final class HeSinhThaiGame {
     }
 
     /** Moi giay: chi viec can nhanh (dua). */
+    /** Nhip cau ca (200 ms): bao ca can / ca thoat dung luc (CauCaPhien). */
+    static void nhipCauCa() {
+        if (!bat()) {
+            return;
+        }
+        try {
+            HeSinhThaiMenu.nhipCauCa();
+        } catch (final Throwable e) {
+            System.out.println("[HE SINH THAI] nhipCauCa: " + e);
+        }
+    }
+
     static void nhipNhanh() {
         if (!bat()) {
             return;
@@ -965,6 +987,7 @@ public final class HeSinhThaiGame {
                 dapAn = null;
             }
             phatThuong(p, "LUONGKHOA:" + HeSinhThai.THUONG_DO_VUI_LUONG_KHOA, "do vui");
+            real.DiemMocNhiemVu.khiDoVui(p); // diem moc do_vui
             final HoSoSinhThai h = hoSo(p);
             if (h != null) {
                 h.doVuiDung++;
@@ -1128,6 +1151,9 @@ public final class HeSinhThaiGame {
                         danhDau(c);
                     }
                 }
+            }
+            for (int i = 0; i < xong.size(); i++) {
+                real.DiemMocNhiemVu.khiDua(timOnline((Integer) xong.get(i)[0]), i + 1); // diem moc dua_pokemon (moi nguoi ve dich)
             }
             if (xong.isEmpty()) {
                 b.append("không ai về đích.");

@@ -192,11 +192,9 @@ public final class ThoiTiet {
 
     // ------------------------------------------------------------------ HUD
 
-    /** Bán kính / vị trí đĩa HUD màn rộng: ngay trái hàng 3 nút phải trên (HudRong: tâm w-16-k*30, y 15, r 12). */
-    public static final int R = 12, Y = 15;
-
+    /** Đĩa HUD màn rộng: ngay trái hàng nút phải trên, cùng cỡ (HudRong.xTruocHangTren / yHangTren / rHangTren). */
     public static int xHud() {
-        return Canvas.w - 16 - 3 * 30;
+        return game.render.screen.HudRong.xTruocHangTren();
     }
 
     /** Màn hẹp (máy phím J2ME): đĩa nhỏ giữa trên. */
@@ -216,7 +214,8 @@ public final class ThoiTiet {
         }
         Canvas.resetTrans(g);
         boolean rong = manRong();
-        int cx = rong ? xHud() : xHep(), cy = rong ? Y : 9, r = rong ? R : 8;
+        int cx = rong ? xHud() : xHep(), cy = rong ? game.render.screen.HudRong.yHangTren() : 9;
+        int r = rong ? game.render.screen.HudRong.rHangTren() : 8;
         GiaoDien.khoi(g, cx - r, cy - r + 1, 2 * r + 1, 2 * r + 1, r, ChuDe.BONG);
         GiaoDien.khoi(g, cx - r, cy - r, 2 * r + 1, 2 * r + 1, r, 0xFFFFFF);
         ThoiTietVe.veIcon(g, thoiTiet < 0 ? ThoiTietVe.QUANG : thoiTiet, cx, cy, 2 * r - 2);

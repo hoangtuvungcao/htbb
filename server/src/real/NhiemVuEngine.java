@@ -23,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * va mot cho goi {@link #suKien}.
  *
  *  - Danh muc kieu: moi kieu_muc_tieu la mot "su kien" (chuoi) do diem moc trong game ban vao
- *    {@link #suKien}(p, kieu, thamSo, n); khop theo muc_tieu_id (rong = bat ky). Kieu chua co diem
- *    moc (he sinh thai: cau_ca, dao_dat, lam_vuon, nau_an, ap_trung, do_vui, dua_pokemon, cho_ban...) chi
- *    can lop do goi {@code NhiemVuEngine.suKien(p, "cau_ca", vat, 1)}.
+ *    {@link #suKien}(p, kieu, thamSo, n); khop theo muc_tieu_id (rong = bat ky). 0.9.7: moi kieu trong
+ *    data_nhiem_vu_kieu deu co diem moc - cac kieu he sinh thai / chuoi cu nam o real.DiemMocNhiemVu (bang noi goi
+ *    + tham so); cau ca co diem moc DUY NHAT o HeSinhThaiMenu.cauCa. Kieu moi: them mot ham vao DiemMocNhiemVu.
  *  - Gating: cap, ngay_mo, `truoc` (moi ma trong danh sach da xong), an + dieu_kien_mo.
  *  - Toi da 3 nhiem vu phu (khe) cung luc; bang ngay rut 5 mau N-<bac>.* moi ngay (hat giong id + ngay),
  *    thuong toi da 3; bang tuan dung chung tran 2 cho T- / TV- (ca chuoi 1 lan) / TD-; SK-<tuan> chi
@@ -567,7 +567,14 @@ public final class NhiemVuEngine {
         if (loi != null) {
             return loi + ".";
         }
+        if (m.laNgay() && !bangNgay(p).contains(ma)) {
+            return "Nhiệm vụ này không có trong bảng hằng ngày hôm nay."; // 0.9.6: menu cu / goi tu che
+        }
         synchronized (t) {
+            final String nhanLai = NhiemVuMau.chanNhanLai(m, t.get(ma), kyCua(m));
+            if (nhanLai != null) {
+                return nhanLai;
+            }
             if (m.chiemKhe()) {
                 int khe = 0;
                 for (final Entry<String, long[]> e : t.entrySet()) {

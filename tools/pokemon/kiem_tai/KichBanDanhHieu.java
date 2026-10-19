@@ -6,11 +6,12 @@ import java.util.List;
 /**
  * Kich ban bot DANH HIEU (0.9.7: real.DanhHieuGame, com.htbb.pokemon.DanhHieuLogic, lenh -110 S->C / -111 C->S).
  * Chay tren MAY CHU THU RIENG da nap sql/them_danh_hieu.sql (can GM: slv / mto / die):
- *   dh_cap     len cap 31 (GM slv) + mo bang -> mo "Huấn luyện viên tập sự" + "Huấn luyện viên lành nghề" ngay (thong bao -104, so moi -110),
+ *   dh_cap     len cap 55 (GM slv) + mo bang -> mo cap 10 / 30 / 50 + "Huấn luyện viên tập sự" + "Huấn luyện viên lành nghề" ngay (thong bao -104, so moi -110),
  *              danh hieu dau tien tu deo (nhan -110 cho chinh minh)
  *   dh_bang    xin bang (-111 0): co danh hieu da co / chua co, danh hieu an "???" khong lo ten
  *   dh_deo     deo (-111 1) -> nhan moi; deo danh hieu chua co -> tu choi; thao (-111 2) -> nhan rong; da xem -> so moi 0
  *   dh_nguoi   bot thu hai den canh: nhan danh hieu cua bot dau den nguoi gan
+ *   dh_cho     dong cho tob_nhiem_vu_cho (ban cho luc offline) -> vao game: da_ap = 1; vao lai: khong ap lan nua
  *   dh_luu     guc 1 lan, thoat -> tob_danh_hieu_dem co 'guc' = 1, tob_danh_hieu co danh hieu, tob_danh_hieu_log co dong
  *
  *   javac -encoding UTF-8 -d /tmp/bot tools/pokemon/kiem_tai/*.java
@@ -131,14 +132,15 @@ public final class KichBanDanhHieu {
 
     static void cap() throws Exception {
         BotChucNang.Bot b = a();
-        int m = b.moc();
-        b.gm("slv " + b.ten + " 31 0", 2500);
+        int m = 0; // tu dau phien: danh hieu theo cap da co the mo ngay luc vao ban do (DanhHieuGame.khiVaoBanDo)
+        b.gm("slv " + b.ten + " 55 0", 2500);
         // GM slv khong qua duong len cap that (SoTayLauDai.khiLenCap -> datMuc thanh_tuu_cap): mo bang = danh gia ngay
         b.gui(KHACH, (byte) 0);
         b.bom(2000);
         String t = toast(b, m);
-        BotChucNang.ket("dh.cap.thong_bao", t.contains("Huấn luyện viên tập sự") && t.contains("Huấn luyện viên lành nghề"), t);
-        BotChucNang.ket("dh.cap.so_moi", soMoi(b, m) >= 2, "so moi=" + soMoi(b, m));
+        BotChucNang.ket("dh.cap.thong_bao", t.contains("Huấn luyện viên tập sự") && t.contains("Huấn luyện viên lành nghề")
+                && t.contains("Huấn luyện viên tinh anh"), t);
+        BotChucNang.ket("dh.cap.so_moi", soMoi(b, m) >= 3, "so moi=" + soMoi(b, m));
         int[] n = nhan(b, m, b.actor);
         BotChucNang.ket("dh.cap.tu_deo", n != null && n[0] == 9700, n == null ? "khong co nhan" : "nhan " + n[0]);
     }
@@ -150,10 +152,10 @@ public final class KichBanDanhHieu {
         b.cho(x -> bang(x, m) != null, 4000);
         List<Dong> ds = bang(b, m);
         BotChucNang.ket("dh.bang.co", ds != null && ds.size() > 100, ds == null ? "khong co bang" : ds.size() + " dong");
-        Dong c10 = tim(ds, 9700), c30 = tim(ds, 9701), c50 = tim(ds, 9702), an = tim(ds, 9714), cu = tim(ds, 8767);
+        Dong c10 = tim(ds, 9700), c30 = tim(ds, 9701), c50 = tim(ds, 9703), an = tim(ds, 9714), cu = tim(ds, 8767);
         BotChucNang.ket("dh.bang.da_co", c10 != null && c10.trangThai == 2 && c30 != null && c30.trangThai == 1 && c30.moi,
                 c10 == null || c30 == null ? "thieu" : c10.trangThai + "/" + c30.trangThai + " moi=" + c30.moi);
-        BotChucNang.ket("dh.bang.tien_do", c50 != null && c50.trangThai == 0 && c50.tienDo == 31 && c50.can == 50,
+        BotChucNang.ket("dh.bang.tien_do", c50 != null && c50.trangThai == 0 && c50.tienDo == 55 && c50.can == 70,
                 c50 == null ? "thieu" : c50.tienDo + "/" + c50.can);
         BotChucNang.ket("dh.bang.an", an != null && an.an && "???".equals(an.ten) && an.tienDo == 0, an == null ? "thieu" : an.ten + " an=" + an.an);
         BotChucNang.ket("dh.bang.cu_chi_khi_co", cu == null, cu == null ? "" : "lo danh hieu cu chua co");
@@ -231,7 +233,37 @@ public final class KichBanDanhHieu {
         BotChucNang.ket("dh.luu.da_xem", moi == null || moi.trim().isEmpty(), "moi=" + moi);
     }
 
+    static void cho() throws Exception {
+        BotChucNang.Bot b = BotChucNang.botMoi(0);
+        String user = b.user;
+        int db = b.charDb;
+        b.close();
+        Thread.sleep(4000);
+        BotChucNang.sql("DELETE FROM tob_nhiem_vu_cho WHERE id_char = " + db);
+        BotChucNang.sql("INSERT INTO tob_nhiem_vu_cho (id_char, so, ghi_chu, da_ap, luc) VALUES (" + db + ", 1, 'kiem 1', 0, NOW()), ("
+                + db + ", 1, 'kiem 2', 0, NOW())");
+        for (int lan = 0; lan < 2; lan++) {
+            BotChucNang.Bot c = null;
+            for (int t = 0; t < 5 && c == null; t++) {
+                BotChucNang.Bot x = new BotChucNang.Bot(user);
+                String l = x.dangNhap("123456");
+                if (l == null) l = x.vaoGame(0);
+                if (l == null) c = x;
+                else {
+                    x.close();
+                    Thread.sleep(3000);
+                }
+            }
+            c.bom(4000);
+            String da = BotChucNang.sql1("SELECT CONCAT(SUM(da_ap = 1), '/', COUNT(*), '/', SUM(ap_luc IS NOT NULL)) FROM tob_nhiem_vu_cho WHERE id_char = " + db);
+            BotChucNang.ket("dh.cho.lan_" + (lan + 1), "2/2/2".equals(da == null ? null : da.trim()), "da_ap/tong/ap_luc=" + da);
+            c.close();
+            Thread.sleep(4000);
+        }
+    }
+
     public static void main(String[] a) throws Exception {
+        BotChucNang.dk("dh_cho", false, KichBanDanhHieu::cho);
         BotChucNang.dk("dh_cap", true, KichBanDanhHieu::cap);
         BotChucNang.dk("dh_bang", true, KichBanDanhHieu::bangDh);
         BotChucNang.dk("dh_deo", true, KichBanDanhHieu::deo);

@@ -23,6 +23,49 @@ public class MapTown extends Map {
    Vector<Monster> allsmallDragon = new Vector();
    Vector<Monster> allmainDragon = new Vector();
    public static int gameOverByAdmin = -1;
+   /**
+    * GM "over0/over1/over2" (19/10/2026): ket thuc chiem Gym TUNG vung. Truoc day chi co mot so nguyen
+    * gameOverByAdmin: go over0 roi over1 roi over2 thi chi vung cuoi duoc ket thuc (so sau ghi de so truoc, va
+    * "ktct" dat lai -1), hai vung kia chay tiep toi 22h -> moi giao dich / shop / ky gui bi chan "trong thoi gian
+    * chiem Gym" (BotChucNang: chay chiem_thanh roi cho -> "Khong the thuc hien giao dich trong thoi gian chiem Gym"). Moi vung mot co, gameOver tieu thu co.
+    */
+   public static final boolean[] adminKetThuc = new boolean[3];
+   /** Mot lan bat dau chiem Gym chi khop trong ~2 phut dau moc gio: khong bat dau lai ngay sau khi vua ket thuc. */
+   static final long KHOA_BAT_DAU_LAI_MS = 180000L;
+
+   /** GM ket thuc chiem Gym vung country (lenh chat over<N>). */
+   public static void adminKetThuc(int country) {
+      if (country >= 0 && country < adminKetThuc.length) {
+         adminKetThuc[country] = true;
+         gameOverByAdmin = country;
+      }
+   }
+
+   /** Danh dau vung country vua bat dau chiem Gym (moc tinh thoi luong 1 tieng; bo co ket thuc cu). */
+   public static void danhDauBatDau(int country) {
+      if (country >= 0 && country < timeBatDauChiemThanh.length) {
+         timeBatDauChiemThanh[country] = System.currentTimeMillis();
+         adminKetThuc[country] = false;
+         if (gameOverByAdmin == country) {
+            gameOverByAdmin = -1;
+         }
+      }
+   }
+
+   /**
+    * Chiem Gym vung nay con chay khong (thuan, test/KiemChiemGym). batDau = moc bat dau (0 = khong biet).
+    * Co moc: 1 tieng ke tu luc bat dau (ca lich chuan 21h lan gio admin dat - truoc day lich chuan tinh
+    * "gio <= 21", nen chiem Gym bat dau ngoai 21h, vd. GM bd0 hay het gio admin dat roi "ktct", keo toi 22h).
+    */
+   public static boolean conChay(long batDau, long bay, boolean coGioAdmin, int iHour, boolean is0114) {
+      if (batDau > 0L) {
+         return bay - batDau < THOI_LUONG_CHIEM_THANH;
+      }
+      if (coGioAdmin) {
+         return true;
+      }
+      return iHour <= 21 && (!is0114 || iHour <= 15);
+   }
    private static Vector<Vector<DragonTower>> smallDragon = new Vector();
    private static Vector<Vector<Monster>> mboss = new Vector();
    private static Vector<Vector<DragonTower>> mainDragon = new Vector();
@@ -826,7 +869,7 @@ public class MapTown extends Map {
                int nUser = p.party.userParty.size();
                // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-               int xpReceive = newxp * 80 / (nUser * 100);
+               int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                int maxLv = p.lvDetail.lv;
 
                for (int k = 0; k < p.party.userParty.size(); k++) {
@@ -859,7 +902,7 @@ public class MapTown extends Map {
                   }
                }
 
-               xpReceive = newxp * 20 / 100 * doubleALL;
+               xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                xpReceive = p.expReceive(xpReceive);
                addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMultiTarget2");
@@ -1078,7 +1121,7 @@ public class MapTown extends Map {
                                                 int nUser = p.party.userParty.size();
                                                 // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                                int xpReceive = newxp * 80 / (100 * nUser);
+                                                int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                                 int maxLv = p.lvDetail.lv;
 
                                                 for (int i = 0; i < p.party.userParty.size(); i++) {
@@ -1125,7 +1168,7 @@ public class MapTown extends Map {
                                                 }
 
                                                 x2Player = p.getX2();
-                                                xpReceive = newxp * 20 / 100 * doubleALL;
+                                                xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                 if (doubleALL > 1) {
                                                    x2Player = 0;
                                                 }
@@ -1178,10 +1221,10 @@ public class MapTown extends Map {
                                              dxpx = 1;
                                           }
 
-                                          int[] downPercentx = new int[]{1, 5, 10, dxpx};
+                                          int[] downPercentx = new int[]{1, 5, 10, 20}; // 0.9.6: nhu nhanh don danh (truoc: dxpx -> dxpx/dxpx = 1, va chia them lan nua trong traoHaQuai)
                                           int targetLvx = p.getLevel();
                                           if (targetLvx < 40) {
-                                             downPercentx = new int[]{1, 2, 3, dxpx};
+                                             downPercentx = new int[]{1, 2, 3, 4};
                                           }
 
                                           int deltax = targetLvx - mt.level;
@@ -1195,7 +1238,7 @@ public class MapTown extends Map {
                                                 ax = 3;
                                              }
 
-                                             dxpx /= downPercentx[ax];
+                                             dxpx /= ExpLauDai.chiaCu(downPercentx[ax]);
                                              if (dxpx <= 0) {
                                                 dxpx = 1;
                                              }
@@ -1216,7 +1259,7 @@ public class MapTown extends Map {
                                                 int nUserx = p.party.userParty.size();
                                                 // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep = 5 khi > 1 nguoi).
 
-                                                int xpReceive = newxp * 80 / (nUserx * 100);
+                                                int xpReceive = Map.chiaExpDoi(newxp, 80, nUserx, 1);
                                                 int maxLv = p.lvDetail.lv;
 
                                                 for (int ix = 0; ix < p.party.userParty.size(); ix++) {
@@ -1251,7 +1294,7 @@ public class MapTown extends Map {
                                                    }
                                                 }
 
-                                                xpReceive = newxp * 20 / 100 * doubleALL;
+                                                xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                 xpReceive = p.expReceive(xpReceive);
                                                 addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMonster5");
@@ -1381,19 +1424,17 @@ public class MapTown extends Map {
       Calendar cl = Calendar.getInstance();
       int iHour = cl.get(11);
       boolean is0114 = Char.getDayOpen(0L).equals("2017-01-14");
-      boolean chuaKetThuc;
-      if (TimeAdminCheat > -1) {
-         // Admin set gio: tinh theo thoi luong 1 tieng ke tu luc bat dau.
-         // Khong dung "iHour <= TimeAdminCheat" nhu truoc vi neu set gio 23 thi
-         // dieu kien luon dung -> chiem thanh khong bao gio ket thuc.
-         long batDau = timeBatDauChiemThanh[country];
-         chuaKetThuc = batDau == 0L || System.currentTimeMillis() - batDau < THOI_LUONG_CHIEM_THANH;
-      } else {
-         chuaKetThuc = iHour <= 21 && (!is0114 || iHour <= 15);
-      }
-      if (chuaKetThuc && gameOverByAdmin != country) {
+      // Tinh theo thoi luong 1 tieng ke tu luc bat dau (khong dung "iHour <= TimeAdminCheat": set gio 23 thi
+      // khong bao gio ket thuc). Xem conChay.
+      boolean chuaKetThuc = conChay(timeBatDauChiemThanh[country], System.currentTimeMillis(), TimeAdminCheat > -1, iHour, is0114);
+      boolean adminDung = adminKetThuc[country] || gameOverByAdmin == country;
+      if (chuaKetThuc && !adminDung) {
          return false;
       } else {
+         adminKetThuc[country] = false;
+         if (gameOverByAdmin == country) {
+            gameOverByAdmin = -1;
+         }
          this.curday[country] = "";
          taxOfClan[country] = 0;
          resetClanReg();
@@ -1723,6 +1764,11 @@ public class MapTown extends Map {
          return false;
       } else {
          String day = "Mon";
+         long tuLucBatDau = System.currentTimeMillis() - timeBatDauChiemThanh[j];
+         if (timeBatDauChiemThanh[j] > 0L && tuLucBatDau >= 0L && tuLucBatDau < KHOA_BAT_DAU_LAI_MS) {
+            // vua bat dau (va co the vua bi GM ket thuc) trong cung moc gio: khong bat dau lai
+            return false;
+         }
          if (!this.curday[j].equals("Mon")) {
             String nt = new Date(System.currentTimeMillis()).toString();
             Calendar cl = Calendar.getInstance();
@@ -1759,7 +1805,7 @@ public class MapTown extends Map {
      
       System.out.println("BAT DAU CHIEM THANH " + j);
       this.curday[j] = day;
-      timeBatDauChiemThanh[j] = System.currentTimeMillis();
+      danhDauBatDau(j);
       getTown[j] = true;
       if (idClanTown[j] > -1) {
          try {

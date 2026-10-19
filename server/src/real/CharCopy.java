@@ -356,7 +356,7 @@ public class CharCopy extends Char {
                     int nUser = this.owner.party.userParty.size();
                     // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                    int xpReceive = newxp * 80 / (nUser * 100);
+                    int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                     int maxLv = this.owner.lvDetail.lv;
 
                     for(int k = 0; k < this.owner.party.userParty.size(); ++k) {
@@ -389,7 +389,7 @@ public class CharCopy extends Char {
                         }
                     }
 
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                     xpReceive = this.owner.expReceive(xpReceive);
                     Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy2");
@@ -507,7 +507,7 @@ public class CharCopy extends Char {
                                 int nUser = this.owner.party.userParty.size();
                                 // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                int xpReceive = newxp * 80 / (100 * nUser);
+                                int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                 int maxLv = this.owner.lvDetail.lv;
 
                                 for(int i = 0; i < this.owner.party.userParty.size(); ++i) {
@@ -540,7 +540,7 @@ public class CharCopy extends Char {
                                     }
                                 }
 
-                                xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                                 xpReceive = this.owner.expReceive(xpReceive);
                                 Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy5");
@@ -634,7 +634,7 @@ public class CharCopy extends Char {
                                 int nUser = this.owner.party.userParty.size();
                                 // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                                int xpReceive = newxp * 80 / (nUser * 100);
+                                int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                                 int maxLv = this.owner.lvDetail.lv;
 
                                 for(int i = 0; i < this.owner.party.userParty.size(); ++i) {
@@ -667,7 +667,7 @@ public class CharCopy extends Char {
                                     }
                                 }
 
-                                xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                                 xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                                 xpReceive = this.owner.expReceive(xpReceive);
                                 Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy8");

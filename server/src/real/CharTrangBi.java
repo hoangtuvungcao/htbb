@@ -378,7 +378,7 @@ class CharTrangBi {
                     int nUser = self.party.userParty.size();
                     // GD2 1.6: chia theo SO NGUOI THAT (ban cu ep nUser = 5 khi > 1 nguoi).
 
-                    int xpReceive = newxp * 80 / (100 * nUser);
+                    int xpReceive = Map.chiaExpDoi(newxp, 80, nUser, 1);
                     final int maxLv = self.lvDetail.lv;
 
                     for (int j = 0; j < self.party.userParty.size(); ++j) {
@@ -410,7 +410,7 @@ class CharTrangBi {
                             }
                         }
                     }
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Map.chiaExpDoi(newxp, 20, 1, Map.doubleALL);
                     xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, self);
                     xpReceive = self.expReceive(xpReceive);
                     Map.addXPForChar(self, xpReceive + self.getEffSkillClan(0) * xpReceive / 100, false, "char checkNewEffectItem2");
@@ -914,6 +914,9 @@ class CharTrangBi {
                                             if (index2 > -1 && self.wItems[item.slotWearing][index2] == null) {
                                                 self.wItems[item.slotWearing][index2] = item;
                                                 item.pos = (byte) posNhan;
+                                                // [khoa-khi-mac] migration idempotent: do DANG MAC tu truoc khi co luat
+                                                // (cot tob_char.equip la chuoi ghep, SQL thuan khong sua duoc) khoa luc nap.
+                                                item.khoaKhiMac();
                                             } else {
                                                 item.slotWearing = 0;
                                                 item.place = 0;
@@ -934,6 +937,9 @@ class CharTrangBi {
                                     if (SkinThuCuoi.laItemSkin(item.getTemplate().id)
                                             || self.checkExistAnimal(item.idAnimal)) {
                                         self.awItems.add(item);
+                                        if (!SkinThuCuoi.laItemSkin(item.getTemplate().id)) {
+                                            item.khoaKhiMac(); // [khoa-khi-mac] migration trang bi thu dang mac
+                                        }
                                     } else {
                                         item.place = 0;
                                         item.slotWearing = 0;

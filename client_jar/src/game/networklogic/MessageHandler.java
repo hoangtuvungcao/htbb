@@ -125,6 +125,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
+        if (game.pokemon.CapNhat.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;
@@ -1616,8 +1620,12 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             int len2 = 0;
                             int byteRead = 0;
                             byteMap = new byte[msg.reader().available()];
-                            while (len2 != -1 && byteRead < byteMap.length) {
-                                len2 = msg.reader().read(byteMap, 0, byteMap.length - byteRead);
+                            // 0.9.6.1: đọc nối tiếp (trước đây luôn ghi đè từ ô 0 nếu một lần đọc không đủ)
+                            while (byteRead < byteMap.length) {
+                                len2 = msg.reader().read(byteMap, byteRead, byteMap.length - byteRead);
+                                if (len2 <= 0) {
+                                    break;
+                                }
                                 byteRead += len2;
                             }
                         }

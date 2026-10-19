@@ -72,7 +72,7 @@ INSERT INTO `data_danh_hieu_do_hiem` (`id`,`ten`,`mau`,`thu_tu`) VALUES
 (0,'Thường','#5F6B7A',0),(1,'Hiếm','#23803A',1),(2,'Sử thi','#7B45D6',2),(3,'Huyền thoại','#B95A0E',3)
 ON DUPLICATE KEY UPDATE `ten`=VALUES(`ten`), `mau`=VALUES(`mau`), `thu_tu`=VALUES(`thu_tu`);
 
--- 43 danh hiệu thành tựu / xếp hạng / sự kiện / ẩn (Thường 5‰, Hiếm 7‰, Sử thi 9‰, Huyền thoại 10‰ = 1%).
+-- 46 danh hiệu thành tựu / xếp hạng / sự kiện / ẩn (Thường 5‰, Hiếm 7‰, Sử thi 9‰, Huyền thoại 10‰ = 1%).
 INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
 (9700,'cap_10','Huấn luyện viên tập sự','Đạt cấp 10.','',0,'sao','hp',5,'cap','',10,0,0,'thanh_tuu',100,1),
 (9701,'cap_30','Huấn luyện viên lành nghề','Đạt cấp 30.','',0,'tang','ne_tranh',5,'cap','',30,0,0,'thanh_tuu',101,1),
@@ -89,9 +89,9 @@ INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`
 (9712,'ca_50','Cần thủ nghiệp dư','Câu cá 50 lần ở hồ.','',0,'giot','khang_trang_thai',5,'cau_ca','',50,0,0,'thanh_tuu',112,1),
 (9713,'ca_300','Ngư phủ Magikarp','Câu cá 300 lần ở hồ.','',1,'song','ne_tranh',7,'cau_ca','',300,0,0,'thanh_tuu',113,1),
 (9714,'ca_1000','Vua Gyarados','Câu cá 1.000 lần ở hồ.','Mặt hồ chỉ trả lời người đủ kiên nhẫn...',2,'song','hp',9,'cau_ca','',1000,1,0,'an',114,1),
-(9715,'pvp_10','Đấu sĩ tân binh','Thắng 10 trận PvP cùng dải cấp.','',0,'vuot','chi_mang',5,'thang_pvp','',10,0,0,'pvp',115,1),
-(9716,'pvp_100','Đấu sĩ dày dạn','Thắng 100 trận PvP cùng dải cấp.','',1,'vuot','ne_tranh',7,'thang_pvp','',100,0,0,'pvp',116,1),
-(9717,'pvp_500','Chiến thần đấu trường','Thắng 500 trận PvP cùng dải cấp.','',2,'set','chi_mang',9,'thang_pvp','',500,0,0,'pvp',117,1),
+(9715,'pvp_10','Đấu sĩ tân binh','Thắng 10 trận đấu xếp hạng (NPC Đấu trường).','',0,'vuot','chi_mang',5,'thang_pvp','',10,0,0,'pvp',115,1),
+(9716,'pvp_100','Đấu sĩ dày dạn','Thắng 100 trận đấu xếp hạng.','',1,'vuot','ne_tranh',7,'thang_pvp','',100,0,0,'pvp',116,1),
+(9717,'pvp_500','Chiến thần đấu trường','Thắng 500 trận đấu xếp hạng.','',2,'set','chi_mang',9,'thang_pvp','',500,0,0,'pvp',117,1),
 (9718,'mua_great','Great Ball mùa này','Đạt bậc Great Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.','',1,'khien','ne_tranh',7,'pvp_bac','',1,0,43200,'xep_hang',118,1),
 (9719,'mua_ultra','Ultra Ball mùa này','Đạt bậc Ultra Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.','',2,'khien','khang_trang_thai',9,'pvp_bac','',2,0,43200,'xep_hang',119,1),
 (9720,'mua_master','Master Ball mùa này','Đạt bậc Master Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.','',3,'khien','chi_mang',10,'pvp_bac','',3,0,43200,'xep_hang',120,1),
@@ -116,7 +116,10 @@ INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`
 (9739,'map_50','Kẻ lang thang','Đặt chân tới 50 bản đồ khác nhau.','Cứ đi, đường sẽ tự mở.',1,'loc','ne_tranh',7,'tap:den_ban_do','',50,1,0,'an',139,1),
 (9740,'map_120','Người đi khắp thế gian','Đặt chân tới 120 bản đồ khác nhau.','Đã đặt chân tới mọi miền chưa?',3,'loc','ne_tranh',10,'tap:den_ban_do','',120,1,0,'an',140,1),
 (9741,'giet_10000','Cơn bão đồng cỏ','Hạ 10.000 Pokémon hoang dã.','Đồng cỏ nào cũng nhớ tên bạn.',2,'loc','chi_mang',9,'giet','',10000,1,0,'an',141,1),
-(9742,'alpha_50','Thợ săn Alpha','Hạ 50 Pokémon Alpha.','Con đầu đàn to hơn thường lệ...',2,'nanh','hp',9,'ha_alpha','',50,1,0,'an',142,1)
+(9742,'alpha_50','Thợ săn Alpha','Hạ 50 Pokémon Alpha.','Con đầu đàn to hơn thường lệ...',2,'nanh','hp',9,'ha_alpha','',50,1,0,'an',142,1),
+(9743,'thuong_mua_great','Great Ball mùa trước','Thưởng cuối mùa: kết thúc mùa PvP ở bậc Great Ball (ít nhất 10 trận xếp hạng). Giữ một mùa.','',1,'khien','ne_tranh',7,'trao','',1,0,131040,'xep_hang',143,1),
+(9744,'thuong_mua_ultra','Ultra Ball mùa trước','Thưởng cuối mùa: kết thúc mùa PvP ở bậc Ultra Ball (ít nhất 10 trận xếp hạng). Giữ một mùa.','',2,'khien','khang_trang_thai',9,'trao','',1,0,131040,'xep_hang',144,1),
+(9745,'thuong_mua_master','Master Ball mùa trước','Thưởng cuối mùa: kết thúc mùa PvP ở bậc Master Ball (ít nhất 10 trận xếp hạng). Giữ một mùa.','',3,'mat_troi','chi_mang',10,'trao','',1,0,131040,'xep_hang',145,1)
 ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
 
 -- 16 danh hiệu hệ sinh thái (HoSoSinhThai.DANH_HIEU, đã có từ trước; nay đeo qua bảng chung).

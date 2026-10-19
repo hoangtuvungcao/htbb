@@ -26,7 +26,11 @@ public final class Chay {
         System.exit(2);
     }
 
+    /** Tham số dòng lệnh (CapNhatPc mở lại AppImage mới với cùng tham số). */
+    public static String[] thamSo = new String[0];
+
     public static void main(String[] args) throws Exception {
+        thamSo = args.clone();
         // ảnh đọc trong bộ nhớ (không tạo tệp tạm -> không cần SecureRandom; wine thiếu API mạng mà nó dò)
         javax.imageio.ImageIO.setUseCache(false);
         String mayChu = null;
@@ -106,7 +110,10 @@ public final class Chay {
             CaiDat.toanMan = false;
         }
         if (toanMan) CaiDat.toanMan = true;
-        if (fps) CaiDat.hienFps = true;
+        if (fps) {
+            CaiDat.hienFps = true;
+            CaiDat.dev = true;
+        }
         ChuHD.bat = CaiDat.chuHD && !chuAnh;
         GiaoDienHD.bat = CaiDat.khungHD;
         if (khongAm) {

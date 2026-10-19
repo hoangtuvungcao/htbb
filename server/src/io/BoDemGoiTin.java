@@ -213,6 +213,44 @@ public final class BoDemGoiTin {
         return true;
     }
 
+    // ------------------------------------------------------------------ quyet dinh cho mot goi
+    /** Xu ly binh thuong. */
+    public static final int QUA  = 0;
+    /** Lenh thuong vuot tran: BO goi, giu ket noi. */
+    public static final int BO   = 1;
+    /** Vuot xa tran (BOI_CAT_KET_NOI lan): cat ket noi. */
+    public static final int CAT  = 2;
+    /** Lenh TAI NGUYEN vuot tran: KHONG bo - cho hoanMs() roi moi xu ly (ha nhip, khong mat goi). */
+    public static final int HOAN = 3;
+
+    /**
+     * Quyet dinh cho goi tin vua toi.
+     *
+     * VI SAO LENH TAI NGUYEN KHONG BI BO NUA (19/10/2026, open test "tai du lieu cham, khong vao
+     * duoc"): client xin anh / quan ao / hieu ung MOT lan roi cho. Bo goi la mat han anh do -
+     * lenh -47 (anh quai) client danh dau "da xin" va KHONG BAO GIO xin lai, -49 chi xin lai khi
+     * co hieu ung moi, -48 / -51 cho 15-30 giay moi xin lai. Tuc moi goi bi bo la mot o trong /
+     * quai vo hinh hoac mot lan cho 30 giay. Thay vao do: vuot tran thi luong doc CUA RIENG ket
+     * noi nay ngu hoanMs() (~8 ms voi tran 600/5 s) truoc khi xu ly - nhip bi ep ve dung tran,
+     * goi van duoc tra loi theo dung thu tu, ket noi khac khong anh huong. Ke spam -51 van bi
+     * ghim o ~tran/5 s (khong ton dia/bang thong hon truoc), chi la khong lam hai nguoi that.
+     */
+    public int phanLoai(final int command, final long bayGio) {
+        if (!vuotNguong(command, bayGio)) {
+            return QUA;
+        }
+        if (laLenhTaiNguyen(command)) {
+            return HOAN;
+        }
+        return vuotXaNguong(command) ? CAT : BO;
+    }
+
+    /** Thoi gian cho moi goi tai nguyen vuot tran: CUA_SO_MS / tran (tran 600 -> 8 ms), toi thieu 1 ms. */
+    public static long hoanMs(final int command) {
+        final int tran = tran(command);
+        return tran <= 0 ? 0L : Math.max(1L, CUA_SO_MS / tran);
+    }
+
     /** So goi da dem duoc trong cua so hien tai, cho dong log khi cat ket noi. */
     public int demHienTai(final int command) {
         return dem(command);
