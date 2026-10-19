@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  *     -Ddb      CSDL nhan vat de doi chieu (bo trong = khong kiem CSDL)
  *     -Dtu=N    so thu tu tai khoan dau tien (mac dinh 1); moi kich ban lay tai khoan rieng
  *     -Dgm=0    server khong cho bot quyen GM (vd server that): bo qua kich ban can GM
- *     -Dnoi=... thu muc HTBB (doc cMap/ de kiem o di duoc)
+ *     -Dnoi=... thu muc monorepo htbb (doc server/cMap/ de kiem o di duoc)
  * Ket qua tong: in cuoi + ghi file -Dra=<tep> (mac dinh khong ghi).
  *
  * Xem tools/README.md (muc kiem_tai) va docs/kien-truc.md.
@@ -29,7 +29,7 @@ public class BotChucNang {
     static final String DB = System.getProperty("db", "");
     static final int BAN = Integer.getInteger("ban", -1);
     static final boolean GM = !"0".equals(System.getProperty("gm", "1"));
-    static final String NOI = System.getProperty("noi", "/home/vantrong/Downloads/pokemon/HTBB");
+    static final String NOI = System.getProperty("noi", System.getProperty("user.home") + "/Downloads/pokemon/htbb");
     static int soTk = Integer.getInteger("tu", 1);
     static final List<String> KET_QUA = new ArrayList<>();
     static int nPass, nFail, nBo;
