@@ -174,6 +174,10 @@ class MapMuaBan {
                         if (com.htbb.pokemon.ThanhVien.chanHaiNguoi(player, p, "giao_dich", "nhan_tang")) {
                             return;
                         }
+                        // chong clone: ca hai ben du cap / tuoi tai khoan / gio choi (chong_clone.*).
+                        if (com.htbb.pokemon.ChongClone.chanCaHai(player, p, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH)) {
+                            return;
+                        }
 
                         if (p.isKiller) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đề nghị khi người chơi đang ở chế độ PK", ""));
@@ -330,6 +334,16 @@ class MapMuaBan {
                             return;
                         }
 
+                        // Thuoc mua bang luong khoa la thuoc KHOA, khong giao dich duoc (real/ThuocKhoa).
+                        final int coTheGiao = ThuocKhoa.giaoDichDuoc(player, idPotion);
+                        if (coTheGiao < player.potions[idPotion] && coTheGiao < player.tPotions[idPotion] + soluong) {
+                            m = MessageCreator.createServerAlertMessage("Chỉ có thể trao đổi " + coTheGiao
+                                    + " bình (" + (player.potions[idPotion] - coTheGiao) + " bình mua bằng lượng khoá là đồ khoá, không giao dịch được).", "");
+                            player.sendMessage(m);
+                            m.cleanup();
+                            return;
+                        }
+
                         if (player.potions[idPotion] < soluong) {
                             m = MessageCreator.createServerAlertMessage("Chỉ có thể trao đổi " + player.potions[idPotion] + " vật phẩm", "");
                             player.sendMessage(m);
@@ -439,6 +453,21 @@ class MapMuaBan {
                                 return;
                             }
 
+                            // Thuoc khoa (mua bang luong khoa) khong duoc lot qua giao dich.
+                            if (ThuocKhoa.viPham(player, player.tPotions) >= 0 || ThuocKhoa.viPham(dp, dp.tPotions) >= 0) {
+                                huyVaBao(player, "Có bình thuốc khoá (mua bằng lượng khoá) trong giao dịch, đã huỷ.");
+                                return;
+                            }
+                            // chong clone: moi chieu co dua thuoc = mot lan chuyen gia tri gui -> nhan.
+                            final boolean playerDua = coDua(player.tPotions);
+                            final boolean dpDua = coDua(dp.tPotions);
+                            if ((playerDua && com.htbb.pokemon.ChongClone.chanChuyen(player, dp, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L))
+                                    || (dpDua && com.htbb.pokemon.ChongClone.chanChuyen(dp, player, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L))) {
+                                huyVaBao(player, "Giao dịch bị chặn (chống clone), đã huỷ.");
+                                return;
+                            }
+                            final String tomTatGd = GiaoDichThuoc.tomTat(player.tPotions, player.rPotions, dp.tPotions, dp.rPotions);
+
                             if (!player.doAddItemTrad2Inventory()) {
                                 // Khe giua kiemTra va luc tru: mot luong khac vua tieu thuoc. Khong
                                 // cong gi cho ai, huy va ghi lai.
@@ -447,6 +476,12 @@ class MapMuaBan {
                                 data.NghiVanGianLan.ghiVatPham(player, "hackgd", chiTiet);
                                 huyVaBao(player, "Giao dịch không hợp lệ (số thuốc đã thay đổi), đã huỷ.");
                                 return;
+                            }
+                            if (playerDua) {
+                                com.htbb.pokemon.ChongClone.ghi(player, dp, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L, "thuoc " + tomTatGd);
+                            }
+                            if (dpDua) {
+                                com.htbb.pokemon.ChongClone.ghi(dp, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L, "thuoc " + tomTatGd);
                             }
                             m = new Message(66);
                             m.dos.writeByte(4);
@@ -640,4 +675,17 @@ class MapMuaBan {
         }
     }
 
+
+    /** Mang so luong thuoc dua vao giao dich co it nhat mot binh khong. */
+    static boolean coDua(final int[] t) {
+        if (t == null) {
+            return false;
+        }
+        for (final int x : t) {
+            if (x > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

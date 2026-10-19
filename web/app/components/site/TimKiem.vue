@@ -17,7 +17,7 @@ const TRANG: KetQua[] = [
   { nhom: 'Trang', ten: 'Giao diện trong game (HUD)', to: '/huong-dan#giao-dien', icon: 'i-lucide-layout-dashboard' },
   { nhom: 'Trang', ten: 'Cẩm nang cơ chế', to: '/cam-nang', icon: 'i-lucide-library' },
   { nhom: 'Trang', ten: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open' },
-  { nhom: 'Trang', ten: 'Tải game', mo: 'Android APK, PC Windows, PC Java, điện thoại J2ME, iOS sắp ra mắt, cấu hình', to: '/download', icon: 'i-lucide-download' },
+  { nhom: 'Trang', ten: 'Tải game', mo: 'Java J2ME (.jar), Windows (.exe), Linux, Android APK, iOS sắp ra mắt, cấu hình', to: '/download', icon: 'i-lucide-download' },
   { nhom: 'Trang', ten: 'Bảng xếp hạng', to: '/ranking', icon: 'i-lucide-trophy' },
   { nhom: 'Trang', ten: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper' },
   { nhom: 'Trang', ten: 'Điều khoản sử dụng', to: '/dieu-khoan', icon: 'i-lucide-scale' },

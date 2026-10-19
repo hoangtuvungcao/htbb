@@ -352,6 +352,12 @@ public class OfflineMap extends Map {
                      return;
                   }
 
+                  // chong clone: nguoi mua (gui xu) -> nguoi ban (nhan xu): cap / tuoi hai ben + gioi han cung may.
+                  if (com.htbb.pokemon.ChongClone.chanChuyen(player, p, player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI,
+                        player.sellerInfo.priceSell)) {
+                     return;
+                  }
+
                   // Voi vat pham (type 0): RUT NGAY khoi hanh trang nguoi ban bang mot phep remove
                   // (Vector.remove la nguyen tu) thay cho "tim thay roi lat sau moi remove". Nguoi
                   // ban dang chay tren luong phien rieng cua ho: giua hai buoc do ho co the da tieu
@@ -401,6 +407,9 @@ public class OfflineMap extends Map {
                   }
 
                   player.subXu(player.sellerInfo.priceSell, false, "offline map 2");
+                  com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_KY_GUI, player.sellerInfo.priceSell,
+                     (type == 0 ? "vat pham " + ((Item)item).getTemplate().name : "ngoc " + ((GemSellEntry)item).idGemTemplate
+                        + " x" + ((GemSellEntry)item).soLuong) + (item.getCharcanBuy().equals("") ? "" : " (dat rieng)"));
 
                   try {
                      if (type == 0) {
@@ -700,6 +709,20 @@ public class OfflineMap extends Map {
       }
    }
 
+   /** Gia tham chieu cho kiem gia ky gui: gia goc cua template (vat pham) / gia ngoc (ngoc), 0 neu khong co. */
+   static long giaThamChieu(Actor item, int type) {
+      try {
+         if (type == 0 && item instanceof Item) {
+            return Math.max(0L, (long)((Item)item).getTemplate().price);
+         }
+         if (type == 1 && item instanceof GemItem) {
+            return Math.max(0L, (long)((GemItem)item).getTemplate().getPrice(false));
+         }
+      } catch (Exception ignored) {
+      }
+      return 0L;
+   }
+
    public static boolean marketOpen() {
       return false;
    }
@@ -820,6 +843,12 @@ public class OfflineMap extends Map {
                if (sell) {
                   if (prize_sell <= 0) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán với giá này.", ""));
+                     return;
+                  }
+
+                  // chong clone: nguoi rao du cap / tuoi; gia trong khoang so voi gia tham chieu (chong_clone.ky_gui_*).
+                  if (com.htbb.pokemon.ChongClone.chanMotBen(player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI)
+                     || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, type))) {
                      return;
                   }
 
@@ -982,6 +1011,12 @@ public class OfflineMap extends Map {
          return;
       }
 
+      // chong clone: nguoi rao du cap / tuoi; gia moi vien trong khoang so voi gia tham chieu.
+      if (com.htbb.pokemon.ChongClone.chanMotBen(player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI)
+         || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, 1))) {
+         return;
+      }
+
       // GD2 2.7: phi dang ban 1% (dot, khong hoan) khi bat co sv.lau_dai.
       if (com.htbb.pokemon.LauDai.bat()) {
          final long phi = com.htbb.pokemon.KinhTeLauDai.phiDangBan((long) prize_sell * soLuong);
@@ -1093,6 +1128,12 @@ public class OfflineMap extends Map {
                   return;
                }
 
+               // chong clone: nguoi rao du cap / tuoi; gia trong khoang so voi gia tham chieu (chong_clone.ky_gui_*).
+               if (com.htbb.pokemon.ChongClone.chanMotBen(player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI)
+                  || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, type))) {
+                  return;
+               }
+
                if (type == 0 && item.isSelling) {
                   if (((Item)item).prizeSell != 0) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm đang được bán trên gian hàng.", ""));
@@ -1196,6 +1237,12 @@ public class OfflineMap extends Map {
                         )
                         && !isTheBaiLinhDanhThue(t)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể bán1", ""));
+                        return;
+                     }
+
+                     // chong clone: vat pham KHOA (mua bang luong khoa, qua nhiem vu...) khong doi ra xu o NPC.
+                     if (item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm khoá không bán cho NPC lấy xu được (chỉ dùng hoặc vứt bỏ).", ""));
                         return;
                      }
 

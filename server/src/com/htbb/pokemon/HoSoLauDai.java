@@ -33,6 +33,10 @@ public final class HoSoLauDai {
     // ---- pity nang cap: id item -> so lan truot lien tiep o muc hien tai ----
     public final Map<Integer, Integer> truot = new TreeMap<Integer, Integer>();
 
+    // ---- thuoc KHOA (chong clone 19/10/2026): id thuoc -> so binh mua bang luong khoa, KHONG giao dich duoc ----
+    // Luu "x<id>=<so>". Xem real/ThuocKhoa.
+    public final Map<Integer, Integer> thuocKhoa = new TreeMap<Integer, Integer>();
+
     // ---- lich dang nhap 7 ngay (7.1) ----
     public int dnBuoc;
     public int dnNgayCuoi;
@@ -166,6 +170,11 @@ public final class HoSoLauDai {
         for (final Map.Entry<Integer, Integer> e : truot.entrySet()) {
             if (e.getValue().intValue() > 0) {
                 dat(b, "t" + e.getKey(), e.getValue().intValue());
+            }
+        }
+        for (final Map.Entry<Integer, Integer> e : thuocKhoa.entrySet()) {
+            if (e.getValue().intValue() > 0) {
+                dat(b, "x" + e.getKey(), e.getValue().intValue());
             }
         }
         return b.toString();
@@ -307,6 +316,12 @@ public final class HoSoLauDai {
                 h.tdNgay = iv;
             } else if (k.equals("a2")) {
                 h.tdMsDung = v;
+            } else if (k.length() > 1 && k.charAt(0) == 'x') {
+                try {
+                    h.thuocKhoa.put(Integer.valueOf(k.substring(1)), Integer.valueOf(iv));
+                } catch (final NumberFormatException e) {
+                    // bo qua
+                }
             } else if (k.length() > 1 && k.charAt(0) == 't') {
                 try {
                     h.truot.put(Integer.valueOf(k.substring(1)), Integer.valueOf(iv));
@@ -320,6 +335,28 @@ public final class HoSoLauDai {
             h.veChuong = 0;
         }
         return h;
+    }
+
+    // ------------------------------------------------------------------ thuoc khoa
+
+    /** So binh thuoc {@code id} dang khoa (khong giao dich duoc). */
+    public synchronized int thuocKhoa(final int id) {
+        final Integer v = thuocKhoa.get(Integer.valueOf(id));
+        return v == null ? 0 : v.intValue();
+    }
+
+    /** Dat so binh khoa (<= 0 thi xoa). */
+    public synchronized void datThuocKhoa(final int id, final int n) {
+        if (n <= 0) {
+            if (thuocKhoa.remove(Integer.valueOf(id)) != null) {
+                ban = true;
+            }
+            return;
+        }
+        final Integer cu = thuocKhoa.put(Integer.valueOf(id), Integer.valueOf(n));
+        if (cu == null || cu.intValue() != n) {
+            ban = true;
+        }
     }
 
     // ------------------------------------------------------------------ pity nang cap

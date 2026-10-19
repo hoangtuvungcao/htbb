@@ -7638,6 +7638,22 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return this.session;
     }
 
+    /**
+     * Phut choi CHUA luu xuong tob_char.totalTimePlay, va day moc timePlay len tuong ung (19/10/2026). Truoc day moi
+     * lan luu cong (bay gio - luc vao game) -> luu N lan trong mot phien cong N lan -> totalTimePlay phong dai, khong
+     * dung lam cong "gio choi toi thieu" (chong clone) duoc.
+     */
+    public synchronized int layPhutChoiChuaLuu() {
+        final long bay = System.currentTimeMillis();
+        if (this.timePlay <= 0L || this.timePlay > bay) {
+            this.timePlay = bay;
+            return 0;
+        }
+        final long phut = (bay - this.timePlay) / 60000L;
+        this.timePlay += phut * 60000L;
+        return (int) Math.min(Integer.MAX_VALUE, phut);
+    }
+
     public void setSession(final Session s) {
         this.session = s;
     }

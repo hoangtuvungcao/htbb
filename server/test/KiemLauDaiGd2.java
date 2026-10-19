@@ -342,7 +342,7 @@ public final class KiemLauDaiGd2 {
         Kiem.bang("luong top 500 tuan", Integer.valueOf(3), Integer.valueOf(KinhTeLauDai.luongXepHangTuan(500)));
         Kiem.bang("ngoai top 1000: 0", Integer.valueOf(0), Integer.valueOf(KinhTeLauDai.luongXepHangTuan(1001)));
         final String nv = doc("src/real/MapXuLyLenh.java");
-        Kiem.dung("qua cap 35: bat co thi khong cho 10 trieu xu", nv.contains("if (com.htbb.pokemon.LauDai.bat()) {\n            thuongLenCap35LauDai(p);"));
+        Kiem.sai("qua cap 35: khong con 10 trieu xu o che do nao (19/10/2026)", nv.contains("10000000L"));
         Kiem.dung("thue cho moi o OfflineMap", doc("src/real/OfflineMap.java").contains("KinhTeLauDai.thueCho("));
         Kiem.dung("phi chuyen luong 5%", doc("src/real/CharChuyenLuong.java").contains("KinhTeLauDai.phiChuyenLuong("));
     }

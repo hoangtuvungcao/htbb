@@ -144,6 +144,18 @@ class MapXaHoi {
                 return;
             }
 
+            // chong clone: moi thanh vien hai nhom deu phai du cap / tuoi (thua co y = chuyen xu).
+            for (final Object o : player.party.userParty) {
+                if (com.htbb.pokemon.ChongClone.chanCaHai((Char) o, (Char) o, player, com.htbb.pokemon.ChongClone.KIEU_THACH_DAU)) {
+                    return;
+                }
+            }
+            for (final Object o : p.party.userParty) {
+                if (com.htbb.pokemon.ChongClone.chanCaHai((Char) o, (Char) o, player, com.htbb.pokemon.ChongClone.KIEU_THACH_DAU)) {
+                    return;
+                }
+            }
+
             p.sendMessage(
                     MessageCreator.createMsgPopUp(
                             p.id, 11, player.charname + " gửi lời thách đấu tới nhóm của bạn với số tiền cược là " + player.moneyThachdau + " xu. Bạn có đồng ý không?"

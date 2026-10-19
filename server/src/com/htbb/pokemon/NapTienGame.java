@@ -963,6 +963,9 @@ public final class NapTienGame implements Runnable {
             return;
         }
         final long g = gia.get(chon);
+        if (ChongClone.chanMotBen(p, ChongClone.KIEU_CHO_TRANG_TRI)) { // chong clone: nguoi rao du cap / tuoi
+            return;
+        }
         final String loi = NapTienLogic.kiemGiaRao(g, NapTienDb.giaGanDay(s.ma));
         if (loi != null) {
             bao(p, "Không rao được: " + loi);
@@ -1043,7 +1046,10 @@ public final class NapTienGame implements Runnable {
         if (chon != 0 || mot == null || mot.size() != 1) {
             return;
         }
-        bao(p, muaCho(p, mot.get(0)));
+        final String kq = muaCho(p, mot.get(0));
+        if (kq != null) { // null = ChongClone da chan va da bao
+            bao(p, kq);
+        }
     }
 
     /** Mua tren cho: tru xu nguoi mua TRUOC, chot dong rao, chuyen so huu; nguoi ban nhan xu qua vong quet. */
@@ -1054,6 +1060,10 @@ public final class NapTienGame implements Runnable {
         }
         if (r.nguoiBan == p.charDBID) {
             return "Không mua được món của chính mình.";
+        }
+        // chong clone: nguoi mua (gui xu) -> nguoi ban (co the offline).
+        if (ChongClone.chanChuyen(p, r.nguoiBan, r.tenNguoiBan, ChongClone.KIEU_CHO_TRANG_TRI, r.gia)) {
+            return null;
         }
         if (NapTienDb.soHuu(p.charDBID, System.currentTimeMillis()).size()
                 >= TU_DO_O + (coThe(p) ? 10 * NapTienLogic.THE_THANG_TRANG_TU_DO_THEM : 0)) {
@@ -1068,6 +1078,7 @@ public final class NapTienGame implements Runnable {
             return "Món đã có người mua trước.";
         }
         NapTienDb.chuyenSoHuu(r.soHuuId, p.charDBID);
+        ChongClone.ghi(p, r.nguoiBan, r.tenNguoiBan, ChongClone.KIEU_CHO_TRANG_TRI, r.gia, "trang tri " + r.ma);
         NapTienDb.ghiSoCai(p.userID, p.charDBID, "cho_mua", 0, 0, "", "chomua:" + r.id, r.ma + " " + r.gia + " xu, thue " + thue);
         NapTienDb.ghiNhatKy("cho_mua", "", p.userID, p.charname + " mua " + r.ma + " cua " + r.tenNguoiBan + " gia " + r.gia
                 + " thue " + thue);

@@ -186,6 +186,8 @@ public final class Kiem {
         KiemChiSo.chay(); // chi so trang bi + chong lam phat (docs/thiet-ke-game.md)
         KiemAdminPanel.chay();
         KiemKinhTeKhoiDau.chay(); // qua tao nhan vat da bo, he so nap = 1, ghi client dang nhap
+        KiemChongClone.chay(); // chong clone chuyen xu, luong khoa khong chuyen duoc (chu game 19/10/2026)
+        KiemLichNam.chay(); // lich su kien nam theo ngay that + am lich (chu game 19/10/2026)
         KiemVungNhinCoDinh.chay(); // camera co dinh: kep be rong man client (com.htbb.mang.VungNhinCoDinh)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

@@ -449,6 +449,12 @@ class MapNhapText {
                                 return;
                             }
 
+                            // Kich hoat + chong clone (cap / tuoi hai ben) truoc khi hoi gia.
+                            if (com.htbb.pokemon.ThanhVien.chanHaiNguoi(player, p, "giao_dich", "nhan_tang")
+                                    || com.htbb.pokemon.ChongClone.chanCaHai(player, p, player, com.htbb.pokemon.ChongClone.KIEU_THU_CUNG)) {
+                                return;
+                            }
+
                             player.nameTangPet = p.charname;
                             if (pet.isPetTradeThoiHan()) {
                                 player.moneyTrade = 0;
@@ -1500,6 +1506,11 @@ class MapNhapText {
 
                             if (p.mapID != player.mapID) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn và đối thủ phải cùng có mặt tại npc đấu trường.", ""));
+                                return;
+                            }
+
+                            // chong clone: thach dau cuoc xu (thua co y = chuyen xu) - ca hai ben du cap / tuoi.
+                            if (com.htbb.pokemon.ChongClone.chanCaHai(player, p, player, com.htbb.pokemon.ChongClone.KIEU_THACH_DAU)) {
                                 return;
                             }
 

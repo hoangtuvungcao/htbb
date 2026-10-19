@@ -303,45 +303,37 @@ class MapXuLyLenh {
         }
     }
 
-    /** Qua NPC tu cap 35: 10 trieu xu va 50 nguyen lieu khoa moi loai cap 6, mot lan. */
+    /**
+     * Qua NPC cap 35 (mot lan moi nhan vat). Chu game duyet 19/10/2026: bo 10 trieu xu thoi thu nghiem (= ~580 gio thu
+     * nhap o cap 35, ~1.300 lan so xu trung vi nguoi choi cap 35 dang giu trong du_lieu/mo_phong_kinh_te.csv - ca mot
+     * nguon lam phat lan mot muc tieu nuoi clone). Nay mot gia tri cho ca hai che do:
+     *   - {@link #XU_CAP_35} xu = von khoi dau (Database.XU_KHOI_DAU), ~0,3 gio thu nhap o cap 35 (17.270 xu/gio);
+     *   - {@link #LUONG_KHOA_CAP_35} luong khoa = giua thanh tuu cap 30 (5) va cap 40 (6) (du_lieu/nhiem_vu_moi.csv A-003/A-004);
+     *   - {@link #NGUYEN_LIEU_CAP_35} nguyen lieu KHOA moi loai cap 6 (giu nhu thiet ke GD2 2.4; khoa = khong ban NPC / cho).
+     * Test: test/KiemThuongTanThuVaLenCap35.java.
+     */
+    static final long XU_CAP_35 = com.htbb.pokemon.QuaMocCap.XU_CAP_35;
+    static final int LUONG_KHOA_CAP_35 = com.htbb.pokemon.QuaMocCap.LUONG_KHOA_CAP_35;
+    static final int NGUYEN_LIEU_CAP_35 = com.htbb.pokemon.QuaMocCap.NGUYEN_LIEU_CAP_35;
+
     static void thuongLenCap35(Char p) {
         if (!p.canReceiveGif35()) {
             return;
         }
         p.thuongLv35 = 1;
         p.gif35 = 1;
-        if (com.htbb.pokemon.LauDai.bat()) {
-            thuongLenCap35LauDai(p);
-            return;
-        }
-        p.addXu(10000000L, "thuong len cap 35");
+        p.addXu(XU_CAP_35, "thuong len cap 35");
+        p.addLuongLock(LUONG_KHOA_CAP_35);
         for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
-            p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 50, true);
-            p.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 50, true);
+            p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], NGUYEN_LIEU_CAP_35, true);
+            p.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], NGUYEN_LIEU_CAP_35, true);
         }
         p.sendMessage(MessageCreator.createCharGemItem(p));
         p.sendMessage(MessageCreator.createServerAlertMessage(
-                "Bạn đã nhận quà cấp 35: 10.000.000 xu + 50 nguyên liệu khoá mỗi loại cấp 6.", ""));
-        Database.instance.saveOrtherLog("", p.charname,
-                "thuong len cap 35: 10tr xu + 50 khoa moi loai nlsc/nlcc cap 6", "thuonglv35");
-    }
-
-    /**
-     * GD2 2.4: qua cap 35 khi bat co - BO 10 trieu xu (= vai thang thu nhap cap 35). Thay bang
-     * gia 1 mon bac vang (BAC_TB_GIA[3], 1,5 gio thu nhap) + 10 nguyen lieu khoa moi loai cap 6.
-     * Ban toi thieu: chua chon template do bac vang cu the cho tung dong (viec doi noi dung).
-     */
-    static void thuongLenCap35LauDai(Char p) {
-        final long xu = com.htbb.pokemon.ThongSoLauDai.BAC_TB_GIA[3];
-        p.addXu(xu, "thuong len cap 35 (lau dai)");
-        for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
-            p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 10, true);
-            p.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 10, true);
-        }
-        p.sendMessage(MessageCreator.createCharGemItem(p));
-        p.sendMessage(MessageCreator.createServerAlertMessage(
-                "Bạn đã nhận quà cấp 35: " + xu + " xu + 10 nguyên liệu khoá mỗi loại cấp 6.", ""));
-        Database.instance.saveOrtherLog("", p.charname, "thuong len cap 35 lau dai: " + xu + " xu + 10 khoa", "thuonglv35");
+                "Bạn đã nhận quà cấp 35: " + String.format("%,d", XU_CAP_35).replace(',', '.') + " xu, " + LUONG_KHOA_CAP_35
+                + " lượng khoá và " + NGUYEN_LIEU_CAP_35 + " nguyên liệu khoá mỗi loại cấp 6.", ""));
+        Database.instance.saveOrtherLog("", p.charname, "thuong len cap 35: " + XU_CAP_35 + " xu + " + LUONG_KHOA_CAP_35
+                + " luong khoa + " + NGUYEN_LIEU_CAP_35 + " khoa moi loai nlsc/nlcc cap 6", "thuonglv35");
     }
 
     static void doGetItem(Map map, Char player, short id) {

@@ -679,7 +679,7 @@ class DatabaseNhanVat {
             }
         } catch (Exception ignored) {
         }
-        int totalPlay = (int) (System.currentTimeMillis() - p.timePlay) / 60000;
+        int totalPlay = p.layPhutChoiChuaLuu(); // chi cong phan chua luu (khong cong lai ca phien)
         StringBuilder potion = new StringBuilder(String.valueOf(p.getxu()));
         StringBuilder skill = new StringBuilder(String.valueOf(p.skill[0]));
         String basic = String.valueOf(p.strength) + "," + p.agitity + "," + p.spirit + "," + p.health + "," + p.luck + "," + p.basepoint + "," + p.skillpoint;
@@ -933,7 +933,7 @@ class DatabaseNhanVat {
             }
         } catch (Exception ignored) {
         }
-        int totalPlay = (int) (System.currentTimeMillis() - p.timePlay) / 60000;
+        int totalPlay = p.layPhutChoiChuaLuu(); // chi cong phan chua luu (khong cong lai ca phien)
         StringBuilder potion = new StringBuilder(String.valueOf(p.getxu()));
         StringBuilder skill = new StringBuilder(String.valueOf(p.skill[0]));
         String basic = String.valueOf(p.strength) + "," + p.agitity + "," + p.spirit + "," + p.health + "," + p.luck + "," + p.basepoint + "," + p.skillpoint;

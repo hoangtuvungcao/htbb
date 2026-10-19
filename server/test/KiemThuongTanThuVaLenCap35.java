@@ -8,8 +8,9 @@ import java.nio.file.Paths;
  *   1. (DA BO 19/10/2026 - xem KiemKinhTeKhoiDau) Nhan vat DAU TIEN cua tai khoan: 40.000.000 xu + 20.000 luong mo + 30.000 luong
  *      khoa (THAY THE hoan toan bo cu 10tr/5k/100k) + 3 trung MOI LOAI trong 5 trung pet
  *      thuong (Cu/Rong/Yeu Tinh/Doi/Dai bang, id 684-688) + 2 Huyet linh thao KHOA (id 720).
- *   2. Len cap 35: 10.000.000 xu + 50 nguyen lieu KHOA moi loai cap 6 (ca nlsc va nlcc,
- *      moi nhom 5 loai - GemTemplate.ID_MATERIAL_LOW[5]/ID_MATERIAL_HIGHT[5]).
+ *   2. Len cap 35 (sua 19/10/2026, chu game duyet: bo 10.000.000 xu thoi thu nghiem): 5.000 xu + 6 luong khoa
+ *      + 10 nguyen lieu KHOA moi loai cap 6 (ca nlsc va nlcc - GemTemplate.ID_MATERIAL_LOW[5]/ID_MATERIAL_HIGHT[5]),
+ *      MOT gia tri cho ca hai che do (khong con nhanh rieng khi tat sv.lau_dai).
  *
  * Qua (1) khong the phat luc addChar (chua co Char song de nhet vat pham vao tui) nen
  * duoc tach lam hai: DatabaseNhanVat.addChar chi doi so xu/luong/luongK trong hang doi
@@ -84,11 +85,20 @@ public final class KiemThuongTanThuVaLenCap35 {
         Kiem.dung("qua NPC kiem tra dieu kien va danh dau da nhan",
                 thanHam.contains("!p.canReceiveGif35()")
                 && thanHam.contains("p.thuongLv35 = 1;") && thanHam.contains("p.gif35 = 1;"));
-        Kiem.dung("thuong 10.000.000 xu", thanHam.contains("p.addXu(10000000L,"));
-        Kiem.dung("50 nlsc cap 6 (ID_MATERIAL_LOW[5]) khoa",
-                thanHam.contains("GemTemplate.ID_MATERIAL_LOW[5][i], 50, true"));
-        Kiem.dung("50 nlcc cap 6 (ID_MATERIAL_HIGHT[5]) khoa",
-                thanHam.contains("GemTemplate.ID_MATERIAL_HIGHT[5][i], 50, true"));
+        Kiem.sai("KHONG con 10.000.000 xu thoi thu nghiem", ma.contains("10000000L"));
+        Kiem.sai("KHONG con nhanh rieng khi bat sv.lau_dai (mot gia tri chung)", ma.contains("thuongLenCap35LauDai"));
+        Kiem.bang("xu cap 35 = 5.000 (= von khoi dau)", 5000L, com.htbb.pokemon.QuaMocCap.XU_CAP_35);
+        Kiem.bang("xu cap 35 = von khoi dau Database.XU_KHOI_DAU", data.Database.XU_KHOI_DAU, com.htbb.pokemon.QuaMocCap.XU_CAP_35);
+        Kiem.dung("xu cap 35 <= 0,5 gio thu nhap o cap 35",
+                com.htbb.pokemon.QuaMocCap.XU_CAP_35 * 2 <= com.htbb.pokemon.ThongSoLauDai.xuMoiGio(35));
+        Kiem.bang("luong khoa cap 35 = 6", 6, com.htbb.pokemon.QuaMocCap.LUONG_KHOA_CAP_35);
+        Kiem.bang("nguyen lieu khoa cap 35 = 10 moi loai", 10, com.htbb.pokemon.QuaMocCap.NGUYEN_LIEU_CAP_35);
+        Kiem.dung("phat xu + luong khoa qua addXu/addLuongLock (co log, tran)",
+                thanHam.contains("p.addXu(XU_CAP_35,") && thanHam.contains("p.addLuongLock(LUONG_KHOA_CAP_35);"));
+        Kiem.dung("nlsc cap 6 (ID_MATERIAL_LOW[5]) khoa",
+                thanHam.contains("GemTemplate.ID_MATERIAL_LOW[5][i], NGUYEN_LIEU_CAP_35, true"));
+        Kiem.dung("nlcc cap 6 (ID_MATERIAL_HIGHT[5]) khoa",
+                thanHam.contains("GemTemplate.ID_MATERIAL_HIGHT[5][i], NGUYEN_LIEU_CAP_35, true"));
 
         Kiem.sai("len cap khong tu dong phat qua", ma.contains("thuongLenCap35(p);"));
         final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");

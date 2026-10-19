@@ -183,11 +183,13 @@ const lichCot = [
     </template>
 
     <p class="max-w-4xl text-sm text-muted">
-      Bật / tắt từng sự kiện trong game, hoặc <strong class="text-highlighted">hẹn giờ</strong> mở và đóng.
-      Trước đây mốc thời gian của mọi sự kiện được ghi cứng trong mã nguồn (toàn năm 2015–2024, nên đều đã
-      tắt vĩnh viễn); nay chúng đọc thẳng từ bảng này nên <strong class="text-highlighted">bật lúc nào cũng được</strong>.
-      Đổi xong server tự khởi động lại.
+      Mọi sự kiện có lịch <strong class="text-highlighted">tự bật / tắt theo lịch năm</strong> (mục Lịch năm bên dưới) —
+      không cần làm gì. Muốn khác một năm: ghi đè năm đó (tắt, đổi giờ, mở ngay). Bảng cuối trang bật / tắt hoặc
+      <strong class="text-highlighted">hẹn giờ</strong> tay: dùng cho sự kiện không có lịch (bản cũ, mini) — bật tay một sự kiện có lịch
+      thì nó chuyển sang thủ công. Đổi xong server tự khởi động lại (thay đổi của lịch lúc 04:00 gộp vào bảo trì hằng ngày).
     </p>
+
+    <AdminSuKienLichNam :duoc-ghi="duocGhi" @doi="refresh()" />
 
     <div v-if="!data && status === 'pending'" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <USkeleton v-for="i in 4" :key="i" class="h-24" />

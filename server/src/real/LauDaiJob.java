@@ -72,7 +72,7 @@ public final class LauDaiJob {
                         System.out.println("[LAU DAI] kinh te " + ngay + ": " + c.soNguoi + " nguoi, cap trung vi "
                                 + c.capTrungVi + ", cung tien thuc " + (c.cungTienThucX100 / 100.0) + " gio, muc " + c.muc);
                     }
-                    SuKienLauDaiGame.henLichNam();
+                    // Lich su kien: nay do LichSuKien.dongBoLichNam (lich nam theo ngay that) lo, khong hen theo tuan ISO nua.
                 }
             });
         }

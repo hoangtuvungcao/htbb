@@ -262,7 +262,12 @@ kiểm `/api/site` trả 200 — hỏng thì **quay lại bản trước**; gi�
 ### 4.3 Bản tải game
 
 Tải lên ở `/admin → Tải game` (ghi vào `/opt/htbb/downloads`, tối đa `HTBB_TAI_GAME_TOI_DA_MB`), nginx phát ở
-`https://huyenthoaibaoboi.fun/downloads/<tệp>`. Build bản phát hành: [build.md](build.md).
+`https://huyenthoaibaoboi.fun/downloads/<tệp>` (web cũng phát ở `/tai/<tệp>`). Build bản phát hành: [build.md](build.md).
+
+Website phát đúng **5 bản tải**, mỗi nền tảng một tệp (`web/shared/utils/taiGame.ts`): Java J2ME `.jar` (bản
+"thuong"), Windows bộ cài `.exe`, Linux `.AppImage` hoặc `.tar.gz`, Android `.apk`, iOS "Sắp ra mắt". Jar "nhẹ",
+bản Windows `.zip` và `HTBB-PC-<bản>.jar` không còn hiện trên web (tệp trên đĩa không bị xoá). Giá trị CMS kiểu cũ
+(mã `pc-java` / `pc` / `pc-jar`, dòng "tệp phụ" `/tai/…` trong ô "Có gì mới") được đổi tự động khi đọc.
 
 ## 5. Sao lưu và khôi phục
 

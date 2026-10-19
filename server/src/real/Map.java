@@ -10285,6 +10285,15 @@ public class Map implements Runnable {
                             return;
                         }
 
+                        // Kich hoat + chong clone: nguoi mua (tra xu) -> nguoi ban (nhan xu, dua thu cung).
+                        if (com.htbb.pokemon.ThanhVien.chanHaiNguoi(player, p, "giao_dich", "nhan_tang")
+                                || com.htbb.pokemon.ChongClone.chanChuyen(player, p, player, com.htbb.pokemon.ChongClone.KIEU_THU_CUNG,
+                                        (long) p.moneyTrade)) {
+                            player.nameTangPet = "";
+                            p.nameTangPet = "";
+                            return;
+                        }
+
                         p.pet.remove(pet);
                         pet.id = player.getIDItem();
                         pet.ownerid = player.charDBID;
@@ -10295,6 +10304,8 @@ public class Map implements Runnable {
                         p.addXu(moneytrade * 90L / 100L, "map 26");
                         player.subXu(moneytrade, false, "map 27");
                         Database.instance.savePet(pet);
+                        com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_THU_CUNG, moneytrade,
+                                "thu cung " + pet.getName());
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                         player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận được " + pet.getName() + " từ " + p.charname, ""));
@@ -15771,6 +15782,11 @@ public class Map implements Runnable {
                                 n = player.listGemitemLock[gem.idGemTemplate];
                             }
 
+                            // chong clone: ngoc KHOA (mua bang luong khoa, qua cap 35...) khong doi ra xu o NPC.
+                            if (typeMaterial == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Nguyên liệu khoá không bán cho NPC lấy xu được.", ""));
+                                return;
+                            }
                             long price = (long) (gem.getTemplate().getPrice(isSale) / 5 * n);
                             if (n <= 0) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán", ""));

@@ -16,14 +16,13 @@ function coLink(url: string | null | undefined): boolean {
 /** Bản tải: /admin/tai-game (danh mục chung useBanTai — cùng nguồn với Hướng dẫn tân thủ, trang chủ, FAQ). */
 const { ds: dsBanTai } = useBanTai()
 const MAU: Record<string, { mau: string, anh: string }> = {
-  'android': { mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30' },
-  'pc': { mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
-  'pc-java': { mau: 'from-pikachu-400/20 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
-  'pc-jar': { mau: 'from-pokeblue-400/20 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
   'jar': { mau: 'from-pokeblue-400/25 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
+  'windows': { mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
+  'linux': { mau: 'from-pikachu-400/20 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
+  'android': { mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30' },
   'ios': { mau: 'from-pokered-400/25 to-pokered-900/5', anh: 'shadow-pokered-500/30' },
 }
-const platforms = computed(() => dsBanTai.value.map(b => ({ ...b, ...(MAU[b.ma] ?? MAU.pc!) })))
+const platforms = computed(() => dsBanTai.value.map(b => ({ ...b, ...(MAU[b.ma] ?? MAU.windows!) })))
 
 const goiY = ref<string | null>(null)
 onMounted(() => { goiY.value = nenTangTheoUa(navigator.userAgent) })
@@ -32,31 +31,19 @@ const banGoiY = computed(() => platforms.value.find(p => p.ma === goiY.value) ??
 const nhanNut = (p: { kieu: string }) => (p.kieu === 'testflight' ? 'Cài qua TestFlight' : p.kieu === 'app-store' ? 'Mở App Store' : p.kieu === 'ipa-manifest' ? 'Cài trên iPhone/iPad' : 'Tải / cài đặt')
 const shaMo = ref<string | null>(null)
 
-/** Tệp phụ của một bản (vd. bản nén, bản Linux, jar nhẹ): admin ghi "/tai/<tệp>" trong ô "Có gì mới". */
-const NHAN_TEP_PHU: [RegExp, string][] = [
-  [/linux.*\.tar\.gz$|\.AppImage$/i, 'Bản Linux (có Java đi kèm)'],
-  [/\.zip$/i, 'Bản nén chạy ngay (.zip)'],
-  [/nhe.*\.jar$/i, 'Bản nhẹ cho máy yếu'],
-  [/\.jad$/i, 'Tệp .jad'],
-]
-function tepPhu(nhatKy: string): { url: string, nhan: string }[] {
-  const ds = [...new Set(nhatKy.match(/\/tai\/[\w.\-]+/g) ?? [])]
-  return ds.map(url => ({ url, nhan: NHAN_TEP_PHU.find(([re]) => re.test(url))?.[1] ?? url.slice(5) }))
-}
-
 const steps = computed(() => [
   { so: '01.', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
   { so: '02.', tieuDe: 'Tải phiên bản phù hợp', mo: 'Chọn nền tảng và làm theo hướng dẫn cài đặt.', link: 'Chọn bản tải', to: '/download#download' },
   { so: '03.', tieuDe: 'Chọn Pokémon khởi đầu', mo: 'Đăng nhập game, chọn Pokémon của bạn và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
 ])
 
-/** Cột: Android · PC (Windows / Java) · điện thoại Java (J2ME). iOS chưa phát hành nên chưa có cột. */
+/** Cột: Java (J2ME) · Windows / Linux · Android. iOS chưa phát hành nên chưa có cột. */
 const cauHinh = [
-  ['Hệ điều hành', 'Android 8.0 trở lên', 'Windows 10 / 11 (64-bit); bản .jar: Windows, macOS, Linux có Java 8+', 'Điện thoại hỗ trợ Java MIDP 2.0, hoặc J2ME Loader trên Android'],
-  ['Bộ nhớ (RAM)', '2 GB', '2 GB', 'Bản nhẹ cho máy ít bộ nhớ'],
-  ['Dung lượng trống', '200 MB', '300 MB', 'Vài MB'],
-  ['Kết nối', 'Wi-Fi hoặc 3G/4G ổn định', 'Internet ổn định', 'GPRS/3G trở lên'],
-  ['Điều khiển', 'Cảm ứng', 'Bàn phím + chuột', 'Phím số'],
+  ['Hệ điều hành', 'Điện thoại hỗ trợ Java MIDP 2.0, hoặc J2ME Loader trên Android', 'Windows 10 / 11 (64-bit); Linux x86-64. Có sẵn Java đi kèm', 'Android 8.0 trở lên'],
+  ['Bộ nhớ (RAM)', 'Điện thoại Java phổ thông', '2 GB', '2 GB'],
+  ['Dung lượng trống', 'Vài MB', '300 MB', '200 MB'],
+  ['Kết nối', 'GPRS/3G trở lên', 'Internet ổn định', 'Wi-Fi hoặc 3G/4G ổn định'],
+  ['Điều khiển', 'Phím số', 'Bàn phím + chuột', 'Cảm ứng'],
 ]
 
 const faq = [
@@ -153,20 +140,6 @@ const faq = [
                   >
                     {{ nhanNut(p) }}
                   </UButton>
-                  <div v-if="p.href && p.nhatKy && tepPhu(p.nhatKy).length" class="mt-2 flex flex-col gap-1.5">
-                    <UButton
-                      v-for="t in tepPhu(p.nhatKy)"
-                      :key="t.url"
-                      :to="t.url"
-                      external
-                      block
-                      color="neutral"
-                      variant="outline"
-                      icon="i-lucide-download"
-                    >
-                      {{ t.nhan }}
-                    </UButton>
-                  </div>
                   <template v-else-if="p.trangThai === 'sap-ra-mat'">
                     <UBadge color="warning" variant="outline" size="lg" icon="i-lucide-hourglass" class="w-full justify-center py-2">
                       Sắp ra mắt
@@ -199,7 +172,7 @@ const faq = [
           <table class="bang-wiki">
             <thead>
               <tr>
-                <th /><th>Android</th><th>PC</th><th>Điện thoại Java (J2ME)</th>
+                <th /><th>Java (J2ME)</th><th>Windows / Linux</th><th>Android</th>
               </tr>
             </thead>
             <tbody>

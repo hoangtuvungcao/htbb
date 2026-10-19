@@ -71,6 +71,9 @@ public final class LocLogVatPham {
             "nhanlk",                   // nhan luong khoa tu nap
             "mocNap", "mocnap",         // qua moc nap
             "nhanluong",                // chuyen luong giua nguoi choi
+            "chuyenluong", "tangluong", // ben gui cua chuyen luong / tang 10 luong (truoc 19/10/2026 bi bo, khong co dau ben gui)
+            "gdpet",                    // giao dich thu cung lay xu (Map popup 112) - duong chuyen xu giua hai nguoi
+            "nghiclone",                // chong clone: nguoi nhan co nhieu nguoi gui / chung may (com.htbb.pokemon.ChongClone)
             "nhanxu",                   // moi lan nhan xu, kem so du va nguon
             "logxu",                    // anh chup xu / xu mat / xu tim luc thoat
             "autosave",                 // anh chup lv / exp / xu dinh ky

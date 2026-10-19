@@ -726,15 +726,55 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   `real.NhiemVuEngine` + `NhiemVuMau` (3 khe phụ cùng lúc, nhánh lựa chọn, câu đố kiểm trong chat, khoá `truoc` / ẩn, vật
   phẩm nhiệm vụ 10–50). Mở từ Sổ tay → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục).
 
-### 6.2 Sự kiện: lịch 52 tuần
+### 6.2 Sự kiện: lịch năm theo ngày thật + tuần Pokémon
 
-[su_kien_nam.csv](../du_lieu/su_kien_nam.csv), `SuKienLauDai` (tuần ISO, thứ Hai 05:00) hẹn lần kế tiếp vào
-`tob_su_kien.mo_luc/dong_luc` (chỉ khi cả hai trống). Bật / tắt sự kiện **cần khởi động lại** (máy chủ tự gom lệnh và khởi
-động lại theo `sv.suKienTuKhoiDongLai`, `sv.suKienGomGiay`, báo trước `sv.suKienBaoTruocGiay`).
+Chủ game duyệt 19/10/2026: **mọi sự kiện tự bật / tắt đúng ngày thật** (giờ Việt Nam, `Asia/Ho_Chi_Minh`). Lịch ở
+`com.htbb.pokemon.LichNam` (lễ âm lịch tính bằng `AmLich` — thuật toán Hồ Ngọc Đức, múi giờ +7; test đối chiếu Tết /
+Giỗ Tổ / Vu Lan / Trung Thu 2026–2035). Máy chủ ghi mọi lần diễn ra (năm trước .. năm sau) vào `tob_su_kien_lich`, và
+mỗi 15 giây (`real.LichSuKien.dongBoLichNam`) đặt `tob_su_kien.bat` theo lịch cho mọi mã `tu_dong = 1`. Admin ghi đè
+**một năm** ở `/admin/sukien` (tắt năm nay / đổi giờ / mở ngay / về theo lịch) hoặc chuyển cả sự kiện sang thủ công.
+
+**Mốc mở / đóng luôn 04:00**: bật / tắt sự kiện cần khởi động lại, và đổi do lịch khi bảo trì hằng ngày (04:30–05:30)
+còn ≤ 3 giờ thì `LichSuKien` **không** khởi động lại riêng mà chờ bảo trì — cả năm không thêm lần khởi động lại nào.
+Thay đổi tay của admin (hay lịch lúc bảo trì còn xa / đã tắt) vẫn khởi động lại như cũ (gom + báo trong game).
+
+| Mã | Sự kiện | Cửa sổ (mở 04:00 → đóng 04:00) | 2026 | 2027 |
+|---|---|---|---|---|
+| `tetduonglich` | Tết Dương lịch | 30/12 → 04/01 | 30/12/2025 → 04/01/2026 | 30/12/2026 → 04/01/2027 |
+| `tet2017` | Tết Nguyên Đán | mùng 1 âm − 7 ngày → mùng 10 | 10/02 → 27/02 | 30/01 → 16/02 |
+| `tet123` | Ba ngày Tết | mùng 1 → mùng 4 | 17/02 → 20/02 | 06/02 → 09/02 |
+| `moi:valentine` | Valentine | 11/02 → 18/02 | 11/02 → 18/02 | 11/02 → 18/02 |
+| `quocte83` | Quốc tế Phụ nữ 8/3 | 05/03 → 12/03 | 05/03 → 12/03 | 05/03 → 12/03 |
+| `gioto` | Giỗ Tổ Hùng Vương | 10/3 âm − 3 → + 4 | 23/04 → 30/04 | 13/04 → 20/04 |
+| `moi:3004` | Lễ 30/4 – 1/5 | 28/04 → 04/05 | 28/04 → 04/05 | 28/04 → 04/05 |
+| `moi:thieunhi` | Quốc tế Thiếu nhi 1/6 | 30/05 → 06/06 | 30/05 → 06/06 | 30/05 → 06/06 |
+| `he2017` | Sự kiện Hè | 15/06 → 15/07 | 15/06 → 15/07 | 15/06 → 15/07 |
+| `moi:hamngucmua` | Hầm ngục bí ẩn mùa hè | 15/07 → 29/07 | 15/07 → 29/07 | 15/07 → 29/07 |
+| `vulan` | Vu Lan | 15/7 âm − 4 → + 3 | 23/08 → 30/08 | 12/08 → 19/08 |
+| `moi:quockhanh` | Quốc khánh 2/9 | 30/08 → 05/09 | 30/08 → 05/09 | 30/08 → 05/09 |
+| `trungthu` | Trung Thu | 15/8 âm − 10 → + 4 | 15/09 → 29/09 | 05/09 → 19/09 |
+| `moi:2010` | Phụ nữ Việt Nam 20/10 | 17/10 → 23/10 | 17/10 → 23/10 | 17/10 → 23/10 |
+| `halloween` | Halloween | 18/10 → 03/11 | 18/10 → 03/11 | 18/10 → 03/11 |
+| `demhalloween` | Đêm Halloween | 31/10 → 01/11 | 31/10 → 01/11 | 31/10 → 01/11 |
+| `sinhnhat2011` | Ngày Nhà giáo Việt Nam 20/11 | 17/11 → 24/11 | 17/11 → 24/11 | 17/11 → 24/11 |
+| `blackfriday` (+ `…daugia`, `…ban`) | Black Friday | thứ Sáu thứ 4 tháng 11 − 1 → + 4 | 26/11 → 01/12 | 25/11 → 30/11 |
+| `noel` | Giáng sinh | 18/12 → 28/12 | 18/12 → 28/12 | 18/12 → 28/12 |
+| `demnoel` | Đêm Noel | 24/12 → 26/12 | 24/12 → 26/12 | 24/12 → 26/12 |
+| `moi:tongket` | Tổng kết năm | 28/12 → 04/01 | 28/12/2026 → 04/01/2027 | 28/12/2027 → 04/01/2028 |
+
+Tuần Pokémon (bảng dưới) vẫn theo tuần ISO (`SuKienLauDai.LICH`, [su_kien_nam.csv](../du_lieu/su_kien_nam.csv)), thứ Hai
+04:00 → thứ Hai tuần sau 04:00, vì hệ của tuần hệ và huyền thoại đột kích gắn với số tuần. Bật tay (không có lịch):
+`noel2023`, `halloween2015`, `he2015` (bản cũ), `mini*`, `anxuluongtop`. **Đã bỏ** (sự kiện riêng của game kiếm hiệp cũ):
+World Cup bình chọn Messi/Ronaldo (`worldcup*`), Sinh nhật Ngudẻ, Đua top Hoa Lư.
+
+**Website tự đăng tin** (`web/server/plugins/tin-su-kien.ts`, chuyên mục "Sự kiện"): "Sắp diễn ra" 3 ngày trước
+(tuần Pokémon: 1 ngày), "Đang diễn ra" lúc mở, "Đã kết thúc" lúc đóng; nội dung viết từ mô tả, phần thưởng và cửa sổ
+của sự kiện; sự kiện phụ (Ba ngày Tết, Đêm Halloween, Đêm Noel, Black Friday đấu giá / mở bán) nhắc trong tin của sự kiện
+chính. Trang chủ có mục "Sự kiện" (đang diễn ra + 30 ngày tới, đếm ngược), Cẩm nang › Sự kiện có lịch lễ hội 12 tháng.
 
 | Nhóm | Tuần (năm 1) | Cơ chế |
 |---|---|---|
-| Lễ Việt Nam | Tết dương lịch, Tết Nguyên Đán (dời theo âm lịch), Valentine, 8/3, Giỗ Tổ, 30/4–1/5, 1/6, Hè, Vu Lan, 2/9, Trung Thu, 20/10, Halloween, 20/11, Black Friday, Giáng sinh | Đổi vật phẩm sự kiện, NPC, nấu bánh, thả đèn |
+| Lễ Việt Nam | theo ngày thật (bảng trên) | Đổi vật phẩm sự kiện, NPC, nấu bánh, thả đèn |
 | Ngày cộng đồng | 3, 12, 19, 25, 31, 40, 50 | 3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5 |
 | Tuần Shiny | 7, 34 | shiny ×10 |
 | Đột kích huyền thoại | 9, 20, 28, 36, 48 | boss thế giới thêm khung, thưởng theo đóng góp |
@@ -748,7 +788,7 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   ([noi_dung_su_kien_vat_pham.csv](../du_lieu/noi_dung_su_kien_vat_pham.csv)).
 - **Năm 2 xoay vòng** (cột `ten_nam2`): đổi huyền thoại, hệ của tuần hệ, dòng của ngày cộng đồng, linh vật ngày lễ.
 - Mã sự kiện mới có tiền tố `moi:*` trong `SuKien.DANH_MUC`; các cờ sự kiện kiếm hiệp cũ (`sv.isSuKien*`) chỉ còn để tương
-  thích.
+  thích (mặc định khi bảng chưa có dòng).
 
 ### 6.3 Giữ chân người chơi
 
@@ -940,7 +980,7 @@ hồi phục, vùng đánh 4..20 ô, tự hồi sinh (tắt / thuốc thường 
 | **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục | bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá |
 | **Lượng** | được (chuyển, phí 5%) | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật | **chỉ** trang trí, tiện ích (đổi tên, mở rộng túi), bản cao cấp tăng tốc |
 
-**Đã bỏ hẳn** khi bật `sv.lau_dai`: lượng / lượng khoá rơi từ quái; quà 10 triệu xu ở cấp 35 (thay bằng 1 món bậc vàng);
+**Đã bỏ hẳn** khi bật `sv.lau_dai`: lượng / lượng khoá rơi từ quái; quà 10 triệu xu ở cấp 35 (nay 5.000 xu + 6 lượng khoá + 10 nguyên liệu khoá mỗi loại cấp 6 cho mọi chế độ, xem 9.6);
 giftcode ra lượng hoặc xu; mốc nạp; hoàn xu khi tiêu lượng; VIP theo nạp; shop lượng bán đồ có chỉ số; kẹo EXP cố định;
 cộng lượng khoá hằng ngày cho mọi nhân vật cấp ≥ 40.
 
@@ -1008,6 +1048,42 @@ bản đồ / sự kiện đó nếu đỏ.
   ≤ 5%. Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
 
 ---
+
+### 9.6 Chống clone chuyển xu, quà mốc cấp
+
+Chủ game hỏi 19/10/2026: "tạo nhiều clone để giao dịch xu qua thì sao? lượng khoá thì không giao dịch được đúng không?"
+
+**Lượng khoá không chuyển được bằng đường nào** (test `KiemChongClone`): giao dịch trực tiếp chỉ chở thuốc (không có ô
+xu / lượng / lượng khoá); ký gửi, chợ trang trí, chợ sinh thái, thú cưng lấy xu đều trả bằng **xu**; chuyển lượng chỉ trừ /
+cộng lượng **mở**; quỹ đội / lương đội là xu; giftcode an toàn chỉ phát (không chuyển); không có thư / quà giữa người chơi
+hay thất lạc. Các đường *đổi* lượng khoá ra giá trị chuyển được đã bịt: thuốc mua bằng lượng khoá thành **thuốc khoá**
+(`real.ThuocKhoa`, đếm `x<id>` trong hồ sơ dài hạn — không giao dịch được), vật phẩm mới mua bằng lượng khoá có `lock = 1`
+(ký gửi từ chối), và đồ / nguyên liệu khoá **không bán cho NPC lấy xu** (`chong_clone.ban_npc_do_khoa` = 0). Không có khái
+niệm "xu khoá", nên xu từ nhiệm vụ tân thủ được chặn bằng cổng cấp bên dưới.
+
+**Cổng cho mọi đường chuyển xu / giá trị giữa hai người** (`com.htbb.pokemon.ChongClone`, nhóm cấu hình *Chống clone &
+chuyển xu*): giao dịch, ký gửi (rao + mua), thú cưng lấy xu, chợ trang trí, chợ sinh thái (rao, mua, đơn đặt hàng), thách
+đấu cược xu (1-1 và nhóm).
+
+| Cổng | Khoá | Mặc định |
+|---|---|---|
+| Cấp tối thiểu **cả hai bên** | `chong_clone.cap_toi_thieu` | 20 |
+| Tuổi tài khoản (từ `team_user.regdate`) | `chong_clone.tuoi_tai_khoan_gio` | 24 giờ |
+| Giờ chơi của Pokémon (`tob_char.totalTimePlay`) | `chong_clone.gio_choi_toi_thieu` | 10 giờ |
+| Mỗi người nhận / ngày: tối đa N Pokémon **cùng thiết bị hoặc cùng IP** gửi cho họ | `chong_clone.nv_cung_may_toi_da` | 2 |
+| Giá ký gửi ≤ max(giá gốc × N, thu nhập 1 giờ × M) và ≥ 5% giá gốc | `chong_clone.ky_gui_gia_toi_da_lan` / `…_gio` / `…_toi_thieu_phan_tram` | 10 / 200 / 5 |
+
+Cổng có sẵn từ trước: chưa kích hoạt tài khoản thì khoá giao dịch, chat thế giới, chợ, chuyển lượng, nhận tặng, giftcode
+(`kich_hoat.chuc_nang`); Thành viên (`thanh_vien.*`, đang tắt); đăng ký tối đa 3 / giờ, 10 / ngày mỗi IP và mỗi thiết bị;
+cấm theo thiết bị (`tob_cam_may`) + nhật ký thiết bị đăng nhập; góp quỹ đội cần cấp 50. Mọi lần chuyển (kể cả lần bị chặn)
+ghi `tob_log_chuyen_gia_tri`; người nhận có ≥ 3 người gửi trong ngày (`chong_clone.nghi_so_nguoi_gui`), người gửi chung
+thiết bị / IP, hoặc gửi từ chính thiết bị người nhận thì gắn cờ **nghi clone** — báo cáo ở `/admin/kinh-te`.
+
+**Quà cấp 35** (`QuaMocCap`, NPC, một lần mỗi Pokémon): 5.000 xu + 6 lượng khoá + 10 nguyên liệu khoá mỗi loại cấp 6
+(trước: 10.000.000 xu thời thử nghiệm ≈ 580 giờ thu nhập ở cấp 35, ≈ 1.300 lần số xu trung vị người chơi cấp 35 đang giữ
+trong mô phỏng — vừa lạm phát vừa là mồi nuôi clone). 5.000 xu = vốn khởi đầu ≈ 0,3 giờ thu nhập cấp 35 (17.270 xu / giờ);
+6 lượng khoá nằm giữa thành tựu cấp 30 (5) và cấp 40 (6). Các mốc cấp khác (thành tựu cấp 10..100) đã đúng thang: 0 xu,
+1–15 lượng khoá.
 
 ## 10. Thuật ngữ và quy tắc chữ
 

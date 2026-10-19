@@ -54,10 +54,31 @@ public class doBuySpecialItem {
     }
 
     public static void doBuySpecialItem(Char player, Message msg) {
+        // Chong clone (19/10/2026): moi thu mua bang LUONG KHOA phai la do khoa. Chup thuoc + hanh trang truoc khi
+        // mua; sau khi mua, neu luong khoa da giam thi binh thuoc moi tang = thuoc khoa (real/ThuocKhoa), vat pham
+        // moi vao hanh trang = lock 1 (cho ky gui / giao dich da chan lock 1).
+        final int[] thuocTruoc = player.potions == null ? null : player.potions.clone();
+        final long luongKhoaTruoc = player.getLuongLock();
+        final java.util.Set<Object> doTruoc = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
+        try {
+            doTruoc.addAll(player.iItems);
+        } catch (Exception ignored) {
+        }
         try {
             doBuySpecialItem0(player, msg);
         } finally {
             TRA_LUONG_KHOA.remove();
+            try {
+                if (player.getLuongLock() < luongKhoaTruoc) {
+                    ThuocKhoa.sauKhiMua(player, thuocTruoc, luongKhoaTruoc);
+                    for (Object o : player.iItems.toArray()) {
+                        if (o instanceof Item && !doTruoc.contains(o)) {
+                            ((Item) o).lock = 1;
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+            }
         }
     }
 

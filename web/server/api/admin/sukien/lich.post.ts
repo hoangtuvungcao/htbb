@@ -19,9 +19,15 @@ export default defineAdminHandler(async (event) => {
   const loi = suKienKiemLich(mo, dong, await suKienBayGio())
   if (loi) throw apiLoi(400, loi)
 
+  // Hẹn giờ tay một sự kiện đang theo lịch năm = chuyển sang thủ công (máy chủ bỏ qua mốc hẹn của mã tự động).
+  const thuCong = (mo !== null || dong !== null) && await chuyenThuCongNeuTheoLich(ma)
   await exec(dbGame(), `UPDATE ${SU_KIEN_BANG}
                            SET mo_luc = ?, dong_luc = ?
                          WHERE ma = ?`, [mo, dong, ma])
   await ghiNhatKy(event, 'su_kien_lich', ma, `${ten} | mở: ${mo ?? '—'} | đóng: ${dong ?? '—'}`)
-  return { ok: true, message: `Đã đặt lịch cho ${ten}. Tới giờ server sẽ tự đổi rồi tự khởi động lại.` }
+  return {
+    ok: true,
+    message: `Đã đặt lịch cho ${ten}. Tới giờ server sẽ tự đổi rồi tự khởi động lại.`
+      + (thuCong ? ' Sự kiện này đã chuyển sang THỦ CÔNG (lịch năm không tự bật/tắt nữa).' : ''),
+  }
 })

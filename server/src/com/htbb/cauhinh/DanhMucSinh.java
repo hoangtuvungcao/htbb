@@ -15,6 +15,7 @@ final class DanhMucSinh {
         {"su_kien", "Sự kiện & giftcode"},
         {"nap_tien", "Nạp tiền"},
         {"thanh_vien", "Thành viên & kích hoạt"},
+        {"chong_clone", "Chống clone & chuyển xu"},
         {"tu_dong", "Tự động đánh & hồi sinh"},
         {"bao_tri", "Máy chủ, đăng ký & bảo trì"},
         {"che_do", "Chế độ game (cố định)"},
@@ -228,6 +229,38 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("kich_hoat.thanh_vien_la_kich_hoat", "thanh_vien", "co", "1", true, "cau_hinh")
                     .nhan("Thành viên được coi như đã kích hoạt", "1 (mặc định) = tài khoản là Thành viên HTBB không bị khoá vì chưa kích hoạt (gộp hai bậc làm một nếu muốn).")
                     .lop("luon_bat"),
+            new DinhNghiaKhoa("chong_clone.bat", "chong_clone", "co", "1", true, "cau_hinh")
+                    .nhan("Bật chống clone", "1 = áp các cổng dưới cho mọi đường chuyển xu / giá trị giữa hai người chơi. 0 = tắt hết (chỉ để khẩn cấp)."),
+            new DinhNghiaKhoa("chong_clone.cap_toi_thieu", "chong_clone", "so", "20", true, "cau_hinh")
+                    .nhan("Cấp tối thiểu để chuyển / nhận xu", "Cả hai bên của giao dịch, ký gửi, giao dịch thú cưng lấy xu, chợ trang trí / sinh thái, thách đấu cược xu.")
+                    .khoang(0L, 200L),
+            new DinhNghiaKhoa("chong_clone.tuoi_tai_khoan_gio", "chong_clone", "so", "24", true, "cau_hinh")
+                    .nhan("Tuổi tài khoản tối thiểu (giờ)", "Tính từ lúc đăng ký (team_user.regdate). 0 = không xét.")
+                    .khoang(0L, 2160L),
+            new DinhNghiaKhoa("chong_clone.gio_choi_toi_thieu", "chong_clone", "so", "10", true, "cau_hinh")
+                    .nhan("Giờ chơi tối thiểu của Pokémon (giờ)", "tob_char.totalTimePlay + phiên đang chơi. 0 = không xét.")
+                    .khoang(0L, 1000L),
+            new DinhNghiaKhoa("chong_clone.nv_cung_may_toi_da", "chong_clone", "so", "2", true, "cau_hinh")
+                    .nhan("Pokémon cùng thiết bị / IP gửi cho một người / ngày", "Mỗi người nhận, mỗi ngày: tối đa N Pokémon (tài khoản phụ) dùng chung thiết bị hoặc IP được chuyển cho họ; Pokémon thứ N+1 bị chặn. IP proxy tin cậy chỉ tính theo thiết bị.")
+                    .khoang(1L, 50L),
+            new DinhNghiaKhoa("chong_clone.nghi_so_nguoi_gui", "chong_clone", "so", "3", true, "cau_hinh")
+                    .nhan("Ngưỡng \"nghi clone\" (số người gửi / ngày)", "Một người nhận có từ N người gửi khác nhau trong ngày thì đánh dấu nghi (không chặn), hiện ở /admin/kinh-te.")
+                    .khoang(2L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("chong_clone.ky_gui_gia_toi_da_lan", "chong_clone", "so", "10", true, "cau_hinh")
+                    .nhan("Giá ký gửi tối đa (lần giá gốc)", "Giá rao ≤ max(giá gốc × N, thu nhập 1 giờ ở cấp người bán × số giờ bên dưới).")
+                    .khoang(1L, 1000L),
+            new DinhNghiaKhoa("chong_clone.ky_gui_gia_toi_da_gio", "chong_clone", "so", "200", true, "cau_hinh")
+                    .nhan("Giá ký gửi tối đa (giờ thu nhập)", "Trần cho món không có giá gốc (và sàn của trần trên).")
+                    .khoang(1L, 100000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("chong_clone.ky_gui_gia_toi_thieu_phan_tram", "chong_clone", "so", "5", true, "cau_hinh")
+                    .nhan("Giá ký gửi tối thiểu (% giá gốc)", "Chặn bán phá giá cho clone.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("chong_clone.ban_npc_do_khoa", "chong_clone", "co", "0", true, "cau_hinh")
+                    .nhan("Bán đồ / nguyên liệu khoá cho NPC lấy xu", "0 = cấm (đồ khoá mua bằng lượng khoá không đổi ra xu được). 1 = cho như cũ.")
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("sv.dangKyTrongGame", "bao_tri", "co", "1", true, "cau_hinh")
                     .nhan("Đăng ký trong game", "0 = nút Đăng ký trong game báo 'đăng ký trên web'."),
             new DinhNghiaKhoa("sv.dangKyTuKichHoat", "bao_tri", "chon", "web", true, "cau_hinh")
