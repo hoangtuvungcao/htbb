@@ -93,7 +93,7 @@ public class DatabaseGiftCode {
      * Neu du lieu cu con dong trung (giftcode,userId) - vi du nhieu nhan vat DA BI XOA cung
      * nhan mot ma, chuanBiCotUserId() doi chieu tat ca ve userId=0 - ALTER TABLE se bao loi
      * duplicate entry va bi bat lai o day (khong lam sap server, chi log). Xem
-     * sql/them_khoa_duy_nhat_giftcode_log.sql de don du lieu trung roi them khoa bang tay.
+     * du_lieu/sql_nguon/them_khoa_duy_nhat_giftcode_log.sql de don du lieu trung roi them khoa bang tay.
      */
     static void chuanBiKhoaDuyNhatGiftCodeLog(Database db) {
         Connection conn = null;
@@ -112,7 +112,7 @@ public class DatabaseGiftCode {
             }
         } catch (Exception e) {
             System.out.println("[GIFTCODE] Chua them duoc UNIQUE KEY(giftcode,userId) cho giftcode_log"
-                    + " (co the do du lieu cu con dong trung - xem sql/them_khoa_duy_nhat_giftcode_log.sql): " + e);
+                    + " (co the do du lieu cu con dong trung - xem du_lieu/sql_nguon/them_khoa_duy_nhat_giftcode_log.sql): " + e);
         } finally {
             try {
                 if (rs != null) {

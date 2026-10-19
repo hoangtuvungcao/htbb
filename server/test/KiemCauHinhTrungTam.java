@@ -172,12 +172,12 @@ public final class KiemCauHinhTrungTam {
             khoaJava.add(d.khoa);
         }
         Kiem.bang("danh muc nap tu SQL (cau_hinh_danh_muc) khop danh_muc.json (chay tools/cauhinh/sinh_cau_hinh.py)", khoaJson, khoaJava);
-        final String sql = doc("../sql/pokemon_cau_hinh_trung_tam.sql");
+        final String sql = doc("../du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql");
         boolean du = !sql.isEmpty();
         for (final String x : khoaJson) {
             du &= sql.contains("('" + x + "'");
         }
-        Kiem.dung("sql/pokemon_cau_hinh_trung_tam.sql co du khoa", du);
+        Kiem.dung("du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql co du khoa", du);
         for (final String b : new String[]{"cau_hinh_phien_ban", "cau_hinh_lich_su", "cau_hinh_ap_dung", "cau_hinh_hieu_luc",
             "cau_hinh_khoi_dong_lai", "cau_hinh_danh_muc"}) {
             Kiem.dung("sql tao bang " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));

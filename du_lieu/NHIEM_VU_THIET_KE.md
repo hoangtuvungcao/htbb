@@ -11,7 +11,7 @@
 > python3 -I tools/pokemon/sinh_nhiem_vu.py
 > ```
 >
-> Lệnh này sinh lại `nhiem_vu_moi.csv`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_nhiem_vu.sql`,
+> Lệnh này sinh lại `nhiem_vu_moi.csv`, `du_lieu/sql_nguon/pokemon_lau_dai.sql`, `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`,
 > `nhiem_vu_nhip_do.csv`, `web/nhiem_vu_tom_tat.json` và các bảng nằm giữa `<!-- SINH -->` trong file này.
 > Kiểm thử: `test/KiemNhiemVu.java` (đã đăng ký trong `test/Kiem.java`) và `test/KiemLauDai.java`.
 >
@@ -183,7 +183,7 @@ Engine nhiệm vụ do người làm GĐ2 viết trong `src`; tài liệu này c
 - Mỗi dòng có **kiểu dự phòng** (cột `du_phong`, dạng `type:tham_số`). Nhờ vậy engine cũ type 0–4 vẫn chơi trọn chuỗi chính dù chưa có kiểu mới: một bước "đứng tại điểm" sẽ thành "gặp NPC", và một bước "hạ Alpha" sẽ thành "hạ quái mạnh gần cấp".
 - `content` được dựng từ lời thoại thật. Câu của NPC có tên người nói ở đầu; câu của người chơi đi theo tiền tố `0`.
 - Nhiệm vụ lặp lại (ngày, tuần, sự kiện) **không** vào `data_quest_moi`. Engine mới xoay vòng các nhiệm vụ này.
-- `data_nhiem_vu_noi_dung` (trong `sql/pokemon_nhiem_vu.sql`) lấy khoá theo `ma`. Bảng giữ hội thoại 3 giai đoạn, gợi ý, `muc_tieu_text`, `dong_thuong`, `thuong_khac`, `nhanh_lua_chon`, `an`, `dieu_kien_mo`, `dieu_kien`, `map_id`, `toa_do`, `dap_an`, `phut`.
+- `data_nhiem_vu_noi_dung` (trong `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`) lấy khoá theo `ma`. Bảng giữ hội thoại 3 giai đoạn, gợi ý, `muc_tieu_text`, `dong_thuong`, `thuong_khac`, `nhanh_lua_chon`, `an`, `dieu_kien_mo`, `dieu_kien`, `map_id`, `toa_do`, `dap_an`, `phut`.
 - `data_nhiem_vu_kieu` là danh mục kiểu mục tiêu kèm số dòng của từng kiểu.
 - `data_vat_pham_nhiem_vu` liệt kê 41 vật phẩm nhiệm vụ mới, id 10..50.
 
@@ -315,5 +315,5 @@ Các phần không trùng nhau:
 | `tools/pokemon/nv_lap_lai.py` | Ngày/truy nã, tuần, chuỗi vùng, tổ đội, Đội, sư phạm, hầm ngục, quay lại, sự kiện, huyền thoại, ẩn, thành tựu |
 | `tools/pokemon/sinh_nhiem_vu.py` | Bộ sinh: ngân sách, dự phòng, hội thoại, kiểm từ cấm, ghi file phụ |
 | `du_lieu/nhiem_vu_moi.csv` | 30 cột cũ cộng 19 cột mới |
-| `sql/pokemon_nhiem_vu.sql` | Bảng staging nội dung, đã thêm vào `xuat_sql_day_du.sh` sau `pokemon_lau_dai` |
+| `du_lieu/sql_nguon/pokemon_nhiem_vu.sql` | Bảng staging nội dung, đã thêm vào `xuat_sql_day_du.sh` sau `pokemon_lau_dai` |
 | `du_lieu/web/nhiem_vu_tom_tat.json` | Bản cho website: không có id, ngân sách hay đáp án |

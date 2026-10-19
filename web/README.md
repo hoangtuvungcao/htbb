@@ -6,7 +6,7 @@ Website + khu quản trị (CMS) của game, viết bằng **Nuxt 4** (Vue 3, Nu
 - Trang công khai: trang chủ, giới thiệu, hướng dẫn tân thủ, tải game (6 nền tảng), cẩm nang, Pokédex, tin tức,
   bảng xếp hạng, tài khoản, giấy phép (`/giay-phep`).
 - Khu quản trị `/admin`: người chơi, cấu hình hệ thống, sự kiện, giftcode, nội dung CMS, bản tải game, nhật ký.
-  Bảng CMS tạo bằng `sql/web_cms.sql` (chưa chạy thì web dùng nội dung mặc định).
+  Bảng CMS tạo bằng `du_lieu/sql_nguon/web_cms.sql` (chưa chạy thì web dùng nội dung mặc định).
 
 ## Cấu hình
 

@@ -164,13 +164,13 @@ public final class KiemPokemonServer {
         Kiem.bang("thong bao", "Chỉ Eevee từ cấp 25 mới dùng được", DaTienHoa.THONG_BAO_KHONG_DUNG_DUOC);
 
         // Doi chieu file SQL: dung id, dung ten, type 28.
-        final String sql = doc("../sql/pokemon_vat_pham_eevee.sql");
-        Kiem.dung("doc duoc sql/pokemon_vat_pham_eevee.sql", sql.length() > 100);
+        final String sql = doc("../du_lieu/sql_nguon/pokemon_vat_pham_eevee.sql");
+        Kiem.dung("doc duoc du_lieu/sql_nguon/pokemon_vat_pham_eevee.sql", sql.length() > 100);
         for (int i = 0; i < DaTienHoa.ID_ITEM.length; i++) {
             Kiem.dung("SQL co dong " + DaTienHoa.ID_ITEM[i] + " '" + DaTienHoa.TEN[i] + "' type 28",
                     sql.contains("(" + DaTienHoa.ID_ITEM[i] + ",'" + DaTienHoa.TEN[i] + "',28,"));
         }
-        final String seed = doc("../sql/gamedb7_clean.sql");
+        final String seed = doc("../du_lieu/sql_nguon/gamedb7_clean.sql");
         for (final int id : DaTienHoa.ID_ITEM) {
             Kiem.sai("ban seed chua dung id " + id, seed.contains("\n(" + id + ",'"));
         }
@@ -195,7 +195,7 @@ public final class KiemPokemonServer {
         final String tmpl = doc("../vps/server.ini.tmpl");
         Kiem.sai("ban mau khong con sv.che_do_pokemon", tmpl.contains("sv.che_do_pokemon"));
 
-        final String mig = doc("../sql/them_cot_pokemon.sql");
+        final String mig = doc("../du_lieu/sql_nguon/them_cot_pokemon.sql");
         Kiem.dung("migration: tob_char.dex SMALLINT DEFAULT 0", mig.contains("`dex`   SMALLINT NOT NULL DEFAULT 0"));
         Kiem.dung("migration: data_monster.he2 DEFAULT -1", mig.contains("`he2`   TINYINT  NOT NULL DEFAULT -1"));
         Kiem.dung("migration: ALTER ca tob_char lan data_monster",

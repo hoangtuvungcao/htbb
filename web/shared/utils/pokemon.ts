@@ -7,7 +7,7 @@
  *
  * - `tob_char.class` (0..4) = dòng khởi đầu: 0 Charmander, 1 Bulbasaur, 2 Eevee, 3 Squirtle, 4 Pichu.
  * - `tob_char.dex` = loài hiện tại; 0 = tự suy ra từ class + cấp (cột thêm bởi
- *   sql/them_cot_pokemon.sql của repo HTBB).
+ *   du_lieu/sql_nguon/them_cot_pokemon.sql của repo HTBB).
  * - Eevee chọn nhánh ở cấp 25 (người chơi chọn) nên không suy ra được từ cấp: chưa có
  *   `dex` thì vẫn là Eevee.
  */

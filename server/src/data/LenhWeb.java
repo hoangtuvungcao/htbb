@@ -621,7 +621,7 @@ public final class LenhWeb implements Runnable {
      * XOA THAT tob_char + du lieu con truc tiep cua rieng nhan vat nay. Tra ve charname
      * da xoa, hoac null neu khong co nhan vat id nay (da bi xoa truoc do, hoac id sai).
      *
-     * Tat ca cac bang duoi day la MyISAM (xem sql/gamedb7_clean.sql) - KHONG ho tro giao
+     * Tat ca cac bang duoi day la MyISAM (xem du_lieu/sql_nguon/gamedb7_clean.sql) - KHONG ho tro giao
      * dich/rollback. Vi vay xoa THEO THU TU: du lieu con (pet, thu, quest, farm...) TRUOC,
      * tob_char (dong chinh) SAU CUNG. Neu mot buoc giua chung nem ngoai le thi tob_char
      * VAN CON NGUYEN - nhan vat coi nhu chua xoa xong, an toan de bam lai (moi buoc deu
@@ -844,7 +844,7 @@ public final class LenhWeb implements Runnable {
 
     /**
      * Tao bang neu chua co, va them cot tham_so neu bang duoc tao tu ban dau tien (chua co cot).
-     * Cung dinh nghia voi sql/them_bang_web_lenh_nhan_vat.sql va HTBB-Web server/utils/lenhNhanVat.ts
+     * Cung dinh nghia voi du_lieu/sql_nguon/them_bang_web_lenh_nhan_vat.sql va HTBB-Web server/utils/lenhNhanVat.ts
      * (web cung tu tao, de ai chay truoc cung duoc).
      */
     static void taoBang() {

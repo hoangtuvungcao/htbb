@@ -34,6 +34,8 @@ Trên VPS, `/opt/htbb` là bản checkout monorepo này (người dùng hệ th�
 | `don-log.sh` | cron 03:20 — dọn bảng nhật ký CSDL và tệp `.txt` lẻ |
 | `server.ini.linux.example`, `loginServer.server.ini.example` | mẫu tạo tay (máy không dùng pipeline) |
 | `db_new_server.sql`, `doi_ten_nhan_vat.sql` | SQL dựng CSDL máy chủ mới / đổi tên nhân vật |
+| `nang_cap_csdl.sh` + `nang_cap_csdl.sql` | nâng cấp CSDL đang chạy lên bản hiện tại: sao lưu → nạp → kiểm, chạy lại được (`sudo bash /opt/htbb/vps/nang_cap_csdl.sh`; `.sql` sinh bởi `tools/pokemon/sinh_nang_cap_csdl.py`) |
+| `van_hanh/` | SQL thao tác tay xoá dữ liệu người chơi (`wipe_*.sql`) — **tắt server và sao lưu trước**, không hoàn tác được |
 | `win/` | tệp `.bat` xem log, chạy SQL, tải CSDL từ Windows qua SSH — [win/README.md](win/README.md) |
 
 ## Quy trình triển khai

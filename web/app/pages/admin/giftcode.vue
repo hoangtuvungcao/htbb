@@ -17,7 +17,7 @@ import AdminGiftcodeXacNhan from '~/components/admin/giftcode/XacNhan.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
-// Có bảng tob_giftcode (chế độ dài hạn, HTBB/sql/them_bang_lau_dai.sql) -> mặc định trang giftcode
+// Có bảng tob_giftcode (chế độ dài hạn, HTBB/du_lieu/sql_nguon/them_bang_lau_dai.sql) -> mặc định trang giftcode
 // an toàn (components/admin/giftcode/AnToan.vue); bảng cũ vẫn xem/sửa được qua nút "Mã kiểu cũ".
 const apiCheDo = useAdminApi()
 const { data: cheDo } = useAsyncData('admin-gc-che-do', () => apiCheDo<{ coBang: boolean }>('/api/admin/giftcode-moi').catch(() => ({ coBang: false })), { server: false })

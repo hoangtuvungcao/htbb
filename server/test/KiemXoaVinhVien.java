@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * DELETE that, khac han moi cho khac deu chi soft-delete qua cot ban/del).
  *
  * BA DIEU BAT BIEN CAN CHOT (phat hien/thiet ke luc lam tinh nang):
- * 1. MyISAM KHONG co giao dich - moi bang lien quan (xem sql/gamedb7_clean.sql) deu la
+ * 1. MyISAM KHONG co giao dich - moi bang lien quan (xem du_lieu/sql_nguon/gamedb7_clean.sql) deu la
  *    MyISAM, khong the ROLLBACK giua chung. Vi vay LenhWeb.xoaNhanVatThat() PHAI xoa du
  *    lieu CON truoc, tob_char (dong chinh) SAU CUNG - loi giua chung thi tob_char con
  *    nguyen, an toan bam lai (moi buoc idempotent).
@@ -29,7 +29,7 @@ public final class KiemXoaVinhVien {
     private static final String F_NHANVAT = "server/api/admin/nhanvat/[id]/xoa.post.ts";
     private static final String F_TAIKHOAN = "server/api/admin/taikhoan/[id].post.ts";
     private static final String F_TK_UTIL = "server/utils/taiKhoanAdmin.ts";
-    private static final String F_SQL = "../sql/gamedb7_clean.sql";
+    private static final String F_SQL = "../du_lieu/sql_nguon/gamedb7_clean.sql";
 
     /** {ten bang, cot dung de khoa theo nhan vat} - dung THEO DUNG THU TU LenhWeb da xoa. */
     private static final String[][] BANG_CON_THEO_THU_TU = {

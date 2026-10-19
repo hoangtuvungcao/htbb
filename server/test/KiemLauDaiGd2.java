@@ -111,14 +111,14 @@ public final class KiemLauDaiGd2 {
         Kiem.dung("top 1% (1 nguoi) giu > 99% xu", c.phanTramTop1X100 > 9900);
         Kiem.bang("khong ai hoat dong: 0 nguoi", Integer.valueOf(0), Integer.valueOf(ChiSoKinhTe.tinh(new int[0], new long[0], new long[0], new long[0]).soNguoi));
 
-        final String sql = doc("../sql/them_bang_lau_dai.sql");
+        final String sql = doc("../du_lieu/sql_nguon/them_bang_lau_dai.sql");
         for (final String b : new String[]{"tob_kinh_te_ngay", "tob_char_lau_dai", "tob_nhiem_vu_lau_dai", "tob_mua_tuan",
             "tob_boss_dong_gop", "tob_ham_nguc", "tob_pvp_mua", "tob_su_pham", "tob_char_xp_cu", "tob_pokedex_shiny",
             "tob_giftcode", "tob_giftcode_log", "tob_qua_online", "tob_chiem_thanh_tuan"}) {
-            Kiem.dung("sql/them_bang_lau_dai.sql tao " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
+            Kiem.dung("du_lieu/sql_nguon/them_bang_lau_dai.sql tao " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
             Kiem.dung("DatabaseLauDai cung tu tao " + b, doc("src/data/DatabaseLauDai.java").contains("CREATE TABLE IF NOT EXISTS " + b + " "));
         }
-        for (final String f : new String[]{"../sql/them_bang_lau_dai.sql", "../sql/pokemon_lau_dai.sql", "../sql/vo_hieu_giftcode_tt.sql"}) {
+        for (final String f : new String[]{"../du_lieu/sql_nguon/them_bang_lau_dai.sql", "../du_lieu/sql_nguon/pokemon_lau_dai.sql", "../du_lieu/sql_nguon/vo_hieu_giftcode_tt.sql"}) {
             final String s = doc(f).toUpperCase();
             Kiem.sai(f + " khong dung CREATE TABLE ... LIKE", s.matches("(?s).*CREATE TABLE[^;]*\\sLIKE\\s.*"));
             Kiem.sai(f + " khong dung TIMESTAMPDIFF", s.contains("TIMESTAMPDIFF"));
@@ -246,7 +246,7 @@ public final class KiemLauDaiGd2 {
         }
 
         // 1.10 giftcode tt
-        final String gc = doc("../sql/vo_hieu_giftcode_tt.sql");
+        final String gc = doc("../du_lieu/sql_nguon/vo_hieu_giftcode_tt.sql");
         Kiem.dung("sql vo hieu giftcode tt", gc.contains("UPDATE giftcode SET limit_use = 0 WHERE giftcode = 'tt'"));
         Kiem.dung("limit_use = 0 nghia la het luot (DatabaseGiftCode)", doc("src/data/DatabaseGiftCode.java").contains("if (limit == 0) {"));
     }
@@ -927,7 +927,7 @@ public final class KiemLauDaiGd2 {
         final String dl = doc("src/data/DatabaseLauDai.java");
         Kiem.dung("nap mau khong JOIN", dl.contains("napMauNhiemVu") && !dl.toUpperCase().contains(" JOIN "));
         // vat pham dung + noi dung
-        final String vp = doc("../sql/pokemon_vat_pham_lau_dai.sql");
+        final String vp = doc("../du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql");
         Kiem.dung("type 28 + bang hieu ung", vp.contains("data_vat_pham_lau_dai") && vp.contains("Bùa bảo hộ"));
         Kiem.dung("map dung vat pham goi VatPhamDungLauDai", docThuMuc("src/real").contains("VatPhamDungLauDai.dung("));
         Kiem.dung("keo EXP 10-12 bi chan khi bat co", docThuMuc("src/real").contains("keo EXP"));

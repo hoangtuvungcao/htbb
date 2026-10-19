@@ -2,7 +2,7 @@
 """Sinh danh muc cau hinh trung tam tu tools/cauhinh/danh_muc.json (NGUON DUY NHAT).
 
 Ra 3 tep (KHONG sua tay, chay lai script nay sau khi sua danh_muc.json):
-  1. sql/pokemon_cau_hinh_trung_tam.sql            - bang + danh muc cau_hinh_danh_muc / cau_hinh_nhom (idempotent).
+  1. du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql            - bang + danh muc cau_hinh_danh_muc / cau_hinh_nhom (idempotent).
                                                      May chu game NAP danh muc tu hai bang nay luc khoi dong
                                                      (com.htbb.cauhinh.DanhMucSql) - khong con ban chep Java (P1).
                                                      Sua danh_muc.json -> chay script -> nap tep SQL vao CSDL -> khoi
@@ -22,7 +22,7 @@ import sys
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 NGUON = os.path.join(GOC, 'tools', 'cauhinh', 'danh_muc.json')
-RA_SQL = os.path.join(GOC, 'sql', 'pokemon_cau_hinh_trung_tam.sql')
+RA_SQL = os.path.join(GOC, 'du_lieu', 'sql_nguon', 'pokemon_cau_hinh_trung_tam.sql')
 RA_TS = os.path.join(GOC, 'web', 'shared', 'utils', 'cauHinhTrungTam.gen.ts')
 RA_MD = os.path.join(GOC, 'docs', 'cau-hinh.md')
 MOC_DAU = '<!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->'
@@ -156,7 +156,7 @@ DDL = [
 ]
 
 # Danh muc (cau_hinh_danh_muc) + nhom (cau_hinh_nhom): may chu game nap luc khoi dong (P1). Tep migration
-# sql/them_p1_du_lieu_sql.sql chep dung hai DDL nay (test/KiemDuLieuSql doi chieu).
+# vps/nang_cap_csdl.sql chep dung hai DDL nay (test/KiemDuLieuSql doi chieu).
 DDL_DANH_MUC = (
     'CREATE TABLE IF NOT EXISTS `cau_hinh_danh_muc` (`khoa` VARCHAR(64) NOT NULL, `nhom` VARCHAR(20) NOT NULL,'
     " `ten` VARCHAR(160) NOT NULL DEFAULT '', `mo_ta` TEXT NOT NULL, `kieu` VARCHAR(12) NOT NULL,"

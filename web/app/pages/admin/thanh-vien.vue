@@ -138,7 +138,7 @@ onMounted(taiTq)
       <UButton to="/thanh-vien" target="_blank" color="neutral" variant="ghost" icon="i-lucide-external-link" label="Trang công khai" />
     </template>
 
-    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng thành viên" description="Chạy HTBB/sql/pokemon_nap_tien.sql rồi HTBB/sql/pokemon_thanh_vien.sql trên htbb_db." />
+    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng thành viên" description="Chạy HTBB/du_lieu/sql_nguon/pokemon_nap_tien.sql rồi HTBB/du_lieu/sql_nguon/pokemon_thanh_vien.sql trên htbb_db." />
     <UAlert v-if="tq?.cauHinh.banBat && !tq.ban.duoc" color="error" variant="solid" icon="i-lucide-shield-x" title="Đã bật bán nhưng CHƯA bán được (fail closed)" :description="tq.ban.lyDo.join(' · ')" />
     <UAlert v-if="tq && !tq.cauHinh.bat" color="info" variant="subtle" icon="i-lucide-flask-conical" title="Đang TẮT bắt buộc (giai đoạn thử nghiệm)" description="Không tính năng nào bị khoá. Bật khi mở game chính thức; server áp dụng sau ≤ 10 giây, không cần khởi động lại." />
 

@@ -1,66 +1,43 @@
-# sql — CSDL đầy đủ, bản seed và migration
+# sql — một tệp CSDL đầy đủ
 
-## Dựng CSDL mới: một tệp
+Thư mục này chỉ có **`htbb_day_du.sql`**: cả hai CSDL `account` và `htbb_db` — schema, dữ liệu Pokémon, danh mục cấu
+hình, chỉ mục. Không có dữ liệu người chơi.
 
-```sh
-mysql -u root < sql/htbb_day_du.sql                         # tạo cả `account` lẫn `htbb_db`, đủ dữ liệu Pokémon
-mysql -u root htbb_db < sql/them_chi_muc_production.sql     # chỉ mục cho bảng nóng (chạy lại được)
-```
+## Máy mới
 
-CSDL **đang chạy** dựng trước P1 (19/10/2026): nạp migration P1 **trước** khi deploy jar mới, không thì máy chủ từ
-chối khởi động (dòng `THIEU DU LIEU SQL QUAN TRONG - DUNG SERVER` chỉ rõ bảng nào):
+Cài cấu hình MariaDB **trước** (`vps/htbb-mariadb.cnf`: utf8, `lower_case_table_names=1`; xem
+[docs/trien-khai.md](../docs/trien-khai.md)), rồi:
 
 ```sh
-mysql -u root htbb_db < sql/them_p1_du_lieu_sql.sql         # bảng dữ liệu thiết kế máy chủ đọc lúc khởi động (chạy lại được)
+mysql -u root < sql/htbb_day_du.sql      # tạo account + htbb_db, xong
+mysql -u root -e "UPDATE account.team_user SET password = PASSWORD('mật-khẩu-mạnh') WHERE username = 'admin';"
 ```
 
-Cài cấu hình MariaDB (`vps/htbb-mariadb.cnf`: utf8, `lower_case_table_names=1`) **trước** khi nạp — xem
-[docs/trien-khai.md](../docs/trien-khai.md). Có sẵn một tài khoản `admin`: đổi mật khẩu ngay sau khi nạp.
+Tài khoản `admin` trong tệp có mật khẩu ngẫu nhiên không ai biết: đổi ngay như trên. Server tự tạo thêm bảng theo kỳ và
+bảng phụ (`CREATE TABLE IF NOT EXISTS`) lúc chạy lần đầu.
 
-`htbb_day_du.sql` là **tệp sinh** (đừng sửa tay) bằng `sh tools/pokemon/xuat_sql_day_du.sh`: dựng lại trên MariaDB
-trống theo đúng thứ tự `server/loginServer/account.sql` → `gamedb7_clean.sql` → `vps/db_new_server.sql` → migration
-`them_*` / skin → các tệp `pokemon_*.sql` (`pokemon_thuat_ngu.sql` cuối cùng), chạy bằng `mysql -f` (lỗi "đã có" vô
-hại). Sửa dữ liệu Pokémon thì sửa nguồn (`du_lieu/*.csv`, bộ sinh trong `tools/pokemon/`), sinh lại tệp `pokemon_*.sql`
-rồi sinh lại `htbb_day_du.sql`. Server tự tạo thêm bảng theo kỳ và bảng phụ (`CREATE TABLE IF NOT EXISTS`) lúc chạy.
+## CSDL đang chạy (production): nâng cấp, không nạp lại
 
-## Các tệp
+**Không** nạp `htbb_day_du.sql` lên CSDL có người chơi (tệp `DROP TABLE` rồi tạo lại). Dùng một lệnh:
 
-| Nhóm | Tệp | Ghi chú |
-|---|---|---|
-| Seed gốc | `gamedb7_clean.sql` | bảng + dữ liệu game gốc, không có người chơi. Test đọc trực tiếp (`KiemBangThuocTinh`, `KiemDanhMucItem`) và `tools/SinhDanhMucItem.java` sinh `du_lieu/danh_muc_item.md` từ đây |
-| Pokémon (sinh) | `pokemon_*.sql` | dữ liệu quái, chiêu, vật phẩm, chữ, thuật ngữ, nội dung, nhiệm vụ, dài hạn, hệ sinh thái, chỉ số, nạp tiền, thành viên; `pokemon_cau_hinh_trung_tam.sql` sinh từ `tools/cauhinh/danh_muc.json` |
-| Thêm bảng | `them_bang_*.sql` | sự kiện (`tob_su_kien`), log online, nhật ký admin web, chặn spam web, cấm máy, 2FA, Pokédex, dài hạn, top, điều khiển server, `them_bang_web_lenh_nhan_vat.sql` (hàng đợi lệnh web → game; server và web cũng tự tạo bảng) |
-| Dữ liệu máy chủ đọc (P1) | `them_p1_du_lieu_sql.sql` | **sinh** bởi `tools/pokemon/sinh_them_p1.py`: chép nguyên khối DROP/CREATE/INSERT của 8 bảng mà máy chủ nạp lúc khởi động (`data_cap_do_lau_dai`, `data_nang_cap_lau_dai`, `data_kinh_te_lau_dai`, `data_su_kien_nam`, `data_hst_ho_cau`, `data_noi_dung_trang_bi`, `cau_hinh_danh_muc`, `cau_hinh_nhom`) từ các tệp `pokemon_*.sql`. Chỉ cho CSDL dựng trước P1 (thêm bảng `cau_hinh_nhom`, cột `cau_hinh_danh_muc.thu_tu`); `htbb_day_du.sql` đã gồm sẵn. `test/KiemDuLieuSql` đòi từng dòng khớp `htbb_day_du.sql` |
-| Thêm cột / khoá | `them_cot_*.sql`, `them_khoa_duy_nhat_giftcode_log.sql`, `them_chi_muc_production.sql`, `sua_cot_itemquest.sql` | chạy lại được; `sua_cot_itemquest.sql` cho CSDL dựng trước 19/10/2026 (cột `tob_char_quest.itemquest` 100 ký tự làm lưu nhiệm vụ thất bại trên MariaDB) |
-| Sự kiện, vật phẩm | `them_su_kien_world_cup.sql`, `them_phi_phong_vo_hinh.sql`, `skin_linh_thu.sql`, `ten_mo_ta_skin_linh_thu.sql`, `sua_type_skin_linh_thu.sql`, `vo_hieu_giftcode_tt.sql`, `xoa_su_kien_trung_lap.sql` | đã nằm trong `htbb_day_du.sql`; giữ vì test và mã nguồn trỏ vào |
-| Web CMS | `web_cms.sql` | bảng nội dung website (thiếu thì web dùng nội dung mặc định) |
-| Thao tác tay | `wipe_player_data.sql`, `wipe_sau_open_test.sql` | xoá dữ liệu người chơi — **sao lưu trước** |
+```sh
+sudo bash /opt/htbb/vps/nang_cap_csdl.sh
+```
 
-### Thứ tự nạp
+Script sao lưu (`vps/backup_db.sh`, hỏng là dừng) → nạp [`vps/nang_cap_csdl.sql`](../vps/nang_cap_csdl.sql) → kiểm 8
+bảng thiết kế và danh mục cấu hình. Chạy lại bao nhiêu lần cũng được; bảng người chơi chỉ được **thêm** bảng / cột /
+chỉ mục, không bị xoá hay sửa dòng. Phải chạy **trước** khi jar từ P1 trở đi khởi động, không thì máy chủ dừng với dòng
+`THIEU DU LIEU SQL QUAN TRONG - DUNG SERVER`.
 
-- **Máy mới:** chỉ `htbb_day_du.sql` (rồi `them_chi_muc_production.sql`). Thứ tự dựng bên trong nó nằm ở
-  `tools/pokemon/xuat_sql_day_du.sh`: `account.sql` → `gamedb7_clean.sql` → `vps/db_new_server.sql` → migration `them_*`
-  / skin → `pokemon_*.sql` (`them_cot_pokemon` … `pokemon_doi_chu` → `pokemon_lau_dai` → `pokemon_nhiem_vu` → … →
-  `pokemon_noi_dung` → `pokemon_nap_tien` →
-  `pokemon_he_sinh_thai` → `pokemon_vat_pham_lau_dai` → `pokemon_cau_hinh_trung_tam` → `pokemon_chi_so` →
-  `pokemon_thuat_ngu` cuối cùng).
-- **CSDL đang chạy, nâng lên P1:** sao lưu (`vps/backup_db.sh`) → `them_p1_du_lieu_sql.sql` → deploy jar → khởi động lại.
-  Sửa bảng thiết kế về sau: chạy lại bộ sinh, `python3 -I tools/pokemon/sinh_them_p1.py`, nạp lại tệp đó.
-- Từ P1 các bảng trên là **nguồn duy nhất** (không còn bản chép trong Java): sửa số liệu là sửa bộ sinh rồi nạp SQL, khởi
-  động lại máy chủ (danh mục cấu hình tự nạp lại sau ≤ 60 giây).
+## Sinh lại
 
-Đừng xoá tệp chỉ vì migration "đã áp dụng": nhiều tệp là nguồn schema cho test (`KiemSkinThuCuoi`, `KiemBangMaNguon`
-quét cả thư mục này), công cụ và trang quản trị.
+`htbb_day_du.sql` là **tệp sinh** — đừng sửa tay. Nguồn nằm ở [`du_lieu/sql_nguon/`](../du_lieu/sql_nguon/README.md)
+(seed, migration, tệp `pokemon_*.sql` sinh từ `du_lieu/*.csv`). Sửa nguồn / chạy lại bộ sinh, rồi:
 
-## Lưu ý dữ liệu
+```sh
+MYSQL="mysql -uroot -h127.0.0.1 -P<cổng MariaDB TRỐNG>" MYSQLDUMP="mysqldump -uroot -h127.0.0.1 -P<cổng>" \
+  sh tools/pokemon/xuat_sql_day_du.sh          # XOÁ và dựng lại account + htbb_db trên máy đó - không trỏ vào CSDL thật
+python3 -I tools/pokemon/sinh_nang_cap_csdl.py  # sinh lại vps/nang_cap_csdl.sql cho CSDL đang chạy
+```
 
-- **`data_attribute`** phải có id 0..186 liên tục (client tra theo vị trí; thiếu là đơ khi mở trang bị).
-- **`data_item`**: không bao giờ `DELETE` dòng ở giữa (client ghi mảng theo id). Muốn bỏ vật phẩm thì đổi thành loại
-  trơ, giữ dòng. Xoá template trong khi còn người giữ món đó là người đó không vào được game (`getTemplate()` trả
-  `null`); vật phẩm người chơi nằm trong chuỗi cột `equip` / `inven` / `bag` của `tob_char`, dạng
-  `<clazz>,<idTemplate>,<place>,...`.
-- **`data_potion`** luôn đúng 162 dòng (`Char.SO_O_THUOC`, client cấp phát theo số này): thuốc mới `UPDATE` vào ô trống.
-- Cột `xstart` của `data_item` là **icon trong hành trang**, độc lập với hình khi mặc (`atb7` / `atb8`). Dải icon
-  800–806 đã bị chiếm (phục vụ từ `map/other/`), đừng gán `xstart` vào đó.
-- Tệp ở đây là **LF** (`.gitattributes`). Dump trên Windows ra CRLF — đổi trước khi commit. Làm mới một bảng trong
-  seed: dump bằng `--skip-extended-insert --complete-insert --no-create-info` rồi thay đúng khối `INSERT`.
+`server/test/KiemDuLieuSql` đòi bảng thiết kế trong tệp sinh, `htbb_day_du.sql` và `vps/nang_cap_csdl.sql` khớp từng dòng.

@@ -80,7 +80,7 @@ public final class SkinThuCuoi {
 
     /**
      * Id template cua 6 vat pham skin trong bang data_item, dung thu tu skin 0..5.
-     * Tao bang sql/skin_linh_thu.sql. Doi id trong SQL thi phai doi o day cho khop.
+     * Tao bang du_lieu/sql_nguon/skin_linh_thu.sql. Doi id trong SQL thi phai doi o day cho khop.
      *
      * Skin 5 (Kim Cang Long) KHONG di theo bang hang so noi tai o duoi (xem CONG_HP..
      * BAO_KICH_HOAT) - chi so cua no la NGAU NHIEN THEO TUNG VAT PHAM, sinh luc tao bang
@@ -121,7 +121,7 @@ public final class SkinThuCuoi {
      *   - CharVongLap.getAnimalWearing : nhan skin bat ke idAnimal.
      *   - CharTrangBi (nap lai)  : chan skin roi vao nhanh do nhan vat.
      *
-     * Doi so nay phai doi kem trong data_item — xem sql/sua_type_skin_linh_thu.sql.
+     * Doi so nay phai doi kem trong data_item — xem du_lieu/sql_nguon/sua_type_skin_linh_thu.sql.
      */
     public static final int TYPE_ITEM = 30;
 
@@ -651,7 +651,7 @@ public final class SkinThuCuoi {
      *
      * SINH TU CHINH CAC BANG NOI TAI o tren, khong go tay: doi mot con so trong bang thi
      * mo ta nguoi choi doc duoc tu dong doi theo, khong the lech. test/KiemSkinThuCuoi doi
-     * chieu chuoi nay voi sql/skin_linh_thu.sql nen ban SQL cung khong the lech not.
+     * chieu chuoi nay voi du_lieu/sql_nguon/skin_linh_thu.sql nen ban SQL cung khong the lech not.
      *
      * CHI GHI THU DANG CHAY. Cac noi tai co ti le va hoi chieu trong ban mo ta (giam sat
      * thuong, la chan, phan sat thuong...) chua lam nen KHONG duoc ghi vao day — hua voi

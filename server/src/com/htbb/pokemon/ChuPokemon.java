@@ -1180,7 +1180,7 @@ public final class ChuPokemon {
 
     /**
      * LoginHandler.PORTION_NAME (ten thuoc trong thong bao server) lay theo ten CSDL da doi
-     * (sql/pokemon_doi_chu.sql), roi qua tu dien (phong khi chua chay SQL).
+     * (du_lieu/sql_nguon/pokemon_doi_chu.sql), roi qua tu dien (phong khi chua chay SQL).
      */
     private static void apTenThuoc() {
         final String[] ten = real.cmd.LoginHandler.PORTION_NAME;

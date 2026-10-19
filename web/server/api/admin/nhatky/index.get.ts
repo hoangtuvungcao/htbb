@@ -4,7 +4,7 @@
  * Đây là thứ trả lời câu “ai đã khoá tài khoản này?”, “mã quà kia ở đâu ra?”.
  * CỐ Ý CHỈ CÓ API ĐỌC, không có API xoá: một cuốn nhật ký xoá được thì không còn
  * là bằng chứng. Muốn dọn dòng cũ thì chạy tay câu DELETE ghi trong
- * sql/them_bang_web_admin_log.sql.
+ * du_lieu/sql_nguon/them_bang_web_admin_log.sql.
  *
  *   GET /api/admin/nhatky?ai=&viec=&doi=&trang=1
  */

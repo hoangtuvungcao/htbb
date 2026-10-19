@@ -4,7 +4,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Sinh sql/ten_mo_ta_skin_linh_thu.sql tu chinh cac bang so trong real.SkinThuCuoi.
+ * Sinh du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql tu chinh cac bang so trong real.SkinThuCuoi.
  *
  * VI SAO PHAI SINH CHU KHONG GO TAY:
  *
@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class SinhSqlTenSkinThu {
 
-    private static final String TEP = "sql/ten_mo_ta_skin_linh_thu.sql";
+    private static final String TEP = "du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql";
 
     public static void main(final String[] thamSo) throws Exception {
         final StringBuilder s = new StringBuilder();
@@ -42,7 +42,7 @@ public final class SinhSqlTenSkinThu {
         s.append("--  do mac duoc, nen mo ta duoc nhet vao name va xuong dong bang ky tu xuong dong\n");
         s.append("--  that. Game da lam san nhu vay voi ao Nghe Thuong, Ngoc Nu, Kim Dong...\n");
         s.append("--\n");
-        s.append("--  Chay sau sql/skin_linh_thu.sql, roi khoi dong lai may chu (bang item template\n");
+        s.append("--  Chay sau du_lieu/sql_nguon/skin_linh_thu.sql, roi khoi dong lai may chu (bang item template\n");
         s.append("--  chi nap mot lan luc bat may).\n");
         s.append("--\n");
         s.append("--      mysql -u root -p <ten_db> < ").append(TEP).append("\n");

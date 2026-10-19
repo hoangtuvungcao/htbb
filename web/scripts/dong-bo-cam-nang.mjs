@@ -13,7 +13,7 @@
  *   du_lieu/bang_vat_pham.csv         đếm trang bị theo loại
  *   docs/thiet-ke-game.md       (nếu có) chỉ để ghi nhận đã có tài liệu thiết kế
  *   du_lieu/map_moi/<id>.png          (chỉ khi --anh-map) ảnh xem trước bản đồ mới
- *   sql/pokemon_lau_dai.sql           số liệu đã có bảng SQL (data_kinh_te_lau_dai, data_nang_cap_lau_dai)
+ *   du_lieu/sql_nguon/pokemon_lau_dai.sql           số liệu đã có bảng SQL (data_kinh_te_lau_dai, data_nang_cap_lau_dai)
  *   src/com/htbb/pokemon/ThongSoLauDai.java  hằng số thiết kế dài hạn CHƯA có bảng SQL (sinh từ sinh_sql_lau_dai.py)
  *
  * Ghi:
@@ -86,9 +86,9 @@ const n = s => (s === '' || s == null ? null : Number(s))
 
 // ---------------------------------------------------------------- ThongSoLauDai.java
 
-// Số liệu ĐÃ CÓ trong SQL (bảng data_kinh_te_lau_dai / data_nang_cap_lau_dai của sql/pokemon_lau_dai.sql — máy chủ
+// Số liệu ĐÃ CÓ trong SQL (bảng data_kinh_te_lau_dai / data_nang_cap_lau_dai của du_lieu/sql_nguon/pokemon_lau_dai.sql — máy chủ
 // game nạp chính các bảng này lúc khởi động) đọc từ SQL; hằng thiết kế chưa có bảng SQL đọc từ ThongSoLauDai.java.
-const SQL_LD = doc('sql/pokemon_lau_dai.sql')
+const SQL_LD = doc('du_lieu/sql_nguon/pokemon_lau_dai.sql')
 const KT = new Map(docBangSql(SQL_LD, 'data_kinh_te_lau_dai').map(r => [String(r.khoa), String(r.gia_tri)]))
 const NC = docBangSql(SQL_LD, 'data_nang_cap_lau_dai').sort((a, b) => a.bac - b.bac || a.cong - b.cong)
 const NC0 = NC.filter(r => r.bac === NC[0]?.bac)

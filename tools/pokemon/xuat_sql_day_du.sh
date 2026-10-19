@@ -14,6 +14,8 @@ set -e
 MYSQL=${MYSQL:-mysql -uroot}
 MYSQLDUMP=${MYSQLDUMP:-mysqldump -uroot}
 RA=sql/htbb_day_du.sql
+# Tep nguon (seed, migration, pokemon_*.sql sinh): du_lieu/sql_nguon/. sql/ chi con tep day du nay.
+NGUON=du_lieu/sql_nguon
 
 # Migration cu: loi "da co" (1060 trung cot, 1062 trung khoa) la binh thuong vi seed da gom san.
 MIGRATION="them_bang_2buoc them_bang_cam_may them_bang_dieu_khien_server them_bang_su_kien
@@ -51,51 +53,56 @@ CHI_SO="pokemon_chi_so"
 # ngu cu con sot trong du lieu goc. Chay CUOI CUNG. BO_THUAT_NGU=1 bo buoc nay (de sinh lai chinh file do).
 THUAT_NGU="pokemon_thuat_ngu"
 [ "${BO_THUAT_NGU:-0}" = "1" ] && THUAT_NGU=""
+# Chi muc bang nong (CREATE INDEX IF NOT EXISTS): gom vao ban day du de may moi chi can MOT tep.
+CHI_MUC="them_chi_muc_production"
 
 $MYSQL -e "DROP DATABASE IF EXISTS account; CREATE DATABASE account CHARACTER SET utf8;
 DROP DATABASE IF EXISTS htbb_db; CREATE DATABASE htbb_db CHARACTER SET utf8;"
 $MYSQL --default-character-set=utf8 account < server/loginServer/account.sql > /dev/null
-$MYSQL --default-character-set=utf8 htbb_db < sql/gamedb7_clean.sql
+$MYSQL --default-character-set=utf8 htbb_db < du_lieu/sql_nguon/gamedb7_clean.sql
 # Admin trong ban dump co mat khau NGAU NHIEN (khong ai biet): sau khi nap, dat lai mat khau admin
 # (docs/trien-khai.md). Khong bao gio commit mat khau that vao repo.
 MK_NGAU_NHIEN=$(od -An -N12 -tx1 /dev/urandom | tr -d ' \n')
 sed "s/^SET @admin_pass = .*/SET @admin_pass = '$MK_NGAU_NHIEN';/" vps/db_new_server.sql \
     | $MYSQL --default-character-set=utf8 htbb_db > /dev/null
 for f in $MIGRATION; do
-    $MYSQL -f --default-character-set=utf8 htbb_db < sql/$f.sql 2>&1 | grep -v "ERROR 106[02]" || true
+    $MYSQL -f --default-character-set=utf8 htbb_db < $NGUON/$f.sql 2>&1 | grep -v "ERROR 106[02]" || true
 done
 for f in $POKEMON; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $LAU_DAI; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $NOI_DUNG; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $NAP_TIEN; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $HE_SINH_THAI; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $VAT_PHAM_LAU_DAI; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $CAU_HINH_TT; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $CHI_SO; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 for f in $THUAT_NGU; do
-    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
+done
+for f in $CHI_MUC; do
+    $MYSQL --default-character-set=utf8 htbb_db < $NGUON/$f.sql
 done
 
 {
     echo "-- Huyen Thoai Bao Boi (HTBB) - CSDL DAY DU cho server moi (account + htbb_db)."
     echo "-- SINH TU tools/pokemon/xuat_sql_day_du.sh - KHONG SUA TAY. Gom: gamedb7_clean.sql + vps/db_new_server.sql"
-    echo "-- + moi migration trong sql/ + moi file sql/pokemon_*.sql (thu tu xem script). Nap: mysql < sql/htbb_day_du.sql"
+    echo "-- + migration va pokemon_*.sql trong du_lieu/sql_nguon/ (thu tu xem script). Nap: mysql < sql/htbb_day_du.sql"
     $MYSQLDUMP --default-character-set=utf8 --databases account htbb_db --skip-lock-tables \
         --no-tablespaces --skip-comments --skip-dump-date
 } > "$RA"

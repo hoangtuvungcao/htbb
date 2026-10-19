@@ -92,5 +92,5 @@ MUC TIEU
   DAT   PvP khac he x2 + chi mang toi da sau tran >= 6 giay: xem bang 4
   DAT   Do bac cu nang toi da khong hon do bac hien tai +0 qua 30% (sau kep): lon nhat 1.29 (truoc kep 1.64)
   DAT   Bac moi +0 <= 1,10 x bac cu +15 cung cap, TONG chi so (goc + 11 o, THIET_KE 3.6, noi_dung_trang_bi.csv): lon nhat 1.091
-  DAT   Moi dong data_item trang bi nhan vat trong ngan sach sau sql/pokemon_chi_so.sql: 729 dong, truoc 70 vuot, sau 0
+  DAT   Moi dong data_item trang bi nhan vat trong ngan sach sau du_lieu/sql_nguon/pokemon_chi_so.sql: 729 dong, truoc 70 vuot, sau 0
   => 12/12

@@ -27,7 +27,7 @@ export async function docBangGame(ten: string): Promise<DongBang> {
     try {
       const dong = await q<Record<string, string | number | null>>(dbGame(), `SELECT * FROM \`${ten}\``)
       if (dong.length === 0) {
-        console.warn(`[du-lieu-sql] bảng ${ten} TRỐNG — dùng JSON dự phòng lúc build (nạp sql/htbb_day_du.sql hoặc tệp sql/pokemon_*.sql tương ứng).`)
+        console.warn(`[du-lieu-sql] bảng ${ten} TRỐNG — dùng JSON dự phòng lúc build (nạp sql/htbb_day_du.sql hoặc tệp du_lieu/sql_nguon/pokemon_*.sql tương ứng).`)
         return null
       }
       return dong.map(r => ({ ...r }))

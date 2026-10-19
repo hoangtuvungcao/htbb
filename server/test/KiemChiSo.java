@@ -238,8 +238,8 @@ public final class KiemChiSo {
 
     // ------------------------------------------------------------------ SQL / code
     static void kiemSqlVaCode() {
-        final String sql = doc("../sql/pokemon_chi_so.sql");
-        Kiem.dung("co sql/pokemon_chi_so.sql", sql.length() > 1000);
+        final String sql = doc("../du_lieu/sql_nguon/pokemon_chi_so.sql");
+        Kiem.dung("co du_lieu/sql_nguon/pokemon_chi_so.sql", sql.length() > 1000);
         int dem = 0;
         boolean khop = true;
         for (final ChiSoTrangBi.Dong d : ChiSoTrangBi.BANG) {
@@ -318,8 +318,8 @@ public final class KiemChiSo {
             final Class<?> s = cl.loadClass("SinhSqlChiSo");
             final Object items = s.getMethod("docDataItem", String.class).invoke(null, doc("../sql/htbb_day_du.sql"));
             final String sinh = (String) s.getMethod("sinhSql", List.class).invoke(null, items);
-            Kiem.dung("sql/pokemon_chi_so.sql dong bo voi nguon (chay lai tools/pokemon/SinhSqlChiSo neu lech)",
-                    sinh.equals(doc("../sql/pokemon_chi_so.sql")));
+            Kiem.dung("du_lieu/sql_nguon/pokemon_chi_so.sql dong bo voi nguon (chay lai tools/pokemon/SinhSqlChiSo neu lech)",
+                    sinh.equals(doc("../du_lieu/sql_nguon/pokemon_chi_so.sql")));
         }
     }
 }

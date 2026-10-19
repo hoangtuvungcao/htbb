@@ -13,7 +13,7 @@ import java.util.TreeMap;
 /**
  * Danh muc khoa cau hinh trung tam doc tu SQL: {@code cau_hinh_danh_muc} (moi khoa) + {@code cau_hinh_nhom}
  * (nhom hien thi). Hai bang SINH tu tools/cauhinh/danh_muc.json boi tools/cauhinh/sinh_cau_hinh.py
- * (sql/pokemon_cau_hinh_trung_tam.sql). Thay ban chep Java DanhMucSinh (da xoa, P1). Lop THUAN.
+ * (du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql). Thay ban chep Java DanhMucSinh (da xoa, P1). Lop THUAN.
  *
  * {@code gioi_han} la JSON: min, max, buoc, soPhanTu, mau, doDai, luaChon (ma), luaChonTen (nhan, cho web), hoa.
  */

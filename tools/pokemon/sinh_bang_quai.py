@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 Sinh du_lieu/bang_quai.csv: MOI dong data_monster (138 dong) -> Pokemon thay the,
-va sql/pokemon_du_lieu_quai.sql (UPDATE data_monster SET dex/shiny/he/he2 - chay SAU
-sql/them_cot_pokemon.sql). Vat_the giu dex=0 -> client ve bang anh cu.
+va du_lieu/sql_nguon/pokemon_du_lieu_quai.sql (UPDATE data_monster SET dex/shiny/he/he2 - chay SAU
+du_lieu/sql_nguon/them_cot_pokemon.sql). Vat_the giu dex=0 -> client ve bang anh cu.
 
 Nguon:
-  - sql/gamedb7_clean.sql, bang data_monster (id, ten, cap, maxhp)
+  - du_lieu/sql_nguon/gamedb7_clean.sql, bang data_monster (id, ten, cap, maxhp)
   - ANH_XA ben duoi (do nguoi quyet dinh - SUA O DAY, khong sua tay file CSV)
   - PokeAPI (he cua loai) + tracker.json cua PMDCollab/SpriteCollab (co sprite chua)
 
@@ -23,9 +23,9 @@ import sys
 import urllib.request
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SQL = os.path.join(GOC, "sql", "gamedb7_clean.sql")
+SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "gamedb7_clean.sql")
 RA = os.path.join(GOC, "du_lieu", "bang_quai.csv")
-RA_SQL = os.path.join(GOC, "sql", "pokemon_du_lieu_quai.sql")
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_du_lieu_quai.sql")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 
 TRACKER = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/tracker.json"
@@ -241,14 +241,14 @@ def main():
                     "shiny", "he1", "he2", "pmd_sprite(2=du,1=co)", "ghi_chu"])
         w.writerows(dong)
         # Quai nam 2 (id 139+) do tools/pokemon/sinh_noi_dung.py them (data_monster nam trong
-        # sql/pokemon_noi_dung.sql): noi lai nguyen van de chay lai script nay khong lam mat.
+        # du_lieu/sql_nguon/pokemon_noi_dung.sql): noi lai nguyen van de chay lai script nay khong lam mat.
         them = os.path.join(GOC, "du_lieu", "noi_dung_quai_moi_bang.csv")
         if os.path.exists(them):
             with open(them, encoding="utf8", newline="") as g:
                 w.writerows(list(csv.reader(g))[1:])
     with open(RA_SQL, "w", encoding="utf8", newline="\n") as f:
         f.write("-- SINH TU tools/pokemon/sinh_bang_quai.py - KHONG SUA TAY.\n")
-        f.write("-- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.htbb.pokemon.HePokemon).\n")
+        f.write("-- Chay SAU du_lieu/sql_nguon/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.htbb.pokemon.HePokemon).\n")
         f.write("-- Chi dung cho server che_do_pokemon=1: cot he khong con la ngu hanh 0..4.\n")
         for d in dong:
             id_quai, dex, shiny, he1, he2 = d[0], d[5], d[7], d[8], d[9]

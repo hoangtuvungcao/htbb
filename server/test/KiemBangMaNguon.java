@@ -81,15 +81,15 @@ public final class KiemBangMaNguon {
      * bat duoc file MOI bi hong.
      */
     private static final List<String> BO_QUA = Arrays.asList(
-        "../sql/them_bang_cam_may.sql",
-        "../sql/gamedb7_clean.sql",
+        "../du_lieu/sql_nguon/them_bang_cam_may.sql",
+        "../du_lieu/sql_nguon/gamedb7_clean.sql",
         "../vps/db_new_server.sql"
         // web/admin/*.php (5 tep) da ra khoi danh sach: website PHP da bo (docs/kien-truc.md).
     );
 
     // "web" (website PHP cu) da bo - xem docs/kien-truc.md. Website Nuxt nam o repo
     // HTBB-Web, co bo kiem rieng (npm test) va duoc KiemThuatNgu quet chu.
-    private static final String[] THU_MUC = { "src", "test", "../tools", "../sql", "../docs", "../du_lieu" };
+    private static final String[] THU_MUC = { "src", "test", "../tools", "../sql", "../docs", "../du_lieu", "../vps" };
     private static final String[] DUOI = { ".java", ".php", ".sql", ".md" };
 
     public static void chay() {

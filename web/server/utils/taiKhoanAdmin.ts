@@ -197,7 +197,7 @@ export function tkTenTrangThaiLenh(trangThai: number): string {
 }
 
 /**
- * Cùng định nghĩa với LenhWeb.taoBang() và sql/them_bang_web_lenh_nhan_vat.sql. Chỉ
+ * Cùng định nghĩa với LenhWeb.taoBang() và du_lieu/sql_nguon/them_bang_web_lenh_nhan_vat.sql. Chỉ
  * CREATE khi bảng chưa có: người dùng MySQL của web có thể không có quyền CREATE, lúc đó
  * bảng đã được server tạo sẵn thì vẫn phải chạy được. Bảng cũ thiếu cột tham_so thì thêm.
  */

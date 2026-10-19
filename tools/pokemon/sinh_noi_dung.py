@@ -9,7 +9,7 @@ MOT NGUON: moi con so lay tu tools/pokemon/sinh_sql_lau_dai.py (ngan sach kinh t
 tran cap theo mua, chi phi nang cap) + bang da co (sql/htbb_day_du.sql, du_lieu/*.csv).
 Sua so O DAY roi chay lai; KHONG sua tay cac file sinh ra:
 
-  sql/pokemon_noi_dung.sql            bang staging data_noi_dung_* (DROP/CREATE/INSERT) + phan
+  du_lieu/sql_nguon/pokemon_noi_dung.sql            bang staging data_noi_dung_* (DROP/CREATE/INSERT) + phan
                                       NAP DUOC NGAY: data_item id 1001..1199 (DELETE + INSERT,
                                       chay lai nhieu lan van dung). Gom vao xuat_sql_day_du.sh.
   du_lieu/noi_dung_*.csv         ban noi bo (co id, cong thuc, nguon)
@@ -42,7 +42,7 @@ GOC = os.path.dirname(os.path.dirname(DIR))
 sys.path.insert(0, DIR)
 import sinh_sql_lau_dai as LD  # noqa: E402
 
-RA_SQL = os.path.join(GOC, "sql", "pokemon_noi_dung.sql")
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_noi_dung.sql")
 RA_DOC = os.path.join(GOC, "du_lieu")
 RA_WEB = os.path.join(GOC, "du_lieu", "web")
 F_CHIEU = os.path.join(GOC, "du_lieu", "bang_chieu.csv")

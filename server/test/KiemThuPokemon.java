@@ -109,7 +109,7 @@ public final class KiemThuPokemon {
         Kiem.sai("13999 (skin thu) khong thuoc dai", com.htbb.pokemon.IconPokemon.thuocDai(13999));
         Kiem.sai("15000 ngoai dai", com.htbb.pokemon.IconPokemon.thuocDai(15000));
         try {
-            final List<String> sql = Files.readAllLines(new File("../sql/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
+            final List<String> sql = Files.readAllLines(new File("../du_lieu/sql_nguon/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
             for (final String d : sql) {
                 final java.util.regex.Matcher m = java.util.regex.Pattern.compile("xstart=(\\d+)").matcher(d);
@@ -127,7 +127,7 @@ public final class KiemThuPokemon {
             Kiem.dung("sendByteImg phuc vu dai icon Pokemon", dg.contains("IconPokemon.thuocDai(idImg)"));
             Kiem.dung("nIconItem van la 866 (khong dung dai cu)", dg.contains("nIconItem = 866;"));
         } catch (final Exception e) {
-            Kiem.dung("doc sql/pokemon_icon_vat_pham.sql: " + e, false);
+            Kiem.dung("doc du_lieu/sql_nguon/pokemon_icon_vat_pham.sql: " + e, false);
         }
 
         Kiem.nhom("com.htbb.pokemon.TenMapPokemon - doi ten dia danh");

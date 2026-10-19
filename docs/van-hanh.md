@@ -83,7 +83,7 @@ sống" nghĩa là cron chưa cài:
 * * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/logs/dieu-khien-server.log 2>&1
 ```
 
-(Bảng tạo bằng `sql/them_bang_dieu_khien_server.sql`.) Nút "Khởi động lại ngay" trên trang này bật cờ
+(Bảng tạo bằng `du_lieu/sql_nguon/them_bang_dieu_khien_server.sql`.) Nút "Khởi động lại ngay" trên trang này bật cờ
 `5h_systems.restart` — server lưu dữ liệu và thoát trong ≤ 5 giây **không báo trước**; muốn báo người chơi thì
 dùng mục 4.4.
 
@@ -200,6 +200,9 @@ sudo systemctl start htbb-login htbb-game
 - Trước khi khôi phục, chạy sao lưu ngay một lần để còn đường quay lại trạng thái trước sự cố.
 - Nên bật bảo trì (mục 4.3) hoặc tắt `htbb-web` trong lúc nạp để không ai ghi dở dang.
 - Mọi tiến độ của người chơi từ thời điểm bản lưu đến lúc khôi phục sẽ mất: báo trên kênh cộng đồng.
+- Khôi phục bản lưu cũ hơn bản jar đang chạy: chạy lại `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` trước khi bật game
+  (nâng CSDL lên schema / dữ liệu thiết kế hiện tại; chạy lại được, không đụng dữ liệu người chơi — [sql/README.md](../sql/README.md)).
+- Xoá dữ liệu người chơi (wipe sau open test): `vps/van_hanh/wipe_*.sql` — đọc đầu tệp, tắt server và sao lưu trước.
 
 ---
 
@@ -414,7 +417,7 @@ bật máy). Mặc định game tự lo:
 
 Bật bằng hai dòng *World Cup* ở `/admin/sukien`; ba khoá `sv.worldCupBatDau`, `sv.worldCupKetThuc`,
 `sv.worldCupHanNhanQua` (`yyyy-MM-dd HH:mm:ss`, phải `batDau < ketThuc <= hanNhanQua`) chỉ là mặc định khi bảng chưa
-có dòng. Trống = tắt. Lần đầu mở sự kiện chạy `sql/them_su_kien_world_cup.sql` một lần (tạo bảng điểm, đặt tên vật
+có dòng. Trống = tắt. Lần đầu mở sự kiện chạy `du_lieu/sql_nguon/them_su_kien_world_cup.sql` một lần (tạo bảng điểm, đặt tên vật
 phẩm hộp quà). Giai đoạn `batDau → ketThuc`: đánh quái nhặt Quả bóng vàng, đổi phiếu bầu; `ketThuc → hanNhanQua`:
 người bầu cho bên thắng nhận quà ở NPC.
 
@@ -522,7 +525,7 @@ phần sau. Không phát lượng lớn qua bảng cũ: lượng là `int`, trà
 
 1. **Giấy phép** đã có bằng văn bản → mới làm tiếp. Luật sư rà `/dieu-khoan-thanh-toan`, `/chinh-sach-hoan-tien`, và
    sửa `/dieu-khoan` (đang ghi "không nạp tiền").
-2. **CSDL**: bảng nạp đã có chưa? Nếu chưa: `sudo mysql htbb_db < /opt/htbb/sql/pokemon_nap_tien.sql` (chạy lại an toàn).
+2. **CSDL**: bảng nạp đã có chưa? Nếu chưa: `sudo mysql htbb_db < /opt/htbb/du_lieu/sql_nguon/pokemon_nap_tien.sql` (chạy lại an toàn).
    Sao lưu trước.
 3. **SePay** (my.sepay.vn — tên menu có thể đổi theo phiên bản):
    - Đăng ký, liên kết **đúng** tài khoản ngân hàng nhận tiền (số tài khoản → `HTBB_NAP_ACCOUNT_NO`, tên chủ tài khoản
@@ -606,7 +609,7 @@ nhắn trỏ về `/kichhoat` hoặc `/thanh-vien`. `kich_hoat.thanh_vien_la_kic
 **Bật Thành viên khi mở chính thức**
 
 1. Cổng thanh toán đã chạy an toàn (mục 9.3 bước 2–4; Thành viên dùng chung đơn/sổ cái/webhook). Chạy
-   `sql/pokemon_thanh_vien.sql` **sau** `sql/pokemon_nap_tien.sql` nếu chưa có bảng.
+   `du_lieu/sql_nguon/pokemon_thanh_vien.sql` **sau** `du_lieu/sql_nguon/pokemon_nap_tien.sql` nếu chưa có bảng.
 2. `/admin/thanh-vien` › Cấu hình: chọn tính năng, giá (`thanh_vien.gia`, đồng bộ gói `THANH_VIEN`), thời hạn
    (`thanh_vien.thoi_han_ngay`, 0 = vĩnh viễn), miễn cho nhân vật dưới cấp N (`thanh_vien.mien_cap`) → bật **Mở BÁN**
    (`thanh_vien.ban_bat`). Bán thật chỉ khi đủ giấy phép + cổng an toàn — hộp đỏ cho biết thiếu gì. Mở bán Thành viên

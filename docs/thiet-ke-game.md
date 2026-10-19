@@ -774,7 +774,7 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 
 ## 7. Hệ sinh thái
 
-Bật bằng `sv.he_sinh_thai=1` (cần chạy `sql/pokemon_he_sinh_thai.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
+Bật bằng `sv.he_sinh_thai=1` (cần chạy `du_lieu/sql_nguon/pokemon_he_sinh_thai.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
 menu NPC đổi thưởng, hoặc gõ `hst`; phím tắt `cauca`, `dao`, `dua`. Đơn vị tiền là **‰H** = phần nghìn giờ thu nhập ở cấp
 người chơi. Mục tiêu: mỗi kiểu người chơi (chiến đấu, sưu tầm, xã hội, chế tác / thương nhân, chơi nhẹ) có việc dài hạn,
 và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính nó).

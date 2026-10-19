@@ -7,7 +7,7 @@
  *   ho_tro        : hỗ trợ người chơi (khoá/mở, cấm chat, đổi mật khẩu, gửi thư, kích hoạt).
  *   xem           : chỉ xem (mọi GET trừ trang phân quyền / tải file chẩn đoán).
  *
- * Vai trò khác lưu ở htbb_db.web_admin_vai_tro (sql/web_cms.sql). Quyền kiểm ở MỘT chỗ:
+ * Vai trò khác lưu ở htbb_db.web_admin_vai_tro (du_lieu/sql_nguon/web_cms.sql). Quyền kiểm ở MỘT chỗ:
  * defineAdminHandler gọi kiemQuyen(đường dẫn, phương thức, vai trò) cho mọi /api/admin/**.
  */
 import type { H3Event } from 'h3'

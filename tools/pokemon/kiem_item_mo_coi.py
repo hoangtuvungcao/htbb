@@ -7,11 +7,11 @@ che tao - nang cap/nop nhiem vu/doi o NPC/trang tri/suu tap). Ban cho NPC chi la
 
 Doc (khong ket noi CSDL):
   sql/htbb_day_du.sql            data_item, data_potion, data_shop (trang thai seed)
-  sql/pokemon_noi_dung.sql       data_item 1001..1199 (de len ban seed, giong thu tu xuat_sql_day_du.sh)
-  sql/pokemon_vat_pham_lau_dai.sql  data_item 1201..1260 + data_vat_pham_lau_dai + data_cua_hang_lau_dai
-  sql/pokemon_doi_chu.sql        UPDATE ten (data_item/data_potion)
-  sql/pokemon_lau_dai.sql        data_quest_moi (chuoi chinh, engine cu), data_shop_gia_lau_dai
-  sql/pokemon_nhiem_vu.sql       data_vat_pham_nhiem_vu (vat pham nhiem vu 10..50)
+  du_lieu/sql_nguon/pokemon_noi_dung.sql       data_item 1001..1199 (de len ban seed, giong thu tu xuat_sql_day_du.sh)
+  du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql  data_item 1201..1260 + data_vat_pham_lau_dai + data_cua_hang_lau_dai
+  du_lieu/sql_nguon/pokemon_doi_chu.sql        UPDATE ten (data_item/data_potion)
+  du_lieu/sql_nguon/pokemon_lau_dai.sql        data_quest_moi (chuoi chinh, engine cu), data_shop_gia_lau_dai
+  du_lieu/sql_nguon/pokemon_nhiem_vu.sql       data_vat_pham_nhiem_vu (vat pham nhiem vu 10..50)
   du_lieu/noi_dung_roi.csv, nhiem_vu_moi.csv
   src/**.java                    ngoc (MapNapTaiNguyen), vat lieu he sinh thai (VatLieuSinhThai/KyNangSong/
                                  NhaTre), cong thuc, Pokedex + QUET so lieu cung trong code (nguon/cong dung)
@@ -37,7 +37,8 @@ import sys
 import unicodedata
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SQL = os.path.join(GOC, "sql")
+SQL = os.path.join(GOC, "du_lieu", "sql_nguon")
+DUMP_DAY_DU = os.path.join(GOC, "sql", "htbb_day_du.sql")
 DOC = os.path.join(GOC, "du_lieu")
 SRC = os.path.join(GOC, "server", "src")
 RA_MD = os.path.join(DOC, "KIEM_ITEM.md")
@@ -205,7 +206,7 @@ class DuLieu:
 
 
 def nap_vu_tru(d):
-    dump = doc(os.path.join(SQL, "htbb_day_du.sql"))
+    dump = doc(DUMP_DAY_DU)
     d.thong_tin["dump"] = "sql/htbb_day_du.sql"
     cot_item = cot_bang(dump, "data_item")
     item = {}
@@ -802,7 +803,7 @@ def nguon_nhiem_vu(d):
         for x in pg:
             d.nguon("thuoc:%s" % x, "thưởng chuỗi chính (potiongift)", noi, "LD")
     # chuoi chinh game cu (data_quest, LD=0)
-    dump = doc(os.path.join(SQL, "htbb_day_du.sql"))
+    dump = doc(DUMP_DAY_DU)
     cot_q = cot_bang(dump, "data_quest")
     for r in doc_insert(dump, "data_quest", cot_q):
         noi = "data_quest id %s" % r["id"]
@@ -819,7 +820,7 @@ def nguon_nhiem_vu(d):
 def nguon_cua_hang(d):
     """data_shop (doBuySpecialItem): slot thuong = potions[id+19]; slot dac biet da quet tu code. LD: chan theo
     data_shop_gia_lau_dai (tien_moi != tien_cu hoac 9 = khong ban)."""
-    dump = doc(os.path.join(SQL, "htbb_day_du.sql"))
+    dump = doc(DUMP_DAY_DU)
     shop = doc_insert(dump, "data_shop", cot_bang(dump, "data_shop"))
     gia = {}
     s = doc(os.path.join(SQL, "pokemon_lau_dai.sql"))
@@ -1097,8 +1098,8 @@ def tu_cam(d, kq, cam):
 
 # File du lieu dau vao: dau van tay ghi vao KIEM_ITEM.md, test/KiemItemMoCoi.java tinh lai -> bao "chay lai script"
 # khi SQL/CSV doi ma bao cao cu. (Khong gom .java: doi nhom khac sua code lien tuc.)
-DAU_VAO = ["sql/htbb_day_du.sql", "sql/pokemon_noi_dung.sql", "sql/pokemon_vat_pham_lau_dai.sql", "sql/pokemon_lau_dai.sql",
-           "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
+DAU_VAO = ["sql/htbb_day_du.sql", "du_lieu/sql_nguon/pokemon_noi_dung.sql", "du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql", "du_lieu/sql_nguon/pokemon_lau_dai.sql",
+           "du_lieu/sql_nguon/pokemon_doi_chu.sql", "du_lieu/sql_nguon/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
            "du_lieu/nhiem_vu_moi.csv"]
 
 

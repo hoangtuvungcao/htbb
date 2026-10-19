@@ -15,7 +15,7 @@ import re
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 F_CHU = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "ChuPokemon.java")
 F_MAP = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "TenMapPokemon.java")
-F_DUMP = os.path.join(GOC, "sql", "gamedb7_clean.sql")
+F_DUMP = os.path.join(GOC, "du_lieu", "sql_nguon", "gamedb7_clean.sql")
 
 PHAN_BIET = "="
 
@@ -328,7 +328,7 @@ def nap_csdl(cac_file_sql):
             db[bang][int(r["id"])] = r
     da_sua = set()  # (bang, id, cot) bi file SQL khac sua
     for f in cac_file_sql:
-        p = os.path.join(GOC, "sql", f)
+        p = os.path.join(GOC, "du_lieu", "sql_nguon", f)
         if not os.path.exists(p):
             continue
         s = open(p, encoding="utf8").read()

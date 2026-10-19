@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Vat pham tieu hao / do giu moi (GD2b, docs/thiet-ke-game.md + 9.1): data_item type 28 id
- * 1201..1260 (sql/pokemon_vat_pham_lau_dai.sql) + bang data_vat_pham_lau_dai (id -> hieu_ung lay
+ * 1201..1260 (du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql) + bang data_vat_pham_lau_dai (id -> hieu_ung lay
  * NGUYEN chuoi cua doi noi dung, vd "tc:20,giay:90"). Bo doc hieu ung la DU LIEU: them vat pham moi
  * chi can them dong, khong sua code, mien la dung cac khoa da ho tro duoi day. Chi chay khi LauDai.bat().
  *

@@ -6,7 +6,7 @@ ma nguoi choi nhin thay. Nguon: PMDCollab RawAsset/Item (16x16) va chan dung Spr
 
 Ra (KHONG sua tay, chay lai tool):
   map/icon_pokemon/<n>.png               server phuc vu o id anh 14000+n (IconPokemon)
-  sql/pokemon_icon_vat_pham.sql          UPDATE data_item.xstart -> 14000+n, va tach vai o anh
+  du_lieu/sql_nguon/pokemon_icon_vat_pham.sql          UPDATE data_item.xstart -> 14000+n, va tach vai o anh
                                          thuoc dung chung (data_potion.idImage / data_shop.idImg)
   src/com/htbb/pokemon/IconPokemonBang.java
                                          bang thuan: chi so anh cu cua cac dai KHONG co cot DB
@@ -40,7 +40,7 @@ Moi dong ICON = (nguon, [dung cho...]).
           "potion:K" "gem:K" "thu:K" "nv:K" "trai:K"
                              anh cu 5500+K / 6500+K / 7500+K / 8000+K / 8200+K
           "nd:KHOA"          noi dung moi (tools/pokemon/sinh_noi_dung.py doc bang_icon.csv, tu ghi
-                             xstart/icon vao sql/pokemon_noi_dung.sql) - KHONG sinh dong SQL o day
+                             xstart/icon vao du_lieu/sql_nguon/pokemon_noi_dung.sql) - KHONG sinh dong SQL o day
           "dp:ID>K"          data_potion id ID chuyen sang o anh thuoc K (K phai la o TRONG -
           "ds:ID>K"          data_shop  ...                       test kiem tren htbb_day_du.sql)
                              (dung de tach hai vat pham khac nghia dang dung chung mot anh cu)
@@ -61,7 +61,7 @@ import zlib
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA_ANH = os.path.join(GOC, "server", "map", "icon_pokemon")
-RA_SQL = os.path.join(GOC, "sql", "pokemon_icon_vat_pham.sql")
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_icon_vat_pham.sql")
 RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "IconPokemonBang.java")
 RA_CSV = os.path.join(GOC, "du_lieu", "bang_icon.csv")
 RA_XEM = os.path.join(GOC, "du_lieu", "xem_truoc_icon.png")

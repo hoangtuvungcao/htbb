@@ -245,7 +245,7 @@ public final class KiemNhiemVu {
                 }
             }
         }
-        final String sqlNv = new String(Files.readAllBytes(Paths.get("../sql/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
+        final String sqlNv = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
         final Set<String> vatNv = new HashSet<String>(java.util.Arrays.asList("Nọc bọ cạp", "Khúc gỗ", "Rết đỏ", "Lá thư",
                 "Lông đuôi Hồng Kê", "Móng cá sấu", "Da ếch", "Cựa gà"));
         final Matcher mv = Pattern.compile("\\((\\d+),'([^']*)'\\)").matcher(
@@ -475,7 +475,7 @@ public final class KiemNhiemVu {
 
     // ------------------------------------------------------------------ file
     private static void kiemFile(final List<Map<String, String>> nv) throws Exception {
-        final String sql = new String(Files.readAllBytes(Paths.get("../sql/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
+        final String sql = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_nhiem_vu.sql")), StandardCharsets.UTF_8);
         Kiem.dung("pokemon_nhiem_vu.sql: SET NAMES + data_nhiem_vu_noi_dung", sql.contains("SET NAMES utf8;")
                 && sql.contains("CREATE TABLE `data_nhiem_vu_noi_dung`"));
         int dong = 0;

@@ -166,7 +166,7 @@ build rồi đẩy `.output` lên VPS. Chi tiết: [web/README.md](../web/README
 
 - **Cấu hình trung tâm:** sửa `tools/cauhinh/danh_muc.json` → `python3 tools/cauhinh/sinh_cau_hinh.py` (sinh Java,
   SQL, TS và bảng trong [cau-hinh.md](cau-hinh.md); `--kiem` để kiểm lệch).
-- **Dữ liệu game:** bảng nguồn `du_lieu/*.csv` → bộ sinh trong `tools/pokemon/` → `sql/pokemon_*.sql`;
+- **Dữ liệu game:** bảng nguồn `du_lieu/*.csv` → bộ sinh trong `tools/pokemon/` → `du_lieu/sql_nguon/pokemon_*.sql`;
   `sh tools/pokemon/xuat_sql_day_du.sh` gộp mọi thứ thành `sql/htbb_day_du.sql`. Xem
   [du_lieu/README.md](../du_lieu/README.md), [tools/README.md](../tools/README.md), [sql/README.md](../sql/README.md).
 - Chạy công cụ Python **ở gốc repo**: `python3 -I tools/pokemon/<tên>.py`.

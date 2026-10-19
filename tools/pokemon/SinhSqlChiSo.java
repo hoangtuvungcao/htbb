@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * SINH sql/pokemon_chi_so.sql + du_lieu/chi_so_trang_bi.csv (docs/thiet-ke-game.md).
+ * SINH du_lieu/sql_nguon/pokemon_chi_so.sql + du_lieu/chi_so_trang_bi.csv (docs/thiet-ke-game.md).
  *
  * NGUON: com.htbb.pokemon.ChiSoTrangBi (ten / don vi / mo ta 198 dong chi so) + com.htbb.pokemon.NganSachTrangBi
  * (ngan sach o / cap) + bang data_item trong sql/htbb_day_du.sql (chi lay type + level cua dong, KHONG lay chi so,
  * nen sinh lai sau khi dump da chua migration nay van ra DUNG file cu: idempotent theo quy tac, khong theo anh chup).
- * Ten cu (cot ten_cu cua CSV) doc tu ban seed sql/gamedb7_clean.sql.
+ * Ten cu (cot ten_cu cua CSV) doc tu ban seed du_lieu/sql_nguon/gamedb7_clean.sql.
  *
  * Chay o HTBB/ (can build/src hoac thu muc lop tuy y chua com.htbb.pokemon):
  *   javac -encoding UTF-8 -cp &lt;lop src&gt; -d &lt;ra&gt; tools/pokemon/SinhSqlChiSo.java
@@ -29,8 +29,8 @@ import java.util.TreeMap;
 public final class SinhSqlChiSo {
 
     static final String DUMP = "sql/htbb_day_du.sql";
-    static final String SEED = "sql/gamedb7_clean.sql";
-    static final String RA_SQL = "sql/pokemon_chi_so.sql";
+    static final String SEED = "du_lieu/sql_nguon/gamedb7_clean.sql";
+    static final String RA_SQL = "du_lieu/sql_nguon/pokemon_chi_so.sql";
     static final String RA_CSV = "du_lieu/chi_so_trang_bi.csv";
 
     public static void main(final String[] args) throws Exception {

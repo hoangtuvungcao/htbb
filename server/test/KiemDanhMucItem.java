@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Doi chieu du_lieu/danh_muc_item.md voi bang data_item trong sql/gamedb7_clean.sql.
+ * Doi chieu du_lieu/danh_muc_item.md voi bang data_item trong du_lieu/sql_nguon/gamedb7_clean.sql.
  *
  * Doc lai NGUON (SQL) bang mot cach RIENG (khong goi lai code cua SinhDanhMucItem)
  * roi so id+ten voi tep da sinh - phong sinh thieu/du/sai id ma khong ai nhin ra
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public final class KiemDanhMucItem {
 
-    private static final String NGUON = "../sql/gamedb7_clean.sql";
+    private static final String NGUON = "../du_lieu/sql_nguon/gamedb7_clean.sql";
     private static final String DICH = "../du_lieu/danh_muc_item.md";
 
     // Bat dau moi tuple data_item: "(<id>, '<ten co the co dau nhay thoat \' hoac ''>'"

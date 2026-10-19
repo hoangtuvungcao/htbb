@@ -134,7 +134,7 @@ function hoiRestart() {
       <template #description>
         <p>Chạy một lần trên máy chủ:</p>
         <p class="mt-1">
-          <code>mysql -u root htbb_db &lt; sql/them_bang_dieu_khien_server.sql</code>
+          <code>mysql -u root htbb_db &lt; du_lieu/sql_nguon/them_bang_dieu_khien_server.sql</code>
         </p>
         <p class="mt-1 text-xs">
           Lỗi đọc được: {{ data.loiDoc }}
@@ -148,7 +148,7 @@ function hoiRestart() {
       variant="subtle"
       icon="i-lucide-database"
       title="Bảng dieu_khien_server chưa có dòng id=1."
-      description="Chạy lại sql/them_bang_dieu_khien_server.sql để thêm dòng mặc định."
+      description="Chạy lại du_lieu/sql_nguon/them_bang_dieu_khien_server.sql để thêm dòng mặc định."
     />
 
     <template v-else-if="data && tt">

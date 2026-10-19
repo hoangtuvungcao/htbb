@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 /**
- * Luu Pokedex (viec G7.D2) - xem sql/them_bang_pokedex.sql.
+ * Luu Pokedex (viec G7.D2) - xem du_lieu/sql_nguon/them_bang_pokedex.sql.
  *
  *   tob_pokedex        (id_char, dex, so_ha, lan_dau)  : moi loai da gap / da ha
  *   tob_pokedex_thuong (id_char, moc, thoi_gian)       : moc thuong da nhan (chan nhan 2 lan)

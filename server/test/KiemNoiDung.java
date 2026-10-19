@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * chieu, quai/Gym/boss, bang roi, su kien, trang tri, cua hang, che tao.
  *
  * VI SAO: tat ca sinh tu tools/pokemon/sinh_noi_dung.py (doc so tu sinh_sql_lau_dai.py) ra
- * sql/pokemon_noi_dung.sql + du_lieu/noi_dung_*.csv + du_lieu/web/*.csv. Sua so
+ * du_lieu/sql_nguon/pokemon_noi_dung.sql + du_lieu/noi_dung_*.csv + du_lieu/web/*.csv. Sua so
  * trong script ma quen chay lai, hoac chinh so pha ngan sach (bac moi manh hon 1,1 x bac cu
  * +15, gia ngoai tam thu nhap, do Hoan my roi tu quai thuong, chieu lech TTK...) -> test do.
  * Chi doc file, khong can CSDL.
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public final class KiemNoiDung {
 
     private static final String D = "../du_lieu/";
-    private static final String F_SQL = "../sql/pokemon_noi_dung.sql";
+    private static final String F_SQL = "../du_lieu/sql_nguon/pokemon_noi_dung.sql";
     private static final String F_DUMP = "../sql/htbb_day_du.sql";
     private static final int ID_TU = 1001;
     private static final int ID_DEN = 1199;

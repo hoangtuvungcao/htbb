@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Sinh du_lieu/danh_muc_item.md tu bang data_item trong sql/gamedb7_clean.sql
+ * Sinh du_lieu/danh_muc_item.md tu bang data_item trong du_lieu/sql_nguon/gamedb7_clean.sql
  * (BAN MOI, khong phai htbb_db.sql da cu - xem README.md).
  *
  * VI SAO SINH CHU KHONG GO TAY: ~900 vat pham, go tay chac chan sot/sai id.
@@ -20,12 +20,12 @@ import java.util.regex.Pattern;
  *
  * Cach dung: java -cp "server/build/classes;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucItem
  *
- * Chay lai khi sql/gamedb7_clean.sql doi (them/sua vat pham). test/KiemDanhMucItem.java
+ * Chay lai khi du_lieu/sql_nguon/gamedb7_clean.sql doi (them/sua vat pham). test/KiemDanhMucItem.java
  * doi chieu so luong + vai id moc voi chinh file SQL, phong sinh thieu/sinh sai.
  */
 public final class SinhDanhMucItem {
 
-    private static final String NGUON = "sql/gamedb7_clean.sql";
+    private static final String NGUON = "du_lieu/sql_nguon/gamedb7_clean.sql";
     private static final String DICH = "du_lieu/danh_muc_item.md";
 
     private static final Pattern INSERT = Pattern.compile(

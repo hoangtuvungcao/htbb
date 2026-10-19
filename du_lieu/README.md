@@ -1,9 +1,12 @@
 # du_lieu — bảng dữ liệu thiết kế game
 
 Bảng CSV (UTF-8, dòng đầu là tiêu đề) mô tả nội dung Pokémon: loài, chiêu, quái, vật phẩm, nhiệm vụ, bản đồ, sự
-kiện. Đây là **nguồn** cho bộ sinh trong `tools/pokemon/` (ra `sql/pokemon_*.sql`), cho website (`npm run
+kiện. Đây là **nguồn** cho bộ sinh trong `tools/pokemon/` (ra `du_lieu/sql_nguon/pokemon_*.sql`), cho website (`npm run
 dong-bo-du-lieu`), cho client (đóng gói sprite) và là dữ liệu đối chiếu của rất nhiều test `server/test/Kiem*`.
 Luồng dữ liệu: [docs/kien-truc.md](../docs/kien-truc.md). Ý nghĩa các hệ thống: [docs/thiet-ke-game.md](../docs/thiet-ke-game.md).
+
+`sql_nguon/`: tệp SQL nguồn để dựng `sql/htbb_day_du.sql` (seed `gamedb7_clean.sql`, migration `them_*` / `sua_*`, tệp sinh
+`pokemon_*.sql`, `web_cms.sql`) — xem [sql/README.md](../sql/README.md).
 
 Sửa bảng → chạy lại bộ sinh tương ứng → chạy test. Bảng có cột ghi "sinh bởi" thì sửa ở công cụ, không sửa tay.
 
@@ -28,8 +31,8 @@ Sinh bởi `tools/pokemon/sinh_noi_dung.py` (đừng sửa tay), kiểm bởi `K
 `noi_dung_bo`), vật phẩm (`noi_dung_vat_pham`, `noi_dung_item_moi`, `noi_dung_su_kien_vat_pham`), nguyên liệu / chế tạo /
 phân rã / vật liệu nâng cấp, ngọc hệ, chiêu (`noi_dung_chieu`, `noi_dung_chieu_ttk`, `noi_dung_chieu_nhanh_eevee`),
 quái mới / đại cấp / tinh anh / boss thế giới, Gym, cửa hàng, rơi đồ (`noi_dung_roi`), trang trí / ngoại hình
-(`noi_dung_trang_tri`). Cùng lúc ra `sql/pokemon_noi_dung.sql` và `du_lieu/web/*.csv`; `sinh_vat_pham_lau_dai.py` đọc các bảng này ra
-`sql/pokemon_vat_pham_lau_dai.sql`.
+(`noi_dung_trang_tri`). Cùng lúc ra `du_lieu/sql_nguon/pokemon_noi_dung.sql` và `du_lieu/web/*.csv`; `sinh_vat_pham_lau_dai.py` đọc các bảng này ra
+`du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql`.
 
 ## Bản đồ, nhiệm vụ, sự kiện
 
@@ -48,8 +51,8 @@ quái mới / đại cấp / tinh anh / boss thế giới, Gym, cửa hàng, rơ
 |---|---|
 | `NHIEM_VU_THIET_KE.md` | `tools/pokemon/sinh_nhiem_vu.py` — thiết kế nhiệm vụ + bảng đã sinh (test đọc mục "Yêu cầu engine") |
 | `KIEM_ITEM.md`, `kiem_item.csv` | `tools/pokemon/kiem_item_mo_coi.py` — mọi vật phẩm phải có chỗ dùng |
-| `danh_muc_item.md` | `tools/SinhDanhMucItem.java` — danh mục `data_item` từ `sql/gamedb7_clean.sql` |
-| `chi_so_trang_bi.csv` | `tools/pokemon/SinhSqlChiSo.java` (cùng `sql/pokemon_chi_so.sql`) |
+| `danh_muc_item.md` | `tools/SinhDanhMucItem.java` — danh mục `data_item` từ `du_lieu/sql_nguon/gamedb7_clean.sql` |
+| `chi_so_trang_bi.csv` | `tools/pokemon/SinhSqlChiSo.java` (cùng `du_lieu/sql_nguon/pokemon_chi_so.sql`) |
 | `kiem_ke_sprite.csv` | `tools/pokemon/tai_sprite_pmd.py` — kiểm kê động tác sprite |
 | `tu_cam_con_lai.csv` | `tools/pokemon/quet_tu_cam.py` — từ kiếm hiệp còn sót |
 | `mo_phong_kinh_te.csv`, `mo_phong_tom_tat.txt` (biểu đồ `mo_phong_*.png` sinh ra, không commit) | `tools/pokemon/MoPhongKinhTe.java` |

@@ -666,9 +666,9 @@ public final class KiemHeSinhThai {
     // ------------------------------------------------------------------ SQL sinh ra
 
     static void duLieuSql() {
-        Kiem.nhom("He sinh thai - sql/pokemon_he_sinh_thai.sql (sinh tu tools/pokemon/sinh_sql_he_sinh_thai.py)");
+        Kiem.nhom("He sinh thai - du_lieu/sql_nguon/pokemon_he_sinh_thai.sql (sinh tu tools/pokemon/sinh_sql_he_sinh_thai.py)");
         try {
-            final String sql = new String(Files.readAllBytes(new File("../sql/pokemon_he_sinh_thai.sql").toPath()), StandardCharsets.UTF_8);
+            final String sql = new String(Files.readAllBytes(new File("../du_lieu/sql_nguon/pokemon_he_sinh_thai.sql").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("co dau SINH RA / KHONG SUA TAY", sql.startsWith("-- SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py"));
             for (final String b : new String[]{"data_hst_vung", "data_hst_thay_quai", "data_hst_bung_phat", "data_hst_vung_loai", "data_hst_ho_cau",
                 "tob_hst_nhan_vat", "tob_hst_cho", "tob_hst_don", "tob_hst_hop_thu"}) {
@@ -714,7 +714,7 @@ public final class KiemHeSinhThai {
             final String bp = sql.substring(sql.indexOf("INSERT INTO `data_hst_bung_phat`"), sql.indexOf("DROP TABLE IF EXISTS `data_hst_vung_loai`"));
             Kiem.sai("bung phat khong o map 40 (MOBA) / 42", bp.contains("\n(40,") || bp.contains("\n(42,"));
         } catch (final Exception e) {
-            Kiem.dung("doc sql/pokemon_he_sinh_thai.sql: " + e, false);
+            Kiem.dung("doc du_lieu/sql_nguon/pokemon_he_sinh_thai.sql: " + e, false);
         }
         try {
             final String sh = new String(Files.readAllBytes(new File("../tools/pokemon/xuat_sql_day_du.sh").toPath()), StandardCharsets.UTF_8);

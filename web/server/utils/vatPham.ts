@@ -2,7 +2,7 @@
  * Đọc vật phẩm của nhân vật từ ba cột `equip`, `inven`, `bag` của bảng `tob_char`.
  *
  * KHÔNG CÓ BẢNG tob_item trên server này. Trang bị / hành trang / rương được
- * serialize thẳng vào ba cột nói trên (xem ghi chú ở sql/wipe_player_data.sql).
+ * serialize thẳng vào ba cột nói trên (xem ghi chú ở vps/van_hanh/wipe_player_data.sql).
  *
  * ĐỊNH DẠNG (lấy từ chính bộ ghi và bộ nạp của server, không phải đoán):
  *

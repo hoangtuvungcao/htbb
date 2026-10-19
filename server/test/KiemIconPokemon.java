@@ -63,7 +63,7 @@ public final class KiemIconPokemon {
             Kiem.dung("nIconItem van la 866", dg.contains("nIconItem = 866;"));
 
             // So dong SQL sinh ra.
-            final List<String> sql = Files.readAllLines(new File("../sql/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
+            final List<String> sql = Files.readAllLines(new File("../du_lieu/sql_nguon/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
             int dong = 0;
             int khai = -1;
             final Map<String, Integer> tachThuoc = new HashMap<String, Integer>();
@@ -87,7 +87,7 @@ public final class KiemIconPokemon {
             // CSDL day du sau migration.
             final String db = doc("../sql/htbb_day_du.sql");
             final List<List<String>> item = hang(db, "data_item");
-            // Dai id 1001..1199 = noi dung moi (tools/pokemon/sinh_noi_dung.py -> sql/pokemon_noi_dung.sql,
+            // Dai id 1001..1199 = noi dung moi (tools/pokemon/sinh_noi_dung.py -> du_lieu/sql_nguon/pokemon_noi_dung.sql,
             // xem test/KiemNoiDung): 0 dong (dump sinh truoc khi gom) hoac du so dong cua noi_dung_item_moi.csv.
             int goc = 0;
             int noiDung = 0;
@@ -97,7 +97,7 @@ public final class KiemIconPokemon {
                     noiDung++;
                 } else if (id >= 1201 && id <= 1260) {
                     // Dai 1201..1260 = vat pham dung lau dai (tools/pokemon/sinh_vat_pham_lau_dai.py ->
-                    // sql/pokemon_vat_pham_lau_dai.sql), khong tinh vao bang goc.
+                    // du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql), khong tinh vao bang goc.
                     continue;
                 } else {
                     goc++;

@@ -1866,7 +1866,7 @@ public class Database {
                 if (TeamServer.isServerIndo()) {
                     final String nameIn = rs.getString("namein");
                     if (nameIn != null && !nameIn.trim().isEmpty() && !"\"\"".equals(nameIn.trim())) {
-                        name = nameIn; // sql/pokemon_chi_so.sql xoa namein: rong thi giu ten tieng Viet
+                        name = nameIn; // du_lieu/sql_nguon/pokemon_chi_so.sql xoa namein: rong thi giu ten tieng Viet
                     }
                 }
                 ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM.add(new NameAttributeItem(i, name, rs.getByte("ispercent"), rs.getByte("idcolor")));
@@ -5751,7 +5751,7 @@ public class Database {
             stmt = conn.createStatement();
             final String sql = "SELECT * FROM data_monster";
             ResultSet rs = stmt.executeQuery(sql);
-            // Cot Pokemon (sql/them_cot_pokemon.sql): dex, shiny, he2. CSDL chua chay
+            // Cot Pokemon (du_lieu/sql_nguon/them_cot_pokemon.sql): dex, shiny, he2. CSDL chua chay
             // migration thi thieu cot - hoi MOT lan qua findColumn, thieu thi giu mac dinh
             // trong MonsterTemplate (dex 0 = khong gui trong goi -91), khong lam hong
             // ca vong nap template.
@@ -12338,7 +12338,7 @@ public void addCharXaiNapLuong(Char p, int type) {
      * themCotCongTacHienThi(): DatabaseNhanVat.saveChar/saveCharAuto ghi thang cac cot
      * nay, thieu cot thi UPDATE nem loi va saveChar KHOA NHAN VAT ngay lan luu dau tien.
      * Goi 1 lan luc khoi dong server, TRUOC khi nhan nguoi choi vao - cung nhom voi
-     * themCotCongTacHienThi(). Xem sql/them_cot_kho_xu_luong.sql (chay tay cung duoc,
+     * themCotCongTacHienThi(). Xem du_lieu/sql_nguon/them_cot_kho_xu_luong.sql (chay tay cung duoc,
      * ALTER TABLE ADD COLUMN chay lai lan hai chi bao loi vo hai, bang nay tu lam roi).
      */
     public void themCotKhoXuLuong() {
@@ -12348,11 +12348,11 @@ public void addCharXaiNapLuong(Char p, int type) {
     }
 
     /**
-     * Cot cua che do Pokemon (sql/them_cot_pokemon.sql): tob_char.dex/shiny va
+     * Cot cua che do Pokemon (du_lieu/sql_nguon/them_cot_pokemon.sql): tob_char.dex/shiny va
      * data_monster.dex/shiny/he2. Goi luc khoi dong,
      * PHAI TRUOC khi nap template quai (Map.loadAllTemplate) va nhan nguoi choi - cung
      * ly do voi themCotKhoXuLuong().
-     * Chay sql/them_cot_pokemon.sql bang tay truoc van la cach chinh; ham nay chi la
+     * Chay du_lieu/sql_nguon/them_cot_pokemon.sql bang tay truoc van la cach chinh; ham nay chi la
      * luoi an toan, co cot roi thi khong lam gi.
      */
     public void themCotPokemon() {
@@ -12361,7 +12361,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         themCotBangNeuThieu("data_monster", "dex", "SMALLINT", "0");
         themCotBangNeuThieu("data_monster", "shiny", "TINYINT", "0");
         themCotBangNeuThieu("data_monster", "he2", "TINYINT", "-1");
-        // G7.D2: bang Pokedex (sql/them_bang_pokedex.sql) - CREATE TABLE IF NOT EXISTS.
+        // G7.D2: bang Pokedex (du_lieu/sql_nguon/them_bang_pokedex.sql) - CREATE TABLE IF NOT EXISTS.
         DatabasePokedex.taoBang();
     }
 

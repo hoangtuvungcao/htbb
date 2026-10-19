@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sinh sql/pokemon_vat_pham_lau_dai.sql: vat pham tieu hao/do giu MOI (kieu item type 28) cho GD2b.
+"""Sinh du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql: vat pham tieu hao/do giu MOI (kieu item type 28) cho GD2b.
 
 Doc du_lieu/noi_dung_vat_pham.csv (do sinh_noi_dung.py cua doi noi dung sinh - KHONG sua o
 day): moi dong trang_thai = can_code thanh mot data_item id 1201.. (dai cua GD2b; 1001..1199 la
@@ -21,7 +21,7 @@ import re
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 VAO = os.path.join(GOC, "du_lieu", "noi_dung_vat_pham.csv")
-RA = os.path.join(GOC, "sql", "pokemon_vat_pham_lau_dai.sql")
+RA = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_vat_pham_lau_dai.sql")
 ID_DAU = 1201
 ID_CUOI = 1260
 # Bua bao ho that: +7..+10 (10 luong khoa cu) va +11..+15 (25 luong khoa cu). Icon: Gummi he

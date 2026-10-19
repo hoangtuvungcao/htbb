@@ -3,7 +3,7 @@
  *
  * Tên bảng / cột ở đây là HẰNG SỐ trong mã — route chỉ nhận `ma` (khoá của DS_DU_LIEU_GAME), không
  * bao giờ ghép chuỗi người dùng gõ vào SQL. Tìm kiếm `q` đi qua tham số `?`.
- * Nhãn cột lấy từ tên cột + chú thích trong HTBB/sql/*.sql + mã Java đọc bảng.
+ * Nhãn cột lấy từ tên cột + chú thích trong HTBB/du_lieu/sql_nguon/*.sql + mã Java đọc bảng.
  * Đơn vị tiền: xu (gold), lượng, lượng khoá.
  *
  * File thuần (không import gì) — tests/du-lieu-game.test.ts kiểm danh mục.

@@ -215,7 +215,7 @@ public final class KiemTangToc {
         Kiem.sai("nhiem vu: khong con chu 'chờ tới ngày thứ'", nv.contains("chờ tới ngày thứ") || nv.contains("Mở vào ngày thứ"));
         Kiem.dung("huyen thoai: buoc sau can cap cao hon (HT-ZAP.2 cap 42)", nv.contains("HT-ZAP.2,5502,huyen_thoai,1,Mọi vùng,Huyền thoại: Zapdos,,2,")
                 && nv.split("HT-ZAP.2,5502,")[1].split("\n")[0].contains(",42,"));
-        final String vp = new String(Files.readAllBytes(Paths.get("../sql/pokemon_vat_pham_lau_dai.sql")), StandardCharsets.UTF_8);
+        final String vp = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql")), StandardCharsets.UTF_8);
         boolean du = true;
         for (int i = 0; i < 4; i++) {
             du &= vp.contains("(" + TangToc.ID_CAO_CAP[i] + ",'" + TangToc.MA[i] + "',") && vp.contains("(" + TangToc.ID_KHOA[i] + ",'"
@@ -223,7 +223,7 @@ public final class KiemTangToc {
         }
         Kiem.dung("sql vat pham: du 8 mau tang toc (nhom tang_toc)", du);
         Kiem.dung("Kecleon ban ban khoa (luong khoa, gioi han tuan)", vp.contains("'luong_khoa:15','ITEM:1251:1'"));
-        final String nt = new String(Files.readAllBytes(Paths.get("../sql/pokemon_nap_tien.sql")), StandardCharsets.UTF_8);
+        final String nt = new String(Files.readAllBytes(Paths.get("../du_lieu/sql_nguon/pokemon_nap_tien.sql")), StandardCharsets.UTF_8);
         for (final String ma : new String[]{"ve_exp_15", "ve_exp_2", "bua_the_luc", "uy_thac", "keo_hiem"}) {
             Kiem.dung("nap_cua_hang co " + ma + " (trao tang_toc)", nt.contains("('" + ma + "',") && nt.contains("'tang_toc','tang_toc'"));
         }

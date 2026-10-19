@@ -183,7 +183,7 @@ public final class CamTheoMay {
         }
         daBaoLoi = true;
         System.out.println("CAM THEO MAY: " + ex
-                + " (chay 'mysql -u root htbb_db < sql/them_bang_cam_may.sql' neu chua tao bang;"
+                + " (chay 'mysql -u root htbb_db < du_lieu/sql_nguon/them_bang_cam_may.sql' neu chua tao bang;"
                 + " se khong bao lai cho den khi chay duoc)");
     }
 

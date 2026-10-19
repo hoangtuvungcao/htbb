@@ -5,7 +5,7 @@
 --      mysql -u root < /opt/htbb/vps/db_new_server.sql
 --
 --  CHẠY SAU KHI đã import 2 file:
---      mysql -u root htbb_db < /opt/htbb/sql/gamedb7_clean.sql
+--      mysql -u root htbb_db < /opt/htbb/du_lieu/sql_nguon/gamedb7_clean.sql
 --      mysql -u root account < /opt/htbb/loginServer/account.sql
 --
 --  Script này làm 5 việc:

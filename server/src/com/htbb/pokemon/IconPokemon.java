@@ -5,7 +5,7 @@ package com.htbb.pokemon;
  * tools/pokemon/sinh_icon_pokemon.py - nguon DUY NHAT cua danh sach icon).
  *
  * Hai cach mot icon PMD toi tay nguoi choi:
- *  - Cot DB (data_item.xstart): sql/pokemon_icon_vat_pham.sql dat thang 14000+n.
+ *  - Cot DB (data_item.xstart): du_lieu/sql_nguon/pokemon_icon_vat_pham.sql dat thang 14000+n.
  *  - Dai anh KHONG co cot DB (client tu cong 5500/6500/7500/8000/8200 vao chi so 1 byte):
  *    {@link #doiAnh} doi chi so cu -> n theo bang sinh IconPokemonBang, DataGame.sendByteImg
  *    goi.

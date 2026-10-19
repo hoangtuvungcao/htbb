@@ -4,7 +4,7 @@ T1/T3: bang thu cuoi (linh thu, src/data/Animal.java) + pet (item type 25/26/27)
 
 Ra:
   du_lieu/bang_thu.csv               (KHONG sua tay - sua bang ben duoi roi chay lai)
-  sql/pokemon_doi_ten_thu.sql             doi ten item pet/trung/ky lan (chi `name`)
+  du_lieu/sql_nguon/pokemon_doi_ten_thu.sql             doi ten item pet/trung/ky lan (chi `name`)
 
 Bao loi (ma thoat 1) neu loai chon khong co sprite PMD (tracker.json),
 hoac ANIMAL khong du 21 loai (Animal.java co 21 hang so 0..20).
@@ -21,7 +21,7 @@ import urllib.request
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA = os.path.join(GOC, "du_lieu", "bang_thu.csv")
-RA_SQL = os.path.join(GOC, "sql", "pokemon_doi_ten_thu.sql")
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_doi_ten_thu.sql")
 ANIMAL_JAVA = os.path.join(GOC, "server", "src", "data", "Animal.java")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 TRACKER = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/tracker.json"

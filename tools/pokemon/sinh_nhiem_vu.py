@@ -11,8 +11,8 @@ so lieu tu sinh_sql_lau_dai.py (ngan sach, EXP/xu moi gio) + du_lieu/noi_dung_*.
 
 Ra (KHONG sua tay):
   du_lieu/nhiem_vu_moi.csv          (qua sinh_sql_lau_dai: 30 cot cu + cot moi)
-  sql/pokemon_lau_dai.sql                (qua sinh_sql_lau_dai: data_quest_lau_dai + data_quest_moi)
-  sql/pokemon_nhiem_vu.sql               data_nhiem_vu_noi_dung (hoi thoai, goi y, nhanh, an...),
+  du_lieu/sql_nguon/pokemon_lau_dai.sql                (qua sinh_sql_lau_dai: data_quest_lau_dai + data_quest_moi)
+  du_lieu/sql_nguon/pokemon_nhiem_vu.sql               data_nhiem_vu_noi_dung (hoi thoai, goi y, nhanh, an...),
                                          data_nhiem_vu_kieu, data_vat_pham_nhiem_vu
   du_lieu/nhiem_vu_nhip_do.csv      nhip do theo cap (so lua chon, gio noi dung)
   du_lieu/web/nhiem_vu_tom_tat.json tom tat cho website (khong id, khong ngan sach, khong dap an)
@@ -42,7 +42,7 @@ import nv_hoenn as NH  # noqa: E402
 import nv_lap_lai as NL  # noqa: E402
 
 D = os.path.join(GOC, "du_lieu")
-RA_SQL = os.path.join(GOC, "sql", "pokemon_nhiem_vu.sql")
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_nhiem_vu.sql")
 RA_NHIP = os.path.join(D, "nhiem_vu_nhip_do.csv")
 RA_WEB = os.path.join(D, "web", "nhiem_vu_tom_tat.json")
 RA_DOC = os.path.join(D, "NHIEM_VU_THIET_KE.md")

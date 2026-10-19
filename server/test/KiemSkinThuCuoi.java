@@ -1375,8 +1375,8 @@ public final class KiemSkinThuCuoi {
     private static void kiemMoTaVatPham() {
         Kiem.nhom("Skin linh thu - mo ta vat pham khop voi bang so");
 
-        final String sql = doc("../sql/ten_mo_ta_skin_linh_thu.sql");
-        Kiem.dung("doc duoc sql/ten_mo_ta_skin_linh_thu.sql", sql.length() > 100);
+        final String sql = doc("../du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql");
+        Kiem.dung("doc duoc du_lieu/sql_nguon/ten_mo_ta_skin_linh_thu.sql", sql.length() > 100);
         Kiem.dung("tep sql ghi ro la duoc sinh ra", sql.contains("DUNG SUA TAY"));
 
         for (int s = 0; s < real.SkinThuCuoi.SO_SKIN; s++) {
@@ -1394,7 +1394,7 @@ public final class KiemSkinThuCuoi {
 
         // Tep cai dat goc phai chi sang tep nay, khong thi nguoi cai chi chay mot tep va
         // vat pham mang ten ngan khong co mo ta.
-        final String goc = doc("../sql/skin_linh_thu.sql");
+        final String goc = doc("../du_lieu/sql_nguon/skin_linh_thu.sql");
         Kiem.dung("skin_linh_thu.sql chi sang tep ten/mo ta",
                 goc.contains("ten_mo_ta_skin_linh_thu.sql"));
     }
@@ -1532,8 +1532,8 @@ public final class KiemSkinThuCuoi {
                 real.SkinThuCuoi.TYPE_ITEM >= 14 && real.SkinThuCuoi.TYPE_ITEM <= 18);
 
         // sql: ca 5 dong INSERT phai mang dung so type do.
-        final String sql = doc("../sql/skin_linh_thu.sql");
-        Kiem.dung("doc duoc sql/skin_linh_thu.sql", sql.length() > 0);
+        final String sql = doc("../du_lieu/sql_nguon/skin_linh_thu.sql");
+        Kiem.dung("doc duoc du_lieu/sql_nguon/skin_linh_thu.sql", sql.length() > 0);
         int soDong = 0;
         for (final String dong : sql.split("\n")) {
             if (!dong.contains("'Skin linh thú")) {
@@ -1548,8 +1548,8 @@ public final class KiemSkinThuCuoi {
         Kiem.bang("sql co du 5 dong INSERT", real.SkinThuCuoi.SO_SKIN, soDong);
 
         // Phai co san file chuyen doi cho may da chay ban sql cu.
-        final String vaSql = doc("../sql/sua_type_skin_linh_thu.sql");
-        Kiem.dung("co sql/sua_type_skin_linh_thu.sql", vaSql.length() > 0);
+        final String vaSql = doc("../du_lieu/sql_nguon/sua_type_skin_linh_thu.sql");
+        Kiem.dung("co du_lieu/sql_nguon/sua_type_skin_linh_thu.sql", vaSql.length() > 0);
         Kiem.dung("file chuyen doi dat type ve " + TYPE,
                 vaSql.contains("SET `type` = " + TYPE));
 
@@ -1616,8 +1616,8 @@ public final class KiemSkinThuCuoi {
     private static void kiemDaiIcon() {
         Kiem.nhom("Skin linh thu - dai icon khong dam vao Canh");
 
-        final String sql = doc("../sql/skin_linh_thu.sql");
-        Kiem.dung("doc duoc sql/skin_linh_thu.sql", sql.length() > 0);
+        final String sql = doc("../du_lieu/sql_nguon/skin_linh_thu.sql");
+        Kiem.dung("doc duoc du_lieu/sql_nguon/skin_linh_thu.sql", sql.length() > 0);
 
         int lonNhat = -1;
         for (int i = 0; i < real.SkinThuCuoi.SO_SKIN; i++) {

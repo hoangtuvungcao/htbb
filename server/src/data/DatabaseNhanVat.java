@@ -279,7 +279,7 @@ class DatabaseNhanVat {
                 p.setxu(rs.getLong("gold"));
                 p.setLuong(rs.getInt("luong"));
                 // Kho xu/luong (them 21/09/2026) - boc rieng vi cot moi, CSDL chua chay
-                // sql/them_cot_kho_xu_luong.sql thi vang cot nay, khong duoc lam hong ca
+                // du_lieu/sql_nguon/them_cot_kho_xu_luong.sql thi vang cot nay, khong duoc lam hong ca
                 // vong doc phia sau (pInfo, hanh trang...).
                 try {
                     p.khoXu = rs.getLong("kho_xu");

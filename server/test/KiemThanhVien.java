@@ -233,8 +233,8 @@ public final class KiemThanhVien {
     }
 
     static void sqlVaWeb() {
-        Kiem.nhom("Thanh vien - sql/pokemon_thanh_vien.sql + web");
-        final String s = doc("../sql/pokemon_thanh_vien.sql");
+        Kiem.nhom("Thanh vien - du_lieu/sql_nguon/pokemon_thanh_vien.sql + web");
+        final String s = doc("../du_lieu/sql_nguon/pokemon_thanh_vien.sql");
         Kiem.dung("mac dinh TAT", s.contains("('thanh_vien.bat','0'") && s.contains("('thanh_vien.ban_bat','0'"));
         Kiem.dung("chuc_nang mac dinh trung Java", s.contains("('thanh_vien.chuc_nang','" + ThanhVienLogic.CHUC_NANG_MAC_DINH + "'"));
         Kiem.dung("goi THANH_VIEN khong ban mac dinh", s.contains("'thanh_vien',20000,0,") && s.contains(",0,0);"));

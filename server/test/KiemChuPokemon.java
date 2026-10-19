@@ -22,7 +22,7 @@ public final class KiemChuPokemon {
 
     private static final String F_CS = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs";
     private static final String F_MFONT = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/MFont.cs";
-    private static final String F_SQL = "../sql/pokemon_doi_chu.sql";
+    private static final String F_SQL = "../du_lieu/sql_nguon/pokemon_doi_chu.sql";
     private static final String F_CON_LAI = "../du_lieu/tu_cam_con_lai.csv";
     private static final String F_CSV = "../du_lieu/bang_chu.csv";
     private static final String F_TFIELD = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/TField.cs";
@@ -416,7 +416,7 @@ public final class KiemChuPokemon {
         }
     }
 
-    /** sql/pokemon_doi_chu.sql: chi UPDATE don gian, nhay don da thoat, gia tri sach tu cam. */
+    /** du_lieu/sql_nguon/pokemon_doi_chu.sql: chi UPDATE don gian, nhay don da thoat, gia tri sach tu cam. */
     private static void kiemSql() {
         final String s = doc(F_SQL);
         Kiem.dung("co " + F_SQL, s != null);

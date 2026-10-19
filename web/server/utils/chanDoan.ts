@@ -333,8 +333,8 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
       return
     }
     them('Các bảng phụ', 'canhbao', `Thiếu ${thieu.length} bảng.`,
-      `mysql -u root ${DB_GAME} < sql/them_bang_web_admin_log.sql\n`
-      + `mysql -u root ${DB_GAME} < sql/them_bang_web_chan_spam.sql\n`
+      `mysql -u root ${DB_GAME} < du_lieu/sql_nguon/them_bang_web_admin_log.sql\n`
+      + `mysql -u root ${DB_GAME} < du_lieu/sql_nguon/them_bang_web_chan_spam.sql\n`
       + '# tob_nap_moc nằm ở PHẦN 2I của vps/db_new_server.sql', thieu)
   })
 

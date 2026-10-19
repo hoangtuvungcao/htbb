@@ -3,7 +3,7 @@ package com.htbb.pokemon;
 /**
  * 8 vat pham da tien hoa cho nhanh Eevee (viec I2, docs/kien-truc.md).
  *
- * Id item 960..967 trong data_item (sql/pokemon_vat_pham_eevee.sql). Truoc khi chon
+ * Id item 960..967 trong data_item (du_lieu/sql_nguon/pokemon_vat_pham_eevee.sql). Truoc khi chon
  * da grep src/, sql/ va du_lieu/danh_muc_item.md: id lon nhat dang dung la 954, khong
  * cho nao trong src/ nhac toi 955..967. Doi id thi sua CA file SQL do.
  *
@@ -18,7 +18,7 @@ public final class DaTienHoa {
 
     public static final int[] DEX = {134, 135, 136, 196, 197, 470, 471, 700};
 
-    /** Ten hien thi (khop cot name trong sql/pokemon_vat_pham_eevee.sql). */
+    /** Ten hien thi (khop cot name trong du_lieu/sql_nguon/pokemon_vat_pham_eevee.sql). */
     public static final String[] TEN = {
         "Đá Nước", "Đá Sấm", "Đá Lửa", "Đá Mặt Trời",
         "Đá Mặt Trăng", "Đá Lá", "Đá Băng", "Ruy Băng Tiên"

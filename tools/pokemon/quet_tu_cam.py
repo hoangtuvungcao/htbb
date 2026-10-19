@@ -6,7 +6,7 @@ Quet 3 nguon:
   java  chuoi "..." trong src/**/*.java (bo chu thich, bo dong log System.out/err,
         printStackTrace, saveOrtherLog; bo tool admin src/server/AdminPanel.java, src/server/Panel/)
   cs    chuoi "..." trong <client PC>/Assets/Scripts/**/*.cs (client_pc_ios; bo Debug.Log)
-  sql   CSDL SAU KHI chay dump + cac file sql/pokemon_*.sql (ca sql/pokemon_doi_chu.sql)
+  sql   CSDL SAU KHI chay dump + cac file du_lieu/sql_nguon/pokemon_*.sql (ca du_lieu/sql_nguon/pokemon_doi_chu.sql)
 
 Chi tinh chuoi "giong chu" (co ky tu ngoai ASCII hoac bat dau bang chu hoa) - chuoi khoa/SQL/log
 khong dau bi bo qua.
@@ -191,8 +191,8 @@ _UPDATE_TN = re.compile(r"^UPDATE `(\w+)` SET `(\w+)`='((?:[^'\\]|\\.)*)' WHERE 
 
 def quet_sql(cam, ra, dem):
     db, _ = cp.nap_csdl(cp.SQL_POKEMON + [cp.SQL_CHU])
-    # sql/pokemon_thuat_ngu.sql (chay cuoi, dang "WHERE `id`='N' AND cot=<chu cu>") - tools/pokemon/sinh_sql_thuat_ngu.py
-    p_tn = os.path.join(GOC, "sql", "pokemon_thuat_ngu.sql")
+    # du_lieu/sql_nguon/pokemon_thuat_ngu.sql (chay cuoi, dang "WHERE `id`='N' AND cot=<chu cu>") - tools/pokemon/sinh_sql_thuat_ngu.py
+    p_tn = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_thuat_ngu.sql")
     if os.path.exists(p_tn):
         for m in _UPDATE_TN.finditer(open(p_tn, encoding="utf8").read()):
             bang, cot, gt, id_ = m.group(1), m.group(2), cp.bo_thoat_sql(m.group(3)), int(m.group(4))
@@ -230,7 +230,7 @@ def main():
     _, da_sua = cp.nap_csdl(cp.SQL_POKEMON)
     for r in ra:
         if r[0] == "sql" and (r[1], r[2], r[3]) in da_sua:
-            r[8] = "file sql/pokemon_* khac (I1/T1/quai)"
+            r[8] = "file du_lieu/sql_nguon/pokemon_* khac (I1/T1/quai)"
     with open(RA, "w", encoding="utf8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["nguon", "tep_hoac_bang", "dong_hoac_id", "cot", "tu_cam", "chuoi", "sau_doi",

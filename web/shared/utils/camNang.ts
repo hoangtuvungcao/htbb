@@ -2,7 +2,7 @@
  * Cẩm nang (wiki cơ chế) — dữ liệu + danh mục trang.
  *
  * - Dữ liệu số: shared/data/cam-nang.json, sinh bởi `node scripts/dong-bo-cam-nang.mjs` từ repo
- *   game HTBB (CSV thiết kế, sql/pokemon_lau_dai.sql + ThongSoLauDai.java). KHÔNG sửa tay JSON. Lúc chạy, mục có bảng SQL
+ *   game HTBB (CSV thiết kế, du_lieu/sql_nguon/pokemon_lau_dai.sql + ThongSoLauDai.java). KHÔNG sửa tay JSON. Lúc chạy, mục có bảng SQL
  *   được đè bằng dữ liệu CSDL game (app/composables/useCamNang.ts, server/utils/camNangSql.ts).
  * - Danh mục trang (DS_CAM_NANG) nằm ở danhMucCamNang.ts (không kéo JSON này vào mọi trang).
  * - Chỉ import (tự động) CAM_NANG ở trang cần số liệu — module này mang cả JSON (~90 KB).

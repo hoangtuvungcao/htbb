@@ -1,5 +1,5 @@
 /**
- * NẠP TIỀN — phần chạm database (bảng nap_* của HTBB/sql/pokemon_nap_tien.sql, nằm trong htbb_db).
+ * NẠP TIỀN — phần chạm database (bảng nap_* của HTBB/du_lieu/sql_nguon/pokemon_nap_tien.sql, nằm trong htbb_db).
  *
  * Web KHÔNG BAO GIỜ cộng lượng: chỉ đổi đơn sang `da_thanh_toan` qua MỘT hàm duy nhất
  * {@link napXacNhanThanhToan} (webhook / admin / mật khẩu chung / sandbox đều đi qua đây). Server
@@ -66,7 +66,7 @@ export async function napCoBang(): Promise<boolean> {
 export function napThieuBang(nguoiChoi = false): never {
   // Người chơi không cần biết tên bảng / tệp SQL; trang admin vẫn nhận hướng dẫn đầy đủ.
   if (nguoiChoi) throw apiLoi(409, 'Tính năng nạp tiền chưa sẵn sàng. Vui lòng thử lại sau.', { code: 'thieu_bang' })
-  throw apiLoi(409, 'Chưa có bảng nạp tiền (nap_*) — chạy HTBB/sql/pokemon_nap_tien.sql trước.', { code: 'thieu_bang' })
+  throw apiLoi(409, 'Chưa có bảng nạp tiền (nap_*) — chạy HTBB/du_lieu/sql_nguon/pokemon_nap_tien.sql trước.', { code: 'thieu_bang' })
 }
 
 // ---------------------------------------------------------------- nhật ký

@@ -4,7 +4,7 @@ G7.C1/C4: doi chu nguoi choi thay trong CSDL tu kiem hiep sang the gioi Pokemon.
 
 Ra (file sinh ra, KHONG sua tay - sua bang ben duoi hoac tu dien trong ChuPokemon.java roi
 chay lai):
-  sql/pokemon_doi_chu.sql                                 UPDATE chi doi chu (id/so/gia giu nguyen)
+  du_lieu/sql_nguon/pokemon_doi_chu.sql                                 UPDATE chi doi chu (id/so/gia giu nguyen)
   du_lieu/bang_chu.csv                               moi o doi: bang,id,cot,cu,moi (+ moi cap
                                                           cua tu dien, bang=ChuPokemon cot=tu_dien)
   client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs    tu dien cho client (ban sao bangDayDu)
@@ -14,7 +14,7 @@ Nguon chu:
      can hay. Cac lua chon moi can chu du an duyet: docs/thiet-ke-game.md.
   2. Tu dien chung ChuPokemon.DOI (+ dia danh TenMapPokemon) cho moi o con lai.
   3. Ten quai trong nhiem vu ("20 con nhím" -> "20 con Sandshrew") lay tu
-     sql/pokemon_du_lieu_quai.sql (chu thich "-- Cu -> Moi").
+     du_lieu/sql_nguon/pokemon_du_lieu_quai.sql (chu thich "-- Cu -> Moi").
 KHONG dong vao o da duoc file SQL Pokemon khac sua (I1 ten trang bi, T1 ten pet, quai...).
 
 Chay (o thu muc HTBB/): python3 -I tools/pokemon/sinh_sql_chu.py
@@ -33,7 +33,7 @@ cp = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cp)
 
 GOC = cp.GOC
-RA_SQL = os.path.join(GOC, "sql", cp.SQL_CHU)
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", cp.SQL_CHU)
 RA_CSV = os.path.join(GOC, "du_lieu", "bang_chu.csv")
 import importlib.util as _iu
 _sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
@@ -42,7 +42,7 @@ _sd.loader.exec_module(dc)
 # Client Unity: client_pc_ios/Assets (doi bang HTBB_CLIENT_ASSETS).
 RA_CS = os.path.join(dc.scripts(dc.assets()), "ChuPokemonDuLieu.cs")
 RA_CS_TAT_CA = [os.path.join(dc.scripts(a), "ChuPokemonDuLieu.cs") for a in dc.cac_assets()]
-F_QUAI = os.path.join(GOC, "sql", "pokemon_du_lieu_quai.sql")
+F_QUAI = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_du_lieu_quai.sql")
 
 # Do dai toi da cua cot (CREATE TABLE trong gamedb7_clean.sql).
 DO_DAI = {

@@ -8,7 +8,7 @@ defineProps<{ bang?: string }>()
     <template #description>
       <p>
         Website vẫn chạy bằng nội dung mặc định. Để sửa được{{ bang ? ` (${bang})` : '' }}, chạy một lần file
-        <code>sql/web_cms.sql</code>  vào <strong>database game</strong>
+        <code>du_lieu/sql_nguon/web_cms.sql</code>  vào <strong>database game</strong>
         bằng công cụ quản trị CSDL quen dùng (dòng lệnh mysql/mariadb, HeidiSQL, DBeaver...), đăng nhập bằng
         tài khoản CSDL có quyền tạo bảng — thông tin kết nối giống cấu hình của web/game server.
       </p>

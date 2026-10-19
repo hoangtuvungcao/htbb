@@ -141,8 +141,7 @@ lại khi thấy cây làm việc bẩn).
 ### 3.4 Nạp CSDL
 
 ```bash
-mysql -u root < /opt/htbb/sql/htbb_day_du.sql            # tạo account + htbb_db, đủ dữ liệu Pokémon
-mysql -u root htbb_db < /opt/htbb/sql/them_chi_muc_production.sql
+mysql -u root < /opt/htbb/sql/htbb_day_du.sql            # MỘT tệp: account + htbb_db, schema, dữ liệu Pokémon, chỉ mục
 ```
 
 `sql/htbb_day_du.sql` là tệp sinh (xem [sql/README.md](../sql/README.md)) — dựng sẵn tài khoản `admin` với mật khẩu
@@ -245,14 +244,17 @@ Có `flock` chống hai lần deploy chồng nhau và `trap` SIGHUP để bật 
 Nhớ: VPS chạy **tệp jar đã commit**. Sửa `server/src` thì phải build lại `server/htbb-server.jar` ([build.md](build.md))
 và commit cả jar.
 
-**Lần đầu deploy jar build từ mã P1 trở đi** lên CSDL dựng trước P1 (19/10/2026): nạp migration **trước** khi jar mới
-khởi động (deploy-auto không tự chạy SQL), không thì máy chủ dừng ngay với dòng `THIEU DU LIEU SQL QUAN TRONG - DUNG
-SERVER` (systemd báo `failed`, bản cũ đã tắt):
+**Nâng cấp CSDL đang chạy** (production dựng từ `htbb_day_du.sql` cũ, kể cả 0.9.2) — bắt buộc **trước** khi jar từ P1
+trở đi khởi động (deploy-auto không tự chạy SQL), không thì máy chủ dừng ngay với dòng `THIEU DU LIEU SQL QUAN TRONG -
+DUNG SERVER` (systemd báo `failed`, bản cũ đã tắt):
 
 ```sh
-sudo /opt/htbb/vps/backup_db.sh
-mysql -u root htbb_db < /opt/htbb/sql/them_p1_du_lieu_sql.sql   # chạy lại được; jar cũ vẫn chạy được sau bước này
+sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # sao lưu → nạp vps/nang_cap_csdl.sql → kiểm; chạy lại được
 ```
+
+Script tự sao lưu (`vps/backup_db.sh`, hỏng là dừng), chỉ **thêm** bảng / cột / chỉ mục cho bảng người chơi và nạp lại
+các bảng thiết kế máy chủ đọc lúc khởi động (gồm danh mục cấu hình trung tâm). Jar cũ vẫn chạy được sau bước này. Chi
+tiết: [sql/README.md](../sql/README.md).
 
 Từ P1 máy chủ đọc dữ liệu thiết kế (bảng EXP, nâng cấp, kinh tế dài hạn, lịch 52 tuần, danh mục cấu hình…) từ CSDL
 ([kien-truc.md mục 4.4](kien-truc.md)): đổi các bảng đó bằng SQL rồi khởi động lại, không cần build jar.
@@ -263,8 +265,8 @@ thay một jar chép tay để thử gấp: `sudo /opt/htbb/vps/capnhat.sh` (l�
 
 Quay lại bản trước: `sudo -u htbb git -C /opt/htbb log --oneline -5`, rồi
 `systemctl stop htbb-game && sudo -u htbb git -C /opt/htbb checkout <commit> -- server/htbb-server.jar server/lib && systemctl start htbb-game`
-(kèm `server/lib`: jar trước P3 cần `lib/htbb-core.jar`, P3 đã xoá tệp này). Bảng P1 (`them_p1_du_lieu_sql.sql`) để
-nguyên khi quay lại: jar cũ không đọc nhưng vẫn chạy được.
+(kèm `server/lib`: jar trước P3 cần `lib/htbb-core.jar`, P3 đã xoá tệp này). CSDL đã nâng cấp (`vps/nang_cap_csdl.sh`)
+để nguyên khi quay lại: jar cũ không đọc bảng / cột mới nhưng vẫn chạy được.
 
 ### 4.2 Website — `web-deploy.yml` → `htbb-deploy-web.sh`
 

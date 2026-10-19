@@ -194,7 +194,7 @@ public final class Pokedex {
         }
     }
 
-    /** Keo hiem (data_item 1214, sql/pokemon_vat_pham_lau_dai.sql) va Trung may man (1231). */
+    /** Keo hiem (data_item 1214, du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql) va Trung may man (1231). */
     public static final int ID_KEO_HIEM = 1214;
     public static final int ID_TRUNG_MAY_MAN = 1231;
 

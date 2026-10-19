@@ -1,6 +1,6 @@
 -- Huyen Thoai Bao Boi (HTBB) - CSDL DAY DU cho server moi (account + htbb_db).
 -- SINH TU tools/pokemon/xuat_sql_day_du.sh - KHONG SUA TAY. Gom: gamedb7_clean.sql + vps/db_new_server.sql
--- + moi migration trong sql/ + moi file sql/pokemon_*.sql (thu tu xem script). Nap: mysql < sql/htbb_day_du.sql
+-- + migration va pokemon_*.sql trong du_lieu/sql_nguon/ (thu tu xem script). Nap: mysql < sql/htbb_day_du.sql
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -39,7 +39,7 @@ CREATE TABLE `team_user` (
 
 LOCK TABLES `team_user` WRITE;
 /*!40000 ALTER TABLE `team_user` DISABLE KEYS */;
-INSERT INTO `team_user` VALUES (1,'admin','*063AE3E5AB70C78C89DE7D5688297780704B30FD','','2026-10-19 08:15:32',0,0,0,NULL);
+INSERT INTO `team_user` VALUES (1,'admin','*E64E48E83429EEDEC42A383B2781A00FB6182E36','','2026-10-19 10:14:35',0,0,0,NULL);
 /*!40000 ALTER TABLE `team_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,13 +54,15 @@ CREATE TABLE `5h_active` (
   `userID` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `time_end` varchar(50) DEFAULT '-1',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_5h_active_username` (`username`),
+  KEY `idx_5h_active_userid` (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `5h_active` WRITE;
 /*!40000 ALTER TABLE `5h_active` DISABLE KEYS */;
-INSERT INTO `5h_active` VALUES (1,1,'admin','1794964532');
+INSERT INTO `5h_active` VALUES (1,1,'admin','1794971675');
 /*!40000 ALTER TABLE `5h_active` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `5h_notify`;
@@ -1988,7 +1990,8 @@ CREATE TABLE `tob_buy_ruong` (
   `dateLog` varchar(100) DEFAULT NULL,
   `timeBuy` datetime DEFAULT NULL,
   `soluong` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_buy_ruong_ngay_ten` (`dateLog`,`charname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2264,7 +2267,8 @@ CREATE TABLE `tob_char_vip` (
   `vip` int(10) unsigned DEFAULT 0,
   `timeRcv` datetime NOT NULL,
   `reset` int(10) unsigned DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_char_vip_charname` (`charname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2532,7 +2536,7 @@ CREATE TABLE `tob_event_world_cup_state` (
 
 LOCK TABLES `tob_event_world_cup_state` WRITE;
 /*!40000 ALTER TABLE `tob_event_world_cup_state` DISABLE KEYS */;
-INSERT INTO `tob_event_world_cup_state` VALUES ('WORLD_CUP',0,0,NULL,'2026-10-19 08:15:32');
+INSERT INTO `tob_event_world_cup_state` VALUES ('WORLD_CUP',0,0,NULL,'2026-10-19 10:14:35');
 /*!40000 ALTER TABLE `tob_event_world_cup_state` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `tob_farm`;
@@ -3424,7 +3428,8 @@ CREATE TABLE `tob_qua_ct_top` (
   `nhan` int(10) unsigned NOT NULL DEFAULT 0,
   `tlog` datetime DEFAULT NULL,
   `tset` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_qua_ct_top_charname` (`charname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

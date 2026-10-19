@@ -1,5 +1,5 @@
 /**
- * CMS: đọc/ghi nội dung website trong htbb_db (bảng tạo bởi sql/web_cms.sql).
+ * CMS: đọc/ghi nội dung website trong htbb_db (bảng tạo bởi du_lieu/sql_nguon/web_cms.sql).
  *
  * Nguyên tắc: thiếu bảng / lỗi CSDL -> trang công khai vẫn chạy bằng nội dung mặc định
  * (shared/utils/cmsMacDinh.ts, tin tức tĩnh, dữ liệu CSV). Đọc công khai có bộ nhớ đệm ngắn,
@@ -21,7 +21,7 @@ export async function coBangCms(bang: typeof BANG_CMS[number] = 'web_cai_dat'): 
 
 export async function canBangCms(bang: typeof BANG_CMS[number]) {
   if (!(await coBangCms(bang))) {
-    throw apiLoi(409, `Chưa có bảng ${bang}. Chạy file sql/web_cms.sql vào database game rồi tải lại trang.`, { code: 'chua_co_bang' })
+    throw apiLoi(409, `Chưa có bảng ${bang}. Chạy file du_lieu/sql_nguon/web_cms.sql vào database game rồi tải lại trang.`, { code: 'chua_co_bang' })
   }
 }
 

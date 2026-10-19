@@ -349,7 +349,7 @@ public final class MoPhongChiSo {
         }
         k.p("6. DATA_ITEM (sql/htbb_day_du.sql): %d dong trang bi nhan vat; vuot ngan sach TRUOC migration %d, SAU %d", soMau, truoc, sau);
         k.bao.append(vd);
-        k.muc("Moi dong data_item trang bi nhan vat trong ngan sach sau sql/pokemon_chi_so.sql", soMau > 100 && sau == 0,
+        k.muc("Moi dong data_item trang bi nhan vat trong ngan sach sau du_lieu/sql_nguon/pokemon_chi_so.sql", soMau > 100 && sau == 0,
                 soMau + " dong, truoc " + truoc + " vuot, sau " + sau);
         k.p("");
         k.p("MUC TIEU");

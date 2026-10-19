@@ -63,8 +63,8 @@ public final class DatabaseDuLieuSql {
         for (final String s : kq.loi) {
             System.out.println("  LOI      : " + s);
         }
-        System.out.println("  cach sua : nap tep migration P1 vao CSDL game roi khoi dong lai:");
-        System.out.println("               mysql htbb_db < sql/them_p1_du_lieu_sql.sql");
+        System.out.println("  cach sua : nang cap CSDL game (sao luu truoc, chay lai duoc) roi khoi dong lai:");
+        System.out.println("               sudo bash /opt/htbb/vps/nang_cap_csdl.sh   (= mysql htbb_db < vps/nang_cap_csdl.sql)");
         System.out.println("             (CSDL moi: mysql < sql/htbb_day_du.sql da gom san). Xem sql/README.md.");
         System.out.println("  (khong chay tiep voi bang rong: bang EXP / lich su kien / danh muc cau hinh = 0 se lam");
         System.out.println("   sai du lieu nhan vat; systemd se bao 'failed' dung su that)");

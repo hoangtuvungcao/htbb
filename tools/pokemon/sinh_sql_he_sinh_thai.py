@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sinh sql/pokemon_he_sinh_thai.sql - du lieu the gioi cua he sinh thai (docs/thiet-ke-game.md).
+"""Sinh du_lieu/sql_nguon/pokemon_he_sinh_thai.sql - du lieu the gioi cua he sinh thai (docs/thiet-ke-game.md).
 
 Chi thu vien chuan, TAT DINH (cung dau vao -> cung tep). Chay o thu muc HTBB/:
     python3 -I tools/pokemon/sinh_sql_he_sinh_thai.py
@@ -9,7 +9,7 @@ Dau vao:
   du_lieu/bang_quai.csv      : template quai (cap, phan loai, dex, he)
   map/map<N>, map/map<N> : luoi sinh quai (u8 w, u8 h, w*h u8 id mau)
 
-Ra (bang PORTABLE, chay duoc tren MariaDB va NovaDB - giong sql/pokemon_lau_dai.sql):
+Ra (bang PORTABLE, chay duoc tren MariaDB va NovaDB - giong du_lieu/sql_nguon/pokemon_lau_dai.sql):
   data_hst_vung      (map_id, vung, ten)              : vung sinh thai cua ban do
   data_hst_thay_quai (id_goc, id_thay, trong_so, hiem, thoi_tiet, ngay_dem, mat_na_thang)
                      : ung vien thay loai khi quai hoi sinh (cung dai cap +-4, quai hiem +3..+8)
@@ -25,7 +25,7 @@ import os
 import sys
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RA = os.path.join(GOC, "sql", "pokemon_he_sinh_thai.sql")
+RA = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_he_sinh_thai.sql")
 
 MA_VUNG = ["thi_tran", "duong", "dong_co", "rung", "ho", "bien", "nui", "tuyet", "sa_mac", "hang",
            "trong_nha", "thanh", "dau_truong", "tau"]

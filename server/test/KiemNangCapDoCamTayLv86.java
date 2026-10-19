@@ -30,14 +30,14 @@ import java.nio.file.Paths;
  * cap se am tham tao ra vat pham SAI (vd "Cuoc thuong" id465 thay vi "Phuong Thien Cung" 897).
  *
  * Fix: sua ca hai cho chan tu ">= 81" thanh ">= 86", VA dat idUpLevel=893/894/895/896/897 cho
- * 412/425/438/451/464 trong sql/gamedb7_clean.sql (05/09/2026).
+ * 412/425/438/451/464 trong du_lieu/sql_nguon/gamedb7_clean.sql (05/09/2026).
  */
 public final class KiemNangCapDoCamTayLv86 {
 
     private static final String F_MAP = "src/real/Map.java";
     private static final String F_CHETAO = "src/real/MapCheTao.java";
     private static final String F_REALCTRL = "src/real/RealController.java";
-    private static final String F_SQL = "../sql/gamedb7_clean.sql";
+    private static final String F_SQL = "../du_lieu/sql_nguon/gamedb7_clean.sql";
 
     public static void chay() {
         Kiem.nhom("Nang cap vu khi lv81 -> lv86 (NPC Tho Ren Than Bi, npcType -8)");
@@ -163,7 +163,7 @@ public final class KiemNangCapDoCamTayLv86 {
                     thanChot.contains("bacTren != null"));
         }
 
-        // ---- 5. sql/gamedb7_clean.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
+        // ---- 5. du_lieu/sql_nguon/gamedb7_clean.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
         // idUpLevel tro DUNG toi id level-86 tuong ung, khong con -1 (mac dinh id+1 SAI). ----
         final String[][] chuoiNangCap = {
             {"(412,'Phá giáp kiếm'", "893"},

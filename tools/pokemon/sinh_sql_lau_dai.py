@@ -10,7 +10,7 @@ cac file sinh ra:
   du_lieu/su_kien_nam.csv           lich 52 tuan (nam 1 + xoay vong nam 2)
   du_lieu/bang_cap_do_lau_dai.csv   bang EXP de xuat 1..100 + gio muc tieu
   src/com/htbb/pokemon/ThongSoLauDai.java  hang so cho mo phong + giai doan 2 (CHUA noi day)
-  sql/pokemon_lau_dai.sql                bang tam (staging) - gom vao xuat_sql_day_du.sh (GD2)
+  du_lieu/sql_nguon/pokemon_lau_dai.sql                bang tam (staging) - gom vao xuat_sql_day_du.sh (GD2)
 
 Chay (o thu muc HTBB/):   python3 -I tools/pokemon/sinh_sql_lau_dai.py
 Sau do chay mo phong:      xem tools/pokemon/MoPhongKinhTe.java (dau file).
@@ -33,7 +33,7 @@ RA_CSV_NV = os.path.join(GOC, "du_lieu", "nhiem_vu_moi.csv")
 RA_CSV_SK = os.path.join(GOC, "du_lieu", "su_kien_nam.csv")
 RA_CSV_CAP = os.path.join(GOC, "du_lieu", "bang_cap_do_lau_dai.csv")
 RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "ThongSoLauDai.java")
-RA_SQL = os.path.join(GOC, "sql", "pokemon_lau_dai.sql")
+RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_lau_dai.sql")
 BANG_VP = os.path.join(GOC, "du_lieu", "bang_vat_pham.csv")
 
 # =====================================================================================

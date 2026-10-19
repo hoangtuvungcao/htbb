@@ -46,7 +46,7 @@ public class LoginHandler implements ICommandHandler {
      * trong data_potion nen khong ai de y. Hai qua bong 160/161 cung dinh y het.
      *
      * Ngay 30/08/2026: 108 duoc dung lam "Hop qua may man" cua su kien World Cup
-     * (real/SuKienWorldCup + sql/them_su_kien_world_cup.sql) nen phai co mat trong day.
+     * (real/SuKienWorldCup + du_lieu/sql_nguon/them_su_kien_world_cup.sql) nen phai co mat trong day.
      * 108 anh xa sang data_shop 89 (Ao Chu cuoi) - dong do co cot decript RONG nen client
      * khong noi them chu nao vao chi tiet hop qua.
      *

@@ -28,12 +28,12 @@ public final class KiemItemMoCoi {
 
     private static final String F_MD = "../du_lieu/KIEM_ITEM.md";
     private static final String F_CSV = "../du_lieu/kiem_item.csv";
-    private static final String F_VP = "../sql/pokemon_vat_pham_lau_dai.sql";
-    private static final String F_ND = "../sql/pokemon_noi_dung.sql";
-    private static final String F_LD = "../sql/pokemon_lau_dai.sql";
+    private static final String F_VP = "../du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql";
+    private static final String F_ND = "../du_lieu/sql_nguon/pokemon_noi_dung.sql";
+    private static final String F_LD = "../du_lieu/sql_nguon/pokemon_lau_dai.sql";
     private static final String F_GC_JSON = "../web/shared/data/giftcode-an-toan.json";
-    private static final String[] DAU_VAO = {"sql/htbb_day_du.sql", "sql/pokemon_noi_dung.sql", "sql/pokemon_vat_pham_lau_dai.sql",
-        "sql/pokemon_lau_dai.sql", "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
+    private static final String[] DAU_VAO = {"sql/htbb_day_du.sql", "du_lieu/sql_nguon/pokemon_noi_dung.sql", "du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql",
+        "du_lieu/sql_nguon/pokemon_lau_dai.sql", "du_lieu/sql_nguon/pokemon_doi_chu.sql", "du_lieu/sql_nguon/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
         "du_lieu/nhiem_vu_moi.csv"};
 
     private KiemItemMoCoi() {

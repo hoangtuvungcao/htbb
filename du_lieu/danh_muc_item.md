@@ -1,7 +1,7 @@
 # Danh mục vật phẩm (data_item)
 
 File này được **sinh ra**, đừng sửa tay.
-  Nguồn  : sql/gamedb7_clean.sql, bảng `data_item`
+  Nguồn  : du_lieu/sql_nguon/gamedb7_clean.sql, bảng `data_item`
   Sinh lại: java -cp "build/classes;lib/mysql-connector-java-5.1.49.jar" SinhDanhMucItem
 
 Mục đích: tra nhanh **id ↔ tên vật phẩm** khi đọc/viết code (giftcode, shop,

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * phong kinh te DAT muc tieu.
  *
  * VI SAO: bang nhiem vu (nhiem_vu_moi.csv), lich su kien, ThongSoLauDai.java va
- * sql/pokemon_lau_dai.sql deu sinh tu tools/pokemon/sinh_sql_lau_dai.py; mo phong
+ * du_lieu/sql_nguon/pokemon_lau_dai.sql deu sinh tu tools/pokemon/sinh_sql_lau_dai.py; mo phong
  * (tools/pokemon/MoPhongKinhTe.java) doc lai chung. Sua mot so trong script ma quen chay
  * lai, hoac chinh so lam vo can bang (lam phat, nguoi choi nhe xong cot truyen qua som)
  * -> test nay do. Chi doc file, khong can CSDL.
@@ -30,7 +30,7 @@ public final class KiemLauDai {
 
     private static final String F_NV = "../du_lieu/nhiem_vu_moi.csv";
     private static final String F_SK = "../du_lieu/su_kien_nam.csv";
-    private static final String F_SQL = "../sql/pokemon_lau_dai.sql";
+    private static final String F_SQL = "../du_lieu/sql_nguon/pokemon_lau_dai.sql";
     private static final String F_DUMP = "../sql/htbb_day_du.sql";
     private static final String F_XUAT = "../tools/pokemon/xuat_sql_day_du.sh";
     private static final String F_MO_PHONG = "../tools/pokemon/MoPhongKinhTe.java";

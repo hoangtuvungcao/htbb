@@ -130,7 +130,7 @@ public final class SuKien {
      *     Xoa co y, khong phai do nham voi ban cu.
      * Xoa Muc khoi DANH_MUC KHONG xoa dong cu con lai trong bang tob_su_kien (ghiAnhChup()
      * chi INSERT/UPDATE cac ma con trong DANH_MUC, khong bao gio DELETE) - phai chay
-     * sql/xoa_su_kien_trung_lap.sql de don dong cu, khong thi trang admin van con hien
+     * du_lieu/sql_nguon/xoa_su_kien_trung_lap.sql de don dong cu, khong thi trang admin van con hien
      * (du bam nut cung khong con tac dung, vi SuKien.dat() da loai ma la khong con trong
      * danh muc).
      */

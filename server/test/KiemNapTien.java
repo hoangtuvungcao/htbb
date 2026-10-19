@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  *
  * Phan CSDL that (cong don song song, goi lap webhook, cho) chi chay khi dat bien moi truong
  * KIEM_NAP_DB = URL JDBC toi mot CSDL NHAP (vd jdbc:mysql://127.0.0.1:3318/htbb_db_nap?useSSL=false,
- * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu sql/pokemon_nap_tien.sql roi XOA sau.
+ * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu du_lieu/sql_nguon/pokemon_nap_tien.sql roi XOA sau.
  */
 public final class KiemNapTien {
 
@@ -422,8 +422,8 @@ public final class KiemNapTien {
     // ------------------------------------------------------------------ sql + web
 
     static void sqlVaWeb() {
-        Kiem.nhom("Nap tien - sql/pokemon_nap_tien.sql + web khop NapTienLogic");
-        final String s = doc("../sql/pokemon_nap_tien.sql");
+        Kiem.nhom("Nap tien - du_lieu/sql_nguon/pokemon_nap_tien.sql + web khop NapTienLogic");
+        final String s = doc("../du_lieu/sql_nguon/pokemon_nap_tien.sql");
         Kiem.dung("SET NAMES utf8", s.contains("SET NAMES utf8;"));
         final String lenh = s.replaceAll("(?m)--.*$", "");
         Kiem.sai("khong ON DUPLICATE KEY (NovaDB)", lenh.contains("ON DUPLICATE KEY"));
@@ -529,7 +529,7 @@ public final class KiemNapTien {
 
     static void chayKichBan(final String url, final String u, final String p) throws Exception {
         xoaBang(url, u, p);
-        final String sql = doc("../sql/pokemon_nap_tien.sql").replaceAll("(?m)^--.*$", "");
+        final String sql = doc("../du_lieu/sql_nguon/pokemon_nap_tien.sql").replaceAll("(?m)^--.*$", "");
         try (Connection c = DriverManager.getConnection(url, u, p); Statement st = c.createStatement()) {
             for (final String cau : sql.split(";\\s*\\n")) {
                 if (!cau.trim().isEmpty()) {
