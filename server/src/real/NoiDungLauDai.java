@@ -52,6 +52,9 @@ public final class NoiDungLauDai {
             GymLauDai.nap();
             ChieuLauDai.apDung();
             NhiemVuEngine.nap();
+            DanhHieuGame.nap(); // data_danh_hieu (mau danh hieu + dieu kien)
+            LuatPkGame.nap(); // thi tran an toan (data_map_ten.loai = thi_tran)
+            XepHangPvpGame.batDau(); // dau xep hang: lich su 24 gio + bo ghep 2 giay
             CuaHangLauDai.nap(); // cua hang & doi vat pham (So tay)
             moRongVatPhamNhiemVu();
             System.out.println("[LAU DAI] noi dung: " + ROI.size() + " dong roi, " + ALPHA.size() + " alpha, "

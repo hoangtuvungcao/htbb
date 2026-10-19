@@ -649,18 +649,31 @@ public final class Bang {
 
     /**
      * Thanh trượt giá trị [min, max] bước buoc trong (x, y, w, h): rãnh mảnh, phần đầy teal, núm tròn trắng viền teal.
-     * Giữ ngón / chuột kéo hiện giá trị mới ngay (trả giá trị đang hiện); cú chạm thả chạy viec (đọc
-     * {@link #giaTriTruot}). tat = xám, không nhận chạm.
+     * 0.9.6.1: nhấn trong thanh rồi KÉO thì núm + giá trị theo ngón / chuột NGAY từng khung (kể cả kéo ra ngoài thanh -
+     * kẹp về min / max); thả (ở đâu cũng được, VungCham.themKeo) chạy viec MỘT lần - viec đọc {@link #giaTriTha()}.
+     * Trả giá trị đang hiện. tat = xám, không nhận chạm.
      */
     public static int thanhTruot(Graphics g, int x, int y, int w, int h, int gt, int min, int max, int buoc, boolean tat, Object viec, String ten) {
         int rn = nutTruot(h);
         int x0 = x + rn, x1 = x + w - rn;
-        if (!tat && Canvas.isPointerDown && dangAn(g, x, y, w, h)) {
-            gt = giaTriTruot(Canvas.px - g.getTranslateX(), x, w, h, min, max, buoc);
-        } else if (!tat && System.currentTimeMillis() - keoLuc < 160) {
-            int kx = keoX - g.getTranslateX(), ky = keoY - g.getTranslateY();
-            if (kx >= x && kx < x + w && ky >= y && ky < y + h) {
-                gt = giaTriTruot(kx, x, w, h, min, max, buoc);
+        int tx = g.getTranslateX(), ty = g.getTranslateY();
+        boolean nhan = !tat && VungCham.trongVung(x + tx, y + ty, w, h, Canvas.pxLast, Canvas.pyLast);
+        if (nhan) {
+            // cú nhấn gần nhất bắt đầu trong thanh này: ghi hình học (toạ độ tuyệt đối) cho giaTriTha()
+            truotX = x + tx;
+            truotW = w;
+            truotH = h;
+            truotMin = min;
+            truotMax = max;
+            truotBuoc = buoc;
+            if (Canvas.dangGiu) {
+                gt = giaTriTruot(Canvas.px, truotX, w, h, min, max, buoc);
+                keoTen = ten;
+                keoGt = gt;
+                keoLuc = System.currentTimeMillis();
+            } else if (ten != null && ten.equals(keoTen) && System.currentTimeMillis() - keoLuc < 300) {
+                // vừa thả: giữ giá trị vừa kéo tới khi viec (chạy ở nhịp game kế) lưu xong - không giật về giá trị cũ
+                gt = keoGt;
             }
         }
         int cy = y + h / 2;
@@ -674,22 +687,29 @@ public final class Bang {
         GiaoDien.khoi(g, xn - rn, cy - rn, 2 * rn, 2 * rn, rn, tat ? ChuDe.KE : ChuDe.CHINH);
         GiaoDien.khoi(g, xn - rn + 2, cy - rn + 2, 2 * rn - 4, 2 * rn - 4, rn - 2, ChuDe.NEN);
         if (!tat) {
-            dangKy(g, x, y, w, h, viec, ten);
+            VungCham.themKeo(g, x, y, w, h, viec, ten);
+        }
+        if (nhan) {
+            nhanTen = ten;
+            nhanGt = gt;
+            nhanTamNut = xn + tx;
         }
         return gt;
     }
 
-    /** Điểm giữ ngón gần nhất (màn tự xoá Canvas.isPointerDown mỗi nhịp để thế giới phía sau không nhận): thanh trượt đọc. */
-    public static int keoX, keoY;
-    public static long keoLuc;
+    /** Thanh trượt đang / vừa kéo (tên vùng), giá trị đang hiện, lúc ghi. */
+    static String keoTen;
+    static int keoGt;
+    static long keoLuc;
+    /** Hình học (toạ độ tuyệt đối) của thanh mà cú nhấn gần nhất bắt đầu trong đó. */
+    private static int truotX, truotW = 1, truotH = 1, truotMin, truotMax, truotBuoc = 1;
+    /** kiểm thử: thanh của cú nhấn gần nhất - tên, giá trị đang hiện, hoành độ tuyệt đối tâm núm (khung vừa vẽ) */
+    public static String nhanTen;
+    public static int nhanGt, nhanTamNut;
 
-    /** Ghi điểm đang giữ (gọi trước khi màn xoá Canvas.isPointerDown). */
-    public static void ghiKeo() {
-        if (Canvas.isPointerDown) {
-            keoX = Canvas.px;
-            keoY = Canvas.py;
-            keoLuc = System.currentTimeMillis();
-        }
+    /** Giá trị tại điểm thả (Canvas.px) của thanh vừa kéo - gọi trong viec của thanhTruot. */
+    public static int giaTriTha() {
+        return giaTriTruot(Canvas.px, truotX, truotW, truotH, truotMin, truotMax, truotBuoc);
     }
 
     static int nutTruot(int h) {

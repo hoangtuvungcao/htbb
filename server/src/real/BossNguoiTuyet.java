@@ -386,7 +386,7 @@ public class BossNguoiTuyet extends Boss {
                     }
 
                     try {
-                        Message m = MessageCreator.createServerAlertAutoOffMessage(this.getName() + " đã xuất hiện.");
+                        Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossXuatHien(this.getName(), com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                         for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                             ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);
@@ -448,7 +448,7 @@ public class BossNguoiTuyet extends Boss {
                 this.toY = this.y;
 
                 try {
-                    Message m = MessageCreator.createServerAlertAutoOffMessage(this.getName() + " đã xuất hiện.");
+                    Message m = MessageCreator.createServerAlertAutoOffMessage(com.htbb.thongbao.ThongBao.bossXuatHien(this.getName(), com.htbb.thongbao.ThongBao.banDo(this.map)));
 
                     for(int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                         ((Char)CharManager.instance.vChars.elementAt(i)).sendMessage(m);
@@ -637,7 +637,7 @@ public class BossNguoiTuyet extends Boss {
             }
 
             Database.instance.saveOrtherLog("", p.charname, info, "quaboss");
-            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", p.charname + " đã tiêu diệt boss Người tuyết");
+            com.htbb.chongspam.ThongBaoGop.dua("boss", com.htbb.thongbao.ThongBao.bossBiHa("Người tuyết", p.charname, Map.getNameMap(p.mapID)));
         } catch (Exception e) {
             e.printStackTrace();
         }

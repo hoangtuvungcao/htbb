@@ -20,10 +20,14 @@
     </WikiSection>
 
     <WikiSection id="cach-dung" title="Cách dùng">
+      <figure class="mb-5 overflow-hidden rounded-3xl shadow-[0_14px_30px_-18px_rgb(10_26_51/.55)]">
+        <SiteAnhGame ma="tu-dong" sizes="(min-width: 1024px) 760px, 100vw" alt="Ảnh trong game: bảng cài đặt Tự động đánh" />
+        <figcaption class="bg-[var(--poke-card)] px-4 py-2 text-xs text-dimmed">Bảng Tự động đánh trong game (bản PC {{ BAN_ANH_GAME }}): chiêu, ngưỡng thuốc HP / PP, nhặt đồ, vùng đánh, về hồi phục, tự hồi sinh.</figcaption>
+      </figure>
       <ol class="cham">
         <li>Đi tới một bãi luyện tập có Pokémon hoang dã.</li>
-        <li>Mở bảng <strong>Tự động đánh</strong>: chạm Poké Ball nhỏ ở mép trái → "Tự động đánh" (điện thoại cảm ứng), phím <code>#</code> → "Tự động đánh" (máy bấm phím), hoặc menu chính → hàng đầu. Trên máy tính: Menu nhanh → "Tự động đánh".</li>
-        <li>Chọn thứ tự tối đa 4 chiêu (để trống = dùng mọi chiêu đánh đã học, chiêu mạnh trước), ngưỡng thuốc HP / MP, kiểu nhặt đồ, vùng đánh (số ô quanh chỗ bắt đầu) và có <em>về hồi phục</em> hay không.</li>
+        <li>Mở bảng <strong>Tự động đánh</strong>: Android — viên <strong>AUTO</strong> (chạm để bật / tắt), bánh răng cạnh AUTO hoặc Menu → "Tự động đánh" để mở bảng cài đặt; Java — phím <code>#</code> → "Tự động đánh"; PC — phím <code>M</code> (Menu nhanh) → "Tự động đánh".</li>
+        <li>Chọn thứ tự tối đa 4 chiêu (để trống = dùng mọi chiêu đánh đã học, chiêu mạnh trước), ngưỡng thuốc HP / PP, kiểu nhặt đồ, vùng đánh (số ô quanh chỗ bắt đầu) và có <em>về hồi phục</em> hay không.</li>
         <li>Bấm <strong>Bắt đầu</strong>. Thanh xanh dưới khung HP cho biết thời gian còn lại hôm nay và Pokémon đang làm gì.</li>
       </ol>
       <ul class="cham mt-4">

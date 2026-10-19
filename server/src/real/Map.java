@@ -5263,6 +5263,39 @@ public class Map implements Runnable {
         p.doPlayerMove(message);
     }
 
+    /**
+     * O di duoc gan (x, y) nhat (o, khong phai pixel) trong ban kinh r, giu nguyen neu (x, y) da di duoc, khong co
+     * bo cuc, hoac khong tim thay (19/10/2026). Diem vao lang ngau nhien cua move2Map (pos +-2 o) roi vao o chan
+     * tren bo cuc Pokemon cua map 0 (vd. 21,49 / 10,23): Char.checkToPoint tinh ca o DUNG nen moi buoc di bi tu
+     * choi, nhan vat ket cung tai cho toi khi dich chuyen (BotChucNang cong_tat_ca.cong bat duoc).
+     */
+    public int[] oDiDuocGan(int x, int y, int r) {
+        try {
+            if (this.type == null || this.w <= 0) {
+                return new int[]{x, y};
+            }
+            int h = this.type.length / this.w;
+            if (x >= 0 && y >= 0 && x < this.w && y < h && (this.type[y * this.w + x] & 2) != 2) {
+                return new int[]{x, y};
+            }
+            for (int k = 1; k <= r; k++) {
+                for (int dy = -k; dy <= k; dy++) {
+                    for (int dx = -k; dx <= k; dx++) {
+                        if (Math.max(Math.abs(dx), Math.abs(dy)) != k) {
+                            continue;
+                        }
+                        int nx = x + dx, ny = y + dy;
+                        if (nx >= 0 && ny >= 0 && nx < this.w && ny < h && (this.type[ny * this.w + nx] & 2) != 2) {
+                            return new int[]{nx, ny};
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return new int[]{x, y};
+    }
+
     public boolean canMove(int x, int y) {
         try {
             return (this.type[(y >> 4) * this.w + (x >> 4)] & 2) != 2;
@@ -8399,77 +8432,8 @@ public class Map implements Runnable {
         IDBATTLE = (short) ((IDBATTLE + 1) % 32000);
     }
 
-    private void doChallenge(Char player, Message message) {
-        try {
-            byte type = message.dis.readByte();
-            short id = message.dis.readShort();
-            byte ok = message.dis.readByte();
-            if (type == 0) {
-                Char p = CharManager.instance.getByCharID(id);
-                if (p != null) {
-                    if (ok == 0) {
-                        p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không chấp nhận lời thách đấu của bạn.", ""));
-                    } else {
-                        p.sendMessage(
-                                MessageCreator.createServerAlertMessage(
-                                        player.charname + " đã chấp nhận lời thách đấu của bạn. Trận đấu của bạn và " + p.charname + " sẽ diễn ra sau 30s nữa.", ""
-                                )
-                        );
-                        player.sendMessage(
-                                MessageCreator.createServerAlertMessage(
-                                        "Bạn đã chấp nhận lời thách đấu của " + p.charname + ". Trận đấu của bạn và " + p.charname + " sẽ diễn ra sau 30s nữa.", ""
-                                )
-                        );
-                        TeamArena team1 = new TeamArena(TeamArena.genIDTeam());
-                        TeamArena team2 = new TeamArena(TeamArena.genIDTeam());
-                        ArenaMap mm = (ArenaMap) RealController.mapList.get(205);
-                        ArenaData arena = new ArenaData();
-                        arena.addTeam(team1);
-                        arena.addTeam(team2);
-                        arena.idArena = IDARENA;
-                        arena.typeArena = 3;
-                        arena.start();
-                        mm.doAddArena(arena);
-                        p.idArena = IDARENA;
-                        player.idArena = IDARENA;
-                        arena.moneyThachdau = p.moneyThachdau * 2;
-                        p.subXu((long) p.moneyThachdau, false, "map 24");
-                        player.subXu((long) p.moneyThachdau, false, "map 25");
-                        team1.addMember(p);
-                        team2.addMember(player);
-                        Message m = new Message(65);
-                        m.dos.writeShort(p.id);
-                        if (p.pk == 0) {
-                            p.pk = 14;
-                            m.dos.writeByte(1);
-                            m.dos.writeByte(14);
-                            p.timeUsePK = System.currentTimeMillis();
-                            p.sendMessage(m);
-                        }
-
-                        m = new Message(65);
-                        m.dos.writeShort(player.id);
-                        if (player.pk == 0) {
-                            player.pk = 15;
-                            m.dos.writeByte(1);
-                            m.dos.writeByte(15);
-                            player.timeUsePK = System.currentTimeMillis();
-                            player.sendMessage(m);
-                        }
-
-                        arena.sendInfoMatch = true;
-                        arena.timeWaitFight = System.currentTimeMillis() + 30000L;
-                        IDARENA = (IDARENA + 1) % 2000000000;
-                        p.moneyThachdau = 0;
-                        player.moneyThachdau = 0;
-                    }
-                } else {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Đối thủ của bạn đã thoát khỏi game", ""));
-                }
-            }
-        } catch (Exception var12) {
-        }
-    }
+    // Map.doChallenge (thach dau cu: KHONG kiem so du, tra 2 x cuoc, khong thue, khong noi vao dau) da bo 19/10/2026 -
+    // neu ai noi lai se thanh nguon in xu. Thach dau cuoc xu: popup 10 + real.ThachDauCuoc.
 
     public static boolean isBotThuocTinh(int id) {
         return id >= 246 && id <= 249;
@@ -8693,6 +8657,18 @@ public class Map implements Runnable {
                 }
 
                 byte number = message.dis.readByte();
+                // 19/10/2026 (ra soat kinh te cung vong quay): goi -63 tho truoc day KHONG kiem gio / so, nen mua
+                // SAU khi so trung da lo (17h-23h) van vao ky quay HOM NAY neu con ve cu cung ngay -> biet truoc so
+                // trung, moi ve 1.000.000 xu lay 63.000.000 xu (in xu). Kiem giong menu NPC: chot ve cu truoc,
+                // ngoai 16h-18h, so 0..99.
+                if (number < 0 || number > 99) {
+                    return;
+                }
+                player.doOpenNumber();
+                if (!Char.timeBuy() || player.coVeKyDaQuay()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Vé chỉ bán từ sau 18h ngày hiện tại đến 16h ngày hôm sau.", ""));
+                    return;
+                }
                 player.sendMessage(MessageCreator.createServerAlertMessage(Xoso.buyNumber(player, number, (byte) 0), ""));
             } catch (Exception var4) {
             }
@@ -10161,23 +10137,11 @@ public class Map implements Runnable {
                 return;
             }
 
-            if ((idpopup == 100 || idpopup == 100) && idActor == player.id) {
-                if (ok == 0) {
-                    return;
-                }
-
-                // Sua 20/09/2026: ca 3 popup "Thong tin" (vip/thuong/luong) deu dung CHUNG
-                // idpopup=100 nen khong the phan biet loai qua idpopup - phai dua vao
-                // player.tierVongQuayDangXem (Char tu ghi lai moi lan infoXoso/infoXosoLow/
-                // infoXosoLuong duoc goi) de lam moi DUNG loai nguoi choi dang xem, thay vi
-                // luon goi infoXoso(idpopup - 100) = infoXoso(0) = vip nhu truoc.
-                if (player.tierVongQuayDangXem == 2) {
-                    player.infoXosoLuong();
-                } else if (player.tierVongQuayDangXem == 1) {
-                    player.infoXosoLow();
-                } else {
-                    player.infoXoso(0);
-                }
+            if (VongQuay.theoPopup(idpopup) != null && idActor == player.id) {
+                // Hop thong tin vong quay (97 VIP / 98 thuong / 99 luong). Truoc 19/10/2026 ca ba dung chung popup 100
+                // va "Dong y" chi gui lai DUNG hop do (dong ho con bi dat lai 02:00 khi chua du 2 nguoi) -> nut nhu
+                // chet. Nay: chua dat -> mo bang chon muc dat; da dat -> lam moi. ok == 0 (Huy) da return o tren.
+                VongQuay.theoPopup(idpopup).dongY(player);
             } else if (idpopup == 0 && idActor == player.id) {
                 if (player.idClan != -1) {
                     long moneyClan = NewClan.getMoneyClan(player.idClan);
@@ -10472,19 +10436,29 @@ public class Map implements Runnable {
                             return;
                         }
 
-                        if (player.getxu() < (long) px.moneyThachdau) {
+                        // 19/10/2026: KY QUY nguyen tu ca hai ben truoc khi tao arena (truoc: kiem so du roi subXu rieng
+                        // tung ben - chan ve 0 - nguoi thang van nhan du), muc cuoc theo cap, cong chong clone, phi la ho hut.
+                        final long cuocTran = (long) px.moneyThachdau;
+                        String loiTran = ThachDauCuoc.kiemCuoc(cuocTran, px, player);
+                        if (loiTran == null && com.htbb.pokemon.ChongClone.chanCaHai(px, player, player,
+                                com.htbb.pokemon.ChongClone.KIEU_THACH_DAU)) {
+                            loiTran = "";
+                        }
+                        final int idTran = IDARENA;
+                        if (loiTran == null) {
+                            loiTran = ThachDauCuoc.kyQuy(px, player, cuocTran, 3, idTran);
+                        }
+                        if (loiTran != null) {
                             px.nameCompetitor = "";
                             px.moneyThachdau = 0;
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                            player.nameCompetitor = "";
+                            if (!loiTran.isEmpty()) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(loiTran, ""));
+                                px.sendMessage(MessageCreator.createServerAlertMessage(loiTran, ""));
+                            }
                             return;
                         }
-
-                        if (px.getxu() < (long) px.moneyThachdau) {
-                            px.nameCompetitor = "";
-                            px.moneyThachdau = 0;
-                            player.sendMessage(MessageCreator.createServerAlertMessage(px.charname + " Không đủ xu", ""));
-                            return;
-                        }
+                        IDARENA = (idTran + 1) % 2000000000;
 
                         px.sendMessage(
                                 MessageCreator.createServerAlertMessage(
@@ -10502,18 +10476,16 @@ public class Map implements Runnable {
                         ArenaData arena = new ArenaData();
                         arena.addTeam(team1);
                         arena.addTeam(team2);
-                        arena.idArena = IDARENA;
+                        arena.idArena = idTran;
                         arena.typeArena = 3;
                         arena.start();
                         mm.doAddArena(arena);
-                        px.idArena = IDARENA;
-                        player.idArena = IDARENA;
-                        arena.moneyThachdau = px.moneyThachdau * 2;
-                        arena.moneyThachdau = arena.moneyThachdau - arena.moneyThachdau / 10;
+                        px.idArena = idTran;
+                        player.idArena = idTran;
+                        arena.moneyThachdau = (int) Math.min(Integer.MAX_VALUE,
+                                com.htbb.pokemon.ThachDauLogic.chia(ThachDauCuoc.cauHinh(), cuocTran, 0).tra0);
                         long pxu = px.getxu();
                         long playerxu = player.getxu();
-                        px.subXu((long) px.moneyThachdau, false, "map 30");
-                        player.subXu((long) px.moneyThachdau, false, "map 29");
                         Database.instance
                                 .saveOrtherLog(
                                         "", px.charname, player.charname + " chap nhan loi thach dau " + px.moneyThachdau + " xu " + pxu + " > " + playerxu, "challen"
@@ -10548,7 +10520,6 @@ public class Map implements Runnable {
 
                         arena.sendInfoMatch = true;
                         arena.timeWaitFight = System.currentTimeMillis() + 1000L;
-                        IDARENA = (IDARENA + 1) % 2000000000;
                         player.nameCompetitor = "";
                         px.nameCompetitor = "";
                         px.moneyThachdau = 0;
@@ -11336,6 +11307,13 @@ public class Map implements Runnable {
                 return;
             }
 
+            // 19/10/2026: moi Pokemon toi da li_xi.tui_nhan_ngay_toi_da bao / ngay (truoc: mot nguoi nhat ca 100 bao).
+            final String chanNhan = com.htbb.pokemon.LiXiLogic.nhanTui(Char.cauHinhLiXi(), data.DatabaseGioiHanQua.KHO,
+                    Char.dotLiXi(), Char.ngayLiXi(), player.charname);
+            if (chanNhan != null) {
+                player.sendMessage(MessageCreator.createMsgChat(player.id, chanNhan));
+                return;
+            }
             player.potions[159]++;
             MAX_LI_XI--;
             player.sendMessage(MessageCreator.createMsgChat(player.id, "Nhận được 1 bao lì xì."));
@@ -16146,6 +16124,9 @@ public class Map implements Runnable {
                             }
 
                             MapMuaBan.exchangeItem(this, player, item, i);
+                            if (!isItemAnimal) {
+                                DiemMocNhiemVu.khiMacDo(player, item.getTemplate().id); // diem moc nang_cap + bo_trang_bi
+                            }
                         } catch (Exception var17) {
                             var17.printStackTrace();
                         }
@@ -16328,6 +16309,7 @@ public class Map implements Runnable {
                     System.out.println("BAT DAU CHIEM THANH");
 
                     this.curday[i] = day;
+                    MapTown.danhDauBatDau(i);
                     getTown[i] = true;
                     if (idClanTown[i] > -1) {
                         try {
@@ -16382,6 +16364,7 @@ public class Map implements Runnable {
                 System.out.println("BAT DAU CHIEM THANH");
              
                 this.curday[country] = day;
+                MapTown.danhDauBatDau(country);
                 getTown[country] = true;
                 if (idClanTown[country] > -1) {
                     try {
@@ -16694,6 +16677,11 @@ public class Map implements Runnable {
                 int index = r.nextInt(4);
                 x = pos[player.myCountry][index * 2] + r.nextInt() % 3;
                 y = pos[player.myCountry][index * 2 + 1] + r.nextInt() % 3;
+            }
+            if (toMap != null) {
+                final int[] o = toMap.oDiDuocGan(x, y, 8);
+                x = o[0];
+                y = o[1];
             }
 
             player.nearChars.removeAllElements();

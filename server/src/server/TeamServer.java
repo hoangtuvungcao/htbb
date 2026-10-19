@@ -936,6 +936,8 @@ public class TeamServer {
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
         if (com.htbb.pokemon.LauDai.bat()) {
             data.DatabaseLauDai.taoBang();
+            real.DanhHieuGame.taoBang();
+            real.XepHangPvpGame.taoBang();
             real.ExpLauDai.apDungBang();
             real.VatPhamDungLauDai.nap();
         }
@@ -1034,9 +1036,8 @@ public class TeamServer {
         Map.initGiftCode();
         Char.timeGetPhuongHoang = System.currentTimeMillis() + 36000000L;
         Map.ThreadProcessHoiSinh();
-        Char.startThreadXoso();
-        Char.startThreadXosoLow();
-        Char.startThreadXosoLuong();
+        Char.startThreadXoso(); // chi con nhac "choi qua 180 phut" moi 15 phut
+        real.VongQuay.khoiDong();
         Char.startNauBanh();
         if (!real.BaoTriDaily.Running) {
             new Thread(new real.BaoTriDaily()).start();

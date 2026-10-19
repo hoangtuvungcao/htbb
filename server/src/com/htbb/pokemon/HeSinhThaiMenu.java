@@ -54,6 +54,28 @@ public final class HeSinhThaiMenu {
         HeSinhThaiGame.bao(p, s);
     }
 
+    /**
+     * 0.9.6.1: ket qua cau / dao / che tao. Client moi: the nhanh (dong 1 = duoc gi, dong 2 = the luc), gap Pokemon la
+     * MOT thong bao rieng (huy hieu Pokemon). Client cu: mot hop thoai nhu truoc (giu chu "Câu được" o dau - client
+     * giu thong bao cau ca den luc keo cau).
+     */
+    static void baoKetQua(final Char p, final boolean hiem, final String ketQua, final String phu, final int dex,
+            final String tenGap) {
+        if (!com.htbb.thongbao.ThongBao.coToast(p)) {
+            bao(p, com.htbb.thongbao.ThongBao.motCau(ketQua
+                    + (tenGap == null ? "" : ". " + com.htbb.thongbao.ThongBao.gap(tenGap, hiem)), phu));
+            return;
+        }
+        com.htbb.thongbao.ThongBao.gui(p, hiem ? com.htbb.thongbao.ThongBao.HIEM : com.htbb.thongbao.ThongBao.KET_QUA,
+                ketQua, phu, dex > 0 ? com.htbb.thongbao.ThongBao.HINH_POKEMON : com.htbb.thongbao.ThongBao.HINH_BIEU_TUONG,
+                dex > 0 ? dex : com.htbb.thongbao.ThongBao.BT_NGUYEN_LIEU);
+        if (tenGap != null) {
+            com.htbb.thongbao.ThongBao.gui(p, hiem ? com.htbb.thongbao.ThongBao.HIEM : com.htbb.thongbao.ThongBao.TIN,
+                    com.htbb.thongbao.ThongBao.gap(tenGap, hiem), com.htbb.thongbao.ThongBao.GAP_PHU,
+                    com.htbb.thongbao.ThongBao.HINH_POKEMON, dex);
+        }
+    }
+
     /** Chan bam lien tuc (macro chat) - 1,5 giay giua hai hanh dong ton the luc. */
     static boolean quaNhanh(final Char p) {
         final long now = com.htbb.pokemon.DongHo.bay();
@@ -382,7 +404,8 @@ public final class HeSinhThaiMenu {
         if (cap <= 0) {
             return;
         }
-        bao(p, KyNangSong.TEN[kn] + " lên cấp " + cap + "!");
+        com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.HIEM, "Kỹ năng " + KyNangSong.TEN[kn] + " lên cấp " + cap + "!",
+                null, com.htbb.thongbao.ThongBao.HINH_BIEU_TUONG, com.htbb.thongbao.ThongBao.BT_SINH_THAI);
         if (cap >= 30) {
             final String[] dh = {"Ngư phủ bậc thầy", "Nhà vườn xanh", "Nhà khảo cổ", "Đầu bếp Poké", "Dược sư"};
             if (h.themDanhHieu(dh[kn])) {
@@ -561,10 +584,11 @@ public final class HeSinhThaiMenu {
         final int bac = VatLieuSinhThai.bacTheoCap(HeSinhThaiGame.cap(p));
         h.them(VatLieuSinhThai.khoa(kq.ma, bac), so);
         final int len = h.congExp(KyNangSong.CAU_CA, KyNangSong.expKhiLam(gia));
-        final StringBuilder b = new StringBuilder("Câu được: ").append(so).append(" ").append(VatLieuSinhThai.ten(kq.ma))
-                .append(" (bậc ").append(bac).append(")");
+        // 0.9.6.1 (thong bao): ket qua = the nhanh "Câu được X ×n" + dong "Thể lực còn N"; gap Pokemon = thong bao rieng
+        final boolean hiem = gia >= 100;
+        final String ketQua = com.htbb.thongbao.ThongBao.duoc("Câu được", VatLieuSinhThai.ten(kq.ma), so, hiem);
+        final String theLuc = com.htbb.thongbao.ThongBao.theLuc(h.theLuc);
         if (kq.dex > 0) {
-            b.append(". Gặp ").append(SuuTamSinhThai.tenLoai(kq.dex)).append('!');
             gapPokedex(p, kq.dex);
             HeSinhThaiGame.nghienCuu(p, h, kq.dex, SuuTamSinhThai.NV_CAU);
             if (gia >= 100) {
@@ -575,8 +599,10 @@ public final class HeSinhThaiMenu {
                         + real.Map.getNameMap(p.mapID) + "!");
             }
         }
-        b.append(" Thể lực còn ").append(h.theLuc).append('.');
-        bao(p, b.toString());
+        baoKetQua(p, hiem, ketQua, theLuc, kq.dex, kq.dex > 0 ? SuuTamSinhThai.tenLoai(kq.dex) : null);
+        // DIEM MOC DUY NHAT "cau_ca" (NhiemVuEngine: nhiem vu kieu cau_ca + danh hieu cau ca; tham so = dex gap, 0 = khong).
+        // Nhanh khac (cau-ca) KHONG them diem moc cau_ca o noi khac - se dem hai lan.
+        real.NhiemVuEngine.suKien(p, "cau_ca", String.valueOf(kq.dex), 1);
         lenCap(p, h, KyNangSong.CAU_CA, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -680,7 +706,10 @@ public final class HeSinhThaiMenu {
             HeSinhThaiGame.chupAnh(p, h, 0, SuuTamSinhThai.A_HOA_THACH, HeSinhThaiGame.thoiTietMap(p.mapID));
             HeSinhThaiGame.baoTheGioi(p.charname + " vừa đào được " + VatLieuSinhThai.ten(kq.ma) + "!");
         }
-        bao(p, "Đào được: " + kq.soLuong + " " + VatLieuSinhThai.ten(kq.ma) + " (bậc " + bac + "). Thể lực còn " + h.theLuc + ".");
+        baoKetQua(p, VatLieuSinhThai.giaPhanNghin(kq.ma) >= 100,
+                com.htbb.thongbao.ThongBao.duoc("Đào được", VatLieuSinhThai.ten(kq.ma), kq.soLuong,
+                        VatLieuSinhThai.giaPhanNghin(kq.ma) >= 100), com.htbb.thongbao.ThongBao.theLuc(h.theLuc), 0, null);
+        real.DiemMocNhiemVu.khiDao(p, kq.ma); // diem moc dao_dat
         lenCap(p, h, KyNangSong.KHAO_CO, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -767,10 +796,12 @@ public final class HeSinhThaiMenu {
             }
         }
         final String ten;
+        String chatLuong = "";
         if (ct.ra > 0) {
             final int bac = KyNangSong.bacThanhPham(bacs);
             h.them(VatLieuSinhThai.khoa(ct.ra, bac), ct.soRa);
-            ten = ct.soRa + " " + VatLieuSinhThai.ten(ct.ra) + " (bậc " + bac + ")";
+            ten = com.htbb.thongbao.ThongBao.soLuong(VatLieuSinhThai.ten(ct.ra), ct.soRa);
+            chatLuong = "Chất lượng " + bac + "/5 · ";
         } else {
             HeSinhThaiGame.phatThuong(p, ct.thuong, "cong thuc " + ct.id);
             ten = ct.ten;
@@ -780,7 +811,8 @@ public final class HeSinhThaiMenu {
         }
         final int gia = ct.ra > 0 ? VatLieuSinhThai.giaPhanNghin(ct.ra) * ct.soRa : 300;
         final int len = h.congExp(ct.kyNang, KyNangSong.expKhiLam(gia));
-        bao(p, "Hoàn thành: " + ten + ". Thể lực còn " + h.theLuc + ".");
+        baoKetQua(p, false, (ct.ra > 0 ? "Chế xong " : "Hoàn thành: ") + ten, chatLuong + com.htbb.thongbao.ThongBao.theLuc(h.theLuc), 0, null);
+        real.DiemMocNhiemVu.khiNau(p, ct.id, ct.kyNang == KyNangSong.NAU_AN); // diem moc nau_an
         lenCap(p, h, ct.kyNang, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -964,6 +996,7 @@ public final class HeSinhThaiMenu {
             h.banNpcHomNay += kq[1];
         }
         HeSinhThaiGame.congXu(p, kq[1], "ban npc " + ma);
+        real.DiemMocNhiemVu.khiBan(p); // diem moc cho_ban
         bao(p, "Đã bán " + kq[0] + " " + VatLieuSinhThai.tenKhoa(c.khoa) + " được " + kq[1] + " xu.");
         HeSinhThaiGame.danhDau(p);
     }
@@ -1245,6 +1278,7 @@ public final class HeSinhThaiMenu {
                 h.themDanhHieu("Nhà nhân giống");
             }
             bao(p, "Trứng nở: " + t.moTa().replace(" - sắp nở", "") + "! Pet đã vào hành trang.");
+            real.DiemMocNhiemVu.khiNoTrung(p, t.dex); // diem moc ap_trung
             HeSinhThaiGame.danhDau(p);
         } else if (op == 1) {
             final List<String> m = new ArrayList<String>();
@@ -1510,6 +1544,7 @@ public final class HeSinhThaiMenu {
         final Char ban = HeSinhThaiGame.timOnline(idBan);
         if (ban != null) {
             HeSinhThaiGame.congXu(ban, xu, "ban cho sinh thai");
+            real.DiemMocNhiemVu.khiBan(ban); // diem moc cho_ban (nguoi ban offline: khong tinh)
             bao(ban, "Chợ sinh thái: " + ghiChu + " +" + xu + " xu (đã trừ thuế).");
         } else {
             DuLieuHeSinhThai.guiHopThu(idBan, xu, 0, 0, "", ghiChu);
@@ -2000,6 +2035,9 @@ public final class HeSinhThaiMenu {
                 break;
             }
             case 3: {
+                if (real.DanhHieuGame.moBangNeuDuoc(p)) {
+                    break; // 0.9.7: client moi mo bang Danh hieu chung (Ho so -> Danh hieu), khong menu rieng
+                }
                 if (h.danhHieu.isEmpty()) {
                     bao(p, "Chưa có danh hiệu sinh thái.");
                     break;
@@ -2041,6 +2079,12 @@ public final class HeSinhThaiMenu {
             }
         } else {
             if (!h.coDanhHieu(HoSoSinhThai.DANH_HIEU[i])) {
+                return;
+            }
+            // 0.9.7: qua DanhHieuGame (dat ca currentDanhHieu - truoc day CharVongLap thao ngay o nhip sau vi
+            // currentDanhHieu = null) ; khong co mau trong data_danh_hieu thi giu cach cu
+            if (real.DanhHieuGame.deo(p, HeSinhThai.ID_EFF_DANH_HIEU_DAU + i)) {
+                bao(p, "Đang đeo danh hiệu " + HoSoSinhThai.DANH_HIEU[i] + ".");
                 return;
             }
             p.idEffDanhHieu = HeSinhThai.ID_EFF_DANH_HIEU_DAU + i;

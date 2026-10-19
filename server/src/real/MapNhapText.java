@@ -182,28 +182,43 @@ class MapNhapText {
                     return;
                 }
 
+                // 19/10/2026 (chu game duyet): ma li xi la LUONG KHOA (khong giao dich - nick phu khong don ve nick
+                // chinh duoc), moi TAI KHOAN 1 ma / dot, moi thiet bi / IP toi da li_xi.ma_tai_khoan_moi_may tai khoan,
+                // tran tong luong khoa / dot, qua cong chong clone. Truoc: 10 - 100 luong (mo) moi Pokemon.
+                final String chanClone = com.htbb.pokemon.ChongClone.lyDo(player, true);
+                if (chanClone != null) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(chanClone
+                            .replace("giao dịch / mua bán xu với người chơi khác", "nhập mã lì xì")
+                            .replace("giao dịch xu", "nhập mã lì xì"), ""));
+                    return;
+                }
                 if (!Database.instance.checkCanInputCodeLixi(player.charname)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Mỗi Pokémon chỉ được dùng 1 code.", ""));
                     return;
                 }
-
-                if (!Database.instance.checkValidCodeLixi(text)) {
+                final com.htbb.pokemon.LiXiLogic.CauHinh cfgMa = Char.cauHinhLiXi();
+                final com.htbb.pokemon.ChongCloneLogic.Ben benMa = com.htbb.pokemon.ChongClone.ben(player, false);
+                final int luong = com.htbb.pokemon.LiXiLogic.luongKhoaMa(cfgMa, Map.r);
+                final String dotMa = Char.dotLiXi();
+                final String ngayMa = Char.ngayLiXi();
+                final String chanMa = com.htbb.pokemon.LiXiLogic.giuMa(cfgMa, data.DatabaseGioiHanQua.KHO, dotMa, ngayMa,
+                        player.userID, benMa.may, benMa.ip, luong);
+                if (chanMa != null) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(chanMa, ""));
+                    return;
+                }
+                // chot ma NGUYEN TU (UPDATE ... WHERE nhan=0): hai nguoi go cung ma thi chi mot nguoi nhan.
+                if (!data.DatabaseGioiHanQua.chotMaLiXi(text, player.charname + "_" + Database.nameServer[TeamServer.server])) {
+                    com.htbb.pokemon.LiXiLogic.hoanMa(cfgMa, data.DatabaseGioiHanQua.KHO, dotMa, ngayMa, player.userID,
+                            benMa.may, benMa.ip, luong);
                     player.sendMessage(MessageCreator.createServerAlertMessage("Code không hợp lệ hoặc đã được sử dụng.", ""));
                     return;
                 }
-
-                Database.instance.updateValidCodeLixi(text, player.charname);
-                int luong = 10 + Map.r.nextInt(91);
-                // Bo sung kiem toan A6: bat co sv.lau_dai -> li xi la luong KHOA (luong mo chi tu xep hang).
-                if (com.htbb.pokemon.LauDai.bat()) {
-                    luong = Math.min(luong, 15);
-                    player.addLuongLock(luong);
-                } else {
-                    player.addLuong(luong);
-                }
+                player.addLuongLock(luong);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn nhận được " + luong + " lượng", ""));
-                Database.instance.saveOrtherLog("", player.charname, "nhap code: " + text + " nhan duoc " + luong + " luong", "codelixi");
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn nhận được " + luong + " lượng khoá", ""));
+                Database.instance.saveOrtherLog("", player.charname, "nhap code: " + text + " nhan duoc " + luong + " luong khoa (tk "
+                        + player.userID + ")", "codelixi");
             } else if (idActor == -32050) {
                 if (Map.stopGiveMoney) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng đang bảo trì", ""));
@@ -406,8 +421,8 @@ class MapNhapText {
                     return;
                 }
 
-                if (idActor == VongQuayLuong.INPUT_SO_LUONG) {
-                    VongQuayLuong.doNhapSoLuong(player, text);
+                if (VongQuay.theoO(idActor) != null) { // o nhap so cuoc cua 3 vong quay (-32040 / -32041 / -32056)
+                    VongQuay.theoO(idActor).nhapSo(player, text);
                     return;
                 }
 
@@ -677,15 +692,8 @@ class MapNhapText {
                 }
             }
 
-            if (idActor == -32040) {
-                String moneyxx = text.trim().toLowerCase();
-                MapQuaTang.doVongQuayMayMan(map, player, moneyxx, 0);
-                return;
-            }
-
-            if (idActor == -32041) {
-                String moneyxx = text.trim().toLowerCase();
-                MapQuaTang.doVongQuayMayMan(map, player, moneyxx, 1);
+            if (VongQuay.theoO(idActor) != null) {
+                VongQuay.theoO(idActor).nhapSo(player, text);
                 return;
             }
 
@@ -1448,14 +1456,17 @@ class MapNhapText {
                         return;
                     }
 
-                    if (player.lvDetail.lv < 40) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 40 trở lên mới có thể sử dụng chức năng này.", ""));
+                    final long moneyxxxx;
+                    try {
+                        moneyxxxx = Long.parseLong(text.trim().replace(".", "").replace(",", ""));
+                    } catch (final Exception exSo) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thách đấu với số tiền này", ""));
                         return;
                     }
-
-                    int moneyxxxx = Integer.parseInt(text.trim());
-                    if (moneyxxxx < 100000 || moneyxxxx > 10000000) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể thách đấu với số tiền từ 100k xu đến 10t xu", ""));
+                    // 19/10/2026: muc cuoc theo dai cap (real.ThachDauCuoc), truoc 100.000 - 10.000.000 xu co dinh.
+                    final String loiMuc = ThachDauCuoc.kiemCuoc(moneyxxxx, player);
+                    if (loiMuc != null) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(loiMuc, ""));
                         return;
                     }
 
@@ -1469,7 +1480,7 @@ class MapNhapText {
                         return;
                     }
 
-                    player.moneyThachdau = moneyxxxx;
+                    player.moneyThachdau = (int) moneyxxxx;
                     player.sendMessage(MessageCreator.createMsgInputText(player.id, 6, "Nhập tên đối thủ", 0));
                 } else if (idMenu == 6) {
                     if (player.mapID != 201 && player.mapID != 0 && player.mapID != 70 && player.mapID != 301 && player.mapID != 1701) {
@@ -1493,14 +1504,14 @@ class MapNhapText {
                     }
 
                     if (p.rcvInvite && p.rcvInviteVip) {
-                        if (player.moneyThachdau >= 100000 && player.moneyThachdau <= 10000000) {
+                        final String loiMucDoiThu = ThachDauCuoc.kiemCuoc(player.moneyThachdau, player, p);
+                        if (loiMucDoiThu != null) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(loiMucDoiThu, ""));
+                            return;
+                        }
+                        if (player.moneyThachdau > 0) {
                             if (p.getxu() < (long) player.moneyThachdau) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " không có đủ số tiền cược bạn muốn cược.", ""));
-                                return;
-                            }
-
-                            if (p.lvDetail.lv < 40) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Đối thủ của bạn phải đạt cấp độ 40 trở lên.", ""));
                                 return;
                             }
 
@@ -1524,7 +1535,8 @@ class MapNhapText {
                                                 + player.lvDetail.lv
                                                 + " gửi lời thách đấu tới bạn với số tiền cược là "
                                                 + player.moneyThachdau
-                                                + " xu. Bạn có đồng ý không?"
+                                                + " xu (bên thắng nhận gấp đôi trừ phí " + ThachDauCuoc.cauHinh().phiPhanTram
+                                                + "%, hoà thì hoàn lại). Bạn có đồng ý không?"
                                         )
                                 );
                                 p.nameCompetitor = player.charname;

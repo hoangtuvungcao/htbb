@@ -56,7 +56,7 @@ const faq = [
   <div>
     <SitePageBanner
       title="Tải game"
-      eyebrow="Miễn phí · không nạp tiền"
+      eyebrow="Miễn phí · không bán sức mạnh"
       intro="Một lần tải game. Mở ra cả một thế giới để khám phá, kết giao và viết nên câu chuyện của bạn."
     />
 

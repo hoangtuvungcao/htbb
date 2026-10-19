@@ -163,6 +163,7 @@ public final class Kiem {
         KiemDongBoMyCountryKhiVaoBang.chay();
         KiemThuongTanThuVaLenCap35.chay();
         KiemChiemGymDoiDiemGiaoHang.chay();
+        KiemLoiBotChucNang.chay();
         KiemCuocKhuMoAttackDam.chay();
         KiemMaterialMapNhatDo.chay();
         KiemPetTrangThai1LaPetTool.chay();
@@ -186,7 +187,10 @@ public final class Kiem {
         KiemChiSo.chay(); // chi so trang bi + chong lam phat (docs/thiet-ke-game.md)
         KiemAdminPanel.chay();
         KiemKinhTeKhoiDau.chay(); // qua tao nhan vat da bo, he so nap = 1, ghi client dang nhap
-        KiemChongClone.chay(); // chong clone chuyen xu, luong khoa khong chuyen duoc (chu game 19/10/2026)
+        KiemChongClone.chay();
+        KiemVongQuay.chay(); // vong quay gop hu: muc cuoc, phi, bao toan hu, nut Dong y (chu game 19/10/2026)
+        KiemThachDauCuoc.chay(); // thach dau cuoc xu: ky quy, phi, muc theo cap (19/10/2026)
+        KiemLiXi.chay(); // li xi Tet: tran, xu theo gio, ma luong khoa theo tai khoan (19/10/2026)
         KiemLichNam.chay(); // lich su kien nam theo ngay that + am lich (chu game 19/10/2026)
         KiemVungNhinCoDinh.chay(); // camera co dinh: kep be rong man client (com.htbb.mang.VungNhinCoDinh)
         KiemTenHien.chay(); // ten NPC + ten ban do tu SQL data_npc / data_map_ten, co dau, khong tu cam (P6)
@@ -198,6 +202,9 @@ public final class Kiem {
         KiemGiapVoHan.chay(); // 0.9.6.1: giap / khien khong vo han - het han dung luc, hoi chieu > thoi luong (real.ChieuHoTro)
         KiemCauCaNhip.chay(); // 0.9.6.1 cau ca: cho ngau nhien, khung keo can, 30% khong duoc gi, nghi + giam theo gio, phao xuong nuoc
         KiemKhoaKhiMac.chay(); // 0.9.6.1: do da mac bi khoa (khong giao dich), pha khoa o Machamp (ho hut xu), Da pha khoa 1295
+        KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
+        KiemPvpPk.chay(); // 0.9.7 PvP xep hang (Elo chi trong tran ghep, chong nick phu), thuong mua, luat PK, diem moc nhiem vu
+        KiemDanhHieu.chay(); // 0.9.7 danh hieu: mo khoa, an "???", het han, mot danh hieu dang deo, tran chi so, sql/them_danh_hieu.sql
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

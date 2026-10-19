@@ -703,6 +703,10 @@ public class Region {
             if (p.lvDetail.lv < 40 && c.monster != null) {
                 return;
             }
+            // 0.9.7 luat PK the gioi (real.LuatPkGame): thi tran an toan, chenh cap > 10, nghiep qua nang
+            if (LuatPkGame.chan(this.map, p, c) != null) {
+                return;
+            }
             if (!Map.inRangeActor((LiveActor)p, (LiveActor)c, (int)MAX_RANGE_CHAR[p.charClass])) {
                 return;
             }
@@ -820,6 +824,7 @@ public class Region {
                 ahp = 1;
             }
             c.hp = (int)((long)c.hp - ((long)damage - c.checkMagicShield(damage)));
+            XepHangPvpGame.khiSatThuong(p, c, damage); // tran xep hang: sat thuong ben thua gay (chong cay Elo)
             ChiemGymLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
             if (c.hp <= 0) {
                 ThangPvpGame.ketQua(p, c); // GD2 7.2 Elo mua (tat co: khong lam gi)

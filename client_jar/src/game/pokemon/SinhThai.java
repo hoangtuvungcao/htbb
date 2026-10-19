@@ -512,7 +512,7 @@ public final class SinhThai {
     /** Thả câu: true = được (hoạt cảnh đã chạy, người gọi gửi "cauca2"); false = báo ngắn, không câu. */
     public static boolean thuCau() {
         if (!coCho() || !batDauCau()) {
-            HanhDong.bao(BAO_XA_NUOC);
+            ThongBao.hien(BAO_XA_NUOC, ThongBao.TIN);   // thẻ nhanh (lớp thông báo chung)
             return false;
         }
         return true;
@@ -574,7 +574,7 @@ public final class SinhThai {
         if (choBao != null) {
             String s = choBao;
             choBao = null;
-            Canvas.startOKDlg(s);
+            ThongBao.xongCau(s);   // 0.9.6.1: thẻ nhanh (không chặn), gặp Pokémon là thẻ riêng
         }
     }
 
@@ -603,7 +603,7 @@ public final class SinhThai {
             if (canLuc < 0) {
                 canLuc = now > cauLuc + MS_QUANG ? now : cauLuc + MS_QUANG;
             }
-            HanhDong.bao(s);           // dấu cá cắn: chữ nhanh + phao chìm, không hộp thoại chặn tay
+            ThongBao.hien(s, ThongBao.TIN);   // dấu cá cắn: thẻ nhanh + phao chìm, không hộp thoại chặn tay
             return true;
         }
         if (s.startsWith("Câu được")) {

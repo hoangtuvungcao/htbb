@@ -17,7 +17,7 @@ import real.MessageCreator;
  * bi, IP, tuoi tai khoan, gio choi), bao nguoi choi, ghi nhat ky tob_log_chuyen_gia_tri tren luong nen.
  *
  * Cac cong goi vao day (docs/thiet-ke-game.md muc kinh te, "Chống clone"):
- * real/MapMuaBan (giao dich), real/OfflineMap (ky gui: rao + mua), real/Map popup 112 + real/MapNhapText
+ * real/MapMuaBan (giao dich), real/OfflineMap (ky gui: rao + mua), real/VongQuay (vong quay gop hu), real/Map popup 112 + real/MapNhapText
  * (giao dich thu cung lay xu, thach dau cuoc xu), com.htbb.pokemon.NapTienGame (cho trang tri),
  * com.htbb.pokemon.HeSinhThaiMenu (cho sinh thai).
  */
@@ -29,6 +29,8 @@ public final class ChongClone {
     public static final String KIEU_CHO_TRANG_TRI = "cho_trang_tri";
     public static final String KIEU_CHO_SINH_THAI = "cho_sinh_thai";
     public static final String KIEU_THACH_DAU = "thach_dau";
+    /** Vong quay gop hu (real.VongQuay): moi nguoi thua -> nguoi thang. */
+    public static final String KIEU_VONG_QUAY = "vong_quay";
 
     private static final ChongCloneLogic.SoNgay SO = new ChongCloneLogic.SoNgay();
     private static volatile boolean daNapSo = false;

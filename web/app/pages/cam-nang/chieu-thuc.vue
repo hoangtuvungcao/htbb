@@ -20,7 +20,7 @@ const coStab = (he: number) => loaiDang.value.he.includes(he)
   <WikiShell slug="chieu-thuc">
     <p class="van">
       Mỗi dòng khởi đầu có một bộ chiêu riêng. Mỗi lần lên cấp bạn nhận <strong>1 điểm kỹ năng</strong> để học hoặc nâng chiêu
-      (tăng % sức mạnh). Gán chiêu vào thanh phím tắt (phím 1, 3, 5, 7, 9) và bấm <strong>phím 0</strong> để đổi bảng chiêu.
+      (tăng % sức mạnh). Gán chiêu vào ô nhanh: Android có 4 nút chiêu quanh nút đánh; PC dùng phím 1–5 (<strong>R</strong> đổi bộ chiêu); Java dùng phím 1, 3, 5, 7, 9 và <strong>phím 0</strong> để đổi bảng chiêu. Icon dưới đây là icon chiêu thật trong game.
     </p>
 
     <WikiSection id="bang-chieu" title="Chiêu theo dòng">

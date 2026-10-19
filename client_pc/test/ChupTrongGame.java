@@ -225,7 +225,9 @@ public class ChupTrongGame {
             // 0.9.6.1: hệ sinh thái / câu cá (menu máy chủ NPC ảo -528 + thông báo 37 qua MessageHandler thật)
             "hst_menu", "hst_menu_trang2", "hst_cong_thuc", "hst_suu_tam", "hst_vung", "hst_cho", "hst_cho_loai", "hst_tui", "hst_tui_day",
             "hst_tui_hanh_dong", "hst_ky_nang", "hst_tu_man", "hop_hst_ky_nang", "hop_hst_nghien_cuu", "hop_hst_the_gioi",
-            "hop_cau_ket_qua", "cau_can"};
+            "hop_cau_ket_qua", "cau_can",
+            // 0.9.7
+            "danh_hieu", "danh_hieu_chua_co", "danh_hieu_an", "danh_hieu_chi_tiet"};
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -296,7 +298,10 @@ public class ChupTrongGame {
                 // màn chơi: HUD PC (HudRong) chỉ ở cỡ PC; HUD APK (Hud.java) kiểm riêng bằng client_jar/tools/KiemCoCham
                 boolean theGioi = ten.startsWith("the_gioi") || "thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)
                         || "goi_y_chieu".equals(ten) || ten.startsWith("tu_dong") || "hop_vat_pham".equals(ten) || ten.startsWith("npc_")
-                        || "cai_dat_tai_khoan".equals(ten) || "hst_ky_nang".equals(ten) || "cau_can".equals(ten);
+                        || "cai_dat_tai_khoan".equals(ten) || "hst_ky_nang".equals(ten) || "cau_can".equals(ten)
+                        // 0.9.6.1: hộp "OK" báo tin trong game (lên cấp, phần thưởng...) nay là thẻ nhanh trên màn chơi
+                        || ten.startsWith("hop_") && game.render.Canvas.currentDialog == null
+                        && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
                 if (!theGioi || dpi == 0) {
                     kiemCham(ten + " " + TEN_CO[c], min, cach);
                 }
@@ -539,7 +544,65 @@ public class ChupTrongGame {
         game.render.screen.GameScr.infoNewSkill.removeAllElements();
         game.render.screen.GameScr.infoNewSkill.addElement(hoc);
         TOP = top;
+        giaLapDanhHieu();
         gs.switchToMe();
+    }
+
+    /** 0.9.7: bảng danh hiệu giả như máy chủ gửi (-110 loại 0) + nhãn danh hiệu của nhân vật chính. */
+    static void giaLapDanhHieu() {
+        try {
+            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o = new java.io.DataOutputStream(b);
+            o.writeByte(0);
+            o.writeByte(0);
+            o.writeShort(9713);
+            String[] hiem = {"Thường", "Hiếm", "Sử thi", "Huyền thoại"};
+            o.writeByte(hiem.length);
+            for (String h : hiem) o.writeUTF(h);
+            Object[][] d = {
+                // id, tên, mô tả, gợi ý, độ hiếm, hình, trạng thái, ẩn, tiến độ, cần, phút còn, chỉ số, nguồn, mới
+                {9713, "Ngư phủ Magikarp", "Câu cá 300 lần ở hồ.", "", 1, "song", 2, 0, 300, 300, -1, "+0,7% Né tránh", "thanh_tuu", 0},
+                {9720, "Master Ball mùa này", "Đạt bậc Master Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.", "", 3, "khien", 1, 0, 3, 3, 3 * 1440 + 200, "+1% Chí mạng", "xep_hang", 1},
+                {9707, "Nhà Pokédex học", "Nghiên cứu 50% số loài trong Pokédex.", "", 2, "sao", 1, 0, 50, 50, -1, "+0,9% Chí mạng", "pokedex", 0},
+                {9700, "Huấn luyện viên tập sự", "Đạt cấp 10.", "", 0, "sao", 1, 0, 10, 10, -1, "+0,5% HP tối đa", "thanh_tuu", 0},
+                {9702, "Huấn luyện viên tinh anh", "Đạt cấp 50.", "", 1, "nhanh", 0, 0, 24, 50, -1, "+0,7% Chí mạng", "thanh_tuu", 0},
+                {9710, "Thợ săn trùm", "Góp sức hạ 25 trùm thế giới.", "", 1, "nanh", 0, 0, 7, 25, -1, "+0,7% Chí mạng", "boss", 0},
+                {9734, "Bí ngô đêm hội", "Có mặt trong lễ Halloween. Hết hạn sau 30 ngày.", "", 1, "ma", 0, 0, 0, 1, 43200, "+0,7% Né tránh", "su_kien", 0},
+                {9704, "Đỉnh cao huấn luyện", "Đạt cấp tối đa của năm đầu (91).", "", 3, "mat_troi", 0, 0, 24, 91, -1, "+1% HP tối đa", "thanh_tuu", 0},
+                {9714, "???", "???", "Mặt hồ chỉ trả lời người đủ kiên nhẫn...", 2, "", 0, 1, 0, 1000, -1, "", "an", 0},
+                {9738, "???", "???", "Ngã nhiều lần cũng là một kiểu bản lĩnh.", 0, "", 0, 1, 0, 100, -1, "", "an", 0},
+                {9740, "???", "???", "Đã đặt chân tới mọi miền chưa?", 3, "", 0, 1, 0, 120, -1, "", "an", 0},
+            };
+            o.writeShort(d.length);
+            for (Object[] r : d) {
+                o.writeShort((Integer) r[0]);
+                o.writeUTF((String) r[1]);
+                o.writeUTF((String) r[2]);
+                o.writeUTF((String) r[3]);
+                o.writeByte((Integer) r[4]);
+                o.writeUTF((String) r[5]);
+                o.writeByte((Integer) r[6]);
+                o.writeByte((Integer) r[7]);
+                o.writeInt((Integer) r[8]);
+                o.writeInt((Integer) r[9]);
+                o.writeInt((Integer) r[10]);
+                o.writeUTF((String) r[11]);
+                o.writeUTF((String) r[12]);
+                o.writeByte((Integer) r[13]);
+            }
+            game.pokemon.DanhHieuKho.doc(new java.io.DataInputStream(new java.io.ByteArrayInputStream(b.toByteArray())));
+            game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+            java.io.ByteArrayOutputStream b2 = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o2 = new java.io.DataOutputStream(b2);
+            o2.writeByte(1);
+            o2.writeShort(mc.ID);
+            o2.writeShort(9713);
+            o2.writeUTF("Ngư phủ Magikarp");
+            o2.writeByte(1);
+            game.pokemon.DanhHieuKho.doc(new java.io.DataInputStream(new java.io.ByteArrayInputStream(b2.toByteArray())));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     static java.util.Vector TOP;
@@ -738,6 +801,11 @@ public class ChupTrongGame {
             game.pokemon.ManXepHang.nhan(4, TOP);
         } else if ("doi".equals(ten)) {
             game.pokemon.ManDoi.mo(0);
+        } else if (ten.startsWith("danh_hieu")) {
+            game.pokemon.ManDanhHieu.moTab(ten.endsWith("chua_co") ? 1 : ten.endsWith("_an") ? 2 : 0);
+            if (ten.endsWith("chi_tiet")) {
+                dat(game.pokemon.ManDanhHieu.gI(), "xem", game.pokemon.DanhHieuKho.loc(0).elementAt(1));
+            }
         } else if ("ky_nang_hoc".equals(ten)) {
             game.pokemon.ManNhanVat.mo(2);
             dat(nv, "hocMoi", Boolean.TRUE);
