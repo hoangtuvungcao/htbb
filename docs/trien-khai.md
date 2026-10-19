@@ -262,7 +262,9 @@ thay một jar chép tay để thử gấp: `sudo /opt/htbb/vps/capnhat.sh` (l�
 `sudo -u htbb git -C /opt/htbb checkout -- server/htbb-server.jar`).
 
 Quay lại bản trước: `sudo -u htbb git -C /opt/htbb log --oneline -5`, rồi
-`systemctl stop htbb-game && sudo -u htbb git -C /opt/htbb checkout <commit> -- server/htbb-server.jar && systemctl start htbb-game`.
+`systemctl stop htbb-game && sudo -u htbb git -C /opt/htbb checkout <commit> -- server/htbb-server.jar server/lib && systemctl start htbb-game`
+(kèm `server/lib`: jar trước P3 cần `lib/htbb-core.jar`, P3 đã xoá tệp này). Bảng P1 (`them_p1_du_lieu_sql.sql`) để
+nguyên khi quay lại: jar cũ không đọc nhưng vẫn chạy được.
 
 ### 4.2 Website — `web-deploy.yml` → `htbb-deploy-web.sh`
 
