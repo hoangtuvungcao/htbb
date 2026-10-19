@@ -42,8 +42,11 @@ public abstract class Canvas extends Displayable {
         return true;
     }
 
+    /** Kiểm thử: -Dhtbb.khongCham=true giả máy J2ME chỉ có phím (menu chữ / hộp thoại cũ). */
+    static final boolean KHONG_CHAM = Boolean.getBoolean("htbb.khongCham");
+
     public boolean hasPointerEvents() {
-        return true;
+        return !KHONG_CHAM;
     }
 
     public boolean hasPointerMotionEvents() {

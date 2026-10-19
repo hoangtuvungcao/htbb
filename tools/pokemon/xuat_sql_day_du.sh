@@ -20,7 +20,7 @@ NGUON=du_lieu/sql_nguon
 # Migration cu: loi "da co" (1060 trung cot, 1062 trung khoa) la binh thuong vi seed da gom san.
 MIGRATION="them_bang_2buoc them_bang_cam_may them_bang_dieu_khien_server them_bang_su_kien
 them_bang_tob_log_online them_bang_tob_top_thuong them_bang_web_admin_log them_bang_web_chan_spam
-them_bang_web_lenh_nhan_vat them_cot_kho_xu_luong them_khoa_duy_nhat_giftcode_log
+them_bang_web_lenh_nhan_vat them_bang_tob_client_dang_nhap them_cot_kho_xu_luong them_khoa_duy_nhat_giftcode_log
 them_phi_phong_vo_hinh them_su_kien_world_cup skin_linh_thu ten_mo_ta_skin_linh_thu
 sua_type_skin_linh_thu xoa_su_kien_trung_lap"
 # Pokemon: PHAI dung thu tu nay (pokemon_doi_chu cuoi cung).

@@ -17,6 +17,9 @@ interface Hang { dong: number, username: string, matkhau: string, trangthai: str
 interface KetQua { ketQua: Hang[], tongDong: number, soTao: number }
 
 const api = useAdminApi()
+// Vai trò Chỉ xem thấy trang (đọc được) nhưng không gửi được: khoá nút thay vì để bấm rồi nhận 403.
+const me = useAdminMe()
+const duocGhi = computed(() => me.duoc('/api/admin/tao-hang-loat'))
 const toast = useToast()
 
 const danhSach = ref('')
@@ -65,6 +68,14 @@ const cot: TableColumn<Hang>[] = [
 
 <template>
   <AdminPage title="Tạo tài khoản hàng loạt">
+    <UAlert
+      v-if="!duocGhi"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-eye"
+      title="Chế độ chỉ xem"
+      description="Vai trò của bạn xem được trang này nhưng không gửi được lệnh — chỉ Siêu quản trị thao tác."
+    />
     <p class="text-sm text-muted">
       Mỗi dòng một tài khoản, tối đa {{ TOI_DA }} dòng một lượt.
     </p>
@@ -96,7 +107,7 @@ const cot: TableColumn<Hang>[] = [
             Kích hoạt ngay (thêm vào <code>5h_active</code>) — bỏ chọn nếu tài khoản phải tự kích hoạt trên trang chủ.
           </template>
         </UCheckbox>
-        <UButton type="submit" icon="i-lucide-user-plus" label="Tạo tài khoản" :loading="dangTao" />
+        <UButton type="submit" icon="i-lucide-user-plus" label="Tạo tài khoản" :disabled="!duocGhi" :loading="dangTao" />
       </form>
     </UCard>
 

@@ -5,7 +5,7 @@
  *   - tat_ca: tài khoản + nhân vật + email, và IP nếu chuỗi trông như IP.
  * Trả về MỖI TÀI KHOẢN một dòng (tối đa 50) kèm nhân vật, cấp, online, khoá, và lý do khớp.
  */
-import { hsAnEmail, hsChuanHoaTim, hsGiongIp, hsLike, hsQuyetDinhOnline } from '../../../utils/hoSoNguoiChoi'
+import { hsAnEmail, hsChuanHoaTim, hsGiongIp, hsGiongMaMay, hsLike, hsQuyetDinhOnline } from '../../../utils/hoSoNguoiChoi'
 
 const TOI_DA = 50
 
@@ -35,7 +35,9 @@ export default defineAdminHandler(async (event, admin) => {
     for (const r of rows) them(theoId, Number(r.userId), Number(r.id) === so ? `ID Pokémon #${r.id}` : `Pokémon ${r.charname}`)
   }
   const timIp = kieu === 'ip' || (kieu === 'tat_ca' && hsGiongIp(tu))
-  if (timIp || kieu === 'ma_may') {
+  // "Tất cả" cũng dò mã máy khi chuỗi trông như mã máy (hsGiongMaMay).
+  const timMay = kieu === 'ma_may' || (kieu === 'tat_ca' && !timIp && hsGiongMaMay(tu))
+  if (timIp || timMay) {
     try {
       if (await coBang(dbGame(), 'tob_may_dang_nhap')) {
         const rows = timIp

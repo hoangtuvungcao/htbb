@@ -69,7 +69,7 @@ test('gói thanh_vien được danh mục nạp chấp nhận, không kèm lư�
 test('phân quyền: Hỗ trợ xem được, chỉ Siêu quản trị ghi, Chỉ xem / Biên tập không vào', () => {
   assert.equal(kiemQuyenAdmin('/api/admin/thanh-vien/danh-sach', 'GET', 'ho_tro'), true)
   assert.equal(kiemQuyenAdmin('/api/admin/thanh-vien/cap', 'POST', 'ho_tro'), false)
-  assert.equal(kiemQuyenAdmin('/api/admin/thanh-vien/cau-hinh', 'POST', 'sieu_quan_tri'), true)
+  assert.equal(kiemQuyenAdmin('/api/admin/thanh-vien/cap', 'POST', 'sieu_quan_tri'), true)
   assert.equal(kiemQuyenAdmin('/api/admin/thanh-vien/tong-quan', 'GET', 'xem'), false)
   assert.equal(kiemQuyenAdmin('/api/admin/thanh-vien/tong-quan', 'GET', 'bien_tap'), false)
 })

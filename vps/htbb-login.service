@@ -19,6 +19,9 @@ MemoryMax=256M
 ExecStart=/usr/bin/java -Xms32m -Xmx128m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar CheckLoginSocket.jar
 Restart=always
 RestartSec=5
+# systemd mo tep append: bang quyen ROOT nen tep moi tao thuoc root:root 0640 -> web (User=htbb) khong doc duoc
+# (/admin/chandoan, /admin/log bao 'khong doc duoc'). '+' = chay bang root; idempotent.
+ExecStartPre=+/bin/sh -c 'touch /opt/htbb/logs/login.out && chown htbb:htbb /opt/htbb/logs/login.out && chmod 0640 /opt/htbb/logs/login.out'
 StandardOutput=append:/opt/htbb/logs/login.out
 StandardError=append:/opt/htbb/logs/login.out
 

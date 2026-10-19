@@ -89,5 +89,11 @@ CO=$(my -N -e "SELECT COUNT(*) FROM \`$DB\`.cau_hinh_danh_muc")
 if [ "$CO" = "$CAN" ]; then echo "   ok  danh muc cau hinh: $CO khoa"; else echo "   SAI danh muc cau hinh: $CO khoa, tep co $CAN"; SAI=1; fi
 my -N -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='$DB' AND table_name='cau_hinh_danh_muc' AND column_name='thu_tu'" | grep -q 1 \
     || { echo "   SAI cau_hinh_danh_muc thieu cot thu_tu"; SAI=1; }
+# 0.9.4: phan loai khoa (lop) phai co trong danh muc SQL - may chu doc no de an / khoa khoa co dinh.
+N_AN=$(my -N -e "SELECT COUNT(*) FROM \`$DB\`.cau_hinh_danh_muc WHERE lop <> 'chinh'" 2>/dev/null || echo loi)
+case "$N_AN" in
+    ''|loi) echo "   SAI cau_hinh_danh_muc thieu cot lop (phan loai 0.9.4)"; SAI=1 ;;
+    *) echo "   ok  phan loai: $N_AN khoa an (co_dinh / luon_bat)" ;;
+esac
 [ "$SAI" = 0 ] || loi "kiem sau khi nap co loi (xem tren)"
 echo "== XONG. Tiep: deploy jar moi / systemctl restart htbb-game, roi xem log: [DU LIEU SQL] da nap 6 bang, [CAU HINH] danh muc tu CSDL"

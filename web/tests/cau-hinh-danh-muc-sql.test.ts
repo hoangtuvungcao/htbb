@@ -23,10 +23,10 @@ function dongGiaLap() {
     return {
       khoa: k.khoa, nhom: k.nhom, ten: k.ten, mo_ta: k.moTa, kieu: k.kieu, mac_dinh: k.macDinh, gioi_han: JSON.stringify(g),
       ap_dung: k.apDung, nhay: k.nhay ? 1 : 0, khoa_prod: k.khoaProd ? 1 : 0, chi_doc: k.chiDoc ? 1 : 0, bang: k.bang,
-      dung_o: k.dungO, nguon: k.nguon, thu_tu: i + 1,
+      dung_o: k.dungO, nguon: k.nguon, thu_tu: i + 1, lop: k.lop ?? 'chinh',
     }
   })
-  const nhom = NHOM_TT.map((n, i) => ({ ma: n.ma, ten: n.ten, mo_ta: n.moTa, thu_tu: i + 1 }))
+  const nhom = NHOM_TT.map((n, i) => ({ ma: n.ma, ten: n.ten, mo_ta: n.moTa, thu_tu: i + 1, an: n.an ? 1 : 0 }))
   return { khoa, nhom }
 }
 
@@ -38,6 +38,11 @@ test('danhMucTuSqlTT: dòng theo định dạng CSDL -> đúng bản sinh (kể 
   assert.deepEqual(dm.nhom, NHOM_TT)
   // CSDL chưa chạy migration (không có thu_tu) / bảng trống -> null (giữ bản sinh)
   assert.equal(danhMucTuSqlTT(khoa.map(({ thu_tu: _bo, ...r }) => r), nhom), null)
+  // Thiếu cột lop (CSDL trước 0.9.4) / lớp lạ -> null: không đoán 'chinh' cho khoá ẩn
+  assert.equal(danhMucTuSqlTT(khoa.map(({ lop: _bo, ...r }) => r), nhom), null)
+  assert.equal(danhMucTuSqlTT(khoa.map(r => ({ ...r, lop: 'la' })), nhom), null)
+  // Lớp từ CSDL đi tới khoá: khoá ẩn vẫn ẩn khi danh mục đọc từ SQL
+  assert.ok(dm.ds.some(k => k.lop === 'luon_bat') && dm.ds.some(k => k.lop === 'co_dinh'))
   assert.equal(danhMucTuSqlTT([], nhom), null)
   assert.equal(danhMucTuSqlTT(khoa, null), null)
 })

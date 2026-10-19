@@ -383,7 +383,9 @@ public final class KiemTuDongKeHoach {
         db.put(TuDong.K_MAP_CAM, "12, 20,");
         db.put(TuDong.K_DUNG_TU_DI, "0");
         db.put(TuDong.K_NHAT_BAN_KINH, "9999");
-        CauHinhTrungTam.datChoTest(null, db, false);
+        // khoa ke hoach / chenh cap la khoa CO DINH (docs/cau-hinh.md): may that bo qua CSDL, nen kiem doc
+        // gia tri tren may thu (sv.cho_phep_thu_nghiem=1) - doc CSDL nhu cu.
+        CauHinhTrungTam.datChoTest(null, db, true);
         try {
             final TuDong.CauHinh c = TuDong.cauHinh();
             Kiem.sai("doc ke_hoach=0", c.keHoach);

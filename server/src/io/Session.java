@@ -169,6 +169,7 @@ public class Session extends Thread {
             } catch (Exception var9) {
             }
 
+            this.lyDoNgat = "server ngat (dang xuat / kick / dong phien)";
             while(this.connected) {
                 Message message = this.readMessage(dis);
                 this.lastActiveTime = System.currentTimeMillis();
@@ -187,6 +188,7 @@ public class Session extends Thread {
                 if (this.quaNhieuGoi(message.command)) {
                     if (this.boDemGoiTin.vuotXaNguong(message.command)) {
                         server.ChiSoMayChu.CAT_NGAP.incrementAndGet();
+                        this.lyDoNgat = "ngap goi tin (lenh " + message.command + ")";
                         break;   // khoi finally ben duoi se disconnect(7)
                     }
                     server.ChiSoMayChu.GOI_BO.incrementAndGet();
@@ -208,8 +210,16 @@ public class Session extends Thread {
                     com.htbb.log.Nhat.loi("XU_LY_GOI", "lenh " + message.command + " cua " + this.charname, var10);
                 }
             }
+        } catch (java.net.SocketTimeoutException e) {
+            this.lyDoNgat = "het gio im lang " + (server.TeamServer.SOCKET_TIMEOUT_MS / 1000) + " s (client khong gui gi)";
+        } catch (java.io.EOFException e) {
+            this.lyDoNgat = "client dong ket noi";
+        } catch (java.net.SocketException e) {
+            this.lyDoNgat = this.connected ? "loi socket: " + e.getMessage() : this.lyDoNgat;
         } catch (Exception var11) {
+            this.lyDoNgat = "loi: " + var11;
         } finally {
+            baoNgat(this.charname, this.username, this.ip, this.lyDoNgat, this.lastActiveTime);
             this.disconnect(7);
         }
 
@@ -345,6 +355,38 @@ public class Session extends Thread {
         } catch (Exception var3) {
         }
 
+    }
+
+    /** 0.9.4: ly do ngat ket noi (ghi MOT dong / ket noi vao nhat ky chinh). */
+    private volatile String lyDoNgat = "chua doc goi nao";
+    private static long ngatCuaSo;
+    private static int ngatTrongCuaSo, ngatBoQua;
+
+    /** Mot dong "[NGAT] nhan vat ip ly do" moi lan ngat; toi da 30 dong / 10 s, phan du gop thanh so dem. */
+    static void baoNgat(String charname, String username, String ip, String lyDo, long lanCuoi) {
+        try {
+            final long now = System.currentTimeMillis();
+            int boQua = 0;
+            synchronized (Session.class) {
+                if (now - ngatCuaSo > 10000L) {
+                    boQua = ngatBoQua;
+                    ngatCuaSo = now;
+                    ngatTrongCuaSo = 0;
+                    ngatBoQua = 0;
+                }
+                if (++ngatTrongCuaSo > 30) {
+                    ngatBoQua++;
+                    return;
+                }
+            }
+            if (boQua > 0) {
+                com.htbb.log.Nhat.thongTin("NGAT", "(bo qua " + boQua + " dong ngat ket noi trong 10 s truoc)");
+            }
+            final String ten = charname != null && charname.length() > 0 ? charname : (username != null && username.length() > 0 ? "tk " + username : "(chua dang nhap)");
+            final long im = lanCuoi > 0 ? (now - lanCuoi) / 1000L : -1L;
+            com.htbb.log.Nhat.thongTin("NGAT", ten + " ip=" + ip + " ly do: " + lyDo + (im >= 0 ? " (goi cuoi " + im + " s truoc)" : ""));
+        } catch (Throwable ignored) {
+        }
     }
 
     public void disconnect() {

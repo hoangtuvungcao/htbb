@@ -74,7 +74,7 @@ test('Chỉ xem: không ghi được gì ngoài phiên của mình', () => {
 test('Biên tập: chỉ ghi nội dung web', () => {
   for (const r of ROUTES.filter(x => laGhi(x.method) && !x.path.startsWith('/api/admin/auth/'))) {
     const duoc = kiemQuyenAdmin(r.path, r.method, 'bien_tap')
-    const laNoiDung = r.path.startsWith('/api/admin/cms/') && r.path !== '/api/admin/cms/dong-bo'
+    const laNoiDung = r.path.startsWith('/api/admin/cms/')
     assert.equal(duoc, laNoiDung, `bien_tap ${duoc ? 'ghi được' : 'không ghi được'} ${r.method} ${r.path}`)
   }
 })

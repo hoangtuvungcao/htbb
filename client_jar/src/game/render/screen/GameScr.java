@@ -1232,8 +1232,14 @@ public class GameScr extends Screen {
     }
 
     public static void addChat(Actor ac, String str, int time) {
+        if (ac == null) {
+            // 0.9.4: mất mục tiêu (NPC đã rời / đổi focus) giữa hội thoại: vẫn hiện lời ở hộp đáy, không ném NPE
+            game.pokemon.HopThoaiDuoi.dat("", str, time);
+            return;
+        }
         // pokemon: lời NPC (và lời người chơi đáp lại khi đang trò chuyện) -> hộp thoại đáy màn kiểu GBA
-        if (ac != null && (ac instanceof NPC || game.pokemon.HopThoaiDuoi.dangBat() && Canvas.gameScr != null && ac == Canvas.gameScr.mainChar)) {
+        if (ac instanceof NPC || Canvas.gameScr != null && ac == Canvas.gameScr.mainChar
+                && (game.pokemon.HopThoaiDuoi.dangBat() || currQuest != null && currQuest.isShow)) {
             String ten = ac instanceof NPC ? ((NPC) ac).name : ((Char) ac).name;
             game.pokemon.HopThoaiDuoi.dat(ten, str, time);
             ac.chat = null;
@@ -1345,7 +1351,13 @@ public class GameScr extends Screen {
     /** pokemon: đang trò chuyện có bước tiếp (mở đầu map 105 gần ông, nhận / trả nhiệm vụ). */
     public boolean dangTroChuyen() {
         if (Tilemap.lv == 105 && this.focusedActor instanceof NPC && this.mainChar != null
-                && Util.abs(this.mainChar.y - this.focusedActor.y) <= 32) {
+                && this.mainChar.y - this.focusedActor.y <= 32) {
+            return true;
+        }
+        // 0.9.4: hội thoại nhận / trả nhiệm vụ (Quest.isShow) cũng là "đang trò chuyện" - trước đây chỉ xét cờ
+        // receiveQuest (không bao giờ bật) nên chạm / bấm bị hộp thoại đáy nuốt (tat) thay vì sang lời, Quest.update
+        // chờ phím 5 mãi, updateKey thoát sớm mỗi nhịp -> màn chơi "treo" ngay nhiệm vụ đầu tiên.
+        if (currQuest != null && currQuest.isShow) {
             return true;
         }
         return this.receiveQuest;
@@ -1354,6 +1366,17 @@ public class GameScr extends Screen {
     private boolean doIntro() {
         if (Tilemap.lv == 105) {
             String[] intro = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao nhà huấn luyện tài ba.", "1Năm xưa ta có người bạn thân là Xatu", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng huấn luyện này", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
+            if (!(this.focusedActor instanceof NPC)) {
+                // 0.9.4: người chơi khác cùng ở màn mở đầu giành mất mục tiêu (focus = Char) -> trước đây nhân vật đi
+                // lên mãi qua ông nội, không bao giờ vào hội thoại. Tự nhắm ông (NPC) khi đã tới ngang / vượt qua.
+                for (int i = 0; i < this.actors.size(); i++) {
+                    Object o = this.actors.elementAt(i);
+                    if (o instanceof NPC && this.mainChar != null && this.mainChar.y - ((NPC) o).y <= 32) {
+                        this.focusedActor = (NPC) o;
+                        break;
+                    }
+                }
+            }
             if ((this.focusedActor == null || !(this.focusedActor instanceof NPC)) && Canvas.currentDialog == null) {
                 Canvas.keyHold[2] = true;
                 this.indexContent = -1;
@@ -1361,7 +1384,7 @@ public class GameScr extends Screen {
                 return false;
             }
             Canvas.keyHold[2] = false;
-            if (Util.abs(this.mainChar.y - this.focusedActor.y) <= 32) {
+            if (this.mainChar.y - this.focusedActor.y <= 32) {   // 0.9.4: tới ngang HOẶC đã đi quá ông (trước: chỉ |dy| <= 32)
                 if (this.indexContent == -1) {
                     Canvas.keyPressed[5] = true;
                 }
@@ -1640,6 +1663,11 @@ public class GameScr extends Screen {
             return;
         }
         if (currQuest != null && currQuest.isShow) {
+            // 0.9.4: chạm / bấm chuột bất kỳ đâu = nghe tiếp (cả khi lời đang là bong bóng, không có hộp đáy)
+            if (Canvas.isPointerClick) {
+                Canvas.isPointerClick = false;
+                Canvas.keyPressed[5] = true;
+            }
             currQuest.update(this.mainChar, this.focusedActor);
             return;
         }
@@ -4814,6 +4842,20 @@ public class GameScr extends Screen {
     }
 
     public void onConnectFail() {
+        if (game.pokemon.TuNoiLai.dangNoi && Canvas.loginScr != null) {
+            // 0.9.4: lần tự nối lại vừa hỏng (mạng chưa về) -> thử lần kế; hết lượt thì hộp mất kết nối như cũ
+            final String tk = game.pokemon.TuNoiLai.tk(Canvas.loginScr.tfUser.getText());
+            final String mk = game.pokemon.TuNoiLai.mk(Canvas.loginScr.tfPass.getText());
+            if (game.pokemon.TuNoiLai.thu(tk, mk, new Runnable() {
+                public void run() {
+                    GameScr.noiLai(tk, mk);
+                }
+            })) {
+                return;
+            }
+            hopMatKetNoi(tk, mk);   // hết 3 lần: hộp mất kết nối, "Kết nối lại" vẫn dùng được
+            return;
+        }
         Canvas.startOKDlg("Không thể kết nối. Vui lòng chọn server khác", new IAction() {
             @Override
             public void perform() {
@@ -4822,6 +4864,19 @@ public class GameScr extends Screen {
                 Session_ME.gI().close();
             }
         });
+    }
+
+    /** Ngắt hẳn phiên cũ rồi đăng nhập lại bằng tk / mk (nút "Kết nối lại" + TuNoiLai). */
+    public static void noiLai(String tk, String mk) {
+        int sv = ServerListScr.index;
+        Canvas.cmdNgatKetNoi.action.perform();
+        ServerListScr.index = sv;
+        if (sv != -1 && tk.length() > 0 && mk.length() > 0) {
+            Canvas.loginScr.tfUser.setText(tk);
+            Canvas.loginScr.tfPass.setText(mk);
+            Canvas.loginScr.switchToMe();
+            Canvas.loginScr.doLogin();
+        }
     }
 
     public void onDisconnect() {
@@ -4838,31 +4893,38 @@ public class GameScr extends Screen {
             } else {
                 autoFight = false;
                 // pokemon: hộp thoại thân thiện + "Kết nối lại" (đăng nhập lại bằng tài khoản vừa dùng)
-                final String tk = Canvas.loginScr != null && Canvas.loginScr.tfUser != null ? Canvas.loginScr.tfUser.getText() : "";
-                final String mk = Canvas.loginScr != null && Canvas.loginScr.tfPass != null ? Canvas.loginScr.tfPass.getText() : "";
-                Command ketNoiLai = new Command("Kết nối lại", new IAction() {
-                    @Override
-                    public void perform() {
-                        int sv = ServerListScr.index;
-                        Canvas.cmdNgatKetNoi.action.perform();
-                        ServerListScr.index = sv;
-                        if (sv != -1 && tk.length() > 0 && mk.length() > 0) {
-                            Canvas.loginScr.tfUser.setText(tk);
-                            Canvas.loginScr.tfPass.setText(mk);
-                            Canvas.loginScr.switchToMe();
-                            Canvas.loginScr.doLogin();
-                        }
+                final String tk = game.pokemon.TuNoiLai.tk(Canvas.loginScr != null && Canvas.loginScr.tfUser != null ? Canvas.loginScr.tfUser.getText() : "");
+                final String mk = game.pokemon.TuNoiLai.mk(Canvas.loginScr != null && Canvas.loginScr.tfPass != null ? Canvas.loginScr.tfPass.getText() : "");
+                // 0.9.4: rớt thoáng qua -> tự nối lại (tối đa 3 lần, chờ tăng dần) rồi mới hỏi người chơi
+                if (game.pokemon.TuNoiLai.thu(tk, mk, new Runnable() {
+                    public void run() {
+                        GameScr.noiLai(tk, mk);
                     }
-                });
-                Canvas.msgdlg.setInfo("Mất kết nối với máy chủ! Kiểm tra mạng rồi bấm Kết nối lại nhé.", (Command) null, ketNoiLai, new Command("Thoát", new IAction() {
-                    @Override
-                    public void perform() {
-                        Canvas.cmdNgatKetNoi.action.perform();
-                    }
-                }));
-                Canvas.currentDialog = Canvas.msgdlg;
+                })) {
+                    return;
+                }
+                hopMatKetNoi(tk, mk);
             }
         }
+    }
+
+    /** Hộp "Mất kết nối" + nút "Kết nối lại" (đăng nhập lại bằng tài khoản vừa dùng) / "Thoát". */
+    static void hopMatKetNoi(final String tk, final String mk) {
+        Command ketNoiLai = new Command("Kết nối lại", new IAction() {
+            @Override
+            public void perform() {
+                game.pokemon.TuNoiLai.thuCong();   // vào lại đúng Pokémon; hỏng thì hiện lại hộp này
+                GameScr.noiLai(tk, mk);
+            }
+        });
+        Canvas.msgdlg.isIcon = false;
+        Canvas.msgdlg.setInfo("Mất kết nối với máy chủ! Kiểm tra mạng rồi bấm Kết nối lại nhé.", (Command) null, ketNoiLai, new Command("Thoát", new IAction() {
+            @Override
+            public void perform() {
+                Canvas.cmdNgatKetNoi.action.perform();
+            }
+        }));
+        Canvas.currentDialog = Canvas.msgdlg;
     }
 
     public boolean isOffLineMap(int mapID2) {

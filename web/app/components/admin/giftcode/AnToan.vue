@@ -6,7 +6,6 @@
  */
 import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
 
-defineEmits<{ cheDoCu: [] }>()
 interface Ma { ma: string, phan_thuong: string, han: string | null, tong_luot: number, da_dung: number, cap_toi_thieu: number, bat: number, ghi_chu: string, tao_boi: string, tao_luc: string, giaTri: number | null, moTa: string[] }
 interface DuLieu { coBang: boolean, gioiHan: { giaTriToiDa: number, nganSachThang: number, toiDaThang: number }, thang: number, nganSach: { daDung: number, luot: number, toiDa: number }, ds: Ma[] }
 const api = useAdminApi()
@@ -49,32 +48,30 @@ async function xoa(m: Ma) {
 
 const locLog = ref('')
 const { data: log } = useAsyncData('admin-gc-log', () => api<{ ds: Record<string, any>[] }>('/api/admin/giftcode-moi/log', { query: { ma: locLog.value || undefined } }), { server: false, watch: [refDebounced(locLog, 300)] })
-const phanTram = computed(() => data.value ? Math.min(100, (data.value.nganSach.daDung / Math.max(1, data.value.nganSach.toiDa)) * 100) : 0)
+const phanTram = computed(() => data.value?.nganSach ? Math.min(100, (data.value.nganSach.daDung / Math.max(1, data.value.nganSach.toiDa)) * 100) : 0)
 const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Date()
 </script>
 
 <template>
   <AdminPage title="Giftcode">
-    <template #right>
-      <UButton color="neutral" variant="ghost" icon="i-lucide-history" label="Mã kiểu cũ" @click="$emit('cheDoCu')" />
-    </template>
+    <UAlert v-if="data && !data.coBang" color="warning" variant="subtle" icon="i-lucide-database" title="Chưa có bảng tob_giftcode" description="Chạy du_lieu/sql_nguon/them_bang_lau_dai.sql (hoặc khởi động máy chủ game bản mới) rồi tải lại trang." />
     <div class="grid gap-4 md:grid-cols-3">
       <UCard>
         <p class="text-sm text-muted">Ngân sách tháng {{ String(data?.thang ?? '').replace(/(\d{4})(\d{2})/, '$2/$1') }}</p>
-        <p class="text-2xl font-bold">{{ (data?.nganSach.daDung ?? 0).toLocaleString('vi-VN') }} <span class="text-base font-normal text-muted">/ {{ (data?.nganSach.toiDa ?? 0).toLocaleString('vi-VN') }}</span></p>
+        <p class="text-2xl font-bold">{{ (data?.nganSach?.daDung ?? 0).toLocaleString('vi-VN') }} <span class="text-base font-normal text-muted">/ {{ (data?.nganSach?.toiDa ?? 0).toLocaleString('vi-VN') }}</span></p>
         <div class="mt-2 h-2 overflow-hidden rounded-full bg-elevated" role="meter" :aria-valuenow="phanTram" aria-valuemin="0" aria-valuemax="100" aria-label="Ngân sách tháng đã dùng">
           <div class="h-full rounded-full" :class="phanTram >= 90 ? 'bg-error' : phanTram >= 70 ? 'bg-warning' : 'bg-primary'" :style="{ width: `${phanTram}%` }" />
         </div>
-        <p class="mt-1 text-xs text-dimmed">{{ data?.nganSach.luot ?? 0 }} lượt nhận trong tháng · đơn vị: giá trị (lượng khoá)</p>
+        <p class="mt-1 text-xs text-dimmed">{{ data?.nganSach?.luot ?? 0 }} lượt nhận trong tháng · đơn vị: giá trị (lượng khoá)</p>
       </UCard>
       <UCard>
         <p class="text-sm text-muted">Trần giá trị một mã</p>
-        <p class="text-2xl font-bold">{{ data?.gioiHan.giaTriToiDa }}</p>
+        <p class="text-2xl font-bold">{{ data?.gioiHan?.giaTriToiDa }}</p>
         <p class="text-xs text-dimmed">= lượng khoá + số đá + 5 × số vật phẩm</p>
       </UCard>
       <UCard>
         <p class="text-sm text-muted">Mỗi Pokémon / tháng</p>
-        <p class="text-2xl font-bold">{{ data?.gioiHan.toiDaThang }} mã</p>
+        <p class="text-2xl font-bold">{{ data?.gioiHan?.toiDaThang }} mã</p>
         <p class="text-xs text-dimmed">Mỗi tài khoản 1 lần / mã · nhập sai 5 lần khoá 10 phút (server)</p>
       </UCard>
     </div>
@@ -120,7 +117,7 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
     </UCard>
 
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
-      <template #header><b>Mã an toàn ({{ data?.ds.length ?? 0 }})</b></template>
+      <template #header><b>Mã an toàn ({{ data?.ds?.length ?? 0 }})</b></template>
       <div class="overflow-x-auto">
         <table class="bang-wiki">
           <thead><tr><th>Mã</th><th>Phần thưởng</th><th class="so">Giá trị</th><th class="so">Đã dùng</th><th>Hạn</th><th class="so">Cấp</th><th>Trạng thái</th><th /></tr></thead>
@@ -146,7 +143,7 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
                 <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-list" aria-label="Nhật ký" @click="locLog = m.ma" />
               </td>
             </tr>
-            <tr v-if="!data?.ds.length"><td colspan="8" class="text-center text-muted">Chưa có mã nào.</td></tr>
+            <tr v-if="!data?.ds?.length"><td colspan="8" class="text-center text-muted">Chưa có mã nào.</td></tr>
           </tbody>
         </table>
       </div>

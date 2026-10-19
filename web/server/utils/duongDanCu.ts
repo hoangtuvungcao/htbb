@@ -33,11 +33,12 @@ const TRANG_PHP: Readonly<Record<string, string>> = Object.freeze({
   'admin/index': '/admin',
   'admin/dangxuat': '/admin',
   'admin/tao_ma_2buoc': '/admin',
+  'admin/cauhinh': '/admin/cau-hinh-he-thong', // trang Nuxt /admin/cauhinh đã gộp vào Cấu hình hệ thống
 })
 
 /** Trang admin/<ten>.php có trang Nuxt cùng tên (gạch dưới -> gạch ngang). */
 const TRANG_ADMIN = new Set([
-  'cammay', 'cauhinh', 'chandoan', 'dua-top', 'giam-level', 'giftcode', 'log', 'nang-level-toanbo',
+  'cammay', 'chandoan', 'dua-top', 'giam-level', 'giftcode', 'log', 'nang-level-toanbo',
   'nhanvat', 'nhatky', 'online', 'reset-toanbo', 'server', 'sukien', 'taikhoan', 'tao-hang-loat',
 ])
 

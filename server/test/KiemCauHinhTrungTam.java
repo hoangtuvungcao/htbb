@@ -47,7 +47,7 @@ public final class KiemCauHinhTrungTam {
         Kiem.bang("nguon CSDL", "db", k.nguon.get("sv.tileXu"));
         Kiem.bang("ini khi CSDL khong co", "15", k.hieuLuc.get("sv.tileLuong"));
         Kiem.bang("nguon ini", "ini", k.nguon.get("sv.tileLuong"));
-        Kiem.bang("mac dinh khi khong co o dau", "30", k.hieuLuc.get("sv.tilePotion"));
+        Kiem.bang("mac dinh khi khong co o dau", "14", k.hieuLuc.get("sv.tilePotion"));
         Kiem.bang("nguon mac dinh", "mac_dinh", k.nguon.get("sv.tilePotion"));
         Kiem.sai("khoa mac dinh KHONG dua vao Properties cu (ma cu tu dung mac dinh rieng)", k.tatCa.containsKey("sv.tilePotion"));
         Kiem.bang("Properties cu thay gia tri CSDL", "60", k.tatCa.get("sv.tileXu"));
@@ -81,14 +81,14 @@ public final class KiemCauHinhTrungTam {
         Kiem.sai("gia tri mac dinh cua khoa thu nghiem van nhan", k.loi.containsKey("sv.testMode"));
 
         // ---- 5. Khoa khoi dong lai ----
-        final TinhCauHinh.KetQua luc0 = TinhCauHinh.tinh(dm, m("sv.lau_dai", "0"), m("sv.lau_dai", "1"), null, false);
-        Kiem.bang("khoi dong: sv.lau_dai lay CSDL", "1", luc0.hieuLuc.get("sv.lau_dai"));
-        k = TinhCauHinh.tinh(dm, m("sv.lau_dai", "0"), m("sv.lau_dai", "0", "sv.tileXu", "9"), luc0, false);
-        Kiem.bang("dang chay: sv.lau_dai DONG BANG", "1", k.hieuLuc.get("sv.lau_dai"));
-        Kiem.bang("... gia tri moi cho khoi dong lai", "0", k.choKhoiDong.get("sv.lau_dai"));
+        final TinhCauHinh.KetQua luc0 = TinhCauHinh.tinh(dm, m("sv.nap_tien", "0"), m("sv.nap_tien", "1"), null, false);
+        Kiem.bang("khoi dong: sv.nap_tien lay CSDL", "1", luc0.hieuLuc.get("sv.nap_tien"));
+        k = TinhCauHinh.tinh(dm, m("sv.nap_tien", "0"), m("sv.nap_tien", "0", "sv.tileXu", "9"), luc0, false);
+        Kiem.bang("dang chay: sv.nap_tien DONG BANG", "1", k.hieuLuc.get("sv.nap_tien"));
+        Kiem.bang("... gia tri moi cho khoi dong lai", "0", k.choKhoiDong.get("sv.nap_tien"));
         Kiem.bang("... khoa ap dung ngay van doi", "9", k.hieuLuc.get("sv.tileXu"));
-        k = TinhCauHinh.tinh(dm, m("sv.lau_dai", "0"), m("sv.lau_dai", "1"), luc0, false);
-        Kiem.sai("doi lai nhu cu -> het cho", k.choKhoiDong.containsKey("sv.lau_dai"));
+        k = TinhCauHinh.tinh(dm, m("sv.nap_tien", "0"), m("sv.nap_tien", "1"), luc0, false);
+        Kiem.sai("doi lai nhu cu -> het cho", k.choKhoiDong.containsKey("sv.nap_tien"));
 
         // ---- 6. Khoa ngoai bang cau_hinh khong do may chu doc ----
         k = TinhCauHinh.tinh(dm, null, m("tran_tuan_vnd", "9"), null, false);
@@ -109,7 +109,8 @@ public final class KiemCauHinhTrungTam {
                 ngheTat.add(String.valueOf(khoa));
             }
         }, "test-tat");
-        CauHinhTrungTam.datChoTest(m("sv.spam.chat.gan", "5/10"), m("sv.tileXu", "20"), false);
+        // sv.spam.* la khoa CO DINH: may that bo qua CSDL -> nap lai nong thu tren may thu (true).
+        CauHinhTrungTam.datChoTest(m("sv.spam.chat.gan", "5/10"), m("sv.tileXu", "20"), true);
         Kiem.bang("doc ngay sau khi nap", "20", CauHinhTrungTam.chuoi("sv.tileXu"));
         Set<String> doi = CauHinhTrungTam.napLaiChoTest(m("sv.tileXu", "25"), 2L);
         Kiem.bang("nap lai: chi sv.tileXu doi", "[sv.tileXu]", String.valueOf(doi));
@@ -123,6 +124,10 @@ public final class KiemCauHinhTrungTam {
         Kiem.bang("... van doc 3/10", "3/10", CauHinhTrungTam.chuoi("sv.spam.chat.gan"));
         Kiem.dung("co / so doc kieu", CauHinhTrungTam.so("sv.tileXu", -1) == 25L && !CauHinhTrungTam.co("sv.testMode"));
         CauHinhTrungTam.xoaNgheChoTest();
+
+        // ---- 7b. Phan loai: khoa an (co dinh / luon bat) ----
+        KiemPhanLoaiCauHinh.chay(dm);
+        CauHinhTrungTam.datChoTest(null, null, false);
 
         // ---- 8. Ghi: kiem truoc, tat ca hoac khong ----
         final CauHinhTrungTam.KetQuaGhi g = CauHinhTrungTam.ghi(m("sv.tileXu", "500", "sv.tileLuong", "5"), "test", "test", "");

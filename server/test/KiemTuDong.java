@@ -252,7 +252,9 @@ public final class KiemTuDong {
         db.put(TuDong.K_TU_DUNG_THUOC, "0");
         db.put(TuDong.K_BAN_KINH, "160");
         db.put(TuDong.K_NHIP_DANH, "6/3");
-        CauHinhTrungTam.datChoTest(null, db, false);
+        // tu_dung_thuoc / ban_kinh / nhip_danh la khoa CO DINH (docs/cau-hinh.md): may that bo qua CSDL, nen
+        // kiem doc gia tri tren may thu (sv.cho_phep_thu_nghiem=1) - doc CSDL nhu cu.
+        CauHinhTrungTam.datChoTest(null, db, true);
         try {
             final TuDong.CauHinh c = TuDong.cauHinh();
             Kiem.bang("doc gio_moi_ngay tu CSDL", 4, c.gioNgay);

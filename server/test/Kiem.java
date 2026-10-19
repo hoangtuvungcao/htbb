@@ -194,6 +194,7 @@ public final class Kiem {
         KiemChiSo.chay(); // chi so trang bi + chong lam phat (docs/thiet-ke-game.md)
         KiemAdminPanel.chay();
         KiemKhongLoiCu.chay(); // P3: khong con lib/htbb-core.jar (docs/giay-phep.md)
+        KiemKinhTeKhoiDau.chay(); // qua tao nhan vat da bo, he so nap = 1, ghi client dang nhap
         KiemVungNhinCoDinh.chay(); // camera co dinh: kep be rong man client (com.htbb.mang.VungNhinCoDinh)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

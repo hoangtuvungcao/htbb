@@ -133,6 +133,13 @@ public final class GhiSoOnline implements Runnable {
                     + "PRIMARY KEY (`id`),"
                     + "KEY `idx_thoi_gian` (`thoi_gian`)"
                     + ") DEFAULT CHARSET=utf8");
+            // So nhan vat theo loai client (web /admin/online). Bang cu thieu cot: them, da co thi bo qua.
+            for (final String cot : new String[]{"pc", "android", "jar", "khac"}) {
+                try {
+                    st.execute("ALTER TABLE `" + TEN_BANG + "` ADD COLUMN `" + cot + "` INT NOT NULL DEFAULT 0");
+                } catch (final Exception daCo) {
+                }
+            }
         } catch (final Exception e) {
             baoLoiMotLan(e);
         } finally {
@@ -141,15 +148,41 @@ public final class GhiSoOnline implements Runnable {
         }
     }
 
+    /** So nhan vat that theo loai client {pc, android, jar, khac} (GhiClient.ganNhat). */
+    static int[] demTheoClient() {
+        final int[] n = new int[4];
+        try {
+            final Vector<Char> ds = CharManager.instance.vChars;
+            for (int i = ds.size() - 1; i >= 0; --i) {
+                try {
+                    final Char c = ds.get(i);
+                    if (c == null || c.getSession() == null) {
+                        continue;
+                    }
+                    final GhiClient.ThongTin tt = GhiClient.ganNhat(c.getSession().username);
+                    final String l = tt == null ? "" : tt.loai;
+                    n["pc".equals(l) ? 0 : "android".equals(l) ? 1 : "jar".equals(l) ? 2 : 3]++;
+                } catch (final Exception ignored) {
+                }
+            }
+        } catch (final Exception ignored) {
+        }
+        return n;
+    }
+
     static void ghiMotMau(final int ketNoi, final int nhanVat) {
         Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = Database.instance.getConnection();
+            final int[] l = demTheoClient();
             ps = conn.prepareStatement("INSERT INTO `" + TEN_BANG
-                    + "` (thoi_gian, ket_noi, nhan_vat) VALUES (NOW(), ?, ?)");
+                    + "` (thoi_gian, ket_noi, nhan_vat, pc, android, jar, khac) VALUES (NOW(), ?, ?, ?, ?, ?, ?)");
             ps.setInt(1, ketNoi);
             ps.setInt(2, nhanVat);
+            for (int i = 0; i < 4; ++i) {
+                ps.setInt(3 + i, l[i]);
+            }
             ps.execute();
         } catch (final Exception e) {
             baoLoiMotLan(e);

@@ -189,7 +189,7 @@ VA_HD = [
     ("TRONG", "game/render/screen/WindowInfoScr.java", r"\n    public void paint\(Graphics g\)",
      "Canvas.gameScr.paint(g);", "Canvas.gameScr.paint(g); %sHdPhong.batDau(g, this, this.x - 10, this.y - 10, 145, 144, 2.2f);" % HD),
     ("TRONG", "game/render/Canvas.java", r"\n    protected void paint\(Graphics g\)",
-     "currentDialog.paint(g);", "currentDialog.paint(g);\n                %sHdPhong.ket(g);" % HD),
+     "dlg.paint(g);", "dlg.paint(g);\n                    %sHdPhong.ket(g);" % HD),   # 0.9.4: Canvas vẽ hộp qua biến dlg (try riêng)
     ("TRONG", "game/render/screen/MsgDlg.java", r"\n    public void paint\(Graphics g\)",
      "game.pokemon.GiaoDien.hop(g, Canvas.hw - (this.wHop / 2), 12, this.wHop, this.hHop);",
      "%sHdPhong.batDau(g, this, Canvas.hw - (this.wHop / 2), 12, this.wHop, this.hHop, 1.7f); game.pokemon.GiaoDien.hop(g, Canvas.hw - (this.wHop / 2), 12, this.wHop, this.hHop);" % HD),

@@ -164,6 +164,7 @@ public class LoginScr extends Screen {
             this.right = this.tfPass.cmdClear;
             return;
         }
+        game.pokemon.TuNoiLai.nho(user, pass);   // 0.9.4: "Kết nối lại" / tự nối lại dùng lại (ô nhập có thể bị xoá)
         new Thread(new Runnable() {
             @Override
             public void run() {

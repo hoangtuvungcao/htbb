@@ -7,7 +7,7 @@
  * nên web tự công bố giá trị vào bảng chung. server.ini sv.dangKyTuKichHoat=web (mặc định) đọc khoá
  * này; đặt 1/0 thì server game dùng giá trị cứng và bỏ qua khoá.
  *
- * Khoá 'web.*' KHÔNG nằm trong whitelist CAU_HINH_K nên trang Cấu hình không sửa được nó (đúng ý:
+ * Khoá 'web.*' KHÔNG nằm trong danh mục cấu hình trung tâm nên trang Cấu hình không sửa được nó (đúng ý:
  * nguồn thật là biến môi trường).
  */
 export default defineNitroPlugin(() => {

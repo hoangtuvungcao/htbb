@@ -5,6 +5,10 @@
  * xem trước thay đổi trước khi lưu, badge "áp dụng ngay" / "cần khởi động lại", nút khởi động lại an toàn
  * (đếm ngược + lý do), lịch sử + hoàn tác, tìm kiếm. Máy chủ game xác nhận phiên bản đã áp dụng (cau_hinh_ap_dung).
  * Siêu quản trị sửa; Chỉ xem đọc. Tự tải lại mỗi 10 giây (trừ khi đang sửa).
+ *
+ * TRANG CẤU HÌNH DUY NHẤT (trang cũ /admin/cauhinh đã gộp vào đây). Chỉ hiện khoá NGƯỜI VẬN HÀNH CHỈNH (6 nhóm);
+ * khoá cố định / luôn bật (trường `lop` của danh mục) ẩn — máy thật luôn chạy giá trị sản xuất (docs/cau-hinh.md).
+ * Máy thử (dev / HTBB_CHO_PHEP_THU_NGHIEM=1) có nút "Hiện khoá cố định".
  */
 import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
 
@@ -18,16 +22,24 @@ const tab = ref<'cau_hinh' | 'lich_su'>('cau_hinh')
 const tim = ref('')
 const nhomChon = ref<string>('tat_ca')
 const chiDaSua = ref(false)
+const hienAn = ref(false)
+const choPhepHienAn = computed(() => !!data.value?.quyen.choPhepThuNghiem)
+const xemAn = computed(() => hienAn.value && choPhepHienAn.value)
 const ds = computed(() => {
   void ch.phienDanhMuc.value
   let k = timTT(tim.value)
   if (nhomChon.value !== 'tat_ca') k = k.filter(x => x.nhom === nhomChon.value)
   if (chiDaSua.value) k = k.filter(x => Object.prototype.hasOwnProperty.call(ch.sua.value, x.khoa) || (data.value?.giaTri[x.khoa] ?? null) !== null)
-  return nhomTT(k)
+  return nhomTT(k, xemAn.value)
 })
 const mucNhom = computed(() => {
   void ch.phienDanhMuc.value
-  return [{ label: 'Tất cả nhóm', value: 'tat_ca' }, ...dsNhomTT().map(n => ({ label: n.ten, value: n.ma }))]
+  return [{ label: 'Tất cả nhóm', value: 'tat_ca' },
+    ...dsNhomTT().filter(n => xemAn.value || !n.an).map(n => ({ label: n.ten, value: n.ma }))]
+})
+const demLop = computed(() => {
+  void ch.phienDanhMuc.value
+  return demLopTT()
 })
 const ghiDuoc = computed(() => !!data.value?.quyen.ghi)
 
@@ -137,6 +149,11 @@ async function hoanTac(d: DongLs) {
         (sai thì bị từ chối, giữ giá trị tốt gần nhất) và áp dụng trong ≤ 10 giây — trừ khoá <UBadge color="warning" variant="subtle" size="sm" label="Cần khởi động lại" />.
         Bí mật cổng thanh toán, mật khẩu CSDL, cổng mạng vẫn nằm trong biến môi trường / server.ini.
       </p>
+      <p class="mt-1 text-sm text-muted">
+        Chỉ hiện <b>{{ demLop.chinh }}</b> khoá cần chỉnh. <b>{{ demLop.co_dinh + demLop.luon_bat }}</b> khoá khác
+        ({{ demLop.luon_bat }} tính năng luôn bật, {{ demLop.co_dinh }} tham số cố định: chống DoS, nhật ký, công thức kinh tế, luật an toàn…)
+        đã đặt sẵn giá trị sản xuất và ẩn đi — đổi khẩn cấp qua server.ini (xem docs/cau-hinh.md).
+      </p>
     </div>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" title="Không tải được cấu hình" :description="loiApi(error)" />
@@ -202,6 +219,7 @@ async function hoanTac(d: DongLs) {
         <UInput v-model="tim" icon="i-lucide-search" placeholder="Tìm khoá, tên, mô tả… (không cần dấu)" class="min-w-64 flex-1" />
         <USelect v-model="nhomChon" :items="mucNhom" class="w-56" />
         <UCheckbox v-model="chiDaSua" label="Chỉ khoá đã đặt / đang sửa" />
+        <UCheckbox v-if="choPhepHienAn" v-model="hienAn" label="Hiện khoá cố định (máy thử)" />
       </div>
       <p v-if="!ghiDuoc && data" class="text-sm text-muted">Bạn đang ở chế độ <b>chỉ xem</b> — chỉ siêu quản trị sửa được.</p>
 

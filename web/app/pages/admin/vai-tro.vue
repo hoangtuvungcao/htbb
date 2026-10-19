@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
- * Ma trận vai trò: vẽ thẳng từ shared/utils/quyenAdmin.ts — CHÍNH bảng mà server dùng để chặn
+ * Phân quyền: cấp/gỡ vai trò (chỉ Siêu quản trị — AdminPhanQuyenCap, trước là trang /admin/phan-quyen) + ma trận
+ * vai trò cho mọi vai trò. Ma trận vẽ thẳng từ shared/utils/quyenAdmin.ts — CHÍNH bảng mà server dùng để chặn
  * mọi /api/admin/** (tests/quyen-admin.test.ts bảo đảm mọi route đều có quy tắc). Không có số liệu
  * nào gõ tay ở đây nên trang không thể nói sai so với quyền thật.
  */
@@ -35,10 +36,8 @@ const KIEU: Record<Muc, { icon: string, mau: string, nhan: string }> = {
 </script>
 
 <template>
-  <AdminPage title="Ma trận vai trò">
-    <template #right>
-      <UButton v-if="me.duoc('/api/admin/phan-quyen', 'GET')" to="/admin/phan-quyen" icon="i-lucide-shield-check" label="Cấp vai trò" />
-    </template>
+  <AdminPage title="Phân quyền">
+    <AdminPhanQuyenCap v-if="me.duoc('/api/admin/phan-quyen', 'GET')" />
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <UCard v-for="v in DS_VAI_TRO_QUYEN" :key="v" :class="me.vaiTro.value === v ? 'ring-2 ring-primary' : ''">

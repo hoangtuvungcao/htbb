@@ -6,6 +6,9 @@ useSeoMeta({
 })
 
 const api = useApi()
+// Máy chủ chưa cấu hình gửi mail thì không gửi được mã: chỉ hiện kênh hỗ trợ thay vì form chết.
+const { data: siteCfg } = useSite()
+const { coZalo, link: linkHoTro } = useHoTro()
 
 const form = reactive({ username: '', email: '' })
 const loading = ref(false)
@@ -89,7 +92,21 @@ async function submit() {
       Nhập tên tài khoản và email đã đăng ký. Mã xác nhận sẽ được gửi tới email của bạn — nhập mã đó cùng mật khẩu mới.
     </p>
 
-    <template v-if="daDoi">
+    <template v-if="siteCfg && !siteCfg.quenMatKhau">
+      <UAlert
+        class="mt-6"
+        color="warning"
+        variant="subtle"
+        icon="i-lucide-mail-x"
+        title="Máy chủ chưa bật gửi email"
+        description="Chưa gửi được mã đặt lại mật khẩu qua email. Liên hệ ban quản trị kèm tên tài khoản để được cấp lại mật khẩu."
+      />
+      <div class="mt-6">
+        <UButton :to="linkHoTro" :target="coZalo ? '_blank' : undefined" size="xl" block :label="coZalo ? 'Nhắn Zalo hỗ trợ' : 'Xem kênh hỗ trợ'" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />
+      </div>
+    </template>
+
+    <template v-else-if="daDoi">
       <UAlert
         class="mt-6"
         color="success"

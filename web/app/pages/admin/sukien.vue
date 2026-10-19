@@ -43,6 +43,9 @@ interface DuLieu {
 }
 
 const api = useAdminApi()
+// Vai trò chỉ đọc (Hỗ trợ / Chỉ xem / Biên tập) không thấy công tắc và nút — server cũng chặn (403).
+const me = useAdminMe()
+const duocGhi = computed(() => me.duoc('/api/admin/sukien/bat-tat', 'POST'))
 const toast = useToast()
 
 const { data, status, error, refresh } = useAsyncData('admin-sukien', () => api<DuLieu>('/api/admin/sukien'), { server: false })
@@ -169,7 +172,7 @@ const lichCot = [
         @click="refresh()"
       />
       <UButton
-        v-if="data?.coBang && data.soSeBat > 0"
+        v-if="duocGhi && data?.coBang && data.soSeBat > 0"
         icon="i-lucide-power-off"
         color="error"
         variant="soft"
@@ -425,7 +428,7 @@ const lichCot = [
               <USwitch
                 :model-value="Number(s.bat) === 1"
                 :loading="dangLam[`bat:${s.ma}`]"
-                :disabled="dangLam[`bat:${s.ma}`]"
+                :disabled="!duocGhi || dangLam[`bat:${s.ma}`]"
                 :aria-label="Number(s.bat) === 1 ? `Tắt ${s.ten}` : `Bật ${s.ten}`"
                 size="lg"
                 @update:model-value="(v: boolean) => doiBat(s, v)"
@@ -465,7 +468,7 @@ const lichCot = [
                   <UInput v-model="lichNhap[s.ma]!.dong" type="datetime-local" size="sm" class="w-full" />
                 </UFormField>
               </div>
-              <div class="mt-2 flex justify-end gap-2">
+              <div v-if="duocGhi" class="mt-2 flex justify-end gap-2">
                 <UButton
                   v-if="s.mo_luc || s.dong_luc"
                   label="Xoá lịch"

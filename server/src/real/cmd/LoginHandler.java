@@ -299,6 +299,7 @@ public class LoginHandler implements ICommandHandler {
         MessageCreator.version = version;
         session.version = version;
         session.firmWare = firmware;
+        data.GhiClient.nhoPlatf(session, platf); // loai client (PC/Android/jar) cho tob_client_dang_nhap
         // Mot dong moi lan dang nhap: biet nguoi choi dung client nao (J2ME / Unity / nen tang)
         // - can khi soi loi hien thi ma khong the tai hien (05/09/2026: nhay man hinh chi xay ra
         // voi client nem loi khi ve vung ngoai bien anh, tuc J2ME; Unity thi khong).
@@ -423,6 +424,7 @@ public class LoginHandler implements ICommandHandler {
         // Ghi nhan may nao dung tai khoan nao. Moi loi bi nuot ben trong: day chi la ghi
         // chep, khong duoc phep lam hong duong dang nhap.
         data.CamTheoMay.ghiNhanDangNhap(session.IMEI, uname, session.ip);
+        data.GhiClient.ghiNhan(session);
         try {
             if (Map.openLog && (session.clientProvider.trim().equals("-1") || session.agentProvider.trim().equals("-1"))) {
                 final String[] provider_agent = Database.instance.getProviderFromTeamUser(session.userID, session.clientProvider, session.agentProvider);
@@ -591,6 +593,19 @@ public class LoginHandler implements ICommandHandler {
                 }
             } catch (final Exception ex) {
             }
+            // DUONG DANG NHAP CUA MAY THAT (qua login server): truoc 19/10/2026 duong nay BO QUA
+            // cam theo ma may va ghi nhan may/client - chi duong ket noi CSDL truc tiep (it dung)
+            // moi lam - nen /admin/cammay khong chan duoc ai va tob_may_dang_nhap,
+            // tob_client_dang_nhap luon rong tren VPS.
+            if (data.CamTheoMay.biCam(s.IMEI)) {
+                final Message iCamMay = new Message(2);
+                iCamMay.dos.writeUTF("Thiết bị này đã bị khoá.");
+                s.sendMessage(iCamMay);
+                iCamMay.cleanup();
+                return;
+            }
+            data.CamTheoMay.ghiNhanDangNhap(s.IMEI, s.username, s.ip);
+            data.GhiClient.ghiNhan(s);
             System.out.print(". ");
             final Message m = MessageCreator.createCharListMessage(userID, s);
             s.sendMessage(m);

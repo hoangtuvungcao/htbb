@@ -16,17 +16,22 @@ import java.util.TreeMap;
  * (du_lieu/sql_nguon/pokemon_cau_hinh_trung_tam.sql). Thay ban chep Java DanhMucSinh (da xoa, P1). Lop THUAN.
  *
  * {@code gioi_han} la JSON: min, max, buoc, soPhanTu, mau, doDai, luaChon (ma), luaChonTen (nhan, cho web), hoa.
+ * {@code lop} (BAT BUOC, 0.9.4): chinh | co_dinh | luon_bat - khoa an (co_dinh / luon_bat) bi may that bo qua dong
+ * CSDL va tu choi luu ({@link DinhNghiaKhoa#laAn()}, {@link TinhCauHinh}, {@link CauHinhTrungTam}). Thieu cot = loi
+ * (khong doan "chinh": doan sai la mo khoa an cho trang quan tri sua).
  */
 public final class DanhMucSql {
 
     public static final String BANG_KHOA = "cau_hinh_danh_muc";
     public static final String BANG_NHOM = "cau_hinh_nhom";
     static final String[] COT_KHOA = {"khoa", "nhom", "ten", "mo_ta", "kieu", "mac_dinh", "gioi_han", "ap_dung", "nhay",
-        "khoa_prod", "chi_doc", "bang", "thu_tu"};
+        "khoa_prod", "chi_doc", "bang", "thu_tu", "lop"};
     static final String[] COT_NHOM = {"ma", "ten", "mo_ta", "thu_tu"};
     static final Set<String> KIEU = new HashSet<String>(java.util.Arrays.asList(
             "co", "so", "chon", "chuoi", "ds_chuoi", "ds_so", "ngay", "ngay_gio", "nhip"));
     static final Set<String> BANG = new HashSet<String>(java.util.Arrays.asList("cau_hinh", "nap_cau_hinh", "env"));
+    static final Set<String> LOP = new HashSet<String>(java.util.Arrays.asList(
+            DinhNghiaKhoa.LOP_CHINH, DinhNghiaKhoa.LOP_CO_DINH, DinhNghiaKhoa.LOP_LUON_BAT));
 
     private DanhMucSql() {
     }
@@ -134,6 +139,17 @@ public final class DanhMucSql {
             if (b.so(r, "chi_doc") != 0) {
                 d.chiDoc();
             }
+            final String lop = b.chu(r, "lop");
+            if (!LOP.contains(lop)) {
+                throw new IllegalStateException(dong + "lop sai '" + lop + "' (chinh | co_dinh | luon_bat)");
+            }
+            if (DinhNghiaKhoa.LOP_LUON_BAT.equals(lop) && (!"co".equals(kieu) || !"1".equals(d.macDinh))) {
+                throw new IllegalStateException(dong + "lop luon_bat can kieu co va mac_dinh 1");
+            }
+            if (!DinhNghiaKhoa.LOP_CHINH.equals(lop) && (!"cau_hinh".equals(bang) || b.so(r, "chi_doc") != 0)) {
+                throw new IllegalStateException(dong + "khoa an (co_dinh / luon_bat) phai o bang cau_hinh, khong chi doc");
+            }
+            d.lop(lop);
             if (m.put(b.so(r, "thu_tu"), d) != null) {
                 throw new IllegalStateException(dong + "trung thu_tu " + b.so(r, "thu_tu"));
             }

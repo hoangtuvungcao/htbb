@@ -13,6 +13,9 @@ import type { TruongThuong } from '#shared/utils/thuong'
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
 const api = useAdminApi()
+// Vai trò chỉ đọc chỉ xem danh sách — không thấy khung tạo đợt / nút huỷ (server cũng chặn, 403).
+const me = useAdminMe()
+const duocGhi = computed(() => me.duoc('/api/admin/dua-top/luu-dot', 'POST'))
 const toast = useToast()
 
 interface DuLieu {
@@ -201,7 +204,7 @@ async function huy() {
     />
     <UAlert v-if="data?.loiDoc" color="error" variant="subtle" icon="i-lucide-circle-x" :title="`Lỗi đọc dữ liệu: ${data.loiDoc}`" />
 
-    <UCard>
+    <UCard v-if="duocGhi">
       <template #header>
         <h3 class="font-semibold text-highlighted">
           Tạo đợt phát quà mới
@@ -452,7 +455,7 @@ async function huy() {
                 {{ r.tao_luc }}
               </td>
               <td class="px-4 py-2 text-right">
-                <UButton size="xs" color="error" variant="soft" icon="i-lucide-x" @click="hoiHuy(r)">
+                <UButton v-if="duocGhi" size="xs" color="error" variant="soft" icon="i-lucide-x" @click="hoiHuy(r)">
                   Huỷ
                 </UButton>
               </td>

@@ -2,7 +2,7 @@
  * Cấm / bỏ cấm một mã máy.
  * Body: { viec: 'cam' | 'bo_cam', ma_may, ly_do? }
  *
- * MÃ MÁY là SystemInfo.deviceUniqueIdentifier do client Unity tự khai (không phải MAC):
+ * MÃ MÁY là chuỗi ngẫu nhiên client HTBB sinh một lần và tự khai (AutoGuard.maMay, không phải MAC):
  * chặn được người phá lười, không chặn được người biết sửa client; cài lại ứng dụng có
  * thể sinh mã mới; máy dùng chung thì cấm một người là chặn cả nhóm.
  *

@@ -32,6 +32,12 @@ KIEU = {'co', 'so', 'chon', 'chuoi', 'ds_chuoi', 'ds_so', 'ngay', 'ngay_gio', 'n
 AP_DUNG = {'ngay', 'khoi_dong_lai'}
 BANG = {'cau_hinh', 'nap_cau_hinh', 'env'}
 DUNG_O = {'server', 'web', 'ca_hai'}
+# lop (phan loai, docs/cau-hinh.md):
+#   chinh    - nguoi van hanh chinh tren /admin/cau-hinh-he-thong (mac dinh khi thieu truong lop)
+#   co_dinh  - gia tri san xuat co dinh: AN khoi trang, may that BO QUA dong CSDL (chi server.ini de khan cap)
+#   luon_bat - cong tac tinh nang cot loi: luon '1', AN, may that bo qua CSDL (server.ini de khan cap)
+LOP = ('chinh', 'co_dinh', 'luon_bat')
+TEN_LOP = {'chinh': 'Chỉnh trên web', 'co_dinh': 'Cố định (ẩn)', 'luon_bat': 'Luôn bật (ẩn)'}
 
 
 def doc():
@@ -63,6 +69,15 @@ def doc():
             re.compile(k['mau'])
         if len(k.get('macDinh', '')) > 255:
             loi('macDinh qua 255')
+        lop = k.get('lop', 'chinh')
+        if lop not in LOP:
+            loi('lop la ' + lop)
+        if lop == 'luon_bat' and (k['kieu'] != 'co' or k.get('macDinh') != '1'):
+            loi('lop luon_bat can kieu co va macDinh "1"')
+        if lop != 'chinh' and (k.get('bang', 'cau_hinh') != 'cau_hinh' or k.get('chiDoc')):
+            loi('khoa an (co_dinh/luon_bat) phai nam trong bang cau_hinh')
+    for n in d['nhom']:
+        n['an'] = not any(k['nhom'] == n['ma'] and k.get('lop', 'chinh') == 'chinh' for k in d['khoa'])
     return d
 
 
@@ -98,27 +113,31 @@ def sinh_sql(d):
     o.append('')
     o.append('-- Danh muc khoa + nhom: NGUON LUC CHAY cua may chu game (com.htbb.cauhinh.DanhMucSql, nap luc khoi dong;')
     o.append('-- thieu / rong = may chu tu choi khoi dong) va web (web/server/utils/cauHinhDanhMucSql.ts). DROP roi tao lai:')
-    o.append('-- day la du lieu sinh, khong ai ghi tay; CSDL cu (truoc P1) chua co cot thu_tu / bang cau_hinh_nhom.')
+    o.append('-- day la du lieu sinh, khong ai ghi tay; CSDL cu chua co cot lop / an / thu_tu va bang cau_hinh_nhom.')
+    o.append('-- lop: chinh = chinh tren web; co_dinh = gia tri san xuat co dinh; luon_bat = luon 1. an = 1: khong hien tren trang,')
+    o.append('-- may that bo qua dong cau_hinh cua khoa do (chi server.ini de khan cap) - xem docs/cau-hinh.md.')
     o.append('DROP TABLE IF EXISTS `cau_hinh_danh_muc`;')
     o.append(DDL_DANH_MUC + ';')
     o.append('DROP TABLE IF EXISTS `cau_hinh_nhom`;')
     o.append(DDL_NHOM + ';')
     o.append('')
     for i, n in enumerate(d['nhom']):
-        o.append('INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`) VALUES (%s, %s, %s, %d);' % (
-            sq(n['ma']), sq(n['ten']), sq(n.get('moTa', '')[:500]), i + 1))
+        o.append('INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES (%s, %s, %s, %d, %s);' % (
+            sq(n['ma']), sq(n['ten']), sq(n.get('moTa', '')), i + 1, '1' if n['an'] else '0'))
     for i, k in enumerate(d['khoa']):
+        lop = k.get('lop', 'chinh')
         o.append('INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`,'
-                 ' `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`) VALUES (%s);' % ', '.join([
+                 ' `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES (%s);' % ', '.join([
                      sq(k['khoa']), sq(k['nhom']), sq(k['ten']), sq(k.get('moTa', '')), sq(k['kieu']),
                      sq(k.get('macDinh', '')), sq(gioi_han(k)), sq(k.get('apDung', 'ngay')),
                      '1' if k.get('nhay') else '0', '1' if k.get('khoaProd') else '0', '1' if k.get('chiDoc') else '0',
-                     sq(k.get('bang', 'cau_hinh')), sq(k.get('dungO', 'server')), sq(k.get('nguon', '')), str(i + 1)]))
+                     sq(k.get('bang', 'cau_hinh')), sq(k.get('dungO', 'server')), sq(k.get('nguon', '')), str(i + 1),
+                     sq(lop), '0' if lop == 'chinh' else '1']))
     return '\n'.join(o) + '\n'
 
 
 def gioi_han(k):
-    """Cot gioi_han (JSON): moi rang buoc kiem gia tri ma may chu (DanhMucSql) va web can."""
+    """Cot gioi_han (JSON): rang buoc kiem gia tri."""
     gioi = {}
     for f in ('min', 'max', 'buoc', 'soPhanTu', 'mau', 'doDai'):
         if f in k:
@@ -128,8 +147,6 @@ def gioi_han(k):
         gioi['luaChonTen'] = [x[1] for x in k['luaChon']]
     if k.get('hoa'):
         gioi['hoa'] = True
-    # ASCII (\\uXXXX cho chu co dau): ma lua chon "bang" (doi) nam canh nhan tieng Viet khong bi bo quet thuat
-    # ngu (test/KiemThuatNgu) coi la chu nguoi choi; JSON.parse / com.htbb.dulieu.JsonNho deu giai \\u.
     return json.dumps(gioi, ensure_ascii=True)
 
 
@@ -155,19 +172,21 @@ DDL = [
     ' `may_chu` VARCHAR(40) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4',
 ]
 
-# Danh muc (cau_hinh_danh_muc) + nhom (cau_hinh_nhom): may chu game nap luc khoi dong (P1). Tep migration
-# vps/nang_cap_csdl.sql chep dung hai DDL nay (test/KiemDuLieuSql doi chieu).
+# Danh muc (cau_hinh_danh_muc) + nhom (cau_hinh_nhom): cung DDL voi nhanh P1 (com.htbb.cauhinh.DanhMucSql), them
+# cot phan loai `lop` / `an`.
 DDL_DANH_MUC = (
     'CREATE TABLE IF NOT EXISTS `cau_hinh_danh_muc` (`khoa` VARCHAR(64) NOT NULL, `nhom` VARCHAR(20) NOT NULL,'
     " `ten` VARCHAR(160) NOT NULL DEFAULT '', `mo_ta` TEXT NOT NULL, `kieu` VARCHAR(12) NOT NULL,"
     " `mac_dinh` VARCHAR(255) NOT NULL DEFAULT '', `gioi_han` TEXT NOT NULL, `ap_dung` VARCHAR(16) NOT NULL,"
     ' `nhay` TINYINT NOT NULL DEFAULT 0, `khoa_prod` TINYINT NOT NULL DEFAULT 0, `chi_doc` TINYINT NOT NULL DEFAULT 0,'
     " `bang` VARCHAR(16) NOT NULL DEFAULT 'cau_hinh', `dung_o` VARCHAR(10) NOT NULL DEFAULT 'server',"
-    " `nguon` VARCHAR(255) NOT NULL DEFAULT '', `thu_tu` INT NOT NULL DEFAULT 0, PRIMARY KEY (`khoa`))"
+    " `nguon` VARCHAR(255) NOT NULL DEFAULT '', `thu_tu` INT NOT NULL DEFAULT 0,"
+    " `lop` VARCHAR(10) NOT NULL DEFAULT 'chinh', `an` TINYINT NOT NULL DEFAULT 0, PRIMARY KEY (`khoa`))"
     ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4')
 DDL_NHOM = (
     'CREATE TABLE IF NOT EXISTS `cau_hinh_nhom` (`ma` VARCHAR(20) NOT NULL, `ten` VARCHAR(160) NOT NULL DEFAULT \'\','
-    ' `mo_ta` TEXT NOT NULL, `thu_tu` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ma`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4')
+    ' `mo_ta` TEXT NOT NULL, `thu_tu` INT NOT NULL DEFAULT 0, `an` TINYINT NOT NULL DEFAULT 0, PRIMARY KEY (`ma`))'
+    ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4')
 
 
 def sinh_ts(d):
@@ -206,11 +225,14 @@ def sinh_ts(d):
     o.append('  bang: BangTT')
     o.append("  dungO: 'server' | 'web' | 'ca_hai'")
     o.append('  nguon: string')
+    o.append("  /** Phân loại: vắng = 'chinh' (chỉnh trên web); 'co_dinh' / 'luon_bat' = ẨN, máy thật bỏ qua CSDL (docs/cau-hinh.md). */")
+    o.append("  lop?: 'co_dinh' | 'luon_bat'")
     o.append('}')
     o.append('')
-    o.append('export const NHOM_TT: { ma: string, ten: string, moTa: string }[] = [')
+    o.append('/** an = nhóm chỉ còn khoá ẩn (cố định / luôn bật) — không hiện trên trang. */')
+    o.append('export const NHOM_TT: { ma: string, ten: string, moTa: string, an?: boolean }[] = [')
     for n in d['nhom']:
-        o.append('  { ma: %s, ten: %s, moTa: %s },' % (j(n['ma']), j(n['ten']), j(n.get('moTa', ''))))
+        o.append('  { ma: %s, ten: %s, moTa: %s%s },' % (j(n['ma']), j(n['ten']), j(n.get('moTa', '')), ', an: true' if n['an'] else ''))
     o.append(']')
     o.append('')
     o.append('export const DANH_MUC_TT: KhoaTT[] = [')
@@ -231,6 +253,8 @@ def sinh_ts(d):
         f.append('bang: %s' % j(k.get('bang', 'cau_hinh')))
         f.append('dungO: %s' % j(k.get('dungO', 'server')))
         f.append('nguon: %s' % j(k.get('nguon', '')))
+        if k.get('lop', 'chinh') != 'chinh':
+            f.append('lop: %s' % j(k['lop']))
         o.append('  { ' + ', '.join(f) + ' },')
     o.append(']')
     return '\n'.join(o) + '\n'
@@ -245,18 +269,65 @@ def o_md(s):
     return ' '.join(str(s).split()).replace('|', '\\|')
 
 
+def _gioi_md(k):
+    gioi = []
+    if 'min' in k or 'max' in k:
+        gioi.append('%s..%s' % (k.get('min', ''), k.get('max', '')))
+    if k.get('soPhanTu'):
+        gioi.append('%d phần tử' % k['soPhanTu'])
+    if k.get('luaChon'):
+        gioi.append(', '.join('`%s`' % x[0] for x in k['luaChon']))
+    if k.get('doDai'):
+        gioi.append('≤ %d ký tự' % k['doDai'])
+    return o_md('; '.join(gioi))
+
+
+def _mo_ta_md(k):
+    ghi = []
+    if k.get('bang', 'cau_hinh') != 'cau_hinh':
+        ghi.append('bảng `%s`' % k['bang'])
+    if k.get('khoaProd'):
+        ghi.append('máy thật chỉ nhận mặc định')
+    if k.get('chiDoc'):
+        ghi.append('chỉ đọc')
+    mo_ta = o_md(k.get('moTa', ''))
+    if ghi:
+        mo_ta = (mo_ta + ' (' + '; '.join(ghi) + ')').strip()
+    return mo_ta
+
+
+def _gt_md(v):
+    return ('`%s`' % o_md(v)) if v != '' else '*(trống)*'
+
+
 def sinh_md_bang(d):
     """Phan bang cua docs/cau-hinh.md (giua MOC_DAU va MOC_CUOI)."""
     o = [MOC_DAU, '']
-    o.append('Tổng cộng **%d khoá** trong **%d nhóm**. Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; '
-             '**khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.'
-             % (len(d['khoa']), len(d['nhom'])))
+    lop = lambda k: k.get('lop', 'chinh')
+    dem = {x: sum(1 for k in d['khoa'] if lop(k) == x) for x in LOP}
+    ap = lambda k: 'ngay' if k.get('apDung', 'ngay') == 'ngay' else 'khởi động lại'
+    o_ = lambda k: {'server': 'game', 'web': 'web', 'ca_hai': 'cả hai'}[k.get('dungO', 'server')]
+    o.append('Tổng cộng **%d khoá** trong **%d nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):' % (
+        len(d['khoa']), len(d['nhom'])))
+    o.append('')
+    o.append('| Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |')
+    o.append('|---|---|---|---|')
+    o.append('| **Chỉnh trên web** (`chinh`) | %d | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |' % dem['chinh'])
+    o.append('| **Cố định** (`co_dinh`) | %d | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |' % dem['co_dinh'])
+    o.append('| **Luôn bật** (`luon_bat`) | %d | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |' % dem['luon_bat'])
+    o.append('')
+    o.append('Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) '
+             'vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". '
+             'Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. '
+             'Cột *Ở*: máy chủ game, web hay cả hai.')
+    o.append('')
+    o.append('### Khoá chỉnh trên web (%d)' % dem['chinh'])
     o.append('')
     for n in d['nhom']:
-        ds = [k for k in d['khoa'] if k['nhom'] == n['ma']]
+        ds = [k for k in d['khoa'] if k['nhom'] == n['ma'] and lop(k) == 'chinh']
         if not ds:
             continue
-        o.append('### %s (`%s`)' % (n['ten'], n['ma']))
+        o.append('#### %s (`%s`)' % (n['ten'], n['ma']))
         o.append('')
         if n.get('moTa'):
             o.append(o_md(n['moTa']))
@@ -264,31 +335,26 @@ def sinh_md_bang(d):
         o.append('| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |')
         o.append('|---|---|---|---|---|---|---|---|')
         for k in ds:
-            gioi = []
-            if 'min' in k or 'max' in k:
-                gioi.append('%s..%s' % (k.get('min', ''), k.get('max', '')))
-            if k.get('soPhanTu'):
-                gioi.append('%d phần tử' % k['soPhanTu'])
-            if k.get('luaChon'):
-                gioi.append(', '.join('`%s`' % x[0] for x in k['luaChon']))
-            if k.get('doDai'):
-                gioi.append('≤ %d ký tự' % k['doDai'])
-            ghi = []
-            if k.get('bang', 'cau_hinh') != 'cau_hinh':
-                ghi.append('bảng `%s`' % k['bang'])
-            if k.get('khoaProd'):
-                ghi.append('máy thật chỉ nhận mặc định')
-            if k.get('chiDoc'):
-                ghi.append('chỉ đọc')
-            mo_ta = o_md(k.get('moTa', ''))
-            if ghi:
-                mo_ta = (mo_ta + ' (' + '; '.join(ghi) + ')').strip()
-            mac_dinh = k.get('macDinh', '')
             o.append('| `%s` | %s | %s | %s | %s | %s | %s | %s |' % (
-                k['khoa'], o_md(k['ten']), TEN_KIEU.get(k['kieu'], k['kieu']),
-                ('`%s`' % o_md(mac_dinh)) if mac_dinh != '' else '*(trống)*',
-                o_md('; '.join(gioi)), 'ngay' if k.get('apDung', 'ngay') == 'ngay' else 'khởi động lại',
-                {'server': 'game', 'web': 'web', 'ca_hai': 'cả hai'}[k.get('dungO', 'server')], mo_ta))
+                k['khoa'], o_md(k['ten']), TEN_KIEU.get(k['kieu'], k['kieu']), _gt_md(k.get('macDinh', '')),
+                _gioi_md(k), ap(k), o_(k), _mo_ta_md(k)))
+        o.append('')
+    o.append('### Khoá ẩn: cố định & luôn bật (%d)' % (dem['co_dinh'] + dem['luon_bat']))
+    o.append('')
+    o.append('Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` '
+             'vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.')
+    o.append('')
+    for n in d['nhom']:
+        ds = [k for k in d['khoa'] if k['nhom'] == n['ma'] and lop(k) != 'chinh']
+        if not ds:
+            continue
+        o.append('#### %s (`%s`)' % (n['ten'], n['ma']))
+        o.append('')
+        o.append('| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |')
+        o.append('|---|---|---|---|---|---|---|')
+        for k in ds:
+            o.append('| `%s` | %s | %s | %s | %s | %s | %s |' % (
+                k['khoa'], o_md(k['ten']), TEN_LOP[lop(k)], _gt_md(k.get('macDinh', '')), ap(k), o_(k), _mo_ta_md(k)))
         o.append('')
     o.append(MOC_CUOI)
     return '\n'.join(o)

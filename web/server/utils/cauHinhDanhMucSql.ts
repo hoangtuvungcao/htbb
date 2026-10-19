@@ -17,7 +17,7 @@ export async function napDanhMucTTServer(): Promise<'sql' | 'gen'> {
   const dm = danhMucTuSqlTT(k, n)
   if (!dm && k && n && Date.now() - daBao > 5 * 60_000) {
     daBao = Date.now()
-    console.warn('[cau-hinh-tt] cau_hinh_danh_muc / cau_hinh_nhom không đúng định dạng (thiếu cột thu_tu? chạy migration P1) — dùng danh mục sinh lúc build.')
+    console.warn('[cau-hinh-tt] cau_hinh_danh_muc / cau_hinh_nhom không đúng định dạng (thiếu cột thu_tu / lop? chạy vps/nang_cap_csdl.sh) — dùng danh mục sinh lúc build.')
   }
   datDanhMucTT(dm)
   truoc = { k, n, kq: dm ? 'sql' : 'gen' }

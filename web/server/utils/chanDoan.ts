@@ -191,49 +191,31 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
       + 'server tự đặt ban = 1 khi lưu Pokémon thất bại.', '', bang)
   })
 
-  // --- 5. Giftcode trùng tên ---------------------------------------------------
-  await thu('Giftcode trùng tên', async () => {
-    const dong = await q(game, 'SELECT giftcode, COUNT(*) AS n FROM giftcode GROUP BY giftcode HAVING n > 1 ORDER BY n DESC')
-    if (!dong.length) {
-      them('Giftcode trùng tên', 'ok', 'Mỗi mã một tên, không có mã nào bị che khuất.')
+  // --- 5. Giftcode an toàn (tob_giftcode) ---------------------------------------
+  // Bảng giftcode cũ không còn được game đọc (sv.lau_dai luôn bật -> GiftcodeAnToan). Chỉ soát mã AN TOÀN:
+  // phần thưởng mà server sẽ từ chối, và mã vượt trần giá trị (server cũng từ chối lúc nhận).
+  await thu('Giftcode an toàn', async () => {
+    if (!(await coBang(game, 'tob_giftcode'))) {
+      them('Giftcode an toàn', 'canhbao', 'Chưa có bảng tob_giftcode — trang Giftcode không tạo được mã.',
+        'mysql -u root htbb_db < du_lieu/sql_nguon/them_bang_lau_dai.sql')
       return
     }
-    const bang = dong.map(d => ({ 'Mã': String(d.giftcode), 'Số dòng': Math.trunc(Number(d.n)) }))
-    them('Giftcode trùng tên', 'loi',
-      'Có mã bị đặt trùng tên. Câu truy vấn của server kết thúc bằng LIMIT 1 nên chỉ dòng ĐẦU TIÊN '
-      + 'được dùng — những dòng sau vĩnh viễn không ai nhận được, dù bạn có sửa phần thưởng trong đó.',
-      `SELECT id, giftcode, item FROM ${DB_GAME}.giftcode WHERE giftcode = 'ten_ma' ORDER BY id;`,
-      bang)
-  })
-
-  // --- 6. Giftcode sai cú pháp phần thưởng -------------------------------------
-  await thu('Cú pháp phần thưởng của các mã đang có', async () => {
-    const dong = await q(game, 'SELECT id, giftcode, item, type, limit_use FROM giftcode ORDER BY id')
+    const gioiHan = await gcGioiHan()
+    const dong = await q(game, 'SELECT ma, phan_thuong, bat, tong_luot, da_dung FROM tob_giftcode ORDER BY tao_luc DESC LIMIT 1000')
     const xau: ChanDoanKetQua['bang'] = []
     for (const d of dong) {
-      const item = String(d.item ?? '')
-      if (item === '' || item.toUpperCase() === 'NULL') continue
-      // kiemTraItem(): shared/utils/thuong.ts (khu Giftcode) — cùng bộ kiểm với lúc tạo mã.
-      const [, loi] = kiemTraItem(item)
-      if (loi.length) {
-        xau.push({
-          'Mã': String(d.giftcode),
-          'Còn dùng được': (Number(d.type) === 0 && Number(d.limit_use) !== 0) ? 'CÓ' : 'không',
-          'Vấn đề': loi.join(' | '),
-        })
-      }
+      const chuan = gcChuanHoaThuong(d.phan_thuong)
+      const giaTri = chuan ? gcGiaTri(chuan) : null
+      let van = ''
+      if (!chuan) van = 'phần thưởng không hợp lệ (server từ chối)'
+      else if (giaTri !== null && giaTri > gioiHan.giaTriToiDa) van = `giá trị ${giaTri} > trần ${gioiHan.giaTriToiDa}`
+      if (van) xau.push({ 'Mã': String(d.ma), 'Đang bật': Number(d.bat) === 1 ? 'CÓ' : 'không', 'Vấn đề': van })
     }
     if (!xau.length) {
-      them('Cú pháp phần thưởng của các mã đang có', 'ok',
-        `Cả ${dong.length} mã đều dùng loại phần thưởng mà server hiểu, đủ tham số.`)
+      them('Giftcode an toàn', 'ok', `Cả ${dong.length} mã đều hợp lệ và trong trần giá trị.`)
       return
     }
-    them('Cú pháp phần thưởng của các mã đang có', 'loi',
-      `${xau.length} mã có chuỗi phần thưởng sai. Hậu quả tuỳ kiểu sai: loại lạ thì server lặng lẽ bỏ `
-      + 'qua (người chơi mất quà, không báo gì); thiếu tham số thì server ném lỗi GIỮA CHỪNG — người chơi '
-      + 'đã nhận được nửa số quà nhưng dòng giftcode_log lẫn việc trừ lượt đều không chạy, nên họ nhận lại '
-      + 'được vô hạn lần.',
-      '', xau)
+    them('Giftcode an toàn', 'canhbao', `${xau.length} mã sẽ bị server từ chối khi người chơi nhập — sửa hoặc xoá ở trang Giftcode.`, '', xau)
   })
 
   // --- 7. Kích hoạt trùng dòng -------------------------------------------------

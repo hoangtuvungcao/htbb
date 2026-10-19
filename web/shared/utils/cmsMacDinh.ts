@@ -6,6 +6,7 @@
  * "Khôi phục mặc định" là xoá dòng trong CSDL -> quay về đúng các giá trị này.
  */
 import { DS_NEN_TANG, banTaiMacDinh, chuanHoaBanTai, type BanTai } from './taiGame.ts'
+import { chuanHoaDauTrang, type MucMenu } from './menuDauTrang.ts'
 
 export interface LienKet { label: string, to: string, icon?: string }
 export interface NutCta { label: string, to: string, kieu: 'chinh' | 'phu' }
@@ -46,7 +47,8 @@ export interface CmsTrangChu {
   hienCanhPhim: boolean
 }
 export interface CmsMenu {
-  dauTrang: LienKet[]
+  /** Menu đầu trang — vị trí từng mục (thanh / Thêm ▾ / nút nổi bật): shared/utils/menuDauTrang.ts. */
+  dauTrang: MucMenu[]
   chanTrang: { ten: string, links: LienKet[] }[]
 }
 export interface CmsTaiGame { ban: BanTai[] }
@@ -101,14 +103,15 @@ export const CMS_MAC_DINH: CmsCongKhai = {
     hienCanhPhim: true,
   },
   menu: {
+    // Thanh: 4 mục + "Thêm ▾" + nút Tải game. Nạp / Thành viên / Kích hoạt nằm ở menu tài khoản.
     dauTrang: [
-      { label: 'Giới thiệu', to: '/gioi-thieu', icon: 'i-lucide-info' },
-      { label: 'Tân thủ', to: '/huong-dan', icon: 'i-lucide-compass' },
-      { label: 'Cẩm nang', to: '/cam-nang', icon: 'i-lucide-library' },
-      { label: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open' },
-      { label: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper' },
-      { label: 'Xếp hạng', to: '/ranking', icon: 'i-lucide-trophy' },
-      { label: 'Tải game', to: '/download', icon: 'i-lucide-download' },
+      { label: 'Tân thủ', to: '/huong-dan', icon: 'i-lucide-compass', vi: 'chinh' },
+      { label: 'Cẩm nang', to: '/cam-nang', icon: 'i-lucide-library', vi: 'chinh' },
+      { label: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open', vi: 'chinh' },
+      { label: 'Xếp hạng', to: '/ranking', icon: 'i-lucide-trophy', vi: 'chinh' },
+      { label: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper', vi: 'them' },
+      { label: 'Giới thiệu', to: '/gioi-thieu', icon: 'i-lucide-info', vi: 'them' },
+      { label: 'Tải game', to: '/download', icon: 'i-lucide-download', vi: 'nut' },
     ],
     chanTrang: [
       { ten: 'Trò chơi', links: [
@@ -160,11 +163,17 @@ export function tronSau<T>(goc: T, de: unknown): T {
   return (typeof de === typeof goc ? de : goc) as T
 }
 
+/** Nắn khối menu: mục đầu trang có vị trí (menu cũ không có trường `vi` vẫn hiện gọn). */
+export function chuanHoaMenu(m: CmsMenu): CmsMenu {
+  const dauTrang = chuanHoaDauTrang(m.dauTrang)
+  return { ...m, dauTrang: dauTrang.length ? dauTrang : chuanHoaDauTrang(CMS_MAC_DINH.menu.dauTrang) }
+}
+
 export function hopNhatCms(db: Partial<Record<KhoaCms, unknown>>): CmsCongKhai {
   return {
     site: chuanHoaCmsSite(tronSau(CMS_MAC_DINH.site, db.site)),
     trangChu: tronSau(CMS_MAC_DINH.trangChu, db.trangChu),
-    menu: tronSau(CMS_MAC_DINH.menu, db.menu),
+    menu: chuanHoaMenu(tronSau(CMS_MAC_DINH.menu, db.menu)),
     taiGame: { ban: chuanHoaBanTai((db.taiGame as { ban?: unknown } | undefined)?.ban) },
   }
 }

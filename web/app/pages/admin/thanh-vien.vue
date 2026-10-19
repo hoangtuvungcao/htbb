@@ -33,13 +33,11 @@ const tabs = [
 ]
 
 const tq = ref<TongQuan | null>(null)
-const ch = ref<CauHinh | null>(null)
 const dangGui = ref(false)
 
 async function taiTq() {
   try {
     tq.value = await api<TongQuan>('/api/admin/thanh-vien/tong-quan')
-    ch.value = { ...tq.value.cauHinh, chucNang: [...tq.value.cauHinh.chucNang], khChucNang: [...tq.value.cauHinh.khChucNang] }
   } catch (e) {
     toast.add({ title: loiApi(e), color: 'error' })
   }
@@ -58,18 +56,6 @@ async function gui(url: string, body: Record<string, unknown>, xong?: () => void
     dangGui.value = false
   }
 }
-
-function batTat(ma: string, v: boolean, kh = false) {
-  if (!ch.value) return
-  const s = new Set(kh ? ch.value.khChucNang : ch.value.chucNang)
-  if (v) s.add(ma)
-  else s.delete(ma)
-  const ds = (tq.value?.chucNang ?? []).map(c => c.ma).filter(m => s.has(m))
-  if (kh) ch.value.khChucNang = ds
-  else ch.value.chucNang = ds
-}
-
-const luuCauHinh = () => ch.value && gui('/api/admin/thanh-vien/cau-hinh', { ...ch.value })
 
 // --- danh sách ---
 const tim = ref('')
@@ -161,70 +147,14 @@ onMounted(taiTq)
 
     <UTabs v-model="tab" :items="tabs" :content="false" class="w-full" />
 
-    <template v-if="tab === 'cau_hinh' && ch && tq">
-      <UCard>
-        <div class="grid gap-4 md:grid-cols-2">
-          <USwitch v-model="ch.bat" :disabled="!laSieu" label="BẮT BUỘC Thành viên cho các tính năng bên dưới (mở game chính thức)" />
-          <USwitch v-model="ch.banBat" :disabled="!laSieu" label="Mở BÁN trên website (cần giấy phép + cổng thanh toán an toàn)" />
-          <UFormField label="Giá (đ, chẵn nghìn)">
-            <UInputNumber v-model="ch.gia" :min="10000" :max="2000000" :step="1000" :disabled="!laSieu" class="w-full" />
-          </UFormField>
-          <UFormField label="Thời hạn (ngày, 0 = vĩnh viễn)">
-            <UInputNumber v-model="ch.thoiHanNgay" :min="0" :max="36500" :disabled="!laSieu" class="w-full" />
-          </UFormField>
-          <UFormField label="Miễn cho Pokémon dưới cấp (0 = không miễn)">
-            <UInputNumber v-model="ch.mienCap" :min="0" :max="200" :disabled="!laSieu" class="w-full" />
-          </UFormField>
-          <UFormField label="Thông báo khi bị chặn (trống = mặc định; {ten} {gia} {web})">
-            <UInput v-model="ch.thongBao" :disabled="!laSieu" class="w-full" />
-          </UFormField>
-        </div>
-        <USeparator class="my-4" />
-        <p class="mb-2 font-semibold">
-          Tính năng cần Thành viên (khi bắt buộc)
-        </p>
-        <div class="grid gap-2 md:grid-cols-2">
-          <UCheckbox
-            v-for="c in tq.chucNang"
-            :key="c.ma"
-            :model-value="ch.chucNang.includes(c.ma)"
-            :disabled="!laSieu"
-            :label="c.ten"
-            :description="`${c.ma} — ${c.cho}`"
-            @update:model-value="(v: boolean | 'indeterminate') => batTat(c.ma, v === true)"
-          />
-        </div>
-        <USeparator class="my-4" />
-        <p class="font-semibold">
-          Kích hoạt tài khoản (miễn phí, admin cấp — bảng 5h_active)
-        </p>
-        <p class="mb-2 text-sm text-muted">
-          Chưa kích hoạt vẫn đăng nhập và chơi; chỉ bị khoá các tính năng chọn dưới. Một cổng chung với Thành viên:
-          bị chặn nếu (cần kích hoạt và chưa kích hoạt) hoặc (cần Thành viên và chưa là Thành viên). Chỉ có tác dụng khi
-          server.ini sv.EnableAvtiveCheck=1.
-        </p>
-        <div class="grid gap-4 md:grid-cols-2">
-          <USwitch v-model="ch.khChanDangNhap" :disabled="!laSieu" label="CHẶN ĐĂNG NHẬP tài khoản chưa kích hoạt (hành vi cũ)" />
-          <USwitch v-model="ch.khTvLaKh" :disabled="!laSieu" label="Thành viên HTBB được coi như đã kích hoạt" />
-          <UFormField label="Thông báo khi bị khoá vì chưa kích hoạt (trống = mặc định; {ten} {web})" class="md:col-span-2">
-            <UInput v-model="ch.khThongBao" :disabled="!laSieu" class="w-full" />
-          </UFormField>
-        </div>
-        <div class="mt-3 grid gap-2 md:grid-cols-2">
-          <UCheckbox
-            v-for="c in tq.chucNang"
-            :key="`kh-${c.ma}`"
-            :model-value="ch.khChucNang.includes(c.ma)"
-            :disabled="!laSieu"
-            :label="`${c.ten} (khi chưa kích hoạt)`"
-            @update:model-value="(v: boolean | 'indeterminate') => batTat(c.ma, v === true, true)"
-          />
-        </div>
-        <template #footer>
-          <UButton v-if="laSieu" icon="i-lucide-save" :loading="dangGui" label="Lưu cấu hình" @click="luuCauHinh" />
-          <span v-else class="text-sm text-muted">Chỉ Siêu quản trị sửa được.</span>
-        </template>
-      </UCard>
+    <template v-if="tab === 'cau_hinh'">
+      <!-- Một chỗ sửa duy nhất: cùng khoá, cùng lịch sử với trang Cấu hình (docs/cau-hinh.md). -->
+      <AdminHethongCauHinhNhom nhom="thanh_vien" />
+      <AdminHethongCauHinhNhom :khoa="['thanh_vien.ban_bat']" tieu-de="Bán Thành viên trên website" />
+      <p v-if="tq" class="text-sm text-muted">
+        Mã tính năng dùng trong "Tính năng cần Thành viên / khi chưa kích hoạt":
+        <span v-for="c in tq.chucNang" :key="c.ma" class="mr-2 whitespace-nowrap"><code>{{ c.ma }}</code> = {{ c.ten }}</span>
+      </p>
     </template>
 
     <template v-else-if="tab === 'ds'">

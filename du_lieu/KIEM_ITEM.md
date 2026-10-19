@@ -14,7 +14,7 @@ Tham chiếu treo: **0**. Quy tắc lỗi thời: **0**. Trùng tên: **0**. Tê
 
 Lỗi bị test chặn (cấu hình A + B): **0**.
 
-Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `du_lieu/sql_nguon/pokemon_noi_dung.sql`, `du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql`, `du_lieu/sql_nguon/pokemon_lau_dai.sql`, `du_lieu/sql_nguon/pokemon_doi_chu.sql`, `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `2098e889d94e4b43231ea54ecd9c62313021dbc7`
+Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `du_lieu/sql_nguon/pokemon_noi_dung.sql`, `du_lieu/sql_nguon/pokemon_vat_pham_lau_dai.sql`, `du_lieu/sql_nguon/pokemon_lau_dai.sql`, `du_lieu/sql_nguon/pokemon_doi_chu.sql`, `du_lieu/sql_nguon/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `697c7471b5343bc1e6bebb1b1f803c43cde4651d`
 
 ## 1. Cấu hình A: `sv.lau_dai=1`, `sv.he_sinh_thai=0`
 

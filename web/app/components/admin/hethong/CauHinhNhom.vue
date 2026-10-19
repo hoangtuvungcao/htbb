@@ -7,9 +7,10 @@
  */
 const props = defineProps<{ nhom?: string, khoa?: string[], tieuDe?: string }>()
 const ch = useCauHinhTT(`admin-cau-hinh-tt-nhung-${props.nhom ?? (props.khoa ?? []).join(',')}`)
+// Khoá ẩn (cố định / luôn bật) không hiện ở khối nhúng (docs/cau-hinh.md). Danh mục đang dùng: CSDL nếu đã nạp.
 const ds = computed(() => {
   void ch.phienDanhMuc.value
-  return danhMucTT().filter(k => (props.nhom ? k.nhom === props.nhom : true) && (props.khoa ? props.khoa.includes(k.khoa) : true))
+  return danhMucTT().filter(k => !anTT(k) && (props.nhom ? k.nhom === props.nhom : true) && (props.khoa ? props.khoa.includes(k.khoa) : true))
 })
 const ten = computed(() => {
   void ch.phienDanhMuc.value

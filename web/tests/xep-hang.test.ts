@@ -13,12 +13,13 @@ test('danh mục: mã duy nhất, mỗi bảng có bảng CSDL', () => {
   for (const b of XH_DANH_MUC) assert.ok(b.bang.length > 0, b.ma)
 })
 
-test('ủng hộ: mặc định ẩn; cần cả nạp bật và admin bật', () => {
-  const cd = xhChuanHoaCaiDat({})
-  assert.equal(xhBangDuocHien(cd, 'ung-ho', true), false)
-  const bat = xhChuanHoaCaiDat({ hienUngHo: true, bang: [{ ma: 'ung-ho', hien: true }] })
-  assert.equal(xhBangDuocHien(bat, 'ung-ho', false), false)
-  assert.equal(xhBangDuocHien(bat, 'ung-ho', true), true)
+test('không còn bảng "Top ủng hộ" (board_created là hàng chờ quà tạo nhân vật, không phải ủng hộ)', () => {
+  assert.equal(XH_DANH_MUC.some(b => (b.ma as string) === 'ung-ho'), false)
+  assert.equal(XH_DANH_MUC.some(b => b.bang.includes('board_created')), false)
+  const cd = xhChuanHoaCaiDat({ hienUngHo: true, bang: [{ ma: 'ung-ho', hien: true }] })
+  assert.equal(cd.bang.some(b => (b.ma as string) === 'ung-ho'), false)
+  assert.equal('hienUngHo' in cd, false)
+  for (const b of cd.bang) assert.equal(xhBangDuocHien(cd, b.ma), b.hien)
 })
 
 test('chuẩn hoá cài đặt: dữ liệu hỏng không làm vỡ, số bị kẹp, bảng thiếu thêm cuối', () => {

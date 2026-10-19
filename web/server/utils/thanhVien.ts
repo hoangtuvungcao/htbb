@@ -32,6 +32,8 @@ export async function tvCauHinh(moi = false): Promise<CauHinhTv> {
       kv[r.khoa] = String(r.gia_tri)
     }
   } catch { /* chưa có bảng: coi như tắt */ }
+  // kich_hoat.thanh_vien_la_kich_hoat là khoá LUÔN BẬT (docs/cau-hinh.md): máy thật bỏ qua dòng CSDL.
+  if (!choPhepThuNghiemWeb()) delete kv['kich_hoat.thanh_vien_la_kich_hoat']
   const c = docCauHinhTv(kv)
   nho = { c, luc: Date.now() }
   return c

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 /**
  * Cài đặt bảng xếp hạng công khai (/ranking): bảng nào hiện + thứ tự tab, số dòng, làm mới,
- * danh sách loại trừ (tên nhân vật / tài khoản, có tiền tố "tai0*"), bảng ủng hộ.
+ * danh sách loại trừ (tên nhân vật / tài khoản, có tiền tố "tai0*").
  * Lưu vào web_cai_dat khoá 'xepHang' — không cần sửa code. Ghi chỉ dành cho siêu quản trị.
  */
-import AdminTaikhoanXacNhan from '~/components/admin/taikhoan/XacNhan.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
@@ -15,7 +14,6 @@ interface CaiDat {
   moiTrang: number
   lamMoiGiay: number
   loaiTru: { tenNhanVat: string[], taiKhoan: string[], anTaiKhoanKhoa: boolean, anGm: boolean }
-  hienUngHo: boolean
   mocChiemGym: string
 }
 interface Tra { coBang: boolean, tuDb: boolean, caiDat: CaiDat, danhMuc: Muc[], gioiHan: Record<string, [number, number]>, napBat: boolean, muaHienTai: number | null }
@@ -23,7 +21,6 @@ interface Tra { coBang: boolean, tuDb: boolean, caiDat: CaiDat, danhMuc: Muc[], 
 const api = useAdminApi()
 const toast = useToast()
 const me = useAdminMe()
-const xacNhan = useOverlay().create(AdminTaikhoanXacNhan)
 
 const { data, pending, error, refresh } = await useAsyncData('admin-xep-hang', () => api<Tra>('/api/admin/xep-hang'), { server: false })
 
@@ -53,11 +50,6 @@ function doi(i: number, buoc: number) {
 const dangLuu = ref(false)
 async function luu() {
   if (!f.value) return
-  if (f.value.hienUngHo && !(await xacNhan.open({
-    title: 'Hiện bảng xếp hạng ủng hộ?',
-    description: 'Bảng xếp theo số tiền đã nạp dễ tạo áp lực chi tiêu. Bảng chỉ thực sự hiện khi máy chủ cũng BẬT nạp tiền. Vẫn lưu?',
-    nut: 'Lưu', mau: 'warning',
-  }).result)) return
   dangLuu.value = true
   try {
     const body = { caiDat: { ...f.value, loaiTru: { ...f.value.loaiTru, tenNhanVat: tenNv.value, taiKhoan: taiKhoan.value } } }
@@ -148,8 +140,6 @@ function xemBiAn() { anTai.value = true; taiBiAn() }
           <UFormField label="Mốc bắt đầu đợt đua Chiếm Gym" help="Định dạng YYYY-MM-DD HH:MM:SS (giờ máy chủ)" class="mt-4">
             <UInput v-model="f.mocChiemGym" placeholder="2026-09-12 20:00:00" :disabled="!duocGhi" class="w-full" />
           </UFormField>
-          <USeparator class="my-4" />
-          <USwitch v-model="f.hienUngHo" :disabled="!duocGhi" label="Hiện bảng “Top ủng hộ”" :description="data.napBat ? 'Nạp tiền đang BẬT trên máy chủ.' : 'Nạp tiền đang TẮT — bảng vẫn ẩn dù bật ở đây.'" />
           <p v-if="data.muaHienTai != null" class="mt-4 text-sm text-muted">
             Mùa PvP hiện tại (theo ngày khai trương trong cấu hình game): <b>Mùa {{ data.muaHienTai + 1 }}</b>.
           </p>

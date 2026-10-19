@@ -4,6 +4,7 @@
  * Luật cảnh báo + đọc log xu: shared/utils/kinhTeCanhBao.ts (thuần, có test).
  */
 import type { NgayKinhTe, NhanXuNhanVat } from '../../shared/utils/kinhTeCanhBao'
+import { tienMuaShop } from '../../shared/utils/kinhTeCanhBao'
 
 /** Số dòng log tối đa đọc cho một truy vấn (log 'truxu' có thể hàng trăm nghìn dòng/ngày). */
 export const KINH_TE_LOG_TOI_DA = 100_000
@@ -57,25 +58,40 @@ export async function docNguonXu(soNgay: number) {
   }
 }
 
-/** Mua ở shop NPC theo loại tiền (tob_log_buy_shop, gộp theo cửa sổ thời gian bên Java). */
+/**
+ * Mua ở shop NPC theo loại tiền (tob_log_buy_shop, gộp theo cửa sổ thời gian bên Java). Cột `money` là ảnh số dư
+ * trước/sau, không phải tên tiền — loại tiền suy ra bằng tienMuaShop() (shared/utils/kinhTeCanhBao.ts) rồi gộp ở đây.
+ */
 export async function docMuaShop(soNgay: number) {
   const ngay = Math.max(1, Math.min(30, Math.trunc(soNgay) || 1))
   if (!(await coBang(dbGame(), 'tob_log_buy_shop'))) return { co: false, ngay, theoTien: [], top: [] }
-  const theoTien = await q(
+  const dong = await q(
     dbGame(),
-    `SELECT money AS tien, COUNT(*) AS so_lan, SUM(price * soluong) AS tong FROM tob_log_buy_shop
-      WHERE timeBuy >= DATE_SUB(NOW(), INTERVAL ${ngay} DAY) GROUP BY money ORDER BY tong DESC LIMIT 20`,
+    `SELECT info, money, price, soluong FROM tob_log_buy_shop
+      WHERE timeBuy >= DATE_SUB(NOW(), INTERVAL ${ngay} DAY) ORDER BY id DESC LIMIT ${KINH_TE_LOG_TOI_DA}`,
   )
-  const top = await q(
-    dbGame(),
-    `SELECT info, money AS tien, SUM(soluong) AS so_luong, SUM(price * soluong) AS tong FROM tob_log_buy_shop
-      WHERE timeBuy >= DATE_SUB(NOW(), INTERVAL ${ngay} DAY) GROUP BY info, money ORDER BY tong DESC LIMIT 20`,
-  )
+  const theoTien = new Map<string, { tien: string, soLan: number, tong: number }>()
+  const top = new Map<string, { info: string, tien: string, soLuong: number, tong: number }>()
+  for (const r of dong) {
+    const tien = tienMuaShop(r.money)
+    const sl = Math.max(1, Number(r.soluong ?? 1) || 1)
+    const tong = (Number(r.price ?? 0) || 0) * sl
+    const t = theoTien.get(tien) ?? { tien, soLan: 0, tong: 0 }
+    t.soLan++
+    t.tong += tong
+    theoTien.set(tien, t)
+    const info = String(r.info ?? '').slice(0, 120)
+    const k = `${info}\u0000${tien}`
+    const x = top.get(k) ?? { info, tien, soLuong: 0, tong: 0 }
+    x.soLuong += sl
+    x.tong += tong
+    top.set(k, x)
+  }
   return {
     co: true,
     ngay,
-    theoTien: theoTien.map(r => ({ tien: String(r.tien ?? ''), soLan: Number(r.so_lan), tong: Number(r.tong ?? 0) })),
-    top: top.map(r => ({ info: String(r.info ?? '').slice(0, 120), tien: String(r.tien ?? ''), soLuong: Number(r.so_luong ?? 0), tong: Number(r.tong ?? 0) })),
+    theoTien: [...theoTien.values()].sort((a, b) => b.tong - a.tong).slice(0, 20),
+    top: [...top.values()].sort((a, b) => b.tong - a.tong).slice(0, 20),
   }
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /** Khối tổng quan nội dung trên bảng điều khiển: người online, tài khoản mới/ngày, sự kiện tuần, tin mới. */
 const api = useAdminApi()
+const me = useAdminMe()
 const { data } = useAsyncData('admin-cms-tq', () => api<{ noiDung: Record<string, number | null>, tkMoi: { ngay: string, so: number }[], online: number | null, tinMoi: { id: number, tieu_de: string, trang_thai: number, dang_luc: string | null, sua_luc: string }[], coBangCms: boolean }>('/api/admin/cms/tong-quan'), { server: false })
 const lich = useLichSuKien()
 const suKien = computed(() => suKienTuTuan(tuanTrongNam(new Date()), 1, lich.value))
@@ -39,7 +40,8 @@ const maxTk = computed(() => Math.max(1, ...(data.value?.tkMoi ?? []).map(x => x
         </div>
       </UCard>
     </div>
-    <AdminKinhTeNgay />
+    <!-- Chỉ số kinh tế: chỉ Siêu quản trị / Chỉ xem đọc được (shared/utils/quyenAdmin.ts) — vai trò khác không gọi để khỏi 403. -->
+    <AdminKinhTeNgay v-if="me.duoc('/api/admin/kinh-te-ngay', 'GET')" />
     <UCard v-if="data?.tinMoi?.length">
       <template #header><b>Tin sửa gần đây</b></template>
       <ul class="divide-y divide-default text-sm">

@@ -28,6 +28,9 @@ interface ChanDoanResp {
 }
 interface NoiDungFile { ten: string, noiDung: string, co: number, cat: boolean, suaLuc: string, moiTruoc: boolean }
 
+// Đọc nội dung tệp log: chỉ Siêu quản trị (log có thể lộ IP / dữ liệu người chơi) — vai trò Chỉ xem không thấy nút.
+const meCd = useAdminMe()
+const xemFileDuoc = computed(() => meCd.duoc('/api/admin/chandoan/file', 'GET'))
 const api = useAdminApi()
 const toast = useToast()
 const route = useRoute()
@@ -278,7 +281,7 @@ const cotLoiWeb: TableColumn<LoiWeb>[] = [
             <span class="whitespace-nowrap text-xs text-muted">{{ row.original.suaLuc }}</span>
           </template>
           <template #xem-cell="{ row }">
-            <UButton v-if="row.original.co && row.original.docDuoc" size="xs" color="neutral" variant="outline" icon="i-lucide-file-text" label="Xem cuối file" class="whitespace-nowrap" @click="xemFile(row.original.ten)" />
+            <UButton v-if="xemFileDuoc && row.original.co && row.original.docDuoc" size="xs" color="neutral" variant="outline" icon="i-lucide-file-text" label="Xem cuối file" class="whitespace-nowrap" @click="xemFile(row.original.ten)" />
             <span v-else-if="row.original.co" class="whitespace-nowrap text-xs text-warning">không có quyền đọc</span>
             <span v-else class="whitespace-nowrap text-xs text-dimmed">chưa có</span>
           </template>
@@ -304,7 +307,7 @@ const cotLoiWeb: TableColumn<LoiWeb>[] = [
               <span class="whitespace-nowrap text-xs text-muted">{{ row.original.suaLuc }}</span>
             </template>
             <template #xem-cell="{ row }">
-              <UButton v-if="row.original.docDuoc" size="xs" color="neutral" variant="outline" icon="i-lucide-file-text" label="Xem cuối file" @click="xemFile(row.original.ten)" />
+              <UButton v-if="xemFileDuoc && row.original.docDuoc" size="xs" color="neutral" variant="outline" icon="i-lucide-file-text" label="Xem cuối file" @click="xemFile(row.original.ten)" />
               <span v-else class="text-xs text-warning">không có quyền đọc</span>
             </template>
           </UTable>

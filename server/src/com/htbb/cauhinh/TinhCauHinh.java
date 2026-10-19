@@ -18,6 +18,11 @@ import java.util.Map;
  * Khoa "khoaProd" (thu nghiem): gia tri tu CSDL khac mac dinh bi TU CHOI tren may that (choPhepThuNghiem
  * = false, tuc server.ini khong co sv.cho_phep_thu_nghiem=1).
  *
+ * Khoa AN (lop co_dinh / luon_bat, docs/cau-hinh.md): may that BO QUA dong CSDL (ghi loi de trang thay), lay
+ * server.ini (khan cap) roi gia tri co dinh trong danh muc, nguon {@link #NGUON_CO_DINH}. Gia tri co dinh LUON
+ * vao tatCa (ke ca khi bang macDinh) de ma doc cu (Properties) chay dung gia tri san xuat thay vi mac dinh rieng.
+ * May thu (choPhepThuNghiem) van doc CSDL nhu khoa thuong.
+ *
  * Khoa "khoi dong lai" (apDungNgay = false): sau lan tinh dau tien (luc khoi dong, cu == null), gia tri
  * hieu luc DONG BANG; gia tri moi trong CSDL/ini chi ghi vao choKhoiDong de trang quan tri hien
  * "cho khoi dong lai".
@@ -31,6 +36,8 @@ public final class TinhCauHinh {
     public static final String NGUON_INI = "ini";
     public static final String NGUON_MAC_DINH = "mac_dinh";
     public static final String NGUON_GIU_CU = "giu_cu";
+    /** Khoa an (co dinh / luon bat), khong co dong server.ini: gia tri co dinh cua danh muc. */
+    public static final String NGUON_CO_DINH = "co_dinh";
 
     private TinhCauHinh() {
     }
@@ -88,8 +95,14 @@ public final class TinhCauHinh {
             final String k = d.khoa;
             String ungVien = null;
             String tu = null;
+            final boolean anTrenMayThat = d.laAn() && !choPhepThuNghiem;
             final String vDb = dbM.get(k);
-            if (vDb != null) {
+            if (vDb != null && anTrenMayThat) {
+                if (!vDb.trim().equals(d.macDinh)) {
+                    loi.put(k, "khoá cố định — máy thật bỏ qua CSDL \"" + catNgan(vDb) + "\", dùng \"" + d.macDinh
+                            + "\" (đổi khẩn cấp: server.ini)");
+                }
+            } else if (vDb != null) {
                 final KiemGiaTri.KetQua r = KiemGiaTri.kiem(d, vDb);
                 if (!r.dung()) {
                     loi.put(k, "CSDL \"" + catNgan(vDb) + "\" bị từ chối: " + r.loi);
@@ -121,7 +134,7 @@ public final class TinhCauHinh {
                     tu = NGUON_INI;
                 } else {
                     ungVien = d.macDinh;
-                    tu = NGUON_MAC_DINH;
+                    tu = anTrenMayThat ? NGUON_CO_DINH : NGUON_MAC_DINH;
                 }
             }
             String giaTri = ungVien;

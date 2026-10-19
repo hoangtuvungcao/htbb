@@ -252,7 +252,6 @@ async function sinhThaiBat(): Promise<boolean> {
 export async function xhBangKhaDung(b: XhBangDinhNghia): Promise<boolean> {
   try {
     if (b.ma === 'sinh-thai') return await sinhThaiBat()
-    if (b.ma === 'ung-ho') return await coBang(dbGame(), 'board_created')
     return await coDuBang(b.bang)
   }
   catch { return false }
@@ -473,36 +472,6 @@ async function docBang(ma: XhMaBang, loc: Record<string, string>, cd: XhCaiDat):
         WHERE t.point1 > 0 AND ${ex.sql} ORDER BY t.point1 DESC, t.id ASC LIMIT ${n}`, ex.params)
       return { cot: { ten: COT_PKM, giaTri: 'Điểm', phu: '' }, dong: rows.map(r => dongNv(r, soNguyen(r.point1), `Cấp ${soNguyen(r.lastLv)}`)),
         ghiChu: 'Top 10 điểm sự kiện — như NPC sự kiện trong game.' }
-    }
-    case 'ung-ho': {
-      // board_created chỉ có TÊN ĐĂNG NHẬP — không bao giờ đưa ra trang công khai: hiện tên nhân vật nhiều
-      // kinh nghiệm nhất (đã áp loại trừ) của tài khoản đó; tài khoản không còn nhân vật hợp lệ thì bỏ qua.
-      const tk = xhLuatTen(cd.loaiTru.taiKhoan)
-      const rows = (await q(g, `SELECT username, luong FROM board_created WHERE luong > 0 ORDER BY luong DESC LIMIT ${n + 50}`))
-        .filter(r => !xhKhopLuatTen(String(r.username ?? ''), tk))
-      const ten = [...new Set(rows.map(r => String(r.username).toLowerCase()))]
-      const theoTk = new Map<string, Record<string, any>>()
-      if (ten.length) {
-        const ids = await q<{ id: number, username: string }>(dbAccount(),
-          `SELECT id, username FROM team_user WHERE LOWER(username) IN (${ten.map(() => '?').join(',')}) LIMIT ${ten.length * 2}`, ten)
-        const idTk = new Map(ids.map(x => [soNguyen(x.id), String(x.username).toLowerCase()]))
-        if (idTk.size) {
-          const nv = await q(g, `SELECT ${COT_NV}, a.userId FROM tob_char a WHERE a.userId IN (${[...idTk.keys()].join(',')}) AND ${ex.sql}
-            ORDER BY a.xp DESC, a.id ASC LIMIT ${idTk.size * 3}`, ex.params)
-          for (const r of nv) {
-            const u = idTk.get(soNguyen(r.userId))
-            if (u && !theoTk.has(u)) theoTk.set(u, r)
-          }
-        }
-      }
-      const dong: Array<Omit<XhDong, 'hang'>> = []
-      for (const r of rows) {
-        const nv = theoTk.get(String(r.username).toLowerCase())
-        if (!nv) continue
-        dong.push(dongNv(nv, soNguyen(r.luong)))
-        if (dong.length >= n) break
-      }
-      return { cot: { ten: COT_PKM, giaTri: 'Lượng', phu: '' }, dong }
     }
   }
 }

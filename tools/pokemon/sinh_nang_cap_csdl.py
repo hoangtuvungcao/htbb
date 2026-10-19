@@ -14,7 +14,11 @@ Ba phan, theo thu tu:
   3. Chi muc bang nong (them_chi_muc_production.sql, CREATE INDEX IF NOT EXISTS).
 Moi lenh deu chay lai duoc: nap hai lan cho cung ket qua.
 
-KHONG gom (co ly do): them_bang_top_boss.sql (server tu tao khi can, htbb_day_du.sql cung khong co),
+Phan 4: lenh cau hinh he thong chay lai duoc (5h_systems.tangnap = 1 cua 0.9.4).
+
+KHONG gom (co ly do): DELETE FROM board_created trong sua_he_so_nap_va_qua_tao_nv.sql (xoa qua tao nhan vat chua
+nhan cua nguoi choi - quyet dinh kinh te cua chu game, production da chay; nang cap khong xoa du lieu nguoi choi),
+vo_hieu_giftcode_cu.sql (khoa giftcode cu - thao tac cua chu game), them_bang_top_boss.sql (server tu tao khi can, htbb_day_du.sql cung khong co),
 them_khoa_duy_nhat_giftcode_log.sql (xoa dong trung - server tu them khoa luc khoi dong),
 cac migration du lieu cu (skin, world cup, phi phong, vo hieu giftcode, xoa su kien trung) - da nam trong moi CSDL
 dung tu htbb_day_du.sql tu 09/2026, va UPDATE/INSERT du lieu khong chay lai an toan duoc.
@@ -35,6 +39,7 @@ RA = os.path.join(GOC, "vps", "nang_cap_csdl.sql")
 SCHEMA = ["them_bang_2buoc.sql", "them_bang_cam_may.sql", "them_bang_dieu_khien_server.sql", "them_bang_su_kien.sql",
           "them_bang_tob_log_online.sql", "them_bang_tob_top_thuong.sql",
           "them_bang_web_admin_log.sql", "them_bang_web_chan_spam.sql", "them_bang_web_lenh_nhan_vat.sql",
+          "them_bang_tob_client_dang_nhap.sql",
           "them_cot_kho_xu_luong.sql", "them_cot_pokemon.sql", "them_bang_pokedex.sql", "them_bang_lau_dai.sql",
           "sua_cot_itemquest.sql"]
 
@@ -52,6 +57,10 @@ BANG = [
 
 # Phan 3.
 CHI_MUC = ["them_chi_muc_production.sql"]
+
+# Phan 4: cau hinh he thong (khong phai du lieu nguoi choi) - chi lay DUNG lenh liet ke, lenh khac trong tep bo qua.
+HE_THONG = [("sua_he_so_nap_va_qua_tao_nv.sql",
+             "UPDATE `5h_systems` SET status = 1 WHERE command = 'tangnap' AND status <> 1")]
 
 
 def lenh(sql):
@@ -175,6 +184,14 @@ def sinh():
         o.append("-- du_lieu/sql_nguon/%s" % tep)
         for l in lenh_chi_muc(tep):
             o.append(l + ";")
+        o.append("")
+    o += ["-- ======== 4. Cau hinh he thong (0.9.4: he so nap co dinh = 1)", ""]
+    for tep, can in HE_THONG:
+        ds = [bo_chu_thich(l) for l in lenh(doc(tep))]
+        if can not in ds:
+            sys.exit("%s: khong con lenh '%s'" % (tep, can))
+        o.append("-- du_lieu/sql_nguon/%s (chi lenh nay; DELETE board_created la quyet dinh rieng cua chu game)" % tep)
+        o.append(can + ";")
         o.append("")
     return "\n".join(o)
 

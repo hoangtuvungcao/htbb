@@ -11,6 +11,9 @@ definePageMeta({ layout: 'admin', middleware: 'admin' })
 interface SoLieu { capDoToiDa: number, soNhanVat: number, soLenhChoXuLy: number, lenhs: DongLenhGiaoDien[], loiDoc: string }
 
 const api = useAdminApi()
+// Vai trò Chỉ xem thấy trang (đọc được) nhưng không gửi được: khoá nút thay vì để bấm rồi nhận 403.
+const me = useAdminMe()
+const duocGhi = computed(() => me.duoc('/api/admin/nang-level-toanbo'))
 const toast = useToast()
 
 const { data, status, error, refresh } = useAsyncData('admin-nang-level-toanbo',
@@ -60,6 +63,14 @@ async function huy(l: DongLenhGiaoDien) {
     <template #right>
       <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" label="Cập nhật số liệu" :loading="status === 'pending'" @click="refresh()" />
     </template>
+    <UAlert
+      v-if="!duocGhi"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-eye"
+      title="Chế độ chỉ xem"
+      description="Vai trò của bạn xem được trang này nhưng không gửi được lệnh — chỉ Siêu quản trị thao tác."
+    />
 
     <div>
       <h1 class="text-xl font-bold text-highlighted">
@@ -98,7 +109,7 @@ async function huy(l: DongLenhGiaoDien) {
           Pokémon offline sẽ được nâng khi vào game. Pokémon đã ở cấp này trở lên sẽ báo lỗi riêng cho Pokémon
           đó (không bị hạ cấp), không ảnh hưởng đến các Pokémon khác.
         </p>
-        <UButton type="submit" color="error" icon="i-lucide-trending-up" label="Nâng Level cho tất cả" :loading="dangGui" />
+        <UButton type="submit" color="error" icon="i-lucide-trending-up" label="Nâng Level cho tất cả" :disabled="!duocGhi" :loading="dangGui" />
       </form>
     </UCard>
 

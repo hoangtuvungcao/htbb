@@ -235,6 +235,8 @@ public final class TrangCauHinh extends Trang {
                 return "Mặc định";
             case "giu_cu":
                 return "Giữ giá trị cũ";
+            case "co_dinh":
+                return "Cố định";
             default:
                 return n;
         }

@@ -120,7 +120,15 @@ public class Session_ME implements ISession {
         this.sender.AddMessage(message);
     }
 
+    /** 0.9.4: lúc gửi gói cuối (giữ kết nối: server cắt socket im lặng quá sv.socketTimeout = 180 s). */
+    public volatile long lucGuiCuoi = System.currentTimeMillis();
+    /** Chu kỳ gói giữ kết nối (ms). */
+    public static long GIU_KET_NOI_MS = 30000L;
+    /** số gói giữ kết nối đã gửi (kiểm thử) */
+    public static int soGoiGiu;
+
     public synchronized void doSendMessage(Message m) throws IOException {
+        this.lucGuiCuoi = System.currentTimeMillis();
         byte[] data = m.getData();
         try {
             if (this.getKeyComplete) {
@@ -198,6 +206,13 @@ public class Session_ME implements ISession {
                             this.sendingMessage.removeElementAt(0);
                             Session_ME.this.doSendMessage(m);
                         }
+                        // 0.9.4 GIỮ KẾT NỐI: luồng gửi riêng (không phụ thuộc vẽ / cửa sổ mất focus / hộp thoại đang mở)
+                        // gửi gói 11 rỗng nếu 30 s chưa gửi gì. Server: gói 11 trong màn chơi bị bỏ qua vô hại
+                        // (MapXuLyLenh), nhưng đọc được gói = còn sống, không bị cắt sau sv.socketTimeout.
+                        if (System.currentTimeMillis() - Session_ME.this.lucGuiCuoi >= GIU_KET_NOI_MS) {
+                            Session_ME.this.doSendMessage(new Message((byte) 11));
+                            soGoiGiu++;
+                        }
                     }
                     try {
                         Thread.sleep(10L);
@@ -229,8 +244,9 @@ public class Session_ME implements ISession {
                         } else {
                             Session_ME.this.messageHandler.onMessage(message);
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Throwable e) {
+                        // 0.9.4: lỗi một gói chỉ bỏ gói đó (ghi nhật ký kèm mã lệnh), luồng mạng chạy tiếp
+                        game.pokemon.GiamSat.loi("goi tin lenh " + message.command, e);
                     }
                 }
             } catch (Exception e2) {
@@ -311,6 +327,10 @@ public class Session_ME implements ISession {
     }
 
     public void cleanNetwork() {
+        // 0.9.4: bỏ gói còn xếp hàng của phiên cũ / lần nối hỏng. Trước đây gói đăng nhập của các lần nối thất bại
+        // nằm lại trong hàng, lần nối được thì gửi DỒN cả loạt (server thấy 4 lần đăng nhập -> đá phiên ->
+        // "Không thể kết nối" ngay sau khi vào lại game).
+        this.sender.sendingMessage.removeAllElements();
         this.key = null;
         this.curR = (byte) 0;
         this.curW = (byte) 0;

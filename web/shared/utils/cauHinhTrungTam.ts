@@ -8,6 +8,10 @@
  * (cả tests/cau-hinh-trung-tam.test.ts lẫn HTBB/test/KiemCauHinhTrungTam.java chạy cùng bộ đó).
  *
  * Thứ tự ưu tiên khi máy chủ đọc: bảng cau_hinh (CSDL) > server.ini > mặc định. Trang chỉ ghi CSDL.
+ *
+ * PHÂN LOẠI (trường `lop`, docs/cau-hinh.md): vắng = chỉnh trên web; 'co_dinh' / 'luon_bat' = khoá ẨN — không hiện
+ * trên trang, máy thật bỏ qua CSDL (giá trị cố định = macDinh; đổi khẩn cấp bằng server.ini), API lưu từ chối.
+ * Máy thử (choPhepThuNghiem) vẫn thấy và sửa được.
  */
 import { DANH_MUC_TT, NHOM_TT, type KhoaTT } from './cauHinhTrungTam.gen.ts'
 
@@ -16,7 +20,7 @@ import { DANH_MUC_TT, NHOM_TT, type KhoaTT } from './cauHinhTrungTam.gen.ts'
  * game) bằng datDanhMucTT(danhMucTuSqlTT(...)) — phía server: server/utils/cauHinhDanhMucSql.ts, phía trang: dữ liệu
  * API /api/admin/cau-hinh-he-thong. Bản sinh cauHinhTrungTam.gen.ts chỉ là dự phòng lúc build.
  */
-export type NhomTT = { ma: string, ten: string, moTa: string }
+export type NhomTT = { ma: string, ten: string, moTa: string, an?: boolean }
 let DS_TT: KhoaTT[] = DANH_MUC_TT
 let NHOM_DANG_DUNG: NhomTT[] = NHOM_TT
 let THEO_KHOA: Record<string, KhoaTT> = Object.fromEntries(DANH_MUC_TT.map(k => [k.khoa, k]))
@@ -52,15 +56,16 @@ export function datDanhMucTT(dm: { ds: KhoaTT[], nhom: NhomTT[] } | null): boole
 type DongTT = Record<string, string | number | null | undefined>
 
 /**
- * Dòng bảng cau_hinh_danh_muc (+ thu_tu) và cau_hinh_nhom -> đúng hình dạng KhoaTT / NHOM_TT (sinh bởi
- * tools/cauhinh/sinh_cau_hinh.py). Thiếu cột thu_tu (CSDL chưa chạy migration) / dữ liệu lạ -> null (giữ bản sinh).
+ * Dòng bảng cau_hinh_danh_muc (+ thu_tu, lop) và cau_hinh_nhom -> đúng hình dạng KhoaTT / NHOM_TT (sinh bởi
+ * tools/cauhinh/sinh_cau_hinh.py). Thiếu cột thu_tu / lop (CSDL chưa chạy vps/nang_cap_csdl.sh) / dữ liệu lạ -> null
+ * (giữ bản sinh): không đoán lớp 'chinh' cho khoá ẩn.
  */
 export function danhMucTuSqlTT(dongKhoa: DongTT[] | null | undefined, dongNhom: DongTT[] | null | undefined): { ds: KhoaTT[], nhom: NhomTT[] } | null {
   if (!dongKhoa?.length || !dongNhom?.length) return null
-  if (dongKhoa.some(r => r.thu_tu == null) || dongNhom.some(r => r.thu_tu == null)) return null
+  if (dongKhoa.some(r => r.thu_tu == null || r.lop == null) || dongNhom.some(r => r.thu_tu == null)) return null
   const chu = (v: unknown) => (v == null ? '' : String(v))
   const nhom = [...dongNhom].sort((a, b) => Number(a.thu_tu) - Number(b.thu_tu))
-    .map(r => ({ ma: chu(r.ma), ten: chu(r.ten), moTa: chu(r.mo_ta) }))
+    .map(r => ({ ma: chu(r.ma), ten: chu(r.ten), moTa: chu(r.mo_ta), ...(Number(r.an) === 1 ? { an: true } : {}) }))
   const ds: KhoaTT[] = []
   for (const r of [...dongKhoa].sort((a, b) => Number(a.thu_tu) - Number(b.thu_tu))) {
     let g: Record<string, unknown>
@@ -84,6 +89,9 @@ export function danhMucTuSqlTT(dongKhoa: DongTT[] | null | undefined, dongNhom: 
     k.bang = chu(r.bang)
     k.dungO = chu(r.dung_o)
     k.nguon = chu(r.nguon)
+    const lop = chu(r.lop)
+    if (!['chinh', 'co_dinh', 'luon_bat'].includes(lop)) return null
+    if (lop !== 'chinh') k.lop = lop
     if (!['ngay', 'khoi_dong_lai'].includes(k.apDung as string) || !nhom.some(n => n.ma === k.nhom)) return null
     ds.push(k as unknown as KhoaTT)
   }
@@ -188,9 +196,37 @@ export function kiemGiaTriTT(k: KhoaTT, tho: unknown): KetQuaKiemTT {
   return { ok: false, loi: 'kiểu chưa hỗ trợ' }
 }
 
-/** Khoá sửa được từ trang không (không phải env / chỉ đọc; khoá thử nghiệm chỉ khi cho phép). */
+/** Khoá ẩn (cố định / luôn bật): không hiện trên trang, máy thật luôn dùng giá trị cố định. */
+export function anTT(k: KhoaTT): boolean {
+  return k.lop === 'co_dinh' || k.lop === 'luon_bat'
+}
+
+export const TEN_LOP_TT: Record<'chinh' | 'co_dinh' | 'luon_bat', string> = {
+  chinh: 'Chỉnh trên web', co_dinh: 'Cố định (ẩn)', luon_bat: 'Luôn bật (ẩn)',
+}
+
+/** Số khoá theo lớp (trang + tài liệu). */
+export function demLopTT(ds: KhoaTT[] = DS_TT): Record<'chinh' | 'co_dinh' | 'luon_bat', number> {
+  const ra = { chinh: 0, co_dinh: 0, luon_bat: 0 }
+  for (const k of ds) ra[k.lop ?? 'chinh']++
+  return ra
+}
+
+/**
+ * Giá trị có hiệu lực ở phía web cho một khoá đã biết giá trị lưu `luu` (null = không có dòng). Khoá ẩn trên máy
+ * thật: luôn macDinh (giống máy chủ game bỏ qua CSDL). Giá trị lưu sai luật: macDinh.
+ */
+export function hieuLucWebTT(k: KhoaTT, luu: string | null | undefined, choPhepThuNghiem = false): string {
+  if (anTT(k) && !choPhepThuNghiem) return k.macDinh
+  if (luu === null || luu === undefined) return k.macDinh
+  const r = kiemGiaTriTT(k, luu)
+  return r.ok ? r.giaTri : k.macDinh
+}
+
+/** Khoá sửa được từ trang không (không phải env / chỉ đọc / khoá ẩn; khoá thử nghiệm chỉ khi cho phép). */
 export function suaDuocTT(k: KhoaTT, choPhepThuNghiem: boolean): { duoc: boolean, lyDo?: string } {
   if (k.chiDoc || k.bang === 'env') return { duoc: false, lyDo: 'Đặt trong biến môi trường của web — không sửa từ trang.' }
+  if (anTT(k) && !choPhepThuNghiem) return { duoc: false, lyDo: `Khoá cố định — máy thật luôn dùng "${k.macDinh}" (đổi khẩn cấp: server.ini).` }
   if (k.khoaProd && !choPhepThuNghiem) return { duoc: false, lyDo: 'Khoá thử nghiệm — máy thật chỉ dùng mặc định.' }
   return { duoc: true }
 }
@@ -228,8 +264,8 @@ export function soSanhTT(dangLuu: Record<string, string | null | undefined>, moi
     }
     if (moiChuan === cu) continue
     if (!sd.duoc) {
-      // Cho phép đưa khoá thử nghiệm VỀ mặc định / xoá dòng (an toàn), cấm mọi giá trị khác.
-      if (!(k.khoaProd && !k.chiDoc && k.bang !== 'env' && (moiChuan === null || moiChuan === k.macDinh))) {
+      // Cho phép đưa khoá thử nghiệm / khoá ẩn VỀ mặc định / xoá dòng (an toàn, dọn dòng cũ), cấm mọi giá trị khác.
+      if (!((k.khoaProd || anTT(k)) && !k.chiDoc && k.bang !== 'env' && (moiChuan === null || moiChuan === k.macDinh))) {
         loi[khoa] = `${k.ten}: ${sd.lyDo}`
         continue
       }
@@ -247,9 +283,10 @@ export function timTT(q: string, ds: KhoaTT[] = DS_TT): KhoaTT[] {
   return ds.filter(k => bo(`${k.khoa} ${k.ten} ${k.moTa}`).includes(t))
 }
 
-/** Nhóm theo thứ tự nhóm đang dùng. */
-export function nhomTT(ds: KhoaTT[] = DS_TT): { ma: string, ten: string, moTa: string, khoa: KhoaTT[] }[] {
-  return NHOM_DANG_DUNG.map(n => ({ ...n, khoa: ds.filter(k => k.nhom === n.ma) })).filter(n => n.khoa.length > 0)
+/** Nhóm theo thứ tự nhóm đang dùng (CSDL nếu đã nạp). Mặc định BỎ khoá ẩn (cố định / luôn bật); nhóm rỗng bị bỏ. */
+export function nhomTT(ds: KhoaTT[] = DS_TT, hienAn = false): { ma: string, ten: string, moTa: string, khoa: KhoaTT[] }[] {
+  return NHOM_DANG_DUNG.map(n => ({ ma: n.ma, ten: n.ten, moTa: n.moTa, khoa: ds.filter(k => k.nhom === n.ma && (hienAn || !anTT(k))) }))
+    .filter(n => n.khoa.length > 0)
 }
 
 /** Giá trị hiển thị (khoá nhạy cảm che đi). */

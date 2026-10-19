@@ -12,6 +12,9 @@ interface SoLieu {
 }
 
 const api = useAdminApi()
+// Vai trò Chỉ xem thấy trang (đọc được) nhưng không gửi được: khoá nút thay vì để bấm rồi nhận 403.
+const me = useAdminMe()
+const duocGhi = computed(() => me.duoc('/api/admin/reset-toanbo'))
 const toast = useToast()
 
 const { data, status, error, refresh } = useAsyncData('admin-reset-toanbo',
@@ -43,6 +46,14 @@ async function gui() {
     <template #right>
       <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" label="Cập nhật số liệu" :loading="status === 'pending'" @click="refresh()" />
     </template>
+    <UAlert
+      v-if="!duocGhi"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-eye"
+      title="Chế độ chỉ xem"
+      description="Vai trò của bạn xem được trang này nhưng không gửi được lệnh — chỉ Siêu quản trị thao tác."
+    />
 
     <div>
       <h1 class="text-xl font-bold text-error">
@@ -109,7 +120,7 @@ async function gui() {
         <UFormField :label="`Gõ đúng cụm “${data.cumTu}” để xác nhận`" class="min-w-64">
           <UInput v-model="xacNhan" autocomplete="off" class="w-full" />
         </UFormField>
-        <UButton type="submit" color="error" icon="i-lucide-rotate-ccw" label="Reset toàn server" :disabled="!dungCum" :loading="dangGui" />
+        <UButton type="submit" color="error" icon="i-lucide-rotate-ccw" label="Reset toàn server" :disabled="!dungCum || !duocGhi" :loading="dangGui" />
       </form>
     </UCard>
 

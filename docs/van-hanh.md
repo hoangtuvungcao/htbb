@@ -73,7 +73,7 @@ sudo systemctl start htbb-game
   tiếp (mục 4.1), trừ khi chạy với `DEPLOY_NOW=1`. Log: `/opt/htbb/logs/autodeploy.log`, web:
   `/opt/htbb/logs/deploy-web.log` (web tự quay về bản trước nếu `/api/site` không trả 200).
 
-**Bật/tắt game từ web** (`/admin/server`, không cần SSH): trang chỉ ghi trạng thái mong muốn vào bảng
+**Bật/tắt game từ web** (`/admin/he-thong` → khối "Bật / tắt / khởi động lại", không cần SSH): trang chỉ ghi trạng thái mong muốn vào bảng
 `dieu_khien_server`; watcher [`../vps/dieu-khien-server.sh`](../vps/dieu-khien-server.sh) chạy bằng cron **root** mỗi phút
 đọc bảng rồi gọi đúng hai lệnh cố định `systemctl start|stop htbb-game`. Hẹn giờ được. Trang báo "watcher không
 sống" nghĩa là cron chưa cài:
@@ -277,7 +277,7 @@ Luồng: web ghi `cau_hinh_khoi_dong_lai.trang_thai='cho'` → game nhận trong
 chơi và đếm ngược (bấm **Huỷ** được trong lúc đếm) → hết giờ `dang_thoat`, lưu toàn bộ dữ liệu rồi thoát →
 systemd bật lại → lần khởi động mới ghi `da_xong`.
 
-- Web từ chối nếu game không gửi nhịp quá 120 giây (game không chạy/treo) — khi đó dùng `/admin/server` hoặc SSH.
+- Web từ chối nếu game không gửi nhịp quá 120 giây (game không chạy/treo) — khi đó dùng `/admin/he-thong` (khối Bật/tắt) hoặc SSH.
 - Yêu cầu `cho` ghi lúc game đang tắt và cũ hơn 10 phút bị huỷ khi game khởi động, không gây khởi động lại bất ngờ.
 
 ---
@@ -296,13 +296,14 @@ trang chỉ hiện trạng thái.
 | Loại khoá | Khi nào có hiệu lực |
 |---|---|
 | Áp dụng ngay | game kiểm phiên bản cấu hình mỗi 5 giây (đọc lại cả bảng mỗi 60 giây) → thường **5–10 giây**; log `[CAU HINH] AP DUNG khoá: cũ -> mới` |
-| Cần khởi động lại (`sv.lau_dai`, `sv.nap_tien`, `sv.he_sinh_thai`, `sv.chiSoMayChu`, cờ sự kiện cũ…) | đọc một lần lúc bật máy; giá trị mới hiện ở mục *chờ khởi động lại* cho tới khi khởi động lại (4.4) |
+| Cần khởi động lại (`sv.nap_tien`, `sv.ngay_khai_truong`…) | đọc một lần lúc bật máy; giá trị mới hiện ở mục *chờ khởi động lại* cho tới khi khởi động lại (4.4) |
 | Khoá thử nghiệm (`sv.testMode`, `sv.testCode`, `sv.tua_nhanh_ngay`) | bị khoá trên máy thật, chỉ nhận mặc định |
+| Khoá ẩn — cố định / luôn bật (chống DoS, nhật ký, công thức kinh tế, `sv.lau_dai`, `sv.he_sinh_thai`, Gym, Hầm Ngục…) | không hiện trên trang; máy thật bỏ qua `cau_hinh`, chạy giá trị trong danh mục; đổi khẩn cấp bằng `server.ini` rồi khởi động lại ([cau-hinh.md](cau-hinh.md)) |
 
 - Giá trị sai kiểu/khoảng bị **từ chối**: game giữ giá trị tốt gần nhất, trang hiện đỏ kèm lý do.
 - Mỗi lần lưu ghi `cau_hinh_lich_su` (ai, khi nào, cũ → mới, lý do); tab Lịch sử có nút **Hoàn tác**. Ai đó ghi
   thẳng bảng bằng SQL cũng được game phát hiện và ghi lịch sử (`nguon=phat_hien`).
-- Trang cũ `/admin/cauhinh` (Cấu hình game: tỉ lệ rơi, EXP, giờ chiếm Gym…) ghi cùng bảng `cau_hinh`.
+- Đây là trang cấu hình duy nhất (trang cũ `/admin/cauhinh` đã gộp vào và gỡ bỏ).
 
 **Lệnh `setting` trong game** (GM): `setting` mở ô nhập lệnh, `setting menu` mở menu chọn bằng chuột.
 
@@ -316,6 +317,16 @@ trang chỉ hiện trạng thái.
 ```
 
 Thay đổi qua `setting` cũng ghi vào `cau_hinh`. Theo quy định open test, chỉ chủ server dùng `setting`.
+Tham số thứ 7 `chiaXu` (`sv.chiaXuRoi`) là khoá cố định: máy thật bỏ qua giá trị đó.
+
+**Đòn bẩy kinh tế cố định trong mã (19/10/2026, chủ game duyệt), không có công tắc:**
+
+- Hệ số nạp toàn máy chủ = **1** (`data.Database.TILE_NAP_CO_DINH`); dòng `5h_systems.tangnap` bị bỏ qua, khác 1 thì
+  log `CANH BAO 5h_systems: tangnap = … bi bo qua`. Khuyến mãi nạp (nếu có) phải là sự kiện có thời hạn riêng.
+- Nhân vật đầu tiên của tài khoản bắt đầu với **5.000 xu, 0 lượng, 0 lượng khoá** (`data.Database.XU_KHOI_DAU`);
+  bỏ quà tạo nhân vật 40.000.000 xu / 20.000 lượng / 30.000 lượng khoá (`board_created`). Tiền đầu tiên kiếm từ
+  chuỗi nhiệm vụ tân thủ. SQL: `du_lieu/sql_nguon/sua_he_so_nap_va_qua_tao_nv.sql`; thu hồi quà đã phát (tuỳ chọn):
+  `vps/van_hanh/thu_hoi_qua_tao_nv.sql`.
 
 Sau khi đổi `server.ini` (qua deploy), luôn kiểm:
 
@@ -334,7 +345,7 @@ ss -lntp | grep 19129
 | | GM trong game | Quản trị web `/admin` |
 |---|---|---|
 | Gắn với | **tên nhân vật (Pokémon)** | **tên tài khoản** |
-| Khai ở | `sv.adminAccounts` (danh sách tên, không phân biệt hoa/thường, cách nhau dấu phẩy) | `HTBB_ADMIN_ACCOUNTS` trong `/etc/htbb/htbb.env` (luôn là Siêu quản trị) + vai trò ở `/admin/phan-quyen` |
+| Khai ở | `sv.adminAccounts` (danh sách tên, không phân biệt hoa/thường, cách nhau dấu phẩy) | `HTBB_ADMIN_ACCOUNTS` trong `/etc/htbb/htbb.env` (luôn là Siêu quản trị) + vai trò ở `/admin/vai-tro` (Phân quyền) |
 
 - `sv.gmCanCoPInfo=1` (khuyến nghị cho máy công khai): nhân vật còn phải có `pInfo[16]=1` trong `tob_char`, nên
   người chơi trùng tên trong danh sách **không** thành GM. `0` = chỉ cần tên.
@@ -437,8 +448,8 @@ Tạm đóng thách đấu Gym (không phải chiếm Gym): `gym.bat=0`. Kết q
 ## 8. Giftcode
 
 Máy chủ thật chạy chế độ dài hạn (`sv.lau_dai=1`), nên game dùng **giftcode an toàn** (bảng `tob_giftcode` +
-`tob_giftcode_log`). Bảng `giftcode` kiểu cũ (phát xu/lượng/đồ tuỳ ý) **không còn được game đọc**; trang web vẫn
-xem/sửa được nó qua nút "Mã kiểu cũ" chỉ để tra lịch sử.
+`tob_giftcode_log`). Bảng `giftcode` kiểu cũ (phát xu/lượng/đồ tuỳ ý) **không còn được game đọc**; trang web đã bỏ
+phần "Mã kiểu cũ"; khoá hẳn các mã cũ còn mở bằng `du_lieu/sql_nguon/vo_hieu_giftcode_cu.sql`.
 
 ### 8.1 Tạo / tắt mã ở `/admin/giftcode` (Siêu quản trị)
 
@@ -818,7 +829,7 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 | Đổi cấu hình không ăn | trang Cấu hình hệ thống: khoá đỏ (bị từ chối) hay "chờ khởi động lại" | sửa giá trị / khởi động lại an toàn |
 | Đầy ổ đĩa | `df -h`, `du -sh /opt/htbb/logs/* \| sort -h` | xoá bản nén log cũ; kiểm logrotate (`logrotate -d /etc/logrotate.d/htbb`); một lỗi lặp có thể làm `game.out` phình rất nhanh — tìm và sửa lỗi đó |
 | Sao lưu không chạy / cảnh báo "bản mới nhất > 48 giờ" | `tail /var/log/htbb-backup.log`, `ls -lt /opt/htbb/backups` | chạy tay `htbb-backup-db.sh`, đọc lỗi; kiểm `/etc/cron.d/htbb-backup` |
-| `/admin/server` báo watcher không sống | `sudo crontab -l` | cài cron `dieu-khien-server.sh` (mục 1) |
+| `/admin/he-thong` (khối Bật/tắt) báo watcher không sống | `sudo crontab -l` | cài cron `dieu-khien-server.sh` (mục 1) |
 | `/admin/naptien` có hộp đỏ | đọc danh sách lý do | thiếu/yếu biến môi trường hoặc chưa có giấy phép — đúng thiết kế (fail closed) |
 | Người chơi báo không nhận giftcode | `tob_giftcode` (bat, han, da_dung/tong_luot, cap), `tob_giftcode_log`, log `[GIFTCODE]` | xem luật 8.1; tài khoản chưa kích hoạt có thể bị khoá tính năng `giftcode` |
 | Mail quên mật khẩu không tới | `journalctl -u htbb-web \| grep -i gmail` | đủ 4 biến `HTBB_GMAIL_*`? `invalid_grant` → lấy lại refresh token (mục 11) |

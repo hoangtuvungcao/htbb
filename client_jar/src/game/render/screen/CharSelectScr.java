@@ -48,6 +48,7 @@ public class CharSelectScr extends Screen {
             @Override
             public void perform() {
                 Canvas.startWaitDlg("Xin chờ..", true);
+                game.pokemon.TuNoiLai.daChon(CharSelectScr.this.charInfos[CharSelectScr.this.selected].IDDB);
                 GameService.gI().selectChar(CharSelectScr.this.charInfos[CharSelectScr.this.selected].IDDB, 1);
                 Canvas.gameScr.mainChar.imgWpa = CharSelectScr.this.chars[CharSelectScr.this.selected].imgWpa;
                 Canvas.gameScr.mainChar.dxWear = CharSelectScr.this.chars[CharSelectScr.this.selected].dxWear;
@@ -73,6 +74,22 @@ public class CharSelectScr extends Screen {
         });
         this.right = this.cmdClose;
         chonThe(this.selected < 0 || this.selected > 2 ? 0 : this.selected);
+    }
+
+    /** 0.9.4 (TuNoiLai, luồng game): vào lại đúng Pokémon idDb; false = không có trong danh sách. */
+    public boolean tuChonLai(int idDb) {
+        if (this.charInfos == null || this.chars == null || this.cmdSelect == null) {
+            return false;
+        }
+        for (int i = 0; i < this.charInfos.length; i++) {
+            if (this.charInfos[i] != null && this.charInfos[i].IDDB == idDb) {
+                this.selected = i;
+                chonThe(i);
+                this.cmdSelect.action.perform();
+                return true;
+            }
+        }
+        return false;
     }
 
     class AnonymousClass3 implements IAction {

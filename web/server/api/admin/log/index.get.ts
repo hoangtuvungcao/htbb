@@ -16,7 +16,22 @@ export default defineAdminHandler(async (event) => {
   const loc2 = str(query.loc2)
   const trang = Math.min(1_000_000, Math.max(1, int(query.trang, 1)))
 
-  const { bangThat, sql, thamSo } = logGameCauSql(bang, loc, loc2, trang)
+  // Bảng theo kỳ (tob_log_use_luong_<tuần>_<tháng>_<năm>): liệt kê bảng có thật,
+  // ?ky= chọn một (phải nằm trong danh sách), mặc định kỳ mới nhất.
+  let dsKy: { bang: string, nhan: string }[] = []
+  let ky = ''
+  if (ch.theoKy) {
+    try {
+      const ten = await q<{ t: string }>(dbGame(),
+        'SELECT table_name AS t FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name LIKE ?',
+        [`${bang.replace(/_/g, '\\_')}\\_%`])
+      dsKy = logGameDsKy(bang, ch.theoKy, ten.map(r => String(r.t)))
+    } catch { /* không đọc được information_schema: dùng bảng mẫu */ }
+    const chon = str(query.ky)
+    ky = dsKy.some(d => d.bang === chon) ? chon : (dsKy[0]?.bang ?? '')
+  }
+
+  const { bangThat, sql, thamSo } = logGameCauSql(bang, loc, loc2, trang, ky || undefined)
 
   let dong: Record<string, unknown>[] = []
   let conTrangSau = false
@@ -34,6 +49,8 @@ export default defineAdminHandler(async (event) => {
   return {
     bang,
     bangThat,
+    dsKy,
+    ky,
     dsBang: Object.entries(LOG_GAME_BANG).map(([key, v]) => ({ key, ten: v.ten })),
     cauHinh: {
       ten: ch.ten,

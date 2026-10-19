@@ -92,7 +92,7 @@ const cotNhanXu = [
   { key: 'nhan24Truoc', label: '24 giờ trước đó', so: true, sort: true, anMobile: true },
   { key: 'gio', label: 'Giờ thu nhập', so: true, sort: true, giaTri: (r: NhanXuNhanVat) => (cuoi.value?.chiSoGia ? Math.round((r.nhan24 / cuoi.value.chiSoGia) * 10) / 10 : null) },
 ]
-const tenTienLog = (t: string) => ({ xu: 'Xu', luong: 'Lượng', luonglock: 'Lượng khoá', luong_khoa: 'Lượng khoá' } as Record<string, string>)[t] ?? (t || '—')
+const tenTienLog = (t: string) => ({ xu: 'Xu', luong: 'Lượng', luonglock: 'Lượng khoá', luong_khoa: 'Lượng khoá', luong_lock: 'Lượng khoá' } as Record<string, string>)[t] ?? (t || 'không rõ')
 
 function taiLai() {
   tq.refresh()

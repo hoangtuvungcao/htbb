@@ -197,7 +197,7 @@ CREATE TABLE `5h_systems` (
 INSERT INTO `5h_systems` (`id`, `command`, `status`) VALUES
 (1, 'restart', 1),
 (2, 'tangexp', 1),
-(5, 'tangnap', 2),
+(5, 'tangnap', 1),
 (6, 'maxccu', 5000),
 (7, 'percentDrop', 70),
 (8, 'tileDrop', 1);

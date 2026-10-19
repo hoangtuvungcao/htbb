@@ -80,6 +80,7 @@ public final class HopThoaiDuoi {
 
     /** Máy chữ đã hiện hết lời. */
     public static boolean xongChu() {
+        String[] dong = HopThoaiDuoi.dong;
         if (hienHet || dong == null) {
             return true;
         }
@@ -132,12 +133,19 @@ public final class HopThoaiDuoi {
     /** Số dòng hiện một lúc (3 trên máy cao, 2 trên máy thấp 240 px). */
     private static int soDong() {
         int toiDa = Canvas.h >= 260 ? 4 : 3;
+        String[] dong = HopThoaiDuoi.dong;
         int n = dong == null ? 1 : dong.length;
         return n < 1 ? 1 : (n > toiDa ? toiDa : n);
     }
 
     public static void ve(Graphics g) {
         if (!dangBat()) {
+            return;
+        }
+        // 0.9.4: luồng game có thể tat() (dong = null) giữa lúc vẽ -> giữ bản cục bộ
+        String[] dong = HopThoaiDuoi.dong;
+        String ten = HopThoaiDuoi.ten;
+        if (dong == null) {
             return;
         }
         Canvas.resetTrans(g);
