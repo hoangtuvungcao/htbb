@@ -8684,6 +8684,18 @@ public class Map implements Runnable {
                 }
 
                 byte number = message.dis.readByte();
+                // 19/10/2026 (ra soat kinh te cung vong quay): goi -63 tho truoc day KHONG kiem gio / so, nen mua
+                // SAU khi so trung da lo (17h-23h) van vao ky quay HOM NAY neu con ve cu cung ngay -> biet truoc so
+                // trung, moi ve 1.000.000 xu lay 63.000.000 xu (in xu). Kiem giong menu NPC: chot ve cu truoc,
+                // ngoai 16h-18h, so 0..99.
+                if (number < 0 || number > 99) {
+                    return;
+                }
+                player.doOpenNumber();
+                if (!Char.timeBuy() || player.coVeKyDaQuay()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Vé chỉ bán từ sau 18h ngày hiện tại đến 16h ngày hôm sau.", ""));
+                    return;
+                }
                 player.sendMessage(MessageCreator.createServerAlertMessage(Xoso.buyNumber(player, number, (byte) 0), ""));
             } catch (Exception var4) {
             }
@@ -10153,23 +10165,11 @@ public class Map implements Runnable {
                 return;
             }
 
-            if ((idpopup == 100 || idpopup == 100) && idActor == player.id) {
-                if (ok == 0) {
-                    return;
-                }
-
-                // Sua 20/09/2026: ca 3 popup "Thong tin" (vip/thuong/luong) deu dung CHUNG
-                // idpopup=100 nen khong the phan biet loai qua idpopup - phai dua vao
-                // player.tierVongQuayDangXem (Char tu ghi lai moi lan infoXoso/infoXosoLow/
-                // infoXosoLuong duoc goi) de lam moi DUNG loai nguoi choi dang xem, thay vi
-                // luon goi infoXoso(idpopup - 100) = infoXoso(0) = vip nhu truoc.
-                if (player.tierVongQuayDangXem == 2) {
-                    player.infoXosoLuong();
-                } else if (player.tierVongQuayDangXem == 1) {
-                    player.infoXosoLow();
-                } else {
-                    player.infoXoso(0);
-                }
+            if (VongQuay.theoPopup(idpopup) != null && idActor == player.id) {
+                // Hop thong tin vong quay (97 VIP / 98 thuong / 99 luong). Truoc 19/10/2026 ca ba dung chung popup 100
+                // va "Dong y" chi gui lai DUNG hop do (dong ho con bi dat lai 02:00 khi chua du 2 nguoi) -> nut nhu
+                // chet. Nay: chua dat -> mo bang chon muc dat; da dat -> lam moi. ok == 0 (Huy) da return o tren.
+                VongQuay.theoPopup(idpopup).dongY(player);
             } else if (idpopup == 0 && idActor == player.id) {
                 if (player.idClan != -1) {
                     long moneyClan = NewClan.getMoneyClan(player.idClan);
