@@ -5254,6 +5254,39 @@ public class Map implements Runnable {
         p.doPlayerMove(message);
     }
 
+    /**
+     * O di duoc gan (x, y) nhat (o, khong phai pixel) trong ban kinh r, giu nguyen neu (x, y) da di duoc, khong co
+     * bo cuc, hoac khong tim thay (19/10/2026). Diem vao lang ngau nhien cua move2Map (pos +-2 o) roi vao o chan
+     * tren bo cuc Pokemon cua map 0 (vd. 21,49 / 10,23): Char.checkToPoint tinh ca o DUNG nen moi buoc di bi tu
+     * choi, nhan vat ket cung tai cho toi khi dich chuyen (BotChucNang cong_tat_ca.cong bat duoc).
+     */
+    public int[] oDiDuocGan(int x, int y, int r) {
+        try {
+            if (this.type == null || this.w <= 0) {
+                return new int[]{x, y};
+            }
+            int h = this.type.length / this.w;
+            if (x >= 0 && y >= 0 && x < this.w && y < h && (this.type[y * this.w + x] & 2) != 2) {
+                return new int[]{x, y};
+            }
+            for (int k = 1; k <= r; k++) {
+                for (int dy = -k; dy <= k; dy++) {
+                    for (int dx = -k; dx <= k; dx++) {
+                        if (Math.max(Math.abs(dx), Math.abs(dy)) != k) {
+                            continue;
+                        }
+                        int nx = x + dx, ny = y + dy;
+                        if (nx >= 0 && ny >= 0 && nx < this.w && ny < h && (this.type[ny * this.w + nx] & 2) != 2) {
+                            return new int[]{nx, ny};
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return new int[]{x, y};
+    }
+
     public boolean canMove(int x, int y) {
         try {
             return (this.type[(y >> 4) * this.w + (x >> 4)] & 2) != 2;
@@ -16253,6 +16286,7 @@ public class Map implements Runnable {
                     System.out.println("BAT DAU CHIEM THANH");
 
                     this.curday[i] = day;
+                    MapTown.danhDauBatDau(i);
                     getTown[i] = true;
                     if (idClanTown[i] > -1) {
                         try {
@@ -16307,6 +16341,7 @@ public class Map implements Runnable {
                 System.out.println("BAT DAU CHIEM THANH");
              
                 this.curday[country] = day;
+                MapTown.danhDauBatDau(country);
                 getTown[country] = true;
                 if (idClanTown[country] > -1) {
                     try {
@@ -16619,6 +16654,11 @@ public class Map implements Runnable {
                 int index = r.nextInt(4);
                 x = pos[player.myCountry][index * 2] + r.nextInt() % 3;
                 y = pos[player.myCountry][index * 2 + 1] + r.nextInt() % 3;
+            }
+            if (toMap != null) {
+                final int[] o = toMap.oDiDuocGan(x, y, 8);
+                x = o[0];
+                y = o[1];
             }
 
             player.nearChars.removeAllElements();

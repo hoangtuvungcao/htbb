@@ -163,6 +163,7 @@ public final class Kiem {
         KiemDongBoMyCountryKhiVaoBang.chay();
         KiemThuongTanThuVaLenCap35.chay();
         KiemChiemGymDoiDiemGiaoHang.chay();
+        KiemLoiBotChucNang.chay();
         KiemCuocKhuMoAttackDam.chay();
         KiemMaterialMapNhatDo.chay();
         KiemPetTrangThai1LaPetTool.chay();

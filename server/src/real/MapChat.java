@@ -1171,7 +1171,7 @@ class MapChat {
                                                         // Lấy country từ lệnh chat (over0, over1, over2)
                                                         int country = Integer.parseInt(msgChat.substring(4));
                                                         if (country >= 0 && country <= 2) { // Kiểm tra country hợp lệ (0-2)
-                                                            MapTown.gameOverByAdmin = country;
+                                                            MapTown.adminKetThuc(country);
                                                             player.sendMessage(MessageCreator.createServerAlertMessage("Đã kết thúc chiến Gym cho vùng " + country, ""));
                                                         }
                                                     } catch (Exception e) {
