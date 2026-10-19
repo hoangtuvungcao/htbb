@@ -308,6 +308,11 @@ public class ChupTrongGame {
 
     /** Nhân vật + hành trang + đồ đang mặc giả (không máy chủ). */
     static void giaLap() {
+        // 0.9.7: trạng thái hành trang như gói -105 của máy chủ mới (sức chứa 21 ô -> ô khoá hiện ngay trong lưới, trần 126)
+        game.pokemon.TrangThaiNguoiChoi.oDaMo = 21;
+        game.pokemon.TrangThaiNguoiChoi.oToiDaVe = 126;
+        game.pokemon.TrangThaiNguoiChoi.giaXuMoRong = 30000;
+        game.pokemon.TrangThaiNguoiChoi.soVe = 0;
         game.render.Canvas.isLoad = false;
         game.render.Canvas.endDlg();
         try {

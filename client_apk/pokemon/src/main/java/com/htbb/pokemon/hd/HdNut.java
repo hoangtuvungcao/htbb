@@ -209,13 +209,15 @@ public final class HdNut {
                 case 2:
                 case 3: {
                     float rr = hw;
-                    HdVe.bong(c, l, t, r, b, rr, 1f);
-                    if (KIEU[i] == 2) HdVe.tronDoc(c, l, t, r, b, rr, 0xFFFFFFFF, 0xFFDDE5F0);
-                    else HdVe.tronDoc(c, l, t, r, b, rr, 0xF0284C82, 0xF8122446);
-                    HdVe.vienTron(c, l, t, r, b, rr, 1f, KIEU[i] == 2 ? 0xFF1E2A44 : 0xC0A9C8FF);
+                    // 0.9.7 (NRO): nút khối vuông pixel (đóng = đỏ, menu = gỗ) qua mảnh jar
+                    javax.microedition.lcdui.Graphics gv = Hud.gVe;
+                    if (gv != null) {
+                        int m = KIEU[i] == 2 ? game.pokemon.KhungNroBang.NUT_DO : game.pokemon.KhungNroBang.NUT_GO;
+                        game.pokemon.Bang.nutVuong(gv, Math.round(cx), Math.round(cy), Math.round(hw * 0.86f), m, false, k < 1f);
+                    }
                     PV.setStrokeWidth(2f * k);
                     if (KIEU[i] == 2) {
-                        PV.setColor(0xFFE3350D);
+                        PV.setColor(0xFFFFFFFF);
                         float d = rr * 0.38f;
                         c.drawLine(cx - d, cy - d, cx + d, cy + d, PV);
                         c.drawLine(cx - d, cy + d, cx + d, cy - d, PV);
@@ -227,28 +229,15 @@ public final class HdNut {
                     break;
                 }
                 default: {
-                    float rr = (b - t) / 2;
-                    HdVe.bong(c, l, t, r, b, rr, 1.2f);
-                    if (KIEU[i] == 1) {
-                        HdVe.tronDoc(c, l, t, r, b, rr, 0xFFF4613A, 0xFFC2290A);
-                        // sọc chéo kiểu thẻ Pokémon
-                        int sv = c.save();
-                        HdVe.R.set(l, t, r, b);
-                        android.graphics.Path p = new android.graphics.Path();
-                        p.addRoundRect(HdVe.R, rr, rr, android.graphics.Path.Direction.CW);
-                        c.clipPath(p);
-                        P.setColor(0x18FFFFFF);
-                        P.setStrokeWidth(3f);
-                        for (float x = l - (b - t); x < r; x += 9) c.drawLine(x, b, x + (b - t), t, P);
-                        c.restoreToCount(sv);
-                    } else {
-                        HdVe.tronDoc(c, l, t, r, b, rr, 0xF0FFFFFF, 0xF0DCE6F4);
+                    // 0.9.7 (NRO): nút khối pixel - lệnh chính cam, lệnh phụ giấy da
+                    javax.microedition.lcdui.Graphics gv = Hud.gVe;
+                    if (gv != null) {
+                        game.pokemon.Bang.vienNut(gv, Math.round(l), Math.round(t), Math.round(r - l), Math.round(b - t), null,
+                                KIEU[i] == 1 ? game.pokemon.Bang.CHINH : game.pokemon.Bang.TRUNG, k < 1f);
                     }
-                    HdVe.tronDoc(c, l + 1, t + 0.6f, r - 1, t + (b - t) * 0.5f, rr, 0x40FFFFFF, 0x00FFFFFF);
-                    HdVe.vienTron(c, l, t, r, b, rr, 1f, KIEU[i] == 1 ? 0xFF7A1505 : 0xFF1E2A44);
                     PT.setTextSize(11f * k);
                     PT.setTextAlign(Paint.Align.CENTER);
-                    PT.setColor(KIEU[i] == 1 ? 0xFFFFFFFF : 0xFF1E2A44);
+                    PT.setColor(KIEU[i] == 1 ? 0xFFFFFFFF : 0xFF3A2412);
                     String s = CHU[i];
                     if (KIEU[i] == 1) {
                         // ▶ con trỏ kiểu Pokémon trước lệnh chính
@@ -259,7 +248,7 @@ public final class HdNut {
                         p.lineTo(ax + 3f, ay);
                         p.lineTo(ax - 2.5f, ay + 3.5f);
                         p.close();
-                        P.setColor(0xFFFFE066);
+                        P.setColor(0xFFFFE89A);
                         c.drawPath(p, P);
                         c.drawText(s, cx + 3, cy + 3.9f * k, PT);
                     } else {

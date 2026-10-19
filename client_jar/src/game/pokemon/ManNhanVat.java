@@ -95,6 +95,7 @@ public final class ManNhanVat extends Screen {
         m.tab = t;
         m.o = -1;
         m.xem = null;
+        m.daMoXem = null;
         m.ds.den(0);
         m.chieu = -1;
         m.hocMoi = false;
