@@ -163,6 +163,16 @@ public class ThoRenBiAn
             }
             else if (idOptionMenu == 3)
             {
+                if (player.itemThanKhi == null)
+                {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa mang bảo vật huyền thoại nào để tháo.", ""));
+                    return;
+                }
+                if (player.isFullInventory())
+                {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                    return;
+                }
                 if (player.itemThanKhi != null) 
                 {
                     player.iItems.add(player.itemThanKhi);

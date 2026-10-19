@@ -2330,6 +2330,10 @@ public class MessageCreator {
             }
             m.dos.writeShort(p.map.getMapLoad(p.mapID));
             String name = Map.getNameMap(p.mapID);
+            if (name == null || name.isEmpty()) {
+                // ban do khong co trong nhom Map.mapID (vd 21 / 721..724): ten tu SQL (data_map_ten) thay vi "" + "_khu"
+                name = TenBanDoMayChu.tenDayDu(p.mapID);
+            }
             if (p.map.isvanTienTran()) {
                 name = String.valueOf(name) + "_" + (p.region + 1);
             } else if (p.map.nRegion > 0) {

@@ -2545,13 +2545,8 @@ public class GameScr extends Screen {
                                 public void perform() {
                                     GameScr.this.mainChar.chat = null;
                                     GameScr.this.focusedActor.chat = null;
-                                    if (!GameScr.this.focusedActor.isNpcChar() && GameScr.this.focusedActor.getTypeNpc() != 7 && GameScr.this.focusedActor.getTypeNpc() != 10 && GameScr.this.focusedActor.getTypeNpc() != 22 && GameScr.this.focusedActor.getTypeNpc() != 31 && GameScr.this.focusedActor.getTypeNpc() != 21 && GameScr.this.focusedActor.getTypeNpc() != 25) {
-                                        GameScr.addChat(GameScr.this.focusedActor, Res.getDefaultChat(GameScr.this.focusedActor.getTypeNpc()), 500);
-                                    } else {
-                                        if (GameScr.this.focusedActor.isNpcChar()) {
-                                            return;
-                                        }
-                                        GameScr.this.showNpcMenu(GameScr.this.focusedActor.getTypeNpc(), new Vector());
+                                    if (!GameScr.this.focusedActor.isNpcChar()) {
+                                        GameScr.this.moChucNangNpc(GameScr.this.focusedActor.getTypeNpc());
                                     }
                                 }
                             }));
@@ -2559,15 +2554,11 @@ public class GameScr extends Screen {
                             return;
                         }
                         this.focusedActor.chat = null;
-                        if (!this.focusedActor.isNpcChar() && this.focusedActor.getTypeNpc() != 7 && this.focusedActor.getTypeNpc() != 10 && this.focusedActor.getTypeNpc() != 22 && this.focusedActor.getTypeNpc() != 31 && this.focusedActor.getTypeNpc() != 21 && this.focusedActor.getTypeNpc() != 25) {
-                            addChat(this.focusedActor, Res.getDefaultChat(this.focusedActor.getTypeNpc()), 500);
-                        } else if (!this.focusedActor.isNpcChar()) {
-                            showNpcMenu(this.focusedActor.getTypeNpc(), new Vector());
+                        if (!this.focusedActor.isNpcChar()) {
+                            moChucNangNpc(this.focusedActor.getTypeNpc());
                         }
-                    } else if (this.focusedActor.getTypeNpc() == 2 || ((this.focusedActor.getTypeNpc() > 10 && this.focusedActor.getTypeNpc() != 29 && this.focusedActor.getTypeNpc() != 24 && this.focusedActor.getTypeNpc() != 26 && this.focusedActor.getTypeNpc() != 30) || this.focusedActor.getTypeNpc() == 3 || this.focusedActor.getTypeNpc() == 27 || this.focusedActor.getTypeNpc() == 28)) {
-                        showNpcMenu(this.focusedActor.getTypeNpc(), new Vector());
                     } else {
-                        GameService.gI().requestNPCInfo(this.focusedActor.getTypeNpc());
+                        moChucNangNpc(this.focusedActor.getTypeNpc());
                     }
                 }
                 if (this.focusedActor.catagory == 10) {
@@ -2849,6 +2840,21 @@ public class GameScr extends Screen {
         doUseSkillToFocusActor(this.duoiChieu);
     }
 
+    /**
+     * Bấm NPC tĩnh (cMap): mở đúng chức năng của NPC ở MỌI bản đồ (trước đây ở bản đồ ngoài trời
+     * chỉ hiện câu chào, nên Chansey, Kecleon, Machamp, Bronzong... ở các thị trấn Hoenn không dùng
+     * được). NPC chỉ để trò chuyện (gác cổng, trưởng làng, giao nhiệm vụ) vẫn nói câu chào.
+     */
+    public void moChucNangNpc(int type) {
+        if (type == 4 || type == 5 || type == 8 || type == 23) {
+            addChat(this.focusedActor, Res.getDefaultChat(type), 500);
+        } else if (type == 2 || type == 3 || type == 7 || type == 10 || type == 27 || type == 28 || (type > 10 && type != 24 && type != 26 && type != 29 && type != 30)) {
+            showNpcMenu(type, new Vector());
+        } else {
+            GameService.gI().requestNPCInfo(type);
+        }
+    }
+
     public void showNpcMenu(final int type, Vector menu) {
         if (type == 3 || type == 27) {
             for (int i = 0; i < Res.nameClazz.length; i++) {
@@ -2985,10 +2991,10 @@ public class GameScr extends Screen {
                 }
             }));
         } else if (type == 22 || type == 31) {
-            menu.addElement(new Command("Nạp xu", new IAction() {
+            menu.addElement(new Command("Ngân hàng xu, lượng", new IAction() {
                 @Override
                 public void perform() {
-                    GameScr.this.doNapXu();
+                    GameService.gI().requestNPCInfo(type);
                 }
             }));
             menu.addElement(new Command("Nói chuyện", new IAction() {
@@ -3004,12 +3010,8 @@ public class GameScr extends Screen {
                     GameScr.addChat(GameScr.this.focusedActor, Res.getDefaultChat(type), 500);
                 }
             }));
-            menu.addElement(new Command("Chuyển thẻ", new IAction() {
-                @Override
-                public void perform() {
-                    GameScr.this.gameService.giveCard2NPC(GameScr.this.focusedActor.x / 16, GameScr.this.focusedActor.y / 16);
-                }
-            }));
+            // "Chuyển thẻ" (goi -25) da go: server khong xu ly (Map/MapTown.doGiveCardTown rong); giao the Chiem Gym o
+            // NPC doi (-29/-4/-5). Heracross nay giao / tra nhiem vu doi o Cao nguyen Indigo.
         } else if (type == 21) {
             menu.addElement(new Command("Học kỹ năng", new IAction() {
                 @Override
@@ -3169,6 +3171,9 @@ public class GameScr extends Screen {
                     menuItem.addElement(cmd);
                 }
                 Canvas.menu.startAt(menuItem, 3);
+            } else {
+                // Ban do khong co tuyen bay san (vd Pidgeot o Fortree, Hoenn): xin server danh sach diem bay.
+                GameService.gI().requestNPCInfo(7);
             }
         }
     }

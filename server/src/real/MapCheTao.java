@@ -705,7 +705,7 @@ class MapCheTao {
 
     static void doAddNewAttBot(Map map, Char player, Message msg) {
         try {
-            if (!player.map.isMapOffline) {
+            if (!NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
                 return;
             }
             // synchronized (player): gop kiem ngoc (checkEnoughtGem) + kiem item hop le +
@@ -932,10 +932,10 @@ class MapCheTao {
             if (idMenu == 0) {
                 player.infoItemCreate = null;
                 if (idOptionMenu == 0) {
-                    String[] menu = new String[]{"Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung"};
+                    String[] menu = new String[]{"Than lửa", "Hạt giống thần", "Khăn lụa", "Nước thần", "Nam châm"};
                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
                 } else if (idOptionMenu == 1) {
-                    String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vât lý"};
+                    String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 3));
                 } else if (idOptionMenu == 2) {
                     String[] menu = new String[]{
