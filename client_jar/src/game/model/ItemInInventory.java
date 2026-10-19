@@ -397,7 +397,12 @@ public class ItemInInventory {
     public static String setTemp(String temp, String typeFont) {
         String str = "";
         String[] tem = Font.borderFont.splitFontBStrInLine(temp, 95);
-        for (String str2 : tem) {
+        for (int i = 0; i < tem.length; i++) {
+            String str2 = tem[i];
+            if (i > 0) {
+                // 0.9.6.1: dòng nối tiếp của cùng đoạn - thẻ chi tiết (HopChiTiet) nối lại rồi ngắt theo phông thật
+                game.pokemon.HopChiTiet.ghiNoi(typeFont + str2);
+            }
             str = new StringBuffer(String.valueOf(str)).append("\n").append(typeFont).append(str2).toString();
         }
         return str;
