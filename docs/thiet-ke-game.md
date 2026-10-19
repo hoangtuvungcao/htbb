@@ -1347,4 +1347,12 @@ Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
 - **Điểm móc nhiệm vụ** (`real.DiemMocNhiemVu`): mọi kiểu trong `data_nhiem_vu_kieu` đều có nơi gọi `NhiemVuEngine.suKien`
   (đào, nấu ăn, làm vườn, ấp trứng, đố vui, đua, chợ, mặc đồ / bộ trang bị, Pokédex vùng, vật phẩm sự kiện, giao hàng /
   đưa thư, hộ tống). Câu cá có điểm móc **duy nhất** ở `HeSinhThaiMenu.cauCa`.
+  - `su_kien_vat_pham`: đếm vật phẩm THẬT của sự kiện đang bật khi vào túi (nhặt quái rơi, NPC sự kiện, giao hàng,
+    chế đồ / tiến giải Vu Lan). Bảng `data_su_kien_vat_pham` (`sql/them_moc_nhiem_vu.sql`) lấy từ code rơi / thưởng:
+    Trung Thu (Thịt, Trứng, Bột mỳ, Đậu xanh), Tết (Gạo nếp, Đậu xanh, Thịt mỡ, Lá dong, Giấy, Thuốc pháo), Halloween
+    (Kẹo, Bí ngô), Tết Dương lịch (Kẹo), Noel 2023 (Dưa Hấu), Hè (Kem), Vu Lan (Nhánh hoa hồng vàng), World Cup (Quả bóng
+    bạc / vàng), Núi châu báu (Mảnh bản đồ). Nhiệm vụ để `muc_tieu_id` = id vật phẩm hoặc trống (bất kỳ vật phẩm của
+    sự kiện đang chạy).
+  - `cho_ban`: người bán online tính ngay; offline thì ghi `tob_nhiem_vu_cho`, áp khi vào bản đồ lần đầu (mỗi dòng một
+    lần, `UPDATE … da_ap = 0`).
 

@@ -264,6 +264,85 @@ public final class KiemPvpPk {
         }
         Kiem.bang("11 diem moc ban dung kieu vao NhiemVuEngine.suKien (thieu: " + thieu + ")", Integer.valueOf(11), Integer.valueOf(du));
         DanhHieuGame.xoaTrangThai(p);
+        suKienVatPham(p);
+    }
+
+    /** Bang data_su_kien_vat_pham doc tu sql/them_moc_nhiem_vu.sql: {ma, id}. */
+    static List<Object[]> bangSuKien() {
+        final List<Object[]> ds = new ArrayList<Object[]>();
+        final java.util.regex.Matcher m = java.util.regex.Pattern.compile("^\\('([a-z0-9]+)', (\\d+), '", java.util.regex.Pattern.MULTILINE)
+                .matcher(doc("../sql/them_moc_nhiem_vu.sql"));
+        while (m.find()) {
+            ds.add(new Object[]{m.group(1), Integer.valueOf(m.group(2))});
+        }
+        return ds;
+    }
+
+    /** su_kien_vat_pham: chi vat pham cua su kien DANG BAT, tham so = id vat pham, dem dung so luong. */
+    static void suKienVatPham(final Char p) {
+        final List<Object[]> bang = bangSuKien();
+        Kiem.dung("doc duoc data_su_kien_vat_pham (" + bang.size() + " dong)", bang.size() >= 15);
+        real.SuKienVatPham.datBang(bang);
+        final java.util.Map<String, Boolean> cu = new java.util.HashMap<String, Boolean>();
+        cu.put("halloween", Boolean.TRUE);
+        cu.put("trungthu", Boolean.FALSE);
+        cu.put("tet2017", Boolean.FALSE);
+        real.SuKien.dat(cu);
+        try {
+            Kiem.bang("Keo (137) thuoc Halloween dang bat", "halloween", real.SuKienVatPham.suKienDangBat(137, real.SuKien::bat));
+            Kiem.dung("Dau xanh (122) cua Trung Thu / Tet dang tat: khong tinh", real.SuKienVatPham.suKienDangBat(122, real.SuKien::bat) == null);
+            Kiem.dung("binh HP (1) khong phai vat pham su kien", real.SuKienVatPham.suKienDangBat(1, real.SuKien::bat) == null);
+            // chuoi that: nhat vat pham -> NhiemVuEngine.suKien -> bo dem danh hieu (mau nghe su_kien_vat_pham tham so 137, can 3)
+            final List<DanhHieuLogic.Mau> ds = new ArrayList<DanhHieuLogic.Mau>();
+            ds.add(new DanhHieuLogic.Mau(9960, "kiem_keo", "Kiểm kẹo", "", "", 0, "sao", "", 0, "su_kien_vat_pham", "137", 3, 0, 0, "su_kien", 1));
+            ds.add(new DanhHieuLogic.Mau(9961, "kiem_bat_ky", "Kiểm bất kỳ", "", "", 0, "sao", "", 0, "su_kien_vat_pham", "", 1, 0, 0, "su_kien", 2));
+            DanhHieuGame.datMau(ds, null);
+            final Char q = nv("mY", "10.0.0.51");
+            q.allDanhHieu = new java.util.Vector<data.DanhHieu>();
+            q.idEffDanhHieu = -1;
+            DiemMocNhiemVu.khiNhanVatPhamSuKien(q, 122, 5); // su kien tat: khong tinh
+            Kiem.dung("vat pham cua su kien dang tat: khong tinh", !coDh(q, 9961));
+            DiemMocNhiemVu.khiNhanVatPhamSuKien(q, 138, 1); // Bi ngo Halloween
+            Kiem.dung("vat pham bat ky cua su kien dang bat: tinh", coDh(q, 9961));
+            Kiem.sai("Bi ngo khong tinh cho muc tieu Keo (137)", coDh(q, 9960));
+            DiemMocNhiemVu.khiNhanVatPhamSuKien(q, 137, 2);
+            Kiem.sai("2/3 Keo: chua du", coDh(q, 9960));
+            DiemMocNhiemVu.khiNhanVatPhamSuKien(q, 137, 1);
+            Kiem.dung("3/3 Keo (dem dung so luong nhat): du", coDh(q, 9960));
+            DanhHieuGame.xoaTrangThai(q);
+        } finally {
+            real.SuKien.dat(new java.util.HashMap<String, Boolean>());
+            real.SuKienVatPham.datBang(new ArrayList<Object[]>());
+        }
+        // bang du lieu khop code roi: moi id trong cac mang idpt cua khoi roi su kien (Monster.java) co dong
+        final java.util.Set<Integer> coDong = new java.util.HashSet<Integer>();
+        for (final Object[] d : bang) {
+            coDong.add((Integer) d[1]);
+        }
+        final java.util.regex.Matcher m = java.util.regex.Pattern.compile("^\\s*final (?:byte|short)\\[\\] idpt\\d* = \\{([^}]*)\\}",
+                java.util.regex.Pattern.MULTILINE).matcher(doc("src/real/Monster.java"));
+        final StringBuilder thieu = new StringBuilder();
+        int n = 0;
+        while (m.find()) {
+            for (final String x : m.group(1).replace("(byte)", "").split(",")) {
+                n++;
+                if (!coDong.contains(Integer.valueOf(Integer.parseInt(x.trim())))) {
+                    thieu.append(x.trim()).append(' ');
+                }
+            }
+        }
+        Kiem.dung("doc duoc id roi su kien trong Monster.java (" + n + ")", n >= 10);
+        Kiem.bang("moi vat pham roi su kien co trong data_su_kien_vat_pham (thieu: " + thieu + ")", "", thieu.toString());
+        Kiem.dung("Vu Lan (106) va World Cup (161) co dong", coDong.contains(Integer.valueOf(106)) && coDong.contains(Integer.valueOf(161)));
+    }
+
+    static boolean coDh(final Char p, final int id) {
+        for (final data.DanhHieu d : p.allDanhHieu) {
+            if (d.ideff == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ------------------------------------------------------------------ nguon (diem goi that)
@@ -320,6 +399,18 @@ public final class KiemPvpPk {
         }
         Kiem.dung("doc duoc danh muc kieu muc tieu (" + soKieu + ")", soKieu >= 40);
         Kiem.bang("moi kieu muc tieu co diem goi trong ma (thieu: " + khong + ")", "", khong.toString());
+        Kiem.dung("su_kien_vat_pham: khong con ti le uoc luong 35%", !toanBo.contains("TI_LE_SU_KIEN") && !toanBo.contains("khiHaQuaiSuKien"));
+        Kiem.dung("nhat vat pham (ca hai duong doGetPotion) qua DiemMocNhiemVu.khiNhanVatPhamSuKien",
+                doc("src/real/Map.java").split("DiemMocNhiemVu.khiNhanVatPhamSuKien\\(player, pt.getType\\(\\), pt.quantity\\)").length - 1 == 2);
+        final String hst = doc("src/com/htbb/pokemon/HeSinhThaiMenu.java");
+        Kiem.dung("cho_ban: nguoi ban offline ghi tob_nhiem_vu_cho", hst.contains("real.DiemMocNhiemVu.ghiChoNguoiBan(idBan, ghiChu)"));
+        final String dm = doc("src/real/DiemMocNhiemVu.java");
+        Kiem.dung("cho_ban: ap mot lan (UPDATE da_ap 0 -> 1 doi dung 1 dong moi cong)",
+                dm.contains("WHERE id = ? AND da_ap = 0") && dm.contains("Long.valueOf(d[0])) == 1"));
+        Kiem.dung("cho_ban: ap luc vao ban do", doc("src/real/DanhHieuGame.java").contains("DiemMocNhiemVu.apChoCho(p)"));
+        final String sq = doc("../sql/them_moc_nhiem_vu.sql");
+        Kiem.dung("sql/them_moc_nhiem_vu.sql idempotent", sq.split("CREATE TABLE IF NOT EXISTS").length - 1 == 2 && !sq.contains("DROP")
+                && sq.contains("ON DUPLICATE KEY UPDATE"));
         int nCauCa = 0;
         int k = 0;
         while ((k = toanBo.indexOf("suKien(p, \"cau_ca\"", k)) >= 0) {

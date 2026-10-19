@@ -332,7 +332,6 @@ public final class NhiemVuEngine {
             suKien(p, "quan_sat", String.valueOf(dex), 1);
         }
         suKien(p, "thanh_tuu_quai", "", 1);
-        DiemMocNhiemVu.khiHaQuaiSuKien(p, null); // su_kien_vat_pham (chi khi co su kien dang bat)
         final List<Char> doi = ExpLauDai.thanhVienGan(p);
         if (doi.size() > 1) {
             boolean coTanThu = false;

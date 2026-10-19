@@ -938,6 +938,8 @@ public class TeamServer {
             data.DatabaseLauDai.taoBang();
             real.DanhHieuGame.taoBang();
             real.XepHangPvpGame.taoBang();
+            real.SuKienVatPham.taoBang();
+            real.DiemMocNhiemVu.taoBang();
             real.ExpLauDai.apDungBang();
             real.VatPhamDungLauDai.nap();
         }

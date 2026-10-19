@@ -5082,6 +5082,7 @@ public class Map implements Runnable {
                         return; // luong khac vua nhat binh nay
                     }
                     player.potions[pt.getType()] += pt.quantity;
+                    DiemMocNhiemVu.khiNhanVatPhamSuKien(player, pt.getType(), pt.quantity); // vat pham su kien dang bat
                     if (pt.getType() == 0) {
                         player.addXu((long) pt.quantity, "map 2");
                         player.addXu((long) (pt.quantity * player.getEffSkillClanMember(0) / 100), "map 3");
@@ -5208,6 +5209,7 @@ public class Map implements Runnable {
                         return;
                     }
                     player.potions[pt.getType()] += pt.quantity;
+                    DiemMocNhiemVu.khiNhanVatPhamSuKien(player, pt.getType(), pt.quantity); // vat pham su kien dang bat
                     if (pt.getType() == 0) {
                         player.addXu((long) (pt.quantity + pt.quantity * player.getEffSkillClanMember(0) / 100), "map 4");
                     }
@@ -7046,6 +7048,7 @@ public class Map implements Runnable {
             }
             if (r.nextInt(100) < tlVuLan) {
                 player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                DiemMocNhiemVu.khiNhanVatPhamSuKien(player, Potion.TYPE_NHANH_HOA_HONG_VANG, 1);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi che do", "vulan");
             }

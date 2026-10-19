@@ -1394,10 +1394,11 @@ public final class HeSinhThaiMenu {
         final Char ban = HeSinhThaiGame.timOnline(idBan);
         if (ban != null) {
             HeSinhThaiGame.congXu(ban, xu, "ban cho sinh thai");
-            real.DiemMocNhiemVu.khiBan(ban); // diem moc cho_ban (nguoi ban offline: khong tinh)
+            real.DiemMocNhiemVu.khiBan(ban); // diem moc cho_ban (online: tinh ngay)
             bao(ban, "Chợ sinh thái: " + ghiChu + " +" + xu + " xu (đã trừ thuế).");
         } else {
             DuLieuHeSinhThai.guiHopThu(idBan, xu, 0, 0, "", ghiChu);
+            real.DiemMocNhiemVu.ghiChoNguoiBan(idBan, ghiChu); // offline: ghi tob_nhiem_vu_cho, ap luc vao game
         }
     }
 

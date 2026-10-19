@@ -806,6 +806,7 @@ class MapCheTao {
                     }
                     if (r.nextInt(100) < tlVuLan) {
                         player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                        DiemMocNhiemVu.khiNhanVatPhamSuKien(player, Potion.TYPE_NHANH_HOA_HONG_VANG, 1);
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi tien giai", "vulan");
                     }
