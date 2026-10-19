@@ -165,6 +165,27 @@ public final class VungCham {
         return new int[]{x, y, w, h};
     }
 
+    /**
+     * Đáy thấp nhất (y + h) của các vùng đã chốt (khung trước) có tên bắt đầu bằng tienTo, giao dải ngang [x0, x1) và đỉnh
+     * trên yMax; -1 = không có. DungDo dùng để đặt thông báo DƯỚI thẻ trạng thái / nút HUD (không chồng).
+     */
+    public static int duoiVung(String tienTo, int x0, int x1, int yMax) {
+        synchronized (KHOA) {
+            Bo b = chot;
+            int r = -1;
+            for (int i = 0; i < b.n; i++) {
+                String t = b.ten[i];
+                if (t == null || !t.startsWith(tienTo) || b.y[i] >= yMax) {
+                    continue;
+                }
+                if (b.x[i] < x1 && x0 < b.x[i] + b.w[i]) {
+                    r = Math.max(r, b.y[i] + b.h[i]);
+                }
+            }
+            return r;
+        }
+    }
+
     /** Chỉ số vùng (bộ đã chốt) trúng điểm (x, y), -1 = không. */
     public static int tim(int px, int py) {
         synchronized (KHOA) {

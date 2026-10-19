@@ -54,6 +54,28 @@ public final class HeSinhThaiMenu {
         HeSinhThaiGame.bao(p, s);
     }
 
+    /**
+     * 0.9.6.1: ket qua cau / dao / che tao. Client moi: the nhanh (dong 1 = duoc gi, dong 2 = the luc), gap Pokemon la
+     * MOT thong bao rieng (huy hieu Pokemon). Client cu: mot hop thoai nhu truoc (giu chu "Câu được" o dau - client
+     * giu thong bao cau ca den luc keo cau).
+     */
+    static void baoKetQua(final Char p, final boolean hiem, final String ketQua, final String phu, final int dex,
+            final String tenGap) {
+        if (!com.htbb.thongbao.ThongBao.coToast(p)) {
+            bao(p, com.htbb.thongbao.ThongBao.motCau(ketQua
+                    + (tenGap == null ? "" : ". " + com.htbb.thongbao.ThongBao.gap(tenGap, hiem)), phu));
+            return;
+        }
+        com.htbb.thongbao.ThongBao.gui(p, hiem ? com.htbb.thongbao.ThongBao.HIEM : com.htbb.thongbao.ThongBao.KET_QUA,
+                ketQua, phu, dex > 0 ? com.htbb.thongbao.ThongBao.HINH_POKEMON : com.htbb.thongbao.ThongBao.HINH_BIEU_TUONG,
+                dex > 0 ? dex : com.htbb.thongbao.ThongBao.BT_NGUYEN_LIEU);
+        if (tenGap != null) {
+            com.htbb.thongbao.ThongBao.gui(p, hiem ? com.htbb.thongbao.ThongBao.HIEM : com.htbb.thongbao.ThongBao.TIN,
+                    com.htbb.thongbao.ThongBao.gap(tenGap, hiem), com.htbb.thongbao.ThongBao.GAP_PHU,
+                    com.htbb.thongbao.ThongBao.HINH_POKEMON, dex);
+        }
+    }
+
     /** Chan bam lien tuc (macro chat) - 1,5 giay giua hai hanh dong ton the luc. */
     static boolean quaNhanh(final Char p) {
         final long now = com.htbb.pokemon.DongHo.bay();
@@ -340,7 +362,8 @@ public final class HeSinhThaiMenu {
         if (cap <= 0) {
             return;
         }
-        bao(p, KyNangSong.TEN[kn] + " lên cấp " + cap + "!");
+        com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.HIEM, "Kỹ năng " + KyNangSong.TEN[kn] + " lên cấp " + cap + "!",
+                null, com.htbb.thongbao.ThongBao.HINH_BIEU_TUONG, com.htbb.thongbao.ThongBao.BT_SINH_THAI);
         if (cap >= 30) {
             final String[] dh = {"Ngư phủ bậc thầy", "Nhà vườn xanh", "Nhà khảo cổ", "Đầu bếp Poké", "Dược sư"};
             if (h.themDanhHieu(dh[kn])) {
@@ -411,10 +434,11 @@ public final class HeSinhThaiMenu {
         final int bac = VatLieuSinhThai.bacTheoCap(HeSinhThaiGame.cap(p));
         h.them(VatLieuSinhThai.khoa(kq.ma, bac), so);
         final int len = h.congExp(KyNangSong.CAU_CA, KyNangSong.expKhiLam(gia));
-        final StringBuilder b = new StringBuilder("Câu được: ").append(so).append(" ").append(VatLieuSinhThai.ten(kq.ma))
-                .append(" (bậc ").append(bac).append(")");
+        // 0.9.6.1 (thong bao): ket qua = the nhanh "Câu được X ×n" + dong "Thể lực còn N"; gap Pokemon = thong bao rieng
+        final boolean hiem = gia >= 100;
+        final String ketQua = com.htbb.thongbao.ThongBao.duoc("Câu được", VatLieuSinhThai.ten(kq.ma), so, hiem);
+        final String theLuc = com.htbb.thongbao.ThongBao.theLuc(h.theLuc);
         if (kq.dex > 0) {
-            b.append(". Gặp ").append(SuuTamSinhThai.tenLoai(kq.dex)).append('!');
             gapPokedex(p, kq.dex);
             HeSinhThaiGame.nghienCuu(p, h, kq.dex, SuuTamSinhThai.NV_CAU);
             if (gia >= 100) {
@@ -425,8 +449,7 @@ public final class HeSinhThaiMenu {
                         + real.Map.getNameMap(p.mapID) + "!");
             }
         }
-        b.append(" Thể lực còn ").append(h.theLuc).append('.');
-        bao(p, b.toString());
+        baoKetQua(p, hiem, ketQua, theLuc, kq.dex, kq.dex > 0 ? SuuTamSinhThai.tenLoai(kq.dex) : null);
         lenCap(p, h, KyNangSong.CAU_CA, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -530,7 +553,9 @@ public final class HeSinhThaiMenu {
             HeSinhThaiGame.chupAnh(p, h, 0, SuuTamSinhThai.A_HOA_THACH, HeSinhThaiGame.thoiTietMap(p.mapID));
             HeSinhThaiGame.baoTheGioi(p.charname + " vừa đào được " + VatLieuSinhThai.ten(kq.ma) + "!");
         }
-        bao(p, "Đào được: " + kq.soLuong + " " + VatLieuSinhThai.ten(kq.ma) + " (bậc " + bac + "). Thể lực còn " + h.theLuc + ".");
+        baoKetQua(p, VatLieuSinhThai.giaPhanNghin(kq.ma) >= 100,
+                com.htbb.thongbao.ThongBao.duoc("Đào được", VatLieuSinhThai.ten(kq.ma), kq.soLuong,
+                        VatLieuSinhThai.giaPhanNghin(kq.ma) >= 100), com.htbb.thongbao.ThongBao.theLuc(h.theLuc), 0, null);
         lenCap(p, h, KyNangSong.KHAO_CO, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -617,10 +642,12 @@ public final class HeSinhThaiMenu {
             }
         }
         final String ten;
+        String chatLuong = "";
         if (ct.ra > 0) {
             final int bac = KyNangSong.bacThanhPham(bacs);
             h.them(VatLieuSinhThai.khoa(ct.ra, bac), ct.soRa);
-            ten = ct.soRa + " " + VatLieuSinhThai.ten(ct.ra) + " (bậc " + bac + ")";
+            ten = com.htbb.thongbao.ThongBao.soLuong(VatLieuSinhThai.ten(ct.ra), ct.soRa);
+            chatLuong = "Chất lượng " + bac + "/5 · ";
         } else {
             HeSinhThaiGame.phatThuong(p, ct.thuong, "cong thuc " + ct.id);
             ten = ct.ten;
@@ -630,7 +657,7 @@ public final class HeSinhThaiMenu {
         }
         final int gia = ct.ra > 0 ? VatLieuSinhThai.giaPhanNghin(ct.ra) * ct.soRa : 300;
         final int len = h.congExp(ct.kyNang, KyNangSong.expKhiLam(gia));
-        bao(p, "Hoàn thành: " + ten + ". Thể lực còn " + h.theLuc + ".");
+        baoKetQua(p, false, (ct.ra > 0 ? "Chế xong " : "Hoàn thành: ") + ten, chatLuong + com.htbb.thongbao.ThongBao.theLuc(h.theLuc), 0, null);
         lenCap(p, h, ct.kyNang, len);
         HeSinhThaiGame.danhDau(p);
     }
