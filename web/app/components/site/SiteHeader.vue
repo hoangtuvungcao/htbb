@@ -74,7 +74,9 @@ const links = computed<NavigationMenuItem[]>(() => {
       label: 'Thêm',
       icon: 'i-lucide-ellipsis',
       active: don.some(m => m.to !== '/' && route.path.startsWith(m.to)),
-      children: don.map(m => ({ label: m.label, icon: m.icon || undefined, to: lienKetAnToan(m.to) || '/' })),
+      children: don.map(m => ({ label: m.label, icon: m.icon || 'i-lucide-chevron-right', to: lienKetAnToan(m.to) || '/' })),
+      // Danh sách gọn một cột (icon + nhãn), không dùng lưới 2 cột rộng 34rem của "Cẩm nang".
+      ui: { content: 'sm:w-60', childList: 'grid-cols-1 gap-0.5', childLink: 'items-center' },
     })
   }
   return hien
@@ -118,8 +120,11 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
       root: 'bg-default/95 backdrop-blur border-b-4 border-pokered-500 shadow-[0_3px_0_var(--poke-outline)]',
       container: 'max-w-[96rem] gap-2 xl:gap-3',
       // Logo + cụm phải giữ nguyên cỡ; phần giữa co lại, mục thừa tự dồn vào Thêm (không đè logo).
+      // KHÔNG đặt overflow-hidden ở đây: khung thả xuống (viewport) của UNavigationMenu nằm `top-full`,
+      // tức là NGAY DƯỚI ô này -> bị cắt mất, bấm Thêm ▾ / Cẩm nang ▾ chỉ lật mũi tên. Cắt ngang
+      // (nếu mục tràn) làm ở `list` của menu bên dưới.
       left: 'shrink-0 lg:flex-none',
-      center: 'min-w-0 flex-1 xl:flex items-center gap-2 overflow-hidden',
+      center: 'min-w-0 flex-1 xl:flex items-center gap-2',
       right: 'shrink-0 lg:flex-none gap-1',
       // Menu ☰ (slideover) dùng tới hết lg: thanh menu chỉ hiện từ xl (1280 px).
       toggle: 'lg:inline-flex xl:hidden',
@@ -135,14 +140,17 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
 
     <div class="hidden min-w-0 flex-1 items-center justify-center gap-2 xl:flex">
       <div ref="khung" class="relative flex min-w-0 flex-1 justify-center">
-        <!-- Hàng đo (ẩn): bề rộng thật của từng mục để biết bao nhiêu mục vừa chỗ. -->
-        <div ref="hangDo" aria-hidden="true" class="pointer-events-none invisible absolute left-0 top-0 flex whitespace-nowrap">
-          <span v-for="m in chia.chinh" :key="m.to" data-do="muc" class="inline-flex items-center gap-1.5 px-2 font-display text-[15px] font-bold">
-            <UIcon v-if="m.icon" :name="m.icon" class="size-4" />{{ m.label }}<UIcon v-if="m.to === '/cam-nang'" name="i-lucide-chevron-down" class="size-5" />
-          </span>
-          <span data-do="them" class="inline-flex items-center gap-1.5 px-2 font-display text-[15px] font-bold">
-            <UIcon name="i-lucide-ellipsis" class="size-4" />Thêm<UIcon name="i-lucide-chevron-down" class="size-5" />
-          </span>
+        <!-- Hàng đo (ẩn): bề rộng thật của từng mục để biết bao nhiêu mục vừa chỗ.
+             Bọc trong lớp cắt riêng để hàng đo không bao giờ làm trang cuộn ngang. -->
+        <div aria-hidden="true" class="pointer-events-none invisible absolute inset-0 overflow-hidden">
+          <div ref="hangDo" class="absolute left-0 top-0 flex w-max whitespace-nowrap">
+            <span v-for="m in chia.chinh" :key="m.to" data-do="muc" class="inline-flex items-center gap-1.5 px-2 font-display text-[15px] font-bold">
+              <UIcon v-if="m.icon" :name="m.icon" class="size-4" />{{ m.label }}<UIcon v-if="m.to === '/cam-nang'" name="i-lucide-chevron-down" class="size-5" />
+            </span>
+            <span data-do="them" class="inline-flex items-center gap-1.5 px-2 font-display text-[15px] font-bold">
+              <UIcon name="i-lucide-ellipsis" class="size-4" />Thêm<UIcon name="i-lucide-chevron-down" class="size-5" />
+            </span>
+          </div>
         </div>
         <UNavigationMenu
           :items="links"
@@ -150,7 +158,16 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
           color="primary"
           highlight
           class="min-w-0"
-          :ui="{ link: 'font-display font-bold text-[15px] px-2 whitespace-nowrap', linkLeadingIcon: 'size-4', childLinkDescription: 'line-clamp-1', content: 'sm:w-[34rem]' }"
+          :ui="{
+            list: 'min-w-0 overflow-x-clip',
+            link: 'font-display font-bold text-[15px] px-2 whitespace-nowrap',
+            linkLeadingIcon: 'size-4',
+            childLinkDescription: 'line-clamp-1',
+            content: 'sm:w-[34rem]',
+            // Khung thả xuống mở ngay dưới mục được bấm (mặc định Nuxt UI căn giữa cả thanh).
+            viewportWrapper: 'justify-start',
+            viewport: 'sm:w-(--reka-navigation-menu-viewport-width) left-(--reka-navigation-menu-viewport-left)',
+          }"
         />
       </div>
       <UButton
