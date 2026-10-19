@@ -65,8 +65,11 @@ public final class KiemMatDoKhiTaoDo {
                 dem.vuotXaNguong(LENH_THUONG));
 
         final String session = doc("src/io/Session.java");
-        Kiem.dung("Session hoi vuotXaNguong truoc khi cat",
-                session.contains("this.boDemGoiTin.vuotXaNguong(message.command)"));
+        // 19/10/2026: Session hoi BoDemGoiTin.phanLoai (QUA / BO / CAT / HOAN), phanLoai hoi vuotXaNguong.
+        final String bo = doc("src/io/BoDemGoiTin.java");
+        Kiem.dung("Session chi cat khi phanLoai tra CAT (phanLoai hoi vuotXaNguong)",
+                session.contains("quyet == BoDemGoiTin.CAT") && session.contains("this.boDemGoiTin.phanLoai(command")
+                        && bo.contains("return vuotXaNguong(command) ? CAT : BO;"));
         Kiem.dung("nhanh khong vuot xa thi continue (bo goi), khong break",
                 session.contains("// Chi vuot tran o muc \"nhanh tay\": BO goi nay, GIU ket noi."));
     }

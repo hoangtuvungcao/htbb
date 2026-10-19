@@ -823,6 +823,10 @@ public class TeamServer {
             io.BoDemGoiTin.GOI_TRA_CUU_TOI_DA = parseIntDefault(
                     p.getProperty("sv.tranGoiTraCuu"), io.BoDemGoiTin.GOI_TRA_CUU_MAC_DINH);
             io.BoDemGoiTin.datMienIp(p.getProperty("sv.tranGoiMienIp", ""));
+            // Nen goi lon cho client tu bao giai nen duoc (io.GoiNen). Mac dinh bat; client cu khong anh huong.
+            io.GoiNen.BAT = parseIntDefault(p.getProperty("sv.nenGoi"), 1) != 0;
+            io.GoiNen.NGUONG = Math.max(64, parseIntDefault(p.getProperty("sv.nenGoiTu"), 2048));
+            System.out.println("NEN GOI -> " + (io.GoiNen.BAT ? "bat, goi >= " + io.GoiNen.NGUONG + " B (chi client co kha nang nen)" : "tat"));
             if (!io.BoDemGoiTin.MIEN_IP.isEmpty()) {
                 com.htbb.log.Nhat.canhBao("NGAP_GOI", "sv.tranGoiMienIp=" + io.BoDemGoiTin.MIEN_IP
                         + " - cac IP nay KHONG bi dem ngap goi (chi dung cho may chay bot tai)");

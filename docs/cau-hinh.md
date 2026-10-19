@@ -225,8 +225,9 @@ thích `#khoa=giá_trị_mặc_định`. Khoá nào có trong danh mục (mục 
 | `sv.tranGoiTaiNguyen` | `600` | gói **tải tài nguyên** (`-47`, `-48`, `-49`, `-51`) trong 5 giây, đếm riêng |
 | `sv.tranGoiTraCuu` | `600` | gói **tra cứu** (lệnh `7` hỏi máu / vị trí quái) trong 5 giây, đếm riêng |
 | `sv.tranGoiMienIp` | trống | IP không bị đếm ngập gói (chỉ máy chạy bot tải) |
+| `sv.nenGoi` / `sv.nenGoiTu` | `1` / `2048` | nén zlib gói ≥ ngần ấy byte thành gói `-127` (`io.GoiNen`) — chỉ cho client gửi bit khả năng nén sau số bản ở gói đăng nhập (0.9.7+ PC / Android); client cũ và J2ME không nhận gói nén. Đăng nhập còn ~132 KB thay vì ~340 KB. `0` = tắt |
 
-Vượt trần gói là **cắt kết nối** (`NGAP GOI TIN` trong log). `0` hoặc số âm = tắt phép đếm đó. Qua loopback (máy nhà)
+Gói **tải tài nguyên** vượt trần KHÔNG bị bỏ (từ 19/10/2026): luồng đọc của chính kết nối đó chờ `5000/trần` ms (8 ms) rồi mới xử lý — hạ nhịp, không mất ảnh. Gói thường / tra cứu vượt trần bị bỏ, vượt 4 lần trần thì cắt kết nối (`NGAP GOI TIN` trong log). `0` hoặc số âm = tắt phép đếm đó. Qua loopback (máy nhà)
 không có độ trễ nên client vừa xoá cache có thể chạm trần một cách lương thiện: máy nhà nên đặt
 `sv.tranGoiTaiNguyen=0` trong `server.ini` **của máy đó**. Trên VPS đừng hạ và đừng đặt 0 (mở cửa cho spam `-51`).
 

@@ -283,6 +283,11 @@ public class LoginHandler implements ICommandHandler {
         try {
             if (dis.available() >= 4) {
                 banClient = dis.readInt();
+                // 0.9.7+: so nguyen KHA NANG ngay sau so ban (bit io.GoiNen.KHA_NANG_NEN = giai nen
+                // duoc goi -127). Client cu dung o so ban -> giu 0, khong nhan goi nen nao.
+                if (dis.available() >= 4) {
+                    session.khaNang = dis.readInt();
+                }
             }
         } catch (final Exception exBan) {
         }
