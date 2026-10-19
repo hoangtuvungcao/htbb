@@ -94,6 +94,7 @@ public final class ManNhanVat extends Screen {
         ManNhanVat m = gI();
         m.tab = t;
         m.o = -1;
+        m.loc = 0;
         m.xem = null;
         m.daMoXem = null;
         m.ds.den(0);
@@ -546,7 +547,27 @@ public final class ManNhanVat extends Screen {
         int wD = lw - 2 * s + 8, rD = Math.min(wD, cao) * 9 / 20, cyD = yTren + cao / 2 + cao / 20;
         float z = Math.max(1.5f, Math.min(4.2f, Math.min((giuaR - giuaL) / 40f, rD * 2 / 38f)));
         int cx = (giuaL + giuaR) / 2;
-        int yChan = Math.min(yDuoi - k - (int) (4 * z), cyD + rD * 6 / 10);
+        // 0.9.7: viên Danh hiệu (lối vào bảng Danh hiệu) ở đáy sân khấu, dưới chân Pokémon
+        int hDh = ManDanhHieu.hVien();
+        int hcDh = Math.max(VungCham.MIN, hDh + 4);   // vùng chạm đủ cỡ, viên vẽ giữa
+        int yDh = yDuoi - k - 3 - hcDh + (hcDh - hDh) / 2;
+        int yChan = Math.min(yDh - 4 - (int) (2 * z), cyD + rD * 6 / 10);
+        {
+            boolean coDh = m.danhHieuTen != null;
+            String chu = coDh ? m.danhHieuTen : "Danh hiệu";
+            int wMax = giuaR0(x, lw, coCot) - giuaL0(x, coCot) - 8;
+            int wv = ManDanhHieu.vien(g, -10000, yDh, chu + " ›", coDh ? m.danhHieuHiem : 0, null, wMax);   // đo bề ngang
+            int xv = x + lw / 2 - wv / 2;
+            ManDanhHieu.vien(g, xv, yDh, chu + " ›", coDh ? m.danhHieuHiem : 0, null, wMax);
+            VungCham.them(g, xv - 2, yDh - (hcDh - hDh) / 2, Math.max(wv + 4, VungCham.MIN), hcDh, new IAction() {
+                public void perform() {
+                    ManDanhHieu.moTuHoSo();
+                }
+            }, "danh-hieu");
+            if (ChamMoi.co(ChamMoi.DANH_HIEU)) {
+                ChuDe.cham(g, xv + wv - 2, yDh + 1);
+            }
+        }
         banRongBe = (giuaR - giuaL) / 2 - 2;
         veNguoiChoi(g, m, cx, yChan, z);
         banRongBe = 1000;
@@ -568,6 +589,14 @@ public final class ManNhanVat extends Screen {
             veTui(g, xr, y, wr, h);
         }
         moXem();
+    }
+
+    static int giuaL0(int x, int coCot) {
+        return x + coCot - 4;
+    }
+
+    static int giuaR0(int x, int lw, int coCot) {
+        return x + lw - coCot + 4;
     }
 
     /** Ô trang bị TRÒN tâm (cx, cy) bán kính r. */

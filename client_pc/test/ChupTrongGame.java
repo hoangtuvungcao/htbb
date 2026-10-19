@@ -1092,7 +1092,7 @@ public class ChupTrongGame {
             kiem(coVung("tui-0"), nhan + " luoi hanh trang co o (tui-0)");
             kiem(coVung("tien-xu") && coVung("tien-luong"), nhan + " hang vi co xu + luong (cham duoc)");
             if ("nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten)) {
-                kiem(coVung("tui-khoa-"), nhan + " luoi Tat ca co o khoa cuoi (mo rong)");
+                kiem(game.pokemon.LuoiTui.soKhoaVe > 0, nhan + " luoi Tat ca co o khoa cuoi (mo rong) - " + game.pokemon.LuoiTui.soKhoaVe);
             }
         }
         if ("nv_chi_tiet".equals(ten)) {

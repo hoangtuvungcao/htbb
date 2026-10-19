@@ -291,8 +291,10 @@ public final class ManDanhHieu extends ManBang {
         int icon = a == null ? 0 : a.getWidth() + 3;
         String s = ChuDe.cat(ten == null ? "" : ten, ChuDe.NHAN, Math.max(20, wToiDa - icon - 16));
         int w = ChuDe.rong(s, ChuDe.NHAN) + 14 + icon;
-        GiaoDien.khoi(g, x, y, w, h, h / 2, mau);
-        GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, h / 2 - 1, ChuDe.nenDanhHieu(doHiem));
+        // 0.9.7 (NRO): bảng pixel viền màu độ hiếm (góc bậc thang, không viên tròn)
+        GiaoDien.khoi(g, x, y, w, h, 2, ChuDe.VIEN);
+        GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, 1, mau);
+        GiaoDien.khoi(g, x + 2, y + 2, w - 4, h - 4, 1, ChuDe.nenDanhHieu(doHiem));
         int xc = x + 7;
         if (a != null) {
             g.drawImage(a, xc - 1 + a.getWidth() / 2, y + h / 2, Graphics.HCENTER | Graphics.VCENTER);

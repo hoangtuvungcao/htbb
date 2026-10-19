@@ -105,7 +105,8 @@ public final class LuoiTui {
             for (int i = 0; MainChar.shopItem != null && i < MainChar.shopItem.size(); i++) {
                 v.addElement(MainChar.shopItem.elementAt(i));
             }
-            if (MainChar.itemQuest != null) {
+            // vật phẩm nhiệm vụ: mảng riêng của máy chủ (không chiếm ô hành trang) -> chỉ ở tab Khác, không ở "Tất cả"
+            if (MainChar.itemQuest != null && loc == LOC_KHAC) {
                 for (int i = 0; i < MainChar.itemQuest.length; i++) {
                     if (MainChar.itemQuest[i] > 0) {
                         v.addElement(new int[]{i});
@@ -228,6 +229,7 @@ public final class LuoiTui {
         int dung = coKhoa ? soDung() : n;
         final int soTrong = coKhoa ? Math.max(0, suc - dung) : 0;
         final int soKhoa = coKhoa ? Math.max(0, tran - Math.max(suc, dung)) : 0;
+        soKhoaVe = soKhoa;
         int tong = n + soTrong + soKhoa;
         tong = Math.max(((tong + cot - 1) / cot) * cot, hangDay * cot);   // lấp hàng cuối + đủ hàng phủ bảng
         final int tongO = tong;
@@ -288,6 +290,9 @@ public final class LuoiTui {
                 : "Không có vật phẩm khác.";
         dongTrong(g, x, y, w, c);
     }
+
+    /** Số ô khoá của lưới vừa vẽ (kiểm thử: lưới "Tất cả" có ô khoá cuối tới trần mở rộng). */
+    public static int soKhoaVe;
 
     /** Đỉnh / cao vùng lưới vừa vẽ (màn đặt dòng trống riêng). */
     public static int yLuoi, hLuoi;
