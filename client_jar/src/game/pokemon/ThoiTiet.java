@@ -6,7 +6,7 @@ import java.io.DataInputStream;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * THỜI TIẾT / MÙA / NGÀY CỘNG ĐỒNG phía client (đề xuất 8, 0.9.7, bản 907). Máy chủ (HTBB ThoiTietGame) gửi gói -118
+ * THỜI TIẾT / MÙA / NGÀY CỘNG ĐỒNG phía client (đề xuất 8, 0.9.8, bản 908). Máy chủ (HTBB ThoiTietGame) gửi gói -118
  * mỗi khi thời tiết bản đồ / khung giờ / phủ mùa / ngày cộng đồng đổi; client cũ không nhận gói này (vẫn -39).
  *
  * <ul>
@@ -56,6 +56,17 @@ public final class ThoiTiet {
 
     public static String tenThoiTiet(int tt) {
         return tt >= 0 && tt < TEN_TT.length ? TEN_TT[tt] : "";
+    }
+
+    /**
+     * Đang vẽ hạt thời tiết / mùa (đã có gói -118, chất lượng khác Tắt, trời có hạt hoặc mùa có phủ): HieuUng (mod
+     * "Hoa đào"...) tự tắt hạt màn hình trong lúc này.
+     */
+    public static boolean dangVeHat() {
+        if (!co || chatLuong <= TAT) {
+            return false;
+        }
+        return thoiTiet > 0 || mauMuaBat && mauMua > 0;
     }
 
     // ------------------------------------------------------------------ cài đặt

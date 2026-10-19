@@ -18,7 +18,7 @@ import real.Char;
  * trong ThoiTietLich. Nap lan dau khi he sinh thai khoi dong, nap lai moi 10 phut.
  *
  * HeSinhThaiGame.thoiTietVung / thoiTietMap goi vao day (moi noi dung thoi tiet: sinh quai, nghien cuu, sat thuong,
- * menu, goi client). Goi -118 ({@link GoiThoiTiet}) gui cho client ban &gt;= 907 moi khi trang thai ban do cua ho doi
+ * menu, goi client). Goi -118 ({@link GoiThoiTiet}) gui cho client ban &gt;= 908 moi khi trang thai ban do cua ho doi
  * (nhip 15 giay cua he sinh thai); client cu van nhan -39.
  */
 public final class ThoiTietGame {

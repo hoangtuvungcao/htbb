@@ -878,7 +878,7 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
 - **Bùng phát**: 4 khung / ngày (11h, 17h, 20h, 22h), mỗi khung 1 giờ, một cặp (tuyến, loài của tuyến); 40% số lần hồi sinh
   trên tuyến đó thành loài bùng phát; có thông báo đầu / cuối.
 - Client cũ: hiệu ứng qua gói có sẵn `-39` (0 mưa, 1 lá rơi = bão cát / gió, 2 tuyết, 6 sương mù, 7 nắng gắt). Client
-  ≥ 907: gói **`-118`** (`GoiThoiTiet`) mỗi khi thời tiết / khung / màu mùa / ngày cộng đồng của bản đồ đổi; client tự vẽ
+  ≥ 908 (0.9.8): gói **`-118`** (`GoiThoiTiet`) mỗi khi thời tiết / khung / màu mùa / ngày cộng đồng của bản đồ đổi; client tự vẽ
   hạt (`game.pokemon.ThoiTietVe`, Tắt / Thấp 24 hạt / Đầy đủ theo diện tích màn, Menu nhanh › Thời tiết; mặc định Thấp ở
   bản nhẹ), đĩa biểu tượng thời tiết cạnh hàng nút trên (chấm cam = ngày cộng đồng), chạm = thẻ gợi ý (ảnh hưởng chiêu,
   còn bao lâu, khung sau, mùa, giờ vàng), thông báo khi trời đổi. Màu theo mùa tắt riêng được (Menu nhanh).
@@ -1304,7 +1304,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
 | -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 
-| -118 | `THOI_TIET` | S→C | chỉ client ≥ 907: `u8 phienBan=1, i8 thoiTiet (-1 trong nhà), UTF tên, UTF gợi ý, i32 giây còn lại, i8 khung sau, i8 màu mùa, UTF tên màu, u8 ngày cộng đồng (0/1/2 giờ vàng), UTF dòng, i32 giây tới mốc giờ vàng, u8 bản đồ có loài nổi bật, UTF gợi ý` (mục 7.1) |
+| -118 | `THOI_TIET` | S→C | chỉ client ≥ 908 (0.9.8): `u8 phienBan=1, i8 thoiTiet (-1 trong nhà), UTF tên, UTF gợi ý, i32 giây còn lại, i8 khung sau, i8 màu mùa, UTF tên màu, u8 ngày cộng đồng (0/1/2 giờ vàng), UTF dòng, i32 giây tới mốc giờ vàng, u8 bản đồ có loài nổi bật, UTF gợi ý` (mục 7.1) |
 
 Client cũ: hiệu ứng thời tiết qua gói cũ `-39` (mục 7.1).
 

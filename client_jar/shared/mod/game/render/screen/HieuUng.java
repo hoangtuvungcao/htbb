@@ -371,7 +371,9 @@ public class HieuUng {
             return;
         }
         HieuUng.nap();
-        if (manHinh == 0 || Canvas.menu.showMenu || Canvas.currentDialog != null) {
+        // 0.9.8: đang có hạt thời tiết / mùa của máy chủ (gói -118) thì tự tắt hạt màn hình của mod (chủ game chốt):
+        // không hai lớp hạt chồng nhau, nhẹ cho máy J2ME. Cài đặt người chơi giữ nguyên, hết thời tiết thì hiện lại.
+        if (manHinh == 0 || Canvas.menu.showMenu || Canvas.currentDialog != null || game.pokemon.ThoiTiet.dangVeHat()) {
             luc = 0L;
             return;
         }

@@ -191,7 +191,7 @@ public final class KiemThoiTiet {
     }
 
     static void goi() {
-        Kiem.nhom("Goi -118 THOI_TIET (client >= 907)");
+        Kiem.nhom("Goi -118 THOI_TIET (client >= 908)");
         try {
             final GoiThoiTiet.TrangThai t = new GoiThoiTiet.TrangThai();
             t.thoiTiet = SinhThaiTheGioi.MUA;
@@ -214,7 +214,7 @@ public final class KiemThoiTiet {
             Kiem.bang("ghi roi doc lai: giay cong dong", 1200, r.giayCongDong);
             Kiem.bang("ghi roi doc lai: ten mau", t.tenMauMua, r.tenMauMua);
             Kiem.bang("lenh -118", -118, GoiThoiTiet.LENH);
-            Kiem.bang("chi client >= 907", 907, GoiThoiTiet.BAN_CLIENT);
+            Kiem.bang("chi client >= 908 (0.9.7 = 907 da phat hanh khong co -118)", 908, GoiThoiTiet.BAN_CLIENT);
             // client doc cung thu tu truong (game.pokemon.ThoiTiet.docGoi)
             final String cl = doc("../client_jar/src/game/pokemon/ThoiTiet.java");
             Kiem.dung("client co LENH = -118", cl.contains("LENH = -118"));
@@ -299,7 +299,7 @@ public final class KiemThoiTiet {
         final String hst = doc("src/com/htbb/pokemon/HeSinhThaiGame.java");
         Kiem.dung("thoiTietVung dung lich khung gio", hst.contains("ThoiTietGame.thoiTietVung(vung)"));
         Kiem.dung("sat thuong kep qua ThoiTietLich.satThuong", hst.contains("ThoiTietLich.satThuong(he, thoiTietMap(self.mapID))"));
-        Kiem.dung("client >= 907 nhan -118 thay -39", hst.contains("ThoiTietGame.gui(c, ep)"));
+        Kiem.dung("client >= 908 nhan -118 thay -39", hst.contains("ThoiTietGame.gui(c, ep)"));
         final String gs = doc("../client_jar/src/game/render/screen/GameScr.java");
         Kiem.dung("GameScr ve thoi tiet / phu mua truoc phu dem", gs.indexOf("game.pokemon.ThoiTietVe.veTheGioi(g)") >= 0
                 && gs.indexOf("game.pokemon.ThoiTietVe.veTheGioi(g)") < gs.indexOf("game.pokemon.SinhThai.veDem(g)"));

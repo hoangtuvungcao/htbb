@@ -72,7 +72,7 @@ public final class SinhThaiTheGioi {
     /**
      * Hieu ung -39 cua client (AnimateEffect: 0 mua, 1 la roi = bao cat, 2 tuyet; 6 suong mu, 7 nang gat - moc
      * client J2ME/Android moi); -1 = tat. Quang: khong hieu ung. Client cu bo qua id la. Gio: la roi (1). Client
-     * >= 907 nhan goi -118 (ThoiTietGame) va tu ve hat (game.pokemon.ThoiTietVe), khong nhan -39 cua he sinh thai.
+     * >= 908 nhan goi -118 (ThoiTietGame) va tu ve hat (game.pokemon.ThoiTietVe), khong nhan -39 cua he sinh thai.
      */
     public static final int[] HIEU_UNG_CLIENT = {-1, 7, 0, 2, 1, 6, 1};
 

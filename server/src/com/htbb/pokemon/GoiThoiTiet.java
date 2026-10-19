@@ -28,8 +28,8 @@ import java.io.IOException;
 public final class GoiThoiTiet {
 
     public static final int LENH = -118;
-    /** Ban client dau tien biet -118 (0.9.7). Da grep server + client moi nhanh (19/10/2026): -118 trong. */
-    public static final int BAN_CLIENT = 907;
+    /** Ban client dau tien biet -118 (0.9.8; 0.9.7 = 907 da phat hanh khong co -118). Da grep server + client moi nhanh (19/10/2026): -118 trong. */
+    public static final int BAN_CLIENT = 908;
     public static final int PHIEN_BAN = 1;
 
     private GoiThoiTiet() {
