@@ -487,6 +487,13 @@ final class DanhMucSinh {
                     .nhan("Trần tổng % cộng thêm (‰)", "Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc.")
                     .khoang(0L, 5000L)
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("danh_hieu.bat", "chi_so", "co", "1", true, "cau_hinh")
+                    .nhan("Bật danh hiệu thành tựu", "0 = ngừng tự mở khoá danh hiệu và tắt dòng chỉ số của danh hiệu đang đeo (danh hiệu đã có vẫn giữ, vẫn hiện trên đầu). Danh mục + điều kiện ở bảng data_danh_hieu.")
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("danh_hieu.tran_phan_nghin", "chi_so", "so", "10", true, "cau_hinh")
+                    .nhan("Trần chỉ số ô danh hiệu (‰)", "Ngân sách ô danh hiệu (thiết kế cân bằng 4.5, đề xuất 1%): chỉ một danh hiệu đang đeo được tính, giá trị từng danh hiệu (data_danh_hieu.phan_nghin) bị kẹp về trần này và vào trần tổng trang trí. 10 = +1%.")
+                    .khoang(0L, 30L)
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("pvp.tinh_diem.bat", "pvp", "co", "1", true, "cau_hinh")
                     .nhan("Tính điểm thang PvP", "0 = trận PvP không cộng/trừ điểm thang.")
                     .lop("luon_bat"),

@@ -163,6 +163,7 @@ class CharVongLap {
             } catch (final Exception ex2) {
             }
             ++self.minuteOnline;
+            DanhHieuGame.nhip(self); // danh hieu: mo khoa theo trang thai song (cap, Pokedex, bac PvP...) + gia han
             if (self.minuteOnline > 120) {
                 self.minuteOnline = 0;
                 boolean conSuatFanCung;

@@ -247,6 +247,12 @@ public final class HeSinhThaiGame {
     static final ConcurrentHashMap<Integer, HoSoSinhThai> HO_SO = new ConcurrentHashMap<Integer, HoSoSinhThai>();
     static final Set<Integer> BAN = ConcurrentHashMap.newKeySet();
 
+    /** Danh hieu (real.DanhHieuGame, dieu kien sinh_thai): nhan vat da co danh hieu sinh thai {@code ten}. */
+    public static boolean coDanhHieu(final Char p, final String ten) {
+        final HoSoSinhThai h = hoSo(p);
+        return h != null && ten != null && h.coDanhHieu(ten);
+    }
+
     /** Ho so (nap CSDL lan dau), null neu tat co / bot / loi CSDL. Da sang ngay. */
     static HoSoSinhThai hoSo(final Char p) {
         if (!bat() || p == null || p.charDBID <= 0 || p.isBot != -1 && p.isBot != 0) {

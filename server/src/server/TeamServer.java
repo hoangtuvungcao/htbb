@@ -936,6 +936,7 @@ public class TeamServer {
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
         if (com.htbb.pokemon.LauDai.bat()) {
             data.DatabaseLauDai.taoBang();
+            real.DanhHieuGame.taoBang();
             real.ExpLauDai.apDungBang();
             real.VatPhamDungLauDai.nap();
         }

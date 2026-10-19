@@ -427,6 +427,8 @@ public final class HeSinhThaiMenu {
         }
         b.append(" Thể lực còn ").append(h.theLuc).append('.');
         bao(p, b.toString());
+        // diem moc "cau_ca" (NhiemVuEngine: nhiem vu kieu cau_ca + danh hieu cau ca); tham so = dex gap (0 = khong)
+        real.NhiemVuEngine.suKien(p, "cau_ca", String.valueOf(kq.dex), 1);
         lenCap(p, h, KyNangSong.CAU_CA, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -1850,6 +1852,9 @@ public final class HeSinhThaiMenu {
                 break;
             }
             case 3: {
+                if (real.DanhHieuGame.moBangNeuDuoc(p)) {
+                    break; // 0.9.7: client moi mo bang Danh hieu chung (Ho so -> Danh hieu), khong menu rieng
+                }
                 if (h.danhHieu.isEmpty()) {
                     bao(p, "Chưa có danh hiệu sinh thái.");
                     break;
@@ -1891,6 +1896,12 @@ public final class HeSinhThaiMenu {
             }
         } else {
             if (!h.coDanhHieu(HoSoSinhThai.DANH_HIEU[i])) {
+                return;
+            }
+            // 0.9.7: qua DanhHieuGame (dat ca currentDanhHieu - truoc day CharVongLap thao ngay o nhip sau vi
+            // currentDanhHieu = null) ; khong co mau trong data_danh_hieu thi giu cach cu
+            if (real.DanhHieuGame.deo(p, HeSinhThai.ID_EFF_DANH_HIEU_DAU + i)) {
+                bao(p, "Đang đeo danh hiệu " + HoSoSinhThai.DANH_HIEU[i] + ".");
                 return;
             }
             p.idEffDanhHieu = HeSinhThai.ID_EFF_DANH_HIEU_DAU + i;

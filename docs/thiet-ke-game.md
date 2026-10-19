@@ -1254,5 +1254,29 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
+| -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
+
+## Danh hiệu (0.9.7)
+
+- **Dữ liệu:** `sql/them_danh_hieu.sql` (idempotent). `data_danh_hieu` là danh mục duy nhất: tên, mô tả điều kiện, gợi ý
+  (danh hiệu ẩn), độ hiếm (`data_danh_hieu_do_hiem`: Thường / Hiếm / Sử thi / Huyền thoại), hình, **một** dòng chỉ số
+  nhỏ (`chi_so` = `ne_tranh` / `chi_mang` / `khang_trang_thai` / `hp`, `phan_nghin`), điều kiện (`dieu_kien`,
+  `tham_so`, `so_luong`), `an` (0 hiện, 1 ẩn "???" tới khi mở, 2 chỉ hiện khi đang có), `thoi_han_phut` (0 vĩnh viễn).
+  391 dòng: 43 danh hiệu thành tựu / xếp hạng mùa / sự kiện / ẩn (id 9700..), 16 danh hiệu sinh thái (9600..), 48 danh
+  hiệu cũ giftcode / sự kiện (8767..), 284 danh hiệu thưởng nhiệm vụ (10000.., trước đây chỉ là chữ trong tiến độ).
+- **Sở hữu:** kho cũ `tob_danh_hieu` (id, hết hạn) + đang đeo `Char.idEffDanhHieu`; bộ đếm `tob_danh_hieu_dem`, nhật ký
+  `tob_danh_hieu_log`.
+- **Mở khoá** phía máy chủ: mọi điểm móc `NhiemVuEngine.suKien` / `datMuc` (hạ trùm, câu cá, thắng PvP, nâng cấp +N,
+  Hầm ngục, chế tạo, khảm, gục, đến bản đồ...) cộng bộ đếm; trạng thái sống (cấp, Pokédex %, huy hiệu Gym, bậc / hạng
+  PvP mùa, sự kiện đang bật, danh hiệu sinh thái / nhiệm vụ) đánh giá mỗi phút, khi lên cấp và khi mở bảng. Danh hiệu có
+  hạn (bậc mùa, top 10, sự kiện) tự gia hạn khi còn giữ điều kiện, hết hạn thì mất chỉ số và có thể mở lại.
+- **Chỉ số:** chỉ danh hiệu **đang đeo** được tính, kẹp về trần ô `danh_hieu.tran_phan_nghin` (10‰ = 1%, trần cứng 3%)
+  và trần tổng trang trí `trang_tri.tran_tong_phan_nghin` (5%), rồi đi qua `GioiHanChiSo` như mọi nguồn. Danh hiệu trao
+  qua giftcode / gói nạp chỉ có mức Thường (5‰), không vượt danh hiệu tự cày.
+- **Giao diện:** Hồ sơ (bảng Pokémon) → viên "Danh hiệu" cạnh huy hiệu hệ (lối vào duy nhất; menu Sưu tầm sinh thái
+  → Danh hiệu mở cùng bảng) → tấm Danh hiệu: Đã có / Chưa có / Bí ẩn, thanh tiến độ, đếm ngược hạn, nút Đeo / Tháo,
+  chấm đỏ `ChamMoi.DANH_HIEU` khi có danh hiệu mới. Nhãn danh hiệu vẽ trên tên mọi người chơi, màu theo độ hiếm
+  (token `ChuDe.mauDanhHieu` / `nhanDanhHieu`). Web: bảng xếp hạng hiện danh hiệu đang đeo.
+

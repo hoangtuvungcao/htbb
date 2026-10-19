@@ -1206,6 +1206,7 @@ class CharNapDuLieu {
           
             Database.instance.getDiemNapXaiLuong(self);
             Database.instance.getCharDanhHieu(self);
+            DanhHieuGame.napChoChar(self); // bo dem danh hieu (tob_danh_hieu_dem)
             self.dayLogin = Char.getDayOpen(0L);
             if (self.dbBasic != null) {
                 final String[] data3 = Char.split(self.dbBasic, ",");

@@ -6146,6 +6146,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public int haveNeTranhBoQuaPet() {
         int ne = super.haveNeTranh();
         ne += getTkNeTranh() * 10;
+        ne += DanhHieuGame.phanNghin(this, com.htbb.pokemon.DanhHieuLogic.NE_TRANH); // danh hieu dang deo (phan nghin, co tran)
         if (ne > 900) {
             ne = 900;
         }
@@ -6165,6 +6166,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // Than khi: dong ne tranh luu phan tram thang, con noi goi so sanh voi
         // Map.r.nextInt(1000) nen phai x10 de doi sang phan nghin.
         ne += getTkNeTranh() * 10;
+        // Danh hieu DANG DEO (mot danh hieu, phan nghin, tran danh_hieu.tran_phan_nghin); ChiSoTrangBiGame.neTranh kep tran o noi goi.
+        ne += DanhHieuGame.phanNghin(this, com.htbb.pokemon.DanhHieuLogic.NE_TRANH);
         if (ne > 900) {
             ne = 900; // khong cho ne tuyet doi
         }
@@ -16291,11 +16294,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.idEffDanhHieu > -1) {
             this.idEffDanhHieu = -1;
             this.currentDanhHieu = null;
+            this.calculateAttrib(); // danh hieu co dong chi so (DanhHieuGame.phanNghin)
             try {
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
             } catch (final IOException ex) {
             }
             this.sendToNearPlayer(MessageCreator.createCharInfo(this));
+            DanhHieuGame.guiNhan(this);
         }
     }
 
@@ -16304,12 +16309,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.currentDanhHieu = this.allDanhHieu.get(index);
 
 //        System.out.println("idEffDanhHieu: " + idEffDanhHieu +", currentDanhHieu: " + currentDanhHieu.getName());
+        this.calculateAttrib(); // danh hieu co dong chi so (DanhHieuGame.phanNghin)
         try {
             this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
         this.sendToNearPlayer(MessageCreator.createCharInfo(this));
+        DanhHieuGame.guiNhan(this);
     }
 
     public String[] getAllNamDanhHieu() {
