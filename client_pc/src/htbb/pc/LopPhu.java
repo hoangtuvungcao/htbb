@@ -125,7 +125,7 @@ public final class LopPhu {
         game.pokemon.ChuUI.bo = ChuHD.bat ? ChuGiaoDien.I : null;
         // 0.9.5: Hiệu ứng cao = vẽ 60 khung/giây (nội suy vị trí giữa hai nhịp logic 25/giây); thấp = 25
         game.pokemon.NhipVe.fps = CaiDat.hieuUngCao ? 60 : 25;
-        game.pokemon.NhipVe.doBat = CaiDat.doKhung;
+        game.pokemon.NhipVe.doBat = CaiDat.doKhung && CaiDat.choDo();
         dangVe = new ArrayList<Vung>();
         Kinh.min(g);
         float u = Math.max(0.75f, Math.min(W / 1280f, H / 720f));
@@ -143,7 +143,7 @@ public final class LopPhu {
             if (HopNhap.mo) HopNhap.ve(g, W, H, u, dangVe);
             if (caiDatMo) veCaiDat(g, W, H, u);
             veThongBao(g, W, H, u);
-            if (CaiDat.hienFps || CaiDat.doKhung) veFps(g, W, H, u);
+            if (CaiDat.hienLopDo()) veFps(g, W, H, u);
         } catch (Throwable e) {
             NhatKy.loi("lop phu", e);
         }
@@ -506,7 +506,8 @@ public final class LopPhu {
         y = yy + hHang + 14 * u;
         // nhóm Hình ảnh
         y = tieuDeNhom(g, "Hình ảnh", x, y, u);
-        the(g, x, y, w, 5 * hHang, u);
+        final boolean choDo = CaiDat.choDo();   // bản phát hành: không có công tắc FPS / đo khung
+        the(g, x, y, w, (choDo ? 5 : 3) * hHang, u);
         hangCongTac(g, "Chữ HD", "Phông Noto Sans mịn (tắt = phông điểm ảnh gốc)", x, y, w, hHang, u, ChuHD.bat, new Runnable() {
             public void run() {
                 CaiDat.chuHD = !CaiDat.chuHD;
@@ -535,6 +536,7 @@ public final class LopPhu {
                             CaiDat.hieuUngCao = false;
                         }
                     }});
+        if (!choDo) return;
         y += hHang;
         ke(g, x, y, w, u);
         hangCongTac(g, "Hiện FPS", "Số khung hình/giây ở góc dưới", x, y, w, hHang, u, CaiDat.hienFps, new Runnable() {

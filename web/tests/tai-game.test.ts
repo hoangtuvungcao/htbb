@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   DS_NEN_TANG, MA_NEN_TANG, banTaiMacDinh, banTaiSanSang, boDongTepPhu, chuKyTepHopLe, chuanHoaBanTai, hrefCaiDat,
-  loiBanTai, nenTang, nenTangTheoUa, tenTepGameAnToan, urlTaiHopLe,
+  loiBanTai, nenTang, nenTangTheoUa, soBanHopLe, tenTepGameAnToan, urlTaiHopLe,
 } from '../shared/utils/taiGame.ts'
 
 test('chuẩn hoá: dữ liệu (không trangThai) -> đủ 5 nền tảng, giữ thứ tự đã lưu', () => {
@@ -147,4 +147,27 @@ test('tên tệp + chữ ký byte', () => {
   assert.ok(chuKyTepHopLe('exe', new Uint8Array([0x4D, 0x5A])))
   assert.ok(chuKyTepHopLe('plist', new TextEncoder().encode('<?xml version="1.0"?>')))
   assert.ok(!chuKyTepHopLe('plist', new Uint8Array([0x3C, 0, 1])))
+})
+
+test('số bản (BAN) từng nền tảng: máy chủ game đọc làm bản mới nhất', () => {
+  const ds = chuanHoaBanTai([
+    { ma: 'android', url: '/tai/HTBB-907.apk', ban: 907, phienBan: '0.9.7', trangThai: 'san-sang', hien: true },
+    { ma: 'jar', url: '/tai/HTBB.jar', ban: '908', trangThai: 'san-sang', hien: true },
+    { ma: 'windows', url: '/tai/a.exe', ban: -3 },
+    { ma: 'linux', url: '/tai/a.AppImage', ban: 9.5 },
+  ])
+  const b = (ma: string) => ds.find(x => x.ma === ma)!
+  assert.equal(b('android').ban, 907)
+  assert.equal(b('jar').ban, 908, 'chuỗi số được nhận')
+  assert.equal(b('windows').ban, 0, 'số âm -> 0')
+  assert.equal(b('linux').ban, 0, 'số lẻ -> 0')
+  assert.equal(b('ios').ban, 0, 'thiếu -> 0')
+  assert.equal(banTaiMacDinh(nenTang('jar')!).ban, 0)
+  // dữ liệu cũ đổi mã (pc-java -> windows) không mang số bản cũ sang
+  assert.equal(chuanHoaBanTai([{ ma: 'pc-java', url: '/tai/a.exe', ban: 905 }]).find(x => x.ma === 'windows')!.ban, 0)
+  assert.equal(soBanHopLe(' 907 '), 907)
+  assert.equal(soBanHopLe('9a'), 0)
+  assert.equal(soBanHopLe(1e9), 0)
+  assert.equal(loiBanTai({ ...b('android'), ban: 1.5 }) !== null, true, 'lưu số lẻ bị từ chối')
+  assert.equal(loiBanTai(b('android')), null)
 })

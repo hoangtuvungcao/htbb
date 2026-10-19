@@ -327,17 +327,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **256 khoá** trong **17 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **270 khoá** trong **17 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 165 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 178 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (69)
+### Khoá chỉnh trên web (70)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -455,9 +455,10 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.website` | Địa chỉ website (hiện trong game) | chuỗi | `https://huyenthoaibaoboi.fun/` | ≤ 200 ký tự | ngay | game |  |
 | `sv.linkTaiGame` | Link tải game (hiện trong game) | chuỗi | `https://huyenthoaibaoboi.fun/` | ≤ 200 ký tự | ngay | game |  |
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
-| `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
+| `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
+| `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (186)
+### Khoá ẩn: cố định & luôn bật (199)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -485,6 +486,16 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `phi.hoi_sinh_phan_tram_gio` | Phí hồi sinh (% thu nhập 1 giờ) | Cố định (ẩn) | `5` | ngay | game | Tối thiểu 1 xu. |
 | `phi.ban_npc_phan_tram` | Giá bán đồ cho NPC (% giá) | Cố định (ẩn) | `5` | ngay | game | Không cộng theo cấp cường hoá. |
 | `tieu_hao.sua_do_phan_tram_thu_nhap` | Trần phí sửa đồ (% thu nhập 1 giờ / món) | Cố định (ẩn) | `8` | ngay | game | Phí sửa = min(công thức cũ, trần × số món). |
+| `cau_ca.cho_min_giay` | Câu cá: chờ cá cắn tối thiểu (giây) | Cố định (ẩn) | `6` | ngay | game | Sau khi thả câu, cá cắn câu sau ngẫu nhiên [tối thiểu, tối đa] giây (server quyết định). |
+| `cau_ca.cho_max_giay` | Câu cá: chờ cá cắn tối đa (giây) | Cố định (ẩn) | `15` | ngay | game | Nhỏ hơn tối thiểu thì dùng tối thiểu. |
+| `cau_ca.cho_them_ho_lon_giay` | Câu cá: chờ thêm ở hồ lớn (giây) | Cố định (ẩn) | `3` | ngay | game | Hồ lớn (có cá hiếm) chờ lâu hơn ngần này giây (cả hai đầu khoảng). |
+| `cau_ca.cua_so_ms` | Câu cá: khung kéo cần (ms) | Cố định (ẩn) | `1500` | ngay | game | Sau dấu "Cá cắn câu!", phải kéo cần trong ngần này mili giây; sớm hoặc muộn thì cá thoát. |
+| `cau_ca.tre_mang_ms` | Câu cá: bù trễ mạng (ms) | Cố định (ẩn) | `700` | ngay | game | Lệnh kéo cần tới server muộn thêm tối đa ngần này ms vẫn tính đúng lúc (bù đường truyền hai chiều). |
+| `cau_ca.trong_phan_tram` | Câu cá: tỉ lệ không câu được gì (%) | Cố định (ẩn) | `30` | ngay | game | Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất). |
+| `cau_ca.hoi_giay` | Câu cá: nghỉ giữa hai lần thả (giây) | Cố định (ẩn) | `3` | ngay | game | Sau khi một lần câu kết thúc, chờ ngần này giây mới thả câu tiếp. |
+| `cau_ca.giam_tu_lan_gio` | Câu cá: số lần câu được mỗi giờ trước khi giảm | Cố định (ẩn) | `30` | ngay | game | Trong một giờ đồng hồ, câu được quá ngần này lần thì tỉ lệ không được gì tăng dần (chống cày). |
+| `cau_ca.giam_moi_lan_phan_tram` | Câu cá: tăng tỉ lệ trượt mỗi lần vượt (%) | Cố định (ẩn) | `2` | ngay | game | Mỗi lần câu được vượt mốc trong giờ cộng ngần này % vào tỉ lệ không được gì. |
+| `cau_ca.trong_toi_da_phan_tram` | Câu cá: tỉ lệ không được gì tối đa (%) | Cố định (ẩn) | `75` | ngay | game | Trần của tỉ lệ không được gì sau khi cộng giảm theo giờ. |
 
 #### Sự kiện & giftcode (`su_kien`)
 
@@ -611,6 +622,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|
 | `sv.chiSoMayChu` | Ghi chỉ số máy chủ + đọc bao_tri.txt | Luôn bật (ẩn) | `1` | khởi động lại | game | 0 = tắt luồng chỉ số (tob_chi_so_may_chu). |
+| `sv.nhacCapNhat` | Nhắc khi có bản mới | Cố định (ẩn) | `1` | ngay | game | Client cũ hơn bản mới nhất thấy thẻ Đã có bản mới (Cập nhật ngay / Để sau, nhắc một lần mỗi ngày). Không chặn chơi. Cố định bật; tắt khẩn cấp: sv.nhacCapNhat=0 trong server.ini. |
 
 #### Chế độ game (cố định) (`che_do`)
 
@@ -618,7 +630,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 |---|---|---|---|---|---|---|
 | `sv.lau_dai` | Thiết kế dài hạn | Luôn bật (ẩn) | `1` | khởi động lại | game | 1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động. |
 | `sv.he_sinh_thai` | Hệ sinh thái | Luôn bật (ẩn) | `1` | khởi động lại | game | 1 = bật hệ sinh thái thế giới (data_hst_*, tob_hst_*). |
-| `ban_do.khoa.bat` | Khoá bản đồ theo cấp / cửa ải | Chính | `1` | ngay | game | 1 = bản đồ cần đủ cấp và xong cửa ải (bảng `data_ban_do_mo_khoa`) mới vào được, kèm luật Tự động đánh theo bản đồ; 0 = mở mọi bản đồ (người chơi cũ luôn được miễn trừ theo cấp). |
+| `ban_do.khoa.bat` | Khoá bản đồ theo cấp / cửa ải | Luôn bật (ẩn) | `1` | ngay | game | 1 = bản đồ cần đủ cấp và xong cửa ải (bảng `data_ban_do_mo_khoa`) mới vào được, kèm luật Tự động đánh theo bản đồ; 0 = mở mọi bản đồ (người chơi cũ luôn được miễn trừ theo cấp). |
 | `sv.tran_cap_theo_mua` | Trần cấp theo mùa | Cố định (ẩn) | `0` | khởi động lại | game | 1 = bật lại trần cấp 60→100 theo ngày khai trương (thiết kế cũ). 0 = không trần, lên cấp chậm + vật phẩm tăng tốc. |
 | `sv.tua_nhanh_ngay` | Tua nhanh thử nghiệm (ngày) | Cố định (ẩn) | `0` | khởi động lại | game | Cộng thêm N ngày vào ngày hiện tại của lịch dài hạn (thử mùa, vé mùa, lịch). chỉ máy thử — máy thật luôn 0. (máy thật chỉ nhận mặc định) |
 
@@ -684,6 +696,8 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chi_so.tran_khang_he` | Trần kháng một hệ (‰) | Cố định (ẩn) | `600` | ngay | game | Kháng hệ + kháng mọi hệ + phiến đá. |
 | `chi_so.san_sat_thuong` | Sàn sát thương mỗi đòn (‰) | Cố định (ẩn) | `400` | ngay | game | Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử). |
 | `chi_so.tran_phan_tram_cong` | Trần tổng % cộng thêm (‰) | Cố định (ẩn) | `500` | ngay | game | Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc. |
+| `danh_hieu.bat` | Bật danh hiệu thành tựu | Cố định (ẩn) | `1` | ngay | game | 0 = ngừng tự mở khoá danh hiệu và tắt dòng chỉ số của danh hiệu đang đeo (danh hiệu đã có vẫn giữ, vẫn hiện trên đầu). Danh mục + điều kiện ở bảng data_danh_hieu. |
+| `danh_hieu.tran_phan_nghin` | Trần chỉ số ô danh hiệu (‰) | Cố định (ẩn) | `10` | ngay | game | Ngân sách ô danh hiệu (thiết kế cân bằng 4.5, đề xuất 1%): chỉ một danh hiệu đang đeo được tính, giá trị từng danh hiệu (data_danh_hieu.phan_nghin) bị kẹp về trần này và vào trần tổng trang trí. 10 = +1%. |
 
 #### Hồi sinh — luật (cố định) (`hoi_sinh`)
 

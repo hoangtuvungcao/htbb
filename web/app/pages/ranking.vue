@@ -15,7 +15,7 @@ useSeoMeta({
 interface LuaChon { gt: string, nhan: string }
 interface BangCK { ma: string, ten: string, icon: string, nhom: string, moTa: string, trongGame: boolean, boLoc: Array<{ khoa: string, nhan: string, lua: LuaChon[], macDinh: string }> }
 interface DanhSach { bang: BangCK[], moiTrang: number, lamMoiGiay: number, loi?: boolean }
-interface Dong { hang: number, ten: string, loai: string, dex: number, shiny: boolean, vung: number, giaTri: number | null, phu: string, bac?: string }
+interface Dong { hang: number, ten: string, loai: string, dex: number, shiny: boolean, vung: number, giaTri: number | null, phu: string, bac?: string, danhHieu?: { ten: string, doHiem: number } }
 interface KetQua { ma: string, ten: string, laDoi: boolean, cot: { ten: string, giaTri: string, phu: string }, dong: Dong[], loc: Record<string, string>, ghiChu: string, capNhatLuc: string, loi: boolean }
 
 const route = useRoute()
@@ -72,6 +72,7 @@ const rows = computed<RankRow[]>(() => dongTrang.value.map((d) => {
   if (d.vung >= 0 && d.vung <= 2) nhan.push(VUNG[d.vung]!)
   if (d.shiny) nhan.push('✦ Shiny')
   if (d.bac) nhan.push(d.bac)
+  if (d.danhHieu?.ten) nhan.push(d.danhHieu.ten)   // 0.9.7 danh hiệu đang đeo (data_danh_hieu)
   const sub = [d.loai, d.phu].filter(Boolean).join(' · ')
   return { name: d.ten, sub, anh: d.dex ? anhPokemon(d.dex) : '', value: d.giaTri, hang: d.hang, nhan }
 }))

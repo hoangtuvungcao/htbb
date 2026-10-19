@@ -37,6 +37,20 @@ final class DayDu {
     }
 
     /** Toan van sql/nang_cap.sql. */
+    /**
+     * Mot phan cua sql/nang_cap.sql gop tu tep SQL le cu (mot tep SQL): tu dong "-- >>> {@code tep}" toi dong "-- >>> "
+     * ke tiep (hoac het tep). "" neu khong co. Lenh danh muc cau hinh cua tep cu nam o phan 2 (khong o day).
+     */
+    static String phanNangCap(final String tep) {
+        final String s = nangCap();
+        final int a = s.indexOf("-- >>> " + tep + "\n");
+        if (a < 0) {
+            return "";
+        }
+        final int b = s.indexOf("\n-- >>> ", a + 1);
+        return b < 0 ? s.substring(a) : s.substring(a, b + 1);
+    }
+
     static String nangCap() {
         return doc(TEP_NANG_CAP);
     }

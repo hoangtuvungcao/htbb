@@ -75,8 +75,10 @@ public final class KiemIconPokemon {
                 final int id = Integer.parseInt(r.get(0));
                 if (id >= 1001 && id <= 1199) {
                     noiDung++;
-                } else if (id >= 1201 && id <= 1260) {
-                    // Dai 1201..1260 = vat pham dung lau dai (data_vat_pham_lau_dai), khong tinh vao bang goc.
+                } else if (id >= 1201 && id <= 1260 || id == com.htbb.pokemon.PhaKhoaLogic.ID_DA_PHA_KHOA) {
+                    // + Da pha khoa (sql/sua_096_1_logic.sql khoi [khoa-khi-mac]) - vat pham moi, khong thuoc bang goc.
+                    // Dai 1201..1260 = vat pham dung lau dai (tools/pokemon/sinh_vat_pham_lau_dai.py ->
+                    // sql/pokemon_vat_pham_lau_dai.sql), khong tinh vao bang goc.
                     continue;
                 } else {
                     goc++;

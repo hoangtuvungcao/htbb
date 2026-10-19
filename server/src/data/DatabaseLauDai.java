@@ -939,6 +939,11 @@ public final class DatabaseLauDai {
     // ------------------------------------------------------------------ chung
 
     /** executeUpdate voi tham so bind; -1 neu loi. */
+    /** {@link #ghi} cho lop ngoai goi (real.XepHangPvpGame): so dong da doi, -1 = loi. */
+    public static int ghiCong(final String sql, final Object... thamSo) {
+        return ghi(sql, thamSo);
+    }
+
     static int ghi(final String sql, final Object... thamSo) {
         Connection conn = null;
         PreparedStatement pre = null;

@@ -56,6 +56,10 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
    0.9.6 (mô tả thẻ Linux tải game trong `web_cai_dat`).
 9. thách đấu cược xu ký quỹ + phí, lì xì Tết có trần (main bda0e901): bảng `tob_gioi_han_qua`, `tob_thach_dau_ky_quy`
    (danh mục nhóm `cuoc_xu` ở mục 2).
+10. 0.9.7 (main 1a705be6): sửa logic 0.9.6.1 (sàn hồi chiêu / PP / MP trong `data_noi_dung_chieu`, Đá phá khoá 1295,
+    `data_pha_khoa_*`), PvP xếp hạng (`tob_pvp_tran`, `tob_pvp_thuong`), cập nhật client (trường `ban` của
+    `web_cai_dat.taiGame`), danh hiệu (`data_danh_hieu*`, `tob_danh_hieu_*`), điểm móc nhiệm vụ
+    (`data_su_kien_vat_pham`, `tob_nhiem_vu_cho`).
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở

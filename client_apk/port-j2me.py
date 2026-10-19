@@ -120,6 +120,8 @@ VA_HD = [
     ("DAU", "game/render/screen/CauGiaoDien.java", r"\n    public static void moCaiDat\(\)", " if (%s) { %sHud.moCaiDat(); return; }" % (HUD, HD)),
     # HUD màn rộng chung (HudRong, bản PC): APK có HUD HD riêng (Hud.java) -> tắt, khỏi vẽ / nhận chạm chồng
     ("DAU", "game/render/screen/HudRong.java", r"\n    public static boolean bat\(\)", " if (%s) { return false; }" % HUD),
+    # HUD HD có nút chiêu riêng: chạm chiêu khi đang nhắm NPC không mở cửa hàng / menu NPC (GameScr.doFire)
+    ("DAU", "game/pokemon/HanhDong.java", r"\n    public static boolean nutChieuRieng\(\)", " if (%s) { return true; }" % HUD),
     # toạ độ chạm logic -> thế giới (HanhDong: chọn quái / NPC khi chạm): camera cố định phóng 2 (HdZoom)
     ("DAU", "game/pokemon/HanhDong.java", r"\n    public static int wx\(int px\)", " if (true) { return %sHdZoom.wx(GameScr.cmx, px); }" % HD),
     ("DAU", "game/pokemon/HanhDong.java", r"\n    public static int wy\(int py\)", " if (true) { return %sHdZoom.wy(GameScr.cmy, py); }" % HD),
@@ -219,10 +221,13 @@ VA_CAMERA = [
      "        %sHdZoom.batDau(g, this);   // apk: lớp thế giới phóng 2\n"
      "        %sHdZoom.nen(g, cmx - 5, cmy - 5, gsw + 10, gsh + 10);\n" % (HD, HD),
      1),
+    # 0.9.6.2: hết lớp thế giới TRƯỚC "if (laNen) return" - GameScr.veNen (thế giới làm nền cho Menu / bảng) trước đây
+    # thoát sớm khi phép phóng x2 còn bật -> Menu chính / bảng vẽ phóng x2 tràn màn, chạm lệch (không bấm được)
     ("game/render/screen/GameScr.java",
-     "            paintFocusActorInfo(g);\n            paintMainCharInfo(g);\n",
-     "            %sHdZoom.ket(g);   // apk: hết lớp thế giới -> HUD\n"
-     "            paintFocusActorInfo(g);\n            paintMainCharInfo(g);\n" % HD,
+     "        game.pokemon.NhipVe.hetTheGioi();\n        if (laNen) {\n",
+     "        game.pokemon.NhipVe.hetTheGioi();\n"
+     "        %sHdZoom.ket(g);   // apk: hết lớp thế giới -> HUD / bảng phía trên (cả khi chỉ vẽ làm nền)\n"
+     "        if (laNen) {\n" % HD,
      1),
     ("game/render/screen/GameScr.java", "cmx + Canvas.px", "%sHdZoom.wx(cmx, Canvas.px)" % HD, 3),
     ("game/render/screen/GameScr.java", "cmy + Canvas.py", "%sHdZoom.wy(cmy, Canvas.py)" % HD, 3),

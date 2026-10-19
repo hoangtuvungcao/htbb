@@ -22,8 +22,8 @@ public final class KhoaBanDoGame {
 
     public static final String K_BAT = "ban_do.khoa.bat";
     public static final int LENH = -108;
-    /** Client dau tien doc goi -108 (BAN 907 = ban phat hanh ke tiep; ban 906 da phat hanh KHONG co bo doc). */
-    public static final int BAN_CLIENT = 907;
+    /** Client dau tien doc goi -108: BAN 908 (0.9.8). Ban 906 / 907 da phat hanh KHONG co bo doc - chi nhan the -104. */
+    public static final int BAN_CLIENT = 908;
 
     /** charDBID -> moc mien tru (giu ca khi thoat: vai so nguyen / nhan vat, tranh dua giua phien cu va moi). */
     private static final ConcurrentHashMap<Integer, Integer> MIEN = new ConcurrentHashMap<Integer, Integer>();

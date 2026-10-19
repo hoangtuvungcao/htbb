@@ -101,6 +101,31 @@ public final class NhiemVuMau {
         }
     }
 
+    /**
+     * 0.9.6: chan nhan lai (real.NhiemVuEngine.nhan). {@code v} = dong tien do dang co (null = chua nhan bao gio),
+     * {@code ky} = ky hien tai cua mau. Cung luat voi danh sach (dsCoTheNhan) - truoc day nhan() khong kiem, goi menu
+     * cu nhan lai dat dong da tra thuong (v[1] = 2) ve 0 -> thuong ngay / tuan / thanh tuu lanh lai vo han.
+     * @return ly do chan, null neu nhan duoc
+     */
+    public static String chanNhanLai(final NhiemVuMau m, final long[] v, final int ky) {
+        if (m == null) {
+            return "Không nhận được.";
+        }
+        if (m.laThanhTuu()) {
+            return "Thành tựu tự ghi nhận, không cần nhận.";
+        }
+        if (v == null) {
+            return null;
+        }
+        if (!(m.laNgay() || m.laTuan() || m.laSuKien())) {
+            return "Đã nhận nhiệm vụ này.";
+        }
+        if (v.length > 2 && v[2] == ky) {
+            return "Đã nhận nhiệm vụ này trong kỳ này.";
+        }
+        return null;
+    }
+
     /** Nhiem vu phu "chiem khe" (toi da 3 cung luc). Cua ai (khoa ban do) khong chiem khe. */
     public boolean chiemKhe() {
         return !chuoiNam2 && !laNgay() && !laTuan() && !laThanhTuu() && !laSuKien() && !laCuaAi();

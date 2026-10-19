@@ -4090,86 +4090,100 @@ INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_di
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('chi_so.tran_khang_he', 'chi_so', 'Trần kháng một hệ (‰)', 'Kháng hệ + kháng mọi hệ + phiến đá.', 'so', '600', '{"min": 0, "max": 900}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.ChiSoTrangBiGame', 174, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('chi_so.san_sat_thuong', 'chi_so', 'Sàn sát thương mỗi đòn (‰)', 'Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử).', 'so', '400', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.ChiSoTrangBiGame', 175, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('chi_so.tran_phan_tram_cong', 'chi_so', 'Trần tổng % cộng thêm (‰)', 'Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc.', 'so', '500', '{"min": 0, "max": 5000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.ChiSoTrangBiGame', 176, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('pvp.tinh_diem.bat', 'pvp', 'Tính điểm thang PvP', '0 = trận PvP không cộng/trừ điểm thang.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.ThangPvpGame', 177, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('gym.bat', 'pvp', 'Thách đấu Gym', '0 = tạm đóng Gym.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.GymLauDai', 178, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('ham_nguc.bat', 'pvp', 'Hầm Ngục bí ẩn', '0 = không vào tầng mới (vẫn nhận thưởng đã đạt).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.SoTayLauDai#hamNguc', 179, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.bat', 'tu_dong', 'Bật Tự động đánh', '0 = tạm khoá (người đang dùng bị dừng ở lần kiểm tiếp theo).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 180, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.gio_moi_ngay', 'tu_dong', 'Giờ Tự động đánh mỗi ngày', 'Miễn phí, chỉ tính lúc online và đang bật. Đặt lại lúc 00:00.', 'so', '5', '{"min": 0, "max": 24}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 181, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.gio_them_the_thang', 'tu_dong', 'Giờ cộng thêm khi có thẻ tháng', 'Cộng vào giờ mỗi ngày khi thẻ tháng còn hạn.', 'so', '2', '{"min": 0, "max": 24}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 182, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chi_map_da_mo', 'tu_dong', 'Chỉ ở bãi luyện tập', '1 = chỉ bật ở bản đồ có Pokémon hoang dã đã mở (không ở thành phố, nhà, sàn đấu, sự kiện).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 183, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.tat_khi_pvp', 'tu_dong', 'Dừng khi PvP / sàn đấu / Gym / boss', '1 = dừng khi bị Pokémon khác tấn công, bật PK, vào sàn đấu / Gym / chiến trường hay đánh boss.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 184, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.tu_dung_thuoc', 'tu_dong', 'Cho tự uống thuốc', '0 = Tự động đánh không tự uống thuốc hồi phục (người chơi tự bấm).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 185, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.ban_kinh', 'tu_dong', 'Bán kính tối đa (px)', 'Pokémon chỉ đánh quanh điểm bật trong bán kính này; ra xa hơn (+64 px) thì dừng. 1 ô = 16 px.', 'so', '240', '{"min": 48, "max": 960, "buoc": 16}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 186, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_danh', 'tu_dong', 'Nhịp đánh tối đa khi tự động', 'số lệnh đánh / giây (vd 12/5). Vượt thì bỏ lệnh và tính vi phạm.', 'nhip', '12/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 187, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_thuoc', 'tu_dong', 'Nhịp uống thuốc tối đa khi tự động', '', 'nhip', '4/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 188, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_nhat', 'tu_dong', 'Nhịp nhặt đồ tối đa khi tự động', '', 'nhip', '8/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 189, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_nguoi', 'tu_dong', 'Nhịp đánh nghi bot (mọi người chơi)', 'Chỉ ghi nghi vấn (hack.txt), không chặn.', 'nhip', '30/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 190, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.vi_pham_tat', 'tu_dong', 'Số vi phạm nhịp thì dừng', 'Dừng Tự động đánh + ghi nghi vấn.', 'so', '20', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 191, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hoi_sinh_moi_gio', 'tu_dong', 'Tự hồi sinh tối đa / giờ', 'Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật "Tự hồi sinh", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ.', 'so', '2', '{"min": 0, "max": 20}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 192, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.ke_hoach', 'tu_dong', 'Máy chủ điều khiển từng bước', '1 = máy chủ chọn mục tiêu, chiêu, thuốc, nhặt đồ, rút lui cho client 0.9.2+ (client chỉ thực hiện). 0 = client tự chọn như bản 0.9.1 (máy chủ vẫn giới hạn giờ / nhịp / vùng).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 193, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.cap_toi_thieu', 'tu_dong', 'Cấp tối thiểu để bật', '0 = mọi cấp. Dưới cấp này bấm Bắt đầu thì được báo rõ cấp cần.', 'so', '0', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 194, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chenh_cap_tren', 'tu_dong', 'Bỏ Pokémon cao hơn quá N cấp', 'Không đánh Pokémon hoang dã cao hơn cấp mình quá ngần này. -1 = không giới hạn.', 'so', '5', '{"min": -1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 195, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chenh_cap_duoi', 'tu_dong', 'Bỏ Pokémon thấp hơn quá N cấp', '0 = không giới hạn dưới (vẫn đánh Pokémon yếu).', 'so', '0', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 196, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.danh_boss', 'tu_dong', 'Cho đánh boss', '0 = không chọn boss / Pokémon huyền thoại làm mục tiêu (đánh trúng boss vẫn dừng theo tu_dong.tat_khi_pvp).', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 197, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hp_quai_toi_da_pt', 'tu_dong', 'Bỏ Pokémon quá trâu (% HP mình)', 'Bỏ Pokémon có HP tối đa lớn hơn ngần này % HP tối đa của mình. 0 = tắt.', 'so', '500', '{"min": 0, "max": 100000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 198, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chon_chieu_theo_he', 'tu_dong', 'Chọn chiêu theo khắc hệ', '1 = điểm chiêu = sát thương × khắc hệ × STAB, bỏ chiêu đang hồi / thiếu PP. 0 = chỉ theo sát thương.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 199, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nguong_thuoc_hp', 'tu_dong', 'Ngưỡng thuốc HP mặc định (%)', 'Uống thuốc HP khi HP dưới ngưỡng người chơi chọn trong bảng; client cũ dùng số này. 0 = máy chủ không cho tự uống thuốc HP.', 'so', '50', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 200, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nguong_thuoc_mp', 'tu_dong', 'Ngưỡng thuốc PP mặc định (%)', 'Như trên cho PP. 0 = tắt.', 'so', '30', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 201, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nguong_hp_thap', 'tu_dong', 'HP thấp thì rút lui (%)', 'HP dưới ngưỡng mà hết thuốc: rút về điểm bắt đầu nghỉ (hoặc dừng nếu tu_dong.hp_thap_dung=1). 0 = tắt.', 'so', '25', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 202, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hp_thap_dung', 'tu_dong', 'HP thấp thì dừng hẳn', '1 = dừng Tự động đánh thay vì rút lui nghỉ hồi phục.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 203, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hoi_phuc_toi', 'tu_dong', 'Nghỉ hồi phục tới (%)', 'Rút lui nghỉ tới khi HP đạt ngần này % rồi đánh tiếp.', 'so', '80', '{"min": 10, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 204, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhat_ban_kinh', 'tu_dong', 'Bán kính nhặt đồ (px)', 'Chỉ đi nhặt đồ rơi của mình trong bán kính này quanh Pokémon (và trong vùng). 0 = không nhặt. 1 ô = 16 px.', 'so', '96', '{"min": 0, "max": 480, "buoc": 16}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 205, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.dung_khi_day_tui', 'tu_dong', 'Dừng khi hành trang đầy', '1 = hành trang đầy thì dừng và báo.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 206, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.dung_khi_tu_di', 'tu_dong', 'Dừng khi người chơi tự di chuyển', '1 = bấm phím di chuyển / chạm bản đồ thì dừng Tự động đánh. 0 = nhường 3 giây rồi chạy tiếp.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 207, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.tranh_pk_px', 'tu_dong', 'Tránh người bật PK (px)', 'Có người chơi khác bật PK trong bán kính này thì lùi về điểm bắt đầu chờ. 0 = tắt.', 'so', '160', '{"min": 0, "max": 960, "buoc": 16}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 208, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.map_cam', 'tu_dong', 'Bản đồ cấm Tự động đánh thêm (id)', 'Ngoài sàn đấu / Gym / chiến trường / mê cung / bản đồ boss. Cách nhau dấu phẩy; trống = không.', 'chuoi', '', '{"mau": "^[0-9, ]*$", "doDai": 255}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 209, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hoi_sinh_tra_phi', 'tu_dong', 'Cho tự dùng vật phẩm hồi sinh trả phí', '1 = khi người chơi đồng ý riêng (bảng Tự động: Tự hồi sinh "cả vật phẩm lượng") mới được tự dùng Thuốc hồi sinh tối đa (lượng khoá). 0 = chỉ Thuốc hồi sinh thường; không bao giờ tự trả xu / lượng.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 210, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.bat', 'hoi_sinh', 'Bật cơ chế hồi sinh mới', '0 = luồng cũ (popup hồi sinh tại chỗ 5% giờ thu nhập, tự hồi sinh dưới cấp 50).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 211, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.xu_phan_tram_gio', 'tu_dong', 'Phí xu tại chỗ (% thu nhập 1 giờ)', 'Theo cấp (ThongSoLauDai.xuMoiGio). 40 = 0,4 giờ cày. Nhân hệ số gục lặp.', 'so', '40', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 212, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.xu_toi_thieu', 'tu_dong', 'Phí xu tại chỗ tối thiểu', 'Xu.', 'so', '200', '{"min": 0, "max": 100000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 213, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.he_so_lap', 'hoi_sinh', 'Hệ số gục lặp (%)', 'Lần gục thứ 1, 2, 3... trong cửa sổ; lần sau dùng số cuối (trần). Áp cho phí xu và lượng khoá.', 'ds_so', '100,150,200,300', '{"min": 0, "max": 10000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 214, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cua_so_phut', 'hoi_sinh', 'Cửa sổ gục lặp (phút)', 'Đếm số lần gục trong ngần này phút.', 'so', '30', '{"min": 1, "max": 1440}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 215, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.luong_khoa', 'tu_dong', 'Phí lượng khoá tại chỗ', '0 = tắt lựa chọn trả lượng khoá. Nhân hệ số gục lặp (làm tròn lên).', 'so', '2', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 216, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.luong_khoa_toi_da', 'tu_dong', 'Trần phí lượng khoá', 'Lượng khoá tối đa một lần.', 'so', '10', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 217, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cho_sau_guc_giay', 'hoi_sinh', 'Chờ sau khi gục (giây)', 'Hồi sinh tại chỗ chỉ bấm được sau ngần này giây (đếm ngược trên hộp thoại).', 'so', '5', '{"min": 0, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 218, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.hoi_chieu_giay', 'tu_dong', 'Hồi chiêu hồi sinh tại chỗ (giây)', 'Giữa hai lần hồi sinh tại chỗ. Về Trung tâm luôn được.', 'so', '60', '{"min": 0, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 219, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.hp_thuoc', 'hoi_sinh', 'HP khi dùng Thuốc hồi sinh (%)', 'Thuốc hồi sinh tối đa lấy % trong data_vat_pham_lau_dai (hoi_sinh:100).', 'so', '30', '{"min": 1, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 220, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.hp_tra_phi', 'hoi_sinh', 'HP khi trả xu / lượng khoá / tân thủ (%)', '', 'so', '50', '{"min": 1, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 221, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.exp_mat_phan_nghin', 'hoi_sinh', 'Mất EXP khi về Trung tâm (phần nghìn)', 'Phần nghìn EXP lên cấp hiện tại (20 = 2%). Không bao giờ tụt cấp: chỉ trừ trong tiến độ cấp.', 'so', '20', '{"min": 0, "max": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 222, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.exp_mat_toi_da_phut', 'hoi_sinh', 'Trần mất EXP (phút cày)', 'Không mất quá ngần này phút EXP đánh quái ở cấp đó. 0 = không chặn.', 'so', '15', '{"min": 0, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 223, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.do_ben_mat_phan_tram', 'hoi_sinh', 'Mất độ bền khi về Trung tâm (%)', '% độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ).', 'so', '5', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 224, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.met_moi_phut', 'hoi_sinh', 'Mệt mỏi (phút)', 'Sau khi về Trung tâm. 0 = tắt.', 'so', '5', '{"min": 0, "max": 120}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 225, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.met_moi_exp', 'hoi_sinh', 'Mệt mỏi: giảm EXP (%)', 'EXP hạ quái.', 'so', '20', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 226, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.met_moi_tan_cong', 'hoi_sinh', 'Mệt mỏi: giảm tấn công (%)', '', 'so', '10', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 227, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.tan_thu_cap', 'tu_dong', 'Bảo vệ tân thủ dưới cấp', 'Dưới cấp này: không mất EXP / độ bền / Mệt mỏi, hồi sinh tại chỗ miễn phí.', 'so', '15', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 228, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.tan_thu_hoi_chieu_giay', 'hoi_sinh', 'Hồi chiêu hồi sinh miễn phí tân thủ (giây)', '', 'so', '30', '{"min": 0, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 229, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.dong_doi_bat', 'hoi_sinh', 'Cho chờ đồng đội hồi sinh', 'Đồng đội ở gần mang Thuốc hồi sinh được mời cứu.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 230, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.dong_doi_giay', 'hoi_sinh', 'Thời gian chờ đồng đội (giây)', '', 'so', '60', '{"min": 10, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 231, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_pvp', 'hoi_sinh', 'Cấm tại chỗ ở PvP / sàn đấu', 'Sàn đấu, giải Liên minh, chiến trường, lãnh địa đội, chiếm Gym đang đánh, đấu trường + hoi_sinh.map_pvp.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 232, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_gym', 'hoi_sinh', 'Cấm tại chỗ khi thách đấu Gym', '', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 233, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_boss', 'hoi_sinh', 'Cấm tại chỗ giữa trận boss', 'Đã gây sát thương vào boss thế giới / Gym còn sống cùng bản đồ.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 234, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_me_cung', 'hoi_sinh', 'Cấm tại chỗ trong Mê cung', '', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 235, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.map_pvp', 'hoi_sinh', 'Bản đồ PvP (id)', 'Thêm vào luật cấm PvP (so cả id bản đồ lẫn id nạp).', 'ds_so', '202,203,204,205,227,228', '{"min": 0, "max": 100000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 236, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.map_cam_them', 'hoi_sinh', 'Bản đồ cấm tại chỗ thêm (id)', 'Cách nhau dấu phẩy; trống = không.', 'chuoi', '', '{"mau": "^[0-9, ]*$", "doDai": 255}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 237, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.auto_ve_map_up', 'hoi_sinh', 'Cho "Auto về Map Up" sau khi gục', '0 = gục thì không tự bay lại bãi luyện (chống treo máy vô hạn).', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 238, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.gia_thuoc_phan_tram_gio', 'tu_dong', 'Giá Thuốc hồi sinh (% thu nhập 1 giờ)', 'Giá ở cửa hàng NPC theo cấp người mua (cùng bậc phí xu tại chỗ). 0 = giá gốc data_potion.', 'so', '30', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 239, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.gia_thuoc_toi_thieu', 'tu_dong', 'Giá Thuốc hồi sinh tối thiểu', 'Xu / viên (không thấp hơn giá gốc).', 'so', '407', '{"min": 0, "max": 100000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 240, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.thuoc_moi_gio', 'hoi_sinh', 'Hồi sinh bằng vật phẩm tối đa / giờ', 'Thuốc hồi sinh / tối đa của chính mình (tay, Tự động đánh, dùng từ túi) trong 60 phút. Đồng đội cứu không tính. 0 = không giới hạn.', 'so', '6', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 241, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.bat', 'thong_bao', 'Gộp thông báo toàn máy chủ', '0 = gửi thẳng như cũ.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.chongspam.ThongBaoGop', 242, 'luon_bat', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.toiDa', 'thong_bao', 'Thông báo tối đa / cửa sổ', '', 'so', '6', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 243, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.cuaSoGiay', 'thong_bao', 'Cửa sổ đếm thông báo (giây)', '', 'so', '60', '{"min": 1, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 244, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.moiLoai', 'thong_bao', 'Tối đa mỗi loại / cửa sổ', '', 'so', '3', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 245, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.trungLapGiay', 'thong_bao', 'Bỏ thông báo trùng (giây)', '', 'so', '120', '{"min": 0, "max": 86400}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 246, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.gopGiay', 'thong_bao', 'Gộp mỗi (giây)', '', 'so', '15', '{"min": 1, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 247, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.website', 'bao_tri', 'Địa chỉ website (hiện trong game)', '', 'chuoi', 'https://huyenthoaibaoboi.fun/', '{"doDai": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.website', 248, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.linkTaiGame', 'bao_tri', 'Link tải game (hiện trong game)', '', 'chuoi', 'https://huyenthoaibaoboi.fun/', '{"doDai": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.linkTaiGame', 249, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.adminAccounts', 'bao_tri', 'Danh sách GM trong game', 'Tên Pokémon GM, cách nhau dấu phẩy.', 'ds_chuoi', '', '{"mau": "^[A-Za-z0-9_]{1,30}$", "doDai": 255}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.adminAccounts', 250, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.gmCanCoPInfo', 'quan_tri', 'GM cần cả cờ pInfo', '1 = quyền GM cần tên trong danh sách VÀ pInfo[16]=1.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.gmCanCoPInfo', 251, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.banToiThieu', 'bao_tri', 'Bản client tối thiểu', '> 0 = từ chối client jar/Android cũ hơn.', 'so', '0', '{"min": 0, "max": 1000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.banToiThieu', 252, 'chinh', 0);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.choPhepTaoTenGM', 'quan_tri', 'Cho tạo Pokémon tên GM', 'Chỉ bật tạm thời.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'data.Database.CHO_PHEP_TAO_TEN_GM', 253, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.testMode', 'quan_tri', 'Chế độ thử (testMode)', 'Mã test cấp tài nguyên miễn phí. Khoá ở máy thật.', 'co', '0', '{}', 'ngay', 0, 1, 0, 'cau_hinh', 'server', 'TeamServer.testMode', 254, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.testCode', 'quan_tri', 'Mã test', 'Chuỗi gõ trong game khi testMode=1.', 'chuoi', '', '{"mau": "^[ -~]*$", "doDai": 64}', 'ngay', 1, 1, 0, 'cau_hinh', 'server', 'TeamServer.testCode', 255, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('ban_do.khoa.bat', 'che_do', 'Khoá bản đồ theo cấp / cửa ải', '1 = bản đồ cần đủ cấp và xong cửa ải (bảng data_ban_do_mo_khoa) mới vào được, kèm luật Tự động đánh theo bản đồ; 0 = mở mọi bản đồ (người chơi cũ luôn được miễn trừ theo cấp).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.KhoaBanDoGame', 256, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('danh_hieu.bat', 'chi_so', 'Bật danh hiệu thành tựu', '0 = ngừng tự mở khoá danh hiệu và tắt dòng chỉ số của danh hiệu đang đeo (danh hiệu đã có vẫn giữ, vẫn hiện trên đầu). Danh mục + điều kiện ở bảng data_danh_hieu.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DanhHieuGame.bat', 177, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('danh_hieu.tran_phan_nghin', 'chi_so', 'Trần chỉ số ô danh hiệu (‰)', 'Ngân sách ô danh hiệu (thiết kế cân bằng 4.5, đề xuất 1%): chỉ một danh hiệu đang đeo được tính, giá trị từng danh hiệu (data_danh_hieu.phan_nghin) bị kẹp về trần này và vào trần tổng trang trí. 10 = +1%.', 'so', '10', '{"min": 0, "max": 30}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DanhHieuGame.tranO', 178, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('pvp.tinh_diem.bat', 'pvp', 'Tính điểm thang PvP', '0 = trận PvP không cộng/trừ điểm thang.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.ThangPvpGame', 179, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('gym.bat', 'pvp', 'Thách đấu Gym', '0 = tạm đóng Gym.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.GymLauDai', 180, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('ham_nguc.bat', 'pvp', 'Hầm Ngục bí ẩn', '0 = không vào tầng mới (vẫn nhận thưởng đã đạt).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.SoTayLauDai#hamNguc', 181, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.bat', 'tu_dong', 'Bật Tự động đánh', '0 = tạm khoá (người đang dùng bị dừng ở lần kiểm tiếp theo).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 182, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.gio_moi_ngay', 'tu_dong', 'Giờ Tự động đánh mỗi ngày', 'Miễn phí, chỉ tính lúc online và đang bật. Đặt lại lúc 00:00.', 'so', '5', '{"min": 0, "max": 24}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 183, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.gio_them_the_thang', 'tu_dong', 'Giờ cộng thêm khi có thẻ tháng', 'Cộng vào giờ mỗi ngày khi thẻ tháng còn hạn.', 'so', '2', '{"min": 0, "max": 24}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 184, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chi_map_da_mo', 'tu_dong', 'Chỉ ở bãi luyện tập', '1 = chỉ bật ở bản đồ có Pokémon hoang dã đã mở (không ở thành phố, nhà, sàn đấu, sự kiện).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 185, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.tat_khi_pvp', 'tu_dong', 'Dừng khi PvP / sàn đấu / Gym / boss', '1 = dừng khi bị Pokémon khác tấn công, bật PK, vào sàn đấu / Gym / chiến trường hay đánh boss.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 186, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.tu_dung_thuoc', 'tu_dong', 'Cho tự uống thuốc', '0 = Tự động đánh không tự uống thuốc hồi phục (người chơi tự bấm).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 187, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.ban_kinh', 'tu_dong', 'Bán kính tối đa (px)', 'Pokémon chỉ đánh quanh điểm bật trong bán kính này; ra xa hơn (+64 px) thì dừng. 1 ô = 16 px.', 'so', '240', '{"min": 48, "max": 960, "buoc": 16}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 188, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_danh', 'tu_dong', 'Nhịp đánh tối đa khi tự động', 'số lệnh đánh / giây (vd 12/5). Vượt thì bỏ lệnh và tính vi phạm.', 'nhip', '12/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 189, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_thuoc', 'tu_dong', 'Nhịp uống thuốc tối đa khi tự động', '', 'nhip', '4/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 190, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_nhat', 'tu_dong', 'Nhịp nhặt đồ tối đa khi tự động', '', 'nhip', '8/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 191, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhip_nguoi', 'tu_dong', 'Nhịp đánh nghi bot (mọi người chơi)', 'Chỉ ghi nghi vấn (hack.txt), không chặn.', 'nhip', '30/5', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 192, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.vi_pham_tat', 'tu_dong', 'Số vi phạm nhịp thì dừng', 'Dừng Tự động đánh + ghi nghi vấn.', 'so', '20', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 193, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hoi_sinh_moi_gio', 'tu_dong', 'Tự hồi sinh tối đa / giờ', 'Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật "Tự hồi sinh", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ.', 'so', '2', '{"min": 0, "max": 20}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 194, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.ke_hoach', 'tu_dong', 'Máy chủ điều khiển từng bước', '1 = máy chủ chọn mục tiêu, chiêu, thuốc, nhặt đồ, rút lui cho client 0.9.2+ (client chỉ thực hiện). 0 = client tự chọn như bản 0.9.1 (máy chủ vẫn giới hạn giờ / nhịp / vùng).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 195, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.cap_toi_thieu', 'tu_dong', 'Cấp tối thiểu để bật', '0 = mọi cấp. Dưới cấp này bấm Bắt đầu thì được báo rõ cấp cần.', 'so', '0', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 196, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chenh_cap_tren', 'tu_dong', 'Bỏ Pokémon cao hơn quá N cấp', 'Không đánh Pokémon hoang dã cao hơn cấp mình quá ngần này. -1 = không giới hạn.', 'so', '5', '{"min": -1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 197, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chenh_cap_duoi', 'tu_dong', 'Bỏ Pokémon thấp hơn quá N cấp', '0 = không giới hạn dưới (vẫn đánh Pokémon yếu).', 'so', '0', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 198, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.danh_boss', 'tu_dong', 'Cho đánh boss', '0 = không chọn boss / Pokémon huyền thoại làm mục tiêu (đánh trúng boss vẫn dừng theo tu_dong.tat_khi_pvp).', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 199, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hp_quai_toi_da_pt', 'tu_dong', 'Bỏ Pokémon quá trâu (% HP mình)', 'Bỏ Pokémon có HP tối đa lớn hơn ngần này % HP tối đa của mình. 0 = tắt.', 'so', '500', '{"min": 0, "max": 100000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 200, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.chon_chieu_theo_he', 'tu_dong', 'Chọn chiêu theo khắc hệ', '1 = điểm chiêu = sát thương × khắc hệ × STAB, bỏ chiêu đang hồi / thiếu PP. 0 = chỉ theo sát thương.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 201, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nguong_thuoc_hp', 'tu_dong', 'Ngưỡng thuốc HP mặc định (%)', 'Uống thuốc HP khi HP dưới ngưỡng người chơi chọn trong bảng; client cũ dùng số này. 0 = máy chủ không cho tự uống thuốc HP.', 'so', '50', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 202, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nguong_thuoc_mp', 'tu_dong', 'Ngưỡng thuốc PP mặc định (%)', 'Như trên cho PP. 0 = tắt.', 'so', '30', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 203, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nguong_hp_thap', 'tu_dong', 'HP thấp thì rút lui (%)', 'HP dưới ngưỡng mà hết thuốc: rút về điểm bắt đầu nghỉ (hoặc dừng nếu tu_dong.hp_thap_dung=1). 0 = tắt.', 'so', '25', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 204, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hp_thap_dung', 'tu_dong', 'HP thấp thì dừng hẳn', '1 = dừng Tự động đánh thay vì rút lui nghỉ hồi phục.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 205, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hoi_phuc_toi', 'tu_dong', 'Nghỉ hồi phục tới (%)', 'Rút lui nghỉ tới khi HP đạt ngần này % rồi đánh tiếp.', 'so', '80', '{"min": 10, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 206, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.nhat_ban_kinh', 'tu_dong', 'Bán kính nhặt đồ (px)', 'Chỉ đi nhặt đồ rơi của mình trong bán kính này quanh Pokémon (và trong vùng). 0 = không nhặt. 1 ô = 16 px.', 'so', '96', '{"min": 0, "max": 480, "buoc": 16}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 207, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.dung_khi_day_tui', 'tu_dong', 'Dừng khi hành trang đầy', '1 = hành trang đầy thì dừng và báo.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 208, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.dung_khi_tu_di', 'tu_dong', 'Dừng khi người chơi tự di chuyển', '1 = bấm phím di chuyển / chạm bản đồ thì dừng Tự động đánh. 0 = nhường 3 giây rồi chạy tiếp.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 209, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.tranh_pk_px', 'tu_dong', 'Tránh người bật PK (px)', 'Có người chơi khác bật PK trong bán kính này thì lùi về điểm bắt đầu chờ. 0 = tắt.', 'so', '160', '{"min": 0, "max": 960, "buoc": 16}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.TuDongKeHoach', 210, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.map_cam', 'tu_dong', 'Bản đồ cấm Tự động đánh thêm (id)', 'Ngoài sàn đấu / Gym / chiến trường / mê cung / bản đồ boss. Cách nhau dấu phẩy; trống = không.', 'chuoi', '', '{"mau": "^[0-9, ]*$", "doDai": 255}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 211, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('tu_dong.hoi_sinh_tra_phi', 'tu_dong', 'Cho tự dùng vật phẩm hồi sinh trả phí', '1 = khi người chơi đồng ý riêng (bảng Tự động: Tự hồi sinh "cả vật phẩm lượng") mới được tự dùng Thuốc hồi sinh tối đa (lượng khoá). 0 = chỉ Thuốc hồi sinh thường; không bao giờ tự trả xu / lượng.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.TuDongGame', 212, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.bat', 'hoi_sinh', 'Bật cơ chế hồi sinh mới', '0 = luồng cũ (popup hồi sinh tại chỗ 5% giờ thu nhập, tự hồi sinh dưới cấp 50).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 213, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.xu_phan_tram_gio', 'tu_dong', 'Phí xu tại chỗ (% thu nhập 1 giờ)', 'Theo cấp (ThongSoLauDai.xuMoiGio). 40 = 0,4 giờ cày. Nhân hệ số gục lặp.', 'so', '40', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 214, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.xu_toi_thieu', 'tu_dong', 'Phí xu tại chỗ tối thiểu', 'Xu.', 'so', '200', '{"min": 0, "max": 100000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 215, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.he_so_lap', 'hoi_sinh', 'Hệ số gục lặp (%)', 'Lần gục thứ 1, 2, 3... trong cửa sổ; lần sau dùng số cuối (trần). Áp cho phí xu và lượng khoá.', 'ds_so', '100,150,200,300', '{"min": 0, "max": 10000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 216, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cua_so_phut', 'hoi_sinh', 'Cửa sổ gục lặp (phút)', 'Đếm số lần gục trong ngần này phút.', 'so', '30', '{"min": 1, "max": 1440}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 217, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.luong_khoa', 'tu_dong', 'Phí lượng khoá tại chỗ', '0 = tắt lựa chọn trả lượng khoá. Nhân hệ số gục lặp (làm tròn lên).', 'so', '2', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 218, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.luong_khoa_toi_da', 'tu_dong', 'Trần phí lượng khoá', 'Lượng khoá tối đa một lần.', 'so', '10', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 219, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cho_sau_guc_giay', 'hoi_sinh', 'Chờ sau khi gục (giây)', 'Hồi sinh tại chỗ chỉ bấm được sau ngần này giây (đếm ngược trên hộp thoại).', 'so', '5', '{"min": 0, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 220, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.hoi_chieu_giay', 'tu_dong', 'Hồi chiêu hồi sinh tại chỗ (giây)', 'Giữa hai lần hồi sinh tại chỗ. Về Trung tâm luôn được.', 'so', '60', '{"min": 0, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 221, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.hp_thuoc', 'hoi_sinh', 'HP khi dùng Thuốc hồi sinh (%)', 'Thuốc hồi sinh tối đa lấy % trong data_vat_pham_lau_dai (hoi_sinh:100).', 'so', '30', '{"min": 1, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 222, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.hp_tra_phi', 'hoi_sinh', 'HP khi trả xu / lượng khoá / tân thủ (%)', '', 'so', '50', '{"min": 1, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 223, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.exp_mat_phan_nghin', 'hoi_sinh', 'Mất EXP khi về Trung tâm (phần nghìn)', 'Phần nghìn EXP lên cấp hiện tại (20 = 2%). Không bao giờ tụt cấp: chỉ trừ trong tiến độ cấp.', 'so', '20', '{"min": 0, "max": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 224, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.exp_mat_toi_da_phut', 'hoi_sinh', 'Trần mất EXP (phút cày)', 'Không mất quá ngần này phút EXP đánh quái ở cấp đó. 0 = không chặn.', 'so', '15', '{"min": 0, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 225, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.do_ben_mat_phan_tram', 'hoi_sinh', 'Mất độ bền khi về Trung tâm (%)', '% độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ).', 'so', '5', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 226, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.met_moi_phut', 'hoi_sinh', 'Mệt mỏi (phút)', 'Sau khi về Trung tâm. 0 = tắt.', 'so', '5', '{"min": 0, "max": 120}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 227, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.met_moi_exp', 'hoi_sinh', 'Mệt mỏi: giảm EXP (%)', 'EXP hạ quái.', 'so', '20', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 228, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.met_moi_tan_cong', 'hoi_sinh', 'Mệt mỏi: giảm tấn công (%)', '', 'so', '10', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 229, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.tan_thu_cap', 'tu_dong', 'Bảo vệ tân thủ dưới cấp', 'Dưới cấp này: không mất EXP / độ bền / Mệt mỏi, hồi sinh tại chỗ miễn phí.', 'so', '15', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 230, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.tan_thu_hoi_chieu_giay', 'hoi_sinh', 'Hồi chiêu hồi sinh miễn phí tân thủ (giây)', '', 'so', '30', '{"min": 0, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 231, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.dong_doi_bat', 'hoi_sinh', 'Cho chờ đồng đội hồi sinh', 'Đồng đội ở gần mang Thuốc hồi sinh được mời cứu.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 232, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.dong_doi_giay', 'hoi_sinh', 'Thời gian chờ đồng đội (giây)', '', 'so', '60', '{"min": 10, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 233, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_pvp', 'hoi_sinh', 'Cấm tại chỗ ở PvP / sàn đấu', 'Sàn đấu, giải Liên minh, chiến trường, lãnh địa đội, chiếm Gym đang đánh, đấu trường + hoi_sinh.map_pvp.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 234, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_gym', 'hoi_sinh', 'Cấm tại chỗ khi thách đấu Gym', '', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 235, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_boss', 'hoi_sinh', 'Cấm tại chỗ giữa trận boss', 'Đã gây sát thương vào boss thế giới / Gym còn sống cùng bản đồ.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 236, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.cam_me_cung', 'hoi_sinh', 'Cấm tại chỗ trong Mê cung', '', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 237, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.map_pvp', 'hoi_sinh', 'Bản đồ PvP (id)', 'Thêm vào luật cấm PvP (so cả id bản đồ lẫn id nạp).', 'ds_so', '202,203,204,205,227,228', '{"min": 0, "max": 100000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 238, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.map_cam_them', 'hoi_sinh', 'Bản đồ cấm tại chỗ thêm (id)', 'Cách nhau dấu phẩy; trống = không.', 'chuoi', '', '{"mau": "^[0-9, ]*$", "doDai": 255}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 239, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.auto_ve_map_up', 'hoi_sinh', 'Cho "Auto về Map Up" sau khi gục', '0 = gục thì không tự bay lại bãi luyện (chống treo máy vô hạn).', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 240, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.gia_thuoc_phan_tram_gio', 'tu_dong', 'Giá Thuốc hồi sinh (% thu nhập 1 giờ)', 'Giá ở cửa hàng NPC theo cấp người mua (cùng bậc phí xu tại chỗ). 0 = giá gốc data_potion.', 'so', '30', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 241, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.gia_thuoc_toi_thieu', 'tu_dong', 'Giá Thuốc hồi sinh tối thiểu', 'Xu / viên (không thấp hơn giá gốc).', 'so', '407', '{"min": 0, "max": 100000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 242, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('hoi_sinh.thuoc_moi_gio', 'hoi_sinh', 'Hồi sinh bằng vật phẩm tối đa / giờ', 'Thuốc hồi sinh / tối đa của chính mình (tay, Tự động đánh, dùng từ túi) trong 60 phút. Đồng đội cứu không tính. 0 = không giới hạn.', 'so', '6', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.HoiSinhGame', 243, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.bat', 'thong_bao', 'Gộp thông báo toàn máy chủ', '0 = gửi thẳng như cũ.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.chongspam.ThongBaoGop', 244, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.toiDa', 'thong_bao', 'Thông báo tối đa / cửa sổ', '', 'so', '6', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 245, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.cuaSoGiay', 'thong_bao', 'Cửa sổ đếm thông báo (giây)', '', 'so', '60', '{"min": 1, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 246, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.moiLoai', 'thong_bao', 'Tối đa mỗi loại / cửa sổ', '', 'so', '3', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 247, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.trungLapGiay', 'thong_bao', 'Bỏ thông báo trùng (giây)', '', 'so', '120', '{"min": 0, "max": 86400}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 248, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.thongBao.gopGiay', 'thong_bao', 'Gộp mỗi (giây)', '', 'so', '15', '{"min": 1, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'ThongBaoGop', 249, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.website', 'bao_tri', 'Địa chỉ website (hiện trong game)', '', 'chuoi', 'https://huyenthoaibaoboi.fun/', '{"doDai": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.website', 250, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.linkTaiGame', 'bao_tri', 'Link tải game (hiện trong game)', '', 'chuoi', 'https://huyenthoaibaoboi.fun/', '{"doDai": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.linkTaiGame', 251, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.adminAccounts', 'bao_tri', 'Danh sách GM trong game', 'Tên Pokémon GM, cách nhau dấu phẩy.', 'ds_chuoi', '', '{"mau": "^[A-Za-z0-9_]{1,30}$", "doDai": 255}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.adminAccounts', 252, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.gmCanCoPInfo', 'quan_tri', 'GM cần cả cờ pInfo', '1 = quyền GM cần tên trong danh sách VÀ pInfo[16]=1.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.gmCanCoPInfo', 253, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.banToiThieu', 'bao_tri', 'Bản tối thiểu (bắt buộc cập nhật)', 'Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt.', 'so', '0', '{"min": 0, "max": 1000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.banToiThieu', 254, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.banMoiNhat', 'bao_tri', 'Bản mới nhất (dự phòng)', 'Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game.', 'so', '0', '{"min": 0, "max": 1000000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.banMoiNhat', 255, 'chinh', 0);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.nhacCapNhat', 'bao_tri', 'Nhắc khi có bản mới', 'Client cũ hơn bản mới nhất thấy thẻ Đã có bản mới (Cập nhật ngay / Để sau, nhắc một lần mỗi ngày). Không chặn chơi. Cố định bật; tắt khẩn cấp: sv.nhacCapNhat=0 trong server.ini.', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.nhacCapNhat', 256, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.choPhepTaoTenGM', 'quan_tri', 'Cho tạo Pokémon tên GM', 'Chỉ bật tạm thời.', 'co', '0', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'data.Database.CHO_PHEP_TAO_TEN_GM', 257, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.testMode', 'quan_tri', 'Chế độ thử (testMode)', 'Mã test cấp tài nguyên miễn phí. Khoá ở máy thật.', 'co', '0', '{}', 'ngay', 0, 1, 0, 'cau_hinh', 'server', 'TeamServer.testMode', 258, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.testCode', 'quan_tri', 'Mã test', 'Chuỗi gõ trong game khi testMode=1.', 'chuoi', '', '{"mau": "^[ -~]*$", "doDai": 64}', 'ngay', 1, 1, 0, 'cau_hinh', 'server', 'TeamServer.testCode', 259, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.cho_min_giay', 'kinh_te', 'Câu cá: chờ cá cắn tối thiểu (giây)', 'Sau khi thả câu, cá cắn câu sau ngẫu nhiên [tối thiểu, tối đa] giây (server quyết định).', 'so', '6', '{"min": 2, "max": 120}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 260, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.cho_max_giay', 'kinh_te', 'Câu cá: chờ cá cắn tối đa (giây)', 'Nhỏ hơn tối thiểu thì dùng tối thiểu.', 'so', '15', '{"min": 2, "max": 180}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 261, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.cho_them_ho_lon_giay', 'kinh_te', 'Câu cá: chờ thêm ở hồ lớn (giây)', 'Hồ lớn (có cá hiếm) chờ lâu hơn ngần này giây (cả hai đầu khoảng).', 'so', '3', '{"min": 0, "max": 60}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 262, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.cua_so_ms', 'kinh_te', 'Câu cá: khung kéo cần (ms)', 'Sau dấu "Cá cắn câu!", phải kéo cần trong ngần này mili giây; sớm hoặc muộn thì cá thoát.', 'so', '1500', '{"min": 300, "max": 5000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 263, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.tre_mang_ms', 'kinh_te', 'Câu cá: bù trễ mạng (ms)', 'Lệnh kéo cần tới server muộn thêm tối đa ngần này ms vẫn tính đúng lúc (bù đường truyền hai chiều).', 'so', '700', '{"min": 0, "max": 3000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 264, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.trong_phan_tram', 'kinh_te', 'Câu cá: tỉ lệ không câu được gì (%)', 'Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất).', 'so', '30', '{"min": 0, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 265, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.hoi_giay', 'kinh_te', 'Câu cá: nghỉ giữa hai lần thả (giây)', 'Sau khi một lần câu kết thúc, chờ ngần này giây mới thả câu tiếp.', 'so', '3', '{"min": 0, "max": 120}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 266, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.giam_tu_lan_gio', 'kinh_te', 'Câu cá: số lần câu được mỗi giờ trước khi giảm', 'Trong một giờ đồng hồ, câu được quá ngần này lần thì tỉ lệ không được gì tăng dần (chống cày).', 'so', '30', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 267, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.giam_moi_lan_phan_tram', 'kinh_te', 'Câu cá: tăng tỉ lệ trượt mỗi lần vượt (%)', 'Mỗi lần câu được vượt mốc trong giờ cộng ngần này % vào tỉ lệ không được gì.', 'so', '2', '{"min": 0, "max": 50}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 268, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('cau_ca.trong_toi_da_phan_tram', 'kinh_te', 'Câu cá: tỉ lệ không được gì tối đa (%)', 'Trần của tỉ lệ không được gì sau khi cộng giảm theo giờ.', 'so', '75', '{"min": 0, "max": 100}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.CauCaPhien', 269, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('ban_do.khoa.bat', 'che_do', 'Khoá bản đồ theo cấp / cửa ải', '1 = bản đồ cần đủ cấp và xong cửa ải (bảng data_ban_do_mo_khoa) mới vào được, kèm luật Tự động đánh theo bản đồ; 0 = mở mọi bản đồ (người chơi cũ luôn được miễn trừ theo cấp).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.KhoaBanDoGame', 270, 'luon_bat', 1);
 
 -- cau_hinh_nhom (tung la pokemon_cau_hinh_trung_tam.sql, bo sinh tools/luu_tru_sinh_du_lieu/cauhinh/sinh_cau_hinh.py - da luu tru)
 DROP TABLE IF EXISTS `cau_hinh_nhom`;
@@ -4463,6 +4477,8 @@ UPDATE `data_npc` SET `chuc_vu` = 'Ngân hàng xu, lượng', `sua_luc` = NOW()
 UPDATE `data_noi_dung_chieu` SET `ten` = 'Vũ điệu kiếm' WHERE `ten` = 'Múa kiếm';
 UPDATE `data_noi_dung_chieu` SET `trang_thai` = REPLACE(`trang_thai`, 'Múa kiếm', 'Vũ điệu kiếm')
  WHERE `trang_thai` LIKE '%Múa kiếm%';
+UPDATE `data_noi_dung_chieu` SET `vai_tro` = REPLACE(`vai_tro`, 'Múa kiếm', 'Vũ điệu kiếm')
+ WHERE `vai_tro` LIKE '%Múa kiếm%';
 
 -- ======================================================================================================================
 -- 7. KHOA BAN DO theo cap + cua ai (kieu NRO / NSO) va Tu dong danh theo ban do (nhanh khoa-map; thiet ke: sql/README.md).
@@ -4766,4 +4782,747 @@ CREATE TABLE IF NOT EXISTS `tob_thach_dau_ky_quy` (
   `ten0` VARCHAR(40) NOT NULL DEFAULT '', `id0` INT NOT NULL DEFAULT 0,
   `ten1` VARCHAR(40) NOT NULL DEFAULT '', `id1` INT NOT NULL DEFAULT 0,
   `cuoc` BIGINT NOT NULL DEFAULT 0, `luc` DATETIME NOT NULL, PRIMARY KEY (`id_arena`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ======================================================================================================================
+-- 10. main 1a705be6 (0.9.7): giu nguyen van ban cac tep cu (kem chu thich / khoi [..]) tru lenh danh muc cau hinh
+--     (cau_hinh_danh_muc / cau_hinh_nhom nam o phan 2) va SET NAMES. Moi tep mo dau bang dong "-- >>> <ten tep>"
+--     (test doc tung phan: test/DayDu.phanNangCap).
+-- ======================================================================================================================
+-- >>> sua_096_1_logic.sql
+-- 0.9.6.1: sửa logic server bằng dữ liệu. Chạy được nhiều lần (idempotent). Mỗi phần một khối riêng, nối thêm ở cuối.
+-- mysql -u root htbb_db < sql/sua_096_1_logic.sql
+
+-- =====================================================================================================================
+-- [giap-vo-han] Chiêu hỗ trợ / phòng thủ: hồi chiêu luôn dài hơn thời lượng hiệu ứng (chủ game 0.9.6.1)
+-- ---------------------------------------------------------------------------------------------------------------------
+-- Lỗi gốc nằm ở server (real/CharCapNhat.setBuff2Char chia đôi hồi chiêu, thời lượng lấy bảng cũ 50..210 giây) và đã
+-- sửa ở real/ChieuHoTro: hồi chiêu hiệu quả = max(dữ liệu, thời lượng + max(5 giây, 25% thời lượng)). Khối này là SÀN dữ
+-- liệu cho CSDL đã sửa tay (web quản trị / bản cũ): chỉ NÂNG giá trị thấp hơn sàn, không hạ giá trị nào, nên chạy trên
+-- htbb_day_du.sql hiện tại không đổi gì (số liệu seed đã đúng thiết kế). test/KiemGiapVoHan kiểm mỗi sàn
+-- >= thời lượng thiết kế + biên và kiểm cả bảng chiêu trong htbb_day_du.sql / pokemon_noi_dung.sql / du_lieu.
+--
+-- dòng, ô  chiêu                 thời lượng   hồi chiêu   PP   PP%
+-- 0, 4     Màn khói              10 s         30 s        10   8
+-- 0, 5     Vũ điệu kiếm          30 s         60 s        10   8
+-- 1, 4     Tự vệ (giáp)           8 s         40 s        10   8
+-- 1, 5     Sinh trưởng           30 s         60 s        10   8
+-- 2, 4     Mong ước              10 s         30 s        10   8
+-- 2, 5     Nghỉ ngơi              2 s         90 s         5   12
+-- 2, 6     Phước lành hồi sinh    -          120 s         3   15
+-- 2, 7     Chia sẻ nỗi đau       10 s         60 s         5   12   (khiên PP: hút sát thương bằng PP)
+-- 3, 4     Phá mai               20 s         45 s        10   8
+-- 3, 5     Rút vào mai (khiên)   10 s         40 s        10   8
+-- 4, 4     Nhanh nhẹn            10 s         40 s        10   8
+-- 4, 5     Nạp điện              10 s         30 s        10   8
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 30),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 0 AND `so_hieu` = 4;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 60),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 0 AND `so_hieu` = 5;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 40),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 1 AND `so_hieu` = 4;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 60),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 1 AND `so_hieu` = 5;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 30),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 2 AND `so_hieu` = 4;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 90),  `pp` = GREATEST(`pp`, 5),  `mp_phan_tram` = GREATEST(`mp_phan_tram`, 12) WHERE `dong` = 2 AND `so_hieu` = 5;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 120), `pp` = GREATEST(`pp`, 3),  `mp_phan_tram` = GREATEST(`mp_phan_tram`, 15) WHERE `dong` = 2 AND `so_hieu` = 6;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 60),  `pp` = GREATEST(`pp`, 5),  `mp_phan_tram` = GREATEST(`mp_phan_tram`, 12) WHERE `dong` = 2 AND `so_hieu` = 7;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 45),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 3 AND `so_hieu` = 4;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 40),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 3 AND `so_hieu` = 5;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 40),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 4 AND `so_hieu` = 4;
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = GREATEST(`hoi_chieu_giay`, 30),  `pp` = GREATEST(`pp`, 10), `mp_phan_tram` = GREATEST(`mp_phan_tram`, 8)  WHERE `dong` = 4 AND `so_hieu` = 5;
+-- Sàn chung: không chiêu nào hồi dưới 0,5 giây (đánh thường 0,7); chiêu không phải đánh thường phải tốn PP.
+UPDATE `data_noi_dung_chieu` SET `hoi_chieu_giay` = 0.5 WHERE `hoi_chieu_giay` < 0.5;
+UPDATE `data_noi_dung_chieu` SET `pp` = 1 WHERE `kieu` <> 'thuong' AND `pp` < 1;
+UPDATE `data_noi_dung_chieu` SET `mp_phan_tram` = 1 WHERE `kieu` <> 'thuong' AND `mp_phan_tram` < 1;
+-- [/giap-vo-han] =====================================================================================================
+
+-- =====================================================================================================================
+-- [khoa-khi-mac] Đồ đã mặc bị khoá (chủ game 0.9.6.1) + phá khoá ở Machamp thợ rèn (hố hút xu)
+-- ---------------------------------------------------------------------------------------------------------------------
+-- Luật (server, real.Item / real.PhaKhoaGame / com.htbb.pokemon.PhaKhoaLogic, test/KiemKhoaKhiMac):
+--  * Mặc trang bị (nhân vật, trang bị thú, thần khí) lần đầu: lock = 1 vĩnh viễn + cờ "khoá do mặc" (daMac). Món đã
+--    khoá vì lý do khác (mua bằng lượng khoá, quà nhiệm vụ / sự kiện, nguyên liệu khoá, tinh luyện) giữ daMac = 0.
+--    Skin thú, trang phục (model) là trang trí: không khoá khi mặc.
+--  * Món khoá không giao dịch / bày gian hàng / ký gửi / bỏ ra đất cho người khác nhặt (chặn sẵn theo lock = 1).
+--    Món CHỈ khoá do mặc vẫn bán NPC được (trước khi mặc vốn bán được); món khoá vì lý do khác theo
+--    chong_clone.ban_npc_do_khoa như cũ. Lượng khoá không có đường chuyển nào (test/KiemChongClone).
+--  * Chuỗi lưu vật phẩm (getDBInfo, tob_char.equip / inven / bag / tuido): thêm 2 trường CUỐI - 34 = daMac,
+--    35 = số lần phá khoá. Chuỗi cũ (34 trường) đọc ra 0 / 0.
+--  * MIGRATION đồ đang mặc của nhân vật cũ: KHÔNG làm bằng SQL được an toàn - đồ mặc nằm trong cột chuỗi ghép
+--    tob_char.equip ("dbInfo|thuộc tính>...", trường lock là trường thứ 15 của mỗi món). Server làm lúc NẠP nhân vật
+--    (real.CharTrangBi.setItemWearing / CharNapDuLieu: Item.khoaKhiMac() cho món vào ô mặc), idempotent: món đã
+--    khoá giữ nguyên, lần lưu kế tiếp ghi lock = 1 + daMac = 1 xuống CSDL.
+--  * Thiết kế cân bằng 4.3 ghi "món đã mặc không bao giờ giao dịch lại"; chủ game ghi đè bằng PHÁ KHOÁ dưới đây.
+--
+-- Phá khoá (Machamp thợ rèn, mục "Phá khoá trang bị"; chọn món khoá do mặc trong hành trang, xác nhận hiện đúng giá):
+--   xu = giờ thu nhập ở cấp món (ThongSoLauDai.xuMoiGio) × gio_phan_tram/100 × (100 + plus × cong_moi_cap_phan_tram)/100
+--        × he_so_phan_tram(lần)/100, + so_da "Đá phá khoá" (item 1295). Xu bị đốt (không cộng cho ai), ghi
+--   tob_log_use_luong "Pha khoa trang bi_xu". Tối đa = số dòng data_pha_khoa_lan (3); đếm theo món, hiện trong menu.
+--   Ví dụ cấp 50 (33.925 xu/giờ), Quý +10: lần 1 = 135.700 xu + 1 đá, lần 2 = 271.400 + 2, lần 3 = 542.800 + 3.
+--   Cấp 90 (196.101 xu/giờ), Sử thi +15: lần 1 = 1.470.757 xu + 1 đá (7,5 giờ thu nhập), lần 3 = 5.883.030 xu + 3 đá.
+-- Đá phá khoá: chỉ từ hộp đột kích boss thế giới (data_noi_dung_roi nguon mo_hop: hộp vàng top 10 30%, hộp tham
+-- gia 5%), vào túi ở dạng khoá; KHÔNG bán ở cửa hàng lượng / lượng khoá.
+
+INSERT INTO `data_item` (`id`, `name`, `type`, `style`, `he`, `gender`, `level`, `durable`, `atb0`, `atb1`, `atb2`, `atb3`, `atb4`, `atb5`, `atb6`, `atb7`, `atb8`, `atb9`, `price`, `clazz`, `xstart`, `ystart`, `colortype`, `nloan`, `idUpLevel`, `namein`, `ideff`, `pricecu`) VALUES
+(1295,'Đá phá khoá',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14135,0,-1,0,-1,'Đá phá khoá',-1,0)
+ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `type` = VALUES(`type`), `namein` = VALUES(`namein`);
+
+CREATE TABLE IF NOT EXISTS `data_pha_khoa_bac` (
+  `color_name` TINYINT NOT NULL,
+  `ten` VARCHAR(32) NOT NULL DEFAULT '',
+  `gio_phan_tram` INT NOT NULL DEFAULT 100,
+  `cong_moi_cap_phan_tram` INT NOT NULL DEFAULT 10,
+  PRIMARY KEY (`color_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `data_pha_khoa_lan` (
+  `lan` TINYINT NOT NULL,
+  `he_so_phan_tram` INT NOT NULL DEFAULT 100,
+  `so_da` TINYINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (`lan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- INSERT IGNORE: chạy lại không ghi đè số admin đã chỉnh. Khớp PhaKhoaLogic.BAC_MAC_DINH / LAN_MAC_DINH.
+INSERT IGNORE INTO `data_pha_khoa_bac` (`color_name`, `ten`, `gio_phan_tram`, `cong_moi_cap_phan_tram`) VALUES
+(0,'Thường',50,10),(1,'Hoàn mỹ (cũ, như Sử thi)',300,10),(2,'Đỏ (cũ, như Hiếm)',100,10),(3,'Quý',200,10),
+(4,'Sử thi',300,10),(5,'Trang trí',50,10),(6,'Huyền thoại',500,10),(7,'Hiếm',100,10);
+INSERT IGNORE INTO `data_pha_khoa_lan` (`lan`, `he_so_phan_tram`, `so_da`) VALUES (1,100,1),(2,200,2),(3,400,3);
+
+-- Nguồn Đá phá khoá. stt 9501.. tránh dải seed. Chạy lại sql/pokemon_noi_dung.sql (DROP bảng) thì chạy lại khối này.
+INSERT IGNORE INTO `data_noi_dung_roi` (`stt`,`nguon`,`khoa_nguon`,`vat_pham`,`ten`,`ppm`,`sl_min`,`sl_max`,`do_hiem`,`khoa`,`het_han`) VALUES
+(9501,'mo_hop','item:1051','item:1295','Đá phá khoá',300000,1,1,'',1,0),
+(9502,'mo_hop','item:1050','item:1295','Đá phá khoá',50000,1,1,'',1,0);
+-- [/khoa-khi-mac] =====================================================================================================
+
+-- =====================================================================================================================
+-- [cau-ca-nhip] Nhịp câu cá (chủ game 0.9.6.1: câu quá nhanh, phải có lúc không được gì)
+-- ---------------------------------------------------------------------------------------------------------------------
+-- Server quyết định: thả câu ("cauca2") -> chờ ngẫu nhiên 6..15 s (hồ lớn +3 s) -> "Cá cắn câu!" -> kéo cần ("keocan")
+-- trong 1,5 s (+0,7 s bù trễ mạng) -> 30% không được gì (tăng 2%/lần khi câu được quá 30 lần trong một giờ, trần 75%)
+-- -> nghỉ 3 s mới thả tiếp. Kéo sớm / muộn / rời chỗ = cá thoát; mồi (xu) + thể lực (2/lần, 100/ngày) mất ngay lúc thả.
+-- Client cũ ("cauca") server tự kéo khi cá cắn, cùng thời gian chờ, thêm 15% cá thoát. Số liệu = khoá cau_ca.* trong
+-- tools/cauhinh/danh_muc.json (nguồn duy nhất, sinh sql/pokemon_cau_hinh_trung_tam.sql); khối này đăng ký danh mục cho
+-- web quản trị /admin/cau-hinh-he-thong (máy chủ có mặc định sẵn, thiếu dòng vẫn chạy). Không ghi giá trị vào cau_hinh.
+-- Cần bảng cau_hinh_danh_muc dạng 0.9.4+ (pokemon_cau_hinh_trung_tam.sql / máy chủ tự tạo). test/KiemCauCaNhip kiểm.
+-- [/cau-ca-nhip]
+-- >>> sua_pvp_pk.sql
+-- =====================================================================================================
+-- PvP XẾP HẠNG + LUẬT PK (0.9.7): nâng cấp IDEMPOTENT (MariaDB 10.3, utf8), tự chứa, nối được vào sql/nang_cap.sql.
+--
+--   tob_pvp_tran    mỗi trận đấu xếp hạng (real.XepHangPvpGame): hợp lệ (cộng/trừ Elo) hay huỷ + lý do
+--                   (qua_ngan, khong_danh_tra, cung_tai_khoan_thiet_bi_ip, roi_tran, het_gio) - đối chiếu nghi vấn cày Elo.
+--   tob_pvp_thuong  thưởng cuối mùa đã phát, khoá (mua, id_char): INSERT IGNORE trước rồi mới phát -> không phát hai lần
+--                   kể cả khi máy chủ khởi động lại giữa chừng.
+-- Elo mùa vẫn ở tob_pvp_mua (data.DatabaseLauDai tự tạo). Máy chủ cũng tự tạo hai bảng này lúc khởi động.
+-- Danh hiệu thưởng mùa (thuong_mua_great / _ultra / _master) nằm trong sql/them_danh_hieu.sql.
+-- =====================================================================================================
+
+CREATE TABLE IF NOT EXISTS `tob_pvp_tran` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `mua` INT NOT NULL,
+  `thang` INT NOT NULL,
+  `thua` INT NOT NULL,
+  `hop_le` TINYINT NOT NULL DEFAULT 0,
+  `ly_do` VARCHAR(40) NOT NULL DEFAULT '',
+  `giay` INT NOT NULL DEFAULT 0,
+  `elo_thang` INT NOT NULL DEFAULT 0,
+  `elo_thua` INT NOT NULL DEFAULT 0,
+  `luc` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_pvpt_luc` (`luc`),
+  KEY `idx_pvpt_thang` (`thang`),
+  KEY `idx_pvpt_thua` (`thua`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tob_pvp_thuong` (
+  `mua` INT NOT NULL,
+  `id_char` INT NOT NULL,
+  `bac` TINYINT NOT NULL DEFAULT 0,
+  `elo` INT NOT NULL DEFAULT 0,
+  `so_tran` INT NOT NULL DEFAULT 0,
+  `luong_khoa` INT NOT NULL DEFAULT 0,
+  `danh_hieu` INT NOT NULL DEFAULT 0,
+  `luc` DATETIME NOT NULL,
+  PRIMARY KEY (`mua`, `id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- >>> them_cap_nhat_client.sql
+-- ============================================================================
+-- CAP NHAT CLIENT (0.9.7, ban 907) - chay lai bao nhieu lan cung duoc (MariaDB 10.3+, utf8mb4).
+--
+--   mysql -u root -p gamedb7 < sql/them_cap_nhat_client.sql
+--
+-- 1. Danh muc cau hinh trung tam: 3 khoa cua com.htbb.capnhat.CapNhatClient (ban sinh tu tools/cauhinh/danh_muc.json,
+--    giong sql/pokemon_cau_hinh_trung_tam.sql - chay tep do cung duoc):
+--      sv.banToiThieu  ban toi thieu: client gui so ban nho hon bi CHAN dang nhap (hop "Can cap nhat"), 0 = tat
+--      sv.banMoiNhat   ban moi nhat DU PHONG khi ban tai chua ghi so ban, 0 = chi theo trang Ban tai game
+--      sv.nhacCapNhat  nhac "Da co ban moi" (co dinh 1; tat khan cap trong server.ini)
+--    Gia tri dat o web /admin/cau-hinh-he-thong (bang cau_hinh) - tep nay KHONG dat gia tri nao.
+-- 2. Danh muc tai game (web_cai_dat khoa 'taiGame'): them truong "ban" = 0 cho moi ban tai chua co (so ban cua tep dang
+--    phat; admin dien o /admin/tai-game khi phat hanh). Khong dong cham gia tri da co. Chua co bang / khoa thi khong lam gi.
+-- ============================================================================
+
+
+CREATE TABLE IF NOT EXISTS `web_cai_dat` (
+  `khoa`         varchar(64)  NOT NULL,
+  `gia_tri`      mediumtext   NOT NULL,
+  `cap_nhat_luc` datetime     NOT NULL DEFAULT current_timestamp(),
+  `cap_nhat_boi` varchar(50)  NOT NULL DEFAULT '',
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[0].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[0].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[0].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[1].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[1].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[1].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[2].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[2].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[2].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[3].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[3].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[3].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[4].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[4].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[4].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[5].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[5].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[5].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[6].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[6].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[6].ban') IS NULL;
+UPDATE `web_cai_dat` SET `gia_tri` = JSON_SET(`gia_tri`, '$.ban[7].ban', 0) WHERE `khoa` = 'taiGame' AND JSON_VALID(`gia_tri`) AND JSON_EXTRACT(`gia_tri`, '$.ban[7].ma') IS NOT NULL AND JSON_EXTRACT(`gia_tri`, '$.ban[7].ban') IS NULL;
+-- >>> them_danh_hieu.sql
+-- =====================================================================================================
+-- DANH HIỆU (0.9.7): danh mục danh hiệu + điều kiện mở khoá + bộ đếm theo nhân vật + nhật ký.
+-- Nâng cấp IDEMPOTENT (MariaDB 10.3, utf8): chạy lại bao nhiêu lần cũng được; tự chứa, nối được vào sql/nang_cap.sql.
+--
+--   data_danh_hieu_do_hiem  4 độ hiếm (Thường / Hiếm / Sử thi / Huyền thoại); màu vẽ trong game là token chủ đề
+--                           client (ChuDe.mauDanhHieu), cột `mau` chỉ cho web.
+--   data_danh_hieu          mọi danh hiệu: id = id hiệu ứng (Char.idEffDanhHieu, tob_danh_hieu.iddh), tên, mô tả
+--                           (điều kiện viết cho người chơi), gợi ý (danh hiệu ẩn), độ hiếm, hình, một dòng chỉ số nhỏ
+--                           (chi_so + phan_nghin, kẹp về trần danh_hieu.tran_phan_nghin = 10‰ = 1%), điều kiện
+--                           (dieu_kien + tham_so + so_luong, xem com.htbb.pokemon.DanhHieuLogic), an (0 hiện,
+--                           1 ẩn "???" tới khi mở, 2 chỉ hiện khi đang có), thoi_han_phut (0 = vĩnh viễn), nguồn.
+--   tob_danh_hieu_dem       bộ đếm theo nhân vật (câu cá, gục, bản đồ đã đến, danh hiệu mới chưa xem...).
+--   tob_danh_hieu_log       nhật ký mở khoá.
+--
+-- Sở hữu + hạn dùng + danh hiệu đang đeo vẫn ở chỗ cũ (tob_danh_hieu.iddh "id,hết hạn,..." + tob_char dữ liệu 103).
+-- Dải id: 8767..8999 danh hiệu cũ (giftcode / sự kiện, an = 2), 9600..9615 danh hiệu sinh thái, 9700.. danh hiệu
+-- thành tựu, 10000.. danh hiệu phần thưởng nhiệm vụ (284 tên trong data_nhiem_vu_noi_dung, trước đây chỉ là chữ).
+--
+-- Chạy lại: tên / mô tả / điều kiện được cập nhật theo tệp này; chi_so, phan_nghin và bat KHÔNG bị ghi đè (chủ game
+-- chỉnh cân bằng trực tiếp trong CSDL). Máy chủ đọc lại khi nạp nội dung (khởi động).
+-- =====================================================================================================
+
+CREATE TABLE IF NOT EXISTS `data_danh_hieu_do_hiem` (
+  `id` TINYINT NOT NULL,
+  `ten` VARCHAR(32) NOT NULL DEFAULT '',
+  `mau` VARCHAR(7) NOT NULL DEFAULT '',
+  `thu_tu` INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `data_danh_hieu` (
+  `id` INT NOT NULL,
+  `ma` VARCHAR(48) NOT NULL,
+  `ten` VARCHAR(64) NOT NULL DEFAULT '',
+  `mo_ta` VARCHAR(255) NOT NULL DEFAULT '',
+  `goi_y` VARCHAR(255) NOT NULL DEFAULT '',
+  `do_hiem` TINYINT NOT NULL DEFAULT 0,
+  `hinh` VARCHAR(16) NOT NULL DEFAULT '',
+  `chi_so` VARCHAR(24) NOT NULL DEFAULT '',
+  `phan_nghin` INT NOT NULL DEFAULT 0,
+  `dieu_kien` VARCHAR(40) NOT NULL DEFAULT 'trao',
+  `tham_so` VARCHAR(64) NOT NULL DEFAULT '',
+  `so_luong` INT NOT NULL DEFAULT 1,
+  `an` TINYINT NOT NULL DEFAULT 0,
+  `thoi_han_phut` INT NOT NULL DEFAULT 0,
+  `nguon` VARCHAR(16) NOT NULL DEFAULT '',
+  `thu_tu` INT NOT NULL DEFAULT 0,
+  `bat` TINYINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_ddh_ma` (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tob_danh_hieu_dem` (
+  `id_char` INT NOT NULL,
+  `khoa` VARCHAR(80) NOT NULL,
+  `gia_tri` BIGINT NOT NULL DEFAULT 0,
+  `tap` TEXT NULL,
+  PRIMARY KEY (`id_char`, `khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tob_danh_hieu_log` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `id_char` INT NOT NULL,
+  `id_dh` INT NOT NULL,
+  `hanh_dong` VARCHAR(16) NOT NULL DEFAULT '',
+  `luc` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_dhl_char` (`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `data_danh_hieu_do_hiem` (`id`,`ten`,`mau`,`thu_tu`) VALUES
+(0,'Thường','#8A94A6',0),(1,'Hiếm','#2D8FD6',1),(2,'Sử thi','#8E6BE8',2),(3,'Huyền thoại','#F39A2B',3)
+ON DUPLICATE KEY UPDATE `ten`=VALUES(`ten`), `mau`=VALUES(`mau`), `thu_tu`=VALUES(`thu_tu`);
+
+-- 46 danh hiệu thành tựu / xếp hạng / sự kiện / ẩn (Thường 5‰, Hiếm 7‰, Sử thi 9‰, Huyền thoại 10‰ = 1%).
+INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
+(9700,'cap_10','Huấn luyện viên tập sự','Đạt cấp 10.','',0,'sao','hp',5,'cap','',10,0,0,'thanh_tuu',100,1),
+(9701,'cap_30','Huấn luyện viên lành nghề','Đạt cấp 30.','',0,'tang','ne_tranh',5,'cap','',30,0,0,'thanh_tuu',101,1),
+(9702,'cap_50','Huấn luyện viên tinh anh','Đạt cấp 50.','',1,'nhanh','chi_mang',7,'cap','',50,0,0,'thanh_tuu',102,1),
+(9703,'cap_70','Bậc thầy huấn luyện','Đạt cấp 70.','',2,'khien','khang_trang_thai',9,'cap','',70,0,0,'thanh_tuu',103,1),
+(9704,'cap_91','Đỉnh cao huấn luyện','Đạt cấp tối đa của năm đầu (91).','',3,'mat_troi','hp',10,'cap','',91,0,0,'thanh_tuu',104,1),
+(9705,'dex_10','Nhà nghiên cứu tập sự','Nghiên cứu (hạ) 10% số loài trong Pokédex.','',0,'la','ne_tranh',5,'pokedex_phan_tram','',10,0,0,'pokedex',105,1),
+(9706,'dex_25','Trợ lý Giáo sư','Nghiên cứu 25% số loài trong Pokédex.','',1,'la','khang_trang_thai',7,'pokedex_phan_tram','',25,0,0,'pokedex',106,1),
+(9707,'dex_50','Nhà Pokédex học','Nghiên cứu 50% số loài trong Pokédex.','',2,'sao','chi_mang',9,'pokedex_phan_tram','',50,0,0,'pokedex',107,1),
+(9708,'dex_90','Người hoàn thiện Pokédex','Nghiên cứu 90% số loài trong Pokédex.','',3,'sao','hp',10,'pokedex_phan_tram','',90,0,0,'pokedex',108,1),
+(9709,'boss_1','Kẻ thách thức trùm','Lần đầu góp sức hạ một trùm thế giới.','',0,'no','chi_mang',5,'boss_the_gioi','',1,0,0,'boss',109,1),
+(9710,'boss_25','Thợ săn trùm','Góp sức hạ 25 trùm thế giới.','',1,'nanh','chi_mang',7,'boss_the_gioi','',25,0,0,'boss',110,1),
+(9711,'boss_100','Khắc tinh huyền thoại','Góp sức hạ 100 trùm thế giới.','',2,'no','hp',9,'boss_the_gioi','',100,0,0,'boss',111,1),
+(9712,'ca_50','Cần thủ nghiệp dư','Câu cá 50 lần ở hồ.','',0,'giot','khang_trang_thai',5,'cau_ca','',50,0,0,'thanh_tuu',112,1),
+(9713,'ca_300','Ngư phủ Magikarp','Câu cá 300 lần ở hồ.','',1,'song','ne_tranh',7,'cau_ca','',300,0,0,'thanh_tuu',113,1),
+(9714,'ca_1000','Vua Gyarados','Câu cá 1.000 lần ở hồ.','Mặt hồ chỉ trả lời người đủ kiên nhẫn...',2,'song','hp',9,'cau_ca','',1000,1,0,'an',114,1),
+(9715,'pvp_10','Huấn luyện viên tân binh','Thắng 10 trận đấu xếp hạng (NPC Đấu trường).','',0,'vuot','chi_mang',5,'thang_pvp','',10,0,0,'pvp',115,1),
+(9716,'pvp_100','Huấn luyện viên dày dạn','Thắng 100 trận đấu xếp hạng.','',1,'vuot','ne_tranh',7,'thang_pvp','',100,0,0,'pvp',116,1),
+(9717,'pvp_500','Chiến thần đấu trường','Thắng 500 trận đấu xếp hạng.','',2,'set','chi_mang',9,'thang_pvp','',500,0,0,'pvp',117,1),
+(9718,'mua_great','Great Ball mùa này','Đạt bậc Great Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.','',1,'khien','ne_tranh',7,'pvp_bac','',1,0,43200,'xep_hang',118,1),
+(9719,'mua_ultra','Ultra Ball mùa này','Đạt bậc Ultra Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.','',2,'khien','khang_trang_thai',9,'pvp_bac','',2,0,43200,'xep_hang',119,1),
+(9720,'mua_master','Master Ball mùa này','Đạt bậc Master Ball ở thang PvP mùa hiện tại. Giữ bậc để gia hạn.','',3,'khien','chi_mang',10,'pvp_bac','',3,0,43200,'xep_hang',120,1),
+(9721,'top_pvp_10','Top 10 Nhà vô địch','Nằm trong top 10 thang PvP mùa hiện tại. Rời top thì danh hiệu hết hạn sau 7 ngày.','',3,'mat_troi','ne_tranh',10,'top_pvp','',10,0,10080,'xep_hang',121,1),
+(9722,'gym_1','Huy hiệu đầu tiên','Có huy hiệu Gym đầu tiên.','',0,'khien','khang_trang_thai',5,'gym_huy_hieu','',1,0,0,'nhiem_vu',122,1),
+(9723,'gym_8','Người sưu tầm huy hiệu','Có 8 huy hiệu Gym.','',2,'khien','ne_tranh',9,'gym_huy_hieu','',8,0,0,'nhiem_vu',123,1),
+(9724,'gym_16','Nhà vô địch hai vùng','Có đủ 16 huy hiệu Gym (Kanto + Hoenn).','',3,'mat_troi','khang_trang_thai',10,'gym_huy_hieu','',16,0,0,'nhiem_vu',124,1),
+(9725,'nc_7','Thợ rèn +7','Nâng một món trang bị lên +7.','',1,'thep','hp',7,'thanh_tuu_nang_cap','',7,0,0,'thanh_tuu',125,1),
+(9726,'nc_10','Thợ rèn +10','Nâng một món trang bị lên +10.','',2,'thep','chi_mang',9,'thanh_tuu_nang_cap','',10,0,0,'thanh_tuu',126,1),
+(9727,'nc_15','Bàn tay vàng +15','Nâng một món trang bị lên +15.','',3,'thep','hp',10,'thanh_tuu_nang_cap','',15,0,0,'thanh_tuu',127,1),
+(9728,'ham_nguc_5','Kẻ chinh phục Hầm ngục','Vượt tầng 5 Hầm ngục bí ẩn.','',1,'ma','khang_trang_thai',7,'tang_hang','',5,0,0,'thanh_tuu',128,1),
+(9729,'che_tao_50','Nhà giả kim','Chế tạo 50 lần.','',1,'cong','khang_trang_thai',7,'che_tao','',50,0,0,'thanh_tuu',129,1),
+(9730,'kham_100','Thợ khảm ngọc','Khảm ngọc 100 lần.','',1,'bong','chi_mang',7,'kham_ngoc','',100,0,0,'thanh_tuu',130,1),
+(9731,'giup_100','Đồng đội tận tâm','Cùng tổ đội hạ 100 quái với người chơi dưới cấp 20.','',1,'tim','hp',7,'giup_tan_thu','',100,0,0,'thanh_tuu',131,1),
+(9732,'dang_nhap_30','Người bạn trung thành','Đăng nhập 30 ngày.','',0,'tim','hp',5,'dang_nhap','',30,0,0,'thanh_tuu',132,1),
+(9733,'gym_chiem','Trụ cột chiếm Gym','Tham gia chiếm Gym 20 lần.','',1,'khien','hp',7,'tham_gia_gym','',20,0,0,'su_kien',133,1),
+(9734,'halloween','Bí ngô đêm hội','Có mặt trong lễ Halloween. Hết hạn sau 30 ngày.','',1,'ma','ne_tranh',7,'su_kien','halloween',1,0,43200,'su_kien',134,1),
+(9735,'noel','Tuần lộc tuyết trắng','Có mặt trong mùa Giáng sinh. Hết hạn sau 30 ngày.','',1,'sao','khang_trang_thai',7,'su_kien','noel',1,0,43200,'su_kien',135,1),
+(9736,'trung_thu','Clefable đêm rằm','Có mặt trong lễ Trung thu. Hết hạn sau 30 ngày.','',1,'mat_troi','hp',7,'su_kien','trungthu',1,0,43200,'su_kien',136,1),
+(9737,'shiny_1','Ánh sáng lấp lánh','Gặp một Pokémon shiny.','Có những Pokémon mang màu khác thường...',1,'sao','chi_mang',7,'pokedex_shiny','',1,1,0,'an',137,1),
+(9738,'guc_100','Kẻ không bỏ cuộc','Gục ngã 100 lần mà vẫn đứng dậy.','Ngã nhiều lần cũng là một kiểu bản lĩnh.',0,'tim','hp',5,'guc','',100,1,0,'an',138,1),
+(9739,'map_50','Kẻ lang thang','Đặt chân tới 50 bản đồ khác nhau.','Cứ đi, đường sẽ tự mở.',1,'loc','ne_tranh',7,'tap:den_ban_do','',50,1,0,'an',139,1),
+(9740,'map_120','Người đi khắp thế gian','Đặt chân tới 120 bản đồ khác nhau.','Đã đặt chân tới mọi miền chưa?',3,'loc','ne_tranh',10,'tap:den_ban_do','',120,1,0,'an',140,1),
+(9741,'giet_10000','Cơn bão đồng cỏ','Hạ 10.000 Pokémon hoang dã.','Đồng cỏ nào cũng nhớ tên bạn.',2,'loc','chi_mang',9,'giet','',10000,1,0,'an',141,1),
+(9742,'alpha_50','Thợ săn Alpha','Hạ 50 Pokémon Alpha.','Con đầu đàn to hơn thường lệ...',2,'nanh','hp',9,'ha_alpha','',50,1,0,'an',142,1),
+(9743,'thuong_mua_great','Great Ball mùa trước','Thưởng cuối mùa: kết thúc mùa PvP ở bậc Great Ball (ít nhất 10 trận xếp hạng). Giữ một mùa.','',1,'khien','ne_tranh',7,'trao','',1,0,131040,'xep_hang',143,1),
+(9744,'thuong_mua_ultra','Ultra Ball mùa trước','Thưởng cuối mùa: kết thúc mùa PvP ở bậc Ultra Ball (ít nhất 10 trận xếp hạng). Giữ một mùa.','',2,'khien','khang_trang_thai',9,'trao','',1,0,131040,'xep_hang',144,1),
+(9745,'thuong_mua_master','Master Ball mùa trước','Thưởng cuối mùa: kết thúc mùa PvP ở bậc Master Ball (ít nhất 10 trận xếp hạng). Giữ một mùa.','',3,'mat_troi','chi_mang',10,'trao','',1,0,131040,'xep_hang',145,1)
+ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
+
+-- 16 danh hiệu hệ sinh thái (HoSoSinhThai.DANH_HIEU, đã có từ trước; nay đeo qua bảng chung).
+INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
+(9600,'sinh_thai_00','Nhiếp ảnh tập sự','Danh hiệu hệ sinh thái: Nhiếp ảnh tập sự (Sưu tầm sinh thái).','',0,'sao','ne_tranh',5,'sinh_thai','Nhiếp ảnh tập sự',1,0,0,'sinh_thai',300,1),
+(9601,'sinh_thai_01','Thợ săn khoảnh khắc','Danh hiệu hệ sinh thái: Thợ săn khoảnh khắc (Sưu tầm sinh thái).','',1,'sao','chi_mang',7,'sinh_thai','Thợ săn khoảnh khắc',1,0,0,'sinh_thai',301,1),
+(9602,'sinh_thai_02','Nhà sinh thái học','Danh hiệu hệ sinh thái: Nhà sinh thái học (Sưu tầm sinh thái).','',1,'la','khang_trang_thai',7,'sinh_thai','Nhà sinh thái học',1,0,0,'sinh_thai',302,1),
+(9603,'sinh_thai_03','Huyền thoại ống kính','Danh hiệu hệ sinh thái: Huyền thoại ống kính (Sưu tầm sinh thái).','',3,'sao','hp',10,'sinh_thai','Huyền thoại ống kính',1,0,0,'sinh_thai',303,1),
+(9604,'sinh_thai_04','Ngư phủ bậc thầy','Danh hiệu hệ sinh thái: Ngư phủ bậc thầy (Sưu tầm sinh thái).','',2,'giot','ne_tranh',9,'sinh_thai','Ngư phủ bậc thầy',1,0,0,'sinh_thai',304,1),
+(9605,'sinh_thai_05','Nhà khảo cổ','Danh hiệu hệ sinh thái: Nhà khảo cổ (Sưu tầm sinh thái).','',1,'thep','chi_mang',7,'sinh_thai','Nhà khảo cổ',1,0,0,'sinh_thai',305,1),
+(9606,'sinh_thai_06','Đầu bếp Poké','Danh hiệu hệ sinh thái: Đầu bếp Poké (Sưu tầm sinh thái).','',0,'lua','khang_trang_thai',5,'sinh_thai','Đầu bếp Poké',1,0,0,'sinh_thai',306,1),
+(9607,'sinh_thai_07','Dược sư','Danh hiệu hệ sinh thái: Dược sư (Sưu tầm sinh thái).','',0,'cong','hp',5,'sinh_thai','Dược sư',1,0,0,'sinh_thai',307,1),
+(9608,'sinh_thai_08','Nhà vườn xanh','Danh hiệu hệ sinh thái: Nhà vườn xanh (Sưu tầm sinh thái).','',0,'la','ne_tranh',5,'sinh_thai','Nhà vườn xanh',1,0,0,'sinh_thai',308,1),
+(9609,'sinh_thai_09','Nhà nhân giống','Danh hiệu hệ sinh thái: Nhà nhân giống (Sưu tầm sinh thái).','',1,'tim','chi_mang',7,'sinh_thai','Nhà nhân giống',1,0,0,'sinh_thai',309,1),
+(9610,'sinh_thai_10','Thợ săn shiny','Danh hiệu hệ sinh thái: Thợ săn shiny (Sưu tầm sinh thái).','',2,'sao','khang_trang_thai',9,'sinh_thai','Thợ săn shiny',1,0,0,'sinh_thai',310,1),
+(9611,'sinh_thai_11','Vua tốc độ','Danh hiệu hệ sinh thái: Vua tốc độ (Sưu tầm sinh thái).','',1,'nhanh','hp',7,'sinh_thai','Vua tốc độ',1,0,0,'sinh_thai',311,1),
+(9612,'sinh_thai_12','Thánh đố Pokémon','Danh hiệu hệ sinh thái: Thánh đố Pokémon (Sưu tầm sinh thái).','',1,'set','ne_tranh',7,'sinh_thai','Thánh đố Pokémon',1,0,0,'sinh_thai',312,1),
+(9613,'sinh_thai_13','Nhà vô địch giải tuần','Danh hiệu hệ sinh thái: Nhà vô địch giải tuần (Sưu tầm sinh thái).','',2,'khien','chi_mang',9,'sinh_thai','Nhà vô địch giải tuần',1,0,0,'sinh_thai',313,1),
+(9614,'sinh_thai_14','Nhà thám hiểm vùng','Danh hiệu hệ sinh thái: Nhà thám hiểm vùng (Sưu tầm sinh thái).','',1,'loc','khang_trang_thai',7,'sinh_thai','Nhà thám hiểm vùng',1,0,0,'sinh_thai',314,1),
+(9615,'sinh_thai_15','Bạn của muôn loài','Danh hiệu hệ sinh thái: Bạn của muôn loài (Sưu tầm sinh thái).','',2,'tim','hp',9,'sinh_thai','Bạn của muôn loài',1,0,0,'sinh_thai',315,1)
+ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
+
+-- 48 danh hiệu cũ (data.DanhHieu, giftcode / sự kiện / chiếm Gym): chỉ hiện khi đang có (an = 2), trao tay.
+-- Chỉ số 5‰ = mức Thường của danh hiệu kiếm được: món trao qua giftcode / gói nạp không bao giờ vượt món tự cày.
+INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
+(8767,'cu_8767','Anh hùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',500,1),
+(8768,'cu_8768','Bá chủ','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',501,1),
+(8769,'cu_8769','Tối thượng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',502,1),
+(8770,'cu_8770','Đại gia','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',503,1),
+(8771,'cu_8771','Đệ nhất','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',504,1),
+(8772,'cu_8772','Tứ Thiên Vương','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',505,1),
+(8773,'cu_8773','Nhà thám hiểm','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',506,1),
+(8774,'cu_8774','Người dũng cảm','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',507,1),
+(8775,'cu_8775','Huyền thoại','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',508,1),
+(8776,'cu_8776','Bậc thầy Pokémon','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',509,1),
+(8777,'cu_8777','Uy phong','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',510,1),
+(8778,'cu_8778','Vô địch','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',511,1),
+(8779,'cu_8779','Nhà vô địch Pokémon','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',512,1),
+(8785,'cu_8785','Tia Mặt Trời','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',513,1),
+(8786,'cu_8786','Có một không hai','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',514,1),
+(8787,'cu_8787','ACE','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',515,1),
+(8788,'cu_8788','Fan cứng','Trao ngẫu nhiên cho người chơi online lâu (1 ngày).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',516,1),
+(8900,'cu_8900','Angle Of Death','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',517,1),
+(8901,'cu_8901','Bất Chấp Cuộc Chơi','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',518,1),
+(8902,'cu_8902','Huyền Thoại Bất Diệt','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',519,1),
+(8903,'cu_8903','Rayquaza Chấn Thiên','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',520,1),
+(8904,'cu_8904','Kẻ Thách Thức Định Mệnh','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',521,1),
+(8905,'cu_8905','Gươm Aegislash','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',522,1),
+(8906,'cu_8906','Nhà Vô Địch Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',523,1),
+(8907,'cu_8907','Vô Địch Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',524,1),
+(8908,'cu_8908','Bảo Vật Bất Bại','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',525,1),
+(8909,'cu_8909','Bá Chủ Một Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',526,1),
+(8910,'cu_8910','Tung Hoành Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',527,1),
+(8911,'cu_8911','Tinh Anh Tuyệt Đỉnh','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',528,1),
+(8924,'cu_8924','Độc Nhất Vô Nhị','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',529,1),
+(8925,'cu_8925','Tia Chớp Phá Trời','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',530,1),
+(8935,'cu_8935','Vinh Danh Đội','Trao cho Đội chiếm Gym (có hạn).','',1,'sao','hp',5,'trao','',1,2,0,'cu',531,1),
+(8956,'cu_8956','Người Được Chọn','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',532,1),
+(8957,'cu_8957','Nhà Vô Địch Pokémon 2','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',533,1),
+(8983,'cu_8983','Huyền Thoại Bất Diệt 2','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',534,1),
+(8984,'cu_8984','Truyền Nhân Huyền Thoại','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',535,1),
+(8985,'cu_8985','Sức Mạnh Hủy Diệt','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',536,1),
+(8986,'cu_8986','Kinh Tài Tuyệt Diễm','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',537,1),
+(8987,'cu_8987','Nữ Thần Tuyệt Sắc','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',538,1),
+(8988,'cu_8988','Phong Vân Tùy Bút','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',539,1),
+(8989,'cu_8989','Lão Làng Pokémon','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',540,1),
+(8990,'cu_8990','Số Một Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',541,1),
+(8991,'cu_8991','Vô Song Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',542,1),
+(8992,'cu_8992','Tung Hoành Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',543,1),
+(8993,'cu_8993','Có Một Không Hai','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','ne_tranh',5,'trao','',1,2,0,'cu',544,1),
+(8994,'cu_8994','Vinh Hoa Phú Qúy','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','chi_mang',5,'trao','',1,2,0,'cu',545,1),
+(8995,'cu_8995','Chúa Tể Mọi Vùng','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','khang_trang_thai',5,'trao','',1,2,0,'cu',546,1),
+(8996,'cu_8996','Tuyệt Thế Giai Nhân','Danh hiệu được trao (giftcode, sự kiện, chiếm Gym).','',1,'sao','hp',5,'trao','',1,2,0,'cu',547,1)
+ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
+
+-- 284 danh hiệu phần thưởng nhiệm vụ (thuong_khac / nhanh_lua_chon "danh_hieu:<tên>" của data_nhiem_vu_noi_dung):
+-- trước đây chỉ ghi chữ vào tiến độ nhiệm vụ, nay đeo được. Nhiệm vụ ẩn -> danh hiệu ẩn. 3‰ / 5‰ / 7‰.
+INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
+(10000,'nv_000','Người ngay thẳng','Phần thưởng nhiệm vụ C02.6: Chọn một con đường.','',1,'sao','ne_tranh',5,'nhiem_vu','Người ngay thẳng',1,0,0,'nhiem_vu',1000,1),
+(10001,'nv_001','Người rộng lượng','Phần thưởng nhiệm vụ C02.6: Chọn một con đường.','',1,'la','chi_mang',5,'nhiem_vu','Người rộng lượng',1,0,0,'nhiem_vu',1001,1),
+(10002,'nv_002','Bạn của Clefairy','Phần thưởng nhiệm vụ C08.6: Chọn một con đường.','',1,'tim','khang_trang_thai',5,'nhiem_vu','Bạn của Clefairy',1,0,0,'nhiem_vu',1002,1),
+(10003,'nv_003','Người giữ sao','Phần thưởng nhiệm vụ C08.6: Chọn một con đường.','',1,'khien','hp',5,'nhiem_vu','Người giữ sao',1,0,0,'nhiem_vu',1003,1),
+(10004,'nv_004','Người bạn dịu dàng','Phần thưởng nhiệm vụ C18.5: Chọn một con đường.','',1,'giot','ne_tranh',5,'nhiem_vu','Người bạn dịu dàng',1,0,0,'nhiem_vu',1004,1),
+(10005,'nv_005','Người giữ lời hứa','Phần thưởng nhiệm vụ C18.5: Chọn một con đường.','',1,'lua','chi_mang',5,'nhiem_vu','Người giữ lời hứa',1,0,0,'nhiem_vu',1005,1),
+(10006,'nv_006','Người cho cơ hội thứ hai','Phần thưởng nhiệm vụ C33.5: Chọn một con đường.','',1,'set','khang_trang_thai',5,'nhiem_vu','Người cho cơ hội thứ hai',1,0,0,'nhiem_vu',1006,1),
+(10007,'nv_007','Người giữ công lý','Phần thưởng nhiệm vụ C33.5: Chọn một con đường.','',1,'nhanh','hp',5,'nhiem_vu','Người giữ công lý',1,0,0,'nhiem_vu',1007,1),
+(10008,'nv_008','Người giữ lời thề rồng','Phần thưởng nhiệm vụ C48.3: Chọn một con đường.','',1,'cong','ne_tranh',5,'nhiem_vu','Người giữ lời thề rồng',1,0,0,'nhiem_vu',1008,1),
+(10009,'nv_009','Người tìm sự thật','Phần thưởng nhiệm vụ C48.3: Chọn một con đường.','',1,'loc','chi_mang',5,'nhiem_vu','Người tìm sự thật',1,0,0,'nhiem_vu',1009,1),
+(10010,'nv_010','Người mang giấc mơ đẹp','Phần thưởng nhiệm vụ C52.6: Chọn một con đường.','',1,'sao','khang_trang_thai',5,'nhiem_vu','Người mang giấc mơ đẹp',1,0,0,'nhiem_vu',1010,1),
+(10011,'nv_011','Người phong ấn ác mộng','Phần thưởng nhiệm vụ C52.6: Chọn một con đường.','',1,'la','hp',5,'nhiem_vu','Người phong ấn ác mộng',1,0,0,'nhiem_vu',1011,1),
+(10012,'nv_012','Ngôi sao của Hoenn','Phần thưởng nhiệm vụ C78.4: Chọn một con đường.','',1,'tim','ne_tranh',5,'nhiem_vu','Ngôi sao của Hoenn',1,0,0,'nhiem_vu',1012,1),
+(10013,'nv_013','Người cưỡi gió trời','Phần thưởng nhiệm vụ C78.4: Chọn một con đường.','',1,'khien','chi_mang',5,'nhiem_vu','Người cưỡi gió trời',1,0,0,'nhiem_vu',1013,1),
+(10014,'nv_014','Vô địch Hoenn','Phần thưởng nhiệm vụ C100.4: Chọn một con đường.','',1,'giot','khang_trang_thai',5,'nhiem_vu','Vô địch Hoenn',1,0,0,'nhiem_vu',1014,1),
+(10015,'nv_015','Sứ giả ba vùng','Phần thưởng nhiệm vụ C100.4: Chọn một con đường.','',1,'lua','hp',5,'nhiem_vu','Sứ giả ba vùng',1,0,0,'nhiem_vu',1015,1),
+(10016,'nv_016','Người hùng Pallet','Phần thưởng nhiệm vụ P-01.0.5: Nói chuyện với Xatu ở Pallet.','',0,'set','ne_tranh',3,'nhiem_vu','Người hùng Pallet',1,0,0,'nhiem_vu',1016,1),
+(10017,'nv_017','Người bạn của Luvdisc','Phần thưởng nhiệm vụ P-01.1.4: Chọn một con đường.','',0,'nhanh','chi_mang',3,'nhiem_vu','Người bạn của Luvdisc',1,0,0,'nhiem_vu',1017,1),
+(10018,'nv_018','Người đưa tin vội vã','Phần thưởng nhiệm vụ P-01.1.4: Chọn một con đường.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Người đưa tin vội vã',1,0,0,'nhiem_vu',1018,1),
+(10019,'nv_019','Ông tơ bà nguyệt Pallet','Phần thưởng nhiệm vụ P-01.1.4: Chọn một con đường.','',0,'loc','hp',3,'nhiem_vu','Ông tơ bà nguyệt Pallet',1,0,0,'nhiem_vu',1019,1),
+(10020,'nv_020','Người bạn của Munchlax','Phần thưởng nhiệm vụ P-01.2.4: Nấu 2 Bánh quả mọng.','',0,'sao','ne_tranh',3,'nhiem_vu','Người bạn của Munchlax',1,0,0,'nhiem_vu',1020,1),
+(10021,'nv_021','Người bạn của Togepi','Phần thưởng nhiệm vụ P-01.3.4: Nói chuyện với Kangaskhan ở Pallet.','',0,'la','chi_mang',3,'nhiem_vu','Người bạn của Togepi',1,0,0,'nhiem_vu',1021,1),
+(10022,'nv_022','Người hùng Viridian','Phần thưởng nhiệm vụ P-02.0.5: Nói chuyện với Kecleon ở Viridian.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người hùng Viridian',1,0,0,'nhiem_vu',1022,1),
+(10023,'nv_023','Người bạn của Remoraid','Phần thưởng nhiệm vụ P-02.1.4: Nói chuyện với Lapras ở Viridian.','',0,'khien','hp',3,'nhiem_vu','Người bạn của Remoraid',1,0,0,'nhiem_vu',1023,1),
+(10024,'nv_024','Người bạn của Sandshrew','Phần thưởng nhiệm vụ P-02.2.4: Nói chuyện với Persian ở Viridian.','',0,'giot','ne_tranh',3,'nhiem_vu','Người bạn của Sandshrew',1,0,0,'nhiem_vu',1024,1),
+(10025,'nv_025','Người hùng Rừng Viridian','Phần thưởng nhiệm vụ P-03.0.4: Quan sát Oddish lúc bình minh.','',0,'lua','chi_mang',3,'nhiem_vu','Người hùng Rừng Viridian',1,0,0,'nhiem_vu',1025,1),
+(10026,'nv_026','Người bạn của Smeargle','Phần thưởng nhiệm vụ P-03.1.4: Giao Tấm ảnh cho Meowth.','',0,'set','khang_trang_thai',3,'nhiem_vu','Người bạn của Smeargle',1,0,0,'nhiem_vu',1026,1),
+(10027,'nv_027','Người bạn của Hoothoot','Phần thưởng nhiệm vụ P-03.2.4: Nói chuyện với Arcanine ở Rừng Viridian.','',0,'nhanh','hp',3,'nhiem_vu','Người bạn của Hoothoot',1,0,0,'nhiem_vu',1027,1),
+(10028,'nv_028','Người hùng Pewter','Phần thưởng nhiệm vụ P-04.0.5: Nói chuyện với Machamp ở Pewter.','',0,'cong','ne_tranh',3,'nhiem_vu','Người hùng Pewter',1,0,0,'nhiem_vu',1028,1),
+(10029,'nv_029','Người bạn của Machoke','Phần thưởng nhiệm vụ P-04.1.4: Phân rã 2 món đồ thừa.','',0,'loc','chi_mang',3,'nhiem_vu','Người bạn của Machoke',1,0,0,'nhiem_vu',1029,1),
+(10030,'nv_030','Người bạn của Jigglypuff','Phần thưởng nhiệm vụ P-04.2.4: Đứng tại điểm đánh dấu trên Pewter (ô 13,10).','',0,'sao','khang_trang_thai',3,'nhiem_vu','Người bạn của Jigglypuff',1,0,0,'nhiem_vu',1030,1),
+(10031,'nv_031','Người hùng Núi Mặt Trăng','Phần thưởng nhiệm vụ P-05.0.5: Nói chuyện với Snorlax ở Núi Mặt Trăng.','',0,'la','hp',3,'nhiem_vu','Người hùng Núi Mặt Trăng',1,0,0,'nhiem_vu',1031,1),
+(10032,'nv_032','Người bạn của Pelipper','Phần thưởng nhiệm vụ P-05.1.4: Mang lá thư tới Bronzong.','',0,'tim','ne_tranh',3,'nhiem_vu','Người bạn của Pelipper',1,0,0,'nhiem_vu',1032,1),
+(10033,'nv_033','Người bạn của Bellossom','Phần thưởng nhiệm vụ P-05.2.4: Nói chuyện với Persian ở Núi Mặt Trăng.','',0,'khien','chi_mang',3,'nhiem_vu','Người bạn của Bellossom',1,0,0,'nhiem_vu',1033,1),
+(10034,'nv_034','Người hùng Cerulean','Phần thưởng nhiệm vụ P-06.0.5: Nói chuyện với Torkoal ở Cerulean.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Người hùng Cerulean',1,0,0,'nhiem_vu',1034,1),
+(10035,'nv_035','Người bạn của Slowking','Phần thưởng nhiệm vụ P-06.1.4: Nói chuyện với Snorlax ở Cerulean.','',0,'lua','hp',3,'nhiem_vu','Người bạn của Slowking',1,0,0,'nhiem_vu',1035,1),
+(10036,'nv_036','Người bạn của Pinsir','Phần thưởng nhiệm vụ P-06.2.4: Thắng 1 trận đấu trường.','',0,'set','ne_tranh',3,'nhiem_vu','Người bạn của Pinsir',1,0,0,'nhiem_vu',1036,1),
+(10037,'nv_037','Người hùng Vermilion','Phần thưởng nhiệm vụ P-07.0.5: Nói chuyện với Meowth ở Vermilion.','',0,'nhanh','chi_mang',3,'nhiem_vu','Người hùng Vermilion',1,0,0,'nhiem_vu',1037,1),
+(10038,'nv_038','Người bạn của Riolu','Phần thưởng nhiệm vụ P-07.1.4: Nói chuyện với Xatu ở Vermilion.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Người bạn của Riolu',1,0,0,'nhiem_vu',1038,1),
+(10039,'nv_039','Người bạn của Bronzor','Phần thưởng nhiệm vụ P-07.2.4: Đào 2 lần ở Vermilion.','',0,'loc','hp',3,'nhiem_vu','Người bạn của Bronzor',1,0,0,'nhiem_vu',1039,1),
+(10040,'nv_040','Người hùng Tàu S.S. Anne','Phần thưởng nhiệm vụ P-08.0.4: Nói chuyện với Persian ở Tàu S.S. Anne.','',0,'sao','ne_tranh',3,'nhiem_vu','Người hùng Tàu S.S. Anne',1,0,0,'nhiem_vu',1040,1),
+(10041,'nv_041','Người bạn của Slurpuff','Phần thưởng nhiệm vụ P-08.1.4: Giao Bánh quả mọng cho Kecleon.','',0,'la','chi_mang',3,'nhiem_vu','Người bạn của Slurpuff',1,0,0,'nhiem_vu',1041,1),
+(10042,'nv_042','Người hùng Lavender','Phần thưởng nhiệm vụ P-09.0.5: Nói chuyện với Snorlax ở Lavender.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người hùng Lavender',1,0,0,'nhiem_vu',1042,1),
+(10043,'nv_043','Người bạn của Chansey','Phần thưởng nhiệm vụ P-09.1.4: Hộ tống Pokémon bị thương từ Lavender tới Chansey an toàn.','',0,'khien','hp',3,'nhiem_vu','Người bạn của Chansey',1,0,0,'nhiem_vu',1043,1),
+(10044,'nv_044','Người bạn của Shellder','Phần thưởng nhiệm vụ P-09.2.4: Nói chuyện với Meowth ở Lavender.','',0,'giot','ne_tranh',3,'nhiem_vu','Người bạn của Shellder',1,0,0,'nhiem_vu',1044,1),
+(10045,'nv_045','Người hùng Celadon','Phần thưởng nhiệm vụ P-10.0.5: Nói chuyện với Kecleon ở Celadon.','',0,'lua','chi_mang',3,'nhiem_vu','Người hùng Celadon',1,0,0,'nhiem_vu',1045,1),
+(10046,'nv_046','Người bạn của Loudred','Phần thưởng nhiệm vụ P-10.1.4: Chọn một con đường.','',0,'set','khang_trang_thai',3,'nhiem_vu','Người bạn của Loudred',1,0,0,'nhiem_vu',1046,1),
+(10047,'nv_047','Người giữ yên giấc','Phần thưởng nhiệm vụ P-10.1.4: Chọn một con đường.','',0,'nhanh','hp',3,'nhiem_vu','Người giữ yên giấc',1,0,0,'nhiem_vu',1047,1),
+(10048,'nv_048','Người dạy hát ru','Phần thưởng nhiệm vụ P-10.1.4: Chọn một con đường.','',0,'cong','ne_tranh',3,'nhiem_vu','Người dạy hát ru',1,0,0,'nhiem_vu',1048,1),
+(10049,'nv_049','Người bạn của Hoppip','Phần thưởng nhiệm vụ P-10.2.4: Nói chuyện với Pidgeot ở Celadon.','',0,'loc','chi_mang',3,'nhiem_vu','Người bạn của Hoppip',1,0,0,'nhiem_vu',1049,1),
+(10050,'nv_050','Người hùng Saffron','Phần thưởng nhiệm vụ P-11.0.5: Nói chuyện với Xatu ở Saffron.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Người hùng Saffron',1,0,0,'nhiem_vu',1050,1),
+(10051,'nv_051','Người bạn của Pikachu','Phần thưởng nhiệm vụ P-11.1.4: Nói chuyện với Blaziken ở Saffron.','',0,'la','hp',3,'nhiem_vu','Người bạn của Pikachu',1,0,0,'nhiem_vu',1051,1),
+(10052,'nv_052','Người bạn của Foongus','Phần thưởng nhiệm vụ P-11.2.4: Quan sát Whirlipede Shiny vào ban đêm.','',0,'tim','ne_tranh',3,'nhiem_vu','Người bạn của Foongus',1,0,0,'nhiem_vu',1052,1),
+(10053,'nv_053','Người hùng Vùng Safari','Phần thưởng nhiệm vụ P-12.0.4: Hộ tống Kangaskhan con từ Vùng Safari tới Kangaskhan an toàn.','',0,'khien','chi_mang',3,'nhiem_vu','Người hùng Vùng Safari',1,0,0,'nhiem_vu',1053,1),
+(10054,'nv_054','Người bạn của Ponyta','Phần thưởng nhiệm vụ P-12.1.4: Nói chuyện với Tauros ở Vùng Safari.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Người bạn của Ponyta',1,0,0,'nhiem_vu',1054,1),
+(10055,'nv_055','Người bạn của Unown','Phần thưởng nhiệm vụ P-12.2.4: Nói chuyện với Xatu ở Vùng Safari.','',0,'lua','hp',3,'nhiem_vu','Người bạn của Unown',1,0,0,'nhiem_vu',1055,1),
+(10056,'nv_056','Người hùng Fuchsia','Phần thưởng nhiệm vụ P-13.0.4: Nói chuyện với Persian ở Fuchsia.','',0,'set','ne_tranh',3,'nhiem_vu','Người hùng Fuchsia',1,0,0,'nhiem_vu',1056,1),
+(10057,'nv_057','Người bạn của Lotad','Phần thưởng nhiệm vụ P-13.1.4: Nói chuyện với Snorlax ở Fuchsia.','',0,'nhanh','chi_mang',3,'nhiem_vu','Người bạn của Lotad',1,0,0,'nhiem_vu',1057,1),
+(10058,'nv_058','Người bạn của Mareep','Phần thưởng nhiệm vụ P-13.2.4: Giao Chăn len cho Kangaskhan.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Người bạn của Mareep',1,0,0,'nhiem_vu',1058,1),
+(10059,'nv_059','Người hùng Cinnabar','Phần thưởng nhiệm vụ P-14.0.4: Nói chuyện với Bronzong ở Cinnabar.','',0,'loc','hp',3,'nhiem_vu','Người hùng Cinnabar',1,0,0,'nhiem_vu',1059,1),
+(10060,'nv_060','Người bạn của Wigglytuff','Phần thưởng nhiệm vụ P-14.1.4: Nói chuyện với Snorlax ở Cinnabar.','',0,'sao','ne_tranh',3,'nhiem_vu','Người bạn của Wigglytuff',1,0,0,'nhiem_vu',1060,1),
+(10061,'nv_061','Người bạn của Sableye','Phần thưởng nhiệm vụ P-14.2.4: Nói chuyện với Sableye ở Cinnabar.','',0,'la','chi_mang',3,'nhiem_vu','Người bạn của Sableye',1,0,0,'nhiem_vu',1061,1),
+(10062,'nv_062','Người hùng New Bark','Phần thưởng nhiệm vụ P-15.0.5: Nói chuyện với Xatu ở New Bark.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người hùng New Bark',1,0,0,'nhiem_vu',1062,1),
+(10063,'nv_063','Người bạn của Bulbasaur','Phần thưởng nhiệm vụ P-15.1.4: Nói chuyện với Snorlax ở New Bark.','',0,'khien','hp',3,'nhiem_vu','Người bạn của Bulbasaur',1,0,0,'nhiem_vu',1063,1),
+(10064,'nv_064','Người bạn của Skitty','Phần thưởng nhiệm vụ P-15.2.4: Chọn một con đường.','',0,'giot','ne_tranh',3,'nhiem_vu','Người bạn của Skitty',1,0,0,'nhiem_vu',1064,1),
+(10065,'nv_065','Ông tơ bà nguyệt New Bark','Phần thưởng nhiệm vụ P-15.2.4: Chọn một con đường.','',0,'lua','chi_mang',3,'nhiem_vu','Ông tơ bà nguyệt New Bark',1,0,0,'nhiem_vu',1065,1),
+(10066,'nv_066','Người hùng Hang Tối','Phần thưởng nhiệm vụ P-16.0.4: Nói chuyện với Kangaskhan ở Hang Tối.','',0,'set','khang_trang_thai',3,'nhiem_vu','Người hùng Hang Tối',1,0,0,'nhiem_vu',1066,1),
+(10067,'nv_067','Người bạn của Swirlix','Phần thưởng nhiệm vụ P-16.1.4: Nấu 2 Bánh quả mọng.','',0,'nhanh','hp',3,'nhiem_vu','Người bạn của Swirlix',1,0,0,'nhiem_vu',1067,1),
+(10068,'nv_068','Người bạn của Happiny','Phần thưởng nhiệm vụ P-16.2.4: Nói chuyện với Kangaskhan ở Hang Tối.','',0,'cong','ne_tranh',3,'nhiem_vu','Người bạn của Happiny',1,0,0,'nhiem_vu',1068,1),
+(10069,'nv_069','Người hùng Cherrygrove','Phần thưởng nhiệm vụ P-17.0.5: Nói chuyện với Persian ở Cherrygrove.','',0,'loc','chi_mang',3,'nhiem_vu','Người hùng Cherrygrove',1,0,0,'nhiem_vu',1069,1),
+(10070,'nv_070','Người bạn của Corphish','Phần thưởng nhiệm vụ P-17.1.4: Nói chuyện với Lapras ở Cherrygrove.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Người bạn của Corphish',1,0,0,'nhiem_vu',1070,1),
+(10071,'nv_071','Người bạn của Diglett','Phần thưởng nhiệm vụ P-17.2.4: Nói chuyện với Persian ở Cherrygrove.','',0,'la','hp',3,'nhiem_vu','Người bạn của Diglett',1,0,0,'nhiem_vu',1071,1),
+(10072,'nv_072','Người hùng Violet','Phần thưởng nhiệm vụ P-18.0.4: Nói chuyện với Snorlax ở Violet.','',0,'tim','ne_tranh',3,'nhiem_vu','Người hùng Violet',1,0,0,'nhiem_vu',1072,1),
+(10073,'nv_073','Người bạn của Kecleon','Phần thưởng nhiệm vụ P-18.1.4: Giao Tấm ảnh cho Meowth.','',0,'khien','chi_mang',3,'nhiem_vu','Người bạn của Kecleon',1,0,0,'nhiem_vu',1073,1),
+(10074,'nv_074','Người bạn của Noctowl','Phần thưởng nhiệm vụ P-18.2.4: Nói chuyện với Arcanine ở Violet.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Người bạn của Noctowl',1,0,0,'nhiem_vu',1074,1),
+(10075,'nv_075','Người hùng Azalea','Phần thưởng nhiệm vụ P-19.0.4: Nói chuyện với Xatu ở Azalea.','',0,'lua','hp',3,'nhiem_vu','Người hùng Azalea',1,0,0,'nhiem_vu',1075,1),
+(10076,'nv_076','Người bạn của Timburr','Phần thưởng nhiệm vụ P-19.1.4: Phân rã 2 món đồ thừa.','',0,'set','ne_tranh',3,'nhiem_vu','Người bạn của Timburr',1,0,0,'nhiem_vu',1076,1),
+(10077,'nv_077','Người bạn của Chatot','Phần thưởng nhiệm vụ P-19.2.4: Đứng tại điểm đánh dấu trên Azalea (ô 47,5).','',0,'nhanh','chi_mang',3,'nhiem_vu','Người bạn của Chatot',1,0,0,'nhiem_vu',1077,1),
+(10078,'nv_078','Người hùng Rừng Ilex','Phần thưởng nhiệm vụ P-20.0.4: Nói chuyện với Torkoal ở Rừng Ilex.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Người hùng Rừng Ilex',1,0,0,'nhiem_vu',1078,1),
+(10079,'nv_079','Người bạn của Delibird','Phần thưởng nhiệm vụ P-20.1.4: Mang lá thư tới Bronzong.','',0,'loc','hp',3,'nhiem_vu','Người bạn của Delibird',1,0,0,'nhiem_vu',1079,1),
+(10080,'nv_080','Người bạn của Sunkern','Phần thưởng nhiệm vụ P-20.2.4: Nói chuyện với Persian ở Rừng Ilex.','',0,'sao','ne_tranh',3,'nhiem_vu','Người bạn của Sunkern',1,0,0,'nhiem_vu',1080,1),
+(10081,'nv_081','Người hùng Goldenrod','Phần thưởng nhiệm vụ P-21.0.5: Nói chuyện với Meowth ở Goldenrod.','',0,'la','chi_mang',3,'nhiem_vu','Người hùng Goldenrod',1,0,0,'nhiem_vu',1081,1),
+(10082,'nv_082','Người bạn của Primeape','Phần thưởng nhiệm vụ P-21.2.4: Thắng 1 trận đấu trường.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người bạn của Primeape',1,0,0,'nhiem_vu',1082,1),
+(10083,'nv_083','Người hùng Ecruteak','Phần thưởng nhiệm vụ P-22.0.4: Chọn một con đường.','',0,'khien','hp',3,'nhiem_vu','Người hùng Ecruteak',1,0,0,'nhiem_vu',1083,1),
+(10084,'nv_084','Bạn của ánh trăng','Phần thưởng nhiệm vụ P-22.0.4: Chọn một con đường.','',0,'giot','ne_tranh',3,'nhiem_vu','Bạn của ánh trăng',1,0,0,'nhiem_vu',1084,1),
+(10085,'nv_085','Bạn của ánh nắng','Phần thưởng nhiệm vụ P-22.0.4: Chọn một con đường.','',0,'lua','chi_mang',3,'nhiem_vu','Bạn của ánh nắng',1,0,0,'nhiem_vu',1085,1),
+(10086,'nv_086','Người bạn của Bunnelby','Phần thưởng nhiệm vụ P-22.1.4: Nói chuyện với Xatu ở Ecruteak.','',0,'set','khang_trang_thai',3,'nhiem_vu','Người bạn của Bunnelby',1,0,0,'nhiem_vu',1086,1),
+(10087,'nv_087','Người bạn của Natu','Phần thưởng nhiệm vụ P-22.2.4: Đào 2 lần ở Ecruteak.','',0,'nhanh','hp',3,'nhiem_vu','Người bạn của Natu',1,0,0,'nhiem_vu',1087,1),
+(10088,'nv_088','Người hùng Rừng Cổ','Phần thưởng nhiệm vụ P-23.0.4: Nói chuyện với Bronzong ở Rừng Cổ.','',0,'cong','ne_tranh',3,'nhiem_vu','Người hùng Rừng Cổ',1,0,0,'nhiem_vu',1088,1),
+(10089,'nv_089','Người bạn của Alcremie','Phần thưởng nhiệm vụ P-23.1.4: Giao Bánh quả mọng cho Kecleon.','',0,'loc','chi_mang',3,'nhiem_vu','Người bạn của Alcremie',1,0,0,'nhiem_vu',1089,1),
+(10090,'nv_090','Người bạn của Audino','Phần thưởng nhiệm vụ P-23.2.4: Hộ tống Pokémon bị thương từ Rừng Cổ tới Chansey an toàn.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Người bạn của Audino',1,0,0,'nhiem_vu',1090,1),
+(10091,'nv_091','Người hùng Olivine','Phần thưởng nhiệm vụ P-24.0.4: Nói chuyện với Machamp ở Olivine.','',0,'la','hp',3,'nhiem_vu','Người hùng Olivine',1,0,0,'nhiem_vu',1091,1),
+(10092,'nv_092','Người bạn của Exploud','Phần thưởng nhiệm vụ P-24.1.4: Chọn một con đường.','',0,'tim','ne_tranh',3,'nhiem_vu','Người bạn của Exploud',1,0,0,'nhiem_vu',1092,1),
+(10093,'nv_093','Người bạn của Swablu','Phần thưởng nhiệm vụ P-24.2.4: Nói chuyện với Pidgeot ở Olivine.','',0,'khien','chi_mang',3,'nhiem_vu','Người bạn của Swablu',1,0,0,'nhiem_vu',1093,1),
+(10094,'nv_094','Người hùng Cianwood','Phần thưởng nhiệm vụ P-25.0.4: Nói chuyện với Kecleon ở Cianwood.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Người hùng Cianwood',1,0,0,'nhiem_vu',1094,1),
+(10095,'nv_095','Người bạn của Eevee','Phần thưởng nhiệm vụ P-25.1.4: Nói chuyện với Blaziken ở Cianwood.','',0,'lua','hp',3,'nhiem_vu','Người bạn của Eevee',1,0,0,'nhiem_vu',1095,1),
+(10096,'nv_096','Người bạn của Morelull','Phần thưởng nhiệm vụ P-25.2.4: Quan sát Gastrodon vào ban đêm.','',0,'set','ne_tranh',3,'nhiem_vu','Người bạn của Morelull',1,0,0,'nhiem_vu',1096,1),
+(10097,'nv_097','Người hùng Mahogany','Phần thưởng nhiệm vụ P-26.0.4: Nói chuyện với Persian ở Mahogany.','',0,'nhanh','chi_mang',3,'nhiem_vu','Người hùng Mahogany',1,0,0,'nhiem_vu',1097,1),
+(10098,'nv_098','Người bạn của Dodrio','Phần thưởng nhiệm vụ P-26.1.4: Nói chuyện với Tauros ở Mahogany.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Người bạn của Dodrio',1,0,0,'nhiem_vu',1098,1),
+(10099,'nv_099','Người hùng Hồ Phẫn Nộ','Phần thưởng nhiệm vụ P-27.0.5: Nói chuyện với Blaziken ở Hồ Phẫn Nộ.','',0,'loc','hp',3,'nhiem_vu','Người hùng Hồ Phẫn Nộ',1,0,0,'nhiem_vu',1099,1)
+ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
+
+INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
+(10100,'nv_100','Người bạn của Wooper','Phần thưởng nhiệm vụ P-27.1.4: Nói chuyện với Snorlax ở Hồ Phẫn Nộ.','',0,'sao','ne_tranh',3,'nhiem_vu','Người bạn của Wooper',1,0,0,'nhiem_vu',1100,1),
+(10101,'nv_101','Người bạn của Wooloo','Phần thưởng nhiệm vụ P-27.2.4: Giao Chăn len cho Kangaskhan.','',0,'la','chi_mang',3,'nhiem_vu','Người bạn của Wooloo',1,0,0,'nhiem_vu',1101,1),
+(10102,'nv_102','Người hùng Blackthorn','Phần thưởng nhiệm vụ P-28.0.5: Nói chuyện với Xatu ở Blackthorn.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người hùng Blackthorn',1,0,0,'nhiem_vu',1102,1),
+(10103,'nv_103','Người bạn của Linoone','Phần thưởng nhiệm vụ P-28.1.4: Nói chuyện với Snorlax ở Blackthorn.','',0,'khien','hp',3,'nhiem_vu','Người bạn của Linoone',1,0,0,'nhiem_vu',1103,1),
+(10104,'nv_104','Người bạn của Carbink','Phần thưởng nhiệm vụ P-28.2.4: Nói chuyện với Sableye ở Blackthorn.','',0,'giot','ne_tranh',3,'nhiem_vu','Người bạn của Carbink',1,0,0,'nhiem_vu',1104,1),
+(10105,'nv_105','Người hùng Hang Salamence','Phần thưởng nhiệm vụ P-29.0.4: Nói chuyện với Blaziken ở Hang Salamence.','',0,'lua','chi_mang',3,'nhiem_vu','Người hùng Hang Salamence',1,0,0,'nhiem_vu',1105,1),
+(10106,'nv_106','Người bạn của Oddish','Phần thưởng nhiệm vụ P-29.1.4: Nói chuyện với Snorlax ở Hang Salamence.','',0,'set','khang_trang_thai',3,'nhiem_vu','Người bạn của Oddish',1,0,0,'nhiem_vu',1106,1),
+(10107,'nv_107','Ông tơ bà nguyệt Hang Salamence','Phần thưởng nhiệm vụ P-29.2.4: Chọn một con đường.','',0,'nhanh','hp',3,'nhiem_vu','Ông tơ bà nguyệt Hang Salamence',1,0,0,'nhiem_vu',1107,1),
+(10108,'nv_108','Người hùng Đường Victory','Phần thưởng nhiệm vụ P-30.0.4: Nói chuyện với Blaziken ở Đường Victory.','',0,'cong','ne_tranh',3,'nhiem_vu','Người hùng Đường Victory',1,0,0,'nhiem_vu',1108,1),
+(10109,'nv_109','Người hùng Núi Silver','Phần thưởng nhiệm vụ P-31.0.5: Nói chuyện với Snorlax ở Núi Silver.','',0,'loc','chi_mang',3,'nhiem_vu','Người hùng Núi Silver',1,0,0,'nhiem_vu',1109,1),
+(10110,'nv_110','Người hùng Cao nguyên Indigo','Phần thưởng nhiệm vụ P-32.0.5: Nói chuyện với Xatu ở Cao nguyên Indigo.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Người hùng Cao nguyên Indigo',1,0,0,'nhiem_vu',1110,1),
+(10111,'nv_111','Người hùng Hang Darkrai','Phần thưởng nhiệm vụ P-33.0.5: Nói chuyện với Blaziken ở Hang Darkrai.','',0,'la','hp',3,'nhiem_vu','Người hùng Hang Darkrai',1,0,0,'nhiem_vu',1111,1),
+(10112,'nv_112','Người gác Pallet','Phần thưởng nhiệm vụ TV-01.3: Nói chuyện với Xatu ở Pallet.','',0,'tim','ne_tranh',3,'nhiem_vu','Người gác Pallet',1,0,0,'nhiem_vu',1112,1),
+(10113,'nv_113','Người gác Núi Mặt Trăng','Phần thưởng nhiệm vụ TV-02.3: Thu 34 Nấm phát quang (rơi từ Tepig).','',0,'khien','chi_mang',3,'nhiem_vu','Người gác Núi Mặt Trăng',1,0,0,'nhiem_vu',1113,1),
+(10114,'nv_114','Người gác Vermilion','Phần thưởng nhiệm vụ TV-03.3: Hạ 330 Ariados.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Người gác Vermilion',1,0,0,'nhiem_vu',1114,1),
+(10115,'nv_115','Người gác Lavender','Phần thưởng nhiệm vụ TV-04.3: Đứng tại điểm đánh dấu trên Lavender (ô 44,41).','',0,'lua','hp',3,'nhiem_vu','Người gác Lavender',1,0,0,'nhiem_vu',1115,1),
+(10116,'nv_116','Người gác Celadon','Phần thưởng nhiệm vụ TV-05.3: Thắng 2 trận đấu trường.','',0,'set','ne_tranh',3,'nhiem_vu','Người gác Celadon',1,0,0,'nhiem_vu',1116,1),
+(10117,'nv_117','Người gác Cinnabar','Phần thưởng nhiệm vụ TV-06.3: Nói chuyện với Bronzong ở Cinnabar.','',0,'nhanh','chi_mang',3,'nhiem_vu','Người gác Cinnabar',1,0,0,'nhiem_vu',1117,1),
+(10118,'nv_118','Người gác New Bark','Phần thưởng nhiệm vụ TV-07.3: Hạ 295 Scolipede.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Người gác New Bark',1,0,0,'nhiem_vu',1118,1),
+(10119,'nv_119','Người gác Rừng Ilex','Phần thưởng nhiệm vụ TV-08.3: Quan sát Magcargo lúc bình minh.','',0,'loc','hp',3,'nhiem_vu','Người gác Rừng Ilex',1,0,0,'nhiem_vu',1119,1),
+(10120,'nv_120','Người gác Goldenrod','Phần thưởng nhiệm vụ TV-09.3: Trả lời đúng 2 câu đố Ai là Pokémon?.','',0,'sao','ne_tranh',3,'nhiem_vu','Người gác Goldenrod',1,0,0,'nhiem_vu',1120,1),
+(10121,'nv_121','Người gác Olivine','Phần thưởng nhiệm vụ TV-10.3: Hộ tống Gói hàng từ Olivine tới Machamp an toàn.','',0,'la','chi_mang',3,'nhiem_vu','Người gác Olivine',1,0,0,'nhiem_vu',1121,1),
+(10122,'nv_122','Người gác Hồ Phẫn Nộ','Phần thưởng nhiệm vụ TV-11.3: Hạ 270 Kingler.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người gác Hồ Phẫn Nộ',1,0,0,'nhiem_vu',1122,1),
+(10123,'nv_123','Người gác Blackthorn','Phần thưởng nhiệm vụ TV-12.3: Nói chuyện với Xatu ở Blackthorn.','',0,'khien','hp',3,'nhiem_vu','Người gác Blackthorn',1,0,0,'nhiem_vu',1123,1),
+(10124,'nv_124','Người gác Núi Silver','Phần thưởng nhiệm vụ TV-13.3: Đánh bại 61 Luxray mạnh.','',0,'giot','ne_tranh',3,'nhiem_vu','Người gác Núi Silver',1,0,0,'nhiem_vu',1124,1),
+(10125,'nv_125','Người nghe tiếng sấm','Phần thưởng nhiệm vụ HT-ZAP.7: Nói chuyện với Snorlax ở Tổ Zapdos.','',2,'lua','chi_mang',7,'nhiem_vu','Người nghe tiếng sấm',1,0,0,'nhiem_vu',1125,1),
+(10126,'nv_126','Người theo vệt lửa','Phần thưởng nhiệm vụ HT-ENT.7: Nói chuyện với Blaziken ở Ecruteak.','',2,'set','khang_trang_thai',7,'nhiem_vu','Người theo vệt lửa',1,0,0,'nhiem_vu',1126,1),
+(10127,'nv_127','Người đi qua ác mộng','Phần thưởng nhiệm vụ HT-DAR.7: Nói chuyện với Xatu ở Hang Darkrai.','',2,'nhanh','hp',7,'nhiem_vu','Người đi qua ác mộng',1,0,0,'nhiem_vu',1127,1),
+(10128,'nv_128','Người chạm tới bầu trời','Phần thưởng nhiệm vụ HT-RAY.7: Nói chuyện với Blaziken ở Núi Silver.','',2,'cong','ne_tranh',7,'nhiem_vu','Người chạm tới bầu trời',1,0,0,'nhiem_vu',1128,1),
+(10129,'nv_129','Người giữ cân bằng đất biển','Phần thưởng nhiệm vụ HT-GRK.7: Nói chuyện với Lapras ở Hồ Phẫn Nộ.','',2,'loc','chi_mang',7,'nhiem_vu','Người giữ cân bằng đất biển',1,0,0,'nhiem_vu',1129,1),
+(10130,'nv_130','Người giữ hơi thở băng','Phần thưởng nhiệm vụ HT-ART.7: Nói chuyện với Torkoal ở Núi Silver.','',2,'sao','khang_trang_thai',7,'nhiem_vu','Người giữ hơi thở băng',1,0,0,'nhiem_vu',1130,1),
+(10131,'nv_131','Người mang ngọn lửa bất diệt','Phần thưởng nhiệm vụ HT-MOL.7: Nói chuyện với Blaziken ở Cinnabar.','',2,'la','hp',7,'nhiem_vu','Người mang ngọn lửa bất diệt',1,0,0,'nhiem_vu',1131,1),
+(10132,'nv_132','Người đuổi kịp tia chớp','Phần thưởng nhiệm vụ HT-RAI.7: Nói chuyện với Bronzong ở Mahogany.','',2,'tim','ne_tranh',7,'nhiem_vu','Người đuổi kịp tia chớp',1,0,0,'nhiem_vu',1132,1),
+(10133,'nv_133','Người làm trong dòng nước','Phần thưởng nhiệm vụ HT-SUI.7: Nói chuyện với Lapras ở Hồ Phẫn Nộ.','',2,'khien','chi_mang',7,'nhiem_vu','Người làm trong dòng nước',1,0,0,'nhiem_vu',1133,1),
+(10134,'nv_134','Người nghe bài ca biển sâu','Phần thưởng nhiệm vụ HT-LUG.7: Nói chuyện với Lapras ở Olivine.','',2,'giot','khang_trang_thai',7,'nhiem_vu','Người nghe bài ca biển sâu',1,0,0,'nhiem_vu',1134,1),
+(10135,'nv_135','Người thấy cầu vồng bảy sắc','Phần thưởng nhiệm vụ HT-HOO.7: Nói chuyện với Xatu ở Ecruteak.','',2,'lua','hp',7,'nhiem_vu','Người thấy cầu vồng bảy sắc',1,0,0,'nhiem_vu',1135,1),
+(10136,'nv_136','Người du hành qua thời gian','Phần thưởng nhiệm vụ HT-CEL.7: Nói chuyện với Snorlax ở Rừng Ilex.','',2,'set','ne_tranh',7,'nhiem_vu','Người du hành qua thời gian',1,0,0,'nhiem_vu',1136,1),
+(10137,'nv_137','Người tìm thấy Mew','Phần thưởng nhiệm vụ HT-MEW.7: Nói chuyện với Bronzong ở Cinnabar.','',2,'nhanh','chi_mang',7,'nhiem_vu','Người tìm thấy Mew',1,0,0,'nhiem_vu',1137,1),
+(10138,'nv_138','Người giữ bí mật của Snorlax','Phần thưởng nhiệm vụ AN-01: Nói chuyện với Snorlax ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'cong','khang_trang_thai',5,'nhiem_vu','Người giữ bí mật của Snorlax',1,1,0,'an',1138,1),
+(10139,'nv_139','Bạn của bóng đêm','Phần thưởng nhiệm vụ AN-02: Đứng tại điểm đánh dấu trên Lavender (ô 44,41).','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'loc','hp',5,'nhiem_vu','Bạn của bóng đêm',1,1,0,'an',1139,1),
+(10140,'nv_140','Người thấy Magikarp vàng','Phần thưởng nhiệm vụ AN-03: Câu được 1 Vảy cá vàng.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'sao','ne_tranh',5,'nhiem_vu','Người thấy Magikarp vàng',1,1,0,'an',1140,1),
+(10141,'nv_141','Người đọc chữ Unown','Phần thưởng nhiệm vụ AN-04: Giải câu đố của Xatu: gõ đáp án vào kênh trò chuyện.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'la','chi_mang',5,'nhiem_vu','Người đọc chữ Unown',1,1,0,'an',1141,1),
+(10142,'nv_142','Người nhìn thấu','Phần thưởng nhiệm vụ AN-05: Nói chuyện với Kecleon ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'tim','khang_trang_thai',5,'nhiem_vu','Người nhìn thấu',1,1,0,'an',1142,1),
+(10143,'nv_143','Thợ đào may mắn','Phần thưởng nhiệm vụ AN-06: Đào 1 lần ở Khu mỏ.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'khien','hp',5,'nhiem_vu','Thợ đào may mắn',1,1,0,'an',1143,1),
+(10144,'nv_144','Người lắng nghe','Phần thưởng nhiệm vụ AN-07: Đứng tại điểm đánh dấu trên Cerulean (ô 50,46).','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'giot','ne_tranh',5,'nhiem_vu','Người lắng nghe',1,1,0,'an',1144,1),
+(10145,'nv_145','Người nghe chuông bạc','Phần thưởng nhiệm vụ AN-08: Quan sát Rhydon khi trời mưa.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'lua','chi_mang',5,'nhiem_vu','Người nghe chuông bạc',1,1,0,'an',1145,1),
+(10146,'nv_146','Đầu bếp của Snorlax','Phần thưởng nhiệm vụ AN-09: Nấu 1 Bánh mật ong.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'set','khang_trang_thai',5,'nhiem_vu','Đầu bếp của Snorlax',1,1,0,'an',1146,1),
+(10147,'nv_147','Người mang mười sáu ngọn đèn','Phần thưởng nhiệm vụ AN-10: Đứng tại điểm đánh dấu trên Pallet (ô 53,19).','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'nhanh','hp',5,'nhiem_vu','Người mang mười sáu ngọn đèn',1,1,0,'an',1147,1),
+(10148,'nv_148','Người ấp trứng lạ','Phần thưởng nhiệm vụ AN-11: Cho 1 quả trứng nở.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'cong','ne_tranh',5,'nhiem_vu','Người ấp trứng lạ',1,1,0,'an',1148,1),
+(10149,'nv_149','Người chạy cùng gió','Phần thưởng nhiệm vụ AN-12: Về đích trong cuộc Đua Pokémon.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'loc','chi_mang',5,'nhiem_vu','Người chạy cùng gió',1,1,0,'an',1149,1),
+(10150,'nv_150','Người tha thứ','Phần thưởng nhiệm vụ AN-13: Nói chuyện với Xatu ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'sao','khang_trang_thai',5,'nhiem_vu','Người tha thứ',1,1,0,'an',1150,1),
+(10151,'nv_151','Người làm vườn đêm','Phần thưởng nhiệm vụ AN-14: Trồng và thu hoạch 1 Hoa sương.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'la','hp',5,'nhiem_vu','Người làm vườn đêm',1,1,0,'an',1151,1),
+(10152,'nv_152','Bạn của Lém','Phần thưởng nhiệm vụ AN-15: Thắng 1 trận đấu trường.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'tim','ne_tranh',5,'nhiem_vu','Bạn của Lém',1,1,0,'an',1152,1),
+(10153,'nv_153','Người hiểu Darkrai','Phần thưởng nhiệm vụ AN-16: Tìm Cuộn băng radio giấu ở Mahogany.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'khien','chi_mang',5,'nhiem_vu','Người hiểu Darkrai',1,1,0,'an',1153,1),
+(10154,'nv_154','Vũ công dưới trăng','Phần thưởng nhiệm vụ AN-17: Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30).','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'giot','khang_trang_thai',5,'nhiem_vu','Vũ công dưới trăng',1,1,0,'an',1154,1),
+(10155,'nv_155','Người đưa thư tận tâm','Phần thưởng nhiệm vụ AN-18: Mang lá thư tới Torkoal.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'lua','hp',5,'nhiem_vu','Người đưa thư tận tâm',1,1,0,'an',1155,1),
+(10156,'nv_156','Người chiến đấu trong mơ','Phần thưởng nhiệm vụ AN-19: Đánh bại 7 Pinsir mạnh.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'set','ne_tranh',5,'nhiem_vu','Người chiến đấu trong mơ',1,1,0,'an',1156,1),
+(10157,'nv_157','Người nghe Lapras hát','Phần thưởng nhiệm vụ AN-20: Nói chuyện với Lapras ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'nhanh','chi_mang',5,'nhiem_vu','Người nghe Lapras hát',1,1,0,'an',1157,1),
+(10158,'nv_158','Bạn thân của Persian','Phần thưởng nhiệm vụ AN-21: Tìm Vòng cổ ngọc giấu ở Celadon.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'cong','khang_trang_thai',5,'nhiem_vu','Bạn thân của Persian',1,1,0,'an',1158,1),
+(10159,'nv_159','Người biết nghỉ ngơi','Phần thưởng nhiệm vụ AN-22: Nói chuyện với Snorlax ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'loc','hp',5,'nhiem_vu','Người biết nghỉ ngơi',1,1,0,'an',1159,1),
+(10160,'nv_160','Người được Darkrai tin','Phần thưởng nhiệm vụ AN-23: Quan sát Gastrodon vào ban đêm.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'sao','ne_tranh',5,'nhiem_vu','Người được Darkrai tin',1,1,0,'an',1160,1),
+(10161,'nv_161','Người nuôi Larvitar','Phần thưởng nhiệm vụ AN-24: Hạ 25 Kingler.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'la','chi_mang',5,'nhiem_vu','Người nuôi Larvitar',1,1,0,'an',1161,1),
+(10162,'nv_162','Người giữ lời hẹn','Phần thưởng nhiệm vụ AN-25: Đào 1 lần ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'tim','khang_trang_thai',5,'nhiem_vu','Người giữ lời hẹn',1,1,0,'an',1162,1),
+(10163,'nv_163','Người tìm sao','Phần thưởng nhiệm vụ AN-26: Tìm Mảnh sao băng giấu ở Núi Silver.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'khien','hp',5,'nhiem_vu','Người tìm sao',1,1,0,'an',1163,1),
+(10164,'nv_164','Khách quý của Snorlax','Phần thưởng nhiệm vụ AN-27: Nấu 5 Bánh quả mọng.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'giot','ne_tranh',5,'nhiem_vu','Khách quý của Snorlax',1,1,0,'an',1164,1),
+(10165,'nv_165','Người gác cầu Cerulean','Phần thưởng nhiệm vụ AN-28: Hạ 12 Dusclops trong 4 phút.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'lua','chi_mang',5,'nhiem_vu','Người gác cầu Cerulean',1,1,0,'an',1165,1),
+(10166,'nv_166','Người ngắm hoa cuối mùa','Phần thưởng nhiệm vụ AN-29: Đứng tại điểm đánh dấu trên Cherrygrove (ô 9,19).','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'set','khang_trang_thai',5,'nhiem_vu','Người ngắm hoa cuối mùa',1,1,0,'an',1166,1),
+(10167,'nv_167','Học trò của Blaziken','Phần thưởng nhiệm vụ AN-30: Nói chuyện với Blaziken ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'nhanh','hp',5,'nhiem_vu','Học trò của Blaziken',1,1,0,'an',1167,1),
+(10168,'nv_168','Huyền thoại của làng','Phần thưởng nhiệm vụ AN-31: Nói chuyện với Xatu ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'cong','ne_tranh',5,'nhiem_vu','Huyền thoại của làng',1,1,0,'an',1168,1),
+(10169,'nv_169','Người bạn của đá','Phần thưởng nhiệm vụ AN-32: Nói chuyện với Machamp ở Pallet.','Một nhiệm vụ ẩn đang chờ được tìm ra.',1,'loc','chi_mang',5,'nhiem_vu','Người bạn của đá',1,1,0,'an',1169,1),
+(10170,'nv_170','Bước chân đầu tiên','Phần thưởng nhiệm vụ A-001: Cấp độ đạt 10.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Bước chân đầu tiên',1,0,0,'thanh_tuu',1170,1),
+(10171,'nv_171','Nhà huấn luyện đồng','Phần thưởng nhiệm vụ A-002: Cấp độ đạt 20.','',0,'la','hp',3,'nhiem_vu','Nhà huấn luyện đồng',1,0,0,'thanh_tuu',1171,1),
+(10172,'nv_172','Vững vàng','Phần thưởng nhiệm vụ A-003: Cấp độ đạt 30.','',0,'tim','ne_tranh',3,'nhiem_vu','Vững vàng',1,0,0,'thanh_tuu',1172,1),
+(10173,'nv_173','Nhà huấn luyện bạc','Phần thưởng nhiệm vụ A-004: Cấp độ đạt 40.','',0,'khien','chi_mang',3,'nhiem_vu','Nhà huấn luyện bạc',1,0,0,'thanh_tuu',1173,1),
+(10174,'nv_174','Nửa chặng đường','Phần thưởng nhiệm vụ A-005: Cấp độ đạt 50.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Nửa chặng đường',1,0,0,'thanh_tuu',1174,1),
+(10175,'nv_175','Nhà huấn luyện vàng','Phần thưởng nhiệm vụ A-006: Cấp độ đạt 60.','',0,'lua','hp',3,'nhiem_vu','Nhà huấn luyện vàng',1,0,0,'thanh_tuu',1175,1),
+(10176,'nv_176','Vượt mùa','Phần thưởng nhiệm vụ A-007: Cấp độ đạt 70.','',0,'set','ne_tranh',3,'nhiem_vu','Vượt mùa',1,0,0,'thanh_tuu',1176,1),
+(10177,'nv_177','Nhà huấn luyện bạch kim','Phần thưởng nhiệm vụ A-008: Cấp độ đạt 80.','',0,'nhanh','chi_mang',3,'nhiem_vu','Nhà huấn luyện bạch kim',1,0,0,'thanh_tuu',1177,1),
+(10178,'nv_178','Đỉnh cao ba vùng','Phần thưởng nhiệm vụ A-009: Cấp độ đạt 91.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Đỉnh cao ba vùng',1,0,0,'thanh_tuu',1178,1),
+(10179,'nv_179','Huyền thoại sống','Phần thưởng nhiệm vụ A-010: Cấp độ đạt 100.','',0,'loc','hp',3,'nhiem_vu','Huyền thoại sống',1,0,0,'thanh_tuu',1179,1),
+(10180,'nv_180','Nhà sưu tầm 10','Phần thưởng nhiệm vụ A-011: Pokédex đạt 10.','',0,'sao','ne_tranh',3,'nhiem_vu','Nhà sưu tầm 10',1,0,0,'thanh_tuu',1180,1),
+(10181,'nv_181','Nhà sưu tầm 25','Phần thưởng nhiệm vụ A-012: Pokédex đạt 25.','',0,'la','chi_mang',3,'nhiem_vu','Nhà sưu tầm 25',1,0,0,'thanh_tuu',1181,1),
+(10182,'nv_182','Nhà sưu tầm 40','Phần thưởng nhiệm vụ A-013: Pokédex đạt 40.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Nhà sưu tầm 40',1,0,0,'thanh_tuu',1182,1),
+(10183,'nv_183','Nhà sưu tầm 50','Phần thưởng nhiệm vụ A-014: Pokédex đạt 50.','',0,'khien','hp',3,'nhiem_vu','Nhà sưu tầm 50',1,0,0,'thanh_tuu',1183,1),
+(10184,'nv_184','Nhà sưu tầm 60','Phần thưởng nhiệm vụ A-015: Pokédex đạt 60.','',0,'giot','ne_tranh',3,'nhiem_vu','Nhà sưu tầm 60',1,0,0,'thanh_tuu',1184,1),
+(10185,'nv_185','Nhà sưu tầm 75','Phần thưởng nhiệm vụ A-016: Pokédex đạt 75.','',0,'lua','chi_mang',3,'nhiem_vu','Nhà sưu tầm 75',1,0,0,'thanh_tuu',1185,1),
+(10186,'nv_186','Nhà sưu tầm 100','Phần thưởng nhiệm vụ A-017: Pokédex đạt 100.','',0,'set','khang_trang_thai',3,'nhiem_vu','Nhà sưu tầm 100',1,0,0,'thanh_tuu',1186,1),
+(10187,'nv_187','Khởi hành','Phần thưởng nhiệm vụ A-018: Cốt truyện đạt 4.','',0,'nhanh','hp',3,'nhiem_vu','Khởi hành',1,0,0,'thanh_tuu',1187,1),
+(10188,'nv_188','Người kể chuyện','Phần thưởng nhiệm vụ A-019: Cốt truyện đạt 13.','',0,'cong','ne_tranh',3,'nhiem_vu','Người kể chuyện',1,0,0,'thanh_tuu',1188,1),
+(10189,'nv_189','Kanto toàn tập','Phần thưởng nhiệm vụ A-020: Cốt truyện đạt 28.','',0,'loc','chi_mang',3,'nhiem_vu','Kanto toàn tập',1,0,0,'thanh_tuu',1189,1),
+(10190,'nv_190','Gió Johto','Phần thưởng nhiệm vụ A-021: Cốt truyện đạt 40.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Gió Johto',1,0,0,'thanh_tuu',1190,1),
+(10191,'nv_191','Johto toàn tập','Phần thưởng nhiệm vụ A-022: Cốt truyện đạt 52.','',0,'la','hp',3,'nhiem_vu','Johto toàn tập',1,0,0,'thanh_tuu',1191,1),
+(10192,'nv_192','Đất liền Hoenn','Phần thưởng nhiệm vụ A-023: Cốt truyện đạt 66.','',0,'tim','ne_tranh',3,'nhiem_vu','Đất liền Hoenn',1,0,0,'thanh_tuu',1192,1),
+(10193,'nv_193','Bình yên Hoenn','Phần thưởng nhiệm vụ A-024: Cốt truyện đạt 80.','',0,'khien','chi_mang',3,'nhiem_vu','Bình yên Hoenn',1,0,0,'thanh_tuu',1193,1),
+(10194,'nv_194','Huy hiệu đầu tiên','Phần thưởng nhiệm vụ A-025: Huy hiệu Gym đạt 1.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Huy hiệu đầu tiên',1,0,0,'thanh_tuu',1194,1),
+(10195,'nv_195','Bốn ngọn đèn','Phần thưởng nhiệm vụ A-026: Huy hiệu Gym đạt 4.','',0,'lua','hp',3,'nhiem_vu','Bốn ngọn đèn',1,0,0,'thanh_tuu',1195,1),
+(10196,'nv_196','Tám huy hiệu Kanto','Phần thưởng nhiệm vụ A-027: Huy hiệu Gym đạt 8.','',0,'set','ne_tranh',3,'nhiem_vu','Tám huy hiệu Kanto',1,0,0,'thanh_tuu',1196,1),
+(10197,'nv_197','Mười hai','Phần thưởng nhiệm vụ A-028: Huy hiệu Gym đạt 12.','',0,'nhanh','chi_mang',3,'nhiem_vu','Mười hai',1,0,0,'thanh_tuu',1197,1),
+(10198,'nv_198','Mười sáu ngọn đèn','Phần thưởng nhiệm vụ A-029: Huy hiệu Gym đạt 16.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Mười sáu ngọn đèn',1,0,0,'thanh_tuu',1198,1),
+(10199,'nv_199','Thợ rèn tập sự','Phần thưởng nhiệm vụ A-030: Nâng cấp đạt 5.','',0,'loc','hp',3,'nhiem_vu','Thợ rèn tập sự',1,0,0,'thanh_tuu',1199,1)
+ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
+
+INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
+(10200,'nv_200','Thợ rèn khéo tay','Phần thưởng nhiệm vụ A-031: Nâng cấp đạt 8.','',0,'sao','ne_tranh',3,'nhiem_vu','Thợ rèn khéo tay',1,0,0,'thanh_tuu',1200,1),
+(10201,'nv_201','Thợ rèn lành nghề','Phần thưởng nhiệm vụ A-032: Nâng cấp đạt 10.','',0,'la','chi_mang',3,'nhiem_vu','Thợ rèn lành nghề',1,0,0,'thanh_tuu',1201,1),
+(10202,'nv_202','Thợ cả','Phần thưởng nhiệm vụ A-033: Nâng cấp đạt 12.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Thợ cả',1,0,0,'thanh_tuu',1202,1),
+(10203,'nv_203','Thợ rèn bậc thầy','Phần thưởng nhiệm vụ A-034: Nâng cấp đạt 15.','',0,'khien','hp',3,'nhiem_vu','Thợ rèn bậc thầy',1,0,0,'thanh_tuu',1203,1),
+(10204,'nv_204','Người hàng xóm tốt','Phần thưởng nhiệm vụ A-035: Nhiệm vụ phụ đạt 10.','',0,'giot','ne_tranh',3,'nhiem_vu','Người hàng xóm tốt',1,0,0,'thanh_tuu',1204,1),
+(10205,'nv_205','Người bạn của mọi nhà','Phần thưởng nhiệm vụ A-036: Nhiệm vụ phụ đạt 50.','',0,'lua','chi_mang',3,'nhiem_vu','Người bạn của mọi nhà',1,0,0,'thanh_tuu',1205,1),
+(10206,'nv_206','Huyền thoại thị trấn','Phần thưởng nhiệm vụ A-037: Nhiệm vụ phụ đạt 100.','',0,'set','khang_trang_thai',3,'nhiem_vu','Huyền thoại thị trấn',1,0,0,'thanh_tuu',1206,1),
+(10207,'nv_207','Người không thể thiếu','Phần thưởng nhiệm vụ A-038: Nhiệm vụ phụ đạt 200.','',0,'nhanh','hp',3,'nhiem_vu','Người không thể thiếu',1,0,0,'thanh_tuu',1207,1),
+(10208,'nv_208','Linh hồn của ba vùng','Phần thưởng nhiệm vụ A-039: Nhiệm vụ phụ đạt 400.','',0,'cong','ne_tranh',3,'nhiem_vu','Linh hồn của ba vùng',1,0,0,'thanh_tuu',1208,1),
+(10209,'nv_209','Một tuần trọn vẹn','Phần thưởng nhiệm vụ A-040: Chăm chỉ đạt 7.','',0,'loc','chi_mang',3,'nhiem_vu','Một tuần trọn vẹn',1,0,0,'thanh_tuu',1209,1),
+(10210,'nv_210','Chăm chỉ 30 ngày','Phần thưởng nhiệm vụ A-041: Chăm chỉ đạt 30.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Chăm chỉ 30 ngày',1,0,0,'thanh_tuu',1210,1),
+(10211,'nv_211','Chăm chỉ 100 ngày','Phần thưởng nhiệm vụ A-042: Chăm chỉ đạt 100.','',0,'la','hp',3,'nhiem_vu','Chăm chỉ 100 ngày',1,0,0,'thanh_tuu',1211,1),
+(10212,'nv_212','Chăm chỉ 200 ngày','Phần thưởng nhiệm vụ A-043: Chăm chỉ đạt 200.','',0,'tim','ne_tranh',3,'nhiem_vu','Chăm chỉ 200 ngày',1,0,0,'thanh_tuu',1212,1),
+(10213,'nv_213','Chăm chỉ 365 ngày','Phần thưởng nhiệm vụ A-044: Chăm chỉ đạt 365.','',0,'khien','chi_mang',3,'nhiem_vu','Chăm chỉ 365 ngày',1,0,0,'thanh_tuu',1213,1),
+(10214,'nv_214','Trận thắng đầu tiên','Phần thưởng nhiệm vụ A-045: Đấu trường đạt 1.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Trận thắng đầu tiên',1,0,0,'thanh_tuu',1214,1),
+(10215,'nv_215','Đấu trường: 10 trận thắng','Phần thưởng nhiệm vụ A-046: Đấu trường đạt 10.','',0,'lua','hp',3,'nhiem_vu','Đấu trường: 10 trận thắng',1,0,0,'thanh_tuu',1215,1),
+(10216,'nv_216','Đấu trường: 50 trận thắng','Phần thưởng nhiệm vụ A-047: Đấu trường đạt 50.','',0,'set','ne_tranh',3,'nhiem_vu','Đấu trường: 50 trận thắng',1,0,0,'thanh_tuu',1216,1),
+(10217,'nv_217','Đấu trường: 100 trận thắng','Phần thưởng nhiệm vụ A-048: Đấu trường đạt 100.','',0,'nhanh','chi_mang',3,'nhiem_vu','Đấu trường: 100 trận thắng',1,0,0,'thanh_tuu',1217,1),
+(10218,'nv_218','Đấu trường: 500 trận thắng','Phần thưởng nhiệm vụ A-049: Đấu trường đạt 500.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Đấu trường: 500 trận thắng',1,0,0,'thanh_tuu',1218,1),
+(10219,'nv_219','Lần đầu đột kích','Phần thưởng nhiệm vụ A-050: Boss thế giới đạt 1.','',0,'loc','hp',3,'nhiem_vu','Lần đầu đột kích',1,0,0,'thanh_tuu',1219,1),
+(10220,'nv_220','Săn huyền thoại','Phần thưởng nhiệm vụ A-051: Boss thế giới đạt 10.','',0,'sao','ne_tranh',3,'nhiem_vu','Săn huyền thoại',1,0,0,'thanh_tuu',1220,1),
+(10221,'nv_221','Người săn boss','Phần thưởng nhiệm vụ A-052: Boss thế giới đạt 50.','',0,'la','chi_mang',3,'nhiem_vu','Người săn boss',1,0,0,'thanh_tuu',1221,1),
+(10222,'nv_222','Khắc tinh của boss','Phần thưởng nhiệm vụ A-053: Boss thế giới đạt 100.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Khắc tinh của boss',1,0,0,'thanh_tuu',1222,1),
+(10223,'nv_223','Thành viên đội','Phần thưởng nhiệm vụ A-054: Đội đạt 1.','',0,'khien','hp',3,'nhiem_vu','Thành viên đội',1,0,0,'thanh_tuu',1223,1),
+(10224,'nv_224','Đội mạnh nhất tuần','Phần thưởng nhiệm vụ A-055: Đội đạt 10.','',0,'giot','ne_tranh',3,'nhiem_vu','Đội mạnh nhất tuần',1,0,0,'thanh_tuu',1224,1),
+(10225,'nv_225','Trụ cột của đội','Phần thưởng nhiệm vụ A-056: Đội đạt 50.','',0,'lua','chi_mang',3,'nhiem_vu','Trụ cột của đội',1,0,0,'thanh_tuu',1225,1),
+(10226,'nv_226','Đủ bộ trang bị','Phần thưởng nhiệm vụ A-057: Bộ trang bị đạt 1.','',0,'set','khang_trang_thai',3,'nhiem_vu','Đủ bộ trang bị',1,0,0,'thanh_tuu',1226,1),
+(10227,'nv_227','Bộ trang bị tinh anh','Phần thưởng nhiệm vụ A-058: Bộ trang bị đạt 3.','',0,'nhanh','hp',3,'nhiem_vu','Bộ trang bị tinh anh',1,0,0,'thanh_tuu',1227,1),
+(10228,'nv_228','Tủ đồ ba vùng','Phần thưởng nhiệm vụ A-059: Bộ trang bị đạt 6.','',0,'cong','ne_tranh',3,'nhiem_vu','Tủ đồ ba vùng',1,0,0,'thanh_tuu',1228,1),
+(10229,'nv_229','Người vui hội','Phần thưởng nhiệm vụ A-060: Sự kiện đạt 5.','',0,'loc','chi_mang',3,'nhiem_vu','Người vui hội',1,0,0,'thanh_tuu',1229,1),
+(10230,'nv_230','Thánh sự kiện','Phần thưởng nhiệm vụ A-061: Sự kiện đạt 20.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Thánh sự kiện',1,0,0,'thanh_tuu',1230,1),
+(10231,'nv_231','Không bỏ lỡ tuần nào','Phần thưởng nhiệm vụ A-062: Sự kiện đạt 52.','',0,'la','hp',3,'nhiem_vu','Không bỏ lỡ tuần nào',1,0,0,'thanh_tuu',1231,1),
+(10232,'nv_232','Cần câu mới','Phần thưởng nhiệm vụ A-063: Câu cá đạt 10.','',0,'tim','ne_tranh',3,'nhiem_vu','Cần câu mới',1,0,0,'thanh_tuu',1232,1),
+(10233,'nv_233','Ngư ông','Phần thưởng nhiệm vụ A-064: Câu cá đạt 100.','',0,'khien','chi_mang',3,'nhiem_vu','Ngư ông',1,0,0,'thanh_tuu',1233,1),
+(10234,'nv_234','Vua câu cá','Phần thưởng nhiệm vụ A-065: Câu cá đạt 500.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Vua câu cá',1,0,0,'thanh_tuu',1234,1),
+(10235,'nv_235','Huyền thoại sông hồ','Phần thưởng nhiệm vụ A-066: Câu cá đạt 1.000.','',0,'lua','hp',3,'nhiem_vu','Huyền thoại sông hồ',1,0,0,'thanh_tuu',1235,1),
+(10236,'nv_236','Xẻng mới','Phần thưởng nhiệm vụ A-067: Đào đất đạt 10.','',0,'set','ne_tranh',3,'nhiem_vu','Xẻng mới',1,0,0,'thanh_tuu',1236,1),
+(10237,'nv_237','Thợ đào','Phần thưởng nhiệm vụ A-068: Đào đất đạt 100.','',0,'nhanh','chi_mang',3,'nhiem_vu','Thợ đào',1,0,0,'thanh_tuu',1237,1),
+(10238,'nv_238','Thợ đào huyền thoại','Phần thưởng nhiệm vụ A-069: Đào đất đạt 500.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Thợ đào huyền thoại',1,0,0,'thanh_tuu',1238,1),
+(10239,'nv_239','Bếp nhỏ','Phần thưởng nhiệm vụ A-070: Nấu ăn đạt 10.','',0,'loc','hp',3,'nhiem_vu','Bếp nhỏ',1,0,0,'thanh_tuu',1239,1),
+(10240,'nv_240','Đầu bếp','Phần thưởng nhiệm vụ A-071: Nấu ăn đạt 100.','',0,'sao','ne_tranh',3,'nhiem_vu','Đầu bếp',1,0,0,'thanh_tuu',1240,1),
+(10241,'nv_241','Siêu đầu bếp','Phần thưởng nhiệm vụ A-072: Nấu ăn đạt 300.','',0,'la','chi_mang',3,'nhiem_vu','Siêu đầu bếp',1,0,0,'thanh_tuu',1241,1),
+(10242,'nv_242','Trứng đầu tiên','Phần thưởng nhiệm vụ A-073: Trứng nở đạt 1.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Trứng đầu tiên',1,0,0,'thanh_tuu',1242,1),
+(10243,'nv_243','Nhà trẻ đông vui','Phần thưởng nhiệm vụ A-074: Trứng nở đạt 20.','',0,'khien','hp',3,'nhiem_vu','Nhà trẻ đông vui',1,0,0,'thanh_tuu',1243,1),
+(10244,'nv_244','Bảo mẫu ba vùng','Phần thưởng nhiệm vụ A-075: Trứng nở đạt 100.','',0,'giot','ne_tranh',3,'nhiem_vu','Bảo mẫu ba vùng',1,0,0,'thanh_tuu',1244,1),
+(10245,'nv_245','Cha mẹ của trăm Pokémon','Phần thưởng nhiệm vụ A-076: Trứng nở đạt 300.','',0,'lua','chi_mang',3,'nhiem_vu','Cha mẹ của trăm Pokémon',1,0,0,'thanh_tuu',1245,1),
+(10246,'nv_246','Hạ Alpha đầu tiên','Phần thưởng nhiệm vụ A-077: Alpha đạt 1.','',0,'set','khang_trang_thai',3,'nhiem_vu','Hạ Alpha đầu tiên',1,0,0,'thanh_tuu',1246,1),
+(10247,'nv_247','Thợ săn Alpha','Phần thưởng nhiệm vụ A-078: Alpha đạt 10.','',0,'nhanh','hp',3,'nhiem_vu','Thợ săn Alpha',1,0,0,'thanh_tuu',1247,1),
+(10248,'nv_248','Khắc tinh Alpha','Phần thưởng nhiệm vụ A-079: Alpha đạt 50.','',0,'cong','ne_tranh',3,'nhiem_vu','Khắc tinh Alpha',1,0,0,'thanh_tuu',1248,1),
+(10249,'nv_249','Vua Alpha','Phần thưởng nhiệm vụ A-080: Alpha đạt 200.','',0,'loc','chi_mang',3,'nhiem_vu','Vua Alpha',1,0,0,'thanh_tuu',1249,1),
+(10250,'nv_250','Người đi đường','Phần thưởng nhiệm vụ A-081: Khám phá đạt 10.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Người đi đường',1,0,0,'thanh_tuu',1250,1),
+(10251,'nv_251','Nhà thám hiểm','Phần thưởng nhiệm vụ A-082: Khám phá đạt 30.','',0,'la','hp',3,'nhiem_vu','Nhà thám hiểm',1,0,0,'thanh_tuu',1251,1),
+(10252,'nv_252','Người vẽ bản đồ','Phần thưởng nhiệm vụ A-083: Khám phá đạt 60.','',0,'tim','ne_tranh',3,'nhiem_vu','Người vẽ bản đồ',1,0,0,'thanh_tuu',1252,1),
+(10253,'nv_253','Đặt chân mọi nơi','Phần thưởng nhiệm vụ A-084: Khám phá đạt 90.','',0,'khien','chi_mang',3,'nhiem_vu','Đặt chân mọi nơi',1,0,0,'thanh_tuu',1253,1),
+(10254,'nv_254','Người thầy đầu tiên','Phần thưởng nhiệm vụ A-085: Sư phạm đạt 1.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Người thầy đầu tiên',1,0,0,'thanh_tuu',1254,1),
+(10255,'nv_255','Người thầy tận tâm','Phần thưởng nhiệm vụ A-086: Sư phạm đạt 5.','',0,'lua','hp',3,'nhiem_vu','Người thầy tận tâm',1,0,0,'thanh_tuu',1255,1),
+(10256,'nv_256','Bậc thầy dạy dỗ','Phần thưởng nhiệm vụ A-087: Sư phạm đạt 20.','',0,'set','ne_tranh',3,'nhiem_vu','Bậc thầy dạy dỗ',1,0,0,'thanh_tuu',1256,1),
+(10257,'nv_257','Món đồ đầu tay','Phần thưởng nhiệm vụ A-088: Chế tạo đạt 1.','',0,'nhanh','chi_mang',3,'nhiem_vu','Món đồ đầu tay',1,0,0,'thanh_tuu',1257,1),
+(10258,'nv_258','Thợ chế tạo','Phần thưởng nhiệm vụ A-089: Chế tạo đạt 20.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Thợ chế tạo',1,0,0,'thanh_tuu',1258,1),
+(10259,'nv_259','Nghệ nhân','Phần thưởng nhiệm vụ A-090: Chế tạo đạt 100.','',0,'loc','hp',3,'nhiem_vu','Nghệ nhân',1,0,0,'thanh_tuu',1259,1),
+(10260,'nv_260','Màu sắc lạ','Phần thưởng nhiệm vụ A-091: Shiny đạt 1.','',0,'sao','ne_tranh',3,'nhiem_vu','Màu sắc lạ',1,0,0,'thanh_tuu',1260,1),
+(10261,'nv_261','Thợ săn shiny','Phần thưởng nhiệm vụ A-092: Shiny đạt 5.','',0,'la','chi_mang',3,'nhiem_vu','Thợ săn shiny',1,0,0,'thanh_tuu',1261,1),
+(10262,'nv_262','Bậc thầy shiny','Phần thưởng nhiệm vụ A-093: Shiny đạt 20.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Bậc thầy shiny',1,0,0,'thanh_tuu',1262,1),
+(10263,'nv_263','Hầm ngục tầng 10','Phần thưởng nhiệm vụ A-094: Hầm ngục đạt 10.','',0,'khien','hp',3,'nhiem_vu','Hầm ngục tầng 10',1,0,0,'thanh_tuu',1263,1),
+(10264,'nv_264','Hầm ngục tầng 30','Phần thưởng nhiệm vụ A-095: Hầm ngục đạt 30.','',0,'giot','ne_tranh',3,'nhiem_vu','Hầm ngục tầng 30',1,0,0,'thanh_tuu',1264,1),
+(10265,'nv_265','Đáy hầm ngục','Phần thưởng nhiệm vụ A-096: Hầm ngục đạt 50.','',0,'lua','chi_mang',3,'nhiem_vu','Đáy hầm ngục',1,0,0,'thanh_tuu',1265,1),
+(10266,'nv_266','Đầu óc nhanh nhạy','Phần thưởng nhiệm vụ A-097: Câu đố đạt 5.','',0,'set','khang_trang_thai',3,'nhiem_vu','Đầu óc nhanh nhạy',1,0,0,'thanh_tuu',1266,1),
+(10267,'nv_267','Nhà thông thái','Phần thưởng nhiệm vụ A-098: Câu đố đạt 25.','',0,'nhanh','hp',3,'nhiem_vu','Nhà thông thái',1,0,0,'thanh_tuu',1267,1),
+(10268,'nv_268','Bậc thầy câu đố','Phần thưởng nhiệm vụ A-099: Câu đố đạt 60.','',0,'cong','ne_tranh',3,'nhiem_vu','Bậc thầy câu đố',1,0,0,'thanh_tuu',1268,1),
+(10269,'nv_269','Người được huyền thoại chọn','Phần thưởng nhiệm vụ A-100: Huyền thoại đạt 1.','',0,'loc','chi_mang',3,'nhiem_vu','Người được huyền thoại chọn',1,0,0,'thanh_tuu',1269,1),
+(10270,'nv_270','Bạn của huyền thoại','Phần thưởng nhiệm vụ A-101: Huyền thoại đạt 5.','',0,'sao','khang_trang_thai',3,'nhiem_vu','Bạn của huyền thoại',1,0,0,'thanh_tuu',1270,1),
+(10271,'nv_271','Sử thi ba vùng','Phần thưởng nhiệm vụ A-102: Huyền thoại đạt 12.','',0,'la','hp',3,'nhiem_vu','Sử thi ba vùng',1,0,0,'thanh_tuu',1271,1),
+(10272,'nv_272','Kẻ tò mò','Phần thưởng nhiệm vụ A-103: Bí ẩn đạt 1.','',0,'tim','ne_tranh',3,'nhiem_vu','Kẻ tò mò',1,0,0,'thanh_tuu',1272,1),
+(10273,'nv_273','Người tìm bí mật','Phần thưởng nhiệm vụ A-104: Bí ẩn đạt 10.','',0,'khien','chi_mang',3,'nhiem_vu','Người tìm bí mật',1,0,0,'thanh_tuu',1273,1),
+(10274,'nv_274','Không còn bí mật','Phần thưởng nhiệm vụ A-105: Bí ẩn đạt 32.','',0,'giot','khang_trang_thai',3,'nhiem_vu','Không còn bí mật',1,0,0,'thanh_tuu',1274,1),
+(10275,'nv_275','Bảng ngày quen thuộc','Phần thưởng nhiệm vụ A-106: Nhiệm vụ ngày đạt 10.','',0,'lua','hp',3,'nhiem_vu','Bảng ngày quen thuộc',1,0,0,'thanh_tuu',1275,1),
+(10276,'nv_276','Người của bảng ngày','Phần thưởng nhiệm vụ A-107: Nhiệm vụ ngày đạt 100.','',0,'set','ne_tranh',3,'nhiem_vu','Người của bảng ngày',1,0,0,'thanh_tuu',1276,1),
+(10277,'nv_277','Trụ cột bảng ngày','Phần thưởng nhiệm vụ A-108: Nhiệm vụ ngày đạt 500.','',0,'nhanh','chi_mang',3,'nhiem_vu','Trụ cột bảng ngày',1,0,0,'thanh_tuu',1277,1),
+(10278,'nv_278','Bảng ngày là nhà','Phần thưởng nhiệm vụ A-109: Nhiệm vụ ngày đạt 1.000.','',0,'cong','khang_trang_thai',3,'nhiem_vu','Bảng ngày là nhà',1,0,0,'thanh_tuu',1278,1),
+(10279,'nv_279','Tuần nào cũng có mặt','Phần thưởng nhiệm vụ A-110: Nhiệm vụ tuần đạt 10.','',0,'loc','hp',3,'nhiem_vu','Tuần nào cũng có mặt',1,0,0,'thanh_tuu',1279,1),
+(10280,'nv_280','Người của bảng tuần','Phần thưởng nhiệm vụ A-111: Nhiệm vụ tuần đạt 50.','',0,'sao','ne_tranh',3,'nhiem_vu','Người của bảng tuần',1,0,0,'thanh_tuu',1280,1),
+(10281,'nv_281','Trăm tuần','Phần thưởng nhiệm vụ A-112: Nhiệm vụ tuần đạt 100.','',0,'la','chi_mang',3,'nhiem_vu','Trăm tuần',1,0,0,'thanh_tuu',1281,1),
+(10282,'nv_282','Người quyết đoán','Phần thưởng nhiệm vụ A-113: Lựa chọn đạt 5.','',0,'tim','khang_trang_thai',3,'nhiem_vu','Người quyết đoán',1,0,0,'thanh_tuu',1282,1),
+(10283,'nv_283','Người chọn đường','Phần thưởng nhiệm vụ A-114: Lựa chọn đạt 15.','',0,'khien','hp',3,'nhiem_vu','Người chọn đường',1,0,0,'thanh_tuu',1283,1)
+ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`), `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`), `thoi_han_phut`=VALUES(`thoi_han_phut`), `nguon`=VALUES(`nguon`), `thu_tu`=VALUES(`thu_tu`);
+
+-- Cấu hình (khoá cố định trong tools/cauhinh/danh_muc.json; dòng CSDL chỉ để đọc/ghi chú): bật + trần ô danh hiệu.
+INSERT IGNORE INTO `cau_hinh` (`khoa`, `gia_tri`) VALUES ('danh_hieu.bat', '1'), ('danh_hieu.tran_phan_nghin', '10');
+-- >>> them_moc_nhiem_vu.sql
+-- =====================================================================================================
+-- ĐIỂM MÓC NHIỆM VỤ (0.9.7): vật phẩm thật của từng sự kiện + tiến độ chợ cho người bán offline.
+-- Nâng cấp IDEMPOTENT (MariaDB 10.3, utf8), tự chứa, nối được vào sql/nang_cap.sql.
+--
+--   data_su_kien_vat_pham  vật phẩm (id trong potions[] / data_potion) mà CODE của từng sự kiện thả / thưởng vào túi:
+--                          quái rơi (real.Monster.onDropItem), NPC sự kiện (MapMenuNpc), giao hàng (TraHang), chế đồ /
+--                          tiến giải Vu Lan (MapCheTao, Map). Kiểu mục tiêu "su_kien_vat_pham" (real.DiemMocNhiemVu)
+--                          chỉ đếm vật phẩm thuộc một sự kiện ĐANG BẬT (SuKien.bat(ma_su_kien)). Nhiệm vụ đặt
+--                          muc_tieu_id = item_id để nhắm một vật phẩm, để trống = bất kỳ vật phẩm của sự kiện đang chạy.
+--                          Sự kiện trong lịch năm KHÔNG có vật phẩm rơi trong code (tet123, quocte83, gioto,
+--                          demhalloween, sinhnhat2011, blackfriday*, noel, demnoel) không có dòng.
+--   tob_nhiem_vu_cho       người bán OFFLINE bán được hàng trên Chợ sinh thái: một dòng chờ, áp vào nhiệm vụ "cho_ban"
+--                          lần đầu vào bản đồ (da_ap 0 -> 1, mỗi dòng áp đúng một lần).
+-- Kiểm: server/test/KiemPvpPk (mọi id vật phẩm trong các khối rơi sự kiện của Monster.java đều có dòng ở đây).
+-- =====================================================================================================
+
+CREATE TABLE IF NOT EXISTS `data_su_kien_vat_pham` (
+  `ma_su_kien` VARCHAR(32) NOT NULL,
+  `item_id` INT NOT NULL,
+  `ten` VARCHAR(64) NOT NULL DEFAULT '',
+  `nguon` VARCHAR(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`ma_su_kien`, `item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `data_su_kien_vat_pham` (`ma_su_kien`, `item_id`, `ten`, `nguon`) VALUES
+('trungthu', 120, 'Thịt', 'Monster: quái rơi nguyên liệu Trung Thu'),
+('trungthu', 121, 'Trứng', 'Monster: quái rơi nguyên liệu Trung Thu'),
+('trungthu', 142, 'Bột mỳ', 'Monster: quái rơi nguyên liệu Trung Thu; MapMenuNpc: hộp quà NPC'),
+('trungthu', 122, 'Đậu xanh', 'Monster: quái rơi khi có buff sôcôla'),
+('tet2017', 148, 'Gạo nếp', 'Monster: quái rơi nguyên liệu bánh chưng'),
+('tet2017', 122, 'Đậu xanh', 'Monster: quái rơi nguyên liệu bánh chưng'),
+('tet2017', 149, 'Thịt mỡ', 'Monster: quái rơi nguyên liệu bánh chưng'),
+('tet2017', 150, 'Lá dong', 'Monster: quái rơi nguyên liệu bánh chưng'),
+('tet2017', 153, 'Giấy', 'Monster: quái rơi nguyên liệu pháo'),
+('tet2017', 154, 'Thuốc pháo', 'Monster: quái rơi nguyên liệu pháo'),
+('halloween', 137, 'Kẹo', 'Monster: quái rơi'),
+('halloween', 138, 'Bí ngô', 'Monster: quái rơi'),
+('tetduonglich', 137, 'Kẹo', 'Monster: quái rơi (mặc gậy Giáng sinh)'),
+('noel2023', 145, 'Dưa Hấu', 'Monster: quái rơi'),
+('he2017', 146, 'Kem', 'Monster: quái rơi'),
+('vulan', 106, 'Nhánh hoa hồng vàng', 'Monster: quái rơi; MapCheTao / Map: chế đồ, tiến giải'),
+('worldcup2017', 160, 'Quả bóng bạc', 'Monster: quái rơi; TraHang: giao hàng'),
+('worldcup', 161, 'Quả bóng vàng', 'SuKienWorldCup: quái / boss rơi'),
+('mininuichaubau', 77, 'Mảnh bản đồ 1', 'Monster: quái rơi')
+ON DUPLICATE KEY UPDATE `ten` = VALUES(`ten`), `nguon` = VALUES(`nguon`);
+
+CREATE TABLE IF NOT EXISTS `tob_nhiem_vu_cho` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `id_char` INT NOT NULL,
+  `so` INT NOT NULL DEFAULT 1,
+  `ghi_chu` VARCHAR(128) NOT NULL DEFAULT '',
+  `da_ap` TINYINT NOT NULL DEFAULT 0,
+  `luc` DATETIME NOT NULL,
+  `ap_luc` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_nvc_char` (`id_char`, `da_ap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

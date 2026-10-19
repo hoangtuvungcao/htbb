@@ -768,8 +768,16 @@ thường (mạng kém), kick khi thoát game. Một dòng lẻ chưa phải b�
 
 Nhịp rà soát gợi ý: hằng ngày lướt `hack*.txt` + cảnh báo kinh tế; hằng tuần soát `AdminChat*.txt` và kiểm toán GIFTCODE/ADMIN.
 
-Ép cập nhật client: `sv.banToiThieu=N` từ chối jar/APK có số bản build `< N` (kèm link tải). Client PC không gửi số bản nên
-luôn qua. Đây là công cụ buộc cập nhật khi bản cũ có lỗi nghiêm trọng, **không** phải chống giả mạo client.
+Cập nhật client (0.9.7, `com.htbb.capnhat.CapNhatClient`) — hai mức, đặt trên web, không sửa tệp:
+
+- **Bản mới nhất** = ô *Số bản* của từng nền tảng ở `/admin/tai-game` (dự phòng: `sv.banMoiNhat`). Client cũ hơn thấy thẻ
+  "Đã có bản mới — Cập nhật ngay / Để sau" (có gì mới, dung lượng; nhắc một lần mỗi ngày), vẫn chơi được.
+- **Bản tối thiểu** = `sv.banToiThieu` ở `/admin/cau-hinh-he-thong`. Client cũ hơn bị chặn đăng nhập với hộp "Cần cập nhật
+  để tiếp tục chơi" + nút Tải bản mới. Chỉ chặn nền tảng **đã có** bản tải đạt mức đó (đặt nhầm cao hơn bản đang phát thì
+  chỉ nhắc, `game.out` có `[CAP NHAT] CANH BAO`).
+- Client ≤ 906 (chưa có hộp cập nhật) nhận hộp chữ có link tải (nút Mở mở thẳng tệp). Client Unity không gửi số bản nên
+  luôn qua. Đây là công cụ buộc cập nhật khi bản cũ có lỗi nghiêm trọng, **không** phải chống giả mạo client.
+- Máy chủ đọc lại danh mục tải game mỗi 60 giây; `game.out` in `[CAP NHAT] danh muc ...` khi đổi.
 
 ---
 

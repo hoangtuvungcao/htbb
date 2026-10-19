@@ -4653,6 +4653,15 @@ public class Map implements Runnable {
         }
     }
 
+    /**
+     * 0.9.6: chia EXP to doi tinh bang long (truoc: "Map.chiaExpDoi(newxp, 80, n, 1)" o int - newxp > ~26,8 trieu thi tran
+     * thanh so am, addXPForChar bo qua -> CA DOI khong nhan EXP). Ket qua kep [0, Integer.MAX_VALUE].
+     */
+    public static int chiaExpDoi(final int newxp, final int phanTram, final int chia, final int heSo) {
+        final long v = (long) newxp * phanTram / (100L * Math.max(1, chia)) * heSo;
+        return v <= 0L ? 0 : (v >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) v);
+    }
+
     public static int calculatorXpParty(Char p, int xp) {
         int nuser = p.party.userParty.size();
         if (nuser > 1 && nuser <= 5) {
@@ -5082,6 +5091,7 @@ public class Map implements Runnable {
                         return; // luong khac vua nhat binh nay
                     }
                     player.potions[pt.getType()] += pt.quantity;
+                    DiemMocNhiemVu.khiNhanVatPhamSuKien(player, pt.getType(), pt.quantity); // vat pham su kien dang bat
                     if (pt.getType() == 0) {
                         player.addXu((long) pt.quantity, "map 2");
                         player.addXu((long) (pt.quantity * player.getEffSkillClanMember(0) / 100), "map 3");
@@ -5208,6 +5218,7 @@ public class Map implements Runnable {
                         return;
                     }
                     player.potions[pt.getType()] += pt.quantity;
+                    DiemMocNhiemVu.khiNhanVatPhamSuKien(player, pt.getType(), pt.quantity); // vat pham su kien dang bat
                     if (pt.getType() == 0) {
                         player.addXu((long) (pt.quantity + pt.quantity * player.getEffSkillClanMember(0) / 100), "map 4");
                     }
@@ -5252,6 +5263,39 @@ public class Map implements Runnable {
 
     protected void doPlayerMove(Char p, Message message) throws IOException {
         p.doPlayerMove(message);
+    }
+
+    /**
+     * O di duoc gan (x, y) nhat (o, khong phai pixel) trong ban kinh r, giu nguyen neu (x, y) da di duoc, khong co
+     * bo cuc, hoac khong tim thay (19/10/2026). Diem vao lang ngau nhien cua move2Map (pos +-2 o) roi vao o chan
+     * tren bo cuc Pokemon cua map 0 (vd. 21,49 / 10,23): Char.checkToPoint tinh ca o DUNG nen moi buoc di bi tu
+     * choi, nhan vat ket cung tai cho toi khi dich chuyen (BotChucNang cong_tat_ca.cong bat duoc).
+     */
+    public int[] oDiDuocGan(int x, int y, int r) {
+        try {
+            if (this.type == null || this.w <= 0) {
+                return new int[]{x, y};
+            }
+            int h = this.type.length / this.w;
+            if (x >= 0 && y >= 0 && x < this.w && y < h && (this.type[y * this.w + x] & 2) != 2) {
+                return new int[]{x, y};
+            }
+            for (int k = 1; k <= r; k++) {
+                for (int dy = -k; dy <= k; dy++) {
+                    for (int dx = -k; dx <= k; dx++) {
+                        if (Math.max(Math.abs(dx), Math.abs(dy)) != k) {
+                            continue;
+                        }
+                        int nx = x + dx, ny = y + dy;
+                        if (nx >= 0 && ny >= 0 && nx < this.w && ny < h && (this.type[ny * this.w + nx] & 2) != 2) {
+                            return new int[]{nx, ny};
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return new int[]{x, y};
     }
 
     public boolean canMove(int x, int y) {
@@ -7013,6 +7057,7 @@ public class Map implements Runnable {
             }
             if (r.nextInt(100) < tlVuLan) {
                 player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                DiemMocNhiemVu.khiNhanVatPhamSuKien(player, Potion.TYPE_NHANH_HOA_HONG_VANG, 1);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi che do", "vulan");
             }
@@ -9419,9 +9464,8 @@ public class Map implements Runnable {
                     // (Map.doGiveItemToGround) - ham do DA SAN CO chan theo item.lock != 0
                     // ("Khong the bo vat pham da khoa ra dat"), nen chi can dat co nay la du,
                     // khong can sua rieng cho giao dich.
-                    if (player.itemVukhiThoiTrang.lock == 0) {
-                        player.itemVukhiThoiTrang.lock = 1;
-                    }
+                    // [khoa-khi-mac] khoa VINH VIEN (xoa co "khoa do mac": tinh luyen roi thi khong pha khoa duoc).
+                    player.itemVukhiThoiTrang.khoaVinhVien();
 
                     // Tỷ lệ thành công TĂNG dần theo mốc: càng gần 0% càng khó, càng gần
                     // 100% càng dễ. Đường cong BẬC HAI nên đoạn đầu rất chậm rồi mới bứt
@@ -15474,6 +15518,11 @@ public class Map implements Runnable {
         }
     }
 
+    /** 0.9.6: tien ban n vien ngoc cho NPC = (gia / 5) * n tinh bang long (truoc nhan o int roi moi ep -> tran). */
+    public static long giaBanNgocNpc(final int giaMot, final int n) {
+        return n <= 0 ? 0L : Math.max(0L, (long) (giaMot / 5) * (long) n);
+    }
+
     public void doSellGemItem(Char player, Message messge) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
@@ -15482,6 +15531,9 @@ public class Map implements Runnable {
                 try {
                     short id = messge.dis.readShort();
                     byte typeMaterial = messge.dis.readByte();
+                    if (typeMaterial != 0 && typeMaterial != 1) {
+                        return; // 0.9.6: loai khac 0/1 truoc day kiem o KHOA nhung tru n o THUONG ra am (xu khong mat ngoc)
+                    }
 
                     for (int i = 0; i < player.gemItem.size(); i++) {
                         GemItem gem = (GemItem) player.gemItem.elementAt(i);
@@ -15499,7 +15551,7 @@ public class Map implements Runnable {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Nguyên liệu khoá không bán cho NPC lấy xu được.", ""));
                                 return;
                             }
-                            long price = (long) (gem.getTemplate().getPrice(isSale) / 5 * n);
+                            long price = giaBanNgocNpc(gem.getTemplate().getPrice(isSale), n);
                             if (n <= 0) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán", ""));
                                 return;
@@ -15727,6 +15779,7 @@ public class Map implements Runnable {
                             player.iItems.add(player.itemThanKhi);
                         }
                         player.itemThanKhi = item;
+                        PhaKhoaGame.macVao(player, item); // [khoa-khi-mac]
                         
                         player.calculateAttrib();
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
@@ -16074,6 +16127,9 @@ public class Map implements Runnable {
                             }
 
                             MapMuaBan.exchangeItem(this, player, item, i);
+                            if (!isItemAnimal) {
+                                DiemMocNhiemVu.khiMacDo(player, item.getTemplate().id); // diem moc nang_cap + bo_trang_bi
+                            }
                         } catch (Exception var17) {
                             var17.printStackTrace();
                         }
@@ -16216,6 +16272,9 @@ public class Map implements Runnable {
         iItem.idAnimal = player.animalRide.dbid;
         player.awItems.add(iItem);
         player.iItems.remove(iItem);
+        if (!SkinThuCuoi.laItemSkin(iItem.getTemplate().id)) {
+            PhaKhoaGame.macVao(player, iItem); // [khoa-khi-mac] trang bi thu (skin la trang tri, khong khoa)
+        }
         Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "Sử dụng " + sub, "change");
     }
 
@@ -16253,6 +16312,7 @@ public class Map implements Runnable {
                     System.out.println("BAT DAU CHIEM THANH");
 
                     this.curday[i] = day;
+                    MapTown.danhDauBatDau(i);
                     getTown[i] = true;
                     if (idClanTown[i] > -1) {
                         try {
@@ -16307,6 +16367,7 @@ public class Map implements Runnable {
                 System.out.println("BAT DAU CHIEM THANH");
              
                 this.curday[country] = day;
+                MapTown.danhDauBatDau(country);
                 getTown[country] = true;
                 if (idClanTown[country] > -1) {
                     try {
@@ -16626,6 +16687,11 @@ public class Map implements Runnable {
                 int index = r.nextInt(4);
                 x = pos[player.myCountry][index * 2] + r.nextInt() % 3;
                 y = pos[player.myCountry][index * 2 + 1] + r.nextInt() % 3;
+            }
+            if (toMap != null) {
+                final int[] o = toMap.oDiDuocGan(x, y, 8);
+                x = o[0];
+                y = o[1];
             }
 
             player.nearChars.removeAllElements();

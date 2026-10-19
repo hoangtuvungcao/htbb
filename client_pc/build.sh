@@ -62,7 +62,8 @@ rm -rf "$B/cls" "$B/res" && mkdir -p "$B/gen" "$B/cls" "$B/res" "$OUT"
 "$PY" -I port-j2me.py "$J2ME/src" ../client_jar/shared/mod "$B/gen" "$BAN"
 
 # ---- 2. biên dịch (Java 8) ----
-find src "$B/gen" -name '*.java' > "$B/nguon.txt"
+# client_jar/shared/se: mã Java SE dùng chung PC + Android (bộ cập nhật htbb.capnhat) - không vào bản jar J2ME
+find src "$B/gen" ../client_jar/shared/se -name '*.java' > "$B/nguon.txt"
 if ! "${JB}javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/cls" @"$B/nguon.txt" > "$B/javac.log" 2>&1; then
     grep -v '^Note:\|^warning: \[options\]\|^1 warning' "$B/javac.log" | head -60
     echo "LOI: bien dich that bai"; exit 1

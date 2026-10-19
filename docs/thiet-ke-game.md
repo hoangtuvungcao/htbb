@@ -1325,6 +1325,61 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
-| -108 | Khoá bản đồ | S→C | `u8 phiên bản (1), i16 n nhóm, n × (u8 cờ (1 khoá, 2 không Tự động), UTF điều kiện, UTF lý do tự động, i16 k, k × i16 id bản đồ)` — chỉ bản đồ khác mặc định; lúc vào game, lên cấp / xong cửa ải làm đổi, admin sửa bảng; client BAN ≥ 907 (0.9.6 cũ chỉ nhận thông báo -104 / -26 khi bị chặn; mục 6.4). -106 thuộc nhánh ten-pet (thẻ đặt tên), -110 / -111 nhánh danh-hieu |
+| -108 | Khoá bản đồ | S→C | `u8 phiên bản (1), i16 n nhóm, n × (u8 cờ (1 khoá, 2 không Tự động), UTF điều kiện, UTF lý do tự động, i16 k, k × i16 id bản đồ)` — chỉ bản đồ khác mặc định; lúc vào game, lên cấp / xong cửa ải làm đổi, admin sửa bảng; client BAN ≥ 908 (0.9.6 / 0.9.7 đã phát hành chỉ nhận thông báo -104 / -26 khi bị chặn; mục 6.4). -106 thuộc nhánh ten-pet (thẻ đặt tên), -110 / -111 nhánh danh-hieu |
+| -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
+
+## Danh hiệu (0.9.7)
+
+- **Dữ liệu:** `sql/them_danh_hieu.sql` (idempotent). `data_danh_hieu` là danh mục duy nhất: tên, mô tả điều kiện, gợi ý
+  (danh hiệu ẩn), độ hiếm (`data_danh_hieu_do_hiem`: Thường / Hiếm / Sử thi / Huyền thoại), hình, **một** dòng chỉ số
+  nhỏ (`chi_so` = `ne_tranh` / `chi_mang` / `khang_trang_thai` / `hp`, `phan_nghin`), điều kiện (`dieu_kien`,
+  `tham_so`, `so_luong`), `an` (0 hiện, 1 ẩn "???" tới khi mở, 2 chỉ hiện khi đang có), `thoi_han_phut` (0 vĩnh viễn).
+  394 dòng: 46 danh hiệu thành tựu / xếp hạng mùa / sự kiện / ẩn (id 9700..), 16 danh hiệu sinh thái (9600..), 48 danh
+  hiệu cũ giftcode / sự kiện (8767..), 284 danh hiệu thưởng nhiệm vụ (10000.., trước đây chỉ là chữ trong tiến độ).
+- **Sở hữu:** kho cũ `tob_danh_hieu` (id, hết hạn) + đang đeo `Char.idEffDanhHieu`; bộ đếm `tob_danh_hieu_dem`, nhật ký
+  `tob_danh_hieu_log`.
+- **Mở khoá** phía máy chủ: mọi điểm móc `NhiemVuEngine.suKien` / `datMuc` (hạ trùm, câu cá, thắng PvP, nâng cấp +N,
+  Hầm ngục, chế tạo, khảm, gục, đến bản đồ...) cộng bộ đếm; trạng thái sống (cấp, Pokédex %, huy hiệu Gym, bậc / hạng
+  PvP mùa, sự kiện đang bật, danh hiệu sinh thái / nhiệm vụ) đánh giá mỗi phút, khi lên cấp và khi mở bảng. Danh hiệu có
+  hạn (bậc mùa, top 10, sự kiện) tự gia hạn khi còn giữ điều kiện, hết hạn thì mất chỉ số và có thể mở lại.
+- **Chỉ số:** chỉ danh hiệu **đang đeo** được tính, kẹp về trần ô `danh_hieu.tran_phan_nghin` (10‰ = 1%, trần cứng 3%)
+  và trần tổng trang trí `trang_tri.tran_tong_phan_nghin` (5%), rồi đi qua `GioiHanChiSo` như mọi nguồn. Danh hiệu trao
+  qua giftcode / gói nạp chỉ có mức Thường (5‰), không vượt danh hiệu tự cày.
+- **Giao diện:** Hồ sơ (bảng Pokémon) → viên "Danh hiệu" cạnh huy hiệu hệ (lối vào duy nhất; menu Sưu tầm sinh thái
+  → Danh hiệu mở cùng bảng) → tấm Danh hiệu: Đã có / Chưa có / Bí ẩn, thanh tiến độ, đếm ngược hạn, nút Đeo / Tháo,
+  chấm đỏ `ChamMoi.DANH_HIEU` khi có danh hiệu mới. Nhãn danh hiệu vẽ trên tên mọi người chơi, màu theo độ hiếm
+  (token `ChuDe.mauDanhHieu` / `nhanDanhHieu`). Web: bảng xếp hạng hiện danh hiệu đang đeo.
+
+## PvP xếp hạng, thưởng mùa và luật PK (0.9.7)
+
+- **Elo chỉ trong trận xếp hạng** (`real.XepHangPvpGame`, `com.htbb.pokemon.XepHangPvp`): NPC Đấu trường → "Đấu xếp
+  hạng" vào hàng chờ (chọn lại = rời hàng). Máy chủ ghép mỗi 2 giây: lệch ≤ 10 cấp, |Elo| ≤ 100 (+50 mỗi 15 giây chờ, tối
+  đa 400), không cùng tài khoản / thiết bị / IP (`ChongClone.ben`), không gặp lại cùng đối thủ trong 10 phút; hai bên
+  được đưa vào Đấu trường 202, đếm ngược 5 giây, tối đa 180 giây (hết giờ / rời bản đồ = huỷ, không Elo). Trận chỉ
+  tính khi ≥ 20 giây và bên thua gây ≥ 10% HP tối đa của bên thắng; không đạt = huỷ, ghi `tob_pvp_tran` (lý do) và nhật
+  ký "pvpnghi". Gặp lại cùng đối thủ trong 24 giờ: Elo ×1 → ×1/2 → ×1/4, lần 4 không ghép. Giết người ngoài thế giới
+  **không** còn đổi Elo, và thắng PvP (nhiệm vụ, danh hiệu "Đấu sĩ") chỉ đếm trận xếp hạng hợp lệ.
+- **Thưởng cuối mùa** (13 tuần): lần đầu vào bản đồ ở mùa sau, mọi mùa đã kết thúc chưa phát được phát một lần — khoá
+  `tob_pvp_thuong (mua, id_char)` chèn trước rồi mới phát nên không phát hai lần kể cả khi khởi động lại. Cần ≥ 10 trận
+  trong mùa; Great / Ultra / Master = 15 / 40 / 100 lượng khoá (`ThangPvp.LUONG_BAC`) + danh hiệu "… Ball mùa trước"
+  giữ 91 ngày (chỉ số trong ngân sách ô danh hiệu). Không thưởng chỉ số, không lượng thường.
+- **Luật PK thế giới** (`real.LuatPkGame`, `com.htbb.pokemon.LuatPk`): thị trấn (`data_map_ten.loai = thi_tran`) và
+  làng là vùng an toàn; ngoài vùng PvP (đấu trường, lôi đài, chiến trường, Cao nguyên chiến thành, chiến tranh / đưa
+  thẻ) không đánh được người thấp hơn quá 10 cấp trừ khi người đó đang tên đỏ / bật cờ PK; nghiệp ≥ 3000 thì không PK
+  thêm người vô tội (ngưỡng cũ 319000 không bao giờ tới vì nghiệp có trần 32000). Nghiệp giảm 5 / phút online (một lần
+  giết vô tội +100 ≈ 20 phút), không còn −200 mỗi ngày đăng nhập. Gục trong PK mất 1% (tên đỏ) / 0,1% EXP cần của cấp
+  hiện tại theo bảng EXP đang dùng, **không tụt cấp**; VIP 3 không còn được miễn (VIP theo điểm nạp = mua sức mạnh).
+- **Điểm móc nhiệm vụ** (`real.DiemMocNhiemVu`): mọi kiểu trong `data_nhiem_vu_kieu` đều có nơi gọi `NhiemVuEngine.suKien`
+  (đào, nấu ăn, làm vườn, ấp trứng, đố vui, đua, chợ, mặc đồ / bộ trang bị, Pokédex vùng, vật phẩm sự kiện, giao hàng /
+  đưa thư, hộ tống). Câu cá có điểm móc **duy nhất** ở `HeSinhThaiMenu.cauCa`.
+  - `su_kien_vat_pham`: đếm vật phẩm THẬT của sự kiện đang bật khi vào túi (nhặt quái rơi, NPC sự kiện, giao hàng,
+    chế đồ / tiến giải Vu Lan). Bảng `data_su_kien_vat_pham` (`sql/them_moc_nhiem_vu.sql`) lấy từ code rơi / thưởng:
+    Trung Thu (Thịt, Trứng, Bột mỳ, Đậu xanh), Tết (Gạo nếp, Đậu xanh, Thịt mỡ, Lá dong, Giấy, Thuốc pháo), Halloween
+    (Kẹo, Bí ngô), Tết Dương lịch (Kẹo), Noel 2023 (Dưa Hấu), Hè (Kem), Vu Lan (Nhánh hoa hồng vàng), World Cup (Quả bóng
+    bạc / vàng), Núi châu báu (Mảnh bản đồ). Nhiệm vụ để `muc_tieu_id` = id vật phẩm hoặc trống (bất kỳ vật phẩm của
+    sự kiện đang chạy).
+  - `cho_ban`: người bán online tính ngay; offline thì ghi `tob_nhiem_vu_cho`, áp khi vào bản đồ lần đầu (mỗi dòng một
+    lần, `UPDATE … da_ap = 0`).
+

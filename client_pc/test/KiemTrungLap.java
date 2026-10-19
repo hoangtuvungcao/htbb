@@ -9,6 +9,8 @@ import javax.microedition.lcdui.NenPc;
  *  2) ở màn chơi và lúc mở Menu: mọi vùng chạm đã đăng ký (VungCham, lớp trên cùng) có tên riêng - không hai điều
  *     khiển cùng một việc trong cùng ngữ cảnh;
  *  3) phím PC (BanPhim.MAC_DINH): không hai hành động cùng một phím.
+ *  4) 0.9.6.1: Menu kiểu GO trên HUD màn rộng không có viên "Tự động đánh" (trùng viên AUTO + bánh răng HUD); menu
+ *     chữ mở từ "Tiện ích & PK" (PauseMenu) không lặp mục đã có ở Menu / HUD, không hàng rỗng, chọn dòng hiện -> đúng mục.
  *
  *   javac -cp client_pc/out/build/cls -d $O client_pc/test/ChupTrongGame.java client_pc/test/KiemTrungLap.java \
  *     server/src/com/htbb/pokemon/IconPokemon.java server/src/com/htbb/pokemon/IconPokemonBang.java
@@ -51,6 +53,92 @@ public class KiemTrungLap {
         kiem(so > 0, nhan + ": có vùng chạm");
     }
 
+    static Object goi(Object o, String ten, Class<?>[] kieu, Object... thamSo) throws Exception {
+        java.lang.reflect.Method m = (o instanceof Class ? (Class<?>) o : o.getClass()).getDeclaredMethod(ten, kieu);
+        m.setAccessible(true);
+        return m.invoke(o instanceof Class ? null : o, thamSo);
+    }
+
+    static Object truong(Object o, String ten) throws Exception {
+        Field f = o.getClass().getDeclaredField(ten);
+        f.setAccessible(true);
+        return f.get(o);
+    }
+
+    /** Mở "Tiện ích & PK" như người chơi (ManMenu.lam(I_KHAC)) rồi đọc dòng hiện của PauseMenu. */
+    static void kiemPauseMenu(String[] tenMenu) throws Exception {
+        final Object[] pm = new Object[1];
+        ChupTrongGame.chay(() -> {
+            try {
+                game.render.Canvas.gameScr.mainChar.hp = Math.max(1, game.render.Canvas.gameScr.mainChar.hp);
+                goi(game.pokemon.ManMenu.class, "lam", new Class<?>[]{int.class}, 9);   // I_KHAC
+                pm[0] = game.render.Canvas.currentScreen;
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        kiem(pm[0] instanceof game.render.screen.PauseMenu, "Tiện ích & PK mở PauseMenu (" + pm[0] + ")");
+        if (!(pm[0] instanceof game.render.screen.PauseMenu)) return;
+        Object p = pm[0];
+        kiem(!game.render.screen.PauseMenu.moTuMenu, "cờ moTuMenu đã trả về false");
+        String[][] ten = (String[][]) truong(p, "name");
+        int[] hien = (int[]) truong(p, "hien");
+        kiem(((Integer) truong(p, "Limit")) == hien.length, "Limit = số dòng hiện");
+        // mục đã có lối vào ở Menu GO / HUD: không được hiện trong menu chữ
+        String[] trung = {"Tự động đánh", "Bật/tắt auto đánh", "Bản đồ lớn", "Hành trang", "Kỹ năng", "Tiềm năng", "Trang bị",
+            "Thông tin", "Trang bị thú", "Túi sinh thái", "Ngoại hình", "Nhiệm vụ", "Cửa hàng", "Tin nhắn", "Bạn bè",
+            "Top nhà vô địch", "Top đại gia", "Bảng Top", "Cài đặt"};
+        HashSet<String> cam = new HashSet<String>();
+        for (String t : trung) cam.add(t.toLowerCase());
+        for (String t : tenMenu) cam.add(t.toLowerCase());
+        HashSet<String> daThay = new HashSet<String>();
+        for (int v = 0; v < hien.length; v++) {
+            int g = hien[v];
+            String hang = ten[g][0];
+            kiem(!cam.contains(String.valueOf(hang).toLowerCase()), "menu chữ: hàng '" + hang + "' trùng Menu / HUD");
+            kiem(daThay.add("hang:" + hang), "menu chữ: hàng '" + hang + "' lặp");
+            if (ten[g].length > 1) {
+                int con = 0;
+                for (int j = 0; j < ten[g].length - 1; j++) {
+                    if ((Boolean) goi(p, "an", new Class<?>[]{int.class, int.class}, g, j)) continue;
+                    con++;
+                    String muc = ten[g][j + 1];
+                    kiem(!cam.contains(String.valueOf(muc).toLowerCase()), "menu chữ: mục '" + hang + " > " + muc + "' trùng Menu / HUD");
+                }
+                kiem(con > 0, "menu chữ: hàng '" + hang + "' không rỗng");
+            }
+        }
+        kiem(hien.length >= 3 && hien.length < 9, "menu chữ gọn: " + hien.length + " hàng (đủ là 9)");
+        // chọn dòng hiện thứ v -> vào đúng hàng gốc hien[v] (doSelect đổi chỉ số), rồi Đóng về đúng dòng
+        for (int v = 0; v < hien.length; v++) {
+            final int vv = v, g = hien[v];
+            if (ten[g].length <= 1) continue;
+            final Object[] kq = new Object[3];
+            ChupTrongGame.chay(() -> {
+                try {
+                    Field fs = p.getClass().getDeclaredField("selected");
+                    fs.setAccessible(true);
+                    fs.setInt(p, vv);
+                    goi(p, "doSelect", new Class<?>[0]);
+                    kq[0] = truong(p, "index");
+                    kq[1] = truong(p, "Limit");
+                    ((game.render.screen.PauseMenu) p).right.action.perform();
+                    kq[2] = truong(p, "selected");
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            });
+            kiem(Integer.valueOf(g).equals(kq[0]), "menu chữ: dòng " + v + " vào hàng gốc " + g + " (" + kq[0] + ")");
+            kiem(((int[]) truong(p, "hien")).length == hien.length && Integer.valueOf(v).equals(kq[2]), "menu chữ: Đóng về dòng " + v + " (" + kq[2] + ")");
+        }
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
+        // mở bằng phím mềm (không qua Menu GO): đủ 9 hàng như cũ
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.left.action.perform());
+        Object p2 = game.render.Canvas.currentScreen;
+        kiem(p2 instanceof game.render.screen.PauseMenu && ((Integer) truong(p2, "Limit")) == 9, "phím mềm trái: menu chữ đủ 9 hàng");
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
+    }
+
     public static void main(String[] a) throws Exception {
         // 2) vùng chạm ở màn chơi + Menu (đường vẽ PC thật, nhân vật giả)
         System.setProperty("java.awt.headless", "true");
@@ -85,6 +173,19 @@ public class KiemTrungLap {
             ChupTrongGame.ve(1280, 720);
             vungTrungTen(man);
         }
+        // 4) Menu GO trên HUD màn rộng + menu chữ "Tiện ích & PK"
+        kiem(game.render.screen.HudRong.bat(), "PC 1280x720: HUD màn rộng bật");
+        int[] phu = game.pokemon.ManMenu.phu();
+        String[] tenMenu = mang(game.pokemon.ManMenu.class, "TEN");
+        for (int i : phu) kiem(!"Tự động đánh".equals(tenMenu[i]), "Menu GO (HUD rộng) không có viên Tự động đánh");
+        ChupTrongGame.chay(() -> ChupTrongGame.moMan("menu"));
+        ChupTrongGame.ve(1280, 720);
+        boolean coTuDong = false;
+        for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
+            if ("menu-Tự động đánh".equals(game.pokemon.VungCham.ten(i))) coTuDong = true;
+        }
+        kiem(!coTuDong, "Menu GO: không có vùng chạm menu-Tự động đánh");
+        kiemPauseMenu(tenMenu);
         // 1) HUD x lưới Menu
         String[] hud = mang(game.render.screen.HudRong.class, "TEN_TREN");
         String[] luoi = mang(game.pokemon.ManMenu.class, "TEN");

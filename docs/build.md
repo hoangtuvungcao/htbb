@@ -198,30 +198,58 @@ REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh android "ghi ch�
 REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh pc      "ghi chú"   # máy Windows có Unity
 ```
 
-`day-len.sh` đẩy bản build lên GitHub Releases của repo phát hành và ghi `phienban.json`. Trước mỗi đợt: tăng `BAN`
-+ `PHIEN_BAN`; muốn ép cập nhật thì đặt `sv.banToiThieu=<BAN>` ở server (jar/APK cũ hơn bị từ chối kèm link tải).
-Biến và secret của workflow: [tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
+`day-len.sh` đẩy bản build lên GitHub Releases của repo phát hành và ghi `phienban.json`. Biến và secret của workflow:
+[tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
 
-### Danh sách kiểm triển khai 0.9.7 (một tệp SQL, khoá bản đồ, vòng quay, thách đấu cược)
+### Số bản và cập nhật client (0.9.7)
 
-Jar 0.9.7 **dừng ngay** nếu CSDL chưa nâng cấp (`THIEU DU LIEU SQL QUAN TRONG`), và `vps/deploy-auto.sh` chỉ kéo code rồi
+- **Mọi bản phát hành công khai, kể cả bản vá nóng, có `BAN` mới lớn hơn bản trước** (máy chủ chỉ phân biệt client bằng
+  số này: 0.9.5.1 và 0.9.6.1 từng giữ nguyên `BAN` nên máy chủ không tách được). Quy ước `BAN = major*10000 + minor*100
+  + patch` và `PHIEN_BAN` chỉ còn **3 phần số** khớp `BAN` (+ hậu tố tuỳ ý): bản vá của 0.9.7 là 0.9.8 (`BAN=908`), không
+  dùng 0.9.7.1. Nhờ vậy `MIDlet-Version` của jar (MIDP chỉ nhận a.b.c, lấy phần số của `PHIEN_BAN`) luôn tăng theo.
+  Sau 0.9.6.1 (`BAN=906`) là 0.9.7 (`BAN=907`) - bản đầu tiên có hộp cập nhật trong game.
+- Máy chủ (`com.htbb.capnhat.CapNhatClient`) so số bản client gửi lúc đăng nhập với hai mức đặt trên web:
+  **bản mới nhất** = ô *Số bản* từng nền tảng ở `/admin/tai-game` (dự phòng `sv.banMoiNhat`) -> thẻ "Đã có bản mới" (Cập
+  nhật ngay / Để sau, nhắc một lần mỗi ngày); **bản tối thiểu** = `sv.banToiThieu` ở `/admin/cau-hinh-he-thong` -> hộp
+  "Cần cập nhật để tiếp tục chơi", không vào được game. Gói -115 (client >= 907); client cũ nhận hộp chữ kèm link tải.
+- "Cập nhật ngay": APK tải trong game (tiến độ, kiểm SHA-256) rồi mở trình cài Android (cùng khoá ký = giữ dữ liệu); PC
+  Windows tải bộ cài rồi chạy `/SILENT` (nâng cấp tại chỗ, tự mở lại); PC Linux tải AppImage vào cạnh `$APPIMAGE`, thay
+  nguyên tử rồi mở lại; J2ME (và khi thiếu SHA-256 / không cài được tại chỗ) mở link bằng trình duyệt.
+
+**Ra một bản mới:**
+
+1. Tăng `BAN` + `PHIEN_BAN` trong `tools/phat-hanh/phien_ban.conf` (và `ThuongHieu.PHIEN_BAN` của Unity), build các gói.
+2. `/admin/tai-game`: với từng nền tảng bấm *Tải tệp lên* (tự điền link, dung lượng, **SHA-256**), sửa *Phiên bản*,
+   *Số bản* (= `BAN`), *Có gì mới* rồi **Lưu**. Trong ≤ 60 giây người chơi bản cũ thấy "Đã có bản mới".
+3. Cần ép (bản cũ lỗi nặng / đổi giao thức): đặt *Bản tối thiểu* = `BAN` ở `/admin/cau-hinh-he-thong` sau khi mọi nền tảng
+   đã có tệp mới (nền tảng chưa có tệp đạt mức thì máy chủ chỉ nhắc, không khoá người chơi).
+4. Muốn tắt nhắc tạm thời: đặt *Số bản* của nền tảng về 0 (hoặc `sv.nhacCapNhat=0` trong server.ini).
+
+Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ); `client_pc/test/KiemCapNhat` (máy chủ HTTP
+cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
+mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
+
+### Danh sách kiểm triển khai bản có khoá bản đồ (một tệp SQL, khoá bản đồ, vòng quay, thách đấu cược, 0.9.7)
+
+Jar mới **dừng ngay** nếu CSDL chưa nâng cấp (`THIEU DU LIEU SQL QUAN TRONG`), và `vps/deploy-auto.sh` chỉ kéo code rồi
 để lần bảo trì tự động kế tiếp nạp jar mới — nó **không** chạy SQL. Thứ tự:
 
 1. **Trước khi gộp vào `main`** (hoặc ngay sau khi VPS kéo code, trước lần khởi động lại kế tiếp): trên VPS
    `sudo bash /opt/htbb/vps/nang_cap_csdl.sh`. Script sao lưu (hỏng là dừng), nạp `sql/nang_cap.sql`, kiểm bảng. Chạy lại
-   được; jar 0.9.6 đang chạy vẫn chạy được sau bước này. Kiểm cuối log script có `== XONG` và `danh muc cau hinh: 256 khoa`.
+   được; jar đang chạy vẫn chạy được sau bước này. Kiểm cuối log script có `== XONG` và `danh muc cau hinh: 270 khoa`.
 2. Gộp / đẩy `main` (jar đã build trong commit). Muốn lên ngay: chạy workflow với **deploy_now** hoặc "Bảo trì" trên web
    admin; không thì jar mới lên ở lần bảo trì hằng ngày.
-3. Sau khi lên: log máy chủ có `[DU LIEU SQL] da nap 6 bang`, `[CAU HINH] danh muc tu CSDL htbb_db: 256 khoa`,
+3. Sau khi lên: log máy chủ có `[DU LIEU SQL] da nap 6 bang`, `[CAU HINH] danh muc tu CSDL htbb_db: 270 khoa`,
    `[KHOA BAN DO] da nap 140 luat ban do`, `[LAU DAI] engine nhiem vu: ... mau`; không có `THIEU DU LIEU`.
 4. Một lần, tự động, không cần làm tay:
    - mốc miễn trừ khoá bản đồ (`tob_ban_do_mo`): `nang_cap.sql` điền theo cấp / bản đồ đang lưu, server điền nốt khi
      nhân vật đăng nhập đầu tiên — không ai bị dịch chuyển hay mất quyền vào bản đồ đang đứng;
    - cược đang chờ của xổ số cũ (`nin_xoso*`) được hoàn qua `tob_vong_quay_cho_nhan` lúc khởi động; ký quỹ thách đấu còn
      treo được hoàn lúc khởi động.
-5. Client: phát hành 0.9.7 với `BAN=907` (`tools/phat-hanh/phien_ban.conf`). Client 906 vẫn chơi được (bị chặn bản đồ
-   thì nhận thông báo nhanh; không thấy ổ khoá / nhãn AUTO). Chỉ đặt `sv.banToiThieu=907` khi muốn ép cập nhật.
-6. Tắt khẩn cấp khoá bản đồ: `ban_do.khoa.bat=0` ở `/admin/cauhinh` (áp dụng ngay). Sửa luật một bản đồ: bảng
+5. Client: 0.9.7 (`BAN=907`) đã phát hành **không** có bộ đọc gói -108; ổ khoá / nhãn AUTO hiện từ client 0.9.8
+   (`BAN=908`). Client 906 / 907 vẫn chơi được: bị chặn bản đồ thì nhận thông báo nhanh -104 (cũ hơn 902: chữ -26).
+6. Tắt khẩn cấp khoá bản đồ: thêm `ban_do.khoa.bat=0` vào `server.ini` rồi khởi động lại (khoá lớp *luôn bật*, ẩn trên
+   web như `gym.bat`). Sửa luật một bản đồ: bảng
    `data_ban_do_mo_khoa` (server nạp lại ≤ 30 giây).
 7. Quay lại bản trước: như [trien-khai.md mục 4.1](trien-khai.md) — CSDL đã nâng cấp để nguyên, jar cũ vẫn chạy.
 

@@ -697,7 +697,7 @@ public class ThoRenBiAn
 
         if (success)
         {
-            if (materialMode != 0 && item.lock == 0) item.lock = 1; // Nếu dùng NL khóa/hỗn hợp => item bị khóa (nếu đang mở)
+            if (materialMode != 0) item.khoaVinhVien(); // [khoa-khi-mac] NL khoa/hon hop => khoa vinh vien (ca khi dang khoa do mac) // Nếu dùng NL khóa/hỗn hợp => item bị khóa (nếu đang mở)
             item.plus = (byte) (curPlus + 1); 
 
             int newPlus = item.plus;
@@ -976,7 +976,7 @@ public class ThoRenBiAn
         if (newStoreIdx >= 0 && newStoreIdx < item.otherAtt.length) item.otherAtt[newStoreIdx] = (short) attrValue;
 
         // Khóa item nếu dùng NL khóa/hỗn hợp
-        if (materialMode != 0 && item.lock == 0) item.lock = 1;
+        if (materialMode != 0) item.khoaVinhVien(); // [khoa-khi-mac]
 
         // Thông báo
         int oldNameIdx = -1, newNameIdx = -1;
