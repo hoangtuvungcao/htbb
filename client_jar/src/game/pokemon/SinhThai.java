@@ -543,6 +543,11 @@ public final class SinhThai {
         return true;
     }
 
+    /** Lời nhắc trong lúc câu (dấu cá cắn): lớp thông báo hiện ngay, không giữ tới lúc kéo cần (DungDo.giuLai). */
+    public static boolean laNhacCau(String s) {
+        return s != null && s.startsWith("Cá cắn câu");
+    }
+
     public static boolean dangCau() {
         return cauLuc >= 0;
     }
