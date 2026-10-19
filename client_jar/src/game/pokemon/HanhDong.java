@@ -79,9 +79,12 @@ public final class HanhDong {
         AmThanh.phat(AmThanh.MO);
     }
 
-    /** Nút "Tiềm năng" (tab Chỉ số): PC / APK = bảng cộng điểm HD; J2ME = tab Tiềm năng của bảng cũ. */
+    /** Nút "Huấn luyện" / "Tiềm năng" (tab Chỉ số): máy chủ bật Điểm huấn luyện = BangHuanLuyen; không thì PC / APK = bảng
+     * cộng điểm HD, J2ME = tab Tiềm năng của bảng cũ. */
     public static void moTiemNang() {
-        if (KhungVao.moi()) {
+        if (HocChieu.batHL) {
+            BangHuanLuyen.mo();   // 0.9.7: Điểm huấn luyện thay điểm tiềm năng tự do (mọi client)
+        } else if (KhungVao.moi()) {
             BangTiemNangHD.mo();
         } else {
             moBang(2);

@@ -840,7 +840,8 @@ public final class ManNhanVat extends Screen {
                     ManNhanVat.this.chonO(O_TAT_CA);
                 }
             }, "hanh-trang");
-            Bang.nut(g, xx + wn + k, y + h - 6 - nutH, wn, nutH, "Tiềm năng", m.basePointLeft > 0 ? Bang.CHINH : Bang.PHU, new IAction() {
+            Bang.nut(g, xx + wn + k, y + h - 6 - nutH, wn, nutH, HocChieu.batHL ? "Huấn luyện" : "Tiềm năng",
+                    BangTiemNangHD.diemNut() > 0 ? Bang.CHINH : Bang.PHU, new IAction() {
                 public void perform() {
                     HanhDong.moTiemNang();
                 }
@@ -1426,6 +1427,8 @@ public final class ManNhanVat extends Screen {
         final MainChar m = mc();
         int k = Bang.cach();
         final int lop = m.clazz;
+        HocChieu.xinNeuChua();   // 0.9.7: bảng chiêu theo loài (máy chủ mới)
+        final boolean theoLoai = HocChieu.dung(lop);
         // hàng ô nhanh (gán chiêu: một chạm) + điểm kỹ năng còn lại
         if (MainChar.quickSlot == null) {
             m.loadQuickSlot();   // chưa vào trận lần nào: dựng bộ ô (tự điền chiêu đã học) để hàng này khớp thanh ô nhanh
@@ -1512,14 +1515,21 @@ public final class ManNhanVat extends Screen {
             Bang.danhSach(g, this.ds, x, yl, w, hl, moi.size(), Bang.caoHang(), new Bang.Hang() {
                 public void ve(Graphics g, final int i, int x, int y, int w, int h) {
                     final game.model.skill.InfoSkillLearn sk = (game.model.skill.InfoSkillLearn) moi.elementAt(i);
-                    final boolean daHoc = capChieu(sk.idSkill) >= 0;
+                    final boolean daHoc = theoLoai ? capChieu(sk.idSkill) >= 1 : capChieu(sk.idSkill) >= 0;
+                    final String tenSk = theoLoai ? HocChieu.tenChieu(lop, sk.idSkill) : sk.name;
+                    // 0.9.7: loài / cấp chưa học được -> mờ + lý do (máy chủ cũng từ chối)
+                    final String lyDo = theoLoai && !daHoc ? HocChieu.lyDoNpc(sk.idSkill, m.level) : null;
                     Bang.hang(g, x, y, w, h, i, false, new IAction() {
                         public void perform() {
                             if (daHoc) {
-                                DungDo.bao(sk.name + ": đã học - cộng điểm ở tab Chiêu của Pokémon.");
+                                DungDo.bao(tenSk + ": đã học - cộng điểm ở tab Chiêu của Pokémon.");
                                 return;
                             }
-                            HopXacNhan.hoiGia("Học kỹ năng", "Học " + sk.name + "?" + (sk.decript.length() > 0 ? " " + sk.decript : ""), "Học",
+                            if (lyDo != null) {
+                                DungDo.bao(tenSk + ": " + lyDo + ".");
+                                return;
+                            }
+                            HopXacNhan.hoiGia("Học kỹ năng", "Học " + tenSk + "?" + (sk.decript.length() > 0 ? " " + sk.decript : ""), "Học",
                                     TienTe.XU, sk.price, new IAction() {
                                 public void perform() {
                                     GameService.gI().learnSkill(lop, i);
@@ -1528,24 +1538,27 @@ public final class ManNhanVat extends Screen {
                         }
                     }, "hoc-" + i);
                     int s = h - 6;
-                    int he = PokeChieu.he(lop, sk.idSkill);
-                    KieuO.oChieuSk(g, x + 3, y + 3, s, s, lop, sk.idSkill, daHoc);
-                    if (chamMoi && !daHoc) {
+                    int he = HocChieu.heChieu(lop, sk.idSkill);
+                    KieuO.oChieuSk(g, x + 3, y + 3, s, s, lop, sk.idSkill, daHoc || lyDo != null);
+                    if (chamMoi && !daHoc && lyDo == null) {
                         ChuDe.cham(g, x + 3 + s - 2, y + 5);
                     }
                     int wg;
-                    if (daHoc) {
+                    if (daHoc || lyDo != null) {
+                        String nv = daHoc ? "Đã học" : (theoLoai && HocChieu.capHocLoai(sk.idSkill) > 0 ? "Cần cấp " + HocChieu.capHocLoai(sk.idSkill) : "Chưa học được");
                         int hv = Math.max(14, Font.borderFont.getHeight() + 2);
-                        wg = Font.borderFont.getWidth("Đã học") + 14;
-                        GiaoDien.vien(g, x + w - 8 - wg, y + 3, wg, hv, ChuDe.XAM, "Đã học");
+                        wg = Font.borderFont.getWidth(nv) + 14;
+                        GiaoDien.vien(g, x + w - 8 - wg, y + 3, wg, hv, ChuDe.XAM, nv);
                     } else {
                         wg = TienTe.rongGia(TienTe.XU, sk.price, Font.blackFont, true);
                         TienTe.veGia(g, TienTe.XU, sk.price, x + w - 8 - wg, y + 2, Font.blackFont, true);
                     }
-                    Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, sk.name, w - s - 24 - wg), x + s + 9, y + 2, 0);
+                    Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, tenSk, w - s - 24 - wg), x + s + 9, y + 2, 0);
                     int yp = y + 3 + Font.blackFont.getHeight();
                     int wh = KieuO.vienHe(g, x + s + 9, yp, he) + 5;
-                    Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, daHoc ? "Đã học - cộng điểm ở tab Chiêu" : (sk.decript.length() > 0 ? sk.decript : "Chạm để học"), w - s - 14 - wh), x + s + 9 + wh, yp, 0);
+                    String phuNpc = daHoc ? "Đã học - cộng điểm ở tab Chiêu" : lyDo != null ? lyDo
+                            : (theoLoai ? "Học ngay ở NPC Blaziken" : (sk.decript.length() > 0 ? sk.decript : "Chạm để học"));
+                    Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, phuNpc, w - s - 14 - wh), x + s + 9 + wh, yp, 0);
                 }
             });
             return;
@@ -1559,8 +1572,8 @@ public final class ManNhanVat extends Screen {
         final int wc0 = w;
         // hàng có chấm (điểm kỹ năng): chiêu học được bằng 1 điểm; không có thì chiêu đã học chưa tối đa (cộng điểm)
         boolean coHoc0 = false;
-        for (int i = 0; i < so && m.skillPointLeft > 0; i++) {
-            coHoc0 |= capChieu(i) == 0 && m.level >= capCanChieu(lop, i, 0);
+        for (int i = 0; i < so && m.skillPointLeft > 0 && !theoLoai; i++) {
+            coHoc0 |= capChieu(i) == 0 && m.level >= capCanChieu(lop, i, 0);   // luật cũ: học = 1 điểm
         }
         final boolean coHoc = coHoc0;
         Bang.danhSach(g, this.ds, x, yl, w, hl, (so + cot - 1) / cot, Bang.caoHang(), new Bang.Hang() {
@@ -1580,12 +1593,16 @@ public final class ManNhanVat extends Screen {
                     }, "chieu-" + i);
                     int cap = capChieu(i);
                     int s = h - 6;
-                    int he = PokeChieu.he(lop, i);
+                    int he = HocChieu.heChieu(lop, i);
                     KieuO.oChieuSk(g, xr + 3, y + 3, s, s, lop, i, cap <= 0);
                     // trạng thái canh phải: Cấp n | Học: 1 điểm (xanh) | Cần cấp n | Học ở NPC (giá)
                     String tt;
                     int mau;
-                    if (cap > 0) {
+                    if (theoLoai) {
+                        // 0.9.7 học theo loài: Cấp n | Tự học cấp N | NPC · cấp N | Tiến hoá: cấp N
+                        tt = HocChieu.trangThai(i, cap, m.level);
+                        mau = cap > 0 ? ChuDe.CHINH : HocChieu.laNpc(lop, i) && HocChieu.capHocLoai(i) > 0 ? ChuDe.CAM : ChuDe.XAM;
+                    } else if (cap > 0) {
                         tt = cap >= PokeChieu.CAP_TOI_DA ? "Tối đa" : "Cấp " + cap;
                         mau = ChuDe.CHINH;
                     } else if (cap == 0) {
@@ -1604,10 +1621,11 @@ public final class ManNhanVat extends Screen {
                         ChuDe.cham(g, xr + wc - 8, y + 4);
                     }
                     int xt = xr + s + 9;
-                    Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, PokeChieu.ten(lop, i), wc - s - 22 - wv), xt, y + 2, 0);
+                    Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, HocChieu.tenChieu(lop, i), wc - s - 22 - wv), xt, y + 2, 0);
                     int yp = y + 3 + Font.blackFont.getHeight();
                     int wh = KieuO.vienHe(g, xt, yp, he) + 5;
-                    String phu = cap < 0 ? giaHocMoi(lop, i) : PokeChieu.moTa(lop, i);
+                    String phu = theoLoai ? (cap > 0 ? PokeChieu.moTa(lop, i) : HocChieu.moTaTrangThai(i, cap, m.level))
+                            : cap < 0 ? giaHocMoi(lop, i) : PokeChieu.moTa(lop, i);
                     Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, phu, wc - s - 20 - wh - wv), xt + wh, yp, 0);
                 }
             }
@@ -1629,8 +1647,9 @@ public final class ManNhanVat extends Screen {
         KieuO.oChieuSk(g, x + hd + 10, y + 4, s, s, lop, i, capChieu(i) <= 0);
         int xt = x + hd + s + 18;
         int cap = capChieu(i);
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, PokeChieu.ten(lop, i), x + w - 8 - xt), xt, y + 5, 0);
-        int xh = xt + KieuO.vienHe(g, xt, y + 9 + Font.blackFont.getHeight(), PokeChieu.he(lop, i)) + 6;
+        final boolean theoLoai = HocChieu.dung(lop);
+        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, HocChieu.tenChieu(lop, i), x + w - 8 - xt), xt, y + 5, 0);
+        int xh = xt + KieuO.vienHe(g, xt, y + 9 + Font.blackFont.getHeight(), HocChieu.heChieu(lop, i)) + 6;
         Font.arialFont.drawString(g, cap <= 0 ? "Chưa học" : "Cấp " + cap + "/" + PokeChieu.CAP_TOI_DA, xh, y + 9 + Font.blackFont.getHeight(), 0);
         int yy = y + 4 + s + k;
         yy = Bang.doan(g, Font.blackFont, PokeChieu.moTa(lop, i), x + 10, yy, w - 20, false);
@@ -1639,7 +1658,8 @@ public final class ManNhanVat extends Screen {
         int wb = (w - 12 - k) / 2;
         int capCan = capCanChieu(m.clazz, i, Math.max(0, cap));
         // yêu cầu bước kế tiếp (máy chủ Map.doAddSkillPoint: chiêu -1 = phải học ở NPC trước; 0..9 = cộng 1 điểm khi đủ cấp)
-        String yc = cap < 0 ? "Chưa học · " + giaHocMoi(lop, i)
+        String yc = theoLoai && cap <= 0 ? HocChieu.moTaTrangThai(i, cap, m.level)
+                : cap < 0 ? "Chưa học · " + giaHocMoi(lop, i)
                 : (cap >= PokeChieu.CAP_TOI_DA ? "Đã đạt cấp tối đa" : (cap == 0 ? "Học" : "Lên cấp " + (cap + 1)) + ": 1 điểm kỹ năng · cần Pokémon cấp " + capCan);
         int lh = Font.arialFont.getHeight() + 2;
         if (yy + 2 + lh <= yn) {
@@ -1654,7 +1674,7 @@ public final class ManNhanVat extends Screen {
         } catch (Throwable e) {
             // thiếu dữ liệu chiêu
         }
-        boolean cong = cap >= 0 && m.skillPointLeft > 0 && m.level >= capCan && cap < PokeChieu.CAP_TOI_DA;
+        boolean cong = (theoLoai ? cap >= 1 : cap >= 0) && m.skillPointLeft > 0 && m.level >= capCan && cap < PokeChieu.CAP_TOI_DA;
         Bang.nut(g, x + 6, yn, wb, nh, "Gán ô nhanh", cap > 0 ? Bang.PHU : Bang.TAT, new IAction() {
             public void perform() {
                 if (capChieu(i) > 0) {
@@ -1674,6 +1694,17 @@ public final class ManNhanVat extends Screen {
             }, "cong-diem");
             return;
         }
+        if (theoLoai && cap == 0) {
+            // 0.9.7: chiêu tự học khi đủ cấp của loài (không tốn điểm) - không có nút học
+            final String tb = HocChieu.moTaTrangThai(i, cap, m.level);
+            int ch = HocChieu.capHocLoai(i);
+            Bang.nut(g, x + 6 + wb + k, yn, w - 12 - wb - k, nh, ch > 0 ? "Tự học cấp " + ch : "Chưa học được", Bang.TAT, new IAction() {
+                public void perform() {
+                    DungDo.bao(tb + ".");
+                }
+            }, "cong-diem");
+            return;
+        }
         String chuCong = cong ? (cap == 0 ? "Học chiêu (1 điểm)" : "Cộng điểm (+1)")
                 : (cap >= PokeChieu.CAP_TOI_DA ? "Đã tối đa" : (m.level < capCan ? "Cần cấp " + capCan : "Hết điểm"));
         Bang.nut(g, x + 6 + wb + k, yn, w - 12 - wb - k, nh, chuCong, cong ? Bang.XAC_NHAN : Bang.TAT, new IAction() {
@@ -1685,6 +1716,10 @@ public final class ManNhanVat extends Screen {
 
     /** Số chiêu NPC dạy mà Pokémon chưa học (nhãn chip "Học chiêu mới (n)"). */
     static int demHocMoi(int lop) {
+        if (HocChieu.dung(lop)) {
+            MainChar m = mc();
+            return HocChieu.demNpcNgay(m == null ? 0 : m.level);   // 0.9.7: chỉ chiêu loài học được NGAY
+        }
         Vector moi = chieuHocMoi();
         int n = 0;
         for (int k = 0; k < moi.size(); k++) {

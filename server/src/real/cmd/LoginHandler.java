@@ -682,6 +682,8 @@ public class LoginHandler implements ICommandHandler {
                 } catch (final Exception ex) {
                 }
             }
+            // hoan xu / hop thoai chuyen doi mot lan + goi -120 (client >= 907)
+            real.HocChieuGame.sauVaoGame(p);
             try {
                 m = MessageCreator.createCharWearingMessage(p, p);
                 session.sendMessage(m);

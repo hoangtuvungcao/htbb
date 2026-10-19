@@ -15341,6 +15341,10 @@ public class Map implements Runnable {
         try {
             int charclass = msg.dis.readByte();
             int skillSelectIndex = msg.dis.readByte();
+            if (HocChieuGame.batChieu()) {
+                HocChieuGame.hocNpc(player, charclass, skillSelectIndex); // hoc theo loai + du cap (data_learnset)
+                return;
+            }
             if (player.charClass != charclass) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể học kỹ năng của Pokémon khác", ""));
                 return;
@@ -15374,6 +15378,10 @@ public class Map implements Runnable {
     }
 
     void doAddSkillPoint(Char player, Message message) throws IOException {
+        if (HocChieuGame.batChieu()) {
+            HocChieuGame.congDiemKyNang(player, message.dis.readByte()); // chi nang chieu da hoc (tu hoc theo loai)
+            return;
+        }
         if (player.skill[0] == 0) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Chưa học kỹ năng chiến đấu từ Blaziken", ""));
         } else {
@@ -15408,6 +15416,9 @@ public class Map implements Runnable {
     }
 
     void doAddBasePoint(Char player, Message message) throws IOException {
+        if (HocChieuGame.chanCongTiemNang(player)) {
+            return; // diem tiem nang tu do da thay bang Diem huan luyen
+        }
         byte toPoint = message.dis.readByte();
         short value = message.dis.readShort();
         if (value < 0) {

@@ -325,13 +325,13 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **239 khoá** trong **16 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **245 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 149 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 153 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 23 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
@@ -455,7 +455,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (170)
+### Khoá ẩn: cố định & luôn bật (176)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -644,6 +644,17 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `pvp.tinh_diem.bat` | Tính điểm thang PvP | Luôn bật (ẩn) | `1` | ngay | game | 0 = trận PvP không cộng/trừ điểm thang. |
 | `gym.bat` | Thách đấu Gym | Luôn bật (ẩn) | `1` | ngay | game | 0 = tạm đóng Gym. |
 | `ham_nguc.bat` | Hầm Ngục bí ẩn | Luôn bật (ẩn) | `1` | ngay | game | 0 = không vào tầng mới (vẫn nhận thưởng đã đạt). |
+
+#### Học chiêu & Điểm huấn luyện (cố định) (`hoc_chieu`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `chieu.learnset.bat` | Học chiêu theo loài | Luôn bật (ẩn) | `1` | ngay | game | 1 = chiêu tự học theo cấp của loài, NPC Blaziken dạy đúng loài (data_learnset). 0 = luật cũ (1 điểm kỹ năng để học, mua ô ở NPC). |
+| `huan_luyen.bat` | Điểm huấn luyện | Luôn bật (ẩn) | `1` | ngay | game | 1 = chỉ số gốc tự tăng theo cấp + Điểm huấn luyện có trần thay 5 điểm tiềm năng tự do mỗi cấp. Đổi có hiệu lực từ lần vào game kế tiếp của mỗi Pokémon. |
+| `huan_luyen.diem_moi_cap` | Điểm huấn luyện mỗi cấp | Cố định (ẩn) | `2` | ngay | game | Tổng = số này × (cấp − 1) + 1 / huy hiệu Gym (trần riêng). Cấp 100: 198 + 16. |
+| `huan_luyen.tran_diem_thuong` | Trần điểm thưởng (huy hiệu Gym) | Cố định (ẩn) | `16` | ngay | game | Mỗi huy hiệu Gym +1 Điểm huấn luyện, tối đa số này. |
+| `huan_luyen.gia_tay_phan_nghin_gio` | Giá tẩy điểm (‰ giờ thu nhập) | Cố định (ẩn) | `1000` | ngay | game | Lần tẩy đầu miễn phí; sau đó = giờ thu nhập ở cấp hiện tại × số này / 1000 (hố hút). 1000 = 1 giờ. |
+| `huan_luyen.hoi_tay_gio` | Chờ giữa hai lần tẩy (giờ) | Cố định (ẩn) | `24` | ngay | game | Không áp cho lần đầu và cho Kẹo tiềm năng. |
 
 #### Chỉ số & chống lạm phát (cố định) (`chi_so`)
 

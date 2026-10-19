@@ -236,8 +236,25 @@ Bảng khắc hệ đơn (hệ chiêu đánh vào một hệ; trong game "mạnh
   | Dạng 2 | 16 (Pichu 10) | ô 3 (chiêu nhiều đòn) và ô 4 |
   | Dạng 3 | 32 / 36 (Pichu 30, Eevee 25) | ô 6–8 (Eevee 6–10), có chiêu tối thượng |
 
-- Cấp chiêu 1..9 rải từ cấp mở tới cấp 90; cấp 10 cần cấp 95, tối thượng cần cấp 100. Mỗi cấp chiêu +2% sát thương.
-  Học chiêu tốn xu theo cấp (≈ 3 giờ thu nhập ở các mốc 25/30/45/60/75/90).
+- **Học chiêu theo loài** (đề xuất 1, bảng `data_learnset` — nguồn duy nhất, `sql/hoc_chieu_huan_luyen.sql`, sửa trong
+  CSDL; game server `com.htbb.pokemon.Learnset` + `real.HocChieuGame`). Mỗi loài (số Pokédex, 21 loài người chơi) có
+  danh sách ô chiêu nó học được và cấp học:
+  - `nguon = cap`: **tự học** khi đủ cấp, ở cấp chiêu 1, **không tốn điểm**, hiện thẻ "Charmander đã học Than hồng!";
+  - `nguon = npc`: ô 6–8 (Eevee 8–10) học ở **NPC Blaziken** bằng xu (`gia_xu`: 60.000 / 120.000 / 300.000), chỉ khi
+    **đúng loài và đủ cấp** (Súng phun lửa: Charizard cấp 36; Lưới điện: Raichu cấp 30);
+  - loài chưa có ô đó thì học khi tiến hoá (Xoáy lửa: Charmeleon cấp 16). Tiến hoá không bao giờ mất chiêu (test).
+  - Hệ chiêu theo loài: cùng hệ loài, Thường, hoặc phủ hệ có lý do (Charizard Vuốt rồng; Eevee Cắn / Nghỉ ngơi / Chia sẻ
+    nỗi đau / Đuôi sắt; Pikachu Nhanh nhẹn). Nhánh Eevee đổi tên + hệ ô 2/8/10 (Vaporeon: Súng nước / Vòng nước / Thủy
+    triều — có STAB, server tính khắc hệ theo hệ này).
+- **Điểm kỹ năng** (1 mỗi cấp) chỉ dùng để **nâng** chiêu đã học từ cấp 1 lên 9; mốc cấp Pokémon cho từng cấp chiêu ở cột
+  `cap_cap_chieu` (server ghi vào `CharManager.LEVEL_ADD_SKILL` lúc khởi động, client cũ đọc đúng qua gói 35). Điểm còn
+  lại = (cấp cao nhất − 1) − tổng (cấp chiêu − 1), tính lại mỗi lần nạp. Cấp 10 cần cấp 95, tối thượng cần cấp 100. Mỗi
+  cấp chiêu +2% sát thương.
+- Chuyển đổi nhân vật cũ (một lần, `tob_chuyen_doi_can_bang` bước `learnset`): chiêu loài chưa học được bị gỡ (chiêu tự
+  học về "chờ cấp", chiêu NPC về "học ở NPC"), **mọi điểm kỹ năng đã tiêu cho việc học và cho chiêu bị gỡ được hoàn**,
+  xu đã trả cho chiêu NPC bị gỡ được hoàn đúng một lần (bước `hoan_chieu_<ô>`, trả khi vào game, lưu nhân vật ngay). Ô
+  NPC đầu (6 / Eevee 8) có giá trị 0 ở mọi nhân vật do chuỗi tạo nhân vật cũ lệch một ô (đã sửa ở
+  `DatabaseNhanVat`): 0 ở ô này nghĩa là **chưa mua**, không hoàn xu. Các lần nạp sau không bao giờ gỡ chiêu nữa.
 - Chiêu nhiều đòn ô 3 đã giảm từ 2.360% (game cũ) xuống ~5 đòn × 190–260%, để xoay chiêu có nghĩa. Tối thượng hồi
   15 giây, mạnh hơn mọi chiêu dạng 1.
 - Nhánh Eevee đổi hệ ô 2/8/10 để có STAB (ví dụ Vaporeon dùng chiêu Nước, Sylveon dùng chiêu Tiên); số liệu như cây Eevee.
@@ -524,6 +541,31 @@ vụ, Gym, chế tạo, rơi, boss.
 
 Ngừng khi bật `sv.lau_dai`: hiệu ứng "lan" kiếm hiệp (độc / sét / băng / lửa lan), biến người tuyết, các dòng không nơi
 nào đọc; chúng bị lọc khỏi mô tả món (`ChiSoTrangBiGame.locHienThi`). Client lấy tên chỉ số từ server (gói 25).
+
+### 4.4b Điểm huấn luyện (thay điểm tiềm năng tự do)
+
+Đề xuất 1 / spec cân bằng 4.2 (`com.htbb.pokemon.HuanLuyen`, `real.HocChieuGame`; bảng `data_huan_luyen`,
+`data_tang_truong_dong`, `tob_huan_luyen`). Gỡ chênh lệch ×4,3 trong cùng loài của 5 điểm tiềm năng tự do mỗi cấp.
+
+- **Chỉ số gốc tự tăng theo cấp**: ngoài +1 mọi chỉ số mỗi cấp như cũ, 5 điểm tự do cũ được cộng **cố định theo dòng**
+  (`data_tang_truong_dong`): Charmander Sức mạnh 4 + Sức khoẻ 1; Bulbasaur Sức mạnh 3 + Khéo léo 1 + Sức khoẻ 1; Eevee Tinh
+  thần 4 + Sức khoẻ 1; Squirtle Sức mạnh 2 + Khéo léo 2 + Sức khoẻ 1; Pichu Khéo léo 4 + Sức khoẻ 1. May mắn không còn
+  cộng được (không còn đường dồn May mắn để tăng rơi đồ). Tính lại từ cấp mỗi lần nạp, không lưu điểm tự do.
+- **Điểm huấn luyện**: `huan_luyen.diem_moi_cap` (2) × (cấp − 1) + 1 mỗi huy hiệu Gym (trần `huan_luyen.tran_diem_thuong`
+  16) — cấp 100 đủ huy hiệu: 214 điểm. Phân bổ vào 4 dòng: **HP, Tấn công, Phòng thủ** (cả thủ đặc biệt), **PP**.
+  Mỗi dòng tối đa 80 điểm, **giảm dần**: 40 điểm đầu +0,3%/điểm, 40 điểm sau +0,2%/điểm → trần **+20%** một chỉ số (trung
+  bình +0,25%/điểm như spec). Cộng sau trần % (`GioiHanChiSo`), như thưởng giai đoạn tiến hoá.
+- Chênh lệch: một chỉ số lệch tối đa ×1,20 so với không cộng (cũ ×4,3); tích HP × Tấn công × Thủ của mọi cách dùng đủ điểm
+  lệch ≤ 2% (giảm dần làm dàn đều có lợi ngang dồn) — `test/KiemHocChieu`.
+- **Tẩy điểm**: lần đầu miễn phí; sau đó 1 giờ thu nhập ở cấp hiện tại (`huan_luyen.gia_tay_phan_nghin_gio` 1000, hố hút
+  xu) và chờ `huan_luyen.hoi_tay_gio` (24) giờ. Kẹo tiềm năng (lượng khoá, 1/tuần) = tẩy miễn phí, không tính lượt.
+- **Chuyển đổi nhân vật cũ** (lúc nạp, một lần, bước `huan_luyen`, cùng giao dịch với trạng thái): nhận đủ tổng điểm mới
+  của cấp; điểm đã cộng được quy đổi theo đúng tỉ lệ cách cộng cũ (Sức mạnh / Tinh thần / Khéo léo của dòng → Tấn công,
+  Khéo léo → Phòng thủ, Sức khoẻ → HP, Tinh thần → PP), trần 80 mỗi dòng; May mắn, điểm chưa cộng, phần vượt trần → điểm
+  chưa dùng; kèm 1 lần tẩy miễn phí. Hộp thoại "Thay đổi hệ thống chiêu và chỉ số" hiện một lần khi vào game.
+- Client 0.9.7 (gói -120): nút "Huấn luyện" (tab Chỉ số) với chấm đỏ khi còn điểm, bảng phân bổ (−/+, hiệu ứng %, điểm kế
+  tiếp giảm dần), nút Tẩy điểm (miễn phí / giá / thời gian chờ). Client 0.9.6 không có bảng phân bổ: điểm để dành, chỉ số
+  gốc mới vẫn áp dụng, lệnh cộng điểm tiềm năng cũ nhận thông báo.
 
 ### 4.5 `GioiHanChiSo`: trần, giảm dần, sàn sát thương
 
@@ -1280,5 +1322,6 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
+| -120 | Học chiêu + Điểm huấn luyện | hai chiều | **chỉ client BAN ≥ 907** (`real.HocChieuGame`). C→S byte 0 xin / 1 phân bổ `u8 n, n × (i8 id, i16 thêm)` / 2 tẩy điểm. S→C byte 0 bảng chiêu cả dòng: `i16 dex, i8 dòng, i8 số ô, u8 n, n × (i8 ô, i16 loài, UTF tên loài, UTF tên chiêu, i8 hệ, i8 nguồn 0 cấp / 1 NPC, i8 cấp học, i32 giá xu)`; byte 1 Điểm huấn luyện: `i8 bật`, rồi `i16 tổng, i16 đã dùng, u8 n, n × (i8 id, UTF tên, UTF mô tả, i16 điểm, i16 trần, i16 ngưỡng, i16 ‰ trước, i16 ‰ sau), i64 giá tẩy, i32 giây chờ, i8 miễn phí, i8 điểm / cấp, i8 huy hiệu, i8 trần thưởng` (mục 2.3, 4.4b) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).

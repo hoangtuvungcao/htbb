@@ -44,6 +44,16 @@ const thuongGiaiDoan = l.tienHoa?.kieu === 'eevee' && l.dex !== 133
 
 const daCuaLoai = POKEDEX.daTienHoa.find(d => d.dex === l.dex)
 const fmt = (n: number) => n.toLocaleString('vi-VN')
+
+// Học chiêu theo loài: bảng data_learnset của game (/api/learnset/<dex>); CSDL chưa có bảng / không phải Pokémon người
+// chơi -> giữ danh sách chiêu tĩnh của dòng bên dưới.
+const { data: learnset } = await useFetch<DongLearnset[] | null>(`/api/learnset/${l.dex}`, { key: `htbb-learnset-${l.dex}`, default: () => null })
+const chieuLoai = computed(() => learnset.value?.length ? chieuCuaLoai(learnset.value, l.dex) : [])
+const moTaCach = (c: ChieuCuaLoai) => c.cach === 'cap'
+  ? `Tự học ở cấp ${c.capHoc}`
+  : c.cach === 'npc'
+    ? `NPC Blaziken · cấp ${c.capHoc} · ${fmt(c.giaXu)} xu`
+    : `Khi tiến hoá thành ${loaiTheoDex(c.loaiHoc)?.ten ?? `#${c.loaiHoc}`} (cấp ${c.capHoc})`
 </script>
 
 <template>
@@ -277,8 +287,34 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
         </div>
       </section>
 
-      <!-- Chiêu -->
-      <section v-if="l.chieu?.length" class="mt-10 rounded-3xl glass p-6" aria-labelledby="chieu">
+      <!-- Chiêu theo loài (data_learnset) -->
+      <section v-if="chieuLoai.length" class="mt-10 rounded-3xl glass p-6" aria-labelledby="chieu">
+        <h2 id="chieu" class="section-title text-2xl text-highlighted">
+          Chiêu {{ l.ten }} học được
+        </h2>
+        <p class="mt-2 text-sm text-muted">
+          Chiêu tự học khi đủ cấp (không tốn điểm); chiêu mạnh của dạng cuối học ở NPC Blaziken. Điểm kỹ năng (1 mỗi cấp) dùng để nâng chiêu đã học.
+          Chiêu cùng hệ với Pokémon được cộng ×{{ (POKEDEX.stabPhanTram / 100).toLocaleString('vi-VN') }} sát thương.
+        </p>
+        <ol class="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <li v-for="c in chieuLoai" :key="c.o" class="flex items-center justify-between gap-3 rounded-xl border border-default/60 px-3 py-2" :class="c.cach === 'tien-hoa' ? 'opacity-70' : ''">
+            <span class="flex min-w-0 items-center gap-2">
+              <img v-if="l.dong" :src="`/chieu/${l.dong.class}-${c.o}.png`" width="28" height="28" alt="" loading="lazy" class="size-7 shrink-0">
+              <span class="min-w-0">
+                <span class="flex items-center gap-1 font-medium text-highlighted">
+                  {{ c.ten }}
+                  <UBadge v-if="l.he.includes(c.he)" color="primary" variant="subtle" size="sm">STAB</UBadge>
+                </span>
+                <span class="block text-xs text-muted">{{ moTaCach(c) }}</span>
+              </span>
+            </span>
+            <PokeHeBadge :he="c.he" size="sm" />
+          </li>
+        </ol>
+      </section>
+
+      <!-- Chiêu (danh sách tĩnh của dòng khi chưa đọc được bảng chiêu theo loài) -->
+      <section v-else-if="l.chieu?.length" class="mt-10 rounded-3xl glass p-6" aria-labelledby="chieu">
         <h2 id="chieu" class="section-title text-2xl text-highlighted">
           Chiêu thức của {{ l.dong?.ten }}
         </h2>

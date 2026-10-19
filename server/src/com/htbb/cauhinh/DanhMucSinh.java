@@ -23,6 +23,7 @@ final class DanhMucSinh {
         {"dang_ky", "Đăng ký (cố định)"},
         {"chong_spam", "Chống spam, DoS & nhật ký (cố định)"},
         {"pvp", "PvP / Gym / Hầm Ngục (luôn bật)"},
+        {"hoc_chieu", "Học chiêu & Điểm huấn luyện (cố định)"},
         {"chi_so", "Chỉ số & chống lạm phát (cố định)"},
         {"hoi_sinh", "Hồi sinh — luật (cố định)"},
         {"thong_bao", "Thông báo (cố định)"},
@@ -546,6 +547,28 @@ final class DanhMucSinh {
                     .nhan("Loại nhật ký kiểm toán", "Ghi riêng tệp kiem_toan (giữ lâu).")
                     .mau("^[A-Z0-9_]{1,32}$")
                     .doDai(255)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("chieu.learnset.bat", "hoc_chieu", "co", "1", true, "cau_hinh")
+                    .nhan("Học chiêu theo loài", "1 = chiêu tự học theo cấp của loài, NPC Blaziken dạy đúng loài (data_learnset). 0 = luật cũ (1 điểm kỹ năng để học, mua ô ở NPC).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("huan_luyen.bat", "hoc_chieu", "co", "1", true, "cau_hinh")
+                    .nhan("Điểm huấn luyện", "1 = chỉ số gốc tự tăng theo cấp + Điểm huấn luyện có trần thay 5 điểm tiềm năng tự do mỗi cấp. Đổi có hiệu lực từ lần vào game kế tiếp của mỗi Pokémon.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("huan_luyen.diem_moi_cap", "hoc_chieu", "so", "2", true, "cau_hinh")
+                    .nhan("Điểm huấn luyện mỗi cấp", "Tổng = số này × (cấp − 1) + 1 / huy hiệu Gym (trần riêng). Cấp 100: 198 + 16.")
+                    .khoang(1L, 5L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("huan_luyen.tran_diem_thuong", "hoc_chieu", "so", "16", true, "cau_hinh")
+                    .nhan("Trần điểm thưởng (huy hiệu Gym)", "Mỗi huy hiệu Gym +1 Điểm huấn luyện, tối đa số này.")
+                    .khoang(0L, 30L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("huan_luyen.gia_tay_phan_nghin_gio", "hoc_chieu", "so", "1000", true, "cau_hinh")
+                    .nhan("Giá tẩy điểm (‰ giờ thu nhập)", "Lần tẩy đầu miễn phí; sau đó = giờ thu nhập ở cấp hiện tại × số này / 1000 (hố hút). 1000 = 1 giờ.")
+                    .khoang(0L, 20000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("huan_luyen.hoi_tay_gio", "hoc_chieu", "so", "24", true, "cau_hinh")
+                    .nhan("Chờ giữa hai lần tẩy (giờ)", "Không áp cho lần đầu và cho Kẹo tiềm năng.")
+                    .khoang(0L, 720L)
                     .lop("co_dinh"),
             new DinhNghiaKhoa("chi_so.bat", "chi_so", "co", "1", true, "cau_hinh")
                     .nhan("Bật giới hạn chỉ số", "0 = tắt mọi trần/giảm dần chỉ số (quay về công thức cũ).")

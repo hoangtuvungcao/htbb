@@ -3999,7 +3999,7 @@ public class GameScr extends Screen {
             Font.smallFontColor[0].drawString(g, Char.goldTime, 5, H + 34, 0);
         }
         if (Canvas.gameTick % 10 > 3) {
-            if (this.mainChar.basePointLeft > 0) {
+            if (game.pokemon.ChamMoi.co(game.pokemon.ChamMoi.DIEM_TN)) {
                 g.drawImage(imgCong[0], W - 2, H + 5, 24);
             }
             if (this.mainChar.skillPointLeft > 0) {

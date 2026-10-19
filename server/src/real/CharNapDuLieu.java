@@ -1260,7 +1260,9 @@ class CharNapDuLieu {
             if (self.idClan == -1) {
                 self.skillClan = new short[20];
             }
-            if (count + self.skillpoint > self.lastLV && !self.isAdmin) {
+            // Hoc chieu theo loai (HocChieuGame.batChieu): chieu tu hoc cap 1 mien phi -> ngan sach diem kiem rieng
+            // (Learnset.chuanHoa trong HocChieuGame.khiNap ngay duoi), khong dung phep dem cu.
+            if (!HocChieuGame.batChieu() && count + self.skillpoint > self.lastLV && !self.isAdmin) {
                 for (int j = 0; j < self.skill.length; ++j) {
                     if (self.skill[j] > 0) {
                         self.skill[j] = 0;
@@ -1274,6 +1276,8 @@ class CharNapDuLieu {
                     self.skillpoint = 0;
                 }
             }
+            // Hoc chieu theo loai + Diem huan luyen: chuyen doi mot lan, chi so goc theo cap, chuan hoa chieu.
+            HocChieuGame.khiNap(self);
             final int openGif = 0;
             final String logError = "";
             self.setitemInvenBag(0);
