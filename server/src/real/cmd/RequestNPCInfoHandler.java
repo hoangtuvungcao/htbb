@@ -1110,7 +1110,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case 2: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Mua đồ cầm tay", "Mua trang bị thú"};
+                    // [khoa-khi-mac] muc 3 (vi tri real.PhaKhoaGame.VI_TRI_MUC_THO_REN) - xu ly o MapDoMenu case 2.
+                    menu = new String[]{"Mua đồ cầm tay", "Mua trang bị thú", real.PhaKhoaGame.TEN_MUC};
                     if (TeamServer.isServerIndo()) {
                         menu = new String[]{"Membeli senjata"};
                     }

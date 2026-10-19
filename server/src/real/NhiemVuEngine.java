@@ -568,7 +568,14 @@ public final class NhiemVuEngine {
         if (loi != null) {
             return loi + ".";
         }
+        if (m.laNgay() && !bangNgay(p).contains(ma)) {
+            return "Nhiệm vụ này không có trong bảng hằng ngày hôm nay."; // 0.9.6: menu cu / goi tu che
+        }
         synchronized (t) {
+            final String nhanLai = NhiemVuMau.chanNhanLai(m, t.get(ma), kyCua(m));
+            if (nhanLai != null) {
+                return nhanLai;
+            }
             if (m.chiemKhe()) {
                 int khe = 0;
                 for (final Entry<String, long[]> e : t.entrySet()) {

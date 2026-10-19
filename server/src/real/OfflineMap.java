@@ -351,6 +351,14 @@ public class OfflineMap extends Map {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm chỉ bán cho " + item.getCharcanBuy(), ""));
                      return;
                   }
+                  // 0.9.6: gia / so luong luc xac nhan phai trung luc hoi (popup) - nguoi ban go roi rao lai giua hai buoc
+                  // thi truoc day nguoi mua van tra gia CU (sellerInfo.priceSell) cho mon / so ngoc MOI.
+                  final long giaHienTai = type == 0 ? (long)((Item)item).prizeSell
+                        : (long)((GemSellEntry)item).prizeSell * ((GemSellEntry)item).soLuong;
+                  if (giaHienTai <= 0L || giaHienTai != player.sellerInfo.priceSell) {
+                     player.sendMessage(MessageCreator.createServerAlertMessage("Giá vật phẩm đã thay đổi, hãy xem lại gian hàng.", ""));
+                     return;
+                  }
 
                   // chong clone: nguoi mua (gui xu) -> nguoi ban (nhan xu): cap / tuoi hai ben + gioi han cung may.
                   if (com.htbb.pokemon.ChongClone.chanChuyen(player, p, player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI,
@@ -519,7 +527,7 @@ public class OfflineMap extends Map {
                   p.sendMessage(m);
                   Message mm = new Message(27);
                   mm.dos.writeShort(p.id);
-                  mm.dos.writeUTF((type == 0 ? ((Item)item).getTemplate().name : ((GemItem)item).getTemplate().name) + " đã được bán.");
+                  mm.dos.writeUTF((type == 0 ? ((Item)item).getTemplate().name : Map.gemTemplate[((GemSellEntry)item).idGemTemplate].name) + " đã được bán.");
                   p.sendMessage(mm);
                   Database.instance.saveCharAuto(p);
                   Database.instance.saveCharAuto(player);
@@ -804,6 +812,12 @@ public class OfflineMap extends Map {
                   }
                   // TODO bán trứng pet ở đây
                   // ... existing code ...
+                  // 0.9.6: do KHOA (lock 1: mua bang luong khoa, qua...) khong len gian hang ke ca mon canSellTown (thoi
+                  // trang co han / mat na) - truoc day kiem lock nam TRONG "!canSellTown() && (...)" nen bi bo qua.
+                  if (((Item)item).lock == 1) {
+                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán vật phẩm đã khóa", ""));
+                     return;
+                  }
                   if (!item.canSellTown() && (
                         // Kiểm tra item có hạn sử dụng (trừ 890, 891, 892)
                         (type == 0 && ((Item)item).getTemplate().ndayLoan > 0 && ((Item)item).minuteExist > 0 
@@ -922,7 +936,8 @@ public class OfflineMap extends Map {
                      mx.dos.writeShort(itemID);
                      mx.dos.writeByte(type);
                      if (type == 1) {
-                        mx.dos.writeShort(((GemItem)item).idGemTemplate);
+                        // 0.9.6: checkItemSell(type 1) tra GemSellEntry (khong phai GemItem) - ep GemItem nem ClassCastException
+                        mx.dos.writeShort(item instanceof GemSellEntry ? ((GemSellEntry)item).idGemTemplate : ((GemItem)item).idGemTemplate);
                      }
 
                      player.sendMessage(mx);
@@ -1241,7 +1256,8 @@ public class OfflineMap extends Map {
                      }
 
                      // chong clone: vat pham KHOA (mua bang luong khoa, qua nhiem vu...) khong doi ra xu o NPC.
-                     if (item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
+                     // [khoa-khi-mac] tru do CHI khoa vi da mac (Item.laKhoaDoMac): truoc khi mac von ban NPC duoc.
+                     if (!item.laKhoaDoMac() && item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm khoá không bán cho NPC lấy xu được (chỉ dùng hoặc vứt bỏ).", ""));
                         return;
                      }
@@ -1300,6 +1316,9 @@ public class OfflineMap extends Map {
          try {
             short id = messge.dis.readShort();
             byte typeMaterial = messge.dis.readByte();
+            if (typeMaterial != 0 && typeMaterial != 1) {
+               return; // 0.9.6: loai khac 0/1 truoc day kiem o KHOA nhung tru n o THUONG ra am (xu khong mat ngoc)
+            }
 
             for (int i = 0; i < player.gemItem.size(); i++) {
                GemItem gem = (GemItem)player.gemItem.elementAt(i);
@@ -1314,7 +1333,12 @@ public class OfflineMap extends Map {
                      n = player.listGemitemLock[gem.idGemTemplate];
                   }
 
-                  long price = (long)(gem.getTemplate().getPrice(isSale) / 5 * n);
+                  // chong clone (0.9.6, nhu Map.doSellGemItem - ban NPC dang song o day): ngoc KHOA khong doi ra xu.
+                  if (typeMaterial == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
+                     player.sendMessage(MessageCreator.createServerAlertMessage("Nguyên liệu khoá không bán cho NPC lấy xu được.", ""));
+                     return;
+                  }
+                  long price = Map.giaBanNgocNpc(gem.getTemplate().getPrice(isSale), n);
                   if (n <= 0) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán", ""));
                      return;
@@ -1838,7 +1862,7 @@ public class OfflineMap extends Map {
             byte[] material = new byte[6];
             material[idMaterial - 229] = 1;
             item.lockItemAnimal(material);
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac]
             player.sendMessage(MessageCreator.createServerAlertMessage("Đã khóa thành công", ""));
             player.sendMessage(MessageCreator.createMsgItemInfo(item));
             player.delGem(idMaterial, 1, lock == 1);
@@ -1876,7 +1900,7 @@ public class OfflineMap extends Map {
             }
 
             item.lockItem(idMaterial - 235);
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac]
             player.sendMessage(MessageCreator.createServerAlertMessage("Đã khóa thành công", ""));
             player.sendMessage(MessageCreator.createMsgItemInfo(item));
             player.delGem(idMaterial, 1, lock == 1);

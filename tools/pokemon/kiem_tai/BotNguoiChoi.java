@@ -104,10 +104,9 @@ public class BotNguoiChoi {
             if (chon == 0) {
                 // cau ca: thu tai cho -> neu bao diem cau gan nhat thi di toi
                 for (int lan = 0; lan < 2; lan++) {
-                    b.menu(-90, 0, vt);
-                    b.bom(700);
+                    // 0.9.6.1: menu he sinh thai khong con muc cau ca - lenh "cauca" nhu nut ngu canh canh ho
                     int m = b.moc();
-                    b.menu(-528, 0, 1);
+                    b.chat("cauca");
                     String t = b.doiChu(m, 2500, "");
                     if (t == null) break;
                     java.util.regex.Matcher mm = java.util.regex.Pattern.compile("\\((\\d+),(\\d+)\\)").matcher(t);
@@ -130,7 +129,7 @@ public class BotNguoiChoi {
                 b.menu(-90, 0, vt);
                 b.bom(700);
                 int m = b.moc();
-                b.menu(-528, 0, 2);
+                b.menu(-528, 0, 1);   // Khảo cổ
                 String t = b.doiChu(m, 2500, "");
                 if (t != null && !t.contains("Chỉ đào")) { soDao.incrementAndGet(); dem("dao"); }
                 else { int ml = mapLuyen(); if (ml >= 0) toi(ml); }
@@ -138,7 +137,7 @@ public class BotNguoiChoi {
                 b.menu(-90, 0, vt);
                 b.bom(700);
                 int m = b.moc();
-                b.menu(-528, 0, 3);
+                b.menu(-528, 0, 2);   // Nấu ăn, chế thuốc, chế tác
                 if (b.doiMenu(m, -528, 1, 2000) > 0) {
                     int m2 = b.moc();
                     b.menu(-528, 1, 0);
@@ -149,7 +148,7 @@ public class BotNguoiChoi {
             } else {
                 b.menu(-90, 0, vt);
                 b.bom(700);
-                b.menu(-528, 0, 6);
+                b.menu(-528, 0, 5);   // Chợ sinh thái
                 b.bom(1000);
                 dem("cho_sinh_thai_xem");
             }

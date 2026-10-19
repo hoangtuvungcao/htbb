@@ -94,6 +94,7 @@ public final class HeSinhThaiGame {
                 });
                 lich.scheduleWithFixedDelay(HeSinhThaiGame::nhipCham, 20, 15, TimeUnit.SECONDS);
                 lich.scheduleWithFixedDelay(HeSinhThaiGame::nhipNhanh, 5, 1, TimeUnit.SECONDS);
+                lich.scheduleWithFixedDelay(HeSinhThaiGame::nhipCauCa, 5000, 200, TimeUnit.MILLISECONDS);
                 System.out.println("[HE SINH THAI] da bat: " + vungTheoMap.size() + " vung, " + ungVien.size()
                         + " loai co ung vien thay, " + capBungPhat.size() + " cap bung phat, " + quaiBaoVe.size()
                         + " loai bao ve (nhiem vu chinh).");
@@ -721,6 +722,14 @@ public final class HeSinhThaiGame {
                 HeSinhThaiMenu.cauCa(p);
                 return true;
             }
+            if ("cauca2".equals(c)) {
+                HeSinhThaiMenu.thaCau(p, true);   // client 0.9.6.1+: phai keo can dung luc
+                return true;
+            }
+            if ("keocan".equals(c)) {
+                HeSinhThaiMenu.keoCan(p);
+                return true;
+            }
             if ("dao".equals(c) || "khaoco".equals(c)) {
                 HeSinhThaiMenu.dao(p);
                 return true;
@@ -846,6 +855,18 @@ public final class HeSinhThaiGame {
     }
 
     /** Moi giay: chi viec can nhanh (dua). */
+    /** Nhip cau ca (200 ms): bao ca can / ca thoat dung luc (CauCaPhien). */
+    static void nhipCauCa() {
+        if (!bat()) {
+            return;
+        }
+        try {
+            HeSinhThaiMenu.nhipCauCa();
+        } catch (final Throwable e) {
+            System.out.println("[HE SINH THAI] nhipCauCa: " + e);
+        }
+    }
+
     static void nhipNhanh() {
         if (!bat()) {
             return;

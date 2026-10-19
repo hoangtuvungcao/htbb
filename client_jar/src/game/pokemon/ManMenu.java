@@ -18,6 +18,7 @@ public final class ManMenu extends Screen {
     /**
      * 0.9.5: MỘT lối vào cho mỗi tính năng. Hành trang, Nhiệm vụ, Bản đồ có nút riêng trên HUD (không lặp ở đây);
      * Kỹ năng là tab của màn Pokémon (bỏ ô riêng); ô cuối mở menu chữ cũ cho việc hiếm (Tiện ích, PK, Đội nhóm...).
+     * 0.9.6.1: viên "Tự động đánh" chỉ hiện khi HUD không có nút cài đặt Tự động riêng (xem {@link #phu()}).
      */
     static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
         "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh"};
@@ -146,13 +147,16 @@ public final class ManMenu extends Screen {
                 CauGiaoDien.moCaiDat();
                 break;
             case I_TU_DONG:
-                // 0.9.6: bảng cài đặt Tự động đánh (cùng bảng của nút bánh răng cạnh viên AUTO trên HUD)
+                // bảng cài đặt Tự động đánh (HUD APK: chỉ có nhấn giữ nút Tự động -> cần lối vào nhìn thấy được ở đây)
                 ve();
                 game.render.screen.CauGiaoDien.moTuDong();
                 break;
             default:
                 ve();
+                // menu chữ cũ chỉ còn việc hiếm: ẩn mục đã có lối vào ở Menu này / HUD (PauseMenu.an)
+                game.render.screen.PauseMenu.moTuMenu = true;
                 HanhDong.moMenuChinh();
+                game.render.screen.PauseMenu.moTuMenu = false;
                 break;
         }
     }
@@ -196,6 +200,15 @@ public final class ManMenu extends Screen {
      */
     static final int[] CHINH = {I_POKEMON, I_DEX, I_CUA_HANG, I_DOI, I_SU_KIEN};
     static final int[] PHU = {I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+    static final int[] PHU_HUD_RONG = {I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+
+    /**
+     * 0.9.6.1 một lối vào mỗi việc: HUD màn rộng (PC) có viên AUTO + nút bánh răng cài đặt Tự động đánh ngay trên màn
+     * chơi -> bỏ viên "Tự động đánh" trùng ở đây. HUD APK (Hud.java) chỉ có nhấn giữ -> giữ viên.
+     */
+    public static int[] phu() {
+        return game.render.screen.HudRong.bat() ? PHU_HUD_RONG : PHU;
+    }
     static final int[] GOC = {166, 128, 90, 52, 14};
 
     static int rNut() {
@@ -211,9 +224,10 @@ public final class ManMenu extends Screen {
     static int banKinhCung() {
         int r = rNut();
         int k = Math.max(ChuDe.KHE, Bang.cach()), hv = caoVienPhu();
-        int[] wv = new int[PHU.length];
-        for (int q = 0; q < PHU.length; q++) {
-            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
+        int[] phu = phu();
+        int[] wv = new int[phu.length];
+        for (int q = 0; q < phu.length; q++) {
+            wv[q] = ChuDe.rong(TEN[phu[q]], ChuDe.NHAN) + hv + 12;
         }
         int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
         int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
@@ -272,22 +286,23 @@ public final class ManMenu extends Screen {
         int hv = caoVienPhu();
         int k = Math.max(ChuDe.KHE, Bang.cach());
         int wMax = Bang.phai() - Bang.trai() - 8;
-        int[] wv = new int[PHU.length];
-        for (int q = 0; q < PHU.length; q++) {
-            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
+        int[] phu = phu();
+        int[] wv = new int[phu.length];
+        for (int q = 0; q < phu.length; q++) {
+            wv[q] = ChuDe.rong(TEN[phu[q]], ChuDe.NHAN) + hv + 12;
         }
         int soHang = soHangPhu(wv, k, wMax);
         int yv = Math.max(Bang.tren() + 4, cy - R - r - 14 - hv - (soHang - 1) * (hv + k));
         int q0 = 0;
-        while (q0 < PHU.length) {
+        while (q0 < phu.length) {
             int tong = 0, q1 = q0;
-            while (q1 < PHU.length && (q1 == q0 || tong + k + wv[q1] <= wMax)) {
+            while (q1 < phu.length && (q1 == q0 || tong + k + wv[q1] <= wMax)) {
                 tong += wv[q1] + (q1 > q0 ? k : 0);
                 q1++;
             }
             int xv = cx - tong / 2;
             for (int q = q0; q < q1; q++) {
-                final int i = PHU[q];
+                final int i = phu[q];
                 vienPhu(g, xv, yv, wv[q], hv, i, new IAction() {
                     public void perform() {
                         ManMenu.lam(i);

@@ -252,7 +252,7 @@ public class ItemChangeColor {
                         }
 
                         if (materialUse == 1 || haveLock) {
-                            itChangeColor.lock = 1;
+                            itChangeColor.khoaVinhVien(); // [khoa-khi-mac]
                         }
 
                         for(byte i = 1; i < item.size(); ++i) {
@@ -370,7 +370,7 @@ public class ItemChangeColor {
             item.heItem = (byte)Map.r.nextInt(5);
         }
 
-        item.lock = 1;
+        item.khoaVinhVien(); // [khoa-khi-mac]
         return item;
     }
 

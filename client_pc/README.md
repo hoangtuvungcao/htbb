@@ -69,6 +69,9 @@ Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `serv
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần);
+- `KiemChamHud`: chạm HUD màn chơi ở 11 cỡ - vùng chạm thật mọi nút (kể cả viên "1/2", câu cá, ô "+") không chồng
+  nhau, chạm ô chiêu = đúng chiêu đó (ô "+" = bảng gán), nhắm NPC thì chiêu không mở cửa hàng / menu NPC, viên "1/2" /
+  phím R / phím 0 đổi bộ chiêu;
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;

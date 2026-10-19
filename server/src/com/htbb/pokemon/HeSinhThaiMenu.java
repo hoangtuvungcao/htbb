@@ -110,20 +110,61 @@ public final class HeSinhThaiMenu {
         if (h == null) {
             return;
         }
-        final List<String> m = new ArrayList<String>();
         final int tt = HeSinhThaiGame.thoiTietMap(p.mapID);
-        m.add("Thời tiết: " + SinhThaiTheGioi.tenThoiTiet(tt) + (SinhThaiTheGioi.laDem(HeSinhThaiGame.gio()) ? " (đêm)" : " (ngày)"));
-        m.add("Câu cá tại đây");
-        m.add("Khảo cổ: đào tại đây");
-        m.add("Nấu ăn, chế thuốc, chế tác");
-        m.add("Túi sinh thái");
-        m.add("Nhà trẻ và trứng (" + h.trung.size() + ")");
-        m.add("Chợ sinh thái");
-        m.add("Vườn nhà và bạn bè");
-        m.add("Sưu tầm và nghiên cứu");
-        m.add("Giải trí: đố vui, đua, giải đấu");
-        m.add("Kỹ năng và thể lực (" + h.theLuc + ")");
-        menu(p, M_GOC, m);
+        menu(p, M_GOC, mucGoc(SinhThaiTheGioi.tenThoiTiet(tt), SinhThaiTheGioi.laDem(HeSinhThaiGame.gio()), h.trung.size(), h.theLuc));
+    }
+
+    /**
+     * 0.9.6.1: thu tu muc menu goc = thu tu khoa o day; nhan (mucGoc) va xu ly (goc) cung doc mang nay nen chi so khong
+     * the lech nhau. "Câu cá tại đây" DA BO khoi menu: cau ca chi bat dau tu nut ngu canh canh ho (lenh chat "cauca" ->
+     * {@link #cauCa}). Client cu (0.9.6) gui chi so theo DANH SACH MAY CHU VUA GUI nen van dung muc; client cu chi con
+     * hoat canh quang can ngan khi bam muc thu 2 (nay la Khảo cổ) - khong doi ket qua.
+     */
+    static final String G_THOI_TIET = "thoiTiet", G_KHAO_CO = "khaoCo", G_CHE_TAC = "cheTac", G_TUI = "tui",
+            G_NHA_TRE = "nhaTre", G_CHO = "cho", G_VUON = "vuon", G_SUU_TAM = "suuTam", G_GIAI_TRI = "giaiTri",
+            G_KY_NANG = "kyNang";
+    public static final String[] GOC = {G_THOI_TIET, G_KHAO_CO, G_CHE_TAC, G_TUI, G_NHA_TRE, G_CHO, G_VUON, G_SUU_TAM, G_GIAI_TRI,
+        G_KY_NANG};
+
+    /** Nhan menu goc (cung thu tu {@link #GOC}). */
+    public static List<String> mucGoc(final String thoiTiet, final boolean dem, final int soTrung, final int theLuc) {
+        final List<String> m = new ArrayList<String>();
+        for (final String k : GOC) {
+            m.add(nhanGoc(k, thoiTiet, dem, soTrung, theLuc));
+        }
+        return m;
+    }
+
+    static String nhanGoc(final String k, final String thoiTiet, final boolean dem, final int soTrung, final int theLuc) {
+        switch (k) {
+            case G_THOI_TIET:
+                return "Thời tiết: " + thoiTiet + (dem ? " (đêm)" : " (ngày)");
+            case G_KHAO_CO:
+                return "Khảo cổ: đào tại đây";
+            case G_CHE_TAC:
+                return "Nấu ăn, chế thuốc, chế tác";
+            case G_TUI:
+                return "Túi sinh thái";
+            case G_NHA_TRE:
+                return "Nhà trẻ và trứng (" + soTrung + ")";
+            case G_CHO:
+                return "Chợ sinh thái";
+            case G_VUON:
+                return "Vườn nhà và bạn bè";
+            case G_SUU_TAM:
+                return "Sưu tầm và nghiên cứu";
+            case G_GIAI_TRI:
+                return "Giải trí: đố vui, đua, giải đấu";
+            case G_KY_NANG:
+                return "Kỹ năng và thể lực (" + theLuc + ")";
+            default:
+                return k;
+        }
+    }
+
+    /** Khoa cua muc op trong menu goc; null = ngoai danh sach. */
+    public static String khoaGoc(final int op) {
+        return op >= 0 && op < GOC.length ? GOC[op] : null;
     }
 
     /** MapDoMenu: idNpc == HeSinhThaiGame.NPC_ID. */
@@ -236,38 +277,39 @@ public final class HeSinhThaiMenu {
     }
 
     static void goc(final Char p, final int op) {
-        switch (op) {
-            case 0:
+        final String k = khoaGoc(op);
+        if (k == null) {
+            return;
+        }
+        switch (k) {
+            case G_THOI_TIET:
                 xemTheGioi(p);
                 break;
-            case 1:
-                cauCa(p);
-                break;
-            case 2:
+            case G_KHAO_CO:
                 dao(p);
                 break;
-            case 3:
+            case G_CHE_TAC:
                 moCongThuc(p);
                 break;
-            case 4:
+            case G_TUI:
                 moTui(p);
                 break;
-            case 5:
+            case G_NHA_TRE:
                 moNhaTre(p);
                 break;
-            case 6:
+            case G_CHO:
                 moCho(p);
                 break;
-            case 7:
+            case G_VUON:
                 moVuon(p);
                 break;
-            case 8:
+            case G_SUU_TAM:
                 moSuuTam(p);
                 break;
-            case 9:
+            case G_GIAI_TRI:
                 moGiaiTri(p);
                 break;
-            case 10:
+            case G_KY_NANG:
                 xemKyNang(p);
                 break;
             default:
@@ -374,9 +416,36 @@ public final class HeSinhThaiMenu {
 
     // ================================================================== cau ca
 
+    /**
+     * Lenh chat "cauca" (client cu, toi 0.9.6): tha cau, server TU keo khi ca can (khong co nut keo can) nhung
+     * van cho cung thoi gian + them ti le thoat {@link #THOAT_THEM_CLIENT_CU} (bu cho khong phai bam dung luc).
+     */
     public static void cauCa(final Char p) {
+        thaCau(p, false);
+    }
+
+    /** Client cu tu keo: them % ca thoat (nguoi bam tay cung hut khung thinh thoang). */
+    static final int THOAT_THEM_CLIENT_CU = 15;
+
+    /**
+     * Tha cau. {@code canKeo}: client moi (lenh "cauca2") phai gui "keocan" trong khung sau "Cá cắn câu!";
+     * client cu ("cauca") server tu keo. Luat: CHI cau o ho (vung nuoc kin) va dung sat mep nuoc (<= 2 o) -
+     * server kiem lai vi tri, khong tin client.
+     */
+    public static void thaCau(final Char p, final boolean canKeo) {
         final HoSoSinhThai h = hoSo(p);
         if (h == null || quaNhanh(p)) {
+            return;
+        }
+        final long now = DongHo.bay();
+        final CauCaPhien.SoLieu sl = CauCaPhien.soLieu();
+        if (CauCaPhien.dang(p.charDBID) != null) {
+            bao(p, "Đang câu, chờ cá cắn câu.");
+            return;
+        }
+        final long nghi = CauCaPhien.conNghi(p.charDBID, now, sl);
+        if (nghi > 0) {
+            bao(p, "Chờ " + ((nghi + 999) / 1000) + " giây nữa mới thả câu tiếp.");
             return;
         }
         final HeSinhThaiGame.BanDoPhanTich bd = HeSinhThaiGame.banDo(p);
@@ -408,14 +477,95 @@ public final class HeSinhThaiMenu {
             bao(p, "Hết thể lực sinh hoạt hôm nay. Nghỉ ngơi hoặc ăn Bánh Poké.");
             return;
         }
+        // giu cho truoc khi tru (hai lenh song song chi mot lenh qua)
+        final CauCaPhien.Phien ph = CauCaPhien.tha(p.charDBID, p.mapID, p.x / 16, p.y / 16, hoId, hoLon, canKeo, now, sl,
+                HeSinhThaiGame.R);
+        if (ph == null) {
+            bao(p, "Đang câu, chờ cá cắn câu.");
+            return;
+        }
+        // moi cau = vat tieu hao (hut xu), mat ca khi khong duoc gi / ca thoat
         if (!HeSinhThaiGame.truXu(p, moi, "moi cau")) {
+            CauCaPhien.DANG.remove(p.charDBID, ph);
             bao(p, "Cần " + moi + " xu mua mồi câu.");
             return;
         }
         if (!h.truTheLuc(HeSinhThai.TL_CAU_CA)) {
+            CauCaPhien.DANG.remove(p.charDBID, ph);
             HeSinhThaiGame.congXu(p, moi, "hoan moi cau");
             return;
         }
+        HeSinhThaiGame.danhDau(p);
+    }
+
+    /** Lenh chat "keocan" (client moi): keo can. Dung khung -> tra ket qua; som / muon -> ca thoat. */
+    public static void keoCan(final Char p) {
+        final long now = DongHo.bay();
+        final CauCaPhien.Phien ph = CauCaPhien.dang(p.charDBID);
+        final int k = CauCaPhien.keo(p.charDBID, now, CauCaPhien.soLieu());
+        if (k == CauCaPhien.KHONG_CO || ph == null) {
+            return; // khong co phien (da thoat / da xong): im lang
+        }
+        if (k == CauCaPhien.SOM) {
+            bao(p, "Kéo cần quá sớm, cá đã thoát mất…");
+            return;
+        }
+        if (k == CauCaPhien.MUON) {
+            bao(p, "Kéo cần quá muộn, cá đã thoát mất…");
+            return;
+        }
+        traCa(p, ph);
+    }
+
+    /** Nhip (he-sinh-thai, 200 ms): bao ca can, het khung = ca thoat, roi cho / thoat = huy. */
+    static void nhipCauCa() {
+        final long now = DongHo.bay();
+        final CauCaPhien.SoLieu sl = CauCaPhien.soLieu();
+        for (final CauCaPhien.Phien ph : CauCaPhien.denLucCan(now)) {
+            final Char p = HeSinhThaiGame.timOnline(ph.charId);
+            if (p == null || p.mapID != ph.mapId || Math.abs(p.x / 16 - ph.x) > 2 || Math.abs(p.y / 16 - ph.y) > 2) {
+                CauCaPhien.huy(ph.charId, now);
+                if (p != null) {
+                    bao(p, "Bạn đã rời chỗ câu, cá đã thoát mất…");
+                }
+                continue;
+            }
+            if (!ph.canKeo) {
+                // client cu: server tu keo
+                CauCaPhien.keo(ph.charId, now, sl);
+                if (HeSinhThaiGame.R.nextInt(100) < THOAT_THEM_CLIENT_CU) {
+                    bao(p, "Cá đã thoát mất…");
+                } else {
+                    traCa(p, ph);
+                }
+                continue;
+            }
+            bao(p, "Cá cắn câu! Kéo cần ngay!");
+        }
+        for (final CauCaPhien.Phien ph : CauCaPhien.quaKhung(now, sl)) {
+            final Char p = HeSinhThaiGame.timOnline(ph.charId);
+            if (p != null) {
+                bao(p, "Cá đã thoát mất…");
+            }
+        }
+    }
+
+    /** Keo dung luc: co ti le khong duoc gi (tang dan khi cau nhieu trong gio), con lai bang cau ca nhu cu. */
+    static void traCa(final Char p, final CauCaPhien.Phien ph) {
+        final HoSoSinhThai h = HeSinhThaiGame.hoSo(p);
+        if (h == null) {
+            return;
+        }
+        final long now = DongHo.bay();
+        final CauCaPhien.SoLieu sl = CauCaPhien.soLieu();
+        final int daCau = CauCaPhien.demTrongGio(p.charDBID, now);
+        if (CauCaPhien.trong(sl, daCau, HeSinhThaiGame.R)) {
+            bao(p, "Không câu được gì. Thể lực còn " + h.theLuc + ".");
+            HeSinhThaiGame.danhDau(p);
+            return;
+        }
+        CauCaPhien.ghiCauDuoc(p.charDBID, now);
+        final boolean hoLon = ph.hoLon;
         final int v = HeSinhThaiGame.vung(p.mapID);
         // Ho tren map bien / tau = dam pha (nuoc lo): ca nuoc ngot lan nuoc man; con lai: nuoc ngot.
         final int nuoc = v == SinhThaiTheGioi.V_BIEN || v == SinhThaiTheGioi.V_TAU
