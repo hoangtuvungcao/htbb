@@ -566,6 +566,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 |---|---|---|---|---|---|---|
 | `sv.lau_dai` | Thiết kế dài hạn | Luôn bật (ẩn) | `1` | khởi động lại | game | 1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động. |
 | `sv.he_sinh_thai` | Hệ sinh thái | Luôn bật (ẩn) | `1` | khởi động lại | game | 1 = bật hệ sinh thái thế giới (data_hst_*, tob_hst_*). |
+| `ban_do.khoa.bat` | Khoá bản đồ theo cấp / cửa ải | Chính | `1` | ngay | game | 1 = bản đồ cần đủ cấp và xong cửa ải (bảng `data_ban_do_mo_khoa`) mới vào được, kèm luật Tự động đánh theo bản đồ; 0 = mở mọi bản đồ (người chơi cũ luôn được miễn trừ theo cấp). |
 | `sv.tran_cap_theo_mua` | Trần cấp theo mùa | Cố định (ẩn) | `0` | khởi động lại | game | 1 = bật lại trần cấp 60→100 theo ngày khai trương (thiết kế cũ). 0 = không trần, lên cấp chậm + vật phẩm tăng tốc. |
 | `sv.tua_nhanh_ngay` | Tua nhanh thử nghiệm (ngày) | Cố định (ẩn) | `0` | khởi động lại | game | Cộng thêm N ngày vào ngày hiện tại của lịch dài hạn (thử mùa, vé mùa, lịch). chỉ máy thử — máy thật luôn 0. (máy thật chỉ nhận mặc định) |
 

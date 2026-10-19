@@ -25,7 +25,7 @@ public final class KhoaBanDoGame {
     /** Client dau tien doc goi -106 (cac ban 0.9.6 cu bo qua goi la, chi thay thong bao -26). */
     public static final int BAN_CLIENT = 906;
 
-    /** charDBID -> moc mien tru. */
+    /** charDBID -> moc mien tru (giu ca khi thoat: vai so nguyen / nhan vat, tranh dua giua phien cu va moi). */
     private static final ConcurrentHashMap<Integer, Integer> MIEN = new ConcurrentHashMap<Integer, Integer>();
     /** charDBID -> ban do goc dang khoa lan gui truoc (bao "Đã mở"). */
     private static final ConcurrentHashMap<Integer, Set<Integer>> KHOA_TRUOC = new ConcurrentHashMap<Integer, Set<Integer>>();
@@ -189,16 +189,6 @@ public final class KhoaBanDoGame {
         }
     }
 
-    /** Thoat game: bo bo nho dem. */
-    public static void khiThoat(final Char p) {
-        if (p != null) {
-            final Integer k = Integer.valueOf(p.charDBID);
-            MIEN.remove(k);
-            KHOA_TRUOC.remove(k);
-            VAN_TAY.remove(k);
-        }
-    }
-
     /** Test: dat moc mien tru. */
     public static void datMien(final int idChar, final int moc) {
         MIEN.put(Integer.valueOf(idChar), Integer.valueOf(moc));
@@ -265,6 +255,9 @@ public final class KhoaBanDoGame {
 
     /** Vao game: gui danh sach (khong bao "Đã mở"). */
     public static void guiDanhSach(final Char p) {
+        if (p != null) {
+            VAN_TAY.remove(Integer.valueOf(p.charDBID)); // phien moi: luon gui
+        }
         capNhat(p, false);
     }
 

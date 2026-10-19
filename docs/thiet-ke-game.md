@@ -838,6 +838,31 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 
 ---
 
+### 6.4 Khoá bản đồ và cửa ải (kiểu NRO / NSO)
+
+Mỗi bản đồ gốc có một dòng `data_ban_do_mo_khoa` (sửa trong CSDL, server nạp lại ≤ 30 giây): **cấp tối thiểu** (cấp quái
+thấp nhất − 3, nâng bằng cấp Gym nếu cửa ải có Gym), **cửa ải cần xong** và **có cho Tự động đánh không** (kèm lý do). Bản
+sao theo khu theo luật bản gốc. Mở khi đủ cấp và xong cửa ải, hoặc khi cấp tối thiểu ≤ mốc miễn trừ của nhân vật
+(`tob_ban_do_mo`: lần đăng nhập đầu sau bản này = max(cấp, cấp bản đồ đang lưu); bản đồ đang lưu bị khoá thì nâng mốc —
+không bao giờ dịch chuyển người chơi). Admin không bị chặn. Công tắc `ban_do.khoa.bat`.
+
+| Chặng | Bản đồ | Cấp | Cửa ải (Sổ tay → Thử thách cửa ải) |
+|---|---|---|---|
+| 0 | thị trấn, Pallet 1, Viridian 2 | – | – |
+| 1–2 | Cerulean 4, Vermilion 3 / Lavender 5 | 3–4 / 8 | CA-01 / CA-02: hạ 20–25 quái ở bản đồ trước |
+| 3–4 | Celadon 6, Saffron 7, Fuchsia 8 / Cinnabar 9, Hang động 110 | 12 / 19 | CA-03 / CA-04: hạ 30–40 quái + Gym Pewter / Cerulean |
+| 5–8 | New Bark 10 … Goldenrod 18 | 27–49 | CA-05 … CA-08: hạ 45–55 quái + Gym Vermilion … Cinnabar |
+| 9–12 | Ecruteak 19 … Mahogany 28 | 53–79 | CA-09 … CA-12: hạ 60–75 quái + Gym Viridian … Cianwood |
+| 13 | Hoenn (29 bản đồ) | 90–96 | chính tuyến C52.7 (kết năm 1) |
+
+Bước hạ quái chỉ tính ở đúng bản đồ (`dieu_kien` `ban_do=<id>`); bước Gym là trận Gym thật đánh tay (đã có huy hiệu thì
+nhận là xong). Thưởng mỗi bước 0,24 giờ EXP + 0,09 giờ xu, bước cuối +1 lượng khoá (ngân sách `cua_ai`). Chặn ở mọi
+đường vào (đi bộ qua cổng, xa phu / Pidgeot / Lapras, bãi luyện, vật phẩm, tới người chơi, `Map.move2Map`), trước khi trừ
+phí; bị chặn thì nhận thông báo "Cần hoàn thành nhiệm vụ «…» và đạt cấp N để vào …" và ở lại chỗ cũ. Tự động đánh bị từ
+chối / tắt ở bản đồ khoá tự động (thị trấn, nhà, đấu trường, hang boss, khu sự kiện). Client nhận gói -106 (mục 11): cổng
+và danh sách bay hiện hàng "Khoá" xám có ổ khoá + "AUTO" / "Không AUTO", bản đồ lớn vẽ ổ khoá + chấm AUTO, viên AUTO xám khi
+bản đồ không cho tự động.
+
 ## 7. Hệ sinh thái
 
 Bật bằng `sv.he_sinh_thai=1` (cần chạy `sql/nang_cap.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
@@ -1255,5 +1280,6 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
+| -106 | Khoá bản đồ | S→C | `u8 phiên bản (1), i16 n nhóm, n × (u8 cờ (1 khoá, 2 không Tự động), UTF điều kiện, UTF lý do tự động, i16 k, k × i16 id bản đồ)` — chỉ bản đồ khác mặc định; lúc vào game, lên cấp / xong cửa ải làm đổi, admin sửa bảng; client ≥ 906 (mục 6.4) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
