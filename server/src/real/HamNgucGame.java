@@ -94,6 +94,6 @@ final class HamNgucGame {
             p.addLuongLock(lk);
         }
         Database.instance.saveOrtherLog("", p.charname, "ham nguc tang " + tang + " exp " + exp + " lk " + lk, "laudai");
-        return "Thưởng Hầm ngục bí ẩn (tầng " + tang + "): " + exp + " EXP" + (lk > 0 ? ", " + lk + " lượng khoá" : "") + ".";
+        return "Thưởng Hầm ngục bí ẩn (tầng " + tang + "): " + exp + " EXP" + (lk > 0 ? ", " + com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.LUONG_KHOA, lk) : "") + ".";
     }
 }

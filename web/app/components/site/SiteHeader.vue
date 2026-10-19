@@ -3,7 +3,10 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const auth = useAuth()
 const adminAuth = useAdminAuth()
-onMounted(() => { auth.hydrate(); adminAuth.hydrate() })
+// Bản DEMO nạp tiền (HTBB_NAP_DEMO=1): server quyết định ai thấy menu theo token người chơi.
+const napDemo = useNapDemo()
+onMounted(() => { auth.hydrate(); adminAuth.hydrate(); napDemo.tai() })
+watch(() => auth.user.value?.username, () => { napDemo.tai() })
 
 const route = useRoute()
 const tenSite = useAppConfig().htbb.tenSite
@@ -28,6 +31,10 @@ const links = computed<NavigationMenuItem[]>(() => {
   if (auth.loggedIn.value) {
     // Nạp tiền tắt mặc định (HTBB_NAP_BAT, quyết định Q10): chỉ hiện khi server bật.
     if (site.value?.napBat) ds.push({ label: 'Nạp tiền', to: '/naptien', icon: 'i-lucide-gem' })
+    else if (napDemo.xem.value) {
+      ds.push({ label: 'Nạp (demo)', to: '/naptien', icon: 'i-lucide-gem' })
+      ds.push({ label: 'Thành viên (demo)', to: '/thanh-vien', icon: 'i-lucide-badge-plus' })
+    }
     ds.push({ label: 'Kích hoạt', to: '/kichhoat', icon: 'i-lucide-badge-check' })
   }
   return ds

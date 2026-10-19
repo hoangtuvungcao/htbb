@@ -5,6 +5,12 @@
  * Thân: { ma_gd, so_tien, noi_dung } — đi qua đúng đường napXuLyGiaoDich như SePay/Casso.
  */
 export default defineEventHandler(async (event) => {
+  if (useHtbbConfig().nap.demo) {
+    // Lớp chặn thứ hai sau server/middleware/tat-nap.ts: demo KHÔNG ghi nhận tiền.
+    napDemoGhiWebhook(event, event.path.split('?')[0] ?? '')
+    setResponseStatus(event, 403)
+    return { success: false, message: 'demo mode: webhook ignored' }
+  }
   const n = useHtbbConfig().nap
   if (!n.sandbox || n.mockSecret === '') throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   const raw = (await readRawBody(event, 'utf8').catch(() => undefined)) ?? ''

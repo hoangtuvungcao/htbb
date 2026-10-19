@@ -2313,6 +2313,8 @@ public class MessageCreator {
         m.dos.writeShort(Char.clampShort(p.defend_physic + p.percentBuff[0]));
         m.dos.writeInt(p.hp);
         m.dos.writeShort(hpCong);
+        // 0.9.3: PP hien tai o duoi goi (client moi doc qua MauPP.doc60, client cu bo qua phan du)
+        m.dos.writeInt(p.mp);
         return m;
     }
 
@@ -3094,7 +3096,7 @@ public class MessageCreator {
             m.dos.writeByte(potionType);
             m.dos.writeShort(value);
             m.dos.writeInt((potionType == 1) ? player.hp : player.mp);
-            m.dos.writeByte(1);
+            m.dos.writeByte(potionType == 1 ? 1 : 0); // co isHP: truoc day luon 1 ca khi gui PP (loai 4)
             player.sendMessage(m);
             player.sendToNearPlayer(m);
         } catch (final Exception ex) {

@@ -4250,11 +4250,11 @@ public class WindowInfoScr : MyScreen
 					int num5 = -24 + num3;
 					if (isPaintMoney)
 					{
-						MFont.smallFontColor[0].drawString(g, Canvas.gameScr.mainChar.charXu + "$", num4 + (wKhung - (x0 - 2 + 7 * wCell + b)) - 4 + xTr, num5 + yTr, MFont.RIGHT);
-						MFont.smallFontColor[1].drawString(g, Canvas.gameScr.mainChar.luong + "L", num4 + 2 + xTr, num5 + yTr, MFont.LEFT);
+						MFont.smallFontColor[0].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.charXu) + " xu", num4 + (wKhung - (x0 - 2 + 7 * wCell + b)) - 4 + xTr, num5 + yTr, MFont.RIGHT);
+						MFont.smallFontColor[1].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luong) + " lượng", num4 + 2 + xTr, num5 + yTr, MFont.LEFT);
 						if (Canvas.gameScr.mainChar.luongKhoa > -1)
 						{
-							MFont.smallFontColor[1].drawString(g, Canvas.gameScr.mainChar.luongKhoa + "LK", num4 + (wKhung - (x0 - 2 + 7 * wCell + b)) / 2 + xTr, num5 + yTr, MFont.CENTER);
+							MFont.smallFontColor[1].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luongKhoa) + " lượng khoá", num4 + (wKhung - (x0 - 2 + 7 * wCell + b)) / 2 + xTr, num5 + yTr, MFont.CENTER);
 						}
 					}
 					if (index[focusTab] == 0)
@@ -5431,8 +5431,8 @@ public class WindowInfoScr : MyScreen
 			}
 		}
 		Canvas.resetTrans(g);
-		MFont.smallFontColor[0].drawString(g, Canvas.gameScr.mainChar.charXu + "$", num3 + num - 10, num4 + num2 - 10, 1);
-		MFont.smallFontColor[0].drawString(g, Canvas.gameScr.mainChar.luong + "L", num3 + 10, num4 + num2 - 10, 0);
+		MFont.smallFontColor[0].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.charXu) + " xu", num3 + num - 10, num4 + num2 - 10, 1);
+		MFont.smallFontColor[0].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luong) + " lượng", num3 + 10, num4 + num2 - 10, 0);
 	}
 
 	public static string getInfoQuestPaint(int type)
@@ -6356,7 +6356,7 @@ public class WindowInfoScr : MyScreen
 					Canvas.startWaitDlg("Đang bán..", true);
 					list.removeElementAt(element);
 				};
-				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + gemByID.price / 5 + "$ không?", yesAction);
+				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + TienTe.chu(TienTe.XU, gemByID.price / 5) + " không?", yesAction);
 				return;
 			}
 			mVector mVector3 = new mVector();
@@ -6387,7 +6387,7 @@ public class WindowInfoScr : MyScreen
 					list.removeElementAt(element);
 				};
 				GemTemp gemByID3 = Res.getGemByID(item2.id);
-				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + gemByID3.price / 5 + "$ không?", yesAction2);
+				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + TienTe.chu(TienTe.XU, gemByID3.price / 5) + " không?", yesAction2);
 				return;
 			}
 			mVector mVector4 = new mVector();
@@ -6562,7 +6562,7 @@ public class WindowInfoScr : MyScreen
 				Canvas.startWaitDlg("Đang bán..", true);
 				list.removeElementAt(element);
 			};
-			Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + (item5.price / 5 + item5.plus * 1000) + "$ không?", yesAction3);
+			Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + TienTe.chu(TienTe.XU, (item5.price / 5 + item5.plus * 1000)) + " không?", yesAction3);
 		}
 	}
 
@@ -7074,7 +7074,7 @@ public class WindowInfoScr : MyScreen
 					else
 					{
 						string empty = string.Empty;
-						empty = ((itt.ndayLoan != 0) ? ("Bạn có muốn thuê " + itt.name + ", Giá: " + itt.price + "Lượng không?") : ("Bạn có muốn mua " + itt.name + ", Giá: " + itt.price + "$ không?"));
+						empty = ((itt.ndayLoan != 0) ? ("Bạn có muốn thuê " + itt.name + ", Giá: " + TienTe.chu(TienTe.LUONG, itt.price) + " không?") : ("Bạn có muốn mua " + itt.name + ", Giá: " + TienTe.chu(TienTe.XU, itt.price) + " không?"));
 						ActionPerform yesAction = () =>
 						{
 							Canvas.gameScr.mainChar.charXu -= itt.price;
@@ -7161,7 +7161,7 @@ public class WindowInfoScr : MyScreen
 										}
 										Canvas.startOKDlg("Đã mua. Món đồ đang ở trong hành trang.");
 									};
-									Canvas.startYesNoDlg("Bạn có muốn mua " + number + " " + g.name + ", Giá: " + g.price * number + ((g.typeMoney != 0) ? "lượng" : "$") + " không?", yesAction);
+									Canvas.startYesNoDlg("Bạn có muốn mua " + number + " " + g.name + ", Giá: " + TienTe.chu((g.typeMoney != 0) ? TienTe.LUONG : TienTe.XU, g.price * number) + " không?", yesAction);
 								}
 							}
 						}

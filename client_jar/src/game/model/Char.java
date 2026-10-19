@@ -116,6 +116,8 @@ public class Char extends LiveActor {
     public Effect effAnimal;
     public boolean isAnimal;
     public AnimalMove myPet;
+    /** pokemon: actor pet ĐANG ở trong cảnh (Pet hoặc AnimalMove) - một pet / người chơi (game.pokemon.PetDuyNhat) */
+    public AnimalMove petCanh;
     public short baokich;
     public int congTrang;
     public int lienTram;

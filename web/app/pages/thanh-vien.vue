@@ -25,6 +25,10 @@ const auth = useAuth()
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
+// Bản DEMO (HTBB_NAP_DEMO=1): người được xem demo thấy nút Mua + luồng thanh toán minh hoạ (không cấp gì).
+const napDemo = useNapDemo()
+const donDemo = ref(false)
+const dangBan = computed(() => !!tt.value?.dangBan || napDemo.xem.value)
 
 const { data: tt } = await useFetch<ThongTin>('/api/thanh-vien/thong-tin', { key: 'tv-thong-tin' })
 const cuaToi = ref<CuaToi | null>(null)
@@ -61,14 +65,19 @@ async function taiDon(ma: string) {
     return
   }
   try {
-    const r = await api<{ don: DonTv, qr: string, nganHang: { soTaiKhoan: string, chuTaiKhoan: string }, moApp: { ten: string, url: string }[] }>('/api/thanh-vien/don', { query: { ma_don: ma } })
+    const r = await api<{ don: DonTv, qr: string, nganHang: { soTaiKhoan: string, chuTaiKhoan: string }, moApp: { ten: string, url: string }[], demo?: boolean }>('/api/thanh-vien/don', { query: { ma_don: ma } })
     const cu = don.value?.trang_thai
+    donDemo.value = !!r.demo
     don.value = r.don
     qr.value = r.qr
     nganHang.value = r.nganHang
-    moApp.value = r.moApp
+    moApp.value = r.demo ? [] : r.moApp
     if (r.don.trang_thai === 'da_cong') {
-      if (cu && cu !== 'da_cong') toast.add({ title: 'Đã là Thành viên HTBB!', color: 'success', icon: 'i-lucide-badge-check' })
+      if (cu && cu !== 'da_cong') {
+        toast.add(r.demo
+          ? { title: 'DEMO: giả lập thành công', description: 'Không cấp Thành viên thật.', color: 'warning', icon: 'i-lucide-flask-conical' }
+          : { title: 'Đã là Thành viên HTBB!', color: 'success', icon: 'i-lucide-badge-check' })
+      }
       taiCuaToi()
       return
     }
@@ -100,6 +109,7 @@ async function mua() {
 
 watch(maDon, ma => taiDon(ma))
 onMounted(() => {
+  napDemo.tai()
   taiCuaToi()
   if (maDon.value) taiDon(maDon.value)
 })
@@ -123,6 +133,9 @@ const faq = computed(() => [
       :intro="`Mở giao dịch, chat thế giới, chợ, đội... cho mọi Pokémon của tài khoản. ${tt ? vnd(tt.gia) : ''} · ${hanText}. Không bán sức mạnh.`"
     />
     <UContainer class="max-w-5xl py-12">
+      <ClientOnly>
+        <NapDemoBanner v-if="napDemo.xem.value" :chi-admin="napDemo.info.value?.chiAdmin" />
+      </ClientOnly>
       <UAlert v-if="tt && !tt.batBuoc" class="mb-6" color="info" variant="subtle" icon="i-lucide-flask-conical" title="Đang thử nghiệm: Thành viên CHƯA bắt buộc" description="Mọi tính năng đang mở cho tất cả. Khi mở chính thức, các tính năng bên dưới sẽ cần Thành viên." />
 
       <div class="grid gap-6 md:grid-cols-[1fr_22rem]">
@@ -157,10 +170,10 @@ const faq = computed(() => [
               <UBadge v-if="cuaToi.trangThai.laThanhVien" color="success" variant="subtle" size="lg" icon="i-lucide-badge-check" :label="`Thành viên · hạn ${hanCuaToi(cuaToi.trangThai.hetHanMs)}`" />
               <UBadge v-else color="neutral" variant="subtle" size="lg" label="Chưa là Thành viên" />
             </div>
-            <UButton class="mt-5" block size="lg" :loading="dangMua" :disabled="!tt?.dangBan || (cuaToi?.trangThai?.laThanhVien && cuaToi.trangThai.hetHanMs === 0)" icon="i-lucide-qr-code" @click="mua">
+            <UButton class="mt-5" block size="lg" :loading="dangMua" :disabled="!dangBan || (cuaToi?.trangThai?.laThanhVien && cuaToi.trangThai.hetHanMs === 0)" icon="i-lucide-qr-code" @click="mua">
               {{ cuaToi?.trangThai?.laThanhVien ? 'Gia hạn' : 'Mua Thành viên' }}
             </UButton>
-            <p v-if="tt && !tt.dangBan" class="mt-2 text-xs text-muted">
+            <p v-if="tt && !dangBan" class="mt-2 text-xs text-muted">
               Hiện chưa mở bán.
             </p>
           </div>
@@ -173,12 +186,17 @@ const faq = computed(() => [
           <b>Đơn {{ don.ma_don }} · {{ vnd(don.so_tien) }}</b>
         </template>
         <div v-if="['cho_thanh_toan', 'that_bai'].includes(don.trang_thai)" class="text-center">
-          <img :src="qr" alt="Mã QR chuyển khoản VietQR" class="mx-auto size-64 rounded-xl bg-white p-2" width="256" height="256">
+          <NapQrDemo v-if="donDemo || !qr" :ma="don.ma_don" :kich-thuoc="256" />
+          <img v-else :src="qr" alt="Mã QR chuyển khoản VietQR" class="mx-auto size-64 rounded-xl bg-white p-2" width="256" height="256">
           <p class="mt-3 text-sm">
             Nội dung CK: <strong class="font-mono text-primary">{{ don.ma_don }}</strong>
             <span v-if="nganHang"> · TK {{ nganHang.soTaiKhoan }} ({{ nganHang.chuTaiKhoan }})</span>
+            <UBadge v-if="donDemo" class="ml-1" color="error" variant="solid" size="sm" label="minh hoạ" />
           </p>
-          <div v-if="moApp.length" class="mt-3 flex flex-wrap justify-center gap-2">
+          <p v-if="donDemo" class="mt-2 text-sm font-semibold text-error">
+            Bản DEMO: không chuyển khoản. Quản trị bấm Giả lập thanh toán ở /admin/naptien để xem màn hình thành công.
+          </p>
+          <div v-if="moApp.length && !donDemo" class="mt-3 flex flex-wrap justify-center gap-2">
             <UButton v-for="a in moApp" :key="a.ten" :to="a.url" external target="_blank" size="xs" color="neutral" variant="outline" :label="a.ten" />
           </div>
           <p class="mt-3 text-sm text-muted" role="status">
@@ -188,9 +206,12 @@ const faq = computed(() => [
         <div v-else class="text-center" role="status">
           <UIcon :name="don.trang_thai === 'da_cong' ? 'i-lucide-badge-check' : 'i-lucide-info'" class="size-12 text-success" />
           <p class="mt-2 font-display text-xl font-bold">
-            {{ don.trang_thai === 'da_cong' ? 'Đã kích hoạt Thành viên!' : (TEN_TRANG_THAI_NAP[don.trang_thai] ?? don.trang_thai) }}
+            {{ don.trang_thai === 'da_cong' ? (donDemo ? 'Giả lập kích hoạt Thành viên (DEMO)' : 'Đã kích hoạt Thành viên!') : (TEN_TRANG_THAI_NAP[don.trang_thai] ?? don.trang_thai) }}
           </p>
-          <p v-if="don.trang_thai === 'da_cong'" class="text-sm text-muted">
+          <p v-if="don.trang_thai === 'da_cong' && donDemo" class="text-sm font-semibold text-error">
+            BẢN DEMO: chỉ là màn hình minh hoạ — tài khoản KHÔNG được cấp Thành viên.
+          </p>
+          <p v-else-if="don.trang_thai === 'da_cong'" class="text-sm text-muted">
             Áp dụng cho mọi Pokémon trong ≤ 30 giây, không cần đăng nhập lại.
           </p>
         </div>

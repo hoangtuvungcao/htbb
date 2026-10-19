@@ -452,7 +452,8 @@ public class Monster extends LiveActor {
                         this.vy = (byte) 0;
                         this.vx = (byte) 0;
                     } else {
-                        setMove(this.target.x + this.xadd, this.target.y + this.yadd);
+                        int[] dd = diemDuoi(this.target);
+                        setMove(dd[0], dd[1]);
                     }
                 }
                 break;
@@ -564,21 +565,45 @@ public class Monster extends LiveActor {
             this.lastDir = this.dir;
             return;
         }
-        if (this.x < i) {
-            this.x = (short) (this.x + this.speed);
-            this.dir = (short) 3;
-            return;
+        // pokemon 0.9.3: bước theo va chạm (không đi xuyên tường / nước / ra ngoài mép map)
+        if (!buocToi(i, j)) {
+            if (this.state == 7 && diQuai(i, j)) {
+                // về điểm sinh mà bị tường chắn: dịch thẳng về (điểm sinh do máy chủ đặt trên ô đi được)
+                this.x = (short) i;
+                this.y = (short) j;
+                this.state = (byte) 0;
+                this.timeLimit = Res.random(10, 20);
+            }
+            this.vy = (byte) 0;
+            this.vx = (byte) 0;
         }
-        if (this.x > i) {
-            this.x = (short) (this.x - this.speed);
-            this.dir = (short) 2;
-        } else if (this.y > j) {
-            this.y = (short) (this.y - this.speed);
-            this.dir = (short) 1;
-        } else if (this.y < j) {
-            this.dir = (short) 0;
-            this.y = (short) (this.y + this.speed);
+    }
+
+    /** Điểm pixel quái đi được trên bản đồ hiện tại (DuongDi.diQuai: cùng luật người chơi / máy chủ). */
+    public static boolean diQuai(int px, int py) {
+        return DuongDi.diQuai(Tilemap.type, Tilemap.map, Tilemap.w, Tilemap.h, px, py);
+    }
+
+    /** Một bước speed px về (tx, ty) vòng qua ô chặn; false = kẹt (không đổi vị trí). */
+    boolean buocToi(int tx, int ty) {
+        if (!DuongDi.buocQuai(Tilemap.type, Tilemap.map, Tilemap.w, Tilemap.h, this.x, this.y, tx, ty, this.speed)) {
+            return false;
         }
+        int nx = DuongDi.buocX, ny = DuongDi.buocY;
+        this.dir = (short) (nx > this.x ? 3 : nx < this.x ? 2 : ny < this.y ? 1 : 0);
+        this.x = (short) nx;
+        this.y = (short) ny;
+        return true;
+    }
+
+    /** Điểm đuổi quanh mục tiêu (lệch xadd / yadd); lệch rơi vào ô chặn thì nhắm đúng chỗ mục tiêu. */
+    int[] diemDuoi(LiveActor t) {
+        int tx = t.x + this.xadd, ty = t.y + this.yadd;
+        if (!diQuai(tx, ty)) {
+            tx = t.x;
+            ty = t.y;
+        }
+        return new int[]{tx, ty};
     }
 
     public void move() {
@@ -599,7 +624,7 @@ public class Monster extends LiveActor {
             int yu = this.y - this.speed;
             int yd = this.y + this.speed;
             int rd = LiveActor.r.nextInt(50);
-            if ((this.x >= xR && this.dir == 3) || ((this.x <= xL && this.dir == 2) || ((this.y <= yU && this.dir == 1) || ((this.y >= yD && this.dir == 0) || ((Tilemap.tileTypeAtPixel(xl, this.y, 2) && this.dir == 2) || ((Tilemap.tileTypeAtPixel(xr, this.y, 2) && this.dir == 3) || ((Tilemap.tileTypeAtPixel(this.x, yu, 2) && this.dir == 1) || ((Tilemap.tileTypeAtPixel(this.x, yd, 2) && this.dir == 0) || rd == 5)))))))) {
+            if ((this.x >= xR && this.dir == 3) || ((this.x <= xL && this.dir == 2) || ((this.y <= yU && this.dir == 1) || ((this.y >= yD && this.dir == 0) || ((!diQuai(xl, this.y) && this.dir == 2) || ((!diQuai(xr, this.y) && this.dir == 3) || ((!diQuai(this.x, yu) && this.dir == 1) || ((!diQuai(this.x, yd) && this.dir == 0) || rd == 5 || !diQuai(this.x + this.vx, this.y + this.vy))))))))) {
                 this.p3 = (short) 0;
                 this.p2 = (short) 0;
                 this.p1 = (short) 0;
@@ -632,20 +657,11 @@ public class Monster extends LiveActor {
             this.state = (byte) 0;
             return;
         }
-        if (this.x < this.xTo) {
-            this.x = (short) (this.x + this.speed);
-            this.dir = (short) 3;
-            return;
-        }
-        if (this.x > this.xTo) {
-            this.x = (short) (this.x - this.speed);
-            this.dir = (short) 2;
-        } else if (this.y > this.yTo) {
-            this.y = (short) (this.y - this.speed);
-            this.dir = (short) 1;
-        } else if (this.y < this.yTo) {
-            this.dir = (short) 0;
-            this.y = (short) (this.y + this.speed);
+        // pokemon 0.9.3: nội suy giữa các vị trí máy chủ theo va chạm; kẹt thì đặt đúng vị trí máy chủ
+        // (không tự bịa vị trí xuyên tường)
+        if (!buocToi(this.xTo, this.yTo)) {
+            this.x = this.xTo;
+            this.y = this.yTo;
         }
     }
 
@@ -661,6 +677,9 @@ public class Monster extends LiveActor {
                 this.yTo = yTo;
             } else {
                 this.yTo = (short) ((yTo - 4) + (Canvas.r.nextInt() % 8));
+                if (!diQuai(this.xTo, this.yTo)) {
+                    this.yTo = yTo;   // lệch ngẫu nhiên rơi vào ô chặn: giữ đúng vị trí máy chủ
+                }
             }
             if (this.state != 3) {
                 this.state = (byte) 2;

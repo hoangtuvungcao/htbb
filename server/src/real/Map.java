@@ -5751,7 +5751,8 @@ public class Map implements Runnable {
     // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doUsePotion(Char player, Message message) throws IOException {
-        DungVatPham.dungThuoc(this, player, message); // -> MapDungThuoc.doUsePotion, co phan hoi
+        final Map m = this;
+        HanhDongVatPham.boc(player, HanhDongVatPham.DUNG, () -> DungVatPham.dungThuoc(m, player, message)); // co phan hoi + trang thai ngay
     }
 
     public Item doCreateHoaKyLan(Char player, int idTemplate, long timeExpire) {
@@ -12186,9 +12187,9 @@ public class Map implements Runnable {
                     info = info
                             + ". Nhận thời trang Absol, ruy băng "
                             + idOptionMenu
-                            + " luong: "
+                            + " lượng: "
                             + luong[player.canReceiveGiftOffline]
-                            + " ,lk: "
+                            + ", lượng khoá: "
                             + luongk[player.canReceiveGiftOffline];
                     player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Absol", ""));
                 } else if (idMenu == 23) {
@@ -12196,9 +12197,9 @@ public class Map implements Runnable {
                     info = info
                             + ". Nhận thời trang Oricorio, ruy băng "
                             + idOptionMenu
-                            + " luong: "
+                            + " lượng: "
                             + luong[player.canReceiveGiftOffline]
-                            + " ,lk: "
+                            + ", lượng khoá: "
                             + luongk[player.canReceiveGiftOffline];
                     player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Thuý Vũ Hồng Sam", ""));
                 } else if (idMenu == 24) {
@@ -12206,9 +12207,9 @@ public class Map implements Runnable {
                     info = info
                             + ". Nhận thời trang Zoroark, ruy băng "
                             + idOptionMenu
-                            + " luong: "
+                            + " lượng: "
                             + luong[player.canReceiveGiftOffline]
-                            + " ,lk: "
+                            + ", lượng khoá: "
                             + luongk[player.canReceiveGiftOffline];
                     player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Zoroark", ""));
                 } else if (idMenu == 25) {
@@ -12216,9 +12217,9 @@ public class Map implements Runnable {
                     info = info
                             + ". Nhận thời trang Gardevoir, ruy băng "
                             + idOptionMenu
-                            + " luong: "
+                            + " lượng: "
                             + luong[player.canReceiveGiftOffline]
-                            + " ,lk: "
+                            + ", lượng khoá: "
                             + luongk[player.canReceiveGiftOffline];
                     player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được thời trang Gardevoir", ""));
                 }
@@ -15919,7 +15920,8 @@ public class Map implements Runnable {
 
     /** Lenh 29: boc ham cu - moi lan bam deu co phan hoi (xem DungVatPham). */
     void doUseItem(Char player, Message message) throws IOException {
-        DungVatPham.dung(this, player, message);
+        final Map m = this;
+        HanhDongVatPham.boc(player, HanhDongVatPham.DUNG, () -> DungVatPham.dung(m, player, message)); // dung / mac / thao + trang thai ngay
     }
 
     void doUseItemGoc(Char player, Message message) throws IOException 

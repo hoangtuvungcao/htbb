@@ -181,6 +181,8 @@ export async function napHetHanDonCu(): Promise<void> {
 }
 
 export async function napTaoDon(u: { id: number, username: string }, maGoi: string, charId: number, khoaIdem: string | null, nguon: 'web' | 'admin' = 'web', adminUser = ''): Promise<DonNap> {
+  // Demo không bao giờ tạo đơn thật trong nap_don (đơn demo nằm trong bộ nhớ — napDemo.ts).
+  if (useHtbbConfig().nap.demo) throw apiLoi(409, 'Chế độ DEMO: không tạo đơn nạp thật.', { code: 'demo' })
   return transaction(dbGame(), async (conn) => {
     if (khoaIdem) {
       // Bấm hai lần / mạng chập chờn gửi lại: trả lại đơn đã tạo, không tạo đơn mới.
@@ -255,7 +257,7 @@ export function napDonCongKhai(d: DonNap) {
 
 // ---------------------------------------------------------------- XÁC NHẬN THANH TOÁN (hàm duy nhất)
 
-export type KetQuaXacNhan = 'ok' | 'da_xu_ly' | 'khong_thay' | 'thieu_tien' | 'gd_da_dung' | 'sai_trang_thai'
+export type KetQuaXacNhan = 'ok' | 'da_xu_ly' | 'khong_thay' | 'thieu_tien' | 'gd_da_dung' | 'sai_trang_thai' | 'demo_tu_choi'
 
 /**
  * HÀM DUY NHẤT đổi đơn sang da_thanh_toan. Gọi lặp / song song an toàn:
@@ -263,6 +265,7 @@ export type KetQuaXacNhan = 'ok' | 'da_xu_ly' | 'khong_thay' | 'thieu_tien' | 'g
  *   - UNIQUE (nha_cung_cap, ma_gd_ncc): một giao dịch ngân hàng chỉ xác nhận được một đơn;
  *   - sổ cái UNIQUE 'tt:<mã đơn>'.
  * Thiếu tiền: KHÔNG xác nhận (ghi nhật ký, admin xử lý tay). Không bao giờ cộng lượng ở đây.
+ * CHẾ ĐỘ DEMO (HTBB_NAP_DEMO=1): luôn từ chối ('demo_tu_choi') — demo không bao giờ xác nhận / cộng gì.
  */
 export async function napXacNhanThanhToan(a: {
   maDon: string
@@ -273,6 +276,10 @@ export async function napXacNhanThanhToan(a: {
   ip?: string
   ghiChu?: string
 }): Promise<{ ketQua: KetQuaXacNhan, don: DonNap | null }> {
+  if (useHtbbConfig().nap.demo) {
+    console.warn(`[htbb] DEMO: tu choi xac nhan thanh toan ${a.maDon} (${a.nhaCungCap}, ${a.tacNhan}) - che do demo khong cong gi.`)
+    return { ketQua: 'demo_tu_choi', don: null }
+  }
   return transaction(dbGame(), async (conn) => {
     const don = await q1<DonNap>(conn, `SELECT ${NAP_DON_COT} FROM nap_don WHERE ma_don = ? LIMIT 1 FOR UPDATE`, [a.maDon])
     if (!don) return { ketQua: 'khong_thay' as const, don: null }
@@ -354,6 +361,11 @@ export async function napCapNhatWebhook(ncc: string, maGd: string, maDon: string
  */
 export async function napXuLyGiaoDich(nguonIp: H3Event | string, ncc: 'sepay' | 'casso' | 'mock', gd: GiaoDichVao): Promise<{ success: boolean, message: string, ketQua: string }> {
   const ip = typeof nguonIp === 'string' ? nguonIp : ipKhach(nguonIp)
+  if (useHtbbConfig().nap.demo) {
+    // Lớp chặn thứ hai (sau server/middleware/tat-nap.ts): demo không ghi nhận giao dịch nào.
+    console.warn(`[htbb] DEMO: bo qua giao dich ${ncc} ${gd.maGd} tu ${ip} - che do demo khong ghi nhan tien.`)
+    return { success: false, message: 'demo mode: ignored', ketQua: 'demo_tu_choi' }
+  }
   const maDon = maDonCuaGiaoDich(gd)
   const noiDung = `${gd.maThanhToan ? `[code ${gd.maThanhToan}] ` : ''}${gd.noiDung}`
   const moi = await napGhiWebhook(ncc, gd.maGd, true, gd.soTien, noiDung, maDon ?? '', 'dang_xu_ly', ip)

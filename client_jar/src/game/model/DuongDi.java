@@ -60,6 +60,62 @@ public final class DuongDi {
         return (t & 2) == 2;
     }
 
+    /**
+     * Điểm pixel quái đi được (cùng luật va chạm người chơi / máy chủ com.htbb.pokemon.DiChuyenQuai): trong bản đồ,
+     * không phải ô trống (tile 255 = vực), không phải ô cổng chuyển map, (type & 2) == 0. Chưa có bản đồ = được.
+     */
+    public static boolean diQuai(int[] type, short[] map, int w, int h, int px, int py) {
+        if (type == null || w <= 0 || h <= 0) {
+            return true;
+        }
+        if (px < 0 || py < 0) {
+            return false;
+        }
+        int x = px >> 4, y = py >> 4;
+        if (x >= w || y >= h) {
+            return false;
+        }
+        int i = y * w + x;
+        if (i >= type.length) {
+            return false;
+        }
+        if (map != null && i < map.length && (map[i] == 255 || map[i] < 0)) {
+            return false;
+        }
+        int t = type[i];
+        return t < CONG && (t & 2) == 0;
+    }
+
+    /** Kết quả buocQuai (pixel). */
+    public static int buocX, buocY;
+
+    /**
+     * Một bước tối đa sp px của quái từ (x, y) về (tx, ty): ưu tiên trục ngang như cũ, bị chặn thì đi trục dọc
+     * (vòng qua góc tường). true = có bước (buocX / buocY), false = kẹt cả hai trục (nơi gọi tự xử lý: dịch thẳng tới
+     * vị trí máy chủ / về điểm sinh, không bao giờ bước vào ô chặn).
+     */
+    public static boolean buocQuai(int[] type, short[] map, int w, int h, int x, int y, int tx, int ty, int sp) {
+        if (sp < 1) {
+            sp = 1;
+        }
+        for (int k = 0; k < 2; k++) {
+            int nx = x, ny = y;
+            if (k == 0 && x != tx) {
+                nx = x + Math.max(-sp, Math.min(sp, tx - x));
+            } else if (k == 1 && y != ty) {
+                ny = y + Math.max(-sp, Math.min(sp, ty - y));
+            } else {
+                continue;
+            }
+            if (diQuai(type, map, w, h, nx, ny)) {
+                buocX = nx;
+                buocY = ny;
+                return true;
+            }
+        }
+        return false;
+    }
+
     static boolean cong(int[] type, int w, int x, int y) {
         return type[y * w + x] >= CONG;
     }

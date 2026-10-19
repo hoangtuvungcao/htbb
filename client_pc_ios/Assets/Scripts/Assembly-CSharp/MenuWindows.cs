@@ -1351,11 +1351,11 @@ public class MenuWindows : MyScreen
 			g.setColor(25695);
 			g.fillRect(num12 + 1, num, wKhung - (x0 - 2 + 7 * wCell) - 2, num11 - 1);
 			int num13 = -24 + num11;
-			MFont.smallFontColor[0].drawString(g, Canvas.gameScr.mainChar.charXu + "$", num12 + (wKhung - (x0 - 2 + 7 * wCell)) - 4, num13 + yTr, MFont.RIGHT);
-			MFont.smallFontColor[1].drawString(g, Canvas.gameScr.mainChar.luong + "L", num12 + 2, num13 + yTr, MFont.LEFT);
+			MFont.smallFontColor[0].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.charXu) + " xu", num12 + (wKhung - (x0 - 2 + 7 * wCell)) - 4, num13 + yTr, MFont.RIGHT);
+			MFont.smallFontColor[1].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luong) + " lượng", num12 + 2, num13 + yTr, MFont.LEFT);
 			if (Canvas.gameScr.mainChar.luongKhoa > -1)
 			{
-				MFont.smallFontColor[1].drawString(g, Canvas.gameScr.mainChar.luongKhoa + "LK", num12 + (wKhung - (x0 - 2 + 7 * wCell)) / 2, num13 + yTr, MFont.CENTER);
+				MFont.smallFontColor[1].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luongKhoa) + " lượng khoá", num12 + (wKhung - (x0 - 2 + 7 * wCell)) / 2, num13 + yTr, MFont.CENTER);
 			}
 			Canvas.resetTrans(g);
 			paintTabCuaHang(g, x, y, w, h, 0);
@@ -1382,11 +1382,11 @@ public class MenuWindows : MyScreen
 			g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, num15 - wCell / 2, num18, 3);
 			g.setColor(0);
 			num18 += 20;
-			MFont.smallFontColor[0].drawString(g, Canvas.gameScr.mainChar.charXu + "$", num15 - wCell / 2, num18, MFont.LEFT);
-			MFont.smallFontColor[1].drawString(g, Canvas.gameScr.mainChar.luong + "L", 2 + xTr, num18, MFont.LEFT);
+			MFont.smallFontColor[0].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.charXu) + " xu", num15 - wCell / 2, num18, MFont.LEFT);
+			MFont.smallFontColor[1].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luong) + " lượng", 2 + xTr, num18, MFont.LEFT);
 			if (Canvas.gameScr.mainChar.luongKhoa > -1)
 			{
-				MFont.smallFontColor[1].drawString(g, Canvas.gameScr.mainChar.luongKhoa + "LK", 104 + xTr, num18, MFont.CENTER);
+				MFont.smallFontColor[1].drawString(g, TienTe.gon(Canvas.gameScr.mainChar.luongKhoa) + " lượng khoá", 104 + xTr, num18, MFont.CENTER);
 			}
 			paintHanhTrang(g, w);
 			Canvas.resetTrans(g);
@@ -2878,7 +2878,7 @@ public class MenuWindows : MyScreen
 					Canvas.startWaitDlg("Đang bán..", true);
 					list.removeElementAt(element);
 				};
-				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + gemByID.price / 5 + "$ không?", yesAction);
+				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + TienTe.chu(TienTe.XU, gemByID.price / 5) + " không?", yesAction);
 				return;
 			}
 			mVector mVector3 = new mVector();
@@ -2909,7 +2909,7 @@ public class MenuWindows : MyScreen
 					list.removeElementAt(element);
 				};
 				GemTemp gemByID3 = Res.getGemByID(item2.id);
-				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + gemByID3.price / 5 + "$ không?", yesAction2);
+				Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + TienTe.chu(TienTe.XU, gemByID3.price / 5) + " không?", yesAction2);
 				return;
 			}
 			mVector mVector4 = new mVector();
@@ -3084,7 +3084,7 @@ public class MenuWindows : MyScreen
 				Canvas.startWaitDlg("Đang bán..", true);
 				list.removeElementAt(element);
 			};
-			Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + (item5.price / 5 + item5.plus * 1000) + "$ không?", yesAction3);
+			Canvas.startYesNoDlg("Bạn có muốn bán vật phẩm này với giá " + TienTe.chu(TienTe.XU, (item5.price / 5 + item5.plus * 1000)) + " không?", yesAction3);
 		}
 	}
 

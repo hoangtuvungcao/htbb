@@ -113,6 +113,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.DungDo.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -105 trang thai server sau moi thao tac vat pham (kho trang thai client)
+        if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;
@@ -284,8 +288,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     byte magic = msg.reader().readByte();
                     byte khoa1 = 0;
                     try {
-                        khoa1 = msg.reader().readByte();
-                        break;
+                        khoa1 = msg.reader().readByte();   // pokemon: bản dịch ngược có "break" ở đây -> có byte tuỳ chọn thì bỏ qua hàm xử lý (Unity không break)
                     } catch (Exception e2) {
                     }
                     Canvas.gameScr.onEpDothu((short) 1000, idColor, lv, startIDNL, slNguyenLieu, magic, khoa1);
@@ -424,8 +427,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     byte typeCheDo = msg.reader().readByte();
                     byte khoa = 0;
                     try {
-                        khoa = msg.reader().readByte();
-                        break;
+                        khoa = msg.reader().readByte();   // pokemon: bản dịch ngược có "break" ở đây -> có byte tuỳ chọn thì bỏ qua hàm xử lý (Unity không break)
                     } catch (Exception e3) {
                     }
                     Canvas.gameScr.onCheDo(nameItem, idItem, listMineral, typeCheDo, khoa);
@@ -655,8 +657,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     short price1 = msg.reader().readShort();
                     byte khoa3 = 0;
                     try {
-                        khoa3 = msg.reader().readByte();
-                        break;
+                        khoa3 = msg.reader().readByte();   // pokemon: bản dịch ngược có "break" ở đây -> có byte tuỳ chọn thì bỏ qua hàm xử lý (Unity không break)
                     } catch (Exception e5) {
                     }
                     Canvas.gameScr.onKham(price1, khoa3);
@@ -1222,8 +1223,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         m.name = msg.reader().readUTF();
                         m.wName = (short) Font.smallFont.getWidth(m.name);
                         int i37 = msg.reader().readInt();
-                        m.realHP = i37;
-                        m.hp = i37;
+                        game.pokemon.MauPP.datHp(m, i37);   // pokemon: một nguồn HP (hủy đồng bộ trễ cũ)
                         m.maxhp = msg.reader().readInt();
                         m.mp = msg.reader().readInt();
                         m.maxmp = msg.reader().readInt();
@@ -1362,6 +1362,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     Canvas.gameScr.mainChar.idImgAVT = idBigavt;
                     Canvas.gameScr.mainChar.nFrameAVT = nframeAVT;
                     Canvas.gameScr.onMainCharInfo();
+                    game.pokemon.TrangThaiNguoiChoi.doi(game.pokemon.TrangThaiNguoiChoi.TAT_CA);
                     break;
                 case 4:
                     // Sửa lỗi dịch ngược: các "break;" sau từng trường tuỳ chọn (idchar / isnewmonster / isThanthu)
@@ -1924,6 +1925,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     }
                     Canvas.gameScr.mainChar.luongKhoa = msg.reader().readInt();
                     Canvas.gameScr.onCharInventory(charxu, potion, items, animal, type_inventory);
+                    game.pokemon.TrangThaiNguoiChoi.doi(type_inventory == 0 ? game.pokemon.TrangThaiNguoiChoi.TIEN | game.pokemon.TrangThaiNguoiChoi.TUI : game.pokemon.TrangThaiNguoiChoi.TUI);
                     break;
                 case 17:
                     try {
@@ -2003,25 +2005,18 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     }
                     item6.plusTemplate = msg.reader().readByte();
                     try {
-                        item6.lock = msg.reader().readByte();
-                        break;
+                        item6.lock = msg.reader().readByte();   // pokemon: bản dịch ngược có "break" ở đây -> có byte tuỳ chọn thì bỏ qua hàm xử lý (Unity không break)
                     } catch (Exception e32) {
                     }
                     Canvas.gameScr.onItemInfo(item6);
                     break;
-                case 22:
-                    short userId = msg.reader().readShort();
-                    byte potionType = msg.reader().readByte();
-                    short valueAdd = msg.reader().readShort();
-                    int valueNew = msg.reader().readInt();
-                    int ishp = 0;
-                    try {
-                        ishp = msg.reader().readByte();
-                        break;
-                    } catch (Exception e33) {
-                    }
-                    Canvas.gameScr.onUsePotion(userId, potionType, valueAdd, valueNew, ishp);
+                case 22: {
+                    // pokemon: bản dịch ngược có "break" trong try đọc cờ isHP -> server gửi cờ (bình HP) thì
+                    // onUsePotion KHÔNG chạy, HP trên HUD cũ tới gói định kỳ sau (game.pokemon.MauPP)
+                    int[] v22 = game.pokemon.MauPP.doc22(msg.reader());
+                    Canvas.gameScr.onUsePotion((short) v22[0], (byte) v22[1], (short) v22[2], v22[3], v22[4]);
                     break;
+                }
                 case 23:
                     byte npcActionType = msg.reader().readByte();
                     if (npcActionType == 0) {
@@ -2056,8 +2051,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         }
                         try {
                             ItemInInventory.typeItemBuy = (byte) 2;
-                            ItemInInventory.typeItemBuy = msg.reader().readByte();
-                            break;
+                            ItemInInventory.typeItemBuy = msg.reader().readByte();   // pokemon: bản dịch ngược có "break" ở đây -> có byte tuỳ chọn thì bỏ qua hàm xử lý (Unity không break)
                         } catch (Exception e34) {
                         }
                         Canvas.gameScr.onNPCSellItem(itemsSell);
@@ -2384,6 +2378,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                                 GameMidlet.instance.notifyDestroyed();
                             }
                         };
+                        if (game.pokemon.MenuNguCanh.bat()) {
+                            game.pokemon.HopXacNhan.hoi("Xác nhận", message, "Mở", actionOpenURL, null);
+                            break;
+                        }
                         Canvas.msgdlg.isIcon = false;
                         Canvas.msgdlg.setInfo(message, new Command("OK", actionOpenURL), new Command("", actionOpenURL), new Command("Đóng", new IAction() {
                             @Override
@@ -2505,8 +2503,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     short price = msg.reader().readShort();
                     byte khoa2 = 0;
                     try {
-                        khoa2 = msg.reader().readByte();
-                        break;
+                        khoa2 = msg.reader().readByte();   // pokemon: bản dịch ngược có "break" ở đây -> có byte tuỳ chọn thì bỏ qua hàm xử lý (Unity không break)
                     } catch (Exception e45) {
                     }
                     Canvas.gameScr.onImbue(price, khoa2);

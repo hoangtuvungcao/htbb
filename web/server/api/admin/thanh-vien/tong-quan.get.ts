@@ -12,5 +12,7 @@ export default defineAdminHandler(async () => {
     chucNang: TV_CHUC_NANG,
     thongKe: coBangTv ? await tvThongKe() : null,
     daCoGiayPhep: useHtbbConfig().nap.daCoGiayPhep,
+    demo: useHtbbConfig().nap.demo,
+    demoChiAdmin: useHtbbConfig().nap.demoChiAdmin,
   }
 })

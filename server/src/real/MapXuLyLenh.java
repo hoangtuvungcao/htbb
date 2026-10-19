@@ -752,7 +752,7 @@ class MapXuLyLenh {
                 map.doUsePotion(player, message);
                 break;
             case 24:
-                map.doBuyItem(player, message);
+                HanhDongVatPham.boc(player, HanhDongVatPham.MUA, () -> map.doBuyItem(player, message));
                 break;
             // Truoc day dong nay bi comment -> server khong xu ly chat (lenh 27) chut nao:
             // nguoi choi khong chat duoc cho nhau (client chi tu hien lai cau minh vua go),
@@ -761,7 +761,7 @@ class MapXuLyLenh {
                 map.doChat(player, message);
                 break;
             case 28:
-                map.doSellItem(player, message);
+                HanhDongVatPham.boc(player, HanhDongVatPham.BAN, () -> map.doSellItem(player, message));
                 break;
             case 29:
                 map.doUseItem(player, message);
@@ -797,13 +797,13 @@ class MapXuLyLenh {
                 player.talkWithNpcResponse(message.dis.readByte(), message.dis.readByte(), message.dis.readShort());
                 break;
             case 61:
-                map.doGiveItemToGround(player, message);
+                HanhDongVatPham.boc(player, HanhDongVatPham.VUT, () -> map.doGiveItemToGround(player, message));
                 break;
             case 62:
                 map.doRequestSellItemMarket(player, message);
                 break;
             case 66:
-                MapMuaBan.doTrade(map, player, message, 0);
+                HanhDongVatPham.boc(player, HanhDongVatPham.GIAO_DICH, () -> MapMuaBan.doTrade(map, player, message, 0));
                 break;
             case 67:
                 map.doSendKiller(player);
@@ -836,7 +836,7 @@ class MapXuLyLenh {
                 MapEpNgoc.doFinishImbue(map, player, message.dis.readByte());
                 break;
             case 78:
-                map.doSellGemItem(player, message);
+                HanhDongVatPham.boc(player, HanhDongVatPham.BAN, () -> map.doSellGemItem(player, message));
                 break;
             case 79:
                 map.doMove2Map(player, message.dis.readByte(), message.dis.readShort());

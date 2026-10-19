@@ -3515,7 +3515,7 @@ class MapDoMenu {
                                             + " sang "
                                             + he[it.heItem]
                                             + "_"
-                                            + (player.type_luong_doi_he != 0 ? giaLock + "lk" : gia + "l"),
+                                            + (player.type_luong_doi_he != 0 ? giaLock + " lượng khoá" : gia + " lượng"),
                                             "c5"
                                     );
                             player.reCheckAtb5();

@@ -702,7 +702,7 @@ public class WindowInfoScr extends Screen {
                             gt = (GemTemp) ds.elementAt(i);
                         }
                         ten[i] = gt.name;
-                        gia[i] = gt.price + (gt.typeMoney == 0 ? " lượng" : " xu");
+                        gia[i] = game.pokemon.TienTe.chu(gt.typeMoney == 0 ? game.pokemon.TienTe.LUONG : game.pokemon.TienTe.XU, gt.price);
                         co[i] = -1;
                     }
                     datMart(ten, gia, co);
@@ -1215,7 +1215,7 @@ public class WindowInfoScr extends Screen {
             if (WindowInfoScr.this.listEp.size() < 3) {
                 Canvas.startOKDlg("Bạn phải ép ít nhất 3 vật phẩm.");
             } else {
-                Canvas.startYesNoDlg(new StringBuffer("Bạn phải mất ").append(Canvas.getMoneys(WindowInfoScr.this.prizeImbue)).append("Xu để hợp.").toString(), new IAction() {
+                Canvas.startYesNoDlg(new StringBuffer("Bạn phải mất ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, WindowInfoScr.this.prizeImbue)).append(" để hợp.").toString(), new IAction() {
                     @Override
                     public void perform() {
                         GameService.gI().epNgoc(1, WindowInfoScr.this.listEp);
@@ -1437,7 +1437,7 @@ public class WindowInfoScr extends Screen {
         public void perform() {
             if (Canvas.gameScr.mainChar.itemImbue != null) {
                 if (Canvas.gameScr.mainChar.hadPutItemImbue()) {
-                    Canvas.startYesNoDlg(new StringBuffer("Bạn phải mất ").append(WindowInfoScr.this.prizeImbue).append(" ").append("xu").append(" để luyện.").toString(), new IAction() {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn phải mất ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, WindowInfoScr.this.prizeImbue)).append(" để luyện.").toString(), new IAction() {
                         @Override
                         public void perform() {
                             if (Canvas.gameScr.mainChar.charXu < WindowInfoScr.this.prizeImbue) {
@@ -2798,15 +2798,8 @@ public class WindowInfoScr extends Screen {
             if (Canvas.h < 196) {
                 hMoney = this.hk - 24;
             }
-            Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.charXu)).append("$").toString(), this.rk - 23, hMoney, 1);
-            Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luong)).append("l").toString(), 5, hMoney, 0);
-            if (Canvas.gameScr.mainChar.luongKhoa > -1) {
-                if (Canvas.h > 190) {
-                    Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 63 + dl, this.hk - 20, 2);
-                } else {
-                    Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 5, 28, 0);
-                }
-            }
+            // pokemon: biểu tượng tiền (lượng trái, lượng khoá giữa, xu phải) thay "l" / "lk" / "$"; chạm = chú thích
+            game.pokemon.TienTe.veHangTien(g, 5, 63 + dl, this.rk - 16, hMoney - 2, Font.smallFontColor[0]);
         }
         // pokemon: mũi tên đổi tab vàng viền tối
         g.setColor(game.pokemon.GiaoDien.VIEN);
@@ -3954,7 +3947,7 @@ public class WindowInfoScr extends Screen {
                     public void perform() {
                         GemTemp g = Res.getShopByID(shop.id);
                         String itemInfo = ItemInInventory.setTemp(g.name, "0");
-                        WindowInfoScr.this.setShowText(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(g.decript, "0")).toString())).append(ItemInInventory.setTemp(new StringBuffer("Giá mua: ").append(g.price).append(" ").append(g.typeMoney == 0 ? "lượng" : "xu").toString(), "0")).toString(), (ii % WindowInfoScr.this.numW) * 18, (ii / WindowInfoScr.this.numW) * 18);
+                        WindowInfoScr.this.setShowText(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(g.decript, "0")).toString())).append(ItemInInventory.setTemp(new StringBuffer("Giá mua: ").append(game.pokemon.TienTe.chu(g.typeMoney == 0 ? game.pokemon.TienTe.LUONG : game.pokemon.TienTe.XU, g.price)).toString(), "0")).toString(), (ii % WindowInfoScr.this.numW) * 18, (ii / WindowInfoScr.this.numW) * 18);
                     }
                 }) {
                     @Override
@@ -4036,7 +4029,7 @@ public class WindowInfoScr extends Screen {
                         if (aa == WindowInfoScr.this.selected) {
                             final GemTemp item = (GemTemp) Res.shopTemplate.elementAt(i);
                             GemTemp tg = Res.getShopByID(item.id);
-                            String hoi = tg == null ? "Bạn có muốn mua vật phẩm này không ?" : new StringBuffer("Mua ").append(tg.name).append("? Giá: ").append(tg.price).append(tg.typeMoney == 0 ? " lượng" : " xu").toString();
+                            String hoi = tg == null ? "Bạn có muốn mua vật phẩm này không ?" : new StringBuffer("Mua ").append(tg.name).append("? Giá: ").append(game.pokemon.TienTe.chu(tg.typeMoney == 0 ? game.pokemon.TienTe.LUONG : game.pokemon.TienTe.XU, tg.price)).toString();
                             Canvas.startYesNoDlg(hoi, new IAction() {
                                 @Override
                                 public void perform() {
@@ -4260,7 +4253,7 @@ public class WindowInfoScr extends Screen {
         GemTemp g = Res.getShopByID(id);
         String itemInfo = new StringBuffer(String.valueOf(ItemInInventory.setTemp(g.name, "0"))).append(ItemInInventory.setTemp(g.decript, "0")).toString();
         if (this.isSell) {
-            itemInfo = new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(new StringBuffer("Giá bán lại: ").append(Canvas.getMoneys(g.price / 5)).toString(), "0")).toString();
+            itemInfo = new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(new StringBuffer("Giá bán lại: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, g.price / 5)).toString(), "0")).toString();
         }
         setShowText(itemInfo, (count % this.numW) * 18, (count / this.numW) * 18);
     }
@@ -4336,7 +4329,7 @@ public class WindowInfoScr extends Screen {
             if (inde2 < size2) {
                 final GemTemplate item = (GemTemplate) MainChar.gemItemKhoa.elementAt(inde2);
                 if (this.isSell) {
-                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(Res.getGemByID(item.id).price / 5).append("$ không?").toString(), new IAction() {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, Res.getGemByID(item.id).price / 5)).append(" không?").toString(), new IAction() {
                         @Override
                         public void perform() {
                             GameService.gI().sellGemItem(item.rID, (byte) 1);
@@ -4366,7 +4359,7 @@ public class WindowInfoScr extends Screen {
             if (inde3 < size3) {
                 final GemTemplate item2 = (GemTemplate) MainChar.gemItem.elementAt(inde3);
                 if (this.isSell) {
-                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(Res.getGemByID(item2.id).price / 5).append("$ không?").toString(), new IAction() {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, Res.getGemByID(item2.id).price / 5)).append(" không?").toString(), new IAction() {
                         @Override
                         public void perform() {
                             GameService.gI().sellGemItem(item2.rID, (byte) 0);
@@ -4517,7 +4510,7 @@ public class WindowInfoScr extends Screen {
                     return;
                 }
                 ItemTemplate it2 = Res.getItem(item3.charClazz, item3.idTemplate);
-                Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append((it2.price / 5) + (it2.plus * 1000)).append("$ không?").toString(), new IAction() {
+                Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, (it2.price / 5) + (it2.plus * 1000))).append(" không?").toString(), new IAction() {
                     @Override
                     public void perform() {
                         GameService.gI().sellItem(item3.itemID);
@@ -4983,16 +4976,17 @@ public class WindowInfoScr extends Screen {
                 return;
             }
             if (it2.ndayLoan == 0) {
-                str = new StringBuffer("Bạn có muốn mua ").append(it2.name).append(", Giá: ").append(it2.price).append("$ không?").toString();
+                str = new StringBuffer("Bạn có muốn mua ").append(it2.name).append(", Giá: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, it2.price)).append(" không?").toString();
             } else {
                 str = new StringBuffer("Bạn có muốn thuê ").append(it2.name).append(", Giá: ").append(it2.price).append("Lượng không?").toString();
             }
             Canvas.startYesNoDlg(str, new IAction() {
                 @Override
                 public void perform() {
-                    Canvas.gameScr.mainChar.charXu -= (long) it2.price;
+                    // pokemon: gửi mua NGAY (trước: trừ xu + báo "Đã mua" ở client, gom tới lúc đóng cửa hàng mới gửi)
+                    // - server trả túi / xu (16, -105) và thông báo "Đã mua X (−giá)" hoặc lý do không mua được
                     WindowInfoScr.this.readyBuy.addElement(item);
-                    Canvas.startOKDlg("Đã mua. Món đồ đang ở trong hành trang.", false);
+                    WindowInfoScr.this.doBuyItem();
                 }
             });
         }
@@ -5059,7 +5053,7 @@ public class WindowInfoScr extends Screen {
                     WindowInfoScr.this.setShowText("Hết tiền", (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
                     return;
                 }
-                String string = new StringBuffer("Bạn có muốn mua ").append(number).append(" ").append(this.val$g.name).append(", Giá: ").append(this.val$g.price * number).append(this.val$g.typeMoney == 0 ? "$" : "lượng").append(" không?").toString();
+                String string = new StringBuffer("Bạn có muốn mua ").append(number).append(" ").append(this.val$g.name).append(", Giá: ").append(game.pokemon.TienTe.chu(this.val$g.typeMoney == 0 ? game.pokemon.TienTe.XU : game.pokemon.TienTe.LUONG, this.val$g.price * number)).append(" không?").toString();
                 final GemTemp gemTemp = this.val$selectedGemItem;
                 final int i = this.val$numm;
                 final GemTemp gemTemp2 = this.val$g;
@@ -5087,12 +5081,7 @@ public class WindowInfoScr extends Screen {
                             ge.number = (short) number;
                             WindowInfoScr.this.readyBuy.addElement(ge);
                         }
-                        if (gemTemp2.typeMoney == 0) {
-                            Canvas.gameScr.mainChar.charXu -= (long) (gemTemp2.price * number);
-                        } else {
-                            Canvas.gameScr.mainChar.luong -= gemTemp2.price * number;
-                        }
-                        Canvas.startOKDlg("Đã mua. Món đồ đang ở trong hành trang.");
+                        WindowInfoScr.this.doBuyItem();   // pokemon: gửi ngay, tiền / túi / thông báo do server
                     }
                 });
             } catch (Exception e) {
@@ -5111,7 +5100,7 @@ public class WindowInfoScr extends Screen {
                 this.list.addElement(new Command("", new IAction() {
                     @Override
                     public void perform() {
-                        String str = new StringBuffer(String.valueOf(ItemInInventory.setTemp(gem.name, "0"))).append(ItemInInventory.setTemp(gem.decript, "0")).append(ItemInInventory.setTemp(new StringBuffer("Giá: ").append(gem.price).append(gem.typeMoney == 0 ? " xu" : " lượng").toString(), "0")).toString();
+                        String str = new StringBuffer(String.valueOf(ItemInInventory.setTemp(gem.name, "0"))).append(ItemInInventory.setTemp(gem.decript, "0")).append(ItemInInventory.setTemp(new StringBuffer("Giá: ").append(game.pokemon.TienTe.chu(gem.typeMoney == 0 ? game.pokemon.TienTe.XU : game.pokemon.TienTe.LUONG, gem.price)).toString(), "0")).toString();
                         WindowInfoScr.this.setShowText(str, (ii % WindowInfoScr.this.numW) * 18, (ii / WindowInfoScr.this.numW) * 18);
                     }
                 }) {
@@ -5153,25 +5142,11 @@ public class WindowInfoScr extends Screen {
             if (WindowInfoScr.this.setMaxxreadyBuy()) {
                 return;
             }
-            ItemInInventory item = (ItemInInventory) Canvas.gameScr.shop.elementAt(WindowInfoScr.this.selected);
-            int num = 0;
-            int aa = -1;
-            if (WindowInfoScr.this.readyBuy.size() > 0) {
-                int size0 = WindowInfoScr.this.readyBuy.size();
-                for (int i = 0; i < size0; i++) {
-                    ItemInInventory ita = (ItemInInventory) WindowInfoScr.this.readyBuy.elementAt(i);
-                    if (ita.potionType == item.potionType) {
-                        num = item.number;
-                        aa = i;
-                        break;
-                    }
-                }
-            }
-            if (aa == -1) {
-                aa = WindowInfoScr.this.readyBuy.size();
-                WindowInfoScr.this.readyBuy.addElement(item);
-            }
-            if (num + Canvas.gameScr.mainChar.potions[item.potionType] >= 999) {
+            final ItemInInventory item = (ItemInInventory) Canvas.gameScr.shop.elementAt(WindowInfoScr.this.selected);
+            // pokemon: không cho món của CỬA HÀNG vào readyBuy trước khi chọn số lượng (bản cũ: huỷ hộp số lượng vẫn để
+            // món đó trong readyBuy -> đóng cửa hàng là mua; số lượng cộng dồn vào chính món của cửa hàng -> lần mua sau
+            // gửi số cũ + mới). Mỗi lần xác nhận gửi NGAY một gói mua đúng N bình.
+            if (Canvas.gameScr.mainChar.potions[item.potionType] >= 999) {
                 WindowInfoScr.this.setShowText("MAX: 999", (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
                 return;
             }
@@ -5180,14 +5155,13 @@ public class WindowInfoScr extends Screen {
                 WindowInfoScr.this.setShowText("Hết tiền", (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
                 return;
             }
-            final int bb = aa;
             Canvas.inputDlg.setInfo("Số lượng: ", new IAction() {
                 @Override
                 public void perform() {
                     try {
                         int number = Integer.parseInt(Canvas.inputDlg.tfInput.getText());
-                        if (number < 0) {
-                            Canvas.startOKDlg("Không được nhập số âm.");
+                        if (number <= 0) {
+                            Canvas.startOKDlg("Số lượng phải lớn hơn 0.");
                             return;
                         }
                         if (number > 120) {
@@ -5195,22 +5169,25 @@ public class WindowInfoScr extends Screen {
                             return;
                         }
                         final int soMua = number;
-                        final ItemInInventory item2 = (ItemInInventory) WindowInfoScr.this.readyBuy.elementAt(bb);
                         String tenThuoc = "";
                         try {
-                            tenThuoc = MainChar.listPotion[item2.potionType].name;
+                            tenThuoc = MainChar.listPotion[item.potionType].name;
                         } catch (Throwable e) {
                         }
                         // pokemon: xác nhận kèm TỔNG tiền kiểu Poké Mart
                         Canvas.startYesNoDlg(new StringBuffer("Mua ").append(soMua).append(" ").append(tenThuoc).append("? Tổng: ").append((long) soMua * price).append(" xu").toString(), new IAction() {
                             @Override
                             public void perform() {
-                                item2.number = (short) (item2.number + soMua);
-                                Canvas.gameScr.mainChar.charXu -= (long) price * soMua;
+                                ItemInInventory mua = new ItemInInventory();
+                                mua.potionType = item.potionType;
+                                mua.number = (short) soMua;
+                                Vector v = new Vector();
+                                v.addElement(mua);
+                                GameService.gI().buyPotion(v);   // xu / số bình / "Đã mua X ×N (−giá)" do server trả
                                 Canvas.endDlg();
                                 WindowInfoScr.this.countPop = 0;
                                 WindowInfoScr.this.closeText();
-                                WindowInfoScr.this.setShowText(item2.getTemplateDescription(), (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
+                                WindowInfoScr.this.setShowText(item.getTemplateDescription(), (WindowInfoScr.this.selected % WindowInfoScr.this.numW) * 18, (WindowInfoScr.this.selected / WindowInfoScr.this.numW) * 18);
                             }
                         });
                     } catch (Exception e) {

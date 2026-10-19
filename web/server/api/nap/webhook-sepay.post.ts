@@ -12,6 +12,12 @@
  */
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Content-Type', 'application/json; charset=utf-8')
+  if (useHtbbConfig().nap.demo) {
+    // Lớp chặn thứ hai sau server/middleware/tat-nap.ts: demo KHÔNG ghi nhận tiền.
+    napDemoGhiWebhook(event, event.path.split('?')[0] ?? '')
+    setResponseStatus(event, 403)
+    return { success: false, message: 'demo mode: webhook ignored' }
+  }
   const apiKey = useHtbbConfig().nap.sepayApiKey
   if (apiKey === '') {
     setResponseStatus(event, 503)

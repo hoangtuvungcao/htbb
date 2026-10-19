@@ -5,6 +5,11 @@
 import type { DonNap } from '../../utils/napTien'
 
 export default defineEventHandler(async (event) => {
+  if (napDemoBat()) {
+    const u = await napDemoRequireUser(event)
+    const d = napDemoDonCuaToi(u.id, str(getQuery(event).ma_don).toUpperCase())
+    return { trang_thai: d.trang_thai, cong_luc: d.cong_luc, demo: true }
+  }
   const u = await requireUser(event)
   const maDon = str(getQuery(event).ma_don).toUpperCase()
   let don: DonNap | null = null

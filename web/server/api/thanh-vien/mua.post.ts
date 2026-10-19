@@ -5,6 +5,13 @@
 import { TV_MA_GOI } from '../../utils/thanhVienThuan'
 
 export default defineEventHandler(async (event) => {
+  if (napDemoBat() && napDemoXem(napDemoTenNguoiXem(event))) {
+    // DEMO: đơn Thành viên chỉ trong bộ nhớ — không cấp Thành viên, không ghi tv_* / nap_*.
+    const u = await napDemoRequireUser(event)
+    const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
+    const don = napDemoKho().tao(u, await napDemoGoiThanhVien(), '', khoaIdemHopLe(body?.khoa_idem))
+    return { ma_don: don.ma_don, so_tien: don.so_tien, demo: true }
+  }
   const u = await requireUser(event)
   if (!(await napCoBang()) || !(await tvCoBang())) tvThieuBang()
   const ban = await tvBanDuoc()

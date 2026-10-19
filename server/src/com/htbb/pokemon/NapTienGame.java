@@ -654,7 +654,7 @@ public final class NapTienGame implements Runnable {
             return;
         }
         final String[] menu = {
-            "Lượng: " + p.getLuong() + (no > 0 ? " (nợ thu hồi " + no + ")" : ""),
+            "Số dư: " + TienTeChu.chu(TienTeChu.LUONG, p.getLuong()) + (no > 0 ? " (nợ thu hồi " + TienTeChu.chu(TienTeChu.LUONG, no) + ")" : ""),
             "Cửa hàng lượng",
             the,
             ve,

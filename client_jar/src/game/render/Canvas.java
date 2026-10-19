@@ -231,6 +231,8 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 if (isVirTualKey) {
                     virKey.update();
                 }
+                // pokemon: cú chạm trúng điều khiển đã đăng ký lúc vẽ (VungCham) - chạy trước, nuốt cú chạm
+                game.pokemon.VungCham.xuLy();
                 if (menu.showMenu) {
                     menu.updateMenuKey();
                     menu.updateMenu();
@@ -655,6 +657,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
 
     protected void paint(Graphics g) {
         game.render.screen.Font.nenSang = false;
+        game.pokemon.VungCham.khungMoi();
         try {
             if (currentScreen != null) {
                 currentScreen.paint(g);
@@ -663,13 +666,17 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 game.pokemon.HopThoaiDuoi.ve(g);   // pokemon: hộp thoại NPC đáy màn
             }
             if (currentDialog != null) {
+                game.pokemon.VungCham.lop(1);
                 currentDialog.paint(g);
             }
             if (menu.showMenu) {
+                game.pokemon.VungCham.lop(2);
                 menu.paintMenu(g);
             }
             game.pokemon.DungDo.ve(g);   // pokemon: kết quả dùng vật phẩm (thông báo nhanh, mọi màn)
+            game.pokemon.TienTe.veGoiY(g);   // pokemon: chú thích biểu tượng tiền (chạm biểu tượng)
             if (isLoad) {
+                game.pokemon.VungCham.lop(3);   // màn tải phủ: không điều khiển nào bên dưới nhận chạm
                 resetTrans(g);
                 // pokemon: màn tải = trời xanh + đồi cỏ, biển tên game, Poké Ball lắc chờ
                 {
@@ -707,6 +714,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         }
         resetTrans(g);
         AutoGuard.paint(g);
+        game.pokemon.VungCham.khungXong();
     }
 
     public static int abs(int i) {
@@ -718,6 +726,19 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     public static void startYesNoDlgPutArr(String info, String[] arr, IAction yesAction, IAction noAction) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            // pokemon (APK / PC): hộp xác nhận chung, danh sách nối thành một đoạn
+            StringBuffer sb = new StringBuffer(info == null ? "" : info.trim());
+            if (arr != null) {
+                for (int i = 0; i < arr.length; i++) {
+                    if (arr[i] != null && arr[i].length() > 0) {
+                        sb.append(sb.length() > 0 ? " " : "").append(arr[i].trim());
+                    }
+                }
+            }
+            game.pokemon.HopXacNhan.hoi("Xác nhận", sb.toString(), "Đồng ý", yesAction, noAction);
+            return;
+        }
         msgdlg.isIcon = false;
         msgdlg.setInfoArr(info, arr, new game.model.Command("Có", yesAction), new game.model.Command("", yesAction), new game.model.Command("Không", noAction));
         msgdlg.show();
@@ -757,6 +778,11 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     public static void startYesNoDlg(String info, IAction yesAction, IAction noAction) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            // pokemon (APK / PC): hộp xác nhận chung - hai nút to, chính bên phải
+            game.pokemon.HopXacNhan.hoi("Xác nhận", info, "Đồng ý", yesAction, noAction);
+            return;
+        }
         msgdlg.isIcon = false;
         msgdlg.setInfo(info, new game.model.Command("Có", yesAction), new game.model.Command("", yesAction), new game.model.Command("Không", noAction));
         msgdlg.show();
@@ -802,6 +828,10 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     public static void startYesNoDlg(String info, IAction yesAction) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.HopXacNhan.hoi("Xác nhận", info, "Đồng ý", yesAction, null);
+            return;
+        }
         msgdlg.isIcon = false;
         msgdlg.setInfo(info, new game.model.Command("Có", yesAction), new game.model.Command("", yesAction), new game.model.Command("Không", new IAction() {
             @Override

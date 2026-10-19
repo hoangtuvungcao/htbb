@@ -7625,6 +7625,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 return; // hop thoai da gop vao thong bao tong ket
             }
         }
+        m = HanhDongVatPham.qua(this, m); // dang mua / ban / dung...: ghi nhan da noi / da gui tui (HanhDongVatPham)
         if (this.session != null) {
             this.session.sendMessage(m);
         }

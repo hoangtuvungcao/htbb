@@ -23,9 +23,8 @@ import java.util.ArrayDeque;
 /**
  * Cầu nối MIDP <-> Android cho bản APK Huyền Thoại Bảo Bối (code game = code bản jar J2ME).
  *
- * - CAMERA CỐ ĐỊNH (KhungCoDinh): giao diện logic luôn 640x360, thế giới phóng đúng 2 (vùng nhìn 320x180 px
- *   thế giới) trên mọi máy - không phóng to / thu nhỏ. Khung phóng hệ số nguyên khi được (720p x2, 1080p x3,
- *   1440p x4), không thì hệ số lẻ (láng giềng gần nhất); phần dư là viền theo chủ đề (không đen).
+ * - CAMERA PHỦ KÍN CÔNG BẰNG (KhungCoDinh): phóng cover đều hai chiều, giao diện logic <= 640x360 mỗi chiều
+ *   (20:9 -> 640x288, 4:3 -> 480x360), thế giới phóng đúng 2 -> không ai thấy hơn 320x180 px thế giới; không viền.
  * - Một luồng sự kiện (LuongSuKien) chạy tuần tự: chạm, phím, callSerially, paint - giống máy J2ME.
  * - Khung hình vẽ vào Bitmap logic rồi đưa lên SurfaceView (lockHardwareCanvas, không lọc).
  */
@@ -73,7 +72,7 @@ public final class NenAndroid {
 
     // ---------------- kích thước ----------------
 
-    /** Khung cố định 640x360 cho cỡ vùng vẽ thật (hệ số + viền). true = cỡ logic đổi so với trước. */
+    /** Khung phủ kín cho cỡ vùng vẽ thật (logic <= 640x360 mỗi chiều, không viền). true = cỡ logic đổi so với trước. */
     public static boolean tinhKichThuoc(int w, int h) {
         if (w <= 0 || h <= 0) return false;
         KhungCoDinh k = KhungCoDinh.tinh(w, h);
@@ -84,11 +83,31 @@ public final class NenAndroid {
         tiLe = k.tiLe;
         heSo = k.heSoNguyen();
         khung = k;
-        boolean doi = rong != KhungCoDinh.LOGIC_W || cao != KhungCoDinh.LOGIC_H;
-        rong = KhungCoDinh.LOGIC_W;
-        cao = KhungCoDinh.LOGIC_H;
+        boolean doi = rong != k.logicW || cao != k.logicH;
+        rong = k.logicW;
+        cao = k.logicH;
         tinhAnToan();
+        datCoCham(k.tiLe);
         return doi;
+    }
+
+    /** px thật / dp của màn (DisplayMetrics.density) */
+    public static volatile float matDo = 2.625f;
+
+    /**
+     * Cỡ chạm tối thiểu cho vùng chạm chung (game.pokemon.VungCham): 44 dp mỗi cạnh, cách nhau 8 dp, đổi sang px logic
+     * theo mật độ màn và hệ số khung (20:9 1080p 420 dpi: 44 dp = 115 px thật = 31 px logic).
+     */
+    static void datCoCham(float tiLe) {
+        try {
+            Context c = ungDung;
+            if (c != null) matDo = c.getResources().getDisplayMetrics().density;
+        } catch (Throwable e) {
+            // giữ mặc định
+        }
+        float t = Math.max(0.1f, tiLe);
+        game.pokemon.VungCham.MIN = (int) Math.ceil(44f * matDo / t - 0.01f);
+        game.pokemon.VungCham.CACH = (int) Math.ceil(8f * matDo / t - 0.01f);
     }
 
     /** Vùng an toàn thật (px màn) từ WindowInsets (cutout + thanh hệ thống) -> px logic. */
@@ -620,11 +639,7 @@ public final class NenAndroid {
             sc.restoreToCount(sv);
         }
 
-        private final Paint pVien = new Paint();
-        private final Paint pVienNet = new Paint();
-        private int vienW = -1, vienH = -1, vienLX = -1, vienLY = -1;
-
-        /** Dịch + phóng vào khung cố định và cắt trong khung (HUD / game không tràn ra viền). */
+        /** Dịch + phóng vào khung (phủ kín màn) và cắt trong khung. */
         private void vaoKhung(android.graphics.Canvas sc) {
             KhungCoDinh k = khung;
             sc.clipRect(k.lechX, k.lechY, k.lechX + k.khungW, k.lechY + k.khungH);
@@ -632,39 +647,9 @@ public final class NenAndroid {
             sc.scale(k.tiLe, k.tiLe);
         }
 
-        /** Nền màn + viền theo chủ đề quanh khung (letterbox / pillarbox): navy đậm dần, mép khung viền vàng mờ. */
+        /** Nền màn theo chủ đề (navy) dưới khung game - khung phủ kín nên không còn viền letterbox / pillarbox. */
         private void veVien(android.graphics.Canvas sc) {
-            KhungCoDinh k = khung;
-            if (k.lechX <= 0 && k.lechY <= 0) {
-                sc.drawColor(0xFF0A1426);
-                return;
-            }
-            int W = sc.getWidth(), H = sc.getHeight();
-            if (W != vienW || H != vienH || k.lechX != vienLX || k.lechY != vienLY) {
-                vienW = W;
-                vienH = H;
-                vienLX = k.lechX;
-                vienLY = k.lechY;
-                pVien.setShader(new android.graphics.RadialGradient(W / 2f, H / 2f, Math.max(W, H) * 0.62f,
-                        new int[]{0xFF1B2D52, 0xFF0F1B33, 0xFF060C1A}, new float[]{0f, 0.55f, 1f},
-                        android.graphics.Shader.TileMode.CLAMP));
-            }
-            pVien.setStyle(Paint.Style.FILL);
-            sc.drawRect(0, 0, W, H, pVien);
-            Paint p = pVienNet;
-            p.setAntiAlias(true);
-            p.setStyle(Paint.Style.STROKE);
-            float t = Math.max(1f, k.tiLe * 0.75f);
-            p.setStrokeWidth(t);
-            p.setColor(0x66FFCB05);
-            sc.drawRect(k.lechX - t / 2, k.lechY - t / 2, k.lechX + k.khungW + t / 2, k.lechY + k.khungH + t / 2, p);
-            p.setStrokeWidth(t * 3);
-            p.setColor(0x40000000);
-            sc.drawRect(k.lechX - t * 2.5f, k.lechY - t * 2.5f, k.lechX + k.khungW + t * 2.5f, k.lechY + k.khungH + t * 2.5f, p);
-            // nền trong khung (game vẽ đè)
-            p.setStyle(Paint.Style.FILL);
-            p.setColor(0xFF0A1426);
-            sc.drawRect(k.lechX, k.lechY, k.lechX + k.khungW, k.lechY + k.khungH, p);
+            sc.drawColor(0xFF0A1426);
         }
 
         private android.graphics.Canvas khoaMat() {

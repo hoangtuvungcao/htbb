@@ -91,6 +91,22 @@ public final class Hud implements NenAndroid.LopPhu {
     public static void khoiTao() {
         nap();
         NenAndroid.ganLopPhu(I);
+        // 0.9.3: phép phóng cho giao diện mới (Pokémon to ở màn Nhân vật, icon đồ trong ô lớn)
+        game.pokemon.PhongVe.bo = new game.pokemon.PhongVe() {
+            public void bat(Graphics g, float z) {
+                // giữ vùng cắt của nơi gọi (toạ độ màn) -> quy về toạ độ đã phóng
+                int ax = g.getClipX() + g.getTranslateX(), ay = g.getClipY() + g.getTranslateY();
+                int aw = g.getClipWidth(), ah = g.getClipHeight();
+                game.render.Canvas.resetTrans(g);
+                g.datBienDoi(z, 0, 0);
+                g.setClip((int) (ax / z), (int) (ay / z), (int) Math.ceil(aw / z) + 1, (int) Math.ceil(ah / z) + 1);
+            }
+
+            public void tat(Graphics g) {
+                g.datBienDoi(1f, 0, 0);
+                game.render.Canvas.resetTrans(g);
+            }
+        };
     }
 
     // ------------------------------------------------------------------ bố cục (px logic)
@@ -101,13 +117,27 @@ public final class Hud implements NenAndroid.LopPhu {
         W = NenAndroid.rong;
         H = NenAndroid.cao;
         L = NenAndroid.anToanTrai + 6;
+        // bảng chung (game.pokemon.Bang) tránh tai thỏ / bo góc như HUD
+        game.pokemon.Bang.anTrai = NenAndroid.anToanTrai;
+        game.pokemon.Bang.anTren = NenAndroid.anToanTren;
+        game.pokemon.Bang.anPhai = NenAndroid.anToanPhai;
+        game.pokemon.Bang.anDuoi = NenAndroid.anToanDuoi;
         T = NenAndroid.anToanTren + 4;
         R = W - NenAndroid.anToanPhai - 6;
         B = H - NenAndroid.anToanDuoi - 6;
+        HudBoTri.dpLogic = dpLogic();
+        HudBoTri.L = L;
+        HudBoTri.T = T;
+        HudBoTri.R = R;
+        HudBoTri.B = B;
     }
 
     /** Thẻ bản đồ nhỏ góc phải trên: dưới hàng nút, có đầu thẻ (tên map / vùng / toạ độ) - không chồng nhau. */
-    static final int Y_THE_MM = 31, DAU_MM = 22;
+    static final int DAU_MM = 22;
+    /** đỉnh thẻ bản đồ nhỏ (dưới hàng nút trên, tính theo cỡ nút >= 44 dp) */
+    static int yTheMM() {
+        return Math.max(31, HudBoTri.yTheMiniMap());
+    }
 
     /** Vị trí + cỡ bản đồ nhỏ (GameScr.setPosMiniMap): góc phải, dưới hàng nút + đầu thẻ. */
     public static int[] oMiniMap(int wAnh, int hAnh) {
@@ -118,7 +148,7 @@ public final class Hud implements NenAndroid.LopPhu {
         mmW = w;
         mmH = h;
         mmX = R - 4 - w;
-        mmY = T + Y_THE_MM + DAU_MM;
+        mmY = T + yTheMM() + DAU_MM;
         return new int[]{mmX, mmY, w, h};
     }
 
@@ -138,7 +168,7 @@ public final class Hud implements NenAndroid.LopPhu {
     public static int dxMucTieu(int wKhung) {
         tinhKhung();
         int trai = L + RONG_THE + 6;
-        int phai = (int) (xNutTren(SO_NUT_TREN - 1) - R_NUT_TREN - 6);
+        int phai = (int) (xNutTren(SO_NUT_TREN - 1) - HudBoTri.rTren() - 6);
         int x0 = (trai + phai) / 2 - wKhung / 2;
         if (x0 + wKhung > phai) x0 = phai - wKhung;
         if (x0 < trai) x0 = trai;
@@ -185,7 +215,8 @@ public final class Hud implements NenAndroid.LopPhu {
 
     /** Hàng nút trên: canh phải (Menu sát mép phải), trên thẻ bản đồ nhỏ. */
     static float xNutTren(int i) {
-        return R - R_NUT_TREN - 1 - i * 29;
+        HudBoTri.R = R;
+        return HudBoTri.xNutTren(i);
     }
 
     static float jx0, jy0, jr;   // cần điều khiển (chỗ nghỉ)
@@ -205,34 +236,30 @@ public final class Hud implements NenAndroid.LopPhu {
         return kDpi;
     }
 
+    /** px logic mỗi dp: (dpi / 160) / tiLe - nút HUD >= 44 dp sau phép phóng phủ kín (HudBoTri). */
+    private static float dpiMay = -1;
+
+    static float dpLogic() {
+        if (dpiMay < 0) {
+            try {
+                dpiMay = NenAndroid.ungDung.getResources().getDisplayMetrics().densityDpi;
+            } catch (Throwable e) {
+                return 1f;
+            }
+        }
+        return (dpiMay / 160f) / Math.max(0.5f, NenAndroid.tiLe);
+    }
+
     static void boTri() {
         tinhKhung();
-        float kd = kDpi();
-        float s1 = GS[1] * kd;
-        float cx = R - 44 * s1 + GX[1];
-        float cy = B - 44 * s1 + GY[1];
-        dat(N_DANH, cx, cy, 31 * s1);
-        float rc = 68 * s1;
-        float[] goc = {192, 153, 116, 80};
-        int[] nut = {N_C0, N_C1, N_C3, N_C4};
-        for (int i = 0; i < 4; i++) {
-            double a = Math.toRadians(goc[i]);
-            dat(nut[i], cx + (float) Math.cos(a) * rc, cy - (float) Math.sin(a) * rc, 18.5f * s1);
-        }
-        double a = Math.toRadians(232);
-        dat(N_DOI_BO, cx + (float) Math.cos(a) * 47 * s1, cy - (float) Math.sin(a) * 47 * s1, 10 * s1);
-        dat(N_MUC_TIEU, cx + 32 * s1, cy - 100 * s1, 12.5f * s1);
-        float s2 = GS[2] * kd;
-        dat(N_HP, cx - 112 * s1 + GX[2], cy + 20 * s1 + GY[2], 14 * s2);
-        dat(N_PP, cx - 112 * s1 - 33 * s2 + GX[2], cy + 20 * s1 + GY[2], 14 * s2);
-        int[] tren = {N_MENU, N_TU_DONG, N_CHAT, N_THEM, N_CHINH};
-        for (int i = 0; i < SO_NUT_TREN; i++) dat(tren[i], xNutTren(i), T + 15, R_NUT_TREN);
-        float s3 = GS[3] * kd;
-        dat(N_CHAT_BONG, L + 13 * s3 + GX[3], B - 140 * GS[0] * kd + GY[3], 12 * s3);
-        float s0 = GS[0] * kd;
-        jr = 42 * s0;
-        jx0 = L + 58 * s0 + GX[0];
-        jy0 = B - 58 * s0 + GY[0];
+        HudBoTri.dpLogic = dpLogic();
+        HudBoTri.boTri(L, T, R, B, kDpi(), GS, GX, GY);
+        System.arraycopy(HudBoTri.NX, 0, NX, 0, SO_NUT);
+        System.arraycopy(HudBoTri.NY, 0, NY, 0, SO_NUT);
+        System.arraycopy(HudBoTri.NR, 0, NR, 0, SO_NUT);
+        jr = HudBoTri.jr;
+        jx0 = HudBoTri.jx0;
+        jy0 = HudBoTri.jy0;
     }
 
     static void dat(int n, float x, float y, float r) {
@@ -387,6 +414,7 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     public void khungMoi() {
+        tinhKhung();   // vùng an toàn cho bảng chung (game.pokemon.Bang) mỗi khung
         HdPhong.khungMoi();
         HdVe.khungMoi();
         HdKiem.khungMoi();
@@ -575,7 +603,7 @@ public final class Hud implements NenAndroid.LopPhu {
     static void veTheMiniMap(Graphics g, Canvas c, GameScr gs) {
         Image anh = game.model.Tilemap.imgMap;
         if (mmX < 0 || anh == null) return;
-        float l = mmX - 4, t = T + Y_THE_MM, r = mmX + mmW + 4, b = mmY + mmH + 4;
+        float l = mmX - 4, t = T + yTheMM(), r = mmX + mmW + 4, b = mmY + mmH + 4;
         NX[N_MINIMAP] = (l + r) / 2;
         NY[N_MINIMAP] = (t + b) / 2;
         NR[N_MINIMAP] = 0;
@@ -692,7 +720,7 @@ public final class Hud implements NenAndroid.LopPhu {
 
     static boolean trongMiniMap(float x, float y) {
         if (mmX < 0 || game.model.Tilemap.imgMap == null) return false;
-        return x >= mmX - 4 && x <= mmX + mmW + 4 && y >= T + Y_THE_MM && y <= mmY + mmH + 4;
+        return x >= mmX - 4 && x <= mmX + mmW + 4 && y >= T + yTheMM() && y <= mmY + mmH + 4;
     }
 
     /** Vùng toast đáy (tin chạy chữ): giữa cần điều khiển và cụm nút, không đè nút. [x0, x1, y] */
@@ -779,6 +807,13 @@ public final class Hud implements NenAndroid.LopPhu {
                 nenNut(c, x, y, r, 0xD8264A80, 0xE00E1D38, false);
             }
             veIcon(c, n, x, y, r);
+            if (n == N_MENU && game.pokemon.ManMenu.coChamDo()) {
+                // chấm đỏ: Menu có mục mới (nhiệm vụ, thư, điểm kỹ năng)
+                P.setColor(0xFFFFFFFF);
+                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.32f + 1f, P);
+                P.setColor(0xFFE8312B);
+                c.drawCircle(x + r * 0.7f, y - r * 0.7f, r * 0.32f, P);
+            }
         }
     }
 
@@ -1679,8 +1714,8 @@ public final class Hud implements NenAndroid.LopPhu {
         if (n == N_MINIMAP ? !trongMiniMap(x, y) : dx * dx + dy * dy > r * r) return;   // kéo ra ngoài = huỷ
         switch (n) {
             case N_MENU:
-                NenAndroid.phimNgay(0, -6);
-                NenAndroid.phimNgay(2, -6);
+                // 0.9.3: menu lưới ô to (mọi việc thường dùng = 2 chạm); ô "Khác" mở menu chữ cũ
+                game.pokemon.HanhDong.moMenu();
                 break;
             case N_TU_DONG:
                 if (!HdCau.moTuDong()) {

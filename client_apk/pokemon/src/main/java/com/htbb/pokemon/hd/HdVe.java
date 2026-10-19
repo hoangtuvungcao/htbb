@@ -599,6 +599,10 @@ public final class HdVe {
     static void phongManTruocGame(Graphics g, int x, int y, int w, int h) {
         Object m = game.render.Canvas.currentScreen;
         if (m == null || m == game.render.Canvas.gameScr || g.coPhongMan()) return;
+        // màn HD mới (bảng chung game.pokemon.Bang) tự bố cục theo cả màn: không phóng như thẻ màn trước game
+        if (m instanceof game.pokemon.ManNhanVat || m instanceof game.pokemon.ManMenu || m instanceof game.pokemon.ManBang
+                || m instanceof game.pokemon.ManCuaHang || m instanceof game.pokemon.ManNhiemVu || m instanceof game.pokemon.ManGiaoDich
+                || m instanceof game.pokemon.ManDoi) return;
         HdPhong.batDau(g, m, x, y, w, h, 1.6f, true);
     }
 

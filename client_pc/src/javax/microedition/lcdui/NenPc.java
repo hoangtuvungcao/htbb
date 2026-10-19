@@ -8,8 +8,8 @@ import java.util.ArrayDeque;
  * Cầu nối MIDP <-> máy tính (Java SE / AWT) cho bản PC Huyền Thoại Bảo Bối (code game = code bản jar J2ME),
  * cùng kiểu NenAndroid của bản APK:
  *
- * - Độ phân giải logic CỐ ĐỊNH 640x360 (mọi cửa sổ thấy cùng vùng bản đồ - phóng to không thấy thêm), vẽ vào
- *   bộ đệm 640k x 360k (k nguyên), trình bày vừa cửa sổ + viền (khungHien; ManHinh vẽ, đổi toạ độ chuột).
+ * - Độ phân giải logic PHỦ KÍN cửa sổ, <= 640x360 mỗi chiều (không ai thấy hơn vùng bản đồ tham chiếu 16:9 -
+ *   phóng to không thấy thêm), vẽ vào bộ đệm logic x k (k nguyên), trình bày phủ kín cửa sổ, không viền (khungHien).
  *   Game vẽ thẳng vào bộ đệm cỡ thật với biến đổi phóng k: ảnh pixel láng giềng gần nhất (sắc nét, không méo),
  *   chữ + khung HD khử răng cưa ở độ phân giải thật. Phần dư (< k) là viền.
  * - Một luồng sự kiện (LuongSuKien) chạy tuần tự: chuột, phím, callSerially, paint - giống máy J2ME.
@@ -49,40 +49,27 @@ public final class NenPc {
     public static final int LOGIC_H = 360;
 
     /**
-     * Khung hiển thị cho vùng vẽ (cửa sổ) W x H: {k, hienX, hienY, hienW, hienH}. Game vẽ vào bộ đệm 640k x 360k
-     * (k nguyên: ảnh pixel sắc nét, chữ / khung HD ở độ phân giải thật). Trình bày:
-     * - k = phần nguyên của tỉ lệ vừa nhất nếu phủ >= 80% (1280x720 -> x2 vừa khít, 1493x731 -> x2 + viền);
-     * - không thì vẽ k = làm tròn lên rồi thu nhỏ vừa cửa sổ (1280x646 -> vẽ x2, thu 0,897; nhỏ hơn 640x360 -> x1 thu nhỏ).
-     * Phần dư là viền (tô nền, không đen). Toạ độ chuột đổi ngược qua cùng khung (vaoBoDemX/Y).
+     * Khung PHỦ KÍN cửa sổ W x H (0.9.3 - thay hộp 16:9 + viền của 0.9.2), cùng luật với APK (KhungCoDinh):
+     * tỉ lệ s = max(W / 640, H / 360) đều hai chiều; cỡ logic = ceil(W / s) x ceil(H / s), luôn <= 640 x 360 mỗi chiều
+     * -> vùng nhìn thế giới <= 320 x 180 px (không ai thấy hơn tham chiếu 16:9: màn rộng cắt bớt chiều cao, màn cao /
+     * 16:10 / 4:3 cắt bớt chiều ngang). Không viền.
+     *
+     * Trả {k, hienX, hienY, hienW, hienH, logicW, logicH}: game vẽ vào bộ đệm logicW*k x logicH*k (k nguyên = ceil(s):
+     * ảnh pixel láng giềng gần nhất, chữ / khung HD), trình bày ở (0, 0) cỡ logic * s (tràn mép < 1 px logic), vừa khít
+     * khi s nguyên (1280x720 = x2, 1920x1080 = x3). Toạ độ chuột đổi ngược qua cùng khung (vaoBoDemX/Y).
      */
     public static int[] khungHien(int W, int H) {
-        float vua = Math.min(W / (float) LOGIC_W, H / (float) LOGIC_H);
-        int k;
-        float f;
-        if (vua < 1f) {
-            k = 1;
-            f = vua;
-        } else {
-            int kn = (int) Math.floor(vua);
-            if (kn / vua >= 0.8f) {
-                k = kn;
-                f = 1f;
-            } else {
-                k = (int) Math.ceil(vua);
-                f = vua / k;
-            }
+        float s = Math.max(W / (float) LOGIC_W, H / (float) LOGIC_H);
+        int lw = Math.min(LOGIC_W, Math.max(1, (int) Math.ceil(W / s - 1e-3f)));
+        int lh = Math.min(LOGIC_H, Math.max(1, (int) Math.ceil(H / s - 1e-3f)));
+        int k = Math.max(1, Math.min(8, (int) Math.ceil(s - 1e-3f)));
+        int hw = Math.max(1, Math.round(lw * s));
+        int hh = Math.max(1, Math.round(lh * s));
+        if (Math.abs(s - k) < 1e-3f) {
+            hw = lw * k;
+            hh = lh * k;
         }
-        if (k > 8) {
-            f = f * k / 8f;
-            k = 8;
-        }
-        int hw = Math.max(1, Math.round(LOGIC_W * k * f));
-        int hh = Math.max(1, Math.round(LOGIC_H * k * f));
-        if (f == 1f) {
-            hw = LOGIC_W * k;
-            hh = LOGIC_H * k;
-        }
-        return new int[]{k, (W - hw) / 2, (H - hh) / 2, hw, hh};
+        return new int[]{k, 0, 0, hw, hh, lw, lh};
     }
 
     /** khung trình bày trên cửa sổ (toạ độ cửa sổ): bộ đệm thatW x thatH vẽ vào hienX, hienY, hienW x hienH */
@@ -90,8 +77,8 @@ public final class NenPc {
     public static volatile int cuaSoW = 1280, cuaSoH = 720;
 
     /**
-     * Cỡ vùng vẽ (cửa sổ) đổi - phóng to / thu nhỏ / toàn màn: logic LUÔN 640x360 (mọi người thấy cùng vùng bản
-     * đồ), bộ đệm game 640k x 360k, khung trình bày khungHien. true = lần đầu (báo game sizeChanged).
+     * Cỡ vùng vẽ (cửa sổ) đổi - phóng to / thu nhỏ / toàn màn: logic phủ kín (<= 640x360 mỗi chiều), bộ đệm game
+     * logic x k, khung trình bày khungHien. true = cỡ logic đổi (báo game sizeChanged).
      */
     public static synchronized boolean tinhKichThuoc(int w, int h) {
         if (w <= 0 || h <= 0) return false;
@@ -103,14 +90,18 @@ public final class NenPc {
         hienY = kh[2];
         hienW = kh[3];
         hienH = kh[4];
-        thatW = LOGIC_W * s;
-        thatH = LOGIC_H * s;
+        thatW = kh[5] * s;
+        thatH = kh[6] * s;
         lechX = 0;
         lechY = 0;
         heSo = s;
-        boolean doi = rong != LOGIC_W || cao != LOGIC_H;
-        rong = LOGIC_W;
-        cao = LOGIC_H;
+        boolean doi = rong != kh[5] || cao != kh[6];
+        rong = kh[5];
+        cao = kh[6];
+        // cỡ chạm / bấm chuột tối thiểu cho vùng chạm chung (game.pokemon.VungCham): ~32 px thật, cách 8 px thật
+        float px = hienW / (float) Math.max(1, rong);
+        game.pokemon.VungCham.MIN = (int) Math.ceil(32f / px - 0.01f);
+        game.pokemon.VungCham.CACH = (int) Math.ceil(8f / px - 0.01f);
         return doi;
     }
 

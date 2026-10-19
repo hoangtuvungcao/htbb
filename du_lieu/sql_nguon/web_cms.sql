@@ -8,7 +8,7 @@
 -- Chay lai nhieu lan van an toan (CREATE TABLE IF NOT EXISTS, INSERT ... ON DUPLICATE KEY).
 -- SQL viet de chay ca MariaDB lan NovaDB: khong CREATE TABLE LIKE, khong UPDATE...JOIN,
 -- khong TIMESTAMPDIFF, khong ten "db.bang" cheo CSDL, khong ENUM/JSON.
--- Ban goc: du_lieu/sql_nguon/web_cms.sql cua monorepo htbb (truoc day HTBB-Web/server/sql/web_cms.sql).
+-- Ban goc: du_lieu/sql_nguon/web_cms.sql cua monorepo htbb (truoc day nam o repo HTBB-Web, thu muc server/sql).
 --
 -- Website van chay khi CHUA co cac bang nay: moi trang roi ve noi dung tinh / du lieu
 -- sinh tu CSV. Trang admin bao "chua co bang" va huong dan chay file nay.

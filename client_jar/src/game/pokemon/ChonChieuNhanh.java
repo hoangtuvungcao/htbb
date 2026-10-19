@@ -119,6 +119,15 @@ public final class ChonChieuNhanh extends Dialog {
         return chamO(o, giu);
     }
 
+    /** Mở bảng gán / chỉnh ô nhanh o (màn Nhân vật -> Kỹ năng: một chạm). */
+    public static void moO(int o) {
+        if (o < 0 || o >= OChieuNhanh.SO_O || MainChar.quickSlot == null || Canvas.gameScr == null || Canvas.gameScr.mainChar == null) {
+            return;
+        }
+        QuickSlot qs = MainChar.quickSlot[GameScr.indexTabSlot][o];
+        gI().mo(o, qs != null && qs.quickslotType >= 0);
+    }
+
     private void mo(int o, boolean coChinh) {
         this.o = o;
         this.coChinh = coChinh;

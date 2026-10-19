@@ -24,6 +24,26 @@ public final class LopPhu {
     private LopPhu() {
     }
 
+    // 0.9.3: phép phóng cho giao diện mới (Pokémon to ở màn Nhân vật, icon đồ trong ô lớn) - game.pokemon.PhongVe
+    static {
+        game.pokemon.PhongVe.bo = new game.pokemon.PhongVe() {
+            public void bat(javax.microedition.lcdui.Graphics g, float z) {
+                int ax = g.getClipX() + g.getTranslateX(), ay = g.getClipY() + g.getTranslateY();
+                int aw = g.getClipWidth(), ah = g.getClipHeight();
+                g.vaoTheGioi(z, (int) Math.ceil(game.render.Canvas.w / z) + 2, (int) Math.ceil(game.render.Canvas.h / z) + 2);
+                g.setClip((int) (ax / z), (int) (ay / z), (int) Math.ceil(aw / z) + 1, (int) Math.ceil(ah / z) + 1);
+            }
+
+            public void tat(javax.microedition.lcdui.Graphics g) {
+                g.boTheGioi();
+            }
+        };
+    }
+
+    /** Nạp lớp sớm (đặt PhongVe trước khung đầu). */
+    public static void nap() {
+    }
+
     /** Vùng bấm của khung vừa vẽ. */
     static final class Vung {
         final float x, y, w, h;
@@ -110,7 +130,10 @@ public final class LopPhu {
                 // màn chơi có HUD màn rộng: nút cài đặt nằm trong hàng nút phải trên (HudRong) -> không vẽ đè khung mục tiêu
                 boolean hudCo = game.render.Canvas.gameScr != null && game.render.Canvas.currentScreen == game.render.Canvas.gameScr
                         && game.render.screen.HudRong.bat();
-                if (!hudCo) veNutCaiDat(g, W, H, u);
+                // bảng giao diện mới (Nhân vật / Menu lưới) có nút đóng riêng góc phải trên: không vẽ nút cài đặt đè đầu bảng
+                Object mh = game.render.Canvas.currentScreen;
+                boolean bangMoi = mh != null && mh.getClass().getName().startsWith("game.pokemon.Man");
+                if (!hudCo && !bangMoi) veNutCaiDat(g, W, H, u);
             }
             if (HopNhap.mo) HopNhap.ve(g, W, H, u, dangVe);
             if (caiDatMo) veCaiDat(g, W, H, u);

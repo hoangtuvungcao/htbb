@@ -332,8 +332,8 @@ public final class NhiemVuLauDaiGame {
         p.addXu(xu, "nhiem vu tuan " + ma);
         p.addLuongLock(lk);
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-        Database.instance.saveOrtherLog("", p.charname, "nhiem vu tuan " + ma + ": " + exp + " exp " + xu + " xu " + lk + " lk", "laudai");
-        return "Nhận thưởng: " + exp + " EXP, " + xu + " xu, " + lk + " lượng khoá.";
+        Database.instance.saveOrtherLog("", p.charname, "nhiem vu tuan " + ma + ": " + exp + " exp " + xu + " xu " + lk + " lượng khoá", "laudai");
+        return "Nhận thưởng: " + com.htbb.pokemon.TienTeChu.so(exp) + " EXP, " + com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.XU, xu) + ", " + com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.LUONG_KHOA, lk) + ".";
     }
 
     /** Mo ta trang thai nhiem vu tuan cho menu. */

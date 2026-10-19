@@ -386,7 +386,10 @@ public class ShopOnline extends Screen {
         Font.normalFont[0].drawString(g, tile[this.indexMainTile], Canvas.w / 2, this.y + 10, 2);
         game.pokemon.GiaoDien.muiTab(g, (Canvas.hw - 64) + this.xRunL, this.y + 17, true);
         game.pokemon.GiaoDien.muiTab(g, Canvas.hw + 64 + this.xRunR, this.y + 17, false);
-        Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(money)).append("$").toString(), (this.x + this.w0) - 4, (this.y + this.h0) - 12, 1);
+        {   // pokemon: biểu tượng xu thay "$"; chạm = chú thích
+            int wTien = game.pokemon.TienTe.rongGia(game.pokemon.TienTe.XU, money, Font.smallFontColor[0], true);
+            game.pokemon.TienTe.veGiaCham(g, game.pokemon.TienTe.XU, money, (this.x + this.w0) - 4 - wTien, (this.y + this.h0) - 14, Font.smallFontColor[0], true);
+        }
         int i = Screen.ITEM_HEIGHT + 10;
         if (this.indexMainTile == 1) {
             int kc = Screen.ITEM_HEIGHT + 10;

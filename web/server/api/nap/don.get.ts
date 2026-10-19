@@ -6,6 +6,11 @@ import type { DonNap } from '../../utils/napTien'
 import { APP_NGAN_HANG, GIO_HET_HAN_DON, vietQrDeepLink } from '../../utils/napTienThuan'
 
 export default defineEventHandler(async (event) => {
+  if (napDemoBat()) {
+    // DEMO: không QR thật, không link mở app ngân hàng, số TK minh hoạ.
+    const u = await napDemoRequireUser(event)
+    return napDemoChiTiet(napDemoDonCuaToi(u.id, str(getQuery(event).ma_don).toUpperCase()))
+  }
   const u = await requireUser(event)
   const maDon = str(getQuery(event).ma_don).toUpperCase()
   let don: DonNap | null = null

@@ -6,6 +6,12 @@
  */
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Content-Type', 'application/json; charset=utf-8')
+  if (useHtbbConfig().nap.demo) {
+    // Lớp chặn thứ hai sau server/middleware/tat-nap.ts: demo KHÔNG ghi nhận tiền.
+    napDemoGhiWebhook(event, event.path.split('?')[0] ?? '')
+    setResponseStatus(event, 403)
+    return { success: false, message: 'demo mode: webhook ignored' }
+  }
   const secret = useHtbbConfig().nap.cassoSecret
   if (secret === '') return { success: false, message: 'Casso chưa được cấu hình' }
   const raw = (await readRawBody(event, 'utf8').catch(() => undefined)) ?? ''

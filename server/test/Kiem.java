@@ -183,8 +183,10 @@ public final class Kiem {
         KiemTuDong.chay();
         KiemTuDongKeHoach.chay(); // bo nao Tu dong danh (com.htbb.pokemon.TuDongKeHoach)
         KiemDiChuyen.chay(); // lenh 4: quy toc do (real.TocDoDiChuyen) + duoi quai / tim duong client (DuongDi)
+        KiemQuaiDiChuyen.chay(); // quai di chuyen theo va cham nguoi choi (DiChuyenQuai, moi map cMap, Monster client)
         KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
         KiemDungVatPham.chay(); // lenh 29 / 22: moi loai vat pham co tac dung + phan hoi (real.DungVatPham, -104)
+        KiemTrangThaiVatPham.chay(); // 0.9.3: trang thai -105 ngay sau mua / ban / dung / mac / thao, -104 co kieu
         KiemNgoaiHinh.chay(); // ngoai hinh trang bi tren than Pokemon (docs/thiet-ke-game.md)
         KiemThanhVien.chay();
         KiemVongLapChung.chay(); // vong lap chung thay thread-moi-khu (docs/kien-truc.md)

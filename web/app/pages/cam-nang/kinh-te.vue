@@ -18,7 +18,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
       <div class="grid gap-4 md:grid-cols-3">
         <div class="rounded-3xl glass p-5">
           <p class="flex items-center gap-2 font-display text-xl font-extrabold text-highlighted">
-            <span class="grid size-9 place-items-center rounded-full bg-pikachu-400 text-navy-950"><UIcon name="i-lucide-coins" class="size-5" /></span> Xu
+            <TienTe loai="xu" :co="36" /> Xu
           </p>
           <p class="mt-1 text-xs font-bold uppercase tracking-wide text-grass-700 dark:text-grass-400">
             Giao dịch được
@@ -29,7 +29,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
         </div>
         <div class="rounded-3xl glass p-5">
           <p class="flex items-center gap-2 font-display text-xl font-extrabold text-highlighted">
-            <span class="grid size-9 place-items-center rounded-full bg-pokeblue-400 text-white"><UIcon name="i-lucide-lock" class="size-5" /></span> Lượng khoá
+            <TienTe loai="luong_khoa" :co="36" /> Lượng khoá
           </p>
           <p class="mt-1 text-xs font-bold uppercase tracking-wide text-pokered-600 dark:text-pokered-300">
             Không giao dịch được
@@ -40,7 +40,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
         </div>
         <div class="rounded-3xl glass p-5">
           <p class="flex items-center gap-2 font-display text-xl font-extrabold text-highlighted">
-            <span class="grid size-9 place-items-center rounded-full bg-pokered-500 text-white"><UIcon name="i-lucide-gem" class="size-5" /></span> Lượng
+            <TienTe loai="luong" :co="36" /> Lượng
           </p>
           <p class="mt-1 text-xs font-bold uppercase tracking-wide text-grass-700 dark:text-grass-400">
             Giao dịch được · hiếm
