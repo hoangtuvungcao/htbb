@@ -1914,7 +1914,7 @@ public class GameScr extends Screen {
                     for (int i = 0; i < name.length; i++) {
                         final int k = i;
                         if (!name[i].equals("")) {
-                            // khoa ban do (goi -106): hang xam + o khoa, cham = bao dieu kien, KHONG gui doi map
+                            // khoa ban do (goi -108): hang xam + o khoa, cham = bao dieu kien, KHONG gui doi map
                             final boolean khoaDen = game.pokemon.KhoaMap.khoa(local[k * 3]);
                             menuItem.addElement(new Command(game.pokemon.KhoaMap.nhan(local[k * 3], game.pokemon.TenMapPokemon.doiHien(name[i])), new IAction() {
                                 @Override
@@ -7690,12 +7690,12 @@ public class GameScr extends Screen {
 
     public void onMSGServer(String readUTF) {
         MessageScr.gI().addTab(readUTF, null, 0);
-        if (game.pokemon.MenuNguCanh.bat()) {
+        if (game.pokemon.MenuNguCanh.bat() || game.pokemon.ThongBao.trongGame()) {
             // 0.9.5: không còn dải tối chạy chữ ở đáy - nhắc sức khoẻ = dòng mờ ngắn, tin khác = biểu ngữ trên
             if (game.pokemon.DungDo.laSucKhoe(readUTF)) {
                 game.pokemon.DungDo.sucKhoe(readUTF);
             } else {
-                game.pokemon.DungDo.bieuNgu(readUTF);
+                game.pokemon.ThongBao.tuChuChay(readUTF);   // 0.9.6.1: toàn máy chủ = biểu ngữ trên, tin riêng = thẻ nhanh
             }
             return;
         }

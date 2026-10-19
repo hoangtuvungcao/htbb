@@ -23,7 +23,7 @@ public final class KhoaBanDo {
     public static final String BANG = "data_ban_do_mo_khoa";
     public static final String BANG_MIEN = "tob_ban_do_mo";
     public static final long CHU_KY_MS = 30000L;
-    /** Co goi -106: ban do dang khoa voi nguoi choi / khong cho tu dong. */
+    /** Co goi -108: ban do dang khoa voi nguoi choi / khong cho tu dong. */
     public static final int CO_KHOA = 1, CO_KHONG_TU_DONG = 2;
 
     /** Mot luat. Bat bien. */

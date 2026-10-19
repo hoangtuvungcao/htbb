@@ -859,7 +859,7 @@ Bước hạ quái chỉ tính ở đúng bản đồ (`dieu_kien` `ban_do=<id>`
 nhận là xong). Thưởng mỗi bước 0,24 giờ EXP + 0,09 giờ xu, bước cuối +1 lượng khoá (ngân sách `cua_ai`). Chặn ở mọi
 đường vào (đi bộ qua cổng, xa phu / Pidgeot / Lapras, bãi luyện, vật phẩm, tới người chơi, `Map.move2Map`), trước khi trừ
 phí; bị chặn thì nhận thông báo "Cần hoàn thành nhiệm vụ «…» và đạt cấp N để vào …" và ở lại chỗ cũ. Tự động đánh bị từ
-chối / tắt ở bản đồ khoá tự động (thị trấn, nhà, đấu trường, hang boss, khu sự kiện). Client nhận gói -106 (mục 11): cổng
+chối / tắt ở bản đồ khoá tự động (thị trấn, nhà, đấu trường, hang boss, khu sự kiện). Client nhận gói -108 (mục 11): cổng
 và danh sách bay hiện hàng "Khoá" xám có ổ khoá + "AUTO" / "Không AUTO", bản đồ lớn vẽ ổ khoá + chấm AUTO, viên AUTO xám khi
 bản đồ không cho tự động.
 
@@ -1136,6 +1136,32 @@ trong mô phỏng — vừa lạm phát vừa là mồi nuôi clone). 5.000 xu =
 6 lượng khoá nằm giữa thành tựu cấp 30 (5) và cấp 40 (6). Các mốc cấp khác (thành tựu cấp 10..100) đã đúng thang: 0 xu,
 1–15 lượng khoá.
 
+### 9.7 Vòng quay góp hũ (NPC Rương, mục "Vòng quay")
+
+Chủ game báo 19/10/2026: bấm "Đồng ý" ở hộp *Vòng quay vip* không có gì xảy ra, và "sao giới hạn xu cao vậy?". Hộp đó là
+popup 100, nút Đồng ý chỉ gửi lại đúng hộp đó (khi chưa đủ 2 người, đồng hồ còn bị đặt lại 02:00); 1.100.000 xu trên hộp là
+**hũ** = cược của chính người xem (mức cũ: VIP 1.000.000 – 1.000.000.000 xu / lượt, phải giữ ≥ 5.000.000 xu). Bản mới
+(`real.VongQuay`, luật thuần `com.htbb.pokemon.VongQuayLogic`, test `KiemVongQuay`, `sql/sua_vong_quay.sql`):
+
+- Mỗi loại một hộp riêng (97 VIP / 98 thường / 99 lượng). Đồng ý: chưa đặt → bảng chọn mức (tối thiểu / giữa / tối đa /
+  nhập số khác), đã đặt → làm mới. Hộp ghi rõ hũ, số người, thời gian còn lại, mức bạn đã đặt và cơ hội thắng, giới hạn hôm
+  nay, phí, lượt trước.
+- **Không in tiền:** hũ = tổng cược; người thắng nhận hũ − phí, phí bị huỷ (hố hút). Hết giờ mà chỉ 1 người: **hoàn đủ**,
+  không phí. Lượt 120 giây tính từ người đặt đầu tiên, 10 giây cuối khoá. Người thắng chọn theo trọng số cược trong mọi
+  người đặt (cả người đã thoát game: tiền vào `tob_vong_quay_cho_nhan`, cộng khi đăng nhập).
+- Mức cược theo dải cấp (thu nhập 1 giờ: cấp 20 ≈ 9.000 xu, cấp 50 ≈ 34.000 xu, mục 1.6 của thiết kế cân bằng):
+
+| Loại | Cấp | Mỗi lượt | Mỗi ngày | Phí hũ |
+|---|---|---|---|---|
+| Thường | 20 | 1.000 – 10.000 xu (≤ 1,1 giờ cấp 20) | 10 lượt, 30.000 xu | 10% |
+| VIP | 50 | 10.000 – 50.000 xu (≤ 1,5 giờ cấp 50) | 10 lượt, 100.000 xu | 10% |
+| Lượng | 20 | 10 – 100 lượng (lượng mở, không lượng khoá) | 10 lượt, 300 lượng | 15% |
+
+- Vòng quay chuyển tiền giữa người chơi nên đi qua cổng chống clone (mục 9.6: cấp, tuổi tài khoản, giờ chơi) và mỗi thiết
+  bị / IP tối đa `chong_clone.nv_cung_may_toi_da` (2) Pokémon tham gia mỗi ngày; mỗi lần thua → thắng ghi
+  `tob_log_chuyen_gia_tri` (kiểu `vong_quay`). Phí xu 10% ≥ thuế chợ 6% + 1%, phí lượng 15% ≥ phí chuyển lượng 5%, nên
+  vòng quay không phải đường chuyển rẻ hơn. Khoá cấu hình nhóm `vong_quay.*` (lớp cố định, như thuế / phí khác).
+
 ## 10. Thuật ngữ và quy tắc chữ
 
 Áp cho **mọi chữ người chơi và admin thấy**: chuỗi server, CSDL, client J2ME / Android / PC, web. Nguồn máy duy nhất:
@@ -1280,6 +1306,6 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
-| -106 | Khoá bản đồ | S→C | `u8 phiên bản (1), i16 n nhóm, n × (u8 cờ (1 khoá, 2 không Tự động), UTF điều kiện, UTF lý do tự động, i16 k, k × i16 id bản đồ)` — chỉ bản đồ khác mặc định; lúc vào game, lên cấp / xong cửa ải làm đổi, admin sửa bảng; client ≥ 906 (mục 6.4) |
+| -108 | Khoá bản đồ | S→C | `u8 phiên bản (1), i16 n nhóm, n × (u8 cờ (1 khoá, 2 không Tự động), UTF điều kiện, UTF lý do tự động, i16 k, k × i16 id bản đồ)` — chỉ bản đồ khác mặc định; lúc vào game, lên cấp / xong cửa ải làm đổi, admin sửa bảng; client BAN ≥ 907 (0.9.6 cũ chỉ nhận thông báo -104 / -26 khi bị chặn; mục 6.4). -106 thuộc nhánh ten-pet (thẻ đặt tên), -110 / -111 nhánh danh-hieu |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).

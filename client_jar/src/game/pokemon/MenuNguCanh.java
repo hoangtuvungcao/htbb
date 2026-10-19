@@ -347,7 +347,7 @@ public final class MenuNguCanh extends Dialog {
             {BieuTuong.THU, ChuDe.XANH}, {BieuTuong.DONG, ChuDe.XAM}, {BieuTuong.DONG, ChuDe.XAM}, {BieuTuong.DONG, ChuDe.XAM},
             {BieuTuong.THU, ChuDe.XANH}, {BieuTuong.QUA, ChuDe.VANG_TOI}};
         if (KhoaMap.laHangKhoa(chu)) {
-            return new int[]{BieuTuong.KHOA, ChuDe.XAM};   // điểm đến bị khoá (gói -106 / menu bay của server)
+            return new int[]{BieuTuong.KHOA, ChuDe.XAM};   // điểm đến bị khoá (gói -108 / menu bay của server)
         }
         int dai = 0;
         int[] r = {BieuTuong.POKEBALL, ChuDe.DO};

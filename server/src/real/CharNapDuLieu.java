@@ -342,6 +342,7 @@ class CharNapDuLieu {
             // GD2: nap ho so dai han + chuyen nhiem vu chinh sang chuoi moi (tat co: khong lam gi).
             LauDaiNhanVat.khiNap(self);
             NhiemVuLauDaiGame.khiNapTatCo(self); // tat co sau khi da bat: tra nhiem vu chinh ve cho cu
+            VongQuay.khiDangNhap(self); // tien thang / hoan vong quay luc dang offline
             self.itemget = "";
             self.monskilled = "";
             self.finish = "";

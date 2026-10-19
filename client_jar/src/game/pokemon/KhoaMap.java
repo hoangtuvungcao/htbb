@@ -4,7 +4,7 @@ import network.Message;
 import java.util.Hashtable;
 
 /**
- * Khoá bản đồ + Tự động đánh theo bản đồ (server gói -106, real.KhoaBanDoGame). Server gửi các bản đồ KHÁC mặc định:
+ * Khoá bản đồ + Tự động đánh theo bản đồ (server gói -108, real.KhoaBanDoGame). Server gửi các bản đồ KHÁC mặc định:
  * đang khoá với người chơi (kèm điều kiện "Cần … để vào …") và / hoặc không cho Tự động đánh (kèm lý do). Mọi id,
  * gồm cả bản sao theo khu. Không có trong bảng = mở, cho tự động. Server vẫn là nơi quyết (chặn ở mọi đường vào).
  *
@@ -12,7 +12,7 @@ import java.util.Hashtable;
  * short k, k × short id bản đồ.
  */
 public final class KhoaMap {
-    public static final int LENH = -106;
+    public static final int LENH = -108;
     public static final int CO_KHOA = 1, CO_KHONG_TU_DONG = 2;
     /** Tiền tố chữ của hàng khoá trong menu (server dùng cùng chữ cho menu bay / đò): MenuNguCanh vẽ ổ khoá + xám. */
     public static final String TIEN_TO = "Khoá: ";
@@ -24,7 +24,7 @@ public final class KhoaMap {
     private KhoaMap() {
     }
 
-    /** true = đã xử lý (lệnh -106). Gọi ở đầu MessageHandler.onMessage. */
+    /** true = đã xử lý (lệnh -108). Gọi ở đầu MessageHandler.onMessage. */
     public static boolean nhan(Message msg) {
         if (msg.command != LENH) {
             return false;

@@ -132,7 +132,7 @@ public final class BanDoVung {
             g.setColor(GiaoDien.TRANG);
             g.fillRect(x[i] - 1, y[i] - 2, 2, 1);
             if (ids != null && i < ids.length) {
-                // khoá bản đồ (gói -106): ổ khoá nhỏ trên điểm; chấm AUTO dưới điểm: teal = cho tự động, xám = không
+                // khoá bản đồ (gói -108): ổ khoá nhỏ trên điểm; chấm AUTO dưới điểm: teal = cho tự động, xám = không
                 if (khoa) {
                     BieuTuong.ve(g, BieuTuong.KHOA, x[i] + 2, y[i] - 11, 9, ChuDe.XAM, GiaoDien.LA);
                 }

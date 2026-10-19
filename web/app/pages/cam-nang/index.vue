@@ -20,7 +20,7 @@ const nhanh = [
   { so: String(POKEDEX.he.length), nhan: 'hệ Pokémon', to: '/cam-nang/he-khac-che' },
   { so: String(C.capDo.capToiDa), nhan: 'cấp tối đa', to: '/cam-nang/cap-do' },
   { so: `+${C.trangBi.nangCap.length}`, nhan: 'mức nâng cấp', to: '/cam-nang/trang-bi' },
-  { so: String(C.suKien.length), nhan: 'tuần sự kiện / năm', to: '/cam-nang/su-kien' },
+  { so: String(C.suKien.length), nhan: 'tuần Pokémon / năm', to: '/cam-nang/su-kien' },
   { so: String(C.nhiemVu.cung.filter(c => c.nam === 1).reduce((s, c) => s + c.chuong.length, 0)), nhan: 'chương chính tuyến năm 1', to: '/cam-nang/nhiem-vu' },
   { so: String(POKEDEX.loai.length), nhan: 'loài trong Pokédex', to: '/pokedex' },
 ]
@@ -60,11 +60,9 @@ const nhanh = [
         </h2>
         <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="p in n.trang" :key="p.slug">
-            <NuxtLink :to="`/cam-nang/${p.slug}`" class="group flex h-full flex-col rounded-3xl glass p-5 transition hover:-translate-y-1">
+            <NuxtLink :to="`/cam-nang/${p.slug}`" class="the-go group flex h-full flex-col p-5 hover:-translate-y-1">
               <span class="flex items-center gap-3">
-                <span class="grid size-11 shrink-0 place-items-center rounded-2xl border-2 border-[var(--poke-outline)] bg-pikachu-400 text-navy-950 shadow-[0_3px_0_var(--poke-outline)]">
-                  <UIcon :name="p.icon" class="size-5" />
-                </span>
+                <SiteHinhCamNang :slug="p.slug" :icon="p.icon" class="size-12" />
                 <span class="font-display text-xl font-bold text-highlighted group-hover:text-primary">{{ p.ten }}</span>
               </span>
               <span class="mt-3 flex-1 text-sm text-muted">{{ p.moTa }}</span>

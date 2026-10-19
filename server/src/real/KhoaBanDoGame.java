@@ -15,21 +15,21 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Noi KHOA BAN DO (com.htbb.pokemon.KhoaBanDo, bang data_ban_do_mo_khoa) vao game: chan moi duong vao ban do
  * (doChangeMap, move2Map, xa phu, Pidgeot / Lapras, bai luyen...), mien tru nhan vat cu luc nap (tob_ban_do_mo), gui
- * danh sach ban do khoa / khong cho tu dong cho client (goi {@link #LENH} -106) va bao "Đã mở bản đồ" khi len cap /
+ * danh sach ban do khoa / khong cho tu dong cho client (goi {@link #LENH} -108) va bao "Đã mở bản đồ" khi len cap /
  * xong cua ai. Admin khong bi chan. Tat ca bang cong tac {@link #K_BAT} (danh muc cau hinh, mac dinh 1).
  */
 public final class KhoaBanDoGame {
 
     public static final String K_BAT = "ban_do.khoa.bat";
-    public static final int LENH = -106;
-    /** Client dau tien doc goi -106 (cac ban 0.9.6 cu bo qua goi la, chi thay thong bao -26). */
-    public static final int BAN_CLIENT = 906;
+    public static final int LENH = -108;
+    /** Client dau tien doc goi -108 (BAN 907 = ban phat hanh ke tiep; ban 906 da phat hanh KHONG co bo doc). */
+    public static final int BAN_CLIENT = 907;
 
     /** charDBID -> moc mien tru (giu ca khi thoat: vai so nguyen / nhan vat, tranh dua giua phien cu va moi). */
     private static final ConcurrentHashMap<Integer, Integer> MIEN = new ConcurrentHashMap<Integer, Integer>();
     /** charDBID -> ban do goc dang khoa lan gui truoc (bao "Đã mở"). */
     private static final ConcurrentHashMap<Integer, Set<Integer>> KHOA_TRUOC = new ConcurrentHashMap<Integer, Set<Integer>>();
-    /** charDBID -> van tay goi -106 lan truoc (khong gui lai neu khong doi). */
+    /** charDBID -> van tay goi -108 lan truoc (khong gui lai neu khong doi). */
     private static final ConcurrentHashMap<Integer, Integer> VAN_TAY = new ConcurrentHashMap<Integer, Integer>();
 
     private KhoaBanDoGame() {
@@ -106,7 +106,7 @@ public final class KhoaBanDoGame {
         if (ly == null) {
             return false;
         }
-        bao(p, ly);
+        baoChan(p, ly);
         try {
             com.htbb.log.Nhat.thongTin("KHOA_MAP", "chan " + p.charname + " cap " + capCua(p) + " -> map " + toMapId);
         } catch (final Throwable ignored) {
@@ -125,6 +125,30 @@ public final class KhoaBanDoGame {
             }
         } catch (final Exception e) {
             System.out.println("KhoaBanDoGame.giuTaiCho: " + e);
+        }
+    }
+
+    /**
+     * Bao bi chan: client >= 902 = the nhanh ThongBao.LOI (dong 1 dieu kien, dong 2 goi y So tay); client cu = chu
+     * -26 (bieu ngu tu tat) - KHONG hop thoai chan.
+     */
+    static void baoChan(final Char p, final String s) {
+        final int i = s.indexOf(" Mở Sổ tay");
+        final String chinh = i > 0 ? s.substring(0, i) : s;
+        final String phu = i > 0 ? s.substring(i + 1) : "";
+        if (com.htbb.thongbao.ThongBao.coToast(p)) {
+            com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.LOI, chinh, phu, com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
+        } else {
+            bao(p, s);
+        }
+    }
+
+    /** Ban do vua mo: the vang ThongBao.HIEM (client cu: chu -26). */
+    static void baoMo(final Char p, final String s) {
+        if (com.htbb.thongbao.ThongBao.coToast(p)) {
+            com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.HIEM, s, "", com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
+        } else {
+            bao(p, s);
         }
     }
 
@@ -194,7 +218,7 @@ public final class KhoaBanDoGame {
         MIEN.put(Integer.valueOf(idChar), Integer.valueOf(moc));
     }
 
-    // ------------------------------------------------------------------ goi -106
+    // ------------------------------------------------------------------ goi -108
 
     /** Nhom ban do theo (co, yeu cau, ly do tu dong) -> danh sach id (ca ban sao). Ban do mac dinh (mo, cho tu dong) bo. */
     public static LinkedHashMap<String, List<Integer>> nhom(final Char p, final Set<Integer> khoaGoc) {
@@ -231,7 +255,7 @@ public final class KhoaBanDoGame {
         return kq;
     }
 
-    /** Goi -106: byte phien ban 1, short n nhom; moi nhom: byte co, UTF yeu cau, UTF ly do tu dong, short k, k x short id. */
+    /** Goi -108: byte phien ban 1, short n nhom; moi nhom: byte co, UTF yeu cau, UTF ly do tu dong, short k, k x short id. */
     public static Message taoGoi(final LinkedHashMap<String, List<Integer>> nhom) throws java.io.IOException {
         final Message m = new Message(LENH);
         m.dos.writeByte(1);
@@ -285,7 +309,7 @@ public final class KhoaBanDoGame {
                     }
                 }
                 if (!moi.isEmpty()) {
-                    bao(p, "Đã mở bản đồ mới: " + String.join(", ", moi) + ".");
+                    baoMo(p, "Đã mở bản đồ mới: " + String.join(", ", moi) + ".");
                 }
             }
             if (!clientDoc(p)) {

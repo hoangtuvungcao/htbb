@@ -287,8 +287,10 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
         </p>
         <ol class="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="c in l.chieu" :key="c.so" class="flex items-center justify-between gap-3 rounded-xl border border-default/60 px-3 py-2">
-            <span class="flex items-center gap-2">
+            <span class="flex min-w-0 items-center gap-2">
               <span class="num w-5 text-xs text-dimmed">{{ c.so + 1 }}</span>
+              <!-- icon chiêu thật trong game (public/chieu/<class>-<số>.png) -->
+              <img v-if="l.dong" :src="`/chieu/${l.dong.class}-${c.so}.png`" width="28" height="28" alt="" loading="lazy" class="size-7 shrink-0">
               <span class="font-medium text-highlighted">{{ c.ten }}</span>
               <UBadge v-if="l.he.includes(c.he)" color="primary" variant="subtle" size="sm">STAB</UBadge>
             </span>

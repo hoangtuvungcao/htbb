@@ -3,7 +3,7 @@
 Website + khu quản trị (CMS) của game, viết bằng **Nuxt 4** (Vue 3, Nuxt UI, Nitro), đọc/ghi thẳng CSDL game
 (MariaDB / NovaDB) qua `mysql2`.
 
-- Trang công khai: trang chủ, giới thiệu, hướng dẫn tân thủ, tải game (6 nền tảng), cẩm nang, Pokédex, tin tức,
+- Trang công khai: trang chủ, giới thiệu, hướng dẫn tân thủ, tải game (5 bản: Java J2ME, Windows, Linux AppImage, Android, iOS sắp ra mắt), cẩm nang, Pokédex, tin tức,
   bảng xếp hạng, tài khoản, giấy phép (`/giay-phep`).
 - Khu quản trị `/admin`: người chơi, cấu hình hệ thống, sự kiện, giftcode, nội dung CMS, bản tải game, nhật ký.
   Bảng CMS tạo bằng `tools/luu_tru_sinh_du_lieu/sql_nguon/web_cms.sql` (chưa chạy thì web dùng nội dung mặc định).
@@ -45,6 +45,11 @@ HTBB_DIR=.. npm run sinh-anim-khoi-dau   # ảnh động màn khởi đầu từ
 `shared/data/*.json` và `shared/utils/*.gen.ts` là **bản dự phòng tĩnh** (bộ sinh cũ đã lưu trữ ở
 `tools/luu_tru_sinh_du_lieu/`): dữ liệu game nằm trong CSDL (`sql/htbb_day_du.sql`), web đọc CSDL trước; test đối chiếu
 các tệp tĩnh với `sql/htbb_day_du.sql`.
+Kiểm mọi trang công khai bằng Chrome headless (lỗi console, cuộn ngang, ảnh hỏng, khung thả xuống đầu trang bị cắt chữ;
+390 / 1280 / 1440 / 1920 / 2560 px, sáng + tối): chạy server thật rồi
+`node scripts/kiem-trang-cong-khai.mjs --goc http://127.0.0.1:3000 --ra /tmp/kiem-trang [--anh] [--toi] [--menu-moi-trang] [--tk .. --mk ..]`.
+Ảnh chụp trong game cho trang chủ / hướng dẫn: `public/anh-game/` (danh mục `shared/utils/anhGame.ts`).
+
 `node scripts/dev-token.mjs admin admin 1` in token admin để thử API khi dev.
 
 ## Dữ liệu game: CSDL trước, JSON dự phòng

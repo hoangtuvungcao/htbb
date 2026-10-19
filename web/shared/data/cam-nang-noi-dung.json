@@ -62,7 +62,7 @@
   {
    "ten": "Thuốc hồi PP (Ether)",
    "nhom": "Hồi PP",
-   "congDung": "Hồi 30% MP (PP chiêu)",
+   "congDung": "Hồi 30% PP (điểm dùng chiêu)",
    "cap": "1–30",
    "gia": 29,
    "tien": "xu",
@@ -73,7 +73,7 @@
   {
    "ten": "Thuốc hồi PP lớn (Ether lớn)",
    "nhom": "Hồi PP",
-   "congDung": "Hồi 45% MP",
+   "congDung": "Hồi 45% PP",
    "cap": "31–60",
    "gia": 109,
    "tien": "xu",
@@ -84,7 +84,7 @@
   {
    "ten": "Thuốc hồi PP tối đa (Ether tối đa)",
    "nhom": "Hồi PP",
-   "congDung": "Hồi 60% MP",
+   "congDung": "Hồi 60% PP",
    "cap": "61–100",
    "gia": 508,
    "tien": "xu",
@@ -95,7 +95,7 @@
   {
    "ten": "Thuốc hồi PP cả nhóm (Elixir)",
    "nhom": "Hồi PP",
-   "congDung": "Hồi 30% MP cho cả nhóm ở gần",
+   "congDung": "Hồi 30% PP cho cả nhóm ở gần",
    "cap": "30–100",
    "gia": 315,
    "tien": "xu",
@@ -106,7 +106,7 @@
   {
    "ten": "Thuốc hồi PP cả nhóm tối đa (Elixir tối đa)",
    "nhom": "Hồi PP",
-   "congDung": "Hồi 60% MP cho cả nhóm ở gần",
+   "congDung": "Hồi 60% PP cho cả nhóm ở gần",
    "cap": "60–100",
    "gia": 5,
    "tien": "lượng khoá",
@@ -491,7 +491,7 @@
   {
    "ten": "Quả Leppa",
    "nhom": "Quả mọng",
-   "congDung": "Tự dùng khi MP dưới 20%: hồi 15% MP",
+   "congDung": "Tự dùng khi PP dưới 20%: hồi 15% PP",
    "cap": "1–100",
    "gia": 20,
    "tien": "xu",
@@ -1344,7 +1344,7 @@
    ]
   },
   {
-   "ten": "Delcatty (trang trí)",
+   "ten": "Cửa hàng trang trí (lượng)",
    "hang": [
     {
      "vatPham": "Khung ảnh Pikachu",

@@ -140,7 +140,7 @@ try {
       console.log(`${kq.loi.length ? 'LOI' : 'ok '} ${kieu} ${rong}px cao=${kq.cao} [${(kq.muc ?? []).join(' | ')}] -> ${tep}`)
       for (const l of kq.loi) console.log('    - ' + l)
       if (MO_MENU && kieu === 'dang-nhap') {
-        await gui('Runtime.evaluate', { expression: `(() => { const b = [...document.querySelectorAll('header button')].find(x => (x.getAttribute('aria-label') || '').startsWith('Tài khoản') || (x.getAttribute('aria-label') || '') === 'Open menu' && x.offsetParent); b && b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'mouse' })); b && b.click(); return 1 })()` })
+        await gui('Runtime.evaluate', { expression: `(() => { const b = [...document.querySelectorAll('header button')].find(x => (x.getAttribute('aria-label') || '').startsWith('Tài khoản') || ['Open menu', 'Mở menu'].includes(x.getAttribute('aria-label') || '') && x.offsetParent); b && b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'mouse' })); b && b.click(); return 1 })()` })
         await ngu(1200)
         const anh2 = await gui('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: rong, height: 520, scale: 1 } })
         writeFileSync(join(RA, `dau-trang-${kieu}-${rong}-menu.png`), Buffer.from(anh2.data, 'base64'))

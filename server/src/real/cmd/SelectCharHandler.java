@@ -277,7 +277,7 @@ public class SelectCharHandler implements ICommandHandler {
             }
             Message m = MessageCreator.createMapMessage(p);
             session.sendMessage(m);
-            real.KhoaBanDoGame.guiDanhSach(p); // goi -106: ban do khoa / khong cho tu dong
+            real.KhoaBanDoGame.guiDanhSach(p); // goi -108: ban do khoa / khong cho tu dong
             p.map.doSendDynamicObj(p);
             // Skin linh thu duoc suy ra tu vat pham dang mac o bang Trang bi thu (da nap
             // vao p.awItems truoc do), khong co cot DB rieng. Phai tinh TRUOC goi thong
@@ -442,7 +442,7 @@ public class SelectCharHandler implements ICommandHandler {
                 }
                 final String infoBoss = Map.getNameBossApear(p.inCountry);
                 if (!infoBoss.equals("")) {
-                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(infoBoss) + " đã xuất hiện"));
+                    session.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Boss đang xuất hiện: " + infoBoss + "."));
                 }
                 p.sendMessage(MessageCreator.createSkillClan(p));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));

@@ -755,7 +755,7 @@ public final class NhiemVuEngine {
             thuongTangTocTuan(p, t);
         }
         if (m.laCuaAi()) {
-            KhoaBanDoGame.capNhat(p); // xong cua ai: bao ban do vua mo + gui lai goi -106
+            KhoaBanDoGame.capNhat(p); // xong cua ai: bao ban do vua mo + gui lai goi -108
         }
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
         suKien(p, "thanh_tuu_nhiem_vu", "", 1);

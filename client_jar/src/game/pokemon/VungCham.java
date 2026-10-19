@@ -35,6 +35,8 @@ public final class VungCham {
         int n;
         final int[] x = new int[TOI_DA], y = new int[TOI_DA], w = new int[TOI_DA], h = new int[TOI_DA], lop = new int[TOI_DA];
         final Object[] viec = new Object[TOI_DA];
+        /** 0.9.6.1: vùng KÉO (thanh trượt): nhấn trong vùng thì thả ở đâu cũng chạy viec */
+        final boolean[] keo = new boolean[TOI_DA];
         final String[] ten = new String[TOI_DA];
         int lopMax;
     }
@@ -108,6 +110,24 @@ public final class VungCham {
         them(g, x, y, w, h, viec, null);
     }
 
+    /**
+     * 0.9.6.1: vùng KÉO (thanh trượt): giống them, nhưng một cú nhấn BẮT ĐẦU trong vùng thì lúc thả luôn chạy viec
+     * (kéo quá đầu / cuối thanh hay lệch lên xuống vẫn tính - viec đọc điểm thả Canvas.px).
+     */
+    public static void themKeo(Graphics g, int x, int y, int w, int h, Object viec, String ten) {
+        int n = dang.n;
+        them(g, x, y, w, h, viec, ten);
+        if (dang.n > n) {
+            dang.keo[n] = true;
+        }
+    }
+
+    /** Điểm (px, py) nằm trong vùng (x, y, w, h) tuyệt đối đã nới MIN (đúng như vùng chạm thật). */
+    public static boolean trongVung(int x, int y, int w, int h, int px, int py) {
+        int[] r = noi(x, y, w, h);
+        return px >= r[0] && py >= r[1] && px < r[0] + r[2] && py < r[1] + r[3];
+    }
+
     /** Đăng ký vùng theo toạ độ màn jar tuyệt đối. */
     public static void themTuyetDoi(int x, int y, int w, int h, Object viec, String ten) {
         Bo b = dang;
@@ -122,6 +142,7 @@ public final class VungCham {
         b.lop[i] = lopHien;
         b.viec[i] = viec;
         b.ten[i] = ten;
+        b.keo[i] = false;
     }
 
     /** Vùng chạm thật (đã nới MIN) của vùng i trong bộ đã chốt: {x, y, w, h}. */
@@ -163,6 +184,27 @@ public final class VungCham {
             h = m;
         }
         return new int[]{x, y, w, h};
+    }
+
+    /**
+     * Đáy thấp nhất (y + h) của các vùng đã chốt (khung trước) có tên bắt đầu bằng tienTo, giao dải ngang [x0, x1) và đỉnh
+     * trên yMax; -1 = không có. DungDo dùng để đặt thông báo DƯỚI thẻ trạng thái / nút HUD (không chồng).
+     */
+    public static int duoiVung(String tienTo, int x0, int x1, int yMax) {
+        synchronized (KHOA) {
+            Bo b = chot;
+            int r = -1;
+            for (int i = 0; i < b.n; i++) {
+                String t = b.ten[i];
+                if (t == null || !t.startsWith(tienTo) || b.y[i] >= yMax) {
+                    continue;
+                }
+                if (b.x[i] < x1 && x0 < b.x[i] + b.w[i]) {
+                    r = Math.max(r, b.y[i] + b.h[i]);
+                }
+            }
+            return r;
+        }
     }
 
     /** Chỉ số vùng (bộ đã chốt) trúng điểm (x, y), -1 = không. */
@@ -216,12 +258,18 @@ public final class VungCham {
         String ten;
         synchronized (KHOA) {
             Bo b = chot;
-            int i = timTrong(b, Canvas.px, Canvas.py);
-            if (i < 0) {
-                return false;
-            }
-            if (timTrong(b, Canvas.pxLast, Canvas.pyLast) != i) {
-                return false;   // nhấn ở chỗ khác rồi kéo vào: không phải cú chạm vào điều khiển này
+            int iNhan = timTrong(b, Canvas.pxLast, Canvas.pyLast);
+            int i;
+            if (iNhan >= 0 && b.keo[iNhan]) {
+                i = iNhan;      // nhấn trong thanh trượt: thả ở đâu cũng là "xong kéo"
+            } else {
+                i = timTrong(b, Canvas.px, Canvas.py);
+                if (i < 0) {
+                    return false;
+                }
+                if (iNhan != i) {
+                    return false;   // nhấn ở chỗ khác rồi kéo vào: không phải cú chạm vào điều khiển này
+                }
             }
             viec = b.viec[i];
             ten = b.ten[i];

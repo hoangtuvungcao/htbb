@@ -255,7 +255,7 @@ public final class TuDong {
             return;
         }
         if (game.pokemon.KhoaMap.chanTuDong(gs.map)) {
-            thongBao = game.pokemon.KhoaMap.lyDoTuDong(gs.map);   // ban do khoa Tu dong (goi -106): khong xin server
+            thongBao = game.pokemon.KhoaMap.lyDoTuDong(gs.map);   // ban do khoa Tu dong (goi -108): khong xin server
             return;
         }
         if (coServer && (svCo & CO_TINH_NANG) == 0) {

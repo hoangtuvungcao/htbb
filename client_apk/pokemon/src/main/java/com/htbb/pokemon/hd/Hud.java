@@ -905,7 +905,7 @@ public final class Hud implements NenAndroid.LopPhu {
                 P.setColor(HdCau.tuDongDang() ? 0xFFFFFFFF : khoaTd ? HdVe.argb(game.pokemon.ChuDe.CHU_NHAT) : 0xFF138C82);   // 0.9.6: sét teal trên đĩa trắng
                 c.drawPath(PATH, P);
                 if (khoaTd) {
-                    // bản đồ không cho Tự động đánh (gói -106): ổ khoá xám góc dưới phải; chạm = báo lý do (TuDong.bat)
+                    // bản đồ không cho Tự động đánh (gói -108): ổ khoá xám góc dưới phải; chạm = báo lý do (TuDong.bat)
                     float kx = x + u * 0.75f, ky = y + u * 0.7f, kw = u * 0.55f;
                     P.setColor(HdVe.argb(game.pokemon.ChuDe.XAM));
                     c.drawRect(kx - kw, ky - kw * 0.2f, kx + kw, ky + kw * 1.2f, P);

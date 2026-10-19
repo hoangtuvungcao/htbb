@@ -113,7 +113,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.DungDo.nhan(msg)) {
             return;
         }
-        // pokemon: lenh -106 ban do khoa / khong cho Tu dong danh (KhoaMap)
+        // pokemon: lenh -108 ban do khoa / khong cho Tu dong danh (KhoaMap)
         if (game.pokemon.KhoaMap.nhan(msg)) {
             return;
         }
@@ -2376,11 +2376,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         break;
                     }
                     if (url.equals("")) {
-                        if (game.pokemon.MenuNguCanh.bat() && Canvas.gameScr != null && Canvas.gameScr.mainChar != null
-                                && (Canvas.currentScreen == Canvas.gameScr || Canvas.currentScreen instanceof game.pokemon.ManBang
-                                || Canvas.currentScreen != null && Canvas.currentScreen.getClass().getName().startsWith("game.pokemon.Man"))) {
-                            // 0.9.5: trong game, thông báo thông tin = biểu ngữ không chặn (dài: 2 dòng + "Xem")
-                            game.pokemon.DungDo.bieuNgu(message);
+                        if (game.pokemon.ThongBao.trongGame()) {
+                            // 0.9.6.1: trong game, phân loại theo nội dung (game.pokemon.ThongBao): kết quả / lỗi / hiếm
+                            // = thẻ nhanh không chặn, boss = biểu ngữ trên; chỉ việc nghiêm trọng / tin dài mới là hộp
+                            game.pokemon.ThongBao.tuMayChu(message);
                         } else {
                             Canvas.startOKDlg(message);
                         }

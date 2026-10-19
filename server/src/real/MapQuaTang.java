@@ -624,10 +624,6 @@ class MapQuaTang {
         }
     }
 
-    static void doVongQuayMayMan(Map map, Char player, String money, int hight_low) {
-        player.doXoso(Integer.parseInt(money.trim()), 0, hight_low);
-    }
-
     static void doSetGiftNguDeDaiNam(Map map, Char player, String code) {
         // SECURITY: disabled external call to third-party (teamobi) server.
         player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng này hiện không khả dụng.", ""));

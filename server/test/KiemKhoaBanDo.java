@@ -23,11 +23,11 @@ import real.RealController;
 
 /**
  * Khoa ban do theo cap + cua ai (nhanh khoa-map): luat thuan, moi duong vao ban do (that + doc ma), mien tru nhan vat
- * cu, xong cua ai mo ban do, Tu dong danh theo ban do, goi -106, du lieu data_ban_do_mo_khoa / cua ai trong CSDL day du.
+ * cu, xong cua ai mo ban do, Tu dong danh theo ban do, goi -108, du lieu data_ban_do_mo_khoa / cua ai trong CSDL day du.
  */
 public final class KiemKhoaBanDo {
 
-    /** Nhan vat gia: bat thong bao -26 (createServerAlertAutoOffMessage) + goi -106. */
+    /** Nhan vat gia: bat thong bao -26 (createServerAlertAutoOffMessage) + goi -108. */
     static final class NguoiChoi extends Char {
         final List<String> bao = new ArrayList<String>();
         final List<Message> goi = new ArrayList<Message>();
@@ -212,7 +212,7 @@ public final class KiemKhoaBanDo {
                     KhoaBanDoGame.lyDoKhongTuDong(9002));
             Kiem.dung("ban do luyen cho tu dong", KhoaBanDoGame.lyDoKhongTuDong(9001) == null);
 
-            // goi -106
+            // goi -108
             final NguoiChoi moi = new NguoiChoi(990006, 1);
             moi.map = thiTran;
             moi.mapID = 9000;
@@ -221,10 +221,10 @@ public final class KiemKhoaBanDo {
             final LinkedHashMap<String, List<Integer>> n = KhoaBanDoGame.nhom(moi, khoa);
             final Message g = KhoaBanDoGame.taoGoi(n);
             final DataInputStream in = new DataInputStream(new ByteArrayInputStream(g.toByteArray()));
-            Kiem.bang("goi -106 lenh", -106, (int) g.command);
+            Kiem.bang("goi -108 lenh", -108, (int) g.command);
             in.readByte();
             in.readShort();
-            Kiem.bang("goi -106 phien ban", 1, (int) in.readByte());
+            Kiem.bang("goi -108 phien ban", 1, (int) in.readByte());
             final int soNhom = in.readShort();
             final Map<Integer, Integer> co = new HashMap<Integer, Integer>();
             String yc9001 = "";
@@ -386,14 +386,14 @@ public final class KiemKhoaBanDo {
         Kiem.dung("vat pham toi ban doi: chan + tra vat pham (2 lop)", doc("src/real/doUsePotion.java").contains("KhoaBanDoGame.chan(player, p1.mapID)")
                 && doc("src/real/MapDungThuoc.java").contains("KhoaBanDoGame.chan(player, p1.mapID)"));
         Kiem.dung("dang nhap: mien tru (khong dich chuyen)", doc("src/real/CharNapDuLieu.java").contains("KhoaBanDoGame.khiNap(self)"));
-        Kiem.dung("dang nhap + chon nhan vat gui goi -106", doc("src/real/cmd/LoginHandler.java").contains("KhoaBanDoGame.guiDanhSach(p)")
+        Kiem.dung("dang nhap + chon nhan vat gui goi -108", doc("src/real/cmd/LoginHandler.java").contains("KhoaBanDoGame.guiDanhSach(p)")
                 && doc("src/real/cmd/SelectCharHandler.java").contains("KhoaBanDoGame.guiDanhSach(p)"));
         Kiem.dung("len cap / xong cua ai cap nhat", doc("src/real/MapXuLyLenh.java").contains("KhoaBanDoGame.capNhat(p)")
                 && doc("src/real/NhiemVuEngine.java").contains("KhoaBanDoGame.capNhat(p)"));
         Kiem.dung("Tu dong: bat va dang chay deu xem luat ban do", doc("src/real/TuDongGame.java").split("KhoaBanDoGame.lyDoKhongTuDong").length == 3);
         final String kj = doc("../client_jar/src/game/pokemon/KhoaMap.java");
-        Kiem.dung("client doc goi -106 cung thu tu (byte, short, [byte, UTF, UTF, short, short*])",
-                kj.contains("LENH = -106") && kj.indexOf("readByte()") < kj.indexOf("readShort()") && kj.contains("readUTF()"));
+        Kiem.dung("client doc goi -108 cung thu tu (byte, short, [byte, UTF, UTF, short, short*])",
+                kj.contains("LENH = -108") && kj.indexOf("readByte()") < kj.indexOf("readShort()") && kj.contains("readUTF()"));
         Kiem.dung("client MessageHandler goi KhoaMap.nhan", doc("../client_jar/src/game/networklogic/MessageHandler.java").contains("game.pokemon.KhoaMap.nhan(msg)"));
         Kiem.dung("client: cong ra ban do khoa khong gui doi map", doc("../client_jar/src/game/render/screen/GameScr.java").contains("game.pokemon.KhoaMap.baoKhoa("));
         Kiem.dung("client: vien AUTO bi khoa khong xin server", doc("../client_jar/shared/mod/game/render/screen/TuDong.java").contains("game.pokemon.KhoaMap.chanTuDong("));

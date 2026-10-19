@@ -52,6 +52,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
    `data_quest_lau_dai` / `data_nhiem_vu_noi_dung`), khoá cấu hình `ban_do.khoa.bat`, bảng `tob_ban_do_mo` (mốc miễn trừ
    người chơi cũ: `INSERT IGNORE … SELECT` theo cấp / bản đồ đang lưu, không sửa dòng có sẵn; server cũng tự điền lúc
    đăng nhập đầu). `server/test/KiemKhoaBanDo` kiểm.
+8. vòng quay góp hũ (main 0cbf73ae): bảng `tob_vong_quay_*` (danh mục nhóm `vong_quay` ở mục 2) + nội dung CMS web
+   0.9.6 (mô tả thẻ Linux tải game trong `web_cai_dat`).
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở
