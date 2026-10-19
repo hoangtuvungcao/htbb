@@ -202,6 +202,29 @@ REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh pc      "ghi ch�
 + `PHIEN_BAN`; muốn ép cập nhật thì đặt `sv.banToiThieu=<BAN>` ở server (jar/APK cũ hơn bị từ chối kèm link tải).
 Biến và secret của workflow: [tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
 
+### Danh sách kiểm triển khai 0.9.7 (một tệp SQL, khoá bản đồ, vòng quay, thách đấu cược)
+
+Jar 0.9.7 **dừng ngay** nếu CSDL chưa nâng cấp (`THIEU DU LIEU SQL QUAN TRONG`), và `vps/deploy-auto.sh` chỉ kéo code rồi
+để lần bảo trì tự động kế tiếp nạp jar mới — nó **không** chạy SQL. Thứ tự:
+
+1. **Trước khi gộp vào `main`** (hoặc ngay sau khi VPS kéo code, trước lần khởi động lại kế tiếp): trên VPS
+   `sudo bash /opt/htbb/vps/nang_cap_csdl.sh`. Script sao lưu (hỏng là dừng), nạp `sql/nang_cap.sql`, kiểm bảng. Chạy lại
+   được; jar 0.9.6 đang chạy vẫn chạy được sau bước này. Kiểm cuối log script có `== XONG` và `danh muc cau hinh: 256 khoa`.
+2. Gộp / đẩy `main` (jar đã build trong commit). Muốn lên ngay: chạy workflow với **deploy_now** hoặc "Bảo trì" trên web
+   admin; không thì jar mới lên ở lần bảo trì hằng ngày.
+3. Sau khi lên: log máy chủ có `[DU LIEU SQL] da nap 6 bang`, `[CAU HINH] danh muc tu CSDL htbb_db: 256 khoa`,
+   `[KHOA BAN DO] da nap 140 luat ban do`, `[LAU DAI] engine nhiem vu: ... mau`; không có `THIEU DU LIEU`.
+4. Một lần, tự động, không cần làm tay:
+   - mốc miễn trừ khoá bản đồ (`tob_ban_do_mo`): `nang_cap.sql` điền theo cấp / bản đồ đang lưu, server điền nốt khi
+     nhân vật đăng nhập đầu tiên — không ai bị dịch chuyển hay mất quyền vào bản đồ đang đứng;
+   - cược đang chờ của xổ số cũ (`nin_xoso*`) được hoàn qua `tob_vong_quay_cho_nhan` lúc khởi động; ký quỹ thách đấu còn
+     treo được hoàn lúc khởi động.
+5. Client: phát hành 0.9.7 với `BAN=907` (`tools/phat-hanh/phien_ban.conf`). Client 906 vẫn chơi được (bị chặn bản đồ
+   thì nhận thông báo nhanh; không thấy ổ khoá / nhãn AUTO). Chỉ đặt `sv.banToiThieu=907` khi muốn ép cập nhật.
+6. Tắt khẩn cấp khoá bản đồ: `ban_do.khoa.bat=0` ở `/admin/cauhinh` (áp dụng ngay). Sửa luật một bản đồ: bảng
+   `data_ban_do_mo_khoa` (server nạp lại ≤ 30 giây).
+7. Quay lại bản trước: như [trien-khai.md mục 4.1](trien-khai.md) — CSDL đã nâng cấp để nguyên, jar cũ vẫn chạy.
+
 ### Tài nguyên giao diện sinh tự động (0.9.5)
 
 | Lệnh | Ra | Ghi chú |

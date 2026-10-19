@@ -2,6 +2,7 @@
  * PHUC HOI TU LOI CU (P3): lop nay duoc dich nguoc tu lib/htbb-core.jar - ma loi da bien dich cua
  * game goc - bang Vineflower 1.11.1 roi sua tay toi thieu cho bien dich duoc (--release 8). Giu
  * nguyen ten lop, package va hanh vi; doi ten / don dep de o giai doan sau. Nguon goc: docs/giay-phep.md.
+ * (Lay tu nhanh khoa-map 4b08f0b8 cho vong-quay 19/10/2026: onDraw / addGift chia cuoc xu qua real.ThachDauCuoc.)
  */
 package real;
 
@@ -871,47 +872,13 @@ public class ArenaData extends Thread {
     }
 
     public void onDraw() {
-        String info = "";
-        if (this.typeArena == 3) {
-            Char c1 = null;
-            Char c2 = null;
-            TeamArena t = this.team.get(0);
-
-            for (String name : t.memTeam.values()) {
-                info = name;
-                c1 = CharManager.instance.getCharByCharName(name);
-
-                try {
-                    c1.addXu(this.moneyThachdau / 2, "onDraw arenadata");
-                    c1.sendMessage(MessageCreator.createCharInventoryMessage(c1, 0));
-                } catch (Exception var11) {
-                }
-            }
-
-            info = info + " hòa : ";
-            t = this.team.get(1);
-
-            for (String name : t.memTeam.values()) {
-                info = info + name;
-                c2 = CharManager.instance.getCharByCharName(name);
-
-                try {
-                    c2.addXu(this.moneyThachdau / 2, "onDraw arenadata");
-                    c2.sendMessage(MessageCreator.createCharInventoryMessage(c2, 0));
-                } catch (Exception var10) {
-                }
-            }
-
-            info = info + "_" + this.moneyThachdau / 2;
-
-            try {
-                Database.instance.saveOrtherLog("", c1.getName(), info, "darena");
-            } catch (Exception var9) {
-            }
-
-            try {
-                Database.instance.saveOrtherLog("", c2.getName(), info, "darena");
-            } catch (Exception var8) {
+        // 19/10/2026 (sua nguon in / mat xu): hoa -> HOAN DU ky quy moi ben qua real.ThachDauCuoc (truoc: 1-1 tra
+        // moneyThachdau/2 cho moi ben, nhom (kieu 4) khong tra gi - ca hai cuoc bien mat).
+        if (this.typeArena == 3 || this.typeArena == 4) {
+            final com.htbb.pokemon.ThachDauLogic.Chia ch = ThachDauCuoc.ketThuc(this.idArena, -1);
+            if (ch != null) {
+                this.sendAllCharMap(MessageCreator.createServerAlertMessage("Hai bên hoà, đã hoàn lại "
+                        + com.htbb.pokemon.VongQuayLogic.so(ch.tra0) + " xu cược cho mỗi bên.", ""));
             }
         }
     }
@@ -1607,6 +1574,16 @@ public class ArenaData extends Thread {
     }
 
     public void addGift(int twin) {
+        // 19/10/2026: cuoc xu (1-1 kieu 3, nhom kieu 4) chia qua ky quy - nguoi thang nhan 2 x cuoc - phi (ho hut),
+        // tra ca khi offline (cong luc dang nhap). Truoc: kieu 4 khong tra ai, kieu 3 offline thi mat.
+        if ((this.typeArena == 3 || this.typeArena == 4) && (twin == 0 || twin == 1)) {
+            final com.htbb.pokemon.ThachDauLogic.Chia ch = ThachDauCuoc.ketThuc(this.idArena, twin);
+            if (ch != null) {
+                this.sendAllCharMap(MessageCreator.createServerAlertMessage("Bên thắng nhận "
+                        + com.htbb.pokemon.VongQuayLogic.so(twin == 0 ? ch.tra0 : ch.tra1) + " xu (phí "
+                        + com.htbb.pokemon.VongQuayLogic.so(ch.phi) + " xu bị huỷ).", ""));
+            }
+        }
         if (twin == 0 || twin == 1) {
             TeamArena t = this.team.get(twin);
             String pLose = "";
@@ -1637,12 +1614,11 @@ public class ArenaData extends Thread {
                             }
                         }
 
-                        String info = p.getName() + " chien thang " + pLose + " va nhan dc " + this.moneyThachdau + " xu";
-                        p.addXu(this.moneyThachdau, "addGift arenadata");
-                        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                        // tien thang tra o real.ThachDauCuoc.ketThuc (dau ham) - ky quy, phi, nguoi offline.
+                        String info = p.getName() + " chien thang " + pLose;
                         Database.instance.saveOrtherLog("", name, info, "garena");
                     } else {
-                        Database.instance.saveOrtherLog("", name, name + " ko online khi add gift " + this.moneyThachdau, "garenaf");
+                        Database.instance.saveOrtherLog("", name, name + " ko online khi ket thuc thach dau (tien tra khi dang nhap)", "garenaf");
                     }
                 } catch (Exception var9) {
                 }

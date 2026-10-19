@@ -1162,6 +1162,25 @@ popup 100, nút Đồng ý chỉ gửi lại đúng hộp đó (khi chưa đủ 
   `tob_log_chuyen_gia_tri` (kiểu `vong_quay`). Phí xu 10% ≥ thuế chợ 6% + 1%, phí lượng 15% ≥ phí chuyển lượng 5%, nên
   vòng quay không phải đường chuyển rẻ hơn. Khoá cấu hình nhóm `vong_quay.*` (lớp cố định, như thuế / phí khác).
 
+### 9.8 Thách đấu cược xu, lì xì Tết (19/10/2026)
+
+Ba nguồn in / mất xu còn lại sau rà soát vòng quay (chủ game duyệt sửa). Khoá cấu hình nhóm `cuoc_xu` (lớp cố định),
+`sql/sua_vong_quay_2.sql`, test `KiemThachDauCuoc`, `KiemLiXi`.
+
+- **Thách đấu cược xu** (1-1 và nhóm, `real.ThachDauCuoc` + `com.htbb.pokemon.ThachDauLogic`): **ký quỹ** cả hai bên
+  trong một khoá lúc chấp nhận (bên sau thiếu → hoàn bên trước, huỷ trận); thắng → bên thắng nhận 2 × cược − phí 10%
+  (hố hút, ≥ thuế chợ); hoà → hoàn đủ; người nhận offline → cộng khi đăng nhập; máy tắt giữa trận → hoàn đủ lúc khởi động
+  (`tob_thach_dau_ky_quy`). Mức cược 1.000 – min(100.000, 2 giờ thu nhập ở cấp thấp nhất trong trận), cấp 40 + cổng chống
+  clone mọi người trong trận. Trước: 1-1 kiểm số dư rồi trừ riêng (100.000 – 10.000.000 xu), nhóm trừ hai đội trưởng nhưng
+  không trả ai; `Map.doChallenge` cũ (trả 2 lần, không thuế) đã bỏ. Chia tiền nằm trong `real.ArenaData` (lớp phục hồi từ
+  jar cũ, nhánh khoa-map).
+- **Bao lì xì** (sự kiện Tết): mỗi Pokémon nhận 2 bao / ngày, mở 3 / ngày và 15 / đợt (vượt thì trả lại bao); xu = 5 – 10%
+  thu nhập 1 giờ ở cấp người mở, giải lớn = 1 giờ (trước 1.000.000 – 5.000.000 xu), vẫn 5 giải / đợt; phần xu qua cổng chống
+  clone và tối đa 2 Pokémon / thiết bị / IP / ngày.
+- **Mã lì xì**: **lượng khoá** 5 – 15 (trước 10 – 100 lượng mở mỗi Pokémon), mỗi tài khoản 1 mã / đợt, mỗi thiết bị và IP 1
+  tài khoản / đợt, quỹ 20.000 lượng khoá / đợt, cần qua cổng chống clone; chốt mã nguyên tử (hai người gõ cùng mã chỉ một
+  người nhận).
+
 ## 10. Thuật ngữ và quy tắc chữ
 
 Áp cho **mọi chữ người chơi và admin thấy**: chuỗi server, CSDL, client J2ME / Android / PC, web. Nguồn máy duy nhất:

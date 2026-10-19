@@ -327,12 +327,12 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **240 khoá** trong **16 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **256 khoá** trong **17 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 149 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 165 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -457,7 +457,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (170)
+### Khoá ẩn: cố định & luôn bật (186)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -554,6 +554,27 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `vong_quay.luong.luot_ngay_toi_da` | Vòng quay lượng: số lượt tối đa mỗi ngày | Cố định (ẩn) | `10` | ngay | game | Mỗi Pokémon của người chơi. |
 | `vong_quay.luong.so_nguoi_toi_da` | Vòng quay lượng: số người tối đa mỗi lượt | Cố định (ẩn) | `20` | ngay | game |  |
 | `vong_quay.luong.phi_phan_tram` | Vòng quay lượng: phí hũ (%) | Cố định (ẩn) | `15` | ngay | game | Phần trăm hũ bị huỷ (hố hút lượng) khi có người thắng. Tối thiểu 5% để vòng quay không thành đường chuyển lượng rẻ hơn giao dịch. |
+
+#### Thách đấu cược xu & lì xì (cố định) (`cuoc_xu`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `thach_dau.bat` | Thách đấu cược xu: bật | Cố định (ẩn) | `1` | ngay | game | 0 = không nhận trận cược mới (trận đang đánh vẫn chia như thường). |
+| `thach_dau.cap_toi_thieu` | Thách đấu cược xu: cấp tối thiểu | Cố định (ẩn) | `40` | ngay | game | Mọi người trong trận (1-1 hoặc cả hai nhóm). Luôn cộng thêm cổng chống clone: cấp hiệu lực = max(hai số). |
+| `thach_dau.cuoc_toi_thieu` | Thách đấu cược xu: cược tối thiểu (xu) | Cố định (ẩn) | `1000` | ngay | game | Mỗi bên. |
+| `thach_dau.cuoc_toi_da` | Thách đấu cược xu: cược tối đa (xu) | Cố định (ẩn) | `100000` | ngay | game | Trần tuyệt đối mỗi bên; trần thật = min(số này, số giờ dưới × thu nhập 1 giờ ở cấp thấp nhất trong trận). |
+| `thach_dau.cuoc_toi_da_gio` | Thách đấu cược xu: cược tối đa (giờ thu nhập) | Cố định (ẩn) | `2` | ngay | game | Theo cấp thấp nhất trong trận (LauDai.xuMoiGio). |
+| `thach_dau.phi_phan_tram` | Thách đấu cược xu: phí bên thắng (%) | Cố định (ẩn) | `10` | ngay | game | Phần trăm của 2 × cược bị huỷ (hố hút) khi có bên thắng; hoà thì hoàn đủ. Tối thiểu 5% để thua cố ý không rẻ hơn giao dịch. |
+| `li_xi.tui_nhan_ngay_toi_da` | Bao lì xì: nhận tối đa / ngày | Cố định (ẩn) | `2` | ngay | game | Mỗi Pokémon của người chơi. |
+| `li_xi.tui_mo_ngay_toi_da` | Bao lì xì: mở tối đa / ngày | Cố định (ẩn) | `3` | ngay | game | Mỗi Pokémon của người chơi (bao nhận qua giao dịch cũng tính). Vượt thì trả lại bao. |
+| `li_xi.tui_mo_dot_toi_da` | Bao lì xì: mở tối đa cả đợt Tết | Cố định (ẩn) | `15` | ngay | game | Mỗi Pokémon của người chơi, đợt = năm. |
+| `li_xi.tui_xu_phan_tram_gio_min` | Bao lì xì: xu thấp nhất (% giờ thu nhập) | Cố định (ẩn) | `5` | ngay | game | % thu nhập 1 giờ ở cấp người mở. |
+| `li_xi.tui_xu_phan_tram_gio_max` | Bao lì xì: xu cao nhất (% giờ thu nhập) | Cố định (ẩn) | `10` | ngay | game |  |
+| `li_xi.tui_giai_lon_phan_tram_gio` | Bao lì xì: giải lớn (% giờ thu nhập) | Cố định (ẩn) | `100` | ngay | game | Trước: 1.000.000 – 5.000.000 xu. Tối đa 300% (kẹp trong code); 5 giải / đợt toàn máy chủ. |
+| `li_xi.ma_luong_khoa_min` | Mã lì xì: lượng khoá thấp nhất | Cố định (ẩn) | `5` | ngay | game | Trả lượng KHOÁ (không giao dịch). |
+| `li_xi.ma_luong_khoa_max` | Mã lì xì: lượng khoá cao nhất | Cố định (ẩn) | `15` | ngay | game |  |
+| `li_xi.ma_tai_khoan_moi_may` | Mã lì xì: tài khoản / thiết bị / IP / đợt | Cố định (ẩn) | `1` | ngay | game | Mỗi tài khoản 1 mã / đợt; mỗi thiết bị và mỗi IP tối đa N tài khoản / đợt. |
+| `li_xi.ma_tong_luong_khoa_dot` | Mã lì xì: tổng lượng khoá / đợt (cả máy chủ) | Cố định (ẩn) | `20000` | ngay | game | Hết quỹ thì mã còn lại không nhận được. |
 
 #### Tự động đánh & hồi sinh (`tu_dong`)
 
