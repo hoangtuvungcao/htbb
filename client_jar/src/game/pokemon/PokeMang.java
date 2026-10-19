@@ -126,6 +126,7 @@ public final class PokeMang {
                     if (c != null) {
                         c.pokePetDex = dexPet;
                         c.pokePetShiny = shiny;
+                        TrangThaiNguoiChoi.doi(TrangThaiNguoiChoi.PET);
                     }
                     break;
                 }

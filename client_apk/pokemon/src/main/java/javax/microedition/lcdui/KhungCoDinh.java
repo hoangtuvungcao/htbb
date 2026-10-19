@@ -1,56 +1,62 @@
 package javax.microedition.lcdui;
 
 /**
- * Khung hình CỐ ĐỊNH (quyết định chủ game - chống lợi thế màn to): mọi máy thấy cùng một vùng thế giới,
- * không phóng to / thu nhỏ.
+ * Khung hình PHỦ KÍN màn (0.9.3, thay hộp 16:9 + viền của 0.9.2) mà vẫn CÔNG BẰNG (chống lợi thế màn to / màn dài):
  *
- * - Giao diện logic luôn 640x360 (LOGIC_W x LOGIC_H).
- * - Thế giới phóng đúng THE_GIOI_Z = 2 so với logic -> vùng nhìn 320x180 px thế giới (20 x 11,25 ô 16 px).
- * - Cả khung phóng hệ số NGUYÊN lên màn thật khi hệ số nguyên còn lấp >= NGUONG_NGUYEN cạnh vừa nhất
- *   (720p x2, 1080p x3, 1440p x4 ...); không thì hệ số lẻ (vẽ láng giềng gần nhất). Phần dư = viền
- *   theo chủ đề (letterbox / pillarbox), không phải đen.
- * - Chạm: toạ độ màn thật -> logic qua cùng phép biến đổi (logic = (that - lech) / tiLe).
+ * - Tham chiếu 16:9: giao diện logic 640x360, thế giới phóng THE_GIOI_Z = 2 -> vùng nhìn 320x180 px thế giới
+ *   (20 x 11,25 ô 16 px).
+ * - Phóng PHỦ (cover) đều hai chiều: tiLe = max(w / 640, h / 360). Cỡ logic = ceil(w / tiLe) x ceil(h / tiLe), luôn
+ *   <= 640 x 360 ở MỖI chiều -> không ai thấy nhiều thế giới hơn tham chiếu 16:9 theo bất kỳ chiều nào:
+ *     20:9 (2400x1080)  -> tiLe 3,75, logic 640x288 (vùng nhìn 20 x 9 ô),
+ *     4:3  (2048x1536)  -> tiLe 4,27, logic 480x360 (15 x 11,25 ô),
+ *     16:9 (1920x1080)  -> tiLe 3, logic 640x360 đúng tham chiếu.
+ * - Không viền / pillarbox: khung = cả màn (lechX = lechY = 0). Hàng px logic cuối có thể tràn mép < 1 px logic.
+ * - Máy chủ vẫn kẹp cứng vùng nhìn (VungNhinCoDinh) - đây chỉ là trần phía client.
+ * - Chạm: toạ độ màn thật -> logic qua cùng phép biến đổi (logic = that / tiLe).
  *
  * Thuần Java (không phụ thuộc Android) để kiểm thử không cần máy: client_apk/test/KiemKhungCoDinh.java.
  */
 public final class KhungCoDinh {
+    /** cỡ logic THAM CHIẾU (16:9) - trần mỗi chiều */
     public static final int LOGIC_W = 640;
     public static final int LOGIC_H = 360;
-    /** phóng thế giới so với giao diện logic: vùng nhìn = LOGIC / 2 = 320 x 180 px thế giới */
+    /** phóng thế giới so với giao diện logic: vùng nhìn tối đa = LOGIC / 2 = 320 x 180 px thế giới */
     public static final int THE_GIOI_Z = 2;
     public static final int NHIN_W = LOGIC_W / THE_GIOI_Z;
     public static final int NHIN_H = LOGIC_H / THE_GIOI_Z;
-    /** hệ số nguyên được dùng khi lấp ít nhất tỉ lệ này của hệ số vừa nhất (còn lại: hệ số lẻ) */
-    public static final float NGUONG_NGUYEN = 0.8f;
 
-    /** hệ số màn thật / px logic */
+    /** hệ số màn thật / px logic (đều hai chiều) */
     public final float tiLe;
-    /** hệ số nguyên (true) hay lẻ */
+    /** tiLe là số nguyên (ảnh pixel đều cạnh) */
     public final boolean nguyen;
-    /** lệch khung trên màn thật (px thật) */
+    /** lệch khung trên màn thật: luôn 0 (phủ kín) - giữ trường cho chỗ cũ */
     public final int lechX, lechY;
-    /** cỡ khung trên màn thật (px thật) */
+    /** cỡ khung trên màn thật = cả màn */
     public final int khungW, khungH;
     public final int thatW, thatH;
+    /** cỡ giao diện logic thực (<= LOGIC_W x LOGIC_H) */
+    public final int logicW, logicH;
 
-    private KhungCoDinh(int w, int h, float tiLe, boolean nguyen) {
+    private KhungCoDinh(int w, int h, float tiLe, int lw, int lh) {
         this.thatW = w;
         this.thatH = h;
         this.tiLe = tiLe;
-        this.nguyen = nguyen;
-        this.khungW = Math.round(LOGIC_W * tiLe);
-        this.khungH = Math.round(LOGIC_H * tiLe);
-        this.lechX = (w - khungW) / 2;
-        this.lechY = (h - khungH) / 2;
+        this.nguyen = Math.abs(tiLe - Math.round(tiLe)) < 1e-4f;
+        this.logicW = lw;
+        this.logicH = lh;
+        this.khungW = w;
+        this.khungH = h;
+        this.lechX = 0;
+        this.lechY = 0;
     }
 
     /** Khung cho vùng vẽ thật w x h (px). */
     public static KhungCoDinh tinh(int w, int h) {
-        if (w <= 0 || h <= 0) return new KhungCoDinh(LOGIC_W, LOGIC_H, 1f, true);
-        float vua = Math.min(w / (float) LOGIC_W, h / (float) LOGIC_H);
-        int k = (int) Math.floor(vua + 1e-4f);
-        if (k >= 1 && k >= vua * NGUONG_NGUYEN) return new KhungCoDinh(w, h, k, true);
-        return new KhungCoDinh(w, h, vua, false);
+        if (w <= 0 || h <= 0) return new KhungCoDinh(LOGIC_W, LOGIC_H, 1f, LOGIC_W, LOGIC_H);
+        float t = Math.max(w / (float) LOGIC_W, h / (float) LOGIC_H);
+        int lw = Math.min(LOGIC_W, Math.max(1, (int) Math.ceil(w / t - 1e-3f)));
+        int lh = Math.min(LOGIC_H, Math.max(1, (int) Math.ceil(h / t - 1e-3f)));
+        return new KhungCoDinh(w, h, t, lw, lh);
     }
 
     /** Hệ số nguyên gần nhất (>= 1) - cho chỗ cũ cần số nguyên (làm tròn điểm ảnh, cỡ nút theo dpi). */
@@ -67,13 +73,13 @@ public final class KhungCoDinh {
         return (y - lechY) / tiLe;
     }
 
-    /** Toạ độ màn thật -> logic nguyên, kẹp trong [0, LOGIC). */
+    /** Toạ độ màn thật -> logic nguyên, kẹp trong [0, logicW / logicH). */
     public int logicXKep(float x) {
-        return kep((int) Math.floor(logicX(x)), LOGIC_W);
+        return kep((int) Math.floor(logicX(x)), logicW);
     }
 
     public int logicYKep(float y) {
-        return kep((int) Math.floor(logicY(y)), LOGIC_H);
+        return kep((int) Math.floor(logicY(y)), logicH);
     }
 
     /** true = điểm màn thật nằm trong khung game (không phải viền). */
@@ -98,7 +104,7 @@ public final class KhungCoDinh {
         return v < 0 ? 0 : v >= max ? max - 1 : v;
     }
 
-    /** Vùng nhìn thế giới (px thế giới) cho bề rộng / cao giao diện logic: luôn 320 x 180 khi logic 640 x 360. */
+    /** Vùng nhìn thế giới (px thế giới) cho bề rộng / cao giao diện logic: <= 320 x 180 (logic <= 640 x 360). */
     public static int nhinW(int canvasW) {
         return (canvasW + THE_GIOI_Z - 1) / THE_GIOI_Z;
     }

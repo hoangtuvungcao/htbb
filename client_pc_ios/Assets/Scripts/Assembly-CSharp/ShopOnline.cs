@@ -536,7 +536,7 @@ public class ShopOnline : MyScreen
 		MFont.normalFont[0].drawString(g, tile[indexMainTile], Canvas.w / 2, y + 10, 2);
 		g.drawImage(Res.imgBar, Canvas.hw - 40 + xRunL, y + 17, 3);
 		g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, Canvas.hw + 40 + xRunR, y + 17, 3);
-		MFont.smallFontColor[0].drawString(g, money + "$", x + w0 - 2, y + h0 - 12, MFont.RIGHT);
+		MFont.smallFontColor[0].drawString(g, TienTe.gon(money) + " xu", x + w0 - 2, y + h0 - 12, MFont.RIGHT);
 		int num = MyScreen.ITEM_HEIGHT + 10;
 		int num2 = 0;
 		if (indexMainTile == 1)

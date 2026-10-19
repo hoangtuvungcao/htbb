@@ -37,6 +37,8 @@ const coBuc = computed(() => props.buc !== false)
 const top3 = computed(() => (coBuc.value ? props.rows.slice(0, 3) : []))
 const rest = computed(() => props.rows.slice(coBuc.value ? 3 : 0).map((r, i) => ({ ...r, hang: r.hang ?? i + (coBuc.value ? 4 : 1) })))
 const hienSo = (v: number | null) => (v == null ? 'Ẩn' : so(v))
+/** Cột số là tiền (Xu / Lượng / Lượng khoá): hiện biểu tượng tiền cạnh số. */
+const tien = computed(() => loaiTienTuNhan(props.valueLabel))
 
 /** Bục: hạng 2 bên trái, hạng 1 ở giữa (cao nhất), hạng 3 bên phải. */
 const bucVinhDanh = computed(() => {
@@ -99,7 +101,7 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
               :class="[kieuHang[r.hang]!.nen, kieuHang[r.hang]!.cao]"
             >
               <span class="font-pixel text-sm" :class="kieuHang[r.hang]!.chu">#{{ r.hang }}</span>
-              <span class="num mt-2 font-display text-3xl font-extrabold" :class="kieuHang[r.hang]!.chu">{{ hienSo(r.value) }}</span>
+              <span class="num mt-2 font-display text-3xl font-extrabold" :class="kieuHang[r.hang]!.chu"><TienTe v-if="tien && r.value != null" :loai="tien" :gt="r.value" :co="26" /><template v-else>{{ hienSo(r.value) }}</template></span>
               <span class="text-xs font-bold uppercase tracking-[0.15em] text-navy-800">{{ valueLabel }}</span>
             </div>
           </div>
@@ -142,7 +144,10 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
                   </span>
                 </td>
                 <td class="num px-5 py-3 font-display text-base font-bold text-primary">
-                  {{ hienSo(r.value) }}
+                  <TienTe v-if="tien && r.value != null" :loai="tien" :gt="r.value" :co="18" />
+                  <template v-else>
+                    {{ hienSo(r.value) }}
+                  </template>
                 </td>
               </tr>
             </tbody>

@@ -71,21 +71,8 @@ public class CharSelectScr extends Screen {
                 Canvas.loginScr.switchToMe();
             }
         });
-        if (this.selected < this.chars.length) {
-            this.center = this.cmdSelect;
-            this.left = this.cmdDel;
-        } else {
-            this.center = this.cmdNew;
-            this.left = null;
-        }
         this.right = this.cmdClose;
-        if (charInfos.length > 0) {
-            if (charInfos[this.selected].using == 1) {
-                this.cmdDel.caption = "Xóa";
-            } else {
-                this.cmdDel.caption = "Khôi phục";
-            }
-        }
+        chonThe(this.selected < 0 || this.selected > 2 ? 0 : this.selected);
     }
 
     class AnonymousClass3 implements IAction {
@@ -183,6 +170,12 @@ public class CharSelectScr extends Screen {
                 game.pokemon.GiaoDien.khoi(g, x - 2, y - 2, cw + 4, CAO_THE + 4, 7, game.pokemon.GiaoDien.VANG);
             }
             game.pokemon.GiaoDien.khoi(g, x, y, cw, CAO_THE, 5, game.pokemon.GiaoDien.VIEN);
+            final int the = i;
+            game.pokemon.VungCham.them(g, x, y, cw, CAO_THE, new IAction() {
+                public void perform() {
+                    CharSelectScr.this.chamThe(the);
+                }
+            }, "the-" + i);
             if (!co) {
                 game.pokemon.GiaoDien.khoi(g, x + 2, y + 2, cw - 4, CAO_THE - 4, 4, chon ? 0xDCE8F6 : 0xB9C6D8);
                 int cx = x + cw / 2;
@@ -253,71 +246,45 @@ public class CharSelectScr extends Screen {
         super.paint(g);
     }
 
+    /**
+     * Chọn thẻ i (phím trái / phải hoặc chạm): đặt lệnh theo thẻ MỚI (Chọn + Xóa/Khôi phục nếu có Pokémon, Tạo mới nếu
+     * ô trống). Bản cũ đặt lệnh theo thẻ cũ rồi mới đổi -> chạm ô trống vẫn giữ "Chọn" (chạm lần nữa chọn ô không có).
+     */
+    void chonThe(int i) {
+        if (i < 0 || i > 2) {
+            return;
+        }
+        this.selected = i;
+        boolean co = this.chars != null && i < this.chars.length && this.charInfos != null && i < this.charInfos.length;
+        if (co) {
+            this.center = this.cmdSelect;
+            this.left = this.cmdDel;
+            this.cmdDel.caption = this.charInfos[i].using == 1 ? "Xóa" : "Khôi phục";
+        } else {
+            this.center = this.cmdNew;
+            this.left = null;
+        }
+    }
+
+    /** Chạm thẻ: thẻ đang chọn = thực hiện lệnh chính (vào game / tạo mới), thẻ khác = chọn thẻ đó. */
+    void chamThe(int i) {
+        if (i == this.selected && this.center != null && this.center.action != null) {
+            this.center.action.perform();
+        } else {
+            chonThe(i);
+        }
+    }
+
     @Override
     public void update() {
         Canvas.loginScr.updateCamera();
         for (int i = 0; i < this.chars.length; i++) {
             this.chars[i].update();
         }
-        boolean isChangeFocus = false;
         if (Canvas.isKeyPressed(4)) {
-            this.selected--;
-            isChangeFocus = true;
-            if (this.selected < 0) {
-                this.selected = 2;
-            }
-            if (this.charInfos.length > 0) {
-                if (this.selected < this.charInfos.length) {
-                    if (this.charInfos[this.selected].using == 1) {
-                        this.cmdDel.caption = "Xóa";
-                    } else {
-                        this.cmdDel.caption = "Khôi phục";
-                    }
-                } else {
-                    this.cmdDel.caption = "";
-                }
-            }
+            chonThe(this.selected <= 0 ? 2 : this.selected - 1);
         } else if (Canvas.isKeyPressed(6)) {
-            this.selected++;
-            isChangeFocus = true;
-            if (this.selected > 2) {
-                this.selected = 0;
-            }
-            if (this.charInfos.length > 0) {
-                if (this.selected < this.charInfos.length) {
-                    if (this.charInfos[this.selected].using == 1) {
-                        this.cmdDel.caption = "Xóa";
-                    } else {
-                        this.cmdDel.caption = "Khôi phục";
-                    }
-                } else {
-                    this.cmdDel.caption = "";
-                }
-            }
-        }
-        int pa = -1;
-        // pokemon: chạm vào thẻ Pokédex (vị trí theo rongThe / xThe)
-        if (Canvas.isPointerClick && Canvas.isPointer(xThe(0), yThe(), 3 * rongThe() + 8, CAO_THE)) {
-            pa = (Canvas.px - xThe(0)) / (rongThe() + 4);
-            if (pa > 2) {
-                pa = 2;
-            }
-            isChangeFocus = true;
-        }
-        if (isChangeFocus) {
-            if (this.selected < this.chars.length) {
-                this.center = this.cmdSelect;
-                this.left = this.cmdDel;
-            } else {
-                this.center = this.cmdNew;
-                this.left = null;
-            }
-            if (pa == this.selected) {
-                this.center.action.perform();
-            }
-            if (pa < 3 && pa >= 0) {
-                this.selected = pa;
-            }
+            chonThe(this.selected >= 2 ? 0 : this.selected + 1);
         }
         super.update();
     }

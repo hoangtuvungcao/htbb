@@ -50,9 +50,8 @@ public class Tilemap {
         Canvas.gameScr.actors.removeAllElements();
         Canvas.gameScr.npc_limit.removeAllElements();
         Canvas.gameScr.actors.addElement(Canvas.gameScr.mainChar);
-        if (Canvas.gameScr.mainChar.myPet != null) {
-            Canvas.gameScr.actors.addElement(Canvas.gameScr.mainChar.myPet);
-        }
+        // pokemon: thêm lại đúng MỘT pet (actor trong cảnh, không phải mẫu thông tin myPet) - PetDuyNhat
+        game.pokemon.PetDuyNhat.sauDoiMap(Canvas.gameScr.actors, Canvas.gameScr.mainChar);
         IsAnimal.img = new Image[10];
         idLinhGac = 0;
     }

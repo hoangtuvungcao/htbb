@@ -33,6 +33,9 @@ public final class DungDo {
 
     /** Đếm chẩn đoán (kiểm thử / F9 bản PC). */
     public static int soNhan, soGui;
+    /** Kiểu thao tác của thông báo cuối (-1 = server cũ không gửi) và nội dung - kiểm thử. */
+    public static int kieuCuoi = -1;
+    public static String chuCuoi;
 
     private DungDo() {
     }
@@ -47,7 +50,21 @@ public final class DungDo {
         try {
             int loai = msg.reader().readByte();
             String s = msg.reader().readUTF();
+            // 0.9.3: byte kiểu thao tác (TrangThaiNguoiChoi.MUA / BAN / DUNG / MAC...) - server 0.9.2 không gửi
+            int k = -1;
+            try {
+                if (msg.reader().available() > 0) {
+                    k = msg.reader().readByte();
+                }
+            } catch (Throwable e) {
+                k = -1;
+            }
+            kieuCuoi = k;
+            chuCuoi = s;
             soNhan++;
+            if (loai == TIN && k == TrangThaiNguoiChoi.DUNG && game.render.screen.GameScr.autoFight) {
+                return true;   // tự đánh tự uống bình: thanh HP đã lên, không phủ thông báo mỗi bình
+            }
             bao(s, loai);
             if (loai == LOI) {
                 AmThanh.phat(AmThanh.CANH_BAO);

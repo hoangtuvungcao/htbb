@@ -47,9 +47,16 @@ public final class HanhDong {
         if (gs() == null || Canvas.currentDialog != null) {
             return;
         }
-        Canvas.menu.showMenu = false;
-        PauseMenu.gI().showMe(4);
-        AmThanh.phat(AmThanh.MO);
+        // 0.9.3: màn Nhân vật mới (Pokémon to + ô trang bị + tab Chỉ số / Kỹ năng / Thú / Ngoại hình)
+        ManNhanVat.mo(ManNhanVat.TAB_TRANG_BI);
+    }
+
+    /** Menu chính dạng lưới ô to (mọi việc thường dùng: 2 chạm từ HUD). */
+    public static void moMenu() {
+        if (gs() == null || Canvas.currentDialog != null) {
+            return;
+        }
+        ManMenu.mo();
     }
 
     /** Menu chính (như phím mềm trái). */

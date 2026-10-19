@@ -525,7 +525,7 @@ public class ListScr extends Screen {
                 zz = 8;
                 GameData.paintIcon(g, (short) (ac.idClan + 1000), 45, (i * this.height) + 12);
             }
-            String money = Canvas.getPriceMoney(ac.charXu, ac.luong);
+            String money = game.pokemon.TienTe.chuGia(ac.charXu, ac.luong);
             int ww0 = Font.normalFont[0].getWidth(new StringBuffer(String.valueOf(ac.name)).append(money).append((this.type != 6 || ac.isMaster >= 3) ? "" : new StringBuffer(" - ").append(this.nameManager[ac.isMaster]).toString()).append(this.type == 7 ? new StringBuffer(" - CT: ").append(ac.congTrang).append(" - LT: ").append(ac.lienTram).toString() : "").toString()) + 30;
             if (ww0 > this.w - 55 && selected == i) {
                 if (this.dir2 == 1) {

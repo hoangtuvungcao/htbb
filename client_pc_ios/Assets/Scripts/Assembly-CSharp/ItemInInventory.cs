@@ -572,7 +572,7 @@ public class ItemInInventory
 			if (catagory == 4 && isShopItem)
 			{
 				text = string.Empty + MainChar.listPotion[potionType].name;
-				text = text + "\nGiá: " + Canvas.getMoneys(Res.potionTemplates[potionType].price) + "$";
+				text = text + "\nGiá: " + TienTe.chu(TienTe.XU, Res.potionTemplates[potionType].price);
 				if (Res.potionTemplates[potionType].recovered >= 80)
 				{
 					string text3 = text;

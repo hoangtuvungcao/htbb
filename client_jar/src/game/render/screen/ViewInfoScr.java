@@ -141,7 +141,7 @@ public class ViewInfoScr extends Screen {
         this.status = clan.status;
         this.text.addElement(new StringBuffer("Đội trưởng: ").append(clan.master).toString());
         this.text.addElement(new StringBuffer("Cấp độ: ").append((int) clan.level).toString());
-        this.text.addElement(new StringBuffer("Xu: ").append(Canvas.getMoneys(clan.money)).toString());
+        this.text.addElement(new StringBuffer("Quỹ: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, clan.money)).toString());
         this.text.addElement(new StringBuffer("Thành viên: ").append((int) clan.members).toString());
         this.text.addElement(new StringBuffer("Điểm cống hiến: ").append(clan.dedicationPoint).toString());
         this.text.addElement(new StringBuffer("Điểm kinh ngiệm: ").append(clan.xp).toString());

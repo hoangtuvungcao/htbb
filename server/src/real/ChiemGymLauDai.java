@@ -144,7 +144,7 @@ public final class ChiemGymLauDai {
                 daChia += xu;
                 c.addXu(xu, "chia quy bang chiem thanh");
             }
-            final String thuong = lk + " lk, " + xu + " xu quy bang";
+            final String thuong = com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.LUONG_KHOA, lk) + ", " + com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.XU, xu) + " quỹ đội";
             DatabaseLauDai.ghiChiemThanh(lan, c.charDBID, c.idClan, d[1], thuong);
             NhiemVuEngine.suKien(c, "tham_gia_gym", "", 1);
             if (du) {
@@ -152,7 +152,7 @@ public final class ChiemGymLauDai {
             }
             Database.instance.saveOrtherLog("", c.charname, "chiem thanh lau dai " + country + " hang " + (h + 1) + ": " + thuong, "laudai");
             if (lk > 0 || xu > 0L) {
-                LauDaiNhanVat.bao(c, "Chiếm Gym: đóng góp hạng " + (h + 1) + ", nhận " + lk + " lượng khoá"
+                LauDaiNhanVat.bao(c, "Chiếm Gym: đóng góp hạng " + (h + 1) + ", nhận " + com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.LUONG_KHOA, lk)
                         + (xu > 0L ? " và " + xu + " xu từ quỹ đội" : "") + ".");
             }
         }

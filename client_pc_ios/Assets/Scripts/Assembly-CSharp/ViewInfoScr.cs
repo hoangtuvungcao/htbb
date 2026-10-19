@@ -143,7 +143,7 @@ public class ViewInfoScr : MyScreen
 		status = clan.status;
 		text.addElement("Đội trưởng: " + clan.master);
 		text.addElement("Cấp độ: " + clan.level);
-		text.addElement("Xu: " + Canvas.getMoneys(clan.money));
+		text.addElement("Quỹ: " + TienTe.chu(TienTe.XU, clan.money));
 		text.addElement("Thành viên: " + clan.members);
 		text.addElement("Điểm cống hiến: " + clan.dedicationPoint);
 		text.addElement("Điểm kinh ngiệm: " + clan.xp);

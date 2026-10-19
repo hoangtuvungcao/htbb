@@ -232,7 +232,8 @@ public class MonsterNew extends Monster {
                         this.vy = (byte) 0;
                         this.vx = (byte) 0;
                     } else {
-                        setMove(this.target.x + this.xadd, this.target.y + this.yadd);
+                        int[] dd = diemDuoi(this.target);
+                        setMove(dd[0], dd[1]);
                     }
                 }
                 break;

@@ -328,9 +328,9 @@ public class ItemInInventory {
                     s2 = new StringBuffer(String.valueOf(s2)).append("\n").append(Res.nameClazz[this.clazz]).toString();
                 }
                 if (this.isSelling) {
-                    s2 = new StringBuffer(String.valueOf(s2)).append("\nGiá bán: ").append(Canvas.getMoneys(this.prize)).append("~").toString();
+                    s2 = new StringBuffer(String.valueOf(s2)).append("\nGiá bán: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, this.prize)).toString();
                 } else if (showResellPrice) {
-                    s2 = new StringBuffer(String.valueOf(s2)).append("\nGiá bán lại: ").append(Canvas.getMoneys((item.price / 5) + (this.plusTemplate * 1000))).append("~").toString();
+                    s2 = new StringBuffer(String.valueOf(s2)).append("\nGiá bán lại: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, (item.price / 5) + (this.plusTemplate * 1000))).toString();
                 }
                 if (item.level != -1) {
                     s2 = new StringBuffer(String.valueOf(s2)).append("\nYêu cầu lv: ").append((int) this.level).toString();
@@ -426,9 +426,9 @@ public class ItemInInventory {
                         s3 = new StringBuffer(String.valueOf(s3)).append("\n").append(Res.nameClazz[this.clazz]).toString();
                     }
                     if (item.ndayLoan == 0) {
-                        s = new StringBuffer(String.valueOf(s3)).append("\nGiá: ").append(Canvas.getMoneys(item.price + (this.plusTemplate * 1000))).append(" ").append("xu").toString();
+                        s = new StringBuffer(String.valueOf(s3)).append("\nGiá: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, item.price + (this.plusTemplate * 1000))).toString();
                     } else {
-                        s = new StringBuffer(String.valueOf(s3)).append("\nGiá: ").append(Canvas.getMoneys(item.price + this.plusTemplate)).append(" Lượng").toString();
+                        s = new StringBuffer(String.valueOf(s3)).append("\nGiá: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.LUONG, item.price + this.plusTemplate)).toString();
                     }
                     if (this.level != -1) {
                         s = new StringBuffer(String.valueOf(s)).append("\nYêu cầu lv: ").append((int) this.level).toString();
@@ -459,7 +459,7 @@ public class ItemInInventory {
                 }
             }
             if (this.catagory == 4 && this.isShopItem) {
-                String s4 = new StringBuffer(String.valueOf(new StringBuffer().append(MainChar.listPotion[this.potionType].name).toString())).append("\nGiá: ").append(Canvas.getMoneys(Res.potionTemplates[this.potionType].price)).append("$").toString();
+                String s4 = new StringBuffer(String.valueOf(new StringBuffer().append(MainChar.listPotion[this.potionType].name).toString())).append("\nGiá: ").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, Res.potionTemplates[this.potionType].price)).toString();
                 if (Res.potionTemplates[this.potionType].recovered >= 80) {
                     s4 = new StringBuffer(String.valueOf(s4)).append("\nTăng ").append((int) Res.potionTemplates[this.potionType].recovered).append(" ").append(MainChar.listPotion[this.potionType].name2).toString();
                 } else if (Res.potionTemplates[this.potionType].recovered == 0) {
@@ -526,7 +526,7 @@ public class ItemInInventory {
             b = (byte) (i + 1);
         }
         if (this.prize > 0) {
-            s2 = new StringBuffer(String.valueOf(s2)).append("\nGiá bán:\n0").append(Canvas.getMoneys(this.prize)).toString();
+            s2 = new StringBuffer(String.valueOf(s2)).append("\nGiá bán:\n0").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, this.prize)).toString();
             Cout.println(new StringBuffer(String.valueOf(this.prize)).append(" GIA BAN ").append(Canvas.getMoneys(this.prize)).toString());
         }
         return s2;

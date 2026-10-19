@@ -788,6 +788,7 @@ public class GameScr extends Screen {
 
     @Override
     public void update() {
+        game.pokemon.MenuNguCanh.tiepQuan();   // pokemon 0.9.3: menu chữ trên màn chơi -> menu nút to (máy cảm ứng / chuột)
         AutoGuard.tick(); // Tự động đánh chính thức + Menu nhanh (code mod dùng chung)
         for (int i = 0; i < this.VecDataEff.size(); i++) {
             DataSkillEff data = (DataSkillEff) this.VecDataEff.elementAt(i);
@@ -938,6 +939,9 @@ public class GameScr extends Screen {
         }
         for (int i9 = 0; i9 < removeactor.size(); i9++) {
             this.actors.removeElement(removeactor.elementAt(i9));
+        }
+        if (Canvas.gameTick % 10 == 0) {
+            game.pokemon.PetDuyNhat.donDep(this.actors);   // pokemon: pet của người đã rời cảnh / pet thừa
         }
         updateMsgServer();
         setRemoveIconImg();
@@ -2939,7 +2943,7 @@ public class GameScr extends Screen {
                     }
                 }
             }));
-            menu.addElement(new Command(new StringBuffer("Mua vé (").append(pTicket).append(" ").append("xu").append(")").toString(), new IAction() {
+            menu.addElement(new Command(new StringBuffer("Mua vé (").append(game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, pTicket)).append(")").toString(), new IAction() {
                 @Override
                 public void perform() {
                     GameScr.this.gameService.buyTicket();
@@ -5127,80 +5131,64 @@ public class GameScr extends Screen {
     }
 
     public void onCharWearingInfo(short charID, Vector items, byte idFashion, byte typePet, String petInfo, AnimalMove myPet, short[] idModel0, byte idIconAnimal) {
-        if (charID == this.mainChar.ID) {
-            this.mainChar.idFashion = idFashion;
-            this.mainChar.setWearingInfo(items);
-            this.mainChar.idAnimal = typePet;
-            this.mainChar.infoAnimal = petInfo;
-            this.mainChar.idModel = idModel0;
-            this.mainChar.idPaintIconAnimal = idIconAnimal;
-            if (myPet != null) {
-                myPet.idSameMyOwnerID = this.mainChar.ID;
-                setCharPet(myPet, this.mainChar);
-                return;
-            } else {
-                if (this.mainChar.myPet != null) {
-                    this.mainChar.myPet.status = (short) 3;
-                    this.mainChar.myPet.timeMagic = 20;
-                    return;
-                }
-                return;
-            }
-        }
-        Char c = (Char) findCharByID(charID);
-        if (c != null) {
-            c.idFashion = idFashion;
-            c.setWearingInfo(items);
-            c.idAnimal = typePet;
-            c.infoAnimal = petInfo;
-            c.idModel = idModel0;
-            c.idPaintIconAnimal = idIconAnimal;
-            if (myPet != null) {
-                myPet.idSameMyOwnerID = c.ID;
-                setCharPet(myPet, c);
-            } else if (c.myPet != null) {
-                c.myPet.status = (short) 3;
-                c.myPet.timeMagic = 20;
-            }
-        }
-    }
-
-    public void setCharPet(AnimalMove pet, Char myOwner0) {
-        if (pet.type == 5) {
-            clearCharPet(myOwner0.ID);
-            Pet p = new Pet(myOwner0, pet.imgID);
-            setInfoCharPet(pet, myOwner0);
-            this.actors.addElement(p);
+        Char c = charID == this.mainChar.ID ? (Char) this.mainChar : (Char) findCharByID(charID);
+        if (c == null) {
             return;
         }
-        clearCharPet(myOwner0.ID);
-        int size0 = this.actors.size();
-        for (int i = 0; i < size0; i++) {
-            Actor ac = (Actor) this.actors.elementAt(i);
-            if (ac != null && ac.catagory == pet.catagory && !ac.ispetTool()) {
-                AnimalMove pp = (AnimalMove) ac;
-                if (pp.idSameMyOwnerID == pet.idSameMyOwnerID) {
-                    pp.type = pet.type;
-                    pp.imgID = pet.imgID;
-                    pp.sumFrame = pet.sumFrame;
-                    pp.infoPet = pet.infoPet;
-                    pp.totalTime = pet.totalTime;
-                    pp.timeStart = pet.timeStart;
-                    setInfoCharPet(pp, myOwner0);
-                    return;
-                }
-            }
+        c.idFashion = idFashion;
+        c.setWearingInfo(items);
+        c.idAnimal = typePet;
+        c.infoAnimal = petInfo;
+        c.idModel = idModel0;
+        c.idPaintIconAnimal = idIconAnimal;
+        if (myPet != null) {
+            myPet.idSameMyOwnerID = c.ID;
+            setCharPet(myPet, c);
+        } else {
+            game.pokemon.PetDuyNhat.cat(this.actors, c);   // pokemon: cất pet (một pet / người, không sót bản cũ)
         }
-        pet.setFrameType4();
-        setInfoCharPet(pet, myOwner0);
-        this.actors.addElement(pet);
+        game.pokemon.TrangThaiNguoiChoi.doi(c == this.mainChar ? game.pokemon.TrangThaiNguoiChoi.TRANG_BI : 0);
+    }
+
+    /**
+     * Đặt pet đi theo của chủ (gói 37 trang bị). pokemon: qua PetDuyNhat - đúng MỘT actor pet / người chơi: đổi pet
+     * thay pet cũ (kể cả đổi giữa pet kiểu 5 = Pet và pet AnimalMove), không thêm bản thứ hai.
+     */
+    public void setCharPet(AnimalMove pet, Char myOwner0) {
+        pet.idSameMyOwnerID = myOwner0.ID;
+        if (pet.type == 5) {
+            AnimalMove cu = myOwner0.petCanh;
+            setInfoCharPet(pet, myOwner0);   // mẫu giữ thông tin pet (mô tả, thời hạn) cho bảng trang bị thú
+            if (cu instanceof Pet && this.actors.contains(cu) && ((Pet) cu).idTemplate == pet.imgID) {
+                game.pokemon.PetDuyNhat.dat(this.actors, myOwner0, cu);
+                return;
+            }
+            Pet p = new Pet(myOwner0, pet.imgID);
+            game.pokemon.PetDuyNhat.dat(this.actors, myOwner0, p);
+            return;
+        }
+        AnimalMove pp = game.pokemon.PetDuyNhat.timAnimal(this.actors, myOwner0.ID);
+        if (pp != null) {
+            pp.type = pet.type;
+            pp.imgID = pet.imgID;
+            pp.sumFrame = pet.sumFrame;
+            pp.infoPet = pet.infoPet;
+            pp.totalTime = pet.totalTime;
+            pp.timeStart = pet.timeStart;
+            pp.idSameMyOwnerID = myOwner0.ID;
+        } else {
+            pp = pet;
+            pp.setFrameType4();
+        }
+        setInfoCharPet(pp, myOwner0);
+        game.pokemon.PetDuyNhat.dat(this.actors, myOwner0, pp);
     }
 
     public void clearCharPet(short id) {
-        for (int i = 0; i < this.actors.size(); i++) {
+        for (int i = this.actors.size() - 1; i >= 0; i--) {
             Actor ac = (Actor) this.actors.elementAt(i);
             if (ac != null && ac.catagory == 12 && ac.ID == id && ac.ispetTool()) {
-                this.actors.removeElement(ac);
+                this.actors.removeElementAt(i);
             }
         }
     }
@@ -5458,57 +5446,17 @@ public class GameScr extends Screen {
     }
 
     public void onUsePotion(short userId, byte potionType, short valueAdd, int valueNew, int isHP) {
+        // pokemon: một nguồn sự thật HP / PP (MauPP) - đặt giá trị tuyệt đối của server, HUD đọc ngay khung sau
         Char c = (Char) findCharByID(userId);
         if (c == null) {
             return;
         }
-        if (valueNew <= 0) {
-            c.hp = 0;
-            c.realHP = 0;
-            c.state = (byte) 3;
-            return;
-        }
-        switch (potionType) {
-            case 1:
-            case 2:
-            case 3:
-            case 21:
-            case 22:
-                if (c.hp < valueNew) {
-                    c.realHP = valueNew;
-                    c.hp = valueNew;
-                }
-                startFlyText(valueAdd > 0 ? "hp+" : new StringBuffer("hp").append((int) valueAdd).toString(), 4, c.x - 10, c.y - 30, 0, -1);
-                return;
-            case 4:
-            case 5:
-            case 6:
-            case 23:
-            case 24:
-                if (c.mp < valueNew) {
-                    c.mp = valueNew;
-                }
-                startFlyText(valueAdd > 0 ? "mp+" : new StringBuffer("mp").append((int) valueAdd).toString(), 3, c.x - 10, c.y - 40, 0, -1);
-                break;
-            case 34:
-            case 82:
-            case 85:
-                break;
-            default:
-                return;
-        }
-        if (isHP == 1) {
-            if (c.hp < valueNew) {
-                c.realHP = valueNew;
-                c.hp = valueNew;
-            }
+        int k = game.pokemon.MauPP.apDung22(c, potionType, valueNew, isHP);
+        if (k == game.pokemon.MauPP.HP && valueNew > 0) {
             startFlyText(valueAdd > 0 ? "hp+" : new StringBuffer("hp").append((int) valueAdd).toString(), 4, c.x - 10, c.y - 30, 0, -1);
-            return;
+        } else if (k == game.pokemon.MauPP.PP && valueAdd > 0) {
+            startFlyText("mp+", 3, c.x - 10, c.y - 40, 0, -1);
         }
-        if (c.mp < valueNew) {
-            c.mp = valueNew;
-        }
-        startFlyText(valueAdd > 0 ? "mp+" : new StringBuffer("mp").append((int) valueAdd).toString(), 3, c.x - 10, c.y - 40, 0, -1);
     }
 
     private ItemInInventory getItemByID(Vector list, short id) {
@@ -5562,6 +5510,10 @@ public class GameScr extends Screen {
             item.isShopItem = true;
             this.shop.addElement(item);
         }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManCuaHang.mo(game.pokemon.ManCuaHang.THUOC, new byte[]{0, 19});   // pokemon 0.9.3: Poké Mart mới
+            return;
+        }
         showWindow(1, true, new byte[]{0, 19});
     }
 
@@ -5593,11 +5545,13 @@ public class GameScr extends Screen {
         this.shop = itemsSell;
         ItemInInventory item = (ItemInInventory) itemsSell.elementAt(0);
         ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
-        if ((it.type > 2 && it.type < 8) || (it.type >= 14 && it.type <= 18)) {
-            WindowInfoScr.gI().setInfo(1, true, new byte[]{0, 9});
-        } else {
-            WindowInfoScr.gI().setInfo(0, true, new byte[]{11, 12, 13, 14, 15, 16, 17, 18, 0});
+        byte[] cu = (it.type > 2 && it.type < 8) || (it.type >= 14 && it.type <= 18) ? new byte[]{0, 9}
+                : new byte[]{11, 12, 13, 14, 15, 16, 17, 18, 0};
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManCuaHang.mo(game.pokemon.ManCuaHang.DO, cu);   // pokemon 0.9.3: cửa hàng mới
+            return;
         }
+        WindowInfoScr.gI().setInfo(cu.length == 2 ? 1 : 0, true, cu);
         WindowInfoScr.gI().switchToMe();
     }
 
@@ -5622,10 +5576,10 @@ public class GameScr extends Screen {
     public void onSellItem(short itemID) {
         ItemInInventory item = getItemByID(Char.inventory, itemID);
         if (item != null) {
+            // pokemon: server đã bán (lệnh 28 = xác nhận). Xu + thông báo "Đã bán X (+giá)" do server gửi ngay sau
+            // (túi 16 / -105 / -104) - trước client tự cộng price/5 (sai giá thật) và hộp "Đã bán thành công." chung
             Char.inventory.removeElement(item);
-            ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
-            this.mainChar.charXu += (long) (it.price / 5);
-            Canvas.startOKDlg("Đã bán thành công.", false);
+            game.pokemon.TrangThaiNguoiChoi.doi(game.pokemon.TrangThaiNguoiChoi.TUI);
         }
     }
 
@@ -5635,9 +5589,7 @@ public class GameScr extends Screen {
             gem.number--;
             if (gem.number <= 0) {
                 MainChar.gemItem.removeElement(gem);
-                GemTemp g = Res.getGemByID(gem.id);
-                this.mainChar.charXu += (long) (g.price / 5);
-                Canvas.startOKDlg("Đã bán thành công.");
+                game.pokemon.TrangThaiNguoiChoi.doi(game.pokemon.TrangThaiNguoiChoi.TUI);   // pokemon: xu + thông báo do server
             }
         }
     }
@@ -5712,6 +5664,9 @@ public class GameScr extends Screen {
             Actor a = (Actor) this.actors.elementAt(i);
             if (a.catagory == cat && a.ID == actorID) {
                 this.actors.removeElement(a);
+                if (cat == 0) {
+                    game.pokemon.PetDuyNhat.bo(this.actors, actorID, null);   // pokemon: người rời cảnh -> gỡ pet
+                }
                 return;
             }
         }
@@ -5961,17 +5916,11 @@ public class GameScr extends Screen {
 
     public void onNewHPMP(Message msg) {
         try {
-            int id = msg.reader().readShort();
-            int maxhp = msg.reader().readInt();
-            int maxmp = msg.reader().readInt();
-            short defend = msg.reader().readShort();
-            int hp = msg.reader().readInt();
+            // pokemon: MauPP đọc cả PP ở đuôi gói (server 0.9.3) - HP / max / PP của mình và người khác
+            int[] v = game.pokemon.MauPP.doc60(msg.reader());
+            int id = v[0];
             if (id == this.mainChar.ID) {
-                this.mainChar.maxhp = maxhp;
-                this.mainChar.maxmp = maxmp;
-                this.mainChar.defend = defend;
-                this.mainChar.hp = hp;
-                this.mainChar.realHP = hp;
+                game.pokemon.MauPP.apDung60(this.mainChar, v);
                 if (this.mainChar.state == 3 && this.mainChar.hp > 0) {
                     this.mainChar.state = (byte) 0;
                     addChat(new ChatInfo("", "Đã được hồi sinh.", 0));
@@ -5983,12 +5932,8 @@ public class GameScr extends Screen {
             for (int i = 0; i < size0; i++) {
                 Actor ac = (Actor) this.actors.elementAt(i);
                 if (ac.catagory == 0 && ac.ID == id) {
-                    ((Char) ac).hp = hp;
-                    ((Char) ac).realHP = hp;
-                    ((Char) ac).maxhp = maxhp;
-                    ((Char) ac).maxmp = maxmp;
-                    ((Char) ac).defend = defend;
-                    if (((Char) ac).state == 3 && this.mainChar.hp > 0) {
+                    game.pokemon.MauPP.apDung60((Char) ac, v);
+                    if (((Char) ac).state == 3 && ((Char) ac).hp > 0) {
                         ((Char) ac).state = (byte) 0;
                         addChat(new ChatInfo("", new StringBuffer(String.valueOf(((Char) ac).name)).append(" đã được hồi sinh.").toString(), 0));
                         return;
@@ -6044,6 +5989,10 @@ public class GameScr extends Screen {
         }
         addChat(new ChatInfo("", st, 0));
         cancelTrade();
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManGiaoDich.mo();   // pokemon 0.9.3: giao dịch mới
+            return;
+        }
         WindowInfoScr.gI().setInfo(0, true, new byte[]{8});
         WindowInfoScr.gI().setSize(108, 90, 6, 6, 18, 18);
         WindowInfoScr.gI().switchToMe();
@@ -6057,6 +6006,7 @@ public class GameScr extends Screen {
         }
         addChat(new ChatInfo("", new StringBuffer(String.valueOf(st)).append(" không đồng ý giao dịch").toString(), 0));
         cancelTrade();
+        game.pokemon.ManGiaoDich.ket();
     }
 
     public void onItemTrade(short userIdTrade, Message msg, byte type) {
@@ -6160,6 +6110,7 @@ public class GameScr extends Screen {
     }
 
     public void onConfirmTrade() {
+        game.pokemon.ManGiaoDich.haiBenKhoa();
         if (WindowInfoScr.index[WindowInfoScr.focusTab] == 8) {
             WindowInfoScr.gI().left = new Command("Chuyển", new IAction() {
                 @Override
@@ -6194,11 +6145,13 @@ public class GameScr extends Screen {
 
     public void onFinishTrade() {
         cancelTrade();
+        game.pokemon.ManGiaoDich.ket();
         Canvas.startOKDlg("Giao dịch hoàn thành", false);
     }
 
     public void oncancelTrade() {
         cancelTrade();
+        game.pokemon.ManGiaoDich.ket();
         Canvas.startOKDlg("Giao dịch bị hủy.");
     }
 
@@ -6638,6 +6591,10 @@ public class GameScr extends Screen {
                 }
                 ch.setWearingInfo(we);
                 list.addElement(ch);
+            }
+            if (game.pokemon.ManXepHang.nhan(type, list)) {
+                Canvas.endDlg();
+                return;   // pokemon 0.9.3: màn Xếp hạng đang chờ kiểu này
             }
             if (list.size() > 0) {
                 if (type == 0) {

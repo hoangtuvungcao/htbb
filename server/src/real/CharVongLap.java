@@ -1454,7 +1454,7 @@ class CharVongLap {
             if (typegift[index] == -8) {
                 final int lk = Map.r.nextInt(3) + 1;
                 self.addLuongLock(lk);
-                info = String.valueOf(info) + lk + " lượng khoá, ";
+                info = String.valueOf(info) + com.htbb.pokemon.TienTeChu.chu(com.htbb.pokemon.TienTeChu.LUONG_KHOA, lk) + ", ";
             } else if (typegift[index] == -9) {
                 final int[] minute = {4320};
                 final Item newItem = ItemLuckyDraw.createtemCoat(750, self, Map.r.nextInt(2), true, minute[Map.r.nextInt(minute.length)]);

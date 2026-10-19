@@ -40,6 +40,7 @@ public class CreateCharScr extends Screen {
     public void switchToMe() {
         loadImg();
         super.switchToMe();
+        init();   // pokemon: bố cục theo cỡ màn HIỆN TẠI (cửa sổ / màn đổi cỡ khi đang ở màn khác)
         // pokemon: mở màn = ô Tên đang gõ (không kẹt ở dòng Vùng); bỏ cú chạm còn sót từ màn trước
         this.selected = 0;
         this.tfChat.isFocus = true;
@@ -282,6 +283,12 @@ public class CreateCharScr extends Screen {
                 g.setColor(game.pokemon.GiaoDien.VANG);
                 g.fillArc(cx - c / 2 - 3, yAnh - 3, c + 6, c + 6, 0, 360);
             }
+            final int khoi = i;
+            game.pokemon.VungCham.them(g, cx - c / 2 - 2, yAnh - 2, c + 4, c + 4, new IAction() {
+                public void perform() {
+                    CreateCharScr.this.chonKhoiDau(khoi);
+                }
+            }, "khoi-dau-" + i);
             if (!PokeBody.paintChanDung(g, dex, false, cx, yAnh + c / 2, c)) {
                 game.pokemon.GiaoDien.khoi(g, cx - c / 2, yAnh, c, c, 3, game.pokemon.GiaoDien.mauHe(LoaiPokemonClient.HE_KHOI_DAU[i]));
             }
@@ -306,6 +313,12 @@ public class CreateCharScr extends Screen {
         Font.blackFont.drawString(g, LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz], xc, yGiua + 4, 0);
         game.pokemon.GiaoDien.huyHieuHe(g, xc, yGiua + 21, LoaiPokemonClient.HE_KHOI_DAU[this.currentClazz]);
         Font.arialFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFont, LoaiPokemonClient.VAI_TRO[this.currentClazz], x0 + W - 10 - xc), xc, yGiua + 40, 0);
+        // chạm thẻ Pokémon đang chọn / mũi tên = Pokémon kế tiếp
+        game.pokemon.VungCham.them(g, x0 + 6, yGiua, W - 12, 58, new IAction() {
+            public void perform() {
+                CreateCharScr.this.chonKhoiDau((CreateCharScr.this.currentClazz + 1) % 5);
+            }
+        }, "khoi-dau-ke");
         // mũi tên trái / phải đổi Pokémon
         g.setColor(game.pokemon.GiaoDien.XANH);
         g.fillTriangle(x0 + W - 22, yGiua + 10, x0 + W - 22, yGiua + 22, x0 + W - 15, yGiua + 16);
@@ -320,10 +333,37 @@ public class CreateCharScr extends Screen {
         if (this.selected == 2) {
             game.pokemon.GiaoDien.chon(g, x0 + 6, yVung - 3, W - 12, 19);
         }
+        game.pokemon.VungCham.them(g, x0 + 6, yVung - 3, W - 12, 19, new IAction() {
+            public void perform() {
+                CreateCharScr.this.chamVung();
+            }
+        }, "vung");
         Font.normalFont[0].drawString(g, new StringBuffer("Vùng: ").append(GameScr.nameCountry[selectNation]).toString(), x0 + 12, yVung, 0);
         g.setColor(game.pokemon.GiaoDien.VANG);
         g.fillTriangle(x0 + W - 34, yVung + 6, x0 + W - 28, yVung + 1, x0 + W - 28, yVung + 11);
         g.fillTriangle(x0 + W - 12, yVung + 6, x0 + W - 18, yVung + 1, x0 + W - 18, yVung + 11);
+    }
+
+    /** Chọn Pokémon khởi đầu i (chạm chân dung / thẻ). */
+    void chonKhoiDau(int i) {
+        if (this.currentClazz != i) {
+            this.currentClazz = i;
+            changChar();
+            loadImg();
+        }
+        this.selected = 1;
+        this.tfChat.isFocus = false;
+        this.right = null;
+    }
+
+    /** Chạm dòng Vùng: lần đầu chỉ chọn dòng, lần nữa mới đổi vùng (không đổi nhầm). */
+    void chamVung() {
+        if (this.selected == 2) {
+            selectNation = selectNation == 0 ? 1 : 0;
+        }
+        this.selected = 2;
+        this.tfChat.isFocus = false;
+        this.right = null;
     }
 
     /** pokemon: chạm chân dung để chọn Pokémon, chạm dòng vùng để đổi vùng. */

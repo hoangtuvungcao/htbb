@@ -4,9 +4,10 @@ import javax.microedition.lcdui.KhungCoDinh;
 /**
  * Kiểm thử thuần Java (không Android, không máy) cho CAMERA CỐ ĐỊNH của bản APK (KhungCoDinh) và toán phóng cửa sổ
  * jar (HdPhongToan):
- *  - logic luôn 640x360, vùng nhìn thế giới 320x180, hệ số nguyên khi được, viền canh giữa;
- *  - chạm màn thật -> logic khứ hồi đúng từng điểm, chạm vào viền kẹp mép;
- *  - vùng an toàn (tai thỏ) nằm trong viền thì không chừa;
+ *  - phủ kín (cover), không viền; logic <= 640x360 mỗi chiều -> vùng nhìn thế giới <= 320x180 (20:9 = 20 x 9 ô,
+ *    4:3 = 15 x 11,25 ô);
+ *  - chạm màn thật -> logic khứ hồi đúng từng điểm, mép màn kẹp đúng;
+ *  - vùng an toàn (tai thỏ) đổi đúng sang px logic;
  *  - cửa sổ phóng (HdPhong) nằm trọn trong khung, canh giữa; hai lớp (cửa sổ + hộp thoại) không làm hoạt hình
  *    mở chạy lại mỗi khung (lỗi popup xác nhận mua lệch); chạm đổi ngược đúng.
  *
@@ -41,62 +42,76 @@ public final class KiemKhungCoDinh {
         System.exit(hong == 0 ? 0 : 1);
     }
 
-    static void heSo(int w, int h, float tiLe, boolean nguyen, int lx, int ly) {
+    /** Phủ kín: tiLe = max(w/640, h/360), logic = ceil(w/tiLe) x ceil(h/tiLe) <= 640 x 360, không viền. */
+    static void heSo(int w, int h, float tiLe, int lw, int lh) {
         KhungCoDinh k = KhungCoDinh.tinh(w, h);
-        bang(w + "x" + h + " tiLe", Float.valueOf(tiLe), Float.valueOf(Math.round(k.tiLe * 1000) / 1000f));
-        bang(w + "x" + h + " nguyen", Boolean.valueOf(nguyen), Boolean.valueOf(k.nguyen));
-        bang(w + "x" + h + " lechX", Integer.valueOf(lx), Integer.valueOf(k.lechX));
-        bang(w + "x" + h + " lechY", Integer.valueOf(ly), Integer.valueOf(k.lechY));
-        dung(w + "x" + h + " khung vua man", k.khungW <= w && k.khungH <= h && k.lechX >= 0 && k.lechY >= 0);
-        dung(w + "x" + h + " ti le 16:9 giu nguyen", Math.abs(k.khungW * 360 - k.khungH * 640) <= 640);
+        String t = w + "x" + h;
+        bang(t + " tiLe", Float.valueOf(tiLe), Float.valueOf(Math.round(k.tiLe * 1000) / 1000f));
+        bang(t + " logicW", Integer.valueOf(lw), Integer.valueOf(k.logicW));
+        bang(t + " logicH", Integer.valueOf(lh), Integer.valueOf(k.logicH));
+        bang(t + " khong vien X", Integer.valueOf(0), Integer.valueOf(k.lechX));
+        bang(t + " khong vien Y", Integer.valueOf(0), Integer.valueOf(k.lechY));
+        dung(t + " phu kin ngang", k.logicW * k.tiLe >= w - 0.01f);
+        dung(t + " phu kin doc", k.logicH * k.tiLe >= h - 0.01f);
+        dung(t + " tran mep < 1 px logic", (k.logicW - 1) * k.tiLe < w && (k.logicH - 1) * k.tiLe < h);
+        // công bằng: không thấy hơn tham chiếu 16:9 ở bất kỳ chiều nào
+        dung(t + " vung nhin <= 320x180 (" + KhungCoDinh.nhinW(k.logicW) + "x" + KhungCoDinh.nhinH(k.logicH) + ")",
+                KhungCoDinh.nhinW(k.logicW) <= 320 && KhungCoDinh.nhinH(k.logicH) <= 180);
+        // một chiều luôn đúng bằng tham chiếu (lấp đầy chiều đó)
+        dung(t + " mot chieu = tham chieu", k.logicW == 640 || k.logicH == 360);
     }
 
     static void kiemHeSo() {
-        heSo(1280, 720, 2f, true, 0, 0);
-        heSo(1920, 1080, 3f, true, 0, 0);
-        heSo(2560, 1440, 4f, true, 0, 0);
-        heSo(2400, 1080, 3f, true, 240, 0);      // điện thoại 20:9 -> pillarbox
-        heSo(1600, 720, 2f, true, 160, 0);
-        heSo(2340, 1080, 3f, true, 210, 0);
-        heSo(3200, 1440, 4f, true, 320, 0);
-        heSo(1280, 800, 2f, true, 0, 40);        // máy tính bảng 16:10 -> letterbox
-        heSo(2048, 1536, 3f, true, 64, 228);     // 4:3: 3 / 3,2 >= 0,8 -> nguyên
-        heSo(2772, 1240, 3f, true, 426, 80);
-        heSo(854, 480, 1.333f, false, 0, 0);     // 1 / 1,33 < 0,8 -> hệ số lẻ
-        heSo(960, 540, 1.5f, false, 0, 0);
-        heSo(640, 360, 1f, true, 0, 0);
+        heSo(1280, 720, 2f, 640, 360);
+        heSo(1920, 1080, 3f, 640, 360);
+        heSo(2560, 1440, 4f, 640, 360);
+        heSo(2400, 1080, 3.75f, 640, 288);       // 20:9 -> 20 x 9 ô
+        heSo(1600, 720, 2.5f, 640, 288);
+        heSo(2340, 1080, 3.656f, 640, 296);      // 19.5:9
+        heSo(3200, 1440, 5f, 640, 288);
+        heSo(3440, 1440, 5.375f, 640, 268);      // 21:9
+        heSo(1280, 800, 2.222f, 576, 360);       // 16:10 -> cắt ngang
+        heSo(2560, 1600, 4.444f, 576, 360);
+        heSo(2048, 1536, 4.267f, 480, 360);      // 4:3 -> 15 x 11,25 ô
+        heSo(2772, 1240, 4.331f, 640, 287);
+        heSo(854, 480, 1.334f, 640, 360);
+        heSo(640, 360, 1f, 640, 360);
         bang("vung nhin the gioi rong", Integer.valueOf(320), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
         bang("vung nhin the gioi cao", Integer.valueOf(180), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
         bang("20 o ngang", Integer.valueOf(20), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
+        bang("20:9 -> 9 o doc", Integer.valueOf(9), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
     }
 
     static void kiemCham() {
-        int[][] man = {{2400, 1080}, {1600, 720}, {1280, 800}, {854, 480}, {960, 540}, {2772, 1240}};
+        int[][] man = {{2400, 1080}, {1600, 720}, {1280, 800}, {854, 480}, {960, 540}, {2772, 1240}, {2048, 1536}, {3440, 1440}};
         for (int m = 0; m < man.length; m++) {
             KhungCoDinh k = KhungCoDinh.tinh(man[m][0], man[m][1]);
             boolean ok = true;
-            for (int p = 0; p < 640; p += 7) {
-                float that = k.lechX + (p + 0.5f) * k.tiLe;
-                if (k.logicXKep(that) != p) ok = false;
+            for (int p = 0; p < k.logicW; p += 7) {
+                float that = (p + 0.5f) * k.tiLe;
+                if (that < man[m][0] && k.logicXKep(that) != p) ok = false;
             }
-            for (int p = 0; p < 360; p += 5) {
-                float that = k.lechY + (p + 0.5f) * k.tiLe;
-                if (k.logicYKep(that) != p) ok = false;
+            for (int p = 0; p < k.logicH; p += 5) {
+                float that = (p + 0.5f) * k.tiLe;
+                if (that < man[m][1] && k.logicYKep(that) != p) ok = false;
             }
-            dung(man[m][0] + "x" + man[m][1] + " cham khu hoi dung", ok);
-            bang(man[m][0] + "x" + man[m][1] + " cham vien trai kep 0", Integer.valueOf(0), Integer.valueOf(k.logicXKep(0)));
-            bang(man[m][0] + "x" + man[m][1] + " cham vien phai kep 639", Integer.valueOf(639), Integer.valueOf(k.logicXKep(man[m][0] - 1)));
-            dung(man[m][0] + "x" + man[m][1] + " vien khong thuoc khung", k.lechX == 0 || !k.trongKhung(k.lechX - 1, man[m][1] / 2f));
+            String t = man[m][0] + "x" + man[m][1];
+            dung(t + " cham khu hoi dung", ok);
+            bang(t + " mep trai -> 0", Integer.valueOf(0), Integer.valueOf(k.logicXKep(0)));
+            // mép phải / dưới: hàng logic cuối (hàng tràn < 1 px logic có thể không có điểm ảnh thật nào)
+            dung(t + " mep phai -> hang cuoi", k.logicXKep(man[m][0] - 1) >= k.logicW - 2);
+            dung(t + " mep duoi -> hang cuoi", k.logicYKep(man[m][1] - 1) >= k.logicH - 2);
+            dung(t + " ca man la khung", k.trongKhung(0, 0) && k.trongKhung(man[m][0] - 1, man[m][1] - 1));
         }
     }
 
     static void kiemAnToan() {
         int[] l = KhungCoDinh.tinh(2400, 1080).anToanLogic(100, 0, 48, 0);
-        bang("tai tho 100px nam trong vien 240px", Integer.valueOf(0), Integer.valueOf(l[0]));
-        bang("bo goc phai trong vien", Integer.valueOf(0), Integer.valueOf(l[2]));
+        bang("tai tho 100px / 3,75 -> 27 logic", Integer.valueOf(27), Integer.valueOf(l[0]));
+        bang("bo goc phai 48px -> 13 logic", Integer.valueOf(13), Integer.valueOf(l[2]));
         l = KhungCoDinh.tinh(1600, 720).anToanLogic(200, 0, 0, 30);
-        bang("tai tho 200px lan vao khung 40px -> 20 logic", Integer.valueOf(20), Integer.valueOf(l[0]));
-        bang("thanh duoi 30px x2 -> 15 logic", Integer.valueOf(15), Integer.valueOf(l[3]));
+        bang("tai tho 200px / 2,5 -> 80 logic", Integer.valueOf(80), Integer.valueOf(l[0]));
+        bang("thanh duoi 30px / 2,5 -> 12 logic", Integer.valueOf(12), Integer.valueOf(l[3]));
         l = KhungCoDinh.tinh(1280, 720).anToanLogic(0, 0, 0, 0);
         bang("khong tai tho", Integer.valueOf(0), Integer.valueOf(l[0] + l[1] + l[2] + l[3]));
     }

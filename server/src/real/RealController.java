@@ -1016,7 +1016,7 @@ public class RealController extends ServerController {
                                     if (!TuDongGame.kiemLenh(p, 22)) {
                                         break;
                                     }
-                                    DungVatPham.dungThuoc(null, p, message); // -> doUsePotion.doUsePotion, co phan hoi
+                                    HanhDongVatPham.boc(p, HanhDongVatPham.DUNG, () -> DungVatPham.dungThuoc(null, p, message)); // -> doUsePotion.doUsePotion, co phan hoi
                                     break;
                                 case -30:// doMenu(player, message);
                                     int idNpc = message.dis.readShort();

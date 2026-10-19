@@ -29,7 +29,7 @@ const suKienHn = CAM_NANG.suKien.filter(s => /hầm ngục/i.test(`${s.ten1} ${s
           <b>{{ HN.expPhanTramGio }}%</b><span>EXP của một giờ đánh quái ở tầng {{ HN.tangDuExp }} trở lên (thấp hơn thì nhận theo tỉ lệ tầng)</span>
         </div>
         <div class="the-so">
-          <b>{{ HN.luongKhoa }} lượng khoá</b><span>khi qua từ tầng {{ HN.tangLuongKhoa }} trở lên</span>
+          <b><TienTe loai="luong_khoa" :gt="HN.luongKhoa" :co="22" ten /></b><span>khi qua từ tầng {{ HN.tangLuongKhoa }} trở lên</span>
         </div>
       </div>
     </WikiSection>

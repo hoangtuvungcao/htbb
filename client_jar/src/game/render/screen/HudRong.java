@@ -46,7 +46,7 @@ public final class HudRong {
 
     static final int N_MENU = 0, N_TUI = 1, N_POKE = 2, N_NV = 3, N_NHOM = 4, N_BAN_DO = 5, N_SINH_THAI = 6, N_CAI_DAT = 7;
     static final int SO_NUT_TREN = 8;
-    static final int R_TREN = 11, BUOC_TREN = 25, Y_TREN = 14;
+    static final int R_TREN = 11, BUOC_TREN = 27, Y_TREN = 14;
     /** đỉnh đầu thẻ bản đồ nhỏ / đỉnh ảnh bản đồ nhỏ */
     static final int Y_DAU_MM = 29, Y_MM = 45;
     static final int MM_W = 132, MM_H = 82;
@@ -65,7 +65,7 @@ public final class HudRong {
     }
 
     // cụm chiến đấu
-    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 58, R_THUOC = 12, R_NGU_CANH = 14, R_DOI_BO = 9;
+    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 64, R_THUOC = 12, R_NGU_CANH = 14, R_DOI_BO = 9;
     static final int[] GOC_CHIEU = {180, 145, 110, 75};
     static final int[] PHIM_CHIEU = {1, 3, 7, 9};
     /** cos / sin * 1024 của GOC_CHIEU */
@@ -89,19 +89,19 @@ public final class HudRong {
     }
 
     static int xThuoc() {
-        return xDanh() - 94;
+        return xDanh() - 100;
     }
 
     static int yThuoc(boolean hp) {
-        return hp ? yDanh() + 10 : yDanh() - 18;
+        return hp ? yDanh() + 12 : yDanh() - 18;
     }
 
     static int xNguCanh() {
-        return xDanh() - 70;
+        return xDanh() - 84;
     }
 
     static int yNguCanh() {
-        return yDanh() - 66;
+        return yDanh() - 76;
     }
 
     static int xDoiBo() {
@@ -196,6 +196,41 @@ public final class HudRong {
             veBanDoTo(g, gs);
         }
         Canvas.resetTrans(g);
+        if (!banDoTo) {
+            dangKyCham(gs);
+        }
+    }
+
+    /**
+     * Đăng ký mọi nút HUD vào VungCham (TAM: chạm trong vùng đã nới cỡ tối thiểu kéo về tâm nút rồi HudRong.cham xử lý
+     * như cũ) - cùng một nơi đo cỡ chạm / khoảng cách (kiểm thử ChupTrongGame).
+     */
+    static void dangKyCham(GameScr gs) {
+        Object t = game.pokemon.VungCham.TAM;
+        if (Canvas.currentScreen != gs) {
+            return;   // màn chơi đang làm nền cho bảng khác: nút HUD phía sau không nhận chạm
+        }
+        if (gs.hideGUI != 2) {
+            for (int i = 0; i < SO_NUT_TREN; i++) {
+                game.pokemon.VungCham.themTuyetDoi(xNutTren(i) - R_TREN, Y_TREN - R_TREN, 2 * R_TREN + 1, 2 * R_TREN + 1, t, "hud-tren-" + i);
+            }
+            game.pokemon.VungCham.themTuyetDoi(0, 0, rongThe(), caoThe(), t, "hud-the");
+        }
+        if (!hienDuoi(gs)) {
+            return;
+        }
+        for (int i = 0; i < 4; i++) {
+            game.pokemon.VungCham.themTuyetDoi(xChieu(i) - R_CHIEU, yChieu(i) - R_CHIEU, 2 * R_CHIEU + 1, 2 * R_CHIEU + 1, t, "hud-chieu" + i);
+        }
+        game.pokemon.VungCham.themTuyetDoi(xDanh() - R_DANH, yDanh() - R_DANH, 2 * R_DANH + 1, 2 * R_DANH + 1, t, "hud-danh");
+        game.pokemon.VungCham.themTuyetDoi(xDoiBo() - R_DOI_BO, yDoiBo() - R_DOI_BO, 2 * R_DOI_BO + 1, 2 * R_DOI_BO + 1, t, "hud-doi-bo");
+        game.pokemon.VungCham.themTuyetDoi(xThuoc() - R_THUOC, yThuoc(true) - R_THUOC, 2 * R_THUOC + 1, 2 * R_THUOC + 1, t, "hud-thuoc-hp");
+        game.pokemon.VungCham.themTuyetDoi(xThuoc() - R_THUOC, yThuoc(false) - R_THUOC, 2 * R_THUOC + 1, 2 * R_THUOC + 1, t, "hud-thuoc-pp");
+        if (HanhDong.loaiNguCanh() == 3) {
+            game.pokemon.VungCham.themTuyetDoi(xNguCanh() - R_NGU_CANH, yNguCanh() - R_NGU_CANH, 2 * R_NGU_CANH + 1, 2 * R_NGU_CANH + 1, t, "hud-ngu-canh");
+        }
+        game.pokemon.VungCham.themTuyetDoi(xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG, t, "hud-tu-dong");
+        game.pokemon.VungCham.themTuyetDoi(xChat() - R_CHAT, yChat() - R_CHAT, 2 * R_CHAT + 1, 2 * R_CHAT + 1, t, "hud-chat");
     }
 
     static boolean tro(int x, int y, int r) {
@@ -230,11 +265,25 @@ public final class HudRong {
             nen(g, x, y, r, 0x3D6FB0, 0x1A3462, false);
             veIcon(g, i, x, y, r);
         }
+        // chấm đỏ: Menu (có mục mới), Nhiệm vụ (nhiệm vụ mới / đủ để trả)
+        if (game.pokemon.ManMenu.coChamDo()) {
+            chamDo(g, xNutTren(N_MENU) + R_TREN - 3, Y_TREN - R_TREN + 3);
+        }
+        if (game.pokemon.ManNhiemVu.coMoi()) {
+            chamDo(g, xNutTren(N_NV) + R_TREN - 3, Y_TREN - R_TREN + 3);
+        }
         if (tuDong) {
             // đèn nhỏ cạnh nút menu khi Tự động đang chạy
             g.setColor(GiaoDien.HP_XANH);
             g.fillArc(xNutTren(N_MENU) - R_TREN - 2, Y_TREN + R_TREN - 6, 6, 6, 0, 360);
         }
+    }
+
+    static void chamDo(Graphics g, int x, int y) {
+        g.setColor(GiaoDien.TRANG);
+        g.fillArc(x - 4, y - 4, 9, 9, 0, 360);
+        g.setColor(GiaoDien.DO);
+        g.fillArc(x - 3, y - 3, 7, 7, 0, 360);
     }
 
     /** Biểu tượng vẽ bằng nét (không ảnh, không chữ). */
@@ -900,19 +949,19 @@ public final class HudRong {
     static void lam(GameScr gs, int ma, int x, int y) {
         switch (ma) {
             case N_MENU:
-                HanhDong.moMenuChinh();
+                HanhDong.moMenu();   // 0.9.3: menu lưới ô to (2 chạm tới mọi việc), ô "Khác" = menu chữ cũ
                 break;
             case N_TUI:
-                HanhDong.moBang(0);
+                game.pokemon.ManNhanVat.moHanhTrang();
                 break;
             case N_POKE:
-                HanhDong.moBang(3);
+                game.pokemon.ManNhanVat.mo(game.pokemon.ManNhanVat.TAB_KY_NANG);
                 break;
             case N_NV:
-                HanhDong.moBang(6);
+                game.pokemon.ManNhiemVu.mo();
                 break;
             case N_NHOM:
-                HanhDong.moBang(5);
+                game.pokemon.ManDoi.mo(0);
                 break;
             case N_BAN_DO:
                 HanhDong.moBanDoLon();

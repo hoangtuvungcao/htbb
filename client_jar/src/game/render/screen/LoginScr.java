@@ -245,6 +245,8 @@ public class LoginScr extends Screen {
             game.pokemon.GiaoDien.khoi(g, xo + 3, yo + 3, 5, 5, 1, game.pokemon.GiaoDien.LA_TOI);
         }
         Font.blackFont.drawString(g, "Nhớ mật khẩu", this.xC + 18, Canvas.hh + 47, 0);
+        // chạm ô / chữ "Nhớ mật khẩu" = bật / tắt (trước chỉ có phím: chọn dòng rồi bấm "Nhớ")
+        game.pokemon.VungCham.them(g, xo - 2, yo - 3, 18 + Font.blackFont.getWidth("Nhớ mật khẩu") + 4, 17, this.cmdRemem, "nho-mat-khau");
         if (!game.pokemon.Banner.co() && Canvas.hh + 84 + 14 < Canvas.h - Screen.deltaY) {
             Font.borderFont.drawString(g, new StringBuffer("Hỗ trợ: ").append(numberSupport).toString(), Canvas.hw, Canvas.hh + 84, 2);
         }

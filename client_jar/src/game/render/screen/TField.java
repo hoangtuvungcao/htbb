@@ -450,6 +450,7 @@ public class TField extends ObjGame {
 
     @Override
     public void paint(Graphics g) {
+        game.pokemon.VungCham.them(g, this.x, this.y, this.width, this.height, game.pokemon.VungCham.TAM, "o-nhap");   // pokemon: vùng chạm đủ to
         boolean isFocus = isFocused();
         if (this.inputType == 2) {
             this.paintedText = this.passwordText;

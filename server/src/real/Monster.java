@@ -151,6 +151,10 @@ public class Monster extends LiveActor {
         if (this.isMaterialMons() || this.isCongThanh() || this.isLienHoaTru()) {
             return;
         }
+        if (!this.isBoss && this.map != null && this.map.type != null) {
+            this.moveOldVaCham();
+            return;
+        }
         if (this.target != null) {
             int xx = this.x;
             int yy = this.y;
@@ -237,21 +241,10 @@ public class Monster extends LiveActor {
                 } else if (this.target != null) {
                     int xx = this.x;
                     int yy = this.y;
-                    if (Math.abs(this.x - this.target.x) > 16) {
-                        if (this.x > this.target.x) {
-                            xx = this.target.x + 16;
-                        } else {
-                            xx = this.target.x - 16;
-                        }
-                    }
-                    if (Math.abs(this.y - this.target.y) > 16) {
-                        if (this.y > this.target.y) {
-                            yy = this.target.y + 16;
-                        } else {
-                            yy = this.target.y - 16;
-                        }
-                    }
-                    if (this.canMove(xx, yy)) {
+                    // 0.9.3: duoi theo duong di duoc (BFS trong xich) - cu nhay toi canh muc tieu xuyen tuong
+                    // (canMove luon "khong chan" khi co target). Khong co duong trong xich = bo muc tieu, ve nha.
+                    final int[] buoc = this.buocDuoi();
+                    if (buoc == null) {
                         this.target.sendMessage(MessageCreator.createMsgMonsterRemoveTarget(this.id));
                         this.target.sendToNearPlayer(MessageCreator.createMsgMonsterRemoveTarget(this.id));
                         this.x = this.default_x;
@@ -262,8 +255,10 @@ public class Monster extends LiveActor {
                         this.target.sendToNearPlayer(msg);
                         this.target = null;
                         return;
-                    } else {
-
+                    }
+                    if (buoc != com.htbb.pokemon.DiChuyenQuai.DA_TOI) {
+                        xx = buoc[0];
+                        yy = buoc[1];
                     }
                     this.x = xx;
                     this.y = yy;
@@ -300,6 +295,88 @@ public class Monster extends LiveActor {
         }
     }
 
+    /** Luoi va cham cua map quai dang o (cung luat nguoi choi, xem com.htbb.pokemon.DiChuyenQuai). */
+    public com.htbb.pokemon.DiChuyenQuai.Luoi luoiVaCham() {
+        final Map m = this.map;
+        if (m == null || m.type == null) {
+            return null;
+        }
+        return com.htbb.pokemon.DiChuyenQuai.luoi(m.type, m.map, m.w, m.h);
+    }
+
+    /** Quai thuong (khong boss / khong dung yen) theo luat va cham moi. */
+    boolean theoVaCham() {
+        return !this.isBoss && !this.isMaterialMons() && this.getClass() == Monster.class;
+    }
+
+    private boolean daKiemSinh;
+
+    /** Lan dau co ban do: diem sinh nam tren o chan / ngoai mep -> doi sang o di duoc gan nhat. */
+    void kiemDiemSinh() {
+        if (this.daKiemSinh) {
+            return;
+        }
+        final com.htbb.pokemon.DiChuyenQuai.Luoi l = this.luoiVaCham();
+        if (l == null) {
+            return;
+        }
+        this.daKiemSinh = true;
+        if (!this.theoVaCham()) {
+            return;
+        }
+        final int[] o = com.htbb.pokemon.DiChuyenQuai.oGan(l, this.default_x, this.default_y, com.htbb.pokemon.DiChuyenQuai.BAN_KINH_SINH);
+        if (o != null && (o[0] != this.default_x || o[1] != this.default_y)) {
+            this.default_x = o[0];
+            this.default_y = o[1];
+            this.x = o[0];
+            this.y = o[1];
+            this.toX = o[0];
+            this.toY = o[1];
+        }
+    }
+
+    /** Buoc duoi muc tieu theo duong di duoc; null = khong co duong trong xich; DA_TOI = dung yen. */
+    int[] buocDuoi() {
+        final com.htbb.pokemon.DiChuyenQuai.Luoi l = this.luoiVaCham();
+        if (l == null || this.target == null) {
+            return com.htbb.pokemon.DiChuyenQuai.DA_TOI;
+        }
+        final int xich = this.isBoss ? 1000 : (this.getMonsterTemplate() != null && this.getMonsterTemplate().id == 46 ? 96 : 120);
+        return com.htbb.pokemon.DiChuyenQuai.duoi(l, this.x, this.y, this.target.x, this.target.y, this.default_x, this.default_y,
+                xich, com.htbb.pokemon.DiChuyenQuai.BUOC_DUOI);
+    }
+
+    /** moveOld cho quai thuong (ma, ...): lang thang / duoi theo va cham, xich 120 px quanh diem sinh. */
+    private void moveOldVaCham() {
+        if (this.target != null) {
+            final int[] b = this.buocDuoi();
+            if (b == null) {
+                this.target = null;
+                this.x = this.default_x;
+                this.y = this.default_y;
+                return;
+            }
+            if (b != com.htbb.pokemon.DiChuyenQuai.DA_TOI) {
+                this.x = b[0];
+                this.y = b[1];
+            }
+        } else {
+            final int[] b = com.htbb.pokemon.DiChuyenQuai.langThang(this.luoiVaCham(), this.x, this.y, this.default_x, this.default_y,
+                    this.dmove, 120, Monster.r);
+            if (b != null) {
+                this.x = b[0];
+                this.y = b[1];
+            }
+        }
+        final int xich = this.getMonsterTemplate() != null && this.getMonsterTemplate().id == 46 ? 96 : 120;
+        if (Math.abs(this.x - this.default_x) >= xich || Math.abs(this.y - this.default_y) >= xich) {
+            this.target = null;
+            this.x = this.default_x;
+            this.y = this.default_y;
+        }
+    }
+
+    /** Cu (boss dung): true = o CHAN hoac dang co muc tieu. Quai thuong dung luoiVaCham(). */
     public boolean canMove(final int x, final int y) {
         try {
             return (this.map.type[(y >> 4) * this.map.w + (x >> 4)] & 0x2) == 0x2 && this.target == null;
@@ -512,6 +589,7 @@ public class Monster extends LiveActor {
 
     @Override
     public void update() {
+        this.kiemDiemSinh();
         if (this.isDead) {
             final long now = System.currentTimeMillis();
             if (now > this.bornTime && this.idTemplate != 83) {

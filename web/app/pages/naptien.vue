@@ -384,7 +384,7 @@ const cotLichSu = [
         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div v-for="g in goiLuong" :key="g.ma" class="flex flex-col rounded-2xl border border-default/70 bg-elevated/40 p-5">
             <div class="font-display text-3xl font-extrabold text-gilded">
-              {{ so(g.luong) }}
+              <TienTe loai="luong" :gt="g.luong" :co="30" />
             </div>
             <div class="text-sm text-muted">
               lượng

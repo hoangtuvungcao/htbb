@@ -35,6 +35,7 @@ public final class KiemDungVatPham {
         try {
             chuanBi();
             thuocHpPp();
+            dongBoHpNgay();
             hoiSinh();
             quaMong();
             tangToc();
@@ -294,6 +295,104 @@ public final class KiemDungVatPham {
         p.MAX_INVENTORY = 42;
     }
 
+    /** Goi 60 cuoi cung trong GOI cho nhan vat id: {hp, maxhp, mp} theo cach client doc (MauPP.doc60), null neu khong co. */
+    static int[] hmpCuoi(final int id) throws Exception {
+        int[] kq = null;
+        for (final Message m : GOI) {
+            if (m.command == 60) {
+                final byte[] b = m.toByteArray();
+                final DataInputStream r = new DataInputStream(new ByteArrayInputStream(b, 3, b.length - 3));
+                final int cid = r.readShort();
+                final int maxhp = r.readInt();
+                r.readInt();
+                r.readShort();
+                final int hp = r.readInt();
+                r.readShort();
+                final int mp = r.readInt();
+                if (cid == id) {
+                    kq = new int[]{hp, maxhp, mp};
+                }
+            }
+        }
+        return kq;
+    }
+
+    /** Goi 22 cuoi cung: {potionType, valueNew, isHP}. */
+    static int[] goi22Cuoi() throws Exception {
+        int[] kq = null;
+        for (final Message m : GOI) {
+            if (m.command == 22) {
+                final byte[] b = m.toByteArray();
+                final DataInputStream r = new DataInputStream(new ByteArrayInputStream(b, 3, b.length - 3));
+                r.readShort();
+                final int loai = r.readByte();
+                r.readShort();
+                final int moi = r.readInt();
+                final int isHp = r.available() > 0 ? r.readByte() : -1;
+                kq = new int[]{loai, moi, isHp};
+            }
+        }
+        return kq;
+    }
+
+    /**
+     * 0.9.3 "HP cu sau khi dung binh": dung binh / vat pham hoi HP xong, server gui NGAY goi HP (22 / 60) mang HP moi
+     * trong cung lan xu ly lenh (khong cho goi dinh ky); goi 60 co PP o duoi.
+     */
+    static void dongBoHpNgay() throws Exception {
+        final Char p = nhanVat();
+        // binh HP 1 (MapDungThuoc -> Map.doUseHP): can mau binh + hoi chieu nhu CharKhoiTao
+        while (real.Map.potionTemplates2.size() < 7) {
+            real.Map.potionTemplates2.add(new real.PotionTemplate2(10, 200));
+        }
+        if (p.coolDownPotion == null) {
+            p.coolDownPotion = new Hashtable<Short, real.PotionUse>();
+        }
+        for (final short id : new short[]{1, 2, 3, 4, 5, 6, 21, 22, 23, 24, 93, 94, 95, 96, 126, 127}) {
+            p.coolDownPotion.put(Short.valueOf(id), new real.PotionUse(id, 350));
+        }
+        p.hp = 300;
+        p.potions[1] = 2;
+        final int truoc = SO_DONG_BO();
+        dungThuoc(p, 1);
+        Kiem.dung("binh HP: HP tang tren server (" + p.hp + ")", p.hp > 300);
+        final int[] g22 = goi22Cuoi();
+        Kiem.dung("binh HP: goi 22 gui ngay voi HP moi (" + (g22 == null ? "khong co" : g22[1] + "") + ")", g22 != null && g22[1] == p.hp);
+        final int[] h = hmpCuoi(p.id);
+        Kiem.dung("binh HP: goi 60 gui ngay, HP = HP server", h != null && h[0] == p.hp);
+        Kiem.dung("binh HP: goi 60 mang PP o duoi", h != null && h[2] == p.mp);
+        Kiem.dung("binh HP: dem dong bo tang", SO_DONG_BO() > truoc);
+        Kiem.bang("binh HP: tru 1 binh", 1, p.potions[1]);
+        // binh PP 4
+        p.mp = 100;
+        p.potions[4] = 1;
+        dungThuoc(p, 4);
+        final int[] h2 = hmpCuoi(p.id);
+        Kiem.dung("binh PP: goi 60 gui ngay voi PP moi (" + p.mp + ")", p.mp > 100 && h2 != null && h2[2] == p.mp);
+        // vat pham hoi HP trong tui (qua Oran, lenh 29)
+        final Item q = cho(p, 1215);
+        p.hp = 400;
+        dung(p, q.id);
+        final int[] h3 = hmpCuoi(p.id);
+        Kiem.dung("qua Oran: goi 60 gui ngay voi HP moi (" + p.hp + ")", p.hp > 400 && h3 != null && h3[0] == p.hp);
+        // khong doi gi (binh khi day mau bi chan): khong gui goi 60 thua
+        p.hp = p.maxhp;
+        p.potions[1] = 1;
+        dungThuoc(p, 1);
+        Kiem.dung("binh HP khi day: khong gui goi 60 thua", hmpCuoi(p.id) == null);
+        // createMsgUseHpMP loai 4 (PP): co isHP = 0 (truoc: 1 -> client co the ghi PP vao HP)
+        GOI.clear();
+        real.MessageCreator.createMsgUseHpMP(p, 5, 4);
+        final int[] g = goi22Cuoi();
+        Kiem.dung("createMsgUseHpMP PP: co isHP = 0", g != null && g[2] == 0);
+    }
+
+    static int SO_DONG_BO() throws Exception {
+        final Field f = DungVatPham.class.getDeclaredField("SO_DONG_BO");
+        f.setAccessible(true);
+        return ((java.util.concurrent.atomic.AtomicInteger) f.get(null)).get();
+    }
+
     static void hoiSinh() throws Exception {
         final Char p = nhanVat();
         final Item t = cho(p, 1207);
@@ -460,10 +559,10 @@ public final class KiemDungVatPham {
 
     static void noiVaoGame() {
         final String m = doc("src/real/Map.java");
-        Kiem.dung("Map.doUseItem -> DungVatPham.dung", m.contains("DungVatPham.dung(this, player, message);"));
-        Kiem.dung("Map.doUsePotion -> DungVatPham.dungThuoc", m.contains("DungVatPham.dungThuoc(this, player, message);"));
+        Kiem.dung("Map.doUseItem -> DungVatPham.dung", m.contains("() -> DungVatPham.dung(m, player, message))"));
+        Kiem.dung("Map.doUsePotion -> DungVatPham.dungThuoc", m.contains("() -> DungVatPham.dungThuoc(m, player, message))"));
         Kiem.dung("Map.doUseItemGoc: chan vat pham khong mac duoc truoc exchangeItem", m.contains("if (!DungVatPham.macDuoc(item)) {"));
-        Kiem.dung("RealController lenh 22 -> DungVatPham.dungThuoc", doc("src/real/RealController.java").contains("DungVatPham.dungThuoc(null, p, message);"));
+        Kiem.dung("RealController lenh 22 -> DungVatPham.dungThuoc", doc("src/real/RealController.java").contains("() -> DungVatPham.dungThuoc(null, p, message))"));
         Kiem.dung("Char.sendMessage: phien dung vat pham", doc("src/real/Char.java").contains("DungVatPham.quaPhien(this, m)"));
         Kiem.dung("LoginHandler: luu so ban client", doc("src/real/cmd/LoginHandler.java").contains("session.banClient = banClient;"));
         final String c = doc("../client_jar/src/game/networklogic/MessageHandler.java");

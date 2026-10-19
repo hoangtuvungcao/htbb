@@ -66,6 +66,7 @@ public final class DungVatPham {
         final Message m = new Message(LENH);
         m.dos.writeByte(loai);
         m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(s));
+        m.dos.writeByte(HanhDongVatPham.kieuDang()); // 0.9.3: loai thao tac (mua / ban / dung / trang bi...), client cu bo qua
         return m;
     }
 
@@ -196,6 +197,7 @@ public final class DungVatPham {
                     final Message t = new Message(LENH);
                     t.dos.writeByte(TIN);
                     t.dos.writeUTF(chu[0]); // da doi chu o createServerAlertMessage
+                    t.dos.writeByte(HanhDongVatPham.kieuDang());
                     return t;
                 } catch (final IOException e) {
                     return m;
@@ -264,6 +266,28 @@ public final class DungVatPham {
         }
         if (!ph.daNoi && mon != null) {
             ketLuanItem(p, ph);
+        }
+        dongBoHpPp(p, ph);
+    }
+
+    /** So goi dong bo HP / PP da gui ngay sau khi dung (kiem thu / thong ke). */
+    static final java.util.concurrent.atomic.AtomicInteger SO_DONG_BO = new java.util.concurrent.atomic.AtomicInteger();
+
+    /**
+     * Dung vat pham / binh xong ma HP, PP hay HP / PP toi da doi: gui NGAY goi 60 (HP, max, PP) cho chinh nguoi choi va
+     * nguoi xung quanh (dong doi thay thanh mau tren dau / khung muc tieu), khong cho goi dinh ky. Truoc 0.9.3 vai
+     * duong (vat pham hoi trong tui, ban do thi tran) chi bao thong bao hoac chi gui hanh trang -> HUD hien HP cu.
+     */
+    static void dongBoHpPp(final Char p, final Phien ph) {
+        if (p.hp == ph.hp && p.mp == ph.mp && p.maxhp == ph.maxhp && p.maxmp == ph.maxmp) {
+            return;
+        }
+        try {
+            final int cong = Math.max(0, Math.min(Short.MAX_VALUE, p.hp - ph.hp));
+            p.sendMessage(MessageCreator.createNew_HMP_Message(p, cong));
+            p.sendToNearPlayer(MessageCreator.createNew_HMP_Message(p, cong));
+            SO_DONG_BO.incrementAndGet();
+        } catch (final Exception ignored) {
         }
     }
 
@@ -431,6 +455,7 @@ public final class DungVatPham {
         } catch (final Exception ignored) {
         }
         guiSauDoiDo(p);
+        HanhDongVatPham.datKieu(HanhDongVatPham.THAO);
         bao(p, "Đã tháo " + ten(mon) + ".");
         return true;
     }
@@ -464,6 +489,7 @@ public final class DungVatPham {
         final String loiIch = loiIch(p, ph, -1);
         if (!conTrongTui) {
             if (dangMac(p, mon)) {
+                HanhDongVatPham.datKieu(HanhDongVatPham.TRANG_BI);
                 bao(p, "Đã trang bị " + ph.ten + ".");
             } else {
                 bao(p, "Đã dùng " + ph.ten + (loiIch.isEmpty() ? "." : ": " + loiIch + "."));
@@ -748,6 +774,7 @@ public final class DungVatPham {
         } finally {
             p.phienDung = null;
         }
+        dongBoHpPp(p, ph);
         if (!ph.daNoi && !co(THUOC_HP, t) && !co(THUOC_MP, t)) {
             // Binh HP/PP thanh cong khong can bao (thanh mau len); that bai la cho hoi binh khi bam lien tuc.
             SO_TU_BAO.incrementAndGet();
@@ -759,6 +786,16 @@ public final class DungVatPham {
             } else if (System.currentTimeMillis() - p.timeUsePotion[t] > Char.POTION_COOLDOWN_MS) {
                 loi(p, "Không dùng được " + ten + " lúc này.");
             }
+        } else if (!ph.daNoi && coToast(p) && (p.hp > ph.hp || p.mp > ph.mp)) {
+            // 0.9.3: binh HP / PP thanh cong cung co thong bao DUNG (khac thong bao mua) - thong bao nhe, khong am bao
+            final StringBuilder b = new StringBuilder("Đã dùng ").append(ten).append(":");
+            if (p.hp > ph.hp) {
+                b.append(" +").append(p.hp - ph.hp).append(" HP");
+            }
+            if (p.mp > ph.mp) {
+                b.append(p.hp > ph.hp ? "," : "").append(" +").append(p.mp - ph.mp).append(" PP");
+            }
+            gui(p, TIN, b.append('.').toString());
         }
     }
 
