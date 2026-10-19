@@ -38,7 +38,8 @@ public final class HdCau {
     public static String tenVung() {
         GameScr gs = game.render.Canvas.gameScr;
         try {
-            if (gs != null && gs.mainChar.nationID > -1) return GameScr.nameCountry[gs.mainChar.inCountry];
+            // vùng ĐỊA LÝ của map (Pewter = Kanto), không phải lãnh thổ song song inCountry
+            if (gs != null) return game.pokemon.VungMap.ten(game.model.Tilemap.lv);
         } catch (Throwable e) {
             // bỏ qua
         }

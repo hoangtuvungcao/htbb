@@ -230,7 +230,7 @@ public static class MenuNhanh
 			}
 			if (re)
 			{
-				MFont.borderFont.drawString(g, "Menu nhanh (F3)", xBong() + R_BONG + 6, yBong() - 7, MFont.LEFT);
+				MFont.borderFont.drawString(g, "Menu nhanh", xBong() + R_BONG + 6, yBong() - 7, MFont.LEFT);
 			}
 			return;
 		}

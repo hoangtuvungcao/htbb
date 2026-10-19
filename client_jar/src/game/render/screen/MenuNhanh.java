@@ -212,7 +212,7 @@ final class MenuNhanh {
             return true;
         }
         if (!mo) {
-            if (!Nen.coNutUp() || anBong()) {
+            if (!Nen.coNutUp() || anBong() || HudRong.bat()) {   // màn rộng: nút trên của HudRong thay Poké Ball mép trái
                 return true;
             }
             int r = rBong();
@@ -302,7 +302,7 @@ final class MenuNhanh {
             return true;
         }
         if (!mo) {
-            if (!Nen.coNutUp() || anBong()) {
+            if (!Nen.coNutUp() || anBong() || HudRong.bat()) {   // màn rộng: nút trên của HudRong thay Poké Ball mép trái
                 return true;
             }
             if (Canvas.isPointerDown && trongBong(Canvas.pxLast, Canvas.pyLast)) {

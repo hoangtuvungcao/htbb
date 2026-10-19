@@ -252,6 +252,17 @@ public class Monster extends LiveActor {
     public void paintActive(Graphics g, int x, int y) {
     }
 
+    // pokemon: nhãn "Lv N Tên" + thanh HP trên đầu (game.pokemon.NhanQuai), nhớ chuỗi theo tên / cấp
+    public String nhan;
+    public String nhanTen;
+    public int nhanLv = -1;
+
+    @Override
+    public void paintName(Graphics g) {
+        super.paintName(g);
+        game.pokemon.NhanQuai.ve(g, this);
+    }
+
     @Override
     public void paintCorner(Graphics g, int xCorner, int yCorner) {
         if (this.z != 0) {

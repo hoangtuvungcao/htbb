@@ -135,10 +135,13 @@ public final class TangToc {
             lamMoi(h, ngay, tuan);
             final int diem = DIEM[loai];
             if (h.tgDiemTuan + diem > DIEM_TUAN_TOI_DA) {
-                return "Đã dùng " + h.tgDiemTuan + "/" + DIEM_TUAN_TOI_DA + " điểm tăng tốc tuần này (mở lại thứ Hai).";
+                // Chu "Chua dung duoc" dung dau: cau cu "Da dung 57/60..." doc nhu dung thanh cong (bao 0.9.2)
+                return "Chưa dùng được: tuần này đã dùng " + h.tgDiemTuan + "/" + DIEM_TUAN_TOI_DA + " điểm tăng tốc, vật phẩm này cần "
+                        + diem + " (mở lại thứ Hai).";
             }
             if (h.tgDiemNgay + diem > DIEM_NGAY_TOI_DA) {
-                return "Đã dùng " + h.tgDiemNgay + "/" + DIEM_NGAY_TOI_DA + " điểm tăng tốc hôm nay.";
+                return "Chưa dùng được: hôm nay đã dùng " + h.tgDiemNgay + "/" + DIEM_NGAY_TOI_DA + " điểm tăng tốc, vật phẩm này cần "
+                        + diem + " (mở lại ngày mai).";
             }
             if (loai == VE_15 || loai == VE_2) {
                 final int heSo = VE_HE_SO[loai];

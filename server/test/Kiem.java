@@ -181,7 +181,10 @@ public final class Kiem {
         KiemNapTien.chay();
         KiemTangToc.chay();
         KiemTuDong.chay();
+        KiemTuDongKeHoach.chay(); // bo nao Tu dong danh (com.htbb.pokemon.TuDongKeHoach)
+        KiemDiChuyen.chay(); // lenh 4: quy toc do (real.TocDoDiChuyen) + duoi quai / tim duong client (DuongDi)
         KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
+        KiemDungVatPham.chay(); // lenh 29 / 22: moi loai vat pham co tac dung + phan hoi (real.DungVatPham, -104)
         KiemNgoaiHinh.chay(); // ngoai hinh trang bi tren than Pokemon (docs/thiet-ke-game.md)
         KiemThanhVien.chay();
         KiemVongLapChung.chay(); // vong lap chung thay thread-moi-khu (docs/kien-truc.md)
@@ -189,6 +192,7 @@ public final class Kiem {
         KiemChiSo.chay(); // chi so trang bi + chong lam phat (docs/thiet-ke-game.md)
         KiemAdminPanel.chay();
         KiemKhongLoiCu.chay(); // P3: khong con lib/htbb-core.jar (docs/giay-phep.md)
+        KiemVungNhinCoDinh.chay(); // camera co dinh: kep be rong man client (com.htbb.mang.VungNhinCoDinh)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

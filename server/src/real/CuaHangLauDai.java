@@ -106,7 +106,14 @@ public final class CuaHangLauDai {
             if (ds == null || idOption < 0 || idOption >= ds.size()) {
                 return;
             }
-            LauDaiNhanVat.bao(p, mua(p, ds.get(idOption)));
+            // Ket qua mua phai THAY DUOC: LauDaiNhanVat.bao (-26) chi vao hop tin cua client, nguoi choi bam mua
+            // ma khong thay gi. DungVatPham: thong bao nhanh (ban >= 902) / hop thoai OK (client cu).
+            final String kq = mua(p, ds.get(idOption));
+            if (kq.startsWith("Đã nhận")) {
+                DungVatPham.bao(p, kq);
+            } else {
+                DungVatPham.loi(p, kq);
+            }
             final String n = NHOM_XEM.get(Integer.valueOf(p.charDBID));
             if (n != null) {
                 moNhom(p, n);
@@ -323,6 +330,7 @@ public final class CuaHangLauDai {
             }
         }
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1)); // mon trang bi vua them: tui client lam moi ngay
         p.sendMessage(MessageCreator.createCharGemItem(p));
     }
 }

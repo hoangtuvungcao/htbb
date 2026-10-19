@@ -23,7 +23,6 @@ public static class HudPokemon
 
 	public const int BUOC = 50;
 
-	private static readonly string[] PHIM = { "1", "2", "3", "4", "5" };
 
 	public static bool bat()
 	{
@@ -233,7 +232,7 @@ public static class HudPokemon
 		{
 			QuickSlot qs = MainChar.quickSlot[GameScr.indexTabSlot][k];
 			int x = x0 + k * BUOC + (BUOC - O) / 2;
-			veO(g, mc, qs, x, y0, O, O, PHIM[k], k == 2);
+			veO(g, mc, qs, x, y0, O, O, null, k == 2);   // không nhãn phím trên ô (phím tắt: trang hướng dẫn)
 			if (trong(xm, ym, x, y0, O, O) && Canvas.currentDialog == null && !Canvas.menu.showMenu)
 			{
 				oDuoiChuot = k;

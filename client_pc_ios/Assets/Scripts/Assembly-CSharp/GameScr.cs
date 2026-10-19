@@ -4665,11 +4665,6 @@ public class GameScr : MyScreen
 		{
 			g.drawImage(Res.imgChatTouch, xChatTouch, yChatTouch, MyGraphics.TOP | MyGraphics.LEFT);
 			g.drawImage(Res.imgSelectFc, xSelectFc, ySelectFc, MyGraphics.TOP | MyGraphics.LEFT);
-			MFont.normalFont[0].drawString(g, "I", xChangeTab + Res.imgSwapQuickSlot.getWidth() + 2, yChangeTab + 1, 0);
-			MFont.normalFont[0].drawString(g, "F2", xChangeFocus + Res.imgFocusActor.getWidth() + 2, yChangeFocus + 1, 0);
-			MFont.normalFont[0].drawString(g, "U", xChangeClothes + Res.imgFocusActor.getWidth() + 2, yChangeClothes + 1, 0);
-			MFont.normalFont[0].drawString(g, "Y", xChatTouch + Res.imgChatTouch.getWidth() + 2, yChatTouch + 1, 0);
-			MFont.normalFont[0].drawString(g, "O", xSelectFc + Res.imgSelectFc.getWidth() + 2, ySelectFc + 1, 0);
 		}
 	}
 
@@ -4963,8 +4958,6 @@ public class GameScr : MyScreen
 			{
 				MainChar.quickSlot[indexTabSlot][i].paint(g, Canvas.hw - width / 2 + i * Res.wKhung + Res.wKhung / 2 - 7, Canvas.h - 16 - 6 + Res.wKhung / 2 - height + xSlot - ((i == 2) ? 1 : 0) + num);
 			}
-			string[] array = new string[5] { "G", "H", "J", "K", "L" };
-			MFont.borderFont.drawString(g, array[i], Canvas.hw - width / 2 + i * Res.wKhung + Res.wKhung / 2 + Res.wKhung / 2 - 14, Canvas.h - 27 - height + xSlot - ((i == 2) ? 2 : 0) + num - 3, 2);
 		}
 		if (Main.isPC && indexBuff != -1 && timeBuff - mSystem.getCurrentTimeMillis() / 1000 > 0)
 		{

@@ -27,6 +27,8 @@ public class Session extends Thread {
     public String charname = "";
     public int versionCode = 0;
     public byte firmWare = 0;
+    /** So ban client (jar/Android/PC Java gui sau ma may, -1 = khong gui: Unity / client cu). Xem real.DungVatPham. */
+    public int banClient = -1;
     public byte vsTile = 0;
     public byte firmWareReg = 0;
     public boolean isLogin = false;

@@ -583,6 +583,23 @@ public class PokeBody {
         return pb == null ? 0 : pb.dl.layDongTac(PokeDuLieu.DUNG).rongKhung;
     }
 
+    /**
+     * Do cao DINH HINH THAT (khung dong tac dung da cat sat hinh) tren diem chan, 0 neu khong co. Khac
+     * caoTrenChan (dinh khung goc chua cat, con nhieu khoang trong): dung de dat ten sat tren dau.
+     */
+    public static int caoHinh(int dex, boolean shiny) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null) {
+            return 0;
+        }
+        PokeDongTac d = pb.dl.layDongTac(PokeDuLieu.DUNG);
+        if (d == null || d.caoKhung <= 0) {
+            return 0;
+        }
+        int c = d.caoKhung / 2 + d.dyChan[0];
+        return c > 0 ? c : 0;
+    }
+
     /** Chieu cao phan hinh nam tren diem chan (de dat ten/icon tren dau). */
     public static int caoTrenChan(int dex, boolean shiny, int tiLe) {
         PokeBody pb = lay(dex, shiny);

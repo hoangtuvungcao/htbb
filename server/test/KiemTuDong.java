@@ -262,7 +262,8 @@ public final class KiemTuDong {
             Kiem.dung("mac dinh tu_dong.bat=1", c.bat);
             Kiem.dung("mac dinh tat_khi_pvp=1", c.tatKhiPvp);
             Kiem.dung("mac dinh chi_map_da_mo=1", c.chiMapDaMo);
-            Kiem.bang("co gui client: tinh nang + PvP + chi map, khong thuoc", TuDong.CO_TINH_NANG | TuDong.CO_TAT_PVP | TuDong.CO_CHI_MAP, c.co());
+            Kiem.bang("co gui client: tinh nang + PvP + chi map + ke hoach + dung khi tu di, khong thuoc",
+                    TuDong.CO_TINH_NANG | TuDong.CO_TAT_PVP | TuDong.CO_CHI_MAP | TuDong.CO_KE_HOACH | TuDong.CO_DUNG_TU_DI, c.co());
         } finally {
             CauHinhTrungTam.datChoTest(null, null, false);
         }

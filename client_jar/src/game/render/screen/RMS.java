@@ -158,8 +158,10 @@ public class RMS {
                     qs.isBuff = dis.readBoolean();
                     if (qs.quickslotType == 2) {
                         qs.setIsPotion(map);
-                    } else {
+                    } else if (qs.quickslotType == 1) {
                         qs.setIsSkill(map, Canvas.gameScr.mainChar.clazz, qs.isBuff);
+                    } else {
+                        qs.setIsNothing();   // pokemon: ô trống (lưu -1 = 255) giữ trống, không thành chiêu 0
                     }
                     GameScr.indexTabSlot = dis.readByte();
                 }

@@ -1134,24 +1134,14 @@ class CharCapNhat {
             }
             self.isThodia = false;
             if (self.hp > 0) {
+                // KHONG con Thread.sleep o day (truoc: ngu toi 200 ms giua hai goi -> chan ca luong
+                // xu ly cua phien, lenh danh sau do bi tre, nguoi xung quanh thay giat). Toc do nay
+                // kiem bang quy quang duong theo thoi gian (TocDoDiChuyen) o duoi.
                 final long t = now - self.timeMove;
-                // Gian cach toi thieu giua 2 buoc cung duoc dat theo toc do goc.
-                // Di nhanh hon thi client gui goi day hon, neu van ep du 200ms
-                // thi server ngu bu phan chenh lech -> chay giat cuc. Rut ngan
-                // gian cach dung theo ti le toc do.
-                long gianCach = 200L;
-                final int tocDoBuoc = self.speed + self.getThanKhiSpeedBonus();
-                if (tocDoBuoc > 5) {
-                    gianCach = 200L * 5L / tocDoBuoc;
-                }
-                if (t < gianCach) {
-                    Thread.sleep(gianCach - t);
-                }
                 int distance = (self.mapID == 17) ? 96 : 50;
                 if (self.checkTanPhe()) {
                     distance = ((self.mapID == 17) ? 48 : 25);
                 }
-                self.timeMove = System.currentTimeMillis();
                 self.timeLastMove = System.currentTimeMillis();
                 self.lastMovex = x;
                 self.lastMovey = y;
@@ -1172,7 +1162,24 @@ class CharCapNhat {
                         distance = nguongMoi;
                     }
                 }
-                if (Map.abs(self.x - x) <= distance && Map.abs(self.y - y) <= distance) {
+                // Quy quang duong: nap theo thoi gian tu lan NHAN cuoi, buoc dai hon quy = tu choi.
+                // distance >= 1000 (cap < 3) giu nhu cu: khong gioi han.
+                long quyMoi = 0L;
+                boolean hopLe;
+                if (distance >= 1000) {
+                    hopLe = Map.abs(self.x - x) <= distance && Map.abs(self.y - y) <= distance;
+                } else {
+                    final long quy = TocDoDiChuyen.nap(self.quyDiChuyen, t,
+                            tocDoThat > 5 ? 5 : tocDoThat, distance); // distance da nhan theo toc do > 5
+                    quyMoi = TocDoDiChuyen.buoc(quy, x - self.x, y - self.y, distance);
+                    hopLe = quyMoi >= 0L;
+                    if (!hopLe) {
+                        // tu choi: luu quy da nap + moc thoi gian (lan sau nap tiep tu day, khong tru gi)
+                        self.quyDiChuyen = quy;
+                        self.timeMove = now;
+                    }
+                }
+                if (hopLe) {
                     if (self.mapID == Map.idMapChanNui && !self.isDoChangeMap && Char.isOnLocaltion(x, y)) {
                         final CharInfo cinfo = MapChauBau.all_char_nui_kho_bau.get(self.charname);
                         MapChauBau map = (MapChauBau) RealController.mapList.get(42);
@@ -1213,6 +1220,8 @@ class CharCapNhat {
                     }
                     self.x = x;
                     self.y = y;
+                    self.timeMove = now;
+                    self.quyDiChuyen = distance >= 1000 ? -1L : quyMoi;
                     final Message j = new Message(4);
                     self.writeActorPos(j, self);
                     try {

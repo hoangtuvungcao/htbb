@@ -3961,18 +3961,8 @@ public class ShopNew extends Screen {
     }
 
     protected void doUseItem(ItemInInventory item) {
-        ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
-        if (it.gender != 0 && it.gender != Canvas.gameScr.mainChar.gender) {
-            Canvas.startOKDlg(new StringBuffer("Vật phẩm này chỉ dành cho ").append(Res.GENDERNAME[it.gender]).append(".").toString());
-            return;
-        }
-        if (it.clazz != -1 && it.clazz != Canvas.gameScr.mainChar.clazz && isWeapone(it.type)) {
-            Canvas.startOKDlg(new StringBuffer("Vật phẩm này chỉ dành cho ").append(CreateCharScr.clazz[it.clazz][CreateCharScr.selectGender].name).append(".").toString());
-        } else if (it.level > Canvas.gameScr.mainChar.level) {
-            Canvas.startOKDlg(new StringBuffer("Bạn phải đạt cấp ").append((int) it.level).append(" để có thể dùng.").toString());
-        } else {
-            GameService.gI().useItem(item.itemID);
-        }
+        // pokemon: như WindowInfoScr.doUseItem - server kiểm và luôn trả lời (DungDo)
+        game.pokemon.DungDo.dungItem(item);
     }
 
     private boolean isWeapone(int type) {

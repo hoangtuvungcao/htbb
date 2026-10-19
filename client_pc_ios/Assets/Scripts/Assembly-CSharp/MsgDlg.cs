@@ -153,7 +153,7 @@ public class MsgDlg : Dialog
 			Res.paintDlgDragonFull(g, 70, 12, Canvas.w - 140, 100);
 			if (isIcon)
 			{
-				g.drawRegion(Res.imgWaitIcon, 0, 0, 25, 25, translate[state], Canvas.hw, 47, 3);
+				GiaoDien.dangTai(g, Canvas.hw, 47, 13);   // HTBB: Poké Ball quay thay ảnh wicon
 			}
 			g.translate(0, ySt);
 			g.setClip(0, 0, Canvas.w, disLim);

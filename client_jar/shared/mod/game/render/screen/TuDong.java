@@ -24,15 +24,27 @@ import network.Message;
  * kiểm MP / hồi chiêu, có hoạt ảnh), GameScr.doUsePotion, GameService.getDropableFromGround. Không lướt, không
  * bỏ hoạt ảnh, không đổi tầm chiêu.
  *
- * Lệnh -100 client -> server: byte 0 xin trạng thái / 1 bật (+ short bán kính px) / 2 tắt / 3 nhịp (20 giây).
- * Server -> client: byte 0, byte bật, int giây còn lại hôm nay, int giây tối đa hôm nay, short bán kính tối đa,
- * byte cờ (1 tính năng bật, 2 cho tự uống thuốc, 4 dừng khi PvP, 8 chỉ bãi luyện tập), UTF thông báo.
+ * Lệnh -100 client -> server: byte 0 xin trạng thái / 1 bật (+ short bán kính px, byte tự hồi sinh) / 2 tắt (+ byte
+ * lý do) / 3 nhịp (20 giây) / 4 xin kế hoạch (0,6 giây). Bản 0.9.2+ gửi thêm byte giao thức 2 (sau 0 / sau phần bật)
+ * và cài đặt bảng: ngưỡng HP %, ngưỡng PP %, kiểu nhặt, về hồi phục, đồng ý hồi sinh bằng vật phẩm lượng.
+ * Server -> client: byte 0 (trạng thái), byte bật, int giây còn lại hôm nay, int giây tối đa hôm nay, short bán kính
+ * tối đa, byte cờ (1 tính năng bật, 2 cho tự uống thuốc, 4 dừng khi PvP, 8 chỉ bãi luyện tập, 16 máy chủ điều khiển
+ * từng bước, 32 tự di chuyển thì dừng), UTF thông báo. Hoặc byte 1 (kế hoạch, khi cờ 16): byte hành động (0 chờ,
+ * 1 đánh, 2 thuốc, 3 nhặt, 4 về điểm bắt đầu, 5 dừng), short id, short số (chiêu / loại thuốc / loại đồ), short x,
+ * short y, UTF trạng thái. MÁY CHỦ chọn mục tiêu (gần nhất theo đường đi, đúng khoảng cấp, không boss), chiêu (khắc
+ * hệ, PP, hồi chiêu), thuốc, đồ nhặt, rút lui; client chỉ làm đúng việc đó bằng hàm của game. Server cũ (không cờ 16)
+ * thì client tự chọn như bản 0.9.1.
  *
  * Bảng cài đặt (giao diện) ở Nen.moBangTuDong: bản jar/APK = BangTuDong (kiểu Pokémon), bản khác = menu.
  */
 public final class TuDong {
     public static final byte LENH = -100;
-    static final int CO_TINH_NANG = 1, CO_THUOC = 2, CO_TAT_PVP = 4, CO_CHI_MAP = 8;
+    static final int CO_TINH_NANG = 1, CO_THUOC = 2, CO_TAT_PVP = 4, CO_CHI_MAP = 8, CO_KE_HOACH = 16, CO_DUNG_TU_DI = 32;
+    /** Phiên bản giao thức -100 của client này (server com.htbb.pokemon.TuDong.GIAO_THUC). */
+    static final int GIAO_THUC = 2;
+    static final int HD_CHO = 0, HD_DANH = 1, HD_THUOC = 2, HD_NHAT = 3, HD_VE = 4, HD_DUNG = 5;
+    /** Lý do tắt gửi kèm lệnh 2 (TuDong.TAT_TU_DI của server). */
+    static final int TAT_TU_DI = 13;
     private static final String RMS_TEN = "htbbtd";
 
     /** Bình HP / MP mạnh -> yếu (id loại thuốc của game, y GameScr.doUsePotion). */
@@ -53,6 +65,9 @@ public final class TuDong {
     /** Câu server gửi kèm gần nhất (lý do dừng / từ chối). */
     static String thongBao = "";
     static long lucXin;
+    // kế hoạch máy chủ gửi (cờ CO_KE_HOACH)
+    private static int keHd = -1, keId, keSo, keX, keY;
+    private static long keLuc, lucXinKe;
 
     // ---------------------------------------------------------------- đang chạy
     /** Client đang chạy (chỉ true khi server xác nhận). */
@@ -79,14 +94,19 @@ public final class TuDong {
     static final String[] TEN_NHAT = new String[]{"Không nhặt", "Thuốc + xu", "Thuốc, xu, đá", "Tất cả"};
     /** Hết thuốc mà HP thấp: về điểm bắt đầu đứng hồi phục tới 80% rồi đánh tiếp. */
     static boolean veHoiPhuc = true;
-    /** Vùng đánh quanh điểm bắt đầu (ô, 1 ô = 16 px). */
-    static int vungO = 10;
+    /** Vùng đánh quanh điểm bắt đầu (ô, 1 ô = 16 px). Mặc định 15 ô = tu_dong.ban_kinh 240 px (10 ô của 0.9.1 hay trống quái). */
+    static int vungO = 15;
     static final int[] VUNG_O = new int[]{4, 7, 10, 15, 20};
     /**
      * Gục khi đang tự động: bật = cho máy chủ (hệ thống hồi sinh) tự dùng vật phẩm hồi sinh tại chỗ, tối đa
      * tu_dong.hoi_sinh_moi_gio lần / giờ, rồi đánh tiếp; tắt (mặc định) = dừng, về Trung tâm Pokémon như thường.
      */
     static boolean tuHoiSinh;
+    /**
+     * Đồng ý RIÊNG cho tự dùng cả vật phẩm hồi sinh mua bằng lượng (Thuốc hồi sinh tối đa) - chỉ có tác dụng khi
+     * tuHoiSinh bật và máy chủ cho (tu_dong.hoi_sinh_tra_phi). Mặc định tắt: chỉ Thuốc hồi sinh thường.
+     */
+    static boolean hoiSinhLuong;
     private static long lucChet;
     private static boolean daNap;
 
@@ -99,15 +119,33 @@ public final class TuDong {
         try {
             Message m = new Message(LENH);
             m.writer().writeByte(loai);
-            if (loai == 1) {
+            if (loai == 0) {
+                m.writer().writeByte(GIAO_THUC);
+            } else if (loai == 1) {
                 m.writer().writeShort(banKinh);
                 m.writer().writeByte(tuHoiSinh ? 1 : 0);
+                m.writer().writeByte(GIAO_THUC);
+                m.writer().writeByte(choThuoc() ? nguongHp : 0);
+                m.writer().writeByte(choThuoc() ? nguongMp : 0);
+                m.writer().writeByte(nhat);
+                m.writer().writeByte(veHoiPhuc ? 1 : 0);
+                m.writer().writeByte(tuHoiSinh && hoiSinhLuong ? 1 : 0);
+            } else if (loai == 2 && banKinh > 0) {
+                m.writer().writeByte(banKinh); // lý do tắt
             }
             GameService.gI().session.sendMessage(m);
             m.cleanup();
         } catch (Throwable e) {
             // mất kết nối: lần sau
         }
+    }
+
+    /**
+     * Bảng Tự động đánh / Menu nhanh đang mở. Bản PC (htbb.pc.BanPhim) dùng để Enter / Esc / mũi tên đi vào bảng
+     * thay vì mở chat / đi bộ (bản 0.9.1: Enter trên "Bắt đầu" mở ô chat, bảng không nhận phím).
+     */
+    public static boolean bangDangMo() {
+        return BangTuDong.mo || MenuNhanh.mo;
     }
 
     /** Xin trạng thái (mở bảng / vào game). */
@@ -123,7 +161,21 @@ public final class TuDong {
         }
         try {
             DataInputStream r = msg.reader();
-            r.readByte();
+            if (r.readByte() == 1) {
+                // kế hoạch bước tiếp (máy chủ điều khiển)
+                keHd = r.readByte();
+                keId = r.readShort();
+                keSo = r.readShort();
+                keX = r.readShort();
+                keY = r.readShort();
+                String ly = r.readUTF();
+                keLuc = System.currentTimeMillis();
+                coServer = true;
+                if (dang && ly != null && ly.length() > 0) {
+                    trangThai = ly;
+                }
+                return true;
+            }
             boolean bat = r.readByte() != 0;
             svConLai = r.readInt();
             svToiDa = r.readInt();
@@ -199,10 +251,12 @@ public final class TuDong {
         }
         if (gs.mainChar.hp <= 0) {
             thongBao = "Pokémon đang gục, hồi sinh rồi bật lại.";
+            Canvas.startOKDlg(thongBao);
             return;
         }
         if (coServer && (svCo & CO_TINH_NANG) == 0) {
             thongBao = "Tự động đánh đang tạm khoá trên máy chủ.";
+            Canvas.startOKDlg(thongBao);
             return;
         }
         thongBao = "";
@@ -231,6 +285,9 @@ public final class TuDong {
         monNhat = null;
         hoiPhuc = false;
         soHa = 0;
+        keHd = -1;
+        keLuc = 0L;
+        lucXinKe = 0L;
         lucNhip = System.currentTimeMillis() + 20000L;
         trangThai = "bắt đầu";
         // auto gốc của game (BangAuto) không chạy song song
@@ -251,6 +308,7 @@ public final class TuDong {
 
     private static void dungTaiCho() {
         dang = false;
+        keHd = -1;
         nha();
         mucTieu = null;
         monNhat = null;
@@ -264,7 +322,9 @@ public final class TuDong {
         long l = System.currentTimeMillis();
         if (choBat && l - lucChoBat > 6000L) {
             choBat = false;
-            thongBao = coServer ? "Máy chủ không phản hồi, thử lại." : "Máy chủ chưa hỗ trợ Tự động đánh.";
+            thongBao = coServer ? "Máy chủ không phản hồi Tự động đánh, thử lại sau ít giây." : "Máy chủ chưa hỗ trợ Tự động đánh.";
+            // bảng đã đóng khi bấm Bắt đầu: báo bằng hộp thoại, không im lặng
+            Canvas.startOKDlg(thongBao);
         }
         if (!dang) {
             return;
@@ -307,11 +367,23 @@ public final class TuDong {
             return;
         }
         if (nguoiBam()) {
+            if ((svCo & CO_DUNG_TU_DI) != 0 && phimDiChuyen()) {
+                // người chơi tự điều khiển: dừng hẳn (tu_dong.dung_khi_tu_di), máy chủ báo lý do
+                thongBao = "Tự động đánh dừng vì bạn tự di chuyển.";
+                choBat = false;
+                dungTaiCho();
+                gui(2, TAT_TU_DI);
+                return;
+            }
             lucNhuong = l + 3000L;
             nha();
         }
         if (l < lucNhuong) {
             trangThai = "chờ bạn";
+            return;
+        }
+        if ((svCo & CO_KE_HOACH) != 0) {
+            theoKeHoach(gs, mc, l);
             return;
         }
         binh(gs, mc, l);
@@ -324,7 +396,115 @@ public final class TuDong {
         danh(gs, mc, l);
     }
 
-    /** Người chơi tự bấm phím di chuyển / chạm màn: nhường 3 giây. */
+    // ---------------------------------------------------------------- làm theo kế hoạch máy chủ
+
+    /** Xin kế hoạch mới ~0,6 giây / lần (sớm hơn khi vừa làm xong một việc); làm đúng việc máy chủ chọn. */
+    private static void theoKeHoach(GameScr gs, MainChar mc, long l) {
+        if (l - lucXinKe >= 600L || keHd < 0 && l - lucXinKe >= 300L) {
+            lucXinKe = l;
+            gui(4, 0);
+        }
+        if (keHd < 0 || l - keLuc > 3000L) {
+            nha();
+            trangThai = "chờ máy chủ";
+            return;
+        }
+        switch (keHd) {
+            case HD_DANH: {
+                Actor a = timActor(gs, 1, keId);
+                if (a == null || !quaiSong(gs, a)) {
+                    if (a != null) {
+                        // vừa hạ: xin kế hoạch mới ngay
+                        ++soHa;
+                        keHd = -1;
+                        lucXinKe = 0L;
+                        nha();
+                        return;
+                    }
+                    // chưa thấy trên màn (ngoài tầm nhìn): đi về phía đó
+                    diToi(mc, keX, keY, l);
+                    return;
+                }
+                mucTieu = a;
+                gs.focusedActor = a;
+                if (keSo < 0) {
+                    // chưa có chiêu sẵn (hồi chiêu / PP): tiến lại gần, chờ
+                    if (Util.distance(mc.x, mc.y, a.x, a.y) > 48) {
+                        diToi(mc, a.x, a.y, l);
+                    } else {
+                        nha();
+                    }
+                    return;
+                }
+                nha();
+                if (l < lucDanh || mc.isDoing || mc.state == Char.A_ATTACK) {
+                    return;
+                }
+                gs.doUseSkillToFocusActor((byte) keSo);
+                lucDanh = l + 450L;
+                return;
+            }
+            case HD_THUOC: {
+                nha();
+                if (l >= lucBinh && keSo >= 0 && keSo < mc.potions.length && mc.potions[keSo] > 0) {
+                    gs.doUsePotion(keSo);
+                    lucBinh = l + 1500L;
+                }
+                keHd = -1;
+                lucXinKe = 0L;
+                return;
+            }
+            case HD_NHAT: {
+                Actor d = timActor(gs, keSo, keId);
+                if (d == null || !(d instanceof Dropable) || ((Dropable) d).isSendGet) {
+                    keHd = -1;
+                    lucXinKe = 0L;
+                    nha();
+                    return;
+                }
+                if (Util.distance(mc.x, mc.y, d.x, d.y) <= 30) {
+                    nha();
+                    GameService.gI().getDropableFromGround(d.catagory, d.ID);
+                    ((Dropable) d).isSendGet = true;
+                    keHd = -1;
+                    lucXinKe = 0L;
+                    return;
+                }
+                diToi(mc, d.x, d.y, l);
+                return;
+            }
+            case HD_VE:
+                gs.focusedActor = null;
+                if (Util.distance(mc.x, mc.y, keX, keY) > 20) {
+                    diToi(mc, keX, keY, l);
+                } else {
+                    nha();
+                    gs.huyDiTheoDuong();
+                }
+                return;
+            default:
+                nha();
+                gs.huyDiTheoDuong();
+                gs.focusedActor = null;
+                return;
+        }
+    }
+
+    private static Actor timActor(GameScr gs, int cat, int id) {
+        for (int i = 0; i < gs.actors.size(); ++i) {
+            Actor a = (Actor) gs.actors.elementAt(i);
+            if (a != null && a.catagory == cat && a.ID == id) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    private static boolean phimDiChuyen() {
+        return Canvas.keyPressed[2] || Canvas.keyPressed[4] || Canvas.keyPressed[6] || Canvas.keyPressed[8];
+    }
+
+    /** Người chơi tự bấm phím di chuyển / chạm màn: nhường 3 giây (phím di chuyển: dừng nếu máy chủ bật cờ 32). */
     private static boolean nguoiBam() {
         if (Canvas.keyPressed[2] || Canvas.keyPressed[4] || Canvas.keyPressed[6] || Canvas.keyPressed[8]) {
             return true;
@@ -406,7 +586,9 @@ public final class TuDong {
     }
 
     private static boolean quaiSong(GameScr gs, Actor a) {
-        return a != null && a.catagory == 1 && !a.isMineral() && a.state != 8 && a.state != 3 && a.state != 5 && ((LiveActor) a).hp > 0 && gs.actors.contains(a);
+        // state 8 = đang xoá, 5 = bay chết; 3 là Pokémon hoang dã ĐANG ĐÁNH TRẢ (Monster.startAttack) - vẫn sống,
+        // bản 0.9.1 coi 3 là chết nên bỏ đúng con đang cắn mình
+        return a != null && a.catagory == 1 && !a.isMineral() && a.state != 8 && a.state != 5 && ((LiveActor) a).hp > 0 && gs.actors.contains(a);
     }
 
     private static boolean trongVung(Actor a) {
@@ -432,7 +614,7 @@ public final class TuDong {
 
     private static void danh(GameScr gs, MainChar mc, long l) {
         if (mucTieu != null && !quaiSong(gs, mucTieu)) {
-            if (((LiveActor) mucTieu).hp <= 0 || mucTieu.state == 8 || mucTieu.state == 3) {
+            if (((LiveActor) mucTieu).hp <= 0 || mucTieu.state == 8 || mucTieu.state == 5) {
                 ++soHa;
             }
             mucTieu = null;
@@ -596,20 +778,42 @@ public final class TuDong {
 
     // ---------------------------------------------------------------- đi bộ (giữ phím ảo, như người bấm)
 
+    /** Phím đi lần trước (giữ trục, tránh đổi trục mỗi khung -> đi răng cưa). */
+    private static int phimCu;
+
     private static void diToi(MainChar mc, int x, int y, long l) {
+        GameScr gs = Canvas.gameScr;
+        // đoạn thẳng bị tường chặn: đi theo đường (BFS game.model.DuongDi) thay vì giữ phím đâm vào tường rồi bỏ cuộc
+        if (gs != null && Tilemap.type != null && !game.model.DuongDi.thongThoang(Tilemap.type, Tilemap.w, Tilemap.h, mc.x, mc.y, x, y)) {
+            nha();
+            gs.diTheoDuong(x, y);
+            ketCho(mc, l);
+            return;
+        }
+        if (gs != null) {
+            gs.huyDiTheoDuong();
+        }
         int dx = x - mc.x;
         int dy = y - mc.y;
         int ngang = dx < 0 ? 4 : 6;
         int doc = dy < 0 ? 2 : 8;
         int chinh = Math.abs(dx) >= Math.abs(dy) ? ngang : doc;
+        if ((phimCu == ngang && Math.abs(dx) > 8 || phimCu == doc && Math.abs(dy) > 8) && !tuongTruoc(mc, phimCu)) {
+            chinh = phimCu;
+        }
         int phu = chinh == ngang ? doc : ngang;
         if (tuongTruoc(mc, chinh) && !tuongTruoc(mc, phu)) {
             chinh = phu;
         }
+        phimCu = chinh;
         nha();
         Canvas.keyHold[chinh] = true;
         giuPhim = true;
-        // kẹt 1,5 giây: bỏ mục tiêu (lần sau chọn con khác / đứng chờ)
+        ketCho(mc, l);
+    }
+
+    /** Kẹt 1,5 giây (không nhúc nhích): bỏ mục tiêu (lần sau chọn con khác / đứng chờ). */
+    private static void ketCho(MainChar mc, long l) {
         if (lucKet == 0L || mc.x != ketX || mc.y != ketY) {
             lucKet = l;
             ketX = mc.x;
@@ -701,6 +905,9 @@ public final class TuDong {
             if (s.length() >= 11) {
                 tuHoiSinh = s.charAt(10) == '1';
             }
+            if (s.length() >= 12) {
+                hoiSinhLuong = s.charAt(11) == '1';
+            }
         } catch (Throwable e) {
             // mặc định
         }
@@ -719,7 +926,7 @@ public final class TuDong {
                     k = i;
                 }
             }
-            b.append((char) ('0' + k)).append(tuHoiSinh ? '1' : '0');
+            b.append((char) ('0' + k)).append(tuHoiSinh ? '1' : '0').append(hoiSinhLuong ? '1' : '0');
             RMS.saveRMSString(RMS_TEN, b.toString());
         } catch (Throwable e) {
             // không lưu được: giữ trong phiên

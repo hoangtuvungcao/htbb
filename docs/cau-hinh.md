@@ -307,7 +307,7 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **185 khoá** trong **14 nhóm**. Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
+Tổng cộng **203 khoá** trong **14 nhóm**. Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
 ### Chế độ game (`che_do`)
 
@@ -525,6 +525,24 @@ Tự động đánh chính thức (chỉ khi online, theo luật năng lượng 
 | `tu_dong.nhip_nguoi` | Nhịp đánh nghi bot (mọi người chơi) | nhịp số/giây | `30/5` |  | ngay | game | Chỉ ghi nghi vấn (hack.txt), không chặn. |
 | `tu_dong.vi_pham_tat` | Số vi phạm nhịp thì dừng | số | `20` | 1..1000 | ngay | game | Dừng Tự động đánh + ghi nghi vấn. |
 | `tu_dong.hoi_sinh_moi_gio` | Tự hồi sinh tối đa / giờ | số | `2` | 0..20 | ngay | game | Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật "Tự hồi sinh", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ. |
+| `tu_dong.ke_hoach` | Máy chủ điều khiển từng bước | cờ 0/1 | `1` |  | ngay | game | 1 = máy chủ chọn mục tiêu, chiêu, thuốc, nhặt đồ, rút lui cho client 0.9.2+ (client chỉ thực hiện). 0 = client tự chọn như bản 0.9.1 (máy chủ vẫn giới hạn giờ / nhịp / vùng). |
+| `tu_dong.cap_toi_thieu` | Cấp tối thiểu để bật | số | `0` | 0..1000 | ngay | game | 0 = mọi cấp. Dưới cấp này bấm Bắt đầu thì được báo rõ cấp cần. |
+| `tu_dong.chenh_cap_tren` | Bỏ Pokémon cao hơn quá N cấp | số | `5` | -1..1000 | ngay | game | Không đánh Pokémon hoang dã cao hơn cấp mình quá ngần này. -1 = không giới hạn. |
+| `tu_dong.chenh_cap_duoi` | Bỏ Pokémon thấp hơn quá N cấp | số | `0` | 0..1000 | ngay | game | 0 = không giới hạn dưới (vẫn đánh Pokémon yếu). |
+| `tu_dong.danh_boss` | Cho đánh boss | cờ 0/1 | `0` |  | ngay | game | 0 = không chọn boss / Pokémon huyền thoại làm mục tiêu (đánh trúng boss vẫn dừng theo tu_dong.tat_khi_pvp). |
+| `tu_dong.hp_quai_toi_da_pt` | Bỏ Pokémon quá trâu (% HP mình) | số | `500` | 0..100000 | ngay | game | Bỏ Pokémon có HP tối đa lớn hơn ngần này % HP tối đa của mình. 0 = tắt. |
+| `tu_dong.chon_chieu_theo_he` | Chọn chiêu theo khắc hệ | cờ 0/1 | `1` |  | ngay | game | 1 = điểm chiêu = sát thương × khắc hệ × STAB, bỏ chiêu đang hồi / thiếu PP. 0 = chỉ theo sát thương. |
+| `tu_dong.nguong_thuoc_hp` | Ngưỡng thuốc HP mặc định (%) | số | `50` | 0..90 | ngay | game | Uống thuốc HP khi HP dưới ngưỡng người chơi chọn trong bảng; client cũ dùng số này. 0 = máy chủ không cho tự uống thuốc HP. |
+| `tu_dong.nguong_thuoc_mp` | Ngưỡng thuốc PP mặc định (%) | số | `30` | 0..90 | ngay | game | Như trên cho PP. 0 = tắt. |
+| `tu_dong.nguong_hp_thap` | HP thấp thì rút lui (%) | số | `25` | 0..90 | ngay | game | HP dưới ngưỡng mà hết thuốc: rút về điểm bắt đầu nghỉ (hoặc dừng nếu tu_dong.hp_thap_dung=1). 0 = tắt. |
+| `tu_dong.hp_thap_dung` | HP thấp thì dừng hẳn | cờ 0/1 | `0` |  | ngay | game | 1 = dừng Tự động đánh thay vì rút lui nghỉ hồi phục. |
+| `tu_dong.hoi_phuc_toi` | Nghỉ hồi phục tới (%) | số | `80` | 10..100 | ngay | game | Rút lui nghỉ tới khi HP đạt ngần này % rồi đánh tiếp. |
+| `tu_dong.nhat_ban_kinh` | Bán kính nhặt đồ (px) | số | `96` | 0..480 | ngay | game | Chỉ đi nhặt đồ rơi của mình trong bán kính này quanh Pokémon (và trong vùng). 0 = không nhặt. 1 ô = 16 px. |
+| `tu_dong.dung_khi_day_tui` | Dừng khi hành trang đầy | cờ 0/1 | `1` |  | ngay | game | 1 = hành trang đầy thì dừng và báo. |
+| `tu_dong.dung_khi_tu_di` | Dừng khi người chơi tự di chuyển | cờ 0/1 | `1` |  | ngay | game | 1 = bấm phím di chuyển / chạm bản đồ thì dừng Tự động đánh. 0 = nhường 3 giây rồi chạy tiếp. |
+| `tu_dong.tranh_pk_px` | Tránh người bật PK (px) | số | `160` | 0..960 | ngay | game | Có người chơi khác bật PK trong bán kính này thì lùi về điểm bắt đầu chờ. 0 = tắt. |
+| `tu_dong.map_cam` | Bản đồ cấm Tự động đánh thêm (id) | chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Ngoài sàn đấu / Gym / chiến trường / mê cung / bản đồ boss. Cách nhau dấu phẩy; trống = không. |
+| `tu_dong.hoi_sinh_tra_phi` | Cho tự dùng vật phẩm hồi sinh trả phí | cờ 0/1 | `0` |  | ngay | game | 1 = khi người chơi đồng ý riêng (bảng Tự động: Tự hồi sinh "cả vật phẩm lượng") mới được tự dùng Thuốc hồi sinh tối đa (lượng khoá). 0 = chỉ Thuốc hồi sinh thường; không bao giờ tự trả xu / lượng. |
 
 ### Hồi sinh (`hoi_sinh`)
 

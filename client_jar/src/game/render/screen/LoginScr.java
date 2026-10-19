@@ -192,6 +192,13 @@ public class LoginScr extends Screen {
 
     @Override
     public boolean keyPress(int keyCode) {
+        if (!this.tfUser.isFocus && !this.tfPass.isFocus && (keyCode > 32 && CreateCharScr.laChuGo(keyCode) || keyCode == -8)) {
+            // pokemon: đang ở ô "Nhớ mật khẩu" mà gõ chữ -> vào ô Tài khoản (không nuốt phím)
+            this.focus = 0;
+            this.tfUser.isFocus = true;
+            this.center = this.cmdLogin;
+            this.right = this.tfUser.cmdClear;
+        }
         if (this.tfUser.isFocus) {
             boolean swallow = this.tfUser.keyPressed(keyCode);
             if (swallow) {

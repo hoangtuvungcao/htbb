@@ -825,20 +825,25 @@ public class Char extends LiveActor {
                 int dx1 = Canvas.abs(this.x - this.xTo);
                 int dy1 = Canvas.abs(this.y - this.yTo);
                 int spd = this.speed + this.upSpeed + sp;
-                if (dx1 > 100 || dy1 > 100) {
-                    spd = this.speed + this.upSpeed + 4 + sp;
-                } else if (dx1 > 70 || dy1 > 70) {
-                    spd = this.speed + this.upSpeed + 3 + sp;
-                } else if (dx1 > 50 || dy1 > 50) {
-                    spd = this.speed + this.upSpeed + 2 + sp;
-                } else if (dx1 > 30 || dy1 > 30) {
-                    spd = this.speed + this.upSpeed + 1 + sp;
+                // Tăng tốc đuổi kịp CHỈ cho nhân vật khác (nội suy theo gói vị trí máy chủ). Nhân vật chính đi đúng
+                // tốc độ máy chủ: tăng tốc ở đây làm bước giữa hai gói vượt ngưỡng máy chủ -> bị trả vị trí cũ.
+                if (!isMainchar()) {
+                    if (dx1 > 100 || dy1 > 100) {
+                        spd = this.speed + this.upSpeed + 4 + sp;
+                    } else if (dx1 > 70 || dy1 > 70) {
+                        spd = this.speed + this.upSpeed + 3 + sp;
+                    } else if (dx1 > 50 || dy1 > 50) {
+                        spd = this.speed + this.upSpeed + 2 + sp;
+                    } else if (dx1 > 30 || dy1 > 30) {
+                        spd = this.speed + this.upSpeed + 1 + sp;
+                    }
                 }
-                if (dx1 < spd) {
+                if (spd < 1) {
+                    spd = 1;
+                }
+                if (dx1 < spd && dy1 < spd) {
                     this.x = this.xTo;
                     isMatchX = true;
-                }
-                if (dy1 < spd) {
                     this.y = this.yTo;
                     isMatchY = true;
                 }
@@ -850,18 +855,44 @@ public class Char extends LiveActor {
                     this.justStopFromRun = true;
                     this.stand = System.currentTimeMillis();
                 } else {
+                    // Đi THẲNG tới điểm đích (hai trục cùng lúc theo tỉ lệ), không đi hình chữ L (trục X hết rồi mới
+                    // tới Y) như cũ: chữ L lệch khỏi đường máy chủ thấy và nhìn như giật góc. Hướng mặt theo trục lớn,
+                    // có trễ (lệch < 25%) để không lật mặt liên tục khi đi chéo.
+                    int sx;
+                    int sy;
+                    if (dx1 >= dy1) {
+                        sx = spd < dx1 ? spd : dx1;
+                        sy = (dy1 * sx) / dx1;
+                    } else {
+                        sy = spd < dy1 ? spd : dy1;
+                        sx = (dx1 * sy) / dy1;
+                    }
+                    boolean ngang = dx1 * 4 >= dy1 * 5;
+                    boolean doc = dy1 * 4 >= dx1 * 5;
+                    if (!ngang && !doc) {
+                        ngang = this.dir == 2 || this.dir == 3;
+                    }
                     if (this.x < this.xTo) {
-                        this.x = (short) (this.x + spd);
-                        this.dir = (short) 3;
+                        this.x = (short) (this.x + sx);
+                        if (ngang) {
+                            this.dir = (short) 3;
+                        }
                     } else if (this.x > this.xTo) {
-                        this.x = (short) (this.x - spd);
-                        this.dir = (short) 2;
-                    } else if (this.y > this.yTo) {
-                        this.y = (short) (this.y - spd);
-                        this.dir = (short) 1;
+                        this.x = (short) (this.x - sx);
+                        if (ngang) {
+                            this.dir = (short) 2;
+                        }
+                    }
+                    if (this.y > this.yTo) {
+                        this.y = (short) (this.y - sy);
+                        if (!ngang) {
+                            this.dir = (short) 1;
+                        }
                     } else if (this.y < this.yTo) {
-                        this.y = (short) (this.y + spd);
-                        this.dir = (short) 0;
+                        this.y = (short) (this.y + sy);
+                        if (!ngang) {
+                            this.dir = (short) 0;
+                        }
                     }
                     if (this.frame > 3) {
                         this.frame = (byte) 0;
@@ -1544,6 +1575,8 @@ public class Char extends LiveActor {
             return;
         }
         if (this.name != null && Canvas.gameScr.hideGUI != 2) {
+            // pokemon: hang ten dat sat tren DINH HINH THAT (ban goc co dinh y - 40 cho nguoi ~32 px)
+            int dyTen = dyHangTen();
             int bb = -((getHorse() == -1 || GameData.imgHorse == null) ? 2 : 10);
             int aa = 0;
             if (this.idhorse != -1) {
@@ -1555,12 +1588,12 @@ public class Char extends LiveActor {
                 int wImg = 0;
                 if (img != null) {
                     if (!img.isLoad) {
-                        g.drawImage(img.img, (this.x - (this.wName / 2)) - 6, ((this.y - this.height) - 6) + bb, 3);
+                        g.drawImage(img.img, (this.x - (this.wName / 2)) - 6, ((this.y - 32 + dyTen) - 6) + bb, 3);
                         wImg = img.img.getWidth();
                     }
                     if (this.isMaster >= 0 && this.isMaster < 3) {
                         int[][] color = {new int[]{16450576, 14548228}, new int[]{14548228, 16450576}, new int[]{1049853, 16450576}};
-                        Res.paintRectColor(g, ((this.x - (this.wName / 2)) - (wImg / 2)) - 8, ((((this.y - this.height) - 6) + bb) - (wImg / 2)) - 1, wImg + 2, wImg + 2, count, color[this.isMaster][0], color[this.isMaster][1]);
+                        Res.paintRectColor(g, ((this.x - (this.wName / 2)) - (wImg / 2)) - 8, ((((this.y - 32 + dyTen) - 6) + bb) - (wImg / 2)) - 1, wImg + 2, wImg + 2, count, color[this.isMaster][0], color[this.isMaster][1]);
                         count += 3;
                         if (count > 46) {
                             count = 0;
@@ -1568,7 +1601,7 @@ public class Char extends LiveActor {
                     }
                 } else if (this.isMaster >= 0 && this.isMaster < 3) {
                     int[][] color2 = {new int[]{16450576, 14548228}, new int[]{14548228, 16450576}, new int[]{1049853, 16450576}};
-                    Res.paintRectColor(g, (this.x - (this.wName / 2)) - 8, (((this.y - this.height) - 6) + bb) - 1, 10, 10, count, color2[this.isMaster][0], color2[this.isMaster][1]);
+                    Res.paintRectColor(g, (this.x - (this.wName / 2)) - 8, (((this.y - 32 + dyTen) - 6) + bb) - 1, 10, 10, count, color2[this.isMaster][0], color2[this.isMaster][1]);
                     count += 3;
                     if (count > 46) {
                         count = 0;
@@ -1576,16 +1609,16 @@ public class Char extends LiveActor {
                 }
             }
             if (this.nationID > -1 && this.idBoss == -1 && ((this.nationID != this.inCountry || this.ID == Canvas.gameScr.mainChar.ID) && (this.nationID != this.inCountry || this.ID == Canvas.gameScr.mainChar.ID))) {
-                g.drawRegion(Res.imgNation, 0, this.nationID * 11, 11, 11, 0, this.x + (this.wName / 2) + 9, ((this.y - this.height) - 12) + bb, 20);
+                g.drawRegion(Res.imgNation, 0, this.nationID * 11, 11, 11, 0, this.x + (this.wName / 2) + 9, ((this.y - 32 + dyTen) - 12) + bb, 20);
             }
             int dhSinhThai = game.pokemon.SinhThai.danhHieuCua(this.listEffect);
             if (dhSinhThai >= 0) {
-                game.pokemon.SinhThai.veDanhHieu(g, this.x, ((this.y - 42) + bb) - this.dyThanthu, dhSinhThai);
+                game.pokemon.SinhThai.veDanhHieu(g, this.x, ((this.y - 42 + dyTen) + bb) - this.dyThanthu, dhSinhThai);
             }
             if (this.ID == Canvas.gameScr.mainChar.ID || this.nationID == Canvas.gameScr.mainChar.nationID || this.idBoss != -1) {
-                Font.smallFont.drawString(g, this.name, this.x + aa, ((this.y - 40) + bb) - this.dyThanthu, 2);
+                Font.smallFont.drawString(g, this.name, this.x + aa, ((this.y - 40 + dyTen) + bb) - this.dyThanthu, 2);
             } else {
-                Font.smallFontColor[4].drawString(g, this.name, this.x + aa, ((this.y - 43) + bb) - this.dyThanthu, 2);
+                Font.smallFontColor[4].drawString(g, this.name, this.x + aa, ((this.y - 43 + dyTen) + bb) - this.dyThanthu, 2);
             }
             int cc = 0;
             int dd = 0;
@@ -1594,13 +1627,13 @@ public class Char extends LiveActor {
             }
             if (this.pk > 0) {
                 cc = -5;
-                g.drawRegion(imgFlgPk, 0, (this.pk - 14) * 10, 11, 10, 0, this.x + dd, (this.y - 41) + bb, 33);
+                g.drawRegion(imgFlgPk, 0, (this.pk - 14) * 10, 11, 10, 0, this.x + dd, (this.y - 41 + dyTen) + bb, 33);
             } else if (this.killer > 0 || this.iskiller) {
                 cc = -5;
-                g.drawRegion(imgFlgPk, 0, 50, 11, 10, 0, this.x + dd, (this.y - 41) + bb, 33);
+                g.drawRegion(imgFlgPk, 0, 50, 11, 10, 0, this.x + dd, (this.y - 41 + dyTen) + bb, 33);
             }
             if (this.isNo) {
-                Res.imgNo.drawFrame(this.countNo / 5, this.x + cc, ((this.y - 41) + bb) - 2, 0, 33, g);
+                Res.imgNo.drawFrame(this.countNo / 5, this.x + cc, ((this.y - 41 + dyTen) + bb) - 2, 0, 33, g);
             }
             this.countNo = (byte) (this.countNo + 1);
             if (this.countNo >= 10) {
@@ -1608,6 +1641,33 @@ public class Char extends LiveActor {
             }
         }
         super.paintName(g);
+    }
+
+    /**
+     * pokemon: do lech (px the gioi, duong = xuong) cua hang ten / huy hieu so voi vi tri goc y - 40 (nguoi
+     * ~32 px). Than Pokemon: ten cach dinh hinh that 9 px (cong phan nang len khi cuoi thu).
+     */
+    public int dyHangTen() {
+        if (this.pokeDex <= 0 || !PokeBody.coSprite(this.pokeDex, this.pokeShiny)) {
+            return 0;
+        }
+        int cao = PokeBody.caoHinh(this.pokeDex, this.pokeShiny);
+        if (cao <= 0) {
+            return 0;
+        }
+        if (this.pokeThuDex > 0 && this.state != 3 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny)) {
+            cao += PokeBody.caoTrenChan(this.pokeThuDex, this.pokeThuShiny, 100) * 55 / 100;
+        }
+        return tinhDyTen(cao);
+    }
+
+    /** Lech hang ten cho hinh cao caoHinh px tren chan (ten cach dinh 9 px, khong thap hon dinh 14 px). */
+    public static int tinhDyTen(int caoHinh) {
+        int dau = caoHinh + 9;
+        if (dau < 14) {
+            dau = 14;
+        }
+        return 40 - dau;
     }
 
     public int getdyParHorse() {

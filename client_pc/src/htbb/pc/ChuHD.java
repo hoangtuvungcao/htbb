@@ -160,6 +160,43 @@ public final class ChuHD {
         return k;
     }
 
+    /**
+     * Ký hiệu phông Noto Sans đi kèm KHÔNG có (→ − ≥ ≤ ★ ✓ ▼ ♪ ●... - font ảnh của game vẽ được, server gửi trong
+     * thông báo vd "Mốc: (x,y) → ...", "(−5% EXP)") -> thay bằng chữ có trong phông, tránh ô vuông "tofu".
+     */
+    static String thayKyHieu(String s) {
+        int n = s.length();
+        int i = 0;
+        while (i < n && s.charAt(i) < 0x2190) i++;
+        if (i == n) return s;
+        StringBuilder b = new StringBuilder(n + 4);
+        b.append(s, 0, i);
+        for (; i < n; i++) {
+            char c = s.charAt(i);
+            if (c < 0x2190) {
+                b.append(c);
+                continue;
+            }
+            switch (c) {
+                case '\u2192': case '\u27A4': case '\u279C': case '\u25B6': case '\u25BA': b.append("->"); break;   // → ➤ ➜ ▶ ►
+                case '\u2190': case '\u25C0': case '\u25C4': b.append("<-"); break;                              // ← ◀ ◄
+                case '\u2191': case '\u25B2': b.append('^'); break;                                               // ↑ ▲
+                case '\u2193': case '\u25BC': b.append('v'); break;                                               // ↓ ▼
+                case '\u2212': b.append('-'); break;                                                               // −
+                case '\u2265': b.append(">="); break;
+                case '\u2264': b.append("<="); break;
+                case '\u2605': case '\u2606': case '\u2B50': b.append('*'); break;                                // ★ ☆ ⭐
+                case '\u2713': case '\u2714': b.append("(v)"); break;                                             // ✓ ✔
+                case '\u2715': case '\u2716': case '\u2717': case '\u2718': b.append('\u00D7'); break;           // ✕ ✖ ✗ ✘ -> ×
+                case '\u25CF': case '\u25CB': case '\u25A0': case '\u25A1': case '\u25C6': b.append('\u2022'); break; // ● ○ ■ □ ◆ -> •
+                case '\u2665': case '\u2764': b.append("<3"); break;
+                case '\u266A': case '\u266B': b.append('~'); break;                                               // ♪ ♫
+                default: b.append(c); break;
+            }
+        }
+        return b.toString();
+    }
+
     /** Bề rộng chữ HD (px logic), -1 = để font ảnh đo. */
     public static int rong(Object f, Image anh, int cao, String s) {
         Kieu k = kieu(f, anh, cao);
@@ -167,7 +204,7 @@ public final class ChuHD {
         synchronized (k) {
             Integer v = k.rong.get(s);
             if (v != null) return v.intValue();
-            int r = (int) Math.ceil(k.font.getStringBounds(s, FRC).getWidth() + (k.vien != null ? 1 : 0));
+            int r = (int) Math.ceil(k.font.getStringBounds(thayKyHieu(s), FRC).getWidth() + (k.vien != null ? 1 : 0));
             if (k.rong.size() > 4000) k.rong.clear();
             k.rong.put(s, Integer.valueOf(r));
             return r;
@@ -183,6 +220,7 @@ public final class ChuHD {
         if (s.length() == 0) return true;
         int w = rong(f, anh, cao, s);
         int x1 = align == 0 ? x : align == 1 ? x - w : x - (w >> 1);
+        s = thayKyHieu(s);
         Graphics2D g2 = g.g2d();
         Object aa = g2.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

@@ -267,7 +267,7 @@ public class LoginHandler implements ICommandHandler {
             session.agentProvider = agent;
             firmware = dis.readByte();
             session.firmWare = firmware;
-            session.w = dis.readShort();
+            session.w = com.htbb.mang.VungNhinCoDinh.kepRong(dis.readShort()); // camera co dinh: kep be rong man
             session.vsTile = dis.readByte();
             session.idServer = dis.readByte();
             // MA MAY — PHAI la truong CUOI CUNG, va PHAI nam trong khoi try nay.
@@ -286,6 +286,7 @@ public class LoginHandler implements ICommandHandler {
             }
         } catch (final Exception exBan) {
         }
+        session.banClient = banClient;
         if (TeamServer.banToiThieu > 0 && banClient >= 0 && banClient < TeamServer.banToiThieu) {
             com.htbb.log.Nhat.thongTin("CLIENT", "tu choi ban cu " + banClient + " < " + TeamServer.banToiThieu + " user=" + com.htbb.log.Nhat.sach(uname));
             session.sendMessage(MessageCreator.createServerAlertMessage(

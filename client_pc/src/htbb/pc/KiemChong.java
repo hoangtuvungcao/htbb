@@ -95,6 +95,18 @@ public final class KiemChong {
                 }
             }
         }
+        // bố cục HUD màn rộng (nút / bản đồ nhỏ / cụm chiêu / chat): hình học, không phụ thuộc chữ
+        try {
+            if (game.render.Canvas.currentScreen == game.render.Canvas.gameScr && game.render.screen.HudRong.bat()) {
+                String hud = game.render.screen.HudRong.kiemChong(game.render.Canvas.gameScr);
+                if (hud.length() > 0) {
+                    chong += hud.split("\n").length;
+                    b.append("HUD\n").append(hud);
+                }
+            }
+        } catch (Throwable e) {
+            NhatKy.loi("kiem chong hud", e);
+        }
         String tenMan = game.render.Canvas.currentScreen == null ? "?" : game.render.Canvas.currentScreen.getClass().getSimpleName();
         String dau = "man=" + tenMan + " dlg=" + (game.render.Canvas.currentDialog == null ? "-" : game.render.Canvas.currentDialog.getClass().getSimpleName())
                 + " menu=" + game.render.Canvas.menu.showMenu + " cua_so=" + W + "x" + H + " chu=" + soChu

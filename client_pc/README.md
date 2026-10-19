@@ -27,4 +27,18 @@ Ra `client_pc/out/`: `HTBB-PC.jar` (fat jar), `HTBB.sh` / `HTBB.bat` / `HTBB.com
 - `BAN` / `PHIEN_BAN`: mặc định từ `tools/phat-hanh/phien_ban.conf`.
 - Dữ liệu người chơi (tài khoản nhớ, cài đặt, ảnh F12, `htbb-pc.log`): Windows `%APPDATA%\HTBB`,
   macOS `~/Library/Application Support/HTBB`, Linux `~/.local/share/htbb`.
-- Phím: WASD / mũi tên đi, Space đánh, 1–5 chiêu, Enter chat, Esc menu, F10 cài đặt (đổi phím), F11 toàn màn, F12 chụp.
+- Phím: WASD / mũi tên đi, Space đánh, 1–5 chiêu, Enter = hành động ngữ cảnh (tiếp lời thoại / nói chuyện NPC /
+  đánh / nhặt / câu cá), T hoặc / mở chat (Enter gửi), Esc menu, F1 trang Phím tắt, F10 cài đặt (đổi phím), F11 toàn màn,
+  F12 chụp. Chuột trái làm mọi việc; chuột phải chỉ là menu ngữ cảnh tuỳ chọn. Danh sách đầy đủ: Cài đặt → Phím tắt.
+- Vùng chơi CỐ ĐỊNH 640x360 logic, thế giới phóng cố định x2 (thấy 20 x 11,25 ô ở mọi cỡ cửa sổ - không thu phóng):
+  cửa sổ to / phóng to / toàn màn chỉ làm hình to hơn (hệ số nguyên khi vừa, không thì thu vừa), phần dư là viền.
+  Cỡ cửa sổ thường + trạng thái phóng to lưu ở `cua_so_rong` / `cua_so_cao` / `phong_to`.
+
+## Kiểm thử (không cần màn hình)
+
+```sh
+sh client_pc/build.sh && O=$(mktemp -d) && javac -cp client_pc/out/build/cls -d $O client_pc/test/KiemPc.java \
+  && java -Djava.awt.headless=true -cp client_pc/out/build/cls:client_pc/out/build/res:$O KiemPc
+```
+Khung cố định / phóng / viền / đổi toạ độ chuột ở nhiều cỡ cửa sổ, chữ bộ gõ (InputMethodEvent) và KEY_TYPED, lọc dán,
+hàng tên trên đầu, hộp thoại đáy tự tắt, vùng bản đồ.

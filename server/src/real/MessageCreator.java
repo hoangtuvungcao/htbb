@@ -1621,6 +1621,25 @@ public class MessageCreator {
         return msgSkillInfo;
     }
 
+    /**
+     * Hoi chieu gui client (don vi 100 ms): hoi chieu THAT cua nhan vat (Char.coolDown, da tru Than khi / X Toc do,
+     * VatPhamDungLauDai) lam tron LEN - client khong bao gio nhanh hon server. Chua tinh thi theo bang goc.
+     */
+    static short hoiChieuGui(final Char p, final int j, final int k) {
+        final int goc = CharManager.SKILL_COOLDOWN[p.charClass][j][k];
+        // goc > 327: goc * 100 tran kieu short cua Char.coolDown (chieu buff 600..1700) -> giu bang goc.
+        if (goc <= 0 || goc > 327) {
+            return (short) goc;
+        }
+        try {
+            if (p.coolDown != null && j < p.coolDown.length && k < p.coolDown[j].length && p.coolDown[j][k] > 0) {
+                return (short) Math.min(goc, (p.coolDown[j][k] + 99) / 100);
+            }
+        } catch (final Exception ignored) {
+        }
+        return (short) goc;
+    }
+
     public static Message createSkillInfoMessage(final Char p) {
         final Message msgSkillInfo = new Message(35);
         final int nskill = 15;
@@ -1632,7 +1651,7 @@ public class MessageCreator {
             }
             for (int j = 0; j < nskill; ++j) {
                 for (int k = 0; k < 11; ++k) {
-                    msgSkillInfo.dos.writeShort(CharManager.SKILL_COOLDOWN[p.charClass][j][k]);
+                    msgSkillInfo.dos.writeShort(hoiChieuGui(p, j, k));
                 }
             }
             for (int j = 0; j < nskill; ++j) {

@@ -10,7 +10,8 @@ import javax.microedition.lcdui.NenPc;
 /**
  * Nút lệnh TRONG NGỮ CẢNH thay thanh phím mềm kiểu J2ME (bản PC): lệnh trái / giữa / phải (game.model.Main
  * left / center / right) của menu, hộp thoại hay màn đang mở vẽ thành nút kính gắn vào khung đó - nút chính (giữa)
- * đỏ Poké ở phải dưới kèm phím "Enter", nút đóng / quay lại ("Esc") bên trái nó, lệnh trái ("F3") ở trái dưới.
+ * đỏ Poké ở phải dưới, nút đóng / quay lại bên trái nó, lệnh trái ở trái dưới. Nút chỉ ghi tên lệnh (không nhãn
+ * phím; phím tắt Enter / Esc / F3 vẫn chạy và liệt kê ở thẻ "Phím tắt" của Cài đặt - LopPhu).
  * Bấm nút = gửi đúng phím mềm J2ME (-5 / -7 / -6) nên logic game giữ nguyên. port-j2me.py tắt thanh phím mềm
  * cũ (ảnh imgCmdBar, chữ lệnh, nút bàn phím ảo, vùng chạm collisionCmdBar).
  */
@@ -74,11 +75,10 @@ public final class ThanhLenh {
                 float bh = 26 * u;
                 float y = NenPc.lechY + gs.tfChat.y * k - bh - 6 * u;
                 Font f = PhongChu.thuong(true).deriveFont(12 * u);
-                Font fp = PhongChu.thuong(true).deriveFont(9.5f * u);
                 float x = NenPc.lechX + (gs.tfChat.x + gs.tfChat.width) * k;
-                x = nut(g, x, y, bh, "Gửi", "Enter", f, fp, true, -5, vung, u);
-                x = nut(g, x, y, bh, "Xoá", "Del", f, fp, false, -7, vung, u);
-                nut(g, x, y, bh, "Đóng", "Esc", f, fp, false, -6, vung, u);
+                x = nut(g, x, y, bh, "Gửi", f, true, -5, vung, u);
+                x = nut(g, x, y, bh, "Xoá", f, false, -7, vung, u);
+                nut(g, x, y, bh, "Đóng", f, false, -6, vung, u);
             }
             return; // màn chơi: phím tắt + nút gợi ý (không đè thế giới)
         }
@@ -125,11 +125,10 @@ public final class ThanhLenh {
         float y = Math.min(ay1, H - bh - 6 * u);
         if (!laMenu && !laHop) y = ay1 - bh;
         Font f = PhongChu.thuong(true).deriveFont(13 * u);
-        Font fp = PhongChu.thuong(true).deriveFont(10 * u);
         float x = ax1;
-        if (co(giua)) x = nut(g, x, y, bh, giua.caption, "Enter", f, fp, true, traiLaChinh ? -6 : -5, vung, u);
-        if (co(phai)) x = nut(g, x, y, bh, phai.caption, "Esc", f, fp, false, -7, vung, u);
-        if (co(trai)) nutTrai(g, ax0, y, bh, trai.caption, "F3", f, fp, -6, vung, u, x);
+        if (co(giua)) x = nut(g, x, y, bh, giua.caption, f, true, traiLaChinh ? -6 : -5, vung, u);
+        if (co(phai)) x = nut(g, x, y, bh, phai.caption, f, false, -7, vung, u);
+        if (co(trai)) nutTrai(g, ax0, y, bh, trai.caption, f, -6, vung, u, x);
     }
 
     private static boolean co(game.model.Command c) {
@@ -140,21 +139,19 @@ public final class ThanhLenh {
         return game.pokemon.ChuPokemon.D(s);
     }
 
-    private static float rongNut(Graphics2D g, String s, String phim, Font f, Font fp, float bh) {
+    private static float rongNut(Graphics2D g, String s, Font f, float bh) {
         g.setFont(f);
         float w = g.getFontMetrics().stringWidth(s);
-        g.setFont(fp);
-        float wp = Math.max(bh * 0.62f, g.getFontMetrics().stringWidth(phim) + bh * 0.4f);
-        return w + wp + bh * 0.9f;
+        return Math.max(bh * 2.4f, w + bh * 1.1f);
     }
 
     /** Nút căn PHẢI tại xPhai; trả x trái mới (cho nút kế tiếp). */
-    private static float nut(Graphics2D g, float xPhai, float y, float bh, String cap, String phim, Font f, Font fp,
+    private static float nut(Graphics2D g, float xPhai, float y, float bh, String cap, Font f,
                              boolean chinh, final int ma, ArrayList<LopPhu.Vung> vung, float u) {
         String s = chu(cap);
-        float w = rongNut(g, s, phim, f, fp, bh);
+        float w = rongNut(g, s, f, bh);
         float x = xPhai - w;
-        veNut(g, x, y, w, bh, s, phim, f, fp, chinh, u);
+        veNut(g, x, y, w, bh, s, f, chinh, u);
         vung.add(new LopPhu.Vung(x, y, w, bh, new Runnable() {
             public void run() {
                 bam(ma);
@@ -163,14 +160,14 @@ public final class ThanhLenh {
         return x - 8 * u;
     }
 
-    private static void nutTrai(Graphics2D g, float x, float y, float bh, String cap, String phim, Font f, Font fp,
+    private static void nutTrai(Graphics2D g, float x, float y, float bh, String cap, Font f,
                                 final int ma, ArrayList<LopPhu.Vung> vung, float u, float gioiHan) {
         String s = chu(cap);
-        float w = rongNut(g, s, phim, f, fp, bh);
+        float w = rongNut(g, s, f, bh);
         if (x + w > gioiHan) {
             y += bh + 6 * u;   // không đủ chỗ cùng hàng: xuống hàng dưới, căn trái khung
         }
-        veNut(g, x, y, w, bh, s, phim, f, fp, false, u);
+        veNut(g, x, y, w, bh, s, f, false, u);
         vung.add(new LopPhu.Vung(x, y, w, bh, new Runnable() {
             public void run() {
                 bam(ma);
@@ -178,7 +175,7 @@ public final class ThanhLenh {
         }, null));
     }
 
-    private static void veNut(Graphics2D g, float x, float y, float w, float h, String s, String phim, Font f, Font fp,
+    private static void veNut(Graphics2D g, float x, float y, float w, float h, String s, Font f,
                               boolean chinh, float u) {
         ManHinh mh = ManHinh.me;
         boolean sang = mh != null && mh.chuotX >= x && mh.chuotX < x + w && mh.chuotY >= y && mh.chuotY < y + h;
@@ -198,17 +195,11 @@ public final class ThanhLenh {
             }
             g.setClip(cu);
         }
-        g.setFont(fp);
-        FontMetrics fm = g.getFontMetrics();
-        float kh = h * 0.62f;
-        float kw = Math.max(kh, fm.stringWidth(phim) + h * 0.4f);
-        float kx = x + h * 0.3f;
-        float ky = y + (h - kh) / 2;
-        Kinh.phim(g, kx, ky, kh, phim, fp);
+        // chỉ tên lệnh, căn giữa nút (không nhãn phím)
         g.setFont(f);
-        FontMetrics fm2 = g.getFontMetrics();
-        float tx = kx + kw + h * 0.25f;
-        float ty = y + (h - fm2.getAscent() - fm2.getDescent()) / 2f + fm2.getAscent();
+        FontMetrics fm = g.getFontMetrics();
+        float tx = x + (w - fm.stringWidth(s)) / 2f;
+        float ty = y + (h - fm.getAscent() - fm.getDescent()) / 2f + fm.getAscent();
         Kinh.chu(g, s, tx, ty, Kinh.CHU);
     }
 

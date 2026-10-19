@@ -40,6 +40,7 @@ Bot nói giao thức thật của server (khoá `-40`, đăng nhập, tạo / ch
 |---|---|
 | `BotTai` | kiểm tải: N bot (một phần là GM dùng `slv` / `mto`), mỗi 10 giây in số bot, rớt kết nối, gói tin, đòn đánh, quái hạ, RAM/CPU |
 | `BotChucNang` + `KichBanDS*.java` | kiểm PASS/FAIL theo tính năng (đăng nhập → cổng mọi map → chiến đấu → vật phẩm → kinh tế → xã hội → hệ thống dài hạn) |
+| `KichBanDungVatPham.java` | kịch bản `dung_vat_pham`: mua / nhận rồi dùng một vật phẩm mỗi loại, mọi lần bấm phải có phản hồi (`-Dban=902` = client gửi số bản, nhận thông báo nhanh `-104`) |
 | `BotXuyenSuot` | chơi xuyên suốt từ tài khoản mới theo nhiệm vụ; bot điều phối tua đồng hồ ảo (chỉ máy thử `sv.cho_phep_thu_nghiem=1`) |
 | `BotNguoiChoi` | bot theo kiểu người chơi (cày, cốt truyện, sưu tầm, buôn bán, PvP, xã hội…) |
 | `BotVaCham`, `KichBanHoiSinh` | kiểm va chạm bản đồ, hồi sinh |

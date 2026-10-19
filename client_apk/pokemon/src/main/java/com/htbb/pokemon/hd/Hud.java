@@ -53,8 +53,6 @@ public final class Hud implements NenAndroid.LopPhu {
     /** Hiệu ứng cao (hạt, hào quang, chuyển cảnh...) / thấp. */
     public static boolean hieuUngCao = true;
     public static boolean rung = true;
-    /** Thu phóng thế giới (HdZoom) - bảng Chỉnh nút. */
-    public static boolean zoomTheGioi = true;
     static boolean chatMo = true;
     private static SharedPreferences pref;
 
@@ -69,7 +67,6 @@ public final class Hud implements NenAndroid.LopPhu {
             }
             hieuUngCao = pref.getBoolean("hieuUngCao", true);
             rung = pref.getBoolean("rung", true);
-            zoomTheGioi = pref.getBoolean("zoomTheGioi", true);
             chatMo = pref.getBoolean("chatMo", true);
         } catch (Throwable e) {
             // dùng mặc định
@@ -86,7 +83,7 @@ public final class Hud implements NenAndroid.LopPhu {
         }
         e.putBoolean("hieuUngCao", hieuUngCao);
         e.putBoolean("rung", rung);
-        e.putBoolean("zoomTheGioi", zoomTheGioi);
+        e.remove("zoomTheGioi"); // camera cố định (HdZoom): bỏ tuỳ chọn Phóng cũ
         e.putBoolean("chatMo", chatMo);
         e.apply();
     }
@@ -200,7 +197,7 @@ public final class Hud implements NenAndroid.LopPhu {
         if (kDpi < 0) {
             try {
                 float dpi = NenAndroid.ungDung.getResources().getDisplayMetrics().densityDpi;
-                kDpi = Math.max(0.8f, Math.min(1.3f, (dpi / Math.max(1, NenAndroid.heSo)) / 140f));
+                kDpi = Math.max(0.8f, Math.min(1.3f, (dpi / Math.max(0.5f, NenAndroid.tiLe)) / 140f));
             } catch (Throwable e) {
                 kDpi = 1f;
             }
@@ -390,6 +387,7 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     public void khungMoi() {
+        HdPhong.khungMoi();
         HdVe.khungMoi();
         HdKiem.khungMoi();
         HdNut.khungMoi();
@@ -1194,8 +1192,8 @@ public final class Hud implements NenAndroid.LopPhu {
 
     // ------------------------------------------------------------------ chỉnh bố cục
     static final String[] TEN_NHOM = {"Cần điều khiển", "Nút đánh + chiêu", "Ô thuốc", "Khung chat"};
-    static final RectF[] NUT_CS = {new RectF(), new RectF(), new RectF(), new RectF(), new RectF(), new RectF(), new RectF()};
-    static final String[] TEN_CS = {"−", "+", "Mặc định", "Hiệu ứng", "Rung", "Thu phóng", "Xong"};
+    static final RectF[] NUT_CS = {new RectF(), new RectF(), new RectF(), new RectF(), new RectF(), new RectF()};
+    static final String[] TEN_CS = {"−", "+", "Mặc định", "Hiệu ứng", "Rung", "Xong"};
 
     static void veChinhSua(Canvas c) {
         // khung quanh từng nhóm
@@ -1218,18 +1216,17 @@ public final class Hud implements NenAndroid.LopPhu {
         // nhãn độ tuổi 12+ (jar vẽ đè thẻ trạng thái; trong game HD đặt ở đây)
         HdVe.tronDoc(c, x0 + w - 30, y0 + 5, x0 + w - 8, y0 + 15, 3, 0xFFF4613A, 0xFFB8260A);
         chu(c, "12+", x0 + w - 19, y0 + 12.8f, 7f, 0xFFFFFFFF, 0, 2);
-        float bw = (w - 14) / 7f;
-        for (int i = 0; i < 7; i++) {
+        float bw = (w - 14) / (float) NUT_CS.length;
+        for (int i = 0; i < NUT_CS.length; i++) {
             RectF r = NUT_CS[i];
             r.set(x0 + 7 + i * bw + 1.5f, y0 + 20, x0 + 7 + (i + 1) * bw - 1.5f, y0 + 47);
-            boolean bat = (i == 3 && hieuUngCao) || (i == 4 && rung) || (i == 5 && zoomTheGioi);
-            HdVe.tronDoc(c, r.left, r.top, r.right, r.bottom, 8, i == 6 ? 0xFF60D070 : bat ? 0xFF6FA6EA : 0xFF2A4C80,
-                    i == 6 ? 0xFF2E8A3A : bat ? 0xFF3D7DCA : 0xFF15284A);
+            boolean bat = (i == 3 && hieuUngCao) || (i == 4 && rung);
+            HdVe.tronDoc(c, r.left, r.top, r.right, r.bottom, 8, i == 5 ? 0xFF60D070 : bat ? 0xFF6FA6EA : 0xFF2A4C80,
+                    i == 5 ? 0xFF2E8A3A : bat ? 0xFF3D7DCA : 0xFF15284A);
             HdVe.vienTron(c, r.left, r.top, r.right, r.bottom, 8, 0.7f, 0x80FFFFFF);
             String t = TEN_CS[i];
             if (i == 3) t = hieuUngCao ? "Hiệu ứng cao" : "Hiệu ứng thấp";
             if (i == 4) t = rung ? "Rung: bật" : "Rung: tắt";
-            if (i == 5) t = zoomTheGioi ? "Phóng: bật" : "Phóng: tắt";
             float co = i < 2 ? 13f : 6.6f;
             chu(c, t, r.centerX(), r.centerY() + co * 0.36f, co, 0xFFFFFFFF, 0, 2);
         }
@@ -1312,7 +1309,7 @@ public final class Hud implements NenAndroid.LopPhu {
     static void chamChinhSua(int kieu, int id, float x, float y) {
         if (chamAm(kieu, id, x, y)) return;
         if (kieu == 0) {
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < NUT_CS.length; i++) {
                 if (NUT_CS[i].contains(x, y)) {
                     bamChinhSua(i);
                     return;
@@ -1363,9 +1360,6 @@ public final class Hud implements NenAndroid.LopPhu {
             case 4:
                 rung = !rung;
                 break;
-            case 5:
-                zoomTheGioi = !zoomTheGioi;
-                break;
             default:
                 chinhSua = false;
                 break;
@@ -1393,17 +1387,16 @@ public final class Hud implements NenAndroid.LopPhu {
     /** Gọi trên luồng UI: chuyển sự kiện chạm (toạ độ màn thật) sang luồng sự kiện game. */
     public static void chamAndroid(MotionEvent e) {
         int a = e.getActionMasked();
-        int s = NenAndroid.heSo;
-        float lx = NenAndroid.lechX, ly = NenAndroid.lechY;
+        // cùng phép biến đổi khung cố định 640x360 với NenAndroid.cham (hệ số có thể lẻ, có viền)
         if (a == MotionEvent.ACTION_MOVE) {
             for (int i = 0; i < e.getPointerCount(); i++) {
-                gui(1, e.getPointerId(i) & 15, (e.getX(i) - lx) / s, (e.getY(i) - ly) / s);
+                gui(1, e.getPointerId(i) & 15, NenAndroid.logicX(e.getX(i)), NenAndroid.logicY(e.getY(i)));
             }
             return;
         }
         if (a == MotionEvent.ACTION_CANCEL) {
             for (int i = 0; i < e.getPointerCount(); i++) {
-                gui(2, e.getPointerId(i) & 15, (e.getX(i) - lx) / s, (e.getY(i) - ly) / s);
+                gui(2, e.getPointerId(i) & 15, NenAndroid.logicX(e.getX(i)), NenAndroid.logicY(e.getY(i)));
             }
             return;
         }
@@ -1411,7 +1404,7 @@ public final class Hud implements NenAndroid.LopPhu {
         int kieu = a == MotionEvent.ACTION_DOWN || a == MotionEvent.ACTION_POINTER_DOWN ? 0
                 : a == MotionEvent.ACTION_UP || a == MotionEvent.ACTION_POINTER_UP ? 2 : -1;
         if (kieu < 0) return;
-        gui(kieu, e.getPointerId(i) & 15, (e.getX(i) - lx) / s, (e.getY(i) - ly) / s);
+        gui(kieu, e.getPointerId(i) & 15, NenAndroid.logicX(e.getX(i)), NenAndroid.logicY(e.getY(i)));
     }
 
     static void gui(final int kieu, final int id, final float x, final float y) {
@@ -1451,6 +1444,12 @@ public final class Hud implements NenAndroid.LopPhu {
                 if (trongChat(x, y)) {
                     PTR_NUT[id] = N_CHAT;
                     NPTR[N_CHAT] = id;
+                    return;
+                }
+                if (trongThe(x, y)) {
+                    // thẻ trạng thái trái trên (chân dung): thả trong thẻ = hồ sơ nhân vật (HanhDong.moHoSo, chung)
+                    PTR_NUT[id] = N_THE;
+                    if (rung) NenAndroid.rungNhe();
                     return;
                 }
                 if (trongMiniMap(x, y)) {
@@ -1519,6 +1518,11 @@ public final class Hud implements NenAndroid.LopPhu {
             return;
         }
         int n = PTR_NUT[id];
+        if (n == N_THE) {
+            PTR_NUT[id] = -1;
+            if (trongThe(x, y)) game.pokemon.HanhDong.moHoSo();
+            return;
+        }
         if (n >= 0) {
             PTR_NUT[id] = -1;
             thaNut(n, x, y, now);
@@ -1531,6 +1535,13 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     static final int N_HDNUT = 99;
+    /** con trỏ đang giữ thẻ trạng thái (không thuộc mảng nút) */
+    static final int N_THE = 98;
+
+    /** Vùng chạm thẻ trạng thái (toạ độ logic, đã tránh vùng an toàn qua L / T). */
+    static boolean trongThe(float x, float y) {
+        return x >= L - 2 && x <= L + RONG_THE + 2 && y >= T - 2 && y <= T + CAO_THE + 2;
+    }
 
     /**
      * Thả cho game: game đọc chạm theo nhịp 40 ms (isPointerDown rồi isPointerClick) - chạm quá nhanh
@@ -1595,12 +1606,40 @@ public final class Hud implements NenAndroid.LopPhu {
         }
     }
 
+    /** Ô quickslot của nút chiêu nhỏ (-1 = không phải nút chiêu nhỏ). */
+    static int oCua(int n) {
+        switch (n) {
+            case N_C0: return 0;
+            case N_C1: return 1;
+            case N_C3: return 3;
+            case N_C4: return 4;
+            default: return -1;
+        }
+    }
+
+    /** nút chiêu vừa mở bảng gán chiêu lúc nhấn (ô trống "+"): lúc thả không gửi phím */
+    static final boolean[] MO_BANG = new boolean[SO_NUT];
+
     static void batNut(int n, int id, long now) {
         PTR_NUT[id] = n;
         NPTR[n] = id;
         NNHAN[n] = now;
         if (rung) NenAndroid.rungNhe();
         int ma = phimCua(n);
+        int o = oCua(n);
+        MO_BANG[n] = false;
+        GameScr gs0 = game.render.Canvas.gameScr;
+        if (n == N_DANH && gs0 != null && !(gs0.focusedActor != null && gs0.focusedActor.catagory == 2)) {
+            o = 2;   // nút đánh lớn = ô 5 (giữa); ô trống thì cũng mở bảng gán (giữ lâu = đánh lặp, không chỉnh)
+        }
+        if (o >= 0 && MainChar.quickSlot != null) {
+            QuickSlot qs = MainChar.quickSlot[GameScr.indexTabSlot][o];
+            if (qs == null || qs.quickslotType < 0) {
+                // ô trống (dấu +): mở bảng gán chiêu (game.pokemon.ChonChieuNhanh, chung mọi bản)
+                MO_BANG[n] = game.pokemon.ChonChieuNhanh.chamO(o, false);
+                if (MO_BANG[n]) return;
+            }
+        }
         if (ma != 0) {
             NenAndroid.phimNgay(0, ma);
             if (n == N_DANH) tLapDanh = now;
@@ -1618,15 +1657,25 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     static void thaNut(int n, float x, float y, long now) {
+        long giu = now - NNHAN[n];
         NPTR[n] = -1;
         NNHAN[n] = now;
-        int ma = phimCua(n);
-        if (ma != 0) {
-            NenAndroid.phimNgay(2, ma);
-            return;
-        }
         float dx = x - NX[n], dy = y - NY[n];
         float r = NR[n] + 10;
+        int ma = phimCua(n);
+        int o = oCua(n);
+        if (MO_BANG[n]) {
+            MO_BANG[n] = false;
+            return;
+        }
+        if (ma != 0) {
+            NenAndroid.phimNgay(2, ma);
+            // giữ lâu nút chiêu nhỏ (vẫn trong nút) = bảng chỉnh ô: đổi chiêu / bỏ trống / dời trái phải
+            if (o >= 0 && giu >= game.pokemon.OChieuNhanh.GIU_LAU_MS && dx * dx + dy * dy <= r * r) {
+                game.pokemon.ChonChieuNhanh.chamO(o, true);
+            }
+            return;
+        }
         if (n == N_MINIMAP ? !trongMiniMap(x, y) : dx * dx + dy * dy > r * r) return;   // kéo ra ngoài = huỷ
         switch (n) {
             case N_MENU:

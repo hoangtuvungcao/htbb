@@ -16,6 +16,9 @@ public final class PhuKien {
     public static final class Hinh {
         public int o, kieu, huong, lop, neo, dx, dy, rong, cao, ax, ay, nho;
         public byte[] px;   // chi so mau, rong*cao
+        /** anh da tao cho hinh nay: [((h * 2 + lat) * 4 + (k - 1)) * 4 + nhay] (k 1..4), the = lop xoa */
+        Image[] anhDa;
+        int theAnh;
     }
 
     public static final int SAU = 0, TRUOC = 1;
@@ -250,14 +253,35 @@ public final class PhuKien {
         if (h != hiem.length - 1) {
             nhay = 0;
         }
-        String khoa = new StringBuffer(12).append(hi.o).append(',').append(hi.kieu).append(',').append(hi.huong)
-                .append(',').append(h).append(lat ? 'l' : 'n').append(k).append(',').append(nhay).toString();
-        Object o = ANH.get(khoa);
-        if (o instanceof Image) {
-            return (Image) o;
+        // nho theo tung Hinh (khong tao chuoi khoa moi khung; khoa cu thieu hi.nho -> ban nho / thuong lan anh)
+        int iDa = -1;
+        if (k >= 1 && k <= 4) {
+            iDa = ((h * 2 + (lat ? 1 : 0)) * 4 + (k - 1)) * 4 + (nhay & 3);
+            if (hi.anhDa == null || hi.theAnh != theAnh) {
+                hi.anhDa = new Image[hiem.length * 32];
+                hi.theAnh = theAnh;
+            }
+            if (hi.anhDa[iDa] != null) {
+                return hi.anhDa[iDa];
+            }
         }
-        if (ANH.size() > 400) {
+        String khoa = null;
+        if (iDa < 0) {
+            khoa = new StringBuffer(16).append(hi.o).append(',').append(hi.kieu).append(',').append(hi.huong).append(',').append(hi.nho)
+                    .append(',').append(h).append(lat ? 'l' : 'n').append(k).append(',').append(nhay).toString();
+            Object o = ANH.get(khoa);
+            if (o instanceof Image) {
+                return (Image) o;
+            }
+        }
+        if (ANH.size() + soAnhDa > 400) {
             ANH.clear();
+            soAnhDa = 0;
+            theAnh++;   // bo moi anhDa cu
+            if (iDa >= 0) {
+                hi.anhDa = new Image[hiem.length * 32];
+                hi.theAnh = theAnh;
+            }
         }
         int W = hi.rong * k, H = hi.cao * k;
         int[] px = new int[W * H];
@@ -288,9 +312,16 @@ public final class PhuKien {
         } catch (Throwable e) {
             return null;
         }
-        ANH.put(khoa, img);
+        if (iDa >= 0) {
+            hi.anhDa[iDa] = img;
+            soAnhDa++;
+        } else {
+            ANH.put(khoa, img);
+        }
         return img;
     }
+
+    private static int theAnh, soAnhDa;
 
     private static int cosTp = 256, sinTp, tpDangTinh = -1;
 

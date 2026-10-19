@@ -40,7 +40,9 @@ public final class KiemDuLieuSql {
     static final String VT_KINH_TE = "9eefa10bbf60d4a91ba894e652725058c3c5d169dd00b9c1dba3c0a030a75f6e";
     static final String VT_LICH = "78ad902ac9e07511c0e989c00025a6a137a2f7851504a3b462fc5fb6fba921fd";
     static final String VT_TRANG_BI = "18c33f993af029df538f5125e956287de982d6830694fccd85006ead057e3a3e";
-    static final String VT_DANH_MUC = "382a04b30b9ed93d94c9e5a37c909ec029e216adbc55cc6cc7e33ca6f75ff0bd";
+    /** DanhMucSinh cua main 0.9.2 (bf5426c6, them 18 khoa tu_dong.*), tinh cung cach noi chuoi luc gop P1+P3+0.9.2.
+     *  Ban P1 (185 khoa, truoc 0.9.2): 382a04b30b9ed93d94c9e5a37c909ec029e216adbc55cc6cc7e33ca6f75ff0bd. */
+    static final String VT_DANH_MUC = "5934a2e665265ec3bef1fd9fa4df905b2502c768becb4b615a33f63bcf9e9076";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

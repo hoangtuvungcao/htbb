@@ -41,20 +41,52 @@ public final class TuDong {
     public static final String K_NHIP_NGUOI = "tu_dong.nhip_nguoi";
     public static final String K_VI_PHAM_TAT = "tu_dong.vi_pham_tat";
     public static final String K_HOI_SINH_GIO = "tu_dong.hoi_sinh_moi_gio";
+    // bo nao may chu (TuDongKeHoach) + dieu kien dung them (19/10/2026)
+    public static final String K_KE_HOACH = "tu_dong.ke_hoach";
+    public static final String K_CAP_TOI_THIEU = "tu_dong.cap_toi_thieu";
+    public static final String K_CHENH_CAP_TREN = "tu_dong.chenh_cap_tren";
+    public static final String K_CHENH_CAP_DUOI = "tu_dong.chenh_cap_duoi";
+    public static final String K_DANH_BOSS = "tu_dong.danh_boss";
+    public static final String K_HP_QUAI_TOI_DA = "tu_dong.hp_quai_toi_da_pt";
+    public static final String K_CHIEU_THEO_HE = "tu_dong.chon_chieu_theo_he";
+    public static final String K_NGUONG_THUOC_HP = "tu_dong.nguong_thuoc_hp";
+    public static final String K_NGUONG_THUOC_MP = "tu_dong.nguong_thuoc_mp";
+    public static final String K_NGUONG_HP_THAP = "tu_dong.nguong_hp_thap";
+    public static final String K_HP_THAP_DUNG = "tu_dong.hp_thap_dung";
+    public static final String K_HOI_PHUC_TOI = "tu_dong.hoi_phuc_toi";
+    public static final String K_NHAT_BAN_KINH = "tu_dong.nhat_ban_kinh";
+    public static final String K_DUNG_DAY_TUI = "tu_dong.dung_khi_day_tui";
+    public static final String K_DUNG_TU_DI = "tu_dong.dung_khi_tu_di";
+    public static final String K_TRANH_PK = "tu_dong.tranh_pk_px";
+    public static final String K_MAP_CAM = "tu_dong.map_cam";
+    public static final String K_HOI_SINH_TRA_PHI = "tu_dong.hoi_sinh_tra_phi";
 
     // ================================================================== lenh mang (-100, hai chieu)
 
     /** Ma lenh client <-> server cua Tu dong danh. */
     public static final int LENH = -100;
-    /** Client -> server: byte loai. */
-    public static final int C_XIN = 0, C_BAT = 1, C_TAT = 2, C_NHIP = 3;
-    /** Co (bit) trong goi trang thai server -> client. */
-    public static final int CO_TINH_NANG = 1, CO_THUOC = 2, CO_TAT_PVP = 4, CO_CHI_MAP = 8;
+    /**
+     * Client -> server: byte loai. C_KE (client 0.9.2+) = xin ke hoach buoc tiep (~0,6 giay / lan khi dang chay).
+     * C_XIN / C_BAT cua client moi gui them byte phien ban giao thuc ({@link #GIAO_THUC}) va cai dat bang (xem
+     * real.TuDongGame.docCaiDat); C_TAT co the kem byte ly do (TAT_TU_DI khi nguoi choi tu di chuyen).
+     */
+    public static final int C_XIN = 0, C_BAT = 1, C_TAT = 2, C_NHIP = 3, C_KE = 4;
+    /** Phien ban giao thuc -100 cua client moi (client cu khong gui = 1). */
+    public static final int GIAO_THUC = 2;
+    /** Server -> client: byte dau goi -100. 0 = trang thai (nhu cu), 1 = ke hoach (client moi). */
+    public static final int S_TRANG_THAI = 0, S_KE_HOACH = 1;
+    /**
+     * Co (bit) trong goi trang thai server -> client. CO_KE_HOACH: may chu lap ke hoach (client moi xin C_KE thay vi
+     * tu chon); CO_DUNG_TU_DI: nguoi choi tu di chuyen thi DUNG (khong thi nhuong 3 giay).
+     */
+    public static final int CO_TINH_NANG = 1, CO_THUOC = 2, CO_TAT_PVP = 4, CO_CHI_MAP = 8, CO_KE_HOACH = 16,
+            CO_DUNG_TU_DI = 32;
 
     // ================================================================== ly do tat (ghi kiem toan + bao client)
 
     public static final int TAT_NGUOI_CHOI = 0, TAT_HET_GIO = 1, TAT_PVP = 2, TAT_BOSS = 3, TAT_DOI_MAP = 4,
-            TAT_RA_VUNG = 5, TAT_VI_PHAM = 6, TAT_CHET = 7, TAT_TAT_TINH_NANG = 8, TAT_SAN_DAU = 9, TAT_THOAT = 10;
+            TAT_RA_VUNG = 5, TAT_VI_PHAM = 6, TAT_CHET = 7, TAT_TAT_TINH_NANG = 8, TAT_SAN_DAU = 9, TAT_THOAT = 10,
+            TAT_DAY_TUI = 11, TAT_HP_THAP = 12, TAT_TU_DI = 13, TAT_KHU_CAM = 14;
     static final String[] LY_DO = {
         "Đã dừng Tự động đánh.",
         "Hết thời gian Tự động đánh hôm nay. Ngày mai được dùng tiếp.",
@@ -67,6 +99,10 @@ public final class TuDong {
         "Tự động đánh đang tạm khoá trên máy chủ.",
         "Tự động đánh dừng: không dùng ở sàn đấu, Gym hay chiến trường.",
         "Tự động đánh dừng khi thoát game.",
+        "Tự động đánh dừng: hành trang đã đầy, hãy dọn bớt đồ.",
+        "Tự động đánh dừng: HP thấp và hết thuốc hồi phục.",
+        "Tự động đánh dừng vì bạn tự di chuyển.",
+        "Tự động đánh dừng: bản đồ này không cho dùng Tự động đánh.",
     };
 
     public static String lyDo(final int ma) {
@@ -146,6 +182,7 @@ public final class TuDong {
     public static final Nhip NHIP_NGUOI_MAC_DINH = new Nhip(30, 5000L);
     public static final int VI_PHAM_TAT_MAC_DINH = 20;
     public static final int HOI_SINH_GIO_MAC_DINH = 2;
+    public static final int CAP_TOI_THIEU_MAC_DINH = 0;
 
     /** Anh chup cau hinh (de test khong can CauHinhTrungTam). */
     public static final class CauHinh {
@@ -163,10 +200,34 @@ public final class TuDong {
         public int viPhamTat = VI_PHAM_TAT_MAC_DINH;
         /** Toi da so lan TU dung vat pham hoi sinh / gio khi dang tu dong (0 = khong bao gio). */
         public int hoiSinhGio = HOI_SINH_GIO_MAC_DINH;
+        /** May chu lap ke hoach tung buoc (client moi). false = client tu chon nhu ban 0.9.1. */
+        public boolean keHoach = true;
+        /** Cap toi thieu de bat (0 = khong gioi han). */
+        public int capToiThieu = CAP_TOI_THIEU_MAC_DINH;
+        /** Nguoi choi tu di chuyen: true = dung han, false = nhuong 3 giay roi chay tiep. */
+        public boolean dungKhiTuDi = true;
+        /** Ban do (id) cam them ngoai san dau / Gym / chien truong. */
+        public int[] mapCam = new int[0];
+        /**
+         * Cho tu dung vat pham hoi sinh TRA PHI (Thuoc hoi sinh toi da - luong khoa) khi nguoi choi DONG Y rieng
+         * (bang Tu dong: "Tu hoi sinh: ca vat pham luong"). false = chi Thuoc hoi sinh thuong (xu).
+         */
+        public boolean hoiSinhTraPhi;
+        /** Luat cua bo nao (tu_dong.chenh_cap_*, nguong_*, nhat_ban_kinh...). */
+        public final TuDongKeHoach.CauHinh kh = new TuDongKeHoach.CauHinh();
 
         public int co() {
             return (bat ? CO_TINH_NANG : 0) | (tuDungThuoc ? CO_THUOC : 0) | (tatKhiPvp ? CO_TAT_PVP : 0)
-                    | (chiMapDaMo ? CO_CHI_MAP : 0);
+                    | (chiMapDaMo ? CO_CHI_MAP : 0) | (keHoach ? CO_KE_HOACH : 0) | (dungKhiTuDi ? CO_DUNG_TU_DI : 0);
+        }
+
+        public boolean mapBiCam(final int map) {
+            for (final int m : mapCam) {
+                if (m == map) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -187,6 +248,26 @@ public final class TuDong {
             c.nhipNguoi = Nhip.doc(CauHinhTrungTam.chuoi(K_NHIP_NGUOI), NHIP_NGUOI_MAC_DINH);
             c.viPhamTat = (int) kep(CauHinhTrungTam.so(K_VI_PHAM_TAT, VI_PHAM_TAT_MAC_DINH), 1, 1000);
             c.hoiSinhGio = (int) kep(CauHinhTrungTam.so(K_HOI_SINH_GIO, HOI_SINH_GIO_MAC_DINH), 0, 20);
+            c.keHoach = CauHinhTrungTam.co(K_KE_HOACH);
+            c.capToiThieu = (int) kep(CauHinhTrungTam.so(K_CAP_TOI_THIEU, CAP_TOI_THIEU_MAC_DINH), 0, 1000);
+            c.dungKhiTuDi = CauHinhTrungTam.co(K_DUNG_TU_DI);
+            c.mapCam = dsSo(CauHinhTrungTam.chuoi(K_MAP_CAM));
+            c.hoiSinhTraPhi = CauHinhTrungTam.co(K_HOI_SINH_TRA_PHI);
+            final TuDongKeHoach.CauHinh k = c.kh;
+            k.tuDungThuoc = c.tuDungThuoc;
+            k.chenhCapTren = (int) kep(CauHinhTrungTam.so(K_CHENH_CAP_TREN, TuDongKeHoach.CHENH_CAP_TREN_MAC_DINH), -1, 1000);
+            k.chenhCapDuoi = (int) kep(CauHinhTrungTam.so(K_CHENH_CAP_DUOI, TuDongKeHoach.CHENH_CAP_DUOI_MAC_DINH), 0, 1000);
+            k.danhBoss = CauHinhTrungTam.co(K_DANH_BOSS);
+            k.hpQuaiToiDaPt = (int) kep(CauHinhTrungTam.so(K_HP_QUAI_TOI_DA, TuDongKeHoach.HP_QUAI_TOI_DA_PT_MAC_DINH), 0, 100000);
+            k.chonChieuTheoHe = CauHinhTrungTam.co(K_CHIEU_THEO_HE);
+            k.nguongThuocHp = (int) kep(CauHinhTrungTam.so(K_NGUONG_THUOC_HP, TuDongKeHoach.NGUONG_THUOC_HP_MAC_DINH), 0, 90);
+            k.nguongThuocMp = (int) kep(CauHinhTrungTam.so(K_NGUONG_THUOC_MP, TuDongKeHoach.NGUONG_THUOC_MP_MAC_DINH), 0, 90);
+            k.nguongHpThap = (int) kep(CauHinhTrungTam.so(K_NGUONG_HP_THAP, TuDongKeHoach.NGUONG_HP_THAP_MAC_DINH), 0, 90);
+            k.hpThapDung = CauHinhTrungTam.co(K_HP_THAP_DUNG);
+            k.hoiPhucToi = (int) kep(CauHinhTrungTam.so(K_HOI_PHUC_TOI, TuDongKeHoach.HOI_PHUC_TOI_MAC_DINH), 10, 100);
+            k.nhatBanKinh = (int) kep(CauHinhTrungTam.so(K_NHAT_BAN_KINH, TuDongKeHoach.NHAT_BAN_KINH_MAC_DINH), 0, 480);
+            k.dungKhiDayTui = CauHinhTrungTam.co(K_DUNG_DAY_TUI);
+            k.tranhPkPx = (int) kep(CauHinhTrungTam.so(K_TRANH_PK, TuDongKeHoach.TRANH_PK_PX_MAC_DINH), 0, 960);
         } catch (final Throwable t) {
             // cau hinh loi -> giu mac dinh an toan (van co tran gio)
         }
@@ -195,6 +276,25 @@ public final class TuDong {
 
     static long kep(final long v, final long lo, final long hi) {
         return Math.max(lo, Math.min(hi, v));
+    }
+
+    /** "12, 20,7" -> {12, 20, 7}; phan hong bo qua. */
+    static int[] dsSo(final String s) {
+        if (s == null || s.trim().isEmpty()) {
+            return new int[0];
+        }
+        final String[] a = s.split(",");
+        final int[] tam = new int[a.length];
+        int n = 0;
+        for (final String x : a) {
+            try {
+                tam[n] = Integer.parseInt(x.trim());
+                n++;
+            } catch (final NumberFormatException e) {
+                // bo qua
+            }
+        }
+        return java.util.Arrays.copyOf(tam, n);
     }
 
     // ================================================================== phien
@@ -235,6 +335,26 @@ public final class TuDong {
         /** Luc guc dang cho he thong hoi sinh quyet dinh (ms, 0 = khong). */
         public long chetLuc;
         final Vong vHoiSinh = new Vong();
+        /** Phien ban giao thuc cua client (1 = 0.9.1 cu: client tu chon; 2 = xin ke hoach C_KE). */
+        public int giaoThuc = 1;
+        /** Cai dat bang cua nguoi choi (client moi gui khi bat; -1 = khong gui -> mac dinh may chu). */
+        public int nguongHp = -1, nguongMp = -1;
+        public int nhat = TuDongKeHoach.NHAT_THUOC_XU;
+        public boolean veHoiPhuc = true;
+        /** Nguoi choi dong y rieng cho tu dung vat pham hoi sinh tra phi (luong khoa). */
+        public boolean xinHoiSinhTraPhi;
+        /** Trang thai bo nao giua cac buoc. */
+        public int mucTieu = -1;
+        public boolean dangHoiPhuc;
+        public long thuocLuc;
+        public long keLuc;
+        public TuDongKeHoach.KeHoach keCuoi;
+        /** Ly do cho / dung da bao nguoi choi gan nhat (khong bao lap). */
+        public String lyBao = "";
+        public long lyBaoLuc;
+        public int soKe;
+        /** So don danh o lan nhip truoc (client cu: phat hien dung im de goi y ly do), -1 = chua co. */
+        public int soDanhLanNhip = -1;
     }
 
     /** Gio toi da hom nay (giay). */
@@ -269,6 +389,8 @@ public final class TuDong {
         public boolean sanDau;
         public boolean chet;
         public boolean theThang;
+        /** Cap Pokemon (0 = khong ro, khong kiem tu_dong.cap_toi_thieu). */
+        public int cap;
         public int map = -1;
         public int x;
         public int y;
@@ -280,6 +402,12 @@ public final class TuDong {
     public static String kiemBat(final CauHinh c, final Phien p, final NguCanh n, final int homNay) {
         if (!c.bat) {
             return lyDo(TAT_TAT_TINH_NANG);
+        }
+        if (c.capToiThieu > 0 && n.cap > 0 && n.cap < c.capToiThieu) {
+            return "Tự động đánh mở từ cấp " + c.capToiThieu + " (Pokémon của bạn cấp " + n.cap + ").";
+        }
+        if (n.map >= 0 && c.mapBiCam(n.map)) {
+            return lyDo(TAT_KHU_CAM);
         }
         if (n.chet) {
             return "Pokémon đang gục, chưa bật được Tự động đánh.";
@@ -315,6 +443,25 @@ public final class TuDong {
             p.soThuoc = 0;
             p.soNhat = 0;
             p.soChan = 0;
+            p.mucTieu = -1;
+            p.dangHoiPhuc = false;
+            p.keCuoi = null;
+            p.keLuc = 0L;
+            p.lyBao = "";
+            p.soKe = 0;
+            p.soDanhLanNhip = -1;
+        }
+    }
+
+    /** Ly do bao nguoi choi (chat tren dau) khi ke hoach "cho" doi ly do: chi khi doi, toi da 1 lan / 20 giay. */
+    public static boolean nenBao(final Phien p, final String ly, final long bay) {
+        synchronized (p) {
+            if (ly == null || ly.isEmpty() || ly.equals(p.lyBao) && bay - p.lyBaoLuc < 120000L || bay - p.lyBaoLuc < 20000L) {
+                return false;
+            }
+            p.lyBao = ly;
+            p.lyBaoLuc = bay;
+            return true;
         }
     }
 

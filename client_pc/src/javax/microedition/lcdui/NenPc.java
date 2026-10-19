@@ -8,18 +8,16 @@ import java.util.ArrayDeque;
  * Cầu nối MIDP <-> máy tính (Java SE / AWT) cho bản PC Huyền Thoại Bảo Bối (code game = code bản jar J2ME),
  * cùng kiểu NenAndroid của bản APK:
  *
- * - Độ phân giải logic: cửa sổ thật chia một HỆ SỐ NGUYÊN k (cạnh ngắn logic >= canhNgan, mặc định 320 px:
- *   1280x720 -> 640x360 x2, 1920x1080 -> 640x360 x3, 2560x1080 -> 853x360 x3, 1024x768 -> 512x384 x2).
+ * - Độ phân giải logic CỐ ĐỊNH 640x360 (mọi cửa sổ thấy cùng vùng bản đồ - phóng to không thấy thêm), vẽ vào
+ *   bộ đệm 640k x 360k (k nguyên), trình bày vừa cửa sổ + viền (khungHien; ManHinh vẽ, đổi toạ độ chuột).
  *   Game vẽ thẳng vào bộ đệm cỡ thật với biến đổi phóng k: ảnh pixel láng giềng gần nhất (sắc nét, không méo),
  *   chữ + khung HD khử răng cưa ở độ phân giải thật. Phần dư (< k) là viền.
  * - Một luồng sự kiện (LuongSuKien) chạy tuần tự: chuột, phím, callSerially, paint - giống máy J2ME.
  * - Sau khi game vẽ: lớp phủ HD của bản PC (htbb.pc.LopPhu: gợi ý phím, cài đặt, hộp nhập...) ở toạ độ thật.
  */
 public final class NenPc {
-    /** cạnh ngắn logic nhỏ nhất (px) - cài đặt "Cỡ giao diện" đổi giá trị này */
+    /** CŨ (cài đặt "Cỡ giao diện" đã bỏ - vùng chơi cố định): không còn tác dụng */
     public static volatile int canhNgan = 320;
-    /** hệ số ép (0 = tự động theo canhNgan) */
-    public static volatile int heSoEp = 0;
 
     public static volatile int rong = 640;
     public static volatile int cao = 360;
@@ -46,24 +44,109 @@ public final class NenPc {
 
     // ---------------- kích thước ----------------
 
-    /** Tính độ phân giải logic từ cỡ vùng vẽ thật. true = đổi cỡ logic so với trước. */
+    /** Vùng chơi CỐ ĐỊNH (logic) - mọi cửa sổ / màn hình thấy đúng chừng này (không lợi thế khi phóng to). */
+    public static final int LOGIC_W = 640;
+    public static final int LOGIC_H = 360;
+
+    /**
+     * Khung hiển thị cho vùng vẽ (cửa sổ) W x H: {k, hienX, hienY, hienW, hienH}. Game vẽ vào bộ đệm 640k x 360k
+     * (k nguyên: ảnh pixel sắc nét, chữ / khung HD ở độ phân giải thật). Trình bày:
+     * - k = phần nguyên của tỉ lệ vừa nhất nếu phủ >= 80% (1280x720 -> x2 vừa khít, 1493x731 -> x2 + viền);
+     * - không thì vẽ k = làm tròn lên rồi thu nhỏ vừa cửa sổ (1280x646 -> vẽ x2, thu 0,897; nhỏ hơn 640x360 -> x1 thu nhỏ).
+     * Phần dư là viền (tô nền, không đen). Toạ độ chuột đổi ngược qua cùng khung (vaoBoDemX/Y).
+     */
+    public static int[] khungHien(int W, int H) {
+        float vua = Math.min(W / (float) LOGIC_W, H / (float) LOGIC_H);
+        int k;
+        float f;
+        if (vua < 1f) {
+            k = 1;
+            f = vua;
+        } else {
+            int kn = (int) Math.floor(vua);
+            if (kn / vua >= 0.8f) {
+                k = kn;
+                f = 1f;
+            } else {
+                k = (int) Math.ceil(vua);
+                f = vua / k;
+            }
+        }
+        if (k > 8) {
+            f = f * k / 8f;
+            k = 8;
+        }
+        int hw = Math.max(1, Math.round(LOGIC_W * k * f));
+        int hh = Math.max(1, Math.round(LOGIC_H * k * f));
+        if (f == 1f) {
+            hw = LOGIC_W * k;
+            hh = LOGIC_H * k;
+        }
+        return new int[]{k, (W - hw) / 2, (H - hh) / 2, hw, hh};
+    }
+
+    /** khung trình bày trên cửa sổ (toạ độ cửa sổ): bộ đệm thatW x thatH vẽ vào hienX, hienY, hienW x hienH */
+    public static volatile int hienX, hienY, hienW = 1280, hienH = 720;
+    public static volatile int cuaSoW = 1280, cuaSoH = 720;
+
+    /**
+     * Cỡ vùng vẽ (cửa sổ) đổi - phóng to / thu nhỏ / toàn màn: logic LUÔN 640x360 (mọi người thấy cùng vùng bản
+     * đồ), bộ đệm game 640k x 360k, khung trình bày khungHien. true = lần đầu (báo game sizeChanged).
+     */
     public static synchronized boolean tinhKichThuoc(int w, int h) {
         if (w <= 0 || h <= 0) return false;
-        int ngan = Math.min(w, h);
-        int s = heSoEp > 0 ? heSoEp : Math.max(1, ngan / Math.max(160, canhNgan));
-        // logic không nhỏ hơn 240 px cạnh ngắn (giao diện game cần chỗ)
-        while (s > 1 && ngan / s < 240) s--;
-        int lw = w / s;
-        int lh = h / s;
-        thatW = w;
-        thatH = h;
-        lechX = (w - lw * s) / 2;
-        lechY = (h - lh * s) / 2;
+        int[] kh = khungHien(w, h);
+        int s = kh[0];
+        cuaSoW = w;
+        cuaSoH = h;
+        hienX = kh[1];
+        hienY = kh[2];
+        hienW = kh[3];
+        hienH = kh[4];
+        thatW = LOGIC_W * s;
+        thatH = LOGIC_H * s;
+        lechX = 0;
+        lechY = 0;
         heSo = s;
-        boolean doi = lw != rong || lh != cao;
-        rong = lw;
-        cao = lh;
+        boolean doi = rong != LOGIC_W || cao != LOGIC_H;
+        rong = LOGIC_W;
+        cao = LOGIC_H;
         return doi;
+    }
+
+    /** Toạ độ cửa sổ -> toạ độ bộ đệm game (thật). */
+    public static int vaoBoDemX(int x) {
+        return (int) Math.floor((x - hienX) * (double) thatW / Math.max(1, hienW));
+    }
+
+    public static int vaoBoDemY(int y) {
+        return (int) Math.floor((y - hienY) * (double) thatH / Math.max(1, hienH));
+    }
+
+    /** Toạ độ bộ đệm nằm trong khung game. */
+    public static boolean trongKhung(int x, int y) {
+        return x >= 0 && y >= 0 && x < thatW && y < thatH;
+    }
+
+    /** Tô viền quanh khung game (nền xanh đêm chuyển sắc + chỉ vàng mảnh quanh khung) - không để khoảng đen. */
+    public static void veVien(Graphics2D g2, int W, int H, int lx, int ly, int fw, int fh) {
+        java.awt.Paint cu = g2.getPaint();
+        g2.setPaint(new java.awt.GradientPaint(0, 0, new Color(0x0B1630), 0, Math.max(1, H), new Color(0x1B2F5C)));
+        if (lx > 0) {
+            g2.fillRect(0, 0, lx, H);
+            g2.fillRect(lx + fw, 0, W - lx - fw, H);
+        }
+        if (ly > 0) {
+            g2.fillRect(0, 0, W, ly);
+            g2.fillRect(0, ly + fh, W, H - ly - fh);
+        }
+        if (lx > 2 || ly > 2) {
+            g2.setPaint(new Color(0xE8B83A));
+            g2.drawRect(lx - 1, ly - 1, fw + 1, fh + 1);
+            g2.setPaint(new Color(0, 0, 0, 120));
+            g2.drawRect(lx - 2, ly - 2, fw + 3, fh + 3);
+        }
+        g2.setPaint(cu);
     }
 
     /** Báo đổi cỡ màn cho Canvas đang hiện (trên luồng sự kiện). */
@@ -314,16 +397,8 @@ public final class NenPc {
             Graphics2D g2 = mh.batDauVe(W, H);
             if (g2 == null) return;
             try {
-                // viền ngoài vùng game (cửa sổ không chia hết hệ số)
-                g2.setColor(Color.BLACK);
-                if (lx > 0) {
-                    g2.fillRect(0, 0, lx, H);
-                    g2.fillRect(lx + w * k, 0, W - lx - w * k, H);
-                }
-                if (ly > 0) {
-                    g2.fillRect(0, 0, W, ly);
-                    g2.fillRect(0, ly + h * k, W, H - ly - h * k);
-                }
+                // viền ngoài khung game cố định 640x360 x k
+                veVien(g2, W, H, lx, ly, w * k, h * k);
                 Canvas c = Display.canvasCuoi;
                 if (c != null) {
                     Graphics2D gg = (Graphics2D) g2.create();

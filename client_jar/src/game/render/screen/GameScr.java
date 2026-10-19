@@ -4,6 +4,7 @@ import effect.DataSkillEff;
 import effect.DynamicEffect;
 import game.GameMidlet;
 import game.model.Actor;
+import game.model.DuongDi;
 import game.model.AnimalMove;
 import game.model.AnimateEffect;
 import game.model.AttackResult;
@@ -537,6 +538,13 @@ public class GameScr extends Screen {
         if (Tilemap.imgMap == null) {
             return;
         }
+        if (HudRong.bat()) {
+            int[] o = HudRong.oMiniMap(Tilemap.imgMap.getWidth(), Tilemap.imgMap.getHeight());
+            wMiniMap = o[2];
+            hMiniMap = o[3];
+            this.posMiniMap = new Position(o[0], o[1]);
+            return;
+        }
         hMiniMap = Canvas.h / 5;
         if (hMiniMap > 100) {
             hMiniMap = 100;
@@ -559,6 +567,42 @@ public class GameScr extends Screen {
         // pokemon: màn hẹp - hàng ô phím tắt chạm tới bản đồ nhỏ thì đưa bản đồ lên trên hàng ô
         if (Res.imgPanel != null && Canvas.hw + rongThanhO() / 2 > this.posMiniMap.x) {
             this.posMiniMap.y = (Canvas.h - 16) - caoThanhO() - hMiniMap - 2;
+        }
+    }
+
+    /** pokemon: vị trí bản đồ nhỏ (HudRong). */
+    Position posMiniMapHud() {
+        return this.posMiniMap;
+    }
+
+    /** pokemon: bản đồ nhỏ màn rộng (HudRong) + icon buff / kỹ năng đội dưới bản đồ. */
+    private void paintMiniMapRong(Graphics g) {
+        if (this.posMiniMap == null || this.posMiniMap.x != Canvas.w - wMiniMap - 4 || this.posMiniMap.y != 45) {
+            setPosMiniMap();   // đổi map / đổi cỡ màn
+        }
+        HudRong.veMiniMap(g, this, this.posMiniMap);
+        int y = HudRong.dayMiniMap(this) + 2;
+        if (this.indexBuff != -1 && timeBuff - (System.currentTimeMillis() / 1000) > 0) {
+            game.pokemon.BangChieu.icon(g, Canvas.w - 24, y, 20, this.indexBuff);
+            Font.smallFontColor[0].drawString(g, String.valueOf((timeBuff - System.currentTimeMillis()) / 1000), Canvas.w - 30, y + 5, 1);
+            y += 22;
+        }
+        int nsk = 0;
+        if (this.skillClan != null) {
+            for (int i5 = 0; i5 < this.skillClan.length; i5++) {
+                if (this.skillClan[i5].time > 0) {
+                    GameData.paintIcon(g, (short) (this.skillClan[i5].idIcon + 2600), Canvas.w - 9 - 18 * nsk, y + 8);
+                    nsk++;
+                }
+            }
+        }
+        if (this.skillClanPrivate != null) {
+            for (int i6 = 0; i6 < this.skillClanPrivate.length; i6++) {
+                if (this.skillClanPrivate[i6].time > 0) {
+                    GameData.paintIcon(g, (short) (this.skillClanPrivate[i6].idIcon + 2600), Canvas.w - 9 - 18 * nsk, y + 8);
+                    nsk++;
+                }
+            }
         }
     }
 
@@ -838,7 +882,7 @@ public class GameScr extends Screen {
             congThanh.update();
         }
         Util.quickSort(this.actors);
-        if (Canvas.gameTick % 10 == 0) {
+        if (Canvas.gameTick % 10 == 0 && !game.pokemon.HanhDong.giuMucTieu(this)) {   // pokemon: giữ mục tiêu người chơi chọn
             this.focusedActor = findFocusActor();
         }
         if (this.focusedActor != null && this.focusedActor.catagory == 100) {
@@ -1294,6 +1338,15 @@ public class GameScr extends Screen {
         return false;
     }
 
+    /** pokemon: đang trò chuyện có bước tiếp (mở đầu map 105 gần ông, nhận / trả nhiệm vụ). */
+    public boolean dangTroChuyen() {
+        if (Tilemap.lv == 105 && this.focusedActor instanceof NPC && this.mainChar != null
+                && Util.abs(this.mainChar.y - this.focusedActor.y) <= 32) {
+            return true;
+        }
+        return this.receiveQuest;
+    }
+
     private boolean doIntro() {
         if (Tilemap.lv == 105) {
             String[] intro = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao nhà huấn luyện tài ba.", "1Năm xưa ta có người bạn thân là Xatu", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng huấn luyện này", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
@@ -1309,12 +1362,12 @@ public class GameScr extends Screen {
                     Canvas.keyPressed[5] = true;
                 }
                 if (Canvas.isPointerClick) {
+                    // pokemon: chạm BẤT KỲ ĐÂU = nghe tiếp (bản gốc chỉ nhận chạm trúng ông)
                     Canvas.isPointerClick = false;
-                    int aa = cmx + Canvas.px;
-                    int bb = cmy + Canvas.py;
-                    if (Util.abs(this.focusedActor.x - aa) < 20 && Util.abs((this.focusedActor.y - 20) - bb) < 40) {
-                        Canvas.keyPressed[5] = true;
-                    }
+                    Canvas.keyPressed[5] = true;
+                }
+                if (Canvas.isKeyPressed(12) || Canvas.isKeyPressed(13)) {
+                    Canvas.keyPressed[5] = true;   // phím mềm cũng là "tiếp" (không kẹt khi không biết phím)
                 }
                 if (Canvas.isKeyPressed(5) && this.indexContent < intro.length) {
                     this.indexContent++;
@@ -1324,6 +1377,8 @@ public class GameScr extends Screen {
                         int x = 13 + (r2.nextInt() % 5);
                         int y = 11 + (r2.nextInt() % 5);
                         GameService.gI().changeMap(0, x, y);
+                        game.pokemon.HopThoaiDuoi.giu(false);
+                        game.pokemon.HopThoaiDuoi.tat();
                         Canvas.keyHold[2] = false;
                         Canvas.startWaitDlg("Chuyển màn..", true);
                         return true;
@@ -1348,6 +1403,9 @@ public class GameScr extends Screen {
     }
 
     private void doActorMove() {
+        if (Canvas.keyHold[2] || Canvas.keyHold[4] || Canvas.keyHold[6] || Canvas.keyHold[8]) {
+            this.duoiMucTieu = null; // tự bấm phím đi: thôi đuổi
+        }
         if (Canvas.isKeyPressed(2)) {
             this.dir = (byte) 1;
         }
@@ -1551,6 +1609,29 @@ public class GameScr extends Screen {
         if (Canvas.keyPressed[11]) {
             cheat = !cheat;
         }
+        // pokemon: hộp thoại đáy màn - chạm / bấm BẤT KỲ ĐÂU trên màn = tiếp (máy chữ đang chạy: hiện hết)
+        boolean dangNoi = dangTroChuyen();
+        game.pokemon.HopThoaiDuoi.giu(dangNoi);
+        if (game.pokemon.HopThoaiDuoi.dangBat() && Canvas.currentDialog == null && !Canvas.menu.showMenu) {
+            boolean cham = Canvas.isPointerClick;
+            if (cham || (!dangNoi && Canvas.isKeyPressed(5))) {
+                if (!game.pokemon.HopThoaiDuoi.xongChu()) {
+                    game.pokemon.HopThoaiDuoi.hienHetChu();
+                    Canvas.isPointerClick = false;
+                    Canvas.keyPressed[5] = false;
+                    return;
+                }
+                if (dangNoi) {
+                    Canvas.isPointerClick = false;
+                    Canvas.keyPressed[5] = true;   // tiếp lời (doIntro / nhiệm vụ đọc phím 5)
+                } else {
+                    game.pokemon.HopThoaiDuoi.tat();   // lời thông tin: chạm = đóng
+                    Canvas.isPointerClick = false;
+                    Canvas.keyPressed[5] = false;
+                    return;
+                }
+            }
+        }
         if (doIntro() || this.chatMode) {
             return;
         }
@@ -1573,6 +1654,7 @@ public class GameScr extends Screen {
             updatePoint();
         }
         super.updateKey();
+        game.pokemon.HanhDong.tick(this);   // pokemon: chạm NPC -> tới gần thì nói chuyện
         if (this.mainChar.justStopFromRun) {
             this.mainChar.justStopFromRun = false;
             this.changeSinceLastUpdate = true;
@@ -2056,9 +2138,11 @@ public class GameScr extends Screen {
             return;
         }
         if (this.mainChar.hp >= this.mainChar.maxhp && (potionType == 1 || potionType == 2 || potionType == 3 || potionType == 21 || potionType == 22 || potionType == 93 || potionType == 94)) {
+            game.pokemon.DungDo.loi("HP đã đầy.");   // pokemon: trước im lặng
             return;
         }
         if (this.mainChar.mp >= this.mainChar.maxmp && (potionType == 4 || potionType == 5 || potionType == 6 || potionType == 23 || potionType == 24 || potionType == 95 || potionType == 96)) {
+            game.pokemon.DungDo.loi("PP đã đầy.");   // pokemon: trước im lặng
             return;
         }
         if (potionType == 19) {
@@ -2266,7 +2350,8 @@ public class GameScr extends Screen {
                 if (autoFight && (this.focusedActor.isNPC() || this.focusedActor.isNpcChar())) {
                     return;
                 }
-                if (iTaskAuto != 2 && timeRemovePos <= 0) {
+                if (iTaskAuto != 2 && timeRemovePos <= 0 && !(this.mainChar.posTransRoad != null && laDuongDuoi(this.focusedActor))) {
+                    // giữ đường đang ĐUỔI chính mục tiêu này (xoá mỗi lần bấm đánh = khựng giữa đường)
                     this.mainChar.posTransRoad = null;
                     Target target = this.tg;
                     this.tg.y = (short) -1;
@@ -2305,9 +2390,26 @@ public class GameScr extends Screen {
                             this.coutChangeFocusWhenDoing++;
                             moveToRange(attackedLiveActor, maxRange);
                             this.isAutoRangeWhenAuto = true;
+                            // bấm đánh tay: tự đuổi tiếp mỗi khung tới khi vào tầm rồi đánh (capNhatDuoi)
+                            if (!autoFight && !TuDong.dang && this.duoiMucTieu != attackedLiveActor) {
+                                this.duoiMucTieu = attackedLiveActor;
+                                this.duoiBatDau = System.currentTimeMillis();
+                            }
+                            if (this.duoiMucTieu == attackedLiveActor) {
+                                this.duoiChieu = skillType;
+                            }
                         } else {
                             this.isAutoRangeWhenAuto = false;
                             this.coutChangeFocusWhenDoing = 0;
+                            // vào tầm: dừng hẳn (bỏ đường đuổi) rồi đánh
+                            if (this.mainChar.posTransRoad != null && laDuongDuoi(attackedLiveActor)) {
+                                this.mainChar.posTransRoad = null;
+                                this.mainChar.countRoad = 0;
+                            }
+                            if (this.mainChar.state == 1) {
+                                this.mainChar.moveTo(this.mainChar.x, this.mainChar.y);
+                                this.mainChar.justStopFromRun = true; // gửi vị trí dừng ở khung sau
+                            }
                             if (this.mainChar.iskiller && this.focusedActor.catagory == 0 && ((Char) this.focusedActor).level < 10 && this.mainChar.nationID == this.focusedActor.nationID) {
                                 return;
                             }
@@ -2321,6 +2423,9 @@ public class GameScr extends Screen {
                                 atr.dam = 2000000;
                                 this.mainChar.mp -= mplost;
                                 this.mainChar.startAttack(attackedLiveActor, atr, skillType, Char.skillLevelLearnt[skillType]);
+                                if (this.duoiMucTieu == attackedLiveActor) {
+                                    this.duoiMucTieu = null; // đuổi xong: đã đánh
+                                }
                                 boolean isAeo = SkillManager.isSkillAeo(this.mainChar.clazz, skillType);
                                 Vector mst = new Vector();
                                 if (isAeo) {
@@ -2513,7 +2618,9 @@ public class GameScr extends Screen {
     }
 
     private void moveToRange(Actor attackedLiveActor, int maxRange) {
-        if (!(autoFight && typeOptionFocus == 1 && this.mainChar.posTransRoad != null) && this.mainChar.posTransRoad == null) {
+        // đang đi theo đường ĐUỔI chính mục tiêu này thì vẫn vào (đuổi tiếp / tìm lại đường), đường khác thì như cũ
+        boolean dangDuoi = this.mainChar.posTransRoad != null && laDuongDuoi(attackedLiveActor);
+        if (!(autoFight && typeOptionFocus == 1 && this.mainChar.posTransRoad != null && !dangDuoi) && (this.mainChar.posTransRoad == null || dangDuoi)) {
             if (isFight && this.map == 201) {
                 return;
             }
@@ -2556,11 +2663,158 @@ public class GameScr extends Screen {
                 this.mainChar.timeGoToLastXY = System.currentTimeMillis() - 1;
                 findRoad2(this.mainChar.lastXAuto, this.mainChar.lastYAuto);
             }
-            this.mainChar.moveTo((short) (this.mainChar.x + xa), (short) (this.mainChar.y + ya));
-            if (!autoFight || isMoveToSkiller) {
-                sendActorMove((short) (this.mainChar.x + xa), (short) (this.mainChar.y + ya));
+            if ((xa == 0 && ya == 0) || (autoFight && !isMoveToSkiller)) {
+                this.mainChar.moveTo((short) (this.mainChar.x + xa), (short) (this.mainChar.y + ya));
+                return;
+            }
+            duoiToi(attackedLiveActor, maxRange);
+        }
+    }
+
+    // ---------------------------------------------------------------- đuổi mục tiêu (bao 0.9.2 đánh đi giật)
+    // Cũ: moveToRange bước THẲNG tối đa 50 px mỗi trục (xuyên tường), gửi luôn ĐIỂM ĐÍCH cho máy chủ, và mỗi lần
+    // bấm đánh lại xoá đường đang đi (doUseSkillToFocusActor) -> gặp tường thì máy chủ trả vị trí cũ (kéo lùi),
+    // quái chạy thì đứng khựng chờ lần bấm sau. Mới: đoạn thẳng thông thoáng thì đi thẳng tới điểm đứng trong tầm,
+    // không thì tìm đường (DuongDi) tới quái, tìm lại khi quái dời > 24 px (tối đa ~3 lần / giây); vào tầm thì
+    // dừng và đánh; quái chết / biến mất / đổi mục tiêu / bấm phím đi / chạm đất thì thôi đuổi.
+
+    /** Mục tiêu đang đuổi theo lệnh bấm đánh tay (tới tầm thì đánh một đòn, như bấm lại). */
+    Actor duoiMucTieu;
+    byte duoiChieu;
+    private long duoiBatDau;
+    private long duoiKe;
+    /** Đường hiện tại (posTransRoad) là đường đuổi actor này: loại / id / điểm quái lúc tìm / lúc tìm. */
+    private int duoiCat = -1;
+    private int duoiId = -1;
+    private int duoiX;
+    private int duoiY;
+    private long duoiLuc;
+    /** Đo: số lần tìm đường khi đuổi. */
+    public static int soTimDuongDuoi;
+
+    boolean laDuongDuoi(Actor a) {
+        return a != null && this.duoiCat == a.catagory && this.duoiId == a.ID;
+    }
+
+    void huyDuoi() {
+        this.duoiMucTieu = null;
+    }
+
+    /** Đi tới chỗ đứng trong tầm {@code tam} của {@code a} (đi thẳng nếu thông, không thì theo đường). */
+    void duoiToi(Actor a, int tam) {
+        MainChar mc = this.mainChar;
+        int d = Util.distance(mc.x, mc.y, a.x, a.y);
+        int giu = tam - 8;
+        if (giu < 8) {
+            giu = tam > 1 ? tam - 1 : 1;
+        }
+        int gx = a.x;
+        int gy = a.y;
+        if (d > 0) {
+            gx = a.x + ((mc.x - a.x) * giu) / d;
+            gy = a.y + ((mc.y - a.y) * giu) / d;
+        }
+        if (!checkMoveLimit(gx, gy) && DuongDi.thongThoang(Tilemap.type, Tilemap.w, Tilemap.h, mc.x, mc.y, gx, gy)) {
+            if (mc.posTransRoad != null && laDuongDuoi(a)) {
+                mc.posTransRoad = null;
+                mc.countRoad = 0;
+            }
+            mc.moveTo((short) gx, (short) gy);
+            mc.stop = false;
+            return;
+        }
+        long bay = System.currentTimeMillis();
+        boolean tim = mc.posTransRoad == null || !laDuongDuoi(a)
+                || (bay - this.duoiLuc > 350L && (Math.abs(a.x - this.duoiX) > 24 || Math.abs(a.y - this.duoiY) > 24));
+        if (!tim) {
+            return;
+        }
+        if (bay - this.duoiLuc < 300L && laDuongDuoi(a)) {
+            return; // không tìm lại dồn dập (đường cũ vẫn đi tiếp)
+        }
+        this.duoiLuc = bay;
+        this.duoiX = a.x;
+        this.duoiY = a.y;
+        this.duoiCat = a.catagory;
+        this.duoiId = a.ID;
+        soTimDuongDuoi++;
+        short[] duong = updateFindRoad(mc.x / 16, mc.y / 16, a.x / 16, a.y / 16);
+        if (duong == null) {
+            return;
+        }
+        mc.xTo = mc.x;
+        mc.yTo = mc.y;
+        mc.xBegin = mc.x;
+        mc.yBegin = mc.y;
+        mc.posTransRoad = duong;
+        mc.countRoad = 0;
+    }
+
+    /** Đi theo đường tới điểm pixel (x, y) (tự động đánh khi đoạn thẳng bị chặn); tìm lại khi đích dời > 24 px. */
+    public void diTheoDuong(int x, int y) {
+        MainChar mc = this.mainChar;
+        long bay = System.currentTimeMillis();
+        if (mc.posTransRoad != null && this.duoiCat == -2 && Math.abs(x - this.duoiX) <= 24 && Math.abs(y - this.duoiY) <= 24) {
+            return;
+        }
+        if (bay - this.duoiLuc < 300L) {
+            return;
+        }
+        this.duoiLuc = bay;
+        this.duoiX = x;
+        this.duoiY = y;
+        this.duoiCat = -2;
+        this.duoiId = -2;
+        short[] duong = updateFindRoad(mc.x / 16, mc.y / 16, x / 16, y / 16);
+        if (duong == null) {
+            return;
+        }
+        mc.xTo = mc.x;
+        mc.yTo = mc.y;
+        mc.xBegin = mc.x;
+        mc.yBegin = mc.y;
+        mc.posTransRoad = duong;
+        mc.countRoad = 0;
+    }
+
+    /** Bỏ đường do diTheoDuong đặt (đường khác giữ nguyên). */
+    public void huyDiTheoDuong() {
+        if (this.duoiCat == -2 && this.mainChar.posTransRoad != null) {
+            this.mainChar.posTransRoad = null;
+            this.mainChar.countRoad = 0;
+        }
+        if (this.duoiCat == -2) {
+            this.duoiCat = -1;
+        }
+    }
+
+    /** Mỗi khung (MainChar.update): tiếp tục đuổi mục tiêu bấm đánh tay cho tới khi vào tầm và đánh được. */
+    public void capNhatDuoi() {
+        Actor a = this.duoiMucTieu;
+        if (a == null) {
+            return;
+        }
+        long bay = System.currentTimeMillis();
+        if (TuDong.dang || autoFight || this.focusedActor != a || a.wantDestroy || this.mainChar.state == 3 || this.mainChar.isDie
+                || bay - this.duoiBatDau > 10000L || !this.actors.contains(a)) {
+            this.duoiMucTieu = null;
+            return;
+        }
+        if (a instanceof LiveActor) {
+            LiveActor la = (LiveActor) a;
+            // quái: state 5 bay chết, 8 đang xoá (3 = đang đánh trả, vẫn sống); người: 3 = gục
+            boolean chet = a.catagory == 1 ? (la.hp <= 0 || la.state == 5 || la.state == 8)
+                    : (la.hp <= 0 || la.realHP <= 0 || la.state == 3);
+            if (chet) {
+                this.duoiMucTieu = null;
+                return;
             }
         }
+        if (this.mainChar.isDoing || this.mainChar.state == 2 || bay < this.duoiKe) {
+            return;
+        }
+        this.duoiKe = bay + 120L;
+        doUseSkillToFocusActor(this.duoiChieu);
     }
 
     public void showNpcMenu(final int type, Vector menu) {
@@ -3061,6 +3315,10 @@ public class GameScr extends Screen {
         if (Tilemap.w < Canvas.w / 16 && Tilemap.h < Canvas.h / 16) {
             return;
         }
+        if (HudRong.bat()) {
+            paintMiniMapRong(g);   // pokemon: màn rộng - bản đồ nhỏ phải trên dưới hàng nút
+            return;
+        }
         Canvas.resetTrans(g);
         if (this.indexBuff != -1 && timeBuff - (System.currentTimeMillis() / 1000) > 0) {
             game.pokemon.BangChieu.icon(g, Canvas.w - 20, ((Canvas.h - hMiniMap) - Screen.deltaY) - 20, 20, this.indexBuff);
@@ -3104,10 +3362,9 @@ public class GameScr extends Screen {
             int size1 = this.mainChar.posTransRoad.length;
             for (int i3 = 0; i3 < size1; i3++) {
                 g.setColor(15198737);
-                byte xx = (byte) (xStart + (this.mainChar.posTransRoad[i3] >> 8));
-                byte yy = (byte) (yStart + (this.mainChar.posTransRoad[i3] & 255));
-                if (xx != -1) {
-                    g.fillRect(xx + 1, yy + 1, 1, 1);
+                short ma = this.mainChar.posTransRoad[i3];
+                if (DuongDi.co(ma)) {
+                    g.fillRect(DuongDi.maX(ma) + 1, DuongDi.maY(ma) + 1, 1, 1);
                 }
             }
         }
@@ -3142,8 +3399,10 @@ public class GameScr extends Screen {
             game.pokemon.GiaoDien.vien(g, xTen, yTen, wTen, 15, game.pokemon.GiaoDien.XANH, nameMap);
         }
         Font.smallFont.drawString(g, new StringBuffer(String.valueOf(this.mainChar.x / 16)).append(".").append(this.mainChar.y / 16).toString(), Canvas.w - 2, (Canvas.h - Screen.deltaY) - 7, 1);
-        if (this.mainChar.nationID > -1) {
-            Font.normalFontColor.drawString(g, nameCountry[this.mainChar.inCountry], Canvas.w - 2, this.posMiniMap.y - 31, 1);
+        // pokemon: nhãn VÙNG ĐỊA LÝ của map (Pewter = Kanto...), không phải lãnh thổ song song inCountry
+        String vungMap = game.pokemon.VungMap.ten(Tilemap.lv);
+        if (vungMap != null) {
+            Font.normalFontColor.drawString(g, vungMap, Canvas.w - 2, this.posMiniMap.y - 31, 1);
         }
         int nsk = 0;
         if (this.skillClan != null) {
@@ -3171,7 +3430,7 @@ public class GameScr extends Screen {
         for (int i = 0; i < this.VecTime.size(); i++) {
             TimecountDown t = (TimecountDown) this.VecTime.elementAt(i);
             if (t != null) {
-                t.paint(g, Canvas.w, hMiniMap + (i * 18) + 16);
+                t.paint(g, Canvas.w, HudRong.bat() ? HudRong.dayMiniMap(this) + 30 + (i * 18) : hMiniMap + (i * 18) + 16);
             }
         }
     }
@@ -3206,6 +3465,10 @@ public class GameScr extends Screen {
         }
         if (this.mainChar.posTransRoad != null && this.posCam != null) {
             this.tg.paint(g);
+        }
+        game.pokemon.HanhDong.veGon(g);   // pokemon: gợn sóng điểm chạm đi tới
+        if (HudRong.bat() && !this.isAutoRangeWhenAuto) {
+            HudRong.veVongChon(g, this.focusedActor);   // pokemon: vòng dưới chân mục tiêu
         }
         EffectManager.lowEffects.paintAll(g);
         try {
@@ -3351,6 +3614,7 @@ public class GameScr extends Screen {
                 paintMiniMap(g);
                 paintQuickSlot(g);
                 paintServerInfo(g);
+                HudRong.ve(g, this);   // pokemon: HUD màn rộng (nút trên, cụm chiêu, chat, bản đồ to)
             }
         } catch (Exception e8) {
             e8.printStackTrace();
@@ -3366,7 +3630,7 @@ public class GameScr extends Screen {
         try {
             if (this == Canvas.currentScreen) {
                 paintChat(g);
-                if (Canvas.currentDialog == null && !Canvas.menu.showMenu && !this.chatMode) {
+                if (Canvas.currentDialog == null && !Canvas.menu.showMenu && !this.chatMode && !HudRong.bat()) {
                     g.drawImage(Res.imgSoft[0], 2, Canvas.h - 13, 0);
                     g.drawImage(Res.imgSoft[1], Canvas.w - 15, Canvas.h - 13, 0);
                 }
@@ -3580,7 +3844,7 @@ public class GameScr extends Screen {
             if (Canvas.currentDialog != null || this != Canvas.currentScreen) {
                 return;
             }
-            if ((this.focusedActor != null && this.focusedActor.catagory != 2) || this.focusedActor == null) {
+            if (!HudRong.bat() && ((this.focusedActor != null && this.focusedActor.catagory != 2) || this.focusedActor == null)) {
                 int k = Font.borderFont.getWidth("Đóng") + 10;
                 g.setClip(k, Canvas.h - 16, (Canvas.w - k) - 13, 20);
                 if (this.yMsgChat < this.toYchat) {
@@ -3616,6 +3880,9 @@ public class GameScr extends Screen {
 
     /** pokemon: bề ngang khung thông tin nhân vật góc trái trên (kiểu khung HP trận đấu Pokémon). */
     static int rongKhungHp() {
+        if (HudRong.bat()) {
+            return 140;
+        }
         if (Canvas.w < 220) {
             return Canvas.w / 2 - 2;
         }
@@ -3673,8 +3940,8 @@ public class GameScr extends Screen {
     }
 
     private void paintQuickSlot(Graphics g) {
-        if (this.hideGUI == 2 || Canvas.currentDialog != null || this.chatMode) {
-            return;
+        if (this.hideGUI == 2 || Canvas.currentDialog != null || this.chatMode || HudRong.bat()) {
+            return;   // màn rộng: cụm nút tròn của HudRong
         }
         if (this.focusedActor != null && this.focusedActor.catagory == 2) {
             Font.borderFont.drawString(g, "Giao tiếp", Canvas.hw, Canvas.h - Screen.deltaY, 2);
@@ -3687,7 +3954,7 @@ public class GameScr extends Screen {
         int buoc = buocO();
         int wSlot = buoc * 5;
         int hSlot = caoThanhO();
-        // pokemon: 5 ô chiêu kiểu Pokémon (màu hệ + hình chiêu + nhãn phím + hồi chiêu), cùng vị trí cũ
+        // pokemon: 5 ô chiêu kiểu Pokémon (màu hệ + hình chiêu + hồi chiêu), cùng vị trí cũ
         int xSlot0 = Canvas.hw - (wSlot / 2);
         int ySlot0 = ((Canvas.h - 16) - hSlot) + xSlot;
         int wo = buoc - 3;
@@ -3698,7 +3965,7 @@ public class GameScr extends Screen {
         long tMoi = 0;
         for (int k = 0; k < 5; k++) {
             QuickSlot qs = MainChar.quickSlot[indexTabSlot][k];
-            QuickSlot.paintO(g, qs, xSlot0 + (k * buoc) + 2, ySlot0 + 2, wo, ho, String.valueOf(1 + (k * 2)), k == 2);
+            QuickSlot.paintO(g, qs, xSlot0 + (k * buoc) + 2, ySlot0 + 2, wo, ho, null, k == 2);   // không nhãn phím trên ô
             if (qs != null && qs.quickslotType == QuickSlot.TYPE_SKILL) {
                 long t = this.mainChar.timeLastUseSkills[qs.skillType];
                 if (t > tMoi && now - t < 1300) {
@@ -3737,6 +4004,9 @@ public class GameScr extends Screen {
     }
 
     private void paintSoftIcon(Graphics g) {
+        if (HudRong.bat()) {
+            return;
+        }
         g.drawImage(Res.imgSoft[0], 2, Canvas.h - 13, 0);
         g.drawImage(Res.imgSoft[1], Canvas.w - 15, Canvas.h - 13, 0);
     }
@@ -3746,6 +4016,9 @@ public class GameScr extends Screen {
             return;
         }
         Canvas.resetTrans(g);
+        // pokemon: màn rộng - khung mục tiêu giữa trên (góc phải trên là hàng nút + bản đồ nhỏ)
+        int dxRong = HudRong.bat() ? (Canvas.w - rongKhungHp()) / 2 - (Canvas.w - rongKhungHp()) : 0;
+        g.translate(dxRong, 0);
         if (!this.isAutoRangeWhenAuto && this.focusedActor != null) {
             // pokemon: khung đối thủ góc phải trên kiểu trận đấu Pokémon - tên, Lv, thanh HP, chân dung
             boolean coMau = false;
@@ -3784,6 +4057,7 @@ public class GameScr extends Screen {
                 g.setClip(Canvas.w - 30, 5, 25, 25);
                 this.focusedActor.paintCorner(g, Canvas.w - 18, 25);
                 Canvas.resetTrans(g);
+                g.translate(dxRong, 0);
             }
             if (coMau) {
                 long hp = la.hp <= 0 ? 0 : la.hp;
@@ -4991,6 +5265,12 @@ public class GameScr extends Screen {
             WindowInfoScr.gI().isLoad = true;
             PauseMenu.gI().showMe(0);
             WindowInfoScr.gI().isLoad = false;
+        } else if (Canvas.currentScreen == ShopNew.gI() && ShopNew.index != null && ShopNew.focusTab < ShopNew.index.length
+                && ShopNew.index[ShopNew.focusTab] == 0) {
+            // pokemon: hành trang mở từ Cửa hàng (ShopNew) cũng làm mới ngay sau khi dùng / mua (trước giữ món đã dùng)
+            ShopNew.gI().isLoad = true;
+            PauseMenu.gI().showShopNew(0);
+            ShopNew.gI().isLoad = false;
         }
     }
 
@@ -5005,6 +5285,7 @@ public class GameScr extends Screen {
             if (ch != null) {
                 if (ch == this.mainChar) {
                     addChat(new ChatInfo("", new StringBuffer("Nhặt được ").append(item.getDisplayName()).toString(), 1));
+                    game.pokemon.HanhDong.bao(new StringBuffer("Nhặt được ").append(item.getDisplayName()).toString());   // pokemon: thông báo nhanh
                     game.pokemon.AmThanh.phat(game.pokemon.AmThanh.NHAT);   // pokemon
                 }
                 item.startFlyTo(ch.x, ch.y);
@@ -5027,6 +5308,7 @@ public class GameScr extends Screen {
             if (ch != null) {
                 if (ch == this.mainChar) {
                     startFlyText(new StringBuffer("+").append((int) potionQuantity).append(potion.getDisplayName2().toLowerCase()).toString(), 2, this.mainChar.x - 10, this.mainChar.y - 30, 1, -1);
+                    game.pokemon.HanhDong.bao(new StringBuffer("+").append((int) potionQuantity).append(' ').append(potion.getDisplayName2()).toString());   // pokemon: thông báo nhanh
                     if (this.mainChar.getItemQuest(potion.item_template_id)) {
                         addChat(new ChatInfo("", new StringBuffer("Nhặt ").append(this.mainChar.infoQuest).append(" ").append(potion.getDisplayName2()).toString(), 0));
                     }
@@ -6965,11 +7247,20 @@ public class GameScr extends Screen {
     }
 
     private void updatePoint() {
+        if (HudRong.bat() && HudRong.cham(this)) {
+            return;   // pokemon: cú chạm thuộc HUD màn rộng
+        }
         if (!Canvas.isPointer(Canvas.hw - 40, 0, 80, 20) && Canvas.isPointer(0, 0, Canvas.w, Canvas.h)) {
+            // pokemon: chạm ô trống (+) / giữ lâu một ô của thanh ô nhanh -> bảng gán chiêu (ChonChieuNhanh)
+            if (!HudRong.bat() && game.pokemon.ChonChieuNhanh.thanhJar(buocO(), caoThanhO())) {   // màn rộng: HudRong gọi chamO
+                Canvas.isPointerClick = false;
+                Canvas.isPointerDown = false;
+                return;
+            }
             if (Canvas.isPointerClick) {
                 int wSlot = buocO() * 5;
                 int hSlot = caoThanhO();
-                if (Canvas.isPointer(Canvas.hw - (wSlot / 2), (Canvas.h - hSlot) - 20, wSlot, hSlot)) {
+                if (!HudRong.bat() && Canvas.isPointer(Canvas.hw - (wSlot / 2), (Canvas.h - hSlot) - 20, wSlot, hSlot)) {
                     int id = (Canvas.px - (Canvas.hw - (wSlot / 2))) / buocO();
                     if (id > 4) {
                         id = 4;
@@ -7006,106 +7297,48 @@ public class GameScr extends Screen {
             if (Canvas.isPointerClick) {
                 int aa = cmx + Canvas.px;
                 int bb = cmy + Canvas.py;
-                if (this.focusedActor != null) {
-                    if (this.focusedActor.catagory != 10) {
-                        int size0 = this.actors.size();
-                        for (int i = 0; i < size0; i++) {
-                            Actor ac = (Actor) this.actors.elementAt(i);
-                            if (Util.abs(ac.x - aa) < 20 && Util.abs((ac.y - 20) - bb) < 40) {
+                if (this.focusedActor != null && this.focusedActor.catagory == 10) {
+                    if (this.mainChar.x >= this.xBeginFrame && this.mainChar.x <= this.xTheendFrame + 32 && this.mainChar.y >= this.yBeginFrame && this.mainChar.y <= this.yTheendFrame + 32) {
+                        int size1 = this.actors.size();
+                        for (int i2 = 0; i2 < size1; i2++) {
+                            Actor ac2 = (Actor) this.actors.elementAt(i2);
+                            if (aa >= ac2.x + 2 && aa <= ac2.x + 30 && bb >= ac2.y && bb <= ac2.y + 30) {
                                 Canvas.isPointerClick = false;
-                                if (this.focusedActor.ID == ac.ID) {
-                                    if ((ac instanceof Char) && (this.mainChar.pk <= 0 || this.map / 100 == 3)) {
-                                        if (((Char) this.focusedActor).idBoss == -1) {
-                                            doParty();
-                                            return;
-                                        } else {
-                                            doFire(5, indexTabSlot);
-                                            return;
-                                        }
-                                    }
-                                    if (this.focusedActor.catagory != 2 || ac.catagory != 2) {
+                                if (this.focusedActor.ID != -1 && this.focusedActor.ID == ac2.ID) {
+                                    if (this.mainChar.state == 0) {
                                         doFire(5, indexTabSlot);
                                         return;
                                     }
-                                    if (((NPC) this.focusedActor).type == ((NPC) ac).type) {
-                                        if (((NPC) ac).type != 4) {
-                                            doFire(5, indexTabSlot);
-                                            return;
-                                        } else if (((NPC) this.focusedActor).idLinhGac == ((NPC) ac).idLinhGac) {
-                                            doFire(5, indexTabSlot);
-                                            return;
-                                        } else if (ac.ID != this.mainChar.ID) {
-                                            this.focusedActor = ac;
-                                            doFire(5, indexTabSlot);
-                                            return;
-                                        }
-                                    }
-                                }
-                                if (ac.ID != this.mainChar.ID) {
-                                    boolean isContinue = false;
-                                    if (typeOptionFocus == 1) {
-                                        if (ac.catagory == 0 && (!ac.iskiller || ac.isNPC())) {
-                                            isContinue = true;
-                                        }
-                                        if (ac.catagory != 1 && ac.catagory == 0 && !ac.iskiller) {
-                                            isContinue = true;
-                                        }
-                                    } else if (typeOptionFocus == 2) {
-                                        if (!ac.isNPC()) {
-                                            isContinue = true;
-                                        }
-                                    } else if (typeOptionFocus == 3) {
-                                        if ((ac.catagory == 0 && ac.idClan == this.mainChar.idClan) || ac.isNPC()) {
-                                            isContinue = true;
-                                        }
-                                    } else if (typeOptionFocus == 4 && ((ac.catagory == 0 && ac.nationID == this.mainChar.nationID) || ac.isNPC())) {
-                                        isContinue = true;
-                                    }
-                                    if (!isContinue) {
-                                        this.focusedActor = ac;
-                                    }
-                                    if (this.map == 29) {
+                                    return;
+                                } else {
+                                    if (ac2.ID != this.mainChar.ID) {
                                         findRoad(aa, bb);
                                         return;
                                     }
                                     return;
                                 }
-                                return;
                             }
                         }
-                        this.focusedActor = null;
-                    } else {
-                        if (this.mainChar.x >= this.xBeginFrame && this.mainChar.x <= this.xTheendFrame + 32 && this.mainChar.y >= this.yBeginFrame && this.mainChar.y <= this.yTheendFrame + 32) {
-                            int size1 = this.actors.size();
-                            for (int i2 = 0; i2 < size1; i2++) {
-                                Actor ac2 = (Actor) this.actors.elementAt(i2);
-                                if (aa >= ac2.x + 2 && aa <= ac2.x + 30 && bb >= ac2.y && bb <= ac2.y + 30) {
-                                    Canvas.isPointerClick = false;
-                                    if (this.focusedActor.ID != -1 && this.focusedActor.ID == ac2.ID) {
-                                        if (this.mainChar.state == 0) {
-                                            doFire(5, indexTabSlot);
-                                            return;
-                                        }
-                                        return;
-                                    } else {
-                                        if (ac2.ID != this.mainChar.ID) {
-                                            findRoad(aa, bb);
-                                            return;
-                                        }
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                        this.focusedActor = null;
                     }
+                    this.focusedActor = null;
+                } else {
+                    // pokemon: chạm actor (hộp quanh hình thật) = chọn quái / đánh khi chạm lại, NPC = đi tới + nói chuyện,
+                    // người chơi = menu nhỏ, đồ rơi = nhặt (game.pokemon.HanhDong); chạm đất = bỏ chọn + đi tới
+                    if (game.pokemon.HanhDong.chamThe(this, aa, bb)) {
+                        return;
+                    }
+                    game.pokemon.HanhDong.boChon();
+                    this.focusedActor = null;
                 }
+                game.pokemon.HanhDong.chamDat(aa, bb);
                 findRoad(aa, bb);
             }
         }
     }
 
     public void findRoad(int aa, int bb) {
+        this.duoiMucTieu = null; // đi tới chỗ khác: thôi đuổi
+        this.duoiCat = -1;
         int aa2 = aa / 16;
         int bb2 = bb / 16;
         if (!Tilemap.tileTypeAtPixel(cmx + Canvas.px, cmy + Canvas.py, 2) && !checkMoveLimit(cmx + Canvas.px, cmy + Canvas.py)) {
@@ -7126,6 +7359,8 @@ public class GameScr extends Screen {
     }
 
     public void findRoad2(int aa, int bb) {
+        this.duoiMucTieu = null; // đi tới chỗ khác: thôi đuổi
+        this.duoiCat = -1;
         int aa2 = aa / 16;
         int bb2 = bb / 16;
         if (this.posCam == null) {
@@ -7147,146 +7382,26 @@ public class GameScr extends Screen {
         return Util.abs(x1 - x2) + Util.abs(y1 - y2);
     }
 
+    /**
+     * Tìm đường cho nhân vật chính (chạm đất, tự đi nhiệm vụ, đuổi quái): game.model.DuongDi (BFS trong khung bao,
+     * tường = type & 2 như máy chủ). Thay vòng cũ quét cả bản đồ mỗi bước (khựng khung hình) - xem DuongDi.
+     */
     private short[] updateFindRoad(int xF, int yF, int xTo, int yTo) {
         if (Util.distance(xF * 16, yF * 16, xTo * 16, yTo * 16) <= 16 || checkMoveLimit(xTo, yTo)) {
             return null;
         }
         xStart = (byte) cmxMini;
         yStart = (byte) cmyMini;
-        int xF2 = xF - xStart;
-        int yF2 = yF - yStart;
-        int xTo2 = xTo - xStart;
-        int yTo2 = yTo - yStart;
-        int s = mapFind.length;
-        for (int i = 0; i < s; i++) {
-            for (int j = 0; j < mapFind[i].length; j++) {
-                int aa = ((yStart + j) * Tilemap.w) + xStart + i;
-                if (aa < Tilemap.type.length - 1) {
-                    if (Tilemap.type[aa] == 2) {
-                        mapFind[i][j] = -1;
-                    } else {
-                        mapFind[i][j] = 0;
-                    }
-                }
+        short[] duong = DuongDi.tim(Tilemap.type, Tilemap.w, Tilemap.h, xF, yF, xTo, yTo);
+        if (duong == null && DuongDi.quaXa) {
+            // như vòng cũ khi quá 500 bước: tự đi nhiệm vụ thì thử điểm khác (isFixBugAutoQuest)
+            if (iTaskAuto == 2) {
+                this.iTaskAutoLast = iTaskAuto;
+                isFixBugAutoQuest = true;
             }
+            iTaskAuto = 1;
         }
-        int xFrom = xF2;
-        int yFrom = yF2;
-        short xGoc = (short) xFrom;
-        short yGoc = (short) yFrom;
-        if (xFrom < 0 || xFrom >= mapFind.length) {
-            return null;
-        }
-        if (xFrom < mapFind.length && yFrom < mapFind[xFrom].length) {
-            mapFind[xFrom][yFrom] = 1;
-        }
-        short index = 2;
-        int iL = mapFind.length;
-        int jL = mapFind[0].length;
-        int count = 0;
-        while (true) {
-            count++;
-            if (count > 500) {
-                if (iTaskAuto == 2) {
-                    this.iTaskAutoLast = iTaskAuto;
-                    isFixBugAutoQuest = true;
-                    count = 0;
-                }
-                iTaskAuto = 1;
-                Cout.println(new StringBuffer("Cout DAY ROI------: ").append(count).toString());
-                return null;
-            }
-            int xCur = -1;
-            int yCur = -1;
-            if (xFrom + 1 < iL && mapFind[xFrom + 1][yFrom] == 0) {
-                mapFind[xFrom + 1][yFrom] = (byte) index;
-                xCur = xFrom + 1;
-                yCur = yFrom;
-            }
-            if (xFrom - 1 >= 0 && mapFind[xFrom - 1][yFrom] == 0) {
-                mapFind[xFrom - 1][yFrom] = (byte) index;
-                if (xCur == -1 || setDis(xCur, yCur, xTo2, yTo2) > setDis(xFrom - 1, yFrom, xTo2, yTo2)) {
-                    xCur = xFrom - 1;
-                    yCur = yFrom;
-                }
-            }
-            if (yFrom + 1 < jL && mapFind[xFrom][yFrom + 1] == 0) {
-                mapFind[xFrom][yFrom + 1] = (byte) index;
-                if (xCur == -1 || setDis(xCur, yCur, xTo2, yTo2) > setDis(xFrom, yFrom + 1, xTo2, yTo2)) {
-                    xCur = xFrom;
-                    yCur = yFrom + 1;
-                }
-            }
-            if (yFrom - 1 >= 0 && mapFind[xFrom][yFrom - 1] == 0) {
-                mapFind[xFrom][yFrom - 1] = (byte) index;
-                if (xCur == -1 || setDis(xCur, yCur, xTo2, yTo2) > setDis(xFrom, yFrom - 1, xTo2, yTo2)) {
-                    xCur = xFrom;
-                    yCur = yFrom - 1;
-                }
-            }
-            int aa2 = -1;
-            if (xCur != -1) {
-                aa2 = 0;
-                xFrom = xCur;
-                yFrom = yCur;
-            } else {
-                yFrom = 1000;
-                xFrom = 1000;
-            }
-            short s2 = 0;
-            while (true) {
-                short i2 = s2;
-                if (i2 >= iL) {
-                    break;
-                }
-                short s3 = 0;
-                while (true) {
-                    short j2 = s3;
-                    if (j2 >= jL) {
-                        break;
-                    }
-                    if (mapFind[i2][j2] > 1 && setContinue(i2, j2, mapFind) && mapFind[i2][j2] + setDis(i2, j2, xTo2, yTo2) < index + setDis(xFrom, yFrom, xTo2, yTo2)) {
-                        xFrom = i2;
-                        yFrom = j2;
-                        index = mapFind[i2][j2];
-                        aa2 = 0;
-                    }
-                    s3 = (short) (j2 + 1);
-                }
-                s2 = (short) (i2 + 1);
-            }
-            if (xFrom != xTo2 || yFrom != yTo2) {
-                if (aa2 == 0) {
-                    index = (short) (index + 1);
-                } else {
-                    Cout.println(new StringBuffer("TOI DAY ROI------: ").append(xCur).toString());
-                    return null;
-                }
-            } else {
-                if (index >= 127) {
-                    return null;
-                }
-                int ia = 0;
-                short[] success = new short[index];
-                while (true) {
-                    success[ia] = (short) ((xFrom << 8) + yFrom);
-                    if (xFrom + 1 < iL && mapFind[xFrom + 1][yFrom] == mapFind[xFrom][yFrom] - 1) {
-                        xFrom = (short) (xFrom + 1);
-                    } else if (xFrom - 1 >= 0 && mapFind[xFrom - 1][yFrom] == mapFind[xFrom][yFrom] - 1) {
-                        xFrom = (short) (xFrom - 1);
-                    } else if (yFrom + 1 < jL && mapFind[xFrom][yFrom + 1] == mapFind[xFrom][yFrom] - 1) {
-                        yFrom = (short) (yFrom + 1);
-                    } else if (yFrom - 1 >= 0 && mapFind[xFrom][yFrom - 1] == mapFind[xFrom][yFrom] - 1) {
-                        yFrom = (short) (yFrom - 1);
-                    }
-                    if (xFrom != xGoc || yFrom != yGoc) {
-                        ia++;
-                    } else {
-                        return success;
-                    }
-                }
-            }
-        }
+        return duong;
     }
 
     private boolean setContinue(int i, int j, byte[][] mapFind2) {

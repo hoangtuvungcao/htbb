@@ -154,7 +154,7 @@ public class GameData
 				g.drawImage(imgIcon.img, x, y, 3);
 				return;
 			}
-			g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
+			GiaoDien.pokeBall(g, x, y, 6, -(Canvas.gameTick * 30) % 360);   // HTBB: thay waiting
 			setIndexWait();
 		}
 	}
@@ -219,7 +219,7 @@ public class GameData
 				g.drawImage(imgIcon.img, x, y, align);
 				return;
 			}
-			g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
+			GiaoDien.pokeBall(g, x, y, 6, -(Canvas.gameTick * 30) % 360);   // HTBB: thay waiting
 			setIndexWait();
 		}
 	}
@@ -249,7 +249,7 @@ public class GameData
 		}
 		else
 		{
-			g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
+			GiaoDien.pokeBall(g, x, y, 6, -(Canvas.gameTick * 30) % 360);   // HTBB: thay waiting
 			setIndexWait();
 		}
 	}
@@ -279,7 +279,7 @@ public class GameData
 		}
 		else
 		{
-			g.drawRegion(imgWait, 0, idWait * 18, 18, 18, 0, x, y, 3);
+			GiaoDien.pokeBall(g, x, y, 6, -(Canvas.gameTick * 30) % 360);   // HTBB: thay waiting
 			setIndexWait();
 		}
 	}

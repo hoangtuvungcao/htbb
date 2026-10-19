@@ -5751,7 +5751,7 @@ public class Map implements Runnable {
     // Chu ky GIU NGUYEN: lop loi cu (phuc hoi tu htbb-core.jar o P3) goi method nay,
     // va lop con van override duoc nhu cu.
     protected void doUsePotion(Char player, Message message) throws IOException {
-        MapDungThuoc.doUsePotion(this, player,message);
+        DungVatPham.dungThuoc(this, player, message); // -> MapDungThuoc.doUsePotion, co phan hoi
     }
 
     public Item doCreateHoaKyLan(Char player, int idTemplate, long timeExpire) {
@@ -15917,7 +15917,12 @@ public class Map implements Runnable {
         return type == 22;
     }
 
-    void doUseItem(Char player, Message message) throws IOException 
+    /** Lenh 29: boc ham cu - moi lan bam deu co phan hoi (xem DungVatPham). */
+    void doUseItem(Char player, Message message) throws IOException {
+        DungVatPham.dung(this, player, message);
+    }
+
+    void doUseItemGoc(Char player, Message message) throws IOException 
     {
         if (!this.checkTrade(player)) 
         {
@@ -16280,6 +16285,12 @@ public class Map implements Runnable {
                         return;
                     }
 
+                    // Vat pham khong mac duoc (nguyen lieu, ve, qua le...): truoc day roi xuong
+                    // exchangeItem va nem NPE (Char.getIndexItemWearing) -> nguoi choi khong thay gi.
+                    if (!DungVatPham.macDuoc(item)) {
+                        DungVatPham.loi(player, DungVatPham.lyDo(player, item));
+                        return;
+                    }
                     if (item.isChoiLuaLanBienHinh()) {
                         MapMuaBan.exchangeItem(this, player, item, i);
                     } else {
@@ -16293,6 +16304,7 @@ public class Map implements Runnable {
                         }
 
                         if (item.clazz != player.charClass
+                                && item.clazz >= 0 // -1 = mon moi he (truoc: NAME_CLASS[-1] nem loi, bam khong co gi)
                                 && !vk
                                 && isArmor(t)
                                 && !isModelClothes(item.getTemplate().atb[9])

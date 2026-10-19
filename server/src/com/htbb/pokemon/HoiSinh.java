@@ -547,13 +547,23 @@ public final class HoiSinh {
      * ham nay chon vat pham (de khong ton luot khi khong co vat pham).
      */
     public static int chonTuDong(final boolean xinTuHoiSinh, final TinhHuong t) {
+        return chonTuDong(xinTuHoiSinh, t, true);
+    }
+
+    /**
+     * Nhu tren, nhung {@code choTraPhi} = false thi KHONG BAO GIO tu dung Thuoc hoi sinh toi da (vat pham 1207 mua
+     * bang luong khoa): chi Thuoc hoi sinh thuong (potion 119, mua bang xu). Game (real.HoiSinhGame) truyen
+     * tu_dong.hoi_sinh_tra_phi=1 VA nguoi choi dong y rieng trong bang Tu dong ("Tu hoi sinh: ca vat pham luong").
+     * Khong bao gio tra xu / luong (LC_XU / LC_LUONG) thay nguoi choi.
+     */
+    public static int chonTuDong(final boolean xinTuHoiSinh, final TinhHuong t, final boolean choTraPhi) {
         if (!xinTuHoiSinh || t.camTaiCho != null || !t.conLuotThuoc) {
             return LC_TRUNG_TAM;
         }
         if (t.soThuoc > 0) {
             return LC_THUOC;
         }
-        if (t.soThuocToiDa > 0) {
+        if (choTraPhi && t.soThuocToiDa > 0) {
             return LC_THUOC_TOI_DA;
         }
         return LC_TRUNG_TAM;

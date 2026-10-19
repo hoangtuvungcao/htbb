@@ -758,6 +758,8 @@ public class Char extends LiveActor {
     public static Hashtable<String, TopLuong> TOP_LUONG;
     public static byte have8k;
     long timeMove;
+    /** Quy quang duong di chuyen (milli-px, -1 = day), xem TocDoDiChuyen. */
+    long quyDiChuyen = -1L;
     int lastMovex;
     int lastMovey;
     static int[][] lcx_chan_nui_chau_bau;
@@ -2494,10 +2496,16 @@ public class Char extends LiveActor {
         if (xuyenGiapSkin > 0) {
             this.attNguHanh[3] = (byte) Math.min(127, this.attNguHanh[3] + xuyenGiapSkin);
         }
+        // X Chinh xac (vat pham dai han 1209): don danh quai khong truot nen "chinh xac" ap thanh xuyen giap
+        // (diem/3 %); xem VatPhamDungLauDai.xuyenGiap. Het han: VatPhamDungLauDai.nhip tinh lai.
+        final int xuyenGiapBuff = VatPhamDungLauDai.xuyenGiap(this);
+        if (xuyenGiapBuff > 0) {
+            this.attNguHanh[3] = (byte) Math.min(127, this.attNguHanh[3] + xuyenGiapBuff);
+        }
         this.coolDown = new short[CharManager.SKILL_COOLDOWN[this.charClass].length][11];
         // Than khi: "Tang toc do danh" = giam thoi gian hoi chieu. Ap ngay khi
         // dung bang coolDown nen moi noi kiem tra hoi chieu deu huong theo.
-        int tkGiamCd = getTkGiamHoiChieu();
+        int tkGiamCd = getTkGiamHoiChieu() + VatPhamDungLauDai.buff(this, "toc_danh"); // + X Toc do (1208)
         // chan tran, khong cho spam ky nang khong nghi: 50% (cu) / 33% = toc danh +50% (sv.lau_dai)
         tkGiamCd = ChiSoTrangBiGame.giamHoiChieu(tkGiamCd);
         for (int i = 0; i < this.coolDown.length; ++i) {
@@ -7083,6 +7091,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void setSizeScreen(short w, final short h) {
+        w = com.htbb.mang.VungNhinCoDinh.kepRong(w); // camera co dinh: khong cho client xin vung nhin lon hon
         if (w < 0) {
             w = 320;
         }
@@ -7606,14 +7615,23 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
-    public void sendMessage(final Message m) {
+    public void sendMessage(Message m) {
         if (this.isBot != -1) {
             return;
+        }
+        if (this.phienDung != null) {
+            m = DungVatPham.quaPhien(this, m); // dang dung vat pham: ghi nhan phan hoi (xem DungVatPham)
+            if (m == null) {
+                return; // hop thoai da gop vao thong bao tong ket
+            }
         }
         if (this.session != null) {
             this.session.sendMessage(m);
         }
     }
+
+    /** Phien dung vat pham dang chay tren luong xu ly goi tin (DungVatPham), null = khong. */
+    transient volatile DungVatPham.Phien phienDung;
 
     public Session getSession() {
         return this.session;

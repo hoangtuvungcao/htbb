@@ -192,7 +192,7 @@ public final class HoiSinhGame {
     /** Tu dong danh: vat pham hoi sinh (neu nguoi choi bat Tu hoi sinh + con luot / gio) hoac dung + ve Trung tam. */
     static void tuDongKhiGuc(final Char p, final HoiSinh.CauHinh c, final TT t, final long bay) {
         final HoiSinh.TinhHuong th = tinhHuong(p, c, t, bay);
-        int lam = HoiSinh.chonTuDong(true, th);
+        int lam = HoiSinh.chonTuDong(true, th, TuDongGame.choHoiSinhTraPhi(p)); // vat pham luong: chi khi dong y rieng
         if (lam != HoiSinh.LC_TRUNG_TAM && !TuDongGame.choHoiSinhTuDong(p)) {
             lam = HoiSinh.LC_TRUNG_TAM; // khong bat "Tu hoi sinh" hoac het luot tu_dong.hoi_sinh_moi_gio
         }
