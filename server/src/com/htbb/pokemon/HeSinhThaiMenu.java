@@ -88,20 +88,61 @@ public final class HeSinhThaiMenu {
         if (h == null) {
             return;
         }
-        final List<String> m = new ArrayList<String>();
         final int tt = HeSinhThaiGame.thoiTietMap(p.mapID);
-        m.add("Thời tiết: " + SinhThaiTheGioi.tenThoiTiet(tt) + (SinhThaiTheGioi.laDem(HeSinhThaiGame.gio()) ? " (đêm)" : " (ngày)"));
-        m.add("Câu cá tại đây");
-        m.add("Khảo cổ: đào tại đây");
-        m.add("Nấu ăn, chế thuốc, chế tác");
-        m.add("Túi sinh thái");
-        m.add("Nhà trẻ và trứng (" + h.trung.size() + ")");
-        m.add("Chợ sinh thái");
-        m.add("Vườn nhà và bạn bè");
-        m.add("Sưu tầm và nghiên cứu");
-        m.add("Giải trí: đố vui, đua, giải đấu");
-        m.add("Kỹ năng và thể lực (" + h.theLuc + ")");
-        menu(p, M_GOC, m);
+        menu(p, M_GOC, mucGoc(SinhThaiTheGioi.tenThoiTiet(tt), SinhThaiTheGioi.laDem(HeSinhThaiGame.gio()), h.trung.size(), h.theLuc));
+    }
+
+    /**
+     * 0.9.6.1: thu tu muc menu goc = thu tu khoa o day; nhan (mucGoc) va xu ly (goc) cung doc mang nay nen chi so khong
+     * the lech nhau. "Câu cá tại đây" DA BO khoi menu: cau ca chi bat dau tu nut ngu canh canh ho (lenh chat "cauca" ->
+     * {@link #cauCa}). Client cu (0.9.6) gui chi so theo DANH SACH MAY CHU VUA GUI nen van dung muc; client cu chi con
+     * hoat canh quang can ngan khi bam muc thu 2 (nay la Khảo cổ) - khong doi ket qua.
+     */
+    static final String G_THOI_TIET = "thoiTiet", G_KHAO_CO = "khaoCo", G_CHE_TAC = "cheTac", G_TUI = "tui",
+            G_NHA_TRE = "nhaTre", G_CHO = "cho", G_VUON = "vuon", G_SUU_TAM = "suuTam", G_GIAI_TRI = "giaiTri",
+            G_KY_NANG = "kyNang";
+    public static final String[] GOC = {G_THOI_TIET, G_KHAO_CO, G_CHE_TAC, G_TUI, G_NHA_TRE, G_CHO, G_VUON, G_SUU_TAM, G_GIAI_TRI,
+        G_KY_NANG};
+
+    /** Nhan menu goc (cung thu tu {@link #GOC}). */
+    public static List<String> mucGoc(final String thoiTiet, final boolean dem, final int soTrung, final int theLuc) {
+        final List<String> m = new ArrayList<String>();
+        for (final String k : GOC) {
+            m.add(nhanGoc(k, thoiTiet, dem, soTrung, theLuc));
+        }
+        return m;
+    }
+
+    static String nhanGoc(final String k, final String thoiTiet, final boolean dem, final int soTrung, final int theLuc) {
+        switch (k) {
+            case G_THOI_TIET:
+                return "Thời tiết: " + thoiTiet + (dem ? " (đêm)" : " (ngày)");
+            case G_KHAO_CO:
+                return "Khảo cổ: đào tại đây";
+            case G_CHE_TAC:
+                return "Nấu ăn, chế thuốc, chế tác";
+            case G_TUI:
+                return "Túi sinh thái";
+            case G_NHA_TRE:
+                return "Nhà trẻ và trứng (" + soTrung + ")";
+            case G_CHO:
+                return "Chợ sinh thái";
+            case G_VUON:
+                return "Vườn nhà và bạn bè";
+            case G_SUU_TAM:
+                return "Sưu tầm và nghiên cứu";
+            case G_GIAI_TRI:
+                return "Giải trí: đố vui, đua, giải đấu";
+            case G_KY_NANG:
+                return "Kỹ năng và thể lực (" + theLuc + ")";
+            default:
+                return k;
+        }
+    }
+
+    /** Khoa cua muc op trong menu goc; null = ngoai danh sach. */
+    public static String khoaGoc(final int op) {
+        return op >= 0 && op < GOC.length ? GOC[op] : null;
     }
 
     /** MapDoMenu: idNpc == HeSinhThaiGame.NPC_ID. */
@@ -214,38 +255,39 @@ public final class HeSinhThaiMenu {
     }
 
     static void goc(final Char p, final int op) {
-        switch (op) {
-            case 0:
+        final String k = khoaGoc(op);
+        if (k == null) {
+            return;
+        }
+        switch (k) {
+            case G_THOI_TIET:
                 xemTheGioi(p);
                 break;
-            case 1:
-                cauCa(p);
-                break;
-            case 2:
+            case G_KHAO_CO:
                 dao(p);
                 break;
-            case 3:
+            case G_CHE_TAC:
                 moCongThuc(p);
                 break;
-            case 4:
+            case G_TUI:
                 moTui(p);
                 break;
-            case 5:
+            case G_NHA_TRE:
                 moNhaTre(p);
                 break;
-            case 6:
+            case G_CHO:
                 moCho(p);
                 break;
-            case 7:
+            case G_VUON:
                 moVuon(p);
                 break;
-            case 8:
+            case G_SUU_TAM:
                 moSuuTam(p);
                 break;
-            case 9:
+            case G_GIAI_TRI:
                 moGiaiTri(p);
                 break;
-            case 10:
+            case G_KY_NANG:
                 xemKyNang(p);
                 break;
             default:

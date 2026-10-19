@@ -18,6 +18,8 @@ import javax.microedition.lcdui.Graphics;
  * - Trong một lớp, vùng đăng ký sau (vẽ đè lên) thắng; trùng nhau thì vùng có tâm gần điểm chạm hơn.
  * - Cỡ chạm tối thiểu MIN (px logic, nền đặt theo dpi: Android ~44 dp, PC ~32 px thật): vùng nhỏ hơn được nới đều
  *   quanh tâm (chỉ vùng chạm, hình vẽ giữ nguyên).
+ * - Vùng TRÒN (themTron, nút tròn HUD): trúng theo khoảng cách tới tâm (bán kính nới tới MIN / 2) - góc vuông của
+ *   hộp bao không "ăn" chạm của nút bên cạnh.
  * - Một cú chạm = nhấn (Canvas.pxLast / pyLast) và thả (Canvas.px / py) trong CÙNG một vùng (kéo ra ngoài = huỷ).
  * - Toạ độ: toạ độ jar (Canvas.px / py); APK đã đổi ngược phép phóng cửa sổ HD (HdPhong) trước khi vào game.
  *
@@ -34,6 +36,8 @@ public final class VungCham {
     private static final class Bo {
         int n;
         final int[] x = new int[TOI_DA], y = new int[TOI_DA], w = new int[TOI_DA], h = new int[TOI_DA], lop = new int[TOI_DA];
+        /** bán kính vùng tròn (0 = hộp chữ nhật) */
+        final int[] r = new int[TOI_DA];
         final Object[] viec = new Object[TOI_DA];
         final String[] ten = new String[TOI_DA];
         int lopMax;
@@ -122,6 +126,31 @@ public final class VungCham {
         b.lop[i] = lopHien;
         b.viec[i] = viec;
         b.ten[i] = ten;
+        b.r[i] = 0;
+    }
+
+    /** Đăng ký vùng TRÒN tâm (cx, cy) bán kính r (toạ độ màn jar tuyệt đối) - hộp bao (cx - r, cy - r, 2r + 1). */
+    public static void themTron(int cx, int cy, int r, Object viec, String ten) {
+        if (viec == null || r <= 0) {
+            return;
+        }
+        Bo b = dang;
+        int i = b.n;
+        themTuyetDoi(cx - r, cy - r, 2 * r + 1, 2 * r + 1, viec, ten);
+        if (b.n > i) {
+            b.r[i] = r;
+        }
+    }
+
+    /** Bán kính vùng i (đã chốt) như đăng ký - 0 = hộp chữ nhật. */
+    public static int banKinh(int i) {
+        return chot.r[i];
+    }
+
+    /** Bán kính CHẠM thật của vùng tròn i (đã nới MIN / 2) - 0 = hộp. */
+    public static int banKinhCham(int i) {
+        int r = chot.r[i];
+        return r <= 0 ? 0 : Math.max(r, (MIN + 1) / 2);
     }
 
     /** Vùng chạm thật (đã nới MIN) của vùng i trong bộ đã chốt: {x, y, w, h}. */
@@ -185,17 +214,32 @@ public final class VungCham {
             if (b.lop[i] != b.lopMax) {
                 continue;
             }
-            int[] r = noi(b.x[i], b.y[i], b.w[i], b.h[i]);
-            if (px < r[0] || py < r[1] || px >= r[0] + r[2] || py >= r[1] + r[3]) {
-                continue;
+            long d;
+            if (b.r[i] > 0) {
+                // vùng tròn: khoảng cách tới tâm (bán kính nới tới MIN / 2)
+                long dx = px - (b.x[i] + b.r[i]), dy = py - (b.y[i] + b.r[i]);
+                d = dx * dx + dy * dy;
+                long rn = Math.max(b.r[i], (MIN + 1) / 2);
+                if (d > rn * rn) {
+                    continue;
+                }
+                if (d <= (long) b.r[i] * b.r[i]) {
+                    return i;   // trúng thật
+                }
+                d *= 4;   // cùng thang với hộp (toạ độ x2) bên dưới
+            } else {
+                int[] r = noi(b.x[i], b.y[i], b.w[i], b.h[i]);
+                if (px < r[0] || py < r[1] || px >= r[0] + r[2] || py >= r[1] + r[3]) {
+                    continue;
+                }
+                // trúng thật (không cần nới) thắng ngay theo thứ tự vẽ (trên cùng trước)
+                if (px >= b.x[i] && py >= b.y[i] && px < b.x[i] + b.w[i] && py < b.y[i] + b.h[i]) {
+                    return i;
+                }
+                long dx = 2 * px - (2 * b.x[i] + b.w[i]);
+                long dy = 2 * py - (2 * b.y[i] + b.h[i]);
+                d = dx * dx + dy * dy;
             }
-            // trúng thật (không cần nới) thắng ngay theo thứ tự vẽ (trên cùng trước)
-            if (px >= b.x[i] && py >= b.y[i] && px < b.x[i] + b.w[i] && py < b.y[i] + b.h[i]) {
-                return i;
-            }
-            long dx = 2 * px - (2 * b.x[i] + b.w[i]);
-            long dy = 2 * py - (2 * b.y[i] + b.h[i]);
-            long d = dx * dx + dy * dy;
             if (d < dTot) {
                 dTot = d;
                 tot = i;

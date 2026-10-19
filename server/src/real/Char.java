@@ -4869,7 +4869,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         try {
             final byte[][] temp = {{4, 5}, {1, 1, 6}, {5, 5, 6, 3}, {0, 1, 6}, {2, 3, 6}};
             for (int i = 0; i < temp[this.charClass].length; ++i) {
-                if (this.skill[i + 4] + this.addMoreLevelSkill[i + 4] != -1) {
+                // hieu ung dang chay giu thoi luong luc dung (ChieuHoTro.ghi) - khong keo dai giua chung
+                if (this.skill[i + 4] + this.addMoreLevelSkill[i + 4] != -1 && this.arrayBuff[temp[this.charClass][i]] == -1) {
                     this.timeOut[temp[this.charClass][i]] = CharManager.TIME_LIFE_BUFF_SKILL[temp[this.charClass][i]][this.skill[i + 4] + this.addMoreLevelSkill[i + 4]];
                 }
             }
@@ -8066,6 +8067,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             m.dos.writeByte(0);
             m.dos.writeShort(charID);
             m.dos.writeByte(buffEff);
+            m.dos.writeShort(0); // client doc short (timeOut) truoc khi xet kieu - thieu la EOF, khong xoa duoc
             for (int i = 0; i < this.nearChars.size(); ++i) {
                 final Char ch = this.map.getPlayerByID(this.nearChars.elementAt(i));
                 if (ch != null) {

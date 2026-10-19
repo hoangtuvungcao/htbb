@@ -126,12 +126,18 @@ public final class HudRong {
         return yDanh() - 76;
     }
 
+    /**
+     * Viên đổi bộ chiêu "1/2" (vẽ R_DOI_BO) dưới cụm chiêu, giữa ô chiêu 0 và nút đánh. Vùng CHẠM riêng R_CHAM_DOI_BO
+     * (> vẽ: ngón tay / chuột không phải nhắm đúng viên nhỏ), không chạm vùng chạm nút đánh / chiêu 0 (KiemChamHud).
+     */
+    static final int R_CHAM_DOI_BO = 13;
+
     static int xDoiBo() {
-        return xDanh() - 30;
+        return xDanh() - 40;
     }
 
     static int yDoiBo() {
-        return yDanh() + 30;
+        return yDanh() + 26;
     }
 
     /** Công tắc Tự động: viên trên cụm chiêu, sát mép phải. */
@@ -246,38 +252,101 @@ public final class HudRong {
         if (Canvas.currentScreen != gs || BangTuDong.mo) {
             return;   // màn chơi đang làm nền cho bảng khác / tấm Tự động: nút HUD phía sau không nhận chạm
         }
+        BoNut b = BO_VE;
+        lapNut(gs, b);
+        for (int i = 0; i < b.n; i++) {
+            if (b.r[i] > 0) {
+                game.pokemon.VungCham.themTron(b.x[i], b.y[i], b.rVe[i], t, b.ten[i]);
+            } else {
+                game.pokemon.VungCham.themTuyetDoi(b.x[i], b.y[i], b.w[i], b.h[i], t, b.ten[i]);
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ bảng nút chạm (MỘT nguồn: trung / VungCham / kiểm thử)
+
+    /** Nút HUD đang hiện khung này: mã (lam), tâm / góc, bán kính vẽ + bán kính chạm (tròn) hoặc hộp w x h (+ lề). */
+    static final class BoNut {
+        int n;
+        final int[] ma = new int[24], x = new int[24], y = new int[24], rVe = new int[24], r = new int[24], w = new int[24], h = new int[24], le = new int[24];
+        final String[] ten = new String[24];
+
+        void tron(int m, String t, int cx, int cy, int rv, int rc) {
+            int i = n++;
+            ma[i] = m;
+            ten[i] = t;
+            x[i] = cx;
+            y[i] = cy;
+            rVe[i] = rv;
+            r[i] = rc;
+        }
+
+        void hop(int m, String t, int x0, int y0, int w0, int h0, int le0) {
+            int i = n++;
+            ma[i] = m;
+            ten[i] = t;
+            x[i] = x0;
+            y[i] = y0;
+            w[i] = w0;
+            h[i] = h0;
+            le[i] = le0;
+            r[i] = 0;
+        }
+    }
+
+    /** bộ của luồng vẽ (dangKyCham) / của trung (luồng game, chuột PC) - không dùng chung giữa hai luồng */
+    private static final BoNut BO_VE = new BoNut(), BO_CHAM = new BoNut();
+
+    /** Lập bảng nút đang hiện (cùng điều kiện hiện với veNutTren / veCum). */
+    static void lapNut(GameScr gs, BoNut b) {
+        b.n = 0;
         if (gs.hideGUI != 2) {
             for (int i = 0; i < SO_NUT_TREN; i++) {
                 if (i == N_MENU && !hienDuoi(gs)) {
                     continue;
                 }
-                int rn = rNut(i);
-                game.pokemon.VungCham.themTuyetDoi(xNutTren(i) - rn, yNut(i) - rn, 2 * rn + 1, 2 * rn + 1, t, TEN_VUNG_TREN[i]);
+                b.tron(i, TEN_VUNG_TREN[i], xNutTren(i), yNut(i), rNut(i), rNut(i) + 2);
             }
-            game.pokemon.VungCham.themTuyetDoi(0, 0, rongThe(), caoThe(), t, "hud-the");
+            b.hop(10, "hud-the", 0, 0, rongThe(), caoThe(), 0);
+            // 0.9.5: bản đồ nhỏ không còn là nút (trùng nút Bản đồ)
         }
         if (!hienDuoi(gs)) {
             return;
         }
         QuickSlot[] bo = MainChar.quickSlot == null ? null : MainChar.quickSlot[GameScr.indexTabSlot];
         for (int i = 0; i < 4; i++) {
-            if (!game.pokemon.ThanhNhanh.hienO(bo, gs.SLOTINDEXOFKEY[PHIM_CHIEU[i]])) {
-                continue;
+            if (game.pokemon.ThanhNhanh.hienO(bo, gs.SLOTINDEXOFKEY[PHIM_CHIEU[i]])) {
+                b.tron(20 + i, TEN_CHIEU[i], xChieu(i), yChieu(i), R_CHIEU, R_CHIEU + 2);
             }
-            game.pokemon.VungCham.themTuyetDoi(xChieu(i) - R_CHIEU, yChieu(i) - R_CHIEU, 2 * R_CHIEU + 1, 2 * R_CHIEU + 1, t, TEN_CHIEU[i]);
         }
-        game.pokemon.VungCham.themTuyetDoi(xDanh() - R_DANH, yDanh() - R_DANH, 2 * R_DANH + 1, 2 * R_DANH + 1, t, "hud-danh");
+        b.tron(24, "hud-danh", xDanh(), yDanh(), R_DANH, R_DANH + 3);
         if (game.pokemon.ThanhNhanh.coBo2()) {
-            game.pokemon.VungCham.themTuyetDoi(xDoiBo() - R_DOI_BO, yDoiBo() - R_DOI_BO, 2 * R_DOI_BO + 1, 2 * R_DOI_BO + 1, t, "hud-doi-bo");
+            b.tron(25, "hud-doi-bo", xDoiBo(), yDoiBo(), R_CHAM_DOI_BO, R_CHAM_DOI_BO);
         }
-        game.pokemon.VungCham.themTuyetDoi(xThuoc() - R_THUOC, yThuoc(true) - R_THUOC, 2 * R_THUOC + 1, 2 * R_THUOC + 1, t, "hud-thuoc-hp");
-        game.pokemon.VungCham.themTuyetDoi(xThuoc() - R_THUOC, yThuoc(false) - R_THUOC, 2 * R_THUOC + 1, 2 * R_THUOC + 1, t, "hud-thuoc-pp");
+        b.tron(26, "hud-thuoc-hp", xThuoc(), yThuoc(true), R_THUOC, R_THUOC + 2);
+        b.tron(27, "hud-thuoc-pp", xThuoc(), yThuoc(false), R_THUOC, R_THUOC + 2);
         if (HanhDong.loaiNguCanh() == 3) {
-            game.pokemon.VungCham.themTuyetDoi(xNguCanh() - R_NGU_CANH, yNguCanh() - R_NGU_CANH, 2 * R_NGU_CANH + 1, 2 * R_NGU_CANH + 1, t, "hud-ngu-canh");
+            b.tron(28, "hud-ngu-canh", xNguCanh(), yNguCanh(), R_NGU_CANH, R_NGU_CANH + 2);
         }
-        game.pokemon.VungCham.themTuyetDoi(xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG, t, "hud-tu-dong");
-        game.pokemon.VungCham.themTuyetDoi(xTdCai() - R_TD_CAI, yTdCai() - R_TD_CAI, 2 * R_TD_CAI + 1, 2 * R_TD_CAI + 1, t, "hud-tu-dong-cai-dat");
-        game.pokemon.VungCham.themTuyetDoi(xChat() - R_CHAT, yChat() - R_CHAT, 2 * R_CHAT + 1, 2 * R_CHAT + 1, t, "hud-chat");
+        b.hop(29, "hud-tu-dong", xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG, 2);
+        b.tron(31, "hud-tu-dong-cai-dat", xTdCai(), yTdCai(), R_TD_CAI, R_TD_CAI + 2);
+        b.tron(30, "hud-chat", xChat(), yChat(), R_CHAT, R_CHAT + 3);
+    }
+
+    /**
+     * Kiểm thử (client_pc/test/KiemChamHud): nút HUD đang hiện {tên, mã, int[]{x, y, r}} (tròn, r = bán kính chạm của
+     * trung) hoặc {tên, mã, int[]{x, y, w, h}} (hộp, đã cộng lề chạm).
+     */
+    public static Object[][] cacNutCham(GameScr gs) {
+        BoNut b = new BoNut();
+        lapNut(gs, b);
+        Object[][] v = new Object[b.n][];
+        for (int i = 0; i < b.n; i++) {
+            int[] hinh = b.r[i] > 0 ? new int[]{b.x[i], b.y[i], b.r[i]}
+                    : new int[]{b.x[i] - b.le[i], b.y[i] - b.le[i], b.w[i] + 2 * b.le[i], b.h[i] + 2 * b.le[i]};
+            v[i] = new Object[]{b.ten[i], new Integer(b.ma[i]), hinh};
+        }
+        return v;
     }
 
     static final String[] TEN_CHIEU = {"hud-chieu0", "hud-chieu1", "hud-chieu2", "hud-chieu3"};
@@ -1037,52 +1106,15 @@ public final class HudRong {
             }
             return 41;   // ngoài bảng: đóng
         }
-        if (gs.hideGUI != 2) {
-            for (int i = 0; i < SO_NUT_TREN; i++) {
-                if (i == N_MENU && !hienDuoi(gs)) {
-                    continue;
+        BoNut b = BO_CHAM;
+        synchronized (b) {
+            lapNut(gs, b);
+            for (int i = 0; i < b.n; i++) {
+                if (b.r[i] > 0 ? trongTron(x, y, b.x[i], b.y[i], b.r[i])
+                        : trongO(x, y, b.x[i] - b.le[i], b.y[i] - b.le[i], b.w[i] + 2 * b.le[i], b.h[i] + 2 * b.le[i])) {
+                    return b.ma[i];
                 }
-                if (trongTron(x, y, xNutTren(i), yNut(i), rNut(i) + 2)) {
-                    return i;
-                }
             }
-            if (trongO(x, y, 0, 0, rongThe(), caoThe())) {
-                return 10;
-            }
-            // 0.9.5: bản đồ nhỏ không còn là nút (trùng nút Bản đồ)
-        }
-        if (!hienDuoi(gs)) {
-            return -1;
-        }
-        for (int i = 0; i < 4; i++) {
-            if (trongTron(x, y, xChieu(i), yChieu(i), R_CHIEU + 2)
-                    && game.pokemon.ThanhNhanh.hienO(MainChar.quickSlot == null ? null : MainChar.quickSlot[GameScr.indexTabSlot], gs.SLOTINDEXOFKEY[PHIM_CHIEU[i]])) {
-                return 20 + i;
-            }
-        }
-        if (trongTron(x, y, xDanh(), yDanh(), R_DANH + 3)) {
-            return 24;
-        }
-        if (game.pokemon.ThanhNhanh.coBo2() && trongTron(x, y, xDoiBo(), yDoiBo(), R_DOI_BO + 2)) {
-            return 25;
-        }
-        if (trongTron(x, y, xThuoc(), yThuoc(true), R_THUOC + 2)) {
-            return 26;
-        }
-        if (trongTron(x, y, xThuoc(), yThuoc(false), R_THUOC + 2)) {
-            return 27;
-        }
-        if (HanhDong.loaiNguCanh() == 3 && trongTron(x, y, xNguCanh(), yNguCanh(), R_NGU_CANH + 2)) {
-            return 28;
-        }
-        if (trongO(x, y, xTuDong() - 2, yTuDong() - 2, W_TU_DONG + 4, H_TU_DONG + 4)) {
-            return 29;
-        }
-        if (trongTron(x, y, xTdCai(), yTdCai(), R_TD_CAI + 2)) {
-            return 31;
-        }
-        if (trongTron(x, y, xChat(), yChat(), R_CHAT + 3)) {
-            return 30;
         }
         return -1;
     }
@@ -1153,7 +1185,7 @@ public final class HudRong {
                 danh(gs, 5);
                 break;
             case 25:
-                Canvas.keyPressed[0] = true;
+                GameScr.doiBoChieu();   // viên "1/2": đổi bộ ô ngay (trước: keyPressed[0] không ai đọc -> chạm không ăn)
                 break;
             case 26:
             case 27: {

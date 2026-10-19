@@ -106,7 +106,10 @@ public final class Chay {
             CaiDat.toanMan = false;
         }
         if (toanMan) CaiDat.toanMan = true;
-        if (fps) CaiDat.hienFps = true;
+        if (fps) {
+            CaiDat.hienFps = true;
+            CaiDat.dev = true;
+        }
         ChuHD.bat = CaiDat.chuHD && !chuAnh;
         GiaoDienHD.bat = CaiDat.khungHD;
         if (khongAm) {

@@ -570,6 +570,17 @@ public class Char extends LiveActor {
         }
     }
 
+    /** Dat lai thoi gian con lai cua bieu tuong hieu ung dang co theo server (giay). */
+    public void lamMoiBuff(int id, int timeOut) {
+        for (int i = 0; i < this.buff.size(); i++) {
+            CharBuff cb = (CharBuff) this.buff.elementAt(i);
+            if (cb.type == id) {
+                cb.setTimeLive(timeOut);
+                return;
+            }
+        }
+    }
+
     public boolean isExistBuff(int id) {
         for (int i = 0; i < this.buff.size(); i++) {
             if (((CharBuff) this.buff.elementAt(i)).type == id) {
@@ -2291,7 +2302,8 @@ public class Char extends LiveActor {
     public void setBuff(byte[] bufftype, short[] countdown) {
         for (int i = 0; i < bufftype.length; i++) {
             if (bufftype[i] <= 0) {
-                if (!isExistBuff(BUFFTYPE[i])) {
+                // server bao o nay het hieu ung: xoa bieu tuong con dang ve (ban cu dao dieu kien -> khong bao gio xoa)
+                if (isExistBuff(BUFFTYPE[i])) {
                     removeBuff(BUFFTYPE[i]);
                 }
             } else if (!isExistBuff(bufftype[i])) {

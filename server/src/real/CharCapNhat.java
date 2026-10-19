@@ -773,36 +773,20 @@ class CharCapNhat {
                     m.cleanup();
                     return;
                 }
-                final int buff = bid;
-                if (buff == -1) {
-                    final Message i = MessageCreator.createServerAlertMessage("Pokémon bạn chọn không có kỹ năng này.", "");
-                    self.sendMessage(i);
-                    i.cleanup();
-                    return;
-                }
-                if (self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4] == 0) {
-                    return;
-                }
-                final int mplost = CharManager.SKILL_MP[self.charClass][buff][self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4]];
-                if (self.mp + self.percentBuff[1] < mplost) {
-                    return;
-                }
-                self.mp -= mplost;
-                int div = 1;
-                if (buffEff != 27) {
-                    div = 2;
-                }
-                if (System.currentTimeMillis() - self.timeLastUseSkills[buff + 4] < CharManager.SKILL_COOLDOWN[self.charClass][buff + 4][self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4]] * 100 / div) {
-                    if (buffEff == 27) {
-                        final long time = CharManager.SKILL_COOLDOWN[self.charClass][buff + 4][self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4]] / 10 - (System.currentTimeMillis() - self.timeLastUseSkills[buff + 4]) / 1000L;
-                        self.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể sử dụng sau " + time + "s", ""));
+                // Luat chung (ChieuHoTro): hoi chieu KHONG chia doi, >= thoi luong + bien; PP o that (buff + 4),
+                // chi tru khi qua het kiem; muc tieu dang co hieu ung -> tu choi (khong cong don / lam moi).
+                final long now = System.currentTimeMillis();
+                final int kq = ChieuHoTro.kiem(self, c, buffEff, now);
+                if (kq != ChieuHoTro.OK) {
+                    if (kq == ChieuHoTro.DANG_HOI && buffEff == 27) {
+                        self.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể sử dụng sau "
+                                + ChieuHoTro.conHoiGiay(self, buffEff, now) + "s", ""));
+                    } else if (kq == ChieuHoTro.DANG_HIEU_LUC) {
+                        self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hiệu ứng vẫn còn, chưa thể dùng lại."));
                     }
                     return;
                 }
-                int[] tempBuff;
-                int j;
-                for (tempBuff = new int[]{19, 20, 22, 23, 24, 25, 27}, j = 0; j < tempBuff.length && tempBuff[j] != buffEff; ++j) {
-                }
+                final int j = ChieuHoTro.viTri(buffEff);
                 if (buffEff == 27) {
                     if (c.inCountry != self.inCountry) {
                         return;
@@ -830,19 +814,15 @@ class CharCapNhat {
                         }
                     }
                 }
-                c.upPercentAtribute(c, buffEff, j, self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4], self);
+                final int lv = ChieuHoTro.capChieu(self, bid + 4);
+                c.upPercentAtribute(c, buffEff, j, lv, self);
+                final int thoiLuong = ChieuHoTro.ghi(self, c, buffEff, now);
                 final Message k = new Message(51);
                 k.dos.writeByte(1);
                 k.dos.writeShort(charID);
                 k.dos.writeByte(buffEff);
-                c.timeUseBuff[j] = System.currentTimeMillis();
-                c.countDown[j] = 0;
-                c.lvBuff[j] = (byte) (self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4]);
-                c.timeOut[j] = self.timeOut[j];
-                k.dos.writeShort(self.timeOut[j]);
-                c.arrayBuff[j] = (byte) buffEff;
-                k.dos.writeByte(self.skill[buff + 4] + self.addMoreLevelSkill[buff + 4]);
-                self.timeLastUseSkills[buff + 4] = System.currentTimeMillis();
+                k.dos.writeShort(thoiLuong);
+                k.dos.writeByte(lv);
                 self.sendMessage(k);
                 if (c.id != self.id) {
                     c.sendMessage(k);
@@ -851,6 +831,10 @@ class CharCapNhat {
                     self.sendToNearPlayer(k);
                 }
                 k.cleanup();
+                try {
+                    self.sendMessage(MessageCreator.createNew_HMP_Message(self, 0)); // PP that sau khi tru
+                } catch (final Exception ex) {
+                }
             }
         } catch (final Exception e) {
             e.printStackTrace();

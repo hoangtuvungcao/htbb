@@ -402,6 +402,32 @@ public final class HanhDong {
     }
 
     /** Nút đánh khi chưa có mục tiêu: chọn quái gần nhất (tầm ~10 ô). */
+    /**
+     * HUD có nút chiêu RIÊNG (màn rộng HudRong; bản APK vá thêm HUD HD): chiêu không bao giờ là "nói chuyện". J2ME màn
+     * nhỏ giữ hành vi gốc (khi nhắm NPC, thanh ô đáy thành nút "Giao tiếp" - phím ô nào cũng nói chuyện).
+     */
+    public static boolean nutChieuRieng() {
+        return HudRong.bat();
+    }
+
+    /**
+     * GameScr.doFire với phím chiêu (khác 5): đang nhắm NPC -> bỏ nhắm NPC, tự nhắm quái gần nhất (không có thì
+     * không mục tiêu: chiêu bổ trợ dùng cho mình, chiêu đánh không làm gì) - không mở cửa hàng / menu NPC.
+     * Ô thuốc giữ nguyên mục tiêu.
+     */
+    public static void boNhamNpcKhiDungChieu(GameScr g, game.model.QuickSlot qs) {
+        Actor f = g.focusedActor;
+        if (f == null || !(f.isNPC() || f.isNpcChar() || f.catagory == 2)) {
+            return;
+        }
+        if (qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_POTION) {
+            return;
+        }
+        boChon();
+        g.focusedActor = null;
+        tuChonQuai(g);
+    }
+
     public static void tuChonQuai(GameScr g) {
         Actor q = ganNhat(g, 3, 160);
         if (q != null) {

@@ -99,6 +99,30 @@ public class KiemPc {
         kiem("Hoenn".equals(game.pokemon.VungMap.ten(43)), "map 43 Littleroot = Hoenn");
         kiem(game.pokemon.VungMap.ten(105) == null, "map 105 san khoi dau: khong nhan");
         kiem(game.pokemon.VungMap.ten(202) == null, "dau truong: khong nhan");
+        // ---- 0.9.6.1: lớp chữ FPS / độ phân giải ("hiển thị 60 FPS 1190×720 logic ...") TẮT ở bản phát hành
+        boolean fps0 = htbb.pc.CaiDat.hienFps, dk0 = htbb.pc.CaiDat.doKhung, dev0 = htbb.pc.CaiDat.dev;
+        Object thu0 = javax.microedition.midlet.MIDlet.GHI_DE.get("HTBB-Ban-Thu");
+        javax.microedition.midlet.MIDlet.GHI_DE.put("HTBB-Ban-Thu", "0");
+        htbb.pc.CaiDat.dev = false;
+        htbb.pc.CaiDat.hienFps = false;
+        htbb.pc.CaiDat.doKhung = false;
+        kiem(!htbb.pc.CaiDat.hienLopDo(), "ban phat hanh mac dinh: khong ve lop FPS");
+        htbb.pc.CaiDat.hienFps = true;   // hien_fps=1 con trong cai_dat.properties tu ban cu
+        htbb.pc.CaiDat.doKhung = true;
+        kiem(!htbb.pc.CaiDat.hienLopDo() && !htbb.pc.CaiDat.choDo(), "ban phat hanh: hien_fps / do_khung cu bi bo qua, khong co cong tac");
+        htbb.pc.CaiDat.dev = true;       // --fps / -Dhtbb.dev=1
+        kiem(htbb.pc.CaiDat.hienLopDo(), "ban phat hanh + co dev (--fps): co lop FPS");
+        htbb.pc.CaiDat.dev = false;
+        javax.microedition.midlet.MIDlet.GHI_DE.put("HTBB-Ban-Thu", "1");
+        kiem(htbb.pc.CaiDat.hienLopDo(), "ban thu + bat Hien FPS: co lop FPS");
+        htbb.pc.CaiDat.hienFps = false;
+        htbb.pc.CaiDat.doKhung = false;
+        kiem(!htbb.pc.CaiDat.hienLopDo(), "ban thu mac dinh: khong ve lop FPS");
+        if (thu0 == null) javax.microedition.midlet.MIDlet.GHI_DE.remove("HTBB-Ban-Thu");
+        else javax.microedition.midlet.MIDlet.GHI_DE.put("HTBB-Ban-Thu", thu0);
+        htbb.pc.CaiDat.hienFps = fps0;
+        htbb.pc.CaiDat.doKhung = dk0;
+        htbb.pc.CaiDat.dev = dev0;
         System.out.println("KiemPc: " + dat + " dat, " + hong + " hong");
         if (hong > 0) System.exit(1);
     }

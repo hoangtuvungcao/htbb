@@ -120,6 +120,8 @@ VA_HD = [
     ("DAU", "game/render/screen/CauGiaoDien.java", r"\n    public static void moCaiDat\(\)", " if (%s) { %sHud.moCaiDat(); return; }" % (HUD, HD)),
     # HUD màn rộng chung (HudRong, bản PC): APK có HUD HD riêng (Hud.java) -> tắt, khỏi vẽ / nhận chạm chồng
     ("DAU", "game/render/screen/HudRong.java", r"\n    public static boolean bat\(\)", " if (%s) { return false; }" % HUD),
+    # HUD HD có nút chiêu riêng: chạm chiêu khi đang nhắm NPC không mở cửa hàng / menu NPC (GameScr.doFire)
+    ("DAU", "game/pokemon/HanhDong.java", r"\n    public static boolean nutChieuRieng\(\)", " if (%s) { return true; }" % HUD),
     # toạ độ chạm logic -> thế giới (HanhDong: chọn quái / NPC khi chạm): camera cố định phóng 2 (HdZoom)
     ("DAU", "game/pokemon/HanhDong.java", r"\n    public static int wx\(int px\)", " if (true) { return %sHdZoom.wx(GameScr.cmx, px); }" % HD),
     ("DAU", "game/pokemon/HanhDong.java", r"\n    public static int wy\(int py\)", " if (true) { return %sHdZoom.wy(GameScr.cmy, py); }" % HD),
