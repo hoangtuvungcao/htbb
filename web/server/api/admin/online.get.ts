@@ -18,6 +18,42 @@
  */
 const BANG_VI_TRI = 'tob_vi_tri_online'
 
+async function boSungTaiKhoanClient(dong: DongViTri[]): Promise<void> {
+  const thieuTk = [...new Set(dong.filter(r => !r.tai_khoan).map(r => String(r.charname)))]
+  if (thieuTk.length > 0) {
+    try {
+      const nv = await q<{ charname: string, userID: number }>(dbGame(),
+        `SELECT charname, userID FROM tob_char WHERE charname IN (${thieuTk.map(() => '?').join(',')})`, thieuTk)
+      const ids = [...new Set(nv.map(r => Number(r.userID)).filter(n => n > 0))]
+      const tk = ids.length
+        ? await q<{ id: number, username: string }>(dbAccount(),
+          `SELECT id, username FROM team_user WHERE id IN (${ids.map(() => '?').join(',')})`, ids)
+        : []
+      const tenTk = new Map(tk.map(r => [Number(r.id), String(r.username)]))
+      const theoNv = new Map(nv.map(r => [String(r.charname).toLowerCase(), tenTk.get(Number(r.userID)) ?? '']))
+      for (const r of dong) if (!r.tai_khoan) r.tai_khoan = theoNv.get(String(r.charname).toLowerCase()) ?? ''
+    } catch { /* để trống */ }
+  }
+  const thieuClient = [...new Set(dong.filter(r => !r.client && r.tai_khoan).map(r => String(r.tai_khoan)))]
+  if (thieuClient.length > 0) {
+    try {
+      const cl = await q<{ tai_khoan: string, loai: string, chinh_chu: number, ban_jar: number, platf: string }>(dbGame(),
+        `SELECT tai_khoan, loai, chinh_chu, ban_jar, platf FROM tob_client_dang_nhap
+          WHERE tai_khoan IN (${thieuClient.map(() => '?').join(',')}) ORDER BY lan_cuoi ASC`, thieuClient)
+      const m = new Map(cl.map(r => [String(r.tai_khoan).toLowerCase(), r])) // dòng sau (mới hơn) đè dòng trước
+      for (const r of dong) {
+        const c = !r.client && r.tai_khoan ? m.get(String(r.tai_khoan).toLowerCase()) : undefined
+        if (c) {
+          r.client = c.loai
+          r.chinh_chu = Number(c.chinh_chu)
+          r.client_ban = Number(c.ban_jar) > 0 ? `v${c.ban_jar}` : ''
+          r.platf = c.platf
+        }
+      }
+    } catch { /* bảng chưa có: để trống */ }
+  }
+}
+
 interface DongViTri {
   charname: string
   map_id: number
@@ -67,16 +103,22 @@ export default defineAdminHandler(async (event) => {
     bangChuaCo = e?.code === 'ER_NO_SUCH_TABLE' || /exist/i.test(loiDoc)
   }
 
-  const coCotClient = dong.length > 0 && dong[0]!.client !== undefined
+  // Thiếu tài khoản (server bản cũ chưa ghi cột tai_khoan, hoặc dòng ghi trước lần đăng nhập đầu sau khi
+  // khởi động lại): tra charname -> tob_char.userID -> account.team_user.username. Thiếu client: lấy loại
+  // client của lần đăng nhập gần nhất trong tob_client_dang_nhap. Hỏng ở bước nào thì để trống, không lỗi.
+  await boSungTaiKhoanClient(dong)
+
+  const coCotClient = dong.length > 0 && dong.some(r => (r.client ?? '') !== '')
   // Đếm theo client / bản ngoài trên TOÀN BỘ người đang online (trước khi lọc bản ngoài)
   const theoClient = { pc: 0, android: 0, jar: 0, khac: 0, chinhChu: 0, banNgoai: 0 }
   for (const r of dong) {
     const k = (['pc', 'android', 'jar'].includes(String(r.client)) ? r.client : 'khac') as 'pc' | 'android' | 'jar' | 'khac'
     theoClient[k]++
+    if (!r.client) continue // chưa biết client: không tính là bản ngoài
     if (Number(r.chinh_chu) === 1) theoClient.chinhChu++
     else theoClient.banNgoai++
   }
-  if (banNgoai && coCotClient) dong = dong.filter(r => Number(r.chinh_chu) !== 1)
+  if (banNgoai && coCotClient) dong = dong.filter(r => r.client && Number(r.chinh_chu) !== 1)
 
   // Gom theo map để hiện số người trên từng map ngay trên đầu, không phải đọc từng dòng.
   const dem = new Map<string, number>()

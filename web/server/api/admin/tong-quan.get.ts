@@ -127,9 +127,10 @@ async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
 
   // ---- Giftcode ----
   const [gcTong, gcConDung, gcLuotTong] = await Promise.all([
-    dem(game, 'SELECT COUNT(*) FROM giftcode'),
-    dem(game, 'SELECT COUNT(*) FROM giftcode WHERE type = 0 AND limit_use <> 0'),
-    dem(game, 'SELECT COUNT(*) FROM giftcode_log'),
+    // Giftcode an toàn (tob_giftcode) — bảng giftcode cũ không còn được game đọc (sv.lau_dai luôn bật).
+    dem(game, 'SELECT COUNT(*) FROM tob_giftcode'),
+    dem(game, 'SELECT COUNT(*) FROM tob_giftcode WHERE bat = 1 AND (han IS NULL OR han > NOW()) AND da_dung < tong_luot'),
+    dem(game, 'SELECT COUNT(*) FROM tob_giftcode_log'),
   ])
 
   // ---- Người chơi online ----

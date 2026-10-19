@@ -26,6 +26,9 @@ import java.util.*;
  */
 class DatabaseNhanVat {
 
+    /** Xu cua nhan vat dau tien luc tao: xem Database.XU_KHOI_DAU. */
+    static final long XU_KHOI_DAU = Database.XU_KHOI_DAU;
+
     /** Bon chuoi vat pham ghi xuong tob_char: equip / inven / bag / tuido. */
     static final class ChuoiVatPham {
         final String equip;
@@ -1242,9 +1245,9 @@ class DatabaseNhanVat {
             StringBuilder potion = new StringBuilder("0," + ct.nHP1 + ",0,0," + ct.nMP1 + ",0,0");
             if (first) {
                 if (s.privateProvider.equals("1") && s.bigProvider.equals("1")) {
-                    xu = 100000L;
+                    xu = XU_KHOI_DAU;
                 } else if (s.bigProvider.equals("0")) {
-                    xu = 100000L;
+                    xu = XU_KHOI_DAU;
                 }
             }
             if (countChar >= Database.MAX_CHAR_PER_ACCOUNT) { // tạo nhân vật
@@ -1342,23 +1345,12 @@ class DatabaseNhanVat {
             pre.setString(12, equip);
             pre.setInt(13, s.idServer);
             pre.execute();
-            // Nhan vat dau tien va duy nhat cua tai khoan: tang 40.000.000 xu + 20.000 luong mo
-            // + 30.000 luong khoa, cong qua hang doi board_created (nhu Nhan moc nap), Char se
-            // nhan khi vao game lan dau qua Database.getBoardCreated(), khong dung sua truc tiep
-            // pInfo (fragile, xem [[feedback-htbb-safe-npc-edits]]). So doi 12/09/2026 theo yeu
-            // cau nguoi dung (thay the hoan toan bo cu 10tr/5k/100k). Trung Cu/Rong/Yeu Tinh/
-            // Doi/Dai bang x3 va Huyet linh thao x4 (khong the nhet vao bang nay - chi co cot
-            // so, khong co vat pham) duoc cong THEM ngay trong chinh getBoardCreated() ben duoi,
-            // cung mot lan nhan, dung luc con lai Char song de co the them vao tui.
-            if (first) {
-                try {
-                    pre.close();
-                } catch (Exception ignored) {
-                }
-                pre = conn.prepareStatement("INSERT INTO board_created(xu,luong,luongK,username) VALUES(40000000,20000,30000,?)");
-                pre.setString(1, String.valueOf(userID));
-                pre.execute();
-            }
+            // QUA TAO NHAN VAT DA BO (19/10/2026, chu game duyet "giam het di"): truoc day nhan vat
+            // dau tien cua tai khoan nhan them 40.000.000 xu + 20.000 luong + 30.000 luong khoa
+            // (+ 15 trung pet, 2 Huyet linh thao) qua hang doi board_created - so cua dot thu
+            // nghiem, pha kinh te ngay tu ngay dau. Gio KHONG ghi board_created nua: nhan vat moi
+            // chi co XU_KHOI_DAU xu (o tren), 0 luong, 0 luong khoa; tien dau tien kiem tu chuoi
+            // nhiem vu tan thu (C01.x thuong ~1.000 xu + luong khoa moi buoc).
             sql = "SELECT * FROM tob_char WHERE charname=?";
             try {
                 pre.close();
@@ -1666,9 +1658,9 @@ class DatabaseNhanVat {
             StringBuilder potion = new StringBuilder("0," + ct.nHP1 + ",0,0," + ct.nMP1 + ",0,0");
             if (first) {
                 if (s.privateProvider.equals("1") && s.bigProvider.equals("1")) {
-                    xu = 100000L;
+                    xu = XU_KHOI_DAU;
                 } else if (s.bigProvider.equals("0")) {
-                    xu = 100000L;
+                    xu = XU_KHOI_DAU;
                 }
             }
             potion = new StringBuilder(String.valueOf(xu));

@@ -19,7 +19,7 @@
 
 export type XhMaBang =
   | 'suc-manh' | 'dai-gia' | 'cong-trang' | 'chuoi-thang' | 'doi' | 'chiem-gym'
-  | 'pokedex' | 'pvp' | 'gym' | 'ham-nguc' | 'sinh-thai' | 'thanh-tuu' | 'su-kien' | 'ung-ho'
+  | 'pokedex' | 'pvp' | 'gym' | 'ham-nguc' | 'sinh-thai' | 'thanh-tuu' | 'su-kien'
 
 export interface XhLuaChon { gt: string, nhan: string }
 export interface XhBoLoc {
@@ -147,12 +147,6 @@ export const XH_DANH_MUC: readonly XhBangDinhNghia[] = [
     bang: ['tob_top_event', 'tob_char'], macDinhHien: true,
     boLoc: [{ khoa: 'kieu', nhan: 'Bảng', macDinh: 'diem', lua: [{ gt: 'diem', nhan: 'Điểm sự kiện' }, { gt: 'tha-den', nhan: 'Thả đèn Trung Thu' }] }],
   },
-  {
-    ma: 'ung-ho', ten: 'Top ủng hộ', icon: 'i-lucide-gem', nhom: 'Ủng hộ', trongGame: false, gioiHanGame: 0,
-    moTa: 'Tổng lượng đã ủng hộ. Bảng chỉ hiện khi máy chủ mở ủng hộ.',
-    nguon: 'board_created ORDER BY luong DESC (hiện tên Pokémon cấp cao nhất của tài khoản, không bao giờ hiện tên đăng nhập).',
-    bang: ['board_created'], macDinhHien: false, boLoc: [],
-  },
 ]
 
 export const XH_MA_BANG: readonly XhMaBang[] = XH_DANH_MUC.map(b => b.ma)
@@ -184,8 +178,6 @@ export interface XhCaiDat {
     /** Ẩn GM trong sv.adminAccounts (cau_hinh) — game cũng ẩn ở Top sức mạnh / đại gia. */
     anGm: boolean
   }
-  /** Bảng "Top ủng hộ": mặc định TẮT; còn phải đang bật nạp (HTBB_NAP_BAT). */
-  hienUngHo: boolean
   /** Mốc bắt đầu đợt đua "Chiếm Gym" ('YYYY-MM-DD HH:MM:SS', giờ máy chủ). */
   mocChiemGym: string
 }
@@ -196,7 +188,6 @@ export const XH_CAI_DAT_MAC_DINH: XhCaiDat = {
   moiTrang: 10,
   lamMoiGiay: 60,
   loaiTru: { tenNhanVat: [], taiKhoan: [], anTaiKhoanKhoa: true, anGm: true },
-  hienUngHo: false,
   mocChiemGym: '2026-09-12 20:12:29',
 }
 
@@ -252,20 +243,17 @@ export function xhChuanHoaCaiDat(raw: unknown): XhCaiDat {
       anTaiKhoanKhoa: typeof lt.anTaiKhoanKhoa === 'boolean' ? lt.anTaiKhoanKhoa : md.loaiTru.anTaiKhoanKhoa,
       anGm: typeof lt.anGm === 'boolean' ? lt.anGm : md.loaiTru.anGm,
     },
-    hienUngHo: typeof r.hienUngHo === 'boolean' ? r.hienUngHo : md.hienUngHo,
     mocChiemGym: moc ? `${moc[1]}-${moc[2]}-${moc[3]} ${moc[4]}:${moc[5]}:${moc[6] ?? '00'}` : md.mocChiemGym,
   }
 }
 
 /**
  * Bảng có được hiện công khai không (chưa tính bảng CSDL có tồn tại hay không).
- * "Top ủng hộ" cần cả nạp bật lẫn admin bật.
+ * (Bảng "Top ủng hộ" cũ đã bỏ: nó đọc board_created — hàng chờ quà tạo nhân vật, không phải tiền ủng hộ.
+ * Tham số thứ ba giữ cho tương thích chữ ký, không còn dùng.)
  */
-export function xhBangDuocHien(cd: XhCaiDat, ma: XhMaBang, napBat: boolean): boolean {
-  const m = cd.bang.find(b => b.ma === ma)
-  if (!m?.hien) return false
-  if (ma === 'ung-ho') return napBat && cd.hienUngHo
-  return true
+export function xhBangDuocHien(cd: XhCaiDat, ma: XhMaBang, _napBat?: boolean): boolean {
+  return !!cd.bang.find(b => b.ma === ma)?.hien
 }
 
 // ------------------------------------------------------------------ loại trừ

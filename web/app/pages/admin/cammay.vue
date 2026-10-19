@@ -4,7 +4,7 @@
  *
  * Cấm tài khoản thì kẻ phá lập tài khoản mới trong 30 giây; mã máy đi theo thiết bị nên
  * bám dai hơn, và bảng tob_may_dang_nhap cho thấy *một máy đã dùng những tài khoản nào*.
- * Mã máy là SystemInfo.deviceUniqueIdentifier do client Unity gửi (Client/Canvas.cs:157),
+ * Mã máy là chuỗi ngẫu nhiên client HTBB sinh một lần rồi gửi kèm gói đăng nhập (AutoGuard.maMay),
  * KHÔNG phải MAC. Lệnh cấm có hiệu lực chậm nhất 60 giây (server làm mới danh sách mỗi phút).
  */
 import type { CotBang } from '~/components/admin/Bang.vue'
@@ -160,19 +160,14 @@ const cotCam: CotBang[] = [
         color="warning"
         variant="subtle"
         icon="i-lucide-info"
-        title="Bảng đã có nhưng chưa ghi nhận máy nào. Hai nguyên nhân thường gặp:"
+        title="Chưa ghi nhận máy nào."
       >
         <template #description>
           <p>
-            1. Máy chủ chưa chạy bản jar có <code>CamTheoMay</code> — kiểm bằng:
-            <code>jar tf htbb-server.jar | grep CamTheoMay</code>
-          </p>
-          <p class="mt-1">
-            2. <strong>Client chưa gửi mã máy</strong> — đây là nguyên nhân gần như chắc chắn. Client hiện chỉ gửi mã máy
-            kèm gói <em>đăng ký</em>, mà đăng ký đã chuyển sang web và đường đó đã bị đóng. Server đọc mã máy ở
-            <em>trường cuối cùng</em> của gói đăng nhập; client cũ không gửi thì bỏ qua (cố ý — để không ép ai cập nhật
-            cùng lúc). Cần thêm một dòng vào cuối gói đăng nhập bên client rồi build lại:
-            <code>message.writer().writeUTF(Canvas.IMEI);</code>
+            Client HTBB (PC, Android, jar từ bản 0.9.x) gửi mã máy ở cuối gói đăng nhập. Máy chủ game chạy bản cũ chỉ ghi
+            mã máy khi đăng nhập theo đường trực tiếp, còn máy thật đăng nhập qua login server nên bảng
+            <code>tob_may_dang_nhap</code> rỗng và lệnh cấm máy chưa có tác dụng. Cập nhật <code>htbb-server.jar</code>
+            bản mới rồi khởi động lại máy chủ game: bảng sẽ có dữ liệu từ lần đăng nhập kế tiếp.
           </p>
         </template>
       </UAlert>

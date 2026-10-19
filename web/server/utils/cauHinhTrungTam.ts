@@ -62,11 +62,13 @@ async function docNho(): Promise<Record<string, string>> {
 
 /**
  * Giá trị hiệu lực phía web của một khoá cau_hinh (CSDL hợp lệ > mặc định — web không thấy server.ini).
+ * Khoá ẩn (cố định / luôn bật) trên máy thật: luôn giá trị cố định, không đọc CSDL (docs/cau-hinh.md).
  * Lỗi CSDL / giá trị sai: `khiLoi` (công tắc thu tiền truyền '0' = FAIL CLOSED).
  */
 export async function chGiaTri(khoa: string, khiLoi?: string): Promise<string> {
   const k = khoaTT(khoa)
   if (!k) throw new Error(`Khoá không có trong danh mục: ${khoa}`)
+  if (anTT(k) && !choPhepThuNghiemWeb()) return k.macDinh
   let tho: string | undefined
   try {
     tho = (await docNho())[khoa]

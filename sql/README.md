@@ -25,6 +25,9 @@ rồi sinh lại `htbb_day_du.sql`. Server tự tạo thêm bảng theo kỳ và
 | Thêm bảng | `them_bang_*.sql` | sự kiện (`tob_su_kien`), log online, nhật ký admin web, chặn spam web, cấm máy, 2FA, Pokédex, dài hạn, top, điều khiển server, `them_bang_web_lenh_nhan_vat.sql` (hàng đợi lệnh web → game; server và web cũng tự tạo bảng) |
 | Thêm cột / khoá | `them_cot_*.sql`, `them_khoa_duy_nhat_giftcode_log.sql`, `them_chi_muc_production.sql`, `sua_cot_itemquest.sql` | chạy lại được; `sua_cot_itemquest.sql` cho CSDL dựng trước 19/10/2026 (cột `tob_char_quest.itemquest` 100 ký tự làm lưu nhiệm vụ thất bại trên MariaDB) |
 | Sự kiện, vật phẩm | `them_su_kien_world_cup.sql`, `them_phi_phong_vo_hinh.sql`, `skin_linh_thu.sql`, `ten_mo_ta_skin_linh_thu.sql`, `sua_type_skin_linh_thu.sql`, `vo_hieu_giftcode_tt.sql`, `xoa_su_kien_trung_lap.sql` | đã nằm trong `htbb_day_du.sql`; giữ vì test và mã nguồn trỏ vào |
+| Theo dõi client | `them_bang_tob_client_dang_nhap.sql` | bảng `tob_client_dang_nhap` + cột client của `tob_vi_tri_online` / `tob_log_online` cho trang /admin/online; server game cũng tự tạo lúc khởi động; chạy lại được |
+| Kinh tế | `sua_he_so_nap_va_qua_tao_nv.sql` | `5h_systems.tangnap` về 1 (server đã cố định hệ số nạp = 1) và xoá quà tạo nhân vật chưa nhận trong `board_created`; không đụng số dư. Thu hồi quà đã nhận: `vps/van_hanh/thu_hoi_qua_tao_nv.sql` (tuỳ chọn, chủ game quyết) |
+| Dọn dữ liệu cũ | `vo_hieu_giftcode_cu.sql` | khoá mọi mã của bảng `giftcode` kiểu cũ (game chế độ dài hạn chỉ đọc `tob_giftcode`); in danh sách mã còn mở rồi khoá, chạy lại được |
 | Web CMS | `web_cms.sql` | bảng nội dung website (thiếu thì web dùng nội dung mặc định) |
 | Thao tác tay | `wipe_player_data.sql`, `wipe_sau_open_test.sql` | xoá dữ liệu người chơi — **sao lưu trước** |
 

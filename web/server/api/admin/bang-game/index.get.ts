@@ -5,14 +5,14 @@
  * ?bang= tên bảng (phải nằm trong danh sách) -> 200 dòng mới nhất.
  */
 const BANG: { ten: string, moTa: string }[] = [
-  { ten: 'tob_chiemthanh', moTa: 'Chiếm Gym — đội đang giữ Gym' },
+  // tob_chiemthanh (chiếm thành theo bang của bản gốc) và giftcode_log (giftcode cũ) đã bỏ: chế độ dài hạn
+  // (sv.lau_dai luôn bật) dùng tob_chiem_thanh_tuan và tob_giftcode_log.
   { ten: 'tob_chiem_thanh_tuan', moTa: 'Chiếm Gym tuần — thưởng theo đóng góp' },
   { ten: 'tob_chien_truong', moTa: 'Chiến trường' },
   { ten: 'tob_qua_ct_top', moTa: 'Quà top chiến trường' },
   { ten: 'tob_qua_online', moTa: 'Quà online: mốc phút, chuỗi đăng nhập, lịch tháng (theo tài khoản)' },
   { ten: 'tob_giftcode_log', moTa: 'Nhật ký nhận giftcode (mới)' },
   { ten: 'tob_top_thuong', moTa: 'Thưởng bảng xếp hạng' },
-  { ten: 'giftcode_log', moTa: 'Nhật ký nhận giftcode' },
 ]
 export default defineAdminHandler(async (event) => {
   const co: typeof BANG = []

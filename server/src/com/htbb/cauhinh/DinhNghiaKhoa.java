@@ -32,6 +32,12 @@ public final class DinhNghiaKhoa {
     private boolean nhay = false;
     private boolean khoaProd = false;
     private boolean chiDoc = false;
+    /** chinh | co_dinh | luon_bat (docs/cau-hinh.md, truong "lop" trong danh_muc.json). */
+    private String lop = LOP_CHINH;
+
+    public static final String LOP_CHINH = "chinh";
+    public static final String LOP_CO_DINH = "co_dinh";
+    public static final String LOP_LUON_BAT = "luon_bat";
 
     public DinhNghiaKhoa(final String khoa, final String nhom, final String kieu, final String macDinh,
             final boolean apDungNgay, final String bang) {
@@ -98,6 +104,11 @@ public final class DinhNghiaKhoa {
 
     DinhNghiaKhoa chiDoc() {
         this.chiDoc = true;
+        return this;
+    }
+
+    DinhNghiaKhoa lop(final String l) {
+        this.lop = l;
         return this;
     }
 
@@ -174,6 +185,19 @@ public final class DinhNghiaKhoa {
     /** Khong sua duoc tu web / Swing (vd bien moi truong). */
     public boolean laChiDoc() {
         return chiDoc;
+    }
+
+    /** chinh | co_dinh | luon_bat. */
+    public String lop() {
+        return lop;
+    }
+
+    /**
+     * Khoa AN (co dinh / luon bat): khong hien tren trang quan tri; may that (khong co sv.cho_phep_thu_nghiem=1)
+     * BO QUA dong CSDL, chi nhan server.ini (khan cap) roi gia tri co dinh {@link #macDinh}.
+     */
+    public boolean laAn() {
+        return !LOP_CHINH.equals(lop);
     }
 
     /** Khoa nam trong bang cau_hinh (may chu game doc + nap lai). */

@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 
 /**
  * Hai qua moi theo yeu cau nguoi dung (12-13/09/2026):
- *   1. Nhan vat DAU TIEN cua tai khoan: 40.000.000 xu + 20.000 luong mo + 30.000 luong
+ *   1. (DA BO 19/10/2026 - xem KiemKinhTeKhoiDau) Nhan vat DAU TIEN cua tai khoan: 40.000.000 xu + 20.000 luong mo + 30.000 luong
  *      khoa (THAY THE hoan toan bo cu 10tr/5k/100k) + 3 trung MOI LOAI trong 5 trung pet
  *      thuong (Cu/Rong/Yeu Tinh/Doi/Dai bang, id 684-688) + 2 Huyet linh thao KHOA (id 720).
  *   2. Len cap 35: 10.000.000 xu + 50 nguyen lieu KHOA moi loai cap 6 (ca nlsc va nlcc,
@@ -33,10 +33,13 @@ public final class KiemThuongTanThuVaLenCap35 {
     private static void kiemQuaNhanVatDauTien() {
         final String dbNhanVat = doc("src/data/DatabaseNhanVat.java");
         Kiem.dung("doc duoc src/data/DatabaseNhanVat.java", !dbNhanVat.isEmpty());
-        Kiem.dung("board_created dat dung so moi: 40tr xu, 20k luong mo, 30k luong khoa",
-                dbNhanVat.contains("INSERT INTO board_created(xu,luong,luongK,username) VALUES(40000000,20000,30000,?)"));
+        // 19/10/2026: qua tao nhan vat (40tr xu / 20k luong / 30k luong khoa) DA BO - chu game duyet.
+        Kiem.sai("addChar KHONG con ghi board_created (qua tao nhan vat da bo)",
+                dbNhanVat.contains("INSERT INTO board_created"));
+        Kiem.sai("KHONG con bo so 40tr/20k/30k", dbNhanVat.contains("VALUES(40000000,20000,30000,?)"));
         Kiem.sai("KHONG con bo so cu (10tr/5k/100k)",
                 dbNhanVat.contains("VALUES(10000000,5000,100000,?)"));
+        Kiem.sai("KHONG con xu khoi dau 100.000", dbNhanVat.contains("xu = 100000L;"));
 
         final String dbXepHang = doc("src/data/DatabaseXepHang.java");
         Kiem.dung("doc duoc src/data/DatabaseXepHang.java", !dbXepHang.isEmpty());

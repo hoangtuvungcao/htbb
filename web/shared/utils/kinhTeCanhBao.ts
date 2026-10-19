@@ -257,3 +257,23 @@ export function tinhCanhBaoKinhTe(ds: NgayKinhTe[], dotBien: DotBien[], homNay: 
   const thuTu: Record<MucCanhBao, number> = { nghiem_trong: 0, canh_bao: 1, thong_tin: 2 }
   return ra.sort((a, b) => thuTu[a.muc] - thuTu[b.muc])
 }
+
+/**
+ * Loại tiền của một dòng tob_log_buy_shop. Cột `money` KHÔNG phải tên tiền mà là ảnh số dư trước/sau do
+ * real/doBuySpecialItem.java ghi: "Xu_<trước>_<sau>_Luong_<trước>_<sau>[_lk_<trước>_<sau>]". Tiền đã trả = số dư
+ * nào GIẢM (ưu tiên xu → lượng → lượng khoá). Chuỗi cũ chỉ ghi tên tiền thì trả lại đúng tên đó; không đọc được -> ''.
+ */
+export function tienMuaShop(money: unknown): 'xu' | 'luong' | 'luong_khoa' | '' {
+  const s = String(money ?? '').trim()
+  const cu = s.toLowerCase()
+  if (cu === 'xu' || cu === 'luong') return cu
+  if (cu === 'luonglock' || cu === 'luong_khoa' || cu === 'lk') return 'luong_khoa'
+  const giam = (ten: string) => {
+    const m = new RegExp(`(?:^|_)${ten}_(-?\\d+)_(-?\\d+)(?:_|$)`).exec(s)
+    return m ? Number(m[1]) > Number(m[2]) : false
+  }
+  if (giam('Xu')) return 'xu'
+  if (giam('Luong')) return 'luong'
+  if (giam('lk')) return 'luong_khoa'
+  return ''
+}

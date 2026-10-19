@@ -8,6 +8,9 @@ import type { DongLenhGiaoDien } from '~/components/admin/nhanvat/BangLenh.vue'
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
 const api = useAdminApi()
+// Vai trò Chỉ xem thấy trang (đọc được) nhưng không gửi được: khoá nút thay vì để bấm rồi nhận 403.
+const me = useAdminMe()
+const duocGhi = computed(() => me.duoc('/api/admin/giam-level'))
 const toast = useToast()
 
 const { data, status, error, refresh } = useAsyncData('admin-giam-level',
@@ -67,6 +70,14 @@ async function huy(l: DongLenhGiaoDien) {
     <template #right>
       <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" label="Cập nhật kết quả" :loading="status === 'pending'" @click="refresh()" />
     </template>
+    <UAlert
+      v-if="!duocGhi"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-eye"
+      title="Chế độ chỉ xem"
+      description="Vai trò của bạn xem được trang này nhưng không gửi được lệnh — chỉ Siêu quản trị thao tác."
+    />
 
     <div>
       <h1 class="text-xl font-bold text-highlighted">
@@ -89,7 +100,7 @@ async function huy(l: DongLenhGiaoDien) {
           <p>Cấp thấp nhất là 1, EXP về 0% cấp mới. Không đủ cấp sẽ báo lỗi riêng cho Pokémon đó. Tên trùng chỉ xử lý một lần.</p>
           <p>Giữ điểm đã nhận; luyện lại cấp cũ không cộng trùng điểm. Pokémon offline sẽ được giảm khi vào game.</p>
         </div>
-        <UButton type="submit" color="error" icon="i-lucide-user-minus" label="Gửi lệnh giảm Level" :loading="dangGui" />
+        <UButton type="submit" color="error" icon="i-lucide-user-minus" label="Gửi lệnh giảm Level" :disabled="!duocGhi" :loading="dangGui" />
       </form>
     </UCard>
 

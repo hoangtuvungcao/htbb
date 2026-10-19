@@ -5,8 +5,8 @@
  * (shared/utils/cmsMacDinh.ts, tin tức tĩnh, dữ liệu CSV). Đọc công khai có bộ nhớ đệm ngắn,
  * mọi lần admin ghi gọi xoaDemCms() để trang thấy ngay.
  */
-import { CMS_MAC_DINH, KHOA_CMS, chuanHoaCmsSite, hopNhatCms, lienKetAnToan, lienKetNgoaiThat, lienKetZalo, tronSau, HOST_ZALO } from '../../shared/utils/cmsMacDinh'
-import type { CmsCongKhai, CmsSite, KhoaCms } from '../../shared/utils/cmsMacDinh'
+import { CMS_MAC_DINH, KHOA_CMS, chuanHoaCmsSite, chuanHoaMenu, hopNhatCms, lienKetAnToan, lienKetNgoaiThat, lienKetZalo, tronSau, HOST_ZALO } from '../../shared/utils/cmsMacDinh'
+import type { CmsCongKhai, CmsMenu, CmsSite, KhoaCms } from '../../shared/utils/cmsMacDinh'
 import { chuanHoaBanTai, loiBanTai } from '../../shared/utils/taiGame'
 
 import type { H3Event } from 'h3'
@@ -122,6 +122,7 @@ export function nanCaiDatLuu<K extends KhoaCms>(khoa: K, giaTri: unknown): CmsCo
     return { ban } as CmsCongKhai[K]
   }
   const moi = tronSau(CMS_MAC_DINH[khoa], giaTri)
+  if (khoa === 'menu') return chuanHoaMenu(moi as CmsMenu) as CmsCongKhai[K]
   if (khoa !== 'site') return moi
   const site = moi as CmsSite
   const urlZalo = site.hoTroZalo.url.trim()

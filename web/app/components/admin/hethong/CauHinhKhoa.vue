@@ -18,6 +18,11 @@ const hl = computed(() => d.value?.hieuLuc[ten.value] ?? null)
 const coDong = computed(() => props.k.bang !== 'env' && props.ch.luu(props.k) !== null)
 const nguonChu: Record<string, string> = { db: 'CSDL', ini: 'server.ini', mac_dinh: 'mặc định', giu_cu: 'giữ giá trị cũ (CSDL bị từ chối)' }
 const sb = computed(() => d.value?.suaBoi[ten.value] ?? null)
+const nguonChuThem: Record<string, string> = { co_dinh: 'cố định' }
+// Giá trị lưu / đang sửa khác mặc định -> nút "Về mặc định" (xoá dòng: máy chủ về server.ini / mặc định).
+const khacMacDinh = computed(() => daSua.value
+  ? props.ch.sua.value[ten.value] !== null && v.value !== props.k.macDinh
+  : coDong.value && props.ch.luu(props.k) !== props.k.macDinh)
 
 function dat(x: string | number | boolean | null | undefined) {
   if (x === null || x === undefined) return
@@ -57,6 +62,7 @@ const goiY = computed(() => {
         <UBadge v-if="k.apDung === 'ngay'" color="success" variant="subtle" size="sm" label="Áp dụng ngay" />
         <UBadge v-else color="warning" variant="subtle" size="sm" icon="i-lucide-rotate-ccw" label="Cần khởi động lại" />
         <UBadge v-if="k.khoaProd" color="error" variant="subtle" size="sm" icon="i-lucide-flask-conical" label="Thử nghiệm — khoá ở máy thật" />
+        <UBadge v-if="k.lop" color="neutral" variant="subtle" size="sm" icon="i-lucide-lock" :label="TEN_LOP_TT[k.lop]" />
         <UBadge v-if="k.bang === 'env'" color="neutral" variant="subtle" size="sm" icon="i-lucide-lock" label="Biến môi trường" />
         <UBadge v-if="k.bang === 'nap_cau_hinh'" color="neutral" variant="outline" size="sm" label="nap_cau_hinh" />
         <UBadge v-if="k.dungO === 'web'" color="info" variant="outline" size="sm" label="web" />
@@ -76,21 +82,24 @@ const goiY = computed(() => {
             <UCheckbox v-for="[ma, nhan] in k.luaChon" :key="ma" :label="nhan" :model-value="dsDaChon.includes(ma)" :disabled="khoa"
               @update:model-value="(c) => batTat(ma, c)" />
           </div>
-          <UInput v-else :model-value="v" :type="k.kieu === 'so' ? 'number' : 'text'" :disabled="khoa" :placeholder="goiY"
-            :color="loi ? 'error' : undefined" :highlight="!!loi" class="w-full" @update:model-value="dat" />
+          <UInput v-else :model-value="v" :type="k.kieu === 'so' ? 'number' : k.kieu === 'ngay' ? 'date' : 'text'" :disabled="khoa" :placeholder="goiY"
+            :min="k.kieu === 'so' ? k.min : undefined" :max="k.kieu === 'so' ? k.max : undefined" :step="k.kieu === 'so' ? (k.buoc || 1) : undefined"
+            :color="loi ? 'error' : undefined" :highlight="!!loi" class="w-full" :class="k.kieu === 'so' ? 'sm:w-48' : ''" @update:model-value="dat" />
         </div>
-        <UTooltip v-if="!khoa && (coDong || daSua)" :text="daSua ? 'Bỏ sửa' : 'Xoá dòng CSDL — máy chủ về server.ini / mặc định'">
-          <UButton v-if="daSua" icon="i-lucide-undo-2" size="xs" color="neutral" variant="ghost" aria-label="Bỏ sửa" @click="ch.boSua(k.khoa)" />
-          <UButton v-else icon="i-lucide-eraser" size="xs" color="neutral" variant="ghost" aria-label="Về mặc định" @click="ch.datGiaTri(k, null)" />
+        <UTooltip v-if="!khoa && daSua" text="Bỏ sửa">
+          <UButton icon="i-lucide-undo-2" size="xs" color="neutral" variant="ghost" aria-label="Bỏ sửa" @click="ch.boSua(k.khoa)" />
+        </UTooltip>
+        <UTooltip v-if="!khoa && !xoaDong && khacMacDinh" :text="`Về mặc định: ${hienThiTT(k, k.macDinh)} (xoá dòng CSDL)`">
+          <UButton icon="i-lucide-rotate-ccw" size="xs" color="neutral" variant="outline" label="Mặc định" @click="ch.datGiaTri(k, null)" />
         </UTooltip>
       </div>
       <p v-if="loi" class="text-xs text-error">{{ loi }}</p>
       <p v-if="xoaDong" class="text-xs text-warning">Sẽ xoá dòng CSDL → máy chủ dùng server.ini hoặc mặc định "{{ hienThiTT(k, k.macDinh) }}".</p>
       <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-dimmed">
+        <span>Mặc định: <b class="text-default">{{ hienThiTT(k, k.macDinh) }}</b></span>
         <span v-if="k.bang === 'cau_hinh' && k.dungO !== 'web' && hl">
-          Máy chủ đang chạy: <b class="text-default">{{ hienThiTT(k, hl.giaTri) }}</b> ({{ nguonChu[hl.nguon] ?? hl.nguon }})
+          Máy chủ đang chạy: <b class="text-default">{{ hienThiTT(k, hl.giaTri) }}</b> ({{ nguonChu[hl.nguon] ?? nguonChuThem[hl.nguon] ?? hl.nguon }})
         </span>
-        <span v-else>Mặc định: {{ hienThiTT(k, k.macDinh) }}</span>
         <span v-if="hl?.cho" class="text-warning">Chờ khởi động lại: <b>{{ hienThiTT(k, hl.cho) }}</b></span>
         <span v-if="sb?.boi">Sửa: {{ sb.boi }} · {{ sb.luc }}</span>
       </div>

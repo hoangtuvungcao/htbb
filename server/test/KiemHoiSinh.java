@@ -315,9 +315,11 @@ public final class KiemHoiSinh {
                 HoiSinh.K_TAN_THU_CAP, HoiSinh.K_TAN_THU_HOI_CHIEU, HoiSinh.K_DONG_DOI_BAT, HoiSinh.K_DONG_DOI_GIAY, HoiSinh.K_CAM_PVP,
                 HoiSinh.K_CAM_GYM, HoiSinh.K_CAM_BOSS, HoiSinh.K_CAM_ME_CUNG, HoiSinh.K_MAP_PVP, HoiSinh.K_MAP_CAM_THEM,
                 HoiSinh.K_AUTO_VE_MAP_UP, HoiSinh.K_GIA_THUOC, HoiSinh.K_GIA_THUOC_TOI_THIEU, HoiSinh.K_THUOC_MOI_GIO, HoiSinh.K_HP_THUOC, HoiSinh.K_HP_TRA_PHI, HoiSinh.K_XU_TOI_THIEU}) {
-            Kiem.dung("danh muc cau hinh co " + k + " (nhom hoi_sinh, ap dung ngay)", j.contains("\"khoa\": \"" + k + "\", \"nhom\": \"hoi_sinh\""));
+            // Gia hoi sinh chinh tren web nam o nhom tu_dong ("Tu dong danh & hoi sinh"), luat co dinh o hoi_sinh.
+            Kiem.dung("danh muc cau hinh co " + k + " (nhom hoi_sinh / tu_dong, ap dung ngay)", j.contains("\"khoa\": \"" + k + "\", \"nhom\": \"hoi_sinh\"")
+                    || j.contains("\"khoa\": \"" + k + "\", \"nhom\": \"tu_dong\""));
         }
-        Kiem.dung("nhom \"Hồi sinh\"", j.contains("\"ma\": \"hoi_sinh\", \"ten\": \"Hồi sinh\""));
+        Kiem.dung("nhom \"Hồi sinh\"", j.contains("\"ma\": \"hoi_sinh\", \"ten\": \"Hồi sinh"));
         // mac dinh trong danh muc = mac dinh trong code
         final HoiSinh.CauHinh c = HoiSinh.cauHinh();
         final HoiSinh.CauHinh m = new HoiSinh.CauHinh();

@@ -87,6 +87,10 @@ public final class NguonCauHinh {
         }
         final List<Muc> l = new ArrayList<Muc>();
         for (final Object d : dm) {
+            // Khoa an (co dinh / luon bat, docs/cau-hinh.md): khong hien, giong trang web.
+            if (Boolean.TRUE.equals(goi(d, "laAn"))) {
+                continue;
+            }
             final Muc m = new Muc();
             m.khoa = (String) d.getClass().getField("khoa").get(d);
             m.nhom = str(d.getClass().getField("nhom").get(d));

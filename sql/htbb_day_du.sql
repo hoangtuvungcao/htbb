@@ -92,7 +92,7 @@ CREATE TABLE `5h_systems` (
 
 LOCK TABLES `5h_systems` WRITE;
 /*!40000 ALTER TABLE `5h_systems` DISABLE KEYS */;
-INSERT INTO `5h_systems` VALUES (1,'restart',1),(2,'tangexp',1),(5,'tangnap',2),(6,'maxccu',5000),(7,'percentDrop',70),(8,'tileDrop',1);
+INSERT INTO `5h_systems` VALUES (1,'restart',1),(2,'tangexp',1),(5,'tangnap',1),(6,'maxccu',5000),(7,'percentDrop',70),(8,'tileDrop',1);
 /*!40000 ALTER TABLE `5h_systems` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `admin_msg`;

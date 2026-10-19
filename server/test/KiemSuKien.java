@@ -281,7 +281,7 @@ public final class KiemSuKien {
         if (WebHtbb.goc() != null) {
             final String menu = WebHtbb.doc("app/utils/adminMenu.ts");
             Kiem.dung("menu quan tri co muc su kien",
-                    menu.contains("to: '/admin/sukien'") && menu.contains("nhom: 'Sự kiện'"));
+                    menu.contains("to: '/admin/sukien'") && menu.contains("nhom: 'Sự kiện"));
         }
 
         // ================= 8. SQL MIGRATE KHOP VOI CREATE TABLE TRONG JAVA =================

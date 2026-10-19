@@ -14,6 +14,8 @@ export interface SiteConfig {
   siteUrl: string
   /** false = chưa có tên miền thật -> noindex, nofollow. */
   choIndex: boolean
+  /** Đã cấu hình gửi mail -> có trang Quên mật khẩu; chưa thì chỉ hiện kênh hỗ trợ. */
+  quenMatKhau?: boolean
 }
 
 export function useSite() {

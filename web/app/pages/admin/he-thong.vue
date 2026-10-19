@@ -1,11 +1,13 @@
 <script setup lang="ts">
 /**
  * Máy chủ & bảo trì: biểu đồ chỉ số máy chủ game (GET /api/admin/chi-so-may-chu — game ghi mỗi 30 giây
- * vào tob_chi_so_may_chu, giữ 7 ngày) + chế độ bảo trì đăng nhập (AdminHethongBaoTri).
+ * vào tob_chi_so_may_chu, giữ 7 ngày) + bật/tắt/khởi động lại (AdminHethongDieuKhien, trước là /admin/server)
+ * + chế độ bảo trì đăng nhập (AdminHethongBaoTri).
  * Tự tải lại mỗi 30 giây. "Im lặng > 90 giây" = cùng ngưỡng với HTBB/vps/kiem-suc-khoe.sh.
  */
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 const api = useAdminApi()
+const me = useAdminMe()
 
 interface Diem {
   luc: string, ketNoi: number, nhanVat: number, heapMb: number, heapToiDaMb: number, thread: number, cpu: number, taiMay: number
@@ -43,7 +45,7 @@ const choDoc = (g: number) => (g < 60 ? `${g} giây` : g < 3600 ? `${Math.round(
 
     <div>
       <h1 class="text-2xl font-bold text-highlighted">Máy chủ & bảo trì</h1>
-      <p class="mt-1 text-sm text-muted">Game tự ghi một mẫu mỗi 30 giây (giữ 7 ngày). Trang tự tải lại mỗi 30 giây. Bật/tắt/khởi động lại máy chủ ở trang <NuxtLink to="/admin/server" class="text-primary hover:underline">Máy chủ game</NuxtLink>.</p>
+      <p class="mt-1 text-sm text-muted">Game tự ghi một mẫu mỗi 30 giây (giữ 7 ngày). Trang tự tải lại mỗi 30 giây. <a href="#dieu-khien" class="text-primary hover:underline">Bật / tắt / khởi động lại</a> · <a href="#bao-tri" class="text-primary hover:underline">Bảo trì đăng nhập</a>.</p>
     </div>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" title="Không tải được chỉ số máy chủ" :description="loiApi(error)"
@@ -96,6 +98,10 @@ const choDoc = (g: number) => (g < 60 ? `${g} giây` : g < 3600 ? `${Math.round(
       </details>
     </UCard>
 
-    <AdminHethongBaoTri ref="baoTri" />
+    <AdminHethongDieuKhien v-if="me.duoc('/api/admin/server', 'GET')" />
+
+    <div id="bao-tri" class="scroll-mt-20">
+      <AdminHethongBaoTri ref="baoTri" />
+    </div>
   </AdminPage>
 </template>

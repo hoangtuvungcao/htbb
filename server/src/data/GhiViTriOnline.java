@@ -31,6 +31,15 @@ public final class GhiViTriOnline implements Runnable {
     /** Lay mau moi 30 giay - du moi de admin xem, khong qua nang CSDL o CCU lon. */
     public static final long CHU_KY_MS = 30L * 1000L;
 
+    /** Cot client (web /admin/online: Tai khoan, Client). */
+    static final String[] COT_THEM = {
+        "`tai_khoan` VARCHAR(45) NOT NULL DEFAULT ''",
+        "`client` VARCHAR(10) NOT NULL DEFAULT ''",
+        "`chinh_chu` TINYINT NOT NULL DEFAULT 0",
+        "`client_ban` VARCHAR(20) NOT NULL DEFAULT ''",
+        "`platf` VARCHAR(100) NOT NULL DEFAULT ''",
+    };
+
     private static volatile boolean daChay = false;
     private static boolean daBaoLoi = false;
 
@@ -49,6 +58,7 @@ public final class GhiViTriOnline implements Runnable {
     @Override
     public void run() {
         taoBang();
+        GhiClient.taoBangLucKhoiDong();
         while (TeamServer.running) {
             try {
                 ghiMauViTri();
@@ -78,8 +88,20 @@ public final class GhiViTriOnline implements Runnable {
                     + "`x` INT NOT NULL DEFAULT 0,"
                     + "`y` INT NOT NULL DEFAULT 0,"
                     + "`cap_nhat_luc` DATETIME NOT NULL,"
+                    + "`tai_khoan` VARCHAR(45) NOT NULL DEFAULT '',"
+                    + "`client` VARCHAR(10) NOT NULL DEFAULT '',"
+                    + "`chinh_chu` TINYINT NOT NULL DEFAULT 0,"
+                    + "`client_ban` VARCHAR(20) NOT NULL DEFAULT '',"
+                    + "`platf` VARCHAR(100) NOT NULL DEFAULT '',"
                     + "PRIMARY KEY (`charname`)"
                     + ") DEFAULT CHARSET=utf8mb4");
+            // Bang tao tu ban cu (truoc 19/10/2026) thieu 5 cot client: them tung cot, cot da co thi bo qua.
+            for (final String cot : COT_THEM) {
+                try {
+                    st.execute("ALTER TABLE `" + TEN_BANG + "` ADD COLUMN " + cot);
+                } catch (final Exception daCo) {
+                }
+            }
         } catch (final Exception e) {
             baoLoiMotLan(e);
         } finally {
@@ -103,7 +125,8 @@ public final class GhiViTriOnline implements Runnable {
             stXoa.execute("DELETE FROM `" + TEN_BANG + "`");
 
             ps = conn.prepareStatement("INSERT INTO `" + TEN_BANG
-                    + "` (charname, map_id, map_ten, khu, x, y, cap_nhat_luc) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+                    + "` (charname, map_id, map_ten, khu, x, y, cap_nhat_luc, tai_khoan, client, chinh_chu, client_ban, platf)"
+                    + " VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?)");
             final Vector<Char> ds = CharManager.instance.vChars;
             int soDong = 0;
             for (int i = ds.size() - 1; i >= 0; --i) {
@@ -118,6 +141,14 @@ public final class GhiViTriOnline implements Runnable {
                     ps.setInt(4, c.region);
                     ps.setInt(5, c.x);
                     ps.setInt(6, c.y);
+                    final io.Session ss = c.getSession();
+                    final String tk = ss.username == null ? "" : ss.username;
+                    final GhiClient.ThongTin tt = GhiClient.ganNhat(tk);
+                    ps.setString(7, GhiClient.cat(tk, 45));
+                    ps.setString(8, tt == null ? "" : tt.loai);
+                    ps.setInt(9, tt != null && tt.chinhChu ? 1 : 0);
+                    ps.setString(10, tt == null || tt.ban < 0 ? "" : ("v" + tt.ban));
+                    ps.setString(11, tt == null ? "" : tt.platf);
                     ps.addBatch();
                     ++soDong;
                 } catch (final Exception ignored) {

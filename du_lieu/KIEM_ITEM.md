@@ -14,7 +14,7 @@ Tham chiếu treo: **0**. Quy tắc lỗi thời: **0**. Trùng tên: **0**. Tê
 
 Lỗi bị test chặn (cấu hình A + B): **0**.
 
-Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `095b33ef7c4ed663a4e589edd598fce28ce00315`
+Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `ef0eb6fd28d13243de7d01ffd02410a8c7e0f6f3`
 
 ## 1. Cấu hình A: `sv.lau_dai=1`, `sv.he_sinh_thai=0`
 
@@ -687,8 +687,8 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `item:664` | Găng đấm huyền thoại | ok | ok | Sổ tay → Cửa hàng & đổi vật phẩm (Trang bị (Bronzong, xu)); rơi trang bị theo dải cấp (NoiDungLauDai.phatTrangBi) …(+2) | bán cho NPC (OfflineMap.doSellItem); mặc trang bị (doUseItem → MapMuaBan.exchangeItem) |
 | `item:668` | Phiến đá hệ huyền thoại | ok | ok | Sổ tay → Cửa hàng & đổi vật phẩm (Chế tạo (Machamp)); thưởng chuỗi chính (data_quest_moi.itemgift) | bán cho NPC (OfflineMap.doSellItem); mặc trang bị (doUseItem → MapMuaBan.exchangeItem) |
 | `item:675` | Thẻ mua bán | ok | ok | NPC bán trang bị (MessageCreator.ALL_ID_ITEM_NPC_SELL, OfflineMap.doBuyItem); thẻ mua bán: NPC bán + thành tựu VIP | bán cho NPC (OfflineMap.doSellItem); thẻ mua bán (dịch chuyển chợ) |
-| `item:676` | Vé xe giao hàng 2x | ok | ok | boss Sơn Tinh / hộp quà sự kiện | bán cho NPC (OfflineMap.doSellItem); kiểm id vật phẩm (doUseItem) …(+1) |
-| `item:677` | Vé xe giao hàng 3x | ok | ok | boss Sơn Tinh / hộp quà sự kiện | bán cho NPC (OfflineMap.doSellItem); kiểm id vật phẩm (doUseItem) …(+1) |
+| `item:676` | Vé xe giao hàng 2x | ok | ok | boss Sơn Tinh / hộp quà sự kiện | bán cho NPC (OfflineMap.doSellItem); kiểm id vật phẩm (doUseItemGoc) …(+1) |
+| `item:677` | Vé xe giao hàng 3x | ok | ok | boss Sơn Tinh / hộp quà sự kiện | bán cho NPC (OfflineMap.doSellItem); kiểm id vật phẩm (doUseItemGoc) …(+1) |
 | `item:678` | Vé Mê cung 5x | ok | ok | quái vận tiêu / tiến giai 1% (MapCheTao.doAddNewAttBot) | bán cho NPC (OfflineMap.doSellItem); lệnh bài vào Tháp Pokémon (Char.getLenhBaiTranYeu) |
 | `item:679` | Vé Mê cung 6x | ok | ok | quái vận tiêu / tiến giai 1% (MapCheTao.doAddNewAttBot) | bán cho NPC (OfflineMap.doSellItem); lệnh bài vào Tháp Pokémon (Char.getLenhBaiTranYeu) |
 | `item:680` | Vé Mê cung 7x | ok | ok | quái vận tiêu / tiến giai 1% (MapCheTao.doAddNewAttBot) | bán cho NPC (OfflineMap.doSellItem); lệnh bài vào Tháp Pokémon (Char.getLenhBaiTranYeu) |
@@ -750,8 +750,8 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `item:748` | Mặt nạ Yamask | ok | ok | hộp quà Noel / Halloween / Vu Lan (mặt nạ, phi phong) | kiểm id vật phẩm (isMatNaZoombi); mặc trang bị (doUseItem → MapMuaBan.exchangeItem) |
 | `item:749` | Mặt nạ Gengar | ok | ok | hộp quà Noel / Halloween / Vu Lan (mặt nạ, phi phong) | kiểm id vật phẩm (isMatNaPanda); mặc trang bị (doUseItem → MapMuaBan.exchangeItem) |
 | `item:750` | Ruy Băng Hoenn | ok | ok | hộp quà Noel / Halloween / Vu Lan (mặt nạ, phi phong) | kiểm id vật phẩm (createAttributeItemCoat); kiểm id vật phẩm (isPhiPhongHuyenVu) …(+1) |
-| `item:752` | Rương nguyên liệu cao cấp | ok | ok | Shop Đặc Biệt (VIP) | kiểm id vật phẩm (doUseItem); kiểm id vật phẩm (isRuongNguyenLieu) …(+1) |
-| `item:753` | Rương nguyên liệu sơ cấp | ok | ok | Shop Đặc Biệt (VIP) | kiểm id vật phẩm (doUseItem); kiểm id vật phẩm (isRuongNguyenLieu) …(+1) |
+| `item:752` | Rương nguyên liệu cao cấp | ok | ok | Shop Đặc Biệt (VIP) | kiểm id vật phẩm (doUseItemGoc); kiểm id vật phẩm (isRuongNguyenLieu) …(+1) |
+| `item:753` | Rương nguyên liệu sơ cấp | ok | ok | Shop Đặc Biệt (VIP) | kiểm id vật phẩm (doUseItemGoc); kiểm id vật phẩm (isRuongNguyenLieu) …(+1) |
 | `item:754` | Áo dài nam | ok | ok | cửa hàng lượng (data_shop slot thời trang) | kiểm id vật phẩm (isAoDai2021); kiểm id vật phẩm (isAoDaiNam) …(+1) |
 | `item:755` | Áo dài nữ | ok | ok | cửa hàng lượng (data_shop slot thời trang) | kiểm id vật phẩm (isAoDai2021); kiểm id vật phẩm (isAoDaiNu) …(+2) |
 | `item:791` | Bóng đá nam | ok | ok | cửa hàng lượng (data_shop slot thời trang) | kiểm id vật phẩm (isBongDaNam); kiểm id vật phẩm (isBongDaNamAoCam) …(+1) |

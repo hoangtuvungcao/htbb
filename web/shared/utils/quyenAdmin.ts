@@ -84,7 +84,6 @@ export const QUY_TAC_QUYEN: QuyTacQuyen[] = [
   { mau: '/api/admin/reset-toanbo/**', nhom: 'Người chơi', viec: 'Reset toàn máy chủ', doc: SIEU_XEM, ghi: KHONG_AI },
 
   // --- Nội dung web ---
-  { mau: '/api/admin/cms/dong-bo', nhom: 'Hệ thống', viec: 'Chạy đồng bộ dữ liệu game → website', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/cms/**', nhom: 'Nội dung web', viec: 'Tin tức, trang cẩm nang, trang chủ, FAQ, menu, ảnh, lịch sự kiện, cài đặt website', doc: TAT_CA, ghi: BIEN_TAP },
 
   // --- Trò chơi & kinh tế ---
@@ -94,13 +93,11 @@ export const QUY_TAC_QUYEN: QuyTacQuyen[] = [
   { mau: '/api/admin/kinh-te/**', nhom: 'Trò chơi & kinh tế', viec: 'Bảng kinh tế: nguồn vào/ra, lạm phát, người giữ nhiều, cảnh báo', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/xep-hang/**', nhom: 'Trò chơi & kinh tế', viec: 'Bảng xếp hạng công khai: bảng nào hiện, thứ tự, làm mới, danh sách loại trừ, bảng ủng hộ', doc: TAT_CA, ghi: KHONG_AI },
   { mau: '/api/admin/dua-top/**', nhom: 'Trò chơi & kinh tế', viec: 'Đợt đua top và phần thưởng', doc: TAT_CA, ghi: KHONG_AI },
-  { mau: '/api/admin/cauhinh/**', nhom: 'Trò chơi & kinh tế', viec: 'Cấu hình game (bảng cau_hinh)', doc: SIEU_XEM, ghi: KHONG_AI },
 
   // --- Sự kiện ---
   { mau: '/api/admin/sukien/**', nhom: 'Sự kiện', viec: 'Bật/tắt và hẹn lịch sự kiện trong game', doc: TAT_CA, ghi: KHONG_AI },
 
   // --- Giftcode ---
-  { mau: '/api/admin/giftcode/**', nhom: 'Giftcode', viec: 'Giftcode (bảng cũ)', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/giftcode-moi/**', nhom: 'Giftcode', viec: 'Giftcode an toàn (tob_giftcode)', doc: SIEU_XEM, ghi: KHONG_AI },
 
   // --- Nạp tiền ---

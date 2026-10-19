@@ -313,6 +313,15 @@ export function hsChuanHoaTim(q: unknown, kieu: unknown): { q: string, kieu: HsK
   return { q: s, kieu: k }
 }
 
+/**
+ * Trông giống mã máy không — để "Tất cả" tự tìm thêm theo mã máy (client HTBB gửi "j2me-" + 24 ký tự;
+ * máy chủ chỉ nhận chữ/số/-/_ tối đa 64 — data.CamTheoMay.lamSach). Tên tài khoản cũng khớp mẫu này:
+ * tìm thêm chỉ thêm kết quả, không bớt.
+ */
+export function hsGiongMaMay(s: string): boolean {
+  return /^[A-Za-z0-9_-]{8,64}$/.test(s)
+}
+
 /** Trông giống địa chỉ IP (hoặc đầu IP) không — để "Tất cả" tự tìm thêm trong lịch sử đăng nhập. */
 export function hsGiongIp(s: string): boolean {
   return /^\d{1,3}(\.\d{0,3}){1,3}$/.test(s) || (/^[0-9a-f:]+$/i.test(s) && s.includes(':') && s.length >= 3)

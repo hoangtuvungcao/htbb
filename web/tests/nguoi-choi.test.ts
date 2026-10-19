@@ -6,7 +6,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   hsAnEmail, hsAnMa, hsBacPvp, hsCapKyNang, hsChuanHoaTim, hsDatViTriAnToan, hsDocViTri, hsExpLenCapKyNang,
-  hsGiaiMaLauDai, hsGiaiMaSinhThai, hsGiongIp, hsLike, hsNoiDungThuQua, hsPhanTramCap, hsQuyetDinhOnline,
+  hsGiaiMaLauDai, hsGiaiMaSinhThai, hsGiongIp, hsGiongMaMay, hsLike, hsNoiDungThuQua, hsPhanTramCap, hsQuyetDinhOnline,
   hsSoGio, hsTachNhiemVuCu, hsTaoMaQuaRieng, HS_MAP_AN_TOAN,
 } from '../server/utils/hoSoNguoiChoi.ts'
 import { hsTenBanDo } from '../server/utils/tenBanDoNguoiChoi.ts'
@@ -162,4 +162,13 @@ test('tên bản đồ', () => {
   assert.equal(hsTenBanDo(0), 'Pewter')
   assert.equal(hsTenBanDo(105), 'Sân nhà khởi đầu')
   assert.equal(hsTenBanDo(301), 'Bản đồ #301')
+})
+
+test('tìm "Tất cả" nhận ra mã máy client HTBB (j2me-…), bỏ chuỗi quá ngắn / ký tự lạ', () => {
+  assert.equal(hsGiongMaMay('j2me-abcdefghijklmnopqrstuvwx'), true)
+  assert.equal(hsGiongMaMay('abcdef0123456789'), true)
+  assert.equal(hsGiongMaMay('abc'), false)
+  assert.equal(hsGiongMaMay('1.2.3.4'), false)
+  assert.equal(hsGiongMaMay('có dấu cách'), false)
+  assert.equal(hsGiongMaMay('x'.repeat(65)), false)
 })

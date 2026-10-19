@@ -1093,10 +1093,19 @@ public class Database {
             conn = this.getConnection();
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
+            // HE SO NAP CO DINH = 1 (19/10/2026, chu game duyet): he so nhan luong khi nap la don bay
+            // lam phat kinh dien, khong duoc nam cach mot cu bam. Dong 5h_systems.tangnap chi con
+            // de doi chieu: khac 1 thi bao canh bao va BO QUA. Khuyen mai nap (neu co) phai la su
+            // kien co thoi han rieng, khong phai he so toan may chu.
+            TileNap = TILE_NAP_CO_DINH;
             while (rs.next()) {
-                TileNap = rs.getInt("status");
-                System.out.println("TANG NAP TOAN SERVER = " + TileNap);
+                final int trongBang = rs.getInt("status");
+                if (trongBang != TILE_NAP_CO_DINH) {
+                    System.out.println("CANH BAO 5h_systems: tangnap = " + trongBang + " bi bo qua, he so nap co dinh = "
+                            + TILE_NAP_CO_DINH + " (sql/sua_he_so_nap_va_qua_tao_nv.sql)");
+                }
             }
+            System.out.println("TANG NAP TOAN SERVER = " + TileNap + " (co dinh)");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -2336,7 +2345,16 @@ public class Database {
             e.printStackTrace();
         }
     }
-    public static int TileNap = 1;
+    /**
+     * Xu cua nhan vat DAU TIEN cua tai khoan luc tao (nhan vat thu hai tro di: 0); 0 luong, 0 luong
+     * khoa. Du mua vai chuc binh hoi mau / qua Oran (20-41 xu o Chansey) truoc khi nhiem vu tan thu
+     * tra xu (C01.x ~1.000 xu moi buoc). Truoc 19/10/2026: 100.000 xu + 40.000.000 xu qua board_created.
+     */
+    public static final long XU_KHOI_DAU = 5000L;
+
+    /** He so nhan luong khi nap: CO DINH 1, khong doc tu CSDL (xem loadTangNap). */
+    public static final int TILE_NAP_CO_DINH = 1;
+    public static int TileNap = TILE_NAP_CO_DINH;
 
     // Than method (84 dong) da chuyen sang DatabaseXepHang.java. Chu ky GIU NGUYEN.
     public void getBoardNapTien(Char player) {

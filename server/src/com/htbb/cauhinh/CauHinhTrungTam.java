@@ -24,7 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * CAU HINH TRUNG TAM (docs/cau-hinh.md) - MOT dich vu cho moi khoa cau hinh chinh duoc luc chay.
  *
  * NGUON: bang {@code cau_hinh} (CSDL) > server.ini > mac dinh trong danh muc (tools/cauhinh/danh_muc.json ->
- * {@link DanhMucSinh}). Kiem kieu / khoang / lua chon ({@link KiemGiaTri}); gia tri sai bi TU CHOI, giu gia
+ * {@link DanhMucSinh}). Khoa AN (lop co_dinh / luon_bat): may that bo qua CSDL - server.ini > gia tri co dinh
+ * ({@link TinhCauHinh}, docs/cau-hinh.md). Kiem kieu / khoang / lua chon ({@link KiemGiaTri}); gia tri sai bi TU CHOI, giu gia
  * tri tot gan nhat ({@link TinhCauHinh}).
  *
  * NAP LAI NONG: luong "CauHinhTrungTam" moi {@link #CHU_KY_MS} hoi 3 truy van re (phien ban, COUNT/MAX(sua_luc)
@@ -282,6 +283,11 @@ public final class CauHinhTrungTam {
         hienTai = new AnhChup(kq, -1L, System.currentTimeMillis());
         int soDb = 0;
         for (final DinhNghiaKhoa d : DM) {
+            // Khoa an (co dinh / luon bat) cung ghi vao Properties: ma doc cu (TeamServer: sv.lau_dai...) phai thay
+            // gia tri san xuat ke ca khi server.ini thieu dong.
+            if (d.trongCauHinh() && TinhCauHinh.NGUON_CO_DINH.equals(kq.nguon.get(d.khoa))) {
+                p.setProperty(d.khoa, kq.hieuLuc.get(d.khoa));
+            }
             if (d.trongCauHinh() && TinhCauHinh.NGUON_DB.equals(kq.nguon.get(d.khoa))) {
                 p.setProperty(d.khoa, kq.hieuLuc.get(d.khoa));
                 soDb++;
@@ -534,6 +540,10 @@ public final class CauHinhTrungTam {
             final DinhNghiaKhoa d = THEO_KHOA.get(e.getKey());
             if (d == null || !d.trongCauHinh() || d.laChiDoc()) {
                 loi.put(e.getKey(), "khoá không sửa được ở đây");
+                continue;
+            }
+            if (d.laAn() && !choPhepThuNghiem && e.getValue() != null) {
+                loi.put(e.getKey(), "khoá cố định — máy thật luôn dùng \"" + d.macDinh + "\" (đổi khẩn cấp: server.ini)");
                 continue;
             }
             if (e.getValue() == null) {

@@ -25,7 +25,7 @@ Chép `.env.example` thành `.env` (dev); trên VPS là `/etc/htbb/htbb.env` (d�
 | `HTBB_NAP_BAT` + `HTBB_NAP_*`, `HTBB_SEPAY_*`, `HTBB_CASSO_*` | Nạp tiền — mặc định **tắt** |
 | `HTBB_GMAIL_*`, `HTBB_MAIL_FROM_NAME` | Gửi email (Gmail API); lấy refresh token: `node scripts/lay-gmail-refresh-token.mjs` |
 | `HTBB_UPLOAD_DIR` | Thư mục ảnh/tệp tải lên (mặc định `./uploads`) |
-| `HTBB_DIR`, `HTBB_WEB_SRC_DIR` | Đường dẫn monorepo cho `/admin/dong-bo` và script đồng bộ dữ liệu |
+| `HTBB_DIR`, `HTBB_WEB_SRC_DIR` | Đường dẫn monorepo cho script đồng bộ dữ liệu (`npm run dong-bo-du-lieu`, chạy lúc build — trang `/admin/dong-bo` đã bỏ) |
 
 Giải thích đầy đủ từng biến nằm trong `.env.example`. Các khoá cấu hình game (`cau_hinh`): `docs/cau-hinh.md`.
 

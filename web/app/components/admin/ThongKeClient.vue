@@ -72,16 +72,17 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
     </div>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="loiApi(error)" />
-    <UAlert v-else-if="data?.bangChuaCo" color="warning" variant="subtle" icon="i-lucide-database">
+    <UAlert v-else-if="data?.bangChuaCo" color="info" variant="subtle" icon="i-lucide-database">
       <template #description>
-        Chưa có bảng <code>tob_client_dang_nhap</code> — server game tự tạo ở lần đăng nhập thành công đầu
-        tiên sau khi chạy bản có tính năng này.
+        Chưa có dữ liệu client: máy chủ game đang chạy bản chưa ghi bảng <code>tob_client_dang_nhap</code>.
+        Cập nhật <code>htbb-server.jar</code> rồi khởi động lại (bảng được tạo ngay lúc khởi động), hoặc chạy
+        <code>sql/them_bang_tob_client_dang_nhap.sql</code>. Số liệu bắt đầu từ lần đăng nhập kế tiếp.
       </template>
     </UAlert>
     <UAlert v-else-if="data?.loiDoc" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="`Lỗi đọc dữ liệu: ${data.loiDoc}`" />
 
     <!-- Bản ngoài: để soát và khoá -->
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
+    <UCard v-if="!data?.bangChuaCo" :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <div class="space-y-1">
           <h3 class="flex items-center gap-2 font-semibold text-highlighted">
@@ -129,7 +130,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
       </UTable>
     </UCard>
 
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
+    <UCard v-if="!data?.bangChuaCo" :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <h3 class="font-semibold text-highlighted">
           Số tài khoản đã vào game theo client
@@ -172,7 +173,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
       </div>
     </UCard>
 
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
+    <UCard v-if="!data?.bangChuaCo" :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <h3 class="font-semibold text-highlighted">
           Đăng nhập gần đây <span class="text-sm font-normal text-muted">(200 dòng mới nhất)</span>

@@ -14,6 +14,9 @@ interface CotLog { key: string, nhan: string, so: boolean }
 interface LogResp {
   bang: string
   bangThat: string
+  /** Bảng tách theo kỳ (tuần / tháng): danh sách kỳ có dữ liệu, mới nhất trước. */
+  dsKy: { bang: string, nhan: string }[]
+  ky: string
   dsBang: { key: string, ten: string }[]
   cauHinh: { ten: string, mota: string, cot: CotLog[], loc: string | null, loc2: string | null, nhanLoc: string | null, nhanLoc2: string | null }
   loc: string
@@ -33,7 +36,7 @@ const qs = (k: string) => (typeof route.query[k] === 'string' ? route.query[k] a
 const { data, status, error, refresh } = await useAsyncData(
   'admin-log',
   () => api<LogResp>('/api/admin/log', {
-    query: { bang: qs('bang'), loc: qs('loc'), loc2: qs('loc2'), trang: qs('trang') || '1' },
+    query: { bang: qs('bang'), ky: qs('ky'), loc: qs('loc'), loc2: qs('loc2'), trang: qs('trang') || '1' },
   }),
   { server: false, watch: [() => route.fullPath] },
 )
@@ -67,11 +70,15 @@ function doiBang(v: string) {
 function boLoc() {
   di({ bang: bang.value })
 }
+function doiKy(v: string) {
+  di({ bang: bang.value, ky: v, loc: loc.value.trim(), loc2: loc2.value.trim() })
+}
+const dsKyItems = computed(() => (data.value?.dsKy ?? []).map(k => ({ label: k.nhan, value: k.bang })))
 function sangTrang(t: number) {
   // Sang trang theo bộ lọc ĐANG ÁP DỤNG (data), không theo ô đang gõ dở.
   const d = data.value
   if (!d) return
-  di({ bang: d.bang, loc: d.loc, loc2: d.loc2, trang: t })
+  di({ bang: d.bang, ky: d.ky, loc: d.loc, loc2: d.loc2, trang: t })
 }
 
 const dsBangItems = computed(() => (data.value?.dsBang ?? []).map(b => ({ label: b.ten, value: b.key })))
@@ -105,6 +112,9 @@ const tenRong = (v: string) => v === '' || v === '""'
       <form class="flex flex-wrap items-end gap-3" @submit.prevent="xem">
         <UFormField label="Bảng" class="min-w-56">
           <USelect :model-value="bang" :items="dsBangItems" class="w-full" @update:model-value="(v: any) => doiBang(String(v))" />
+        </UFormField>
+        <UFormField v-if="dsKyItems.length" label="Kỳ" class="min-w-44">
+          <USelect :model-value="data?.ky" :items="dsKyItems" class="w-full" @update:model-value="(v: any) => doiKy(String(v))" />
         </UFormField>
         <UFormField v-if="data?.cauHinh.loc" :label="data.cauHinh.nhanLoc ?? 'Lọc'">
           <UInput v-model="loc" placeholder="tên chính xác" />
@@ -142,7 +152,7 @@ const tenRong = (v: string) => v === '' || v === '""'
       <template #header>
         <h3 class="flex flex-wrap items-center gap-2 font-semibold text-highlighted">
           {{ data.cauHinh.ten }} · <code class="text-sm">{{ data.bangThat }}</code>
-          <span v-if="data.bangThat !== data.bang" class="text-xs font-normal text-muted">(view lọc sẵn từ {{ data.bang }})</span>
+          <span v-if="data.bangThat !== data.bang && !data.ky" class="text-xs font-normal text-muted">(view lọc sẵn từ {{ data.bang }})</span>
         </h3>
       </template>
 

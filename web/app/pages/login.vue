@@ -16,6 +16,7 @@ const errors = ref<string[]>([])
 /** Đăng nhập bị từ chối vì tài khoản bị khoá -> chỉ đường khiếu nại qua Zalo. */
 const biKhoa = ref(false)
 const { coZalo, link: linkHoTro } = useHoTro()
+const { data: siteCfg } = useSite()
 
 async function submit() {
   errors.value = []
@@ -117,11 +118,11 @@ async function submit() {
           </template>
         </UInput>
       </UFormField>
-      <p class="text-end text-sm">
+      <p v-if="siteCfg?.quenMatKhau" class="text-end text-sm">
         <NuxtLink to="/quen-mat-khau" class="text-primary hover:underline">Quên mật khẩu?</NuxtLink>
       </p>
       <p class="text-sm text-muted">
-        Cần hỗ trợ tài khoản? <ULink :to="linkHoTro" :target="coZalo ? '_blank' : undefined" class="text-primary hover:underline">{{ coZalo ? 'Nhắn Zalo hỗ trợ' : 'Xem kênh hỗ trợ' }} ↗</ULink>
+        {{ siteCfg?.quenMatKhau ? 'Cần hỗ trợ tài khoản?' : 'Quên mật khẩu hoặc cần hỗ trợ tài khoản?' }} <ULink :to="linkHoTro" :target="coZalo ? '_blank' : undefined" class="text-primary hover:underline">{{ coZalo ? 'Nhắn Zalo hỗ trợ' : 'Xem kênh hỗ trợ' }} ↗</ULink>
       </p>
       <!-- Dùng prop label (không dùng slot) để ui.label áp vào: nút block đẩy icon sang
            mép phải bằng ms-auto, chữ phải tự giãn ra mới nằm giữa được. -->

@@ -2,7 +2,7 @@
 # ============================================================
 #  DIEU KHIEN BAT/TAT SERVER GAME TU WEB ADMIN
 #
-#  Web admin (HTBB-Web /admin/server) khong SSH/exec duoc vao VPS - no chi GHI
+#  Web admin (/admin/he-thong, khoi Bat/tat) khong SSH/exec duoc vao VPS - no chi GHI
 #  "trang thai mong muon" vao bang dieu_khien_server (htbb_db). Script nay la
 #  canh gac CHAY NGOAI JVM game, doc bang do roi tu goi systemctl thay ban.
 #  Ly do bat buoc phai co canh gac rieng (khong the lam trong Java server):

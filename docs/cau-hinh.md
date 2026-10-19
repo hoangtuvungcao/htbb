@@ -7,7 +7,23 @@ Tài liệu tra cứu mọi khoá cấu hình của máy chủ game và website.
 | **Bảng `cau_hinh`** (CSDL `htbb_db`) | mọi khoá trong danh mục cấu hình trung tâm: tỉ lệ rơi, EXP, sự kiện, chống spam, công tắc tính năng… | trang web **/admin → Cấu hình hệ thống** (có lịch sử, hoàn tác) |
 | **`server.ini`** (cạnh `htbb-server.jar`) | khoá khởi động: cổng, kết nối CSDL, đường dẫn log, cờ cũ bắt buộc; đồng thời là giá trị khởi tạo / dự phòng cho khoá trong danh mục | VPS: sửa [`vps/server.ini.tmpl`](../vps/server.ini.tmpl) rồi commit; máy nhà: sửa tay |
 
-Thứ tự ưu tiên: **bảng `cau_hinh` > `server.ini` > mặc định trong danh mục.**
+Thứ tự ưu tiên: **bảng `cau_hinh` > `server.ini` > mặc định trong danh mục** — riêng **khoá ẩn** (cố định / luôn bật,
+xem dưới) máy thật bỏ qua bảng `cau_hinh`: **`server.ini` > giá trị cố định**.
+
+**Phân loại (19/10/2026).** Mỗi khoá có trường `lop` trong `danh_muc.json`:
+
+- **Chỉnh trên web** (`chinh`) — thứ người vận hành thật sự chỉnh: tỉ lệ rơi / EXP, giờ chiếm Gym, giftcode, công tắc bán
+  hàng nạp tiền, Thành viên / kích hoạt, giới hạn Tự động đánh, giá hồi sinh, bảo trì, đăng ký, link, GM. Hiện trên
+  **/admin/cau-hinh-he-thong** theo 6 nhóm, mỗi ô có mặc định và nút *Về mặc định*.
+- **Cố định** (`co_dinh`) — giá trị sản xuất không nên đổi tuỳ tiện: nội bộ chống DoS / spam / nhật ký, ngưỡng gói tin,
+  công thức kinh tế (thuế, phí, giao hàng), trần chỉ số, luật an toàn Tự động đánh / hồi sinh, cờ sự kiện cũ,
+  khoá thử nghiệm. **Ẩn** khỏi trang; máy thật luôn chạy giá trị trong danh mục (đã đặt bằng đúng giá trị VPS đang chạy).
+- **Luôn bật** (`luon_bat`) — công tắc tính năng cốt lõi (dài hạn, hệ sinh thái, Gym, Hầm Ngục, Tự động đánh, hồi sinh,
+  chống spam, trần chỉ số, hoàn tiền…): luôn `1`, ẩn.
+
+Đổi khẩn cấp một khoá ẩn: thêm `khoa=gia_tri` vào [`vps/server.ini.tmpl`](../vps/server.ini.tmpl) (máy nhà: `server.ini`)
+rồi khởi động lại máy chủ game. Máy thử (`sv.cho_phep_thu_nghiem=1`; web: dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc
+`cau_hinh` cho mọi khoá và trang có nút *Hiện khoá cố định*. Bảng đầy đủ ở mục 4 (sinh từ danh mục).
 
 Vận hành hằng ngày (đổi cấu hình từ web, khởi động lại an toàn): [van-hanh.md](van-hanh.md). Kiến trúc của
 dịch vụ cấu hình trung tâm: [kien-truc.md](kien-truc.md). Biến môi trường của website: `web/.env.example` và
@@ -20,7 +36,7 @@ dịch vụ cấu hình trung tâm: [kien-truc.md](kien-truc.md). Biến môi tr
 | Danh mục khoá (nguồn duy nhất) | [`tools/cauhinh/danh_muc.json`](../tools/cauhinh/danh_muc.json) |
 | Bộ sinh | [`tools/cauhinh/sinh_cau_hinh.py`](../tools/cauhinh/sinh_cau_hinh.py) → `server/src/com/htbb/cauhinh/DanhMucSinh.java`, `sql/pokemon_cau_hinh_trung_tam.sql`, `web/shared/utils/cauHinhTrungTam.gen.ts` và bảng ở mục 4 của tài liệu này |
 | Dịch vụ máy chủ | `server/src/com/htbb/cauhinh/CauHinhTrungTam.java` (+ `TinhCauHinh`, `KiemGiaTri`, `ApDungMacDinh`, `CongTac`) |
-| Trang web | `/admin/cau-hinh-he-thong`, API `/api/admin/cau-hinh-he-thong/**` |
+| Trang web | `/admin/cau-hinh-he-thong` (trang cấu hình DUY NHẤT; trang cũ `/admin/cauhinh` đã gỡ), API `/api/admin/cau-hinh-he-thong/**` |
 | Bộ ví dụ kiểm chung Java ↔ web | [`tools/cauhinh/vi_du_kiem.tsv`](../tools/cauhinh/vi_du_kiem.tsv) |
 
 Thêm / sửa khoá: chỉnh `danh_muc.json` → `python3 tools/cauhinh/sinh_cau_hinh.py` ở gốc repo (kiểm lệch:
@@ -307,64 +323,52 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **203 khoá** trong **14 nhóm**. Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
+Tổng cộng **203 khoá** trong **14 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
-### Chế độ game (`che_do`)
+| Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
+|---|---|---|---|
+| **Chỉnh trên web** (`chinh`) | 63 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 119 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
-Bật/tắt các chế độ lớn. Hầu hết cần khởi động lại máy chủ (đổi bảng EXP, schema, nội dung).
+Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `sv.lau_dai` | Thiết kế dài hạn | cờ 0/1 | `0` |  | khởi động lại | game | 1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động. |
-| `sv.he_sinh_thai` | Hệ sinh thái | cờ 0/1 | `0` |  | khởi động lại | game | 1 = bật hệ sinh thái thế giới (data_hst_*, tob_hst_*). |
-| `sv.tran_cap_theo_mua` | Trần cấp theo mùa | cờ 0/1 | `0` |  | khởi động lại | game | 1 = bật lại trần cấp 60→100 theo ngày khai trương (thiết kế cũ). 0 = không trần, lên cấp chậm + vật phẩm tăng tốc. |
-| `sv.ngay_khai_truong` | Ngày khai trương | ngày | *(trống)* |  | khởi động lại | game | yyyy-MM-dd — ngày 0 của lịch mùa. Để trống = theo lau_dai.ngay_khai_truong game tự ghi. |
-| `sv.tua_nhanh_ngay` | Tua nhanh thử nghiệm (ngày) | số | `0` | 0..3650 | khởi động lại | game | Cộng thêm N ngày vào ngày hiện tại của lịch dài hạn (thử mùa, vé mùa, lịch). chỉ máy thử — máy thật luôn 0. (máy thật chỉ nhận mặc định) |
+### Khoá chỉnh trên web (63)
 
-### Kinh tế (`kinh_te`)
+#### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
-Tỉ lệ rơi, EXP, thuế chợ, phí, ngân sách giftcode. Áp dụng ngay.
+Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, phí và công thức kinh tế cốt lõi đã cố định (không hiện ở đây).
 
 | Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|---|
-| `sv.tileXu` | Tỉ lệ rơi xu (%) | số | `10` | 0..100 | ngay | game | % so với tỉ lệ gốc. 100 = như cũ, 0 = tắt. |
-| `sv.tileLuong` | Tỉ lệ rơi lượng (%) | số | `20` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
-| `sv.tileItemSuKien` | Tỉ lệ rơi đồ sự kiện (%) | số | `20` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
-| `sv.tilePotion` | Tỉ lệ rơi bình thuốc (%) | số | `30` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
-| `sv.tileNgoc` | Tỉ lệ rơi ngọc (%) | số | `30` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
-| `sv.tileItem` | Tỉ lệ rơi đồ thường (%) | số | `20` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
-| `sv.chiaXuRoi` | Chia số xu rơi | số | `10` | 1..1000000 | ngay | game | Xu rơi = xu gốc chia số này (tối thiểu 1). |
+| `sv.tileXu` | Tỉ lệ rơi xu (%) | số | `4` | 0..100 | ngay | game | % so với tỉ lệ gốc. 100 = như cũ, 0 = tắt. |
+| `sv.tileLuong` | Tỉ lệ rơi lượng (%) | số | `10` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
+| `sv.tileItemSuKien` | Tỉ lệ rơi đồ sự kiện (%) | số | `10` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
+| `sv.tilePotion` | Tỉ lệ rơi bình thuốc (%) | số | `14` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
+| `sv.tileNgoc` | Tỉ lệ rơi ngọc (%) | số | `14` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
+| `sv.tileItem` | Tỉ lệ rơi đồ thường (%) | số | `10` | 0..100 | ngay | game | % so với tỉ lệ gốc. |
 | `sv.tileExpLv50` | EXP quái từ cấp 50 (%) | số | `10` | 0..100 | ngay | game | % so với EXP gốc. |
 | `sv.tileExpDuoiLv50` | EXP quái dưới cấp 50 (%) | số | `50` | 0..100 | ngay | game | % so với EXP gốc. |
-| `sv.expvantieu` | Thưởng EXP giao hàng | cờ 0/1 | `0` |  | ngay | game | 1 = bật. |
-| `sv.Luckyexp` | Ô EXP rương may mắn | cờ 0/1 | `0` |  | ngay | game | 1 = bật. |
-| `sv.ExpQua` | EXP cây ăn quả | cờ 0/1 | `0` |  | ngay | game | 1 = bật (cũng khoá nút tăng tốc cây). |
-| `sv.giaXuBoHoaDoVuLan` | Giá xu bó hoa Vu Lan | số | `150000` | 0..2000000000 | ngay | game | Số xu. |
-| `sv.tieuNguongMau` | Giao hàng: ngưỡng màu khi nhận | danh sách số | `60189,89389,99689,99989,99999` | 0..100000; 5 phần tử | ngay | game | 5 ngưỡng cộng dồn trên thang 100000 (Trắng..Vàng, còn lại Tím). |
-| `sv.tieuHeSoExp` | Giao hàng: hệ số EXP chung (%) | số | `200` | 0..10000 | ngay | game | 200 = ×2. |
-| `sv.tieuPcExpTheoMau` | Giao hàng: % EXP theo màu | danh sách số | `50,100,150,250,250,500,0` | 0..100000; 7 phần tử | ngay | game | 7 số (Trắng..Tím, số cuối không dùng). |
-| `sv.tieuPermilleCaoCap` | Giao hàng: phần nghìn EXP cao cấp | danh sách số | `50,70,90,35,55,75,5,25,45` | 0..1000; 9 phần tử | ngay | game | 9 số (3 khung cấp × 3 màu). |
-| `sv.doiTieuNguongMauXu` | Đổi hàng (xu): ngưỡng màu | danh sách số | `50545,85545,98945,99945,99995` | 0..100000; 5 phần tử | ngay | game | 5 ngưỡng cộng dồn. |
-| `sv.doiTieuNguongMauLuong` | Đổi hàng (lượng): ngưỡng màu | danh sách số | `22890,52890,96890,99890,99990` | 0..100000; 5 phần tử | ngay | game | 5 ngưỡng cộng dồn. |
 | `roi.xu.phan_tram` | Tỉ lệ một quái rơi xu (%) — dài hạn | số | `30` | 0..100 | ngay | game | Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi. |
 | `roi.da_nang_cap.phan_nghin` | Tỉ lệ rơi đá nâng cấp (‰) | số | `15` | 0..200 | ngay | game | Phần nghìn mỗi quái khi lệch cấp ≤ 5. |
 | `exp.nang_luong_phut` | Phút năng lượng 100% / ngày | số | `90` | 0..1440 | ngay | game | Số phút EXP/rơi đầy đủ mỗi ngày. |
-| `exp.nang_luong_tich_phut` | Năng lượng tích luỹ tối đa (phút) | số | `180` | 0..4320 | ngay | game | Phút năng lượng dồn tối đa khi không chơi. |
-| `thue.cho` | Thuế chợ ký gửi (%) | số | `6` | 0..50 | ngay | game | Đốt khỏi nền kinh tế khi bán được. |
-| `thue.dang_ban` | Phí đăng bán (%) | số | `1` | 0..20 | ngay | game | Đốt, không hoàn; tối thiểu 1 xu. |
-| `thue.chuyen_luong` | Phí chuyển lượng (%) | số | `5` | 0..50 | ngay | game | Làm tròn lên, tối thiểu 1 khi > 0. |
-| `thue.tran_chuyen_xu_gio` | Trần chuyển xu / ngày (giờ thu nhập) | số | `5` | 0..100 | ngay | game | Bội số thu nhập 1 giờ ở cấp người gửi. |
-| `phi.dich_chuyen_phan_tram_gio` | Phí dịch chuyển (% thu nhập 1 giờ) | số | `3` | 0..100 | ngay | game | Tối thiểu 1 xu. |
-| `phi.hoi_sinh_phan_tram_gio` | Phí hồi sinh (% thu nhập 1 giờ) | số | `5` | 0..100 | ngay | game | Tối thiểu 1 xu. |
-| `phi.ban_npc_phan_tram` | Giá bán đồ cho NPC (% giá) | số | `5` | 0..100 | ngay | game | Không cộng theo cấp cường hoá. |
-| `tieu_hao.sua_do_phan_tram_thu_nhap` | Trần phí sửa đồ (% thu nhập 1 giờ / món) | số | `8` | 0..100 | ngay | game | Phí sửa = min(công thức cũ, trần × số món). |
+
+#### Sự kiện & giftcode (`su_kien`)
+
+Giờ chiếm Gym, trần & ngân sách giftcode. Bật/tắt từng sự kiện ở trang Sự kiện (bảng tob_su_kien).
+
+| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|---|
 | `giftcode.toi_da_thang` | Giftcode dài hạn tối đa / tháng | số | `2` | 0..20 | ngay | game | Số giftcode một Pokémon nhập được mỗi tháng. |
 | `giftcode.gia_tri_toi_da` | Trần giá trị một giftcode | số | `30` | 0..100000 | ngay | cả hai | Điểm giá trị tối đa của một mã (GiftcodeAnToanLogic). |
 | `giftcode.ngan_sach_thang` | Ngân sách giftcode / tháng | số | `20000` | 0..100000000 | ngay | cả hai | Tổng giá trị giftcode được phát mỗi tháng. |
+| `sv.gioChiemThanh` | Giờ chiếm Gym | số | `-1` | -1..23 | ngay | game | 0–23, −1 = lịch chuẩn 21h thứ 3 + thứ 7. |
+| `sv.phutChiemThanh` | Phút chiếm Gym | số | `-1` | -1..59 | ngay | game | 0–59. |
+| `sv.ngayChiemThanh` | Ngày chiếm Gym | chuỗi | *(trống)* | ≤ 64 ký tự | ngay | game | Mon,Tue,... hoặc yyyy-MM-dd; trống = mỗi ngày. |
 
-### Nạp tiền (`nap_tien`)
+#### Nạp tiền (`nap_tien`)
 
-Công tắc bán từng loại sản phẩm, hoàn tiền, trần chi tiêu. Web vẫn KHOÁ (fail closed) khi thiếu HTBB_NAP_BAT, giấy phép hoặc bí mật cổng thanh toán — các giá trị đó nằm trong biến môi trường, không ở CSDL.
+Công tắc bán từng loại sản phẩm, trần chi tiêu. Web vẫn KHOÁ (fail closed) khi thiếu HTBB_NAP_BAT, giấy phép hoặc bí mật cổng thanh toán — các giá trị đó nằm trong biến môi trường, không ở CSDL.
 
 | Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|---|
@@ -376,12 +380,10 @@ Công tắc bán từng loại sản phẩm, hoàn tiền, trần chi tiêu. Web
 | `nap.ve_mua.bat` | Bán vé mùa cao cấp | cờ 0/1 | `1` |  | ngay | web | 0 = web ngừng tạo đơn vé mùa mới. |
 | `thanh_vien.ban_bat` | Bán Thành viên HTBB | cờ 0/1 | `0` |  | ngay | cả hai | 1 = mở bán (còn cần giấy phép + cổng an toàn). Cùng khoá với trang Thành viên. |
 | `nap.tang_toc.bat` | Bán vật phẩm tăng tốc (bằng lượng, trong game) | cờ 0/1 | `1` |  | ngay | game | 0 = cửa hàng lượng trong game ngừng bán vé EXP / bùa thể lực / ủy thác / kẹo hiếm bản cao cấp. |
-| `nap.hoan_tien.thu_cong` | Cho phép hoàn tiền thủ công | cờ 0/1 | `1` |  | ngay | web | 0 = khoá nút Hoàn tiền / Chargeback ở trang Nạp tiền. |
-| `nap.hoan_tien.tu_dong` | Tự động thu hồi khi hoàn đơn đã cộng | cờ 0/1 | `1` |  | ngay | game | 1 = máy chủ game tự chuyển lượng thành nợ / trừ thẻ tháng / gỡ vé mùa cho đơn 'chờ thu hồi'. 0 = đơn đứng chờ, xử lý tay. |
 | `tran_tuan_vnd` | Trần nạp / tuần / tài khoản (VND) | số | `1000000` | 0..5000000 | ngay | web | 0 = mặc định 1.000.000 đ. Bị kẹp ≤ 5.000.000. (bảng `nap_cau_hinh`) |
 | `tran_thang_vnd` | Trần nạp / tháng / tài khoản (VND) | số | `2000000` | 0..5000000 | ngay | web | 0 = mặc định 2.000.000 đ. Bị kẹp ≤ 5.000.000. (bảng `nap_cau_hinh`) |
 
-### Thành viên (`thanh_vien`)
+#### Thành viên & kích hoạt (`thanh_vien`)
 
 Thành viên HTBB theo tài khoản (trả phí) và Kích hoạt tài khoản (miễn phí): tính năng bị khoá, giá, thời hạn, chặn đăng nhập.
 
@@ -396,218 +398,260 @@ Thành viên HTBB theo tài khoản (trả phí) và Kích hoạt tài khoản (
 | `kich_hoat.chan_dang_nhap` | Chặn đăng nhập tài khoản chưa kích hoạt | cờ 0/1 | `0` |  | ngay | cả hai | 0 (mặc định) = chưa kích hoạt vẫn vào chơi, chỉ bị khoá các tính năng dưới. 1 = hành vi cũ: không vào được game. Chỉ có tác dụng khi sv.EnableAvtiveCheck=1. |
 | `kich_hoat.chuc_nang` | Tính năng khoá khi chưa kích hoạt | danh sách chuỗi | `giao_dich,chat_the_gioi,cho,chuyen_luong,nhan_tang,giftcode` | `giao_dich`, `nhan_tang`, `chat_the_gioi`, `cho`, `cho_sinh_thai`, `chuyen_luong`, `bang`, `pvp_xep_hang`, `giftcode`, `qua_online`, `gui_thu` | ngay | cả hai | Cùng cổng với Thành viên: bị chặn nếu (cần kích hoạt và chưa kích hoạt) hoặc (cần Thành viên và chưa là Thành viên). |
 | `kich_hoat.thong_bao` | Câu thông báo khi bị khoá vì chưa kích hoạt | chuỗi | *(trống)* | ≤ 250 ký tự | ngay | cả hai | Trống = câu mặc định (chỉ tới /kichhoat). Thay được {ten} {web}. |
-| `kich_hoat.thanh_vien_la_kich_hoat` | Thành viên được coi như đã kích hoạt | cờ 0/1 | `1` |  | ngay | cả hai | 1 (mặc định) = tài khoản là Thành viên HTBB không bị khoá vì chưa kích hoạt (gộp hai bậc làm một nếu muốn). |
 
-### Đăng ký (`dang_ky`)
+#### Tự động đánh & hồi sinh (`tu_dong`)
 
-Đăng ký trong game / trên web, giới hạn Pokémon.
+Giới hạn Tự động đánh (chỉ khi online) và giá hồi sinh tại chỗ. Luật an toàn (cấm ở PvP / Gym / boss, nhịp, bán kính…) đã cố định.
 
 | Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|---|
+| `tu_dong.gio_moi_ngay` | Giờ Tự động đánh mỗi ngày | số | `5` | 0..24 | ngay | game | Miễn phí, chỉ tính lúc online và đang bật. Đặt lại lúc 00:00. |
+| `tu_dong.gio_them_the_thang` | Giờ cộng thêm khi có thẻ tháng | số | `2` | 0..24 | ngay | game | Cộng vào giờ mỗi ngày khi thẻ tháng còn hạn. |
+| `tu_dong.cap_toi_thieu` | Cấp tối thiểu để bật | số | `0` | 0..1000 | ngay | game | 0 = mọi cấp. Dưới cấp này bấm Bắt đầu thì được báo rõ cấp cần. |
+| `tu_dong.danh_boss` | Cho đánh boss | cờ 0/1 | `0` |  | ngay | game | 0 = không chọn boss / Pokémon huyền thoại làm mục tiêu (đánh trúng boss vẫn dừng theo tu_dong.tat_khi_pvp). |
+| `tu_dong.map_cam` | Bản đồ cấm Tự động đánh thêm (id) | chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Ngoài sàn đấu / Gym / chiến trường / mê cung / bản đồ boss. Cách nhau dấu phẩy; trống = không. |
+| `tu_dong.hoi_sinh_tra_phi` | Cho tự dùng vật phẩm hồi sinh trả phí | cờ 0/1 | `0` |  | ngay | game | 1 = khi người chơi đồng ý riêng (bảng Tự động: Tự hồi sinh "cả vật phẩm lượng") mới được tự dùng Thuốc hồi sinh tối đa (lượng khoá). 0 = chỉ Thuốc hồi sinh thường; không bao giờ tự trả xu / lượng. |
+| `hoi_sinh.xu_phan_tram_gio` | Phí xu tại chỗ (% thu nhập 1 giờ) | số | `40` | 0..1000 | ngay | game | Theo cấp (ThongSoLauDai.xuMoiGio). 40 = 0,4 giờ cày. Nhân hệ số gục lặp. |
+| `hoi_sinh.xu_toi_thieu` | Phí xu tại chỗ tối thiểu | số | `200` | 0..100000000 | ngay | game | Xu. |
+| `hoi_sinh.luong_khoa` | Phí lượng khoá tại chỗ | số | `2` | 0..1000 | ngay | game | 0 = tắt lựa chọn trả lượng khoá. Nhân hệ số gục lặp (làm tròn lên). |
+| `hoi_sinh.luong_khoa_toi_da` | Trần phí lượng khoá | số | `10` | 0..1000 | ngay | game | Lượng khoá tối đa một lần. |
+| `hoi_sinh.hoi_chieu_giay` | Hồi chiêu hồi sinh tại chỗ (giây) | số | `60` | 0..3600 | ngay | game | Giữa hai lần hồi sinh tại chỗ. Về Trung tâm luôn được. |
+| `hoi_sinh.tan_thu_cap` | Bảo vệ tân thủ dưới cấp | số | `15` | 0..100 | ngay | game | Dưới cấp này: không mất EXP / độ bền / Mệt mỏi, hồi sinh tại chỗ miễn phí. |
+| `hoi_sinh.gia_thuoc_phan_tram_gio` | Giá Thuốc hồi sinh (% thu nhập 1 giờ) | số | `30` | 0..1000 | ngay | game | Giá ở cửa hàng NPC theo cấp người mua (cùng bậc phí xu tại chỗ). 0 = giá gốc data_potion. |
+| `hoi_sinh.gia_thuoc_toi_thieu` | Giá Thuốc hồi sinh tối thiểu | số | `407` | 0..100000000 | ngay | game | Xu / viên (không thấp hơn giá gốc). |
+
+#### Máy chủ, đăng ký & bảo trì (`bao_tri`)
+
+Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, GM, ngày khai trương.
+
+| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|---|
+| `sv.ngay_khai_truong` | Ngày khai trương | ngày | *(trống)* |  | khởi động lại | game | yyyy-MM-dd — ngày 0 của lịch mùa. Để trống = theo lau_dai.ngay_khai_truong game tự ghi. |
 | `sv.dangKyTrongGame` | Đăng ký trong game | cờ 0/1 | `1` |  | ngay | game | 0 = nút Đăng ký trong game báo 'đăng ký trên web'. |
 | `sv.dangKyTuKichHoat` | Tự kích hoạt tài khoản đăng ký trong game | lựa chọn | `web` | `web`, `1`, `0` | ngay | game | web = theo cấu hình web (web.autoActivate). |
-| `sv.dangKyTreMs` | Trễ phản hồi đăng ký (ms) | số | `800` | 0..5000 | ngay | game | Làm chậm dò tài khoản. |
-| `sv.dangKyCsdlTaiKhoan` | CSDL tài khoản | chuỗi | `account` |  | khởi động lại | game | Tên database chứa team_user. |
 | `dang_ky.web.bat` | Đăng ký trên web | cờ 0/1 | `1` |  | ngay | web | 0 = trang Đăng ký từ chối tài khoản mới. |
 | `sv.maxCharPerAccount` | Số Pokémon tối đa / tài khoản | số | `3` | 1..3 | ngay | game | Client hỗ trợ tối đa 3. |
-
-### Sự kiện (`su_kien`)
-
-Lịch hẹn sự kiện, World Cup, chiếm Gym. Bật/tắt từng sự kiện ở trang Sự kiện (bảng tob_su_kien).
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `sv.suKienTuKhoiDongLai` | Tự khởi động lại khi đổi sự kiện | cờ 0/1 | `1` |  | ngay | game | 1 = lệnh bật/tắt sự kiện có hẹn sẽ tự khởi động lại máy chủ. |
-| `sv.suKienGomGiay` | Gom lệnh sự kiện (giây) | số | `120` | 30..3600 | ngay | game | Gom nhiều lệnh thành một lần khởi động lại. |
-| `sv.suKienBaoTruocGiay` | Báo trước khi đổi sự kiện (giây) | số | `60` | 10..600 | ngay | game |  |
-| `sv.worldCupBatDau` | World Cup bắt đầu | ngày giờ | *(trống)* |  | ngay | game | yyyy-MM-dd HH:mm:ss. Trống = tắt. |
-| `sv.worldCupKetThuc` | World Cup kết thúc | ngày giờ | *(trống)* |  | ngay | game | Trống = tắt. |
-| `sv.worldCupHanNhanQua` | World Cup hạn nhận quà | ngày giờ | *(trống)* |  | ngay | game | Trống = tắt. |
-| `sv.gioChiemThanh` | Giờ chiếm Gym | số | `-1` | -1..23 | ngay | game | 0–23, −1 = lịch chuẩn 21h thứ 3 + thứ 7. |
-| `sv.phutChiemThanh` | Phút chiếm Gym | số | `0` | -1..59 | ngay | game | 0–59. |
-| `sv.ngayChiemThanh` | Ngày chiếm Gym | chuỗi | *(trống)* | ≤ 64 ký tự | ngay | game | Mon,Tue,... hoặc yyyy-MM-dd; trống = mỗi ngày. |
-| `sv.isSuKienTrungThul2016` | Sự kiện cũ: Trung thu 2016 | cờ 0/1 | `0` |  | khởi động lại | game | Cờ sự kiện gốc (đọc lúc khởi động). |
-| `sv.isSuKienTet2017` | Sự kiện cũ: Tết 2017 | cờ 0/1 | `0` |  | khởi động lại | game |  |
-| `sv.isSuKienGioTo2016` | Sự kiện cũ: Giỗ Tổ 2016 | cờ 0/1 | `0` |  | khởi động lại | game |  |
-| `sv.isSuKienNoel2023` | Sự kiện cũ: Noel 2023 | cờ 0/1 | `0` |  | khởi động lại | game |  |
-| `sv.isSuKienTetduonglich2024` | Sự kiện cũ: Tết dương lịch 2024 | cờ 0/1 | `0` |  | khởi động lại | game |  |
-
-### Bảo trì (`bao_tri`)
-
-Giờ bảo trì hằng ngày, chế độ bảo trì đăng nhập, danh sách được vào khi bảo trì.
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
 | `bao_tri.bat` | Chế độ bảo trì đăng nhập | cờ 0/1 | `0` |  | ngay | game | 1 = từ chối đăng nhập mới (người đang chơi không bị đá). Tương đương tệp bao_tri.txt — bật một trong hai là bảo trì. |
 | `bao_tri.cau` | Câu thông báo bảo trì | chuỗi | *(trống)* | ≤ 200 ký tự | ngay | game | Trống = câu mặc định. |
 | `bao_tri.cho` | Tài khoản được vào khi bảo trì | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên tài khoản (chữ thường), cách nhau dấu phẩy. |
 | `sv.gioBaoTri` | Giờ bảo trì hằng ngày | chuỗi | *(trống)* | ≤ 5 ký tự | ngay | game | HH:MM cố định, 'tat' = không tự bảo trì, trống = ngẫu nhiên 4:30–5:30. |
-| `sv.chiSoMayChu` | Ghi chỉ số máy chủ + đọc bao_tri.txt | cờ 0/1 | `1` |  | khởi động lại | game | 0 = tắt luồng chỉ số (tob_chi_so_may_chu). |
-
-### Chống spam, DoS & nhật ký (`chong_spam`)
-
-Nhịp chat/thao tác, chống ngập kết nối/gói tin, mức nhật ký.
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `sv.spam.bat` | Chống spam chat / thao tác | cờ 0/1 | `1` |  | ngay | game | 0 = tắt toàn bộ. |
-| `sv.spam.chat.gan` | Nhịp chat gần | nhịp số/giây | `5/10` |  | ngay | game | số tin / giây (vd 5/10). |
-| `sv.spam.chat.rieng` | Nhịp chat riêng | nhịp số/giây | `6/10` |  | ngay | game |  |
-| `sv.spam.chat.theGioi` | Nhịp chat thế giới / người | nhịp số/giây | `1/30` |  | ngay | game |  |
-| `sv.spam.theGioiToanServer` | Nhịp chat thế giới toàn máy chủ | nhịp số/giây | `12/60` |  | ngay | game |  |
-| `sv.spam.chat.doi` | Nhịp chat đội | nhịp số/giây | `8/10` |  | ngay | game |  |
-| `sv.spam.chat.bang` | Nhịp chat đội | nhịp số/giây | `8/10` |  | ngay | game |  |
-| `sv.spam.trungLapGiay` | Chặn tin trùng lặp (giây) | số | `30` | 0..3600 | ngay | game |  |
-| `sv.spam.chanQuangCao` | Chặn quảng cáo / link | cờ 0/1 | `1` |  | ngay | game |  |
-| `sv.spam.viPhamCam` | Số vi phạm thì cấm chat | số | `4` | 1..100 | ngay | game |  |
-| `sv.spam.camGiay` | Thang cấm chat (giây) | danh sách số | `60,300,1800,7200` | 1..31536000 | ngay | game | Các bậc cấm tăng dần, cách nhau dấu phẩy. |
-| `sv.socketTimeout` | Hết hạn socket (giây) | số | `180` | 0..3600 | ngay | game | Áp dụng cho kết nối mới. 0 = tắt. |
-| `sv.maxConnPerIp` | Kết nối tối đa / IP | số | `50` | 0..100000 | ngay | game | 0 = tắt. |
-| `sv.connRateMax` | Số kết nối tối đa / cửa sổ | số | `60` | 0..100000 | ngay | game | 0 = tắt. |
-| `sv.connRateWindow` | Cửa sổ đếm kết nối (giây) | số | `30` | 0..3600 | ngay | game | 0 = tắt. |
-| `sv.dosBanSec` | Thời gian chặn IP ngập (giây) | số | `300` | 0..86400 | ngay | game |  |
-| `sv.reloginWaitSec` | Chờ đăng nhập lại (giây) | số | `0` | 0..600 | ngay | game |  |
-| `sv.proxyTinCay` | Proxy tin cậy (miễn giới hạn theo IP) | danh sách chuỗi | `127.0.0.1,::1` | ≤ 255 ký tự | ngay | game | IP hoặc dải CIDR (IPv4/IPv6) của WAF / Nova agent, cách nhau dấu phẩy. Kết nối từ đây không bị tính sv.maxConnPerIp, sv.connRate*, chặn sv.dosBanSec, chờ đăng nhập theo IP, hạn mức đăng ký theo IP. Giới hạn theo tài khoản / kết nối / thiết bị vẫn giữ. |
-| `sv.dangNhapIpNguong` | Ngưỡng đăng nhập dồn dập / IP | số | `10` | 0..100000 | ngay | game | Số lần đăng nhập trong ~1 giây từ một IP (không phải proxy tin cậy) thì bắt đầu chờ + ghi nghi vấn. 0 = tắt. |
-| `sv.dangNhapIpChoMs` | Chờ khi đăng nhập dồn dập (ms) | số | `3000` | 0..10000 | ngay | game | Thời gian chờ mỗi lần đăng nhập khi vượt sv.dangNhapIpNguong. 0 = không chờ. |
-| `sv.tranGoiThuong` | Trần gói tin thường / cửa sổ | số | `300` | 10..100000 | ngay | game |  |
-| `sv.tranGoiTaiNguyen` | Trần gói tải tài nguyên / cửa sổ | số | `600` | 10..100000 | ngay | game |  |
-| `sv.tranGoiTraCuu` | Trần gói tra cứu / cửa sổ | số | `600` | 10..100000 | ngay | game |  |
-| `sv.log.muc` | Mức nhật ký (màn hình) | lựa chọn | `THONG_TIN` | `LOI`, `CANH_BAO`, `THONG_TIN`, `GO_LOI`, `ERROR`, `WARN`, `INFO`, `DEBUG` | ngay | game |  |
-| `sv.log.mucTep` | Mức nhật ký (tệp) | lựa chọn | *(trống)* | ``, `LOI`, `CANH_BAO`, `THONG_TIN`, `GO_LOI`, `ERROR`, `WARN`, `INFO`, `DEBUG` | ngay | game | Trống = như màn hình. |
-| `sv.log.tat` | Loại nhật ký tắt | danh sách chuỗi | `GOI3,GOI5,GOI26,VKTT,SQL,LUU_CHAR` | ≤ 255 ký tự | ngay | game | Mã loại, cách nhau dấu phẩy. |
-| `sv.log.kiemToan` | Loại nhật ký kiểm toán | danh sách chuỗi | `ADMIN,GM,NAP,NAP_TIEN,GIFTCODE,CAM,BAN,KINH_TE,KINHTE,CHONG_SPAM` | ≤ 255 ký tự | ngay | game | Ghi riêng tệp kiem_toan (giữ lâu). |
-
-### PvP / Gym / Hầm Ngục (`pvp`)
-
-Công tắc nội dung chiến đấu thiết kế dài hạn (chỉ có tác dụng khi sv.lau_dai=1).
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `pvp.tinh_diem.bat` | Tính điểm thang PvP | cờ 0/1 | `1` |  | ngay | game | 0 = trận PvP không cộng/trừ điểm thang. |
-| `gym.bat` | Thách đấu Gym | cờ 0/1 | `1` |  | ngay | game | 0 = tạm đóng Gym. |
-| `ham_nguc.bat` | Hầm Ngục bí ẩn | cờ 0/1 | `1` |  | ngay | game | 0 = không vào tầng mới (vẫn nhận thưởng đã đạt). |
-
-### Chỉ số & chống lạm phát (`chi_so`)
-
-Trần + giảm dần cho chỉ số trang bị, pet, thú cưỡi, skin (docs/thiet-ke-game.md). Chỉ có tác dụng khi sv.lau_dai=1. Áp dụng ngay (đòn kế tiếp; kẹp đồ: lần mặc/tháo kế tiếp).
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `chi_so.bat` | Bật giới hạn chỉ số | cờ 0/1 | `1` |  | ngay | game | 0 = tắt mọi trần/giảm dần chỉ số (quay về công thức cũ). |
-| `chi_so.kep_trang_bi` | Kẹp chỉ số trang bị theo ngân sách | cờ 0/1 | `1` |  | ngay | game | Mỗi món ≤ chuẩn bậc × 1,30 × nâng cấp; đồ bậc cũ ≤ 130% đồ bậc hiện tại. |
-| `chi_so.tran_chi_mang` | Trần tỉ lệ chí mạng (‰) | số | `400` | 100..1000 | ngay | game | Phần nghìn, có giảm dần. PvP cố định 300‰. |
-| `chi_so.tran_st_chi_mang` | Trần ST chí mạng cộng thêm (‰) | số | `500` | 0..1000 | ngay | game | Trên nền ×1,5. 500 = đòn chí mạng tối đa ×2,0. |
-| `chi_so.tran_ne` | Trần né tránh (‰) | số | `300` | 0..900 | ngay | game | Phần nghìn, có giảm dần. PvP cố định 200‰. |
-| `chi_so.tran_hut` | Trần hút HP PvE (‰ sát thương) | số | `100` | 0..1000 | ngay | game | Gộp mọi nguồn hút HP. |
-| `chi_so.tran_hut_pvp` | Trần hút HP PvP (‰ sát thương thật) | số | `50` | 0..1000 | ngay | game | Gộp mọi nguồn hút HP, tính trên sát thương sau ×0,30. |
-| `chi_so.tran_giam_st` | Trần giảm sát thương nhận (‰) | số | `500` | 0..900 | ngay | game | Gộp mọi nguồn thụ động (PvP cố định 400‰). |
-| `chi_so.tran_khang_he` | Trần kháng một hệ (‰) | số | `600` | 0..900 | ngay | game | Kháng hệ + kháng mọi hệ + phiến đá. |
-| `chi_so.san_sat_thuong` | Sàn sát thương mỗi đòn (‰) | số | `400` | 0..1000 | ngay | game | Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử). |
-| `chi_so.tran_phan_tram_cong` | Trần tổng % cộng thêm (‰) | số | `500` | 0..5000 | ngay | game | Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc. |
-
-### Tự động đánh (`tu_dong`)
-
-Tự động đánh chính thức (chỉ khi online, theo luật năng lượng như đánh tay; vé treo máy offline tách riêng). Áp dụng ngay.
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `tu_dong.bat` | Bật Tự động đánh | cờ 0/1 | `1` |  | ngay | game | 0 = tạm khoá (người đang dùng bị dừng ở lần kiểm tiếp theo). |
-| `tu_dong.gio_moi_ngay` | Giờ Tự động đánh mỗi ngày | số | `5` | 0..24 | ngay | game | Miễn phí, chỉ tính lúc online và đang bật. Đặt lại lúc 00:00. |
-| `tu_dong.gio_them_the_thang` | Giờ cộng thêm khi có thẻ tháng | số | `2` | 0..24 | ngay | game | Cộng vào giờ mỗi ngày khi thẻ tháng còn hạn. |
-| `tu_dong.chi_map_da_mo` | Chỉ ở bãi luyện tập | cờ 0/1 | `1` |  | ngay | game | 1 = chỉ bật ở bản đồ có Pokémon hoang dã đã mở (không ở thành phố, nhà, sàn đấu, sự kiện). |
-| `tu_dong.tat_khi_pvp` | Dừng khi PvP / sàn đấu / Gym / boss | cờ 0/1 | `1` |  | ngay | game | 1 = dừng khi bị Pokémon khác tấn công, bật PK, vào sàn đấu / Gym / chiến trường hay đánh boss. |
-| `tu_dong.tu_dung_thuoc` | Cho tự uống thuốc | cờ 0/1 | `1` |  | ngay | game | 0 = Tự động đánh không tự uống thuốc hồi phục (người chơi tự bấm). |
-| `tu_dong.ban_kinh` | Bán kính tối đa (px) | số | `240` | 48..960 | ngay | game | Pokémon chỉ đánh quanh điểm bật trong bán kính này; ra xa hơn (+64 px) thì dừng. 1 ô = 16 px. |
-| `tu_dong.nhip_danh` | Nhịp đánh tối đa khi tự động | nhịp số/giây | `12/5` |  | ngay | game | số lệnh đánh / giây (vd 12/5). Vượt thì bỏ lệnh và tính vi phạm. |
-| `tu_dong.nhip_thuoc` | Nhịp uống thuốc tối đa khi tự động | nhịp số/giây | `4/5` |  | ngay | game |  |
-| `tu_dong.nhip_nhat` | Nhịp nhặt đồ tối đa khi tự động | nhịp số/giây | `8/5` |  | ngay | game |  |
-| `tu_dong.nhip_nguoi` | Nhịp đánh nghi bot (mọi người chơi) | nhịp số/giây | `30/5` |  | ngay | game | Chỉ ghi nghi vấn (hack.txt), không chặn. |
-| `tu_dong.vi_pham_tat` | Số vi phạm nhịp thì dừng | số | `20` | 1..1000 | ngay | game | Dừng Tự động đánh + ghi nghi vấn. |
-| `tu_dong.hoi_sinh_moi_gio` | Tự hồi sinh tối đa / giờ | số | `2` | 0..20 | ngay | game | Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật "Tự hồi sinh", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ. |
-| `tu_dong.ke_hoach` | Máy chủ điều khiển từng bước | cờ 0/1 | `1` |  | ngay | game | 1 = máy chủ chọn mục tiêu, chiêu, thuốc, nhặt đồ, rút lui cho client 0.9.2+ (client chỉ thực hiện). 0 = client tự chọn như bản 0.9.1 (máy chủ vẫn giới hạn giờ / nhịp / vùng). |
-| `tu_dong.cap_toi_thieu` | Cấp tối thiểu để bật | số | `0` | 0..1000 | ngay | game | 0 = mọi cấp. Dưới cấp này bấm Bắt đầu thì được báo rõ cấp cần. |
-| `tu_dong.chenh_cap_tren` | Bỏ Pokémon cao hơn quá N cấp | số | `5` | -1..1000 | ngay | game | Không đánh Pokémon hoang dã cao hơn cấp mình quá ngần này. -1 = không giới hạn. |
-| `tu_dong.chenh_cap_duoi` | Bỏ Pokémon thấp hơn quá N cấp | số | `0` | 0..1000 | ngay | game | 0 = không giới hạn dưới (vẫn đánh Pokémon yếu). |
-| `tu_dong.danh_boss` | Cho đánh boss | cờ 0/1 | `0` |  | ngay | game | 0 = không chọn boss / Pokémon huyền thoại làm mục tiêu (đánh trúng boss vẫn dừng theo tu_dong.tat_khi_pvp). |
-| `tu_dong.hp_quai_toi_da_pt` | Bỏ Pokémon quá trâu (% HP mình) | số | `500` | 0..100000 | ngay | game | Bỏ Pokémon có HP tối đa lớn hơn ngần này % HP tối đa của mình. 0 = tắt. |
-| `tu_dong.chon_chieu_theo_he` | Chọn chiêu theo khắc hệ | cờ 0/1 | `1` |  | ngay | game | 1 = điểm chiêu = sát thương × khắc hệ × STAB, bỏ chiêu đang hồi / thiếu PP. 0 = chỉ theo sát thương. |
-| `tu_dong.nguong_thuoc_hp` | Ngưỡng thuốc HP mặc định (%) | số | `50` | 0..90 | ngay | game | Uống thuốc HP khi HP dưới ngưỡng người chơi chọn trong bảng; client cũ dùng số này. 0 = máy chủ không cho tự uống thuốc HP. |
-| `tu_dong.nguong_thuoc_mp` | Ngưỡng thuốc PP mặc định (%) | số | `30` | 0..90 | ngay | game | Như trên cho PP. 0 = tắt. |
-| `tu_dong.nguong_hp_thap` | HP thấp thì rút lui (%) | số | `25` | 0..90 | ngay | game | HP dưới ngưỡng mà hết thuốc: rút về điểm bắt đầu nghỉ (hoặc dừng nếu tu_dong.hp_thap_dung=1). 0 = tắt. |
-| `tu_dong.hp_thap_dung` | HP thấp thì dừng hẳn | cờ 0/1 | `0` |  | ngay | game | 1 = dừng Tự động đánh thay vì rút lui nghỉ hồi phục. |
-| `tu_dong.hoi_phuc_toi` | Nghỉ hồi phục tới (%) | số | `80` | 10..100 | ngay | game | Rút lui nghỉ tới khi HP đạt ngần này % rồi đánh tiếp. |
-| `tu_dong.nhat_ban_kinh` | Bán kính nhặt đồ (px) | số | `96` | 0..480 | ngay | game | Chỉ đi nhặt đồ rơi của mình trong bán kính này quanh Pokémon (và trong vùng). 0 = không nhặt. 1 ô = 16 px. |
-| `tu_dong.dung_khi_day_tui` | Dừng khi hành trang đầy | cờ 0/1 | `1` |  | ngay | game | 1 = hành trang đầy thì dừng và báo. |
-| `tu_dong.dung_khi_tu_di` | Dừng khi người chơi tự di chuyển | cờ 0/1 | `1` |  | ngay | game | 1 = bấm phím di chuyển / chạm bản đồ thì dừng Tự động đánh. 0 = nhường 3 giây rồi chạy tiếp. |
-| `tu_dong.tranh_pk_px` | Tránh người bật PK (px) | số | `160` | 0..960 | ngay | game | Có người chơi khác bật PK trong bán kính này thì lùi về điểm bắt đầu chờ. 0 = tắt. |
-| `tu_dong.map_cam` | Bản đồ cấm Tự động đánh thêm (id) | chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Ngoài sàn đấu / Gym / chiến trường / mê cung / bản đồ boss. Cách nhau dấu phẩy; trống = không. |
-| `tu_dong.hoi_sinh_tra_phi` | Cho tự dùng vật phẩm hồi sinh trả phí | cờ 0/1 | `0` |  | ngay | game | 1 = khi người chơi đồng ý riêng (bảng Tự động: Tự hồi sinh "cả vật phẩm lượng") mới được tự dùng Thuốc hồi sinh tối đa (lượng khoá). 0 = chỉ Thuốc hồi sinh thường; không bao giờ tự trả xu / lượng. |
-
-### Hồi sinh (`hoi_sinh`)
-
-Khi Pokémon gục: hồi sinh tại chỗ (vật phẩm / xu theo cấp / lượng khoá, có chờ + hồi chiêu, cấm ở PvP / Gym / boss / Mê cung), về Trung tâm Pokémon (miễn phí, phạt nhẹ: EXP cấp, độ bền, Mệt mỏi) hoặc chờ đồng đội. Áp dụng ngay.
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `hoi_sinh.bat` | Bật cơ chế hồi sinh mới | cờ 0/1 | `1` |  | ngay | game | 0 = luồng cũ (popup hồi sinh tại chỗ 5% giờ thu nhập, tự hồi sinh dưới cấp 50). |
-| `hoi_sinh.xu_phan_tram_gio` | Phí xu tại chỗ (% thu nhập 1 giờ) | số | `40` | 0..1000 | ngay | game | Theo cấp (ThongSoLauDai.xuMoiGio). 40 = 0,4 giờ cày. Nhân hệ số gục lặp. |
-| `hoi_sinh.xu_toi_thieu` | Phí xu tại chỗ tối thiểu | số | `200` | 0..100000000 | ngay | game | Xu. |
-| `hoi_sinh.he_so_lap` | Hệ số gục lặp (%) | danh sách số | `100,150,200,300` | 0..10000 | ngay | game | Lần gục thứ 1, 2, 3... trong cửa sổ; lần sau dùng số cuối (trần). Áp cho phí xu và lượng khoá. |
-| `hoi_sinh.cua_so_phut` | Cửa sổ gục lặp (phút) | số | `30` | 1..1440 | ngay | game | Đếm số lần gục trong ngần này phút. |
-| `hoi_sinh.luong_khoa` | Phí lượng khoá tại chỗ | số | `2` | 0..1000 | ngay | game | 0 = tắt lựa chọn trả lượng khoá. Nhân hệ số gục lặp (làm tròn lên). |
-| `hoi_sinh.luong_khoa_toi_da` | Trần phí lượng khoá | số | `10` | 0..1000 | ngay | game | Lượng khoá tối đa một lần. |
-| `hoi_sinh.cho_sau_guc_giay` | Chờ sau khi gục (giây) | số | `5` | 0..600 | ngay | game | Hồi sinh tại chỗ chỉ bấm được sau ngần này giây (đếm ngược trên hộp thoại). |
-| `hoi_sinh.hoi_chieu_giay` | Hồi chiêu hồi sinh tại chỗ (giây) | số | `60` | 0..3600 | ngay | game | Giữa hai lần hồi sinh tại chỗ. Về Trung tâm luôn được. |
-| `hoi_sinh.hp_thuoc` | HP khi dùng Thuốc hồi sinh (%) | số | `30` | 1..100 | ngay | game | Thuốc hồi sinh tối đa lấy % trong data_vat_pham_lau_dai (hoi_sinh:100). |
-| `hoi_sinh.hp_tra_phi` | HP khi trả xu / lượng khoá / tân thủ (%) | số | `50` | 1..100 | ngay | game |  |
-| `hoi_sinh.exp_mat_phan_nghin` | Mất EXP khi về Trung tâm (phần nghìn) | số | `20` | 0..200 | ngay | game | Phần nghìn EXP lên cấp hiện tại (20 = 2%). Không bao giờ tụt cấp: chỉ trừ trong tiến độ cấp. |
-| `hoi_sinh.exp_mat_toi_da_phut` | Trần mất EXP (phút cày) | số | `15` | 0..600 | ngay | game | Không mất quá ngần này phút EXP đánh quái ở cấp đó. 0 = không chặn. |
-| `hoi_sinh.do_ben_mat_phan_tram` | Mất độ bền khi về Trung tâm (%) | số | `5` | 0..100 | ngay | game | % độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ). |
-| `hoi_sinh.met_moi_phut` | Mệt mỏi (phút) | số | `5` | 0..120 | ngay | game | Sau khi về Trung tâm. 0 = tắt. |
-| `hoi_sinh.met_moi_exp` | Mệt mỏi: giảm EXP (%) | số | `20` | 0..90 | ngay | game | EXP hạ quái. |
-| `hoi_sinh.met_moi_tan_cong` | Mệt mỏi: giảm tấn công (%) | số | `10` | 0..90 | ngay | game |  |
-| `hoi_sinh.tan_thu_cap` | Bảo vệ tân thủ dưới cấp | số | `15` | 0..100 | ngay | game | Dưới cấp này: không mất EXP / độ bền / Mệt mỏi, hồi sinh tại chỗ miễn phí. |
-| `hoi_sinh.tan_thu_hoi_chieu_giay` | Hồi chiêu hồi sinh miễn phí tân thủ (giây) | số | `30` | 0..3600 | ngay | game |  |
-| `hoi_sinh.dong_doi_bat` | Cho chờ đồng đội hồi sinh | cờ 0/1 | `1` |  | ngay | game | Đồng đội ở gần mang Thuốc hồi sinh được mời cứu. |
-| `hoi_sinh.dong_doi_giay` | Thời gian chờ đồng đội (giây) | số | `60` | 10..600 | ngay | game |  |
-| `hoi_sinh.cam_pvp` | Cấm tại chỗ ở PvP / sàn đấu | cờ 0/1 | `1` |  | ngay | game | Sàn đấu, giải Liên minh, chiến trường, lãnh địa đội, chiếm Gym đang đánh, đấu trường + hoi_sinh.map_pvp. |
-| `hoi_sinh.cam_gym` | Cấm tại chỗ khi thách đấu Gym | cờ 0/1 | `1` |  | ngay | game |  |
-| `hoi_sinh.cam_boss` | Cấm tại chỗ giữa trận boss | cờ 0/1 | `1` |  | ngay | game | Đã gây sát thương vào boss thế giới / Gym còn sống cùng bản đồ. |
-| `hoi_sinh.cam_me_cung` | Cấm tại chỗ trong Mê cung | cờ 0/1 | `1` |  | ngay | game |  |
-| `hoi_sinh.map_pvp` | Bản đồ PvP (id) | danh sách số | `202,203,204,205,227,228` | 0..100000 | ngay | game | Thêm vào luật cấm PvP (so cả id bản đồ lẫn id nạp). |
-| `hoi_sinh.map_cam_them` | Bản đồ cấm tại chỗ thêm (id) | chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Cách nhau dấu phẩy; trống = không. |
-| `hoi_sinh.auto_ve_map_up` | Cho "Auto về Map Up" sau khi gục | cờ 0/1 | `0` |  | ngay | game | 0 = gục thì không tự bay lại bãi luyện (chống treo máy vô hạn). |
-| `hoi_sinh.gia_thuoc_phan_tram_gio` | Giá Thuốc hồi sinh (% thu nhập 1 giờ) | số | `30` | 0..1000 | ngay | game | Giá ở cửa hàng NPC theo cấp người mua (cùng bậc phí xu tại chỗ). 0 = giá gốc data_potion. |
-| `hoi_sinh.gia_thuoc_toi_thieu` | Giá Thuốc hồi sinh tối thiểu | số | `407` | 0..100000000 | ngay | game | Xu / viên (không thấp hơn giá gốc). |
-| `hoi_sinh.thuoc_moi_gio` | Hồi sinh bằng vật phẩm tối đa / giờ | số | `6` | 0..100 | ngay | game | Thuốc hồi sinh / tối đa của chính mình (tay, Tự động đánh, dùng từ túi) trong 60 phút. Đồng đội cứu không tính. 0 = không giới hạn. |
-
-### Thông báo (`thong_bao`)
-
-Gộp thông báo toàn máy chủ, địa chỉ website / link tải hiện trong game.
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
-| `sv.thongBao.bat` | Gộp thông báo toàn máy chủ | cờ 0/1 | `1` |  | ngay | game | 0 = gửi thẳng như cũ. |
-| `sv.thongBao.toiDa` | Thông báo tối đa / cửa sổ | số | `6` | 1..1000 | ngay | game |  |
-| `sv.thongBao.cuaSoGiay` | Cửa sổ đếm thông báo (giây) | số | `60` | 1..3600 | ngay | game |  |
-| `sv.thongBao.moiLoai` | Tối đa mỗi loại / cửa sổ | số | `3` | 1..1000 | ngay | game |  |
-| `sv.thongBao.trungLapGiay` | Bỏ thông báo trùng (giây) | số | `120` | 0..86400 | ngay | game |  |
-| `sv.thongBao.gopGiay` | Gộp mỗi (giây) | số | `15` | 1..3600 | ngay | game |  |
-| `sv.website` | Địa chỉ website (hiện trong game) | chuỗi | *(trống)* | ≤ 200 ký tự | ngay | game |  |
-| `sv.linkTaiGame` | Link tải game (hiện trong game) | chuỗi | *(trống)* | ≤ 200 ký tự | ngay | game |  |
-
-### Quản trị & thử nghiệm (`quan_tri`)
-
-Danh sách GM, chế độ thử. Các khoá thử nghiệm bị khoá ở máy thật.
-
-| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
-|---|---|---|---|---|---|---|---|
+| `sv.website` | Địa chỉ website (hiện trong game) | chuỗi | `https://huyenthoaibaoboi.fun/` | ≤ 200 ký tự | ngay | game |  |
+| `sv.linkTaiGame` | Link tải game (hiện trong game) | chuỗi | `https://huyenthoaibaoboi.fun/` | ≤ 200 ký tự | ngay | game |  |
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
-| `sv.gmCanCoPInfo` | GM cần cả cờ pInfo | cờ 0/1 | `0` |  | ngay | game | 1 = quyền GM cần tên trong danh sách VÀ pInfo[16]=1. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
-| `sv.choPhepTaoTenGM` | Cho tạo Pokémon tên GM | cờ 0/1 | `0` |  | ngay | game | Chỉ bật tạm thời. |
-| `sv.testMode` | Chế độ thử (testMode) | cờ 0/1 | `0` |  | ngay | game | Mã test cấp tài nguyên miễn phí. Khoá ở máy thật. (máy thật chỉ nhận mặc định) |
-| `sv.testCode` | Mã test | chuỗi | *(trống)* | ≤ 64 ký tự | ngay | game | Chuỗi gõ trong game khi testMode=1. (máy thật chỉ nhận mặc định) |
+
+### Khoá ẩn: cố định & luôn bật (140)
+
+Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
+
+#### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.chiaXuRoi` | Chia số xu rơi | Cố định (ẩn) | `30` | ngay | game | Xu rơi = xu gốc chia số này (tối thiểu 1). |
+| `sv.expvantieu` | Thưởng EXP giao hàng | Cố định (ẩn) | `1` | ngay | game | 1 = bật. |
+| `sv.Luckyexp` | Ô EXP rương may mắn | Cố định (ẩn) | `1` | ngay | game | 1 = bật. |
+| `sv.ExpQua` | EXP cây ăn quả | Cố định (ẩn) | `1` | ngay | game | 1 = bật (cũng khoá nút tăng tốc cây). |
+| `sv.giaXuBoHoaDoVuLan` | Giá xu bó hoa Vu Lan | Cố định (ẩn) | `150000` | ngay | game | Số xu. |
+| `sv.tieuNguongMau` | Giao hàng: ngưỡng màu khi nhận | Cố định (ẩn) | `60189,89389,99689,99989,99999` | ngay | game | 5 ngưỡng cộng dồn trên thang 100000 (Trắng..Vàng, còn lại Tím). |
+| `sv.tieuHeSoExp` | Giao hàng: hệ số EXP chung (%) | Cố định (ẩn) | `200` | ngay | game | 200 = ×2. |
+| `sv.tieuPcExpTheoMau` | Giao hàng: % EXP theo màu | Cố định (ẩn) | `50,100,150,250,250,500,0` | ngay | game | 7 số (Trắng..Tím, số cuối không dùng). |
+| `sv.tieuPermilleCaoCap` | Giao hàng: phần nghìn EXP cao cấp | Cố định (ẩn) | `50,70,90,35,55,75,5,25,45` | ngay | game | 9 số (3 khung cấp × 3 màu). |
+| `sv.doiTieuNguongMauXu` | Đổi hàng (xu): ngưỡng màu | Cố định (ẩn) | `50545,85545,98945,99945,99995` | ngay | game | 5 ngưỡng cộng dồn. |
+| `sv.doiTieuNguongMauLuong` | Đổi hàng (lượng): ngưỡng màu | Cố định (ẩn) | `22890,52890,96890,99890,99990` | ngay | game | 5 ngưỡng cộng dồn. |
+| `exp.nang_luong_tich_phut` | Năng lượng tích luỹ tối đa (phút) | Cố định (ẩn) | `180` | ngay | game | Phút năng lượng dồn tối đa khi không chơi. |
+| `thue.cho` | Thuế chợ ký gửi (%) | Cố định (ẩn) | `6` | ngay | game | Đốt khỏi nền kinh tế khi bán được. |
+| `thue.dang_ban` | Phí đăng bán (%) | Cố định (ẩn) | `1` | ngay | game | Đốt, không hoàn; tối thiểu 1 xu. |
+| `thue.chuyen_luong` | Phí chuyển lượng (%) | Cố định (ẩn) | `5` | ngay | game | Làm tròn lên, tối thiểu 1 khi > 0. |
+| `thue.tran_chuyen_xu_gio` | Trần chuyển xu / ngày (giờ thu nhập) | Cố định (ẩn) | `5` | ngay | game | Bội số thu nhập 1 giờ ở cấp người gửi. |
+| `phi.dich_chuyen_phan_tram_gio` | Phí dịch chuyển (% thu nhập 1 giờ) | Cố định (ẩn) | `3` | ngay | game | Tối thiểu 1 xu. |
+| `phi.hoi_sinh_phan_tram_gio` | Phí hồi sinh (% thu nhập 1 giờ) | Cố định (ẩn) | `5` | ngay | game | Tối thiểu 1 xu. |
+| `phi.ban_npc_phan_tram` | Giá bán đồ cho NPC (% giá) | Cố định (ẩn) | `5` | ngay | game | Không cộng theo cấp cường hoá. |
+| `tieu_hao.sua_do_phan_tram_thu_nhap` | Trần phí sửa đồ (% thu nhập 1 giờ / món) | Cố định (ẩn) | `8` | ngay | game | Phí sửa = min(công thức cũ, trần × số món). |
+
+#### Sự kiện & giftcode (`su_kien`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.suKienTuKhoiDongLai` | Tự khởi động lại khi đổi sự kiện | Cố định (ẩn) | `1` | ngay | game | 1 = lệnh bật/tắt sự kiện có hẹn sẽ tự khởi động lại máy chủ. |
+| `sv.suKienGomGiay` | Gom lệnh sự kiện (giây) | Cố định (ẩn) | `120` | ngay | game | Gom nhiều lệnh thành một lần khởi động lại. |
+| `sv.suKienBaoTruocGiay` | Báo trước khi đổi sự kiện (giây) | Cố định (ẩn) | `60` | ngay | game |  |
+| `sv.worldCupBatDau` | World Cup bắt đầu | Cố định (ẩn) | *(trống)* | ngay | game | yyyy-MM-dd HH:mm:ss. Trống = tắt. |
+| `sv.worldCupKetThuc` | World Cup kết thúc | Cố định (ẩn) | *(trống)* | ngay | game | Trống = tắt. |
+| `sv.worldCupHanNhanQua` | World Cup hạn nhận quà | Cố định (ẩn) | *(trống)* | ngay | game | Trống = tắt. |
+| `sv.isSuKienTrungThul2016` | Sự kiện cũ: Trung thu 2016 | Cố định (ẩn) | `0` | khởi động lại | game | Cờ sự kiện gốc (đọc lúc khởi động). |
+| `sv.isSuKienTet2017` | Sự kiện cũ: Tết 2017 | Cố định (ẩn) | `0` | khởi động lại | game |  |
+| `sv.isSuKienGioTo2016` | Sự kiện cũ: Giỗ Tổ 2016 | Cố định (ẩn) | `0` | khởi động lại | game |  |
+| `sv.isSuKienNoel2023` | Sự kiện cũ: Noel 2023 | Cố định (ẩn) | `0` | khởi động lại | game |  |
+| `sv.isSuKienTetduonglich2024` | Sự kiện cũ: Tết dương lịch 2024 | Cố định (ẩn) | `0` | khởi động lại | game |  |
+
+#### Nạp tiền (`nap_tien`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `nap.hoan_tien.thu_cong` | Cho phép hoàn tiền thủ công | Luôn bật (ẩn) | `1` | ngay | web | 0 = khoá nút Hoàn tiền / Chargeback ở trang Nạp tiền. |
+| `nap.hoan_tien.tu_dong` | Tự động thu hồi khi hoàn đơn đã cộng | Luôn bật (ẩn) | `1` | ngay | game | 1 = máy chủ game tự chuyển lượng thành nợ / trừ thẻ tháng / gỡ vé mùa cho đơn 'chờ thu hồi'. 0 = đơn đứng chờ, xử lý tay. |
+
+#### Thành viên & kích hoạt (`thanh_vien`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `kich_hoat.thanh_vien_la_kich_hoat` | Thành viên được coi như đã kích hoạt | Luôn bật (ẩn) | `1` | ngay | cả hai | 1 (mặc định) = tài khoản là Thành viên HTBB không bị khoá vì chưa kích hoạt (gộp hai bậc làm một nếu muốn). |
+
+#### Tự động đánh & hồi sinh (`tu_dong`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `tu_dong.bat` | Bật Tự động đánh | Luôn bật (ẩn) | `1` | ngay | game | 0 = tạm khoá (người đang dùng bị dừng ở lần kiểm tiếp theo). |
+| `tu_dong.chi_map_da_mo` | Chỉ ở bãi luyện tập | Cố định (ẩn) | `1` | ngay | game | 1 = chỉ bật ở bản đồ có Pokémon hoang dã đã mở (không ở thành phố, nhà, sàn đấu, sự kiện). |
+| `tu_dong.tat_khi_pvp` | Dừng khi PvP / sàn đấu / Gym / boss | Cố định (ẩn) | `1` | ngay | game | 1 = dừng khi bị Pokémon khác tấn công, bật PK, vào sàn đấu / Gym / chiến trường hay đánh boss. |
+| `tu_dong.tu_dung_thuoc` | Cho tự uống thuốc | Luôn bật (ẩn) | `1` | ngay | game | 0 = Tự động đánh không tự uống thuốc hồi phục (người chơi tự bấm). |
+| `tu_dong.ban_kinh` | Bán kính tối đa (px) | Cố định (ẩn) | `240` | ngay | game | Pokémon chỉ đánh quanh điểm bật trong bán kính này; ra xa hơn (+64 px) thì dừng. 1 ô = 16 px. |
+| `tu_dong.nhip_danh` | Nhịp đánh tối đa khi tự động | Cố định (ẩn) | `12/5` | ngay | game | số lệnh đánh / giây (vd 12/5). Vượt thì bỏ lệnh và tính vi phạm. |
+| `tu_dong.nhip_thuoc` | Nhịp uống thuốc tối đa khi tự động | Cố định (ẩn) | `4/5` | ngay | game |  |
+| `tu_dong.nhip_nhat` | Nhịp nhặt đồ tối đa khi tự động | Cố định (ẩn) | `8/5` | ngay | game |  |
+| `tu_dong.nhip_nguoi` | Nhịp đánh nghi bot (mọi người chơi) | Cố định (ẩn) | `30/5` | ngay | game | Chỉ ghi nghi vấn (hack.txt), không chặn. |
+| `tu_dong.vi_pham_tat` | Số vi phạm nhịp thì dừng | Cố định (ẩn) | `20` | ngay | game | Dừng Tự động đánh + ghi nghi vấn. |
+| `tu_dong.hoi_sinh_moi_gio` | Tự hồi sinh tối đa / giờ | Cố định (ẩn) | `2` | ngay | game | Khi đang tự động mà Pokémon gục: chỉ dùng vật phẩm hồi sinh nếu người chơi bật "Tự hồi sinh", tối đa ngần này lần / 60 phút; còn lại dừng tự động và về Trung tâm Pokémon. 0 = không bao giờ. |
+| `tu_dong.ke_hoach` | Máy chủ điều khiển từng bước | Cố định (ẩn) | `1` | ngay | game | 1 = máy chủ chọn mục tiêu, chiêu, thuốc, nhặt đồ, rút lui cho client 0.9.2+ (client chỉ thực hiện). 0 = client tự chọn như bản 0.9.1 (máy chủ vẫn giới hạn giờ / nhịp / vùng). |
+| `tu_dong.chenh_cap_tren` | Bỏ Pokémon cao hơn quá N cấp | Cố định (ẩn) | `5` | ngay | game | Không đánh Pokémon hoang dã cao hơn cấp mình quá ngần này. -1 = không giới hạn. |
+| `tu_dong.chenh_cap_duoi` | Bỏ Pokémon thấp hơn quá N cấp | Cố định (ẩn) | `0` | ngay | game | 0 = không giới hạn dưới (vẫn đánh Pokémon yếu). |
+| `tu_dong.hp_quai_toi_da_pt` | Bỏ Pokémon quá trâu (% HP mình) | Cố định (ẩn) | `500` | ngay | game | Bỏ Pokémon có HP tối đa lớn hơn ngần này % HP tối đa của mình. 0 = tắt. |
+| `tu_dong.chon_chieu_theo_he` | Chọn chiêu theo khắc hệ | Cố định (ẩn) | `1` | ngay | game | 1 = điểm chiêu = sát thương × khắc hệ × STAB, bỏ chiêu đang hồi / thiếu PP. 0 = chỉ theo sát thương. |
+| `tu_dong.nguong_thuoc_hp` | Ngưỡng thuốc HP mặc định (%) | Cố định (ẩn) | `50` | ngay | game | Uống thuốc HP khi HP dưới ngưỡng người chơi chọn trong bảng; client cũ dùng số này. 0 = máy chủ không cho tự uống thuốc HP. |
+| `tu_dong.nguong_thuoc_mp` | Ngưỡng thuốc PP mặc định (%) | Cố định (ẩn) | `30` | ngay | game | Như trên cho PP. 0 = tắt. |
+| `tu_dong.nguong_hp_thap` | HP thấp thì rút lui (%) | Cố định (ẩn) | `25` | ngay | game | HP dưới ngưỡng mà hết thuốc: rút về điểm bắt đầu nghỉ (hoặc dừng nếu tu_dong.hp_thap_dung=1). 0 = tắt. |
+| `tu_dong.hp_thap_dung` | HP thấp thì dừng hẳn | Cố định (ẩn) | `0` | ngay | game | 1 = dừng Tự động đánh thay vì rút lui nghỉ hồi phục. |
+| `tu_dong.hoi_phuc_toi` | Nghỉ hồi phục tới (%) | Cố định (ẩn) | `80` | ngay | game | Rút lui nghỉ tới khi HP đạt ngần này % rồi đánh tiếp. |
+| `tu_dong.nhat_ban_kinh` | Bán kính nhặt đồ (px) | Cố định (ẩn) | `96` | ngay | game | Chỉ đi nhặt đồ rơi của mình trong bán kính này quanh Pokémon (và trong vùng). 0 = không nhặt. 1 ô = 16 px. |
+| `tu_dong.dung_khi_day_tui` | Dừng khi hành trang đầy | Cố định (ẩn) | `1` | ngay | game | 1 = hành trang đầy thì dừng và báo. |
+| `tu_dong.dung_khi_tu_di` | Dừng khi người chơi tự di chuyển | Cố định (ẩn) | `1` | ngay | game | 1 = bấm phím di chuyển / chạm bản đồ thì dừng Tự động đánh. 0 = nhường 3 giây rồi chạy tiếp. |
+| `tu_dong.tranh_pk_px` | Tránh người bật PK (px) | Cố định (ẩn) | `160` | ngay | game | Có người chơi khác bật PK trong bán kính này thì lùi về điểm bắt đầu chờ. 0 = tắt. |
+
+#### Máy chủ, đăng ký & bảo trì (`bao_tri`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.chiSoMayChu` | Ghi chỉ số máy chủ + đọc bao_tri.txt | Luôn bật (ẩn) | `1` | khởi động lại | game | 0 = tắt luồng chỉ số (tob_chi_so_may_chu). |
+
+#### Chế độ game (cố định) (`che_do`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.lau_dai` | Thiết kế dài hạn | Luôn bật (ẩn) | `1` | khởi động lại | game | 1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động. |
+| `sv.he_sinh_thai` | Hệ sinh thái | Luôn bật (ẩn) | `1` | khởi động lại | game | 1 = bật hệ sinh thái thế giới (data_hst_*, tob_hst_*). |
+| `sv.tran_cap_theo_mua` | Trần cấp theo mùa | Cố định (ẩn) | `0` | khởi động lại | game | 1 = bật lại trần cấp 60→100 theo ngày khai trương (thiết kế cũ). 0 = không trần, lên cấp chậm + vật phẩm tăng tốc. |
+| `sv.tua_nhanh_ngay` | Tua nhanh thử nghiệm (ngày) | Cố định (ẩn) | `0` | khởi động lại | game | Cộng thêm N ngày vào ngày hiện tại của lịch dài hạn (thử mùa, vé mùa, lịch). chỉ máy thử — máy thật luôn 0. (máy thật chỉ nhận mặc định) |
+
+#### Đăng ký (cố định) (`dang_ky`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.dangKyTreMs` | Trễ phản hồi đăng ký (ms) | Cố định (ẩn) | `800` | ngay | game | Làm chậm dò tài khoản. |
+| `sv.dangKyCsdlTaiKhoan` | CSDL tài khoản | Cố định (ẩn) | `account` | khởi động lại | game | Tên database chứa team_user. |
+
+#### Chống spam, DoS & nhật ký (cố định) (`chong_spam`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.spam.bat` | Chống spam chat / thao tác | Luôn bật (ẩn) | `1` | ngay | game | 0 = tắt toàn bộ. |
+| `sv.spam.chat.gan` | Nhịp chat gần | Cố định (ẩn) | `5/10` | ngay | game | số tin / giây (vd 5/10). |
+| `sv.spam.chat.rieng` | Nhịp chat riêng | Cố định (ẩn) | `6/10` | ngay | game |  |
+| `sv.spam.chat.theGioi` | Nhịp chat thế giới / người | Cố định (ẩn) | `1/30` | ngay | game |  |
+| `sv.spam.theGioiToanServer` | Nhịp chat thế giới toàn máy chủ | Cố định (ẩn) | `12/60` | ngay | game |  |
+| `sv.spam.chat.doi` | Nhịp chat đội | Cố định (ẩn) | `8/10` | ngay | game |  |
+| `sv.spam.chat.bang` | Nhịp chat đội | Cố định (ẩn) | `8/10` | ngay | game |  |
+| `sv.spam.trungLapGiay` | Chặn tin trùng lặp (giây) | Cố định (ẩn) | `30` | ngay | game |  |
+| `sv.spam.chanQuangCao` | Chặn quảng cáo / link | Cố định (ẩn) | `1` | ngay | game |  |
+| `sv.spam.viPhamCam` | Số vi phạm thì cấm chat | Cố định (ẩn) | `4` | ngay | game |  |
+| `sv.spam.camGiay` | Thang cấm chat (giây) | Cố định (ẩn) | `60,300,1800,7200` | ngay | game | Các bậc cấm tăng dần, cách nhau dấu phẩy. |
+| `sv.socketTimeout` | Hết hạn socket (giây) | Cố định (ẩn) | `180` | ngay | game | Áp dụng cho kết nối mới. 0 = tắt. |
+| `sv.maxConnPerIp` | Kết nối tối đa / IP | Cố định (ẩn) | `50` | ngay | game | 0 = tắt. |
+| `sv.connRateMax` | Số kết nối tối đa / cửa sổ | Cố định (ẩn) | `60` | ngay | game | 0 = tắt. |
+| `sv.connRateWindow` | Cửa sổ đếm kết nối (giây) | Cố định (ẩn) | `30` | ngay | game | 0 = tắt. |
+| `sv.dosBanSec` | Thời gian chặn IP ngập (giây) | Cố định (ẩn) | `300` | ngay | game |  |
+| `sv.reloginWaitSec` | Chờ đăng nhập lại (giây) | Cố định (ẩn) | `0` | ngay | game |  |
+| `sv.proxyTinCay` | Proxy tin cậy (miễn giới hạn theo IP) | Cố định (ẩn) | `127.0.0.1,::1` | ngay | game | IP hoặc dải CIDR (IPv4/IPv6) của WAF / Nova agent, cách nhau dấu phẩy. Kết nối từ đây không bị tính sv.maxConnPerIp, sv.connRate*, chặn sv.dosBanSec, chờ đăng nhập theo IP, hạn mức đăng ký theo IP. Giới hạn theo tài khoản / kết nối / thiết bị vẫn giữ. |
+| `sv.dangNhapIpNguong` | Ngưỡng đăng nhập dồn dập / IP | Cố định (ẩn) | `10` | ngay | game | Số lần đăng nhập trong ~1 giây từ một IP (không phải proxy tin cậy) thì bắt đầu chờ + ghi nghi vấn. 0 = tắt. |
+| `sv.dangNhapIpChoMs` | Chờ khi đăng nhập dồn dập (ms) | Cố định (ẩn) | `3000` | ngay | game | Thời gian chờ mỗi lần đăng nhập khi vượt sv.dangNhapIpNguong. 0 = không chờ. |
+| `sv.tranGoiThuong` | Trần gói tin thường / cửa sổ | Cố định (ẩn) | `300` | ngay | game |  |
+| `sv.tranGoiTaiNguyen` | Trần gói tải tài nguyên / cửa sổ | Cố định (ẩn) | `600` | ngay | game |  |
+| `sv.tranGoiTraCuu` | Trần gói tra cứu / cửa sổ | Cố định (ẩn) | `600` | ngay | game |  |
+| `sv.log.muc` | Mức nhật ký (màn hình) | Cố định (ẩn) | `THONG_TIN` | ngay | game |  |
+| `sv.log.mucTep` | Mức nhật ký (tệp) | Cố định (ẩn) | *(trống)* | ngay | game | Trống = như màn hình. |
+| `sv.log.tat` | Loại nhật ký tắt | Cố định (ẩn) | `GOI3,GOI5,GOI26,VKTT,SQL,LUU_CHAR` | ngay | game | Mã loại, cách nhau dấu phẩy. |
+| `sv.log.kiemToan` | Loại nhật ký kiểm toán | Cố định (ẩn) | `ADMIN,GM,NAP,NAP_TIEN,GIFTCODE,CAM,BAN,KINH_TE,KINHTE,CHONG_SPAM` | ngay | game | Ghi riêng tệp kiem_toan (giữ lâu). |
+
+#### PvP / Gym / Hầm Ngục (luôn bật) (`pvp`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `pvp.tinh_diem.bat` | Tính điểm thang PvP | Luôn bật (ẩn) | `1` | ngay | game | 0 = trận PvP không cộng/trừ điểm thang. |
+| `gym.bat` | Thách đấu Gym | Luôn bật (ẩn) | `1` | ngay | game | 0 = tạm đóng Gym. |
+| `ham_nguc.bat` | Hầm Ngục bí ẩn | Luôn bật (ẩn) | `1` | ngay | game | 0 = không vào tầng mới (vẫn nhận thưởng đã đạt). |
+
+#### Chỉ số & chống lạm phát (cố định) (`chi_so`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `chi_so.bat` | Bật giới hạn chỉ số | Luôn bật (ẩn) | `1` | ngay | game | 0 = tắt mọi trần/giảm dần chỉ số (quay về công thức cũ). |
+| `chi_so.kep_trang_bi` | Kẹp chỉ số trang bị theo ngân sách | Luôn bật (ẩn) | `1` | ngay | game | Mỗi món ≤ chuẩn bậc × 1,30 × nâng cấp; đồ bậc cũ ≤ 130% đồ bậc hiện tại. |
+| `chi_so.tran_chi_mang` | Trần tỉ lệ chí mạng (‰) | Cố định (ẩn) | `400` | ngay | game | Phần nghìn, có giảm dần. PvP cố định 300‰. |
+| `chi_so.tran_st_chi_mang` | Trần ST chí mạng cộng thêm (‰) | Cố định (ẩn) | `500` | ngay | game | Trên nền ×1,5. 500 = đòn chí mạng tối đa ×2,0. |
+| `chi_so.tran_ne` | Trần né tránh (‰) | Cố định (ẩn) | `300` | ngay | game | Phần nghìn, có giảm dần. PvP cố định 200‰. |
+| `chi_so.tran_hut` | Trần hút HP PvE (‰ sát thương) | Cố định (ẩn) | `100` | ngay | game | Gộp mọi nguồn hút HP. |
+| `chi_so.tran_hut_pvp` | Trần hút HP PvP (‰ sát thương thật) | Cố định (ẩn) | `50` | ngay | game | Gộp mọi nguồn hút HP, tính trên sát thương sau ×0,30. |
+| `chi_so.tran_giam_st` | Trần giảm sát thương nhận (‰) | Cố định (ẩn) | `500` | ngay | game | Gộp mọi nguồn thụ động (PvP cố định 400‰). |
+| `chi_so.tran_khang_he` | Trần kháng một hệ (‰) | Cố định (ẩn) | `600` | ngay | game | Kháng hệ + kháng mọi hệ + phiến đá. |
+| `chi_so.san_sat_thuong` | Sàn sát thương mỗi đòn (‰) | Cố định (ẩn) | `400` | ngay | game | Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử). |
+| `chi_so.tran_phan_tram_cong` | Trần tổng % cộng thêm (‰) | Cố định (ẩn) | `500` | ngay | game | Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc. |
+
+#### Hồi sinh — luật (cố định) (`hoi_sinh`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `hoi_sinh.bat` | Bật cơ chế hồi sinh mới | Luôn bật (ẩn) | `1` | ngay | game | 0 = luồng cũ (popup hồi sinh tại chỗ 5% giờ thu nhập, tự hồi sinh dưới cấp 50). |
+| `hoi_sinh.he_so_lap` | Hệ số gục lặp (%) | Cố định (ẩn) | `100,150,200,300` | ngay | game | Lần gục thứ 1, 2, 3... trong cửa sổ; lần sau dùng số cuối (trần). Áp cho phí xu và lượng khoá. |
+| `hoi_sinh.cua_so_phut` | Cửa sổ gục lặp (phút) | Cố định (ẩn) | `30` | ngay | game | Đếm số lần gục trong ngần này phút. |
+| `hoi_sinh.cho_sau_guc_giay` | Chờ sau khi gục (giây) | Cố định (ẩn) | `5` | ngay | game | Hồi sinh tại chỗ chỉ bấm được sau ngần này giây (đếm ngược trên hộp thoại). |
+| `hoi_sinh.hp_thuoc` | HP khi dùng Thuốc hồi sinh (%) | Cố định (ẩn) | `30` | ngay | game | Thuốc hồi sinh tối đa lấy % trong data_vat_pham_lau_dai (hoi_sinh:100). |
+| `hoi_sinh.hp_tra_phi` | HP khi trả xu / lượng khoá / tân thủ (%) | Cố định (ẩn) | `50` | ngay | game |  |
+| `hoi_sinh.exp_mat_phan_nghin` | Mất EXP khi về Trung tâm (phần nghìn) | Cố định (ẩn) | `20` | ngay | game | Phần nghìn EXP lên cấp hiện tại (20 = 2%). Không bao giờ tụt cấp: chỉ trừ trong tiến độ cấp. |
+| `hoi_sinh.exp_mat_toi_da_phut` | Trần mất EXP (phút cày) | Cố định (ẩn) | `15` | ngay | game | Không mất quá ngần này phút EXP đánh quái ở cấp đó. 0 = không chặn. |
+| `hoi_sinh.do_ben_mat_phan_tram` | Mất độ bền khi về Trung tâm (%) | Cố định (ẩn) | `5` | ngay | game | % độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ). |
+| `hoi_sinh.met_moi_phut` | Mệt mỏi (phút) | Cố định (ẩn) | `5` | ngay | game | Sau khi về Trung tâm. 0 = tắt. |
+| `hoi_sinh.met_moi_exp` | Mệt mỏi: giảm EXP (%) | Cố định (ẩn) | `20` | ngay | game | EXP hạ quái. |
+| `hoi_sinh.met_moi_tan_cong` | Mệt mỏi: giảm tấn công (%) | Cố định (ẩn) | `10` | ngay | game |  |
+| `hoi_sinh.tan_thu_hoi_chieu_giay` | Hồi chiêu hồi sinh miễn phí tân thủ (giây) | Cố định (ẩn) | `30` | ngay | game |  |
+| `hoi_sinh.dong_doi_bat` | Cho chờ đồng đội hồi sinh | Luôn bật (ẩn) | `1` | ngay | game | Đồng đội ở gần mang Thuốc hồi sinh được mời cứu. |
+| `hoi_sinh.dong_doi_giay` | Thời gian chờ đồng đội (giây) | Cố định (ẩn) | `60` | ngay | game |  |
+| `hoi_sinh.cam_pvp` | Cấm tại chỗ ở PvP / sàn đấu | Luôn bật (ẩn) | `1` | ngay | game | Sàn đấu, giải Liên minh, chiến trường, lãnh địa đội, chiếm Gym đang đánh, đấu trường + hoi_sinh.map_pvp. |
+| `hoi_sinh.cam_gym` | Cấm tại chỗ khi thách đấu Gym | Luôn bật (ẩn) | `1` | ngay | game |  |
+| `hoi_sinh.cam_boss` | Cấm tại chỗ giữa trận boss | Luôn bật (ẩn) | `1` | ngay | game | Đã gây sát thương vào boss thế giới / Gym còn sống cùng bản đồ. |
+| `hoi_sinh.cam_me_cung` | Cấm tại chỗ trong Mê cung | Luôn bật (ẩn) | `1` | ngay | game |  |
+| `hoi_sinh.map_pvp` | Bản đồ PvP (id) | Cố định (ẩn) | `202,203,204,205,227,228` | ngay | game | Thêm vào luật cấm PvP (so cả id bản đồ lẫn id nạp). |
+| `hoi_sinh.map_cam_them` | Bản đồ cấm tại chỗ thêm (id) | Cố định (ẩn) | *(trống)* | ngay | game | Cách nhau dấu phẩy; trống = không. |
+| `hoi_sinh.auto_ve_map_up` | Cho "Auto về Map Up" sau khi gục | Cố định (ẩn) | `0` | ngay | game | 0 = gục thì không tự bay lại bãi luyện (chống treo máy vô hạn). |
+| `hoi_sinh.thuoc_moi_gio` | Hồi sinh bằng vật phẩm tối đa / giờ | Cố định (ẩn) | `6` | ngay | game | Thuốc hồi sinh / tối đa của chính mình (tay, Tự động đánh, dùng từ túi) trong 60 phút. Đồng đội cứu không tính. 0 = không giới hạn. |
+
+#### Thông báo (cố định) (`thong_bao`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.thongBao.bat` | Gộp thông báo toàn máy chủ | Luôn bật (ẩn) | `1` | ngay | game | 0 = gửi thẳng như cũ. |
+| `sv.thongBao.toiDa` | Thông báo tối đa / cửa sổ | Cố định (ẩn) | `6` | ngay | game |  |
+| `sv.thongBao.cuaSoGiay` | Cửa sổ đếm thông báo (giây) | Cố định (ẩn) | `60` | ngay | game |  |
+| `sv.thongBao.moiLoai` | Tối đa mỗi loại / cửa sổ | Cố định (ẩn) | `3` | ngay | game |  |
+| `sv.thongBao.trungLapGiay` | Bỏ thông báo trùng (giây) | Cố định (ẩn) | `120` | ngay | game |  |
+| `sv.thongBao.gopGiay` | Gộp mỗi (giây) | Cố định (ẩn) | `15` | ngay | game |  |
+
+#### Quản trị & thử nghiệm (cố định) (`quan_tri`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `sv.gmCanCoPInfo` | GM cần cả cờ pInfo | Cố định (ẩn) | `0` | ngay | game | 1 = quyền GM cần tên trong danh sách VÀ pInfo[16]=1. |
+| `sv.choPhepTaoTenGM` | Cho tạo Pokémon tên GM | Cố định (ẩn) | `0` | ngay | game | Chỉ bật tạm thời. |
+| `sv.testMode` | Chế độ thử (testMode) | Cố định (ẩn) | `0` | ngay | game | Mã test cấp tài nguyên miễn phí. Khoá ở máy thật. (máy thật chỉ nhận mặc định) |
+| `sv.testCode` | Mã test | Cố định (ẩn) | *(trống)* | ngay | game | Chuỗi gõ trong game khi testMode=1. (máy thật chỉ nhận mặc định) |
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: KET THUC -->

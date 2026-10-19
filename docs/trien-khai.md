@@ -207,7 +207,7 @@ Cron của root (các dòng mẫu nằm ở đầu từng script):
 | `30 3 * * *` (`/etc/cron.d/htbb-backup`) | `/usr/local/sbin/htbb-backup-db.sh` — dump `htbb_db` + `account`, giữ 14 ngày |
 | `30 4 * * 1` | `vps/kiem-khoi-phuc-csdl.sh` — nạp thử bản sao lưu mới nhất vào CSDL tạm, so số dòng |
 | mỗi phút | `vps/kiem-suc-khoe.sh` — bắt tay `-40` với cổng game, `trang_thai.json`, login, CSDL, web |
-| mỗi phút | `vps/dieu-khien-server.sh` — bật/tắt game theo lệnh từ `/admin/server` |
+| mỗi phút | `vps/dieu-khien-server.sh` — bật/tắt game theo lệnh từ `/admin/he-thong` (khối Bật/tắt) |
 | `20 3 * * *` | `vps/don-log.sh` — dọn bảng nhật ký CSDL và tệp `.txt` lẻ |
 
 Người chơi vào game qua WAF / Nova agent, nên game server chỉ thấy IP của proxy: thêm dải WAF vào `sv.proxyTinCay` ở

@@ -79,10 +79,11 @@ test('kiểm: kiểu không phải chuỗi, ký tự điều khiển, boolean', 
 })
 
 test('so sánh trước khi lưu', () => {
-  const dang = { 'sv.tileXu': '20', 'thue.cho': '6', 'sv.testMode': null as string | null }
-  let r = soSanhTT(dang, { 'sv.tileXu': '20', 'thue.cho': ' 7 ' })
+  // thue.cho là khoá cố định (ẩn) từ 19/10/2026 -> dùng một khoá chỉnh trên web (sv.tileLuong)
+  const dang = { 'sv.tileXu': '20', 'sv.tileLuong': '6', 'sv.testMode': null as string | null }
+  let r = soSanhTT(dang, { 'sv.tileXu': '20', 'sv.tileLuong': ' 7 ' })
   assert.deepEqual(r.loi, {})
-  assert.deepEqual(r.thayDoi.map(d => [d.khoa, d.cu, d.moi]), [['thue.cho', '6', '7']], 'không đổi thì bỏ, có chuẩn hoá')
+  assert.deepEqual(r.thayDoi.map(d => [d.khoa, d.cu, d.moi]), [['sv.tileLuong', '6', '7']], 'không đổi thì bỏ, có chuẩn hoá')
   r = soSanhTT(dang, { 'sv.tileXu': null })
   assert.deepEqual(r.thayDoi.map(d => [d.khoa, d.moi]), [['sv.tileXu', null]], 'null = xoá dòng')
   r = soSanhTT(dang, { 'sv.tileXu': '500' })
@@ -109,7 +110,8 @@ test('tìm kiếm không dấu + nhóm theo thứ tự', () => {
   assert.equal(timTT('').length, DANH_MUC_TT.length)
   const g = nhomTT()
   assert.deepEqual(g.map(x => x.ma), NHOM_TT.map(x => x.ma).filter(m => g.some(y => y.ma === m)))
-  assert.equal(g.reduce((t, x) => t + x.khoa.length, 0), DANH_MUC_TT.length)
+  assert.equal(nhomTT(DANH_MUC_TT, true).reduce((t, x) => t + x.khoa.length, 0), DANH_MUC_TT.length, 'máy thử: mọi khoá')
+  assert.ok(g.every(x => x.khoa.every(y => !y.lop)), 'mặc định bỏ khoá ẩn')
 })
 
 test('hiển thị: nhạy cảm che, cờ bật/tắt, lựa chọn có nhãn', () => {
