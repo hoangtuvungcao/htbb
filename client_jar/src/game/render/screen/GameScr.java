@@ -1995,6 +1995,11 @@ public class GameScr extends Screen {
             return;
         }
         this.mainChar.stand = System.currentTimeMillis();
+        // 0.9.6.1: J2ME phím (không HUD rộng, không nút câu): phím 5 cạnh hồ khi không nhắm gì / đang câu = câu cá
+        if (key == 5 && !HudRong.bat() && game.pokemon.HanhDong.nutDanhLaCau()) {
+            game.pokemon.HanhDong.cauCa();
+            return;
+        }
         if (this.mainChar.state == 3) {
             Canvas.msgdlg.isIcon = false;
             this.indexBuff = -1;
@@ -3902,10 +3907,10 @@ public class GameScr extends Screen {
             return;   // 0.9.5: tin rỗng / chỉ khoảng trắng: không gửi, không bong bóng (ô chat vẫn mở)
         }
         if ("cauca".equals(text.toLowerCase())) {
-            // hệ sinh thái: chỉ câu ở HỒ - xa hồ thì báo, không gửi, không ném cần
-            if (!game.pokemon.SinhThai.thuCau()) {
-                return;
-            }
+            // hệ sinh thái: chỉ câu ở HỒ - xa mặt nước thì báo, không gửi, không ném cần; gõ tay = như nút câu
+            // (thả "cauca2" hoặc kéo cần nếu đang câu), không gửi chữ lên kênh chat
+            game.pokemon.HanhDong.cauCa();
+            return;
         }
         if (typechat == CHAT_NORMAL) {
             this.tinVuaGo = text;
@@ -7542,6 +7547,14 @@ public class GameScr extends Screen {
         }
         Canvas.menu.startAt(menu, 3);
         Canvas.currentDialog = null;
+        // 0.9.6.1: máy cảm ứng, menu máy chủ tới lúc đang mở một TẤM (Menu lưới, Pokédex... - MenuNguCanh.tiepQuan chỉ
+        // tiếp quản trên màn chơi): thẻ lệnh chung luôn, không để lộ menu chữ J2ME (không vùng chạm, không theo vùng an toàn)
+        Screen m = Canvas.currentScreen;
+        if (game.pokemon.MenuNguCanh.bat() && m != null && m != this
+                && (m instanceof game.pokemon.ManBang || m.getClass().getName().startsWith("game.pokemon.Man"))) {
+            Canvas.menu.showMenu = false;
+            game.pokemon.MenuNguCanh.mo(menu, false);
+        }
     }
 
     public void onTextBox(final int userID, final byte idMenu, String nameText, int typeInput) {

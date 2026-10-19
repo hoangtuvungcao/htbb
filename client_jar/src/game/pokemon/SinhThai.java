@@ -353,7 +353,7 @@ public final class SinhThai {
             }
             laHo = ho;
             if (mapDiemServer < 0) {
-                Vector v = diemCau(nhan, luoiDiDuoc(m, game.model.Tilemap.type), w, h, DIEM_MOI_HO);
+                Vector v = diemCau(nhan, luoiDiDuoc(m, game.model.Tilemap.type), w, h, 1);   // bản đồ nhỏ: 1 phao / hồ
                 Vector xy = new Vector();
                 for (int i = 0; i < v.size(); i++) {
                     int[] d = (int[]) v.elementAt(i);
@@ -364,6 +364,12 @@ public final class SinhThai {
         } catch (Throwable e) {
             laHo = null;
         }
+    }
+
+    /** Kiểm thử: đặt lưới hồ [y*w+x] cho bản đồ đang nạp (bỏ qua phân tích tile). */
+    public static void datHoThu(boolean[] ho) {
+        daTinh = game.model.Tilemap.map;
+        laHo = ho;
     }
 
     /** Server gửi danh sách điểm câu của bản đồ (khi có dữ liệu hồ phía server): dùng thay phát hiện tại client. */
@@ -408,67 +414,163 @@ public final class SinhThai {
         return false;
     }
 
-    /** Gõ "cauca": true = được câu (gửi server + hoạt cảnh); false = báo "Chỉ có thể câu cá ở hồ." */
-    public static boolean thuCau() {
-        if (!ganHo()) {
-            Canvas.startOKDlg("Chỉ có thể câu cá ở hồ.");
-            return false;
-        }
-        batDauCau();
-        return true;
-    }
-
-    /** Bản đồ nhỏ: biểu tượng cần câu ở bến hồ. */
-    static void veDiemCauMini(Graphics g) {
+    /**
+     * Bản đồ nhỏ: MỘT phao câu nhỏ (3x4 px, nền trong suốt) mỗi hồ. Trước 0.9.6.1: ô vuông tối 6x6 + nét cần cho 4
+     * điểm / hồ -> bản đồ nhỏ đầy khối đen (báo lỗi chủ game). KiemPc kiểm không còn khối tối.
+     */
+    public static void veDiemCauMini(Graphics g) {
         phanTichHo();
         for (int i = 0; i < diemCau.size(); i++) {
             int[] d = (int[]) diemCau.elementAt(i);
             int x = d[0], y = d[1];
-            g.setColor(GiaoDien.VIEN);
-            g.fillRect(x - 2, y - 3, 6, 6);
-            g.setColor(0xC08040);
-            g.drawLine(x - 1, y + 1, x + 2, y - 2);       // cần
+            g.setColor(0xE3350D);
+            g.fillRect(x - 1, y - 1, 3, 1);               // nửa trên phao đỏ
             g.setColor(0xFFFFFF);
-            g.fillRect(x + 2, y - 2, 1, 1);
-            g.setColor(GiaoDien.DO);
-            g.fillRect(x + 2, y + 1, 1, 1);               // phao
+            g.fillRect(x - 1, y, 3, 2);                   // nửa dưới trắng
+            g.setColor(0xC08040);
+            g.fillRect(x, y - 2, 1, 1);                   // cán phao
         }
     }
 
     // ================================================================== câu cá
+    //
+    // 0.9.6.1 (server CauCaPhien): thả câu ("cauca2") -> phao bay ra Ô NƯỚC HỒ gần nhất (ưu tiên hướng đang nhìn,
+    // không bao giờ rơi trên đất) -> chờ server báo "Cá cắn câu!" -> bấm nút câu / Enter = "keocan" trong khung ngắn
+    // -> "Câu được..." / "Không câu được gì" / "...cá đã thoát mất". Server quyết định thời gian + vị trí (chống gian).
 
-    private static int cauTick = -1;          // tick bắt đầu (-1 = không câu)
-    private static int canTick = -1;          // tick cá cắn (-1 = chưa có kết quả)
+    private static long cauLuc = -1;          // ms bắt đầu (-1 = không câu)
+    private static long canLuc = -1;          // ms cá cắn (-1 = chưa)
+    private static long keoLuc = -1;          // ms bắt đầu kéo về (có kết quả "Câu được")
+    private static boolean daKeo;             // đã gửi "keocan" lần này
     private static int cauDir;
-    private static int cauX, cauY;            // tọa độ người câu lúc bắt đầu
+    private static int cauX, cauY;            // tọa độ người câu lúc bắt đầu (px)
+    private static int phaoX, phaoY;          // chỗ phao (px, tâm ô nước)
     private static String choBao;             // thông báo kết quả chờ hiện
 
-    private static final int T_QUANG = 12;    // ném phao
-    private static final int T_CHO_MIN = 34;  // phao nổi tối thiểu trước khi cá cắn
-    private static final int T_CAN = 20;      // cá cắn
-    private static final int T_KEO = 10;      // kéo về
-    private static final int T_HET = 260;     // không có kết quả: thôi
+    static final int MS_QUANG = 600;          // ném phao
+    static final int MS_KEO = 500;            // kéo về
+    static final int MS_HET_CHO = 30000;      // không có tin cá cắn: thôi
+    static final int MS_HET_CAN = 6000;       // cá cắn mà không có kết quả: thôi
+    /** Bán kính (ô) tìm mặt nước quanh người câu - = server BanDoSinhThai.hoGan(..., 2). */
+    static final int TAM_CAU = 2;
 
-    public static void batDauCau() {
+    /** Ô nước hồ gần (x, y) (ô) trong TAM_CAU ô, ưu tiên hướng dir; null = không có. Thuần (test gọi được). */
+    public static int[] oNuocGan(boolean[] ho, int w, int h, int x, int y, int dir) {
+        if (ho == null) {
+            return null;
+        }
+        int dx = dxHuong(dir), dy = dyHuong(dir);
+        int[] tot = null;
+        int diemTot = Integer.MAX_VALUE;
+        for (int yy = y - TAM_CAU; yy <= y + TAM_CAU; yy++) {
+            for (int xx = x - TAM_CAU; xx <= x + TAM_CAU; xx++) {
+                if (xx < 0 || yy < 0 || xx >= w || yy >= h || !ho[yy * w + xx]) {
+                    continue;
+                }
+                int ex = xx - x, ey = yy - y;
+                int d = (ex < 0 ? -ex : ex) + (ey < 0 ? -ey : ey);
+                // cùng hướng nhìn: ưu tiên (điểm thấp); ngược hướng: phạt
+                int cung = ex * dx + ey * dy;
+                int diem = d * 4 - (cung > 0 ? 6 : 0) + (cung < 0 ? 6 : 0);
+                if (diem < diemTot) {
+                    diemTot = diem;
+                    tot = new int[]{xx, yy};
+                }
+            }
+        }
+        return tot;
+    }
+
+    /** Hướng nhìn về (ex, ey) (ô lệch). */
+    static int huongVe(int ex, int ey, int cu) {
+        if (ex == 0 && ey == 0) {
+            return cu;
+        }
+        if ((ex < 0 ? -ex : ex) >= (ey < 0 ? -ey : ey)) {
+            return ex < 0 ? Char.LEFT : Char.RIGHT;
+        }
+        return ey < 0 ? Char.UP : Char.DOWN;
+    }
+
+    /** Ô nước để thả phao ngay lúc này (null = không đứng gần mặt nước). */
+    static int[] oThaPhao() {
         GameScr gs = Canvas.gameScr;
         if (gs == null || gs.mainChar == null) {
-            return;
+            return null;
         }
-        cauTick = Canvas.gameTick;
-        canTick = -1;
-        cauDir = gs.mainChar.dir;
+        phanTichHo();
+        return oNuocGan(laHo, game.model.Tilemap.w, game.model.Tilemap.h, gs.mainChar.x / 16, gs.mainChar.y / 16, gs.mainChar.dir);
+    }
+
+    /** Có chỗ thả phao xuống nước (hồ) trong tầm. */
+    public static boolean coCho() {
+        return ganHo() && oThaPhao() != null;
+    }
+
+    public static final String BAO_XA_NUOC = "Hãy đứng gần mặt nước để câu cá";
+
+    /** Thả câu: true = được (hoạt cảnh đã chạy, người gọi gửi "cauca2"); false = báo ngắn, không câu. */
+    public static boolean thuCau() {
+        if (!coCho() || !batDauCau()) {
+            HanhDong.bao(BAO_XA_NUOC);
+            return false;
+        }
+        return true;
+    }
+
+    /** Bắt đầu hoạt cảnh thả phao xuống ô nước gần nhất. false = không có mặt nước trong tầm (không ném xuống đất). */
+    public static boolean batDauCau() {
+        GameScr gs = Canvas.gameScr;
+        if (gs == null || gs.mainChar == null) {
+            return false;
+        }
+        int[] o = oThaPhao();
+        if (o == null) {
+            return false;
+        }
+        int x = gs.mainChar.x / 16, y = gs.mainChar.y / 16;
+        cauDir = huongVe(o[0] - x, o[1] - y, gs.mainChar.dir);
+        gs.mainChar.dir = (short) cauDir;      // quay mặt ra mặt nước
+        phaoX = o[0] * 16 + 8;
+        phaoY = o[1] * 16 + 10;
+        cauLuc = System.currentTimeMillis();
+        canLuc = -1;
+        keoLuc = -1;
+        daKeo = false;
         cauX = gs.mainChar.x;
         cauY = gs.mainChar.y;
         choBao = null;
+        return true;
     }
 
     public static boolean dangCau() {
-        return cauTick >= 0;
+        return cauLuc >= 0;
+    }
+
+    /** Cá đang cắn câu (chờ người chơi kéo). */
+    public static boolean dangCan() {
+        return cauLuc >= 0 && canLuc >= 0 && keoLuc < 0;
+    }
+
+    /** Đã gửi lệnh kéo lần này (nút câu tạm ẩn chữ "Kéo"). */
+    public static boolean daKeo() {
+        return daKeo;
+    }
+
+    /** Bấm nút câu / Enter khi đang câu: gửi "keocan" (một lần). true = đã gửi. */
+    public static boolean keoCan() {
+        if (cauLuc < 0 || daKeo || keoLuc >= 0) {
+            return false;
+        }
+        daKeo = true;
+        return true;
     }
 
     private static void ketThucCau() {
-        cauTick = -1;
-        canTick = -1;
+        cauLuc = -1;
+        canLuc = -1;
+        keoLuc = -1;
+        daKeo = false;
         if (choBao != null) {
             String s = choBao;
             choBao = null;
@@ -476,26 +578,56 @@ public final class SinhThai {
         }
     }
 
+    /** Thu cần ngay (không có kết quả). */
+    private static void thuCan() {
+        cauLuc = -1;
+        canLuc = -1;
+        keoLuc = -1;
+        daKeo = false;
+        choBao = null;
+    }
+
     /**
-     * Lệnh 37 (hộp thông báo): true = client giữ lại (hiện sau). Đồng thời đọc mốc đua / điểm đào.
+     * Lệnh 37 (hộp thông báo): true = client giữ lại (hiện sau / thay bằng hoạt cảnh). Đồng thời đọc mốc đua / điểm đào.
      */
     public static boolean chanThongBao(String s) {
         if (s == null) {
             return false;
         }
         docMoc(s);
+        long now = System.currentTimeMillis();
+        if (s.startsWith("Cá cắn câu")) {
+            if (cauLuc < 0 && !batDauCau()) {
+                return false;
+            }
+            if (canLuc < 0) {
+                canLuc = now > cauLuc + MS_QUANG ? now : cauLuc + MS_QUANG;
+            }
+            HanhDong.bao(s);           // dấu cá cắn: chữ nhanh + phao chìm, không hộp thoại chặn tay
+            return true;
+        }
         if (s.startsWith("Câu được")) {
-            if (cauTick < 0) {
+            if (cauLuc < 0) {
                 batDauCau();
             }
             choBao = s;
-            int toiThieu = cauTick + T_QUANG + T_CHO_MIN;
-            canTick = Canvas.gameTick > toiThieu ? Canvas.gameTick : toiThieu;
-            return true;
+            if (cauLuc >= 0) {
+                if (canLuc < 0) {
+                    // server cũ (không báo cá cắn): diễn cá cắn ngắn rồi kéo
+                    canLuc = now > cauLuc + MS_QUANG ? now : cauLuc + MS_QUANG;
+                    keoLuc = canLuc + 900;
+                } else {
+                    keoLuc = now;
+                }
+                return true;
+            }
+            choBao = null;
+            return false;
         }
-        if (cauTick >= 0 && (s.indexOf("mép nước") >= 0 || s.indexOf("thể lực") >= 0 || s.indexOf("mồi câu") >= 0 || s.indexOf("tạm thời") >= 0)) {
-            cauTick = -1;            // câu không được: thu cần ngay
-            canTick = -1;
+        if (cauLuc >= 0 && (s.startsWith("Không câu được") || s.indexOf("thoát mất") >= 0 || s.startsWith("Chỉ có thể câu")
+                || s.indexOf("thả câu tiếp") >= 0 || s.indexOf("mép nước") >= 0 || s.indexOf("thể lực") >= 0
+                || s.indexOf("mồi câu") >= 0 || s.indexOf("tạm thời") >= 0)) {
+            thuCan();            // câu không được / cá thoát: thu cần ngay, thông báo hiện như thường
         }
         return false;
     }
@@ -516,16 +648,14 @@ public final class SinhThai {
     }
 
     private static void veCau(Graphics g) {
-        if (cauTick < 0) {
+        if (cauLuc < 0) {
             return;
         }
         GameScr gs = Canvas.gameScr;
-        int t = Canvas.gameTick - cauTick;
-        if (t < 0) {
-            t += 10001;                // Canvas.gameTick quay về 0 sau 10000
-        }
-        if (t > T_HET && canTick < 0) {
-            cauTick = -1;
+        long now = System.currentTimeMillis();
+        long t = now - cauLuc;
+        if (canLuc < 0 && t > MS_HET_CHO || canLuc >= 0 && keoLuc < 0 && now - canLuc > MS_HET_CAN) {
+            thuCan();
             return;
         }
         // di chuyển xa chỗ câu: thu cần
@@ -534,57 +664,56 @@ public final class SinhThai {
             return;
         }
         int dx = dxHuong(cauDir);
-        int dy = dyHuong(cauDir);
-        int xNgon = gs.mainChar.x + (dx != 0 ? dx * 10 : 8);
+        int xNgon = gs.mainChar.x + (dx != 0 ? dx * 10 : (phaoX >= gs.mainChar.x ? 8 : -8));
         int yNgon = gs.mainChar.y - 26;
-        int xPhao = cauX + dx * 34 + (dx == 0 ? 6 : 0);
-        int yPhao = cauY + dy * 30 + (dy == 0 ? 4 : 0);
+        int xPhao = phaoX;
+        int yPhao = phaoY;
         int x = xPhao;
         int y = yPhao;
         int pha;                     // 0 ném, 1 nổi, 2 cắn, 3 kéo
-        int tc = canTick < 0 ? -1 : Canvas.gameTick - canTick;
-        if (canTick >= 0 && tc < -5000) {
-            tc += 10001;
-        }
-        if (t < T_QUANG) {
+        long tc = canLuc < 0 || now < canLuc ? -1 : now - canLuc;
+        if (t < MS_QUANG) {
             pha = 0;
-            x = xNgon + (xPhao - xNgon) * t / T_QUANG;
-            int cung = t * (T_QUANG - t);
-            y = yNgon + (yPhao - yNgon) * t / T_QUANG - cung * 18 / (T_QUANG * T_QUANG / 4);
+            int tt = (int) t;
+            x = xNgon + (xPhao - xNgon) * tt / MS_QUANG;
+            long cung = (long) tt * (MS_QUANG - tt);
+            y = yNgon + (yPhao - yNgon) * tt / MS_QUANG - (int) (cung * 18 / ((long) MS_QUANG * MS_QUANG / 4));
+        } else if (keoLuc >= 0 && now >= keoLuc) {
+            long k = now - keoLuc;
+            if (k >= MS_KEO) {
+                ketThucCau();
+                return;
+            }
+            pha = 3;
+            x = xPhao + (int) ((xNgon - xPhao) * k / MS_KEO);
+            y = yPhao + (int) ((yNgon - yPhao) * k / MS_KEO);
         } else if (tc < 0) {
             pha = 1;
-            y += (Canvas.gameTick / 6) % 2;
-        } else if (tc < T_CAN) {
-            pha = 2;
-            y += tc < 8 ? (tc % 4 < 2 ? 3 : 1) : 2;
-            x += tc % 2;
-        } else if (tc < T_CAN + T_KEO) {
-            pha = 3;
-            int k = tc - T_CAN;
-            x = xPhao + (xNgon - xPhao) * k / T_KEO;
-            y = yPhao + (yNgon - yPhao) * k / T_KEO;
+            y += (now / 300) % 2;
         } else {
-            ketThucCau();
-            return;
+            pha = 2;
+            y += tc < 400 ? ((tc / 100) % 2 == 0 ? 3 : 1) : 2;
+            x += (now / 50) % 2;
         }
         // cần câu
+        int xGoc = gs.mainChar.x + (dx != 0 ? dx * 2 : (xNgon > gs.mainChar.x ? 3 : -3));
         g.setColor(0x7A4A22);
-        g.drawLine(gs.mainChar.x + (dx != 0 ? dx * 2 : 3), gs.mainChar.y - 14, xNgon, yNgon);
+        g.drawLine(xGoc, gs.mainChar.y - 14, xNgon, yNgon);
         g.setColor(0x9C6430);
-        g.drawLine(gs.mainChar.x + (dx != 0 ? dx * 2 : 3) + 1, gs.mainChar.y - 14, xNgon + 1, yNgon);
+        g.drawLine(xGoc + 1, gs.mainChar.y - 14, xNgon + 1, yNgon);
         // dây
         g.setColor(0xE8EEF4);
         g.drawLine(xNgon, yNgon, x, y);
         if (pha >= 1 && pha <= 2) {
             // gợn nước quanh phao
-            int r = 3 + (Canvas.gameTick % 24) / 3;
+            int r = 3 + (int) ((now / 120) % 8);
             g.setColor(pha == 2 ? 0xFFFFFF : 0xBFE4FF);
             g.drawArc(x - r, y - r / 3 + 2, r * 2, r * 2 / 3 + 1, 0, 360);
             if (pha == 2) {
                 // bọt nước bắn
                 for (int i = 0; i < 5; i++) {
                     int bx = x - 6 + i * 3;
-                    int by = y - 2 - (tc * (2 + i % 3)) % 9;
+                    int by = y - 2 - (int) ((tc / 50 * (2 + i % 3)) % 9);
                     g.setColor(0xDFF3FF);
                     g.fillRect(bx, by, 2, 2);
                 }
@@ -597,7 +726,7 @@ public final class SinhThai {
         g.fillArc(x - 2, y - 3, 5, 5, 0, 360);
         g.setColor(0xE3350D);
         g.fillArc(x - 2, y - 3, 5, 3, 0, 180);
-        if (pha == 2) {
+        if (pha == 2 && !daKeo) {
             // dấu "!" trên đầu
             int yy = gs.mainChar.y - gs.mainChar.height - 22;
             GiaoDien.khoi(g, gs.mainChar.x - 5, yy, 11, 14, 4, GiaoDien.VIEN);

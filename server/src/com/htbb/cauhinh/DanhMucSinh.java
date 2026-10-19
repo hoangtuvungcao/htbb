@@ -766,6 +766,45 @@ final class DanhMucSinh {
                     .nhay()
                     .khoaProd()
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.cho_min_giay", "kinh_te", "so", "6", true, "cau_hinh")
+                    .nhan("Câu cá: chờ cá cắn tối thiểu (giây)", "Sau khi thả câu, cá cắn câu sau ngẫu nhiên [tối thiểu, tối đa] giây (server quyết định).")
+                    .khoang(2L, 120L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.cho_max_giay", "kinh_te", "so", "15", true, "cau_hinh")
+                    .nhan("Câu cá: chờ cá cắn tối đa (giây)", "Nhỏ hơn tối thiểu thì dùng tối thiểu.")
+                    .khoang(2L, 180L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.cho_them_ho_lon_giay", "kinh_te", "so", "3", true, "cau_hinh")
+                    .nhan("Câu cá: chờ thêm ở hồ lớn (giây)", "Hồ lớn (có cá hiếm) chờ lâu hơn ngần này giây (cả hai đầu khoảng).")
+                    .khoang(0L, 60L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.cua_so_ms", "kinh_te", "so", "1500", true, "cau_hinh")
+                    .nhan("Câu cá: khung kéo cần (ms)", "Sau dấu \"Cá cắn câu!\", phải kéo cần trong ngần này mili giây; sớm hoặc muộn thì cá thoát.")
+                    .khoang(300L, 5000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.tre_mang_ms", "kinh_te", "so", "700", true, "cau_hinh")
+                    .nhan("Câu cá: bù trễ mạng (ms)", "Lệnh kéo cần tới server muộn thêm tối đa ngần này ms vẫn tính đúng lúc (bù đường truyền hai chiều).")
+                    .khoang(0L, 3000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.trong_phan_tram", "kinh_te", "so", "30", true, "cau_hinh")
+                    .nhan("Câu cá: tỉ lệ không câu được gì (%)", "Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất).")
+                    .khoang(0L, 90L),
+            new DinhNghiaKhoa("cau_ca.hoi_giay", "kinh_te", "so", "3", true, "cau_hinh")
+                    .nhan("Câu cá: nghỉ giữa hai lần thả (giây)", "Sau khi một lần câu kết thúc, chờ ngần này giây mới thả câu tiếp.")
+                    .khoang(0L, 120L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.giam_tu_lan_gio", "kinh_te", "so", "30", true, "cau_hinh")
+                    .nhan("Câu cá: số lần câu được mỗi giờ trước khi giảm", "Trong một giờ đồng hồ, câu được quá ngần này lần thì tỉ lệ không được gì tăng dần (chống cày).")
+                    .khoang(1L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.giam_moi_lan_phan_tram", "kinh_te", "so", "2", true, "cau_hinh")
+                    .nhan("Câu cá: tăng tỉ lệ trượt mỗi lần vượt (%)", "Mỗi lần câu được vượt mốc trong giờ cộng ngần này % vào tỉ lệ không được gì.")
+                    .khoang(0L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cau_ca.trong_toi_da_phan_tram", "kinh_te", "so", "75", true, "cau_hinh")
+                    .nhan("Câu cá: tỉ lệ không được gì tối đa (%)", "Trần của tỉ lệ không được gì sau khi cộng giảm theo giờ.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
         };
     }
 }

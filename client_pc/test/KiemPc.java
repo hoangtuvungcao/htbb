@@ -22,6 +22,51 @@ public class KiemPc {
         }
     }
 
+    /**
+     * 0.9.6.1 câu cá: phao luôn rơi xuống Ô NƯỚC hồ (kể cả đang quay lưng lại hồ), xa nước = không câu; bản đồ nhỏ vẽ
+     * phao nhỏ nền trong suốt (không còn ô vuông tối 6x6 mỗi điểm câu - lỗi chủ game báo).
+     */
+    static void kiemCauCa() {
+        int w = 12, h = 10;
+        boolean[] ho = new boolean[w * h];
+        for (int y = 3; y < 7; y++) {
+            for (int x = 6; x < 10; x++) {
+                ho[y * w + x] = true;
+            }
+        }
+        int[][] dir = {{game.model.Char.LEFT}, {game.model.Char.RIGHT}, {game.model.Char.UP}, {game.model.Char.DOWN}};
+        for (int[] d : dir) {
+            int[] o = game.pokemon.SinhThai.oNuocGan(ho, w, h, 4, 4, d[0]);
+            kiem(o != null && ho[o[1] * w + o[0]], "cau ca: dung cach ho 2 o, huong " + d[0] + " -> phao xuong o nuoc");
+            int[] o2 = game.pokemon.SinhThai.oNuocGan(ho, w, h, 5, 4, d[0]);
+            kiem(o2 != null && ho[o2[1] * w + o2[0]] && Math.abs(o2[0] - 5) + Math.abs(o2[1] - 4) <= 2,
+                    "cau ca: sat bo, huong " + d[0] + " -> o nuoc gan");
+        }
+        int[] uu = game.pokemon.SinhThai.oNuocGan(ho, w, h, 5, 4, game.model.Char.RIGHT);
+        kiem(uu != null && uu[0] == 6 && uu[1] == 4, "cau ca: nhin ra ho -> o nuoc ngay truoc mat (6,4)");
+        kiem(game.pokemon.SinhThai.oNuocGan(ho, w, h, 1, 4, game.model.Char.RIGHT) == null, "cau ca: cach 5 o -> khong cau (khong nem xuong dat)");
+        kiem(game.pokemon.SinhThai.oNuocGan(ho, w, h, 3, 4, game.model.Char.RIGHT) == null, "cau ca: cach 3 o -> khong cau (= server 2 o)");
+        kiem(game.pokemon.SinhThai.oNuocGan(null, w, h, 5, 4, game.model.Char.RIGHT) == null, "cau ca: map khong ho -> khong cau");
+        // bản đồ nhỏ: 4 hồ x 1 phao, nền xanh cỏ -> không điểm tối, mỗi phao <= 10 điểm ảnh (3x3 + cán)
+        javax.microedition.lcdui.Image im = javax.microedition.lcdui.Image.createImage(60, 40);
+        javax.microedition.lcdui.Graphics g = im.getGraphics();
+        g.setColor(0x5A9A40);
+        g.fillRect(0, 0, 60, 40);
+        game.pokemon.SinhThai.datDiemCau(-99, new int[]{8, 20, 35, 50}, new int[]{8, 30, 12, 25});
+        game.pokemon.SinhThai.veDiemCauMini(g);
+        int[] px = new int[60 * 40];
+        im.getRGB(px, 0, 60, 0, 0, 60, 40);
+        int toi = 0, doi = 0;
+        for (int p : px) {
+            int r = (p >> 16) & 255, gg = (p >> 8) & 255, b = p & 255;
+            if ((p & 0xFFFFFF) != 0x5A9A40) doi++;
+            if (r * 3 + gg * 6 + b < 600) toi++;
+        }
+        kiem(toi == 0, "ban do nho: diem cau khong ve khoi toi (" + toi + " diem toi)");
+        kiem(doi > 0 && doi <= 4 * 10, "ban do nho: moi diem cau la phao nho <= 10 px (" + doi + " px / 4 diem)");
+        game.pokemon.SinhThai.datDiemCau(-98, new int[0], new int[0]);
+    }
+
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
         // ---- khung PHỦ KÍN (0.9.3): mọi cỡ cửa sổ -> logic <= 640x360 mỗi chiều, phủ kín cửa sổ, không viền
@@ -123,6 +168,7 @@ public class KiemPc {
         htbb.pc.CaiDat.hienFps = fps0;
         htbb.pc.CaiDat.doKhung = dk0;
         htbb.pc.CaiDat.dev = dev0;
+        kiemCauCa();
         System.out.println("KiemPc: " + dat + " dat, " + hong + " hong");
         if (hong > 0) System.exit(1);
     }

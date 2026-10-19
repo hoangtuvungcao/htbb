@@ -449,6 +449,27 @@ public final class HudRong {
         }
     }
 
+    /**
+     * Nút câu (0.9.6.1): đĩa trắng như mọi nút tròn HUD + icon cần câu (BieuTuong.CAN_CAU, ảnh tạm). Trạng thái:
+     * chờ thả = bình thường; đang chờ cá = đĩa ấn chìm + nhãn "Chờ"; cá cắn = viền vàng nhấp nháy + nhãn "Kéo!";
+     * đã kéo = mờ. Nhấn co 1 px như các nút khác.
+     */
+    static void veNutCau(Graphics g, int x, int y, int r0) {
+        boolean can = game.pokemon.SinhThai.dangCan() && !game.pokemon.SinhThai.daKeo();
+        boolean cho = game.pokemon.SinhThai.dangCau() && !can;
+        int r = r0 - (tro(x, y, r0 + 2) ? 1 : 0);
+        boolean sang = can && (Canvas.gameTick & 4) == 0;
+        nen(g, x, y, r, cho ? game.pokemon.ChuDe.NEN_DUOI : 0xFFFFFF, cho ? game.pokemon.ChuDe.NEN_PHU_TOI : game.pokemon.ChuDe.NEN_DUOI, sang);
+        int s = r * 6 / 5;
+        game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.CAN_CAU, x - s / 2, y - s / 2, s,
+                cho ? game.pokemon.ChuDe.CHU_PHU : game.pokemon.ChuDe.CHINH, 0xFFFFFF);
+        String nhan = can ? "Kéo!" : (cho ? "Chờ" : null);
+        if (nhan != null) {
+            game.pokemon.ChuDe.chuGiua(g, nhan, x, y + r - 2, 12, game.pokemon.ChuDe.NHAN_NHO,
+                    can ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.CHU_PHU, 2);
+        }
+    }
+
     static final int[] COS8 = {1024, 724, 0, -724, -1024, -724, 0, 724};
     static final int[] SIN8 = {0, 724, 1024, 724, 0, -724, -1024, -724};
 
@@ -496,9 +517,7 @@ public final class HudRong {
         veThuoc(g, mc, false, now);
         // ngữ cảnh: câu cá
         if (nc == 3) {
-            int x = xNguCanh(), y = yNguCanh();
-            nenMau(g, x, y, R_NGU_CANH, game.pokemon.ChuDe.XANH, true);
-            veIcon(g, 23, x, y, R_NGU_CANH);
+            veNutCau(g, xNguCanh(), yNguCanh(), R_NGU_CANH);
         }
         // tự động: công tắc viên (tắt = trắng, núm xám trái; bật = xanh lá sáng, núm trắng phải, chữ đậm)
         boolean td = TuDong.dang;

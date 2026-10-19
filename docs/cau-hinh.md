@@ -325,17 +325,17 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **213 khoá** trong **15 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **223 khoá** trong **15 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 123 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 132 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (69)
+### Khoá chỉnh trên web (70)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -354,6 +354,7 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `roi.xu.phan_tram` | Tỉ lệ một quái rơi xu (%) — dài hạn | số | `30` | 0..100 | ngay | game | Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi. |
 | `roi.da_nang_cap.phan_nghin` | Tỉ lệ rơi đá nâng cấp (‰) | số | `15` | 0..200 | ngay | game | Phần nghìn mỗi quái khi lệch cấp ≤ 5. |
 | `exp.nang_luong_phut` | Phút năng lượng 100% / ngày | số | `90` | 0..1440 | ngay | game | Số phút EXP/rơi đầy đủ mỗi ngày. |
+| `cau_ca.trong_phan_tram` | Câu cá: tỉ lệ không câu được gì (%) | số | `30` | 0..90 | ngay | game | Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất). |
 
 #### Sự kiện & giftcode (`su_kien`)
 
@@ -455,7 +456,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (144)
+### Khoá ẩn: cố định & luôn bật (153)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -483,6 +484,15 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `phi.hoi_sinh_phan_tram_gio` | Phí hồi sinh (% thu nhập 1 giờ) | Cố định (ẩn) | `5` | ngay | game | Tối thiểu 1 xu. |
 | `phi.ban_npc_phan_tram` | Giá bán đồ cho NPC (% giá) | Cố định (ẩn) | `5` | ngay | game | Không cộng theo cấp cường hoá. |
 | `tieu_hao.sua_do_phan_tram_thu_nhap` | Trần phí sửa đồ (% thu nhập 1 giờ / món) | Cố định (ẩn) | `8` | ngay | game | Phí sửa = min(công thức cũ, trần × số món). |
+| `cau_ca.cho_min_giay` | Câu cá: chờ cá cắn tối thiểu (giây) | Cố định (ẩn) | `6` | ngay | game | Sau khi thả câu, cá cắn câu sau ngẫu nhiên [tối thiểu, tối đa] giây (server quyết định). |
+| `cau_ca.cho_max_giay` | Câu cá: chờ cá cắn tối đa (giây) | Cố định (ẩn) | `15` | ngay | game | Nhỏ hơn tối thiểu thì dùng tối thiểu. |
+| `cau_ca.cho_them_ho_lon_giay` | Câu cá: chờ thêm ở hồ lớn (giây) | Cố định (ẩn) | `3` | ngay | game | Hồ lớn (có cá hiếm) chờ lâu hơn ngần này giây (cả hai đầu khoảng). |
+| `cau_ca.cua_so_ms` | Câu cá: khung kéo cần (ms) | Cố định (ẩn) | `1500` | ngay | game | Sau dấu "Cá cắn câu!", phải kéo cần trong ngần này mili giây; sớm hoặc muộn thì cá thoát. |
+| `cau_ca.tre_mang_ms` | Câu cá: bù trễ mạng (ms) | Cố định (ẩn) | `700` | ngay | game | Lệnh kéo cần tới server muộn thêm tối đa ngần này ms vẫn tính đúng lúc (bù đường truyền hai chiều). |
+| `cau_ca.hoi_giay` | Câu cá: nghỉ giữa hai lần thả (giây) | Cố định (ẩn) | `3` | ngay | game | Sau khi một lần câu kết thúc, chờ ngần này giây mới thả câu tiếp. |
+| `cau_ca.giam_tu_lan_gio` | Câu cá: số lần câu được mỗi giờ trước khi giảm | Cố định (ẩn) | `30` | ngay | game | Trong một giờ đồng hồ, câu được quá ngần này lần thì tỉ lệ không được gì tăng dần (chống cày). |
+| `cau_ca.giam_moi_lan_phan_tram` | Câu cá: tăng tỉ lệ trượt mỗi lần vượt (%) | Cố định (ẩn) | `2` | ngay | game | Mỗi lần câu được vượt mốc trong giờ cộng ngần này % vào tỉ lệ không được gì. |
+| `cau_ca.trong_toi_da_phan_tram` | Câu cá: tỉ lệ không được gì tối đa (%) | Cố định (ẩn) | `75` | ngay | game | Trần của tỉ lệ không được gì sau khi cộng giảm theo giờ. |
 
 #### Sự kiện & giftcode (`su_kien`)
 

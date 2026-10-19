@@ -211,6 +211,18 @@ public class KiemChamHud {
                 if (gs.map < 0) gs.map = 1;   // bản đồ giả lập chưa có số: điểm câu cá theo bản đồ cần map >= 0
                 game.pokemon.SinhThai.ganHo();
                 game.pokemon.SinhThai.datDiemCau(gs.map, new int[]{mc.x / 16}, new int[]{mc.y / 16});
+                // 0.9.6.1: nút câu chỉ hiện khi có Ô NƯỚC hồ trong 2 ô (phao không rơi xuống đất): hồ giả ngay dưới chân
+                int wm = game.model.Tilemap.w, hm = game.model.Tilemap.h;
+                if (wm > 0 && hm > 0) {
+                    boolean[] hoThu = new boolean[wm * hm];
+                    int ox = mc.x / 16, oy = mc.y / 16 + 2;
+                    for (int yy = oy; yy < oy + 3 && yy < hm; yy++) {
+                        for (int xx = ox - 1; xx <= ox + 1; xx++) {
+                            if (xx >= 0 && xx < wm && yy >= 0) hoThu[yy * wm + xx] = true;
+                        }
+                    }
+                    game.pokemon.SinhThai.datHoThu(hoThu);
+                }
                 game.render.Canvas.endDlg();
                 game.render.Canvas.menu.showMenu = false;
             } catch (Throwable e) {
