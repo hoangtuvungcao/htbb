@@ -36,7 +36,8 @@ UPDATE tob_su_kien SET mo_luc = NULL, dong_luc = NULL
    AND ma IN ('tetduonglich','tet2017','tet123','moi:valentine','quocte83','gioto','moi:3004','moi:thieunhi','he2017',
               'moi:hamngucmua','vulan','moi:quockhanh','trungthu','moi:2010','halloween','demhalloween','sinhnhat2011',
               'blackfriday','blackfridaydaugia','blackfridayban','noel','demnoel','moi:tongket','moi:tuanhe',
-              'moi:congdong','moi:shiny','moi:dotkich','moi:muapvp','moi:pokedex','moi:chienvung','moi:bungphat');
+              'moi:congdong','moi:shiny','moi:dotkich','moi:muapvp','moi:pokedex','moi:chienvung','moi:bungphat',
+              'moi:cuptuan');
 
 -- 4. Su kien rieng cua game kiem hiep cu da bo khoi danh muc (World Cup binh chon Messi/Ronaldo, Sinh nhat Ngude,
 --    Dua top Hoa Lu): may chu bo qua ma la, xoa dong cho trang /admin/sukien gon.

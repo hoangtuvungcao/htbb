@@ -654,12 +654,69 @@ Tính năng **Chiếm Gym** thay "chiếm thành" của game gốc: các **độ
   sát thương 40%, hút 5%; thời lượng trạng thái ×0,5.
 - Không hồi sinh tại chỗ ở bản đồ PvP (`hoi_sinh.cam_pvp`, `hoi_sinh.map_pvp`).
 
+#### Cúp PvP tuần (0.9.7)
+
+Chế độ **riêng** với thang PvP mùa và PK thế giới (`com.htbb.pokemon.CupLogic` thuần + `real.CupGame`; dữ liệu
+`data_cup_loai`, `data_cup_lich`; SQL [them_pho_ban_cup.sql](../sql/them_pho_ban_cup.sql)). Trận cúp diễn ra trong khu
+riêng của **Sàn Cúp PvP** (bản đồ 4382, nền "Sàn đấu" 227): không tính Elo, không cờ PK, HP không về 0 (hết HP = bị
+loại), không mất EXP, không tự động đánh.
+
+- **Tuần cúp** = tuần ISO thứ Hai 04:00 → thứ Hai sau 04:00 giờ Việt Nam (cùng mốc `LichNam.thuHaiTuanIso` và "tuần này"
+  của web). Lịch xoay 16 tuần: Cúp Nhí (cấp 20–30) → Cúp hệ (Lửa / Nước / Cỏ / Điện, Pokémon mang hệ đó ở hệ 1 hoặc 2)
+  → Cúp Đôi 2v2 (đội trưởng tổ đội 2 người đăng ký) → Cúp Không trang bị → lặp.
+- **Lịch trong tuần** (khoá `cup.*`): đăng ký trong Sổ tay huấn luyện → "Cúp PvP tuần" tới Chủ nhật 19:55; Chủ nhật 20:00
+  vòng 1, mỗi 10 phút một vòng, 5 vòng Thuỵ Sĩ, trận tối đa 3 phút (+5 giây chuẩn bị). Hết giờ: bên còn nhiều % HP hơn
+  thắng, bằng nhau hoà. Thắng 3 / hoà 1 / thua 0 / miễn đấu 3 điểm (mỗi đội tối đa 1 lần). Xếp hạng: điểm → Buchholz →
+  số trận thắng → đăng ký sớm. Dưới 4 đội lúc khoá danh sách thì tuần đó hoãn.
+- **Ghép tự động**: cùng điểm trước, không gặp lại nếu còn cách; vắng mặt / đang trong phó bản lúc ghép thì không được
+  ghép vòng đó; mất kết nối / rời sàn giữa trận = bị loại.
+- **Chuẩn hoá**: mỗi đòn = sát thương PvP thô ÷ HP tối đa người đánh, đổi sang phần nghìn HP tối đa đối thủ, kẹp 10–80‰
+  (Cúp Không trang bị 30–50‰ nên trang bị gần như không tính). Cấp không còn quyết định.
+- **Chống clone**: cổng tuổi tài khoản / giờ chơi của `chong_clone.*`; mỗi thiết bị / tài khoản một Pokémon / tuần; hai
+  đội chung thiết bị / IP / tài khoản không bao giờ gặp nhau.
+- **Thưởng** (không xu, không lạm phát): vô địch danh hiệu 28 ngày (9800 Nhí / 9801 hệ / 9802 Đôi / 9803 Không trang bị)
+  + 20 lượng khoá; hạng 2–3 "Á quân cúp tuần" 14 ngày + 10; hạng 4–8 "Đấu sĩ cúp tuần" 7 ngày + 5; dự ≥ 3 trận và thắng
+  ≥ 1: 2 lượng khoá. Tối đa 20 lượng khoá / người / tuần (trong trần 25 / tuần của Gym / boss / xếp hạng). Danh hiệu chỉ
+  có chỉ số nhỏ của ô danh hiệu (chỉ danh hiệu đang đeo được tính). Ghi `tob_cup_thuong` trước khi phát, cờ `da_nhan` đổi
+  nguyên tử: không bao giờ phát hai lần; ai offline nhận khi đăng nhập.
+- **Tự bật / tắt + tin web**: mã lịch năm `moi:cuptuan` (nhóm "Cúp PvP"), mỗi tuần một dòng `tob_su_kien_lich` tên = cúp
+  của tuần → web tự đăng "Sắp diễn ra" (1 ngày trước), "Đang diễn ra", "Đã kết thúc" (link [/cup](../web/app/pages/cup.vue)
+  bảng điểm + nhà vô địch, API `/api/cup`). Admin tắt một tuần ở `/admin/sukien` (tắt năm nay) → cúp tuần đó không chạy,
+  không cần khởi động lại.
+- Thẻ trạng thái trận (gói -112, client ≥ 908): vòng, hai bên, đếm ngược; chạm thẻ → "Bỏ cuộc" (hỏi lại).
+
 ### 5.4 Hầm ngục bí ẩn
 
 `real.HamNgucGame` (bật / tắt: `ham_nguc.bat`). Bản hiện tại chưa có bản đồ / tầng riêng: mỗi "tầng" là một thử thách hạ quái
 chênh không quá 5 cấp, số lượng từ bố cục của ngày (mọi người cùng đề trong ngày), xong tầng thì tự sang tầng sau. Thưởng
 **1 lần / ngày** theo tầng cao nhất: 0,2 giờ EXP + 5 lượng khoá từ tầng 5; chơi thêm không thưởng. Có bảng xếp hạng tầng.
 Chữ người chơi thấy không nói "hạt giống" — dùng "đổi lối", "bố cục hôm nay".
+
+#### Phó bản Hầm ngục (0.9.7, tổ đội 5 tầng)
+
+Mở rộng Hầm ngục bí ẩn (Sổ tay → Hầm ngục bí ẩn → "Phó bản tổ đội (5 tầng)"; `com.htbb.pokemon.PhoBanLogic` thuần +
+`real.PhoBanGame`; dữ liệu `data_pho_ban_ngay`, `data_pho_ban_tang`, bảng rơi `data_noi_dung_roi` nguồn `pho_ban`):
+
+- **Phòng riêng**: mỗi tổ đội (1–4 người, cấp ≥ 20 — `pho_ban.cap_toi_thieu`, chênh cấp ≤ 10, đứng cùng bản đồ với đội
+  trưởng) vào một khu riêng của bản đồ 4381 "Phó bản Hầm ngục" (nền "Ngục tối" 117; 40 phòng cùng lúc). Quái chỉ có trong
+  khu đó, không hồi sinh. Không tự động đánh, không đổi khu, không hồi sinh tại chỗ (luật bản đồ `PhongRieng`).
+- **Chủ đề theo thứ** (đổi 00:00 như lượt ngày): Hang Băng (T2), Núi Lửa (T3), Hồ Sâu (T4), Rừng Rậm (T5), Nhà máy Điện
+  (T6), Tháp Ma (T7), Hang Rồng (CN) — quái + boss tầng 5 mang hệ của chủ đề.
+- **Tầng**: 6 / 8 / 7 / 10 quái rồi boss tầng 5; HP / tấn công / phòng thủ theo phần nghìn chỉ số gốc ở cấp cao nhất của
+  đội (nội suy bảng Gym: HP ~105 giây đánh một mình với đồ +6). HP ×(1 + 0,6 × người thêm), boss ×(1 + 0,7 ×). Cả 5 tầng
+  ~11 phút đánh một mình; giới hạn 20 phút (`pho_ban.phut_toi_da`). Boss có pha / niệm chiêu / nổi giận như boss Gym.
+  EXP / xu mỗi quái theo template tham chiếu cùng cấp (không theo template gốc cấp 80+).
+- **Lượt**: 3 lượt vào / ngày / Pokémon (`pho_ban.luot_ngay`, `tob_pho_ban_luot`), vào lại sau khi thua vẫn mất lượt.
+- **Thua**: cả đội gục / rời phòng quá 15 giây, hoặc hết giờ. Gục rồi về Trung tâm, đi qua cổng, dịch chuyển hay
+  "Rời phó bản" = rời phòng (không quay lại). **Mất kết nối**: giữ chỗ 180 giây, đăng nhập lại thì về đúng phòng.
+- **Thưởng ngày** (một lần / ngày, CHUNG với Hầm ngục bí ẩn — cùng cờ `hnDaThuong`, ngân sách "hang_bi_an"): hạ boss tầng
+  5 → 0,2 giờ EXP + 5 lượng khoá + rương boss mỗi người: 2–3 Đá nâng cấp (cấp ≥ 60: 2–4), 50% nguyên liệu nâng cấp của
+  dải (Bụi sao < 30 / Mảnh sao 30–59 / Mảnh thiên thạch ≥ 60; 5% Mảnh tinh hoa ở ≥ 60), 20% một món trang bị đúng dải cấp
+  — mọi thứ **khoá**. Kỳ vọng / lần ≤ 4 đá, ≤ 1 nguyên liệu, ≤ 0,35 trang bị (test `KiemPhoBanCup`). Danh hiệu "Chinh phục
+  Phó bản" (9810) lần đầu; 9811 / 9812 theo số lần hạ boss.
+- Thẻ trạng thái (gói -112, client ≥ 908): tầng, quái đã hạ, đội còn sống, đếm ngược, thanh tiến độ; chạm thẻ → "Rời
+  phó bản" (hỏi lại). Client cũ chỉ nhận thông báo chữ.
+- **Doanh trại Đội** chưa làm (cần quỹ Đội / ngày vào Đội — chủ game quyết, xem báo cáo nhánh `pho-ban-cup`).
 
 ### 5.5 Mê cung
 
@@ -807,6 +864,7 @@ chính. Trang chủ có mục "Sự kiện" (đang diễn ra + 30 ngày tới, �
 | Lễ hội Pokédex / bùng phát | 14, 45 / 21 | điểm nghiên cứu ×2 / một loài ×5 trên một tuyến |
 | Chiến vùng | 16, 30, 49 | Kanto / Johto / Hoenn giành cờ |
 | Mùa giải PvP | 13, 26, 39, 52 | chốt bậc mùa |
+| Cúp PvP tuần (`moi:cuptuan`) | mọi tuần | xoay Cúp Nhí / Cúp hệ / Cúp Đôi / Cúp Không trang bị, Chủ nhật 20:00 Thuỵ Sĩ (mục 5.3) |
 
 - **Ngân sách**: cả năm 66,5 giờ thu nhập (test chặn ≤ 70). Chỉ **25%** trả bằng xu; còn lại là vật phẩm **khoá, hết hạn
   khi sự kiện kết thúc** hoặc đồ trang trí, nên sự kiện không tích tiền. Mỗi tuần 1–3 vật phẩm, tối đa 20 cái / tuần

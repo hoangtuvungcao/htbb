@@ -325,13 +325,13 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **239 khoá** trong **16 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **247 khoá** trong **16 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 149 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 155 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 23 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
@@ -455,7 +455,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (170)
+### Khoá ẩn: cố định & luôn bật (178)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -644,6 +644,14 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `pvp.tinh_diem.bat` | Tính điểm thang PvP | Luôn bật (ẩn) | `1` | ngay | game | 0 = trận PvP không cộng/trừ điểm thang. |
 | `gym.bat` | Thách đấu Gym | Luôn bật (ẩn) | `1` | ngay | game | 0 = tạm đóng Gym. |
 | `ham_nguc.bat` | Hầm Ngục bí ẩn | Luôn bật (ẩn) | `1` | ngay | game | 0 = không vào tầng mới (vẫn nhận thưởng đã đạt). |
+| `pho_ban.bat` | Phó bản Hầm ngục (tổ đội 5 tầng) | Luôn bật (ẩn) | `1` | ngay | game | 0 = không mở phòng mới (phòng đang chạy vẫn chạy hết). |
+| `pho_ban.luot_ngay` | Phó bản: lượt vào mỗi ngày | Cố định (ẩn) | `3` | ngay | game | Mỗi Pokémon, đếm cả lần vào lại sau khi thua. Thưởng ngày (0,2 giờ EXP + 5 lượng khoá + rương boss) vẫn chỉ 1 lần, chung với Hầm ngục bí ẩn. |
+| `pho_ban.phut_toi_da` | Phó bản: thời gian tối đa (phút) | Cố định (ẩn) | `20` | ngay | game | Hết giờ chưa hạ boss tầng 5 thì phòng đóng, không có thưởng ngày. |
+| `pho_ban.cap_toi_thieu` | Phó bản: cấp tối thiểu | Cố định (ẩn) | `20` | ngay | game | Mọi thành viên phải đạt cấp này; chênh cấp trong đội tối đa 10. |
+| `cup.bat` | Cúp PvP tuần | Luôn bật (ẩn) | `1` | ngay | game | 0 = tạm đóng cúp (không nhận đăng ký, không ghép vòng). Tắt riêng một tuần: /admin/sukien (mã moi:cuptuan, tắt năm nay). |
+| `cup.gio_vong_dau` | Cúp: giờ vòng 1 (Chủ nhật) | Cố định (ẩn) | `20` | ngay | game | Giờ Việt Nam. Mỗi 10 phút một vòng; đóng đăng ký trước vòng 1 năm phút. |
+| `cup.so_vong` | Cúp: số vòng Thuỵ Sĩ | Cố định (ẩn) | `5` | ngay | game | Vòng ghép tự động theo điểm; hai bên cùng thiết bị / IP / tài khoản không bao giờ gặp nhau. |
+| `cup.so_doi_toi_thieu` | Cúp: số đội tối thiểu | Cố định (ẩn) | `4` | ngay | game | Ít hơn số này lúc đóng đăng ký thì cúp tuần đó hoãn (không phát thưởng). |
 
 #### Chỉ số & chống lạm phát (cố định) (`chi_so`)
 

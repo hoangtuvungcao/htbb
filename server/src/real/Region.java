@@ -672,6 +672,15 @@ public class Region {
             }
             boolean timeAutoPK = Map.pkAuto;
             boolean haveShield = c.haveShield();
+            // 0.9.7 phong rieng (pho ban / san cup, com.htbb.pokemon.PhongRieng): PvP CHI trong tran cup, giua hai doi
+            // cua cung tran (CupGame.choDanh); bo qua luat PK the gioi (co do sat, phe, bao ho, to doi).
+            final boolean cupTran = com.htbb.pokemon.PhongRieng.laMapRieng(this.map.mapId);
+            if (cupTran) {
+                if (!CupGame.choDanh(p, c) || p.mapID != c.mapID || p.region != c.region
+                        || !Map.inRangeActor((LiveActor)p, (LiveActor)c, (int)MAX_RANGE_CHAR[p.charClass])) {
+                    return;
+                }
+            } else {
             if (!(p.myCountry == c.myCountry || !haveShield || p.isKiller || c.isKiller || p.pk > 0 && c.pk > 0 && p.pk != c.pk || Map.nwar[p.inCountry] && (!Map.nwar[p.inCountry] || this.map.mapId == Map.idMapTown))) {
                 p.sendMessage(MessageCreator.createMsgChat((int)p.id, (String)"Ng\u01b0\u1eddi ch\u01a1i \u0111ang \u0111\u01b0\u1ee3c b\u1ea3o h\u1ed9."));
                 return;
@@ -733,6 +742,7 @@ public class Region {
                     return;
                 }
             }
+            } // het luat PK the gioi (khong ap trong tran cup)
             byte skill = dis.readByte();
             int effect = 0;
             int ahp = p.attackDamage;
@@ -793,6 +803,9 @@ public class Region {
                 }
                 damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, d), c.maxhp);
                 damage = p.subDam(c, damage);
+                if (cupTran) {
+                    damage = CupGame.satThuong(p, c, d); // chuan hoa: phan nghin HP muc tieu theo thang do nguoi danh
+                }
             }
             if (p.mp + p.percentBuff[1] < (mplost = CharManager.SKILL_MP[p.charClass][_type][_level])) {
                 return;
@@ -821,8 +834,8 @@ public class Region {
             }
             c.hp = (int)((long)c.hp - ((long)damage - c.checkMagicShield(damage)));
             ChiemGymLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
-            if (c.hp <= 0) {
-                ThangPvpGame.ketQua(p, c); // GD2 7.2 Elo mua (tat co: khong lam gi)
+            if (c.hp <= 0 && !cupTran) {
+                ThangPvpGame.ketQua(p, c); // GD2 7.2 Elo mua (tat co: khong lam gi) - tran cup KHONG tinh Elo
             }
             c.checkNewEffectItem(0, (long)(damage / 10), (LiveActor)p);
             c.downDuarable();
@@ -834,6 +847,9 @@ public class Region {
             }
             if (this.map.isMapTrain() && c.isHieuUngCoLongDuongQua() && c.hp <= 0) {
                 c.hp = 1;
+            }
+            if (cupTran) {
+                CupGame.sauDon(p, c); // tran cup: HP khong ve 0 (khong guc, khong mat EXP) - het HP = bi loai
             }
             if (c.hp <= 0) {
                 if (c.hp <= 0) {
@@ -917,7 +933,7 @@ public class Region {
                 p.buffSkillKham((LiveActor)c);
                 p.charHireAttackDam((LiveActor)c, (int)_type, _level, buffAttack);
             }
-            if (p.isKiller) {
+            if (p.isKiller && !cupTran) {
                 if (p.killer == 0 && p.killer < 32000) {
                     p.killer = p.charClass == 4 ? (short)(p.killer + 50) : (short)(p.killer + 1);
                 }

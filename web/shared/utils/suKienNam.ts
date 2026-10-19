@@ -56,6 +56,12 @@ export function laTuanPokemon(l: Pick<SuKienLan, 'nhom'>): boolean {
   return l.nhom === 'Tuần Pokémon'
 }
 
+/** Cúp PvP tuần (0.9.7, mã moi:cuptuan): mỗi tuần một dòng, tên = loại cúp của tuần (com.htbb.pokemon.CupLogic). */
+export const NHOM_CUP = 'Cúp PvP'
+export function laCup(l: Pick<SuKienLan, 'nhom'>): boolean {
+  return l.nhom === NHOM_CUP
+}
+
 /** 'YYYY-MM-DD HH:mm:ss' (giờ VN) -> ms; NaN nếu sai. */
 export function msTuChuoi(s: string | null | undefined): number {
   const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/.exec(String(s ?? ''))
@@ -96,7 +102,7 @@ export function soNgaySuKien(l: Pick<SuKienLan, 'mo' | 'dong'>): number {
 }
 
 export function baoTruocMs(l: Pick<SuKienLan, 'nhom'>): number {
-  return (laTuanPokemon(l) ? BAO_TRUOC_NGAY_TUAN : BAO_TRUOC_NGAY) * NGAY
+  return (laTuanPokemon(l) || laCup(l) ? BAO_TRUOC_NGAY_TUAN : BAO_TRUOC_NGAY) * NGAY
 }
 
 /** Giai đoạn của một lần diễn ra lúc `bay` (ms). Lần bị admin tắt năm nay (ghiDe 1) luôn 'xa'. */
@@ -170,6 +176,11 @@ export function vietTin(l: SuKienLan, kieu: KieuTin, kem: SuKienLan[] = []): Tin
     tomTat = `${l.ten} đã khép lại lúc ${gioDep(dong)}. Cảm ơn các huấn luyện viên đã tham gia!`
     doan.push(`**${l.ten}** đã kết thúc lúc ${gioDep(dong)}. Cảm ơn mọi huấn luyện viên đã tham gia!`)
   }
+  if (laCup(l)) {
+    doan.push(kieu === 'ket'
+      ? 'Xem bảng điểm và nhà vô địch ở trang [Cúp PvP tuần](/cup). Phần thưởng đã tự gửi vào game (ai offline nhận khi đăng nhập).'
+      : 'Đăng ký trong game: Sổ tay huấn luyện → Cúp PvP tuần. Bảng điểm trực tiếp: [Cúp PvP tuần](/cup).')
+  }
   if (kieu !== 'ket') {
     doan.push(`## Có gì trong sự kiện\n\n${l.moTa}`)
     if (l.phanThuong) doan.push(`## Phần thưởng nổi bật\n\n${l.phanThuong}`)
@@ -190,7 +201,7 @@ export function vietTin(l: SuKienLan, kieu: KieuTin, kem: SuKienLan[] = []): Tin
     tomTat: tomTat.slice(0, 500),
     noiDung: doan.join('\n\n'),
     loai: 'Sự kiện',
-    the: `sự kiện,${laTuanPokemon(l) ? 'tuần Pokémon' : 'lễ hội'},${NHAN_KIEU[kieu].toLowerCase()}`,
+    the: `sự kiện,${laCup(l) ? 'cúp PvP' : laTuanPokemon(l) ? 'tuần Pokémon' : 'lễ hội'},${NHAN_KIEU[kieu].toLowerCase()}`,
   }
 }
 

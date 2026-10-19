@@ -205,6 +205,8 @@ public final class SuKien {
                 "Thứ Bảy 20h, Kanto/Johto/Hoenn giành cờ (dùng lại chiến trường)."),
         new Muc("moi:muapvp", "Kết thúc mùa PvP", "Pokémon",
                 "Chốt bậc mùa PvP, phát thưởng khung/danh hiệu (cần sv.lau_dai=1)."),
+        new Muc("moi:cuptuan", "Cúp PvP tuần", "Pokémon",
+                "Cúp PvP xoay vòng mỗi tuần, Chủ nhật 20:00 Thuỵ Sĩ (real.CupGame tự chạy theo lịch, không cần cờ)."),
         new Muc("moi:valentine", "Valentine", "Lễ Việt Nam",
                 "Valentine: Luvdisc, cặp đôi cùng đội."),
         new Muc("moi:3004", "30/4 - 1/5", "Lễ Việt Nam",

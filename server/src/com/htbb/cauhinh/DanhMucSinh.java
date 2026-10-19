@@ -598,6 +598,36 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("ham_nguc.bat", "pvp", "co", "1", true, "cau_hinh")
                     .nhan("Hầm Ngục bí ẩn", "0 = không vào tầng mới (vẫn nhận thưởng đã đạt).")
                     .lop("luon_bat"),
+            new DinhNghiaKhoa("pho_ban.bat", "pvp", "co", "1", true, "cau_hinh")
+                    .nhan("Phó bản Hầm ngục (tổ đội 5 tầng)", "0 = không mở phòng mới (phòng đang chạy vẫn chạy hết).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("pho_ban.luot_ngay", "pvp", "so", "3", true, "cau_hinh")
+                    .nhan("Phó bản: lượt vào mỗi ngày", "Mỗi Pokémon, đếm cả lần vào lại sau khi thua. Thưởng ngày (0,2 giờ EXP + 5 lượng khoá + rương boss) vẫn chỉ 1 lần, chung với Hầm ngục bí ẩn.")
+                    .khoang(1L, 10L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("pho_ban.phut_toi_da", "pvp", "so", "20", true, "cau_hinh")
+                    .nhan("Phó bản: thời gian tối đa (phút)", "Hết giờ chưa hạ boss tầng 5 thì phòng đóng, không có thưởng ngày.")
+                    .khoang(5L, 60L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("pho_ban.cap_toi_thieu", "pvp", "so", "20", true, "cau_hinh")
+                    .nhan("Phó bản: cấp tối thiểu", "Mọi thành viên phải đạt cấp này; chênh cấp trong đội tối đa 10.")
+                    .khoang(1L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cup.bat", "pvp", "co", "1", true, "cau_hinh")
+                    .nhan("Cúp PvP tuần", "0 = tạm đóng cúp (không nhận đăng ký, không ghép vòng). Tắt riêng một tuần: /admin/sukien (mã moi:cuptuan, tắt năm nay).")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("cup.gio_vong_dau", "pvp", "so", "20", true, "cau_hinh")
+                    .nhan("Cúp: giờ vòng 1 (Chủ nhật)", "Giờ Việt Nam. Mỗi 10 phút một vòng; đóng đăng ký trước vòng 1 năm phút.")
+                    .khoang(8L, 22L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cup.so_vong", "pvp", "so", "5", true, "cau_hinh")
+                    .nhan("Cúp: số vòng Thuỵ Sĩ", "Vòng ghép tự động theo điểm; hai bên cùng thiết bị / IP / tài khoản không bao giờ gặp nhau.")
+                    .khoang(1L, 8L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cup.so_doi_toi_thieu", "pvp", "so", "4", true, "cau_hinh")
+                    .nhan("Cúp: số đội tối thiểu", "Ít hơn số này lúc đóng đăng ký thì cúp tuần đó hoãn (không phát thưởng).")
+                    .khoang(2L, 64L)
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("tu_dong.bat", "tu_dong", "co", "1", true, "cau_hinh")
                     .nhan("Bật Tự động đánh", "0 = tạm khoá (người đang dùng bị dừng ở lần kiểm tiếp theo).")
                     .lop("luon_bat"),

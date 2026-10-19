@@ -82,6 +82,8 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemTruotDoiCo` (0.9.6.1): thanh trượt (Bang.thanhTruot - bảng Tự động đánh) theo ngón / chuột từng lần kéo, lưu khi
   thả (kể cả thả ngoài thanh); đổi cỡ cửa sổ nhỏ -> TO HƠN cỡ đầu -> phóng to / 21:9 / 4:3 / toàn màn: khung đúng cỡ mới,
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
+- `KiemPhongRieng` (0.9.7): thẻ phòng riêng (game.pokemon.PhongRieng - Phó bản Hầm ngục / trận Cúp PvP, gói -112): đọc gói,
+  gói hỏng không vỡ, tự ẩn khi đổi bản đồ, vẽ ở 11 cỡ trong vùng an toàn, canh giữa, không chồng nút HUD, chạm >= cỡ tối thiểu;
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

@@ -3674,6 +3674,7 @@ public class GameScr extends Screen {
                 paintQuickSlot(g);
                 paintServerInfo(g);
                 HudRong.ve(g, this);   // pokemon: HUD màn rộng (nút trên, cụm chiêu, chat, bản đồ to)
+                game.pokemon.PhongRieng.ve(g);   // pokemon 0.9.7: thẻ phòng riêng (phó bản / trận cúp), gói -112
             }
         } catch (Exception e8) {
             e8.printStackTrace();

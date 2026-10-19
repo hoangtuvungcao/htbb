@@ -43,6 +43,7 @@ Bot nói giao thức thật của server (khoá `-40`, đăng nhập, tạo / ch
 | `BotXuyenSuot` | chơi xuyên suốt từ tài khoản mới theo nhiệm vụ; bot điều phối tua đồng hồ ảo (chỉ máy thử `sv.cho_phep_thu_nghiem=1`) |
 | `BotNguoiChoi` | bot theo kiểu người chơi (cày, cốt truyện, sưu tầm, buôn bán, PvP, xã hội…) |
 | `BotVaCham`, `KichBanHoiSinh` | kiểm va chạm bản đồ, hồi sinh |
+| `KichBanPhoBanCup` | Phó bản Hầm ngục (vào phòng riêng, gói -112, lượt ngày, mất kết nối về đúng phòng, rời, hai phòng tách nhau) + Cúp PvP tuần (đăng ký, tua đồng hồ tới Chủ nhật 20:00, ghép Thuỵ Sĩ, trận, chốt hạng, thưởng một lần) — máy chủ thử có `sv.cho_phep_thu_nghiem=1`, chạy `-Dban=908` |
 | `kiem_hoi_quy.sh` | chạy bộ hồi quy |
 
 ```sh

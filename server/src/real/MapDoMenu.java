@@ -1411,6 +1411,11 @@ class MapDoMenu {
                     {
                         break;
                     }
+                    if (com.htbb.pokemon.PhongRieng.laMapRieng(map.mapId))
+                    {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(com.htbb.pokemon.PhongRieng.LY_DO_DOI_KHU, ""));
+                        return;
+                    }
                     if (idOptionMenu < 0 || idOptionMenu >= map.nRegion)
                     {
                         return;

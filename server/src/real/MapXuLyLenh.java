@@ -556,6 +556,9 @@ class MapXuLyLenh {
             case -101: // Guc / hoi sinh (com.htbb.pokemon.HoiSinh): xin / chon trong hop thoai
                 HoiSinhGame.xuLy(player, message);
                 break;
+            case -112: // 0.9.7 phong rieng: cham the trang thai -> "Rời" (pho ban) / "Bỏ cuộc" (tran cup)
+                PhongRiengGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;

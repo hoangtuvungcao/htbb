@@ -117,6 +117,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
             return;
         }
+        // pokemon 0.9.7: lenh -112 the phong rieng (Pho ban Ham nguc / tran Cup PvP)
+        if (game.pokemon.PhongRieng.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;

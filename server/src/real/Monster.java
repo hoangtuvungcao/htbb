@@ -956,6 +956,7 @@ public class Monster extends LiveActor {
     @Override
     public Vector<Actor> onDropItem(final Map m, final Char p) {
         BossLauDai.khiChet(this); // GD2 6.6: thuong boss the gioi theo dong gop (tat co: khong lam gi)
+        PhoBanGame.khiQuaiChet(this, p); // 0.9.7: tien do tang Pho ban Ham nguc (quai MonsterPhoBan)
         final Vector<Actor> droplist = new Vector<Actor>();
         try {
             final int deltlv = Map.abs(p.lvDetail.lv - this.level);

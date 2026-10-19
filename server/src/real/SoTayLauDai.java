@@ -52,7 +52,7 @@ public final class SoTayLauDai {
             return;
         }
         p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Năng lượng và tinh thông", "Nhiệm vụ tuần",
-            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi", "Cửa hàng và đổi vật phẩm"}, NPC_ID, MENU_GOC));
+            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi", "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"}, NPC_ID, MENU_GOC));
     }
 
     static void bao(final Char p, final String s) {
@@ -101,6 +101,9 @@ public final class SoTayLauDai {
                     case 9:
                         CuaHangLauDai.moMenu(p); // luat "khong item mo coi" (kiem_item_mo_coi.py)
                         break;
+                    case 10:
+                        CupGame.moMenu(p); // 0.9.7 Cup PvP tuan xoay vong (real.CupGame)
+                        break;
                     default:
                         break;
                 }
@@ -123,6 +126,8 @@ public final class SoTayLauDai {
                 bao(p, QuaHoatDong.nhan(p, idOption));
             } else if (idMenu == MENU_HAM_NGUC) {
                 hamNguc(p, h, idOption);
+            } else if (PhoBanGame.doMenu(p, idMenu, idOption) || CupGame.doMenu(p, idMenu, idOption)) {
+                return; // 0.9.7 Pho ban Ham nguc (60..61), Cup PvP tuan (70..72)
             }
         } catch (final Exception e) {
             System.out.println("SoTayLauDai.doMenu: " + e);
@@ -204,7 +209,7 @@ public final class SoTayLauDai {
         bao(p, "Hầm ngục bí ẩn hôm nay\nĐã qua tầng: " + h.hnTangCao + "\nTầng " + tang
                 + ": hạ " + t[1] + " quái chênh không quá 5 cấp" + (t[2] == 1 ? " (tầng thưởng)" : "")
                 + "\nTiến độ: " + HamNgucGame.tienDo(p) + "/" + t[1]);
-        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vào tầng " + tang, "Nhận thưởng hôm nay"}, NPC_ID, MENU_HAM_NGUC));
+        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vào tầng " + tang, "Nhận thưởng hôm nay", "Phó bản tổ đội (5 tầng)"}, NPC_ID, MENU_HAM_NGUC));
     }
 
     static void hamNguc(final Char p, final HoSoLauDai h, final int idOption) {
@@ -217,6 +222,8 @@ public final class SoTayLauDai {
             bao(p, "Đã vào tầng " + (h.hnTangCao + 1) + ". Hạ quái chênh không quá 5 cấp để qua tầng.");
         } else if (idOption == 1) {
             bao(p, HamNgucGame.nhanThuong(p, h));
+        } else if (idOption == 2) {
+            PhoBanGame.moMenu(p); // 0.9.7: phong rieng 5 tang cho to doi (real.PhoBanGame)
         }
     }
 
