@@ -139,6 +139,8 @@ public class Char extends LiveActor {
     // Doc TRUOC bang remap VI_TRI_MENU_DAU_TRUONG trong MapDoMenu de khong bi bang do
     // chan nham (bang chi chap nhan vi tri no biet). Xem real/MapSuKien.doMenuDauTruongVuLan.
     public int idxSuKienVuLanDauTruong = -1;
+    /** Vi tri muc "Đấu xếp hạng" trong menu NPC Dau truong (-31) vua gui, -1 = khong co (XepHangPvpGame). */
+    public int idxXepHangDauTruong = -1;
     // Vi tri (idOptionMenu) cua muc "Nhan thuong dua top" trong menu NPC Tong Quan, gan
     // lai moi lan RequestNPCInfoHandler mo menu -10. -1 = nhan vat nay khong co thuong
     // dua top nao dang cho nhan (menu khong co dong nay). Xem real/SuKienDuaTop.
@@ -3784,8 +3786,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /**
+     * 0.9.7: BO mien mat EXP cua VIP 3 (VIP theo diem nap = mua suc manh, trai luat "khong ban suc manh"). Moi nguoi
+     * guc trong PK deu mat EXP nhu nhau (real.LuatPkGame.expMat, khong tut cap).
+     */
     public boolean isNotDownExp() {
-        return this.vip == 3;
+        return false;
     }
 
     @Override
@@ -5778,6 +5784,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     // Than method (120 dong) da chuyen sang CharSuKien.java. Chu ky GIU NGUYEN.
     public void doResponseTieu(final Char pReceive, final boolean isThief, final int type, int lvOpen) {
         CharSuKien.doResponseTieu(this, pReceive,isThief,type,lvOpen);
+        if (!isThief) {
+            DiemMocNhiemVu.khiHoTong(pReceive); // diem moc ho_tong (ve dich, khong bi cuop)
+        }
     }
 
     public Item doAddItemVanTieu(final Char pRcv, final int colorTieu, final int lvOpen) {
@@ -12613,6 +12622,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         this.mainQuest.state_quest = NewCharQuest.DONE;
                         this.mainQuest.addGift(this);
                         NhiemVuEngine.khiXongChuoiCu(this, info.ma); // thuong_khac chuoi chinh (dai han, kiem_item_mo_coi)
+                        if (info.type == 1) {
+                            DiemMocNhiemVu.khiGiaoVatPham(this, info.getItemGet()); // diem moc giao_hang / dua_thu
+                        }
                         boolean sendInfo = true;
                         if (info.type == 3) {
                             sendInfo = false;

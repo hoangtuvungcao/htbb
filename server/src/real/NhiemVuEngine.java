@@ -23,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * va mot cho goi {@link #suKien}.
  *
  *  - Danh muc kieu: moi kieu_muc_tieu la mot "su kien" (chuoi) do diem moc trong game ban vao
- *    {@link #suKien}(p, kieu, thamSo, n); khop theo muc_tieu_id (rong = bat ky). Kieu chua co diem
- *    moc (he sinh thai: cau_ca, dao_dat, lam_vuon, nau_an, ap_trung, do_vui, dua_pokemon, cho_ban...) chi
- *    can lop do goi {@code NhiemVuEngine.suKien(p, "cau_ca", vat, 1)}.
+ *    {@link #suKien}(p, kieu, thamSo, n); khop theo muc_tieu_id (rong = bat ky). 0.9.7: moi kieu trong
+ *    data_nhiem_vu_kieu deu co diem moc - cac kieu he sinh thai / chuoi cu nam o real.DiemMocNhiemVu (bang noi goi
+ *    + tham so); cau ca co diem moc DUY NHAT o HeSinhThaiMenu.cauCa. Kieu moi: them mot ham vao DiemMocNhiemVu.
  *  - Gating: cap, ngay_mo, `truoc` (moi ma trong danh sach da xong), an + dieu_kien_mo.
  *  - Toi da 3 nhiem vu phu (khe) cung luc; bang ngay rut 5 mau N-<bac>.* moi ngay (hat giong id + ngay),
  *    thuong toi da 3; bang tuan dung chung tran 2 cho T- / TV- (ca chuoi 1 lan) / TD-; SK-<tuan> chi
@@ -332,6 +332,7 @@ public final class NhiemVuEngine {
             suKien(p, "quan_sat", String.valueOf(dex), 1);
         }
         suKien(p, "thanh_tuu_quai", "", 1);
+        DiemMocNhiemVu.khiHaQuaiSuKien(p, null); // su_kien_vat_pham (chi khi co su kien dang bat)
         final List<Char> doi = ExpLauDai.thanhVienGan(p);
         if (doi.size() > 1) {
             boolean coTanThu = false;

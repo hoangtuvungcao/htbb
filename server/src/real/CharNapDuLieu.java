@@ -544,11 +544,8 @@ class CharNapDuLieu {
                 self.doAddGiftSn();
             }
             if (self.subpk == 0) {
-                self.killer -= 200;
-                if (self.killer < 0) {
-                    self.killer = 0;
-                    self.isKiller = false;
-                }
+                // 0.9.7: nghiep KHONG con -200 moi ngay dang nhap (dang nhap ngay moi la het ten do); phai theo gio
+                // online o real.LuatPkGame.nhipPhut.
                 self.subpk = 1;
             }
             if (self.pointActiveQuest > 300) {

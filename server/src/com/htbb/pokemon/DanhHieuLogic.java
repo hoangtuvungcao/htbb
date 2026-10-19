@@ -39,8 +39,11 @@ public final class DanhHieuLogic {
     public static final int LENH_KHACH = -111;
     public static final byte G_DANH_SACH = 0, G_NHAN = 1, G_SO_MOI = 2;
     public static final byte K_XIN = 0, K_DEO = 1, K_THAO = 2, K_DA_XEM = 3;
-    /** Ban client dau tien biet lenh -110 / -111. */
-    public static final int BAN_CLIENT = 906;
+    /**
+     * Ban client dau tien biet lenh -110 / -111. Ban 906 da phat hanh KHONG co bo xu ly -> 907 (BAN tang moi ban phat
+     * hanh, nhanh cap-nhat).
+     */
+    public static final int BAN_CLIENT = 907;
 
     /** Ma dong chi so (cot chi_so). Ngan sach o danh hieu (thiet_ke_can_bang 4.5): +1% Ne / Khang trang thai / Chi mang. */
     public static final String NE_TRANH = "ne_tranh", CHI_MANG = "chi_mang", KHANG_TRANG_THAI = "khang_trang_thai", HP = "hp";

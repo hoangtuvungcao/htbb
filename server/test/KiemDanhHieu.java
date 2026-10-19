@@ -504,7 +504,7 @@ public final class KiemDanhHieu {
             }
         }
         Kiem.dung("doc duoc > 300 dong danh hieu (" + n + ")", n > 300);
-        Kiem.dung("30..45 danh hieu thanh tuu moi (" + moi + ")", moi >= 30 && moi <= 45);
+        Kiem.dung("30..50 danh hieu thanh tuu moi (" + moi + ")", moi >= 30 && moi <= 50);
         Kiem.dung("du 4 do hiem o danh hieu moi " + hiem, hiem.size() == 4);
         Kiem.dung("co danh hieu an (" + an + ")", an >= 5);
         Kiem.dung("co danh hieu co han (xep hang / su kien) (" + coHan + ")", coHan >= 5);
@@ -516,6 +516,11 @@ public final class KiemDanhHieu {
         Kiem.sai("ten / mo ta / goi y khong co chu HOA co dau (font J2ME)", hoaCoDau);
         Kiem.sai("ten danh hieu cu khop data.DanhHieu.getName (giftcode)", lechCu);
         Kiem.dung("danh muc gom danh hieu cu (" + cu + ")", cu >= 40);
+        for (final String maMua : com.htbb.pokemon.XepHangPvp.MA_DANH_HIEU_MUA) {
+            Kiem.dung("danh hieu thuong mua co trong SQL: " + maMua, maMua.isEmpty() || s.contains("'" + maMua + "'"));
+        }
+        Kiem.bang("goi -110 chi cho client >= 907 (ban 906 da phat hanh khong co bo xu ly)", Integer.valueOf(907),
+                Integer.valueOf(DanhHieuLogic.BAN_CLIENT));
         // moi "danh_hieu:<ten>" thuong nhiem vu co mot dong nhiem_vu cung ten
         final String nvSql = doc("../sql/pokemon_nhiem_vu.sql");
         final Matcher t = Pattern.compile("danh_hieu:([^;|']+)").matcher(nvSql);

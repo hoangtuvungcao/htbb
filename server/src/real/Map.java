@@ -16129,6 +16129,9 @@ public class Map implements Runnable {
                             }
 
                             MapMuaBan.exchangeItem(this, player, item, i);
+                            if (!isItemAnimal) {
+                                DiemMocNhiemVu.khiMacDo(player, item.getTemplate().id); // diem moc nang_cap + bo_trang_bi
+                            }
                         } catch (Exception var17) {
                             var17.printStackTrace();
                         }

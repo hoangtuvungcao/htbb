@@ -937,6 +937,7 @@ public class TeamServer {
         if (com.htbb.pokemon.LauDai.bat()) {
             data.DatabaseLauDai.taoBang();
             real.DanhHieuGame.taoBang();
+            real.XepHangPvpGame.taoBang();
             real.ExpLauDai.apDungBang();
             real.VatPhamDungLauDai.nap();
         }

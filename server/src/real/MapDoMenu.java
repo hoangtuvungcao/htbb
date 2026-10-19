@@ -1545,6 +1545,11 @@ class MapDoMenu {
                     // (RequestNPCInfoHandler case -31). Phai chan O DAY, TRUOC khi remap
                     // VI_TRI_MENU_DAU_TRUONG ben duoi - bang do chi biet cac vi tri co san,
                     // vi tri moi nay se bi no return im lang neu khong chan truoc.
+                    // 0.9.7 Dau xep hang (noi cuoi menu, truoc Vu Lan): chan truoc khi remap.
+                    if (idMenu == 0 && player.idxXepHangDauTruong >= 0 && idOptionMenu == player.idxXepHangDauTruong) {
+                        XepHangPvpGame.dangKy(player);
+                        return;
+                    }
                     if (idMenu == 0 && SuKien.bat(SuKien.VU_LAN) && player.idxSuKienVuLanDauTruong >= 0
                             && idOptionMenu == player.idxSuKienVuLanDauTruong) {
                         MapSuKien.doMenuDauTruongVuLan(map, player, idNpc, MapSuKien.MENU_VU_LAN_DAU_TRUONG_GOC, -1);
