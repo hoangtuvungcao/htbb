@@ -170,8 +170,13 @@ sv.adminAccounts=admin
 sv.choPhepTaoTenGM=0
 # 1 = quyền GM cần thêm pInfo[16]=1 trong tob_char (bật sau khi đã đặt cho GM thật).
 sv.gmCanCoPInfo=0
-# Từ chối client có số bản < N (0 = tắt). Số bản = BAN= trong phat-hanh/phien_ban.conf.
+# Cập nhật client (0.9.7, nên đặt trên web /admin/cau-hinh-he-thong): bản tối thiểu - client gửi số bản < N bị chặn
+# đăng nhập, hiện hộp "Cần cập nhật" + nút Tải bản mới (0 = tắt). Số bản = BAN= trong tools/phat-hanh/phien_ban.conf.
 sv.banToiThieu=0
+# Bản mới nhất dự phòng (khi bản tải ở /admin/tai-game chưa ghi Số bản). 0 = chỉ theo trang Bản tải game.
+sv.banMoiNhat=0
+# 0 = tắt thẻ "Đã có bản mới" (khẩn cấp).
+sv.nhacCapNhat=1
 # Chờ (giây) trước khi vào lại game sau khi thoát (theo nhân vật). 0 = vào lại ngay.
 sv.reloginWaitSec=0
 # Bật log chẩn đoán hình thú cưỡi cho đúng MỘT tên Pokémon; trống = tắt.

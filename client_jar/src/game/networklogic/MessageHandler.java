@@ -117,6 +117,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
+        if (game.pokemon.CapNhat.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;

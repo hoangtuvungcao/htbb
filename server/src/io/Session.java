@@ -29,6 +29,8 @@ public class Session extends Thread {
     public byte firmWare = 0;
     /** So ban client (jar/Android/PC Java gui sau ma may, -1 = khong gui: Unity / client cu). Xem real.DungVatPham. */
     public int banClient = -1;
+    /** platf (microedition.platform) client gui luc dang nhap - nen tang cho com.htbb.capnhat.CapNhatClient. */
+    public String platfClient = "";
     public byte vsTile = 0;
     public byte firmWareReg = 0;
     public boolean isLogin = false;

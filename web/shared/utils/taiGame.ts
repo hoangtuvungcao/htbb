@@ -35,6 +35,11 @@ export interface BanTai {
   url: string
   kieu: KieuLinkTai
   phienBan: string
+  /**
+   * Số bản (BAN của tools/phat-hanh/phien_ban.conf, vd 907) của tệp đang phát — máy chủ game coi đây là BẢN MỚI NHẤT
+   * của nền tảng: client gửi số bản nhỏ hơn thấy "Đã có bản mới" (com.htbb.capnhat.CapNhatClient). 0 = chưa ghi.
+   */
+  ban: number
   dungLuong: string
   capNhat: string
   nhatKy: string
@@ -117,12 +122,18 @@ export function nenTang(ma: string): NenTang | undefined {
 
 export function banTaiMacDinh(n: NenTang): BanTai {
   return {
-    ma: n.ma, ten: n.ten, moTa: n.moTa, url: '', kieu: n.kieu[0]!, phienBan: '', dungLuong: '', capNhat: '', nhatKy: '',
+    ma: n.ma, ten: n.ten, moTa: n.moTa, url: '', kieu: n.kieu[0]!, phienBan: '', ban: 0, dungLuong: '', capNhat: '', nhatKy: '',
     sha256: '', heDieuHanh: n.heDieuHanh, trangThai: n.trangThai, hien: n.hien,
   }
 }
 
 const chuoi = (v: unknown, max: number, macDinh = '') => (typeof v === 'string' ? v.trim().slice(0, max) : macDinh)
+
+/** Số bản hợp lệ: số nguyên 0..99 999 999 (chuỗi số cũng nhận); sai -> 0. */
+export function soBanHopLe(v: unknown): number {
+  const n = typeof v === 'string' && /^\s*\d+\s*$/.test(v) ? Number(v) : v
+  return typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < 100_000_000 ? n : 0
+}
 
 /** Link được nhận: https://…, http://localhost (dev), hoặc đường dẫn trong site (/tai/…, /huong-dan…). Sai -> ''. */
 export function urlTaiHopLe(u: unknown): string {
@@ -158,6 +169,8 @@ export function loiBanTai(b: BanTai): string | null {
     if (b.kieu === 'tep' && n.duoi.length && !dungDuoi(n, u)) return `${n.ten}: tệp phải có đuôi ${n.duoi.map(d => (d === 'appimage' ? '.AppImage' : `.${d}`)).join(' / ')}.`
   }
   if (b.sha256 && !/^[0-9a-f]{64}$/.test(b.sha256)) return `${n.ten}: SHA-256 phải gồm đúng 64 ký tự 0-9 a-f.`
+  const ban = b.ban as unknown
+  if (ban !== '' && ban != null && ban !== 0 && soBanHopLe(ban) === 0) return `${n.ten}: số bản phải là số nguyên ≥ 0 (vd 907).`
   return null
 }
 
@@ -214,6 +227,7 @@ export function chuanHoaBanTai(raw: unknown): BanTai[] {
       url: url === '#' ? '' : url,
       kieu,
       phienBan: chuoi(r.phienBan, 40),
+      ban: doiMa ? 0 : soBanHopLe(r.ban),
       dungLuong: chuoi(r.dungLuong, 40),
       capNhat: chuoi(r.capNhat, 40),
       nhatKy: boDongTepPhu(chuoi(r.nhatKy, 3000)),

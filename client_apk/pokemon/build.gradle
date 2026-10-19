@@ -103,6 +103,8 @@ android {
 
     sourceSets {
         main.java.srcDirs += codeSinh
+        // Java SE dùng chung PC + APK (bộ cập nhật htbb.capnhat - tải + SHA-256); không vào bản jar J2ME
+        main.java.srcDirs += rootProject.file('../client_jar/shared/se')
         main.assets.srcDirs += new File(j2me, 'res')
         // key art HD chỉ cho APK (assets /bn/hd/: cảnh 880x400 + mây + khung + logo 240 px - client_jar/tools/tao_banner.py);
         // Banner.java (code jar) thấy /bn/hd/nen.png thì vẽ đúng khung hình key art, jar J2ME không có -> dải lớp nhỏ

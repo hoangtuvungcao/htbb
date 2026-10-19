@@ -114,7 +114,7 @@ const faq = [
                   <UIcon name="i-lucide-info" class="size-3.5 align-[-2px]" /> Cần: {{ p.heDieuHanh }}
                 </p>
                 <p v-if="p.phienBan || p.dungLuong || p.capNhat" class="mt-2 text-xs font-semibold text-dimmed">
-                  <span v-if="p.phienBan">Phiên bản {{ p.phienBan }}</span>
+                  <span v-if="p.phienBan">Phiên bản {{ p.phienBan }}<template v-if="p.ban"> (bản {{ p.ban }})</template></span>
                   <span v-if="p.dungLuong"> · {{ p.dungLuong }}</span>
                   <span v-if="p.capNhat"> · cập nhật {{ p.capNhat }}</span>
                 </p>

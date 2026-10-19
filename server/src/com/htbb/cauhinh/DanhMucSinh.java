@@ -750,8 +750,14 @@ final class DanhMucSinh {
                     .nhan("GM cần cả cờ pInfo", "1 = quyền GM cần tên trong danh sách VÀ pInfo[16]=1.")
                     .lop("co_dinh"),
             new DinhNghiaKhoa("sv.banToiThieu", "bao_tri", "so", "0", true, "cau_hinh")
-                    .nhan("Bản client tối thiểu", "> 0 = từ chối client jar/Android cũ hơn.")
+                    .nhan("Bản tối thiểu (bắt buộc cập nhật)", "Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt.")
                     .khoang(0L, 1000000L),
+            new DinhNghiaKhoa("sv.banMoiNhat", "bao_tri", "so", "0", true, "cau_hinh")
+                    .nhan("Bản mới nhất (dự phòng)", "Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game.")
+                    .khoang(0L, 1000000L),
+            new DinhNghiaKhoa("sv.nhacCapNhat", "bao_tri", "co", "1", true, "cau_hinh")
+                    .nhan("Nhắc khi có bản mới", "Client cũ hơn bản mới nhất thấy thẻ Đã có bản mới (Cập nhật ngay / Để sau, nhắc một lần mỗi ngày). Không chặn chơi. Cố định bật; tắt khẩn cấp: sv.nhacCapNhat=0 trong server.ini.")
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("sv.choPhepTaoTenGM", "quan_tri", "co", "0", true, "cau_hinh")
                     .nhan("Cho tạo Pokémon tên GM", "Chỉ bật tạm thời.")
                     .lop("co_dinh"),
