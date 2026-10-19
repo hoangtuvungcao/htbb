@@ -78,6 +78,8 @@ public final class HeSinhThaiGame {
             try {
                 DuLieuHeSinhThai.taoBang();
                 napTheGioi();
+                ThoiTietGame.nap();
+                NgayCongDongGame.nap();
                 doiTenHatGiong();
                 SuuTamSinhThai.tenBoSung = (dex) -> {
                     for (final MonsterTemplate t : real.Map.monsterTemplates.values()) {
@@ -235,11 +237,13 @@ public final class HeSinhThaiGame {
                 return g.intValue();
             }
         }
-        return SinhThaiTheGioi.thoiTiet(homNay(), vung);
+        return ThoiTietGame.thoiTietVung(vung); // 0.9.7: lich 4 khung gio / ngay + su kien (ThoiTietLich)
     }
 
     public static int thoiTietMap(final int mapId) {
-        return thoiTietVung(vung(mapId));
+        final int v = vung(mapId);
+        final int co = ThoiTietGame.coDinh(mapId); // ban do co dinh thoi tiet (data_thoi_tiet_map); GM ghi de vung van thang
+        return co >= 0 && !(ngayGhiDe == homNay() && THOI_TIET_GHI_DE.containsKey(Integer.valueOf(v))) ? co : thoiTietVung(v);
     }
 
     // ================================================================== ho so nguoi choi
@@ -436,7 +440,10 @@ public final class HeSinhThaiGame {
             int dacBiet = 0;
             if (!quaiBaoVe.contains(goc)) {
                 final int[] bp = bungPhat;
-                if (bp != null && bp[0] == mapId && SinhThaiTheGioi.doiThanhBungPhat(goc, bp[1], R)) {
+                final int cd = NgayCongDongGame.loaiNoiBat(mapId, goc); // ngay cong dong: gio vang, ban do cua dong
+                if (cd > 0) {
+                    moi = cd;
+                } else if (bp != null && bp[0] == mapId && SinhThaiTheGioi.doiThanhBungPhat(goc, bp[1], R)) {
                     moi = bp[1];
                     dacBiet = 2;
                 } else if (bp != null && bp[0] == mapId && goc == bp[1]) {
@@ -520,6 +527,7 @@ public final class HeSinhThaiGame {
             return;
         }
         try {
+            NgayCongDongGame.khiHaQuai(p, m); // ngay cong dong: bo dem danh hieu cua dong
             final HoSoSinhThai h = hoSo(p);
             if (h == null) {
                 return;
@@ -666,7 +674,7 @@ public final class HeSinhThaiGame {
             if (he < 0) {
                 he = self.hePokemon1();
             }
-            final int pct = SinhThaiTheGioi.satThuongPhanTram(he, thoiTietMap(self.mapID));
+            final int pct = ThoiTietLich.satThuong(he, thoiTietMap(self.mapID)); // kep tran +-10%
             return pct == 100 ? dam : (int) ((long) dam * pct / 100L);
         } catch (final Exception e) {
             return dam;
@@ -871,14 +879,18 @@ public final class HeSinhThaiGame {
     static final Map<Integer, Integer> DA_GUI_THOI_TIET = new ConcurrentHashMap<Integer, Integer>();
 
     static void guiThoiTietMoiNguoi(final boolean ep) {
-        if (real.Map.weather != null) {
-            return; // su kien dang dung hieu ung thoi tiet toan may chu - khong de
-        }
         try {
             for (int i = 0; i < CharManager.instance.vChars.size(); i++) {
                 final Char c = CharManager.instance.vChars.get(i);
                 if (c == null || c.isBot != -1 && c.isBot != 0) {
                     continue;
+                }
+                if (ThoiTietGame.moi(c)) {
+                    ThoiTietGame.gui(c, ep); // client >= 907: goi -118 (HUD, hat thoi tiet, phu mau mua, ngay cong dong)
+                    continue;
+                }
+                if (real.Map.weather != null) {
+                    continue; // su kien dang dung hieu ung thoi tiet toan may chu - khong de
                 }
                 final int hu = SinhThaiTheGioi.HIEU_UNG_CLIENT[thoiTietMap(c.mapID)];
                 final Integer cu = DA_GUI_THOI_TIET.get(c.charDBID);

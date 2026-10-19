@@ -65,6 +65,10 @@ public final class DatabaseLichNam {
         return b.toString();
     }
 
+    static String cat(final String s, final int n) {
+        return s == null ? "" : s.length() <= n ? s : s.substring(0, n);
+    }
+
     static String gio(final long ms) {
         final SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         f.setTimeZone(LichNam.MUI_GIO);
@@ -131,8 +135,8 @@ public final class DatabaseLichNam {
                 pre.setString(i++, c.muc.ten);
                 pre.setString(i++, c.muc.nhom);
                 pre.setString(i++, c.muc.ngayLe);
-                pre.setString(i++, c.muc.moTa);
-                pre.setString(i++, c.muc.phanThuong);
+                pre.setString(i++, cat(c.moTa(), 500));
+                pre.setString(i++, cat(c.phanThuong(), 300));
                 pre.setString(i++, gio(c.mo));
                 pre.setString(i++, gio(c.dong));
                 pre.setString(i++, gio(c.mo));

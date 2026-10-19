@@ -12,6 +12,7 @@ const THOI_TIET = [
   { ten: 'Tuyết', icon: 'i-lucide-snowflake', he: 'Băng', satThuong: `Băng +${H.thoiTietPhanTram}%` },
   { ten: 'Bão cát', icon: 'i-lucide-wind', he: 'Đá, Đất, Thép', satThuong: `Đá +${H.thoiTietPhanTram}%` },
   { ten: 'Sương mù', icon: 'i-lucide-cloud-fog', he: 'Ma, Siêu linh', satThuong: `Ma +${H.thoiTietPhanTram}%` },
+  { ten: 'Gió mạnh', icon: 'i-lucide-wind', he: 'Bay, Rồng', satThuong: `Bay +${H.thoiTietPhanTram}%` },
 ]
 const KY_NANG_MO: Record<string, string> = {
   'Câu cá': 'Câu ở hồ: vảy cá, vỏ sò, ngọc trai, cá hiếm cho album.',
@@ -30,8 +31,10 @@ const gioKhung = (g: number) => `${String(g).padStart(2, '0')}:00–${String(g +
       Hệ sinh thái đang được thử nghiệm và sẽ mở theo thông báo trong game. Số liệu dưới đây lấy từ bản đang thử, có thể còn điều chỉnh.
     </WikiCallout>
 
-    <WikiSection id="the-gioi" title="Thế giới sống: ngày đêm & thời tiết" lead="Mỗi vùng có thời tiết riêng, đổi theo ngày và theo mùa. Thời tiết quyết định Pokémon hoang dã nào hay xuất hiện và chiêu hệ nào mạnh hơn.">
+    <WikiSection id="the-gioi" title="Thế giới sống: ngày đêm & thời tiết" lead="Mỗi vùng có thời tiết riêng, đổi 4 lần mỗi ngày và theo mùa. Thời tiết quyết định Pokémon hoang dã nào hay xuất hiện và chiêu hệ nào mạnh hơn.">
       <ul class="cham">
+        <li><strong>Lịch thời tiết</strong>: mỗi ngày 4 khung 6 giờ (00:00, 06:00, 12:00, 18:00). Trời hay giữ nguyên sang khung sau, thỉnh thoảng đổi; dịp lễ đổi không khí (Halloween nhiều sương mù, Noel có tuyết ở làng). Chạm biểu tượng thời tiết cạnh hàng nút trên để xem ảnh hưởng, còn bao lâu và khung kế tiếp.</li>
+        <li><strong>Màu theo mùa</strong>: bản đồ ngoài trời phủ một lớp màu rất nhẹ theo mùa thật (xuân hoa anh đào, thu lá phong, đông lạnh) hoặc theo lễ (hoàng hôn Halloween, Tết, Noel, Trung Thu). Tắt được ở Menu nhanh › Màu theo mùa; hiệu ứng thời tiết chọn Tắt / Thấp / Đầy đủ (máy yếu nên để Thấp).</li>
         <li><strong>Ban đêm</strong> từ {{ H.gioDemTu }}:00 đến {{ String(H.gioDemDen).padStart(2, '0') }}:00 (giờ máy chủ): Pokémon hệ Ma, Bóng tối, Độc xuất hiện nhiều gấp {{ H.heSoSinh }}.</li>
         <li>Hang động và trong nhà luôn quang đãng; vùng tuyết hay có tuyết; mùa hè nắng nhiều hơn.</li>
         <li>Mỗi lần quái hồi sinh có {{ H.thayLoaiPhanTram }}% khả năng đổi sang loài hợp thời tiết, ban đêm hoặc mùa. Một số loài chỉ có mặt nửa năm (loài di cư).</li>

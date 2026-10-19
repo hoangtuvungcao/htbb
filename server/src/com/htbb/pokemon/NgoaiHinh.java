@@ -57,12 +57,15 @@ public final class NgoaiHinh {
     public static final String[] TEN_O = {"Mũ / nơ", "Khăn quàng", "Vòng cổ", "Đồ cầm tay", "Ruy băng / áo choàng",
         "Phiến đá hệ", "Kính"};
 
-    /** Do hiem hien thi (bang mau phu kien): 0 thuong, 1 hiem, 2 su thi, 3 huyen thoai, 4 hoan my. */
-    public static final String[] TEN_HIEM = {"Thường", "Hiếm", "Sử thi", "Huyền thoại", "Hoàn mỹ"};
+    /**
+     * Do hiem hien thi (hang bang mau phu kien gui trong -102) = bac chung {@link DoHiemSinh} (MOT nguon
+     * tools/cauhinh/do_hiem.json): 0 Thuong, 1 Hiem, 2 Quy, 3 Su thi, 4 Huyen thoai (lap lanh), 5 Trang tri.
+     * Client cu (bang 5 hang trong phukien.bin) van ve gan nhu cu; hang 5 ngoai bang -> Thuong.
+     */
+    public static final String[] TEN_HIEM = DoHiemSinh.TEN;
 
     /** Ten bac (docs/thiet-ke-game.md 3.1). */
-    public static final String[] TEN_BAC = {"Sơ cấp", "Đồng", "Bạc", "Vàng", "Bạch kim", "Kim cương", "Chuyên gia",
-        "Tinh anh", "Huyền thoại", "Thần thoại", "Tối thượng"};
+    public static final String[] TEN_BAC = DoHiemSinh.TEN_BAC_TRANG_BI;
 
     /** So trang phuc (bang mau) client co: id 1..SO_TRANG_PHUC. */
     public static final int SO_TRANG_PHUC = 8;
@@ -71,23 +74,11 @@ public final class NgoaiHinh {
     }
 
     /**
-     * colorName cua Item -> do hiem hien thi. Thu tu that cua game (Map.doCreateNewItem / ItemChangeColor):
-     * Trang 0 &lt; Xanh 3 &lt; Do 2 &lt; Hoan my 1; Tim 4 / Vang 5 la do su kien, trang tri.
+     * colorName cua Item -> do hiem hien thi = bac chung (DoHiemSinh.bacVatPham: Trang 0 -> Thuong, Xanh 3 -> Hiem,
+     * Do 2 -> Quy, Hoan my 1 / Tim 4 -> Su thi, 6 -> Huyen thoai, Vang 5 -> Trang tri).
      */
     public static int hangHiem(final int colorName) {
-        switch (colorName) {
-            case 3:
-                return 1;
-            case 2:
-                return 2;
-            case 4:
-            case 5:
-                return 3;
-            case 1:
-                return 4;
-            default:
-                return 0;
-        }
+        return DoHiemSinh.bacVatPham(colorName);
     }
 
     /** Bac theo cap yeu cau cua mon (bac k mo o cap 10k, bac 10 o cap 98). */
@@ -246,7 +237,7 @@ public final class NgoaiHinh {
         }
         if (canh > 0) {
             if (d.kieu[LUNG] == 0) {
-                d.hiem[LUNG] = 2;
+                d.hiem[LUNG] = DoHiemSinh.SU_THI; // canh thoi trang khong co mon that: tim nhu ban cu
             }
             d.kieu[LUNG] = KIEU_CANH;
         }

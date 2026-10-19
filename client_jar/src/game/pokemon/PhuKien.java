@@ -39,7 +39,7 @@ public final class PhuKien {
     private static final Hashtable NGOAI_LE = new Hashtable();
     public static final int NL_CO = 1, NL_MU = 2, NL_TAY = 4, NL_LUNG = 8;
     private static final Hashtable ANH = new Hashtable();
-    /** Mau "sang" lap lanh cua do Hoan my (4 nhip). */
+    /** Mau "sang" lap lanh cua bac vien dong (Huyen thoai, 4 nhip). */
     private static final int[] LAP_LANH = {0xFFF8C8, 0xFFD0F0, 0xD0F0FF, 0xD8FFD0};
 
     private PhuKien() {
@@ -99,6 +99,12 @@ public final class PhuKien {
                 trangPhuc[i][4] = r.readUnsignedByte();
                 tenTrangPhuc[i] = r.readUTF();
             }
+            // 0.9.7: bảng màu độ hiếm + bậc lấy từ MỘT nguồn (DoHiemSinh, tools/cauhinh/do_hiem.json) thay bảng trong tệp
+            // (phukien.bin cũ 5 hàng: Hiếm xanh dương, Hoàn mỹ...) - hàng = bậc chung máy chủ gửi trong -102.
+            hiem = DoHiemSinh.PHU_KIEN;
+            tenHiem = DoHiemSinh.TEN;
+            mauBac = DoHiemSinh.MAU_BAC_TRANG_BI;
+            tenBac = DoHiemSinh.TEN_BAC_TRANG_BI;
             n = r.readUnsignedShort();
             for (int i = 0; i < n; i++) {
                 Hinh h = new Hinh();
@@ -250,8 +256,8 @@ public final class PhuKien {
         if (h < 0 || h >= hiem.length) {
             h = 0;
         }
-        if (h != hiem.length - 1) {
-            nhay = 0;
+        if (!DoHiemSinh.VIEN_DONG[h]) {
+            nhay = 0;   // lấp lánh chỉ ở bậc viền động (Huyền thoại)
         }
         // nho theo tung Hinh (khong tao chuoi khoa moi khung; khoa cu thieu hi.nho -> ban nho / thuong lan anh)
         int iDa = -1;
@@ -294,7 +300,7 @@ public final class PhuKien {
                 }
                 int argb;
                 if (c <= 5) {
-                    argb = (c == 4 && h == hiem.length - 1) ? LAP_LANH[nhay & 3] : bang[c - 1];
+                    argb = (c == 4 && DoHiemSinh.VIEN_DONG[h]) ? LAP_LANH[nhay & 3] : bang[c - 1];
                 } else {
                     argb = coDinh[c - 6 < coDinh.length ? c - 6 : 0];
                 }

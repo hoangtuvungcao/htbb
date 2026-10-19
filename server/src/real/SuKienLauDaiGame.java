@@ -21,9 +21,9 @@ public final class SuKienLauDaiGame {
     // henLichNam (hen lan ke tiep theo lich 52 tuan ISO) DA BO 19/10/2026: lich su kien nay theo ngay that,
     // xem com.htbb.pokemon.LichNam + real.LichSuKien.dongBoLichNam.
 
-    /** He so nhan shiny hien tai theo su kien dang bat. */
+    /** He so nhan shiny hien tai theo su kien dang bat. Ngay cong dong: x5 CHI trong 3 gio vang (NgayCongDongGame). */
     public static int nhanShiny() {
-        return SuKienLauDai.nhanShiny(SuKien.bat("moi:shiny"), SuKien.bat("moi:congdong"));
+        return SuKienLauDai.nhanShiny(SuKien.bat("moi:shiny"), com.htbb.pokemon.NgayCongDongGame.gioVang());
     }
 
     /** He dang duoc +10% cua "tuan he" (-1 neu khong co). */

@@ -15,6 +15,8 @@ export interface RankRow {
   hang?: number
   /** Huy hiệu nhỏ cạnh tên: vùng, shiny, bậc PvP… */
   nhan?: string[]
+  /** Danh hiệu đang đeo, tô màu độ hiếm chung (shared/utils/doHiem.gen.ts — cùng màu trong game). */
+  danhHieu?: { ten: string, mau: string, nhat: string }
 }
 </script>
 
@@ -92,8 +94,9 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
             <p v-if="r.sub" class="text-sm font-semibold text-muted">
               {{ r.sub }}
             </p>
-            <p v-if="r.nhan?.length" class="mt-1 flex flex-wrap justify-center gap-1">
+            <p v-if="r.nhan?.length || r.danhHieu" class="mt-1 flex flex-wrap justify-center gap-1">
               <UBadge v-for="n in r.nhan" :key="n" size="sm" color="neutral" variant="subtle">{{ n }}</UBadge>
+              <span v-if="r.danhHieu" class="inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-bold" :style="{ color: r.danhHieu.mau, borderColor: r.danhHieu.mau, backgroundColor: r.danhHieu.nhat }">{{ r.danhHieu.ten }}</span>
             </p>
             <!-- Thân bục: cao thấp theo hạng -->
             <div
@@ -137,8 +140,9 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
                     <span class="min-w-0">
                       <span class="font-bold text-highlighted">{{ r.name }}</span>
                       <span v-if="r.sub" class="ms-2 text-muted">· {{ r.sub }}</span>
-                      <span v-if="r.nhan?.length" class="ms-2 inline-flex flex-wrap gap-1 align-middle">
+                      <span v-if="r.nhan?.length || r.danhHieu" class="ms-2 inline-flex flex-wrap gap-1 align-middle">
                         <UBadge v-for="n in r.nhan" :key="n" size="sm" color="neutral" variant="subtle">{{ n }}</UBadge>
+                        <span v-if="r.danhHieu" class="inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-bold" :style="{ color: r.danhHieu.mau, borderColor: r.danhHieu.mau, backgroundColor: r.danhHieu.nhat }">{{ r.danhHieu.ten }}</span>
                       </span>
                     </span>
                   </span>

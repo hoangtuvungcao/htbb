@@ -786,6 +786,7 @@ Thay đổi tay của admin (hay lịch lúc bảo trì còn xa / đã tắt) v�
 | `noel` | Giáng sinh | 18/12 → 28/12 | 18/12 → 28/12 | 18/12 → 28/12 |
 | `demnoel` | Đêm Noel | 24/12 → 26/12 | 24/12 → 26/12 | 24/12 → 26/12 |
 | `moi:tongket` | Tổng kết năm | 28/12 → 04/01 | 28/12/2026 → 04/01/2027 | 28/12/2027 → 04/01/2028 |
+| `moi:congdong` | Ngày cộng đồng (mỗi tháng) | Chủ nhật 04:00 → thứ Hai 04:00 (bên dưới) | 18/01, 15/02, 22/03, 19/04, 10/05, 21/06, 19/07, 02/08, 20/09, 04/10, 15/11, 13/12 | 24/01, 21/02, 28/03, 18/04, 16/05, 27/06, 18/07, 08/08, 19/09, 10/10, 21/11, 19/12 |
 
 Tuần Pokémon (bảng dưới) vẫn theo tuần ISO (`SuKienLauDai.LICH`, [su_kien_nam.csv](../du_lieu/su_kien_nam.csv)), thứ Hai
 04:00 → thứ Hai tuần sau 04:00, vì hệ của tuần hệ và huyền thoại đột kích gắn với số tuần. Bật tay (không có lịch):
@@ -800,13 +801,23 @@ chính. Trang chủ có mục "Sự kiện" (đang diễn ra + 30 ngày tới, �
 | Nhóm | Tuần (năm 1) | Cơ chế |
 |---|---|---|
 | Lễ Việt Nam | theo ngày thật (bảng trên) | Đổi vật phẩm sự kiện, NPC, nấu bánh, thả đèn |
-| Ngày cộng đồng | 3, 12, 19, 25, 31, 40, 50 | 3 giờ: dòng khởi đầu xuất hiện dày, shiny ×5 |
+| Tuần cộng đồng | 3, 12, 19, 25, 31, 40, 50 | chuỗi nhiệm vụ của tuần; Chủ nhật của tuần là Ngày cộng đồng của tháng |
 | Tuần Shiny | 7, 34 | shiny ×10 |
 | Đột kích huyền thoại | 9, 20, 28, 36, 48 | boss thế giới thêm khung, thưởng theo đóng góp |
 | Tuần hệ | 2 Băng, 11 Cỏ, 18 Lửa, 27 Nước, 33 Điện, 42 Siêu linh | quái hệ X ×2, chiêu hệ X +10% |
 | Lễ hội Pokédex / bùng phát | 14, 45 / 21 | điểm nghiên cứu ×2 / một loài ×5 trên một tuyến |
 | Chiến vùng | 16, 30, 49 | Kanto / Johto / Hoenn giành cờ |
 | Mùa giải PvP | 13, 26, 39, 52 | chốt bậc mùa |
+
+**Ngày cộng đồng hằng tháng** (0.9.7, đề xuất 8; `com.htbb.pokemon.NgayCongDong`, `NgayCongDongGame`,
+`sql/them_thoi_tiet_mua.sql`): một Chủ nhật mỗi tháng, tự động theo lịch năm (Chủ nhật của tuần cộng đồng ISO nếu
+rơi vào tháng đó, còn lại Chủ nhật thứ ba), 04:00 → 04:00, web tự đăng tin "Sắp / Đang / Đã kết thúc" (nhóm
+"Ngày cộng đồng", báo trước 3 ngày; mô tả từng lần = dòng nổi bật của tháng). Trong **3 giờ vàng 14:00–17:00**
+(`data_ngay_cong_dong`): trên bản đồ tự nhiên của từng loài trong **dòng** nổi bật (`data_hst_bung_phat`, nên mọi dải cấp
+có phần) 40% lần hồi sinh đổi thành loài đó (trần 50%); hạ loài nổi bật +20% EXP (trần 25%, cộng vào buff EXP chung nên
+vẫn chịu trần +100%); shiny ×5 chỉ trong giờ vàng; hạ 30 con trong giờ vàng mở danh hiệu "Bạn đồng hành <loài>" (Thường,
++0,5% HP, 9801..9816), 6 dòng khác nhau mở "Trụ cột cộng đồng" (Hiếm, 9817). Không phát xu / lượng. 16 dòng xoay
+12 tháng × 2 năm (năm chẵn / lẻ). Chiêu nổi bật (cột `chieu`) để trống: chờ hệ học chiêu theo loài.
 
 - **Ngân sách**: cả năm 66,5 giờ thu nhập (test chặn ≤ 70). Chỉ **25%** trả bằng xu; còn lại là vật phẩm **khoá, hết hạn
   khi sự kiện kết thúc** hoặc đồ trang trí, nên sự kiện không tích tiền. Mỗi tuần 1–3 vật phẩm, tối đa 20 cái / tuần
@@ -847,19 +858,30 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
 ### 7.1 Thế giới: ngày đêm, thời tiết, mùa, bùng phát
 
 - **Ngày / đêm** theo giờ máy chủ: 19:00–05:59 là đêm.
-- **Thời tiết theo ngày cho từng vùng sinh thái** (vùng = cột `loai` của `thiet_ke_map.csv`): quang, nắng, mưa, tuyết, bão
-  cát, sương mù; tính tất định từ (ngày, vùng), trọng số theo vùng và mùa (vùng tuyết ~70% tuyết; hang và trong nhà luôn
-  quang; mùa hạ tăng nắng; mùa đông ở hồ / núi mưa thành tuyết).
-- Ảnh hưởng: hệ hợp trời sinh nhiều gấp 3 (mưa: Nước / Điện; nắng: Lửa / Cỏ; tuyết: Băng; bão cát: Đá / Đất / Thép; sương
-  mù: Ma / Siêu linh; ban đêm thêm Ma / Bóng tối / Độc). Sát thương chiêu: mưa Nước +10% / Lửa −10%; nắng Lửa +10% / Nước
-  −10%; tuyết Băng +10%; bão cát Đá +10%; sương mù Ma +10% (chỉ đòn của người chơi).
+- **Thời tiết theo khung giờ cho từng vùng sinh thái** (0.9.7, `com.htbb.pokemon.ThoiTietLich`; vùng = cột `loai` của
+  `thiet_ke_map.csv`): quang, nắng, mưa, tuyết, bão cát, sương mù, **gió mạnh**; mỗi ngày 4 khung 6 giờ (00/06/12/18h),
+  tất định từ (ngày, khung, vùng): khung đầu quay theo trọng số vùng + mùa (vùng tuyết ~70% tuyết; hang, trong nhà, đấu
+  trường luôn quang; hạ tăng nắng; đông ở hồ / núi mưa thành tuyết; xuân / thu thêm gió), khung sau giữ khung trước 55%.
+  Sự kiện đang bật thêm trọng số (`data_thoi_tiet_su_kien`: Halloween +30 sương mù, Noel +25 tuyết, Tết / Trung Thu trời
+  quang, Hè nắng; trần 60) và đặt màu phủ; bản đồ có thể cố định thời tiết (`data_thoi_tiet_map`). GM vẫn ghi đè vùng.
+- Ảnh hưởng (`data_thoi_tiet`, máy chủ kẹp |%| ≤ 10 dù bảng ghi gì): hệ hợp trời sinh nhiều gấp 3 (mưa: Nước / Điện;
+  nắng: Lửa / Cỏ; tuyết: Băng; bão cát: Đá / Đất / Thép; sương mù: Ma / Siêu linh; gió: Bay / Rồng; ban đêm thêm Ma / Bóng
+  tối / Độc). Sát thương chiêu: mưa Nước +10% / Lửa −10%; nắng Lửa +10% / Nước −10%; tuyết Băng +10%; bão cát Đá +10%;
+  sương mù Ma +10%; gió Bay +10% (chỉ đòn của người chơi).
+- **Phủ màu mùa** (client vẽ, máy chủ chọn): bản đồ ngoài trời phủ alpha ≤ 17% theo mùa thật (xuân hoa anh đào 2–4, hạ
+  5–7, thu lá phong 8–10, đông 11–1) hoặc sự kiện đang bật ưu tiên cao nhất (Halloween hoàng hôn, Tết, Noel, Trung Thu),
+  kèm vài hạt (cánh hoa, lá, tàn lửa, lấp lánh); trong nhà / hang không phủ. Vẽ trước phủ đêm và HUD nên chữ HUD không đổi.
 - **Thay loài khi hồi sinh**: 15% số lần hồi sinh đổi sang ứng viên cùng dải cấp ±4 (tối đa 6 loài / điểm); một phần ba là
   **loài di cư** (chỉ có 6 tháng liền mỗi năm); **quái hiếm** cấp +3..+8 chỉ ra trong một kiểu thời tiết (có thể chỉ ban
   đêm), báo kênh thế giới tối đa 1 lần / 10 phút mỗi loài. Không đổi: mục tiêu nhiệm vụ chính, boss, vật thể, bản đồ đặc
   biệt. Không đổi số lượng, vị trí, id quái.
 - **Bùng phát**: 4 khung / ngày (11h, 17h, 20h, 22h), mỗi khung 1 giờ, một cặp (tuyến, loài của tuyến); 40% số lần hồi sinh
   trên tuyến đó thành loài bùng phát; có thông báo đầu / cuối.
-- Hiệu ứng client qua gói có sẵn `-39` (0 mưa, 1 lá rơi, 2 tuyết, 6 sương mù, 7 nắng gắt), gửi theo vùng khi đổi.
+- Client cũ: hiệu ứng qua gói có sẵn `-39` (0 mưa, 1 lá rơi = bão cát / gió, 2 tuyết, 6 sương mù, 7 nắng gắt). Client
+  ≥ 907: gói **`-118`** (`GoiThoiTiet`) mỗi khi thời tiết / khung / màu mùa / ngày cộng đồng của bản đồ đổi; client tự vẽ
+  hạt (`game.pokemon.ThoiTietVe`, Tắt / Thấp 24 hạt / Đầy đủ theo diện tích màn, Menu nhanh › Thời tiết; mặc định Thấp ở
+  bản nhẹ), đĩa biểu tượng thời tiết cạnh hàng nút trên (chấm cam = ngày cộng đồng), chạm = thẻ gợi ý (ảnh hưởng chiêu,
+  còn bao lâu, khung sau, mùa, giờ vàng), thông báo khi trời đổi. Màu theo mùa tắt riêng được (Menu nhanh).
 
 ### 7.2 Kỹ năng sống
 
@@ -1282,7 +1304,23 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
 | -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 
-Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
+| -118 | `THOI_TIET` | S→C | chỉ client ≥ 907: `u8 phienBan=1, i8 thoiTiet (-1 trong nhà), UTF tên, UTF gợi ý, i32 giây còn lại, i8 khung sau, i8 màu mùa, UTF tên màu, u8 ngày cộng đồng (0/1/2 giờ vàng), UTF dòng, i32 giây tới mốc giờ vàng, u8 bản đồ có loài nổi bật, UTF gợi ý` (mục 7.1) |
+
+Client cũ: hiệu ứng thời tiết qua gói cũ `-39` (mục 7.1).
+
+## Độ hiếm: một nguồn màu (0.9.7, đề xuất 4)
+
+`tools/cauhinh/do_hiem.json` là nguồn duy nhất; `python3 tools/cauhinh/sinh_cau_hinh.py` (cùng lần sinh danh mục cấu hình,
+`--kiem` báo lệch) sinh `DoHiemSinh` server + client, `web/shared/utils/doHiem.gen.ts`, `sql/them_do_hiem.sql` và khối màu
+của `tools/pokemon/SinhPhuKien.java`. 6 bậc: **Thường** (xám đá trên nền sáng / trắng trên nền tối) · **Hiếm** xanh lá ·
+**Quý** xanh dương · **Sử thi** tím · **Huyền thoại** cam, viền động (lấp lánh) · **Trang trí** vàng. Mỗi bậc có `mau`
+(chữ / viền trên nền sáng, tương phản ≥ 4,5 trên trắng, ≥ 3 trên giấy da NRO), `nhat` (nền nhạt), `sang` (chữ trên nền tối),
+5 tông phụ kiện. Ánh xạ theo **giá trị thật** của dữ liệu hiện tại: colorName 0 → Thường, 3 (Xanh 110%) → Hiếm, 2 (Đỏ
+120%) → Quý, 1 (Hoàn mỹ 130%) và 4 (tím) → Sử thi, 6 → Huyền thoại, 7 → Hiếm, 5 → Trang trí; danh hiệu 0..3 → Thường /
+Hiếm / Sử thi / Huyền thoại. Client vẽ qua token `ChuDe.mauHiem / nenHiem / sangHiem` (danh hiệu: `mauDanhHieu`,
+`nenDanhHieu`, `nhanDanhHieu` dùng chung bậc), khung ô đồ `KieuO.mauHiem`, tên món trong thẻ chi tiết, phụ kiện
+(`PhuKien`, hàng -102 = bậc chung); web tô chip danh hiệu ở bảng xếp hạng. Khi chạy chuyển đổi mã 0.9.7 (3 → 7, 2 → 3,
+1 → 4) chỉ sửa `mauVatPham` trong tệp json.
 
 ## Danh hiệu (0.9.7)
 

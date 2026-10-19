@@ -6,6 +6,7 @@
  * Trạng thái bảng + bộ lọc nằm trên URL (?bang=pvp&mua=0) để chia sẻ được.
  */
 import type { RankRow } from '~/components/site/RankBoard.vue'
+import { bacDanhHieu } from '~~/shared/utils/doHiem.gen'
 
 useSeoMeta({
   title: 'Bảng xếp hạng',
@@ -72,9 +73,11 @@ const rows = computed<RankRow[]>(() => dongTrang.value.map((d) => {
   if (d.vung >= 0 && d.vung <= 2) nhan.push(VUNG[d.vung]!)
   if (d.shiny) nhan.push('✦ Shiny')
   if (d.bac) nhan.push(d.bac)
-  if (d.danhHieu?.ten) nhan.push(d.danhHieu.ten)   // 0.9.7 danh hiệu đang đeo (data_danh_hieu)
+  // 0.9.7 danh hiệu đang đeo (data_danh_hieu): chip màu độ hiếm chung (cùng màu trong game)
+  const bac = d.danhHieu?.ten ? bacDanhHieu(d.danhHieu.doHiem) : null
+  const danhHieu = bac ? { ten: d.danhHieu!.ten, mau: bac.mau, nhat: bac.nhat } : undefined
   const sub = [d.loai, d.phu].filter(Boolean).join(' · ')
-  return { name: d.ten, sub, anh: d.dex ? anhPokemon(d.dex) : '', value: d.giaTri, hang: d.hang, nhan }
+  return { name: d.ten, sub, anh: d.dex ? anhPokemon(d.dex) : '', value: d.giaTri, hang: d.hang, nhan, danhHieu }
 }))
 
 const capNhat = computed(() => {

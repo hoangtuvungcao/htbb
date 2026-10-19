@@ -69,6 +69,9 @@ Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `serv
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần);
+- `ChupThoiTiet` (0.9.7): thời tiết / phủ màu mùa / ngày cộng đồng (game.pokemon.ThoiTiet, ThoiTietVe) ở 11 cỡ - đĩa
+  HUD trong màn và đủ cách nút hàng trên, thẻ gợi ý trong màn, phủ mùa không đổi thẻ HUD và đổi độ sáng thế giới ≤ 16%,
+  tắt màu = như không phủ, đường J2ME (Thấp) ≤ 40 lệnh vẽ / khung; ghi ảnh mẫu mỗi thời tiết / mùa vào thư mục tham số;
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;

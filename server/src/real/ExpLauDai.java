@@ -54,7 +54,8 @@ public final class ExpLauDai {
                 final int nl = LauDaiNhanVat.nangLuong(c);
                 // Ve EXP (TangToc): nhan SAU nang luong - ve dung luc met chi duoc 20%/5% x he so ve. Chi EXP.
                 final int x = HoiSinhGame.apMetExp(c, com.htbb.pokemon.TangToc.nhanVe(
-                        CapDoLauDai.expHaQuai(raw, heLech, buffPhanTram(c, ds), nl, LauDaiNhanVat.batKip(c), toDoi),
+                        CapDoLauDai.expHaQuai(raw, heLech, buffPhanTram(c, ds) + com.htbb.pokemon.NgayCongDongGame.expThem(mt), nl,
+                                LauDaiNhanVat.batKip(c), toDoi), // ngay cong dong: +<=25% (chung tran +100%)
                         TangTocGame.heSoVe(c, hc, msTruoc))); // Met moi (ve Trung tam sau khi guc): -X% EXP
                 if (x > 0) {
                     // nhanExpThu = 1 tren may that (chi may thu + -Dhtbb.thu.nhanExp, xem DongHo)

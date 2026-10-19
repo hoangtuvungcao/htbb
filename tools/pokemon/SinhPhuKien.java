@@ -42,24 +42,24 @@ import javax.imageio.ImageIO;
  */
 public final class SinhPhuKien {
 
-    // ---- bang mau do hiem: vien, toi, goc, sang, diem (thuong, hiem, su thi, huyen thoai, hoan my)
+    // ---- bang mau do hiem (vien, toi, goc, sang, diem) + bac trang bi: MOT NGUON tools/cauhinh/do_hiem.json
+    // SINH TU tools/cauhinh/do_hiem.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py)
     static final int[][] HIEM = {
-        {0x3A4250, 0x9AA2B0, 0xD8DCE4, 0xFFFFFF, 0x8FA8C8},   // thuong: trang / xam
-        {0x123060, 0x2A60B8, 0x48A0F8, 0xB8E0FF, 0xFFFFFF},   // hiem: xanh duong
-        {0x30104A, 0x6A2CA0, 0xA45CE8, 0xE0C0FF, 0xFFE070},   // su thi: tim
-        {0x4A2C06, 0xB07010, 0xF0B020, 0xFFE890, 0xFFFFFF},   // huyen thoai: vang kim
-        {0x4A3208, 0xC89018, 0xFFD040, 0xFFF8C8, 0xFF70D0},   // hoan my: vang cau vong (diem sang doi mau)
+        {0x3A4250, 0x9AA2B0, 0xD8DCE4, 0xFFFFFF, 0x8FA8C8},   // thuong
+        {0x123A1C, 0x2A8A3E, 0x52C866, 0xC2F2C8, 0xFFFFFF},   // hiem
+        {0x123060, 0x2A60B8, 0x48A0F8, 0xB8E0FF, 0xFFFFFF},   // quy
+        {0x30104A, 0x6A2CA0, 0xA45CE8, 0xE0C0FF, 0xFFE070},   // su_thi
+        {0x4A2006, 0xB45A10, 0xF08A28, 0xFFD8A0, 0xFFFFFF},   // huyen_thoai
+        {0x4A3208, 0xC89018, 0xFFD040, 0xFFF8C8, 0xFFFFFF},   // trang_tri
     };
-    static final String[] TEN_HIEM = {"Thường", "Hiếm", "Sử thi", "Huyền thoại", "Hoàn mỹ"};
+    static final String[] TEN_HIEM = {"Thường", "Hiếm", "Quý", "Sử thi", "Huyền thoại", "Trang trí"};
+    static final int[] MAU_BAC = {0x9AA0A8, 0xC88048, 0xD0D8E0, 0xF8D030, 0xE4F4FF, 0x78D8F8, 0x52C866, 0xA45CE8, 0xF08A28, 0xF84868, 0xFFFFFF};
+    static final String[] TEN_BAC = {"Sơ cấp", "Đồng", "Bạc", "Vàng", "Bạch kim", "Kim cương", "Chuyên gia", "Tinh anh", "Huyền thoại", "Thần thoại", "Tối thượng"};
+    // SINH TU tools/cauhinh/do_hiem.json: KET THUC
     /** w k r y g G u U m M */
     static final int[] CO_DINH = {0xF8F8F8, 0x2A2A34, 0xF07828, 0xF8D048, 0x60B040, 0x2F6B2A, 0x4890F0, 0xB0E4FA,
         0xD83838, 0xB4B4C4};
     static final String CHU_CO_DINH = "wkrygGuUmM";
-    static final int[] MAU_BAC = {0x9AA0A8, 0xC88048, 0xD0D8E0, 0xF8D030, 0xE4F4FF, 0x78D8F8, 0x58D878, 0xB070F8,
-        0xF89030, 0xF84868, 0xFFFFFF};
-    static final String[] TEN_BAC = {"Sơ cấp", "Đồng", "Bạc", "Vàng", "Bạch kim", "Kim cương", "Chuyên gia",
-        "Tinh anh", "Huyền thoại", "Thần thoại", "Tối thượng"};
-
     /** Trang phuc doi mau: {xoay mau, bao hoa %, sang %, phu mau rgb, phu mau %}, ten. Khop NgoaiHinh.SO_TRANG_PHUC. */
     static final int[][] TRANG_PHUC = {
         {0, 110, 106, 0xFFD838, 30},

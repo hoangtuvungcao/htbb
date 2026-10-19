@@ -190,7 +190,7 @@ public final class SuKien {
         // ---- GD2 buoc 5.1: ma moi cua lich 52 tuan (du_lieu/su_kien_nam.csv). Chi co hieu
         // ung khi sv.lau_dai=1 (SuKienLauDaiGame); tat co thi bat cung khong lam gi. ----
         new Muc("moi:congdong", "Ngày cộng đồng", "Pokémon",
-                "3 giờ: dòng khởi đầu xuất hiện dày, shiny x5 (cần sv.lau_dai=1)."),
+                "Một ngày mỗi tháng (lịch năm): 3 giờ vàng, một dòng Pokémon xuất hiện dày trên tuyến của nó, shiny x5, +EXP nhỏ, danh hiệu dòng (data_ngay_cong_dong)."),
         new Muc("moi:shiny", "Tuần Shiny", "Pokémon",
                 "Tỉ lệ shiny x10, pity 2.000 lần hạ (cần sv.lau_dai=1)."),
         new Muc("moi:dotkich", "Đột kích huyền thoại", "Pokémon",
@@ -330,6 +330,8 @@ public final class SuKien {
      */
     public static void nap() {
         data.DatabaseSuKien.chayLichDenHan();
+        // Ngay cong dong: nap dong noi bat cua cac thang TRUOC khi ghi lich nam (tin web co ten dong).
+        com.htbb.pokemon.NgayCongDongGame.nap();
         // Lich nam (19/10/2026): dat bat theo ngay that TRUOC khi doc - khoi dong luc nao cung ap dung dung lich.
         try {
             LichSuKien.dongBoLichNam();

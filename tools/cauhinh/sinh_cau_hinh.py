@@ -7,6 +7,7 @@ Ra 4 tep (KHONG sua tay, chay lai script nay sau khi sua danh_muc.json):
   3. web/shared/utils/cauHinhTrungTam.gen.ts       - ban sao cho web
   4. docs/cau-hinh.md                              - CHI phan bang giua hai dong danh dau MOC_DAU / MOC_CUOI;
                                                      phan con lai cua tai lieu viet tay, script khong dung toi
+  + mau do hiem chung tu tools/cauhinh/do_hiem.json (tools/cauhinh/sinh_do_hiem.py: server / client / web / SQL)
 
 Chay o goc monorepo:     python3 tools/cauhinh/sinh_cau_hinh.py
 Kiem dong bo (CI/test):  python3 tools/cauhinh/sinh_cau_hinh.py --kiem   (ma thoat 1 neu tep sinh lech)
@@ -439,6 +440,10 @@ def main():
         if md is None:
             sys.exit('docs/cau-hinh.md thieu dong moc:\n  %s\n  %s' % (MOC_DAU, MOC_CUOI))
         ra.append((RA_MD, md))
+    # Mau do hiem chung (tools/cauhinh/do_hiem.json -> server / client / web / SQL): chung mot lan chay va --kiem.
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import sinh_do_hiem
+    ra += sinh_do_hiem.tep_ra()
     kiem = '--kiem' in sys.argv
     lech = []
     for duong, nd in ra:

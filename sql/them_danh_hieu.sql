@@ -2,8 +2,8 @@
 -- DANH HIỆU (0.9.7): danh mục danh hiệu + điều kiện mở khoá + bộ đếm theo nhân vật + nhật ký.
 -- Nâng cấp IDEMPOTENT (MariaDB 10.3, utf8): chạy lại bao nhiêu lần cũng được; tự chứa, nối được vào sql/nang_cap.sql.
 --
---   data_danh_hieu_do_hiem  4 độ hiếm (Thường / Hiếm / Sử thi / Huyền thoại); màu vẽ trong game là token chủ đề
---                           client (ChuDe.mauDanhHieu), cột `mau` chỉ cho web.
+--   data_danh_hieu_do_hiem  4 độ hiếm (Thường / Hiếm / Sử thi / Huyền thoại); màu = bậc chung MỘT nguồn
+--                           tools/cauhinh/do_hiem.json (game: ChuDe.mauDanhHieu; web; sql/them_do_hiem.sql ghi lại).
 --   data_danh_hieu          mọi danh hiệu: id = id hiệu ứng (Char.idEffDanhHieu, tob_danh_hieu.iddh), tên, mô tả
 --                           (điều kiện viết cho người chơi), gợi ý (danh hiệu ẩn), độ hiếm, hình, một dòng chỉ số nhỏ
 --                           (chi_so + phan_nghin, kẹp về trần danh_hieu.tran_phan_nghin = 10‰ = 1%), điều kiện
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `tob_danh_hieu_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `data_danh_hieu_do_hiem` (`id`,`ten`,`mau`,`thu_tu`) VALUES
-(0,'Thường','#8A94A6',0),(1,'Hiếm','#2D8FD6',1),(2,'Sử thi','#8E6BE8',2),(3,'Huyền thoại','#F39A2B',3)
+(0,'Thường','#5F6B7A',0),(1,'Hiếm','#23803A',1),(2,'Sử thi','#7B45D6',2),(3,'Huyền thoại','#B95A0E',3)
 ON DUPLICATE KEY UPDATE `ten`=VALUES(`ten`), `mau`=VALUES(`mau`), `thu_tu`=VALUES(`thu_tu`);
 
 -- 43 danh hiệu thành tựu / xếp hạng / sự kiện / ẩn (Thường 5‰, Hiếm 7‰, Sử thi 9‰, Huyền thoại 10‰ = 1%).

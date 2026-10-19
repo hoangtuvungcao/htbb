@@ -2979,7 +2979,9 @@ public class Item extends Actor {
         if (this.magic_physic < 2) {
             name = String.valueOf(name) + " " + mg[this.magic_physic];
         }
-        final String[] n = {"", "Hoàn mỹ", "Đỏ", "Xanh"};
+        final String[] n = {"", com.htbb.pokemon.DoHiemSinh.ten(com.htbb.pokemon.DoHiemSinh.bacVatPham(1)),
+            com.htbb.pokemon.DoHiemSinh.ten(com.htbb.pokemon.DoHiemSinh.bacVatPham(2)),
+            com.htbb.pokemon.DoHiemSinh.ten(com.htbb.pokemon.DoHiemSinh.bacVatPham(3))}; // ten bac hiem chung
         final String[] p = {"", "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Hạng 5"};
         if (this.colorName > 0 && this.colorName < 4) {
             name = String.valueOf(name) + " " + n[this.colorName];
@@ -3134,7 +3136,9 @@ public class Item extends Actor {
         if (this.magic_physic < 2) {
             name = String.valueOf(name) + " " + mg[this.magic_physic];
         }
-        final String[] n = {"", "Hoàn mỹ", "Đỏ", "Xanh"};
+        final String[] n = {"", com.htbb.pokemon.DoHiemSinh.ten(com.htbb.pokemon.DoHiemSinh.bacVatPham(1)),
+            com.htbb.pokemon.DoHiemSinh.ten(com.htbb.pokemon.DoHiemSinh.bacVatPham(2)),
+            com.htbb.pokemon.DoHiemSinh.ten(com.htbb.pokemon.DoHiemSinh.bacVatPham(3))}; // ten bac hiem chung
         final String[] p = {"", "Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Hạng 5"};
         if (this.colorName > 0 && this.colorName < 4) {
             name = String.valueOf(name) + " " + n[this.colorName];

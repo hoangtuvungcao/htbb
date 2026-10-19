@@ -56,6 +56,13 @@ export function laTuanPokemon(l: Pick<SuKienLan, 'nhom'>): boolean {
   return l.nhom === 'Tuần Pokémon'
 }
 
+/** Ngày cộng đồng hằng tháng (0.9.7, mã moi:congdong): một Chủ nhật 04:00 → 04:00, báo trước 3 ngày như lễ hội. */
+export const NHOM_NGAY_CONG_DONG = 'Ngày cộng đồng'
+
+export function laNgayCongDong(l: Pick<SuKienLan, 'nhom'>): boolean {
+  return l.nhom === NHOM_NGAY_CONG_DONG
+}
+
 /** 'YYYY-MM-DD HH:mm:ss' (giờ VN) -> ms; NaN nếu sai. */
 export function msTuChuoi(s: string | null | undefined): number {
   const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/.exec(String(s ?? ''))
@@ -190,7 +197,7 @@ export function vietTin(l: SuKienLan, kieu: KieuTin, kem: SuKienLan[] = []): Tin
     tomTat: tomTat.slice(0, 500),
     noiDung: doan.join('\n\n'),
     loai: 'Sự kiện',
-    the: `sự kiện,${laTuanPokemon(l) ? 'tuần Pokémon' : 'lễ hội'},${NHAN_KIEU[kieu].toLowerCase()}`,
+    the: `sự kiện,${laTuanPokemon(l) ? 'tuần Pokémon' : laNgayCongDong(l) ? 'ngày cộng đồng' : 'lễ hội'},${NHAN_KIEU[kieu].toLowerCase()}`,
   }
 }
 

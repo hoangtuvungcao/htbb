@@ -195,6 +195,9 @@ public final class Kiem {
         KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
         KiemNpc.chay(); // moi NPC + moi muc menu NPC dung duoc: NPC tinh ngoai troi, su kien -49, muc da go (npcfix)
         KiemDanhHieu.chay(); // 0.9.7 danh hieu: mo khoa, an "???", het han, mot danh hieu dang deo, tran chi so, sql/them_danh_hieu.sql
+        KiemDoHiem.chay(); // 0.9.7 de xuat 4: mau do hiem MOT nguon (do_hiem.json -> server / client / web / SQL), tuong phan
+        KiemThoiTiet.chay(); // 0.9.7 de xuat 8: thoi tiet 4 khung gio / vung, anh huong co tran, phu mau mua, goi -118
+        KiemNgayCongDong.chay(); // 0.9.7 de xuat 8: ngay cong dong hang thang (lich nam), gio vang, tran ti le / EXP / shiny
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

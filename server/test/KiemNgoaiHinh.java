@@ -14,11 +14,14 @@ public final class KiemNgoaiHinh {
     public static void chay() {
         Kiem.nhom("NgoaiHinh: phu kien trang bi tren than Pokemon (goi -102)");
 
+        // 0.9.7 do hiem chung (tools/cauhinh/do_hiem.json, DoHiemSinh): hang phu kien = bac chung
         Kiem.bang("Trang -> thuong", 0, NgoaiHinh.hangHiem(0));
-        Kiem.bang("Xanh (3) -> hiem", 1, NgoaiHinh.hangHiem(3));
-        Kiem.bang("Do (2) -> su thi", 2, NgoaiHinh.hangHiem(2));
-        Kiem.bang("Vang (5) -> huyen thoai", 3, NgoaiHinh.hangHiem(5));
-        Kiem.bang("Hoan my (1) -> hoan my", 4, NgoaiHinh.hangHiem(1));
+        Kiem.bang("Xanh 110% (3) -> hiem", 1, NgoaiHinh.hangHiem(3));
+        Kiem.bang("Do 120% (2) -> quy", 2, NgoaiHinh.hangHiem(2));
+        Kiem.bang("Hoan my 130% (1) -> su thi", 3, NgoaiHinh.hangHiem(1));
+        Kiem.bang("Tim (4) -> su thi", 3, NgoaiHinh.hangHiem(4));
+        Kiem.bang("6 -> huyen thoai", 4, NgoaiHinh.hangHiem(6));
+        Kiem.bang("Vang (5) -> trang tri", 5, NgoaiHinh.hangHiem(5));
 
         Kiem.bang("cap 1 -> bac 0", 0, NgoaiHinh.bacTheoCap(1));
         Kiem.bang("cap 35 -> bac 3", 3, NgoaiHinh.bacTheoCap(35));
@@ -40,8 +43,8 @@ public final class KiemNgoaiHinh {
         Kiem.bang("bo du 11 mon cung bac", 11, d.boCungBac);
         Kiem.bang("bac tot = 7", 7, d.bacTot);
         Kiem.bang("cong tot = 13", 13, d.congTot);
-        Kiem.bang("tay: hiem hoan my", 4, d.hiem[NgoaiHinh.TAY]);
-        Kiem.bang("khan: su thi +10", 2 * 100 + 10, d.hiem[NgoaiHinh.KHAN] * 100 + d.cong[NgoaiHinh.KHAN]);
+        Kiem.bang("tay: hoan my cu = su thi", 3, d.hiem[NgoaiHinh.TAY]);
+        Kiem.bang("khan: do = quy +10", 2 * 100 + 10, d.hiem[NgoaiHinh.KHAN] * 100 + d.cong[NgoaiHinh.KHAN]);
         Kiem.bang("lung: ao choang (bac 7)", 2, d.kieu[NgoaiHinh.LUNG]);
         Kiem.bang("co o: mu khan vong tay lung da", 0x3F, d.coO());
         Kiem.bang("khong trang phuc", 0, d.trangPhuc);
@@ -90,7 +93,7 @@ public final class KiemNgoaiHinh {
                     congTay = c;
                 }
             }
-            Kiem.bang("tay doc lai", "1/4/13", kieuTay + "/" + hiemTay + "/" + congTay);
+            Kiem.bang("tay doc lai (hoan my cu = su thi 3)", "1/3/13", kieuTay + "/" + hiemTay + "/" + congTay);
             Kiem.bang("bacTot", 7, r.readUnsignedByte());
             Kiem.bang("congTot", 13, r.readUnsignedByte());
             Kiem.bang("bo", 11, r.readUnsignedByte());
