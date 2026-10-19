@@ -56,6 +56,22 @@ public class BaoTriDaily implements Runnable {
         System.out.println("Thời gian bảo trì được set: " + maintenanceHour + ":" + maintenanceMinute);
     }
 
+    /**
+     * So phut tu {@code d} toi lan bao tri hang ngay ke tiep (0..1439), -1 neu da tat bao tri tu dong. LichSuKien dung
+     * de hoan thay doi cua lich su kien nam toi luc bao tri thay vi khoi dong lai rieng.
+     */
+    public static int phutDenBaoTri(final Date d) {
+        if (tatBaoTri) {
+            return -1;
+        }
+        return phutDen(d.getHours() * 60 + d.getMinutes(), maintenanceHour * 60 + maintenanceMinute);
+    }
+
+    /** Ham thuan: so phut tu phut-trong-ngay {@code bay} toi {@code moc} (vong qua nua dem). */
+    public static int phutDen(final int bay, final int moc) {
+        return ((moc - bay) % 1440 + 1440) % 1440;
+    }
+
     /** Tat han bao tri tu dong hang ngay (sv.gioBaoTri=tat). */
     private static volatile boolean tatBaoTri = false;
 

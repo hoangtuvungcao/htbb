@@ -12,12 +12,15 @@ export default defineAdminHandler(async (event, admin) => {
   // người gửi form tay tạo ra dòng rác mà game không bao giờ đọc.
   const ten = await suKienTenTheoMa(ma)
 
+  // Sự kiện đang theo lịch năm: bật / tắt tay = chuyển sang thủ công (lịch không tự đặt lại nữa).
+  const thuCong = await chuyenThuCongNeuTheoLich(ma)
   await exec(dbGame(), `UPDATE ${SU_KIEN_BANG}
                            SET bat = ?, sua_boi = ?, sua_luc = NOW()
                          WHERE ma = ?`, [viec === 'bat' ? 1 : 0, admin.username, ma])
-  await ghiNhatKy(event, `su_kien_${viec}`, ma, ten)
+  await ghiNhatKy(event, `su_kien_${viec}`, ma, ten + (thuCong ? ' (chuyển sang thủ công)' : ''))
   return {
     ok: true,
-    message: `${viec === 'bat' ? 'Đã bật ' : 'Đã tắt '}${ten}. Phải khởi động lại server thì mới có hiệu lực.`,
+    message: `${viec === 'bat' ? 'Đã bật ' : 'Đã tắt '}${ten}. Server tự khởi động lại để áp dụng.`
+      + (thuCong ? ' Sự kiện này đã chuyển sang THỦ CÔNG — bật lại "Tự động theo lịch" ở mục Lịch năm khi muốn.' : ''),
   }
 })

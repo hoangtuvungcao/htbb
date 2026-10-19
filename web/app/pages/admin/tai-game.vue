@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
- * Bản tải game: mỗi nền tảng (Android APK, PC Windows, PC Linux, macOS, Java .jar, iOS) có bật/tắt,
+ * Bản tải game: đúng 5 nền tảng, mỗi nền tảng MỘT tệp — Java J2ME (.jar bản thường), Windows (bộ cài .exe),
+ * Linux (.AppImage / .tar.gz), Android (.apk), iOS (sắp ra mắt). Mỗi thẻ có bật/tắt,
  * trạng thái "Sẵn sàng / Sắp ra mắt", kiểu link (tệp / TestFlight / App Store / manifest .ipa),
  * phiên bản, dung lượng, SHA-256, hệ điều hành tối thiểu, nhật ký thay đổi.
  * Tệp có thể tải thẳng lên kho /tai/ của website (ghi theo luồng, tự tính SHA-256) hoặc dán link ngoài.
@@ -22,6 +23,8 @@ const duocGhi = computed(() => me.duocGhiNoiDung.value)
 const LUA_TRANG_THAI = [{ label: 'Sẵn sàng tải', value: 'san-sang' }, { label: 'Sắp ra mắt', value: 'sap-ra-mat' }]
 const luaKieu = (ma: string) => (nenTang(ma)?.kieu ?? ['tep']).map(k => ({ label: TEN_KIEU_LINK[k], value: k }))
 const loi = (b: BanTai) => loiBanTai(b)
+/** ".exe", ".AppImage / .tar.gz / .tgz"… — đuôi tệp nền tảng nhận (shared/utils/taiGame.ts NenTang.duoi). */
+const duoiNhan = (ma: string) => (nenTang(ma)?.duoi ?? []).map(d => (d === 'appimage' ? '.AppImage' : `.${d}`)).join(' / ')
 const coLoi = computed(() => f.value.ban.some(b => !!loi(b)))
 
 function doi(i: number, buoc: number) {
@@ -119,7 +122,7 @@ const luaTep = computed(() => (kho.value?.ds ?? []).map(t => ({ label: `${t.ten}
     <UAlert v-if="!duocGhi" color="info" variant="subtle" icon="i-lucide-eye" title="Chế độ chỉ đọc" description="Chỉ Siêu quản trị và Biên tập sửa được bản tải." />
     <UAlert
       color="neutral" variant="subtle" icon="i-lucide-info"
-      description="Thẻ hiện trên trang Tải game theo thứ tự dưới đây. “Sắp ra mắt” hiện thẻ có nhãn chờ, không có nút tải. Nút chính trên trang tự chọn theo thiết bị của người xem. Link trống thì dùng biến môi trường HTBB_LINK_* (nếu có)."
+      description="Thẻ hiện trên trang Tải game theo thứ tự dưới đây. Mỗi nền tảng phát đúng một tệp: Java J2ME .jar (bản thường), Windows .exe (bộ cài), Linux .AppImage hoặc .tar.gz, Android .apk. “Sắp ra mắt” hiện thẻ có nhãn chờ, không có nút tải. Nút chính trên trang tự chọn theo thiết bị của người xem. Link trống thì dùng biến môi trường HTBB_LINK_* (nếu có)."
     />
 
     <div class="grid gap-4 xl:grid-cols-2">
@@ -144,10 +147,10 @@ const luaTep = computed(() => (kho.value?.ds ?? []).map(t => ({ label: `${t.ten}
           <UFormField
             :label="b.kieu === 'testflight' ? 'Link TestFlight' : b.kieu === 'app-store' ? 'Link App Store' : b.kieu === 'ipa-manifest' ? 'URL manifest.plist (https)' : 'Link tải'"
             class="sm:col-span-2"
-            :help="b.kieu === 'tep' ? 'https://… hoặc tệp trong kho của website (/tai/…)' : b.kieu === 'ipa-manifest' ? 'iOS chỉ cài qua https; manifest trỏ tới tệp .ipa' : ''"
+            :help="b.kieu === 'tep' ? `https://… hoặc tệp trong kho của website (/tai/…), đuôi ${duoiNhan(b.ma)}` : b.kieu === 'ipa-manifest' ? 'iOS chỉ cài qua https; manifest trỏ tới tệp .ipa' : ''"
           >
             <div class="flex flex-wrap gap-2">
-              <UInput v-model="b.url" :placeholder="b.kieu === 'testflight' ? 'https://testflight.apple.com/join/…' : b.kieu === 'app-store' ? 'https://apps.apple.com/…' : 'https://… hoặc /tai/ten-tep.zip'" :disabled="!duocGhi" class="w-full" />
+              <UInput v-model="b.url" :placeholder="b.kieu === 'testflight' ? 'https://testflight.apple.com/join/…' : b.kieu === 'app-store' ? 'https://apps.apple.com/…' : 'https://… hoặc /tai/ten-tep'" :disabled="!duocGhi" class="w-full" />
               <USelect v-if="luaTep.length && (b.kieu === 'tep' || b.kieu === 'ipa-manifest')" :items="luaTep" placeholder="Chọn tệp trong kho" :disabled="!duocGhi" class="min-w-0 flex-1" @update:model-value="(v: any) => { const t = kho?.ds.find(x => x.ten === v); if (t) dungTep(b, t) }" />
               <label v-if="duocGhi && (b.kieu === 'tep' || b.kieu === 'ipa-manifest')" class="inline-flex">
                 <input type="file" class="sr-only" :disabled="!!dangGui" @change="taiLen(b, $event)">
@@ -163,7 +166,7 @@ const luaTep = computed(() => (kho.value?.ds ?? []).map(t => ({ label: `${t.ten}
           <UFormField label="Hệ điều hành tối thiểu" class="sm:col-span-2"><UInput v-model="b.heDieuHanh" :disabled="!duocGhi" class="w-full" /></UFormField>
           <UFormField label="SHA-256 (tự điền khi tải tệp lên)" class="sm:col-span-2"><UInput v-model="b.sha256" placeholder="64 ký tự hex" :disabled="!duocGhi" class="w-full font-mono text-xs" /></UFormField>
           <UFormField label="Mô tả ngắn" class="sm:col-span-2"><UInput v-model="b.moTa" :disabled="!duocGhi" class="w-full" /></UFormField>
-          <UFormField label="Có gì mới (mỗi dòng một ý)" class="sm:col-span-2"><UTextarea v-model="b.nhatKy" :rows="3" :disabled="!duocGhi" class="w-full" /></UFormField>
+          <UFormField label="Có gì mới (mỗi dòng một ý)" help="Dòng có link /tai/… bị bỏ khi lưu: mỗi nền tảng chỉ phát một tệp." class="sm:col-span-2"><UTextarea v-model="b.nhatKy" :rows="3" :disabled="!duocGhi" class="w-full" /></UFormField>
         </div>
         <p v-if="loi(b)" class="mt-3 text-sm text-error" role="alert">{{ loi(b) }}</p>
       </UCard>

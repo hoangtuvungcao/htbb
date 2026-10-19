@@ -72,6 +72,7 @@ public final class DatabaseSuKien {
                             + "may_chu_luc DATETIME NULL,"
                             + "mo_luc DATETIME NULL,"
                             + "dong_luc DATETIME NULL,"
+                            + "tu_dong TINYINT NOT NULL DEFAULT 1,"
                             + "PRIMARY KEY (ma)"
                             + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
             pre.executeUpdate();
@@ -99,7 +100,10 @@ public final class DatabaseSuKien {
     private static void themCotThieu(final Connection conn) {
         for (final String[] cot : new String[][]{
                 {"mo_luc", "DATETIME NULL"},
-                {"dong_luc", "DATETIME NULL"}}) {
+                {"dong_luc", "DATETIME NULL"},
+                // 19/10/2026: 1 = su kien co trong lich nam (com.htbb.pokemon.LichNam) tu bat/tat theo lich;
+                // 0 = admin chuyen sang thu cong (/admin/sukien). Ma khong co lich thi cot nay khong co tac dung.
+                {"tu_dong", "TINYINT NOT NULL DEFAULT 1"}}) {
             PreparedStatement pre = null;
             ResultSet rs = null;
             try {
@@ -229,9 +233,11 @@ public final class DatabaseSuKien {
         try {
             conn = Database.instance.getConnection();
             // Buoc 1: dong nao dang khac gia tri can dat -> doi that, co dau vet nguoi sua.
+            // Su kien theo lich nam dang tu dong: lich nam lo (DatabaseLichNam.dongBo), bo qua moc hen tay cu.
             pre = conn.prepareStatement(
                     "UPDATE " + BANG + " SET bat = ?, sua_boi = ?, sua_luc = NOW(), " + cot + " = NULL"
-                            + " WHERE " + cot + " IS NOT NULL AND " + cot + " <= NOW() AND bat <> ?");
+                            + " WHERE " + cot + " IS NOT NULL AND " + cot + " <= NOW() AND bat <> ?"
+                            + " AND " + DatabaseLichNam.KHONG_THEO_LICH);
             pre.setInt(1, giaTri);
             pre.setString(2, NGUOI_DAT_LICH);
             pre.setInt(3, giaTri);
@@ -268,6 +274,16 @@ public final class DatabaseSuKien {
     public static int soDongChoKhoiDongLai() {
         return dem("bat <> dang_bat AND sua_luc IS NOT NULL"
                 + " AND (may_chu_luc IS NULL OR sua_luc > may_chu_luc)");
+    }
+
+    /**
+     * Nhu tren nhung chi dong do LICH NAM doi (sua_boi = DatabaseLichNam.NGUOI_DAT). LichSuKien hoan cac dong
+     * nay toi lan bao tri hang ngay neu bao tri sap toi (khong them lan khoi dong lai).
+     */
+    public static int soDongChoKhoiDongLaiTheoLich() {
+        return dem("bat <> dang_bat AND sua_luc IS NOT NULL"
+                + " AND (may_chu_luc IS NULL OR sua_luc > may_chu_luc)"
+                + " AND sua_boi = '" + DatabaseLichNam.NGUOI_DAT + "'");
     }
 
     /**

@@ -18,25 +18,8 @@ public final class SuKienLauDaiGame {
     private SuKienLauDaiGame() {
     }
 
-    /** Job dem (LauDaiJob) va luc khoi dong: hen lan ke tiep cua moi ma trong lich. */
-    public static int henLichNam() {
-        if (!LauDai.bat()) {
-            return 0;
-        }
-        int n = 0;
-        for (final Map.Entry<String, long[]> e : SuKienLauDai.lanKeTiep(com.htbb.pokemon.DongHo.bay()).entrySet()) {
-            if (SuKien.timMuc(e.getKey()) == null) {
-                continue;
-            }
-            if (DatabaseLauDai.henSuKien(e.getKey(), e.getValue()[0], e.getValue()[1])) {
-                n++;
-            }
-        }
-        if (n > 0) {
-            System.out.println("[LAU DAI] da hen lich " + n + " su kien (lich 52 tuan).");
-        }
-        return n;
-    }
+    // henLichNam (hen lan ke tiep theo lich 52 tuan ISO) DA BO 19/10/2026: lich su kien nay theo ngay that,
+    // xem com.htbb.pokemon.LichNam + real.LichSuKien.dongBoLichNam.
 
     /** He so nhan shiny hien tai theo su kien dang bat. */
     public static int nhanShiny() {

@@ -8,6 +8,12 @@ const tuanNay = ref(tuanTrongNam(new Date()))
 onMounted(() => { tuanNay.value = tuanTrongNam(new Date()) })
 
 const dangDienRa = computed(() => suKienTuTuan(tuanNay.value, 2, SK.value))
+
+// Lịch thật theo ngày (máy chủ game ghi tob_su_kien_lich, Tết / Giỗ Tổ / Vu Lan / Trung Thu theo âm lịch).
+const skNam = useSuKienNam(45)
+const leHoiNam = computed(() => skNam.ds.value
+  .filter(l => l.nhom !== 'Tuần Pokémon' && !SU_KIEN_PHU[l.ma] && msTuChuoi(l.dong) > skNam.bay.value - 86_400_000)
+  .slice(0, 24))
 const tenSk = (s: SuKienTuan) => (nam.value === 1 ? s.ten1 : s.ten2)
 const thang = computed(() => Array.from({ length: 12 }, (_, i) => ({
   so: i + 1,
@@ -33,7 +39,35 @@ const moTaLoai: Record<string, string> = {
       Phần thưởng sự kiện chủ yếu là <strong>đồ trang trí không chỉ số</strong> và vật phẩm khoá — vui mà không làm lệch sức mạnh.
     </p>
 
-    <WikiSection id="dang-dien-ra" title="Đang diễn ra">
+    <WikiSection v-if="skNam.coDuLieu.value" id="lich-that" title="Lịch lễ hội 12 tháng tới">
+      <p class="van">
+        Mỗi dịp lễ tự mở và đóng đúng ngày (giờ Việt Nam, đổi trạng thái lúc 04:00 — áp dụng ở lần bảo trì sáng sớm).
+        Tết Nguyên Đán, Giỗ Tổ Hùng Vương, Vu Lan và Trung Thu tính theo âm lịch. Website đăng tin trước 3 ngày, lúc mở và lúc kết thúc.
+      </p>
+      <ClientOnly>
+        <ol class="mt-3 grid gap-2 md:grid-cols-2">
+          <li v-for="l in leHoiNam" :key="`${l.ma}-${l.nam}-${l.lan}`" class="rounded-2xl glass p-3">
+            <p class="text-xs font-bold uppercase tracking-wide" :class="msTuChuoi(l.mo) <= skNam.bay.value ? 'text-primary' : 'text-dimmed'">
+              <template v-if="msTuChuoi(l.mo) <= skNam.bay.value">Đang diễn ra · còn {{ demNguoc(msTuChuoi(l.dong) - skNam.bay.value) }}</template>
+              <template v-else>Bắt đầu sau {{ demNguoc(msTuChuoi(l.mo) - skNam.bay.value) }}</template>
+            </p>
+            <p class="font-display text-base font-extrabold text-highlighted">
+              {{ l.ten }} <span class="text-xs font-normal text-dimmed">· {{ l.ngayLe }}</span>
+            </p>
+            <p class="text-xs text-muted">{{ khoangThoiGian(l) }}</p>
+            <p class="mt-1 text-sm text-muted">{{ l.moTa }}</p>
+            <p v-if="l.phanThuong" class="mt-1 text-xs text-toned">
+              <UIcon name="i-lucide-gift" class="mr-1 inline size-3.5 align-[-2px]" />{{ l.phanThuong }}
+            </p>
+          </li>
+        </ol>
+        <template #fallback>
+          <USkeleton class="h-32 w-full" />
+        </template>
+      </ClientOnly>
+    </WikiSection>
+
+    <WikiSection id="dang-dien-ra" title="Tuần này">
       <ClientOnly>
         <ol class="grid gap-3 md:grid-cols-3">
           <li v-for="(s, i) in dangDienRa" :key="s.tuan" class="relative overflow-hidden rounded-2xl glass p-4" :class="i === 0 ? 'ring-gilded' : ''">
@@ -57,7 +91,7 @@ const moTaLoai: Record<string, string> = {
         </template>
       </ClientOnly>
       <p class="mt-2 text-xs text-dimmed">
-        Tuần tính theo lịch dương (tuần 1 = 1–7/1). Tết Nguyên Đán đi theo âm lịch nên có thể lệch vài tuần; ngày giờ chính xác xem thông báo trong game.
+        Tuần tính theo lịch dương (tuần 1 = 1–7/1) — bảng chủ đề tuần Pokémon. Ngày giờ chính xác của các dịp lễ xem mục Lịch lễ hội ở trên.
       </p>
     </WikiSection>
 

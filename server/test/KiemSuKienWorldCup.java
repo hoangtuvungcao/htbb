@@ -87,7 +87,9 @@ public final class KiemSuKienWorldCup {
             // Cua so hop le bao trum hien tai -> dang binh chon.
             real.SuKienWorldCup.datThoiGian("2000-01-01 00:00:00", "2099-12-31 23:59:59",
                     "2099-12-31 23:59:59");
-            Kiem.dung("cua so bao trum hien tai -> dang binh chon",
+            // 19/10/2026: World Cup (binh chon Messi/Ronaldo) da bo khoi danh muc su kien - cua so sv.worldCup*
+            // khong con bat su kien nua (SuKien.macDinh luon tat).
+            Kiem.sai("da bo: cua so bao trum hien tai cung KHONG binh chon",
                     real.SuKienWorldCup.dangDienRa());
             Kiem.sai("dang binh chon thi chua toi han nhan qua",
                     real.SuKienWorldCup.dangHanNhanQua());
@@ -97,9 +99,9 @@ public final class KiemSuKienWorldCup {
                     "2099-12-31 23:59:59");
             Kiem.sai("het binh chon thi quai khong roi bong vang nua",
                     real.SuKienWorldCup.dangDienRa());
-            Kiem.dung("het binh chon nhung con han nhan qua",
+            Kiem.sai("da bo: con han nhan qua cung KHONG phat qua",
                     real.SuKienWorldCup.dangHanNhanQua());
-            Kiem.dung("con han nhan qua thi menu van hien",
+            Kiem.sai("da bo: menu khong hien",
                     real.SuKienWorldCup.hienTrongMenu());
 
             // Qua han het.

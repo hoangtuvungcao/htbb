@@ -88,8 +88,10 @@ Ghi chú cho vài khoá hay chỉnh:
   `StartLimitIntervalSec=300`, khởi động lại quá 5 lần trong 300 giây là unit vào trạng thái `failed`.
   **`sv.suKienBaoTruocGiay`** đừng dưới 10 giây (tin báo cần 15–20 giây để trôi hết trên client).
 - **`sv.ExpQua`** đồng thời khoá nút "Tăng tốc" của mọi loại cây (hành vi sẵn có của mã nguồn).
-- **World Cup**: bật chính thức ở trang `/admin/sukien`; ba khoá `sv.worldCup*` (`yyyy-MM-dd HH:mm:ss`,
-  `batDau < ketThuc <= hanNhanQua`) chỉ là mặc định khi `tob_su_kien` chưa có dòng; để trống = tắt.
+- **World Cup**: đã bỏ khỏi danh mục sự kiện (19/10/2026); ba khoá `sv.worldCup*` còn trong danh mục cấu hình nhưng không
+  bật gì nữa. Mọi sự kiện khác tự bật / tắt theo lịch năm ([van-hanh.md](van-hanh.md) mục 7.1).
+- **Chống clone & chuyển xu** (`chong_clone.*`): cấp / tuổi tài khoản / giờ chơi tối thiểu để chuyển hay nhận xu, giới
+  hạn Pokémon cùng thiết bị / IP gửi cho một người mỗi ngày, khoảng giá ký gửi ([thiet-ke-game.md](thiet-ke-game.md) mục 9.6).
 
 ## 2. `server.ini`
 
@@ -323,17 +325,17 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **203 khoá** trong **14 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **213 khoá** trong **15 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 63 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 119 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 69 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 123 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (63)
+### Khoá chỉnh trên web (69)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -399,6 +401,19 @@ Thành viên HTBB theo tài khoản (trả phí) và Kích hoạt tài khoản (
 | `kich_hoat.chuc_nang` | Tính năng khoá khi chưa kích hoạt | danh sách chuỗi | `giao_dich,chat_the_gioi,cho,chuyen_luong,nhan_tang,giftcode` | `giao_dich`, `nhan_tang`, `chat_the_gioi`, `cho`, `cho_sinh_thai`, `chuyen_luong`, `bang`, `pvp_xep_hang`, `giftcode`, `qua_online`, `gui_thu` | ngay | cả hai | Cùng cổng với Thành viên: bị chặn nếu (cần kích hoạt và chưa kích hoạt) hoặc (cần Thành viên và chưa là Thành viên). |
 | `kich_hoat.thong_bao` | Câu thông báo khi bị khoá vì chưa kích hoạt | chuỗi | *(trống)* | ≤ 250 ký tự | ngay | cả hai | Trống = câu mặc định (chỉ tới /kichhoat). Thay được {ten} {web}. |
 
+#### Chống clone & chuyển xu (`chong_clone`)
+
+Cổng cho mọi đường chuyển xu / giá trị giữa hai người chơi (giao dịch, ký gửi, thú cưng lấy xu, chợ trang trí, chợ sinh thái, thách đấu): cấp, tuổi tài khoản, giờ chơi, giới hạn cùng thiết bị, giá ký gửi. Nhật ký + báo cáo "Nghi clone" ở /admin/kinh-te.
+
+| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|---|
+| `chong_clone.bat` | Bật chống clone | cờ 0/1 | `1` |  | ngay | game | 1 = áp các cổng dưới cho mọi đường chuyển xu / giá trị giữa hai người chơi. 0 = tắt hết (chỉ để khẩn cấp). |
+| `chong_clone.cap_toi_thieu` | Cấp tối thiểu để chuyển / nhận xu | số | `20` | 0..200 | ngay | game | Cả hai bên của giao dịch, ký gửi, giao dịch thú cưng lấy xu, chợ trang trí / sinh thái, thách đấu cược xu. |
+| `chong_clone.tuoi_tai_khoan_gio` | Tuổi tài khoản tối thiểu (giờ) | số | `24` | 0..2160 | ngay | game | Tính từ lúc đăng ký (team_user.regdate). 0 = không xét. |
+| `chong_clone.gio_choi_toi_thieu` | Giờ chơi tối thiểu của Pokémon (giờ) | số | `10` | 0..1000 | ngay | game | tob_char.totalTimePlay + phiên đang chơi. 0 = không xét. |
+| `chong_clone.nv_cung_may_toi_da` | Pokémon cùng thiết bị / IP gửi cho một người / ngày | số | `2` | 1..50 | ngay | game | Mỗi người nhận, mỗi ngày: tối đa N Pokémon (tài khoản phụ) dùng chung thiết bị hoặc IP được chuyển cho họ; Pokémon thứ N+1 bị chặn. IP proxy tin cậy chỉ tính theo thiết bị. |
+| `chong_clone.ky_gui_gia_toi_da_lan` | Giá ký gửi tối đa (lần giá gốc) | số | `10` | 1..1000 | ngay | game | Giá rao ≤ max(giá gốc × N, thu nhập 1 giờ ở cấp người bán × số giờ bên dưới). |
+
 #### Tự động đánh & hồi sinh (`tu_dong`)
 
 Giới hạn Tự động đánh (chỉ khi online) và giá hồi sinh tại chỗ. Luật an toàn (cấm ở PvP / Gym / boss, nhịp, bán kính…) đã cố định.
@@ -440,7 +455,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản client tối thiểu | số | `0` | 0..1000000 | ngay | game | > 0 = từ chối client jar/Android cũ hơn. |
 
-### Khoá ẩn: cố định & luôn bật (140)
+### Khoá ẩn: cố định & luôn bật (144)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -497,6 +512,15 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|
 | `kich_hoat.thanh_vien_la_kich_hoat` | Thành viên được coi như đã kích hoạt | Luôn bật (ẩn) | `1` | ngay | cả hai | 1 (mặc định) = tài khoản là Thành viên HTBB không bị khoá vì chưa kích hoạt (gộp hai bậc làm một nếu muốn). |
+
+#### Chống clone & chuyển xu (`chong_clone`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `chong_clone.nghi_so_nguoi_gui` | Ngưỡng "nghi clone" (số người gửi / ngày) | Cố định (ẩn) | `3` | ngay | game | Một người nhận có từ N người gửi khác nhau trong ngày thì đánh dấu nghi (không chặn), hiện ở /admin/kinh-te. |
+| `chong_clone.ky_gui_gia_toi_da_gio` | Giá ký gửi tối đa (giờ thu nhập) | Cố định (ẩn) | `200` | ngay | game | Trần cho món không có giá gốc (và sàn của trần trên). |
+| `chong_clone.ky_gui_gia_toi_thieu_phan_tram` | Giá ký gửi tối thiểu (% giá gốc) | Cố định (ẩn) | `5` | ngay | game | Chặn bán phá giá cho clone. |
+| `chong_clone.ban_npc_do_khoa` | Bán đồ / nguyên liệu khoá cho NPC lấy xu | Cố định (ẩn) | `0` | ngay | game | 0 = cấm (đồ khoá mua bằng lượng khoá không đổi ra xu được). 1 = cho như cũ. |
 
 #### Tự động đánh & hồi sinh (`tu_dong`)
 

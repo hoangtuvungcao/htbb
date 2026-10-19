@@ -8,7 +8,7 @@ export function useBanTai() {
   const { data: site } = useSite()
   const linkEnv = (ma: string): string => {
     const s = site.value
-    const v = ({ android: s?.linkAndroid, pc: s?.linkPc, jar: s?.linkJar, ios: s?.linkIos } as Record<string, string | undefined>)[ma] ?? ''
+    const v = ({ android: s?.linkAndroid, windows: s?.linkPc, jar: s?.linkJar, ios: s?.linkIos } as Record<string, string | undefined>)[ma] ?? ''
     return v && v !== '#' ? v : ''
   }
   const ds = computed(() => cms.value.taiGame.ban
@@ -20,7 +20,7 @@ export function useBanTai() {
       const href = ban.trangThai === 'san-sang' ? hrefCaiDat(ban) : ''
       return { ...ban, href, sanSang: !!href, sapRaMat: ban.trangThai === 'sap-ra-mat', icon: n?.icon ?? 'i-lucide-box', chiTiet: n?.chiTiet ?? [], buoc: buocCaiDat(ban) }
     }))
-  /** "Android, PC Windows, … và Điện thoại Java (J2ME)" — chỉ các bản đã/đang phát hành (không tính "sắp ra mắt"). */
+  /** "Java (J2ME), Windows, Linux và Android" — chỉ các bản đã/đang phát hành (không tính "sắp ra mắt"). */
   const tenDangCo = computed(() => noiDanhSach(ds.value.filter(b => !b.sapRaMat).map(b => b.ten)))
   const tenSapRaMat = computed(() => noiDanhSach(ds.value.filter(b => b.sapRaMat).map(b => b.ten)))
   return { ds, tenDangCo, tenSapRaMat }

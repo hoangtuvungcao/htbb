@@ -834,6 +834,9 @@ public final class HeSinhThaiMenu {
         if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
             return;
         }
+        if (op >= 0 && ChongClone.chanMotBen(p, ChongClone.KIEU_CHO_SINH_THAI)) { // chong clone: cap / tuoi
+            return;
+        }
         final NguCanh c = nc(p);
         if (op >= c.ds.size() || quaNhanh(p)) {
             return;
@@ -1118,6 +1121,9 @@ public final class HeSinhThaiMenu {
         if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
             return;
         }
+        if (op >= 0 && ChongClone.chanMotBen(p, ChongClone.KIEU_CHO_SINH_THAI)) { // chong clone: cap / tuoi
+            return;
+        }
         final NguCanh c = nc(p);
         final HoSoSinhThai h = hoSo(p);
         if (h == null || quaNhanh(p)) {
@@ -1311,6 +1317,10 @@ public final class HeSinhThaiMenu {
             return;
         }
         final long tong = t.giaMoi * t.soLuong;
+        // chong clone: nguoi mua (gui xu) -> nguoi ban (co the offline, nhan qua hop thu).
+        if (ChongClone.chanChuyen(p, t.idBan, t.tenBan, ChongClone.KIEU_CHO_SINH_THAI, tong)) {
+            return;
+        }
         if (!HeSinhThaiGame.truXu(p, tong, "mua cho " + t.id)) {
             bao(p, "Không đủ " + tong + " xu.");
             return;
@@ -1322,6 +1332,7 @@ public final class HeSinhThaiMenu {
         }
         nhanHang(h, t.khoaVat, t.soLuong, t.duLieu);
         traTienNguoiBan(t.idBan, ChoSinhThai.nguoiBanNhan(tong), "Bán " + VatLieuSinhThai.tenKhoa(t.khoaVat) + " x" + t.soLuong);
+        ChongClone.ghi(p, t.idBan, t.tenBan, ChongClone.KIEU_CHO_SINH_THAI, tong, "sinh thai " + VatLieuSinhThai.tenKhoa(t.khoaVat) + " x" + t.soLuong);
         bao(p, "Đã mua " + moTaTin(t) + ".");
         HeSinhThaiGame.danhDau(p);
         try {
@@ -1392,6 +1403,9 @@ public final class HeSinhThaiMenu {
         if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
             return;
         }
+        if (op >= 0 && ChongClone.chanMotBen(p, ChongClone.KIEU_CHO_SINH_THAI)) { // chong clone: cap / tuoi
+            return;
+        }
         final NguCanh c = nc(p);
         final HoSoSinhThai h = hoSo(p);
         if (h == null || op >= c.ds.size() || quaNhanh(p)) {
@@ -1426,6 +1440,8 @@ public final class HeSinhThaiMenu {
         }
         final long tien = ChoSinhThai.nguoiBanNhan(don.giaMoi * so);
         HeSinhThaiGame.congXu(p, tien, "giao don " + don.id);
+        ChongClone.ghiNhan(don.idMua, don.tenMua, p, ChongClone.KIEU_CHO_SINH_THAI, tien, "giao don " + don.id + " "
+                + VatLieuSinhThai.ten(don.maVat) + " x" + so);
         final Char mua = HeSinhThaiGame.timOnline(don.idMua);
         final HoSoSinhThai hm = mua != null ? HeSinhThaiGame.hoSo(mua) : null;
         if (hm != null) {
@@ -1471,6 +1487,9 @@ public final class HeSinhThaiMenu {
 
     static void taoDonGia(final Char p, final int op) {
         if (ThanhVien.chanVaBao(p, "cho_sinh_thai")) { // thanh vien: cho sinh thai
+            return;
+        }
+        if (op >= 0 && ChongClone.chanMotBen(p, ChongClone.KIEU_CHO_SINH_THAI)) { // chong clone: cap / tuoi
             return;
         }
         final NguCanh c = nc(p);

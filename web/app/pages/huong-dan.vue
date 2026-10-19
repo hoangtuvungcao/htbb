@@ -6,7 +6,7 @@
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Hướng dẫn tân thủ',
-  description: `Bắt đầu ${tenSite} từng bước: tải & cài game (Android, PC, Java, iOS sắp ra mắt), tạo tài khoản, chọn Pokémon khởi đầu, điều khiển, giao diện và 30 phút đầu tiên.`,
+  description: `Bắt đầu ${tenSite} từng bước: tải & cài game (Java J2ME, Windows, Linux, Android; iOS sắp ra mắt), tạo tài khoản, chọn Pokémon khởi đầu, điều khiển, giao diện và 30 phút đầu tiên.`,
 })
 const { data: site } = await useSite()
 const hoTro = useHoTro().link

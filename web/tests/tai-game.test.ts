@@ -2,11 +2,11 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  DS_NEN_TANG, banTaiMacDinh, banTaiSanSang, chuKyTepHopLe, chuanHoaBanTai, hrefCaiDat, loiBanTai, nenTang,
-  nenTangTheoUa, tenTepGameAnToan, urlTaiHopLe,
+  DS_NEN_TANG, MA_NEN_TANG, banTaiMacDinh, banTaiSanSang, boDongTepPhu, chuKyTepHopLe, chuanHoaBanTai, hrefCaiDat,
+  loiBanTai, nenTang, nenTangTheoUa, tenTepGameAnToan, urlTaiHopLe,
 } from '../shared/utils/taiGame.ts'
 
-test('chuẩn hoá: dữ liệu cũ (không trangThai) -> đủ 6 nền tảng, giữ thứ tự đã lưu', () => {
+test('chuẩn hoá: dữ liệu (không trangThai) -> đủ 5 nền tảng, giữ thứ tự đã lưu', () => {
   const cu = [
     { ma: 'jar', ten: 'Java', url: 'https://x.vn/a.jar', hien: true },
     { ma: 'android', ten: 'Android', url: '', hien: true },
@@ -20,18 +20,84 @@ test('chuẩn hoá: dữ liệu cũ (không trangThai) -> đủ 6 nền tảng, 
   assert.equal(ds[1]!.trangThai, 'san-sang') // mặc định của Android
   assert.equal(ds[2]!.url, '')
   assert.equal(ds[2]!.kieu, 'testflight')
-  assert.ok(ds.some(b => b.ma === 'pc-jar' && b.hien))
+  assert.ok(ds.some(b => b.ma === 'linux' && b.hien))
 })
 
-test('đúng 6 nền tảng theo các client có thật, chỉ iOS "Sắp ra mắt"', () => {
-  assert.deepEqual(DS_NEN_TANG.map(n => n.ma), ['android', 'pc', 'pc-java', 'pc-jar', 'jar', 'ios'])
+test('đúng 5 bản tải: Java J2ME, Windows, Linux, Android, iOS (chỉ iOS "Sắp ra mắt")', () => {
+  assert.deepEqual(DS_NEN_TANG.map(n => n.ma), ['jar', 'windows', 'linux', 'android', 'ios'])
+  assert.deepEqual([...MA_NEN_TANG], ['jar', 'windows', 'linux', 'android', 'ios'])
   assert.ok(DS_NEN_TANG.every(n => n.hien))
   assert.deepEqual(DS_NEN_TANG.filter(n => n.trangThai === 'sap-ra-mat').map(n => n.ma), ['ios'])
   assert.equal(nenTang('android')!.heDieuHanh, 'Android 8.0 trở lên') // client_apk/pokemon minSdk 26
-  // Mã cũ (pc-linux, macos) đã lưu trong CMS bị bỏ, không thành thẻ thứ 7.
-  const ds = chuanHoaBanTai([{ ma: 'pc-linux', hien: true }, { ma: 'macos', hien: true }])
-  assert.equal(ds.length, 6)
-  assert.ok(!ds.some(b => (b.ma as string) === 'pc-linux' || (b.ma as string) === 'macos'))
+  assert.deepEqual(nenTang('windows')!.duoi, ['exe'])
+  assert.deepEqual(nenTang('linux')!.duoi, ['appimage', 'tar.gz', 'tgz'])
+  assert.deepEqual(nenTang('jar')!.duoi, ['jar'])
+  assert.deepEqual(nenTang('android')!.duoi, ['apk'])
+  for (const ma of ['pc', 'pc-java', 'pc-jar', 'pc-linux', 'macos']) assert.equal(nenTang(ma), undefined, ma)
+})
+
+/** Giá trị CMS 'taiGame' đang chạy trên máy thật (19/10/2026, bản 0.9.4) — kiểu 6 thẻ cũ + tệp phụ. */
+const CMS_094_CU = [
+  { ma: 'android', ten: 'Android', url: '/tai/HTBB-0.9.4-opentest-android.apk', kieu: 'tep', phienBan: '0.9.4 (Open test)', nhatKy: 'Bản 0.9.4.', sha256: '79b4c2407fbe3032dae07ca1ba7222d4b221d2267902a4f24adde53ebea88ec6', trangThai: 'san-sang', hien: true },
+  { ma: 'pc-java', ten: 'PC Windows (bản Java)', moTa: 'Bộ cài Windows có sẵn Java đi kèm', url: '/tai/HTBB-PC-Setup-0.9.4.exe', kieu: 'tep', phienBan: '0.9.4 (Open test)', capNhat: '2026-10-19', nhatKy: 'Bản 0.9.4.\\nKhông muốn cài đặt? Tải bản nén chạy ngay: /tai/HTBB-PC-Windows-0.9.4.zip', sha256: 'bee49ae5c503cc1f5718825bbdea75bb34eacc9a313186c94906662f73374c9c', trangThai: 'san-sang', hien: true },
+  { ma: 'pc-jar', ten: 'PC Java (.jar)', url: '/tai/HTBB-PC-0.9.4.jar', kieu: 'tep', phienBan: '0.9.4 (Open test)', capNhat: '2026-10-19', nhatKy: 'Bản 0.9.4.\\nLinux có Java đi kèm: /tai/HTBB-PC-Linux-0.9.4.tar.gz', trangThai: 'san-sang', hien: true },
+  { ma: 'jar', ten: 'Điện thoại Java (J2ME)', url: '/tai/HTBB-0.9.4-opentest-thuong.jar', kieu: 'tep', nhatKy: 'Bản 0.9.4.\\nMáy yếu dùng bản nhẹ (~2 MB): /tai/HTBB-0.9.4-opentest-nhe.jar', trangThai: 'san-sang', hien: true },
+  { ma: 'pc', ten: 'PC Windows', url: '', kieu: 'tep', nhatKy: 'Đang hoàn thiện', trangThai: 'sap-ra-mat', hien: true },
+  { ma: 'ios', ten: 'iOS', url: '', kieu: 'testflight', trangThai: 'sap-ra-mat', hien: true },
+]
+
+test('đổi mã cũ: pc-java -> windows, bỏ pc (Unity) và pc-jar, Linux lấy từ tệp phụ, xếp theo danh mục', () => {
+  const ds = chuanHoaBanTai(CMS_094_CU)
+  assert.deepEqual(ds.map(b => b.ma), ['jar', 'windows', 'linux', 'android', 'ios'])
+  const w = ds.find(b => b.ma === 'windows')!
+  assert.equal(w.url, '/tai/HTBB-PC-Setup-0.9.4.exe')
+  assert.equal(w.ten, 'Windows')
+  assert.equal(w.sha256, 'bee49ae5c503cc1f5718825bbdea75bb34eacc9a313186c94906662f73374c9c')
+  assert.equal(w.trangThai, 'san-sang')
+  assert.equal(w.nhatKy, 'Bản 0.9.4.') // dòng tệp phụ .zip bị bỏ
+  const l = ds.find(b => b.ma === 'linux')!
+  assert.equal(l.url, '/tai/HTBB-PC-Linux-0.9.4.tar.gz')
+  assert.equal(l.trangThai, 'san-sang')
+  assert.equal(l.phienBan, '0.9.4 (Open test)')
+  const j = ds.find(b => b.ma === 'jar')!
+  assert.equal(j.url, '/tai/HTBB-0.9.4-opentest-thuong.jar')
+  assert.equal(j.nhatKy, 'Bản 0.9.4.') // bỏ jar nhẹ
+  // Không còn link tệp phụ nào ở bất kỳ thẻ nào; mọi thẻ hợp lệ để lưu lại.
+  for (const b of ds) {
+    assert.ok(!/\/tai\//.test(b.nhatKy), b.ma)
+    assert.equal(loiBanTai(b), null, b.ma)
+  }
+  // Chuẩn hoá lần hai không đổi gì (dữ liệu mới giữ nguyên thứ tự admin đã xếp).
+  assert.deepEqual(chuanHoaBanTai(JSON.parse(JSON.stringify(ds))), ds)
+})
+
+test('đổi mã cũ: tệp sai loại (pc-java là .zip) -> bỏ link, thẻ Windows chờ tệp .exe', () => {
+  const ds = chuanHoaBanTai([{ ma: 'pc-java', url: '/tai/HTBB-PC-Windows-0.9.4.zip', trangThai: 'san-sang', hien: true }])
+  const w = ds.find(b => b.ma === 'windows')!
+  assert.equal(w.url, '')
+  assert.equal(banTaiSanSang(w), false)
+  assert.equal(ds.length, 5)
+})
+
+test('mỗi nền tảng một loại tệp', () => {
+  const w = banTaiMacDinh(nenTang('windows')!)
+  assert.equal(loiBanTai({ ...w, url: '/tai/HTBB-PC-Setup-0.9.5.exe' }), null)
+  assert.match(loiBanTai({ ...w, url: '/tai/HTBB-PC-Windows-0.9.5.zip' })!, /\.exe/)
+  const l = banTaiMacDinh(nenTang('linux')!)
+  assert.equal(loiBanTai({ ...l, url: '/tai/HTBB-0.9.5-x86_64.AppImage' }), null)
+  assert.equal(loiBanTai({ ...l, url: 'https://cdn.vn/HTBB-PC-Linux-0.9.5.tar.gz?x=1' }), null)
+  assert.match(loiBanTai({ ...l, url: '/tai/HTBB-PC-0.9.5.jar' })!, /AppImage/)
+  const j = banTaiMacDinh(nenTang('jar')!)
+  assert.equal(loiBanTai({ ...j, url: '/tai/HTBB-0.9.5-opentest-thuong.jar' }), null)
+  assert.match(loiBanTai({ ...j, url: '/tai/a.apk' })!, /\.jar/)
+  const a = banTaiMacDinh(nenTang('android')!)
+  assert.match(loiBanTai({ ...a, url: '/tai/a.jar' })!, /\.apk/)
+})
+
+test('bỏ dòng tệp phụ trong "Có gì mới"', () => {
+  assert.equal(boDongTepPhu('A\nB: /tai/x.zip\nC'), 'A\nC')
+  assert.equal(boDongTepPhu('A\\nB: /tai/x.zip'), 'A')
+  assert.equal(boDongTepPhu('Không có link'), 'Không có link')
 })
 
 test('mặc định có thẻ iOS "Sắp ra mắt" đang hiện', () => {
@@ -61,9 +127,10 @@ test('kiểm theo kiểu link', () => {
 test('nhận diện thiết bị', () => {
   assert.equal(nenTangTheoUa('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)'), 'ios')
   assert.equal(nenTangTheoUa('Mozilla/5.0 (Linux; Android 13; SM-A505F)'), 'android')
-  assert.equal(nenTangTheoUa('Mozilla/5.0 (Windows NT 10.0; Win64; x64)'), 'pc')
-  assert.equal(nenTangTheoUa('Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)'), 'pc-jar')
-  assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; Linux x86_64)'), 'pc-jar')
+  assert.equal(nenTangTheoUa('Mozilla/5.0 (Windows NT 10.0; Win64; x64)'), 'windows')
+  assert.equal(nenTangTheoUa('Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)'), null) // chưa có bản macOS
+  assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; Linux x86_64)'), 'linux')
+  assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; CrOS x86_64 14541.0.0)'), null)
   assert.equal(nenTangTheoUa('Nokia6300/2.0 Profile/MIDP-2.0'), 'jar')
 })
 

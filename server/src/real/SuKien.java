@@ -183,21 +183,9 @@ public final class SuKien {
 
         new Muc(QUOC_TE_8_3, "Quốc tế Phụ nữ 8/3", "Kỷ niệm",
                 "Quà 8/3, hoa hồng."),
-        new Muc(SINH_NHAT_2011, "Sinh nhật 20/11", "Kỷ niệm",
+        new Muc(SINH_NHAT_2011, "Ngày Nhà giáo Việt Nam 20/11", "Kỷ niệm",
                 "Lồng đèn hoa sen, chổi băng / chổi độc / chổi điện ở NPC sự kiện."),
-        new Muc(SINH_NHAT_NGUDE, "Sinh nhật Ngudẻ", "Kỷ niệm",
-                "NPC sinh nhật."),
-        new Muc(DUA_TOP_HOA_LU, "Đua top Hoa Lư", "Kỷ niệm",
-                "Đợt đua top của server Hoa Lư."),
 
-        new Muc(WORLD_CUP, "World Cup: bình chọn", "World Cup",
-                "Quái rơi Quả bóng vàng; NPC Tổng Quản mở mục bình chọn Messi/Ronaldo."
-                + " Mặc định theo cửa sổ sv.worldCup* trong server.ini."),
-        new Muc(WORLD_CUP_NHAN_QUA, "World Cup: phát quà", "World Cup",
-                "Hết bình chọn, bên thắng vào NPC nhận quà. Bật cùng lúc với mục trên thì"
-                + " mục trên được ưu tiên (vẫn đang bình chọn)."),
-        new Muc(WORLD_CUP_2017, "World Cup 2017 (bản cũ)", "World Cup",
-                "Bản cũ: quái rơi Quả bóng bạc, NPC đổi nguyên liệu."),
 
         // ---- GD2 buoc 5.1: ma moi cua lich 52 tuan (du_lieu/su_kien_nam.csv). Chi co hieu
         // ung khi sv.lau_dai=1 (SuKienLauDaiGame); tat co thi bat cung khong lam gi. ----
@@ -305,12 +293,9 @@ public final class SuKien {
         if (TRUNG_THU.equals(ma) || DEM_TRUNG_THU.equals(ma)) {
             return TeamServer.isSuKienTrungThul2016;
         }
-        if (WORLD_CUP.equals(ma)) {
-            return SuKienWorldCup.trongCuaSoBinhChon();
-        }
-        if (WORLD_CUP_NHAN_QUA.equals(ma)) {
-            return SuKienWorldCup.trongCuaSoNhanQua();
-        }
+        // World Cup (binh chon Messi/Ronaldo), Sinh nhat Ngude, Dua top Hoa Lu: su kien rieng cua game kiem hiep cu,
+        // BO 19/10/2026 (chu game: moi su kien phai la su kien Pokemon theo lich nam) - khong con trong DANH_MUC,
+        // SuKien.dat() bo qua, mac dinh TAT (khong con mo theo cua so sv.worldCup* trong server.ini).
         return false;
     }
 
@@ -345,6 +330,12 @@ public final class SuKien {
      */
     public static void nap() {
         data.DatabaseSuKien.chayLichDenHan();
+        // Lich nam (19/10/2026): dat bat theo ngay that TRUOC khi doc - khoi dong luc nao cung ap dung dung lich.
+        try {
+            LichSuKien.dongBoLichNam();
+        } catch (final Throwable e) {
+            System.out.println("[SUKIEN] khong dong bo duoc lich nam luc khoi dong: " + e);
+        }
         data.DatabaseSuKien.nap();
         data.DatabaseSuKien.ghiAnhChup();
     }

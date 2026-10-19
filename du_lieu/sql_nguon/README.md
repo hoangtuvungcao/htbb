@@ -17,6 +17,8 @@ trong `tools/pokemon/` — sửa nguồn rồi sinh lại, đừng sửa tay. SQ
 | Theo dõi client | `them_bang_tob_client_dang_nhap.sql` | bảng `tob_client_dang_nhap` + cột client của `tob_vi_tri_online` / `tob_log_online` cho trang /admin/online; server game cũng tự tạo lúc khởi động; chạy lại được (đã gộp vào `vps/nang_cap_csdl.sql`) |
 | Kinh tế | `sua_he_so_nap_va_qua_tao_nv.sql` | `5h_systems.tangnap` về 1 (server đã cố định hệ số nạp = 1) và xoá quà tạo nhân vật chưa nhận trong `board_created`; không đụng số dư; chạy lại được (đã gộp vào `vps/nang_cap_csdl.sql`). Thu hồi quà đã nhận: `vps/van_hanh/thu_hoi_qua_tao_nv.sql` (tuỳ chọn, chủ game quyết) |
 | Dọn dữ liệu cũ | `vo_hieu_giftcode_cu.sql` | khoá mọi mã của bảng `giftcode` kiểu cũ (game chế độ dài hạn chỉ đọc `tob_giftcode`); in danh sách mã còn mở rồi khoá, chạy lại được — thao tác của chủ game, không nằm trong `nang_cap_csdl.sql` |
+| Chống clone | `them_bang_chong_clone.sql` | bảng `tob_log_chuyen_gia_tri` (nhật ký chuyển xu / giao dịch / chợ của cổng chống clone); server cũng tự tạo; chạy lại được (đã gộp vào `vps/nang_cap_csdl.sql`) |
+| Lịch sự kiện năm | `them_lich_su_kien_nam.sql` | bảng `tob_su_kien_lich`, cột `tob_su_kien.tu_dong`, bỏ mốc hẹn tay cũ của mã tự động, xoá dòng sự kiện kiếm hiệp đã bỏ; chạy lại được (đã gộp vào `vps/nang_cap_csdl.sql`) |
 | Web CMS | `web_cms.sql` | bảng nội dung website (thiếu thì web dùng nội dung mặc định) |
 
 ### Thứ tự nạp

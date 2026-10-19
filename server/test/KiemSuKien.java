@@ -94,11 +94,7 @@ public final class KiemSuKien {
 
         {"isSuKien83", real.SuKien.QUOC_TE_8_3, Boolean.TRUE},
         {"isSuKien2011l2016", real.SuKien.SINH_NHAT_2011, Boolean.TRUE},
-        {"isSuKienSnNgude", real.SuKien.SINH_NHAT_NGUDE, Boolean.TRUE},
-        {"isFinishAllSuKienSnNgude", real.SuKien.SINH_NHAT_NGUDE, Boolean.FALSE},
-        {"isSuKienDuaTopHoaLu", real.SuKien.DUA_TOP_HOA_LU, Boolean.TRUE},
 
-        {"isSuKienWordcup2017", real.SuKien.WORLD_CUP_2017, Boolean.TRUE},
     };
 
     /**
@@ -120,6 +116,11 @@ public final class KiemSuKien {
         {"isBanLongDenHoaSen", real.SuKien.LONG_DEN_HOA_SEN, Boolean.TRUE},
         {"isSinhNhatNgude", real.SuKien.SINH_NHAT_NGUDE_QUA, Boolean.TRUE},
         {"canReceiveGiftSNNgude", real.SuKien.SINH_NHAT_NGUDE_QUA, Boolean.TRUE},
+        // 19/10/2026 (chu game: chi giu su kien Pokemon theo lich nam): bo su kien rieng cua game kiem hiep cu.
+        {"isSuKienSnNgude", real.SuKien.SINH_NHAT_NGUDE, Boolean.TRUE},
+        {"isFinishAllSuKienSnNgude", real.SuKien.SINH_NHAT_NGUDE, Boolean.FALSE},
+        {"isSuKienDuaTopHoaLu", real.SuKien.DUA_TOP_HOA_LU, Boolean.TRUE},
+        {"isSuKienWordcup2017", real.SuKien.WORLD_CUP_2017, Boolean.TRUE},
     };
 
     public static void chay() {
@@ -138,15 +139,7 @@ public final class KiemSuKien {
 
         // Chot rieng cai chan sv.me: day la dieu kien ve LOAI MAY CHU chu khong phai
         // ngay thang, nen co y giu lai khi bo cac moc ngay.
-        real.Map.openLog = true;
-        try {
-            dat(real.SuKien.SINH_NHAT_NGUDE, true);
-            Kiem.sai("sv.me=1 van chan Sinh nhat Ngude du da bat cong",
-                    real.Char.isSuKienSnNgude());
-        } finally {
-            real.SuKien.dat(new HashMap<String, Boolean>());
-            real.Map.openLog = openLogCu;
-        }
+        real.Map.openLog = openLogCu;
     }
 
     private static void chayThat() {
@@ -179,7 +172,7 @@ public final class KiemSuKien {
         for (final Object[] d : DA_BO_21_09) {
             final String tenHam = (String) d[0];
             final String ma = (String) d[1];
-            Kiem.sai("ma " + ma + " da bo khoi danh muc (21/09/2026)", maCoThat.contains(ma));
+            Kiem.sai("ma " + ma + " da bo khoi danh muc (21/09 / 19/10/2026)", maCoThat.contains(ma));
             final Boolean khiBat = goi(tenHam, ma, true);
             final Boolean khiTat = goi(tenHam, ma, false);
             Kiem.dung("goi duoc Char." + tenHam + "()", khiBat != null && khiTat != null);
@@ -226,20 +219,12 @@ public final class KiemSuKien {
             }
         }
 
-        // ================= 5. WORLD CUP THEO CUNG MOT CONG =================
+        // ================= 5. WORLD CUP (binh chon Messi/Ronaldo) DA BO 19/10/2026 =================
         try {
-            dat(real.SuKien.WORLD_CUP, true);
-            Kiem.dung("bat cong worldcup -> dang binh chon", real.SuKienWorldCup.dangDienRa());
-            Kiem.sai("dang binh chon thi chua phat qua", real.SuKienWorldCup.dangHanNhanQua());
-
-            dat(real.SuKien.WORLD_CUP, false);
-            dat2(real.SuKien.WORLD_CUP, false, real.SuKien.WORLD_CUP_NHAN_QUA, true);
-            Kiem.sai("tat binh chon -> quai khong roi bong vang", real.SuKienWorldCup.dangDienRa());
-            Kiem.dung("bat cong phat qua -> dang phat qua", real.SuKienWorldCup.dangHanNhanQua());
-            Kiem.dung("dang phat qua thi menu van hien", real.SuKienWorldCup.hienTrongMenu());
-
-            dat2(real.SuKien.WORLD_CUP, false, real.SuKien.WORLD_CUP_NHAN_QUA, false);
-            Kiem.sai("tat ca hai -> menu khong hien", real.SuKienWorldCup.hienTrongMenu());
+            dat2(real.SuKien.WORLD_CUP, true, real.SuKien.WORLD_CUP_NHAN_QUA, true);
+            Kiem.sai("worldcup da bo: bat cong cung khong binh chon", real.SuKienWorldCup.dangDienRa());
+            Kiem.sai("worldcup da bo: bat cong cung khong phat qua", real.SuKienWorldCup.dangHanNhanQua());
+            Kiem.sai("worldcup da bo: menu khong hien", real.SuKienWorldCup.hienTrongMenu());
         } finally {
             real.SuKien.dat(new HashMap<String, Boolean>());
         }

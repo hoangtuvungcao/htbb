@@ -14,7 +14,8 @@ Ba phan, theo thu tu:
   3. Chi muc bang nong (them_chi_muc_production.sql, CREATE INDEX IF NOT EXISTS).
 Moi lenh deu chay lai duoc: nap hai lan cho cung ket qua.
 
-Phan 4: lenh cau hinh he thong chay lai duoc (5h_systems.tangnap = 1 cua 0.9.4).
+Phan 4: lenh cau hinh he thong / cong tac su kien chay lai duoc (5h_systems.tangnap = 1 cua 0.9.4; lich su kien
+nam: bang tob_su_kien_lich, cot tob_su_kien.tu_dong, bo moc hen cu, xoa su kien da bo).
 
 KHONG gom (co ly do): DELETE FROM board_created trong sua_he_so_nap_va_qua_tao_nv.sql (xoa qua tao nhan vat chua
 nhan cua nguoi choi - quyet dinh kinh te cua chu game, production da chay; nang cap khong xoa du lieu nguoi choi),
@@ -39,7 +40,7 @@ RA = os.path.join(GOC, "vps", "nang_cap_csdl.sql")
 SCHEMA = ["them_bang_2buoc.sql", "them_bang_cam_may.sql", "them_bang_dieu_khien_server.sql", "them_bang_su_kien.sql",
           "them_bang_tob_log_online.sql", "them_bang_tob_top_thuong.sql",
           "them_bang_web_admin_log.sql", "them_bang_web_chan_spam.sql", "them_bang_web_lenh_nhan_vat.sql",
-          "them_bang_tob_client_dang_nhap.sql",
+          "them_bang_tob_client_dang_nhap.sql", "them_bang_chong_clone.sql",
           "them_cot_kho_xu_luong.sql", "them_cot_pokemon.sql", "them_bang_pokedex.sql", "them_bang_lau_dai.sql",
           "sua_cot_itemquest.sql"]
 
@@ -59,8 +60,15 @@ BANG = [
 CHI_MUC = ["them_chi_muc_production.sql"]
 
 # Phan 4: cau hinh he thong (khong phai du lieu nguoi choi) - chi lay DUNG lenh liet ke, lenh khac trong tep bo qua.
-HE_THONG = [("sua_he_so_nap_va_qua_tao_nv.sql",
-             "UPDATE `5h_systems` SET status = 1 WHERE command = 'tangnap' AND status <> 1")]
+#   (tep, dau lenh): lay MOI lenh bat dau bang dau do (so khop sau khi gop khoang trang); thieu = dung.
+HE_THONG = [("sua_he_so_nap_va_qua_tao_nv.sql", "UPDATE `5h_systems` SET status = 1 WHERE command = 'tangnap' AND status <> 1"),
+            # Lich su kien nam (0.9.5): bang lich + cot tu_dong (schema) roi hai lenh tren BANG CONG TAC su kien
+            # tob_su_kien (khong phai du lieu nguoi choi): bo moc hen tay cu cua ma tu dong (may chu cung tu lam luc
+            # chay, DatabaseLichNam) va xoa dong su kien kiem hiep da bo. Ca hai chay lai duoc.
+            ("them_lich_su_kien_nam.sql", "CREATE TABLE IF NOT EXISTS tob_su_kien_lich"),
+            ("them_lich_su_kien_nam.sql", "ALTER TABLE tob_su_kien ADD COLUMN IF NOT EXISTS tu_dong"),
+            ("them_lich_su_kien_nam.sql", "UPDATE tob_su_kien SET mo_luc = NULL, dong_luc = NULL WHERE tu_dong = 1"),
+            ("them_lich_su_kien_nam.sql", "DELETE FROM tob_su_kien WHERE ma IN ('worldcup',")]
 
 
 def lenh(sql):
@@ -185,13 +193,15 @@ def sinh():
         for l in lenh_chi_muc(tep):
             o.append(l + ";")
         o.append("")
-    o += ["-- ======== 4. Cau hinh he thong (0.9.4: he so nap co dinh = 1)", ""]
-    for tep, can in HE_THONG:
+    o += ["-- ======== 4. Cau hinh he thong / cong tac su kien (khong phai du lieu nguoi choi), chay lai duoc", ""]
+    gon = lambda x: " ".join(x.split())
+    for tep, dau in HE_THONG:
         ds = [bo_chu_thich(l) for l in lenh(doc(tep))]
-        if can not in ds:
-            sys.exit("%s: khong con lenh '%s'" % (tep, can))
-        o.append("-- du_lieu/sql_nguon/%s (chi lenh nay; DELETE board_created la quyet dinh rieng cua chu game)" % tep)
-        o.append(can + ";")
+        hop = [l for l in ds if gon(l).startswith(gon(dau))]
+        if len(hop) != 1:
+            sys.exit("%s: can dung 1 lenh bat dau '%s', thay %d" % (tep, dau, len(hop)))
+        o.append("-- du_lieu/sql_nguon/%s (chi lenh nay)" % tep)
+        o.append(hop[0] + ";")
         o.append("")
     return "\n".join(o)
 

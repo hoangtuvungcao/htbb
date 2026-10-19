@@ -409,6 +409,14 @@ tảng (jar/APK/PC + số bản) · mô tả · ảnh/clip*. Giờ + tên đủ 
 Bảng `htbb_db.tob_su_kien`. Danh sách sự kiện do game đăng lên mỗi lần khởi động; trang web chỉ ghi bật/tắt và hẹn
 giờ mở/đóng. Các khoá `sv.isSuKien*` trong `server.ini` chỉ là mặc định khi bảng chưa có dòng tương ứng.
 
+**Lịch năm tự động** (từ 19/10/2026, [thiet-ke-game.md](thiet-ke-game.md) mục 6.2): mọi sự kiện có lịch tự bật / tắt đúng
+ngày thật (giờ Việt Nam, lễ âm lịch tự tính), mốc 04:00 gộp vào bảo trì hằng ngày — **không cần làm gì**. Lịch nằm ở
+`tob_su_kien_lich` (máy chủ ghi năm trước .. năm sau). Ở `/admin/sukien` mục *Lịch năm*: ghi đè **một năm** (Tắt năm nay /
+Đổi giờ / Mở ngay / Theo lịch) hoặc *Chuyển thủ công*; bật / tắt / hẹn giờ tay một sự kiện có lịch cũng chuyển nó sang thủ
+công (bấm *Tự động theo lịch* để trả lại). "Tắt hết" chuyển mọi sự kiện đang bật sang thủ công. Website tự đăng tin
+"Sắp diễn ra" (3 ngày trước), "Đang diễn ra", "Đã kết thúc" (tắt bằng `HTBB_TIN_SU_KIEN=0`); muốn ẩn một tin tự động thì
+chuyển bài sang *Nháp*, đừng xoá. Máy chủ game và MariaDB phải chạy giờ `Asia/Ho_Chi_Minh` (VPS đang đúng).
+
 **Đổi trạng thái sự kiện chỉ có hiệu lực sau khi khởi động lại** (cửa hàng, giảm giá, NPC được dựng một lần lúc
 bật máy). Mặc định game tự lo:
 
@@ -422,15 +430,13 @@ bật máy). Mặc định game tự lo:
 (mục 1) và game nằm `failed`. Game không làm gì trong 3 phút đầu sau khi bật máy. Đừng hạ báo trước dưới 10 giây
 (người chơi bị đá trước khi kịp thấy chữ).
 
-`/admin/lich-su-kien` là **lịch sự kiện năm hiển thị trên web** (nội dung CMS), không bật gì trong game.
+`/admin/lich-su-kien` là **bảng chủ đề 52 tuần hiển thị trên web** (nội dung CMS), không bật gì trong game; ngày giờ thật
+của các dịp lễ lấy từ lịch năm (`/api/su-kien`).
 
-### 7.2 World Cup (bình chọn)
+### 7.2 World Cup (bình chọn) — đã bỏ
 
-Bật bằng hai dòng *World Cup* ở `/admin/sukien`; ba khoá `sv.worldCupBatDau`, `sv.worldCupKetThuc`,
-`sv.worldCupHanNhanQua` (`yyyy-MM-dd HH:mm:ss`, phải `batDau < ketThuc <= hanNhanQua`) chỉ là mặc định khi bảng chưa
-có dòng. Trống = tắt. Lần đầu mở sự kiện chạy `du_lieu/sql_nguon/them_su_kien_world_cup.sql` một lần (tạo bảng điểm, đặt tên vật
-phẩm hộp quà). Giai đoạn `batDau → ketThuc`: đánh quái nhặt Quả bóng vàng, đổi phiếu bầu; `ketThuc → hanNhanQua`:
-người bầu cho bên thắng nhận quà ở NPC.
+Sự kiện bình chọn Messi/Ronaldo của game kiếm hiệp cũ đã bỏ khỏi danh mục (19/10/2026, cùng Sinh nhật Ngudẻ, Đua top
+Hoa Lư): ba khoá `sv.worldCup*` không còn bật gì. `du_lieu/sql_nguon/them_lich_su_kien_nam.sql` xoá các dòng cũ khỏi `tob_su_kien`.
 
 ### 7.3 Chiếm Gym
 

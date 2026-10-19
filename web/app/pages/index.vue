@@ -43,6 +43,13 @@ const stats = [
 // Trạng thái máy chủ: chỉ gọi phía trình duyệt (không làm chậm SSR khi CSDL chậm).
 const { data: trangThai, status: ttStatus } = useFetch<{ song: boolean | null, online: number | null }>('/api/trang-thai', { server: false, lazy: true, key: 'trang-thai' })
 
+// Sự kiện thật theo lịch năm (đang diễn ra + 30 ngày tới, đếm ngược theo giờ máy chủ). Chưa có lịch năm (máy chủ game
+// cũ) thì lùi về lịch 52 tuần như trước.
+const skNam = useSuKienNam(30)
+const skHien = computed(() => [
+  ...skNam.dang.value.map(l => ({ l, dang: true })),
+  ...skNam.sap.value.map(l => ({ l, dang: false })),
+].slice(0, 4))
 // Sự kiện tuần này + 2 tuần tới (tính theo ngày trên máy người xem)
 const suKien = ref<SuKienTuan[]>([])
 const lich = useLichSuKien()
@@ -327,14 +334,29 @@ const faq = computed(() => [
           <div>
             <FxReveal>
               <p class="eyebrow">
-                Lịch tuần này
+                Sự kiện
               </p>
               <h2 id="su-kien-title" class="section-title mt-4 text-4xl text-highlighted">
-                Sự kiện đang diễn ra
+                Đang và sắp diễn ra
               </h2>
             </FxReveal>
             <ClientOnly>
-              <ol class="mt-8 space-y-3">
+              <ol v-if="skHien.length" class="mt-8 space-y-3">
+                <li v-for="(e, i) in skHien" :key="`${e.l.ma}-${e.l.nam}-${e.l.lan}`">
+                  <NuxtLink to="/cam-nang/su-kien" class="group relative flex gap-4 overflow-hidden rounded-2xl glass p-4 pl-5 transition hover:-translate-y-0.5" :class="i === 0 && e.dang ? 'ring-gilded' : ''">
+                    <span class="absolute inset-y-0 left-0 w-1.5" :class="e.dang ? 'bg-primary' : 'bg-pokeblue-400'" />
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl text-white" :class="e.dang ? 'bg-primary' : 'bg-pokeblue-500'"><UIcon :name="e.dang ? 'i-lucide-party-popper' : 'i-lucide-calendar-clock'" class="size-5" /></span>
+                    <span class="min-w-0">
+                      <span class="text-xs font-bold uppercase tracking-wide" :class="e.dang ? 'text-primary' : 'text-dimmed'">
+                        {{ e.dang ? `Đang diễn ra · còn ${demNguoc(msTuChuoi(e.l.dong) - skNam.bay.value)}` : `Sắp diễn ra · sau ${demNguoc(msTuChuoi(e.l.mo) - skNam.bay.value)}` }}
+                      </span>
+                      <span class="block font-display text-lg font-bold text-highlighted group-hover:text-primary">{{ e.l.ten }}</span>
+                      <span class="block text-sm text-muted">{{ ngayNgan(msTuChuoi(e.l.mo)) }} – {{ ngayNgan(msTuChuoi(e.l.dong) - 60_000) }} · {{ e.l.moTa }}</span>
+                    </span>
+                  </NuxtLink>
+                </li>
+              </ol>
+              <ol v-else class="mt-8 space-y-3">
                 <li v-for="(e, i) in suKien" :key="e.tuan">
                   <NuxtLink to="/cam-nang/su-kien" class="group relative flex gap-4 overflow-hidden rounded-2xl glass p-4 pl-5 transition hover:-translate-y-0.5" :class="i === 0 ? 'ring-gilded' : ''">
                     <span class="absolute inset-y-0 left-0 w-1.5" :style="{ background: LOAI_SU_KIEN[e.loai]?.mau }" />

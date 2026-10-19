@@ -154,8 +154,49 @@ public final class LichSuKien implements Runnable {
         }
     }
 
+    /** Ngay (yyyyMMdd, gio Viet Nam) da ghi lai tob_su_kien_lich lan cuoi. */
+    private static volatile int ngayGhiLich = 0;
+
+    /**
+     * Lich nam (com.htbb.pokemon.LichNam): moi ngay ghi lai cac lan dien ra (nam truoc .. nam sau) vao
+     * tob_su_kien_lich, moi nhip dat tob_su_kien.bat theo lich. Goi ca luc khoi dong (SuKien.nap) va moi nhip.
+     * @return so su kien vua doi bat.
+     */
+    public static int dongBoLichNam() {
+        final long bay = com.htbb.pokemon.DongHo.bay();
+        final java.util.Calendar c = java.util.Calendar.getInstance(com.htbb.pokemon.LichNam.MUI_GIO);
+        c.setTimeInMillis(bay);
+        final int nam = c.get(java.util.Calendar.YEAR);
+        final int ngay = nam * 10000 + (c.get(java.util.Calendar.MONTH) + 1) * 100 + c.get(java.util.Calendar.DAY_OF_MONTH);
+        if (ngay != ngayGhiLich) {
+            if (data.DatabaseLichNam.ghiLich(nam - 1, nam + 1) > 0) {
+                ngayGhiLich = ngay;
+            }
+        }
+        return data.DatabaseLichNam.dongBo(com.htbb.pokemon.LichNam.dsMa());
+    }
+
+    /**
+     * Thay doi do LICH NAM (moc 04:00) cho bao tri hang ngay neu bao tri con <= {@link #HOAN_TOI_BAO_TRI_PHUT} phut:
+     * khong khoi dong lai rieng. Thay doi cua admin (hoac lich khi bao tri con xa / da tat) van khoi dong lai
+     * nhu cu (gom + bao truoc trong game).
+     */
+    public static final int HOAN_TOI_BAO_TRI_PHUT = 180;
+
+    /** Ham thuan: so dong can tu khoi dong lai sau khi tru cac dong lich cho bao tri. */
+    public static int soChoTuKhoiDong(final int soCho, final int soChoTheoLich, final int phutDenBaoTri) {
+        if (phutDenBaoTri >= 0 && phutDenBaoTri <= HOAN_TOI_BAO_TRI_PHUT) {
+            return Math.max(0, soCho - Math.max(0, soChoTheoLich));
+        }
+        return soCho;
+    }
+
     /** Mot nhip: chay lich toi han, dem viec ton dong, roi quyet dinh. */
     static void motNhip() {
+        final int theoLich = dongBoLichNam();
+        if (theoLich > 0) {
+            System.out.println("[SUKIEN] lich nam vua doi trang thai " + theoLich + " su kien (ap dung o lan khoi dong lai / bao tri ke tiep).");
+        }
         final int daDoi = DatabaseSuKien.chayLichDenHan();
         if (daDoi > 0) {
             System.out.println("[SUKIEN] lich hen vua doi trang thai " + daDoi + " su kien.");
@@ -169,7 +210,8 @@ public final class LichSuKien implements Runnable {
                     + " KHONG tu khoi dong lai vi ly do nay - xem lai log [SUKIEN] luc bat may.");
         }
 
-        final int soCho = DatabaseSuKien.soDongChoKhoiDongLai();
+        final int soCho = soChoTuKhoiDong(DatabaseSuKien.soDongChoKhoiDongLai(),
+                DatabaseSuKien.soDongChoKhoiDongLaiTheoLich(), BaoTriDaily.phutDenBaoTri(new java.util.Date()));
         final int viec = nhip(TRANG_THAI, System.currentTimeMillis(), batDauLuc, soCho,
                 tuKhoiDongLai, gomGiay, baoTruocGiay);
 

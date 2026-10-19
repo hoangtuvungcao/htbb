@@ -291,5 +291,8 @@ const dangTai = computed(() => tq.status.value === 'pending' || top.status.value
         </template>
       </AdminBang>
     </UCard>
+
+    <!-- ============ Nghi clone (chống clone chuyển xu) ============ -->
+    <AdminKinhteNghiClone />
   </AdminPage>
 </template>
