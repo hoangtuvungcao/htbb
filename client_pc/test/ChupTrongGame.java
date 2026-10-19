@@ -688,7 +688,7 @@ public class ChupTrongGame {
             game.pokemon.MenuNguCanh.mo(v, false);
         } else if ("tui_loc_thuoc".equals(ten)) {
             game.pokemon.ManNhanVat.moHanhTrang();
-            dat(nv, "loc", Integer.valueOf(1));
+            dat(nv, "loc", Integer.valueOf(game.pokemon.LuoiTui.LOC_THUOC));
         } else if ("tui_loc_nguyen_lieu".equals(ten)) {
             game.pokemon.ManNhanVat.moHanhTrang();
             dat(nv, "loc", Integer.valueOf(3));

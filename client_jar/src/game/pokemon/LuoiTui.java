@@ -1,0 +1,404 @@
+package game.pokemon;
+
+import game.model.Char;
+import game.model.GemTemp;
+import game.model.GemTemplate;
+import game.model.IAction;
+import game.model.ItemInInventory;
+import game.model.ItemTemplate;
+import game.model.MainChar;
+import game.render.Canvas;
+import game.render.Res;
+import java.util.Vector;
+import javax.microedition.lcdui.Graphics;
+
+/**
+ * LƯỚI HÀNH TRANG kiểu NRO (0.9.7, yêu cầu chủ dự án): Ô VUÔNG hộp gỗ thay danh sách, đặt cạnh nhân vật (màn Nhân vật /
+ * tab Trang bị) và ở tab Bán của cửa hàng. Chip lọc Tất cả / Trang bị / Thuốc / Nguyên liệu / Khác, đếm "38/50" (số ô
+ * đã dùng / sức chứa - gói -105 TrangThaiNguoiChoi.oDaMo), ô trống, ô KHOÁ cuối lưới (tới trần mở rộng) - chạm ô khoá =
+ * hỏi mở rộng (dùng vé / mua bằng xu, lệnh -107). Chạm ô đồ = thẻ thông tin {@link TheVatPham}; PC: nháy đúp = dùng /
+ * mặc nhanh, chuột phải = thao tác nhanh ({@link #chuotPhai}).
+ *
+ * Mục: Integer = bình thuốc (loại), ItemInInventory = đồ, GemTemplate = nguyên liệu (khoá nếu thuộc
+ * MainChar.gemItemKhoa) hoặc vật phẩm đặc biệt (thuộc MainChar.shopItem), int[]{id} = vật phẩm nhiệm vụ.
+ */
+public final class LuoiTui {
+    private LuoiTui() {
+    }
+
+    public static final String[] LOC = {"Tất cả", "Trang bị", "Thuốc", "Nguyên liệu", "Khác"};
+    public static final int LOC_TAT_CA = 0, LOC_DO = 1, LOC_THUOC = 2, LOC_NGUYEN_LIEU = 3, LOC_KHAC = 4;
+
+    /** Bấm một mục (null = ô trống). */
+    public interface Bam {
+        void bam(Object mon);
+    }
+
+    // ------------------------------------------------------------------ dữ liệu
+
+    static MainChar mc() {
+        return Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
+    }
+
+    public static boolean laKhoa(Object o) {
+        return o instanceof GemTemplate && MainChar.gemItemKhoa != null && MainChar.gemItemKhoa.contains(o);
+    }
+
+    public static boolean laDacBiet(Object o) {
+        return o instanceof GemTemplate && MainChar.shopItem != null && MainChar.shopItem.contains(o);
+    }
+
+    /** Số ô đang dùng (cùng cách đếm máy chủ: đồ + loại bình + nguyên liệu + đặc biệt). */
+    public static int soDung() {
+        MainChar m = mc();
+        int n = Char.inventory == null ? 0 : Char.inventory.size();
+        if (m != null && m.potions != null) {
+            for (int i = 1; i < m.potions.length; i++) {
+                if (m.potions[i] > 0) {
+                    n++;
+                }
+            }
+        }
+        n += MainChar.gemItem == null ? 0 : MainChar.gemItem.size();
+        n += MainChar.gemItemKhoa == null ? 0 : MainChar.gemItemKhoa.size();
+        n += MainChar.shopItem == null ? 0 : MainChar.shopItem.size();
+        return n;
+    }
+
+    private static Vector dem;
+    private static int khoa = 1;
+
+    /** Danh sách mục theo bộ lọc (nhớ giữa các khung, dựng lại khi túi / gói -105 đổi). */
+    public static Vector ds(int loc) {
+        MainChar m = mc();
+        int k = TrangThaiNguoiChoi.phienBan * 31 + loc;
+        k = k * 31 + Bang.vanTay(Char.inventory);
+        k = k * 31 + Bang.vanTay(MainChar.gemItem);
+        k = k * 31 + Bang.vanTay(MainChar.gemItemKhoa);
+        k = k * 31 + Bang.vanTay(MainChar.shopItem);
+        k = k * 31 + (m == null ? 0 : Bang.vanTay(m.potions));
+        k = k * 31 + Bang.vanTay(MainChar.itemQuest);
+        if (dem != null && k == khoa) {
+            return dem;
+        }
+        Vector v = new Vector();
+        boolean tat = loc == LOC_TAT_CA;
+        if ((tat || loc == LOC_DO) && Char.inventory != null) {
+            for (int i = 0; i < Char.inventory.size(); i++) {
+                v.addElement(Char.inventory.elementAt(i));
+            }
+        }
+        if ((tat || loc == LOC_THUOC) && m != null && m.potions != null) {
+            for (int i = 1; i < m.potions.length; i++) {
+                if (m.potions[i] > 0) {
+                    v.addElement(new Integer(i));
+                }
+            }
+        }
+        if (tat || loc == LOC_NGUYEN_LIEU) {
+            Vector[] g = {MainChar.gemItemKhoa, MainChar.gemItem};
+            for (int q = 0; q < g.length; q++) {
+                for (int i = 0; g[q] != null && i < g[q].size(); i++) {
+                    v.addElement(g[q].elementAt(i));
+                }
+            }
+        }
+        if (tat || loc == LOC_KHAC) {
+            for (int i = 0; MainChar.shopItem != null && i < MainChar.shopItem.size(); i++) {
+                v.addElement(MainChar.shopItem.elementAt(i));
+            }
+            if (MainChar.itemQuest != null) {
+                for (int i = 0; i < MainChar.itemQuest.length; i++) {
+                    if (MainChar.itemQuest[i] > 0) {
+                        v.addElement(new int[]{i});
+                    }
+                }
+            }
+        }
+        dem = v;
+        khoa = k;
+        return v;
+    }
+
+    /** Cạnh ô lưới (px logic, >= cỡ chạm). */
+    public static int coO() {
+        return Math.max(Bang.co(26), ChuDe.dt() ? 32 : 28);
+    }
+
+    // ------------------------------------------------------------------ PC: nháy đúp / chuột phải
+
+    /** ô vừa vẽ (toạ độ tuyệt đối) - chuột phải / nháy đúp */
+    private static final int SO_O = 160;
+    private static final int[] OX = new int[SO_O], OY = new int[SO_O], OS = new int[SO_O];
+    private static final Object[] OM = new Object[SO_O];
+    private static int soO;
+    private static long luoiLuc;
+    /** ngữ cảnh lưới vừa vẽ (TheVatPham.TUI / BAN) */
+    private static int nguCanhVe;
+    private static Object choMon;
+    private static long choLuc;
+    private static Bam choBam;
+
+    /** Chuột phải (toạ độ logic): trên một ô đồ của lưới vừa vẽ -> thao tác nhanh. true = đã xử lý. */
+    public static boolean chuotPhai(int x, int y) {
+        if (System.currentTimeMillis() - luoiLuc > 400) {
+            return false;
+        }
+        for (int i = 0; i < soO; i++) {
+            if (OM[i] != null && x >= OX[i] && x < OX[i] + OS[i] && y >= OY[i] && y < OY[i] + OS[i]) {
+                TheVatPham.nhanh(OM[i], nguCanhVe);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Bấm ô: máy cảm ứng mở thẻ ngay; PC chờ ~0,3 s để phân biệt nháy đúp (= thao tác nhanh). */
+    static void bamO(Object mon, Bam b) {
+        if (ChuDe.dt() || mon == null) {
+            b.bam(mon);
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (choMon == mon && now - choLuc < 350) {
+            choMon = null;
+            TheVatPham.nhanh(mon, nguCanhVe);
+            return;
+        }
+        choMon = mon;
+        choLuc = now;
+        choBam = b;
+    }
+
+    /** Gọi mỗi khung vẽ: hết thời gian chờ nháy đúp -> mở thẻ. */
+    static void capNhatCho() {
+        if (choMon != null && System.currentTimeMillis() - choLuc >= 300) {
+            Object m = choMon;
+            choMon = null;
+            if (choBam != null) {
+                choBam.bam(m);
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ vẽ
+
+    /**
+     * Bảng hành trang trong (x, y, w, h): đầu = chip lọc + đếm ô; giữa = lưới cuộn; đáy = hàng ví. mon = danh sách đã
+     * lọc (null = ds(loc)); coKhoa = hiện ô trống + ô khoá tới trần (chỉ "Tất cả"); chon = mục đang chọn.
+     * Trả {chiều cao đầu} (để màn đặt tiêu đề phụ).
+     */
+    public static void ve(Graphics g, Cuon c, int x, int y, int w, int h, int loc, final Vector mon, boolean coKhoa, Object chon,
+            final Object[] viecLoc, final Bam bam, int nguCanh) {
+        capNhatCho();
+        int k = Bang.cach();
+        if (!KhungNro.ve(g, KhungNroBang.THE, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 3, ChuDe.KE);
+        }
+        Font_nenSang();
+        MainChar m = mc();
+        int yy = y + 5;
+        // đầu: TAB GỖ lọc (Tất cả / Trang bị / Thuốc / Nguyên liệu / Khác); đáy: hàng ví + đếm ô "38/50"
+        int suc = TrangThaiNguoiChoi.sucChua(m);
+        int hc = Bang.caoTab();
+        if (viecLoc != null && (w - 10) / LOC.length >= VungCham.MIN + k + 4) {
+            Bang.ranhTab(g, x + 4, yy + hc - 2, w - 8);
+            Bang.phanDoan(g, x + 5, yy, w - 10, hc, LOC, loc, viecLoc);
+            yy += hc + k;
+        } else if (viecLoc != null) {
+            // bảng hẹp (điện thoại 16:9 ...): chip nút nhỏ xuống dòng, mỗi chip >= cỡ chạm
+            yy += Bang.hangChip(g, x + 6, yy, w - 12, LOC, loc, viecLoc) + k;
+        } else {
+            yy += hc + k;
+        }
+        String dem = soDung() + "/" + suc;
+        int wDem = ChuDe.rong(dem, ChuDe.SO) + 16;
+        int hVi = ViTien.cao();
+        int yVi = y + h - 5 - hVi;
+        ViTien.hang(g, x + 5, yVi, w - 10 - wDem - k, hVi);
+        GiaoDien.khoiPixel(g, x + w - 5 - wDem, yVi, wDem, hVi, soDung() >= suc ? ChuDe.DO : 0x5C2E12);
+        ChuDe.chuVienGiua(g, dem, x + w - 5 - wDem / 2, yVi, hVi, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
+        // lưới
+        final int s = coO();
+        int gw = w - 12;
+        final int cot = Math.max(1, (gw + k) / (s + k));
+        final int n = mon.size();
+        int tran = TrangThaiNguoiChoi.tran(m);
+        final int soTrong = coKhoa ? Math.max(0, suc - soDung()) : 0;
+        final int soKhoa = coKhoa ? Math.max(0, tran - Math.max(suc, n)) : 0;
+        int tong = n + soTrong + soKhoa;
+        if (!coKhoa) {
+            tong = ((n + cot - 1) / cot) * cot;   // lấp đầy hàng cuối bằng ô trống
+        }
+        final int tongO = tong;
+        final Object chonO = chon;
+        int xl = x + 6 + (gw - (cot * (s + k) - k)) / 2;
+        int hl = yVi - k - yy;
+        nguCanhVe = nguCanh;
+        luoiLuc = System.currentTimeMillis();
+        soO = 0;
+        final int x0 = xl;
+        if (n == 0 && !coKhoa) {
+            Bang.trong(g, x + 6, yy, w - 12, hl, loc == LOC_TAT_CA ? "Hành trang trống" : "Không có " + LOC[loc].toLowerCase(),
+                    "Nhặt đồ rơi từ Pokémon hoang dã hoặc mua ở Poké Mart.");
+            return;
+        }
+        Bang.danhSach(g, c, xl - 1, yy, cot * (s + k) - k + 12, hl, (tongO + cot - 1) / cot, s, new Bang.Hang() {
+            public void ve(Graphics g, int i, int xr, int yr, int wr, int hr) {
+                for (int q = 0; q < cot; q++) {
+                    int j = i * cot + q;
+                    if (j >= tongO) {
+                        break;
+                    }
+                    int xo = x0 + q * (s + Bang.cach());
+                    if (j < n) {
+                        final Object o = mon.elementAt(j);
+                        veO(g, o, xo, yr, s, o == chonO, new IAction() {
+                            public void perform() {
+                                bamO(o, bam);
+                            }
+                        }, "tui-" + j);
+                        if (soO < SO_O) {
+                            OX[soO] = xo + g.getTranslateX();
+                            OY[soO] = yr + g.getTranslateY();
+                            OS[soO] = s;
+                            OM[soO] = o;
+                            soO++;
+                        }
+                    } else if (j < n + soTrong) {
+                        Bang.oDo(g, xo, yr, s, false, false, null, null);
+                    } else {
+                        Bang.oKhoa(g, xo, yr, s, new IAction() {
+                            public void perform() {
+                                hoiMoRong();
+                            }
+                        }, "tui-khoa-" + j);
+                    }
+                }
+            }
+        });
+    }
+
+    private static void Font_nenSang() {
+        game.render.screen.Font.nenSang = true;
+    }
+
+    /** Một ô đồ: hộp gỗ, viền độ hiếm, icon thật, số lượng, +N, khoá. */
+    public static void veO(Graphics g, Object o, int x, int y, int s, boolean chon, Object viec, String ten) {
+        Bang.oDo(g, x, y, s, true, chon, viec, ten);
+        int cx = x + s / 2, cy = y + s / 2, ic = s - 10;
+        if (o instanceof ItemInInventory) {
+            ItemInInventory it = (ItemInInventory) o;
+            ItemTemplate t = ManNhanVat.mau(it);
+            int hiem = KieuO.mauHiem(it.colorName);
+            if (hiem >= 0 && !chon) {
+                g.setColor(hiem);
+                g.drawRect(x + 1, y + 1, s - 3, s - 3);
+                g.drawRect(x + 2, y + 2, s - 5, s - 5);
+            }
+            if (t != null) {
+                Bang.icon(g, t.idIcon, cx, cy, ic >= 22 ? ic / 22f : 1f);
+            }
+            if (it.plusTemplate > 0) {
+                KieuO.capCuong(g, x + 3, y + 3, it.plusTemplate);
+            }
+            if (it.lock == 1) {
+                oKhoaNho(g, x + s - 9, y + 3);
+            }
+        } else if (o instanceof Integer) {
+            int loai = ((Integer) o).intValue();
+            ManNhanVat.veThuoc(g, loai, cx, cy, ic);
+            MainChar m = mc();
+            soLuong(g, x, y, s, m == null || m.potions == null ? 0 : m.potions[loai]);
+        } else if (o instanceof GemTemplate) {
+            GemTemplate gt = (GemTemplate) o;
+            if (laDacBiet(o)) {
+                GemTemp t = Res.getShopByID(gt.id);
+                if (t != null) {
+                    IconVatPham.ve(g, (short) (t.idImage + 5500), cx, cy, ic, IconVatPham.DP_DO);
+                }
+            } else {
+                GemTemp t = Res.getGemByID(gt.id);
+                if (t != null) {
+                    IconVatPham.ve(g, (short) (t.idImage + 6500), cx, cy, ic, IconVatPham.DP_NGOC);
+                }
+                if (laKhoa(o)) {
+                    oKhoaNho(g, x + s - 9, y + 3);
+                }
+            }
+            soLuong(g, x, y, s, gt.number);
+        } else if (o instanceof int[]) {
+            int id = ((int[]) o)[0];
+            if (id < game.model.ItemQuest.ICON_IMG.length) {
+                IconVatPham.ve(g, (short) (game.model.ItemQuest.ICON_IMG[id] + 8000), cx, cy, ic, IconVatPham.DP_NV);
+            }
+            soLuong(g, x, y, s, MainChar.itemQuest[id]);
+            GiaoDien.khoiPixel(g, x + 3, y + 3, 7, 7, ChuDe.VANG);   // dấu vật phẩm nhiệm vụ
+        }
+    }
+
+    /** Số lượng góc dưới phải (chữ trắng viền). */
+    static void soLuong(Graphics g, int x, int y, int s, int n) {
+        if (n <= 1) {
+            return;
+        }
+        String c = KieuO.soGon(n);
+        ChuDe.chuVien(g, c, x + s - 4, y + s - 4 - ChuDe.cao(ChuDe.NHAN_NHO), ChuDe.NHAN_NHO, 0xFFFFFF, ChuDe.VIEN, 1);
+    }
+
+    /** Ổ khoá pixel nhỏ 6x7 (vật phẩm khoá / không giao dịch). */
+    static void oKhoaNho(Graphics g, int x, int y) {
+        g.setColor(ChuDe.VIEN);
+        g.fillRect(x, y + 2, 7, 6);
+        g.fillRect(x + 1, y, 5, 3);
+        g.setColor(0xC8C8D0);
+        g.fillRect(x + 2, y + 1, 3, 2);
+        g.setColor(ChuDe.VANG);
+        g.fillRect(x + 1, y + 3, 5, 4);
+        g.setColor(ChuDe.VIEN);
+        g.fillRect(x + 3, y + 4, 1, 2);
+    }
+
+    // ------------------------------------------------------------------ mở rộng
+
+    /** Chạm ô khoá: dùng vé nếu có, không thì hỏi mua bằng xu (giá leo thang theo gói -105). */
+    public static void hoiMoRong() {
+        MainChar m = mc();
+        int suc = TrangThaiNguoiChoi.sucChua(m);
+        int tran = TrangThaiNguoiChoi.tran(m);
+        int moi = Math.max(1, Math.min(TrangThaiNguoiChoi.oMoiVe, tran - suc));
+        if (TrangThaiNguoiChoi.oDaMo < 0) {
+            DungDo.bao("Máy chủ chưa hỗ trợ mở rộng hành trang bằng vé. Hỏi Kangaskhan ở thị trấn.");
+            return;
+        }
+        if (suc >= tran) {
+            DungDo.loi("Hành trang đã mở rộng tối đa (" + tran + " ô).");
+            return;
+        }
+        if (TrangThaiNguoiChoi.soVe > 0) {
+            HopXacNhan.hoi("Mở rộng hành trang", "Dùng 1 vé mở rộng hành trang (còn " + TrangThaiNguoiChoi.soVe + " vé) để mở thêm " + moi
+                    + " ô (" + suc + " -> " + (suc + moi) + ")?", "Dùng vé", new IAction() {
+                public void perform() {
+                    TrangThaiNguoiChoi.guiMoRong(1);
+                }
+            }, null);
+            return;
+        }
+        final long gia = TrangThaiNguoiChoi.giaXuMoRong;
+        if (gia < 0) {
+            DungDo.loi("Chưa mở rộng thêm được. Vé mở rộng hành trang có ở cửa hàng đặc biệt.");
+            return;
+        }
+        HopXacNhan.hoiGia("Mở rộng hành trang", "Mở thêm " + moi + " ô (" + suc + " -> " + (suc + moi)
+                + "). Giá tăng dần mỗi lần mở; vé mở rộng có ở cửa hàng đặc biệt.", "Mở rộng", TienTe.XU, gia, new IAction() {
+            public void perform() {
+                MainChar mm = mc();
+                if (mm != null && mm.charXu < gia) {
+                    DungDo.loi("Không đủ xu (cần " + TienTe.so(gia) + ").");
+                    return;
+                }
+                TrangThaiNguoiChoi.guiMoRong(2);
+            }
+        });
+    }
+}

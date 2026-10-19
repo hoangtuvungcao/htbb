@@ -305,15 +305,13 @@ public final class KieuO {
         int w = rongVienHe(he);
         int h = 15;
         int mau = mauHe(he);
+        // 0.9.7: khối pixel màu hệ viền nâu, chữ trắng viền
+        GiaoDien.khoiPixel(g, x, y, w, h, mau);
         if (ChuUI.bo != null) {
-            GiaoDien.khoiDoc(g, x, y, w, h, h / 2, GiaoDien.pha(mau, 0xFFFFFF, 1, 6), mau);
-            ChuDe.chuGiua(g, chu, x + w / 2, y, h, ChuDe.SO, 0xFFFFFF, 2);
+            ChuDe.chuVienGiua(g, chu, x + w / 2, y, h, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
             return w;
         }
-        Font f = Font.borderFont;
-        GiaoDien.khoi(g, x, y, w, h, 7, GiaoDien.pha(mau, 0, 1, 3));
-        GiaoDien.khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 6, mau, GiaoDien.pha(mau, 0x000000, 2, 5));
-        f.drawString(g, chu, x + w / 2, y + 1, Font.CENTER);
+        Font.borderFont.drawString(g, chu, x + w / 2, y + 1, Font.CENTER);
         return w;
     }
 
@@ -339,10 +337,15 @@ public final class KieuO {
         if (s == null || s.length() == 0) {
             return;
         }
+        if (ChuUI.bo != null) {
+            // 0.9.7: số trắng viền nâu (kiểu NRO), không nền
+            ChuDe.chuVien(g, s, xPhai - 1, yDuoi - ChuDe.cao(ChuDe.NHAN_NHO), ChuDe.NHAN_NHO, 0xFFFFFF, ChuDe.VIEN, 1);
+            return;
+        }
         Font f = Font.smallFontColor[0];
         int w = f.getWidth(s) + 4;
         int h = 9;
-        GiaoDien.khoi(g, xPhai - w, yDuoi - h, w, h, 2, 0x0B1222);
+        GiaoDien.khoi(g, xPhai - w, yDuoi - h, w, h, 1, 0x1B0E06);
         f.drawString(g, s, xPhai - w + 2, yDuoi - h + 1, Font.LEFT);
     }
 
@@ -358,9 +361,9 @@ public final class KieuO {
 
     // ------------------------------------------------------------ ô lưới đồ
     /** Nền ô (chẵn/lẻ xen kẽ) */
-    public static final int O_CHAN = 0x3E4D5A;   // 0.9.6: xám đá (không navy)
-    public static final int O_LE = 0x37444F;
-    public static final int O_TRONG = 0x2E3943;
+    public static final int O_CHAN = 0x2E1E14;   // 0.9.7: lòng ô gỗ tối (NRO)
+    public static final int O_LE = 0x2A1A10;
+    public static final int O_TRONG = 0x24170E;
 
     /**
      * Ô lưới đồ s x s tại (x, y) (gồm khe 1 px bên phải/dưới): co = có đồ, le = sọc xen kẽ.
@@ -376,16 +379,16 @@ public final class KieuO {
 
     public static void oDoMau(Graphics g, int x, int y, int s, boolean co, int nen) {
         int c = s - 1;
-        GiaoDien.khoi(g, x, y, c, c, 3, 0x0E1A30);
-        GiaoDien.khoi(g, x + 1, y + 1, c - 2, c - 2, 2, nen);
-        if (co) {
-            g.setColor(GiaoDien.pha(nen, GiaoDien.TRANG, 1, 5));
-            g.fillRect(x + 3, y + 1, c - 6, 1);
-        } else {
-            // ô trống: chấm nhỏ ở giữa cho thấy chỗ trống
-            g.setColor(0x2C4A78);
-            g.fillRect(x + c / 2 - 1, y + c / 2 - 1, 2, 2);
+        // 0.9.7: ô hộp gỗ lòng tối (mảnh O / O_TRONG); ô rương (nền nâu) giữ màu riêng bên trong
+        if (KhungNro.ve(g, co ? KhungNroBang.O : KhungNroBang.O_TRONG, x, y, c, c)) {
+            if (co && nen != O_CHAN && nen != O_LE && c > 10) {
+                g.setColor(nen);
+                g.fillRect(x + 5, y + 5, c - 10, c - 10);
+            }
+            return;
         }
+        GiaoDien.khoi(g, x, y, c, c, 3, 0x1B0E06);
+        GiaoDien.khoi(g, x + 1, y + 1, c - 2, c - 2, 2, nen);
     }
 
     /**
@@ -437,7 +440,7 @@ public final class KieuO {
                     }
                     boolean vien = x == 0 || y == 0 || x == c - 1 || y == c - 1 || d >= (r - 1) * (r - 1) + 1 && (dx > 0 && dy > 0);
                     // thân trong mờ: ô chọn tô phía dưới (code gốc tô trước rồi vẽ ô) vẫn thấy
-                    p[y * s + x] = vien ? 0xFF0E1A30 : (y == 1 ? 0x80FFFFFF : 0x50000000);
+                    p[y * s + x] = vien ? 0xFF1B0E06 : (y == 1 ? 0x60FFE89A : 0x60120A06);
                 }
             }
             return Image.createRGBImage(p, s, s, true);
@@ -449,7 +452,7 @@ public final class KieuO {
     /** Nền sáng cho ô đang chọn (vẽ TRƯỚC đồ). */
     public static void nenChon(Graphics g, int x, int y, int s) {
         int c = s - 1;
-        GiaoDien.khoiDoc(g, x + 1, y + 1, c - 2, c - 2, 2, GiaoDien.XANH_SANG, GiaoDien.XANH);
+        GiaoDien.khoiDoc(g, x + 1, y + 1, c - 2, c - 2, 2, 0x8A5A12, 0x5C3A10);
     }
 
     /** Màu khung theo độ hiếm (colorName của đồ: 0 thường ... ). */
@@ -488,7 +491,7 @@ public final class KieuO {
         String s = "+" + n;
         Font f = Font.smallFontColor[1];
         int w = f.getWidth(s) + 2;
-        GiaoDien.khoi(g, x, y, w, 8, 2, 0x0B1222);
+        GiaoDien.khoiPixel(g, x, y, w + 1, 9, 0x8E1A0E);
         f.drawString(g, s, x + 1, y, Font.LEFT);
     }
 
@@ -497,7 +500,7 @@ public final class KieuO {
         if (tong <= thay || tong <= 0 || h < 8) {
             return;
         }
-        GiaoDien.khoi(g, x, y, 3, h, 1, 0x0E1A30);
+        GiaoDien.khoi(g, x, y, 3, h, 1, 0x3A2414);
         int dai = h * thay / tong;
         if (dai < 6) {
             dai = 6;

@@ -26,7 +26,13 @@ public final class BieuTuong {
             H_THUONG = 32, H_LUA = 33, H_NUOC = 34, H_DIEN = 35, H_CO = 36, H_DOC = 37, H_SIEU_LINH = 38, H_MA = 39, H_RONG = 40,
             H_BONG_TOI = 41, H_THEP = 42, H_DAT = 43, H_BANG = 44,
             // thông báo / điều khiển (0.9.5): máy ảnh (album), xu, thông tin, cảnh báo, lỗi, đóng (X), lùi, hộp đồ
-            CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52;
+            CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52,
+            // 0.9.7 (icon pixel NRO, chỉ có ảnh /nro/icon.png - không có lệnh vector): thú cưng (bàn chân), cần câu, ổ
+            // khoá, mở rộng (+), lượng (ngọc), vứt, trận đấu, bạn bè, thoát
+            THU_CUNG = 53, CAN_CAU = 54, KHOA = 55, MO_RONG = 56, LUONG = 57, VUT = 58, TRAN = 59, BAN_BE = 60, THOAT = 61;
+
+    /** số id biểu tượng (kể cả id chỉ có icon pixel) */
+    public static final int SO = 62;
 
     static final float[][] HINH = new float[53][];
 
@@ -183,6 +189,10 @@ public final class BieuTuong {
      * Vẽ biểu tượng id cỡ s (hộp vuông góc trái trên (x, y)), màu chính mau, màu nền dưới nen (cho phần "đục lỗ").
      */
     public static void ve(Graphics g, int id, int x, int y, int s, int mau, int nen) {
+        // 0.9.7: icon PIXEL đủ màu (KhungNro, phóng hệ số nguyên) - mọi bản; thiếu ảnh mới vẽ vector cũ
+        if (KhungNro.icon(g, id, x, y, s, -1)) {
+            return;
+        }
         if (id == POKEBALL) {
             if (ChuUI.bo != null && ChuUI.bo.hinh(g, AnhUI.BONG, x, y, s, mau, nen)) {
                 return;
@@ -199,6 +209,14 @@ public final class BieuTuong {
             return;
         }
         veJ2me(g, h, x, y, s, mau, nen);
+    }
+
+    /** Bóng mờ một màu của biểu tượng id (ô trống: mũ, găng... mờ) - 0.9.7 icon pixel tô một màu. */
+    public static void veBong(Graphics g, int id, int x, int y, int s, int mau, int nen) {
+        if (KhungNro.icon(g, id, x, y, s, mau)) {
+            return;
+        }
+        ve(g, id, x, y, s, mau, nen);
     }
 
     /** Vẽ bằng lệnh J2ME (không khử răng cưa). */

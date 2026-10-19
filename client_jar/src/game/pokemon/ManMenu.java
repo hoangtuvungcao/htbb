@@ -8,7 +8,8 @@ import game.render.screen.Screen;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * MENU CHÍNH (0.9.3 lưới ô to; 0.9.6 kiểu Pokémon GO): Poké Ball giữa đáy mở vòng cung nút tròn to + hàng viên phụ.
+ * MENU CHÍNH (0.9.3 lưới ô to; 0.9.6 vòng cung; 0.9.7 kiểu NRO: nút KHỐI GỖ icon pixel, nhãn chữ trắng viền): Poké Ball
+ * giữa đáy mở vòng cung nút to + hàng nút gỗ phụ.
  * Mỗi việc thường dùng cách HUD đúng HAI chạm: nút Menu -> nút. Viên "Tiện ích & PK" mở menu chữ cũ cho việc hiếm.
  * Đóng: Poké Ball (X) giữa đáy, phím Back / Esc, hoặc chạm ra ngoài.
  */
@@ -213,7 +214,7 @@ public final class ManMenu extends Screen {
         int k = Math.max(ChuDe.KHE, Bang.cach()), hv = caoVienPhu();
         int[] wv = new int[PHU.length];
         for (int q = 0; q < PHU.length; q++) {
-            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
+            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + 34;
         }
         int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
         int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
@@ -246,7 +247,7 @@ public final class ManMenu extends Screen {
         Canvas.resetTrans(g);
         Bang.khungMoTam();
         int t = Bang.tuoiTam();
-        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, (0x8C * (60 + t * 40 / 140) / 100) << 24 | 0x101828);
+        KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, (0x8C * (60 + t * 40 / 140) / 100) << 24 | 0x120804);
         // chạm ra ngoài = đóng (vùng phủ cả màn, đăng ký TRƯỚC: nút vẽ sau thắng)
         IAction dong = new IAction() {
             public void perform() {
@@ -274,7 +275,7 @@ public final class ManMenu extends Screen {
         int wMax = Bang.phai() - Bang.trai() - 8;
         int[] wv = new int[PHU.length];
         for (int q = 0; q < PHU.length; q++) {
-            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + hv + 12;
+            wv[q] = ChuDe.rong(TEN[PHU[q]], ChuDe.NHAN) + 34;
         }
         int soHang = soHangPhu(wv, k, wMax);
         int yv = Math.max(Bang.tren() + 4, cy - R - r - 14 - hv - (soHang - 1) * (hv + k));
@@ -306,31 +307,37 @@ public final class ManMenu extends Screen {
     /** Nút tròn to vòng cung: đĩa trắng + icon màu, nhãn đậm dưới; chấm đỏ khi có mới. */
     static void nutTo(Graphics g, int x, int y, int r, int i, Object viec) {
         Bang.nutTron(g, x, y, r, HINH[i], MAU[i], false, null, viec, "menu-" + TEN[i]);
-        // nhãn: viên trắng mờ dưới đĩa (đọc rõ trên thế giới tối)
+        // nhãn: chữ trắng viền nâu dưới nút (đọc rõ trên thế giới tối) - kiểu NRO
         String ten = TEN[i];
-        int wt = ChuDe.rong(ten, ChuDe.SO) + 12, ht = ChuDe.cao(ChuDe.SO) + 2;
-        KieuO.phu(g, x - wt / 2, y + r + 4, wt, ht, 0x66101828);
-        ChuDe.chuGiua(g, ten, x, y + r + 4, ht, ChuDe.SO, 0xFFFFFF, 2);
+        int ht = ChuDe.cao(ChuDe.SO) + 2;
+        ChuDe.chuVienGiua(g, ten, x, y + r + 5, ht, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
         if (cham(i)) {
             ChuDe.cham(g, x + r * 7 / 10, y - r * 7 / 10);
         }
     }
 
-    /** Viên phụ (việc ít dùng): viên trắng, đĩa icon nhỏ màu nhạt + nhãn. */
+    /** Nút phụ (việc ít dùng) - 0.9.7: khối gỗ nổi, icon pixel trái + nhãn trắng viền; nhấn = lõm. */
     static void vienPhu(Graphics g, int x, int y, int w, int h, int i, Object viec) {
         boolean an = Bang.dangAn(g, x, y, w, h);
-        GiaoDien.khoi(g, x, y + 1, w, h, h / 2, ChuDe.BONG);
-        GiaoDien.khoi(g, x, y, w, h, h / 2, an ? ChuDe.NEN_PHU : ChuDe.NEN);
-        int s = h - 6, mau = MAU[i];
-        GiaoDien.khoi(g, x + 3, y + 3, s, s, s / 2, GiaoDien.pha(mau, 0xFFFFFF, 5, 6));
-        int ic = s * 2 / 3;
-        BieuTuong.ve(g, HINH[i], x + 3 + (s - ic) / 2, y + 3 + (s - ic) / 2, ic, mau, GiaoDien.pha(mau, 0xFFFFFF, 5, 6));
-        ChuDe.chuGiua(g, TEN[i], x + s + 8, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
+        if (!an) {
+            KhungNro.bong(g, x, y, w, h);
+        }
+        if (!KhungNro.ve(g, an ? KhungNroBang.NUT_GO_NHAN : KhungNroBang.NUT_GO, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 3, ChuDe.VIEN);
+            GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, 2, 0x7A3E18);
+        }
+        int dy = an ? 1 : 0;
+        int s = h - 6;
+        if (!KhungNro.iconGiua(g, HINH[i], x + 4 + 8, y + h / 2 + dy, 1, -1)) {
+            BieuTuong.ve(g, HINH[i], x + 3, y + 3, s, MAU[i], ChuDe.NEN);
+        }
+        ChuDe.chuVienGiua(g, TEN[i], x + 24, y + dy, h, ChuDe.NHAN, 0xF6E6C0, ChuDe.VIEN, 0);
         if (cham(i)) {
-            ChuDe.cham(g, x + 3 + s - 1, y + 4);
+            ChuDe.cham(g, x + w - 5, y + 4);
         }
         VungCham.them(g, x, y, w, h, viec, "menu-" + TEN[i]);
     }
+
 
     static int sin(int goc) {
         return (int) (Math.sin(Math.toRadians(goc)) * 1024);

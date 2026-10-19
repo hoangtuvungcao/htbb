@@ -26,6 +26,9 @@ import javax.microedition.lcdui.Graphics;
  * - Trang bị: Pokémon của người chơi vẽ TO giữa màn, động, kèm phụ kiện / ngoại hình đang mặc (Char.paintPokemonTinh
  *   + NgoaiHinhVe); 4 ô trái + 4 ô phải + hàng 4 ô dưới (Phiến đá hệ, Lông vũ, Ruy băng, Thú cưỡi). Bên phải: tên,
  *   cấp, huy hiệu hệ, chỉ số chính.
+ * - 0.9.7 (kiểu NRO, yêu cầu chủ dự án): bên phải = LƯỚI Ô VUÔNG hành trang (LuoiTui: chip lọc, đếm ô, ô khoá cuối lưới
+ *   -> mở rộng, hàng ví Xu / Lượng / Lượng khoá); chạm ô = thẻ thông tin TheVatPham (Dùng / Mặc / Tháo / Vứt); ô trang
+ *   bị VUÔNG hộp gỗ quanh nhân vật.
  * - Chạm một ô (trống hay có đồ): bên phải thành HÀNH TRANG LỌC theo ô đó (đúng loại + đúng dòng + đủ cấp); không
  *   có món nào -> "Chưa có trang bị phù hợp cho ô này" + gợi ý nơi kiếm. Chạm món -> thẻ chi tiết so sánh chỉ số với
  *   món đang mặc (xanh tăng / đỏ giảm) + nút to "Trang bị" / "Gỡ". Máy chủ xác nhận (gói mặc đồ) là hình + chỉ số
@@ -159,13 +162,23 @@ public final class ManNhanVat extends Screen {
     void xemMon(ItemInInventory it, boolean dangMac) {
         this.xem = it;
         this.xemDangMac = dangMac;
-        if (it != null && !it.isEnoughData && it.allAttribute.size() == 0) {
-            it.isEnoughData = true;
-            try {
-                GameService.gI().requestItemInfo(it.itemID, mc().ID);
-            } catch (Throwable e) {
-                // chưa nối máy chủ
-            }
+        moXem();
+    }
+
+    /** món đã mở thẻ (không mở lại khi thẻ nhường chỗ cho hộp xác nhận) */
+    private Object daMoXem;
+    private final IAction dongXem = new IAction() {
+        public void perform() {
+            ManNhanVat.this.xem = null;
+            ManNhanVat.this.daMoXem = null;
+        }
+    };
+
+    /** Mở thẻ thông tin cho xem (đặt bằng xemMon hoặc kiểm thử) - một lần mỗi món. */
+    void moXem() {
+        if (this.xem != null && this.xem != this.daMoXem && !TheVatPham.dangMo()) {
+            this.daMoXem = this.xem;
+            TheVatPham.mo(this.xem, TheVatPham.TUI, this.xemDangMac, this.dongXem);
         }
     }
 
@@ -430,12 +443,16 @@ public final class ManNhanVat extends Screen {
      * Sân khấu kiểu GO (mọi tab): KHÔNG khung - đĩa tròn lớn dải màu hệ nhạt phía sau Pokémon trên nền tấm nhuốm màu.
      */
     static void nenSanKhau(Graphics g, int x, int y, int w, int h) {
+        // 0.9.7 (NRO): sân khấu = khung lõm giấy da + dải màu hệ dưới chân (pixel, không đĩa tròn mềm)
         int mau = mauHePoke(mc());
-        int r = Math.min(w, h) * 9 / 20;
-        int cx = x + w / 2, cy = y + h / 2 + h / 20;
-        GiaoDien.khoiDoc(g, cx - r, cy - r, 2 * r, 2 * r, r, GiaoDien.pha(mau, 0xFFFFFF, 3, 5), GiaoDien.pha(mau, 0xFFFFFF, 6, 8));
-        int r2 = r * 7 / 10;
-        GiaoDien.khoiDoc(g, cx - r2, cy - r2, 2 * r2, 2 * r2, r2, GiaoDien.pha(mau, 0xFFFFFF, 5, 8), GiaoDien.pha(mau, 0xFFFFFF, 4, 7));
+        if (!KhungNro.ve(g, KhungNroBang.THE, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 3, ChuDe.NEN_DUOI);
+        }
+        int hd = Math.max(6, h / 6);
+        g.setColor(GiaoDien.pha(mau, 0xE9D2A0, 3, 5));
+        g.fillRect(x + 3, y + h - 3 - hd, w - 6, hd);
+        g.setColor(GiaoDien.pha(mau, 0x1B0E06, 1, 3));
+        g.fillRect(x + 3, y + h - 3 - hd, w - 6, 1);
     }
 
     /** Đĩa màu hệ + Pokémon người chơi đứng giữa (tab Chỉ số / Ngoại hình). */
@@ -453,15 +470,12 @@ public final class ManNhanVat extends Screen {
     static int banRongBe = 1000;
 
     static void veSanKhau(Graphics g, int cx, int yChan, float z) {
-        int mau = mauHePoke(mc());
-        int rw = Math.min((int) (28 * z), banRongBe), rh = Math.max(6, rw * 3 / 10);
-        g.setColor(GiaoDien.pha(mau, 0xFFFFFF, 2, 4));
-        g.fillArc(cx - rw, yChan - rh / 2 + 1, 2 * rw, rh, 0, 360);
-        g.setColor(0xFFFFFF);
-        g.fillArc(cx - rw + 2, yChan - rh / 2, 2 * rw - 4, rh - 3, 0, 360);
-        g.setColor(GiaoDien.pha(mau, 0xFFFFFF, 4, 6));
-        int bw = (int) (13 * z), bh = Math.max(3, (int) (3.5f * z));
-        g.fillArc(cx - bw, yChan - bh / 2, 2 * bw, bh, 0, 360);
+        // 0.9.7: bệ pixel (elip nâu đậm + vành sáng) dưới chân
+        int rw = Math.min((int) (24 * z), banRongBe), rh = Math.max(4, rw / 4);
+        g.setColor(0x6A4422);
+        g.fillArc(cx - rw, yChan - rh / 2, 2 * rw, rh, 0, 360);
+        g.setColor(0x8E5E2E);
+        g.fillArc(cx - rw + 2, yChan - rh / 2, 2 * rw - 4, rh - 2, 0, 360);
     }
 
     /**
@@ -479,8 +493,8 @@ public final class ManNhanVat extends Screen {
         if (this.o >= 0 && this.o < TEN_O.length) {
             String ten = TEN_O[this.o];
             int wt = ChuDe.rong(ten, ChuDe.NHAN) + 18, ht = ChuDe.cao(ChuDe.NHAN) + 6;
-            GiaoDien.khoi(g, cxS - wt / 2, y + (hSm - ht) / 2, wt, ht, ht / 2, ChuDe.CHINH);
-            ChuDe.chuGiua(g, ten, cxS, y + (hSm - ht) / 2, ht, ChuDe.NHAN, 0xFFFFFF, 2);
+            ChuDe.bien(g, cxS - wt / 2 - 6, y + (hSm - ht) / 2, wt + 12, ht);
+            ChuDe.chuVienGiua(g, ten, cxS, y + (hSm - ht) / 2, ht, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
         } else {
             ChuDe.chu(g, "SỨC MẠNH", cxS, y, ChuDe.PHU, ChuDe.CHU_PHU, 2);
             ChuDe.chu(g, String.valueOf(sucManh(m)), cxS, y + ChuDe.cao(ChuDe.PHU) - 3, ChuDe.SO_TO, ChuDe.CHU, 2);
@@ -531,19 +545,20 @@ public final class ManNhanVat extends Screen {
             String ten = TEN_O[nhanO];
             int wt = ChuDe.rong(ten, ChuDe.NHAN_NHO) + 12, ht = ChuDe.cao(ChuDe.NHAN_NHO) + 4;
             int xl = Math.max(x + 2, Math.min(x + lw - wt - 2, nhanX - wt / 2));
-            GiaoDien.khoi(g, xl, nhanY - ht - 2, wt, ht, ht / 2, ChuDe.CHU);
-            ChuDe.chuGiua(g, ten, xl + wt / 2, nhanY - ht - 2, ht, ChuDe.NHAN_NHO, 0xFFFFFF, 2);
+            if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, xl, nhanY - ht - 2, wt, ht)) {
+                GiaoDien.khoi(g, xl, nhanY - ht - 2, wt, ht, 2, 0x2B1A10);
+            }
+            ChuDe.chuGiua(g, ten, xl + wt / 2, nhanY - ht - 2, ht, ChuDe.NHAN_NHO, 0xF6E6C0, 2);
             nhanO = -1;
         }
-        // bên phải: chỉ số / hành trang lọc / chi tiết
+        // bên phải (0.9.7 kiểu NRO): LƯỚI hành trang (lọc theo ô trang bị đang chọn); ô Thú = danh sách thú
         int xr = x + lw + k, wr = w - lw - k;
-        if (this.xem != null) {
-            veChiTiet(g, xr, y, wr, h);
-        } else if (this.o >= 0) {
+        if (this.o == O_THU) {
             veHanhTrang(g, xr, y, wr, h);
         } else {
-            veChiSo(g, xr, y, wr, h, true);
+            veTui(g, xr, y, wr, h);
         }
+        moXem();
     }
 
     /** Ô trang bị TRÒN tâm (cx, cy) bán kính r. */
@@ -560,7 +575,7 @@ public final class ManNhanVat extends Screen {
         if (!co) {
             // ô trống: bóng mờ kiểu ô (mũ, vòng cổ, găng...) thay dấu "+"
             int ic = s * 11 / 20;
-            BieuTuong.ve(g, HINH_O[i], x + (s - ic) / 2, y + (s - ic) / 2, ic, 0xB3BFC9, ChuDe.NEN_PHU);
+            BieuTuong.veBong(g, HINH_O[i], x + (s - ic) / 2, y + (s - ic) / 2, Math.max(ic, 16), 0x8A6A4A, ChuDe.NEN_PHU);
         }
         if (Canvas.isPointerDown && Canvas.px >= x && Canvas.px < x + s && Canvas.py >= y && Canvas.py < y + s) {
             nhanO = i;   // nhấn giữ / di chuột: nhãn tên ô
@@ -571,10 +586,10 @@ public final class ManNhanVat extends Screen {
             ItemTemplate t = mau(it);
             int hiem = KieuO.mauHiem(it.colorName);
             if (hiem >= 0) {
-                // độ hiếm: vành màu quanh đĩa
+                // độ hiếm: viền gỗ đổi màu độ hiếm (ô vuông NRO)
                 g.setColor(hiem);
-                g.drawArc(x, y, s - 1, s - 1, 0, 360);
-                g.drawArc(x + 1, y + 1, s - 3, s - 3, 0, 360);
+                g.drawRect(x + 1, y + 1, s - 3, s - 3);
+                g.drawRect(x + 2, y + 2, s - 5, s - 5);
             }
             if (t != null) {
                 Bang.icon(g, t.idIcon, x + s / 2, y + s / 2, z);
@@ -761,8 +776,8 @@ public final class ManNhanVat extends Screen {
         int wlv = ChuDe.rong(lv, ChuDe.SO) + 14, hlv = ChuDe.cao(ChuDe.SO) + 2;
         ChuDe.chu(g, ChuDe.cat(loai, ChuDe.TIEU_DE, ww - wlv - 8), xx, yy, ChuDe.TIEU_DE, ChuDe.CHU, 0);
         int ytd = yy + (ChuDe.cao(ChuDe.TIEU_DE) - hlv) / 2;
-        GiaoDien.khoi(g, xx + ww - wlv, ytd, wlv, hlv, hlv / 2, ChuDe.CHINH_NHAT);
-        ChuDe.chuGiua(g, lv, xx + ww - wlv / 2, ytd, hlv, ChuDe.SO, ChuDe.CHINH_TOI, 2);
+        GiaoDien.khoiPixel(g, xx + ww - wlv, ytd, wlv, hlv, ChuDe.CHINH);
+        ChuDe.chuVienGiua(g, lv, xx + ww - wlv / 2, ytd, hlv, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
         yy += ChuDe.cao(ChuDe.TIEU_DE) + 1;
         int he1 = HePoke.he1(m.pokeDex), he2 = HePoke.he2(m.pokeDex);
         int xb = xx;
@@ -901,8 +916,10 @@ public final class ManNhanVat extends Screen {
         g.fillRect(x, y + ChuDe.cao(ChuDe.THUONG) + 1, w, 1);
     }
 
-    static final String[] LOC = {"Tất cả", "Thuốc", "Trang bị", "Nguyên liệu", "Nhiệm vụ"};
-    static final int LOC_TAT_CA = 0, LOC_THUOC = 1, LOC_DO = 2, LOC_NGUYEN_LIEU = 3, LOC_NHIEM_VU = 4;
+    /** 0.9.7: bộ lọc của lưới hành trang (LuoiTui): Tất cả / Trang bị / Thuốc / Nguyên liệu / Khác */
+    static final String[] LOC = LuoiTui.LOC;
+    static final int LOC_TAT_CA = LuoiTui.LOC_TAT_CA, LOC_THUOC = LuoiTui.LOC_THUOC, LOC_DO = LuoiTui.LOC_DO,
+            LOC_NGUYEN_LIEU = LuoiTui.LOC_NGUYEN_LIEU, LOC_NHIEM_VU = LuoiTui.LOC_KHAC;
     /** bộ lọc hành trang đầy đủ */
     int loc;
 
@@ -978,6 +995,55 @@ public final class ManNhanVat extends Screen {
             }
         }
         return ds;
+    }
+
+    /** Lưới hành trang (LuoiTui): tất cả + chip lọc, hoặc lọc theo ô trang bị đang chọn (món đang mặc đứng đầu). */
+    private void veTui(Graphics g, int x, int y, int w, int h) {
+        final boolean tat = this.o < 0 || this.o == O_TAT_CA;
+        final ItemInInventory mac = tat ? null : dangMac(this.o);
+        int[] dem = new int[1];
+        Vector ds = tat ? LuoiTui.ds(this.loc) : dsHanhTrang(mac, dem);
+        Object[] vl = null;
+        if (tat) {
+            vl = new Object[LOC.length];
+            for (int i = 0; i < vl.length; i++) {
+                final int li = i;
+                vl[i] = new IAction() {
+                    public void perform() {
+                        ManNhanVat.this.loc = li;
+                        ManNhanVat.this.ds.den(0);
+                    }
+                };
+            }
+        }
+        LuoiTui.ve(g, this.ds, x, y, w, h, tat ? this.loc : LOC_DO, ds, tat && this.loc == LOC_TAT_CA, this.xem, vl, new LuoiTui.Bam() {
+            public void bam(Object mon) {
+                if (mon instanceof ItemInInventory) {
+                    ManNhanVat.this.xemMon((ItemInInventory) mon, mon == mac);
+                } else if (mon != null) {
+                    TheVatPham.mo(mon, TheVatPham.TUI, false, null);
+                }
+            }
+        }, TheVatPham.TUI);
+        if (!tat) {
+            // đầu lưới khi lọc theo ô: nút lùi + tên ô (thay chip lọc)
+            int hd = Bang.co(22);
+            Bang.nutLui(g, x + 5, y + 5, hd, new IAction() {
+                public void perform() {
+                    ManNhanVat.this.o = -1;
+                    ManNhanVat.this.ds.den(0);
+                }
+            });
+            ChuDe.chuGiua(g, ChuDe.cat("Phù hợp: " + TEN_O[this.o], ChuDe.NHAN, w - hd - 80), x + hd + 12, y + 5, hd, ChuDe.NHAN, ChuDe.CHU, 0);
+            if (ds.size() == 0) {
+                String phu = GOI_Y[this.o];
+                if (dem[0] > 0) {
+                    phu = dem[0] + " món cần cấp cao hơn. " + phu;
+                }
+                int yt = y + 5 + hd + Bang.cach();
+                Bang.trong(g, x + 6, yt, w - 12, y + h - ViTien.cao() - 10 - yt, "Chưa có trang bị phù hợp cho ô này", phu);
+            }
+        }
     }
 
     private void veHanhTrang(Graphics g, int x, int y, int w, int h) {

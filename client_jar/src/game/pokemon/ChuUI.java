@@ -39,6 +39,13 @@ public abstract class ChuUI {
         return false;
     }
 
+    /**
+     * 0.9.7: khối nền (x, y, w, h) độ sáng sang (0..255) vừa vẽ bằng mảnh pixel (KhungNro) - bản PC / APK ghi lại để chữ
+     * của game cũ tự chọn bản sáng / tối cho dễ đọc. J2ME: không làm gì.
+     */
+    public void nen(Graphics g, int x, int y, int w, int h, int sang) {
+    }
+
     /** Đầu mỗi khung vẽ (Canvas.paint). */
     public void khungMoi() {
     }

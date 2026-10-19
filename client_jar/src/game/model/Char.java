@@ -391,7 +391,8 @@ public class Char extends LiveActor {
     }
 
     public boolean isFullInventory() {
-        return FullInventory() > 42 * Canvas.gameScr.mainChar.limItemBag;
+        // 0.9.7: sức chứa thật (gói -105: 42 x trang + ô mở rộng bằng vé / xu)
+        return FullInventory() >= game.pokemon.TrangThaiNguoiChoi.sucChua(Canvas.gameScr.mainChar);
     }
 
     public int FullInventory() {

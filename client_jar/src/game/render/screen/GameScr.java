@@ -3963,27 +3963,28 @@ public class GameScr extends Screen {
             return;
         }
         Canvas.resetTrans(g);
-        // pokemon: khung trắng viền tối, chân dung trong vòng tròn, Lv + thanh HP (xanh->vàng->đỏ), PP, EXP
+        // 0.9.7 (NRO): bảng gỗ tối chỉ vàng, chân dung trong ô hộp gỗ khung vàng, Lv + thanh HP đỏ, PP, EXP pixel
         int W = rongKhungHp();
         int H = imgInfo != null ? imgInfo.getHeight() : 34;
-        game.pokemon.GiaoDien.khoi(g, 1, 2, W, H - 1, 5, 0x0B1222);
-        game.pokemon.GiaoDien.khoi(g, 0, 0, W, H - 1, 5, game.pokemon.GiaoDien.VIEN);
-        game.pokemon.GiaoDien.khoiDoc(g, 2, 2, W - 4, H - 5, 3, game.pokemon.GiaoDien.TRANG, 0xE6EEF8);
-        g.setColor(game.pokemon.GiaoDien.VIEN);
-        g.fillArc(3, 3, 28, 28, 0, 360);
-        g.setColor(game.pokemon.GiaoDien.XANH_NHAT);
-        g.fillArc(5, 5, 24, 24, 0, 360);
+        game.pokemon.KhungNro.bong(g, 0, 0, W, H - 1);
+        if (!game.pokemon.KhungNro.ve(g, game.pokemon.KhungNroBang.TOOLTIP, 0, 0, W, H - 1)) {
+            game.pokemon.GiaoDien.khoi(g, 0, 0, W, H - 1, 3, 0x2B1A10);
+        }
+        if (!game.pokemon.KhungNro.ve(g, game.pokemon.KhungNroBang.O_CHON, 2, 2, 30, 30)) {
+            g.setColor(game.pokemon.ChuDe.VANG);
+            g.fillRect(3, 3, 28, 28);
+        }
         if (this.mainChar.pokeDex <= 0 || !game.pokemon.PokeBody.paintChanDung(g, this.mainChar.pokeDex, this.mainChar.pokeShiny, 17, 17, 22)) {
             Res.getCharPartInfo(2, this.mainChar.currentHead).paintStatic(g, (short) 20, (short) 18, 0, this.mainChar.frame);
         }
         Canvas.resetTrans(g);
-        Font.blackFont.drawString(g, new StringBuffer("Lv").append((int) this.mainChar.level).toString(), 35, 2, 0);
+        Font.borderFont.drawString(g, new StringBuffer("Lv").append((int) this.mainChar.level).toString(), 35, 2, 0);
         if (W >= 100) {
-            Font.arialFont.drawString(g, this.mainChar.getPercent(), W - 5, 2, 1);
+            Font.arialFontW.drawString(g, this.mainChar.getPercent(), W - 5, 2, 1);
         }
         int xb = 35;
         int wb = W - xb - 5;
-        game.pokemon.GiaoDien.thanhHP(g, xb, 16, wb, 6, this.mainChar.hp, this.mainChar.maxhp);
+        game.pokemon.GiaoDien.thanh(g, xb, 15, wb, 7, this.mainChar.hp, this.mainChar.maxhp, 0);
         game.pokemon.GiaoDien.thanh(g, xb, 22, wb, 5, this.mainChar.mp, this.mainChar.maxmp, 1);
         game.pokemon.GiaoDien.thanh(g, xb, 27, wb, 4, this.mainChar.lvpercent, 1000, 2);
         if (this.mainChar.killer > 0) {
@@ -4107,13 +4108,15 @@ public class GameScr extends Screen {
             // 0.9.5: chữ thật - thêm hàng số HP / Lv dưới thanh
             int H = coMau ? (game.pokemon.ChuUI.bo != null ? 37 : 34) : 22;
             int x0 = Canvas.w - W;
-            game.pokemon.GiaoDien.khoi(g, x0 + 1, 2, W - 1, H - 1, 5, 0x0B1222);
-            game.pokemon.GiaoDien.khoi(g, x0, 0, W, H - 1, 5, game.pokemon.GiaoDien.VIEN);
-            game.pokemon.GiaoDien.khoiDoc(g, x0 + 2, 2, W - 4, H - 5, 3, game.pokemon.GiaoDien.TRANG, 0xF8E8E4);
-            g.setColor(game.pokemon.GiaoDien.VIEN);
-            g.fillArc(Canvas.w - 32, 3, 28, 28, 0, 360);
-            g.setColor(0xF8D8D0);
-            g.fillArc(Canvas.w - 30, 5, 24, 24, 0, 360);
+            // 0.9.7 (NRO): bảng gỗ tối chỉ vàng + chân dung trong ô hộp gỗ viền đỏ (mục tiêu)
+            game.pokemon.KhungNro.bong(g, x0, 0, W, H - 1);
+            if (!game.pokemon.KhungNro.ve(g, game.pokemon.KhungNroBang.TOOLTIP, x0, 0, W, H - 1)) {
+                game.pokemon.GiaoDien.khoi(g, x0, 0, W, H - 1, 3, 0x2B1A10);
+            }
+            if (!game.pokemon.KhungNro.ve(g, game.pokemon.KhungNroBang.O, Canvas.w - 33, 2, 30, 30)) {
+                g.setColor(0x2E1E14);
+                g.fillRect(Canvas.w - 32, 3, 28, 28);
+            }
             if (coTen) {
                 String ten = this.focusedActor.getDisplayName();
                 if (ten == null) {
@@ -4126,7 +4129,7 @@ public class GameScr extends Screen {
                     }
                     ten = new StringBuffer(ten).append("..").toString();
                 }
-                Font.blackFont.drawString(g, ten, x0 + 5, 2, 0);
+                Font.borderFont.drawString(g, ten, x0 + 5, 2, 0);
                 g.setClip(Canvas.w - 30, 5, 25, 25);
                 this.focusedActor.paintCorner(g, Canvas.w - 18, 25);
                 Canvas.resetTrans(g);
@@ -4134,14 +4137,14 @@ public class GameScr extends Screen {
             }
             if (coMau) {
                 long hp = la.hp <= 0 ? 0 : la.hp;
-                game.pokemon.GiaoDien.thanhHP(g, x0 + 5, 17, W - 40, 6, hp, la.maxhp);
+                game.pokemon.GiaoDien.thanh(g, x0 + 5, 16, W - 40, 7, hp, la.maxhp, 0);
                 if (game.pokemon.ChuUI.bo != null) {
                     // 0.9.5: số HP / Lv chữ thật DƯỚI thanh (không đè thanh)
                     int yS = 23, hS = H - 3 - yS;
                     game.pokemon.ChuDe.chuGiua(g, game.pokemon.NhanTheGioi.hpMax(la.hp > 0 ? la.hp : 1, la.maxhp), x0 + W - 37, yS, hS,
-                            game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU, 1);
+                            game.pokemon.ChuDe.PHU, 0xF6E6C0, 1);
                     game.pokemon.ChuDe.chuGiua(g, game.pokemon.NhanTheGioi.lv(la.level), x0 + 5, yS, hS,
-                            game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 0);
+                            game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.VANG, 0);
                 } else {
                     String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
                     int wSo = Font.smallFont.getWidth(so) + 6;

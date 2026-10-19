@@ -268,6 +268,10 @@ public final class ManCuaHang extends Screen {
             }
         });
         int x = c[0], y = c[1], w = c[2], h = c[3];
+        if (this.tab == 1) {
+            veBan(g, x, y, w, h);   // 0.9.7: tab Bán = lưới hành trang NRO, chạm ô = thẻ vật phẩm (nút Bán)
+            return;
+        }
         int k = Bang.cach();
         boolean hai = w >= 400;
         int wl = hai ? w * 54 / 100 : w;
@@ -294,6 +298,28 @@ public final class ManCuaHang extends Screen {
                         this.tab == 0 ? "Chạm hàng bên trái: xem chi tiết, chọn số lượng rồi bấm Mua." : "Giá bán lại bằng 1/5 giá mua.");
             }
         }
+    }
+
+    /** Tab Bán (0.9.7): lưới hành trang (LuoiTui, ngữ cảnh BÁN) - chạm ô = thẻ vật phẩm với nút Bán / lý do không bán được. */
+    private void veBan(Graphics g, int x, int y, int w, int h) {
+        Object[] vl = new Object[LuoiTui.LOC.length];
+        for (int i = 0; i < vl.length; i++) {
+            final int li = i;
+            vl[i] = new IAction() {
+                public void perform() {
+                    ManCuaHang.this.loc = li;
+                    ManCuaHang.this.ds.den(0);
+                }
+            };
+        }
+        int lc = this.loc < LuoiTui.LOC.length ? this.loc : 0;
+        LuoiTui.ve(g, this.ds, x, y, w, h, lc, LuoiTui.ds(lc), false, TheVatPham.monDangXem(), vl, new LuoiTui.Bam() {
+            public void bam(Object mon) {
+                if (mon != null) {
+                    TheVatPham.mo(mon, TheVatPham.BAN, false, null);
+                }
+            }
+        }, TheVatPham.BAN);
     }
 
     private void veDanhSach(Graphics g, int x, int y, int w, int h) {
@@ -526,7 +552,7 @@ public final class ManCuaHang extends Screen {
         final long gia = t == null ? 0 : t.price;
         Bang.nut(g, x + 6, yn, w - 12, nh, thue ? "Thuê" : "Mua", Bang.XAC_NHAN, new IAction() {
             public void perform() {
-                if (mc().FullInventory() >= 42 * mc().limItemBag) {
+                if (mc().FullInventory() >= TrangThaiNguoiChoi.sucChua(mc())) {
                     DungDo.loi("Hành trang đã đầy.");
                     return;
                 }
