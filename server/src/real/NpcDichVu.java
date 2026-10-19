@@ -97,7 +97,7 @@ public final class NpcDichVu {
         }
         final String[] menu = new String[ben.size()];
         for (int i = 0; i < menu.length; i++) {
-            menu[i] = "Đến " + tenBanDo(ben.get(i))[0];
+            menu[i] = KhoaBanDoGame.nhanDiem(p, ben.get(i), "Đến " + tenBanDo(ben.get(i))[0]);
         }
         p.sendMessage(MessageCreator.createMsgMenu(menu, NPC_LAPRAS, 0));
     }
@@ -136,6 +136,9 @@ public final class NpcDichVu {
                     }
                 }
             }
+        }
+        if (KhoaBanDoGame.chan(p, den)) {
+            return; // chua tru ve
         }
         synchronized (p) {
             if (p.potions[VE_TAU] <= 0) {
@@ -176,7 +179,7 @@ public final class NpcDichVu {
         final long gia = BaiLuyenTap.giaDichChuyen(p, GIA_BAY);
         final String[] menu = new String[ds.size()];
         for (int i = 0; i < menu.length; i++) {
-            menu[i] = tenBanDo(ds.get(i))[0] + " (" + gia + " xu)";
+            menu[i] = KhoaBanDoGame.nhanDiem(p, ds.get(i), tenBanDo(ds.get(i))[0] + " (" + gia + " xu)");
         }
         p.sendMessage(MessageCreator.createMsgMenu(menu, NPC_PIDGEOT, 0));
     }
@@ -205,6 +208,9 @@ public final class NpcDichVu {
         if (diem == null || diem[0] != den) {
             bao(p, "Điểm bay này đang tạm đóng.");
             return;
+        }
+        if (KhoaBanDoGame.chan(p, den)) {
+            return; // chua tru xu
         }
         final long gia = BaiLuyenTap.giaDichChuyen(p, GIA_BAY);
         if (!p.truXuNeuDu(gia, true, "pidgeot bay")) {

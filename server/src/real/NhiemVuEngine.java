@@ -273,6 +273,10 @@ public final class NhiemVuEngine {
 
     /** Dieu kien them cua mau luc co su kien (quan sat: dem / gio; to doi toi thieu...). */
     static boolean dieuKienSuKien(final Char p, final NhiemVuMau m) {
+        final int chiMap = m.banDoChi();
+        if (chiMap >= 0 && (p.map == null || p.map.mapIDLoadMap != chiMap)) {
+            return false; // buoc cua ai: chi tinh quai ha o dung ban do
+        }
         final String qs = m.dieuKien.get("dieu_kien_quan_sat");
         if (qs != null) {
             final int gio = com.htbb.pokemon.DongHo.lich().get(java.util.Calendar.HOUR_OF_DAY);
@@ -414,7 +418,7 @@ public final class NhiemVuEngine {
             }
         }
         p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đang làm (" + dang + ")", "Nhận nhiệm vụ phụ", "Nhiệm vụ hằng ngày",
-            "Nhiệm vụ hằng tuần", "Thành tựu", "Sự kiện tuần này", "Cốt truyện năm 2"}, SoTayLauDai.NPC_ID, M_GOC));
+            "Nhiệm vụ hằng tuần", "Thành tựu", "Sự kiện tuần này", "Cốt truyện năm 2", "Thử thách cửa ải"}, SoTayLauDai.NPC_ID, M_GOC));
     }
 
     static void doMenu(final Char p, final int idMenu, final int op) {
@@ -506,7 +510,7 @@ public final class NhiemVuEngine {
             if (m.chuoiNam2 && (nhom != 6 || kiemNam2(m) != null)) {
                 continue; // chuoi nam 2: chi o muc "Cot truyen nam 2", khi co ban do + tran cap mua
             }
-            final boolean dung = nhom == 6 && m.chuoiNam2 || nhom == 1 && m.chiemKhe() || nhom == 2 && ngayRut.contains(m.ma)
+            final boolean dung = nhom == 6 && m.chuoiNam2 || nhom == 7 && m.laCuaAi() || nhom == 1 && m.chiemKhe() || nhom == 2 && ngayRut.contains(m.ma)
                     || nhom == 3 && m.laTuan() || nhom == 5 && m.laSuKien() && m.tuanSuKien() == SuKienLauDai.tuanIso(com.htbb.pokemon.DongHo.bay());
             if (!dung || t.containsKey(m.ma) && !(m.laNgay() || m.laTuan() || m.laSuKien())) {
                 continue;
@@ -521,7 +525,8 @@ public final class NhiemVuEngine {
             ma.add(m.ma);
             nhan.add(m.ten + (m.tenNpc.isEmpty() ? "" : " (" + m.tenNpc + ")"));
         }
-        hien(p, ma, nhan, M_NHAN, "Chưa có nhiệm vụ phù hợp lúc này.");
+        hien(p, ma, nhan, M_NHAN, nhom == 7 ? "Chưa có cửa ải nào nhận được lúc này (xem cấp và cửa ải trước)."
+                : "Chưa có nhiệm vụ phù hợp lúc này.");
     }
 
     /** Ky lap lai cua mau: ngay -> yyyyMMdd, tuan -> chi so tuan, su kien -> tuan ISO, khac 0. */
@@ -596,6 +601,10 @@ public final class NhiemVuEngine {
             final long[] v = new long[]{0L, 0L, kyCua(m), com.htbb.pokemon.DongHo.bay()};
             if ("noi_chuyen".equals(m.kieu) || "dua_thu".equals(m.kieu)) {
                 v[0] = m.soLuong; // gap NPC qua So tay = xong ngay (giao hang / dua thu dung item o du_phong)
+                v[1] = 1;
+            }
+            if ("ha_gym".equals(m.kieu) && daCoHuyHieu(p, m.mucTieuId)) {
+                v[0] = m.soLuong; // cua ai "ha Gym": da co huy hieu thi khong bat danh lai
                 v[1] = 1;
             }
             t.put(ma, v);
@@ -745,6 +754,9 @@ public final class NhiemVuEngine {
         if (m.laTuan()) {
             thuongTangTocTuan(p, t);
         }
+        if (m.laCuaAi()) {
+            KhoaBanDoGame.capNhat(p); // xong cua ai: bao ban do vua mo + gui lai goi -106
+        }
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
         suKien(p, "thanh_tuu_nhiem_vu", "", 1);
         if (m.laNgay()) {
@@ -801,6 +813,15 @@ public final class NhiemVuEngine {
             } catch (final Exception e) {
                 System.out.println("NhiemVuEngine.thuongKhac: " + e);
             }
+        }
+    }
+
+    /** Huy hieu Gym so thu tu {@code stt} (chuoi so) da co chua. */
+    static boolean daCoHuyHieu(final Char p, final String stt) {
+        try {
+            return GymLauDai.coHuyHieu(LauDaiNhanVat.lay(p), Integer.parseInt(stt.trim()));
+        } catch (final RuntimeException e) {
+            return false;
         }
     }
 

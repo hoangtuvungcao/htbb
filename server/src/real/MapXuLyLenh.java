@@ -120,6 +120,7 @@ class MapXuLyLenh {
                     // ben duoi de goi 3 kem -90 da mang loai moi.
                     TienHoaPokemon.kiemTienHoaTheoCap(p);
                     SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
+                    KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -106
                     if (newlevel > p.lastLV) {
                         p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
                         p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
@@ -254,6 +255,7 @@ class MapXuLyLenh {
                 // Pokemon (viec S5): ban sao thu hai cua khoi len cap - xem tren.
                 TienHoaPokemon.kiemTienHoaTheoCap(p);
                     SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
+                    KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -106
                 if (newlevel > p.lastLV) {
                     p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
                     p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
@@ -1977,7 +1979,7 @@ class MapXuLyLenh {
                 }
 
                 // Vung Hoenn: cong vao chi mo khi tran cap mua >= 91 (sv.lau_dai) va du cap - xem real.VungHoenn.
-                if (VungHoenn.chanVao(player, map, toMapID)) {
+                if (VungHoenn.chanVao(player, map, toMapID) || KhoaBanDoGame.chan(player, toMapID)) {
                     toMapID = player.mapID;
                     toTX = player.x / 16;
                     toTY = player.y / 16;

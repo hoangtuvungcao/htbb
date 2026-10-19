@@ -448,6 +448,15 @@ public final class HudRong {
         GiaoDien.khoi(g, xn - rn, yt + hp / 2 - rn, 2 * rn + 1, 2 * rn + 1, rn, td ? 0xFFFFFF : game.pokemon.ChuDe.CHU_NHAT);
         game.pokemon.ChuDe.chuGiua(g, "AUTO", td ? xt + (W_TU_DONG - 2 * rn - 4) / 2 + 2 : xt + 2 * rn + 6 + (W_TU_DONG - 2 * rn - 8) / 2, yt, hp,
                 td ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.NHAN_NHO, td ? 0xFFFFFF : game.pokemon.ChuDe.CHU_PHU, 2);
+        // bản đồ không cho Tự động đánh (gói -106): viên xám + ổ khoá thay núm; chạm = báo lý do (TuDong.bat)
+        if (!td && game.pokemon.KhoaMap.tuDongKhoa(gs.map)) {
+            GiaoDien.khoi(g, xt + 1, yt + 1, W_TU_DONG - 2, hp - 2, hp / 2 - 1, game.pokemon.ChuDe.NEN_PHU);
+            int sk = 2 * rn + 2;
+            game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.KHOA, xn - sk / 2, yt + hp / 2 - sk / 2, sk, game.pokemon.ChuDe.XAM,
+                    game.pokemon.ChuDe.NEN_PHU);
+            game.pokemon.ChuDe.chuGiua(g, "AUTO", xt + 2 * rn + 6 + (W_TU_DONG - 2 * rn - 8) / 2, yt, hp, game.pokemon.ChuDe.NHAN_NHO,
+                    game.pokemon.ChuDe.CHU_NHAT, 2);
+        }
         // bánh răng cài đặt Tự động (đĩa trắng nhỏ)
         int xc = xTdCai(), yc2 = yTdCai(), rc = R_TD_CAI - (tro(xc, yc2, R_TD_CAI + 2) ? 1 : 0);
         nen(g, xc, yc2, rc, 0xFFFFFF, game.pokemon.ChuDe.NEN_DUOI, false);

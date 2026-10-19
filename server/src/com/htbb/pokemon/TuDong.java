@@ -394,6 +394,8 @@ public final class TuDong {
         public int map = -1;
         public int x;
         public int y;
+        /** Ban do khoa Tu dong danh (data_ban_do_mo_khoa.cho_phep_tu_dong = 0): cau bao, null = cho phep. */
+        public String khoaMap;
     }
 
     /**
@@ -408,6 +410,9 @@ public final class TuDong {
         }
         if (n.map >= 0 && c.mapBiCam(n.map)) {
             return lyDo(TAT_KHU_CAM);
+        }
+        if (n.khoaMap != null) {
+            return n.khoaMap;
         }
         if (n.chet) {
             return "Pokémon đang gục, chưa bật được Tự động đánh.";

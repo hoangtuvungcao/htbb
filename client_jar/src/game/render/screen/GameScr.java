@@ -1914,9 +1914,15 @@ public class GameScr extends Screen {
                     for (int i = 0; i < name.length; i++) {
                         final int k = i;
                         if (!name[i].equals("")) {
-                            menuItem.addElement(new Command(game.pokemon.TenMapPokemon.doiHien(name[i]), new IAction() {
+                            // khoa ban do (goi -106): hang xam + o khoa, cham = bao dieu kien, KHONG gui doi map
+                            final boolean khoaDen = game.pokemon.KhoaMap.khoa(local[k * 3]);
+                            menuItem.addElement(new Command(game.pokemon.KhoaMap.nhan(local[k * 3], game.pokemon.TenMapPokemon.doiHien(name[i])), new IAction() {
                                 @Override
                                 public void perform() {
+                                    if (khoaDen) {
+                                        game.pokemon.KhoaMap.baoKhoa(local[k * 3]);
+                                        return;
+                                    }
                                     GameService.gI().changeMap(local[k * 3], local[(k * 3) + 1], local[(k * 3) + 2]);
                                     ChangScr.gI().switchToMe();
                                     Res.removeMonsterTemplet();
@@ -3161,10 +3167,12 @@ public class GameScr extends Screen {
                 for (int i = 0; i < xp.mapID.length; i++) {
                     final int aa = i;
                     final int idm = xp.mapID[aa];
-                    Command cmd = new Command(game.pokemon.TenBanDoBang.ten(xp.mapID[aa], Res.nameBigMap[xp.mapID[aa]]), new IAction() {
+                    Command cmd = new Command(game.pokemon.KhoaMap.nhan(idm, game.pokemon.TenBanDoBang.ten(xp.mapID[aa], Res.nameBigMap[xp.mapID[aa]])), new IAction() {
                         @Override
                         public void perform() {
-                            if (xp.price[aa] <= GameScr.this.mainChar.charXu) {
+                            if (game.pokemon.KhoaMap.khoa(idm)) {
+                                game.pokemon.KhoaMap.baoKhoa(idm); // diem bay khoa: bao dieu kien, khong bay
+                            } else if (xp.price[aa] <= GameScr.this.mainChar.charXu) {
                                 GameScr.this.doUseXaPhu(idm, aa);
                             } else {
                                 Canvas.startOKDlg("Không còn đủ tiền");

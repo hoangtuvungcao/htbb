@@ -161,6 +161,7 @@ public final class TuDongGame {
             n.cap = 0;
         }
         n.map = m == null ? -1 : m.mapId;
+        n.khoaMap = m == null ? null : KhoaBanDoGame.lyDoKhongTuDong(m.mapId);
         n.x = p.x;
         n.y = p.y;
         return n;
@@ -368,9 +369,19 @@ public final class TuDongGame {
         } else if (c.mapBiCam(p.map.mapId)) {
             lyDo = TuDong.TAT_KHU_CAM;
         }
+        final String khoaMap = (lyDo < 0 || lyDo == TuDong.TAT_DOI_MAP) && p.map != null ? KhoaBanDoGame.lyDoKhongTuDong(p.map.mapId) : null;
+        if (khoaMap != null) {
+            lyDo = TuDong.TAT_KHU_CAM; // ban do khong cho tu dong (data_ban_do_mo_khoa): tat + bao ly do cua ban do
+        }
         ghiNgay(p, ph);
         if (lyDo < 0) {
             return false;
+        }
+        if (khoaMap != null) {
+            tat(p, ph, lyDo);
+            guiTrangThai(p, c, ph, khoaMap);
+            bao(p, khoaMap);
+            return true;
         }
         tat(p, ph, lyDo);
         guiTrangThai(p, c, ph, TuDong.lyDo(lyDo));

@@ -900,8 +900,19 @@ public final class Hud implements NenAndroid.LopPhu {
                 PATH.lineTo(x + u * 0.75f, y - u * 0.2f);
                 PATH.lineTo(x + u * 0.05f, y - u * 0.2f);
                 PATH.close();
-                P.setColor(HdCau.tuDongDang() ? 0xFFFFFFFF : 0xFF138C82);   // 0.9.6: sét teal trên đĩa trắng
+                boolean khoaTd = !HdCau.tuDongDang() && game.render.Canvas.gameScr != null
+                        && game.pokemon.KhoaMap.tuDongKhoa(game.render.Canvas.gameScr.map);
+                P.setColor(HdCau.tuDongDang() ? 0xFFFFFFFF : khoaTd ? HdVe.argb(game.pokemon.ChuDe.CHU_NHAT) : 0xFF138C82);   // 0.9.6: sét teal trên đĩa trắng
                 c.drawPath(PATH, P);
+                if (khoaTd) {
+                    // bản đồ không cho Tự động đánh (gói -106): ổ khoá xám góc dưới phải; chạm = báo lý do (TuDong.bat)
+                    float kx = x + u * 0.75f, ky = y + u * 0.7f, kw = u * 0.55f;
+                    P.setColor(HdVe.argb(game.pokemon.ChuDe.XAM));
+                    c.drawRect(kx - kw, ky - kw * 0.2f, kx + kw, ky + kw * 1.2f, P);
+                    PV.setStrokeWidth(kw * 0.35f);
+                    PV.setColor(HdVe.argb(game.pokemon.ChuDe.XAM));
+                    c.drawArc(kx - kw * 0.65f, ky - kw * 1.1f, kx + kw * 0.65f, ky + kw * 0.3f, 180, 180, false, PV);
+                }
                 break;
             case N_THEM:
                 for (int i = -1; i <= 1; i++) c.drawCircle(x + i * u * 0.75f, y, u * 0.22f, P);

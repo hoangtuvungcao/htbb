@@ -606,6 +606,11 @@ class MapDungThuoc {
                                     return;
                                 }
 
+                                if (KhoaBanDoGame.chan(player, p1.mapID)) { // khoa ban do: tra lai vat pham
+                                    player.potions[potionType]++;
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                    return;
+                                }
                                 map.move2Map(player, p1.x / 16, p1.y / 16, p1.mapID, p1.inCountry);
                                 break;
                             case 99:

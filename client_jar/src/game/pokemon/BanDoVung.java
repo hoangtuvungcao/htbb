@@ -28,6 +28,9 @@ public final class BanDoVung {
     static final short[][] DIEM_HOENN = {{40, 150}, {30, 128}, {28, 100}, {55, 112}, {80, 140}, {82, 118}, {84, 98}, {70, 80}, {60, 64}, {45, 56}, {100, 78}, {108, 58}, {130, 62}, {160, 60}, {140, 82}, {160, 86}, {182, 92}, {135, 118}, {178, 118}, {150, 150}, {55, 140}, {30, 74}, {152, 104}, {118, 128}, {170, 138}, {184, 156}, {130, 158}, {112, 164}, {94, 166}};
     static final int[] ID_HOENN = {43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 160, 161, 162, 163, 164, 165, 280, 281, 282};
 
+    /** Id bản đồ của 17 điểm bản đồ lớn Kanto / Johto (cùng thứ tự PauseMenu.doBigMap) - để vẽ khoá / AUTO. */
+    public static final int[] ID_KANTO = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 110, 111, 112, 202, 104};
+
     /** Chỉ số map trong vùng Hoenn, -1 nếu không phải Hoenn. */
     public static int chiSoHoenn(int map) {
         for (int i = 0; i < ID_HOENN.length; i++) {
@@ -40,7 +43,7 @@ public final class BanDoVung {
 
     /** Bản đồ vùng Hoenn, điểm đang đứng = map hiện tại. */
     public static void veHoenn(Graphics g, int map, int w, int h) {
-        ve(g, DIEM_HOENN, chiSoHoenn(map), w, h, TenMapPokemon.tenHoenn(map));
+        ve(g, DIEM_HOENN, ID_HOENN, chiSoHoenn(map), w, h, TenMapPokemon.tenHoenn(map));
     }
 
     /** pts = tọa độ gốc {x, y}; cur = điểm đang đứng; w, h = cỡ khung PageScr (gốc tọa độ = góc khung). */
@@ -50,6 +53,11 @@ public final class BanDoVung {
 
     /** nhan = tên điểm đang đứng (null = Res.nameBigMap[cur]). */
     public static void ve(Graphics g, short[][] pts, int cur, int w, int h, String nhan) {
+        ve(g, pts, pts.length == ID_KANTO.length ? ID_KANTO : null, cur, w, h, nhan);
+    }
+
+    /** ids = id bản đồ từng điểm (null = không vẽ khoá / AUTO). */
+    public static void ve(Graphics g, short[][] pts, int[] ids, int cur, int w, int h, String nhan) {
         int n = pts.length;
         int[] x = new int[n];
         int[] y = new int[n];
@@ -119,9 +127,17 @@ public final class BanDoVung {
         // chấm thị trấn
         for (int i = 0; i < n; i++) {
             GiaoDien.khoi(g, x[i] - 4, y[i] - 4, 9, 9, 4, GiaoDien.VIEN);
-            GiaoDien.khoi(g, x[i] - 3, y[i] - 3, 7, 7, 3, i == cur ? GiaoDien.VANG : GiaoDien.DO);
+            boolean khoa = ids != null && i < ids.length && KhoaMap.khoa(ids[i]);
+            GiaoDien.khoi(g, x[i] - 3, y[i] - 3, 7, 7, 3, i == cur ? GiaoDien.VANG : khoa ? ChuDe.XAM : GiaoDien.DO);
             g.setColor(GiaoDien.TRANG);
             g.fillRect(x[i] - 1, y[i] - 2, 2, 1);
+            if (ids != null && i < ids.length) {
+                // khoá bản đồ (gói -106): ổ khoá nhỏ trên điểm; chấm AUTO dưới điểm: teal = cho tự động, xám = không
+                if (khoa) {
+                    BieuTuong.ve(g, BieuTuong.KHOA, x[i] + 2, y[i] - 11, 9, ChuDe.XAM, GiaoDien.LA);
+                }
+                GiaoDien.khoi(g, x[i] - 2, y[i] + 6, 4, 4, 2, KhoaMap.tuDongKhoa(ids[i]) ? ChuDe.XAM : ChuDe.CHINH);
+            }
         }
         if (cur >= 0 && cur < n) {
             int r = 6 + (Canvas.gameTick % 12 < 6 ? 1 : 0);

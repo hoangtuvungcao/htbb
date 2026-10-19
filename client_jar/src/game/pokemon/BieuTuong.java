@@ -26,9 +26,11 @@ public final class BieuTuong {
             H_THUONG = 32, H_LUA = 33, H_NUOC = 34, H_DIEN = 35, H_CO = 36, H_DOC = 37, H_SIEU_LINH = 38, H_MA = 39, H_RONG = 40,
             H_BONG_TOI = 41, H_THEP = 42, H_DAT = 43, H_BANG = 44,
             // thông báo / điều khiển (0.9.5): máy ảnh (album), xu, thông tin, cảnh báo, lỗi, đóng (X), lùi, hộp đồ
-            CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52;
+            CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52,
+            // khoá bản đồ (khoa-map): ổ khoá tạm (bộ hình NRO/NSO sẽ thay)
+            KHOA = 53;
 
-    static final float[][] HINH = new float[53][];
+    static final float[][] HINH = new float[54][];
 
     /** Biểu tượng hệ theo số hệ (PokeChieu.he / KieuO.mauHe). */
     public static int heIcon(int he) {
@@ -160,6 +162,8 @@ public final class BieuTuong {
         HINH[DONG] = new float[]{MAU, c, NET, 20, 20, 80, 80, 18, NET, 80, 20, 20, 80, 18};
         HINH[LUI] = new float[]{MAU, c, DUONG, 3, 18, 66, 14, 30, 50, 66, 86};
         HINH[HOP_DO] = new float[]{MAU, c, CHU_NHAT, 14, 32, 72, 56, 8, MAU, d, CHU_NHAT, 8, 20, 84, 22, 7, MAU, n, CHU_NHAT, 44, 20, 12, 68, 0};
+        HINH[KHOA] = new float[]{MAU, c, CUNG, 50, 44, 20, 0, 180, 10, CHU_NHAT, 20, 44, 60, 46, 9, MAU, n, TRON, 50, 62, 7,
+            CHU_NHAT, 47, 62, 6, 14, 2};
         HINH[DOI_BO] = new float[]{MAU, c, CUNG, 50, 50, 30, 30, 260, 9, DA_GIAC, 3, 78, 14, 86, 44, 56, 36};
     }
 

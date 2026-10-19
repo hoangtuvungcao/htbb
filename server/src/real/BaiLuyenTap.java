@@ -126,6 +126,10 @@ public final class BaiLuyenTap {
             return;
         }
 
+        if (KhoaBanDoGame.chan(player, bai.mapId)) {
+            return; // khoa ban do: chua tru xu, chua tinh cho
+        }
+
         // Nguoi choi thuong (khong hang) phai co The mua ban, hang Ca Cung tro len (vip>=1)
         // duoc mien - xem chu thich dau file.
         if (player.vip < 1 && !player.checkItemTheMuaBan()) {

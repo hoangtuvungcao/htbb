@@ -445,6 +445,8 @@ class CharNapDuLieu {
                     self.y = 512 + Database.r.nextInt() % 5;
                 }
             }
+            // khoa ban do: mien tru nhan vat cu / ban do dang luu bi khoa (KHONG dich chuyen ai di)
+            KhoaBanDoGame.khiNap(self);
             int count = 0;
             if (self.dbSkill != null) {
                 final String[] data2 = Char.split(self.dbSkill, ",");

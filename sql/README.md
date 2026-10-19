@@ -47,6 +47,11 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
    cột kỹ thuật, **giữ tên admin đã sửa** ở `/admin/ten-hien`.
 6. 0.9.6: chức năng NPC đúng (Heracross đứng ở Cao nguyên Indigo 201, `chuc_vu` Chansey / Persian / Meowth) và tên
    chiêu kiểu Pokémon ("Múa kiếm" → "Vũ điệu kiếm") — chỉ đổi dòng còn giá trị mặc định cũ.
+7. khoá bản đồ (kiểu NRO / NSO): `data_ban_do_mo_khoa` (mỗi bản đồ gốc: cấp tối thiểu, cửa ải cần xong, có cho Tự động
+   đánh không + lý do; `INSERT IGNORE` giữ dòng admin đã sửa), 12 cửa ải `CA-01`…`CA-12` (29 bước, loại `cua_ai`, trong
+   `data_quest_lau_dai` / `data_nhiem_vu_noi_dung`), khoá cấu hình `ban_do.khoa.bat`, bảng `tob_ban_do_mo` (mốc miễn trừ
+   người chơi cũ: `INSERT IGNORE … SELECT` theo cấp / bản đồ đang lưu, không sửa dòng có sẵn; server cũng tự điền lúc
+   đăng nhập đầu). `server/test/KiemKhoaBanDo` kiểm.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở

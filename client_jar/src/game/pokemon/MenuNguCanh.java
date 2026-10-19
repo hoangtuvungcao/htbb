@@ -346,6 +346,9 @@ public final class MenuNguCanh extends Dialog {
             {BieuTuong.QUA, ChuDe.VANG_TOI}, {BieuTuong.CHIEU, ChuDe.TIM}, {BieuTuong.CHIEU, ChuDe.TIM},
             {BieuTuong.THU, ChuDe.XANH}, {BieuTuong.DONG, ChuDe.XAM}, {BieuTuong.DONG, ChuDe.XAM}, {BieuTuong.DONG, ChuDe.XAM},
             {BieuTuong.THU, ChuDe.XANH}, {BieuTuong.QUA, ChuDe.VANG_TOI}};
+        if (KhoaMap.laHangKhoa(chu)) {
+            return new int[]{BieuTuong.KHOA, ChuDe.XAM};   // điểm đến bị khoá (gói -106 / menu bay của server)
+        }
         int dai = 0;
         int[] r = {BieuTuong.POKEBALL, ChuDe.DO};
         for (int i = 0; i < khoa.length; i++) {
@@ -373,7 +376,8 @@ public final class MenuNguCanh extends Dialog {
             int q = s * 3 / 5;
             BieuTuong.ve(g, b[0], cx - q / 2, cy - q / 2, q, b[1], GiaoDien.pha(b[1], 0xFFFFFF, 5, 6));
         }
-        ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - s - 22), x + s + 14, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
+        ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - s - 22), x + s + 14, y, h, ChuDe.NHAN,
+                b[0] == BieuTuong.KHOA ? ChuDe.CHU_NHAT : ChuDe.CHU, 0);
         VungCham.them(g, x, y, w, h, viec, "lenh-" + i);
     }
 

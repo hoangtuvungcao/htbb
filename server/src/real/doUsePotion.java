@@ -656,6 +656,11 @@ public class doUsePotion {
                                 return;
                             }
 
+                            if (KhoaBanDoGame.chan(player, p1.mapID)) { // khoa ban do: tra lai vat pham
+                                var10002 = player.potions[potionType]++;
+                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                return;
+                            }
                             player.map.move2Map(player, p1.x / 16, p1.y / 16, p1.mapID, p1.inCountry);
                             break;
                         }

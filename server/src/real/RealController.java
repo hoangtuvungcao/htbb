@@ -927,6 +927,7 @@ public class RealController extends ServerController {
         VungHoenn.dangKyBang();
         // Ten ban do: ghi de ten kiem hiep goc o tren bang ten trong SQL data_map_ten (P6, real.TenBanDoMayChu).
         TenBanDoMayChu.batDau();
+        KhoaBanDoGame.batDau(); // khoa ban do theo cap / cua ai (data_ban_do_mo_khoa)
     }
 
     public void initData() {

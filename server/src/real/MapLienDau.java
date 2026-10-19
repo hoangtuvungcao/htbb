@@ -418,6 +418,12 @@ public class MapLienDau extends Map {
                     CharManager.instance.kickPlayer(player, "mapliendau 2");
                     Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 201 ", "hcm");
                 }
+                if (toMapID != player.mapID && KhoaBanDoGame.chan(player, toMapID)) {
+                    toMapID = player.mapID; // khoa ban do: nap lai cho dang dung
+                    toTX = player.x / 16;
+                    toTY = player.y / 16;
+                    checklocation = false;
+                }
 
                 if (toMapID == 111) {
                     toMapID = player.mapID;

@@ -254,6 +254,10 @@ public final class TuDong {
             game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh
             return;
         }
+        if (game.pokemon.KhoaMap.chanTuDong(gs.map)) {
+            thongBao = game.pokemon.KhoaMap.lyDoTuDong(gs.map);   // ban do khoa Tu dong (goi -106): khong xin server
+            return;
+        }
         if (coServer && (svCo & CO_TINH_NANG) == 0) {
             thongBao = "Tự động đánh đang tạm khoá trên máy chủ.";
             game.pokemon.DungDo.bao(thongBao, game.pokemon.DungDo.TIN);   // 0.9.5.1: thông báo nhanh

@@ -71,8 +71,8 @@ public final class ThongSoLauDai {
     };
 
     /** Ngan sach thuong theo loai nhiem vu: {gio EXP x1000, gio xu x1000, luong khoa, luong}. */
-    public static final String[] NGAN_SACH_LOAI = {"huong_dan", "chinh", "chinh_moc", "phu", "tuyen", "ngay", "tuan", "pokedex", "doi", "su_pham", "hang_bi_an", "quay_lai", "thanh_tuu", "su_kien", "huyen_thoai", "an"};
-    public static final int[][] NGAN_SACH = {{60, 30, 2, 0}, {300, 150, 3, 0}, {450, 250, 10, 0}, {400, 250, 3, 0}, {500, 300, 4, 0}, {100, 50, 4, 0}, {1000, 500, 20, 0}, {250, 100, 5, 0}, {500, 200, 10, 0}, {300, 100, 10, 0}, {200, 100, 5, 0}, {800, 300, 15, 0}, {0, 0, 20, 10}, {0, 0, 0, 0}, {0, 0, 5, 0}, {0, 0, 2, 0}};
+    public static final String[] NGAN_SACH_LOAI = {"huong_dan", "chinh", "chinh_moc", "phu", "tuyen", "ngay", "tuan", "pokedex", "doi", "su_pham", "hang_bi_an", "quay_lai", "thanh_tuu", "su_kien", "huyen_thoai", "an", "cua_ai"};
+    public static final int[][] NGAN_SACH = {{60, 30, 2, 0}, {300, 150, 3, 0}, {450, 250, 10, 0}, {400, 250, 3, 0}, {500, 300, 4, 0}, {100, 50, 4, 0}, {1000, 500, 20, 0}, {250, 100, 5, 0}, {500, 200, 10, 0}, {300, 100, 10, 0}, {200, 100, 5, 0}, {800, 300, 15, 0}, {0, 0, 20, 10}, {0, 0, 0, 0}, {0, 0, 5, 0}, {0, 0, 2, 0}, {250, 100, 2, 0}};
 
     /** Luong theo bac xep hang tuan: {top <=, luong}. */
     public static final int[][] LUONG_XEP_HANG_TUAN = {{1, 50}, {10, 20}, {100, 8}, {1000, 3}};

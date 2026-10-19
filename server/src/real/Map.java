@@ -16640,6 +16640,13 @@ public class Map implements Runnable {
 
     public void move2Map(Char player, int x, int y, int mapID, int country) {
         this.checkTrade(player);
+        // Khoa ban do (chot cuoi cho moi duong dich chuyen): chua du dieu kien -> o lai cho dang dung, nap lai map.
+        if (mapID != player.mapID && KhoaBanDoGame.chan(player, mapID)) {
+            x = player.x / 16;
+            y = player.y / 16;
+            mapID = player.mapID;
+            country = player.inCountry;
+        }
 
         try {
             Map toMap = (Map) RealController.mapList.get(mapID);
@@ -16758,6 +16765,10 @@ public class Map implements Runnable {
                     }
 
                     if (!isok) {
+                        return;
+                    }
+                    if (KhoaBanDoGame.chan(player, mapID)) {
+                        KhoaBanDoGame.giuTaiCho(player); // chua tru xu; client dang o man cho -> nap lai map hien tai
                         return;
                     }
 

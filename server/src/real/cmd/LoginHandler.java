@@ -710,6 +710,7 @@ public class LoginHandler implements ICommandHandler {
             }
             m = MessageCreator.createMapMessage(p);
             session.sendMessage(m);
+            real.KhoaBanDoGame.guiDanhSach(p); // goi -106: ban do khoa / khong cho tu dong
             p.map.doSendDynamicObj(p);
             p.map.sendInfoNpc(p);
             p.map.sendDynamicEff(p);

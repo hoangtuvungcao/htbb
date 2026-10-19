@@ -43,8 +43,9 @@ public final class KiemDuLieuSql {
     static final String VT_TRANG_BI = "18c33f993af029df538f5125e956287de982d6830694fccd85006ead057e3a3e";
     /** DanhMucSinh cua main cfff771b (213 khoa / 15 nhom: them nhom chong_clone; co phan loai lop), tinh cung cach noi
      *  chuoi (KE CA lop) ngay truoc khi bo ban chep Java luc gop. Lich su: P1 185 khoa 382a04b3..., 0.9.2 5934a2e6...,
-     *  0.9.4 (203 khoa, co lop) e6505ed5.... Lech = danh muc da doi: sua danh_muc.json, sinh lai, cap nhat. */
-    static final String VT_DANH_MUC = "9be03a6ad04088088a73e03ed0d95097564ff2cf4896df77a563d7ac977d1381";
+     *  0.9.4 (203 khoa, co lop) e6505ed5..., 213 khoa 9be03a6a.... khoa-map: +ban_do.khoa.bat (214 khoa).
+     *  Lech = danh muc da doi (sua trong CSDL / nang_cap.sql phan 2, xuat lai), cap nhat. */
+    static final String VT_DANH_MUC = "d521a75eb75dd69c7a2e4e4a76ff291ddeccc910f019de67e251ebc4a008e055";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

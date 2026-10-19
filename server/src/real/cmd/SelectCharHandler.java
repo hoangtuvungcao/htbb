@@ -277,6 +277,7 @@ public class SelectCharHandler implements ICommandHandler {
             }
             Message m = MessageCreator.createMapMessage(p);
             session.sendMessage(m);
+            real.KhoaBanDoGame.guiDanhSach(p); // goi -106: ban do khoa / khong cho tu dong
             p.map.doSendDynamicObj(p);
             // Skin linh thu duoc suy ra tu vat pham dang mac o bang Trang bi thu (da nap
             // vao p.awItems truoc do), khong co cot DB rieng. Phai tinh TRUOC goi thong

@@ -101,9 +101,24 @@ public final class NhiemVuMau {
         }
     }
 
-    /** Nhiem vu phu "chiem khe" (toi da 3 cung luc). */
+    /** Nhiem vu phu "chiem khe" (toi da 3 cung luc). Cua ai (khoa ban do) khong chiem khe. */
     public boolean chiemKhe() {
-        return !chuoiNam2 && !laNgay() && !laTuan() && !laThanhTuu() && !laSuKien();
+        return !chuoiNam2 && !laNgay() && !laTuan() && !laThanhTuu() && !laSuKien() && !laCuaAi();
+    }
+
+    /** Thu thach cua ai (loai cua_ai, ma CA-xx.y): xong buoc cuoi mo ban do (data_ban_do_mo_khoa). */
+    public boolean laCuaAi() {
+        return "cua_ai".equals(loai);
+    }
+
+    /** dieu_kien "ban_do=<id>": chi tinh khi dang o ban do goc nay; -1 = moi ban do. */
+    public int banDoChi() {
+        try {
+            final String s = dieuKien.get("ban_do");
+            return s == null || s.trim().isEmpty() ? -1 : Integer.parseInt(s.trim());
+        } catch (final RuntimeException e) {
+            return -1;
+        }
     }
 
     // ------------------------------------------------------------------ chuoi chinh nam 2 (Hoenn)
