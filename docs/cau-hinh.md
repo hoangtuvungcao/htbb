@@ -329,13 +329,13 @@ Tổng cộng **269 khoá** trong **17 nhóm**. Phân loại (trường `lop` tr
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 71 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 177 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 178 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (71)
+### Khoá chỉnh trên web (70)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -354,7 +354,6 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `roi.xu.phan_tram` | Tỉ lệ một quái rơi xu (%) — dài hạn | số | `30` | 0..100 | ngay | game | Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi. |
 | `roi.da_nang_cap.phan_nghin` | Tỉ lệ rơi đá nâng cấp (‰) | số | `15` | 0..200 | ngay | game | Phần nghìn mỗi quái khi lệch cấp ≤ 5. |
 | `exp.nang_luong_phut` | Phút năng lượng 100% / ngày | số | `90` | 0..1440 | ngay | game | Số phút EXP/rơi đầy đủ mỗi ngày. |
-| `cau_ca.trong_phan_tram` | Câu cá: tỉ lệ không câu được gì (%) | số | `30` | 0..90 | ngay | game | Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất). |
 
 #### Sự kiện & giftcode (`su_kien`)
 
@@ -457,7 +456,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (198)
+### Khoá ẩn: cố định & luôn bật (199)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -490,6 +489,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `cau_ca.cho_them_ho_lon_giay` | Câu cá: chờ thêm ở hồ lớn (giây) | Cố định (ẩn) | `3` | ngay | game | Hồ lớn (có cá hiếm) chờ lâu hơn ngần này giây (cả hai đầu khoảng). |
 | `cau_ca.cua_so_ms` | Câu cá: khung kéo cần (ms) | Cố định (ẩn) | `1500` | ngay | game | Sau dấu "Cá cắn câu!", phải kéo cần trong ngần này mili giây; sớm hoặc muộn thì cá thoát. |
 | `cau_ca.tre_mang_ms` | Câu cá: bù trễ mạng (ms) | Cố định (ẩn) | `700` | ngay | game | Lệnh kéo cần tới server muộn thêm tối đa ngần này ms vẫn tính đúng lúc (bù đường truyền hai chiều). |
+| `cau_ca.trong_phan_tram` | Câu cá: tỉ lệ không câu được gì (%) | Cố định (ẩn) | `30` | ngay | game | Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất). |
 | `cau_ca.hoi_giay` | Câu cá: nghỉ giữa hai lần thả (giây) | Cố định (ẩn) | `3` | ngay | game | Sau khi một lần câu kết thúc, chờ ngần này giây mới thả câu tiếp. |
 | `cau_ca.giam_tu_lan_gio` | Câu cá: số lần câu được mỗi giờ trước khi giảm | Cố định (ẩn) | `30` | ngay | game | Trong một giờ đồng hồ, câu được quá ngần này lần thì tỉ lệ không được gì tăng dần (chống cày). |
 | `cau_ca.giam_moi_lan_phan_tram` | Câu cá: tăng tỉ lệ trượt mỗi lần vượt (%) | Cố định (ẩn) | `2` | ngay | game | Mỗi lần câu được vượt mốc trong giờ cộng ngần này % vào tỉ lệ không được gì. |

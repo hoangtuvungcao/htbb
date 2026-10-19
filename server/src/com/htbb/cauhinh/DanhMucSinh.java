@@ -967,7 +967,8 @@ final class DanhMucSinh {
                     .lop("co_dinh"),
             new DinhNghiaKhoa("cau_ca.trong_phan_tram", "kinh_te", "so", "30", true, "cau_hinh")
                     .nhan("Câu cá: tỉ lệ không câu được gì (%)", "Kéo đúng lúc vẫn có ngần này % không được gì (mồi và thể lực vẫn mất).")
-                    .khoang(0L, 90L),
+                    .khoang(0L, 90L)
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("cau_ca.hoi_giay", "kinh_te", "so", "3", true, "cau_hinh")
                     .nhan("Câu cá: nghỉ giữa hai lần thả (giây)", "Sau khi một lần câu kết thúc, chờ ngần này giây mới thả câu tiếp.")
                     .khoang(0L, 120L)
