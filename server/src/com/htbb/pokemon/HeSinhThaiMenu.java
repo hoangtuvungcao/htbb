@@ -450,6 +450,9 @@ public final class HeSinhThaiMenu {
             }
         }
         baoKetQua(p, hiem, ketQua, theLuc, kq.dex, kq.dex > 0 ? SuuTamSinhThai.tenLoai(kq.dex) : null);
+        // DIEM MOC DUY NHAT "cau_ca" (NhiemVuEngine: nhiem vu kieu cau_ca + danh hieu cau ca; tham so = dex gap, 0 = khong).
+        // Nhanh khac (cau-ca) KHONG them diem moc cau_ca o noi khac - se dem hai lan.
+        real.NhiemVuEngine.suKien(p, "cau_ca", String.valueOf(kq.dex), 1);
         lenCap(p, h, KyNangSong.CAU_CA, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -556,6 +559,7 @@ public final class HeSinhThaiMenu {
         baoKetQua(p, VatLieuSinhThai.giaPhanNghin(kq.ma) >= 100,
                 com.htbb.thongbao.ThongBao.duoc("Đào được", VatLieuSinhThai.ten(kq.ma), kq.soLuong,
                         VatLieuSinhThai.giaPhanNghin(kq.ma) >= 100), com.htbb.thongbao.ThongBao.theLuc(h.theLuc), 0, null);
+        real.DiemMocNhiemVu.khiDao(p, kq.ma); // diem moc dao_dat
         lenCap(p, h, KyNangSong.KHAO_CO, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -658,6 +662,7 @@ public final class HeSinhThaiMenu {
         final int gia = ct.ra > 0 ? VatLieuSinhThai.giaPhanNghin(ct.ra) * ct.soRa : 300;
         final int len = h.congExp(ct.kyNang, KyNangSong.expKhiLam(gia));
         baoKetQua(p, false, (ct.ra > 0 ? "Chế xong " : "Hoàn thành: ") + ten, chatLuong + com.htbb.thongbao.ThongBao.theLuc(h.theLuc), 0, null);
+        real.DiemMocNhiemVu.khiNau(p, ct.id, ct.kyNang == KyNangSong.NAU_AN); // diem moc nau_an
         lenCap(p, h, ct.kyNang, len);
         HeSinhThaiGame.danhDau(p);
     }
@@ -841,6 +846,7 @@ public final class HeSinhThaiMenu {
             h.banNpcHomNay += kq[1];
         }
         HeSinhThaiGame.congXu(p, kq[1], "ban npc " + ma);
+        real.DiemMocNhiemVu.khiBan(p); // diem moc cho_ban
         bao(p, "Đã bán " + kq[0] + " " + VatLieuSinhThai.tenKhoa(c.khoa) + " được " + kq[1] + " xu.");
         HeSinhThaiGame.danhDau(p);
     }
@@ -1122,6 +1128,7 @@ public final class HeSinhThaiMenu {
                 h.themDanhHieu("Nhà nhân giống");
             }
             bao(p, "Trứng nở: " + t.moTa().replace(" - sắp nở", "") + "! Pet đã vào hành trang.");
+            real.DiemMocNhiemVu.khiNoTrung(p, t.dex); // diem moc ap_trung
             HeSinhThaiGame.danhDau(p);
         } else if (op == 1) {
             final List<String> m = new ArrayList<String>();
@@ -1387,6 +1394,7 @@ public final class HeSinhThaiMenu {
         final Char ban = HeSinhThaiGame.timOnline(idBan);
         if (ban != null) {
             HeSinhThaiGame.congXu(ban, xu, "ban cho sinh thai");
+            real.DiemMocNhiemVu.khiBan(ban); // diem moc cho_ban (nguoi ban offline: khong tinh)
             bao(ban, "Chợ sinh thái: " + ghiChu + " +" + xu + " xu (đã trừ thuế).");
         } else {
             DuLieuHeSinhThai.guiHopThu(idBan, xu, 0, 0, "", ghiChu);
@@ -1877,6 +1885,9 @@ public final class HeSinhThaiMenu {
                 break;
             }
             case 3: {
+                if (real.DanhHieuGame.moBangNeuDuoc(p)) {
+                    break; // 0.9.7: client moi mo bang Danh hieu chung (Ho so -> Danh hieu), khong menu rieng
+                }
                 if (h.danhHieu.isEmpty()) {
                     bao(p, "Chưa có danh hiệu sinh thái.");
                     break;
@@ -1918,6 +1929,12 @@ public final class HeSinhThaiMenu {
             }
         } else {
             if (!h.coDanhHieu(HoSoSinhThai.DANH_HIEU[i])) {
+                return;
+            }
+            // 0.9.7: qua DanhHieuGame (dat ca currentDanhHieu - truoc day CharVongLap thao ngay o nhip sau vi
+            // currentDanhHieu = null) ; khong co mau trong data_danh_hieu thi giu cach cu
+            if (real.DanhHieuGame.deo(p, HeSinhThai.ID_EFF_DANH_HIEU_DAU + i)) {
+                bao(p, "Đang đeo danh hiệu " + HoSoSinhThai.DANH_HIEU[i] + ".");
                 return;
             }
             p.idEffDanhHieu = HeSinhThai.ID_EFF_DANH_HIEU_DAU + i;

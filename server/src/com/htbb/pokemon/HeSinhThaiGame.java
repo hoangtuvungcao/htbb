@@ -247,6 +247,12 @@ public final class HeSinhThaiGame {
     static final ConcurrentHashMap<Integer, HoSoSinhThai> HO_SO = new ConcurrentHashMap<Integer, HoSoSinhThai>();
     static final Set<Integer> BAN = ConcurrentHashMap.newKeySet();
 
+    /** Danh hieu (real.DanhHieuGame, dieu kien sinh_thai): nhan vat da co danh hieu sinh thai {@code ten}. */
+    public static boolean coDanhHieu(final Char p, final String ten) {
+        final HoSoSinhThai h = hoSo(p);
+        return h != null && ten != null && h.coDanhHieu(ten);
+    }
+
     /** Ho so (nap CSDL lan dau), null neu tat co / bot / loi CSDL. Da sang ngay. */
     static HoSoSinhThai hoSo(final Char p) {
         if (!bat() || p == null || p.charDBID <= 0 || p.isBot != -1 && p.isBot != 0) {
@@ -687,6 +693,7 @@ public final class HeSinhThaiGame {
             final int len = h.congExp(KyNangSong.TRONG_TROT, KyNangSong.expKhiLam(VatLieuSinhThai.giaPhanNghin(ma)) * 3);
             bao(p, "Vườn berry: +" + so + " " + VatLieuSinhThai.ten(ma) + " vào Túi sinh thái." + (len > 0
                     ? " Trồng trọt lên cấp " + len + "!" : ""));
+            real.DiemMocNhiemVu.khiThuHoach(p, idCay); // diem moc lam_vuon
             danhDau(p);
         } catch (final Exception e) {
             System.out.println("[HE SINH THAI] khiThuHoach: " + e);
@@ -947,6 +954,7 @@ public final class HeSinhThaiGame {
                 dapAn = null;
             }
             phatThuong(p, "LUONGKHOA:" + HeSinhThai.THUONG_DO_VUI_LUONG_KHOA, "do vui");
+            real.DiemMocNhiemVu.khiDoVui(p); // diem moc do_vui
             final HoSoSinhThai h = hoSo(p);
             if (h != null) {
                 h.doVuiDung++;
@@ -1110,6 +1118,9 @@ public final class HeSinhThaiGame {
                         danhDau(c);
                     }
                 }
+            }
+            for (int i = 0; i < xong.size(); i++) {
+                real.DiemMocNhiemVu.khiDua(timOnline((Integer) xong.get(i)[0]), i + 1); // diem moc dua_pokemon (moi nguoi ve dich)
             }
             if (xong.isEmpty()) {
                 b.append("không ai về đích.");

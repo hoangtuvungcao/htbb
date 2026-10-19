@@ -122,9 +122,10 @@ class MapDanhNhau {
                 return;
             }
 
+            // 0.9.7: nguong cu (ba tram muoi chin nghin + 500 lan PK) khong bao gio toi vi killer la short, tran 32000
+            // -> com.htbb.pokemon.LuatPk.NGUONG_KHOA_PK
             if ((map.mapIDLoadMap == Map.idMapMateria || !timeAutoPK)
-                    && p.killer >= 319000
-                    && p.nPKill >= 500
+                    && com.htbb.pokemon.LuatPk.khoaPk(p.killer)
                     && p.isKiller
                     && map.mapId != Map.idMapDautruong
                     && !((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId)) {
@@ -158,6 +159,10 @@ class MapDanhNhau {
             }
 
             if (((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId) && !p.isMonster && !c.isMonster) {
+                return;
+            }
+            // 0.9.7 luat PK the gioi: thi tran an toan, chenh cap > 10, nghiep qua nang (vung PvP khong ap dung)
+            if (LuatPkGame.chan(map, p, c) != null) {
                 return;
             }
 
@@ -340,6 +345,7 @@ class MapDanhNhau {
             }
 
             c.hp = (int) ((long) c.hp - ((long) damage - c.checkMagicShield(damage)));
+            XepHangPvpGame.khiSatThuong(p, c, damage); // tran xep hang: sat thuong ben thua gay (chong cay Elo)
             c.downDuarable();
             c.checkNewEffectItem(0, (long) (damage / 10), p);
             if (p.charthanthu != null && c.hp > 0) {

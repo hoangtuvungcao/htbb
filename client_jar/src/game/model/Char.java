@@ -87,6 +87,10 @@ public class Char extends LiveActor {
     public short dxWear;
     public short dyWear;
     public short[] listEffect;
+    /** 0.9.7 danh hiệu đang đeo (gói -110 nhãn, DanhHieuKho): id, tên (null = không), độ hiếm 0..3. */
+    public int danhHieuId = -1;
+    public String danhHieuTen;
+    public int danhHieuHiem;
     public byte[] Tick;
     public byte numFrame;
     public long charXu;
@@ -631,7 +635,7 @@ public class Char extends LiveActor {
     }
 
     public static DataSkillEff getPartEff(short id) {
-        if (id == -1 || game.pokemon.SinhThai.laDanhHieu(id)) {
+        if (id == -1 || game.pokemon.SinhThai.laDanhHieu(id) || game.pokemon.DanhHieuKho.laDanhHieu(id)) {
             return null;   // danh hiệu sinh thái: huy hiệu vẽ bằng code, không xin dữ liệu hiệu ứng
         }
         DataSkillEff ef = (DataSkillEff) ALL_PART_EFF.get(new StringBuffer(String.valueOf((int) id)).toString());
@@ -1613,7 +1617,12 @@ public class Char extends LiveActor {
             if (this.nationID > -1 && this.idBoss == -1 && ((this.nationID != this.inCountry || this.ID == Canvas.gameScr.mainChar.ID) && (this.nationID != this.inCountry || this.ID == Canvas.gameScr.mainChar.ID))) {
                 g.drawRegion(Res.imgNation, 0, this.nationID * 11, 11, 11, 0, this.x + (this.wName / 2) + 9, ((this.y - 32 + dyTen) - 12) + bb, 20);
             }
-            int dhSinhThai = game.pokemon.SinhThai.danhHieuCua(this.listEffect);
+            int dhSinhThai = this.danhHieuTen != null ? -1 : game.pokemon.SinhThai.danhHieuCua(this.listEffect);
+            if (this.danhHieuTen != null && !game.pokemon.NhanTheGioi.bat()) {
+                // 0.9.7 danh hiệu (nhãn chữ màu độ hiếm) - máy J2ME vẽ ngay trên tên trong lớp thế giới
+                game.pokemon.NhanTheGioi.danhHieuJ2me(g, this.danhHieuTen, this.danhHieuHiem, this.x,
+                        ((this.y - 42 + dyTen) + bb) - this.dyThanthu);
+            }
             if (dhSinhThai >= 0) {
                 game.pokemon.SinhThai.veDanhHieu(g, this.x, ((this.y - 42 + dyTen) + bb) - this.dyThanthu, dhSinhThai);
             }

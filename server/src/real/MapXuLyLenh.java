@@ -550,6 +550,9 @@ class MapXuLyLenh {
             case -100: // Tu dong danh chinh thuc (com.htbb.pokemon.TuDong)
                 TuDongGame.xuLy(player, message);
                 break;
+            case -111: // Danh hieu: xin bang / deo / thao / da xem (real.DanhHieuGame, com.htbb.pokemon.DanhHieuLogic)
+                DanhHieuGame.xuLy(player, message);
+                break;
             case -103: // Ngoai hinh trang bi: an/hien phu kien, trang phuc (com.htbb.pokemon.NgoaiHinh)
                 NgoaiHinhGame.xuLy(player, message);
                 break;
@@ -1926,6 +1929,8 @@ class MapXuLyLenh {
 
                 player.sendInfoNuiChauBau();
                 player.isDoChangeMap = false;
+                NhiemVuEngine.suKien(player, "den_ban_do", String.valueOf(player.mapID), 1); // danh hieu kham pha
+                DanhHieuGame.khiVaoBanDo(player); // lan dau trong phien: nhan danh hieu, so moi, thuong mua PvP
                 map.doJoinMapOk(player);
             } else if (player.mapID == Map.idMapChanNui) {
                 map.doReturnVillage(player);

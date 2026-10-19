@@ -23,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * va mot cho goi {@link #suKien}.
  *
  *  - Danh muc kieu: moi kieu_muc_tieu la mot "su kien" (chuoi) do diem moc trong game ban vao
- *    {@link #suKien}(p, kieu, thamSo, n); khop theo muc_tieu_id (rong = bat ky). Kieu chua co diem
- *    moc (he sinh thai: cau_ca, dao_dat, lam_vuon, nau_an, ap_trung, do_vui, dua_pokemon, cho_ban...) chi
- *    can lop do goi {@code NhiemVuEngine.suKien(p, "cau_ca", vat, 1)}.
+ *    {@link #suKien}(p, kieu, thamSo, n); khop theo muc_tieu_id (rong = bat ky). 0.9.7: moi kieu trong
+ *    data_nhiem_vu_kieu deu co diem moc - cac kieu he sinh thai / chuoi cu nam o real.DiemMocNhiemVu (bang noi goi
+ *    + tham so); cau ca co diem moc DUY NHAT o HeSinhThaiMenu.cauCa. Kieu moi: them mot ham vao DiemMocNhiemVu.
  *  - Gating: cap, ngay_mo, `truoc` (moi ma trong danh sach da xong), an + dieu_kien_mo.
  *  - Toi da 3 nhiem vu phu (khe) cung luc; bang ngay rut 5 mau N-<bac>.* moi ngay (hat giong id + ngay),
  *    thuong toi da 3; bang tuan dung chung tran 2 cho T- / TV- (ca chuoi 1 lan) / TD-; SK-<tuan> chi
@@ -200,6 +200,7 @@ public final class NhiemVuEngine {
 
     /** Mot su kien {@code kieu} (tham so {@code thamSo}, so lan {@code n}) cua nhan vat. */
     public static void suKien(final Char p, final String kieu, final String thamSo, final int n) {
+        DanhHieuGame.suKien(p, kieu, thamSo, n); // danh hieu (bo dem rieng, chay ca khi khong co nhiem vu kieu nay)
         if (!LauDai.bat() || p == null || p.charDBID <= 0 || n <= 0) {
             return;
         }
@@ -242,6 +243,7 @@ public final class NhiemVuEngine {
      * Kieu "dat muc" (cap, +k nang cap, tang Ham nguc...): tien do = max(tien do, gia tri) thay vi cong.
      */
     public static void datMuc(final Char p, final String kieu, final int giaTri) {
+        DanhHieuGame.datMuc(p, kieu, giaTri);
         if (!LauDai.bat() || p == null || p.charDBID <= 0) {
             return;
         }
@@ -330,6 +332,7 @@ public final class NhiemVuEngine {
             suKien(p, "quan_sat", String.valueOf(dex), 1);
         }
         suKien(p, "thanh_tuu_quai", "", 1);
+        DiemMocNhiemVu.khiHaQuaiSuKien(p, null); // su_kien_vat_pham (chi khi co su kien dang bat)
         final List<Char> doi = ExpLauDai.thanhVienGan(p);
         if (doi.size() > 1) {
             boolean coTanThu = false;
@@ -794,13 +797,32 @@ public final class NhiemVuEngine {
                     final long[] d = new long[]{1L, 2L, 0L, 0L};
                     td(p).put("DH:" + v, d);
                     luu(p, cat("DH:" + v), d);
-                    LauDaiNhanVat.bao(p, "Danh hiệu mới: " + v);
+                    // co mau trong data_danh_hieu: trao danh hieu deo duoc (DanhHieuGame tu bao); khong co: bao nhu cu
+                    if (!DanhHieuGame.khiNhanTheoTen(p, v)) {
+                        LauDaiNhanVat.bao(p, "Danh hiệu mới: " + v);
+                    }
                 } else {
                     Database.instance.saveOrtherLog("", p.charname, lyDo + " thuong khac " + k + ":" + v, "laudai");
                 }
             } catch (final Exception e) {
                 System.out.println("NhiemVuEngine.thuongKhac: " + e);
             }
+        }
+    }
+
+    /**
+     * Danh hieu thuong nhiem vu theo TEN da nhan chua (tien do "DH:&lt;ten&gt;"; khoa luu CSDL bi cat 32 ky tu nen
+     * xem ca ban cat).
+     */
+    public static boolean coDanhHieuTen(final Char p, final String ten) {
+        if (p == null || ten == null || ten.isEmpty() || p.charDBID <= 0) {
+            return false;
+        }
+        try {
+            final ConcurrentHashMap<String, long[]> t = td(p);
+            return t != null && (t.containsKey("DH:" + ten) || t.containsKey(cat("DH:" + ten)));
+        } catch (final Exception e) {
+            return false;
         }
     }
 
