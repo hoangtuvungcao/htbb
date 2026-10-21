@@ -69,6 +69,22 @@ public final class HudRong {
         return Canvas.w - 16 - (SO_NUT_TREN - 2 - i) * BUOC_TREN;
     }
 
+    /**
+     * 0.9.8 (game.pokemon.ThoiTiet): tâm x của ô kế bên trái hàng nút trên (cùng bước / bán kính, chừa đèn Tự động
+     * ở xNutTren(0) - R_TREN - 7) - đĩa thời tiết đặt ở đây, đổi bố cục hàng nút thì đĩa theo.
+     */
+    public static int xTruocHangTren() {
+        return xNutTren(0) - BUOC_TREN - 6;
+    }
+
+    public static int yHangTren() {
+        return Y_TREN;
+    }
+
+    public static int rHangTren() {
+        return R_TREN;
+    }
+
     static int yNut(int i) {
         return i == N_MENU ? Canvas.h - R_MENU - 5 : Y_TREN;
     }

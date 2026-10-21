@@ -6761,7 +6761,7 @@ public class Map implements Runnable {
                 return null;
             }
 
-            String[] nameItem = new String[]{"Trắng", "Xanh", "Đỏ", "Hoàn mỹ"};
+            String[] nameItem = com.htbb.pokemon.DoHiemSinh.tenVatPham(new int[]{0, 3, 2, 1}); // ten bac hiem chung (do_hiem.json)
             int[] colorName = new int[]{0, 3, 2, 1};
             int pc = r.nextInt(100);
             int tempPC = 110;
@@ -13267,7 +13267,7 @@ public class Map implements Runnable {
                 return null;
             }
 
-            String[] nameItem = new String[]{"Trắng", "Xanh", "Đỏ", "Hoàn mỹ"};
+            String[] nameItem = com.htbb.pokemon.DoHiemSinh.tenVatPham(new int[]{0, 3, 2, 1}); // ten bac hiem chung (do_hiem.json)
             int[] colorName = new int[]{0, 3, 2, 1};
             int pc = r.nextInt(100);
             int tempPC = 110;

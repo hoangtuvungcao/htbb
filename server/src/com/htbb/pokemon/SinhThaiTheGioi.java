@@ -62,13 +62,19 @@ public final class SinhThaiTheGioi {
 
     // ------------------------------------------------------------------ thoi tiet
 
-    public static final int QUANG = 0, NANG = 1, MUA = 2, TUYET = 3, BAO_CAT = 4, SUONG_MU = 5;
-    public static final String[] TEN_THOI_TIET = {"Quang đãng", "Nắng gắt", "Mưa", "Tuyết", "Bão cát", "Sương mù"};
+    /**
+     * GIO (gio manh) them 0.9.7 (de xuat 8): chi lich theo khung gio (ThoiTietLich) ra gio; thoi tiet THEO NGAY cu
+     * ({@link #thoiTiet}) van 6 loai dau (khong doi ket qua cu).
+     */
+    public static final int QUANG = 0, NANG = 1, MUA = 2, TUYET = 3, BAO_CAT = 4, SUONG_MU = 5, GIO = 6;
+    public static final int SO_THOI_TIET = 7;
+    public static final String[] TEN_THOI_TIET = {"Quang đãng", "Nắng gắt", "Mưa", "Tuyết", "Bão cát", "Sương mù", "Gió mạnh"};
     /**
      * Hieu ung -39 cua client (AnimateEffect: 0 mua, 1 la roi = bao cat, 2 tuyet; 6 suong mu, 7 nang gat - moc
-     * client J2ME/Android moi); -1 = tat. Quang: khong hieu ung. Client cu bo qua id la.
+     * client J2ME/Android moi); -1 = tat. Quang: khong hieu ung. Client cu bo qua id la. Gio: la roi (1). Client
+     * >= 908 nhan goi -118 (ThoiTietGame) va tu ve hat (game.pokemon.ThoiTietVe), khong nhan -39 cua he sinh thai.
      */
-    public static final int[] HIEU_UNG_CLIENT = {-1, 7, 0, 2, 1, 6};
+    public static final int[] HIEU_UNG_CLIENT = {-1, 7, 0, 2, 1, 6, 1};
 
     /** Trong so thoi tiet [vung][thoi tiet] (QUANG, NANG, MUA, TUYET, BAO_CAT, SUONG_MU). */
     static final int[][] TRONG_SO_THOI_TIET = {
@@ -163,22 +169,13 @@ public final class SinhThaiTheGioi {
         return gio >= HeSinhThai.GIO_DEM_TU || gio < HeSinhThai.GIO_DEM_DEN;
     }
 
-    /** He de SINH nhieu hon trong thoi tiet nay (x HE_SO_SINH_HOP_THOI_TIET). */
+    /**
+     * He de SINH nhieu hon trong thoi tiet nay (x HE_SO_SINH_HOP_THOI_TIET): bang data_thoi_tiet.he_sinh
+     * (ThoiTietLich, mac dinh: nang Lua / Co; mua Nuoc / Dien; tuyet Bang; bao cat Da / Dat / Thep; suong mu Ma / Sieu
+     * linh; gio Bay / Rong).
+     */
     public static boolean heHopThoiTiet(final int he, final int tt) {
-        switch (tt) {
-            case NANG:
-                return he == HePokemon.LUA || he == HePokemon.CO;
-            case MUA:
-                return he == HePokemon.NUOC || he == HePokemon.DIEN;
-            case TUYET:
-                return he == HePokemon.BANG;
-            case BAO_CAT:
-                return he == HePokemon.DA || he == HePokemon.DAT || he == HePokemon.THEP;
-            case SUONG_MU:
-                return he == HePokemon.MA || he == HePokemon.SIEU_LINH;
-            default:
-                return false;
-        }
+        return ThoiTietLich.heHop(he, tt);
     }
 
     /** He hoat dong ve dem (ma, bong toi, doc). */
@@ -187,25 +184,12 @@ public final class SinhThaiTheGioi {
     }
 
     /**
-     * % sat thuong cua chieu he {@code heChieu} trong thoi tiet {@code tt}: 100 + 10 (uu the) / - 10
-     * (mua-Lua, nang-Nuoc) / 100.
+     * % sat thuong cua chieu he {@code heChieu} trong thoi tiet {@code tt} (bang data_thoi_tiet qua ThoiTietLich, kep
+     * |thay doi| &lt;= ThoiTietLich.TRAN_SAT_THUONG_PHAN_TRAM): mac dinh mua Nuoc +10 / Lua -10, nang Lua +10 / Nuoc -10,
+     * tuyet Bang +10, bao cat Da +10, suong mu Ma +10, gio Bay +10.
      */
     public static int satThuongPhanTram(final int heChieu, final int tt) {
-        final int d = HeSinhThai.THOI_TIET_SAT_THUONG_PHAN_TRAM;
-        switch (tt) {
-            case NANG:
-                return heChieu == HePokemon.LUA ? 100 + d : (heChieu == HePokemon.NUOC ? 100 - d : 100);
-            case MUA:
-                return heChieu == HePokemon.NUOC ? 100 + d : (heChieu == HePokemon.LUA ? 100 - d : 100);
-            case TUYET:
-                return heChieu == HePokemon.BANG ? 100 + d : 100;
-            case BAO_CAT:
-                return heChieu == HePokemon.DA ? 100 + d : 100;
-            case SUONG_MU:
-                return heChieu == HePokemon.MA ? 100 + d : 100;
-            default:
-                return 100;
-        }
+        return ThoiTietLich.satThuong(heChieu, tt);
     }
 
     // ------------------------------------------------------------------ thay loai khi hoi sinh

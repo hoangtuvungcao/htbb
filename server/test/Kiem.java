@@ -216,6 +216,9 @@ public final class Kiem {
         KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
         KiemPvpPk.chay(); // 0.9.7 PvP xep hang (Elo chi trong tran ghep, chong nick phu), thuong mua, luat PK, diem moc nhiem vu
         KiemDanhHieu.chay(); // 0.9.7 danh hieu: mo khoa, an "???", het han, mot danh hieu dang deo, tran chi so, sql/them_danh_hieu.sql
+        KiemDoHiem.chay(); // 0.9.7 de xuat 4: mau do hiem MOT nguon (do_hiem.json -> server / client / web / SQL), tuong phan
+        KiemThoiTiet.chay(); // 0.9.7 de xuat 8: thoi tiet 4 khung gio / vung, anh huong co tran, phu mau mua, goi -118
+        KiemNgayCongDong.chay(); // 0.9.7 de xuat 8: ngay cong dong hang thang (lich nam), gio vang, tran ti le / EXP / shiny
         KiemCapNhatClient.chay(); // 0.9.7: cap nhat client - hai nguong, goi -115, hop 37 client cu co link
         KiemHocChieu.chay(); // de xuat 1: hoc chieu theo loai (data_learnset) + Diem huan luyen thay diem tiem nang
         KiemBoNgocCheTao.chay(); // bo trang bi cung bac, ngoc he, che tao, moc neo nang cap (bo-ngoc-bat)

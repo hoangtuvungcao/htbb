@@ -135,8 +135,8 @@ public final class DatabaseLichNam {
                 pre.setString(i++, cat(c.ten, 100));
                 pre.setString(i++, c.muc.nhom);
                 pre.setString(i++, c.muc.ngayLe);
-                pre.setString(i++, cat(c.moTa, 500));
-                pre.setString(i++, cat(c.phanThuong, 300));
+                pre.setString(i++, cat(c.moTa(), 500));
+                pre.setString(i++, cat(c.phanThuong(), 300));
                 pre.setString(i++, gio(c.mo));
                 pre.setString(i++, gio(c.dong));
                 pre.setString(i++, gio(c.mo));

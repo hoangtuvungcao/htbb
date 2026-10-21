@@ -452,22 +452,13 @@ public final class KieuO {
         GiaoDien.khoiDoc(g, x + 1, y + 1, c - 2, c - 2, 2, GiaoDien.XANH_SANG, GiaoDien.XANH);
     }
 
-    /** Màu khung theo độ hiếm (colorName của đồ: 0 thường ... ). */
+    /**
+     * Màu khung theo độ hiếm của đồ (colorName máy chủ -> bậc chung DoHiemSinh, MỘT nguồn tools/cauhinh/do_hiem.json):
+     * Hiếm xanh lá, Quý xanh dương, Sử thi tím, Huyền thoại cam, Trang trí vàng; Thường = -1 (không khung).
+     */
     public static int mauHiem(int c) {
-        switch (c) {
-            case 1:
-                return 0x48D058;   // xanh lá
-            case 2:
-                return 0x3FA0F0;   // xanh dương
-            case 3:
-                return 0xC060F0;   // tím
-            case 4:
-                return 0xFFCB05;   // vàng
-            case 5:
-                return 0xF04830;   // đỏ
-            default:
-                return -1;
-        }
+        int bac = DoHiemSinh.bacVatPham(c);
+        return bac == DoHiemSinh.THUONG ? -1 : ChuDe.mauHiem(bac);
     }
 
     /** Khung độ hiếm 1 px bên trong ô s x s. */

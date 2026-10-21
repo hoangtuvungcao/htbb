@@ -1,0 +1,35 @@
+{
+  "_ghiChu": "NGUON DUY NHAT cua mau do hiem (de xuat 4, chu game duyet 19/10/2026; thiet_ke_can_bang 4.3): vat pham, danh hieu, phu kien ngoai hinh, bac trang bi. Sua file nay roi chay python3 tools/cauhinh/sinh_cau_hinh.py (sinh luon cung danh muc cau hinh) -> server/src/com/htbb/pokemon/DoHiemSinh.java, client_jar/src/game/pokemon/DoHiemSinh.java, web/shared/utils/doHiem.gen.ts, sql/them_do_hiem.sql, khoi mau trong tools/pokemon/SinhPhuKien.java. mau = chu / vien tren nen sang (bang, the, web; tuong phan >= 4,5 tren trang, >= 3 tren nen giay da NRO), nhat = nen nhat cung tong (vien danh hieu, o chon), sang = chu tren nen toi / the gioi (nhan tren dau, the toi), phuKien = 5 tong bang mau phu kien ve tren than (vien, toi, goc, sang, diem). vienDong = vien chay / lap lanh (Huyen thoai).",
+  "bac": [
+    {"ma": "thuong", "ten": "Thường", "mau": "#5F6B7A", "nhat": "#EEF1F5", "sang": "#F2F4F7",
+     "phuKien": ["#3A4250", "#9AA2B0", "#D8DCE4", "#FFFFFF", "#8FA8C8"], "vienDong": false},
+    {"ma": "hiem", "ten": "Hiếm", "mau": "#23803A", "nhat": "#E2F5E5", "sang": "#7EE08A",
+     "phuKien": ["#123A1C", "#2A8A3E", "#52C866", "#C2F2C8", "#FFFFFF"], "vienDong": false},
+    {"ma": "quy", "ten": "Quý", "mau": "#2366C0", "nhat": "#E3EEFC", "sang": "#8CC8FF",
+     "phuKien": ["#123060", "#2A60B8", "#48A0F8", "#B8E0FF", "#FFFFFF"], "vienDong": false},
+    {"ma": "su_thi", "ten": "Sử thi", "mau": "#7B45D6", "nhat": "#EEE8FC", "sang": "#CDB8FF",
+     "phuKien": ["#30104A", "#6A2CA0", "#A45CE8", "#E0C0FF", "#FFE070"], "vienDong": false},
+    {"ma": "huyen_thoai", "ten": "Huyền thoại", "mau": "#B95A0E", "nhat": "#FFEEDB", "sang": "#FFC46B",
+     "phuKien": ["#4A2006", "#B45A10", "#F08A28", "#FFD8A0", "#FFFFFF"], "vienDong": true},
+    {"ma": "trang_tri", "ten": "Trang trí", "mau": "#8A6A00", "nhat": "#FFF5D0", "sang": "#FFE070",
+     "phuKien": ["#4A3208", "#C89018", "#FFD040", "#FFF8C8", "#FFFFFF"], "vienDong": false}
+  ],
+  "_ghiChuMauVatPham": "Item.colorName (data_item.colortype) -> bac. Theo GIA TRI THAT cua du lieu hien tai (thiet_ke_can_bang muc 7: Trang -> Thuong, Xanh 110% (ma 3) -> Hiem, Do 120% (ma 2) -> Quy, Hoan my 130% (ma 1) -> Su thi; 4 tim = do thoi trang su kien -> Su thi; 5 vang = trang tri; 6 = Huyen thoai moi, 7 = Hiem moi). Khi chay chuyen doi ma 0.9.7 (3 -> 7, 2 -> 3, 1 -> 4) chi sua bang nay. Ma khong co trong bang -> Thuong.",
+  "mauVatPham": {"0": "thuong", "1": "su_thi", "2": "quy", "3": "hiem", "4": "su_thi", "5": "trang_tri", "6": "huyen_thoai", "7": "hiem"},
+  "_ghiChuDanhHieu": "data_danh_hieu.do_hiem (0 Thuong, 1 Hiem, 2 Su thi, 3 Huyen thoai) -> bac chung.",
+  "danhHieu": ["thuong", "hiem", "su_thi", "huyen_thoai"],
+  "_ghiChuBacTrangBi": "11 bac trang bi theo cap (NgoaiHinh.TEN_BAC, vong sang duoi chan / vien Pokemon). theoHiem = lay mau goc phu kien cua bac hiem cung ten / y nghia (mot nguon). Bac 10 Toi thuong doi mau cau vong (client).",
+  "bacTrangBi": [
+    {"ten": "Sơ cấp", "mau": "#9AA0A8"},
+    {"ten": "Đồng", "mau": "#C88048"},
+    {"ten": "Bạc", "mau": "#D0D8E0"},
+    {"ten": "Vàng", "mau": "#F8D030"},
+    {"ten": "Bạch kim", "mau": "#E4F4FF"},
+    {"ten": "Kim cương", "mau": "#78D8F8"},
+    {"ten": "Chuyên gia", "theoHiem": "hiem"},
+    {"ten": "Tinh anh", "theoHiem": "su_thi"},
+    {"ten": "Huyền thoại", "theoHiem": "huyen_thoai"},
+    {"ten": "Thần thoại", "mau": "#F84868"},
+    {"ten": "Tối thượng", "mau": "#FFFFFF"}
+  ]
+}

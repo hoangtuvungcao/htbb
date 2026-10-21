@@ -23,6 +23,10 @@ final class MenuNhanh {
     private static boolean dungPhim;
 
     private static final int TU_DONG = 0;
+    // pokemon 0.9.7: hiệu ứng thời tiết Tắt / Thấp / Đầy đủ, màu theo mùa, xem thẻ thời tiết (game.pokemon.ThoiTiet)
+    private static final int THOI_TIET = 1;
+    private static final int MAU_MUA = 2;
+    private static final int XEM_THOI_TIET = 3;
     private static final int AN = 8;
     // pokemon: cài đặt âm thanh (game.model.Sound, lưu RecordStore "htbbAm")
     private static final int NHAC = 9;
@@ -31,12 +35,16 @@ final class MenuNhanh {
     /** 0.9.6: Tài khoản -> nhập giftcode (cùng hộp nhập của NPC quà tặng) */
     private static final int GIFTCODE = 12;
 
-    private static final String[] TEN = {"Tự động đánh", "", "", "", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode"};
+    private static final String[] TEN = {"Tự động đánh", "Thời tiết", "Màu theo mùa", "Xem thời tiết", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode"};
 
     /** Tên mục (âm lượng kèm %). */
     private static String ten(int m) {
         if (m == AM_LUONG) {
             return new StringBuffer("Loa ").append(game.model.Sound.me.amLuong).append('%').toString();
+        }
+        if (m == THOI_TIET) {
+            game.pokemon.ThoiTiet.napCaiDat();
+            return new StringBuffer("Thời tiết: ").append(game.pokemon.ThoiTiet.TEN_CHAT_LUONG[game.pokemon.ThoiTiet.chatLuong]).toString();
         }
         return TEN[m];
     }
@@ -56,7 +64,7 @@ final class MenuNhanh {
         }
     }
 
-    private static final int[] DS = {TU_DONG, AN, NHAC, HIEU_UNG, AM_LUONG, GIFTCODE};
+    private static final int[] DS = {TU_DONG, AN, NHAC, HIEU_UNG, AM_LUONG, THOI_TIET, MAU_MUA, XEM_THOI_TIET, GIFTCODE};
 
     private static int[] dsMuc() {
         return DS;
@@ -75,6 +83,12 @@ final class MenuNhanh {
             case HIEU_UNG:
                 game.model.Sound.me.napCaiDat();
                 return game.model.Sound.me.batHieuUng ? 1 : 0;
+            case THOI_TIET:
+                game.pokemon.ThoiTiet.napCaiDat();
+                return game.pokemon.ThoiTiet.chatLuong > game.pokemon.ThoiTiet.TAT ? 1 : 0;
+            case MAU_MUA:
+                game.pokemon.ThoiTiet.napCaiDat();
+                return game.pokemon.ThoiTiet.mauMuaBat ? 1 : 0;
             default:
                 return -1;
         }
@@ -99,6 +113,16 @@ final class MenuNhanh {
             }
             case TU_DONG:
                 BangTuDong.mo();
+                break;
+            case THOI_TIET:
+                game.pokemon.ThoiTiet.doiChatLuong();
+                break;
+            case MAU_MUA:
+                game.pokemon.ThoiTiet.doiMauMua();
+                break;
+            case XEM_THOI_TIET:
+                mo = false;
+                game.pokemon.ThoiTiet.moTheGoiY();
                 break;
             case GIFTCODE:
                 mo = false;

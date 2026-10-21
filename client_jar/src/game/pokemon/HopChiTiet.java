@@ -124,9 +124,15 @@ public final class HopChiTiet {
         return new Object[]{s.substring(0, c + 1), new Integer(loaiTot), so};
     }
 
+    /**
+     * Màu dòng mô tả theo mã màu chữ đầu dòng của máy chủ (mã phông cũ 1..5, KHÔNG phải độ hiếm - tên món dùng
+     * KieuO.mauHiem theo colorName): 1 xanh lá, 2 xanh dương, 3 tím, 4 vàng, 5 đỏ, pha tối cho dễ đọc trên thẻ sáng.
+     */
     static int mau(int m) {
-        return m <= 0 || m >= 6 ? ChuDe.CHU : GiaoDien.pha(KieuO.mauHiem(m), 0, 2, 5);
+        return m <= 0 || m >= 6 ? ChuDe.CHU : GiaoDien.pha(MAU_DONG[m], 0, 2, 5);
     }
+
+    private static final int[] MAU_DONG = {0, 0x48D058, 0x3FA0F0, 0xC060F0, 0xFFCB05, 0xF04830};
 
     // ------------------------------------------------------------------ kiểm thử: hình học khung vừa vẽ
 
@@ -241,7 +247,12 @@ public final class HopChiTiet {
         VUA[3] = h;
         ChuDe.phuMan(g);
         Bang.the(g, x, y, w, h);
-        int mauTen = doan.length > 0 && mauDoan[0] > 0 ? KieuO.mauHiem(mauDoan[0]) : ChuDe.CHINH;
+        // tên món + vạch đầu thẻ theo bậc hiếm chung (DoHiemSinh, cùng màu web / máy chủ); Thường: chữ thường, vạch màu chính
+        int mauTen = doan.length > 0 && mauDoan[0] > 0 ? KieuO.mauHiem(mauDoan[0]) : -1;
+        int mauChuTen = mauTen >= 0 ? mauTen : ChuDe.CHU;
+        if (mauTen < 0) {
+            mauTen = ChuDe.CHINH;
+        }
         GiaoDien.khoi(g, x + pad, y + 3, w - 2 * pad, 3, 1, mauTen);
         // đầu: biểu tượng + tên
         int yTen = y + pad;
@@ -259,7 +270,7 @@ public final class HopChiTiet {
         }
         int yDong = yTen + (hTen - dongTen.length * lhTen) / 2;
         for (int k = 0; k < dongTen.length; k++) {
-            ChuDe.chu(g, dongTen[k], xTen, yDong, ChuDe.TIEU_DE, ChuDe.CHU, 0);
+            ChuDe.chu(g, dongTen[k], xTen, yDong, ChuDe.TIEU_DE, mauChuTen, 0);
             ghiChu(xTen, yDong, ChuDe.rong(dongTen[k], ChuDe.TIEU_DE), lhTen);
             yDong += lhTen;
         }

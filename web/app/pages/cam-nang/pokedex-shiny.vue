@@ -67,7 +67,7 @@ const suKienShiny = CAM_NANG.suKien.filter(s => /shiny/i.test(`${s.ten1} ${s.coC
         <li v-for="s in suKienShiny" :key="s.tuan">
           <strong>{{ s.ten1 }}</strong> (tuần {{ s.tuan }}): {{ s.coChe }}
         </li>
-        <li>Ngày cộng đồng: trong 3 giờ vàng, dòng khởi đầu được chọn xuất hiện dày và tỉ lệ shiny ×5.</li>
+        <li>Ngày cộng đồng (một Chủ nhật mỗi tháng): trong 3 giờ vàng 14:00–17:00, dòng Pokémon nổi bật của tháng xuất hiện dày trên các tuyến của nó và tỉ lệ shiny ×5.</li>
       </ul>
     </WikiSection>
   </WikiShell>

@@ -15,8 +15,12 @@ const dangDienRa = computed(() => suKienTuTuan(tuanNay.value, 2, SK.value))
 // Lịch thật theo ngày (máy chủ game ghi tob_su_kien_lich, Tết / Giỗ Tổ / Vu Lan / Trung Thu theo âm lịch).
 const skNam = useSuKienNam(45)
 const leHoiNam = computed(() => skNam.ds.value
-  .filter(l => l.nhom !== 'Tuần Pokémon' && !SU_KIEN_PHU[l.ma] && msTuChuoi(l.dong) > skNam.bay.value - 86_400_000)
+  .filter(l => l.nhom !== 'Tuần Pokémon' && !laNgayCongDong(l) && !SU_KIEN_PHU[l.ma] && msTuChuoi(l.dong) > skNam.bay.value - 86_400_000)
   .slice(0, 24))
+// Ngày cộng đồng hằng tháng (0.9.7): một Chủ nhật mỗi tháng, dòng Pokémon nổi bật trong mô tả từng lần
+const congDong = computed(() => skNam.ds.value
+  .filter(l => laNgayCongDong(l) && msTuChuoi(l.dong) > skNam.bay.value - 86_400_000)
+  .slice(0, 6))
 const tenSk = (s: SuKienTuan) => (nam.value === 1 ? s.ten1 : s.ten2)
 const thang = computed(() => Array.from({ length: 12 }, (_, i) => ({
   so: i + 1,
@@ -26,7 +30,7 @@ const dem = computed(() => Object.fromEntries(Object.keys(LOAI_SU_KIEN).map(k =>
 const moTaLoai: Record<string, string> = {
   le_vn: 'Tết, Trung Thu, 8/3, 20/10, Giáng sinh… phiên bản Pokémon của các dịp lễ Việt Nam.',
   tuan_he: 'Quái một hệ xuất hiện ×2 và chiêu hệ đó +10% — cơ hội săn Pokédex và đá.',
-  cong_dong: '3 giờ vàng: một dòng khởi đầu xuất hiện dày đặc, tỉ lệ shiny ×5.',
+  cong_dong: 'Tuần có Ngày cộng đồng: chuỗi nhiệm vụ của tuần, Chủ nhật là ngày cộng đồng (xem mục Ngày cộng đồng).',
   pokemon: 'Tuần Shiny, Lễ hội Pokédex, Bùng phát quần thể.',
   dot_kich: 'Boss thế giới xuất hiện thêm 2 lần mỗi ngày (12:30 và 20:30), thưởng theo mức đóng góp.',
   pvp: 'Chốt bậc mùa PvP và phát thưởng.',
@@ -68,6 +72,32 @@ const moTaLoai: Record<string, string> = {
         </ol>
         <template #fallback>
           <USkeleton class="h-32 w-full" />
+        </template>
+      </ClientOnly>
+    </WikiSection>
+
+    <WikiSection v-if="congDong.length" id="ngay-cong-dong" title="Ngày cộng đồng hằng tháng">
+      <p class="van">
+        Mỗi tháng một Chủ nhật (tự động theo lịch, website báo trước 3 ngày). Trong <strong>3 giờ vàng</strong>, một dòng Pokémon
+        xuất hiện dày trên các tuyến của nó ở mọi dải cấp, tỉ lệ shiny ×5, hạ dòng nổi bật thêm chút EXP (vẫn trong trần
+        tăng tốc chung) và mở <strong>danh hiệu của dòng</strong>. Không phát xu hay lượng.
+      </p>
+      <ClientOnly>
+        <ol class="mt-3 grid gap-2 md:grid-cols-2">
+          <li v-for="l in congDong" :key="`${l.ma}-${l.nam}-${l.lan}`" class="rounded-2xl glass p-3">
+            <p class="text-xs font-bold uppercase tracking-wide" :class="msTuChuoi(l.mo) <= skNam.bay.value ? 'text-primary' : 'text-dimmed'">
+              <template v-if="msTuChuoi(l.mo) <= skNam.bay.value">Hôm nay · còn {{ demNguoc(msTuChuoi(l.dong) - skNam.bay.value) }}</template>
+              <template v-else>Sau {{ demNguoc(msTuChuoi(l.mo) - skNam.bay.value) }}</template>
+            </p>
+            <p class="font-display text-base font-extrabold text-highlighted">{{ ngayNgan(msTuChuoi(l.mo)) }} · {{ l.ten }}</p>
+            <p class="mt-1 text-sm text-muted">{{ l.moTa }}</p>
+            <p v-if="l.phanThuong" class="mt-1 text-xs text-toned">
+              <UIcon name="i-lucide-gift" class="mr-1 inline size-3.5 align-[-2px]" />{{ l.phanThuong }}
+            </p>
+          </li>
+        </ol>
+        <template #fallback>
+          <USkeleton class="h-24 w-full" />
         </template>
       </ClientOnly>
     </WikiSection>

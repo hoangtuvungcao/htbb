@@ -3684,6 +3684,8 @@ public class GameScr extends Screen {
                 }
             }
         }
+        // pokemon 0.9.7: phủ màu mùa + hạt thời tiết (gói -118; trước phủ đêm và HUD)
+        game.pokemon.ThoiTietVe.veTheGioi(g);
         // pokemon (hệ sinh thái): phủ đêm theo giờ
         game.pokemon.SinhThai.veDem(g);
         if (charcountdonw != null) {
@@ -3706,6 +3708,7 @@ public class GameScr extends Screen {
                 paintServerInfo(g);
                 HudRong.ve(g, this);   // pokemon: HUD màn rộng (nút trên, cụm chiêu, chat, bản đồ to)
                 game.pokemon.PhongRieng.ve(g);   // pokemon 0.9.7: thẻ phòng riêng (phó bản / trận cúp), gói -112
+                game.pokemon.ThoiTiet.veHud(g);   // pokemon 0.9.7: đĩa thời tiết + thẻ gợi ý
             }
         } catch (Exception e8) {
             e8.printStackTrace();

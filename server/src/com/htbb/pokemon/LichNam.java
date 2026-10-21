@@ -16,7 +16,10 @@ import java.util.TimeZone;
  * real/BaoTriDaily). Su kien chi doi hieu luc sau khi khoi dong lai (SuKien), nen moc 04:00 de LichSuKien hoan
  * viec khoi dong lai toi luc bao tri: KHONG them lan khoi dong lai nao ngoai bao tri hang ngay.
  *
- * Tuan Pokemon (tuan he, cong dong, shiny, dot kich, mua PvP, Pokedex, chien vung, bung phat) van theo tuan ISO
+ * Ngay cong dong (moi:congdong, 0.9.7): MOT ngay moi thang (NgayCongDong.ngay - Chu nhat cua tuan cong dong ISO hoac
+ * Chu nhat thu ba), 04:00 -> 04:00; mo ta tung lan = dong noi bat cua thang (CuaSo.moTa, data_ngay_cong_dong).
+ *
+ * Tuan Pokemon (tuan he, shiny, dot kich, mua PvP, Pokedex, chien vung, bung phat) van theo tuan ISO
  * (HE_TUAN / DOT_KICH gan voi so tuan) - lay tu SuKienLauDai.LICH, thu Hai 04:00 -> thu Hai tuan sau 04:00.
  *
  * Lop THUAN: test/KiemLichNam.java. Ban keo noi CSDL + web: real/LichNamGame, bang tob_su_kien_lich.
@@ -34,6 +37,8 @@ public final class LichNam {
     static final int TUAN_ISO = 3;
     /** Cup PvP tuan (0.9.7): MOI tuan ISO mot lan, ten / mo ta theo loai cup cua tuan (CupLogic.loaiTuan). */
     static final int CUP_TUAN = 4;
+    /** Ngay cong dong: MOT ngay moi thang (NgayCongDong.ngay), lan = thang - 1. */
+    static final int THANG = 5;
 
     /** Mot su kien trong lich nam. */
     public static final class Muc {
@@ -158,7 +163,8 @@ public final class LichNam {
                 "Tổng kết năm và chốt mùa giải PvP.",
                 "Thưởng mùa PvP, danh hiệu"),
         tuan("moi:tuanhe", "Tuần hệ", "Chiêu của hệ trong tuần mạnh hơn 10%.", "+10% sát thương chiêu hệ của tuần"),
-        tuan("moi:congdong", "Ngày cộng đồng", "3 giờ dòng khởi đầu xuất hiện dày, shiny x5.", "Shiny x5"),
+        new Muc(NgayCongDong.MA_SU_KIEN, "Ngày cộng đồng", "Ngày cộng đồng", THANG, 0, 0, 0, 1, "Chủ nhật hằng tháng",
+                NgayCongDong.moTa(null), NgayCongDong.phanThuong(null)),
         tuan("moi:shiny", "Tuần Shiny", "Tỉ lệ shiny x10, bảo đảm sau 2.000 lần hạ.", "Shiny x10"),
         tuan("moi:dotkich", "Đột kích huyền thoại", "Boss thế giới theo lịch, thưởng theo % đóng góp.",
                 "Thưởng theo đóng góp"),
@@ -226,7 +232,37 @@ public final class LichNam {
         public boolean chua(final long t) {
             return t >= mo && t < dong;
         }
+
+        /**
+         * Mo ta RIENG lan nay: ngay cong dong = dong noi bat cua thang (moTaLan, tu CSDL); Cup PvP = loai cup cua tuan
+         * (truong moTa); con lai = mo ta chung cua muc.
+         */
+        public String moTa() {
+            final String[] r = rieng();
+            return r != null && r[0] != null ? r[0] : moTa;
+        }
+
+        public String phanThuong() {
+            final String[] r = rieng();
+            return r != null && r.length > 1 && r[1] != null ? r[1] : phanThuong;
+        }
+
+        private String[] rieng() {
+            final MoTaLan f = moTaLan;
+            try {
+                return f == null ? null : f.moTa(muc, nam, lan);
+            } catch (final RuntimeException e) {
+                return null;
+            }
+        }
     }
+
+    /** Mo ta rieng tung lan dien ra ({moTa, phanThuong} hoac null) - NgayCongDongGame dat sau khi nap CSDL. */
+    public interface MoTaLan {
+        String[] moTa(Muc m, int nam, int lan);
+    }
+
+    public static volatile MoTaLan moTaLan;
 
     /** Millis cua ngay duong lich {@code d/m/y} luc GIO_CHUYEN (gio Viet Nam), cong them {@code lech} ngay. */
     public static long moc(final int y, final int m, final int d, final int lech) {
@@ -275,6 +311,13 @@ public final class LichNam {
                 ra.add(new CuaSo(m, nam, w, mo, mo + 7L * 86400000L, l.ten + " (tuần " + w + ")",
                         l.moTa + " " + l.luat() + ". " + CupLogic.lichChu(CupLogic.GIO_VONG_DAU, CupLogic.SO_VONG,
                                 CupLogic.PHUT_MOI_VONG), m.phanThuong));
+            }
+            return ra;
+        }
+        if (m.kieu == THANG) {
+            for (int t = 1; t <= 12; t++) {
+                final long[] c = NgayCongDong.cuaSo(nam, t);
+                ra.add(new CuaSo(m, nam, t - 1, c[0], c[1]));
             }
             return ra;
         }

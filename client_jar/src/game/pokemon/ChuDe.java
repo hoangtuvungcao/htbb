@@ -296,52 +296,48 @@ public final class ChuDe {
         KieuO.phu(g, 0, 0, Canvas.w, Canvas.h, PHU_NEN);
     }
 
-    // ------------------------------------------------------------------ 0.9.7 độ hiếm danh hiệu (token chủ đề)
+    // ------------------------------------------------------------------ 0.9.7 độ hiếm (token chủ đề, MỘT nguồn)
     /**
-     * Màu độ hiếm danh hiệu 0 Thường / 1 Hiếm / 2 Sử thi / 3 Huyền thoại - token chủ đề (giao diện khác chỉ cần đổi
-     * các hằng này): nhãn trên đầu, viên danh hiệu, hàng bảng Danh hiệu. Bản _NHAT = nền nhạt cùng tông.
+     * Màu độ hiếm chung (vật phẩm, danh hiệu, phụ kiện, bậc trang bị) - MỘT nguồn tools/cauhinh/do_hiem.json sinh ra
+     * {@link DoHiemSinh} (cùng giá trị máy chủ và web). Bậc 0 Thường / 1 Hiếm / 2 Quý / 3 Sử thi / 4 Huyền thoại (viền
+     * động) / 5 Trang trí. mauHiem = chữ / viền trên nền sáng (bảng, thẻ), nenHiem = nền nhạt cùng tông, sangHiem = chữ
+     * trên nền tối / thế giới (nhãn trên đầu). Giao diện khác (NRO) giữ nguyên màu độ hiếm: đây là nhận diện giá trị,
+     * không phải màu chủ đề.
      */
-    public static final int DH_THUONG = XAM, DH_HIEM = XANH, DH_SU_THI = TIM, DH_HUYEN_THOAI = CAM;
-    public static final int DH_THUONG_NHAT = NEN_PHU, DH_HIEM_NHAT = XANH_NHAT, DH_SU_THI_NHAT = 0xEEE8FC, DH_HUYEN_THOAI_NHAT = VANG_NHAT;
-    /** Màu chữ nhãn danh hiệu trên đầu (nền thế giới tối / sáng lẫn lộn: tông sáng, có viền tối). */
-    public static final int DH_NHAN_THUONG = 0xD5DBE3, DH_NHAN_HIEM = 0x8CC8FF, DH_NHAN_SU_THI = 0xCDB8FF, DH_NHAN_HUYEN_THOAI = 0xFFC46B;
+    public static int mauHiem(int bac) {
+        return DoHiemSinh.MAU[DoHiemSinh.kep(bac)];
+    }
+
+    public static int nenHiem(int bac) {
+        return DoHiemSinh.NHAT[DoHiemSinh.kep(bac)];
+    }
+
+    public static int sangHiem(int bac) {
+        return DoHiemSinh.SANG[DoHiemSinh.kep(bac)];
+    }
+
+    /** Bậc hiếm của vật phẩm theo colorName (Item.colorName của máy chủ). */
+    public static int bacVatPham(int colorName) {
+        return DoHiemSinh.bacVatPham(colorName);
+    }
+
+    /**
+     * Độ hiếm danh hiệu 0 Thường / 1 Hiếm / 2 Sử thi / 3 Huyền thoại (data_danh_hieu.do_hiem) -> bậc chung
+     * (DoHiemSinh.BAC_DANH_HIEU). Nhãn trên đầu, viên danh hiệu, hàng bảng Danh hiệu dùng ba hàm dưới.
+     */
+    public static final int DH_THUONG = DoHiemSinh.MAU[DoHiemSinh.THUONG], DH_HIEM = DoHiemSinh.MAU[DoHiemSinh.HIEM],
+            DH_SU_THI = DoHiemSinh.MAU[DoHiemSinh.SU_THI], DH_HUYEN_THOAI = DoHiemSinh.MAU[DoHiemSinh.HUYEN_THOAI];
 
     public static int mauDanhHieu(int doHiem) {
-        switch (doHiem) {
-            case 1:
-                return DH_HIEM;
-            case 2:
-                return DH_SU_THI;
-            case 3:
-                return DH_HUYEN_THOAI;
-            default:
-                return DH_THUONG;
-        }
+        return mauHiem(DoHiemSinh.bacDanhHieu(doHiem));
     }
 
     public static int nenDanhHieu(int doHiem) {
-        switch (doHiem) {
-            case 1:
-                return DH_HIEM_NHAT;
-            case 2:
-                return DH_SU_THI_NHAT;
-            case 3:
-                return DH_HUYEN_THOAI_NHAT;
-            default:
-                return DH_THUONG_NHAT;
-        }
+        return nenHiem(DoHiemSinh.bacDanhHieu(doHiem));
     }
 
+    /** Màu chữ nhãn danh hiệu trên đầu (nền thế giới tối / sáng lẫn lộn: tông sáng, có viền tối). */
     public static int nhanDanhHieu(int doHiem) {
-        switch (doHiem) {
-            case 1:
-                return DH_NHAN_HIEM;
-            case 2:
-                return DH_NHAN_SU_THI;
-            case 3:
-                return DH_NHAN_HUYEN_THOAI;
-            default:
-                return DH_NHAN_THUONG;
-        }
+        return sangHiem(DoHiemSinh.bacDanhHieu(doHiem));
     }
 }
