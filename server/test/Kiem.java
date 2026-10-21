@@ -197,6 +197,7 @@ public final class Kiem {
         KiemKinhTeKhoiDau.chay(); // qua tao nhan vat da bo, he so nap = 1, ghi client dang nhap
         KiemChongClone.chay();
         KiemVongQuay.chay(); // vong quay gop hu: muc cuoc, phi, bao toan hu, nut Dong y (chu game 19/10/2026)
+        KiemPhoBanCup.chay(); // 0.9.7 Pho ban Ham nguc + Cup PvP tuan: xoay tuan, Thuy Si, chong clone, vong doi phong, thuong mot lan
         KiemThachDauCuoc.chay(); // thach dau cuoc xu: ky quy, phi, muc theo cap (19/10/2026)
         KiemLiXi.chay(); // li xi Tet: tran, xu theo gio, ma luong khoa theo tai khoan (19/10/2026)
         KiemLichNam.chay(); // lich su kien nam theo ngay that + am lich (chu game 19/10/2026)

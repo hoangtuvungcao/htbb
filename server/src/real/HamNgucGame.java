@@ -72,7 +72,11 @@ final class HamNgucGame {
     static String nhanThuong(final Char p, final HoSoLauDai h) {
         final int tang;
         synchronized (h) {
-            if (h.hnNgay != NangLuong.ngay(com.htbb.pokemon.DongHo.bay()) || h.hnTangCao <= 0) {
+            final boolean homNay = h.hnNgay == NangLuong.ngay(com.htbb.pokemon.DongHo.bay());
+            if (homNay && h.hnDaThuong != 0 && h.hnTangCao <= 0) {
+                return "Hôm nay đã nhận thưởng Hầm ngục (Phó bản tổ đội, 1 lần/ngày).";
+            }
+            if (!homNay || h.hnTangCao <= 0) {
                 return "Hôm nay chưa qua tầng nào.";
             }
             if (h.hnDaThuong != 0) {

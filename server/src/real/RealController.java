@@ -469,6 +469,8 @@ public class RealController extends ServerController {
         System.out.println("TONG MAP TRAIN ROI NGOC RONG: " + all_map_train.size());
         // Vung Hoenn (nam 2). Bang locationMap/mapID noi them o add_more_idMapSend2Client.
         VungHoenn.taoMap(mapList);
+        // 0.9.7: ban do phong rieng (Pho ban Ham nguc 4381 nen 117, san Cup PvP 4382 nen 227) - real.PhongRiengGame.
+        PhongRiengGame.taoBanDo(mapList);
     }
 
     public static void add_more_idMapSend2Client() {

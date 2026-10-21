@@ -60,6 +60,17 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
     `data_pha_khoa_*`), PvP xếp hạng (`tob_pvp_tran`, `tob_pvp_thuong`), cập nhật client (trường `ban` của
     `web_cai_dat.taiGame`), danh hiệu (`data_danh_hieu*`, `tob_danh_hieu_*`), điểm móc nhiệm vụ
     (`data_su_kien_vat_pham`, `tob_nhiem_vu_cho`).
+11. 0.9.8 (`BAN=908`; mỗi tệp lẻ cũ một khối `-- >>> <tên tệp>`, danh mục cấu hình của chúng ở mục 2):
+    - `hoc_chieu_huan_luyen.sql`: học chiêu theo loài `data_learnset` (175 dòng, 21 loài), Điểm huấn luyện
+      `data_huan_luyen`, `data_tang_truong_dong`, `tob_huan_luyen`, dấu chuyển đổi một lần `tob_chuyen_doi_can_bang`
+      (nhân vật cũ chuyển đổi trong game lúc nạp, không sửa dữ liệu người chơi ở đây);
+    - `them_bo_ngoc_che_tao_bat.sql`: bộ trang bị / ngọc hệ / chế tạo / mốc neo nâng cấp (`data_ngoc_he_*`,
+      `data_che_tao_bac`, `data_nang_cap_moc`, cột `loi_che_tao` / `bat` của `data_noi_dung_che_tao`), thu phục
+      (`data_bat_bong`, `data_bat_loai`, `tob_hop_pc`, `tob_ho_so_bo_ngoc`, cột `so_bat` / `bat_shiny` của `tob_pokedex`);
+    - `them_pho_ban_cup.sql`: Phó bản Hầm ngục (`data_pho_ban_ngay`, `data_pho_ban_tang`, dòng rơi `pho_ban` 9001…9024 của
+      `data_noi_dung_roi`, `tob_pho_ban_*`), Cúp PvP tuần (`data_cup_loai`, `data_cup_lich`, `tob_cup_*`), tên bản đồ phòng
+      riêng 4381 / 4382 (`data_map_ten`, giữ tên admin đã sửa), danh hiệu 9850…9855 (cúp) + 9860…9862 (phó bản); mục 4
+      thêm `moi:cuptuan` vào danh sách xoá mốc hẹn cũ của lịch năm;
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở

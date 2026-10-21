@@ -378,6 +378,9 @@ public final class HoiSinhGame {
         if (m == null) {
             return null;
         }
+        if (com.htbb.pokemon.PhongRieng.laMapRieng(m.mapId)) {
+            return com.htbb.pokemon.PhongRieng.LY_DO_HOI_SINH; // pho ban: guc thi ve Trung tam (= roi phong)
+        }
         boolean pvp = m instanceof MapLoiDai || m instanceof MapLienDau || m instanceof MapChienTruongMoba || m instanceof MapClan
                 || m.isMapChoLoiDai();
         try {

@@ -222,6 +222,9 @@ public final class TuDong {
         }
 
         public boolean mapBiCam(final int map) {
+            if (PhongRieng.khongTuDong(map)) {
+                return true; // luat ban do: phong rieng (pho ban / san cup) khong cho tu dong danh
+            }
             for (final int m : mapCam) {
                 if (m == map) {
                     return true;

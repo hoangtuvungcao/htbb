@@ -558,6 +558,9 @@ class MapXuLyLenh {
             case -121: // [bat-pokemon] thu phuc: trang thai / nem bong / Pokedex (real.BatPokemonGame)
                 BatPokemonGame.xuLy(player, message);
                 break;
+            case -112: // 0.9.7 phong rieng: cham the trang thai -> "Rời" (pho ban) / "Bỏ cuộc" (tran cup)
+                PhongRiengGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;

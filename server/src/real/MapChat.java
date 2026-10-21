@@ -333,7 +333,9 @@ class MapChat {
                             return;
                         }
 
-                        if (msgChat.startsWith("khu") && map.nRegion > 0) {
+                        if (msgChat.startsWith("khu") && com.htbb.pokemon.PhongRieng.laMapRieng(map.mapId)) {
+                            PhongRiengGame.moMenuTrongPhong(player); // phong rieng: khong doi khu, chi "Rời"
+                        } else if (msgChat.startsWith("khu") && map.nRegion > 0) {
                             String[] menu = new String[player.map.nRegion];
 
                             for (int i = 0; i < player.map.nRegion; i++) {

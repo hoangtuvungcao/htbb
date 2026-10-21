@@ -1061,6 +1061,7 @@ public class TeamServer {
         Char.startThreadXoso(); // chi con nhac "choi qua 180 phut" moi 15 phut
         real.VongQuay.khoiDong();
         real.HocChieuGame.khoiDong(); // data_learnset + Diem huan luyen (truoc khi nhan nguoi choi)
+        real.PhongRiengGame.khoiDong(); // 0.9.7 Pho ban Ham nguc + Cup PvP tuan: nhip 1 giay
         Char.startNauBanh();
         if (!real.BaoTriDaily.Running) {
             new Thread(new real.BaoTriDaily()).start();

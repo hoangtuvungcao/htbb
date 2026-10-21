@@ -137,6 +137,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.BatPokemon.nhan(msg)) {
             return;
         }
+        // pokemon 0.9.7: lenh -112 the phong rieng (Pho ban Ham nguc / tran Cup PvP)
+        if (game.pokemon.PhongRieng.nhan(msg)) {
+            return;
+        }
         // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
         if (game.pokemon.CapNhat.nhan(msg)) {
             return;

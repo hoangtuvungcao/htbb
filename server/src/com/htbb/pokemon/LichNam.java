@@ -32,6 +32,8 @@ public final class LichNam {
     static final int AM = 1;
     static final int THU_SAU_DEN = 2; // Black Friday: thu Sau thu 4 cua thang 11
     static final int TUAN_ISO = 3;
+    /** Cup PvP tuan (0.9.7): MOI tuan ISO mot lan, ten / mo ta theo loai cup cua tuan (CupLogic.loaiTuan). */
+    static final int CUP_TUAN = 4;
 
     /** Mot su kien trong lich nam. */
     public static final class Muc {
@@ -164,6 +166,9 @@ public final class LichNam {
         tuan("moi:pokedex", "Lễ hội Pokédex", "Điểm nghiên cứu Pokédex x2.", "Điểm Pokédex x2"),
         tuan("moi:chienvung", "Chiến vùng", "Thứ Bảy 20h: Kanto / Johto / Hoenn giành cờ.", "Thưởng vùng thắng"),
         tuan("moi:bungphat", "Bùng phát quần thể", "Mỗi ngày một loài x5 trên một tuyến.", "Loài bùng phát x5"),
+        new Muc(CupLogic.MA_LICH, "Cúp PvP tuần", CupLogic.NHOM_LICH, CUP_TUAN, 0, 0, 0, 7, "mỗi tuần",
+                "Cúp PvP xoay vòng mỗi tuần: đăng ký trong tuần, Chủ nhật 20:00 thi đấu Thuỵ Sĩ tự ghép cặp.",
+                CupLogic.phanThuongChu()),
     };
 
     private LichNam() {
@@ -197,13 +202,25 @@ public final class LichNam {
         public final int lan;
         public final long mo;
         public final long dong;
+        /** Ten / mo ta / phan thuong cua RIENG lan nay (Cup PvP: ten cup cua tuan); mac dinh = cua muc. */
+        public final String ten;
+        public final String moTa;
+        public final String phanThuong;
 
         CuaSo(final Muc muc, final int nam, final int lan, final long mo, final long dong) {
+            this(muc, nam, lan, mo, dong, muc.ten, muc.moTa, muc.phanThuong);
+        }
+
+        CuaSo(final Muc muc, final int nam, final int lan, final long mo, final long dong, final String ten,
+                final String moTa, final String phanThuong) {
             this.muc = muc;
             this.nam = nam;
             this.lan = lan;
             this.mo = mo;
             this.dong = dong;
+            this.ten = ten;
+            this.moTa = moTa;
+            this.phanThuong = phanThuong;
         }
 
         public boolean chua(final long t) {
@@ -247,6 +264,20 @@ public final class LichNam {
     /** Cac lan dien ra cua {@code m} co moc trong nam {@code nam}. */
     public static List<CuaSo> cuaSo(final Muc m, final int nam) {
         final List<CuaSo> ra = new ArrayList<CuaSo>();
+        if (m.kieu == CUP_TUAN) {
+            // moi tuan ISO cua nam ISO {@code nam}: lan = so tuan (1..53), ten = loai cup tuan do
+            for (int w = 1; w <= 53; w++) {
+                final long mo = thuHaiTuanIso(nam, w);
+                if (CupLogic.namTuanIso(mo)[0] != nam || CupLogic.namTuanIso(mo)[1] != w) {
+                    continue; // nam chi co 52 tuan
+                }
+                final CupLogic.Loai l = CupLogic.loaiTuan(CupLogic.tuan(mo));
+                ra.add(new CuaSo(m, nam, w, mo, mo + 7L * 86400000L, l.ten + " (tuần " + w + ")",
+                        l.moTa + " " + l.luat() + ". " + CupLogic.lichChu(CupLogic.GIO_VONG_DAU, CupLogic.SO_VONG,
+                                CupLogic.PHUT_MOI_VONG), m.phanThuong));
+            }
+            return ra;
+        }
         if (m.kieu == TUAN_ISO) {
             int lan = 0;
             for (final Object[] r : SuKienLauDai.LICH) {
