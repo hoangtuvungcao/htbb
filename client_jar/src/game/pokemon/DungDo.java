@@ -270,9 +270,12 @@ public final class DungDo {
         return false;
     }
 
-    /** Kết quả (không phải lỗi) chờ trong lúc câu cá: giữ đến khi kéo cần xong. */
+    /**
+     * Kết quả (không phải lỗi) chờ trong lúc câu cá: giữ đến khi kéo cần xong. Trừ lời nhắc của chính lần câu
+     * (SinhThai.laNhacCau: "Cá cắn câu! Kéo cần ngay!") - phải hiện NGAY vì người chơi chỉ có ~1,5 giây để kéo.
+     */
     static boolean giuLai(Tin t) {
-        return t.loai != LOI && SinhThai.dangCau();
+        return t.loai != LOI && SinhThai.dangCau() && !SinhThai.laNhacCau(t.chu);
     }
 
     /** Hết giờ thì tắt; có chỗ thì đưa tin chờ vào; hàng chờ đầy chỗ thì thẻ cũ nhất ĐÃ ĐỌC ĐỦ (doc) nhường chỗ. */
