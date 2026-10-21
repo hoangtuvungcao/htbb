@@ -416,37 +416,12 @@ public final class HudRong {
 
     /** Biểu tượng vẽ bằng nét (không ảnh, không chữ). */
     static void veIcon(Graphics g, int n, int x, int y, int r) {
-        int u = r * 5 / 11;
-        g.setColor(GiaoDien.TRANG);
-        switch (n) {
-            case 20:   // chat: bóng thoại
-                g.fillRoundRect(x - u - 1, y - u + 1, 2 * u + 3, 2 * u - 2, 5, 5);
-                g.fillTriangle(x - u + 1, y + u - 2, x - u + 1, y + u + 3, x - 1, y + u - 2);
-                g.setColor(0x1A3462);
-                g.fillRect(x - u + 2, y - 1, 2, 2);
-                g.fillRect(x, y - 1, 2, 2);
-                g.fillRect(x + u - 2, y - 1, 2, 2);
-                break;
-            case 21:   // nói chuyện (NPC): bóng thoại + 3 chấm
-                veIcon(g, 20, x, y, r);
-                break;
-            case 22:   // nhặt: bàn tay
-                g.fillRoundRect(x - u, y - 1, 2 * u + 1, u + 2, 4, 4);
-                for (int k = 0; k < 4; k++) {
-                    g.fillRect(x - u + k * (2 * u) / 4 + 1, y - u, 2, u);
-                }
-                break;
-            case 23:   // câu cá: cần + phao
-                g.setColor(0xC08040);
-                g.drawLine(x - u, y + u, x + u - 1, y - u);
-                g.drawLine(x - u + 1, y + u, x + u, y - u);
-                g.setColor(GiaoDien.TRANG);
-                g.drawLine(x + u, y - u, x + u, y + u - 2);
-                g.setColor(GiaoDien.DO);
-                g.fillArc(x + u - 2, y + u - 3, 5, 5, 0, 360);
-                break;
-            default:
-                break;
+        // 0.9.7: icon PNG (/nro/icon.png) - chat, nói chuyện, nhặt (hộp đồ), câu cá
+        int id = n == 20 || n == 21 ? game.pokemon.BieuTuong.CHAT : n == 22 ? game.pokemon.BieuTuong.HOP_DO
+                : n == 23 ? game.pokemon.BieuTuong.CAN_CAU : -1;
+        if (id >= 0) {
+            int s = Math.max(16, (2 * r * 4 / 5 - 4) / 16 * 16);
+            game.pokemon.BieuTuong.ve(g, id, x - s / 2, y - s / 2, s, 0xFFFFFF, 0);
         }
     }
 
@@ -641,14 +616,9 @@ public final class HudRong {
             return;
         }
         // ô trống thật sự: dấu + mờ (chạm = bảng gán chiêu / thuốc)
-        nen(g, x, y, r, 0xFFFFFF, game.pokemon.ChuDe.NEN_PHU, false);
-        int u = r / 3;
-        game.pokemon.ChuUI b = game.pokemon.ChuUI.bo;
-        if (b == null || !b.net(g, x, y, u, game.pokemon.ChuDe.CHU_PHU, 2)) {
-            g.setColor(game.pokemon.ChuDe.CHU_PHU);
-            g.fillRect(x - u, y - 1, 2 * u + 1, 2);
-            g.fillRect(x - 1, y - u, 2, 2 * u + 1);
-        }
+        // 0.9.7: ô hộp gỗ trống + icon PNG "+" (mở rộng / gán)
+        game.pokemon.Bang.oDo(g, x - r, y - r, 2 * r, false, false, null, null);
+        game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.MO_RONG, x - 8, y - 8, 16, 0, 0);
     }
 
     private static final String[][] VIET_TAT = new String[8][16];

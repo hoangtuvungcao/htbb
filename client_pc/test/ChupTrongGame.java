@@ -281,8 +281,12 @@ public class ChupTrongGame {
                     }
                 });
                 Thread.sleep(150);
+                game.pokemon.VeTay.xoa();
                 BufferedImage anh = ve(W, H);
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
+                // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
+                kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
+                        + game.pokemon.VeTay.cuoi + ")");
                 if (ten.startsWith("hop_") || ten.equals("xac_nhan") || ten.equals("so_luong")) {
                     kiemHop(ten + " " + TEN_CO[c]);
                 }

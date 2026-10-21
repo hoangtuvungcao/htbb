@@ -190,7 +190,7 @@ public final class KhungNro {
      * -1 = đủ màu. Trả false khi không có icon (người gọi vẽ vector cũ).
      */
     public static boolean icon(Graphics g, int id, int x, int y, int s, int bong) {
-        if (s < 13 || !coIcon(id)) {   // ô quá nhỏ cho 16 px: để vector cũ
+        if (s < 8 || !coIcon(id)) {   // 0.9.7: icon PNG cả ở ô nhỏ (16 px canh giữa, tràn nhẹ)
             return false;
         }
         int k = heSoIcon(s);

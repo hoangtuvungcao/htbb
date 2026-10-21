@@ -521,12 +521,7 @@ final class BangTuDong {
                 }
             } else {
                 game.pokemon.Bang.diaTrang(g, cx, cy, r, an);
-                game.pokemon.ChuUI b = game.pokemon.ChuUI.bo;
-                if (b == null || !b.net(g, cx, cy, r / 3, game.pokemon.ChuDe.CHU_PHU, 2)) {
-                    g.setColor(game.pokemon.ChuDe.CHU_PHU);
-                    g.fillRect(cx - r / 3, cy, 2 * (r / 3), 1);
-                    g.fillRect(cx, cy - r / 3, 1, 2 * (r / 3));
-                }
+                game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.MO_RONG, cx - 8, cy - 8, 16, 0, 0);   // 0.9.7: icon PNG
             }
             // huy hiệu số thứ tự
             int rs = game.pokemon.ChuDe.dt() ? 7 : 6;

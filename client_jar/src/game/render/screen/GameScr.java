@@ -7353,6 +7353,14 @@ public class GameScr extends Screen {
     }
 
     private void updatePoint() {
+        // 0.9.7: máy J2ME cảm ứng màn nhỏ (không HudRong): chạm thẻ trạng thái góc trái trên = hồ sơ nhân vật
+        if (!HudRong.bat() && Canvas.isPointerClick && this.hideGUI != 2 && Canvas.currentDialog == null
+                && Canvas.isPointer(0, 0, rongKhungHp(), imgInfo != null ? imgInfo.getHeight() : 34)) {
+            Canvas.isPointerClick = false;
+            Canvas.isPointerDown = false;
+            game.pokemon.HanhDong.moHoSo();
+            return;
+        }
         if (HudRong.bat() && HudRong.cham(this)) {
             return;   // pokemon: cú chạm thuộc HUD màn rộng
         }

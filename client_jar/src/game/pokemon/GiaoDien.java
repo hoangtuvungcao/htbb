@@ -546,7 +546,7 @@ public final class GiaoDien {
         if (r < 3) {
             r = 3;
         }
-        if (r >= 6 && KhungNro.coIcon(BieuTuong.POKEBALL)) {
+        if (KhungNro.coIcon(BieuTuong.POKEBALL)) {
             int k = Math.max(1, (2 * r + 4) / 16);
             if (goc % 360 == 0 || k > 1) {
                 if (KhungNro.iconGiua(g, BieuTuong.POKEBALL, cx, cy, k, -1)) {
@@ -564,6 +564,7 @@ public final class GiaoDien {
 
     /** Poké Ball vẽ bằng lệnh (cung, tam giác) - ô nhỏ / thiếu ảnh. */
     static void pokeBallVe(Graphics g, int cx, int cy, int r, int goc) {
+        VeTay.ghi("Poke Ball ve cung");
         int d = r * 2;
         g.setColor(VIEN);
         g.fillArc(cx - r - 1, cy - r - 1, d + 3, d + 3, 0, 360);

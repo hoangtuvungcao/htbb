@@ -239,8 +239,41 @@ public final class Kinh {
     public static final int BT_MAN_HINH = 0, BT_LOA = 1, BT_BAN_PHIM = 2, BT_SET = 3, BT_THONG_TIN = 4, BT_DONG = 5,
             BT_CHUOT = 6, BT_TAI_KHOAN = 7;
 
-    /** Biểu tượng loai tâm (cx, cy), cạnh s, màu c. */
+    // ------------------------------------------------------------------ 0.9.7: icon = ảnh PNG (/nro/icon.png)
+    private static java.awt.image.BufferedImage tamIcon;
+    private static boolean daNapIcon;
+
+    /** Vẽ icon pixel id (game.pokemon.BieuTuong) tâm (cx, cy), cạnh ~s px thật (phóng nguyên, láng giềng gần nhất). */
+    public static boolean icon(Graphics2D g, int id, float cx, float cy, float s) {
+        if (!daNapIcon) {
+            daNapIcon = true;
+            try {
+                java.io.InputStream in = Kinh.class.getResourceAsStream(game.pokemon.KhungNroBang.TAM_ICON);
+                if (in != null) tamIcon = javax.imageio.ImageIO.read(in);
+            } catch (Throwable e) {
+                tamIcon = null;
+            }
+        }
+        if (tamIcon == null || id < 0 || id >= game.pokemon.KhungNroBang.SO_ICON) return false;
+        int k = Math.max(1, Math.round(s / 16f));
+        int c = 16 * k;
+        int sx = (id % game.pokemon.KhungNroBang.COT_ICON) * 16, sy = (id / game.pokemon.KhungNroBang.COT_ICON) * 16;
+        Object cu = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        int x = Math.round(cx - c / 2f), y = Math.round(cy - c / 2f);
+        g.drawImage(tamIcon, x, y, x + c, y + c, sx, sy, sx + 16, sy + 16, null);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, cu == null ? RenderingHints.VALUE_INTERPOLATION_BILINEAR : cu);
+        return true;
+    }
+
+    private static final int[] BT_ICON = {game.pokemon.BieuTuong.MAN_HINH, game.pokemon.BieuTuong.LOA, game.pokemon.BieuTuong.BAN_PHIM,
+        game.pokemon.BieuTuong.PHIM, game.pokemon.BieuTuong.TIN, game.pokemon.BieuTuong.DONG, game.pokemon.BieuTuong.CHUOT_TRAI,
+        game.pokemon.BieuTuong.TAI_KHOAN};
+
+    /** Biểu tượng loai tâm (cx, cy), cạnh s (0.9.7: ảnh PNG; vẽ nét chỉ khi thiếu ảnh), màu c. */
     public static void bieuTuong(Graphics2D g, int loai, float cx, float cy, float s, Color c) {
+        if (loai >= 0 && loai < BT_ICON.length && icon(g, BT_ICON[loai], cx, cy, s)) return;
+        game.pokemon.VeTay.ghi("Kinh.bieuTuong vector");
         java.awt.Stroke cu = g.getStroke();
         float n = Math.max(1.2f, s * 0.11f);
         g.setColor(c);
@@ -323,6 +356,8 @@ public final class Kinh {
      * Chuột nhỏ (trang Phím tắt): nut 0 = nút trái sáng, 1 = nút phải sáng, 2 = con lăn sáng. Tâm (cx, cy), cao s.
      */
     public static void chuot(Graphics2D g, float cx, float cy, float s, int nut) {
+        if (icon(g, nut == 0 ? game.pokemon.BieuTuong.CHUOT_TRAI : nut == 1 ? game.pokemon.BieuTuong.CHUOT_PHAI : game.pokemon.BieuTuong.CHUOT_LAN, cx, cy, s)) return;
+        game.pokemon.VeTay.ghi("Kinh.chuot vector");
         float w = s * 0.66f, h = s;
         float x = cx - w / 2, y = cy - h / 2;
         RoundRectangle2D.Float than = new RoundRectangle2D.Float(x, y, w, h, w * 0.9f, w * 0.9f);
@@ -347,6 +382,8 @@ public final class Kinh {
 
     /** Poké Ball tâm (cx, cy) bán kính r (tiêu đề bảng Cài đặt). */
     public static void pokeBall(Graphics2D g, float cx, float cy, float r) {
+        if (icon(g, game.pokemon.BieuTuong.POKEBALL, cx, cy, 2 * r)) return;
+        game.pokemon.VeTay.ghi("Kinh.pokeBall vector");
         java.awt.geom.Ellipse2D.Float tron = new java.awt.geom.Ellipse2D.Float(cx - r, cy - r, 2 * r, 2 * r);
         g.setColor(Color.WHITE);
         g.fill(tron);

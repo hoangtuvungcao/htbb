@@ -320,6 +320,7 @@ public final class ChuDe {
 
     /** Dấu X vẽ nét (không ảnh), tâm (cx, cy), nửa cạnh k. */
     public static void dauX(Graphics g, int cx, int cy, int k, int mau) {
+        VeTay.ghi("dau X ve net");
         ChuUI b = ChuUI.bo;
         if (b != null && b.net(g, cx, cy, k, mau, 0)) {
             return;

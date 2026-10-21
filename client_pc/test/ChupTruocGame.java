@@ -170,7 +170,10 @@ public class ChupTruocGame {
                 doi(700);
                 ve(W, H);   // khung đầu (hoạt hình mở) + đăng ký vùng
                 doi(300);
+                game.pokemon.VeTay.xoa();
                 BufferedImage anh = ve(W, H);
+                // 0.9.7: mọi icon là ẢNH PNG (logo, Poké Ball, nút) - không vẽ bằng hình
+                kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.cuoi + ")");
                 File f = new File(ra, ten + "_" + TEN_CO[c] + "_" + W + "x" + H + ".png");
                 ImageIO.write(anh, "png", f);
                 // phủ kín: không còn điểm "chưa vẽ" (tím) ở 4 mép

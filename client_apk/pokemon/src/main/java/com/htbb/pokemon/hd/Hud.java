@@ -774,6 +774,21 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     static void veIcon(Canvas c, int n, float x, float y, float r) {
+        // 0.9.7 (icon = ảnh PNG): nút HUD dùng icon pixel /nro/icon.png qua Graphics của khung (jar BieuTuong)
+        int bt = n == N_TU_DONG ? game.pokemon.BieuTuong.TU_DONG : n == N_MUC_TIEU ? game.pokemon.BieuTuong.TRAN
+                : n == N_DOI_BO ? game.pokemon.BieuTuong.DOI_BO : n == N_CHAT || n == N_CHAT_BONG ? game.pokemon.BieuTuong.CHAT
+                : n == N_THEM ? game.pokemon.BieuTuong.TUI : n == N_CHINH ? game.pokemon.BieuTuong.NHIEM_VU
+                : n == N_MENU ? game.pokemon.BieuTuong.POKEBALL : -1;
+        if (bt >= 0 && gVe != null) {
+            int s = Math.max(16, Math.round(r * 1.3f) / 16 * 16);
+            Graphics g = gVe;
+            int tx = g.getTranslateX(), ty = g.getTranslateY();
+            g.translate(-tx, -ty);
+            game.pokemon.BieuTuong.ve(g, bt, Math.round(x) - s / 2, Math.round(y) - s / 2, s, 0xFFFFFF, 0);
+            g.translate(tx, ty);
+            return;
+        }
+        game.pokemon.VeTay.ghi("Hud APK veIcon vector");
         PV.setColor(0xFFFFFFFF);
         PV.setStrokeWidth(r * 0.14f);
         P.setShader(null);
@@ -907,10 +922,7 @@ public final class Hud implements NenAndroid.LopPhu {
                 if (!game.pokemon.ThanhNhanh.coGiDeGan(bo)) continue;
                 int rr = Math.round(r * 0.82f);
                 game.pokemon.Bang.oDo(gVe, Math.round(x) - rr, Math.round(y) - rr, 2 * rr, false, false, null, null);
-                PV.setColor(0xFF000000 | game.pokemon.ChuDe.CHU_NHAT);
-                PV.setStrokeWidth(1.2f);
-                c.drawLine(x - 4, y, x + 4, y, PV);
-                c.drawLine(x, y - 4, x, y + 4, PV);
+                game.pokemon.BieuTuong.ve(gVe, game.pokemon.BieuTuong.MO_RONG, Math.round(x) - 8, Math.round(y) - 8, 16, 0, 0);
                 continue;
             }
             nenNut(c, x, y, r, HdVe.pha(mau, 0xFFFFFFFF, 0.3f), HdVe.pha(mau, 0xFF000000, 0.35f), false);

@@ -9,7 +9,7 @@ public final class KhungNroBang {
     }
 
     public static final String TAM_KHUNG = "/nro/khung.png", TAM_ICON = "/nro/icon.png";
-    public static final int SO_ICON = 62, COT_ICON = 8;
+    public static final int SO_ICON = 70, COT_ICON = 8;
 
     public static final int TAM = 0;
     public static final int TAM_TOI = 1;

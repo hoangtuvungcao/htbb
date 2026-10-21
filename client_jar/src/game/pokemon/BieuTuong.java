@@ -29,10 +29,12 @@ public final class BieuTuong {
             CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52,
             // 0.9.6.1: cần câu (nút câu cạnh hồ). 0.9.7 (icon pixel NRO, chỉ có ảnh /nro/icon.png - không có lệnh vector):
             // thú cưng (bàn chân), ổ khoá, mở rộng (+), lượng (ngọc), vứt, trận đấu, bạn bè, thoát
-            CAN_CAU = 53, THU_CUNG = 54, KHOA = 55, MO_RONG = 56, LUONG = 57, VUT = 58, TRAN = 59, BAN_BE = 60, THOAT = 61;
+            CAN_CAU = 53, THU_CUNG = 54, KHOA = 55, MO_RONG = 56, LUONG = 57, VUT = 58, TRAN = 59, BAN_BE = 60, THOAT = 61,
+            // cài đặt bản PC: màn hình, loa, bàn phím, chuột (trái / phải / lăn), phím, tài khoản
+            MAN_HINH = 62, LOA = 63, BAN_PHIM = 64, CHUOT_TRAI = 65, CHUOT_PHAI = 66, CHUOT_LAN = 67, PHIM = 68, TAI_KHOAN = 69;
 
     /** số id biểu tượng (kể cả id chỉ có icon pixel) */
-    public static final int SO = 62;
+    public static final int SO = 70;
 
     static final float[][] HINH = new float[54][];
 
@@ -225,6 +227,7 @@ public final class BieuTuong {
 
     /** Vẽ bằng lệnh J2ME (không khử răng cưa). */
     static void veJ2me(Graphics g, float[] h, int x, int y, int s, int chinh, int nen) {
+        VeTay.ghi("BieuTuong vector");
         int i = 0;
         while (i < h.length) {
             int lenh = (int) h[i++];
