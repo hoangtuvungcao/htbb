@@ -147,7 +147,7 @@ public final class NangCapLauDaiGame {
             return THIEU;
         }
         if (daKhoa[0]) {
-            item.lock = 1;
+            item.khoaVinhVien(); // [khoa-khi-mac] nang cap bang nguyen lieu / bua khoa
         }
         final HoSoLauDai h = LauDaiNhanVat.lay(p);
         final int truot = h != null ? h.truot(item.id) : 0;

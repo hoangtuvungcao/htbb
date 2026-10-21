@@ -15,7 +15,7 @@ import javax.microedition.lcdui.Graphics;
 import network.Message;
 
 /**
- * 0.9.7 THU PHỤC POKÉMON (gói -121 của máy chủ HTBB, real.BatPokemonGame). Người chơi đánh một Pokémon hoang dã xuống
+ * 0.9.8 THU PHỤC POKÉMON (gói -121 của máy chủ HTBB, real.BatPokemonGame). Người chơi đánh một Pokémon hoang dã xuống
  * dưới ngưỡng HP (máy chủ gửi, mặc định 25%) thì dưới khung mục tiêu hiện nút "Ném Poké Ball ×n" (chạm "Đổi" để đổi loại
  * bóng). Bấm: bóng bay theo đường cong tới Pokémon, Pokémon "vào bóng" (ẩn), bóng lắc 0..3 lần theo kết quả máy chủ rồi
  * sáng sao (bắt được) / bật mở (thoát) / khói (bỏ chạy). Máy chủ quyết định mọi thứ (tỉ lệ, điều kiện, trừ bóng); client

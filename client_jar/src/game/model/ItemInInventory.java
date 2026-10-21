@@ -380,7 +380,7 @@ public class ItemInInventory {
                     b2 = (byte) (i2 + 1);
                 }
             }
-            // 0.9.7: bộ cùng bậc + lỗ ngọc hệ (máy chủ gửi -120 kiểu 0 trước gói 21) - game.pokemon.TrangBiThem
+            // 0.9.8: bộ cùng bậc + lỗ ngọc hệ (máy chủ gửi -120 kiểu 0 trước gói 21) - game.pokemon.TrangBiThem
             s = new StringBuffer(String.valueOf(s)).append(game.pokemon.TrangBiThem.moTa(this.itemID)).toString();
             if (this.dayUse != 0) {
                 long time = ((long) this.dayUse) - ((System.currentTimeMillis() - this.lastTime) / 60000);

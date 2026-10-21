@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import network.Message;
 
 /**
- * 0.9.7: BỘ TRANG BỊ, NGỌC HỆ, CHẾ TẠO, MỐC NEO NÂNG CẤP - gói -120 của máy chủ HTBB (real.BoNgocGame / real.CheTaoGame).
+ * 0.9.8: BỘ TRANG BỊ, NGỌC HỆ, CHẾ TẠO, MỐC NEO NÂNG CẤP - gói -120 của máy chủ HTBB (real.BoNgocGame / real.CheTaoGame).
  *
  * <ul>
  * <li>kiểu 0: dòng thêm cho thẻ chi tiết vật phẩm (bộ cùng bậc đang mặc x/11, lỗ ngọc, lợi / hại của ngọc) - máy chủ gửi

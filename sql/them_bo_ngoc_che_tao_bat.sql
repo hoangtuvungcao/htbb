@@ -1,5 +1,5 @@
 -- =====================================================================================================================
---  BỘ TRANG BỊ, NGỌC HỆ, CHẾ TẠO, MỐC NEO NÂNG CẤP, THU PHỤC POKÉMON (0.9.7, nhánh bo-ngoc-bat)
+--  BỘ TRANG BỊ, NGỌC HỆ, CHẾ TẠO, MỐC NEO NÂNG CẤP, THU PHỤC POKÉMON (0.9.8, nhánh bo-ngoc-bat)
 -- =====================================================================================================================
 --
 --      mysql -u root htbb_db < sql/them_bo_ngoc_che_tao_bat.sql

@@ -11,7 +11,7 @@ import javax.microedition.lcdui.Graphics;
 /**
  * POKÉDEX (0.9.3): các loài Pokémon hoang dã của thế giới game (mẫu quái máy chủ gửi: tên, hệ, số dex -91), lưới
  * chân dung + tên, chip lọc theo hệ, chạm = thẻ chi tiết với Pokémon to động + huy hiệu hệ. Hiện mọi loài đã biết;
- * 0.9.7: loài ĐÃ BẮT (thu phục, gói -121 kiểu 2 - BatPokemon) có dấu Poké Ball ở góc thẻ, chip lọc "Đã bắt", số đã bắt
+ * 0.9.8: loài ĐÃ BẮT (thu phục, gói -121 kiểu 2 - BatPokemon) có dấu Poké Ball ở góc thẻ, chip lọc "Đã bắt", số đã bắt
  * trên đầu lưới.
  */
 public final class ManPokedex extends ManBang {
@@ -31,7 +31,7 @@ public final class ManPokedex extends ManBang {
         loai = null;
         gI().chon = -1;
         gI().moBang();
-        BatPokemon.xinPokedex();   // 0.9.7: trạng thái "Đã bắt" theo loài
+        BatPokemon.xinPokedex();   // 0.9.8: trạng thái "Đã bắt" theo loài
     }
 
     protected String tieuDe() {
@@ -177,7 +177,7 @@ public final class ManPokedex extends ManBang {
                     ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN, s - 6), xi + s / 2, y + 4 + hi, ChuDe.NHAN, ChuDe.CHU, 2);
                     ChuDe.chu(g, soDex(lt[0]), xi + s / 2, y + 4 + hi + lh1, ChuDe.PHU, ChuDe.CHU_PHU, 2);
                     if (BatPokemon.daBat(lt[0])) {
-                        GiaoDien.pokeBall(g, xi + s - 10, y + 10, 6, 0);   // 0.9.7: đã bắt
+                        GiaoDien.pokeBall(g, xi + s - 10, y + 10, 6, 0);   // 0.9.8: đã bắt
                     }
                     Bang.dangKy(g, xi, y, s, h, new IAction() {
                         public void perform() {

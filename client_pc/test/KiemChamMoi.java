@@ -62,6 +62,7 @@ public class KiemChamMoi {
         m.basePointLeft = 0;
         game.render.screen.MessageScr.nMSG = 0;
         game.pokemon.ChamMoi.daXemChieuMoi();
+        game.pokemon.DanhHieuKho.soMoi = 0;
     }
 
     static void mo(String man) throws Exception {
@@ -197,6 +198,27 @@ public class KiemChamMoi {
             buoc(ng, "tab " + (t == 0 ? "Đang làm" : "Có thể nhận"), "tab-" + t);
             buoc(ng, "hàng nhiệm vụ", "nv-*");
         }
+        // DANH HIỆU MỚI (0.9.7): HUD Menu -> Pokémon -> tab Trang bị -> viên Danh hiệu -> hàng danh hiệu mới
+        ChupTrongGame.chay(() -> {
+            tatHet();
+            ChupTrongGame.giaLapDanhHieu();   // bảng giả: 9720 "Master Ball mùa này" mới
+            game.pokemon.DanhHieuKho.soMoi = 1;
+        });
+        mo("the_gioi");
+        buoc("danh hiệu mới", "HUD Menu", "hud-tren-3");
+        mo("menu");
+        buoc("danh hiệu mới", "Menu Pokémon", "menu-Pokémon");
+        mo("nv_trang_bi");
+        buoc("danh hiệu mới", "tab Trang bị", "tab-0");
+        buoc("danh hiệu mới", "viên Danh hiệu", "danh-hieu");
+        ChupTrongGame.chay(() -> {
+            game.pokemon.ManDanhHieu.moTab(0);
+            game.pokemon.DanhHieuKho.soMoi = 1;   // mo() gửi "đã xem" (không máy chủ ở đây): giữ chấm để vẽ hàng
+        });
+        buoc("danh hiệu mới", "hàng danh hiệu mới", "danh-hieu-9720");
+        ChupTrongGame.chay(() -> game.pokemon.DanhHieuKho.daXem());
+        mo("menu");
+        kiem(!coChamTrong("danh_hieu_da_xem", "menu-Pokémon"), "danh hiệu mới: đã mở bảng -> ô Pokémon ở Menu hết chấm");
         System.out.println("KiemChamMoi: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);
     }

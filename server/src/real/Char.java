@@ -139,6 +139,8 @@ public class Char extends LiveActor {
     // Doc TRUOC bang remap VI_TRI_MENU_DAU_TRUONG trong MapDoMenu de khong bi bang do
     // chan nham (bang chi chap nhan vi tri no biet). Xem real/MapSuKien.doMenuDauTruongVuLan.
     public int idxSuKienVuLanDauTruong = -1;
+    /** Vi tri muc "Đấu xếp hạng" trong menu NPC Dau truong (-31) vua gui, -1 = khong co (XepHangPvpGame). */
+    public int idxXepHangDauTruong = -1;
     // Vi tri (idOptionMenu) cua muc "Nhan thuong dua top" trong menu NPC Tong Quan, gan
     // lai moi lan RequestNPCInfoHandler mo menu -10. -1 = nhan vat nay khong co thuong
     // dua top nao dang cho nhan (menu khong co dong nay). Xem real/SuKienDuaTop.
@@ -343,6 +345,10 @@ public class Char extends LiveActor {
     public short idNguoiMoiGiaoDich = -1;
     /** Thoi diem nhan loi moi tren, de loi moi cu khong dung lai duoc. */
     public long timeDuocMoiGiaoDich;
+    /** 0.9.6: loi moi vao nhom con han (ai moi, luc nao) - okJoinParty chi nhan khi co loi moi that. */
+    public volatile short idNguoiMoiNhom = -1;
+    public volatile long timeDuocMoiNhom;
+    public static final long HAN_LOI_MOI_NHOM_MS = 60000L;
 
     /** Doi phuong dang giao dich voi minh, hay null. */
     public Char doiPhuongGiaoDich() {
@@ -1187,7 +1193,8 @@ public class Char extends LiveActor {
         Char.timeExpireAutoGetItem = new long[]{2592000000L, 3600000L};
         Char.lixilucky = new byte[]{-1, -1, -1, -1, -1};
         Char.totalLixiOpened = 0;
-        Char.XU_LI_XI = new int[]{1000000, 1000000, 1000000, 2000000, 5000000};
+        // Gia tri cu cua 5 giai lon (khong con dung - giai lon = li_xi.tui_giai_lon_phan_tram_gio, LiXiLogic.giaiLon).
+        Char.XU_LI_XI = new int[]{0, 0, 0, 0, 0};
         Char.daysomaymm = "";
         Char.numberLucky = 5300;
         Char.numberRandom = 4067;
@@ -2047,6 +2054,20 @@ public class Char extends LiveActor {
 
     /** @return false neu buoc chuyen thuoc bi tu choi (xem doAddPotionTrad2Inventory) - nguoi goi phai huy giao dich. */
     public boolean doAddItemTrad2Inventory() {
+        // [khoa-khi-mac] chot cuoi: vat pham khoa (da mac / khoa vi ly do khac) khong bao gio doi chu qua giao dich.
+        // (Hien MapMuaBan.doTrade tu choi moi vat pham - goi 66/2 kieu 0 - nen tItems luon rong; chan them cho chac.)
+        for (int i = 0; i < this.tItems.size(); ++i) {
+            if (!this.tItems.elementAt(i).giaoDichDuoc()) {
+                return false;
+            }
+        }
+        if (this.userTrade.size() > 0) {
+            for (int i = 0; i < this.userTrade.get(0).tItems.size(); ++i) {
+                if (!this.userTrade.get(0).tItems.elementAt(i).giaoDichDuoc()) {
+                    return false;
+                }
+            }
+        }
         String info = String.valueOf(this.charname) + " chuyển_";
         for (int i = 0; i < this.tItems.size(); ++i) {
             final Item item = this.tItems.elementAt(i);
@@ -3784,8 +3805,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /**
+     * 0.9.7: BO mien mat EXP cua VIP 3 (VIP theo diem nap = mua suc manh, trai luat "khong ban suc manh"). Moi nguoi
+     * guc trong PK deu mat EXP nhu nhau (real.LuatPkGame.expMat, khong tut cap).
+     */
     public boolean isNotDownExp() {
-        return this.vip == 3;
+        return false;
     }
 
     @Override
@@ -4854,7 +4879,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         try {
             final byte[][] temp = {{4, 5}, {1, 1, 6}, {5, 5, 6, 3}, {0, 1, 6}, {2, 3, 6}};
             for (int i = 0; i < temp[this.charClass].length; ++i) {
-                if (this.skill[i + 4] + this.addMoreLevelSkill[i + 4] != -1) {
+                // hieu ung dang chay giu thoi luong luc dung (ChieuHoTro.ghi) - khong keo dai giua chung
+                if (this.skill[i + 4] + this.addMoreLevelSkill[i + 4] != -1 && this.arrayBuff[temp[this.charClass][i]] == -1) {
                     this.timeOut[temp[this.charClass][i]] = CharManager.TIME_LIFE_BUFF_SKILL[temp[this.charClass][i]][this.skill[i + 4] + this.addMoreLevelSkill[i + 4]];
                 }
             }
@@ -5779,6 +5805,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     // Than method (120 dong) da chuyen sang CharSuKien.java. Chu ky GIU NGUYEN.
     public void doResponseTieu(final Char pReceive, final boolean isThief, final int type, int lvOpen) {
         CharSuKien.doResponseTieu(this, pReceive,isThief,type,lvOpen);
+        if (!isThief) {
+            DiemMocNhiemVu.khiHoTong(pReceive); // diem moc ho_tong (ve dich, khong bi cuop)
+        }
     }
 
     public Item doAddItemVanTieu(final Char pRcv, final int colorTieu, final int lvOpen) {
@@ -6135,6 +6164,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public int haveNeTranhBoQuaPet() {
         int ne = super.haveNeTranh();
         ne += getTkNeTranh() * 10;
+        ne += DanhHieuGame.phanNghin(this, com.htbb.pokemon.DanhHieuLogic.NE_TRANH); // danh hieu dang deo (phan nghin, co tran)
         if (ne > 900) {
             ne = 900;
         }
@@ -6154,6 +6184,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // Than khi: dong ne tranh luu phan tram thang, con noi goi so sanh voi
         // Map.r.nextInt(1000) nen phai x10 de doi sang phan nghin.
         ne += getTkNeTranh() * 10;
+        // Danh hieu DANG DEO (mot danh hieu, phan nghin, tran danh_hieu.tran_phan_nghin); ChiSoTrangBiGame.neTranh kep tran o noi goi.
+        ne += DanhHieuGame.phanNghin(this, com.htbb.pokemon.DanhHieuLogic.NE_TRANH);
         if (ne > 900) {
             ne = 900; // khong cho ne tuyet doi
         }
@@ -7791,6 +7823,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.partyID = -1;
                 this.masterIDParty = -1;
                 mm.cleanup();
+            } else if (this.partyID != -1) {
+                // 0.9.6: nhom chua ai vao (tao roi giai tan / thoat / thoat game) truoc day khong tra id ve kho
+                // (32000 id, lenh 48 + 50 lap lai la can kho -> khong ai tao duoc nhom den khi khoi dong lai).
+                RealController.intance.idGen.putID(this.partyID, 5, "xoa party rong");
+                this.party = new Party();
+                this.partyID = -1;
+                this.masterIDParty = -1;
             }
         } catch (final Exception ex) {
         }
@@ -7822,6 +7861,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     return;
                 }
                 if (fr.id == idFriend && fr.party.userParty.size() <= 0) {
+                    if (this.partyID == -1) {
+                        this.createParty(); // 0.9.6: moi khi chua tao nhom -> tao truoc (okJoinParty can partyID that)
+                        if (this.partyID == -1) {
+                            return;
+                        }
+                    }
+                    fr.idNguoiMoiNhom = this.id;
+                    fr.timeDuocMoiNhom = System.currentTimeMillis();
                     final Message mm = new Message(49);
                     mm.dos.writeByte(0);
                     mm.dos.writeShort(this.partyID);
@@ -7861,6 +7908,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
             final short idInvite = m.dis.readShort();
             final Char fr = CharManager.instance.getByCharID(idInvite);
+            // 0.9.6: phai co loi moi con han tu dung nguoi do, nhom ho con ton tai va chua du. Truoc day goi 49/1 voi
+            // id bat ky la vao duoc nhom nguoi do (khong loi moi, vuot 5 nguoi - kiem nham nhom RONG cua chinh minh).
+            if (fr == null || !duocVaoNhom(this.idNguoiMoiNhom, this.timeDuocMoiNhom, idInvite, System.currentTimeMillis(),
+                    fr.partyID, fr.party == null ? Party.MAX_MEMBER : fr.party.userParty.size())) {
+                return;
+            }
+            this.idNguoiMoiNhom = -1;
             if (fr != null && this.partyID == -1) {
                 final int size = fr.party.userParty.size();
                 this.partyID = fr.partyID;
@@ -7900,6 +7954,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /** 0.9.6: nhan loi moi vao nhom duoc khong (ham thuan). */
+    public static boolean duocVaoNhom(final int idMoi, final long lucMoi, final int idInvite, final long bayGio,
+            final int partyIdChuNhom, final int soThanhVien) {
+        if (idMoi < 0 || idMoi != idInvite || bayGio - lucMoi > HAN_LOI_MOI_NHOM_MS || bayGio < lucMoi) {
+            return false;
+        }
+        return partyIdChuNhom != -1 && soThanhVien < Party.MAX_MEMBER;
+    }
+
     public void cancelJoinParty(final Message m) {
         try {
             final int idInvite = m.dis.readShort();
@@ -7917,6 +7980,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public void outParty() {
         try {
+            // 0.9.6: nhom rong / truong nhom roi nhom = giai tan (tra id ve kho). Truoc day truong nhom roi thi nhom con
+            // lai khong ai moi / duoi / giai tan duoc va id nhom khong bao gio duoc tra.
+            if (this.partyID != -1 && (this.party.userParty.isEmpty() || this.id == this.party.idMaster)) {
+                this.deleteParty();
+                return;
+            }
             final Message msg = new Message(50);
             msg.dos.writeByte(2);
             msg.dos.writeShort(this.id);
@@ -8014,6 +8083,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             m.dos.writeByte(0);
             m.dos.writeShort(charID);
             m.dos.writeByte(buffEff);
+            m.dos.writeShort(0); // client doc short (timeOut) truoc khi xet kieu - thieu la EOF, khong xoa duoc
             for (int i = 0; i < this.nearChars.size(); ++i) {
                 final Char ch = this.map.getPlayerByID(this.nearChars.elementAt(i));
                 if (ch != null) {
@@ -8584,6 +8654,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
             } else {
                 this.outParty();
             }
+        } else if (this.partyID != -1) {
+            this.deleteParty(); // 0.9.6: nhom rong - tra id ve kho
         }
         try {
             this.tItems.removeAllElements();
@@ -10164,7 +10236,75 @@ public int applyRongLonReleaseTo(int baseDamage) {
         Map.MAX_LI_XI = 100;
     }
 
+    /**
+     * Dot li xi (moi nam mot dot, khoa o dem tob_gioi_han_qua) - xem com.htbb.pokemon.LiXiLogic.
+     */
+    static String dotLiXi() {
+        return String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    static String ngayLiXi() {
+        return new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date());
+    }
+
+    public static com.htbb.pokemon.LiXiLogic.CauHinh cauHinhLiXi() {
+        final com.htbb.pokemon.LiXiLogic.CauHinh d = com.htbb.pokemon.LiXiLogic.CauHinh.macDinh();
+        try {
+            return new com.htbb.pokemon.LiXiLogic.CauHinh(
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_nhan_ngay_toi_da", d.tuiNhanNgay),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_mo_ngay_toi_da", d.tuiMoNgay),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_mo_dot_toi_da", d.tuiMoDot),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_xu_phan_tram_gio_min", d.xuPhanTramGioMin),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_xu_phan_tram_gio_max", d.xuPhanTramGioMax),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.tui_giai_lon_phan_tram_gio", d.giaiLonPhanTramGio),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_luong_khoa_min", d.maLuongKhoaMin),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_luong_khoa_max", d.maLuongKhoaMax),
+                    (int) com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_tai_khoan_moi_may", d.maTaiKhoanMoiMay),
+                    com.htbb.cauhinh.CauHinhTrungTam.so("li_xi.ma_tong_luong_khoa_dot", d.maTongLuongKhoaDot));
+        } catch (final Throwable t) {
+            return d;
+        }
+    }
+
+    /**
+     * Phan XU cua tui li xi: chi tra khi qua cong chong clone (cap / tuoi tai khoan / gio choi) va thiet bi / IP chua
+     * qua N Pokemon mo li xi hom nay. @return so xu da tra (0 = khong tra, da bao ly do).
+     */
+    static long traXuLiXi(final Char p, final long xu, final String lyDo) {
+        if (xu <= 0L) {
+            return 0L;
+        }
+        final String chan = com.htbb.pokemon.ChongClone.lyDo(p, true);
+        if (chan != null) {
+            p.sendMessage(MessageCreator.createServerAlertMessage("Bao lì xì có " + xu + " xu nhưng chưa nhận được: "
+                    + chan.replace("giao dịch / mua bán xu với người chơi khác", "nhận xu lì xì").replace("giao dịch xu", "nhận xu lì xì"), ""));
+            return 0L;
+        }
+        final com.htbb.pokemon.ChongCloneLogic.Ben b = com.htbb.pokemon.ChongClone.ben(p, false);
+        final String ngay = ngayLiXi();
+        final String may = VongQuay.SO_NGAY.kiemMay(ngay, p.charname, b.may, b.ip,
+                com.htbb.pokemon.ChongClone.cauHinh().nvCungMayToiDa);
+        if (may != null) {
+            p.sendMessage(MessageCreator.createServerAlertMessage(may.replace("tham gia vòng quay", "nhận xu lì xì"), ""));
+            return 0L;
+        }
+        VongQuay.SO_NGAY.ghi(ngay, 10, p.charname, b.may, b.ip, xu);
+        p.addXu(xu, lyDo);
+        Database.instance.saveOrtherLog("", p.charname, "li xi tra " + xu + " xu (" + lyDo + ")", "olixixu");
+        return xu;
+    }
+
     public static synchronized void doOpenLixi2021(final Char p) {
+        // 19/10/2026: tran mo tui (ngay + ca dot) - vuot thi tra lai tui, khong mo.
+        final com.htbb.pokemon.LiXiLogic.CauHinh cfgLiXi = cauHinhLiXi();
+        final String chanMo = com.htbb.pokemon.LiXiLogic.moTui(cfgLiXi, data.DatabaseGioiHanQua.KHO, dotLiXi(), ngayLiXi(), p.charname);
+        if (chanMo != null) {
+            p.potions[159]++;
+            p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+            p.sendMessage(MessageCreator.createServerAlertMessage(chanMo, ""));
+            return;
+        }
+        final long xuGioLiXi = com.htbb.pokemon.LauDai.xuMoiGio(Math.max(1, p.lvDetail == null ? 1 : p.lvDetail.lv));
         if (Char.lixilucky[0] == -1) {
             final Vector<Byte> number = new Vector<Byte>();
             for (int i = 0; i < 100; ++i) {
@@ -10188,20 +10328,27 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (TeamServer.isServerLocal()) {
             info = String.valueOf(Char.daysomaymm) + " số hộp dc mở: " + Char.totalLixiOpened + ". " + info;
         }
+        // 19/10/2026: giai lon = 1 gio thu nhap o cap nguoi mo (truoc 1.000.000 - 5.000.000 xu), toi da so giai cu (5) moi
+        // dot toan may chu; tui thuong = 5-10% gio (truoc 10.000 - 20.000). Phan xu qua cong chong clone (traXuLiXi).
         boolean isXu = false;
         for (int j = 0; j < Char.lixilucky.length; ++j) {
-            if (Char.lixilucky[j] == Char.totalLixiOpened) {
-                p.addXu(Char.XU_LI_XI[j], "char 6");
-                info = String.valueOf(info) + Char.XU_LI_XI[j] + " xu. ";
+            if (Char.lixilucky[j] == Char.totalLixiOpened
+                    && data.DatabaseGioiHanQua.KHO.thu(com.htbb.pokemon.LiXiLogic.maGiaiLon(dotLiXi()), "*", 1L,
+                            com.htbb.pokemon.GioiHanQua.VO_HAN, Char.lixilucky.length, ngayLiXi())) {
+                final long xu = traXuLiXi(p, com.htbb.pokemon.LiXiLogic.giaiLon(cfgLiXi, xuGioLiXi), "li xi giai lon");
+                if (xu > 0L) {
+                    info = String.valueOf(info) + xu + " xu (giải lớn). ";
+                }
                 isXu = true;
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 break;
             }
         }
         if (!isXu) {
-            final int xu = UtilHTBB.getRandomMinMax(10000, 20000);
-            p.addXu(xu, "char 6");
-            info = String.valueOf(info) + xu + " xu. ";
+            final long xu = traXuLiXi(p, com.htbb.pokemon.LiXiLogic.xuTui(cfgLiXi, xuGioLiXi, Map.r), "li xi");
+            if (xu > 0L) {
+                info = String.valueOf(info) + xu + " xu. ";
+            }
             isXu = true;
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
         }
@@ -10236,8 +10383,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
         } else if (typegift[index] == 3) {
             if (p.isFullInventory()) {
-                final int xu2 = 5000 + Map.r.nextInt(100000);
-                p.addXu(xu2, "char 7");
+                // hanh trang day: doi mon do bang xu cung muc tui thuong (truoc 5.000 - 105.000 xu)
+                final long xu2 = traXuLiXi(p, com.htbb.pokemon.LiXiLogic.xuTui(cfgLiXi, xuGioLiXi, Map.r), "li xi (day tui)");
                 info = String.valueOf(info) + xu2 + " xu";
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             } else {
@@ -12566,6 +12713,31 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /**
+     * 0.9.6: tra nhiem vu (OnQuest type 1) duoc khong. Nhiem vu "noi chuyen" (type 3) / "giao do" (type 1) xong khi
+     * gap NPC nen khong can FINISH, nhung PHAI DA NHAN (WORKING / FINISH). Truoc day UN_RECEIVE cung tra duoc -> goi
+     * -64 tra thang nhiem vu chinh chua nhan, bo qua kiemNhanChinh (cap, ngay mo chuong, ve chuong) va diem hoat dong.
+     */
+    public static boolean duocTraNhiemVu(final int trangThai, final int loai) {
+        if (trangThai == NewCharQuest.DONE || trangThai == NewCharQuest.UN_RECEIVE) {
+            return false;
+        }
+        return trangThai == NewCharQuest.FINISH || loai == 1 || loai == 3;
+    }
+
+    /** 0.9.6: questID (main_sub) co trong danh sach nhiem vu dang moi nhan khong. */
+    public static boolean coTrongDanhSachNhan(final java.util.List<NewCharQuest> ds, final short questID, final byte mainSub) {
+        if (ds == null) {
+            return false;
+        }
+        for (final NewCharQuest q : ds) {
+            if (q != null && q.id_quest == questID && q.main_sub == mainSub) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void OnQuest(final byte type, final short questID, final byte main_sub) 
     {              
         if (main_sub == 0) 
@@ -12607,10 +12779,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             } else if (type == 1) {
                 try {
-                    if (this.mainQuest.state_quest != NewCharQuest.DONE && (this.mainQuest.state_quest == NewCharQuest.FINISH || info.type == 1 || info.type == 3)) {
+                    if (duocTraNhiemVu(this.mainQuest.state_quest, info.type)) {
                         this.mainQuest.state_quest = NewCharQuest.DONE;
                         this.mainQuest.addGift(this);
                         NhiemVuEngine.khiXongChuoiCu(this, info.ma); // thuong_khac chuoi chinh (dai han, kiem_item_mo_coi)
+                        if (info.type == 1) {
+                            DiemMocNhiemVu.khiGiaoVatPham(this, info.getItemGet()); // diem moc giao_hang / dua_thu
+                        }
                         boolean sendInfo = true;
                         if (info.type == 3) {
                             sendInfo = false;
@@ -12658,6 +12833,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 if (this.subQuest.id_quest > -1 && this.subQuest.id_quest != questID) {
                     return;
                 }
+                // 0.9.6: chi nhan nhiem vu phu NAM TRONG danh sach dang moi (getAllQuestCanReceive: ton tai, loc cap khi
+                // bat sv.lau_dai). Truoc day goi -64 voi questID bat ky la nhan duoc - ca id khong ton tai (info null ->
+                // NPE, subQuest ket o id rac) lan nhiem vu cap cao.
+                if (!coTrongDanhSachNhan(this.getAllQuestCanReceive(), questID, (byte) 1)) {
+                    return;
+                }
                 this.subQuest = new NewCharQuest(questID, (byte) 1);
                 info = this.subQuest.getTemplate();
                 if (info.pAvtive > this.pointActiveQuest) {
@@ -12689,7 +12870,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     return;
                 }
                 info = this.subQuest.getTemplate();
-                if (this.subQuest.state_quest != NewCharQuest.DONE && (info.type == 3 || info.type == 1 || this.subQuest.state_quest == NewCharQuest.FINISH)) {
+                if (duocTraNhiemVu(this.subQuest.state_quest, info.type)) {
                     this.subQuest.state_quest = NewCharQuest.DONE;
                     this.subQuest.addGift(this);
                     boolean sendInfo = true;
@@ -15769,11 +15950,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.idEffDanhHieu > -1) {
             this.idEffDanhHieu = -1;
             this.currentDanhHieu = null;
+            this.calculateAttrib(); // danh hieu co dong chi so (DanhHieuGame.phanNghin)
             try {
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
             } catch (final IOException ex) {
             }
             this.sendToNearPlayer(MessageCreator.createCharInfo(this));
+            DanhHieuGame.guiNhan(this);
         }
     }
 
@@ -15782,12 +15965,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.currentDanhHieu = this.allDanhHieu.get(index);
 
 //        System.out.println("idEffDanhHieu: " + idEffDanhHieu +", currentDanhHieu: " + currentDanhHieu.getName());
+        this.calculateAttrib(); // danh hieu co dong chi so (DanhHieuGame.phanNghin)
         try {
             this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
         this.sendToNearPlayer(MessageCreator.createCharInfo(this));
+        DanhHieuGame.guiNhan(this);
     }
 
     public String[] getAllNamDanhHieu() {

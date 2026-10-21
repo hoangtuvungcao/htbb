@@ -43,7 +43,10 @@ public final class KiemChuHoaCoDau {
         "[^a-zA-Z0-9",
     };
 
+    private static int soPhucHoi;
+
     public static void chay() {
+        soPhucHoi = 0;
         Kiem.nhom("Chu HOA co dau (U+1EA0..U+1EF8) - font client JAR khong ve duoc");
 
         final List<String> viPham = new ArrayList<String>();
@@ -58,7 +61,7 @@ public final class KiemChuHoaCoDau {
             return;
         }
 
-        Kiem.dung("duyet duoc ma nguon src/ (" + soTep + " tep)", soTep > 0);
+        Kiem.dung("duyet duoc ma nguon src/ (" + soTep + " tep, bo qua " + soPhucHoi + " lop phuc hoi tu jar cu)", soTep > 0);
         if (!viPham.isEmpty()) {
             for (final String v : viPham) {
                 System.out.println("        " + v);
@@ -71,6 +74,12 @@ public final class KiemChuHoaCoDau {
     private static void quetTep(final Path p, final List<String> viPham) throws IOException {
         final String duong = p.toString().replace('\\', '/');
         final List<String> dong = Files.readAllLines(p, StandardCharsets.UTF_8);
+        // Lop phuc hoi tu lib/htbb-core.jar (P3): chuoi giu NGUYEN nhu ban jar cu (khong doi hanh vi);
+        // viet lai chuoi la viec cua P4/P5. Dem rieng de khong lan voi chuoi moi them vao src/.
+        if (KiemThuatNgu.laLopPhucHoi(dong)) {
+            soPhucHoi++;
+            return;
+        }
         for (int i = 0; i < dong.size(); i++) {
             final String line = dong.get(i);
             final String cat = line.trim();

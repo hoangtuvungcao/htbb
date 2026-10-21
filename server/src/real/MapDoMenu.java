@@ -136,6 +136,11 @@ class MapDoMenu {
             if (NpcDichVu.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // [khoa-khi-mac] NPC ao pha khoa trang bi (mo tu muc 3 cua Machamp tho ren, case 2 ben duoi).
+            if (idNpc == PhaKhoaGame.NPC_ID) {
+                PhaKhoaGame.doMenu(player, idMenu, idOptionMenu);
+                return;
+            }
             // [bo-ngoc] Machamp tho ren (loai 2): muc "Che tao & kham ngoc" noi cuoi menu (BoNgocGame.themMucThoRen)
             if (idNpc == 2 && idMenu == 0 && idOptionMenu == BoNgocGame.viTriThoRen) {
                 BoNgocGame.moMenu(player);
@@ -1558,6 +1563,11 @@ class MapDoMenu {
                     // (RequestNPCInfoHandler case -31). Phai chan O DAY, TRUOC khi remap
                     // VI_TRI_MENU_DAU_TRUONG ben duoi - bang do chi biet cac vi tri co san,
                     // vi tri moi nay se bi no return im lang neu khong chan truoc.
+                    // 0.9.7 Dau xep hang (noi cuoi menu, truoc Vu Lan): chan truoc khi remap.
+                    if (idMenu == 0 && player.idxXepHangDauTruong >= 0 && idOptionMenu == player.idxXepHangDauTruong) {
+                        XepHangPvpGame.dangKy(player);
+                        return;
+                    }
                     if (idMenu == 0 && SuKien.bat(SuKien.VU_LAN) && player.idxSuKienVuLanDauTruong >= 0
                             && idOptionMenu == player.idxSuKienVuLanDauTruong) {
                         MapSuKien.doMenuDauTruongVuLan(map, player, idNpc, MapSuKien.MENU_VU_LAN_DAU_TRUONG_GOC, -1);
@@ -1693,7 +1703,7 @@ class MapDoMenu {
                                 return;
                             }
 
-                            player.sendMessage(MessageCreator.createMsgInputText(player.id, 5, "Nhập tiền cược", 1));
+                            player.sendMessage(MessageCreator.createMsgInputText(player.id, 5, "Nhập xu cược (" + ThachDauCuoc.moTaMuc(player) + ", phí " + ThachDauCuoc.cauHinh().phiPhanTram + "% bên thắng)", 1));
                         } else {
                             ArenaData arena = ArenaMap.getArenaData(player);
                             if (arena == null) {
@@ -4969,7 +4979,9 @@ class MapDoMenu {
                         }
                     } else {
                         player.buyAnimalArmor = -1;
-                        if (idOptionMenu != 0) {
+                        if (idOptionMenu == PhaKhoaGame.VI_TRI_MUC_THO_REN) {
+                            PhaKhoaGame.moMenu(player); // [khoa-khi-mac]
+                        } else if (idOptionMenu != 0) {
                             if (idOptionMenu == 1) {
                                 String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
                                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));

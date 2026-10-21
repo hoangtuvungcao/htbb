@@ -739,7 +739,7 @@ public class ScreenDapDo extends Screen {
             if (itemSelect != null) {
                 itemSelect.paint(g, this.xItem[0] + 10, this.yItem[0] + 10);
             }
-            // 0.9.7: tỉ lệ thật + pity + mốc neo của lần nâng kế tiếp (máy chủ gửi -120 kiểu 1) - spec 4.4 / đề xuất 6
+            // 0.9.8: tỉ lệ thật + pity + mốc neo của lần nâng kế tiếp (máy chủ gửi -120 kiểu 1) - spec 4.4 / đề xuất 6
             String nut = itemSelect == null ? null : game.pokemon.TrangBiThem.chuNut(itemSelect.itemID);
             this.cmdEp.caption = nut != null ? nut : "Đập";
             String phu = itemSelect == null ? null : game.pokemon.TrangBiThem.chuPhu(itemSelect.itemID);

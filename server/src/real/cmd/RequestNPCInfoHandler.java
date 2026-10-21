@@ -567,6 +567,16 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     // neu con hien) chu khong chen vao giua, de VI_TRI_MENU_DAU_TRUONG
                     // (MapDoMenu) khong bi lech vi tri cac muc no da biet. Xem
                     // real/MapSuKien.doMenuDauTruongVuLan.
+                    // 0.9.7 Dau xep hang (real.XepHangPvpGame): cung kieu noi CUOI menu nhu Vu Lan, vi tri ghi o
+                    // p.idxXepHangDauTruong (MapDoMenu chan truoc khi remap VI_TRI_MENU_DAU_TRUONG).
+                    p.idxXepHangDauTruong = -1;
+                    if (com.htbb.pokemon.LauDai.bat()) {
+                        String[] menuXh = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuXh, 0, menu.length);
+                        menuXh[menu.length] = real.XepHangPvpGame.dangCho(p) ? "Rời hàng đấu xếp hạng" : "Đấu xếp hạng";
+                        p.idxXepHangDauTruong = menu.length;
+                        menu = menuXh;
+                    }
                     p.idxSuKienVuLanDauTruong = -1;
                     if (real.SuKien.bat(real.SuKien.VU_LAN)) {
                         String[] menuVuLan = new String[menu.length + 1];
@@ -1100,7 +1110,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case 2: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Mua đồ cầm tay", "Mua trang bị thú"};
+                    // [khoa-khi-mac] muc 3 (vi tri real.PhaKhoaGame.VI_TRI_MUC_THO_REN) - xu ly o MapDoMenu case 2.
+                    menu = new String[]{"Mua đồ cầm tay", "Mua trang bị thú", real.PhaKhoaGame.TEN_MUC};
                     if (TeamServer.isServerIndo()) {
                         menu = new String[]{"Membeli senjata"};
                     } else {

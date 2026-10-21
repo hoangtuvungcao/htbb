@@ -175,11 +175,16 @@ public final class TienHoaPokemon {
             final Message pet = taoPokePet(ch);
             // ... -> -102 ngoai hinh trang bi (NgoaiHinhGame): phu kien + vang sang hien cho moi nguoi
             Message duoi = NgoaiHinhGame.tao(ch);
+            duoi = DanhHieuGame.noiDuoi(duoi, ch); // ... -> -110 nhan danh hieu dang deo (ten + do hiem) cho moi nguoi
             // [bat-pokemon] ... -> -102 -> -121 kieu 3: ban dong hanh (Hop PC) di theo, chi de nhin
             final Message banDh = BatPokemonGame.taoDongHanh(ch);
             if (banDh != null) {
                 if (duoi != null) {
-                    duoi.kemTheo = banDh;
+                    Message cuoiChuoi = duoi; // noi vao CUOI chuoi (sau -110 danh hieu)
+                    while (cuoiChuoi.kemTheo != null) {
+                        cuoiChuoi = cuoiChuoi.kemTheo;
+                    }
+                    cuoiChuoi.kemTheo = banDh;
                 } else {
                     duoi = banDh;
                 }

@@ -55,7 +55,7 @@ test('cố định: nội bộ chống DoS / nhật ký / công thức kinh tế
 test('chỉnh trên web: những thứ người vận hành thật sự chỉnh vẫn hiện', () => {
   for (const khoa of ['sv.tileXu', 'sv.tileLuong', 'sv.tileExpLv50', 'bao_tri.bat', 'sv.gioBaoTri', 'sv.nap_tien', 'nap.luong.bat',
     'tran_tuan_vnd', 'thanh_vien.gia', 'thanh_vien.bat', 'kich_hoat.chan_dang_nhap', 'tu_dong.gio_moi_ngay',
-    'hoi_sinh.xu_phan_tram_gio', 'hoi_sinh.luong_khoa', 'dang_ky.web.bat', 'sv.dangKyTrongGame', 'sv.website', 'sv.linkTaiGame',
+    'hoi_sinh.xu_phan_tram_gio', 'hoi_sinh.luong_khoa', 'dang_ky.web.bat', 'sv.dangKyTrongGame', 'sv.website', 'sv.linkTaiGame', 'sv.banToiThieu', 'sv.banMoiNhat',
     'giftcode.ngan_sach_thang', 'sv.gioChiemThanh', 'HTBB_NAP_BAT']) {
     assert.ok(!anTT(k(khoa)), khoa)
   }

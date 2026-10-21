@@ -280,7 +280,7 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 ### 2.6 Pokédex, shiny, sưu tầm
 
 - **Pokédex nghiên cứu** theo loài (`tob_pokedex`, `tob_pokedex_thuong`): gặp → hạ 50 → thấy shiny; mốc 10 / 25 / 50 /
-  75 / 100 loài cho danh hiệu. Hệ sinh thái thêm 6 kiểu nghiên cứu (mục 7.6). 0.9.7: thêm trạng thái **Đã bắt**
+  75 / 100 loài cho danh hiệu. Hệ sinh thái thêm 6 kiểu nghiên cứu (mục 7.6). 0.9.8: thêm trạng thái **Đã bắt**
   (`so_bat`, `bat_shiny`) khi thu phục (mục 7.7).
 - **Shiny** (quái): 1/4.096 lần hạ, pity 2.000 (lần thứ 2.000 không ra thì chắc chắn ra). Tuần Shiny ×10, Ngày cộng đồng
   ×5. Shiny chỉ đổi màu và cho danh hiệu, **không cộng chỉ số**. Shiny trứng nhà trẻ có tỉ lệ riêng (mục 7.4).
@@ -464,7 +464,7 @@ vụ, Gym, chế tạo, rơi, boss.
 - **Độ hiếm**: Trắng 100%, Xanh 110%, Đỏ 120%, **Hoàn mỹ 130%** (chỉ từ quái tinh anh, Gym, boss thế giới), Vàng (sự
   kiện, chỉ trang trí).
 - **Bộ trang bị** (số món cùng bậc): 4 món +5% HP, 7 món +5% tấn công, 11 món +3% chí mạng. Thưởng giống nhau mọi bậc nên
-  không gây leo thang ([noi_dung_bo.csv](../du_lieu/noi_dung_bo.csv)). 0.9.7: server đọc bảng `data_noi_dung_bo`
+  không gây leo thang ([noi_dung_bo.csv](../du_lieu/noi_dung_bo.csv)). 0.9.8: server đọc bảng `data_noi_dung_bo`
   (`real.BoNgocGame`, lớp thuần `BoTrangBi`): đếm 11 ô trang bị đang mặc theo bậc (cấp món ≤ cấp người chơi, bỏ thời
   trang / đồ trang trí), mỗi chỉ số lấy **mức cao nhất** trong các bộ đang kích (hai bộ khác bậc không cộng dồn), rồi cộng
   CHUNG với thưởng bộ nâng cấp cũ (+10/+13/+15 đủ bộ) vào một trần 5% (`bo.tran_phan_tram`); chí mạng bộ ≤ 3%
@@ -493,12 +493,12 @@ vụ, Gym, chế tạo, rơi, boss.
 - **Pity**: mỗi lần trượt liên tiếp ở cùng ô cộng `ceil(tỉ lệ gốc / 3)` điểm % (`ThongSoLauDai.tiLeNangCap`); về 0 khi
   thành công hoặc đổi bậc.
 - **Không bao giờ vỡ đồ.** Bùa bảo hộ là item 1258 / 1259; thiếu bùa thì trả lượng khoá như cũ.
-- **Mốc neo +7 / +10 / +13** (0.9.7, bảng `data_nang_cap_moc`, khoá `nang_cap.moc_neo`): đã đạt mốc thì nâng hỏng vẫn −1
+- **Mốc neo +7 / +10 / +13** (0.9.8, bảng `data_nang_cap_moc`, khoá `nang_cap.moc_neo`): đã đạt mốc thì nâng hỏng vẫn −1
   nhưng **không rơi dưới mốc** cao nhất đã đạt (đang +8 hỏng lên +9 → giữ +7; đang +10 hỏng → giữ +10). Bước +11..+15 đắt
   thêm 6% (`nang_cap.he_so_xu_bac_cao` = 1060‰) để bù. Mô phỏng (bậc 5, `test/KiemBoNgocCheTao`): người dùng bùa từ +11 thì
   mốc neo giảm xu +0 → +15 còn 97,4%, có hệ số 1,06 thì 102%; người dùng bùa từ +7 tiết kiệm bùa lượng khoá 15,6 → 10,4
   mỗi món (xu +5,3%); người không dùng bùa thôi "rơi vô tận" (trung bình 11.540 → 131 lần thử).
-- **Hiện tỉ lệ thật + pity trên nút** (gói -120 kiểu 1, client 0.9.7): nút "Đập 55%" và dòng dưới ô nâng cấp "Lên +8: tỉ lệ
+- **Hiện tỉ lệ thật + pity trên nút** (gói -120 kiểu 1, client 0.9.8): nút "Đập 55%" và dòng dưới ô nâng cấp "Lên +8: tỉ lệ
   55% (gồm +10% pity) · xu · đá · giữ mốc +7".
 - Từ +11 cần thêm 1 **nguyên liệu phụ** theo nhóm bậc: Bụi sao (bậc 0–2), Mảnh sao (3–5), Mảnh thiên thạch (6–8), Vảy rồng
   (9–10). Nguyên liệu phụ rơi 0,4%/quái từ cấp 40, có trong phân rã và hộp boss.
@@ -508,7 +508,7 @@ vụ, Gym, chế tạo, rơi, boss.
 
 - **Ngọc hệ** (khảm): mỗi ô 1 ngọc, cấp 1..10, +1% chỉ số món mỗi cấp (≤ 10%); giá bước n = 1,45^(n−1) giờ thu nhập.
   Đây là hố hút thứ hai (thiếu nó thì mô phỏng cho cung tiền thực tăng ~12%/tháng). Thiết kế 18 hệ × 10 cấp ở
-  [noi_dung_ngoc_he.csv](../du_lieu/noi_dung_ngoc_he.csv). 0.9.7 (`real.BoNgocGame`, lớp thuần `NgocHe`, màn
+  [noi_dung_ngoc_he.csv](../du_lieu/noi_dung_ngoc_he.csv). 0.9.8 (`real.BoNgocGame`, lớp thuần `NgocHe`, màn
   `ManKhamNgoc` ở Machamp thợ rèn):
   - **Số lỗ theo bậc hiếm** (`data_ngoc_he_lo` theo `colorName`): Thường / Hiếm 1, Quý / Sử thi (Hoàn mỹ) 2, Huyền thoại 3
     (món chế tạo "Huyền thoại" mang thêm lỗ). Đồ trang trí (vàng) không khảm.
@@ -523,7 +523,7 @@ vụ, Gym, chế tạo, rơi, boss.
 - **Phân rã**: đồ thường → 2 đá + 10% giá; đồ Hoàn mỹ thêm 1 Mảnh tinh hoa + 1 nguyên liệu phụ (3 Mảnh tinh hoa để chuyển
   đồ Hoàn mỹ sang bậc mới); ngọc thừa → đá theo cấp ngọc.
 - **Chế tạo** ở Machamp (Xưởng Pewter): Vòng cổ và Phiến đá hệ mỗi bậc cần (2 + bậc) đá, (1 + bậc/3) nguyên liệu phụ và
-  50% giá xu. 0.9.7 (`real.CheTaoGame`, lớp thuần `CheTaoLogic`, màn `ManCheTao`): công thức đọc `data_noi_dung_che_tao`
+  50% giá xu. 0.9.8 (`real.CheTaoGame`, lớp thuần `CheTaoLogic`, màn `ManCheTao`): công thức đọc `data_noi_dung_che_tao`
   (+ cột `loi_che_tao` = số Lõi chế tạo cần, mặc định 0 cho tới khi phân rã ra Lõi; `bat`), cấp người chơi ≥ cấp công thức.
   Bậc thành phẩm theo `data_che_tao_bac`: Hiếm 60% (×110% chỉ số) / Quý 30% (×120%) / Sử thi 9% (×130%, Hoàn mỹ) /
   Huyền thoại 1% (×130% + 3 lỗ ngọc); **pity**: 20 lần liên tiếp không ra Sử thi thì lần thứ 20 chắc Sử thi
@@ -950,7 +950,7 @@ vào `tob_hst_hop_thu`.
   cộng vào chỉ số).
 - Danh hiệu sinh thái: `idEffDanhHieu` 9600..9615.
 
-### 7.7 Thu phục Pokémon (0.9.7)
+### 7.7 Thu phục Pokémon (0.9.8)
 
 Người chơi **là** một Pokémon; quái là Pokémon hoang dã. Vòng thu phục nhẹ, không đổi mô hình đó và **không cộng chỉ số
 thô** (đề xuất 9 / S2 của rà soát lối chơi). Mã: lớp thuần `com.htbb.pokemon.BatPokemon` + `HopPc`, game `real.BatPokemonGame`,
@@ -1206,6 +1206,25 @@ popup 100, nút Đồng ý chỉ gửi lại đúng hộp đó (khi chưa đủ 
   `tob_log_chuyen_gia_tri` (kiểu `vong_quay`). Phí xu 10% ≥ thuế chợ 6% + 1%, phí lượng 15% ≥ phí chuyển lượng 5%, nên
   vòng quay không phải đường chuyển rẻ hơn. Khoá cấu hình nhóm `vong_quay.*` (lớp cố định, như thuế / phí khác).
 
+### 9.8 Thách đấu cược xu, lì xì Tết (19/10/2026)
+
+Ba nguồn in / mất xu còn lại sau rà soát vòng quay (chủ game duyệt sửa). Khoá cấu hình nhóm `cuoc_xu` (lớp cố định),
+`sql/sua_vong_quay_2.sql`, test `KiemThachDauCuoc`, `KiemLiXi`.
+
+- **Thách đấu cược xu** (1-1 và nhóm, `real.ThachDauCuoc` + `com.htbb.pokemon.ThachDauLogic`): **ký quỹ** cả hai bên
+  trong một khoá lúc chấp nhận (bên sau thiếu → hoàn bên trước, huỷ trận); thắng → bên thắng nhận 2 × cược − phí 10%
+  (hố hút, ≥ thuế chợ); hoà → hoàn đủ; người nhận offline → cộng khi đăng nhập; máy tắt giữa trận → hoàn đủ lúc khởi động
+  (`tob_thach_dau_ky_quy`). Mức cược 1.000 – min(100.000, 2 giờ thu nhập ở cấp thấp nhất trong trận), cấp 40 + cổng chống
+  clone mọi người trong trận. Trước: 1-1 kiểm số dư rồi trừ riêng (100.000 – 10.000.000 xu), nhóm trừ hai đội trưởng nhưng
+  không trả ai; `Map.doChallenge` cũ (trả 2 lần, không thuế) đã bỏ. Chia tiền nằm trong `real.ArenaData` (lớp phục hồi từ
+  jar cũ, nhánh khoa-map).
+- **Bao lì xì** (sự kiện Tết): mỗi Pokémon nhận 2 bao / ngày, mở 3 / ngày và 15 / đợt (vượt thì trả lại bao); xu = 5 – 10%
+  thu nhập 1 giờ ở cấp người mở, giải lớn = 1 giờ (trước 1.000.000 – 5.000.000 xu), vẫn 5 giải / đợt; phần xu qua cổng chống
+  clone và tối đa 2 Pokémon / thiết bị / IP / ngày.
+- **Mã lì xì**: **lượng khoá** 5 – 15 (trước 10 – 100 lượng mở mỗi Pokémon), mỗi tài khoản 1 mã / đợt, mỗi thiết bị và IP 1
+  tài khoản / đợt, quỹ 20.000 lượng khoá / đợt, cần qua cổng chống clone; chốt mã nguyên tử (hai người gõ cùng mã chỉ một
+  người nhận).
+
 ## 10. Thuật ngữ và quy tắc chữ
 
 Áp cho **mọi chữ người chơi và admin thấy**: chuỗi server, CSDL, client J2ME / Android / PC, web. Nguồn máy duy nhất:
@@ -1350,7 +1369,62 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
-| -120 | `TRANG_BI` (0.9.7) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |
-| -121 | `THU_PHUC` (0.9.7) | hai chiều | C→S: xin trạng thái, ném bóng (idQuai, loại bóng), xin Pokédex; S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102) (mục 7.7) |
+| -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
+| -120 | `TRANG_BI` (0.9.8) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |
+| -121 | `THU_PHUC` (0.9.8) | hai chiều | C→S: xin trạng thái, ném bóng (idQuai, loại bóng), xin Pokédex; S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102) (mục 7.7) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
+
+## Danh hiệu (0.9.7)
+
+- **Dữ liệu:** `sql/them_danh_hieu.sql` (idempotent). `data_danh_hieu` là danh mục duy nhất: tên, mô tả điều kiện, gợi ý
+  (danh hiệu ẩn), độ hiếm (`data_danh_hieu_do_hiem`: Thường / Hiếm / Sử thi / Huyền thoại), hình, **một** dòng chỉ số
+  nhỏ (`chi_so` = `ne_tranh` / `chi_mang` / `khang_trang_thai` / `hp`, `phan_nghin`), điều kiện (`dieu_kien`,
+  `tham_so`, `so_luong`), `an` (0 hiện, 1 ẩn "???" tới khi mở, 2 chỉ hiện khi đang có), `thoi_han_phut` (0 vĩnh viễn).
+  394 dòng: 46 danh hiệu thành tựu / xếp hạng mùa / sự kiện / ẩn (id 9700..), 16 danh hiệu sinh thái (9600..), 48 danh
+  hiệu cũ giftcode / sự kiện (8767..), 284 danh hiệu thưởng nhiệm vụ (10000.., trước đây chỉ là chữ trong tiến độ).
+- **Sở hữu:** kho cũ `tob_danh_hieu` (id, hết hạn) + đang đeo `Char.idEffDanhHieu`; bộ đếm `tob_danh_hieu_dem`, nhật ký
+  `tob_danh_hieu_log`.
+- **Mở khoá** phía máy chủ: mọi điểm móc `NhiemVuEngine.suKien` / `datMuc` (hạ trùm, câu cá, thắng PvP, nâng cấp +N,
+  Hầm ngục, chế tạo, khảm, gục, đến bản đồ...) cộng bộ đếm; trạng thái sống (cấp, Pokédex %, huy hiệu Gym, bậc / hạng
+  PvP mùa, sự kiện đang bật, danh hiệu sinh thái / nhiệm vụ) đánh giá mỗi phút, khi lên cấp và khi mở bảng. Danh hiệu có
+  hạn (bậc mùa, top 10, sự kiện) tự gia hạn khi còn giữ điều kiện, hết hạn thì mất chỉ số và có thể mở lại.
+- **Chỉ số:** chỉ danh hiệu **đang đeo** được tính, kẹp về trần ô `danh_hieu.tran_phan_nghin` (10‰ = 1%, trần cứng 3%)
+  và trần tổng trang trí `trang_tri.tran_tong_phan_nghin` (5%), rồi đi qua `GioiHanChiSo` như mọi nguồn. Danh hiệu trao
+  qua giftcode / gói nạp chỉ có mức Thường (5‰), không vượt danh hiệu tự cày.
+- **Giao diện:** Hồ sơ (bảng Pokémon) → viên "Danh hiệu" cạnh huy hiệu hệ (lối vào duy nhất; menu Sưu tầm sinh thái
+  → Danh hiệu mở cùng bảng) → tấm Danh hiệu: Đã có / Chưa có / Bí ẩn, thanh tiến độ, đếm ngược hạn, nút Đeo / Tháo,
+  chấm đỏ `ChamMoi.DANH_HIEU` khi có danh hiệu mới. Nhãn danh hiệu vẽ trên tên mọi người chơi, màu theo độ hiếm
+  (token `ChuDe.mauDanhHieu` / `nhanDanhHieu`). Web: bảng xếp hạng hiện danh hiệu đang đeo.
+
+## PvP xếp hạng, thưởng mùa và luật PK (0.9.7)
+
+- **Elo chỉ trong trận xếp hạng** (`real.XepHangPvpGame`, `com.htbb.pokemon.XepHangPvp`): NPC Đấu trường → "Đấu xếp
+  hạng" vào hàng chờ (chọn lại = rời hàng). Máy chủ ghép mỗi 2 giây: lệch ≤ 10 cấp, |Elo| ≤ 100 (+50 mỗi 15 giây chờ, tối
+  đa 400), không cùng tài khoản / thiết bị / IP (`ChongClone.ben`), không gặp lại cùng đối thủ trong 10 phút; hai bên
+  được đưa vào Đấu trường 202, đếm ngược 5 giây, tối đa 180 giây (hết giờ / rời bản đồ = huỷ, không Elo). Trận chỉ
+  tính khi ≥ 20 giây và bên thua gây ≥ 10% HP tối đa của bên thắng; không đạt = huỷ, ghi `tob_pvp_tran` (lý do) và nhật
+  ký "pvpnghi". Gặp lại cùng đối thủ trong 24 giờ: Elo ×1 → ×1/2 → ×1/4, lần 4 không ghép. Giết người ngoài thế giới
+  **không** còn đổi Elo, và thắng PvP (nhiệm vụ, danh hiệu "Đấu sĩ") chỉ đếm trận xếp hạng hợp lệ.
+- **Thưởng cuối mùa** (13 tuần): lần đầu vào bản đồ ở mùa sau, mọi mùa đã kết thúc chưa phát được phát một lần — khoá
+  `tob_pvp_thuong (mua, id_char)` chèn trước rồi mới phát nên không phát hai lần kể cả khi khởi động lại. Cần ≥ 10 trận
+  trong mùa; Great / Ultra / Master = 15 / 40 / 100 lượng khoá (`ThangPvp.LUONG_BAC`) + danh hiệu "… Ball mùa trước"
+  giữ 91 ngày (chỉ số trong ngân sách ô danh hiệu). Không thưởng chỉ số, không lượng thường.
+- **Luật PK thế giới** (`real.LuatPkGame`, `com.htbb.pokemon.LuatPk`): thị trấn (`data_map_ten.loai = thi_tran`) và
+  làng là vùng an toàn; ngoài vùng PvP (đấu trường, lôi đài, chiến trường, Cao nguyên chiến thành, chiến tranh / đưa
+  thẻ) không đánh được người thấp hơn quá 10 cấp trừ khi người đó đang tên đỏ / bật cờ PK; nghiệp ≥ 3000 thì không PK
+  thêm người vô tội (ngưỡng cũ 319000 không bao giờ tới vì nghiệp có trần 32000). Nghiệp giảm 5 / phút online (một lần
+  giết vô tội +100 ≈ 20 phút), không còn −200 mỗi ngày đăng nhập. Gục trong PK mất 1% (tên đỏ) / 0,1% EXP cần của cấp
+  hiện tại theo bảng EXP đang dùng, **không tụt cấp**; VIP 3 không còn được miễn (VIP theo điểm nạp = mua sức mạnh).
+- **Điểm móc nhiệm vụ** (`real.DiemMocNhiemVu`): mọi kiểu trong `data_nhiem_vu_kieu` đều có nơi gọi `NhiemVuEngine.suKien`
+  (đào, nấu ăn, làm vườn, ấp trứng, đố vui, đua, chợ, mặc đồ / bộ trang bị, Pokédex vùng, vật phẩm sự kiện, giao hàng /
+  đưa thư, hộ tống). Câu cá có điểm móc **duy nhất** ở `HeSinhThaiMenu.cauCa`.
+  - `su_kien_vat_pham`: đếm vật phẩm THẬT của sự kiện đang bật khi vào túi (nhặt quái rơi, NPC sự kiện, giao hàng,
+    chế đồ / tiến giải Vu Lan). Bảng `data_su_kien_vat_pham` (`sql/them_moc_nhiem_vu.sql`) lấy từ code rơi / thưởng:
+    Trung Thu (Thịt, Trứng, Bột mỳ, Đậu xanh), Tết (Gạo nếp, Đậu xanh, Thịt mỡ, Lá dong, Giấy, Thuốc pháo), Halloween
+    (Kẹo, Bí ngô), Tết Dương lịch (Kẹo), Noel 2023 (Dưa Hấu), Hè (Kem), Vu Lan (Nhánh hoa hồng vàng), World Cup (Quả bóng
+    bạc / vàng), Núi châu báu (Mảnh bản đồ). Nhiệm vụ để `muc_tieu_id` = id vật phẩm hoặc trống (bất kỳ vật phẩm của
+    sự kiện đang chạy).
+  - `cho_ban`: người bán online tính ngay; offline thì ghi `tob_nhiem_vu_cho`, áp khi vào bản đồ lần đầu (mỗi dòng một
+    lần, `UPDATE … da_ap = 0`).
+

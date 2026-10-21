@@ -56,8 +56,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class BoNgocGame {
 
     public static final int LENH = -120;
-    /** Ban client dau tien biet goi -120 / -121 (0.9.7). */
-    public static final int BAN_CLIENT = 907;
+    /** Ban client dau tien biet goi -120 / -121 (0.9.8; 0.9.8 da phat hanh khong co). */
+    public static final int BAN_CLIENT = 908;
 
     public static final byte S_DONG_THEM = 0, S_NANG_CAP = 1, S_CHE_TAO = 2, S_CHE_TAO_KQ = 3, S_KHAM = 4, S_KET_QUA = 5;
     public static final byte C_XIN_CHE_TAO = 0, C_CHE_TAO = 1, C_XIN_KHAM = 2, C_DAT_NGOC = 3, C_NANG_NGOC = 4,
@@ -1041,7 +1041,7 @@ public final class BoNgocGame {
     /** Menu Machamp "Chế tạo & khảm ngọc": client moi mo man; client cu: bao cap nhat. */
     public static void moTuNpc(final Char p, final int muc) {
         if (!coClient(p)) {
-            ketQua(p, false, "Cần cập nhật game bản 0.9.7 để dùng Chế tạo và Khảm ngọc hệ.");
+            ketQua(p, false, "Cần cập nhật game bản 0.9.8 để dùng Chế tạo và Khảm ngọc hệ.");
             return;
         }
         if (!oMachamp(p)) {

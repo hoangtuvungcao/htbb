@@ -101,8 +101,8 @@ public final class PokedexPokemon {
                 return;
             }
             final Pokedex d = lay(p);
-            if (d != null) {
-                d.ghiHa(dex, bayGio());
+            if (d != null && d.ghiHa(dex, bayGio())) {
+                DiemMocNhiemVu.khiLoaiMoi(p, dex); // diem moc pokedex_vung (lan dau ha loai nay)
             }
         } catch (final Exception e) {
             System.out.println("PokedexPokemon.khiHaQuai: " + e);

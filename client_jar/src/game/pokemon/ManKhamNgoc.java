@@ -8,7 +8,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * 0.9.7 KHẢM NGỌC HỆ (Machamp thợ rèn, gói -120 kiểu 4 - real.BoNgocGame): tab "Trang bị" = món có lỗ ngọc (đang mặc +
+ * 0.9.8 KHẢM NGỌC HỆ (Machamp thợ rèn, gói -120 kiểu 4 - real.BoNgocGame): tab "Trang bị" = món có lỗ ngọc (đang mặc +
  * hành trang) với lỗ tô màu hệ; chạm một món = thẻ chi tiết: từng lỗ (Nâng / Tháo / Mài kèm giá xu, hoặc lỗ trống: Khảm
  * ngọc mới cấp 1 theo hệ đang chọn / lấy viên trong túi), chip chọn hệ, lời giải thích lợi + hại. Tab "Túi ngọc" = ngọc
  * đã tháo (giữ cấp) + Phân rã ra Đá nâng cấp. Mọi giá / điều kiện do máy chủ tính, client chỉ hiện + gửi yêu cầu.

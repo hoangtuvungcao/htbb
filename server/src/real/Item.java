@@ -309,6 +309,15 @@ public class Item extends Actor {
      * o cuoi getDBInfo (initInfoFromDB tim theo tien to, khong theo vi tri) nen khong lech voi truong cuoi them sau.
      */
     public String ngocHe = "";
+    /**
+     * [khoa-khi-mac] 1 = co {@link #lock} NAY chi do MAC vao (chu game: "do da mac bi khoa, khong giao dich duoc").
+     * Phan biet voi khoa vi ly do khac (mua bang luong khoa, qua nhiem vu / su kien, nguyen lieu khoa, tinh luyen...):
+     * chi khoa do mac moi pha khoa duoc (real.PhaKhoaGame) va moi ban NPC duoc khi cam ban do khoa. Moi cho khoa vi
+     * ly do khac tren mon DA CO goi {@link #khoaVinhVien()} de xoa co nay. Luu o truong 34 cua getDBInfo.
+     */
+    public byte daMac;
+    /** [khoa-khi-mac] So lan da pha khoa mon nay (0..PhaKhoaLogic.lanToiDa()). Luu o truong 35 cua getDBInfo. */
+    public byte soLanPhaKhoa;
 
     static {
         Item.COLOR_WHITE = 0;
@@ -1246,6 +1255,19 @@ public class Item extends Actor {
                 this.soLanTinhLuyenThatBai = Integer.parseInt(data[33]);
             } catch (final Exception ex) {
             }
+            // [khoa-khi-mac] truong moi o cuoi, rieng mot khoi: chuoi cu (34 truong tro xuong) giu mac dinh 0.
+            try {
+                if (data.length > 34) {
+                    this.daMac = (byte) (Byte.parseByte(data[34].trim()) == 1 ? 1 : 0);
+                }
+                if (data.length > 35) {
+                    this.soLanPhaKhoa = (byte) Math.max(0, Byte.parseByte(data[35].trim()));
+                }
+            } catch (final Exception ex) {
+            }
+            if (this.lock != 1) {
+                this.daMac = 0;
+            }
             // [bo-ngoc] truong co tien to "nh" (ngoc he) o bat ky vi tri nao sau truong 33
             for (int i = data.length - 1; i >= 34; i--) {
                 if (data[i] != null && data[i].startsWith(com.htbb.pokemon.NgocHe.TIEN_TO)) {
@@ -1837,10 +1859,62 @@ public class Item extends Actor {
         info = String.valueOf(info) + "," + this.GiaHan;
         info = String.valueOf(info) + "," + this.CaiTao;
         info = String.valueOf(info) + "," + this.soLanTinhLuyenThatBai;
+        // [khoa-khi-mac] chi THEM truong cuoi (34, 35): chuoi cu ngan hon van doc duoc (initInfoFromDB).
+        info = String.valueOf(info) + "," + this.daMac;
+        info = String.valueOf(info) + "," + this.soLanPhaKhoa;
         if (this.ngocHe != null && this.ngocHe.startsWith(com.htbb.pokemon.NgocHe.TIEN_TO)) {
             info = String.valueOf(info) + "," + this.ngocHe; // [bo-ngoc] truong co tien to, LUON o cuoi
         }
         return info;
+    }
+
+    // ------------------------------------------------------------------ [khoa-khi-mac]
+
+    /**
+     * Mac mon vao nguoi (nhan vat / thu cuoi / than khi): mon chua khoa thi khoa VINH VIEN va danh dau "khoa do mac".
+     * Mon da khoa vi ly do khac giu nguyen (KHONG gan daMac, nen khong pha khoa duoc). Goi lai bao nhieu lan cung
+     * duoc (idempotent) - dung ca cho migration luc nap nhan vat (do dang mac tu truoc khi co luat).
+     * @return true neu vua khoa.
+     */
+    public boolean khoaKhiMac() {
+        if (this.lock != 0) {
+            return false;
+        }
+        this.lock = 1;
+        this.daMac = 1;
+        return true;
+    }
+
+    /** Khoa vi ly do KHAC mac (nguyen lieu khoa, khoa thuoc tinh, tinh luyen...): khong con pha khoa duoc. */
+    public void khoaVinhVien() {
+        this.lock = 1;
+        this.daMac = 0;
+    }
+
+    /** Khoa chi vi da mac (pha khoa duoc, ban NPC duoc). */
+    public boolean laKhoaDoMac() {
+        return this.lock == 1 && this.daMac == 1;
+    }
+
+    /** Duoc dua cho nguoi choi khac (giao dich, gian hang / ky gui, bo ra dat cho nguoi khac nhat) khong. */
+    public boolean giaoDichDuoc() {
+        return this.lock == 0;
+    }
+
+    /** Ban cho NPC lay xu: mon mo, mon chi khoa do mac, hoac cau hinh cho ban do khoa. */
+    public boolean banNpcDuoc(final boolean choBanDoKhoa) {
+        return this.lock == 0 || this.laKhoaDoMac() || choBanDoKhoa;
+    }
+
+    /** Dong mo ta khoa (server gui kem thong bao / menu pha khoa). */
+    public String moTaKhoa() {
+        if (this.lock == 0) {
+            return "Khoá khi mặc";
+        }
+        if (this.daMac == 1) {
+            return "Đã khoá (đã mặc), phá khoá " + this.soLanPhaKhoa + "/" + com.htbb.pokemon.PhaKhoaLogic.lanToiDa();
+        }
+        return "Đã khoá";
     }
 
     public Item cloneItem() {
@@ -1879,6 +1953,8 @@ public class Item extends Actor {
         newItem.idSellMarket = this.idSellMarket;
         newItem.isItemShop = this.isItemShop;
         newItem.ngocHe = this.ngocHe; // [bo-ngoc] ngoc da khảm di theo mon
+        // [khoa-khi-mac] bo dem pha khoa theo MON: ban qua gian hang roi mua lai khong reset duoc tran 3 lan.
+        newItem.soLanPhaKhoa = this.soLanPhaKhoa;
         return newItem;
     }
 

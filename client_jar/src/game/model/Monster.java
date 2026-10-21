@@ -151,7 +151,7 @@ public class Monster extends LiveActor {
             return true;
         }
         if (game.pokemon.BatPokemon.anQuai(this.ID)) {
-            return true;   // 0.9.7: đang ở trong Poké Ball (hiệu ứng thu phục)
+            return true;   // 0.9.8: đang ở trong Poké Ball (hiệu ứng thu phục)
         }
         paintDataEff_Top(g, this.x, this.y, false);
         if (!this.isFreeze) {

@@ -85,6 +85,8 @@ public final class AutoGuard {
             message.writer().writeUTF(AutoGuard.maMay());
             // số bản jar (build.sh sinh PhienBan.java): server (real.BanMoiNhat) báo khi có bản mới hơn
             message.writer().writeInt(PhienBan.BAN);
+            // 0.9.7: khả năng client (bit 1 = giải nén gói -127, chỉ PC / Android) - server cũ bỏ qua 4 byte này
+            message.writer().writeInt(network.Session_ME.khaNang());
             GameService.gI().session.sendMessage(message);
             message.cleanup();
             return true;

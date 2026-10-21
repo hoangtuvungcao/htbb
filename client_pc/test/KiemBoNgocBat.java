@@ -6,7 +6,7 @@ import javax.microedition.lcdui.NenPc;
 import javax.microedition.midlet.MIDlet;
 
 /**
- * KIỂM GIAO DIỆN 0.9.7 BỘ / NGỌC / CHẾ TẠO / THU PHỤC (headless, không máy chủ, đường vẽ bản PC):
+ * KIỂM GIAO DIỆN 0.9.8 BỘ / NGỌC / CHẾ TẠO / THU PHỤC (headless, không máy chủ, đường vẽ bản PC):
  * <ul>
  * <li>ManCheTao (danh sách + tấm chọn hệ Phiến đá), ManKhamNgoc (danh sách, thẻ chi tiết lỗ, túi ngọc): tấm canh giữa,
  *     trong vùng an toàn, mọi vùng chạm đủ cỡ / không chồng (ChupTrongGame.kiemTam / kiemCham), đủ nút, chữ tỉ lệ + pity;</li>

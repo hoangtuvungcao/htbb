@@ -8,7 +8,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * 0.9.7 CHẾ TẠO (Machamp thợ rèn, gói -120 kiểu 2 / 3 - real.CheTaoGame): đầu bảng = tỉ lệ bậc thành phẩm (Hiếm 60% /
+ * 0.9.8 CHẾ TẠO (Machamp thợ rèn, gói -120 kiểu 2 / 3 - real.CheTaoGame): đầu bảng = tỉ lệ bậc thành phẩm (Hiếm 60% /
  * Quý 30% / Sử thi 9% / Huyền thoại 1%) + bộ đếm pity ("Chưa ra Sử thi 7/20 - lần 20 chắc Sử thi"); danh sách công thức
  * (icon, tên, bậc · cấp, nguyên liệu có / cần, xu) với nút "Chế tạo" (xám + lý do khi thiếu). Phiến đá hệ: chọn hệ + kiểu
  * (tăng ST hệ / giảm ST nhận) ở tấm dưới trước khi chế. Máy chủ kiểm lại mọi điều kiện.
