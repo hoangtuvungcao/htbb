@@ -4109,6 +4109,8 @@ public class GameScr extends Screen {
     private void paintFocusActorInfo(Graphics g) {
         // 0.9.5: nhãn tên / Lv quái + số bay ở lớp giao diện (đã hết lớp thế giới phóng)
         game.pokemon.NhanTheGioi.ve(g);
+        Canvas.resetTrans(g);
+        game.pokemon.BatPokemon.veHieuUng(g);   // 0.9.8: Poké Ball bay / lắc / bắt được
         game.pokemon.VienTrangThai.macDinh(rongKhungHp());
         if (this.hideGUI == 2) {
             return;
@@ -4180,6 +4182,8 @@ public class GameScr extends Screen {
                     }
                 }
             }
+            // 0.9.8: Pokémon hoang dã đã yếu (HP <= ngưỡng) -> nút "Ném Poké Ball" dưới khung mục tiêu
+            game.pokemon.BatPokemon.veNut(g, this.focusedActor, x0, H, W);
         }
     }
 

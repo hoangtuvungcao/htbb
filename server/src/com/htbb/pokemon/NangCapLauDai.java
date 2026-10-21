@@ -63,6 +63,49 @@ public final class NangCapLauDai {
         return hienTai;
     }
 
+    // ------------------------------------------------------------------ moc neo (thiet ke can bang 4.4, de xuat 6)
+
+    /** Moc neo mac dinh +7 / +10 / +13 (bang data_nang_cap_moc). */
+    public static final int[] MOC_NEO_MAC_DINH = {7, 10, 13};
+    /** He so xu buoc +11..+15 (phan nghin) bu phan ky vong giam do moc neo (spec: +6%). */
+    public static final int HE_SO_XU_BAC_CAO_MAC_DINH = 1060;
+
+    /** Moc neo cao nhat &lt;= {@code hienTai} (0 = chua dat moc nao). */
+    public static int mocGiu(final int hienTai, final int[] moc) {
+        int m = 0;
+        if (moc != null) {
+            for (final int x : moc) {
+                if (x > 0 && x <= hienTai && x > m) {
+                    m = x;
+                }
+            }
+        }
+        return m;
+    }
+
+    /**
+     * Cap sau khi TRUOT co moc neo: luat cu (-1 tu +7, giu cap neu co bua) nhung KHONG duoi moc neo cao nhat da dat
+     * (dang o +8 truot len +9 -&gt; giu +7; dang o +10 truot len +11 -&gt; giu +10). {@code moc} null/rong = luat cu.
+     */
+    public static int capSauTruot(final int hienTai, final int k, final boolean coBua, final int[] moc) {
+        final int cu = capSauTruot(hienTai, k, coBua);
+        return Math.max(cu, Math.min(hienTai, mocGiu(hienTai, moc)));
+    }
+
+    /** Xu len +k co he so buoc cao (+11..+15 x heSo/1000). */
+    public static long chiPhi(final int capDo, final int k, final int heSoBacCaoPhanNghin) {
+        final long goc = chiPhi(capDo, k);
+        if (k < 11 || heSoBacCaoPhanNghin <= 0) {
+            return goc;
+        }
+        return Math.max(goc, goc * Math.min(2000, heSoBacCaoPhanNghin) / 1000L);
+    }
+
+    /** Diem % pity dang cong them vao ti le len +k sau {@code truot} lan truot. */
+    public static int pityCong(final int k, final int truot) {
+        return Math.max(0, tiLe(k, truot) - tiLe(k, 0));
+    }
+
     /** % chi so mon tang khi len +k (3%/cap toi +10, 5%/cap tu +11). */
     public static int chiSoPhanTram(final int k) {
         return k < 1 || k > 15 ? 0 : ThongSoLauDai.CHI_SO_NC_PHAN_TRAM[k - 1];

@@ -3,6 +3,7 @@ package real;
 import com.htbb.pokemon.HoSoLauDai;
 import com.htbb.pokemon.LauDai;
 import com.htbb.pokemon.NangCapLauDai;
+import com.htbb.pokemon.ThongSoLauDai;
 import data.Database;
 
 /**
@@ -111,7 +112,8 @@ public final class NangCapLauDaiGame {
         }
         final int k = item.plus + 1;
         final int capDo = item.getTemplate() != null ? item.getTemplate().level : item.level;
-        final long xu = NangCapLauDai.chiPhi(capDo, k);
+        // [bo-ngoc] buoc +11..+15 x he so (bu phan ky vong giam do moc neo, spec 4.4)
+        final long xu = NangCapLauDai.chiPhi(capDo, k, BoNgocGame.heSoXuBacCao());
         final int da = NangCapLauDai.da(k);
         // Bua bao ho THAT (item, GD2b): co thi tru 1 bua thay cho luong khoa; khong co thi luong khoa nhu cu.
         final int idBua = coBua && NangCapLauDai.bua(k) > 0 ? VatPhamDungLauDai.buaChoMuc(k) : 0;
@@ -163,10 +165,12 @@ public final class NangCapLauDaiGame {
             NhiemVuEngine.datMuc(p, "thanh_tuu_nang_cap", k);
         } else {
             boolean baoHo = bua > 0;
-            if (!baoHo && coBaoHo && dungItemBua && NangCapLauDai.capSauTruot(cu, k, false) < cu) {
+            final int[] moc = BoNgocGame.mocNeo(); // [bo-ngoc] moc neo +7 / +10 / +13: truot khong roi duoi moc da dat
+            if (!baoHo && coBaoHo && dungItemBua && NangCapLauDai.capSauTruot(cu, k, false, moc) < cu) {
                 baoHo = VatPhamDungLauDai.truItem(p, idBua, 1); // chi tieu bua khi THAT SU can (truot tu +7)
             }
-            final int sau = NangCapLauDai.capSauTruot(cu, k, baoHo);
+            final int sau = NangCapLauDai.capSauTruot(cu, k, baoHo, moc);
+            final int giu = NangCapLauDai.mocGiu(cu, moc);
             if (sau < cu) {
                 doiChiSo(item, cu, sau);
                 item.plus = (byte) sau;
@@ -175,7 +179,7 @@ public final class NangCapLauDaiGame {
                 h.datTruot(item.id, truot + 1);
             }
             ra[0] = "Thất bại +" + k + " (tỉ lệ " + tiLe + "%, lần sau +" + (NangCapLauDai.tiLe(k, truot + 1) - tiLe) + "%)"
-                    + (sau < cu ? ", giảm còn +" + sau : "") + ".";
+                    + (sau < cu ? ", giảm còn +" + sau : (giu > 0 && k >= ThongSoLauDai.MAT_CAP_TU && !baoHo ? ", giữ mốc +" + giu : "")) + ".";
         }
         try {
             Database.instance.saveOrtherLog("tob_log_other_kham", p.charname,

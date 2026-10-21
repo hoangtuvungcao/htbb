@@ -114,6 +114,7 @@ class MapCheTao {
                 }
 
                 if (e != null) {
+                    BoNgocGame.guiMoTa(p, pp, e); // [bo-ngoc] dong bo / lo ngoc cho the chi tiet (TRUOC goi 21)
                     Message m = new Message(21);
                     m.dos.writeShort(e.id);
                     m.dos.writeShort(e.durable);

@@ -107,6 +107,8 @@ class CharChiSo {
         // thuong bo nang cap: bat gioi han chi so -> <= 5% (THIET_KE 3.4)
         pcUphp = ChiSoTrangBiGame.thuongBo(self.fullSet15 >= 10 ? 12 : self.fullSet15 >= 6 ? 8 : 0);
         pcUpmp = pcUphp;
+        // [bo-ngoc] + bo cung bac (4 mon +5% HP, data_noi_dung_bo) chung tran 5% voi bo nang cap (chi HP)
+        pcUphp = ChiSoTrangBiGame.thuongBoTong(self, com.htbb.pokemon.BoTrangBi.HP, (int) pcUphp);
         if (petUsing != null) {
             pcUphp += petUsing.getCuongTrang();
             pcUpmp += petUsing.getCuongThan();
@@ -1423,8 +1425,10 @@ class CharChiSo {
         self.attack += self.attack * upAttack / 100;
         {
             // thuong bo nang cap (+10/+13/+15 du bo): bat gioi han chi so -> <= 5% (THIET_KE 3.4)
-            final int boTc = ChiSoTrangBiGame.thuongBo(self.fullSet15 >= 10 ? 12 : self.fullSet15 >= 6 ? 8
-                    : self.fullSet13 >= 10 ? 4 : self.fullSet10 >= 10 ? 1 : 0);
+            // [bo-ngoc] + bo cung bac (7 mon +5% tan cong) chung tran 5%
+            final int boTc = ChiSoTrangBiGame.thuongBoTong(self, com.htbb.pokemon.BoTrangBi.TAN_CONG,
+                    ChiSoTrangBiGame.thuongBo(self.fullSet15 >= 10 ? 12 : self.fullSet15 >= 6 ? 8
+                    : self.fullSet13 >= 10 ? 4 : self.fullSet10 >= 10 ? 1 : 0));
             self.attack += self.attack * boTc / 100;
             upatkP += boTc;
         }

@@ -980,6 +980,8 @@ public class TeamServer {
         // Gym, chieu moi). Tat co: khong lam gi.
         if (com.htbb.pokemon.LauDai.bat()) {
             real.NoiDungLauDai.sauKhiNapTemplate();
+            // [bo-ngoc] bo trang bi, ngoc he, che tao, moc neo, thu phuc: tao bang thieu + nap + theo doi chu ky bang
+            real.BoNgocGame.khoiDong();
         }
         // G7.C: doi chu kiem hiep -> Pokemon (Text, ten vung, ten dong, ten thuoc, ngoc). PHAI
         // SAU startSaveChar (Map.gemTemplate/potionTemplates2 da nap), TRUOC khi nhan nguoi

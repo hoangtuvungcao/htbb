@@ -90,6 +90,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemHuanLuyen` (0.9.8): học chiêu theo loài + Điểm huấn luyện (game.pokemon.HocChieu / BangHuanLuyen, gói -122 giả):
   trạng thái chiêu theo loài, nút "Huấn luyện" có / hết chấm, bảng ở 6 cỡ (điện thoại / PC / J2ME) đủ nút, trong vùng an
   toàn, <= 80 %, hàng không chồng nút, trần + / −, ô nhanh giữ chiêu bị gỡ được thay;
+- `KiemBoNgocBat` (0.9.8): màn Chế tạo / Khảm ngọc hệ (tấm, vùng chạm, nút, tỉ lệ + pity), nút "Ném Poké Ball" (chỉ khi
+  Pokémon hoang dã yếu, trong màn, không chồng HUD), hiệu ứng ném (bay / trong bóng / thoát / bắt được), Pokédex "Đã bắt",
+  dòng bộ / lỗ ngọc trên thẻ chi tiết đồ, chữ nút "Đập" có tỉ lệ thật;
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

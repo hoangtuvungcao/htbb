@@ -70,6 +70,10 @@ public class Char extends LiveActor {
     /** Pet di theo dang Pokemon (lenh -94 POKE_PET), 0 = pet kieu cu. */
     public short pokePetDex;
     public boolean pokePetShiny;
+    /** 0.9.8: bạn đồng hành từ Hộp PC (lệnh -121 kiểu 3, chỉ để nhìn), 0 = không; vị trí đuổi theo mượt. */
+    public short pokeBanDex;
+    public boolean pokeBanShiny;
+    public short banX = Short.MIN_VALUE, banY;
     /** Ngoai hinh trang bi (lenh -102 POKE_NGOAI_HINH): phu kien, vang sang, trang phuc. null = chua co. */
     public game.pokemon.NgoaiHinhCua ngoaiHinh;
     /** 1,5 giay o 25 tick/giay (Unity: 75 tick o 50/giay). */
@@ -1392,6 +1396,7 @@ public class Char extends LiveActor {
             paintDataEff_Top(g, this.x, this.y, false);
             paintListEff(g, 0);
         }
+        game.pokemon.BatPokemon.veBanDongHanh(g, this, tick); // 0.9.8: Pokémon Hộp PC đi theo (sau lưng, chỉ hình)
         g.drawImage(Res.imgShadow, this.x, this.y - 2, 3);
         int yNguoi = this.y + this.z + this.dy;
         if (this.pokeThuDex > 0 && this.state != 3 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny)) {

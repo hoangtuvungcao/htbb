@@ -4117,6 +4117,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
             finalDame = ChiSoTrangBiGame.giam(this, finalDame, ChiSoTrangBiGame.tranGiam(giam, false));
             finalDame = ChiSoTrangBiGame.giam(this, finalDame, ChiSoTrangBiGame.khangHe(this, c.hePokemon1()));
+            finalDame = ChiSoTrangBiGame.khuechDaiHe(this, finalDame, c.hePokemon1()); // [bo-ngoc]
             return Math.max(1, finalDame);
         }
         int a = 0;

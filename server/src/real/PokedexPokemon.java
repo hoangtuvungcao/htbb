@@ -87,6 +87,7 @@ public final class PokedexPokemon {
                 d.ghiGap(dex, bayGio());
             }
             NhiemVuEngine.suKien(p, "pokedex_gap", String.valueOf(dex), 1); // GD2b (tat co: khong lam gi)
+            BatPokemonGame.khiDanh(p, actor); // [bat-pokemon] ai vua giao chien con nay (moi nem bong duoc)
         } catch (final Exception e) {
             System.out.println("PokedexPokemon.khiDanh: " + e);
         }
@@ -157,7 +158,7 @@ public final class PokedexPokemon {
             return;
         }
         p.sendMessage(MessageCreator.createMsgMenu(
-                new String[]{"Xem Pokédex", "Thưởng mốc Pokédex", "Tiến hoá Eevee"}, NPC_ID, MENU_GOC));
+                new String[]{"Xem Pokédex", "Thưởng mốc Pokédex", "Tiến hoá Eevee", BatPokemonGame.TEN_MUC_POKEDEX}, NPC_ID, MENU_GOC));
     }
 
     /** MapDoMenu: idNpc == NPC_ID. */
@@ -172,6 +173,8 @@ public final class PokedexPokemon {
                 moMenuMoc(p);
             } else if (idOption == 2) {
                 moMenuEevee(p);
+            } else if (idOption == 3) {
+                BatPokemonGame.moHop(p, 0); // [bat-pokemon]
             }
         } else if (idMenu == MENU_MOC) {
             nhanMoc(p, idOption);
@@ -195,6 +198,7 @@ public final class PokedexPokemon {
         sb.append("Pokédex\n");
         sb.append("Đã gặp: ").append(d.soLoaiDaGap()).append('/').append(tong).append(" loài\n");
         sb.append("Đã hạ: ").append(d.soLoaiDaHa()).append('/').append(tong).append(" loài\n");
+        sb.append("Đã bắt: ").append(d.soLoaiDaBat()).append('/').append(tong).append(" loài\n"); // [bat-pokemon]
         final List<int[]> top = d.top(5);
         if (!top.isEmpty()) {
             sb.append("Hạ nhiều nhất:\n");

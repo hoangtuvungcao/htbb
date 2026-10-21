@@ -150,6 +150,9 @@ public class Monster extends LiveActor {
         if (!isPaint() || this.state == 8 || this.hp <= 0) {
             return true;
         }
+        if (game.pokemon.BatPokemon.anQuai(this.ID)) {
+            return true;   // 0.9.8: đang ở trong Poké Ball (hiệu ứng thu phục)
+        }
         paintDataEff_Top(g, this.x, this.y, false);
         if (!this.isFreeze) {
             if (this.dynamicEffBottom != null) {

@@ -10,8 +10,9 @@ import javax.microedition.lcdui.Graphics;
 
 /**
  * POKÉDEX (0.9.3): các loài Pokémon hoang dã của thế giới game (mẫu quái máy chủ gửi: tên, hệ, số dex -91), lưới
- * chân dung + tên, chip lọc theo hệ, chạm = thẻ chi tiết với Pokémon to động + huy hiệu hệ. Client chưa có dữ liệu
- * "đã gặp / đã bắt" -> hiện mọi loài đã biết.
+ * chân dung + tên, chip lọc theo hệ, chạm = thẻ chi tiết với Pokémon to động + huy hiệu hệ. Hiện mọi loài đã biết;
+ * 0.9.8: loài ĐÃ BẮT (thu phục, gói -121 kiểu 2 - BatPokemon) có dấu Poké Ball ở góc thẻ, chip lọc "Đã bắt", số đã bắt
+ * trên đầu lưới.
  */
 public final class ManPokedex extends ManBang {
     public static ManPokedex me;
@@ -30,6 +31,7 @@ public final class ManPokedex extends ManBang {
         loai = null;
         gI().chon = -1;
         gI().moBang();
+        BatPokemon.xinPokedex();   // 0.9.8: trạng thái "Đã bắt" theo loài
     }
 
     protected String tieuDe() {
@@ -72,8 +74,8 @@ public final class ManPokedex extends ManBang {
         return v;
     }
 
-    static final String[] CHIP = {"Tất cả", "Lửa", "Nước", "Cỏ", "Điện", "Khác"};
-    static final int[] HE_CHIP = {-1, HePoke.LUA, HePoke.NUOC, HePoke.CO, HePoke.DIEN, -2};
+    static final String[] CHIP = {"Tất cả", "Lửa", "Nước", "Cỏ", "Điện", "Khác", "Đã bắt"};
+    static final int[] HE_CHIP = {-1, HePoke.LUA, HePoke.NUOC, HePoke.CO, HePoke.DIEN, -2, -3};
 
     Vector loc() {
         Vector all = dsLoai();
@@ -86,7 +88,7 @@ public final class ManPokedex extends ManBang {
             int dex = ((int[]) all.elementAt(i))[0];
             int h1 = HePoke.he1(dex), h2 = HePoke.he2(dex);
             boolean khac = h1 != HePoke.LUA && h1 != HePoke.NUOC && h1 != HePoke.CO && h1 != HePoke.DIEN;
-            if (he == -2 ? khac : (h1 == he || h2 == he)) {
+            if (he == -3 ? BatPokemon.daBat(dex) : he == -2 ? khac : (h1 == he || h2 == he)) {
                 v.addElement(all.elementAt(i));
             }
         }
@@ -137,8 +139,16 @@ public final class ManPokedex extends ManBang {
         }
         int yl = y + 2;
         yl += Bang.hangChip(g, x, yl, w, CHIP, this.loc, vl) + k;
+        if (BatPokemon.coDex) {
+            ChuDe.chu(g, "Đã bắt: " + BatPokemon.soDaBat + " / " + dsLoai().size() + " loài", x + 4, yl, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+            yl += ChuDe.cao(ChuDe.PHU) + 2;
+        }
         if (v.size() == 0) {
-            Bang.trong(g, x, yl, w, y + h - yl, "Chưa biết loài nào", "Đi khám phá bản đồ: Pokémon hoang dã sẽ hiện trong Pokédex.");
+            if (this.loc == CHIP.length - 1) {
+                Bang.trong(g, x, yl, w, y + h - yl, "Chưa bắt loài nào", "Làm Pokémon hoang dã yếu đi rồi ném Poké Ball (mua ở Y tá Chansey).");
+            } else {
+                Bang.trong(g, x, yl, w, y + h - yl, "Chưa biết loài nào", "Đi khám phá bản đồ: Pokémon hoang dã sẽ hiện trong Pokédex.");
+            }
             return;
         }
         final int o = Bang.coO() + 12;
@@ -166,6 +176,9 @@ public final class ManPokedex extends ManBang {
                     String ten = Res.monsterTemplates[lt[1]].name;
                     ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN, s - 6), xi + s / 2, y + 4 + hi, ChuDe.NHAN, ChuDe.CHU, 2);
                     ChuDe.chu(g, soDex(lt[0]), xi + s / 2, y + 4 + hi + lh1, ChuDe.PHU, ChuDe.CHU_PHU, 2);
+                    if (BatPokemon.daBat(lt[0])) {
+                        GiaoDien.pokeBall(g, xi + s - 10, y + 10, 6, 0);   // 0.9.8: đã bắt
+                    }
                     Bang.dangKy(g, xi, y, s, h, new IAction() {
                         public void perform() {
                             ManPokedex.this.chon = i;
@@ -224,6 +237,13 @@ public final class ManPokedex extends ManBang {
             Font.arialFont.drawString(g, "HP gốc: " + hp, xr + 10, yy, 0);
             yy += Font.arialFont.getHeight() + 4;
         }
-        Bang.doan(g, Font.arialFont, "Gặp ngoài bản đồ hoang dã. Chạm Pokémon hoang dã để chọn làm mục tiêu.", xr + 10, yy, wr - 20, false);
+        if (BatPokemon.coDex) {
+            int co = BatPokemon.coDex(lt[0]);
+            String tt = (co & 2) != 0 ? ((co & 4) != 0 ? "Đã bắt (có sắc màu)" : "Đã bắt") : (co & 1) != 0 ? "Đã hạ, chưa bắt" : "Chưa bắt";
+            Font.blackFont.drawString(g, tt, xr + 10, yy, 0);
+            yy += Font.blackFont.getHeight() + 4;
+        }
+        Bang.doan(g, Font.arialFont, "Gặp ngoài bản đồ hoang dã. Làm Pokémon yếu đi (HP dưới " + BatPokemon.nguongHp
+                + "%) rồi ném Poké Ball để thu phục.", xr + 10, yy, wr - 20, false);
     }
 }

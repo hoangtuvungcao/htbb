@@ -552,6 +552,12 @@ class MapXuLyLenh {
             case HocChieuGame.LENH: // -122 hoc chieu theo loai + Diem huan luyen (client >= 908)
                 HocChieuGame.xuLy(player, message);
                 break;
+            case -120: // [bo-ngoc] che tao / khảm ngoc he (real.BoNgocGame, real.CheTaoGame)
+                BoNgocGame.xuLy(player, message);
+                break;
+            case -121: // [bat-pokemon] thu phuc: trang thai / nem bong / Pokedex (real.BatPokemonGame)
+                BatPokemonGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;

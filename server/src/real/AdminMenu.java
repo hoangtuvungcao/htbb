@@ -48,6 +48,7 @@ public class AdminMenu {
             + "5 <xu> <lượng> <sựkiện> <bình> <ngọc> <đồ> <chiaXu>\n"
             + "6 = xem cấu hình hiện tại\n"
             + "8 = nạp lại ngay từ CSDL (không cần chờ tối đa 10 giây)\n"
+            + "9 = nạp lại bộ trang bị / ngọc hệ / chế tạo / thu phục (bảng data_*)\n"
             + "(mọi thay đổi được ghi vào CSDL, còn sau restart, sửa được cả trên trang quản trị web)";
 
     private AdminMenu() {
@@ -307,6 +308,9 @@ public class AdminMenu {
                     break;
                 case 8:
                     ketQua = server.CauHinh.napLai() + "\n---\n" + xemCauHinh(player);
+                    break;
+                case 9:
+                    ketQua = BoNgocGame.napLaiNgay("admin " + player.charname);
                     break;
                 default:
                     ketQua = xemCauHinh(player);

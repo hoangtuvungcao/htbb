@@ -45,6 +45,7 @@ public final class NpcDichVu {
                 p.sendMessage(MessageCreator.createMsgMenu(new String[]{
                     "Hồi phục Pokémon (miễn phí)",
                     "Mua thuốc hồi phục",
+                    BatPokemonGame.TEN_MUC_CHANSEY, // [bat-pokemon] muc 2
                 }, NPC_Y_TA, 0));
                 return true;
             case NPC_PIDGEOT:
@@ -247,6 +248,8 @@ public final class NpcDichVu {
                 hoiPhuc(p);
             } else if (chon == 1) {
                 guiShopThuoc(p);
+            } else if (chon == 2) {
+                BatPokemonGame.moMenuBong(p); // [bat-pokemon]
             }
             return true;
         }

@@ -10846,6 +10846,8 @@ public void addCharXaiNapLuong(Char p, int type) {
         real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex . Bang rieng, khong can KHOA_LUU.
         real.DanhHieuGame.luu(p); // danh hieu: bo dem tob_danh_hieu_dem (bang rieng)
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (tat co sv.lau_dai: khong lam gi).
+        real.BoNgocGame.luu(p); // [bo-ngoc] tui ngoc he + pity che tao (tob_ho_so_bo_ngoc)
+        real.BatPokemonGame.luu(p); // [bat-pokemon] Hop PC, keo loai, bong (tob_hop_pc)
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveChar(this, p, admindExit);
         }
@@ -10859,6 +10861,8 @@ public void addCharXaiNapLuong(Char p, int type) {
         real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (cung ban sao voi saveChar).
         real.DanhHieuGame.luu(p); // danh hieu: bo dem (cung ban sao voi saveChar)
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (cung ban sao voi saveChar).
+        real.BoNgocGame.luu(p); // [bo-ngoc]
+        real.BatPokemonGame.luu(p); // [bat-pokemon]
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveCharAuto(this, p);
         }

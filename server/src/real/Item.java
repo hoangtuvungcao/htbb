@@ -305,6 +305,11 @@ public class Item extends Actor {
     /** So lan tinh luyen that bai LIEN TIEP o cung 1 moc - reset ve 0 khi tinh luyen thanh cong. */
     public int soLanTinhLuyenThatBai;
     /**
+     * [bo-ngoc] Ngoc he da khảm (com.htbb.pokemon.NgocHe.maHoa, "nh..."; "" = khong co). Luu thanh MOT truong CO TIEN TO
+     * o cuoi getDBInfo (initInfoFromDB tim theo tien to, khong theo vi tri) nen khong lech voi truong cuoi them sau.
+     */
+    public String ngocHe = "";
+    /**
      * [khoa-khi-mac] 1 = co {@link #lock} NAY chi do MAC vao (chu game: "do da mac bi khoa, khong giao dich duoc").
      * Phan biet voi khoa vi ly do khac (mua bang luong khoa, qua nhiem vu / su kien, nguyen lieu khoa, tinh luyen...):
      * chi khoa do mac moi pha khoa duoc (real.PhaKhoaGame) va moi ban NPC duoc khi cam ban do khoa. Moi cho khoa vi
@@ -1263,6 +1268,13 @@ public class Item extends Actor {
             if (this.lock != 1) {
                 this.daMac = 0;
             }
+            // [bo-ngoc] truong co tien to "nh" (ngoc he) o bat ky vi tri nao sau truong 33
+            for (int i = data.length - 1; i >= 34; i--) {
+                if (data[i] != null && data[i].startsWith(com.htbb.pokemon.NgocHe.TIEN_TO)) {
+                    this.ngocHe = data[i].trim();
+                    break;
+                }
+            }
             if (this.typetieu > 6) {
                 this.typetieu = 0;
             }
@@ -1850,6 +1862,9 @@ public class Item extends Actor {
         // [khoa-khi-mac] chi THEM truong cuoi (34, 35): chuoi cu ngan hon van doc duoc (initInfoFromDB).
         info = String.valueOf(info) + "," + this.daMac;
         info = String.valueOf(info) + "," + this.soLanPhaKhoa;
+        if (this.ngocHe != null && this.ngocHe.startsWith(com.htbb.pokemon.NgocHe.TIEN_TO)) {
+            info = String.valueOf(info) + "," + this.ngocHe; // [bo-ngoc] truong co tien to, LUON o cuoi
+        }
         return info;
     }
 
@@ -1937,6 +1952,7 @@ public class Item extends Actor {
         newItem.slotWearing = this.slotWearing;
         newItem.idSellMarket = this.idSellMarket;
         newItem.isItemShop = this.isItemShop;
+        newItem.ngocHe = this.ngocHe; // [bo-ngoc] ngoc da khảm di theo mon
         // [khoa-khi-mac] bo dem pha khoa theo MON: ban qua gian hang roi mua lai khong reset duoc tran 3 lan.
         newItem.soLanPhaKhoa = this.soLanPhaKhoa;
         return newItem;

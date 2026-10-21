@@ -405,6 +405,7 @@ class MapEpNgoc {
 
                 if (player.itemImbue == 40000) {
                     player.itemImbue = id;
+                    BoNgocGame.guiNangCap(player, it); // [bo-ngoc] ti le + pity + moc neo tren nut Dap
                 } else if (player.itemImbue != id) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể luyện 2 vật phẩm cùng lúc", ""));
                 } else if (player.itemImbue == id) {
@@ -800,6 +801,7 @@ class MapEpNgoc {
         }
         final String[] ra = {""};
         final int kq = NangCapLauDaiGame.thu(player, item, idLkd, player.typeGemImbue, coBua, ra);
+        BoNgocGame.guiNangCap(player, item); // [bo-ngoc] ti le / pity cua lan ke tiep
         try {
             if (kq == NangCapLauDaiGame.THIEU || kq == NangCapLauDaiGame.DA_TOI_DA) {
                 player.sendMessage(MessageCreator.createServerAlertMessage(ra[0], ""));

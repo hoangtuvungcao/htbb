@@ -217,6 +217,8 @@ public final class Kiem {
         KiemDanhHieu.chay(); // 0.9.7 danh hieu: mo khoa, an "???", het han, mot danh hieu dang deo, tran chi so, sql/them_danh_hieu.sql
         KiemCapNhatClient.chay(); // 0.9.7: cap nhat client - hai nguong, goi -115, hop 37 client cu co link
         KiemHocChieu.chay(); // de xuat 1: hoc chieu theo loai (data_learnset) + Diem huan luyen thay diem tiem nang
+        KiemBoNgocCheTao.chay(); // bo trang bi cung bac, ngoc he, che tao, moc neo nang cap (bo-ngoc-bat)
+        KiemBatPokemon.chay(); // thu phuc Pokemon, Hop PC, Keo loai, Pokedex "Da bat" (bo-ngoc-bat)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

@@ -15,7 +15,7 @@ import java.util.TreeSet;
  * va cac moc thuong da nhan. Ban trong bo nho - real.PokedexPokemon giu cache theo
  * charDBID, data.DatabasePokedex nap/luu (bang tob_pokedex, tob_pokedex_thuong).
  *
- * "Da gap" = co dong (danh hoac ha). "Da ha" = so_ha > 0.
+ * "Da gap" = co dong (danh hoac ha). "Da ha" = so_ha > 0. "Da bat" = so_bat > 0 (thu phuc, BatPokemon; 7.7).
  * Ghi theo lo: moi lan danh/ha chi doi bo nho + danh dau "ban" (dirty); saveChar xa ra CSDL.
  *
  * Lop THUAN + dong bo (danh quai chay tren luong map, luu chay tren luong luu).
@@ -25,17 +25,35 @@ public final class Pokedex {
     /** Moc so loai DA HA de nhan thuong (D3). Doi thi giu tang dan. */
     public static final int[] MOC = {10, 25, 50, 100};
 
-    /** dex -> {so_ha, lan_dau (giay epoch)}. */
+    /** dex -> {so_ha, lan_dau (giay epoch), so_bat, bat_shiny (0/1)}. */
     private final Map<Integer, long[]> bang = new LinkedHashMap<>();
     private final Set<Integer> ban = new HashSet<>();
     private final Set<Integer> mocDaNhan = new TreeSet<>();
 
     /** Nap mot dong tu CSDL (khong danh dau ban). */
     public synchronized void napDong(final int dex, final int soHa, final long lanDau) {
+        napDong(dex, soHa, lanDau, 0, false);
+    }
+
+    /** Nap mot dong co cot thu phuc (so_bat, bat_shiny). */
+    public synchronized void napDong(final int dex, final int soHa, final long lanDau, final int soBat, final boolean batShiny) {
         if (dex <= 0) {
             return;
         }
-        bang.put(Integer.valueOf(dex), new long[]{Math.max(0, soHa), lanDau});
+        bang.put(Integer.valueOf(dex), new long[]{Math.max(0, soHa), lanDau, Math.max(0, soBat), batShiny ? 1 : 0});
+    }
+
+    private long[] dong(final int dex, final long bayGioGiay) {
+        final Integer k = Integer.valueOf(dex);
+        long[] d = bang.get(k);
+        if (d == null) {
+            d = new long[]{0, bayGioGiay, 0, 0};
+            bang.put(k, d);
+        } else if (d.length < 4) {
+            d = new long[]{d[0], d[1], 0, 0};
+            bang.put(k, d);
+        }
+        return d;
     }
 
     public synchronized void napMoc(final int moc) {
@@ -51,7 +69,7 @@ public final class Pokedex {
         if (bang.containsKey(k)) {
             return false;
         }
-        bang.put(k, new long[]{0, bayGioGiay});
+        bang.put(k, new long[]{0, bayGioGiay, 0, 0});
         ban.add(k);
         return true;
     }
@@ -62,17 +80,77 @@ public final class Pokedex {
             return false;
         }
         final Integer k = Integer.valueOf(dex);
-        long[] d = bang.get(k);
-        if (d == null) {
-            d = new long[]{0, bayGioGiay};
-            bang.put(k, d);
-        }
+        final long[] d = dong(dex, bayGioGiay);
         final boolean dau = d[0] == 0;
         if (d[0] < Integer.MAX_VALUE) {
             d[0]++;
         }
         ban.add(k);
         return dau;
+    }
+
+    /**
+     * Thu phuc thanh cong mot con loai {@code dex} (BatPokemon). Ghi luon "da gap". Tra ve true neu la lan dau bat loai nay.
+     */
+    public synchronized boolean ghiBat(final int dex, final boolean shiny, final long bayGioGiay) {
+        if (dex <= 0) {
+            return false;
+        }
+        final long[] d = dong(dex, bayGioGiay);
+        final boolean dau = d[2] == 0;
+        if (d[2] < Integer.MAX_VALUE) {
+            d[2]++;
+        }
+        if (shiny) {
+            d[3] = 1;
+        }
+        ban.add(Integer.valueOf(dex));
+        return dau;
+    }
+
+    public synchronized int soBat(final int dex) {
+        final long[] d = bang.get(Integer.valueOf(dex));
+        return d == null || d.length < 4 ? 0 : (int) d[2];
+    }
+
+    public synchronized boolean daBat(final int dex) {
+        return soBat(dex) > 0;
+    }
+
+    public synchronized boolean batShiny(final int dex) {
+        final long[] d = bang.get(Integer.valueOf(dex));
+        return d != null && d.length >= 4 && d[3] != 0;
+    }
+
+    public synchronized int soLoaiDaBat() {
+        int n = 0;
+        for (final long[] d : bang.values()) {
+            if (d.length >= 4 && d[2] > 0) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Moi loai da biet: {dex, co} voi co bit0 = da ha, bit1 = da bat, bit2 = da bat shiny (goi Pokedex cho client, 7.7).
+     * Theo dex tang dan.
+     */
+    public synchronized List<int[]> trangThai() {
+        final List<int[]> ds = new ArrayList<>();
+        for (final Map.Entry<Integer, long[]> e : bang.entrySet()) {
+            final long[] d = e.getValue();
+            int co = d[0] > 0 ? 1 : 0;
+            if (d.length >= 4 && d[2] > 0) {
+                co |= 2;
+            }
+            if (d.length >= 4 && d[3] != 0) {
+                co |= 4;
+            }
+            ds.add(new int[]{e.getKey().intValue(), co});
+        }
+        Collections.sort(ds, (a, b) -> Integer.compare(a[0], b[0]));
+        return ds;
     }
 
     public synchronized int soHa(final int dex) {
@@ -107,7 +185,7 @@ public final class Pokedex {
     }
 
     /**
-     * Lay va XOA danh sach dong ban: moi phan tu {dex, so_ha, lan_dau}. Noi goi ghi CSDL;
+     * Lay va XOA danh sach dong ban: moi phan tu {dex, so_ha, lan_dau, so_bat, bat_shiny}. Noi goi ghi CSDL;
      * ghi loi thi goi {@link #traLaiBan} de lan sau ghi lai.
      */
     public synchronized List<long[]> layDongBan() {
@@ -115,7 +193,7 @@ public final class Pokedex {
         for (final Integer k : ban) {
             final long[] d = bang.get(k);
             if (d != null) {
-                ds.add(new long[]{k.longValue(), d[0], d[1]});
+                ds.add(new long[]{k.longValue(), d[0], d[1], d.length >= 4 ? d[2] : 0, d.length >= 4 ? d[3] : 0});
             }
         }
         ban.clear();
