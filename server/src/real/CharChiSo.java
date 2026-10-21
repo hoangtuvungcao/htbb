@@ -164,6 +164,9 @@ class CharChiSo {
         if (self.pokeDex > 0) {
             self.maxhp += (int) ((long) self.maxhp * com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex) / 100L);
         }
+        // Diem huan luyen (<= +20% moi dong, tong diem co dinh theo cap - HocChieuGame / HuanLuyen). Tat = 0.
+        self.maxhp += (int) ((long) self.maxhp * HocChieuGame.phanNghin(self, com.htbb.pokemon.HuanLuyen.HP) / 1000L);
+        self.maxmp += (int) ((long) self.maxmp * HocChieuGame.phanNghin(self, com.htbb.pokemon.HuanLuyen.PP) / 1000L);
         self.maxhp += SkinThuCuoi.congHp(self);
         self.maxmp += SkinThuCuoi.congMp(self);
         if (self.hp > self.maxhp) {
@@ -563,6 +566,14 @@ class CharChiSo {
             self.defend_magic = ChiSoTrangBiGame.kepPhanTram(self.defend_magic, gocMa);
             self.defendMaPlayer = ChiSoTrangBiGame.kepPhanTram(self.defendMaPlayer, gocMa);
         }
+        {
+            // Diem huan luyen dong Phong thu (<= +20%, tat = 0)
+            final int hl = HocChieuGame.phanNghin(self, com.htbb.pokemon.HuanLuyen.PHONG_THU);
+            self.defend_physic += (int) ((long) self.defend_physic * hl / 1000L);
+            self.defend_magic += (int) ((long) self.defend_magic * hl / 1000L);
+            self.defendVatPlayer += (int) ((long) self.defendVatPlayer * hl / 1000L);
+            self.defendMaPlayer += (int) ((long) self.defendMaPlayer * hl / 1000L);
+        }
         if (self.map != null && self.map.isMapChienTruongMoba()) {
             final CharChienTruong c2 = MapChienTruongMoba.getCharChienTruong(self.charname);
             if (c2 != null) {
@@ -833,7 +844,7 @@ class CharChiSo {
                     if (com.htbb.pokemon.LauDai.bat()) {
                         // GD2 6.1: co ban = max(5% atk, atk - def); he + STAB SAU thu; dao 95..105%.
                         // Chi mang x1,5 do noi goi ap (Region...). Ghi co/he cho goi -95.
-                        final int heC = com.htbb.pokemon.ChieuPokemon.heChieu(self.charClass, idSkill);
+                        final int heC = HocChieuGame.heChieu(self, idSkill); // nhanh Eevee: he o 2/8/10 theo learnset
                         final int heDung = heC >= 0 ? heC : self.hePokemon1();
                         final int[] kqLd = com.htbb.pokemon.SatThuongLauDai.tinh(att, def, 100, heDung,
                                 self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(),
@@ -1456,6 +1467,12 @@ class CharChiSo {
             final int ptGd = com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex);
             self.attack += (int) ((long) self.attack * ptGd / 100L);
             self.attackPlayer += (int) ((long) self.attackPlayer * ptGd / 100L);
+        }
+        {
+            // Diem huan luyen dong Tan cong (<= +20%, tat = 0)
+            final int hl = HocChieuGame.phanNghin(self, com.htbb.pokemon.HuanLuyen.TAN_CONG);
+            self.attack += (int) ((long) self.attack * hl / 1000L);
+            self.attackPlayer += (int) ((long) self.attackPlayer * hl / 1000L);
         }
         // ---- THAN KHI: "Tang diem sat thuong" — cong SAU CUNG ----
         // Dat o cuoi ham nen khong bi bat ky he so nhan nao phia tren khuech dai,

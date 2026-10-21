@@ -39,12 +39,20 @@ public final class ThanhNhanh {
         if (MainChar.quickSlot == null || mc == null) {
             return;
         }
+        if (mc.name != null && !mc.name.equals(daTen)) {
+            HocChieu.xoa();   // đổi Pokémon: bảng chiêu theo loài / Điểm huấn luyện của Pokémon trước không còn đúng
+        }
+        HocChieu.xinNeuChua();
         int n = soDaHoc();
         if (n == daDem && mc.name != null && mc.name.equals(daTen)) {
             return;
         }
         daDem = n;
         daTen = mc.name;
+        // 0.9.8: chiêu bị gỡ (loài chưa học được - máy chủ chuyển đổi học chiêu theo loài) -> chiêu gần nhất còn học
+        for (int b = 0; b < MainChar.quickSlot.length; b++) {
+            thayChieuMat(MainChar.quickSlot[b], Canvas_lop());
+        }
         // 0.9.5: thuốc có nút HP / PP riêng -> bỏ thuốc khỏi ô CHIÊU (bản cũ đặt thuốc ở phím 7 / 9 = hai nút thuốc
         // thừa cạnh chiêu); cả hai bộ ô
         for (int b = 0; b < MainChar.quickSlot.length; b++) {
@@ -56,6 +64,47 @@ public final class ThanhNhanh {
             }
         }
         dien(MainChar.quickSlot[0]);
+    }
+
+    /**
+     * Ô giữ chiêu có cấp &lt;= 0 (đã bị gỡ) -> chiêu đã học gần nhất chưa có trên bộ ô: ưu tiên cùng hệ, rồi số hiệu gần
+     * nhất; không còn chiêu nào thì để trống (ô "+"). Chiêu cơ bản 0 luôn giữ. Trả số ô đã đổi.
+     */
+    public static int thayChieuMat(QuickSlot[] bo, int lop) {
+        byte[] lv = Char.skillLevelLearnt;
+        if (bo == null || lv == null) {
+            return 0;
+        }
+        int doi = 0;
+        for (int i = 0; i < bo.length; i++) {
+            QuickSlot q = bo[i];
+            if (q == null || q.quickslotType != QuickSlot.TYPE_SKILL) {
+                continue;
+            }
+            int sk = q.skillType;
+            if (sk == 0 || (sk > 0 && sk < lv.length && lv[sk] > 0)) {
+                continue;
+            }
+            int heCu = HocChieu.heChieu(lop, sk);
+            int tot = -1, diemTot = Integer.MAX_VALUE;
+            for (int c = 1; c < lv.length; c++) {
+                if (lv[c] <= 0 || coChieu(bo, c)) {
+                    continue;
+                }
+                int d = Math.abs(c - sk) + (HocChieu.heChieu(lop, c) == heCu ? 0 : 100);
+                if (d < diemTot) {
+                    diemTot = d;
+                    tot = c;
+                }
+            }
+            if (tot > 0) {
+                q.setIsSkill(tot, lop, false);
+            } else {
+                q.setIsNothing();
+            }
+            doi++;
+        }
+        return doi;
     }
 
     /** Điền ô trống của một bộ ô. */

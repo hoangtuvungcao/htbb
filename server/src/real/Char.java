@@ -9019,6 +9019,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void resetTN() {
+        if (HocChieuGame.tayBangKeo(this)) {
+            return; // Keo tiem nang = tay Diem huan luyen mien phi
+        }
         final int allBasicPoint = this.lvDetail.getBasicPoint(this.lastLV) + (this.lastLV - 1) * 5;
         this.basepoint = (short) (allBasicPoint - (this.lastLV - 1) * 5);
         this.strength = (short) (Database.basicPoint[this.charClass][0] + (this.lastLV - 1));
@@ -9046,6 +9049,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void resetKN() {
+        if (HocChieuGame.datLaiKyNang(this)) {
+            return; // hoc chieu theo loai: chieu da hoc ve cap 1, tra lai diem
+        }
         for (int i = 0; i < this.skill.length; ++i) {
             if (this.skill[i] > 0) {
                 this.skill[i] = 0;
@@ -9065,6 +9071,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void resetKNDownlv() {
+        if (HocChieuGame.datLaiKyNang(this)) {
+            return;
+        }
         for (int i = 0; i < this.skill.length; ++i) {
             if (this.skill[i] > 0) {
                 this.skill[i] = 0;

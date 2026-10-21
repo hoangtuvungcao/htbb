@@ -83,9 +83,14 @@ public final class BangTiemNangHD extends Dialog {
         return m == null ? 0 : Math.max(0, m.basePointLeft);
     }
 
+    /** Điểm chưa dùng của nút tab Chỉ số: Điểm huấn luyện khi máy chủ bật (HocChieu), không thì điểm tiềm năng. */
+    public static int diemNut() {
+        return HocChieu.batHL ? HocChieu.conLai() : diemChuaDung();
+    }
+
     /** Chấm đỏ góc phải trên nút (x, y, w) khi còn điểm chưa dùng. */
     public static void chamDo(Graphics g, int x, int y, int w) {
-        if (diemChuaDung() <= 0) {
+        if (diemNut() <= 0) {
             return;
         }
         ChuDe.cham(g, x + w - 4, y + 4);   // 0.9.6: chấm chung (ChamMoi / KiemChamMoi)

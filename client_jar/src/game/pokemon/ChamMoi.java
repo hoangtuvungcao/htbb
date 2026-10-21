@@ -13,7 +13,7 @@ import java.util.Vector;
  *  NV_NHAN  nhiệm vụ mới nhận được   HUD Nhiệm vụ -> tab "Có thể nhận" -> hàng nhiệm vụ
  *  NV_TRA   nhiệm vụ đủ, về trả       HUD Nhiệm vụ -> tab "Đang làm"    -> hàng nhiệm vụ
  *  THU      thư chưa đọc              HUD Menu -> "Thư/Quà" -> hàng "Hộp thư (n mới)"
- *  DIEM_TN  điểm tiềm năng chưa cộng  HUD Menu -> "Pokémon" -> tab Trang bị / Chỉ số -> nút "Tiềm năng"
+ *  DIEM_TN  điểm tiềm năng / Điểm huấn luyện chưa dùng  HUD Menu -> "Pokémon" -> tab Trang bị / Chỉ số -> nút "Huấn luyện"
  *  DIEM_KN  điểm kỹ năng chưa dùng    HUD Menu -> "Pokémon" -> tab Kỹ năng -> chip "Chiêu của Pokémon" -> hàng "Học: 1 điểm"
  *  CHIEU_MOI chiêu mới học được ở NPC  HUD Menu -> "Pokémon" -> tab Kỹ năng -> chip "Học chiêu mới" -> hàng chiêu (chưa xem)
  *  DANH_HIEU danh hiệu mới mở khoá    HUD Menu -> "Pokémon" -> tab Trang bị / Chỉ số -> viên "Danh hiệu" -> hàng (0.9.7)
@@ -66,7 +66,8 @@ public final class ChamMoi {
                 case THU:
                     return Math.max(0, game.render.screen.MessageScr.nMSG);
                 case DIEM_TN:
-                    return m == null ? 0 : Math.max(0, m.basePointLeft);
+                    // 0.9.8: Điểm huấn luyện chưa phân bổ (máy chủ bật), không thì điểm tiềm năng cũ
+                    return m == null ? 0 : HocChieu.batHL ? HocChieu.conLai() : Math.max(0, m.basePointLeft);
                 case DIEM_KN:
                     return m == null ? 0 : Math.max(0, m.skillPointLeft);
                 case CHIEU_MOI: {

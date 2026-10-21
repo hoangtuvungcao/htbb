@@ -540,7 +540,7 @@ public final class TuDongGame {
                 }
                 final long hoi = (long) bang(CharManager.SKILL_COOLDOWN, cl, s, lv, 10) * 100L;
                 final long da = p.timeLastUseSkills != null && s < p.timeLastUseSkills.length ? bay - p.timeLastUseSkills[s] : Long.MAX_VALUE;
-                t.chieu.add(new TuDongKeHoach.Chieu(s, com.htbb.pokemon.ChieuPokemon.heChieu(cl, s),
+                t.chieu.add(new TuDongKeHoach.Chieu(s, HocChieuGame.heChieu(p, s),
                         bang(CharManager.SKILL_DAM_PERCENT, cl, s, lv, 100), bang(CharManager.SKILL_MP, cl, s, lv, 0),
                         Math.max(0L, hoi - da)));
             }

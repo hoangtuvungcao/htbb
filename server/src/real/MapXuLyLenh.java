@@ -122,14 +122,8 @@ class MapXuLyLenh {
                     SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
                     KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -108
                     if (newlevel > p.lastLV) {
-                        p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
-                        p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
-                        p.agitity = (short) (p.agitity + 1 * (newlevel - p.lastLV));
-                        p.spirit = (short) (p.spirit + 1 * (newlevel - p.lastLV));
-                        p.health = (short) (p.health + 1 * (newlevel - p.lastLV));
-                        p.luck = (short) (p.luck + 1 * (newlevel - p.lastLV));
-                        p.skillpoint = (short) (p.skillpoint + 1 * (newlevel - p.lastLV));
-                        p.lastLV = (short) newlevel;
+                        // diem tiem nang / chi so / diem ky nang + tu hoc chieu (HocChieuGame: luat cu khi tat)
+                        HocChieuGame.congLenCap(p, newlevel);
                         m = new Message(32);
                         m.dos.writeShort(p.id);
                         m.dos.writeByte(2);
@@ -257,14 +251,8 @@ class MapXuLyLenh {
                     SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
                     KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -108
                 if (newlevel > p.lastLV) {
-                    p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
-                    p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
-                    p.agitity = (short) (p.agitity + 1 * (newlevel - p.lastLV));
-                    p.spirit = (short) (p.spirit + 1 * (newlevel - p.lastLV));
-                    p.health = (short) (p.health + 1 * (newlevel - p.lastLV));
-                    p.luck = (short) (p.luck + 1 * (newlevel - p.lastLV));
-                    p.skillpoint = (short) (p.skillpoint + 1 * (newlevel - p.lastLV));
-                    p.lastLV = (short) newlevel;
+                    // diem tiem nang / chi so / diem ky nang + tu hoc chieu (HocChieuGame: luat cu khi tat)
+                    HocChieuGame.congLenCap(p, newlevel);
                     m = new Message(32);
                     m.dos.writeShort(p.id);
                     m.dos.writeByte(2);
@@ -560,6 +548,9 @@ class MapXuLyLenh {
                 break;
             case -101: // Guc / hoi sinh (com.htbb.pokemon.HoiSinh): xin / chon trong hop thoai
                 HoiSinhGame.xuLy(player, message);
+                break;
+            case HocChieuGame.LENH: // -122 hoc chieu theo loai + Diem huan luyen (client >= 908)
+                HocChieuGame.xuLy(player, message);
                 break;
             case -71:
                 map.doSetTaxTown(player, message);

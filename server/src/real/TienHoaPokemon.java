@@ -107,6 +107,7 @@ public final class TienHoaPokemon {
                     + " (cap " + (p.lvDetail != null ? p.lvDetail.lv : 0) + ")", "tienhoa");
         } catch (final Exception ignored) {
         }
+        HocChieuGame.khiTienHoa(p); // loai moi -> tu hoc chieu cua loai (data_learnset)
     }
 
     /**

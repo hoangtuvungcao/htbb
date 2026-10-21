@@ -301,6 +301,8 @@ public class SelectCharHandler implements ICommandHandler {
                 } catch (final Exception ex2) {
                 }
             }
+            // hoan xu / hop thoai chuyen doi mot lan + goi -122 (client >= 908)
+            real.HocChieuGame.sauVaoGame(p);
             try {
                 m = MessageCreator.createCharWearingMessage(p, p);
                 session.sendMessage(m);

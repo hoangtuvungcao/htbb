@@ -87,6 +87,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
 - `KiemCapNhat` (0.9.7): cập nhật trong game (game.pokemon.CapNhat + htbb.capnhat / htbb.pc.CapNhatPc) - gói -115, hộp nhắc /
   bắt buộc ở mọi cỡ, tải qua máy chủ HTTP cục bộ (SHA-256 lệch / 404 / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài /SILENT);
+- `KiemHuanLuyen` (0.9.8): học chiêu theo loài + Điểm huấn luyện (game.pokemon.HocChieu / BangHuanLuyen, gói -122 giả):
+  trạng thái chiêu theo loài, nút "Huấn luyện" có / hết chấm, bảng ở 6 cỡ (điện thoại / PC / J2ME) đủ nút, trong vùng an
+  toàn, <= 80 %, hàng không chồng nút, trần + / −, ô nhanh giữ chiêu bị gỡ được thay;
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

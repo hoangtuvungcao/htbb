@@ -1280,7 +1280,7 @@ class DatabaseNhanVat {
             for (int k = 7; k < 25; ++k) {
                 potion.append(",0");
                 if (k < 21) {
-                    skill.append(",").append(mainSkill[k - 7]);
+                    skill.append(",").append(mainSkill[k - 6]); // o 1..14 (truoc: k - 7 lech mot o -> o NPC dau = 0)
                 }
             }
             potion.append(",0,0,0,0,0,0,0,0,0,0,0,0,0");
@@ -1690,7 +1690,7 @@ class DatabaseNhanVat {
             for (int k = 7; k < 25; ++k) {
                 potion.append(",0");
                 if (k < 21) {
-                    skill.append(",").append(mainSkill[k - 7]);
+                    skill.append(",").append(mainSkill[k - 6]); // o 1..14 (truoc: k - 7 lech mot o -> o NPC dau = 0)
                 }
             }
             potion.append(",0,0,0,0,0,0,0,0,0,0,0,0,0");

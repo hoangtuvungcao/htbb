@@ -121,6 +121,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.DanhHieuKho.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -122 hoc chieu theo loai + diem huan luyen (HocChieu, server >= 0.9.8)
+        if (game.pokemon.HocChieu.nhan(msg)) {
+            return;
+        }
         // pokemon: lenh -105 trang thai server sau moi thao tac vat pham (kho trang thai client)
         if (game.pokemon.TrangThaiNguoiChoi.nhan(msg)) {
             return;
