@@ -22,7 +22,9 @@ GOC = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 
 # màn có nội dung trắng thật (sprite Pokémon trắng, bản đồ tuyết...) - ngưỡng nới
 NOI = ("pokedex", "the_gioi", "the_gioi_cuoi", "goi_y_chieu", "suc_khoe", "thong_bao_kich_hoat", "hop_vat_pham", "tai_", "may_chu",
-       "dang_nhap", "dang_ky", "chon_nhan_vat", "tao_nhan_vat")
+       "dang_nhap", "dang_ky", "chon_nhan_vat", "tao_nhan_vat",
+       # lưới icon vật phẩm sinh thái: ô gỗ đúng kiểu NRO, phần trắng là hình bên trong icon
+       "hst_tui")
 
 MAU_GO = [(0xDF, 0xE6, 0xEB), (0xEE, 0xF3, 0xF6), (0xE2, 0xE9, 0xEE), (0xF6, 0xF9, 0xFA)]
 
@@ -80,7 +82,7 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(2)
-    nguong = 1.2
+    nguong = 1.5
     if "--nguong-trang" in sys.argv:
         nguong = float(sys.argv[sys.argv.index("--nguong-trang") + 1])
     bao = 0
