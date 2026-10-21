@@ -186,8 +186,24 @@ public class KiemThongBao {
             kiem(game.pokemon.DungDo.nhan(m[2]), "gói -104 biểu ngữ đọc được");
             kiem("Boss Gyarados đã xuất hiện ở Hồ Phẫn Nộ!".equals(game.pokemon.DungDo.chuHien(-1)), "gói -104 SU_KIEN -> biểu ngữ trên");
             game.pokemon.DungDo.xoaHet();
-            // câu cá: kết quả về TRƯỚC lúc cá cắn -> giữ; lần gặp Pokémon (tin) chờ; kéo cần xong mới hiện, kết quả trước
-            game.pokemon.SinhThai.batDauCau();
+            // câu cá (0.9.6.1 cauca2/keocan): phao chỉ thả xuống Ô NƯỚC -> đặt hồ giả cạnh chân nhân vật
+            game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+            int wm = game.model.Tilemap.w, hm = game.model.Tilemap.h;
+            boolean[] hoThu = new boolean[Math.max(1, wm * hm)];
+            for (int yy = mc.y / 16 + 1; yy <= mc.y / 16 + 3 && yy < hm; yy++) {
+                for (int xx = mc.x / 16 - 1; xx <= mc.x / 16 + 1; xx++) {
+                    if (xx >= 0 && xx < wm) hoThu[yy * wm + xx] = true;
+                }
+            }
+            game.pokemon.SinhThai.datHoThu(hoThu);
+            kiem(game.pokemon.SinhThai.batDauCau(), "câu cá: cạnh hồ -> thả phao được");
+            // dấu cá cắn "Cá cắn câu! Kéo cần ngay!" là lời nhắc phải bấm ngay: hiện thẻ nhanh NGAY (không chờ kéo cần)
+            kiem(game.pokemon.SinhThai.chanThongBao("Cá cắn câu! Kéo cần ngay!"), "câu cá: dấu cá cắn do hoạt cảnh nhận");
+            kiem(game.pokemon.DungDo.soHien() == 1 && game.pokemon.DungDo.chuHien(0) != null
+                    && game.pokemon.DungDo.chuHien(0).startsWith("Cá cắn câu"), "câu cá: dấu cá cắn hiện ngay (" + game.pokemon.DungDo.soHien() + ")");
+            kiem(game.render.Canvas.currentDialog == null, "câu cá: dấu cá cắn không phải hộp chặn");
+            game.pokemon.DungDo.xoaHet();
+            // kết quả (sau keocan) -> giữ; lần gặp Pokémon (tin) chờ; hoạt cảnh kéo cần xong mới hiện, kết quả trước
             kiem(game.pokemon.DungDo.nhan(m[0]), "gói -104 câu cá (có hình Pokémon) đọc được");
             game.pokemon.DungDo.them("Gặp Pokémon hiếm: Gyarados!\nĐã ghi vào Pokédex", HIEM, 2, 130, false);
             kiem(game.pokemon.DungDo.soHien() == 0, "câu cá: chưa kéo cần -> chưa hiện thẻ nào (" + game.pokemon.DungDo.soHien() + ")");
