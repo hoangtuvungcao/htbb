@@ -83,16 +83,21 @@ public final class HudRong {
     }
 
     static int caoThe() {
-        return 50;
+        return game.pokemon.TheNguoiChoi.CAO;   // 0.9.7: theo thẻ chung (56)
     }
 
     // cụm chiến đấu
-    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 64, R_THUOC = 12, R_NGU_CANH = 14, R_DOI_BO = 9;
-    static final int[] GOC_CHIEU = {180, 145, 110, 75};
+    /**
+     * 0.9.7 (NRO): 4 ô chiêu VUÔNG trên cung quanh nút đánh, KHE ĐỀU giữa các ô kề nhau: ô vuông kề trên cung cách nhau
+     * theo trục lớn nhất (|dx| hoặc |dy|), bằng nhau khi góc = 180, 180 - a, 90 + a, 90 với tan a = 1/2 (a = 26,57 độ):
+     * khoảng tâm theo trục = KC sin a = 0,447 KC -> KC 84: khe ~8 px giữa mọi cặp ô. Ô thuốc HP / PP xếp dọc ngoài cung.
+     */
+    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 84, R_THUOC = 12, R_NGU_CANH = 14, R_DOI_BO = 9;
+    static final int[] GOC_CHIEU = {180, 153, 117, 90};
     static final int[] PHIM_CHIEU = {1, 3, 7, 9};
-    /** cos / sin * 1024 của GOC_CHIEU */
-    static final int[] COS = {-1024, -839, -350, 265};
-    static final int[] SIN = {0, 587, 962, 989};
+    /** cos / sin * 1024 của GOC_CHIEU (180, 153,43, 116,57, 90) */
+    static final int[] COS = {-1024, -916, -458, 0};
+    static final int[] SIN = {0, 458, 916, 1024};
 
     static int xDanh() {
         return Canvas.w - 40;
@@ -110,12 +115,22 @@ public final class HudRong {
         return yDanh() - SIN[i] * KC_CHIEU / 1024;
     }
 
+    /** Ô thuốc: cột dọc ngay ngoài ô chiêu trái nhất (cùng khe ~8 px), HP dưới / PP trên, giữa quanh hàng nút đánh. */
+    /** Kiểm thử: tâm ô chiêu i. */
+    public static int xChieuKiem(int i) {
+        return xChieu(i);
+    }
+
+    public static int yChieuKiem(int i) {
+        return yChieu(i);
+    }
+
     static int xThuoc() {
-        return xDanh() - 100;
+        return xDanh() - KC_CHIEU - 15 - 8 - 12;
     }
 
     static int yThuoc(boolean hp) {
-        return hp ? yDanh() + 12 : yDanh() - 18;
+        return hp ? yDanh() + 15 : yDanh() - 15;
     }
 
     static int xNguCanh() {
@@ -565,17 +580,22 @@ public final class HudRong {
             g.drawRect(x - r + 1, y - r + 1, 2 * r - 3, 2 * r - 3);
             boolean anh = oc >= 0 && game.pokemon.ChuUI.bo != null
                     && game.pokemon.ChuUI.bo.chieu(g, oc, false, x - r + 3, y - r + 3, 2 * r - 6, false);
-            if (!anh) {
-                nen(g, x, y, r, GiaoDien.pha(mau, GiaoDien.TRANG, 1, 4), mau, false);
-                int ic = r * 9 / 10;
-                game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.heIcon(he), x - ic / 2, y - r * 3 / 4, ic, 0xFFFFFF, mau);
-            }
             String vt = vietTat(lop, sk);
+            int vaiVt = r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU;
+            if (!anh) {
+                // J2ME / thiếu ảnh: biểu tượng hệ (ảnh 16 px) SÁT ĐỈNH ô, nhãn ở dưới - không chữ đè biểu tượng
+                nen(g, x, y, r, GiaoDien.pha(mau, GiaoDien.TRANG, 1, 4), mau, false);
+                int ic = 16;
+                int yIc = y - r + 2;
+                if (vt != null) {
+                    yIc = Math.min(yIc, y + r - game.pokemon.ChuDe.cao(vaiVt) - 1 - ic - 1);
+                }
+                game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.heIcon(he), x - ic / 2, yIc, ic, 0xFFFFFF, mau);
+            }
             if (vt != null) {
                 // 0.9.6: huy hiệu hệ Thường là đĩa kem -> nhãn tối cho dễ đọc
                 // tên viết tắt sát đáy BÊN TRONG ô (đo theo font đang dùng - font ảnh J2ME cao hơn)
-                int vaiVt = r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU;
-                int yVt = Math.min(anh ? y + r * 2 / 5 : y + r / 4 - 1, y + r - game.pokemon.ChuDe.cao(vaiVt));
+                int yVt = anh ? Math.min(y + r * 2 / 5, y + r - game.pokemon.ChuDe.cao(vaiVt)) : y + r - game.pokemon.ChuDe.cao(vaiVt) - 1;
                 game.pokemon.ChuDe.chuVien(g, game.pokemon.ChuDe.cat(vt, vaiVt, 2 * r - 2), x, yVt, vaiVt, 0xFFFFFF, game.pokemon.ChuDe.VIEN, 2);
             }
             long da = now - mc.timeLastUseSkills[sk];

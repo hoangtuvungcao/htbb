@@ -279,7 +279,7 @@ public final class ManMenu extends Screen {
             final int i = CHINH[q];
             int a = GOC[q];
             int x = cx + cos(a) * Rv / 1024, y = cy - sin(a) * Rv / 1024;
-            nutTo(g, x, y, r, i, new IAction() {
+            nutTo(g, x, y, r, i, t >= 140, new IAction() {
                 public void perform() {
                     ManMenu.lam(i);
                 }
@@ -322,12 +322,15 @@ public final class ManMenu extends Screen {
     }
 
     /** Nút tròn to vòng cung: đĩa trắng + icon màu, nhãn đậm dưới; chấm đỏ khi có mới. */
-    static void nutTo(Graphics g, int x, int y, int r, int i, Object viec) {
+    static void nutTo(Graphics g, int x, int y, int r, int i, boolean nhan, Object viec) {
         Bang.nutTron(g, x, y, r, HINH[i], MAU[i], false, null, viec, "menu-" + TEN[i]);
-        // nhãn: chữ trắng viền nâu dưới nút (đọc rõ trên thế giới tối) - kiểu NRO
+        // nhãn: chữ trắng viền nâu dưới nút (đọc rõ trên thế giới tối) - kiểu NRO; 0.9.7: chỉ khi vòng đã bung hết
+        // (đang bung 70 -> 100% bán kính thì nhãn đè nút kế bên)
         String ten = TEN[i];
         int ht = ChuDe.cao(ChuDe.SO) + 2;
-        ChuDe.chuVienGiua(g, ten, x, y + r + 5, ht, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
+        if (nhan) {
+            ChuDe.chuVienGiua(g, ten, x, y + r + 5, ht, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
+        }
         if (cham(i)) {
             ChuDe.cham(g, x + r * 7 / 10, y - r * 7 / 10);
         }

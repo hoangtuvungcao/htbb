@@ -174,6 +174,8 @@ public class ChupTrongGame {
 
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
+        // hiệu ứng mở tấm ở trạng thái cuối: hai khung chụp cách nhau > 300 ms (giả lập máy chủ, ghi ảnh) mở lại hiệu ứng
+        game.pokemon.Bang.dungHieuUng = true;
         File ra = new File(a.length > 0 ? a[0] : "anh_trong_game");
         ra.mkdirs();
         System.setProperty("htbb.duLieu", new File(ra, "du_lieu").getAbsolutePath());
@@ -305,6 +307,10 @@ public class ChupTrongGame {
                 BufferedImage anh = ve(W, H);
                 game.pokemon.GhiChu.bat = false;
                 kiemChu(ten + " " + TEN_CO[c]);
+                if (ten.startsWith("the_gioi") || "suc_khoe".equals(ten) || "goi_y_chieu".equals(ten)) {
+                    kiemPhuKin(anh, ten + " " + TEN_CO[c]);
+                    if (game.render.screen.HudRong.bat()) kiemKheChieu(ten + " " + TEN_CO[c]);
+                }
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
                 // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
                 kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
@@ -1196,6 +1202,63 @@ public class ChupTrongGame {
                 }
             }
         }
+        // 0.9.7: chữ không đè BIỂU TƯỢNG (tiền tệ, icon pixel) - phần lõi dòng chữ (bỏ đệm trên / dưới) giao hộp ảnh
+        int nb = game.pokemon.GhiChu.soBieu;
+        int[] bx = game.pokemon.GhiChu.BX, by = game.pokemon.GhiChu.BY, bw = game.pokemon.GhiChu.BW, bh = game.pokemon.GhiChu.BH;
+        int[] bt = game.pokemon.GhiChu.BT;
+        for (int b = 0; b < nb; b++) {
+            // khung trên cùng chứa tâm biểu tượng (vẽ trước nó) - chữ ở khung khác (vd hàng dưới thẻ phủ) không tính
+            int pxb = bx[b] + bw[b] / 2, pyb = by[b] + bh[b] / 2, kb = -1;
+            for (int k = 0; k < nk; k++) {
+                if (kt[k] > bt[b]) continue;
+                int m = game.pokemon.GhiChu.KM[k];
+                if (m == game.pokemon.KhungNroBang.RANH || m == game.pokemon.KhungNroBang.CUON || m == game.pokemon.KhungNroBang.CUON_NUM
+                        || m >= game.pokemon.KhungNroBang.DAY_HP && m <= game.pokemon.KhungNroBang.DAY_LA) continue;
+                if (pxb < kx[k] || pyb < ky[k] || pxb >= kx[k] + kw[k] || pyb >= ky[k] + kh[k]) continue;
+                if (kb < 0 || kt[k] > kt[kb]) kb = k;
+            }
+            for (int i = 0; i < n; i++) {
+                if (khungCua[i] != kb) continue;
+                int t0 = cy[i] + ch[i] / 5, t1 = cy[i] + ch[i] * 4 / 5;
+                int ox = Math.min(cx[i] + cw[i], bx[b] + bw[b]) - Math.max(cx[i], bx[b]);
+                int oy = Math.min(t1, by[b] + bh[b]) - Math.max(t0, by[b]);
+                if (ox > 1 && oy > 1) {
+                    kiem(false, nhan + " chu de bieu tuong: \"" + game.pokemon.GhiChu.CS[i] + "\" x " + game.pokemon.GhiChu.BS[b] + " @"
+                            + bx[b] + "," + by[b] + " " + bw[b] + "x" + bh[b]);
+                }
+            }
+        }
+    }
+
+    /** 0.9.7: thế giới PHỦ KÍN màn (không lề màu nền thử magenta / đen thuần ở mép phải / dưới). */
+    static void kiemPhuKin(BufferedImage anh, String nhan) {
+        int W = anh.getWidth(), H = anh.getHeight(), n = 0, ho = 0;
+        for (int y = 1; y < H; y += 7) {
+            for (int x = 1; x < W; x += 7) {
+                int c = anh.getRGB(x, y) & 0xFFFFFF;
+                n++;
+                if (c == 0xFF00FF) ho++;
+            }
+        }
+        kiem(ho == 0, nhan + " the gioi phu kin man (" + ho + "/" + n + " diem ho)");
+        // mép phải / dưới: cột / hàng cuối không đen thuần cả dải (lề đen của cover hỏng)
+        int denP = 0, denD = 0;
+        for (int y = 0; y < H; y += 5) if ((anh.getRGB(W - 2, y) & 0xFFFFFF) == 0) denP++;
+        for (int x = 0; x < W; x += 5) if ((anh.getRGB(x, H - 2) & 0xFFFFFF) == 0) denD++;
+        kiem(denP * 5 < H / 2 && denD * 5 < W / 2, nhan + " khong lề den mep phai / duoi (" + denP + ", " + denD + ")");
+    }
+
+    /** 0.9.7: cụm chiêu HUD PC: khe giữa các ô vuông kề nhau trên cung BẰNG NHAU (sai <= 1 px). */
+    static void kiemKheChieu(String nhan) {
+        int h = 15;   // nửa cạnh ô vuông chiêu (4/5 r + viền)
+        int[] khe = new int[3];
+        for (int i = 0; i < 3; i++) {
+            int dx = Math.abs(game.render.screen.HudRong.xChieuKiem(i + 1) - game.render.screen.HudRong.xChieuKiem(i));
+            int dy = Math.abs(game.render.screen.HudRong.yChieuKiem(i + 1) - game.render.screen.HudRong.yChieuKiem(i));
+            khe[i] = Math.max(dx, dy) - 2 * h;
+        }
+        int mn = Math.min(khe[0], Math.min(khe[1], khe[2])), mx = Math.max(khe[0], Math.max(khe[1], khe[2]));
+        kiem(mx - mn <= 1 && mn >= 4, nhan + " khe o chieu deu (" + khe[0] + ", " + khe[1] + ", " + khe[2] + ")");
     }
 
     /** Chuỗi vùng chạm (tiền tố) sau khi mở màn ten. */

@@ -40,7 +40,8 @@ public final class TienTe {
         "đổi quà trong sự kiện đang diễn ra",
         "kiếm từ PvP / sàn đấu, đổi quà vinh dự"};
     private static final String[] ANH = {"xu", "luong", "luong_khoa", "su_kien", "vinh_du"};
-    private static final int[] CO = {16, 24, 32};
+    /** cỡ ảnh /tien/<ten>_<co>.png (0.9.7: thêm 8 / 12 - hàng ví thẻ HUD) */
+    private static final int[] CO = {8, 12, 16, 24, 32};
 
     private static Image[][] anh;
     private static boolean daNap;
@@ -183,11 +184,18 @@ public final class TienTe {
         }
         // 0.9.7 (quy tắc: icon = ảnh PNG): mọi bản dùng ảnh pixel /tien/<ten>_<16|24|32>.png cỡ gần nhất, canh giữa ô
         nap();
-        int j = co >= 32 ? 2 : co >= 24 ? 1 : 0;
+        // 0.9.7: ảnh LỚN NHẤT không vượt ô (trước: < 24 luôn ảnh 16 -> tràn ô 9 px của hàng ví, đè thanh EXP)
+        int j = 0;
+        for (int k = 0; k < CO.length; k++) {
+            if (CO[k] <= co) {
+                j = k;
+            }
+        }
         Image a = loai >= 0 && loai < SO_LOAI ? anh[loai][j] : null;
         if (a != null) {
             int d = (co - CO[j]) / 2;
             g.drawImage(a, x + d, y + d, Graphics.TOP | Graphics.LEFT);
+            GhiChu.bieu(g, "tien-" + ANH[loai], x + d, y + d, CO[j], CO[j]);
             return;
         }
         veVector(g, loai, x, y, co);

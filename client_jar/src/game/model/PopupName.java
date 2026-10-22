@@ -30,9 +30,21 @@ public class PopupName extends Tree {
             this.num = (byte) 0;
         }
         g.drawImage(Res.imgShadow, this.x, this.y, 3);
+        // 0.9.7: cổng sát mép bản đồ -> mũi tên + chữ "vào" kẹp trọn trong vùng nhìn (không bị cắt ở mép màn)
+        int wc = Font.normalFontColor.getWidth(this.name);
+        int xa = kep(this.x, 9), xc = kep(this.x, wc / 2 + 2);
         if (imgArrow != null) {
-            imgArrow.drawFrame(0, this.x, (this.y - 10) + (this.num / 2), 0, 33, g);
+            imgArrow.drawFrame(0, xa, (this.y - 10) + (this.num / 2), 0, 33, g);
         }
-        Font.normalFontColor.drawString(g, this.name, this.x, (this.y - 32) + (this.num / 2), 2);
+        Font.normalFontColor.drawString(g, this.name, xc, (this.y - 32) + (this.num / 2), 2);
+    }
+
+    /** x kẹp sao cho [x - nua, x + nua] nằm trong vùng nhìn thế giới (chỉ khi cổng đang ở gần vùng nhìn). */
+    static int kep(int x, int nua) {
+        int l = game.render.screen.GameScr.cmx, r = l + game.render.screen.GameScr.gsw;
+        if (x < l - nua || x > r + nua) {
+            return x;
+        }
+        return Math.max(l + nua, Math.min(r - nua, x));
     }
 }

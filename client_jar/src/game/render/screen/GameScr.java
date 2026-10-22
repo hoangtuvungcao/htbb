@@ -8552,8 +8552,8 @@ public class GameScr extends Screen {
         // 0.9.6: cách mép dưới / trái >= 16 px logic (góc bo màn điện thoại không cắt nhãn)
         int dy = Canvas.h - 16 - game.pokemon.Bang.anDuoi - 12;
         if (Canvas.currentScreen == Canvas.gameScr) {
-            if (Canvas.gameScr.hideGUI == 2 || HudRong.banDoTo) {
-                return;
+            if (Canvas.gameScr.hideGUI == 2 || HudRong.banDoTo || game.pokemon.TheNguoiChoi.daVe12()) {
+                return;   // 0.9.7: thẻ NRO (PC / APK) tự vẽ 12+ trong hàng ví
             }
             dy = 40;
             dy += 4;

@@ -41,7 +41,8 @@ public final class ViTien {
         if (mc == null) {
             return;
         }
-        int co = Math.max(8, h);
+        // 0.9.7: biểu tượng = cao chữ (không to hơn hàng): ảnh 8 px ở hàng 10 px
+        int co = Math.max(8, Math.min(h - 2, ChuDe.cao(ChuDe.NHAN_NHO)));
         int vai = ChuDe.NHAN_NHO;
         int xx = x;
         xx += muc(g, TienTe.XU, mc.charXu, xx, y, h, co, vai, 0xFFE89A, true) + 8;
