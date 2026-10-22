@@ -9,12 +9,18 @@ Hình đã được thu nhỏ / cắt khung / đổi định dạng để chạy
 Bản sắc màu (shiny) là sprite sắc màu của chính PMDCollab, không tự đổi màu.
 Loài ghi (bản nháp ...) dùng sprite CHƯA HOÀN THIỆN của PMDCollab; (dạng ...) dùng một dạng khác của chính loài đó.
 Động tác còn thiếu dùng lại khung của chính người vẽ (CopyOf), không vẽ thêm.
+
+# Sprite ngoài PMDCollab (42 loài PMDCollab chưa có; chủ game chấp nhận, đang xin giấy phép; du_lieu/loai/sprite_ngoai.csv)
+Smogon Sprite Project - https://www.smogon.com/forums/threads/smogon-sprite-project.3647722/ (dùng phi lợi nhuận, ghi công người vẽ / dự án)
+Bảng ghi công: Gen 6 https://docs.google.com/spreadsheets/d/1Gn0UORn-unvcbUeQhQdEBz0ADNcH49BZZqQ1dpXm9eo ; Gen 7 https://docs.google.com/spreadsheets/d/1FMcHbSKEWZc7v2Ur4cyJjT_NhO0gqXyU9kDhsOQhlBQ ; Gen 8 https://docs.google.com/spreadsheets/d/1acgzAjh0dnFRQnjZu8kSjS177rKCzpFfEHRLtwuuXRU ; Gen 9 https://docs.google.com/spreadsheets/d/1MCjDktTOOFjLKM5C-RW6SfBQGkjlxDSCZAZDma_ItuA
+Gen 5: sprite gốc Pokémon Black / White (Game Freak / Nintendo), bản lưu trên https://play.pokemonshowdown.com/sprites/gen5/
+Ảnh trận đấu (trước / sau) giữ nguyên điểm ảnh, thu nhỏ lân cận gần nhất, lật gương cho hướng phải / trái-sau.
 Nhân vật dựa trên Pokémon Mystery Dungeon (Chunsoft / Spike Chunsoft).
 
-# Người vẽ (121)
-CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris, Anon, Anonymous, Ariakyu, Audino, avalancheman, Avery, Axcel, baronessfaron, bwappi, Caitemis, Chesyon, Chi, cyboy_bit, DavKriz, Deeshura, Dejais, Deleca7755, DeltaL, Discord 173876028593274880, Discord 195280695009083392, Discord 199989579682414592, Discord 215638650434617345, Discord 319728945920475137, dmDash, El_Pangoro_Parse, electronvolt, Emboarger, Emmuffin, EzerArt, FerMrack, FlowerSnek, FrivolousAqua, G-, Gelius, Ginnie, Grimlin, gromchurch, Gust, Hanbei, Hemlock, Ichor, Inv3rse, jelEmerald, JFain, Jhony-Rex, Johanne2, JuanmaSG, JustAGunk, Katach314, Kawaiitron, KCN015, Keldaan, LazerBlitz, Leif, LightBlueBlaze, Limomon, lokatts, Lovi, metalbear, Michael12, Mitsubachi, mixy:3, Mond, Moo, Morei, mosscoated, mucrush, nataniel-sama, Neat_Neato, NeonCityRain, NeroIntruder, NickOnimura, NikolaP, Noivern, NOLASMOR, Noo, Pencil, pi3.14, Pink_no_tori, PixlHoopa, Pokejavi., powercristal, Prismatic, programmedsleepstate, RaoKurai, Reimu\_needs\_$$$, RelicCipher, Reppamon, Riodise, Sceptile, Scizivire, SethY, Shadowcrafts, Shitpost_Sunkern, ShyStarryRain, SilverDeoxys563, Skycloud383, Smalusion, Sonikku_A, Soulja, Spikey-Valentine, stressparticles, Tacocoa, Tainted#3886, TawnySoup, Top_Kec, Uni, Vendily, VOID, Wyvernagon, XModxGodX, Yari, YoukaiMinori
+# Người vẽ (133)
+CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris, Anon, Anonymous, Ariakyu, Arkeis (front), Audino, avalancheman, Avery, Axcel, baronessfaron, Blaquaza, bwappi, Caitemis, Chesyon, Chi, cyboy_bit, DavKriz, Deeshura, Dejais, Deleca7755, DeltaL, Discord 173876028593274880, Discord 195280695009083392, Discord 199989579682414592, Discord 215638650434617345, dmDash, El_Pangoro_Parse, electronvolt, Emboarger, Emmuffin, FerMrack, FlowerSnek, FrivolousAqua, G-, G.E.Z., Game Freak (Pokémon Black / White), Gelius, Ginnie, Grimlin, Gust, Hanbei, Hemlock, Ichor, Inv3rse, JFain, Jhony-Rex, Johanne2, JuanmaSG, JustAGunk, Katach314, Katten, Kawaiitron, KCN015, Keldaan, KingOfThe-X-Roads, KyleDove, Layell (back), LazerBlitz, Leif, leParagon, leParagon (back), LightBlueBlaze, Limomon, lokatts, Lovi, metalbear, Michael12, Mintly, Mitsubachi, mixy:3, Mond, Moo, Morei, mosscoated, nataniel-sama, Neat_Neato, NeonCityRain, NeroIntruder, NickOnimura, NikolaP, Noivern, NOLASMOR, Noo, Pencil, pi3.14, Pink_no_tori, PixlHoopa, Pokejavi., powercristal, Prismatic, programmedsleepstate, RaoKurai, Reimu\_needs\_$$$, RelicCipher, Reppamon, Riodise, Sceptile, Scizivire, SethY, Shadowcrafts, Shitpost_Sunkern, ShyStarryRain, SilverDeoxys563, Skycloud383, Smalusion, Smogon Sprite Project, Sonikku_A, Soulja, Sphex, Spikey-Valentine, Spook, stressparticles, Tacocoa, Tainted#3886, TawnySoup, TheAetherPlayer (back shiny), TheAetherPlayer (shiny), Top_Kec, Travis, Uni, Vendily, VOID, Wyvernagon, XModxGodX, Yari, YoukaiMinori
 
-# Người vẽ theo từng loài (983 loài)
+# Người vẽ theo từng loài (1025 loài)
 #0001: CHUNSOFT
 #0002: CHUNSOFT
 #0003: CHUNSOFT
@@ -528,11 +534,16 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0511: Pokejavi.
 #0512: baronessfaron
 #0513: AllPatchedUp
+#0514: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0515: Pokejavi.
+#0516: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0517: baronessfaron, ShyStarryRain
 #0518: baronessfaron
 #0519: powercristal, Caitemis
+#0520: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0521: Top_Kec
+#0522: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
+#0523: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0524: powercristal
 #0525: Soulja
 #0526: Soulja
@@ -547,6 +558,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0535: JFain
 #0536: JFain
 #0537: Soulja
+#0538: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0539: Emmuffin
 #0540: Emboarger
 #0541: baronessfaron
@@ -566,11 +578,14 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0555: Soulja, Michael12
 #0556: JFain
 #0557: Pink_no_tori, Leif
+#0558: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0559: JFain, Soulja
 #0560: baronessfaron
 #0561: Soulja
 #0562: Michael12, baronessfaron
 #0563: Pink_no_tori, baronessfaron
+#0564: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
+#0565: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0566: Soulja
 #0567: Top_Kec
 #0568: powercristal, cyboy_bit
@@ -596,6 +611,8 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0588: Pink_no_tori, Pokejavi.
 #0589: JFain
 #0590: JFain
+#0591: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
+#0592: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0593: G- (bản nháp PMDCollab, sprite/0593)
 #0594: baronessfaron, Inv3rse
 #0595: JFain, baronessfaron
@@ -619,6 +636,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0613: Emboarger
 #0614: baronessfaron
 #0615: baronessfaron
+#0616: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0617: Johanne2
 #0618: Emmuffin (bản nháp PMDCollab, sprite/0618)
 #0619: JFain
@@ -628,6 +646,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0623: JFain, Soulja, baronessfaron
 #0624: AikoMaiko, baronessfaron
 #0625: Emmuffin
+#0626: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0627: baronessfaron, Discord 215638650434617345
 #0628: Caitemis
 #0629: baronessfaron
@@ -669,6 +688,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0665: Emmuffin, baronessfaron
 #0666: Emmuffin
 #0667: Caitemis
+#0668: Arkeis (front), Layell (back) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0669: baronessfaron
 #0670: baronessfaron
 #0671: baronessfaron
@@ -732,8 +752,10 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0729: Discord 215638650434617345, baronessfaron
 #0730: baronessfaron, Discord 215638650434617345, JFain
 #0731: FlowerSnek
+#0732: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0733: G- (bản nháp PMDCollab, sprite/0733)
 #0734: baronessfaron
+#0735: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0736: Soulja
 #0737: Soulja
 #0738: Soulja
@@ -754,6 +776,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0753: Emmuffin
 #0754: baronessfaron
 #0755: baronessfaron
+#0756: G.E.Z. (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0757: baronessfaron, Soulja
 #0758: JFain, baronessfaron, Soulja
 #0759: JFain
@@ -762,6 +785,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0762: JFain
 #0763: baronessfaron
 #0764: baronessfaron
+#0765: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0766: baronessfaron
 #0767: Soulja
 #0768: JFain, Soulja, Michael12
@@ -833,6 +857,9 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0834: nataniel-sama, Soulja
 #0835: RelicCipher, baronessfaron, Emmuffin
 #0836: Top_Kec
+#0837: Blaquaza, leParagon (back) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0838: Spook, leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0839: Spook, leParagon, TheAetherPlayer (back shiny) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0840: JFain, Emmuffin
 #0841: JFain, Emmuffin
 #0842: Emmuffin
@@ -859,6 +886,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0863: Johanne2
 #0864: JFain
 #0865: baronessfaron (bản nháp PMDCollab, sprite/0865)
+#0866: G.E.Z., TheAetherPlayer (shiny) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0867: Top_Kec
 #0868: Riodise (bản nháp PMDCollab, sprite/0868)
 #0869: Emmuffin
@@ -870,6 +898,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0875: baronessfaron
 #0876: JFain
 #0877: Emmuffin, Uni
+#0878: KingOfThe-X-Roads, leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0879: nataniel-sama, Emmuffin (bản nháp PMDCollab, sprite/0879)
 #0880: Soulja
 #0881: Soulja
@@ -884,6 +913,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0890: Soulja
 #0891: Top_Kec
 #0892: baronessfaron
+#0893: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0894: JFain, baronessfaron
 #0895: JFain, baronessfaron
 #0896: JFain
@@ -921,6 +951,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0928: Emmuffin
 #0929: G- (bản nháp PMDCollab, sprite/0929)
 #0930: JFain, pi3.14
+#0931: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0932: DavKriz, baronessfaron
 #0933: Soulja
 #0934: baronessfaron
@@ -931,18 +962,27 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0939: G-
 #0940: Soulja, DavKriz
 #0941: Soulja, DavKriz
+#0942: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0943: Smogon Sprite Project (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0944: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0945: G- (bản nháp PMDCollab, sprite/0945)
 #0946: Johanne2
+#0947: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0948: pi3.14, Gelius (bản nháp PMDCollab, sprite/0948)
+#0949: Mintly (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0950: KyleDove (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0951: pi3.14, Soulja
 #0952: pi3.14, Soulja, baronessfaron
 #0953: Johanne2
+#0954: Smogon Sprite Project (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0955: Emmuffin
+#0956: Travis (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0957: JFain
 #0958: JFain
 #0959: Emmuffin
 #0960: Limomon
 #0961: baronessfaron
+#0962: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0963: baronessfaron
 #0964: baronessfaron
 #0965: Soulja
@@ -953,6 +993,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0970: G-
 #0971: pi3.14, baronessfaron
 #0972: baronessfaron
+#0973: Katten (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0974: pi3.14, DeltaL
 #0975: pi3.14, DeltaL, Soulja
 #0976: FlowerSnek
@@ -965,12 +1006,14 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0983: Top_Kec
 #0984: G-, Soulja
 #0985: baronessfaron
+#0986: Katten (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0987: baronessfaron
 #0988: Soulja, baronessfaron
 #0989: Soulja, G-
 #0990: G- (bản nháp PMDCollab, sprite/0990)
 #0991: JFain
 #0992: pi3.14, Soulja
+#0993: G.E.Z. (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0994: pi3.14, Soulja
 #0995: Soulja
 #0996: Soulja, pi3.14, Inv3rse
@@ -978,6 +1021,8 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0998: Soulja, pi3.14
 #0999: G- (dạng Roaming, sprite/0999/0001)
 #1000: baronessfaron, G-
+#1001: G.E.Z. (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#1002: Sphex (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #1003: pi3.14, DeltaL (dạng Temp, sprite/1003/0001)
 #1004: pi3.14, DeltaL
 #1005: FerMrack, Soulja, pi3.14
@@ -989,6 +1034,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #1011: Soulja
 #1012: Shadowcrafts, Emmuffin
 #1013: Shadowcrafts, Emmuffin
+#1014: Katten (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #1015: JFain
 #1016: Emmuffin
 #1017: baronessfaron
@@ -996,10 +1042,12 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #1019: Soulja, Emmuffin
 #1020: G- (bản nháp PMDCollab, sprite/1020)
 #1021: Michael12, pi3.14, Caitemis (bản nháp PMDCollab, sprite/1021)
+#1022: Mintly (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#1023: Mintly (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #1024: G-
 #1025: G- (bản nháp PMDCollab, sprite/1025)
 
-# Người vẽ bản sắc màu theo từng loài (939 loài)
+# Người vẽ bản sắc màu theo từng loài (981 loài)
 #0001s: ShyStarryRain
 #0002s: SilverDeoxys563
 #0003s: SilverDeoxys563
@@ -1487,11 +1535,16 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0511s: baronessfaron
 #0512s: Emmuffin
 #0513s: baronessfaron
+#0514s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0515s: baronessfaron
+#0516s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0517s: Caitemis
 #0518s: Caitemis
 #0519s: Caitemis
+#0520s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0521s: Top_Kec
+#0522s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
+#0523s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0524s: Caitemis
 #0525s: Emmuffin
 #0526s: Emmuffin
@@ -1506,6 +1559,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0535s: Morei, JFain
 #0536s: electronvolt
 #0537s: G-
+#0538s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0539s: Emmuffin
 #0540s: Caitemis
 #0541s: ShyStarryRain
@@ -1524,11 +1578,14 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0555s: G-
 #0556s: Caitemis
 #0557s: Leif
+#0558s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0559s: ShyStarryRain, G-
 #0560s: Morei
 #0561s: baronessfaron
 #0562s: ShyStarryRain
 #0563s: baronessfaron
+#0564s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
+#0565s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0566s: Discord 215638650434617345, Caitemis
 #0567s: ShyStarryRain
 #0568s: Caitemis
@@ -1552,6 +1609,8 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0587s: Noo
 #0589s: JFain
 #0590s: ShyStarryRain
+#0591s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
+#0592s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0593s: G- (bản nháp PMDCollab, sprite/0593/0000/0001)
 #0594s: Emmuffin
 #0595s: JFain, Discord 215638650434617345
@@ -1575,6 +1634,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0613s: Morei, ShyStarryRain
 #0614s: Emmuffin
 #0615s: baronessfaron
+#0616s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0617s: Emmuffin
 #0618s: Emmuffin (bản nháp PMDCollab, sprite/0618/0000/0001)
 #0619s: Noo
@@ -1584,6 +1644,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0623s: JuanmaSG, baronessfaron
 #0624s: Caitemis
 #0625s: Emmuffin
+#0626s: Game Freak (Pokémon Black / White) (sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng)
 #0627s: baronessfaron, Emmuffin
 #0628s: Caitemis
 #0629s: Emmuffin
@@ -1624,6 +1685,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0665s: Emmuffin
 #0666s: Emmuffin
 #0667s: Caitemis
+#0668s: Arkeis (front), Layell (back) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0669s: Morei
 #0670s: Morei, baronessfaron
 #0671s: Morei
@@ -1685,8 +1747,10 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0729s: Discord 215638650434617345, ShyStarryRain
 #0730s: Discord 215638650434617345
 #0731s: Emmuffin
+#0732s: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0733s: G- (bản nháp PMDCollab, sprite/0733/0000/0001)
 #0734s: Emmuffin
+#0735s: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0736s: Emmuffin
 #0737s: Emmuffin
 #0738s: G-
@@ -1706,6 +1770,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0753s: Emmuffin
 #0754s: ShyStarryRain
 #0755s: Caitemis
+#0756s: G.E.Z. (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0757s: Caitemis, Emmuffin
 #0758s: Emmuffin
 #0759s: ShyStarryRain
@@ -1714,6 +1779,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0762s: Caitemis, ShyStarryRain
 #0763s: Discord 215638650434617345
 #0764s: baronessfaron
+#0765s: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0766s: Emmuffin
 #0767s: Emmuffin
 #0768s: Caitemis, G-
@@ -1782,6 +1848,9 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0834s: Emmuffin
 #0835s: Emmuffin
 #0836s: Top_Kec
+#0837s: Blaquaza, leParagon (back) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0838s: Spook, leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0839s: Spook, leParagon, TheAetherPlayer (back shiny) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0840s: Emboarger, Emmuffin
 #0841s: Shitpost_Sunkern
 #0842s: Emmuffin
@@ -1808,6 +1877,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0863s: Emmuffin
 #0864s: ShyStarryRain
 #0865s: baronessfaron (bản nháp PMDCollab, sprite/0865/0000/0001)
+#0866s: G.E.Z., TheAetherPlayer (shiny) (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0867s: Top_Kec
 #0869s: Emmuffin
 #0870s: Discord 215638650434617345 (dạng Brass, sprite/0870/0002/0001)
@@ -1818,6 +1888,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0875s: Emmuffin
 #0876s: ShyStarryRain
 #0877s: Emmuffin, Morei
+#0878s: KingOfThe-X-Roads, leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0879s: Emmuffin (bản nháp PMDCollab, sprite/0879/0000/0001)
 #0880s: Emmuffin
 #0881s: Emmuffin
@@ -1832,6 +1903,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0890s: Emmuffin
 #0891s: Top_Kec
 #0892s: Deeshura
+#0893s: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0894s: Ichor, Caitemis
 #0895s: Ichor, ShyStarryRain
 #0897s: ShyStarryRain
@@ -1865,6 +1937,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0928s: Emmuffin
 #0929s: G- (bản nháp PMDCollab, sprite/0929/0000/0001)
 #0930s: Emmuffin
+#0931s: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0932s: Emmuffin
 #0934s: Emmuffin
 #0935s: Emmuffin
@@ -1874,18 +1947,27 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0939s: G-
 #0940s: G-
 #0941s: G-
+#0942s: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0943s: Smogon Sprite Project (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0944s: leParagon (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0945s: G- (bản nháp PMDCollab, sprite/0945/0000/0001)
 #0946s: Emmuffin
+#0947s: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0948s: <SKREE> (bản nháp PMDCollab, sprite/0948/0000/0001)
+#0949s: Mintly (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#0950s: KyleDove (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0951s: Emmuffin
 #0952s: baronessfaron
 #0953s: Emmuffin
+#0954s: Smogon Sprite Project (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0955s: Emmuffin
+#0956s: Travis (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0957s: ShyStarryRain
 #0958s: ShyStarryRain
 #0959s: Emmuffin
 #0960s: Emmuffin
 #0961s: baronessfaron
+#0962s: KingOfThe-X-Roads (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0963s: ShyStarryRain
 #0964s: ShyStarryRain
 #0965s: Emmuffin
@@ -1896,6 +1978,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0970s: G-
 #0971s: baronessfaron
 #0972s: Emmuffin
+#0973s: Katten (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0974s: DeltaL
 #0975s: Pokejavi.
 #0976s: FlowerSnek
@@ -1908,12 +1991,14 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0983s: Top_Kec
 #0984s: G-
 #0985s: Emmuffin
+#0986s: Katten (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0987s: JuanmaSG
 #0988s: Emmuffin, baronessfaron
 #0989s: Emmuffin
 #0990s: G- (bản nháp PMDCollab, sprite/0990/0000/0001)
 #0991s: ShyStarryRain, Discord 215638650434617345
 #0992s: G-
+#0993s: G.E.Z. (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #0994s: Emmuffin
 #0995s: G-
 #0996s: Emmuffin
@@ -1921,6 +2006,8 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #0998s: G-
 #0999s: G- (dạng Roaming, sprite/0999/0001/0001)
 #1000s: Deeshura
+#1001s: G.E.Z. (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#1002s: Sphex (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #1004s: baronessfaron
 #1005s: Emmuffin
 #1006s: Emmuffin
@@ -1930,6 +2017,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #1011s: Gust
 #1012s: Emmuffin
 #1013s: Emmuffin
+#1014s: Katten (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #1015s: Pokejavi.
 #1016s: Emmuffin
 #1017s: ShyStarryRain
@@ -1937,49 +2025,7 @@ CHUNSOFT, 3Monika4, 3P1C, <SKREE>, Adrian, AikoMaiko, AllPatchedUp, anomalocaris
 #1019s: Emmuffin
 #1020s: G- (bản nháp PMDCollab, sprite/1020/0000/0001)
 #1021s: Emmuffin (bản nháp PMDCollab, sprite/1021/0000/0001)
+#1022s: Mintly (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
+#1023s: Mintly (Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng)
 #1024s: G-
 #1025s: G- (bản nháp PMDCollab, sprite/1025/0000/0001)
-
-# Người vẽ chân dung Pokédex tĩnh (loài chưa có gói sprite, 42 loài; web/public/pokemon/loai)
-#0514: Emmuffin
-#0516: mucrush, NOLASMOR, Gust
-#0520: mucrush, Gust
-#0522: mucrush, Emmuffin
-#0523: mucrush, Gust
-#0538: mucrush, G-
-#0558: mucrush, Emmuffin
-#0564: mucrush, Noo
-#0565: G-
-#0591: mucrush, Top_Kec
-#0592: mucrush, Emmuffin
-#0616: mucrush, Gust
-#0626: mucrush
-#0668: G-
-#0732: Emmuffin
-#0735: baronessfaron, Soulja
-#0756: Emmuffin
-#0765: gromchurch, Top_Kec
-#0837: Discord 319728945920475137
-#0838: Emmuffin
-#0839: Emmuffin
-#0866: G-
-#0878: EzerArt, Gust
-#0893: Emboarger, G-, Soulja
-#0931: Emmuffin
-#0942: Emmuffin
-#0943: baronessfaron
-#0944: G-
-#0947: Emmuffin
-#0949: G-
-#0950: Emmuffin
-#0954: G-
-#0956: baronessfaron
-#0962: baronessfaron
-#0973: Top_Kec, jelEmerald
-#0986: Emmuffin
-#0993: G-
-#1001: Emmuffin
-#1002: Emmuffin
-#1014: Emmuffin
-#1022: G-
-#1023: G-, Top_Kec

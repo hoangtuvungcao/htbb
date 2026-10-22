@@ -404,7 +404,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 403,Shinx,4,Điện,,45,65,34,40,34,45,263,0,1,403,0,1,400,ground,theo_he,3,1,2
 404,Luxio,4,Điện,,60,85,49,60,49,60,363,0,2,403,403,2,250,ground,theo_he,3,1,2
 405,Luxray,4,Điện,,80,120,79,95,79,70,523,0,3,403,404,3,120,ground,theo_he,3,1,1
-406,Budew,4,Cỏ,Độc,40,30,35,50,70,55,280,0,0,406,0,2,250,no-eggs,theo_he,3,0,2
+406,Budew,4,Cỏ,Độc,40,30,35,50,70,55,280,0,0,406,0,2,250,no-eggs,theo_he,3,1,2
 407,Roserade,4,Cỏ,Độc,60,70,65,125,105,90,515,0,2,406,315,2,250,fairy/plant,theo_he,3,1,1
 408,Cranidos,4,Đá,,67,125,40,30,30,58,350,0,1,408,0,4,60,monster,theo_he,3,1,1
 409,Rampardos,4,Đá,,97,165,60,65,50,58,495,0,2,408,408,4,60,monster,theo_he,3,1,1
@@ -437,15 +437,15 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 436,Bronzor,4,Thép,Siêu linh,57,24,86,24,86,23,300,0,1,436,0,1,400,mineral,theo_he,3,1,1
 437,Bronzong,4,Thép,Siêu linh,67,89,116,79,116,33,500,0,2,436,436,2,250,mineral,theo_he,3,1,1
 438,Bonsly,4,Đá,,50,80,95,10,45,10,290,0,0,438,0,1,400,no-eggs,theo_he,3,0,1
-439,Mime Jr.,4,Siêu linh,Tiên,20,25,45,70,90,60,310,0,0,439,0,2,250,no-eggs,theo_he,3,0,2
+439,Mime Jr.,4,Siêu linh,Tiên,20,25,45,70,90,60,310,0,0,439,0,2,250,no-eggs,theo_he,3,1,2
 440,Happiny,4,Thường,,100,5,5,15,65,30,220,0,0,440,0,2,250,no-eggs,theo_he,3,0,2
 441,Chatot,4,Thường,Bay,76,65,45,92,42,91,411,0,1,441,0,2,250,flying,theo_he,3,1,2
 442,Spiritomb,4,Ma,Bóng tối,50,92,108,92,108,35,485,0,1,442,0,3,120,indeterminate,theo_he,3,1,1
 443,Gible,4,Rồng,Đất,58,70,45,40,45,42,300,0,1,443,0,4,60,monster/dragon,theo_he,3,1,1
 444,Gabite,4,Rồng,Đất,68,90,65,50,55,82,410,0,2,443,443,4,60,monster/dragon,theo_he,3,1,1
-445,Garchomp,4,Rồng,Đất,108,130,95,80,85,102,600,0,3,443,444,5,25,monster/dragon,theo_he,3,0,1
+445,Garchomp,4,Rồng,Đất,108,130,95,80,85,102,600,0,3,443,444,5,25,monster/dragon,theo_he,3,1,1
 446,Munchlax,4,Thường,,135,85,40,40,85,5,390,0,0,446,0,2,250,no-eggs,theo_he,3,0,2
-447,Riolu,4,Giác đấu,,40,70,40,35,40,60,285,0,0,447,0,1,400,no-eggs,theo_he,3,0,2
+447,Riolu,4,Giác đấu,,40,70,40,35,40,60,285,0,0,447,0,1,400,no-eggs,theo_he,3,1,2
 448,Lucario,4,Giác đấu,Thép,70,110,70,115,70,90,525,0,1,447,447,3,120,ground/humanshape,theo_he,3,1,2
 449,Hippopotas,4,Đất,,68,72,78,38,42,32,330,0,1,449,0,1,400,ground,theo_he,3,1,1
 450,Hippowdon,4,Đất,,108,112,118,68,72,47,525,0,2,449,449,2,250,ground,theo_he,3,1,1
@@ -512,16 +512,16 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 511,Pansage,5,Cỏ,,50,53,48,53,48,64,316,0,1,511,0,1,400,ground,theo_he,4,1,1
 512,Simisage,5,Cỏ,,75,98,63,98,63,101,498,0,2,511,511,2,250,ground,theo_he,4,1,1
 513,Pansear,5,Lửa,,50,53,48,53,48,64,316,0,1,513,0,1,400,ground,theo_he,4,1,1
-514,Simisear,5,Lửa,,75,98,63,98,63,101,498,0,2,513,513,2,250,ground,theo_he,4,0,0
+514,Simisear,5,Lửa,,75,98,63,98,63,101,498,0,2,513,513,2,250,ground,theo_he,4,1,1
 515,Panpour,5,Nước,,50,53,48,53,48,64,316,0,1,515,0,1,400,ground,theo_he,4,1,1
-516,Simipour,5,Nước,,75,98,63,98,63,101,498,0,2,515,515,2,250,ground,theo_he,4,0,0
+516,Simipour,5,Nước,,75,98,63,98,63,101,498,0,2,515,515,2,250,ground,theo_he,4,1,1
 517,Munna,5,Siêu linh,,76,25,45,67,55,24,292,0,1,517,0,1,400,ground,theo_he,4,1,1
 518,Musharna,5,Siêu linh,,116,55,85,107,95,29,487,0,2,517,517,2,250,ground,theo_he,4,1,1
 519,Pidove,5,Thường,Bay,50,55,50,36,30,43,264,0,1,519,0,1,400,flying,theo_he,4,1,1
-520,Tranquill,5,Thường,Bay,62,77,62,50,42,65,358,0,2,519,519,2,250,flying,theo_he,4,0,0
+520,Tranquill,5,Thường,Bay,62,77,62,50,42,65,358,0,2,519,519,2,250,flying,theo_he,4,1,1
 521,Unfezant,5,Thường,Bay,80,115,80,65,55,93,488,0,3,519,520,3,120,flying,theo_he,4,1,1
-522,Blitzle,5,Điện,,45,60,32,50,32,76,295,0,1,522,0,1,400,ground,theo_he,4,0,0
-523,Zebstrika,5,Điện,,75,100,63,80,63,116,497,0,2,522,522,2,250,ground,theo_he,4,0,0
+522,Blitzle,5,Điện,,45,60,32,50,32,76,295,0,1,522,0,1,400,ground,theo_he,4,1,1
+523,Zebstrika,5,Điện,,75,100,63,80,63,116,497,0,2,522,522,2,250,ground,theo_he,4,1,1
 524,Roggenrola,5,Đá,,55,75,85,25,25,15,280,0,1,524,0,1,400,mineral,theo_he,4,1,1
 525,Boldore,5,Đá,,70,105,105,50,40,20,390,0,2,524,524,2,250,mineral,theo_he,4,1,1
 526,Gigalith,5,Đá,,85,135,130,60,80,25,515,0,3,524,525,3,120,mineral,theo_he,4,1,1
@@ -536,7 +536,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 535,Tympole,5,Nước,,50,50,40,50,40,64,294,0,1,535,0,1,400,water1,theo_he,4,1,1
 536,Palpitoad,5,Nước,Đất,75,65,55,65,55,69,384,0,2,535,535,2,250,water1,theo_he,4,1,1
 537,Seismitoad,5,Nước,Đất,105,95,75,85,75,74,509,0,3,535,536,3,120,water1,theo_he,4,1,1
-538,Throh,5,Giác đấu,,120,100,85,30,85,45,465,0,1,538,0,3,120,humanshape,theo_he,4,0,0
+538,Throh,5,Giác đấu,,120,100,85,30,85,45,465,0,1,538,0,3,120,humanshape,theo_he,4,1,1
 539,Sawk,5,Giác đấu,,75,125,75,30,75,85,465,0,1,539,0,3,120,humanshape,theo_he,4,1,1
 540,Sewaddle,5,Bọ,Cỏ,45,53,70,40,60,42,310,0,1,540,0,1,400,bug,theo_he,4,1,1
 541,Swadloon,5,Bọ,Cỏ,55,63,90,50,80,42,380,0,2,540,540,2,250,bug,theo_he,4,1,1
@@ -556,14 +556,14 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 555,Darmanitan,5,Lửa,,105,140,55,30,55,95,480,0,2,554,554,2,250,ground,theo_he,4,1,1
 556,Maractus,5,Cỏ,,75,86,67,106,67,60,461,0,1,556,0,3,120,plant,theo_he,4,1,1
 557,Dwebble,5,Bọ,Đá,50,65,85,35,35,55,325,0,1,557,0,1,400,bug/mineral,theo_he,4,1,2
-558,Crustle,5,Bọ,Đá,70,105,125,65,75,45,485,0,2,557,557,2,250,bug/mineral,theo_he,4,0,0
+558,Crustle,5,Bọ,Đá,70,105,125,65,75,45,485,0,2,557,557,2,250,bug/mineral,theo_he,4,1,1
 559,Scraggy,5,Bóng tối,Giác đấu,50,75,70,35,70,48,348,0,1,559,0,1,400,ground/dragon,theo_he,4,1,2
 560,Scrafty,5,Bóng tối,Giác đấu,65,90,115,45,115,58,488,0,2,559,559,2,250,ground/dragon,theo_he,4,1,1
 561,Sigilyph,5,Siêu linh,Bay,72,58,80,103,80,97,490,0,1,561,0,3,120,flying,theo_he,4,1,1
 562,Yamask,5,Ma,,38,30,85,55,65,30,303,0,1,562,0,1,400,mineral/indeterminate,theo_he,4,1,1
 563,Cofagrigus,5,Ma,,58,50,145,95,105,30,483,0,2,562,562,2,250,mineral/indeterminate,theo_he,4,1,1
-564,Tirtouga,5,Nước,Đá,54,78,103,53,45,22,355,0,1,564,0,4,60,water1/water3,theo_he,4,0,0
-565,Carracosta,5,Nước,Đá,74,108,133,83,65,32,495,0,2,564,564,4,60,water1/water3,theo_he,4,0,0
+564,Tirtouga,5,Nước,Đá,54,78,103,53,45,22,355,0,1,564,0,4,60,water1/water3,theo_he,4,1,1
+565,Carracosta,5,Nước,Đá,74,108,133,83,65,32,495,0,2,564,564,4,60,water1/water3,theo_he,4,1,1
 566,Archen,5,Đá,Bay,55,112,45,74,45,70,401,0,1,566,0,4,60,flying/water3,theo_he,4,1,1
 567,Archeops,5,Đá,Bay,75,140,65,112,65,110,567,0,2,566,566,4,60,flying/water3,theo_he,4,1,1
 568,Trubbish,5,Độc,,50,50,62,40,62,65,329,0,1,568,0,1,400,mineral,theo_he,4,1,2
@@ -589,8 +589,8 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 588,Karrablast,5,Bọ,,50,75,45,40,45,60,315,0,1,588,0,1,400,bug,theo_he,4,1,1
 589,Escavalier,5,Bọ,Thép,70,135,105,60,105,20,495,0,2,588,588,2,250,bug,theo_he,4,1,1
 590,Foongus,5,Cỏ,Độc,69,55,45,55,55,15,294,0,1,590,0,1,400,plant,theo_he,4,1,1
-591,Amoonguss,5,Cỏ,Độc,114,85,70,85,80,30,464,0,2,590,590,2,250,plant,theo_he,4,0,0
-592,Frillish,5,Nước,Ma,55,40,50,65,85,40,335,0,1,592,0,1,400,indeterminate,theo_he,4,0,0
+591,Amoonguss,5,Cỏ,Độc,114,85,70,85,80,30,464,0,2,590,590,2,250,plant,theo_he,4,1,1
+592,Frillish,5,Nước,Ma,55,40,50,65,85,40,335,0,1,592,0,1,400,indeterminate,theo_he,4,1,1
 593,Jellicent,5,Nước,Ma,100,60,70,85,105,60,480,0,2,592,592,2,250,indeterminate,theo_he,4,1,1
 594,Alomomola,5,Nước,,165,75,80,40,45,65,470,0,1,594,0,3,120,water1/water2,theo_he,4,1,1
 595,Joltik,5,Bọ,Điện,50,47,50,57,50,65,319,0,1,595,0,1,400,bug,theo_he,4,1,1
@@ -614,7 +614,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 613,Cubchoo,5,Băng,,55,70,40,60,40,40,305,0,1,613,0,1,400,ground,theo_he,4,1,1
 614,Beartic,5,Băng,,95,130,80,70,80,50,505,0,2,613,613,2,250,ground,theo_he,4,1,1
 615,Cryogonal,5,Băng,,80,50,50,95,135,105,515,0,1,615,0,3,120,mineral,theo_he,4,1,1
-616,Shelmet,5,Bọ,,50,40,85,40,65,25,305,0,1,616,0,1,400,bug,theo_he,4,0,0
+616,Shelmet,5,Bọ,,50,40,85,40,65,25,305,0,1,616,0,1,400,bug,theo_he,4,1,1
 617,Accelgor,5,Bọ,,80,70,40,100,60,145,495,0,2,616,616,2,250,bug,theo_he,4,1,1
 618,Stunfisk,5,Đất,Điện,109,66,84,81,99,32,471,0,1,618,0,3,120,water1/indeterminate,theo_he,4,1,1
 619,Mienfoo,5,Giác đấu,,45,85,50,55,50,65,350,0,1,619,0,2,250,ground/humanshape,theo_he,4,1,2
@@ -624,7 +624,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 623,Golurk,5,Đất,Ma,89,124,80,55,80,55,483,0,2,622,622,2,250,mineral,theo_he,4,1,1
 624,Pawniard,5,Bóng tối,Thép,45,85,70,40,40,60,340,0,1,624,0,1,400,humanshape,theo_he,4,1,2
 625,Bisharp,5,Bóng tối,Thép,65,125,100,60,70,70,490,0,2,624,624,2,250,humanshape,theo_he,4,1,2
-626,Bouffalant,5,Thường,,95,110,95,40,95,55,490,0,1,626,0,3,120,ground,theo_he,4,0,0
+626,Bouffalant,5,Thường,,95,110,95,40,95,55,490,0,1,626,0,3,120,ground,theo_he,4,1,1
 627,Rufflet,5,Thường,Bay,70,83,50,37,50,60,350,0,1,627,0,2,250,flying,theo_he,4,1,2
 628,Braviary,5,Thường,Bay,100,123,75,57,75,80,510,0,2,627,627,2,250,flying,theo_he,4,1,1
 629,Vullaby,5,Bóng tối,Bay,70,55,75,45,65,60,370,0,1,629,0,2,250,flying,theo_he,4,1,1
@@ -633,7 +633,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 632,Durant,5,Bọ,Thép,58,109,112,48,48,109,484,0,1,632,0,3,120,bug,theo_he,4,1,1
 633,Deino,5,Bóng tối,Rồng,52,65,50,45,50,38,300,0,1,633,0,4,60,dragon,theo_he,4,1,2
 634,Zweilous,5,Bóng tối,Rồng,72,85,70,65,70,58,420,0,2,633,633,4,60,dragon,theo_he,4,1,1
-635,Hydreigon,5,Bóng tối,Rồng,92,105,90,125,90,98,600,0,3,633,634,5,25,dragon,theo_he,4,0,1
+635,Hydreigon,5,Bóng tối,Rồng,92,105,90,125,90,98,600,0,3,633,634,5,25,dragon,theo_he,4,1,1
 636,Larvesta,5,Bọ,Lửa,55,85,55,50,55,60,360,0,1,636,0,2,250,bug,theo_he,4,1,1
 637,Volcarona,5,Bọ,Lửa,85,60,65,135,105,100,550,0,2,636,636,2,250,bug,theo_he,4,1,1
 638,Cobalion,5,Thép,Giác đấu,91,90,129,90,72,108,580,1,1,638,0,6,30,no-eggs,theo_he,4,0,1
@@ -666,7 +666,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 665,Spewpa,6,Bọ,,45,22,60,27,30,29,213,0,2,664,664,2,250,bug,theo_he,4,1,1
 666,Vivillon,6,Bọ,Bay,80,52,50,90,50,89,411,0,3,664,665,3,120,bug,theo_he,4,1,1
 667,Litleo,6,Lửa,Thường,62,50,58,73,54,72,369,0,1,667,0,2,250,ground,theo_he,4,1,2
-668,Pyroar,6,Lửa,Thường,86,68,72,109,66,106,507,0,2,667,667,2,250,ground,theo_he,4,0,0
+668,Pyroar,6,Lửa,Thường,86,68,72,109,66,106,507,0,2,667,667,2,250,ground,theo_he,4,1,1
 669,Flabébé,6,Tiên,,44,38,39,61,79,42,303,0,1,669,0,1,400,fairy,theo_he,4,1,1
 670,Floette,6,Tiên,,54,45,47,75,98,52,371,0,2,669,669,2,250,fairy,theo_he,4,1,1
 671,Florges,6,Tiên,,78,65,68,112,154,75,552,0,3,669,670,3,120,fairy,theo_he,4,1,1
@@ -704,7 +704,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 703,Carbink,6,Đá,Tiên,50,50,150,50,150,50,500,0,1,703,0,3,120,fairy/mineral,theo_he,4,1,1
 704,Goomy,6,Rồng,,45,50,35,55,75,40,300,0,1,704,0,4,60,dragon,theo_he,4,1,1
 705,Sliggoo,6,Rồng,,68,75,53,83,113,60,452,0,2,704,704,4,60,dragon,theo_he,4,1,1
-706,Goodra,6,Rồng,,90,100,70,110,150,80,600,0,3,704,705,5,25,dragon,theo_he,4,0,1
+706,Goodra,6,Rồng,,90,100,70,110,150,80,600,0,3,704,705,5,25,dragon,theo_he,4,1,1
 707,Klefki,6,Thép,Tiên,57,80,91,80,87,75,470,0,1,707,0,3,120,mineral,theo_he,4,1,1
 708,Phantump,6,Ma,Cỏ,43,70,48,50,60,38,309,0,1,708,0,1,400,plant/indeterminate,theo_he,4,1,1
 709,Trevenant,6,Ma,Cỏ,85,110,76,65,82,56,474,0,2,708,708,2,250,plant/indeterminate,theo_he,4,1,1
@@ -730,10 +730,10 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 729,Brionne,7,Nước,,60,69,69,91,81,50,420,0,2,728,728,4,60,water1/ground,theo_he,4,1,1
 730,Primarina,7,Nước,Tiên,80,74,74,126,116,60,530,0,3,728,729,4,60,water1/ground,theo_he,4,1,1
 731,Pikipek,7,Thường,Bay,35,75,30,30,30,65,265,0,1,731,0,1,400,flying,theo_he,4,1,1
-732,Trumbeak,7,Thường,Bay,55,85,50,40,50,75,355,0,2,731,731,2,250,flying,theo_he,4,0,0
+732,Trumbeak,7,Thường,Bay,55,85,50,40,50,75,355,0,2,731,731,2,250,flying,theo_he,4,1,1
 733,Toucannon,7,Thường,Bay,80,120,75,75,75,60,485,0,3,731,732,3,120,flying,theo_he,4,1,1
 734,Yungoos,7,Thường,,48,70,30,30,30,45,253,0,1,734,0,1,400,ground,theo_he,4,1,1
-735,Gumshoos,7,Thường,,88,110,60,55,60,45,418,0,2,734,734,2,250,ground,theo_he,4,0,0
+735,Gumshoos,7,Thường,,88,110,60,55,60,45,418,0,2,734,734,2,250,ground,theo_he,4,1,1
 736,Grubbin,7,Bọ,,47,62,45,55,45,46,300,0,1,736,0,1,400,bug,theo_he,4,1,1
 737,Charjabug,7,Bọ,Điện,57,82,95,55,75,36,400,0,2,736,736,2,250,bug,theo_he,4,1,1
 738,Vikavolt,7,Bọ,Điện,77,70,90,145,75,43,500,0,3,736,737,3,120,bug,theo_he,4,1,1
@@ -754,7 +754,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 753,Fomantis,7,Cỏ,,40,55,35,50,35,35,250,0,1,753,0,1,400,plant,theo_he,4,1,2
 754,Lurantis,7,Cỏ,,70,105,90,80,90,45,480,0,2,753,753,2,250,plant,theo_he,4,1,1
 755,Morelull,7,Cỏ,Tiên,40,35,55,65,75,15,285,0,1,755,0,1,400,plant,theo_he,4,1,1
-756,Shiinotic,7,Cỏ,Tiên,60,45,80,90,100,30,405,0,2,755,755,2,250,plant,theo_he,4,0,0
+756,Shiinotic,7,Cỏ,Tiên,60,45,80,90,100,30,405,0,2,755,755,2,250,plant,theo_he,4,1,1
 757,Salandit,7,Độc,Lửa,48,44,40,71,40,77,320,0,1,757,0,1,400,monster/dragon,theo_he,4,1,2
 758,Salazzle,7,Độc,Lửa,68,64,60,111,60,117,480,0,2,757,757,2,250,monster/dragon,theo_he,4,1,1
 759,Stufful,7,Thường,Giác đấu,70,75,50,45,50,50,340,0,1,759,0,1,400,ground,theo_he,4,1,1
@@ -763,7 +763,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 762,Steenee,7,Cỏ,,52,40,48,40,48,62,290,0,2,761,761,2,250,plant,theo_he,4,1,2
 763,Tsareena,7,Cỏ,,72,120,98,50,98,72,510,0,3,761,762,3,120,plant,theo_he,4,1,1
 764,Comfey,7,Tiên,,51,52,90,82,110,100,485,0,1,764,0,3,120,plant,theo_he,4,1,1
-765,Oranguru,7,Thường,Siêu linh,90,60,80,90,110,60,490,0,1,765,0,3,120,ground,theo_he,4,0,0
+765,Oranguru,7,Thường,Siêu linh,90,60,80,90,110,60,490,0,1,765,0,3,120,ground,theo_he,4,1,1
 766,Passimian,7,Giác đấu,,100,120,90,40,60,80,490,0,1,766,0,3,120,ground,theo_he,4,1,1
 767,Wimpod,7,Bọ,Nước,25,35,40,20,30,80,230,0,1,767,0,1,400,bug/water3,theo_he,4,1,1
 768,Golisopod,7,Bọ,Nước,75,125,140,60,90,40,530,0,2,767,767,2,250,bug/water3,theo_he,4,1,1
@@ -782,7 +782,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 781,Dhelmise,7,Ma,Cỏ,70,131,100,86,90,40,517,0,1,781,0,3,120,mineral,theo_he,4,1,1
 782,Jangmo-o,7,Rồng,,45,55,65,45,45,45,300,0,1,782,0,4,60,dragon,theo_he,4,1,2
 783,Hakamo-o,7,Rồng,Giác đấu,55,75,90,65,70,65,420,0,2,782,782,4,60,dragon,theo_he,4,1,1
-784,Kommo-o,7,Rồng,Giác đấu,75,110,125,100,105,85,600,0,3,782,783,5,25,dragon,theo_he,4,0,1
+784,Kommo-o,7,Rồng,Giác đấu,75,110,125,100,105,85,600,0,3,782,783,5,25,dragon,theo_he,4,1,1
 785,Tapu Koko,7,Điện,Tiên,70,115,85,95,75,130,570,1,1,785,0,6,30,no-eggs,theo_he,4,0,1
 786,Tapu Lele,7,Siêu linh,Tiên,70,85,75,130,115,95,570,1,1,786,0,6,30,no-eggs,theo_he,4,0,2
 787,Tapu Bulu,7,Cỏ,Tiên,70,130,115,85,95,75,570,1,1,787,0,6,30,no-eggs,theo_he,4,0,1
@@ -835,9 +835,9 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 834,Drednaw,8,Nước,Đá,90,115,90,48,68,74,485,0,2,833,833,2,250,monster/water1,theo_he,4,1,1
 835,Yamper,8,Điện,,59,45,50,40,50,26,270,0,1,835,0,1,400,ground,theo_he,4,1,2
 836,Boltund,8,Điện,,69,90,60,90,60,121,490,0,2,835,835,2,250,ground,theo_he,4,1,1
-837,Rolycoly,8,Đá,,30,40,50,40,50,30,240,0,1,837,0,1,400,mineral,theo_he,4,0,0
-838,Carkol,8,Đá,Lửa,80,60,90,60,70,50,410,0,2,837,837,2,250,mineral,theo_he,4,0,0
-839,Coalossal,8,Đá,Lửa,110,80,120,80,90,30,510,0,3,837,838,3,120,mineral,theo_he,4,0,0
+837,Rolycoly,8,Đá,,30,40,50,40,50,30,240,0,1,837,0,1,400,mineral,theo_he,4,1,1
+838,Carkol,8,Đá,Lửa,80,60,90,60,70,50,410,0,2,837,837,2,250,mineral,theo_he,4,1,1
+839,Coalossal,8,Đá,Lửa,110,80,120,80,90,30,510,0,3,837,838,3,120,mineral,theo_he,4,1,1
 840,Applin,8,Cỏ,Rồng,40,40,80,40,40,20,260,0,1,840,0,1,400,plant/dragon,theo_he,4,1,2
 841,Flapple,8,Cỏ,Rồng,70,110,80,95,60,70,485,0,2,840,840,2,250,plant/dragon,theo_he,4,1,1
 842,Appletun,8,Cỏ,Rồng,110,85,80,100,80,30,485,0,2,840,840,2,250,plant/dragon,theo_he,4,1,1
@@ -846,7 +846,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 845,Cramorant,8,Bay,Nước,70,85,55,85,95,85,475,0,1,845,0,3,120,water1/flying,theo_he,4,1,1
 846,Arrokuda,8,Nước,,41,63,40,40,30,66,280,0,1,846,0,1,400,water2,theo_he,4,1,1
 847,Barraskewda,8,Nước,,61,123,60,60,50,136,490,0,2,846,846,2,250,water2,theo_he,4,1,1
-848,Toxel,8,Điện,Độc,40,38,35,54,35,40,242,0,0,848,0,1,400,no-eggs,theo_he,4,0,1
+848,Toxel,8,Điện,Độc,40,38,35,54,35,40,242,0,0,848,0,1,400,no-eggs,theo_he,4,1,1
 849,Toxtricity,8,Điện,Độc,75,98,70,114,70,75,502,0,1,848,848,3,120,humanshape,theo_he,4,1,1
 850,Sizzlipede,8,Lửa,Bọ,50,65,45,50,50,45,305,0,1,850,0,1,400,bug,theo_he,4,1,1
 851,Centiskorch,8,Lửa,Bọ,100,115,65,90,90,65,525,0,2,850,850,2,250,bug,theo_he,4,1,1
@@ -864,7 +864,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 863,Perrserker,8,Thép,,70,110,100,50,60,50,440,0,2,52,52,2,250,ground,theo_he,4,1,1
 864,Cursola,8,Ma,,60,95,50,145,130,30,510,0,2,222,222,2,250,water1/water3,theo_he,4,1,1
 865,Sirfetch'd,8,Giác đấu,,62,135,95,68,82,65,507,0,2,83,83,2,250,flying/ground,theo_he,4,1,1
-866,Mr. Rime,8,Băng,Siêu linh,80,85,75,110,100,70,520,0,2,439,122,2,250,humanshape,theo_he,4,0,0
+866,Mr. Rime,8,Băng,Siêu linh,80,85,75,110,100,70,520,0,2,439,122,2,250,humanshape,theo_he,4,1,1
 867,Runerigus,8,Đất,Ma,58,95,145,50,105,30,483,0,2,562,562,2,250,mineral/indeterminate,theo_he,4,1,1
 868,Milcery,8,Tiên,,45,40,40,50,61,34,270,0,1,868,0,1,400,fairy/indeterminate,theo_he,4,1,1
 869,Alcremie,8,Tiên,,65,60,75,110,121,64,495,0,2,868,868,2,250,fairy/indeterminate,theo_he,4,1,2
@@ -876,7 +876,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 875,Eiscue,8,Băng,,75,80,110,65,90,50,470,0,1,875,0,3,120,water1/ground,theo_he,4,1,1
 876,Indeedee,8,Siêu linh,Thường,60,65,55,105,95,95,475,0,1,876,0,3,120,fairy,theo_he,4,1,1
 877,Morpeko,8,Điện,Bóng tối,58,95,58,70,58,97,436,0,1,877,0,2,250,ground/fairy,theo_he,4,1,1
-878,Cufant,8,Thép,,72,80,49,40,49,40,330,0,1,878,0,1,400,ground/mineral,theo_he,4,0,0
+878,Cufant,8,Thép,,72,80,49,40,49,40,330,0,1,878,0,1,400,ground/mineral,theo_he,4,1,1
 879,Copperajah,8,Thép,,122,130,69,80,69,30,500,0,2,878,878,2,250,ground/mineral,theo_he,4,1,1
 880,Dracozolt,8,Điện,Rồng,90,100,90,80,70,75,505,0,1,880,0,4,60,no-eggs,theo_he,4,1,1
 881,Arctozolt,8,Điện,Băng,90,100,90,90,80,55,505,0,1,881,0,4,60,no-eggs,theo_he,4,1,1
@@ -885,13 +885,13 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 884,Duraludon,8,Thép,Rồng,70,95,115,120,50,85,535,0,1,884,0,3,120,mineral/dragon,theo_he,4,1,2
 885,Dreepy,8,Rồng,Ma,28,60,30,40,30,82,270,0,1,885,0,4,60,indeterminate/dragon,theo_he,4,1,1
 886,Drakloak,8,Rồng,Ma,68,80,50,60,50,102,410,0,2,885,885,4,60,indeterminate/dragon,theo_he,4,1,1
-887,Dragapult,8,Rồng,Ma,88,120,75,100,75,142,600,0,3,885,886,5,25,indeterminate/dragon,theo_he,4,0,1
+887,Dragapult,8,Rồng,Ma,88,120,75,100,75,142,600,0,3,885,886,5,25,indeterminate/dragon,theo_he,4,1,1
 888,Zacian,8,Tiên,,92,120,115,80,115,138,660,1,1,888,0,6,30,no-eggs,theo_he,4,0,1
 889,Zamazenta,8,Giác đấu,,92,120,115,80,115,138,660,1,1,889,0,6,30,no-eggs,theo_he,4,0,1
 890,Eternatus,8,Độc,Rồng,140,85,95,145,95,130,690,1,1,890,0,6,30,no-eggs,theo_he,4,0,1
 891,Kubfu,8,Giác đấu,,60,90,60,53,50,72,385,1,1,891,0,6,30,no-eggs,theo_he,4,0,1
 892,Urshifu,8,Giác đấu,Bóng tối,100,130,100,63,60,97,550,1,2,891,891,6,30,no-eggs,theo_he,4,0,1
-893,Zarude,8,Bóng tối,Cỏ,105,120,105,70,95,105,600,2,1,893,0,6,30,no-eggs,theo_he,4,0,0
+893,Zarude,8,Bóng tối,Cỏ,105,120,105,70,95,105,600,2,1,893,0,6,30,no-eggs,theo_he,4,0,1
 894,Regieleki,8,Điện,,80,100,50,100,50,200,580,1,1,894,0,6,30,no-eggs,theo_he,4,0,1
 895,Regidrago,8,Rồng,,200,100,50,100,50,80,580,1,1,895,0,6,30,no-eggs,theo_he,4,0,1
 896,Glastrier,8,Băng,,100,145,130,65,110,30,580,1,1,896,0,6,30,no-eggs,theo_he,4,0,1
@@ -929,7 +929,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 928,Smoliv,9,Cỏ,Thường,41,35,45,58,51,30,260,0,1,928,0,1,400,plant,theo_he,4,1,1
 929,Dolliv,9,Cỏ,Thường,52,53,60,78,78,33,354,0,2,928,928,2,250,plant,theo_he,4,1,1
 930,Arboliva,9,Cỏ,Thường,78,69,90,125,109,39,510,0,3,928,929,3,120,plant,theo_he,4,1,1
-931,Squawkabilly,9,Thường,Bay,82,96,51,45,51,92,417,0,1,931,0,2,250,flying,theo_he,4,0,0
+931,Squawkabilly,9,Thường,Bay,82,96,51,45,51,92,417,0,1,931,0,2,250,flying,theo_he,4,1,1
 932,Nacli,9,Đá,,55,55,75,35,35,25,280,0,1,932,0,1,400,mineral,theo_he,4,1,1
 933,Naclstack,9,Đá,,60,60,100,35,65,35,355,0,2,932,932,2,250,mineral,theo_he,4,1,1
 934,Garganacl,9,Đá,,100,100,130,45,90,35,500,0,3,932,933,3,120,mineral,theo_he,4,1,1
@@ -940,27 +940,27 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 939,Bellibolt,9,Điện,,109,64,91,103,83,45,495,0,2,938,938,2,250,water1,theo_he,4,1,1
 940,Wattrel,9,Điện,Bay,40,40,35,55,40,70,280,0,1,940,0,1,400,water1/flying,theo_he,4,1,1
 941,Kilowattrel,9,Điện,Bay,70,70,60,105,60,125,490,0,2,940,940,2,250,water1/flying,theo_he,4,1,1
-942,Maschiff,9,Bóng tối,,60,78,60,40,51,51,340,0,1,942,0,1,400,ground,theo_he,4,0,0
-943,Mabosstiff,9,Bóng tối,,80,120,90,60,70,85,505,0,2,942,942,2,250,ground,theo_he,4,0,0
-944,Shroodle,9,Độc,Thường,40,65,35,40,35,75,290,0,1,944,0,1,400,ground,theo_he,4,0,0
+942,Maschiff,9,Bóng tối,,60,78,60,40,51,51,340,0,1,942,0,1,400,ground,theo_he,4,1,1
+943,Mabosstiff,9,Bóng tối,,80,120,90,60,70,85,505,0,2,942,942,2,250,ground,theo_he,4,1,1
+944,Shroodle,9,Độc,Thường,40,65,35,40,35,75,290,0,1,944,0,1,400,ground,theo_he,4,1,1
 945,Grafaiai,9,Độc,Thường,63,95,65,80,72,110,485,0,2,944,944,2,250,ground,theo_he,4,1,1
 946,Bramblin,9,Cỏ,Ma,40,65,30,45,35,60,275,0,1,946,0,1,400,plant,theo_he,4,1,1
-947,Brambleghast,9,Cỏ,Ma,55,115,70,80,70,90,480,0,2,946,946,2,250,plant,theo_he,4,0,0
+947,Brambleghast,9,Cỏ,Ma,55,115,70,80,70,90,480,0,2,946,946,2,250,plant,theo_he,4,1,1
 948,Toedscool,9,Đất,Cỏ,40,40,35,50,100,70,335,0,1,948,0,1,400,plant,theo_he,4,1,1
-949,Toedscruel,9,Đất,Cỏ,80,70,65,80,120,100,515,0,2,948,948,2,250,plant,theo_he,4,0,0
-950,Klawf,9,Đá,,70,100,115,35,55,75,450,0,1,950,0,3,120,water3,theo_he,4,0,0
+949,Toedscruel,9,Đất,Cỏ,80,70,65,80,120,100,515,0,2,948,948,2,250,plant,theo_he,4,1,1
+950,Klawf,9,Đá,,70,100,115,35,55,75,450,0,1,950,0,3,120,water3,theo_he,4,1,1
 951,Capsakid,9,Cỏ,,50,62,40,62,40,50,304,0,1,951,0,1,400,plant,theo_he,4,1,1
 952,Scovillain,9,Cỏ,Lửa,65,108,65,108,65,75,486,0,2,951,951,2,250,plant,theo_he,4,1,1
 953,Rellor,9,Bọ,,41,50,60,31,58,30,270,0,1,953,0,1,400,bug,theo_he,4,1,1
-954,Rabsca,9,Bọ,Siêu linh,75,50,85,115,100,45,470,0,2,953,953,2,250,bug,theo_he,4,0,0
+954,Rabsca,9,Bọ,Siêu linh,75,50,85,115,100,45,470,0,2,953,953,2,250,bug,theo_he,4,1,1
 955,Flittle,9,Siêu linh,,30,35,30,55,30,75,255,0,1,955,0,1,400,flying,theo_he,4,1,1
-956,Espathra,9,Siêu linh,,95,60,60,101,60,105,481,0,2,955,955,2,250,flying,theo_he,4,0,0
+956,Espathra,9,Siêu linh,,95,60,60,101,60,105,481,0,2,955,955,2,250,flying,theo_he,4,1,1
 957,Tinkatink,9,Tiên,Thép,50,45,45,35,64,58,297,0,1,957,0,1,400,fairy,theo_he,4,1,1
 958,Tinkatuff,9,Tiên,Thép,65,55,55,45,82,78,380,0,2,957,957,2,250,fairy,theo_he,4,1,1
 959,Tinkaton,9,Tiên,Thép,85,75,77,70,105,94,506,0,3,957,958,3,120,fairy,theo_he,4,1,1
 960,Wiglett,9,Nước,,10,55,25,35,25,95,245,0,1,960,0,1,400,water3,theo_he,4,1,1
 961,Wugtrio,9,Nước,,35,100,50,50,70,120,425,0,2,960,960,2,250,water3,theo_he,4,1,1
-962,Bombirdier,9,Bay,Bóng tối,70,103,85,60,85,82,485,0,1,962,0,3,120,flying,theo_he,4,0,0
+962,Bombirdier,9,Bay,Bóng tối,70,103,85,60,85,82,485,0,1,962,0,3,120,flying,theo_he,4,1,1
 963,Finizen,9,Nước,,70,45,40,45,40,75,315,0,1,963,0,1,400,ground/water2,theo_he,4,1,1
 964,Palafin,9,Nước,,100,70,72,53,62,100,457,0,2,963,963,2,250,ground/water2,theo_he,4,1,1
 965,Varoom,9,Thép,Độc,45,70,63,30,45,47,300,0,1,965,0,1,400,mineral,theo_he,4,1,1
@@ -971,7 +971,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 970,Glimmora,9,Đá,Độc,83,55,90,130,81,86,525,0,2,969,969,2,250,mineral,theo_he,4,1,1
 971,Greavard,9,Ma,,50,61,60,30,55,34,290,0,1,971,0,1,400,ground,theo_he,4,1,1
 972,Houndstone,9,Ma,,72,101,100,50,97,68,488,0,2,971,971,2,250,ground,theo_he,4,1,1
-973,Flamigo,9,Bay,Giác đấu,82,115,74,75,64,90,500,0,1,973,0,3,120,flying,theo_he,4,0,0
+973,Flamigo,9,Bay,Giác đấu,82,115,74,75,64,90,500,0,1,973,0,3,120,flying,theo_he,4,1,1
 974,Cetoddle,9,Băng,,108,68,45,30,40,43,334,0,1,974,0,1,400,ground,theo_he,4,1,1
 975,Cetitan,9,Băng,,170,113,65,45,55,73,521,0,2,974,974,2,250,ground,theo_he,4,1,1
 976,Veluza,9,Nước,Siêu linh,90,102,73,78,65,70,478,0,1,976,0,3,120,water2,theo_he,4,1,1
@@ -984,23 +984,23 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 983,Kingambit,9,Bóng tối,Thép,100,135,120,60,85,50,550,0,3,624,625,3,120,humanshape,theo_he,4,1,1
 984,Great Tusk,9,Đất,Giác đấu,115,131,131,53,53,87,570,4,1,984,0,6,30,no-eggs,theo_he,4,0,1
 985,Scream Tail,9,Tiên,Siêu linh,115,65,99,65,115,111,570,4,1,985,0,6,30,no-eggs,theo_he,4,0,1
-986,Brute Bonnet,9,Cỏ,Bóng tối,111,127,99,79,99,55,570,4,1,986,0,6,30,no-eggs,theo_he,4,0,0
+986,Brute Bonnet,9,Cỏ,Bóng tối,111,127,99,79,99,55,570,4,1,986,0,6,30,no-eggs,theo_he,4,0,1
 987,Flutter Mane,9,Ma,Tiên,55,55,55,135,135,135,570,4,1,987,0,6,30,no-eggs,theo_he,4,0,1
 988,Slither Wing,9,Bọ,Giác đấu,85,135,79,85,105,81,570,4,1,988,0,6,30,no-eggs,theo_he,4,0,1
 989,Sandy Shocks,9,Điện,Đất,85,81,97,121,85,101,570,4,1,989,0,6,30,no-eggs,theo_he,4,0,1
 990,Iron Treads,9,Đất,Thép,90,112,120,72,70,106,570,4,1,990,0,6,30,no-eggs,theo_he,4,0,1
 991,Iron Bundle,9,Băng,Nước,56,80,114,124,60,136,570,4,1,991,0,6,30,no-eggs,theo_he,4,0,1
 992,Iron Hands,9,Giác đấu,Điện,154,140,108,50,68,50,570,4,1,992,0,6,30,no-eggs,theo_he,4,0,1
-993,Iron Jugulis,9,Bóng tối,Bay,94,80,86,122,80,108,570,4,1,993,0,6,30,no-eggs,theo_he,4,0,0
+993,Iron Jugulis,9,Bóng tối,Bay,94,80,86,122,80,108,570,4,1,993,0,6,30,no-eggs,theo_he,4,0,1
 994,Iron Moth,9,Lửa,Độc,80,70,60,140,110,110,570,4,1,994,0,6,30,no-eggs,theo_he,4,0,1
 995,Iron Thorns,9,Đá,Điện,100,134,110,70,84,72,570,4,1,995,0,6,30,no-eggs,theo_he,4,0,1
 996,Frigibax,9,Rồng,Băng,65,75,45,35,45,55,320,0,1,996,0,4,60,mineral/dragon,theo_he,4,1,1
 997,Arctibax,9,Rồng,Băng,90,95,66,45,65,62,423,0,2,996,996,4,60,mineral/dragon,theo_he,4,1,1
-998,Baxcalibur,9,Rồng,Băng,115,145,92,75,86,87,600,0,3,996,997,5,25,mineral/dragon,theo_he,4,0,1
+998,Baxcalibur,9,Rồng,Băng,115,145,92,75,86,87,600,0,3,996,997,5,25,mineral/dragon,theo_he,4,1,1
 999,Gimmighoul,9,Ma,,45,30,70,75,70,10,300,0,1,999,0,1,400,no-eggs,theo_he,4,1,1
 1000,Gholdengo,9,Thép,Ma,87,60,95,133,91,84,550,0,2,999,999,2,250,no-eggs,theo_he,4,1,1
-1001,Wo-Chien,9,Bóng tối,Cỏ,85,85,100,95,135,70,570,1,1,1001,0,6,30,no-eggs,theo_he,4,0,0
-1002,Chien-Pao,9,Bóng tối,Băng,80,120,80,90,65,135,570,1,1,1002,0,6,30,no-eggs,theo_he,4,0,0
+1001,Wo-Chien,9,Bóng tối,Cỏ,85,85,100,95,135,70,570,1,1,1001,0,6,30,no-eggs,theo_he,4,0,1
+1002,Chien-Pao,9,Bóng tối,Băng,80,120,80,90,65,135,570,1,1,1002,0,6,30,no-eggs,theo_he,4,0,1
 1003,Ting-Lu,9,Bóng tối,Đất,155,110,125,55,80,45,570,1,1,1003,0,6,30,no-eggs,theo_he,4,0,1
 1004,Chi-Yu,9,Bóng tối,Lửa,55,80,80,135,120,100,570,1,1,1004,0,6,30,no-eggs,theo_he,4,0,1
 1005,Roaring Moon,9,Rồng,Bóng tối,105,139,71,55,101,119,590,4,1,1005,0,6,30,no-eggs,theo_he,4,0,1
@@ -1012,7 +1012,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 1011,Dipplin,9,Cỏ,Rồng,80,80,110,95,80,40,485,0,2,840,840,2,250,plant/dragon,theo_he,4,1,1
 1012,Poltchageist,9,Cỏ,Ma,40,45,45,74,54,50,308,0,1,1012,0,1,400,mineral/indeterminate,theo_he,4,1,1
 1013,Sinistcha,9,Cỏ,Ma,71,60,106,121,80,70,508,0,2,1012,1012,2,250,mineral/indeterminate,theo_he,4,1,1
-1014,Okidogi,9,Độc,Giác đấu,88,128,115,58,86,80,555,1,1,1014,0,6,30,no-eggs,theo_he,4,0,0
+1014,Okidogi,9,Độc,Giác đấu,88,128,115,58,86,80,555,1,1,1014,0,6,30,no-eggs,theo_he,4,0,1
 1015,Munkidori,9,Độc,Siêu linh,88,75,66,130,90,106,555,1,1,1015,0,6,30,no-eggs,theo_he,4,0,1
 1016,Fezandipiti,9,Độc,Tiên,88,91,82,70,125,99,555,1,1,1016,0,6,30,no-eggs,theo_he,4,0,2
 1017,Ogerpon,9,Cỏ,,80,120,84,60,96,110,550,1,1,1017,0,6,30,no-eggs,theo_he,4,0,1
@@ -1020,7 +1020,7 @@ dex,ten,the_he,he1,he2,hp,tan_cong,phong_thu,tan_cong_db,phong_thu_db,toc_do,ton
 1019,Hydrapple,9,Cỏ,Rồng,106,80,110,120,80,44,540,0,3,840,1011,3,120,plant/dragon,theo_he,4,1,1
 1020,Gouging Fire,9,Lửa,Rồng,105,115,121,65,93,91,590,4,1,1020,0,6,30,no-eggs,theo_he,4,0,1
 1021,Raging Bolt,9,Điện,Rồng,125,73,91,137,89,75,590,4,1,1021,0,6,30,no-eggs,theo_he,4,0,1
-1022,Iron Boulder,9,Đá,Siêu linh,90,120,80,68,108,124,590,4,1,1022,0,6,30,no-eggs,theo_he,4,0,0
-1023,Iron Crown,9,Thép,Siêu linh,90,72,100,122,108,98,590,4,1,1023,0,6,30,no-eggs,theo_he,4,0,0
+1022,Iron Boulder,9,Đá,Siêu linh,90,120,80,68,108,124,590,4,1,1022,0,6,30,no-eggs,theo_he,4,0,1
+1023,Iron Crown,9,Thép,Siêu linh,90,72,100,122,108,98,590,4,1,1023,0,6,30,no-eggs,theo_he,4,0,1
 1024,Terapagos,9,Thường,,90,65,85,65,85,60,450,1,1,1024,0,6,30,no-eggs,theo_he,4,0,1
 1025,Pecharunt,9,Độc,Ma,88,88,160,88,88,88,600,2,1,1025,0,6,30,no-eggs,theo_he,4,0,1

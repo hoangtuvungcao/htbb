@@ -1220,7 +1220,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 305,Lairon,2,water.xa,Bơm nước,phu_he,24
 305,Lairon,3,steel.khien,Giáp sắt,ho_tro,36
 306,Aggron,0,steel.toi_thuong,Tia thép,stab,1
-306,Aggron,1,rock.tan_cong,Đá sắc,stab,12
+306,Aggron,1,dt.duoi_giap_sat,Đuôi giáp sắt,dac_trung,12
 306,Aggron,2,grass.xa,Hút năng lượng,phu_he,24
 306,Aggron,3,steel.khien,Giáp sắt,ho_tro,36
 307,Meditite,0,fighting.tan_cong,Đấm thẳng,stab,1
@@ -1316,7 +1316,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 329,Vibrava,2,fighting.tan_cong,Đấm thẳng,phu_he,24
 329,Vibrava,3,ground.buff,Bão cát,ho_tro,36
 330,Flygon,0,ground.toi_thuong,Khe nứt,stab,1
-330,Flygon,1,dragon.tan_cong,Vuốt rồng,stab,12
+330,Flygon,1,dt.loc_cat_sa_mac,Lốc cát sa mạc,dac_trung,12
 330,Flygon,2,steel.tan_cong,Đầu sắt,phu_he,24
 330,Flygon,3,ground.buff,Bão cát,ho_tro,36
 331,Cacnea,0,grass.tan_cong,Bom hạt,stab,1
@@ -1432,7 +1432,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 358,Chimecho,2,bug.xa,Tiếng bọ,phu_he,24
 358,Chimecho,3,psychic.buff,Tĩnh tâm,ho_tro,36
 359,Absol,0,dark.tan_cong,Nghiến,stab,1
-359,Absol,1,dark.thuong,Cắn,stab,12
+359,Absol,1,dt.vuot_diem_bao,Vuốt điềm báo,dac_trung,12
 359,Absol,2,flying.tan_cong,Mổ khoan,phu_he,24
 359,Absol,3,dark.buff,Âm mưu,ho_tro,36
 360,Wynaut,0,psychic.tan_cong,Đầu tâm linh,stab,1

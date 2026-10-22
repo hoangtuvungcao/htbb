@@ -220,3 +220,6 @@ dt.ao_thuat_hoa,Ảo thuật hoa,Cỏ,vat_ly,dac_trung,200,1,6000,10,ngu,thang,h
 dt.khuc_ca_ngon_duoc,Khúc ca ngọn đuốc,Lửa,dac_biet,dac_trung,200,1,6000,10,bong,thang,hu_flamethrower,EE8130,0,909
 dt.vu_bo_nuoc,Vũ bộ nước,Nước,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_aqua_tail_splash,6390F0,0,912
 dt.luoi_bang_xung_kich,Lưỡi băng xung kích,Rồng,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_shadow_claw,6F35FC,1,996
+dt.vuot_diem_bao,Vuốt điềm báo,Bóng tối,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_shadow_claw,705746,1,359
+dt.duoi_giap_sat,Đuôi giáp sắt,Thép,vat_ly,dac_trung,200,1,6000,10,giam_thu,thang,hu_iron_head,B7B7CE,1,304
+dt.loc_cat_sa_mac,Lốc cát sa mạc,Đất,dac_biet,dac_trung,200,1,6000,10,mu,thang,hu_mud_bomb_ball,E2BF65,1,328

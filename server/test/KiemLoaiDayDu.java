@@ -162,6 +162,18 @@ public final class KiemLoaiDayDu {
 
     static Map<String, List<Map<String, Object>>> bang;
 
+    /** Dex goc cua cac ho co loai trong Vung hoang da (ca ho duoc mo, khong ra ngoai troi). */
+    static Set<Integer> hoXoay(final Set<Integer> xoay) {
+        final Set<Integer> s = new HashSet<Integer>();
+        for (final Integer x : xoay) {
+            final LoaiDuLieu.Loai l = d.lay(x.intValue());
+            if (l != null) {
+                s.add(Integer.valueOf(l.dexGoc));
+            }
+        }
+        return s;
+    }
+
     /** Dex trong Vung hoang da xoay vong (bang data_loai_xoay_vong cua khoi). */
     static Set<Integer> dexXoay() {
         final Set<Integer> s = new HashSet<Integer>();
@@ -299,15 +311,15 @@ public final class KiemLoaiDayDu {
                     mo12++;
                 } else if (l.theHe == 3) {
                     mo3++;
-                } else if (!xoay.contains(l.dex)) {
+                } else if (!xoay.contains(l.dex) && !hoXoay(xoay).contains(l.dexGoc)) {
                     moSai++;
                 }
             }
         }
         Kiem.bang("dot A: 251 loai Gen 1-2 da mo", 251, mo12);
         Kiem.bang("dot B: 135 loai Gen 3 da mo", 135, mo3);
-        Kiem.bang("Gen 4-9: chi loai Vung hoang da da mo", 0, moSai);
-        Kiem.bang("tong da mo = 251 + 135 + vong xoay", 251 + 135 + xoay.size(), mo);
+        Kiem.bang("Gen 4-9: chi loai Vung hoang da (va ca ho cua no) da mo", 0, moSai);
+        Kiem.dung("tong da mo >= 251 + 135 + vong xoay (" + mo + ")", mo >= 251 + 135 + xoay.size());
     }
 
     // ------------------------------------------------------------------ tien hoa
@@ -318,7 +330,15 @@ public final class KiemLoaiDayDu {
         Kiem.dung("Hop PC: Eevee nhieu nhanh mo (Vaporeon dau, co Espeon / Umbreon)", eevee.size() >= 5 && eevee.get(0) == 134
                 && eevee.contains(196) && eevee.contains(197));
         Kiem.dung("Hop PC: nhanh Leafeon (Gen 4, Vung hoang da) hien khi da mo", eevee.contains(470) == d.daMo(470));
-        Kiem.sai("Hop PC: Mr. Mime -> Mr. Rime chua duoc (Mr. Rime chua co sprite, chua mo)", d.tienHoaDuoc(122, 866));
+        Kiem.dung("Hop PC: Gabite -> Garchomp duoc (ca ho Vung hoang da da mo, ke ca dang cuoi T5)", d.tienHoaDuoc(444, 445));
+        Kiem.sai("Hop PC: Cosmog -> Cosmoem chua duoc (ho huyen thoai T6 chua mo)", d.tienHoaDuoc(789, 790));
+        int buocMoSai = 0;
+        for (final LoaiDuLieu.TienHoa t : d.tatCaTienHoa()) {
+            if (d.daMo(t.tu) && !d.daMo(t.sang) && d.bac(t.sang) < 6) {
+                buocMoSai++;
+            }
+        }
+        Kiem.bang("Hop PC: moi buoc tien hoa tu loai da mo sang loai da mo (tru huyen thoai)", 0, buocMoSai);
         Kiem.bang("Hop PC: Gloom 2 nhanh (Vileplume / Bellossom)", 2, real.BatPokemonGame.dichTienHoa(45, d.tienHoaMo(44)).size());
         Kiem.bang("Hop PC: Bulbasaur 1 nhanh", 1, real.BatPokemonGame.dichTienHoa(2, d.tienHoaMo(1)).size());
         try {
@@ -475,7 +495,8 @@ public final class KiemLoaiDayDu {
                 }
                 if (c.get("dac_trung_ho") != null) {
                     final int ho = so(c, "dac_trung_ho");
-                    if (ho != l.dexGoc || (bacHo.get(ho) < 4 && !khoiDau.contains(ho))) {
+                    // ngoai le 4.2 chu game duyet: Absol 359, ho Aron 304 (Aggron), ho Trapinch 328 (Flygon)
+                    if (ho != l.dexGoc || (bacHo.get(ho) < 4 && !khoiDau.contains(ho) && ho != 359 && ho != 304 && ho != 328)) {
                         dacTrungSai++;
                     }
                 }
