@@ -161,6 +161,12 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     tuKhoa: 'ket doi cuoi dam cuoi nhom trung egg group ban doi',
   },
   {
+    slug: 'dau-truong', ten: 'Đấu trường Bảo Bối', nhom: 'Cộng đồng', icon: 'i-lucide-swords',
+    moTa: 'Đấu đội 3 Pokémon chuẩn hoá cấp 50: IV, tính cách, chiêu, công thức sát thương, điểm mùa, ghép trận và phần thưởng.',
+    muc: [{ id: 'the-thuc', ten: 'Thể thức' }, { id: 'chi-so', ten: 'Chỉ số & sát thương' }, { id: 'chieu', ten: 'Chiêu & trạng thái' }, { id: 'diem', ten: 'Điểm mùa & ghép trận' }, { id: 'thuong', ten: 'Phần thưởng' }],
+    tuKhoa: 'dau truong bao boi 3v3 doi hinh phong thu tan cong iv tinh cach cap 50 elo luong khoa danh hieu',
+  },
+  {
     slug: 'boss-dot-kich', ten: 'Boss & đột kích', nhom: 'Nội dung', icon: 'i-lucide-skull',
     moTa: 'Boss huyền thoại trên bản đồ, boss thế giới tối thứ Bảy, lịch đột kích theo tuần và cách chuẩn bị.',
     muc: [{ id: 'boss', ten: 'Danh sách boss' }, { id: 'boss-the-gioi', ten: 'Boss thế giới hằng tuần' }, { id: 'dot-kich', ten: 'Đột kích huyền thoại' }, { id: 'chuan-bi', ten: 'Chuẩn bị' }],

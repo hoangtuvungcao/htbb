@@ -1414,6 +1414,49 @@ Ma trận kết đôi (dạng sau tiến hoá đầu; Pichu không kết đôi v
 và cùng dòng (Quái vật); Pikachu / Raichu kết đôi với nhau và mọi loài dòng Eevee (Đồng cỏ); hai nhóm này không kết đôi
 chéo. `test/KiemKetDoi` kiểm cả 21 × 21 cặp loài.
 
+### 7.11 Đấu trường Bảo Bối 3v3 (0.9.8, đề xuất D12)
+
+Chế độ **tách khỏi MMO**: nơi chỉ số cá thể (IV 0–31), tính cách và loài của con trong Hộp PC có giá trị thật mà sức mạnh
+ngoài thế giới không đổi. Vào ở NPC Đấu trường (-31) → "Đấu trường Bảo Bối" (client ≥ 908, cấp ≥ 20). Logic thuần
+`com.htbb.pokemon.DauTruongTran` (mô phỏng), `DauTruongLogic` (điểm, ghép, thưởng), `DauTruongDuLieu` (chiêu), gói
+`GoiDauTruong`; game `real.DauTruongGame`; client `ManDauTruong` / `ManTranDauTruong`; web `/dau-truong`, `/cam-nang/dau-truong`.
+
+- **Đội:** tấn công + phòng thủ, mỗi đội 3 con KHÁC loài trong Hộp PC (không bao giờ là chính người chơi), không loài T6. Đội
+  phòng thủ đấu thay chủ cả khi offline (máy chọn chiêu, đổi Pokémon khi thế trận xấu rõ).
+- **Trận:** máy chủ mô phỏng theo lượt, tất định từ hạt (lưu `tob_dau_truong_tran.hat` + `hanh_dong` để phát lại). Cấp 50,
+  chỉ số chính bản (không EV), sát thương thế hệ 5+ (`⌊⌊22·P·A/D⌋/50⌋+2`, chí mạng ×1,5 1/24, ngẫu nhiên 85–100 %, STAB ×1,5,
+  khắc hệ **chính xác** ×0..×4, bỏng ×0,5 vật lý), tốc độ quyết định thứ tự (đổi Pokémon trước). 4 chiêu của loài
+  (`data_loai_chieu`), uy lực / chính xác / PP chuẩn hoá theo vai trò: thường 50/100/30, tấn công 85/95/15, nhiều đòn
+  20×n/90/15, xa 80/100/15, vùng 75/100/15, tối thượng 120/90/5 (−1 bậc tấn công), đặc trưng 100/95/10, khống chế
+  (trạng thái) 85 %/10, tăng chỉ số +1 TC +1 TCĐB /10, khiên hồi 50 % HP /5. Trạng thái: bỏng, độc, tê liệt, ngủ, đóng
+  băng, lú lẫn, choáng, giảm chỉ số; miễn nhiễm chính bản. Người chơi có 20 giây mỗi lượt, hết giờ / Tự động / rời game thì
+  máy chọn; tối đa 50 lượt (hết lượt: nhiều % HP hơn thắng, hoà = phòng thủ).
+- **Điểm mùa** (riêng, `tob_dau_truong_mua`, mùa 13 tuần như PvP): 1000 đầu mùa, Elo K 32, bên phòng thủ đổi 50 %, sàn
+  100; bậc Tập sự / Đồng 900 / Bạc 1100 / Vàng 1250 / Bạch kim 1400 / Kim cương 1550 / Huyền thoại 1700.
+- **Cảnh đấu** (client): sân riêng toàn màn, không rời bản đồ (đóng cảnh là về chỗ cũ). Sân mở theo bậc người tấn công:
+  Sân cỏ Viridian, Sân đá Pewter, Hồ nước Cerulean, Gym điện Vermilion, Sân băng Mahogany, Núi lửa Cinnabar, Đỉnh rồng
+  Blackthorn; mùa thứ 4 mỗi năm mọi trận ở Sân đêm Lavender (`DauTruongLogic.sanCho`; ảnh `tools/pokemon/sinh_anh_dau_truong.py`).
+  Pokémon đi lại tự do (chỉ hình), máy chủ gửi sự kiện từng lượt (`DauTruongTran.SK_*`: dùng chiêu, trúng + sát thương + chí
+  mạng / khắc hệ, trượt, trạng thái, bậc, hồi, ngã gục, ra sân) để client diễn: lao tới / bắn hiệu ứng, số bay, né, tia
+  đỏ thu bóng, ném bóng, bên kia loé sáng về chỗ xuất phát.
+- **Lượt / ghép:** 5 trận tấn công mỗi ngày (tính lúc vào trận), 10 lần làm mới; 3 đề xuất: điểm ±100 (+100 mỗi lần làm
+  mới, tối đa 400), sức mạnh đội (tổng chỉ số cấp 50) ±15 % (+10 %, tối đa 50 %). Chống nick phụ: không cùng tài khoản /
+  thiết bị / IP (`XepHangPvp.Cum`, danh tính lưu ở `tob_dau_truong_doi` để lọc cả đối thủ offline). Chống cày: cùng đối
+  thủ trong 24 giờ hệ số ×1 → ×1/2 → ×1/4 → 0 (lần 4 không ghép).
+- **Thưởng:** thắng +3 lượng khoá × hệ số, trần 25 / tuần (tuần cúp, thứ Hai 04:00), thua 0, không xu. Cuối mùa (≥ 10 trận
+  tấn công, nhận khi đăng nhập mùa sau, `tob_dau_truong_thuong` một lần): danh hiệu giữ một mùa — Quán quân (hạng 1, id
+  9870), Tinh anh (2–10, 9871), Đấu thủ (11–100 hoặc ≥ 1300 điểm, 9872), chỉ số trong ngân sách ô danh hiệu.
+- **Lượt chơi:** mặc định máy tự đánh (AI máy chủ, nhịp 2,6 giây / lượt chia theo tốc độ ×1 / ×2 / ×3; ×2 từ cấp 20, ×3
+  từ cấp 40, khoá `dau_truong.cap_toc_2/3`, máy chủ tự kiểm cấp); bật "Tự chọn chiêu" (lưu máy) để chọn chiêu trong 20
+  giây. Mỗi lượt MỘT hành động (máy chủ bỏ gói bấm lại trong 1,2 giây); hồi chiêu: tối thượng 3 lượt, uy lực ≥ 100 /
+  đặc trưng 2 lượt; chiêu khống chế không dùng lên mục tiêu đã có trạng thái / miễn nhiễm (`DauTruongTran.lyDo`). Trận
+  trung bình ~8,4 lượt (500 trận mô phỏng) ≈ 50 giây xem ở ×1. Nút thoát = đầu hàng (thua, mất lượt); rớt mạng: máy chủ
+  đánh nốt. Thắng đầu ngày +2 lượng khoá (vẫn trong trần 25 / tuần); chuỗi thắng chỉ hiển thị; xem lại 5 trận gần nhất
+  (lưu đội + hạt + hành động); bảng tuần trong game (tab Tuần) và trên web. Cuối mùa: Quán quân / Tinh anh theo hạng,
+  danh hiệu bậc (Đồng 9873 .. Huyền thoại 9878; Bạch kim trở lên đẹp hơn Đấu thủ), Đấu thủ (11–100 / ≥ 1300).
+- **Kiểm:** `server/test/KiemDauTruong`, `client_pc/test/KiemDauTruong` (11 cỡ màn), bot
+  `tools/pokemon/kiem_tai/KichBanDauTruong.java`, `web/tests/dau-truong.test.ts`.
+
 ---
 
 ## 8. Hồi sinh và Tự động đánh
@@ -1798,6 +1841,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -102 | `POKE_NGOAI_HINH` | S→C | ngoại hình trang bị, sau -94 (mục 4.6) |
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
 | -108 | Khoá bản đồ | S→C | `u8 phiên bản (1), i16 n nhóm, n × (u8 cờ (1 khoá, 2 không Tự động), UTF điều kiện, UTF lý do tự động, i16 k, k × i16 id bản đồ)` — chỉ bản đồ khác mặc định; lúc vào game, lên cấp / xong cửa ải làm đổi, admin sửa bảng; client BAN ≥ 908 (0.9.6 / 0.9.7 đã phát hành chỉ nhận thông báo -104 / -26 khi bị chặn; mục 6.4). -106 thuộc nhánh ten-pet (thẻ đặt tên), -110 / -111 nhánh danh-hieu |
+| -109 | `DAU_TRUONG` (0.9.8) | hai chiều | **chỉ client BAN ≥ 908** (`com.htbb.pokemon.GoiDauTruong`, đầu tệp ghi đủ bố cục). C→S `u8 kiểu`: 0 mở, 1 lưu đội (`u8 0 công / 1 thủ, u8 n, n × i32 id Hộp PC`), 2 tìm (`u8 làm mới`), 3 thách (`i32 idChar`), 4 hành động (`i32 trận, u8 0 chiêu / 1 đổi, u8 ô`), 5 tự động, 6 đầu hàng. S→C: 0 trạng thái + kho, 1 đối thủ, 2 bắt đầu (2 × 3 con + 12 chiêu của mình), 3 lượt (nhật ký + HP / trạng thái / PP), 4 kết quả (điểm trước / sau, lượng khoá, hệ số), 5 ghi chú (mục 7.11) |
 | -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 | -122 | Học chiêu + Điểm huấn luyện | hai chiều | **chỉ client BAN ≥ 908** (`real.HocChieuGame`). C→S byte 0 xin / 1 phân bổ `u8 n, n × (i8 id, i16 thêm)` / 2 tẩy điểm. S→C byte 0 bảng chiêu cả dòng: `i16 dex, i8 dòng, i8 số ô, u8 n, n × (i8 ô, i16 loài, UTF tên loài, UTF tên chiêu, i8 hệ, i8 nguồn 0 cấp / 1 NPC, i8 cấp học, i32 giá xu)`; byte 1 Điểm huấn luyện: `i8 bật`, rồi `i16 tổng, i16 đã dùng, u8 n, n × (i8 id, UTF tên, UTF mô tả, i16 điểm, i16 trần, i16 ngưỡng, i16 ‰ trước, i16 ‰ sau), i64 giá tẩy, i32 giây chờ, i8 miễn phí, i8 điểm / cấp, i8 huy hiệu, i8 trần thưởng` (mục 2.3, 4.4b) |
 | -120 | `TRANG_BI` (0.9.8) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |

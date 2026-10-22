@@ -554,6 +554,9 @@ class MapXuLyLenh {
             case -124: // Kenh chat 0.9.8: gui theo kenh / chan / ban be / tra id (real.KenhChatGame)
                 KenhChatGame.xuLy(player, message);
                 break;
+            case -109: // Dau truong Bao Boi 3v3 (real.DauTruongGame, com.htbb.pokemon.DauTruongTran; client >= 908)
+                DauTruongGame.xuLy(player, message);
+                break;
             case -111: // Danh hieu: xin bang / deo / thao / da xem (real.DanhHieuGame, com.htbb.pokemon.DanhHieuLogic)
                 DanhHieuGame.xuLy(player, message);
                 break;

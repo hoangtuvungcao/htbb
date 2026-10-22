@@ -61,6 +61,21 @@ public final class PokeHieuUng {
         return null;
     }
 
+    /** 0.9.8 Đấu trường: hiệu ứng theo tên ảnh (data_chieu.hieu_ung, vd "hu_ember"); null = không có trong bảng / thiếu ảnh. */
+    public static HieuUngBang layTheoTen(String ten) {
+        napBang();
+        if (ten == null || ten.length() == 0) {
+            return null;
+        }
+        for (java.util.Enumeration e = bang.elements(); e.hasMoreElements(); ) {
+            HieuUngBang h = (HieuUngBang) e.nextElement();
+            if (ten.equals(h.ten)) {
+                return anh(h) != null ? h : null;
+            }
+        }
+        return null;
+    }
+
     static Image anh(HieuUngBang h) {
         return PokeBody.napAnhChung(PokeBody.THU_MUC + h.ten + ".png");
     }
