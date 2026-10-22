@@ -76,7 +76,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
             </div>
             <div v-if="l.anh && l.anhShiny" class="mt-4 flex items-center justify-center gap-3 rounded-xl bg-pikachu-50 p-2 text-sm font-semibold text-pikachu-900 dark:bg-pikachu-950/40 dark:text-pikachu-200">
               <PokeSan :dex="l.dex" shiny :he="l.he" :size="56" :label="`${l.ten} shiny`" class="w-14 rounded-lg" />
-              ✨ Có bản shiny trong game
+              Có bản shiny trong game
             </div>
           </div>
           <div class="mt-2 flex items-center justify-between px-2 pb-0.5" aria-hidden="true">

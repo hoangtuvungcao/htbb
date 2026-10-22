@@ -138,10 +138,13 @@
 
 /* ---------- Biến Nuxt UI ---------- */
 
+/*
+ * Bảng màu website (từ 22/10/2026) lấy theo key art màn đăng nhập trong game: trời hoàng hôn tím than,
+ * nắng vàng, cỏ xanh. Sáng = nền giấy ấm + khung viền tím than; tối = tím than sâu. Khung / nút theo kiểu
+ * game nhập vai (viền đậm, vát nổi, bóng đáy) — không thẻ trắng bo tròn, không vệt màu mờ.
+ */
 :root {
-  /* Nuxt UI nhân biến này: rounded-2xl = ×4, rounded-3xl = ×6 — giữ nhỏ để thẻ không thành "viên thuốc". */
   --ui-radius: 0.3rem;
-  /* Chữ màu trên nền trắng: lấy sắc đậm hơn để đủ tương phản (WCAG AA). */
   --ui-primary: var(--ui-color-primary-600);
   --ui-secondary: var(--ui-color-secondary-600);
   --ui-success: var(--ui-color-success-700);
@@ -149,31 +152,34 @@
   --ui-info: var(--ui-color-info-600);
   --ui-error: var(--ui-color-error-700);
 
-  --ui-bg: #ffffff;
-  --ui-bg-muted: var(--color-navy-50);
-  --ui-bg-elevated: var(--color-navy-100);
-  --ui-bg-accented: var(--color-navy-200);
-  --ui-border: var(--color-navy-200);
-  --ui-border-muted: var(--color-navy-100);
-  --ui-border-accented: var(--color-navy-300);
-  /* dimmed đậm hơn navy-500 một chút: đủ 4,5:1 cả trên nền navy-50 (bảng, thẻ). */
-  --ui-text-dimmed: #52698d;
-  --ui-text-muted: var(--color-navy-600);
-  --ui-text-toned: var(--color-navy-700);
-  --ui-text: var(--color-navy-800);
-  --ui-text-highlighted: var(--color-navy-950);
+  --ui-bg: #f6f1e7;
+  --ui-bg-muted: #efe7d7;
+  --ui-bg-elevated: #e9dfca;
+  --ui-bg-accented: #ddd0b4;
+  --ui-border: #d5c6a6;
+  --ui-border-muted: #e4d9c2;
+  --ui-border-accented: #bfa983;
+  --ui-text-dimmed: #625878;
+  --ui-text-muted: #554b6c;
+  --ui-text-toned: #3d3457;
+  --ui-text: #2b2442;
+  --ui-text-highlighted: #17122e;
 
-  /* Viền "đồ hoạ game": nét đậm quanh thẻ, hộp thoại, Poké Ball. */
-  --poke-outline: var(--color-navy-900);
-  --poke-card: #ffffff;
-  --poke-screen: #eef6f0;
-  --poke-screen-dot: #d9ebdc;
-  --poke-sky-top: #8fd0ff;
-  --poke-sky-bottom: #e6f6ff;
+  /* Viền "đồ hoạ game": nét đậm quanh khung, nút, ô vật phẩm. */
+  --poke-outline: #241c3f;
+  --poke-card: #fffcf5;
+  --poke-screen: #f1ead9;
+  --poke-screen-dot: #e4d9c2;
+  --poke-sky-top: #2a2160;
+  --poke-sky-bottom: #4b3a86;
+  /* vạch sáng bên trong khung (vát nổi) */
+  --khung-sang: #ffffff;
+  --khung-vien: color-mix(in oklab, var(--poke-outline) 82%, transparent);
+  --vang: #ffcb05;
+  --vang-dam: #c98a00;
 }
 
 .dark {
-  /* primary-300 (không phải 400): chữ đỏ nhỏ trên nền badge/thẻ navy vẫn đạt 4,5:1. */
   --ui-primary: var(--ui-color-primary-300);
   --ui-secondary: var(--ui-color-secondary-300);
   --ui-success: var(--ui-color-success-400);
@@ -181,29 +187,33 @@
   --ui-info: var(--ui-color-info-300);
   --ui-error: var(--ui-color-error-400);
 
-  --ui-bg: var(--color-navy-950);
-  --ui-bg-muted: #0f2240;
-  --ui-bg-elevated: #152b4d;
-  --ui-bg-accented: #1c365c;
-  --ui-border: #24406a;
-  --ui-border-muted: #1a3256;
-  --ui-border-accented: #2f5185;
-  --ui-text-dimmed: var(--color-navy-400);
-  --ui-text-muted: var(--color-navy-300);
-  --ui-text-toned: var(--color-navy-200);
-  --ui-text: var(--color-navy-100);
+  --ui-bg: #120f24;
+  --ui-bg-muted: #1a1631;
+  --ui-bg-elevated: #231e40;
+  --ui-bg-accented: #2d2750;
+  --ui-border: #3a3262;
+  --ui-border-muted: #2a2448;
+  --ui-border-accented: #4c4380;
+  --ui-text-dimmed: #9a90bd;
+  --ui-text-muted: #bdb4d8;
+  --ui-text-toned: #d6cfec;
+  --ui-text: #e9e4f7;
   --ui-text-highlighted: #ffffff;
 
-  --poke-outline: #050f20;
-  --poke-card: #12284a;
-  --poke-screen: #17304f;
-  --poke-screen-dot: #1d3a5e;
-  --poke-sky-top: #071530;
-  --poke-sky-bottom: #1d3a6b;
+  --poke-outline: #06040e;
+  --poke-card: #1c1834;
+  --poke-screen: #221d3e;
+  --poke-screen-dot: #2a2448;
+  --poke-sky-top: #0d0a1f;
+  --poke-sky-bottom: #2a2160;
+  --khung-sang: rgb(255 255 255 / .06);
+  --khung-vien: #06040e;
 }
 
 html {
   scroll-behavior: smooth;
+  /* thanh cuộn không làm xô bố cục khi trang ngắn / dài */
+  scrollbar-gutter: stable;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -224,56 +234,66 @@ h1, h2, h3, .font-display {
   font-family: var(--font-display);
 }
 
-/* ---------- Tiện ích dùng chung cho trang công khai ---------- */
+/* ---------- Khung & nút kiểu game (dùng chung cho trang công khai) ---------- */
 
-/* Chữ vàng viền xanh (kiểu tiêu đề game) — wordmark gốc, không phải logo chính thức. */
+/* Chữ vàng viền tím than (tiêu đề lớn, số 404). */
 .text-gilded {
-  color: var(--color-pikachu-400);
-  -webkit-text-stroke: .14em var(--color-pokeblue-700);
+  color: var(--vang);
+  -webkit-text-stroke: .12em var(--poke-outline);
   paint-order: stroke fill;
-  text-shadow: 0 .09em 0 var(--color-pokeblue-950);
-  font-style: normal;
+  text-shadow: 0 .08em 0 var(--poke-outline);
   letter-spacing: .01em;
 }
 
-/* Thẻ: nền trắng/navy, viền rõ, bóng đổ "nổi" phía dưới (không còn kính mờ). */
-.glass {
+/*
+ * Khung: viền đậm + vạch sáng bên trong + bóng đáy — như bảng trong game.
+ * .glass và .the-go là tên cũ, giữ để mọi trang dùng chung một kiểu khung.
+ */
+.khung, .glass, .the-go {
   background: var(--poke-card);
-  border: 1.5px solid var(--ui-border);
-  box-shadow: 0 3px 0 var(--ui-border), 0 10px 24px -16px rgb(10 26 51 / .25);
+  border: 2px solid var(--khung-vien);
+  border-radius: .6rem;
+  box-shadow: inset 0 0 0 2px var(--khung-sang), 0 4px 0 var(--khung-vien);
+}
+a.khung, a.the-go, a.glass, button.the-go { transition: transform .15s ease, box-shadow .15s ease; }
+a.khung:hover, a.the-go:hover, a.glass:hover, button.the-go:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 2px var(--khung-sang), 0 6px 0 var(--khung-vien);
 }
 
-/* Thẻ kiểu Pokémon GO (hướng giao diện trong game từ 0.9.5): nền trắng, bo lớn, bóng mềm, không viền đậm. */
-.the-go {
-  display: block;
-  background: var(--poke-card);
-  border-radius: 1.5rem;
-  box-shadow: 0 1px 0 color-mix(in oklab, var(--poke-outline) 10%, transparent), 0 10px 28px -14px rgb(10 26 51 / .28);
-  outline: 1px solid color-mix(in oklab, var(--poke-outline) 8%, transparent);
-  transition: transform .2s ease, box-shadow .2s ease;
+/* Dải tiêu đề của khung: nền đỏ, chữ trắng in hoa. */
+.khung-dau {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem .9rem;
+  background: linear-gradient(180deg, #ef4a26, #c8260b);
+  color: #fff;
+  border-bottom: 2px solid var(--khung-vien);
+  border-radius: .45rem .45rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: .95rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgb(0 0 0 / .28);
 }
-.the-go:hover { box-shadow: 0 1px 0 color-mix(in oklab, var(--poke-outline) 10%, transparent), 0 16px 34px -14px rgb(10 26 51 / .38); }
-.dark .the-go { outline-color: rgb(255 255 255 / .08); box-shadow: 0 10px 28px -14px rgb(0 0 0 / .6); }
 
-/* Thẻ nổi bật: viền đậm kiểu đồ hoạ game. */
+/* Khung nổi bật: viền vàng hai lớp. */
 .ring-gilded {
-  border: 2px solid color-mix(in oklab, var(--poke-outline) 78%, transparent);
-  box-shadow: 0 4px 0 color-mix(in oklab, var(--poke-outline) 70%, transparent), 0 14px 30px -18px rgb(10 26 51 / .45);
+  border: 2px solid var(--poke-outline);
+  box-shadow: inset 0 0 0 2px var(--vang), inset 0 0 0 4px var(--vang-dam), 0 4px 0 var(--khung-vien);
 }
 
-/* Nhãn nhỏ phía trên tiêu đề: viên thuốc trắng có Poké Ball mini. */
+/* Nhãn nhỏ trên tiêu đề: chữ in hoa + icon viên ngọc thật của game. */
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  padding: .3rem .85rem .3rem .4rem;
-  border-radius: 999px;
-  border: 2px solid var(--poke-outline);
-  background: var(--poke-card);
+  gap: .45rem;
   font-family: var(--font-display);
   font-size: .8rem;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: .09em;
   text-transform: uppercase;
   color: var(--ui-primary);
   line-height: 1.2;
@@ -281,13 +301,10 @@ h1, h2, h3, .font-display {
 .eyebrow::before {
   content: "";
   flex: none;
-  width: 1.05rem;
-  height: 1.05rem;
-  border-radius: 999px;
-  border: 2px solid var(--poke-outline);
-  background:
-    radial-gradient(circle, #fff 0 18%, var(--poke-outline) 19% 30%, transparent 31%),
-    linear-gradient(to bottom, var(--color-pokered-500) 0 43%, var(--poke-outline) 43% 57%, #fff 57%);
+  width: 16px;
+  height: 16px;
+  background: url("/vat-pham/294.png") center / contain no-repeat;
+  image-rendering: pixelated;
 }
 
 .section-title {
@@ -297,157 +314,152 @@ h1, h2, h3, .font-display {
   line-height: 1.12;
 }
 
-/* Nền toàn site: trời xanh nhạt + chấm pixel rất mờ. */
-.bg-pattern {
-  background-color: var(--ui-bg);
-  background-image:
-    radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--color-pokeblue-500) 12%, transparent) 1px, transparent 0);
-  background-size: 18px 18px;
-}
+/* Nền toàn site: trơn (không chấm, không vệt màu). */
+.bg-pattern { background-color: var(--ui-bg); }
 
-/* Lưới pixel (dither) 2 tông — dùng cho màn hình Pokédex, dải trang trí. */
-.pixel-dither {
-  background-image: conic-gradient(var(--poke-screen-dot) 25%, transparent 0 50%, var(--poke-screen-dot) 0 75%, transparent 0);
-  background-size: 6px 6px;
-}
+.pixel-dither { background-color: var(--poke-screen); }
 
-/* "Màn hình" Pokédex: nền xanh nhạt trơn (không ô caro), viền trong rất mảnh. */
 @utility bg-screen {
   background-color: var(--poke-screen);
-  background-image: linear-gradient(180deg, rgb(255 255 255 / .35), transparent 60%);
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--poke-outline) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--poke-outline) 14%, transparent);
 }
 
-/* Thẻ Pokédex: khung đỏ, góc bo, đèn xanh ở góc. Nội dung đặt trong .dex-screen. */
+/* Thẻ Pokédex: khung đỏ viền đậm, nội dung trong .dex-screen. */
 .dex-card {
   position: relative;
-  background: linear-gradient(180deg, var(--color-pokered-500), var(--color-pokered-600));
-  border: 2px solid color-mix(in oklab, var(--poke-outline) 80%, transparent);
-  border-radius: 1.25rem;
-  box-shadow: 0 4px 0 color-mix(in oklab, var(--poke-outline) 70%, transparent), 0 14px 28px -18px rgb(10 26 51 / .5);
-  padding: .6rem;
-}
-.dex-card::before {
-  content: "";
-  position: absolute;
-  top: .55rem;
-  left: .65rem;
-  width: .75rem;
-  height: .75rem;
-  border-radius: 999px;
-  background: radial-gradient(circle at 35% 35%, #bfe9ff, #3d9de8 60%, #1a5aa0);
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 2px var(--poke-outline);
+  background: linear-gradient(180deg, #ef4a26, #c8260b);
+  border: 2px solid var(--khung-vien);
+  border-radius: .7rem;
+  box-shadow: inset 0 2px 0 rgb(255 255 255 / .3), 0 4px 0 var(--khung-vien);
+  padding: .5rem;
 }
 .dex-screen {
-  border-radius: .8rem;
-  border: 1.5px solid color-mix(in oklab, var(--poke-outline) 70%, transparent);
+  border-radius: .45rem;
+  border: 2px solid var(--khung-vien);
   background: var(--poke-card);
 }
 
-/*
- * Hộp thoại kiểu game: nền trắng, viền đậm 2 lớp, mũi tên ▼ nhấp nháy ở góc.
- * Luôn sáng (cả ở chế độ tối) như hộp thoại trong game, nên đặt lại màu chữ.
- */
+/* Hộp thoại kiểu game: nền trắng, viền đậm 2 lớp. Luôn sáng (cả chế độ tối) như trong game. */
 .dialog-box {
-  --ui-text: var(--color-navy-800);
-  --ui-text-muted: var(--color-navy-600);
-  --ui-text-toned: var(--color-navy-700);
-  --ui-text-highlighted: var(--color-navy-950);
+  --ui-text: #2b2442;
+  --ui-text-muted: #554b6c;
+  --ui-text-toned: #3d3457;
+  --ui-text-highlighted: #17122e;
   --ui-primary: var(--color-pokered-600);
   position: relative;
   color: var(--ui-text);
-  background: #fff;
-  border: 4px solid #1b2a44;
-  border-radius: 1rem;
-  box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 5px #8fb4dc, 0 6px 0 rgb(10 26 51 / .35);
-  padding: 1.1rem 1.4rem 1.4rem;
+  background: #fffcf5;
+  border: 3px solid #241c3f;
+  border-radius: .6rem;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px #c9b98f, 0 4px 0 rgb(10 8 30 / .45);
+  padding: 1rem 1.3rem 1.2rem;
 }
-.dialog-box::after {
-  content: "";
-  position: absolute;
-  right: 1rem;
-  bottom: .55rem;
-  border-left: .45rem solid transparent;
-  border-right: .45rem solid transparent;
-  border-top: .55rem solid var(--color-pokered-500);
-  animation: var(--animate-blink);
-}
-.dialog-box.no-arrow::after { display: none; }
+.dialog-box::after { display: none; }
 
-/* Biển chỉ đường (route sign): nền xanh, chữ trắng, hai chân cột. */
+/* Đường dẫn (breadcrumb). */
 .route-sign {
-  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  padding: .35rem .9rem;
-  border-radius: .6rem;
-  border: 3px solid var(--poke-outline);
-  background: var(--color-pokeblue-600);
-  color: #fff;
+  gap: .4rem;
+  padding: .25rem .7rem;
+  border-radius: .4rem;
+  border: 2px solid var(--khung-vien);
+  background: var(--poke-card);
+  color: var(--ui-text-highlighted);
   font-family: var(--font-display);
-  font-weight: 800;
-  box-shadow: inset 0 0 0 2px var(--color-pokeblue-400);
+  font-weight: 700;
 }
 
-/* Dải cỏ cao ở mép dưới một khối (hero, đầu trang con). */
-.grass-edge {
-  position: absolute;
-  inset-inline: 0;
-  bottom: -1px;
-  height: 34px;
-  background: var(--color-grass-500);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 34'%3E%3Cpath d='M0 34V20l4-12 4 12 4-16 4 16 4-10 4 10 4-14 4 14 4-12 4 12 4-16 4 16v14Z'/%3E%3C/svg%3E") repeat-x bottom / 48px 34px;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 34'%3E%3Cpath d='M0 34V20l4-12 4 12 4-16 4 16 4-10 4 10 4-14 4 14 4-12 4 12 4-16 4 16v14Z'/%3E%3C/svg%3E") repeat-x bottom / 48px 34px;
-  pointer-events: none;
-}
+/* Dải cỏ vẽ bằng CSS cũ: bỏ. */
+.grass-edge { display: none; }
 
-/* Bảng số liệu của khu quản trị: số căn phải, chữ số đều nhau. */
 .num {
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-/* Sprite / chân dung PMD phóng to: giữ nét pixel, không làm mờ. */
 .pixelated {
   image-rendering: crisp-edges;
   image-rendering: pixelated;
 }
 
-/* Nút vàng Pikachu (chữ navy, viền đậm): CTA phụ như "Đăng ký", "Tải game". */
+/*
+ * Nút kiểu game: vát nổi (vạch sáng trên, tối dưới), viền đậm, bóng đáy; bấm thì lún xuống.
+ * .btn-pikachu = vàng (CTA chính "Tải game", "Đăng ký"); .btn-game = đỏ.
+ */
+.btn-pikachu, .btn-game {
+  border: 2px solid var(--poke-outline) !important;
+  border-radius: .55rem !important;
+  box-shadow: inset 0 2px 0 rgb(255 255 255 / .45), inset 0 -3px 0 rgb(0 0 0 / .22), 0 4px 0 var(--poke-outline) !important;
+  font-family: var(--font-display);
+  font-weight: 800 !important;
+  letter-spacing: .02em;
+  transition: transform .08s ease, filter .15s ease;
+}
 .btn-pikachu {
-  background: var(--color-pikachu-400) !important;
-  color: var(--color-navy-950) !important;
-  border: 2px solid var(--poke-outline);
-  box-shadow: 0 3px 0 var(--poke-outline);
+  background: linear-gradient(180deg, #ffe76e, #ffcb05 55%, #eaa600) !important;
+  color: #261a00 !important;
+  text-shadow: 0 1px 0 rgb(255 255 255 / .55);
 }
-.btn-pikachu:hover { background: var(--color-pikachu-300) !important; }
-.btn-pikachu:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--poke-outline); }
-
-/* Nút đỏ chính có "bóng đáy" kiểu nút game. */
 .btn-game {
-  background: var(--color-pokered-600) !important;
+  background: linear-gradient(180deg, #ff6b4a, #e3350d 55%, #b9210a) !important;
   color: #fff !important;
-  border: 2px solid var(--poke-outline);
-  box-shadow: 0 3px 0 var(--poke-outline);
+  text-shadow: 0 2px 0 rgb(0 0 0 / .3);
 }
-.btn-game:hover { background: var(--color-pokered-700) !important; }
-.btn-game:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--poke-outline); }
+.btn-pikachu:hover, .btn-game:hover { filter: brightness(1.06); }
+.btn-pikachu:active, .btn-game:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 2px 0 rgb(255 255 255 / .35), inset 0 -2px 0 rgb(0 0 0 / .2), 0 1px 0 var(--poke-outline) !important;
+}
 
-/* Khối nền navy đậm (chân trang...): đặt lại màu chữ/viền cho cả hai chế độ. */
-.on-navy {
-  --ui-text-dimmed: var(--color-navy-300);
-  --ui-text-muted: var(--color-navy-200);
-  --ui-text-toned: var(--color-navy-100);
-  --ui-text: var(--color-navy-50);
+/* Vùng nền tối cố định (đầu trang, chân trang, dải tải game): cùng tím than ở cả hai chế độ. */
+.on-navy, .vung-toi {
+  --ui-text-dimmed: #a79fc6;
+  --ui-text-muted: #c4bddd;
+  --ui-text-toned: #ddd7ef;
+  --ui-text: #eeeaf8;
   --ui-text-highlighted: #fff;
-  --ui-border: #2c4a78;
-  --ui-primary: var(--color-pikachu-400);
-  background: var(--color-pokeblue-900);
+  --ui-border: #3b3366;
+  --ui-border-muted: #2e2756;
+  --ui-border-accented: #4c4380;
+  --ui-primary: var(--vang);
+  --ui-bg: #1b1540;
+  --ui-bg-muted: #221b4b;
+  --ui-bg-elevated: #2a2350;
+  --ui-bg-accented: #342b60;
+  --poke-card: #221b4b;
+  --khung-sang: rgb(255 255 255 / .06);
+  --khung-vien: #06040e;
+  background: #1b1540;
   color: var(--ui-text);
 }
-.dark .on-navy { background: #061328; }
+.dark .on-navy, .dark .vung-toi { --ui-bg: #0c0a1b; background: #0c0a1b; }
+
+/* Ô vật phẩm lõm (chọn Pokémon, icon): như ô túi đồ trong game. */
+.o-slot {
+  display: grid;
+  place-items: center;
+  background: var(--poke-screen);
+  border: 2px solid var(--khung-vien);
+  border-radius: .5rem;
+  box-shadow: inset 0 3px 0 rgb(0 0 0 / .12), inset 0 -2px 0 var(--khung-sang);
+  transition: transform .12s ease, border-color .12s ease;
+}
+button.o-slot:hover { transform: translateY(-2px); }
+.o-slot[aria-pressed="true"], .o-slot[aria-selected="true"] {
+  border-color: var(--poke-outline);
+  background: color-mix(in oklab, var(--vang) 30%, var(--poke-screen));
+  box-shadow: 0 0 0 3px var(--vang), 0 4px 0 3px var(--vang-dam);
+}
+
+/* Tiêu đề mục lớn của trang công khai. */
+.tieu-de-muc {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+  color: var(--ui-text-highlighted);
+}
 
 /* ---------- Cẩm nang (wiki) ---------- */
 
@@ -457,9 +469,8 @@ h1, h2, h3, .font-display {
 .wiki ul.cham { list-style: none; padding: 0; display: grid; gap: .45rem; color: var(--ui-text-toned); max-width: 48rem; }
 .wiki ul.cham > li { position: relative; padding-left: 1.4rem; line-height: 1.6; }
 .wiki ul.cham > li::before {
-  content: ""; position: absolute; left: .2rem; top: .55em; width: .55rem; height: .55rem; border-radius: 999px;
-  background: linear-gradient(to bottom, var(--color-pokered-500) 0 45%, var(--poke-outline) 45% 58%, #fff 58%);
-  box-shadow: 0 0 0 1.5px var(--poke-outline);
+  content: ""; position: absolute; left: .1rem; top: .3em; width: 14px; height: 14px;
+  background: url("/vat-pham/286.png") center / contain no-repeat; image-rendering: pixelated;
 }
 /* Danh sách có thứ tự (các bước): số tròn đỏ kiểu nút game. */
 .wiki ol.cham { list-style: none; padding: 0; display: grid; gap: .5rem; color: var(--ui-text-toned); max-width: 48rem; counter-reset: buoc; }
@@ -467,7 +478,7 @@ h1, h2, h3, .font-display {
 .wiki ol.cham > li::before {
   content: counter(buoc); position: absolute; left: 0; top: .1em; width: 1.4rem; height: 1.4rem; border-radius: 999px;
   display: grid; place-items: center; font-size: .75rem; font-weight: 800; color: #fff;
-  background: var(--color-pokered-600); box-shadow: 0 0 0 1.5px var(--poke-outline);
+  background: var(--color-pokered-600); box-shadow: 0 0 0 1.5px var(--poke-outline); border-radius: .3rem;
 }
 .wiki strong { color: var(--ui-text-highlighted); }
 .wiki a.lien-ket { color: var(--ui-primary); font-weight: 600; }
@@ -475,7 +486,7 @@ h1, h2, h3, .font-display {
 
 /* Bảng số liệu cẩm nang: khung bo góc, đầu bảng navy nhạt, hàng xen màu. */
 .bang-cuon {
-  overflow-x: auto; border-radius: 1rem; border: 2px solid var(--ui-border); box-shadow: 0 4px 0 var(--ui-border);
+  overflow-x: auto; border-radius: .6rem; border: 2px solid var(--khung-vien); box-shadow: 0 4px 0 var(--khung-vien);
   /* Bóng mờ ở mép khi bảng còn cuộn ngang được (gợi ý "vuốt sang"): lớp `local` che bóng khi đã tới mép. */
   background:
     linear-gradient(to right, var(--poke-card) 40%, transparent) left / 2rem 100% no-repeat local,
@@ -506,7 +517,7 @@ h1, h2, h3, .font-display {
 .bang-wiki tr.noi-bat td { background: color-mix(in oklab, var(--color-pikachu-300) 30%, transparent) !important; }
 
 /* Thẻ số liệu nhỏ (KPI). */
-.the-so { border-radius: 1rem; border: 2px solid var(--ui-border); background: var(--poke-card); box-shadow: 0 4px 0 var(--ui-border); padding: 1rem 1.1rem; }
+.the-so { border-radius: .6rem; border: 2px solid var(--khung-vien); background: var(--poke-card); box-shadow: inset 0 0 0 2px var(--khung-sang), 0 4px 0 var(--khung-vien); padding: 1rem 1.1rem; }
 .the-so b { display: block; font-family: var(--font-display); font-size: 1.75rem; font-weight: 800; line-height: 1.1; color: var(--ui-text-highlighted); font-variant-numeric: tabular-nums; }
 .the-so span { font-size: .8rem; color: var(--ui-text-muted); }
 

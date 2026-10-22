@@ -11,7 +11,14 @@ interface TrangThai { song: boolean | null, online: number | null, capNhat: stri
 
 let cache: { luc: number, kq: TrangThai } | null = null
 
-export default defineEventHandler(async (): Promise<TrangThai> => {
+/** Trang công khai chỉ cần Online / Bảo trì + số người: không trả thời điểm nhịp tim nội bộ. */
+export default defineEventHandler(async (event): Promise<{ song: boolean | null, online: number | null }> => {
+  setHeader(event, 'Cache-Control', 'public, max-age=30')
+  const { song, online } = await layTrangThai()
+  return { song, online }
+})
+
+async function layTrangThai(): Promise<TrangThai> {
   if (cache && Date.now() - cache.luc < 30_000) return cache.kq
   let kq: TrangThai = { song: null, online: null, capNhat: null }
   // Nguồn ngoài (cài ở /admin/cai-dat): chỉ lấy hai trường song/online.
@@ -56,4 +63,4 @@ export default defineEventHandler(async (): Promise<TrangThai> => {
   }
   cache = { luc: Date.now(), kq }
   return kq
-})
+}

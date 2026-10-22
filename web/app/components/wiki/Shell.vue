@@ -124,9 +124,9 @@ const moMenu = ref(false)
           <div v-if="them?.html" class="noi-dung-md mt-12" v-html="them.html" />
 
           <div class="mt-14 rounded-2xl bg-elevated/60 p-4 text-xs text-muted">
-            <UIcon name="i-lucide-database" class="mr-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
-            Số liệu có thể được điều chỉnh trong các bản cập nhật cân bằng. Mục ghi "từ 0.9.6" có ở bản cập nhật kế tiếp;
-            mục "Sắp có" chưa có trong game. Khi có khác biệt, thông báo trong game là chuẩn.
+            <UIcon name="i-lucide-info" class="mr-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
+            Số liệu có thể thay đổi theo bản cập nhật cân bằng. Mục "Sắp có" chưa có trong game.
+            Khi có khác biệt, thông báo trong game là chuẩn.
           </div>
 
           <nav class="mt-8 grid gap-3 sm:grid-cols-2" aria-label="Trang trước / sau">

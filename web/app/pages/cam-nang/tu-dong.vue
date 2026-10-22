@@ -22,7 +22,7 @@
     <WikiSection id="cach-dung" title="Cách dùng">
       <figure class="mb-5 overflow-hidden rounded-3xl shadow-[0_14px_30px_-18px_rgb(10_26_51/.55)]">
         <SiteAnhGame ma="tu-dong" sizes="(min-width: 1024px) 760px, 100vw" alt="Ảnh trong game: bảng cài đặt Tự động đánh" />
-        <figcaption class="bg-[var(--poke-card)] px-4 py-2 text-xs text-dimmed">Bảng Tự động đánh trong game (bản PC {{ BAN_ANH_GAME }}): chiêu, ngưỡng thuốc HP / PP, nhặt đồ, vùng đánh, về hồi phục, tự hồi sinh.</figcaption>
+        <figcaption class="bg-[var(--poke-card)] px-4 py-2 text-xs text-dimmed">Bảng Tự động đánh trong game (bản PC): chiêu, ngưỡng thuốc HP / PP, nhặt đồ, vùng đánh, về hồi phục, tự hồi sinh.</figcaption>
       </figure>
       <ol class="cham">
         <li>Đi tới một bãi luyện tập có Pokémon hoang dã.</li>

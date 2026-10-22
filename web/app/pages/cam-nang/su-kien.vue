@@ -151,7 +151,7 @@ const moTaLoai: Record<string, string> = {
                   {{ s.coChe }}
                 </p>
                 <p v-if="s.phanThuong" class="mt-1 pl-4.5 text-xs text-toned">
-                  🎁 {{ s.phanThuong }}
+                  Phần thưởng: {{ s.phanThuong }}
                 </p>
               </details>
             </li>

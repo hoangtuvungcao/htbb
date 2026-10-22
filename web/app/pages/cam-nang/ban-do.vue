@@ -77,12 +77,12 @@ const dsNpc = computed(() => (npcDb.value?.length ? npcDb.value : NPC_TINH))
       <ul class="cham mt-5">
         <li>Di chuyển nhanh: nhờ <strong>Pidgeot chở bay</strong> đưa tới bản đồ khác — mỗi lần tốn xu bằng {{ CAM_NANG.kinhTe.dichChuyenPhanTramGio }}% thu nhập một giờ ở cấp của bạn.</li>
         <li>Ra đảo: gặp <strong>Lapras chở đò</strong> ở bến tàu mua vé tàu và đi thuyền.</li>
-        <li>NPC dùng được cả ngoài trời (từ 0.9.6), không chỉ trong nhà — danh sách ở mục <a href="#npc" class="lien-ket">NPC & chức năng</a>, giá xem ở <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng</NuxtLink>.</li>
+        <li>NPC dùng được cả ngoài trời, không chỉ trong nhà — danh sách ở mục <a href="#npc" class="lien-ket">NPC & chức năng</a>, giá xem ở <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng</NuxtLink>.</li>
         <li>Muốn câu cá? Chỉ câu được ở hồ — xem <NuxtLink to="/cam-nang/cau-ca#ban-do" class="lien-ket">bản đồ có hồ</NuxtLink>.</li>
       </ul>
     </WikiSection>
 
-    <WikiSection id="npc" title="NPC & chức năng" lead="Chạm (hoặc đi tới rồi bấm Enter trên PC) để nói chuyện. Từ bản 0.9.6, NPC ngoài trời mở đúng chức năng như NPC trong nhà.">
+    <WikiSection id="npc" title="NPC & chức năng" lead="Chạm (hoặc đi tới rồi bấm Enter trên PC) để nói chuyện. NPC ngoài trời có đủ chức năng như NPC trong nhà.">
       <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <li v-for="n in dsNpc" :key="n.ten + n.chucVu" class="the-go flex items-center gap-3 p-3">
           <img v-if="anhChanDung(n.dex)" :src="anhChanDung(n.dex)" width="40" height="40" alt="" loading="lazy" class="pixelated size-12 shrink-0 rounded-2xl bg-screen">

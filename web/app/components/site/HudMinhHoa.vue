@@ -32,7 +32,7 @@ const CHAM: ChamHud[] = [
       >{{ c.so }}</span>
     </div>
     <figcaption class="mt-2 text-xs text-dimmed">
-      Ảnh chụp thật bản PC {{ BAN_ANH_GAME }} (giao diện kiểu Pokémon GO). Bản Android cùng bố cục; bản Java (J2ME) gọn hơn, dùng phím số.
+      Ảnh chụp trong game, bản PC. Bản Android cùng bố cục; bản Java (J2ME) gọn hơn, dùng phím số.
     </figcaption>
     <ol class="mt-4 grid gap-2 sm:grid-cols-2">
       <li v-for="c in CHAM" :key="c.so" class="flex gap-3 rounded-2xl bg-elevated/60 p-3 text-sm">
