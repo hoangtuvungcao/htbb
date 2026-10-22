@@ -157,7 +157,14 @@ public final class KichBanCoPk {
             int ma = a.moc();
             int mc = c.moc();
             for (int i = 0; i < 6; i++) {
-                a.gui(6, (short) c.actor, (byte) 0);
+                if (BotChucNang.BAN >= 908) {
+                    // client 0.9.8: PvP la ngam tay (-113), goi 6 tu nham chi con o PvE
+                    int[] pa = KichBanNgamTay.viTri(a), pb = KichBanNgamTay.viTri(c);
+                    short[] h = KichBanNgamTay.huong(pa, pb, false);
+                    a.gui(-113, (byte) 0, (byte) 0, (short) pa[0], (short) pa[1], h[0], h[1]);
+                } else {
+                    a.gui(6, (short) c.actor, (byte) 0);
+                }
                 a.bom(450);
             }
             c.bom(300);
