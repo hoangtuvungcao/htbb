@@ -4315,6 +4315,16 @@ INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_di
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('pvp.ngam_tay.giay_giao_chien', 'pvp', 'Giây coi là đang giao chiến PvP', 'Đánh trúng / bị người chơi đánh trúng trong ngần này giây thì vẫn tính là trận giữa người chơi (tắt tự động, bắt buộc ngắm tay).', 'so', '10', '{"min": 0, "max": 600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.BanHuongGame', 338, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('pvp.ngam_tay.bu_tre_ms', 'pvp', 'Bù trễ vị trí (ms)', 'Vị trí mục tiêu trong ngần này ms trước lúc đạn tới đều tính trúng (ưu tiên người bắn khi mạng trễ). Trần 300.', 'so', '150', '{"min": 0, "max": 300}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.BanHuongGame', 339, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('pvp.ngam_tay.map', 'pvp', 'Bản đồ PvP bắt buộc ngắm tay (id)', 'Ngoài sàn đấu / chiến trường / giải Liên minh / thách đấu / chiếm Gym đang đánh (tự nhận theo loại bản đồ). So cả id bản đồ lẫn id nạp.', 'ds_so', '202,204,205,227', '{"min": 0, "max": 100000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.BanHuongGame', 340, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.bat', 'dat_ten_pet', 'Bật thẻ đặt tên Pokémon', 'Khẩn cấp (server.ini): 0 = không dùng / không bán thẻ (dòng đã có vẫn tính, vẫn trong trần).', 'co', '1', '{}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DatTenPetGame', 341, 'luon_bat', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.gia_luong', 'dat_ten_pet', 'Giá thẻ (lượng)', 'Cửa hàng lượng (mục Tiện ích). Bản kiếm được: đổi Tem nghiên cứu / lượng khoá ở Sổ tay (data_cua_hang_lau_dai).', 'so', '100', '{"min": 10, "max": 5000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DatTenPetGame.giaLuong', 342, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.mua_tuan_toi_da', 'dat_ten_pet', 'Số thẻ mua bằng lượng / tuần', 'Mỗi Pokémon, mở lại thứ Hai. 0 = tạm ngừng bán. Giới hạn số lần quay lại dòng bằng tiền.', 'so', '3', '{"min": 0, "max": 20}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.NapTienGame.mua', 343, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.muc_phan_nghin', 'dat_ten_pet', 'Các mức của dòng (‰)', 'Tăng dần, mỗi mức ≤ trần một dòng. 10 = +1%. Chí mạng / né nhân thêm hệ số của bảng data_dong_the_ten.', 'ds_so', '10,15,20,30', '{"min": 1, "max": 30}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.DatTenPet.quay', 344, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.trong_so_muc', 'dat_ten_pet', 'Trọng số từng mức', 'Cùng số phần tử với các mức, KHÔNG tăng (mức thấp luôn ra nhiều hơn). Sai luật thì máy chủ dùng mặc định 55,30,12,3.', 'ds_so', '55,30,12,3', '{"min": 1, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.DatTenPet.mucHopLe', 345, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.tran_dong_phan_nghin', 'dat_ten_pet', 'Trần một dòng thẻ tên (‰)', 'Ngân sách ô thẻ tên pet. 30 = +3%.', 'so', '30', '{"min": 0, "max": 60}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DatTenPetGame.tranDong', 346, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('trang_tri.tran_tong_phan_nghin', 'dat_ten_pet', 'Trần tổng chỉ số trang trí (‰)', 'Mọi ô trang trí cộng lại (thiết kế cân bằng 4.5), nằm trong chi_so.tran_phan_tram_cong. 50 = 5%.', 'so', '50', '{"min": 0, "max": 50}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DatTenPetGame.tranTrangTri', 347, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.do_dai_toi_thieu', 'dat_ten_pet', 'Tên pet: ít nhất (ký tự)', '', 'so', '2', '{"min": 1, "max": 12}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.DatTenPet.kiemTen', 348, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.do_dai_toi_da', 'dat_ten_pet', 'Tên pet: nhiều nhất (ký tự)', 'Cột tob_pet_dat_ten.ten dài 40.', 'so', '12', '{"min": 2, "max": 20}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'com.htbb.pokemon.DatTenPet.kiemTen', 349, 'co_dinh', 1);
+INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('dat_ten_pet.ban_client_popup', 'dat_ten_pet', 'Bản client có hộp kết quả thẻ tên', 'Client có số bản ≥ giá trị này nhận gói -106 (thẻ trắng kiểu Pokémon GO); cũ hơn / Unity nhận hộp thông báo 37.', 'so', '908', '{"min": 0, "max": 100000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'real.DatTenPetGame.baoKetQua', 350, 'co_dinh', 1);
 
 -- cau_hinh_nhom (tung la pokemon_cau_hinh_trung_tam.sql, bo sinh tools/luu_tru_sinh_du_lieu/cauhinh/sinh_cau_hinh.py - da luu tru)
 DROP TABLE IF EXISTS `cau_hinh_nhom`;
@@ -4338,6 +4348,7 @@ INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('tran
 INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('hoi_sinh', 'Hồi sinh — luật (cố định)', 'Phạt khi về Trung tâm, mệt mỏi, cấm hồi sinh tại chỗ ở PvP / Gym / boss / Mê cung.', 17, 1);
 INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('thong_bao', 'Thông báo (cố định)', 'Gộp thông báo toàn máy chủ.', 18, 1);
 INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('quan_tri', 'Quản trị & thử nghiệm (cố định)', 'Cờ GM cũ và khoá thử nghiệm (máy thật luôn mặc định).', 19, 1);
+INSERT INTO `cau_hinh_nhom` (`ma`, `ten`, `mo_ta`, `thu_tu`, `an`) VALUES ('dat_ten_pet', 'Thẻ đặt tên Pokémon', 'Giá bán (lượng), số lần mua / tuần và tỉ lệ các mức của dòng chỉ số ngẫu nhiên. Trần một dòng và trần tổng trang trí 5% là cố định. Bảng chỉ số trong data_dong_the_ten, từ cấm trong data_tu_cam_ten.', 20, 1);
 
 -- ======== 3. Chi muc bang nong
 
@@ -7857,3 +7868,101 @@ UPDATE `data_quest_moi` SET `infogift` = LEFT(REPLACE(`infogift`, 'Địa điể
 -- 1322 C52.7: NPC 5 chi o [0, 43, 45, 50, 56, 59, 60, 70, 80, 101, 163, 164, 280, 282]
 UPDATE `data_quest_moi` SET `scontent` = IF(`scontent` LIKE '% ở Núi Silver', CONCAT(LEFT(`scontent`, CHAR_LENGTH(`scontent`) - 13), ' ở làng'), `scontent`), `infogift` = LEFT(REPLACE(REPLACE(`infogift`, 'Địa điểm:|Núi Silver|', 'Địa điểm:|Làng khởi đầu|'), ' ở Núi Silver|', ' ở làng|'), 200) WHERE `id` = 1322 AND `mainsub` = 0;
 -- /SUA CHUOI CHINH ---------------------------------------------------------------------------------------------------
+-- >>> them_the_dat_ten_pet.sql
+-- THE DAT TEN POKEMON (0.9.6, nhanh ten-pet) - migration cho CSDL dang chay. Chay lai bao nhieu lan cung duoc
+-- (CREATE TABLE IF NOT EXISTS, INSERT IGNORE giu gia tri admin da sua, UPDATE dat lai dung hinh/ten vat pham).
+-- Khong dung "INSERT ... SELECT ... ON DUPLICATE KEY UPDATE col=col" (hong tren MariaDB 10.3).
+-- Cung khoi nay nam trong sql/htbb_day_du.sql. Chay SAU sql/pokemon_vat_pham_lau_dai.sql neu chay lai tep do
+-- (tep do DROP data_vat_pham_lau_dai / data_cua_hang_lau_dai). Thiet ke: docs/thiet-ke-game.md muc 4.8.
+--   (nay la mot phan cua sql/nang_cap.sql phan 11)
+
+-- Bang dong chi so cua the (chi so + trong so chon + he so % ap len muc gia tri trong cau hinh
+-- dat_ten_pet.muc_phan_nghin / dat_ten_pet.trong_so_muc). Ma chi so chi gom: hp, tan_cong, phong_thu, chi_mang, ne_tranh
+-- (com.htbb.pokemon.DatTenPet.MA_HOP_LE; dong ma khac bi may chu bo qua). bat = 0 tat dong.
+CREATE TABLE IF NOT EXISTS `data_dong_the_ten` (
+  `id` int NOT NULL,
+  `chi_so` varchar(16) NOT NULL,
+  `ten_hien` varchar(40) NOT NULL DEFAULT '',
+  `trong_so` int NOT NULL DEFAULT 1,
+  `he_so` int NOT NULL DEFAULT 100 COMMENT '% ap len muc (1..100): 50 = chi mang / ne bang nua muc',
+  `bat` tinyint NOT NULL DEFAULT 1,
+  `ghi_chu` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
+INSERT IGNORE INTO `data_dong_the_ten` (`id`,`chi_so`,`ten_hien`,`trong_so`,`he_so`,`bat`,`ghi_chu`) VALUES
+(1,'hp','HP',30,100,1,'+1..3% HP toi da, trong chi_so.tran_phan_tram_cong'),
+(2,'tan_cong','Tấn công',25,100,1,'+1..3% tan cong, trong chi_so.tran_phan_tram_cong'),
+(3,'phong_thu','Phòng thủ',25,100,1,'+1..3% phong thu, trong chi_so.tran_phan_tram_cong'),
+(4,'chi_mang','Chí mạng',10,50,1,'+0,5..1,5% ti le chi mang, qua tran 40% giam dan'),
+(5,'ne_tranh','Né tránh',10,50,1,'+0,5..1,5% ne, qua tran 30% / PvP 20%');
+
+-- Tu cam trong ten pet. kieu 'tu' = ca tu (co dau, khong phan biet hoa thuong); 'chuoi' = chuoi con cua ban bo dau,
+-- bo dau cach, doi so giong chu (DatTenPet.khung: "D.m.m", "đ m m", "dmm" deu bi chan).
+CREATE TABLE IF NOT EXISTS `data_tu_cam_ten` (
+  `tu` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'chu thuong; utf8_bin: đụ / đù khac nhau',
+  `kieu` varchar(8) NOT NULL DEFAULT 'tu',
+  `bat` tinyint NOT NULL DEFAULT 1,
+  PRIMARY KEY (`tu`)
+) DEFAULT CHARSET=utf8;
+INSERT IGNORE INTO `data_tu_cam_ten` (`tu`,`kieu`,`bat`) VALUES
+('lồn','tu',1),('cặc','tu',1),('buồi','tu',1),('địt','tu',1),('đụ','tu',1),('đéo','tu',1),('đĩ','tu',1),('cứt','tu',1),
+('dái','tu',1),('nứng','tu',1),('đỉ','tu',1),('đù','tu',1),('chó đẻ','tu',1),('mẹ mày','tu',1),('bú cu','tu',1),
+('admin','tu',1),('gm','tu',1),('quản trị','tu',1),
+('dmm','chuoi',1),('dcm','chuoi',1),('dkm','chuoi',1),('vcl','chuoi',1),('vkl','chuoi',1),('cmm','chuoi',1),
+('clgt','chuoi',1),('dmcs','chuoi',1),('ditme','chuoi',1),('dume','chuoi',1),('duma','chuoi',1),('dmeo','chuoi',1),
+('fuck','chuoi',1),('shit','chuoi',1),('bitch','chuoi',1),('cunt','chuoi',1),('pussy','chuoi',1),('nigger','chuoi',1),
+('nigga','chuoi',1),('dick','chuoi',1);
+
+-- Ten + dong cua tung pet (khoa id_pet = tob_pet.id). May chu cung tu tao (real.DatTenPetGame.taoBang).
+CREATE TABLE IF NOT EXISTS `tob_pet_dat_ten` (
+  `id_pet` int NOT NULL,
+  `id_char` int NOT NULL,
+  `ten` varchar(40) NOT NULL,
+  `chi_so` varchar(16) NOT NULL DEFAULT '',
+  `gia_tri` int NOT NULL DEFAULT 0 COMMENT 'phan nghin',
+  `so_lan` int NOT NULL DEFAULT 0,
+  `cap_nhat` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_pet`),
+  KEY `idx_pet_dat_ten_char` (`id_char`)
+) DEFAULT CHARSET=utf8;
+
+-- Nhat ky kinh te: moi lan the bi tru (ok) hoac hoan (hoan_the). /admin co the doc truc tiep.
+CREATE TABLE IF NOT EXISTS `tob_log_dat_ten` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `luc` datetime NOT NULL,
+  `id_char` int NOT NULL,
+  `charname` varchar(30) NOT NULL DEFAULT '',
+  `id_pet` int NOT NULL,
+  `dex` int NOT NULL DEFAULT 0,
+  `ten_cu` varchar(40) NOT NULL DEFAULT '',
+  `dong_cu` varchar(32) NOT NULL DEFAULT '',
+  `ten_moi` varchar(40) NOT NULL DEFAULT '',
+  `dong_moi` varchar(32) NOT NULL DEFAULT '',
+  `id_item` int NOT NULL DEFAULT 0,
+  `ket_qua` varchar(32) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_log_dat_ten_char` (`id_char`),
+  KEY `idx_log_dat_ten_luc` (`luc`)
+) DEFAULT CHARSET=utf8;
+
+-- Vat pham 1261 "The dat ten Pokemon" (type 28, icon map/icon_pokemon/502.png = 14502). Moi the vao tui deu KHOA
+-- (Char.createItemSoLuong lock = 1): khong ky gui, khong ban NPC. price = 0 (khong phai nguon xu).
+INSERT IGNORE INTO `data_item` (`id`,`name`,`type`,`style`,`he`,`gender`,`level`,`durable`,`atb0`,`atb1`,`atb2`,`atb3`,`atb4`,`atb5`,`atb6`,`atb7`,`atb8`,`atb9`,`price`,`clazz`,`xstart`,`ystart`,`colortype`,`nloan`,`idUpLevel`,`namein`,`ideff`,`pricecu`) VALUES
+(1261,'Thẻ đặt tên Pokémon',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14502,0,-1,0,-1,'Thẻ đặt tên Pokémon',-1,0);
+UPDATE `data_item` SET `name`='Thẻ đặt tên Pokémon', `namein`='Thẻ đặt tên Pokémon', `type`=28, `xstart`=14502, `price`=0
+WHERE `id`=1261;
+
+-- Cong dung (real.VatPhamDungLauDai: hieu_ung "dat_ten" -> real.DatTenPetGame).
+INSERT IGNORE INTO `data_vat_pham_lau_dai` (`id_item`,`ma`,`ten`,`nhom`,`hieu_ung`,`gioi_han`,`cap_tu`,`cap_den`) VALUES
+(1261,'the_dat_ten_pet','Thẻ đặt tên Pokémon','tien_ich','dat_ten:1','1 thẻ / 1 lần đặt tên',1,100);
+
+-- Nguon KIEM DUOC (cung vat pham, cung ngan sach voi ban luong): doi Tem nghien cuu (nhiem vu nghien cuu / su kien)
+-- hoac luong khoa (Kecleon), moi dong 1 lan / tuan.
+INSERT IGNORE INTO `data_cua_hang_lau_dai` (`id`,`nhom`,`ten`,`chi_phi`,`thuong`,`cap`,`ngay_mo`,`lop`,`gioi_han_tuan`) VALUES
+(128,'Đổi Tem nghiên cứu','Thẻ đặt tên Pokémon','item:1054x8','ITEM:1261:1',10,0,-1,1),
+(129,'Lượng khoá (Kecleon)','Thẻ đặt tên Pokémon','luong_khoa:40','ITEM:1261:1',10,0,-1,1);
+
+-- Nguon TRA PHI: Cua hang luong, nhom Tien ich. Gia that = cau hinh dat_ten_pet.gia_luong (mac dinh 100 luong),
+-- so lan / tuan = dat_ten_pet.mua_tuan_toi_da (mac dinh 3); gioi_han cua dong PHAI = 0 (NapTienLogic.kiemDatTen).
+INSERT IGNORE INTO `nap_cua_hang` (`ma`,`ten`,`nhom`,`trao`,`gia_luong`,`han_ngay`,`gioi_han`,`nhom_xoay`,`giao_dich_duoc`,`co_chi_so`,`dang_ban`,`thu_tu`) VALUES
+('the_dat_ten_pet','Thẻ đặt tên Pokémon','tien_ich','dat_ten_pet',100,0,0,0,0,0,1,24);

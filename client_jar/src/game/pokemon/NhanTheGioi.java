@@ -11,8 +11,9 @@ import javax.microedition.lcdui.Image;
  *
  * Lúc vẽ thế giới, Char.paintName / NhanQuai chỉ GHI yêu cầu (toạ độ thế giới của đáy nhãn = sát đỉnh hình thật) vào
  * mảng cố định; GameScr.paintFocusActorInfo (đã hết lớp thế giới) gọi {@link #ve}: đổi toạ độ thế giới -> giao diện,
- * xếp chỗ theo ưu tiên (mục tiêu đang chọn > bản thân > người chơi khác > quái vừa trúng > quái), nhãn chồng nhãn đã
- * đặt thì nhích lên một hàng, vẫn chồng thì người chơi vẽ MỜ, quái bỏ; nhãn quái không đè hình nhân vật chính. Vẽ
+ * xếp chỗ theo ưu tiên (mục tiêu đang chọn > bản thân > người chơi khác > pet đi theo > quái vừa trúng > quái), nhãn
+ * chồng nhãn đã đặt thì nhích lên một hàng, vẫn chồng thì người chơi vẽ MỜ, pet / quái bỏ; nhãn pet / quái không đè hình
+ * nhân vật chính. Nhãn pet (0.9.6, NhanPet) chữ nhỏ hơn + màu dịu hơn tên người chơi. Vẽ
  * ngược thứ tự ưu tiên: nhãn người chơi nằm TRÊN nhãn quái, mục tiêu trên cùng (nền viên tối + thanh HP).
  * Không cấp phát mỗi khung. Máy J2ME (không có ChuUI) giữ cách vẽ cũ trong lớp thế giới (không phóng).
  */
@@ -20,9 +21,9 @@ public final class NhanTheGioi {
     private NhanTheGioi() {
     }
 
-    public static final int QUAI = 0, NGUOI = 1, BAN_THAN = 2, TRUM = 3, KHAC_PHE = 4;
+    public static final int QUAI = 0, NGUOI = 1, BAN_THAN = 2, TRUM = 3, KHAC_PHE = 4, PET = 5;
 
-    static final int TOI_DA = 48;
+    static final int TOI_DA = 64;
     private static final Object[] AI = new Object[TOI_DA];
     private static final String[] CHU = new String[TOI_DA];
     private static final String[] TIEN = new String[TOI_DA];
@@ -109,6 +110,11 @@ public final class NhanTheGioi {
      */
     public static boolean nguoi(Object ai, String ten, int wx, int wyDay, int wyChan, int loai, boolean chon) {
         return ghi(ai, loai, null, ten, wx, wyDay, wyChan, -1, chon, false);
+    }
+
+    /** NhanPet: "tên pet · tên chủ"; wyDay = đáy nhãn (sát đỉnh hình pet), wyChan = chân pet. */
+    public static boolean pet(Object ai, String chu, int wx, int wyDay, int wyChan) {
+        return ghi(ai, PET, null, chu, wx, wyDay, wyChan, -1, false, false);
     }
 
     /** NhanQuai: "Lv N" (tien) + tên; hp phần nghìn (-1 không thanh). */
@@ -220,6 +226,16 @@ public final class NhanTheGioi {
         return ChuDe.dt() ? 7.6f : 6.8f;
     }
 
+    /** Cỡ chữ nhãn pet (nhỏ hơn tên người chơi). */
+    static float coPet() {
+        return ChuDe.dt() ? 6.2f : 5.6f;
+    }
+
+    /** Cỡ chữ của nhãn i. */
+    static float co(int i, float co, float coC, float coP) {
+        return CHON[i] ? coC : LOAI[i] == PET ? coP : co;
+    }
+
     // ------------------------------------------------------------------ vẽ
     /** GameScr.paintFocusActorInfo (lớp giao diện): vẽ hàng đợi nhãn + số bay; xoá hàng đợi. */
     public static void ve(Graphics g) {
@@ -250,20 +266,27 @@ public final class NhanTheGioi {
         if (l == BAN_THAN) {
             return 1;
         }
+        if (l == PET) {
+            return 3;
+        }
         if (l != QUAI) {
             return 2;
         }
-        return NONG[i] ? 3 : 4;
+        return NONG[i] ? 4 : 5;
     }
 
+    /** Số nhãn của khung vẽ cuối (kiểm thử client_pc/test/KiemNhanPet đọc cùng X/Y/W/H/TT/LOAI). */
+    static int soVe;
+
     private static void veNhan(Graphics g) {
-        float co = coNhan(), coC = coChon();
-        int h = cao(co), hC = cao(coC);
+        soVe = so;
+        float co = coNhan(), coC = coChon(), coP = coPet();
+        int h = cao(co), hC = cao(coC), hP = cao(coP);
         // hình nhân vật chính (nhãn quái không đè)
         int bx0 = 0, by0 = 0, bx1 = -1, by1 = -1;
         for (int i = 0; i < so; i++) {
-            float c = CHON[i] ? coC : co;
-            int dam = CHON[i] ? 2 : 1;
+            float c = co(i, co, coC, coP);
+            int dam = CHON[i] ? 2 : LOAI[i] == PET ? 0 : 1;
             int w = rong(CHU[i], c, dam);
             int wt = 0;
             if (TIEN[i] != null) {
@@ -272,7 +295,7 @@ public final class NhanTheGioi {
             }
             WTIEN[i] = wt;
             WCHU[i] = w;
-            int hh = CHON[i] ? hC : h;
+            int hh = CHON[i] ? hC : LOAI[i] == PET ? hP : h;
             int day = sy(WY[i]);
             if (HP[i] >= 0) {
                 day -= 5;   // thanh HP dưới chữ
@@ -304,9 +327,9 @@ public final class NhanTheGioi {
                 by1 = sy(WCHAN[i]);
             }
         }
-        // thứ tự ưu tiên (đếm theo 5 bậc, không cấp phát)
+        // thứ tự ưu tiên (đếm theo 6 bậc, không cấp phát)
         int n = 0;
-        for (int p = 0; p <= 4; p++) {
+        for (int p = 0; p <= 5; p++) {
             for (int i = 0; i < so; i++) {
                 if (TT[i] != 0 && uuTien(i) == p) {
                     THU[n++] = i;
@@ -320,7 +343,8 @@ public final class NhanTheGioi {
             if (p <= 1) {
                 continue;   // mục tiêu / bản thân: luôn đúng chỗ
             }
-            boolean laQuai = LOAI[i] == QUAI;
+            // pet / quái: không đè hình nhân vật chính
+            boolean laQuai = LOAI[i] == QUAI || LOAI[i] == PET;
             if (!dung(i, k, laQuai, bx0, by0, bx1, by1)) {
                 continue;
             }
@@ -330,7 +354,7 @@ public final class NhanTheGioi {
                 continue;   // nhích lên một hàng
             }
             Y[i] = y0;
-            if (laQuai && p == 4) {
+            if (LOAI[i] == PET || laQuai && p == 5) {
                 TT[i] = 0;
                 THU[k] = -1;
             } else {
@@ -341,7 +365,7 @@ public final class NhanTheGioi {
         for (int k = n - 1; k >= 0; k--) {
             int i = THU[k];
             if (i >= 0 && TT[i] != 0) {
-                ve1(g, i, CHON[i] ? coC : co);
+                ve1(g, i, co(i, co, coC, coP));
             }
         }
     }
@@ -379,10 +403,12 @@ public final class NhanTheGioi {
         if (chon) {
             vien(g, x - 4, y, WCHU[i] + 8, hh);
         }
-        int dam = chon ? 2 : 1;
+        int dam = chon ? 2 : l == PET ? 0 : 1;
         int mau;
         if (mo) {
             mau = 0xAEB6C4;
+        } else if (l == PET) {
+            mau = 0xC2CBDA;   // dịu hơn tên người chơi (0xEEF3FF)
         } else if (l == BAN_THAN) {
             mau = 0xFFF1B8;
         } else if (l == TRUM) {

@@ -24,6 +24,7 @@ class KichBanDS {
         BotChucNang.dk("chet_hoi_sinh", true, KichBanDS::chetHoiSinh);
         BotChucNang.dk("mat_ket_noi", true, KichBanDS::matKetNoi);
         KichBanDS2.dangKy();
+        KichBanDatTenPet.dangKy(); // 0.9.6 the dat ten Pokemon
     }
 
     // ------------------------------------------------------------------ tien ich chung

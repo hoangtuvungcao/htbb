@@ -37,7 +37,8 @@ public final class KiemPhanLoaiCauHinh {
                 chinh++;
             }
         }
-        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 70), con lai an", chinh <= 70 && chinh >= 40);
+        // <= 72: 0.9.6 them 3 khoa chinh cua the dat ten Pokemon (gia + muc + trong so muc - chu game: gia / ti le chinh tren web)
+        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 72), con lai an", chinh <= 72 && chinh >= 40);
         Kiem.dung("phan loai: co khoa co dinh + luon bat", coDinh > 100 && luonBat >= 15);
         Kiem.dung("luon_bat: moi khoa la co, gia tri 1", luonBatDung);
 

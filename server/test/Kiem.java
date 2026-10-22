@@ -232,6 +232,7 @@ public final class Kiem {
         KiemTraoDoiPokemon.chay(); // ca the IV / tinh cach, chuyen doi, trao doi Pokemon nguyen tu (bat-trade)
         KiemNgamTay.chay(); // 0.9.8 ngam tay PvP: khong tu dong / khong tu nham, ban theo huong (hinh hoc, tuong, bu tre, hoi chieu / PP, client cu)
         KiemChoPokemon.chay(); // cho Pokemon: khung gia, thue, ky quy, mua nguyen tu (bat-trade)
+        KiemDatTenPet.chay(); // 0.9.6 the dat ten Pokemon: nhan pet, ten, mot dong chi so co tran, khong cong don, nhat ky
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

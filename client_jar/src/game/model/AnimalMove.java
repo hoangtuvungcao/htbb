@@ -257,6 +257,13 @@ public class AnimalMove extends Char {
         return dexTheoIdImgPetCu(this.imgID);
     }
 
+    /** 0.9.6: nhãn "tên pet · tên chủ" trên đầu pet (game.pokemon.NhanPet, lớp giao diện NhanTheGioi). */
+    @Override
+    public void paintName(Graphics g) {
+        game.pokemon.NhanPet.ve(this);
+        super.paintName(g);
+    }
+
     @Override
     public void paint(Graphics g) {
         if (vePokePet(g, this.myOwner)) {

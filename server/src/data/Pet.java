@@ -97,6 +97,14 @@ public class Pet extends Actor {
     public static int[] limitLevel;
     public short lastlevel = 0;
     public boolean ispetthoihan = false;
+    /**
+     * The dat ten Pokemon (real.DatTenPetGame, bang tob_pet_dat_ten - KHONG luu vao tob_pet.name / info): ten rieng
+     * (null = chua dat) + MOT dong chi so (ma, phan nghin) + so lan dat. Pet da dat ten khong giao dich (canTrade).
+     */
+    public String tenDat;
+    public String dongMa;
+    public int dongPhanNghin;
+    public int datTenSoLan;
 
     static {
         ID_SKILL_PET = new short[][]{{ID_SKILL_CHUA_TRI, ID_SKILL_DOAT_MENH, ID_SKILL_TIEN_KHI, ID_SKILL_CUONG_TRANG, ID_SKILL_KIEN_CO, ID_SKILL_HO_THE}, {ID_SKILL_PHA_TRIEN, ID_SKILL_THIEN_NHAN, ID_SKILL_KIM_CANG, ID_SKILL_CAN_KHON, ID_SKILL_LIEN_KICH, ID_SKILL_TANG_KICH}, {ID_SKILL_CUONG_THAN, ID_SKILL_THUAN_ANH, ID_SKILL_PHI_HUYET}};
@@ -915,6 +923,11 @@ public class Pet extends Actor {
     }
 
     public String getInfoSendUser() {
+        // The dat ten: ten rieng + loai + dong chi so o dau the thong tin pet ("" neu chua dat).
+        return real.DatTenPetGame.dongThongTin(this) + this.getInfoSendUserGoc();
+    }
+
+    private String getInfoSendUserGoc() {
         if (this.itemPet != null) {
             String info = "";
             if (!this.isPetBachThu()) {
@@ -1753,6 +1766,10 @@ public class Pet extends Actor {
     public boolean khongTheGiaoDichDuDaLaLongDen = false;
 
     public boolean canTrade() {
+        // The dat ten: pet da gan ten + dong chi so bi KHOA (khoa khi mac, chong nuoi pet co dong roi ban / clone).
+        if (real.DatTenPetGame.daDatTen(this)) {
+            return false;
+        }
         if (this.khongTheGiaoDichDuDaLaLongDen) {
             return false;
         }

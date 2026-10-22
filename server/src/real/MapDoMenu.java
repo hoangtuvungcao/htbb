@@ -132,6 +132,10 @@ class MapDoMenu {
             if (HoiSinhGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
             }
+            // The dat ten Pokemon: menu chon pet (NPC ao -561)
+            if (DatTenPetGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             // NPC tinh co menu dich vu (Y ta Chansey 0, Meowth ngan hang 22/31) - real.NpcDichVu.
             if (NpcDichVu.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;

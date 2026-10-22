@@ -75,16 +75,17 @@ public final class KiemIconPokemon {
                 final int id = Integer.parseInt(r.get(0));
                 if (id >= 1001 && id <= 1199) {
                     noiDung++;
-                } else if (id >= 1201 && id <= 1260 || id == com.htbb.pokemon.PhaKhoaLogic.ID_DA_PHA_KHOA) {
-                    // + Da pha khoa (sql/sua_096_1_logic.sql khoi [khoa-khi-mac]) - vat pham moi, khong thuoc bang goc.
+                } else if (id >= 1201 && id <= 1261 || id == com.htbb.pokemon.PhaKhoaLogic.ID_DA_PHA_KHOA) {
+                    // + Da pha khoa (khoi [khoa-khi-mac] cua sql/nang_cap.sql) va The dat ten Pokemon 1261 - vat pham moi
                     // Dai 1201..1260 = vat pham dung lau dai (tools/pokemon/sinh_vat_pham_lau_dai.py ->
-                    // sql/pokemon_vat_pham_lau_dai.sql), khong tinh vao bang goc.
+                    // sql/pokemon_vat_pham_lau_dai.sql) + 1261 the dat ten Pokemon (sql/them_the_dat_ten_pet.sql),
+                    // khong tinh vao bang goc.
                     continue;
                 } else {
                     goc++;
                 }
             }
-            Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1260)", Integer.valueOf(924), Integer.valueOf(goc));
+            Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1261)", Integer.valueOf(924), Integer.valueOf(goc));
             Kiem.dung("dai noi dung 1001..1199 co trong CSDL (" + noiDung + " dong)", noiDung >= 60);
             final List<String> loiItem = new ArrayList<String>();
             for (final List<String> r : item) {

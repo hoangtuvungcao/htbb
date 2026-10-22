@@ -6202,6 +6202,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         ne += getTkNeTranh() * 10;
         // Danh hieu DANG DEO (mot danh hieu, phan nghin, tran danh_hieu.tran_phan_nghin); ChiSoTrangBiGame.neTranh kep tran o noi goi.
         ne += DanhHieuGame.phanNghin(this, com.htbb.pokemon.DanhHieuLogic.NE_TRANH);
+        // The dat ten (pet dang di theo, phan nghin); ChiSoTrangBiGame.neTranh kep tran 30% / PvP 20% o noi goi.
+        ne += DatTenPetGame.phanNghin(this, petUsing, com.htbb.pokemon.DatTenPet.NE_TRANH);
         if (ne > 900) {
             ne = 900; // khong cho ne tuyet doi
         }

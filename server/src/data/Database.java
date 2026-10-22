@@ -3834,6 +3834,8 @@ public class Database {
             for (Pet pet : pdelete) {
                 this.deletePet(pet.idDB);
             }
+            // The dat ten Pokemon: ten rieng + dong chi so cua tung pet (bang tob_pet_dat_ten, cung ket noi).
+            real.DatTenPetGame.napChoChar(p, conn);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -237,6 +237,8 @@ public final class TienHoaPokemon {
         final Message m = new Message(GoiPokemon.POKE_PET);
         try {
             GoiPokemon.ghiPet(m.dos, ch.id, dex, dex > 0 && PetPokemon.shiny(id));
+            // 0.9.6 the dat ten: them o CUOI (u8 phien ban, UTF ten hien, u8 co ten rieng) - client cu doc 5 byte roi bo qua
+            DatTenPetGame.ghiMoRong(m.dos, ch);
         } catch (final Exception e) {
             return null;
         }

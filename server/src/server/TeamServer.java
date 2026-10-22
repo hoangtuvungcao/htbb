@@ -967,6 +967,7 @@ public class TeamServer {
             real.XepHangPvpGame.taoBang();
             real.SuKienVatPham.taoBang();
             real.DiemMocNhiemVu.taoBang();
+            real.DatTenPetGame.taoBang();
             real.ExpLauDai.apDungBang();
             real.VatPhamDungLauDai.nap();
         }

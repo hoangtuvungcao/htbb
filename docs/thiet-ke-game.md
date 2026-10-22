@@ -674,6 +674,42 @@ hình, **không đổi chỉ số**.
   - Nguồn: đổi điểm ở NPC đổi thưởng (5 skin đầu), giftcode / quà `DB:<id>:1:<phút>` (0 = vĩnh viễn). Tên kèm mô tả
     sinh từ chính bảng số (`tools/luu_tru_sinh_du_lieu/java/SinhSqlTenSkinThu.java`), không sửa tay SQL.
 
+### 4.8 Nhãn pet và Thẻ đặt tên Pokémon (0.9.6)
+
+Chủ game 19/10/2026: *"trên đầu pet không có tên, ví dụ Pokémon - tên người chơi; sau đó bán thẻ đặt tên để nhận chỉ số
+ngẫu nhiên siêu thấp vài % có kiểm soát để không lạm phát"*. Mã: `com.htbb.pokemon.DatTenPet` (thuần, test
+`KiemDatTenPet`), `real.DatTenPetGame` (nối game), client `game.pokemon.NhanPet` + `NhanTheGioi` (loại `PET`).
+
+**Nhãn.** Mọi pet đang đi theo (của mình và người khác) có nhãn `tên pet · tên chủ`, vd "Pikachu · vantron"; pet có tên
+riêng: "Sấm Sét · vantron" (loài ghi ở thẻ thông tin pet). Chữ nhỏ và dịu hơn tên người chơi, xếp chỗ sau tên người chơi
+trong cùng bộ chống chồng nhãn 0.9.5: chồng nhãn đã đặt thì nhích lên một hàng, vẫn chồng thì bỏ (không bao giờ đè tên
+chủ), không đè hình nhân vật chính. Tên pet đi ở **đuôi gói -94** (chỉ thêm ở cuối: client cũ / Unity đọc 5 byte rồi bỏ
+qua), nên mọi chỗ đã gửi chuỗi -90 → -93 → -94 tự có nhãn. Thú cưỡi luôn vẽ dưới người cưỡi, đi theo hàng tên người cưỡi.
+Máy J2ME (không chữ thật) không vẽ nhãn pet.
+
+**Thẻ.** Vật phẩm 1261 "Thẻ đặt tên Pokémon" (icon 14502). Bấm Sử dụng → chọn pet (vĩnh viễn) → nhập tên 2–12 ký tự
+(chữ Latin có dấu tiếng Việt, số, dấu cách; lọc từ tục ở `data_tu_cam_ten`: cả từ có dấu + chuỗi bỏ dấu / bỏ cách / số
+giống chữ; không bắt trùng) → máy chủ **trừ thẻ trước**, quay **một** dòng, lưu `tob_pet_dat_ten`, ghi
+`tob_log_dat_ten`, tính lại chỉ số, gửi -94 cho mình và người gần, trả kết quả bằng gói -106 (thẻ trắng kiểu Pokémon GO;
+client cũ nhận hộp 37). Lưu lỗi thì trả lại thẻ.
+
+| Luật | Giá trị (cấu hình) |
+|---|---|
+| Dòng | chỉ số theo trọng số bảng `data_dong_the_ten` (HP 30, Tấn công 25, Phòng thủ 25, Chí mạng 10, Né 10; chí mạng / né × 50%) × mức `dat_ten_pet.muc_phan_nghin` 10/15/20/30‰ với trọng số `dat_ten_pet.trong_so_muc` 55/30/12/3 (không tăng: mức thấp luôn nhiều hơn). Trung bình ≈ +1,4% |
+| Trần một dòng | `dat_ten_pet.tran_dong_phan_nghin` = 30‰ (cố định) = ngân sách ô thẻ tên pet |
+| Trần trang trí | `trang_tri.tran_tong_phan_nghin` = 50‰ (cố định): mọi ô trang trí (4.5 của thiết kế cân bằng) cộng thẻ tên ≤ 5%; ô khác chiếm trước, thẻ tên chỉ lấp phần còn trống |
+| Trần chung | HP / Tấn công / Phòng thủ cộng **trước** `kepPhanTram` (`chi_so.tran_phan_tram_cong` 50%); chí mạng vào `chiMangTho` (trần 40% giảm dần), né vào `haveNeTranh` (trần 30% / PvP 20%) |
+| Không cộng dồn | một dòng mỗi pet, đặt lại = quay lại (thay dòng cũ, là hố hút); chỉ pet **đang đi theo** được tính |
+| Khoá | thẻ vào túi luôn khoá; pet đã đặt tên không giao dịch được (`Pet.canTrade`) |
+| Giá | Cửa hàng lượng (Tiện ích) `dat_ten_pet.gia_luong` = 100 lượng, tối đa `dat_ten_pet.mua_tuan_toi_da` = 3 / tuần |
+| Bản kiếm được (cùng vật phẩm, cùng ngân sách) | Sổ tay → Cửa hàng & đổi: 8 Tem nghiên cứu hoặc 40 lượng khoá (Kecleon), mỗi dòng 1 lần / tuần |
+
+**Kinh tế** (mô phỏng 20.000 người, 3 nhóm 85 / 12 / 3%, 156 tuần, người chơi dừng quay khi đạt ý muốn): không nạp đạt
+trung bình +2,2% một chỉ số sau 26 tuần chỉ bằng bản kiếm được; cá voi săn đúng +3% chỉ số ưa thích đạt +2,6% ở tuần 52,
++3,0% ở tuần 156 — chênh với người không nạp ≤ 0,8 điểm % của **một** chỉ số (ngân sách tổng 2,4 × không đổi). Không tạo xu
+(giá bán NPC 0, khoá); lượng bị đốt ≈ 2,5 lượng / tuần / người nạp nhẹ, ≈ 60 lượng / tuần / cá voi. Khi các ô trang trí
+4.5 lên máy chủ và đủ 5%, thẻ tên tự về 0% chỉ số (chỉ còn tên + nhãn).
+
 ---
 
 ## 5. Gym, Chiếm Gym, PvP, Hầm ngục, boss
@@ -1658,7 +1694,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -91 | `POKE_QUAI` | S→C | `u8 n, n × (u8 idTemplate, i16 dex, u8 shiny, u8 tiLe%)` — ngay sau lệnh 26 |
 | -92 | `POKE_TIEN_HOA` | S→C | `i16 charId, i16 dexCu, i16 dexMoi` — trước -90 khi tiến hoá |
 | -93 | `POKE_CUOI` | S→C | `i16 charId, i16 dexThu (0 = không cưỡi), u8 shiny` — sau mỗi -90 |
-| -94 | `POKE_PET` | S→C | `i16 charId, i16 dexPet (0 = không có), u8 shiny` — sau mỗi -93 |
+| -94 | `POKE_PET` | S→C | `i16 charId, i16 dexPet (0 = không có), u8 shiny` — sau mỗi -93; 0.9.6 thêm cuối `u8 phiên bản = 1, UTF tên hiện, u8 có tên riêng` (mục 4.8) |
 | -95..-99 | `POKE_DON`, `POKE_CANH_BAO`, `POKE_TRANG_THAI`, `POKE_BOSS`, `POKE_DONG_GOP` | S→C | chiến đấu, **đã chốt** (mục 5.8) |
 | -100 | Tự động đánh | hai chiều | xin trạng thái / bật / tắt / nhịp / xin kế hoạch (4); server trả byte 0 trạng thái (giờ còn lại, bán kính, cờ, thông báo) hoặc byte 1 kế hoạch (hành động, id, số, x, y, lý do) (mục 8.2) |
 | -101 | Hồi sinh | hai chiều | mở / đóng hộp chọn; client xin / chọn mã 0..6 (mục 8.1) |
@@ -1740,4 +1776,5 @@ Hiếm / Sử thi / Huyền thoại. Client vẽ qua token `ChuDe.mauHiem / nenH
     sự kiện đang chạy).
   - `cho_ban`: người bán online tính ngay; offline thì ghi `tob_nhiem_vu_cho`, áp khi vào bản đồ lần đầu (mỗi dòng một
     lần, `UPDATE … da_ap = 0`).
+| -106 | Kết quả thẻ đặt tên | S→C | `u8 kiểu, UTF tiêu đề, UTF nội dung` — chỉ client bản ≥ `dat_ten_pet.ban_client_popup` (mục 4.8) |
 

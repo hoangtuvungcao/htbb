@@ -164,8 +164,9 @@ public final class ChiSoTrangBiGame {
     /** Phan nghin chi mang THO (chua giam dan): diem /300 (+ bang hoi, do giu, buff) + bao kich. */
     static long chiMangTho(final Char p) {
         final int diem = p.critical + p.getEffSkillClan(1) * p.critical / 100 + VatPhamDungLauDai.congChiMang(p);
-        // + dong Chi mang cua danh hieu dang deo (phan nghin), roi giam dan / tran nhu moi nguon
-        return GioiHanChiSo.chiMangTho(diem, p.baokich + DanhHieuGame.phanNghin(p, com.htbb.pokemon.DanhHieuLogic.CHI_MANG))
+        // + dong Chi mang cua danh hieu dang deo + the dat ten (pet dang di theo), phan nghin, roi giam dan / tran nhu moi nguon
+        return GioiHanChiSo.chiMangTho(diem, p.baokich + DanhHieuGame.phanNghin(p, com.htbb.pokemon.DanhHieuLogic.CHI_MANG)
+                + DatTenPetGame.phanNghin(p, com.htbb.pokemon.DatTenPet.CHI_MANG))
                 + BoNgocGame.boPhanNghin(p, com.htbb.pokemon.BoTrangBi.CHI_MANG); // [bo-ngoc] chi mang bo 11 mon (<= 3%)
     }
 

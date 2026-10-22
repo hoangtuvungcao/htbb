@@ -747,7 +747,7 @@ public final class NapTienGame implements Runnable {
         for (final NapTienLogic.Mon m : dangBan()) {
             if (m.nhom.equals(nhom.get(chon))) {
                 mon.add(m);
-                ten.add(m.ten + " - " + m.giaLuong + " lượng" + (m.giaoDichDuoc ? " (giao dịch được)" : ""));
+                ten.add(m.ten + " - " + giaThat(m) + " lượng" + (m.giaoDichDuoc ? " (giao dịch được)" : ""));
             }
         }
         NGU_CANH.put(p.charDBID, mon);
@@ -774,7 +774,7 @@ public final class NapTienGame implements Runnable {
         final List<NapTienLogic.Mon> mot = new ArrayList<NapTienLogic.Mon>();
         mot.add(m);
         NGU_CANH.put(p.charDBID, mot);
-        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Mua " + m.ten + " - " + m.giaLuong + " lượng", "Thôi"},
+        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Mua " + m.ten + " - " + giaThat(m) + " lượng", "Thôi"},
                 NPC_XAC_NHAN, 0));
     }
 
@@ -796,18 +796,25 @@ public final class NapTienGame implements Runnable {
             return "Tài khoản đang có khoản thu hồi nạp chưa trả, tạm khoá mua bằng lượng.";
         }
         final boolean tangToc = NapTienLogic.TRAO_TANG_TOC.equals(m.trao);
+        // The dat ten Pokemon: gia + so lan / tuan tu cau hinh (dat_ten_pet.*), dem theo tuan nhu tang toc.
+        final boolean datTen = NapTienLogic.TRAO_DAT_TEN_PET.equals(m.trao);
+        final int gia = giaThat(m);
+        final int gioiHan = datTen ? real.DatTenPetGame.muaTuanToiDa() : m.gioiHan;
+        if (datTen && (!real.DatTenPetGame.bat() || gioiHan <= 0)) {
+            return "Thẻ đặt tên đang tạm ngừng bán. Vui lòng quay lại sau.";
+        }
         if (tangToc && !com.htbb.cauhinh.CongTac.banTangToc()) {
             // Cong tac nap.tang_toc.bat (trang "Cau hinh he thong"): tam ngung ban ban cao cap.
             return "Vật phẩm tăng tốc đang tạm ngừng bán. Vui lòng quay lại sau.";
         }
         // Tang toc: gioi_han tinh theo TUAN (dem rieng moi tuan: ma@tuan), tui can 1 o trong.
-        final String maDem = tangToc ? m.ma + "@" + NhiemVuLauDai.tuan(System.currentTimeMillis()) : m.ma;
+        final String maDem = tangToc || datTen ? m.ma + "@" + NhiemVuLauDai.tuan(System.currentTimeMillis()) : m.ma;
         final long[] dem = NapTienDb.demMua(p.charDBID, maDem);
-        if (m.gioiHan > 0 && dem[0] >= m.gioiHan) {
-            return tangToc ? "Tuần này đã mua tối đa " + m.gioiHan + " lần món này (mở lại thứ Hai)."
-                    : "Bạn đã mua tối đa " + m.gioiHan + " lần món này.";
+        if (gioiHan > 0 && dem[0] >= gioiHan) {
+            return tangToc || datTen ? "Tuần này đã mua tối đa " + gioiHan + " lần món này (mở lại thứ Hai)."
+                    : "Bạn đã mua tối đa " + gioiHan + " lần món này.";
         }
-        if (tangToc && (!LauDai.bat() || p.countSlotInventory() < 1)) {
+        if ((tangToc || datTen) && (!LauDai.bat() || p.countSlotInventory() < 1)) {
             return "Hành trang cần 1 ô trống.";
         }
         final boolean veMoRong = NapTienLogic.laVeMoRong(m);
@@ -824,11 +831,11 @@ public final class NapTienGame implements Runnable {
                 >= TU_DO_O + (coThe(p) ? 10 * NapTienLogic.THE_THANG_TRANG_TU_DO_THEM : 0)) {
             return "Tủ đồ trang trí đã đầy.";
         }
-        if (!p.truLuongNeuDu(m.giaLuong)) {
-            return "Không đủ lượng (cần " + m.giaLuong + " lượng).";
+        if (!p.truLuongNeuDu(gia)) {
+            return "Không đủ lượng (cần " + gia + " lượng).";
         }
         if (!NapTienDb.ghiMua(p.charDBID, maDem, dem[0], System.currentTimeMillis())) {
-            p.addLuong(m.giaLuong); // bam hai lan cung luc: hoan lan sau
+            p.addLuong(gia); // bam hai lan cung luc: hoan lan sau
             return "Thao tác quá nhanh, vui lòng thử lại.";
         }
         try {
@@ -843,6 +850,14 @@ public final class NapTienGame implements Runnable {
                     p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                 } catch (final Exception ignored) {
                 }
+            } else if (datTen) {
+                // The dat ten vao tui (KHOA, khong giao dich): id theo hieu ung "dat_ten" cua data_vat_pham_lau_dai.
+                final int id = real.VatPhamDungLauDai.idTheoHieuUng(real.DatTenPetGame.HIEU_UNG);
+                if (id <= 0 || real.Map.itemTemplates.get(5).get(Integer.valueOf(id)) == null) {
+                    throw new IllegalStateException("chua co vat pham the dat ten");
+                }
+                Char.createItemSoLuong(id, 1, p);
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             } else if (tangToc) {
                 // Ban CAO CAP vao tui (khoa, khong giao dich). Dung chung tran diem ngay/tuan voi ban khoa.
                 final int loai = TangToc.loaiCuaMa(m.ma);
@@ -856,22 +871,28 @@ public final class NapTienGame implements Runnable {
                 NapTienDb.themSoHuu(p.charDBID, m.ma, "mua", m.giaoDichDuoc, han);
             }
         } catch (final Exception e) {
-            p.addLuong(m.giaLuong);
+            p.addLuong(gia);
             NapTienDb.hoanMua(p.charDBID, maDem);
-            return "Mua thất bại, đã hoàn " + m.giaLuong + " lượng.";
+            return "Mua thất bại, đã hoàn " + gia + " lượng.";
         }
-        NapTienDb.ghiSoCai(p.userID, p.charDBID, "tieu", -m.giaLuong, 0, "",
+        NapTienDb.ghiSoCai(p.userID, p.charDBID, "tieu", -gia, 0, "",
                 "tieu:" + p.charDBID + ":" + m.ma + ":" + System.nanoTime(), m.ten);
         try {
             Database.instance.saveCharAuto(p);
         } catch (final Exception ignored) {
         }
         capNhatTui(p);
-        return "Đã mua " + m.ten + " (-" + m.giaLuong + " lượng)."
+        return "Đã mua " + m.ten + " (-" + gia + " lượng)."
                 + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "")
                 + (veMoRong ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + MoRongHanhTrang.O_MOI_VE + " ô." : "")
                 + (tangToc ? " Vật phẩm đã vào hành trang; dùng chung giới hạn " + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, "
-                        + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "");
+                        + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
+                + (datTen ? " Thẻ đã vào hành trang: bấm Sử dụng để đặt tên cho Pokémon đi theo." : "");
+    }
+
+    /** Gia luong THAT cua mon: the dat ten theo cau hinh dat_ten_pet.gia_luong, mon khac theo dong nap_cua_hang. */
+    static int giaThat(final NapTienLogic.Mon m) {
+        return NapTienLogic.TRAO_DAT_TEN_PET.equals(m.trao) ? real.DatTenPetGame.giaLuong() : m.giaLuong;
     }
 
     // ================================================================== tu do
