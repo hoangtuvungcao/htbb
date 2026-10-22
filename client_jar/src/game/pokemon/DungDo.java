@@ -509,6 +509,11 @@ public final class DungDo {
             if (d >= 0 && d + 4 > y) {
                 y = d + 4;
             }
+            // 0.9.8: thẻ trạng thái giữ chỗ (phó bản / trận cúp - PhongRieng, giữa trên): biểu ngữ + thẻ xếp DƯỚI nó
+            int dp = VungCham.duoiVung("phong_rieng", Canvas.hw - rongMax / 2, Canvas.hw + rongMax / 2, Canvas.h / 2);
+            if (dp >= 0 && dp + 4 > y) {
+                y = dp + 4;
+            }
         }
         if (theGioi && bieu != null) {
             y = veBieuNgu(g, bieu, y, now) + 6;

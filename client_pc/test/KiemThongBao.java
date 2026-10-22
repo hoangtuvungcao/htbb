@@ -254,6 +254,9 @@ public class KiemThongBao {
         {"chong", new Object[][]{{"Trainer9 đã hạ gục Boss Người tuyết ở Núi Tuyết!", SK, 0, 0},
             {"Nhận được 2 Ether lớn.", KQ, 0, 0}, {"Không dùng được: HP đã đầy.", LOI, 0, 0},
             {"Kỹ năng Câu cá lên cấp 5!", HIEM, 3, 7}, {"Đào được Đá lửa ×2\nThể lực còn 150", KQ, 3, 28}}},
+        // 0.9.8: thẻ trạng thái phó bản / cúp (PhongRieng) giữ chỗ giữa trên - biểu ngữ + thẻ xếp dưới, không chồng
+        {"chong_phong_rieng", new Object[][]{{"Bùng phát! Đàn Wild Igglybuff Shiny tràn ra Núi Mặt Trăng trong 1 giờ tới!", SK, 0, 0},
+            {"Tầng 1/5: hạ 6 Pokémon", TIN, 3, 6}, {"Phó bản Hầm ngục\nHôm nay: Nhà máy Điện", TIN, 3, 6}}},
     };
 
     static boolean giao(int[] a, int[] b) {
@@ -278,6 +281,12 @@ public class KiemThongBao {
                     game.render.Canvas.endDlg();
                     game.pokemon.DungDo.xoaHet();
                     htbb.pc.ChuHD.ghi.clear();
+                    if (ten.endsWith("_phong_rieng")) {
+                        game.pokemon.PhongRieng.datThu(game.pokemon.PhongRieng.CUP, "Cúp Nhỉ · Vòng 1", "tieuminh vs namkhoa",
+                                "Hết giờ: bên còn nhiều % HP hơn thắng", 176, -1);
+                    } else {
+                        game.pokemon.PhongRieng.datThu(game.pokemon.PhongRieng.AN, "", "", "", -1, -1);
+                    }
                     for (Object[] d : ds) {
                         game.pokemon.DungDo.them((String) d[0], (Integer) d[1], (Integer) d[2], (Integer) d[3], false);
                         game.pokemon.DungDo.troiGio(400);   // lần lượt vào (giãn cách 350 ms)
@@ -285,9 +294,10 @@ public class KiemThongBao {
                 });
                 ChupTrongGame.ve(W, H);
                 Thread.sleep(250);   // qua hoạt cảnh trượt vào
+                ChupTrongGame.ve(W, H);   // vùng chạm khung trước (thẻ trạng thái, HUD) đã chốt
                 BufferedImage anh = ChupTrongGame.ve(W, H);
                 ImageIO.write(anh, "png", new File(ra, "thong_bao_" + ten + "_" + co + ".png"));
-                java.util.List<int[]> the = new java.util.ArrayList<>(), hud = new java.util.ArrayList<>();
+                java.util.List<int[]> the = new java.util.ArrayList<>(), hud = new java.util.ArrayList<>(), trangThai = new java.util.ArrayList<>();
                 int n = game.pokemon.VungCham.dem();
                 int xem = 0;
                 for (int i = 0; i < n; i++) {
@@ -297,6 +307,10 @@ public class KiemThongBao {
                     if (t.startsWith("thong-bao-xem")) xem++;
                     else if (t.startsWith("thong-bao")) the.add(game.pokemon.VungCham.vungVe(i));
                     else if (t.startsWith("hud-")) hud.add(game.pokemon.VungCham.vungVe(i));
+                    else if (t.equals("phong_rieng")) trangThai.add(game.pokemon.VungCham.vungVe(i));
+                }
+                if (ten.endsWith("_phong_rieng")) {
+                    kiem(trangThai.size() == 1, ten + " " + ChupTrongGame.TEN_CO[0] + ": thẻ trạng thái cúp đang hiện");
                 }
                 String nhan = ten + " " + co;
                 int soThe = 0, soBieu = 0;
@@ -321,6 +335,9 @@ public class KiemThongBao {
                     }
                     for (int[] h : hud) {
                         kiem(!giao(v, h), nhan + " thẻ " + i + " không chồng nút HUD " + java.util.Arrays.toString(h));
+                    }
+                    for (int[] h : trangThai) {
+                        kiem(!giao(v, h), nhan + " thẻ " + i + " không chồng thẻ trạng thái phó bản / cúp " + java.util.Arrays.toString(v) + " / " + java.util.Arrays.toString(h));
                     }
                 }
                 // chữ chính đã vẽ (ít nhất phần đầu dòng 1)
