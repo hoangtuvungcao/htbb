@@ -114,7 +114,7 @@ public class ShopNew extends Screen {
     private static byte[][] posWearChar = {new byte[]{10, 11}, new byte[]{56, 11}, new byte[]{10, 32}, new byte[]{56, 32}, new byte[]{10, 52}, new byte[]{56, 52}, new byte[]{10, 73}, new byte[]{56, 94}, new byte[]{10, 94}, new byte[]{56, 94}};
     public int numW = 7;
     public int[][] arrFrame = {new int[]{0, 1, 2}, new int[]{0, 1}};
-    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng đội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
+    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Chiêu", "Thông tin", "Nhóm", "Nhiệm vụ", "Học chiêu", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Chiêu đội", "Chiêu cá nhân", "Trang bị thú", "Hợp đồ thú"};
     public String name = "";
     public String firName = "";
     public Vector list = new Vector();
@@ -1425,7 +1425,7 @@ public class ShopNew extends Screen {
                         int mpLost = SkillManager.getSkillMP(ShopNew.this.selected, Char.skillLevelLearnt[ShopNew.this.selected - 4], Canvas.gameScr.mainChar.clazz);
                         if (mpLost > Canvas.gameScr.mainChar.mp) {
                             if (!ShopNew.this.first) {
-                                Canvas.gameScr.addChat(new ChatInfo("", "Không đủ MP", 0));
+                                Canvas.gameScr.addChat(new ChatInfo("", "Không đủ PP", 0));
                                 ShopNew.this.first = true;
                                 return;
                             }
@@ -1476,9 +1476,9 @@ public class ShopNew extends Screen {
             @Override
             public void perform() {
                 if (Canvas.gameScr.mainChar.skillPointLeft == 0) {
-                    Canvas.startOKDlg("Đã hết điểm kỹ năng để cộng. Xin đánh lên level để có điểm kỹ năng.");
+                    Canvas.startOKDlg("Đã hết điểm chiêu để cộng. Hãy lên cấp để có thêm điểm chiêu.");
                 } else if (Canvas.gameScr.mainChar.level < SkillManager.getLvAddSkill(Canvas.gameScr.mainChar.clazz, ShopNew.this.selected, Char.skillLevelLearnt[ShopNew.this.selected])) {
-                    Canvas.startOKDlg("Chưa đủ cấp độ để cộng. Xin đánh lên level yêu cầu để có thể cộng.");
+                    Canvas.startOKDlg("Chưa đủ cấp để cộng. Hãy lên tới cấp yêu cầu.");
                 } else {
                     GameService.gI().addSkillPoint(ShopNew.this.selected);
                     Canvas.startWaitDlg("Xin chờ..", true);
@@ -1898,9 +1898,9 @@ public class ShopNew extends Screen {
         this.charInfo = new String[17];
         MainChar c = Canvas.gameScr.mainChar;
         this.charInfo[0] = new StringBuffer("Pokémon: ").append(c.name).toString();
-        this.charInfo[1] = new StringBuffer("Level: ").append((int) c.level).append("+").append(c.getPercent()).toString();
+        this.charInfo[1] = new StringBuffer("Cấp: ").append((int) c.level).append("+").append(c.getPercent()).toString();
         this.charInfo[2] = new StringBuffer("HP: ").append(c.hp).append("/").append(c.maxhp).toString();
-        this.charInfo[3] = new StringBuffer("MP: ").append(c.mp).append("/").append(c.maxmp).toString();
+        this.charInfo[3] = new StringBuffer("PP: ").append(c.mp).append("/").append(c.maxmp).toString();
         this.charInfo[4] = new StringBuffer("Tấn công: ").append(c.getAttack()).toString();
         this.charInfo[5] = new StringBuffer("Phòng thủ: ").append(c.defend).toString();
         this.charInfo[6] = new StringBuffer("Phòng thủ đặc biệt: ").append(c.defend_magic).toString();
@@ -2696,7 +2696,7 @@ public class ShopNew extends Screen {
                                     }
                                 }
                             } else {
-                                Canvas.startOKDlg("Đồ ép phải cùng màu và chênh lệch +-5 level.");
+                                Canvas.startOKDlg("Đồ ép phải cùng màu và chênh không quá 5 cấp.");
                             }
                             ShopNew.this.resetEpdothu(1);
                         }
@@ -3381,8 +3381,8 @@ public class ShopNew extends Screen {
             }
             for (int i = 0; i < size; i++) {
                 PartyInfo ch = (PartyInfo) Char.party.elementAt(i);
-                Font.arialFontW.drawString(g, new StringBuffer("NV:").append(ch.name).toString(), 8, i * 33, 0);
-                Font.arialFontW.drawString(g, new StringBuffer("LV: ").append(ch.lv).toString(), 8, ((i * 2) + 1) * 16, 0);
+                Font.arialFontW.drawString(g, new StringBuffer("Pokémon: ").append(ch.name).toString(), 8, i * 33, 0);
+                Font.arialFontW.drawString(g, new StringBuffer("Cấp: ").append(ch.lv).toString(), 8, ((i * 2) + 1) * 16, 0);
                 g.setColor(16777215);
                 g.fillRect(2, (((i * 2) + 1) * 16) + 15, 131, 1);
             }

@@ -204,6 +204,7 @@ public class CharManager {
 
     public void remove(int userID) {
         Char p = this.getByUserID(userID);
+        BatPokemonGame.khiThoat(p); // [trao-doi-pokemon] roi game giua chung: huy phien trao doi (khong doi gi)
 
         try {
             this.charID.remove(p.id);
@@ -261,6 +262,7 @@ public class CharManager {
         if (p == null) {
             return;
         }
+        BatPokemonGame.khiThoat(p); // [trao-doi-pokemon] roi game giua chung: huy phien trao doi (khong doi gi)
         synchronized (this) {
             try {
                 if (this.charID.get(p.id) == p) {

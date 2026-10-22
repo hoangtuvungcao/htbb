@@ -274,24 +274,24 @@ public class MainChar extends Char {
         String string9;
         String[] info = (String[]) null;
         if (Char.skillLevelLearnt[idSkill] == -1) {
-            info = new String[]{"Chưa học kỹ năng này", new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][1]).toString()};
+            info = new String[]{"Chưa học chiêu này", new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][1]).toString()};
         } else if (Char.skillLevelLearnt[idSkill] == 0) {
-            info = new String[]{"Chưa học kỹ năng này", getLvRequest(idSkill)};
+            info = new String[]{"Chưa học chiêu này", getLvRequest(idSkill)};
         } else if (!WindowInfoScr.gI().isBuffSkill()) {
             info = new String[5];
             info[0] = new StringBuffer("Thời gian đánh: ").append(SkillManager.getSkillCooldown((byte) idSkill, this.clazz, Char.skillLevelLearnt[idSkill])).append(" ms").toString();
             info[1] = new StringBuffer(String.valueOf(SkillManager.infoString[this.clazz][idSkill])).append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
             info[2] = new StringBuffer("Phạm vi: ").append(SkillManager.getSkillRange((byte) idSkill, this.clazz)).toString();
-            info[3] = new StringBuffer("MP mất: ").append(SkillManager.getSkillMP(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString();
+            info[3] = new StringBuffer("Tốn PP: ").append(SkillManager.getSkillMP(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString();
             if (Char.skillLevelLearnt[idSkill] < 9) {
-                string9 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                string9 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
             } else {
                 string9 = "";
             }
             info[4] = string9;
         } else {
             byte[][] temp = {new byte[]{1, 5}, new byte[]{1, 2}, new byte[]{3, 4, 5, 6}, new byte[]{0, 1}, new byte[]{0, 3}};
-            String mpMat = new StringBuffer("MP mất: ").append(SkillManager.getSkillMP(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString();
+            String mpMat = new StringBuffer("Tốn PP: ").append(SkillManager.getSkillMP(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).toString();
             switch (this.clazz) {
                 case 0:
                     if (idSkill == 4) {
@@ -300,7 +300,7 @@ public class MainChar extends Char {
                         info[1] = new StringBuffer("Tỷ lệ thành công: ").append((int) SkillManager.SKILL_DAM_PERCENT[this.clazz][idSkill][Char.skillLevelLearnt[idSkill]]).append("%").toString();
                         info[2] = mpMat;
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string8 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string8 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string8 = "";
                         }
@@ -313,7 +313,7 @@ public class MainChar extends Char {
                         info[3] = new StringBuffer("Tỷ lệ: ").append((int) SkillManager.SKILL_DAM_PERCENT[this.clazz][idSkill][Char.skillLevelLearnt[idSkill]]).append("%").toString();
                         info[4] = mpMat;
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string7 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string7 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string7 = "";
                         }
@@ -327,7 +327,7 @@ public class MainChar extends Char {
                         info[1] = "của bản thân";
                         info[2] = new StringBuffer("Tỷ lệ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string6 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string6 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string6 = "";
                         }
@@ -338,7 +338,7 @@ public class MainChar extends Char {
                         info[1] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
                         info[2] = mpMat;
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string5 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string5 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string5 = "";
                         }
@@ -352,18 +352,18 @@ public class MainChar extends Char {
                         info[1] = "của bản thân";
                         info[2] = new StringBuffer("Tỷ lệ tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string4 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string4 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string4 = "";
                         }
                         info[3] = string4;
                     } else if (idSkill == 4) {
                         info = new String[4];
-                        info[0] = new StringBuffer("MP + HP tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append(" %").toString();
+                        info[0] = new StringBuffer("HP + PP tăng: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append(" %").toString();
                         info[1] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
                         info[2] = mpMat;
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string3 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string3 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string3 = "";
                         }
@@ -374,21 +374,21 @@ public class MainChar extends Char {
                         info[1] = new StringBuffer("HP hồi phục: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
                         info[2] = mpMat;
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string2 = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string2 = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string2 = "";
                         }
                         info[3] = string2;
                     } else if (idSkill == 7) {
                         info = new String[7];
-                        info[0] = "Khiên MP";
+                        info[0] = "Khiên PP";
                         info[1] = "Chuyển 1 lượng hao tổn";
-                        info[2] = "HP sang MP";
+                        info[2] = "HP sang PP";
                         info[3] = new StringBuffer("Tỷ lệ chuyển: ").append(SkillManager.getSkillDamPercent(idSkill, Char.skillLevelLearnt[idSkill], this.clazz)).append("%").toString();
                         info[4] = new StringBuffer("Thời gian: ").append((int) SkillManager.TIME_LIFE_BUFF_SKILL[temp[this.clazz][idSkill - 4]][Char.skillLevelLearnt[idSkill]]).append("s").toString();
                         info[5] = mpMat;
                         if (Char.skillLevelLearnt[idSkill] < 9) {
-                            string = new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+                            string = new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
                         } else {
                             string = "";
                         }
@@ -415,7 +415,7 @@ public class MainChar extends Char {
     }
 
     public String getLvRequest(int idSkill) {
-        return new StringBuffer("Lv yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
+        return new StringBuffer("Cấp yêu cầu: ").append((int) SkillManager.LEVEL_ADD_SKILL[idSkill][Char.skillLevelLearnt[idSkill]]).toString();
     }
 
     public boolean setWay(int vX, int vY) {

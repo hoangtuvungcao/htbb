@@ -28,6 +28,14 @@ public final class HopPc {
         public int ngay;
         /** Ma bong da dung. */
         public String bong;
+        /** Chi so ca the dong goi (CaThePokemon, 6 x 5 bit). */
+        public int iv;
+        /** Tinh cach 0..24 (CaThePokemon). */
+        public int tinhCach;
+        /** charDBID nguoi thu phuc goc (0 = khong ro / con cu). Khac chu hop = nhan qua trao doi. */
+        public int chuGoc;
+        /** Lan trao doi cuoi (epoch giay, 0 = chua bao gio): khoa trao doi tiep / chuyen doi lay xu mot thoi gian. */
+        public long doiLuc;
 
         public Con(final int id, final int dex, final int cap, final boolean shiny, final int ngay, final String bong) {
             this.id = id;
@@ -36,6 +44,24 @@ public final class HopPc {
             this.shiny = shiny;
             this.ngay = ngay;
             this.bong = bong == null ? "" : bong.replaceAll("[^a-z0-9]", "");
+            this.iv = CaThePokemon.ivTatDinh(id, dex, ngay);
+            this.tinhCach = CaThePokemon.tinhCachTatDinh(id, dex, ngay);
+        }
+
+        /** Ban sao voi id moi (trao doi: giu loai, cap, sac mau, ngay, bong, ca the, chu goc). */
+        public Con saoVoiId(final int idMoi) {
+            final Con c = new Con(idMoi, this.dex, this.cap, this.shiny, this.ngay, this.bong);
+            c.iv = this.iv;
+            c.tinhCach = this.tinhCach;
+            c.chuGoc = this.chuGoc;
+            c.doiLuc = this.doiLuc;
+            return c;
+        }
+
+        /** Cung mot con (loai, cap, sac mau, ca the) - kiem "con da doi" giua luc chon va luc chot trao doi. */
+        public boolean giong(final Con o) {
+            return o != null && o.dex == this.dex && o.cap == this.cap && o.shiny == this.shiny && o.iv == this.iv
+                    && o.tinhCach == this.tinhCach;
         }
     }
 
@@ -53,6 +79,15 @@ public final class HopPc {
     public int nemNgay;
     /** Tong so lan bat duoc (thong ke). */
     public int tongBat;
+    /** Bo dem theo ngay (cung ngay voi batNgay): so Pokemon da NHAN qua trao doi, xu / luong khoa tu chuyen doi. */
+    public int doiNgay;
+    public long chuyenXuNgay;
+    public int chuyenLuongNgay;
+    /** Lan trao doi cuoi (epoch giay) - nhip giua hai lan trao doi. */
+    public long doiCuoi;
+    /** Tong so lan trao doi / chuyen doi (thong ke). */
+    public int tongDoi;
+    public int tongChuyen;
     /** Da doi tu lan luu cuoi. */
     public boolean ban;
 
@@ -101,6 +136,72 @@ public final class HopPc {
         this.con.add(c);
         this.ban = true;
         return c;
+    }
+
+    /** Them con moi co ca the + chu goc (thu phuc). */
+    public synchronized Con them(final int dex, final int cap, final boolean shiny, final int ngayBat, final String maBong,
+            final int iv, final int tinhCach, final int chuGoc) {
+        final Con c = them(dex, cap, shiny, ngayBat, maBong);
+        if (c != null) {
+            c.iv = iv & 0x3FFFFFFF;
+            c.tinhCach = Math.max(0, Math.min(CaThePokemon.SO_TINH_CACH - 1, tinhCach));
+            c.chuGoc = chuGoc;
+        }
+        return c;
+    }
+
+    /** Nhan mot con tu hop khac (trao doi): id moi trong hop nay, giu moi thu khac. null neu day. */
+    public synchronized Con nhan(final Con mau) {
+        if (mau == null || day()) {
+            return null;
+        }
+        final Con c = mau.saoVoiId(this.idKe++);
+        this.con.add(c);
+        this.ban = true;
+        return c;
+    }
+
+    /** So con cua loai {@code dex} (khongShiny: chi dem con thuong). */
+    public synchronized int soCungLoai(final int dex, final boolean khongShiny) {
+        int n = 0;
+        for (final Con c : this.con) {
+            if (c.dex == dex && (!khongShiny || !c.shiny)) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /** Ban sao doc lap (trao doi chuan bi tren ban sao, chi ap vao hop that sau khi CSDL ghi xong). */
+    public synchronized HopPc banSao() {
+        return giaiMa(maHoa());
+    }
+
+    /** Thay toan bo noi dung bang {@code o} (sau khi CSDL da ghi o). */
+    public synchronized void thayBang(final HopPc o) {
+        synchronized (o) {
+            this.con.clear();
+            for (final Con c : o.con) {
+                this.con.add(c.saoVoiId(c.id));
+            }
+            this.keo.clear();
+            this.keo.putAll(o.keo);
+            this.bong.clear();
+            this.bong.putAll(o.bong);
+            this.idKe = o.idKe;
+            this.lanMoRong = o.lanMoRong;
+            this.dangTheo = o.dangTheo;
+            this.ngay = o.ngay;
+            this.batNgay = o.batNgay;
+            this.nemNgay = o.nemNgay;
+            this.tongBat = o.tongBat;
+            this.doiNgay = o.doiNgay;
+            this.chuyenXuNgay = o.chuyenXuNgay;
+            this.chuyenLuongNgay = o.chuyenLuongNgay;
+            this.doiCuoi = o.doiCuoi;
+            this.tongDoi = o.tongDoi;
+            this.tongChuyen = o.tongChuyen;
+        }
     }
 
     public synchronized Con lay(final int id) {
@@ -215,6 +316,9 @@ public final class HopPc {
             this.ngay = homNay;
             this.batNgay = 0;
             this.nemNgay = 0;
+            this.doiNgay = 0;
+            this.chuyenXuNgay = 0;
+            this.chuyenLuongNgay = 0;
             this.ban = true;
         }
     }
@@ -225,7 +329,9 @@ public final class HopPc {
         final StringBuilder sb = new StringBuilder();
         sb.append("v=1;ik=").append(this.idKe).append(";mr=").append(this.lanMoRong).append(";dt=").append(this.dangTheo)
                 .append(";ng=").append(this.ngay).append(";bn=").append(this.batNgay).append(";nn=").append(this.nemNgay)
-                .append(";tb=").append(this.tongBat);
+                .append(";tb=").append(this.tongBat).append(";dn=").append(this.doiNgay).append(";cx=").append(this.chuyenXuNgay)
+                .append(";cl=").append(this.chuyenLuongNgay).append(";dc=").append(this.doiCuoi).append(";td=").append(this.tongDoi)
+                .append(";tc=").append(this.tongChuyen);
         for (final Map.Entry<Integer, Integer> e : this.keo.entrySet()) {
             sb.append(";k").append(e.getKey()).append('=').append(e.getValue());
         }
@@ -234,7 +340,8 @@ public final class HopPc {
         }
         for (final Con c : this.con) {
             sb.append(";c").append(c.id).append('=').append(c.dex).append('.').append(c.cap).append('.')
-                    .append(c.shiny ? 1 : 0).append('.').append(c.ngay).append('.').append(c.bong);
+                    .append(c.shiny ? 1 : 0).append('.').append(c.ngay).append('.').append(c.bong).append('.').append(c.iv)
+                    .append('.').append(c.tinhCach).append('.').append(c.chuGoc).append('.').append(c.doiLuc);
         }
         return sb.toString();
     }
@@ -267,6 +374,18 @@ public final class HopPc {
                     h.nemNgay = Math.max(0, Integer.parseInt(v));
                 } else if (k.equals("tb")) {
                     h.tongBat = Math.max(0, Integer.parseInt(v));
+                } else if (k.equals("dn")) {
+                    h.doiNgay = Math.max(0, Integer.parseInt(v));
+                } else if (k.equals("cx")) {
+                    h.chuyenXuNgay = Math.max(0L, Long.parseLong(v));
+                } else if (k.equals("cl")) {
+                    h.chuyenLuongNgay = Math.max(0, Integer.parseInt(v));
+                } else if (k.equals("dc")) {
+                    h.doiCuoi = Math.max(0L, Long.parseLong(v));
+                } else if (k.equals("td")) {
+                    h.tongDoi = Math.max(0, Integer.parseInt(v));
+                } else if (k.equals("tc")) {
+                    h.tongChuyen = Math.max(0, Integer.parseInt(v));
                 } else if (k.startsWith("b_")) {
                     final int n = Integer.parseInt(v);
                     if (n > 0) {
@@ -283,6 +402,15 @@ public final class HopPc {
                     final Con c = new Con(id, Integer.parseInt(p[0]), Integer.parseInt(p[1]),
                             p.length > 2 && "1".equals(p[2]), p.length > 3 ? Integer.parseInt(p[3]) : 0,
                             p.length > 4 ? p[4] : "");
+                    // 0.9.8 trao doi: ca the + chu goc + lan doi (con cu thieu thi giu IV tat dinh tu id / dex / ngay)
+                    if (p.length > 6) {
+                        c.iv = Integer.parseInt(p[5]) & 0x3FFFFFFF;
+                        c.tinhCach = Math.max(0, Math.min(CaThePokemon.SO_TINH_CACH - 1, Integer.parseInt(p[6])));
+                    }
+                    if (p.length > 8) {
+                        c.chuGoc = Integer.parseInt(p[7]);
+                        c.doiLuc = Math.max(0L, Long.parseLong(p[8]));
+                    }
                     if (c.dex > 0 && h.lay(id) == null) {
                         h.con.add(c);
                         idLonNhat = Math.max(idLonNhat, id);

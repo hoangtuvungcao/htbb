@@ -225,7 +225,7 @@ class CharSuKien {
         int id = Integer.parseInt(tach_string[0]);
         if (id == 1) {
             if (self.getLevel() < Integer.parseInt(tach_string[5])) {
-                self.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đặt Level " + tach_string[5] + " thì mới nhận được GiftCode", ""));
+                self.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp " + tach_string[5] + " thì mới nhận được giftcode", ""));
                 return;
             }
             String code = tach_string[6];
@@ -469,7 +469,7 @@ class CharSuKien {
         int id = Integer.parseInt(tach_string[0]);
         if (id == 1) {
             if (self.getLevel() < Integer.parseInt(tach_string[5])) {
-                self.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đặt Level " + tach_string[5] + " thì mới nhận được GiftCode", ""));
+                self.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp " + tach_string[5] + " thì mới nhận được giftcode", ""));
                 return;
             }
             String code = tach_string[6];

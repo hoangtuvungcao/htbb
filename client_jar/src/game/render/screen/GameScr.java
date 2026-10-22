@@ -2253,11 +2253,11 @@ public class GameScr extends Screen {
         if (this.focusedActor != null) {
             if (this.focusedActor.catagory == 0) {
                 Vector menuItems = new Vector();
-                menuItems.addElement(new Command("Mời party", new IAction() {
+                menuItems.addElement(new Command("Mời vào nhóm", new IAction() {
                     @Override
                     public void perform() {
                         if (((Char) GameScr.this.focusedActor).pk > 0 || ((Char) GameScr.this.focusedActor).iskiller) {
-                            Canvas.startOKDlg("Không thể mời người trong trạng thái đánh nhau hoặc phạm tội");
+                            Canvas.startOKDlg("Không thể mời Pokémon đang PK hoặc đang bị truy nã.");
                         } else if (GameScr.this.mainChar.IDParty == -1) {
                             GameScr.this.gameService.requestCreateParty(GameScr.this.mainChar.ID);
                             GameScr.tempIDActorParty = GameScr.this.focusedActor.ID;
@@ -2266,7 +2266,7 @@ public class GameScr extends Screen {
                         }
                     }
                 }));
-                menuItems.addElement(new Command("Trao đổi", new IAction() {
+                menuItems.addElement(new Command("Trao đổi vật phẩm", new IAction() {
                     @Override
                     public void perform() {
                         if (!GameScr.this.mainChar.isTrade) {
@@ -2274,6 +2274,15 @@ public class GameScr extends Screen {
                         }
                     }
                 }));
+                if (game.pokemon.BatPokemon.coTraoDoi()) {
+                    // 0.9.8: trao đổi Pokémon trong Hộp PC (máy chủ kiểm mọi cổng, gói -121 kiểu 6)
+                    menuItems.addElement(new Command("Trao đổi Pokémon", new IAction() {
+                        @Override
+                        public void perform() {
+                            game.pokemon.BatPokemon.moiTraoDoi(GameScr.this.focusedActor.ID);
+                        }
+                    }));
+                }
                 menuItems.addElement(new Command("Mời đám cưới", new IAction() {
                     @Override
                     public void perform() {
@@ -2337,7 +2346,7 @@ public class GameScr extends Screen {
 
     public void unRideHorse() {
         if (this.mainChar.useHorse != -1 || this.mainChar.idhorse > -1) {
-            Canvas.startYesNoDlg("Thú cưỡi sẽ bị mất nếu rương đồ không còn chỗ. Bạn có muốn xuống thú cưỡi không ?", new IAction() {
+            Canvas.startYesNoDlg("Thú cưỡi sẽ bị mất nếu hành trang không còn chỗ. Bạn có muốn xuống thú cưỡi không?", new IAction() {
                 @Override
                 public void perform() {
                     GameScr.this.gameService.unRideHorse((byte) 0);

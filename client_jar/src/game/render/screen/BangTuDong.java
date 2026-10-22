@@ -64,9 +64,9 @@ final class BangTuDong {
                 return TuDong.nguongHp <= 0 ? "Thuốc HP: tắt" : "Thuốc HP < " + TuDong.nguongHp + "%";
             case MP:
                 if (!TuDong.choThuoc()) {
-                    return "Thuốc MP: máy chủ tắt";
+                    return "Thuốc PP: máy chủ tắt";
                 }
-                return TuDong.nguongMp <= 0 ? "Thuốc MP: tắt" : "Thuốc MP < " + TuDong.nguongMp + "%";
+                return TuDong.nguongMp <= 0 ? "Thuốc PP: tắt" : "Thuốc PP < " + TuDong.nguongMp + "%";
             case NHAT:
                 return "Nhặt: " + TuDong.TEN_NHAT[TuDong.nhat];
             case HOI:

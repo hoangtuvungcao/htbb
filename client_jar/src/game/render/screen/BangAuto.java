@@ -138,7 +138,7 @@ public class BangAuto extends Screen {
     public void doAuto() {
         try {
             if (this.tfHp.getText().equals("") || this.tfMp.getText().equals("")) {
-                Canvas.startOKDlg("HP, Mp không được bỏ trống.");
+                Canvas.startOKDlg("HP, PP không được bỏ trống.");
                 return;
             }
             if (Integer.parseInt(this.tfHp.getText()) > 100 || Integer.parseInt(this.tfMp.getText()) > 100) {
@@ -507,7 +507,7 @@ public class BangAuto extends Screen {
         switch (this.index) {
             case 0:
                 Font.normalFont[0].drawString(g, "HP: ", Canvas.hw - 60, Canvas.hh - 45, 0);
-                Font.normalFont[0].drawString(g, "MP: ", Canvas.hw - 60, Canvas.hh - 20, 0);
+                Font.normalFont[0].drawString(g, "PP: ", Canvas.hw - 60, Canvas.hh - 20, 0);
                 Font.normalFont[0].drawString(g, "%", Canvas.hw + 45, Canvas.hh - 45, 1);
                 Font.normalFont[0].drawString(g, "%", Canvas.hw + 45, Canvas.hh - 20, 1);
                 g.setColor(16777215);
@@ -541,7 +541,7 @@ public class BangAuto extends Screen {
                 paintSkillAuto(g);
                 break;
             case 2:
-                Font.normalFont[0].drawString(g, "HP + MP: ", Canvas.hw - 60, Canvas.hh - 45, 0);
+                Font.normalFont[0].drawString(g, "HP + PP: ", Canvas.hw - 60, Canvas.hh - 45, 0);
                 Res.imgCheck.drawFrame(this.seleted == 1 ? 1 : 0, Canvas.hw + 30, Canvas.hh - 38, 0, 3, g);
                 if (this.isAutoPotion) {
                     Res.imgCheck.drawFrame(2, Canvas.hw + 30, Canvas.hh - 38, 0, 3, g);
@@ -622,7 +622,7 @@ public class BangAuto extends Screen {
                     doGiveSkillToQuickSlotAuto(this.focus, isBuff);
                     return;
                 } else if (this.focus == 6) {
-                    Canvas.startOKDlg("Không thể dùng skill này");
+                    Canvas.startOKDlg("Không thể dùng chiêu này");
                     return;
                 } else {
                     doGiveSkillToQuickSlotAuto(this.focus, isBuff);
