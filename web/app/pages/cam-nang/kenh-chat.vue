@@ -33,7 +33,7 @@ const KENH = [
         <img src="/anh-game/chat-1280.webp" srcset="/anh-game/chat-640.webp 640w, /anh-game/chat-1280.webp 1280w" sizes="(min-width: 768px) 720px, 100vw" alt="Hội thoại riêng hai phía trong bảng chat" loading="lazy" class="w-full">
       </figure>
       <ul class="cham">
-        <li>Chat chỉ giữ trong lần chơi này (như Làng Lá): thoát game rồi vào lại thì mọi tab đều trống. Nút <strong>Xoá</strong> ở mỗi tab xoá ngay tin đang hiện.</li>
+        <li>Chat chỉ giữ trong lần chơi này: thoát game rồi vào lại thì mọi tab đều trống. Nút <strong>Xoá</strong> ở mỗi tab xoá ngay tin đang hiện.</li>
         <li>Người nhận không trực tuyến: tin <strong>không</strong> được gửi, bạn nhận thông báo “… không trực tuyến, tin không được gửi”.</li>
         <li>Danh sách bạn bè và danh sách chặn vẫn được lưu. Chặn tối đa {{ CHAT.chanToiDa }} người: không thấy tin và không nhận tin riêng của họ.</li>
         <li>Mỗi tin dài tối đa {{ CHAT.doDai }} ký tự.</li>

@@ -6,7 +6,7 @@
  * phần "đang online" không có "trang sau" hay lịch sử: luôn là ảnh chụp mới nhất, trễ tối
  * đa 30 giây. Bộ lọc nằm trên URL (?locTen=&locMap=&banNgoai=1) để chép link gửi nhau được.
  *
- * Client: PC / Android / jar và BẢN CHÍNH THỨC (HTBB chính thức) hay BẢN NGOÀI (client gốc TeaMobi,
+ * Client: PC / Android / jar và BẢN CHÍNH THỨC (HTBB chính thức) hay BẢN NGOÀI (client gốc (bản cũ),
  * client lạ). Phần dưới (AdminThongKeClient) là lịch sử đăng nhập theo client + danh sách tài khoản
  * từng dùng bản ngoài để soát và khoá.
  */
@@ -90,7 +90,7 @@ const columns = [
     <p class="text-sm text-muted">
       Vị trí (map + toạ độ) và client của mọi người chơi đang online — lấy mẫu lại mỗi 30 giây,
       có thể trễ tối đa 30 giây so với thực tế. <b>Bản ngoài</b> = client không phải bản HTBB chính thức của bạn
-      (client gốc TeaMobi hoặc client lạ — không gửi mã máy lúc đăng nhập).
+      (client gốc (bản cũ) hoặc client lạ — không gửi mã máy lúc đăng nhập).
     </p>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="loiApi(error)" />

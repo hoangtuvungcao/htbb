@@ -93,7 +93,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
             </UBadge>
           </h3>
           <p class="text-sm text-muted">
-            Từng đăng nhập bằng client KHÔNG phải bản HTBB chính thức của bạn (client gốc TeaMobi hoặc client lạ — không
+            Từng đăng nhập bằng client KHÔNG phải bản HTBB chính thức của bạn (client gốc (bản cũ) hoặc client lạ — không
             gửi mã máy). Bấm "Khoá / xem" để mở tài khoản và khoá. Client bị sửa tay vẫn có thể giả làm bản của
             bạn, nên đây là danh sách để soát, không phải bằng chứng tuyệt đối.
           </p>

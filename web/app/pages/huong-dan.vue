@@ -39,7 +39,7 @@ const khoiDau = [0, 1, 3, 4, 2].map((cls) => {
 })
 
 /**
- * Điều khiển kiểu NRO (0.9.5+): chạm / bấm để đi tới hoặc chọn mục tiêu, nút chiêu to góc phải dưới,
+ * Điều khiển (0.9.5+): chạm / bấm để đi tới hoặc chọn mục tiêu, nút chiêu to góc phải dưới,
  * hai nút thuốc HP / PP, nút Tự động. Java (J2ME) vẫn dùng phím số.
  * Nguồn: client_jar GameScr (phím #: menu nhanh), client_apk hd/Hud.java (hàng nút, N_HP / N_PP).
  */

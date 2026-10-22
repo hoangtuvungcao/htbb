@@ -1,5 +1,5 @@
 /**
- * Ảnh chụp THẬT trong game (bản 0.9.8, client PC 1920×1080 - cùng mã jar / APK, tắt lớp gỡ lỗi; giao diện kiểu NRO) —
+ * Ảnh chụp THẬT trong game (bản 0.9.8, client PC 1920×1080 - cùng mã jar / APK, tắt lớp gỡ lỗi; giao diện khung gỗ cổ điển) —
  * public/anh-game/<ma>-<rộng>.webp,
  * mỗi ảnh hai cỡ 1280 / 640 px để trình duyệt tự chọn (srcset). Thêm ảnh: chụp lại bằng client_pc/test/ChupTrongGame,
  * đổi sang WebP (chất lượng ~78) ở hai cỡ rồi thêm một dòng ở đây.
@@ -25,7 +25,7 @@ export const ANH_GAME: Record<string, AnhGame> = {
   'npc': { ma: 'npc', tieuDe: 'NPC ngoài trời', moTa: 'Y tá Chansey ngoài thị trấn: hồi phục Pokémon, mua thuốc — thẻ chức năng mở ngay cạnh NPC.' },
   'tien-hoa': { ma: 'tien-hoa', tieuDe: 'Tiến hoá', moTa: 'Đủ cấp là tiến hoá ngay trên bản đồ.' },
   'doi': { ma: 'doi', tieuDe: 'Đội & bạn bè', moTa: 'Lập đội đi săn, đánh boss cùng nhau.' },
-  // 0.9.8 (giao diện kiểu NRO)
+  // 0.9.8 (giao diện khung gỗ cổ điển)
   'thu-phuc': { ma: 'thu-phuc', tieuDe: 'Thu phục Pokémon', moTa: 'Đánh yếu Pokémon hoang dã (dấu Poké Ball, vòng màu bậc) rồi chạm nút bóng cạnh cụm chiêu — nhãn ghi bóng sẽ ném và số còn.' },
   'hop-pc': { ma: 'hop-pc', tieuDe: 'Hộp PC', moTa: 'Pokémon đã bắt, Kẹo loài, tiến hoá và bạn đồng hành đi theo.' },
   'ho-so-tu-do': { ma: 'ho-so-tu-do', tieuDe: 'Tủ đồ trang trí', moTa: 'Hồ sơ → Ngoại hình: mặc thử trang phục, hào quang, skin thú và chọn dòng chỉ số của ô.' },

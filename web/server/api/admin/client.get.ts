@@ -10,7 +10,7 @@
  * đều gửi platf "nokia/1/1" nên không dùng platf để phân loại.
  *
  * Bản chính thức hay bản ngoài: cột chinh_chu (1 = client HTBB chính thức của mình — gửi mã máy lúc đăng nhập;
- * 0 = client gốc TeaMobi / client lạ). Danh sách banNgoai để admin soát và khoá tài khoản.
+ * 0 = client gốc (bản cũ) / client lạ). Danh sách banNgoai để admin soát và khoá tài khoản.
  *
  * Tài khoản bot thử tải (tbot001…, user123…, kiemtrabot) bị ẩn khi ?anBot=1 (mặc định).
  */
