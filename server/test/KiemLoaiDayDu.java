@@ -434,7 +434,9 @@ public final class KiemLoaiDayDu {
                 dacTrung++;
             }
         }
-        Kiem.dung("data_chieu: ~180 chieu dung chung (150..220)", chieu.size() >= 150 && chieu.size() <= 220);
+        // loai-bo-sung: +50 chieu dac trung (Gen 3-9 ho T4-T6 / khoi dau) -> dem rieng chieu dung chung
+        Kiem.dung("data_chieu: ~146 chieu dung chung (120..220) + chieu dac trung (" + dacTrung + ")",
+                chieu.size() - dacTrung >= 120 && chieu.size() - dacTrung <= 220 && dacTrung >= 25);
         Kiem.bang("data_chieu: ten khong trung", chieu.size(), ten.size());
         Kiem.bang("data_chieu: he 0..17", 0, heSai);
         Kiem.bang("data_chieu: hieu ung co san (du_lieu/bang_hieu_ung.csv)", 0, huSai);

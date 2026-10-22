@@ -1012,7 +1012,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 253,Grovyle,2,rock.tan_cong,Đá sắc,phu_he,24
 253,Grovyle,3,grass.khong_che,Bột ngủ,ho_tro,36
 254,Sceptile,0,grass.toi_thuong,Tia mặt trời,stab,1
-254,Sceptile,1,grass.vung,Bão lá,stab,12
+254,Sceptile,1,dt.luoi_la_rung_sau,Lưỡi lá rừng sâu,dac_trung,12
 254,Sceptile,2,rock.tan_cong,Đá sắc,phu_he,24
 254,Sceptile,3,grass.khong_che,Bột ngủ,ho_tro,36
 255,Torchic,0,fire.xa,Súng phun lửa,stab,1
@@ -1024,7 +1024,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 256,Combusken,2,electric.tan_cong,Đấm sấm,phu_he,24
 256,Combusken,3,fire.buff,Nắng gắt,ho_tro,36
 257,Blaziken,0,fire.toi_thuong,Đại hỏa,stab,1
-257,Blaziken,1,fighting.tan_cong,Đấm thẳng,stab,12
+257,Blaziken,1,dt.cuoc_lua_bung_chay,Cước lửa bùng cháy,dac_trung,12
 257,Blaziken,2,electric.tan_cong,Đấm sấm,phu_he,24
 257,Blaziken,3,fire.buff,Nắng gắt,ho_tro,36
 258,Mudkip,0,water.tan_cong,Đuôi nước,stab,1
@@ -1036,7 +1036,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 259,Marshtomp,2,ice.tan_cong,Đấm băng,phu_he,24
 259,Marshtomp,3,water.buff,Mưa rào,ho_tro,36
 260,Swampert,0,water.toi_thuong,Thủy triều dâng,stab,1
-260,Swampert,1,ground.tan_cong,Đào hầm,stab,12
+260,Swampert,1,dt.lu_bun_dam_lay,Lũ bùn đầm lầy,dac_trung,12
 260,Swampert,2,ice.tan_cong,Đấm băng,phu_he,24
 260,Swampert,3,water.buff,Mưa rào,ho_tro,36
 261,Poochyena,0,dark.tan_cong,Nghiến,stab,1
@@ -1380,7 +1380,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 345,Lileep,2,ground.xa,Năng lượng đất,phu_he,24
 345,Lileep,3,grass.khien,Quang hợp,ho_tro,36
 346,Cradily,0,rock.tan_cong,Đá sắc,stab,1
-346,Cradily,1,grass.tan_cong,Bom hạt,stab,12
+346,Cradily,1,dt.xuc_tu_hoa_thach,Xúc tu hoá thạch,dac_trung,12
 346,Cradily,2,ground.tan_cong,Đào hầm,phu_he,24
 346,Cradily,3,grass.khien,Quang hợp,ho_tro,36
 347,Anorith,0,rock.tan_cong,Đá sắc,stab,1
@@ -1388,7 +1388,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 347,Anorith,2,fighting.tan_cong,Đấm thẳng,phu_he,24
 347,Anorith,3,rock.buff,Đánh bóng đá,ho_tro,36
 348,Armaldo,0,rock.tan_cong,Đá sắc,stab,1
-348,Armaldo,1,bug.tan_cong,Chém chéo,stab,12
+348,Armaldo,1,dt.vuot_giap_co,Vuốt giáp cổ,dac_trung,12
 348,Armaldo,2,fighting.tan_cong,Đấm thẳng,phu_he,24
 348,Armaldo,3,rock.buff,Đánh bóng đá,ho_tro,36
 349,Feebas,0,water.tan_cong,Đuôi nước,stab,1
@@ -1488,7 +1488,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 372,Shelgon,2,steel.tan_cong,Đầu sắt,phu_he,24
 372,Shelgon,3,normal.khien,Tự vệ,ho_tro,36
 373,Salamence,0,dragon.toi_thuong,Thịnh nộ,stab,1
-373,Salamence,1,flying.tan_cong,Mổ khoan,stab,12
+373,Salamence,1,dt.bao_canh_cuong_phong,Bão cánh cuồng phong,dac_trung,12
 373,Salamence,2,steel.tan_cong,Đầu sắt,phu_he,24
 373,Salamence,3,dragon.buff,Vũ điệu rồng,ho_tro,36
 374,Beldum,0,steel.tan_cong,Đầu sắt,stab,1
@@ -1500,47 +1500,47 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 375,Metang,2,ice.tan_cong,Đấm băng,phu_he,24
 375,Metang,3,steel.khien,Giáp sắt,ho_tro,36
 376,Metagross,0,steel.toi_thuong,Tia thép,stab,1
-376,Metagross,1,psychic.tan_cong,Đầu tâm linh,stab,12
+376,Metagross,1,dt.thien_thach_thep,Thiên thạch thép,dac_trung,12
 376,Metagross,2,ice.tan_cong,Đấm băng,phu_he,24
 376,Metagross,3,psychic.buff,Tĩnh tâm,ho_tro,36
 377,Regirock,0,rock.tan_cong,Đá sắc,stab,1
-377,Regirock,1,rock.nhieu_don,Pháo đá,stab,12
+377,Regirock,1,dt.khoi_da_nguyen_khoi,Khối đá nguyên khối,dac_trung,12
 377,Regirock,2,fire.tan_cong,Nanh lửa,phu_he,24
 377,Regirock,3,normal.khien,Tự vệ,ho_tro,36
 378,Regice,0,ice.toi_thuong,Bão tuyết,stab,1
-378,Regice,1,ice.vung,Gió băng,stab,12
+378,Regice,1,dt.tia_bang_nguyen_khoi,Tia băng nguyên khối,dac_trung,12
 378,Regice,2,ground.tan_cong,Đào hầm,phu_he,24
 378,Regice,3,ice.khien,Màn cực quang,ho_tro,36
 379,Registeel,0,steel.toi_thuong,Tia thép,stab,1
-379,Registeel,1,steel.thuong,Vuốt kim loại,stab,12
+379,Registeel,1,dt.thep_nguyen_khoi,Thép nguyên khối,dac_trung,12
 379,Registeel,2,ice.tan_cong,Đấm băng,phu_he,24
 379,Registeel,3,steel.khien,Giáp sắt,ho_tro,36
 380,Latias,0,dragon.toi_thuong,Thịnh nộ,stab,1
-380,Latias,1,psychic.xa,Siêu năng,stab,12
+380,Latias,1,dt.cau_suong,Cầu sương,dac_trung,12
 380,Latias,2,fire.xa,Súng phun lửa,phu_he,24
 380,Latias,3,psychic.khien,Tường ánh sáng,ho_tro,36
 381,Latios,0,dragon.toi_thuong,Thịnh nộ,stab,1
-381,Latios,1,psychic.xa,Siêu năng,stab,12
+381,Latios,1,dt.anh_tay_rua,Ánh tẩy rửa,dac_trung,12
 381,Latios,2,fire.xa,Súng phun lửa,phu_he,24
 381,Latios,3,dragon.buff,Vũ điệu rồng,ho_tro,36
 382,Kyogre,0,water.toi_thuong,Thủy triều dâng,stab,1
-382,Kyogre,1,water.vung,Lướt sóng,stab,12
+382,Kyogre,1,dt.song_nguyen_so,Sóng nguyên sơ,dac_trung,12
 382,Kyogre,2,ice.xa,Tia băng,phu_he,24
 382,Kyogre,3,water.buff,Mưa rào,ho_tro,36
 383,Groudon,0,ground.toi_thuong,Khe nứt,stab,1
-383,Groudon,1,ground.thuong,Ném bùn,stab,12
+383,Groudon,1,dt.luoi_vuc_tham,Lưỡi vực thẳm,dac_trung,12
 383,Groudon,2,fire.tan_cong,Nanh lửa,phu_he,24
 383,Groudon,3,ground.buff,Bão cát,ho_tro,36
 384,Rayquaza,0,dragon.toi_thuong,Thịnh nộ,stab,1
-384,Rayquaza,1,flying.tan_cong,Mổ khoan,stab,12
+384,Rayquaza,1,dt.thang_thien,Thăng thiên,dac_trung,12
 384,Rayquaza,2,steel.tan_cong,Đầu sắt,phu_he,24
 384,Rayquaza,3,dragon.buff,Vũ điệu rồng,ho_tro,36
 385,Jirachi,0,steel.toi_thuong,Tia thép,stab,1
-385,Jirachi,1,psychic.tan_cong,Đầu tâm linh,stab,12
+385,Jirachi,1,dt.uoc_nguyen_dinh_menh,Ước nguyện định mệnh,dac_trung,12
 385,Jirachi,2,water.xa,Bơm nước,phu_he,24
 385,Jirachi,3,steel.khien,Giáp sắt,ho_tro,36
 386,Deoxys,0,psychic.toi_thuong,Tiên tri,stab,1
-386,Deoxys,1,psychic.tan_cong,Đầu tâm linh,stab,12
+386,Deoxys,1,dt.bung_no_tam_linh,Bùng nổ tâm linh,dac_trung,12
 386,Deoxys,2,fire.tan_cong,Nanh lửa,phu_he,24
 386,Deoxys,3,psychic.buff,Tĩnh tâm,ho_tro,36
 387,Turtwig,0,grass.tan_cong,Bom hạt,stab,1
@@ -1552,7 +1552,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 388,Grotle,2,rock.tan_cong,Đá sắc,phu_he,24
 388,Grotle,3,grass.buff,Sinh trưởng,ho_tro,36
 389,Torterra,0,grass.toi_thuong,Tia mặt trời,stab,1
-389,Torterra,1,ground.tan_cong,Đào hầm,stab,12
+389,Torterra,1,dt.bua_go_co_thu,Búa gỗ cổ thụ,dac_trung,12
 389,Torterra,2,rock.tan_cong,Đá sắc,phu_he,24
 389,Torterra,3,grass.buff,Sinh trưởng,ho_tro,36
 390,Chimchar,0,fire.tan_cong,Nanh lửa,stab,1
@@ -1564,7 +1564,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 391,Monferno,2,electric.tan_cong,Đấm sấm,phu_he,24
 391,Monferno,3,fire.khong_che,Lửa ma trơi,ho_tro,36
 392,Infernape,0,fire.toi_thuong,Đại hỏa,stab,1
-392,Infernape,1,fighting.tan_cong,Đấm thẳng,stab,12
+392,Infernape,1,dt.lao_lua_ruc,Lao lửa rực,dac_trung,12
 392,Infernape,2,electric.tan_cong,Đấm sấm,phu_he,24
 392,Infernape,3,fire.khong_che,Lửa ma trơi,ho_tro,36
 393,Piplup,0,water.xa,Bơm nước,stab,1
@@ -1576,7 +1576,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 394,Prinplup,2,ice.xa,Tia băng,phu_he,24
 394,Prinplup,3,water.buff,Mưa rào,ho_tro,36
 395,Empoleon,0,water.toi_thuong,Thủy triều dâng,stab,1
-395,Empoleon,1,steel.xa,Pháo ánh sáng,stab,12
+395,Empoleon,1,dt.loc_nuoc_hoang_de,Lốc nước hoàng đế,dac_trung,12
 395,Empoleon,2,ice.xa,Tia băng,phu_he,24
 395,Empoleon,3,water.buff,Mưa rào,ho_tro,36
 396,Starly,0,normal.tan_cong,Đè nặng,stab,1
@@ -1632,7 +1632,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 408,Cranidos,2,fire.tan_cong,Nanh lửa,phu_he,24
 408,Cranidos,3,rock.buff,Đánh bóng đá,ho_tro,36
 409,Rampardos,0,rock.tan_cong,Đá sắc,stab,1
-409,Rampardos,1,rock.nhieu_don,Pháo đá,stab,12
+409,Rampardos,1,dt.dau_bua_tien_su,Đầu búa tiền sử,dac_trung,12
 409,Rampardos,2,fire.tan_cong,Nanh lửa,phu_he,24
 409,Rampardos,3,rock.buff,Đánh bóng đá,ho_tro,36
 410,Shieldon,0,rock.tan_cong,Đá sắc,stab,1
@@ -1640,7 +1640,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 410,Shieldon,2,electric.xa,Mười vạn vôn,phu_he,24
 410,Shieldon,3,steel.khien,Giáp sắt,ho_tro,36
 411,Bastiodon,0,rock.tan_cong,Đá sắc,stab,1
-411,Bastiodon,1,steel.tan_cong,Đầu sắt,stab,12
+411,Bastiodon,1,dt.khien_thep_de,Khiên thép đè,dac_trung,12
 411,Bastiodon,2,electric.xa,Mười vạn vôn,phu_he,24
 411,Bastiodon,3,steel.khien,Giáp sắt,ho_tro,36
 412,Burmy,0,bug.thuong,Cắn bọ,stab,1
@@ -1776,7 +1776,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 444,Gabite,2,steel.tan_cong,Đầu sắt,phu_he,24
 444,Gabite,3,ground.buff,Bão cát,ho_tro,36
 445,Garchomp,0,dragon.toi_thuong,Thịnh nộ,stab,1
-445,Garchomp,1,ground.tan_cong,Đào hầm,stab,12
+445,Garchomp,1,dt.vuot_bao_cat,Vuốt bão cát,dac_trung,12
 445,Garchomp,2,steel.tan_cong,Đầu sắt,phu_he,24
 445,Garchomp,3,ground.buff,Bão cát,ho_tro,36
 446,Munchlax,0,normal.tan_cong,Đè nặng,stab,1
@@ -1984,7 +1984,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 496,Servine,2,water.tan_cong,Đuôi nước,phu_he,24
 496,Servine,3,grass.khong_che,Bột ngủ,ho_tro,36
 497,Serperior,0,grass.toi_thuong,Tia mặt trời,stab,1
-497,Serperior,1,grass.nhieu_don,Lá dao,stab,12
+497,Serperior,1,dt.loc_la_hoang_gia,Lốc lá hoàng gia,dac_trung,12
 497,Serperior,2,water.tan_cong,Đuôi nước,phu_he,24
 497,Serperior,3,grass.khong_che,Bột ngủ,ho_tro,36
 498,Tepig,0,fire.tan_cong,Nanh lửa,stab,1
@@ -1996,7 +1996,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 499,Pignite,2,electric.tan_cong,Đấm sấm,phu_he,24
 499,Pignite,3,fire.buff,Nắng gắt,ho_tro,36
 500,Emboar,0,fire.toi_thuong,Đại hỏa,stab,1
-500,Emboar,1,fighting.tan_cong,Đấm thẳng,stab,12
+500,Emboar,1,dt.lua_de_nang,Lửa đè nặng,dac_trung,12
 500,Emboar,2,electric.tan_cong,Đấm sấm,phu_he,24
 500,Emboar,3,fire.buff,Nắng gắt,ho_tro,36
 501,Oshawott,0,water.xa,Bơm nước,stab,1
@@ -2008,7 +2008,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 502,Dewott,2,ice.xa,Tia băng,phu_he,24
 502,Dewott,3,water.buff,Mưa rào,ho_tro,36
 503,Samurott,0,water.toi_thuong,Thủy triều dâng,stab,1
-503,Samurott,1,water.vung,Lướt sóng,stab,12
+503,Samurott,1,dt.vo_so_chem,Vỏ sò chém,dac_trung,12
 503,Samurott,2,ice.xa,Tia băng,phu_he,24
 503,Samurott,3,water.buff,Mưa rào,ho_tro,36
 504,Patrat,0,normal.tan_cong,Đè nặng,stab,1
@@ -2264,7 +2264,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 566,Archen,2,ground.tan_cong,Đào hầm,phu_he,24
 566,Archen,3,rock.buff,Đánh bóng đá,ho_tro,36
 567,Archeops,0,rock.tan_cong,Đá sắc,stab,1
-567,Archeops,1,flying.tan_cong,Mổ khoan,stab,12
+567,Archeops,1,dt.luon_chim_co,Lượn chim cổ,dac_trung,12
 567,Archeops,2,ground.tan_cong,Đào hầm,phu_he,24
 567,Archeops,3,rock.buff,Đánh bóng đá,ho_tro,36
 568,Trubbish,0,poison.tan_cong,Đâm độc,stab,1
@@ -2536,7 +2536,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 634,Zweilous,2,fire.tan_cong,Nanh lửa,phu_he,24
 634,Zweilous,3,dark.buff,Âm mưu,ho_tro,36
 635,Hydreigon,0,dark.xa,Xung bóng tối,stab,1
-635,Hydreigon,1,dragon.xa,Xung kích rồng,stab,12
+635,Hydreigon,1,dt.song_ba_dau,Sóng ba đầu,dac_trung,12
 635,Hydreigon,2,fire.xa,Súng phun lửa,phu_he,24
 635,Hydreigon,3,dark.buff,Âm mưu,ho_tro,36
 636,Larvesta,0,bug.tan_cong,Chém chéo,stab,1
@@ -2604,7 +2604,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 651,Quilladin,2,rock.tan_cong,Đá sắc,phu_he,24
 651,Quilladin,3,grass.khien,Quang hợp,ho_tro,36
 652,Chesnaught,0,grass.toi_thuong,Tia mặt trời,stab,1
-652,Chesnaught,1,fighting.tan_cong,Đấm thẳng,stab,12
+652,Chesnaught,1,dt.canh_tay_gai,Cánh tay gai,dac_trung,12
 652,Chesnaught,2,rock.tan_cong,Đá sắc,phu_he,24
 652,Chesnaught,3,grass.khien,Quang hợp,ho_tro,36
 653,Fennekin,0,fire.xa,Súng phun lửa,stab,1
@@ -2616,7 +2616,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 654,Braixen,2,grass.xa,Hút năng lượng,phu_he,24
 654,Braixen,3,fire.buff,Nắng gắt,ho_tro,36
 655,Delphox,0,fire.toi_thuong,Đại hỏa,stab,1
-655,Delphox,1,psychic.xa,Siêu năng,stab,12
+655,Delphox,1,dt.lua_huyen_bi,Lửa huyền bí,dac_trung,12
 655,Delphox,2,grass.xa,Hút năng lượng,phu_he,24
 655,Delphox,3,fire.buff,Nắng gắt,ho_tro,36
 656,Froakie,0,water.xa,Bơm nước,stab,1
@@ -2628,7 +2628,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 657,Frogadier,2,ice.xa,Tia băng,phu_he,24
 657,Frogadier,3,water.khong_che,Bong bóng,ho_tro,36
 658,Greninja,0,water.toi_thuong,Thủy triều dâng,stab,1
-658,Greninja,1,dark.xa,Xung bóng tối,stab,12
+658,Greninja,1,dt.phi_tieu_nuoc,Phi tiêu nước,dac_trung,12
 658,Greninja,2,flying.tan_cong,Mổ khoan,phu_he,24
 658,Greninja,3,water.khong_che,Bong bóng,ho_tro,36
 659,Bunnelby,0,normal.tan_cong,Đè nặng,stab,1
@@ -2784,7 +2784,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 696,Tyrunt,2,fire.tan_cong,Nanh lửa,phu_he,24
 696,Tyrunt,3,rock.buff,Đánh bóng đá,ho_tro,36
 697,Tyrantrum,0,rock.toi_thuong,Đầu đá,stab,1
-697,Tyrantrum,1,dragon.tan_cong,Vuốt rồng,stab,12
+697,Tyrantrum,1,dt.ham_bao_chua,Hàm bạo chúa,dac_trung,12
 697,Tyrantrum,2,fire.tan_cong,Nanh lửa,phu_he,24
 697,Tyrantrum,3,rock.buff,Đánh bóng đá,ho_tro,36
 698,Amaura,0,rock.xa,Ngọc đá,stab,1
@@ -2792,7 +2792,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 698,Amaura,2,water.xa,Bơm nước,phu_he,24
 698,Amaura,3,ice.khien,Màn cực quang,ho_tro,36
 699,Aurorus,0,rock.xa,Ngọc đá,stab,1
-699,Aurorus,1,ice.xa,Tia băng,stab,12
+699,Aurorus,1,dt.cuc_quang,Cực quang,dac_trung,12
 699,Aurorus,2,water.xa,Bơm nước,phu_he,24
 699,Aurorus,3,ice.khien,Màn cực quang,ho_tro,36
 700,Sylveon,0,fairy.xa,Sức mạnh mặt trăng,stab,1
@@ -2820,7 +2820,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 705,Sliggoo,2,steel.tan_cong,Đầu sắt,phu_he,24
 705,Sliggoo,3,normal.khien,Tự vệ,ho_tro,36
 706,Goodra,0,dragon.toi_thuong,Thịnh nộ,stab,1
-706,Goodra,1,dragon.vung,Lốc xoáy rồng,stab,12
+706,Goodra,1,dt.song_nhay,Sóng nhầy,dac_trung,12
 706,Goodra,2,steel.tan_cong,Đầu sắt,phu_he,24
 706,Goodra,3,normal.khien,Tự vệ,ho_tro,36
 707,Klefki,0,steel.tan_cong,Đầu sắt,stab,1
@@ -2892,7 +2892,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 723,Dartrix,2,steel.tan_cong,Đầu sắt,phu_he,24
 723,Dartrix,3,grass.khien,Quang hợp,ho_tro,36
 724,Decidueye,0,grass.toi_thuong,Tia mặt trời,stab,1
-724,Decidueye,1,ghost.tan_cong,Vuốt bóng ma,stab,12
+724,Decidueye,1,dt.mui_ten_bong,Mũi tên bóng,dac_trung,12
 724,Decidueye,2,rock.tan_cong,Đá sắc,phu_he,24
 724,Decidueye,3,ghost.buff,Lời nguyền,ho_tro,36
 725,Litten,0,fire.tan_cong,Nanh lửa,stab,1
@@ -2904,7 +2904,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 726,Torracat,2,grass.tan_cong,Bom hạt,phu_he,24
 726,Torracat,3,fire.khong_che,Lửa ma trơi,ho_tro,36
 727,Incineroar,0,fire.toi_thuong,Đại hỏa,stab,1
-727,Incineroar,1,dark.tan_cong,Nghiến,stab,12
+727,Incineroar,1,dt.quat_xoay_bong_toi,Quật xoay bóng tối,dac_trung,12
 727,Incineroar,2,grass.tan_cong,Bom hạt,phu_he,24
 727,Incineroar,3,fire.buff,Nắng gắt,ho_tro,36
 728,Popplio,0,water.xa,Bơm nước,stab,1
@@ -2916,7 +2916,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 729,Brionne,2,ice.xa,Tia băng,phu_he,24
 729,Brionne,3,water.buff,Mưa rào,ho_tro,36
 730,Primarina,0,water.toi_thuong,Thủy triều dâng,stab,1
-730,Primarina,1,fairy.xa,Sức mạnh mặt trăng,stab,12
+730,Primarina,1,dt.khuc_ca_bot_bien,Khúc ca bọt biển,dac_trung,12
 730,Primarina,2,ice.xa,Tia băng,phu_he,24
 730,Primarina,3,water.buff,Mưa rào,ho_tro,36
 731,Pikipek,0,normal.tan_cong,Đè nặng,stab,1
@@ -3132,7 +3132,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 783,Hakamo-o,2,rock.tan_cong,Đá sắc,phu_he,24
 783,Hakamo-o,3,fighting.khien,Phát hiện,ho_tro,36
 784,Kommo-o,0,dragon.toi_thuong,Thịnh nộ,stab,1
-784,Kommo-o,1,fighting.tan_cong,Đấm thẳng,stab,12
+784,Kommo-o,1,dt.vay_vang_doi,Vảy vang dội,dac_trung,12
 784,Kommo-o,2,ice.tan_cong,Đấm băng,phu_he,24
 784,Kommo-o,3,fighting.khien,Phát hiện,ho_tro,36
 785,Tapu Koko,0,electric.toi_thuong,Sấm sét,stab,1
@@ -3244,7 +3244,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 811,Thwackey,2,flying.tan_cong,Mổ khoan,phu_he,24
 811,Thwackey,3,grass.buff,Sinh trưởng,ho_tro,36
 812,Rillaboom,0,grass.toi_thuong,Tia mặt trời,stab,1
-812,Rillaboom,1,grass.nhieu_don,Lá dao,stab,12
+812,Rillaboom,1,dt.trong_rung,Trống rừng,dac_trung,12
 812,Rillaboom,2,ground.tan_cong,Đào hầm,phu_he,24
 812,Rillaboom,3,grass.buff,Sinh trưởng,ho_tro,36
 813,Scorbunny,0,fire.tan_cong,Nanh lửa,stab,1
@@ -3256,7 +3256,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 814,Raboot,2,grass.tan_cong,Bom hạt,phu_he,24
 814,Raboot,3,fire.khong_che,Lửa ma trơi,ho_tro,36
 815,Cinderace,0,fire.toi_thuong,Đại hỏa,stab,1
-815,Cinderace,1,fire.nhieu_don,Xoáy lửa,stab,12
+815,Cinderace,1,dt.bong_lua,Bóng lửa,dac_trung,12
 815,Cinderace,2,grass.tan_cong,Bom hạt,phu_he,24
 815,Cinderace,3,fire.khong_che,Lửa ma trơi,ho_tro,36
 816,Sobble,0,water.xa,Bơm nước,stab,1
@@ -3268,7 +3268,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 817,Drizzile,2,bug.tan_cong,Chém chéo,phu_he,24
 817,Drizzile,3,water.buff,Mưa rào,ho_tro,36
 818,Inteleon,0,water.toi_thuong,Thủy triều dâng,stab,1
-818,Inteleon,1,water.vung,Lướt sóng,stab,12
+818,Inteleon,1,dt.phat_ban_tia_nuoc,Phát bắn tỉa nước,dac_trung,12
 818,Inteleon,2,ice.xa,Tia băng,phu_he,24
 818,Inteleon,3,water.buff,Mưa rào,ho_tro,36
 819,Skwovet,0,normal.tan_cong,Đè nặng,stab,1
@@ -3516,19 +3516,19 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 879,Copperajah,2,grass.tan_cong,Bom hạt,phu_he,24
 879,Copperajah,3,steel.buff,Tự rèn,ho_tro,36
 880,Dracozolt,0,electric.toi_thuong,Sấm sét,stab,1
-880,Dracozolt,1,dragon.tan_cong,Vuốt rồng,stab,12
+880,Dracozolt,1,dt.mo_set,Mỏ sét,dac_trung,12
 880,Dracozolt,2,steel.tan_cong,Đầu sắt,phu_he,24
 880,Dracozolt,3,electric.buff,Nạp điện,ho_tro,36
 881,Arctozolt,0,electric.toi_thuong,Sấm sét,stab,1
-881,Arctozolt,1,ice.tan_cong,Đấm băng,stab,12
+881,Arctozolt,1,dt.bang_set_hoa_thach,Băng sét hoá thạch,dac_trung,12
 881,Arctozolt,2,water.xa,Bơm nước,phu_he,24
 881,Arctozolt,3,electric.buff,Nạp điện,ho_tro,36
 882,Dracovish,0,water.tan_cong,Đuôi nước,stab,1
-882,Dracovish,1,dragon.tan_cong,Vuốt rồng,stab,12
+882,Dracovish,1,dt.ham_ca_co_dai,Hàm cá cổ đại,dac_trung,12
 882,Dracovish,2,ice.tan_cong,Đấm băng,phu_he,24
 882,Dracovish,3,water.khien,Rút vào mai,ho_tro,36
 883,Arctovish,0,water.tan_cong,Đuôi nước,stab,1
-883,Arctovish,1,ice.tan_cong,Đấm băng,stab,12
+883,Arctovish,1,dt.ham_bang_co_dai,Hàm băng cổ đại,dac_trung,12
 883,Arctovish,2,psychic.tan_cong,Đầu tâm linh,phu_he,24
 883,Arctovish,3,ice.khien,Màn cực quang,ho_tro,36
 884,Duraludon,0,steel.xa,Pháo ánh sáng,stab,1
@@ -3544,7 +3544,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 886,Drakloak,2,fire.xa,Súng phun lửa,phu_he,24
 886,Drakloak,3,ghost.khong_che,Ánh sáng mê hoặc,ho_tro,36
 887,Dragapult,0,dragon.toi_thuong,Thịnh nộ,stab,1
-887,Dragapult,1,ghost.thuong,Liếm,stab,12
+887,Dragapult,1,dt.phi_tieu_bong_ma,Phi tiêu bóng ma,dac_trung,12
 887,Dragapult,2,fire.xa,Súng phun lửa,phu_he,24
 887,Dragapult,3,ghost.khong_che,Ánh sáng mê hoặc,ho_tro,36
 888,Zacian,0,fairy.tan_cong,Đùa nghịch,stab,1
@@ -3628,7 +3628,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 907,Floragato,2,electric.tan_cong,Đấm sấm,phu_he,24
 907,Floragato,3,grass.khong_che,Bột ngủ,ho_tro,36
 908,Meowscarada,0,grass.toi_thuong,Tia mặt trời,stab,1
-908,Meowscarada,1,dark.tan_cong,Nghiến,stab,12
+908,Meowscarada,1,dt.ao_thuat_hoa,Ảo thuật hoa,dac_trung,12
 908,Meowscarada,2,rock.xa,Ngọc đá,phu_he,24
 908,Meowscarada,3,grass.khong_che,Bột ngủ,ho_tro,36
 909,Fuecoco,0,fire.xa,Súng phun lửa,stab,1
@@ -3640,7 +3640,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 910,Crocalor,2,grass.tan_cong,Bom hạt,phu_he,24
 910,Crocalor,3,fire.buff,Nắng gắt,ho_tro,36
 911,Skeledirge,0,fire.toi_thuong,Đại hỏa,stab,1
-911,Skeledirge,1,ghost.xa,Cầu bóng ma,stab,12
+911,Skeledirge,1,dt.khuc_ca_ngon_duoc,Khúc ca ngọn đuốc,dac_trung,12
 911,Skeledirge,2,grass.xa,Hút năng lượng,phu_he,24
 911,Skeledirge,3,fire.buff,Nắng gắt,ho_tro,36
 912,Quaxly,0,water.tan_cong,Đuôi nước,stab,1
@@ -3652,7 +3652,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 913,Quaxwell,2,flying.tan_cong,Mổ khoan,phu_he,24
 913,Quaxwell,3,water.buff,Mưa rào,ho_tro,36
 914,Quaquaval,0,water.toi_thuong,Thủy triều dâng,stab,1
-914,Quaquaval,1,fighting.tan_cong,Đấm thẳng,stab,12
+914,Quaquaval,1,dt.vu_bo_nuoc,Vũ bộ nước,dac_trung,12
 914,Quaquaval,2,bug.tan_cong,Chém chéo,phu_he,24
 914,Quaquaval,3,water.buff,Mưa rào,ho_tro,36
 915,Lechonk,0,normal.tan_cong,Đè nặng,stab,1
@@ -3988,7 +3988,7 @@ dex,ten,o,chieu,ten_chieu,vai,cap_hoc
 997,Arctibax,2,fighting.tan_cong,Đấm thẳng,phu_he,24
 997,Arctibax,3,ice.buff,Mưa đá,ho_tro,36
 998,Baxcalibur,0,dragon.toi_thuong,Thịnh nộ,stab,1
-998,Baxcalibur,1,ice.tan_cong,Đấm băng,stab,12
+998,Baxcalibur,1,dt.luoi_bang_xung_kich,Lưỡi băng xung kích,dac_trung,12
 998,Baxcalibur,2,fighting.tan_cong,Đấm thẳng,phu_he,24
 998,Baxcalibur,3,dragon.buff,Vũ điệu rồng,ho_tro,36
 999,Gimmighoul,0,ghost.xa,Cầu bóng ma,stab,1

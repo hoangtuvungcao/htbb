@@ -95,11 +95,13 @@ public final class DatabaseLoai {
                     goc[0] = Math.min(goc[0], ng.toLocalDate().toEpochDay());
                 }
             });
-            final List<Integer> bd = new ArrayList<Integer>();
-            doc(c, "SELECT map_id FROM data_loai_xoay_vong_map", (rs) -> bd.add(Integer.valueOf(rs.getInt(1))));
+            final Map<Integer, Integer> bd = new HashMap<Integer, Integer>();
+            doc(c, "SELECT map_id, nhom FROM data_loai_xoay_vong_map", (rs) -> bd.put(Integer.valueOf(rs.getInt(1)),
+                    Integer.valueOf(rs.getInt(2))));
             final List<int[]> xv = new ArrayList<int[]>();
-            doc(c, "SELECT chu_ky, dex, vung, cap_min, cap_max, trong_so, bac_gap FROM data_loai_xoay_vong", (rs) -> xv.add(
-                    new int[]{rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7)}));
+            doc(c, "SELECT chu_ky, nhom, dex, vung, cap_min, cap_max, trong_so, bac_gap FROM data_loai_xoay_vong", (rs) -> xv.add(
+                    new int[]{rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7),
+                            rs.getInt(8)}));
             if (!lich.isEmpty() && goc[0] != Long.MAX_VALUE) {
                 kq.datXoayVong(lich, goc[0], bd, xv);
             }

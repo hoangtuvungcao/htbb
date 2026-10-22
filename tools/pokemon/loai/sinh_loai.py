@@ -696,9 +696,16 @@ def main():
         if cmax < cmin:
             cmax = min(cap_cfg["toi_da"], cmin + 20)
         a_, b_ = anh_xa_cap(cmin, xvc["cap"]), anh_xa_cap(cmax, xvc["cap"])
+        # nhom 1 (cap thap): chi dang dau (giai doan 1), bac <= bac_thap_toi_da
+        thap = xvc.get("ban_do_thap") and l["giai_doan"] == 1 and l["bac"] <= int(xvc.get("bac_thap_toi_da", 3))
+        at, bt = (anh_xa_cap(cmin, xvc["cap_thap"]), anh_xa_cap(cmax, xvc["cap_thap"])) if thap else (0, 0)
         for i, vg in enumerate(l["vung"]):
             ts = 100 * [100, 40, 20, 10][min(i, 3)] // 100
-            XV.append({"chu_ky": l["xoay"], "dex": dex, "vung": vg, "cmin": a_, "cmax": b_, "ts": ts, "bac_gap": l["bac"]})
+            XV.append({"chu_ky": l["xoay"], "nhom": 0, "dex": dex, "vung": vg, "cmin": a_, "cmax": b_, "ts": ts,
+                       "bac_gap": l["bac"]})
+            if thap:
+                XV.append({"chu_ky": l["xoay"], "nhom": 1, "dex": dex, "vung": vg, "cmin": at, "cmax": bt, "ts": ts,
+                           "bac_gap": l["bac"]})
     cfg["_XV"] = XV
 
     # ---- doi chieu Showdown
@@ -806,8 +813,8 @@ def ghi_csv(L, TH, CHIEU, LC, VG, cfg, ten_trung):
         c["trang_thai"], c["hinh"], c["hu"], c["mau"], c["doi_mau"], c["dac_trung_ho"] or ""] for c in CHIEU.values()])
     w("bang_loai_chieu.csv", ["dex", "ten", "o", "chieu", "ten_chieu", "vai", "cap_hoc"],
       [[x["dex"], L[x["dex"]]["ten"], x["o"], x["ma"], CHIEU[x["ma"]]["ten"], x["vai"], x["cap"]] for x in LC])
-    w("bang_loai_xoay_vong.csv", ["chu_ky", "dex", "ten", "vung", "cap_min", "cap_max", "trong_so", "bac_gap"],
-      [[x["chu_ky"], x["dex"], L[x["dex"]]["ten"], x["vung"], x["cmin"], x["cmax"], x["ts"], x["bac_gap"]]
+    w("bang_loai_xoay_vong.csv", ["chu_ky", "nhom", "dex", "ten", "vung", "cap_min", "cap_max", "trong_so", "bac_gap"],
+      [[x["chu_ky"], x["nhom"], x["dex"], L[x["dex"]]["ten"], x["vung"], x["cmin"], x["cmax"], x["ts"], x["bac_gap"]]
        for x in cfg.get("_XV", [])])
     w("bang_loai_vung.csv", ["dex", "ten", "khu_vuc", "vung", "cap_min", "cap_max", "trong_so", "ngay_dem", "thoi_tiet", "bac_gap"],
       [[x["dex"], L[x["dex"]]["ten"], x["khu"], x["vung"], x["cmin"], x["cmax"], x["ts"], x["nd"], x["tt"], x["bac_gap"]]
@@ -1019,18 +1026,20 @@ CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong_lich` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong_map` (
   `map_id` SMALLINT NOT NULL,
+  `nhom` TINYINT NOT NULL DEFAULT 0 COMMENT '0 ban do cap 52-84, 1 cap thap (dang dau T1-T3)',
   PRIMARY KEY (`map_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong` (
   `chu_ky` TINYINT NOT NULL,
+  `nhom` TINYINT NOT NULL DEFAULT 0 COMMENT 'nhom ban do (data_loai_xoay_vong_map.nhom)',
   `dex` SMALLINT NOT NULL,
   `vung` TINYINT NOT NULL COMMENT 'vung sinh thai (data_hst_vung) cua ban do xoay vong',
   `cap_min` TINYINT NOT NULL,
   `cap_max` TINYINT NOT NULL,
   `trong_so` SMALLINT NOT NULL,
   `bac_gap` TINYINT NOT NULL,
-  PRIMARY KEY (`chu_ky`, `dex`, `vung`),
-  KEY `k_ky_vung` (`chu_ky`, `vung`)
+  PRIMARY KEY (`chu_ky`, `nhom`, `dex`, `vung`),
+  KEY `k_ky_vung` (`chu_ky`, `nhom`, `vung`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 """)
     if XV:
@@ -1038,12 +1047,13 @@ CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong` (
         out.append("DELETE FROM `data_loai_xoay_vong_lich` WHERE `chu_ky` >= %d;" % len(lich))
         out.append(khoi_insert("data_loai_xoay_vong_lich", ["chu_ky", "ten", "mo_ta", "the_he", "ngay_goc"], lich,
                                ["`%s` = VALUES(`%s`)" % (c, c) for c in ["ten", "mo_ta", "the_he", "ngay_goc"]]))
-        out.append("DELETE FROM `data_loai_xoay_vong_map` WHERE `map_id` NOT IN (%s);" % ",".join(map(str, xvc["ban_do"])))
-        out.append(khoi_insert("data_loai_xoay_vong_map", ["map_id"], [[m] for m in xvc["ban_do"]], ignore=True))
+        bd = [[m, 0] for m in xvc["ban_do"]] + [[m, 1] for m in xvc.get("ban_do_thap", [])]
+        out.append("DELETE FROM `data_loai_xoay_vong_map` WHERE `map_id` NOT IN (%s);" % ",".join(str(m[0]) for m in bd))
+        out.append(khoi_insert("data_loai_xoay_vong_map", ["map_id", "nhom"], bd, ["`nhom` = VALUES(`nhom`)"]))
         out.append("DELETE FROM `data_loai_xoay_vong` WHERE `dex` NOT IN (%s);" % ",".join(map(str, sorted(set(x["dex"] for x in XV)))))
-        cot = ["chu_ky", "dex", "vung", "cap_min", "cap_max", "trong_so", "bac_gap"]
+        cot = ["chu_ky", "nhom", "dex", "vung", "cap_min", "cap_max", "trong_so", "bac_gap"]
         out.append(khoi_insert("data_loai_xoay_vong", cot, [[x[c] if c in x else x[{"cap_min": "cmin", "cap_max": "cmax",
-                               "trong_so": "ts"}[c]] for c in cot] for x in XV], ["`%s` = VALUES(`%s`)" % (c, c) for c in cot[3:]]))
+                               "trong_so": "ts"}[c]] for c in cot] for x in XV], ["`%s` = VALUES(`%s`)" % (c, c) for c in cot[4:]]))
     out.append("")
 
     out.append("""-- Khu vuc dia ly cua ban do (ban sao du_lieu/vung_map.csv): may chu ghep voi data_hst_vung de chon loai.

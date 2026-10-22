@@ -132,7 +132,7 @@ export interface ChiTietLoai {
   chieu: ChieuLoai[]
   vung: VungLoai[]
   /** Vùng hoang dã xoay vòng: các chu kỳ tuần loài xuất hiện (rỗng = không xoay vòng). */
-  xoayVong: { chuKy: number, ten: string, capMin: number, capMax: number }[]
+  xoayVong: { chuKy: number, ten: string, capMin: number, capMax: number, thap: boolean }[]
   sprite: { trangThai: number, chanDung: boolean, trongJar: boolean, goiMayChu: boolean, ghiCong: string } | null
 }
 

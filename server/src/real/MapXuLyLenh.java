@@ -1967,7 +1967,6 @@ class MapXuLyLenh {
                 DanhHieuGame.khiVaoBanDo(player); // lan dau trong phien: nhan danh hieu, so moi, thuong mua PvP
                 KenhChatGame.khiVaoBanDo(player); // lan dau trong phien: kenh chat, ban be online
                 NgoaiHinhGame.guiONhanh(player);  // 0.9.8: trang chieu (o nhanh) cua nhan vat - may chu giu
-                LoaiQuaiGame.khiVaoBanDo(player); // 0.9.8: Vung hoang da tuan nay (lan dau trong phien moi tuan)
                 map.doJoinMapOk(player);
             } else if (player.mapID == Map.idMapChanNui) {
                 map.doReturnVillage(player);

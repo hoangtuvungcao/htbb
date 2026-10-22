@@ -170,3 +170,53 @@ dt.bao_cat_nghien,Bão cát nghiền,Đá,vat_ly,dac_trung,200,1,6000,10,choang,
 dt.than_phong,Thần phong,Bay,dac_biet,dac_trung,200,1,6000,10,day_lui,thang,hu_charge_beam_glow,A98FF3,1,249
 dt.lua_thieng,Lửa thiêng,Lửa,vat_ly,dac_trung,200,1,6000,10,bong,thang,hu_fire_blast,EE8130,0,250
 dt.la_thoi_gian,Lá thời gian,Cỏ,dac_biet,dac_trung,200,1,6000,10,ngu,thang,hu_wish,7AC74C,1,251
+dt.luoi_la_rung_sau,Lưỡi lá rừng sâu,Cỏ,vat_ly,dac_trung,200,1,6000,10,ngu,thang,hu_razor_leaf,7AC74C,0,252
+dt.cuoc_lua_bung_chay,Cước lửa bùng cháy,Lửa,vat_ly,dac_trung,200,1,6000,10,bong,thang,hu_fire_fang_fang,EE8130,0,255
+dt.lu_bun_dam_lay,Lũ bùn đầm lầy,Nước,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_water_column_ranger,6390F0,0,258
+dt.xuc_tu_hoa_thach,Xúc tu hoá thạch,Đá,dac_biet,dac_trung,200,1,6000,10,choang,thang,hu_brine_splashes,B6A136,1,345
+dt.vuot_giap_co,Vuốt giáp cổ,Bọ,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_scratch,A6B91A,1,347
+dt.bao_canh_cuong_phong,Bão cánh cuồng phong,Rồng,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_last_resort_front,6F35FC,1,371
+dt.thien_thach_thep,Thiên thạch thép,Thép,vat_ly,dac_trung,200,1,6000,10,giam_thu,thang,hu_iron_head,B7B7CE,1,374
+dt.khoi_da_nguyen_khoi,Khối đá nguyên khối,Đá,vat_ly,dac_trung,200,1,6000,10,choang,thang,hu_giga_impact_front,B6A136,1,377
+dt.tia_bang_nguyen_khoi,Tia băng nguyên khối,Băng,dac_biet,dac_trung,200,1,6000,10,dong_bang,thang,hu_charge_beam_glow,96D9D6,1,378
+dt.thep_nguyen_khoi,Thép nguyên khối,Thép,vat_ly,dac_trung,200,1,6000,10,giam_thu,thang,hu_iron_head,B7B7CE,1,379
+dt.cau_suong,Cầu sương,Siêu linh,dac_biet,dac_trung,200,1,6000,10,lu_lan,thang,hu_wish,F95587,1,380
+dt.anh_tay_rua,Ánh tẩy rửa,Siêu linh,dac_biet,dac_trung,200,1,6000,10,lu_lan,thang,hu_charge_beam_glow,F95587,1,381
+dt.song_nguyen_so,Sóng nguyên sơ,Nước,dac_biet,dac_trung,200,1,6000,10,cham,thang,hu_hydro_pump_rse,6390F0,0,382
+dt.luoi_vuc_tham,Lưỡi vực thẳm,Đất,vat_ly,dac_trung,200,1,6000,10,mu,thang,hu_mud_bomb_ball,E2BF65,1,383
+dt.thang_thien,Thăng thiên,Bay,vat_ly,dac_trung,200,1,6000,10,day_lui,thang,hu_swift_star,A98FF3,1,384
+dt.uoc_nguyen_dinh_menh,Ước nguyện định mệnh,Thép,dac_biet,dac_trung,200,1,6000,10,giam_thu,thang,hu_wish,B7B7CE,1,385
+dt.bung_no_tam_linh,Bùng nổ tâm linh,Siêu linh,dac_biet,dac_trung,200,1,6000,10,lu_lan,thang,hu_charge_beam_glow,F95587,1,386
+dt.bua_go_co_thu,Búa gỗ cổ thụ,Cỏ,vat_ly,dac_trung,200,1,6000,10,ngu,thang,hu_seed_bomb_blast,7AC74C,0,387
+dt.lao_lua_ruc,Lao lửa rực,Lửa,vat_ly,dac_trung,200,1,6000,10,bong,thang,hu_fire_spin_front,EE8130,0,390
+dt.loc_nuoc_hoang_de,Lốc nước hoàng đế,Nước,dac_biet,dac_trung,200,1,6000,10,cham,thang,hu_water_column_ranger,6390F0,0,393
+dt.dau_bua_tien_su,Đầu búa tiền sử,Đá,vat_ly,dac_trung,200,1,6000,10,choang,thang,hu_giga_impact_front,B6A136,1,408
+dt.khien_thep_de,Khiên thép đè,Thép,vat_ly,dac_trung,200,1,6000,10,giam_thu,thang,hu_iron_head,B7B7CE,1,410
+dt.vuot_bao_cat,Vuốt bão cát,Rồng,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_shadow_claw,6F35FC,1,443
+dt.loc_la_hoang_gia,Lốc lá hoàng gia,Cỏ,dac_biet,dac_trung,200,1,6000,10,ngu,thang,hu_leaf_storm_hit,7AC74C,0,495
+dt.lua_de_nang,Lửa đè nặng,Lửa,vat_ly,dac_trung,200,1,6000,10,bong,thang,hu_fire_blast,EE8130,0,498
+dt.vo_so_chem,Vỏ sò chém,Nước,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_aqua_tail_splash,6390F0,0,501
+dt.luon_chim_co,Lượn chim cổ,Bay,vat_ly,dac_trung,200,1,6000,10,day_lui,thang,hu_swift_star,A98FF3,1,566
+dt.song_ba_dau,Sóng ba đầu,Bóng tối,dac_biet,dac_trung,200,1,6000,10,so_hai,thang,hu_smoke_black,705746,1,633
+dt.canh_tay_gai,Cánh tay gai,Cỏ,vat_ly,dac_trung,200,1,6000,10,ngu,thang,hu_vine_whip,7AC74C,0,650
+dt.lua_huyen_bi,Lửa huyền bí,Lửa,dac_biet,dac_trung,200,1,6000,10,bong,thang,hu_flamethrower,EE8130,0,653
+dt.phi_tieu_nuoc,Phi tiêu nước,Nước,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_water_column_ranger,6390F0,0,656
+dt.ham_bao_chua,Hàm bạo chúa,Đá,vat_ly,dac_trung,200,1,6000,10,choang,thang,hu_bite,B6A136,1,696
+dt.cuc_quang,Cực quang,Băng,dac_biet,dac_trung,200,1,6000,10,dong_bang,thang,hu_charge_beam_glow,96D9D6,1,698
+dt.song_nhay,Sóng nhầy,Rồng,dac_biet,dac_trung,200,1,6000,10,so_hai,thang,hu_bubbles_blue,6F35FC,1,704
+dt.mui_ten_bong,Mũi tên bóng,Ma,vat_ly,dac_trung,200,1,6000,10,lu_lan,thang,hu_grudge_lights,735797,1,722
+dt.quat_xoay_bong_toi,Quật xoay bóng tối,Bóng tối,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_hit_super_effective,705746,1,725
+dt.khuc_ca_bot_bien,Khúc ca bọt biển,Tiên,dac_biet,dac_trung,200,1,6000,10,me_hoac,thang,hu_wish,D685AD,1,728
+dt.vay_vang_doi,Vảy vang dội,Rồng,dac_biet,dac_trung,200,1,6000,10,so_hai,thang,hu_discharge,6F35FC,1,782
+dt.trong_rung,Trống rừng,Cỏ,vat_ly,dac_trung,200,1,6000,10,ngu,thang,hu_seed_bomb_blast,7AC74C,0,810
+dt.bong_lua,Bóng lửa,Lửa,vat_ly,dac_trung,200,1,6000,10,bong,thang,hu_fire_blast,EE8130,0,813
+dt.phat_ban_tia_nuoc,Phát bắn tỉa nước,Nước,dac_biet,dac_trung,200,1,6000,10,cham,thang,hu_water_column_ranger,6390F0,0,816
+dt.mo_set,Mỏ sét,Điện,vat_ly,dac_trung,200,1,6000,10,te,thang,hu_thunder_fang_fang,F7D02C,0,880
+dt.bang_set_hoa_thach,Băng sét hoá thạch,Băng,vat_ly,dac_trung,200,1,6000,10,dong_bang,thang,hu_charge_beam_glow,96D9D6,1,881
+dt.ham_ca_co_dai,Hàm cá cổ đại,Nước,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_bite,6390F0,1,882
+dt.ham_bang_co_dai,Hàm băng cổ đại,Băng,vat_ly,dac_trung,200,1,6000,10,dong_bang,thang,hu_bite,96D9D6,1,883
+dt.phi_tieu_bong_ma,Phi tiêu bóng ma,Rồng,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_last_resort_front,6F35FC,1,885
+dt.ao_thuat_hoa,Ảo thuật hoa,Cỏ,vat_ly,dac_trung,200,1,6000,10,ngu,thang,hu_razor_leaf,7AC74C,0,906
+dt.khuc_ca_ngon_duoc,Khúc ca ngọn đuốc,Lửa,dac_biet,dac_trung,200,1,6000,10,bong,thang,hu_flamethrower,EE8130,0,909
+dt.vu_bo_nuoc,Vũ bộ nước,Nước,vat_ly,dac_trung,200,1,6000,10,cham,thang,hu_aqua_tail_splash,6390F0,0,912
+dt.luoi_bang_xung_kich,Lưỡi băng xung kích,Rồng,vat_ly,dac_trung,200,1,6000,10,so_hai,thang,hu_shadow_claw,6F35FC,1,996

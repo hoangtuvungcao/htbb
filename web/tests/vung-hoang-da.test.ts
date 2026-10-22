@@ -27,7 +27,7 @@ test('giờ máy chủ UTC+7: 17:00 UTC Chủ nhật đã là thứ Hai ở máy
 })
 
 test('tuần này + 2 tuần tới bắt đầu từ thứ Hai', () => {
-  const lich: LichVungHoangDa = { ngayGoc: '2026-10-26', tuan: [0, 1, 2, 3, 4, 5].map(i => ({ chuKy: i, ten: `T${i}`, moTa: '', theHe: 4 + i })), banDo: [], soLoai: {} }
+  const lich: LichVungHoangDa = { ngayGoc: '2026-10-26', tuan: [0, 1, 2, 3, 4, 5].map(i => ({ chuKy: i, ten: `T${i}`, moTa: '', theHe: 4 + i })), banDo: [{ id: 4, ten: 'A', vung: 3, nhom: 1 }], soLoai: {} }
   const t = cacTuanToi(lich, goc + 10, 3)
   assert.deepEqual(t.map(x => x.chuKy), [1, 2, 3])
   assert.equal(ngayTuEpoch(t[0]!.batDau), '02/11')

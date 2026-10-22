@@ -326,6 +326,14 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
   bậc T1–T4, không huyền thoại / huyền ảo / UB / Nghịch lý, không dạng em bé (486 loài; `bat = 1`, Pokédex "đã xuất
   hiện"). Tỉ lệ từng bậc và số quái **không đổi**: vòng xoay chỉ thêm loài vào danh sách ứng viên của bậc đã tung
   (`ChonLoaiHoangDa.chon(..., them)`). Lịch hiện ở trang Tin tức (`/api/vung-hoang-da`) và thẻ Pokédex web.
+  **Nhóm cấp thấp** (người mới): cùng lịch, trên 4 bản đồ quái cấp 6–39 (Kanto #4, #7, #9, #13), CHỈ dạng đầu (giai đoạn
+  1, không tiến hoá / em bé), bậc T1–T3, dải cấp 5–40 (`xoay_vong.ban_do_thap`, `data_loai_xoay_vong.nhom = 1`).
+  Đổi tuần: biểu ngữ `ThongBao.SU_KIEN` "Vùng hoang dã: Tuần …" cho mọi người đang online lúc sang thứ Hai, và ở lần đăng
+  nhập đầu tiên trong tuần (`LoaiQuaiGame.khiDangNhap`).
+- **Chiêu đặc trưng** thêm 50 họ (Gen 3–9: dòng khởi đầu, họ T4–T6 đã mở - Bagon, Beldum, Gible, Deino, Goomy, Jangmo-o,
+  Dreepy, Frigibax, hoá thạch, huyền thoại Gen 3) = 75 chiêu đặc trưng; tên tiếng Việt tự đặt, dùng hiệu ứng có sẵn (đổi
+  màu theo hệ), cùng khuôn `vai_tro.dac_trung` (sát thương 200%, hồi 6 giây, 10 PP). Họ dưới T4 (Absol, Aggron, Flygon…)
+  không có chiêu đặc trưng theo luật 4.2.
 - **Bậc loài T1–T6** (gốc bắt 400 / 250 / 120 / 60 / 25 ‰, T6 chỉ sau đột kích): luật tự động theo giai đoạn + tổng chỉ
   số nền (giả huyền thoại, hoá thạch, Eevee, khởi đầu → T4; dạng cuối giả huyền thoại → T5; huyền thoại / huyền ảo / UB /
   Nghịch lý → T6) rồi ghi đè tay.
