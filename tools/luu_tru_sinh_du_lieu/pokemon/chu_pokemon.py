@@ -13,6 +13,8 @@ import os
 import re
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if not os.path.isdir(os.path.join(GOC, "server")):
+    GOC = os.path.dirname(GOC)   # 943e989b: tep nay nam o tools/luu_tru_sinh_du_lieu/pokemon (sau hon mot cap)
 F_CHU = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "ChuPokemon.java")
 F_MAP = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "TenMapPokemon.java")
 F_DUMP = os.path.join(GOC, "du_lieu", "sql_nguon", "gamedb7_clean.sql")

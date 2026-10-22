@@ -63,7 +63,7 @@ public final class BatPokemon {
         return (coDex(dex) & 2) != 0;
     }
 
-    static void xinTrangThai() {
+    public static void xinTrangThai() {
         long bay = System.currentTimeMillis();
         if (bay - xinLuc < 8000) {
             return;
@@ -270,21 +270,60 @@ public final class BatPokemon {
     public static final int[] NUT_HUD = new int[4];
     public static int demVeNutHud;
 
-    /** HudRong: nút tròn Poké Ball cạnh cụm chiêu (chỉ khi mục tiêu hoang dã đã yếu). r = bán kính. */
-    public static void veNutHud(Graphics g, int x, int y, int r) {
+    /** Loại bóng nút hiện (bóng sẽ dùng; hết mọi loại = loại ưu tiên đầu): chỉ số mảng máy chủ, -1 = chưa có danh sách. */
+    static int bongHien() {
         int i = bongSeDung();
-        boolean het = i < 0;
+        if (i >= 0) {
+            return i;
+        }
+        napUuTien();
+        for (int u = 0; u < uuTien.length; u++) {
+            for (int k = 0; k < bongThuTu.length; k++) {
+                if (bongThuTu[k] == uuTien[u]) {
+                    return k;
+                }
+            }
+        }
+        return bongThuTu.length > 0 ? 0 : -1;
+    }
+
+    /** Nhãn dưới nút: "Ultra Ball ×3" (bóng sẽ dùng; hết = loại ưu tiên đầu ×0). */
+    public static String nhanNutHud() {
+        int i = bongHien();
+        if (i < 0) {
+            return "Poké Ball ×0";
+        }
+        int so = bongSeDung() < 0 ? 0 : bongSo[i];
+        return bongTen[i] + " ×" + (so > 999 ? "999+" : String.valueOf(so));
+    }
+
+    /** Icon PNG của bóng sẽ dùng (Poké đỏ trắng / Great xanh sọc đỏ / Ultra đen chữ H vàng / Master...). */
+    public static int iconNutHud() {
+        int i = bongHien();
+        return i < 0 ? BieuTuong.POKEBALL : BieuTuong.bong(bongThuTu[i], bongTen[i]);
+    }
+
+    /**
+     * HudRong: nút Poké Ball cạnh cụm chiêu (chỉ khi mục tiêu hoang dã đã yếu) - CHỈ hình bóng (icon PNG pixel theo loại
+     * bóng sẽ dùng, phóng nguyên), không chữ trên nút; nhãn "Ultra Ball ×3" ngay dưới (yNhan = đỉnh nhãn). Hết bóng: icon
+     * xám, không nhấp nháy. r = bán kính.
+     */
+    public static void veNutHud(Graphics g, int x, int y, int r, int yNhan) {
+        boolean het = bongSeDung() < 0;
         boolean sang = !het && (System.currentTimeMillis() / 400) % 2 == 0;
         if (sang) {
             g.setColor(ChuDe.VANG);
-            g.fillArc(x - r - 3, y - r - 3, 2 * r + 6, 2 * r + 6, 0, 360);
+            g.fillArc(x - r - 2, y - r - 2, 2 * r + 4, 2 * r + 4, 0, 360);
         }
-        g.setColor(het ? 0x8A8A92 : 0xFFFFFF);
-        g.fillArc(x - r, y - r, 2 * r, 2 * r, 0, 360);
-        int s = r * 3 / 2;
-        BieuTuong.ve(g, BieuTuong.POKEBALL, x - s / 2, y - s / 2, s, het ? 0x8A8A92 : 0xE03C30, 0xFFFFFF);
-        String so = het ? "0" : (TEN_NGAN[bongThuTu[i]] + " " + bongSo[i]);
-        ChuDe.chuGiua(g, so, x, y + r - 4, 12, ChuDe.NHAN_NHO, het ? ChuDe.CHU_PHU : ChuDe.CHU, 2);
+        int id = iconNutHud();
+        int k = Math.max(1, (2 * r) / 16);
+        if (!KhungNro.iconGiua(g, id, x, y, k, het ? KhungNro.XAM : -1)) {
+            BieuTuong.ve(g, BieuTuong.POKEBALL, x - r, y - r, 2 * r, het ? 0x8A8A92 : 0xE03C30, 0xFFFFFF);
+        }
+        GhiChu.bieu(g, "nut-bong-" + id + (het ? "-xam" : ""), x - r, y - r, 2 * r, 2 * r);
+        String nhan = nhanNutHud();
+        int h = ChuDe.cao(ChuDe.NHAN_NHO);
+        ChuDe.chuVienGiua(g, nhan, x, yNhan, h, ChuDe.NHAN_NHO, het ? 0xC4C4CA : 0xFFFFFF, ChuDe.VIEN, 2);   // chữ viền: đọc được trên nền bản đồ
         NUT_HUD[0] = x - r + g.getTranslateX();
         NUT_HUD[1] = y - r + g.getTranslateY();
         NUT_HUD[2] = 2 * r;
@@ -768,6 +807,8 @@ public final class BatPokemon {
 
     /** Vùng nút vừa vẽ {x, y, w, h} (kiểm thử). */
     public static final int[] NUT = new int[4];
+    /** HUD cảm ứng riêng (APK com.htbb.pokemon.hd.Hud) tự vẽ nút ném: GameScr không vẽ thanh dưới khung mục tiêu. */
+    public static boolean nutNgoai;
     public static int demVeNut;
 
     /**
@@ -803,7 +844,9 @@ public final class BatPokemon {
             GiaoDien.khoi(g, x - 2, y - 2, w + 4, h + 4, h / 2 + 2, ChuDe.VANG);
         }
         GiaoDien.khoiDoc(g, x, y, w, h, h / 2, con ? (an ? ChuDe.DO_TOI : 0xF7735F) : 0xCDD5DC, con ? ChuDe.DO : 0xC3CCD4);
-        GiaoDien.pokeBall(g, x + 6 + r, y + h / 2, r, (int) ((System.currentTimeMillis() / 6) % 40) - 20);
+        if (!KhungNro.iconGiua(g, iconNutHud(), x + 6 + r, y + h / 2, Math.max(1, (2 * r) / 16), con ? -1 : KhungNro.XAM)) {
+            GiaoDien.pokeBall(g, x + 6 + r, y + h / 2, r, (int) ((System.currentTimeMillis() / 6) % 40) - 20);
+        }
         ChuDe.chuGiua(g, chu, x + 2 * r + 12, y, h, ChuDe.NHAN, 0xFFFFFF, 0);
         VungCham.them(g, x, y, w - wDoi, h, new IAction() {
             public void perform() {

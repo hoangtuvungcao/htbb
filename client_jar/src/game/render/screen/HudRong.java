@@ -117,7 +117,7 @@ public final class HudRong {
      * theo trục lớn nhất (|dx| hoặc |dy|), bằng nhau khi góc = 180, 180 - a, 90 + a, 90 với tan a = 1/2 (a = 26,57 độ):
      * khoảng tâm theo trục = KC sin a = 0,447 KC -> KC 84: khe ~8 px giữa mọi cặp ô. Ô thuốc HP / PP xếp dọc ngoài cung.
      */
-    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 84, R_THUOC = 12, R_NGU_CANH = 14, R_DOI_BO = 9;
+    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 84, R_THUOC = 12, R_NGU_CANH = 16, R_DOI_BO = 9;
     static final int[] GOC_CHIEU = {180, 153, 117, 90};
     static final int[] PHIM_CHIEU = {1, 3, 7, 9};
     /** cos / sin * 1024 của GOC_CHIEU (180, 153,43, 116,57, 90) */
@@ -163,12 +163,30 @@ public final class HudRong {
         return gs != null && game.pokemon.BatPokemon.coTrangThai && game.pokemon.BatPokemon.nemDuoc(gs.focusedActor);
     }
 
+    /** 0.9.8: nút ngữ cảnh (Poké Ball ném / câu cá) trái-trên ô chiêu 1, chừa chỗ nhãn "Ultra Ball ×3" ngay dưới. */
     static int xNguCanh() {
-        return xDanh() - 84;
+        return xDanh() - 98;
     }
 
     static int yNguCanh() {
-        return yDanh() - 76;
+        return yDanh() - 90;
+    }
+
+    /** Đỉnh nhãn bóng dưới nút ném. */
+    static int yNhanBong() {
+        return yNguCanh() + R_NGU_CANH + 2;
+    }
+
+    /** Kiểm thử: ô nhãn bóng. */
+    public static int[] oNhanBongKiem() {
+        return oNhanBong();
+    }
+
+    /** Ô dành cho nhãn bóng (rộng theo nhãn dài nhất "Master Ball ×999+") - kiểm chồng / an toàn. */
+    static int[] oNhanBong() {
+        int w = game.pokemon.ChuDe.rong("Master Ball ×999+", game.pokemon.ChuDe.NHAN_NHO) + 4;
+        int h = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN_NHO) + 2;
+        return new int[]{xNguCanh() - w / 2, yNhanBong() - 1, w, h};
     }
 
     /**
@@ -547,7 +565,7 @@ public final class HudRong {
         veThuoc(g, mc, false, now);
         // ngữ cảnh: câu cá
         if (nemBong(gs)) {
-            game.pokemon.BatPokemon.veNutHud(g, xNguCanh(), yNguCanh(), R_NGU_CANH);
+            game.pokemon.BatPokemon.veNutHud(g, xNguCanh(), yNguCanh(), R_NGU_CANH, yNhanBong());
         } else if (nc == 3) {
             veNutCau(g, xNguCanh(), yNguCanh(), R_NGU_CANH);
         }
@@ -1401,6 +1419,7 @@ public final class HudRong {
         v.addElement(new Object[]{"thuoc_hp", tron(xThuoc(), yThuoc(true), R_THUOC + 1)});
         v.addElement(new Object[]{"thuoc_pp", tron(xThuoc(), yThuoc(false), R_THUOC + 1)});
         v.addElement(new Object[]{"ngu_canh", tron(xNguCanh(), yNguCanh(), R_NGU_CANH + 1)});
+        v.addElement(new Object[]{"nhan_bong", oNhanBong()});
         v.addElement(new Object[]{"tu_dong", new int[]{xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG}});
         v.addElement(new Object[]{"tu_dong_cai_dat", tron(xTdCai(), yTdCai(), R_TD_CAI + 1)});
         v.addElement(new Object[]{"chat", tron(xChat(), yChat(), R_CHAT + 1)});

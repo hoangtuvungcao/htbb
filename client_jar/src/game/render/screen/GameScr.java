@@ -4255,7 +4255,7 @@ public class GameScr extends Screen {
                 }
             }
             // 0.9.8: Pokémon hoang dã đã yếu (HP <= ngưỡng) -> nút "Ném Poké Ball" dưới khung mục tiêu
-            if (!HudRong.bat()) {
+            if (!HudRong.bat() && !game.pokemon.BatPokemon.nutNgoai) {
                 game.pokemon.BatPokemon.veNut(g, this.focusedActor, x0, H, W);   // bản không HUD rộng (J2ME phím): thanh dưới khung
             }
         }

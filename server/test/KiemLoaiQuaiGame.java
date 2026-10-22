@@ -202,5 +202,12 @@ public final class KiemLoaiQuaiGame {
         final String xl = new String(Files.readAllBytes(Paths.get("src/real/MapXuLyLenh.java")), StandardCharsets.UTF_8);
         Kiem.dung("MapXuLyLenh: lenh -126 -> LoaiMayChu", xl.contains("case -126:") && xl.contains("LoaiMayChu.xuLy(player, message)"));
         Kiem.dung("BoDemGoiTin: -126 la lenh tai nguyen", io.BoDemGoiTin.laLenhTaiNguyen(-126));
+        // 0.9.8 + loai-bo-sung: shiny CHI tung tren con hoang da (co dau, da qua gioi han khu) - quai thuong khong shiny
+        final String lq = new String(Files.readAllBytes(Paths.get("src/real/LoaiQuaiGame.java")), StandardCharsets.UTF_8);
+        final int iGioiHan = lq.indexOf("kq = ChonLoaiHoangDa.GIU;"), iShiny = lq.indexOf("m.shinyRieng = kq.dex > 0 && tungShiny(d, kq.dex);");
+        Kiem.dung("shiny chi tung sau gioi han khu va chi khi la hoang da (kq.dex > 0)", iGioiHan > 0 && iShiny > iGioiHan);
+        final String bp = new String(Files.readAllBytes(Paths.get("src/real/BatPokemonGame.java")), StandardCharsets.UTF_8);
+        Kiem.dung("bat: tu choi quai khong hoang da TRUOC khi xet shiny", bp.indexOf("tuChoi(p, idQuai, thuTu, KHONG_HOANG_DA)") > 0
+                && bp.indexOf("tuChoi(p, idQuai, thuTu, KHONG_HOANG_DA)") < bp.indexOf("LoaiQuaiGame.shinyChoNguoi(p, m)"));
     }
 }

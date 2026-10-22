@@ -17,10 +17,15 @@ import re
 import sys
 
 _D = os.path.dirname(os.path.abspath(__file__))
-_spec = importlib.util.spec_from_file_location("chu_pokemon", os.path.join(_D, "chu_pokemon.py"))
+# chu_pokemon.py da chuyen vao tools/luu_tru_sinh_du_lieu/pokemon (943e989b)
+_CP = os.path.join(_D, "chu_pokemon.py")
+if not os.path.exists(_CP):
+    _CP = os.path.join(_D, "..", "luu_tru_sinh_du_lieu", "pokemon", "chu_pokemon.py")
+_spec = importlib.util.spec_from_file_location("chu_pokemon", _CP)
 cp = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cp)
-_sq = importlib.util.spec_from_file_location("quet_tu_cam", os.path.join(_D, "quet_tu_cam.py"))
+_QT = os.path.join(os.path.dirname(_CP), "quet_tu_cam.py")
+_sq = importlib.util.spec_from_file_location("quet_tu_cam", _QT)
 qt = importlib.util.module_from_spec(_sq)
 _sq.loader.exec_module(qt)
 

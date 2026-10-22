@@ -20,7 +20,7 @@ const giaBong = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximum
       </ul>
     </WikiSection>
 
-    <WikiSection id="nem-bong" title="Ném bóng" :lead="`Đánh Pokémon hoang dã (dấu Poké Ball) xuống còn ≤ ${BAT.nguongHpPhanTram}% HP thì nút Ném Poké Ball hiện trên màn hình. Bắt được: loài vào Pokédex “Đã bắt”, Hộp PC có thêm một con và bạn nhận Kẹo loài.`">
+    <WikiSection id="nem-bong" title="Ném bóng" :lead="`Đánh Pokémon hoang dã (dấu Poké Ball) xuống còn ≤ ${BAT.nguongHpPhanTram}% HP thì nút bóng tròn hiện cạnh cụm chiêu (PC: phím B) — hình trên nút là bóng sẽ dùng theo “Thứ tự dùng bóng” (mặc định Ultra → Great → Poké), nhãn dưới ghi tên và số còn, ví dụ “Ultra Ball ×3”; hết bóng thì nút xám. Bắt được: loài vào Pokédex “Đã bắt”, Hộp PC có thêm một con và bạn nhận Kẹo loài.`">
       <div class="bang-cuon">
         <table class="bang-wiki">
           <thead>

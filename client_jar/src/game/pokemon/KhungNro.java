@@ -247,11 +247,14 @@ public final class KhungNro {
         return true;
     }
 
+    /** bong = XAM: icon đủ hình nhưng xám (nút hết bóng). */
+    public static final int XAM = -2;
+
     private static synchronized Image anhIcon(int id, int k, int bong) {
         if (k > 6) {
             k = 6;
         }
-        int khoa = (id * 8 + k) * 31 + (bong < 0 ? 0 : bong + 1);
+        int khoa = (id * 8 + k) * 31 + (bong == XAM ? 0x1000001 : bong < 0 ? 0 : bong + 1);
         int o = (khoa & 0x7FFFFFFF) % SO_DEM;
         for (int d = 0; d < 4; d++) {
             int j = (o + d) % SO_DEM;
@@ -272,6 +275,10 @@ public final class KhungNro {
                     int p = dem16[(yy / k) * 16 + xx / k];
                     if (bong >= 0 && (p >>> 24) != 0) {
                         p = ((p >>> 24) * 3 / 4) << 24 | (bong & 0xFFFFFF);
+                    } else if (bong == XAM && (p >>> 24) != 0) {
+                        int l = (((p >> 16) & 255) * 30 + ((p >> 8) & 255) * 59 + (p & 255) * 11) / 100;
+                        l = 70 + l * 120 / 255;   // xám dịu, giữ nét viền / chi tiết
+                        p = (p & 0xFF000000) | l << 16 | l << 8 | l;
                     }
                     ra[yy * n + xx] = p;
                 }

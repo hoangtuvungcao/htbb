@@ -223,6 +223,11 @@ public class KiemBoNgocBat {
                         game.render.Canvas.gameScr.switchToMe();
                         hoangDa = !ten.equals("nem_thuong");
                         datQuai(ten.equals("nem_khoe") ? 100 : 20);
+                        if (ten.equals("nem_ultra")) {
+                            game.pokemon.BatPokemon.bongSo = new int[]{12, 3, 7};
+                        } else if (ten.equals("nem_het")) {
+                            game.pokemon.BatPokemon.bongSo = new int[]{0, 0, 0};
+                        }
                     } else if (ten.equals("pokedex_da_bat")) {
                         game.pokemon.BatPokemon.DEX.clear();
                         game.pokemon.BatPokemon.DEX.put(new Integer(19), new Integer(3));
@@ -322,9 +327,11 @@ public class KiemBoNgocBat {
         String mt = game.pokemon.TrangBiThem.moTa(9999);
         kiem(mt.indexOf("\n4Bộ Pallet") >= 0 && mt.indexOf("\n14 món") >= 0, "mo ta the chi tiet dinh dang setTemp: " + mt.replace('\n', '|'));
 
-        int[][] co = {{2400, 1080, 420}, {1280, 720, 0}, {1920, 1080, 0}, {1024, 768, 0}};
-        String[] tenCo = {"dt20x9", "pc720", "pc1080", "pc4x3"};
-        String[] man = {"che_tao", "che_tao_phien_da", "kham", "kham_chi_tiet", "kham_lo_trong", "kham_tui", "nem_yeu", "nem_khoe", "nem_thuong", "pokedex_da_bat", "chi_tiet_do"};
+        // 0.9.8: nút ném kiểm ở CẢ 11 cỡ (ChupTrongGame.CO); bảng chế tạo / khảm ở 4 cỡ như trước
+        int[][] co = ChupTrongGame.CO;
+        String[] tenCo = ChupTrongGame.TEN_CO;
+        java.util.List<String> bon = java.util.Arrays.asList("dt20x9", "pc720", "pc1080", "pc4x3");
+        String[] man = {"che_tao", "che_tao_phien_da", "kham", "kham_chi_tiet", "kham_lo_trong", "kham_tui", "nem_yeu", "nem_ultra", "nem_het", "nem_khoe", "nem_thuong", "pokedex_da_bat", "chi_tiet_do"};
         for (int c = 0; c < co.length; c++) {
             final int W = co[c][0], H = co[c][1], dpi = co[c][2];
             NenPc.tinhKichThuoc(W, H);
@@ -348,6 +355,7 @@ public class KiemBoNgocBat {
             game.pokemon.VungCham.MIN = min;
             game.pokemon.VungCham.CACH = cach;
             for (int m = 0; m < man.length; m++) {
+                if (!man[m].startsWith("nem") && !bon.contains(tenCo[c])) continue;
                 String t = man[m] + " " + tenCo[c];
                 mo(man[m]);
                 Thread.sleep(150);
@@ -447,8 +455,28 @@ public class KiemBoNgocBat {
         if (game.render.screen.HudRong.bat()) {
             // 0.9.8: nút Poké Ball tròn cạnh cụm chiêu (chỗ nút ngữ cảnh), không còn thanh dưới khung mục tiêu / "Đổi"
             kiem(coVung("hud-nem-bong") && !coVung("nem-bong") && !coVung("doi-bong"), t + " Pokemon yeu: nut Poke Ball o cum chieu");
-            // thứ tự mặc định Ultra > Great > Poké, có 12 Poké / 3 Great / 0 Ultra -> dùng Great (3)
-            kiem(daVe("Great 3"), t + " nut ghi loai bong se dung theo thu tu (Great 3)");
+            // thứ tự mặc định Ultra > Great > Poké: 12 Poké / 3 Great / 0 Ultra -> Great (3); nem_ultra 7 Ultra; nem_het hết
+            boolean het = man.equals("nem_het");
+            int icon = game.pokemon.BatPokemon.iconNutHud();
+            int canIcon = man.equals("nem_ultra") ? game.pokemon.BieuTuong.BONG_ULTRA : man.equals("nem_het") ? game.pokemon.BieuTuong.BONG_ULTRA
+                    : game.pokemon.BieuTuong.BONG_GREAT;
+            String canNhan = man.equals("nem_ultra") ? "Ultra Ball ×7" : het ? "Ultra Ball ×0" : "Great Ball ×3";
+            kiem(icon == canIcon, t + " icon nut = bong se dung (" + icon + ", can " + canIcon + ")");
+            kiem(game.pokemon.KhungNro.coIcon(icon), t + " icon bong la PNG (icon.png o " + icon + ")");
+            kiem(daVe(canNhan), t + " nhan duoi nut '" + canNhan + "'");
+            kiem(!daVe("Great 3") && !daVe("Ném "), t + " nut chi co hinh bong (khong chu tren nut)");
+            kiem(game.pokemon.BatPokemon.nhanNutHud().equals(canNhan), t + " nhan = " + game.pokemon.BatPokemon.nhanNutHud());
+            int[] o = game.render.screen.HudRong.oNhanBongKiem();
+            int L = game.pokemon.Bang.trai(), T = game.pokemon.Bang.tren(), R = game.pokemon.Bang.phai(), B = game.pokemon.Bang.duoi();
+            kiem(o[0] >= L && o[1] >= T && o[0] + o[2] <= R && o[1] + o[3] <= B, t + " nhan bong trong vung an toan " + java.util.Arrays.toString(o)
+                    + " / " + L + "," + T + "," + R + "," + B);
+            String chong = game.render.screen.HudRong.kiemChong(game.render.Canvas.gameScr);
+            kiem(chong.indexOf("nhan_bong") < 0 && chong.indexOf("ngu_canh") < 0, t + " nut + nhan bong khong chong HUD: " + chong.replace('\n', '|'));
+            int[] nut = game.pokemon.BatPokemon.NUT_HUD;
+            kiem(nut[2] >= 30, t + " nut bong du lon (" + nut[2] + " px logic)");
+            if (het) {
+                kiem(game.pokemon.BatPokemon.bongSeDung() < 0, t + " het bong: icon xam");
+            }
             return;
         }
         kiem(ve && coVung("nem-bong"), t + " Pokemon yeu: co nut Nem bong");

@@ -207,7 +207,7 @@ public final class Hud implements NenAndroid.LopPhu {
     // ------------------------------------------------------------------ nút
     static final int N_DANH = 0, N_C0 = 1, N_C1 = 2, N_C3 = 3, N_C4 = 4, N_DOI_BO = 5, N_MUC_TIEU = 6,
             N_HP = 7, N_PP = 8, N_MENU = 9, N_TU_DONG = 10, N_CHAT = 11, N_THEM = 12, N_CHINH = 13,
-            N_CHAT_BONG = 14, N_MINIMAP = 15, SO_NUT = 16;
+            N_CHAT_BONG = 14, N_BONG = 15, N_MINIMAP = 16, SO_NUT = 17;
     static final int SO_NUT_TREN = 5;
     static final float R_NUT_TREN = 12.5f;
     /** 0.9.7: cỡ thẻ = thẻ chung kiểu NRO game.pokemon.TheNguoiChoi */
@@ -328,6 +328,7 @@ public final class Hud implements NenAndroid.LopPhu {
 
     public void ve(Graphics g) {
         game.pokemon.NgamTay.HUD_RIENG = BAT;   // 0.9.8: HUD tự bắt kéo-ngắm ở nút chiêu
+        game.pokemon.BatPokemon.nutNgoai = BAT;   // 0.9.8: nút ném bóng vẽ ở đây (không thanh dưới khung mục tiêu)
         long now = System.currentTimeMillis();
         float dt = tTruoc == 0 ? 0.016f : Math.min(0.1f, (now - tTruoc) / 1000f);
         tTruoc = now;
@@ -446,6 +447,7 @@ public final class Hud implements NenAndroid.LopPhu {
         for (int n = 0; n < SO_NUT; n++) {
             if (n == N_MINIMAP) continue;
             if (n == N_MUC_TIEU && gs.focusedActor == null && gs.actors.size() <= 1) continue;
+            if (n == N_BONG && !hienBong(gs)) continue;
             HdKiem.ghi(2, NX[n] - NR[n], NY[n] - NR[n], NX[n] + NR[n], NY[n] + NR[n], "o:nut" + n);
         }
         HdKiem.ghi(2, jx0 - jr, jy0 - jr, jx0 + jr, jy0 + jr, "o:can");
@@ -963,6 +965,42 @@ public final class Hud implements NenAndroid.LopPhu {
         if (gs.focusedActor != null || gs.actors.size() > 1) veNutNho(c, N_MUC_TIEU, now);
         veBinh(g, c, N_HP, mc, now, true);
         veBinh(g, c, N_PP, mc, now, false);
+        if (hienBong(gs)) veNutBong(g, c, now);
+    }
+
+    /** 0.9.8: nút ném bóng hiện (mục tiêu Pokémon hoang dã đã yếu, máy chủ đã gửi danh sách bóng). */
+    static boolean hienBong(GameScr gs) {
+        if (gs == null || !game.pokemon.BatPokemon.nemDuoc(gs.focusedActor)) {
+            return false;
+        }
+        if (!game.pokemon.BatPokemon.coTrangThai) {
+            game.pokemon.BatPokemon.xinTrangThai();
+            return false;
+        }
+        return game.pokemon.BatPokemon.bongThuTu.length > 0;
+    }
+
+    /**
+     * Nút ném bóng: CHỈ hình bóng (icon PNG pixel theo bóng sẽ dùng - Poké / Great / Ultra / ...), phóng nguyên; nhãn
+     * "Ultra Ball ×3" ngay dưới (ô HudBoTri.oNhanBong); hết bóng: icon xám, không nhấp nháy.
+     */
+    static void veNutBong(Graphics g, Canvas c, long now) {
+        int n = N_BONG;
+        float s = nhun(n, now);
+        float x = NX[n], y = NY[n], r = NR[n] * s;
+        boolean het = game.pokemon.BatPokemon.bongSeDung() < 0;
+        if (!het && (now / 400) % 2 == 0) {
+            P.setColor(0xFF000000 | game.pokemon.ChuDe.VANG);
+            c.drawCircle(x, y, r + 2, P);
+        }
+        int id = game.pokemon.BatPokemon.iconNutHud();
+        int k = Math.max(1, Math.round(2 * r / 16f));
+        if (!game.pokemon.KhungNro.iconGiua(g, id, Math.round(x), Math.round(y), k, het ? game.pokemon.KhungNro.XAM : -1)) {
+            nenMau(c, x, y, r, het ? game.pokemon.ChuDe.XAM : game.pokemon.ChuDe.DO, false);
+        }
+        float[] o = HudBoTri.oNhanBong();
+        String nhan = game.pokemon.BatPokemon.nhanNutHud();
+        chu(c, nhan, x, o[3] - 2.5f, 8.5f, het ? 0xFFC4C4CA : 0xFFFFFFFF, 0xC0000000, 2);
     }
 
     static void veNutNho(Canvas c, int n, long now) {
@@ -1631,6 +1669,7 @@ public final class Hud implements NenAndroid.LopPhu {
         for (int n = 0; n < SO_NUT; n++) {
             if (n == N_MINIMAP) continue;
             if (n == N_MUC_TIEU && gs != null && gs.focusedActor == null && gs.actors.size() <= 1) continue;
+            if (n == N_BONG && !hienBong(gs)) continue;
             float dx = x - NX[n], dy = y - NY[n];
             float d = dx * dx + dy * dy;
             float r = NR[n] + (NR[n] < 15 ? 5 : 3);
@@ -1801,6 +1840,9 @@ public final class Hud implements NenAndroid.LopPhu {
                 break;
             case N_MINIMAP:
                 HdCau.moBanDoLon();
+                break;
+            case N_BONG:
+                game.pokemon.BatPokemon.bamNut();   // 0.9.8: ném theo Thứ tự dùng bóng; hết bóng thì báo
                 break;
             default:
                 break;

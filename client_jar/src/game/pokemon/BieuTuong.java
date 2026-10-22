@@ -34,6 +34,23 @@ public final class BieuTuong {
             MAN_HINH = 62, LOA = 63, BAN_PHIM = 64, CHUOT_TRAI = 65, CHUOT_PHAI = 66, CHUOT_LAN = 67, PHIM = 68, TAI_KHOAN = 69,
             // 0.9.8: thời tiết (đĩa HUD, ThoiTietVe.veIcon): TT_QUANG + ThoiTietVe.QUANG..GIO
             TT_QUANG = 70, TT_NANG = 71, TT_MUA = 72, TT_TUYET = 73, TT_BAO_CAT = 74, TT_SUONG_MU = 75, TT_GIO = 76;
+    /** 0.9.8: icon từng loại bóng (nút ném HUD): Poké = POKEBALL; bóng mới thêm icon_nro.py + nhánh bong(). */
+    public static final int BONG_GREAT = 77, BONG_ULTRA = 78, BONG_MASTER = 79;
+
+    /** Icon của loại bóng (mã máy chủ 1 Poké / 2 Great / 3 Ultra; loại khác theo tên), không rõ = Poké Ball. */
+    public static int bong(int loai, String ten) {
+        String t = ten == null ? "" : ten.toLowerCase();
+        if (loai == 3 || t.indexOf("ultra") >= 0) {
+            return BONG_ULTRA;
+        }
+        if (loai == 2 || t.indexOf("great") >= 0) {
+            return BONG_GREAT;
+        }
+        if (t.indexOf("master") >= 0) {
+            return BONG_MASTER;
+        }
+        return POKEBALL;
+    }
 
     /** số id biểu tượng (kể cả id chỉ có icon pixel) */
     public static final int SO = 77;

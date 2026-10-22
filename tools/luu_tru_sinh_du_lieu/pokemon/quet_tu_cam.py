@@ -44,7 +44,10 @@ _spec.loader.exec_module(cp)
 GOC = cp.GOC
 RA = os.path.join(GOC, "du_lieu", "tu_cam_con_lai.csv")
 SRC = os.path.join(GOC, "server", "src")
-_sd = importlib.util.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
+_DC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py")
+if not os.path.exists(_DC):
+    _DC = os.path.join(GOC, "tools", "pokemon", "duong_client.py")   # 943e989b: duong_client.py o lai tools/pokemon
+_sd = importlib.util.spec_from_file_location("duong_client", _DC)
 dc = importlib.util.module_from_spec(_sd)
 _sd.loader.exec_module(dc)
 # Ma C# client Unity (client_pc_ios/Assets, doi bang HTBB_CLIENT_ASSETS).
