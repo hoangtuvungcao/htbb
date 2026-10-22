@@ -77,6 +77,9 @@ const loaiLoc = computed(() => {
         Pokémon và mọi tên, hình liên quan © Nintendo / Creatures Inc. / GAME FREAK inc. / The Pokémon Company. Dự án fan
         <strong class="text-highlighted">không chính thức</strong>, không liên quan và không được các công ty trên bảo trợ.
       </li>
+      <li>
+        Mã nguồn game gốc thuộc bản quyền TeaMobi; máy chủ này chỉ dùng cho mục đích học tập và cộng đồng.
+      </li>
     </ul>
 
     <h2 class="mt-10 font-display text-xl font-bold text-highlighted">Tài nguyên</h2>

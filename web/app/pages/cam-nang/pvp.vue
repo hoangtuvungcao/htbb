@@ -53,7 +53,7 @@ const soMuaNam = Math.round(52 / P.tuanMoiMua)
         <li class="rounded-2xl glass p-4">
           <strong class="font-display text-highlighted">Giải đấu tuần</strong>
           <p class="mt-1 text-sm text-muted">
-            Cây đấu loại trực tiếp công bố thứ Bảy 20:00, trận đánh ở Giải Liên minh — thuộc <NuxtLink to="/cam-nang/he-sinh-thai#giai-tri" class="lien-ket">hệ sinh thái</NuxtLink> (đang thử nghiệm).
+            Cây đấu loại trực tiếp công bố thứ Bảy 20:00, trận đánh ở Giải Liên minh — thuộc <NuxtLink to="/cam-nang/he-sinh-thai#giai-tri" class="lien-ket">hệ sinh thái</NuxtLink> (sắp mở).
           </p>
         </li>
         <li class="rounded-2xl glass p-4">

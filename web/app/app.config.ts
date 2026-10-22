@@ -22,7 +22,7 @@ export default defineAppConfig({
     },
     button: {
       slots: {
-        base: 'font-display font-bold tracking-wide rounded-full',
+        base: 'font-display font-bold tracking-wide rounded-md',
       },
     },
     // Menu ngang chỉ hiện từ xl (7 mục + tìm kiếm); dưới xl dùng nút mở menu trượt.
@@ -35,7 +35,7 @@ export default defineAppConfig({
     },
     badge: {
       slots: {
-        base: 'font-bold rounded-full',
+        base: 'font-bold rounded-md',
       },
     },
   },

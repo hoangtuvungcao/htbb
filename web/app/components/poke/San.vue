@@ -42,7 +42,6 @@ const anh = computed(() => {
     class="poke-san relative isolate block overflow-hidden"
     :style="{ '--mau': mau, 'height': `${size}px` }"
   >
-    <PokeBall mono class="pointer-events-none absolute -right-[10%] -top-[22%] -z-10 aspect-square h-[78%] w-auto text-[var(--mau)] opacity-[.14]" />
     <template v-if="viTri">
       <span class="absolute left-1/2 h-2 -translate-x-1/2 rounded-[50%] bg-[rgb(10_26_51/.2)] dark:bg-black/45" :style="viTri.bong" aria-hidden="true" />
       <PokeSprite :dex="dex" :shiny="shiny" :scale="viTri.scale" :label="label" :delay="delay" class="!absolute" :style="viTri.style" />

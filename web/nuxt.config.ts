@@ -51,6 +51,15 @@ export default defineNuxtConfig({
     '/naptien': { ssr: false },
     '/logout': { ssr: false },
     '/api/**': { headers: { 'Cache-Control': 'no-store' } },
+    // Ảnh / phông tĩnh của game: cache dài ở trình duyệt + CDN (đổi ảnh thì đổi tên tệp hoặc chờ hết hạn 7 ngày).
+    // /_nuxt/** (JS/CSS có hash trong tên) Nitro đã tự đặt immutable 1 năm.
+    ...Object.fromEntries(['/pokemon/**', '/anh-game/**', '/keyart/**', '/vat-pham/**', '/tien/**', '/chieu/**', '/ban-do/**', '/og/**'].map(r => [r, {
+      headers: { 'Cache-Control': 'public, max-age=604800, stale-while-revalidate=86400' },
+    }])),
+    '/_fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+    ...Object.fromEntries(['/logo.svg', '/logo-gon.svg', '/logo-mark.svg', '/favicon.ico', '/favicon-32.png', '/apple-touch-icon.png'].map(r => [r, {
+      headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' },
+    }])),
   },
 
   // Icon được đóng gói sẵn (không gọi API Iconify lúc chạy) — máy chủ game có thể không ra được Internet.
@@ -63,10 +72,11 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       // Cả hai đều có bộ chữ tiếng Việt (subset "vietnamese" trên Google Fonts).
-      { name: 'Nunito', provider: 'google', weights: [400, 600, 700, 800, 900] },
-      { name: 'Baloo 2', provider: 'google', weights: [500, 600, 700, 800] },
+      // Chỉ bộ latin + vietnamese (đủ mọi chữ tiếng Việt) và preload để chữ không nhảy khi phông tải xong.
+      { name: 'Nunito', provider: 'google', weights: [400, 600, 700, 800, 900], subsets: ['latin', 'vietnamese'], preload: true },
+      { name: 'Baloo 2', provider: 'google', weights: [600, 700, 800], subsets: ['latin', 'vietnamese'], preload: true },
       // Font pixel KHÔNG có tiếng Việt: chỉ dùng cho chữ ASCII ngắn (số dex, "LV").
-      { name: 'Press Start 2P', provider: 'google', weights: [400] },
+      { name: 'Press Start 2P', provider: 'google', weights: [400], subsets: ['latin'] },
     ],
   },
 

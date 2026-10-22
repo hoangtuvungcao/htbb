@@ -62,7 +62,7 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
         <li><strong>Đánh quái gần cấp mình</strong> — nguồn xu chính, tỉ lệ thuận với cấp (xem cột "Xu / giờ" ở <NuxtLink to="/cam-nang/cap-do#bang-exp" class="lien-ket">bảng EXP</NuxtLink>). Chịu giới hạn <NuxtLink to="/cam-nang/cap-do#nang-luong" class="lien-ket">năng lượng huấn luyện</NuxtLink>.</li>
         <li><strong>Nhiệm vụ</strong> trả xu + EXP theo "giờ thu nhập" ở cấp của nhiệm vụ, nên luôn đáng làm dù bạn cấp nào.</li>
         <li><strong>Sự kiện</strong>: chỉ {{ K.suKienPhanXu }}% giá trị phần thưởng là xu; phần lớn là vật phẩm khoá, đồ trang trí, vật phẩm hết hạn.</li>
-        <li><strong>Giftcode</strong>: tối đa {{ K.giftcodeToiDaThang }} mã/tháng, giá trị nhỏ — không có mã "phá game". Nhập ở Menu → Thư/Quà → Nhập giftcode (từ 0.9.6).</li>
+        <li><strong>Giftcode</strong>: tối đa {{ K.giftcodeToiDaThang }} mã/tháng, giá trị nhỏ — không có mã "phá game". Nhập ở Menu → Thư/Quà → Nhập giftcode.</li>
       </ul>
     </WikiSection>
 

@@ -38,8 +38,9 @@ const demLop = demLopTT()
 const ghiDuoc = computed(() => !!data.value?.quyen.ghi)
 
 // ---- bản đang phát từng nền tảng (web_cai_dat 'taiGame') - giải thích "Bản mới nhất / Bản tối thiểu" ----
-const { data: cmsCk } = useAsyncData('admin-cau-hinh-tai-game', () => $fetch<{ taiGame?: { ban?: BanTai[] } }>('/api/cong-khai'), { server: false })
-const banTai = computed(() => (cmsCk.value?.taiGame?.ban ?? []).filter(b => b.ma !== 'ios' && b.hien))
+// Số bản (BAN) không còn trả ở /api/cong-khai: đọc qua API quản trị.
+const { data: cmsCk } = useAsyncData('admin-cau-hinh-tai-game', () => api<{ giaTri?: { taiGame?: { ban?: BanTai[] } } }>('/api/admin/cms/cai-dat'), { server: false })
+const banTai = computed(() => (cmsCk.value?.giaTri?.taiGame?.ban ?? []).filter(b => b.ma !== 'ios' && b.hien))
 
 useIntervalFn(() => {
   if (document.visibilityState === 'visible' && ch.soThayDoi.value === 0 && !moXemTruoc.value) refresh()

@@ -106,13 +106,15 @@ export const CMS_MAC_DINH: CmsCongKhai = {
     hienCanhPhim: true,
   },
   menu: {
-    // Thanh: 4 mục + "Thêm ▾" + nút Tải game. Nạp / Thành viên / Kích hoạt nằm ở menu tài khoản.
+    // Thanh: Trang chủ · Tin tức · Cẩm nang · Pokédex · Xếp hạng + "Thêm ▾" (Tân thủ, Giới thiệu) + nút Tải game.
+    // Nạp / Thành viên / Kích hoạt nằm ở menu tài khoản (bên phải).
     dauTrang: [
-      { label: 'Tân thủ', to: '/huong-dan', icon: 'i-lucide-compass', vi: 'chinh' },
+      { label: 'Trang chủ', to: '/', icon: 'i-lucide-house', vi: 'chinh' },
+      { label: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper', vi: 'chinh' },
       { label: 'Cẩm nang', to: '/cam-nang', icon: 'i-lucide-library', vi: 'chinh' },
       { label: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open', vi: 'chinh' },
       { label: 'Xếp hạng', to: '/ranking', icon: 'i-lucide-trophy', vi: 'chinh' },
-      { label: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper', vi: 'them' },
+      { label: 'Tân thủ', to: '/huong-dan', icon: 'i-lucide-compass', vi: 'them' },
       { label: 'Giới thiệu', to: '/gioi-thieu', icon: 'i-lucide-info', vi: 'them' },
       { label: 'Tải game', to: '/download', icon: 'i-lucide-download', vi: 'nut' },
     ],
