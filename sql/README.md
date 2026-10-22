@@ -88,6 +88,9 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
     - `sua_tuyen_nhiem_vu.sql` (main 4f89b3ad sua-tuyen, đã chạy trên production, SINH bởi `tools/pokemon/sinh_sua_tuyen.py`):
       `tob_lang_khoi_dau` (làng khởi đầu theo vùng), `data_nhiem_vu_khu_vuc` (vùng đích bước địa điểm), chữ phần thưởng
       `infogift`; chạy sau khối hướng dẫn tân thủ;
+    - `mo_duong_dia_diem.sql` (ban-098, chủ game duyệt; chạy sau `sua_tuyen_nhiem_vu.sql`): Arcanine gác cổng dẫn tới khu xa
+      (100 / 118 / 41 / 42, khoá 41 / 42 cấp 80), bật lại các bước địa điểm ở đó, đổi bản đồ các bước ở bản đồ khoá cao hơn cấp
+      bước / Hang Darkrai theo mùa, chữ Gym "(đấu ở …)" + NPC xa "NPC:|Torkoal (Cerulean)|" của chuỗi chính (`KiemDiaDiemNpc`);
     - `them_the_dat_ten_pet.sql` (ten-pet): thẻ đặt tên Pokémon 1261 (`data_dong_the_ten`, `data_tu_cam_ten`, `tob_pet_dat_ten`,
       `tob_log_dat_ten`, công dụng / 2 nguồn kiếm được / món cửa hàng lượng);
     - `pokemon_npc_sprite.sql`, `pokemon_thu_pokemon.sql` (p2-tainguyen): ảnh NPC = Pokémon (`data_npc.dex` / `sprite`,

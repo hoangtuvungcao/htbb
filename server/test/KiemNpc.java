@@ -76,7 +76,7 @@ public final class KiemNpc {
         Kiem.dung("Heracross (25) dung o Cao nguyen Indigo (201)", loaiTren(201).contains(25));
         Kiem.dung("Rustboro la ban do ngoai troi (truoc day NPC o day chi chao)", !offline.contains(45));
 
-        final Map<Integer, String[]> npc = KiemTenHien.dong(doc("../sql/nang_cap.sql"), "data_npc");
+        final Map<Integer, String[]> npc = KiemTenHien.dongDump(doc("../sql/htbb_day_du.sql"), "data_npc", 7);
         final List<String> lech = new ArrayList<String>();
         for (final Map.Entry<Integer, String[]> e : npc.entrySet()) {
             final Set<Integer> sql = new TreeSet<Integer>();

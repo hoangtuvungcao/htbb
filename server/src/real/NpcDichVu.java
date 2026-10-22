@@ -20,6 +20,16 @@ public final class NpcDichVu {
     public static final int NPC_MEOWTH_DOI_XU = 31;
     public static final int NPC_LAPRAS = 10;
     public static final int NPC_PIDGEOT = 7;
+    /**
+     * Arcanine gac cong (loai 4, o 3 lang + Indigo + Lien minh Hoenn, 0.9.8): dan duong toi khu xa KHONG co cong / tau /
+     * Pidgeot dan vao (Bao tang Pewter 100, Duong Victory 118, Chan nui / Nui Silver 41 / 42 - cac buoc dia diem cua chuoi
+     * chinh / phu / huyen thoai / So tay). Mien phi; khoa ban do (KhoaBanDoGame.chan: cap + cua ai) ap nhu moi duong vao.
+     * O ban do khu xa co Arcanine dung (41 / 42 / 118): "Về làng" + cac khu xa khac.
+     */
+    public static final int NPC_ARCANINE = 4;
+    /** {ban do, o x, o y} diem den cua tung loi di (o di duoc, ngay duoi Arcanine ben kia; 100 = giua nha). */
+    static final int[][] LOI_DI = {{100, 5, 10}, {118, 43, 24}, {41, 30, 15}, {42, 34, 43}};
+    static final String[] TEN_LOI_DI = {"Bảo tàng Pewter", "Đường Victory", "Chân núi Silver", "Núi Silver"};
     /** Kangaskhan thu kho (trong nha / thi tran): menu "Mo kho do" + "Mo rong hanh trang" (real.MoRongTuiGame). */
     public static final int NPC_KANGASKHAN = 9, NPC_KANGASKHAN_2 = 30;
     /** Gia mot chuyen bay Pidgeot (xu, truoc giam theo thu nhap BaiLuyenTap.giaDichChuyen) - bang tuyen bay cu 500..750. */
@@ -52,6 +62,9 @@ public final class NpcDichVu {
                 return true;
             case NPC_PIDGEOT:
                 moBay(p);
+                return true;
+            case NPC_ARCANINE:
+                moLoiDi(p);
                 return true;
             case NPC_KANGASKHAN:
             case NPC_KANGASKHAN_2:
@@ -232,8 +245,83 @@ public final class NpcDichVu {
         p.map.move2Map(p, diem[1], diem[2], den, p.inCountry);
     }
 
+    /** Chi so LOI_DI ma Arcanine o ban do {@code tuLoad} dan toi (tru chinh ban do do). Thuan (test). */
+    static java.util.List<Integer> loiDi(final int tuLoad) {
+        final java.util.List<Integer> kq = new java.util.ArrayList<Integer>();
+        for (int i = 0; i < LOI_DI.length; i++) {
+            if (LOI_DI[i][0] != tuLoad) {
+                kq.add(Integer.valueOf(i));
+            }
+        }
+        return kq;
+    }
+
+    /** Ban do {@code load} la mot khu xa (khong phai lang): menu co "Về làng" dau tien. */
+    static boolean laKhuXa(final int load) {
+        for (final int[] d : LOI_DI) {
+            if (d[0] == load) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static void moLoiDi(final Char p) {
+        if (!NpcTinhBanDo.gan(p, NPC_ARCANINE)) {
+            bao(p, "Hãy đến gần Arcanine gác cổng.");
+            return;
+        }
+        final int tu = NpcTinhBanDo.banDoNap(p);
+        final java.util.List<String> m = new java.util.ArrayList<String>();
+        if (laKhuXa(tu)) {
+            m.add("Về làng");
+        }
+        for (final Integer i : loiDi(tu)) {
+            m.add(KhoaBanDoGame.nhanDiem(p, LOI_DI[i][0], "Đến " + TEN_LOI_DI[i]));
+        }
+        p.sendMessage(MessageCreator.createMsgMenu(m.toArray(new String[0]), NPC_ARCANINE, 0));
+    }
+
+    static void diLoi(final Char p, final int chon) {
+        if (!NpcTinhBanDo.gan(p, NPC_ARCANINE)) {
+            bao(p, "Hãy đến gần Arcanine gác cổng.");
+            return;
+        }
+        if (p.monster != null) {
+            bao(p, "Không thể đi khi đang giao hàng.");
+            return;
+        }
+        final int tu = NpcTinhBanDo.banDoNap(p);
+        int c = chon;
+        if (laKhuXa(tu)) {
+            if (c == 0) {
+                final int[][] lang = LangKhoiDau.bang(p);
+                final int den = lang[Math.max(0, Math.min(lang.length - 1, p.myCountry))][0];
+                final int[] vt = LangKhoiDau.viTri(den);
+                p.map.move2Map(p, vt != null ? vt[0] : 16, vt != null ? vt[1] : 24, den, p.inCountry);
+                return;
+            }
+            c--;
+        }
+        final java.util.List<Integer> ds = loiDi(tu);
+        if (c < 0 || c >= ds.size()) {
+            return;
+        }
+        final int[] d = LOI_DI[ds.get(c)];
+        if (KhoaBanDoGame.chan(p, d[0])) {
+            return; // cap / cua ai chua du - KhoaBanDoGame da bao ly do
+        }
+        p.map.move2Map(p, d[1] * 16 + 8, d[2] * 16 + 8, d[0], p.inCountry);
+    }
+
     /** MapDoMenu: true neu {@code idNpc} la NPC cua lop nay (da xu ly). */
     public static boolean xuLyMenu(final Char p, final int idNpc, final int idMenu, final int chon) {
+        if (idNpc == NPC_ARCANINE) {
+            if (idMenu == 0) {
+                diLoi(p, chon);
+            }
+            return true;
+        }
         if (idNpc == NPC_LAPRAS) {
             if (idMenu == 0) {
                 diDo(p, chon);

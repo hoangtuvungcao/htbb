@@ -4434,7 +4434,7 @@ INSERT INTO `data_npc` (`type`,`ten`,`chuc_vu`,`pokemon`,`dex`,`id_anh`,`ban_do`
 (1,'Kecleon tạp hoá','Tạp hoá','Kecleon',352,1,'0,45,47,49,54,56,62,70,72,80,82,102'),
 (2,'Machamp thợ rèn','Thợ rèn: chế tạo, sửa, khảm đồ','Machamp',68,2,'0,45,70,73,80,83,103'),
 (3,'Bronzong thợ giáp','Bán trang bị','Bronzong',437,3,'0,47,55,59,70,74,80,84,104'),
-(4,'Arcanine gác cổng','Gác cổng','Arcanine',59,4,'0,70,80,201,281'),
+(4,'Arcanine gác cổng','Gác cổng','Arcanine',59,4,'0,41,42,70,80,118,201,281'),
 (5,'Trưởng làng Xatu','Trưởng làng, giao nhiệm vụ','Xatu',178,5,'0,43,45,50,56,59,60,70,80,101,163,164,280,282'),
 (6,'Ngài Persian','Bán đá quý, nguyên liệu','Persian',53,6,'0,53,70,79,80,89,109'),
 (7,'Pidgeot chở bay','Chở bay tới bản đồ khác','Pidgeot',18,7,'0,3,4,5,6,7,8,9,54,70,80'),
@@ -20553,3 +20553,131 @@ UPDATE `data_quest_moi` SET `infogift` = CONCAT(SUBSTRING_INDEX(`infogift`, 'Ph�
 UPDATE `data_quest_moi` SET `infogift` = CONCAT(SUBSTRING_INDEX(`infogift`, 'Phần thưởng:|', 1), 'Phần thưởng:|', '2.056.621 EXP, 34.194 xu, 2 lượng khoá, danh hiệu Người bạn của Hoothoot, Mảnh thiên thạch x1') WHERE `id` = 2396 AND `mainsub` = 1 AND `exp` = 2056621 AND `gold` = 34194 AND `luong` = 0 AND `luongLock` = 2 AND `itemgift` = '32000' AND `potiongift` = '32000' AND `npotion` = '32000' AND `infogift` LIKE '%Phần thưởng:|%';
 UPDATE `data_quest_moi` SET `infogift` = CONCAT(SUBSTRING_INDEX(`infogift`, 'Phần thưởng:|', 1), 'Phần thưởng:|', '2.251.692 EXP, 40.674 xu, 2 lượng khoá, danh hiệu Người bạn của Jigglypuff, Mảnh thiên thạch x1') WHERE `id` = 2409 AND `mainsub` = 1 AND `exp` = 2251692 AND `gold` = 40674 AND `luong` = 0 AND `luongLock` = 2 AND `itemgift` = '32000' AND `potiongift` = '32000' AND `npotion` = '32000' AND `infogift` LIKE '%Phần thưởng:|%';
 -- ==== SINH TU DONG - HET ====
+-- >>> mo_duong_dia_diem.sql
+-- =====================================================================================================================
+--  MO DUONG BUOC DIA DIEM + SUA DIA DIEM / NPC CHUOI CHINH (ban-098, chu game duyet). Chay SAU khoi sua_tuyen_nhiem_vu.sql
+--  (khoi do xoa / ghi lai dong data_nhiem_vu_khu_vuc cua no moi lan chay). Chay lai duoc.
+--
+--  1. Arcanine gac cong (data_npc loai 4, real.NpcDichVu.LOI_DI): o 3 lang / Indigo / Lien minh Hoenn dan toi khu xa khong
+--     co cong / tau / Pidgeot dan vao: Bao tang Pewter 100, Duong Victory 118, Chan nui Silver 41, Nui Silver 42; o 41 / 42
+--     / 118 co Arcanine (cMap, tools/pokemon/ThemNpcLang.java) de "Về làng". Khoa ban do ap nhu moi duong vao: 118 cap 69 +
+--     CA-11.3 (san co), 41 / 42 cap 80 (moi: buoc thap nhat o day la HT-RAY.2 cap 82).
+--  2. Bat lai buoc dia diem o 4 ban do tren (C05.2, C49.3, C51.2, C51.5, C51.7, HT-ART.3, HT-RAY.2, TV-13.1).
+--  3. Buoc o ban do khoa cap CAO hon cap cua buoc -> doi sang ban do mo dung cap, cung vung / cung kieu:
+--     C13.6 (cap 25) Tau S.S. Anne 22 (cap 65) -> Ben tau 106; C32.2 (54) Dong co phia tay 21 (61) -> Violet 20;
+--     P-23.2.2 (70) Rung Co 26 (77) -> Rung Viridian 11. Hang Darkrai 111 (chi mo mua he): HT-DAR.3, P-33.1.4 -> Hang Toi 113.
+--  4. Chuoi chinh: tran Gym danh o ban do co Pokemon cua truong Gym (Dia diem) - chu ghi ro "(đấu ở <Dia diem>)"; NPC tra
+--     buoc o xa (Torkoal chi o Cerulean / Lavaridge, Lapras o ben do) ghi "NPC:|Torkoal (Cerulean)|". Dang ngoac (khong
+--     " ở X|") de khoi huong dan tan thu (REPLACE ' ở X|') chay lai khong doi chu nay. Test: server/test/KiemDiaDiemNpc.
+-- ---------------------------------------------------------------------------------------------------------------------
+-- 1. Arcanine + khoa ban do
+-- (data_npc loai 4: ban_do them 41,42,118 ngay trong lenh INSERT data_npc cua phan 5)
+UPDATE `data_ban_do_mo_khoa` SET `cap_toi_thieu` = 80 WHERE `map_id` IN (41, 42) AND `cap_toi_thieu` = 0 AND `ma_nhiem_vu` = '';
+-- 2. bat lai buoc dia diem
+UPDATE `data_nhiem_vu_khu_vuc` SET `bat` = 1, `ghi_chu` = 'Arcanine gác cổng dẫn đường (real.NpcDichVu.LOI_DI)' WHERE `ma` IN ('C05.2','C49.3','C51.2','C51.5','C51.7','HT-ART.3','HT-RAY.2','TV-13.1');
+-- 3. doi ban do
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 106, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `bat` = 1, `ten_noi` = 'Bến tàu', `ghi_chu` = 'ban-098: ban do cu khoa / theo mua' WHERE `ma` = 'C13.6' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 106, `muc_tieu_text` = 'Đến Bến tàu đón tàu S.S. Anne' WHERE `ma` = 'C13.6' AND `muc_tieu_text` = 'Đến Tàu S.S. Anne';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 106 WHERE `ma` = 'C13.6';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Bến tàu' WHERE `ma` = 'C13.6' AND `dia_danh` = 'Vermilion';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Bến tàu đón tàu S.S. Anne', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Tàu S.S. Anne|', 'Nhiệm vụ:|Đến Bến tàu đón tàu S.S. Anne|'), 'Địa điểm:|Vermilion|', 'Địa điểm:|Bến tàu|') WHERE `id` = 1080 AND `scontent` = 'Đến Tàu S.S. Anne ở Vermilion';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 20, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `bat` = 1, `ten_noi` = 'Violet', `ghi_chu` = 'ban-098: ban do cu khoa / theo mua' WHERE `ma` = 'C32.2' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 20, `muc_tieu_text` = 'Đến đồng cỏ lộng gió (Violet)' WHERE `ma` = 'C32.2' AND `muc_tieu_text` = 'Đến Đồng cỏ phía tây';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 20 WHERE `ma` = 'C32.2';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Violet' WHERE `ma` = 'C32.2' AND `dia_danh` = 'Violet';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến đồng cỏ lộng gió (Violet)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Đồng cỏ phía tây|', 'Nhiệm vụ:|Đến đồng cỏ lộng gió (Violet)|'), 'Địa điểm:|Violet|', 'Địa điểm:|Violet|') WHERE `id` = 1193 AND `scontent` = 'Đến Đồng cỏ phía tây ở Violet';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 11, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `bat` = 1, `ten_noi` = 'Rừng Viridian', `ghi_chu` = 'ban-098: ban do cu khoa / theo mua' WHERE `ma` = 'P-23.2.2' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 11, `muc_tieu_text` = 'Đến Rừng Viridian' WHERE `ma` = 'P-23.2.2' AND `muc_tieu_text` = 'Đến Rừng Cổ';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 11 WHERE `ma` = 'P-23.2.2';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Rừng Viridian' WHERE `ma` = 'P-23.2.2' AND `dia_danh` = 'Rừng Cổ';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Rừng Viridian', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Rừng Cổ|', 'Nhiệm vụ:|Đến Rừng Viridian|'), 'Địa điểm:|Rừng Cổ|', 'Địa điểm:|Rừng Viridian|') WHERE `id` = 2286 AND `scontent` = 'Đến Rừng Cổ';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 113, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `bat` = 1, `ten_noi` = 'Hang Tối', `ghi_chu` = 'ban-098: ban do cu khoa / theo mua' WHERE `ma` = 'HT-DAR.3' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 113, `muc_tieu_text` = 'Đến Hang Tối' WHERE `ma` = 'HT-DAR.3' AND `muc_tieu_text` = 'Đến Hang Darkrai';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 113 WHERE `ma` = 'HT-DAR.3';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Hang Tối' WHERE `ma` = 'HT-DAR.3' AND `dia_danh` = 'Hang Darkrai';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 113, `x1` = 47, `y1` = 47, `x2` = 53, `y2` = 53, `bat` = 1, `ten_noi` = 'Hang Tối', `ghi_chu` = 'ban-098: ban do cu khoa / theo mua' WHERE `ma` = 'P-33.1.4' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 113, `toa_do` = '50;50', `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Hang Tối (ô 50,50)' WHERE `ma` = 'P-33.1.4' AND `toa_do` = '22;25';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 113, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Hang Tối (ô 50,50)' WHERE `ma` = 'P-33.1.4' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Hang Darkrai (ô 22,25)';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 113 WHERE `ma` = 'P-33.1.4';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Hang Tối' WHERE `ma` = 'P-33.1.4' AND `dia_danh` = 'Hang Darkrai';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Hang Tối (ô 50,50)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Hang Darkrai (ô 22,25)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Hang Tối (ô 50,50)|'), 'Địa điểm:|Hang Darkrai|', 'Địa điểm:|Hang Tối|') WHERE `id` = 2409 AND `scontent` = 'Đứng tại điểm đánh dấu trên Hang Darkrai (ô 22,25)';
+-- 4. chuoi chinh: tran Gym ghi noi dau, NPC xa ghi noi o
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Pewter: Golem (đấu ở Saffron)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Pewter: Golem|', 'Nhiệm vụ:|Thắng trưởng Gym Pewter: Golem (đấu ở Saffron)|') WHERE `id` = 1037 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Pewter: Golem';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Cerulean: Gyarados (đấu ở Cinnabar)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Cerulean: Gyarados|', 'Nhiệm vụ:|Thắng trưởng Gym Cerulean: Gyarados (đấu ở Cinnabar)|') WHERE `id` = 1062 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Cerulean: Gyarados';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Vermilion: Luxray (đấu ở Cinnabar)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Vermilion: Luxray|', 'Nhiệm vụ:|Thắng trưởng Gym Vermilion: Luxray (đấu ở Cinnabar)|') WHERE `id` = 1074 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Vermilion: Luxray';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Celadon: Vileplume (đấu ở Núi Mặt Trăng)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Celadon: Vileplume|', 'Nhiệm vụ:|Thắng trưởng Gym Celadon: Vileplume (đấu ở Núi Mặt Trăng)|') WHERE `id` = 1123 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Celadon: Vileplume';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Saffron: Seismitoad (đấu ở Vùng Safari)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Saffron: Seismitoad|', 'Nhiệm vụ:|Thắng trưởng Gym Saffron: Seismitoad (đấu ở Vùng Safari)|') WHERE `id` = 1136 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Saffron: Seismitoad';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Fuchsia: Gengar (đấu ở Cherrygrove)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Fuchsia: Gengar|', 'Nhiệm vụ:|Thắng trưởng Gym Fuchsia: Gengar (đấu ở Cherrygrove)|') WHERE `id` = 1148 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Fuchsia: Gengar';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Cinnabar: Magcargo (đấu ở Hang Tối)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Cinnabar: Magcargo|', 'Nhiệm vụ:|Thắng trưởng Gym Cinnabar: Magcargo (đấu ở Hang Tối)|') WHERE `id` = 1167 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Cinnabar: Magcargo';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Viridian: Rhydon (đấu ở Hồ Phẫn Nộ)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Viridian: Rhydon|', 'Nhiệm vụ:|Thắng trưởng Gym Viridian: Rhydon (đấu ở Hồ Phẫn Nộ)|') WHERE `id` = 1172 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Viridian: Rhydon';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Violet: Dodrio (đấu ở Ecruteak)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Violet: Dodrio|', 'Nhiệm vụ:|Thắng trưởng Gym Violet: Dodrio (đấu ở Ecruteak)|') WHERE `id` = 1191 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Violet: Dodrio';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Azalea: Heracross (đấu ở Violet)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Azalea: Heracross|', 'Nhiệm vụ:|Thắng trưởng Gym Azalea: Heracross (đấu ở Violet)|') WHERE `id` = 1204 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Azalea: Heracross';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Goldenrod: Tauros (đấu ở Đồng cỏ phía tây)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Goldenrod: Tauros|', 'Nhiệm vụ:|Thắng trưởng Gym Goldenrod: Tauros (đấu ở Đồng cỏ phía tây)|') WHERE `id` = 1222 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Goldenrod: Tauros';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Ecruteak: Dusknoir (đấu ở Đồng cỏ phía tây)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Ecruteak: Dusknoir|', 'Nhiệm vụ:|Thắng trưởng Gym Ecruteak: Dusknoir (đấu ở Đồng cỏ phía tây)|') WHERE `id` = 1229 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Ecruteak: Dusknoir';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Olivine: Aegislash (đấu ở Tàu S.S. Anne)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Olivine: Aegislash|', 'Nhiệm vụ:|Thắng trưởng Gym Olivine: Aegislash (đấu ở Tàu S.S. Anne)|') WHERE `id` = 1241 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Olivine: Aegislash';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Cianwood: Crabrawler (đấu ở Azalea)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Cianwood: Crabrawler|', 'Nhiệm vụ:|Thắng trưởng Gym Cianwood: Crabrawler (đấu ở Azalea)|') WHERE `id` = 1245 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Cianwood: Crabrawler';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Mahogany: Abomasnow (đấu ở Rừng Cổ)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Mahogany: Abomasnow|', 'Nhiệm vụ:|Thắng trưởng Gym Mahogany: Abomasnow (đấu ở Rừng Cổ)|') WHERE `id` = 1271 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Mahogany: Abomasnow';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Blackthorn: Salamence (đấu ở Mahogany)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Blackthorn: Salamence|', 'Nhiệm vụ:|Thắng trưởng Gym Blackthorn: Salamence (đấu ở Mahogany)|') WHERE `id` = 1295 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Blackthorn: Salamence';
+UPDATE `data_quest_moi` SET `scontent` = 'Thắng trưởng Gym Núi Silver: Darkrai (đấu ở Mahogany)', `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Thắng trưởng Gym Núi Silver: Darkrai|', 'Nhiệm vụ:|Thắng trưởng Gym Núi Silver: Darkrai (đấu ở Mahogany)|') WHERE `id` = 1320 AND `mainsub` = 0 AND `scontent` = 'Thắng trưởng Gym Núi Silver: Darkrai';
+UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'NPC:|Torkoal|', 'NPC:|Torkoal (Cerulean)|') WHERE `id` IN (1053, 1058, 1060, 1061, 1062, 1206, 1207, 1208, 1209) AND `mainsub` = 0;
+UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'NPC:|Lapras|', 'NPC:|Lapras (Bến tàu)|') WHERE `id` = 1096 AND `mainsub` = 0;
+UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Tìm Cành hành thơm giấu ở Rừng Ilex|', 'Nhiệm vụ:|Tìm Cành hành thơm giấu ở Ecruteak|') WHERE `id` = 1206 AND `mainsub` = 0;
+-- 5. buoc dia diem o ban do khoa cap CAO hon cap cua buoc (khoa-map: cap ban do theo cap quai) -> ban do mo dung cap,
+--    canh / truoc ban do cu (bia rung, chan nui, cong vao): Rung Viridian 11 (29) -> Viridian 2, Nui Mat Trang 13 (33) ->
+--    Cerulean 4, Azalea 23 (69) -> Violet 20, Olivine 24 (73) -> Vung Safari 14 (cong Olivine), Mahogany 28 (79) -> Ecruteak 19.
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 2, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `ten_noi` = 'Viridian' WHERE `ma` = 'C04.4' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 2, `muc_tieu_text` = 'Đến Viridian, bìa Rừng Viridian' WHERE `ma` = 'C04.4' AND `muc_tieu_text` = 'Đến Rừng Viridian';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Viridian' WHERE `ma` = 'C04.4' AND `dia_danh` = 'Rừng Viridian';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Viridian, bìa Rừng Viridian', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Rừng Viridian|', 'Nhiệm vụ:|Đến Viridian, bìa Rừng Viridian|'), 'Địa điểm:|Rừng Viridian|', 'Địa điểm:|Viridian|') WHERE `id` = 1022 AND `scontent` = 'Đến Rừng Viridian';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 2, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `ten_noi` = 'Viridian' WHERE `ma` = 'P-02.0.2' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 2, `muc_tieu_text` = 'Đến Viridian, bìa Rừng Viridian' WHERE `ma` = 'P-02.0.2' AND `muc_tieu_text` = 'Đến Rừng Viridian';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Viridian' WHERE `ma` = 'P-02.0.2' AND `dia_danh` = 'Viridian';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Viridian, bìa Rừng Viridian', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Rừng Viridian|', 'Nhiệm vụ:|Đến Viridian, bìa Rừng Viridian|'), 'Địa điểm:|Viridian|', 'Địa điểm:|Viridian|') WHERE `id` = 2019 AND `scontent` = 'Đến Rừng Viridian';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 2, `x1` = 62, `y1` = 27, `x2` = 68, `y2` = 33, `ten_noi` = 'Viridian' WHERE `ma` = 'P-03.2.2' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '65;30' WHERE `ma` = 'P-03.2.2' AND `toa_do` = '68;63';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 2, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Viridian, bìa Rừng Viridian (ô 65,30)' WHERE `ma` = 'P-03.2.2' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Rừng Viridian (ô 68,63)';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Viridian' WHERE `ma` = 'P-03.2.2' AND `dia_danh` = 'Rừng Viridian';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Viridian, bìa Rừng Viridian (ô 65,30)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Rừng Viridian (ô 68,63)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Viridian, bìa Rừng Viridian (ô 65,30)|'), 'Địa điểm:|Rừng Viridian|', 'Địa điểm:|Viridian|') WHERE `id` = 2040 AND `scontent` = 'Đứng tại điểm đánh dấu trên Rừng Viridian (ô 68,63)';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 4, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `ten_noi` = 'Cerulean' WHERE `ma` = 'C07.6' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 4, `muc_tieu_text` = 'Đến Cerulean, chân Núi Mặt Trăng' WHERE `ma` = 'C07.6' AND `muc_tieu_text` = 'Đến Núi Mặt Trăng';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Cerulean' WHERE `ma` = 'C07.6' AND `dia_danh` = 'Núi Mặt Trăng';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Cerulean, chân Núi Mặt Trăng', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Núi Mặt Trăng|', 'Nhiệm vụ:|Đến Cerulean, chân Núi Mặt Trăng|'), 'Địa điểm:|Núi Mặt Trăng|', 'Địa điểm:|Cerulean|') WHERE `id` = 1043 AND `scontent` = 'Đến Núi Mặt Trăng';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 4, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `ten_noi` = 'Cerulean' WHERE `ma` = 'TV-02.1' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 4, `muc_tieu_text` = 'Đến Cerulean, chân Núi Mặt Trăng' WHERE `ma` = 'TV-02.1' AND `muc_tieu_text` = 'Đến Núi Mặt Trăng';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Cerulean' WHERE `ma` = 'TV-02.1' AND `dia_danh` = 'Núi Mặt Trăng';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 4, `x1` = 50, `y1` = 46, `x2` = 56, `y2` = 52, `ten_noi` = 'Cerulean' WHERE `ma` = 'C08.5' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '53;49' WHERE `ma` = 'C08.5' AND `toa_do` = '30;30';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 4, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)' WHERE `ma` = 'C08.5' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Cerulean' WHERE `ma` = 'C08.5' AND `dia_danh` = 'Núi Mặt Trăng';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)|'), 'Địa điểm:|Núi Mặt Trăng|', 'Địa điểm:|Cerulean|') WHERE `id` = 1048 AND `scontent` = 'Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 4, `x1` = 50, `y1` = 46, `x2` = 56, `y2` = 52, `ten_noi` = 'Cerulean' WHERE `ma` = 'P-05.0.4' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '53;49' WHERE `ma` = 'P-05.0.4' AND `toa_do` = '30;30';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 4, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)' WHERE `ma` = 'P-05.0.4' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Cerulean' WHERE `ma` = 'P-05.0.4' AND `dia_danh` = 'Núi Mặt Trăng';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)|'), 'Địa điểm:|Núi Mặt Trăng|', 'Địa điểm:|Cerulean|') WHERE `id` = 2059 AND `scontent` = 'Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 4, `x1` = 50, `y1` = 46, `x2` = 56, `y2` = 52, `ten_noi` = 'Cerulean' WHERE `ma` = 'AN-17' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '53;49' WHERE `ma` = 'AN-17' AND `toa_do` = '30;30';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 4, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Cerulean, chân Núi Mặt Trăng (ô 53,49)' WHERE `ma` = 'AN-17' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Núi Mặt Trăng (ô 30,30)';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 20, `x1` = 0, `y1` = 0, `x2` = 255, `y2` = 255, `ten_noi` = 'Violet' WHERE `ma` = 'C33.2' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 20, `muc_tieu_text` = 'Đến Violet, đường tới Azalea' WHERE `ma` = 'C33.2' AND `muc_tieu_text` = 'Đến Azalea';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Violet' WHERE `ma` = 'C33.2' AND `dia_danh` = 'Azalea';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Violet, đường tới Azalea', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Azalea|', 'Nhiệm vụ:|Đến Violet, đường tới Azalea|'), 'Địa điểm:|Azalea|', 'Địa điểm:|Violet|') WHERE `id` = 1199 AND `scontent` = 'Đến Azalea';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 20, `x1` = 44, `y1` = 4, `x2` = 50, `y2` = 10, `ten_noi` = 'Violet' WHERE `ma` = 'P-19.2.4' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '47;7' WHERE `ma` = 'P-19.2.4' AND `toa_do` = '47;5';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 20, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Violet, đường tới Azalea (ô 47,7)' WHERE `ma` = 'P-19.2.4' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Azalea (ô 47,5)';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Violet' WHERE `ma` = 'P-19.2.4' AND `dia_danh` = 'Azalea';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Violet, đường tới Azalea (ô 47,7)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Azalea (ô 47,5)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Violet, đường tới Azalea (ô 47,7)|'), 'Địa điểm:|Azalea|', 'Địa điểm:|Violet|') WHERE `id` = 2239 AND `scontent` = 'Đứng tại điểm đánh dấu trên Azalea (ô 47,5)';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 14, `x1` = 33, `y1` = -1, `x2` = 39, `y2` = 5, `ten_noi` = 'Vùng Safari' WHERE `ma` = 'C39.3' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '36;2' WHERE `ma` = 'C39.3' AND `toa_do` = '21;5';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 14, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Vùng Safari, cổng Olivine (ô 36,2)' WHERE `ma` = 'C39.3' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Olivine (ô 21,5)';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Vùng Safari' WHERE `ma` = 'C39.3' AND `dia_danh` = 'Olivine';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Vùng Safari, cổng Olivine (ô 36,2)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Olivine (ô 21,5)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Vùng Safari, cổng Olivine (ô 36,2)|'), 'Địa điểm:|Olivine|', 'Địa điểm:|Vùng Safari|') WHERE `id` = 1238 AND `scontent` = 'Đứng tại điểm đánh dấu trên Olivine (ô 21,5)';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 14, `x1` = 30, `y1` = 0, `x2` = 42, `y2` = 6, `ten_noi` = 'Vùng Safari' WHERE `ma` = 'P-24.2.2' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 14, `muc_tieu_text` = 'Đến Vùng Safari, cổng Olivine' WHERE `ma` = 'P-24.2.2' AND `muc_tieu_text` = 'Đến Olivine';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Vùng Safari' WHERE `ma` = 'P-24.2.2' AND `dia_danh` = 'Olivine';
+UPDATE `data_quest_moi` SET `scontent` = 'Đến Vùng Safari, cổng Olivine', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đến Olivine|', 'Nhiệm vụ:|Đến Vùng Safari, cổng Olivine|'), 'Địa điểm:|Olivine|', 'Địa điểm:|Vùng Safari|') WHERE `id` = 2298 AND `scontent` = 'Đến Olivine';
+UPDATE `data_nhiem_vu_khu_vuc` SET `map_id` = 19, `x1` = 70, `y1` = 24, `x2` = 76, `y2` = 30, `ten_noi` = 'Ecruteak' WHERE `ma` = 'C41.3' AND `stt` = 0;
+UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '73;27' WHERE `ma` = 'C41.3' AND `toa_do` = '67;21';
+UPDATE `data_nhiem_vu_noi_dung` SET `map_id` = 19, `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Ecruteak, cổng Mahogany (ô 73,27)' WHERE `ma` = 'C41.3' AND `muc_tieu_text` = 'Đứng tại điểm đánh dấu trên Mahogany (ô 67,21)';
+UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Ecruteak' WHERE `ma` = 'C41.3' AND `dia_danh` = 'Mahogany';
+UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu trên Ecruteak, cổng Mahogany (ô 73,27)', `infogift` = REPLACE(REPLACE(`infogift`, 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Mahogany (ô 67,21)|', 'Nhiệm vụ:|Đứng tại điểm đánh dấu trên Ecruteak, cổng Mahogany (ô 73,27)|'), 'Địa điểm:|Mahogany|', 'Địa điểm:|Ecruteak|') WHERE `id` = 1250 AND `scontent` = 'Đứng tại điểm đánh dấu trên Mahogany (ô 67,21)';

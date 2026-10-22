@@ -242,6 +242,7 @@ public final class Kiem {
         KiemLoaiDayDu.chay();
         KiemLoaiQuaiGame.chay(); // loai rieng tung con quai: hoi sinh, -125 sau lenh 4 chi client >= 908, fallback client cu // loai day du: 1.025 loai, chuoi tien hoa, chieu, noi song, sprite, chon loai hoi sinh, goi -125/-126
         KiemDoTrangPhuc.chay(); // do ho moi + tu do trang tri (do-trang-phuc)
+        KiemDiaDiemNpc.chay(); // 0.9.8: buoc dia diem toi duoc (Arcanine gac cong), Dia diem / NPC chuoi chinh dung ban do
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

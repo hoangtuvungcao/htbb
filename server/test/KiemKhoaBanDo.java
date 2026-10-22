@@ -418,7 +418,7 @@ public final class KiemKhoaBanDo {
         Kiem.dung("xa phu cu (goi 79) chan truoc khi tru xu + nap lai map", map.contains("KhoaBanDoGame.giuTaiCho(player); // chua tru xu"));
         final String npc = doc("src/real/NpcDichVu.java");
         Kiem.dung("Pidgeot bay + Lapras do chan truoc khi tru phi", npc.contains("return; // chua tru xu") && npc.contains("return; // chua tru ve"));
-        Kiem.dung("menu bay / do hien diem khoa", npc.split("KhoaBanDoGame.nhanDiem").length == 3);
+        Kiem.dung("menu bay / do / Arcanine gac cong hien diem khoa", npc.split("KhoaBanDoGame.nhanDiem").length == 4);
         Kiem.dung("bai luyen chan truoc khi tru xu", doc("src/real/BaiLuyenTap.java").contains("KhoaBanDoGame.chan(player, bai.mapId)"));
         Kiem.dung("vat pham toi ban doi: chan + tra vat pham (2 lop)", doc("src/real/doUsePotion.java").contains("KhoaBanDoGame.chan(player, p1.mapID)")
                 && doc("src/real/MapDungThuoc.java").contains("KhoaBanDoGame.chan(player, p1.mapID)"));

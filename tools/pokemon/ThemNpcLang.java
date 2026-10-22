@@ -25,6 +25,9 @@ public class ThemNpcLang {
         {0, 0, 38, 46}, {0, 8, 48, 12},
         {70, 0, 35, 48}, {70, 8, 37, 9},
         {80, 0, 21, 51}, {80, 8, 16, 9},
+        // 0.9.8: Arcanine gac cong (loai 4, real.NpcDichVu.LOI_DI) o khu xa khong co cong / tau dan vao - diem "Về làng"
+        // va diem den (o ngay duoi Arcanine): Nui Silver 42 (khong co cong), Chan nui Silver 41, Duong Victory 118
+        {42, 4, 34, 41}, {41, 4, 30, 13}, {118, 4, 43, 22},
     };
 
     public static void main(final String[] a) throws Exception {

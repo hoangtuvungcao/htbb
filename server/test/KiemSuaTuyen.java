@@ -282,7 +282,8 @@ public final class KiemSuaTuyen {
     static final Set<Integer> LANG = new HashSet<Integer>(Arrays.asList(0, 70, 80));
 
     static void duLieuKhuVuc(final String du, final String st) throws Exception {
-        final List<List<String>> kv = dong(st, "data_nhiem_vu_khu_vuc");
+        // CSDL day du (sau ca khoi mo_duong_dia_diem.sql cua ban-098: mo duong / doi ban do mot so buoc)
+        final List<List<String>> kv = dong(du, "data_nhiem_vu_khu_vuc");
         Kiem.dung("co bang vung dich (>= 120 dong)", kv.size() >= 120);
         final Map<String, List<List<String>>> theoMa = new LinkedHashMap<String, List<List<String>>>();
         for (final List<String> r : kv) {
@@ -408,11 +409,7 @@ public final class KiemSuaTuyen {
         Kiem.dung("ban do tat chi la ban do khong toi duoc (" + new TreeSet<String>(tat) + ")", tat.size() <= 20);
         // chu "(ô x,y)" cua buoc dung_toa_do bat khop tam vung tren ban do goc
         final List<String> lechChu = new ArrayList<String>();
-        final Matcher mu = Pattern.compile("UPDATE `data_nhiem_vu_noi_dung` SET `toa_do` = '(\\d+);(\\d+)'.*?WHERE `ma` = '([^']+)'").matcher(st);
-        final Map<String, String> toaMoi = new HashMap<String, String>();
-        while (mu.find()) {
-            toaMoi.put(mu.group(3), mu.group(1) + "," + mu.group(2));
-        }
+        final Map<String, String> toaMoi = new HashMap<String, String>(); // CSDL day du da co toa_do moi
         for (final Map.Entry<String, List<List<String>>> e : theoMa.entrySet()) {
             final List<String> n = nd.get(e.getKey());
             if (n == null || !"dung_toa_do".equals(ld.get(e.getKey()).get(15)) || n.get(5).trim().isEmpty()) {
@@ -574,6 +571,17 @@ public final class KiemSuaTuyen {
             }
         }
         final Set<Integer> pidgeot = new HashSet<Integer>(Arrays.asList(3, 4, 5, 6, 7, 8, 9, 24));
+        final Set<Integer> arcanine = new HashSet<Integer>();
+        {
+            final Matcher ma = Pattern.compile("\\(4,'[^']*','[^']*','Arcanine',\\d+,\\d+,'([0-9,]*)'").matcher(du);
+            if (ma.find()) {
+                for (final String x : ma.group(1).split(",")) {
+                    if (!x.trim().isEmpty()) {
+                        arcanine.add(Integer.valueOf(x.trim()));
+                    }
+                }
+            }
+        }
         final Map<Integer, List<Integer>> hoenn = new HashMap<Integer, List<Integer>>();
         for (final BanDoHoenn.BanDo b : BanDoHoenn.ds()) {
             final List<Integer> den = new ArrayList<Integer>();
@@ -612,6 +620,12 @@ public final class KiemSuaTuyen {
                 }
                 if (LANG.contains(Integer.valueOf(m))) {
                     ke.addAll(pidgeot);
+                }
+                // 0.9.8 (ban-098): Arcanine gac cong (data_npc loai 4) dan toi khu xa real.NpcDichVu.LOI_DI
+                if (arcanine.contains(Integer.valueOf(m))) {
+                    for (final int[] d : real.NpcDichVuKiem.loiDi()) {
+                        ke.add(Integer.valueOf(d[0]));
+                    }
                 }
                 for (final Integer d : ke) {
                     if (LANG.contains(d) || laNha(d.intValue())) {
