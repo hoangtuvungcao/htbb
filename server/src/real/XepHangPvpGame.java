@@ -322,6 +322,15 @@ public final class XepHangPvpGame {
         }
     }
 
+    /** Dang trong mot tran xep hang chua xong. */
+    public static boolean trongTran(final Char a) {
+        if (a == null || TRAN.isEmpty()) {
+            return false;
+        }
+        final Tran t = TRAN.get(Integer.valueOf(a.charDBID));
+        return t != null && !t.xong;
+    }
+
     /** Hai nguoi dang trong cung tran xep hang. */
     public static boolean cungTran(final Char a, final Char b) {
         if (a == null || b == null) {

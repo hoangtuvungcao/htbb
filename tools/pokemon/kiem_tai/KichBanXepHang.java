@@ -66,6 +66,35 @@ public final class KichBanXepHang {
             BotChucNang.ket("xh.ghep.dua_vao_dau_truong", vao, "a map " + a.mapId + " c map " + c.mapId);
             BotChucNang.ket("xh.ghep.bao_doi_thu", toast(a, ma).contains("gặp " + c.ten) && toast(c, mc).contains("gặp " + a.ten),
                     toast(a, ma) + " || " + toast(c, mc));
+            // 0.9.8: tran xep hang tren san 202 PHAI gay sat thuong (ngam tay -113 nhu client 908) - ca hai phia
+            if (vao) {
+                a.bom(7000);   // dem nguoc 5 giay roi may chu dat hai ben vao be xuat phat
+                c.lamMoi();
+                a.lamMoi();
+                int hpB0 = c.hp, hpA0 = a.hp;
+                int[] p0 = KichBanNgamTay.viTri(c);
+                a.den(202, p0[0] / 16 + 1, p0[1] / 16);   // lai sat doi thu (don thuong can chien: tam 30 px)
+                int md = a.moc();
+                for (int lan = 0; lan < 40; lan++) {
+                    int[] pa = KichBanNgamTay.viTri(a), pb = KichBanNgamTay.viTri(c);
+                    short[] h = KichBanNgamTay.huong(pa, pb, false);
+                    a.gui(-113, (byte) 0, (byte) 0, (short) pa[0], (short) pa[1], h[0], h[1]);
+                    h = KichBanNgamTay.huong(pb, pa, false);
+                    c.gui(-113, (byte) 0, (byte) 0, (short) pb[0], (short) pb[1], h[0], h[1]);
+                    a.bom(450);
+                    if (lan % 5 == 4) {
+                        c.lamMoi();
+                        a.lamMoi();
+                        if (c.hp < hpB0 && a.hp < hpA0) break;
+                    }
+                }
+                c.lamMoi();
+                a.lamMoi();
+                int[] pa1 = KichBanNgamTay.viTri(a), pb1 = KichBanNgamTay.viTri(c);
+                BotChucNang.ket("xh.ghep.gay_sat_thuong", c.hp < hpB0 && a.hp < hpA0,
+                        "B " + hpB0 + " -> " + c.hp + ", A " + hpA0 + " -> " + a.hp + " (A " + pa1[0] + "," + pa1[1] + " B " + pb1[0] + "," + pb1[1]
+                        + ") " + a.chuTu(md));
+            }
         }
     }
 

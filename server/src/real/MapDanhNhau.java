@@ -218,10 +218,15 @@ class MapDanhNhau {
                     map.move2Map(p, toTX, toTY, toMapID, p.inCountry);
                     return;
                 }
-            } else if ((p.idClan == -1 || c.idClan == -1 || p.idClan == c.idClan)
+            } else if (!XepHangPvpGame.cungTran(p, c)   // 0.9.8: tran xep hang ghep cap tren san 202 - khong can khac bang
+                    && (p.idClan == -1 || c.idClan == -1 || p.idClan == c.idClan)
                     && !((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId)
                     && p.myCountry == c.myCountry) {
                 return;
+            }
+            if (map.mapId == Map.idMapDautruong && !XepHangPvpGame.cungTran(p, c)
+                    && (XepHangPvpGame.trongTran(p) || XepHangPvpGame.trongTran(c))) {
+                return;   // 0.9.8: nguoi ngoai khong xen vao tran xep hang dang dau (va nguoc lai)
             }
 
             if (p.isKiller) {
