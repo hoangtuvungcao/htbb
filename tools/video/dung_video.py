@@ -13,7 +13,8 @@ Tệp JSON:
     "logo_doc": "<png logo cho dải trên video dọc>" (tuỳ chọn),
     "chan_doc": "<png biển chân video dọc>" (tuỳ chọn),
     "doan_list": [ {"tep": "c1_mo_dau", "tu": 0.0, "den": 4.0, "toc": 1.0,
-                    "chu": "c1", "chu_tu": 0.3, "chu_dai": 3.2}, ... ]
+                    "chu": "c1", "chu_tu": 0.3, "chu_dai": 3.2,
+                    "chu_vi_tri": "duoi" | "giua" | "tren" | "to" | "y250"}, ... ]
   }
 Ra: <ten>_1080p.mp4 (16:9, chữ đề giữa dưới), <ten>_doc.mp4 (9:16 1080x1920: khung đầy đủ HUD giữa màn, nền mờ,
 chữ đề ở dải trên), cùng nhạc. H.264 yuv420p CRF 18, +faststart, AAC 192k.
@@ -140,6 +141,8 @@ def main():
                 pos = '(W-w)/2:(H-h)/2'
             elif vt == 'tren':
                 pos = '(W-w)/2:150'
+            elif str(vt).startswith('y'):
+                pos = '(W-w)/2:%d' % int(vt[1:])   # "y250": mép trên biển ở y=250 (tránh chữ trong khung)
             else:
                 pos = '(W-w)/2:H-h-170'
             fl.append('%s%soverlay=%s:enable=\'between(t,%.3f,%.3f)\'%s' % (cur, a, pos, t0, t0 + dd, o))

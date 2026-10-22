@@ -19,6 +19,7 @@ import java.util.Map;
  *   ketban <tk> <id actor>       mời kết bạn (gói 101, 0) / nhanban <tk> <id> (101, 1)
  *   xephang <tk>                 NPC Đấu trường -> Đấu xếp hạng (máy chủ ghép, đưa vào Đấu trường 202)
  *   cup <tk>                     Sổ tay -> Cúp PvP tuần -> Đăng ký
+ *   dt <tk>                      Đấu trường Bảo Bối 3v3: mở + lưu đội (Hộp PC 1-3)
  *   vitri <tk>                   in bản đồ + toạ độ
  *   ngu <giây>
  */
@@ -143,6 +144,17 @@ public class BotVideo {
                         b.menu(-527, 70, 0);
                         b.bom(1200);
                         System.out.println("[bot] " + p[1] + " cup map " + b.mapId + " | " + KichBanPhoBanCup.toast(b, m0) + " | " + KichBanPhoBanCup.menuChu(b, m0));
+                        break;
+                    }
+                    case "dt": {
+                        // Đấu trường Bảo Bối 3v3: mở từ NPC Đấu trường, lưu đội tấn công + phòng thủ (Hộp PC 1, 2, 3)
+                        int i = KichBanXepHang.chonDauTruong(b, "Đấu trường Bảo Bối");
+                        b.bom(1500);
+                        for (int loai = 0; loai < 2; loai++) {
+                            b.gui(-109, (byte) 1, (byte) loai, (byte) 3, 1, 2, 3);
+                            b.bom(1200);
+                        }
+                        System.out.println("[bot] " + p[1] + " dt " + i + " | " + KichBanPhoBanCup.toast(b, 0));
                         break;
                     }
                     case "vitri":

@@ -530,15 +530,15 @@ public class KichBanVideo {
         if (mapId() != 0) denMap(0, 30, 30);
         chuanBiBot();
         // tin riêng tới nhân vật chính -> tab Bạn bè có hội thoại
-        bot("kenh mylinh 4 " + TEN + " chiều nay vào hầm ngục không");
+        bot("kenh mylinh 4 " + TEN + " Chiều nay đi Hầm ngục không?");
         Quay.ngu(1.5);
         Quay.ghi("c7_chat");
         Quay.ngu(0.6);
         Quay.bamVung("hud-chat");
         Quay.ngu(1.0);
         Quay.tren(() -> game.pokemon.ManChat.moTab(game.pokemon.KenhChat.THE_GIOI));
-        String[][] tin = {{"lananh99", "ai lập team săn pokémon hiếm ở fuchsia không"}, {"namkhoa", "vừa câu ra goldeen ở hồ pallet nè"},
-            {"thuha2k", "bán than lửa +1 giá rẻ ai cần nhắn nha"}, {"ducbeo", "tối nay vào cúp pvp tuần team còn 1 slot"}};
+        String[][] tin = {{"lananh99", "Ai lập đội săn Pokémon hiếm ở Fuchsia không?"}, {"namkhoa", "Vừa câu được Goldeen ở hồ Pallet, vui quá!"},
+            {"thuha2k", "Bán Than lửa +1, ai cần nhắn mình nhé."}, {"ducbeo", "Tối nay đánh Cúp PvP tuần, đội mình còn 1 chỗ!"}};
         for (String[] t : tin) {
             bot("kenh " + t[0] + " 1 - " + t[1]);
             Quay.ngu(1.4);
@@ -547,11 +547,11 @@ public class KichBanVideo {
         Quay.moc("ban_be");
         Quay.tren(() -> game.pokemon.ManChat.moRieng("mylinh"));
         Quay.ngu(1.5);
-        go(game.pokemon.ManChat.gI().o, "ok luôn mang charmeleon theo nè", 0.06);
+        go(game.pokemon.ManChat.gI().o, "Đi luôn! Mình mang Charmeleon theo nhé.", 0.06);
         Quay.ngu(0.4);
         Quay.tren(() -> game.pokemon.ManChat.gI().gui());
         Quay.ngu(1.2);
-        bot("kenh mylinh 4 " + TEN + " hẹn ở pewter nhé");
+        bot("kenh mylinh 4 " + TEN + " Ok, hẹn gặp ở Pewter nhé!");
         Quay.ngu(2.5);
         Quay.anh("c7_rieng");
         Quay.dung();
@@ -962,6 +962,47 @@ public class KichBanVideo {
         Quay.dung();
     }
 
+    /** P4: Đấu trường Bảo Bối 3v3 (Hộp PC 3 con mỗi bên đã có; máy đánh + tốc độ x2) */
+    static void pvp4() {
+        chuanBiBot();
+        gm("slv " + TEN + " 30 0", 1.5);
+        gm("slv namkhoa 30 0", 1.0);
+        bot("dt namkhoa");
+        Quay.cho(30, () -> botLog(" dt ") > 0);
+        if (mapId() != 0) denMap(0, 22, 33);
+        Quay.ngu(2);
+        Quay.tren(() -> game.networklogic.GameService.gI().requestNPCInfo((byte) -31));
+        Quay.ngu(1.5);
+        bamLenh("Đấu trường Bảo Bối", 3);
+        Quay.ngu(2);
+        Quay.tren(() -> {
+            game.pokemon.DauTruong.luuDoi(0, new int[]{1, 2, 3});
+            game.pokemon.DauTruong.luuDoi(1, new int[]{1, 2, 3});
+        });
+        Quay.ngu(2);
+        veTheGioi();
+        Quay.ngu(8);   // thẻ thông báo (lưu đội, trang trí mới) tắt hết
+        Quay.ghi("p4_3v3");
+        Quay.tren(() -> game.networklogic.GameService.gI().requestNPCInfo((byte) -31));
+        Quay.ngu(1.2);
+        bamLenh("Đấu trường Bảo Bối", 3);
+        Quay.ngu(2);
+        Quay.bamVung("dt-tim", 3);
+        Quay.cho(8, () -> game.pokemon.DauTruong.DOI_THU.size() > 0);
+        Quay.ngu(1.5);
+        System.out.println("[kb] dt doi thu " + game.pokemon.DauTruong.DOI_THU.size() + " " + Quay.vung());
+        Quay.bamVung("dt-dau-0", 3);
+        Quay.moc("tran");
+        Quay.ngu(5);
+        Quay.bamVung("toc-do", 2);
+        Quay.moc("x2");
+        Quay.cho(150, () -> Quay.timVung("kq-dong") != null || Quay.timVung("kq-ve") != null);
+        Quay.moc("ket_qua");
+        Quay.ngu(5);
+        Quay.anh("p4");
+        Quay.dung();
+    }
+
     public static void main(String[] a) throws Exception {
         File ra = new File(a[0]);
         ra.mkdirs();
@@ -983,6 +1024,7 @@ public class KichBanVideo {
             if (co("9")) canh9();
             if (co("10")) canh10();
             if (CANH != null && CANH.contains("p1")) pvp1();
+            if (CANH != null && CANH.contains("p4")) pvp4();
             if (CANH != null && CANH.contains("p3")) pvp3();
             if (CANH != null && CANH.contains("p2")) pvp2();
             if (co("chu") && System.getProperty("chu.ds") != null) {
