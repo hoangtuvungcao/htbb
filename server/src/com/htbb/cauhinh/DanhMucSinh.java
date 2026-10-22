@@ -985,6 +985,21 @@ final class DanhMucSinh {
                     .nhan("Câu cá: tỉ lệ không được gì tối đa (%)", "Trần của tỉ lệ không được gì sau khi cộng giảm theo giờ.")
                     .khoang(0L, 100L)
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("pvp.ngam_tay", "pvp", "co", "1", true, "cau_hinh")
+                    .nhan("Ngắm tay trong PvP", "1 = trận giữa người chơi (PK, thách đấu, xếp hạng, sàn đấu, chiến trường, chiếm Gym) không tự động đánh, không tự nhắm: kéo chiêu để ngắm, chiêu bay thẳng theo hướng kéo (client 0.9.8; bản cũ bắn theo hướng Pokémon đang quay). 0 = như 0.9.7.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("pvp.ngam_tay.giay_giao_chien", "pvp", "so", "10", true, "cau_hinh")
+                    .nhan("Giây coi là đang giao chiến PvP", "Đánh trúng / bị người chơi đánh trúng trong ngần này giây thì vẫn tính là trận giữa người chơi (tắt tự động, bắt buộc ngắm tay).")
+                    .khoang(0L, 600L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("pvp.ngam_tay.bu_tre_ms", "pvp", "so", "150", true, "cau_hinh")
+                    .nhan("Bù trễ vị trí (ms)", "Vị trí mục tiêu trong ngần này ms trước lúc đạn tới đều tính trúng (ưu tiên người bắn khi mạng trễ). Trần 300.")
+                    .khoang(0L, 300L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("pvp.ngam_tay.map", "pvp", "ds_so", "202,204,205,227", true, "cau_hinh")
+                    .nhan("Bản đồ PvP bắt buộc ngắm tay (id)", "Ngoài sàn đấu / chiến trường / giải Liên minh / thách đấu / chiếm Gym đang đánh (tự nhận theo loại bản đồ). So cả id bản đồ lẫn id nạp.")
+                    .khoang(0L, 100000L)
+                    .lop("co_dinh"),
         };
     }
 }

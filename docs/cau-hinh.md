@@ -325,13 +325,13 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **269 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **273 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 178 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 181 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 22 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
@@ -456,7 +456,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (199)
+### Khoá ẩn: cố định & luôn bật (203)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -677,6 +677,10 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `pvp.tinh_diem.bat` | Tính điểm thang PvP | Luôn bật (ẩn) | `1` | ngay | game | 0 = trận PvP không cộng/trừ điểm thang. |
 | `gym.bat` | Thách đấu Gym | Luôn bật (ẩn) | `1` | ngay | game | 0 = tạm đóng Gym. |
 | `ham_nguc.bat` | Hầm Ngục bí ẩn | Luôn bật (ẩn) | `1` | ngay | game | 0 = không vào tầng mới (vẫn nhận thưởng đã đạt). |
+| `pvp.ngam_tay` | Ngắm tay trong PvP | Luôn bật (ẩn) | `1` | ngay | game | 1 = trận giữa người chơi (PK, thách đấu, xếp hạng, sàn đấu, chiến trường, chiếm Gym) không tự động đánh, không tự nhắm: kéo chiêu để ngắm, chiêu bay thẳng theo hướng kéo (client 0.9.8; bản cũ bắn theo hướng Pokémon đang quay). 0 = như 0.9.7. |
+| `pvp.ngam_tay.giay_giao_chien` | Giây coi là đang giao chiến PvP | Cố định (ẩn) | `10` | ngay | game | Đánh trúng / bị người chơi đánh trúng trong ngần này giây thì vẫn tính là trận giữa người chơi (tắt tự động, bắt buộc ngắm tay). |
+| `pvp.ngam_tay.bu_tre_ms` | Bù trễ vị trí (ms) | Cố định (ẩn) | `150` | ngay | game | Vị trí mục tiêu trong ngần này ms trước lúc đạn tới đều tính trúng (ưu tiên người bắn khi mạng trễ). Trần 300. |
+| `pvp.ngam_tay.map` | Bản đồ PvP bắt buộc ngắm tay (id) | Cố định (ẩn) | `202,204,205,227` | ngay | game | Ngoài sàn đấu / chiến trường / giải Liên minh / thách đấu / chiếm Gym đang đánh (tự nhận theo loại bản đồ). So cả id bản đồ lẫn id nạp. |
 
 #### Chỉ số & chống lạm phát (cố định) (`chi_so`)
 

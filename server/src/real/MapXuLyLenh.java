@@ -462,6 +462,10 @@ class MapXuLyLenh {
         if (!TuDongGame.kiemLenh(player, message.command)) {
             return;
         }
+        // 0.9.8 ngam tay PvP: lenh ban theo huong (-113) + chan / doi danh khoa muc tieu vao nguoi choi (6). BanHuongGame.
+        if (BanHuongGame.xuLy(map, player, message)) {
+            return;
+        }
 
         switch (message.command) {
             case -76:

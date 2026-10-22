@@ -255,7 +255,8 @@ public final class TuDongGame {
                 tich(p, c, ph, bay);
             }
             final TuDong.NguCanh n = nguCanh(p);
-            final String loi = TuDong.kiemBat(c, ph, n, homNay(bay));
+            final String camPvp = BanHuongGame.lyDoCamTuDong(p); // 0.9.8 ngam tay: PvP khong tu dong (moi cau hinh)
+            final String loi = camPvp != null ? camPvp : TuDong.kiemBat(c, ph, n, homNay(bay));
             if (loi != null) {
                 if (dangBat) {
                     tat(p, ph, TuDong.TAT_NGUOI_CHOI);
@@ -365,6 +366,8 @@ public final class TuDongGame {
             lyDo = p.map != null && p.map.mapId == ph.neoMap ? TuDong.TAT_RA_VUNG : TuDong.TAT_DOI_MAP;
         } else if (c.tatKhiPvp && (p.isKiller || laSanDau(p, p.map))) {
             lyDo = p.isKiller ? TuDong.TAT_PVP : TuDong.TAT_SAN_DAU;
+        } else if (BanHuongGame.lyDoCamTuDong(p) != null) {
+            lyDo = TuDong.TAT_PVP; // 0.9.8 ngam tay: trong tran giua nguoi choi luon dung
         } else if (c.mapBiCam(p.map.mapId)) {
             lyDo = TuDong.TAT_KHU_CAM;
         }
@@ -654,7 +657,7 @@ public final class TuDongGame {
                 return true;
             }
             if (lenh == 6) {
-                if (c.tatKhiPvp) {
+                if (c.tatKhiPvp || BanHuongGame.bat()) {
                     tich(p, c, ph, bay);
                     tat(p, ph, TuDong.TAT_PVP);
                     guiTrangThai(p, c, ph, TuDong.lyDo(TuDong.TAT_PVP));
@@ -771,6 +774,30 @@ public final class TuDongGame {
     /** Nhan vat {@code p} gay sat thuong vao boss (BossLauDai). */
     public static void khiGapBoss(final Char p) {
         dungVi(p, TuDong.TAT_BOSS);
+    }
+
+    /**
+     * 0.9.8 ngam tay (BanHuongGame.nhip): dang trong tran giua nguoi choi -&gt; dung tu dong NGAY, khong phu thuoc
+     * tu_dong.tat_khi_pvp, bao ro ly do (goi -100 + chu tren dau).
+     */
+    public static void dungViPvp(final Char p) {
+        try {
+            if (laNguoi(p) == null) {
+                return;
+            }
+            final TuDong.Phien ph = phien(p, false);
+            if (ph == null || !ph.bat) {
+                return;
+            }
+            final TuDong.CauHinh c = TuDong.cauHinh();
+            tich(p, c, ph, System.currentTimeMillis());
+            tat(p, ph, TuDong.TAT_PVP);
+            final String ly = BanHuongGame.lyDoCamTuDong(p);
+            guiTrangThai(p, c, ph, ly == null ? TuDong.lyDo(TuDong.TAT_PVP) : ly);
+            bao(p, ly == null ? TuDong.lyDo(TuDong.TAT_PVP) : ly);
+        } catch (final Exception e) {
+            // khong lam hong tran danh
+        }
     }
 
     private static void dungVi(final Char p, final int lyDo) {
