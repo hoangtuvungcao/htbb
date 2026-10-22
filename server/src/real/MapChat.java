@@ -1297,6 +1297,9 @@ class MapChat {
                                                         mq.daCoLoaiRieng = true;
                                                         LoaiQuaiGame.HOANG_DA.put(mq, Long.valueOf(System.currentTimeMillis()));
                                                         mq.baoDoiLoai();
+                                                        com.htbb.thongbao.ThongBao.rieng(player, "GM hoangda: quái " + mq.id + " -> loài " + mq.dexRieng + " bậc " + mq.bacRieng);
+                                                    } else {
+                                                        com.htbb.thongbao.ThongBao.rieng(player, "GM hoangda: không thấy quái " + hd[0] + " (khu " + player.region + ")");
                                                     }
                                                 } catch (Exception exHd) {
                                                 }

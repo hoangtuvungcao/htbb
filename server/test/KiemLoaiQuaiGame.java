@@ -199,6 +199,18 @@ public final class KiemLoaiQuaiGame {
         final String nguon = new String(Files.readAllBytes(Paths.get("src/real/Region.java")), StandardCharsets.UTF_8);
         Kiem.dung("Region: -125 gui NGAY SAU lenh 4 them quai", nguon.matches(
                 "(?s).*writeActorPos\\(new Message\\(4\\), \\(Actor\\)mt\\)\\);\\s*LoaiQuaiGame\\.sauThemQuai\\(p, mt\\);.*"));
+        // 0.9.8: ban do KHONG chia khu (vong lap MapVongLap) cung gui -125 sau lenh 4 - truoc chi Region gui nen dau hoang da
+        // khong hien / khong bat duoc o cac ban do nay
+        final String vl = new String(Files.readAllBytes(Paths.get("src/real/MapVongLap.java")), StandardCharsets.UTF_8);
+        int them = 0, sau = 0;
+        for (int i = vl.indexOf("p.writeActorPos(new Message(4), mt));"); i >= 0; i = vl.indexOf("p.writeActorPos(new Message(4), mt));", i + 1)) {
+            them++;
+            final int j = vl.indexOf('\n', i);
+            if (vl.startsWith("LoaiQuaiGame.sauThemQuai(p, mt);", vl.indexOf("L", j))) {
+                sau++;
+            }
+        }
+        Kiem.dung("MapVongLap: moi lenh 4 them quai co -125 ngay sau (" + sau + "/" + them + ")", them > 0 && sau == them);
         final String xl = new String(Files.readAllBytes(Paths.get("src/real/MapXuLyLenh.java")), StandardCharsets.UTF_8);
         Kiem.dung("MapXuLyLenh: lenh -126 -> LoaiMayChu", xl.contains("case -126:") && xl.contains("LoaiMayChu.xuLy(player, message)"));
         Kiem.dung("BoDemGoiTin: -126 la lenh tai nguyen", io.BoDemGoiTin.laLenhTaiNguyen(-126));

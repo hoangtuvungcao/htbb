@@ -1344,6 +1344,7 @@ public class MapLienDau extends Map {
                                         if (!p.nearMons.contains(mt.id)) {
                                             p.nearMons.add(mt.id);
                                             p.sendMessage(p.writeActorPos(new Message(4), mt));
+                                            LoaiQuaiGame.sauThemQuai(p, mt); // 0.9.8: -125 loai rieng / dau hoang da (ban do khong chia khu)
                                         }
                                     } else {
                                         p.nearMons.add(mt.id);
