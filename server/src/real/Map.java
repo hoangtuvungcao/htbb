@@ -14953,6 +14953,11 @@ public class Map implements Runnable {
                 return;
             }
 
+            if (player.killer != 0) {
+                // ten do (nghiep) khong tat bang co nay: truoc im lang
+                DungVatPham.baoNhe(player, com.htbb.pokemon.CoPk.baoTenDo(player.killer).replace("không thể đeo khăn PK", "chưa tắt được chế độ tên đỏ"));
+                return;
+            }
             if (player.killer == 0) {
                 player.isKiller = !player.isKiller;
                 Message m = new Message(67);

@@ -220,6 +220,12 @@ public class Char extends LiveActor {
     public long timeGiveCardTown;
     public long xpLost;
     public long timeUsePK;
+    /** Luc don danh nguoi choi cuoi trung (CoPkGame: cho com.htbb.pokemon.CoPk.CHO_SAU_DANH_MS moi thao khan PK). */
+    public long lucDanhNguoiPk;
+    /** Moc tinh nghiep phai theo dong ho that (LuatPkGame.nhipPhut). */
+    public long lucPhaiNghiep;
+    /** Lan cuoi bao "dang ten do, thao khan moi danh duoc" (MapDanhNhau, chong lap bao moi don). */
+    public long lucBaoTenDoKhan;
     public long timeJoinClan;
     public long timeHoiSinh;
 

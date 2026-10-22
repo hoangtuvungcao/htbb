@@ -922,6 +922,7 @@ public class Region {
                 p.buffSkillKham((LiveActor)c);
                 p.charHireAttackDam((LiveActor)c, (int)_type, _level, buffAttack);
             }
+            CoPkGame.daDanhNguoi(p); // don trung nguoi choi: cho 10 giay moi thao khan PK
             if (p.isKiller) {
                 if (p.killer == 0 && p.killer < 32000) {
                     p.killer = p.charClass == 4 ? (short)(p.killer + 50) : (short)(p.killer + 1);

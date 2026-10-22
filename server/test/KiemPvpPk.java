@@ -1,3 +1,4 @@
+import com.htbb.pokemon.CoPk;
 import com.htbb.pokemon.DanhHieuLogic;
 import com.htbb.pokemon.LuatPk;
 import com.htbb.pokemon.ThangPvp;
@@ -39,6 +40,7 @@ public final class KiemPvpPk {
     public static void chay() {
         Kiem.nhom("PvP xep hang / thuong mua / luat PK / diem moc nhiem vu (0.9.7)");
         luatPk();
+        coPk();
         xepHang();
         final real.GemTemplate[] gemCu = real.Map.gemTemplate;
         try {
@@ -82,6 +84,26 @@ public final class KiemPvpPk {
         Kiem.dung("muc tieu thap hon nhung dang ten do / bat PK: cho (tu chiu)", LuatPk.chan(false, 50, 20, true, 0) == null);
         Kiem.dung("danh nguoi CAO hon: cho", LuatPk.chan(false, 20, 60, false, 0) == null);
         Kiem.dung("nghiep qua nang: chan danh nguoi vo toi", LuatPk.chan(false, 50, 50, false, LuatPk.NGUONG_KHOA_PK) != null);
+    }
+
+    /** Khan PK (22/10/2026: "PK tu bat, bat roi khong tat duoc"). */
+    static void coPk() {
+        Kiem.dung("khan PK 14..18", CoPk.laKhan(14) && CoPk.laKhan(18) && !CoPk.laKhan(13) && !CoPk.laKhan(19));
+        Kiem.bang("chua danh ai: thao ngay", Integer.valueOf(0), Integer.valueOf(CoPk.giayCho(0L, 5_000_000L)));
+        Kiem.bang("vua danh 0,5 giay: cho 10 giay (lam tron len)", Integer.valueOf(10), Integer.valueOf(CoPk.giayCho(1_000_000L, 1_000_500L)));
+        Kiem.bang("vua danh 7,2 giay: con 3 giay", Integer.valueOf(3), Integer.valueOf(CoPk.giayCho(1_000_000L, 1_007_200L)));
+        Kiem.bang("danh 10 giay truoc: thao ngay", Integer.valueOf(0), Integer.valueOf(CoPk.giayCho(1_000_000L, 1_010_000L)));
+        Kiem.bang("dong ho lui: cho toi da 10 giay", Integer.valueOf(10), Integer.valueOf(CoPk.giayCho(1_000_000L, 900_000L)));
+        Kiem.dung("thong bao cho co so giay", CoPk.baoCho(4).contains("còn 4 giây"));
+        Kiem.dung("thong bao ten do co nghiep + phut", CoPk.baoTenDo(300).contains("nghiệp 300") && CoPk.baoTenDo(300).contains("60 phút"));
+        Kiem.bang("phut het nghiep lam tron len", Integer.valueOf(1), Integer.valueOf(CoPk.phutHetNghiep(1)));
+        final long[] a = CoPk.phaiTheoGio(300, 1_000_000L, 1_000_000L + 59_000L);
+        Kiem.dung("duoi 1 phut that: chua tru, giu moc", a[0] == 300 && a[1] == 1_000_000L);
+        final long[] b = CoPk.phaiTheoGio(300, 1_000_000L, 1_000_000L + 150_000L);
+        Kiem.dung("2,5 phut that: tru 10, moc tien 2 phut (khong mat phan le)", b[0] == 290 && b[1] == 1_120_000L);
+        final long[] c = CoPk.phaiTheoGio(300, 1_000_000L, 1_000_000L + 3_600_000L);
+        Kiem.bang("300 nghiep het sau 60 phut online", Long.valueOf(0), Long.valueOf(c[0]));
+        Kiem.dung("dong ho lui: khong tru", CoPk.phaiTheoGio(300, 2_000_000L, 1_000_000L)[0] == 300);
     }
 
     // ------------------------------------------------------------------ (2) xep hang thuan
@@ -355,6 +377,16 @@ public final class KiemPvpPk {
         Kiem.sai("nghiep khong con -200 moi ngay dang nhap", doc("src/real/CharNapDuLieu.java").contains("self.killer -= 200"));
         Kiem.dung("getXPLost qua LuatPkGame (khong tut cap)", doc("src/real/LevelDetail.java").contains("LuatPkGame.expMat(this, killer)"));
         Kiem.dung("nghiep phai moi phut (CharVongLap)", doc("src/real/CharVongLap.java").contains("LuatPkGame.nhipPhut(self)"));
+        final String th = doc("src/real/MapDungThuoc.java") + doc("src/real/doUsePotion.java");
+        Kiem.sai("khan PK: het 'hack khan' (dung lai trong 150 giay = ten do + 300 nghiep)", th.contains("hack khan") || th.contains("150000L"));
+        Kiem.dung("khan PK qua CoPkGame o ca hai duong dung thuoc", doc("src/real/MapDungThuoc.java").contains("CoPkGame.dung(player, potionType)")
+                && doc("src/real/doUsePotion.java").contains("CoPkGame.dung(player, potionType)"));
+        Kiem.dung("don danh nguoi ghi luc (cho thao khan) o ca ba duong", doc("src/real/MapDanhNhau.java").contains("CoPkGame.daDanhNguoi(p)")
+                && doc("src/real/Region.java").contains("CoPkGame.daDanhNguoi(p)") && doc("src/real/RegionVantienTran.java").contains("CoPkGame.daDanhNguoi(p)"));
+        final String cg = doc("src/real/CoPkGame.java");
+        Kiem.dung("thao khan khong xet ten do (chi cho sau don danh)", cg.indexOf("CoPk.giayCho") > cg.indexOf("if (p.pk == 0)")
+                && cg.indexOf("p.isKiller || p.killer > 0") < cg.indexOf("CoPk.giayCho"));
+        Kiem.dung("nghiep phai theo dong ho that", doc("src/real/LuatPkGame.java").contains("CoPk.phaiTheoGio"));
         Kiem.dung("luat PK o ca hai duong danh nguoi", doc("src/real/MapDanhNhau.java").contains("LuatPkGame.chan(map, p, c)")
                 && doc("src/real/Region.java").contains("LuatPkGame.chan(this.map, p, c)"));
         Kiem.dung("sat thuong tran xep hang ghi o ca hai duong", doc("src/real/MapDanhNhau.java").contains("XepHangPvpGame.khiSatThuong")

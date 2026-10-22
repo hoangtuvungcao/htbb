@@ -1344,6 +1344,12 @@ Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
   thêm người vô tội (ngưỡng cũ 319000 không bao giờ tới vì nghiệp có trần 32000). Nghiệp giảm 5 / phút online (một lần
   giết vô tội +100 ≈ 20 phút), không còn −200 mỗi ngày đăng nhập. Gục trong PK mất 1% (tên đỏ) / 0,1% EXP cần của cấp
   hiện tại theo bảng EXP đang dùng, **không tụt cấp**; VIP 3 không còn được miễn (VIP theo điểm nạp = mua sức mạnh).
+- **Cờ PK = khăn PK** (bình 14–18, `real.CoPkGame`, `com.htbb.pokemon.CoPk`; client 0.9.7 chỉ bật / tắt PK bằng khăn,
+  gói 22 → 65): dùng khăn = đeo (bật PK), dùng lại = tháo (tắt PK), có thông báo. Tháo **luôn được**, chỉ chờ 10 giây
+  sau đòn trúng người chơi cuối ("còn N giây"). Tên đỏ (nghiệp) tách riêng: đang tên đỏ không đeo được khăn (có báo số
+  nghiệp + phút còn lại), nghiệp giảm 5 / phút online theo đồng hồ thật. Khăn không lưu: vào lại game là đã tháo.
+  Trước 22/10/2026: dùng lại khăn trong 150 giây = "hack khăn" → tên đỏ + 300 nghiệp, khăn không tháo, mọi lần dùng sau
+  bị bỏ qua im lặng (PK "tự bật, không tắt được").
 - **Điểm móc nhiệm vụ** (`real.DiemMocNhiemVu`): mọi kiểu trong `data_nhiem_vu_kieu` đều có nơi gọi `NhiemVuEngine.suKien`
   (đào, nấu ăn, làm vườn, ấp trứng, đố vui, đua, chợ, mặc đồ / bộ trang bị, Pokédex vùng, vật phẩm sự kiện, giao hàng /
   đưa thư, hộ tống). Câu cá có điểm móc **duy nhất** ở `HeSinhThaiMenu.cauCa`.

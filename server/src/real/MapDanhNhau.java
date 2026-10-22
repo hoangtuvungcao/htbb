@@ -60,6 +60,11 @@ class MapDanhNhau {
             p.downDurableWeapone();
             boolean inArenaP = map.inArena(p);
             if (p.isKiller && p.pk != 0 && !p.isMonster) {
+                // ten do + dang deo khan: luat cu khong cho danh - truoc im lang, nguoi choi tuong PK hong
+                if (System.currentTimeMillis() - p.lucBaoTenDoKhan > 5000L) {
+                    p.lucBaoTenDoKhan = System.currentTimeMillis();
+                    DungVatPham.baoNhe(p, "Đang mang tên đỏ: tháo khăn PK mới tấn công người chơi được.");
+                }
                 return;
             }
 
@@ -551,6 +556,7 @@ class MapDanhNhau {
                 }
             }
 
+            CoPkGame.daDanhNguoi(p); // don trung nguoi choi: cho 10 giay moi thao khan PK
             if (p.isKiller) {
                 if ((p.killer == 0
                         && map.mapId != Map.idMapDautruong
