@@ -601,6 +601,10 @@ public final class HudRong {
                 // tên viết tắt sát đáy BÊN TRONG ô (đo theo font đang dùng - font ảnh J2ME cao hơn)
                 int vaiVt = r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU;
                 int yVt = Math.min(anh ? y + r * 2 / 5 : y + r / 4 - 1, y + r - game.pokemon.ChuDe.cao(vaiVt));
+                if (r < 24) {
+                    // 0.9.8: huy hiệu PP (r < 24) nằm giữa đáy ô - tên đặt NGAY TRÊN huy hiệu, không đè chữ
+                    yVt = Math.min(yVt, y + r - Font.smallFont.getHeight() / 2 - 2 - game.pokemon.ChuDe.cao(vaiVt));
+                }
                 game.pokemon.ChuDe.chuVien(g, game.pokemon.ChuDe.cat(vt, vaiVt, 2 * r - 2), x, yVt, vaiVt, 0xFFFFFF, game.pokemon.ChuDe.VIEN, 2);
             }
             long da = now - mc.timeLastUseSkills[sk];
