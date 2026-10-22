@@ -1125,7 +1125,7 @@ def dong_data_quest(d, mainsub):
     elif typ == 3:
         npcres = 32000
     nv = (d.get("muc_tieu_text") or d["ten"])[:150]
-    thuong = (d.get("dong_thuong") or "")[:120]
+    thuong = d.get("dong_thuong") or ""  # khong cat (cu [:120] + info[:200] cat giua chu); doan nay server / sinh_sua_tuyen.py viet lai tu dong thuong
     info = "Nhiệm vụ:|%s|Địa điểm:|%s|NPC:|%s|Phần thưởng:|%s" % (nv, d["dia_danh"] or "-", d["ten_npc"] or "-",
                                                                    thuong.replace("Thưởng: ", ""))
     dd = d["dia_danh"] or ""
@@ -1138,7 +1138,7 @@ def dong_data_quest(d, mainsub):
     gt = [d["id_so"], sql_chuoi(d["ten"][:45]), npc, npcres, max(1, int(d["cap_toi_thieu"])), mainsub,
           sql_chuoi(content), sql_chuoi(sc[:490]), sql_chuoi(res), sql_chuoi(iget),
           sql_chuoi(mon), typ, sql_chuoi(nget), sql_chuoi(nmon), d["xu"] or 0, d["exp"] or 0, "'32000'", "'32000'",
-          sql_chuoi(vat), 5 if typ == 4 else 0, sql_chuoi(info[:200]), sql_chuoi(fin), 0, d["luong"] or 0,
+          sql_chuoi(vat), 5 if typ == 4 else 0, sql_chuoi(info[:1000]), sql_chuoi(fin), 0, d["luong"] or 0,
           d["luong_khoa"] or 0]
     return "(" + ",".join(str(x) for x in gt) + ")"
 

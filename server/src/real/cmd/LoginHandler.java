@@ -448,6 +448,7 @@ public class LoginHandler implements ICommandHandler {
         } catch (final Exception ex6) {
         }
         System.out.print(". ");
+        session.lucDangNhap = System.currentTimeMillis();   // 0.9.7.1: theo doi dang nhap -> vao ban do (io.Session)
         final Message i = MessageCreator.createCharListMessage(userID, session);
         session.sendMessage(i);
         i.cleanup();
@@ -509,6 +510,7 @@ public class LoginHandler implements ICommandHandler {
             }
             s.userID = userID;
             System.out.print(". ");
+            s.lucDangNhap = System.currentTimeMillis();   // 0.9.7.1: theo doi dang nhap -> vao ban do (io.Session)
             final Message m = MessageCreator.createCharListMessage(userID, s);
             s.sendMessage(m);
             m.cleanup();
@@ -613,6 +615,7 @@ public class LoginHandler implements ICommandHandler {
             data.CamTheoMay.ghiNhanDangNhap(s.IMEI, s.username, s.ip);
             data.GhiClient.ghiNhan(s);
             System.out.print(". ");
+            s.lucDangNhap = System.currentTimeMillis();   // 0.9.7.1: theo doi dang nhap -> vao ban do (io.Session)
             final Message m = MessageCreator.createCharListMessage(userID, s);
             s.sendMessage(m);
             m.cleanup();

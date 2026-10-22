@@ -82,8 +82,12 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
     - `them_ngam_tay_pvp.sql` (pvp-keo): `data_chieu_ban` (kiểu bắn từng chiêu cho ngắm tay PvP, `INSERT IGNORE`);
     - `sua_ket_doi.sql` (ket-doi): Lễ kết đôi thay đám cưới - `data_nhom_trung_ten`, `data_nhom_trung` (nhóm trứng 21 loài),
       đổi tên vật phẩm 88–92, 98, 751 và bản đồ 225 / 226 (chỉ ô còn tên cũ);
-    - `them_huong_dan_tan_thu.sql` (main 90658456, đã chạy trên production): hướng dẫn tân thủ 10 bước (`data_quest_moi`
-      901..910 viết lại tại chỗ), `data_huong_dan_tan_thu`, Chansey / Snorlax ở 3 làng, sửa chuỗi chính; chạy lại vô hại;
+    - `them_huong_dan_tan_thu.sql` (main 90658456 + bản sửa của main 4f89b3ad, đã chạy trên production): hướng dẫn tân thủ
+      10 bước (`data_quest_moi` 901..910 viết lại tại chỗ), `data_huong_dan_tan_thu`, Chansey / Snorlax ở 3 làng, sửa chuỗi
+      chính, `infogift` varchar(1000); chạy lại vô hại;
+    - `sua_tuyen_nhiem_vu.sql` (main 4f89b3ad sua-tuyen, đã chạy trên production, SINH bởi `tools/pokemon/sinh_sua_tuyen.py`):
+      `tob_lang_khoi_dau` (làng khởi đầu theo vùng), `data_nhiem_vu_khu_vuc` (vùng đích bước địa điểm), chữ phần thưởng
+      `infogift`; chạy sau khối hướng dẫn tân thủ;
     - `them_the_dat_ten_pet.sql` (ten-pet): thẻ đặt tên Pokémon 1261 (`data_dong_the_ten`, `data_tu_cam_ten`, `tob_pet_dat_ten`,
       `tob_log_dat_ten`, công dụng / 2 nguồn kiếm được / món cửa hàng lượng);
     - `pokemon_npc_sprite.sql`, `pokemon_thu_pokemon.sql` (p2-tainguyen): ảnh NPC = Pokémon (`data_npc.dex` / `sprite`,

@@ -1036,7 +1036,7 @@ public class PrivateDataMap extends Thread {
                     while (this.players.size() > 0) {
                         Char player = this.players.remove(0);
                         if (player.isBot == -1) {
-                            int[][] vilage = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+                            int[][] vilage = LangKhoiDau.bang(player); // lang khoi dau theo vung (sua-tuyen)
                             int[] tmap = vilage[player.myCountry];
                             int x = 16 + Map.r.nextInt() % 5;
                             int y = 24 + Map.r.nextInt(20);

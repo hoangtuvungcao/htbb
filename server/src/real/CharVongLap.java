@@ -362,7 +362,7 @@ class CharVongLap {
         if (self.timeWaitComeHome > 0L && System.currentTimeMillis() - self.timeWaitComeHome > 30000L && self.mapID == Map.idMapTown) {
             try {
                 if (self.hp <= 0) {
-                    final int[][] mapstart = {{70, 1701}, {0, 301}, {80, 1901}};
+                    final int[][] mapstart = real.LangKhoiDau.bang(self);
                     self.hp = 1;
                     self.desTroy();
                     try {

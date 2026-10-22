@@ -13,9 +13,18 @@ const { link: hoTro, coZalo } = useHoTro()
 const { ds: platforms } = useBanTai()
 
 const goiY = ref<string | null>(null)
-onMounted(() => { goiY.value = nenTangTheoUa(navigator.userAgent) })
+/** Đang xem bằng iPhone/iPad: các bản .jar/.apk/.zip KHÔNG chạy được trên máy này. */
+const laIos = ref(false)
+onMounted(() => {
+  laIos.value = laThietBiIos(navigator.userAgent, navigator.maxTouchPoints)
+  goiY.value = laIos.value ? 'ios' : nenTangTheoUa(navigator.userAgent)
+})
 /** Bản gợi ý cho thiết bị này (có thể là "Sắp ra mắt", vd. iPhone). */
 const banGoiY = computed(() => platforms.value.find(p => p.ma === goiY.value) ?? null)
+/** iPhone/iPad mà bản iOS chưa phát hành: báo rõ thay vì mời tải bản không cài được. */
+const iosChuaCo = computed(() => laIos.value && !banGoiY.value?.href)
+/** Bản này không cài được trên máy đang xem (iOS mở bản Java/Windows/Linux/Android). */
+const khongChoMayNay = (p: { ma: string }) => laIos.value && p.ma !== 'ios'
 const nhanNut = (p: { kieu: string }) => (p.kieu === 'testflight' ? 'Cài qua TestFlight' : p.kieu === 'app-store' ? 'Mở App Store' : p.kieu === 'ipa-manifest' ? 'Cài trên iPhone/iPad' : 'Tải về')
 
 /** Cột: Java (J2ME) · Windows / Linux · Android. */
@@ -52,6 +61,13 @@ const cauHinh = [
             <p class="font-display text-2xl font-extrabold text-highlighted">
               {{ banGoiY.ten }}
             </p>
+            <p v-if="iosChuaCo" class="mt-1 text-sm text-muted">
+              <strong class="text-highlighted">Bản iOS sắp ra mắt; hiện có thể chơi bằng PC/Android.</strong>
+              iPhone/iPad không cài được tệp .jar, .apk hay bản Windows/Linux bên dưới — hãy tải trên máy tính hoặc điện thoại Android.
+              <template v-if="coZalo">
+                Theo dõi <ULink :to="hoTro" target="_blank" class="font-semibold text-primary hover:underline">nhóm Zalo</ULink> để biết khi có bản iOS.
+              </template>
+            </p>
           </div>
           <UButton v-if="banGoiY.href" :to="banGoiY.href" external size="xl" class="btn-pikachu px-6" icon="i-lucide-download">
             {{ nhanNut(banGoiY) }}
@@ -83,7 +99,15 @@ const cauHinh = [
                 </p>
               </div>
               <div class="shrink-0 sm:w-48">
-                <UButton v-if="p.href" :to="p.href" external block size="lg" class="btn-pikachu" icon="i-lucide-download">
+                <template v-if="p.href && khongChoMayNay(p)">
+                  <p class="mb-1.5 text-center text-xs font-bold text-warning">
+                    Không chạy trên iPhone/iPad
+                  </p>
+                  <UButton :to="p.href" external block size="md" color="neutral" variant="outline" icon="i-lucide-monitor-smartphone">
+                    Tải cho máy khác
+                  </UButton>
+                </template>
+                <UButton v-else-if="p.href" :to="p.href" external block size="lg" class="btn-pikachu" icon="i-lucide-download">
                   {{ nhanNut(p) }}
                 </UButton>
                 <p v-else class="rounded-md border-2 border-dashed border-[var(--ui-border-accented)] px-3 py-2 text-center text-sm font-bold text-muted">

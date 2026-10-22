@@ -213,6 +213,11 @@ public class Session extends Thread {
                     }
                 }
 
+                this.theoDoiVaoGame(message.command);
+                if (message.command == GoiManh.LENH_MANH) {
+                    this.nhanBaoLoiTai(message);   // client 0.9.7.1+ bao loi tai (khong qua bo xu ly game)
+                    continue;
+                }
                 // Bo dem chan doan chieu client -> server (xem DemGoiTin).
                 DemGoiTin.ghiVao(this.charname, message.command);
                 try {
@@ -233,10 +238,86 @@ public class Session extends Thread {
         } catch (Exception var11) {
             this.lyDoNgat = "loi: " + var11;
         } finally {
+            if (this.lucDangNhap > 0 && this.lucVaoMap == 0) {
+                // ngat truoc khi vao duoc ban do: ghi buoc dang ket (client J2ME ket man tai roi nguoi choi tat)
+                this.lyDoNgat = this.lyDoNgat + "; " + this.moTaVaoGame(System.currentTimeMillis(), "ngat khi chua vao ban do");
+            }
             baoNgat(this.charname, this.username, this.ip, this.lyDoNgat, this.lastActiveTime);
             this.disconnect(7);
         }
 
+    }
+
+    // ------------------------------------------------------------------ theo doi dang nhap -> vao ban do (0.9.7.1)
+    /**
+     * Su co 22/10/2026: client J2ME tren gia lap iOS dang nhap xong roi ket o man tai, nhat ky chi co dong [CLIENT] -
+     * khong biet ket o dau (goi giu ket noi 30 s giu phien song nen khong co ca dong [NGAT]). Nay moi phien ghi:
+     * luc dang nhap (LoginHandler), luc chon Pokemon (lenh 13), luc vao ban do xong (lenh 12 = changeMapOK sau khi
+     * client nap xong ban do) va so byte da gui; qua VAO_GAME_CHAM_MS ma chua vao duoc ban do -> MOT dong [VAO_GAME]
+     * canh bao (buoc dang ket, byte da gui, nen tang); client khong nen (J2ME) vao duoc -> mot dong thoi gian.
+     */
+    public static long VAO_GAME_CHAM_MS = 90000L;
+    public volatile long lucDangNhap;
+    private volatile long lucChonNhanVat;
+    private volatile long lucVaoMap;
+    private volatile boolean daBaoCham;
+    /** byte da ghi ra socket (Sender.run) */
+    public final java.util.concurrent.atomic.AtomicLong byteDaGui = new java.util.concurrent.atomic.AtomicLong();
+
+    void theoDoiVaoGame(final int lenh) {
+        try {
+            if (this.lucDangNhap <= 0 || this.lucVaoMap > 0) {
+                return;
+            }
+            final long now = System.currentTimeMillis();
+            if (lenh == 13 && this.lucChonNhanVat == 0) {
+                this.lucChonNhanVat = now;
+            } else if (lenh == 12 && this.lucChonNhanVat > 0) {
+                this.lucVaoMap = now;
+                if ((this.khaNang & GoiNen.KHA_NANG_NEN) == 0 || this.daBaoCham) {
+                    com.htbb.log.Nhat.thongTin("VAO_GAME", moTaVaoGame(now, "vao ban do"));
+                }
+                return;
+            }
+            if (!this.daBaoCham && now - this.lucDangNhap > VAO_GAME_CHAM_MS) {
+                this.daBaoCham = true;
+                com.htbb.log.Nhat.canhBao("VAO_GAME", moTaVaoGame(now, "CHUA vao duoc ban do"));
+            }
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private int soBaoLoiTai;
+
+    /**
+     * Goi -123 tu client (0.9.7.1+): client bao man tai hong (thieu bo nho / dung qua lau) - ly do, heap tong / trong
+     * (KB), buoc man tai, so lan da giai phong bo nho, so goi da bo. Toi da 5 dong / phien.
+     */
+    void nhanBaoLoiTai(final Message m) {
+        try {
+            if (++this.soBaoLoiTai > 5) {
+                return;
+            }
+            final String lyDo = m.dis.readUTF();
+            final int tong = m.dis.readInt();
+            final int trong = m.dis.readInt();
+            final int buoc = m.dis.readByte();
+            final int giai = m.dis.readShort();
+            final int bo = m.dis.readShort();
+            com.htbb.log.Nhat.canhBao("LOI_TAI_CLIENT", "tk " + com.htbb.log.Nhat.sach(this.username) + ": " + com.htbb.log.Nhat.sach(lyDo)
+                    + " | heap " + trong + "/" + tong + " KB trong, buoc man tai " + buoc + ", giai phong " + giai + " lan, bo " + bo
+                    + " goi | " + moTaVaoGame(System.currentTimeMillis(), "bao loi"));
+        } catch (Throwable ignored) {
+        }
+    }
+
+    /** Dong mo ta tien trinh vao game (cung dung khi ngat ket noi truoc khi vao duoc ban do). */
+    String moTaVaoGame(final long now, final String viec) {
+        final String buoc = this.lucVaoMap > 0 ? "da vao ban do" : this.lucChonNhanVat > 0 ? "dang tai Pokemon / ban do (da chon)" : "chua chon / tao Pokemon";
+        return "tk " + com.htbb.log.Nhat.sach(this.username) + " " + viec + " sau " + (now - this.lucDangNhap) / 1000L + " s ("
+                + buoc + (this.lucChonNhanVat > 0 ? ", chon luc +" + (this.lucChonNhanVat - this.lucDangNhap) / 1000L + " s" : "")
+                + "), da gui " + this.byteDaGui.get() / 1024L + " KB, platf=" + com.htbb.log.Nhat.sach(this.platfClient)
+                + " ban=" + this.banClient + " khaNang=" + this.khaNang + " w=" + this.w;
     }
 
     /** So goi tai nguyen da duoc HOAN (cho roi xu ly, khong bo) tu luc khoi dong - chi so chan doan. */
@@ -583,19 +664,45 @@ public class Session extends Thread {
 
         }
 
+        /**
+         * Xep mot khung goi: nen neu client giai nen duoc (io.GoiNen), khong thi chia manh neu client gom duoc
+         * (io.GoiManh - client J2ME 0.9.7.1+), con lai gui nguyen. Goi duoi khoa this (sendMessage).
+         */
+        private void xepKhung(final byte[] data) {
+            final byte[] ra = this.nenNeuDuoc(data);
+            if (ra == data && (Session.this.khaNang & GoiManh.KHA_NANG_MANH) != 0 && data.length >= GoiManh.NGUONG) {
+                byte[][] manh = null;
+                try {
+                    manh = GoiManh.chia(data);
+                } catch (Throwable e) {
+                    manh = null;
+                }
+                if (manh != null) {
+                    for (int i = 0; i < manh.length; i++) {
+                        this.xepHang(manh[i]);
+                    }
+                    return;
+                }
+            }
+            this.xepHang(ra);
+        }
+
         public void sendMessage(Message m, int index) {
             if (Session.this.connected) {
                 try {
                     byte[] data = m.toByteArray();
                     if (data != null) {
-                        this.xepHang(this.nenNeuDuoc(data));
-                        server.ChiSoMayChu.GOI_RA.increment();
-                        // Goi kem (xem Message.kemTheo): xep NGAY SAU goi
-                        // chinh trong cung hang doi, client nhan dung thu tu.
-                        for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
-                            byte[] dataKem = kem.toByteArray();
-                            if (dataKem != null) {
-                                this.xepHang(this.nenNeuDuoc(dataKem));
+                        // khoa: cac manh cua mot goi (va goi kem) nam LIEN TIEP trong hang doi du nhieu luong cung gui
+                        synchronized (this) {
+                            this.xepKhung(data);
+                            server.ChiSoMayChu.GOI_RA.increment();
+                            // Goi kem (xem Message.kemTheo): xep NGAY SAU goi
+                            // chinh trong cung hang doi, client nhan dung thu tu.
+                            for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
+                                byte[] dataKem = kem.toByteArray();
+                                if (dataKem != null) {
+                                    this.xepKhung(dataKem);
+                                }
                             }
                         }
                     }
@@ -661,7 +768,9 @@ public class Session extends Thread {
                         try {
                             int n = 0;
                             int soGoi = 0;
+                            long tongGhi = 0;
                             do {
+                                tongGhi += bytes.length;
                                 final boolean ma = Session.this.key != null && bytes.length > 0 && bytes[0] != -40;
                                 int off = 0;
                                 final int len = bytes.length;
@@ -687,6 +796,7 @@ public class Session extends Thread {
                                 os.write(buf, 0, n);
                             }
                             os.flush();
+                            Session.this.byteDaGui.addAndGet(tongGhi);
                         } catch (Exception e) {
                             // Socket da dong (client ngat): luong READ se disconnect. Chi bao mot lan
                             // moi ket noi (truoc day moi goi/moi giay mot dong).

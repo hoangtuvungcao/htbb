@@ -27,6 +27,31 @@ public class Font {
     public static Font[] smallFontColor = new Font[5];
     public static Font[] normalFont = new Font[6];
 
+    /**
+     * 0.9.7.1 (BoNho.giai - thiếu bộ nhớ): bỏ các ảnh phụ tạo thêm của mọi font (bản tô đậm anhToi, chữ hoa có dấu
+     * ghép boGhep). Tạo lại khi cần; ảnh font gốc giữ nguyên.
+     */
+    public static void giaiPhong() {
+        Font[] ds = {normalFontColor, borderFont, bigFont, blackFont, arialFont, smallFontYellow, smallFont, arialFontW};
+        for (int i = 0; i < ds.length; i++) {
+            giaiPhong(ds[i]);
+        }
+        for (int i = 0; i < smallFontColor.length; i++) {
+            giaiPhong(smallFontColor[i]);
+        }
+        for (int i = 0; i < normalFont.length; i++) {
+            giaiPhong(normalFont[i]);
+        }
+    }
+
+    private static void giaiPhong(Font f) {
+        if (f != null) {
+            f.anhToi = null;
+            f.boGhep = null;
+            f.boGhepToi = null;
+        }
+    }
+
     public static void init() {
         FilePack.init("/font.sh");
         for (int i = 0; i < 5; i++) {

@@ -128,9 +128,10 @@ class CharNapDuLieu {
                 }
                 try {
                     self.setCountry();
+                    real.LangKhoiDau.nap(self); // lang khoi dau theo vung (nhan vat tao tu ban sua-tuyen)
                     if (self.myCountry >= 0) {
                         self.inCountry = self.myCountry;
-                        self.session.sendMessage(MessageCreator.createMessageLocation(self.myCountry));
+                        self.session.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(self, self.myCountry)));
                     }
                 } catch (final Exception ex6) {
                 }
@@ -431,11 +432,11 @@ class CharNapDuLieu {
                 self.x = 176;
                 self.y = 272;
             } else {
-                final int[][] mapstart = {{70, 1701}, {0, 301}, {80, 1901}};
+                final int[][] mapstart = real.LangKhoiDau.bang(self);
                 if (self.myCountry > -1) {
                     if (self.mapID == 228 || self.mapID == 227 || self.mapID == 42 || self.mapID == 41 || self.mapID == 40 || self.mapID == 17 || self.mapID == 25 || self.mapID == 111 || self.mapID == 118 || self.mapID == 201 || self.mapID == 202 || self.mapID == 203 || self.mapID == 204 || self.mapID == 205 || self.mapID == 207 || self.mapID == 225 || self.mapID == 226 || RealController.mapList.get(self.mapID) == null || self.mapID == 0 || self.mapID == 301 || self.mapID == 302 || self.mapID == 303 || self.mapID == 304 || self.mapID == 206 || self.mapID == 208 || self.mapID == 209 || self.mapID == 210 || self.mapID == 70 || self.mapID == 1701 || self.mapID == 1702 || self.mapID == 1703 || self.mapID == 1704 || self.mapID == 203 || self.mapID == 4361 || self.mapID == 4362 || self.mapID == 4363 || self.mapID == 4364 || self.mapID == 4365 || self.mapID == 4366) {
                         self.mapID = mapstart[self.myCountry][Map.r.nextInt(mapstart[self.myCountry].length)];
-                        final int[][] pos = {{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                        final int[][] pos = real.LangKhoiDau.bangViTri(self);
                         final int index = Map.r.nextInt(4);
                         self.x = pos[self.myCountry][index * 2] * 16 + Map.r.nextInt() % 16;
                         self.y = pos[self.myCountry][index * 2 + 1] * 16 + Map.r.nextInt() % 16;

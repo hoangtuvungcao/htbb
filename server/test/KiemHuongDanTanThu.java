@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import real.NpcTinhBanDo;
 
 /**
- * HUONG DAN TAN THU (nhanh huong-dan): luat thuan com.htbb.pokemon.HuongDanTanThu, du lieu sql/them_huong_dan_tan_thu.sql
+ * HUONG DAN TAN THU (nhanh huong-dan): luat thuan com.htbb.pokemon.HuongDanTanThu, du lieu khoi them_huong_dan_tan_thu.sql cua sql/nang_cap.sql
  * (10 buoc = 10 dong dau chuoi chinh 901..910) doi chieu CSDL day du sql/htbb_day_du.sql + server/cMap + server/map:
  * thu tu / cap chuoi chinh, NPC co o ca ba lang, moi buoc lam xong duoc (co diem moc that), ngan sach thuong, bo qua,
  * chuoi chinh sau huong dan (NPC tiep can duoc theo cap). Bot dau-cuoi: tools/pokemon/kiem_tai/KichBanHuongDan (hd_*).

@@ -2962,18 +2962,19 @@ public class MessageCreator {
                         break;
                     }
                     case 1: {
-                        m.dos.writeByte(info.idNpcRes);
+                        m.dos.writeByte(KhuVucNhiemVuGame.npcTra(info, 1)); // sua-tuyen: buoc dia diem "toi roi noi" -> NPC giao
                         m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(info.resContent));
                         m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(info.getinfoHelpFinishQuest()));
-                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(info.infoGift));
+                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(ChuThuongNhiemVuGame.infoGift(info, p))); // sua-tuyen: thuong sinh tu dong thuong
                         break;
                     }
                     case 2: {
                         m.dos.writeByte(info.type);
-                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(info.shortContent));
-                        m.dos.writeByte(info.idNpcRes);
+                        // sua-tuyen: buoc dia diem dang lam -> mo ta + chi duong (o, huong)
+                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(KhuVucNhiemVuGame.moTaDangLam(p, q, info)));
+                        m.dos.writeByte(KhuVucNhiemVuGame.npcTra(info, 2)); // sua-tuyen: buoc dia diem dang lam -> khong NPC (-1)
                         m.dos.writeByte(info.deltaLv);
-                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(info.infoGift));
+                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(ChuThuongNhiemVuGame.infoGift(info, p)));
                         if (info.type == 1) {
                             break;
                         }

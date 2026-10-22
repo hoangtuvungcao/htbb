@@ -16776,10 +16776,10 @@ public class Map implements Runnable {
                     || mapID == 1702
                     || mapID == 1703
                     || mapID == 1704) {
-                int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                int[] pos = LangKhoiDau.viTri(mapID); // diem trong lang theo ban do dich (khong theo vung)
                 int index = r.nextInt(4);
-                x = pos[player.myCountry][index * 2] + r.nextInt() % 3;
-                y = pos[player.myCountry][index * 2 + 1] + r.nextInt() % 3;
+                x = pos[index * 2] + r.nextInt() % 3;
+                y = pos[index * 2 + 1] + r.nextInt() % 3;
             }
             if (toMap != null) {
                 final int[] o = toMap.oDiDuocGan(x, y, 8);
@@ -16826,7 +16826,7 @@ public class Map implements Runnable {
                     || toMap.mapIDLoadMap == 2
                     || toMap.mapIDLoadMap == 12
                     || toMap.mapIDLoadMap == 106)) {
-                player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+                player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.inCountry)));
             }
 
             player.doFinishAutoInbue();
@@ -17167,7 +17167,7 @@ public class Map implements Runnable {
         try {
             player.timedie = 0L;
             player.timeWaitComeHome = 0L;
-            int[][] mapstart1 = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+            int[][] mapstart1 = LangKhoiDau.bang(player);
             int homeX = 18 + Database.r.nextInt() % 5;
             int homeY = 24 + Database.r.nextInt(20);
             int homeMap = mapstart1[player.myCountry][r.nextInt(mapstart1[player.myCountry].length)];
@@ -17224,7 +17224,7 @@ public class Map implements Runnable {
                 // Vung Hoenn: ve Trung tam Pokemon cua thi tran Hoenn gan nhat (truoc day ve lang nha o Kanto).
                 final int[] hsHoenn = HoiSinhGame.diemVeTrungTam(player);
                 int[] var10000 = new int[]{0, 301};
-                int[][] mapstart1 = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+                int[][] mapstart1 = LangKhoiDau.bang(player);
                 int homeX = 18 + Database.r.nextInt() % 5;
                 int homeY = 24 + Database.r.nextInt(20);
                 int[] mapstart;
@@ -17238,7 +17238,7 @@ public class Map implements Runnable {
                     homeY = 79 + Database.r.nextInt(20);
                 } else if (this.mapId != 225 && this.mapId != 226) {
                     mapstart = mapstart1[player.myCountry];
-                    int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                    int[][] pos = LangKhoiDau.bangViTri(player);
                     int index = r.nextInt(4);
                     homeX = pos[player.myCountry][index * 2] + r.nextInt() % 3;
                     homeY = pos[player.myCountry][index * 2 + 1] + r.nextInt() % 3;
@@ -17719,12 +17719,11 @@ public class Map implements Runnable {
 
     void kickPlayerOutEventMonster(int country) {
         this.nCharBeKilled[country] = 0;
-        int[][] mapstart1 = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
-        int[] mapstart = mapstart1[country];
         Vector<Char> players = (Vector<Char>) this.allPlayers.get(country);
 
         for (int i = 0; i < players.size(); i++) {
             Char player = (Char) players.get(i);
+            int[] mapstart = LangKhoiDau.bang(player)[country];
             player.isMonster = false;
             player.x = 16 + Database.r.nextInt() % 10;
             player.y = 24 + Database.r.nextInt() % 10;

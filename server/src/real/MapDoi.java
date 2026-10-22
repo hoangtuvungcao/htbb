@@ -613,7 +613,7 @@ class MapDoi {
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                 if (player.mapID == idMapDautruong) {
-                    int[][] homeMaps = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+                    int[][] homeMaps = real.LangKhoiDau.bang(player);
                     int[] mapstart = homeMaps[player.inCountry];
                     int homeMap = mapstart[r.nextInt(mapstart.length)];
                     map.move2Map(player, 28, 24, homeMap, player.inCountry);

@@ -121,17 +121,26 @@ public final class PhongRiengGame {
         dua(p, den, den.nRegion > 0 ? Math.max(0, Math.min(v.khu, den.nRegion - 1)) : 0, v.x, v.y, Math.max(0, v.phe));
     }
 
-    static final int[][] LANG = {{70, 1701}, {0, 301}, {80, 1901}};
-    /** Toa do o (tile) diem xuat hien o lang theo vung (giong CharNapDuLieu). */
-    static final int[][] LANG_O = {{10, 23}, {22, 41}, {10, 23}};
+    /** Lang ve cua nhan vat (real.LangKhoiDau: lang khoi dau theo vung, nhan vat cu giu lang cu). */
+    static int langVe(final Char p) {
+        final int vung = Math.max(0, Math.min(2, p.myCountry));
+        return LangKhoiDau.bang(p)[vung][0];
+    }
+
+    /** O (tile) diem xuat hien o lang {@code lang} (LangKhoiDau.viTri; thieu -> giua lang). */
+    static int[] oLang(final int lang) {
+        final int[] vt = LangKhoiDau.viTri(lang);
+        return vt != null && vt.length >= 2 ? new int[]{vt[0], vt[1]} : new int[]{10, 23};
+    }
 
     static void veLang(final Char p) {
-        final int vung = Math.max(0, Math.min(2, p.myCountry));
-        final Map den = RealController.mapList.get(Integer.valueOf(LANG[vung][0]));
+        final int lang = langVe(p);
+        final Map den = RealController.mapList.get(Integer.valueOf(lang));
         if (p.hp <= 0) {
             p.hp = Math.max(1, p.maxhp / 2);
         }
-        dua(p, den, 0, LANG_O[vung][0] * 16 + 8, LANG_O[vung][1] * 16 + 8, Math.max(0, p.myCountry));
+        final int[] o = oLang(lang);
+        dua(p, den, 0, o[0] * 16 + 8, o[1] * 16 + 8, Math.max(0, p.myCountry));
     }
 
     /**
@@ -152,11 +161,12 @@ public final class PhongRiengGame {
                 self.inCountry = 0;
                 return;
             }
-            final int vung = Math.max(0, Math.min(2, self.myCountry));
-            self.mapID = (short) LANG[vung][0];
+            final int lang = langVe(self);
+            final int[] o = oLang(lang);
+            self.mapID = (short) lang;
             self.region = 0;
-            self.x = LANG_O[vung][0] * 16 + 8;
-            self.y = LANG_O[vung][1] * 16 + 8;
+            self.x = o[0] * 16 + 8;
+            self.y = o[1] * 16 + 8;
         } catch (final Exception e) {
             System.out.println("PhongRiengGame.khiNapViTri: " + e);
         }

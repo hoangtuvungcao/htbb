@@ -32,6 +32,7 @@ public final class KiemBoDemGoiTin {
         dotDangNhapCacheRongKhongMatGoi();
         lenhThuongVanBoVaCat();
         KiemGoiNen.chay();
+        KiemGoiManh.chay();
     }
 
     /** Lenh tai nguyen vuot tran: HOAN (cho roi xu ly), KHONG BAO GIO bo / cat. */

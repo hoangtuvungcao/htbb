@@ -727,6 +727,10 @@ public class Char extends LiveActor {
     public byte[] lockAtb;
     public byte idSkillLearnClan;
     public byte myCountry;
+    /** Lang khoi dau theo dung vung (nhan vat tao tu ban sua-tuyen, bang tob_lang_khoi_dau); null = chua nap. real.LangKhoiDau. */
+    public volatile Boolean langDungVung;
+    /** Ban do nap da bao huong diem nhiem vu dia diem gan nhat (real.KhuVucNhiemVuGame), -1 = chua. */
+    public volatile int khuVucDaBao = -1;
     public byte inCountry;
     public long cSalary;
     public byte typeBox;
@@ -12921,6 +12925,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     if (nhanVaTraNoiChuyen(this.mainQuest.state_quest, info.type) && !this.nhanNoiChuyenChinh(info)) {
                         return;
                     }
+                    if (KhuVucNhiemVuGame.chuaToi(this, this.mainQuest, info)) {
+                        // sua-tuyen: buoc dia diem - nghe NPC = nhan buoc; xong khi dung trong vung dich (khiDiChuyen)
+                        if (this.mainQuest.state_quest == NewCharQuest.UN_RECEIVE) {
+                            this.mainQuest.state_quest = NewCharQuest.WORKING;
+                        }
+                        Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
+                        MessageCreator.createMsgCharQuest(this, 0);
+                        MessageCreator.createMsgCharQuest(this, 2);
+                        KhuVucNhiemVuGame.baoChuaToi(this, info);
+                        return;
+                    }
                     final String khongTra = lyDoKhongTra(this.mainQuest.state_quest, info.type, info.name);
                     if (khongTra != null) {
                         this.tuChoiNhiemVu(this.mainQuest.state_quest == NewCharQuest.DONE ? null : khongTra);
@@ -13061,6 +13076,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     this.tuChoiNhiemVu(TUI_DAY_NHIEM_VU);
                     return;
                 }
+                if (KhuVucNhiemVuGame.chuaToi(this, this.subQuest, info)) {
+                    // sua-tuyen: buoc dia diem phu - da nhan (o tren), xong khi dung trong vung dich
+                    Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
+                    MessageCreator.createMsgCharQuest(this, 0);
+                    MessageCreator.createMsgCharQuest(this, 2);
+                    KhuVucNhiemVuGame.baoChuaToi(this, info);
+                    return;
+                }
                 final String khongTraPhu = lyDoKhongTra(this.subQuest.state_quest, info.type, info.name);
                 if (khongTraPhu != null) {
                     this.tuChoiNhiemVu(khongTraPhu);
@@ -13076,6 +13099,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     this.subQuest.state_quest = NewCharQuest.DONE;
                     NhiemVuEngine.ghiXongPhuCu(this, info.ma); // danh dau TRUOC khi trao thuong
                     this.subQuest.addGift(this);
+                    NhiemVuEngine.khiXongPhuCu(this, info.ma); // sua-tuyen: danh hieu / item cua thuong_khac nhu So tay
                     boolean sendInfo = true;
                     if (info.type == 3) {
                         sendInfo = false;

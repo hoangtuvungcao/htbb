@@ -1077,7 +1077,17 @@ class CharCapNhat {
 
     static void doPlayerMove(Char self, final Message message) {
         QuaHoatDong.hanhDong(self); // GD2: giay hoat dong theo tai khoan (tat co: khong lam gi)
-        NhiemVuEngine.khiDiChuyen(self); // GD2b: dung tai diem / den noi
+        try {
+            doPlayerMoveThan(self, message);
+        } finally {
+            // sua-tuyen: kiem SAU khi cap nhat vi tri (truoc day kiem o dau ham = vi tri goi truoc: dung lai ngay tai
+            // diem thi khong bao gio xong)
+            NhiemVuEngine.khiDiChuyen(self); // GD2b: dung tai diem / den noi (So tay)
+            KhuVucNhiemVuGame.khiDiChuyen(self); // buoc dia diem chuoi chinh / phu (-64)
+        }
+    }
+
+    private static void doPlayerMoveThan(Char self, final Message message) {
         try {
             final DataInputStream dis = message.dis;
             final long now = System.currentTimeMillis();

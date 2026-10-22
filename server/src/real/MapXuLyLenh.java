@@ -1937,7 +1937,7 @@ class MapXuLyLenh {
                                 || toMap.mapIDLoadMap == 2
                                 || toMap.mapIDLoadMap == 12
                                 || toMap.mapIDLoadMap == 106)) {
-                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+                            player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.inCountry)));
                         }
 
                         return;
@@ -2060,8 +2060,8 @@ class MapXuLyLenh {
                         checklocation = false;
                     }
                 } else if (player.mapID == 105) {
-                    int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
-                    int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                    int[][] mapstart = real.LangKhoiDau.bang(player);
+                    int[][] pos = real.LangKhoiDau.bangViTri(player);
                     int index = Map.r.nextInt(4);
                     toTX = pos[player.myCountry][index * 2] + Map.r.nextInt() % 3;
                     toTY = pos[player.myCountry][index * 2 + 1] + Map.r.nextInt() % 3;
@@ -2157,8 +2157,8 @@ class MapXuLyLenh {
                         // toi bat ky toa do nao trong bat ky instance lang nao, khong can dung o
                         // cong lang. Sua: server tu tinh diem ve lang (giong nhanh player.mapID
                         // == 105 o tren), bo qua hoan toan toMapID/toTX/toTY client gui.
-                        int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
-                        int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                        int[][] mapstart = real.LangKhoiDau.bang(player);
+                        int[][] pos = real.LangKhoiDau.bangViTri(player);
                         int index = Map.r.nextInt(4);
                         toTX = pos[player.myCountry][index * 2] + Map.r.nextInt() % 3;
                         toTY = pos[player.myCountry][index * 2 + 1] + Map.r.nextInt() % 3;
@@ -2322,7 +2322,7 @@ class MapXuLyLenh {
                                 || toMap.mapIDLoadMap == 2
                                 || toMap.mapIDLoadMap == 12
                                 || toMap.mapIDLoadMap == 106)) {
-                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+                            player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.inCountry)));
                         }
                     }
                 } catch (Exception var37) {

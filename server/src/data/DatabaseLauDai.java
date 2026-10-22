@@ -961,6 +961,20 @@ public final class DatabaseLauDai {
 
     /** executeUpdate voi tham so bind; -1 neu loi. */
     /** {@link #ghi} cho lop ngoai goi (real.XepHangPvpGame): so dong da doi, -1 = loi. */
+    /** real.LangKhoiDau: nhan vat co dong tob_lang_khoi_dau (tao tu ban sua lang theo vung). */
+    public static boolean coLangKhoiDau(final int idChar) {
+        return !docBang("SELECT id_char FROM tob_lang_khoi_dau WHERE id_char = " + idChar, 1).isEmpty();
+    }
+
+    /**
+     * real.KhuVucNhiemVuGame: vung dich cua buoc nhiem vu dia diem (data_nhiem_vu_khu_vuc, chi dong bat = 1):
+     * {ma, map_id, x1, y1, x2, y2, noi_chuyen_sau, ten_noi}. Rong neu chua co bang.
+     */
+    public static List<Object[]> napKhuVucNhiemVu() {
+        return docBang("SELECT ma, map_id, x1, y1, x2, y2, noi_chuyen_sau, ten_noi FROM data_nhiem_vu_khu_vuc WHERE bat = 1"
+                + " ORDER BY ma, stt", 8);
+    }
+
     public static int ghiCong(final String sql, final Object... thamSo) {
         return ghi(sql, thamSo);
     }

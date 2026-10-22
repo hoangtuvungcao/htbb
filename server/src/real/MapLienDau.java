@@ -447,8 +447,8 @@ public class MapLienDau extends Map {
                         checklocation = false;
                     }
                 } else if (player.mapID == 105) {
-                    int[][] mapstart2 = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
-                    int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                    int[][] mapstart2 = real.LangKhoiDau.bang(player);
+                    int[][] pos = real.LangKhoiDau.bangViTri(player);
                     int index = Map.r.nextInt(4);
                     toTX = pos[player.myCountry][index * 2] + Map.r.nextInt() % 3;
                     toTY = pos[player.myCountry][index * 2 + 1] + Map.r.nextInt() % 3;
@@ -657,7 +657,7 @@ public class MapLienDau extends Map {
                         }
 
                         if (toMap != null && (toMap.mapIDLoadMap == 80 || toMap.mapIDLoadMap == 70 || toMap.mapIDLoadMap == 0 || toMap.mapIDLoadMap == 1 || toMap.mapIDLoadMap == 2 || toMap.mapIDLoadMap == 12 || toMap.mapIDLoadMap == 106)) {
-                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+                            player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.inCountry)));
                         }
 
                     }
