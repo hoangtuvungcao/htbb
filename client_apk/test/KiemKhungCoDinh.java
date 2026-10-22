@@ -37,6 +37,7 @@ public final class KiemKhungCoDinh {
         kiemCham();
         kiemAnToan();
         kiemTheGioi();
+        kiemNgamTay();
         kiemPhong();
         System.out.println("KiemKhungCoDinh: DAT " + dat + ", HONG " + hong);
         System.exit(hong == 0 ? 0 : 1);
@@ -76,12 +77,12 @@ public final class KiemKhungCoDinh {
         heSo(2772, 1240, 4.331f, 640, 287);
         heSo(854, 480, 1.334f, 640, 360);
         heSo(640, 360, 1f, 640, 360);
-        // 0.9.7: camera "cao hơn" NHIN_THEM 1,15 -> vùng nhìn 368 x 207 px thế giới (23 x ~13 ô) thay 320 x 180
-        bang("vung nhin the gioi rong", Integer.valueOf(368), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
-        bang("vung nhin the gioi cao", Integer.valueOf(207), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
-        bang("23 o ngang", Integer.valueOf(23), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
-        bang("20:9 -> 10 o doc", Integer.valueOf(10), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
-        dung("thay them ~15% moi chieu", Math.abs(KhungCoDinh.NHIN_W / 320f - 1.15f) < 0.01f && Math.abs(KhungCoDinh.NHIN_H / 180f - 1.15f) < 0.01f);
+        // 0.9.7: camera "cao hơn" NHIN_THEM 1,35 -> vùng nhìn 432 x 243 px thế giới (27 x ~15 ô) thay 320 x 180
+        bang("vung nhin the gioi rong", Integer.valueOf(432), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
+        bang("vung nhin the gioi cao", Integer.valueOf(243), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
+        bang("27 o ngang", Integer.valueOf(27), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
+        bang("20:9 -> 12 o doc", Integer.valueOf(12), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
+        dung("thay them ~35% moi chieu", Math.abs(KhungCoDinh.NHIN_W / 320f - 1.35f) < 0.01f && Math.abs(KhungCoDinh.NHIN_H / 180f - 1.35f) < 0.01f);
     }
 
     static void kiemCham() {
@@ -120,17 +121,43 @@ public final class KiemKhungCoDinh {
 
     static void kiemTheGioi() {
         bang("cham 0 -> 0", Integer.valueOf(0), Integer.valueOf(KhungCoDinh.theGioi(0)));
-        // chạm logic p -> thế giới floor(p / THE_GIOI_Z), THE_GIOI_Z = 2 / 1,15
-        bang("cham 639 -> 367", Integer.valueOf(367), Integer.valueOf(KhungCoDinh.theGioi(639)));
-        bang("cham 320 -> 184", Integer.valueOf(184), Integer.valueOf(KhungCoDinh.theGioi(320)));
+        // chạm logic p -> thế giới floor(p / THE_GIOI_Z), THE_GIOI_Z = 2 / 1,35
+        bang("cham 639 -> 431", Integer.valueOf(431), Integer.valueOf(KhungCoDinh.theGioi(639)));
+        bang("cham 320 -> 216", Integer.valueOf(216), Integer.valueOf(KhungCoDinh.theGioi(320)));
         // khứ hồi: điểm thế giới w vẽ ở logic w * Z -> chạm vào đó trả lại đúng w
         boolean kh = true;
-        for (int w = 0; w < 368; w++) {
+        for (int w = 0; w < 432; w++) {
             int p = (int) Math.floor((w + 0.5f) * KhungCoDinh.THE_GIOI_Z);
             if (KhungCoDinh.theGioi(p) != w && KhungCoDinh.theGioi(p) != w - 1) kh = false;
         }
         dung("cham -> the gioi khu hoi (sai <= 1 px)", kh);
         bang("cham -1 -> -1 (lam tron xuong)", Integer.valueOf(-1), Integer.valueOf(KhungCoDinh.theGioi(-1)));
+    }
+
+    /**
+     * 0.9.8: ngắm tay PvP (NgamTay.huongChuot -> HanhDong.wx / wy, port-j2me.py vá thành HdZoom.wx = cmx +
+     * KhungCoDinh.theGioi) dùng CÙNG đổi chạm -> thế giới với camera phóng số thực (THE_GIOI_Z = 2 / 1,35): điểm thế giới
+     * T vẽ ở logic (T - cmx) * Z -> chạm vào đó đọc lại T (sai <= 1 px) -> hướng ngắm lệch <= sai số 1 px.
+     */
+    static void kiemNgamTay() {
+        int cmx = 1237, cmy = 401, mx = cmx + 216, my = cmy + 121;
+        int lech = 0, thu = 0;
+        for (int tx = -200; tx <= 200; tx += 13) {
+            for (int ty = -110; ty <= 110; ty += 11) {
+                if (tx * tx + ty * ty < 40 * 40) continue;
+                int wx = mx + tx, wy = my - 12 + ty;
+                int px = Math.round((wx - cmx + 0.5f) * KhungCoDinh.THE_GIOI_Z);
+                int py = Math.round((wy - cmy + 0.5f) * KhungCoDinh.THE_GIOI_Z);
+                if (px < 0 || py < 0 || px >= 640 || py >= 360) continue;
+                int rx = cmx + KhungCoDinh.theGioi(px), ry = cmy + KhungCoDinh.theGioi(py);
+                thu++;
+                double g1 = Math.atan2(ry - (my - 12), rx - mx), g2 = Math.atan2(ty, tx);
+                double d = Math.abs(Math.IEEEremainder(g1 - g2, 2 * Math.PI));
+                if (Math.abs(rx - wx) > 1 || Math.abs(ry - wy) > 1 || d > Math.atan(1.5 / Math.sqrt(tx * tx + ty * ty)) + 1e-6) lech++;
+            }
+        }
+        dung("ngam tay APK: diem cham -> the gioi dung diem duoi ngon tay, Z so thuc " + KhungCoDinh.THE_GIOI_Z + " (" + lech + "/" + thu + ")",
+                thu > 100 && lech == 0);
     }
 
     static void kiemPhong() {

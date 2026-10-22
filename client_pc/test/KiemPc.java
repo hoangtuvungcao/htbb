@@ -85,12 +85,12 @@ public class KiemPc {
             kiem(Math.abs(NenPc.hienW / (float) NenPc.rong - NenPc.hienH / (float) NenPc.cao) < 0.02f, t + " khong meo");
             kiem(NenPc.heSo >= 1 && NenPc.heSo <= 8, t + " he so 1..8");
             // vùng nhìn thế giới <= 320x180 px (không lợi thế khi phóng to / màn dài)
-            // 0.9.7: camera "cao hơn" (Zoom.NHIN_THEM 1,15): vùng nhìn ~368x207, sai khác <= 5% do làm tròn m nguyên
+            // 0.9.7: camera "cao hơn" (Zoom.NHIN_THEM 1,35): vùng nhìn ~432x243, sai khác <= 11% do làm tròn m nguyên
             int vw = htbb.pc.Zoom.gsw(NenPc.rong), vh = htbb.pc.Zoom.gsh(NenPc.cao);
-            kiem(vw <= 368 * 1.06f && vh <= 207 * 1.06f, t + " vung nhin the gioi <= 368x207 (+5%): " + vw + "x" + vh);
-            kiem(vw >= 320 * 1.09f || vh >= 180 * 1.09f, t + " thay them >= ~10% (" + vw + "x" + vh + ")");
+            kiem(vw <= 432 * 1.13f && vh <= 243 * 1.13f, t + " vung nhin the gioi <= 432x243 (+11%): " + vw + "x" + vh);
+            kiem(vw >= 320 * 1.25f || vh >= 180 * 1.25f, t + " thay them >= ~25% (" + vw + "x" + vh + ")");
             float mm = htbb.pc.Zoom.mThuc(), muc = 2f * NenPc.heSo / htbb.pc.Zoom.NHIN_THEM;
-            kiem(Math.abs(mm - muc) <= muc * 0.05f + 1e-4f, t + " phong the gioi ~ 2k / 1,15 (" + mm + ")");
+            kiem(Math.abs(mm - muc) <= muc * 0.11f + 1e-4f, t + " phong the gioi ~ 2k / 1,35 (" + mm + ")");
             // chuột: góc trên trái -> 0,0; góc dưới phải -> hàng logic cuối; giữa -> giữa
             kiem(NenPc.vaoBoDemX(0) == 0 && NenPc.vaoBoDemY(0) == 0, t + " goc tren trai");
             int bx = NenPc.vaoBoDemX(W - 1), by = NenPc.vaoBoDemY(H - 1);

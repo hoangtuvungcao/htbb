@@ -489,13 +489,21 @@ public class KiemNgamTay {
             String kc = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(goc,
                     "client_apk/pokemon/src/main/java/javax/microedition/lcdui/KhungCoDinh.java")), "UTF-8");
             kiem(kc.contains("NHIN_THEM = " + htbb.pc.Zoom.NHIN_THEM + "f"), "APK KhungCoDinh.NHIN_THEM == PC Zoom.NHIN_THEM (" + htbb.pc.Zoom.NHIN_THEM + ")");
-            // APK: vùng nhìn 640 x 360 logic -> 368 x 207 thế giới; chạm px -> floor(px / (2 / 1,15))
-            float zA = 2f / 1.15f;
-            kiem((int) Math.ceil(640 / zA - 1e-3f) == 368 && (int) Math.ceil(360 / zA - 1e-3f) == 207, "APK vung nhin 368 x 207");
+            // APK: vùng nhìn 640 x 360 logic -> 432 x 243 thế giới (NHIN_THEM 1,35, phóng số thực); khứ hồi chạm ở
+            // client_apk/test/KiemKhungCoDinh.kiemNgamTay
+            float zA = 2f / htbb.pc.Zoom.NHIN_THEM;
+            kiem((int) Math.ceil(640 / zA - 1e-3f) == 432 && (int) Math.ceil(360 / zA - 1e-3f) == 243, "APK vung nhin 432 x 243");
             // chạy trên luồng game (camera không trôi giữa hai lần đọc cmx)
+          final int heSoGoc = javax.microedition.lcdui.NenPc.heSo;
+          // 720p (k 2 -> m 3), 1080p (k 3 -> m 4 nguyen: 4x), 1440p (k 4 -> m 6), 4K (k 6 -> m 9)
+          for (final int k : new int[]{2, 3, 4, 6}) {
             final int[][] ra = new int[1][];
+            final float[] zz = new float[2];
             ChupTrongGame.chay(() -> {
                 try {
+                    javax.microedition.lcdui.NenPc.heSo = k;
+                    zz[0] = htbb.pc.Zoom.mThuc();
+                    zz[1] = htbb.pc.Zoom.z();
                     // PC: HanhDong.wx == cmx + Zoom.theGioiX; điểm thế giới dưới con trỏ -> hướng ngắm tới đúng điểm đó
                     game.render.screen.GameScr gs = game.render.Canvas.gameScr;
                     game.model.MainChar mc = gs.mainChar;
@@ -538,9 +546,14 @@ public class KiemNgamTay {
                 }
             });
             final int lech = ra[0] == null ? -1 : ra[0][0], sai = ra[0] == null ? -1 : ra[0][1], thu = ra[0] == null ? 0 : ra[0][2];
-            final float z = htbb.pc.Zoom.z();
-            kiem(sai == 0, "PC: HanhDong.wx(px) == cmx + Zoom.theGioiX(px) (z = " + z + ")");
-            kiem(thu > 50 && lech == 0, "PC: ngam chuot toi diem the gioi duoi con tro (sai so <= 1 px the gioi) (" + lech + "/" + thu + ")");
+            final String t = "PC k" + k + " (m " + zz[0] + ", z " + zz[1] + ")";
+            kiem(sai == 0, t + ": HanhDong.wx(px) == cmx + Zoom.theGioiX(px)");
+            kiem(thu > 50 && lech == 0, t + ": ngam chuot toi diem the gioi duoi con tro (sai so <= 1 px the gioi) (" + lech + "/" + thu + ")");
+            if (k == 3) {
+                kiem(Math.abs(zz[0] - 4f) < 1e-4f, "PC 1080p (k 3): phong the gioi nguyen 4x (" + zz[0] + ")");
+            }
+          }
+          ChupTrongGame.chay(() -> javax.microedition.lcdui.NenPc.heSo = heSoGoc);
         } catch (Throwable e) {
             e.printStackTrace();
             kiem(false, "kiemCamera: " + e);

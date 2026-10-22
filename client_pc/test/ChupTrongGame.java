@@ -310,8 +310,10 @@ public class ChupTrongGame {
                 BufferedImage anh = ve(W, H);
                 game.pokemon.GhiChu.bat = false;
                 kiemChu(ten + " " + TEN_CO[c]);
+                kiemTrongMan(ten + " " + TEN_CO[c]);
                 if (ten.startsWith("the_gioi") || "suc_khoe".equals(ten) || "goi_y_chieu".equals(ten)) {
                     kiemPhuKin(anh, ten + " " + TEN_CO[c]);
+                    kiemNhanTheGioi(ten + " " + TEN_CO[c]);
                     if (game.render.screen.HudRong.bat()) kiemKheChieu(ten + " " + TEN_CO[c]);
                 }
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
@@ -1315,6 +1317,22 @@ public class ChupTrongGame {
         }
     }
 
+    /** 0.9.7: phần HUD / giao diện (khung pixel + biểu tượng đã ghi) nằm TRỌN trong màn (logic). */
+    static void kiemTrongMan(String nhan) {
+        int W = NenPc.rong, H = NenPc.cao;
+        for (int b = 0; b < game.pokemon.GhiChu.soBieu; b++) {
+            int x = game.pokemon.GhiChu.BX[b], y = game.pokemon.GhiChu.BY[b], w = game.pokemon.GhiChu.BW[b], h = game.pokemon.GhiChu.BH[b];
+            kiem(x >= -1 && y >= -1 && x + w <= W + 1 && y + h <= H + 1, nhan + " bieu tuong ngoai man: " + game.pokemon.GhiChu.BS[b] + " @" + x + "," + y + " " + w + "x" + h);
+        }
+        for (int k = 0; k < game.pokemon.GhiChu.soKhung; k++) {
+            // phần thấy được (hàng danh sách cuộn bị cắt theo khung danh sách không tính)
+            int x = game.pokemon.GhiChu.KVX[k], y = game.pokemon.GhiChu.KVY[k], w = game.pokemon.GhiChu.KVW[k], h = game.pokemon.GhiChu.KVH[k];
+            if (w <= 0 || h <= 0) continue;
+            if (w >= W - 2 && h >= H - 2) continue;   // nền phủ màn
+            kiem(x >= -1 && y >= -1 && x + w <= W + 1 && y + h <= H + 1, nhan + " khung ngoai man: manh " + game.pokemon.GhiChu.KM[k] + " @" + x + "," + y + " " + w + "x" + h);
+        }
+    }
+
     /** 0.9.7: thế giới PHỦ KÍN màn (không lề màu nền thử magenta / đen thuần ở mép phải / dưới). */
     static void kiemPhuKin(BufferedImage anh, String nhan) {
         int W = anh.getWidth(), H = anh.getHeight(), n = 0, ho = 0;
@@ -1331,6 +1349,19 @@ public class ChupTrongGame {
         for (int y = 0; y < H; y += 5) if ((anh.getRGB(W - 2, y) & 0xFFFFFF) == 0) denP++;
         for (int x = 0; x < W; x += 5) if ((anh.getRGB(x, H - 2) & 0xFFFFFF) == 0) denD++;
         kiem(denP * 5 < H / 2 && denD * 5 < W / 2, nhan + " khong lề den mep phai / duoi (" + denP + ", " + denD + ")");
+    }
+
+    /** 0.9.7: nhãn thế giới (tên người / NPC / quái, biển "vào") đã đặt không chồng nhau và trọn trong màn. */
+    static void kiemNhanTheGioi(String nhan) {
+        int n = game.pokemon.NhanTheGioi.soDaVe;
+        int[] x = game.pokemon.NhanTheGioi.DX, y = game.pokemon.NhanTheGioi.DY, w = game.pokemon.NhanTheGioi.DW, h = game.pokemon.NhanTheGioi.DH_;
+        for (int i = 0; i < n; i++) {
+            kiem(x[i] >= 0 && y[i] >= 0 && x[i] + w[i] <= NenPc.rong && y[i] + h[i] <= NenPc.cao, nhan + " nhan the gioi ngoai man: \"" + game.pokemon.NhanTheGioi.DS[i] + "\"");
+            for (int j = i + 1; j < n; j++) {
+                boolean giao = x[i] < x[j] + w[j] && x[j] < x[i] + w[i] && y[i] < y[j] + h[j] && y[j] < y[i] + h[i];
+                kiem(!giao, nhan + " nhan the gioi chong: \"" + game.pokemon.NhanTheGioi.DS[i] + "\" x \"" + game.pokemon.NhanTheGioi.DS[j] + "\"");
+            }
+        }
     }
 
     /** 0.9.7: cụm chiêu HUD PC: khe giữa các ô vuông kề nhau trên cung BẰNG NHAU (sai <= 1 px). */

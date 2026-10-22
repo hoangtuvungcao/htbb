@@ -15,6 +15,8 @@ public final class GhiChu {
     public static boolean bat;
     public static final int TOI_DA = 2048;
     public static int soChu, soKhung;
+    /** phần THẤY ĐƯỢC của khung (cắt theo vùng cắt lúc vẽ; w <= 0 = bị cắt hết) - kiểm khung trong màn */
+    public static final int[] KVX = new int[2048], KVY = new int[2048], KVW = new int[2048], KVH = new int[2048];
     /** 0.9.7: hộp BIỂU TƯỢNG đã vẽ (TienTe, BieuTuong): kiểm chữ không đè biểu tượng */
     public static int soBieu;
     public static final int[] BX = new int[TOI_DA], BY = new int[TOI_DA], BW = new int[TOI_DA], BH = new int[TOI_DA], BT = new int[TOI_DA];
@@ -87,5 +89,12 @@ public final class GhiChu {
         KH[i] = h;
         KM[i] = manh;
         KT[i] = thuTu++;
+        int cx = g.getClipX() + g.getTranslateX(), cy = g.getClipY() + g.getTranslateY();
+        int x0 = Math.max(KX[i], cx), y0 = Math.max(KY[i], cy);
+        int x1 = Math.min(KX[i] + w, cx + g.getClipWidth()), y1 = Math.min(KY[i] + h, cy + g.getClipHeight());
+        KVX[i] = x0;
+        KVY[i] = y0;
+        KVW[i] = x1 - x0;
+        KVH[i] = y1 - y0;
     }
 }

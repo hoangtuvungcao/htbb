@@ -12,10 +12,10 @@ import javax.microedition.lcdui.NenPc;
 /**
  * Thu phóng THẾ GIỚI riêng với giao diện (bản PC). Giao diện (HUD, menu, hộp thoại) vẫn ở độ phân giải logic
  * NenPc (vd 640x360 x2); lớp thế giới (ô bản đồ, nhân vật, hiệu ứng, thời tiết, đêm) phóng m điểm ảnh thật / px
- * thế giới. 0.9.7: m = 2k / NHIN_THEM (NHIN_THEM 1,15 - camera "cao hơn", thấy thêm ~15% mỗi chiều: vùng nhìn ~368x207
- * px thế giới thay 320x180), LÀM TRÒN về số NGUYÊN gần nhất khi lệch <= 5% (pixel art sắc nét: 1080p m 5, 1440p m 7,
- * 4K m 10); không có số nguyên đủ gần (720p: 3,48) thì dùng đúng số thực (vẽ láng giềng gần nhất). Vùng nhìn như nhau
- * mọi cỡ cửa sổ (sai khác <= 5%) - thấy thêm bản đồ là lợi thế không công bằng nên KHÔNG có thu phóng.
+ * thế giới. 0.9.7: m = 2k / NHIN_THEM (NHIN_THEM 1,35 - camera "cao hơn", thấy thêm ~35% mỗi chiều: vùng nhìn ~432x243
+ * px thế giới thay 320x180), LÀM TRÒN về số NGUYÊN gần nhất khi lệch <= 11% (pixel art sắc nét: 720p m 3, 1080p m 4
+ * -> 480x270, 1440p m 6, 4K m 9); không có số nguyên đủ gần thì dùng đúng số thực (vẽ láng giềng gần nhất). KHÔNG có
+ * thu phóng của người chơi (thấy thêm bản đồ là lợi thế không công bằng).
  *
  * Camera của game dùng sẵn bề rộng "gsw/gsh" (vùng nhìn thế giới) tách khỏi Canvas.w/h: port-j2me.py đặt
  * gsw = Zoom.gsw(), bọc phần vẽ thế giới của GameScr.paint bằng vaoTheGioi/raTheGioi, đổi toạ độ chạm
@@ -26,9 +26,9 @@ public final class Zoom {
     /** Phóng thế giới GỐC so với giao diện (mốc cũ: vùng nhìn 320x180). */
     public static final int TI_LE = 2;
     /** HẰNG SỐ DUY NHẤT của camera PC (cùng giá trị KhungCoDinh.NHIN_THEM của APK): vùng nhìn lớn hơn mốc cũ bao nhiêu lần. */
-    public static final float NHIN_THEM = 1.15f;
+    public static final float NHIN_THEM = 1.35f;
     /** lệch tối đa để làm tròn m về số nguyên (sắc nét) */
-    static final float LECH_NGUYEN = 0.05f;
+    static final float LECH_NGUYEN = 0.11f;
 
     /** Phóng thế giới hiện tại (điểm ảnh thật / px thế giới): nguyên khi đủ gần, không thì số thực. */
     public static float mThuc() {

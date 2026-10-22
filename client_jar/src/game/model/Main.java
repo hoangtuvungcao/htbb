@@ -41,8 +41,13 @@ public abstract class Main {
         if (this.right != null) {
             game.pokemon.GiaoDien.nutMem(g, this.right.caption, 2, Canvas.keyHold[13] || vung == 2, wBen);
         }
-        if (MessageScr.nMSG > 0) {
-            g.drawImage(Res.imgMSG, Canvas.w - 7, 7, 3);
+        // 0.9.7: HUD NRO báo thư bằng chấm đỏ ở Menu -> viên "Thư/Quà" (ChamMoi); không vẽ phong bì cũ đè nút bản đồ.
+        // Màn cũ / J2ME: phong bì TRỌN trong màn (trước canh giữa ở w - 7 -> tràn mép phải)
+        if (MessageScr.nMSG > 0 && Res.imgMSG != null && !(Canvas.currentScreen == Canvas.gameScr && game.render.screen.HudRong.bat())) {
+            int iw = Res.imgMSG.getWidth(), ih = Res.imgMSG.getHeight();
+            int mx = Canvas.w - iw - 2, my = 2;
+            g.drawImage(Res.imgMSG, mx, my, 0);
+            game.pokemon.GhiChu.bieu(g, "phong-bi-thu", mx, my, iw, ih);
         }
         if (GameScr.msgWorld.size() <= 0 && ImgBpa != null && (Canvas.currentScreen == Canvas.gameScr || Canvas.isVirTualKey)) {
             // pokemon: ngoài màn chơi đặt nút bàn phím ở góc phải trên (không đè biển tên game)

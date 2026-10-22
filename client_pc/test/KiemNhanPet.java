@@ -191,7 +191,7 @@ public class KiemNhanPet {
         int n = ((Integer) truong("soVe")).intValue();
         int[] X = (int[]) truong("X"), Y = (int[]) truong("Y"), W = (int[]) truong("W"), H = (int[]) truong("H");
         int[] TT = (int[]) truong("TT"), LOAI = (int[]) truong("LOAI");
-        int PET = 5, BAN_THAN = 2;
+        int PET = 5, BAN_THAN = 2, CUA = 6; // CUA: bien cong (giao-dien-nro 58d59ac0) - uu tien thap nhat, duoc an
         int soPet = 0, soPetHien = 0, hNguoi = 0, hPet = 0;
         kiem(n >= 3, canh + ": co nhan (" + n + ")");
         StringBuffer b = new StringBuffer(canh + ": nhan");
@@ -215,7 +215,7 @@ public class KiemNhanPet {
                         }
                     }
                 }
-            } else if (LOAI[i] != 0) {
+            } else if (LOAI[i] != 0 && LOAI[i] != CUA) {
                 hNguoi = H[i];
                 kiem(TT[i] != 0, canh + ": ten nguoi choi " + i + " luon hien");
             }
