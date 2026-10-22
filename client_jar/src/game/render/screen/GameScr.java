@@ -4288,6 +4288,9 @@ public class GameScr extends Screen {
         }
         this.actors.addElement(a1);
         a1.canfocus = canfocus;
+        if (a1 instanceof Monster) {
+            game.pokemon.LoaiMang.apDung((Monster) a1);   // 1.0: -125 den truoc lenh 4
+        }
         if (this.actors.size() < 200) {
             switch (actorCatagory) {
                 case 0:
@@ -5097,6 +5100,7 @@ public class GameScr extends Screen {
         }
         int isSame = 0;
         this.actors.removeAllElements();
+        game.pokemon.LoaiMang.doiMap();   // 1.0: loai rieng cho cua quai map cu
         if (this.mainChar != null) {
             this.actors.addElement(this.mainChar);
         }

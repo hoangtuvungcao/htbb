@@ -40,6 +40,10 @@ public final class PokeMang {
     /** true = da xu ly (lenh Pokemon). */
     public static boolean xuLy(Message msg) {
         int lenh = msg.command;
+        if (lenh == LoaiMang.POKE_QUAI_CON || lenh == LoaiMang.POKE_LOAI) {
+            // 1.0: loai rieng tung con quai, sprite tai theo nhu cau, bang loai + Pokedex (LoaiMang)
+            return LoaiMang.xuLy(msg);
+        }
         if (lenh <= PokeMangChienDau.POKE_DON && lenh >= PokeMangChienDau.POKE_DONG_GOP) {
             // -95..-99: goi chien dau (co don, canh bao, trang thai, pha boss, dong gop)
             try {

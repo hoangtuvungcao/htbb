@@ -2203,6 +2203,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     Res.monsterTemplates = new MonsterTemplate[nMonster];
                     // pokemon: bang Pokemon cua template gui lai bang -91 ngay sau lenh nay
                     MonsterTemplate.xoaPoke();
+                    game.pokemon.LoaiMang.datLaiPhien();   // 1.0: phien moi - xin lai bang loai / Pokedex / sprite thieu
                     byte[] effSh = new byte[msg.reader().readShort()];
                     msg.reader().read(effSh);
                     Res.setEffSh(effSh);

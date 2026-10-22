@@ -61,14 +61,19 @@ public final class HePoke {
     /** He 1 cua loai (Thuong neu khong biet). */
     public static int he1(int dex) {
         int i = tim(dex);
-        return i < 0 ? THUONG : HE.charAt(i) - 'a';
+        if (i < 0) {
+            int b = BangLoai.he1(dex);   // 1.0: loai ngoai bang tinh -> bang loai may chu (-126)
+            return b >= 0 && b < 18 ? b : THUONG;
+        }
+        return HE.charAt(i) - 'a';
     }
 
     /** He 2 cua loai, -1 neu chi co mot he / khong biet. */
     public static int he2(int dex) {
         int i = tim(dex);
         if (i < 0) {
-            return -1;
+            int b = BangLoai.he2(dex);
+            return b >= 0 && b < 18 ? b : -1;
         }
         char c = HE2.charAt(i);
         return c == '-' ? -1 : c - 'a';

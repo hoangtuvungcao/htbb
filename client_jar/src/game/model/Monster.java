@@ -77,7 +77,53 @@ public class Monster extends LiveActor {
 
     @Override
     public String getDisplayName() {
+        if (this.pokeDexRieng > 0) {
+            // 1.0: quai mang loai rieng (-125) -> ten loai (bang loai -126; chua co bang thi ten mau)
+            String t = game.pokemon.BangLoai.ten(this.pokeDexRieng);
+            if (t.length() > 0) {
+                return t;
+            }
+        }
         return (Res.monsterTemplates == null || Res.monsterTemplates[this.monster_type] == null) ? "" : Res.monsterTemplates[this.monster_type].name;
+    }
+
+    // 1.0: loai RIENG cua con quai nay (lenh -125, client >= 909); 0 = loai mac dinh cua template (-91)
+    public short pokeDexRieng;
+    public boolean pokeShinyRieng;
+    public byte pokeBac;
+
+    /** Gan / bo loai rieng (dex 0 = ve lai theo template). */
+    public void datLoaiRieng(int dex, boolean shiny, int bac) {
+        this.pokeDexRieng = (short) (dex > 0 ? dex : 0);
+        this.pokeShinyRieng = dex > 0 && shiny;
+        this.pokeBac = (byte) (dex > 0 ? bac : 0);
+    }
+
+    /** Dex dang ve: loai rieng neu co, khong thi loai cua template. */
+    public int dexVe() {
+        return this.pokeDexRieng > 0 ? this.pokeDexRieng : MonsterTemplate.layPokeDex(this.monster_type);
+    }
+
+    public boolean shinyVe() {
+        if (this.pokeDexRieng > 0) {
+            return this.pokeShinyRieng;
+        }
+        int t = this.monster_type;
+        return t >= 0 && t < MonsterTemplate.pokeShiny.length && MonsterTemplate.pokeShiny[t];
+    }
+
+    public int tiLeVe() {
+        int t = this.monster_type;
+        int tl = t >= 0 && t < MonsterTemplate.pokeTiLe.length ? MonsterTemplate.pokeTiLe[t] : 100;
+        return tl <= 0 ? 100 : tl;
+    }
+
+    /** Ve bang PokeBody (loai rieng hoac template Pokemon). */
+    public boolean laPokemonVe() {
+        if (this.pokeDexRieng > 0) {
+            return PokeBody.coSprite(this.pokeDexRieng, this.pokeShinyRieng);
+        }
+        return MonsterTemplate.laPokemon(this.monster_type);
     }
 
     @Override
@@ -144,7 +190,7 @@ public class Monster extends LiveActor {
      */
     public boolean paintPokemon(Graphics g) {
         int t = this.monster_type;
-        if (!MonsterTemplate.laPokemon(t)) {
+        if (!laPokemonVe()) {
             return paintVatThe(g);
         }
         if (!isPaint() || this.state == 8 || this.hp <= 0) {
@@ -158,14 +204,25 @@ public class Monster extends LiveActor {
                 }
             }
             g.drawImage(Res.imgShadow, this.x, this.y, 3);
-            int cao = PokeBody.caoTrenChan(MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], MonsterTemplate.pokeTiLe[t]) + 4;
+            if (this.pokeBac >= 3) {
+                // 1.0: vong mau bac duoi chan (T3 xanh duong, T4 tim, T5 cam, T6 do)
+                g.setColor(game.pokemon.BangLoai.mauBac(this.pokeBac));
+                g.drawArc(this.x - 11, this.y - 4, 22, 8, 0, 360);
+                if (this.pokeBac >= 5) {
+                    g.drawArc(this.x - 13, this.y - 5, 26, 10, 0, 360);
+                }
+            }
+            int dexV = dexVe();
+            boolean shV = shinyVe();
+            int tlV = tiLeVe();
+            int cao = PokeBody.caoTrenChan(dexV, shV, tlV) + 4;
             if (cao > this.height) {
                 this.height = (short) cao;
             }
             int dongTac = pokeDongTac();
             int tick = pokeTickTrongDongTac(dongTac);
             // pokemon: chop trang + lac nhe khi trung don (HieuUngDanh)
-            PokeBody.paint(g, MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], this.x + this.vangx + pokeLac(), this.y + this.vangy + this.dy + this.z, this.dir, dongTac, tick, MonsterTemplate.pokeTiLe[t], pokeChop() ? 230 : 0);
+            PokeBody.paint(g, dexV, shV, this.x + this.vangx + pokeLac(), this.y + this.vangy + this.dy + this.z, this.dir, dongTac, tick, tlV, pokeChop() ? 230 : 0);
             for (int i = 0; i < this.buff.size(); i++) {
                 ((CharBuff) this.buff.elementAt(i)).paint(g);
             }
@@ -271,9 +328,8 @@ public class Monster extends LiveActor {
         if (VatThePokemon.veGocQuai(g, this.monster_type, xCorner, yCorner - 8, 24)) {
             return;
         }
-        if (MonsterTemplate.laPokemon(this.monster_type)) {
-            int t = this.monster_type;
-            PokeBody.paintChanDung(g, MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], xCorner, yCorner - 8, 24);
+        if (laPokemonVe()) {
+            PokeBody.paintChanDung(g, dexVe(), shinyVe(), xCorner, yCorner - 8, 24);
             if (this.he >= 0 && this.he < this.nh.length) {
                 g.drawRegion(Res.imgNguHanh, this.nh[this.he] * 16, 0, 16, 16, 0, xCorner - 15, yCorner + 3, 20);
             }
