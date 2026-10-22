@@ -177,14 +177,9 @@ public final class KiemNgayCongDong {
         Kiem.bang("du 24 khoa thang / nam xoay", 24, theoKhoa.size());
         Kiem.bang("khong dong nao vuot tran", 0, vuot);
         // id quai la quai thuong co ban do tu nhien (data_hst_bung_phat)
-        final String hst = doc("../sql/pokemon_he_sinh_thai.sql");
-        final int a = hst.indexOf("INSERT INTO `data_hst_bung_phat` VALUES");
         final Set<Integer> coMap = new HashSet<Integer>();
-        if (a >= 0) {
-            final Matcher p = Pattern.compile("\\((\\d+),(\\d+)\\)").matcher(hst.substring(a, hst.indexOf(';', a)));
-            while (p.find()) {
-                coMap.add(Integer.parseInt(p.group(2)));
-            }
+        for (final Map<String, String> r : DayDu.dong("data_hst_bung_phat")) { // CSDL day du (sql/htbb_day_du.sql)
+            coMap.add(Integer.parseInt(r.get("id_quai")));
         }
         final Set<Integer> thieu = new HashSet<Integer>(idQuai);
         thieu.removeAll(coMap);

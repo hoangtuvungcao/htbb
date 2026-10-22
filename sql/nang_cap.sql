@@ -2496,7 +2496,68 @@ CREATE TABLE IF NOT EXISTS `web_trang` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+CREATE TABLE IF NOT EXISTS `data_huan_luyen` (
+  `id` tinyint(4) NOT NULL,
+  `ma` varchar(16) NOT NULL,
+  `ten` varchar(32) NOT NULL,
+  `mo_ta` varchar(120) NOT NULL DEFAULT '',
+  `tran_diem` smallint(6) NOT NULL,
+  `nguong_giam` smallint(6) NOT NULL,
+  `phan_nghin_truoc` smallint(6) NOT NULL,
+  `phan_nghin_sau` smallint(6) NOT NULL,
+  `thu_tu` tinyint(4) NOT NULL DEFAULT 0,
+  `sua_boi` varchar(50) DEFAULT NULL,
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_learnset` (
+  `loai` smallint(6) NOT NULL,
+  `o` tinyint(4) NOT NULL,
+  `dong` tinyint(4) NOT NULL,
+  `ten` varchar(48) NOT NULL,
+  `he` tinyint(4) NOT NULL,
+  `kieu` varchar(16) NOT NULL,
+  `nguon` varchar(8) NOT NULL DEFAULT 'cap',
+  `cap_hoc` tinyint(4) NOT NULL,
+  `gia_xu` int(11) NOT NULL DEFAULT 0,
+  `cap_cap_chieu` varchar(64) NOT NULL,
+  `sua_boi` varchar(50) DEFAULT NULL,
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`loai`,`o`),
+  KEY `k_dong` (`dong`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `data_tang_truong_dong` (
+  `dong` tinyint(4) NOT NULL,
+  `ten` varchar(24) NOT NULL,
+  `suc_manh` tinyint(4) NOT NULL,
+  `kheo_leo` tinyint(4) NOT NULL,
+  `tinh_than` tinyint(4) NOT NULL,
+  `suc_khoe` tinyint(4) NOT NULL,
+  `may_man` tinyint(4) NOT NULL DEFAULT 0,
+  `ghi_chu` varchar(160) NOT NULL DEFAULT '',
+  `sua_boi` varchar(50) DEFAULT NULL,
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`dong`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_chuyen_doi_can_bang` (
+  `char_id` int(11) NOT NULL,
+  `buoc` varchar(24) NOT NULL,
+  `luc` datetime NOT NULL,
+  `chi_tiet` text DEFAULT NULL,
+  `xu_hoan` bigint(20) NOT NULL DEFAULT 0,
+  `da_hoan` tinyint(4) NOT NULL DEFAULT 0,
+  `da_bao` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`char_id`,`buoc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE IF NOT EXISTS `tob_huan_luyen` (
+  `char_id` int(11) NOT NULL,
+  `phan_bo` varchar(48) NOT NULL DEFAULT '',
+  `lan_tay` int(11) NOT NULL DEFAULT 0,
+  `tay_luc` bigint(20) NOT NULL DEFAULT 0,
+  `tong_xu_tay` bigint(20) NOT NULL DEFAULT 0,
+  `cap_nhat` datetime DEFAULT NULL,
+  PRIMARY KEY (`char_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ======== 1. Schema (khong pha, chay lai duoc)
 
@@ -4496,7 +4557,9 @@ INSERT INTO `data_map_ten` (`map_id`,`ten`,`vung`,`loai`,`mo_ta`) VALUES
 (280,'Đỉnh Tháp Trời','Hoenn','dau_truong','Đấu trường'),
 (281,'Liên minh Hoenn','Hoenn','thanh','Lãnh địa'),
 (282,'Sảnh Nhà vô địch','Hoenn','dau_truong','Đấu trường'),
-(2541,'Tổ Zapdos','','hang','Hang động')
+(2541,'Tổ Zapdos','','hang','Hang động'),
+(4381,'Phó bản Hầm ngục','','hang','Phòng riêng của tổ đội (5 tầng)'),
+(4382,'Sàn Cúp PvP','','dau_truong','Sàn đấu riêng của trận cúp tuần')
 ON DUPLICATE KEY UPDATE `vung`=VALUES(`vung`), `loai`=VALUES(`loai`), `mo_ta`=VALUES(`mo_ta`);
 
 -- ======================================================================================================================
@@ -4680,7 +4743,9 @@ INSERT IGNORE INTO `data_ban_do_mo_khoa` (`map_id`,`cap_toi_thieu`,`ma_nhiem_vu`
 (280,96,'C52.7','Chính tuyến: Vùng đất phía nam',0,'Hang boss: boss phải đánh tay.','Đỉnh Tháp Trời'),
 (281,90,'C52.7','Chính tuyến: Vùng đất phía nam',0,'Khu an toàn, không có Pokémon hoang dã để tự đánh.','Liên minh Hoenn'),
 (282,90,'C52.7','Chính tuyến: Vùng đất phía nam',0,'Đấu trường / PvP: phải tự điều khiển.','Sảnh Nhà vô địch'),
-(2541,0,'','',0,'Hang boss: boss phải đánh tay.','Tổ Zapdos');
+(2541,0,'','',0,'Hang boss: boss phải đánh tay.','Tổ Zapdos'),
+(4381,0,'','',0,'Phó bản: tổ đội phải tự điều khiển.','Phó bản Hầm ngục'),
+(4382,0,'','',0,'Đấu trường / PvP: phải tự điều khiển.','Sàn Cúp PvP');
 
 INSERT INTO `data_quest_lau_dai` (`ma`,`id_so`,`loai`,`nam`,`vung`,`cung`,`chuong`,`buoc`,`ten`,`npc_giao`,`ten_npc`,`dia_danh`,`cap_toi_thieu`,`ngay_mo`,`truoc`,`kieu_muc_tieu`,`muc_tieu_id`,`muc_tieu_ten`,`so_luong`,`quai_roi`,`lap_lai`,`gioi_han`,`exp`,`xu`,`luong_khoa`,`luong`,`vat_pham`,`huy_hieu`,`dong_co_tuong_thich`,`ghi_chu`) VALUES
 ('CA-01.1',7001,'cua_ai',1,'','Rời đồng cỏ Pallet','CA-01','1','Cửa ải: 20 Torchic ở Pallet','','','Pallet',3,0,'','giet','4','Torchic',20,'','','',3161,384,0,0,'','',0,'Cửa ải mở bản đồ (khoá bản đồ)'),
@@ -6342,10 +6407,8 @@ CREATE TABLE IF NOT EXISTS `data_map_ten` (
   `sua_luc` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`map_id`)
 ) DEFAULT CHARSET=utf8;
-INSERT INTO `data_map_ten` (`map_id`,`ten`,`vung`,`loai`,`mo_ta`) VALUES
-(4381,'Phó bản Hầm ngục','','hang','Phòng riêng của tổ đội (5 tầng)'),
-(4382,'Sàn Cúp PvP','','dau_truong','Sàn đấu riêng của trận cúp tuần')
-ON DUPLICATE KEY UPDATE `vung`=VALUES(`vung`), `loai`=VALUES(`loai`), `mo_ta`=VALUES(`mo_ta`); -- giu ten admin da sua (/admin/ten-hien)
+-- (ban-098) Dong 4381 / 4382 nam o phan 5 (data_map_ten, giu ten admin da sua) + luat khoa ban do o phan 7
+-- (data_ban_do_mo_khoa: khong khoa cap, cam Tu dong danh - giong PhongRieng.khongTuDong).
 
 -- ---------------------------------------------------------------------------------------------------- 4. Danh hieu
 -- Danh muc danh hieu (he danh hieu 0.9.7, nhanh danh-hieu: cung cau truc bang data_danh_hieu). Kho so huu van la
@@ -6378,7 +6441,7 @@ INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`
 (9852,'cup_vo_dich_doi','Song đấu vô địch','Vô địch Cúp Đôi 2 đấu 2. Hiệu lực 28 ngày.','Đứng hạng 1 Cúp Đôi cùng đồng đội.',2,'vuot','khang_trang_thai',9,'trao','',1,0,40320,'cup',302,1),
 (9853,'cup_vo_dich_thuan','Bậc thầy tay không','Vô địch Cúp Không trang bị. Hiệu lực 28 ngày.','Đứng hạng 1 Cúp Không trang bị.',2,'vuot','hp',9,'trao','',1,0,40320,'cup',303,1),
 (9854,'cup_a_quan','Á quân cúp tuần','Hạng 2–3 của một cúp tuần. Hiệu lực 14 ngày.','Vào top 3 cúp tuần.',1,'khien','ne_tranh',7,'trao','',1,0,20160,'cup',304,1),
-(9855,'cup_dau_si','Đấu sĩ cúp tuần','Hạng 4–8, hoặc dự đủ 3 trận và thắng ít nhất 1 trận cúp tuần. Hiệu lực 7 ngày.','Dự cúp tuần đủ 3 trận.',0,'khien','chi_mang',5,'trao','',1,0,10080,'cup',305,1),
+(9855,'cup_dau_si','Huấn luyện viên cúp tuần','Hạng 4–8, hoặc dự đủ 3 trận và thắng ít nhất 1 trận cúp tuần. Hiệu lực 7 ngày.','Dự cúp tuần đủ 3 trận.',0,'khien','chi_mang',5,'trao','',1,0,10080,'cup',305,1),
 (9860,'pho_ban_chinh_phuc','Chinh phục Phó bản','Hạ boss tầng 5 Phó bản Hầm ngục lần đầu.','Hạ boss tầng 5 Phó bản Hầm ngục.',1,'sao','khang_trang_thai',7,'trao','',1,0,0,'thanh_tuu',310,1),
 (9861,'pho_ban_10','Thám hiểm Hầm ngục','Hạ boss Phó bản Hầm ngục 10 lần.','Hạ boss phó bản nhiều lần.',1,'la','hp',7,'pho_ban','',10,0,0,'thanh_tuu',311,1),
 (9862,'pho_ban_50','Chúa tể Hầm ngục','Hạ boss Phó bản Hầm ngục 50 lần.','Hạ boss phó bản thật nhiều lần.',2,'mat_troi','chi_mang',9,'pho_ban','',50,1,0,'thanh_tuu',312,1)

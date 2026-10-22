@@ -5,19 +5,19 @@ const CH = CAM_NANG_ND.cuaHang
 const MO_TA: Record<string, string> = {
   'Chansey (thuốc)': 'Y tá Chansey ở Trung tâm Pokémon và ngoài thị trấn: hồi phục miễn phí; bán thuốc hồi máu, Ether, thuốc chữa trạng thái, thuốc tăng cường X.',
   'Kecleon (lượng khoá)': 'Quầy lượng khoá: bùa bảo hộ và thuốc mạnh có giới hạn mỗi tuần.',
-  'Cửa hàng trang trí (lượng)': 'Đồ trang trí (khung ảnh, trang phục, hiệu ứng) mua bằng lượng ở Meowth thương nhân → "Cửa hàng và nạp" (mục chỉ hiện khi máy chủ bật nạp). Chỉ để đẹp, không bán sức mạnh.',
+  'Delcatty (trang trí)': 'Đồ trang trí (khung ảnh, trang phục, hiệu ứng) mua bằng lượng ở Meowth thương nhân → "Cửa hàng và nạp" (mục chỉ hiện khi máy chủ bật nạp). Chỉ để đẹp, không bán sức mạnh.',
   'Bronzong (trang bị)': 'Bán trang bị theo bậc. Đồ bán ở đây là bản thường; bản tốt hơn đến từ quái rơi, chế tạo và Gym.',
   'Huy chương Gym': 'Đổi Huy chương Gym (đánh lại Gym hằng tuần) lấy phần thưởng riêng.',
 }
 const ICON: Record<string, string> = {
   'Chansey (thuốc)': 'i-lucide-heart-pulse',
   'Kecleon (lượng khoá)': 'i-lucide-lock',
-  'Cửa hàng trang trí (lượng)': 'i-lucide-sparkles',
+  'Delcatty (trang trí)': 'i-lucide-sparkles',
   'Bronzong (trang bị)': 'i-lucide-shield',
   'Huy chương Gym': 'i-lucide-medal',
 }
 const idCh = (ten: string) => boDau(ten).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-const thuTu = ['Chansey (thuốc)', 'Kecleon (lượng khoá)', 'Huy chương Gym', 'Cửa hàng trang trí (lượng)', 'Bronzong (trang bị)']
+const thuTu = ['Chansey (thuốc)', 'Kecleon (lượng khoá)', 'Huy chương Gym', 'Delcatty (trang trí)', 'Bronzong (trang bị)']
 const viTri = (ten: string) => (thuTu.includes(ten) ? thuTu.indexOf(ten) : thuTu.length)
 const ds = [...CH].sort((a, b) => viTri(a.ten) - viTri(b.ten))
 const CT = CAM_NANG_ND.cheTao

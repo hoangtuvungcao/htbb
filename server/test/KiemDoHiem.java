@@ -96,7 +96,7 @@ public final class KiemDoHiem {
         Kiem.sai("ChuDe khong con mau danh hieu viet tay (0x8CC8FF / 0xCDB8FF)", chuDe.contains("0x8CC8FF") || chuDe.contains("0xCDB8FF"));
         final String pk = doc("../client_jar/src/game/pokemon/PhuKien.java");
         Kiem.dung("PhuKien dung bang mau DoHiemSinh", pk.contains("hiem = DoHiemSinh.PHU_KIEN") && pk.contains("mauBac = DoHiemSinh.MAU_BAC_TRANG_BI"));
-        Kiem.dung("danh hieu SQL cung mau (them_danh_hieu.sql)", doc("../sql/them_danh_hieu.sql").contains("(1,'Hiếm','#23803A',1)"));
+        Kiem.dung("danh hieu SQL cung mau (them_danh_hieu.sql)", DayDu.phanNangCap("them_danh_hieu.sql").contains("(1,'Hiếm','#23803A',1)"));
         Kiem.dung("web xep hang to chip danh hieu theo bac chung", doc("../web/app/pages/ranking.vue").contains("bacDanhHieu(d.danhHieu.doHiem)"));
         Kiem.sai("Item.getNameItemPetEat khong con ten mau cu", doc("src/real/Item.java").contains("{\"\", \"Hoàn mỹ\", \"Đỏ\", \"Xanh\"}"));
         Kiem.sai("Map: ten bac cu 'Hoan my' trong do tieu", doc("src/real/Map.java").contains("new String[]{\"Trắng\", \"Xanh\", \"Đỏ\", \"Hoàn mỹ\"}"));

@@ -746,7 +746,7 @@ loại), không mất EXP, không tự động đánh.
 - **Chống clone**: cổng tuổi tài khoản / giờ chơi của `chong_clone.*`; mỗi thiết bị / tài khoản một Pokémon / tuần; hai
   đội chung thiết bị / IP / tài khoản không bao giờ gặp nhau.
 - **Thưởng** (không xu, không lạm phát): vô địch danh hiệu 28 ngày (9850 Nhí / 9851 hệ / 9852 Đôi / 9853 Không trang bị)
-  + 20 lượng khoá; hạng 2–3 "Á quân cúp tuần" 14 ngày + 10; hạng 4–8 "Đấu sĩ cúp tuần" 7 ngày + 5; dự ≥ 3 trận và thắng
+  + 20 lượng khoá; hạng 2–3 "Á quân cúp tuần" 14 ngày + 10; hạng 4–8 "Huấn luyện viên cúp tuần" 7 ngày + 5; dự ≥ 3 trận và thắng
   ≥ 1: 2 lượng khoá. Tối đa 20 lượng khoá / người / tuần (trong trần 25 / tuần của Gym / boss / xếp hạng). Danh hiệu chỉ
   có chỉ số nhỏ của ô danh hiệu (chỉ danh hiệu đang đeo được tính). Ghi `tob_cup_thuong` trước khi phát, cờ `da_nhan` đổi
   nguyên tử: không bao giờ phát hai lần; ai offline nhận khi đăng nhập.

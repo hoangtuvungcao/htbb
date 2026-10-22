@@ -693,7 +693,7 @@ public final class KiemPhoBanCup {
             li &= sql.contains("(" + i + ",'" + lich.get(i) + "')");
         }
         Kiem.dung("SQL: data_cup_lich = CupLogic.lichMacDinh() (16 o)", li && lich.size() == 16);
-        Kiem.dung("SQL: ten ban do 4381 / 4382 (data_map_ten)", sql.contains("(4381,'Phó bản Hầm ngục'") && sql.contains("(4382,'Sàn Cúp PvP'"));
+        Kiem.dung("SQL: ten ban do 4381 / 4382 (data_map_ten, nang_cap.sql phan 5)", DayDu.nangCap().contains("(4381,'Phó bản Hầm ngục'") && DayDu.nangCap().contains("(4382,'Sàn Cúp PvP'"));
         final String java = doc("src/data/DatabasePhoBanCup.java");
         for (final String bang : new String[]{"tob_pho_ban_luot", "tob_pho_ban_lich_su", "tob_cup_dang_ky", "tob_cup_tran", "tob_cup_thuong"}) {
             Kiem.dung("SQL + may chu cung tao bang " + bang, sql.contains("CREATE TABLE IF NOT EXISTS `" + bang + "`") && java.contains("CREATE TABLE IF NOT EXISTS " + bang + " ("));

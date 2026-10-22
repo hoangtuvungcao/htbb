@@ -198,7 +198,13 @@ public final class KiemBoNgocCheTao {
             }
         }
         Kiem.bang("dau vao: (2 + bac) da, (1 + bac/3) nguyen lieu phu dung nhom bac", Integer.valueOf(0), Integer.valueOf(sai));
-        Kiem.bang("xu = 50% gia mon bac (bac 0: 5385 -> 2692)", "2692", ct.get(0)[8]);
+        String xuBac0 = null; // bang CSDL xep theo khoa chinh (thanh_pham), khong theo thu tu CSV cu
+        for (final String[] r : ct) {
+            if (xuBac0 == null && "0".equals(r[2])) {
+                xuBac0 = r[8];
+            }
+        }
+        Kiem.bang("xu = 50% gia mon bac (bac 0: 5385 -> 2692)", "2692", xuBac0);
         final List<CheTaoLogic.BacHiem> bac = CheTaoLogic.bacMacDinh();
         int tong = 0;
         for (final CheTaoLogic.BacHiem b : bac) {
