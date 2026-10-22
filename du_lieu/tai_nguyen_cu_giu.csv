@@ -1,0 +1,331 @@
+mau,nhom,ly_do
+server/map/imgEffs/*,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+server/map/imgArrow/*,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+server/map/EFF_PACK,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/eff.sh,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/skillpublic.sh,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/eff.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/skillpublic.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/newef/*,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/sword skill/h0.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/sword skill/nut.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/sword skill/skillboss.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/sword skill/h0.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/sword skill/t0.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/sword skill/t1.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/skillboss.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/skill_da.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/skill_ice.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/other.bytes#skill_da.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/other.bytes#skill_ice.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/other.bytes#swordskill_t0.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/other.bytes#swordskill_t1.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/arrow.sh,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/arrow.bytes,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+server/map/hieuung/4.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+server/map/other/[1-5].png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/qs/qs#st.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_pc_ios/Assets/Resources/res/qs/qs.bytes#st.png,hieu_ung,"hiệu ứng chiến đấu / sự kiện chung (tia sáng, nổ, mũi tên, pháo hoa, lá rơi) — chủ game giữ nguyên, chỉ thay hiệu ứng kiếm hiệp rõ ràng"
+client_jar/res/font.sh,phong_chu,phông chữ bitmap (glyph Latin + tiếng Việt)
+client_jar/res/arial11.png,phong_chu,phông chữ bitmap (glyph Latin + tiếng Việt)
+client_jar/res/font/*,phong_chu,phông chữ bitmap (glyph Latin + tiếng Việt)
+client_pc_ios/Assets/Resources/res/font.bytes,phong_chu,phông chữ bitmap (glyph Latin + tiếng Việt)
+client_jar/res/m1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/m2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/plus12.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/shadow.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/m/*,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/m/*,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/qs/qs#q.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/qs/qs#wood21.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/qs/qs.bytes#q.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/qs/qs.bytes#wood21.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/b0.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/b1.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/b2.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/b3.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/b4.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/bar.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/bar1.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/c0.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/c1.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/c2.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/check.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/fc.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/imgChat.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/inv3.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/inv_0.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/inv_1.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/inv_5.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/k0.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/m1.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/m2.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/plus12.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/selectfc.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/shadow.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/tg.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/wap.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/wap36.bytes,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#ar.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#ar2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#arF.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#bar.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#bpa.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#c.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#ch0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#ch1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#check.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#cong1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#cong2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#cooldown.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#die.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#eye.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#fire.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#flg.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#grid.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#info.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#inv_0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#inv_1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#inv0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#inv1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#inv2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#kc.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#kham.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#light.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#mauquai.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#msg0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#no.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#panel.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#panel150x36.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#plus.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#select.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#select1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#select3.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#shadow.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#sk31.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#smoke.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#soft0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_jar/res/main.sh#soft1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#ar.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#ar2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#arF.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#bar.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#bpa.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#c.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#ch0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#ch1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#check.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#cong1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#cong2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#cooldown.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#die.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#eye.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#fire.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#flg.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#grid.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#info.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#inv_0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#inv_1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#inv0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#inv1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#inv2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#kc.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#kham.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#light.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#mauquai.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#msg0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#no.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#panel.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#panel150x36.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#plus.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#select.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#select1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#select3.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#shadow.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#sk31.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#smoke.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#soft0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/main.bytes#soft1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/items.bytes#change.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/items.bytes#chat.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/items.bytes#dangxuat.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/items.bytes#exit.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/items.bytes#napxu.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#bg_popup.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#button_bar.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#button1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#button2.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#button5.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#chat.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#cooldown.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#focus_actor.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#inv_0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#inv_1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#inv0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#inv1.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#map_mini.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+client_pc_ios/Assets/Resources/res/other.bytes#msg0.png,giao_dien,"khung giao diện chung (nền, nút, thanh máu, ô đồ, bóng, dấu chọn) — không mang hình kiếm hiệp"
+server/map/d_effect/0.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/1.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/10.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/100.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/101.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/102.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/103.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/104.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/105.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/11.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/116.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/117.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/118.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/119.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/12.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/120.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/121.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/13.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/14.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/15.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/153.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/154.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/155.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/156.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/157.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/158.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/159.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/16.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/160.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/161.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/162.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/163.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/164.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/165.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/166.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/167.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/168.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/169.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/17.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/170.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/171.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/172.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/173.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/174.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/175.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/176.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/177.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/178.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/179.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/18.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/180.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/181.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/182.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/183.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/184.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/185.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/19.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/191.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/192.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/193.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/194.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/195.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/196.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/197.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/198.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/199.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/2.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/20.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/21.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/212.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/213.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/214.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/215.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/216.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/217.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/218.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/219.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/22.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/220.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/221.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/222.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/223.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/226.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/227.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/228.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/229.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/23.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/230.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/231.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/232.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/233.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/237.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/238.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/239.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/240.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/241.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/242.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/243.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/244.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/245.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/246.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/247.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/248.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/249.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/250.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/251.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/252.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/253.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/258.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/259.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/260.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/261.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/262.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/263.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/264.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/277.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/278.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/279.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/280.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/281.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/282.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/29.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/299.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/3.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/30.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/300.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/31.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/32.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/33.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/34.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/35111111.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/4.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/45.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/46.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/47.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/48.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/49.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/5.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/50.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/51.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/52.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/53.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/54.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/55.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/57.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/58.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/59.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/6.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/61.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/63.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/66.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/7.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/8.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/80.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/81.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/82.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/87.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/88.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/89.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/9.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/90.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/91.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/98.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)
+server/map/d_effect/99.png,d_effect_con_lai,dải 8700 còn lại: hiệu ứng buff / trang phục cũ chỉ vẽ ở đường paper-doll — chưa rà từng id (việc còn lại P2)

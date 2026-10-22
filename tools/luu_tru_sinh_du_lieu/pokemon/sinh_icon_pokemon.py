@@ -835,7 +835,7 @@ def ghi_java(kq):
         f.write("package com.htbb.pokemon;\n\n")
         f.write("/**\n * SINH TU tools/pokemon/sinh_icon_pokemon.py - KHONG SUA TAY.\n *\n")
         f.write(" * Chi so anh cu (dai khong co cot DB) -> so thu tu icon PMD n (anh map/icon_pokemon/n.png,\n")
-        f.write(" * id 14000+n). -1 = giu anh cu. Dung qua IconPokemon.doiAnh khi bat che do Pokemon.\n */\n")
+        f.write(" * id 14000+n). -1 = giu anh cu. Dung qua IconPokemon.doiAnh.\n */\n")
         f.write("final class IconPokemonBang {\n\n    private IconPokemonBang() {\n    }\n")
         for ten in DAI:
             dau, so, _, _ = DAI[ten]

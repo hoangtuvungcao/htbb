@@ -9,8 +9,8 @@ Hình đã được thu nhỏ / cắt khung / đổi định dạng để chạy
 Nhân vật dựa trên Pokémon Mystery Dungeon (Chunsoft / Spike Chunsoft).
 Chân dung Pokémon và biểu tượng ứng dụng (chân dung Pikachu) cũng lấy từ SpriteCollab.
 
-# Người vẽ (42)
-CHUNSOFT, 3P1C, <SKREE>, anomalocaris, Anon, baronessfaron, bwappi, Caitemis, Deeshura, Discord 199989579682414592, Discord 215638650434617345, dmDash, El_Pangoro_Parse, Emboarger, Emmuffin, FlowerSnek, G-, Ginnie, Grimlin, JFain, JustAGunk, KCN015, LightBlueBlaze, Lovi, Michael12, NeroIntruder, NikolaP, Noo, Pencil, pi3.14, powercristal, Reppamon, Sceptile, SethY, ShyStarryRain, Smalusion, Soulja, Spikey-Valentine, Tacocoa, TawnySoup, Top_Kec, Uni
+# Người vẽ (43)
+CHUNSOFT, 3P1C, <SKREE>, anomalocaris, Anon, baronessfaron, bwappi, Caitemis, Deeshura, Discord 199989579682414592, Discord 215638650434617345, dmDash, El_Pangoro_Parse, Emboarger, Emmuffin, FlowerSnek, G-, Ginnie, Grimlin, JFain, JustAGunk, KCN015, LightBlueBlaze, Lovi, Michael12, nataniel-sama, NeroIntruder, NikolaP, Noo, Pencil, pi3.14, powercristal, Reppamon, Sceptile, SethY, ShyStarryRain, Smalusion, Soulja, Spikey-Valentine, Tacocoa, TawnySoup, Top_Kec, Uni
 
 # Người vẽ theo từng loài
 #0001: CHUNSOFT
@@ -203,6 +203,7 @@ CHUNSOFT, 3P1C, <SKREE>, anomalocaris, Anon, baronessfaron, bwappi, Caitemis, De
 #0471: CHUNSOFT, JFain, baronessfaron
 #0473: CHUNSOFT
 #0477: CHUNSOFT, Caitemis
+#0483: CHUNSOFT
 #0491: CHUNSOFT, baronessfaron
 #0496: NeroIntruder
 #0497: NeroIntruder
@@ -228,15 +229,19 @@ CHUNSOFT, 3P1C, <SKREE>, anomalocaris, Anon, baronessfaron, bwappi, Caitemis, De
 #0628: Caitemis
 #0637: powercristal, Emmuffin, pi3.14, Soulja
 #0667: Caitemis
+#0675: Soulja
 #0681: Top_Kec
 #0700: baronessfaron
 #0709: baronessfaron
 #0711: JFain, baronessfaron
+#0716: baronessfaron
 #0739: Soulja
+#0745: baronessfaron, Emmuffin, JFain
 #0750: bwappi
 #0750: <SKREE>
 #0781: baronessfaron
 #0831: Emmuffin, JFain
+#0879: nataniel-sama, Emmuffin
 #0896: JFain
 #0897: baronessfaron
 #0901: Emmuffin, baronessfaron
@@ -251,6 +256,13 @@ Vật thể: Item/Belt_Brown.None, Item/Box_Brown.None, Item/Iron_Ball.None, Ite
 Ninja Adventure - Asset Pack, tác giả Pixel-boy và AAA - CC0 1.0
 https://pixel-boy.itch.io/ninja-adventure-asset-pack
 Mép chuyển tiếp, nền / vách hang, biển hiệu: vẽ bằng code trong dự án HTBB (CC0).
+Cây, đá, vật trang trí bản đồ gửi từ máy chủ (map/tree): cũng từ Ninja Adventure (CC0).
+
+# Hình vẽ riêng của dự án (thay toàn bộ hình của máy chủ cũ)
+Vẽ bằng code (CC0, nhóm HTBB): Poké Ball, quả mọng, huy hiệu đội (bang), icon kỹ năng đội, huy hiệu hệ, khung tranh,
+đèn lồng / tượng Poké Ball, ô vườn, rương, mảnh băng, băng-rôn danh hiệu, vầng sáng, nút giao diện, khiên vùng, vòng quay.
+Thú cưỡi, thú đi theo, NPC, quái và tranh treo: hình Pokémon PMDCollab SpriteCollab (ghi công ở trên), đã thu nhỏ / cắt.
+Chữ trên băng-rôn danh hiệu: font Noto Sans (Google) - SIL Open Font License 1.1 (chỉ dùng để vẽ ảnh, không kèm tệp font).
 
 # Âm thanh
 Kenney (www.kenney.nl) - CC0 1.0: Interface Sounds, Impact Sounds, RPG Audio, Digital Audio, Music Jingles.

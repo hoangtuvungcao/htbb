@@ -1091,6 +1091,7 @@ public final class ChuPokemon {
         datMang(real.NpcReceiveCard.nameCountry, TEN_VUNG);
         apTenThuoc();
         apNgoc();
+        apTenPet();
     }
 
     /** Chi test dung: tra moi thu ap() da doi ve nhu cu. */
@@ -1218,6 +1219,32 @@ public final class ChuPokemon {
     }
 
     /** Map.gemTemplate (ngoc/da) da chep chu tu Text LUC NAP - doi lai ban chep. */
+    /** P2: ten mau pet cu (Map.petTemplate[].name: "Lồng đèn xếp", "Pet Giáp Ngọ"...) -> ten Pokemon (PetPokemon). */
+    private static void apTenPet() {
+        final data.PetTemplate[] mau = real.Map.petTemplate;
+        if (mau == null) {
+            return;
+        }
+        for (int i = 0; i < mau.length; i++) {
+            final data.PetTemplate t = mau[i];
+            if (t == null) {
+                continue;
+            }
+            final String moi = PetPokemon.tenMauPet(i, t.idImg);
+            if (moi == null) {
+                continue;
+            }
+            final String ten = t.name;
+            t.name = moi;
+            HOAN_TAC.add(new Runnable() {
+                @Override
+                public void run() {
+                    t.name = ten;
+                }
+            });
+        }
+    }
+
     private static void apNgoc() {
         final real.GemTemplate[] g = real.Map.gemTemplate;
         if (g == null) {

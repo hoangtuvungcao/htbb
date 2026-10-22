@@ -98,7 +98,11 @@ public final class KiemPetPokemon {
 
             pet.idHoaHinhPet = 67;
             pet.timeEndHoaHinhPet = System.currentTimeMillis() + 60000L;
-            Kiem.bang("pet dang hoa hinh Lan -> dex 0 (giu hinh Lan)", Integer.valueOf(0), Integer.valueOf(dexTrongChuoi(c)));
+            // P2: hoa hinh khong con giu hinh Ky Lan cu - ve Pokemon theo cap hoa hinh (PetPokemon.dexHoaHinh)
+            pet.capHoaHinh = 1;
+            Kiem.bang("pet dang hoa hinh cap 1 -> -94 dex Growlithe", Integer.valueOf(58), Integer.valueOf(dexTrongChuoi(c)));
+            pet.capHoaHinh = 5;
+            Kiem.bang("pet dang hoa hinh cap 5 -> -94 dex Entei", Integer.valueOf(244), Integer.valueOf(dexTrongChuoi(c)));
         } catch (final Throwable e) {
             Kiem.dung("chuoi goi: " + e, false);
         }

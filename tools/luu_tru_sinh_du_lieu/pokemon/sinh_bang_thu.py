@@ -22,6 +22,8 @@ import urllib.request
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA = os.path.join(GOC, "du_lieu", "bang_thu.csv")
 RA_SQL = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_doi_ten_thu.sql")
+RA_SQL_ANH_XA = os.path.join(GOC, "du_lieu", "sql_nguon", "pokemon_thu_pokemon.sql")
+PET_CU = os.path.join(GOC, "du_lieu", "bang_pet_cu.csv")
 ANIMAL_JAVA = os.path.join(GOC, "server", "src", "data", "Animal.java")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 TRACKER = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/tracker.json"
@@ -71,6 +73,25 @@ PET = {
     832: (585, 0, "Deerling"), 873: (399, 0, "Bidoof"),
 }
 
+# Skin linh thu (real.SkinThuCuoi 0..5, ten TEN[]) -> Pokemon thu cuoi ve khi skin dang hien (P2).
+SKIN = {
+    0: (879, 0, "Copperajah"), 1: (675, 0, "Pangoro"), 2: (716, 0, "Xerneas"),
+    3: (323, 0, "Camerupt"), 4: (745, 0, "Lycanroc"), 5: (483, 0, "Dialga"),
+}
+
+# Hoa hinh pet (data.Pet capHoaHinh 1..5, ten cu "Lan cap n") -> Pokemon (P2). Cap 1-3 dung chung.
+HOA_HINH_PET = {
+    1: (58, 0, "Growlithe"), 2: (58, 0, "Growlithe"), 3: (58, 0, "Growlithe"),
+    4: (59, 0, "Arcanine"), 5: (244, 0, "Entei"),
+}
+
+# Thu cuoi dang hoa hinh (data.Animal.isHoaHinh == 1, anh cu Ky Lan 8965/8966) -> Pokemon (P2).
+HOA_HINH_THU = {0: (244, 0, "Entei")}
+
+# Loai chi dung lam thu cuoi (chi ve dung / chay): PMDCollab chi co Idle + Walk, chap nhan sprite
+# chua du (tai_sprite_pmd.py / DongGoiSprite dung Walk/Idle thay cho dong tac thieu).
+CHI_CAN_DUNG_CHAY = {879}
+
 
 def tracker():
     os.makedirs(BO_NHO, exist_ok=True)
@@ -103,7 +124,12 @@ def main():
         dong.append(["thu_cuoi", hs[ten], ten, dex, shiny, ten_pk])
     for id_, (dex, shiny, ten_pk) in sorted(PET.items()):
         dong.append(["pet_item", id_, "", dex, shiny, ten_pk])
+    for loai, bang in (("skin", SKIN), ("hoa_hinh_pet", HOA_HINH_PET), ("hoa_hinh_thu", HOA_HINH_THU)):
+        for id_, (dex, shiny, ten_pk) in sorted(bang.items()):
+            dong.append([loai, id_, "", dex, shiny, ten_pk])
     for d in dong:
+        if d[0] == "skin" and d[3] in CHI_CAN_DUNG_CHAY:
+            continue
         if t.get("%04d" % d[3], {}).get("sprite_complete", 0) < 1:
             loi.append("dex %d (%s) KHONG co sprite PMD" % (d[3], d[5]))
     dong.sort(key=lambda d: (d[0], d[1]))
@@ -115,10 +141,43 @@ def main():
         f.write("-- SINH TU tools/pokemon/sinh_bang_thu.py - KHONG SUA TAY. Chi doi ten item pet/trung.\n")
         for id_, (dex, shiny, ten_pk) in sorted(PET.items()):
             f.write("UPDATE data_item SET name='%s' WHERE id=%d;\n" % (ten_pk.replace("'", "''"), id_))
-    print("Da ghi %s (%d dong), %s" % (os.path.relpath(RA, GOC), len(dong), os.path.relpath(RA_SQL, GOC)))
+    ghi_sql_anh_xa(dong)
+    print("Da ghi %s (%d dong), %s, %s" % (os.path.relpath(RA, GOC), len(dong), os.path.relpath(RA_SQL, GOC),
+                                          os.path.relpath(RA_SQL_ANH_XA, GOC)))
     for l in loi:
         print("LOI:", l)
     return 1 if loi else 0
+
+
+def ghi_sql_anh_xa(dong):
+    """sql/pokemon_thu_pokemon.sql: bang anh xa (idempotent: CREATE IF NOT EXISTS + REPLACE INTO).
+
+    Server van doc mang Java (ThuPokemon / PetPokemon, test KiemThuPetSql doi chieu bang nay voi Java
+    va CSV); bang SQL la nguon tra cuu cho web / quan tri va la ghi chep chinh thuc cua anh xa.
+    """
+    hang = [(d[0], int(d[1]), int(d[3]), int(d[4]), d[5]) for d in dong]
+    with open(PET_CU, encoding="utf8") as f:
+        for r in csv.DictReader(f):
+            hang.append(("pet_cu", int(r["id_img"]), int(r["dex"]), int(r["shiny"] or 0), r["ten_moi"]))
+    hang.sort(key=lambda h: (h[0], h[1]))
+    with open(RA_SQL_ANH_XA, "w", encoding="utf8", newline="\n") as f:
+        f.write("-- SINH TU tools/pokemon/sinh_bang_thu.py - KHONG SUA TAY (sua bang trong tool roi chay lai).\n")
+        f.write("-- P2: anh xa thu cuoi / pet / skin linh thu / hoa hinh -> Pokemon (dex PMDCollab, shiny).\n")
+        f.write("-- loai: thu_cuoi (id = data.Animal.idImg), pet_item (id = data_item.id), pet_cu (id = PetTemplate.idImg),\n")
+        f.write("--       skin (id = real.SkinThuCuoi 0..5), hoa_hinh_pet (id = cap 1..5), hoa_hinh_thu (id 0).\n")
+        f.write("-- Chay lai bao nhieu lan cung duoc (CREATE IF NOT EXISTS + REPLACE INTO, khong INSERT...SELECT).\n")
+        f.write("-- SO_DONG: %d (test KiemThuPetSql dem lai)\n" % len(hang))
+        f.write("CREATE TABLE IF NOT EXISTS `data_thu_pokemon` (\n"
+                "  `loai` varchar(16) NOT NULL,\n"
+                "  `id` int(11) NOT NULL,\n"
+                "  `dex` smallint(6) NOT NULL,\n"
+                "  `shiny` tinyint(1) NOT NULL DEFAULT 0,\n"
+                "  `ten` varchar(64) NOT NULL,\n"
+                "  PRIMARY KEY (`loai`, `id`)\n"
+                ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;\n")
+        for loai, id_, dex, shiny, ten in hang:
+            f.write("REPLACE INTO `data_thu_pokemon` (`loai`, `id`, `dex`, `shiny`, `ten`) VALUES ('%s', %d, %d, %d, '%s');\n"
+                    % (loai, id_, dex, shiny, ten.replace("'", "''")))
 
 
 if __name__ == "__main__":

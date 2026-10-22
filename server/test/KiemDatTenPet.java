@@ -354,7 +354,7 @@ public final class KiemDatTenPet {
         final int tc = cs.indexOf("DatTenPetGame.phanNghin(self, com.htbb.pokemon.DatTenPet.TAN_CONG)");
         Kiem.dung("Tan cong: TRUOC kepPhanTram", tc > 0 && tc < cs.indexOf("self.attack = ChiSoTrangBiGame.kepPhanTram(self.attack, gocTc);"));
         Kiem.dung("Chi mang: vao chiMangTho (giam dan / tran 40%)", doc("src/real/ChiSoTrangBiGame.java")
-                .contains("GioiHanChiSo.chiMangTho(diem, p.baokich + DatTenPetGame.phanNghin(p, com.htbb.pokemon.DatTenPet.CHI_MANG))"));
+                .contains("+ DatTenPetGame.phanNghin(p, com.htbb.pokemon.DatTenPet.CHI_MANG))")); // cung tong voi danh hieu, truoc tran
         final String ch = doc("src/real/Char.java");
         final int ne = ch.indexOf("DatTenPetGame.phanNghin(this, petUsing, com.htbb.pokemon.DatTenPet.NE_TRANH)");
         Kiem.dung("Ne: trong haveNeTranh (pet bi tat o Moba thi khong tinh), truoc tran 900", ne > ch.indexOf("public int haveNeTranh()")

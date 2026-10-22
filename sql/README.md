@@ -86,6 +86,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
       901..910 viết lại tại chỗ), `data_huong_dan_tan_thu`, Chansey / Snorlax ở 3 làng, sửa chuỗi chính; chạy lại vô hại;
     - `them_the_dat_ten_pet.sql` (ten-pet): thẻ đặt tên Pokémon 1261 (`data_dong_the_ten`, `data_tu_cam_ten`, `tob_pet_dat_ten`,
       `tob_log_dat_ten`, công dụng / 2 nguồn kiếm được / món cửa hàng lượng);
+    - `pokemon_npc_sprite.sql`, `pokemon_thu_pokemon.sql` (p2-tainguyen): ảnh NPC = Pokémon (`data_npc.dex` / `sprite`,
+      `data_npc_su_kien_sprite`), ánh xạ thú cưỡi / pet / skin → Pokémon (`data_thu_pokemon`);
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
 

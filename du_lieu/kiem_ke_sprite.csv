@@ -189,6 +189,7 @@ dex,shiny,dung_cho,trang_thai,dung,chay,danh_gan,danh_xa,trung_don,guc_nga,portr
 471,0,nguoi_choi,OK,Idle 32x40 x6,Walk 32x40 x4,Attack 64x80 x14,Shoot 40x48 x12,Hurt 48x64 x2,Faint 32x40 x4,co
 473,0,thu,OK,Idle 48x48 x9,Walk 48x40 x4,Attack 80x72 x14,Shoot 56x56 x12,Hurt 48x64 x2,Sleep 40x40 x2,co
 477,0,bang_quai,OK,Idle 48x80 x13,Walk 48x72 x4,Attack 72x88 x14,Shoot 56x80 x10,Hurt 48x80 x2,Faint 56x64 x4,co
+483,0,thu,OK,Idle 72x104 x2,Walk 72x104 x4,Attack 96x128 x14,Shoot 72x120 x12,Hurt 80x120 x2,Sleep 64x64 x2,co
 491,0,bang_quai,OK,Idle 40x80 x7,Walk 40x80 x8,Attack 80x104 x11,Shoot 32x80 x24,Hurt 48x96 x2,Faint 40x80 x4,co
 496,0,bang_quai,OK,Idle 32x48 x5,Walk 32x40 x4,Attack 64x80 x10,Shoot 24x40 x10,Hurt 48x56 x2,Sleep 32x32 x2,co
 497,0,bang_quai,OK,Idle 32x48 x2,Walk 40x56 x7,Attack 80x80 x10,Shoot 48x64 x11,Hurt 48x64 x2,Sleep 24x40 x2,co
@@ -214,15 +215,19 @@ dex,shiny,dung_cho,trang_thai,dung,chay,danh_gan,danh_xa,trung_don,guc_nga,portr
 628,1,thu,OK,Idle 32x48 x4,Walk 32x48 x4,Attack 64x72 x14,Shoot 40x56 x12,Hurt 40x56 x2,Sleep 32x32 x2,co
 637,0,bang_quai,OK,Idle 48x56 x7,Walk 48x48 x4,Attack 64x80 x11,Shoot 56x64 x14,Hurt 56x72 x2,Sleep 48x32 x2,co
 667,0,bang_quai,OK,Idle 24x40 x7,Walk 32x40 x7,Attack 64x72 x15,Shoot 32x48 x12,Hurt 32x40 x2,Faint 32x24 x4,co
+675,0,thu,OK,Idle 40x56 x6,Walk 40x56 x4,Attack 88x96 x12,Shoot 48x64 x11,Hurt 56x64 x2,Sleep 40x32 x2,co
 681,0,bang_quai,OK,Idle 32x56 x8,Walk 32x56 x8,Attack 72x96 x14,Shoot 40x56 x12,Hurt 48x72 x2,Sleep 24x56 x6,co
 700,0,nguoi_choi,OK,Idle 32x48 x8,Walk 32x48 x4,Attack 72x88 x14,Shoot 40x56 x12,Hurt 40x64 x2,Sleep 32x24 x2,co
 709,0,bang_quai,OK,Idle 40x56 x10,Walk 40x56 x4,Attack 72x88 x13,Shoot 32x56 x10,Hurt 40x72 x2,Sleep 24x48 x2,co
 711,0,bang_quai,OK,Idle 24x56 x8,Walk 24x56 x10,Attack 56x80 x15,Shoot 40x64 x14,Hurt 40x72 x2,Sleep 24x48 x4,co
+716,0,thu,OK,Idle 56x120 x6,Walk 64x120 x4,Attack 104x136 x10,Shoot 72x136 x12,Hurt 64x136 x2,Sleep 64x88 x2,co
 739,0,bang_quai,OK,Idle 40x40 x3,Walk 40x40 x4,Attack 80x64 x14,Shoot 48x48 x13,Hurt 32x56 x2,Sleep 32x32 x2,co
+745,0,thu,OK,Idle 48x56 x14,Walk 48x56 x4,Attack 72x80 x10,Shoot 56x56 x12,Hurt 56x56 x2,Faint 48x48 x4,co
 750,0,bang_quai,OK,Idle 56x64 x14,Walk 48x64 x4,Attack 80x96 x10,Shoot 56x80 x12,Hurt 64x72 x2,Sleep 48x24 x2,co
 750,1,bang_quai,OK,Idle 56x64 x14,Walk 48x64 x4,Attack 80x96 x10,Shoot 56x80 x12,Hurt 64x72 x2,Sleep 48x24 x2,co
 781,0,bang_quai,OK,Idle 48x96 x8,Walk 48x96 x8,Attack 96x96 x13,Shoot 40x88 x12,Hurt 72x104 x2,Sleep 32x80 x8,co
 831,0,thu,OK,Idle 32x40 x6,Walk 32x32 x4,Attack 72x80 x10,Shoot 40x48 x11,Hurt 40x48 x2,Faint 32x24 x4,co
+879,0,thu,OK,Idle 64x72 x1,Walk 64x72 x4,Walk 64x72 x4,Walk 64x72 x4,Idle 64x72 x1,Idle 64x72 x1,co
 896,0,thu,OK,Idle 48x72 x14,Walk 40x72 x4,Attack 80x96 x10,Shoot 48x80 x12,Hurt 40x80 x2,Sleep 32x56 x2,co
 897,0,thu,OK,Idle 40x56 x14,Walk 40x56 x4,Attack 72x88 x10,Shoot 48x72 x12,Hurt 40x64 x2,Sleep 40x32 x2,co
 901,0,bang_quai,OK,Idle 48x48 x8,Walk 48x48 x4,Attack 80x80 x13,Shoot 56x72 x12,Hurt 48x72 x2,Sleep 40x40 x2,co
