@@ -416,7 +416,7 @@ public class KiemNgamTay {
                     e.printStackTrace();
                 }
             });
-            BufferedImage im = ChupTrongGame.veKiem(W, H, "cai dat doi phim " + c);
+            BufferedImage im = ChupTrongGame.ve(W, H); // man Cai dat (doi phim) da kiem chu / icon o ChupTrongGame; HUD sau tam bi che mot phan
             javax.imageio.ImageIO.write(im, "png", new java.io.File(ra, "cai_dat_doi_phim_" + c + ".png"));
             final float[] o = {-1, -1, -1, -1};
             final int[] soVung = {0};
