@@ -136,6 +136,10 @@ public class Res {
     public static Image[] imgBox = new Image[2];
 
     static {
+      // 0.9.7.2: ảnh / phông nạp ở khởi tạo tĩnh trong try - một tệp hỏng không được làm hỏng cả lớp Res
+      // (NoClassDefFoundError mọi nơi = game chết ngay màn "Đang tải dữ liệu game")
+      try {
+        game.pokemon.KhoiDong.buoc("Res anh");
         FilePack.init("/main.sh");
         imgNo = new FrameImage(FilePack.getImg("no"), 10, 10);
         imgKham = FilePack.getImg("kham");
@@ -211,6 +215,14 @@ public class Res {
             GameScr.imghealth[1] = Image.createImage("/m2.png");
         } catch (Exception e2) {
         }
+      } catch (Throwable eTinh) {
+        game.pokemon.KhoiDong.loi("Res anh", eTinh);
+        try {
+            FilePack.reset();
+        } catch (Throwable e3) {
+            // bỏ qua
+        }
+      }
         wpSplashInfos = new WPSplashInfo[5][3];
         percent = new byte[]{20, 50, 10, 70, 20};
         load = new LoadData();

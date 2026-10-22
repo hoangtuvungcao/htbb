@@ -448,6 +448,7 @@ public class Session_ME implements ISession {
                 bArr[i4] = (byte) (bArr[i4] ^ Session_ME.this.key[i3]);
             }
             Session_ME.this.getKeyComplete = true;
+            game.pokemon.KhoiDong.guiNeuCo();   // 0.9.7.2: lỗi khởi động (nếu có) về nhật ký máy chủ
         }
 
         private Message readMessage() throws Exception {

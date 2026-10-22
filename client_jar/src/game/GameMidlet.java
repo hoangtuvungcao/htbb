@@ -34,7 +34,11 @@ public class GameMidlet extends MIDlet {
 
     public GameMidlet() {
         instance = this;
-        start();
+        try {
+            start();
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("start", e);   // 0.9.7.2
+        }
         Res.load.isInitGame = true;
     }
 
@@ -45,17 +49,60 @@ public class GameMidlet extends MIDlet {
     }
 
     public void load() {
-        gameCanvas.init();
-        gameCanvas.sizeChanged(0, 0);
-        Res.loadTreeImage();
-        Res.loadMonster();
-        Res.loadPart2();
-        Session_ME.gI().setHandler(MessageHandler.gI());
-        GameService.gI().setSession(Session_ME.gI());
-        Res.resetImgMonsTemp();
-        Tilemap.loadMap(0, null);
-        ServerListScr.gI().switchToMe();
+        // 0.9.7.2: mỗi bước nạp trong try riêng + tên bước cho chẩn đoán (game.pokemon.KhoiDong); bước hỏng thì đi
+        // tiếp - màn tải khởi động không bao giờ kẹt vì một ảnh / dữ liệu lỗi
+        String[] ten = {"init", "sizeChanged", "loadTreeImage", "loadMonster", "loadPart2", "mang", "resetImgMonsTemp", "loadMap0", "ServerList"};
+        for (int i = 0; i < ten.length; i++) {
+            game.pokemon.KhoiDong.buoc(ten[i]);
+            try {
+                switch (i) {
+                    case 0:
+                        gameCanvas.init();
+                        break;
+                    case 1:
+                        gameCanvas.sizeChanged(0, 0);
+                        break;
+                    case 2:
+                        Res.loadTreeImage();
+                        break;
+                    case 3:
+                        Res.loadMonster();
+                        break;
+                    case 4:
+                        Res.loadPart2();
+                        break;
+                    case 5:
+                        Session_ME.gI().setHandler(MessageHandler.gI());
+                        GameService.gI().setSession(Session_ME.gI());
+                        break;
+                    case 6:
+                        Res.resetImgMonsTemp();
+                        break;
+                    case 7:
+                        Tilemap.loadMap(0, null);
+                        break;
+                    default:
+                        ServerListScr.gI().switchToMe();
+                        break;
+                }
+            } catch (Throwable e) {
+                game.pokemon.KhoiDong.loi(ten[i], e);
+                if (e instanceof OutOfMemoryError) {
+                    game.pokemon.BoNho.giai("khoi dong " + ten[i]);
+                }
+            }
+        }
         Canvas.isLoad = false;
+        game.pokemon.KhoiDong.buoc("xong");
+        game.pokemon.KhoiDong.xong = true;
+        try {
+            napAgent();
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("agent", e);
+        }
+    }
+
+    private void napAgent() {
         if (isLoadAgentPro) {
             agent = RMS.loadRMSString("agent");
             if (agent == null) {
