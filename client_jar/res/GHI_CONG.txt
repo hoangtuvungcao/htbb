@@ -246,6 +246,52 @@ CHUNSOFT, 3P1C, <SKREE>, anomalocaris, Anon, baronessfaron, bwappi, Caitemis, De
 #0897: baronessfaron
 #0901: Emmuffin, baronessfaron
 
+# Sprite ngoài PMDCollab (42 loài)
+Smogon Sprite Project - https://www.smogon.com/forums/threads/smogon-sprite-project.3647722/ (dùng phi lợi nhuận, ghi công người vẽ / dự án).
+Gen 5: sprite gốc Pokémon Black / White (Game Freak / Nintendo). Ảnh trận đấu giữ nguyên điểm ảnh, đổi sang 4 hướng.
+#0514 Simisear: Game Freak (Pokémon Black / White)
+#0516 Simipour: Game Freak (Pokémon Black / White)
+#0520 Tranquill: Game Freak (Pokémon Black / White)
+#0522 Blitzle: Game Freak (Pokémon Black / White)
+#0523 Zebstrika: Game Freak (Pokémon Black / White)
+#0538 Throh: Game Freak (Pokémon Black / White)
+#0558 Crustle: Game Freak (Pokémon Black / White)
+#0564 Tirtouga: Game Freak (Pokémon Black / White)
+#0565 Carracosta: Game Freak (Pokémon Black / White)
+#0591 Amoonguss: Game Freak (Pokémon Black / White)
+#0592 Frillish: Game Freak (Pokémon Black / White)
+#0616 Shelmet: Game Freak (Pokémon Black / White)
+#0626 Bouffalant: Game Freak (Pokémon Black / White)
+#0668 Pyroar: Arkeis (front), Layell (back)
+#0732 Trumbeak: leParagon
+#0735 Gumshoos: leParagon
+#0756 Shiinotic: G.E.Z.
+#0765 Oranguru: leParagon
+#0837 Rolycoly: Blaquaza, leParagon (back)
+#0838 Carkol: Spook, leParagon
+#0839 Coalossal: Spook, leParagon, TheAetherPlayer (back shiny)
+#0866 Mr. Rime: G.E.Z., TheAetherPlayer (shiny)
+#0878 Cufant: KingOfThe-X-Roads, leParagon
+#0893 Zarude: leParagon
+#0931 Squawkabilly: KingOfThe-X-Roads
+#0942 Maschiff: KingOfThe-X-Roads
+#0943 Mabosstiff: Smogon Sprite Project
+#0944 Shroodle: leParagon
+#0947 Brambleghast: KingOfThe-X-Roads
+#0949 Toedscruel: Mintly
+#0950 Klawf: KyleDove
+#0954 Rabsca: Smogon Sprite Project
+#0956 Espathra: Travis
+#0962 Bombirdier: KingOfThe-X-Roads
+#0973 Flamigo: Katten
+#0986 Brute Bonnet: Katten
+#0993 Iron Jugulis: G.E.Z.
+#1001 Wo-Chien: G.E.Z.
+#1002 Chien-Pao: Sphex
+#1014 Okidogi: Katten
+#1022 Iron Boulder: Mintly
+#1023 Iron Crown: Mintly
+
 # Hiệu ứng chiêu và vật thể
 PMDCollab RawAsset - https://github.com/PMDCollab/RawAsset (thư mục Particle, Object, Item).
 Trích từ Pokémon Mystery Dungeon gốc (Chunsoft / Nintendo), chỉ dùng phi thương mại.

@@ -54,7 +54,14 @@ def doc_nhap():
         for d in open(f, encoding="utf-8").read().splitlines()[1:]:
             p = d.split(",")
             if len(p) >= 4:
-                kq[p[0]] = "bản nháp PMDCollab, " + p[1] if p[3] == "1" else "dạng %s, %s" % (p[2], p[1])
+                if p[1] == "smogon":
+                    kq[p[0]] = "Smogon Sprite Project, sprite trận đấu đổi sang 4 hướng"
+                elif p[1] == "bw_goc":
+                    kq[p[0]] = "sprite gốc Pokémon Black / White (Game Freak), đổi sang 4 hướng"
+                elif p[1] == "cong_dong":
+                    kq[p[0]] = "sprite cộng đồng, đổi sang 4 hướng"
+                else:
+                    kq[p[0]] = "bản nháp PMDCollab, " + p[1] if p[3] == "1" else "dạng %s, %s" % (p[2], p[1])
     return kq
 
 
@@ -92,6 +99,12 @@ def main():
         "Bản sắc màu (shiny) là sprite sắc màu của chính PMDCollab, không tự đổi màu.",
         "Loài ghi (bản nháp ...) dùng sprite CHƯA HOÀN THIỆN của PMDCollab; (dạng ...) dùng một dạng khác của chính loài đó.",
         "Động tác còn thiếu dùng lại khung của chính người vẽ (CopyOf), không vẽ thêm.",
+        "",
+        "# Sprite ngoài PMDCollab (42 loài PMDCollab chưa có; chủ game chấp nhận, đang xin giấy phép; du_lieu/loai/sprite_ngoai.csv)",
+        "Smogon Sprite Project - https://www.smogon.com/forums/threads/smogon-sprite-project.3647722/ (dùng phi lợi nhuận, ghi công người vẽ / dự án)",
+        "Bảng ghi công: Gen 6 https://docs.google.com/spreadsheets/d/1Gn0UORn-unvcbUeQhQdEBz0ADNcH49BZZqQ1dpXm9eo ; Gen 7 https://docs.google.com/spreadsheets/d/1FMcHbSKEWZc7v2Ur4cyJjT_NhO0gqXyU9kDhsOQhlBQ ; Gen 8 https://docs.google.com/spreadsheets/d/1acgzAjh0dnFRQnjZu8kSjS177rKCzpFfEHRLtwuuXRU ; Gen 9 https://docs.google.com/spreadsheets/d/1MCjDktTOOFjLKM5C-RW6SfBQGkjlxDSCZAZDma_ItuA",
+        "Gen 5: sprite gốc Pokémon Black / White (Game Freak / Nintendo), bản lưu trên https://play.pokemonshowdown.com/sprites/gen5/",
+        "Ảnh trận đấu (trước / sau) giữ nguyên điểm ảnh, thu nhỏ lân cận gần nhất, lật gương cho hướng phải / trái-sau.",
         "Nhân vật dựa trên Pokémon Mystery Dungeon (Chunsoft / Spike Chunsoft).",
         "",
         "# Người vẽ (%d)" % len(nguoi),

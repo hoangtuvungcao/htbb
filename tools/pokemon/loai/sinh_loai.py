@@ -334,6 +334,14 @@ def main():
         if l["dot_mo"] in dm["dang_mo"] and not co_hinh:
             loi.append("loai %d (%s) thuoc dot dang mo nhung khong co hinh (jar / goi may chu)" % (dex, l["ten"]))
 
+    # ---- vong xoay: mo CA HO (dang cuoi T5, em be co hinh) cua loai trong Vung hoang da - chi Pokedex / tien hoa Hop PC,
+    # KHONG xuat hien ngoai troi (khong co dong noi song / xoay vong). Ho T6 (huyen thoai) khong mo.
+    ho_xoay = set(l["dex_goc"] for l in L.values() if l.get("xoay", -1) >= 0)
+    for dex, l in L.items():
+        sp = l["sprite"]
+        if not l["bat"] and l["dex_goc"] in ho_xoay and l["bac"] < 6 and (sp["trong_jar"] or sp["goi_server"]):
+            l["bat"] = 1
+
     # ---- moi truong
     v = cfg["vung"]
     for dex, l in L.items():
@@ -561,7 +569,7 @@ def main():
         if g not in ho_thanh_vien:
             loi.append("chieu dac trung %s: ho %d khong co" % (val[0], g))
             continue
-        if max(L[x]["bac"] for x in ho_thanh_vien[g]) < 4 and g not in khoi_dau:
+        if max(L[x]["bac"] for x in ho_thanh_vien[g]) < 4 and g not in khoi_dau and g not in cc.get("dac_trung_ngoai_le", []):
             loi.append("chieu dac trung %s cho ho %d bac %d (chi T4-T6 / khoi dau)" % (val[0], g, L[g]["bac"]))
         tv = ho_thanh_vien[g]
         cuoi = [x for x in tv if L[x]["cuoi"] and val[2] in (L[x]["he1"], L[x]["he2"])]

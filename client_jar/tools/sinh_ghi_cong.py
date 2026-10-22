@@ -15,6 +15,7 @@ APK (client_jar/res là assets) và bản PC (Resources/ghicong + chép cạnh .
 Định dạng ra (UTF-8): dòng "# ..." = tiêu đề mục, dòng trống = cách đoạn, còn lại = chữ thường.
 Chỉ dùng chữ font game vẽ được (Latin + tiếng Việt); ký tự khác bị bỏ.
 """
+import csv
 import os
 import re
 import sys
@@ -96,6 +97,21 @@ def doc_sprite(duong, ten):
     return loai, duoi
 
 
+def dong_sprite_ngoai(goc):
+    """Muc ghi cong sprite ngoai PMDCollab (du_lieu/loai/sprite_ngoai.csv - 42 loai PMDCollab chua co)."""
+    f = os.path.join(goc, "du_lieu", "loai", "sprite_ngoai.csv")
+    if not os.path.exists(f):
+        return []
+    with open(f, encoding="utf-8") as t:
+        ds = list(csv.DictReader(t))
+    r = ["# Sprite ngoài PMDCollab (%d loài)" % len(ds),
+         "Smogon Sprite Project - https://www.smogon.com/forums/threads/smogon-sprite-project.3647722/ (dùng phi lợi nhuận, ghi công người vẽ / dự án).",
+         "Gen 5: sprite gốc Pokémon Black / White (Game Freak / Nintendo). Ảnh trận đấu giữ nguyên điểm ảnh, đổi sang 4 hướng."]
+    for d in ds:
+        r.append("#%04d %s: %s" % (int(d["dex"]), d["ten"], d["nguoi_ve"]))
+    return r + [""]
+
+
 def main():
     if len(sys.argv) < 3:
         raise SystemExit(__doc__)
@@ -128,6 +144,8 @@ def main():
     for dex, ds in loai:
         a("#%s: %s" % (dex, ", ".join(ds) if ds else "?"))
     a("")
+    for d in dong_sprite_ngoai(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))):
+        a(d)
     a("# Hiệu ứng chiêu và vật thể")
     a("PMDCollab RawAsset - https://github.com/PMDCollab/RawAsset (thư mục Particle, Object, Item).")
     a("Trích từ Pokémon Mystery Dungeon gốc (Chunsoft / Nintendo), chỉ dùng phi thương mại.")

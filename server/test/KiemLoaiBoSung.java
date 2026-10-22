@@ -177,9 +177,24 @@ public final class KiemLoaiBoSung {
                 }
             }
         }
-        // 64 loai PMDCollab chua co sprite hoan chinh: 22 dung ban nhap / dang khac PMDCollab (#879 dong san trong jar)
-        // -> 42 loai chua co hinh trong game (chi chan dung Pokedex)
-        Kiem.bang("so loai chua co sprite (chi chan dung Pokedex)", Integer.valueOf(42), Integer.valueOf(khongHinh));
+        // 64 loai PMDCollab chua co sprite hoan chinh: 22 ban nhap / dang khac PMDCollab, 42 sprite tran dau Smogon Sprite
+        // Project / Black-White goc doi sang 4 huong (du_lieu/loai/sprite_ngoai.csv) -> moi loai deu co hinh trong game
+        Kiem.bang("so loai chua co sprite", Integer.valueOf(0), Integer.valueOf(khongHinh));
+        final BangSql spr = DayDu.bang("data_loai_sprite");
+        int smogon = 0, bw = 0;
+        for (int r = 0; spr != null && r < spr.soDong(); r++) {
+            final String ng = spr.chu(r, "nguon_sprite");
+            if ("smogon".equals(ng) && spr.so(r, "ban_nhap") == 1) {
+                smogon++;
+            } else if ("bw_goc".equals(ng) && spr.so(r, "ban_nhap") == 1) {
+                bw++;
+            }
+        }
+        Kiem.bang("nguon_sprite smogon (Gen 6-9, ban_nhap = 1)", Integer.valueOf(29), Integer.valueOf(smogon));
+        Kiem.bang("nguon_sprite bw_goc (Gen 5, ban_nhap = 1)", Integer.valueOf(13), Integer.valueOf(bw));
+        final String gc = new String(Files.readAllBytes(new File("map/loai/GHI_CONG.txt").toPath()), "UTF-8");
+        Kiem.dung("GHI_CONG ghi Smogon Sprite Project + nguoi ve (KingOfThe-X-Roads, leParagon)", gc.contains("Smogon Sprite Project")
+                && gc.contains("KingOfThe-X-Roads") && gc.contains("leParagon") && gc.contains("Black / White"));
         Kiem.bang("loai chua co sprite khong co goi gia", Integer.valueOf(0), Integer.valueOf(khongHinhCoGoi));
         int chanDung = 0;
         for (int dex = 1; dex <= LoaiDuLieu.SO_LOAI; dex++) {

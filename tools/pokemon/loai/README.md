@@ -60,18 +60,19 @@ java -Djava.awt.headless=true -cp $B DongGoiLoai --kiem     # kiểm mọi gói 
   - **bản nháp** (`sprite_complete = 0` nhưng repo có tệp, 18): #593, #618, #683, #733, #865, #868, #874, #879, #883,
     #917, #929, #945, #948, #968, #990, #1020, #1021, #1025. Động tác thiếu dùng lại khung của chính người vẽ bằng
     `<CopyOf>` (vd Walk = Idle) - không vẽ thêm; 9 loài chỉ có Idle (đi lại bằng khung đứng).
-  Còn **42 loài** không có hình trong game (chỉ chân dung tĩnh, không bao giờ ra ngoài trời): #514 Simisear, #516 Simipour,
-  #520 Tranquill, #522 Blitzle, #523 Zebstrika, #538 Throh, #558 Crustle, #564 Tirtouga, #565 Carracosta, #591 Amoonguss,
-  #592 Frillish, #616 Shelmet, #626 Bouffalant, #668 Pyroar, #732 Trumbeak, #735 Gumshoos, #756 Shiinotic, #765 Oranguru,
-  #837 Rolycoly, #838 Carkol, #839 Coalossal, #866 Mr. Rime, #878 Cufant, #893 Zarude, #931 Squawkabilly, #942 Maschiff,
-  #943 Mabosstiff, #944 Shroodle, #947 Brambleghast, #949 Toedscruel, #950 Klawf, #954 Rabsca, #956 Espathra,
-  #962 Bombirdier, #973 Flamigo, #986 Brute Bonnet, #993 Iron Jugulis, #1001 Wo-Chien, #1002 Chien-Pao, #1014 Okidogi,
-  #1022 Iron Boulder, #1023 Iron Crown (chỉ có ảnh nháp trên Discord, không có tệp trong repo).
+  42 loài còn lại (không có tệp trong repo PMDCollab) dùng **sprite ngoài** (chủ game duyệt 22/10/2026, đang xin giấy phép;
+  `du_lieu/loai/sprite_ngoai.csv`: nguồn, người vẽ, URL): 29 loài Gen 6–9 sprite trận đấu **Smogon Sprite Project**
+  (`nguon_sprite = 'smogon'`, ghi công từng người vẽ theo bảng của dự án), 13 loài Gen 5 sprite **gốc Black / White**
+  (`'bw_goc'`), đều `ban_nhap = 1` để thay khi có hình PMD. `ChuyenSpriteChienDau.java` đổi ảnh trước / sau 96×96 thành thư
+  mục PMD (trước = xuống / trái, lật = phải, sau = lên; Idle nhún 1 px, Walk 4 khung; thu nhỏ lân cận gần nhất về cỡ PMD
+  12 + 20·√(chiều cao m); Offsets / Shadow sinh từ điểm ảnh). Ảnh đầu vào đặt sẵn ở thư mục scratchpad (không tải trong
+  công cụ). **Cả 1.025 loài có hình trong game.**
   `ChonLoaiHoangDa` không bao giờ chọn loài `trang_thai = 0`; `trang_thai = 1` khi có gói / jar.
 - **Mở loài (loai-bo-sung):** đợt B Gen 3 (Hoenn, cấp 83–100) + Vùng hoang dã xoay vòng Gen 4–9 (`loai_duyet.json`
   `xoay_vong`, `docs/thiet-ke-game.md` 2.6b). Tải + đóng gói: `tai_sprite_loai.py 252 1025` (+ `--shiny`),
-  `tai_sprite_nhap.py` (+ `--shiny`), `DongGoiLoai 252 1025` (+ `--shiny`). Đã mở theo thế hệ: 151 / 100 / 135 / 84 / 129 /
-  64 / 56 / 77 / 76 = 872 loài; gói 983 thường + 939 sắc màu (≈ 21,7 MB máy chủ).
+  `tai_sprite_nhap.py` (+ `--shiny`), `ChuyenSpriteChienDau.java`, `DongGoiLoai 252 1025` (+ `--shiny`). Đã mở theo thế hệ:
+  151 / 100 / 135 / 88 / 143 / 66 / 61 / 84 / 88 = 916 loài (Gen 4–9: loài Vùng hoang dã + cả họ của chúng, dạng cuối T5
+  chỉ để tiến hoá trong Hộp PC, không ra ngoài trời); gói 1.025 thường + 981 sắc màu (≈ 22,4 MB máy chủ).
 - Nguồn khác: không có kho sprite Pokémon nào khác có giấy phép tương thích CC BY-NC (sprite chính thức / bản rip game
   và kho fan không ghi giấy phép đều không dùng được), nên không lấp bằng nguồn khác.
 

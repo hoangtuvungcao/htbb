@@ -323,8 +323,8 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
   địa lý - Sinnoh → Unova → Kalos → Alola → Galar → Paldea, chu kỳ 6 tuần - xuất hiện thêm trên 6 bản đồ quái cấp 52–84
   (Goldenrod #18, Ecruteak #19, Violet #20, tàu S.S. Anne #22, Olivine #24, Mahogany #28), theo vùng sinh thái của bản đồ,
   dải cấp ánh xạ vào 50–85 (`loai_duyet.json` `xoay_vong` → bảng `data_loai_xoay_vong*`). Chỉ loài **có sprite thật**,
-  bậc T1–T4, không huyền thoại / huyền ảo / UB / Nghịch lý, không dạng em bé (486 loài; `bat = 1`, Pokédex "đã xuất
-  hiện"). Tỉ lệ từng bậc và số quái **không đổi**: vòng xoay chỉ thêm loài vào danh sách ứng viên của bậc đã tung
+  bậc T1–T4, không huyền thoại / huyền ảo / UB / Nghịch lý, không dạng em bé (520 loài; 208 ở nhóm cấp thấp). Cả họ của các loài này (kể cả
+  dạng cuối T5 như Garchomp, em bé) có `bat = 1` để tiến hoá trong Hộp PC, nhưng chỉ loài vòng xoay ra ngoài trời. Tỉ lệ từng bậc và số quái **không đổi**: vòng xoay chỉ thêm loài vào danh sách ứng viên của bậc đã tung
   (`ChonLoaiHoangDa.chon(..., them)`). Lịch hiện ở trang Tin tức (`/api/vung-hoang-da`) và thẻ Pokédex web.
   **Nhóm cấp thấp** (người mới): cùng lịch, trên 4 bản đồ quái cấp 6–39 (Kanto #4, #7, #9, #13), CHỈ dạng đầu (giai đoạn
   1, không tiến hoá / em bé), bậc T1–T3, dải cấp 5–40 (`xoay_vong.ban_do_thap`, `data_loai_xoay_vong.nhom = 1`).
@@ -333,7 +333,12 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 - **Chiêu đặc trưng** thêm 50 họ (Gen 3–9: dòng khởi đầu, họ T4–T6 đã mở - Bagon, Beldum, Gible, Deino, Goomy, Jangmo-o,
   Dreepy, Frigibax, hoá thạch, huyền thoại Gen 3) = 75 chiêu đặc trưng; tên tiếng Việt tự đặt, dùng hiệu ứng có sẵn (đổi
   màu theo hệ), cùng khuôn `vai_tro.dac_trung` (sát thương 200%, hồi 6 giây, 10 PP). Họ dưới T4 (Absol, Aggron, Flygon…)
-  không có chiêu đặc trưng theo luật 4.2.
+  không có chiêu đặc trưng theo luật 4.2 - **ngoại lệ chủ game duyệt**: Absol, họ Aron (Aggron), họ Trapinch (Flygon)
+  (`loai_duyet.json` `chieu.dac_trung_ngoai_le`) = 78 chiêu đặc trưng.
+- **Sprite ngoài PMDCollab** (chủ game duyệt, đang xin giấy phép): 42 loài PMDCollab chưa có dùng sprite trận đấu Smogon Sprite
+  Project (29 loài Gen 6–9) / sprite gốc Black–White (13 loài Gen 5), đổi sang 4 hướng (trước = xuống / trái, lật = phải,
+  sau = lên; nhún 1 px làm đi; thu nhỏ lân cận gần nhất) bằng `tools/pokemon/loai/ChuyenSpriteChienDau.java`, đánh dấu
+  `data_loai_sprite.nguon_sprite = 'smogon' / 'bw_goc'`, `ban_nhap = 1` để thay sau. **Cả 1.025 loài có hình trong game.**
 - **Bậc loài T1–T6** (gốc bắt 400 / 250 / 120 / 60 / 25 ‰, T6 chỉ sau đột kích): luật tự động theo giai đoạn + tổng chỉ
   số nền (giả huyền thoại, hoá thạch, Eevee, khởi đầu → T4; dạng cuối giả huyền thoại → T5; huyền thoại / huyền ảo / UB /
   Nghịch lý → T6) rồi ghi đè tay.
@@ -357,8 +362,7 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 - **Mô tả Pokédex:** 1.025 mô tả tiếng Việt tự viết (`data_loai.mo_ta`, nguồn `tools/pokemon/loai/mo_ta_loai.json`) hiện
   ở thẻ Pokédex trong game (đuôi gói `-121` kiểu 5) và trang web `/pokedex/<dex>`.
 - **64 loài chưa có sprite PMDCollab hoàn chỉnh**: 22 dùng **bản nháp** / **dạng khác** của chính PMDCollab (ghi công,
-  nhãn "bản nháp"; `data_loai_sprite.ban_nhap`, `nguon_sprite`); còn **42 loài** chỉ có chân dung Pokédex tĩnh (web),
-  trong game là bóng, không bao giờ xuất hiện ngoài trời (danh sách: `tools/pokemon/loai/README.md`).
+  nhãn "bản nháp"; `data_loai_sprite.ban_nhap`, `nguon_sprite`); 42 loài còn lại dùng sprite ngoài (mục dưới).
 
 ### 2.7 Hiển thị Pokémon trên client
 
