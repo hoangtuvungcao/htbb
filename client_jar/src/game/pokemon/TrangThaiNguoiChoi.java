@@ -19,7 +19,10 @@ import network.Message;
  *   thay đổi client đoán trước (trừ bình, cộng HP khi bấm bình, trừ xu khi bấm mua) -> bị từ chối thì tự trả lại.
  *
  * Định dạng -105: byte phiên bản (1), byte kiểu thao tác, int hp, int maxhp, int mp, int maxmp, long xu, int lượng,
- * int lượng khoá, short cấp, long exp, byte n, (byte id bình, int số) x n, short số món trong túi, short số món đang mặc.
+ * int lượng khoá, short cấp, long exp, byte n, (byte id bình, int số) x n, short số món trong túi, short số món đang mặc;
+ * 0.9.7 (máy chủ mới NỐI THÊM, máy chủ cũ không có - đọc khi còn byte): short oDaMo (sức chứa hành trang), short
+ * oToiDaVe (trần mở bằng vé / xu), byte oMoiVe (+ô mỗi vé), int giaXuBuocKe (giá xu lần mở kế, -1 = hết), int soVe,
+ * short idVe (id nguyên liệu của vé), byte loaiVe (1 = nguyên liệu). Lệnh mở rộng: {@link #LENH_MO_RONG} (-107).
  */
 public final class TrangThaiNguoiChoi {
     public static final int LENH = -105;
@@ -35,6 +38,32 @@ public final class TrangThaiNguoiChoi {
     /** Trạng thái server ở gói -105 cuối (kiểm thử / chẩn đoán). */
     public static int soGoi, kieuCuoi = -1, hpMay, maxhpMay, mpMay, maxmpMay, luongMay, luongKhoaMay, capMay, soTuiMay, soMacMay;
     public static long xuMay, expMay;
+    /** 0.9.7 hành trang: sức chứa (-1 = máy chủ cũ chưa gửi), trần mở bằng vé / xu, ô mỗi vé, giá xu lần kế, số vé, id vé */
+    public static int oDaMo = -1, oToiDaVe = -1, oMoiVe = 10, giaXuMoRong = -1, soVe, idVe = -1, loaiVe = -1;
+    /** C->S mở rộng hành trang: byte kieu 0 hỏi trạng thái, 1 dùng vé, 2 mua bằng xu */
+    public static final int LENH_MO_RONG = -107;
+
+    /** Sức chứa hành trang (ô): gói -105 mới, không có thì 42 x số trang (gói thông tin 3). */
+    public static int sucChua(MainChar mc) {
+        if (oDaMo > 0) {
+            return oDaMo;
+        }
+        return 42 * Math.max(1, mc == null ? 1 : mc.limItemBag);
+    }
+
+    /** Trần ô hiện ở lưới (ô khoá cuối lưới tới đây). */
+    public static int tran(MainChar mc) {
+        return Math.max(sucChua(mc), oToiDaVe > 0 ? oToiDaVe : sucChua(mc));
+    }
+
+    /** Gửi -107 (kiểu 0 hỏi, 1 dùng vé, 2 mua xu). */
+    public static void guiMoRong(int kieu) {
+        try {
+            game.networklogic.GameService.gI().moRongTui(kieu);
+        } catch (Throwable e) {
+            // chưa nối máy chủ
+        }
+    }
     public static final int[] binhMay = new int[256];
 
     private TrangThaiNguoiChoi() {
@@ -93,6 +122,25 @@ public final class TrangThaiNguoiChoi {
         }
         soTuiMay = r.readShort();
         soMacMay = r.readShort();
+        if (r.available() >= 2 + 2 + 1 + 4 + 4 + 2 + 1) {
+            int dm = r.readShort();
+            int td = r.readShort();
+            int mv = r.readByte();
+            int gx = r.readInt();
+            int sv = r.readInt();
+            int iv = r.readShort();
+            int lv = r.readByte();
+            if (oDaMo != dm || soVe != sv || giaXuMoRong != gx) {
+                doiCuoi |= TUI;
+            }
+            oDaMo = dm;
+            oToiDaVe = td;
+            oMoiVe = mv;
+            giaXuMoRong = gx;
+            soVe = sv;
+            idVe = iv;
+            loaiVe = lv;
+        }
         soGoi++;
         if (mc == null) {
             return;

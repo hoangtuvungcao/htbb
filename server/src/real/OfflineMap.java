@@ -342,6 +342,13 @@ public class OfflineMap extends Map {
                   return;
                }
 
+               // 19/10/2026: kiem tui nguoi MUA truoc khi rut mon khoi nguoi ban (truoc day khong kiem -> tran tui).
+               // (Ngoc - type 1 - gop vao chong co san, khong chan o day.)
+               if (type == 0 && player.isFullInventory()) {
+                  player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                  return;
+               }
+
                if ((item = npcSell[player.inCountry][idNpc - 11].getOneItemOfUser(shopId, p, itemID, type)) != null) {
                   // Bo "type == 0 &&": ngoc (type == 1) dat rieng cho mot nguoi cung phai duoc
                   // kiem lai o day, khong chi luc gui yeu cau ban dau (doBuyItemOfUser) - truoc
@@ -550,6 +557,11 @@ public class OfflineMap extends Map {
 
    protected void doGetItemFromBag(Char player, short itemID) {
       if (player.isPutItem2Bag) {
+         // 19/10/2026: lay do tu kho ra hanh trang phai con o trong (truoc day khong kiem -> tran tui).
+         if (player.isFullInventory()) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+            return;
+         }
          for (int i = 0; i < player.bItem.size(); i++) {
             Item item = (Item)player.bItem.get(i);
             if (item.id == itemID) {
@@ -1251,14 +1263,16 @@ public class OfflineMap extends Map {
                               || ItemLuckyDraw.isChoi(item.getTemplate().id)
                         )
                         && !isTheBaiLinhDanhThue(t)) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể bán1", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này không bán được.", ""));
                         return;
                      }
 
                      // chong clone: vat pham KHOA (mua bang luong khoa, qua nhiem vu...) khong doi ra xu o NPC.
                      // [khoa-khi-mac] tru do CHI khoa vi da mac (Item.laKhoaDoMac): truoc khi mac von ban NPC duoc.
-                     if (!item.laKhoaDoMac() && item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm khoá không bán cho NPC lấy xu được (chỉ dùng hoặc vứt bỏ).", ""));
+                     // 0.9.8: do KHOA ban NPC duoc o GIA THAP (com.htbb.pokemon.BanDoKhoa, mac dinh 15% gia NPC thuong).
+                     final boolean giaThap = !item.laKhoaDoMac() && item.lock == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa();
+                     if (giaThap && !com.htbb.pokemon.BanDoKhoa.bat()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm khoá không bán được.", ""));
                         return;
                      }
 
@@ -1273,7 +1287,10 @@ public class OfflineMap extends Map {
                         if (com.htbb.pokemon.LauDai.bat()) {
                            xu = com.htbb.pokemon.KinhTeLauDai.giaBanNpc(item.getTemplate().price);
                         }
-                        player.addXu(xu, "offline map 4");
+                        if (giaThap) {
+                           xu = com.htbb.pokemon.BanDoKhoa.gia(xu);
+                        }
+                        player.addXu(xu, giaThap ? com.htbb.pokemon.BanDoKhoa.LOG_BAN : "offline map 4");
                         player.removeIDItem(item.id);
                         Database.instance
                            .saveLogItemSellShop(
@@ -1289,8 +1306,11 @@ public class OfflineMap extends Map {
                                  + "|"
                                  + item.getAttribute()
                                  + "_"
-                                 + (item.getTemplate().price / 5 + item.plus * 1000)
+                                 + (giaThap ? com.htbb.pokemon.BanDoKhoa.LOG_BAN + " " + xu : String.valueOf(item.getTemplate().price / 5 + item.plus * 1000))
                            );
+                        if (giaThap) {
+                           player.sendMessage(MessageCreator.createServerAlertMessage("Đã bán vật phẩm khoá cho NPC (giá thấp): +" + xu + " xu", ""));
+                        }
                         Message m = new Message(28);
                         m.dos.writeShort(itemID);
                         player.sendMessage(m);
@@ -1319,6 +1339,8 @@ public class OfflineMap extends Map {
             if (typeMaterial != 0 && typeMaterial != 1) {
                return; // 0.9.6: loai khac 0/1 truoc day kiem o KHOA nhung tru n o THUONG ra am (xu khong mat ngoc)
             }
+         // 19/10/2026: so luong TUY CHON (thieu = ban ca chong, nhu cu)
+         final int soLuongXin = HanhDongVatPham.docSoLuong(messge);
 
             for (int i = 0; i < player.gemItem.size(); i++) {
                GemItem gem = (GemItem)player.gemItem.elementAt(i);
@@ -1332,13 +1354,22 @@ public class OfflineMap extends Map {
                   if (typeMaterial == 1) {
                      n = player.listGemitemLock[gem.idGemTemplate];
                   }
+               n = HanhDongVatPham.kepSoLuong(soLuongXin, n);
+               if (MoRongTuiGame.laVe(gem.idGemTemplate)) {
+                  DungVatPham.loi(player, MoRongTuiGame.TEN_VE + " không bán được.");
+                  return;
+               }
+               // chong clone: nguyen lieu KHOA chi ban NPC o GIA THAP (0.9.8, com.htbb.pokemon.BanDoKhoa); tat = khong ban.
+               final boolean giaThap = typeMaterial == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa();
+               if (giaThap && !com.htbb.pokemon.BanDoKhoa.bat()) {
+                  DungVatPham.loi(player, "Vật phẩm khoá không bán được.");
+                  return;
+               }
 
-                  // chong clone (0.9.6, nhu Map.doSellGemItem - ban NPC dang song o day): ngoc KHOA khong doi ra xu.
-                  if (typeMaterial == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()) {
-                     player.sendMessage(MessageCreator.createServerAlertMessage("Nguyên liệu khoá không bán cho NPC lấy xu được.", ""));
-                     return;
-                  }
                   long price = Map.giaBanNgocNpc(gem.getTemplate().getPrice(isSale), n);
+                  if (giaThap) {
+                     price = com.htbb.pokemon.BanDoKhoa.gia(price);
+                  }
                   if (n <= 0) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán", ""));
                      return;
@@ -1358,7 +1389,7 @@ public class OfflineMap extends Map {
                   }
 
                   if (n > 0) {
-                     player.addXu(price, "offline map 5");
+                     player.addXu(price, giaThap ? com.htbb.pokemon.BanDoKhoa.LOG_BAN : "offline map 5");
                      player.sendMessage(MessageCreator.createServerAlertMessage("Đã bán thành công", ""));
                      player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                      player.sendMessage(MessageCreator.createCharGemItem(player));
@@ -1375,6 +1406,7 @@ public class OfflineMap extends Map {
                               + n
                               + "_"
                               + typeMaterial
+                              + (giaThap ? " " + com.htbb.pokemon.BanDoKhoa.LOG_BAN + " " + price : "")
                         );
                   }
                }

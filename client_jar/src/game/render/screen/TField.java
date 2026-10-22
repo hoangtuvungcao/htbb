@@ -460,12 +460,15 @@ public class TField extends ObjGame {
         // pokemon: ô nhập trắng viền xám; đang gõ: viền xanh dày, nền vàng rất nhạt
         if (isFocus) {
             if (this.paintFocus) {
-                game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 3, game.pokemon.GiaoDien.XANH);
-                game.pokemon.GiaoDien.khoi(g, this.x + 2, this.y + 2, this.width - 3, this.height - 3, 2, 0xFFFFFF);
+                // 0.9.7: ô nhập đang gõ = khung vàng + lòng giấy da sáng
+                game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 1, game.pokemon.ChuDe.VANG);
+                game.pokemon.GiaoDien.khoi(g, this.x + 2, this.y + 2, this.width - 3, this.height - 3, 1, 0xFAEECF);
             }
         } else {
-            game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 3, game.pokemon.GiaoDien.XAM_TOI);
-            game.pokemon.GiaoDien.khoi(g, this.x + 1, this.y + 1, this.width - 1, this.height - 1, 2, game.pokemon.GiaoDien.KEM);
+            // 0.9.7: ô nhập = giấy da lõm (mảnh THE)
+            if (!game.pokemon.KhungNro.ve(g, game.pokemon.KhungNroBang.THE, this.x, this.y, this.width + 1, this.height + 1)) {
+                game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 1, game.pokemon.ChuDe.KE);
+            }
         }
         g.setClip(this.x + 3, this.y + 1, (this.width - typingModeAreaWidth) - 8, this.height - 4);
         g.setColor(0);

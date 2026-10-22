@@ -494,6 +494,10 @@ class MapNapTaiNguyen {
                 // VAN GIU o day vi listGemitem duoc cap phat theo Map.gemTemplate.length va
                 // cot tob_gem_new luu du 270 truong - bo di la lech dinh dang dang luu.
                 new GemTemplate(Map.SACH_SKILL_PET_GEM, 95, "Sách kỹ năng pet (cũ)", "Vật phẩm đã ngừng dùng", 1, -1, 100, GemTemplate.TYPE_TU_BINH, Map.NOT_SELL, 0),
+                // 19/10/2026: Ve mo rong hanh trang (real.MoRongTuiGame). Kieu TU_BINH (4) de MOI client hien nut
+                // "Dung" (goi -67 douseGemItem); Map.doTuBinh chuyen id nay sang MoRongTuiGame. NOT_SELL: Persian
+                // khong ban (mua o cua hang luong / mo bang xu tai Kangaskhan). Anh 52 = icon tam (giay vang).
+                MoRongTuiGame.taoMauVe(),
             };
         }
     }

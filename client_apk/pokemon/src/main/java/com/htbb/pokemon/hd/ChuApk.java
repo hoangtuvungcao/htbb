@@ -66,6 +66,11 @@ public final class ChuApk extends game.pokemon.ChuUI {
         g.androidCanvas().drawText(s, x + g.getTranslateX(), by, chu);
     }
 
+    /** 0.9.7: nền mảnh pixel (KhungNro) -> danh sách nền để chữ game cũ tự tương phản. */
+    public void nen(Graphics g, int x, int y, int w, int h, int sang) {
+        HdVe.ghiNen(g, x, y, w, h, sang);
+    }
+
     public boolean net(Graphics g, int cx, int cy, int k, int mau, int kieu) {
         Canvas c = g.androidCanvas();
         net.setColor(0xFF000000 | mau);

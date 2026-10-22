@@ -23,7 +23,14 @@ public class KiemBoNgocBat {
     static int dat, hong;
     static File ra;
 
+    /** 0.9.8 (giao diện NRO): đếm icon vẽ bằng code từ lần kiểm đầu (sau khi game đã lên) - phải 0. */
+    static boolean daXoaVeTay;
+
     static void kiem(boolean ok, String ten) {
+        if (!daXoaVeTay) {
+            daXoaVeTay = true;
+            game.pokemon.VeTay.xoa();
+        }
         if (ok) {
             dat++;
         } else {
@@ -413,6 +420,7 @@ public class KiemBoNgocBat {
         ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "nem_bat_duoc.png"));
         kiem(game.pokemon.BatPokemon.daBat(19), "bat duoc: Pokedex danh dau Da bat");
         kiem(game.pokemon.BatPokemon.anQuai(quai.ID), "bat duoc: quai van trong bong (may chu xoa bang goi 90)");
+        kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("KiemBoNgocBat: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }

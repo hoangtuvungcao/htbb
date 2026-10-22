@@ -99,10 +99,15 @@ public final class Cuon {
         if (this.max <= 0) {
             return;
         }
-        GiaoDien.khoi(g, x, y, 4, h, 2, 0x9AA6BC);
+        // 0.9.7: rãnh gỗ tối + núm đồng (mảnh CUON / CUON_NUM)
         int tong = this.max + h;
         int hb = Math.max(16, h * h / Math.max(1, tong));
         int yb = y + (int) ((long) (h - hb) * this.lech() / Math.max(1, this.max));
-        GiaoDien.khoi(g, x, yb, 4, hb, 2, GiaoDien.XANH);
+        if (KhungNro.ve(g, KhungNroBang.CUON, x - 1, y, 6, h)) {
+            KhungNro.ve(g, KhungNroBang.CUON_NUM, x - 1, yb, 6, hb);
+            return;
+        }
+        GiaoDien.khoi(g, x, y, 4, h, 1, 0x3A2414);
+        GiaoDien.khoi(g, x, yb, 4, hb, 1, ChuDe.VANG);
     }
 }

@@ -8019,6 +8019,7 @@ public class Database {
                 p.dbInfo = rs.getString("pInfo");
                 // Pokemon: loai + shiny (cot moi, doc trong try rieng).
                 Database.docCotPokemon(rs, p);
+                Database.docCotMoRong(rs, p); // o hanh trang le (cot moi, try rieng)
                 p.using = rs.getByte("del");
                 p.charname = rs.getString("charname").toLowerCase();
                 p.dbPotion = rs.getString("potion");
@@ -12472,6 +12473,50 @@ public void addCharXaiNapLuong(Char p, int type) {
             pre.execute();
         } catch (Exception e) {
             System.out.println("[POKEMON] khong luu duoc tob_char.dex cho id " + idChar + ": " + e);
+        } finally {
+            try {
+                if (pre != null) {
+                    pre.close();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * O hanh trang mo rong le (ve mo rong / mua xu - real.MoRongTuiGame, them 19/10/2026): tob_char.o_mo_rong.
+     * Goi luc khoi dong TRUOC khi nhan nguoi choi (cung nhom themCotKhoXuLuong). Ghi / doc bang cau rieng
+     * ({@link #luuCotMoRong} / {@link #docCotMoRong}) nen thieu cot KHONG khoa nhan vat. Xem sql/them_ve_mo_rong.sql.
+     */
+    public void themCotVeMoRong() {
+        themCotBangNeuThieu("tob_char", "o_mo_rong", "INT", "0");
+    }
+
+    /** Doc tob_char.o_mo_rong (thieu cot -> 0, kep vao [0, MoRongHanhTrang.O_LE_TOI_DA]). */
+    public static void docCotMoRong(final ResultSet rs, final Char p) {
+        try {
+            p.oMoRong = (short) com.htbb.pokemon.MoRongHanhTrang.kep(rs.getInt("o_mo_rong"));
+        } catch (Exception thieuCot) {
+            p.oMoRong = 0;
+        }
+    }
+
+    /**
+     * Ghi tob_char.o_mo_rong - cau UPDATE RIENG sau cau chinh cua saveChar/saveCharAuto/saveCharLienDau (giong
+     * luuCotPokemon): thieu cot chi mat o le, khong khoa nhan vat. Dung connection cua noi goi.
+     */
+    public static void luuCotMoRong(final Connection conn, final int idChar, final int oMoRong) {
+        if (conn == null || idChar <= 0) {
+            return;
+        }
+        PreparedStatement pre = null;
+        try {
+            pre = conn.prepareStatement("UPDATE tob_char SET o_mo_rong=? WHERE id=?");
+            pre.setInt(1, com.htbb.pokemon.MoRongHanhTrang.kep(oMoRong));
+            pre.setInt(2, idChar);
+            pre.execute();
+        } catch (Exception e) {
+            System.out.println("[MO_RONG] khong luu duoc tob_char.o_mo_rong cho id " + idChar + ": " + e);
         } finally {
             try {
                 if (pre != null) {

@@ -26,7 +26,14 @@ public class KiemHuanLuyen {
     static File ra;
     static int soAnh;
 
+    /** 0.9.8 (giao diện NRO): đếm icon vẽ bằng code từ lần kiểm đầu (sau khi game đã lên) - phải 0. */
+    static boolean daXoaVeTay;
+
     static void kiem(boolean ok, String ten) {
+        if (!daXoaVeTay) {
+            daXoaVeTay = true;
+            game.pokemon.VeTay.xoa();
+        }
         if (ok) dat++;
         else {
             hong++;
@@ -356,6 +363,7 @@ public class KiemHuanLuyen {
         kiem(ok[0], "ThanhNhanh: ô giữ chiêu bị gỡ -> chiêu học gần nhất chưa có trên thanh");
         kiem(ok[1], "ThanhNhanh: không còn chiêu thay -> ô trống");
 
+        kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("KiemHuanLuyen: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);
     }

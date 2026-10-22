@@ -195,12 +195,13 @@ public final class ManTai {
         y += 4;
         // thanh tiến trình
         int hh = 6;
-        GiaoDien.khoi(g, tx, y, tw, hh, 3, ChuDe.KE);
+        int hh0 = hh;
+        hh = 8;   // 0.9.7: rãnh tối pixel + dải vàng (GiaoDien.thanh)
         int dai = tw * (b == KHOI_DONG ? (int) (950L * (System.currentTimeMillis() - tu) / (System.currentTimeMillis() - tu + 1500L)) : tienTrinh()) / 1000;
         if (dai < hh) {
             dai = hh;
         }
-        GiaoDien.khoiDoc(g, tx, y, dai, hh, 3, GiaoDien.pha(ChuDe.CHINH, 0xFFFFFF, 1, 3), ChuDe.CHINH);
+        GiaoDien.thanh(g, tx, y, tw, hh, dai, tw, 2);
         y += hh + 6;
         if (day) {
             // dãy bước: xong = xanh lá, đang làm = xanh dương, chưa = xám

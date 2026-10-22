@@ -24,7 +24,14 @@ import javax.microedition.midlet.MIDlet;
 public class ChupThoiTiet {
     static int dat, hong;
 
+    /** 0.9.8 (giao diện NRO): đếm icon vẽ bằng code từ lần kiểm đầu (sau khi game đã lên) - phải 0. */
+    static boolean daXoaVeTay;
+
     static void kiem(boolean ok, String ten) {
+        if (!daXoaVeTay) {
+            daXoaVeTay = true;
+            game.pokemon.VeTay.xoa();
+        }
         if (ok) {
             dat++;
         } else {
@@ -296,6 +303,7 @@ public class ChupThoiTiet {
             ChupTrongGame.ve(1280, 720);
             ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "j2me_thap_" + TEN_TT[tt] + ".png"));
         }
+        kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("ChupThoiTiet: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }

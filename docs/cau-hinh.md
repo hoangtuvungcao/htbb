@@ -327,12 +327,12 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **305 khoá** trong **19 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **306 khoá** trong **19 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 203 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 204 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 32 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -458,7 +458,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (235)
+### Khoá ẩn: cố định & luôn bật (236)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -533,7 +533,8 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chong_clone.nghi_so_nguoi_gui` | Ngưỡng "nghi clone" (số người gửi / ngày) | Cố định (ẩn) | `3` | ngay | game | Một người nhận có từ N người gửi khác nhau trong ngày thì đánh dấu nghi (không chặn), hiện ở /admin/kinh-te. |
 | `chong_clone.ky_gui_gia_toi_da_gio` | Giá ký gửi tối đa (giờ thu nhập) | Cố định (ẩn) | `200` | ngay | game | Trần cho món không có giá gốc (và sàn của trần trên). |
 | `chong_clone.ky_gui_gia_toi_thieu_phan_tram` | Giá ký gửi tối thiểu (% giá gốc) | Cố định (ẩn) | `5` | ngay | game | Chặn bán phá giá cho clone. |
-| `chong_clone.ban_npc_do_khoa` | Bán đồ / nguyên liệu khoá cho NPC lấy xu | Cố định (ẩn) | `0` | ngay | game | 0 = cấm (đồ khoá mua bằng lượng khoá không đổi ra xu được). 1 = cho như cũ. |
+| `chong_clone.ban_npc_do_khoa` | Bán đồ / nguyên liệu khoá cho NPC lấy xu | Cố định (ẩn) | `0` | ngay | game | 0 = đồ khoá chỉ bán ở giá thấp (chong_clone.ban_npc_khoa_phan_tram). 1 = bán giá NPC thường như cũ. |
+| `chong_clone.ban_npc_khoa_phan_tram` | Giá bán đồ / nguyên liệu khoá cho NPC (% giá NPC thường) | Cố định (ẩn) | `15` | ngay | game | 0.9.8: đồ khoá (phần thưởng khoá, mua bằng lượng khoá) bán NPC ở giá thấp = số này % giá NPC thường (mặc định 15%, trần cứng 20%; giá NPC thường đã là 5% giá mẫu). 0 = không bán. Thuốc không bán. Vẫn không giao dịch / vứt cho người khác. |
 
 #### Vòng quay may mắn (cố định) (`vong_quay`)
 

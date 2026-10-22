@@ -51,7 +51,8 @@ public final class DungVatPham {
     /** Binh chi dung trong Chien truong Moba (MapDungThuoc: 126..132). */
     static final int MOBA_TU = 126, MOBA_DEN = 132;
     /** Hop / tui qua dang binh: can it nhat 1 o trong (vai nhanh cu tru binh roi bao "Hanh trang day"). */
-    static final int[] THUOC_HOP = {63, 79, 101, 102, 108, 133, 134, 139, 140, 141, 143, 147, 159};
+    // 19/10/2026: + 71 (Trung Ho Ky Lan: dung = tao 1 vat pham vao tui, truoc day khong kiem o trong).
+    static final int[] THUOC_HOP = {63, 71, 79, 101, 102, 108, 133, 134, 139, 140, 141, 143, 147, 159};
 
     private DungVatPham() {
     }

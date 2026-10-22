@@ -217,13 +217,15 @@ public final class ThoiTiet {
         int cx = rong ? xHud() : xHep(), cy = rong ? game.render.screen.HudRong.yHangTren() : 9;
         int r = rong ? game.render.screen.HudRong.rHangTren() : 8;
         GiaoDien.khoi(g, cx - r, cy - r + 1, 2 * r + 1, 2 * r + 1, r, ChuDe.BONG);
-        GiaoDien.khoi(g, cx - r, cy - r, 2 * r + 1, 2 * r + 1, r, 0xFFFFFF);
+        // 0.9.8 giao diện NRO: đĩa gỗ viền đậm (không còn đĩa trắng kiểu GO)
+        GiaoDien.khoi(g, cx - r, cy - r, 2 * r + 1, 2 * r + 1, r, ChuDe.VIEN);
+        GiaoDien.khoi(g, cx - r + 1, cy - r + 1, 2 * r - 1, 2 * r - 1, r - 1, ChuDe.NEN);
         ThoiTietVe.veIcon(g, thoiTiet < 0 ? ThoiTietVe.QUANG : thoiTiet, cx, cy, 2 * r - 2);
         if (congDong > 0) {
             // chấm ngày cộng đồng: cam khi giờ vàng, vàng khi chờ
             g.setColor(congDong == 2 ? 0xF07A1E : 0xF5B921);
             g.fillArc(cx + r - 6, cy - r - 1, 8, 8, 0, 360);
-            g.setColor(0xFFFFFF);
+            g.setColor(ChuDe.VIEN);
             g.drawArc(cx + r - 6, cy - r - 1, 8, 8, 0, 360);
         }
         boolean cham = rong || Canvas.instance != null && Canvas.instance.hasPointerEvents();

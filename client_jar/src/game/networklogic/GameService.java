@@ -887,6 +887,56 @@ public class GameService extends Cmd_message {
         }
     }
 
+    /** 0.9.7: mở rộng hành trang (-107): kieu 0 hỏi trạng thái, 1 dùng vé, 2 mua +ô bằng xu. */
+    public void moRongTui(int kieu) {
+        Message m = init((byte) -107);
+        try {
+            m.writer().writeByte(kieu);
+            this.session.sendMessage(m);
+            m.cleanup();
+        } catch (IOException e) {
+        }
+    }
+
+    /** 0.9.7: bán soLuong nguyên liệu (78 + short số; 0 = cả chồng). */
+    public void sellGemItem(short realID, byte khoa, int soLuong) {
+        Message m = init((byte) 78);
+        try {
+            m.writer().writeShort(realID);
+            m.writer().writeByte(khoa);
+            m.writer().writeShort(soLuong);
+            this.session.sendMessage(m);
+            m.cleanup();
+        } catch (IOException e) {
+        }
+    }
+
+    /** 0.9.7: bỏ soLuong bình (-21 + short số; 0 = hết). */
+    public void dellPotion(int potionType, int soLuong) {
+        Message m = init((byte) -21);
+        try {
+            m.writer().writeShort(potionType);
+            m.writer().writeShort(soLuong);
+        } catch (IOException e) {
+        }
+        this.session.sendMessage(m);
+    }
+
+    /** 0.9.7: bỏ soLuong nguyên liệu (-23 + short số; 0 = cả chồng). */
+    public void dellGemItem(short id, int type, byte khoa, int soLuong) {
+        Message m = init((byte) -23);
+        try {
+            m.writer().writeByte(type);
+            m.writer().writeShort(id);
+            if (type == 0) {
+                m.writer().writeByte(khoa);
+            }
+            m.writer().writeShort(soLuong);
+        } catch (IOException e) {
+        }
+        this.session.sendMessage(m);
+    }
+
     public void sellGemItem(short realID, byte khoa) {
         Message m = init((byte) 78);
         try {

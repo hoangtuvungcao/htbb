@@ -768,6 +768,13 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
                         if (LopPhu.chuotPhai(x, y)) return;
                         // chuột phải = menu ngữ cảnh TUỲ CHỌN (người chơi: giao dịch / tổ đội / nhắn); trống = Esc
                         boolean xong = false;
+                        // 0.9.7: chuột phải trên ô lưới hành trang (màn Nhân vật / cửa hàng) = mặc / dùng / bán nhanh
+                        try {
+                            if (NenPc.trongKhung(x, y) && game.render.Canvas.currentDialog == null
+                                    && game.pokemon.LuoiTui.chuotPhai(NenPc.logicX(x), NenPc.logicY(y))) return;
+                        } catch (Throwable t) {
+                            NhatKy.loi("chuot phai tui", t);
+                        }
                         if (NenPc.trongKhung(x, y) && BanPhim.trongTheGioi()) {
                             try {
                                 xong = game.pokemon.HanhDong.chuotPhai(NenPc.logicX(x), NenPc.logicY(y));

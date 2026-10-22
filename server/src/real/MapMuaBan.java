@@ -466,6 +466,15 @@ class MapMuaBan {
                                 huyVaBao(player, "Giao dịch bị chặn (chống clone), đã huỷ.");
                                 return;
                             }
+                            // 19/10/2026: tui hai ben phai chua du so loai thuoc MOI nhan ve (countSlotInventory khong tinh rPotions).
+                            if (player.countSlotInventory() < GiaoDichThuoc.soOThemCan(player.potions, player.tPotions, player.rPotions)) {
+                                huyVaBao(player, "Hành trang của bạn không đủ ô trống, đã huỷ.");
+                                return;
+                            }
+                            if (dp.countSlotInventory() < GiaoDichThuoc.soOThemCan(dp.potions, dp.tPotions, dp.rPotions)) {
+                                huyVaBao(player, "Hành trang người nhận đã đầy, đã huỷ.");
+                                return;
+                            }
                             final String tomTatGd = GiaoDichThuoc.tomTat(player.tPotions, player.rPotions, dp.tPotions, dp.rPotions);
 
                             if (!player.doAddItemTrad2Inventory()) {

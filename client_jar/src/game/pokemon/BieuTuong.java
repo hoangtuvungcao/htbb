@@ -27,12 +27,18 @@ public final class BieuTuong {
             H_BONG_TOI = 41, H_THEP = 42, H_DAT = 43, H_BANG = 44,
             // thông báo / điều khiển (0.9.5): máy ảnh (album), xu, thông tin, cảnh báo, lỗi, đóng (X), lùi, hộp đồ
             CAMERA = 45, XU = 46, TIN = 47, CANH_BAO = 48, LOI = 49, DONG = 50, LUI = 51, HOP_DO = 52,
-            // 0.9.6.1: cần câu (nút câu cạnh hồ; ảnh tạm - bộ ảnh mới thay sau)
-            CAN_CAU = 53,
-            // khoá bản đồ (khoa-map): ổ khoá tạm (bộ hình NRO/NSO sẽ thay)
-            KHOA = 54;
+            // 0.9.6.1: cần câu (nút câu cạnh hồ). 0.9.7 (icon pixel NRO, chỉ có ảnh /nro/icon.png - không có lệnh vector):
+            // thú cưng (bàn chân), ổ khoá, mở rộng (+), lượng (ngọc), vứt, trận đấu, bạn bè, thoát
+            CAN_CAU = 53, THU_CUNG = 54, KHOA = 55, MO_RONG = 56, LUONG = 57, VUT = 58, TRAN = 59, BAN_BE = 60, THOAT = 61,
+            // cài đặt bản PC: màn hình, loa, bàn phím, chuột (trái / phải / lăn), phím, tài khoản
+            MAN_HINH = 62, LOA = 63, BAN_PHIM = 64, CHUOT_TRAI = 65, CHUOT_PHAI = 66, CHUOT_LAN = 67, PHIM = 68, TAI_KHOAN = 69,
+            // 0.9.8: thời tiết (đĩa HUD, ThoiTietVe.veIcon): TT_QUANG + ThoiTietVe.QUANG..GIO
+            TT_QUANG = 70, TT_NANG = 71, TT_MUA = 72, TT_TUYET = 73, TT_BAO_CAT = 74, TT_SUONG_MU = 75, TT_GIO = 76;
 
-    static final float[][] HINH = new float[55][];
+    /** số id biểu tượng (kể cả id chỉ có icon pixel) */
+    public static final int SO = 77;
+
+    static final float[][] HINH = new float[54][];
 
     /** Biểu tượng hệ theo số hệ (PokeChieu.he / KieuO.mauHe). */
     public static int heIcon(int he) {
@@ -168,8 +174,6 @@ public final class BieuTuong {
         HINH[CAN_CAU] = new float[]{MAU, d, NET, 14, 88, 66, 14, 10, MAU, c, NET, 16, 86, 64, 16, 6, MAU, d, TRON, 30, 68, 11,
             MAU, l, TRON, 30, 68, 6, MAU, d, NET, 66, 14, 80, 56, 3, MAU, d, TRON, 80, 70, 13, MAU, t, TRON, 80, 70, 10,
             MAU, c, CUNG, 80, 70, 10, 0, 180, 10};
-        HINH[KHOA] = new float[]{MAU, c, CUNG, 50, 44, 20, 0, 180, 10, CHU_NHAT, 20, 44, 60, 46, 9, MAU, n, TRON, 50, 62, 7,
-            CHU_NHAT, 47, 62, 6, 14, 2};
         HINH[DOI_BO] = new float[]{MAU, c, CUNG, 50, 50, 30, 30, 260, 9, DA_GIAC, 3, 78, 14, 86, 44, 56, 36};
     }
 
@@ -193,6 +197,10 @@ public final class BieuTuong {
      * Vẽ biểu tượng id cỡ s (hộp vuông góc trái trên (x, y)), màu chính mau, màu nền dưới nen (cho phần "đục lỗ").
      */
     public static void ve(Graphics g, int id, int x, int y, int s, int mau, int nen) {
+        // 0.9.7: icon PIXEL đủ màu (KhungNro, phóng hệ số nguyên) - mọi bản; thiếu ảnh mới vẽ vector cũ
+        if (KhungNro.icon(g, id, x, y, s, -1)) {
+            return;
+        }
         if (id == POKEBALL) {
             if (ChuUI.bo != null && ChuUI.bo.hinh(g, AnhUI.BONG, x, y, s, mau, nen)) {
                 return;
@@ -211,8 +219,17 @@ public final class BieuTuong {
         veJ2me(g, h, x, y, s, mau, nen);
     }
 
+    /** Bóng mờ một màu của biểu tượng id (ô trống: mũ, găng... mờ) - 0.9.7 icon pixel tô một màu. */
+    public static void veBong(Graphics g, int id, int x, int y, int s, int mau, int nen) {
+        if (KhungNro.icon(g, id, x, y, s, mau)) {
+            return;
+        }
+        ve(g, id, x, y, s, mau, nen);
+    }
+
     /** Vẽ bằng lệnh J2ME (không khử răng cưa). */
     static void veJ2me(Graphics g, float[] h, int x, int y, int s, int chinh, int nen) {
+        VeTay.ghi("BieuTuong vector");
         int i = 0;
         while (i < h.length) {
             int lenh = (int) h[i++];

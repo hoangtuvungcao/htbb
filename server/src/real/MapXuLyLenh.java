@@ -355,6 +355,13 @@ class MapXuLyLenh {
             // CA tu vong tu dong nhat trong CharVongLap (luong ban do). Ban cu chi remove roi
             // cap luon -> hai luong cung nhat mot mon = mon do nam trong tui hai nguoi (hoac hai
             // lan trong mot nguoi) va duoc luu that xuong DB. Xem Map.chiemItem.
+            // 19/10/2026: tui day ma bat tu nghien: chi nhat mon SE bi nghien ngay. Truoc day mon khong nghien duoc
+            // van bi chiem roi roi xuong kiem "day tui" o cuoi ham -> mon bien mat (khong vao tui, khong con duoi dat).
+            if (player.isFullInventory() && !player.isAutoBan && !(player.isNghienAuto
+                    && !Map.isWearingAnimal(item.getTemplate().type) && Map.isItemChar(item.getTemplate().type))) {
+                player.sendMessage(MessageCreator.createMsgChat(player.id, "Hành trang đã đầy"));
+                return;
+            }
             if (!map.chiemItem(item, player.inCountry)) {
                 return;
             }
@@ -561,6 +568,9 @@ class MapXuLyLenh {
             case -112: // 0.9.7 phong rieng: cham the trang thai -> "Rời" (pho ban) / "Bỏ cuộc" (tran cup)
                 PhongRiengGame.xuLy(player, message);
                 break;
+            case MoRongTuiGame.LENH: // -107 Mo rong hanh trang: byte kieu 0 trang thai / 1 dung ve / 2 mua xu
+                MoRongTuiGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;
@@ -664,14 +674,14 @@ class MapXuLyLenh {
             case -24:
                 map.doSendStringInfo(player, message);
                 break;
-            case -23:
-                MapEpNgoc.doGiveSpecialGem2Ground(map, player, message);
+            case -23: // vut nguyen lieu / vat pham dac biet: byte type, short id, [byte khoa neu type 0] [, short soLuong]
+                HanhDongVatPham.boc(player, HanhDongVatPham.VUT, () -> MapEpNgoc.doGiveSpecialGem2Ground(map, player, message));
                 break;
             case -22:
                 doSendDetailChar(map, player, message);
                 break;
-            case -21:
-                map.doGivePotion2Ground(player, message);
+            case -21: // vut binh: short potionType [, short soLuong] (thieu = ca chong)
+                HanhDongVatPham.boc(player, HanhDongVatPham.VUT, () -> map.doGivePotion2Ground(player, message));
                 break;
             case -20:
                 MapDoi.doGiveMoneyClan(map, player, message);

@@ -377,6 +377,8 @@ public class SelectCharHandler implements ICommandHandler {
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 3));
+            // Client >= 903: trang thai -105 ngay sau khi nap nhan vat (suc chua hanh trang, ve mo rong, gia xu...).
+            real.MoRongTuiGame.guiTrangThai(p);
             p.sendInfoQuest();
             try {
                 p.sendMessage(MessageCreator.createMsgFriendList(p));

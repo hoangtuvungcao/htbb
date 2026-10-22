@@ -1134,15 +1134,22 @@ class MapEpNgoc {
     static void doGiveSpecialGem2Ground(Map map, Char player, Message message) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
-        } else {
+        } else if (!map.checkTrade(player)) { // 19/10/2026: truoc day vut nguyen lieu duoc ca khi dang trao doi
             try {
                 int type = message.dis.readByte();
                 int id = message.dis.readShort();
                 String info = "";
                 if (type == 0) {
                     byte typeMaterial = message.dis.readByte();
-                    if (typeMaterial == 1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ vật phẩm khóa ra đất", ""));
+                    // 19/10/2026: so luong TUY CHON (thieu = ca chong, nhu cu).
+                    final int soLuongXin = HanhDongVatPham.docSoLuong(message);
+                    // 0.9.8: nguyen lieu KHOA khong ra dat - "Huỷ" (client hoi lai) huy han (com.htbb.pokemon.BanDoKhoa).
+                    if (typeMaterial != 0 && typeMaterial != 1) {
+                        return;
+                    }
+                    if (id < 0 || id >= player.listGemitem.length
+                            || (typeMaterial == 0 ? player.listGemitem[id] : player.listGemitemLock[id]) <= 0) {
+                        DungVatPham.loi(player, "Bạn không còn nguyên liệu này.");
                         return;
                     }
 
@@ -1154,18 +1161,18 @@ class MapEpNgoc {
                         i++;
                         if (gem.idGemTemplate == id) {
                             if (player.listGemitemSell[gem.idGemTemplate] > 0 && typeMaterial == 0) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ khi đang bán", ""));
+                                DungVatPham.loi(player, "Nguyên liệu đang rao bán, không bỏ được.");
                                 return;
                             }
 
                             int var13 = 0;
                             if (typeMaterial == 0) {
-                                n = player.listGemitem[gem.idGemTemplate];
-                                player.listGemitem[gem.idGemTemplate] = 0;
+                                n = HanhDongVatPham.kepSoLuong(soLuongXin, player.listGemitem[gem.idGemTemplate]);
+                                player.listGemitem[gem.idGemTemplate] -= n;
                                 player.allGemUse[gem.idGemTemplate] = player.allGemUse[gem.idGemTemplate] + n;
                             } else {
-                                n = player.listGemitemLock[gem.idGemTemplate];
-                                player.listGemitemLock[gem.idGemTemplate] = 0;
+                                n = HanhDongVatPham.kepSoLuong(soLuongXin, player.listGemitemLock[gem.idGemTemplate]);
+                                player.listGemitemLock[gem.idGemTemplate] -= n;
                                 player.allGemUseLock[gem.idGemTemplate] = player.allGemUseLock[gem.idGemTemplate] + n;
                             }
 
@@ -1176,7 +1183,8 @@ class MapEpNgoc {
                                 player.removeIDItem(gem.realId);
                             }
 
-                            info = n + " " + gem.getTemplate().name + "_" + typeMaterial;
+                            info = n + " " + gem.getTemplate().name + "_" + typeMaterial + (typeMaterial == 1 ? " " + com.htbb.pokemon.BanDoKhoa.LOG_HUY : "");
+                            DungVatPham.bao(player, (typeMaterial == 1 ? "Đã huỷ " : "Đã bỏ ") + gem.getTemplate().name + " ×" + n + ".");
                             break;
                         }
                     }
@@ -1198,6 +1206,7 @@ class MapEpNgoc {
                             // dat, tu choi tao ve moi nhung VAN tru tien -> mat tien oan.
                             player.listSpItem[shop.id] = 0;
                             info = i + " " + shop.name;
+                            DungVatPham.bao(player, "Đã bỏ " + shop.name + ".");
                         }
                     }
 

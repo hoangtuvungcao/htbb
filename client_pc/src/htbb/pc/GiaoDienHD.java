@@ -13,6 +13,8 @@ import java.awt.geom.RoundRectangle2D;
 import javax.microedition.lcdui.Graphics;
 
 /**
+ * 0.9.7 (kiểu NRO): khung / nút / thanh / Poké Ball do JAR vẽ bằng mảnh pixel (game.pokemon.KhungNro, láng giềng gần
+ * nhất) - các móc dưới đây chỉ còn GHI NỀN (chữ tự tương phản) + khung neo rồi trả false. Lịch sử 0.9.5-0.9.6:
  * Giao diện HD của bản PC = CÙNG HỆ THIẾT KẾ với bản APK (client_apk/pokemon/.../hd/HdVe.java): cùng hàm, cùng
  * token màu (đỏ Poké, vàng Pikachu, xanh, navy, kính KINH_TREN / KINH_DUOI), bo góc, bóng đổ 3 lớp, ánh kính nửa
  * trên, viền sáng mảnh - vẽ bằng Java2D khử răng cưa ở độ phân giải thật. port-j2me.py chèn
@@ -236,52 +238,25 @@ public final class GiaoDienHD {
     }
 
     public static boolean khoi(Graphics g, int x, int y, int w, int h, int r, int mau) {
-        if (w <= 0 || h <= 0) return true;
-        if (mau != 0x0B1222 && mau != 0x0A0F2C) ghiNen(g, x, y, w, h, doSang(mau));
-        if (veDem(g, mau == 0x0B1222 || mau == 0x0A0F2C ? D_BONG : D_KHOI, x, y, w, h, r, mau, 0)) return true;
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        float rad = Math.min(r, Math.min(w, h) / 2f);
-        if (mau == 0x0B1222 || mau == 0x0A0F2C) {
-            bong(g2, l, t - 1, l + w - 1, t + h - 2, rad, 0);   // "bóng đổ" kiểu jar -> bóng mềm
-        } else {
-            tron(g2, l, t, l + w, t + h, rad, argb(mau));
-        }
-        return xong(g, g2);
+        // 0.9.7 (NRO): khối pixel bậc thang của jar (không bo mượt Java2D) - chỉ ghi nền cho chữ tự tương phản
+        if (w > 0 && h > 0 && mau != game.pokemon.ChuDe.BONG) ghiNen(g, x, y, w, h, doSang(mau));
+        return false;
     }
 
     public static boolean khoiDoc(Graphics g, int x, int y, int w, int h, int r, int tren, int duoi) {
-        if (w <= 0 || h <= 0) return true;
-        ghiNen(g, x, y, w, h, (doSang(tren) + doSang(duoi)) / 2);
-        if (veDem(g, D_DOC, x, y, w, h, r, tren, duoi)) return true;
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        float rad = Math.min(r, Math.min(w, h) / 2f);
-        tronDoc(g2, l, t, l + w, t + h, rad, argb(tren), argb(duoi));
-        return xong(g, g2);
+        if (w > 0 && h > 0) ghiNen(g, x, y, w, h, (doSang(tren) + doSang(duoi)) / 2);
+        return false;   // 0.9.7: dải pixel của jar
     }
 
     /** Hộp thoại sáng (chữ tối): thẻ trắng ngà, bo 9, viền mảnh, bóng mềm. */
     public static boolean hop(Graphics g, int x, int y, int w, int h) {
-        game.pokemon.GiaoDien.moClip(g);
-        ghiKhung(g, x, y, w, h);
-        ghiNen(g, x, y, w, h, 245);
-        game.render.screen.Font.nenSang = true;
-        if (veDem(g, D_THE, x, y, w, h, 9, 0, 0)) return true;
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        theSang(g2, l, t, l + w, t + h, 9);
-        return xong(g, g2);
+        ghiKhung(g, x, y, w, h);   // khung neo nút ngữ cảnh
+        return false;   // 0.9.7: khung pixel NRO của jar (KhungNro)
     }
 
     /** Thẻ sáng (GiaoDien.theSang / ChuDe.the) bo r: một ảnh dựng sẵn. */
     public static boolean theSang(Graphics g, int x, int y, int w, int h, int r) {
-        ghiNen(g, x, y, w, h, 245);
-        if (veDem(g, D_THE, x, y, w, h, r, 0, 0)) return true;
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        theSang(g2, l, t, l + w, t + h, r);
-        return xong(g, g2);
+        return false;   // 0.9.7: KhungNro
     }
 
     /** Thẻ sáng 0.9.5 (ChuDe): bóng mềm, thân trắng, viền tối mảnh. */
@@ -294,15 +269,8 @@ public final class GiaoDienHD {
 
     /** Bảng tối kiểu kính: navy trong mờ, viền sáng mảnh, ánh trên, bóng đổ. */
     public static boolean bang(Graphics g, int x, int y, int w, int h) {
-        game.pokemon.GiaoDien.moClip(g);
-        ghiKhung(g, x, y, w, h);
-        ghiNen(g, x, y, w, h, 245);
-        game.render.screen.Font.nenSang = true;
-        if (veDem(g, D_THE, x, y, w, h, 9, 0, 0)) return true;
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        theSang(g2, l, t, l + w, t + h, 9);
-        return xong(g, g2);
+        ghiKhung(g, x, y, w, h);   // khung neo nút ngữ cảnh
+        return false;   // 0.9.7: khung pixel NRO của jar (KhungNro)
     }
 
     static void bangKinh(Graphics2D g, float l, float t, float r, float b, float rad) {
@@ -314,29 +282,13 @@ public final class GiaoDienHD {
     }
 
     public static boolean theMo(Graphics g, int x, int y, int w, int h) {
-        game.pokemon.GiaoDien.moClip(g);
-        ghiKhung(g, x, y, w, h);
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        bong(g2, l, t, l + w, t + h, 10, 1.5f);
-        tronDoc(g2, l, t, l + w, t + h, 10, 0xF2FFFFFF, 0xEAF3F6FB);
-        vienTron(g2, l, t, l + w, t + h, 10, 0.6f, 0x1A000000 | game.pokemon.ChuDe.CHU);
-        ghiNen(g, x, y, w, h, 240);
-        game.render.screen.Font.nenSang = true;
-        return xong(g, g2);
+        ghiKhung(g, x, y, w, h);   // khung neo nút ngữ cảnh
+        return false;   // 0.9.7: khung pixel NRO của jar (KhungNro)
     }
 
     public static boolean bangMo(Graphics g, int x, int y, int w, int h) {
-        game.pokemon.GiaoDien.moClip(g);
-        ghiKhung(g, x, y, w, h);
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        bong(g2, l, t, l + w, t + h, 10, 1.5f);
-        tronDoc(g2, l, t, l + w, t + h, 10, 0xF2FFFFFF, 0xEAF3F6FB);
-        vienTron(g2, l, t, l + w, t + h, 10, 0.6f, 0x1A000000 | game.pokemon.ChuDe.CHU);
-        ghiNen(g, x, y, w, h, 240);
-        game.render.screen.Font.nenSang = true;
-        return xong(g, g2);
+        ghiKhung(g, x, y, w, h);   // khung neo nút ngữ cảnh
+        return false;   // 0.9.7: khung pixel NRO của jar (KhungNro)
     }
 
     /** Dải tiêu đề đỏ 0.9.5: phẳng, Poké Ball nhỏ, tiêu đề chữ giao diện trắng (jar GiaoDien.dai vẽ chữ). */
@@ -345,44 +297,20 @@ public final class GiaoDienHD {
     }
 
     public static boolean vienTab(Graphics g, int x, int y, int w, int h, boolean doiTab) {
-        ghiNen(g, x, y, w, h, 110);
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        float rad = h / 2f;
-        bong(g2, l, t, l + w, t + h, rad, 1f);
-        int m = argb(doiTab ? game.pokemon.ChuDe.CHINH_TOI : game.pokemon.ChuDe.CHINH);
-        tronDoc(g2, l, t, l + w, t + h, rad, pha(m, 0xFFFFFFFF, 0.15f), m);
-        return xong(g, g2);
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     public static boolean chon(Graphics g, int x, int y, int w, int h) {
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        float rad = Math.min(6, h / 2f);
-        ghiNen(g, x, y, w, h, 235);
-        tronDoc(g2, l, t, l + w, t + h, rad, 0xFFF4FCFB, argb(game.pokemon.ChuDe.CHINH_NHAT));
-        vienTron(g2, l, t, l + w, t + h, rad, 1.1f, argb(game.pokemon.ChuDe.CHINH));
-        return xong(g, g2);
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     public static boolean chonSang(Graphics g, int x, int y, int w, int h) {
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        float rad = Math.min(6, h / 2f);
-        ghiNen(g, x, y, w, h, 235);
-        tronDoc(g2, l, t, l + w, t + h, rad, 0xFFF4FCFB, argb(game.pokemon.ChuDe.CHINH_NHAT));
-        vienTron(g2, l, t, l + w, t + h, rad, 1.1f, argb(game.pokemon.ChuDe.CHINH));
-        return xong(g, g2);
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     /** Thanh HP / PP / EXP: viên bo tròn, nền tối mờ, thân dải màu + ánh. */
     public static boolean thanh(Graphics g, int x, int y, int w, int h, long gt, long max, int loai) {
-        if (w < 4 || h < 3) return true;
-        if (gt < 0) gt = 0;
-        if (max > 0 && gt > max) gt = max;
-        Graphics2D g2 = bd(g);
-        veThanh(g2, L(g, x), T(g, y), w, h, max <= 0 ? 0f : gt / (float) max, mauThanh(loai, gt, max));
-        return xong(g, g2);
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     static int mauThanh(int loai, long gt, long max) {
@@ -407,46 +335,16 @@ public final class GiaoDienHD {
 
     /** Viên (pill) màu: dải màu + viền + chữ (chữ HD). */
     public static boolean vien(Graphics g, int x, int y, int w, int h, int mau, String chu) {
-        Graphics2D g2 = bd(g);
-        float l = L(g, x), t = T(g, y);
-        float rad = h / 2f;
-        bong(g2, l, t, l + w, t + h, rad, 0.8f);
-        // 0.9.6 (kiểu GO): viên màu đặc dải nhẹ, không ánh kính / viền tối
-        tronDoc(g2, l, t, l + w, t + h, rad, pha(argb(mau), 0xFFFFFFFF, 0.18f), argb(mau));
-        xong(g, g2);
-        if (chu != null && game.pokemon.ChuUI.bo != null) {
-            // chữ giao diện trắng đậm (không viền)
-            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(chu, game.pokemon.ChuDe.SO, w - 6), x + w / 2, y, h, game.pokemon.ChuDe.SO, 0xFFFFFF, 2);
-        } else if (chu != null && game.render.screen.Font.borderFont != null) {
-            game.render.screen.Font f = game.render.screen.Font.borderFont;
-            f.drawString(g, chu, x + w / 2, y + (h - f.getHeight()) / 2 + 1, game.render.screen.Font.CENTER);
-        }
-        return true;
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     public static boolean muiTab(Graphics g, int x, int yTam, boolean trai) {
-        Graphics2D g2 = bd(g);
-        float cx = L(g, x), cy = T(g, yTam);
-        float d = trai ? 1 : -1;
-        float mx = cx + 4.5f * d;
-        tron(g2, mx - 7, cy - 7, mx + 7, cy + 7, 7, 0xE01E2A44);
-        tronDoc(g2, mx - 6, cy - 6, mx + 6, cy + 6, 6, 0xFFFFE066, 0xFFF0A800);
-        Path2D.Float p = new Path2D.Float();
-        p.moveTo(mx - 2.2f * d, cy);
-        p.lineTo(mx + 2f * d, cy - 3.4f);
-        p.lineTo(mx + 2f * d, cy + 3.4f);
-        p.closePath();
-        g2.setColor(c(VIEN));
-        g2.fill(p);
-        return xong(g, g2);
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     /** Poké Ball vector (dải màu đỏ, ánh sáng, đai, nút giữa). */
     public static boolean pokeBall(Graphics g, int cx, int cy, int r, int goc) {
-        if (r < 3) r = 3;
-        Graphics2D g2 = bd(g);
-        veBong(g2, L(g, cx) + 0.5f, T(g, cy) + 0.5f, r, goc);
-        return xong(g, g2);
+        return false;   // 0.9.7: bản pixel NRO của jar
     }
 
     static void veBong(Graphics2D g, float x, float y, float r, int goc) {

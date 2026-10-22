@@ -149,6 +149,11 @@ public final class ChuGiaoDien extends game.pokemon.ChuUI {
     private static final BasicStroke[] NET = new BasicStroke[16];
 
     /** Dấu X / mũi tên / dấu cộng vector khử răng cưa. */
+    /** 0.9.7: nền mảnh pixel (KhungNro) -> danh sách nền để chữ game cũ tự tương phản. */
+    public void nen(Graphics g, int x, int y, int w, int h, int sang) {
+        GiaoDienHD.ghiNen(g, x, y, w, h, sang);
+    }
+
     public boolean net(Graphics g, int cx, int cy, int k, int mau, int kieu) {
         if (!GiaoDienHD.bat) return false;
         Graphics2D g2 = g.g2d();

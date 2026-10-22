@@ -629,6 +629,30 @@ Khi demo chạy (log `NAP TIEN CHE DO DEMO`):
 
 Chuyển từ demo sang thật: đặt `HTBB_NAP_DEMO=0`, điền số tài khoản thật + các khoá ở 9.2, khởi động lại `htbb-web`.
 
+### 9.7 Mở rộng hành trang (vé +10 ô, xu tăng dần)
+
+Sức chứa hành trang = 42 × số trang + số ô lẻ (`tob_char.o_mo_rong`). Số trang mua bằng lượng vẫn như cũ (NPC Tổng quản,
+món `mo_rong_tui` +42 ô). Có thêm hai đường mở ô lẻ, mỗi lần **+10 ô**, chỉ dùng được khi sức chứa còn dưới **126 ô**
+(3 trang khởi đầu). Lần cuối chỉ thêm phần còn thiếu. Người đã vượt 126 ô nhờ mua trang giữ nguyên sức chứa, chỉ không
+dùng vé / xu được nữa.
+
+- **Vé mở rộng hành trang**: nguyên liệu id 270, nằm ở tab nguyên liệu, bấm **Dùng**. Bán ở cửa hàng lượng với mã
+  `ve_mo_rong_tui`: 80 lượng, tối đa 9 lần mỗi nhân vật, vé khoá. Khi số vé đang giữ đã đủ mở tới 126 ô thì cửa hàng
+  từ chối bán thêm. Bật / tắt bằng cột `dang_ban` ở `/admin/naptien`, như mọi món khác.
+- **Mua bằng xu** ở Kangaskhan thủ kho, mục "Mở rộng hành trang". Giá theo bước (`o_mo_rong / 10`, tính cả bước đã mở
+  bằng vé):
+
+  | Bước | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+  |---|---|---|---|---|---|---|---|---|---|
+  | Xu | 20.000 | 30.000 | 45.000 | 68.000 | 100.000 | 150.000 | 230.000 | 340.000 | 510.000 |
+
+  Cả 9 bước (42 → 126 ô) tốn 1.493.000 xu. Bước đầu bằng khoảng 2 giờ thu nhập ở cấp 20, bước cuối khoảng 6 giờ ở cấp 70.
+
+Cài đặt: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` ([sql/nang_cap.sql](../sql/nang_cap.sql) phần 11, khối `them_ve_mo_rong.sql`, chạy lại được). Khối này thêm cột và món cửa
+hàng. Cột cũng được máy chủ tự thêm lúc khởi động. Hằng số nằm ở `server/src/com/htbb/pokemon/MoRongHanhTrang.java`,
+giao thức (`-107`, phần nối thêm của `-105`) ở `server/src/real/MoRongTuiGame.java`. Tra cứu:
+`SELECT charname, o_mo_rong FROM tob_char WHERE o_mo_rong > 0;` và nhật ký `tob_other_log` loại `morong`.
+
 ---
 
 ## 10. Thành viên và kích hoạt tài khoản

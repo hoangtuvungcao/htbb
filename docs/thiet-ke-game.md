@@ -1301,7 +1301,7 @@ xu / lượng / lượng khoá); ký gửi, chợ trang trí, chợ sinh thái, 
 cộng lượng **mở**; quỹ đội / lương đội là xu; giftcode an toàn chỉ phát (không chuyển); không có thư / quà giữa người chơi
 hay thất lạc. Các đường *đổi* lượng khoá ra giá trị chuyển được đã bịt: thuốc mua bằng lượng khoá thành **thuốc khoá**
 (`real.ThuocKhoa`, đếm `x<id>` trong hồ sơ dài hạn — không giao dịch được), vật phẩm mới mua bằng lượng khoá có `lock = 1`
-(ký gửi từ chối), và đồ / nguyên liệu khoá **không bán cho NPC lấy xu** (`chong_clone.ban_npc_do_khoa` = 0). Không có khái
+(ký gửi từ chối), và đồ / nguyên liệu khoá chỉ bán cho NPC ở **giá thấp** (0.9.8: `chong_clone.ban_npc_khoa_phan_tram` = 15% giá NPC thường, trần 20% ≈ 0,75–1% giá mẫu, `com.htbb.pokemon.BanDoKhoa`, nhật ký `KHOA_BAN_NPC`; thuốc vẫn không bán; đồ khoá không bán được thì **Huỷ** có hỏi lại, nhật ký `KHOA_HUY`). Không có khái
 niệm "xu khoá", nên xu từ nhiệm vụ tân thủ được chặn bằng cổng cấp bên dưới.
 
 **Cổng cho mọi đường chuyển xu / giá trị giữa hai người** (`com.htbb.pokemon.ChongClone`, nhóm cấu hình *Chống clone &

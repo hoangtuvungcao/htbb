@@ -20,6 +20,8 @@ public final class NpcDichVu {
     public static final int NPC_MEOWTH_DOI_XU = 31;
     public static final int NPC_LAPRAS = 10;
     public static final int NPC_PIDGEOT = 7;
+    /** Kangaskhan thu kho (trong nha / thi tran): menu "Mo kho do" + "Mo rong hanh trang" (real.MoRongTuiGame). */
+    public static final int NPC_KANGASKHAN = 9, NPC_KANGASKHAN_2 = 30;
     /** Gia mot chuyen bay Pidgeot (xu, truoc giam theo thu nhap BaiLuyenTap.giaDichChuyen) - bang tuyen bay cu 500..750. */
     static final long GIA_BAY = 750L;
     /** Ve tau (potion 20) - mua o Lapras (goi 81, Map.doBuyTicket). */
@@ -50,6 +52,14 @@ public final class NpcDichVu {
                 return true;
             case NPC_PIDGEOT:
                 moBay(p);
+                return true;
+            case NPC_KANGASKHAN:
+            case NPC_KANGASKHAN_2:
+                if (!NpcTinhBanDo.oNoiDichVu(p, NpcTinhBanDo.NPC_GIU_DO)) {
+                    bao(p, "Hãy đến gần Kangaskhan thủ kho để mở kho đồ.");
+                    return true;
+                }
+                p.sendMessage(MessageCreator.createMsgMenu(MoRongTuiGame.menuKangaskhan(p), loai, 0));
                 return true;
             case NPC_MEOWTH:
             case NPC_MEOWTH_DOI_XU:
@@ -233,6 +243,17 @@ public final class NpcDichVu {
         if (idNpc == NPC_PIDGEOT) {
             if (idMenu == 0) {
                 bay(p, chon);
+            }
+            return true;
+        }
+        if (idNpc == NPC_KANGASKHAN || idNpc == NPC_KANGASKHAN_2) {
+            if (!NpcTinhBanDo.oNoiDichVu(p, NpcTinhBanDo.NPC_GIU_DO)) {
+                bao(p, "Hãy đến gần Kangaskhan thủ kho để mở kho đồ.");
+                return true;
+            }
+            try {
+                MoRongTuiGame.chonKangaskhan(p, idNpc, idMenu, chon);
+            } catch (final java.io.IOException ignored) {
             }
             return true;
         }

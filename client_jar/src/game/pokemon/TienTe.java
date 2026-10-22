@@ -181,22 +181,21 @@ public final class TienTe {
         if (co < 8) {
             co = 8;
         }
-        if (!PhongVe.co()) {
-            // J2ME: ảnh pixel cỡ gần nhất (không lớn hơn ô), thiếu ảnh thì vẽ vector
-            nap();
-            int j = co >= 32 ? 2 : co >= 24 ? 1 : 0;
-            Image a = loai >= 0 && loai < SO_LOAI ? anh[loai][j] : null;
-            if (a != null) {
-                int d = (co - CO[j]) / 2;
-                g.drawImage(a, x + (d > 0 ? d : 0), y + (d > 0 ? d : 0), Graphics.TOP | Graphics.LEFT);
-                return;
-            }
+        // 0.9.7 (quy tắc: icon = ảnh PNG): mọi bản dùng ảnh pixel /tien/<ten>_<16|24|32>.png cỡ gần nhất, canh giữa ô
+        nap();
+        int j = co >= 32 ? 2 : co >= 24 ? 1 : 0;
+        Image a = loai >= 0 && loai < SO_LOAI ? anh[loai][j] : null;
+        if (a != null) {
+            int d = (co - CO[j]) / 2;
+            g.drawImage(a, x + d, y + d, Graphics.TOP | Graphics.LEFT);
+            return;
         }
         veVector(g, loai, x, y, co);
     }
 
     /** Thiết kế vector chung (ảnh pixel /tien/*.png sinh từ đúng hình này). */
     static void veVector(Graphics g, int loai, int x, int y, int s) {
+        VeTay.ghi("tien vector");
         switch (loai) {
             case XU:
                 veXu(g, x, y, s);

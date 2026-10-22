@@ -358,7 +358,7 @@ public final class HopThongBao extends Dialog {
     }
 
     /**
-     * KHUNG HỘP CHUNG kiểu A (giống Pokémon GO; mọi hộp: thông báo, xác nhận, nhập chữ / số, chờ): nền mờ 45% (mở dần +
+     * KHUNG HỘP CHUNG kiểu A (0.9.7 kiểu NRO: hộp gỗ, ô huy hiệu vuông, tiêu đề vàng viền; trước đây giống Pokémon GO; mọi hộp: thông báo, xác nhận, nhập chữ / số, chờ): nền mờ 45% (mở dần +
      * thẻ trượt lên), thẻ TRẮNG bo góc lớn + bóng mềm, KHÔNG dải đầu; huy hiệu tròn to đè mép trên (màu theo loại, biểu
      * tượng PNG), tiêu đề đậm canh giữa, X nhỏ góc phải (chỉ khi đóng được). hNoi = cao phần thân (gồm hàng nút); kẹp 70%.
      * Trả {x, y, w, h, yNoi, xNoi, wNoi}.
@@ -388,32 +388,31 @@ public final class HopThongBao extends Dialog {
         VUA_VE[2] = ww;
         VUA_VE[3] = hh + dk / 2;
         int bo = boThe();
-        // bóng mềm (3 lớp mờ dần)
-        KieuO.phu(g, x + 2, y + 5, ww - 4, hh, 0x18101828);
-        GiaoDien.khoi(g, x - 1, y + 2, ww + 2, hh + 1, bo + 1, 0xD5DBE6);
-        GiaoDien.khoi(g, x, y, ww, hh, bo, 0xFFFFFF);
+        // 0.9.7 (NRO): hộp gỗ viền vàng giấy da + bóng cứng; huy hiệu = ô hộp gỗ khung vàng đè mép trên, icon pixel
+        KhungNro.bong(g, x, y, ww, hh);
+        if (!KhungNro.ve(g, KhungNroBang.HOP, x, y, ww, hh)) {
+            GiaoDien.khoi(g, x, y, ww, hh, 4, ChuDe.VIEN);
+            GiaoDien.khoi(g, x + 2, y + 2, ww - 4, hh - 4, 3, ChuDe.NEN);
+        }
         game.render.screen.Font.nenSang = true;
-        // huy hiệu tròn đè mép trên (0.9.6: phần thưởng nảy nhẹ lúc mở)
         int cx = x + ww / 2, cy = y;
         long tt = now - lucMo;
         if ((huyHieu == BieuTuong.QUA || huyHieu == BieuTuong.SU_KIEN) && tt < 520) {
             cy -= (int) (Math.sin(Math.PI * tt / 520.0) * 5);
         }
-        GiaoDien.khoi(g, cx - dk / 2 - 3, cy - dk / 2 - 3, dk + 6, dk + 6, dk / 2 + 3, 0xFFFFFF);
         int mau = mauHuy;
-        if (huyNhat) {
-            GiaoDien.khoiDoc(g, cx - dk / 2, cy - dk / 2, dk, dk, dk / 2, GiaoDien.pha(mau, 0xFFFFFF, 7, 8), GiaoDien.pha(mau, 0xFFFFFF, 5, 7));
-        } else {
-            GiaoDien.khoiDoc(g, cx - dk / 2, cy - dk / 2, dk, dk, dk / 2, GiaoDien.pha(mau, 0xFFFFFF, 1, 4), GiaoDien.pha(mau, 0x000000, 1, 8));
+        int sh = Math.max(dk, 24);
+        if (!KhungNro.ve(g, KhungNroBang.O_CHON, cx - sh / 2, cy - sh / 2, sh, sh)) {
+            GiaoDien.khoi(g, cx - sh / 2, cy - sh / 2, sh, sh, 3, mau);
         }
-        int ic = dk * 3 / 5;
-        BieuTuong.ve(g, huyHieu, cx - ic / 2, cy - ic / 2, ic, huyNhat ? mau : 0xFFFFFF, huyNhat ? GiaoDien.pha(mau, 0xFFFFFF, 6, 8) : mau);
+        int ic = sh - 8;
+        BieuTuong.ve(g, huyHieu, cx - ic / 2, cy - ic / 2, ic, mau, 0x2E1E14);
         huyHieu = BieuTuong.TIN;
         mauHuy = ChuDe.CHINH;
         huyNhat = false;
         // tiêu đề
-        int yTieu = y + dk / 2 + 4;
-        ChuDe.chu(g, ChuDe.cat(tieuDe == null ? "" : tieuDe, ChuDe.TIEU_DE, ww - 2 * pad - 24), cx, yTieu, ChuDe.TIEU_DE, MAU_TIEU_DE, 2);
+        int yTieu = y + Math.max(dk, 24) / 2 + 3;
+        ChuDe.chu(g, ChuDe.cat(tieuDe == null ? "" : tieuDe, ChuDe.TIEU_DE, ww - 2 * pad - 24), cx, yTieu, ChuDe.TIEU_DE, 0x8E1A0E, 2);
         if (dong != null) {
             int sx = Math.max(VungCham.MIN, ChuDe.dt() ? 24 : 16);   // vùng chạm đủ cỡ, X vẽ nhỏ
             Bang.nutDong(g, x + ww - sx - 2, y + 2, sx, dong, false);

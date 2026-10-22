@@ -948,6 +948,13 @@ public class TeamServer {
             System.out.println("[POKEMON] LOI kiem tra cot dex/shiny/he2: " + exPoke);
             exPoke.printStackTrace();
         }
+        // O hanh trang le (ve mo rong / mua xu, real.MoRongTuiGame): tob_char.o_mo_rong. Luu bang cau rieng nen
+        // thieu cot khong khoa nhan vat, nhung phai co cot thi o da mo moi giu duoc qua lan dang nhap sau.
+        try {
+            Database.instance.themCotVeMoRong();
+        } catch (Exception exMoRong) {
+            System.out.println("[MO_RONG] LOI kiem tra cot tob_char.o_mo_rong: " + exMoRong);
+        }
         // GD2 thiet ke dai han: bang moi + doi bang EXP + chuyen EXP nhan vat cu (MOT lan, co sao
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
         if (com.htbb.pokemon.LauDai.bat()) {

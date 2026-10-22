@@ -281,8 +281,12 @@ public class ChupTrongGame {
                     }
                 });
                 Thread.sleep(150);
+                game.pokemon.VeTay.xoa();
                 BufferedImage anh = ve(W, H);
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
+                // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
+                kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
+                        + game.pokemon.VeTay.cuoi + ")");
                 if (ten.startsWith("hop_") || ten.equals("xac_nhan") || ten.equals("so_luong")) {
                     kiemHop(ten + " " + TEN_CO[c]);
                 }
@@ -292,6 +296,7 @@ public class ChupTrongGame {
                 if ("menu_ngu_canh".equals(ten)) {
                     kiemMenuNguCanh(ten + " " + TEN_CO[c]);
                 }
+                kiemTuiNro(ten, ten + " " + TEN_CO[c]);
                 if (ten.startsWith("hst_") && !"hst_ky_nang".equals(ten)) {
                     kiemMenuMayChu(ten + " " + TEN_CO[c]);
                 }
@@ -319,6 +324,11 @@ public class ChupTrongGame {
 
     /** Nhân vật + hành trang + đồ đang mặc giả (không máy chủ). */
     static void giaLap() {
+        // 0.9.7: trạng thái hành trang như gói -105 của máy chủ mới (sức chứa 21 ô -> ô khoá hiện ngay trong lưới, trần 126)
+        game.pokemon.TrangThaiNguoiChoi.oDaMo = 21;
+        game.pokemon.TrangThaiNguoiChoi.oToiDaVe = 126;
+        game.pokemon.TrangThaiNguoiChoi.giaXuMoRong = 30000;
+        game.pokemon.TrangThaiNguoiChoi.soVe = 0;
         game.render.Canvas.isLoad = false;
         game.render.Canvas.endDlg();
         try {
@@ -758,7 +768,7 @@ public class ChupTrongGame {
             game.pokemon.MenuNguCanh.mo(v, false);
         } else if ("tui_loc_thuoc".equals(ten)) {
             game.pokemon.ManNhanVat.moHanhTrang();
-            dat(nv, "loc", Integer.valueOf(1));
+            dat(nv, "loc", Integer.valueOf(game.pokemon.LuoiTui.LOC_THUOC));
         } else if ("tui_loc_nguyen_lieu".equals(ten)) {
             game.pokemon.ManNhanVat.moHanhTrang();
             dat(nv, "loc", Integer.valueOf(3));
@@ -1066,6 +1076,36 @@ public class ChupTrongGame {
                 nhan + " tam rong " + r[2] + " <= 80% vung an toan " + sw);
         kiem(r[3] <= B - T + 1 && r[3] >= 100, nhan + " tam cao " + r[3] + " trong [100, " + (B - T) + "]");
         kiem(r[0] >= L && r[1] >= T && r[0] + r[2] <= R && r[1] + r[3] <= B, nhan + " tam trong vung an toan");
+    }
+
+    /** Tên vùng chạm đã đăng ký có tiền tố t (lớp nào cũng được). */
+    static boolean coVung(String t) {
+        for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
+            String n = game.pokemon.VungCham.ten(i);
+            if (n != null && n.startsWith(t)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * 0.9.7 hành trang kiểu NRO: tab Trang bị / tab Bán = LƯỚI ô (vùng tui-0..), hàng ví có vùng chạm xu + lượng, "Tất cả"
+     * có ô khoá cuối lưới; thẻ vật phẩm (nv_chi_tiet) trong vùng an toàn, có nút Mặc / Vứt / Đóng; tab Bán có nút Bán.
+     */
+    static void kiemTuiNro(String ten, String nhan) {
+        if ("nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten) || "cua_hang_ban".equals(ten) || ten.startsWith("tui_loc")) {
+            kiem(coVung("tui-0"), nhan + " luoi hanh trang co o (tui-0)");
+            kiem(coVung("tien-xu") && coVung("tien-luong"), nhan + " hang vi co xu + luong (cham duoc)");
+            if ("nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten)) {
+                kiem(game.pokemon.LuoiTui.soKhoaVe > 0, nhan + " luoi Tat ca co o khoa cuoi (mo rong) - " + game.pokemon.LuoiTui.soKhoaVe);
+            }
+        }
+        if ("nv_chi_tiet".equals(ten)) {
+            int[] r = game.pokemon.TheVatPham.VUA_VE;
+            int L = game.pokemon.Bang.trai(), T = game.pokemon.Bang.tren(), R = game.pokemon.Bang.phai(), B = game.pokemon.Bang.duoi();
+            kiem(game.pokemon.TheVatPham.dangMo(), nhan + " the vat pham mo");
+            kiem(r[2] > 0 && r[0] >= L && r[1] >= T && r[0] + r[2] <= R && r[1] + r[3] <= B, nhan + " the vat pham trong vung an toan");
+            kiem(coVung("tvp-mac") && coVung("tvp-vut") && coVung("tvp-dong"), nhan + " the vat pham co nut Mac / Vut / Dong");
+        }
     }
 
     /** Menu ngữ cảnh: thẻ trong vùng an toàn, không chồng phần HUD (thẻ trạng thái, nút, bản đồ nhỏ, cụm chiêu, chat). */

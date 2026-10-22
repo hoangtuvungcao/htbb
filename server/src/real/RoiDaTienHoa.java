@@ -22,6 +22,11 @@ public final class RoiDaTienHoa {
             if (idDa <= 0) {
                 return;
             }
+            // 19/10/2026: day tui thi khong nhan (truoc day moi lan roi them 1 o, khong kiem suc chua).
+            if (p.isFullInventory()) {
+                p.sendMessage(MessageCreator.createMsgChat(p.id, "Hành trang đã đầy"));
+                return;
+            }
             Char.createItemSoLuong(idDa, 1, p);
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             final int i = idDa - DaTienHoa.ID_DAU;

@@ -5,76 +5,79 @@ import game.render.screen.Font;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * CHỦ ĐỀ GIAO DIỆN 0.9.6 "kiểu Pokémon GO" (một nơi duy nhất: bảng màu + số đo + kiểu chữ) cho HUD, tấm, bảng,
- * hộp thoại, thông báo, nút và dòng đáy: mặt TRẮNG / nền tấm dải teal rất nhạt, KHÔNG dải đầu màu, tiêu đề tròn đậm
- * canh giữa, nút viên dải TEAL (đỏ chỉ cho nguy hiểm + Poké Ball, vàng cho phần thưởng), bóng mềm, không viền tối. Bản PC (htbb.pc.GiaoDienHD / ChuHD) và APK (HdVe / HdChu) đọc cùng hằng số này
- * nên ba bản cùng một kiểu.
+ * CHỦ ĐỀ GIAO DIỆN 0.9.7 "kiểu NRO / NSO" (một nơi duy nhất: bảng màu + số đo + kiểu chữ) cho HUD, tấm, bảng, hộp
+ * thoại, thông báo, nút: khung GỖ viền vàng góc Poké Ball, thân GIẤY DA, nút KHỐI nổi 3D (cam chính, xanh phụ, đỏ nguy
+ * hiểm, đá tắt), tab gỗ thật, ô đồ hộp gỗ lõm tối, chữ tiêu đề trắng viền nâu - vẽ bằng mảnh pixel 9-slice
+ * ({@link KhungNro}, tools/giao_dien_nro/sinh_khung_nro.py). Tên hằng giữ như 0.9.6 (API ổn định cho mọi màn / nhánh),
+ * GIÁ TRỊ đổi sang bảng màu NRO: NEN = giấy da sáng, CHINH = cam, CHU = nâu đậm, BONG = bóng cứng nâu đen. Bản PC
+ * (htbb.pc.GiaoDienHD / ChuHD) và APK (HdVe / HdChu) đọc cùng hằng số này nên ba bản cùng một kiểu.
  *
- * Chữ giao diện: {@link #chu} / {@link #rong} theo VAI (tiêu đề, nhãn, thường, phụ, số). Bản PC / APK vẽ bằng phông
- * thật (Noto Sans / Be Vietnam Pro) đúng cỡ, đúng độ đậm qua {@link ChuUI#bo}; máy J2ME dùng font ảnh của game.
+ * Chữ giao diện: {@link #chu} / {@link #rong} theo VAI (tiêu đề, nhãn, thường, phụ, số); tiêu đề / chữ trên nút màu:
+ * {@link #chuVien} (viền nâu 1 px logic như chữ NRO). Bản PC / APK vẽ bằng phông thật (Noto Sans / Be Vietnam Pro, tiêu
+ * đề Baloo 2) qua {@link ChuUI#bo}; máy J2ME dùng font ảnh của game (borderFont đã có viền).
  */
 public final class ChuDe {
     private ChuDe() {
     }
 
     // ------------------------------------------------------------------ bảng màu (RGB)
-    /** thân thẻ / bảng: trắng -> trắng xanh rất nhạt */
-    public static final int NEN = 0xFFFFFF;
-    public static final int NEN_DUOI = 0xF6F9FA;
+    /** 0.9.7 thân thẻ / bảng: GIẤY DA sáng -> giấy da (NRO); tên giữ như 0.9.6 */
+    public static final int NEN = 0xF2E0B4;
+    public static final int NEN_DUOI = 0xE7CF9C;
     /** kem ấm (thẻ thông tin, hộp lời thoại) */
-    public static final int KEM = 0xFFF8EA;
+    public static final int KEM = 0xFAEECF;
     /** vùng phụ trong bảng (khung con, rãnh tab, ô trống) */
-    public static final int NEN_PHU = 0xEEF3F6;
-    public static final int NEN_PHU_TOI = 0xE2E9EE;
+    public static final int NEN_PHU = 0xE2C994;
+    public static final int NEN_PHU_TOI = 0xC9A46A;
     /** viền tối mảnh quanh thẻ / nút */
-    public static final int VIEN = 0x2F3A5A;
+    public static final int VIEN = 0x1B0E06;
     /** đường kẻ / viền hàng nhạt */
-    public static final int KE = 0xDFE6EB;
+    public static final int KE = 0xC9A46A;
     /** chữ (xám đá đậm, không navy) */
-    public static final int CHU = 0x24323F;
-    public static final int CHU_PHU = 0x687887;
-    public static final int CHU_NHAT = 0xA3AEB8;
-    /** 0.9.6 MÀU CHÍNH teal / ngọc lam (nút chính, tab chọn, công tắc bật, thanh trượt): dải CHINH_SANG -> CHINH */
-    public static final int CHINH = 0x1FB5A8;
-    public static final int CHINH_SANG = 0x2FCDBE;
-    public static final int CHINH_TOI = 0x138C82;
-    public static final int CHINH_NHAT = 0xE2F6F3;
+    public static final int CHU = 0x3A2412;
+    public static final int CHU_PHU = 0x7A5634;
+    public static final int CHU_NHAT = 0xA88A66;
+    /** 0.9.7 MÀU CHÍNH = CAM (nút chính, tab chọn, thanh trượt): dải CHINH_SANG -> CHINH (0.9.6: teal) */
+    public static final int CHINH = 0xE8861E;
+    public static final int CHINH_SANG = 0xF8AE44;
+    public static final int CHINH_TOI = 0xA04A08;
+    public static final int CHINH_NHAT = 0xFBE3B4;
     /** nền tấm (sheet) toàn màn: dải teal rất nhạt -> gần trắng */
-    public static final int TAM_TREN = 0xE3F5F2;
-    public static final int TAM_DUOI = 0xF7FAFB;
+    public static final int TAM_TREN = 0xF2E0B4;
+    public static final int TAM_DUOI = 0xE7CF9C;
     /** vàng thưởng đậm (chữ / viền trên nền vàng nhạt) */
-    public static final int VANG_TOI = 0xD99A00;
+    public static final int VANG_TOI = 0x8A5A12;
     /** nhấn: đỏ Poké Ball, xanh, vàng Pikachu */
-    public static final int DO = 0xE8412C;
-    public static final int DO_TOI = 0xC9301E;
-    public static final int DO_NHAT = 0xFDE7E3;
-    public static final int XANH = 0x2D8FD6;   // xanh thông tin (biểu tượng tin, chat) - nút chính dùng CHINH
-    public static final int XANH_TOI = 0x2B64B8;
-    public static final int XANH_NHAT = 0xE3EEFC;
-    public static final int VANG = 0xFFC93C;
-    public static final int VANG_NHAT = 0xFFF4D2;
-    public static final int CAM = 0xF39A2B;
-    public static final int LA = 0x43B05C;
-    public static final int LA_TOI = 0x2F8F45;
-    public static final int TEAL = CHINH;
-    public static final int XAM = 0x8A94A6;
+    public static final int DO = 0xC83220;
+    public static final int DO_TOI = 0x8E1A0E;
+    public static final int DO_NHAT = 0xF4C0A8;
+    public static final int XANH = 0x2F66C4;   // xanh thông tin (biểu tượng tin, chat) - nút chính dùng CHINH
+    public static final int XANH_TOI = 0x1E3E86;
+    public static final int XANH_NHAT = 0xC8DCF4;
+    public static final int VANG = 0xF2C54E;
+    public static final int VANG_NHAT = 0xFFE89A;
+    public static final int CAM = 0xE8861E;
+    public static final int LA = 0x36962E;
+    public static final int LA_TOI = 0x1E6A22;
+    public static final int TEAL = 0x1FB5A8;
+    public static final int XAM = 0x85858E;
     public static final int TIM = 0x8E6BE8;
     public static final int HONG = 0xEF6A93;
-    /** "bóng đổ" (khối này -> bóng mềm ở bản HD; J2ME: khối tối lệch 1-2 px) */
-    public static final int BONG = 0x0A0F2C;
+    /** bóng đổ CỨNG (pixel) nâu đen lệch 1-2 px - mọi bản */
+    public static final int BONG = 0x1B0E06;
     /** phủ mờ thế giới sau bảng / menu: ~45 % */
-    public static final int PHU_NEN = 0x73101828;
-    /** thanh máu (xanh lá -> vàng -> đỏ), PP xanh dương, EXP vàng */
-    public static final int HP_XANH = 0x3CC45A;
-    public static final int HP_VANG = 0xF5B921;
-    public static final int HP_DO = 0xE8412C;
-    public static final int PP = 0x3B8FE8;
-    public static final int EXP = 0xF2B705;
-    /** rãnh thanh trên thẻ sáng */
-    public static final int RANH = 0xDDE3EC;
+    public static final int PHU_NEN = 0x7A120804;
+    /** 0.9.7: thanh HP ĐỎ (một màu như NRO), PP xanh dương, EXP vàng */
+    public static final int HP_XANH = 0xE0301E;
+    public static final int HP_VANG = 0xE0301E;
+    public static final int HP_DO = 0xE0301E;
+    public static final int PP = 0x3A78D8;
+    public static final int EXP = 0xF2C21A;
+    /** rãnh thanh: nâu đen lõm */
+    public static final int RANH = 0x24160C;
 
     /** Màu ICON nút tròn HUD (0.9.6: đĩa trắng, icon màu): túi cam, Pokémon đỏ, nhiệm vụ vàng, đội xanh lá, bản đồ teal, cài đặt xám. */
-    public static final int NUT_TUI = CAM, NUT_POKE = DO, NUT_NV = 0xF2B417, NUT_DOI = LA, NUT_BAN_DO = TEAL, NUT_CAI_DAT = XAM;
+    public static final int NUT_TUI = CAM, NUT_POKE = DO, NUT_NV = 0xF2C54E, NUT_DOI = LA, NUT_BAN_DO = XANH, NUT_CAI_DAT = XAM;
 
     // ------------------------------------------------------------------ số đo (px logic, khung 640x360)
     /** bo góc thẻ lớn / ô / nút */
@@ -235,28 +238,64 @@ public final class ChuDe {
         return r;
     }
 
+    /**
+     * Chữ VIỀN kiểu NRO (tiêu đề, chữ trên nút màu): viền mauVien 1 px logic 4 hướng + bóng dưới, rồi chữ mau.
+     * J2ME (font ảnh): font tiêu đề / borderFont đã có viền sẵn -> vẽ thường.
+     */
+    public static void chuVien(Graphics g, String s, int x, int y, int vai, int mau, int mauVien, int canh) {
+        if (s == null || s.length() == 0) {
+            return;
+        }
+        ChuUI b = ChuUI.bo;
+        if (b == null) {
+            chu(g, s, x, y, vai, mau, canh);
+            return;
+        }
+        float c = co(vai);
+        int d = DAM[vai];
+        b.ve(g, s, x, y + 1, c, d, mauVien, canh);
+        b.ve(g, s, x - 1, y, c, d, mauVien, canh);
+        b.ve(g, s, x + 1, y, c, d, mauVien, canh);
+        b.ve(g, s, x, y - 1, c, d, mauVien, canh);
+        b.ve(g, s, x + 1, y + 1, c, d, mauVien, canh);
+        b.ve(g, s, x, y, c, d, mau, canh);
+    }
+
+    /** Chữ viền canh giữa dọc trong (y, h). */
+    public static void chuVienGiua(Graphics g, String s, int x, int y, int h, int vai, int mau, int mauVien, int canh) {
+        chuVien(g, s, x, y + (h - cao(vai)) / 2, vai, mau, mauVien, canh);
+    }
+
     // ------------------------------------------------------------------ khối cơ bản
-    /** Thẻ sáng: bóng mềm + viền tối mảnh + thân trắng. */
+    /** Thẻ: 0.9.7 thẻ giấy da LÕM (mảnh THE) - khối phẳng khi thiếu ảnh. */
     public static void the(Graphics g, int x, int y, int w, int h, int bo) {
-        GiaoDien.theSang(g, x, y, w, h, bo);
+        if (!KhungNro.ve(g, KhungNroBang.THE, x, y, w, h)) {
+            GiaoDien.theSang(g, x, y, w, h, bo);
+        }
         Font.nenSang = true;
     }
 
     /**
-     * Đầu bảng mảnh: dải đỏ (hoặc màu nhấn) bo góc trên, Poké Ball nhỏ, tiêu đề chữ thật trắng. Trả cao đã dùng.
-     * Không vẽ nút đóng (Bang.nutDong đặt trên dải).
+     * Đầu bảng: 0.9.7 BIỂN TIÊU ĐỀ đỏ Poké viền vàng phủ (x, y, w, h), chữ trắng viền nâu canh giữa.
+     * Không vẽ nút đóng (Bang.nutDong đặt trên dải). mau: giữ chữ ký cũ (bỏ qua - biển luôn đỏ).
      */
     public static void dau(Graphics g, int x, int y, int w, int h, String tieuDe, int mau) {
-        GiaoDien.khoiDoc(g, x, y, w, h, BO - 1, GiaoDien.pha(mau, 0xFFFFFF, 1, 6), mau);
-        // mép dưới vuông (đầu nối liền thân thẻ)
-        g.setColor(mau);
-        int bo = Math.min(BO - 1, h / 2);
-        g.fillRect(x, y + h - bo, w, bo);
-        int r = Math.max(4, Math.min(7, h / 2 - 4));
-        GiaoDien.pokeBall(g, x + 8 + r, y + h / 2, r, 0);
+        bien(g, x, y, w, h);
         if (tieuDe != null) {
-            int xt = x + 8 + 2 * r + 7;
-            chuGiua(g, cat(tieuDe, TIEU_DE, w - (xt - x) - h - 6), xt, y, h, TIEU_DE, 0xFFFFFF, 0);
+            chuVienGiua(g, cat(tieuDe, TIEU_DE, w - h - 16), x + w / 2, y, h, TIEU_DE, 0xFFFFFF, VIEN, 2);
+        }
+    }
+
+    /** Biển tiêu đề (mảnh BIEN) + đinh vàng hai đầu khi đủ rộng. */
+    public static void bien(Graphics g, int x, int y, int w, int h) {
+        if (!KhungNro.ve(g, KhungNroBang.BIEN, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 3, VIEN);
+            GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, 2, DO);
+            return;
+        }
+        if (w >= 60 && h >= 14) {
+            KhungNro.hinhGiua(g, KhungNroBang.DINH, x + 9, y + h / 2);
+            KhungNro.hinhGiua(g, KhungNroBang.DINH, x + w - 9, y + h / 2);
         }
     }
 
@@ -264,21 +303,24 @@ public final class ChuDe {
     public static final int[] CHAM_X = new int[64], CHAM_Y = new int[64];
     public static int demCham;
 
-    /** Chấm đỏ báo mới (8-10 px thật) tâm (cx, cy) - nguồn: ChamMoi. */
+    /** Chấm đỏ báo mới tâm (cx, cy) - nguồn: ChamMoi. 0.9.7: chấm pixel 7x7 viền trắng + nâu. */
     public static void cham(Graphics g, int cx, int cy) {
         CHAM_X[demCham & 63] = cx + g.getTranslateX();
         CHAM_Y[demCham & 63] = cy + g.getTranslateY();
         demCham++;
-        // ~8-10 px thật (PC 1280: 5 px logic x 2), điện thoại to hơn chút
+        if (KhungNro.hinhGiua(g, KhungNroBang.CHAM, cx, cy)) {
+            return;
+        }
         int d = dt() ? 6 : 5;
         g.setColor(0xFFFFFF);
-        g.fillArc(cx - d / 2 - 1, cy - d / 2 - 1, d + 2, d + 2, 0, 360);
+        g.fillRect(cx - d / 2 - 1, cy - d / 2 - 1, d + 2, d + 2);
         g.setColor(DO);
-        g.fillArc(cx - d / 2, cy - d / 2, d, d, 0, 360);
+        g.fillRect(cx - d / 2, cy - d / 2, d, d);
     }
 
     /** Dấu X vẽ nét (không ảnh), tâm (cx, cy), nửa cạnh k. */
     public static void dauX(Graphics g, int cx, int cy, int k, int mau) {
+        VeTay.ghi("dau X ve net");
         ChuUI b = ChuUI.bo;
         if (b != null && b.net(g, cx, cy, k, mau, 0)) {
             return;

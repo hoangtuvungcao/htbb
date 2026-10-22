@@ -148,9 +148,11 @@ public class RequestNPCInfoHandler implements ICommandHandler {
         Char p = null;
         Message msg = null;
         String[] menu = {""};
-        // NPC tinh co menu dich vu rieng: Y ta Chansey (0), Meowth ngan hang (22 / 31) - xem real.NpcDichVu.
+        // NPC tinh co menu dich vu rieng: Y ta Chansey (0), Meowth ngan hang (22 / 31), Kangaskhan thu kho (9 / 30:
+        // kho do + mo rong hanh trang) - xem real.NpcDichVu.
         if (npcType == real.NpcDichVu.NPC_Y_TA || npcType == real.NpcDichVu.NPC_PIDGEOT
-                || npcType == real.NpcDichVu.NPC_MEOWTH || npcType == real.NpcDichVu.NPC_MEOWTH_DOI_XU) {
+                || npcType == real.NpcDichVu.NPC_MEOWTH || npcType == real.NpcDichVu.NPC_MEOWTH_DOI_XU
+                || npcType == real.NpcDichVu.NPC_KANGASKHAN || npcType == real.NpcDichVu.NPC_KANGASKHAN_2) {
             if (real.NpcDichVu.moMenu(CharManager.instance.getByUserID(session.userID), npcType)) {
                 return;
             }

@@ -5,8 +5,8 @@ import game.render.screen.Font;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * Hộp thoại NPC kiểu Pokémon GBA/DS: khung trắng viền kép ở ĐÁY màn, thẻ tên người nói, chữ hiện
- * dần (máy chữ), tam giác ▼ nhấp nháy khi hết dòng. Dùng cho lời thoại nhiệm vụ / nói chuyện NPC
+ * Hộp thoại NPC (0.9.7 kiểu NRO): HỘP GỖ viền vàng ở ĐÁY màn, ô CHÂN DUNG NPC khung vàng bên trái (NPC có hình),
+ * BIỂN TÊN đỏ trên mép hộp, chữ hiện dần (máy chữ), tam giác ▼ nhấp nháy khi hết dòng. Dùng cho lời thoại nhiệm vụ / nói chuyện NPC
  * (GameScr.addChat khi đang trò chuyện) thay bong bóng trên đầu; phím / chạm vẫn do GameScr xử lý.
  */
 public final class HopThoaiDuoi {
@@ -28,9 +28,26 @@ public final class HopThoaiDuoi {
     private HopThoaiDuoi() {
     }
 
+    /** số Pokédex NPC đang nói (chân dung trái hộp), -1 = không hình */
+    private static int dex = -1;
+
+    /** NPC đang chọn có hình Pokémon -> số dex, không thì -1. */
+    static int dexDangNoi(String nguoiNoi) {
+        try {
+            game.model.Actor a = Canvas.gameScr == null ? null : Canvas.gameScr.focusedActor;
+            if (nguoiNoi != null && nguoiNoi.length() > 0 && a instanceof game.model.NPC) {
+                return ((game.model.NPC) a).getPokeDex();
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        return -1;
+    }
+
     /** Lời mới của người nói (ten có thể rỗng). */
     public static void dat(String nguoiNoi, String loi, int tickSong) {
         ten = nguoiNoi;
+        dex = dexDangNoi(nguoiNoi);
         hetLuc = System.currentTimeMillis() + thoiGianDoc(loi == null ? 0 : loi.length(), tickSong);
         int w = rongLong();
         dong = Font.arialFont.splitFontBStrInLine(loi == null ? "" : loi, w);
@@ -126,8 +143,14 @@ public final class HopThoaiDuoi {
         return dx * dx + dy * dy > 48 * 48;
     }
 
+    /** cạnh ô chân dung (0 = không có) */
+    private static int coChanDung() {
+        return dex > 0 ? (Canvas.h >= 260 ? 46 : 36) : 0;
+    }
+
     private static int rongLong() {
-        return Canvas.w - 24;
+        int c = coChanDung();
+        return Canvas.w - 24 - (c > 0 ? c + 8 : 0);
     }
 
     /** Số dòng hiện một lúc (3 trên máy cao, 2 trên máy thấp 240 px). */
@@ -155,14 +178,29 @@ public final class HopThoaiDuoi {
         int y = Canvas.h - game.render.screen.Screen.deltaY - h - 2;
         int x = 3;
         int w = Canvas.w - 6;
+        int cd = coChanDung();
+        h = Math.max(h, cd + 12);
+        y = Canvas.h - game.render.screen.Screen.deltaY - h - 2;
         GiaoDien.hop(g, x, y, w, h);
-        // thẻ tên người nói (trên mép trái hộp)
+        int xChu = x + 10;
+        if (cd > 0) {
+            int px = x + 7, py = y + (h - cd) / 2;
+            if (!KhungNro.ve(g, KhungNroBang.O_CHON, px, py, cd, cd)) {
+                GiaoDien.khoi(g, px, py, cd, cd, 3, ChuDe.VANG);
+            }
+            int kx = g.getClipX(), ky = g.getClipY(), kw = g.getClipWidth(), kh = g.getClipHeight();
+            g.clipRect(px + 4, py + 4, cd - 8, cd - 8);
+            PokeBody.paintChanDung(g, dex, false, px + cd / 2, py + cd / 2 + 1, cd - 8);
+            Canvas.resetTrans(g);
+            g.setClip(kx, ky, kw, kh);
+            xChu = px + cd + 8;
+        }
+        // biển tên người nói (đỏ viền vàng, trên mép trái hộp)
         if (ten != null && ten.length() > 0) {
             String t = GiaoDien.catChu(Font.borderFont, ten, w / 2);
-            int wt = Font.borderFont.getWidth(t) + 14;
-            GiaoDien.khoi(g, x + 6, y - 11, wt, 15, 6, GiaoDien.VIEN);
-            GiaoDien.khoiDoc(g, x + 7, y - 10, wt - 2, 13, 5, GiaoDien.DO_SANG, GiaoDien.DO_TOI);
-            Font.borderFont.drawString(g, t, x + 6 + wt / 2, y - 11, Font.CENTER);
+            int wt = Math.max(ChuDe.rong(t, ChuDe.NHAN), Font.borderFont.getWidth(t)) + 24;
+            ChuDe.bien(g, xChu - 4, y - 12, wt, 16);
+            ChuDe.chuVienGiua(g, t, xChu - 4 + wt / 2, y - 12, 16, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
         }
         // máy chữ: 2 ký tự / khung hình
         int tick = Canvas.gameTick - tuTick;
@@ -179,7 +217,7 @@ public final class HopThoaiDuoi {
                 xong = false;
             }
             conLai -= dong[i].length();
-            Font.arialFont.drawString(g, s, x + 10, yy, Font.LEFT);
+            Font.arialFont.drawString(g, s, xChu, yy, Font.LEFT);
             yy += lh;
         }
         if (xong) {

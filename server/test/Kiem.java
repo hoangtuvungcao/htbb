@@ -186,6 +186,7 @@ public final class Kiem {
         KiemQuaiDiChuyen.chay(); // quai di chuyen theo va cham nguoi choi (DiChuyenQuai, moi map cMap, Monster client)
         KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
         KiemDungVatPham.chay(); // lenh 29 / 22: moi loai vat pham co tac dung + phan hoi (real.DungVatPham, -104)
+        KiemMoRongTui.chay(); // mo rong hanh trang (ve / xu, -105 noi them, -107) + vut / ban co so luong (-21 / -23 / 78)
         KiemTrangThaiVatPham.chay(); // 0.9.3: trang thai -105 ngay sau mua / ban / dung / mac / thao, -104 co kieu
         KiemNgoaiHinh.chay(); // ngoai hinh trang bi tren than Pokemon (docs/thiet-ke-game.md)
         KiemThanhVien.chay();
@@ -222,6 +223,7 @@ public final class Kiem {
         KiemCapNhatClient.chay(); // 0.9.7: cap nhat client - hai nguong, goi -115, hop 37 client cu co link
         KiemHocChieu.chay(); // de xuat 1: hoc chieu theo loai (data_learnset) + Diem huan luyen thay diem tiem nang
         KiemBoNgocCheTao.chay(); // bo trang bi cung bac, ngoc he, che tao, moc neo nang cap (bo-ngoc-bat)
+        KiemBanDoKhoa.chay(); // 0.9.8: do khoa ban NPC gia thap + Huy
         KiemBatPokemon.chay(); // thu phuc Pokemon, Hop PC, Keo loai, Pokedex "Da bat" (bo-ngoc-bat)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

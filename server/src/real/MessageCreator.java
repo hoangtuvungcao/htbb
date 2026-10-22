@@ -2157,7 +2157,9 @@ public class MessageCreator {
             }
         }
         m.dos.writeBoolean(p.timeCrazy > 0L);
-        m.dos.writeByte(p.maxBag);
+        // So trang hanh trang client hien. Co o le (ve mo rong / xu, Char.oMoRong) thi lam tron LEN de client cu (chi
+        // biet trang 42 o) van thay het do; client moi doc suc chua dung o goi -105 (oDaMo).
+        m.dos.writeByte(com.htbb.pokemon.MoRongHanhTrang.soTrangHienThi(p.MAX_INVENTORY, p.sucChuaTui()));
         m.dos.writeByte(p.getMyCountry());
         m.dos.writeByte(p.getInCountry());
         m.dos.writeShort(p.maxKill);

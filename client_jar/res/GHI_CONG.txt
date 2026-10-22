@@ -260,6 +260,7 @@ Nhạc nền chiptune gốc, tự soạn cho dự án (CC0) - không dùng nhạ
 Nhóm phát triển Huyền Thoại Bảo Bối (HTBB). Chữ tiếng Việt, giao diện kiểu Pokémon: vẽ bằng code.
 Biểu tượng và nút giao diện (bản PC / Android): do dự án HTBB tự vẽ (tools/pokemon/sinh_icon_ui.py), phát hành CC0 1.0.
 Hình trên icon chiêu (bản PC / Android): game-icons.net - tác giả Lorc, Delapouite, Skoll, sbed, darkzaitzev - CC BY 3.0 (creativecommons.org/licenses/by/3.0); đã sửa đổi (tô màu, viền, thu nhỏ thành huy hiệu pixel). Huy hiệu tự vẽ (sinh_icon_chieu.py), CC0.
+Giao diện kiểu NRO 0.9.7 (khung gỗ / giấy da 9-slice, nút khối, ô đồ, thanh, 62 icon pixel 16x16): do dự án HTBB tự vẽ (tools/giao_dien_nro/sinh_khung_nro.py, icon_nro.py), phát hành CC0 1.0 - không dùng hình của trò chơi khác.
 Logo và key art màn tải / đăng nhập: dựng bằng code (client_jar/tools/tao_logo.py, tao_banner.py) từ sprite PMDCollab (Charmander, Bulbasaur, Eevee, Squirtle, Pichu, Lapras, Butterfree, Mareep, Rayquaza - ghi công ở trên) và tile Ninja Adventure. Chữ logo: font Baloo 2 (Ek Type) - SIL Open Font License 1.1.
 
 Cảm ơn các hoạ sĩ PMDCollab và cộng đồng đã chia sẻ tác phẩm!

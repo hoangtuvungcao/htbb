@@ -39,3 +39,21 @@ Ra `client_jar/out/`: `HTBB-v<N>.jar`, `HTBB-v<N>-release.jar` (ProGuard, `mappi
 sh client_jar/tools/kiem_ve_map/chay.sh /tmp/kiem_ve_map      # client vẽ mọi bản đồ server/cMap (LOI phải 0)
 # KiemPokeDuLieu: sprite/hiệu ứng/âm thanh jar khớp Unity + từ điển khớp server (xem đầu tệp tools/KiemPokeDuLieu.java)
 ```
+
+## Giao diện kiểu NRO (0.9.7)
+
+Một lớp thành phần chung cho cả jar J2ME, APK và PC (`client_jar/src/game/pokemon`):
+
+| Lớp | Việc |
+|---|---|
+| `ChuDe` | bảng màu (tên hằng giữ từ 0.9.6, giá trị NRO: `NEN` giấy da, `CHINH` cam, `CHU` nâu đậm, `BONG` bóng cứng), chữ theo vai, `chuVien` (chữ viền), `bien` (biển tiêu đề đỏ), `cham` |
+| `KhungNro` + `KhungNroBang` (sinh) | vẽ mảnh 9-slice / hình cố định / icon pixel từ `res/nro/khung.png`, `icon.png` (lát `drawRegion`, phóng nguyên) |
+| `Bang` | tấm (`khungTam`, `oTam`), tab gỗ (`phanDoan`), nút khối (`nut` / `vienNut`, kiểu `CHINH` cam, `XAC_NHAN` xanh lá, `PHU` xanh dương, `TRUNG` giấy da, `NGUY` đỏ, `TAT` đá, `GO` gỗ), hàng nổi (`hang`), thẻ lõm (`the`), ô đồ (`oDo`, `oKhoa`, `oTron` = ô vuông), thanh trượt, công tắc, `nutVuong` (HUD) |
+| `GiaoDien` | hộp / bảng / dải tiêu đề / thanh HP-PP-EXP / viên (`khoiPixel`) cho màn của game gốc |
+| `LuoiTui` | lưới hành trang (tab lọc, đếm ô, ô khoá -> mở rộng `-107`, hàng ví) |
+| `TheVatPham` | thẻ thông tin vật phẩm + nút Dùng / Mặc / Tháo / Vứt / Bán (chọn số lượng) |
+| `TheNguoiChoi`, `ViTien` | thẻ người chơi HUD, hàng ví Xu / Lượng / Lượng khoá |
+
+Màn mới: dùng `Bang` / `ChuDe` / `KhungNro`, **không** tô khối trắng / teal trực tiếp - `python3 tools/giao_dien_nro/kiem_kieu_cu.py`
+(trên ảnh `ChupTrongGame`) gắn cờ màn còn kiểu cũ. Sửa hình: `tools/giao_dien_nro/sinh_khung_nro.py` (mảnh) và `icon_nro.py`
+(icon vẽ bằng lưới ký tự), chạy lại bộ sinh; `--kiem` kiểm tệp trong repo khớp.

@@ -135,6 +135,27 @@ public class KiemChamHud {
         return (Integer) m.invoke(null, game.render.Canvas.gameScr, x, y);
     }
 
+    /**
+     * 0.9.7: chạm thẻ người chơi góc trái trên mở màn Nhân vật - HudRong (PC / J2ME màn rộng) và đường J2ME màn nhỏ
+     * không HudRong (giả lập bằng HudRong.tat = true: GameScr.updatePoint).
+     */
+    static void kiemHoSo(boolean j2meNho) throws Exception {
+        ChupTrongGame.chay(() -> {
+            game.render.Canvas.endDlg();
+            game.render.Canvas.menu.showMenu = false;
+            game.render.Canvas.gameScr.focusedActor = null;
+            game.render.Canvas.gameScr.switchToMe();
+        });
+        game.render.screen.HudRong.tat = j2meNho;
+        ngu(200);
+        cham(30, 18);
+        boolean mo = cho(() -> game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat);
+        kiem(mo, "cham the nguoi choi trai tren -> man Nhan vat" + (j2meNho ? " (J2ME man nho, khong HudRong)" : " (HudRong)"));
+        game.render.screen.HudRong.tat = false;
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
+        ngu(150);
+    }
+
     static game.model.Monster quai;
     static game.model.NPC npc;
 
@@ -502,6 +523,10 @@ public class KiemChamHud {
             javax.imageio.ImageIO.write(ChupTrongGame.ve(W, H), "png", new java.io.File(ra, "hud_" + co + ".png"));   // xem bằng mắt
             if ("pc720".equals(co) || "pc4x3".equals(co) || "dt20x9".equals(co) || "pc21x9".equals(co)) {
                 kiemCham();
+            }
+            kiemHoSo(false);
+            if ("pc720".equals(co) || "dt20x9".equals(co)) {
+                kiemHoSo(true);
             }
         }
         System.out.println("KiemChamHud: " + dat + " dat, " + hong + " hong");

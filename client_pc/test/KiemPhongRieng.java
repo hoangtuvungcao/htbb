@@ -17,7 +17,14 @@ import javax.microedition.lcdui.NenPc;
 public class KiemPhongRieng {
     static int dat, hong;
 
+    /** 0.9.8 (giao diện NRO): đếm icon vẽ bằng code từ lần kiểm đầu (sau khi game đã lên) - phải 0. */
+    static boolean daXoaVeTay;
+
     static void kiem(boolean ok, String ten) {
+        if (!daXoaVeTay) {
+            daXoaVeTay = true;
+            game.pokemon.VeTay.xoa();
+        }
         if (ok) dat++;
         else {
             hong++;
@@ -164,6 +171,7 @@ public class KiemPhongRieng {
         });
         kiemGoi();
         kiemVe(ra);
+        kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("KiemPhongRieng: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }

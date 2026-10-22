@@ -276,6 +276,8 @@ Jar mới **dừng ngay** nếu CSDL chưa nâng cấp (`THIEU DU LIEU SQL QUAN 
 |---|---|---|
 | `python3 tools/pokemon/sinh_icon_chieu.py` (`--kiem` chỉ kiểm) | `client_jar/res/ui/chieu{,_tron}_{32,64,96}.png`, `web/public/chieu/*.png` | icon chiêu CHỈ cho giao diện (hiệu ứng trận không đổi); mỗi chiêu gán họ hình + hệ, thiếu là lỗi |
 | `python3 tools/pokemon/sinh_icon_ui.py` | `client_jar/res/ui/ui_96.png`, `nut_96.png` | icon / da nút giao diện |
+| `python3 tools/giao_dien_nro/sinh_khung_nro.py` (`--kiem` chỉ kiểm) | `client_jar/res/nro/{khung,icon}.png`, `client_jar/src/game/pokemon/KhungNroBang.java`, `docs/anh/giao_dien_nro.png` | 0.9.7 giao diện kiểu NRO: mảnh 9-slice + icon pixel (vẽ bằng `game.pokemon.KhungNro`, vào cả jar J2ME) |
+| `python3 tools/giao_dien_nro/kiem_kieu_cu.py <thư mục ảnh ChupTrongGame> [<ChupTruocGame>]` | — | gắn cờ màn còn kiểu GO 0.9.6 (mảng trắng / teal / xám xanh) + mã vẽ kiểu cũ; thoát 1 = còn sót |
 | `python3 tools/pokemon/sinh_icon_client.py` | `client_jar/res/pk_icon.png`, `IconBang.java` | icon vật phẩm |
 | `python3 -I tools/pokemon/sinh_ten_ban_do_client.py` (`--kiem`) | `client_jar/src/game/pokemon/TenBanDoBang.java` | tên bản đồ client lấy từ SQL `data_map_ten` (sửa tên trên web rồi chạy lại trước khi build client) |
 | `python3 -I tools/pokemon/kiem_chuoi_ui.py [chuoi_da_ve.txt]` | — | soát chữ giao diện còn sót (tĩnh + lúc chạy) |

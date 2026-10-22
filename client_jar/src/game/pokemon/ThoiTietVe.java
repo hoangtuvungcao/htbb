@@ -292,6 +292,11 @@ public final class ThoiTietVe {
 
     /** Biểu tượng thời tiết tâm (cx, cy), cỡ s (~16..28 px), vẽ bằng khối (J2ME rẻ). */
     public static void veIcon(Graphics g, int tt, int cx, int cy, int s) {
+        // 0.9.8: icon PNG (/nro/icon.png, BieuTuong.TT_*); vẽ lệnh chỉ còn là dự phòng khi thiếu ảnh (VeTay đếm)
+        if (tt >= QUANG && tt <= GIO && KhungNro.iconGiua(g, BieuTuong.TT_QUANG + tt, cx, cy, Math.max(1, s / 16), -1)) {
+            return;
+        }
+        VeTay.ghi("ThoiTietVe.veIcon vector");
         int r = Math.max(3, s / 4);
         switch (tt) {
             case NANG:

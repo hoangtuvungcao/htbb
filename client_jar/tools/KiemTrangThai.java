@@ -102,7 +102,22 @@ public final class KiemTrangThai {
         // nhận qua đường MessageHandler (lệnh -105)
         dung("nhan(): nhận lệnh -105", TrangThaiNguoiChoi.nhan(goi(-105, hex(MAU_HEX))));
         dung("nhan(): bỏ qua lệnh khác", !TrangThaiNguoiChoi.nhan(goi(-104, new byte[]{0})));
+        // 0.9.7: phần NỐI THÊM (mở rộng hành trang, = server/test/KiemTrangThaiVatPham.MAU_HEX_MO_RONG)
+        bang("-105 cũ: chưa có sức chứa (-1)", Integer.valueOf(-1), Integer.valueOf(TrangThaiNguoiChoi.oDaMo));
+        TrangThaiNguoiChoi.apDung(new DataInputStream(new ByteArrayInputStream(hex(MAU_HEX + MAU_HEX_MO_RONG))), mc);
+        bang("-105 mới: sức chứa", Integer.valueOf(42), Integer.valueOf(TrangThaiNguoiChoi.oDaMo));
+        bang("-105 mới: trần vé", Integer.valueOf(126), Integer.valueOf(TrangThaiNguoiChoi.oToiDaVe));
+        bang("-105 mới: ô mỗi vé", Integer.valueOf(10), Integer.valueOf(TrangThaiNguoiChoi.oMoiVe));
+        bang("-105 mới: giá xu lần kế", Integer.valueOf(20000), Integer.valueOf(TrangThaiNguoiChoi.giaXuMoRong));
+        bang("-105 mới: số vé", Integer.valueOf(0), Integer.valueOf(TrangThaiNguoiChoi.soVe));
+        bang("-105 mới: id vé (-1 = máy chủ không có vé)", Integer.valueOf(-1), Integer.valueOf(TrangThaiNguoiChoi.idVe));
+        bang("-105 mới: loại vé", Integer.valueOf(1), Integer.valueOf(TrangThaiNguoiChoi.loaiVe));
+        bang("sucChua(mc) theo gói mới", Integer.valueOf(42), Integer.valueOf(TrangThaiNguoiChoi.sucChua(mc)));
+        bang("tran(mc)", Integer.valueOf(126), Integer.valueOf(TrangThaiNguoiChoi.tran(mc)));
     }
+
+    /** = server/test/KiemTrangThaiVatPham.MAU_HEX_MO_RONG */
+    static final String MAU_HEX_MO_RONG = "002a007e0a00004e2000000000ffff01";
 
     static byte[] goi104(int loai, String s, int kieu) throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream();

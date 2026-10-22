@@ -112,7 +112,7 @@ public final class HopXacNhan extends Dialog {
         if (this.nguyHiem) {
             HopThongBao.datHuyHieu(BieuTuong.CANH_BAO, ChuDe.DO, false);
         } else if (td.startsWith("Mua") || td.startsWith("Bán") || this.loaiTien >= 0) {
-            HopThongBao.datHuyHieu(BieuTuong.CUA_HANG, ChuDe.TEAL, true);
+            HopThongBao.datHuyHieu(BieuTuong.CUA_HANG, ChuDe.CHINH, true);
         } else {
             HopThongBao.chonHuyHieu(td, this.noiDung, HopThongBao.HOI);
         }
