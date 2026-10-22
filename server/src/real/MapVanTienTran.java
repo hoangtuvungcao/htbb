@@ -244,6 +244,12 @@ public class MapVanTienTran extends Map {
     @Override
     public void playerJoin(Char player) {
         RegionVantienTran rg = this.ALL_REGION.get((short)player.region);
+        if (rg == null && !this.ALL_REGION.isEmpty()) {
+            rg = this.ALL_REGION.values().iterator().next(); // khu khong ton tai (vao bang GM / dich chuyen): khu dau tien
+        }
+        if (rg == null) {
+            return; // ban do su kien chua mo khu nao: khong vao (truoc: NullPointerException)
+        }
         player.region = rg.id;
         player.map = this;
         player.mapID = this.mapId;
