@@ -900,6 +900,9 @@ public final class MoPhongKinhTe {
         }
     }
 
+    /** Moc neo nang cap 0.9.8 (bat mac dinh nhu may chu: nang_cap.moc_neo = 1). */
+    static final boolean MOC_NEO = !"0".equals(System.getProperty("moc_neo", "1"));
+
     void nangCap(final NguoiChoi p, final int ngay) {
         final int mucTieu = PLUS_MUC_TIEU[p.nhom];
         // Du tru: giu 2 gio thu nhap; mua da qua cho neu thieu (gia ~ 0.5 x xu de tu kiem 1 vien).
@@ -917,7 +920,10 @@ public final class MoPhongKinhTe {
             if (k > mucTieu || k > 15) {
                 return;
             }
-            final double chiPhi = nangCapCoDinh ? 5000 : ThongSoLauDai.CHI_PHI_NC[p.tier][k];
+            // 0.9.8 (bo-ngoc-bat): moc neo +7/+10/+13 (truot khong tut duoi moc) + he so xu buoc +11..+15
+            // (nang_cap.he_so_xu_bac_cao = 1060 phan nghin) - nhu may chu (NangCapLauDai), tat bang -Dmoc_neo=0
+            final double chiPhi = nangCapCoDinh ? 5000 : ThongSoLauDai.CHI_PHI_NC[p.tier][k]
+                    * (MOC_NEO && k >= 11 ? com.htbb.pokemon.NangCapLauDai.HE_SO_XU_BAC_CAO_MAC_DINH / 1000.0 : 1.0);
             final int canDa = ThongSoLauDai.DA_NC[k - 1];
             if (p.da < canDa) {
                 final double mua = (canDa - p.da) * giaDa;
@@ -954,7 +960,12 @@ public final class MoPhongKinhTe {
             } else {
                 p.truot[o]++;
                 if (k >= ThongSoLauDai.MAT_CAP_TU && !bua) {
-                    p.plus[o] = Math.max(0, p.plus[o] - 1);
+                    final int truoc = p.plus[o];
+                    p.plus[o] = Math.max(0, truoc - 1);
+                    if (MOC_NEO && !nangCapCoDinh) {
+                        p.plus[o] = Math.max(p.plus[o], com.htbb.pokemon.NangCapLauDai.mocGiu(truoc,
+                                com.htbb.pokemon.NangCapLauDai.MOC_NEO_MAC_DINH));
+                    }
                 }
             }
         }
