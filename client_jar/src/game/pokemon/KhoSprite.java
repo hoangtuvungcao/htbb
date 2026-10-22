@@ -20,6 +20,9 @@ import javax.microedition.rms.RecordStoreFullException;
  * Luong: xin() / docTep() goi tu luong ve (PokeBody), nhanKhuc() tu luong mang -&gt; moi trang thai dong bo tren KHOA.
  * Moi loai chi xin 1 lan / phien; toi da DANG_XIN_TOI_DA goi dang tai cung luc, con lai xep hang.
  * Dang tai: PokeBody ve bong den ("bong"); xong thi PokeBody.boLoai(dex) de lan ve sau nap hinh that.
+ * Ban SAC MAU (shiny, goi "&lt;NNNN&gt;s", kho RMS "pk0016s"): cung so sach LRU / cung ngan sach byte voi ban thuong (mot
+ * con shiny tren man = them mot goi trong ngan sach, khong vuot). Dang tai / may chu bao thieu (loai "chua co shiny"):
+ * PokeBody ve ban thuong.
  */
 public final class KhoSprite {
     public static int NGAN_SACH = KhoSpriteLru.NGAN_SACH_MAC_DINH;
@@ -58,6 +61,13 @@ public final class KhoSprite {
     static String khoa(int dex) {
         return PokeBody.tenKhoa(dex, false);
     }
+
+    static String khoa(int dex, boolean shiny) {
+        return PokeBody.tenKhoa(dex, shiny);
+    }
+
+    /** Ma hang doi: dex, bit 16 = shiny. */
+    static final int CO_SHINY = 0x10000;
 
     private static void khoiTao() {
         if (daKhoiTao) {
@@ -177,16 +187,24 @@ public final class KhoSprite {
 
     /** Loai da co trong kho (khong doc noi dung). */
     public static boolean co(int dex) {
+        return co(dex, false);
+    }
+
+    public static boolean co(int dex, boolean shiny) {
         synchronized (KHOA) {
             khoiTao();
-            String k = khoa(dex);
+            String k = khoa(dex, shiny);
             return ram.containsKey(k) || coRms && lru.co(k);
         }
     }
 
     /** Loai nay may chu bao khong co sprite (trong phien). */
     public static boolean thieu(int dex) {
-        return thieu.containsKey(khoa(dex));
+        return thieu(dex, false);
+    }
+
+    public static boolean thieu(int dex, boolean shiny) {
+        return thieu.containsKey(khoa(dex, shiny));
     }
 
     /**
@@ -194,6 +212,11 @@ public final class KhoSprite {
      * = false, da co trong kho, da xin, hoac may chu da bao thieu.
      */
     public static void xin(int dex) {
+        xin(dex, false);
+    }
+
+    /** Nhu xin(dex) cho ban thuong hoac ban SAC MAU (goi "&lt;NNNN&gt;s"). */
+    public static void xin(int dex, boolean shiny) {
         if (dex <= 0 || dex > 9999) {
             return;
         }
@@ -202,12 +225,12 @@ public final class KhoSprite {
                 return;
             }
             khoiTao();
-            String k = khoa(dex);
+            String k = khoa(dex, shiny);
             if (daXin.containsKey(k) || thieu.containsKey(k) || ram.containsKey(k) || coRms && lru.co(k)) {
                 return;
             }
             daXin.put(k, Boolean.TRUE);
-            hang.addElement(new Integer(dex));
+            hang.addElement(new Integer(dex | (shiny ? CO_SHINY : 0)));
         }
         bom();
     }
@@ -224,10 +247,12 @@ public final class KhoSprite {
                 hang.removeElementAt(0);
                 soDangXin++;
             }
-            if (!LoaiMang.guiXinSprite(dex)) {
+            boolean sh = (dex & CO_SHINY) != 0;
+            int d = dex & 0xFFFF;
+            if (!LoaiMang.guiXinSprite(d, sh)) {
                 synchronized (KHOA) {
                     soDangXin--;
-                    daXin.remove(khoa(dex));   // chua noi may chu: lan ve sau xin lai
+                    daXin.remove(khoa(d, sh));   // chua noi may chu: lan ve sau xin lai
                 }
                 return;
             }
@@ -239,7 +264,7 @@ public final class KhoSprite {
      * lam moi hinh, 0 neu chua xong / loi.
      */
     public static int nhanKhuc(int dex, boolean shiny, int tong, int viTri, byte[] du) {
-        String k = khoa(dex);
+        String k = khoa(dex, shiny);
         byte[] xong = null;
         boolean het = false;
         synchronized (KHOA) {
@@ -272,7 +297,7 @@ public final class KhoSprite {
         }
         int kq = 0;
         if (xong != null) {
-            if (luu(dex, xong)) {
+            if (luu(dex, shiny, xong)) {
                 kq = dex;
             } else {
                 thieu.put(k, Boolean.TRUE);
@@ -286,10 +311,15 @@ public final class KhoSprite {
 
     /** Kiem goi roi luu (RMS co ngan sach, hoac RAM). false = goi hong. */
     public static boolean luu(int dex, byte[] goi) {
-        if (GoiSprite.doc(goi, dex) == null) {
+        return luu(dex, false, goi);
+    }
+
+    /** Luu goi ban thuong / ban sac mau (co shiny trong dau goi phai khop). */
+    public static boolean luu(int dex, boolean shiny, byte[] goi) {
+        if (GoiSprite.doc(goi, dex) == null || GoiSprite.shiny(goi) != (shiny ? 1 : 0)) {
             return false;
         }
-        String k = khoa(dex);
+        String k = khoa(dex, shiny);
         synchronized (KHOA) {
             khoiTao();
             tach.remove(k);

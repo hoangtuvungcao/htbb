@@ -36,6 +36,13 @@ public final class LoaiDuLieu {
         /** 0 thieu (chi Pokedex), 1 dung duoc, 2 du dong tac. */
         public final int sprite;
         public final boolean chanDung, goiMayChu, trongJar;
+        /**
+         * Mo ta Pokedex tieng Viet tu viet (data_loai.mo_ta) va co goi shiny PMDCollab (data_loai_sprite.shiny,
+         * server/map/loai/&lt;NNNN&gt;s.goi). Dat MOT lan boi bo nap (DatabaseLoai) TRUOC khi bang duoc dat (dat()), sau do
+         * chi doc; khong co cot (CSDL cu) thi giu mac dinh.
+         */
+        public String moTa = "";
+        public boolean coShiny;
 
         public Loai(final int dex, final String ten, final int theHe, final int he1, final int he2, final int[] chiSo,
                 final int nhom, final int dexGoc, final int tienHoaTu, final int giaiDoan, final int bac, final int gocBat,
@@ -204,6 +211,18 @@ public final class LoaiDuLieu {
     public String ten(final int dex) {
         final Loai x = lay(dex);
         return x == null ? "" : x.ten;
+    }
+
+    /** Mo ta Pokedex ("" neu chua co). */
+    public String moTa(final int dex) {
+        final Loai l = lay(dex);
+        return l == null ? "" : l.moTa;
+    }
+
+    /** Loai co ban sac mau (goi shiny) - chi loai nay moi duoc tung shiny ngoai troi. */
+    public boolean coShiny(final int dex) {
+        final Loai l = lay(dex);
+        return l != null && l.coShiny;
     }
 
     public int bac(final int dex) {

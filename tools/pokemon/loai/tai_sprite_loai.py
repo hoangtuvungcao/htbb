@@ -4,6 +4,12 @@ Tai sprite PMDCollab SpriteCollab o COMMIT GHIM cho mot dai so Pokedex (mac dinh
 
     python3 -I tools/pokemon/loai/tai_sprite_loai.py            # 1..251
     python3 -I tools/pokemon/loai/tai_sprite_loai.py 252 386    # dai khac (Gen 3)
+    python3 -I tools/pokemon/loai/tai_sprite_loai.py --shiny 1 251   # ban SHINY (sac mau) cua PMDCollab
+
+Shiny: PMDCollab de ban sac mau o nhanh con 0000/0001 cua moi loai (tracker: subgroups 0000 -> subgroups 0001,
+ten "Shiny"; tep: sprite/<NNNN>/0000/0001/, portrait/<NNNN>/0000/0001/Normal.png). Ra tools/pokemon/pmd_raw/<NNNN>s/.
+Chi tai khi nhanh shiny DUNG DUOC (cung luat voi ban thuong: sprite_complete >= 1 va co Walk). Khong co thi loai do
+"chua co shiny": KHONG tu doi mau / suy bang mau (khong co nguon bang mau shiny chinh thuc co giay phep).
 
 Ra: tools/pokemon/pmd_raw/<NNNN>/ (AnimData.xml, <Anim>-{Anim,Shadow,Offsets}.png, credits.txt, portrait.png).
 Thu muc nay KHONG commit (.gitignore). Neu thu muc cua repo chinh (bien HTBB_PMD_RAW_CU, mac dinh
@@ -96,7 +102,14 @@ def dung_duoc(e):
     return bool(e) and e.get("sprite_complete", 0) > 0 and "Walk" in (e.get("sprite_files") or {})
 
 
+def nhanh_shiny(e):
+    """Nhanh shiny (0000/0001) cua mot loai trong tracker.json, None neu khong co."""
+    return ((((e or {}).get("subgroups") or {}).get("0000") or {}).get("subgroups") or {}).get("0001")
+
+
 def main(argv):
+    shiny = "--shiny" in argv
+    argv = [a for a in argv if a != "--shiny"]
     tu = int(argv[1]) if len(argv) > 1 else 1
     den = int(argv[2]) if len(argv) > 2 else 251
     with open(TRACKER, encoding="utf8") as f:
@@ -108,23 +121,25 @@ def main(argv):
     for dex in range(tu, den + 1):
         k = "%04d" % dex
         e = tracker.get(k)
+        if shiny:
+            e = nhanh_shiny(e)
         if not dung_duoc(e):
             bo.append(k)
             so_bo += 1
             continue
-        tm = os.path.join(RAW, k)
-        if not os.path.isfile(os.path.join(tm, "AnimData.xml")) and cu and os.path.isfile(os.path.join(cu, k, "AnimData.xml")):
+        tm = os.path.join(RAW, k + ("s" if shiny else ""))
+        if not shiny and not os.path.isfile(os.path.join(tm, "AnimData.xml")) and cu and os.path.isfile(os.path.join(cu, k, "AnimData.xml")):
             shutil.copytree(os.path.join(cu, k), tm, dirs_exist_ok=True)
             so_chep += 1
         os.makedirs(tm, exist_ok=True)
-        base = "%s/sprite/%s" % (NGUON, k)
+        base = "%s/sprite/%s%s" % (NGUON, k, "/0000/0001" if shiny else "")
         xml = os.path.join(tm, "AnimData.xml")
         if not tai(base + "/AnimData.xml", xml):
             print("LOI %s: khong co AnimData.xml" % k)
             loi += 1
             continue
         tai(base + "/credits.txt", os.path.join(tm, "credits.txt"))
-        tai("%s/portrait/%s/Normal.png" % (NGUON, k), os.path.join(tm, "portrait.png"))
+        tai("%s/portrait/%s%s/Normal.png" % (NGUON, k, "/0000/0001" if shiny else ""), os.path.join(tm, "portrait.png"))
         anims = doc_anim(xml)
         thieu = []
         for ten_game, uu_tien in DONG_TAC:
@@ -139,7 +154,7 @@ def main(argv):
             loi += 1
             print("LOI %s: thieu dong tac %s" % (k, ",".join(thieu)))
         so_tai += 1
-    print("Dai %d..%d: %d loai co sprite (%d chep tu repo chinh), %d khong co sprite dung duoc%s, %d loi"
+    print(("SHINY " if shiny else "") + "Dai %d..%d: %d loai co sprite (%d chep tu repo chinh), %d khong co sprite dung duoc%s, %d loi"
           % (tu, den, so_tai, so_chep, so_bo, (" (" + " ".join(bo) + ")") if bo else "", loi))
     return 1 if loi else 0
 

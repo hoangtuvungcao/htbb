@@ -100,7 +100,8 @@ public final class KiemDatTenPet {
         final String ntg = doc("../client_jar/src/game/pokemon/NhanTheGioi.java");
         Kiem.dung("client NhanTheGioi: nhan pet nho hon (coPet < coNhan), mau diu, chong thi BO (khong ve mo)",
                 ntg.contains("static float coPet()") && ntg.contains("return ChuDe.dt() ? 6.2f : 5.6f;")
-                        && ntg.contains("if (LOAI[i] == PET || laQuai && p == 5) {"));
+                        // 0.9.7 (gop giao-dien-nro b83c3e28): khong bao gio chong - thu cho khac, het cho thi an (THU[k] = -1)
+                        && ntg.contains("boolean laQuai = LOAI[i] == QUAI || LOAI[i] == PET;") && ntg.contains("THU[k] = -1;"));
         Kiem.dung("client AnimalMove.paintName -> NhanPet (moi pet: minh + nguoi khac)",
                 doc("../client_jar/src/game/model/AnimalMove.java").contains("game.pokemon.NhanPet.ve(this);"));
     }

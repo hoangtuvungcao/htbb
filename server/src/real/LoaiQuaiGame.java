@@ -38,7 +38,7 @@ public final class LoaiQuaiGame {
     static final long CHU_KY_NAP_MS = 5L * 60 * 1000;
     static final ConcurrentHashMap<Integer, Long> LAN_BAO_MAP = new ConcurrentHashMap<Integer, Long>();
     static final long CACH_BAO_MAP_MS = 60L * 1000;
-    static final AtomicLong DEM_DOI = new AtomicLong(), DEM_HIEM = new AtomicLong();
+    static final AtomicLong DEM_DOI = new AtomicLong(), DEM_HIEM = new AtomicLong(), DEM_SHINY = new AtomicLong();
 
     private LoaiQuaiGame() {
     }
@@ -159,10 +159,12 @@ public final class LoaiQuaiGame {
     public static boolean khiHoiSinh(final Monster m) {
         try {
             final int cu = m.dexRieng;
+            final boolean shinyCu = m.shinyRieng;
             if (!bat() || !duDieuKien(m)) {
                 m.dexRieng = 0;
                 m.bacRieng = 0;
-                return cu != 0;
+                m.shinyRieng = false;
+                return cu != 0 || shinyCu;
             }
             final LoaiDuLieu d = bang();
             if (d.rong()) {
@@ -175,6 +177,7 @@ public final class LoaiQuaiGame {
                     gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), thamSo(), R);
             m.dexRieng = kq.dex;
             m.bacRieng = kq.bac;
+            m.shinyRieng = kq.dex > 0 && tungShiny(d, kq.dex);
             if (kq.dex > 0) {
                 m.daCoLoaiRieng = true;
                 DEM_DOI.incrementAndGet();
@@ -185,11 +188,53 @@ public final class LoaiQuaiGame {
                     bao(m, d, kq);
                 }
             }
-            return cu != kq.dex;
+            if (m.shinyRieng) {
+                DEM_SHINY.incrementAndGet();
+                baoShiny(m, d);
+            }
+            return cu != kq.dex || shinyCu != m.shinyRieng;
         } catch (final Throwable e) {
             System.out.println("[LOAI] khiHoiSinh: " + e);
             return false;
         }
+    }
+
+    /**
+     * Tung shiny cho con quai vua co loai rieng (docs/thiet-ke-game.md 2.6: 1/4.096 - khoa shiny.mau_so - x tuan shiny
+     * x10 / ngay cong dong x5 chi trong gio vang). Chi loai co goi shiny that (data_loai_sprite.shiny).
+     */
+    static boolean tungShiny(final LoaiDuLieu d, final int dex) {
+        final int mau = (int) Math.max(1, com.htbb.pokemon.LauDai.so(com.htbb.pokemon.LauDai.K_SHINY_MAU,
+                com.htbb.pokemon.CuonHut.SHINY_MAU));
+        int nhan = 1;
+        try {
+            nhan = SuKienLauDaiGame.nhanShiny();
+        } catch (final Throwable ignored) {
+            // danh muc su kien chua nap: x1
+        }
+        return ChonLoaiHoangDa.shiny(d, dex, R.nextInt(mau), mau, nhan);
+    }
+
+    /** Shiny vua xuat hien: bao nguoi trong ban do thay duoc (client moi), moi ban do toi da 1 tin / phut. */
+    static void baoShiny(final Monster m, final LoaiDuLieu d) {
+        try {
+            final String tin = "Một " + d.ten(m.dexRieng) + " sắc màu vừa xuất hiện ở " + Map.getNameMap(m.map.mapId) + "!";
+            final java.util.Vector<Char> ds = m.map.getAllPlayer(m.inCountry, m.region);
+            if (ds != null) {
+                for (final Char p : new ArrayList<Char>(ds)) {
+                    if (p != null && p.isBot == -1 && thayLoaiRieng(p)) {
+                        p.sendMessage(MessageCreator.createthongbao(tin));
+                    }
+                }
+            }
+        } catch (final Throwable e) {
+            System.out.println("[LOAI] baoShiny: " + e);
+        }
+    }
+
+    /** Con quai {@code m} la shiny voi nguoi {@code p}: chi khi p thay dung loai rieng (client cu thay loai mau, khong shiny). */
+    public static boolean shinyChoNguoi(final Char p, final Monster m) {
+        return m != null && m.shinyRieng && m.dexRieng > 0 && thayLoaiRieng(p);
     }
 
     /** T4+ bao nguoi trong ban do (khong bao toan may chu de tranh don nguoi); T5 bao toan may chu (2.4). */
@@ -236,7 +281,7 @@ public final class LoaiQuaiGame {
             return;
         }
         final List<int[]> ds = new ArrayList<int[]>(1);
-        ds.add(new int[]{mt.id, mt.dexRieng, 0, mt.dexRieng > 0 ? mt.bacRieng : 0});
+        ds.add(new int[]{mt.id, mt.dexRieng, mt.dexRieng > 0 && mt.shinyRieng ? 1 : 0, mt.dexRieng > 0 ? mt.bacRieng : 0});
         final Message m = taoQuaiCon(ds);
         if (m != null) {
             p.sendMessage(m);
@@ -256,6 +301,6 @@ public final class LoaiQuaiGame {
     /** Thong ke cho log / quan tri. */
     public static String thongKe() {
         final LoaiDuLieu d = LoaiDuLieu.hien();
-        return "loai " + d.soLoai() + " (mo " + d.soLoaiDaMo() + "), doi loai " + DEM_DOI.get() + ", hiem T3+ " + DEM_HIEM.get();
+        return "loai " + d.soLoai() + " (mo " + d.soLoaiDaMo() + "), doi loai " + DEM_DOI.get() + ", hiem T3+ " + DEM_HIEM.get() + ", shiny " + DEM_SHINY.get();
     }
 }

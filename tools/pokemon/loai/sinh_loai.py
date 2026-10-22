@@ -314,7 +314,9 @@ def main():
         trong_jar = int(r.get("trong_jar") or 0)
         goi = int(r.get("goi_server") or 0)
         l["sprite"] = {
-            "trang_thai": 2 if (pmd >= 2 and walk) else 1 if (walk or trong_jar or goi) else 0,
+            # dung duoc = PMDCollab sprite_complete >= 1 VA co Walk (README); co khoa Walk ma sprite_complete = 0 (ban nhap
+            # chua xong, vd #593, #865, #1025) la THIEU: khong bao gio xuat hien ngoai troi
+            "trang_thai": 2 if (pmd >= 2 and walk) else 1 if ((walk and pmd >= 1) or trong_jar or goi) else 0,
             "chan_dung": int(r.get("pmd_chan_dung") or 0),
             "trong_jar": trong_jar, "goi_server": goi, "kich_thuoc": int(r.get("kich_thuoc_goi") or 0),
             "ghi_cong": (r.get("ghi_cong") or "")[:250],

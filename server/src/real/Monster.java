@@ -24,6 +24,8 @@ public class Monster extends LiveActor {
     public int bacRieng;
     /** Da tung mang loai rieng (khi ve lai loai mau van gui -125 dex 0 de client xoa ghi de). */
     public boolean daCoLoaiRieng;
+    /** Con quai mang loai rieng nay la ban SAC MAU (shiny) - nguoi choi client moi thay, bat duoc shiny (LoaiQuaiGame). */
+    public boolean shinyRieng;
     public int default_x;
     public int default_y;
     public int toX;

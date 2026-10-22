@@ -13,7 +13,7 @@ import java.io.DataInputStream;
  */
 public final class BangLoai {
     public static final int CO_DA_MO = 1, CO_SPRITE = 2, CO_CHAN_DUNG = 4;
-    public static final int DEX_GAP = 1, DEX_HA = 2, DEX_BAT = 4;
+    public static final int DEX_GAP = 1, DEX_HA = 2, DEX_BAT = 4, DEX_BAT_SHINY = 8;
     /** Dex lon nhat client giu chi so (Gen 9 = 1025, de du cho dang moi). */
     public static final int DEX_TOI_DA = 1200;
 

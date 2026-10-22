@@ -56,11 +56,16 @@ public final class LoaiMang {
     }
 
     static boolean guiXinSprite(int dex) {
+        return guiXinSprite(dex, false);
+    }
+
+    /** Xin goi sprite ban thuong / ban sac mau ("&lt;NNNN&gt;s.goi"). */
+    static boolean guiXinSprite(int dex, boolean shiny) {
         try {
             Message m = new Message(POKE_LOAI);
             m.writer().writeByte(K_SPRITE);
             m.writer().writeShort(dex);
-            m.writer().writeByte(0);
+            m.writer().writeByte(shiny ? 1 : 0);
             return gui(m);
         } catch (Throwable e) {
             return false;
@@ -164,7 +169,7 @@ public final class LoaiMang {
             int bac = r.readUnsignedByte();
             dat(id, dex, shiny != 0, bac);
             if (dex > 0) {
-                taiTruoc(dex);
+                taiTruoc(dex, shiny != 0);
             }
         }
         // co may chu moi: lay ten loai cho nhan quai
@@ -212,8 +217,16 @@ public final class LoaiMang {
 
     /** Loai khong co trong jar: xin truoc khi can ve (thu tu = thu tu goi -125). */
     static void taiTruoc(int dex) {
+        taiTruoc(dex, false);
+    }
+
+    /** Quai sac mau: xin ca goi shiny (ban thuong van can cho luc dang tai / loai chua co shiny). */
+    static void taiTruoc(int dex, boolean shiny) {
         if (!PokeBody.coTrongJar(dex)) {
             KhoSprite.xin(dex);
+        }
+        if (shiny && !PokeBody.coTrongJar(dex, true)) {
+            KhoSprite.xin(dex, true);
         }
     }
 

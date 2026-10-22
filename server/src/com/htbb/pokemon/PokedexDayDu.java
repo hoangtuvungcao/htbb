@@ -42,7 +42,8 @@ public final class PokedexDayDu {
         if (dx == null || !dx.daGap(dex)) {
             return 0;
         }
-        return 1 | (dx.soHa(dex) > 0 ? 2 : 0) | (daBat(dx, dex) ? 4 : 0);
+        // bit3 (loai-bo-sung): da bat ban sac mau (tob_pokedex.bat_shiny) - client cu chi doc bit0..2
+        return 1 | (dx.soHa(dex) > 0 ? 2 : 0) | (daBat(dx, dex) ? 4 : 0) | (dx.batShiny(dex) ? 8 : 0);
     }
 
     static String so(final int n) {

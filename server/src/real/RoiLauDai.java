@@ -66,17 +66,26 @@ final class RoiLauDai {
         if (dex <= 0) {
             return;
         }
+        // ha dung con quai SAC MAU nguoi nay nhin thay (loai rieng shiny, client moi): ghi "thay shiny" vao Pokedex ngay,
+        // khong dung toi dem pity (dem pity chi cho shiny tung luc ha nhu cu)
+        final boolean thayShiny = LoaiQuaiGame.shinyChoNguoi(p, mt) && dex == mt.dexRieng;
         final boolean ra;
         synchronized (h) {
-            ra = CuonHut.shiny(h.shinyDem, Map.random(CuonHut.SHINY_MAU), SuKienLauDaiGame.nhanShiny(),
+            if (thayShiny) {
+                h.shinySo++;
+                h.ban = true;
+            }
+            ra = !thayShiny && CuonHut.shiny(h.shinyDem, Map.random(CuonHut.SHINY_MAU), SuKienLauDaiGame.nhanShiny(),
                     CuonHut.SHINY_MAU, CuonHut.SHINY_PITY);
-            h.shinyDem = ra ? 0 : h.shinyDem + 1;
+            if (!thayShiny) {
+                h.shinyDem = ra ? 0 : h.shinyDem + 1;
+            }
             if (ra) {
                 h.shinySo++;
             }
             h.ban = true;
         }
-        if (ra) {
+        if (ra || thayShiny) {
             DatabaseLauDai.congShiny(p.charDBID, dex);
             NhiemVuEngine.suKien(p, "pokedex_shiny", String.valueOf(dex), 1);
             try {

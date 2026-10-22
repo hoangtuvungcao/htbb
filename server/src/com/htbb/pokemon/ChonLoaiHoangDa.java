@@ -18,6 +18,10 @@ import java.util.Random;
  * heSo = gio it nguoi (0-5 gio) x1,5, kep o heSoToiDa. Trong bac, trong so loai hop thoi tiet x1,5.
  * Bac duoc chon ma khong co ung vien thi tra 0 (KHONG roi xuong bac thap hon -> khong tang ti le gap).
  * Loai chua mo, khong bat duoc (T6) hoac bac 6 KHONG BAO GIO duoc chon (T6 chi o dot kich).
+ * Loai KHONG CO SPRITE dung duoc (data_loai_sprite.trang_thai = 0: 64 loai PMDCollab chua ve, chi co chan dung
+ * Pokedex) cung khong bao gio duoc chon, ke ca khi dot cua no da mo - cho toi khi co hinh that.
+ * Shiny rieng (sau khi da co loai rieng): {@link #shiny} - 1/mau (mac dinh 4.096, khoa shiny.mau_so) x he so su kien
+ * (tuan shiny x10, ngay cong dong x5 CHI trong gio vang - SuKienLauDai.nhanShiny); chi loai co goi shiny.
  *
  * Lop THUAN (Random truyen vao), test: test/KiemLoaiDayDu.
  */
@@ -88,7 +92,7 @@ public final class ChonLoaiHoangDa {
                 continue;
             }
             final LoaiDuLieu.Loai l = d.lay(v.dex);
-            if (l == null || !l.daMo || !l.batDuoc || l.bac >= LoaiDuLieu.T6) {
+            if (l == null || !l.daMo || !l.batDuoc || l.bac >= LoaiDuLieu.T6 || l.sprite <= 0) {
                 continue;
             }
             if (!conHieuLuc(v, dem, thoiTiet)) {
@@ -125,6 +129,18 @@ public final class ChonLoaiHoangDa {
             }
         }
         return ds.get(ds.size() - 1).dex;
+    }
+
+    /**
+     * Con quai vua co loai rieng {@code dex} co la shiny khong: {@code roll} = so ngau nhien 0..mau-1, {@code nhan} = he so
+     * su kien (1 thuong, 10 tuan shiny, 5 gio vang ngay cong dong). Loai khong co ban sac mau (chua co goi shiny that,
+     * KHONG doi mau gia) thi khong bao gio shiny. Khong pity (pity la cua dem ha quai tung nguoi, RoiLauDai).
+     */
+    public static boolean shiny(final LoaiDuLieu d, final int dex, final int roll, final int mau, final int nhan) {
+        if (d == null || dex <= 0 || !d.coShiny(dex)) {
+            return false;
+        }
+        return roll >= 0 && roll < Math.max(1, Math.min(nhan, Math.max(1, mau)));
     }
 
     /**

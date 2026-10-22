@@ -24,6 +24,11 @@ public final class GoiSprite {
         return b != null && b.length >= 9 && b[0] == 'H' && b[1] == 'T' && b[2] == 'P' && b[3] == 'K';
     }
 
+    /** Co shiny ghi trong goi (0 / 1; -1 neu hong). */
+    public static int shiny(byte[] b) {
+        return dauHopLe(b) ? b[7] & 0xFF : -1;
+    }
+
     /** Dex ghi trong goi (-1 neu hong). */
     public static int dex(byte[] b) {
         if (!dauHopLe(b)) {
@@ -99,8 +104,8 @@ public final class GoiSprite {
     }
 
     /**
-     * Ten tep trong jar ("/pk/0016_0.png") -&gt; khoa loai ("0016"); null neu khong phai sprite loai thuong 4 so
-     * (bong, vt_*, hu_*, shiny "0016s" ... khong tai theo nhu cau).
+     * Ten tep trong jar ("/pk/0016_0.png") -&gt; khoa loai ("0016"; ban sac mau "/pk/0016s_0.png" -&gt; "0016s"); null neu
+     * khong phai sprite loai 4 so (bong, vt_*, hu_* ... khong tai theo nhu cau).
      */
     public static String khoaTuDuongDan(String duongDan) {
         if (duongDan == null || !duongDan.startsWith("/pk/") || duongDan.length() < 8) {
@@ -112,12 +117,16 @@ public final class GoiSprite {
                 return null;
             }
         }
-        if (duongDan.length() > 8) {
-            char c = duongDan.charAt(8);
+        int het = 8;
+        if (duongDan.length() > 8 && duongDan.charAt(8) == 's') {
+            het = 9;   // ban sac mau (goi <NNNN>s.goi)
+        }
+        if (duongDan.length() > het) {
+            char c = duongDan.charAt(het);
             if (c != '.' && c != '_') {
                 return null;
             }
         }
-        return duongDan.substring(4, 8);
+        return duongDan.substring(4, het);
     }
 }

@@ -412,6 +412,9 @@ public final class BatPokemon {
         public String ten = "", tenDoHiem = "", tenTruoc = "", tenSau = "";
         public String[] noiSong = new String[0];
         public int[] goc;
+        /** Đuôi gói (loai-bo-sung): mô tả Pokédex tiếng Việt; loài có bản sắc màu; đã bắt shiny. */
+        public String moTa = "";
+        public boolean coShiny, batShiny;
     }
 
     public static final Hashtable LOAI = new Hashtable();
@@ -457,6 +460,15 @@ public final class BatPokemon {
             l.goc = new int[6];
             for (int i = 0; i < 6; i++) {
                 l.goc[i] = r.readUnsignedByte();
+            }
+        }
+        // đuôi tuỳ chọn (máy chủ cũ không gửi): UTF mô tả, u8 cờ (bit0 có bản sắc màu, bit1 đã bắt shiny)
+        if (r.available() >= 2) {
+            l.moTa = r.readUTF();
+            if (r.available() >= 1) {
+                int c = r.readUnsignedByte();
+                l.coShiny = (c & 1) != 0;
+                l.batShiny = (c & 2) != 0;
             }
         }
         LOAI.put(new Integer(l.dex), l);

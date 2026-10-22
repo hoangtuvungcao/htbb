@@ -302,6 +302,12 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
   (`so_bat`, `bat_shiny`) khi thu phục (mục 7.7).
 - **Shiny** (quái): 1/4.096 lần hạ, pity 2.000 (lần thứ 2.000 không ra thì chắc chắn ra). Tuần Shiny ×10, Ngày cộng đồng
   ×5. Shiny chỉ đổi màu và cho danh hiệu, **không cộng chỉ số**. Shiny trứng nhà trẻ có tỉ lệ riêng (mục 7.4).
+- **Shiny hoang dã nhìn thấy được** (loai-bo-sung): con quái vừa nhận **loài riêng** (2.6b) tung shiny riêng lúc hồi sinh,
+  cùng tỉ lệ 1/4.096 (`shiny.mau_so`) × Tuần Shiny ×10 / Ngày cộng đồng ×5 **chỉ trong giờ vàng** (`SuKienLauDai.nhanShiny`),
+  không pity. Chỉ loài có **bản sắc màu thật** (`data_loai_sprite.shiny`, gói `<NNNN>s.goi` PMDCollab) mới được tung;
+  loài "chưa có shiny" không bao giờ shiny (không đổi màu giả). Mọi người chơi client ≥ 908 trong bản đồ thấy cùng con
+  sắc màu (`-125` byte shiny) và nhận tin; ném bóng bắt được là **bắt shiny** (Hộp PC, Kẹo ×2, Pokédex `bat_shiny`, cờ
+  Pokédex bit3); hạ nó ghi "đã thấy shiny" (không đụng bộ đếm pity). Client ≤ 907 thấy loài mẫu, không shiny.
 - 16 huy hiệu Gym là mốc cốt truyện, hiện trong hồ sơ.
 - Trang phục, danh hiệu, khung theo mùa: **0 chỉ số**. Danh hiệu nói chung không có chỉ số.
 
@@ -327,7 +333,15 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 - **Tiến hoá Hộp PC** theo chuỗi thật (`data_loai_tien_hoa`: cấp / đá / trao đổi → Dây Liên Kết hoặc sau khi được trao
   đổi / thân thiết / Kẹo khi chưa có vật phẩm); chỉ tiến hoá sang loài đã mở (`LoaiDuLieu.tienHoaDuoc`).
 - **Hình:** loài không có trong jar tải theo nhu cầu (gói `-126`, `server/map/loai/<NNNN>.goi`, ≈ 10 KB / loài, PMDCollab
-  CC BY-NC 4.0, ghi công từng loài), client J2ME giữ tối đa 1 MB trong RMS (LRU).
+  CC BY-NC 4.0, ghi công từng loài), client J2ME giữ tối đa 1 MB trong RMS (LRU). Bản sắc màu `<NNNN>s.goi` (240 / 251
+  loài Gen 1–2; 11 loài chưa có shiny ở PMDCollab) tải khi cần, chung ngân sách LRU. Mọi gói có **khối neo phụ kiện**
+  PMD nên trang phục / thẻ bạn đồng hành vẽ được trên bạn đồng hành hoang dã và Pokémon Hộp PC đi theo
+  (`du_lieu/loai/neo_loai.csv`, kiểm `client_pc/test/KiemNeoLoai`: mọi loài × hướng × khung lệch ≤ 1 px).
+- **Mô tả Pokédex:** 1.025 mô tả tiếng Việt tự viết (`data_loai.mo_ta`, nguồn `tools/pokemon/loai/mo_ta_loai.json`) hiện
+  ở thẻ Pokédex trong game (đuôi gói `-121` kiểu 5) và trang web `/pokedex/<dex>`.
+- **64 loài chưa có sprite PMDCollab dùng được** (Gen 5–9; #879 Copperajah đã có sprite nháp PMDCollab đóng sẵn trong
+  jar nên còn **63** loài không có hình trong game): chỉ chân dung Pokédex tĩnh (web), trong game là bóng; không bao giờ
+  xuất hiện ngoài trời cho tới khi có sprite thật (danh sách: `tools/pokemon/loai/README.md`).
 
 ### 2.7 Hiển thị Pokémon trên client
 
