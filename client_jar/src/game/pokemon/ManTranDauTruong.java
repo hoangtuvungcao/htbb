@@ -223,7 +223,7 @@ public final class ManTranDauTruong extends ManBang {
             return;
         }
         x = Math.max(L + s / 2 + 2, Math.min(R - s / 2 - 2, x));
-        y = Math.max(zTop + s + 2, Math.min(fBot - 2, y));
+        y = Math.max(zTop + s + 2, Math.min(zBot, y));
         if (e.kieu != DauTruong.SK_DUNG && !hopLe(b, x, y)) {
             x = X[b];
             y = Y[b];
@@ -310,7 +310,7 @@ public final class ManTranDauTruong extends ManBang {
 
     static int L, T, R, B, yUi, fTop, fBot, cuW, cuH;
     /** Mép trên vùng đánh nhau (dưới hai bảng HP ở dải nền sau): sprite không bao giờ vào bảng HP / thanh dưới. */
-    static int zTop;
+    static int zTop, zBot, hBang;
     static int[] tamThu = new int[4], tamCong = new int[4];
 
     static void boCuc(int hUi) {
@@ -328,8 +328,8 @@ public final class ManTranDauTruong extends ManBang {
         }
     }
 
-    /** Ảnh sân 600 x 240 (toạ độ bục khớp sinh_anh_dau_truong.py BUC_THU / BUC_CONG). */
-    static final int NEN_W = 600, NEN_H = 240, BUC_THU_X = 390, BUC_THU_Y = 112, BUC_CONG_X = 210, BUC_CONG_Y = 196;
+    /** Ảnh sân 800 x 340 (điểm logic; khung sân rộng 600 ở giữa) (toạ độ bục khớp sinh_anh_dau_truong.py BUC_THU / BUC_CONG). */
+    static final int NEN_W = 800, NEN_H = 340, BUC_THU_X = 490, BUC_THU_Y = 168, BUC_CONG_X = 310, BUC_CONG_Y = 292;
     /** Màu khối phẳng J2ME theo sân: {trời / nền sau, mép sân, sân}. */
     static final int[][] MAU_SAN = {{0x8CC6F0, 0x5C8A3A, 0x78B850}, {0xD8B888, 0x8A6A44, 0xC8A070}, {0x9AD0F0, 0x4A7EB8, 0x5A9AD8},
         {0x2A3040, 0xC8A020, 0x7A8494}, {0xC8E4F4, 0x8AB0C8, 0xDCEEF8}, {0x3A1A14, 0xC84818, 0x5A3428}, {0x6A5AA0, 0x5A4A6A, 0x8A7A8A},
@@ -338,11 +338,8 @@ public final class ManTranDauTruong extends ManBang {
 
     static void tinhNen() {
         // phóng nguyên vừa phủ bề ngang + cao sân; cắt bớt nền sau phía trên nếu màn thấp
-        // phóng nguyên theo bề ngang; chỉ phóng thêm khi sân còn hở quá 1/4 phía trên (phần hở tô màu nền sau)
-        int f = Math.max(1, (Canvas.w + NEN_W - 1) / NEN_W);
-        while (NEN_H * f < (fBot - fTop) * 3 / 4) {
-            f++;
-        }
+        // phóng NGUYÊN vừa phủ bề ngang (cả khung sân luôn thấy hết); sân cao hơn ảnh thì phần trên tô màu nền sau
+        int f = Math.max(1, Canvas.w / (NEN_W * 3 / 4));
         nenF = f;
         nenX0 = (Canvas.w - NEN_W * f) / 2;
         nenY0 = fBot - NEN_H * f + f * 8;
@@ -363,7 +360,7 @@ public final class ManTranDauTruong extends ManBang {
         }
         int s = coSprite(b);
         // tránh bảng HP: đối thủ dưới bảng đối thủ, mình trên đáy sân
-        return Math.max(zTop + s + 4, Math.min(fBot - 6, y));
+        return Math.max(zTop + s + 2, Math.min(zBot, y));
     }
 
     /** % phóng sprite theo cao sân + độ sâu (gần đáy = to hơn). */
@@ -400,7 +397,7 @@ public final class ManTranDauTruong extends ManBang {
     static boolean hopLe(int b, int x, int y) {
         int s = coSprite(b);
         int sx = x - s / 2, sy = y - s;
-        if (sx < L + 2 || sx + s > R - 2 || sy < zTop + 2 || y > fBot - 2) {
+        if (sx < L + 4 || sx + s > R - 4 || sy < zTop || y > zBot) {
             return false;
         }
         if (giao(sx, sy, s, s, tamThu) || giao(sx, sy, s, s, tamCong) || giao(sx, sy, s, s, tamNut) || giao(sx, sy, s, s, tamBang)
@@ -439,8 +436,8 @@ public final class ManTranDauTruong extends ManBang {
         if (dungYen) {
             return;
         }
-        int cx = (L + R) / 2, cy = (zTop + fBot) / 2 + coSprite(0) / 2;
-        int rx = (R - L) * 32 / 100, ry = (fBot - zTop) * 30 / 100;
+        int cx = (L + R) / 2, cy = (zTop + zBot) / 2 + coSprite(0) / 2;
+        int rx = (R - L) * 32 / 100, ry = Math.max(4, (zBot - zTop - coSprite(0)) * 40 / 100);
         double goc = t / 2600.0;
         double xa = 0.70 + 0.30 * Math.sin(t / 1900.0);
         for (int b = 0; b < 2; b++) {
@@ -535,17 +532,33 @@ public final class ManTranDauTruong extends ManBang {
         boCuc(DauTruong.tuDong ? 0 : rong ? hLenh : 3 * hn + 2 * k + 10);
         tinhNen();
         int sDong = Math.max(VungCham.MIN, Bang.co(30));
-        // bảng HP gọn kiểu game chính: đối thủ trái trên, mình phải dưới (trên vùng lệnh); 3 bóng đội ngay cạnh bảng
+        // bảng HP gọn 2 hàng (tên + trạng thái + Lv / thanh HP [+ số]) kiểu game chính; dải 3 bóng đội gắn dưới bảng
         int wb = Math.max(Bang.co(150), Math.min((R - L) * 26 / 100, Bang.co(230)));
-        int hb = lh + Math.max(8, lp - 2) + lp + 16;
-        int wBong = 3 * (Math.max(12, Math.min(16, lh)) + 2) + 6;
-        tamThu = new int[]{L + 6, T + 6, wb + wBong, hb};
-        tamCong = new int[]{R - wb - wBong - 6, fBot - hb - 6, wb + wBong, hb};
-        int wLuot = Math.min(R - L - 2 * (wb + wBong) - sDong - 40, ChuDe.rong("Chọn chiêu · Lượt 50/50 · Đỉnh rồng Blackthorn", ChuDe.PHU) + 24);
-        int yBang = wLuot >= Bang.co(150) ? T + 6 : T + hb + 12;
-        tamBang = new int[]{(L + R) / 2 - Bang.co(140), yBang, Bang.co(280), lp + 8};
+        int is = Math.max(12, Math.min(16, lh));
+        hBang = lh + Math.max(8, lp - 2) + 14;
+        int hTab = is + 6;
+        tamThu = new int[]{L + 6, T + 6, wb, hBang + hTab - 2};
+        tamCong = new int[]{R - wb - 6, fBot - hBang - hTab - 4, wb, hBang + hTab - 2};
         tamDong = new int[]{R - sDong - 6, T, sDong + 8, sDong + 6};
-        zTop = T + 4;
+        int wLuot = ChuDe.rong("Chọn chiêu · Lượt 50/50 · Đỉnh rồng Blackthorn", ChuDe.PHU) + 24;
+        int cho = R - L - 2 * (wb + 12) - 2 * (sDong + 12);
+        int yBang = wLuot <= cho ? T + 6 : T + 6 + tamThu[3] + 6;
+        tamBang = new int[]{(L + R) / 2 - wLuot / 2, yBang, wLuot, lp + 8};
+        // vùng đánh nhau: dưới bảng đối thủ / băng lượt, trên bảng mình, cách mép
+        zTop = Math.max(tamThu[1] + tamThu[3], tamBang[1] + tamBang[3]) + 8;
+        zBot = tamCong[1] - 6;
+        if (zBot - zTop < coSprite(0) * 2) {
+            // màn thấp (bảng lệnh tự chọn chiếm chỗ): bảng mình lên góc phải trên, băng lượt xuống dưới hai bảng
+            int phai = R - sDong - 14 - (DauTruong.tuDong ? sDong + 12 : 0);
+            tamCong = new int[]{phai - wb, T + 6, wb, tamThu[3]};
+            if (tamCong[0] < tamThu[0] + tamThu[2] + 6) {
+                tamCong[0] = tamThu[0] + tamThu[2] + 6;
+                tamCong[2] = Math.max(Bang.co(120), phai - tamCong[0]);
+            }
+            tamBang = new int[]{(L + R) / 2 - wLuot / 2, T + 6 + tamThu[3] + 6, wLuot, lp + 8};
+            zTop = tamBang[1] + tamBang[3] + 6;
+            zBot = fBot - 6;
+        }
         diLai(t);
         // rung màn khi đòn to (PC / APK)
         int rx = 0, ry = 0;
@@ -556,13 +569,15 @@ public final class ManTranDauTruong extends ManBang {
         }
         g.setColor(MAU_SAN[Math.max(0, Math.min(MAU_SAN.length - 1, DauTruong.san))][2]);
         g.fillRect(0, 0, Canvas.w, Canvas.h);
+        veNen(g);                                         // nền đứng yên (rung không lộ mép màn)
         g.translate(rx, ry);
-        veNen(g);
         int dau = Y[0] < Y[1] ? 0 : 1;
         veBen(g, dau, t);
         veBen(g, 1 - dau, t);
         veHieuUng(g, t);
         g.translate(-rx, -ry);
+        Canvas.resetTrans(g);
+        g.setClip(0, 0, Canvas.w, Canvas.h);
         veBang(g, 1, tamThu, t);
         veBang(g, 0, tamCong, t);
         ketQuaHien = DauTruong.coKetQua && !dangDien();
@@ -987,7 +1002,7 @@ public final class ManTranDauTruong extends ManBang {
     /** Số sát thương / hồi bay lên. */
     static void soBay(Graphics g, String s, int x, int y, float p, int mau) {
         int dy = (int) (p * Bang.co(30));
-        ChuDe.chuVien(g, s, x, Math.max(fTop + 2, y - dy), ChuDe.SO_TO, mau, ChuDe.VIEN, 2);
+        ChuDe.chuVien(g, s, x, Math.max(zTop, Math.min(zBot - ChuDe.cao(ChuDe.SO_TO), y - dy)), ChuDe.SO_TO, mau, ChuDe.VIEN, 2);
     }
 
     static void chuBay(Graphics g, String s, int x, int y, float p, int mau) {
@@ -997,7 +1012,7 @@ public final class ManTranDauTruong extends ManBang {
         int dy = (int) (Math.min(1f, p * 3) * Bang.co(10));
         int w = ChuDe.rong(s, ChuDe.NHAN);
         int xx = Math.max(L + w / 2 + 2, Math.min(R - w / 2 - 2, x));
-        ChuDe.chuVien(g, s, xx, Math.max(fTop + 2, y - dy), ChuDe.NHAN, mau, ChuDe.VIEN, 2);
+        ChuDe.chuVien(g, s, xx, Math.max(zTop, Math.min(zBot - ChuDe.cao(ChuDe.NHAN), y - dy)), ChuDe.NHAN, mau, ChuDe.VIEN, 2);
     }
 
     // ------------------------------------------------------------------ bảng HP
@@ -1005,25 +1020,26 @@ public final class ManTranDauTruong extends ManBang {
     void veBang(Graphics g, int b, int[] r, long t) {
         int lh = ChuDe.cao(ChuDe.NHAN), lp = ChuDe.cao(ChuDe.PHU);
         int is = Math.max(12, Math.min(16, lh));
-        int wBong = 3 * (is + 2) + 6;
-        // bảng: đối thủ = bóng đội bên phải bảng, mình = bên trái
-        int x = b == 1 ? r[0] : r[0] + wBong, y = r[1], w = r[2] - wBong, h = r[3];
-        int xBong = b == 1 ? r[0] + w + 6 : r[0];
+        int x = r[0], y = r[1], w = r[2], h = hBang;
         int ra = RA[b];
         DauTruong.SuKien e = dang;
         float p = tienDo(t);
         if (e != null && e.ben == b && e.kieu == DauTruong.SK_RA_SAN && p >= 0.9f) {
             ra = Math.max(0, Math.min(2, e.so));
         }
-        DauTruong.Con c = DauTruong.DOI[b][ra];
+        // dải 3 bóng đội gắn dưới bảng (đối thủ: trái, mình: phải)
+        int wTab = 3 * (is + 3) + 10, hTab = is + 6;
+        int xTab = b == 1 ? x + 8 : x + w - wTab - 8;
+        Bang.the(g, xTab, y + h - 2, wTab, hTab);
         for (int i = 0; i < 3; i++) {
             boolean song = DauTruong.DOI[b][i] != null && HP[b][i] > 0;
-            IconBat.ve(g, song ? IconBat.POKE : IconBat.SAO_RONG, xBong + i * (is + 2) + is / 2, y + h / 2, is);
+            IconBat.ve(g, song ? IconBat.POKE : IconBat.SAO_RONG, xTab + 6 + i * (is + 3) + is / 2, y + h - 2 + hTab / 2, is);
         }
+        Bang.the(g, x, y, w, h);
+        DauTruong.Con c = DauTruong.DOI[b][ra];
         if (c == null) {
             return;
         }
-        Bang.the(g, x, y, w, h);
         int xt = x + 8, wt = w - 16;
         int tt = TT[b][ra];
         String ttc = tt > 0 && tt < DauTruong.TEN_TT.length ? DauTruong.TEN_TT[tt] : "";
@@ -1036,18 +1052,21 @@ public final class ManTranDauTruong extends ManBang {
             GiaoDien.vien(g, xt + wt - wlv - wtt - 6, y + 4 + (lh - lp - 2) / 2, wtt, lp + 2, ttMau(tt), null);
             ChuDe.chuVienGiua(g, ttc, xt + wt - wlv - 6 - wtt / 2, y + 4 + (lh - lp - 2) / 2, lp + 2, ChuDe.PHU, 0xFFFFFF, ChuDe.VIEN, 2);
         }
-        int yb = y + 6 + lh;
         int hb = Math.max(8, lp - 2);
+        int yb = y + h - hb - 6;
         int hp = HP[b][ra];
         if (e != null && e.ben == b && ra == RA[b] && (e.kieu == DauTruong.SK_TRUNG || e.kieu == DauTruong.SK_MAT_MAU)) {
             hp = Math.max(0, hp - (int) (e.so * Math.min(1f, p / 0.6f)));
         } else if (e != null && e.ben == b && e.kieu == DauTruong.SK_HOI) {
             hp = Math.min(c.hpMax, hp + (int) (e.so * Math.min(1f, p / 0.6f)));
         }
-        GiaoDien.thanhHP(g, xt, yb, wt, hb, hp, c.hpMax);
+        int wso = 0;
         if (b == 0) {
-            ChuDe.chu(g, Math.max(0, hp) + "/" + c.hpMax, xt + wt, yb + hb + 2, ChuDe.PHU, ChuDe.CHU, 1);
+            String so = Math.max(0, hp) + "/" + c.hpMax;
+            wso = ChuDe.rong(so, ChuDe.PHU) + 6;
+            ChuDe.chuGiua(g, so, xt + wt, yb - 2, hb + 4, ChuDe.PHU, ChuDe.CHU, 1);
         }
+        GiaoDien.thanhHP(g, xt, yb, wt - wso, hb, hp, c.hpMax);
     }
 
     static int ttMau(int tt) {
@@ -1084,28 +1103,34 @@ public final class ManTranDauTruong extends ManBang {
 
     /** Một nút tốc độ ×1 -> ×2 -> ×3 (×2 / ×3 mở theo cấp); bấm vào tốc độ đang khoá: hiện khoá + cấp cần. */
     void veNutToc(Graphics g, long t) {
-        int s = Math.max(VungCham.MIN, Bang.co(40));
-        int w = Math.max(s, ChuDe.rong("×3", ChuDe.SO) + 26);
-        int x = L + 6, y = fBot - s - 6;
-        tamNut = new int[]{x - 4, y - 4, w + 8, s + 8};
-        Bang.nut(g, x, y, w, s, "×" + DauTruong.toc, ketQuaHien ? Bang.TAT : Bang.GO, new IAction() {
-            public void perform() {
-                int ke = DauTruong.tocKe();
-                if (ke > 0) {
-                    DauTruong.datToc(ke);
-                } else {
-                    khoaLuc = bay();
-                    khoaCap = -ke;
-                    khoaToc = DauTruong.toc >= 3 ? 1 : DauTruong.toc + 1;
+        int sD = Math.max(VungCham.MIN, Bang.co(30));
+        int rr = (sD + 1) / 2;
+        int cx = R - sD - 10 - rr, cy = T + 4 + rr;
+        int x = cx - rr, y = cy - rr, w = 2 * rr, s = 2 * rr;
+        tamNut = new int[]{x, y, w, s};
+        boolean an = !ketQuaHien && Bang.dangAnTron(g, cx, cy, rr);
+        Bang.diaTrang(g, cx, cy + (an ? 1 : 0), rr - 1, an);
+        ChuDe.chuVienGiua(g, "×" + DauTruong.toc, cx, y + (an ? 1 : 0), s, ChuDe.SO, ChuDe.CHINH_TOI, 0xFFFFFF, 2);
+        if (!ketQuaHien) {
+            VungCham.them(g, x, y, w, s, new IAction() {
+                public void perform() {
+                    int ke = DauTruong.tocKe();
+                    if (ke > 0) {
+                        DauTruong.datToc(ke);
+                    } else {
+                        khoaLuc = bay();
+                        khoaCap = -ke;
+                        khoaToc = DauTruong.toc >= 3 ? 1 : DauTruong.toc + 1;
+                    }
                 }
-            }
-        }, "toc-do");
+            }, "toc-do");
+        }
         if (khoaLuc > 0 && t - khoaLuc < 1800) {
             String chu = "×" + khoaToc + " mở ở cấp " + khoaCap;
             int lp = ChuDe.cao(ChuDe.PHU);
             int is = Math.max(14, lp);
             int wc = ChuDe.rong(chu, ChuDe.PHU) + is + 22, hc = Math.max(is + 6, lp + 8);
-            int xc = x + w + 6, yc = y + (s - hc) / 2;
+            int xc = x - wc - 6, yc = y + (s - hc) / 2;
             Bang.the(g, xc, yc, wc, hc);
             IconBat.ve(g, IconBat.KHOA, xc + 6 + is / 2, yc + hc / 2, is);
             ChuDe.chuGiua(g, chu, xc + is + 12, yc, hc, ChuDe.PHU, ChuDe.CHU, 0);
@@ -1156,16 +1181,32 @@ public final class ManTranDauTruong extends ManBang {
             nDoi++;
         }
         int xg = rong ? xc : xc + 2 * (wDoi + k), yg = rong ? yc + hc + k : yc;
-        int dg = Math.min(hc, rong ? (wCot - k) / 2 : hn);
-        int giay = DauTruong.giayCon();
-        GiaoDien.khoi(g, xg + (rong ? (wCot / 2 - dg) / 2 : 0), yg, dg, dg, dg / 2, giay <= 5 ? ChuDe.DO : ChuDe.CHINH_TOI);
-        ChuDe.chuVienGiua(g, cho ? "..." : String.valueOf(giay), xg + (rong ? (wCot / 2 - dg) / 2 : 0) + dg / 2, yg, dg, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
-        int xa = rong ? xc + wCot / 2 + k / 2 : xg + dg + k, wa = rong ? wCot / 2 - k / 2 : hn;
-        Bang.nut(g, xa, yg, wa, dg, "Máy", ketQuaHien ? Bang.TAT : Bang.GO, new IAction() {
+        // đồng hồ: vòng đếm ngược tròn (cao bằng hàng chiêu) + nút Máy đánh cùng chiều cao
+        int wo = rong ? wDoi : hc;
+        int dg = Math.min(hc, wo);
+        int cxg = xg + wo / 2, cyg = yg + hc / 2;
+        veVongGio(g, cxg, cyg, dg / 2, cho ? -1 : DauTruong.giayCon());
+        int xa = xg + wo + k, wa = rong ? wCot - wo - k : hn;
+        Bang.nut(g, xa, yg, wa, hc, "Máy", ketQuaHien ? Bang.TAT : Bang.GO, new IAction() {
             public void perform() {
                 DauTruong.datTuDong(true);
             }
         }, "tu-dong");
+    }
+
+    /** Vòng đếm ngược lượt: đĩa tối + cung còn lại (đỏ khi <= 5 giây) + số giây giữa; giay < 0 = đang diễn ("..."). */
+    static void veVongGio(Graphics g, int cx, int cy, int r, int giay) {
+        int tong = Math.max(1, DauTruong.giayLuot);
+        GiaoDien.khoi(g, cx - r, cy - r, 2 * r, 2 * r, r, ChuDe.VIEN);
+        GiaoDien.khoi(g, cx - r + 2, cy - r + 2, 2 * r - 4, 2 * r - 4, r - 2, 0x3A2A1E);
+        int deg = giay < 0 ? 360 : Math.max(0, Math.min(360, giay * 360 / tong));
+        g.setColor(giay >= 0 && giay <= 5 ? ChuDe.DO : ChuDe.CHINH);
+        int day = Math.max(3, r / 4);
+        for (int i = 0; i < day; i++) {
+            g.drawArc(cx - r + 3 + i, cy - r + 3 + i, 2 * r - 6 - 2 * i, 2 * r - 6 - 2 * i, 90, deg);
+        }
+        GiaoDien.khoiPixel(g, cx - r / 2, cy - r / 3, r, 2 * r / 3, 0x3A2A1E);
+        ChuDe.chuVienGiua(g, giay < 0 ? "..." : String.valueOf(giay), cx, cy - r / 3, 2 * r / 3, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
     }
 
     /** Nút chiêu kiểu game chính: nền MÀU HỆ viền tối, icon PNG trái, tên, PP phải; hồi chiêu = huy hiệu số; không dùng
@@ -1253,6 +1294,32 @@ public final class ManTranDauTruong extends ManBang {
         g.drawRegion(ve, vai * c, (duoc ? he : 0) * c, c, c, 0, x + (s - c) / 2, y + (s - c) / 2, Graphics.TOP | Graphics.LEFT);
         IconBat.demVe++;
         return true;
+    }
+
+    /** Kiểm thử: bố cục lần vẽ cuối - mọi bảng / băng / nút nằm trọn vùng an toàn, vùng đánh nhau còn chỗ, hai sprite trọn
+     *  trong vùng đánh nhau. null = đạt, khác = lý do. */
+    public static String loiBoCuc() {
+        int[][] ds = {tamThu, tamCong, tamBang, tamNut};
+        String[] ten = {"bang doi thu", "bang minh", "bang luot", "nut toc do"};
+        for (int i = 0; i < ds.length; i++) {
+            int[] r = ds[i];
+            if (r[2] <= 0) {
+                continue;
+            }
+            if (r[0] < L - 1 || r[1] < T - 1 || r[0] + r[2] > R + 1 || r[1] + r[3] > B + 1) {
+                return ten[i] + " ra ngoai vung an toan " + r[0] + "," + r[1] + " " + r[2] + "x" + r[3] + " / " + L + "," + T + "-" + R + "," + B;
+            }
+        }
+        if (zBot - zTop < coSprite(0) + coSprite(1) / 2) {
+            return "vung danh nhau qua hep " + zTop + ".." + zBot;
+        }
+        for (int b = 0; b < 2; b++) {
+            int sb = coSprite(b);
+            if (!AN[b] && (X[b] - sb / 2 < L || X[b] + sb / 2 > R || Y[b] - sb < zTop - 2 || Y[b] > zBot + 2)) {
+                return "sprite ben " + b + " ra ngoai vung danh nhau";
+            }
+        }
+        return null;
     }
 
     /** Kiểm thử / chụp: sự kiện đang diễn + tiến độ. */

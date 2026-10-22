@@ -659,6 +659,8 @@ public class KiemDauTruong {
                     }
                     kiem(daVe("Lv50") && daVe("/" + tran.doi[0][game.pokemon.DauTruong.dangRa[0]].hpMax), t + " bang HP kieu Pokemon (ten, Lv, so HP ben minh)");
                     kiem(daVe("Lượt 3/50"), t + " bang luot (so luot)");
+                    String lbc = game.pokemon.ManTranDauTruong.loiBoCuc();
+                    kiem(lbc == null, t + " bo cuc canh dau: " + lbc);
                     kiem(daVe("Gym điện Vermilion"), t + " ten san tren bang luot");
                     if (man[m].equals("tran_trang_thai")) {
                         kiem(daVe("Tê liệt") && daVe("Bỏng"), t + " nhan trang thai");

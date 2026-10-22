@@ -3,7 +3,7 @@
     python3 tools/pokemon/sinh_anh_dau_truong.py          # ghi client_jar/res/ui/dau_truong_san_<n>.png + chieu_loai_{32,64}.png
     python3 tools/pokemon/sinh_anh_dau_truong.py --kiem   # chỉ kiểm tệp trong repo khớp bộ sinh
 
-1. dau_truong_san_<n>.png (600 x 240, rộng cho màn 20:9 / 21:9, pixel-art, phóng nguyên lúc chạy): 8 sân kiểu Pokémon theo thứ tự
+1. dau_truong_san_<n>.png (800 x 340 điểm logic, khung sân 600 rộng ở giữa, rộng cho màn 20:9 / 21:9, pixel-art, phóng nguyên lúc chạy): 8 sân kiểu Pokémon theo thứ tự
    DauTruongLogic.TEN_SAN (cỏ, đá, hồ nước bục nổi, gym điện, băng, núi lửa, đỉnh rồng, đêm): nền sau theo chủ đề, viền
    sân, mặt sân, biểu tượng POKÉ BALL phối cảnh (nửa trên phớt đỏ, vạch ngang + nút giữa), hai bục nổi có bóng (đối thủ
    phải trên, mình trái dưới - toạ độ ảnh BUC_THU / BUC_CONG, ManTranDauTruong dùng cùng số). Tự vẽ (CC0).
@@ -20,9 +20,9 @@ from PIL import Image, ImageDraw
 
 GOC = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 RA = os.path.join(GOC, "client_jar", "res", "ui")
-W, H = 600, 240
-BUC_THU = (390, 112)
-BUC_CONG = (210, 196)
+W, H = 800, 340
+BUC_THU = (490, 168)
+BUC_CONG = (310, 292)
 VAI = ["thuong", "tan_cong", "nhieu_don", "xa", "vung", "toi_thuong", "dac_trung", "khong_che", "buff", "khien"]
 HINH_VAI = {
     "thuong": ("lorc_impact-point", "V"), "tan_cong": ("lorc_bright-explosion", "V"), "nhieu_don": ("lorc_triple-claws", "V"),
@@ -64,7 +64,7 @@ SAN = [
     ("dem", (58, 46, 86), (50, 40, 76), (190, 170, 240), (14, 12, 34), (34, 26, 60)),
 ]
 EM = (300, 152, 120, 40)   # tâm + bán trục biểu tượng Poké Ball (phối cảnh)
-Y_SAN = 56
+Y_SAN = 90
 
 
 def trong_elip(x, y, cx, cy, rx, ry):
@@ -75,7 +75,7 @@ def nen_sau(d, a, ten, c1, c2, r):
     for y in range(0, Y_SAN):
         d.line([(0, y), (W, y)], fill=pha(c1, c2, y / Y_SAN))
     if ten in ("co", "nuoc", "da", "bang"):
-        for cx, cy in ((44, 10), (160, 6), (270, 13), (400, 9), (530, 12)):
+        for cx, cy in ((44, 10), (160, 6), (270, 13), (400, 9), (530, 12), (650, 8), (760, 14)):
             for dx, rr in ((0, 8), (9, 6), (-9, 6)):
                 d.ellipse([cx + dx - rr, cy - rr // 2, cx + dx + rr, cy + rr // 2], fill=(255, 250, 236))
     if ten in ("co", "dien"):
@@ -86,16 +86,16 @@ def nen_sau(d, a, ten, c1, c2, r):
     if ten == "co":
         for x in range(-10, W + 10, 14):
             h = 12 + (x * 7) % 9
-            d.ellipse([x, 40 - h // 3, x + 22, Y_SAN - 4], fill=(52, 112, 52))
-            d.ellipse([x + 4, 42 - h // 3, x + 16, Y_SAN - 8], fill=(70, 136, 62))
+            d.ellipse([x, Y_SAN - 30 - h // 3, x + 22, Y_SAN - 4], fill=(52, 112, 52))
+            d.ellipse([x + 4, Y_SAN - 28 - h // 3, x + 16, Y_SAN - 8], fill=(70, 136, 62))
     elif ten in ("da", "bang", "rong"):
         mau = {"da": ((150, 118, 86), (176, 142, 104)), "bang": ((132, 176, 220), (230, 244, 255)), "rong": ((76, 62, 104), (112, 92, 140))}[ten]
-        for cx, h in ((30, 30), (96, 22), (150, 34), (214, 26), (288, 32), (350, 24), (420, 30), (476, 22), (540, 30), (596, 24)):
+        for cx, h in ((30, 30), (96, 22), (150, 34), (214, 26), (288, 32), (350, 24), (420, 30), (476, 22), (540, 30), (596, 24), (660, 32), (720, 26), (790, 30)):
             d.polygon([(cx - 46, Y_SAN), (cx, Y_SAN - h - 8), (cx + 46, Y_SAN)], fill=mau[0])
             d.polygon([(cx - 10, Y_SAN - h + 2), (cx, Y_SAN - h - 8), (cx + 10, Y_SAN - h + 2)], fill=mau[1])
     elif ten == "nuoc":
-        d.rectangle([0, 34, W, Y_SAN], fill=(92, 156, 216))
-        d.rectangle([0, 30, W, 34], fill=(214, 196, 140))
+        d.rectangle([0, Y_SAN - 22, W, Y_SAN], fill=(92, 156, 216))
+        d.rectangle([0, Y_SAN - 26, W, Y_SAN - 22], fill=(214, 196, 140))
     elif ten == "dien":
         for x in range(8, W, 40):
             d.rectangle([x, 8, x + 24, 40], fill=(60, 66, 86))
@@ -103,20 +103,20 @@ def nen_sau(d, a, ten, c1, c2, r):
         for x in range(0, W, 20):
             d.rectangle([x + 8, 2, x + 11, 4], fill=(255, 246, 200))
     elif ten == "lua":
-        d.polygon([(250, Y_SAN), (290, 14), (312, 14), (354, Y_SAN)], fill=(70, 40, 34))
-        d.polygon([(290, 14), (301, 4), (312, 14)], fill=(250, 140, 50))
+        d.polygon([(330, Y_SAN), (390, 20), (412, 20), (474, Y_SAN)], fill=(70, 40, 34))
+        d.polygon([(390, 20), (401, 8), (412, 20)], fill=(250, 140, 50))
         for k in range(30):
-            x, y = r.randrange(0, W), r.randrange(0, 40)
+            x, y = r.randrange(0, W), r.randrange(0, Y_SAN - 30)
             d.point((x, y), fill=(250, 180, 90))
     elif ten == "dem":
         for k in range(60):
-            d.point((r.randrange(0, W), r.randrange(0, 40)), fill=(230, 230, 255))
-        d.ellipse([396, 6, 416, 26], fill=(246, 238, 206))
-        d.ellipse([402, 4, 422, 24], fill=c1)
+            d.point((r.randrange(0, W), r.randrange(0, Y_SAN - 30)), fill=(230, 230, 255))
+        d.ellipse([596, 12, 616, 32], fill=(246, 238, 206))
+        d.ellipse([602, 10, 622, 30], fill=c1)
         for x in range(6, W, 34):
-            d.rounded_rectangle([x, 36, x + 12, 52], radius=5, fill=(40, 34, 60))
-            d.rectangle([x + 5, 40, x + 7, 47], fill=(70, 62, 96))
-            d.rectangle([x + 3, 42, x + 9, 44], fill=(70, 62, 96))
+            d.rounded_rectangle([x, Y_SAN - 24, x + 12, Y_SAN - 8], radius=5, fill=(40, 34, 60))
+            d.rectangle([x + 5, Y_SAN - 20, x + 7, Y_SAN - 13], fill=(70, 62, 96))
+            d.rectangle([x + 3, Y_SAN - 18, x + 9, Y_SAN - 16], fill=(70, 62, 96))
 
 
 def vien_san(d, ten, r):
@@ -175,11 +175,11 @@ def mat_san(a, ten, c, c2, r):
             elif ten == "nuoc":
                 m = c if ((x + (y * 3)) // 9) % 7 else pha(c, (230, 244, 255), 0.30)
             elif ten == "dien":
-                m = c if ((x // 48) + (y - Y_SAN) // 30) % 2 else c2
-                if x % 48 == 0 or (y - Y_SAN) % 30 == 0:
-                    m = pha(c, (0, 0, 0), 0.30)
-                elif x % 48 == 1 or (y - Y_SAN) % 30 == 1:
-                    m = pha(c, (255, 255, 255), 0.18)
+                m = c if ((x // 40) + (y - Y_SAN) // 24) % 2 else c2
+                if x % 40 == 0 or (y - Y_SAN) % 24 == 0:
+                    m = pha(m, (0, 0, 0), 0.14)
+                elif (x * 7 + y * 3) % 23 == 0:
+                    m = pha(m, (255, 255, 255), 0.08)
             elif ten == "bang":
                 m = c if ((x + y // 2) // 26) % 2 else c2
                 if (x * 5 + y * 11) % 53 == 0:
@@ -200,9 +200,16 @@ def mat_san(a, ten, c, c2, r):
             x, y = r.randrange(0, W), r.randrange(Y_SAN + 3, H)
             d.point((x, y), fill=r.choice([(250, 240, 120), (250, 250, 250), (240, 140, 160)]))
     if ten == "dien":
-        for cx, cy, sc in ((178, 170, 1.0), (422, 130, -1.0)):
+        for cx, cy, sc in ((250, 290, 1.0), (550, 168, -1.0)):
             pts = [(0, -26), (10, -26), (2, -4), (14, -4), (-8, 26), (-2, 4), (-14, 4)]
-            d.polygon([(cx + px * sc * 1.6, cy + py * 0.9) for px, py in pts], fill=(214, 180, 52))
+            d.polygon([(cx + px * sc * 0.7, cy + py * 0.45) for px, py in pts], fill=(200, 170, 56))
+        # cột điện + đèn hai bên mép sân
+        for x0, hh in ((64, 90), (W - 76, 90), (24, 120), (W - 36, 120)):
+            d.rectangle([x0, Y_SAN - 6, x0 + 10, Y_SAN + hh], fill=(66, 72, 90))
+            d.rectangle([x0 + 2, Y_SAN - 4, x0 + 8, Y_SAN + hh - 2], fill=(92, 100, 122))
+            for k in range(3):
+                d.rectangle([x0 - 4, Y_SAN + 6 + k * 16, x0 + 14, Y_SAN + 8 + k * 16], fill=(200, 170, 56))
+            d.ellipse([x0 - 2, Y_SAN - 14, x0 + 12, Y_SAN - 2], fill=(255, 244, 160))
         for x in range(0, W, 24):
             d.rectangle([x, H - 5, x + 11, H - 1], fill=(250, 210, 60))
             d.rectangle([x + 12, H - 5, x + 23, H - 1], fill=(30, 30, 36))
@@ -255,22 +262,38 @@ def khan_dai(d, y0, y1, r, nen):
 
 
 def bieu_tuong(a, ten, vach):
-    """Biểu tượng Poké Ball trên sân (phối cảnh): nửa trên phớt đỏ, nửa dưới phớt trắng, viền + vạch ngang + nút giữa."""
-    cx, cy, rx, ry = EM
-    for y in range(cy - ry, cy + ry + 1):
+    """SÂN ĐẤU kiểu Pokémon (phối cảnh, nét sắc 2 px, căn giữa): khung sân hình thang, vạch giữa, vòng Poké Ball giữa sân
+    (nửa trên phớt đỏ, vạch ngang, nút trắng giữa)."""
+    d = ImageDraw.Draw(a)
+    yt, yb = Y_SAN + 16, H - 12
+    xt0, xt1, xb0, xb1 = W // 2 - 190, W // 2 + 190, W // 2 - 300, W // 2 + 300
+    tim = (yt + yb) // 2
+    def xl(y):
+        return xt0 + (xb0 - xt0) * (y - yt) / (yb - yt)
+    def xr(y):
+        return xt1 + (xb1 - xt1) * (y - yt) / (yb - yt)
+    # mặt sân trong khung sáng hơn một chút
+    for y in range(yt, yb + 1):
+        for x in range(int(xl(y)), int(xr(y)) + 1):
+            a.putpixel((x, y), pha(a.getpixel((x, y)), (255, 255, 255), 0.06))
+    toi = pha(vach, (0, 0, 0), 0.45)
+    for k, m in ((1, toi), (0, vach)):
+        d.line([(xt0, yt + k), (xt1, yt + k), (xb1, yb + k), (xb0, yb + k), (xt0, yt + k)], fill=m, width=2)
+        d.line([(xl(tim), tim + k), (xr(tim), tim + k)], fill=m, width=2)
+    cx, rx, ry = W // 2, 60, 20
+    for y in range(tim - ry, tim + ry + 1):
         for x in range(cx - rx, cx + rx + 1):
-            if trong_elip(x, y, cx, cy, rx, ry):
+            if trong_elip(x, y, cx, tim, rx, ry):
                 p = a.getpixel((x, y))
-                a.putpixel((x, y), pha(p, (220, 48, 40), 0.12) if y < cy else pha(p, (255, 255, 255), 0.08))
-    # vạch sơn mờ hoà vào mặt sân, nút giữa nhỏ
-    lop = Image.new("RGBA", a.size, (0, 0, 0, 0))
-    d = ImageDraw.Draw(lop)
-    v = vach + (150,)
-    d.ellipse([cx - rx, cy - ry, cx + rx, cy + ry], outline=v, width=2)
-    d.rectangle([cx - rx, cy - 1, cx + rx, cy], fill=v)
-    d.ellipse([cx - 15, cy - 6, cx + 15, cy + 6], fill=v)
-    d.ellipse([cx - 10, cy - 4, cx + 10, cy + 4], fill=(250, 250, 246, 200))
-    a.paste(Image.alpha_composite(a.convert("RGBA"), lop).convert("RGB"))
+                a.putpixel((x, y), pha(p, (214, 52, 44), 0.55) if y < tim else pha(p, (250, 250, 246), 0.35))
+    d.ellipse([cx - rx, tim - ry, cx + rx, tim + ry], outline=vach, width=2)
+    d.line([(cx - rx, tim), (cx + rx, tim)], fill=toi, width=3)
+    d.ellipse([cx - 14, tim - 6, cx + 14, tim + 6], fill=toi)
+    d.ellipse([cx - 10, tim - 4, cx + 10, tim + 4], fill=(250, 250, 246))
+    # vạch phát bóng hai bên (ô đứng của huấn luyện viên)
+    for y in (yt + 10, yb - 10):
+        d.line([(xl(y) + 6, y), (xl(y) + 26, y)], fill=vach, width=2)
+        d.line([(xr(y) - 26, y), (xr(y) - 6, y)], fill=vach, width=2)
 
 
 def buc(a, cx, cy, rx, ry, ten, vien):
