@@ -962,7 +962,7 @@ public final class NapTienGame implements Runnable {
         NGU_CANH.put(p.charDBID, mot);
         final List<String> m = new ArrayList<String>();
         // dong bo 0.9.8: mac / thao mon tu do CHI o Ho so > Tu do (client 908); mon cu khong con cong dung: Thong tin
-        m.add(!real.TrangPhucGame.laMa(s.ma) ? "Thông tin" : real.TrangPhucGame.coManTuDo(p) ? "Mặc ở Hồ sơ > Tủ đồ"
+        m.add(!real.TrangPhucGame.laMa(s.ma) ? "Thông tin" : real.TrangPhucGame.coManTuDo(p) ? "Mặc ở Hồ sơ > Ngoại hình"
                 : s.dangDung ? "Bỏ dùng" : "Dùng");
         if (s.dangRao) {
             m.add("Huỷ rao bán");
@@ -981,7 +981,7 @@ public final class NapTienGame implements Runnable {
         if (chon == 0 && real.TrangPhucGame.laMa(s.ma) && real.TrangPhucGame.coManTuDo(p)) {
             NGU_CANH.remove(p.charDBID);
             real.TrangPhucGame.guiTuDo(p);
-            bao(p, tenMa(s.ma) + " nằm trong Tủ đồ: mở Hồ sơ > Tủ đồ để mặc, tháo và chọn dòng chỉ số của ô.");
+            bao(p, tenMa(s.ma) + " nằm trong Tủ đồ: mở Hồ sơ > Ngoại hình để mặc, tháo và chọn dòng chỉ số của ô.");
             return;
         }
         if (chon == 0 && !real.TrangPhucGame.laMa(s.ma)) {

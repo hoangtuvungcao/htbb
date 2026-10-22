@@ -29,9 +29,16 @@ const theoO = computed(() => dm.value.oTrangTri.map(o => ({
   <WikiShell slug="trang-phuc">
     <p class="van">
       {{ dm.trangTri.length }} món trang trí: trang phục hiện thẳng trên Pokémon của bạn (mũ, khăn, áo choàng, cánh, đồ cầm tay),
-      hào quang dưới chân, skin thú cưỡi và thẻ cho bạn đồng hành. Mặc và thử trước ở tab <strong>Ngoại hình</strong> của màn
-      hồ sơ Pokémon (Tủ đồ trang trí).
+      hào quang dưới chân, skin thú cưỡi và thẻ cho bạn đồng hành. Mặc, thử trước và chọn dòng chỉ số ở
+      <strong>Hồ sơ → tab Ngoại hình</strong> (Tủ đồ trang trí) — đây là chỗ duy nhất mặc / tháo đồ trang trí.
     </p>
+
+    <WikiCallout kieu="luu-y" title="Món của cửa hàng lượng cũ đã vào Tủ đồ (0.9.8)">
+      Skin Mũ rơm, Khăn quàng mùa đông, Kính râm, Nơ xinh, Hào quang Lửa / Nước và Skin thú cưỡi Vân mây / Cầu vồng mua trước
+      đây nay là món Tủ đồ cùng ô (Trang phục Mũ rơm…, Hào quang Lửa thiêng / Sóng nước, Yên vân mây / Yên cầu vồng nhạt): bạn có
+      ngay trong Tủ đồ, không mất gì. Màu tên, khung tên, biểu cảm và trang trí nhà không còn công dụng nên ngừng bán; ai đã
+      có vẫn giữ.
+    </WikiCallout>
 
     <WikiCallout kieu="vi-sao" title="Lượng chỉ mua hình, chỉ số theo ô">
       Món nào cũng có chút chỉ số, nhưng chỉ số gắn vào <strong>ô</strong> chứ không gắn vào món: món miễn phí, món sự kiện, món
@@ -39,7 +46,7 @@ const theoO = computed(() => dm.value.oTrangTri.map(o => ({
       Ô nào cũng có món miễn phí sớm, sở hữu nhiều không cộng dồn, không nâng cấp / khảm / tẩy được.
     </WikiCallout>
 
-    <WikiSection id="ngan-sach" title="Ngân sách chỉ số" :lead="`Tổng trang trí tối đa +${phanTram(dm.tranTong)}% (kẹp cứng), cộng chung trần chỉ số của mọi nguồn.`">
+    <WikiSection id="ngan-sach" title="Ngân sách chỉ số" :lead="`Tổng trang trí tối đa +${phanTram(dm.tranTong)}% (kẹp cứng) gồm cả danh hiệu và dòng chỉ số của thẻ đặt tên Pokémon: danh hiệu và các ô Tủ đồ tính trước, thẻ đặt tên lấy phần còn lại. Tất cả nằm trong trần chỉ số chung của mọi nguồn.`">
       <div class="bang-cuon">
         <table class="bang-wiki">
           <thead>

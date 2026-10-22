@@ -555,6 +555,7 @@ public class GameService extends Cmd_message {
     }
 
     public void selectChar(int id, int type) {
+        game.pokemon.KenhChat.xoaHet();   // 0.9.8: chat chỉ trong phiên (kiểu Làng Lá) - vào game là mọi tab trống
         try {
             Message m = init((byte) 13);
             m.writer().writeByte(type);

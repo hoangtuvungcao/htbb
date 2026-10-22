@@ -4131,8 +4131,6 @@ INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_di
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.giayTheGioi', 'chong_spam', 'Chat thế giới: giãn cách (giây)', 'Mỗi người một tin / N giây; client hiện đếm ngược. sv.spam.chat.theGioi vẫn áp.', 'so', '30', '{"min": 0, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 154, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.capRieng', 'chong_spam', 'Nhắn riêng: cấp tối thiểu', 'Chặn tài khoản rác mới tạo nhắn riêng hàng loạt.', 'so', '3', '{"min": 0, "max": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 155, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.doDai', 'chong_spam', 'Độ dài tối đa một tin (ký tự)', 'Kênh thế giới / đội / nhóm / riêng của bảng chat 0.9.8.', 'so', '80', '{"min": 10, "max": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 156, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.thuChoToiDa', 'chong_spam', 'Hộp thư offline: tối đa tin chờ / người', 'Tin riêng gửi cho người offline (tob_chat_cho), giao khi họ vào game. 0 = tắt hộp thư.', 'so', '30', '{"min": 0, "max": 500}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 157, 'co_dinh', 1);
-INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.thuChoNgay', 'chong_spam', 'Hộp thư offline: giữ tối đa (ngày)', 'Tin chờ quá hạn bị bỏ (xoá lúc khởi động).', 'so', '7', '{"min": 1, "max": 90}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 158, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.lichSu', 'chong_spam', 'Lịch sử kênh gửi khi vào game (dòng)', 'Số dòng thế giới / đội gần nhất (trong bộ nhớ) gửi cho người vừa vào.', 'so', '50', '{"min": 0, "max": 200}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 159, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.chat.chanToiDa', 'chong_spam', 'Danh sách chặn: tối đa tên / người', 'tob_chat_chan.', 'so', '100', '{"min": 0, "max": 1000}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'KenhChatLogic', 160, 'co_dinh', 1);
 INSERT INTO `cau_hinh_danh_muc` (`khoa`, `nhom`, `ten`, `mo_ta`, `kieu`, `mac_dinh`, `gioi_han`, `ap_dung`, `nhay`, `khoa_prod`, `chi_doc`, `bang`, `dung_o`, `nguon`, `thu_tu`, `lop`, `an`) VALUES ('sv.socketTimeout', 'chong_spam', 'Hết hạn socket (giây)', 'Áp dụng cho kết nối mới. 0 = tắt.', 'so', '180', '{"min": 0, "max": 3600}', 'ngay', 0, 0, 0, 'cau_hinh', 'server', 'TeamServer.SOCKET_TIMEOUT_MS', 161, 'co_dinh', 1);
@@ -7041,25 +7039,15 @@ CREATE TABLE IF NOT EXISTS `tob_log_cho_pokemon` (
 -- Nâng cấp IDEMPOTENT (MariaDB 10.3, utf8): chạy lại bao nhiêu lần cũng được; tự chứa. Máy chủ game cũng tự tạo hai
 -- bảng này lúc khởi động (real.KenhChatGame.taoBang) - chạy tệp này chỉ để dựng sẵn trên CSDL mới / web đọc được.
 --
---   tob_chat_cho    hộp thư tin riêng OFFLINE: tin gửi cho người đang offline, giao một lần khi họ vào game rồi xoá
---                   (trước 0.9.8 tin riêng cho người offline bị MẤT). id_nhan = tob_char.id (đổi tên không mất tin);
---                   luc = mili giây (System.currentTimeMillis). Tối đa sv.chat.thuChoToiDa tin / người, giữ
---                   sv.chat.thuChoNgay ngày (quá hạn xoá lúc khởi động).
+--   tob_chat_cho    (bỏ từ đồng bộ 0.9.8, chủ game 22/10/2026: chat chỉ trong phiên kiểu Làng Lá - tin riêng cho người
+--                   offline không gửi, không còn hộp thư) -> DROP TABLE IF EXISTS bên dưới.
 --   tob_chat_chan   danh sách chặn: id_char chặn tên ten_chan (chữ thường). Người bị chặn không nhắn riêng được, tin
 --                   thế giới / bang hội / đội của họ không tới người chặn.
 --
 -- Khoá cấu hình sv.chat.* (lớp co_dinh, không tăng số khoá trên web) nằm ở phần 2 của sql/nang_cap.sql.
 -- =====================================================================================================
 
-CREATE TABLE IF NOT EXISTS `tob_chat_cho` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `id_nhan` INT NOT NULL,
-  `ten_gui` VARCHAR(45) NOT NULL,
-  `noi_dung` VARCHAR(400) NOT NULL,
-  `luc` BIGINT NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_chat_cho_nhan` (`id_nhan`)
-) DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `tob_chat_cho`;
 
 CREATE TABLE IF NOT EXISTS `tob_chat_chan` (
   `id_char` INT NOT NULL,
@@ -21109,3 +21097,53 @@ UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'Địa điểm:|Az
 UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'Địa điểm:|Olivine|', 'Địa điểm:|Làng khởi đầu|') WHERE `id` = 1240 AND `infogift` LIKE '%Địa điểm:|Olivine|%';
 UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'Địa điểm:|Mahogany|', 'Địa điểm:|Làng khởi đầu|') WHERE `id` = 1268 AND `infogift` LIKE '%Địa điểm:|Mahogany|%';
 UPDATE `data_quest_moi` SET `infogift` = REPLACE(`infogift`, 'Địa điểm:|Mahogany|', 'Địa điểm:|Azalea|') WHERE `id` = 2314 AND `infogift` LIKE '%Địa điểm:|Mahogany|%';
+-- 5. Tin Open test chinh thuc 0.9.8 (web_tin_tuc, INSERT IGNORE theo slug - admin sua / an tren /admin/tin-tuc thi giu)
+-- =====================================================================================================================
+--  TIN TUC: "Open test chinh thuc 0.9.8" (web_tin_tuc, bai CSDL - trang /news/open-test-chinh-thuc-0-9-8, ghim trang chu).
+--  INSERT IGNORE theo slug (uk_slug): chay lai khong ghi de bai admin da sua / da xoa-roi-tao-lai cung slug.
+-- ---------------------------------------------------------------------------------------------------------------------
+INSERT IGNORE INTO `web_tin_tuc` (`slug`, `tieu_de`, `tom_tat`, `anh_bia`, `loai`, `the`, `noi_dung`, `trang_thai`, `dang_luc`, `ghim`, `tac_gia`, `tao_luc`, `sua_luc`) VALUES
+('open-test-chinh-thuc-0-9-8',
+ 'Open test chính thức 0.9.8 từ 23/10/2026',
+ 'Huyền Thoại Bảo Bối mở open test chính thức với bản 0.9.8: hướng dẫn tân thủ hai vùng, thu phục Pokémon và Hộp PC, trao đổi và chợ Pokémon, Phó bản Hầm ngục, Cúp PvP tuần, ngắm tay PvP, thời tiết, tủ đồ trang trí, chat nhiều kênh, Lễ kết đôi và giao diện mới.',
+ '/anh-game/chien-dau-1280.webp',
+ 'Thông báo',
+ 'open test,0.9.8,cập nhật',
+ '## Open test chính thức bắt đầu 23/10/2026
+
+Cảm ơn mọi huấn luyện viên đã chơi thử các bản trước. Từ **23/10/2026**, Huyền Thoại Bảo Bối mở **open test chính thức** với bản **0.9.8**. Tải bản mới ở trang [Tải game](/download) (Android, Windows, Linux, Java J2ME). Bản cũ vẫn vào được nhưng không có các màn mới, nên hãy cập nhật.
+
+## Có gì mới trong 0.9.8
+
+### Bắt đầu dễ hơn
+- **Hướng dẫn tân thủ 10 bước** trong làng khởi đầu, giống nhau ở **Kanto (Pewter)** và **Johto (Blackthorn)**: gặp Trưởng làng Xatu, đánh quái, dùng thuốc, học chiêu, mặc đồ, ghé ngân hàng, thả câu. Đã quen chơi thì chọn **Bỏ qua hướng dẫn** mà vẫn nhận đủ thưởng. Xem [Hướng dẫn tân thủ](/huong-dan#30-phut).
+- **Giao diện mới** gọn gàng, dễ chạm: HUD, Hồ sơ, hành trang, thẻ vật phẩm, bảng nhiệm vụ.
+
+### Sưu tầm Pokémon
+- **Thu phục**: đánh Pokémon hoang dã xuống còn ít máu rồi ném **Poké Ball / Great Ball / Ultra Ball**. Loài càng hiếm càng khó bắt (Thường / Ít gặp / Hiếm / Rất hiếm).
+- **Hộp PC**: giữ Pokémon đã bắt, dùng Kẹo loài để tiến hoá (cả loài nhiều nhánh như Eevee), chọn một bạn đồng hành đi theo. Con trùng loài tự chuyển đổi thành Kẹo loài.
+- **1.025 loài** trong Pokédex.
+- **Trao đổi Pokémon** với người chơi khác và **chợ Pokémon** (thuế 8% khi bán, khung giá do máy chủ tính để loài hiếm giữ giá). Xem [Thu phục & Hộp PC](/cam-nang/thu-phuc) và [Trao đổi & chợ Pokémon](/cam-nang/trao-doi-cho).
+
+### Thử thách cùng nhau
+- **Phó bản Hầm ngục**: phòng riêng cho nhóm 1–4 người, **5 tầng**, boss ở tầng 5, chủ đề đổi theo thứ trong tuần, 3 lượt mỗi ngày. Xem [Hầm ngục](/cam-nang/ham-nguc#pho-ban).
+- **Cúp PvP tuần**: mỗi tuần một thể thức (Cúp Nhí, Cúp hệ, Cúp Đôi, Cúp Không trang bị), Chủ nhật 20:00 đấu 5 vòng Thuỵ Sĩ, chỉ số chuẩn hoá theo cấp. Xem [Cúp PvP](/cup).
+- **Ngắm tay PvP**: mọi trận giữa người chơi đều kéo chiêu để ngắm rồi thả để bắn — không tự nhắm. Thang PvP mùa chỉ tính ở trận xếp hạng ghép cặp. Xem [PvP](/cam-nang/pvp).
+
+### Thế giới sống động
+- **Thời tiết** đổi theo khung 6 giờ (nắng, mưa, tuyết, bão cát, sương mù, gió): hệ hợp thời tiết xuất hiện nhiều hơn, sát thương chiêu đổi nhẹ. Mỗi tháng một **Ngày cộng đồng** với 3 giờ vàng săn loài nổi bật và shiny. Xem [Thời tiết & ngày cộng đồng](/cam-nang/thoi-tiet).
+- **Danh hiệu** 4 bậc hiện trên đầu, kiếm từ nhiệm vụ, thành tựu, Gym, phó bản, cúp, ngày cộng đồng. Xem [Danh hiệu](/cam-nang/danh-hieu).
+- **Tủ đồ trang trí** 4 ô (trang phục hiện trên Pokémon, hào quang, skin thú cưỡi, thẻ bạn đồng hành) ở **Hồ sơ → Ngoại hình**. Món trang trí mua ở cửa hàng lượng trước đây đã được gộp vào tủ đồ, bạn không mất gì. Trang trí chỉ có chút chỉ số theo ô: tổng trang trí, kể cả danh hiệu và thẻ đặt tên, tối đa 5%. Xem [Trang phục & trang trí](/cam-nang/trang-phuc).
+- **Thẻ đặt tên Pokémon**: đặt tên riêng cho Pokémon đi theo.
+
+### Bạn bè
+- **Chat nhiều kênh**: Bản đồ, Thế giới, Đội, Nhóm, Bạn bè; hội thoại riêng hai phía, nút Xoá ở mỗi tab, chỉ giữ trong phiên chơi (thoát game là trống); chặn người làm phiền. Xem [Kênh chat](/cam-nang/kenh-chat).
+- **Lễ kết đôi**: hai Pokémon cùng nhóm trứng tổ chức lễ và mời bạn bè. Xem [Lễ kết đôi](/cam-nang/ket-doi).
+- **Vào nhóm** đã được sửa: lời mời vào nhóm giờ nhận được bình thường.
+
+## Không bán sức mạnh
+
+Lượng chỉ mua hình và tiện ích. Lượng khoá không giao dịch được, đồ khoá khi mặc, mọi đường chuyển giá trị giữa người chơi có phí bị đốt và chốt chống tài khoản phụ.
+
+Gặp lỗi hoặc có góp ý, hãy báo cho ban quản trị qua kênh hỗ trợ. Hẹn gặp bạn trong thế giới Pokémon!',
+ 1, '2026-10-22 18:00:00', 1, 'admin', NOW(), NOW());

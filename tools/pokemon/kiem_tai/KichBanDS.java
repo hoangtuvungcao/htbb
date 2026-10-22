@@ -311,7 +311,9 @@ class KichBanDS {
             Thread.sleep(4000);
             String dex = BotChucNang.sql1("SELECT COUNT(*),COALESCE(SUM(so_ha),0) FROM tob_pokedex WHERE id_char=" + charDb);
             String xp1 = BotChucNang.sql1("SELECT xp FROM tob_char WHERE id=" + charDb);
-            ket("danh_quai.exp_csdl", xp1 != null && xp0 != null && Long.parseLong(xp1) > Long.parseLong(xp0), "tob_char.xp " + xp0 + " -> " + xp1);
+            // slv dat lai tong xp ve dau cap 3 (CSDL con xp cu toi lan luu): EXP ha quai da luu = xp CSDL > 0, khac xp truoc slv
+            ket("danh_quai.exp_csdl", xp1 != null && Long.parseLong(xp1.trim()) > 0 && !xp1.equals(xp0),
+                    "tob_char.xp " + xp0 + " (truoc slv) -> " + xp1);
             ket("danh_quai.pokedex_csdl", dex != null && !dex.startsWith("0"), "tob_pokedex(id_char=" + charDb + ") = " + dex);
         }
     }

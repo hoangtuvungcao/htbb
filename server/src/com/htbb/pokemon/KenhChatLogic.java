@@ -26,6 +26,9 @@ import java.util.Properties;
  *   byte 4 ket qua:  byte kenh, byte ma (KQ_*), short giay cho con lai, UTF ly do
  *   byte 5 ban online / offline: UTF ten, byte online
  *   byte 6 id theo ten: byte viec, UTF ten, short id (-1 = offline), byte cung ban do
+ *   byte 7 doi:      UTF ten doi ("" = chua vao doi), short so dang online, short tong thanh vien
+ * Chat chi trong PHIEN (chu game 22/10/2026, kieu Lang La): khong gui lai lich su khi vao game, tin rieng cho nguoi offline
+ * KHONG gui (bao nguoi gui) - khong con hop thu tob_chat_cho.
  * -124 C-&gt;S: byte 0 xin lai (cau hinh + chan + ban be + lich su), 1 gui (byte kenh, UTF dich, UTF noi dung),
  *   2 chan (byte 1 chan / 0 bo, UTF ten), 3 xin ban be, 6 tra id (byte viec, UTF ten)
  * </pre>
@@ -49,7 +52,7 @@ public final class KenhChatLogic {
     public static final String[] TEN_KENH = {"Bản đồ", "Thế giới", "Đội", "Nhóm", "Bạn bè", "Hệ thống"};
 
     /** goi S-&gt;C */
-    public static final byte G_CAU_HINH = 0, G_TIN = 1, G_BAN = 2, G_CHAN = 3, G_KET_QUA = 4, G_TRANG_THAI = 5, G_ID = 6;
+    public static final byte G_CAU_HINH = 0, G_TIN = 1, G_BAN = 2, G_CHAN = 3, G_KET_QUA = 4, G_TRANG_THAI = 5, G_ID = 6, G_DOI = 7;
     /** goi C-&gt;S */
     public static final byte K_XIN = 0, K_GUI = 1, K_CHAN = 2, K_XIN_BAN = 3, K_TRA_ID = 6;
 
@@ -73,8 +76,6 @@ public final class KenhChatLogic {
     public static volatile int giayTheGioi = 30;
     public static volatile int capRieng = 3;
     public static volatile int doDai = 80;
-    public static volatile int thuChoToiDa = 30;
-    public static volatile int thuChoNgay = 7;
     public static volatile int lichSu = 50;
     public static volatile int chanToiDa = 100;
 
@@ -85,16 +86,13 @@ public final class KenhChatLogic {
         giayTheGioi = so(p, "sv.chat.giayTheGioi", 30, 0, 3600);
         capRieng = so(p, "sv.chat.capRieng", 3, 0, 200);
         doDai = so(p, "sv.chat.doDai", 80, 10, 200);
-        thuChoToiDa = so(p, "sv.chat.thuChoToiDa", 30, 0, 500);
-        thuChoNgay = so(p, "sv.chat.thuChoNgay", 7, 1, 90);
         lichSu = so(p, "sv.chat.lichSu", 50, 0, 200);
         chanToiDa = so(p, "sv.chat.chanToiDa", 100, 0, 1000);
     }
 
     public static String moTa() {
         return "KENH CHAT -> ban do cap " + capGan + ", the gioi cap " + capTheGioi + " / " + xuTheGioi + " xu / "
-                + giayTheGioi + "s, rieng cap " + capRieng + ", dai " + doDai + ", hop thu " + thuChoToiDa + " tin / "
-                + thuChoNgay + " ngay, lich su " + lichSu + ", chan toi da " + chanToiDa;
+                + giayTheGioi + "s, rieng cap " + capRieng + ", dai " + doDai + ", lich su " + lichSu + ", chan toi da " + chanToiDa;
     }
 
     private static int so(final Properties p, final String k, final int macDinh, final int min, final int max) {
@@ -326,22 +324,6 @@ public final class KenhChatLogic {
         }
     }
 
-    // ================================================================== hop thu offline (thuan)
-
-    /** Mot tin rieng cho nguoi offline. */
-    public static final class ThuCho {
-        public long id;
-        public int idNhan;
-        public String tenGui;
-        public String noiDung;
-        public long luc;
-    }
-
-    /** Con han (sv.chat.thuChoNgay)? */
-    public static boolean conHan(final ThuCho t, final long bayGio) {
-        return t != null && bayGio - t.luc <= thuChoNgay * 86400000L;
-    }
-
     // ================================================================== goi tin
 
     public static void viet(final DataOutputStream o, final Tin t, final int coThem) throws IOException {
@@ -378,6 +360,14 @@ public final class KenhChatLogic {
         o.writeByte(ma);
         o.writeShort(Math.max(0, Math.min(Short.MAX_VALUE, giayCho)));
         o.writeUTF(cat(lyDo, 200));
+    }
+
+    /** Loai 7: UTF ten doi ("" = chua vao doi), short dang online, short tong thanh vien. */
+    public static void vietDoi(final DataOutputStream o, final String tenDoi, final int online, final int tong) throws IOException {
+        o.writeByte(G_DOI);
+        o.writeUTF(cat(tenDoi == null ? "" : tenDoi, 40));
+        o.writeShort(Math.max(0, Math.min(Short.MAX_VALUE, online)));
+        o.writeShort(Math.max(0, Math.min(Short.MAX_VALUE, tong)));
     }
 
     public static void vietTen(final DataOutputStream o, final byte goi, final List<String> ten) throws IOException {

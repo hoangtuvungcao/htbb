@@ -17,7 +17,7 @@ import real.KenhChatGame;
 /**
  * KENH CHAT (0.9.8, goi -124, client ban &gt;= 908): luat tung kenh (cap, xu, gian cach the gioi, thanh vien bang /
  * doi, cam chat GM), dinh tuyen (the gioi toi moi nguoi, bang chi thanh vien, doi chi nguoi trong doi, rieng toi dung
- * nguoi), chong spam (trung lap, link), danh sach chan, hop thu tin rieng OFFLINE (giao khi vao game, xoa sau khi giao,
+ * nguoi), chong spam (trung lap, link), danh sach chan, tin rieng cho nguoi OFFLINE khong gui (chat chi trong phien) (
  * day / qua han), client cu (&lt; 908) nhan goi cu (-60 / -18 / -5), lan dau vao ban do gui cau hinh + lich su mot
  * lan, ban be online / offline, va noi vao ma (lenh -124, -18, -5, loa) + SQL / danh muc cau hinh.
  */
@@ -55,46 +55,10 @@ public final class KiemKenhChat {
     // ------------------------------------------------------------------ gia lap CSDL / danh ba
 
     static final class KhoGia implements KenhChatGame.Kho {
-        final Map<String, Integer> id = new HashMap<String, Integer>();
-        final List<KenhChatLogic.ThuCho> cho = new ArrayList<KenhChatLogic.ThuCho>();
         final Map<Integer, List<String>> chan = new HashMap<Integer, List<String>>();
         int ghiChan;
 
         public void taoBang() {
-        }
-
-        public int timId(final String ten) {
-            final Integer i = id.get(KenhChatLogic.khoaTen(ten));
-            return i == null ? -1 : i.intValue();
-        }
-
-        public boolean luuCho(final int idNhan, final String tenGui, final String noiDung, final long luc) {
-            final KenhChatLogic.ThuCho t = new KenhChatLogic.ThuCho();
-            t.id = cho.size() + 1;
-            t.idNhan = idNhan;
-            t.tenGui = tenGui;
-            t.noiDung = noiDung;
-            t.luc = luc;
-            cho.add(t);
-            return true;
-        }
-
-        public int demCho(final int idNhan) {
-            int n = 0;
-            for (final KenhChatLogic.ThuCho t : cho) {
-                n += t.idNhan == idNhan ? 1 : 0;
-            }
-            return n;
-        }
-
-        public List<KenhChatLogic.ThuCho> layCho(final int idNhan) {
-            final List<KenhChatLogic.ThuCho> r = new ArrayList<KenhChatLogic.ThuCho>();
-            for (int i = cho.size() - 1; i >= 0; i--) {
-                if (cho.get(i).idNhan == idNhan) {
-                    r.add(0, cho.remove(i));
-                }
-            }
-            return r;
         }
 
         public List<String> docChan(final int idChar) {
@@ -385,7 +349,6 @@ public final class KiemKenhChat {
         tim.online.add(cu);
         tim.online.add(moi);
         tim.online.add(ngoai);
-        kho.id.put("kcoff", Integer.valueOf(99901));
 
         // ---------------- the gioi
         xoa();
@@ -493,57 +456,24 @@ public final class KiemKenhChat {
         Kiem.bang("rieng: client cu nhan -5 (ten, noi dung) ngay", "kcan|chao ban cu", chuoiCu(cu, -5));
         xoa();
         Kiem.dung("rieng: khong nhan cho chinh minh", KenhChatGame.gui(an, KenhChatLogic.RIENG, "kcan", "tu nhan") != null);
-        Kiem.dung("rieng: nguoi khong ton tai -> bao", KenhChatGame.gui(an, KenhChatLogic.RIENG, "khongco", "alo") != null
-                && ((String) ketQua(an)[2]).contains("Không tìm thấy"));
+        Kiem.dung("rieng: nguoi khong ton tai / khong online -> bao khong gui", KenhChatGame.gui(an, KenhChatLogic.RIENG, "khongco", "alo") != null
+                && ((String) ketQua(an)[2]).contains("không trực tuyến, tin không được gửi"));
         Kiem.dung("rieng: cap 1 khong nhan duoc", KenhChatGame.gui(moi, KenhChatLogic.RIENG, "kcan", "alo") != null);
 
-        // ---------------- hop thu offline
+        // ---------------- nguoi nhan offline: KHONG gui, KHONG luu (chat chi trong phien - chu game 22/10/2026, kieu Lang La)
         xoa();
-        Kiem.dung("offline: an -> kcoff vao hop thu", KenhChatGame.gui(an, KenhChatLogic.RIENG, "kcoff", "khi nao ve") == null);
-        Kiem.bang("offline: 1 tin cho", Integer.valueOf(1), Integer.valueOf(kho.demCho(99901)));
+        Kiem.dung("offline: an -> kcoff khong gui (bao loi)", KenhChatGame.gui(an, KenhChatLogic.RIENG, "kcoff", "khi nao ve") != null);
         final Object[] kqo = ketQua(an);
-        Kiem.dung("offline: bao nguoi gui 'đang offline'", kqo != null && ((Integer) kqo[0]).intValue() == KenhChatLogic.KQ_HOP_THU);
-        // trung lap (nhip rieng) - gui them 2 tin khac nhau
-        KenhChatGame.gui(an, KenhChatLogic.RIENG, "kcoff", "tin thu hai");
-        // nguoi nhan vao game
+        Kiem.dung("offline: bao nguoi gui '<ten> khong truc tuyen, tin khong duoc gui'", kqo != null
+                && ((Integer) kqo[0]).intValue() == KenhChatLogic.KQ_LOI && ((String) kqo[2]).contains("không trực tuyến, tin không được gửi"));
+        Kiem.bang("offline: nguoi gui khong nhan tin cua minh (khong gui)", Integer.valueOf(0), Integer.valueOf(tin(an, KenhChatLogic.RIENG).size()));
         final Char off = nv("kcoff", 908, 20);
         off.charDBID = 99901;
         tim.online.add(off);
         xoa();
         KenhChatGame.khiVaoBanDo(off);
-        final List<TinDoc> ro = tin(off, KenhChatLogic.RIENG);
-        Kiem.bang("offline: vao game nhan 2 tin cho", Integer.valueOf(2), Integer.valueOf(ro.size()));
-        Kiem.dung("offline: tin co co HOP_THU + dung thu tu", ro.size() == 2 && (ro.get(0).co & KenhChatLogic.CO_HOP_THU) != 0
-                && ro.get(0).noiDung.equals("khi nao ve") && ro.get(1).noiDung.equals("tin thu hai") && ro.get(0).doiPhuong.equals("kcan"));
-        Kiem.bang("offline: giao xong xoa khoi hop thu", Integer.valueOf(0), Integer.valueOf(kho.demCho(99901)));
-        xoa();
-        KenhChatGame.khiVaoBanDo(off);
-        Kiem.bang("offline: vao ban do lan 2 khong gui lai gi", Integer.valueOf(0), Integer.valueOf(dem(off, KenhChatLogic.LENH)));
-        // hop thu day
-        kho.id.put("kcday", Integer.valueOf(99902));
-        for (int i = 0; i < KenhChatLogic.thuChoToiDa; i++) {
-            kho.luuCho(99902, "x", "tin " + i, System.currentTimeMillis());
-        }
-        xoa();
-        Kiem.dung("offline: hop thu day -> bao", KenhChatGame.gui(binh, KenhChatLogic.RIENG, "kcday", "alo") != null
-                && ((String) ketQua(binh)[2]).contains("đầy"));
-        // qua han
-        kho.id.put("kchan", Integer.valueOf(99903));
-        kho.luuCho(99903, "kcan", "tin cu", System.currentTimeMillis() - 8L * 86400000L);
-        kho.luuCho(99903, "kcan", "tin moi", System.currentTimeMillis());
-        final Char han = nv("kchan", 908, 20);
-        han.charDBID = 99903;
-        xoa();
-        Kiem.bang("offline: tin qua 7 ngay bi bo, tin moi giao", Integer.valueOf(1), Integer.valueOf(KenhChatGame.giaoHopThu(han)));
-        // client cu nhan hop thu bang -5
-        kho.id.put("kccu2", Integer.valueOf(99904));
-        kho.luuCho(99904, "kcan", "cho ban cu", System.currentTimeMillis());
-        final Char cu2 = nv("kccu2", 907, 20);
-        cu2.charDBID = 99904;
-        xoa();
-        KenhChatGame.khiVaoBanDo(cu2);
-        Kiem.bang("offline: client cu nhan tin cho bang -5", "kcan|cho ban cu", chuoiCu(cu2, -5));
-        Kiem.bang("offline: client cu khong nhan -124", Integer.valueOf(0), Integer.valueOf(dem(cu2, KenhChatLogic.LENH)));
+        Kiem.bang("offline: vao game sau do khong nhan tin rieng nao", Integer.valueOf(0), Integer.valueOf(tin(off, KenhChatLogic.RIENG).size()));
+        tim.online.remove(off);
 
         // ---------------- chan
         xoa();
@@ -602,7 +532,12 @@ public final class KiemKenhChat {
         Kiem.bang("vao game: danh sach 2 ban", Integer.valueOf(2), Integer.valueOf(soBan));
         Kiem.bang("vao game: 1 ban online", Integer.valueOf(1), Integer.valueOf(banOnline));
         final List<TinDoc> ls = tin(vao, KenhChatLogic.THE_GIOI);
-        Kiem.dung("vao game: nhan lich su the gioi (co LICH_SU)", !ls.isEmpty() && (ls.get(ls.size() - 1).co & KenhChatLogic.CO_LICH_SU) != 0);
+        Kiem.bang("vao game: KHONG gui lai lich su the gioi (chat chi trong phien)", Integer.valueOf(0), Integer.valueOf(ls.size()));
+        boolean coDoi = false;
+        for (final Goi g : gv) {
+            coDoi |= g.lenh == KenhChatLogic.LENH && g.du[0] == KenhChatLogic.G_DOI;
+        }
+        Kiem.dung("vao game: goi doi (loai 7: ten doi + so online)", coDoi);
         boolean baoAn = false;
         for (final Goi g : goi(an)) {
             if (g.lenh == KenhChatLogic.LENH && g.du[0] == KenhChatLogic.G_TRANG_THAI) {
@@ -681,7 +616,7 @@ public final class KiemKenhChat {
         Kiem.dung("MapXuLyLenh: case -124 -> KenhChatGame.xuLy", xl.contains("case -124:") && xl.contains("KenhChatGame.xuLy(player, message)"));
         Kiem.dung("MapXuLyLenh: vao ban do -> KenhChatGame.khiVaoBanDo", xl.contains("KenhChatGame.khiVaoBanDo(player)"));
         final String xh = doc("src/real/MapXaHoi.java");
-        Kiem.dung("MapXaHoi: tin rieng -5 cu di qua giaoRieng (offline vao hop thu)", xh.contains("KenhChatGame.giaoRieng(player, receiver, info)"));
+        Kiem.dung("MapXaHoi: tin rieng -5 cu di qua giaoRieng (offline: bao khong gui)", xh.contains("KenhChatGame.giaoRieng(player, receiver, info)"));
         Kiem.dung("MapXaHoi: the 'Nhóm' cua client cu = chat doi", xh.contains("TEN_NHOM_CU.equals(receiver)"));
         Kiem.sai("MapXaHoi: het cap cung 20 bo im lang", xh.contains("player.lvDetail.lv >= 20 && msgChat.length() >= 2"));
         Kiem.dung("MapDoi: chat bang -18 di qua phatBang", doc("src/real/MapDoi.java").contains("KenhChatGame.phatBang(player, ms)"));
@@ -691,14 +626,15 @@ public final class KiemKenhChat {
                 && doc("src/server/TeamServer.java").contains("KenhChatLogic.docCauHinh(p)"));
         final String g = doc("src/real/KenhChatGame.java");
         Kiem.dung("KenhChatGame: cong thanh vien chat the gioi / gui thu", g.contains("chanVaBao(p, \"chat_the_gioi\")") && g.contains("chanVaBao(p, \"gui_thu\")"));
-        Kiem.dung("KenhChatGame: tao tob_chat_cho + tob_chat_chan", g.contains("CREATE TABLE IF NOT EXISTS tob_chat_cho")
-                && g.contains("CREATE TABLE IF NOT EXISTS tob_chat_chan"));
+        Kiem.dung("KenhChatGame: tao tob_chat_chan, KHONG con hop thu tob_chat_cho", !g.contains("CREATE TABLE IF NOT EXISTS tob_chat_cho")
+                && !g.contains("INSERT INTO tob_chat_cho") && g.contains("CREATE TABLE IF NOT EXISTS tob_chat_chan"));
         final String sql = DayDu.phanNangCap("them_kenh_chat.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        Kiem.dung("nang_cap.sql them_kenh_chat: hai bang, idempotent", sql.contains("CREATE TABLE IF NOT EXISTS `tob_chat_cho`")
-                && sql.contains("CREATE TABLE IF NOT EXISTS `tob_chat_chan`") && !sql.contains("DROP TABLE"));
+        Kiem.dung("nang_cap.sql them_kenh_chat: tob_chat_chan + bo tob_chat_cho (DROP IF EXISTS, chay lai duoc)",
+                sql.contains("DROP TABLE IF EXISTS `tob_chat_cho`;") && !sql.contains("CREATE TABLE IF NOT EXISTS `tob_chat_cho`")
+                && sql.contains("CREATE TABLE IF NOT EXISTS `tob_chat_chan`"));
         final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (thay DanhMucSinh.java da xoa)
         final String[] khoa = {"sv.chat.capGan", "sv.chat.capTheGioi", "sv.chat.xuTheGioi", "sv.chat.giayTheGioi", "sv.chat.capRieng",
-            "sv.chat.doDai", "sv.chat.thuChoToiDa", "sv.chat.thuChoNgay", "sv.chat.lichSu", "sv.chat.chanToiDa"};
+            "sv.chat.doDai", "sv.chat.lichSu", "sv.chat.chanToiDa"};
         for (final String k : khoa) {
             Kiem.dung("danh muc: " + k + " lop co_dinh (khong tang khoa web)", dm.contains("\"khoa\": \"" + k + "\", \"nhom\": \"")
                     && dm.matches("(?s).*\"khoa\": \"" + k.replace(".", "\\.") + "\", \"nhom\": \"\\w+\", \"lop\": \"co_dinh\".*"));

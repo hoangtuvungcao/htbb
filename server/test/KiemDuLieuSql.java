@@ -44,9 +44,9 @@ public final class KiemDuLieuSql {
     /** DanhMucSinh cua main cfff771b (213 khoa / 15 nhom: them nhom chong_clone; co phan loai lop), tinh cung cach noi
      *  chuoi (KE CA lop) ngay truoc khi bo ban chep Java luc gop. Lich su: P1 185 khoa 382a04b3..., 0.9.2 5934a2e6...,
      *  0.9.4 (203 khoa, co lop) e6505ed5..., 213 khoa 9be03a6a.... khoa-map: +ban_do.khoa.bat (214 khoa); gop main 0cbf73ae: +nhom vong_quay 26 khoa (240 / 16); gop main bda0e901: +nhom cuoc_xu (256 / 17); gop main 1a705be6: 269 khoa main + ban_do.khoa.bat (luon_bat, an) = 270 / 17; ban-098 (0.9.8): +nhom hoc_chieu 5 khoa, +nhom trang_bi 21 khoa,
-     *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306; bat-trade +10 (bat.*, trao_doi.*), kenh-chat +10 (sv.chat.*) = 326, pvp-keo +4 (pvp.ngam_tay*) = 330, bat-trade cho +10 (cho_pokemon.*) = 340, ten-pet +10 (dat_ten_pet.*, an) = 350 / 20, loai-day-du +8 (loai.*, nhom loai) = 358 / 21, do-trang-phuc +2 (do_moi.bat, trang_phuc.bat, luon_bat) = 360 / 21.
+     *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306; bat-trade +10 (bat.*, trao_doi.*), kenh-chat +10 (sv.chat.*) = 326, pvp-keo +4 (pvp.ngam_tay*) = 330, bat-trade cho +10 (cho_pokemon.*) = 340, ten-pet +10 (dat_ten_pet.*, an) = 350 / 20, loai-day-du +8 (loai.*, nhom loai) = 358 / 21, do-trang-phuc +2 (do_moi.bat, trang_phuc.bat, luon_bat) = 360 / 21; dong bo 0.9.8: bo sv.chat.thuChoToiDa / thuChoNgay (chat chi trong phien) = 358 / 21.
      *  Lech = danh muc da doi (sua trong CSDL / nang_cap.sql phan 2, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "2eaa960e9549ba91d8c14e4e68397d0888faabdfa6bed57b8270bf876e9f61a2";
+    static final String VT_DANH_MUC = "966f0bddaf010eb6b7e91480d1834252d59691ce03e78f6579025f594705ae5e";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */
@@ -164,6 +164,8 @@ public final class KiemDuLieuSql {
             final boolean hopLe = t.startsWith("CREATE TABLE IF NOT EXISTS") || t.startsWith("CREATE INDEX IF NOT EXISTS")
                     || t.startsWith("INSERT IGNORE INTO")
                     || t.startsWith("UPDATE `5h_systems` SET") // bang cau hinh he thong (he so nap), khong phai nguoi choi
+                    // chu game 22/10/2026: chat chi trong phien - bo hop thu offline (bang tin cho, khong phai tai san nguoi choi)
+                    || t.equals("DROP TABLE IF EXISTS `tob_chat_cho`")
                     // dong bo 0.9.8: doi ten mon cua hang cu CHI khi con ten mac dinh cu (giu ten admin da sua)
                     || t.startsWith("UPDATE `nap_cua_hang` SET `ten` = ") && t.matches("(?s).* WHERE `ma` = '[a-z_]+' AND `ten` = '[^']+'$")
                     // bang CONG TAC su kien (khong phai du lieu nguoi choi): lich su kien nam 0.9.5

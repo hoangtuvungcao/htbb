@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PHO_BAN } from '../../../shared/utils/heThong098'
 const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * Hầm Ngục Bí Ẩn — luật từ HamNgucGame.java / CuonHut.java (cam-nang-noi-dung.json); các chặng
@@ -8,6 +9,9 @@ const HN = CAM_NANG_ND.hamNguc
 const CHANG = CAM_NANG.nhiemVu.hamNguc
 const vietHoaDau = (t: string) => t.charAt(0).toLocaleUpperCase('vi') + t.slice(1)
 const suKienHn = CAM_NANG.suKien.filter(s => /hầm ngục/i.test(`${s.ten1} ${s.coChe}`))
+// 0.9.8: Phó bản tổ đội 5 tầng (data_pho_ban_ngay / data_pho_ban_tang, pho_ban.*, PhoBanLogic) - shared/utils/heThong098.ts
+const PB = PHO_BAN
+const THU = ['', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật']
 </script>
 
 <template>
@@ -32,6 +36,31 @@ const suKienHn = CAM_NANG.suKien.filter(s => /hầm ngục/i.test(`${s.ten1} ${s
         <div class="the-so">
           <b><TienTe loai="luong_khoa" :gt="HN.luongKhoa" :co="22" ten /></b><span>khi qua từ tầng {{ HN.tangLuongKhoa }} trở lên</span>
         </div>
+      </div>
+    </WikiSection>
+
+    <WikiSection id="pho-ban" title="Phó bản tổ đội (5 tầng)" :lead="`Sổ tay → Hầm ngục bí ẩn → Phó bản tổ đội: một phòng riêng cho nhóm 1–${PB.nguoiToiDa} người, từ cấp ${PB.cap}, chênh nhau tối đa ${PB.chenhCap} cấp. ${PB.soTang} tầng, tầng ${PB.soTang} là boss, giới hạn ${PB.phutToiDa} phút.`">
+      <ul class="cham">
+        <li>Đội trưởng mở phòng, mỗi thành viên mất 1 lượt; mỗi Pokémon <strong>{{ PB.luotNgay }} lượt / ngày</strong> (tính cả lần vào lại sau khi thua).</li>
+        <li>Không tự động đánh, không hồi sinh tại chỗ. Rớt mạng thì vào lại đúng phòng.</li>
+        <li>Hạ boss: thưởng ngày (chung với Hầm ngục bí ẩn ở trên) <strong>{{ PB.expPhanNghinGio / 1000 * 100 }}% giờ EXP + {{ PB.luongKhoa }} lượng khoá + rương boss</strong>, một lần mỗi ngày.</li>
+      </ul>
+      <div class="bang-cuon mt-4">
+        <table class="bang-wiki">
+          <thead>
+            <tr>
+              <th>Ngày</th><th>Phó bản</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="d in PB.ngay" :key="d.thu">
+              <td>{{ THU[d.thu] }}</td>
+              <td class="font-semibold text-highlighted">
+                {{ d.ten }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </WikiSection>
 

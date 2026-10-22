@@ -502,9 +502,52 @@ public final class KenhChat {
                 lamViec(viec, ten, id, cung);
                 break;
             }
+            case 7: {
+                tenDoi = r.readUTF();
+                doiOnline = r.readShort();
+                doiTong = r.readShort();
+                coTinDoi = true;
+                if (tenDoi.length() == 0) {
+                    KENH[BANG].removeAllElements();   // rời đội: không giữ tin đội cũ
+                    chuaDoc[BANG] = 0;
+                }
+                phienBan++;
+                break;
+            }
             default:
                 break;
         }
+    }
+
+    /** Đội (bang hội) của mình theo gói -124 loại 7: tên ("" = chưa vào đội), số đang online / tổng. */
+    public static String tenDoi = "";
+    public static int doiOnline, doiTong;
+    public static boolean coTinDoi;
+
+    /** Có đang ở trong đội (gói loại 7 nếu máy chủ đã gửi, không thì theo idClan). */
+    public static boolean trongDoi() {
+        if (coTinDoi) {
+            return tenDoi != null && tenDoi.length() > 0;
+        }
+        return Canvas.gameScr != null && Canvas.gameScr.mainChar != null && Canvas.gameScr.mainChar.idClan != -1;
+    }
+
+    /** Nút "Xoá" của tab: xoá ngay tin đang hiện của tab (hội thoại riêng đang mở / mọi hội thoại ở danh sách Bạn bè). */
+    public static void xoaTab(int t) {
+        if (t == RIENG) {
+            Ban mo = dangNhan == null ? null : ban(dangNhan);
+            for (int i = 0; i < dsBan.size(); i++) {
+                Ban b = (Ban) dsBan.elementAt(i);
+                if (mo == null || b == mo) {
+                    b.tin.removeAllElements();
+                    b.chuaDoc = 0;
+                }
+            }
+        } else if (t >= 0 && t < SO_KENH) {
+            KENH[t].removeAllElements();
+            chuaDoc[t] = 0;
+        }
+        phienBan++;
     }
 
     static void bao(String s, boolean loi) {
@@ -705,7 +748,7 @@ public final class KenhChat {
         }
     }
 
-    /** Kiểm thử / đổi nhân vật: xoá mọi lịch sử. */
+    /** Vào game (GameService.selectChar) / kiểm thử: xoá mọi lịch sử - chat chỉ trong phiên (chủ game, kiểu Làng Lá). */
     public static void xoaHet() {
         for (int i = 0; i < SO_KENH; i++) {
             KENH[i].removeAllElements();
@@ -717,6 +760,9 @@ public final class KenhChat {
         dangNhan = null;
         choTheGioiDen = 0;
         baoCuoi = null;
+        tenDoi = "";
+        doiOnline = doiTong = 0;
+        coTinDoi = false;
         phienBan++;
     }
 }

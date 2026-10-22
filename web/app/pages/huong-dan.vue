@@ -107,7 +107,6 @@ const PHIM_PC: { nhom: string, ds: { phim: string[], viec: string }[] }[] = [
 const meo = POKEDEX.huongDanGame.filter(t => !/^Phím/.test(t))
 
 const N = CAM_NANG.nhiemVu
-const hd = N.huongDan
 const cung1 = N.cung[0]
 /** Lần tiến hoá đầu của từng dòng, gom theo cấp: "Pichu cấp 10, Charmander/Bulbasaur/Squirtle cấp 16". */
 const tienHoaDau = (() => {
@@ -282,15 +281,15 @@ const tienHoaDau = (() => {
             <SiteHudMinhHoa />
           </WikiSection>
 
-          <WikiSection id="30-phut" title="6. 30 phút đầu tiên" :lead="`Chuỗi hướng dẫn ${hd.length} bước dẫn bạn đi khắp Pallet — làm xong bạn sẽ ở khoảng cấp 8, đủ hiểu mọi thứ cơ bản.`">
+          <WikiSection id="30-phut" title="6. 30 phút đầu tiên" :lead="`Hướng dẫn tân thủ ${TAN_THU.length} bước trong làng khởi đầu (Pewter ở Kanto, Blackthorn ở Johto — cùng các bước). Đi theo dấu nhiệm vụ trên đầu NPC; mở Nhiệm vụ rồi bấm Đi tới để tự tìm đường.`">
             <ol class="relative space-y-3 border-l-2 border-dashed border-[var(--ui-border)] pl-6">
-              <li v-for="(q, i) in hd" :key="i" class="relative">
+              <li v-for="(q, i) in TAN_THU" :key="i" class="relative">
                 <span class="absolute -left-[35px] grid size-7 place-items-center rounded-full border-2 border-white bg-pokered-600 font-pixel text-[9px] text-white shadow">{{ i + 1 }}</span>
                 <p class="font-display font-bold text-highlighted">
                   {{ q.ten }}
                 </p>
                 <p class="text-sm text-muted">
-                  {{ q.yeuCau || `Gặp ${q.npc} ở ${q.diaDanh}` }}
+                  {{ q.viec }}
                 </p>
               </li>
               <li class="relative">
@@ -303,6 +302,10 @@ const tienHoaDau = (() => {
                 </p>
               </li>
             </ol>
+            <WikiCallout kieu="luu-y" title="Đã quen chơi?">
+              Lúc vào làng lần đầu, chọn <strong>Bỏ qua hướng dẫn (đã quen chơi)</strong>: bạn vẫn nhận đủ thưởng của các bước còn lại
+              và gặp Trưởng làng Xatu để vào cốt truyện. Không làm lại được. Công dụng từng NPC trong làng xem ở Sổ tay → Hướng dẫn tân thủ.
+            </WikiCallout>
             <WikiCallout kieu="meo" title="Mẹo cho người mới">
               <ul class="cham !gap-1.5">
                 <li v-for="m in meo.slice(0, 8)" :key="m">

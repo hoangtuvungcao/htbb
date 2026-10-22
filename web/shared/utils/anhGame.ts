@@ -24,16 +24,36 @@ export const ANH_GAME: Record<string, AnhGame> = {
   'npc': { ma: 'npc', tieuDe: 'NPC ngoài trời', moTa: 'Y tá Chansey ngoài thị trấn: hồi phục Pokémon, mua thuốc — thẻ chức năng mở ngay cạnh NPC.' },
   'tien-hoa': { ma: 'tien-hoa', tieuDe: 'Tiến hoá', moTa: 'Đủ cấp là tiến hoá ngay trên bản đồ.' },
   'doi': { ma: 'doi', tieuDe: 'Đội & bạn bè', moTa: 'Lập đội đi săn, đánh boss cùng nhau.' },
+  // 0.9.8 (giao diện kiểu NRO)
+  'thu-phuc': { ma: 'thu-phuc', tieuDe: 'Thu phục Pokémon', moTa: 'Đánh yếu Pokémon hoang dã rồi ném Poké Ball ngay trên bản đồ.' },
+  'hop-pc': { ma: 'hop-pc', tieuDe: 'Hộp PC', moTa: 'Pokémon đã bắt, Kẹo loài, tiến hoá và bạn đồng hành đi theo.' },
+  'ho-so-tu-do': { ma: 'ho-so-tu-do', tieuDe: 'Tủ đồ trang trí', moTa: 'Hồ sơ → Ngoại hình: mặc thử trang phục, hào quang, skin thú và chọn dòng chỉ số của ô.' },
+  'chat': { ma: 'chat', tieuDe: 'Chat nhiều kênh', moTa: 'Bản đồ, Thế giới, Đội, Nhóm, Bạn bè và tin riêng trong một bảng.' },
+  'pho-ban': { ma: 'pho-ban', tieuDe: 'Phó bản Hầm ngục', moTa: 'Phòng riêng 5 tầng cho nhóm, boss ở tầng cuối.' },
 }
+
+/**
+ * Ảnh 0.9.8 CHƯA chụp (chưa có public/anh-game/<ma>-640|1280.webp) -> tạm dùng ảnh có sẵn. Khi thêm tệp ảnh thật thì
+ * xoá dòng tương ứng (tests/he-thong-098.test.ts kiểm: ảnh không có trong bảng này phải có đủ hai tệp).
+ */
+export const ANH_TAM: Record<string, string> = {
+  'thu-phuc': 'chien-dau', 'hop-pc': 'pokedex', 'ho-so-tu-do': 'trang-bi', 'chat': 'doi', 'pho-ban': 'the-gioi',
+}
+const tep = (ma: string) => ANH_TAM[ma] ?? ma
 
 /** srcset 640/1280 của một ảnh. */
 export function srcsetAnhGame(ma: string): string {
-  return `/anh-game/${ma}-640.webp 640w, /anh-game/${ma}-1280.webp 1280w`
+  return `/anh-game/${tep(ma)}-640.webp 640w, /anh-game/${tep(ma)}-1280.webp 1280w`
+}
+
+/** Ảnh nhỏ (cỡ 640). */
+export function srcAnhGameNho(ma: string): string {
+  return `/anh-game/${tep(ma)}-640.webp`
 }
 
 /** Ảnh mặc định (cỡ 1280). */
 export function srcAnhGame(ma: string): string {
-  return `/anh-game/${ma}-1280.webp`
+  return `/anh-game/${tep(ma)}-1280.webp`
 }
 
 /** Icon vật phẩm thật (atlas 16×16 của game, server/map/icon_pokemon/<n>.png chép sang public/vat-pham/). */
@@ -57,4 +77,7 @@ export const HINH_CAM_NANG: Record<string, { dex?: number, vp?: number }> = {
   'pvp': { dex: 448 }, 'boss-dot-kich': { dex: 384 }, 'ham-nguc': { dex: 94 }, 'su-kien': { vp: ICON_VAT_PHAM.trangTri },
   'nhiem-vu': { dex: 143 }, 'ban-do': { dex: 18 }, 'he-sinh-thai': { dex: 1 }, 'cau-ca': { dex: 129 }, 'tai-khoan': { dex: 113 },
   'faq': { vp: ICON_VAT_PHAM.nhiemVu },
+  // 0.9.8
+  'thu-phuc': { dex: 25 }, 'danh-hieu': { vp: ICON_VAT_PHAM.trangTri }, 'trao-doi-cho': { dex: 52 },
+  'kenh-chat': { dex: 441 }, 'ket-doi': { dex: 370 }, 'thoi-tiet': { dex: 351 },
 }

@@ -16,6 +16,11 @@ const DIEM: { t: string, m: string, dex?: number[], anh?: string, img?: string[]
   { anh: 'tien-hoa', t: 'Không trần cấp theo mùa', m: `Cấp ${CAM_NANG.capDo.capToiDa} mở cho mọi người ngay từ đầu; lên cấp chậm, năng lượng huấn luyện và bắt kịp giúp người chơi ít giờ không bị bỏ lại.` },
   { anh: 'the-gioi', t: 'Phong cách Mystery Dungeon', m: 'Sprite PMD động 4 hướng từ cộng đồng PMDCollab, bản đồ vẽ lại tông màu tươi sáng, camera cố định cho mọi người.' },
   { anh: 'doi', t: 'Đội, vùng & thầy trò', m: 'Lập đội, tranh cờ giữa ba vùng, kèm người mới để cùng nhận thưởng.' },
+  // 0.9.8
+  { anh: 'thu-phuc', t: 'Thu phục & trao đổi', m: 'Ném Poké / Great / Ultra Ball, sưu tầm vào Hộp PC, đổi Pokémon với bạn bè hoặc mua bán ở chợ Pokémon.' },
+  { anh: 'pho-ban', t: 'Phó bản & Cúp PvP', m: 'Phó bản Hầm ngục 5 tầng mỗi ngày cho nhóm; Cúp PvP tuần Thuỵ Sĩ với chỉ số chuẩn hoá và ngắm tay kéo chiêu.' },
+  { anh: 'ho-so-tu-do', t: 'Tủ đồ & danh hiệu', m: 'Trang phục hiện trên Pokémon, hào quang, skin thú và danh hiệu 4 bậc — chỉ là hình và chút chỉ số theo ô, tổng ≤ 5%.' },
+  { anh: 'chat', t: 'Chat, nhóm & Lễ kết đôi', m: 'Bảng chat nhiều kênh, tin riêng tới cả khi bạn offline; hai Pokémon cùng nhóm trứng tổ chức Lễ kết đôi.' },
 ]
 const VUNG = [
   { ten: 'Kanto', dex: 4, mo: 'Nơi mọi hành trình bắt đầu. Đồng cỏ Pallet, Rừng Viridian rậm rạp, Núi Mặt Trăng đầy sao băng, con tàu S.S. Anne và đảo lửa Cinnabar.' },
@@ -26,7 +31,7 @@ const VUNG = [
 
 <template>
   <div>
-    <SitePageBanner title="Giới thiệu game" eyebrow="Thế giới" :intro="`${tenSite} — một buổi sáng ở Pallet, bạn thức dậy… trong hình hài một Pokémon.`" />
+    <SitePageBanner title="Giới thiệu game" eyebrow="Thế giới" :intro="`${tenSite} — một buổi sáng ở làng khởi đầu, bạn thức dậy… trong hình hài một Pokémon.`" />
 
     <section class="py-14 sm:py-20" aria-labelledby="cot-truyen">
       <UContainer class="max-w-6xl">
@@ -36,14 +41,14 @@ const VUNG = [
               Cốt truyện
             </p>
             <h2 id="cot-truyen" class="section-title mt-4 text-4xl text-highlighted">
-              Thức giấc ở Pallet
+              Thức giấc ở làng khởi đầu
             </h2>
             <div class="mt-5 space-y-4 text-lg text-toned">
               <p>
                 Trưởng làng Xatu đã chờ bạn từ lâu. Thế giới Pokémon đang đổi thay: Pokémon hoang dã kéo về các tuyến đường, những huyền thoại cổ xưa trở mình dưới lòng núi và đáy biển.
               </p>
               <p>
-                Bạn — một Pokémon nhỏ bé — sẽ rời Pallet, đi qua {{ cung1.length }} chặng đường của Kanto và Johto, kết bạn, lập đội, tiến hoá,
+                Bạn — một Pokémon nhỏ bé — sẽ rời làng (Pewter ở Kanto hoặc Blackthorn ở Johto), đi qua {{ cung1.length }} chặng đường của Kanto và Johto, kết bạn, lập đội, tiến hoá,
                 và cuối cùng đứng trên đỉnh Núi Silver khi huyền thoại thức tỉnh.
               </p>
             </div>

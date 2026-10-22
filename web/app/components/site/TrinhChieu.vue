@@ -3,7 +3,7 @@
  * Trình chiếu ảnh chụp THẬT trong game ở trang chủ: khung viền đậm kiểu game, chú thích, tự chuyển 5 giây/ảnh (dừng khi rê chuột / "giảm chuyển động"), dải ảnh nhỏ để chọn.
  * Chỉ ảnh đang hiện và ảnh kế tiếp được tải (loading lazy), mỗi ảnh ~20–50 KB.
  */
-const DS = ['chien-dau', 'the-gioi', 'thu-cuoi', 'tu-dong', 'khoi-dau'] as const
+const DS = ['chien-dau', 'the-gioi', 'thu-phuc', 'ho-so-tu-do', 'pho-ban', 'chat', 'thu-cuoi', 'tu-dong', 'khoi-dau'] as const
 const i = ref(0)
 const dung = ref(false)
 let t: ReturnType<typeof setInterval> | undefined
@@ -55,7 +55,7 @@ const hien = computed(() => ANH_GAME[DS[i.value]!]!)
         :class="k === i ? 'border-[#ffcb05]' : 'border-transparent opacity-70 hover:opacity-100'"
         @click="i = k"
       >
-        <img :src="`/anh-game/${m}-640.webp`" width="640" height="360" alt="" loading="lazy" decoding="async" class="aspect-video w-full object-cover">
+        <img :src="srcAnhGameNho(m)" width="640" height="360" alt="" loading="lazy" decoding="async" class="aspect-video w-full object-cover">
       </button>
     </div>
   </figure>

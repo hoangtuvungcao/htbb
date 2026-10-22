@@ -2,7 +2,6 @@ package real;
 
 import com.htbb.pokemon.KenhChatLogic;
 import com.htbb.pokemon.KenhChatLogic.Loi;
-import com.htbb.pokemon.KenhChatLogic.ThuCho;
 import com.htbb.pokemon.KenhChatLogic.Tin;
 import io.Message;
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.util.WeakHashMap;
 /**
  * KENH CHAT (0.9.8) - phan noi vao game cua com.htbb.pokemon.KenhChatLogic: dinh tuyen tin theo kenh (ban do, the
  * gioi, bang hoi, doi, rieng), kiem thanh vien / cam chat / cap / xu / gian cach, chong spam (ChongSpam) + tu xau
- * (BadWord), lich su, hop thu tin rieng OFFLINE (tob_chat_cho, giao khi nguoi nhan vao game), danh sach chan
+ * (BadWord), lich su trong bo nho (khong gui lai khi vao game - chat chi trong phien), danh sach chan
  * (tob_chat_chan), trang thai online cua ban be.
  *
  * <p>Client &gt;= 908 nhan goi -124; client cu nhan goi cu (the gioi -60, bang -18, rieng -5, chat doi -5 tu the
@@ -36,20 +35,9 @@ public final class KenhChatGame {
 
     // ================================================================== diem cam (kiem thu thay duoc)
 
-    /** CSDL: hop thu offline + danh sach chan. */
+    /** CSDL: danh sach chan (tin chat KHONG luu - kieu Lang La: chi trong phien). */
     public interface Kho {
         void taoBang();
-
-        /** id nhan vat theo ten (-1 = khong co). */
-        int timId(String ten);
-
-        /** Them mot tin cho; false = khong ghi duoc. */
-        boolean luuCho(int idNhan, String tenGui, String noiDung, long luc);
-
-        int demCho(int idNhan);
-
-        /** Lay va XOA cac tin cho cua nguoi nhan (cu nhat truoc). */
-        List<ThuCho> layCho(int idNhan);
 
         List<String> docChan(int idChar);
 
@@ -518,34 +506,17 @@ public final class KenhChatGame {
     }
 
     /**
-     * Giao mot tin rieng (sau moi kiem): online -&gt; -124 / -5 ngay; offline -&gt; hop thu tob_chat_cho (giao luc vao
-     * game). Nguoi nhan da chan nguoi gui: khong giao (nguoi gui van thay tin cua minh). Dung chung cho lenh -5 cu.
-     * @return null = da gui (hoac da vao hop thu).
+     * Giao mot tin rieng (sau moi kiem): online -&gt; -124 / -5 ngay; offline -&gt; bao nguoi gui "khong truc tuyen, tin
+     * khong duoc gui" (khong luu - chat chi trong phien). Nguoi nhan da chan nguoi gui: khong giao (nguoi gui van thay tin cua minh). Dung chung cho lenh -5 cu.
+     * @return null = da gui.
      */
     public static String giaoRieng(final Char p, final String tenNhan, final String s) {
         final Char q = tim.theoTen(KenhChatLogic.khoaTen(tenNhan));
         final long bayGio = System.currentTimeMillis();
         if (q == null || q.isBot != -1) {
-            final int id = kho.timId(tenNhan);
-            if (id <= 0) {
-                ketQua(p, KenhChatLogic.RIENG, KenhChatLogic.KQ_LOI, 0, "Không tìm thấy người chơi " + tenNhan + ".");
-                return "khong co";
-            }
-            if (KenhChatLogic.thuChoToiDa <= 0 || kho.demCho(id) >= KenhChatLogic.thuChoToiDa) {
-                ketQua(p, KenhChatLogic.RIENG, KenhChatLogic.KQ_LOI, 0, tenNhan + " đang offline và hộp thư đã đầy.");
-                return "day";
-            }
-            if (!kho.luuCho(id, ten(p), s, bayGio)) {
-                ketQua(p, KenhChatLogic.RIENG, KenhChatLogic.KQ_LOI, 0, "Chưa gửi được, thử lại sau.");
-                return "csdl";
-            }
-            ghiNhatKy(KenhChatLogic.RIENG, p, tenNhan + " (offline)", s);
-            final Tin t = new Tin(KenhChatLogic.RIENG, bayGio, p.id, ten(p), tenNhan, s, "", KenhChatLogic.CO_CUA_MINH);
-            if (coGoi(p)) {
-                p.sendMessage(goiTin(t, 0));
-            }
-            ketQua(p, KenhChatLogic.RIENG, KenhChatLogic.KQ_HOP_THU, 0, tenNhan + " đang offline - tin sẽ tới khi họ vào game.");
-            return null;
+            // 0.9.8 (chu game): chat chi trong phien nhu Lang La - khong co hop thu offline
+            ketQua(p, KenhChatLogic.RIENG, KenhChatLogic.KQ_LOI, 0, tenNhan + " không trực tuyến, tin không được gửi.");
+            return "offline";
         }
         final String tenThat = ten(q);
         ghiNhatKy(KenhChatLogic.RIENG, p, tenThat, s);
@@ -694,53 +665,32 @@ public final class KenhChatGame {
             p.sendMessage(goi(o -> KenhChatLogic.vietCauHinh(o, duoc)));
             guiChan(p);
             guiBan(p);
-            if (!xinLai) {
-                for (final Tin x : KenhChatLogic.lichSuTheGioi()) {
-                    if (!daChan(p, x.tenGui)) {
-                        p.sendMessage(goiTin(x, KenhChatLogic.CO_LICH_SU
-                                | (KenhChatLogic.khoaTen(x.tenGui).equals(KenhChatLogic.khoaTen(ten(p))) ? KenhChatLogic.CO_CUA_MINH : 0)));
-                    }
-                }
-                if (p.idClan != -1) {
-                    for (final Tin x : KenhChatLogic.lichSuBang(p.idClan)) {
-                        if (!daChan(p, x.tenGui)) {
-                            p.sendMessage(goiTin(x, KenhChatLogic.CO_LICH_SU));
-                        }
-                    }
-                }
-            }
-        }
-        if (!xinLai) {
-            giaoHopThu(p);
+            // 0.9.8 (chu game): chat chi trong phien (kieu Lang La) - vao game KHONG gui lai lich su the gioi / doi, khong hop thu
+            guiDoi(p);
         }
     }
 
-    /** Giao tin rieng cho luc offline (moi tin mot lan, xoa khi lay). Tra so tin da giao. */
-    public static int giaoHopThu(final Char p) {
-        if (p == null || p.charDBID <= 0) {
-            return 0;
+    /** Goi -124 loai 7: ten doi (bang hoi) cua p + so thanh vien dang online / tong ("" = chua vao doi). */
+    public static void guiDoi(final Char p) {
+        if (p == null || !coGoi(p)) {
+            return;
         }
-        final List<ThuCho> ds;
+        String tenDoi = "";
+        int tong = 0;
+        int on = 0;
         try {
-            ds = kho.layCho(p.charDBID);
+            final data.NewClan c = p.idClan == -1 ? null : data.NewClan.getClan(p.idClan);
+            if (c != null) {
+                tenDoi = c.name == null ? "" : c.name;
+                tong = c.member == null ? 0 : c.member.size();
+                on = tim.bang(p).size();
+            }
         } catch (final Exception e) {
-            return 0;
+            // giu rong
         }
-        final long bayGio = System.currentTimeMillis();
-        int n = 0;
-        for (final ThuCho c : ds) {
-            if (!KenhChatLogic.conHan(c, bayGio) || daChan(p, c.tenGui)) {
-                continue;
-            }
-            if (coGoi(p)) {
-                p.sendMessage(goiTin(new Tin(KenhChatLogic.RIENG, c.luc, (short) -1, c.tenGui, c.tenGui, c.noiDung, "",
-                        KenhChatLogic.CO_HOP_THU), 0));
-            } else {
-                p.sendMessage(goiRiengCu(c.tenGui, c.noiDung));
-            }
-            n++;
-        }
-        return n;
+        final String t = tenDoi;
+        final int a = on, b = tong;
+        p.sendMessage(goi(o -> KenhChatLogic.vietDoi(o, t, a, b)));
     }
 
     /** Bao ban be (client moi, dang online) rang p vua online / offline. */
@@ -810,90 +760,11 @@ public final class KenhChatGame {
         }
     }
 
-    /** tob_chat_cho (hop thu tin rieng offline) + tob_chat_chan. Bang tu tao (sql/nang_cap.sql phan 11 cung vay). */
+    /** tob_chat_chan (danh sach chan). Bang tu tao (sql/nang_cap.sql phan 11 cung vay). tob_chat_cho (hop thu offline) da bo. */
     static final class KhoCsdl implements Kho {
         public void taoBang() {
-            data.DatabaseLauDai.ghiCong("CREATE TABLE IF NOT EXISTS tob_chat_cho (id BIGINT NOT NULL AUTO_INCREMENT,"
-                    + " id_nhan INT NOT NULL, ten_gui VARCHAR(45) NOT NULL, noi_dung VARCHAR(400) NOT NULL, luc BIGINT NOT NULL,"
-                    + " PRIMARY KEY (id), KEY idx_chat_cho_nhan (id_nhan)) DEFAULT CHARSET=utf8");
             data.DatabaseLauDai.ghiCong("CREATE TABLE IF NOT EXISTS tob_chat_chan (id_char INT NOT NULL, ten_chan VARCHAR(45) NOT NULL,"
                     + " luc DATETIME NOT NULL, PRIMARY KEY (id_char, ten_chan)) DEFAULT CHARSET=utf8");
-            // tin qua han (sv.chat.thuChoNgay) xoa luc khoi dong
-            data.DatabaseLauDai.ghiCong("DELETE FROM tob_chat_cho WHERE luc < ?",
-                    Long.valueOf(System.currentTimeMillis() - KenhChatLogic.thuChoNgay * 86400000L));
-        }
-
-        public int timId(final String ten) {
-            Connection conn = null;
-            PreparedStatement pre = null;
-            ResultSet rs = null;
-            try {
-                conn = data.Database.instance.getConnection();
-                pre = conn.prepareStatement("SELECT id FROM tob_char WHERE charname = ? LIMIT 1");
-                pre.setString(1, KenhChatLogic.khoaTen(ten));
-                rs = pre.executeQuery();
-                return rs.next() ? rs.getInt(1) : -1;
-            } catch (final Exception e) {
-                return -1;
-            } finally {
-                XepHangPvpGame.dong(rs, pre, conn);
-            }
-        }
-
-        public boolean luuCho(final int idNhan, final String tenGui, final String noiDung, final long luc) {
-            return data.DatabaseLauDai.ghiCong("INSERT INTO tob_chat_cho (id_nhan, ten_gui, noi_dung, luc) VALUES (?, ?, ?, ?)",
-                    Integer.valueOf(idNhan), tenGui, noiDung, Long.valueOf(luc)) == 1;
-        }
-
-        public int demCho(final int idNhan) {
-            Connection conn = null;
-            PreparedStatement pre = null;
-            ResultSet rs = null;
-            try {
-                conn = data.Database.instance.getConnection();
-                pre = conn.prepareStatement("SELECT COUNT(*) FROM tob_chat_cho WHERE id_nhan = ?");
-                pre.setInt(1, idNhan);
-                rs = pre.executeQuery();
-                return rs.next() ? rs.getInt(1) : 0;
-            } catch (final Exception e) {
-                return Integer.MAX_VALUE;
-            } finally {
-                XepHangPvpGame.dong(rs, pre, conn);
-            }
-        }
-
-        public List<ThuCho> layCho(final int idNhan) {
-            final List<ThuCho> r = new ArrayList<ThuCho>();
-            Connection conn = null;
-            PreparedStatement pre = null;
-            ResultSet rs = null;
-            try {
-                conn = data.Database.instance.getConnection();
-                pre = conn.prepareStatement("SELECT id, ten_gui, noi_dung, luc FROM tob_chat_cho WHERE id_nhan = ? ORDER BY id LIMIT 500");
-                pre.setInt(1, idNhan);
-                rs = pre.executeQuery();
-                while (rs.next()) {
-                    final ThuCho t = new ThuCho();
-                    t.id = rs.getLong(1);
-                    t.idNhan = idNhan;
-                    t.tenGui = rs.getString(2);
-                    t.noiDung = rs.getString(3);
-                    t.luc = rs.getLong(4);
-                    r.add(t);
-                }
-            } catch (final Exception e) {
-                return new ArrayList<ThuCho>();
-            } finally {
-                XepHangPvpGame.dong(rs, pre, conn);
-            }
-            final List<ThuCho> lay = new ArrayList<ThuCho>();
-            for (final ThuCho t : r) {
-                // xoa tung dong: hai phien cung luc khong giao hai lan
-                if (data.DatabaseLauDai.ghiCong("DELETE FROM tob_chat_cho WHERE id = ?", Long.valueOf(t.id)) == 1) {
-                    lay.add(t);
-                }
-            }
-            return lay;
         }
 
         public List<String> docChan(final int idChar) {

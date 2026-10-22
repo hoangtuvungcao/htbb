@@ -389,6 +389,9 @@ public final class ManChat extends ManBang {
             KenhChat.Ban b = KenhChat.ban(KenhChat.dangNhan);
             return b == null ? new Vector() : b.tin;
         }
+        if (this.tab == KenhChat.BANG && !KenhChat.trongDoi()) {
+            return new Vector();   // chưa vào đội: không hiện tin đội nào
+        }
         return KenhChat.dong(this.tab);
     }
 
@@ -488,8 +491,20 @@ public final class ManChat extends ManBang {
                 ManChat.this.menuTuyChon();
             }
         }, "chat-tuy-chon");
+        // "Xoá": xoá ngay tin của tab này (không hỏi lại; chat chỉ trong phiên)
+        String chuXoa = "Xoá";
+        int wXoa = Math.max(ChuDe.rong(chuXoa, ChuDe.NHAN) + 20, Math.max(h, VungCham.MIN));
+        boolean coXoa = true;
+        if (coXoa) {
+            Bang.nut(g, x + w - wTc - Bang.cach() - wXoa, y, wXoa, h, chuXoa, Bang.PHU, new IAction() {
+                public void perform() {
+                    KenhChat.xoaTab(ManChat.this.tab);
+                    ManChat.this.chon = -1;
+                }
+            }, "chat-xoa");
+        }
         int xx = x;
-        int wConLai = w - wTc - Bang.cach();
+        int wConLai = w - wTc - Bang.cach() - (coXoa ? wXoa + Bang.cach() : 0);
         if (this.tab == KenhChat.RIENG && KenhChat.dangNhan != null) {
             int s = h;
             Bang.nutLui(g, x, y, s, new IAction() {
@@ -517,7 +532,7 @@ public final class ManChat extends ManBang {
     }
 
     /** Dòng thông tin luật kênh. */
-    String thongTinTab() {
+    public String thongTinTab() {
         switch (this.tab) {
             case KenhChat.BAN_DO:
                 return "Người cùng bản đồ thấy" + (KenhChat.capKenh[0] > 0 ? " - từ cấp " + KenhChat.capKenh[0] : "");
@@ -538,8 +553,11 @@ public final class ManChat extends ManBang {
                 return b.toString();
             }
             case KenhChat.BANG:
-                return Canvas.gameScr != null && Canvas.gameScr.mainChar != null && Canvas.gameScr.mainChar.idClan == -1
-                        ? "Bạn chưa vào đội" : "Chỉ thành viên đội thấy";
+                if (!KenhChat.trongDoi()) {
+                    return "Bạn chưa vào đội";
+                }
+                return KenhChat.coTinDoi ? "Đội " + KenhChat.tenDoi + " - " + KenhChat.doiOnline + "/" + KenhChat.doiTong + " trực tuyến"
+                        : "Chỉ thành viên đội thấy";
             case KenhChat.DOI:
                 return game.model.Char.party == null || game.model.Char.party.size() == 0 ? "Bạn chưa vào nhóm" : "Chỉ người trong nhóm thấy";
             case KenhChat.RIENG: {
@@ -559,6 +577,15 @@ public final class ManChat extends ManBang {
         return ChuDe.cao(vai) + 1;
     }
 
+    /** Hội thoại riêng đang mở: tin dạng bong bóng hai bên (của mình bên phải, của bạn bên trái), rộng 3/4. */
+    boolean laHoiThoai() {
+        return this.tab == KenhChat.RIENG && KenhChat.dangNhan != null;
+    }
+
+    static int rongBong(int w) {
+        return w * 3 / 4;
+    }
+
     /** Cao một tin (đầu dòng: giờ + tên; thân ngắt dòng). */
     static int caoTin(KenhChat.Dong d, int w) {
         int than = ChuDe.ngat(d.noiDung, ChuDe.THUONG, w - 16, 6).length * lh(ChuDe.THUONG);
@@ -574,8 +601,12 @@ public final class ManChat extends ManBang {
         VUA_DS[3] = h;
         soDongVe = 0;
         if (v.size() == 0) {
+            if (this.tab == KenhChat.BANG && !KenhChat.trongDoi()) {
+                Bang.trong(g, x, y, w, h, "Bạn chưa vào đội", "Tìm đội: nhận lời mời của trưởng đội, hoặc lập đội ở Lãnh địa đội (Cao nguyên Indigo).");
+                return;
+            }
             String phu = this.tab == KenhChat.RIENG ? "Gửi lời chào đầu tiên!" : this.tab == KenhChat.THE_GIOI && !KenhChat.coMayChu
-                    ? null : "Tin mới sẽ hiện ở đây.";
+                    ? null : "Tin mới sẽ hiện ở đây. Tin chỉ giữ trong lần chơi này.";
             Bang.trong(g, x, y, w, h, "Chưa có tin nào", phu);
             return;
         }
@@ -583,7 +614,7 @@ public final class ManChat extends ManBang {
         int[] cao = new int[v.size()];
         int tong = 0;
         for (int i = 0; i < v.size(); i++) {
-            cao[i] = caoTin((KenhChat.Dong) v.elementAt(i), w - 10);
+            cao[i] = caoTin((KenhChat.Dong) v.elementAt(i), laHoiThoai() ? rongBong(w - 10) : w - 10);
             tong += cao[i] + k;
         }
         tong -= k;
@@ -619,7 +650,13 @@ public final class ManChat extends ManBang {
             int yy = y - lech;
             for (int i = 0; i < v.size(); i++) {
                 if (yy + cao[i] >= y && yy < y + h) {
-                    veMotTin(g, (KenhChat.Dong) v.elementAt(i), i, x, yy, wr, cao[i]);
+                    KenhChat.Dong di = (KenhChat.Dong) v.elementAt(i);
+                    if (laHoiThoai()) {
+                        int wb = rongBong(wr);
+                        veMotTin(g, di, i, di.cuaMinh() ? x + wr - wb : x, yy, wb, cao[i]);
+                    } else {
+                        veMotTin(g, di, i, x, yy, wr, cao[i]);
+                    }
                     g.setClip(x, y, w, h);
                     soDongVe++;
                 }
@@ -707,11 +744,8 @@ public final class ManChat extends ManBang {
             String gioTen = d.gio == null ? "" : d.gio;
             ChuDe.chu(g, gioTen, xx, yy, ChuDe.PHU, ChuDe.CHU_NHAT, 0);
             int xt = xx + ChuDe.rong(gioTen, ChuDe.PHU) + 6;
-            String nguoi = d.kenh == KenhChat.RIENG && d.cuaMinh() ? "Bạn tới " + d.doiPhuong
+            String nguoi = d.kenh == KenhChat.RIENG && d.cuaMinh() ? (laHoiThoai() ? "Bạn" : "Bạn tới " + d.doiPhuong)
                     : (d.cuaMinh() ? "Bạn" : (d.nhan == null ? "" : d.nhan) + d.ten);
-            if ((d.co & KenhChat.CO_HOP_THU) != 0) {
-                nguoi = nguoi + " (lúc bạn offline)";
-            }
             ChuDe.chu(g, ChuDe.cat(nguoi, ChuDe.PHU, x + w - 8 - xt), xt, yy, ChuDe.PHU, mauTen(d), 0);
             yy += lh(ChuDe.PHU);
         }
@@ -797,7 +831,8 @@ public final class ManChat extends ManBang {
         this.o.paint(g);
         g.setClip(0, 0, Canvas.w, Canvas.h);
         if (this.o.getText().length() == 0 && !this.o.isFocus) {
-            ChuDe.chuGiua(g, "Nhập tin...", xO + 8, this.o.y, this.o.height, ChuDe.PHU, ChuDe.CHU_NHAT, 0);
+            String goiY = laHoiThoai() ? "Nhắn cho " + KenhChat.dangNhan + "…" : "Nhập tin...";
+            ChuDe.chuGiua(g, ChuDe.cat(goiY, ChuDe.PHU, wO - 12), xO + 8, this.o.y, this.o.height, ChuDe.PHU, ChuDe.CHU_NHAT, 0);
         }
         int xg = x + w - wGui;
         VUA_GUI[0] = xg;

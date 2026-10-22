@@ -415,7 +415,8 @@ public final class Bang {
             }
             String ct = ChuDe.cat(chu[i], ChuDe.NHAN, ww - 14);
             if (c) {
-                ChuDe.chuGiua(g, ct, xt + ww / 2, y, h, ChuDe.SO, ChuDe.CHU, 2);
+                // 0.9.8: tab đang chọn cùng cỡ / độ đậm với tab khác (chữ NHAN viền), chữ tối trên nền giấy da sáng
+                ChuDe.chuGiua(g, ct, xt + ww / 2, y + 1, h, ChuDe.NHAN, ChuDe.CHU, 2);
             } else {
                 ChuDe.chuVienGiua(g, ct, xt + ww / 2, y + 1 + (an ? 1 : 0), h, ChuDe.NHAN, 0xF6E6C0, ChuDe.VIEN, 2);
             }
@@ -538,7 +539,7 @@ public final class Bang {
         }
         String c = ChuDe.cat(chu, ChuDe.NHAN, w - 6);
         if (chon) {
-            ChuDe.chuGiua(g, c, x + w / 2, y, h, ChuDe.SO, ChuDe.CHU, 2);
+            ChuDe.chuGiua(g, c, x + w / 2, y + 1, h, ChuDe.NHAN, ChuDe.CHU, 2);   // cùng cỡ / đậm với tab thường
         } else {
             ChuDe.chuVienGiua(g, c, x + w / 2, y + 1, h, ChuDe.NHAN, 0xF6E6C0, ChuDe.VIEN, 2);
         }

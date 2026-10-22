@@ -158,6 +158,16 @@ public class KiemKenhChat {
         });
     }
 
+    /** Gói -124 loại 7: đội của mình ("" = chưa vào đội). */
+    static void doi(final String ten, final int on, final int tong) throws Exception {
+        mayChu(o -> {
+            o.writeByte(7);
+            o.writeUTF(ten);
+            o.writeShort(on);
+            o.writeShort(tong);
+        });
+    }
+
     static void banBe() throws Exception {
         mayChu(o -> {
             o.writeByte(2);
@@ -187,6 +197,7 @@ public class KiemKenhChat {
     static void napDuLieu() throws Exception {
         chay(game.pokemon.KenhChat::xoaHet);
         cauHinh();
+        doi("Lửa Thiêng", 3, 12);
         banBe();
         tin(0, 0, "Squirtle3", "", "Có ai đi săn Pidgey ở Rừng Viridian không?", 21);
         tin(0, 1, "Charmander99", "", "Mình đi cùng nhé!", 1);
@@ -197,7 +208,10 @@ public class KiemKenhChat {
         tin(2, 0, "Bulbasaur1", "", "Tối nay 21h đánh chiếm Gym nhé cả bang", 12);
         tin(3, 0, "Pikachu7", "", "Gom quái lại rồi mình dùng chiêu diện rộng", 7);
         tin(4, 0, "Pikachu7", "Pikachu7", "Cậu ơi chiều nay đi phó bản không?", 7);
-        tin(4, 2, "Eevee2", "Eevee2", "Hôm qua cậu offline mình để lại lời nhắn nè", -1);
+        // hội thoại hai phía: tin của mình (máy chủ trả lại, cờ CỦA MÌNH) xen giữa tin của bạn, theo thời gian
+        tin(4, 1, "Charmander99", "Pikachu7", "Đi chứ! 3 giờ gặp ở cổng Hầm ngục nhé.", -1);
+        tin(4, 0, "Pikachu7", "Pikachu7", "Ok, mình mang thêm thuốc.", 7);
+        tin(4, 0, "Eevee2", "Eevee2", "Tối nay đi câu cá không?", -1);
         chay(() -> game.pokemon.KenhChat.heThong("Bạn nhận được 120 xu."));
     }
 
@@ -426,6 +440,33 @@ public class KiemKenhChat {
         chay(() -> game.pokemon.KenhChat.banDo((short) 77, "Psyduck5", "đi đâu vậy"));
         java.util.Vector b0 = game.pokemon.KenhChat.dong(0);
         kiem(((game.pokemon.KenhChat.Dong) b0.lastElement()).ten.equals("Psyduck5"), "tin bản đồ người khác vào tab Bản đồ");
+        // hội thoại riêng hai phía: tin của mình + của bạn cùng trong một hội thoại; gợi ý ô nhập "Nhắn cho X…"
+        game.pokemon.KenhChat.Ban pk = game.pokemon.KenhChat.ban("Pikachu7");
+        boolean minh = false, ban = false;
+        for (int i = 0; pk != null && i < pk.tin.size(); i++) {
+            if (((game.pokemon.KenhChat.Dong) pk.tin.elementAt(i)).cuaMinh()) minh = true;
+            else ban = true;
+        }
+        kiem(minh && ban, "hội thoại riêng Pikachu7: có tin của mình và của bạn");
+        // Xoá: xoá ngay tab đang xem (không hỏi lại)
+        moTab(1, null, 0);
+        kiem(game.pokemon.KenhChat.dong(1).size() > 0, "Thế giới có tin trước khi Xoá");
+        kiem(chamVung("chat-xoa"), "nút Xoá có vùng chạm");
+        kiem(game.pokemon.KenhChat.dong(1).size() == 0 && game.render.Canvas.currentDialog == null, "Xoá: tab Thế giới trống ngay, không hộp hỏi");
+        // Đội: chưa vào đội -> không hiện tin đội, dòng thông tin "Bạn chưa vào đội"
+        doi("", 0, 0);
+        moTab(2, null, 0);
+        ve();
+        kiem(game.pokemon.KenhChat.dong(2).size() == 0 && "Bạn chưa vào đội".equals(game.pokemon.ManChat.gI().thongTinTab()),
+                "chưa vào đội: không tin đội cũ + 'Bạn chưa vào đội' (" + game.pokemon.ManChat.gI().thongTinTab() + ")");
+        doi("Lửa Thiêng", 3, 12);
+        kiem(game.pokemon.ManChat.gI().thongTinTab().startsWith("Đội Lửa Thiêng - 3/12"), "trong đội: dòng thông tin có tên đội + trực tuyến");
+        // đăng nhập lại (chọn Pokémon): mọi tab trống - chat chỉ trong phiên
+        chay(() -> game.networklogic.GameService.gI().selectChar(1, 0));
+        boolean trongHet = game.pokemon.KenhChat.dsBan.size() == 0;
+        for (int i = 0; i < 6; i++) trongHet &= game.pokemon.KenhChat.dong(i).size() == 0;
+        kiem(trongHet, "vào game lại: mọi tab chat trống (không giữ qua phiên)");
+        napDuLieu();
         // máy chủ cũ: không gói cấu hình -> bang hội gửi -18, tin riêng -5
         chay(() -> game.pokemon.KenhChat.coMayChu = false);
         xoaGoi();
@@ -515,10 +556,20 @@ public class KiemKenhChat {
         phim(-7);
     }
 
+    static void xoaThuMuc(File f) {
+        File[] con = f.listFiles();
+        if (con != null) {
+            for (File c : con) xoaThuMuc(c);
+        }
+        f.delete();
+    }
+
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
         ra = new File(a.length > 0 ? a[0] : "kiem_kenh_chat");
         ra.mkdirs();
+        // dữ liệu người chơi MỚI mỗi lần chạy: lần trước để lại cài đặt (cỡ chữ / HUD chat đã lưu) làm lần sau khác lần đầu
+        xoaThuMuc(new File(ra, "du_lieu"));
         System.setProperty("htbb.duLieu", new File(ra, "du_lieu").getAbsolutePath());
         System.setProperty("microedition.platform", "HTBB-PC/kiem");
         htbb.pc.CaiDat.thuMucDuLieu();

@@ -71,6 +71,12 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     tuKhoa: 'evolution da tien hoa eevee vaporeon jolteon flareon espeon umbreon leafeon glaceon sylveon',
   },
   {
+    slug: 'thu-phuc', ten: 'Thu phục & Hộp PC', nhom: 'Phát triển', icon: 'i-lucide-circle-dot',
+    moTa: 'Đánh yếu Pokémon hoang dã rồi ném Poké / Great / Ultra Ball: tỉ lệ, bậc hiếm loài, giới hạn ngày, Hộp PC, Kẹo loài, tiến hoá nhiều nhánh và chuyển đổi con trùng.',
+    muc: [{ id: 'nem-bong', ten: 'Ném bóng' }, { id: 'ti-le', ten: 'Tỉ lệ thu phục' }, { id: 'bac-hiem', ten: 'Bậc hiếm loài' }, { id: 'hop-pc', ten: 'Hộp PC & tiến hoá' }, { id: 'chuyen-doi', ten: 'Chuyển đổi con trùng' }],
+    tuKhoa: 'thu phuc bat pokemon poke ball great ultra hop pc keo loai tien hoa chuyen doi con trung shiny sac mau',
+  },
+  {
     slug: 'trang-bi', ten: 'Trang bị & nâng cấp', nhom: 'Phát triển', icon: 'i-lucide-shield',
     moTa: 'Ô trang bị, 11 bậc, bảng tỉ lệ +1..+15, cơ chế bù may mắn, bùa bảo hộ, ngọc hệ và bộ trang bị.',
     muc: [{ id: 'o', ten: 'Ô trang bị' }, { id: 'bac', ten: 'Bậc trang bị' }, { id: 'nang-cap', ten: 'Nâng cấp +1..+15' }, { id: 'chi-phi', ten: 'Chi phí & số lần thử' }, { id: 'ngoc-he', ten: 'Ngọc hệ' }, { id: 'bo', ten: 'Thưởng bộ' }],
@@ -84,9 +90,15 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'trang-phuc', ten: 'Trang phục & trang trí', nhom: 'Phát triển', icon: 'i-lucide-shirt',
-    moTa: 'Trang phục hiện trên Pokémon, hào quang, skin thú cưỡi, thẻ bạn đồng hành: ngân sách chỉ số theo ô (tổng 5%) và nguồn kiếm.',
+    moTa: 'Tủ đồ trang trí 4 ô (Hồ sơ → Ngoại hình): trang phục, hào quang, skin thú cưỡi, thẻ bạn đồng hành; món cửa hàng cũ đã gộp vào; tổng trang trí kể cả danh hiệu và thẻ đặt tên ≤ 5%.',
     muc: [{ id: 'ngan-sach', ten: 'Ngân sách chỉ số' }, { id: 'trang-phuc', ten: 'Trang phục' }, { id: 'hao-quang', ten: 'Hào quang' }, { id: 'skin-thu', ten: 'Skin thú cưỡi' }, { id: 'the-dong-hanh', ten: 'Thẻ bạn đồng hành' }],
-    tuKhoa: 'costume cosmetic thoi trang mu khan ao choang canh hao quang skin thu cuoi yen the ten ban dong hanh tu do ngoai hinh su kien luong',
+    tuKhoa: 'costume cosmetic thoi trang mu khan ao choang canh hao quang skin thu cuoi yen the ten ban dong hanh tu do ngoai hinh su kien luong mu rom kinh ram the dat ten',
+  },
+  {
+    slug: 'danh-hieu', ten: 'Danh hiệu', nhom: 'Phát triển', icon: 'i-lucide-badge',
+    moTa: 'Danh hiệu 4 bậc hiện trên đầu: kiếm từ nhiệm vụ, thành tựu, Gym, Pokédex, phó bản, cúp, ngày cộng đồng; một danh hiệu đang đeo cho một dòng chỉ số nhỏ.',
+    muc: [{ id: 'bac', ten: 'Bậc danh hiệu' }, { id: 'deo', ten: 'Đeo & chỉ số' }, { id: 'kiem', ten: 'Nhận danh hiệu ở đâu' }],
+    tuKhoa: 'danh hieu title hien tren dau thanh tuu bac hiem huyen thoai deo',
   },
   {
     slug: 'vat-pham', ten: 'Vật phẩm', nhom: 'Kinh tế & vật phẩm', icon: 'i-lucide-backpack',
@@ -105,6 +117,12 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     moTa: 'Xu, lượng khoá, lượng: kiếm ở đâu, tiêu vào đâu, thuế chợ, chốt chống clone khi chuyển xu và vì sao giá cả ổn định.',
     muc: [{ id: 'tien', ten: 'Ba loại tiền' }, { id: 'kiem', ten: 'Cách kiếm tiền' }, { id: 'tieu', ten: 'Tiêu tiền' }, { id: 'cho', ten: 'Chợ & giao dịch' }, { id: 'lam-phat', ten: 'Vì sao giá cả ổn định?' }],
     tuKhoa: 'xu luong luong khoa tien te thue cho giao dich lam phat chong clone chuyen xu nap khoi dau 5000 xu',
+  },
+  {
+    slug: 'trao-doi-cho', ten: 'Trao đổi & chợ Pokémon', nhom: 'Kinh tế & vật phẩm', icon: 'i-lucide-repeat',
+    moTa: 'Đổi Pokémon trong Hộp PC với người chơi khác (xác nhận hai lần, đổi nguyên tử) và mua bán ở chợ Pokémon: phí, thuế, khung giá, giờ khoá.',
+    muc: [{ id: 'trao-doi', ten: 'Trao đổi Pokémon' }, { id: 'cho', ten: 'Chợ Pokémon' }, { id: 'khung-gia', ten: 'Khung giá' }, { id: 'chong-clone', ten: 'Vì sao có giới hạn' }],
+    tuKhoa: 'trao doi pokemon trade cho pokemon mua ban thue phi khung gia khoa gio',
   },
   {
     slug: 'pokedex-shiny', ten: 'Pokédex & Shiny', nhom: 'Nội dung', icon: 'i-lucide-book-open',
@@ -126,9 +144,21 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'pvp', ten: 'PvP xếp hạng mùa', nhom: 'Cộng đồng', icon: 'i-lucide-trophy',
-    moTa: 'Thang điểm mùa 13 tuần, bậc Poké Ball → Master Ball, cách tính trận, Giải Liên minh, luật PK và đua top.',
-    muc: [{ id: 'mua', ten: 'Thang PvP mùa' }, { id: 'che-do', ten: 'Các chế độ PvP' }, { id: 'pk', ten: 'Luật PK' }, { id: 'xep-hang-tuan', ten: 'Xếp hạng & đua top' }],
-    tuKhoa: 'pvp pk elo dau truong lien dau xep hang mua giai master ball great ultra dua top',
+    moTa: 'Thang điểm mùa 13 tuần (chỉ trận xếp hạng ghép cặp), ngắm tay kéo chiêu, Cúp PvP tuần Thuỵ Sĩ, Giải Liên minh, luật PK và đua top.',
+    muc: [{ id: 'mua', ten: 'Thang PvP mùa' }, { id: 'che-do', ten: 'Các chế độ PvP' }, { id: 'ngam-tay', ten: 'Ngắm tay' }, { id: 'cup', ten: 'Cúp PvP tuần' }, { id: 'pk', ten: 'Luật PK' }, { id: 'xep-hang-tuan', ten: 'Xếp hạng & đua top' }],
+    tuKhoa: 'pvp pk elo dau truong lien dau xep hang mua giai master ball great ultra dua top ngam tay keo chieu cup tuan thuy si',
+  },
+  {
+    slug: 'kenh-chat', ten: 'Kênh chat', nhom: 'Cộng đồng', icon: 'i-lucide-messages-square',
+    moTa: 'Bảng chat nhiều kênh: Bản đồ, Thế giới, Đội, Nhóm, Bạn bè (tin riêng, cả khi bạn offline), Hệ thống; chặn người, giãn cách và cấp tối thiểu.',
+    muc: [{ id: 'kenh', ten: 'Các kênh' }, { id: 'tin-rieng', ten: 'Tin riêng & hộp thư' }, { id: 'luat', ten: 'Luật chat' }],
+    tuKhoa: 'chat kenh the gioi doi nhom ban be tin rieng nhan tin chan hop thu',
+  },
+  {
+    slug: 'ket-doi', ten: 'Lễ kết đôi', nhom: 'Cộng đồng', icon: 'i-lucide-heart',
+    moTa: 'Hai Pokémon kết đôi theo nhóm trứng như Pokémon thật: điều kiện, cách tổ chức Lễ kết đôi, mời khách và huỷ kết đôi.',
+    muc: [{ id: 'dieu-kien', ten: 'Điều kiện' }, { id: 'nhom-trung', ten: 'Nhóm trứng' }, { id: 'to-chuc', ten: 'Tổ chức lễ' }],
+    tuKhoa: 'ket doi cuoi dam cuoi nhom trung egg group ban doi',
   },
   {
     slug: 'boss-dot-kich', ten: 'Boss & đột kích', nhom: 'Nội dung', icon: 'i-lucide-skull',
@@ -138,9 +168,9 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'ham-nguc', ten: 'Hầm ngục bí ẩn', nhom: 'Nội dung', icon: 'i-lucide-castle',
-    moTa: 'Thử thách leo tầng mỗi ngày: cách vào từ Sổ tay, luật tính quái, tối đa tầng và phần thưởng EXP + lượng khoá.',
-    muc: [{ id: 'gioi-thieu', ten: 'Hầm ngục là gì' }, { id: 'thuong', ten: 'Phần thưởng' }, { id: 'tang', ten: 'Nhiệm vụ Hầm ngục' }, { id: 'meo', ten: 'Mẹo' }],
-    tuKhoa: 'mystery dungeon ham nguc tang leo thap thu thach hang ngay',
+    moTa: 'Leo tầng mỗi ngày từ Sổ tay và Phó bản tổ đội 5 tầng (phòng riêng, boss tầng 5, chủ đề đổi theo thứ): luật, lượt ngày, phần thưởng EXP + lượng khoá.',
+    muc: [{ id: 'gioi-thieu', ten: 'Hầm ngục là gì' }, { id: 'thuong', ten: 'Phần thưởng' }, { id: 'pho-ban', ten: 'Phó bản tổ đội' }, { id: 'tang', ten: 'Nhiệm vụ Hầm ngục' }, { id: 'meo', ten: 'Mẹo' }],
+    tuKhoa: 'mystery dungeon ham nguc tang leo thap thu thach hang ngay pho ban to doi boss phong rieng',
   },
   {
     slug: 'su-kien', ten: 'Sự kiện năm', nhom: 'Nội dung', icon: 'i-lucide-calendar-days',
@@ -159,6 +189,12 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     moTa: 'Các vùng, thị trấn, NPC và chức năng, khu luyện cấp theo cấp độ và Pokémon hoang dã ở từng nơi.',
     muc: [{ id: 'vung', ten: 'Các vùng' }, { id: 'npc', ten: 'NPC & chức năng' }, { id: 'luyen-cap', ten: 'Khu luyện cấp' }, { id: 'danh-sach', ten: 'Mọi bản đồ' }],
     tuKhoa: 'map ban do khu vuc luyen cap pallet viridian kanto johto npc chansey kecleon kangaskhan meowth ngan hang lapras pidgeot cho bay cho do',
+  },
+  {
+    slug: 'thoi-tiet', ten: 'Thời tiết & ngày cộng đồng', nhom: 'Thế giới', icon: 'i-lucide-cloud-sun-rain',
+    moTa: 'Thời tiết đổi theo khung 6 giờ, hệ hợp thời tiết xuất hiện nhiều hơn và đổi nhẹ sát thương chiêu; mỗi tháng một Ngày cộng đồng 3 giờ vàng.',
+    muc: [{ id: 'thoi-tiet', ten: 'Thời tiết' }, { id: 'mua', ten: 'Màu mùa' }, { id: 'cong-dong', ten: 'Ngày cộng đồng' }],
+    tuKhoa: 'thoi tiet mua nang tuyet bao cat suong mu gio ngay cong dong community day gio vang shiny',
   },
   {
     slug: 'he-sinh-thai', ten: 'Hệ sinh thái', nhom: 'Thế giới', icon: 'i-lucide-leaf',

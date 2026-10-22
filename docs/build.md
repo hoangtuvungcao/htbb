@@ -233,12 +233,12 @@ mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - l�
 
 Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), khác:
 
-1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — cuối log có `== XONG` và `danh muc cau hinh: 360 khoa`. `nang_cap.sql`
+1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — cuối log có `== XONG` và `danh muc cau hinh: 358 khoa`. `nang_cap.sql`
    phần 11 tạo bảng / dữ liệu 0.9.8 (`sql/README.md`); chỉ thêm bảng / cột (`tob_pokedex.so_bat`, `bat_shiny`, `tob_char.o_mo_rong`), thêm dòng cửa hàng
    `nap_cua_hang` bằng `INSERT IGNORE` (vé mở rộng túi, thẻ đặt tên, 15 món tủ đồ), `data_item` 1400..2027 (đồ họ), không sửa
    dòng người chơi. Kiểm (22/10/2026): dump `main` 1e27bf2a + `nang_cap.sql` hai lần → không lỗi, bảng người chơi giữ số
    dòng + CHECKSUM, xuất lại = `htbb_day_du.sql`.
-2. Log máy chủ sau khi lên: `[CAU HINH] danh muc tu CSDL htbb_db: 360 khoa, 21 nhom`, `[KHOA BAN DO] da nap 142 luat`,
+2. Log máy chủ sau khi lên: `[CAU HINH] danh muc tu CSDL htbb_db: 358 khoa, 21 nhom`, `[KHOA BAN DO] da nap 142 luat`,
    `[HOC CHIEU] learnset 175 dong`, `[BO NGOC] 33 dòng bộ ... 330 loài thu phục được; [DO MOI] 21 bộ, 628/628 món họ; [TRANG PHUC] 69 món trang trí`,
    `ICON DO MOI -> 689 anh`, `[KET DOI] da nap 15 nhom trung, 1025 loai`, `[NGAM TAY] 50 dong`, `PHONG RIENG -> pho ban 4381, san
    cup 4382`, `[DANH HIEU] 420 mau danh hieu`, khi quái hồi sinh lần đầu `[LOAI] nap 1025 loai`; không có `THIEU DU LIEU` / `Exception`.
