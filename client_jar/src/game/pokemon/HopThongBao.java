@@ -354,7 +354,9 @@ public final class HopThongBao extends Dialog {
     /** Cao phần đầu (nửa huy hiệu + tiêu đề) trong thẻ. */
     static int caoDauA() {
         // đủ cao cho vùng chạm nút X (góc phải) + khe chạm trước hàng đầu của thân
-        return Math.max(dkHuy() / 2 + 4 + ChuDe.cao(ChuDe.TIEU_DE) + 4, 2 + Math.max(VungCham.MIN, ChuDe.dt() ? 24 : 16) + Bang.cach());
+        // 0.9.7: ô huy hiệu vuông (cạnh max(dk, 24)) nhô nửa trên mép thẻ: tiêu đề nằm DƯỚI ô, thân dưới tiêu đề
+        int sh = Math.max(dkHuy(), 24);
+        return Math.max(sh / 2 + 4 + ChuDe.cao(ChuDe.TIEU_DE) + 4, 2 + Math.max(VungCham.MIN, ChuDe.dt() ? 24 : 16) + Bang.cach());
     }
 
     /**
@@ -411,7 +413,7 @@ public final class HopThongBao extends Dialog {
         mauHuy = ChuDe.CHINH;
         huyNhat = false;
         // tiêu đề
-        int yTieu = y + Math.max(dk, 24) / 2 + 3;
+        int yTieu = y + sh / 2 + 3;
         ChuDe.chu(g, ChuDe.cat(tieuDe == null ? "" : tieuDe, ChuDe.TIEU_DE, ww - 2 * pad - 24), cx, yTieu, ChuDe.TIEU_DE, 0x8E1A0E, 2);
         if (dong != null) {
             int sx = Math.max(VungCham.MIN, ChuDe.dt() ? 24 : 16);   // vùng chạm đủ cỡ, X vẽ nhỏ

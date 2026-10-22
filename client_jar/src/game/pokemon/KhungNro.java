@@ -94,6 +94,9 @@ public final class KhungNro {
         if (!co()) {
             return false;
         }
+        if (GhiChu.bat) {
+            GhiChu.khung(g, manh, x, y, w, h);
+        }
         short[] m = KhungNroBang.MANH;
         int i = manh * 9;
         int sx = m[i], sy = m[i + 1], sw = m[i + 2], sh = m[i + 3];

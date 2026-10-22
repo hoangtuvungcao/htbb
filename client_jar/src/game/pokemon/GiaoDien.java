@@ -714,6 +714,9 @@ public final class GiaoDien {
         if (w < 3 || h < 3) {
             return;
         }
+        if (GhiChu.bat) {
+            GhiChu.khung(g, -1, x, y, w, h);
+        }
         g.setColor(ChuDe.VIEN);
         g.fillRect(x + 1, y, w - 2, h);
         g.fillRect(x, y + 1, w, h - 2);

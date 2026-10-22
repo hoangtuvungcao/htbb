@@ -968,6 +968,20 @@ public class GameService extends Cmd_message {
         }
     }
 
+    /** 0.9.8: gói 61 + byte huy (1 = TIÊU HUỶ vật phẩm khoá thay vì bỏ ra đất; máy chủ cũ bỏ qua byte thừa). */
+    public void giveItemToGround(short itemID, boolean huy) {
+        Message m = init((byte) 61);
+        try {
+            m.writer().writeShort(itemID);
+            if (huy) {
+                m.writer().writeByte(1);
+            }
+            this.session.sendMessage(m);
+            m.cleanup();
+        } catch (IOException e) {
+        }
+    }
+
     public void comeHomeWhenDie() {
         Message m = init((byte) 31);
         this.session.sendMessage(m);

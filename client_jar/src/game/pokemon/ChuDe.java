@@ -151,6 +151,20 @@ public final class ChuDe {
         if (s == null || s.length() == 0) {
             return;
         }
+        if (GhiChu.bat) {
+            GhiChu.chu(g, s, x, y, rong(s, vai), cao(vai), canh);
+            GhiChu.trongChuDe++;
+            try {
+                chu0(g, s, x, y, vai, mau, canh);
+            } finally {
+                GhiChu.trongChuDe--;
+            }
+            return;
+        }
+        chu0(g, s, x, y, vai, mau, canh);
+    }
+
+    private static void chu0(Graphics g, String s, int x, int y, int vai, int mau, int canh) {
         ChuUI b = ChuUI.bo;
         if (b != null) {
             b.ve(g, s, x, y, co(vai), DAM[vai], mau, canh);
@@ -251,9 +265,21 @@ public final class ChuDe {
         }
         ChuUI b = ChuUI.bo;
         if (b == null) {
+            // J2ME: chữ sáng trên nền màu / gỗ = borderFont (font ảnh có viền sẵn - đọc rõ), chữ tối = font thường
+            if (GiaoDien.doSang(mau) > 150 && Font.borderFont != null) {
+                GhiChu.chu(g, s, x, y, Font.borderFont.getWidth(s), Font.borderFont.getHeight(), canh);
+                GhiChu.trongChuDe++;
+                try {
+                    Font.borderFont.drawString(g, s, x, y, canh == 2 ? Font.CENTER : canh == 1 ? Font.RIGHT : Font.LEFT);
+                } finally {
+                    GhiChu.trongChuDe--;
+                }
+                return;
+            }
             chu(g, s, x, y, vai, mau, canh);
             return;
         }
+        GhiChu.chu(g, s, x, y, rong(s, vai), cao(vai), canh);
         float c = co(vai);
         int d = DAM[vai];
         b.ve(g, s, x, y + 1, c, d, mauVien, canh);

@@ -108,6 +108,9 @@ public class Font {
         if (st == null || g == null) {
             return;
         }
+        if (game.pokemon.GhiChu.bat && game.pokemon.GhiChu.trongChuDe == 0) {
+            game.pokemon.GhiChu.chu(g, st, x, y, getWidth(st), getHeight(), align == CENTER ? 2 : align == RIGHT ? 1 : 0);
+        }
         Image anh = this.imgFont;
         java.util.Hashtable boCu = this.boGhep;
         if (nenSang && laSang()) {
@@ -275,9 +278,19 @@ public class Font {
     /** Ký tự ASCII hay thiếu trong font ảnh -> ký tự gần giống (cặp liền nhau). */
     private static final String THAY_ASCII = "{(" + "})" + "[(" + "])" + "|/" + "`'" + "^-" + "~-" + "\\/" + "_-" + ";:" + "\"'" + "<(" + ">)" + "&+" + "=-" + "@a";
 
+    /** Dấu câu Unicode font ảnh không có -> ký tự ASCII gần giống (0.9.7: không bao giờ ra '?'). */
+    private static final String THAY_DAU = "\u00b7-\u203a>\u2039<\u2026.\u00d7x\u2013-\u2014-\u2022-\u201c\"\u201d\"\u2018'\u2019'\u2192>\u2190<";
+
     private int thay(char c) {
         if (c <= ' ') {
             return 0;                    // khoảng trắng / ký tự điều khiển
+        }
+        for (int k = 0; k + 1 < THAY_DAU.length(); k += 2) {
+            if (THAY_DAU.charAt(k) == c) {
+                char t = THAY_DAU.charAt(k + 1);
+                int p = this.charList.indexOf(t);
+                return p >= 0 ? p : thay(t);
+            }
         }
         if (c < 0x80 && !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')) {
             for (int k = 0; k + 1 < THAY_ASCII.length(); k += 2) {
@@ -290,6 +303,10 @@ public class Font {
                 }
             }
             int q = this.charList.indexOf('?');
+            if (c != '?') {
+                thieuNet++;
+                thieuCuoi = c;
+            }
             return q >= 0 ? q : 0;
         }
         char t = ChuPokemon.thuong(c);
@@ -308,8 +325,14 @@ public class Font {
             return pos;
         }
         pos = this.charList.indexOf('?');
+        thieuNet++;   // 0.9.7: ký tự font ảnh không có (vẽ thành '?') - kiểm thử đếm
+        thieuCuoi = c;
         return pos >= 0 ? pos : 0;
     }
+
+    /** số lần vẽ ký tự font ảnh không có (kiểm thử chữ) + ký tự gần nhất */
+    public static int thieuNet;
+    public static char thieuCuoi;
 
     private int[] doc(int pos) {
         int w = this.imgFont.getWidth();
