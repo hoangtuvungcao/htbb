@@ -15,7 +15,7 @@ import java.util.Vector;
  *    (serviceRepaints) - không chạy song song với logic; vị trí tạm đặt lúc vẽ được trả lại ngay sau khung.
  *
  * 2) Bộ đo khung (Cài đặt -> Nhà phát triển): ms nhập (chạm / phím), logic, vẽ thế giới, vẽ giao diện; nền thêm
- *    trình bày, GC, cấp phát. Đo bằng System.nanoTime, không cấp phát.
+ *    trình bày, GC, cấp phát. Đo bằng nano() (mili giây x 10^6: CLDC / MIDP KHÔNG có System.nanoTime - 0.9.7.3, CoffeeCat iOS ném lỗi mọi nhịp), không cấp phát.
  */
 public final class NhipVe {
     private NhipVe() {
@@ -99,23 +99,28 @@ public final class NhipVe {
 
     private static long t0;
 
+    /** "nano giây" từ đồng hồ mili giây (CLDC 1.1 / MIDP 2.0 không có System.nanoTime). */
+    static long nano() {
+        return System.currentTimeMillis() * 1000000L;
+    }
+
     /** Canvas.run: bắt đầu pha. */
     public static void batDau() {
-        t0 = System.nanoTime();
+        t0 = nano();
     }
 
     /** Canvas.run: xong pha. */
     public static void xong(int pha) {
         if (doBat) {
-            cong(pha, System.nanoTime() - t0);
+            cong(pha, nano() - t0);
         }
-        t0 = System.nanoTime();
+        t0 = nano();
     }
 
     /** GameScr.paint: hết lớp thế giới (bắt đầu vẽ giao diện). */
     public static void hetTheGioi() {
         if (doBat && mocVe != 0) {
-            long n = System.nanoTime();
+            long n = nano();
             cong(VE_THE_GIOI, n - mocVe);
             mocVe = -n;   // âm = đang đo giao diện từ đây
         }
@@ -163,7 +168,7 @@ public final class NhipVe {
     public static void dauKhung() {
         demKhung++;
         if (doBat) {
-            mocVe = System.nanoTime();
+            mocVe = nano();
             dauVe = mocVe;
         }
         soTam = 0;
@@ -245,7 +250,7 @@ public final class NhipVe {
             camTam = false;
         }
         if (doBat) {
-            long n = System.nanoTime();
+            long n = nano();
             if (mocVe < 0) {
                 cong(VE_GIAO_DIEN, n + mocVe);
             } else if (mocVe > 0) {
