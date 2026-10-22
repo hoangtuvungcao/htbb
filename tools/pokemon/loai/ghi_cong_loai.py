@@ -46,8 +46,21 @@ def doc_nguoi_ve(sg, ten, cr):
     return ds
 
 
+def doc_nhap():
+    """khoa -> nhan ("bản nháp" / "dạng <ten>") tu du_lieu/loai/sprite_nhap.csv (tai_sprite_nhap.py)."""
+    kq = {}
+    f = os.path.join(GOC, "du_lieu", "loai", "sprite_nhap.csv")
+    if os.path.isfile(f):
+        for d in open(f, encoding="utf-8").read().splitlines()[1:]:
+            p = d.split(",")
+            if len(p) >= 4:
+                kq[p[0]] = "bản nháp PMDCollab, " + p[1] if p[3] == "1" else "dạng %s, %s" % (p[2], p[1])
+    return kq
+
+
 def main():
     sg = nap_sinh_ghi_cong()
+    nhap = doc_nhap()
     ten = sg.doc_ten()
     loai, shiny, chan_dung = [], [], []
     for t in sorted(os.listdir(THU_MUC_GOI)):
@@ -77,6 +90,8 @@ def main():
         "Giấy phép CC BY-NC 4.0 (phải ghi công, không dùng cho mục đích thương mại): https://creativecommons.org/licenses/by-nc/4.0/",
         "Hình đã được thu nhỏ / cắt khung / đổi định dạng để chạy trên điện thoại.",
         "Bản sắc màu (shiny) là sprite sắc màu của chính PMDCollab, không tự đổi màu.",
+        "Loài ghi (bản nháp ...) dùng sprite CHƯA HOÀN THIỆN của PMDCollab; (dạng ...) dùng một dạng khác của chính loài đó.",
+        "Động tác còn thiếu dùng lại khung của chính người vẽ (CopyOf), không vẽ thêm.",
         "Nhân vật dựa trên Pokémon Mystery Dungeon (Chunsoft / Spike Chunsoft).",
         "",
         "# Người vẽ (%d)" % len(nguoi),
@@ -85,11 +100,11 @@ def main():
         "# Người vẽ theo từng loài (%d loài)" % len(loai),
     ]
     for k, ds in loai:
-        r.append("#%s: %s" % (k, ", ".join(ds) if ds else "?"))
+        r.append("#%s: %s%s" % (k, ", ".join(ds) if ds else "?", " (%s)" % nhap[k] if k in nhap else ""))
     if shiny:
         r += ["", "# Người vẽ bản sắc màu theo từng loài (%d loài)" % len(shiny)]
         for k, ds in shiny:
-            r.append("#%s: %s" % (k, ", ".join(ds) if ds else "?"))
+            r.append("#%s: %s%s" % (k, ", ".join(ds) if ds else "?", " (%s)" % nhap[k] if k in nhap else ""))
     if chan_dung:
         r += ["", "# Người vẽ chân dung Pokédex tĩnh (loài chưa có gói sprite, %d loài; web/public/pokemon/loai)" % len(chan_dung)]
         for k, ds in chan_dung:

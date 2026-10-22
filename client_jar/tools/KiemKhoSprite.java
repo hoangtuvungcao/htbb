@@ -424,7 +424,7 @@ public final class KiemKhoSprite {
         int so = 0, soShiny = 0, maxGoi = 0, maxCap = 0;
         long tong = 0;
         boolean vuot = false;
-        for (int d = 1; d <= 251; d++) {
+        for (int d = 1; d <= 1025; d++) {   // loai-bo-sung: moi goi (Gen 1-3 + Vung hoang da + ban nhap)
             String k = PokeBody.tenKhoa(d, false);
             File f = new File(thu, k + ".goi"), fs = new File(thu, k + "s.goi");
             int cap = 0;
@@ -446,8 +446,8 @@ public final class KiemKhoSprite {
             }
             maxCap = Math.max(maxCap, cap);
         }
-        dung("251 loai da mo co goi thuong", so == 251);
-        dung("co goi shiny (" + soShiny + ")", soShiny >= 200);
+        dung("goi thuong cho moi loai Gen 1-2 + loai mo moi (" + so + ")", so >= 251 + 135);
+        dung("co goi shiny (" + soShiny + ")", soShiny >= 800);
         dung("LRU 1 MB khong luc nao vuot khi nap " + (so + soShiny) + " goi", !vuot);
         dung("goi lon nhat " + maxGoi + " < GOI_TOI_DA", maxGoi < KhoSprite.GOI_TOI_DA);
         dung("cap thuong + shiny lon nhat " + maxCap + " <= 1/4 ngan sach (con cho >= 4 loai)", maxCap * 4 <= KhoSpriteLru.NGAN_SACH_MAC_DINH);

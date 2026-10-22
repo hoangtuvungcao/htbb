@@ -173,8 +173,12 @@ public final class LoaiQuaiGame {
             final int mapId = m.map.mapId;
             final int gio = com.htbb.pokemon.DongHo.lich().get(Calendar.HOUR_OF_DAY);
             final int tt = HeSinhThaiGame.thoiTietMap(mapId);
-            final ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), HeSinhThaiGame.vung(mapId), m.level,
-                    gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), thamSo(), R);
+            final int vungMap = HeSinhThaiGame.vung(mapId);
+            // VUNG HOANG DA (loai-bo-sung): ban do xoay vong them loai Gen 4-9 cua chu ky tuan nay
+            final java.util.List<LoaiDuLieu.Vung> xoay = d.laBanDoXoay(mapId)
+                    ? d.xoayVong(chuKyHienTai(d), vungMap) : java.util.Collections.<LoaiDuLieu.Vung>emptyList();
+            final ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), vungMap, m.level,
+                    gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), thamSo(), R, xoay);
             m.dexRieng = kq.dex;
             m.bacRieng = kq.bac;
             m.shinyRieng = kq.dex > 0 && tungShiny(d, kq.dex);
@@ -235,6 +239,17 @@ public final class LoaiQuaiGame {
     /** Con quai {@code m} la shiny voi nguoi {@code p}: chi khi p thay dung loai rieng (client cu thay loai mau, khong shiny). */
     public static boolean shinyChoNguoi(final Char p, final Monster m) {
         return m != null && m.shinyRieng && m.dexRieng > 0 && thayLoaiRieng(p);
+    }
+
+    /** Ngay epoch theo gio may chu (DongHo) - cung mui gio voi lich tuan. */
+    public static long ngayHienTai() {
+        final Calendar c = com.htbb.pokemon.DongHo.lich();
+        return java.time.LocalDate.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)).toEpochDay();
+    }
+
+    /** Chu ky Vung hoang da tuan nay (-1 = chua co lich). */
+    public static int chuKyHienTai(final LoaiDuLieu d) {
+        return d == null ? -1 : d.chuKyNgay(ngayHienTai());
     }
 
     /** T4+ bao nguoi trong ban do (khong bao toan may chu de tranh don nguoi); T5 bao toan may chu (2.4). */

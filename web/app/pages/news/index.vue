@@ -1,5 +1,6 @@
 <script setup lang="ts">
 /** Tin tức (CSDL web_tin_tuc, có tin mặc định) + sự kiện đang / sắp diễn ra theo lịch năm của máy chủ game. */
+import { cacTuanToi, homNayMayChu, ngayTuEpoch, type LichVungHoangDa } from '~~/shared/utils/vungHoangDa'
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Tin tức & sự kiện',
@@ -16,6 +17,9 @@ const skHien = computed(() => [
   ...skNam.dang.value.map(l => ({ l, dang: true })),
   ...skNam.sap.value.map(l => ({ l, dang: false })),
 ].slice(0, 6))
+// Vùng hoang dã xoay vòng (loai-bo-sung): tuần này + 2 tuần tới, cùng công thức với máy chủ
+const { data: vhd } = await useFetch<LichVungHoangDa | null>('/api/vung-hoang-da', { key: 'htbb-vung-hoang-da', default: () => null, timeout: 4000 })
+const vhdTuan = computed(() => vhd.value ? cacTuanToi(vhd.value, homNayMayChu(), 3) : [])
 const lich = useLichSuKien()
 const suKien = ref<SuKienTuan[]>([])
 onMounted(() => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 3, lich.value) })
@@ -117,6 +121,27 @@ watch(lich, l => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 3, l) }
                 </div>
               </template>
             </ClientOnly>
+            <div v-if="vhd && vhdTuan.length" class="border-t-2 border-[var(--ui-border-muted)]" data-vung-hoang-da>
+              <h3 class="px-4 pt-3 font-display text-sm font-extrabold uppercase text-highlighted">
+                Vùng hoang dã
+              </h3>
+              <ul class="divide-y divide-[var(--ui-border-muted)]">
+                <li v-for="(t, i) in vhdTuan" :key="t.batDau" class="px-4 py-3">
+                  <p class="text-[11px] font-extrabold uppercase" :class="i === 0 ? 'text-success' : 'text-dimmed'">
+                    {{ i === 0 ? 'Tuần này' : i === 1 ? 'Tuần sau' : 'Sắp tới' }} · từ {{ ngayTuEpoch(t.batDau) }}
+                  </p>
+                  <p class="font-display font-bold text-highlighted">
+                    {{ vhd.tuan[t.chuKy]?.ten }} · {{ vhd.soLoai[t.chuKy] ?? 0 }} loài
+                  </p>
+                  <p class="line-clamp-2 text-xs text-muted">
+                    {{ vhd.tuan[t.chuKy]?.moTa }}
+                  </p>
+                </li>
+              </ul>
+              <p class="px-4 pb-3 text-xs text-muted">
+                Bản đồ: {{ vhd.banDo.map(b => b.ten).join(', ') }}. Độ hiếm và số quái không đổi; huyền thoại không xuất hiện.
+              </p>
+            </div>
             <div class="border-t-2 border-[var(--ui-border-muted)] p-3">
               <UButton to="/cam-nang/su-kien" block color="neutral" variant="outline" trailing-icon="i-lucide-arrow-right">
                 Lịch sự kiện cả năm

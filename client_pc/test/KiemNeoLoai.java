@@ -78,9 +78,11 @@ public class KiemNeoLoai {
         game.pokemon.KhoSprite.NGAN_SACH = 64 << 20;
         game.pokemon.KhoSprite.RAM_TOI_DA = 64 << 20;
         game.pokemon.PokeBody.ToiDaPixel = 40000000;
-        boolean[] coShiny = new boolean[252];
+        // loai-bo-sung: MOI loai da mo (du_lieu/loai/bang_loai.csv cot bat = 1: Gen 1-3 + Vung hoang da Gen 4-9)
+        int[] daMo = loaiDaMo();
+        boolean[] coShiny = new boolean[1026];
         int soGoi = 0;
-        for (int d = 1; d <= 251; d++) {
+        for (int d : daMo) {
             String k = game.pokemon.PokeBody.tenKhoa(d, false);
             File f = new File(thu, k + ".goi"), fs = new File(thu, k + "s.goi");
             if (!game.pokemon.PokeBody.coTrongJar(d) && f.isFile()) {
@@ -103,7 +105,7 @@ public class KiemNeoLoai {
                 + "mat_y,co_x,co_y,lung_x,lung_y,eo_y,day_y,mu_sau");
         int[] neo = new int[8], tp = new int[game.pokemon.NeoTrangPhuc.SO];
         int soShiny = 0;
-        for (int dex = 1; dex <= 251; dex++) {
+        for (int dex : daMo) {
             kiem(game.pokemon.PokeBody.coSprite(dex, false) && !"bong".equals(game.pokemon.PokeBody.lay(dex, false).khoa),
                     "#" + dex + " có sprite thật");
             for (int sh = 0; sh < 2; sh++) {
@@ -127,7 +129,7 @@ public class KiemNeoLoai {
             }
         }
         csv.close();
-        veBang(ra, coShiny);
+        veBang(ra, coShiny, daMo);
         tatCaHong.close();
         for (java.util.Map.Entry<String, Integer> e : LOAI.entrySet()) {
             System.out.println("LOAI HONG " + e.getValue() + " x " + e.getKey());
@@ -136,12 +138,31 @@ public class KiemNeoLoai {
         for (int i = 0; i < LECH_MAX.length; i++) {
             b.append(i > 0 ? ", " : "").append(TEN_LECH[i]).append(' ').append(LECH_MAX[i]);
         }
-        System.out.println("KiemNeoLoai: 251 loai (" + soShiny + " co ban sac mau), " + soGoi + " goi tai, " + soKhung
+        System.out.println("KiemNeoLoai: " + daMo.length + " loai da mo (" + soShiny + " co ban sac mau), " + soGoi + " goi tai, " + soKhung
                 + " khung x huong; mu " + soMu + " (an " + soAnMu + "), khan " + soKhan + " (an " + soAnKhan + "), the " + soThe
                 + "; shiny khac khung nguon voi ban thuong (jar day du / goi XA, khong so) " + soKhacNguon);
         System.out.println("lech lon nhat (px goc): " + b);
         System.out.println("KiemNeoLoai: dat " + dat + ", hong " + hong);
         System.exit(hong == 0 ? 0 : 1);
+    }
+
+    /** Dex co bat = 1 trong du_lieu/loai/bang_loai.csv (sinh_loai.py), tang dan. */
+    static int[] loaiDaMo() throws Exception {
+        java.util.List<String> d = Files.readAllLines(new File("du_lieu/loai/bang_loai.csv").toPath(), java.nio.charset.StandardCharsets.UTF_8);
+        String[] h = d.get(0).split(",");
+        int cBat = java.util.Arrays.asList(h).indexOf("bat");
+        java.util.List<Integer> kq = new java.util.ArrayList<Integer>();
+        for (int i = 1; i < d.size(); i++) {
+            String[] p = d.get(i).split(",");
+            if (p.length > cBat && "1".equals(p[cBat])) {
+                kq.add(Integer.valueOf(p[0]));
+            }
+        }
+        int[] a = new int[kq.size()];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = kq.get(i).intValue();
+        }
+        return a;
     }
 
     static int[] tickKhung(int dex, boolean shiny, int dt) {
@@ -370,17 +391,19 @@ public class KiemNeoLoai {
      * Bảng soát (phóng 3x, mỗi tệp 16 loài): mỗi loài một hàng: 4 hướng trang phục 1 | 4 hướng thẻ 1 (đi theo) | bản sắc
      * màu đứng xuống. Điểm đỏ = đỉnh sọ / giữa sọ (NeoTrangPhuc), xanh = cổ, vàng = neo thẻ đỉnh đầu PMD.
      */
-    static void veBang(File ra, boolean[] coShiny) throws Exception {
+    static void veBang(File ra, boolean[] coShiny, int[] daMo) throws Exception {
         int s = 80, z = 3, cot = 9;
         int[] tp = new int[game.pokemon.NeoTrangPhuc.SO], neo = new int[8];
-        for (int tu = 1; tu <= 251; tu += 16) {
-            int den = Math.min(251, tu + 15);
-            BufferedImage tam = new BufferedImage(cot * s * z, (den - tu + 1) * s * z, BufferedImage.TYPE_INT_RGB);
+        for (int i0 = 0; i0 < daMo.length; i0 += 16) {
+            int i1 = Math.min(daMo.length, i0 + 16);
+            int tu = daMo[i0], den = daMo[i1 - 1];
+            BufferedImage tam = new BufferedImage(cot * s * z, (i1 - i0) * s * z, BufferedImage.TYPE_INT_RGB);
             Graphics2D gt = tam.createGraphics();
             gt.setColor(new java.awt.Color(NEN));
             gt.fillRect(0, 0, tam.getWidth(), tam.getHeight());
-            for (int dex = tu; dex <= den; dex++) {
-                int hang = dex - tu;
+            for (int ii = i0; ii < i1; ii++) {
+                int dex = daMo[ii];
+                int hang = ii - i0;
                 for (int c = 0; c < cot; c++) {
                     boolean shiny = c == 8;
                     if (shiny && !coShiny[dex]) {
@@ -407,7 +430,7 @@ public class KiemNeoLoai {
                 gt.drawString("#" + dex, 4, hang * s * z + 14);
             }
             gt.dispose();
-            ImageIO.write(tam, "png", new File(ra, String.format("neo_%03d_%03d.png", tu, den)));
+            ImageIO.write(tam, "png", new File(ra, String.format("neo_%04d_%04d.png", tu, den)));
         }
     }
 

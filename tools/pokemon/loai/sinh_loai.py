@@ -323,6 +323,14 @@ def main():
         }
         co_hinh = trong_jar or goi
         l["bat"] = 1 if (l["dot_mo"] in dm["dang_mo"] and co_hinh) else 0
+        # VUNG HOANG DA xoay vong (loai-bo-sung): loai Gen 4-9 CO HINH, bac T1-T4, nhom 0, khong em be -> bat = 1
+        xv = cfg.get("xoay_vong") or {}
+        the_he_xv = [t["the_he"] for t in xv.get("tuan", [])]
+        l["xoay"] = -1
+        if (l["the_he"] in the_he_xv and l["dot_mo"] not in dm["dang_mo"] and co_hinh and l["nhom"] == 0
+                and 1 <= l["bac"] <= 4 and l["giai_doan"] >= 1 and l.get("bat_duoc", 1) and not l.get("chi_su_kien")):
+            l["xoay"] = the_he_xv.index(l["the_he"])
+            l["bat"] = 1
         if l["dot_mo"] in dm["dang_mo"] and not co_hinh:
             loi.append("loai %d (%s) thuoc dot dang mo nhung khong co hinh (jar / goi may chu)" % (dex, l["ten"]))
 
@@ -664,12 +672,34 @@ def main():
         if nha in v["khu_phu"]:
             khu.append((v["khu_phu"][nha], v["trong_so_khu_phu"]))
         for kv, ts_kv in khu:
+            dai = v.get("cap_khu_vuc", {}).get(kv)
+            a_, b_ = (anh_xa_cap(cmin, dai), anh_xa_cap(cmax, dai)) if dai else (cmin, cmax)
             for i, vg in enumerate(l["vung"]):
                 ts = ts_kv * [100, 40, 20, 10][min(i, 3)] // 100
                 if ts <= 0:
                     continue
-                VG.append({"dex": dex, "khu": kv, "vung": vg, "cmin": cmin, "cmax": cmax, "ts": ts, "nd": nd, "tt": tt,
+                VG.append({"dex": dex, "khu": kv, "vung": vg, "cmin": a_, "cmax": b_, "ts": ts, "nd": nd, "tt": tt,
                            "bac_gap": bac_gap})
+
+    # ---- vung hoang da xoay vong (loai-bo-sung): moi loai trong vong -> cac vung sinh thai cua no, dai cap anh xa
+    XV = []
+    xvc = cfg.get("xoay_vong") or {}
+    for dex, l in L.items():
+        if l.get("xoay", -1) < 0:
+            continue
+        if l["giai_doan"] <= 1:
+            cmin = int(cap_cfg["goc_theo_bac"][str(min(5, l["bac"]))])
+        else:
+            cmin = max(10, int(round(he_so_cap * cap_tien_hoa_vao(dex))))
+        ra = cap_tien_hoa_ra(dex)
+        cmax = min(cap_cfg["toi_da"], int(round(he_so_cap * ra)) + cap_cfg["them_tren"]) if ra else cap_cfg["toi_da"]
+        if cmax < cmin:
+            cmax = min(cap_cfg["toi_da"], cmin + 20)
+        a_, b_ = anh_xa_cap(cmin, xvc["cap"]), anh_xa_cap(cmax, xvc["cap"])
+        for i, vg in enumerate(l["vung"]):
+            ts = 100 * [100, 40, 20, 10][min(i, 3)] // 100
+            XV.append({"chu_ky": l["xoay"], "dex": dex, "vung": vg, "cmin": a_, "cmax": b_, "ts": ts, "bac_gap": l["bac"]})
+    cfg["_XV"] = XV
 
     # ---- doi chieu Showdown
     sd = doc_showdown(os.path.join(d_sd, "pokedex.ts"))
@@ -776,9 +806,18 @@ def ghi_csv(L, TH, CHIEU, LC, VG, cfg, ten_trung):
         c["trang_thai"], c["hinh"], c["hu"], c["mau"], c["doi_mau"], c["dac_trung_ho"] or ""] for c in CHIEU.values()])
     w("bang_loai_chieu.csv", ["dex", "ten", "o", "chieu", "ten_chieu", "vai", "cap_hoc"],
       [[x["dex"], L[x["dex"]]["ten"], x["o"], x["ma"], CHIEU[x["ma"]]["ten"], x["vai"], x["cap"]] for x in LC])
+    w("bang_loai_xoay_vong.csv", ["chu_ky", "dex", "ten", "vung", "cap_min", "cap_max", "trong_so", "bac_gap"],
+      [[x["chu_ky"], x["dex"], L[x["dex"]]["ten"], x["vung"], x["cmin"], x["cmax"], x["ts"], x["bac_gap"]]
+       for x in cfg.get("_XV", [])])
     w("bang_loai_vung.csv", ["dex", "ten", "khu_vuc", "vung", "cap_min", "cap_max", "trong_so", "ngay_dem", "thoi_tiet", "bac_gap"],
       [[x["dex"], L[x["dex"]]["ten"], x["khu"], x["vung"], x["cmin"], x["cmax"], x["ts"], x["nd"], x["tt"], x["bac_gap"]]
        for x in VG])
+
+
+def anh_xa_cap(c, dai):
+    """Cap tu nhien 1..100 -> dai [lo, hi] (tuyen tinh, lam tron)."""
+    lo, hi = dai
+    return int(round(lo + (max(1, min(100, c)) - 1) * (hi - lo) / 99.0))
 
 
 def khoi_insert(bang, cot, dong, cap_nhat=None, lo=200, ignore=False):
@@ -804,9 +843,9 @@ def ghi_sql(L, TH, CHIEU, LC, VG, cfg, ten_trung):
 --   PMDCollab SpriteCollab %s (CC BY-NC 4.0: chi trang thai sprite + ghi cong),
 --   tools/pokemon/loai/loai_duyet.json (cho duy nhat sua tay: bac, vung, chieu, vat pham).
 -- Day la NGUON SU THAT khi trien khai (khong chay bo sinh khi deploy). Idempotent: chay lai bao nhieu lan cung duoc,
--- MariaDB 10.3+, utf8:   khoi nay nam trong sql/nang_cap.sql (vps/nang_cap_csdl.sh), dump: sql/htbb_day_du.sql
+-- MariaDB 10.3+, utf8; nay la mot phan cua sql/nang_cap.sql phan 11 (sau khoi sua_ket_doi / them_trade_pokemon)
 --   data_loai            1.025 loai: ten (giu ten chinh thuc), he, 6 chi so nen, nhom, ho, giai doan, bac T1-T6, goc bat,
---                        nhom trung, moi truong, dot mo; bat = 1 loai DA MO (Gen 1-2, dot A)
+--                        nhom trung, moi truong, dot mo; bat = 1 loai DA MO (Gen 1-2 dot A, Gen 3 dot B, Vung hoang da Gen 4-9)
 --   data_loai_tien_hoa   moi buoc tien hoa that + dieu kien, anh xa co che HTBB (cap / vat_pham / trao_doi / than_thiet / keo)
 --   data_chieu           danh muc chieu dung chung (18 he x vai tro) + chieu dac trung ho T4-T6 / khoi dau
 --   data_loai_chieu      4 chieu ban dong hanh moi loai: 2 cung he (STAB), 1 phu he, 1 ho tro
@@ -816,6 +855,7 @@ def ghi_sql(L, TH, CHIEU, LC, VG, cfg, ten_trung):
 --   data_bat_loai, data_bat_chi_so_loai    cung luoc do nhanh bat-trade (them dong loai da mo, giu dong da chinh tay)
 -- Khong ghi de cot nguoi van hanh da chinh tren web: data_loai.bat / goc_bat (chi ghi lan dau), mo_ta.
 -- =====================================================================================================================
+
 """ % (n["pokeapi"]["commit"], n["showdown"]["commit"], n["pmdcollab"]["commit"]))
 
     out.append("""CREATE TABLE IF NOT EXISTS `data_loai` (
@@ -966,6 +1006,46 @@ def ghi_sql(L, TH, CHIEU, LC, VG, cfg, ten_trung):
     out.append(khoi_insert("data_loai_vung", cot, dong, ["`%s` = VALUES(`%s`)" % (c, c) for c in cot[3:]]))
     out.append("")
 
+    xvc = cfg.get("xoay_vong") or {}
+    XV = cfg.get("_XV", [])
+    out.append("""-- VUNG HOANG DA xoay vong (loai-bo-sung): lich tuan (chu ky = so dong), ban do tham gia, loai theo chu ky x vung sinh thai.
+CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong_lich` (
+  `chu_ky` TINYINT NOT NULL COMMENT '0..n-1: tuan k tinh tu ngay_goc (thu Hai) -> chu ky k mod n',
+  `ten` VARCHAR(48) NOT NULL,
+  `mo_ta` VARCHAR(255) NOT NULL DEFAULT '',
+  `the_he` TINYINT NOT NULL,
+  `ngay_goc` DATE NOT NULL,
+  PRIMARY KEY (`chu_ky`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong_map` (
+  `map_id` SMALLINT NOT NULL,
+  PRIMARY KEY (`map_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `data_loai_xoay_vong` (
+  `chu_ky` TINYINT NOT NULL,
+  `dex` SMALLINT NOT NULL,
+  `vung` TINYINT NOT NULL COMMENT 'vung sinh thai (data_hst_vung) cua ban do xoay vong',
+  `cap_min` TINYINT NOT NULL,
+  `cap_max` TINYINT NOT NULL,
+  `trong_so` SMALLINT NOT NULL,
+  `bac_gap` TINYINT NOT NULL,
+  PRIMARY KEY (`chu_ky`, `dex`, `vung`),
+  KEY `k_ky_vung` (`chu_ky`, `vung`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+""")
+    if XV:
+        lich = [[i, t["ten"], t["mo_ta"], t["the_he"], xvc["ngay_goc"]] for i, t in enumerate(xvc["tuan"])]
+        out.append("DELETE FROM `data_loai_xoay_vong_lich` WHERE `chu_ky` >= %d;" % len(lich))
+        out.append(khoi_insert("data_loai_xoay_vong_lich", ["chu_ky", "ten", "mo_ta", "the_he", "ngay_goc"], lich,
+                               ["`%s` = VALUES(`%s`)" % (c, c) for c in ["ten", "mo_ta", "the_he", "ngay_goc"]]))
+        out.append("DELETE FROM `data_loai_xoay_vong_map` WHERE `map_id` NOT IN (%s);" % ",".join(map(str, xvc["ban_do"])))
+        out.append(khoi_insert("data_loai_xoay_vong_map", ["map_id"], [[m] for m in xvc["ban_do"]], ignore=True))
+        out.append("DELETE FROM `data_loai_xoay_vong` WHERE `dex` NOT IN (%s);" % ",".join(map(str, sorted(set(x["dex"] for x in XV)))))
+        cot = ["chu_ky", "dex", "vung", "cap_min", "cap_max", "trong_so", "bac_gap"]
+        out.append(khoi_insert("data_loai_xoay_vong", cot, [[x[c] if c in x else x[{"cap_min": "cmin", "cap_max": "cmax",
+                               "trong_so": "ts"}[c]] for c in cot] for x in XV], ["`%s` = VALUES(`%s`)" % (c, c) for c in cot[3:]]))
+    out.append("")
+
     out.append("""-- Khu vuc dia ly cua ban do (ban sao du_lieu/vung_map.csv): may chu ghep voi data_hst_vung de chon loai.
 CREATE TABLE IF NOT EXISTS `data_loai_khu_vuc_map` (
   `map_id` SMALLINT NOT NULL,
@@ -1074,7 +1154,7 @@ CREATE TABLE IF NOT EXISTS `data_bat_chi_so_loai` (
     out.append(khoi_insert("data_bat_chi_so_loai", ["dex", "hp", "tan_cong", "phong_thu", "tan_cong_db", "phong_thu_db", "toc_do"],
                            [[l["dex"], *l["cs"]] for l in L.values()], ignore=True))
     out.append("")
-    out.append("-- Het khoi them_loai_day_du.sql. Kiem du lieu: server/test/KiemLoaiDayDu (DayDu.phanNangCap).")
+    out.append("-- Het tep. Kiem du lieu: server/test/KiemDuLieuLoai (doc thang tep nay).")
     khoi = "\n".join(out) + "\n"
     with open(RA_SQL, encoding="utf8") as f:
         cu = f.read()

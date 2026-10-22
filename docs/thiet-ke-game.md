@@ -316,7 +316,16 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 - **Một nguồn dữ liệu:** `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) (sinh bởi `tools/pokemon/loai/sinh_loai.py` từ PokeAPI ghim commit,
   đối chiếu Showdown; chỉ sửa tay `tools/pokemon/loai/loai_duyet.json`). Bảng `data_loai`, `data_loai_tien_hoa`,
   `data_chieu`, `data_loai_chieu`, `data_loai_vung`, `data_loai_sprite`. Tên loài giữ tên chính thức.
-- **Đợt A (Gen 1–2, 251 loài) đã mở** (`data_loai.bat = 1`); Gen 3–9 có trong Pokédex với nhãn "Chưa xuất hiện".
+- **Đợt A (Gen 1–2, 251 loài) và đợt B (Gen 3, 135 loài) đã mở** (`data_loai.bat = 1`). Gen 3 sống ở khu vực nhà
+  **Hoenn** (bản đồ quái cấp 83–100): dải cấp tự nhiên của loài (theo bậc / tiến hoá) ánh xạ tuyến tính vào 83–100
+  (`loai_duyet.json` `vung.cap_khu_vuc`) - dạng đầu ở bản đồ Hoenn thấp, dạng cuối ở bản đồ cao.
+- **Vùng hoang dã xoay vòng** (Gen 4–9): mỗi tuần (thứ Hai 00:00 giờ máy chủ, tính từ `ngay_goc` 26/10/2026) một vùng
+  địa lý - Sinnoh → Unova → Kalos → Alola → Galar → Paldea, chu kỳ 6 tuần - xuất hiện thêm trên 6 bản đồ quái cấp 52–84
+  (Goldenrod #18, Ecruteak #19, Violet #20, tàu S.S. Anne #22, Olivine #24, Mahogany #28), theo vùng sinh thái của bản đồ,
+  dải cấp ánh xạ vào 50–85 (`loai_duyet.json` `xoay_vong` → bảng `data_loai_xoay_vong*`). Chỉ loài **có sprite thật**,
+  bậc T1–T4, không huyền thoại / huyền ảo / UB / Nghịch lý, không dạng em bé (486 loài; `bat = 1`, Pokédex "đã xuất
+  hiện"). Tỉ lệ từng bậc và số quái **không đổi**: vòng xoay chỉ thêm loài vào danh sách ứng viên của bậc đã tung
+  (`ChonLoaiHoangDa.chon(..., them)`). Lịch hiện ở trang Tin tức (`/api/vung-hoang-da`) và thẻ Pokédex web.
 - **Bậc loài T1–T6** (gốc bắt 400 / 250 / 120 / 60 / 25 ‰, T6 chỉ sau đột kích): luật tự động theo giai đoạn + tổng chỉ
   số nền (giả huyền thoại, hoá thạch, Eevee, khởi đầu → T4; dạng cuối giả huyền thoại → T5; huyền thoại / huyền ảo / UB /
   Nghịch lý → T6) rồi ghi đè tay.
@@ -339,9 +348,9 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
   (`du_lieu/loai/neo_loai.csv`, kiểm `client_pc/test/KiemNeoLoai`: mọi loài × hướng × khung lệch ≤ 1 px).
 - **Mô tả Pokédex:** 1.025 mô tả tiếng Việt tự viết (`data_loai.mo_ta`, nguồn `tools/pokemon/loai/mo_ta_loai.json`) hiện
   ở thẻ Pokédex trong game (đuôi gói `-121` kiểu 5) và trang web `/pokedex/<dex>`.
-- **64 loài chưa có sprite PMDCollab dùng được** (Gen 5–9; #879 Copperajah đã có sprite nháp PMDCollab đóng sẵn trong
-  jar nên còn **63** loài không có hình trong game): chỉ chân dung Pokédex tĩnh (web), trong game là bóng; không bao giờ
-  xuất hiện ngoài trời cho tới khi có sprite thật (danh sách: `tools/pokemon/loai/README.md`).
+- **64 loài chưa có sprite PMDCollab hoàn chỉnh**: 22 dùng **bản nháp** / **dạng khác** của chính PMDCollab (ghi công,
+  nhãn "bản nháp"; `data_loai_sprite.ban_nhap`, `nguon_sprite`); còn **42 loài** chỉ có chân dung Pokédex tĩnh (web),
+  trong game là bóng, không bao giờ xuất hiện ngoài trời (danh sách: `tools/pokemon/loai/README.md`).
 
 ### 2.7 Hiển thị Pokémon trên client
 

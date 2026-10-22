@@ -97,6 +97,21 @@ def sinh():
         if sh and not gc:
             loi.append("thieu ghi cong shiny %s (chay tai_sprite_loai.py --shiny)" % k)
         sp.append((d, 1 if sh else 0, os.path.getsize(f), os.path.getsize(fs) if sh else 0, 1, gc))
+    # ban nhap / dang khac (du_lieu/loai/sprite_nhap.csv, tai_sprite_nhap.py)
+    nhap = {}
+    fn = os.path.join(GOC, "du_lieu", "loai", "sprite_nhap.csv")
+    if os.path.isfile(fn):
+        for x in open(fn, encoding="utf-8").read().splitlines()[1:]:
+            p = x.split(",")
+            if len(p) >= 4 and not p[0].endswith("s"):
+                nhap[int(p[0])] = (1 if p[3] == "1" else 0, (p[1] if p[3] == "1" else "dang " + p[2] + " " + p[1])[:64])
+    # loai mo moi (Gen 3 + vong xoay Vung hoang da): bat chi ghi lan dau o khoi them_loai_day_du -> cap nhat o day
+    import csv as _csv
+    mo_moi = []
+    with open(os.path.join(GOC, "du_lieu", "loai", "bang_loai.csv"), encoding="utf-8") as f:
+        for x in _csv.DictReader(f):
+            if x["bat"] == "1" and int(x["dex"]) > 251:
+                mo_moi.append(int(x["dex"]))
     r = [
         "-- >>> " + KHOI,
         "-- " + "=" * 117,
@@ -114,7 +129,9 @@ def sinh():
         "  ADD COLUMN IF NOT EXISTS `shiny` TINYINT NOT NULL DEFAULT 0 COMMENT '1 = co goi ban sac mau server/map/loai/<NNNN>s.goi',",
         "  ADD COLUMN IF NOT EXISTS `kich_thuoc_shiny` INT NOT NULL DEFAULT 0,",
         "  ADD COLUMN IF NOT EXISTS `ghi_cong_shiny` VARCHAR(255) NOT NULL DEFAULT '',",
-        "  ADD COLUMN IF NOT EXISTS `neo` TINYINT NOT NULL DEFAULT 0 COMMENT '1 = goi co khoi neo phu kien PMD';",
+        "  ADD COLUMN IF NOT EXISTS `neo` TINYINT NOT NULL DEFAULT 0 COMMENT '1 = goi co khoi neo phu kien PMD',",
+        "  ADD COLUMN IF NOT EXISTS `ban_nhap` TINYINT NOT NULL DEFAULT 0 COMMENT '1 = sprite PMDCollab chua hoan thien',",
+        "  ADD COLUMN IF NOT EXISTS `nguon_sprite` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'ban nhap / dang khac: nhanh PMDCollab';",
         "",
         "DROP TEMPORARY TABLE IF EXISTS `tam_loai_sprite_bo_sung`;",
         "CREATE TEMPORARY TABLE `tam_loai_sprite_bo_sung` (`dex` SMALLINT NOT NULL PRIMARY KEY, `shiny` TINYINT NOT NULL,"
@@ -128,6 +145,14 @@ def sinh():
         "  SET s.`shiny` = t.`shiny`, s.`kich_thuoc` = t.`kich_thuoc`, s.`kich_thuoc_shiny` = t.`kich_thuoc_shiny`,",
         "      s.`neo` = t.`neo`, s.`ghi_cong_shiny` = t.`ghi_cong_shiny`;",
         "DROP TEMPORARY TABLE IF EXISTS `tam_loai_sprite_bo_sung`;",
+        "UPDATE `data_loai_sprite` SET `ban_nhap` = 0, `nguon_sprite` = '';",
+    ]
+    for d_, (bn, ng) in sorted(nhap.items()):
+        r.append("UPDATE `data_loai_sprite` SET `ban_nhap` = %d, `nguon_sprite` = %s WHERE `dex` = %d;" % (bn, q(ng), d_))
+    r += [
+        "",
+        "-- Mo loai moi (dot B Gen 3 Hoenn + Vung hoang da xoay vong Gen 4-9): bat chi ghi lan dau o khoi them_loai_day_du.",
+        "UPDATE `data_loai` SET `bat` = 1 WHERE `bat` = 0 AND `dex` IN (%s);" % ",".join(map(str, mo_moi)),
         "",
         "DROP TEMPORARY TABLE IF EXISTS `tam_loai_mo_ta`;",
         "CREATE TEMPORARY TABLE `tam_loai_mo_ta` (`dex` SMALLINT NOT NULL PRIMARY KEY, `mo_ta` VARCHAR(255) NOT NULL)"

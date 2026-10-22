@@ -503,7 +503,12 @@ const moTaCach = (c: ChieuCuaLoai) => c.cach === 'cap'
         <h2 id="noi-song" class="section-title text-2xl text-highlighted">
           Nơi sống
         </h2>
-        <p v-if="!ct?.vung.length" class="mt-2 text-sm text-muted">
+        <p v-if="ct?.xoayVong?.length" class="mt-2 rounded-xl bg-elevated p-3 text-sm text-highlighted" data-vung-hoang-da>
+          Vùng hoang dã: xuất hiện trong {{ ct.xoayVong.map(x => x.ten).join(', ') }} (lịch xoay vòng mỗi tuần, cấp
+          {{ ct.xoayVong[0]!.capMin }}–{{ ct.xoayVong[0]!.capMax }}) — xem lịch ở
+          <NuxtLink to="/news" class="font-semibold text-primary underline">Tin tức &amp; sự kiện</NuxtLink>.
+        </p>
+        <p v-if="!ct?.vung.length && !ct?.xoayVong?.length" class="mt-2 text-sm text-muted">
           {{ !d.bat ? 'Loài này chưa xuất hiện ngoài trời trong game.' : d.bac >= 6 ? 'Huyền thoại chỉ gặp ở đột kích.' : d.giaiDoan === 0 ? 'Pokémon con chỉ nở từ trứng.' : 'Không gặp ngoài trời: tiến hoá trong Hộp PC hoặc ở sự kiện.' }}
         </p>
         <template v-else>
