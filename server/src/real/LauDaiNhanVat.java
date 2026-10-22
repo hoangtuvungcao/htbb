@@ -99,6 +99,7 @@ public final class LauDaiNhanVat {
                 h.ban = true;
             }
             NhiemVuLauDaiGame.khiNap(p, h);
+            HuongDanTanThuGame.khiNap(p); // buoc huong dan luu theo du lieu buoc cu -> nhan lai buoc do
             TangTocGame.khiNap(p, h);
         } catch (final Exception e) {
             System.out.println("LauDaiNhanVat.khiNap: " + e);

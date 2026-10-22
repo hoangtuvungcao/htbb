@@ -23,6 +23,7 @@ class KichBanDS4 {
         BotChucNang.dk("pokedex_menu", true, KichBanDS4::pokedexMenu);
         KichBanDS5.dangKy();
         KichBanNhiemVu.dangKy();
+        KichBanHuongDan.dangKy();
     }
 
     static BotChucNang.Bot botLang(int lv) throws Exception {
