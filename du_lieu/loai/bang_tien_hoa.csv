@@ -1,0 +1,485 @@
+tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
+1,2,cap,cap,16,,0,0,50,Cấp 16
+2,3,cap,cap,32,,0,0,100,Cấp 32
+4,5,cap,cap,16,,0,0,50,Cấp 16
+5,6,cap,cap,36,,0,0,100,Cấp 36
+7,8,cap,cap,16,,0,0,50,Cấp 16
+8,9,cap,cap,36,,0,0,100,Cấp 36
+10,11,cap,cap,7,,0,0,25,Cấp 7
+11,12,cap,cap,10,,0,0,50,Cấp 10
+13,14,cap,cap,7,,0,0,25,Cấp 7
+14,15,cap,cap,10,,0,0,50,Cấp 10
+16,17,cap,cap,18,,0,0,25,Cấp 18
+17,18,cap,cap,36,,0,0,50,Cấp 36
+19,20,cap,cap,20,,0,0,25,Cấp 20
+21,22,cap,cap,20,,0,0,25,Cấp 20
+23,24,cap,cap,22,,0,0,25,Cấp 22
+172,25,than_thiet,than_thiet,20,,0,0,25,Thân thiết 220
+25,26,da,vat_pham,20,Đá Sấm,961,0,25,Dùng Đá Sấm
+27,28,cap,cap,22,,0,0,25,Cấp 22
+29,30,cap,cap,16,,0,0,25,Cấp 16
+30,31,da,vat_pham,36,Đá Mặt Trăng,964,0,50,Dùng Đá Mặt Trăng
+32,33,cap,cap,16,,0,0,25,Cấp 16
+33,34,da,vat_pham,36,Đá Mặt Trăng,964,0,50,Dùng Đá Mặt Trăng
+173,35,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+35,36,da,vat_pham,20,Đá Mặt Trăng,964,0,25,Dùng Đá Mặt Trăng
+37,38,da,vat_pham,20,Đá Lửa,962,0,25,Dùng Đá Lửa
+174,39,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+39,40,da,vat_pham,20,Đá Mặt Trăng,964,0,25,Dùng Đá Mặt Trăng
+41,42,cap,cap,22,,0,0,25,Cấp 22
+43,44,cap,cap,21,,0,0,25,Cấp 21
+44,45,da,vat_pham,36,Đá Lá,965,0,50,Dùng Đá Lá
+46,47,cap,cap,24,,0,0,25,Cấp 24
+48,49,cap,cap,31,,0,0,25,Cấp 31
+50,51,cap,cap,26,,0,0,25,Cấp 26
+52,53,cap,cap,28,,0,0,25,Cấp 28
+54,55,cap,cap,33,,0,0,25,Cấp 33
+56,57,cap,cap,28,,0,0,25,Cấp 28
+58,59,da,vat_pham,20,Đá Lửa,962,0,25,Dùng Đá Lửa
+60,61,cap,cap,25,,0,0,25,Cấp 25
+61,62,da,vat_pham,36,Đá Nước,960,0,50,Dùng Đá Nước
+63,64,cap,cap,16,,0,0,25,Cấp 16
+64,65,trao_doi,trao_doi,36,,0,0,50,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+66,67,cap,cap,28,,0,0,25,Cấp 28
+67,68,trao_doi,trao_doi,36,,0,0,50,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+69,70,cap,cap,21,,0,0,25,Cấp 21
+70,71,da,vat_pham,36,Đá Lá,965,0,50,Dùng Đá Lá
+72,73,cap,cap,30,,0,0,25,Cấp 30
+74,75,cap,cap,25,,0,0,25,Cấp 25
+75,76,trao_doi,trao_doi,36,,0,0,50,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+77,78,cap,cap,40,,0,0,25,Cấp 40
+79,80,cap,cap,37,,0,0,25,Cấp 37
+81,82,cap,cap,30,,0,0,25,Cấp 30
+84,85,cap,cap,31,,0,0,25,Cấp 31
+86,87,cap,cap,34,,0,0,25,Cấp 34
+88,89,cap,cap,38,,0,0,25,Cấp 38
+90,91,da,vat_pham,20,Đá Nước,960,0,25,Dùng Đá Nước
+92,93,cap,cap,25,,0,0,25,Cấp 25
+93,94,trao_doi,trao_doi,36,,0,0,50,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+96,97,cap,cap,26,,0,0,25,Cấp 26
+98,99,cap,cap,28,,0,0,25,Cấp 28
+100,101,cap,cap,30,,0,0,25,Cấp 30
+102,103,da,vat_pham,20,Đá Lá,965,0,25,Dùng Đá Lá
+104,105,cap,cap,28,,0,0,25,Cấp 28
+236,106,khac,keo,20,,0,0,25,Cách gốc: Tấn công lớn hơn Phòng thủ
+236,107,khac,keo,20,,0,0,25,Cách gốc: Tấn công nhỏ hơn Phòng thủ
+109,110,cap,cap,35,,0,0,25,Cấp 35
+111,112,cap,cap,42,,0,0,25,Cấp 42
+440,113,vat_pham,keo,20,Đá Bầu Dục,0,1,50,"Lên cấp khi giữ Đá Bầu Dục; ban ngày; HTBB: chưa có vật phẩm, dùng Kẹo"
+116,117,cap,cap,32,,0,0,25,Cấp 32
+118,119,cap,cap,33,,0,0,25,Cấp 33
+120,121,da,vat_pham,20,Đá Nước,960,0,25,Dùng Đá Nước
+439,122,khac,keo,20,,0,0,25,Cách gốc: biết chiêu mimic
+238,124,cap,cap,30,,0,0,25,Cấp 30
+239,125,cap,cap,30,,0,0,25,Cấp 30
+240,126,cap,cap,30,,0,0,25,Cấp 30
+129,130,cap,cap,20,,0,0,25,Cấp 20
+133,134,da,vat_pham,20,Đá Nước,960,0,50,Dùng Đá Nước
+133,135,da,vat_pham,20,Đá Sấm,961,0,50,Dùng Đá Sấm
+133,136,da,vat_pham,20,Đá Lửa,962,0,50,Dùng Đá Lửa
+138,139,cap,cap,40,,0,0,50,Cấp 40
+140,141,cap,cap,40,,0,0,50,Cấp 40
+446,143,than_thiet,than_thiet,20,,0,0,50,Thân thiết 160
+147,148,cap,cap,30,,0,0,50,Cấp 30
+148,149,cap,cap,55,,0,0,100,Cấp 55
+152,153,cap,cap,16,,0,0,50,Cấp 16
+153,154,cap,cap,32,,0,0,100,Cấp 32
+155,156,cap,cap,14,,0,0,50,Cấp 14
+156,157,cap,cap,36,,0,0,100,Cấp 36
+158,159,cap,cap,18,,0,0,50,Cấp 18
+159,160,cap,cap,30,,0,0,100,Cấp 30
+161,162,cap,cap,15,,0,0,25,Cấp 15
+163,164,cap,cap,20,,0,0,25,Cấp 20
+165,166,cap,cap,18,,0,0,25,Cấp 18
+167,168,cap,cap,22,,0,0,25,Cấp 22
+42,169,than_thiet,than_thiet,36,,0,0,50,Thân thiết 160
+170,171,cap,cap,27,,0,0,25,Cấp 27
+175,176,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+177,178,cap,cap,25,,0,0,25,Cấp 25
+179,180,cap,cap,15,,0,0,25,Cấp 15
+180,181,cap,cap,30,,0,0,50,Cấp 30
+44,182,da,vat_pham,36,Đá Mặt Trời,963,0,50,Dùng Đá Mặt Trời
+298,183,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+183,184,cap,cap,18,,0,0,25,Cấp 18
+438,185,khac,keo,20,,0,0,25,Cách gốc: biết chiêu mimic
+61,186,trao_doi,trao_doi,36,Vương Miện Đá,0,0,50,Trao đổi khi giữ Vương Miện Đá; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+187,188,cap,cap,18,,0,0,25,Cấp 18
+188,189,cap,cap,27,,0,0,50,Cấp 27
+191,192,da,vat_pham,20,Đá Mặt Trời,963,0,25,Dùng Đá Mặt Trời
+194,195,cap,cap,20,,0,0,25,Cấp 20
+133,196,than_thiet,than_thiet,20,,0,1,50,Thân thiết 160; ban ngày
+133,197,than_thiet,than_thiet,20,,0,2,50,Thân thiết 160; ban đêm
+79,199,trao_doi,trao_doi,20,Vương Miện Đá,0,0,25,Trao đổi khi giữ Vương Miện Đá; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+360,202,cap,cap,15,,0,0,25,Cấp 15
+204,205,cap,cap,31,,0,0,25,Cấp 31
+95,208,trao_doi,trao_doi,20,Áo Kim Loại,0,0,25,Trao đổi khi giữ Áo Kim Loại; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+209,210,cap,cap,23,,0,0,25,Cấp 23
+123,212,trao_doi,trao_doi,20,Áo Kim Loại,0,0,25,Trao đổi khi giữ Áo Kim Loại; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+216,217,cap,cap,30,,0,0,25,Cấp 30
+218,219,cap,cap,38,,0,0,25,Cấp 38
+220,221,cap,cap,33,,0,0,25,Cấp 33
+223,224,cap,cap,25,,0,0,25,Cấp 25
+458,226,khac,keo,20,,0,0,25,Cách gốc: có loài khác trong đội
+228,229,cap,cap,24,,0,0,25,Cấp 24
+117,230,trao_doi,trao_doi,36,Vảy Rồng,0,0,50,Trao đổi khi giữ Vảy Rồng; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+231,232,cap,cap,25,,0,0,25,Cấp 25
+137,233,trao_doi,trao_doi,20,Bộ Nâng Cấp,0,0,25,Trao đổi khi giữ Bộ Nâng Cấp; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+236,237,khac,keo,20,,0,0,25,Cách gốc: Tấn công bằng Phòng thủ
+113,242,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+246,247,cap,cap,30,,0,0,50,Cấp 30
+247,248,cap,cap,55,,0,0,100,Cấp 55
+252,253,cap,cap,16,,0,0,50,Cấp 16
+253,254,cap,cap,36,,0,0,100,Cấp 36
+255,256,cap,cap,16,,0,0,50,Cấp 16
+256,257,cap,cap,36,,0,0,100,Cấp 36
+258,259,cap,cap,16,,0,0,50,Cấp 16
+259,260,cap,cap,36,,0,0,100,Cấp 36
+261,262,cap,cap,18,,0,0,25,Cấp 18
+263,264,cap,cap,20,,0,0,25,Cấp 20
+265,266,cap,cap,7,,0,0,25,Cấp 7
+266,267,cap,cap,10,,0,0,50,Cấp 10
+265,268,cap,cap,7,,0,0,25,Cấp 7
+268,269,cap,cap,10,,0,0,50,Cấp 10
+270,271,cap,cap,14,,0,0,25,Cấp 14
+271,272,da,vat_pham,36,Đá Nước,960,0,50,Dùng Đá Nước
+273,274,cap,cap,14,,0,0,25,Cấp 14
+274,275,da,vat_pham,36,Đá Lá,965,0,50,Dùng Đá Lá
+276,277,cap,cap,22,,0,0,25,Cấp 22
+278,279,cap,cap,25,,0,0,25,Cấp 25
+280,281,cap,cap,20,,0,0,25,Cấp 20
+281,282,cap,cap,30,,0,0,50,Cấp 30
+283,284,cap,cap,22,,0,0,25,Cấp 22
+285,286,cap,cap,23,,0,0,25,Cấp 23
+287,288,cap,cap,18,,0,0,25,Cấp 18
+288,289,cap,cap,36,,0,0,50,Cấp 36
+290,291,cap,cap,20,,0,0,25,Cấp 20
+290,292,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (shed)
+293,294,cap,cap,20,,0,0,25,Cấp 20
+294,295,cap,cap,40,,0,0,50,Cấp 40
+296,297,cap,cap,24,,0,0,25,Cấp 24
+300,301,da,vat_pham,20,Đá Mặt Trăng,964,0,25,Dùng Đá Mặt Trăng
+304,305,cap,cap,32,,0,0,25,Cấp 32
+305,306,cap,cap,42,,0,0,50,Cấp 42
+307,308,cap,cap,37,,0,0,25,Cấp 37
+309,310,cap,cap,26,,0,0,25,Cấp 26
+406,315,than_thiet,than_thiet,20,,0,1,25,Thân thiết 160; ban ngày
+316,317,cap,cap,26,,0,0,25,Cấp 26
+318,319,cap,cap,30,,0,0,25,Cấp 30
+320,321,cap,cap,40,,0,0,25,Cấp 40
+322,323,cap,cap,33,,0,0,25,Cấp 33
+325,326,cap,cap,32,,0,0,25,Cấp 32
+328,329,cap,cap,35,,0,0,25,Cấp 35
+329,330,cap,cap,45,,0,0,50,Cấp 45
+331,332,cap,cap,32,,0,0,25,Cấp 32
+333,334,cap,cap,35,,0,0,25,Cấp 35
+339,340,cap,cap,30,,0,0,25,Cấp 30
+341,342,cap,cap,30,,0,0,25,Cấp 30
+343,344,cap,cap,36,,0,0,25,Cấp 36
+345,346,cap,cap,40,,0,0,50,Cấp 40
+347,348,cap,cap,40,,0,0,50,Cấp 40
+349,350,trao_doi,trao_doi,20,Vảy Lăng Kính,0,0,25,Trao đổi khi giữ Vảy Lăng Kính; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+353,354,cap,cap,37,,0,0,25,Cấp 37
+355,356,cap,cap,37,,0,0,25,Cấp 37
+433,358,than_thiet,than_thiet,20,,0,2,25,Thân thiết 220; ban đêm
+361,362,cap,cap,42,,0,0,25,Cấp 42
+363,364,cap,cap,32,,0,0,25,Cấp 32
+364,365,cap,cap,44,,0,0,50,Cấp 44
+366,367,trao_doi,trao_doi,20,Răng Biển Sâu,0,0,25,Trao đổi khi giữ Răng Biển Sâu; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+366,368,trao_doi,trao_doi,20,Vảy Biển Sâu,0,0,25,Trao đổi khi giữ Vảy Biển Sâu; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+371,372,cap,cap,30,,0,0,50,Cấp 30
+372,373,cap,cap,50,,0,0,100,Cấp 50
+374,375,cap,cap,20,,0,0,50,Cấp 20
+375,376,cap,cap,45,,0,0,100,Cấp 45
+387,388,cap,cap,18,,0,0,50,Cấp 18
+388,389,cap,cap,32,,0,0,100,Cấp 32
+390,391,cap,cap,14,,0,0,50,Cấp 14
+391,392,cap,cap,36,,0,0,100,Cấp 36
+393,394,cap,cap,16,,0,0,50,Cấp 16
+394,395,cap,cap,36,,0,0,100,Cấp 36
+396,397,cap,cap,14,,0,0,25,Cấp 14
+397,398,cap,cap,34,,0,0,50,Cấp 34
+399,400,cap,cap,15,,0,0,25,Cấp 15
+401,402,cap,cap,10,,0,0,25,Cấp 10
+403,404,cap,cap,15,,0,0,25,Cấp 15
+404,405,cap,cap,30,,0,0,50,Cấp 30
+315,407,da,keo,20,Đá Lấp Lánh,0,0,50,"Dùng Đá Lấp Lánh; HTBB: chưa có vật phẩm, dùng Kẹo"
+408,409,cap,cap,30,,0,0,50,Cấp 30
+410,411,cap,cap,30,,0,0,50,Cấp 30
+412,413,khac,keo,20,,0,0,25,Cách gốc: theo giới tính
+412,414,khac,keo,20,,0,0,25,Cách gốc: theo giới tính
+415,416,khac,keo,21,,0,0,25,Cách gốc: theo giới tính
+418,419,cap,cap,26,,0,0,25,Cấp 26
+420,421,cap,cap,25,,0,0,25,Cấp 25
+422,423,cap,cap,30,,0,0,25,Cấp 30
+190,424,khac,keo,20,,0,0,25,Cách gốc: biết chiêu double-hit
+425,426,cap,cap,28,,0,0,25,Cấp 28
+427,428,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+200,429,da,keo,20,Đá Hoàng Hôn,0,0,50,"Dùng Đá Hoàng Hôn; HTBB: chưa có vật phẩm, dùng Kẹo"
+198,430,da,keo,20,Đá Hoàng Hôn,0,0,50,"Dùng Đá Hoàng Hôn; HTBB: chưa có vật phẩm, dùng Kẹo"
+431,432,cap,cap,38,,0,0,25,Cấp 38
+434,435,cap,cap,34,,0,0,25,Cấp 34
+436,437,cap,cap,33,,0,0,25,Cấp 33
+443,444,cap,cap,24,,0,0,50,Cấp 24
+444,445,cap,cap,48,,0,0,100,Cấp 48
+447,448,than_thiet,than_thiet,20,,0,1,25,Thân thiết 160; ban ngày
+449,450,cap,cap,34,,0,0,25,Cấp 34
+451,452,cap,cap,40,,0,0,25,Cấp 40
+453,454,cap,cap,37,,0,0,25,Cấp 37
+456,457,cap,cap,31,,0,0,25,Cấp 31
+459,460,cap,cap,40,,0,0,25,Cấp 40
+215,461,vat_pham,keo,20,Vuốt Sắc,0,2,50,"Lên cấp khi giữ Vuốt Sắc; ban đêm; HTBB: chưa có vật phẩm, dùng Kẹo"
+82,462,da,vat_pham,36,Đá Sấm,961,0,50,Dùng Đá Sấm
+108,463,khac,keo,20,,0,0,25,Cách gốc: biết chiêu rollout
+112,464,trao_doi,trao_doi,36,Giáp Bảo Hộ,0,0,50,Trao đổi khi giữ Giáp Bảo Hộ; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+114,465,khac,keo,20,,0,0,25,Cách gốc: biết chiêu ancient-power
+125,466,trao_doi,trao_doi,20,Bộ Tích Điện,0,0,25,Trao đổi khi giữ Bộ Tích Điện; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+126,467,trao_doi,trao_doi,20,Bộ Tích Nhiệt,0,0,25,Trao đổi khi giữ Bộ Tích Nhiệt; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+176,468,da,keo,20,Đá Lấp Lánh,0,0,50,"Dùng Đá Lấp Lánh; HTBB: chưa có vật phẩm, dùng Kẹo"
+193,469,khac,keo,20,,0,0,25,Cách gốc: biết chiêu ancient-power
+133,470,da,vat_pham,20,Đá Lá,965,0,50,Dùng Đá Lá
+133,471,da,vat_pham,20,Đá Băng,966,0,50,Dùng Đá Băng
+207,472,vat_pham,keo,20,Nanh Sắc,0,2,50,"Lên cấp khi giữ Nanh Sắc; ban đêm; HTBB: chưa có vật phẩm, dùng Kẹo"
+221,473,khac,keo,36,,0,0,50,Cách gốc: biết chiêu ancient-power
+233,474,trao_doi,trao_doi,36,Đĩa Khả Nghi,0,0,50,Trao đổi khi giữ Đĩa Khả Nghi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+281,475,da,keo,36,Đá Bình Minh,0,0,100,"Dùng Đá Bình Minh; HTBB: chưa có vật phẩm, dùng Kẹo"
+299,476,da,vat_pham,20,Đá Sấm,961,0,25,Dùng Đá Sấm
+356,477,trao_doi,trao_doi,36,Vải Tử Thần,0,0,50,Trao đổi khi giữ Vải Tử Thần; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+361,478,da,keo,20,Đá Bình Minh,0,0,50,"Dùng Đá Bình Minh; HTBB: chưa có vật phẩm, dùng Kẹo"
+495,496,cap,cap,17,,0,0,50,Cấp 17
+496,497,cap,cap,36,,0,0,100,Cấp 36
+498,499,cap,cap,17,,0,0,50,Cấp 17
+499,500,cap,cap,36,,0,0,100,Cấp 36
+501,502,cap,cap,17,,0,0,50,Cấp 17
+502,503,cap,cap,36,,0,0,100,Cấp 36
+504,505,cap,cap,20,,0,0,25,Cấp 20
+506,507,cap,cap,16,,0,0,25,Cấp 16
+507,508,cap,cap,32,,0,0,50,Cấp 32
+509,510,cap,cap,20,,0,0,25,Cấp 20
+511,512,da,vat_pham,20,Đá Lá,965,0,25,Dùng Đá Lá
+513,514,da,vat_pham,20,Đá Lửa,962,0,25,Dùng Đá Lửa
+515,516,da,vat_pham,20,Đá Nước,960,0,25,Dùng Đá Nước
+517,518,da,vat_pham,20,Đá Mặt Trăng,964,0,25,Dùng Đá Mặt Trăng
+519,520,cap,cap,21,,0,0,25,Cấp 21
+520,521,cap,cap,32,,0,0,50,Cấp 32
+522,523,cap,cap,27,,0,0,25,Cấp 27
+524,525,cap,cap,25,,0,0,25,Cấp 25
+525,526,trao_doi,trao_doi,36,,0,0,50,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+527,528,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
+529,530,cap,cap,31,,0,0,25,Cấp 31
+532,533,cap,cap,25,,0,0,25,Cấp 25
+533,534,trao_doi,trao_doi,36,,0,0,50,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+535,536,cap,cap,25,,0,0,25,Cấp 25
+536,537,cap,cap,36,,0,0,50,Cấp 36
+540,541,cap,cap,20,,0,0,25,Cấp 20
+541,542,than_thiet,than_thiet,36,,0,0,50,Thân thiết 220
+543,544,cap,cap,22,,0,0,25,Cấp 22
+544,545,cap,cap,30,,0,0,50,Cấp 30
+546,547,da,vat_pham,20,Đá Mặt Trời,963,0,25,Dùng Đá Mặt Trời
+548,549,da,vat_pham,20,Đá Mặt Trời,963,0,25,Dùng Đá Mặt Trời
+551,552,cap,cap,29,,0,0,25,Cấp 29
+552,553,cap,cap,40,,0,0,50,Cấp 40
+554,555,cap,cap,35,,0,0,25,Cấp 35
+557,558,cap,cap,34,,0,0,25,Cấp 34
+559,560,cap,cap,39,,0,0,25,Cấp 39
+562,563,cap,cap,34,,0,0,25,Cấp 34
+564,565,cap,cap,37,,0,0,50,Cấp 37
+566,567,cap,cap,37,,0,0,50,Cấp 37
+568,569,cap,cap,36,,0,0,25,Cấp 36
+570,571,cap,cap,30,,0,0,25,Cấp 30
+572,573,da,keo,20,Đá Lấp Lánh,0,0,50,"Dùng Đá Lấp Lánh; HTBB: chưa có vật phẩm, dùng Kẹo"
+574,575,cap,cap,32,,0,0,25,Cấp 32
+575,576,cap,cap,41,,0,0,50,Cấp 41
+577,578,cap,cap,32,,0,0,25,Cấp 32
+578,579,cap,cap,41,,0,0,50,Cấp 41
+580,581,cap,cap,35,,0,0,25,Cấp 35
+582,583,cap,cap,35,,0,0,25,Cấp 35
+583,584,cap,cap,47,,0,0,50,Cấp 47
+585,586,cap,cap,34,,0,0,25,Cấp 34
+588,589,trao_doi,trao_doi,20,,0,0,25,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+590,591,cap,cap,39,,0,0,25,Cấp 39
+592,593,cap,cap,40,,0,0,25,Cấp 40
+595,596,cap,cap,36,,0,0,25,Cấp 36
+597,598,cap,cap,40,,0,0,25,Cấp 40
+599,600,cap,cap,38,,0,0,25,Cấp 38
+600,601,cap,cap,49,,0,0,50,Cấp 49
+602,603,cap,cap,39,,0,0,25,Cấp 39
+603,604,da,vat_pham,36,Đá Sấm,961,0,50,Dùng Đá Sấm
+605,606,cap,cap,42,,0,0,25,Cấp 42
+607,608,cap,cap,41,,0,0,25,Cấp 41
+608,609,da,keo,36,Đá Hoàng Hôn,0,0,100,"Dùng Đá Hoàng Hôn; HTBB: chưa có vật phẩm, dùng Kẹo"
+610,611,cap,cap,38,,0,0,25,Cấp 38
+611,612,cap,cap,48,,0,0,50,Cấp 48
+613,614,cap,cap,37,,0,0,25,Cấp 37
+616,617,trao_doi,trao_doi,20,,0,0,25,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+619,620,cap,cap,50,,0,0,25,Cấp 50
+622,623,cap,cap,43,,0,0,25,Cấp 43
+624,625,cap,cap,52,,0,0,25,Cấp 52
+627,628,cap,cap,54,,0,0,25,Cấp 54
+629,630,cap,cap,54,,0,0,25,Cấp 54
+633,634,cap,cap,50,,0,0,50,Cấp 50
+634,635,cap,cap,64,,0,0,100,Cấp 64
+636,637,cap,cap,59,,0,0,25,Cấp 59
+650,651,cap,cap,16,,0,0,50,Cấp 16
+651,652,cap,cap,36,,0,0,100,Cấp 36
+653,654,cap,cap,16,,0,0,50,Cấp 16
+654,655,cap,cap,36,,0,0,100,Cấp 36
+656,657,cap,cap,16,,0,0,50,Cấp 16
+657,658,cap,cap,36,,0,0,100,Cấp 36
+659,660,cap,cap,20,,0,0,25,Cấp 20
+661,662,cap,cap,17,,0,0,25,Cấp 17
+662,663,cap,cap,35,,0,0,50,Cấp 35
+664,665,cap,cap,9,,0,0,25,Cấp 9
+665,666,cap,cap,12,,0,0,50,Cấp 12
+667,668,cap,cap,35,,0,0,25,Cấp 35
+669,670,cap,cap,19,,0,0,25,Cấp 19
+670,671,da,keo,36,Đá Lấp Lánh,0,0,100,"Dùng Đá Lấp Lánh; HTBB: chưa có vật phẩm, dùng Kẹo"
+672,673,cap,cap,32,,0,0,25,Cấp 32
+674,675,khac,keo,32,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+677,678,khac,keo,25,,0,0,25,Cách gốc: theo giới tính
+679,680,cap,cap,35,,0,0,25,Cấp 35
+680,681,da,keo,36,Đá Hoàng Hôn,0,0,100,"Dùng Đá Hoàng Hôn; HTBB: chưa có vật phẩm, dùng Kẹo"
+682,683,trao_doi,trao_doi,20,Túi Thơm,0,0,25,Trao đổi khi giữ Túi Thơm; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+684,685,trao_doi,trao_doi,20,Kem Mơ Ước,0,0,25,Trao đổi khi giữ Kem Mơ Ước; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+686,687,khac,keo,30,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+688,689,cap,cap,39,,0,0,25,Cấp 39
+690,691,cap,cap,48,,0,0,25,Cấp 48
+692,693,cap,cap,37,,0,0,25,Cấp 37
+694,695,da,vat_pham,20,Đá Mặt Trời,963,0,25,Dùng Đá Mặt Trời
+696,697,cap,cap,39,,0,1,50,Cấp 39; ban ngày
+698,699,cap,cap,39,,0,2,50,Cấp 39; ban đêm
+133,700,than_thiet,than_thiet,20,,0,0,50,Thân thiết 160
+704,705,cap,cap,40,,0,0,50,Cấp 40
+705,706,khac,keo,50,,0,0,100,Cách gốc: trời mưa
+708,709,trao_doi,trao_doi,20,,0,0,25,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+710,711,trao_doi,trao_doi,20,,0,0,25,Trao đổi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
+712,713,cap,cap,37,,0,0,25,Cấp 37
+714,715,cap,cap,48,,0,0,25,Cấp 48
+722,723,cap,cap,17,,0,0,50,Cấp 17
+723,724,cap,cap,34,,0,0,100,Cấp 34
+725,726,cap,cap,17,,0,0,50,Cấp 17
+726,727,cap,cap,34,,0,0,100,Cấp 34
+728,729,cap,cap,17,,0,0,50,Cấp 17
+729,730,cap,cap,34,,0,0,100,Cấp 34
+731,732,cap,cap,14,,0,0,25,Cấp 14
+732,733,cap,cap,28,,0,0,50,Cấp 28
+734,735,cap,cap,20,,0,1,25,Cấp 20; ban ngày
+736,737,cap,cap,20,,0,0,25,Cấp 20
+737,738,da,vat_pham,36,Đá Sấm,961,0,50,Dùng Đá Sấm
+739,740,da,vat_pham,20,Đá Băng,966,0,25,Dùng Đá Băng
+742,743,cap,cap,25,,0,0,25,Cấp 25
+744,745,cap,cap,25,,0,1,25,Cấp 25; ban ngày
+747,748,cap,cap,38,,0,0,25,Cấp 38
+749,750,cap,cap,30,,0,0,25,Cấp 30
+751,752,cap,cap,22,,0,0,25,Cấp 22
+753,754,cap,cap,34,,0,1,25,Cấp 34; ban ngày
+755,756,cap,cap,24,,0,0,25,Cấp 24
+757,758,khac,keo,33,,0,0,25,Cách gốc: theo giới tính
+759,760,cap,cap,27,,0,0,25,Cấp 27
+761,762,cap,cap,18,,0,0,25,Cấp 18
+762,763,khac,keo,36,,0,0,50,Cách gốc: biết chiêu stomp
+767,768,cap,cap,30,,0,0,25,Cấp 30
+769,770,cap,cap,42,,0,0,25,Cấp 42
+772,773,than_thiet,than_thiet,20,,0,0,50,Thân thiết 160
+782,783,cap,cap,35,,0,0,50,Cấp 35
+783,784,cap,cap,45,,0,0,100,Cấp 45
+789,790,cap,cap,43,,0,0,50,Cấp 43
+790,791,cap,cap,53,,0,0,100,Cấp 53
+790,792,cap,cap,53,,0,0,100,Cấp 53
+803,804,khac,keo,20,,0,0,50,Cách gốc: biết chiêu dragon-pulse
+808,809,khac,keo,20,,0,0,50,Cách gốc: điều kiện đặc biệt (meltan-candies)
+810,811,cap,cap,16,,0,0,50,Cấp 16
+811,812,cap,cap,35,,0,0,100,Cấp 35
+813,814,cap,cap,16,,0,0,50,Cấp 16
+814,815,cap,cap,35,,0,0,100,Cấp 35
+816,817,cap,cap,16,,0,0,50,Cấp 16
+817,818,cap,cap,35,,0,0,100,Cấp 35
+819,820,cap,cap,24,,0,0,25,Cấp 24
+821,822,cap,cap,18,,0,0,25,Cấp 18
+822,823,cap,cap,38,,0,0,50,Cấp 38
+824,825,cap,cap,10,,0,0,25,Cấp 10
+825,826,cap,cap,30,,0,0,50,Cấp 30
+827,828,cap,cap,18,,0,0,25,Cấp 18
+829,830,cap,cap,20,,0,0,25,Cấp 20
+831,832,cap,cap,24,,0,0,25,Cấp 24
+833,834,cap,cap,22,,0,0,25,Cấp 22
+835,836,cap,cap,25,,0,0,25,Cấp 25
+837,838,cap,cap,18,,0,0,25,Cấp 18
+838,839,cap,cap,34,,0,0,50,Cấp 34
+840,841,da,keo,20,Táo Chua,0,0,50,"Dùng Táo Chua; HTBB: chưa có vật phẩm, dùng Kẹo"
+840,842,da,keo,20,Táo Ngọt,0,0,50,"Dùng Táo Ngọt; HTBB: chưa có vật phẩm, dùng Kẹo"
+843,844,cap,cap,36,,0,0,25,Cấp 36
+846,847,cap,cap,26,,0,0,25,Cấp 26
+848,849,cap,cap,30,,0,0,25,Cấp 30
+850,851,cap,cap,28,,0,0,25,Cấp 28
+852,853,khac,keo,20,,0,0,25,Cách gốc: biết chiêu taunt
+854,855,da,keo,20,Ấm Nứt,0,0,50,"Dùng Ấm Nứt; HTBB: chưa có vật phẩm, dùng Kẹo"
+856,857,cap,cap,32,,0,0,25,Cấp 32
+857,858,cap,cap,42,,0,0,50,Cấp 42
+859,860,cap,cap,32,,0,0,25,Cấp 32
+860,861,cap,cap,42,,0,0,50,Cấp 42
+264,862,cap,cap,35,,0,2,50,Cấp 35; ban đêm
+52,863,cap,cap,28,,0,0,25,Cấp 28
+222,864,cap,cap,38,,0,0,25,Cấp 38
+83,865,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (three-critical-hits)
+122,866,cap,cap,42,,0,0,25,Cấp 42
+562,867,khac,keo,20,,0,0,25,Cách gốc: ở địa điểm đặc biệt
+868,869,vat_pham,keo,20,Vật phẩm tiến hoá (strawberry-sweet),0,1,50,"Lên cấp khi giữ Vật phẩm tiến hoá (strawberry-sweet); ban ngày; HTBB: chưa có vật phẩm, dùng Kẹo"
+872,873,than_thiet,than_thiet,20,,0,2,25,Thân thiết 160; ban đêm
+878,879,cap,cap,34,,0,0,25,Cấp 34
+885,886,cap,cap,50,,0,0,50,Cấp 50
+886,887,cap,cap,60,,0,0,100,Cấp 60
+891,892,da,keo,20,Cuộn Bóng Tối,0,0,100,"Dùng Cuộn Bóng Tối; HTBB: chưa có vật phẩm, dùng Kẹo"
+234,899,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (agile-style-move)
+123,900,da,keo,20,Đá Đen Augurite,0,0,50,"Dùng Đá Đen Augurite; HTBB: chưa có vật phẩm, dùng Kẹo"
+217,901,da,keo,36,Khối Than Bùn,0,0,100,"Dùng Khối Than Bùn; HTBB: chưa có vật phẩm, dùng Kẹo"
+550,902,khac,keo,20,,0,0,25,Cách gốc: theo giới tính
+215,903,vat_pham,keo,20,Vuốt Sắc,0,1,50,"Lên cấp khi giữ Vuốt Sắc; ban ngày; HTBB: chưa có vật phẩm, dùng Kẹo"
+211,904,khac,keo,20,,0,0,25,Cách gốc: biết chiêu barb-barrage
+906,907,cap,cap,16,,0,0,50,Cấp 16
+907,908,cap,cap,36,,0,0,100,Cấp 36
+909,910,cap,cap,16,,0,0,50,Cấp 16
+910,911,cap,cap,36,,0,0,100,Cấp 36
+912,913,cap,cap,16,,0,0,50,Cấp 16
+913,914,cap,cap,36,,0,0,100,Cấp 36
+915,916,khac,keo,18,,0,0,25,Cách gốc: theo giới tính
+917,918,cap,cap,15,,0,0,25,Cấp 15
+919,920,cap,cap,24,,0,0,25,Cấp 24
+921,922,cap,cap,18,,0,0,25,Cấp 18
+922,923,khac,keo,36,,0,0,50,Cách gốc: điều kiện đặc biệt (level-up)
+924,925,khac,keo,25,,0,0,25,Cách gốc: điều kiện đặc biệt (in-battle-level-up)
+926,927,cap,cap,26,,0,0,25,Cấp 26
+928,929,cap,cap,25,,0,0,25,Cấp 25
+929,930,cap,cap,35,,0,0,50,Cấp 35
+932,933,cap,cap,24,,0,0,25,Cấp 24
+933,934,cap,cap,38,,0,0,50,Cấp 38
+935,936,da,keo,20,Giáp Cát Tường,0,0,50,"Dùng Giáp Cát Tường; HTBB: chưa có vật phẩm, dùng Kẹo"
+935,937,da,keo,20,Giáp Hung Ác,0,0,50,"Dùng Giáp Hung Ác; HTBB: chưa có vật phẩm, dùng Kẹo"
+938,939,da,vat_pham,20,Đá Sấm,961,0,25,Dùng Đá Sấm
+940,941,cap,cap,25,,0,0,25,Cấp 25
+942,943,cap,cap,30,,0,0,25,Cấp 30
+944,945,cap,cap,28,,0,0,25,Cấp 28
+946,947,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+948,949,cap,cap,30,,0,0,25,Cấp 30
+951,952,da,vat_pham,20,Đá Lửa,962,0,25,Dùng Đá Lửa
+953,954,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+955,956,cap,cap,35,,0,0,25,Cấp 35
+957,958,cap,cap,24,,0,0,25,Cấp 24
+958,959,cap,cap,38,,0,0,50,Cấp 38
+960,961,cap,cap,26,,0,0,25,Cấp 26
+963,964,cap,cap,38,,0,0,25,Cấp 38
+965,966,cap,cap,40,,0,0,25,Cấp 40
+969,970,cap,cap,35,,0,0,25,Cấp 35
+971,972,cap,cap,30,,0,2,25,Cấp 30; ban đêm
+974,975,da,vat_pham,20,Đá Băng,966,0,25,Dùng Đá Băng
+57,979,khac,keo,36,,0,0,50,Cách gốc: điều kiện đặc biệt (use-move)
+194,980,cap,cap,20,,0,0,25,Cấp 20
+203,981,khac,keo,20,,0,0,25,Cách gốc: biết chiêu twin-beam
+206,982,khac,keo,20,,0,0,25,Cách gốc: biết chiêu hyper-drill
+625,983,khac,keo,36,,0,0,50,Cách gốc: điều kiện đặc biệt (three-defeated-bisharp)
+996,997,cap,cap,35,,0,0,50,Cấp 35
+997,998,cap,cap,54,,0,0,100,Cấp 54
+999,1000,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (gimmighoul-coins)
+840,1011,da,keo,20,Táo Mật,0,0,50,"Dùng Táo Mật; HTBB: chưa có vật phẩm, dùng Kẹo"
+1012,1013,da,keo,20,Chén Trà Thường,0,0,50,"Dùng Chén Trà Thường; HTBB: chưa có vật phẩm, dùng Kẹo"
+884,1018,da,keo,20,Hợp Kim,0,0,50,"Dùng Hợp Kim; HTBB: chưa có vật phẩm, dùng Kẹo"
+1011,1019,khac,keo,36,,0,0,50,Cách gốc: biết chiêu dragon-cheer

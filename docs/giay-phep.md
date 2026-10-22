@@ -22,6 +22,8 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 | Eclipse Temurin JRE 21 | Java đi kèm bản PC Windows / Linux | GPL v2 + Classpath Exception | giữ tệp giấy phép của JRE |
 | Launch4j | `HTBB.exe` bọc jar | BSD-3 | chép `LICENSE.txt` |
 | Lucide Icons | biểu tượng website | ISC | — |
+| [PokéAPI](https://github.com/PokeAPI/pokeapi) `data/v2/csv`, commit ghim `2bf639e5572812a67d2b94903fdcb9d095f5aeb2` | dữ kiện 1.025 loài (hệ, chỉ số nền, tiến hoá, nhóm trứng, môi trường sống, learnset để chọn chiêu) → `sql/them_loai_day_du.sql` | **BSD-3-Clause** (xem 8.1) | **Có** — giữ văn bản bản quyền + giấy phép |
+| [Pokémon Showdown](https://github.com/smogon/pokemon-showdown) `data/pokedex.ts`, commit ghim `d601443456c795f77c6e4f2b5b459167f2b10a3c` | chỉ **đối chiếu chéo** hệ / chỉ số / tiến hoá / nhóm trứng (không chép vào game) | **MIT** (xem 8.2) | giữ văn bản giấy phép |
 
 Không dùng nhạc, tiếng hay tile của game Pokémon gốc. Bộ tile bản đồ hiện tại dựng bằng
 `tools/pokemon/DungBoTileMoi.java` và **không dùng pixel nào** của tile, cây, nhà hay vật trang trí của game kiếm hiệp
@@ -125,3 +127,59 @@ javac -d /tmp/htbb-tools tools/pokemon/DungBoTileMoi.java && java -cp /tmp/htbb-
   đích fan phi thương mại.
 - Thư viện server: MySQL Connector/J 5.1 (GPL v2 + FOSS exception), JExcelAPI `jxl` (LGPL). Công cụ build client J2ME:
   ProGuard (GPL v2), xem `client_jar/tools/LICENSE`.
+
+## 8. Dữ liệu loài (1.025 loài, `sql/them_loai_day_du.sql`)
+
+Bộ sinh `tools/pokemon/loai/sinh_loai.py` đọc dữ liệu tải về **đúng commit ghim** (thư mục
+`tools/pokemon/nguon_loai/<nguồn>-<commit>/`, tệp dữ liệu không commit, `nguon.txt` giữ URL + SHA-256 từng tệp) và sinh
+tệp SQL là nguồn sự thật khi triển khai. Văn bản giấy phép dưới đây chép nguyên văn từ tệp LICENSE ở đúng commit ghim
+(bản gốc cũng nằm trong `tools/pokemon/nguon_loai/*/LICENSE*`). Không dùng chữ mô tả của Bulbapedia / Serebii / wiki
+(CC BY-NC-SA hoặc không có giấy phép mở); mô tả Pokédex (`data_loai.mo_ta`) tự viết. Không dùng `PokeAPI/sprites`
+(hình không có giấy phép mở) và không dùng tiếng kêu gốc. Tên loài giữ tên chính thức (là nhãn hiệu của TPC, xem 2.3).
+
+Sprite Gen 1–2 tải theo nhu cầu (`server/map/loai/<NNNN>.goi`) lấy từ PMDCollab SpriteCollab ghim commit
+`4702f10d888d19e804c5986a91170dfc92ae01b8` (CC BY-NC 4.0, mục 2), ghi công từng loài ở `server/map/loai/GHI_CONG.txt`
+(sinh bởi `tools/pokemon/loai/ghi_cong_loai.py`) và cột `data_loai_sprite.ghi_cong`.
+
+### 8.1 PokéAPI — BSD-3-Clause (`LICENSE.md` tại commit `2bf639e5`)
+
+```
+Copyright (c) © 2013–2023 Paul Hallett and PokéAPI contributors (https://github.com/PokeAPI/pokeapi#contributing). Pokémon and Pokémon character names are trademarks of Nintendo.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+* Neither the name of PokéAPI nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### 8.2 Pokémon Showdown — MIT (`LICENSE` tại commit `d6014434`)
+
+```
+The MIT License (MIT)
+
+Copyright (c) 2011-2026 Guangcong Luo and other contributors http://pokemonshowdown.com/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```

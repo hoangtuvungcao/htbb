@@ -1,0 +1,11 @@
+# Doi chieu PokeAPI 2bf639e557 <-> Showdown d601443456 (sinh boi sinh_loai.py)
+
+29: ten PokeAPI 'Nidoran♀' / Showdown 'Nidoran-F' (giu ten PokeAPI)
+32: ten PokeAPI 'Nidoran♂' / Showdown 'Nidoran-M' (giu ten PokeAPI)
+669: ten PokeAPI 'Flabébé' / Showdown 'Flabe\u0301be\u0301' (giu ten PokeAPI)
+774 Minior: bo qua doi chieu (Minior: PokeAPI lay dang Sao bang (60/60/100/60/100/60), Showdown lay dang Loi)
+809 Melmetal: bo qua doi chieu (Melmetal: Showdown khong ghi tien hoa tu Meltan (chi tien hoa bang Keo ngoai game chinh))
+948 Toedscool: bo qua doi chieu (Toedscool: nhom trung PokeAPI Thuc vat, Showdown Dong co)
+949 Toedscruel: bo qua doi chieu (Toedscruel: nhom trung PokeAPI Thuc vat, Showdown Dong co)
+
+Tong: 1025 loai, 0 lech du lieu (he / chi so / tien hoa / nhom trung).
