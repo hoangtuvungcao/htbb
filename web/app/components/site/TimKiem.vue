@@ -19,6 +19,7 @@ const TRANG: KetQua[] = [
   { nhom: 'Trang', ten: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open' },
   { nhom: 'Trang', ten: 'Tải game', mo: 'Java J2ME (.jar), Windows (.exe), Linux, Android APK, iOS sắp ra mắt, cấu hình', to: '/download', icon: 'i-lucide-download' },
   { nhom: 'Trang', ten: 'Bảng xếp hạng', to: '/ranking', icon: 'i-lucide-trophy' },
+  { nhom: 'Trang', ten: 'Đấu trường Bảo Bối', mo: 'Bảng tuần và mùa đấu đội 3v3', to: '/dau-truong', icon: 'i-lucide-swords' },
   { nhom: 'Trang', ten: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper' },
   { nhom: 'Trang', ten: 'Điều khoản sử dụng', to: '/dieu-khoan', icon: 'i-lucide-scale' },
   { nhom: 'Trang', ten: 'Quyền riêng tư', to: '/quyen-rieng-tu', icon: 'i-lucide-shield' },

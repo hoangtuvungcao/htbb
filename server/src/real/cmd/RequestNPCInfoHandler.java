@@ -579,6 +579,15 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.idxXepHangDauTruong = menu.length;
                         menu = menuXh;
                     }
+                    // Dau truong Bao Boi 3v3 (real.DauTruongGame): noi cuoi menu nhu Dau xep hang, chi client >= 908
+                    p.idxDauTruongBaoBoi = -1;
+                    if (real.DauTruongGame.hienMenu(p)) {
+                        String[] menuDt = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuDt, 0, menu.length);
+                        menuDt[menu.length] = "Đấu trường Bảo Bối";
+                        p.idxDauTruongBaoBoi = menu.length;
+                        menu = menuDt;
+                    }
                     p.idxSuKienVuLanDauTruong = -1;
                     if (real.SuKien.bat(real.SuKien.VU_LAN)) {
                         String[] menuVuLan = new String[menu.length + 1];

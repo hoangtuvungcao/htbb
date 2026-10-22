@@ -1577,6 +1577,10 @@ class MapDoMenu {
                         XepHangPvpGame.dangKy(player);
                         return;
                     }
+                    if (idMenu == 0 && player.idxDauTruongBaoBoi >= 0 && idOptionMenu == player.idxDauTruongBaoBoi) {
+                        DauTruongGame.moTuNpc(player); // Dau truong Bao Boi 3v3 (goi -109)
+                        return;
+                    }
                     if (idMenu == 0 && SuKien.bat(SuKien.VU_LAN) && player.idxSuKienVuLanDauTruong >= 0
                             && idOptionMenu == player.idxSuKienVuLanDauTruong) {
                         MapSuKien.doMenuDauTruongVuLan(map, player, idNpc, MapSuKien.MENU_VU_LAN_DAU_TRUONG_GOC, -1);

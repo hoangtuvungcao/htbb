@@ -603,6 +603,7 @@ public final class DanhHieuGame {
                 guiSoMoi(p, t);
             }
             XepHangPvpGame.thuongMuaCu(p); // thuong cac mua PvP da ket thuc chua phat (mot lan / mua)
+            DauTruongGame.thuongMuaCu(p); // danh hieu mua Dau truong Bao Boi da ket thuc (mot lan / mua)
             DiemMocNhiemVu.apChoCho(p); // ban hang tren cho luc offline: cong tien do nhiem vu cho_ban
         } catch (final Exception e) {
             System.out.println("DanhHieuGame.khiVaoBanDo: " + e);
@@ -620,6 +621,7 @@ public final class DanhHieuGame {
                 if (!t0.daGuiDau) {
                     t0.daGuiDau = true;
                     XepHangPvpGame.thuongMuaCu(p);
+                    DauTruongGame.thuongMuaCu(p); // danh hieu mua Dau truong Bao Boi da ket thuc (mot lan / mua)
                 }
                 return;
             }
@@ -630,6 +632,7 @@ public final class DanhHieuGame {
                 guiNhan(p);
                 guiSoMoi(p, t);
                 XepHangPvpGame.thuongMuaCu(p); // thuong cac mua PvP da ket thuc chua phat (mot lan / mua)
+                DauTruongGame.thuongMuaCu(p); // danh hieu mua Dau truong Bao Boi da ket thuc (mot lan / mua)
             }
         } catch (final Exception e) {
             System.out.println("DanhHieuGame.nhip: " + e);

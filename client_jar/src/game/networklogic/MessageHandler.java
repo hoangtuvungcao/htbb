@@ -141,6 +141,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.BatPokemon.nhan(msg)) {
             return;
         }
+        // pokemon 0.9.8: lenh -109 Dau truong Bao Boi 3v3 (doi hinh, doi thu, tran theo luot, ket qua) - DauTruong
+        if (game.pokemon.DauTruong.nhan(msg)) {
+            return;
+        }
         // pokemon 0.9.7: lenh -112 the phong rieng (Pho ban Ham nguc / tran Cup PvP)
         if (game.pokemon.PhongRieng.nhan(msg)) {
             return;
