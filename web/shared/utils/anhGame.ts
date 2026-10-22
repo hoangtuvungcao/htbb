@@ -1,17 +1,18 @@
 /**
- * Ảnh chụp THẬT trong game (bản 0.9.6, client PC 1920×1080, tắt lớp gỡ lỗi; giao diện kiểu Pokémon GO) — public/anh-game/<ma>-<rộng>.webp,
+ * Ảnh chụp THẬT trong game (bản 0.9.8, client PC 1920×1080 - cùng mã jar / APK, tắt lớp gỡ lỗi; giao diện kiểu NRO) —
+ * public/anh-game/<ma>-<rộng>.webp,
  * mỗi ảnh hai cỡ 1280 / 640 px để trình duyệt tự chọn (srcset). Thêm ảnh: chụp lại bằng client_pc/test/ChupTrongGame,
  * đổi sang WebP (chất lượng ~78) ở hai cỡ rồi thêm một dòng ở đây.
  */
 /** Bản game của bộ ảnh hiện tại — đổi khi chụp lại. */
-export const BAN_ANH_GAME = '0.9.6'
+export const BAN_ANH_GAME = '0.9.8'
 
 export interface AnhGame { ma: string, tieuDe: string, moTa: string }
 
 export const ANH_GAME: Record<string, AnhGame> = {
   'the-gioi': { ma: 'the-gioi', tieuDe: 'Thế giới mở', moTa: 'Thị trấn, đường đi, NPC và Pokémon hoang dã — camera cố định, ai cũng thấy cùng một khung cảnh.' },
   'chien-dau': { ma: 'chien-dau', tieuDe: 'Đánh thời gian thực', moTa: 'Chạm để chọn mục tiêu, chiêu + đánh thường, nút thuốc HP / PP, khắc hệ hiện ngay trên đầu quái.' },
-  'thu-cuoi': { ma: 'thu-cuoi', tieuDe: 'Thú cưỡi & pet', moTa: 'Cưỡi Rapidash chạy nhanh hơn, pet nhỏ lẽo đẽo theo sau.' },
+  'thu-cuoi': { ma: 'thu-cuoi', tieuDe: 'Thú cưỡi & pet', moTa: 'Hồ sơ → Thú: cưỡi Rapidash, Tauros chạy nhanh hơn, chọn pet nhỏ lẽo đẽo theo sau.' },
   'tu-dong': { ma: 'tu-dong', tieuDe: 'Tự động đánh', moTa: 'Bảng cài đặt: thứ tự chiêu, ngưỡng thuốc HP / PP, vùng đánh, về hồi phục, tự hồi sinh, nhặt đồ.' },
   'khoi-dau': { ma: 'khoi-dau', tieuDe: 'Chọn Pokémon khởi đầu', moTa: 'Charmander, Bulbasaur, Squirtle, Pichu hay Eevee — chính bạn là Pokémon đó.' },
   'ky-nang': { ma: 'ky-nang', tieuDe: 'Kỹ năng', moTa: 'Học và nâng chiêu bằng điểm kỹ năng, gán vào ô nhanh.' },
@@ -19,26 +20,24 @@ export const ANH_GAME: Record<string, AnhGame> = {
   'cua-hang': { ma: 'cua-hang', tieuDe: 'Poké Mart', moTa: 'Mua thuốc hồi máu, Ether bằng xu — icon vật phẩm thật.' },
   'cua-hang-do': { ma: 'cua-hang-do', tieuDe: 'Cửa hàng trang bị', moTa: 'So sánh chỉ số với món đang mặc trước khi mua.' },
   'pokedex': { ma: 'pokedex', tieuDe: 'Pokédex', moTa: 'Lọc theo hệ, xem loài đã gặp / đã hạ.' },
-  'menu': { ma: 'menu', tieuDe: 'Menu chính', moTa: 'Chạm Poké Ball giữa đáy: vòng nút Pokémon, Pokédex, Cửa hàng, Đội/Bạn bè, Sự kiện, cùng Tự động đánh, Thư/Quà, Cài đặt.' },
+  'menu': { ma: 'menu', tieuDe: 'Menu chính', moTa: 'Chạm Poké Ball ở đáy màn: Pokémon, Pokédex, Cửa hàng, Đội/Bạn bè, Sự kiện, cùng Hệ sinh thái, Thư/Quà, Xếp hạng, Cài đặt.' },
   'thu-qua': { ma: 'thu-qua', tieuDe: 'Thư / Quà & giftcode', moTa: 'Hộp thư và ô Nhập giftcode ở cùng một chỗ.' },
   'npc': { ma: 'npc', tieuDe: 'NPC ngoài trời', moTa: 'Y tá Chansey ngoài thị trấn: hồi phục Pokémon, mua thuốc — thẻ chức năng mở ngay cạnh NPC.' },
   'tien-hoa': { ma: 'tien-hoa', tieuDe: 'Tiến hoá', moTa: 'Đủ cấp là tiến hoá ngay trên bản đồ.' },
   'doi': { ma: 'doi', tieuDe: 'Đội & bạn bè', moTa: 'Lập đội đi săn, đánh boss cùng nhau.' },
   // 0.9.8 (giao diện kiểu NRO)
-  'thu-phuc': { ma: 'thu-phuc', tieuDe: 'Thu phục Pokémon', moTa: 'Đánh yếu Pokémon hoang dã rồi ném Poké Ball ngay trên bản đồ.' },
+  'thu-phuc': { ma: 'thu-phuc', tieuDe: 'Thu phục Pokémon', moTa: 'Đánh yếu Pokémon hoang dã (dấu Poké Ball, vòng màu bậc) rồi chạm nút bóng cạnh cụm chiêu — nhãn ghi bóng sẽ ném và số còn.' },
   'hop-pc': { ma: 'hop-pc', tieuDe: 'Hộp PC', moTa: 'Pokémon đã bắt, Kẹo loài, tiến hoá và bạn đồng hành đi theo.' },
   'ho-so-tu-do': { ma: 'ho-so-tu-do', tieuDe: 'Tủ đồ trang trí', moTa: 'Hồ sơ → Ngoại hình: mặc thử trang phục, hào quang, skin thú và chọn dòng chỉ số của ô.' },
-  'chat': { ma: 'chat', tieuDe: 'Chat nhiều kênh', moTa: 'Bản đồ, Thế giới, Đội, Nhóm, Bạn bè và tin riêng trong một bảng.' },
+  'chat': { ma: 'chat', tieuDe: 'Chat nhiều kênh', moTa: 'Bản đồ, Thế giới, Đội, Nhóm, Bạn bè và tin riêng hai chiều trong một bảng — chỉ trong phiên đang chơi.' },
   'pho-ban': { ma: 'pho-ban', tieuDe: 'Phó bản Hầm ngục', moTa: 'Phòng riêng 5 tầng cho nhóm, boss ở tầng cuối.' },
 }
 
 /**
- * Ảnh 0.9.8 CHƯA chụp (chưa có public/anh-game/<ma>-640|1280.webp) -> tạm dùng ảnh có sẵn. Khi thêm tệp ảnh thật thì
- * xoá dòng tương ứng (tests/he-thong-098.test.ts kiểm: ảnh không có trong bảng này phải có đủ hai tệp).
+ * Ảnh CHƯA chụp (chưa có public/anh-game/<ma>-640|1280.webp) -> tạm dùng ảnh có sẵn. Khi thêm tệp ảnh thật thì
+ * xoá dòng tương ứng (tests/he-thong-098.test.ts kiểm: ảnh không có trong bảng này phải có đủ hai tệp). 0.9.8: đã đủ.
  */
-export const ANH_TAM: Record<string, string> = {
-  'thu-phuc': 'chien-dau', 'hop-pc': 'pokedex', 'ho-so-tu-do': 'trang-bi', 'chat': 'doi', 'pho-ban': 'the-gioi',
-}
+export const ANH_TAM: Record<string, string> = {}
 const tep = (ma: string) => ANH_TAM[ma] ?? ma
 
 /** srcset 640/1280 của một ảnh. */
