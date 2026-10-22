@@ -112,7 +112,14 @@ public class RMS {
         }
     }
 
+    /** Lưu ô nhanh vào máy + gửi máy chủ (TrangChieu, client 0.9.8). */
     public static void saveQuickSlot() {
+        luuQuickSlotMay();
+        game.pokemon.TrangChieu.gui();
+    }
+
+    /** Chỉ lưu vào máy (RMS) - dùng khi áp dữ liệu máy chủ. */
+    public static void luuQuickSlotMay() {
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bo);
         try {
@@ -163,7 +170,7 @@ public class RMS {
                     } else {
                         qs.setIsNothing();   // pokemon: ô trống (lưu -1 = 255) giữ trống, không thành chiêu 0
                     }
-                    GameScr.indexTabSlot = dis.readByte();
+                    GameScr.indexTabSlot = Math.max(0, Math.min(game.pokemon.TrangChieu.so - 1, dis.readByte()));
                 }
             }
             dis.close();

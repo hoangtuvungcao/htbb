@@ -12,7 +12,7 @@ import java.util.Properties;
  * Trong màn chơi (không hộp thoại / menu): WASD + mũi tên đi, Space đánh (phím 5), 1..5 = ô chiêu 1,3,5,7,9,
  * Q / E = bình HP / MP (ô 7 / 9), Tab đổi mục tiêu, ENTER = hành động ngữ cảnh (tiếp lời thoại, nói chuyện NPC,
  * đánh, nhặt, câu cá - HanhDong.nguCanh), T hoặc "/" mở chat (Enter gửi khi đang gõ), Esc menu (phím mềm trái),
- * R đổi bộ chiêu (phím 0), M menu nhanh (phím #), P tổ đội (phím *). F1 trang Phím tắt, F2/F3 phím mềm phải/trái,
+ * R đổi bộ chiêu (phím 0), B ném Poké Ball, M menu nhanh (phím #), P tổ đội (phím *). F1 trang Phím tắt, F2/F3 phím mềm phải/trái,
  * F10 cài đặt, F11 toàn màn, F12 chụp màn. KHÔNG thu phóng (vùng nhìn cố định). Đổi phím trong Cài đặt (F10)
  * -> lưu cai_dat.properties (phim.<ma>=mã phím Java).
  * Đang gõ chữ (ô nhập của game đang chọn): mọi chữ (cả tiếng Việt từ bộ gõ) vào ô nhập, Ctrl+V dán.
@@ -21,17 +21,17 @@ public final class BanPhim {
     // ---- hành động đổi được phím ----
     public static final String[] MA = {"len", "xuong", "trai", "phai", "danh", "chieu1", "chieu2", "chieu3", "chieu4",
         "chieu5", "binh_hp", "binh_mp", "muc_tieu", "chat", "menu", "doi_bo_chieu", "menu_nhanh", "to_doi",
-        "cai_dat", "toan_man", "chup_man"};
+        "cai_dat", "toan_man", "chup_man", "nem_bong"};
     public static final String[] TEN = {"Đi lên", "Đi xuống", "Sang trái", "Sang phải", "Đánh (ô giữa)", "Chiêu 1",
         "Chiêu 2", "Chiêu 3", "Chiêu 4", "Chiêu 5", "Bình HP", "Bình MP", "Đổi mục tiêu", "Chat", "Menu / Quay lại",
-        "Đổi bộ chiêu", "Menu nhanh", "Tổ đội", "Cài đặt", "Toàn màn hình", "Chụp màn hình"};
+        "Đổi bộ chiêu", "Menu nhanh", "Tổ đội", "Cài đặt", "Toàn màn hình", "Chụp màn hình", "Ném Poké Ball"};
     public static final int[] MAC_DINH = {KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE,
         KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_Q, KeyEvent.VK_E,
         KeyEvent.VK_TAB, KeyEvent.VK_T, KeyEvent.VK_ESCAPE, KeyEvent.VK_R, KeyEvent.VK_M, KeyEvent.VK_P,
-        KeyEvent.VK_F10, KeyEvent.VK_F11, KeyEvent.VK_F12};
+        KeyEvent.VK_F10, KeyEvent.VK_F11, KeyEvent.VK_F12, KeyEvent.VK_B};
     public static final int LEN = 0, XUONG = 1, TRAI = 2, PHAI = 3, DANH = 4, CHIEU1 = 5, BINH_HP = 10, BINH_MP = 11,
         MUC_TIEU = 12, CHAT = 13, MENU = 14, DOI_BO = 15, MENU_NHANH = 16, TO_DOI = 17, CAI_DAT = 18, TOAN_MAN = 19,
-        CHUP = 20;
+        CHUP = 20, NEM_BONG = 21;
     public static final int[] PHIM = MAC_DINH.clone();
     /** ô chiêu 1..5 -> phím J2ME (nhãn trên ô = phím PC) */
     private static final int[] O_CHIEU = {49, 51, 53, 55, 57};
@@ -214,6 +214,13 @@ public final class BanPhim {
                 case BINH_HP: nhan(vk, 55); return;
                 case BINH_MP: nhan(vk, 57); return;
                 case DOI_BO: nhan(vk, 48); return;
+                case NEM_BONG:
+                    try {
+                        game.pokemon.BatPokemon.bamNut();   // 0.9.8: B = ném bóng theo Thứ tự bóng
+                    } catch (Throwable e) {
+                        NhatKy.loi("nem bong", e);
+                    }
+                    return;
                 case MENU_NHANH: nhan(vk, 35); return;
                 case TO_DOI: nhan(vk, 42); return;
                 case MENU: nhan(vk, -6); return;

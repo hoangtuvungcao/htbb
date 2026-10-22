@@ -21,6 +21,108 @@ public final class NgoaiHinhGame {
     private NgoaiHinhGame() {
     }
 
+    // ------------------------------------------------------------------ 0.9.8 trang chieu (o nhanh) dong bo may chu
+
+    /** Gia xu mo trang chieu 3 ("Blaziken" - Huan luyen): so gio thu nhap o cap nhan vat (cao, mot lan). */
+    public static final int GIO_XU_TRANG_CHIEU = 30;
+
+    /** So trang chieu cua nhan vat: 2 mac dinh, 3 khi da mo (the / xu). */
+    public static int soTrangChieu(final Char p) {
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        return h != null && h.trangChieuThem > 0 ? 3 : 2;
+    }
+
+    /** Mo trang 3 (mot lan). false = da mo / khong co ho so. */
+    public static boolean moTrangChieu(final Char p) {
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return false;
+        }
+        synchronized (h) {
+            if (h.trangChieuThem > 0) {
+                return false;
+            }
+            h.trangChieuThem = 1;
+            h.ban = true;
+        }
+        guiONhanh(p);
+        return true;
+    }
+
+    /** Gia xu mo trang 3 o cap hien tai. */
+    public static long giaXuTrangChieu(final Char p) {
+        final int cap = p.lvDetail == null ? 1 : p.lvDetail.lv;
+        return com.htbb.pokemon.ThongSoLauDai.xuMoiGio(com.htbb.pokemon.LauDai.kepCap(cap)) * GIO_XU_TRANG_CHIEU;
+    }
+
+    /** -103 loai 2: mua trang 3 bang xu (Huan luyen vien Blaziken - so tay o nhanh). */
+    static void muaTrangChieuXu(final Char p) {
+        if (soTrangChieu(p) >= 3) {
+            com.htbb.thongbao.ThongBao.loi(p, "Đã mở đủ 3 trang chiêu.", "");
+            return;
+        }
+        final long gia = giaXuTrangChieu(p);
+        if (!p.truNeuDu(() -> p.xu >= gia, () -> p.subXu(gia, true, "mo trang chieu 3"))) {
+            com.htbb.thongbao.ThongBao.loi(p, "Cần " + com.htbb.pokemon.TienTeChu.so(gia) + " xu để mở trang chiêu 3.", "");
+            return;
+        }
+        if (!moTrangChieu(p)) {
+            p.addXu(gia, "hoan mo trang chieu");
+            return;
+        }
+        try {
+            p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+        } catch (final Exception ignored) {
+        }
+        com.htbb.thongbao.ThongBao.ketQua(p, "Đã mở trang chiêu 3!", "Gán chiêu ở Hồ sơ > Kỹ năng > Ô nhanh, đổi trang bằng nút 1/3 cạnh chiêu.");
+    }
+
+    /** -103 loai 1 (client &gt;= 908): u8 trang dang dung, 3 x i64 trang (5 o x 12 bit). */
+    static void nhanONhanh(final Char p, final Message msg) throws java.io.IOException {
+        final int trang = msg.dis.readUnsignedByte();
+        final long a = msg.dis.readLong(), b = msg.dis.readLong(), c = msg.dis.readLong();
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return;
+        }
+        synchronized (h) {
+            h.oNhanh1 = a;
+            h.oNhanh2 = b;
+            h.oNhanh3 = soTrangChieuH(h) >= 3 ? c : 0L;
+            h.trangChieu = Math.max(0, Math.min(soTrangChieuH(h) - 1, trang));
+            h.ban = true;
+        }
+    }
+
+    static int soTrangChieuH(final HoSoLauDai h) {
+        return h.trangChieuThem > 0 ? 3 : 2;
+    }
+
+    /** Gui -103 loai 1 cho client &gt;= 908: u8 so trang, u8 trang dang dung, 3 x i64, i64 gia xu mo trang 3. */
+    public static void guiONhanh(final Char p) {
+        if (p == null || !BoNgocGame.coClient(p)) {
+            return;
+        }
+        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return;
+        }
+        try {
+            final Message m = new Message(NgoaiHinh.LENH_CAI_DAT);
+            synchronized (h) {
+                m.dos.writeByte(1);
+                m.dos.writeByte(soTrangChieuH(h));
+                m.dos.writeByte(h.trangChieu);
+                m.dos.writeLong(h.oNhanh1);
+                m.dos.writeLong(h.oNhanh2);
+                m.dos.writeLong(h.oNhanh3);
+            }
+            m.dos.writeLong(giaXuTrangChieu(p));
+            p.sendMessage(m);
+        } catch (final Exception ignored) {
+        }
+    }
+
     /** Mat na an khi khong co ho so (sv.lau_dai tat): charDBID -&gt; an. */
     private static final ConcurrentHashMap<Integer, Integer> AN_DU_PHONG = new ConcurrentHashMap<Integer, Integer>();
     /** Khoa ngoai hinh da gui gan nhat: char id -&gt; khoa. */
@@ -142,6 +244,14 @@ public final class NgoaiHinhGame {
         }
         try {
             final int loai = msg.dis.readUnsignedByte();
+            if (loai == 1) {
+                nhanONhanh(p, msg);
+                return;
+            }
+            if (loai == 2) {
+                muaTrangChieuXu(p);
+                return;
+            }
             if (loai != 0) {
                 return;
             }

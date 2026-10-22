@@ -82,6 +82,12 @@ public final class HoSoLauDai {
     public int doGiu;
     /** Ngoai hinh trang bi: bit o phu kien an + bit 7 an trang phuc (com.htbb.pokemon.NgoaiHinh). */
     public int ngoaiHinhAn;
+    /**
+     * 0.9.8 trang chieu (o nhanh) tung nhan vat - client 908 dong bo (goi -103 loai 1): 3 trang x 5 o, moi o 12 bit
+     * ((kieu + 1) 3 bit | gia tri 8 bit | buff 1 bit), trang dang dung, so trang mo them (0 = 2 trang mac dinh, 1 = 3 trang).
+     */
+    public long oNhanh1, oNhanh2, oNhanh3;
+    public int trangChieu, trangChieuThem;
     /** Gym: bit huy hieu da co (16 bit) va tuan danh lai gan nhat moi Gym bit. */
     public int gymHuyHieu;
     public int gymTuan;
@@ -149,6 +155,11 @@ public final class HoSoLauDai {
         dat(b, "ks", khSo);
         dat(b, "dg", doGiu);
         dat(b, "nh", ngoaiHinhAn);
+        dat(b, "o1", oNhanh1);
+        dat(b, "o2", oNhanh2);
+        dat(b, "o3", oNhanh3);
+        dat(b, "ot", trangChieu);
+        dat(b, "tc", trangChieuThem);
         dat(b, "gh", gymHuyHieu);
         dat(b, "gw", gymTuan);
         dat(b, "gb", gymTuanBit);
@@ -280,6 +291,16 @@ public final class HoSoLauDai {
                 h.doGiu = iv;
             } else if (k.equals("nh")) {
                 h.ngoaiHinhAn = iv;
+            } else if (k.equals("o1")) {
+                h.oNhanh1 = v;
+            } else if (k.equals("o2")) {
+                h.oNhanh2 = v;
+            } else if (k.equals("o3")) {
+                h.oNhanh3 = v;
+            } else if (k.equals("ot")) {
+                h.trangChieu = iv;
+            } else if (k.equals("tc")) {
+                h.trangChieuThem = iv;
             } else if (k.equals("gh")) {
                 h.gymHuyHieu = iv;
             } else if (k.equals("gw")) {

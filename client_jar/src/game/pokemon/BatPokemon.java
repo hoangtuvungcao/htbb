@@ -179,6 +179,119 @@ public final class BatPokemon {
         return n;
     }
 
+    // ---------------------------------------------------------------- 0.9.8 thứ tự dùng bóng (Menu nhanh "Thứ tự bóng")
+
+    /** Thứ tự ưu tiên (thuTu của máy chủ: 3 Ultra, 2 Great, 1 Poké) - mặc định cao -> thấp. Lưu RMS "htbbBongUuTien". */
+    public static int[] uuTien = {3, 2, 1};
+    static boolean daNapUuTien;
+    /** Các thứ tự chọn được ở Menu nhanh. */
+    public static final int[][] THU_TU = {{3, 2, 1}, {1, 2, 3}, {2, 3, 1}, {2, 1, 3}, {3, 1, 2}, {1, 3, 2}};
+    public static final String[] TEN_NGAN = {"", "Poké", "Great", "Ultra"};
+
+    static void napUuTien() {
+        if (daNapUuTien) {
+            return;
+        }
+        daNapUuTien = true;
+        try {
+            int v = game.render.screen.RMS.loadRMSInt("htbbBongUuTien");
+            if (v >= 0 && v < THU_TU.length) {
+                uuTien = THU_TU[v];
+            }
+        } catch (Throwable e) {
+            // mặc định
+        }
+    }
+
+    public static int chiSoThuTu() {
+        napUuTien();
+        for (int i = 0; i < THU_TU.length; i++) {
+            if (THU_TU[i] == uuTien) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    /** Menu nhanh: thứ tự kế tiếp (6 kiểu), lưu ngay. */
+    public static void doiThuTu() {
+        int i = (chiSoThuTu() + 1) % THU_TU.length;
+        uuTien = THU_TU[i];
+        try {
+            game.render.screen.RMS.saveRMSInt("htbbBongUuTien", i);
+        } catch (Throwable e) {
+            // không lưu được: chỉ phiên này
+        }
+    }
+
+    /** "Ultra > Great > Poké". */
+    public static String tenThuTu() {
+        napUuTien();
+        StringBuffer b = new StringBuffer();
+        for (int i = 0; i < uuTien.length; i++) {
+            if (i > 0) {
+                b.append(" > ");
+            }
+            b.append(TEN_NGAN[uuTien[i]]);
+        }
+        return b.toString();
+    }
+
+    /** Chỉ số (trong mảng bóng máy chủ) bóng sẽ dùng: loại đầu tiên theo thứ tự còn bóng; -1 = hết mọi loại. */
+    public static int bongSeDung() {
+        napUuTien();
+        for (int u = 0; u < uuTien.length; u++) {
+            for (int i = 0; i < bongThuTu.length; i++) {
+                if (bongThuTu[i] == uuTien[u] && bongSo[i] > 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /** Nút Poké Ball HUD / phím B: ném bóng theo thứ tự; hết bóng thì báo lý do. */
+    public static void bamNut() {
+        game.model.Actor muc = Canvas.gameScr == null ? null : Canvas.gameScr.focusedActor;
+        if (!nemDuoc(muc)) {
+            ThongBao.hien("Chọn một Pokémon hoang dã (dấu Poké Ball) đã yếu (HP ≤ " + nguongHp + "%) để ném bóng.", ThongBao.TIN);
+            return;
+        }
+        int i = bongSeDung();
+        if (i < 0) {
+            ThongBao.hien("Hết bóng. Mua ở Y tá Chansey (Trung tâm Pokémon) hoặc nhận từ nhiệm vụ.", ThongBao.LOI);
+            return;
+        }
+        bongChon = i;
+        nem((LiveActor) muc);
+    }
+
+    /** Vùng nút HUD vừa vẽ (kiểm thử). */
+    public static final int[] NUT_HUD = new int[4];
+    public static int demVeNutHud;
+
+    /** HudRong: nút tròn Poké Ball cạnh cụm chiêu (chỉ khi mục tiêu hoang dã đã yếu). r = bán kính. */
+    public static void veNutHud(Graphics g, int x, int y, int r) {
+        int i = bongSeDung();
+        boolean het = i < 0;
+        boolean sang = !het && (System.currentTimeMillis() / 400) % 2 == 0;
+        if (sang) {
+            g.setColor(ChuDe.VANG);
+            g.fillArc(x - r - 3, y - r - 3, 2 * r + 6, 2 * r + 6, 0, 360);
+        }
+        g.setColor(het ? 0x8A8A92 : 0xFFFFFF);
+        g.fillArc(x - r, y - r, 2 * r, 2 * r, 0, 360);
+        int s = r * 3 / 2;
+        BieuTuong.ve(g, BieuTuong.POKEBALL, x - s / 2, y - s / 2, s, het ? 0x8A8A92 : 0xE03C30, 0xFFFFFF);
+        String so = het ? "0" : (TEN_NGAN[bongThuTu[i]] + " " + bongSo[i]);
+        ChuDe.chuGiua(g, so, x, y + r - 4, 12, ChuDe.NHAN_NHO, het ? ChuDe.CHU_PHU : ChuDe.CHU, 2);
+        NUT_HUD[0] = x - r + g.getTranslateX();
+        NUT_HUD[1] = y - r + g.getTranslateY();
+        NUT_HUD[2] = 2 * r;
+        NUT_HUD[3] = 2 * r;
+        demVeNutHud++;
+    }
+
     /** Nút "Ném bóng": bắt đầu hiệu ứng ngay (máy chủ trả kết quả sau). */
     public static void nem(LiveActor quai) {
         if (quai == null || bongThuTu.length == 0) {
@@ -661,11 +774,13 @@ public final class BatPokemon {
             return;
         }
         final LiveActor quai = (LiveActor) muc;
-        int i = Math.max(0, Math.min(bongThuTu.length - 1, bongChon));
+        int iu = bongSeDung();
+        int i = iu < 0 ? Math.max(0, Math.min(bongThuTu.length - 1, bongChon)) : iu;
+        bongChon = i;
         boolean con = bongSo[i] > 0;
         int h = Math.max(Bang.co(26), VungCham.MIN > 0 ? Math.min(VungCham.MIN, 40) : 0);
         int r = h / 2 - 3;
-        int wDoi = bongThuTu.length > 1 ? Math.max(h, ChuDe.rong("Đổi", ChuDe.PHU) + 14) : 0;
+        int wDoi = 0;   // 0.9.8: bỏ "Đổi" - bóng theo Menu nhanh > Thứ tự bóng
         String chu = con ? "Ném " + bongTen[i] + " ×" + bongSo[i] : "Hết " + bongTen[i];
         int w = Math.min(W, ChuDe.rong(chu, ChuDe.NHAN) + 2 * r + 22 + wDoi);
         int x = x0 + W - w, y = H + 3;

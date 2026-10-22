@@ -955,9 +955,10 @@ public final class Hud implements NenAndroid.LopPhu {
         }
         veNutNho(c, N_DOI_BO, now);
         // 2 chấm bộ ô đang dùng cạnh nút đổi bộ
-        for (int k = 0; k < 2; k++) {
+        int soTrang = game.pokemon.TrangChieu.so;   // 0.9.8: 2 hoặc 3 trang chiêu
+        for (int k = 0; k < soTrang; k++) {
             P.setColor(k == GameScr.indexTabSlot ? 0xFFF2C54E : 0x80A88A66);
-            c.drawCircle(NX[N_DOI_BO] - 3 + k * 6, NY[N_DOI_BO] + NR[N_DOI_BO] + 4, 1.6f, P);
+            c.drawCircle(NX[N_DOI_BO] - 3 * (soTrang - 1) + k * 6, NY[N_DOI_BO] + NR[N_DOI_BO] + 4, 1.6f, P);
         }
         if (gs.focusedActor != null || gs.actors.size() > 1) veNutNho(c, N_MUC_TIEU, now);
         veBinh(g, c, N_HP, mc, now, true);

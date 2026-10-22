@@ -158,6 +158,11 @@ public final class HudRong {
         return hp ? yDanh() + 15 : yDanh() - 15;
     }
 
+    /** 0.9.8: hiện nút Poké Ball (mục tiêu là Pokémon hoang dã bắt được, HP ≤ ngưỡng). */
+    static boolean nemBong(GameScr gs) {
+        return gs != null && game.pokemon.BatPokemon.coTrangThai && game.pokemon.BatPokemon.nemDuoc(gs.focusedActor);
+    }
+
     static int xNguCanh() {
         return xDanh() - 84;
     }
@@ -370,7 +375,10 @@ public final class HudRong {
         }
         b.tron(26, "hud-thuoc-hp", xThuoc(), yThuoc(true), R_THUOC, R_THUOC + 2);
         b.tron(27, "hud-thuoc-pp", xThuoc(), yThuoc(false), R_THUOC, R_THUOC + 2);
-        if (HanhDong.loaiNguCanh() == 3) {
+        if (nemBong(gs)) {
+            // 0.9.8: nút Poké Ball (mục tiêu hoang dã đã yếu) ở chỗ nút ngữ cảnh, cạnh cụm chiêu
+            b.tron(32, "hud-nem-bong", xNguCanh(), yNguCanh(), R_NGU_CANH, R_NGU_CANH + 2);
+        } else if (HanhDong.loaiNguCanh() == 3) {
             b.tron(28, "hud-ngu-canh", xNguCanh(), yNguCanh(), R_NGU_CANH, R_NGU_CANH + 2);
         }
         b.hop(29, "hud-tu-dong", xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG, 2);
@@ -531,14 +539,16 @@ public final class HudRong {
         if (game.pokemon.ThanhNhanh.coBo2()) {
             int xb = xDoiBo(), yb = yDoiBo();
             nen(g, xb, yb, R_DOI_BO, 0xFFFFFF, game.pokemon.ChuDe.NEN_PHU_TOI, false);
-            game.pokemon.ChuDe.chuGiua(g, GameScr.indexTabSlot == 0 ? "1/2" : "2/2", xb, yb - R_DOI_BO, 2 * R_DOI_BO,
+            game.pokemon.ChuDe.chuGiua(g, game.pokemon.TrangChieu.nhan(), xb, yb - R_DOI_BO, 2 * R_DOI_BO,
                     game.pokemon.ChuDe.SO, game.pokemon.ChuDe.CHU, 2);
         }
         // thuốc
         veThuoc(g, mc, true, now);
         veThuoc(g, mc, false, now);
         // ngữ cảnh: câu cá
-        if (nc == 3) {
+        if (nemBong(gs)) {
+            game.pokemon.BatPokemon.veNutHud(g, xNguCanh(), yNguCanh(), R_NGU_CANH);
+        } else if (nc == 3) {
             veNutCau(g, xNguCanh(), yNguCanh(), R_NGU_CANH);
         }
         // tự động: công tắc viên (tắt = trắng, núm xám trái; bật = xanh lá sáng, núm trắng phải, chữ đậm)
@@ -1296,6 +1306,9 @@ public final class HudRong {
                 }
                 break;
             }
+            case 32:
+                game.pokemon.BatPokemon.bamNut();
+                break;
             case 28:
                 HanhDong.cauCa();
                 break;

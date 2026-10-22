@@ -1973,8 +1973,9 @@ public class GameScr extends Screen {
 
     /** pokemon: đổi bộ ô chiêu 1 <-> 2 (phím 0, phím PC "Đổi bộ chiêu", viên "1/2" của HUD) - nút chiêu đổi ngay khung sau. */
     public static void doiBoChieu() {
-        indexTabSlot = indexTabSlot == 0 ? 1 : 0;
+        game.pokemon.TrangChieu.tiep();   // 0.9.8: quay vòng 2 / 3 trang
         xSlot = Res.wKhung;
+        RMS.saveQuickSlot();
     }
 
     private void doFire(int key, int index) {
@@ -4127,8 +4128,8 @@ public class GameScr extends Screen {
             }
         }
         // bộ ô đang dùng (phím 0 đổi): 2 chấm bên trái thanh
-        for (int k = 0; k < 2; k++) {
-            int yc = ySlot0 + 3 + (ho / 2) - 5 + (k * 7);
+        for (int k = 0; k < game.pokemon.TrangChieu.so; k++) {
+            int yc = ySlot0 + 3 + (ho / 2) - 5 + (k * 7) - (game.pokemon.TrangChieu.so - 2) * 3;
             g.setColor(game.pokemon.GiaoDien.VIEN);
             g.fillArc(xSlot0 - 5, yc - 1, 6, 6, 0, 360);
             g.setColor(k == indexTabSlot ? game.pokemon.GiaoDien.VANG : 0x5E7AA8);
@@ -4207,6 +4208,18 @@ public class GameScr extends Screen {
                     ten = "";
                 }
                 int wTen = W - 40;
+                // 0.9.8: Pokémon hoang dã - dấu Poké Ball + bậc loài (màu bậc, ghi đủ) cuối hàng tên, tên nhường chỗ
+                int bacBat = this.focusedActor instanceof game.model.Monster ? game.pokemon.NhanQuai.bacBat((game.model.Monster) this.focusedActor) : 0;
+                if (bacBat > 0 && game.pokemon.ChuUI.bo != null) {
+                    String sb = game.pokemon.BangLoai.TEN_BAC[bacBat];
+                    int hB = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU);
+                    int sI = 12;   // icon PNG 16 px gốc vẽ thu về 12 (không phóng to hơn ô chữ)
+                    int wB = game.pokemon.ChuDe.rong(sb, game.pokemon.ChuDe.PHU) + sI + 4;
+                    int xB = x0 + W - 37 - wB;
+                    game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.POKEBALL, xB, 3 + (hB - sI) / 2, sI, 0xE03C30, 0xFFFFFF);
+                    game.pokemon.ChuDe.chu(g, sb, xB + sI + 4, 3, game.pokemon.ChuDe.PHU, game.pokemon.BangLoai.mauBac(bacBat), 0);
+                    wTen = Math.max(24, xB - 4 - (x0 + 5));
+                }
                 if (ten != null && Font.blackFont.getWidth(ten) > wTen) {
                     while (ten.length() > 2 && Font.blackFont.getWidth(new StringBuffer(ten).append("..").toString()) > wTen) {
                         ten = ten.substring(0, ten.length() - 1);
@@ -4229,22 +4242,6 @@ public class GameScr extends Screen {
                             game.pokemon.ChuDe.PHU, 0xF6E6C0, 1);
                     game.pokemon.ChuDe.chuGiua(g, game.pokemon.NhanTheGioi.lv(la.level), x0 + 5, yS, hS,
                             game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.VANG, 0);
-                    // 0.9.8: Pokémon hoang dã - bậc loài + "Bắt được" (màu bậc), giữa Lv và số HP
-                    int bacBat = la instanceof game.model.Monster ? game.pokemon.NhanQuai.bacBat((game.model.Monster) la) : 0;
-                    if (bacBat > 0) {
-                        String sb = new StringBuffer(game.pokemon.BangLoai.TEN_BAC[bacBat]).append(" · Bắt được").toString();
-                        int xL = x0 + 5 + game.pokemon.ChuDe.rong(game.pokemon.NhanTheGioi.lv(la.level), game.pokemon.ChuDe.PHU) + 4;
-                        int wL = x0 + W - 37 - game.pokemon.ChuDe.rong(game.pokemon.NhanTheGioi.hpMax(la.hp > 0 ? la.hp : 1, la.maxhp),
-                                game.pokemon.ChuDe.PHU) - 4 - xL;
-                        if (wL > hS + 10) {
-                            game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.POKEBALL, xL, yS + (hS - hS * 3 / 4) / 2, hS * 3 / 4, 0xE03C30, 0xFFFFFF);
-                            if (game.pokemon.ChuDe.rong(sb, game.pokemon.ChuDe.PHU) > wL - hS) {
-                                sb = "Bắt được";   // khung hẹp: chỉ "Bắt được" (màu vẫn theo bậc), không cắt "..."
-                            }
-                            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(sb, game.pokemon.ChuDe.PHU, wL - hS), xL + hS, yS, hS,
-                                    game.pokemon.ChuDe.PHU, game.pokemon.BangLoai.mauBac(bacBat), 0);
-                        }
-                    }
                 } else {
                     String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
                     int wSo = Font.smallFont.getWidth(so) + 6;
@@ -4258,7 +4255,9 @@ public class GameScr extends Screen {
                 }
             }
             // 0.9.8: Pokémon hoang dã đã yếu (HP <= ngưỡng) -> nút "Ném Poké Ball" dưới khung mục tiêu
-            game.pokemon.BatPokemon.veNut(g, this.focusedActor, x0, H, W);
+            if (!HudRong.bat()) {
+                game.pokemon.BatPokemon.veNut(g, this.focusedActor, x0, H, W);   // bản không HUD rộng (J2ME phím): thanh dưới khung
+            }
         }
     }
 

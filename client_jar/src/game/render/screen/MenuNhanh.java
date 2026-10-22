@@ -36,8 +36,10 @@ final class MenuNhanh {
     private static final int GIFTCODE = 12;
     /** 0.9.8: ngắm tay cả khi đánh Pokémon hoang dã (PvP luôn ngắm tay - game.pokemon.NgamTay) */
     private static final int NGAM_TAY = 13;
+    /** 0.9.8: thứ tự dùng bóng của nút Poké Ball (game.pokemon.BatPokemon.uuTien) */
+    private static final int BONG = 14;
 
-    private static final String[] TEN = {"Tự động đánh", "Thời tiết", "Màu theo mùa", "Xem thời tiết", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode", "Ngắm thủ công"};
+    private static final String[] TEN = {"Tự động đánh", "Thời tiết", "Màu theo mùa", "Xem thời tiết", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode", "Ngắm thủ công", "Thứ tự bóng"};
 
     /** Tên mục (âm lượng kèm %). */
     private static String ten(int m) {
@@ -47,6 +49,9 @@ final class MenuNhanh {
         if (m == THOI_TIET) {
             game.pokemon.ThoiTiet.napCaiDat();
             return new StringBuffer("Thời tiết: ").append(game.pokemon.ThoiTiet.TEN_CHAT_LUONG[game.pokemon.ThoiTiet.chatLuong]).toString();
+        }
+        if (m == BONG) {
+            return new StringBuffer("Bóng: ").append(game.pokemon.BatPokemon.tenThuTu()).toString();
         }
         return TEN[m];
     }
@@ -66,7 +71,7 @@ final class MenuNhanh {
         }
     }
 
-    private static final int[] DS = {TU_DONG, AN, NGAM_TAY, NHAC, HIEU_UNG, AM_LUONG, THOI_TIET, MAU_MUA, XEM_THOI_TIET, GIFTCODE};
+    private static final int[] DS = {TU_DONG, AN, NGAM_TAY, BONG, NHAC, HIEU_UNG, AM_LUONG, THOI_TIET, MAU_MUA, XEM_THOI_TIET, GIFTCODE};
 
     private static int[] dsMuc() {
         return DS;
@@ -127,6 +132,11 @@ final class MenuNhanh {
             case XEM_THOI_TIET:
                 mo = false;
                 game.pokemon.ThoiTiet.moTheGoiY();
+                break;   // (trước thiếu break: Xem thời tiết đổi luôn Ngắm thủ công)
+            case BONG:
+                game.pokemon.BatPokemon.doiThuTu();
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.CLICK);
+                break;
             case NGAM_TAY:
                 game.pokemon.NgamTay.datThuCong(!game.pokemon.NgamTay.thuCong());
                 game.pokemon.AmThanh.phat(game.pokemon.AmThanh.CLICK);

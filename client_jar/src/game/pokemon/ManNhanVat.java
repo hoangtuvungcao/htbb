@@ -1566,6 +1566,23 @@ public final class ManNhanVat extends Screen {
         }
     }
 
+    /** 0.9.8: mở trang chiêu 3 - xu (máy chủ trừ) hoặc Thẻ mở trang chiêu (cửa hàng lượng, Tiện ích). */
+    static void moMenuTrang3() {
+        java.util.Vector v = new java.util.Vector();
+        String gia = TrangChieu.giaXu > 0 ? TienTe.gon(TrangChieu.giaXu) + " xu" : "xu";
+        v.addElement(new game.model.Command("Mở bằng " + gia, new IAction() {
+            public void perform() {
+                TrangChieu.muaXu();
+            }
+        }));
+        v.addElement(new game.model.Command("Thẻ mở trang chiêu (cửa hàng lượng)", new IAction() {
+            public void perform() {
+                DungDo.bao("Thẻ mở trang chiêu 3: Cửa hàng lượng > Tiện ích. Mở xong đổi trang bằng nút 1/3 cạnh chiêu.", DungDo.TIN);
+            }
+        }));
+        game.render.Canvas.menu.startAt(v, 3);
+    }
+
     private void veKyNang(Graphics g, int x, int y, int w, int h) {
         final MainChar m = mc();
         int k = Bang.cach();
@@ -1612,6 +1629,32 @@ public final class ManNhanVat extends Screen {
             ChuDe.chu(g, String.valueOf(i + 1), xi + sO - 3, y + 6 + sO - ChuDe.cao(ChuDe.NHAN_NHO) - 1, ChuDe.NHAN_NHO,
                     coChieu ? 0xFFFFFF : ChuDe.CHU_PHU, 1);
             xHet = xi + sO;
+        }
+        // 0.9.8: chọn trang ô nhanh để gán (mỗi trang gán riêng) + mở trang 3
+        {
+            String tr = "Trang " + TrangChieu.nhan();
+            int wt = ChuDe.rong(tr, ChuDe.NHAN) + 20;
+            if (xHet + k + wt < x + w - 8) {
+                Bang.nut(g, xHet + k, y + 6, wt, sO, tr, Bang.TRUNG, new IAction() {
+                    public void perform() {
+                        TrangChieu.tiep();
+                        game.render.screen.RMS.saveQuickSlot();
+                    }
+                }, "o-nhanh-trang");
+                xHet += k + wt;
+            }
+            if (TrangChieu.so < TrangChieu.TOI_DA) {
+                String mo = "+ Trang 3";
+                int wm = ChuDe.rong(mo, ChuDe.NHAN) + 20;
+                if (xHet + k + wm < x + w - 8) {
+                    Bang.nut(g, xHet + k, y + 6, wm, sO, mo, Bang.PHU, new IAction() {
+                        public void perform() {
+                            ManNhanVat.moMenuTrang3();
+                        }
+                    }, "o-nhanh-mo-trang");
+                    xHet += k + wm;
+                }
+            }
         }
         String diem = m.skillPointLeft > 0 ? m.skillPointLeft + " điểm kỹ năng" : "Hết điểm kỹ năng";
         int wd = ChuDe.rong(diem, ChuDe.NHAN) + 18, hd0 = ChuDe.cao(ChuDe.NHAN) + 8;

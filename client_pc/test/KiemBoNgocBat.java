@@ -434,18 +434,24 @@ public class KiemBoNgocBat {
     static void kiemNem(String man, String t, int nut0, int min, int cach, int W, int H) {
         boolean ve = game.pokemon.BatPokemon.demVeNut > nut0;
         if (man.equals("nem_khoe")) {
-            kiem(!ve && !coVung("nem-bong"), t + " Pokemon con khoe: KHONG co nut nem");
+            kiem(!ve && !coVung("nem-bong") && !coVung("hud-nem-bong"), t + " Pokemon con khoe: KHONG co nut nem");
             return;
         }
         if (man.equals("nem_thuong")) {
-            kiem(!ve && !coVung("nem-bong"), t + " quai thuong (khong hoang da) yeu: KHONG co nut nem");
+            kiem(!ve && !coVung("nem-bong") && !coVung("hud-nem-bong"), t + " quai thuong (khong hoang da) yeu: KHONG co nut nem");
             kiem(game.pokemon.NhanQuai.bacBat(quai) == 0, t + " quai thuong: khong dau Poke Ball / vong bac");
             hoangDa = true;
             return;
         }
         kiem(game.pokemon.NhanQuai.bacBat(quai) == 2, t + " Pokemon hoang da: bac 2 (dau Poke Ball + vong mau bac)");
+        if (game.render.screen.HudRong.bat()) {
+            // 0.9.8: nút Poké Ball tròn cạnh cụm chiêu (chỗ nút ngữ cảnh), không còn thanh dưới khung mục tiêu / "Đổi"
+            kiem(coVung("hud-nem-bong") && !coVung("nem-bong") && !coVung("doi-bong"), t + " Pokemon yeu: nut Poke Ball o cum chieu");
+            // thứ tự mặc định Ultra > Great > Poké, có 12 Poké / 3 Great / 0 Ultra -> dùng Great (3)
+            kiem(daVe("Great 3"), t + " nut ghi loai bong se dung theo thu tu (Great 3)");
+            return;
+        }
         kiem(ve && coVung("nem-bong"), t + " Pokemon yeu: co nut Nem bong");
-        kiem(coVung("doi-bong"), t + " co nut doi loai bong");
         int[] v = vung("nem-bong");
         if (v == null) {
             return;

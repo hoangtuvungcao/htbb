@@ -58,15 +58,17 @@ public class MainChar extends Char {
         if (quickSlot != null) {
             return;
         }
-        quickSlot = new QuickSlot[2][5];
-        for (int i = 0; i < 5; i++) {
-            quickSlot[0][i] = new QuickSlot();
-            quickSlot[1][i] = new QuickSlot();
+        quickSlot = new QuickSlot[game.pokemon.TrangChieu.TOI_DA][5];   // 0.9.8: tối đa 3 trang (mở trang 3 bằng thẻ / xu)
+        for (int t = 0; t < quickSlot.length; t++) {
+            for (int i = 0; i < 5; i++) {
+                quickSlot[t][i] = new QuickSlot();
+            }
         }
         // 0.9.5: bộ 1 = chiêu cơ bản + chiêu đã học (ThanhNhanh tự điền), thuốc có nút HP / PP riêng trên HUD
         quickSlot[0][2].setIsSkill(0, this.clazz, false);
         RMS.loadQuickSlot();
         game.pokemon.ThanhNhanh.dien(quickSlot[0]);
+        game.pokemon.TrangChieu.apDung();   // trang chiêu máy chủ giữ (gói -103 có thể tới trước bộ ô)
     }
 
     public String getPercent() {

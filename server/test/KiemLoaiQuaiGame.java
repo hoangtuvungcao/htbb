@@ -137,6 +137,21 @@ public final class KiemLoaiQuaiGame {
             Kiem.dung("chu thuong: bong:pokex5 -> '5 Poké Ball'", com.htbb.pokemon.ChuThuongNhiemVu.dong(0, 0, 0, 0, "32000", 0, "32000", "32000",
                     "bong:pokex5", null, null).contains("5 Poké Ball"));
 
+            // 0.9.8 trang chieu: ho so luu 3 trang + so trang mo them
+            final com.htbb.pokemon.HoSoLauDai hs = new com.htbb.pokemon.HoSoLauDai();
+            hs.oNhanh1 = 0x123456789AL;
+            hs.oNhanh3 = -5L;
+            hs.trangChieu = 2;
+            hs.trangChieuThem = 1;
+            final com.htbb.pokemon.HoSoLauDai hs2 = com.htbb.pokemon.HoSoLauDai.giaiMa(hs.maHoa());
+            Kiem.bang("ho so: trang chieu luu / doc", "78187493530/0/-5/2/1", hs2.oNhanh1 + "/" + hs2.oNhanh2 + "/" + hs2.oNhanh3 + "/"
+                    + hs2.trangChieu + "/" + hs2.trangChieuThem);
+            final String ng = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/NgoaiHinhGame.java")),
+                    java.nio.charset.StandardCharsets.UTF_8);
+            Kiem.dung("trang chieu: -103 loai 1 (dong bo) / 2 (mua xu), trang 3 mot lan, chi client 908",
+                    ng.contains("if (loai == 1) {") && ng.contains("if (loai == 2) {") && ng.contains("if (h.trangChieuThem > 0) {")
+                            && ng.contains("if (p == null || !BoNgocGame.coClient(p)) {"));
+
             // ep mot loai rieng de kiem goi
             m.dexRieng = 16;
             m.bacRieng = 1;

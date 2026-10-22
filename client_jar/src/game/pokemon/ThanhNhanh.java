@@ -137,6 +137,11 @@ public final class ThanhNhanh {
 
     /** Có cần bộ ô thứ 2 (học hơn 4 chiêu, hoặc bộ 2 đã có gì): nút đổi bộ chỉ hiện khi đó. */
     public static boolean coBo2() {
+        // 0.9.8: luôn có ≥ 2 trang (gán riêng từng trang ở Hồ sơ > Kỹ năng) - viên đổi trang luôn hiện (trước: chỉ khi
+        // học > 4 chiêu -> mất viên 1/2 ở đầu / giữa game vì learnset theo loài)
+        if (MainChar.quickSlot != null && TrangChieu.so >= 2) {
+            return true;
+        }
         if (soDaHoc() > 4) {
             return true;
         }

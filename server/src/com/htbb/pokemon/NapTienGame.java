@@ -849,6 +849,9 @@ public final class NapTienGame implements Runnable {
                 >= TU_DO_O + (coThe(p) ? 10 * NapTienLogic.THE_THANG_TRANG_TU_DO_THEM : 0)) {
             return "Tủ đồ trang trí đã đầy.";
         }
+        if (NapTienLogic.TRAO_TRANG_CHIEU.equals(m.trao) && real.NgoaiHinhGame.soTrangChieu(p) >= 3) {
+            return "Đã mở đủ 3 trang chiêu.";
+        }
         if (!p.truLuongNeuDu(gia)) {
             return "Không đủ lượng (cần " + gia + " lượng).";
         }
@@ -857,7 +860,11 @@ public final class NapTienGame implements Runnable {
             return "Thao tác quá nhanh, vui lòng thử lại.";
         }
         try {
-            if (veMoRong) {
+            if (NapTienLogic.TRAO_TRANG_CHIEU.equals(m.trao)) {
+                if (!real.NgoaiHinhGame.moTrangChieu(p)) {
+                    throw new IllegalStateException("da du trang chieu");
+                }
+            } else if (veMoRong) {
                 real.MoRongTuiGame.traoVe(p, 1);
             } else if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao)) {
                 if (p.maxBag >= Char.MAX_BAG_LIMIT) {

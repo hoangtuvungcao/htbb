@@ -387,7 +387,11 @@ public final class NapTienLogic {
      */
     public static final String TRAO_DAT_TEN_PET = "dat_ten_pet";
     public static final String MA_THE_DAT_TEN = "the_dat_ten_pet";
-    public static final String[] TRAO_HOP_LE = {TRAO_TRANG_TRI, TRAO_MO_RONG_TUI, TRAO_DOI_TEN, TRAO_TANG_TOC, TRAO_DAT_TEN_PET};
+    /** 0.9.8: mo trang chieu thu 3 (o nhanh) - tien ich, khong chi so; mot lan / nhan vat (gioi_han 1). */
+    public static final String TRAO_TRANG_CHIEU = "trang_chieu";
+    public static final String MA_THE_TRANG_CHIEU = "the_trang_chieu";
+    public static final String[] TRAO_HOP_LE = {TRAO_TRANG_TRI, TRAO_MO_RONG_TUI, TRAO_DOI_TEN, TRAO_TANG_TOC, TRAO_DAT_TEN_PET,
+        TRAO_TRANG_CHIEU};
 
     /**
      * Nhom hien thi = 4 o TU DO TRANG TRI (TrangPhucLogic.O, mot he trang tri - dong bo 0.9.8) + tien ich + tang toc. Mon
@@ -490,6 +494,8 @@ public final class NapTienLogic {
         new Mon(MA_VE_MO_RONG, "Vé mở rộng hành trang (+10 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_VE_MO_RONG, 0, 9, 0, false),
         // The dat ten Pokemon: gia / gioi han tuan that = cau hinh dat_ten_pet.* (DatTenPet), gioi_han dong = 0.
         new Mon(MA_THE_DAT_TEN, "Thẻ đặt tên Pokémon", "tien_ich", TRAO_DAT_TEN_PET, DatTenPet.GIA_LUONG_MAC_DINH, 0, 0, 0, false),
+        // 0.9.8: Thẻ mở trang chiêu 3 (dùng ngay khi mua, mỗi Pokémon một lần) - tiện ích, không chỉ số
+        new Mon(MA_THE_TRANG_CHIEU, "Thẻ mở trang chiêu 3", "tien_ich", TRAO_TRANG_CHIEU, 150, 0, 1, 0, false),
         // Tu do trang tri 0.9.8 (khoi them_do_trang_phuc.sql, sinh boi tools/do_trang_phuc/sinh.py): chi HINH, chi so theo O
         new Mon("tp_hai_tac", "Trang phục Hải tặc", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
         new Mon("tp_ninja", "Trang phục Ninja", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),

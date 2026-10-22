@@ -714,6 +714,7 @@ public final class LopPhu {
             ds.add(new String[]{ten(BanPhim.MUC_TIEU), "Đổi mục tiêu", null});
             ds.add(new String[]{"Shift+" + ten(BanPhim.MUC_TIEU), "Mục tiêu trước", null});
             ds.add(new String[]{ten(BanPhim.DOI_BO), "Đổi bộ chiêu", null});
+            ds.add(new String[]{ten(BanPhim.NEM_BONG), "Ném Poké Ball (Pokémon hoang dã đã yếu)", null});
         } else {
             ds.add(new String[]{null, "Giao diện"});
             ds.add(new String[]{chat + "|/", "Mở chat", "Enter gửi tin khi đang gõ"});

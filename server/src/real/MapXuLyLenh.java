@@ -1965,7 +1965,8 @@ class MapXuLyLenh {
                 player.isDoChangeMap = false;
                 NhiemVuEngine.suKien(player, "den_ban_do", String.valueOf(player.mapID), 1); // danh hieu kham pha
                 DanhHieuGame.khiVaoBanDo(player); // lan dau trong phien: nhan danh hieu, so moi, thuong mua PvP
-                KenhChatGame.khiVaoBanDo(player); // lan dau trong phien: kenh chat, ban be online, hop thu tin rieng
+                KenhChatGame.khiVaoBanDo(player); // lan dau trong phien: kenh chat, ban be online
+                NgoaiHinhGame.guiONhanh(player);  // 0.9.8: trang chieu (o nhanh) cua nhan vat - may chu giu
                 map.doJoinMapOk(player);
             } else if (player.mapID == Map.idMapChanNui) {
                 map.doReturnVillage(player);
