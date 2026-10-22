@@ -1358,7 +1358,8 @@ public final class ManTranDauTruong extends ManBang {
             return "vung danh nhau qua hep " + zTop + ".." + zBot;
         }
         if (bucThuBiChe()) {
-            return "buc do doi thu bi bang HP che " + java.util.Arrays.toString(oBucThu());
+            int[] o = oBucThu();
+            return "buc do doi thu bi bang HP che " + o[0] + "," + o[1] + " " + o[2] + "x" + o[3];
         }
         for (int b = 0; b < 2; b++) {
             int sb = coSprite(b);
