@@ -161,6 +161,18 @@ public final class KiemLoaiDayDu {
     }
 
     static Map<String, List<Map<String, Object>>> bang;
+
+    /** Dex trong Vung hoang da xoay vong (bang data_loai_xoay_vong cua khoi). */
+    static Set<Integer> dexXoay() {
+        final Set<Integer> s = new HashSet<Integer>();
+        final List<Map<String, Object>> x = bang.get("data_loai_xoay_vong");
+        if (x != null) {
+            for (final Map<String, Object> d0 : x) {
+                s.add(so(d0, "dex"));
+            }
+        }
+        return s;
+    }
     static LoaiDuLieu d;
 
     public static void chay() {
@@ -199,11 +211,13 @@ public final class KiemLoaiDayDu {
         for (final String l : s.split("\n")) {
             if (l.startsWith("DELETE FROM")) {
                 xoa++;
-                Kiem.dung("sql: DELETE chi o data_loai_vung (" + l.substring(0, Math.min(40, l.length())) + ")",
-                        l.startsWith("DELETE FROM `data_loai_vung`"));
+                // loai-bo-sung: them 3 bang Vung hoang da xoay vong (bang thiet ke, xoa dong cu khi doi lich / loai)
+                Kiem.dung("sql: DELETE chi o data_loai_vung / data_loai_xoay_vong* (" + l.substring(0, Math.min(40, l.length())) + ")",
+                        l.startsWith("DELETE FROM `data_loai_vung`") || l.startsWith("DELETE FROM `data_loai_xoay_vong`")
+                                || l.startsWith("DELETE FROM `data_loai_xoay_vong_lich`") || l.startsWith("DELETE FROM `data_loai_xoay_vong_map`"));
             }
         }
-        Kiem.bang("sql: dung 1 DELETE", 1, xoa);
+        Kiem.bang("sql: dung 4 DELETE (noi song + 3 bang xoay vong)", 4, xoa);
         Kiem.dung("sql: ghi nguon PokeAPI ghim commit", s.contains("PokeAPI 2bf639e5572812a67d2b94903fdcb9d095f5aeb2"));
         Kiem.dung("giay phep: docs/giay-phep.md chep BSD-3 PokeAPI + MIT Showdown", docTep("../docs/giay-phep.md")
                 .contains("Redistributions of source code must retain") && docTep("../docs/giay-phep.md").contains("The MIT License"));
@@ -275,17 +289,25 @@ public final class KiemLoaiDayDu {
         Kiem.bang("bac: Mewtwo T6", 6, d.bac(150));
         Kiem.bang("bac: Snorlax T4 (loai don, khong tinh baby)", 4, d.bac(143));
         Kiem.bang("bac: Rattata T1", 1, d.bac(19));
-        int mo = 0, moSai = 0;
+        // loai-bo-sung: dot A (Gen 1-2) + dot B (Gen 3) mo du; Gen 4-9 CHI loai trong Vung hoang da xoay vong
+        final Set<Integer> xoay = dexXoay();
+        int mo = 0, moSai = 0, mo12 = 0, mo3 = 0;
         for (final LoaiDuLieu.Loai l : d.tatCa()) {
             if (l.daMo) {
                 mo++;
-                if (l.theHe > 2) {
+                if (l.theHe <= 2) {
+                    mo12++;
+                } else if (l.theHe == 3) {
+                    mo3++;
+                } else if (!xoay.contains(l.dex)) {
                     moSai++;
                 }
             }
         }
-        Kiem.bang("dot A: 251 loai da mo (Gen 1-2)", 251, mo);
-        Kiem.bang("dot A: khong mo loai Gen 3+", 0, moSai);
+        Kiem.bang("dot A: 251 loai Gen 1-2 da mo", 251, mo12);
+        Kiem.bang("dot B: 135 loai Gen 3 da mo", 135, mo3);
+        Kiem.bang("Gen 4-9: chi loai Vung hoang da da mo", 0, moSai);
+        Kiem.bang("tong da mo = 251 + 135 + vong xoay", 251 + 135 + xoay.size(), mo);
     }
 
     // ------------------------------------------------------------------ tien hoa
@@ -295,7 +317,8 @@ public final class KiemLoaiDayDu {
         final java.util.List<Integer> eevee = real.BatPokemonGame.dichTienHoa(134, d.tienHoaMo(133));
         Kiem.dung("Hop PC: Eevee nhieu nhanh mo (Vaporeon dau, co Espeon / Umbreon)", eevee.size() >= 5 && eevee.get(0) == 134
                 && eevee.contains(196) && eevee.contains(197));
-        Kiem.dung("Hop PC: nhanh loai chua mo (Leafeon Gen 4) khong hien", !eevee.contains(470));
+        Kiem.dung("Hop PC: nhanh Leafeon (Gen 4, Vung hoang da) hien khi da mo", eevee.contains(470) == d.daMo(470));
+        Kiem.sai("Hop PC: Mr. Mime -> Mr. Rime chua duoc (Mr. Rime chua co sprite, chua mo)", d.tienHoaDuoc(122, 866));
         Kiem.bang("Hop PC: Gloom 2 nhanh (Vileplume / Bellossom)", 2, real.BatPokemonGame.dichTienHoa(45, d.tienHoaMo(44)).size());
         Kiem.bang("Hop PC: Bulbasaur 1 nhanh", 1, real.BatPokemonGame.dichTienHoa(2, d.tienHoaMo(1)).size());
         try {
@@ -362,9 +385,16 @@ public final class KiemLoaiDayDu {
         Kiem.bang("Espeon ban ngay", 1, timTienHoa(133, 196).ngayDem);
         Kiem.bang("Umbreon ban dem", 2, timTienHoa(133, 197).ngayDem);
         Kiem.dung("Hop PC: Pikachu -> Raichu duoc (ca hai da mo)", d.tienHoaDuoc(25, 26));
-        Kiem.sai("Hop PC: Magneton -> Magnezone chua duoc (Gen 4 chua mo)", d.tienHoaDuoc(82, 462));
+        Kiem.bang("Hop PC: Magneton -> Magnezone duoc dung khi Magnezone da mo", Boolean.valueOf(d.daMo(462)),
+                Boolean.valueOf(d.tienHoaDuoc(82, 462)));
         Kiem.sai("Hop PC: buoc khong co trong chuoi (Pikachu -> Charizard)", d.tienHoaDuoc(25, 6));
-        Kiem.bang("Hop PC: Eevee da mo 5 nhanh Gen 1-2", 5, d.tienHoaMo(133).size());
+        int nhanMo = 0;
+        for (final LoaiDuLieu.TienHoa t : d.tienHoaTu(133)) {
+            if (d.daMo(t.sang)) {
+                nhanMo++;
+            }
+        }
+        Kiem.bang("Hop PC: Eevee - moi nhanh da mo (Gen 1-2 + Vung hoang da) hien", nhanMo, d.tienHoaMo(133).size());
     }
 
     static LoaiDuLieu.TienHoa timTienHoa(final int tu, final int sang) {
@@ -496,6 +526,7 @@ public final class KiemLoaiDayDu {
         Kiem.bang("vung: khong co baby (chi no tu trung)", 0, baby);
         Kiem.bang("vung: gia tri hop le (khu vuc, vung, cap, trong so, gio, thoi tiet)", 0, sai);
         int thieu = 0;
+        coVung.addAll(dexXoay());   // loai Vung hoang da: noi song la ban do xoay vong (data_loai_xoay_vong)
         for (final LoaiDuLieu.Loai l : d.tatCa()) {
             if (l.daMo && l.bac <= 4 && l.giaiDoan > 0 && !coVung.contains(l.dex)) {
                 thieu++;
@@ -583,7 +614,7 @@ public final class KiemLoaiDayDu {
                 t6++;
             }
         }
-        Kiem.bang("data_bat_loai (bat-trade): 251 loai da mo", 251, bang.get("data_bat_loai").size());
+        Kiem.bang("data_bat_loai (bat-trade): moi loai da mo", d.soLoaiDaMo(), bang.get("data_bat_loai").size());
         Kiem.bang("data_bat_loai: chi loai da mo", 0, chuaMo);
         Kiem.bang("data_bat_loai: tien_hoa_thanh ton tai", 0, dichSai);
         Kiem.bang("data_bat_loai: T6 khong bat duoc", 0, t6);
@@ -725,7 +756,7 @@ public final class KiemLoaiDayDu {
             }
         }
         Kiem.bang("-126 bang: het goi", 0, in.available());
-        Kiem.bang("-126 bang: 251 loai co bit da mo", 251, moClient);
+        Kiem.bang("-126 bang: moi loai da mo co bit da mo", d.soLoaiDaMo(), moClient);
         Kiem.bang("-126 bang: ten Pikachu", "Pikachu", ten25);
         Kiem.dung("-126 bang: < 32 KB (gui mot lan, client cache theo bam)", bo.size() < 32 * 1024);
         Kiem.bang("bam on dinh", dung(bang).bam(), d.bam());
@@ -790,6 +821,8 @@ public final class KiemLoaiDayDu {
         System.out.println("        " + s.replace("\n", "\n        "));
         Kiem.dung("Pokedex: tong 1.025 loai", s.contains("1.025 loài"));
         Kiem.dung("Pokedex: Kanto gap 1/151", s.contains("Kanto (#1–151): gặp 1/151"));
-        Kiem.dung("Pokedex: the he chua mo hien 'Chưa xuất hiện'", s.contains("Chưa xuất hiện") && s.contains("Hoenn … Paldea"));
+        // loai-bo-sung: Hoenn mo du; Gen 4-9 mo mot phan (Vung hoang da) -> dong the he co "· mở N"
+        Kiem.dung("Pokedex: Hoenn mo du, the he mo mot phan hien so loai mo", s.contains("Hoenn (#252–386): gặp 0/135")
+                && s.contains("Sinnoh (#387–493)") && s.contains(" · mở "));
     }
 }

@@ -51,20 +51,27 @@ java -Djava.awt.headless=true -cp $B DongGoiLoai --kiem     # kiểm mọi gói 
 - **Mô tả Pokédex**: `mo_ta_loai.json` là nguồn duy nhất của `data_loai.mo_ta` (1.025 mô tả 1–2 câu, tự viết từ sự
   kiện hệ / nơi sống / đặc điểm / tiến hoá, không chép hay dịch Pokédex chính thức, Bulbapedia, Serebii; không có từ
   cấm của `ChuPokemon.TU_CAM`). Khối SQL chỉ ghi ô đang rỗng (giữ mô tả người vận hành đã sửa trên web).
-- **64 loài chưa có sprite PMDCollab dùng được** (4702f10d = commit mới nhất ngày 22/10/2026, không có loài nào được
-  thêm). #879 Copperajah có sprite nháp (Walk / Idle) đã đóng trong jar từ trước nên vẽ được; còn **63 loài** chỉ có chân
-  dung Pokédex tĩnh, trong game vẽ bóng: #514 Simisear, #516 Simipour, #520 Tranquill, #522 Blitzle, #523 Zebstrika,
-  #538 Throh, #558 Crustle, #564 Tirtouga, #565 Carracosta, #591 Amoonguss, #592 Frillish, #593 Jellicent, #616 Shelmet,
-  #618 Stunfisk, #626 Bouffalant, #668 Pyroar, #683 Aromatisse, #732 Trumbeak, #733 Toucannon, #735 Gumshoos,
-  #756 Shiinotic, #765 Oranguru, #837 Rolycoly, #838 Carkol, #839 Coalossal, #865 Sirfetch’d, #866 Mr. Rime,
-  #868 Milcery, #870 Falinks, #874 Stonjourner, #878 Cufant, #883 Arctovish, #893 Zarude, #917 Tarountula, #929 Dolliv,
-  #931 Squawkabilly, #942 Maschiff, #943 Mabosstiff, #944 Shroodle, #945 Grafaiai, #947 Brambleghast, #948 Toedscool,
-  #949 Toedscruel, #950 Klawf, #954 Rabsca, #956 Espathra, #962 Bombirdier, #968 Orthworm, #973 Flamigo,
-  #986 Brute Bonnet, #990 Iron Treads, #993 Iron Jugulis, #999 Gimmighoul, #1001 Wo-Chien, #1002 Chien-Pao,
-  #1003 Ting-Lu, #1008 Miraidon, #1014 Okidogi, #1020 Gouging Fire, #1021 Raging Bolt, #1022 Iron Boulder,
-  #1023 Iron Crown, #1025 Pecharunt. `ChonLoaiHoangDa` không bao giờ chọn loài `trang_thai = 0` (kể cả khi đợt của nó
-  mở), bộ sinh dừng nếu loài đợt đang mở thiếu hình; `trang_thai` chỉ = 1 khi PMDCollab `sprite_complete ≥ 1` + `Walk`
-  (sửa: trước đây bản nháp `sprite_complete = 0` có khoá Walk bị tính là dùng được - 10 loài, đều chưa mở).
+- **64 loài chưa có sprite PMDCollab hoàn chỉnh** (4702f10d = commit mới nhất ngày 22/10/2026; 0 PR đang mở; 66 fork:
+  chỉ 2 fork của nhóm Pokémon Auto Chess có thêm tệp - #520 là hình **Unfezant chép tạm** ("unfezant temporary
+  sprites", không credits) và #874 chỉ thêm động tác cho nhánh shiny, không credits → không dùng).
+  `tai_sprite_nhap.py` lấy hình THẬT còn lại của chính PMDCollab (`du_lieu/loai/sprite_nhap.csv`):
+  - **dạng khác hoàn chỉnh** (4): #870 Falinks "Brass", #999 Gimmighoul "Roaming", #1003 Ting-Lu "Temp", #1008 Miraidon
+    "Low_Power";
+  - **bản nháp** (`sprite_complete = 0` nhưng repo có tệp, 18): #593, #618, #683, #733, #865, #868, #874, #879, #883,
+    #917, #929, #945, #948, #968, #990, #1020, #1021, #1025. Động tác thiếu dùng lại khung của chính người vẽ bằng
+    `<CopyOf>` (vd Walk = Idle) - không vẽ thêm; 9 loài chỉ có Idle (đi lại bằng khung đứng).
+  Còn **42 loài** không có hình trong game (chỉ chân dung tĩnh, không bao giờ ra ngoài trời): #514 Simisear, #516 Simipour,
+  #520 Tranquill, #522 Blitzle, #523 Zebstrika, #538 Throh, #558 Crustle, #564 Tirtouga, #565 Carracosta, #591 Amoonguss,
+  #592 Frillish, #616 Shelmet, #626 Bouffalant, #668 Pyroar, #732 Trumbeak, #735 Gumshoos, #756 Shiinotic, #765 Oranguru,
+  #837 Rolycoly, #838 Carkol, #839 Coalossal, #866 Mr. Rime, #878 Cufant, #893 Zarude, #931 Squawkabilly, #942 Maschiff,
+  #943 Mabosstiff, #944 Shroodle, #947 Brambleghast, #949 Toedscruel, #950 Klawf, #954 Rabsca, #956 Espathra,
+  #962 Bombirdier, #973 Flamigo, #986 Brute Bonnet, #993 Iron Jugulis, #1001 Wo-Chien, #1002 Chien-Pao, #1014 Okidogi,
+  #1022 Iron Boulder, #1023 Iron Crown (chỉ có ảnh nháp trên Discord, không có tệp trong repo).
+  `ChonLoaiHoangDa` không bao giờ chọn loài `trang_thai = 0`; `trang_thai = 1` khi có gói / jar.
+- **Mở loài (loai-bo-sung):** đợt B Gen 3 (Hoenn, cấp 83–100) + Vùng hoang dã xoay vòng Gen 4–9 (`loai_duyet.json`
+  `xoay_vong`, `docs/thiet-ke-game.md` 2.6b). Tải + đóng gói: `tai_sprite_loai.py 252 1025` (+ `--shiny`),
+  `tai_sprite_nhap.py` (+ `--shiny`), `DongGoiLoai 252 1025` (+ `--shiny`). Đã mở theo thế hệ: 151 / 100 / 135 / 84 / 129 /
+  64 / 56 / 77 / 76 = 872 loài; gói 983 thường + 939 sắc màu (≈ 21,7 MB máy chủ).
 - Nguồn khác: không có kho sprite Pokémon nào khác có giấy phép tương thích CC BY-NC (sprite chính thức / bản rip game
   và kho fan không ghi giấy phép đều không dùng được), nên không lấp bằng nguồn khác.
 

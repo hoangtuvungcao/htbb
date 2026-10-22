@@ -62,6 +62,10 @@ public final class NeoTrangPhuc {
     public static final int[][] AN_MU = {
         {1, PokeDuLieu.DANH_XA, 2}, {1, PokeDuLieu.DANH_XA, 3},
         {2, PokeDuLieu.DANH_XA, 2}, {2, PokeDuLieu.GUC_NGA, 2},
+        // loai-bo-sung (mo Gen 3 + Vung hoang da): Archeops / Fletchinder nhin len (canh che dau o mot khung),
+        // Crabominable trung don (dau thut vao giua hai cang)
+        {567, PokeDuLieu.DUNG, 1}, {567, PokeDuLieu.CHAY, 1}, {567, PokeDuLieu.DANH_GAN, 1}, {567, PokeDuLieu.DANH_XA, 1},
+        {662, PokeDuLieu.CHAY, 1}, {740, PokeDuLieu.TRUNG_DON, 0}, {740, PokeDuLieu.TRUNG_DON, 1},
     };
 
     public static boolean anMu(int dex, int dongTac, int dir) {

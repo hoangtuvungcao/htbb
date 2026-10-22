@@ -171,6 +171,106 @@ public final class LoaiDuLieu {
         this.bam = tinhBam();
     }
 
+    // ------------------------------------------------------------------ vung hoang da xoay vong (loai-bo-sung)
+
+    /** Mot tuan cua lich xoay vong (data_loai_xoay_vong_lich). */
+    public static final class TuanXoay {
+        public final int chuKy, theHe;
+        public final String ten, moTa;
+
+        public TuanXoay(final int chuKy, final String ten, final String moTa, final int theHe) {
+            this.chuKy = chuKy;
+            this.ten = ten == null ? "" : ten;
+            this.moTa = moTa == null ? "" : moTa;
+            this.theHe = theHe;
+        }
+    }
+
+    private volatile List<TuanXoay> lichXoay = Collections.emptyList();
+    private volatile long ngayGocXoay;
+    private volatile java.util.Set<Integer> banDoXoay = Collections.emptySet();
+    /** "chuKy|vung" -> dong (Vung.khuVuc = "#chuKy"). */
+    private volatile Map<String, List<Vung>> theoXoay = Collections.emptyMap();
+
+    /**
+     * Gan du lieu xoay vong (bo nap goi TRUOC dat(); sau do chi doc). ngayGoc = so ngay epoch cua thu Hai tuan 0;
+     * dong[] = {chuKy, dex, vung, capMin, capMax, trongSo, bacGap}.
+     */
+    public void datXoayVong(final List<TuanXoay> lich, final long ngayGoc, final java.util.Collection<Integer> banDo,
+            final List<int[]> dong) {
+        final List<TuanXoay> l = new ArrayList<TuanXoay>(lich);
+        Collections.sort(l, (a, b) -> a.chuKy - b.chuKy);
+        final Map<String, List<Vung>> m = new HashMap<String, List<Vung>>();
+        for (final int[] d : dong) {
+            final String k = d[0] + "|" + d[2];
+            List<Vung> ds = m.get(k);
+            if (ds == null) {
+                ds = new ArrayList<Vung>();
+                m.put(k, ds);
+            }
+            ds.add(new Vung(d[1], "#" + d[0], d[2], d[3], d[4], d[5], 0, -1, d[6]));
+        }
+        this.lichXoay = Collections.unmodifiableList(l);
+        this.ngayGocXoay = ngayGoc;
+        this.banDoXoay = Collections.unmodifiableSet(new java.util.TreeSet<Integer>(banDo));
+        this.theoXoay = m;
+    }
+
+    /**
+     * Chu ky dang hien cua ngay {@code ngayEpoch} (ngay theo gio may chu): tuan k = floor((ngay - goc) / 7), chu ky =
+     * k mod n (ca truoc ngay goc - van xac dinh). -1 neu chua co lich. Lop THUAN: cung ngay -> cung chu ky moi lan.
+     */
+    public static int chuKy(final long ngayEpoch, final long ngayGoc, final int n) {
+        if (n <= 0) {
+            return -1;
+        }
+        return (int) Math.floorMod(Math.floorDiv(ngayEpoch - ngayGoc, 7L), (long) n);
+    }
+
+    public int chuKyNgay(final long ngayEpoch) {
+        return chuKy(ngayEpoch, ngayGocXoay, lichXoay.size());
+    }
+
+    /** Ngay epoch bat dau (thu Hai) cua tuan chua ngayEpoch. */
+    public long dauTuan(final long ngayEpoch) {
+        return ngayGocXoay + Math.floorDiv(ngayEpoch - ngayGocXoay, 7L) * 7L;
+    }
+
+    public List<TuanXoay> lichXoay() {
+        return lichXoay;
+    }
+
+    public long ngayGocXoay() {
+        return ngayGocXoay;
+    }
+
+    public boolean laBanDoXoay(final int mapId) {
+        return banDoXoay.contains(Integer.valueOf(mapId));
+    }
+
+    public java.util.Set<Integer> banDoXoay() {
+        return banDoXoay;
+    }
+
+    /** Ung vien xoay vong cua chu ky + vung sinh thai (rong neu khong co). */
+    public List<Vung> xoayVong(final int chuKy, final int vung) {
+        final List<Vung> v = theoXoay.get(chuKy + "|" + vung);
+        return v == null ? Collections.<Vung>emptyList() : v;
+    }
+
+    /** Moi dex cua chu ky (Pokedex web / thong bao). */
+    public java.util.Set<Integer> dexXoay(final int chuKy) {
+        final java.util.Set<Integer> s = new java.util.TreeSet<Integer>();
+        for (final Map.Entry<String, List<Vung>> e : theoXoay.entrySet()) {
+            if (e.getKey().startsWith(chuKy + "|")) {
+                for (final Vung v : e.getValue()) {
+                    s.add(Integer.valueOf(v.dex));
+                }
+            }
+        }
+        return s;
+    }
+
     public static LoaiDuLieu hien() {
         return hien;
     }

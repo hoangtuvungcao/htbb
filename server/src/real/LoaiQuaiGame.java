@@ -80,6 +80,7 @@ public final class LoaiQuaiGame {
      * (nhu bo chay - hoi sinh lai thanh quai thuong / luot chon moi).
      */
     public static void nhip(final Monster m) {
+        kiemDoiTuan(); // 0.9.8: thu Hai doi tuan Vung hoang da -> bao (tu gioi han 30 giay)
         if (m.dexRieng <= 0 || m.isDead) {
             return;
         }
@@ -231,8 +232,13 @@ public final class LoaiQuaiGame {
             final int tt = HeSinhThaiGame.thoiTietMap(mapId);
             HOANG_DA.remove(m);
             final ChonLoaiHoangDa.ThamSo ts = thamSo();
-            ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), HeSinhThaiGame.vung(mapId), m.level,
-                    gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), ts, R);
+            final int vungMap = HeSinhThaiGame.vung(mapId);
+            // VUNG HOANG DA (loai-bo-sung): ban do xoay vong them loai Gen 4-9 cua chu ky tuan nay - van chi qua luot
+            // doi loai rieng (hoang da co dau) va gioi han khu cua 0.9.8
+            final java.util.List<LoaiDuLieu.Vung> xoay = d.laBanDoXoay(mapId)
+                    ? d.xoayVong(chuKyHienTai(d), vungMap) : java.util.Collections.<LoaiDuLieu.Vung>emptyList();
+            ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), vungMap, m.level,
+                    gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), ts, R, xoay);
             if (kq.dex > 0 && demHoangDa(m) >= Math.max(0, ts.toiDaMap)) {
                 kq = ChonLoaiHoangDa.GIU; // da du Pokemon hoang da tren ban do / khu nay: hoi sinh thanh quai thuong
             }
@@ -297,6 +303,114 @@ public final class LoaiQuaiGame {
     /** Con quai {@code m} la shiny voi nguoi {@code p}: chi khi p thay dung loai rieng (client cu thay loai mau, khong shiny). */
     public static boolean shinyChoNguoi(final Char p, final Monster m) {
         return m != null && m.shinyRieng && m.dexRieng > 0 && thayLoaiRieng(p);
+    }
+
+    // ------------------------------------------------------------------ 0.9.8: bao Vung hoang da doi tuan
+
+    /** Chu ky da biet (MIN = chua kiem lan nao: lan dau KHONG phat toan may chu - tranh bao lai moi lan khoi dong). */
+    static volatile int chuKyDaBiet = Integer.MIN_VALUE;
+    static volatile long lanKiemTuan;
+    /** Nguoi choi (phien) da nhan tin tuan nay: Char -> chu ky. */
+    static final java.util.Map<Char, Integer> DA_BAO_TUAN = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<Char, Integer>());
+
+    /** Chu tin tuan: {chinh, phu}; null = khong co tuan dang chay. */
+    static String[] tinTuan(final LoaiDuLieu d, final int ck) {
+        if (d == null || ck < 0) {
+            return null;
+        }
+        LoaiDuLieu.TuanXoay tuan = null;
+        for (final LoaiDuLieu.TuanXoay t : d.lichXoay()) {
+            if (t.chuKy == ck) {
+                tuan = t;
+            }
+        }
+        if (tuan == null) {
+            return null;
+        }
+        final StringBuilder bd = new StringBuilder();
+        for (final Integer id : d.banDoXoay()) {
+            final String ten = Map.getNameMap(id.intValue());
+            if (ten != null && !ten.isEmpty()) {
+                bd.append(bd.length() > 0 ? ", " : "").append(ten);
+            }
+        }
+        return new String[]{"Vùng hoang dã: " + tuan.ten,
+            tuan.moTa + (bd.length() > 0 ? " Bản đồ: " + bd + "." : "") + " Chỉ bắt được con hoang dã (dấu Poké Ball)."};
+    }
+
+    /** Kiem thu. */
+    public static String[] tinTuanKiem(final LoaiDuLieu d, final int ck) {
+        return tinTuan(d, ck);
+    }
+
+    static void guiTinTuan(final Char p, final String[] tin) {
+        if (p == null || tin == null || p.isBot != -1 || !thayLoaiRieng(p)) {
+            return;
+        }
+        com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.SU_KIEN, tin[0], tin[1],
+                com.htbb.thongbao.ThongBao.HINH_BIEU_TUONG, com.htbb.thongbao.ThongBao.BT_SINH_THAI);
+    }
+
+    /** Vao ban do (moi lan; tu loc): lan dau trong phien cua tuan dang chay -> bieu ngu tuan nay. */
+    public static void khiVaoBanDo(final Char p) {
+        try {
+            kiemDoiTuan();
+            final LoaiDuLieu d = LoaiDuLieu.hien();
+            final int ck = chuKyHienTai(d);
+            if (ck < 0 || p == null) {
+                return;
+            }
+            final Integer cu = DA_BAO_TUAN.put(p, Integer.valueOf(ck));
+            if (cu == null || cu.intValue() != ck) {
+                guiTinTuan(p, tinTuan(d, ck));
+            }
+        } catch (final Throwable e) {
+            System.out.println("[LOAI] bao tuan: " + e);
+        }
+    }
+
+    /** Moi 30 giay (Monster.update / vao ban do): chu ky vua doi (thu Hai) -> bieu ngu cho moi nguoi dang choi. */
+    public static void kiemDoiTuan() {
+        final long now = System.currentTimeMillis();
+        if (now - lanKiemTuan < 30000L) {
+            return;
+        }
+        lanKiemTuan = now;
+        final LoaiDuLieu d = LoaiDuLieu.hien();
+        final int ck = chuKyHienTai(d);
+        final int cu = chuKyDaBiet;
+        chuKyDaBiet = ck;
+        if (cu == Integer.MIN_VALUE || cu == ck || ck < 0) {
+            return;
+        }
+        final String[] tin = tinTuan(d, ck);
+        System.out.println("[LOAI] Vung hoang da doi tuan: chu ky " + cu + " -> " + ck + (tin != null ? " (" + tin[0] + ")" : ""));
+        try {
+            for (int i = 0; i < CharManager.instance.vChars.size(); i++) {
+                final Char p = (Char) CharManager.instance.vChars.get(i);
+                if (p != null) {
+                    DA_BAO_TUAN.put(p, Integer.valueOf(ck));
+                    guiTinTuan(p, tin);
+                }
+            }
+        } catch (final Throwable e) {
+            System.out.println("[LOAI] bao doi tuan: " + e);
+        }
+    }
+
+    /** Ngay epoch theo gio may chu (DongHo) - cung mui gio voi lich tuan. */
+    public static long ngayHienTai() {
+        final Calendar c = com.htbb.pokemon.DongHo.lich();
+        return java.time.LocalDate.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)).toEpochDay();
+    }
+
+    /** Chu ky Vung hoang da tuan nay (-1 = chua co lich). */
+    public static int chuKyHienTai(final LoaiDuLieu d) {
+        if (d == null) {
+            return -1;
+        }
+        final long hom = ngayHienTai();
+        return hom < d.ngayGocXoay() ? -1 : d.chuKyNgay(hom); // 0.9.8: lich bat dau tu ngay goc (thu Hai 26/10/2026)
     }
 
     /** T3+ bao nguoi trong ban do (khong bao toan may chu de tranh don nguoi); T5 bao toan may chu (2.4). */

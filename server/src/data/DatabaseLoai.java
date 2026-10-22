@@ -84,7 +84,26 @@ public final class DatabaseLoai {
                     rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9))));
             final Map<Integer, String> km = new HashMap<Integer, String>();
             doc(c, "SELECT map_id, khu_vuc FROM data_loai_khu_vuc_map", (rs) -> km.put(rs.getInt(1), rs.getString(2)));
-            return new LoaiDuLieu(loai, th, vung, km);
+            final LoaiDuLieu kq = new LoaiDuLieu(loai, th, vung, km);
+            // VUNG HOANG DA xoay vong (loai-bo-sung) - CSDL cu chua co bang: bo qua (khong xoay vong)
+            final List<LoaiDuLieu.TuanXoay> lich = new ArrayList<LoaiDuLieu.TuanXoay>();
+            final long[] goc = {Long.MAX_VALUE};
+            doc(c, "SELECT chu_ky, ten, mo_ta, the_he, ngay_goc FROM data_loai_xoay_vong_lich ORDER BY chu_ky", (rs) -> {
+                lich.add(new LoaiDuLieu.TuanXoay(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+                final java.sql.Date ng = rs.getDate(5);
+                if (ng != null) {
+                    goc[0] = Math.min(goc[0], ng.toLocalDate().toEpochDay());
+                }
+            });
+            final List<Integer> bd = new ArrayList<Integer>();
+            doc(c, "SELECT map_id FROM data_loai_xoay_vong_map", (rs) -> bd.add(Integer.valueOf(rs.getInt(1))));
+            final List<int[]> xv = new ArrayList<int[]>();
+            doc(c, "SELECT chu_ky, dex, vung, cap_min, cap_max, trong_so, bac_gap FROM data_loai_xoay_vong", (rs) -> xv.add(
+                    new int[]{rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7)}));
+            if (!lich.isEmpty() && goc[0] != Long.MAX_VALUE) {
+                kq.datXoayVong(lich, goc[0], bd, xv);
+            }
+            return kq;
         } catch (final Exception e) {
             System.out.println("[LOAI] nap loi: " + e);
             return null;

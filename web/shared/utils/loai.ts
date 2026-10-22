@@ -131,6 +131,8 @@ export interface ChiTietLoai {
   ho: { thanhVien: ThanhVienHo[], canh: CanhTienHoa[] }
   chieu: ChieuLoai[]
   vung: VungLoai[]
+  /** Vùng hoang dã xoay vòng: các chu kỳ tuần loài xuất hiện (rỗng = không xoay vòng). */
+  xoayVong: { chuKy: number, ten: string, capMin: number, capMax: number }[]
   sprite: { trangThai: number, chanDung: boolean, trongJar: boolean, goiMayChu: boolean, ghiCong: string } | null
 }
 

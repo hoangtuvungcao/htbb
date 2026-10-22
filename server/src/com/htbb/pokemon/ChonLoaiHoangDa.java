@@ -88,8 +88,21 @@ public final class ChonLoaiHoangDa {
     /** Ung vien cua mot bac (bacMin..bacMax) cho (khu vuc, vung, cap quai). */
     public static List<LoaiDuLieu.Vung> ungVien(final LoaiDuLieu d, final String khuVuc, final int vung, final int cap,
             final boolean dem, final int thoiTiet, final int bacMin, final int bacMax) {
+        return ungVien(d, khuVuc, vung, cap, dem, thoiTiet, bacMin, bacMax, java.util.Collections.<LoaiDuLieu.Vung>emptyList());
+    }
+
+    /**
+     * Nhu tren, cong them {@code them} (dong VUNG HOANG DA xoay vong cua ban do nay, LoaiDuLieu.xoayVong) - CUNG bo loc
+     * (loai da mo, co sprite, bat duoc, khong T6, dung dai cap / gio / thoi tiet).
+     */
+    public static List<LoaiDuLieu.Vung> ungVien(final LoaiDuLieu d, final String khuVuc, final int vung, final int cap,
+            final boolean dem, final int thoiTiet, final int bacMin, final int bacMax, final List<LoaiDuLieu.Vung> them) {
         final List<LoaiDuLieu.Vung> kq = new ArrayList<LoaiDuLieu.Vung>();
-        for (final LoaiDuLieu.Vung v : d.vung(khuVuc, vung)) {
+        final List<LoaiDuLieu.Vung> nguon = new ArrayList<LoaiDuLieu.Vung>(d.vung(khuVuc, vung));
+        if (them != null) {
+            nguon.addAll(them);
+        }
+        for (final LoaiDuLieu.Vung v : nguon) {
             if (v.bacGap < bacMin || v.bacGap > bacMax || v.bacGap >= LoaiDuLieu.T6) {
                 continue;
             }
@@ -153,6 +166,16 @@ public final class ChonLoaiHoangDa {
      */
     public static KetQua chon(final LoaiDuLieu d, final String khuVuc, final int vung, final int cap, final int gio,
             final boolean dem, final int thoiTiet, final int dexMau, final ThamSo ts, final Random r) {
+        return chon(d, khuVuc, vung, cap, gio, dem, thoiTiet, dexMau, ts, r, java.util.Collections.<LoaiDuLieu.Vung>emptyList());
+    }
+
+    /**
+     * Mot luot chon voi ung vien xoay vong {@code them} (ban do Vung hoang da). Ti le TUNG BAC giu nguyen (cung u,
+     * cung p3/p4/p5, cung doiThuong%) - xoay vong chi them loai vao danh sach ung vien cua bac da tung duoc.
+     */
+    public static KetQua chon(final LoaiDuLieu d, final String khuVuc, final int vung, final int cap, final int gio,
+            final boolean dem, final int thoiTiet, final int dexMau, final ThamSo ts, final Random r,
+            final List<LoaiDuLieu.Vung> them) {
         if (d == null || d.rong() || vung < 0) {
             return GIU;
         }
@@ -174,8 +197,8 @@ public final class ChonLoaiHoangDa {
             return GIU;
         }
         final List<LoaiDuLieu.Vung> ds = bac == LoaiDuLieu.T2
-                ? ungVien(d, khuVuc, vung, cap, dem, thoiTiet, LoaiDuLieu.T1, LoaiDuLieu.T2)
-                : ungVien(d, khuVuc, vung, cap, dem, thoiTiet, bac, bac);
+                ? ungVien(d, khuVuc, vung, cap, dem, thoiTiet, LoaiDuLieu.T1, LoaiDuLieu.T2, them)
+                : ungVien(d, khuVuc, vung, cap, dem, thoiTiet, bac, bac, them);
         if (ds.isEmpty()) {
             return GIU;
         }
