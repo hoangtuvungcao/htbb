@@ -90,11 +90,13 @@ public final class HudBoTri {
         float s1 = gs[1] * kd;
         float rDanh = Math.max(31 * s1, rm + dp(6));
         float rChieu = Math.max(18.5f * s1, rm);
-        // cung chiêu: góc gần nhau nhất 36 độ -> dây cung >= 2 rChieu + k; xa nút đánh >= rDanh + rChieu + k
-        float rc = Math.max(68 * s1, Math.max((2 * rChieu + k) / (2f * (float) Math.sin(Math.toRadians(18))), rDanh + rChieu + k));
-        float[] goc = {192, 153, 116, 80};
-        float le = Math.max(44 * s1, Math.max(rDanh + 2, rChieu + rc * (float) Math.cos(Math.toRadians(80)) + 2));
-        float leD = Math.max(44 * s1, Math.max(rDanh + 2, rChieu - rc * (float) Math.sin(Math.toRadians(192)) + 2));
+        // 0.9.7 (NRO): ô chiêu VUÔNG khe ĐỀU trên cung: góc 180, 180 - a, 90 + a, 90 (tan a = 1/2) -> mọi cặp ô kề cách
+        // nhau theo trục 0,447 rc; dây cung ngắn nhất (góc 26,57 độ) >= 2 rChieu + k; xa nút đánh >= rDanh + rChieu + k
+        float aKhe = (float) Math.toDegrees(Math.atan(0.5));
+        float rc = Math.max(76 * s1, Math.max((2 * rChieu + k) / (2f * (float) Math.sin(Math.toRadians(aKhe / 2))), rDanh + rChieu + k));
+        float[] goc = {180, 180 - aKhe, 90 + aKhe, 90};
+        float le = Math.max(44 * s1, Math.max(rDanh + 2, rChieu + 2));
+        float leD = Math.max(44 * s1, Math.max(rDanh + 2, rChieu + 2));
         float cx = R - le + gx[1];
         float cy = B - leD + gy[1];
         dat(N_DANH, cx, cy, rDanh);
@@ -107,7 +109,9 @@ public final class HudBoTri {
         float rDb = Math.max(10 * s1, rm);
         dat(N_DOI_BO, NX[N_C0] - rChieu - rDb - k, Math.min(NY[N_C0] + rChieu - rDb, B - rDb), rDb);
         float rMt = Math.max(12.5f * s1, rm);
-        dat(N_MUC_TIEU, cx + 32 * s1, cy - Math.max(100 * s1, rc + rChieu + rMt + k), rMt);
+        // mục tiêu: NGOÀI cung, hướng 135 độ (giữa ô chiêu 2 và 3 - ô chiêu 4 nay ở đỉnh cung ngay trên nút đánh)
+        float rMtc = rc + rChieu + rMt + k + dp(4);
+        dat(N_MUC_TIEU, cx - rMtc * 0.7071f, cy - rMtc * 0.7071f, rMt);
         float s2 = gs[2] * kd;
         float rHp = Math.max(14 * s2, rm);
         float xHp = Math.min(cx - 112 * s1, NX[N_DOI_BO] - rDb - rHp - k) + gx[2];

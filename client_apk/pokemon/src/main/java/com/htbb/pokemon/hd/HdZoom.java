@@ -6,11 +6,11 @@ import javax.microedition.lcdui.KhungCoDinh;
 
 /**
  * CAMERA CỐ ĐỊNH (quyết định chủ game - chống lợi thế màn to, giống bản PC): giao diện logic 640x360, thế giới
- * phóng ĐÚNG 2 lần -> vùng nhìn 320x180 px thế giới (20 x 11,25 ô) trên mọi máy. Không thu phóng (bỏ tuỳ chọn
- * "Phóng" và phóng theo cỡ bản đồ của bản cũ).
+ * phóng KhungCoDinh.THE_GIOI_Z = 2 / NHIN_THEM (0.9.7: NHIN_THEM 1,15 -> vùng nhìn ~368x207 px thế giới, ~23 x 13
+ * ô) trên mọi máy. Không thu phóng (bỏ tuỳ chọn "Phóng" và phóng theo cỡ bản đồ của bản cũ).
  *
  * port-j2me.py (vá BẮT BUỘC): GameScr.loadCamera đặt gsw / gsh = gsw(Canvas.w) / gsh(Canvas.h) để camera của game
- * theo vùng nhìn 320x180; GameScr.paint gọi batDau sau g.translate(-cmx, -cmy) và ket trước HUD; toạ độ chạm
+ * theo vùng nhìn (NHIN_W x NHIN_H); GameScr.paint gọi batDau sau g.translate(-cmx, -cmy) và ket trước HUD; toạ độ chạm
  * thế giới cmx + Canvas.px -> wx(cmx, Canvas.px). Bản đồ nhỏ hơn vùng nhìn: game tự canh giữa, lề vẽ nền().
  */
 public final class HdZoom {

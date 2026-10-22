@@ -15,6 +15,10 @@ public final class GhiChu {
     public static boolean bat;
     public static final int TOI_DA = 2048;
     public static int soChu, soKhung;
+    /** 0.9.7: hộp BIỂU TƯỢNG đã vẽ (TienTe, BieuTuong): kiểm chữ không đè biểu tượng */
+    public static int soBieu;
+    public static final int[] BX = new int[TOI_DA], BY = new int[TOI_DA], BW = new int[TOI_DA], BH = new int[TOI_DA], BT = new int[TOI_DA];
+    public static final String[] BS = new String[TOI_DA];
     public static final int[] CX = new int[TOI_DA], CY = new int[TOI_DA], CW = new int[TOI_DA], CH = new int[TOI_DA], CT = new int[TOI_DA];
     public static final String[] CS = new String[TOI_DA];
     public static final int[] KX = new int[TOI_DA], KY = new int[TOI_DA], KW = new int[TOI_DA], KH = new int[TOI_DA], KT = new int[TOI_DA],
@@ -27,6 +31,7 @@ public final class GhiChu {
     public static void xoa() {
         soChu = 0;
         soKhung = 0;
+        soBieu = 0;
         thuTu = 0;
     }
 
@@ -50,6 +55,25 @@ public final class GhiChu {
         CH[i] = h;
         CS[i] = s;
         CT[i] = thuTu++;
+    }
+
+    /** Hộp biểu tượng (toạ độ đang dịch của g). */
+    public static void bieu(Graphics g, String ten, int x, int y, int w, int h) {
+        if (!bat || soBieu >= TOI_DA || w <= 0 || h <= 0) {
+            return;
+        }
+        int ax = x + g.getTranslateX(), ay = y + g.getTranslateY();
+        int kx = g.getClipX() + g.getTranslateX(), ky = g.getClipY() + g.getTranslateY();
+        if (ax + w <= kx || ay + h <= ky || ax >= kx + g.getClipWidth() || ay >= ky + g.getClipHeight()) {
+            return;
+        }
+        int i = soBieu++;
+        BX[i] = ax;
+        BY[i] = ay;
+        BW[i] = w;
+        BH[i] = h;
+        BS[i] = ten;
+        BT[i] = thuTu++;
     }
 
     public static void khung(Graphics g, int manh, int x, int y, int w, int h) {

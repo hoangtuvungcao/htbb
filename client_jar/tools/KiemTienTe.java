@@ -83,7 +83,7 @@ public final class KiemTienTe {
 
     static void kiemAnh(File goc) throws Exception {
         for (int i = 0; i < ANH.length; i++) {
-            for (int c : new int[]{16, 24, 32}) {
+            for (int c : new int[]{8, 12, 16, 24, 32}) {
                 File f = new File(goc, "client_jar/res/tien/" + ANH[i] + "_" + c + ".png");
                 dung("anh " + f.getPath(), f.isFile());
                 if (f.isFile()) {

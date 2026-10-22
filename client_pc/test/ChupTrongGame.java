@@ -174,6 +174,8 @@ public class ChupTrongGame {
 
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
+        // hiệu ứng mở tấm ở trạng thái cuối: hai khung chụp cách nhau > 300 ms (giả lập máy chủ, ghi ảnh) mở lại hiệu ứng
+        game.pokemon.Bang.dungHieuUng = true;
         File ra = new File(a.length > 0 ? a[0] : "anh_trong_game");
         ra.mkdirs();
         System.setProperty("htbb.duLieu", new File(ra, "du_lieu").getAbsolutePath());
@@ -231,7 +233,12 @@ public class ChupTrongGame {
             // 0.9.7: tin nhiệm vụ đội (trước: cửa sổ chữ ViewInfoScr)
             "hop_tin_bang",
             // 0.9.8 tủ đồ trang trí (tab Ngoại hình)
-            "nv_tu_do", "nv_tu_do_thu", "nv_tu_do_hao_quang", "nv_tu_do_an"};
+            "nv_tu_do", "nv_tu_do_thu", "nv_tu_do_hao_quang", "nv_tu_do_an",
+
+            // 0.9.7: cửa sổ cũ (WindowInfoScr / ShopNew) -> màn NRO ở máy cảm ứng
+            "xem_trang_bi", "xem_trang_bi_the", "xem_do_thu", "shop_su_kien", "shop_su_kien_the", "tui_do_lay_ra_the",
+            "cua_hang_nguyen_lieu", "cua_hang_nguyen_lieu_the", "kho_do", "kho_do_the", "luyen_do", "luyen_do_dat", "kham",
+            "hop_thanh"};
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -278,11 +285,13 @@ public class ChupTrongGame {
                     }
                 });
                 ve(W, H);
-                if ("the_phan_thuong".equals(ten)) {
-                    // chạm ô phần thưởng (vật phẩm) trong hộp phần thưởng -> thẻ vật phẩm chỉ xem
+                // chuỗi chạm thật sau khi mở (thẻ vật phẩm, đặt vào bàn luyện...): vẽ lại sau mỗi chạm
+                String[] cham = chamSau(ten);
+                for (int ci = 0; cham != null && ci < cham.length; ci++) {
+                    final String vc = cham[ci];
                     chay(new Runnable() {
                         public void run() {
-                            chamVung("phan-thuong-");
+                            chamVung(vc);
                         }
                     });
                     ve(W, H);
@@ -301,6 +310,10 @@ public class ChupTrongGame {
                 BufferedImage anh = ve(W, H);
                 game.pokemon.GhiChu.bat = false;
                 kiemChu(ten + " " + TEN_CO[c]);
+                if (ten.startsWith("the_gioi") || "suc_khoe".equals(ten) || "goi_y_chieu".equals(ten)) {
+                    kiemPhuKin(anh, ten + " " + TEN_CO[c]);
+                    if (game.render.screen.HudRong.bat()) kiemKheChieu(ten + " " + TEN_CO[c]);
+                }
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
                 // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
                 kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
@@ -998,6 +1011,32 @@ public class ChupTrongGame {
             moSinhThai(ten);
         } else if ("the_phan_thuong".equals(ten)) {
             hopMau(ten);
+        } else if ("xem_trang_bi".equals(ten) || "xem_trang_bi_the".equals(ten)) {
+            game.render.Canvas.gameScr.onViewCharInfo(nguoiKhac());
+        } else if ("xem_do_thu".equals(ten)) {
+            game.render.Canvas.gameScr.onViewAnimalInfo(nguoiKhac());
+        } else if ("shop_su_kien".equals(ten) || "shop_su_kien_the".equals(ten)) {
+            giaLapShopNew("Mua", "Shop Trung Thu", true);
+            game.pokemon.ManCuaHang.moMayChu();
+        } else if ("tui_do_lay_ra_the".equals(ten)) {
+            giaLapShopNew("Lấy ra", "Túi Đồ", false);
+            game.pokemon.ManCuaHang.moMayChu();
+        } else if ("cua_hang_nguyen_lieu".equals(ten) || "cua_hang_nguyen_lieu_the".equals(ten)) {
+            giaLapNguyenLieu();
+            game.render.Canvas.gameScr.onNPCSellGemItem(null);
+        } else if ("kho_do".equals(ten) || "kho_do_the".equals(ten)) {
+            java.util.Vector kho = new java.util.Vector();
+            for (int i = 0; i < 2 && i < game.model.Char.inventory.size(); i++) kho.addElement(game.model.Char.inventory.elementAt(i));
+            game.render.Canvas.gameScr.onNPCKeepItem(kho);
+        } else if ("luyen_do".equals(ten) || "luyen_do_dat".equals(ten)) {
+            giaLapNguyenLieu();
+            game.render.Canvas.gameScr.onImbue((short) 5000, (byte) 0);
+        } else if ("kham".equals(ten)) {
+            giaLapNguyenLieu();
+            game.render.Canvas.gameScr.onKham((short) 3000, (byte) 0);
+        } else if ("hop_thanh".equals(ten)) {
+            giaLapNguyenLieu();
+            game.render.Canvas.gameScr.onEpNgoc((short) 2000);
         } else if ("hop_tin_bang".equals(ten)) {
             game.pokemon.HopThongBao.tinNhiemVuBang("Nhiệm vụ đội: hạ 30 Geodude ở Đường hầm đá. Phần thưởng: 2000 xu, 500 điểm cống hiến.");
         } else if (ten.startsWith("hop_") && hopMau(ten)) {
@@ -1248,6 +1287,150 @@ public class ChupTrongGame {
                 }
             }
         }
+        // 0.9.7: chữ không đè BIỂU TƯỢNG (tiền tệ, icon pixel) - phần lõi dòng chữ (bỏ đệm trên / dưới) giao hộp ảnh
+        int nb = game.pokemon.GhiChu.soBieu;
+        int[] bx = game.pokemon.GhiChu.BX, by = game.pokemon.GhiChu.BY, bw = game.pokemon.GhiChu.BW, bh = game.pokemon.GhiChu.BH;
+        int[] bt = game.pokemon.GhiChu.BT;
+        for (int b = 0; b < nb; b++) {
+            // khung trên cùng chứa tâm biểu tượng (vẽ trước nó) - chữ ở khung khác (vd hàng dưới thẻ phủ) không tính
+            int pxb = bx[b] + bw[b] / 2, pyb = by[b] + bh[b] / 2, kb = -1;
+            for (int k = 0; k < nk; k++) {
+                if (kt[k] > bt[b]) continue;
+                int m = game.pokemon.GhiChu.KM[k];
+                if (m == game.pokemon.KhungNroBang.RANH || m == game.pokemon.KhungNroBang.CUON || m == game.pokemon.KhungNroBang.CUON_NUM
+                        || m >= game.pokemon.KhungNroBang.DAY_HP && m <= game.pokemon.KhungNroBang.DAY_LA) continue;
+                if (pxb < kx[k] || pyb < ky[k] || pxb >= kx[k] + kw[k] || pyb >= ky[k] + kh[k]) continue;
+                if (kb < 0 || kt[k] > kt[kb]) kb = k;
+            }
+            for (int i = 0; i < n; i++) {
+                if (khungCua[i] != kb) continue;
+                int t0 = cy[i] + ch[i] / 5, t1 = cy[i] + ch[i] * 4 / 5;
+                int ox = Math.min(cx[i] + cw[i], bx[b] + bw[b]) - Math.max(cx[i], bx[b]);
+                int oy = Math.min(t1, by[b] + bh[b]) - Math.max(t0, by[b]);
+                if (ox > 1 && oy > 1) {
+                    kiem(false, nhan + " chu de bieu tuong: \"" + game.pokemon.GhiChu.CS[i] + "\" x " + game.pokemon.GhiChu.BS[b] + " @"
+                            + bx[b] + "," + by[b] + " " + bw[b] + "x" + bh[b]);
+                }
+            }
+        }
+    }
+
+    /** 0.9.7: thế giới PHỦ KÍN màn (không lề màu nền thử magenta / đen thuần ở mép phải / dưới). */
+    static void kiemPhuKin(BufferedImage anh, String nhan) {
+        int W = anh.getWidth(), H = anh.getHeight(), n = 0, ho = 0;
+        for (int y = 1; y < H; y += 7) {
+            for (int x = 1; x < W; x += 7) {
+                int c = anh.getRGB(x, y) & 0xFFFFFF;
+                n++;
+                if (c == 0xFF00FF) ho++;
+            }
+        }
+        kiem(ho == 0, nhan + " the gioi phu kin man (" + ho + "/" + n + " diem ho)");
+        // mép phải / dưới: cột / hàng cuối không đen thuần cả dải (lề đen của cover hỏng)
+        int denP = 0, denD = 0;
+        for (int y = 0; y < H; y += 5) if ((anh.getRGB(W - 2, y) & 0xFFFFFF) == 0) denP++;
+        for (int x = 0; x < W; x += 5) if ((anh.getRGB(x, H - 2) & 0xFFFFFF) == 0) denD++;
+        kiem(denP * 5 < H / 2 && denD * 5 < W / 2, nhan + " khong lề den mep phai / duoi (" + denP + ", " + denD + ")");
+    }
+
+    /** 0.9.7: cụm chiêu HUD PC: khe giữa các ô vuông kề nhau trên cung BẰNG NHAU (sai <= 1 px). */
+    static void kiemKheChieu(String nhan) {
+        int h = 15;   // nửa cạnh ô vuông chiêu (4/5 r + viền)
+        int[] khe = new int[3];
+        for (int i = 0; i < 3; i++) {
+            int dx = Math.abs(game.render.screen.HudRong.xChieuKiem(i + 1) - game.render.screen.HudRong.xChieuKiem(i));
+            int dy = Math.abs(game.render.screen.HudRong.yChieuKiem(i + 1) - game.render.screen.HudRong.yChieuKiem(i));
+            khe[i] = Math.max(dx, dy) - 2 * h;
+        }
+        int mn = Math.min(khe[0], Math.min(khe[1], khe[2])), mx = Math.max(khe[0], Math.max(khe[1], khe[2]));
+        kiem(mx - mn <= 1 && mn >= 4, nhan + " khe o chieu deu (" + khe[0] + ", " + khe[1] + ", " + khe[2] + ")");
+    }
+
+    /** Chuỗi vùng chạm (tiền tố) sau khi mở màn ten. */
+    static String[] chamSau(String ten) {
+        if ("the_phan_thuong".equals(ten)) return new String[]{"phan-thuong-"};
+        if ("xem_trang_bi_the".equals(ten)) return new String[]{"xem-hang-0"};
+        if ("shop_su_kien_the".equals(ten) || "tui_do_lay_ra_the".equals(ten) || "cua_hang_nguyen_lieu_the".equals(ten)) {
+            return new String[]{"hang-0"};
+        }
+        if ("kho_do_the".equals(ten)) return new String[]{"kho-kho-0"};
+        if ("luyen_do_dat".equals(ten)) {
+            return new String[]{"luyen-tui-0", "tvp-mua", "luyen-nl-0", "luyen-ngoc-0", "tvp-mua", "luyen-ngoc-0", "tvp-mua"};
+        }
+        if ("hop_thanh".equals(ten)) {
+            return new String[]{"luyen-ngoc-0", "tvp-mua", "luyen-ngoc-0", "tvp-mua", "luyen-ngoc-0", "tvp-mua"};
+        }
+        return null;
+    }
+
+    /** Nguyên liệu luyện / hợp giả lập: luyện kim dược (id 8) + ngọc (id 1, nhóm ép 1). */
+    static void giaLapNguyenLieu() {
+        String[] ten = {"Ngọc bảo hộ", "Luyện kim dược"};
+        int[] id = {1, 8};
+        for (int i = 0; i < id.length; i++) {
+            if (game.render.Res.getGemByID((short) id[i]) == null) {
+                game.model.GemTemp t = new game.model.GemTemp();
+                t.id = (short) id[i];
+                t.name = ten[i];
+                t.decript = i == 0 ? "Ngọc khảm / luyện, hợp 3 viên thành viên cấp cao hơn." : "Đặt trước khi luyện đồ.";
+                t.type = 0;
+                t.typeEp = (byte) (i == 0 ? 1 : 0);
+                t.price = 300;
+                t.isSell = true;
+                game.render.Res.gemTemplate.addElement(t);
+            }
+        }
+        game.model.MainChar.gemItem.removeAllElements();
+        game.model.GemTemplate lkd = new game.model.GemTemplate(8);
+        lkd.number = 1;
+        lkd.rID = 801;
+        game.model.GemTemplate ngoc = new game.model.GemTemplate(1);
+        ngoc.number = 5;
+        ngoc.rID = 101;
+        game.model.GemTemplate da = new game.model.GemTemplate(3);
+        da.number = 7;
+        game.model.MainChar.gemItem.addElement(lkd);
+        game.model.MainChar.gemItem.addElement(ngoc);
+        game.model.MainChar.gemItem.addElement(da);
+    }
+
+    /** Người chơi khác giả lập (xem trang bị): mặc như nhân vật chính, thú mang 3 món. */
+    static game.model.Char nguoiKhac() {
+        game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+        game.model.Char c = new game.model.Char();
+        c.ID = 7;
+        c.name = "Misty";
+        c.level = 22;
+        c.pokeDex = mc.pokeDex;
+        c.pokeShiny = mc.pokeShiny;
+        c.ngoaiHinh = mc.ngoaiHinh;
+        c.wearingItems = mc.wearingItems;
+        c.wearingAnimal = new java.util.Vector();
+        for (int i = 0; i < 3 && i < game.model.Char.inventory.size(); i++) c.wearingAnimal.addElement(game.model.Char.inventory.elementAt(i));
+        return c;
+    }
+
+    /** Danh sách -76 giả lập (shop: giá lượng = thuộc tính 125). */
+    static void giaLapShopNew(String dongTu, String tenDs, boolean coGia) {
+        shopDo();
+        java.util.Vector v = new java.util.Vector();
+        for (int i = 0; i < game.render.Canvas.gameScr.shop.size(); i++) {
+            game.model.ItemInInventory g0 = (game.model.ItemInInventory) game.render.Canvas.gameScr.shop.elementAt(i);
+            game.model.ItemInInventory it = new game.model.ItemInInventory();
+            it.itemID = (short) (900 + i);
+            it.idTemplate = g0.idTemplate;
+            it.charClazz = g0.charClazz;
+            it.colorName = (byte) (i % 4);
+            it.isEnoughData = true;
+            it.allAttribute.addElement(new game.model.InfoAttributeItem((short) 0, (short) (30 + i)));
+            if (coGia) it.allAttribute.addElement(new game.model.InfoAttributeItem((short) 125, (short) (80 + 20 * i)));
+            v.addElement(it);
+        }
+        game.model.ItemTemplate.ALL_NAME_ATTRIBUTE_ITEM.put("125", new game.model.NameAttributeItem((short) 125, "Giá lượng", (byte) 0, (byte) 0));
+        game.model.ShopNew.text = dongTu;
+        game.model.ShopNew.nameshop = tenDs;
+        game.model.ShopNew.gI().typeshop = 8;
+        game.model.ShopNew.gI().ItemShopNew = v;
     }
 
     /** Chạm (qua VungCham.xuLy như Canvas) tâm vùng đầu tiên có tiền tố t. */
@@ -1302,12 +1485,48 @@ public class ChupTrongGame {
         if ("the_phan_thuong".equals(ten)) {
             kiem(game.pokemon.TheVatPham.dangMo() && coVung("dong") && !coVung("tvp-"), nhan + " cham o phan thuong = the vat pham chi xem (chi X)");
         }
+        kiemCuaSoCu(ten, nhan);
         if ("nv_chi_tiet".equals(ten)) {
             int[] r = game.pokemon.TheVatPham.VUA_VE;
             int L = game.pokemon.Bang.trai(), T = game.pokemon.Bang.tren(), R = game.pokemon.Bang.phai(), B = game.pokemon.Bang.duoi();
             kiem(game.pokemon.TheVatPham.dangMo(), nhan + " the vat pham mo");
             kiem(r[2] > 0 && r[0] >= L && r[1] >= T && r[0] + r[2] <= R && r[1] + r[3] <= B, nhan + " the vat pham trong vung an toan");
             kiem(coVung("tvp-mac") && (coVung("tvp-vut") || coVung("tvp-huy")) && coVung("dong"), nhan + " the vat pham co nut Mac / Vut|Huy / X");
+        }
+    }
+
+    /** 0.9.7: đường cũ (WindowInfoScr / ShopNew) nay là màn NRO có vùng chạm ở máy cảm ứng. */
+    static void kiemCuaSoCu(String ten, String nhan) {
+        Object man = game.render.Canvas.currentScreen;
+        boolean cu = man == game.render.screen.WindowInfoScr.gI() || man == game.model.ShopNew.gI();
+        boolean the = game.pokemon.TheVatPham.dangMo();
+        game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+        if ("xem_trang_bi".equals(ten)) {
+            kiem(!cu && game.pokemon.ManXemTrangBi.dangXem() && coVung("xem-o-") && coVung("xem-hang-0"), nhan + " xem trang bi nguoi khac = man NRO (o + danh sach)");
+        } else if ("xem_trang_bi_the".equals(ten)) {
+            kiem(the && coVung("dong") && !coVung("tvp-"), nhan + " xem trang bi: cham mon = the chi xem");
+        } else if ("xem_do_thu".equals(ten)) {
+            kiem(!cu && game.pokemon.ManXemTrangBi.dangXem() && coVung("xem-thu-0"), nhan + " xem do thu = man NRO (luoi o)");
+        } else if ("shop_su_kien".equals(ten)) {
+            kiem(!cu && man == game.pokemon.ManCuaHang.gI() && coVung("hang-0"), nhan + " danh sach -76 (shop su kien) = cua hang NRO");
+        } else if ("shop_su_kien_the".equals(ten)) {
+            kiem(the && coVung("tvp-mua") && coVung("sl-cong") && coVung("dong"), nhan + " shop su kien: the Mua co chon so + gia luong");
+        } else if ("tui_do_lay_ra_the".equals(ten)) {
+            kiem(the && coVung("tvp-mua") && !coVung("sl-cong"), nhan + " tui do: the co nut Lay ra (khong gia)");
+        } else if ("cua_hang_nguyen_lieu".equals(ten)) {
+            kiem(!cu && man == game.pokemon.ManCuaHang.gI() && coVung("hang-0"), nhan + " NPC ban nguyen lieu = cua hang NRO");
+        } else if ("cua_hang_nguyen_lieu_the".equals(ten)) {
+            kiem(the && coVung("tvp-mua") && coVung("sl-cong"), nhan + " nguyen lieu: the Mua co chon so");
+        } else if ("kho_do".equals(ten)) {
+            kiem(!cu && coVung("kho-tui-0") && coVung("kho-kho-0"), nhan + " kho do = hai cot NRO");
+        } else if ("kho_do_the".equals(ten)) {
+            kiem(the && coVung("tvp-mua"), nhan + " kho do: the co nut Lay ra");
+        } else if ("luyen_do".equals(ten) || "kham".equals(ten)) {
+            kiem(!cu && game.pokemon.ManLuyen.dangMo() && coVung("luyen-do") && coVung("luyen-nl-7") && coVung("luyen-tui-0"), nhan + " ban luyen / kham NRO (o trang bi + 8 o + danh sach)");
+        } else if ("luyen_do_dat".equals(ten)) {
+            kiem(mc.itemImbue != null && game.model.MainChar.gemitemImbue.size() == 2 && coVung("luyen-lam"), nhan + " luyen: dat trang bi + luyen kim duoc + ngoc qua the (" + game.model.MainChar.gemitemImbue.size() + ")");
+        } else if ("hop_thanh".equals(ten)) {
+            kiem(!cu && game.pokemon.ManLuyen.dangMo() && game.model.MainChar.gemitemImbue.size() == 3 && coVung("luyen-nl-4") && !coVung("luyen-nl-5") && !coVung("luyen-do"), nhan + " hop thanh: 5 o, dat 3 vien");
         }
     }
 

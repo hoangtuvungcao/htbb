@@ -249,14 +249,17 @@ public final class PhanThuong {
             if (m.o instanceof Integer && ((Integer) m.o).intValue() < 0) {
                 final int loai = -1 - ((Integer) m.o).intValue();
                 Bang.oDo(g, x0, y0, o, true, false, null, null);
+                // 0.9.7: biểu tượng TRÊN, số DƯỚI (không chữ đè biểu tượng) - ô >= 30 px
+                int hs = ChuDe.cao(ChuDe.NHAN_NHO);
+                int co = Math.max(8, Math.min(16, o - hs - 7));
                 if (loai >= 0 && loai < TienTe.SO_LOAI) {
-                    int co = o >= 32 ? 24 : 16;
-                    TienTe.ve(g, loai, x0 + (o - co) / 2, y0 + (o - co) / 2, co);
+                    TienTe.ve(g, loai, x0 + (o - co) / 2, y0 + 3, co);
                     TienTe.dangKyGoiY(g, loai, m.so, x0, y0, o, o);
                 } else {
-                    BieuTuong.ve(g, BieuTuong.SU_KIEN, x0 + 3, y0 + 3, o - 6, ChuDe.VANG, 0);
+                    BieuTuong.ve(g, BieuTuong.SU_KIEN, x0 + (o - co) / 2, y0 + 3, co, ChuDe.VANG, 0);
                 }
-                LuoiTui.soLuong(g, x0, y0, o, (int) Math.min(Integer.MAX_VALUE, Math.max(2, m.so)));
+                ChuDe.chuVienGiua(g, KieuO.soGon((int) Math.min(Integer.MAX_VALUE, m.so)), x0 + o / 2, y0 + o - 3 - hs, hs, ChuDe.NHAN_NHO,
+                        0xFFFFFF, ChuDe.VIEN, 2);
                 continue;
             }
             LuoiTui.boSo = true;

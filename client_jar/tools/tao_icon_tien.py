@@ -3,7 +3,7 @@
     python3 client_jar/tools/tao_icon_tien.py
 
 Ra:
-  client_jar/res/tien/<ten>_<16|24|32>.png   bản J2ME (jar/APK/PC chép client_jar/res; bản HD vẽ vector)
+  client_jar/res/tien/<ten>_<8|12|16|24|32>.png (0.9.7: 8 / 12 cho hàng ví thẻ HUD - icon không to hơn dòng chữ)   bản J2ME (jar/APK/PC chép client_jar/res; bản HD vẽ vector)
   web/public/tien/<ten>_<32|64>.png          website (1x / 2x)
 ten: xu, luong, luong_khoa, su_kien, vinh_du.
 
@@ -141,7 +141,7 @@ def main():
     os.makedirs(ra_jar, exist_ok=True)
     os.makedirs(ra_web, exist_ok=True)
     for ten in VE:
-        for co in (16, 24, 32):
+        for co in (8, 12, 16, 24, 32):
             tao(ten, co).save(os.path.join(ra_jar, "%s_%d.png" % (ten, co)), optimize=True)
         for co in (32, 64):
             tao(ten, co).save(os.path.join(ra_web, "%s_%d.png" % (ten, co)), optimize=True)

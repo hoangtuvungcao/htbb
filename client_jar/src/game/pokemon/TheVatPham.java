@@ -51,7 +51,20 @@ public final class TheVatPham extends Dialog {
         t.muaToiDa = Math.max(1, toiDa);
         t.muaViec = v;
         t.so = 1;
+        t.muaNhan = null;
     }
+
+    /**
+     * Thẻ MUA với nút tên khác (danh sách chọn của máy chủ: "Đổi", "Lấy ra", "Bỏ vào", "Chọn"...); gia <= 0 = không
+     * hiện hàng giá (máy chủ không gửi giá).
+     */
+    public static void moMua(Object mon, long gia, int loaiTien, int toiDa, String nhan, ViecMua v, IAction khiDong) {
+        moMua(mon, gia, loaiTien, toiDa, v, khiDong);
+        gI().muaNhan = nhan;
+    }
+
+    /** nút thẻ MUA (null = "Mua") */
+    String muaNhan;
 
     /** Mở thẻ CHỈ XEM (phần thưởng / quà): thông tin + X; phu = dòng ghi chú (vd "Phần thưởng nhiệm vụ x2"). */
     public static void moXem(Object mon, String phu) {
@@ -108,6 +121,7 @@ public final class TheVatPham extends Dialog {
         t.khiDong = khiDong;
         t.xemPhu = null;
         t.muaViec = null;
+        t.muaNhan = null;
         t.muaToiDa = 1;
         t.left = null;
         t.center = null;
@@ -705,6 +719,9 @@ public final class TheVatPham extends Dialog {
             }, "sl-max");
             y += sb + k;
         }
+        if (this.muaGia <= 0) {
+            return y;   // máy chủ không gửi giá: không hàng giá
+        }
         long tong = this.muaGia * this.so;
         String c = this.muaToiDa > 1 ? "Tổng:" : "Giá:";
         ChuDe.chu(g, c, x, y, ChuDe.THUONG, ChuDe.CHU, 0);
@@ -754,6 +771,9 @@ public final class TheVatPham extends Dialog {
         ManNhanVat.themId(ids, it);
         for (int i = 0; i < ids.size(); i++) {
             int id = ((Integer) ids.elementAt(i)).intValue();
+            if (id == 125 || id == 126) {
+                continue;   // giá lượng / số lượng gói của danh sách máy chủ: hiện ở hàng giá, không phải chỉ số
+            }
             int moi = ManNhanVat.giaTri(it, id);
             String d = null;
             if (cu != null && cu != it) {
@@ -780,7 +800,8 @@ public final class TheVatPham extends Dialog {
         if (this.nguCanh == MUA) {
             String l = this.muaViec == null ? "Không mua được." : this.muaViec.khongMua(this.so);
             final int sl = this.so;
-            chu[n] = l == null ? (this.muaToiDa > 1 ? "Mua " + sl : "Mua") : "Không mua được";
+            String nm = this.muaNhan == null ? "Mua" : this.muaNhan;
+            chu[n] = l == null ? (this.muaToiDa > 1 ? nm + " " + sl : nm) : (this.muaNhan == null ? "Không mua được" : "Không được");
             kieu[n] = l == null ? Bang.XAC_NHAN : Bang.TAT;
             viec[n] = l == null ? new IAction() {
                 public void perform() {

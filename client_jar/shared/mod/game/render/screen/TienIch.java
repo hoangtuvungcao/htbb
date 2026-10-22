@@ -28,6 +28,10 @@ final class TienIch {
 
             public void perform() {
                 Canvas.menu.showMenu = false;
+                if (game.pokemon.MenuNguCanh.bat()) {
+                    game.pokemon.ManCuaHang.moMayChu();
+                    return;
+                }
                 PauseMenu.gI().showShopNew(0);
             }
         }));

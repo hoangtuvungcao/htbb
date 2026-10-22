@@ -55,8 +55,8 @@ public final class KiemKhungCoDinh {
         dung(t + " phu kin doc", k.logicH * k.tiLe >= h - 0.01f);
         dung(t + " tran mep < 1 px logic", (k.logicW - 1) * k.tiLe < w && (k.logicH - 1) * k.tiLe < h);
         // công bằng: không thấy hơn tham chiếu 16:9 ở bất kỳ chiều nào
-        dung(t + " vung nhin <= 320x180 (" + KhungCoDinh.nhinW(k.logicW) + "x" + KhungCoDinh.nhinH(k.logicH) + ")",
-                KhungCoDinh.nhinW(k.logicW) <= 320 && KhungCoDinh.nhinH(k.logicH) <= 180);
+        dung(t + " vung nhin <= " + KhungCoDinh.NHIN_W + "x" + KhungCoDinh.NHIN_H + " (" + KhungCoDinh.nhinW(k.logicW) + "x"
+                + KhungCoDinh.nhinH(k.logicH) + ")", KhungCoDinh.nhinW(k.logicW) <= KhungCoDinh.NHIN_W && KhungCoDinh.nhinH(k.logicH) <= KhungCoDinh.NHIN_H);
         // một chiều luôn đúng bằng tham chiếu (lấp đầy chiều đó)
         dung(t + " mot chieu = tham chieu", k.logicW == 640 || k.logicH == 360);
     }
@@ -76,10 +76,12 @@ public final class KiemKhungCoDinh {
         heSo(2772, 1240, 4.331f, 640, 287);
         heSo(854, 480, 1.334f, 640, 360);
         heSo(640, 360, 1f, 640, 360);
-        bang("vung nhin the gioi rong", Integer.valueOf(320), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
-        bang("vung nhin the gioi cao", Integer.valueOf(180), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
-        bang("20 o ngang", Integer.valueOf(20), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
-        bang("20:9 -> 9 o doc", Integer.valueOf(9), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
+        // 0.9.7: camera "cao hơn" NHIN_THEM 1,15 -> vùng nhìn 368 x 207 px thế giới (23 x ~13 ô) thay 320 x 180
+        bang("vung nhin the gioi rong", Integer.valueOf(368), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
+        bang("vung nhin the gioi cao", Integer.valueOf(207), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
+        bang("23 o ngang", Integer.valueOf(23), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
+        bang("20:9 -> 10 o doc", Integer.valueOf(10), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
+        dung("thay them ~15% moi chieu", Math.abs(KhungCoDinh.NHIN_W / 320f - 1.15f) < 0.01f && Math.abs(KhungCoDinh.NHIN_H / 180f - 1.15f) < 0.01f);
     }
 
     static void kiemCham() {
@@ -118,8 +120,16 @@ public final class KiemKhungCoDinh {
 
     static void kiemTheGioi() {
         bang("cham 0 -> 0", Integer.valueOf(0), Integer.valueOf(KhungCoDinh.theGioi(0)));
-        bang("cham 639 -> 319", Integer.valueOf(319), Integer.valueOf(KhungCoDinh.theGioi(639)));
-        bang("cham 320 -> 160", Integer.valueOf(160), Integer.valueOf(KhungCoDinh.theGioi(320)));
+        // chạm logic p -> thế giới floor(p / THE_GIOI_Z), THE_GIOI_Z = 2 / 1,15
+        bang("cham 639 -> 367", Integer.valueOf(367), Integer.valueOf(KhungCoDinh.theGioi(639)));
+        bang("cham 320 -> 184", Integer.valueOf(184), Integer.valueOf(KhungCoDinh.theGioi(320)));
+        // khứ hồi: điểm thế giới w vẽ ở logic w * Z -> chạm vào đó trả lại đúng w
+        boolean kh = true;
+        for (int w = 0; w < 368; w++) {
+            int p = (int) Math.floor((w + 0.5f) * KhungCoDinh.THE_GIOI_Z);
+            if (KhungCoDinh.theGioi(p) != w && KhungCoDinh.theGioi(p) != w - 1) kh = false;
+        }
+        dung("cham -> the gioi khu hoi (sai <= 1 px)", kh);
         bang("cham -1 -> -1 (lam tron xuong)", Integer.valueOf(-1), Integer.valueOf(KhungCoDinh.theGioi(-1)));
     }
 

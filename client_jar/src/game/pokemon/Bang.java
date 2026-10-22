@@ -372,8 +372,14 @@ public final class Bang {
 
     /** Thời gian (ms, 0..140) từ lúc tấm hiện - hiệu ứng mở. */
     public static int tuoiTam() {
+        if (dungHieuUng) {
+            return 140;
+        }
         return (int) Math.min(140, System.currentTimeMillis() - lucMoTam);
     }
+
+    /** Kiểm thử: hiệu ứng mở tấm đứng ở trạng thái CUỐI (khung chụp cách nhau > 300 ms không mở lại hiệu ứng). */
+    public static boolean dungHieuUng;
 
     /** Chấm báo mới cho tab / chip kế tiếp (ChamMoi) - đặt ngay trước khung / hangChip, tự xoá sau khi vẽ. */
     public static boolean[] chamTab, chamChip;

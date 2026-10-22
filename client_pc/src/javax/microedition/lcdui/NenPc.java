@@ -51,7 +51,7 @@ public final class NenPc {
     /**
      * Khung PHỦ KÍN cửa sổ W x H (0.9.3 - thay hộp 16:9 + viền của 0.9.2), cùng luật với APK (KhungCoDinh):
      * tỉ lệ s = max(W / 640, H / 360) đều hai chiều; cỡ logic = ceil(W / s) x ceil(H / s), luôn <= 640 x 360 mỗi chiều
-     * -> vùng nhìn thế giới <= 320 x 180 px (không ai thấy hơn tham chiếu 16:9: màn rộng cắt bớt chiều cao, màn cao /
+     * -> vùng nhìn thế giới <= ~368 x 207 px (Zoom.NHIN_THEM) (không ai thấy hơn tham chiếu 16:9: màn rộng cắt bớt chiều cao, màn cao /
      * 16:10 / 4:3 cắt bớt chiều ngang). Không viền.
      *
      * Trả {k, hienX, hienY, hienW, hienH, logicW, logicH}: game vẽ vào bộ đệm logicW*k x logicH*k (k nguyên = ceil(s):
@@ -78,7 +78,7 @@ public final class NenPc {
 
     /**
      * Cỡ vùng vẽ (cửa sổ) đổi - phóng to / thu nhỏ / toàn màn: logic phủ kín (<= 640x360 mỗi chiều), bộ đệm game
-     * logic x k, khung trình bày khungHien. true = cỡ logic đổi (báo game sizeChanged).
+     * logic x k, khung trình bày khungHien. true = cỡ logic hoặc hệ số k đổi (báo game sizeChanged).
      */
     public static synchronized boolean tinhKichThuoc(int w, int h) {
         if (w <= 0 || h <= 0) return false;
@@ -94,8 +94,10 @@ public final class NenPc {
         thatH = kh[6] * s;
         lechX = 0;
         lechY = 0;
+        // 0.9.7: phóng thế giới làm tròn theo k (htbb.pc.Zoom.mThuc) -> k đổi thì vùng nhìn thế giới (gsw / gsh) đổi dù
+        // cỡ logic giữ nguyên: cũng báo đổi cỡ để GameScr nạp lại camera (không hở lề đen)
+        boolean doi = rong != kh[5] || cao != kh[6] || heSo != s;
         heSo = s;
-        boolean doi = rong != kh[5] || cao != kh[6];
         rong = kh[5];
         cao = kh[6];
         // cỡ chạm / bấm chuột tối thiểu cho vùng chạm chung (game.pokemon.VungCham): ~32 px thật, cách 8 px thật

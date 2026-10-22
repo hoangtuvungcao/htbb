@@ -462,10 +462,89 @@ public class KiemNgamTay {
                 }
             });
         }
+        kiemCamera();
         // vạch / nón / vòng ngắm là HÌNH CHỈ HƯỚNG (không phải icon) - vẽ bằng lệnh là chủ ý, VeTay không đếm (miễn trừ ghi ở
         // NgamTay.java); mọi icon trên màn ngắm vẫn phải là PNG (veKiem: VeTay = 0)
         kiem(ChupTrongGame.hong == 0, "chu trong khung + icon PNG (ChupTrongGame.veKiem): " + ChupTrongGame.hong + " hong");
         System.out.println("KiemNgamTay: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);
     }
+
+    /**
+     * 0.9.8 (giao-dien-nro c6c276a6): camera "cao hơn" NHIN_THEM 1,15 (vùng nhìn 368 x 207 px thế giới ở APK). Ngắm tay
+     * bằng chuột / chạm điểm phải đổi điểm màn -> thế giới CÙNG công thức với chạm chọn quái / đi tới (HanhDong.wx / wy, bản
+     * PC = Zoom.theGioiX/Y, bản APK = HdZoom.wx -> KhungCoDinh.theGioi): hướng ngắm tới đúng điểm thế giới dưới con trỏ.
+     */
+    static void kiemCamera() {
+        co = "camera";
+        try {
+            // gốc repo: -Dhtbb.goc, không thì suy từ client_pc/out/build/cls của lớp game
+            java.io.File cls = new java.io.File(game.pokemon.NgamTay.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            String goc = System.getProperty("htbb.goc", cls.getParentFile().getParentFile().getParentFile().getParent());
+            String nt = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(goc, "client_jar/src/game/pokemon/NgamTay.java")), "UTF-8");
+            kiem(nt.contains("chuan(HanhDong.wx(x) - mc.x, HanhDong.wy(y) - (mc.y - 12))"), "NgamTay.huongChuot doi diem qua HanhDong.wx / wy");
+            String apk = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(goc, "client_apk/port-j2me.py")), "UTF-8");
+            kiem(apk.contains("\"game/pokemon/HanhDong.java\", r\"\\n    public static int wx\\(int px\\)\", \" if (true) { return %sHdZoom.wx(GameScr.cmx, px); }\"")
+                    && apk.contains("\"cmx + Canvas.px\", \"%sHdZoom.wx(cmx, Canvas.px)\""), "APK: HanhDong.wx va cham GameScr cung HdZoom.wx (KhungCoDinh.theGioi)");
+            String kc = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(goc,
+                    "client_apk/pokemon/src/main/java/javax/microedition/lcdui/KhungCoDinh.java")), "UTF-8");
+            kiem(kc.contains("NHIN_THEM = " + htbb.pc.Zoom.NHIN_THEM + "f"), "APK KhungCoDinh.NHIN_THEM == PC Zoom.NHIN_THEM (" + htbb.pc.Zoom.NHIN_THEM + ")");
+            // APK: vùng nhìn 640 x 360 logic -> 368 x 207 thế giới; chạm px -> floor(px / (2 / 1,15))
+            float zA = 2f / 1.15f;
+            kiem((int) Math.ceil(640 / zA - 1e-3f) == 368 && (int) Math.ceil(360 / zA - 1e-3f) == 207, "APK vung nhin 368 x 207");
+            // chạy trên luồng game (camera không trôi giữa hai lần đọc cmx)
+            final int[][] ra = new int[1][];
+            ChupTrongGame.chay(() -> {
+                try {
+                    // PC: HanhDong.wx == cmx + Zoom.theGioiX; điểm thế giới dưới con trỏ -> hướng ngắm tới đúng điểm đó
+                    game.render.screen.GameScr gs = game.render.Canvas.gameScr;
+                    game.model.MainChar mc = gs.mainChar;
+                    int cx0 = game.render.screen.GameScr.cmx, cy0 = game.render.screen.GameScr.cmy;
+                    java.lang.reflect.Method hc = game.pokemon.NgamTay.class.getDeclaredMethod("huongChuot", int.class, int.class);
+                    hc.setAccessible(true);
+                    float z = htbb.pc.Zoom.z();
+                    final int[] kq = new int[3]; // lech, sai, thu
+                    for (int tx = -160; tx <= 160; tx += 23) {
+                        for (int ty = -90; ty <= 90; ty += 17) {
+                            if (tx * tx + ty * ty < 40 * 40) {
+                                continue;
+                            }
+                            int wx = mc.x + tx, wy = mc.y - 12 + ty;
+                            int px = (int) Math.ceil((wx - cx0) * z), py = (int) Math.ceil((wy - cy0) * z);
+                            if (game.pokemon.HanhDong.wx(px) != cx0 + htbb.pc.Zoom.theGioiX(px)) {
+                                kq[1]++;
+                            }
+                            // điểm thế giới đọc lại từ điểm màn (một điểm ảnh màn phủ ~1 / z px thế giới: sai số <= 1 px)
+                            int rx = game.pokemon.HanhDong.wx(px), ry = game.pokemon.HanhDong.wy(py);
+                            int[] h = (int[]) hc.invoke(null, px, py);
+                            int[] mong = game.pokemon.NgamTay.chuan(rx - mc.x, ry - (mc.y - 12));
+                                                        kq[2]++;
+                            if (h == null || mong == null || Math.abs(rx - wx) > 1 || Math.abs(ry - wy) > 1
+                                    || h[0] != mong[0] || h[1] != mong[1]) {
+                                kq[0]++;
+                                continue;
+                            }
+                            // góc giữa hướng ngắm và hướng tới điểm thật: <= sai số 1 px thế giới ở khoảng cách đó
+                            double gNgam = Math.atan2(ry - (mc.y - 12), rx - mc.x), gThat = Math.atan2(ty, tx);
+                            double d = Math.abs(Math.IEEEremainder(gNgam - gThat, 2 * Math.PI));
+                            if (d > Math.atan(1.5 / Math.sqrt(tx * tx + ty * ty)) + 1e-6) {
+                                kq[0]++;
+                            }
+                        }
+                    }
+                    ra[0] = kq;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            });
+            final int lech = ra[0] == null ? -1 : ra[0][0], sai = ra[0] == null ? -1 : ra[0][1], thu = ra[0] == null ? 0 : ra[0][2];
+            final float z = htbb.pc.Zoom.z();
+            kiem(sai == 0, "PC: HanhDong.wx(px) == cmx + Zoom.theGioiX(px) (z = " + z + ")");
+            kiem(thu > 50 && lech == 0, "PC: ngam chuot toi diem the gioi duoi con tro (sai so <= 1 px the gioi) (" + lech + "/" + thu + ")");
+        } catch (Throwable e) {
+            e.printStackTrace();
+            kiem(false, "kiemCamera: " + e);
+        }
+    }
+
 }
