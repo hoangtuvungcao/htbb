@@ -192,7 +192,9 @@ public final class ThongBao {
         }
         if (t.startsWith("bạn ") || co(t, " của bạn") || co(t, "hết hạn") || co(t, "hết tác dụng") || co(t, "đã hết")
                 || t.startsWith("thời gian sử dụng") || t.startsWith("kích hoạt") || t.startsWith("bị giảm")
-                || co(t, "tinh thông +") || co(t, "sát thương")) {
+                || co(t, "tinh thông +") || co(t, "sát thương") || co(t, "khoá khi mặc") || t.startsWith("lịch đăng nhập")
+                || t.startsWith("không thể") || t.startsWith("thời gian sử dụng") || co(t, "đã hết hạn")) {
+            // 0.9.8: tin riêng của bạn (máy chủ cũ gửi -26) - thẻ nhanh, KHÔNG biểu ngữ "TOÀN MÁY CHỦ"
             int k = phanLoai(s);
             return k == SU_KIEN || k == HOP ? TIN : k;
         }

@@ -1495,7 +1495,7 @@ public class RegionLoiDai {
                     CharThiDau cthidau = Map.ALL_CHAR_LOI_DAI.get(p.nhomThidau).get(p.charDBID);
                     if (isDraw) {
                         try {
-                            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Trận đấu của bạn đã hoà"));
+                            com.htbb.thongbao.ThongBao.rieng(p, "Trận đấu của bạn đã hoà");
                         } catch (Exception var17) {
                         }
 
@@ -1506,7 +1506,7 @@ public class RegionLoiDai {
                             Database.instance.doAddCharThachDau(cthidau, cthidau.nhom, true);
 
                             try {
-                                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(p.charname + " chiến thắng"));
+                                com.htbb.thongbao.ThongBao.rieng(p, p.charname + " chiến thắng");
                             } catch (Exception var16) {
                             }
 
@@ -1520,7 +1520,7 @@ public class RegionLoiDai {
                             Database.instance.doAddCharThachDau(cthidau, cthidau.nhom, true);
 
                             try {
-                                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã thua"));
+                                com.htbb.thongbao.ThongBao.rieng(p, p.charname + " đã thua");
                             } catch (Exception var15) {
                             }
                         }

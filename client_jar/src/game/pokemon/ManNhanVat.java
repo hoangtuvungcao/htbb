@@ -1258,6 +1258,10 @@ public final class ManNhanVat extends Screen {
     static void veHangThuoc(Graphics g, int x, int y, int w, int h, int i, final int loai) {
         Bang.hang(g, x, y, w, h, i, false, new IAction() {
             public void perform() {
+                if (KhanPk.laKhan(loai)) {
+                    KhanPk.hoi(loai);   // 0.9.8: khăn PK hỏi xác nhận "Đeo khăn (bật PK)" / "Tháo khăn (tắt PK)"
+                    return;
+                }
                 try {
                     Canvas.gameScr.doUsePotion(loai);
                 } catch (Throwable e) {

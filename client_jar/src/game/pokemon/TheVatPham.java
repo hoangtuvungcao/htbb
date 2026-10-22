@@ -381,7 +381,9 @@ public final class TheVatPham extends Dialog {
     void dung() {
         Object o = this.mon;
         dong();
-        if (o instanceof Integer) {
+        if (o instanceof Integer && KhanPk.laKhan(((Integer) o).intValue())) {
+            KhanPk.hoi(((Integer) o).intValue());   // 0.9.8: khăn PK - xác nhận bật / tắt PK
+        } else if (o instanceof Integer) {
             try {
                 Canvas.gameScr.doUsePotion(((Integer) o).intValue());
             } catch (Throwable e) {
@@ -855,7 +857,7 @@ public final class TheVatPham extends Dialog {
                     lyDo = l;
                 }
             } else if (dungDuoc()) {
-                chu[n] = "Sử dụng";
+                chu[n] = this.mon instanceof Integer && KhanPk.laKhan(((Integer) this.mon).intValue()) ? KhanPk.nhan() : "Sử dụng";
                 kieu[n] = Bang.XAC_NHAN;
                 viec[n] = new IAction() {
                     public void perform() {

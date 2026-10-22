@@ -221,7 +221,7 @@ public final class VungHoenn {
             if (ly == null) {
                 return false;
             }
-            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(ly));
+            com.htbb.thongbao.ThongBao.rieng(p, ly);
             return true;
         } catch (final Exception e) {
             e.printStackTrace();

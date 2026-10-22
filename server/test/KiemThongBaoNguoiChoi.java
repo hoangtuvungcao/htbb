@@ -24,6 +24,19 @@ public final class KiemThongBaoNguoiChoi {
 
     public static void chay() {
         Kiem.nhom("Thong bao nguoi choi (0.9.6.1)");
+        // 0.9.8: tin rieng KHONG di bieu ngu toan may chu (-26) voi client moi - the KET_QUA / TIN / LOI
+        Kiem.bang("lich dang nhap = KET_QUA", Integer.valueOf(ThongBao.KET_QUA),
+                Integer.valueOf(ThongBao.loaiRieng("Lịch đăng nhập: nhận 3 lượng khoá (ngày 1/7).")));
+        Kiem.bang("khong the tan cong = LOI", Integer.valueOf(ThongBao.LOI), Integer.valueOf(ThongBao.loaiRieng("Không thể tấn công tại vùng này.")));
+        Kiem.bang("het han = TIN", Integer.valueOf(ThongBao.TIN), Integer.valueOf(ThongBao.loaiRieng("Thời gian sử dụng Vé giờ vàng đã hết")));
+        try {
+            final String ld = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/LauDaiNhanVat.java")), "UTF-8");
+            final String ql = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/QuaHoatDong.java")), "UTF-8");
+            Kiem.dung("LauDaiNhanVat.bao (lich dang nhap, qua hoat dong...) = ThongBao.rieng", ld.contains("com.htbb.thongbao.ThongBao.rieng(p, s);")
+                    && ql.contains("LauDaiNhanVat.bao(p, \"Lịch đăng nhập"));
+        } catch (final java.io.IOException e) {
+            Kiem.dung("doc nguon", false);
+        }
         Kiem.bang("cau ca dong 1", "Câu được Vảy Magikarp ×1", ThongBao.duoc("Câu được", "Vảy Magikarp", 1, false));
         Kiem.bang("cau ca hiem", "Câu được đồ hiếm: Vảy Gyarados ×2", ThongBao.duoc("Câu được", "Vảy Gyarados", 2, true));
         Kiem.bang("the luc", "Thể lực còn 176", ThongBao.theLuc(176));

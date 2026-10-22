@@ -1025,7 +1025,7 @@ class MapDoMenu {
                             if (px.map.isMapTrain()) {
                                 if (px.inCountry != player.myCountry) {
                                     ((Vector) listKillPerson.get(player.myCountry)).remove(px.charname);
-                                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage(px.charname + " đã rời khỏi vùng của bạn"));
+                                    com.htbb.thongbao.ThongBao.rieng(player, px.charname + " đã rời khỏi vùng của bạn");
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
                                 }
@@ -1075,7 +1075,7 @@ class MapDoMenu {
                         }
 
                         ((Vector) listKillPerson.get(player.myCountry)).remove(nameKiller);
-                        player.sendMessage(MessageCreator.createServerAlertAutoOffMessage(nameKiller + " đã rời khỏi vùng của bạn"));
+                        com.htbb.thongbao.ThongBao.rieng(player, nameKiller + " đã rời khỏi vùng của bạn");
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         return;
                     }

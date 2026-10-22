@@ -716,7 +716,7 @@ public class Database {
 //                m.dos.writeShort(p.id);
 //                m.dos.writeUTF(content);
 //                p.sendMessage(m);
-                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(content));
+                com.htbb.thongbao.ThongBao.rieng(p, content);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -3817,7 +3817,7 @@ public class Database {
                     }
                     pdelete.add(pet);
                     this.saveOrtherLog("tob_log_other_item", p.charname, pet.getDBInfo(), "pd");
-                    p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(pet.getName() + " đã hết thời gian sử dụng"));
+                    com.htbb.thongbao.ThongBao.rieng(p, pet.getName() + " đã hết thời gian sử dụng");
                 } else {
                     // Hoa hinh Pet het han: don ve mac dinh luc nap nhan vat (dang
                     // nhap), giong cach ban goc dang lam - khong dat het han thuc

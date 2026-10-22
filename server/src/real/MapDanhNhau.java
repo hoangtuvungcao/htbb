@@ -60,6 +60,11 @@ class MapDanhNhau {
             p.downDurableWeapone();
             boolean inArenaP = map.inArena(p);
             if (p.isKiller && p.pk != 0 && !p.isMonster) {
+                // ten do + dang deo khan: luat cu khong cho danh - truoc im lang, nguoi choi tuong PK hong
+                if (System.currentTimeMillis() - p.lucBaoTenDoKhan > 5000L) {
+                    p.lucBaoTenDoKhan = System.currentTimeMillis();
+                    DungVatPham.baoNhe(p, "Đang mang tên đỏ: tháo khăn PK mới tấn công người chơi được.");
+                }
                 return;
             }
 
@@ -205,7 +210,7 @@ class MapDanhNhau {
                 }
 
                 if (Map.nwar[p.inCountry] && p.myCountry != Map.nationBeAttack[p.inCountry] && p.myCountry != p.inCountry) {
-                    p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tấn công tại vùng này."));
+                    com.htbb.thongbao.ThongBao.rieng(p, "Không thể tấn công tại vùng này.");
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     int toTX = 16 + Database.r.nextInt() % 5;
                     int toTY = 84;
@@ -551,6 +556,7 @@ class MapDanhNhau {
                 }
             }
 
+            CoPkGame.daDanhNguoi(p); // don trung nguoi choi: cho 10 giay moi thao khan PK
             if (p.isKiller) {
                 if ((p.killer == 0
                         && map.mapId != Map.idMapDautruong

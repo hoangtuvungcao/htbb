@@ -2076,21 +2076,21 @@ class MapXuLyLenh {
                         || Map.nwar[player.inCountry] && player.myCountry != player.inCountry && Map.nationBeAttack[player.inCountry] != player.myCountry
                         || player.inCountry != player.myCountry && MapTown.addDragon[player.inCountry])
                         && toMapID == Map.idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại vùng khác."));
+                    com.htbb.thongbao.ThongBao.rieng(player, "Không thể tham gia sự kiện tại vùng khác.");
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;
                     toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
                 } else if (player.idClan == -1 && Map.getTown[player.myCountry] && toMapID == Map.idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội."));
+                    com.htbb.thongbao.ThongBao.rieng(player, "Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội.");
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;
                     toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
                 } else if (player.lvDetail.lv < 60 && Map.getTown[player.inCountry] && toMapID == Map.idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 60 trở lên mới có thể vào thành trong thời gian này."));
+                    com.htbb.thongbao.ThongBao.rieng(player, "Bạn phải đạt cấp độ 60 trở lên mới có thể vào thành trong thời gian này.");
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;

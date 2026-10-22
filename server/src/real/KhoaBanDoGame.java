@@ -154,7 +154,7 @@ public final class KhoaBanDoGame {
 
     static void bao(final Char p, final String s) {
         try {
-            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(s));
+            com.htbb.thongbao.ThongBao.rieng(p, s);
         } catch (final Exception ignored) {
         }
     }

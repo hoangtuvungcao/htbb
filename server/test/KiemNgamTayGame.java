@@ -406,6 +406,14 @@ public final class KiemNgamTayGame {
         Kiem.dung("giao chien 9 giay truoc: van PvP", BanHuongGame.lyDoPvp(a, bay) != null);
         BanHuongGame.ghiGiaoChien(a, null, bay - 11000);
         Kiem.bang("giao chien 11 giay truoc: het PvP", null, BanHuongGame.lyDoPvp(a, bay));
+        // 0.9.8 + sua-pk: deo khan PK = PvP; thao khan (khong vua danh ai) = het PvP ngay
+        a.pk = 14;
+        Kiem.dung("deo khan PK: trong PvP", BanHuongGame.lyDoPvp(a, bay) != null);
+        final java.lang.reflect.Method dung = Class.forName("real.CoPkGame").getDeclaredMethod("dung", Char.class, int.class);
+        dung.setAccessible(true);
+        dung.invoke(null, a, Integer.valueOf(14));
+        Kiem.bang("thao khan PK: pk = 0", Integer.valueOf(0), Integer.valueOf(a.pk));
+        Kiem.bang("thao khan PK: het ngu canh PvP ngay", null, BanHuongGame.lyDoPvp(a, System.currentTimeMillis() + 11000));
         for (final int id : new int[]{202, 204, 205, 227}) {
             final MapGia m = new MapGia(id);
             final Char p = nv(m, 908, 100, 100);

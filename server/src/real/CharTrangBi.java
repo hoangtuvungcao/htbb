@@ -499,7 +499,7 @@ class CharTrangBi {
                 item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID);
                 if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                     try {
-                        self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
+                        com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
                         Database.instance.deleteItem(item.dbid);
                         // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
                         Database.instance.saveOrtherLog("tob_log_other_item", self.charname, "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
@@ -701,7 +701,7 @@ class CharTrangBi {
                     item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID);
                     if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                         try {
-                            self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
+                            com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
                             Database.instance.deleteItem(item.dbid);
                             // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
                             Database.instance.saveOrtherLog("tob_log_other_item", self.charname, "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");

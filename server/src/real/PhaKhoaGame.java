@@ -116,6 +116,7 @@ public final class PhaKhoaGame {
         if (p != null) {
             try {
                 // Hop tin (-26), khong phai thong bao nhanh cua DungVatPham: giu nguyen "Đã trang bị ..." cua lenh 29.
+                // (client 0.9.8 phan loai chu chay "khoá khi mặc" = tin rieng, khong bieu ngu toan may chu)
                 p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(ten(it) + " đã khoá khi mặc: không bán / giao dịch cho người khác được nữa"
                         + " (vẫn bán cho NPC được; phá khoá ở Machamp thợ rèn)."));
             } catch (final Exception ignored) {

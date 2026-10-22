@@ -869,7 +869,7 @@ public class Map implements Runnable {
                             if (p != null) {
                                 if (p.monster != null && p.monster.isFinish) {
                                     try {
-                                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chúc mừng bạn đã có 1 chuyến giao hàng thành công."));
+                                        com.htbb.thongbao.ThongBao.rieng(p, "Chúc mừng bạn đã có 1 chuyến giao hàng thành công.");
                                     } catch (IOException var7) {
                                     }
                                 } else {
@@ -14987,6 +14987,11 @@ public class Map implements Runnable {
                 return;
             }
 
+            if (player.killer != 0) {
+                // ten do (nghiep) khong tat bang co nay: truoc im lang
+                DungVatPham.baoNhe(player, com.htbb.pokemon.CoPk.baoTenDo(player.killer).replace("không thể đeo khăn PK", "chưa tắt được chế độ tên đỏ"));
+                return;
+            }
             if (player.killer == 0) {
                 player.isKiller = !player.isKiller;
                 Message m = new Message(67);

@@ -426,7 +426,7 @@ public final class ThaoTacMayChu {
         final Char p = tim(ten);
         if (p != null) {
             try {
-                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn có thư mới từ Admin - mở hộp thư để đọc."));
+                com.htbb.thongbao.ThongBao.rieng(p, "Bạn có thư mới từ Admin - mở hộp thư để đọc.");
             } catch (final Exception ignored) {
             }
         }

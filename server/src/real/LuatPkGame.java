@@ -119,11 +119,26 @@ public final class LuatPkGame {
 
     /** CharVongLap moi phut online: nghiep phai dan; het nghiep thi het ten do (bao minh + nguoi gan, goi 67). */
     public static void nhipPhut(final Char p) {
-        if (p == null || p.isBot != -1 || p.killer <= 0) {
+        if (p == null || p.isBot != -1) {
             return;
         }
+        final long bay = System.currentTimeMillis();
+        if (p.killer <= 0) {
+            p.lucPhaiNghiep = bay;
+            return;
+        }
+        // theo DONG HO THAT (5 / phut online): nhip CharVongLap la 300 vong x ~300 ms (~90 giay, cham hon khi tai nang),
+        // truoc tru 5 moi nhip -> nghiep giam cham hon thiet ke ~1,5 lan tro len.
+        if (p.lucPhaiNghiep <= 0L) {
+            p.lucPhaiNghiep = bay - 60_000L;
+        }
+        final long[] tg = com.htbb.pokemon.CoPk.phaiTheoGio(p.killer, p.lucPhaiNghiep, bay);
+        p.lucPhaiNghiep = tg[1];
         final int cu = p.killer;
-        final int moi = LuatPk.phaiNghiep(cu, 1);
+        final int moi = (int) tg[0];
+        if (moi == cu) {
+            return;
+        }
         p.killer = (short) moi;
         if (moi <= 0) {
             p.killer = 0;

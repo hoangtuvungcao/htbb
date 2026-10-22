@@ -597,6 +597,7 @@ public class RegionVantienTran implements Runnable {
                 p.charHireAttackDam(c, _type, _level, buffAttack);
             }
 
+            CoPkGame.daDanhNguoi(p); // don trung nguoi choi: cho 10 giay moi thao khan PK
             if (p.isKiller) {
                 if (p.killer == 0) {
                     if (p.charClass == 4) {

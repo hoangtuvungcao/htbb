@@ -509,7 +509,7 @@ public final class HoiSinhGame {
             t.menuCu = ma;
         }
         try {
-            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(tieuDe + " " + moTa));
+            com.htbb.thongbao.ThongBao.rieng(p, tieuDe + " " + moTa);
         } catch (final Exception ignored) {
         }
         p.sendMessage(MessageCreator.createMsgMenu(menu, MENU_CU, 0));
@@ -531,7 +531,7 @@ public final class HoiSinhGame {
 
     static void bao(final Char p, final String s) {
         try {
-            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(s));
+            com.htbb.thongbao.ThongBao.rieng(p, s);
         } catch (final Exception ignored) {
         }
     }

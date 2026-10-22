@@ -286,7 +286,7 @@ class CharVongLap {
                 
                 // Thông báo cho người chơi
                 try {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Đã hết hiệu ứng giảm giáp!"));
+                    com.htbb.thongbao.ThongBao.rieng(self, "Đã hết hiệu ứng giảm giáp!");
                     // Cập nhật thông tin cho người chơi và người chơi xung quanh
                     Message msg = MessageCreator.createCharInfo(self);
                     self.sendMessage(msg);
@@ -387,7 +387,7 @@ class CharVongLap {
             self.timeEatSocola = System.currentTimeMillis();
             try {
                 if (self.minuteSocola <= 0) {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng hạt mầm của bạn đã hết"));
+                    com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng hạt mầm của bạn đã hết");
                     Database.instance.saveOrtherLog("", self.charname, "loc may man het gio", "ohoatuyet");
                 }
             } catch (final IOException ex11) {
@@ -401,7 +401,7 @@ class CharVongLap {
             final byte timeout = self.animalRide.timeOutFood();
             if (timeout > -1) {
                 try {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(LoginHandler.PORTION_NAME[timeout + 112]) + " đã hết tác dụng."));
+                    com.htbb.thongbao.ThongBao.rieng(self, String.valueOf(LoginHandler.PORTION_NAME[timeout + 112]) + " đã hết tác dụng.");
                     Database.instance.saveOrtherLog("", self.charname, LoginHandler.PORTION_NAME[timeout + 112], "aexpire");
                     self.calculateAttrib();
                     self.sendMessage(MessageCreator.createMainCharInfoMessage(self));
@@ -987,7 +987,7 @@ class CharVongLap {
                     // Only keep essential time-based checks
                     if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                         try {
-                            self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
+                            com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
                             Database.instance.deleteItem(item.dbid);
                             // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
                             Database.instance.saveOrtherLog("tob_log_other_item", self.charname, "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");

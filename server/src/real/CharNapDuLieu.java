@@ -270,7 +270,7 @@ class CharNapDuLieu {
                 }
                 if (self.minuteSocola > 0) {
                     try {
-                        self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng hạt mầm của bạn còn lại " + self.minuteSocola + " phút"));
+                        com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng hạt mầm của bạn còn lại " + self.minuteSocola + " phút");
                     } catch (final IOException ex11) {
                     }
                 }
@@ -1329,7 +1329,7 @@ class CharNapDuLieu {
                         item.initInfoFromDB();
                         if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                             try {
-                                self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
+                                com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
                                 Database.instance.deleteItem(item.dbid);
                                 // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
                                 Database.instance.saveOrtherLog("tob_log_other_item", self.charname, "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
@@ -1564,7 +1564,7 @@ class CharNapDuLieu {
             }
             if (self.haveShield()) {
                 try {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn đang được bảo hộ"));
+                    com.htbb.thongbao.ThongBao.rieng(self, "Bạn đang được bảo hộ");
                 } catch (final IOException ex17) {
                 }
             }
@@ -1631,7 +1631,7 @@ class CharNapDuLieu {
             if (self.firstNapMoney == 0 && Char.isSuKienHalowwen2015() && Map.openLog) {
                 final String kq = Database.instance.getFirstNap(self);
                 if (!kq.equals("")) {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage(kq));
+                    com.htbb.thongbao.ThongBao.rieng(self, kq);
                     self.firstNapMoney = 1;
                     Database.instance.saveOrtherLog("", self.charname, kq, "firstx2");
                 }
@@ -1651,7 +1651,7 @@ class CharNapDuLieu {
         if (self.monster == null && self.typeTieu > -1) {
             self.typeTieu = -1;
             try {
-                self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chuyến giao hàng của bạn đã kết thúc."));
+                com.htbb.thongbao.ThongBao.rieng(self, "Chuyến giao hàng của bạn đã kết thúc.");
             } catch (final IOException e6) {
                 e6.printStackTrace();
             }
@@ -1661,7 +1661,7 @@ class CharNapDuLieu {
                     self.monster.actorDie();
                     self.typeTieu = -1;
                 } else {
-                    self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Ponyta giao hàng đang ở " + Map.getNameMap(self.monster.map.mapId) + " toạ độ " + self.monster.x / 16 + " " + self.monster.y / 16));
+                    com.htbb.thongbao.ThongBao.rieng(self, "Ponyta giao hàng đang ở " + Map.getNameMap(self.monster.map.mapId) + " toạ độ " + self.monster.x / 16 + " " + self.monster.y / 16);
                 }
             } catch (final IOException e6) {
                 e6.printStackTrace();

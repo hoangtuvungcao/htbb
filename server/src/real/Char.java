@@ -227,6 +227,12 @@ public class Char extends LiveActor {
     public long timeGiveCardTown;
     public long xpLost;
     public long timeUsePK;
+    /** Luc don danh nguoi choi cuoi trung (CoPkGame: cho com.htbb.pokemon.CoPk.CHO_SAU_DANH_MS moi thao khan PK). */
+    public long lucDanhNguoiPk;
+    /** Moc tinh nghiep phai theo dong ho that (LuatPkGame.nhipPhut). */
+    public long lucPhaiNghiep;
+    /** Lan cuoi bao "dang ten do, thao khan moi danh duoc" (MapDanhNhau, chong lap bao moi don). */
+    public long lucBaoTenDoKhan;
     public long timeJoinClan;
     public long timeHoiSinh;
 
@@ -3483,9 +3489,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     this.rlDeathCount = 0;
 
     try {
-        this.sendMessage(MessageCreator.createServerAlertAutoOffMessage(
+        com.htbb.thongbao.ThongBao.rieng(this, 
             "Tải Game Ngay Tại Ngude2.vn"
-        ));
+        );
     } catch (Exception ignored) {}
 
     return (int) out;
@@ -3917,7 +3923,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
 //                System.out.println("[DEBUG] do8sRongLon: countRongLon = " + this.countRongLon);
 
                     try {
-                        this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Sát thương cam chịu tích lũy lên " + this.countRongLon));
+                        com.htbb.thongbao.ThongBao.rieng(this, "Sát thương cam chịu tích lũy lên " + this.countRongLon);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -3930,7 +3936,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
 //                        System.out.println("[DEBUG] Kích hoạt trạng thái bất tử 8s, timeActive8sRongLon = " + this.timeActive8sRongLon);
 
                         try {
-                            this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Kích hoạt trạng thái bất tử trong 8 giây!"));
+                            com.htbb.thongbao.ThongBao.rieng(this, "Kích hoạt trạng thái bất tử trong 8 giây!");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -4189,7 +4195,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.sendPetEff();
                 this.sendMessage(MessageCreator.createCharWearingMessage(this, this));
                 this.sendToNearPlayer(MessageCreator.createCharWearingMessage(this, this));
-                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hoá hình Lân của pet đã hết hạn, pet trở về hình cũ"));
+                com.htbb.thongbao.ThongBao.rieng(this, "Hoá hình Lân của pet đã hết hạn, pet trở về hình cũ");
                 Database.instance.saveOrtherLog("", this.charname, "hoa hinh pet Lan het han", "hoahinhpet");
             }
             if (this.petUsing != null && this.petUsing.getTimeExpire() <= 0) {
@@ -4197,7 +4203,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
                 Database.instance.saveOrtherLog("tob_log_other_item", this.charname, this.petUsing.getDBInfo(), "pd");
                 Database.instance.deletePet(this.petUsing.idDB);
-                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage(String.valueOf(this.petUsing.getName()) + " đã hết thời gian sử dụng"));
+                com.htbb.thongbao.ThongBao.rieng(this, String.valueOf(this.petUsing.getName()) + " đã hết thời gian sử dụng");
                 this.petUsing = null;
                 this.sendMessage(MessageCreator.createCharWearingMessage(this, this));
                 this.sendToNearPlayer(MessageCreator.createCharWearingMessage(this, this));
@@ -4212,7 +4218,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             final Item item = this.wItems[this.slotWearing][i];
             if (item != null && item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                 try {
-                    this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
+                    com.htbb.thongbao.ThongBao.rieng(this, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
                     this.wItems[this.slotWearing][i] = null;
                     Database.instance.deleteItem(item.dbid);
                     this.calculateAttrib();
@@ -4241,7 +4247,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 for (int i = 0; i < itemExpire.size(); ++i) {
                     try {
                         final Item item = itemExpire.get(i);
-                        this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
+                        com.htbb.thongbao.ThongBao.rieng(this, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
                         this.iItems.remove(item);
                         Database.instance.deleteItem(item.dbid);
                         // 16/09/2026: them ten + dbid (theo yeu cau "log chi tiet hon").
@@ -4275,9 +4281,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                         try {
                             if (!TeamServer.isServerIndo()) {
-                                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian thuê đồ cầm tay " + item.getTemplate().name + " đã hết"));
+                                com.htbb.thongbao.ThongBao.rieng(this, "Thời gian thuê đồ cầm tay " + item.getTemplate().name + " đã hết");
                             } else {
-                                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Masa sewa senjata  " + item.getTemplate().name + " sudah berakhir"));
+                                com.htbb.thongbao.ThongBao.rieng(this, "Masa sewa senjata  " + item.getTemplate().name + " sudah berakhir");
                             }
                             this.wItems[this.slotWearing][i] = null;
                             Database.instance.deleteItem(item.dbid);
@@ -4990,7 +4996,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     }
                     if (this.x25Exp == 0) {
                         try {
-                            this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng vé giờ vàng tăng 150% kinh nghiệm đẵ hết"));
+                            com.htbb.thongbao.ThongBao.rieng(this, "Thời gian sử dụng vé giờ vàng tăng 150% kinh nghiệm đẵ hết");
                         } catch (final Exception ex) {
                         }
                     }
@@ -8971,7 +8977,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     this.lvlinh = 0;
                     this.lvlinhthue = 0;
                     this.classlinh = 0;
-                    this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Pokémon hỗ trợ của bạn đã hết hạn"));
+                    com.htbb.thongbao.ThongBao.rieng(this, "Pokémon hỗ trợ của bạn đã hết hạn");
                     Database.instance.saveOrtherLog("", this.charname, "linh thue het han:c= " + this.classlinh + ",g=" + this.genderlinh + ",lvl=" + this.lvlinhthue + ",lvcl=" + this.lvlinh, "lhethan");
                 }
             }
@@ -9041,7 +9047,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
         Database.instance.updateRcvGiftTop(this.charname);
         Database.instance.saveOrtherLog("", this.charname, "Nhan qua offline hn", "offline");
         try {
-            this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn đã nhận được quà offline"));
+            com.htbb.thongbao.ThongBao.rieng(this, "Bạn đã nhận được quà offline");
         } catch (final IOException ex) {
         }
     }
@@ -10117,7 +10123,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 // Tui do tro ve so goc ngay (xem Item.getInfoAtbItem(Char)).
                 this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
                 // "ảo hóa" viet thuong, cung ly do font o cho tren.
-                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hiệu lực ảo hóa Ponyta đã hết hạn, chỉ số trở về ban đầu"));
+                com.htbb.thongbao.ThongBao.rieng(this, "Hiệu lực ảo hóa Ponyta đã hết hạn, chỉ số trở về ban đầu");
                 Database.instance.saveOrtherLog("", this.charname, "ao hoa hoa ky lan het han", "aohoahkl");
             }
         } catch (final Exception ex) {
@@ -11150,7 +11156,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         }
                     }
                     try {
-                        this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Vé không trúng thưởng. Số trúng là số " + Map.winNumber));
+                        com.htbb.thongbao.ThongBao.rieng(this, "Vé không trúng thưởng. Số trúng là số " + Map.winNumber);
                     } catch (final IOException ex2) {
                     }
                     this.dayOpenXoso = "";
@@ -11160,7 +11166,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             } else {
                 Database.instance.saveOrtherLog("", this.charname, this.allNumberBuy(), "hethanXS");
                 try {
-                    this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Vé bạn mua hôm qua đã hết hạn."));
+                    com.htbb.thongbao.ThongBao.rieng(this, "Vé bạn mua hôm qua đã hết hạn.");
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }

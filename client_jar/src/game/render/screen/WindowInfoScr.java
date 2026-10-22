@@ -4541,33 +4541,21 @@ public class WindowInfoScr extends Screen {
 
     private void showMenuForPotion(final int potionType) {
         Vector menuItems = new Vector();
-        if (potionType >= 14 && potionType <= 18 && Canvas.gameScr.mainChar.pk > 0) {
-            menuItems.addElement(new Command("Tháo khăn", new IAction() {
+        if (game.pokemon.KhanPk.laKhan(potionType)) {
+            // 0.9.8: khăn PK - "Đeo khăn (bật PK)" / "Tháo khăn (tắt PK)" + xác nhận; máy chủ quyết (không còn chặn 3 phút ở client)
+            menuItems.addElement(new Command(game.pokemon.KhanPk.nhan(), new IAction() {
                 @Override
                 public void perform() {
-                    if (System.currentTimeMillis() - Canvas.gameScr.mainChar.timeWearScarves < 180000) {
-                        Canvas.startOKDlg("Sau 3 phút tính từ thời điểm đeo khăn mới được tháo khăn.");
-                    } else {
-                        Canvas.gameScr.doUsePotion(Canvas.gameScr.mainChar.pk);
-                        Canvas.gameScr.mainChar.pk = (byte) 0;
-                    }
+                    game.pokemon.KhanPk.hoi(potionType);
                 }
             }));
         } else {
             menuItems.addElement(new Command("Sử dụng", new IAction() {
                 @Override
                 public void perform() {
-                    if (Canvas.gameScr.mainChar.iskiller && potionType >= 14 && potionType <= 18) {
-                        Canvas.startOKDlg("Không thể đeo khăn khi đang bị truy nã.");
-                        return;
-                    }
                     Canvas.gameScr.doUsePotion(potionType);
                     if (Canvas.gameScr.mainChar.potions[potionType] == 0) {
                         WindowInfoScr.this.list.removeElementAt(WindowInfoScr.this.selected);
-                    }
-                    if (potionType >= 14 && potionType <= 18) {
-                        Canvas.gameScr.mainChar.timeWearScarves = System.currentTimeMillis();
-                        Canvas.gameScr.mainChar.pk = (byte) potionType;
                     }
                 }
             }));

@@ -183,8 +183,8 @@ public final class LauDaiNhanVat {
         }
         if (kq[0] > diemCu) {
             try {
-                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(
-                        "Tinh thông +" + (kq[0] - diemCu) + " (hiện " + kq[0] + " điểm)."));
+                com.htbb.thongbao.ThongBao.rieng(p, 
+                        "Tinh thông +" + (kq[0] - diemCu) + " (hiện " + kq[0] + " điểm).");
                 p.calculateAttrib();
             } catch (final Exception ignored) {
             }
@@ -205,7 +205,7 @@ public final class LauDaiNhanVat {
     /** Thong bao tu tat (nuot IOException). */
     static void bao(final Char p, final String s) {
         try {
-            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(s));
+            com.htbb.thongbao.ThongBao.rieng(p, s);
         } catch (final Exception ignored) {
         }
     }

@@ -635,7 +635,7 @@ public final class SkinThuCuoi {
                 p.sendEffToChar(p);
                 p.sendEffToNearChar();
             }
-            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(BAO_KICH_HOAT[s]));
+            com.htbb.thongbao.ThongBao.rieng(p, BAO_KICH_HOAT[s]);
         } catch (final Exception e) {
             // Bao hieu hong thi noi tai van chay — khong duoc lam hong don danh.
         }

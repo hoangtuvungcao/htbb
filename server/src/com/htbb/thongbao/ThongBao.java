@@ -93,6 +93,37 @@ public final class ThongBao {
         }
     }
 
+    /**
+     * 0.9.8: tin RIENG cua mot nguoi (truoc gui chu chay -26 -> client moi hien thanh bieu ngu "TOAN MAY CHU"). Client moi:
+     * the nhanh dung loai (LOI / KET_QUA / TIN theo noi dung); client cu: chu chay -26 nhu truoc. Tin toan may chu that
+     * (boss, gio vang, chiem Gym...) van dung -26 / ThongBaoGop.
+     */
+    public static void rieng(final real.Char p, final String s) throws java.io.IOException {
+        if (p == null || s == null || s.trim().isEmpty()) {
+            return;
+        }
+        if (!coToast(p)) {
+            p.sendMessage(real.MessageCreator.createServerAlertAutoOffMessage(s));
+            return;
+        }
+        gui(p, loaiRieng(s), s, "", HINH_KHONG, 0);
+    }
+
+    /** Loai the cho tin rieng theo noi dung (thuan, test). */
+    public static byte loaiRieng(final String s) {
+        final String t = s == null ? "" : s.trim().toLowerCase();
+        if (t.startsWith("không") || t.startsWith("bạn không") || t.contains("không thể") || t.startsWith("chưa thể")
+                || t.startsWith("hiệu ứng vẫn còn") || t.contains("chưa đủ") || t.startsWith("bạn phải") || t.contains("thất bại")
+                || t.contains("đã thua")) {
+            return LOI;
+        }
+        if (t.contains("nhận") || t.contains("chúc mừng") || t.contains("thành công") || t.contains("chiến thắng")
+                || t.contains("tinh thông +") || t.startsWith("mở khoá") || t.startsWith("đã mở")) {
+            return KET_QUA;
+        }
+        return TIN;
+    }
+
     public static void ketQua(final real.Char p, final String chinh, final String phu) {
         gui(p, KET_QUA, chinh, phu, HINH_KHONG, 0);
     }

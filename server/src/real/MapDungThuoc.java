@@ -32,43 +32,8 @@ class MapDungThuoc {
                 } else if (player.map.isMapChienTruongMoba() && (potionType < 126 || potionType > 132) && potionType != 100 && !TeamServer.isServerLocal()) {
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 } else if (potionType >= 14 && potionType <= 18) {
-                    if (map.mapId != 204 && map.mapId != 205 && !player.map.isMapLoiDai()) {
-                        if (player.killer <= 0 && !player.isKiller) {
-                            Message m = new Message(65);
-                            m.dos.writeShort(player.id);
-                            if (player.pk == 0) {
-                                if (player.isKiller) {
-                                    return;
-                                }
-
-                                player.pk = (byte) potionType;
-                                m.dos.writeByte(1);
-                                m.dos.writeByte(potionType);
-                                player.timeUsePK = System.currentTimeMillis();
-                            } else {
-                                if (System.currentTimeMillis() - player.timeUsePK <= 150000L) {
-                                    player.isKiller = true;
-                                    player.killer = (short) (player.killer + 300);
-                                    Message msg = new Message(67);
-                                    msg.dos.writeShort(player.id);
-                                    msg.dos.writeByte(1);
-                                    msg.dos.writeShort(player.killer);
-                                    player.sendMessage(msg);
-                                    player.sendToNearPlayer(msg);
-                                    Database.instance.saveOrtherLog("tob_other_log", player.charname, "hack khan ", "hk");
-                                    return;
-                                }
-
-                                m.dos.writeByte(0);
-                                m.dos.writeByte(potionType);
-                                player.pk = 0;
-                            }
-
-                            player.sendMessage(m);
-                            player.sendToNearPlayer(m);
-                            m.cleanup();
-                        }
-                    }
+                    // khan PK: bat / tat (CoPkGame - truoc: dung lai trong 150 giay = ten do + 300 nghiep, khan ket)
+                    CoPkGame.dung(player, potionType);
                 } else if (potionType != 1
                         && potionType != 2
                         && potionType != 3

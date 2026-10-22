@@ -186,7 +186,7 @@ public class SelectCharHandler implements ICommandHandler {
                 if (wd != null) {
                     wd.listMember.put(p.charDBID, p.userID);
                     if (wd.action == 1) {
-                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Lễ kết đôi bạn được mời đang diễn ra. Hãy nhanh chân lên Cao nguyên Indigo để dự lễ."));
+                        com.htbb.thongbao.ThongBao.rieng(p, "Lễ kết đôi bạn được mời đang diễn ra. Hãy nhanh chân lên Cao nguyên Indigo để dự lễ.");
                     }
                 } else {
                     p.idWedding = -1;
@@ -428,7 +428,7 @@ public class SelectCharHandler implements ICommandHandler {
             try {
                 // p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chào mừng " + p.charname + " đã đến với OpenBeta của Ngũ Đế Online Private, chúc bạn một ngày chơi game vui vẻ nhé. Khi train quái, bạn sẽ nhận được thêm lượng khoá khi còn dưới 500 lượng khoá."));
                 if (p.isCharNu() && Char.getDayOpen(0L).equals("2017-03-08")) {
-                    p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chúc " + p.charname + " 8/3 thật vui vẻ và nhiều niềm vui"));
+                    com.htbb.thongbao.ThongBao.rieng(p, "Chúc " + p.charname + " 8/3 thật vui vẻ và nhiều niềm vui");
                 }
                 session.sendMessage(MessageCreator.createConfig(p));
                 session.sendMessage(MessageCreator.createInboxMessage(p));

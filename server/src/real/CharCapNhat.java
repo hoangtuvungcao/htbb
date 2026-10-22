@@ -782,7 +782,7 @@ class CharCapNhat {
                         self.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể sử dụng sau "
                                 + ChieuHoTro.conHoiGiay(self, buffEff, now) + "s", ""));
                     } else if (kq == ChieuHoTro.DANG_HIEU_LUC) {
-                        self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hiệu ứng vẫn còn, chưa thể dùng lại."));
+                        com.htbb.thongbao.ThongBao.rieng(self, "Hiệu ứng vẫn còn, chưa thể dùng lại.");
                     }
                     return;
                 }

@@ -89,8 +89,8 @@ final class RoiLauDai {
             DatabaseLauDai.congShiny(p.charDBID, dex);
             NhiemVuEngine.suKien(p, "pokedex_shiny", String.valueOf(dex), 1);
             try {
-                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(
-                        "Bạn vừa thấy một " + PokedexPokemon.tenLoai(dex) + " shiny! Đã ghi vào Pokédex."));
+                com.htbb.thongbao.ThongBao.rieng(p, 
+                        "Bạn vừa thấy một " + PokedexPokemon.tenLoai(dex) + " shiny! Đã ghi vào Pokédex.");
             } catch (final Exception ignored) {
             }
             Database.instance.saveOrtherLog("", p.charname, "shiny dex " + dex, "laudai");
