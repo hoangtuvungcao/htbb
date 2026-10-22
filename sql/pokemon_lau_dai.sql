@@ -2547,7 +2547,7 @@ CREATE TABLE `data_quest_moi` (
   `npotion` varchar(45) NOT NULL DEFAULT '32000',
   `itemgift` varchar(45) NOT NULL DEFAULT '32000',
   `deltaLv` int(10) unsigned NOT NULL DEFAULT 0,
-  `infogift` varchar(200) DEFAULT NULL,
+  `infogift` varchar(1000) DEFAULT NULL,
   `infofinish` varchar(200) NOT NULL DEFAULT 'Nhiệm vụ hoàn thành',
   `pactive` int(10) unsigned NOT NULL DEFAULT 0,
   `luong` int(10) DEFAULT 0,

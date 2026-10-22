@@ -1364,6 +1364,9 @@ class DatabaseNhanVat {
                     charId = rs3.getInt("id");
                     // Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
                     Database.luuCotPokemon(conn, charId, LoaiPokemon.khoiDau(classID), 0);
+                    // sua-tuyen: nhan vat moi -> lang khoi dau dung vung (Kanto = Pewter, Johto = Blackthorn); nhan vat cu
+                    // (khong co dong) giu lang dang song. Xem real.LangKhoiDau.
+                    real.LangKhoiDau.ghiNhanVatMoi(charId, nation);
                 }
                 try {
                     rs3.close();

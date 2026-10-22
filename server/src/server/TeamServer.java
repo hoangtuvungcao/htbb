@@ -944,6 +944,7 @@ public class TeamServer {
         }
         // GD2 thiet ke dai han: bang moi + doi bang EXP + chuyen EXP nhan vat cu (MOT lan, co sao
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
+        real.LangKhoiDau.taoBang(); // lang khoi dau theo vung cho nhan vat moi (moi che do)
         if (com.htbb.pokemon.LauDai.bat()) {
             data.DatabaseLauDai.taoBang();
             real.DanhHieuGame.taoBang();

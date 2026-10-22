@@ -23,7 +23,8 @@ class KichBanHuongDan {
     }
 
     static void dangKy() {
-        BotChucNang.dk("hd_toan_bo", false, KichBanHuongDan::toanBo);
+        BotChucNang.dk("hd_toan_bo", false, () -> toanBo(0));
+        BotChucNang.dk("hd_toan_bo_johto", false, () -> toanBo(1)); // sua-tuyen: nhan vat Johto -> Blackthorn, du 10 buoc
         BotChucNang.dk("hd_bo_qua", false, KichBanHuongDan::boQua);
         BotChucNang.dk("hd_so_tay", false, KichBanHuongDan::soTay);
         BotChucNang.dk("hd_tien_do_cu", false, KichBanHuongDan::tienDoCu);
@@ -226,6 +227,11 @@ class KichBanHuongDan {
 
     /** Tai khoan chua co nhan vat (tao moi trong account.team_user khi can - chi may thu, can -Ddb). */
     static BotChucNang.Bot botMoiTinh(String tienTo) throws Exception {
+        return botMoiTinh(tienTo, 0);
+    }
+
+    /** Tai khoan moi tinh, nhan vat tao o vung {@code vung} (0 Kanto, 1 Johto). */
+    static BotChucNang.Bot botMoiTinh(String tienTo, int vung) throws Exception {
         String ten = tienTo + String.valueOf(System.currentTimeMillis() % 100000000L);
         BotChucNang.sql("INSERT INTO account.team_user (username,password,phone,regdate,ban,provider,fromgame) VALUES ('" + ten
                 + "',PASSWORD('123456'),'',DATE_SUB(NOW(), INTERVAL 30 DAY),0,0,0)");
@@ -233,7 +239,7 @@ class KichBanHuongDan {
         BotChucNang.Bot b = new BotChucNang.Bot(ten);
         String l = b.dangNhap("123456");
         if (l != null) throw new IllegalStateException(ten + " dang nhap: " + l);
-        l = b.vaoGame(0);
+        l = b.vaoGame(0, vung);
         if (l != null) throw new IllegalStateException(ten + " " + l);
         BotChucNang.duTuoiChongClone(b);
         return b;
@@ -269,9 +275,14 @@ class KichBanHuongDan {
 
     // ------------------------------------------------------------------ hd_toan_bo
 
-    static void toanBo() throws Exception {
+    /** Lang khoi dau dung cua vung (sua-tuyen): Kanto -> Pewter 0, Johto -> Blackthorn 70. */
+    static int langCuaVung(int vung) {
+        return vung == 1 ? 70 : 0;
+    }
+
+    static void toanBo(int vung) throws Exception {
         long bd = System.currentTimeMillis();
-        try (BotChucNang.Bot b = botMoiTinh("hd")) {
+        try (BotChucNang.Bot b = botMoiTinh(vung == 1 ? "hj" : "hd", vung)) {
             Nv q0 = chinh(b, 0, 0);
             ket("hd.tao_moi.san_105", b.mapId == 105, "map " + b.mapId);
             ket("hd.buoc1.xatu_noi_chuyen", q0 != null && q0.id == 0 && q0.npc == 5 && q0.loai == 3, String.valueOf(q0));
@@ -279,6 +290,8 @@ class KichBanHuongDan {
             int m = b.moc();
             roiSan(b);
             ket("hd.vao_lang", laLang(b.mapLoad), "map " + b.mapId + " nap " + b.mapLoad);
+            ket("hd.lang_dung_vung." + (vung == 1 ? "johto" : "kanto"), b.mapLoad == langCuaVung(vung),
+                    "vung " + vung + " -> lang nap " + b.mapLoad + " (mong " + langCuaVung(vung) + ")");
             boolean moi = b.doiMenu(m, NPC_SO_TAY, MENU_MOI, 3000) == 2;
             ket("hd.moi_lam_bo_qua", moi && b.timMuc("Bỏ qua") == 1, chuSau(b, m));
             int m2 = b.moc();

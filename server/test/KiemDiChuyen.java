@@ -92,7 +92,8 @@ public final class KiemDiChuyen {
 
     static void handlerKhongNgu() throws Exception {
         final String src = new String(Files.readAllBytes(Paths.get("src/real/CharCapNhat.java")), StandardCharsets.UTF_8);
-        final int a = src.indexOf("static void doPlayerMove(Char self");
+        // sua-tuyen: than ham nam o doPlayerMoveThan (doPlayerMove boc try/finally de kiem buoc dia diem SAU khi cap nhat vi tri)
+        final int a = src.indexOf("static void doPlayerMoveThan(Char self");
         final int b = src.indexOf("\n    }\n", a);
         final String than = a < 0 || b < 0 ? "" : src.substring(a, b);
         Kiem.dung("CharCapNhat.doPlayerMove tim thay", !than.isEmpty());

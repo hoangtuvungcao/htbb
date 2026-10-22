@@ -24,6 +24,7 @@ class KichBanDS4 {
         KichBanDS5.dangKy();
         KichBanNhiemVu.dangKy();
         KichBanHuongDan.dangKy();
+        KichBanSuaTuyen.dangKy();
     }
 
     static BotChucNang.Bot botLang(int lv) throws Exception {
