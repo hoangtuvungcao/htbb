@@ -144,11 +144,19 @@ public final class ChonChieuNhanh extends Dialog {
         }
         this.cuon = 0;
         this.bc = null;
-        this.anNutLenh = ChuUI.bo != null;   // bảng mới: X + chạm hàng thay "Gán" / "Đóng"
+        this.anNutLenh = moi();   // bảng mới: X + chạm hàng thay "Gán" / "Đóng"
         Canvas.isPointerClick = false;
         Canvas.isPointerDown = false;
         AmThanh.phat(AmThanh.MO);
         show();
+    }
+
+    /**
+     * Bảng mới (vùng chạm VungCham, nút khối NRO): máy có chữ thật (PC / APK) HOẶC máy cảm ứng (J2ME cảm ứng, J2ME
+     * Loader) - 0.9.7: trước chỉ theo chữ thật nên J2ME cảm ứng rơi vào bảng cũ chỉ dùng phím. Máy chỉ phím: bảng cũ.
+     */
+    static boolean moi() {
+        return ChuUI.bo != null || Canvas.instance != null && Canvas.instance.hasPointerEvents();
     }
 
     private void dong() {
@@ -192,7 +200,7 @@ public final class ChonChieuNhanh extends Dialog {
     }
 
     private String[] nutChan() {
-        if (ChuUI.bo != null) {   // bảng mới: đóng bằng X trên đầu (không lặp nút "Đóng")
+        if (moi()) {   // bảng mới: đóng bằng X trên đầu (không lặp nút "Đóng")
             return this.coChinh ? new String[]{"Bỏ trống", "Dời sang trái", "Dời sang phải"} : new String[0];
         }
         return this.coChinh ? new String[]{"Bỏ trống", "< Dời trái", "Dời phải >", "Đóng"} : new String[]{"Đóng"};
@@ -279,7 +287,7 @@ public final class ChonChieuNhanh extends Dialog {
         if (this.bc == null) {
             this.bc = OChieuNhanh.boCuc(Canvas.w, Canvas.h, n);
         }
-        if (ChuUI.bo != null) {
+        if (moi()) {
             veMoi(g, n);
             return;
         }

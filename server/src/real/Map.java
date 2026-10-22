@@ -15531,6 +15531,12 @@ public class Map implements Runnable {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
         } else if (!this.checkTrade(player)) {
             short itemID = msg.dis.readShort();
+            // 0.9.8: byte cuoi 1 = HUY vat pham khoa (TheVatPham "Huỷ"); client cu khong gui
+            boolean xinHuy = false;
+            try {
+                xinHuy = msg.dis.available() >= 1 && msg.dis.readByte() == 1;
+            } catch (final Exception ignored) {
+            }
             if (!isItemSelled(player, itemID, null)) {
                 int size = player.iItems.size() - 1;
 
@@ -15544,6 +15550,10 @@ public class Map implements Runnable {
 
                         // 0.9.8: vat pham KHOA khong ra dat (khong ai nhat) - "Huỷ" (client hoi lai) huy han, tru do thue.
                         final boolean huyKhoa = item.lock != 0;
+                        if (huyKhoa && !xinHuy) {
+                            DungVatPham.loi(player, "Vật phẩm khoá không bỏ được.");
+                            return;
+                        }
                         if (huyKhoa && !com.htbb.pokemon.BanDoKhoa.huyDuoc(true, item.getTemplate().ndayLoan > 0, item.isSelling)) {
                             DungVatPham.loi(player, "Vật phẩm khoá này không huỷ được.");
                             return;
@@ -15562,7 +15572,11 @@ public class Map implements Runnable {
                             // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
                             String sub = "dbid" + item.dbid + " " + item.getTemplate().name + "_" + item.plus + "|" + item.getAttribute() + "|" + item.getDBInfo();
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                            player.sendMessage(MessageCreator.createServerAlertMessage(huyKhoa ? "Đã huỷ vật phẩm khoá" : "Đã huỷ vật phẩm khi bỏ ra đất", ""));
+                            if (huyKhoa) {
+                                DungVatPham.bao(player, "Đã huỷ vật phẩm khoá.");
+                            } else {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Đã huỷ vật phẩm khi bỏ ra đất", ""));
+                            }
                             Database.instance.saveOrtherLog("tob_log_other_item", player.charname, (huyKhoa ? "Huỷ khoá " : "Bỏ ") + sub + (huyKhoa ? "" : " ra đất"),
                                     huyKhoa ? com.htbb.pokemon.BanDoKhoa.LOG_HUY : "delI");
                             return;

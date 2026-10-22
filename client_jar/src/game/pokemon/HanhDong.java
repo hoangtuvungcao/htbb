@@ -597,11 +597,18 @@ public final class HanhDong {
                 BAO[i] = null;
                 continue;
             }
-            int w = f.getWidth(s) + 14;
+            // 0.9.7 (NRO): bảng tối viền xanh lá; không chồng thẻ người chơi trái trên (rộng quá thì xuống dưới thẻ)
+            int wMax = Canvas.w - 16;
+            s = GiaoDien.catChu(f, s, wMax - 16);
+            int w = f.getWidth(s) + 16;
             int x = Canvas.hw - w / 2;
-            int yy = y + i * 17 - (int) (tuoi < 160 ? (160 - tuoi) / 20 : 0);
-            GiaoDien.khoi(g, x, yy, w, 15, 7, GiaoDien.VIEN);
-            GiaoDien.khoiDoc(g, x + 1, yy + 1, w - 2, 13, 6, 0x2E8A3A, 0x1E5E28);
+            int y0 = x < TheNguoiChoi.RONG + 10 ? Math.max(y, TheNguoiChoi.CAO + 8) : y;
+            int yy = y0 + i * 18 - (int) (tuoi < 160 ? (160 - tuoi) / 20 : 0);
+            g.setColor(ChuDe.LA);
+            g.fillRect(x - 1, yy - 1, w + 2, 18);
+            if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, x, yy, w, 16)) {
+                GiaoDien.khoi(g, x, yy, w, 16, 2, 0x2B1A10);
+            }
             f.drawString(g, s, Canvas.hw, yy + 1, Font.CENTER);
         }
     }

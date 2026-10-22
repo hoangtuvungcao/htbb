@@ -534,7 +534,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chong_clone.ky_gui_gia_toi_da_gio` | Giá ký gửi tối đa (giờ thu nhập) | Cố định (ẩn) | `200` | ngay | game | Trần cho món không có giá gốc (và sàn của trần trên). |
 | `chong_clone.ky_gui_gia_toi_thieu_phan_tram` | Giá ký gửi tối thiểu (% giá gốc) | Cố định (ẩn) | `5` | ngay | game | Chặn bán phá giá cho clone. |
 | `chong_clone.ban_npc_do_khoa` | Bán đồ / nguyên liệu khoá cho NPC lấy xu | Cố định (ẩn) | `0` | ngay | game | 0 = đồ khoá chỉ bán ở giá thấp (chong_clone.ban_npc_khoa_phan_tram). 1 = bán giá NPC thường như cũ. |
-| `chong_clone.ban_npc_khoa_phan_tram` | Giá bán đồ / nguyên liệu khoá cho NPC (% giá NPC thường) | Cố định (ẩn) | `15` | ngay | game | 0.9.8: đồ khoá (phần thưởng khoá, mua bằng lượng khoá) bán NPC ở giá thấp = số này % giá NPC thường (mặc định 15%, trần cứng 20%; giá NPC thường đã là 5% giá mẫu). 0 = không bán. Thuốc không bán. Vẫn không giao dịch / vứt cho người khác. |
+| `chong_clone.ban_npc_khoa_phan_tram` | Giá bán đồ / nguyên liệu khoá cho NPC (% giá NPC thường) | Cố định (ẩn) | `25` | ngay | game | 0.9.8: đồ khoá (phần thưởng khoá, mua bằng lượng khoá) bán NPC ở giá thấp = số này % giá NPC thường (mặc định 25% = 1/4, khớp thẻ vật phẩm client; trần cứng 25%; giá NPC thường đã là 5% giá mẫu). 0 = không bán. Thuốc không bán. Vẫn không giao dịch / vứt cho người khác. |
 
 #### Vòng quay may mắn (cố định) (`vong_quay`)
 

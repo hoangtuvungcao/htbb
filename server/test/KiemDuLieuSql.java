@@ -46,7 +46,7 @@ public final class KiemDuLieuSql {
      *  0.9.4 (203 khoa, co lop) e6505ed5..., 213 khoa 9be03a6a.... khoa-map: +ban_do.khoa.bat (214 khoa); gop main 0cbf73ae: +nhom vong_quay 26 khoa (240 / 16); gop main bda0e901: +nhom cuoc_xu (256 / 17); gop main 1a705be6: 269 khoa main + ban_do.khoa.bat (luon_bat, an) = 270 / 17; ban-098 (0.9.8): +nhom hoc_chieu 5 khoa, +nhom trang_bi 21 khoa,
      *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306.
      *  Lech = danh muc da doi (sua trong CSDL / nang_cap.sql phan 2, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "1d6043c573c1b19e37db4096c16ce0f5d61606107df12733d7ece052023e45cb";
+    static final String VT_DANH_MUC = "7b368c7d9e305f3156c6d5b5b791226700fd0217c574256af736cbedc947b76f";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

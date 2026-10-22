@@ -184,25 +184,17 @@ public final class TheVatPham extends Dialog {
     /** Giá bán lại 1 chiếc (xu); -1 = không bán được. */
     long giaBan() {
         Object o = this.mon;
-        long gia = -1;
+        // vật phẩm khoá: NPC mua giá thấp (1/4 giá bán thường - khớp luật máy chủ ban-098)
+        int chia = laKhoa() ? 4 : 1;
         if (o instanceof ItemInInventory) {
             ItemTemplate t = ManNhanVat.mau((ItemInInventory) o);
-            gia = t == null ? -1 : t.price / 5 + t.plus * 1000;
-        } else if (o instanceof GemTemplate && !LuoiTui.laDacBiet(o)) {
-            GemTemp t = gem(o);
-            gia = t == null ? -1 : t.price / 5;
+            return t == null ? -1 : (t.price / 5 + t.plus * 1000) / chia;
         }
-        // 0.9.8: đồ khoá bán NPC ở giá thấp (máy chủ com.htbb.pokemon.BanDoKhoa: 15% giá NPC thường, quyết định cuối ở máy chủ)
-        return gia > 0 && laKhoa() ? gia * PHAN_TRAM_KHOA / 100 : gia;
-    }
-
-    /** % giá NPC thường khi bán đồ khoá (khớp mặc định máy chủ chong_clone.ban_npc_khoa_phan_tram). */
-    static final int PHAN_TRAM_KHOA = 15;
-
-    /** Món đang xem là đồ / nguyên liệu khoá. */
-    boolean laKhoa() {
-        Object o = this.mon;
-        return LuoiTui.laKhoa(o) || (o instanceof ItemInInventory && ((ItemInInventory) o).lock == 1);
+        if (o instanceof GemTemplate && !LuoiTui.laDacBiet(o)) {
+            GemTemp t = gem(o);
+            return t == null ? -1 : t.price / 5 / chia;
+        }
+        return -1;
     }
 
     /** Lý do không bán được (null = bán được). */
@@ -214,6 +206,7 @@ public final class TheVatPham extends Dialog {
         if (o instanceof int[]) {
             return "Vật phẩm nhiệm vụ không bán được.";
         }
+        // 0.9.8 (luật máy chủ ban-098): vật phẩm khoá BÁN ĐƯỢC cho NPC với giá thấp (giaBan), không giao dịch
         if (LuoiTui.laDacBiet(o)) {
             return "Vật phẩm đặc biệt không bán được.";
         }
@@ -232,14 +225,34 @@ public final class TheVatPham extends Dialog {
         return giaBan() < 0 ? "Vật phẩm này không bán được." : null;
     }
 
-    /** Lý do không vứt được (null = vứt được). */
-    String khongVut() {
+    /** Vật phẩm khoá (không vứt ra đất được - chỉ Huỷ). */
+    boolean laKhoa() {
         Object o = this.mon;
-        if (o instanceof int[]) {
-            return "Vật phẩm nhiệm vụ không bỏ được.";
+        return LuoiTui.laKhoa(o) || (o instanceof ItemInInventory && ((ItemInInventory) o).lock == 1);
+    }
+
+    /**
+     * Thao tác bỏ (kiểu NRO): 0 = "Vứt" ra đất, 1 = "Huỷ" (vật phẩm khoá: tiêu huỷ, hỏi lại), -1 = không bỏ được (vật
+     * phẩm nhiệm vụ - nút ẩn, thẻ nói lý do {@link #lyDoKhongBo}).
+     */
+    int kieuBo() {
+        if (this.mon instanceof int[]) {
+            return -1;
+        }
+        return laKhoa() ? 1 : 0;
+    }
+
+    String lyDoKhongBo() {
+        return this.mon instanceof int[] ? "Vật phẩm nhiệm vụ: giao cho NPC, không vứt / huỷ được." : null;
+    }
+
+    /** Lý do không vứt / huỷ được lúc này (null = được). */
+    String khongVut() {
+        if (kieuBo() < 0) {
+            return lyDoKhongBo();
         }
         if (this.dangMac) {
-            return laKhoa() ? "Tháo ra trước khi huỷ." : "Tháo ra trước khi bỏ.";
+            return "Tháo ra trước khi bỏ.";
         }
         return null;
     }
@@ -335,6 +348,7 @@ public final class TheVatPham extends Dialog {
     /** Vứt so chiếc (đã xác nhận). */
     void vut(int so) {
         Object o = this.mon;
+        boolean huy = kieuBo() == 1;
         dong();
         if (o instanceof Integer) {
             GameService.gI().dellPotion(((Integer) o).intValue(), so >= soCoTinh(o) ? 0 : so);
@@ -343,7 +357,8 @@ public final class TheVatPham extends Dialog {
             boolean dacBiet = LuoiTui.laDacBiet(o);
             GameService.gI().dellGemItem(g.id, dacBiet ? 1 : 0, (byte) (LuoiTui.laKhoa(o) ? 1 : 0), so >= g.number ? 0 : so);
         } else if (o instanceof ItemInInventory) {
-            GameService.gI().giveItemToGround(((ItemInInventory) o).itemID);
+            // vật phẩm khoá: TIÊU HUỶ (gói 61 + byte 1); thường: bỏ ra đất (gói 61 như cũ)
+            GameService.gI().giveItemToGround(((ItemInInventory) o).itemID, huy);
         }
         AmThanh.phat(AmThanh.XAC_NHAN);
     }
@@ -380,13 +395,12 @@ public final class TheVatPham extends Dialog {
 
     void hoiVut(final int so) {
         final TheVatPham t = this;
-        final boolean khoa = laKhoa();
-        // 0.9.8: đồ khoá không ra đất (không ai nhặt) - "Huỷ" xoá hẳn, hỏi lại
-        String noi = khoa ? "Huỷ " + (so > 1 ? so + " " : "") + ten() + "? Đồ khoá không bỏ ra đất được, sẽ mất vĩnh viễn."
-                : (so > 1 ? "Bỏ " + so + " " : "Bỏ ") + ten() + " ra đất? Vật phẩm sẽ mất.";
+        boolean huy = kieuBo() == 1;
+        String noi = huy ? "Huỷ " + (so > 1 ? so + " " : "") + ten() + "? Vật phẩm khoá sẽ mất vĩnh viễn, không lấy lại được."
+                : (so > 1 ? "Vứt " + so + " " : "Vứt ") + ten() + " ra đất? Vật phẩm sẽ mất.";
         Object o = this.mon;
         final Object giu = o;
-        HopXacNhan.hoiNguyHiem(khoa ? "Huỷ vật phẩm khoá" : "Bỏ vật phẩm", noi, khoa ? "Huỷ" : "Bỏ", new IAction() {
+        HopXacNhan.hoiNguyHiem(huy ? "Huỷ vật phẩm" : "Vứt vật phẩm", noi, huy ? "Huỷ" : "Vứt", new IAction() {
             public void perform() {
                 t.mon = giu;
                 t.vut(so);
@@ -408,8 +422,7 @@ public final class TheVatPham extends Dialog {
         final Object giu = this.mon;
         long tong = Math.max(0, giaBan()) * so;
         boolean hiem = giu instanceof ItemInInventory && (((ItemInInventory) giu).colorName >= 2 || ((ItemInInventory) giu).plusTemplate > 0);
-        HopXacNhan.hoiGia("Bán vật phẩm", "Bán " + (so > 1 ? so + " " : "") + ten() + "?" + (laKhoa() ? " Đồ khoá: bán cho NPC (giá thấp)." : "")
-                + (hiem ? " Đồ hiếm - không lấy lại được." : " Không lấy lại được."),
+        HopXacNhan.hoiGia("Bán vật phẩm", "Bán " + (so > 1 ? so + " " : "") + ten() + "?" + (hiem ? " Đồ hiếm - không lấy lại được." : " Không lấy lại được."),
                 "Bán", TienTe.XU, tong, new IAction() {
             public void perform() {
                 t.mon = giu;
@@ -641,10 +654,10 @@ public final class TheVatPham extends Dialog {
     /** Hàng nút đáy theo ngữ cảnh. */
     void veNut(Graphics g, int x, int y, int w, int h) {
         int k = Bang.cach();
-        String[] chu = new String[3];
-        int[] kieu = new int[3];
-        IAction[] viec = new IAction[3];
-        String[] ten = new String[3];
+        String[] chu = new String[4];
+        int[] kieu = new int[4];
+        IAction[] viec = new IAction[4];
+        String[] ten = new String[4];
         int n = 0;
         final TheVatPham t = this;
         if (this.nguCanh == BAN) {
@@ -660,7 +673,7 @@ public final class TheVatPham extends Dialog {
             if (l != null) {
                 lyDo = l;
             } else if (laKhoa()) {
-                goiY = "Bán cho NPC (giá thấp)";
+                goiY = "Đồ khoá: Bán cho NPC (giá thấp), không giao dịch được";
             }
         } else {
             if (this.dangMac) {
@@ -686,7 +699,7 @@ public final class TheVatPham extends Dialog {
                     lyDo = l;
                 }
             } else if (dungDuoc()) {
-                chu[n] = "Dùng";
+                chu[n] = "Sử dụng";
                 kieu[n] = Bang.XAC_NHAN;
                 viec[n] = new IAction() {
                     public void perform() {
@@ -695,32 +708,31 @@ public final class TheVatPham extends Dialog {
                 };
                 ten[n++] = "tvp-dung";
             }
-            String lv = khongVut();
-            boolean huy = laKhoa();
-            chu[n] = huy ? "Huỷ" : "Vứt";
-            kieu[n] = lv == null ? Bang.NGUY : Bang.TAT;
-            viec[n] = lv == null ? new IAction() {
-                public void perform() {
-                    t.bamVut();
+            int kb = kieuBo();
+            if (kb >= 0) {
+                String lv = khongVut();
+                chu[n] = kb == 1 ? "Huỷ" : "Vứt";
+                kieu[n] = lv == null ? Bang.NGUY : Bang.TAT;
+                viec[n] = lv == null ? new IAction() {
+                    public void perform() {
+                        t.bamVut();
+                    }
+                } : null;
+                ten[n++] = kb == 1 ? "tvp-huy" : "tvp-vut";
+                if (kb == 1 && lyDo == null) {
+                    goiY = "Đồ khoá: Bán cho NPC (giá thấp) ở cửa hàng, hoặc Huỷ";
                 }
-            } : null;
-            ten[n++] = huy ? "tvp-huy" : "tvp-vut";
-            if (huy && lv == null && (this.mon instanceof ItemInInventory || this.mon instanceof GemTemplate)) {
-                goiY = "Khoá: không giao dịch. Bán cho NPC (giá thấp) ở cửa hàng";
-            }
-            if (lv != null && n == 1) {
-                lyDo = lv;
+                if (lv != null) {
+                    lyDo = lv;
+                }
+            } else {
+                lyDo = lyDoKhongBo();   // vật phẩm nhiệm vụ: không có nút bỏ, nói lý do
             }
         }
-        chu[n] = "Đóng";
-        kieu[n] = Bang.TRUNG;
-        viec[n] = new IAction() {
-            public void perform() {
-                t.dong();
-            }
-        };
-        ten[n++] = "tvp-dong";
-        int wn = (w - (n - 1) * k) / n;
+        if (n == 0) {
+            lyDo = lyDo == null ? "Đóng thẻ bằng nút X." : lyDo;
+        }
+        int wn = n == 0 ? w : (w - (n - 1) * k) / n;
         for (int i = 0; i < n; i++) {
             Bang.nut(g, x + i * (wn + k), y, i == n - 1 ? x + w - (x + i * (wn + k)) : wn, h, chu[i], kieu[i], viec[i], ten[i]);
         }
@@ -736,7 +748,7 @@ public final class TheVatPham extends Dialog {
     }
 
     private String lyDo;
-    /** gợi ý (không phải lỗi) ngay trên hàng nút: đồ khoá bán NPC giá thấp. */
+    /** gợi ý (không phải lỗi) trên hàng nút: đồ khoá bán NPC giá thấp. */
     private String goiY;
 
     /** Chế độ chọn số lượng (vứt / bán chồng). */
@@ -765,7 +777,7 @@ public final class TheVatPham extends Dialog {
             GiaoDien.khoi(g, x, y, w, h, 4, ChuDe.NEN);
         }
         VungCham.them(g, x, y, w, h, IAction_KHONG, "the-vat-pham");
-        String td = this.chonSo == 1 ? (laKhoa() ? "Huỷ bao nhiêu?" : "Bỏ bao nhiêu?") : "Bán bao nhiêu?";
+        String td = this.chonSo == 1 ? "Bỏ bao nhiêu?" : "Bán bao nhiêu?";
         int hb = ChuDe.cao(ChuDe.TIEU_DE) + 6;
         int wb = Math.min(w - 20, ChuDe.rong(td, ChuDe.TIEU_DE) + 40);
         ChuDe.bien(g, x + (w - wb) / 2, y + 6, wb, hb);
@@ -819,13 +831,13 @@ public final class TheVatPham extends Dialog {
         }
         final int sl = this.so;
         int w2 = (w - 2 * pad - k) / 2;
-        Bang.nut(g, x + pad, y + h - 8 - hn, w2, hn, this.chonSo == 1 && laKhoa() ? "Thôi" : "Huỷ", Bang.TRUNG, new IAction() {
+        Bang.nut(g, x + pad, y + h - 8 - hn, w2, hn, "Huỷ", Bang.TRUNG, new IAction() {
             public void perform() {
                 t.chonSo = 0;
             }
         }, "sl-huy");
         final boolean laBan = this.chonSo == 2;
-        Bang.nut(g, x + pad + w2 + k, y + h - 8 - hn, w - 2 * pad - w2 - k, hn, laBan ? "Bán " + sl : (laKhoa() ? "Huỷ " : "Bỏ ") + sl, laBan ? Bang.CHINH : Bang.NGUY,
+        Bang.nut(g, x + pad + w2 + k, y + h - 8 - hn, w - 2 * pad - w2 - k, hn, laBan ? "Bán " + sl : "Bỏ " + sl, laBan ? Bang.CHINH : Bang.NGUY,
                 new IAction() {
             public void perform() {
                 t.chonSo = 0;

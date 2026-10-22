@@ -199,8 +199,9 @@ final class BangTuDong {
         return Canvas.w >= 200 ? 2 : 1;
     }
 
+    /** Bảng mới (vùng chạm, kiểu NRO): chữ thật HOẶC máy cảm ứng (0.9.7: J2ME cảm ứng cũng dùng); chỉ phím = bảng cũ. */
     private static boolean moi() {
-        return game.pokemon.ChuUI.bo != null;
+        return game.pokemon.ChuUI.bo != null || Canvas.instance != null && Canvas.instance.hasPointerEvents();
     }
 
     /** khe giữa các ô (bảng mới: đủ khoảng cách chạm) */

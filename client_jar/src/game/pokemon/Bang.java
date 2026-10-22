@@ -414,7 +414,7 @@ public final class Bang {
                 ChuDe.chuVienGiua(g, ct, xt + ww / 2, y + 1 + (an ? 1 : 0), h, ChuDe.NHAN, 0xF6E6C0, ChuDe.VIEN, 2);
             }
             if (cham != null && i < cham.length && cham[i]) {
-                ChuDe.cham(g, Math.min(xt + ww - 5, xt + ww / 2 + ChuDe.rong(ct, ChuDe.SO) / 2 + 5), y + h / 2 - 4);
+                ChuDe.cham(g, xt + ww - 8, y + 7);   // 0.9.7: góc phải trên của tab - không đè chữ
             }
             // vùng chạm chừa khe cach() giữa hai tab (không bấm nhầm tab bên cạnh)
             int kh = cach();

@@ -598,8 +598,10 @@ public final class HudRong {
             String vt = vietTat(lop, sk);
             if (vt != null) {
                 // 0.9.6: huy hiệu hệ Thường là đĩa kem -> nhãn tối cho dễ đọc
-                game.pokemon.ChuDe.chuVien(g, vt, x, anh ? y + r * 2 / 5 : y + r / 4 - 1, r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU,
-                        0xFFFFFF, game.pokemon.ChuDe.VIEN, 2);
+                // tên viết tắt sát đáy BÊN TRONG ô (đo theo font đang dùng - font ảnh J2ME cao hơn)
+                int vaiVt = r >= 24 ? game.pokemon.ChuDe.SO : game.pokemon.ChuDe.PHU;
+                int yVt = Math.min(anh ? y + r * 2 / 5 : y + r / 4 - 1, y + r - game.pokemon.ChuDe.cao(vaiVt));
+                game.pokemon.ChuDe.chuVien(g, game.pokemon.ChuDe.cat(vt, vaiVt, 2 * r - 2), x, yVt, vaiVt, 0xFFFFFF, game.pokemon.ChuDe.VIEN, 2);
             }
             long da = now - mc.timeLastUseSkills[sk];
             long tong = mc.coolDownSkill[sk];
@@ -775,8 +777,10 @@ public final class HudRong {
         // 0.9.7: ô hộp gỗ + bình thật, nhãn HP / PP khối màu góc trái
         game.pokemon.Bang.nutVuong(g, x, y, r, game.pokemon.KhungNroBang.NUT_GO, false, false);
         game.pokemon.ManNhanVat.veThuocHud(g, loai, x, y, 2 * r);
-        GiaoDien.khoiPixel(g, x - r - 2, y - r - 2, 14, 9, mau);
-        game.pokemon.ChuDe.chuGiua(g, hp ? "HP" : "PP", x - r + 5, y - r - 2, 9, game.pokemon.ChuDe.PHU, 0xFFFFFF, 2);
+        // nhãn HP / PP: khối pixel cỡ theo chữ (font ảnh J2ME cao hơn)
+        int wNh = Math.max(14, game.pokemon.ChuDe.rong("HP", game.pokemon.ChuDe.PHU) + 4), hNh = Math.max(9, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU));
+        GiaoDien.khoiPixel(g, x - r - 2, y - r - 2, wNh, hNh, mau);
+        game.pokemon.ChuDe.chuGiua(g, hp ? "HP" : "PP", x - r - 2 + wNh / 2, y - r - 2, hNh, game.pokemon.ChuDe.PHU, 0xFFFFFF, 2);
         try {
             long da = now - mc.potionLastTimeUse[loai];
             long tong = MainChar.listPotion[loai].delay;

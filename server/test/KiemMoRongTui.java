@@ -431,9 +431,13 @@ public final class KiemMoRongTui {
         final Class<?>[] k = {Char.class, Message.class};
         GOI.clear();
         goiRieng(real.Map.class, map, "doGiveItemToGround", k, p, goi(61, 2, it.id));
-        // 0.9.8: vat pham khoa "Huỷ" (khong ra dat, khong ai nhat duoc)
-        Kiem.sai("61 vat pham khoa: da huy (khong con trong tui)", p.iItems.contains(it));
-        Kiem.dung("61 vat pham khoa: khong roi ra dat (khong co nhat)", true);
+        Kiem.dung("61 vat pham khoa (khong byte huy, client cu): con trong tui", p.iItems.contains(it));
+        Kiem.dung("61 vat pham khoa: -104 ly do", String.valueOf(toastCuoi()).contains("Vật phẩm khoá không bỏ được."));
+        // 0.9.8: goi 61 + byte cuoi 1 = "Huỷ" vat pham khoa (TheVatPham), khong ra dat, ghi nhat ky KHOA_HUY
+        GOI.clear();
+        goiRieng(real.Map.class, map, "doGiveItemToGround", k, p, goi(61, 2, it.id, 1, 1));
+        Kiem.sai("61 + byte 1 vat pham khoa: da huy (khong con trong tui)", p.iItems.contains(it));
+        Kiem.dung("61 + byte 1: -104 'Đã huỷ vật phẩm khoá'", String.valueOf(toastCuoi()).contains("Đã huỷ vật phẩm khoá"));
         GOI.clear();
         goiRieng(real.Map.class, map, "doGiveItemToGround", k, p, goi(61, 2, 30000));
         Kiem.dung("61 vat pham khong co: -104 ly do (truoc day im lang)", String.valueOf(toastCuoi()).startsWith("1|"));

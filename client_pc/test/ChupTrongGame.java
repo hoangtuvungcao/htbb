@@ -282,7 +282,12 @@ public class ChupTrongGame {
                 });
                 Thread.sleep(150);
                 game.pokemon.VeTay.xoa();
+                game.pokemon.GhiChu.xoa();
+                game.pokemon.GhiChu.bat = true;
+                game.render.screen.Font.thieuNet = 0;
                 BufferedImage anh = ve(W, H);
+                game.pokemon.GhiChu.bat = false;
+                kiemChu(ten + " " + TEN_CO[c]);
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
                 // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
                 kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
@@ -1078,6 +1083,71 @@ public class ChupTrongGame {
         kiem(r[0] >= L && r[1] >= T && r[0] + r[2] <= R && r[1] + r[3] <= B, nhan + " tam trong vung an toan");
     }
 
+    static java.awt.Font phongKiem;
+
+    /**
+     * 0.9.7 KIỂM CHỮ (mọi màn, mọi cỡ): (1) không ký tự thiếu nét (font ảnh J2ME: Font.thieuNet; font thật: canDisplay);
+     * (2) mỗi dòng chữ nằm TRỌN trong khung pixel nhỏ nhất (vẽ trước nó) chứa điểm đầu dòng; (3) hai dòng chữ trong
+     * khung không chồng nhau. Chữ trên thế giới (tên trên đầu, không khung) bỏ qua.
+     */
+    static void kiemChu(String nhan) {
+        kiem(game.render.screen.Font.thieuNet == 0, nhan + " ky tu thieu net (" + game.render.screen.Font.thieuNet + " lan, '"
+                + game.render.screen.Font.thieuCuoi + "')");
+        if (phongKiem == null) {
+            try {
+                phongKiem = htbb.pc.PhongChu.co(false, 12f);
+            } catch (Throwable e) {
+                phongKiem = new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12);
+            }
+        }
+        int n = game.pokemon.GhiChu.soChu, nk = game.pokemon.GhiChu.soKhung;
+        int[] cx = game.pokemon.GhiChu.CX, cy = game.pokemon.GhiChu.CY, cw = game.pokemon.GhiChu.CW, ch = game.pokemon.GhiChu.CH;
+        int[] ct = game.pokemon.GhiChu.CT;
+        int[] kx = game.pokemon.GhiChu.KX, ky = game.pokemon.GhiChu.KY, kw = game.pokemon.GhiChu.KW, kh = game.pokemon.GhiChu.KH;
+        int[] kt = game.pokemon.GhiChu.KT;
+        int[] khungCua = new int[n];
+        for (int i = 0; i < n; i++) {
+            String s = game.pokemon.GhiChu.CS[i];
+            if (htbb.pc.ChuHD.bat) {
+                int u = phongKiem.canDisplayUpTo(s.replace('\u2026', '.'));
+                kiem(u < 0, nhan + " phong khong co ky tu '" + (u < 0 ? "" : s.substring(u, u + 1)) + "' trong \"" + s + "\"");
+            }
+            // khung TRÊN CÙNG (vẽ gần nhất trước chữ) chứa điểm đầu dòng; bỏ rãnh / dải thanh / thanh cuộn (chữ số đè
+            // thanh HP / PP là chủ ý)
+            int px = cx[i] + 1, py = cy[i] + ch[i] / 2;
+            int tot = -1;
+            for (int k = 0; k < nk; k++) {
+                if (kt[k] > ct[i]) continue;
+                int m = game.pokemon.GhiChu.KM[k];
+                if (m == game.pokemon.KhungNroBang.RANH || m == game.pokemon.KhungNroBang.CUON || m == game.pokemon.KhungNroBang.CUON_NUM
+                        || m >= game.pokemon.KhungNroBang.DAY_HP && m <= game.pokemon.KhungNroBang.DAY_LA) continue;
+                if (px < kx[k] || py < ky[k] || px >= kx[k] + kw[k] || py >= ky[k] + kh[k]) continue;
+                if (tot < 0 || kt[k] > kt[tot]) {
+                    tot = k;
+                }
+            }
+            khungCua[i] = tot;
+            if (tot < 0) continue;
+            int dung = 1;
+            boolean trong = cx[i] >= kx[tot] - dung && cy[i] >= ky[tot] - dung && cx[i] + cw[i] <= kx[tot] + kw[tot] + dung
+                    && cy[i] + ch[i] <= ky[tot] + kh[tot] + 2;
+            kiem(trong, nhan + " chu tran khung: \"" + s + "\" " + cx[i] + "," + cy[i] + " " + cw[i] + "x" + ch[i] + " ngoai khung "
+                    + kx[tot] + "," + ky[tot] + " " + kw[tot] + "x" + kh[tot]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (khungCua[i] < 0) continue;
+            for (int j = i + 1; j < n; j++) {
+                if (khungCua[j] != khungCua[i]) continue;
+                int ox = Math.min(cx[i] + cw[i], cx[j] + cw[j]) - Math.max(cx[i], cx[j]);
+                int oy = Math.min(cy[i] + ch[i], cy[j] + ch[j]) - Math.max(cy[i], cy[j]);
+                // hộp dòng có khoảng đệm trên / dưới: chồng > 1/3 chiều cao dòng thấp hơn mới là đè chữ
+                if (ox > 2 && oy > Math.min(ch[i], ch[j]) / 3) {
+                    kiem(false, nhan + " chu de chu: \"" + game.pokemon.GhiChu.CS[i] + "\" x \"" + game.pokemon.GhiChu.CS[j] + "\"");
+                }
+            }
+        }
+    }
+
     /** Tên vùng chạm đã đăng ký có tiền tố t (lớp nào cũng được). */
     static boolean coVung(String t) {
         for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
@@ -1104,7 +1174,7 @@ public class ChupTrongGame {
             int L = game.pokemon.Bang.trai(), T = game.pokemon.Bang.tren(), R = game.pokemon.Bang.phai(), B = game.pokemon.Bang.duoi();
             kiem(game.pokemon.TheVatPham.dangMo(), nhan + " the vat pham mo");
             kiem(r[2] > 0 && r[0] >= L && r[1] >= T && r[0] + r[2] <= R && r[1] + r[3] <= B, nhan + " the vat pham trong vung an toan");
-            kiem(coVung("tvp-mac") && coVung("tvp-vut") && coVung("tvp-dong"), nhan + " the vat pham co nut Mac / Vut / Dong");
+            kiem(coVung("tvp-mac") && (coVung("tvp-vut") || coVung("tvp-huy")) && coVung("dong"), nhan + " the vat pham co nut Mac / Vut|Huy / X");
         }
     }
 

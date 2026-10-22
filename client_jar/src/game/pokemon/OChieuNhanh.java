@@ -65,8 +65,9 @@ public final class OChieuNhanh {
         int hHang = Hd >= 280 ? 30 : 24;
         int hDau = 26;
         int hChan = 30;
-        if (ChuUI.bo != null) {   // 0.9.5 PC / APK: bảng sáng chung (Bang.khung), hàng / nút đủ cỡ chạm
-            hHang = Math.max(34, VungCham.MIN + Bang.cach() + 2);
+        if (ChonChieuNhanh.moi()) {   // bảng chung (Bang.khung), hàng / nút đủ cỡ chạm - PC / APK / J2ME cảm ứng
+            // 0.9.7: hàng đủ cao cho 2 dòng (tên + hệ / cấp) đo theo font đang dùng (font ảnh J2ME cao hơn)
+            hHang = Math.max(Math.max(34, VungCham.MIN + Bang.cach() + 2), ChuDe.cao(ChuDe.NHAN) + ChuDe.cao(ChuDe.PHU) + 6 + Bang.cach());
             hDau = ChuDe.caoDau() + ChuDe.DEM;
             hChan = Math.max(30, VungCham.MIN + 8);
         }

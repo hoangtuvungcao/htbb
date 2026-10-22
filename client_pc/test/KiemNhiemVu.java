@@ -184,12 +184,14 @@ public class KiemNhiemVu {
     }
 
     /**
-     * Thông báo server 37 trong game: thẻ nhanh không chặn (0.9.6.1 game.pokemon.ThongBao - mọi máy, cả J2ME chỉ phím);
-     * câu cần đọc kỹ (loại HOP) vẫn là hộp MsgDlg.
+     * Thông báo 37 đã hiện: trong game (0.9.6.1 thong-bao, MỌI kiểu nhập kể cả J2ME chỉ phím) là THẺ NHANH không chặn
+     * (DungDo, tự tắt - không cần phím để đóng); ngoài game / tin nghiêm trọng là hộp MsgDlg.
      */
     static boolean coThongBao37() {
-        return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien()
-                || game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg;
+        if (game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg) {
+            return true;
+        }
+        return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
     }
 
     static boolean coLenhGui(int lenh, int byteDau) {

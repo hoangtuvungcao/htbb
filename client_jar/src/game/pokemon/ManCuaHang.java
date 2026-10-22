@@ -354,7 +354,8 @@ public final class ManCuaHang extends Screen {
             return;
         }
         // hàng gọn hơn (vẫn >= cỡ chạm tối thiểu) để thấy nhiều món hơn
-        int rh = Math.max(VungCham.MIN + 2, Bang.caoHang() * 5 / 6);
+        // 0.9.7: hàng đủ cao cho 2 dòng (tên + dòng phụ) đo theo font thật - dòng phụ không tràn khung hàng
+        int rh = Math.max(Math.max(VungCham.MIN + 2, Bang.caoHang() * 5 / 6), 2 + Font.blackFont.getHeight() + 1 + Font.arialFont.getHeight() + 3);
         Bang.danhSach(g, this.ds, x + 4, yl, w - 8, hl, v.size(), rh, new Bang.Hang() {
             public void ve(Graphics g, int i, int x, int y, int w, int h) {
                 final Object o = v.elementAt(i);

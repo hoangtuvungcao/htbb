@@ -1865,10 +1865,10 @@ public final class ManNhanVat extends Screen {
         for (int k = 0; k < moi.size(); k++) {
             game.model.skill.InfoSkillLearn sk = (game.model.skill.InfoSkillLearn) moi.elementAt(k);
             if (sk.idSkill == i) {
-                return "học ở NPC Blaziken: " + TienTe.chu(TienTe.XU, sk.price);
+                return "Blaziken dạy, " + TienTe.chu(TienTe.XU, sk.price);   // nút bên phải đã ghi "Học ở NPC"
             }
         }
-        return "học ở NPC Blaziken";
+        return "Blaziken dạy";
     }
 
 

@@ -243,7 +243,7 @@ Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), kh
 3. Nhân vật cũ: điểm tiềm năng → Điểm huấn luyện chuyển **trong game** lúc nạp nhân vật (một lần, dấu
    `tob_chuyen_doi_can_bang`). Gói mới -107 / -112 / -118 / -120 / -121 / -122 / -108 (và phần nối thêm sức chứa túi của -105) chỉ gửi cho client `BAN >= 908`; client
    906 / 907 vẫn chơi được (không có màn mới).
-4. Đồ / nguyên liệu khoá bán NPC ở giá thấp (`chong_clone.ban_npc_khoa_phan_tram` = 15% giá NPC thường, trần 20%; tắt
+4. Đồ / nguyên liệu khoá bán NPC ở giá thấp (`chong_clone.ban_npc_khoa_phan_tram` = 25% = 1/4 giá NPC thường, trần 25%; tắt
    khẩn cấp: `chong_clone.ban_npc_khoa_phan_tram=0` trong `server.ini`), đồ khoá Huỷ được; nhật ký `KHOA_BAN_NPC` / `KHOA_HUY`.
    Danh hiệu: 9700…9745 (thành tựu), 9801…9817 (ngày cộng đồng), 9850…9855 (cúp tuần), 9860…9862 (phó bản).
 5. Client: tải gói 908 lên `/admin/tai-game` (Số bản = 908) sau khi máy chủ đã chạy jar mới.

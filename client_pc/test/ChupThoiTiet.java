@@ -234,6 +234,16 @@ public class ChupThoiTiet {
                 BufferedImage ref2 = ChupTrongGame.ve(W, H);
                 double nhieu = khac(tat, ref2, wx0, wy0, wx1, wy1);
                 kt = Math.min(kt, nhieu);
+                // hoạt hình / camera còn trôi (máy bận): chụp lại tối đa 2 lần, lấy lần sạch nhất
+                for (int lai = 0; lai < 2 && kt >= 4.0; lai++) {
+                    dat(0, m, 0, game.pokemon.ThoiTiet.DAY_DU, false);
+                    ChupTrongGame.ve(W, H);
+                    BufferedImage tat2 = ChupTrongGame.ve(W, H);
+                    dat(0, 0, 0, game.pokemon.ThoiTiet.DAY_DU, true);
+                    ChupTrongGame.ve(W, H);
+                    BufferedImage ref3 = ChupTrongGame.ve(W, H);
+                    kt = Math.min(kt, khac(tat2, ref3, wx0, wy0, wx1, wy1));
+                }
                 kiem(kt < 4.0, co + " mua " + TEN_MAU[m] + " tat: nhu khong phu (" + kt + ")");
             }
             // ngày cộng đồng + thẻ gợi ý mở

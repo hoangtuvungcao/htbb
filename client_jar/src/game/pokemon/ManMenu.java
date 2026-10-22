@@ -232,7 +232,9 @@ public final class ManMenu extends Screen {
         }
         int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
         int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
-        return Math.max(2 * r + 30, Math.min(ChuDe.dt() ? 150 : 132, conCho));
+        // 0.9.7: đủ xa để nhãn dưới nút (vuông NRO) không chạm nút kế bên trên cung (sin128 - sin166 = 0,546)
+        int toiThieu = (2 * r + ChuDe.cao(ChuDe.SO) + 12) * 1000 / 546;
+        return Math.max(Math.max(2 * r + 30, toiThieu), Math.min(ChuDe.dt() ? 150 : 132, conCho));
     }
 
     static int soHangPhu(int[] wv, int k, int wMax) {
