@@ -12,6 +12,15 @@ Bộ sinh dữ liệu cũ (CSV → SQL, danh mục cấu hình, JSON tĩnh cho w
 `vi_du_kiem.tsv`: bộ ví dụ kiểm giá trị cấu hình dùng chung cho test Java và web. Danh mục khoá cấu hình là bảng
 `cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL ([docs/cau-hinh.md](../docs/cau-hinh.md)).
 
+## `do_trang_phuc/` — đồ họ mới và trang phục (0.9.8)
+
+`danh_muc.py` là nguồn duy nhất (18 bộ hệ, 3 bộ huy chương vùng, thưởng bộ, ngân sách ô trang trí, 61 món trang trí và
+nguồn của chúng); `hinh_trang_bi.py` / `hinh_trang_phuc.py` là hình vẽ tay bằng lưới ký tự (CC0). `sinh.py` ra
+khối `-- >>> them_do_trang_phuc.sql` của `sql/nang_cap.sql`, icon `server/map/icon_do_moi/` + `web/public/icon-do/`, atlas lớp phủ
+`client_jar/res/pk/trang_phuc.{png,bin}`, `khung_hiem.png`, `du_lieu/do_moi_*.csv`, `du_lieu/trang_phuc.csv`,
+`web/shared/data/danh-muc-do-trang-phuc.json` (`--xem <thư mục>` = bộ sưu tập ảnh phóng to). `kiem_ke.py` ra
+`du_lieu/KIEM_KE_TRANG_BI.md`.
+
 ## `pokemon/` — tài nguyên Pokémon
 
 | Nhóm | Công cụ | Làm gì |

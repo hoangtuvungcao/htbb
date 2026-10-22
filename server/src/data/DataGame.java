@@ -23,6 +23,8 @@ public class DataGame {
     public static byte[][] imgIconTrangBi;
     /** Icon vat pham Pokemon map/icon_pokemon/&lt;n&gt;.png, phuc vu o id 14000+n. */
     public static byte[][] imgIconPokemon = new byte[0][];
+    /** [do-trang-phuc] Icon do ho moi / trang tri map/icon_do_moi/&lt;n&gt;.png, phuc vu o id 15000+n (IconDoMoi). */
+    public static byte[][] imgIconDoMoi = new byte[0][];
     public static byte[][] imgOther;
     public static byte[][] allImg;
     public static byte[][] iconClanImg;
@@ -69,6 +71,24 @@ public class DataGame {
     static short nIconItem = 866; // update item moi (865 = icon skin Kim Cang Long)
 //    static short nIconItem = 632;
     public static byte version = 1;
+
+    /** [do-trang-phuc] Nap map/icon_do_moi/0..n-1.png (dung o file dau tien thieu). */
+    static void napIconDoMoi() {
+        final java.util.List<byte[]> ds = new java.util.ArrayList<byte[]>();
+        for (int i = 0; i < com.htbb.pokemon.IconDoMoi.SO_TOI_DA; i++) {
+            final java.io.File f = new java.io.File(com.htbb.pokemon.IconDoMoi.THU_MUC + i + ".png");
+            if (!f.isFile()) {
+                break;
+            }
+            try {
+                ds.add(java.nio.file.Files.readAllBytes(f.toPath()));
+            } catch (final Exception e) {
+                break;
+            }
+        }
+        imgIconDoMoi = ds.toArray(new byte[0][]);
+        System.out.println("ICON DO MOI -> " + imgIconDoMoi.length + " anh tu " + com.htbb.pokemon.IconDoMoi.THU_MUC);
+    }
 
     /** Nap map/icon_pokemon/0..n-1.png (dung o file dau tien thieu). Thieu thu muc -> 0 icon. */
     static void napIconPokemon() {
@@ -360,6 +380,7 @@ public class DataGame {
             }
 
             napIconPokemon();
+            napIconDoMoi(); // [do-trang-phuc]
             allImg = new byte[nIconItem][];
 
             for (i = 0; i < nIconItem; ++i) {
@@ -1002,6 +1023,9 @@ public class DataGame {
             } else if (com.htbb.pokemon.IconPokemon.thuocDai(idImg)) {
                 // Icon vat pham Pokemon (map/icon_pokemon/), xem com.htbb.pokemon.IconPokemon.
                 ghiAnh(m, imgIconPokemon, idImg - com.htbb.pokemon.IconPokemon.ID_DAU, idImg);
+            } else if (com.htbb.pokemon.IconDoMoi.thuocDai(idImg)) {
+                // [do-trang-phuc] icon do ho moi / trang tri (map/icon_do_moi/), xem com.htbb.pokemon.IconDoMoi.
+                ghiAnh(m, imgIconDoMoi, idImg - com.htbb.pokemon.IconDoMoi.ID_DAU, idImg);
             } else if (idImg >= real.SkinThuCuoi.ID_ANH_BAN_DO
                     && idImg < real.SkinThuCuoi.ID_ANH_BAN_DO + real.SkinThuCuoi.SO_SKIN) {
                 // Skin linh thu. Dai id nay chua tung duoc dung (dai cu cao nhat het o

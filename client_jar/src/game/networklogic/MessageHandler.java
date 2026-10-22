@@ -149,6 +149,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.KenhChat.nhan(msg)) {
             return;
         }
+        // pokemon 0.9.8: lenh -116 tu do trang tri (trang phuc / hao quang / skin thu / the ban dong hanh - ManTuDo)
+        if (game.pokemon.ManTuDo.nhan(msg)) {
+            return;
+        }
         // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
         if (game.pokemon.CapNhat.nhan(msg)) {
             return;

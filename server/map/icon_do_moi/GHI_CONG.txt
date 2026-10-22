@@ -1,0 +1,3 @@
+Icon do moi / trang phuc HTBB (map/icon_do_moi/<n>.png, id anh 15000+n): tu ve cho du an bang luoi ky tu
+(tools/do_trang_phuc/hinh_trang_bi.py, hinh_trang_phuc.py), sinh bang tools/do_trang_phuc/sinh.py.
+Giay phep: CC0 (khong dung tai san ben ngoai). 689 icon.

@@ -339,13 +339,13 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **358 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **360 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 251 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 37 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
@@ -470,7 +470,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (288)
+### Khoá ẩn: cố định & luôn bật (290)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -780,6 +780,8 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `trao_doi.cach_giay` | Nhịp giữa hai lần trao đổi (giây) | Cố định (ẩn) | `60` | ngay | game | Mỗi người chơi chỉ trao đổi xong một lần mỗi chừng này giây. |
 | `trao_doi.phi_phan_nghin_gio` | Phí trao đổi mỗi Pokémon (‰ giờ thu nhập) | Cố định (ẩn) | `50` | ngay | game | Người nhận trả cho mỗi con: chừng này phần nghìn giờ thu nhập ở cấp mình × bậc hiếm (1/2/4/8) × sắc màu 4 × 3 sao 2 (hố hút xu). |
 | `trao_doi.phi_tran_phan_nghin_gio` | Trần phí trao đổi mỗi Pokémon (‰ giờ thu nhập) | Cố định (ẩn) | `2000` | ngay | game | Phí một con không vượt chừng này phần nghìn giờ thu nhập. |
+| `do_moi.bat` | Bật đồ họ mới (bộ hệ / bộ vùng) | Luôn bật (ẩn) | `1` | ngay | game | Đồ họ (data_trang_bi_moi) thay món gốc khi rơi / chế tạo (cùng chỉ số, không thêm món) và thưởng bộ họ trong trần chung. 0 = không đổi món rơi, không thưởng bộ họ. |
+| `trang_phuc.bat` | Bật tủ đồ trang trí (trang phục, hào quang, skin thú, thẻ bạn đồng hành) | Luôn bật (ẩn) | `1` | ngay | game | Gói -116 + hình trên thân (-102) + chỉ số nhỏ theo ô (data_trang_phuc_o, tổng cùng danh hiệu ≤ trang_tri.tran_tong_phan_nghin). 0 = tạm khoá. |
 | `cho_pokemon.bat` | Bật chợ Pokémon | Luôn bật (ẩn) | `1` | ngay | game | Bán / mua Pokémon trong Hộp PC giữa người chơi (khung giá máy chủ, ký quỹ, mua nguyên tử). 0 = tạm khoá. |
 | `cho_pokemon.thue_phan_tram` | Thuế chợ Pokémon (%) | Cố định (ẩn) | `8` | ngay | game | Đốt khi bán được; luôn ≥ thuế chợ ký gửi (thue.cho). |
 | `cho_pokemon.phi_dang_phan_tram` | Phí đăng bán Pokémon (%) | Cố định (ẩn) | `1` | ngay | game | Đốt, không hoàn (huỷ / hết hạn cũng mất); tối thiểu 1 xu. |

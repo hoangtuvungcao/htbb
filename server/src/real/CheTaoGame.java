@@ -265,17 +265,18 @@ public final class CheTaoGame {
             it.id = p.getIDItem();
             it.owner = p.charDBID;
             p.iItems.add(it);
-            final String ten = t.name + ChiSoTrangBiGame.tenHePhienDa(it);
+            final ItemTemplates tm = it.getTemplate() != null ? it.getTemplate() : t; // [do-moi] co the da doi sang mon ho
+            final String ten = tm.name + ChiSoTrangBiGame.tenHePhienDa(it);
             final boolean hiem = bac != null && bac.ma >= CheTaoLogic.MA_SU_THI;
             com.htbb.thongbao.ThongBao.gui(p, hiem ? com.htbb.thongbao.ThongBao.HIEM : com.htbb.thongbao.ThongBao.KET_QUA,
                     "Chế tạo: " + ten + " (" + (bac != null ? bac.ten : "") + ")",
                     hiem ? "" : "Chưa ra Sử thi: " + tui.cheTaoPity + "/" + pity() + " lần",
-                    com.htbb.thongbao.ThongBao.HINH_ICON, t.idIcon);
+                    com.htbb.thongbao.ThongBao.HINH_ICON, tm.idIcon);
             try {
                 final Message m = BoNgocGame.moi(BoNgocGame.S_CHE_TAO_KQ);
                 m.dos.writeByte(1);
-                m.dos.writeShort(t.id);
-                m.dos.writeShort(t.idIcon);
+                m.dos.writeShort(tm.id);
+                m.dos.writeShort(tm.idIcon);
                 m.dos.writeUTF(ten);
                 m.dos.writeByte(bac != null ? bac.ma : 0);
                 m.dos.writeUTF(bac != null ? bac.ten : "");
@@ -344,6 +345,7 @@ public final class CheTaoGame {
                 it.ngocHe = NgocHe.maHoa(k);
             }
         }
+        DoMoiGame.thayCheTao(it, t, he); // [do-moi] vong co -> bo he da chon, phien da -> bo vung (cung chi so)
         if (t.type == 12 && it.otherAtt != null && it.otherAtt.length > com.htbb.pokemon.ChiSoTrangBi.ID_KHANG_HE_PHIEN_DA - 61) {
             final int h = HePokemon.hopLe(he) ? he : Math.max(0, p.hePokemon1());
             final int id = kieuDa == 1 ? com.htbb.pokemon.ChiSoTrangBi.ID_KHANG_HE_PHIEN_DA : com.htbb.pokemon.ChiSoTrangBi.ID_ST_HE_PHIEN_DA;

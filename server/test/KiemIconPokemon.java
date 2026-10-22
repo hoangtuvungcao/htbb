@@ -81,6 +81,8 @@ public final class KiemIconPokemon {
                     // sql/pokemon_vat_pham_lau_dai.sql) + 1261 the dat ten Pokemon (sql/them_the_dat_ten_pet.sql),
                     // khong tinh vao bang goc.
                     continue;
+                } else if (id >= 1400 && id <= 2099) {
+                    continue; // do ho moi (khoi them_do_trang_phuc.sql, icon 15000+ map/icon_do_moi - KiemDoTrangPhuc)
                 } else {
                     goc++;
                 }
@@ -90,11 +92,17 @@ public final class KiemIconPokemon {
             final List<String> loiItem = new ArrayList<String>();
             for (final List<String> r : item) {
                 final int xstart = Integer.parseInt(r.get(20));
+                if (com.htbb.pokemon.IconDoMoi.thuocDai(xstart)) {
+                    if (!new File(com.htbb.pokemon.IconDoMoi.THU_MUC + (xstart - com.htbb.pokemon.IconDoMoi.ID_DAU) + ".png").isFile()) {
+                        loiItem.add(r.get(0) + "=" + xstart);
+                    }
+                    continue; // icon do ho moi (map/icon_do_moi)
+                }
                 if (!IconPokemon.thuocDai(xstart) || xstart - IconPokemon.ID_DAU >= soFile) {
                     loiItem.add(r.get(0) + "=" + xstart);
                 }
             }
-            Kiem.bang("moi data_item.xstart la icon PMD co file", "[]", loiItem.toString());
+            Kiem.bang("moi data_item.xstart la icon PMD / icon do ho moi co file", "[]", loiItem.toString());
 
             final Map<Integer, Set<String>> dungO = new HashMap<Integer, Set<String>>();
             final List<String> loiThuoc = new ArrayList<String>();

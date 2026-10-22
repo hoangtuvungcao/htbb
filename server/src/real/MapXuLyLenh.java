@@ -581,6 +581,9 @@ class MapXuLyLenh {
             case MoRongTuiGame.LENH: // -107 Mo rong hanh trang: byte kieu 0 trang thai / 1 dung ve / 2 mua xu
                 MoRongTuiGame.xuLy(player, message);
                 break;
+            case -116: // [trang-phuc] tu do trang tri: xin / mac / dong chi so / nhan / che / mua (real.TrangPhucGame)
+                TrangPhucGame.xuLy(player, message);
+                break;
             case -71:
                 map.doSetTaxTown(player, message);
                 break;

@@ -869,6 +869,8 @@ public final class NhiemVuEngine {
                     if (!DanhHieuGame.khiNhanTheoTen(p, v)) {
                         LauDaiNhanVat.bao(p, "Danh hiệu mới: " + v);
                     }
+                } else if ("trang_tri".equals(k) && TrangPhucGame.laMa(v)) {
+                    TrangPhucGame.trao(p, v, "nhiem_vu"); // [trang-phuc] mon tu do trang tri
                 } else {
                     Database.instance.saveOrtherLog("", p.charname, lyDo + " thuong khac " + k + ":" + v, "laudai");
                 }

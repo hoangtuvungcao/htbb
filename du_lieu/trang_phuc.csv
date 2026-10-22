@@ -1,0 +1,62 @@
+ma,o,so,ten,do_hiem,icon,manh,nguon,tham_so,gia_luong,mo_ta
+tp_tan_thu,trang_phuc,1,Áo huấn luyện viên tân thủ,0,15628,1 30,mien_phi,cap:5,0,Mũ lưỡi trai đỏ và khăn trắng của mọi huấn luyện viên mới.
+tp_tuyet,trang_phuc,2,Trang phục Pokémon Tuyết,1,15629,5 31,su_kien,lich:tetduonglich;quai:300,0,Mũ len và khăn sọc cho mùa đông đầu năm.
+tp_tet,trang_phuc,3,Trang phục Tết Nguyên Đán,2,15630,2 32 56,su_kien,lich:tet2017;quai:400,0,"Nón lá, khăn đỏ viền vàng và bao lì xì may mắn."
+tp_valentine,trang_phuc,4,Trang phục Valentine,2,15631,22 42 54,su_kien,lich:moi:valentine;quai:300,0,"Nơ tim, cánh thiên thần và đoá hồng."
+tp_hoa_thang_ba,trang_phuc,5,Trang phục Hoa tháng Ba,1,15632,12 37,su_kien,"lich:quocte83,moi:2010;quai:300",0,Vòng hoa xuân và dây chuyền ngọc trai.
+tp_tham_tu,trang_phuc,6,Trang phục Thám tử,2,15633,7 52,su_kien,lich:moi:congdong;quai:200,0,Mũ thám tử và kính lúp - quà Ngày cộng đồng.
+tp_thieu_nhi,trang_phuc,7,Trang phục Thiếu nhi,1,15634,13 33 51,su_kien,lich:moi:thieunhi;quai:200,0,"Mũ tiệc, nơ cổ và bóng bay 1/6."
+tp_bien_he,trang_phuc,8,Trang phục Biển hè,2,15635,8 35 57,su_kien,lich:he2017;quai:500,0,"Mũ rơm, vòng hoa Hawaii và que kem mát lạnh."
+tp_vu_lan,trang_phuc,9,Trang phục Vu Lan,1,15636,21 37 54,su_kien,lich:vulan;quai:300,0,"Hoa cài, dây chuyền ngọc và bông hồng tặng mẹ."
+tp_trung_thu,trang_phuc,10,Trang phục Trung Thu,2,15637,15 50,su_kien,lich:trungthu;quai:400,0,Tai thỏ ngọc và đèn ông sao đêm rằm.
+tp_halloween,trang_phuc,11,Trang phục Halloween,3,15638,4 41 53,su_kien,lich:halloween;quai:500,0,"Mũ phù thuỷ, áo choàng tím và đũa phép."
+tp_giang_sinh,trang_phuc,12,Trang phục Giáng sinh,3,15639,3 31 58,su_kien,lich:noel;quai:400,0,"Mũ Noel, khăn len sọc và kẹo gậy."
+tp_tuan_loc,trang_phuc,13,Trang phục Tuần lộc,2,15640,16 34,thanh_tuu,danh_hieu:noel,0,Sừng tuần lộc và lục lạc vàng - danh hiệu Tuần lộc tuyết trắng.
+tp_lap_lanh,trang_phuc,14,Trang phục Lấp lánh,3,15641,6 37,thanh_tuu,danh_hieu:shiny_1,0,Vương miện và chuỗi ngọc cho người gặp Pokémon shiny đầu tiên.
+tp_vo_dich_gym,trang_phuc,15,Trang phục Nhà vô địch Gym,3,15642,1 46,thanh_tuu,danh_hieu:gym_8,0,Áo choàng Gym có huy hiệu - thắng 8 Gym.
+tp_nha_nghien_cuu,trang_phuc,16,Trang phục Nhà nghiên cứu,2,15643,24 52,thanh_tuu,danh_hieu:dex_50,0,Mũ thám hiểm và kính lúp - Pokédex 50 loài.
+tp_ngu_dan,trang_phuc,17,Trang phục Ngư dân,2,15644,23 55,thanh_tuu,danh_hieu:ca_300,0,Mũ ngư dân và cần câu - câu 300 lần.
+tp_nha_vo_dich,trang_phuc,18,Trang phục Nhà vô địch,4,15645,6 40,thanh_tuu,danh_hieu:top_pvp_10,0,Vương miện và áo choàng đỏ của top 10 Nhà vô địch PvP.
+tp_dau_bep,trang_phuc,19,Trang phục Đầu bếp Poké,1,15646,10 33,thanh_tuu,danh_hieu:sinh_thai_06,0,Mũ đầu bếp và nơ cổ - danh hiệu Đầu bếp Poké.
+tp_tot_nghiep,trang_phuc,20,Trang phục Tốt nghiệp,2,15647,11 33,thanh_tuu,danh_hieu:cap_50,0,Mũ tốt nghiệp cho huấn luyện viên cấp 50.
+tp_hai_tac,trang_phuc,21,Trang phục Hải tặc,2,15648,9 36,cua_hang,,200,Mũ tam giác và khăn rằn của hải tặc Cinnabar.
+tp_ninja,trang_phuc,22,Trang phục Ninja,2,15649,25 36,cua_hang,,200,Băng đô ninja và khăn rằn.
+tp_hiep_si,trang_phuc,23,Trang phục Hiệp sĩ,3,15650,18 40,cua_hang,,250,Mũ giáp lông đỏ và áo choàng.
+tp_phi_cong,trang_phuc,24,Trang phục Phi công,2,15651,20 30,cua_hang,,200,Mũ phi công có kính và khăn trắng.
+tp_ba_tuoc,trang_phuc,25,Trang phục Bá tước bóng đêm,3,15652,43 33,cua_hang,,250,Cánh dơi và nơ cổ đỏ.
+tp_thien_than,trang_phuc,26,Trang phục Thiên thần,3,15653,12 42,cua_hang,,250,Vòng hoa và đôi cánh trắng.
+tp_cao_boi,trang_phuc,27,Trang phục Cao bồi,2,15654,17 36,cua_hang,,200,Mũ cao bồi và khăn rằn.
+tp_canh_buom,trang_phuc,28,Trang phục Cánh bướm,2,15655,21 44,cua_hang,,200,Hoa cài và cánh bướm hồng.
+tp_tho_mo,trang_phuc,29,Trang phục Thợ mỏ,1,15656,14 36,che_tao,"nl:1034x10,1035x4;gio:2",0,Mũ thợ mỏ có đèn - chế ở Machamp.
+tp_tham_hiem,trang_phuc,30,Trang phục Thám hiểm,2,15657,19 45,che_tao,"nl:1035x6,1036x2;gio:3",0,Kính bơi trên trán và ba lô thám hiểm.
+tp_tai_tho,trang_phuc,31,Trang phục Tai thỏ tuyết,1,15658,15 31,che_tao,nl:1034x12;gio:1,0,Tai thỏ và khăn len - món chế đầu tiên cho người mới.
+tp_hiep_khach,trang_phuc,32,Trang phục Huấn luyện viên Gym,3,15659,25 46,che_tao,"nl:1036x4,1037x2;gio:5",0,Băng đô và áo choàng Gym - món chế cao cấp.
+hq_tap_su,hao_quang,1,Hào quang tập sự,0,15660,,mien_phi,cap:10,0,Vòng sáng đầu tiên của mọi huấn luyện viên.
+hq_lua,hao_quang,2,Hào quang Lửa,2,15661,,che_tao,nl:1035x5;gio:2,0,Vòng lửa chế từ Mảnh sao.
+hq_nuoc,hao_quang,3,Hào quang Nước,2,15662,,che_tao,nl:1035x5;gio:2,0,Vòng nước chế từ Mảnh sao.
+hq_co,hao_quang,4,Hào quang Cỏ,2,15663,,che_tao,nl:1035x5;gio:2,0,Vòng lá chế từ Mảnh sao.
+hq_dien,hao_quang,5,Hào quang Điện,2,15664,,che_tao,nl:1035x5;gio:2,0,Vòng điện chế từ Mảnh sao.
+hq_bang,hao_quang,6,Hào quang Băng,2,15665,,cua_hang,,200,Vòng băng lấp lánh.
+hq_tam_linh,hao_quang,7,Hào quang Tâm linh,3,15666,,thanh_tuu,danh_hieu:pvp_100,0,Huấn luyện viên dày dạn: thắng 100 trận PvP.
+hq_rong,hao_quang,8,Hào quang Rồng,4,15667,,thanh_tuu,danh_hieu:boss_100,0,Khắc tinh huyền thoại: hạ 100 boss.
+hq_tien,hao_quang,9,Hào quang Tiên,2,15668,,cua_hang,,200,Vòng hồng của các tiên tử.
+hq_bong_toi,hao_quang,10,Hào quang Bóng tối,2,15669,,cua_hang,,200,Vòng bóng đêm.
+hq_cau_vong,hao_quang,11,Hào quang Cầu vồng,4,15670,,thanh_tuu,danh_hieu:dex_90,0,Người hoàn thiện Pokédex.
+hq_anh_dao,hao_quang,12,Hào quang Hoa anh đào,3,15671,,su_kien,lich:tet2017;quai:600,0,Hoa anh đào ngày Tết.
+hq_sao_bang,hao_quang,13,Hào quang Sao băng,3,15672,,su_kien,lich:moi:shiny;quai:500,0,Sao băng Tuần Shiny.
+st_yen_co_ban,skin_thu,1,Yên cương cơ bản,0,15673,,mien_phi,cap:15,0,Yên cưỡi đầu tiên khi có thú cưỡi.
+st_yen_da,skin_thu,2,Yên da thợ săn,1,15674,,che_tao,nl:1034x8;gio:1,0,Yên da chế ở Machamp.
+st_yen_hoa,skin_thu,3,Yên hoa xuân,2,15675,,su_kien,"lich:gioto,moi:3004;quai:300",0,Yên hoa mùa xuân.
+st_yen_vang,skin_thu,4,Yên vàng hoàng gia,3,15676,,cua_hang,,150,Yên vàng hoàng gia.
+st_yen_bang,skin_thu,5,Yên băng Noel,2,15677,,su_kien,lich:noel;quai:300,0,Yên băng Giáng sinh.
+st_yen_lua,skin_thu,6,Yên lửa nhà vô địch,3,15678,,thanh_tuu,danh_hieu:gym_16,0,Nhà vô địch hai vùng.
+st_yen_dem,skin_thu,7,Yên bóng đêm,2,15679,,cua_hang,,150,Yên bóng đêm.
+st_yen_cau_vong,skin_thu,8,Yên cầu vồng,4,15680,,thanh_tuu,danh_hieu:map_120,0,Người đi khắp thế gian.
+th_the_co_ban,the_dong_hanh,1,Thẻ tên bạn đồng hành,0,15681,77,mien_phi,cap:20,0,Thẻ tên cho bạn đồng hành đầu tiên.
+th_no_do,the_dong_hanh,2,Nơ đỏ bạn đồng hành,1,15682,70,cua_hang,,80,Nơ đỏ trên đầu bạn đồng hành.
+th_chuong_vang,the_dong_hanh,3,Chuông vàng bạn đồng hành,1,15683,71,che_tao,nl:1034x6;gio:1,0,Chuông vàng leng keng.
+th_khan_xanh,the_dong_hanh,4,Khăn xanh bạn đồng hành,1,15684,72,che_tao,nl:1034x6;gio:1,0,Khăn xanh nhỏ.
+th_vuong_mien_nho,the_dong_hanh,5,Vương miện tí hon,3,15685,73,thanh_tuu,danh_hieu:dang_nhap_30,0,Người bạn trung thành: 30 ngày đăng nhập.
+th_hoa_cai_nho,the_dong_hanh,6,Hoa cài bạn đồng hành,2,15686,74,su_kien,"lich:quocte83,moi:2010;quai:200",0,Hoa cài ngày phụ nữ.
+th_ngoi_sao_nho,the_dong_hanh,7,Ngôi sao bạn đồng hành,2,15687,75,su_kien,lich:moi:shiny;quai:300,0,Ngôi sao Tuần Shiny.
+th_tim_hong_nho,the_dong_hanh,8,Tim hồng bạn đồng hành,2,15688,76,cua_hang,,80,Tim hồng.

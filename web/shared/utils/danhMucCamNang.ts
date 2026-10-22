@@ -77,6 +77,18 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     tuKhoa: 'equipment cuong hoa nang cap ti le bao hiem bua bao ho pity da nang cap ngoc kham',
   },
   {
+    slug: 'do-moi', ten: 'Đồ họ & bộ trang bị', nhom: 'Phát triển', icon: 'i-lucide-swatch-book',
+    moTa: '628 món đồ họ: 18 bộ hệ và 3 bộ huy chương Kanto / Johto / Hoenn, thưởng bộ trong trần, rơi từ quái cùng hệ, boss, chế tạo.',
+    muc: [{ id: 'bo-he', ten: '18 bộ hệ' }, { id: 'bo-vung', ten: 'Bộ huy chương vùng' }, { id: 'danh-sach', ten: 'Danh sách đồ' }, { id: 'nguon', ten: 'Lấy ở đâu' }],
+    tuKhoa: 'set bo he bo vung huy chuong kanto johto hoenn do ho icon thuong bo khang he sat thuong he',
+  },
+  {
+    slug: 'trang-phuc', ten: 'Trang phục & trang trí', nhom: 'Phát triển', icon: 'i-lucide-shirt',
+    moTa: 'Trang phục hiện trên Pokémon, hào quang, skin thú cưỡi, thẻ bạn đồng hành: ngân sách chỉ số theo ô (tổng 5%) và nguồn kiếm.',
+    muc: [{ id: 'ngan-sach', ten: 'Ngân sách chỉ số' }, { id: 'trang-phuc', ten: 'Trang phục' }, { id: 'hao-quang', ten: 'Hào quang' }, { id: 'skin-thu', ten: 'Skin thú cưỡi' }, { id: 'the-dong-hanh', ten: 'Thẻ bạn đồng hành' }],
+    tuKhoa: 'costume cosmetic thoi trang mu khan ao choang canh hao quang skin thu cuoi yen the ten ban dong hanh tu do ngoai hinh su kien luong',
+  },
+  {
     slug: 'vat-pham', ten: 'Vật phẩm', nhom: 'Kinh tế & vật phẩm', icon: 'i-lucide-backpack',
     moTa: 'Thuốc, Berry, đá, trứng, pet, thú cưỡi, vé chương và đồ trang trí — dùng vào việc gì.',
     muc: [{ id: 'nhom', ten: 'Các nhóm vật phẩm' }, { id: 'bang', ten: 'Bảng vật phẩm' }, { id: 'khoa', ten: 'Vật phẩm khoá & hết hạn' }],

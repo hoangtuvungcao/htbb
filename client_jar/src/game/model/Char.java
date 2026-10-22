@@ -1407,7 +1407,8 @@ public class Char extends LiveActor {
         if (this.pokeThuDex > 0 && this.state != 3 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny)) {
             // thu cuoi: ve thu (dung/chay theo nguoi choi) roi nang nguoi choi len ~55% chieu cao thu
             int dongTacThu = this.state == 1 ? PokeDuLieu.CHAY : PokeDuLieu.DUNG;
-            PokeBody.paint(g, this.pokeThuDex, this.pokeThuShiny, this.x, yNguoi, this.dir, dongTacThu, tick, 100);
+            PokeBody.paint(g, this.pokeThuDex, this.pokeThuShiny, this.x, yNguoi, this.dir, dongTacThu, tick, 100, 0,
+                    game.pokemon.NgoaiHinhVe.hien || this == Canvas.gameScr.mainChar ? game.pokemon.TrangPhucVe.tpThu(this.ngoaiHinh) : 0);
             int caoThu = PokeBody.caoTrenChan(this.pokeThuDex, this.pokeThuShiny, 100);
             yNguoi -= caoThu * 55 / 100;
             this.height = (short) (this.height + caoThu * 55 / 100);

@@ -163,7 +163,7 @@ public final class BangTrangBi {
                 }
                 int[] p = viTri(it.type, item.viTriVe, posX, posY);
                 int hiem = KieuO.mauHiem(item.colorName);
-                if (hiem >= 0) {
+                if (hiem >= 0 && !IconVatPham.veKhungHiem(g, item.colorName, p[0], p[1], 18)) {
                     KieuO.khungHiem(g, p[0] - 9, p[1] - 9, 18, hiem);
                 }
                 IconVatPham.ve(g, it.idIcon, p[0], p[1], 22, IconVatPham.DP_DO);

@@ -38,6 +38,11 @@ public final class NgoaiHinhVe {
         return PokeBody.rongHinh(dex, shiny) >= 46 || PokeBody.caoTrenChan(dex, shiny, 100) >= 64 ? 2 : 1;
     }
 
+    /** He so phong phu kien cua loai (test / the). */
+    public static int heSoCong(int dex) {
+        return heSo(dex, false);
+    }
+
     /** Ban kinh ngang vong sang duoi chan theo be ngang hinh. */
     static int banKinh(int dex, boolean shiny) {
         int r = PokeBody.rongHinh(dex, shiny) * 2 / 5;
@@ -45,7 +50,7 @@ public final class NgoaiHinhVe {
     }
 
     /** Co cua loai cam o (bang ngoai le). */
-    private static boolean biCam(int dex, int o) {
+    static boolean biCam(int dex, int o) {
         int nl = PhuKien.ngoaiLe(dex);
         switch (o) {
             case NgoaiHinhCua.MU:
@@ -83,8 +88,10 @@ public final class NgoaiHinhVe {
         if (n == null) {
             return;
         }
+        // 0.9.8: hao quang dang deo thay vong sang theo bac (TrangPhucVe, ca ban jar khong co neo)
+        boolean hq = TrangPhucVe.veHaoQuang(g, n, dex, shiny, x, yChan, tick);
         // vong sang mem duoi chan (moi bac >= 1; bo du 11 mon sang hon)
-        if (n.bacTot >= 1) {
+        if (!hq && n.bacTot >= 1) {
             int rw = banKinh(dex, shiny), rh = rw / 3 + 1;
             int mau = n.bacTot >= 10 ? 0xFFD860 : PhuKien.mauBac(n.bacTot, tick);
             int a = 40 + n.bacTot * 4 + (n.bo >= 11 ? 30 : n.bo >= 7 ? 12 : 0);
@@ -128,6 +135,11 @@ public final class NgoaiHinhVe {
 
     /** Ve cac phu kien (toi da 2) cua lop SAU / TRUOC. */
     static void veLop(Graphics g, NgoaiHinhCua n, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int lop) {
+        // 0.9.8: dang mac trang phuc -> CHI ve cac manh trang phuc (thay phu kien trang bi); luat "toi da 2" chi khi khong co
+        if (TrangPhucVe.coTrangPhuc(n)) {
+            TrangPhucVe.veLop(g, n, dex, shiny, x, y, dir, dongTac, tick, lop);
+            return;
+        }
         if (!PhuKien.nap() || !PokeBody.neo(dex, shiny, dir, dongTac, tick, 100, NEO)) {
             return;
         }

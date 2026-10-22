@@ -3845,7 +3845,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
             att = HoiSinhGame.apMetTanCong(this, att); // Met moi sau khi ve Trung tam
         }
         // He sinh thai (tat sv.he_sinh_thai: 0): hoan thanh vung (tran 3%) + IV cong cua pet (<= 1%).
-        final int stAtt = com.htbb.pokemon.ChiSoSinhThai.vungPhanNghin(this) + com.htbb.pokemon.ChiSoSinhThai.ivPetPhanNghin(this, 1);
+        final int stAtt = com.htbb.pokemon.ChiSoSinhThai.vungPhanNghin(this) + com.htbb.pokemon.ChiSoSinhThai.ivPetPhanNghin(this, 1)
+                + TrangPhucGame.phanNghin(this, "tan_cong"); // [trang-phuc] dong Tan cong cua o trang tri
         if (stAtt > 0) {
             att += (int) ((long) att * stAtt / 1000L);
         }

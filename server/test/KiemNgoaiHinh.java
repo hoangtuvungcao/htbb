@@ -74,7 +74,7 @@ public final class KiemNgoaiHinh {
             final ByteArrayOutputStream bo = new ByteArrayOutputStream();
             NgoaiHinh.ghi(new DataOutputStream(bo), 1234, d);
             final byte[] b = bo.toByteArray();
-            Kiem.bang("do dai goi (6 o x 3 + 9)", 6 * 3 + 9, b.length);
+            Kiem.bang("do dai goi (6 o x 3 + 9 + 6 duoi trang tri 0.9.8)", 6 * 3 + 9 + 6, b.length);
             final DataInputStream r = new DataInputStream(new ByteArrayInputStream(b));
             Kiem.bang("charId", 1234, (int) r.readShort());
             Kiem.bang("phien ban", 1, r.readUnsignedByte());
@@ -99,6 +99,9 @@ public final class KiemNgoaiHinh {
             Kiem.bang("bo", 11, r.readUnsignedByte());
             Kiem.bang("trang phuc", 0, r.readUnsignedByte());
             Kiem.bang("an", 0, r.readUnsignedByte());
+            Kiem.bang("con lai dung duoi trang tri (client cu bo qua)", 6, r.available());
+            Kiem.bang("duoi trang tri: 'T' v1, khong mac gi", "84 1 0 0 0 0", r.readUnsignedByte() + " " + r.readUnsignedByte() + " "
+                    + r.readUnsignedByte() + " " + r.readUnsignedByte() + " " + r.readUnsignedByte() + " " + r.readUnsignedByte());
             Kiem.bang("het goi", 0, r.available());
             final ByteArrayOutputStream bo2 = new ByteArrayOutputStream();
             NgoaiHinh.ghi(new DataOutputStream(bo2), 1, rong);

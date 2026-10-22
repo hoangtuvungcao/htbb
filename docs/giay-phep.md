@@ -16,6 +16,7 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 | Phần vẽ bằng code của dự án | mép chuyển tiếp autotile, nền / vách hang, biển hiệu, chữ và giao diện kiểu Pokémon, logo; **P2**: Poké Ball, quả mọng, 1344 huy hiệu đội, icon kỹ năng đội, huy hiệu hệ, khung tranh, đèn lồng / tượng / ô vườn / rương, mảnh băng, băng-rôn danh hiệu, vầng sáng, nút và khung giao diện, khiên vùng, vòng quay (mục 7) | CC0 | — |
 | Bộ icon + da nút giao diện PNG của dự án (`client_jar/res/ui/`, 0.9.5) | icon HUD / menu / thông báo / hệ / ô trang bị, da nút 9-slice (PC, APK) | CC0 1.0 | — |
 | Bộ giao diện kiểu NRO của dự án (`client_jar/res/nro/`, 0.9.7; sinh bởi `tools/giao_dien_nro/sinh_khung_nro.py` + `icon_nro.py`) | khung gỗ / giấy da 9-slice, biển tiêu đề, nút khối, tab, ô đồ, thanh HP / PP / EXP, công tắc, 62 icon pixel 16x16 (mọi client) | CC0 1.0 (tự vẽ, không lấy hình của TeaMobi hay trò chơi khác) | — |
+| Icon đồ họ mới, trang phục, hào quang, yên thú, thẻ bạn đồng hành, khung độ hiếm (0.9.8) | `server/map/icon_do_moi/`, `web/public/icon-do/`, `client_jar/res/pk/trang_phuc.png`, `khung_hiem.png` | CC0 1.0 | — |
 | [Kenney](https://kenney.nl/assets) — Interface Sounds, Impact Sounds, RPG Audio, Digital Audio, Music Jingles | tiếng hiệu ứng | CC0 1.0 | không (dự án vẫn ghi) |
 | Nhạc nền chiptune soạn riêng (`client_jar/tools/lam_am_thanh.py`) | nhạc nền MIDI | CC0 1.0 | — |
 | Noto Sans (© Google), Baloo 2 (© The Baloo 2 Project Authors / Ek Type), Nunito, Press Start 2P | chữ bản PC, logo, website; chữ vẽ sẵn vào ảnh băng-rôn danh hiệu (Noto Sans Bold, P2 — không kèm tệp font) | SIL Open Font License 1.1 | giữ nguyên tệp giấy phép |
@@ -82,6 +83,14 @@ Delapouite, Skoll, sbed, darkzaitzev**. 45 tệp SVG nguyên bản ở `tools/po
 commit `82d94881` của github.com/game-icons/icons); `tools/pokemon/sinh_icon_chieu.py` vẽ SVG (ImageMagick) rồi dựng
 huy hiệu và thu BOX + cắt ngưỡng (đã sửa đổi: tô màu, viền, thu nhỏ). Ghi công trong game: màn Giấy phép (GHI_CONG.txt).
 Hiệu ứng chiêu trong trận không đổi.
+
+### Đồ họ mới và trang phục (0.9.8)
+
+689 icon 16x16 (`server/map/icon_do_moi/<n>.png`, id ảnh 15000+n, bản sao `web/public/icon-do/`), atlas lớp phủ trang
+phục / hào quang `client_jar/res/pk/trang_phuc.png` (+ `trang_phuc.bin`) và khung độ hiếm `khung_hiem.png` do dự án **tự
+vẽ bằng lưới ký tự** (`tools/do_trang_phuc/hinh_trang_bi.py`, `hinh_trang_phuc.py`; dựng lại bằng
+`python3 -I tools/do_trang_phuc/sinh.py`). Không dùng tệp ảnh bên ngoài (không PMDCollab, không gói icon nào), phát
+hành CC0 1.0, không cần ghi công.
 
 ## 5. Âm thanh
 

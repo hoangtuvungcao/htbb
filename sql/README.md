@@ -91,6 +91,9 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
     - `them_loai_day_du.sql` (loai-day-du, tệp SINH bởi `tools/pokemon/loai/sinh_loai.py`: thay cả khối này khi sinh lại):
       1.025 loài `data_loai*`, `data_chieu`, nơi sống, sprite; thêm dòng `data_nhom_trung` / `data_bat_loai` (INSERT IGNORE, giữ
       dòng của khối kết đôi / thu phục);
+    - `them_do_trang_phuc.sql` (do-trang-phuc, SINH bởi `tools/do_trang_phuc/sinh.py`: thay cả khối khi sinh lại): đồ họ mới
+      `data_item` 1400..2027 (icon 15000..15688, `server/map/icon_do_moi/`), `data_trang_bi_ho*`, `data_trang_bi_moi`, tủ đồ
+      `data_trang_phuc_o` / `data_trang_phuc` (61 món), `tob_trang_phuc`, 15 món `nap_cua_hang` (INSERT IGNORE);
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
 

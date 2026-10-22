@@ -22,6 +22,8 @@ public final class NgoaiHinhCua {
     public int bo;
     public int trangPhuc;
     public int an;
+    /** 0.9.8 trang tri (duoi goi -102, TrangPhucVe): so trang phuc / hao quang / skin thu cuoi / the ban dong hanh (0 = khong). */
+    public int tpSo, haoQuang, skinThu, theBan;
 
     /** Doc phan sau charId cua goi -102 (phien ban 1; phien ban moi hon chi them truong o cuoi). */
     public static NgoaiHinhCua doc(DataInputStream r) throws IOException {
@@ -47,8 +49,43 @@ public final class NgoaiHinhCua {
         return n;
     }
 
+    /** Duoi goi -102 (0.9.8): u8 'T', u8 phien ban, u8 trang phuc, u8 hao quang, u8 skin thu, u8 the. Khong co: bo qua. */
+    public void docDuoi(DataInputStream r) {
+        try {
+            if (r.available() < 6 || r.readUnsignedByte() != 0x54) {
+                return;
+            }
+            r.readUnsignedByte();
+            tpSo = r.readUnsignedByte();
+            haoQuang = r.readUnsignedByte();
+            skinThu = r.readUnsignedByte();
+            theBan = r.readUnsignedByte();
+        } catch (Throwable e) {
+            // server cu: khong co duoi
+        }
+    }
+
+    /** Ban sao (thu trang phuc o tu do: doi tren ban sao, khong dung ban that). */
+    public NgoaiHinhCua sao() {
+        NgoaiHinhCua n = new NgoaiHinhCua();
+        System.arraycopy(kieu, 0, n.kieu, 0, SO_O);
+        System.arraycopy(hiem, 0, n.hiem, 0, SO_O);
+        System.arraycopy(bac, 0, n.bac, 0, SO_O);
+        System.arraycopy(cong, 0, n.cong, 0, SO_O);
+        n.bacTot = bacTot;
+        n.congTot = congTot;
+        n.bo = bo;
+        n.trangPhuc = trangPhuc;
+        n.an = an;
+        n.tpSo = tpSo;
+        n.haoQuang = haoQuang;
+        n.skinThu = skinThu;
+        n.theBan = theBan;
+        return n;
+    }
+
     public boolean coGi() {
-        if (bacTot >= 1 || congTot >= 7 || trangPhuc > 0) {
+        if (bacTot >= 1 || congTot >= 7 || trangPhuc > 0 || tpSo > 0 || haoQuang > 0) {
             return true;
         }
         for (int o = 0; o < SO_O; o++) {

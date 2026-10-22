@@ -1,0 +1,9828 @@
+{
+ "sinh": "tools/do_trang_phuc/sinh.py",
+ "idAnhDau": 15000,
+ "bac": [
+  "sơ cấp",
+  "đồng",
+  "bạc",
+  "vàng",
+  "bạch kim",
+  "kim cương",
+  "chuyên gia",
+  "tinh anh",
+  "huyền thoại",
+  "thần thoại",
+  "tối thượng"
+ ],
+ "capBac": [
+  1,
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  70,
+  80,
+  90,
+  98
+ ],
+ "he": [
+  "Thường",
+  "Lửa",
+  "Nước",
+  "Điện",
+  "Cỏ",
+  "Băng",
+  "Giác đấu",
+  "Độc",
+  "Đất",
+  "Bay",
+  "Siêu linh",
+  "Bọ",
+  "Đá",
+  "Ma",
+  "Rồng",
+  "Bóng tối",
+  "Thép",
+  "Tiên"
+ ],
+ "bo": [
+  {
+   "ma": "he_binh_nguyen",
+   "ten": "Bộ Bình Nguyên",
+   "loai": "he",
+   "he": "Thường",
+   "heKhac": "Giác đấu",
+   "pokemon": [
+    "Meowth",
+    "Eevee",
+    "Kangaskhan",
+    "Snorlax",
+    "Regigigas"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_hoa_diem",
+   "ten": "Bộ Hoả Diệm",
+   "loai": "he",
+   "he": "Lửa",
+   "heKhac": "Nước",
+   "pokemon": [
+    "Vulpix",
+    "Ponyta",
+    "Arcanine",
+    "Moltres",
+    "Ho-Oh"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_thuy_trieu",
+   "ten": "Bộ Thuỷ Triều",
+   "loai": "he",
+   "he": "Nước",
+   "heKhac": "Điện",
+   "pokemon": [
+    "Staryu",
+    "Vaporeon",
+    "Lapras",
+    "Suicune",
+    "Kyogre"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_loi_quang",
+   "ten": "Bộ Lôi Quang",
+   "loai": "he",
+   "he": "Điện",
+   "heKhac": "Đất",
+   "pokemon": [
+    "Pikachu",
+    "Electabuzz",
+    "Jolteon",
+    "Zapdos",
+    "Raikou"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_diep_luc",
+   "ten": "Bộ Diệp Lục",
+   "loai": "he",
+   "he": "Cỏ",
+   "heKhac": "Lửa",
+   "pokemon": [
+    "Oddish",
+    "Tangela",
+    "Venusaur",
+    "Celebi",
+    "Shaymin"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_bang_tinh",
+   "ten": "Bộ Băng Tinh",
+   "loai": "he",
+   "he": "Băng",
+   "heKhac": "Lửa",
+   "pokemon": [
+    "Snorunt",
+    "Jynx",
+    "Glaceon",
+    "Articuno",
+    "Regice"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_vo_dao",
+   "ten": "Bộ Võ Đạo",
+   "loai": "he",
+   "he": "Giác đấu",
+   "heKhac": "Siêu linh",
+   "pokemon": [
+    "Machop",
+    "Hitmonlee",
+    "Machamp",
+    "Lucario",
+    "Terrakion"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_doc_duoc",
+   "ten": "Bộ Độc Dược",
+   "loai": "he",
+   "he": "Độc",
+   "heKhac": "Đất",
+   "pokemon": [
+    "Ekans",
+    "Grimer",
+    "Arbok",
+    "Nidoking",
+    "Crobat"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_dia_chan",
+   "ten": "Bộ Địa Chấn",
+   "loai": "he",
+   "he": "Đất",
+   "heKhac": "Nước",
+   "pokemon": [
+    "Sandshrew",
+    "Cubone",
+    "Rhydon",
+    "Donphan",
+    "Groudon"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_phong_vu",
+   "ten": "Bộ Phong Vũ",
+   "loai": "he",
+   "he": "Bay",
+   "heKhac": "Điện",
+   "pokemon": [
+    "Pidgey",
+    "Swablu",
+    "Pidgeot",
+    "Togekiss",
+    "Lugia"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_tam_linh",
+   "ten": "Bộ Tâm Linh",
+   "loai": "he",
+   "he": "Siêu linh",
+   "heKhac": "Bóng tối",
+   "pokemon": [
+    "Abra",
+    "Natu",
+    "Espeon",
+    "Alakazam",
+    "Mewtwo"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_giap_trung",
+   "ten": "Bộ Giáp Trùng",
+   "loai": "he",
+   "he": "Bọ",
+   "heKhac": "Lửa",
+   "pokemon": [
+    "Caterpie",
+    "Butterfree",
+    "Pinsir",
+    "Scyther",
+    "Heracross"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_nham_thach",
+   "ten": "Bộ Nham Thạch",
+   "loai": "he",
+   "he": "Đá",
+   "heKhac": "Nước",
+   "pokemon": [
+    "Geodude",
+    "Onix",
+    "Golem",
+    "Aerodactyl",
+    "Regirock"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_u_linh",
+   "ten": "Bộ U Linh",
+   "loai": "he",
+   "he": "Ma",
+   "heKhac": "Bóng tối",
+   "pokemon": [
+    "Gastly",
+    "Misdreavus",
+    "Haunter",
+    "Gengar",
+    "Giratina"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_long_vuong",
+   "ten": "Bộ Long Vương",
+   "loai": "he",
+   "he": "Rồng",
+   "heKhac": "Băng",
+   "pokemon": [
+    "Dratini",
+    "Bagon",
+    "Dragonite",
+    "Salamence",
+    "Rayquaza"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_hac_am",
+   "ten": "Bộ Hắc Ám",
+   "loai": "he",
+   "he": "Bóng tối",
+   "heKhac": "Giác đấu",
+   "pokemon": [
+    "Murkrow",
+    "Umbreon",
+    "Houndoom",
+    "Tyranitar",
+    "Darkrai"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_cuong_thiet",
+   "ten": "Bộ Cương Thiết",
+   "loai": "he",
+   "he": "Thép",
+   "heKhac": "Lửa",
+   "pokemon": [
+    "Magnemite",
+    "Skarmory",
+    "Steelix",
+    "Metagross",
+    "Dialga"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "he_tien_tu",
+   "ten": "Bộ Tiên Tử",
+   "loai": "he",
+   "he": "Tiên",
+   "heKhac": "Thép",
+   "pokemon": [
+    "Cleffa",
+    "Clefairy",
+    "Togetic",
+    "Gardevoir",
+    "Xerneas"
+   ],
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "st_he",
+     "phanNghin": 20
+    },
+    {
+     "soMon": 4,
+     "chiSo": "khang_he_khac",
+     "phanNghin": 30
+    },
+    {
+     "soMon": 6,
+     "chiSo": "st_he",
+     "phanNghin": 30
+    }
+   ]
+  },
+  {
+   "ma": "vung_kanto",
+   "ten": "Bộ Huy chương Kanto",
+   "loai": "vung",
+   "vung": "kanto",
+   "bacTu": 0,
+   "bacDen": 3,
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "hp",
+     "phanNghin": 10
+    },
+    {
+     "soMon": 3,
+     "chiSo": "tan_cong",
+     "phanNghin": 10
+    },
+    {
+     "soMon": 4,
+     "chiSo": "chi_mang",
+     "phanNghin": 10
+    }
+   ]
+  },
+  {
+   "ma": "vung_johto",
+   "ten": "Bộ Huy chương Johto",
+   "loai": "vung",
+   "vung": "johto",
+   "bacTu": 4,
+   "bacDen": 7,
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "hp",
+     "phanNghin": 10
+    },
+    {
+     "soMon": 3,
+     "chiSo": "tan_cong",
+     "phanNghin": 10
+    },
+    {
+     "soMon": 4,
+     "chiSo": "chi_mang",
+     "phanNghin": 10
+    }
+   ]
+  },
+  {
+   "ma": "vung_hoenn",
+   "ten": "Bộ Huy chương Hoenn",
+   "loai": "vung",
+   "vung": "hoenn",
+   "bacTu": 8,
+   "bacDen": 10,
+   "thuong": [
+    {
+     "soMon": 2,
+     "chiSo": "hp",
+     "phanNghin": 10
+    },
+    {
+     "soMon": 3,
+     "chiSo": "tan_cong",
+     "phanNghin": 10
+    },
+    {
+     "soMon": 4,
+     "chiSo": "chi_mang",
+     "phanNghin": 10
+    }
+   ]
+  }
+ ],
+ "do": [
+  {
+   "id": 1400,
+   "ten": "Khăn quàng Meowth",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_binh_nguyen",
+   "icon": 0,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1401,
+   "ten": "Khăn quàng Eevee",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_binh_nguyen",
+   "icon": 1,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1402,
+   "ten": "Khăn quàng Kangaskhan",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_binh_nguyen",
+   "icon": 2,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1403,
+   "ten": "Khăn quàng Snorlax",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_binh_nguyen",
+   "icon": 3,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1404,
+   "ten": "Khăn quàng Regigigas",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_binh_nguyen",
+   "icon": 4,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1405,
+   "ten": "Đai Meowth",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_binh_nguyen",
+   "icon": 5,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1406,
+   "ten": "Đai Eevee",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_binh_nguyen",
+   "icon": 6,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1407,
+   "ten": "Đai Kangaskhan",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_binh_nguyen",
+   "icon": 7,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1408,
+   "ten": "Đai Snorlax",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_binh_nguyen",
+   "icon": 8,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1409,
+   "ten": "Đai Regigigas",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_binh_nguyen",
+   "icon": 9,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1410,
+   "ten": "Băng đô Meowth",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_binh_nguyen",
+   "icon": 10,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1411,
+   "ten": "Băng đô Eevee",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_binh_nguyen",
+   "icon": 11,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1412,
+   "ten": "Băng đô Kangaskhan",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_binh_nguyen",
+   "icon": 12,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1413,
+   "ten": "Băng đô Snorlax",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_binh_nguyen",
+   "icon": 13,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1414,
+   "ten": "Băng đô Regigigas",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_binh_nguyen",
+   "icon": 14,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1415,
+   "ten": "Vòng cổ Meowth",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_binh_nguyen",
+   "icon": 15,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1416,
+   "ten": "Vòng cổ Eevee",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_binh_nguyen",
+   "icon": 16,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1417,
+   "ten": "Vòng cổ Kangaskhan",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_binh_nguyen",
+   "icon": 17,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1418,
+   "ten": "Vòng cổ Snorlax",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_binh_nguyen",
+   "icon": 18,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1419,
+   "ten": "Vòng cổ Regigigas",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_binh_nguyen",
+   "icon": 19,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1420,
+   "ten": "Lông vũ Meowth",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_binh_nguyen",
+   "icon": 20,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1421,
+   "ten": "Lông vũ Eevee",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_binh_nguyen",
+   "icon": 21,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1422,
+   "ten": "Lông vũ Kangaskhan",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_binh_nguyen",
+   "icon": 22,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1423,
+   "ten": "Lông vũ Snorlax",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_binh_nguyen",
+   "icon": 23,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1424,
+   "ten": "Lông vũ Regigigas",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_binh_nguyen",
+   "icon": 24,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1425,
+   "ten": "Ruy băng Meowth",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_binh_nguyen",
+   "icon": 25,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1426,
+   "ten": "Ruy băng Eevee",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_binh_nguyen",
+   "icon": 26,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1427,
+   "ten": "Ruy băng Kangaskhan",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_binh_nguyen",
+   "icon": 27,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1428,
+   "ten": "Ruy băng Snorlax",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_binh_nguyen",
+   "icon": 28,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1429,
+   "ten": "Ruy băng Regigigas",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_binh_nguyen",
+   "icon": 29,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1430,
+   "ten": "Khăn quàng Vulpix",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_hoa_diem",
+   "icon": 30,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1431,
+   "ten": "Khăn quàng Ponyta",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_hoa_diem",
+   "icon": 31,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1432,
+   "ten": "Khăn quàng Arcanine",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_hoa_diem",
+   "icon": 32,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1433,
+   "ten": "Khăn quàng Moltres",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_hoa_diem",
+   "icon": 33,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1434,
+   "ten": "Khăn quàng Ho-Oh",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_hoa_diem",
+   "icon": 34,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1435,
+   "ten": "Đai Vulpix",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_hoa_diem",
+   "icon": 35,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1436,
+   "ten": "Đai Ponyta",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_hoa_diem",
+   "icon": 36,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1437,
+   "ten": "Đai Arcanine",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_hoa_diem",
+   "icon": 37,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1438,
+   "ten": "Đai Moltres",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_hoa_diem",
+   "icon": 38,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1439,
+   "ten": "Đai Ho-Oh",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_hoa_diem",
+   "icon": 39,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1440,
+   "ten": "Băng đô Vulpix",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_hoa_diem",
+   "icon": 40,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1441,
+   "ten": "Băng đô Ponyta",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_hoa_diem",
+   "icon": 41,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1442,
+   "ten": "Băng đô Arcanine",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_hoa_diem",
+   "icon": 42,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1443,
+   "ten": "Băng đô Moltres",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_hoa_diem",
+   "icon": 43,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1444,
+   "ten": "Băng đô Ho-Oh",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_hoa_diem",
+   "icon": 44,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1445,
+   "ten": "Vòng cổ Vulpix",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_hoa_diem",
+   "icon": 45,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1446,
+   "ten": "Vòng cổ Ponyta",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_hoa_diem",
+   "icon": 46,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1447,
+   "ten": "Vòng cổ Arcanine",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_hoa_diem",
+   "icon": 47,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1448,
+   "ten": "Vòng cổ Moltres",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_hoa_diem",
+   "icon": 48,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1449,
+   "ten": "Vòng cổ Ho-Oh",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_hoa_diem",
+   "icon": 49,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1450,
+   "ten": "Lông vũ Vulpix",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_hoa_diem",
+   "icon": 50,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1451,
+   "ten": "Lông vũ Ponyta",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_hoa_diem",
+   "icon": 51,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1452,
+   "ten": "Lông vũ Arcanine",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_hoa_diem",
+   "icon": 52,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1453,
+   "ten": "Lông vũ Moltres",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_hoa_diem",
+   "icon": 53,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1454,
+   "ten": "Lông vũ Ho-Oh",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_hoa_diem",
+   "icon": 54,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1455,
+   "ten": "Ruy băng Vulpix",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_hoa_diem",
+   "icon": 55,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1456,
+   "ten": "Ruy băng Ponyta",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_hoa_diem",
+   "icon": 56,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1457,
+   "ten": "Ruy băng Arcanine",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_hoa_diem",
+   "icon": 57,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1458,
+   "ten": "Ruy băng Moltres",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_hoa_diem",
+   "icon": 58,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1459,
+   "ten": "Ruy băng Ho-Oh",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_hoa_diem",
+   "icon": 59,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1460,
+   "ten": "Khăn quàng Staryu",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_thuy_trieu",
+   "icon": 60,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1461,
+   "ten": "Khăn quàng Vaporeon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_thuy_trieu",
+   "icon": 61,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1462,
+   "ten": "Khăn quàng Lapras",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_thuy_trieu",
+   "icon": 62,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1463,
+   "ten": "Khăn quàng Suicune",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_thuy_trieu",
+   "icon": 63,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1464,
+   "ten": "Khăn quàng Kyogre",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_thuy_trieu",
+   "icon": 64,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1465,
+   "ten": "Đai Staryu",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_thuy_trieu",
+   "icon": 65,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1466,
+   "ten": "Đai Vaporeon",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_thuy_trieu",
+   "icon": 66,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1467,
+   "ten": "Đai Lapras",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_thuy_trieu",
+   "icon": 67,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1468,
+   "ten": "Đai Suicune",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_thuy_trieu",
+   "icon": 68,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1469,
+   "ten": "Đai Kyogre",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_thuy_trieu",
+   "icon": 69,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1470,
+   "ten": "Băng đô Staryu",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_thuy_trieu",
+   "icon": 70,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1471,
+   "ten": "Băng đô Vaporeon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_thuy_trieu",
+   "icon": 71,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1472,
+   "ten": "Băng đô Lapras",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_thuy_trieu",
+   "icon": 72,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1473,
+   "ten": "Băng đô Suicune",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_thuy_trieu",
+   "icon": 73,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1474,
+   "ten": "Băng đô Kyogre",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_thuy_trieu",
+   "icon": 74,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1475,
+   "ten": "Vòng cổ Staryu",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_thuy_trieu",
+   "icon": 75,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1476,
+   "ten": "Vòng cổ Vaporeon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_thuy_trieu",
+   "icon": 76,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1477,
+   "ten": "Vòng cổ Lapras",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_thuy_trieu",
+   "icon": 77,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1478,
+   "ten": "Vòng cổ Suicune",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_thuy_trieu",
+   "icon": 78,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1479,
+   "ten": "Vòng cổ Kyogre",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_thuy_trieu",
+   "icon": 79,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1480,
+   "ten": "Lông vũ Staryu",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_thuy_trieu",
+   "icon": 80,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1481,
+   "ten": "Lông vũ Vaporeon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_thuy_trieu",
+   "icon": 81,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1482,
+   "ten": "Lông vũ Lapras",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_thuy_trieu",
+   "icon": 82,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1483,
+   "ten": "Lông vũ Suicune",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_thuy_trieu",
+   "icon": 83,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1484,
+   "ten": "Lông vũ Kyogre",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_thuy_trieu",
+   "icon": 84,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1485,
+   "ten": "Ruy băng Staryu",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_thuy_trieu",
+   "icon": 85,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1486,
+   "ten": "Ruy băng Vaporeon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_thuy_trieu",
+   "icon": 86,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1487,
+   "ten": "Ruy băng Lapras",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_thuy_trieu",
+   "icon": 87,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1488,
+   "ten": "Ruy băng Suicune",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_thuy_trieu",
+   "icon": 88,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1489,
+   "ten": "Ruy băng Kyogre",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_thuy_trieu",
+   "icon": 89,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1490,
+   "ten": "Khăn quàng Pikachu",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_loi_quang",
+   "icon": 90,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1491,
+   "ten": "Khăn quàng Electabuzz",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_loi_quang",
+   "icon": 91,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1492,
+   "ten": "Khăn quàng Jolteon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_loi_quang",
+   "icon": 92,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1493,
+   "ten": "Khăn quàng Zapdos",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_loi_quang",
+   "icon": 93,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1494,
+   "ten": "Khăn quàng Raikou",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_loi_quang",
+   "icon": 94,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1495,
+   "ten": "Đai Pikachu",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_loi_quang",
+   "icon": 95,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1496,
+   "ten": "Đai Electabuzz",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_loi_quang",
+   "icon": 96,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1497,
+   "ten": "Đai Jolteon",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_loi_quang",
+   "icon": 97,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1498,
+   "ten": "Đai Zapdos",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_loi_quang",
+   "icon": 98,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1499,
+   "ten": "Đai Raikou",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_loi_quang",
+   "icon": 99,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1500,
+   "ten": "Băng đô Pikachu",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_loi_quang",
+   "icon": 100,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1501,
+   "ten": "Băng đô Electabuzz",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_loi_quang",
+   "icon": 101,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1502,
+   "ten": "Băng đô Jolteon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_loi_quang",
+   "icon": 102,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1503,
+   "ten": "Băng đô Zapdos",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_loi_quang",
+   "icon": 103,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1504,
+   "ten": "Băng đô Raikou",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_loi_quang",
+   "icon": 104,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1505,
+   "ten": "Vòng cổ Pikachu",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_loi_quang",
+   "icon": 105,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1506,
+   "ten": "Vòng cổ Electabuzz",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_loi_quang",
+   "icon": 106,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1507,
+   "ten": "Vòng cổ Jolteon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_loi_quang",
+   "icon": 107,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1508,
+   "ten": "Vòng cổ Zapdos",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_loi_quang",
+   "icon": 108,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1509,
+   "ten": "Vòng cổ Raikou",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_loi_quang",
+   "icon": 109,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1510,
+   "ten": "Lông vũ Pikachu",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_loi_quang",
+   "icon": 110,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1511,
+   "ten": "Lông vũ Electabuzz",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_loi_quang",
+   "icon": 111,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1512,
+   "ten": "Lông vũ Jolteon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_loi_quang",
+   "icon": 112,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1513,
+   "ten": "Lông vũ Zapdos",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_loi_quang",
+   "icon": 113,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1514,
+   "ten": "Lông vũ Raikou",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_loi_quang",
+   "icon": 114,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1515,
+   "ten": "Ruy băng Pikachu",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_loi_quang",
+   "icon": 115,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1516,
+   "ten": "Ruy băng Electabuzz",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_loi_quang",
+   "icon": 116,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1517,
+   "ten": "Ruy băng Jolteon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_loi_quang",
+   "icon": 117,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1518,
+   "ten": "Ruy băng Zapdos",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_loi_quang",
+   "icon": 118,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1519,
+   "ten": "Ruy băng Raikou",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_loi_quang",
+   "icon": 119,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1520,
+   "ten": "Khăn quàng Oddish",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_diep_luc",
+   "icon": 120,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1521,
+   "ten": "Khăn quàng Tangela",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_diep_luc",
+   "icon": 121,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1522,
+   "ten": "Khăn quàng Venusaur",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_diep_luc",
+   "icon": 122,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1523,
+   "ten": "Khăn quàng Celebi",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_diep_luc",
+   "icon": 123,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1524,
+   "ten": "Khăn quàng Shaymin",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_diep_luc",
+   "icon": 124,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1525,
+   "ten": "Đai Oddish",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_diep_luc",
+   "icon": 125,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1526,
+   "ten": "Đai Tangela",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_diep_luc",
+   "icon": 126,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1527,
+   "ten": "Đai Venusaur",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_diep_luc",
+   "icon": 127,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1528,
+   "ten": "Đai Celebi",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_diep_luc",
+   "icon": 128,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1529,
+   "ten": "Đai Shaymin",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_diep_luc",
+   "icon": 129,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1530,
+   "ten": "Băng đô Oddish",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_diep_luc",
+   "icon": 130,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1531,
+   "ten": "Băng đô Tangela",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_diep_luc",
+   "icon": 131,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1532,
+   "ten": "Băng đô Venusaur",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_diep_luc",
+   "icon": 132,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1533,
+   "ten": "Băng đô Celebi",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_diep_luc",
+   "icon": 133,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1534,
+   "ten": "Băng đô Shaymin",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_diep_luc",
+   "icon": 134,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1535,
+   "ten": "Vòng cổ Oddish",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_diep_luc",
+   "icon": 135,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1536,
+   "ten": "Vòng cổ Tangela",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_diep_luc",
+   "icon": 136,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1537,
+   "ten": "Vòng cổ Venusaur",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_diep_luc",
+   "icon": 137,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1538,
+   "ten": "Vòng cổ Celebi",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_diep_luc",
+   "icon": 138,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1539,
+   "ten": "Vòng cổ Shaymin",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_diep_luc",
+   "icon": 139,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1540,
+   "ten": "Lông vũ Oddish",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_diep_luc",
+   "icon": 140,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1541,
+   "ten": "Lông vũ Tangela",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_diep_luc",
+   "icon": 141,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1542,
+   "ten": "Lông vũ Venusaur",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_diep_luc",
+   "icon": 142,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1543,
+   "ten": "Lông vũ Celebi",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_diep_luc",
+   "icon": 143,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1544,
+   "ten": "Lông vũ Shaymin",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_diep_luc",
+   "icon": 144,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1545,
+   "ten": "Ruy băng Oddish",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_diep_luc",
+   "icon": 145,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1546,
+   "ten": "Ruy băng Tangela",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_diep_luc",
+   "icon": 146,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1547,
+   "ten": "Ruy băng Venusaur",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_diep_luc",
+   "icon": 147,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1548,
+   "ten": "Ruy băng Celebi",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_diep_luc",
+   "icon": 148,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1549,
+   "ten": "Ruy băng Shaymin",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_diep_luc",
+   "icon": 149,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1550,
+   "ten": "Khăn quàng Snorunt",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_bang_tinh",
+   "icon": 150,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1551,
+   "ten": "Khăn quàng Jynx",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_bang_tinh",
+   "icon": 151,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1552,
+   "ten": "Khăn quàng Glaceon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_bang_tinh",
+   "icon": 152,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1553,
+   "ten": "Khăn quàng Articuno",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_bang_tinh",
+   "icon": 153,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1554,
+   "ten": "Khăn quàng Regice",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_bang_tinh",
+   "icon": 154,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1555,
+   "ten": "Đai Snorunt",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_bang_tinh",
+   "icon": 155,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1556,
+   "ten": "Đai Jynx",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_bang_tinh",
+   "icon": 156,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1557,
+   "ten": "Đai Glaceon",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_bang_tinh",
+   "icon": 157,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1558,
+   "ten": "Đai Articuno",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_bang_tinh",
+   "icon": 158,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1559,
+   "ten": "Đai Regice",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_bang_tinh",
+   "icon": 159,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1560,
+   "ten": "Băng đô Snorunt",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_bang_tinh",
+   "icon": 160,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1561,
+   "ten": "Băng đô Jynx",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_bang_tinh",
+   "icon": 161,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1562,
+   "ten": "Băng đô Glaceon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_bang_tinh",
+   "icon": 162,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1563,
+   "ten": "Băng đô Articuno",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_bang_tinh",
+   "icon": 163,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1564,
+   "ten": "Băng đô Regice",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_bang_tinh",
+   "icon": 164,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1565,
+   "ten": "Vòng cổ Snorunt",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_bang_tinh",
+   "icon": 165,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1566,
+   "ten": "Vòng cổ Jynx",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_bang_tinh",
+   "icon": 166,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1567,
+   "ten": "Vòng cổ Glaceon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_bang_tinh",
+   "icon": 167,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1568,
+   "ten": "Vòng cổ Articuno",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_bang_tinh",
+   "icon": 168,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1569,
+   "ten": "Vòng cổ Regice",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_bang_tinh",
+   "icon": 169,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1570,
+   "ten": "Lông vũ Snorunt",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_bang_tinh",
+   "icon": 170,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1571,
+   "ten": "Lông vũ Jynx",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_bang_tinh",
+   "icon": 171,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1572,
+   "ten": "Lông vũ Glaceon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_bang_tinh",
+   "icon": 172,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1573,
+   "ten": "Lông vũ Articuno",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_bang_tinh",
+   "icon": 173,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1574,
+   "ten": "Lông vũ Regice",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_bang_tinh",
+   "icon": 174,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1575,
+   "ten": "Ruy băng Snorunt",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_bang_tinh",
+   "icon": 175,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1576,
+   "ten": "Ruy băng Jynx",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_bang_tinh",
+   "icon": 176,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1577,
+   "ten": "Ruy băng Glaceon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_bang_tinh",
+   "icon": 177,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1578,
+   "ten": "Ruy băng Articuno",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_bang_tinh",
+   "icon": 178,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1579,
+   "ten": "Ruy băng Regice",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_bang_tinh",
+   "icon": 179,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1580,
+   "ten": "Khăn quàng Machop",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_vo_dao",
+   "icon": 180,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1581,
+   "ten": "Khăn quàng Hitmonlee",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_vo_dao",
+   "icon": 181,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1582,
+   "ten": "Khăn quàng Machamp",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_vo_dao",
+   "icon": 182,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1583,
+   "ten": "Khăn quàng Lucario",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_vo_dao",
+   "icon": 183,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1584,
+   "ten": "Khăn quàng Terrakion",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_vo_dao",
+   "icon": 184,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1585,
+   "ten": "Đai Machop",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_vo_dao",
+   "icon": 185,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1586,
+   "ten": "Đai Hitmonlee",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_vo_dao",
+   "icon": 186,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1587,
+   "ten": "Đai Machamp",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_vo_dao",
+   "icon": 187,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1588,
+   "ten": "Đai Lucario",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_vo_dao",
+   "icon": 188,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1589,
+   "ten": "Đai Terrakion",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_vo_dao",
+   "icon": 189,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1590,
+   "ten": "Băng đô Machop",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_vo_dao",
+   "icon": 190,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1591,
+   "ten": "Băng đô Hitmonlee",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_vo_dao",
+   "icon": 191,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1592,
+   "ten": "Băng đô Machamp",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_vo_dao",
+   "icon": 192,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1593,
+   "ten": "Băng đô Lucario",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_vo_dao",
+   "icon": 193,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1594,
+   "ten": "Băng đô Terrakion",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_vo_dao",
+   "icon": 194,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1595,
+   "ten": "Vòng cổ Machop",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_vo_dao",
+   "icon": 195,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1596,
+   "ten": "Vòng cổ Hitmonlee",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_vo_dao",
+   "icon": 196,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1597,
+   "ten": "Vòng cổ Machamp",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_vo_dao",
+   "icon": 197,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1598,
+   "ten": "Vòng cổ Lucario",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_vo_dao",
+   "icon": 198,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1599,
+   "ten": "Vòng cổ Terrakion",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_vo_dao",
+   "icon": 199,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1600,
+   "ten": "Lông vũ Machop",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_vo_dao",
+   "icon": 200,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1601,
+   "ten": "Lông vũ Hitmonlee",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_vo_dao",
+   "icon": 201,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1602,
+   "ten": "Lông vũ Machamp",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_vo_dao",
+   "icon": 202,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1603,
+   "ten": "Lông vũ Lucario",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_vo_dao",
+   "icon": 203,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1604,
+   "ten": "Lông vũ Terrakion",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_vo_dao",
+   "icon": 204,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1605,
+   "ten": "Ruy băng Machop",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_vo_dao",
+   "icon": 205,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1606,
+   "ten": "Ruy băng Hitmonlee",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_vo_dao",
+   "icon": 206,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1607,
+   "ten": "Ruy băng Machamp",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_vo_dao",
+   "icon": 207,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1608,
+   "ten": "Ruy băng Lucario",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_vo_dao",
+   "icon": 208,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1609,
+   "ten": "Ruy băng Terrakion",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_vo_dao",
+   "icon": 209,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1610,
+   "ten": "Khăn quàng Ekans",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_doc_duoc",
+   "icon": 210,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1611,
+   "ten": "Khăn quàng Grimer",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_doc_duoc",
+   "icon": 211,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1612,
+   "ten": "Khăn quàng Arbok",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_doc_duoc",
+   "icon": 212,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1613,
+   "ten": "Khăn quàng Nidoking",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_doc_duoc",
+   "icon": 213,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1614,
+   "ten": "Khăn quàng Crobat",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_doc_duoc",
+   "icon": 214,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1615,
+   "ten": "Đai Ekans",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_doc_duoc",
+   "icon": 215,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1616,
+   "ten": "Đai Grimer",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_doc_duoc",
+   "icon": 216,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1617,
+   "ten": "Đai Arbok",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_doc_duoc",
+   "icon": 217,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1618,
+   "ten": "Đai Nidoking",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_doc_duoc",
+   "icon": 218,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1619,
+   "ten": "Đai Crobat",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_doc_duoc",
+   "icon": 219,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1620,
+   "ten": "Băng đô Ekans",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_doc_duoc",
+   "icon": 220,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1621,
+   "ten": "Băng đô Grimer",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_doc_duoc",
+   "icon": 221,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1622,
+   "ten": "Băng đô Arbok",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_doc_duoc",
+   "icon": 222,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1623,
+   "ten": "Băng đô Nidoking",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_doc_duoc",
+   "icon": 223,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1624,
+   "ten": "Băng đô Crobat",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_doc_duoc",
+   "icon": 224,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1625,
+   "ten": "Vòng cổ Ekans",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_doc_duoc",
+   "icon": 225,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1626,
+   "ten": "Vòng cổ Grimer",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_doc_duoc",
+   "icon": 226,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1627,
+   "ten": "Vòng cổ Arbok",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_doc_duoc",
+   "icon": 227,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1628,
+   "ten": "Vòng cổ Nidoking",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_doc_duoc",
+   "icon": 228,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1629,
+   "ten": "Vòng cổ Crobat",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_doc_duoc",
+   "icon": 229,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1630,
+   "ten": "Lông vũ Ekans",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_doc_duoc",
+   "icon": 230,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1631,
+   "ten": "Lông vũ Grimer",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_doc_duoc",
+   "icon": 231,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1632,
+   "ten": "Lông vũ Arbok",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_doc_duoc",
+   "icon": 232,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1633,
+   "ten": "Lông vũ Nidoking",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_doc_duoc",
+   "icon": 233,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1634,
+   "ten": "Lông vũ Crobat",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_doc_duoc",
+   "icon": 234,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1635,
+   "ten": "Ruy băng Ekans",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_doc_duoc",
+   "icon": 235,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1636,
+   "ten": "Ruy băng Grimer",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_doc_duoc",
+   "icon": 236,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1637,
+   "ten": "Ruy băng Arbok",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_doc_duoc",
+   "icon": 237,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1638,
+   "ten": "Ruy băng Nidoking",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_doc_duoc",
+   "icon": 238,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1639,
+   "ten": "Ruy băng Crobat",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_doc_duoc",
+   "icon": 239,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1640,
+   "ten": "Khăn quàng Sandshrew",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_dia_chan",
+   "icon": 240,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1641,
+   "ten": "Khăn quàng Cubone",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_dia_chan",
+   "icon": 241,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1642,
+   "ten": "Khăn quàng Rhydon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_dia_chan",
+   "icon": 242,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1643,
+   "ten": "Khăn quàng Donphan",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_dia_chan",
+   "icon": 243,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1644,
+   "ten": "Khăn quàng Groudon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_dia_chan",
+   "icon": 244,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1645,
+   "ten": "Đai Sandshrew",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_dia_chan",
+   "icon": 245,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1646,
+   "ten": "Đai Cubone",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_dia_chan",
+   "icon": 246,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1647,
+   "ten": "Đai Rhydon",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_dia_chan",
+   "icon": 247,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1648,
+   "ten": "Đai Donphan",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_dia_chan",
+   "icon": 248,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1649,
+   "ten": "Đai Groudon",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_dia_chan",
+   "icon": 249,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1650,
+   "ten": "Băng đô Sandshrew",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_dia_chan",
+   "icon": 250,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1651,
+   "ten": "Băng đô Cubone",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_dia_chan",
+   "icon": 251,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1652,
+   "ten": "Băng đô Rhydon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_dia_chan",
+   "icon": 252,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1653,
+   "ten": "Băng đô Donphan",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_dia_chan",
+   "icon": 253,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1654,
+   "ten": "Băng đô Groudon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_dia_chan",
+   "icon": 254,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1655,
+   "ten": "Vòng cổ Sandshrew",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_dia_chan",
+   "icon": 255,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1656,
+   "ten": "Vòng cổ Cubone",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_dia_chan",
+   "icon": 256,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1657,
+   "ten": "Vòng cổ Rhydon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_dia_chan",
+   "icon": 257,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1658,
+   "ten": "Vòng cổ Donphan",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_dia_chan",
+   "icon": 258,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1659,
+   "ten": "Vòng cổ Groudon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_dia_chan",
+   "icon": 259,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1660,
+   "ten": "Lông vũ Sandshrew",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_dia_chan",
+   "icon": 260,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1661,
+   "ten": "Lông vũ Cubone",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_dia_chan",
+   "icon": 261,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1662,
+   "ten": "Lông vũ Rhydon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_dia_chan",
+   "icon": 262,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1663,
+   "ten": "Lông vũ Donphan",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_dia_chan",
+   "icon": 263,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1664,
+   "ten": "Lông vũ Groudon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_dia_chan",
+   "icon": 264,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1665,
+   "ten": "Ruy băng Sandshrew",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_dia_chan",
+   "icon": 265,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1666,
+   "ten": "Ruy băng Cubone",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_dia_chan",
+   "icon": 266,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1667,
+   "ten": "Ruy băng Rhydon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_dia_chan",
+   "icon": 267,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1668,
+   "ten": "Ruy băng Donphan",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_dia_chan",
+   "icon": 268,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1669,
+   "ten": "Ruy băng Groudon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_dia_chan",
+   "icon": 269,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1670,
+   "ten": "Khăn quàng Pidgey",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_phong_vu",
+   "icon": 270,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1671,
+   "ten": "Khăn quàng Swablu",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_phong_vu",
+   "icon": 271,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1672,
+   "ten": "Khăn quàng Pidgeot",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_phong_vu",
+   "icon": 272,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1673,
+   "ten": "Khăn quàng Togekiss",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_phong_vu",
+   "icon": 273,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1674,
+   "ten": "Khăn quàng Lugia",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_phong_vu",
+   "icon": 274,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1675,
+   "ten": "Đai Pidgey",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_phong_vu",
+   "icon": 275,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1676,
+   "ten": "Đai Swablu",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_phong_vu",
+   "icon": 276,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1677,
+   "ten": "Đai Pidgeot",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_phong_vu",
+   "icon": 277,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1678,
+   "ten": "Đai Togekiss",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_phong_vu",
+   "icon": 278,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1679,
+   "ten": "Đai Lugia",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_phong_vu",
+   "icon": 279,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1680,
+   "ten": "Băng đô Pidgey",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_phong_vu",
+   "icon": 280,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1681,
+   "ten": "Băng đô Swablu",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_phong_vu",
+   "icon": 281,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1682,
+   "ten": "Băng đô Pidgeot",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_phong_vu",
+   "icon": 282,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1683,
+   "ten": "Băng đô Togekiss",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_phong_vu",
+   "icon": 283,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1684,
+   "ten": "Băng đô Lugia",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_phong_vu",
+   "icon": 284,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1685,
+   "ten": "Vòng cổ Pidgey",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_phong_vu",
+   "icon": 285,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1686,
+   "ten": "Vòng cổ Swablu",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_phong_vu",
+   "icon": 286,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1687,
+   "ten": "Vòng cổ Pidgeot",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_phong_vu",
+   "icon": 287,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1688,
+   "ten": "Vòng cổ Togekiss",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_phong_vu",
+   "icon": 288,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1689,
+   "ten": "Vòng cổ Lugia",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_phong_vu",
+   "icon": 289,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1690,
+   "ten": "Lông vũ Pidgey",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_phong_vu",
+   "icon": 290,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1691,
+   "ten": "Lông vũ Swablu",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_phong_vu",
+   "icon": 291,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1692,
+   "ten": "Lông vũ Pidgeot",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_phong_vu",
+   "icon": 292,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1693,
+   "ten": "Lông vũ Togekiss",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_phong_vu",
+   "icon": 293,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1694,
+   "ten": "Lông vũ Lugia",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_phong_vu",
+   "icon": 294,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1695,
+   "ten": "Ruy băng Pidgey",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_phong_vu",
+   "icon": 295,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1696,
+   "ten": "Ruy băng Swablu",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_phong_vu",
+   "icon": 296,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1697,
+   "ten": "Ruy băng Pidgeot",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_phong_vu",
+   "icon": 297,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1698,
+   "ten": "Ruy băng Togekiss",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_phong_vu",
+   "icon": 298,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1699,
+   "ten": "Ruy băng Lugia",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_phong_vu",
+   "icon": 299,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1700,
+   "ten": "Khăn quàng Abra",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_tam_linh",
+   "icon": 300,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1701,
+   "ten": "Khăn quàng Natu",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_tam_linh",
+   "icon": 301,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1702,
+   "ten": "Khăn quàng Espeon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_tam_linh",
+   "icon": 302,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1703,
+   "ten": "Khăn quàng Alakazam",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_tam_linh",
+   "icon": 303,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1704,
+   "ten": "Khăn quàng Mewtwo",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_tam_linh",
+   "icon": 304,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1705,
+   "ten": "Đai Abra",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_tam_linh",
+   "icon": 305,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1706,
+   "ten": "Đai Natu",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_tam_linh",
+   "icon": 306,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1707,
+   "ten": "Đai Espeon",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_tam_linh",
+   "icon": 307,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1708,
+   "ten": "Đai Alakazam",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_tam_linh",
+   "icon": 308,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1709,
+   "ten": "Đai Mewtwo",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_tam_linh",
+   "icon": 309,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1710,
+   "ten": "Băng đô Abra",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_tam_linh",
+   "icon": 310,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1711,
+   "ten": "Băng đô Natu",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_tam_linh",
+   "icon": 311,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1712,
+   "ten": "Băng đô Espeon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_tam_linh",
+   "icon": 312,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1713,
+   "ten": "Băng đô Alakazam",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_tam_linh",
+   "icon": 313,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1714,
+   "ten": "Băng đô Mewtwo",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_tam_linh",
+   "icon": 314,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1715,
+   "ten": "Vòng cổ Abra",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_tam_linh",
+   "icon": 315,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1716,
+   "ten": "Vòng cổ Natu",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_tam_linh",
+   "icon": 316,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1717,
+   "ten": "Vòng cổ Espeon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_tam_linh",
+   "icon": 317,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1718,
+   "ten": "Vòng cổ Alakazam",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_tam_linh",
+   "icon": 318,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1719,
+   "ten": "Vòng cổ Mewtwo",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_tam_linh",
+   "icon": 319,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1720,
+   "ten": "Lông vũ Abra",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_tam_linh",
+   "icon": 320,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1721,
+   "ten": "Lông vũ Natu",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_tam_linh",
+   "icon": 321,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1722,
+   "ten": "Lông vũ Espeon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_tam_linh",
+   "icon": 322,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1723,
+   "ten": "Lông vũ Alakazam",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_tam_linh",
+   "icon": 323,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1724,
+   "ten": "Lông vũ Mewtwo",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_tam_linh",
+   "icon": 324,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1725,
+   "ten": "Ruy băng Abra",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_tam_linh",
+   "icon": 325,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1726,
+   "ten": "Ruy băng Natu",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_tam_linh",
+   "icon": 326,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1727,
+   "ten": "Ruy băng Espeon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_tam_linh",
+   "icon": 327,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1728,
+   "ten": "Ruy băng Alakazam",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_tam_linh",
+   "icon": 328,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1729,
+   "ten": "Ruy băng Mewtwo",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_tam_linh",
+   "icon": 329,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1730,
+   "ten": "Khăn quàng Caterpie",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_giap_trung",
+   "icon": 330,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1731,
+   "ten": "Khăn quàng Butterfree",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_giap_trung",
+   "icon": 331,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1732,
+   "ten": "Khăn quàng Pinsir",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_giap_trung",
+   "icon": 332,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1733,
+   "ten": "Khăn quàng Scyther",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_giap_trung",
+   "icon": 333,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1734,
+   "ten": "Khăn quàng Heracross",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_giap_trung",
+   "icon": 334,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1735,
+   "ten": "Đai Caterpie",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_giap_trung",
+   "icon": 335,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1736,
+   "ten": "Đai Butterfree",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_giap_trung",
+   "icon": 336,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1737,
+   "ten": "Đai Pinsir",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_giap_trung",
+   "icon": 337,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1738,
+   "ten": "Đai Scyther",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_giap_trung",
+   "icon": 338,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1739,
+   "ten": "Đai Heracross",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_giap_trung",
+   "icon": 339,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1740,
+   "ten": "Băng đô Caterpie",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_giap_trung",
+   "icon": 340,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1741,
+   "ten": "Băng đô Butterfree",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_giap_trung",
+   "icon": 341,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1742,
+   "ten": "Băng đô Pinsir",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_giap_trung",
+   "icon": 342,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1743,
+   "ten": "Băng đô Scyther",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_giap_trung",
+   "icon": 343,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1744,
+   "ten": "Băng đô Heracross",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_giap_trung",
+   "icon": 344,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1745,
+   "ten": "Vòng cổ Caterpie",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_giap_trung",
+   "icon": 345,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1746,
+   "ten": "Vòng cổ Butterfree",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_giap_trung",
+   "icon": 346,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1747,
+   "ten": "Vòng cổ Pinsir",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_giap_trung",
+   "icon": 347,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1748,
+   "ten": "Vòng cổ Scyther",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_giap_trung",
+   "icon": 348,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1749,
+   "ten": "Vòng cổ Heracross",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_giap_trung",
+   "icon": 349,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1750,
+   "ten": "Lông vũ Caterpie",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_giap_trung",
+   "icon": 350,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1751,
+   "ten": "Lông vũ Butterfree",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_giap_trung",
+   "icon": 351,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1752,
+   "ten": "Lông vũ Pinsir",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_giap_trung",
+   "icon": 352,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1753,
+   "ten": "Lông vũ Scyther",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_giap_trung",
+   "icon": 353,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1754,
+   "ten": "Lông vũ Heracross",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_giap_trung",
+   "icon": 354,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1755,
+   "ten": "Ruy băng Caterpie",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_giap_trung",
+   "icon": 355,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1756,
+   "ten": "Ruy băng Butterfree",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_giap_trung",
+   "icon": 356,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1757,
+   "ten": "Ruy băng Pinsir",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_giap_trung",
+   "icon": 357,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1758,
+   "ten": "Ruy băng Scyther",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_giap_trung",
+   "icon": 358,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1759,
+   "ten": "Ruy băng Heracross",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_giap_trung",
+   "icon": 359,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1760,
+   "ten": "Khăn quàng Geodude",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_nham_thach",
+   "icon": 360,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1761,
+   "ten": "Khăn quàng Onix",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_nham_thach",
+   "icon": 361,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1762,
+   "ten": "Khăn quàng Golem",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_nham_thach",
+   "icon": 362,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1763,
+   "ten": "Khăn quàng Aerodactyl",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_nham_thach",
+   "icon": 363,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1764,
+   "ten": "Khăn quàng Regirock",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_nham_thach",
+   "icon": 364,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1765,
+   "ten": "Đai Geodude",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_nham_thach",
+   "icon": 365,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1766,
+   "ten": "Đai Onix",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_nham_thach",
+   "icon": 366,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1767,
+   "ten": "Đai Golem",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_nham_thach",
+   "icon": 367,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1768,
+   "ten": "Đai Aerodactyl",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_nham_thach",
+   "icon": 368,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1769,
+   "ten": "Đai Regirock",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_nham_thach",
+   "icon": 369,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1770,
+   "ten": "Băng đô Geodude",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_nham_thach",
+   "icon": 370,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1771,
+   "ten": "Băng đô Onix",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_nham_thach",
+   "icon": 371,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1772,
+   "ten": "Băng đô Golem",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_nham_thach",
+   "icon": 372,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1773,
+   "ten": "Băng đô Aerodactyl",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_nham_thach",
+   "icon": 373,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1774,
+   "ten": "Băng đô Regirock",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_nham_thach",
+   "icon": 374,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1775,
+   "ten": "Vòng cổ Geodude",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_nham_thach",
+   "icon": 375,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1776,
+   "ten": "Vòng cổ Onix",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_nham_thach",
+   "icon": 376,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1777,
+   "ten": "Vòng cổ Golem",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_nham_thach",
+   "icon": 377,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1778,
+   "ten": "Vòng cổ Aerodactyl",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_nham_thach",
+   "icon": 378,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1779,
+   "ten": "Vòng cổ Regirock",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_nham_thach",
+   "icon": 379,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1780,
+   "ten": "Lông vũ Geodude",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_nham_thach",
+   "icon": 380,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1781,
+   "ten": "Lông vũ Onix",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_nham_thach",
+   "icon": 381,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1782,
+   "ten": "Lông vũ Golem",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_nham_thach",
+   "icon": 382,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1783,
+   "ten": "Lông vũ Aerodactyl",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_nham_thach",
+   "icon": 383,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1784,
+   "ten": "Lông vũ Regirock",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_nham_thach",
+   "icon": 384,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1785,
+   "ten": "Ruy băng Geodude",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_nham_thach",
+   "icon": 385,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1786,
+   "ten": "Ruy băng Onix",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_nham_thach",
+   "icon": 386,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1787,
+   "ten": "Ruy băng Golem",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_nham_thach",
+   "icon": 387,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1788,
+   "ten": "Ruy băng Aerodactyl",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_nham_thach",
+   "icon": 388,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1789,
+   "ten": "Ruy băng Regirock",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_nham_thach",
+   "icon": 389,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1790,
+   "ten": "Khăn quàng Gastly",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_u_linh",
+   "icon": 390,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1791,
+   "ten": "Khăn quàng Misdreavus",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_u_linh",
+   "icon": 391,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1792,
+   "ten": "Khăn quàng Haunter",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_u_linh",
+   "icon": 392,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1793,
+   "ten": "Khăn quàng Gengar",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_u_linh",
+   "icon": 393,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1794,
+   "ten": "Khăn quàng Giratina",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_u_linh",
+   "icon": 394,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1795,
+   "ten": "Đai Gastly",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_u_linh",
+   "icon": 395,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1796,
+   "ten": "Đai Misdreavus",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_u_linh",
+   "icon": 396,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1797,
+   "ten": "Đai Haunter",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_u_linh",
+   "icon": 397,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1798,
+   "ten": "Đai Gengar",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_u_linh",
+   "icon": 398,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1799,
+   "ten": "Đai Giratina",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_u_linh",
+   "icon": 399,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1800,
+   "ten": "Băng đô Gastly",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_u_linh",
+   "icon": 400,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1801,
+   "ten": "Băng đô Misdreavus",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_u_linh",
+   "icon": 401,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1802,
+   "ten": "Băng đô Haunter",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_u_linh",
+   "icon": 402,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1803,
+   "ten": "Băng đô Gengar",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_u_linh",
+   "icon": 403,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1804,
+   "ten": "Băng đô Giratina",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_u_linh",
+   "icon": 404,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1805,
+   "ten": "Vòng cổ Gastly",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_u_linh",
+   "icon": 405,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1806,
+   "ten": "Vòng cổ Misdreavus",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_u_linh",
+   "icon": 406,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1807,
+   "ten": "Vòng cổ Haunter",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_u_linh",
+   "icon": 407,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1808,
+   "ten": "Vòng cổ Gengar",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_u_linh",
+   "icon": 408,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1809,
+   "ten": "Vòng cổ Giratina",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_u_linh",
+   "icon": 409,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1810,
+   "ten": "Lông vũ Gastly",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_u_linh",
+   "icon": 410,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1811,
+   "ten": "Lông vũ Misdreavus",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_u_linh",
+   "icon": 411,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1812,
+   "ten": "Lông vũ Haunter",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_u_linh",
+   "icon": 412,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1813,
+   "ten": "Lông vũ Gengar",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_u_linh",
+   "icon": 413,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1814,
+   "ten": "Lông vũ Giratina",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_u_linh",
+   "icon": 414,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1815,
+   "ten": "Ruy băng Gastly",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_u_linh",
+   "icon": 415,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1816,
+   "ten": "Ruy băng Misdreavus",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_u_linh",
+   "icon": 416,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1817,
+   "ten": "Ruy băng Haunter",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_u_linh",
+   "icon": 417,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1818,
+   "ten": "Ruy băng Gengar",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_u_linh",
+   "icon": 418,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1819,
+   "ten": "Ruy băng Giratina",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_u_linh",
+   "icon": 419,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1820,
+   "ten": "Khăn quàng Dratini",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_long_vuong",
+   "icon": 420,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1821,
+   "ten": "Khăn quàng Bagon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_long_vuong",
+   "icon": 421,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1822,
+   "ten": "Khăn quàng Dragonite",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_long_vuong",
+   "icon": 422,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1823,
+   "ten": "Khăn quàng Salamence",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_long_vuong",
+   "icon": 423,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1824,
+   "ten": "Khăn quàng Rayquaza",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_long_vuong",
+   "icon": 424,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1825,
+   "ten": "Đai Dratini",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_long_vuong",
+   "icon": 425,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1826,
+   "ten": "Đai Bagon",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_long_vuong",
+   "icon": 426,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1827,
+   "ten": "Đai Dragonite",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_long_vuong",
+   "icon": 427,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1828,
+   "ten": "Đai Salamence",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_long_vuong",
+   "icon": 428,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1829,
+   "ten": "Đai Rayquaza",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_long_vuong",
+   "icon": 429,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1830,
+   "ten": "Băng đô Dratini",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_long_vuong",
+   "icon": 430,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1831,
+   "ten": "Băng đô Bagon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_long_vuong",
+   "icon": 431,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1832,
+   "ten": "Băng đô Dragonite",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_long_vuong",
+   "icon": 432,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1833,
+   "ten": "Băng đô Salamence",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_long_vuong",
+   "icon": 433,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1834,
+   "ten": "Băng đô Rayquaza",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_long_vuong",
+   "icon": 434,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1835,
+   "ten": "Vòng cổ Dratini",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_long_vuong",
+   "icon": 435,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1836,
+   "ten": "Vòng cổ Bagon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_long_vuong",
+   "icon": 436,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1837,
+   "ten": "Vòng cổ Dragonite",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_long_vuong",
+   "icon": 437,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1838,
+   "ten": "Vòng cổ Salamence",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_long_vuong",
+   "icon": 438,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1839,
+   "ten": "Vòng cổ Rayquaza",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_long_vuong",
+   "icon": 439,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1840,
+   "ten": "Lông vũ Dratini",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_long_vuong",
+   "icon": 440,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1841,
+   "ten": "Lông vũ Bagon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_long_vuong",
+   "icon": 441,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1842,
+   "ten": "Lông vũ Dragonite",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_long_vuong",
+   "icon": 442,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1843,
+   "ten": "Lông vũ Salamence",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_long_vuong",
+   "icon": 443,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1844,
+   "ten": "Lông vũ Rayquaza",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_long_vuong",
+   "icon": 444,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1845,
+   "ten": "Ruy băng Dratini",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_long_vuong",
+   "icon": 445,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1846,
+   "ten": "Ruy băng Bagon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_long_vuong",
+   "icon": 446,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1847,
+   "ten": "Ruy băng Dragonite",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_long_vuong",
+   "icon": 447,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1848,
+   "ten": "Ruy băng Salamence",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_long_vuong",
+   "icon": 448,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1849,
+   "ten": "Ruy băng Rayquaza",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_long_vuong",
+   "icon": 449,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1850,
+   "ten": "Khăn quàng Murkrow",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_hac_am",
+   "icon": 450,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1851,
+   "ten": "Khăn quàng Umbreon",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_hac_am",
+   "icon": 451,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1852,
+   "ten": "Khăn quàng Houndoom",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_hac_am",
+   "icon": 452,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1853,
+   "ten": "Khăn quàng Tyranitar",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_hac_am",
+   "icon": 453,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1854,
+   "ten": "Khăn quàng Darkrai",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_hac_am",
+   "icon": 454,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1855,
+   "ten": "Đai Murkrow",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_hac_am",
+   "icon": 455,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1856,
+   "ten": "Đai Umbreon",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_hac_am",
+   "icon": 456,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1857,
+   "ten": "Đai Houndoom",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_hac_am",
+   "icon": 457,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1858,
+   "ten": "Đai Tyranitar",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_hac_am",
+   "icon": 458,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1859,
+   "ten": "Đai Darkrai",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_hac_am",
+   "icon": 459,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1860,
+   "ten": "Băng đô Murkrow",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_hac_am",
+   "icon": 460,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1861,
+   "ten": "Băng đô Umbreon",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_hac_am",
+   "icon": 461,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1862,
+   "ten": "Băng đô Houndoom",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_hac_am",
+   "icon": 462,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1863,
+   "ten": "Băng đô Tyranitar",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_hac_am",
+   "icon": 463,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1864,
+   "ten": "Băng đô Darkrai",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_hac_am",
+   "icon": 464,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1865,
+   "ten": "Vòng cổ Murkrow",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_hac_am",
+   "icon": 465,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1866,
+   "ten": "Vòng cổ Umbreon",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_hac_am",
+   "icon": 466,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1867,
+   "ten": "Vòng cổ Houndoom",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_hac_am",
+   "icon": 467,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1868,
+   "ten": "Vòng cổ Tyranitar",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_hac_am",
+   "icon": 468,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1869,
+   "ten": "Vòng cổ Darkrai",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_hac_am",
+   "icon": 469,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1870,
+   "ten": "Lông vũ Murkrow",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_hac_am",
+   "icon": 470,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1871,
+   "ten": "Lông vũ Umbreon",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_hac_am",
+   "icon": 471,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1872,
+   "ten": "Lông vũ Houndoom",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_hac_am",
+   "icon": 472,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1873,
+   "ten": "Lông vũ Tyranitar",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_hac_am",
+   "icon": 473,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1874,
+   "ten": "Lông vũ Darkrai",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_hac_am",
+   "icon": 474,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1875,
+   "ten": "Ruy băng Murkrow",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_hac_am",
+   "icon": 475,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1876,
+   "ten": "Ruy băng Umbreon",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_hac_am",
+   "icon": 476,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1877,
+   "ten": "Ruy băng Houndoom",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_hac_am",
+   "icon": 477,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1878,
+   "ten": "Ruy băng Tyranitar",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_hac_am",
+   "icon": 478,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1879,
+   "ten": "Ruy băng Darkrai",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_hac_am",
+   "icon": 479,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1880,
+   "ten": "Khăn quàng Magnemite",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_cuong_thiet",
+   "icon": 480,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1881,
+   "ten": "Khăn quàng Skarmory",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_cuong_thiet",
+   "icon": 481,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1882,
+   "ten": "Khăn quàng Steelix",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_cuong_thiet",
+   "icon": 482,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1883,
+   "ten": "Khăn quàng Metagross",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_cuong_thiet",
+   "icon": 483,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1884,
+   "ten": "Khăn quàng Dialga",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_cuong_thiet",
+   "icon": 484,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1885,
+   "ten": "Đai Magnemite",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_cuong_thiet",
+   "icon": 485,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1886,
+   "ten": "Đai Skarmory",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_cuong_thiet",
+   "icon": 486,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1887,
+   "ten": "Đai Steelix",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_cuong_thiet",
+   "icon": 487,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1888,
+   "ten": "Đai Metagross",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_cuong_thiet",
+   "icon": 488,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1889,
+   "ten": "Đai Dialga",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_cuong_thiet",
+   "icon": 489,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1890,
+   "ten": "Băng đô Magnemite",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_cuong_thiet",
+   "icon": 490,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1891,
+   "ten": "Băng đô Skarmory",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_cuong_thiet",
+   "icon": 491,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1892,
+   "ten": "Băng đô Steelix",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_cuong_thiet",
+   "icon": 492,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1893,
+   "ten": "Băng đô Metagross",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_cuong_thiet",
+   "icon": 493,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1894,
+   "ten": "Băng đô Dialga",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_cuong_thiet",
+   "icon": 494,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1895,
+   "ten": "Vòng cổ Magnemite",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_cuong_thiet",
+   "icon": 495,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1896,
+   "ten": "Vòng cổ Skarmory",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_cuong_thiet",
+   "icon": 496,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1897,
+   "ten": "Vòng cổ Steelix",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_cuong_thiet",
+   "icon": 497,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1898,
+   "ten": "Vòng cổ Metagross",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_cuong_thiet",
+   "icon": 498,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1899,
+   "ten": "Vòng cổ Dialga",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_cuong_thiet",
+   "icon": 499,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1900,
+   "ten": "Lông vũ Magnemite",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_cuong_thiet",
+   "icon": 500,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1901,
+   "ten": "Lông vũ Skarmory",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_cuong_thiet",
+   "icon": 501,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1902,
+   "ten": "Lông vũ Steelix",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_cuong_thiet",
+   "icon": 502,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1903,
+   "ten": "Lông vũ Metagross",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_cuong_thiet",
+   "icon": 503,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1904,
+   "ten": "Lông vũ Dialga",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_cuong_thiet",
+   "icon": 504,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1905,
+   "ten": "Ruy băng Magnemite",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_cuong_thiet",
+   "icon": 505,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1906,
+   "ten": "Ruy băng Skarmory",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_cuong_thiet",
+   "icon": 506,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1907,
+   "ten": "Ruy băng Steelix",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_cuong_thiet",
+   "icon": 507,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1908,
+   "ten": "Ruy băng Metagross",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_cuong_thiet",
+   "icon": 508,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1909,
+   "ten": "Ruy băng Dialga",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_cuong_thiet",
+   "icon": 509,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1910,
+   "ten": "Khăn quàng Cleffa",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 2,
+   "maHo": "he_tien_tu",
+   "icon": 510,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1911,
+   "ten": "Khăn quàng Clefairy",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 4,
+   "maHo": "he_tien_tu",
+   "icon": 511,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1912,
+   "ten": "Khăn quàng Togetic",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 6,
+   "maHo": "he_tien_tu",
+   "icon": 512,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1913,
+   "ten": "Khăn quàng Gardevoir",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 8,
+   "maHo": "he_tien_tu",
+   "icon": 513,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1914,
+   "ten": "Khăn quàng Xerneas",
+   "type": 0,
+   "o": "khan_quang",
+   "bac": 10,
+   "maHo": "he_tien_tu",
+   "icon": 514,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1915,
+   "ten": "Đai Cleffa",
+   "type": 1,
+   "o": "dai",
+   "bac": 2,
+   "maHo": "he_tien_tu",
+   "icon": 515,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1916,
+   "ten": "Đai Clefairy",
+   "type": 1,
+   "o": "dai",
+   "bac": 4,
+   "maHo": "he_tien_tu",
+   "icon": 516,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1917,
+   "ten": "Đai Togetic",
+   "type": 1,
+   "o": "dai",
+   "bac": 6,
+   "maHo": "he_tien_tu",
+   "icon": 517,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1918,
+   "ten": "Đai Gardevoir",
+   "type": 1,
+   "o": "dai",
+   "bac": 8,
+   "maHo": "he_tien_tu",
+   "icon": 518,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1919,
+   "ten": "Đai Xerneas",
+   "type": 1,
+   "o": "dai",
+   "bac": 10,
+   "maHo": "he_tien_tu",
+   "icon": 519,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1920,
+   "ten": "Băng đô Cleffa",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 2,
+   "maHo": "he_tien_tu",
+   "icon": 520,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1921,
+   "ten": "Băng đô Clefairy",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 4,
+   "maHo": "he_tien_tu",
+   "icon": 521,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1922,
+   "ten": "Băng đô Togetic",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 6,
+   "maHo": "he_tien_tu",
+   "icon": 522,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1923,
+   "ten": "Băng đô Gardevoir",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 8,
+   "maHo": "he_tien_tu",
+   "icon": 523,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1924,
+   "ten": "Băng đô Xerneas",
+   "type": 2,
+   "o": "bang_do",
+   "bac": 10,
+   "maHo": "he_tien_tu",
+   "icon": 524,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1925,
+   "ten": "Vòng cổ Cleffa",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 2,
+   "maHo": "he_tien_tu",
+   "icon": 525,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1926,
+   "ten": "Vòng cổ Clefairy",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 4,
+   "maHo": "he_tien_tu",
+   "icon": 526,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1927,
+   "ten": "Vòng cổ Togetic",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 6,
+   "maHo": "he_tien_tu",
+   "icon": 527,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1928,
+   "ten": "Vòng cổ Gardevoir",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 8,
+   "maHo": "he_tien_tu",
+   "icon": 528,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1929,
+   "ten": "Vòng cổ Xerneas",
+   "type": 9,
+   "o": "vong_co",
+   "bac": 10,
+   "maHo": "he_tien_tu",
+   "icon": 529,
+   "nguon": [
+    "quai_he",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1930,
+   "ten": "Lông vũ Cleffa",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 2,
+   "maHo": "he_tien_tu",
+   "icon": 530,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1931,
+   "ten": "Lông vũ Clefairy",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 4,
+   "maHo": "he_tien_tu",
+   "icon": 531,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1932,
+   "ten": "Lông vũ Togetic",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 6,
+   "maHo": "he_tien_tu",
+   "icon": 532,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1933,
+   "ten": "Lông vũ Gardevoir",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 8,
+   "maHo": "he_tien_tu",
+   "icon": 533,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1934,
+   "ten": "Lông vũ Xerneas",
+   "type": 10,
+   "o": "long_vu",
+   "bac": 10,
+   "maHo": "he_tien_tu",
+   "icon": 534,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1935,
+   "ten": "Ruy băng Cleffa",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 2,
+   "maHo": "he_tien_tu",
+   "icon": 535,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1936,
+   "ten": "Ruy băng Clefairy",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 4,
+   "maHo": "he_tien_tu",
+   "icon": 536,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1937,
+   "ten": "Ruy băng Togetic",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 6,
+   "maHo": "he_tien_tu",
+   "icon": 537,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1938,
+   "ten": "Ruy băng Gardevoir",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 8,
+   "maHo": "he_tien_tu",
+   "icon": 538,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1939,
+   "ten": "Ruy băng Xerneas",
+   "type": 19,
+   "o": "ruy_bang",
+   "bac": 10,
+   "maHo": "he_tien_tu",
+   "icon": 539,
+   "nguon": [
+    "quai_he",
+    "boss"
+   ]
+  },
+  {
+   "id": 1940,
+   "ten": "Huy hiệu Đá Tảng",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 540,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1941,
+   "ten": "Găng Brock",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 541,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1942,
+   "ten": "Phiến đá Pewter",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 542,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1943,
+   "ten": "Than lửa Pewter",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 543,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1944,
+   "ten": "Hạt giống thần Pewter",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 544,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1945,
+   "ten": "Khăn lụa Pewter",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 545,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1946,
+   "ten": "Nước thần Pewter",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 546,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1947,
+   "ten": "Nam châm Pewter",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 0,
+   "maHo": "vung_kanto",
+   "icon": 547,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1948,
+   "ten": "Huy hiệu Thác Nước",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 548,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1949,
+   "ten": "Găng Misty",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 549,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1950,
+   "ten": "Phiến đá Cerulean",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 550,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1951,
+   "ten": "Than lửa Cerulean",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 551,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1952,
+   "ten": "Hạt giống thần Cerulean",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 552,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1953,
+   "ten": "Khăn lụa Cerulean",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 553,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1954,
+   "ten": "Nước thần Cerulean",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 554,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1955,
+   "ten": "Nam châm Cerulean",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 1,
+   "maHo": "vung_kanto",
+   "icon": 555,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1956,
+   "ten": "Huy hiệu Sấm Sét",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 556,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1957,
+   "ten": "Găng Surge",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 557,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1958,
+   "ten": "Phiến đá Vermilion",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 558,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1959,
+   "ten": "Than lửa Vermilion",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 559,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1960,
+   "ten": "Hạt giống thần Vermilion",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 560,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1961,
+   "ten": "Khăn lụa Vermilion",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 561,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1962,
+   "ten": "Nước thần Vermilion",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 562,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1963,
+   "ten": "Nam châm Vermilion",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 2,
+   "maHo": "vung_kanto",
+   "icon": 563,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1964,
+   "ten": "Huy hiệu Cầu Vồng",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 564,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1965,
+   "ten": "Găng Erika",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 565,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1966,
+   "ten": "Phiến đá Celadon",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 566,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1967,
+   "ten": "Than lửa Celadon",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 567,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1968,
+   "ten": "Hạt giống thần Celadon",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 568,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1969,
+   "ten": "Khăn lụa Celadon",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 569,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1970,
+   "ten": "Nước thần Celadon",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 570,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1971,
+   "ten": "Nam châm Celadon",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 3,
+   "maHo": "vung_kanto",
+   "icon": 571,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1972,
+   "ten": "Huy hiệu Gió Lành",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 572,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1973,
+   "ten": "Găng Falkner",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 573,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1974,
+   "ten": "Phiến đá Violet",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 574,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1975,
+   "ten": "Than lửa Violet",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 575,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1976,
+   "ten": "Hạt giống thần Violet",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 576,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1977,
+   "ten": "Khăn lụa Violet",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 577,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1978,
+   "ten": "Nước thần Violet",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 578,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1979,
+   "ten": "Nam châm Violet",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 4,
+   "maHo": "vung_johto",
+   "icon": 579,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1980,
+   "ten": "Huy hiệu Tổ Ong",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 580,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1981,
+   "ten": "Găng Bugsy",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 581,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1982,
+   "ten": "Phiến đá Azalea",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 582,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1983,
+   "ten": "Than lửa Azalea",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 583,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1984,
+   "ten": "Hạt giống thần Azalea",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 584,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1985,
+   "ten": "Khăn lụa Azalea",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 585,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1986,
+   "ten": "Nước thần Azalea",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 586,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1987,
+   "ten": "Nam châm Azalea",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 5,
+   "maHo": "vung_johto",
+   "icon": 587,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1988,
+   "ten": "Huy hiệu Sương Mù",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 588,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1989,
+   "ten": "Găng Morty",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 589,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1990,
+   "ten": "Phiến đá Ecruteak",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 590,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1991,
+   "ten": "Than lửa Ecruteak",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 591,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1992,
+   "ten": "Hạt giống thần Ecruteak",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 592,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1993,
+   "ten": "Khăn lụa Ecruteak",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 593,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1994,
+   "ten": "Nước thần Ecruteak",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 594,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1995,
+   "ten": "Nam châm Ecruteak",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 6,
+   "maHo": "vung_johto",
+   "icon": 595,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1996,
+   "ten": "Huy hiệu Bão Tố",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 596,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 1997,
+   "ten": "Găng Chuck",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 597,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 1998,
+   "ten": "Phiến đá Cianwood",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 598,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 1999,
+   "ten": "Than lửa Cianwood",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 599,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2000,
+   "ten": "Hạt giống thần Cianwood",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 600,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2001,
+   "ten": "Khăn lụa Cianwood",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 601,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2002,
+   "ten": "Nước thần Cianwood",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 602,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2003,
+   "ten": "Nam châm Cianwood",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 7,
+   "maHo": "vung_johto",
+   "icon": 603,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2004,
+   "ten": "Huy hiệu Dung Nham",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 604,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2005,
+   "ten": "Găng Flannery",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 605,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 2006,
+   "ten": "Phiến đá Lavaridge",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 606,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 2007,
+   "ten": "Than lửa Lavaridge",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 607,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2008,
+   "ten": "Hạt giống thần Lavaridge",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 608,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2009,
+   "ten": "Khăn lụa Lavaridge",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 609,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2010,
+   "ten": "Nước thần Lavaridge",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 610,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2011,
+   "ten": "Nam châm Lavaridge",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 8,
+   "maHo": "vung_hoenn",
+   "icon": 611,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2012,
+   "ten": "Huy hiệu Cánh Chim",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 612,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2013,
+   "ten": "Găng Winona",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 613,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 2014,
+   "ten": "Phiến đá Fortree",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 614,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 2015,
+   "ten": "Than lửa Fortree",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 615,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2016,
+   "ten": "Hạt giống thần Fortree",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 616,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2017,
+   "ten": "Khăn lụa Fortree",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 617,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2018,
+   "ten": "Nước thần Fortree",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 618,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2019,
+   "ten": "Nam châm Fortree",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 9,
+   "maHo": "vung_hoenn",
+   "icon": 619,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2020,
+   "ten": "Huy hiệu Mưa Rào",
+   "type": 8,
+   "o": "huy_hieu",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 620,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2021,
+   "ten": "Găng Wallace",
+   "type": 11,
+   "o": "gang_dam",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 621,
+   "nguon": [
+    "quai_vung",
+    "boss"
+   ]
+  },
+  {
+   "id": 2022,
+   "ten": "Phiến đá Sootopolis",
+   "type": 12,
+   "o": "phien_da",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 622,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "che_tao"
+   ]
+  },
+  {
+   "id": 2023,
+   "ten": "Than lửa Sootopolis",
+   "type": 3,
+   "o": "vu_khi",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 623,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2024,
+   "ten": "Hạt giống thần Sootopolis",
+   "type": 4,
+   "o": "vu_khi",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 624,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2025,
+   "ten": "Khăn lụa Sootopolis",
+   "type": 5,
+   "o": "vu_khi",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 625,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2026,
+   "ten": "Nước thần Sootopolis",
+   "type": 6,
+   "o": "vu_khi",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 626,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  },
+  {
+   "id": 2027,
+   "ten": "Nam châm Sootopolis",
+   "type": 7,
+   "o": "vu_khi",
+   "bac": 10,
+   "maHo": "vung_hoenn",
+   "icon": 627,
+   "nguon": [
+    "quai_vung",
+    "boss",
+    "gym"
+   ]
+  }
+ ],
+ "oTrangTri": [
+  {
+   "o": "trang_phuc",
+   "ten": "Trang phục",
+   "phanNghin": 15,
+   "dong": [
+    {
+     "ma": "hp",
+     "ten": "HP"
+    },
+    {
+     "ma": "tan_cong",
+     "ten": "Tấn công"
+    },
+    {
+     "ma": "phong_thu",
+     "ten": "Phòng thủ"
+    },
+    {
+     "ma": "thu_dac_biet",
+     "ten": "Phòng thủ đặc biệt"
+    }
+   ]
+  },
+  {
+   "o": "hao_quang",
+   "ten": "Hào quang",
+   "phanNghin": 10,
+   "dong": [
+    {
+     "ma": "hp",
+     "ten": "HP"
+    },
+    {
+     "ma": "tan_cong",
+     "ten": "Tấn công"
+    }
+   ]
+  },
+  {
+   "o": "skin_thu",
+   "ten": "Skin thú cưỡi",
+   "phanNghin": 5,
+   "dong": [
+    {
+     "ma": "hp",
+     "ten": "HP"
+    },
+    {
+     "ma": "phong_thu",
+     "ten": "Phòng thủ"
+    }
+   ]
+  },
+  {
+   "o": "the_dong_hanh",
+   "ten": "Thẻ bạn đồng hành",
+   "phanNghin": 10,
+   "dong": [
+    {
+     "ma": "hp",
+     "ten": "HP"
+    },
+    {
+     "ma": "tan_cong",
+     "ten": "Tấn công"
+    },
+    {
+     "ma": "phong_thu",
+     "ten": "Phòng thủ"
+    }
+   ]
+  }
+ ],
+ "nganSachDanhHieu": 10,
+ "tranTong": 50,
+ "trangTri": [
+  {
+   "ma": "tp_tan_thu",
+   "o": "trang_phuc",
+   "so": 1,
+   "ten": "Áo huấn luyện viên tân thủ",
+   "doHiem": 0,
+   "icon": 628,
+   "nguon": "mien_phi",
+   "thamSo": "cap:5",
+   "giaLuong": 0,
+   "moTa": "Mũ lưỡi trai đỏ và khăn trắng của mọi huấn luyện viên mới."
+  },
+  {
+   "ma": "tp_tuyet",
+   "o": "trang_phuc",
+   "so": 2,
+   "ten": "Trang phục Pokémon Tuyết",
+   "doHiem": 1,
+   "icon": 629,
+   "nguon": "su_kien",
+   "thamSo": "lich:tetduonglich;quai:300",
+   "giaLuong": 0,
+   "moTa": "Mũ len và khăn sọc cho mùa đông đầu năm."
+  },
+  {
+   "ma": "tp_tet",
+   "o": "trang_phuc",
+   "so": 3,
+   "ten": "Trang phục Tết Nguyên Đán",
+   "doHiem": 2,
+   "icon": 630,
+   "nguon": "su_kien",
+   "thamSo": "lich:tet2017;quai:400",
+   "giaLuong": 0,
+   "moTa": "Nón lá, khăn đỏ viền vàng và bao lì xì may mắn."
+  },
+  {
+   "ma": "tp_valentine",
+   "o": "trang_phuc",
+   "so": 4,
+   "ten": "Trang phục Valentine",
+   "doHiem": 2,
+   "icon": 631,
+   "nguon": "su_kien",
+   "thamSo": "lich:moi:valentine;quai:300",
+   "giaLuong": 0,
+   "moTa": "Nơ tim, cánh thiên thần và đoá hồng."
+  },
+  {
+   "ma": "tp_hoa_thang_ba",
+   "o": "trang_phuc",
+   "so": 5,
+   "ten": "Trang phục Hoa tháng Ba",
+   "doHiem": 1,
+   "icon": 632,
+   "nguon": "su_kien",
+   "thamSo": "lich:quocte83,moi:2010;quai:300",
+   "giaLuong": 0,
+   "moTa": "Vòng hoa xuân và dây chuyền ngọc trai."
+  },
+  {
+   "ma": "tp_tham_tu",
+   "o": "trang_phuc",
+   "so": 6,
+   "ten": "Trang phục Thám tử",
+   "doHiem": 2,
+   "icon": 633,
+   "nguon": "su_kien",
+   "thamSo": "lich:moi:congdong;quai:200",
+   "giaLuong": 0,
+   "moTa": "Mũ thám tử và kính lúp - quà Ngày cộng đồng."
+  },
+  {
+   "ma": "tp_thieu_nhi",
+   "o": "trang_phuc",
+   "so": 7,
+   "ten": "Trang phục Thiếu nhi",
+   "doHiem": 1,
+   "icon": 634,
+   "nguon": "su_kien",
+   "thamSo": "lich:moi:thieunhi;quai:200",
+   "giaLuong": 0,
+   "moTa": "Mũ tiệc, nơ cổ và bóng bay 1/6."
+  },
+  {
+   "ma": "tp_bien_he",
+   "o": "trang_phuc",
+   "so": 8,
+   "ten": "Trang phục Biển hè",
+   "doHiem": 2,
+   "icon": 635,
+   "nguon": "su_kien",
+   "thamSo": "lich:he2017;quai:500",
+   "giaLuong": 0,
+   "moTa": "Mũ rơm, vòng hoa Hawaii và que kem mát lạnh."
+  },
+  {
+   "ma": "tp_vu_lan",
+   "o": "trang_phuc",
+   "so": 9,
+   "ten": "Trang phục Vu Lan",
+   "doHiem": 1,
+   "icon": 636,
+   "nguon": "su_kien",
+   "thamSo": "lich:vulan;quai:300",
+   "giaLuong": 0,
+   "moTa": "Hoa cài, dây chuyền ngọc và bông hồng tặng mẹ."
+  },
+  {
+   "ma": "tp_trung_thu",
+   "o": "trang_phuc",
+   "so": 10,
+   "ten": "Trang phục Trung Thu",
+   "doHiem": 2,
+   "icon": 637,
+   "nguon": "su_kien",
+   "thamSo": "lich:trungthu;quai:400",
+   "giaLuong": 0,
+   "moTa": "Tai thỏ ngọc và đèn ông sao đêm rằm."
+  },
+  {
+   "ma": "tp_halloween",
+   "o": "trang_phuc",
+   "so": 11,
+   "ten": "Trang phục Halloween",
+   "doHiem": 3,
+   "icon": 638,
+   "nguon": "su_kien",
+   "thamSo": "lich:halloween;quai:500",
+   "giaLuong": 0,
+   "moTa": "Mũ phù thuỷ, áo choàng tím và đũa phép."
+  },
+  {
+   "ma": "tp_giang_sinh",
+   "o": "trang_phuc",
+   "so": 12,
+   "ten": "Trang phục Giáng sinh",
+   "doHiem": 3,
+   "icon": 639,
+   "nguon": "su_kien",
+   "thamSo": "lich:noel;quai:400",
+   "giaLuong": 0,
+   "moTa": "Mũ Noel, khăn len sọc và kẹo gậy."
+  },
+  {
+   "ma": "tp_tuan_loc",
+   "o": "trang_phuc",
+   "so": 13,
+   "ten": "Trang phục Tuần lộc",
+   "doHiem": 2,
+   "icon": 640,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:noel",
+   "giaLuong": 0,
+   "moTa": "Sừng tuần lộc và lục lạc vàng - danh hiệu Tuần lộc tuyết trắng."
+  },
+  {
+   "ma": "tp_lap_lanh",
+   "o": "trang_phuc",
+   "so": 14,
+   "ten": "Trang phục Lấp lánh",
+   "doHiem": 3,
+   "icon": 641,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:shiny_1",
+   "giaLuong": 0,
+   "moTa": "Vương miện và chuỗi ngọc cho người gặp Pokémon shiny đầu tiên."
+  },
+  {
+   "ma": "tp_vo_dich_gym",
+   "o": "trang_phuc",
+   "so": 15,
+   "ten": "Trang phục Nhà vô địch Gym",
+   "doHiem": 3,
+   "icon": 642,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:gym_8",
+   "giaLuong": 0,
+   "moTa": "Áo choàng Gym có huy hiệu - thắng 8 Gym."
+  },
+  {
+   "ma": "tp_nha_nghien_cuu",
+   "o": "trang_phuc",
+   "so": 16,
+   "ten": "Trang phục Nhà nghiên cứu",
+   "doHiem": 2,
+   "icon": 643,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:dex_50",
+   "giaLuong": 0,
+   "moTa": "Mũ thám hiểm và kính lúp - Pokédex 50 loài."
+  },
+  {
+   "ma": "tp_ngu_dan",
+   "o": "trang_phuc",
+   "so": 17,
+   "ten": "Trang phục Ngư dân",
+   "doHiem": 2,
+   "icon": 644,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:ca_300",
+   "giaLuong": 0,
+   "moTa": "Mũ ngư dân và cần câu - câu 300 lần."
+  },
+  {
+   "ma": "tp_nha_vo_dich",
+   "o": "trang_phuc",
+   "so": 18,
+   "ten": "Trang phục Nhà vô địch",
+   "doHiem": 4,
+   "icon": 645,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:top_pvp_10",
+   "giaLuong": 0,
+   "moTa": "Vương miện và áo choàng đỏ của top 10 Nhà vô địch PvP."
+  },
+  {
+   "ma": "tp_dau_bep",
+   "o": "trang_phuc",
+   "so": 19,
+   "ten": "Trang phục Đầu bếp Poké",
+   "doHiem": 1,
+   "icon": 646,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:sinh_thai_06",
+   "giaLuong": 0,
+   "moTa": "Mũ đầu bếp và nơ cổ - danh hiệu Đầu bếp Poké."
+  },
+  {
+   "ma": "tp_tot_nghiep",
+   "o": "trang_phuc",
+   "so": 20,
+   "ten": "Trang phục Tốt nghiệp",
+   "doHiem": 2,
+   "icon": 647,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:cap_50",
+   "giaLuong": 0,
+   "moTa": "Mũ tốt nghiệp cho huấn luyện viên cấp 50."
+  },
+  {
+   "ma": "tp_hai_tac",
+   "o": "trang_phuc",
+   "so": 21,
+   "ten": "Trang phục Hải tặc",
+   "doHiem": 2,
+   "icon": 648,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Mũ tam giác và khăn rằn của hải tặc Cinnabar."
+  },
+  {
+   "ma": "tp_ninja",
+   "o": "trang_phuc",
+   "so": 22,
+   "ten": "Trang phục Ninja",
+   "doHiem": 2,
+   "icon": 649,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Băng đô ninja và khăn rằn."
+  },
+  {
+   "ma": "tp_hiep_si",
+   "o": "trang_phuc",
+   "so": 23,
+   "ten": "Trang phục Hiệp sĩ",
+   "doHiem": 3,
+   "icon": 650,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 250,
+   "moTa": "Mũ giáp lông đỏ và áo choàng."
+  },
+  {
+   "ma": "tp_phi_cong",
+   "o": "trang_phuc",
+   "so": 24,
+   "ten": "Trang phục Phi công",
+   "doHiem": 2,
+   "icon": 651,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Mũ phi công có kính và khăn trắng."
+  },
+  {
+   "ma": "tp_ba_tuoc",
+   "o": "trang_phuc",
+   "so": 25,
+   "ten": "Trang phục Bá tước bóng đêm",
+   "doHiem": 3,
+   "icon": 652,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 250,
+   "moTa": "Cánh dơi và nơ cổ đỏ."
+  },
+  {
+   "ma": "tp_thien_than",
+   "o": "trang_phuc",
+   "so": 26,
+   "ten": "Trang phục Thiên thần",
+   "doHiem": 3,
+   "icon": 653,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 250,
+   "moTa": "Vòng hoa và đôi cánh trắng."
+  },
+  {
+   "ma": "tp_cao_boi",
+   "o": "trang_phuc",
+   "so": 27,
+   "ten": "Trang phục Cao bồi",
+   "doHiem": 2,
+   "icon": 654,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Mũ cao bồi và khăn rằn."
+  },
+  {
+   "ma": "tp_canh_buom",
+   "o": "trang_phuc",
+   "so": 28,
+   "ten": "Trang phục Cánh bướm",
+   "doHiem": 2,
+   "icon": 655,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Hoa cài và cánh bướm hồng."
+  },
+  {
+   "ma": "tp_tho_mo",
+   "o": "trang_phuc",
+   "so": 29,
+   "ten": "Trang phục Thợ mỏ",
+   "doHiem": 1,
+   "icon": 656,
+   "nguon": "che_tao",
+   "thamSo": "nl:1034x10,1035x4;gio:2",
+   "giaLuong": 0,
+   "moTa": "Mũ thợ mỏ có đèn - chế ở Machamp."
+  },
+  {
+   "ma": "tp_tham_hiem",
+   "o": "trang_phuc",
+   "so": 30,
+   "ten": "Trang phục Thám hiểm",
+   "doHiem": 2,
+   "icon": 657,
+   "nguon": "che_tao",
+   "thamSo": "nl:1035x6,1036x2;gio:3",
+   "giaLuong": 0,
+   "moTa": "Kính bơi trên trán và ba lô thám hiểm."
+  },
+  {
+   "ma": "tp_tai_tho",
+   "o": "trang_phuc",
+   "so": 31,
+   "ten": "Trang phục Tai thỏ tuyết",
+   "doHiem": 1,
+   "icon": 658,
+   "nguon": "che_tao",
+   "thamSo": "nl:1034x12;gio:1",
+   "giaLuong": 0,
+   "moTa": "Tai thỏ và khăn len - món chế đầu tiên cho người mới."
+  },
+  {
+   "ma": "tp_hiep_khach",
+   "o": "trang_phuc",
+   "so": 32,
+   "ten": "Trang phục Huấn luyện viên Gym",
+   "doHiem": 3,
+   "icon": 659,
+   "nguon": "che_tao",
+   "thamSo": "nl:1036x4,1037x2;gio:5",
+   "giaLuong": 0,
+   "moTa": "Băng đô và áo choàng Gym - món chế cao cấp."
+  },
+  {
+   "ma": "hq_tap_su",
+   "o": "hao_quang",
+   "so": 1,
+   "ten": "Hào quang tập sự",
+   "doHiem": 0,
+   "icon": 660,
+   "nguon": "mien_phi",
+   "thamSo": "cap:10",
+   "giaLuong": 0,
+   "moTa": "Vòng sáng đầu tiên của mọi huấn luyện viên."
+  },
+  {
+   "ma": "hq_lua",
+   "o": "hao_quang",
+   "so": 2,
+   "ten": "Hào quang Lửa",
+   "doHiem": 2,
+   "icon": 661,
+   "nguon": "che_tao",
+   "thamSo": "nl:1035x5;gio:2",
+   "giaLuong": 0,
+   "moTa": "Vòng lửa chế từ Mảnh sao."
+  },
+  {
+   "ma": "hq_nuoc",
+   "o": "hao_quang",
+   "so": 3,
+   "ten": "Hào quang Nước",
+   "doHiem": 2,
+   "icon": 662,
+   "nguon": "che_tao",
+   "thamSo": "nl:1035x5;gio:2",
+   "giaLuong": 0,
+   "moTa": "Vòng nước chế từ Mảnh sao."
+  },
+  {
+   "ma": "hq_co",
+   "o": "hao_quang",
+   "so": 4,
+   "ten": "Hào quang Cỏ",
+   "doHiem": 2,
+   "icon": 663,
+   "nguon": "che_tao",
+   "thamSo": "nl:1035x5;gio:2",
+   "giaLuong": 0,
+   "moTa": "Vòng lá chế từ Mảnh sao."
+  },
+  {
+   "ma": "hq_dien",
+   "o": "hao_quang",
+   "so": 5,
+   "ten": "Hào quang Điện",
+   "doHiem": 2,
+   "icon": 664,
+   "nguon": "che_tao",
+   "thamSo": "nl:1035x5;gio:2",
+   "giaLuong": 0,
+   "moTa": "Vòng điện chế từ Mảnh sao."
+  },
+  {
+   "ma": "hq_bang",
+   "o": "hao_quang",
+   "so": 6,
+   "ten": "Hào quang Băng",
+   "doHiem": 2,
+   "icon": 665,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Vòng băng lấp lánh."
+  },
+  {
+   "ma": "hq_tam_linh",
+   "o": "hao_quang",
+   "so": 7,
+   "ten": "Hào quang Tâm linh",
+   "doHiem": 3,
+   "icon": 666,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:pvp_100",
+   "giaLuong": 0,
+   "moTa": "Huấn luyện viên dày dạn: thắng 100 trận PvP."
+  },
+  {
+   "ma": "hq_rong",
+   "o": "hao_quang",
+   "so": 8,
+   "ten": "Hào quang Rồng",
+   "doHiem": 4,
+   "icon": 667,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:boss_100",
+   "giaLuong": 0,
+   "moTa": "Khắc tinh huyền thoại: hạ 100 boss."
+  },
+  {
+   "ma": "hq_tien",
+   "o": "hao_quang",
+   "so": 9,
+   "ten": "Hào quang Tiên",
+   "doHiem": 2,
+   "icon": 668,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Vòng hồng của các tiên tử."
+  },
+  {
+   "ma": "hq_bong_toi",
+   "o": "hao_quang",
+   "so": 10,
+   "ten": "Hào quang Bóng tối",
+   "doHiem": 2,
+   "icon": 669,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 200,
+   "moTa": "Vòng bóng đêm."
+  },
+  {
+   "ma": "hq_cau_vong",
+   "o": "hao_quang",
+   "so": 11,
+   "ten": "Hào quang Cầu vồng",
+   "doHiem": 4,
+   "icon": 670,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:dex_90",
+   "giaLuong": 0,
+   "moTa": "Người hoàn thiện Pokédex."
+  },
+  {
+   "ma": "hq_anh_dao",
+   "o": "hao_quang",
+   "so": 12,
+   "ten": "Hào quang Hoa anh đào",
+   "doHiem": 3,
+   "icon": 671,
+   "nguon": "su_kien",
+   "thamSo": "lich:tet2017;quai:600",
+   "giaLuong": 0,
+   "moTa": "Hoa anh đào ngày Tết."
+  },
+  {
+   "ma": "hq_sao_bang",
+   "o": "hao_quang",
+   "so": 13,
+   "ten": "Hào quang Sao băng",
+   "doHiem": 3,
+   "icon": 672,
+   "nguon": "su_kien",
+   "thamSo": "lich:moi:shiny;quai:500",
+   "giaLuong": 0,
+   "moTa": "Sao băng Tuần Shiny."
+  },
+  {
+   "ma": "st_yen_co_ban",
+   "o": "skin_thu",
+   "so": 1,
+   "ten": "Yên cương cơ bản",
+   "doHiem": 0,
+   "icon": 673,
+   "nguon": "mien_phi",
+   "thamSo": "cap:15",
+   "giaLuong": 0,
+   "moTa": "Yên cưỡi đầu tiên khi có thú cưỡi."
+  },
+  {
+   "ma": "st_yen_da",
+   "o": "skin_thu",
+   "so": 2,
+   "ten": "Yên da thợ săn",
+   "doHiem": 1,
+   "icon": 674,
+   "nguon": "che_tao",
+   "thamSo": "nl:1034x8;gio:1",
+   "giaLuong": 0,
+   "moTa": "Yên da chế ở Machamp."
+  },
+  {
+   "ma": "st_yen_hoa",
+   "o": "skin_thu",
+   "so": 3,
+   "ten": "Yên hoa xuân",
+   "doHiem": 2,
+   "icon": 675,
+   "nguon": "su_kien",
+   "thamSo": "lich:gioto,moi:3004;quai:300",
+   "giaLuong": 0,
+   "moTa": "Yên hoa mùa xuân."
+  },
+  {
+   "ma": "st_yen_vang",
+   "o": "skin_thu",
+   "so": 4,
+   "ten": "Yên vàng hoàng gia",
+   "doHiem": 3,
+   "icon": 676,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 150,
+   "moTa": "Yên vàng hoàng gia."
+  },
+  {
+   "ma": "st_yen_bang",
+   "o": "skin_thu",
+   "so": 5,
+   "ten": "Yên băng Noel",
+   "doHiem": 2,
+   "icon": 677,
+   "nguon": "su_kien",
+   "thamSo": "lich:noel;quai:300",
+   "giaLuong": 0,
+   "moTa": "Yên băng Giáng sinh."
+  },
+  {
+   "ma": "st_yen_lua",
+   "o": "skin_thu",
+   "so": 6,
+   "ten": "Yên lửa nhà vô địch",
+   "doHiem": 3,
+   "icon": 678,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:gym_16",
+   "giaLuong": 0,
+   "moTa": "Nhà vô địch hai vùng."
+  },
+  {
+   "ma": "st_yen_dem",
+   "o": "skin_thu",
+   "so": 7,
+   "ten": "Yên bóng đêm",
+   "doHiem": 2,
+   "icon": 679,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 150,
+   "moTa": "Yên bóng đêm."
+  },
+  {
+   "ma": "st_yen_cau_vong",
+   "o": "skin_thu",
+   "so": 8,
+   "ten": "Yên cầu vồng",
+   "doHiem": 4,
+   "icon": 680,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:map_120",
+   "giaLuong": 0,
+   "moTa": "Người đi khắp thế gian."
+  },
+  {
+   "ma": "th_the_co_ban",
+   "o": "the_dong_hanh",
+   "so": 1,
+   "ten": "Thẻ tên bạn đồng hành",
+   "doHiem": 0,
+   "icon": 681,
+   "nguon": "mien_phi",
+   "thamSo": "cap:20",
+   "giaLuong": 0,
+   "moTa": "Thẻ tên cho bạn đồng hành đầu tiên."
+  },
+  {
+   "ma": "th_no_do",
+   "o": "the_dong_hanh",
+   "so": 2,
+   "ten": "Nơ đỏ bạn đồng hành",
+   "doHiem": 1,
+   "icon": 682,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 80,
+   "moTa": "Nơ đỏ trên đầu bạn đồng hành."
+  },
+  {
+   "ma": "th_chuong_vang",
+   "o": "the_dong_hanh",
+   "so": 3,
+   "ten": "Chuông vàng bạn đồng hành",
+   "doHiem": 1,
+   "icon": 683,
+   "nguon": "che_tao",
+   "thamSo": "nl:1034x6;gio:1",
+   "giaLuong": 0,
+   "moTa": "Chuông vàng leng keng."
+  },
+  {
+   "ma": "th_khan_xanh",
+   "o": "the_dong_hanh",
+   "so": 4,
+   "ten": "Khăn xanh bạn đồng hành",
+   "doHiem": 1,
+   "icon": 684,
+   "nguon": "che_tao",
+   "thamSo": "nl:1034x6;gio:1",
+   "giaLuong": 0,
+   "moTa": "Khăn xanh nhỏ."
+  },
+  {
+   "ma": "th_vuong_mien_nho",
+   "o": "the_dong_hanh",
+   "so": 5,
+   "ten": "Vương miện tí hon",
+   "doHiem": 3,
+   "icon": 685,
+   "nguon": "thanh_tuu",
+   "thamSo": "danh_hieu:dang_nhap_30",
+   "giaLuong": 0,
+   "moTa": "Người bạn trung thành: 30 ngày đăng nhập."
+  },
+  {
+   "ma": "th_hoa_cai_nho",
+   "o": "the_dong_hanh",
+   "so": 6,
+   "ten": "Hoa cài bạn đồng hành",
+   "doHiem": 2,
+   "icon": 686,
+   "nguon": "su_kien",
+   "thamSo": "lich:quocte83,moi:2010;quai:200",
+   "giaLuong": 0,
+   "moTa": "Hoa cài ngày phụ nữ."
+  },
+  {
+   "ma": "th_ngoi_sao_nho",
+   "o": "the_dong_hanh",
+   "so": 7,
+   "ten": "Ngôi sao bạn đồng hành",
+   "doHiem": 2,
+   "icon": 687,
+   "nguon": "su_kien",
+   "thamSo": "lich:moi:shiny;quai:300",
+   "giaLuong": 0,
+   "moTa": "Ngôi sao Tuần Shiny."
+  },
+  {
+   "ma": "th_tim_hong_nho",
+   "o": "the_dong_hanh",
+   "so": 8,
+   "ten": "Tim hồng bạn đồng hành",
+   "doHiem": 2,
+   "icon": 688,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 80,
+   "moTa": "Tim hồng."
+  }
+ ]
+}

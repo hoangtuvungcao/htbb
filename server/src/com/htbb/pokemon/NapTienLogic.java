@@ -475,6 +475,22 @@ public final class NapTienLogic {
         new Mon(MA_VE_MO_RONG, "Vé mở rộng hành trang (+10 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_VE_MO_RONG, 0, 9, 0, false),
         // The dat ten Pokemon: gia / gioi han tuan that = cau hinh dat_ten_pet.* (DatTenPet), gioi_han dong = 0.
         new Mon(MA_THE_DAT_TEN, "Thẻ đặt tên Pokémon", "tien_ich", TRAO_DAT_TEN_PET, DatTenPet.GIA_LUONG_MAC_DINH, 0, 0, 0, false),
+        // Tu do trang tri 0.9.8 (khoi them_do_trang_phuc.sql, sinh boi tools/do_trang_phuc/sinh.py): chi HINH, chi so theo O
+        new Mon("tp_hai_tac", "Trang phục Hải tặc", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("tp_ninja", "Trang phục Ninja", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("tp_hiep_si", "Trang phục Hiệp sĩ", "trang_phuc", TRAO_TRANG_TRI, 250, 0, 1, 0, false),
+        new Mon("tp_phi_cong", "Trang phục Phi công", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("tp_ba_tuoc", "Trang phục Bá tước bóng đêm", "trang_phuc", TRAO_TRANG_TRI, 250, 0, 1, 0, false),
+        new Mon("tp_thien_than", "Trang phục Thiên thần", "trang_phuc", TRAO_TRANG_TRI, 250, 0, 1, 0, false),
+        new Mon("tp_cao_boi", "Trang phục Cao bồi", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("tp_canh_buom", "Trang phục Cánh bướm", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("hq_bang", "Hào quang Băng", "hao_quang", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("hq_tien", "Hào quang Tiên", "hao_quang", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("hq_bong_toi", "Hào quang Bóng tối", "hao_quang", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
+        new Mon("st_yen_vang", "Yên vàng hoàng gia", "skin_thu", TRAO_TRANG_TRI, 150, 0, 1, 0, false),
+        new Mon("st_yen_dem", "Yên bóng đêm", "skin_thu", TRAO_TRANG_TRI, 150, 0, 1, 0, false),
+        new Mon("th_no_do", "Nơ đỏ bạn đồng hành", "the_dong_hanh", TRAO_TRANG_TRI, 80, 0, 1, 0, false),
+        new Mon("th_tim_hong_nho", "Tim hồng bạn đồng hành", "the_dong_hanh", TRAO_TRANG_TRI, 80, 0, 1, 0, false),
     };
 
     /** Thuong lan nap dau (moi tai khoan 1 lan): CHI trang tri, khong giao dich duoc. */

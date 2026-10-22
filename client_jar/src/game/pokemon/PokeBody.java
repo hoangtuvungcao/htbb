@@ -547,6 +547,106 @@ public class PokeBody {
         return true;
     }
 
+    /** Bang neo trang phuc da tinh (khoa loai + dong tac + huong + khung -> int[NeoTrangPhuc.SO]). */
+    private static final java.util.Hashtable NEO_TP = new java.util.Hashtable();
+    private static final int[] NEO_TAM = new int[8];
+
+    /**
+     * 0.9.8: neo TRANG PHUC cua khung DANG ve (cung cach chon dong tac / khung nhu ve()), tinh tu chinh diem anh khung
+     * (NeoTrangPhuc: dinh so, giua so, mep dau, hang mat, co, lung, eo) - nho theo khung. out[NeoTrangPhuc.SO] so voi
+     * diem chan, nhan tiLe. false = loai khong co neo PMD / khong doc duoc anh.
+     */
+    public static boolean neoTrangPhuc(int dex, boolean shiny, int dir, int dongTac, int tick, int tiLe, int[] out) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null || pb.dl.neo == null) {
+            return false;
+        }
+        if (dir < 0 || dir > 3) {
+            dir = 0;
+        }
+        if (tiLe <= 0) {
+            tiLe = 100;
+        }
+        PokeDongTac d = pb.dl.layDongTac(dongTac);
+        Image anh = pb.anhDongTac(dongTac, d, 100);
+        if (anh == null && dongTac != PokeDuLieu.DUNG) {
+            dongTac = PokeDuLieu.DUNG;
+            d = pb.dl.layDongTac(dongTac);
+            anh = pb.anhDongTac(dongTac, d, 100);
+        }
+        if (anh == null) {
+            return false;
+        }
+        int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
+        String k = pb.khoa + "/" + dongTac + "/" + dir + "/" + f;
+        int[] v = (int[]) NEO_TP.get(k);
+        if (v == null) {
+            if (!neo(dex, shiny, dir, dongTac, tick, 100, NEO_TAM)) {
+                return false;
+            }
+            int w = d.rongKhung, h = d.caoKhung;
+            int sx = d.xAtlas + f * w, sy = d.yAtlas + dir * h;
+            if (sx + w > anh.getWidth() || sy + h > anh.getHeight()) {
+                return false;
+            }
+            int[] px = new int[w * h];
+            try {
+                anh.getRGB(px, 0, w, sx, sy, w, h);
+            } catch (Throwable e) {
+                return false;
+            }
+            v = new int[NeoTrangPhuc.SO];
+            // diem chan trong khung: ve() dat goc khung o (x - w/2 - dxChan, y - h/2 - dyChan)
+            NeoTrangPhuc.tinh(px, w, h, w / 2 + d.dxChan[dir], h / 2 + d.dyChan[dir], NEO_TAM, dir, v);
+            if (NEO_TP.size() > 3000) {
+                NEO_TP.clear();
+            }
+            NEO_TP.put(k, v);
+        }
+        for (int i = 0; i < NeoTrangPhuc.SO; i++) {
+            out[i] = v[i] == NeoTrangPhuc.KHONG ? NeoTrangPhuc.KHONG : v[i] * tiLe / 100;
+        }
+        return true;
+    }
+
+    /** Anh khung dang ve (ARGB, test / cong cu): {w, h, cx, cy} + px vao out (cap phat moi). null = khong co. */
+    public static int[][] khungDangVe(int dex, boolean shiny, int dir, int dongTac, int tick) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null) {
+            return null;
+        }
+        PokeDongTac d = pb.dl.layDongTac(dongTac);
+        Image anh = pb.anhDongTac(dongTac, d, 100);
+        if (anh == null && dongTac != PokeDuLieu.DUNG) {
+            dongTac = PokeDuLieu.DUNG;
+            d = pb.dl.layDongTac(dongTac);
+            anh = pb.anhDongTac(dongTac, d, 100);
+        }
+        if (anh == null) {
+            return null;
+        }
+        int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
+        int w = d.rongKhung, h = d.caoKhung;
+        int[] px = new int[w * h];
+        anh.getRGB(px, 0, w, d.xAtlas + f * w, d.yAtlas + dir * h, w, h);
+        return new int[][]{{w, h, w / 2 + d.dxChan[dir], h / 2 + d.dyChan[dir], f, d.soKhung}, px};
+    }
+
+    /** So khung + tong thoi luong (tick PokeDuLieu) cua dong tac (test / cong cu). */
+    public static int[] thongTinDongTac(int dex, boolean shiny, int dongTac) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null) {
+            return null;
+        }
+        PokeDongTac d = pb.dl.layDongTac(dongTac);
+        int[] t = new int[1 + d.soKhung];
+        t[0] = d.soKhung;
+        for (int i = 0; i < d.soKhung; i++) {
+            t[1 + i] = d.thoiLuong[i];
+        }
+        return t;
+    }
+
     /**
      * Vien sang 1 px quanh hinh khung dang ve (vang sang cap cuong hoa cao), mau = mau RGB. Anh vien tinh
      * mot lan cho moi (anh, huong, khung, mau) roi nho LRU. Chi ti le 100 (nguoi choi). false = khong ve.

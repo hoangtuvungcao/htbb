@@ -1,0 +1,64 @@
+ma_ho,ten,loai,so_mon,chi_so,phan_nghin
+he_binh_nguyen,Bộ Bình Nguyên,he,2,st_he:Thường,20
+he_binh_nguyen,Bộ Bình Nguyên,he,4,khang_he_khac:Giác đấu,30
+he_binh_nguyen,Bộ Bình Nguyên,he,6,st_he:Thường,30
+he_hoa_diem,Bộ Hoả Diệm,he,2,st_he:Lửa,20
+he_hoa_diem,Bộ Hoả Diệm,he,4,khang_he_khac:Nước,30
+he_hoa_diem,Bộ Hoả Diệm,he,6,st_he:Lửa,30
+he_thuy_trieu,Bộ Thuỷ Triều,he,2,st_he:Nước,20
+he_thuy_trieu,Bộ Thuỷ Triều,he,4,khang_he_khac:Điện,30
+he_thuy_trieu,Bộ Thuỷ Triều,he,6,st_he:Nước,30
+he_loi_quang,Bộ Lôi Quang,he,2,st_he:Điện,20
+he_loi_quang,Bộ Lôi Quang,he,4,khang_he_khac:Đất,30
+he_loi_quang,Bộ Lôi Quang,he,6,st_he:Điện,30
+he_diep_luc,Bộ Diệp Lục,he,2,st_he:Cỏ,20
+he_diep_luc,Bộ Diệp Lục,he,4,khang_he_khac:Lửa,30
+he_diep_luc,Bộ Diệp Lục,he,6,st_he:Cỏ,30
+he_bang_tinh,Bộ Băng Tinh,he,2,st_he:Băng,20
+he_bang_tinh,Bộ Băng Tinh,he,4,khang_he_khac:Lửa,30
+he_bang_tinh,Bộ Băng Tinh,he,6,st_he:Băng,30
+he_vo_dao,Bộ Võ Đạo,he,2,st_he:Giác đấu,20
+he_vo_dao,Bộ Võ Đạo,he,4,khang_he_khac:Siêu linh,30
+he_vo_dao,Bộ Võ Đạo,he,6,st_he:Giác đấu,30
+he_doc_duoc,Bộ Độc Dược,he,2,st_he:Độc,20
+he_doc_duoc,Bộ Độc Dược,he,4,khang_he_khac:Đất,30
+he_doc_duoc,Bộ Độc Dược,he,6,st_he:Độc,30
+he_dia_chan,Bộ Địa Chấn,he,2,st_he:Đất,20
+he_dia_chan,Bộ Địa Chấn,he,4,khang_he_khac:Nước,30
+he_dia_chan,Bộ Địa Chấn,he,6,st_he:Đất,30
+he_phong_vu,Bộ Phong Vũ,he,2,st_he:Bay,20
+he_phong_vu,Bộ Phong Vũ,he,4,khang_he_khac:Điện,30
+he_phong_vu,Bộ Phong Vũ,he,6,st_he:Bay,30
+he_tam_linh,Bộ Tâm Linh,he,2,st_he:Siêu linh,20
+he_tam_linh,Bộ Tâm Linh,he,4,khang_he_khac:Bóng tối,30
+he_tam_linh,Bộ Tâm Linh,he,6,st_he:Siêu linh,30
+he_giap_trung,Bộ Giáp Trùng,he,2,st_he:Bọ,20
+he_giap_trung,Bộ Giáp Trùng,he,4,khang_he_khac:Lửa,30
+he_giap_trung,Bộ Giáp Trùng,he,6,st_he:Bọ,30
+he_nham_thach,Bộ Nham Thạch,he,2,st_he:Đá,20
+he_nham_thach,Bộ Nham Thạch,he,4,khang_he_khac:Nước,30
+he_nham_thach,Bộ Nham Thạch,he,6,st_he:Đá,30
+he_u_linh,Bộ U Linh,he,2,st_he:Ma,20
+he_u_linh,Bộ U Linh,he,4,khang_he_khac:Bóng tối,30
+he_u_linh,Bộ U Linh,he,6,st_he:Ma,30
+he_long_vuong,Bộ Long Vương,he,2,st_he:Rồng,20
+he_long_vuong,Bộ Long Vương,he,4,khang_he_khac:Băng,30
+he_long_vuong,Bộ Long Vương,he,6,st_he:Rồng,30
+he_hac_am,Bộ Hắc Ám,he,2,st_he:Bóng tối,20
+he_hac_am,Bộ Hắc Ám,he,4,khang_he_khac:Giác đấu,30
+he_hac_am,Bộ Hắc Ám,he,6,st_he:Bóng tối,30
+he_cuong_thiet,Bộ Cương Thiết,he,2,st_he:Thép,20
+he_cuong_thiet,Bộ Cương Thiết,he,4,khang_he_khac:Lửa,30
+he_cuong_thiet,Bộ Cương Thiết,he,6,st_he:Thép,30
+he_tien_tu,Bộ Tiên Tử,he,2,st_he:Tiên,20
+he_tien_tu,Bộ Tiên Tử,he,4,khang_he_khac:Thép,30
+he_tien_tu,Bộ Tiên Tử,he,6,st_he:Tiên,30
+vung_kanto,Bộ Huy chương Kanto,vung,2,hp,10
+vung_kanto,Bộ Huy chương Kanto,vung,3,tan_cong,10
+vung_kanto,Bộ Huy chương Kanto,vung,4,chi_mang,10
+vung_johto,Bộ Huy chương Johto,vung,2,hp,10
+vung_johto,Bộ Huy chương Johto,vung,3,tan_cong,10
+vung_johto,Bộ Huy chương Johto,vung,4,chi_mang,10
+vung_hoenn,Bộ Huy chương Hoenn,vung,2,hp,10
+vung_hoenn,Bộ Huy chương Hoenn,vung,3,tan_cong,10
+vung_hoenn,Bộ Huy chương Hoenn,vung,4,chi_mang,10

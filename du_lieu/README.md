@@ -25,3 +25,11 @@ Luồng dữ liệu: [docs/kien-truc.md](../docs/kien-truc.md). Ý nghĩa các h
 
 Mô phỏng kinh tế (`tools/pokemon/MoPhongKinhTe.java`) đọc thẳng `sql/htbb_day_du.sql`, ghi kết quả ra `mo_phong_ra/`
 (không commit).
+
+Đồ họ mới và trang phục (0.9.8):
+
+| Tệp | Sinh bởi |
+|---|---|
+| `neo_trang_phuc.csv` | `client_pc/tools/XuatNeoTrangPhuc.java` — neo trang phục từng khung (đỉnh sọ, giữa sọ, mắt, cổ, lưng, eo) của 16 loài người chơi, cùng hàm client tính từ điểm ảnh (`game.pokemon.NeoTrangPhuc`) |
+| `do_moi_trang_bi.csv`, `do_moi_bo.csv`, `trang_phuc.csv` | `tools/do_trang_phuc/sinh.py` — đồ họ mới (18 bộ hệ, 3 bộ vùng), thưởng bộ, trang trí (cùng `sql/nang_cap.sql` (khối `them_do_trang_phuc.sql`)) |
+| `KIEM_KE_TRANG_BI.md` | `tools/do_trang_phuc/kiem_ke.py` — kiểm kê ô × dải cấp × họ, icon trùng / dùng chung, trước và sau đồ họ mới |

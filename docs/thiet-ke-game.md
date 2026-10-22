@@ -734,6 +734,44 @@ trung bình +2,2% một chỉ số sau 26 tuần chỉ bằng bản kiếm đư�
 (giá bán NPC 0, khoá); lượng bị đốt ≈ 2,5 lượng / tuần / người nạp nhẹ, ≈ 60 lượng / tuần / cá voi. Khi các ô trang trí
 4.5 lên máy chủ và đủ 5%, thẻ tên tự về 0% chỉ số (chỉ còn tên + nhãn).
 
+### 4.8 Đồ họ mới & trang phục (0.9.8)
+
+Dữ liệu một nguồn: `tools/do_trang_phuc/sinh.py` (danh mục `danh_muc.py`, hình vẽ tay bằng lưới) → `sql/nang_cap.sql` (khối `them_do_trang_phuc.sql`),
+icon `server/map/icon_do_moi/<n>.png` (id ảnh **15000+n**, `com.htbb.pokemon.IconDoMoi`), atlas trang phục của client,
+[du_lieu/do_moi_trang_bi.csv](../du_lieu/do_moi_trang_bi.csv), [du_lieu/trang_phuc.csv](../du_lieu/trang_phuc.csv).
+
+**Đồ họ** (`data_trang_bi_moi`, `data_item` id 1400..2027): **bản sao chỉ số** của món gốc cùng ô + bậc (chỉ khác tên, icon),
+nên không thêm sức mạnh dọc và trần một món (`NganSachTrangBi`) giữ nguyên. Món họ vẫn tính vào bộ bậc (cùng bậc).
+
+| Họ | Ô | Bậc | Thưởng bộ (phần nghìn) | Trần |
+|---|---|---|---|---|
+| 18 bộ hệ (Bộ Hoả Diệm, Thuỷ Triều, Lôi Quang, Diệp Lục...) | khăn quàng, đai, băng đô, vòng cổ, lông vũ, ruy băng | bạc, bạch kim, chuyên gia, huyền thoại, tối thượng | 2 món +20 ST hệ; 4 món +30 kháng hệ khắc; 6 món thêm +30 ST hệ | họ ≤ 50 ST / 30 kháng; chung trần ST hệ 20% (`doHePhanTram`), kháng hệ 60% |
+| 3 bộ huy chương vùng (Kanto bậc 0-3, Johto 4-7, Hoenn 8-10) | huy hiệu, găng, phiến đá, đồ cầm tay 5 dòng | mọi bậc | 2 món +10 HP; 3 món +10 tấn công; 4 món +10 chí mạng | cộng CHUNG trần bộ 5% / chí mạng bộ 3% với bộ bậc (`BoNgocGame.capNhat`) |
+
+**Nguồn (không thêm nguồn vào):** món họ **thay** món gốc khi rơi (`real.DoMoiGame.thayKhiRoi`, 1 món đổi 1 món, giữ độ
+hiếm / chỉ số / cấp yêu cầu): quái thường 40% (ô bộ hệ, theo hệ của quái) / 35% (ô bộ vùng), boss 60%; chế tạo Machamp:
+vòng cổ ra bộ hệ của hệ đã chọn, phiến đá ra bộ vùng của bậc. Khoá `do_moi.bat` (0 = không đổi, không thưởng bộ họ).
+Thẻ chi tiết món hiện "Bộ X: đang mặc a/6 món họ" và từng mốc.
+
+**Tủ đồ trang trí** (`real.TrangPhucGame`, logic thuần `TrangPhucLogic`): trang phục (mảnh vẽ trên thân Pokémon: mũ, đồ cổ,
+áo choàng / cánh, đồ cầm), hào quang, skin thú cưỡi, thẻ bạn đồng hành. Sở hữu dùng chung `nap_so_huu` (Tủ đồ của cửa hàng
+lượng), món đang mặc = `dang_dung`, mỗi ô một món. **Chỉ số theo Ô, không theo món** - người chơi chọn dòng (đổi 1 lần / ngày / ô):
+
+| Ô | Ngân sách | Dòng chọn được | Món miễn phí |
+|---|---|---|---|
+| Trang phục | 1,5% | HP, Tấn công, Phòng thủ, Phòng thủ đặc biệt | Áo huấn luyện viên tân thủ, cấp 5 |
+| Danh hiệu (hệ có sẵn) | 1% | theo danh hiệu | Huy hiệu đầu tiên |
+| Hào quang | 1% | HP, Tấn công | Hào quang tập sự, cấp 10 |
+| Skin thú cưỡi | 0,5% | HP, Phòng thủ | Yên cương cơ bản, cấp 15 |
+| Thẻ bạn đồng hành | 1% | HP, Tấn công, Phòng thủ | Thẻ tên bạn đồng hành, cấp 20 |
+| **Tổng** | **≤ 5%** (`trang_tri.tran_tong_phan_nghin` = 50, danh hiệu ưu tiên) | | |
+
+Trần cứng từng ô trong mã (15 / 10 / 5 / 10‰) nên sửa `data_trang_phuc_o` không vượt được. Nguồn (`data_trang_phuc.nguon`):
+`mien_phi` (cấp, tự trao khi vào game), `su_kien` (hạ N Pokémon ±10 cấp trong cửa sổ `LichNam` của sự kiện, theo năm),
+`thanh_tuu` (đang có danh hiệu), `cua_hang` (lượng, qua `NapTienGame.mua`: sổ cái, khoản thu hồi; chỉ đổi HÌNH, không giao
+dịch), `che_tao` (Bụi sao / Mảnh sao / Mảnh thiên thạch / Vảy rồng + xu theo giờ thu nhập - hố hút), `nhiem_vu`
+(`thuong_khac` "trang_tri:<mã>"). Khoá `trang_phuc.bat`. Hình gửi trong đuôi gói -102; màn "Ngoại hình" dùng gói -116.
+
 ---
 
 ## 5. Gym, Chiếm Gym, PvP, Hầm ngục, boss
@@ -1729,6 +1767,8 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -122 | Học chiêu + Điểm huấn luyện | hai chiều | **chỉ client BAN ≥ 908** (`real.HocChieuGame`). C→S byte 0 xin / 1 phân bổ `u8 n, n × (i8 id, i16 thêm)` / 2 tẩy điểm. S→C byte 0 bảng chiêu cả dòng: `i16 dex, i8 dòng, i8 số ô, u8 n, n × (i8 ô, i16 loài, UTF tên loài, UTF tên chiêu, i8 hệ, i8 nguồn 0 cấp / 1 NPC, i8 cấp học, i32 giá xu)`; byte 1 Điểm huấn luyện: `i8 bật`, rồi `i16 tổng, i16 đã dùng, u8 n, n × (i8 id, UTF tên, UTF mô tả, i16 điểm, i16 trần, i16 ngưỡng, i16 ‰ trước, i16 ‰ sau), i64 giá tẩy, i32 giây chờ, i8 miễn phí, i8 điểm / cấp, i8 huy hiệu, i8 trần thưởng` (mục 2.3, 4.4b) |
 | -120 | `TRANG_BI` (0.9.8) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |
 | -121 | `THU_PHUC` (0.9.8) | hai chiều | C→S: xin trạng thái (+ byte "có màn Hộp PC"), ném bóng (idQuai, loại bóng), xin Pokédex, xin Hộp PC (3), hành động trên một con (4), xin thông tin loài (5), trao đổi (6: mời / trả lời / đặt / khoá / xác nhận / huỷ); S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102), Hộp PC (4), thông tin loài (5), trao đổi (6: đóng / lời mời / phiên / xong), chợ Pokémon (7: danh sách / khung giá / kết quả; C→S: xin / khung / đăng / mua / huỷ) - chỉ client ≥ 908 (mục 7.7, 7.8, 7.9) |
+| -102 (đuôi 0.9.8) | ngoại hình + trang trí | S→C | sau phần cũ: `u8 'T', u8 1, u8 trangPhuc, u8 haoQuang, u8 skinThu, u8 theDongHanh` (số hiệu `data_trang_phuc.so`, 0 = không; ẩn trang phục → 0). Chỉ gói -102, không có trong khối gói 13; client cũ đọc phần cũ rồi bỏ qua (mục 4.8) |
+| -116 | `TRANG_PHUC` (0.9.8) | hai chiều | C→S `u8 kieu`: 0 xin tủ đồ, 1 mặc (`u8 o, UTF ma`, "" = tháo), 2 chọn dòng (`u8 o, u8 dong`), 3 nhận, 4 chế, 5 mua lượng (`UTF ma`); S→C kiểu 0 tủ đồ (ô: mã, tên, ‰ hiệu lực / gốc, dòng, dòng chọn, đang mặc, giây còn đổi dòng; tổng ‰ / trần / ‰ danh hiệu; món: mã, ô, số, tên, độ hiếm, icon, trạng thái, nguồn, tiến độ, hành động, mô tả), kiểu 1 kết quả (`u8 ok, UTF`). Chỉ client ≥ 908 (`real.TrangPhucGame`, mục 4.8) |
 
 | -118 | `THOI_TIET` | S→C | chỉ client ≥ 908 (0.9.8): `u8 phienBan=1, i8 thoiTiet (-1 trong nhà), UTF tên, UTF gợi ý, i32 giây còn lại, i8 khung sau, i8 màu mùa, UTF tên màu, u8 ngày cộng đồng (0/1/2 giờ vàng), UTF dòng, i32 giây tới mốc giờ vàng, u8 bản đồ có loài nổi bật, UTF gợi ý` (mục 7.1) |
 

@@ -59,6 +59,7 @@ public final class PokeMang {
                 DataInputStream r = msg.reader();
                 short id = r.readShort();
                 NgoaiHinhCua n = NgoaiHinhCua.doc(r);
+                n.docDuoi(r);   // 0.9.8: trang tri (trang phuc / hao quang / skin thu / the) - chi goi -102 rieng
                 NgoaiHinhMenu.nap();
                 Char c = timChar(id);
                 if (c != null) {

@@ -522,7 +522,9 @@ public final class KiemDanhHieu {
         Kiem.bang("goi -110 chi cho client >= 907 (ban 906 da phat hanh khong co bo xu ly)", Integer.valueOf(907),
                 Integer.valueOf(DanhHieuLogic.BAN_CLIENT));
         // moi "danh_hieu:<ten>" thuong nhiem vu co mot dong nhiem_vu cung ten
-        final String nvSql = DayDu.sql();
+        // bo dong data_trang_phuc (do-trang-phuc): nguon "danh_hieu:<ma>" la DIEU KIEN mo trang tri theo ma danh hieu
+        // (KiemDoTrangPhuc kiem ma co trong data_danh_hieu), khong phai thuong nhiem vu
+        final String nvSql = DayDu.sql().replaceAll("(?m)^INSERT INTO `data_trang_phuc` .*$", "");
         final Matcher t = Pattern.compile("danh_hieu:([^;|']+)").matcher(nvSql);
         final Set<String> can = new HashSet<String>();
         while (t.find()) {
