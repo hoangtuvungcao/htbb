@@ -201,6 +201,18 @@ REPO=<chủ>/<repo-phát-hành> sh tools/phat-hanh/phat-hanh.sh pc      "ghi ch�
 `day-len.sh` đẩy bản build lên GitHub Releases của repo phát hành và ghi `phienban.json`. Biến và secret của workflow:
 [tools/phat-hanh/README.md](../tools/phat-hanh/README.md).
 
+**Một thư mục bản phát hành (0.9.8, luật chủ game)**: build xong APK (`KIEU=release`), jar (`client_jar/build.sh`, có
+`GOI=nhe`) và gói PC (`KIEU=phat-hanh sh client_pc/dong_goi_windows.sh`) thì gom vào **một** thư mục cạnh repo, chỉ giữ
+bản mới nhất (mỗi lần gom xoá bản cũ), kèm `SHA256SUMS.txt` — không còn thư mục theo phiên bản (`phat_hanh_0.9.8`...):
+
+```sh
+sh tools/phat-hanh/gom-ban.sh            # -> <thư mục chứa htbb>/phat_hanh/ (vd ~/Downloads/pokemon/phat_hanh)
+RA=/đường/khác sh tools/phat-hanh/gom-ban.sh
+```
+
+Tên tệp: `HTBB-<PHIEN_BAN>-android.apk`, `HTBB-<PHIEN_BAN>.jar`, `HTBB-<PHIEN_BAN>-nhe.jar`, `HTBB-PC-Setup-<x.y.z>.exe`,
+`HTBB-PC-Linux-<x.y.z>.AppImage` (+ `.tar.gz`), `HTBB-PC-Windows-<x.y.z>.zip`.
+
 ### Số bản và cập nhật client (0.9.7)
 
 - **Mọi bản phát hành công khai, kể cả bản vá nóng, có `BAN` mới lớn hơn bản trước** (máy chủ chỉ phân biệt client bằng

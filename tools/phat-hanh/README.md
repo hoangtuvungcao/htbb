@@ -21,6 +21,8 @@ REPO=<chu>/<repo-phat-hanh-htbb> sh tools/phat-hanh/phat-hanh.sh android "ghi ch
 REPO=<chu>/<repo-phat-hanh-htbb> sh tools/phat-hanh/phat-hanh.sh pc      "ghi chú"   # máy Windows có Unity 6000.5.9f1
 ```
 
+- Bản tự build trên máy (APK release, jar, gói PC): `sh tools/phat-hanh/gom-ban.sh` gom vào MỘT thư mục
+  `<thư mục chứa htbb>/phat_hanh/` (chỉ bản mới nhất + `SHA256SUMS.txt`, ghi đè mỗi lần) - docs/build.md mục 8.
 - Tên tệp: `HTBB-<PHIEN_BAN>-thuong.jar`, `-nhe.jar`, `-android.apk`, `-PC.zip`; release cố định trên repo phát hành:
   tag `jar` (`HTBB.jar`), `jar-nhe` (`HTBB-nhe.jar`), `android` (`HTBB.apk`), `pc` (`HTBB-PC.zip`).
 - `phienban.json` (nhánh `main` của repo phát hành): mục `jar`, `jar-nhe`, `android`, `pc` =
