@@ -82,6 +82,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
     - `them_ngam_tay_pvp.sql` (pvp-keo): `data_chieu_ban` (kiểu bắn từng chiêu cho ngắm tay PvP, `INSERT IGNORE`);
     - `sua_ket_doi.sql` (ket-doi): Lễ kết đôi thay đám cưới - `data_nhom_trung_ten`, `data_nhom_trung` (nhóm trứng 21 loài),
       đổi tên vật phẩm 88–92, 98, 751 và bản đồ 225 / 226 (chỉ ô còn tên cũ);
+    - `them_huong_dan_tan_thu.sql` (main 90658456, đã chạy trên production): hướng dẫn tân thủ 10 bước (`data_quest_moi`
+      901..910 viết lại tại chỗ), `data_huong_dan_tan_thu`, Chansey / Snorlax ở 3 làng, sửa chuỗi chính; chạy lại vô hại;
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
 

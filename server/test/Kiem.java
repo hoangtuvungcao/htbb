@@ -210,6 +210,7 @@ public final class Kiem {
         KiemSuaLogic096.chay(); // 0.9.6: sua logic server - ban ngoc NPC, ky gui, EXP doi / ha quai, nhiem vu, nhom
         KiemNhiemVuOn.chay(); // 0.9.7.1: nhan / tra / huy nhiem vu on dinh, dong bo danh sach client
         KiemKetDoi.chay(); // Le ket doi: nhom trung (Egg Group), ma tran 21 x 21 loai, ly do tu choi, cap cu giu nguyen
+        KiemHuongDanTanThu.chay(); // huong dan tan thu: 10 buoc dau chuoi chinh, bo qua, NPC lang, chuoi chinh sau huong dan
         KiemNpc.chay(); // moi NPC + moi muc menu NPC dung duoc: NPC tinh ngoai troi, su kien -49, muc da go (npcfix)
         KiemTaiDuLieu096.chay(); // 0.9.6.1 loi tai: Bang vang khong treo, ban do / tai nguyen / id map SQL tai duoc
         KiemMenu096.chay(); // 0.9.6.1 menu He sinh thai: khong muc cau ca (chi nut ngu canh), chi so menu goc khop xu ly

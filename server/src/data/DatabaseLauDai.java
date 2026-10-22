@@ -419,6 +419,27 @@ public final class DatabaseLauDai {
         return o == null ? "" : o.toString();
     }
 
+    /** Kieu muc tieu cua buoc huong dan (engine nhiem vu khong nap dong huong_dan): ma -> {kieu_muc_tieu, muc_tieu_id}. */
+    public static java.util.Map<String, String[]> napKieuHuongDan() {
+        final java.util.HashMap<String, String[]> m = new java.util.HashMap<String, String[]>();
+        for (final Object[] d : docBang("SELECT ma, kieu_muc_tieu, muc_tieu_id FROM data_quest_lau_dai WHERE ma LIKE 'HD.%'", 3)) {
+            m.put(s(d[0]), new String[]{s(d[1]), s(d[2])});
+        }
+        return m;
+    }
+
+    /**
+     * Chu huong dan tan thu (data_huong_dan_tan_thu, sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql)): ma -> {tieu_de, noi_dung}, theo
+     * thu_tu. Rong neu chua co bang (khi do HuongDanTanThuGame khong gui gi).
+     */
+    public static java.util.Map<String, String[]> napHuongDanTanThu() {
+        final java.util.LinkedHashMap<String, String[]> m = new java.util.LinkedHashMap<String, String[]>();
+        for (final Object[] d : docBang("SELECT ma, tieu_de, noi_dung FROM data_huong_dan_tan_thu ORDER BY thu_tu, ma", 3)) {
+            m.put(s(d[0]), new String[]{s(d[1]), s(d[2])});
+        }
+        return m;
+    }
+
     /** Cac dong nhiem vu TUAN: {ma, ten, cap_toi_thieu, so_luong, exp, xu, luong_khoa}. */
     public static List<Object[]> napNhiemVuTuan() {
         final List<Object[]> kq = new ArrayList<Object[]>();

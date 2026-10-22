@@ -9048,6 +9048,10 @@ public class Map implements Runnable {
             } catch (Exception var17) {
             }
 
+            if (idpopup == com.htbb.pokemon.HuongDanTanThu.POPUP_BO_QUA && idActor == player.id) {
+                HuongDanTanThuGame.khiXacNhan(player, ok == 1); // bo qua huong dan tan thu (co xac nhan)
+                return;
+            }
             if (idpopup != 10 && idpopup != 11 && idpopup != 12 && idActor == player.id && ok == 0) {
                 return;
             }
@@ -15395,6 +15399,7 @@ public class Map implements Runnable {
                     );
             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
             player.sendMessage(MessageCreator.createServerAlertMessage("Kỹ năng đã được học.", ""));
+            DiemMocNhiemVu.khiHocChieu(player, idSkill[charclass][skillSelectIndex]);
         } catch (Exception var5) {
         }
     }
@@ -15424,6 +15429,7 @@ public class Map implements Runnable {
                         player.skillpoint--;
                         player.skill[skillType]++;
                         player.setTimeOutBuff();
+                        DiemMocNhiemVu.khiHocChieu(player, skillType); // huong dan tan thu: buoc hoc chieu
                     }
 
                     player.setTimeOutBuff();

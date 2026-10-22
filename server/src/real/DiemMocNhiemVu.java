@@ -24,6 +24,10 @@ package real;
  *                    {@link #khiNhanVatPhamSuKien}                                id vat pham (data_su_kien_vat_pham)
  *  giao_hang/dua_thu Char.OnQuest tra nhiem vu chinh cu giao vat pham (type 1) {@link #khiGiaoVatPham}  id vat pham NV / ""
  *  ho_tong           Char.doResponseTieu (ve dich, khong bi cuop)       {@link #khiHoTong}  ""
+ *  dung_thuoc        DungVatPham.dungThuoc (binh da tru khoi tui)       {@link #khiDungThuoc}  id thuoc
+ *  hoc_chieu         Map.doAddSkillPoint (cong 1 diem) / Map.doLearnSkil (chieu moi o Blaziken) {@link #khiHocChieu}  id chieu
+ *  tha_cau           HeSinhThaiMenu.thaCau (da tru the luc + moi, chua biet ket qua) {@link #khiThaCau}  ban do
+ *                    (ba kieu tren: buoc hanh dong cua huong dan tan thu - HuongDanTanThuGame, khong co nhiem vu engine)
  * </pre>
  * Kiem thu: test/KiemDiemMocNhiemVu (moi kieu trong data_nhiem_vu_kieu co diem goi; tham so dung).
  */
@@ -40,6 +44,21 @@ public final class DiemMocNhiemVu {
         } catch (final Exception e) {
             System.out.println("DiemMocNhiemVu " + kieu + ": " + e);
         }
+    }
+
+    /** Dung mot binh thuoc (da tru khoi tui). */
+    public static void khiDungThuoc(final Char p, final int idThuoc) {
+        ban(p, "dung_thuoc", String.valueOf(idThuoc), 1);
+    }
+
+    /** Cong mot diem ky nang / hoc mot chieu moi. */
+    public static void khiHocChieu(final Char p, final int idChieu) {
+        ban(p, "hoc_chieu", String.valueOf(idChieu), 1);
+    }
+
+    /** Tha cau thanh cong o ho / ao (chua biet ca can hay khong - "cau_ca" moi la cau duoc). */
+    public static void khiThaCau(final Char p) {
+        ban(p, "tha_cau", p == null ? "" : String.valueOf(p.mapID), 1);
     }
 
     public static void khiDao(final Char p, final int maVatLieu) {

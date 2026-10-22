@@ -134,7 +134,9 @@ public final class KiemLauDai {
             if ("thu_thap".equals(kieu) && !quai.contains(d.get("quai_roi"))) {
                 quaiThieu = true;
             }
-            final String loi = vuotNganSach(d);
+            // huong_dan (HD.01..HD.10, main 90658456 da chay production): thuong co dinh cua 10 buoc dau, gan cap 1 nhung
+            // xay ra o cap 1..5 - kiem tong o KiemHuongDanTanThu, khong kiem theo tung buoc o cap 1
+            final String loi = "huong_dan".equals(d.get("loai")) ? null : vuotNganSach(d);
             if (loi != null) {
                 vuot = true;
                 loiDau = loiDau.isEmpty() ? loi : loiDau;

@@ -347,6 +347,43 @@ public final class KiemKhoaBanDo {
         }
         Kiem.bang("cua ai: quai muc tieu co tren ban do, khong vong lap", "[]", loiCa.toString());
         Kiem.bang("29 buoc cua ai, 14 tran Gym danh tay", "29/14", buoc + "/" + gym);
+
+        // 0.9.8 (ra soat huong dan): moi buoc ha quai cua CHUOI CHINH co it nhat mot ban do co quai do MO (cap) o dung cap
+        // cua buoc - chuoi chinh khong bao gio chi vao ban do con khoa cap
+        final Map<Integer, Set<Integer>> quaiMap = new HashMap<Integer, Set<Integer>>();
+        for (final Integer m : luat.keySet()) {
+            for (final Integer qq : quaiTrenMap(m)) {
+                Set<Integer> v = quaiMap.get(qq);
+                if (v == null) {
+                    quaiMap.put(qq, v = new TreeSet<Integer>());
+                }
+                v.add(m);
+            }
+        }
+        final List<String> loiChinh = new ArrayList<String>();
+        int soBuoc = 0;
+        for (final Map<String, String> q : theoMa.values()) {
+            final String k = q.get("kieu_muc_tieu");
+            if (!"chinh".equals(q.get("loai")) || !q.get("muc_tieu_id").matches("\\d+")
+                    || !(k.equals("giet") || k.equals("giet_lech_cap") || k.equals("giet_tinh_anh") || k.equals("ha_alpha"))) {
+                continue;
+            }
+            final Set<Integer> maps = quaiMap.get(Integer.valueOf(q.get("muc_tieu_id")));
+            if (maps == null) {
+                continue;
+            }
+            soBuoc++;
+            final int capBuoc = Integer.parseInt(q.get("cap_toi_thieu"));
+            int capMo = Integer.MAX_VALUE;
+            for (final Integer m : maps) {
+                capMo = Math.min(capMo, Integer.parseInt(luat.get(m).get("cap_toi_thieu")));
+            }
+            if (capMo > capBuoc) {
+                loiChinh.add(q.get("ma") + " (cap " + capBuoc + "): quai " + q.get("muc_tieu_ten") + " chi o ban do " + maps + " mo tu cap " + capMo);
+            }
+        }
+        Kiem.dung("chuoi chinh: co buoc ha quai de kiem (" + soBuoc + ")", soBuoc > 50);
+        Kiem.bang("chuoi chinh: ban do cua moi buoc ha quai mo dung cap cua buoc", "[]", loiChinh.toString());
     }
 
     static Set<Integer> quaiTrenMap(final int map) {

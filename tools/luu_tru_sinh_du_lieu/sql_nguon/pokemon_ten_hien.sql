@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `data_npc` (
   PRIMARY KEY (`type`)
 ) DEFAULT CHARSET=utf8;
 INSERT INTO `data_npc` (`type`,`ten`,`chuc_vu`,`pokemon`,`dex`,`id_anh`,`ban_do`) VALUES
-(0,'Y tá Chansey','Trung tâm Pokémon: hồi phục, bán thuốc','Chansey',113,0,'43,45,47,49,51,54,56,59,60,62,100,281'),
+(0,'Y tá Chansey','Trung tâm Pokémon: hồi phục, bán thuốc','Chansey',113,0,'0,43,45,47,49,51,54,56,59,60,62,70,80,100,281'),
 (1,'Kecleon tạp hoá','Tạp hoá','Kecleon',352,1,'0,45,47,49,54,56,62,70,72,80,82,102'),
 (2,'Machamp thợ rèn','Thợ rèn: chế tạo, sửa, khảm đồ','Machamp',68,2,'0,45,70,73,80,83,103'),
 (3,'Bronzong thợ giáp','Bán trang bị','Bronzong',437,3,'0,47,55,59,70,74,80,84,104'),
@@ -29,7 +29,7 @@ INSERT INTO `data_npc` (`type`,`ten`,`chuc_vu`,`pokemon`,`dex`,`id_anh`,`ban_do`
 (5,'Trưởng làng Xatu','Trưởng làng, giao nhiệm vụ','Xatu',178,5,'0,43,45,50,56,59,60,70,80,101,163,164,280,282'),
 (6,'Ngài Persian','Bán đá quý, nguyên liệu','Persian',53,6,'0,53,70,79,80,89,109'),
 (7,'Pidgeot chở bay','Chở bay tới bản đồ khác','Pidgeot',18,7,'0,3,4,5,6,7,8,9,54,70,80'),
-(8,'Ông Snorlax','Giao nhiệm vụ','Snorlax',143,8,'51,57,60,105,160'),
+(8,'Ông Snorlax','Giao nhiệm vụ','Snorlax',143,8,'0,51,57,60,70,80,105,160'),
 (9,'Kangaskhan thủ kho','Giữ đồ','Kangaskhan',115,9,'0,70,78,80,88,108'),
 (10,'Lapras chở đò','Chở đò, bán vé tàu','Lapras',131,10,'43,58,60,106,162'),
 (11,'Golem bán hàng 1','Bán hàng','Golem',76,11,'99,201,266'),

@@ -38,6 +38,8 @@ public final class SoTayLauDai {
     static final int MENU_HAM_NGUC = 3;
     static final int MENU_QUA_HOAT_DONG = 4;
     static final int MENU_GYM = 5;
+    /** So muc co dinh cua menu goc; muc tu chi so nay la muc huong dan tan thu (HuongDanTanThuGame.themMucSoTay). */
+    static final int SO_MUC_GOC = 11; // 0..9 + "Cúp PvP tuần" (10, pho-ban-cup)
 
     private SoTayLauDai() {
     }
@@ -51,8 +53,9 @@ public final class SoTayLauDai {
         if (!LauDai.bat() || p == null) {
             return;
         }
-        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Năng lượng và tinh thông", "Nhiệm vụ tuần",
-            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi", "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"}, NPC_ID, MENU_GOC));
+        // huong dan tan thu: muc Bo qua / Huong dan tan thu noi vao CUOI (chi so >= SO_MUC_GOC, chu tu CSDL)
+        p.sendMessage(MessageCreator.createMsgMenu(HuongDanTanThuGame.themMucSoTay(p, new String[]{"Năng lượng và tinh thông", "Nhiệm vụ tuần",
+            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi", "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"}), NPC_ID, MENU_GOC));
     }
 
     static void bao(final Char p, final String s) {
@@ -105,6 +108,7 @@ public final class SoTayLauDai {
                         CupGame.moMenu(p); // 0.9.7 Cup PvP tuan xoay vong (real.CupGame)
                         break;
                     default:
+                        HuongDanTanThuGame.chonMucSoTay(p, idOption - SO_MUC_GOC);
                         break;
                 }
             } else if (idMenu == MENU_TINH_THONG && (idOption == 0 || idOption == 1)) {
@@ -128,6 +132,8 @@ public final class SoTayLauDai {
                 hamNguc(p, h, idOption);
             } else if (PhoBanGame.doMenu(p, idMenu, idOption) || CupGame.doMenu(p, idMenu, idOption)) {
                 return; // 0.9.7 Pho ban Ham nguc (60..61), Cup PvP tuan (70..72)
+            } else if (idMenu == com.htbb.pokemon.HuongDanTanThu.MENU_MOI || idMenu == com.htbb.pokemon.HuongDanTanThu.MENU_NPC) {
+                HuongDanTanThuGame.doMenu(p, idMenu, idOption);
             }
         } catch (final Exception e) {
             System.out.println("SoTayLauDai.doMenu: " + e);

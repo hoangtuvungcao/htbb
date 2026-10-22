@@ -776,6 +776,9 @@ public final class DungVatPham {
             p.phienDung = null;
         }
         dongBoHpPp(p, ph);
+        if (p.potions[t] < ph.binh[t]) {
+            DiemMocNhiemVu.khiDungThuoc(p, t); // binh da tru khoi tui (huong dan tan thu: buoc dung thuoc)
+        }
         if (!ph.daNoi && !co(THUOC_HP, t) && !co(THUOC_MP, t)) {
             // Binh HP/PP thanh cong khong can bao (thanh mau len); that bai la cho hoi binh khi bam lien tuc.
             SO_TU_BAO.incrementAndGet();

@@ -102,6 +102,15 @@ public final class HudRong {
         return 50;
     }
 
+    /** Thẻ trạng thái (rộng / cao) cho lớp khác đặt dưới nó (game.pokemon.TheNhiemVu). */
+    public static int rongTheTrangThai() {
+        return rongThe();
+    }
+
+    public static int caoTheTrangThai() {
+        return caoThe();
+    }
+
     // cụm chiến đấu
     static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 64, R_THUOC = 12, R_NGU_CANH = 14, R_DOI_BO = 9;
     static final int[] GOC_CHIEU = {180, 145, 110, 75};
@@ -231,6 +240,11 @@ public final class HudRong {
     }
 
     static boolean banDoTo;
+
+    /** Đang mở bản đồ to (lớp khác ẩn thẻ HUD phụ). */
+    public static boolean dangMoBanDoTo() {
+        return banDoTo || BangTuDong.mo;
+    }
 
     /** Gọi từ GameScr.paint (lớp giao diện), sau thanh ô / bản đồ nhỏ. */
     public static void ve(Graphics g, GameScr gs) {

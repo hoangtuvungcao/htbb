@@ -44,9 +44,9 @@ public final class KiemDuLieuSql {
     /** DanhMucSinh cua main cfff771b (213 khoa / 15 nhom: them nhom chong_clone; co phan loai lop), tinh cung cach noi
      *  chuoi (KE CA lop) ngay truoc khi bo ban chep Java luc gop. Lich su: P1 185 khoa 382a04b3..., 0.9.2 5934a2e6...,
      *  0.9.4 (203 khoa, co lop) e6505ed5..., 213 khoa 9be03a6a.... khoa-map: +ban_do.khoa.bat (214 khoa); gop main 0cbf73ae: +nhom vong_quay 26 khoa (240 / 16); gop main bda0e901: +nhom cuoc_xu (256 / 17); gop main 1a705be6: 269 khoa main + ban_do.khoa.bat (luon_bat, an) = 270 / 17; ban-098 (0.9.8): +nhom hoc_chieu 5 khoa, +nhom trang_bi 21 khoa,
-     *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306; bat-trade +10 (bat.*, trao_doi.*), kenh-chat +10 (sv.chat.*) = 326, pvp-keo +4 (pvp.ngam_tay*) = 330 / 19.
+     *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306; bat-trade +10 (bat.*, trao_doi.*), kenh-chat +10 (sv.chat.*) = 326, pvp-keo +4 (pvp.ngam_tay*) = 330, bat-trade cho +10 (cho_pokemon.*) = 340 / 19.
      *  Lech = danh muc da doi (sua trong CSDL / nang_cap.sql phan 2, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "8c604c9542da1d560f90bd674ad1de1b25b2ae17115fdd46ce3dd371644ad575";
+    static final String VT_DANH_MUC = "c7141f2ae0dc91e626266f9b0ae1550df4c3be8c2c1e8f48a216b56b615b41a2";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

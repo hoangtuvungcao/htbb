@@ -3749,6 +3749,7 @@ public class GameScr extends Screen {
                 HudRong.ve(g, this);   // pokemon: HUD màn rộng (nút trên, cụm chiêu, chat, bản đồ to)
                 game.pokemon.PhongRieng.ve(g);   // pokemon 0.9.7: thẻ phòng riêng (phó bản / trận cúp), gói -112
                 game.pokemon.ThoiTiet.veHud(g);   // pokemon 0.9.7: đĩa thời tiết + thẻ gợi ý
+                game.pokemon.TheNhiemVu.ve(g, this);   // 0.9.8: thẻ mục tiêu tân thủ + mũi tên chỉ hướng NPC
             }
         } catch (Exception e8) {
             e8.printStackTrace();
@@ -8600,6 +8601,9 @@ public class GameScr extends Screen {
         Canvas.gameScr.actors.addElement(d);
     }
 
+    /** Đáy nhãn "12+" trong màn chơi (khung trước; PC HD đặt dưới thẻ trạng thái lớn) - thẻ mục tiêu đặt dưới nó. */
+    public static int day12plus = 55;
+
     public static void paint12plus(Graphics g) {
         Canvas.resetTrans(g);
         if (img12plus == null) {
@@ -8625,6 +8629,9 @@ public class GameScr extends Screen {
         }
         int x = (Canvas.currentScreen == Canvas.gameScr ? 4 : 16) + game.pokemon.Bang.anTrai;
         int w = 20, h = 11;
+        if (Canvas.currentScreen == Canvas.gameScr) {
+            day12plus = dy + h;
+        }
         game.pokemon.GiaoDien.khoi(g, x, dy, w, h, 4, 0xE8412C);
         game.pokemon.ChuDe.chuGiua(g, "12+", x + w / 2, dy, h, game.pokemon.ChuDe.SO, 0xFFFFFF, 2);
     }
