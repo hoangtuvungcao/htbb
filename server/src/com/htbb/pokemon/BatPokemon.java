@@ -78,6 +78,30 @@ public final class BatPokemon {
         }
     }
 
+    /**
+     * 0.9.8 (chu game): bong TANG (khong mua) moi ngay tu moi nguon cong lai &lt;= so nay Poke Ball quy doi (gia bong / gia
+     * Poke Ball: Great 2,5, Ultra 6). Bong luon khoa trong Hop PC (khong giao dich, khong ban).
+     */
+    public static final int BONG_TANG_NGAY_TOI_DA = 10;
+
+    /** Quy doi mot qua bong {@code b} ra 1/10 Poke Ball (theo gia; Poke = 10). */
+    public static int quyDoiPhanMuoi(final Bong b, final Bong poke) {
+        if (b == null) {
+            return 0;
+        }
+        final int goc = poke == null ? 20 : Math.max(1, poke.giaPhanNghinGio);
+        return Math.max(10, b.giaPhanNghinGio * 10 / goc);
+    }
+
+    /** So bong {@code muon} duoc tang them khi hom nay da tang {@code daTangPhanMuoi} (tran chung). */
+    public static int duocTang(final int muon, final int quyDoi, final int daTangPhanMuoi) {
+        if (muon <= 0 || quyDoi <= 0) {
+            return 0;
+        }
+        final int con = BONG_TANG_NGAY_TOI_DA * 10 - Math.max(0, daTangPhanMuoi);
+        return Math.max(0, Math.min(muon, con / quyDoi));
+    }
+
     /** Bang bong mac dinh (Poke / Great / Ultra) khi CSDL chua co data_bat_bong. */
     public static List<Bong> bongMacDinh() {
         final List<Bong> v = new ArrayList<Bong>();

@@ -647,6 +647,50 @@ public final class BatPokemonGame {
         return com.htbb.pokemon.TienTeChu.so(x) + " xu";
     }
 
+    /**
+     * 0.9.8: TANG bong (nhiem vu "bong:&lt;ma&gt;xN", su kien, ngay cong dong, ruong pho ban, cup tuan) - vao Hop PC (khoa,
+     * khong giao dich / khong ban), tran chung {@link BatPokemon#BONG_TANG_NGAY_TOI_DA} Poke Ball quy doi / ngay.
+     * @return so bong da tang (0 = het tran / chua mo).
+     */
+    public static int thuongBong(final Char p, final String ma, final int so, final String lyDo) {
+        if (p == null || so <= 0 || !bat()) {
+            return 0;
+        }
+        BatPokemon.Bong b = null, poke = null;
+        for (final BatPokemon.Bong x : BONG) {
+            if (x.ma.equals(ma)) {
+                b = x;
+            }
+            if (x.thuTu == 1) {
+                poke = x;
+            }
+        }
+        final HopPc h = hop(p);
+        if (b == null || h == null) {
+            return 0;
+        }
+        final int qd = BatPokemon.quyDoiPhanMuoi(b, poke);
+        final int n;
+        synchronized (h) {
+            h.doiNgay(homNay());
+            n = BatPokemon.duocTang(so, qd, h.bongTangNgay);
+            if (n > 0) {
+                h.bongTangNgay += n * qd;
+                h.themBong(b.ma, n);
+            }
+        }
+        if (n > 0) {
+            com.htbb.thongbao.ThongBao.ketQua(p, "+" + n + " " + b.ten + " (" + lyDo + ")", "Vào Hộp PC: đánh Pokémon hoang dã (dấu Poké Ball cạnh tên)"
+                    + " còn ≤ " + nguongHp() + "% HP rồi bấm nút Poké Ball.");
+            guiTrangThai(p);
+            try {
+                data.Database.instance.saveOrtherLog("", p.charname, "tang bong " + b.ma + " x" + n + " (" + lyDo + ")", "laudai");
+            } catch (final Exception ignored) {
+            }
+        }
+        return n;
+    }
+
     /** Y ta Chansey muc "Poké Ball & Hộp PC". */
     public static void moMenuBong(final Char p) {
         if (!bat()) {

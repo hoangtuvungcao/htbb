@@ -21147,3 +21147,11 @@ Lượng chỉ mua hình và tiện ích. Lượng khoá không giao dịch đư
 
 Gặp lỗi hoặc có góp ý, hãy báo cho ban quản trị qua kênh hỗ trợ. Hẹn gặp bạn trong thế giới Pokémon!',
  1, '2026-10-22 18:00:00', 1, 'admin', NOW(), NOW());
+-- 6. Thu phuc 0.9.8 (chu game): chi Pokemon HOANG DA (dau Poke Ball canh ten) bat duoc; bong TANG co tran chung
+--    BatPokemon.BONG_TANG_NGAY_TOI_DA = 10 Poke Ball quy doi / ngay (Great 2,5, Ultra 6), luon khoa trong Hop PC.
+--    Buoc huong dan HD.05 (gap Chansey) tang 5 Poke Ball; ~1/3 nhiem vu ngay tang 1-3 Poke Ball; ~1/3 nhiem vu su kien
+--    tang 1 Great Ball (ngay cong dong / ruong pho ban / cup tuan: may chu). Chi them vao dong chua co "bong:".
+UPDATE `data_nhiem_vu_noi_dung` SET `thuong_khac` = 'bong:pokex5' WHERE `ma` = 'HD.05' AND `thuong_khac` = '';
+UPDATE `data_nhiem_vu_noi_dung` n JOIN `data_quest_lau_dai` q ON q.`ma` = n.`ma` AND q.`loai` = 'ngay' SET n.`thuong_khac` = CONCAT(n.`thuong_khac`, IF(n.`thuong_khac` = '', '', ';'), 'bong:pokex', 1 + CAST(RIGHT(n.`ma`, 1) AS UNSIGNED) % 3) WHERE RIGHT(n.`ma`, 1) IN ('1', '4', '7') AND n.`thuong_khac` NOT LIKE '%bong:%';
+UPDATE `data_nhiem_vu_noi_dung` n JOIN `data_quest_lau_dai` q ON q.`ma` = n.`ma` AND q.`loai` = 'su_kien' SET n.`thuong_khac` = CONCAT(n.`thuong_khac`, IF(n.`thuong_khac` = '', '', ';'), 'bong:greatx1') WHERE RIGHT(n.`ma`, 1) IN ('1', '4', '7') AND n.`thuong_khac` NOT LIKE '%bong:%';
+UPDATE `data_huong_dan_tan_thu` SET `noi_dung` = 'Y tá Chansey đứng trước cửa Trung tâm Pokémon: hồi đầy HP và PP miễn phí, bán thuốc hồi phục và Poké Ball. Chansey tặng bạn 5 Poké Ball: gặp Pokémon HOANG DÃ (dấu Poké Ball cạnh tên), đánh còn ≤ 35% HP rồi bấm nút Poké Ball để thu phục.' WHERE `ma` = 'npc.02_chansey' AND `noi_dung` = 'Y tá Chansey đứng trước cửa Trung tâm Pokémon: hồi đầy HP và PP miễn phí, bán thuốc hồi phục.';

@@ -90,6 +90,8 @@ public final class HopPc {
     public int tongChuyen;
     /** Cho Pokemon: so con da MUA hom nay (cung ngay voi batNgay). */
     public int muaNgay;
+    /** 0.9.8: bong TANG hom nay (nhiem vu / su kien / pho ban / cup), don vi 1/10 Poke Ball quy doi (tran chung). */
+    public int bongTangNgay;
     /** Da doi tu lan luu cuoi. */
     public boolean ban;
 
@@ -241,6 +243,7 @@ public final class HopPc {
             this.tongDoi = o.tongDoi;
             this.tongChuyen = o.tongChuyen;
             this.muaNgay = o.muaNgay;
+            this.bongTangNgay = o.bongTangNgay;
         }
     }
 
@@ -360,6 +363,7 @@ public final class HopPc {
             this.chuyenXuNgay = 0;
             this.chuyenLuongNgay = 0;
             this.muaNgay = 0;
+            this.bongTangNgay = 0;
             this.ban = true;
         }
     }
@@ -372,7 +376,7 @@ public final class HopPc {
                 .append(";ng=").append(this.ngay).append(";bn=").append(this.batNgay).append(";nn=").append(this.nemNgay)
                 .append(";tb=").append(this.tongBat).append(";dn=").append(this.doiNgay).append(";cx=").append(this.chuyenXuNgay)
                 .append(";cl=").append(this.chuyenLuongNgay).append(";dc=").append(this.doiCuoi).append(";td=").append(this.tongDoi)
-                .append(";tc=").append(this.tongChuyen).append(";mn=").append(this.muaNgay);
+                .append(";tc=").append(this.tongChuyen).append(";mn=").append(this.muaNgay).append(";bg=").append(this.bongTangNgay);
         for (final Map.Entry<Integer, Integer> e : this.keo.entrySet()) {
             sb.append(";k").append(e.getKey()).append('=').append(e.getValue());
         }
@@ -427,6 +431,8 @@ public final class HopPc {
                     h.tongDoi = Math.max(0, Integer.parseInt(v));
                 } else if (k.equals("mn")) {
                     h.muaNgay = Math.max(0, Integer.parseInt(v));
+                } else if (k.equals("bg")) {
+                    h.bongTangNgay = Math.max(0, Integer.parseInt(v));
                 } else if (k.equals("tc")) {
                     h.tongChuyen = Math.max(0, Integer.parseInt(v));
                 } else if (k.startsWith("b_")) {

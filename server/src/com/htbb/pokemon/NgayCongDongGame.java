@@ -163,6 +163,9 @@ public final class NgayCongDongGame {
             final NgayCongDong.Dong d = dongThangNay();
             if (d != null && d.coQuai(m.idTemplate)) {
                 real.DanhHieuGame.suKien(p, "cong_dong", d.ma, 1);
+                if (real.Map.r.nextInt(20) == 0) {
+                    real.BatPokemonGame.thuongBong(p, "great", 1, "Ngày cộng đồng"); // 0.9.8: tran bong tang / ngay
+                }
             }
         } catch (final Throwable e) {
             System.out.println("[CONG DONG] khiHaQuai: " + e);

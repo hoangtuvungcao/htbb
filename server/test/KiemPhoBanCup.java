@@ -646,7 +646,7 @@ public final class KiemPhoBanCup {
         final String g = doc("src/real/PhoBanGame.java");
         Kiem.dung("bang roi: trang bi ruong boss bi khoa (lock = 1)", g.contains("it.lock = 1;"));
         Kiem.dung("bang roi: ruong chi mo khi chua nhan thuong ngay (sau return khi da nhan)",
-                g.indexOf("final String ruong = moRuong(c, ph);") > g.indexOf("if (tn[0] <= 0) {"));
+                g.indexOf("String ruong = moRuong(c, ph);") > g.indexOf("if (tn[0] <= 0) {"));
     }
 
     // ================================================================== C. SQL, cau hinh, danh hieu, goi, diem moc

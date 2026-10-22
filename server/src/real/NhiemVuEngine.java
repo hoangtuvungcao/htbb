@@ -880,7 +880,7 @@ public final class NhiemVuEngine {
         return String.format(java.util.Locale.ROOT, "%,d", v).replace(',', '.');
     }
 
-    /** thuong_khac "danh_hieu:<ten>;item:<id>xN;truyen:..;trang_tri:..;diem_bang:N". */
+    /** thuong_khac "danh_hieu:<ten>;item:<id>xN;truyen:..;trang_tri:..;diem_bang:N;bong:<poke|great|ultra>xN". */
     static void thuongKhac(final Char p, final String s, final String lyDo) {
         if (s == null || s.isEmpty()) {
             return;
@@ -915,6 +915,10 @@ public final class NhiemVuEngine {
                     if (!DanhHieuGame.khiNhanTheoTen(p, v)) {
                         LauDaiNhanVat.bao(p, "Danh hiệu mới: " + v);
                     }
+                } else if ("bong".equals(k)) {
+                    // 0.9.8: bong:<poke|great|ultra>xN -> Hop PC (tran bong tang / ngay)
+                    final int x = v.indexOf('x');
+                    BatPokemonGame.thuongBong(p, x > 0 ? v.substring(0, x) : v, x > 0 ? Integer.parseInt(v.substring(x + 1)) : 1, "nhiệm vụ");
                 } else if ("trang_tri".equals(k) && TrangPhucGame.laMa(v)) {
                     TrangPhucGame.trao(p, v, "nhiem_vu"); // [trang-phuc] mon tu do trang tri
                 } else {

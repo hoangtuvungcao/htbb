@@ -75,6 +75,18 @@ public final class ChuThuongNhiemVu {
                 final String v = phan.substring(k + 1).trim();
                 if ("danh_hieu".equals(loai) && !v.isEmpty()) {
                     p.add("danh hiệu " + v);
+                } else if ("bong".equals(loai)) {
+                    final int x = v.indexOf('x');
+                    final String ma = (x > 0 ? v.substring(0, x) : v).trim();
+                    final String ten = "great".equals(ma) ? "Great Ball" : "ultra".equals(ma) ? "Ultra Ball" : "Poké Ball";
+                    try {
+                        final int n = x > 0 ? Integer.parseInt(v.substring(x + 1).trim()) : 1;
+                        if (n > 0) {
+                            p.add(n + " " + ten);
+                        }
+                    } catch (final NumberFormatException ignored) {
+                        // dong hong
+                    }
                 } else if ("item".equals(loai) || "thuoc".equals(loai)) {
                     final int x = v.indexOf('x');
                     try {

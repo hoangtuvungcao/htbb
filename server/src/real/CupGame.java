@@ -741,6 +741,9 @@ public final class CupGame {
             if (r[2] > 0) {
                 c.addLuongLock(r[2]);
             }
+            if (r[1] >= 1 && r[1] <= 8) {
+                BatPokemonGame.thuongBong(c, "ultra", r[1] == 1 ? 2 : 1, "Cúp PvP tuần"); // 0.9.8: top 8 cup tuan
+            }
             if (r[3] > 0) {
                 PhongRiengGame.traoDanhHieu(c, r[3], r[4]);
             }

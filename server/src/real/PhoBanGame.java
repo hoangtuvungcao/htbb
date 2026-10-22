@@ -535,7 +535,11 @@ public final class PhoBanGame {
         if (tn[1] > 0) {
             c.addLuongLock(tn[1]);
         }
-        final String ruong = moRuong(c, ph);
+        String ruong = moRuong(c, ph);
+        // 0.9.8: ruong boss doi khi co Ultra Ball (25%, tran bong tang / ngay)
+        if (Map.r.nextInt(100) < 25 && BatPokemonGame.thuongBong(c, "ultra", 1, "rương boss phó bản") > 0) {
+            ruong = ruong.isEmpty() ? "1 Ultra Ball" : ruong + ", 1 Ultra Ball";
+        }
         try {
             Database.instance.saveOrtherLog("", c.charname, "pho ban thang " + ph.chuDe.ma + " exp " + exp + " lk " + tn[1] + " ruong " + ruong, "laudai");
         } catch (final Exception ignored) {

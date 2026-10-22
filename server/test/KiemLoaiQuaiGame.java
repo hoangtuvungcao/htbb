@@ -123,6 +123,20 @@ public final class KiemLoaiQuaiGame {
             Kiem.dung("nem bong: quai thuong (khong hoang da) bi tu choi ro rang", bg.contains("if (!LoaiQuaiGame.laHoangDa(m)) {")
                     && bg.contains("đã thuần hoá, không thể bắt"));
 
+            // 0.9.8: bong TANG co tran chung 10 Poke Ball quy doi / ngay (Great 2,5, Ultra 6)
+            final com.htbb.pokemon.BatPokemon.Bong[] bb = com.htbb.pokemon.BatPokemon.bongMacDinh().toArray(new com.htbb.pokemon.BatPokemon.Bong[0]);
+            Kiem.bang("quy doi Poke / Great / Ultra (1/10)", "10/25/60", com.htbb.pokemon.BatPokemon.quyDoiPhanMuoi(bb[0], bb[0]) + "/"
+                    + com.htbb.pokemon.BatPokemon.quyDoiPhanMuoi(bb[1], bb[0]) + "/" + com.htbb.pokemon.BatPokemon.quyDoiPhanMuoi(bb[2], bb[0]));
+            Kiem.bang("tang 5 Poke dau ngay: du 5", 5, com.htbb.pokemon.BatPokemon.duocTang(5, 10, 0));
+            Kiem.bang("da tang 5 Poke + 1 Ultra (110): het tran, khong them", 0, com.htbb.pokemon.BatPokemon.duocTang(3, 10, 110));
+            Kiem.bang("da tang 50: Ultra x2 chi duoc 0 (con 50 < 60)", 0, com.htbb.pokemon.BatPokemon.duocTang(2, 60, 50));
+            Kiem.bang("da tang 40: Great x3 duoc 2 (con 60)", 2, com.htbb.pokemon.BatPokemon.duocTang(3, 25, 40));
+            final com.htbb.pokemon.HopPc hp = new com.htbb.pokemon.HopPc();
+            hp.bongTangNgay = 35;
+            Kiem.bang("Hop PC luu bo dem bong tang", 35, com.htbb.pokemon.HopPc.giaiMa(hp.maHoa()).bongTangNgay);
+            Kiem.dung("chu thuong: bong:pokex5 -> '5 Poké Ball'", com.htbb.pokemon.ChuThuongNhiemVu.dong(0, 0, 0, 0, "32000", 0, "32000", "32000",
+                    "bong:pokex5", null, null).contains("5 Poké Ball"));
+
             // ep mot loai rieng de kiem goi
             m.dexRieng = 16;
             m.bacRieng = 1;

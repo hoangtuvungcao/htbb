@@ -361,6 +361,10 @@ public final class HuongDanTanThuGame {
                     thuoc.merge(Integer.valueOf(t.potiongift[k]), Integer.valueOf(t.npotiongift[k]), Integer::sum);
                 }
             }
+            final String tk = NhiemVuEngine.thuongKhacCu(0, t.ma);
+            if (tk != null && tk.contains("bong:")) {
+                doVat.add(com.htbb.pokemon.ChuThuongNhiemVu.dong(0, 0, 0, 0, "32000", 0, "32000", "32000", tk, null, null));
+            }
             if (Char.canOTrongDeTra(t.idItemgift)) {
                 try {
                     doVat.add(Map.itemTemplates.get(0).get((int) t.idItemgift[0]).name);
