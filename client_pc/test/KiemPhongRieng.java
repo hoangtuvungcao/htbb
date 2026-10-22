@@ -102,7 +102,7 @@ public class KiemPhongRieng {
                     game.pokemon.PhongRieng.datThu((Integer) m[1], (String) m[2], (String) m[3], (String) m[4], (Integer) m[5], (Integer) m[6]);
                 });
                 ChupTrongGame.ve(W, H);
-                BufferedImage anh = ChupTrongGame.ve(W, H);
+                BufferedImage anh = ChupTrongGame.veKiem(W, H, "KiemPhongRieng:105");
                 ImageIO.write(anh, "png", new File(ra, "phong_rieng_" + ten + "_" + co + ".png"));
                 java.util.List<int[]> the = new java.util.ArrayList<>(), hud = new java.util.ArrayList<>();
                 int n = game.pokemon.VungCham.dem();
@@ -171,6 +171,7 @@ public class KiemPhongRieng {
         });
         kiemGoi();
         kiemVe(ra);
+        kiem(ChupTrongGame.hong == 0, "chu trong khung + icon PNG (ChupTrongGame.veKiem): " + ChupTrongGame.hong + " hong");
         kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("KiemPhongRieng: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);

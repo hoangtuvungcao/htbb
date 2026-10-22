@@ -840,7 +840,9 @@ public class TeamServer {
             // Chong spam chat / thao tac + gop thong bao toan server (docs/cau-hinh.md).
             com.htbb.chongspam.ChongSpam.docCauHinh(p);
             com.htbb.chongspam.ThongBaoGop.docCauHinh(p);
+            com.htbb.pokemon.KenhChatLogic.docCauHinh(p);
             System.out.println(com.htbb.chongspam.ChongSpam.moTa());
+            System.out.println(com.htbb.pokemon.KenhChatLogic.moTa());
             System.out.println(com.htbb.chongspam.ThongBaoGop.moTa());
             System.out.println("NGAP GOI TIN -> tran thuong=" + io.BoDemGoiTin.GOI_THUONG_TOI_DA
                     + ", tran tai nguyen=" + io.BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA
@@ -955,6 +957,8 @@ public class TeamServer {
         } catch (Exception exMoRong) {
             System.out.println("[MO_RONG] LOI kiem tra cot tob_char.o_mo_rong: " + exMoRong);
         }
+        // 0.9.8 kenh chat: hop thu tin rieng offline + danh sach chan (CREATE TABLE IF NOT EXISTS)
+        real.KenhChatGame.taoBang();
         // GD2 thiet ke dai han: bang moi + doi bang EXP + chuyen EXP nhan vat cu (MOT lan, co sao
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
         if (com.htbb.pokemon.LauDai.bat()) {

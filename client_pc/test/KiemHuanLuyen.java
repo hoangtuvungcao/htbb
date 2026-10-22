@@ -138,7 +138,7 @@ public class KiemHuanLuyen {
 
     static java.awt.image.BufferedImage ve(String nhan) throws Exception {
         ChupTrongGame.ve(veW, veH);
-        java.awt.image.BufferedImage a = ChupTrongGame.ve(veW, veH);
+        java.awt.image.BufferedImage a = ChupTrongGame.veKiem(veW, veH, nhan);
         if (ra != null && soAnh < 40) {
             javax.imageio.ImageIO.write(a, "png", new File(ra, String.format("%02d_%s.png", soAnh++, nhan)));
         }
@@ -363,6 +363,7 @@ public class KiemHuanLuyen {
         kiem(ok[0], "ThanhNhanh: ô giữ chiêu bị gỡ -> chiêu học gần nhất chưa có trên thanh");
         kiem(ok[1], "ThanhNhanh: không còn chiêu thay -> ô trống");
 
+        kiem(ChupTrongGame.hong == 0, "chu trong khung + icon PNG (ChupTrongGame.veKiem): " + ChupTrongGame.hong + " hong");
         kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("KiemHuanLuyen: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);

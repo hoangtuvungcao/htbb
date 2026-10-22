@@ -217,6 +217,7 @@ public final class Kiem {
         KiemKhoaKhiMac.chay(); // 0.9.6.1: do da mac bi khoa (khong giao dich), pha khoa o Machamp (ho hut xu), Da pha khoa 1295
         KiemThongBaoNguoiChoi.chay(); // 0.9.6.1: thong bao nguoi choi ro rang (cau ca, boss ai/o dau), goi -104 co hinh
         KiemPvpPk.chay(); // 0.9.7 PvP xep hang (Elo chi trong tran ghep, chong nick phu), thuong mua, luat PK, diem moc nhiem vu
+        KiemKenhChat.chay(); // 0.9.8 kenh chat: luat kenh, the gioi / bang / doi / rieng, chan, hop thu offline, client cu
         KiemDanhHieu.chay(); // 0.9.7 danh hieu: mo khoa, an "???", het han, mot danh hieu dang deo, tran chi so, sql/them_danh_hieu.sql
         KiemDoHiem.chay(); // 0.9.7 de xuat 4: mau do hiem MOT nguon (do_hiem.json -> server / client / web / SQL), tuong phan
         KiemThoiTiet.chay(); // 0.9.7 de xuat 8: thoi tiet 4 khung gio / vung, anh huong co tran, phu mau mua, goi -118

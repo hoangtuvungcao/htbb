@@ -108,6 +108,9 @@ public class Font {
         if (st == null || g == null) {
             return;
         }
+        if (st.indexOf('\u2212') >= 0) {
+            st = st.replace('\u2212', '-');   // 0.9.8: dấu trừ U+2212 (chữ máy chủ) không có trong font
+        }
         if (game.pokemon.GhiChu.bat && game.pokemon.GhiChu.trongChuDe == 0) {
             game.pokemon.GhiChu.chu(g, st, x, y, getWidth(st), getHeight(), align == CENTER ? 2 : align == RIGHT ? 1 : 0);
         }

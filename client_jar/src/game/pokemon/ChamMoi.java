@@ -24,9 +24,10 @@ import java.util.Vector;
  * Kiểm thử: client_pc/test/KiemChamMoi (mỗi nguồn: chấm có trên đủ mọi cấp của đường).
  */
 public final class ChamMoi {
-    public static final int NV_NHAN = 0, NV_TRA = 1, THU = 2, DIEM_TN = 3, DIEM_KN = 4, CHIEU_MOI = 5, DANH_HIEU = 6, SO_NGUON = 7;
+    public static final int NV_NHAN = 0, NV_TRA = 1, THU = 2, DIEM_TN = 3, DIEM_KN = 4, CHIEU_MOI = 5, DANH_HIEU = 6, CHAT = 7,
+            SO_NGUON = 8;
     public static final String[] TEN = {"nhiệm vụ mới", "nhiệm vụ đủ để trả", "thư chưa đọc", "điểm tiềm năng", "điểm kỹ năng",
-        "chiêu mới", "danh hiệu mới"};
+        "chiêu mới", "danh hiệu mới", "tin chat chưa đọc"};
 
     /** số chiêu mới đã xem (danh sách "Học chiêu mới" đã mở) - theo dòng Pokémon */
     private static int daXemChieu = -1, daXemLop = -1;
@@ -79,6 +80,8 @@ public final class ChamMoi {
                 }
                 case DANH_HIEU:
                     return Math.max(0, DanhHieuKho.soMoi);
+                case CHAT:
+                    return KenhChat.chuaDocQuanTrong();
                 default:
                     return 0;
             }
@@ -125,6 +128,16 @@ public final class ChamMoi {
     /** Viên "Thư/Quà" ở Menu. */
     public static boolean menuThu() {
         return co(THU);
+    }
+
+    /** 0.9.8: nút chat HUD - tin riêng / bang hội / đội chưa đọc (bản đồ, thế giới không chấm nút). */
+    public static boolean hudChat() {
+        return co(CHAT);
+    }
+
+    /** 0.9.8: tab bảng chat (KenhChat.BAN_DO..HE_THONG) có tin chưa đọc; tab Bạn bè = tin riêng chưa đọc. */
+    public static boolean tabChat(int tab) {
+        return KenhChat.chuaDocTab(tab) > 0;
     }
 
     /** Nút Menu (Poké Ball) của HUD. */

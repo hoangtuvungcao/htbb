@@ -90,6 +90,11 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
 - `KiemPhongRieng` (0.9.7): thẻ phòng riêng (game.pokemon.PhongRieng - Phó bản Hầm ngục / trận Cúp PvP, gói -112): đọc gói,
   gói hỏng không vỡ, tự ẩn khi đổi bản đồ, vẽ ở 11 cỡ trong vùng an toàn, canh giữa, không chồng nút HUD, chạm >= cỡ tối thiểu;
+- `KiemKenhChat` (0.9.8): bảng chat nhiều kênh (game.pokemon.ManChat / KenhChat, gói -124 giả qua MessageHandler) ở 11 cỡ +
+  J2ME 320x240 / 240x320: mỗi tab (Bản đồ, Thế giới, Đội, Nhóm, Bạn bè, hội thoại riêng, Hệ thống, Tuỳ chọn) - tấm canh giữa /
+  <= 80 %, ô nhập + Gửi trong tấm, vùng chạm đủ cỡ không chồng, chấm đỏ tab chưa đọc; chạm dòng -> menu tên -> nhắn riêng ->
+  gói -124, Bản đồ -> gói 27, Thế giới đang chờ -> Gửi tắt, mời nhóm (tra id -> gói 49), chặn, dải chat HUD theo kênh, chấm
+  nút chat HUD, máy chủ cũ (gói -18 / -5), J2ME bấm phím (đổi tab, chọn dòng, 5 = menu / gửi, phím mềm);
 - `KiemCapNhat` (0.9.7): cập nhật trong game (game.pokemon.CapNhat + htbb.capnhat / htbb.pc.CapNhatPc) - gói -115, hộp nhắc /
   bắt buộc ở mọi cỡ, tải qua máy chủ HTTP cục bộ (SHA-256 lệch / 404 / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài /SILENT);
 - `KiemHuanLuyen` (0.9.8): học chiêu theo loài + Điểm huấn luyện (game.pokemon.HocChieu / BangHuanLuyen, gói -122 giả):

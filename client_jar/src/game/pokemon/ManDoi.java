@@ -138,17 +138,8 @@ public final class ManDoi extends ManBang {
         Vector v = new Vector();
         v.addElement(new game.model.Command("Nhắn tin", new IAction() {
             public void perform() {
-                Canvas.inputDlg.setInfo("Nhắn tới " + c.name, new IAction() {
-                    public void perform() {
-                        String t = Canvas.inputDlg.tfInput.getText();
-                        if (t != null && t.trim().length() > 0) {
-                            GameService.gI().sendMsgPrivate(c.name, t);
-                            MessageScr.gI().addTab(t, c.name, 0);
-                        }
-                        Canvas.endDlg();
-                    }
-                }, 0, 100, true);
-                Canvas.inputDlg.show();
+                Canvas.endDlg();
+                ManChat.moRieng(c.name);   // 0.9.8: hội thoại riêng trong bảng chat
             }
         }));
         v.addElement(new game.model.Command("Xoá bạn", new IAction() {

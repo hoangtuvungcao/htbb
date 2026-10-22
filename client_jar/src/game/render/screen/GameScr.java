@@ -362,6 +362,10 @@ public class GameScr extends Screen {
     }
 
     public void addChat(ChatInfo ci) {
+        // 0.9.8: dòng thông báo cục bộ -> tab Hệ thống của bảng chat; người chơi tắt Hệ thống trên HUD thì không lên dải
+        if (!game.pokemon.KenhChat.tuHud(ci)) {
+            return;
+        }
         if (this.chatHistory.size() > 50) {
             this.chatHistory.removeElementAt(0);
             this.yMsgChat -= 18;
@@ -1724,10 +1728,8 @@ public class GameScr extends Screen {
             menu.addElement(new Command("Chat", new IAction() {
                 @Override
                 public void perform() {
-                    GameScr.typechat = GameScr.CHAT_NORMAL;
-                    Canvas.gameScr.chatMode = true;
-                    GameScr.this.tfChat.setIputType(0);
                     Canvas.endDlg();
+                    game.pokemon.ManChat.mo();   // 0.9.8: bảng chat nhiều kênh
                 }
             }));
             menu.addElement(new Command("Thay đồ", new IAction() {
@@ -2293,9 +2295,8 @@ public class GameScr extends Screen {
                     menuItems.addElement(new Command("Nhắn tin", new IAction() {
                         @Override
                         public void perform() {
-                            MessageScr.gI().addTab("", ((Char) GameScr.this.focusedActor).name, 0);
-                            MessageScr.gI().setFocusTab(((Char) GameScr.this.focusedActor).name);
-                            MessageScr.gI().switchToMe();
+                            // 0.9.8: hội thoại riêng trong bảng chat (tab Bạn bè)
+                            game.pokemon.ManChat.moRieng(((Char) GameScr.this.focusedActor).name);
                         }
                     }));
                 }
@@ -2404,6 +2405,7 @@ public class GameScr extends Screen {
     }
 
     public void addMsgWorld(String info) {
+        game.pokemon.KenhChat.loaCu(info);   // 0.9.8: máy chủ cũ - loa vào tab Thế giới (máy chủ mới gửi -124)
         MsgInfo ms = new MsgInfo(info);
         msgWorld.addElement(ms);
         savemsgWorld.addElement(ms);
@@ -3939,8 +3941,15 @@ public class GameScr extends Screen {
             this.mainChar.chat = null;
             addChat(this.mainChar, text, 200);
             MessageScr.gI().addTab(new StringBuffer(String.valueOf(this.mainChar.name)).append(": ").append(text).toString(), null, 0);
+            game.pokemon.KenhChat.banDoMinh(text);   // 0.9.8: tab Bản đồ của bảng chat
             GameService.gI().chat(text);
         }
+    }
+
+    /** 0.9.8: bảng chat (game.pokemon.ManChat) gửi tin kênh Bản đồ - như ô chat cũ (bong bóng, lệnh, câu cá). */
+    public void chatTuBang(String text) {
+        typechat = CHAT_NORMAL;
+        doChatFromMe(text);
     }
 
     private void paintChat(Graphics g) {
@@ -5725,6 +5734,7 @@ public class GameScr extends Screen {
         if (this.mainChar != null && chatFromID == this.mainChar.ID && text != null) {
             if (!text.equals(this.tinVuaGo) || System.currentTimeMillis() - this.lucVuaGo > 5000L) {
                 game.pokemon.DungDo.bao(text, game.pokemon.DungDo.TIN);
+                game.pokemon.KenhChat.heThong(text);   // 0.9.8: tab Hệ thống
             }
             return;
         }
@@ -5738,6 +5748,7 @@ public class GameScr extends Screen {
                 } else {
                     addChat(a, text, 50);
                     MessageScr.gI().addTab(new StringBuffer(String.valueOf(((Char) a).name)).append(": ").append(text).toString(), null, 0);
+                    game.pokemon.KenhChat.banDo(chatFromID, ((Char) a).name, text);   // 0.9.8: tab Bản đồ
                     return;
                 }
             }

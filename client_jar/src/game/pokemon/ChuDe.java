@@ -135,6 +135,11 @@ public final class ChuDe {
     }
 
     /** Bề ngang chuỗi (px logic). */
+    /** Ký tự font không có: dấu trừ toán học U+2212 (chữ máy chủ / bảng 0.9.8) -> '-'. */
+    static String chuanKyTu(String s) {
+        return s.indexOf('\u2212') >= 0 ? s.replace('\u2212', '-') : s;
+    }
+
     public static int rong(String s, int vai) {
         if (s == null) {
             return 0;
@@ -151,6 +156,7 @@ public final class ChuDe {
         if (s == null || s.length() == 0) {
             return;
         }
+        s = chuanKyTu(s);
         if (GhiChu.bat) {
             GhiChu.chu(g, s, x, y, rong(s, vai), cao(vai), canh);
             GhiChu.trongChuDe++;
@@ -263,6 +269,7 @@ public final class ChuDe {
         if (s == null || s.length() == 0) {
             return;
         }
+        s = chuanKyTu(s);
         ChuUI b = ChuUI.bo;
         if (b == null) {
             // J2ME: chữ sáng trên nền màu / gỗ = borderFont (font ảnh có viền sẵn - đọc rõ), chữ tối = font thường

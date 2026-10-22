@@ -1090,6 +1090,22 @@ public class ChupTrongGame {
      * (2) mỗi dòng chữ nằm TRỌN trong khung pixel nhỏ nhất (vẽ trước nó) chứa điểm đầu dòng; (3) hai dòng chữ trong
      * khung không chồng nhau. Chữ trên thế giới (tên trên đầu, không khung) bỏ qua.
      */
+    /**
+     * 0.9.8: chụp một màn CÙNG kiểm của ChupTrongGame (chữ trọn trong khung / không đè / đủ nét - kiemChu, icon chỉ PNG -
+     * VeTay = 0) cho các bộ kiểm màn riêng (KiemBoNgocBat, KiemPhongRieng, KiemKenhChat...). Lỗi cộng vào {@link #hong}.
+     */
+    static BufferedImage veKiem(int W, int H, String nhan) throws Exception {
+        game.pokemon.VeTay.xoa();
+        game.pokemon.GhiChu.xoa();
+        game.pokemon.GhiChu.bat = true;
+        game.render.screen.Font.thieuNet = 0;
+        BufferedImage anh = ve(W, H);
+        game.pokemon.GhiChu.bat = false;
+        kiemChu(nhan);
+        kiem(game.pokemon.VeTay.dem == 0, nhan + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, " + game.pokemon.VeTay.cuoi + ")");
+        return anh;
+    }
+
     static void kiemChu(String nhan) {
         kiem(game.render.screen.Font.thieuNet == 0, nhan + " ky tu thieu net (" + game.render.screen.Font.thieuNet + " lan, '"
                 + game.render.screen.Font.thieuCuoi + "')");

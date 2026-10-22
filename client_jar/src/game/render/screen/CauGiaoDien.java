@@ -20,8 +20,20 @@ public final class CauGiaoDien {
         BangTuDong.mo();
     }
 
-    /** Mở ô chat thường (như mục Chat của menu phím #), con trỏ gõ ở ô chat. */
+    /** 0.9.8: mở bảng chat nhiều kênh (game.pokemon.ManChat) ở tab dùng lần cuối. */
     public static void moChat() {
+        GameScr gs = Canvas.gameScr;
+        if (gs == null) {
+            return;
+        }
+        if (Canvas.currentScreen != gs) {
+            gs.switchToMe();
+        }
+        game.pokemon.ManChat.mo();
+    }
+
+    /** Ô chat nhanh cũ (một dòng, kênh bản đồ) - giữ cho lối vào cũ. */
+    public static void moChatNhanh() {
         GameScr gs = Canvas.gameScr;
         if (gs == null) {
             return;

@@ -419,27 +419,12 @@ class MapDoi {
             }
 
             ms = BadWord.checkBadWord2(ms);
-            NewClan clanInfo = NewClan.getClan(player.idClan);
-            Message m = new Message(-18);
-            String title = "";
-            if (player.rankClan < 3 && player.rankClan > -1) {
-                String[] tempTitle = new String[]{"(BC)", "(PB)", "(TL)"};
-                title = tempTitle[player.rankClan];
+            if (NewClan.getClan(player.idClan) == null) {
+                return;
             }
-
-            m.dos.writeUTF(title + player.charname + ": " + ms);
-
-            for (CharClan c : clanInfo.member.values()) {
-                String name = c.charname;
-                if (name.indexOf("-") > -1) {
-                    name = name.substring(0, name.indexOf("-"));
-                }
-
-                Char pp = CharManager.instance.getCharByCharName(name);
-                if (pp != null) {
-                    pp.sendMessage(m);
-                }
-            }
+            // 0.9.8: phat chung voi kenh Bang hoi (KenhChatGame): client moi -124 (the Bang hoi, lich su), client cu -18
+            // nhu truoc ("(BC)ten: noi dung").
+            KenhChatGame.phatBang(player, ms);
         } catch (Exception var11) {
             var11.printStackTrace();
         }

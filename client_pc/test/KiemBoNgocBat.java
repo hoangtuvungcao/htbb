@@ -349,7 +349,7 @@ public class KiemBoNgocBat {
                 ChupTrongGame.ve(W, H);
                 int dem0 = game.pokemon.Bang.demTam;
                 int nut0 = game.pokemon.BatPokemon.demVeNut;
-                BufferedImage anh = ChupTrongGame.ve(W, H);
+                BufferedImage anh = ChupTrongGame.veKiem(W, H, "KiemBoNgocBat:352");
                 ImageIO.write(anh, "png", new File(ra, man[m] + "_" + tenCo[c] + ".png"));
                 if (man[m].startsWith("nem")) {
                     kiemNem(man[m], t, nut0, min, cach, W, H);
@@ -392,7 +392,7 @@ public class KiemBoNgocBat {
             }
         });
         Thread.sleep(150);
-        BufferedImage bay = ChupTrongGame.ve(1280, 720);
+        BufferedImage bay = ChupTrongGame.veKiem(1280, 720, "KiemBoNgocBat:395");
         ImageIO.write(bay, "png", new File(ra, "nem_bay.png"));
         kiem(!game.pokemon.BatPokemon.anQuai(quai.ID), "dang bay: quai chua an");
         Thread.sleep(500);
@@ -402,10 +402,10 @@ public class KiemBoNgocBat {
                 new Object[]{Short.valueOf(game.render.Canvas.gameScr.mainChar.ID), Short.valueOf(quai.ID), Integer.valueOf(1), Integer.valueOf(0),
                     Integer.valueOf(2), Integer.valueOf(19), Boolean.FALSE});
         Thread.sleep(400);
-        ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "nem_lac.png"));
+        ImageIO.write(ChupTrongGame.veKiem(1280, 720, "KiemBoNgocBat:405"), "png", new File(ra, "nem_lac.png"));
         kiem(game.pokemon.BatPokemon.anQuai(quai.ID), "truot: dang lac van an quai");
         Thread.sleep(700);
-        ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "nem_thoat.png"));
+        ImageIO.write(ChupTrongGame.veKiem(1280, 720, "KiemBoNgocBat:408"), "png", new File(ra, "nem_thoat.png"));
         kiem(!game.pokemon.BatPokemon.anQuai(quai.ID), "truot: het lac -> quai hien lai");
         ChupTrongGame.chay(new Runnable() {
             public void run() {
@@ -417,9 +417,10 @@ public class KiemBoNgocBat {
                 new Object[]{Short.valueOf(game.render.Canvas.gameScr.mainChar.ID), Short.valueOf(quai.ID), Integer.valueOf(1), Integer.valueOf(1),
                     Integer.valueOf(3), Integer.valueOf(19), Boolean.FALSE});
         Thread.sleep(1300);
-        ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "nem_bat_duoc.png"));
+        ImageIO.write(ChupTrongGame.veKiem(1280, 720, "KiemBoNgocBat:420"), "png", new File(ra, "nem_bat_duoc.png"));
         kiem(game.pokemon.BatPokemon.daBat(19), "bat duoc: Pokedex danh dau Da bat");
         kiem(game.pokemon.BatPokemon.anQuai(quai.ID), "bat duoc: quai van trong bong (may chu xoa bang goi 90)");
+        kiem(ChupTrongGame.hong == 0, "chu trong khung + icon PNG (ChupTrongGame.veKiem): " + ChupTrongGame.hong + " hong");
         kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("KiemBoNgocBat: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);

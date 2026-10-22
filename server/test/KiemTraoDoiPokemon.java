@@ -383,7 +383,7 @@ public final class KiemTraoDoiPokemon {
                 && sql.contains("CREATE TABLE IF NOT EXISTS `tob_log_trao_doi_pokemon`") && sql.contains("CREATE TABLE IF NOT EXISTS `data_bat_chi_so_loai`"));
         Kiem.dung("khong INSERT...SELECT...ON DUPLICATE KEY UPDATE col=col", !Pattern.compile("(?is)INSERT[^;]*SELECT[^;]*ON DUPLICATE KEY UPDATE")
                 .matcher(sql).find() && !Pattern.compile("`(\\w+)` = `\\1`").matcher(sql).find());
-        final String bat = KiemBoNgocCheTao.doc("../sql/them_bo_ngoc_che_tao_bat.sql");
+        final String bat = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // khoi cu trong sql/nang_cap.sql phan 11
         final Matcher m = Pattern.compile("^\\((\\d+),'", Pattern.MULTILINE).matcher(bat);
         final java.util.Set<String> loai = new java.util.HashSet<String>();
         while (m.find()) {

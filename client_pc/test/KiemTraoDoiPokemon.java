@@ -327,7 +327,7 @@ public class KiemTraoDoiPokemon {
                 ChupTrongGame.ve(W, H);
                 int dem0 = game.pokemon.Bang.demTam;
                 int ic0 = game.pokemon.IconBat.demVe;
-                BufferedImage anh = ChupTrongGame.ve(W, H);
+                BufferedImage anh = ChupTrongGame.veKiem(W, H, "KiemTraoDoiPokemon:330");
                 ImageIO.write(anh, "png", new File(ra, man[m] + "_" + tenCo + ".png"));
                 ChupTrongGame.kiemTam(t, dem0 - 1);
                 ChupTrongGame.kiemCham(t, min, cach);
@@ -377,7 +377,7 @@ public class KiemTraoDoiPokemon {
             }
         }));
         Thread.sleep(150);
-        ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "loi_moi.png"));
+        ImageIO.write(ChupTrongGame.veKiem(1280, 720, "KiemTraoDoiPokemon:380"), "png", new File(ra, "loi_moi.png"));
         kiem(game.pokemon.HopXacNhan.dangMo(), "loi moi trao doi: hien hop xac nhan");
         // đóng phiên từ máy chủ: về màn chơi
         nap(goiPhien(1, 1, ""));
@@ -391,6 +391,7 @@ public class KiemTraoDoiPokemon {
         Thread.sleep(100);
         kiem(game.render.Canvas.currentScreen != game.pokemon.ManTraoDoiPokemon.me && game.pokemon.BatPokemon.tdTrangThai == 0,
                 "may chu dong phien: roi cua so trao doi");
+        kiem(ChupTrongGame.hong == 0, "chu trong khung + icon PNG (ChupTrongGame.veKiem): " + ChupTrongGame.hong + " hong");
         System.out.println("KiemTraoDoiPokemon: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }

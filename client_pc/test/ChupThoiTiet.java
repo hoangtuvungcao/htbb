@@ -193,7 +193,7 @@ public class ChupThoiTiet {
                 BufferedImage ref = ChupTrongGame.ve(W, H);
                 dat(tt, 0, 0, game.pokemon.ThoiTiet.DAY_DU, true);
                 ChupTrongGame.ve(W, H);
-                BufferedImage anh = ChupTrongGame.ve(W, H);
+                BufferedImage anh = ChupTrongGame.veKiem(W, H, "ChupThoiTiet:196");
                 if (mau) {
                     ImageIO.write(anh, "png", new File(ra, "thoi_tiet_" + TEN_TT[tt] + "_" + co + ".png"));
                 }
@@ -210,7 +210,7 @@ public class ChupThoiTiet {
                 double sangRef = sang(ref, wx0, wy0, wx1, wy1);
                 dat(0, m, 0, game.pokemon.ThoiTiet.DAY_DU, true);
                 ChupTrongGame.ve(W, H);
-                BufferedImage anh = ChupTrongGame.ve(W, H);
+                BufferedImage anh = ChupTrongGame.veKiem(W, H, "ChupThoiTiet:213");
                 if (mau) {
                     ImageIO.write(anh, "png", new File(ra, "mua_" + TEN_MAU[m] + "_" + co + ".png"));
                 }
@@ -235,7 +235,7 @@ public class ChupThoiTiet {
                 double nhieu = khac(tat, ref2, wx0, wy0, wx1, wy1);
                 kt = Math.min(kt, nhieu);
                 // hoạt hình / camera còn trôi (máy bận): chụp lại tối đa 2 lần, lấy lần sạch nhất
-                for (int lai = 0; lai < 2 && kt >= 4.0; lai++) {
+                for (int lai = 0; lai < 4 && kt >= 4.0; lai++) {
                     dat(0, m, 0, game.pokemon.ThoiTiet.DAY_DU, false);
                     ChupTrongGame.ve(W, H);
                     BufferedImage tat2 = ChupTrongGame.ve(W, H);
@@ -254,7 +254,7 @@ public class ChupThoiTiet {
                 }
             });
             ChupTrongGame.ve(W, H);
-            BufferedImage the = ChupTrongGame.ve(W, H);
+            BufferedImage the = ChupTrongGame.veKiem(W, H, "ChupThoiTiet:257");
             if (mau) {
                 ImageIO.write(the, "png", new File(ra, "the_goi_y_cong_dong_" + co + ".png"));
             }
@@ -311,8 +311,9 @@ public class ChupThoiTiet {
         for (int tt = 1; tt < TEN_TT.length; tt++) {
             dat(tt, tt == 3 ? 4 : tt == 5 ? 5 : 0, 0, game.pokemon.ThoiTiet.THAP, true);
             ChupTrongGame.ve(1280, 720);
-            ImageIO.write(ChupTrongGame.ve(1280, 720), "png", new File(ra, "j2me_thap_" + TEN_TT[tt] + ".png"));
+            ImageIO.write(ChupTrongGame.veKiem(1280, 720, "ChupThoiTiet:314"), "png", new File(ra, "j2me_thap_" + TEN_TT[tt] + ".png"));
         }
+        kiem(ChupTrongGame.hong == 0, "chu trong khung + icon PNG (ChupTrongGame.veKiem): " + ChupTrongGame.hong + " hong");
         kiem(game.pokemon.VeTay.dem == 0, "icon ve bang code (VeTay) = 0, co " + game.pokemon.VeTay.dem + " lan, cuoi: " + game.pokemon.VeTay.cuoi);
         System.out.println("ChupThoiTiet: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);

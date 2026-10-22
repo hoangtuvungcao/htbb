@@ -44,6 +44,13 @@ final class ApDungMacDinh {
             }
         }, "ChongSpam");
 
+        CauHinhTrungTam.dangKyNghe(new String[]{"sv.chat."}, new NgheThayDoi() {
+            public void khiDoi(final Set<String> k, final CauHinhTrungTam.AnhChup m) {
+                com.htbb.pokemon.KenhChatLogic.docCauHinh(m.thanhProperties());
+                System.out.println("[CAU HINH] " + com.htbb.pokemon.KenhChatLogic.moTa());
+            }
+        }, "KenhChat");
+
         CauHinhTrungTam.dangKyNghe(new String[]{"sv.thongBao."}, new NgheThayDoi() {
             public void khiDoi(final Set<String> k, final CauHinhTrungTam.AnhChup m) {
                 com.htbb.chongspam.ThongBaoGop.docCauHinh(m.thanhProperties());

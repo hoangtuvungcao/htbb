@@ -145,6 +145,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.PhongRieng.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -124 kenh chat (KenhChat, 0.9.8)
+        if (game.pokemon.KenhChat.nhan(msg)) {
+            return;
+        }
         // pokemon: lenh -115 co ban moi / bat buoc cap nhat (CapNhat, 0.9.7)
         if (game.pokemon.CapNhat.nhan(msg)) {
             return;
@@ -974,6 +978,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                 case -18:
                     String info2 = msg.reader().readUTF();
                     MessageScr.gI().addTab(info2, "Đội", 1);
+                    game.pokemon.KenhChat.bangCu(info2);   // 0.9.8: tab Bang hội
                     break;
                 case -17:
                     Vector list = new Vector();
@@ -1120,6 +1125,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         String name2 = msg.reader().readUTF();
                         String info5 = msg.reader().readUTF();
                         MessageScr.gI().addTab(new StringBuffer(String.valueOf(name2)).append(": ").append(info5).toString(), name2, 0);
+                        game.pokemon.KenhChat.riengCu(name2, info5);   // 0.9.8: tab Bạn bè
                     }
                     break;
                 case 1:

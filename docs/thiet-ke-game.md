@@ -1002,6 +1002,24 @@ chối / tắt ở bản đồ khoá tự động (thị trấn, nhà, đấu tr
 và danh sách bay hiện hàng "Khoá" xám có ổ khoá + "AUTO" / "Không AUTO", bản đồ lớn vẽ ổ khoá + chấm AUTO, viên AUTO xám khi
 bản đồ không cho tự động.
 
+### 6.5 Kênh chat (0.9.8)
+
+Bảng chat kiểu NRO / NSO mở bằng nút chat HUD (mở lại tab dùng lần cuối), phím T hoặc "/" (PC, "/" mở tab Bản đồ),
+mục Chat của menu phím # (J2ME), "Nhắn tin" ở menu người chơi / bạn bè. Sáu tab: **Bản đồ** (người cùng bản đồ, lệnh 27
+cũ - lệnh GM, đáp án nhiệm vụ vẫn chạy), **Thế giới**, **Đội** (bang), **Nhóm** (tổ đội), **Bạn bè** (bạn bè + người từng
+nhắn, online / offline, hội thoại riêng từng người) và **Hệ thống** (thông báo, chỉ đọc). Mỗi tab giữ 50 dòng gần nhất
+trong bộ nhớ, có giờ gửi, chấm đỏ khi có tin chưa đọc; nút chat HUD chỉ chấm cho tin riêng / đội / nhóm. Chạm một dòng =
+menu tên: Nhắn riêng, Mời vào nhóm, Kết bạn, Xem thông tin, Chặn. "Tuỳ chọn": chọn kênh nào hiện trên dải chat HUD, danh
+sách chặn.
+
+| Luật | Giá trị (khoá `sv.chat.*`, cố định) |
+|---|---|
+| Bản đồ | từ cấp 5 (trước: cấp 20, dưới cấp bị bỏ im lặng) |
+| Thế giới | từ cấp 10, 100 xu / tin (hố hút xu), 1 tin / 30 giây mỗi người + trần chung 12 tin / phút toàn máy chủ; cần tài khoản đã kích hoạt (cổng `chat_the_gioi`). Loa (vật phẩm) vẫn chạy như cũ và hiện ở tab Thế giới |
+| Đội / Nhóm | chỉ thành viên đội / nhóm gửi và nhận |
+| Tin riêng | từ cấp 3; người nhận offline: vào hộp thư (`tob_chat_cho`, 30 tin, 7 ngày), giao khi họ vào game |
+| Chung | tối đa 80 ký tự; chặn link / số điện thoại / quảng cáo, trùng lặp, nhịp nhanh, từ xấu (`ChongSpam`, `BadWord`); cấm chat của GM / thẻ cấm chat / cấm tự động đều chặn mọi kênh; người bị chặn không nhắn riêng được và tin của họ không hiện; mọi tin ghi nhật ký `CHAT` |
+
 ## 7. Hệ sinh thái
 
 Bật bằng `sv.he_sinh_thai=1` (cần chạy `sql/nang_cap.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
