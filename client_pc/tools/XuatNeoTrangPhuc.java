@@ -14,7 +14,7 @@ public class XuatNeoTrangPhuc {
         String[] dt = {"dung", "chay", "danh_gan", "danh_xa", "trung_don", "guc_nga"};
         String[] huong = {"xuong", "len", "trai", "phai"};
         PrintWriter w = new PrintWriter(a[0], "UTF-8");
-        w.println("dex,dong_tac,huong,khung,dinh_y,dau_x,dau_trai,dau_phai,mat_y,mat_tren,co_x,co_y,lung_x,lung_y,eo_y,than_trai,than_phai,day_y");
+        w.println("dex,dong_tac,huong,khung,dinh_y,dau_x,dau_trai,dau_phai,mat_y,mat_tren,co_x,co_y,lung_x,lung_y,eo_y,than_trai,than_phai,day_y,mu_sau");
         int[] n = new int[game.pokemon.NeoTrangPhuc.SO];
         int dong = 0;
         for (int d : dex) {

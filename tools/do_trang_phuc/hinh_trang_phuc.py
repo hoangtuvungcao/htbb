@@ -792,3 +792,214 @@ THE_DONG_HANH = [
     (7, "ngoi_sao_nho", "Ngôi sao bạn đồng hành", 75, 0xFFF080),
     (8, "tim_hong_nho", "Tim hồng bạn đồng hành", 76, 0xFF90C0),
 ]
+
+# ================================================================ BẢN NHỎ (id + 100): vẽ tay lại cho đầu / thân nhỏ
+# Client dùng khi bản thường ở cỡ 1 vẫn rộng hơn đầu (mũ) hoặc dài hơn thân (đồ lưng) - thay vì ẩn món.
+NHO = 100
+manh(101, MU, "Mũ lưỡi trai đỏ (nhỏ)", "R", """
+.RRR.
+RRwRR
+kkkkk
+""", ngang="""
+.RRR..
+RRRRw.
+kkkkkk
+""", sau="thay:wR")
+manh(102, MU, "Nón lá (nhỏ)", "T", """
+..t..
+.tTt.
+TTRTT
+""", sau="thay:RT")
+manh(103, MU, "Mũ Noel (nhỏ)", "R", """
+...ww
+..RR.
+.RrR.
+wwwww
+""", ngang="""
+ww...
+.RR..
+.RrR.
+wwwww
+""")
+manh(104, MU, "Mũ phù thuỷ (nhỏ)", "P", """
+..P..
+.PPp.
+.kYk.
+PPPPP
+""")
+manh(105, MU, "Mũ len (nhỏ)", "B", """
+.ww.
+BBBB
+wwww
+""")
+manh(106, MU, "Vương miện (nhỏ)", "Y", """
+Y.Y.Y
+YYYYY
+YRYbY
+""")
+manh(107, MU, "Mũ thám tử (nhỏ)", "N", """
+.NN..
+NNTNN
+nnnnn
+""", ngang="""
+.NNN.
+NNNTN
+nnnnnN
+""")
+manh(108, MU, "Mũ rơm (nhỏ)", "T", """
+.tTTt.
+.RRRR.
+tTTTTt
+""")
+manh(109, MU, "Mũ hải tặc (nhỏ)", "k", """
+k.k.k
+kkwkk
+.YYY.
+""", sau="thay:wk")
+manh(110, MU, "Mũ đầu bếp (nhỏ)", "w", """
+wwqw
+wwww
+qqqq
+""")
+manh(111, MU, "Mũ tốt nghiệp (nhỏ)", "k", """
+kkkkk
+.kkkY
+.kk.Y
+""")
+manh(112, MU, "Vòng hoa (nhỏ)", "G", """
+iYiYi
+GlGlG
+""")
+manh(114, MU, "Mũ thợ mỏ (nhỏ)", "Y", """
+.yy.
+YwwY
+YYYY
+oooo
+""", sau="thay:wY,yY")
+manh(115, MU, "Tai thỏ (nhỏ)", "w", """
+w...w
+wi.iw
+.w.w.
+""", sau="thay:iw")
+manh(116, MU, "Sừng tuần lộc (nhỏ)", "N", """
+N...N
+NN.NN
+.N.N.
+""")
+manh(117, MU, "Mũ cao bồi (nhỏ)", "N", """
+.NNN.
+.nnn.
+NNNNN
+""")
+manh(118, MU, "Mũ hiệp sĩ (nhỏ)", "q", """
+..R..
+.qqq.
+qkkkq
+qqqqq
+""", sau="thay:kq")
+manh(119, MU, "Kính bơi trên trán (nhỏ)", "B", """
+.kkkk.
+kbkkbk
+""", sau="""
+kkkkkk
+""")
+manh(120, MU, "Mũ phi công (nhỏ)", "N", """
+.NNN.
+NkNkN
+NNNNN
+""", sau="thay:kN")
+manh(123, MU, "Mũ ngư dân (nhỏ)", "G", """
+.GGG.
+GlGGG
+DDDDD
+""")
+manh(124, MU, "Mũ thám hiểm (nhỏ)", "T", """
+.tTt.
+TTTTT
+nnnnn
+""")
+manh(125, MU, "Băng đô ninja (nhỏ)", "v", """
+qqqq.
+vqgvv
+....v
+""", sau="""
+vvvv
+""")
+manh(140, LUNG, "Áo choàng đỏ (nhỏ)", "R", """
+RRRRR
+RRRRR
+dRdRd
+""", ngang="""
+RR.
+RRR
+dRd
+""", sau="""
+.RYR.
+RRRRR
+dRdRd
+""")
+manh(141, LUNG, "Áo choàng tím (nhỏ)", "m", """
+mmmmm
+mRRRm
+m.m.m
+""", ngang="""
+mm.
+mRm
+m.m
+""", sau="""
+mmmmm
+mmpmm
+m.m.m
+""")
+manh(142, LUNG, "Cánh thiên thần (nhỏ)", "w", """
+w...w
+ww.ww
+.w.w.
+""", ngang="""
+w.
+ww
+.w
+""")
+manh(143, LUNG, "Cánh dơi (nhỏ)", "m", """
+m...m
+mm.mm
+m.m.m
+""", ngang="""
+m.
+mm
+.m
+""")
+manh(144, LUNG, "Cánh bướm (nhỏ)", "i", """
+i...i
+iY.Yi
+.i.i.
+""", ngang="""
+i.
+iY
+.i
+""")
+manh(145, LUNG, "Ba lô (nhỏ)", "N", """
+NNN
+NYN
+nnn
+""", ngang="""
+NN
+NY
+""", sau="""
+NNN
+NTN
+nnn
+""")
+manh(146, LUNG, "Áo choàng Gym (nhỏ)", "B", """
+BBBBB
+BBBBB
+vBvBv
+""", ngang="""
+BB.
+BBB
+vBv
+""", sau="""
+.BBB.
+BBYBB
+vBvBv
+""")

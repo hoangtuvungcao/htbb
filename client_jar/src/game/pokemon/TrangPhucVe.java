@@ -298,13 +298,25 @@ public final class TrangPhucVe {
         return true;
     }
 
+    /** Đếm lần ẨN mảnh (test / báo cáo): [lý do 0 loài cấm ô, 1 to hơn đầu, 2 không vừa thân][id mảnh]. */
+    public static final int[][] DEM_AN = new int[3][256];
+
+    static void an(int lyDo, int id) {
+        if (ghiHop) {
+            DEM_AN[lyDo][id & 255]++;
+        }
+    }
+
     /** Neo trang phục từ điểm ảnh khung (NeoTrangPhuc) của lần vẽ đang chạy. */
     private static final int[] NTP = new int[NeoTrangPhuc.SO];
 
     /** Mảnh đeo ở TRÁN (kính bơi trên trán): đáy mảnh ngay trên hàng mắt. */
     static boolean laManhTran(int id) {
-        return id == 19;
+        return id % BAN_NHO == 19;
     }
+
+    /** Bản nhỏ vẽ tay của mảnh id là id + BAN_NHO (atlas, tools/do_trang_phuc/hinh_trang_phuc.py). */
+    public static final int BAN_NHO = 100;
 
     /** Hệ số phóng nguyên lớn nhất để bề ngang điểm đặc (w) không vượt {@code toiDa}; tối thiểu 1, tối đa 4. */
     static int heSoVua(int w, int toiDa) {
@@ -325,14 +337,21 @@ public final class TrangPhucVe {
         int huong = dir == 0 ? 0 : dir == 1 ? 1 : 2;
         boolean lat = dir == 3;
         Manh m = manh(id, huong);
-        if (m == null || m.o != oCan || NgoaiHinhVe.biCam(dex, m.o)) {
+        if (m == null || m.o != oCan) {
             return;
         }
         int l = m.lop;
         if (m.o == NgoaiHinhCua.TAY && (NEO[7] & 2) != 0) {
             l = PhuKien.SAU;
         }
+        if (m.o == NgoaiHinhCua.MU && NTP[NeoTrangPhuc.MU_SAU] != 0) {
+            l = PhuKien.SAU;   // đầu khuất sau củ / hoa (dòng Bulbasaur quay lưng): mũ sau thân
+        }
         if (l != lop) {
+            return;
+        }
+        if (NgoaiHinhVe.biCam(dex, m.o)) {
+            an(0, id);
             return;
         }
         pixel(m);
@@ -345,8 +364,14 @@ public final class TrangPhucVe {
             case NgoaiHinhCua.MU: {
                 // hoa cài / nơ: phụ kiện nhỏ, tối đa nửa đầu; mũ: 60-100% bề ngang sọ, không quá đầu + 2
                 kk = m.dx != 0 ? heSoVua(bw, Math.max(bw, rongDau / 2)) : heSoVua(bw, rongDau);
+                // to hơn đầu ở cỡ lớn: lùi từng bậc nguyên (2 -> 1) đã gồm trong heSoVua
                 if (bw * kk > rongDau + 2 && m.dx == 0) {
-                    return;   // mũ to hơn đầu: không vẽ (thà không có còn hơn đè lệch)
+                    if (id < BAN_NHO && manh(id + BAN_NHO, huong) != null) {
+                        veManh(g, id + BAN_NHO, oCan, dex, x, y, dir, lop);   // bản nhỏ vẽ tay cho đầu nhỏ
+                        return;
+                    }
+                    an(1, id);
+                    return;   // kể cả bản nhỏ vẫn to hơn đầu: không vẽ (thà không có còn hơn đè lệch)
                 }
                 cx = NTP[NeoTrangPhuc.DAU_X];
                 theoDay = true;
@@ -382,6 +407,11 @@ public final class TrangPhucVe {
                     kk--;
                 }
                 if (dinhY + bh * kk - 1 > NTP[NeoTrangPhuc.DAY_Y] - 1) {
+                    if (id < BAN_NHO && manh(id + BAN_NHO, huong) != null) {
+                        veManh(g, id + BAN_NHO, oCan, dex, x, y, dir, lop);   // bản ngắn vẽ tay
+                        return;
+                    }
+                    an(2, id);
                     return;   // nằm gục / thân quá thấp: đồ lưng thò xuống đất -> không vẽ
                 }
                 break;

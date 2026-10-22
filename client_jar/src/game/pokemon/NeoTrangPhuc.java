@@ -14,7 +14,7 @@ package game.pokemon;
  */
 public final class NeoTrangPhuc {
     public static final int DINH_Y = 0, DAU_X = 1, DAU_TRAI = 2, DAU_PHAI = 3, MAT_Y = 4, MAT_TREN = 5, CO_X = 6, CO_Y = 7,
-            LUNG_X = 8, LUNG_Y = 9, EO_Y = 10, THAN_TRAI = 11, THAN_PHAI = 12, DAY_Y = 13, SO = 14;
+            LUNG_X = 8, LUNG_Y = 9, EO_Y = 10, THAN_TRAI = 11, THAN_PHAI = 12, DAY_Y = 13, MU_SAU = 14, SO = 15;
     public static final int KHONG = -9999;
 
     private NeoTrangPhuc() {
@@ -37,7 +37,57 @@ public final class NeoTrangPhuc {
      * Tính neo cho một khung: px (w x h, ARGB) với điểm chân ở (cx, cy) trong khung; pmd = neo PMD của khung (dauX, dauY,
      * dinhY, tayX, tayY, tamX, tamY, co) so với chân; dir 0 xuống, 1 lên, 2 trái, 3 phải. out[SO].
      */
+    /**
+     * Loài có ĐẦU NẰM DƯỚI một vật trên lưng / đỉnh (dòng Bulbasaur: củ, nụ, hoa): đỉnh hình là vật đó, không phải sọ. Mũ
+     * phải ngồi trên ĐẦU thật: dò từ hàng mắt lên tới nét viền tối ngăn mặt với củ / hoa; quay lưng: mũ sau thân (củ che).
+     */
+    public static final int[] DAU_DUOI_VAT = {1, 2, 3};
+
+    /**
+     * Neo mặt đặt tay cho loài DAU_DUOI_VAT (nhìn xuống 0 / ngang 2; nhìn phải lật dấu x): {dex, hướng, cộng vào đỉnh PMD,
+     * cộng vào x đầu PMD, bề ngang mặt}. Đỉnh PMD của các loài này là đỉnh củ / hoa, mặt thật nằm thấp hơn.
+     */
+    static final int[][] DAT_TAY = {
+        {1, 0, 7, 1, 14}, {1, 2, -1, 2, 8},
+        {2, 0, 8, 1, 12}, {2, 2, 5, -9, 8},
+        {3, 0, 11, 0, 14}, {3, 2, 3, 3, 9},
+    };
+
+    static int pmdDex;
+
+    static int[] datTay(int dex, int dir) {
+        for (int i = 0; i < DAT_TAY.length; i++) {
+            if (DAT_TAY[i][0] == dex && DAT_TAY[i][1] == dir) {
+                return DAT_TAY[i];
+            }
+        }
+        return null;
+    }
+
+    /** Như tinh(..., duoiVat, out) với số Pokédex (bảng neo đặt tay). */
+    public static void tinhLoai(int dex, int[] px, int w, int h, int cx, int cy, int[] pmd, int dir, int[] out) {
+        pmdDex = dex;
+        try {
+            tinh(px, w, h, cx, cy, pmd, dir, dauDuoiVat(dex), out);
+        } finally {
+            pmdDex = 0;
+        }
+    }
+
+    public static boolean dauDuoiVat(int dex) {
+        for (int i = 0; i < DAU_DUOI_VAT.length; i++) {
+            if (DAU_DUOI_VAT[i] == dex) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void tinh(int[] px, int w, int h, int cx, int cy, int[] pmd, int dir, int[] out) {
+        tinh(px, w, h, cx, cy, pmd, dir, false, out);
+    }
+
+    public static void tinh(int[] px, int w, int h, int cx, int cy, int[] pmd, int dir, boolean duoiVat, int[] out) {
         soMat = 0;
         // hạt giống: điểm đầu PMD (đưa vào trong thân nếu rơi ra ngoài)
         int hx = cx + pmd[0], hy = cy + pmd[1];
@@ -110,7 +160,7 @@ public final class NeoTrangPhuc {
         }
         int dauX = (a + b) / 2;
         // mắt: điểm tối nằm TRONG thân (4 lân cận đặc, không phải viền ngoài), trong đầu, phía trên giữa đầu
-        int matTren = KHONG, tong = 0, dem = 0;
+        int matTren = KHONG, tong = 0, dem = 0, tongX = 0;
         int matDuoi = Math.max(hy, dinhY + (R - L) * 3 / 4);
         if (dir != 1) {
             // mắt = cụm NHỎ gọn điểm rất tối (gần đen, ít màu) nằm trong thân, sát điểm sáng (lòng trắng / ánh mắt);
@@ -201,6 +251,7 @@ public final class NeoTrangPhuc {
                         matTren = cum[tot * 6 + 3];
                     }
                     tong += cum[tot * 6 + 2];
+                    tongX += cum[tot * 6 + 1];
                     dem++;
                     if (ghiMat && soMat < MAT_DIEM.length / 2) {
                         MAT_DIEM[soMat * 2] = cum[tot * 6 + 1] - cx;
@@ -212,6 +263,27 @@ public final class NeoTrangPhuc {
             }
         }
         int matY = dem > 0 ? tong / dem : KHONG;
+        int muSau = 0;
+        if (duoiVat) {
+            int[] t = dir == 1 ? null : datTay(pmdDex, dir == 3 ? 2 : dir);
+            if (t != null) {
+                // neo ĐẶT TAY (đã soát từng loài, theo neo PMD của chính khung nên chạy theo hoạt ảnh): đỉnh mặt, giữa mặt
+                int dX = dir == 3 ? -t[3] : t[3];
+                dinhY = cy + pmd[2] + t[2];
+                dauX = cx + pmd[0] + dX;
+                L = dauX - t[4] / 2;
+                R = L + t[4] - 1;
+                if (matTren != KHONG && matTren < dinhY - 1) {
+                    matTren = KHONG;   // "mắt" phía trên mặt = điểm tối trong lá / củ, không phải mắt
+                    matY = KHONG;
+                } else if (matTren != KHONG && dinhY > matTren - 2) {
+                    dinhY = matTren - 2;   // không bao giờ xuống tới mắt (khung gục / đánh: mặt lệch)
+                }
+            } else if (dir == 1) {
+                muSau = 1;   // quay lưng: đầu khuất sau củ / hoa -> mũ vẽ sau thân, chỉ ló phần thò ra
+                dinhY = Math.max(dinhY, hy - 2);
+            }
+        }
         // cổ: hàng hẹp nhất của thân (liền cột giữa) giữa mắt / đầu và tâm PMD; không thắt -> cằm ước lượng
         int tamY = cy + pmd[6];
         int tu = Math.max(hy, matY != KHONG ? matY + 2 : hy) + 1, den = Math.max(tu, tamY);   // cổ dưới mắt và dưới điểm đầu
@@ -255,6 +327,13 @@ public final class NeoTrangPhuc {
                 }
             }
         }
+        if (coY <= dinhY + 2) {
+            // đỉnh đầu đặt tay thấp hơn cổ ước lượng: cổ ngay dưới mắt / dưới đầu
+            coY = Math.min(Math.max(tu, matY != KHONG ? matY + 2 : dinhY + 5), Math.max(dinhY + 3, cy + pmd[6]));
+            if (coY <= dinhY + 2) {
+                coY = dinhY + 3;
+            }
+        }
         int coX = (coL + coR) / 2;
         // lưng / vai: hàng cổ, lệch về phía sau (nhìn trái: lưng bên phải; nhìn phải: bên trái)
         int lungX = coX;
@@ -291,6 +370,109 @@ public final class NeoTrangPhuc {
         out[THAN_TRAI] = coL - cx;
         out[THAN_PHAI] = coR - cx;
         out[DAY_Y] = day - cy;
+        out[MU_SAU] = muSau;
+    }
+
+    static int sac(int c) {
+        int r = (c >> 16) & 0xFF, g = (c >> 8) & 0xFF, b = c & 0xFF;
+        int mx = Math.max(r, Math.max(g, b)), mn = Math.min(r, Math.min(g, b));
+        if (mx == mn) {
+            return -1;
+        }
+        int d = mx - mn, hh;
+        if (mx == r) {
+            hh = 60 * (g - b) / d;
+        } else if (mx == g) {
+            hh = 120 + 60 * (b - r) / d;
+        } else {
+            hh = 240 + 60 * (r - g) / d;
+        }
+        return hh < 0 ? hh + 360 : hh;
+    }
+
+    static boolean cungSac(int c, int hue) {
+        int s = sac(c);
+        if (s < 0 || bao(c) < 24 || sangDo(c) < 55) {
+            return false;
+        }
+        int d = Math.abs(s - hue);
+        return Math.min(d, 360 - d) <= 26;
+    }
+
+    /**
+     * Vùng da mặt quanh (hx, hy): {đỉnh, trái, phải} (bề ngang ở 2 hàng dưới đỉnh), null nếu không tìm thấy hạt giống da.
+     * Chỉ lấy phần vùng nằm từ hàng điểm đầu trở lên (thân cùng màu da ở dưới không tính).
+     */
+    static int[] vungDa(int[] px, int w, int h, int hx, int hy) {
+        int seed = -1;
+        for (int r = 0; r <= 3 && seed < 0; r++) {
+            for (int dy = -r; dy <= r && seed < 0; dy++) {
+                for (int dx = -r; dx <= r && seed < 0; dx++) {
+                    int x = hx + dx, y = hy + dy;
+                    if (dac(px, w, h, x, y) && sac(px[y * w + x]) >= 0 && bao(px[y * w + x]) >= 24 && sangDo(px[y * w + x]) >= 70) {
+                        seed = y * w + x;
+                    }
+                }
+            }
+        }
+        if (seed < 0) {
+            return null;
+        }
+        int hue = sac(px[seed]);
+        boolean[] da = new boolean[w * h];
+        int[] hang = new int[w * h];
+        int dau = 0, cuoi = 0;
+        hang[cuoi++] = seed;
+        da[seed] = true;
+        int dinh = seed / w;
+        while (dau < cuoi) {
+            int j = hang[dau++];
+            int x = j % w, y = j / w;
+            if (y < dinh) {
+                dinh = y;
+            }
+            int[] k = {j - 1, j + 1, j - w, j + w};
+            for (int t = 0; t < 4; t++) {
+                int q = k[t];
+                if (q < 0 || q >= w * h || da[q] || (t < 2 && q / w != y)) {
+                    continue;
+                }
+                if (q / w > hy + 2) {
+                    continue;   // chỉ phần trên (mặt), không loang xuống thân
+                }
+                if (dac(px, w, h, q % w, q / w) && cungSac(px[q], hue)) {
+                    da[q] = true;
+                    hang[cuoi++] = q;
+                }
+            }
+        }
+        // đỉnh: hàng cao nhất có >= 2 điểm da (bỏ điểm lẻ); viền ngoài ngay trên đó là hàng đỉnh đầu
+        int top = -1;
+        for (int y = dinh; y <= hy && top < 0; y++) {
+            int n = 0;
+            for (int x = 0; x < w; x++) {
+                if (da[y * w + x]) {
+                    n++;
+                }
+            }
+            if (n >= 2) {
+                top = y;
+            }
+        }
+        if (top < 0) {
+            return null;
+        }
+        int yy = Math.min(hy, top + 2), L = w, R = -1;
+        for (int x = 0; x < w; x++) {
+            if (da[yy * w + x]) {
+                L = Math.min(L, x);
+                R = Math.max(R, x);
+            }
+        }
+        if (R - L < 3) {
+            return null;
+        }
+        return new int[]{Math.max(0, top - 1), L, R};
     }
 
     static boolean coSangGan(int[] px, int w, int h, int x, int y) {

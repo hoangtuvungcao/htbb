@@ -597,7 +597,7 @@ public class PokeBody {
             }
             v = new int[NeoTrangPhuc.SO];
             // diem chan trong khung: ve() dat goc khung o (x - w/2 - dxChan, y - h/2 - dyChan)
-            NeoTrangPhuc.tinh(px, w, h, w / 2 + d.dxChan[dir], h / 2 + d.dyChan[dir], NEO_TAM, dir, v);
+            NeoTrangPhuc.tinhLoai(dex, px, w, h, w / 2 + d.dxChan[dir], h / 2 + d.dyChan[dir], NEO_TAM, dir, v);
             if (NEO_TP.size() > 3000) {
                 NEO_TP.clear();
             }
