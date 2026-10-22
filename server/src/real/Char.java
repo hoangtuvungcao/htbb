@@ -8135,7 +8135,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public void finishClanQuest() {
     }
 
+    /**
+     * Goi 52 (he nhiem vu cu, da bo). 0.9.7.1: nut "Huỷ nhiệm vụ" cua so Nhiệm vụ (ManNhiemVu, client <= 0.9.7) gui
+     * 52 {type 3, npc 0, id 0} thay vi -64 type 2 - truoc day server bo qua im lang, client tu xoa o nhiem vu cuc bo
+     * nhung server van giu nhiem vu (vao lai van con, NPC van cho tra). Nay huy that nhiem vu chinh dang lam.
+     */
     public void receiveQuest(final Message m) {
+        try {
+            final byte type = m.dis.readByte();
+            if (type == 3 && (this.mainQuest.state_quest == NewCharQuest.WORKING || this.mainQuest.state_quest == NewCharQuest.FINISH)) {
+                this.OnQuest((byte) 2, this.mainQuest.id_quest, (byte) 0);
+            }
+        } catch (final Exception e) {
+        }
     }
 
     public void sendPotionQuest(final Potion pt) {
@@ -12725,6 +12737,48 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return trangThai == NewCharQuest.FINISH || loai == 1 || loai == 3;
     }
 
+    /**
+     * 0.9.7.1: nhiem vu "noi chuyen" (type 3) CHUA NHAN ma client gui "tra" (-64 type 1). Client (Quest.capNhat) khong
+     * bao gio gui "nhan" cho nhiem vu noi chuyen: nghe het loi thoai la gui thang "tra". Tu 0.9.6 (duocTraNhiemVu chan
+     * UN_RECEIVE) goi nay bi bo qua im lang -> chuoi chinh ket ngay "Thức giấc ở Pallet", nhiem vu phu noi chuyen NPE.
+     * Nay: nhan (cung moi dieu kien cua nhan: diem hoat dong, cap, ngay mo, ve chuong) roi tra luon.
+     */
+    public static boolean nhanVaTraNoiChuyen(final int trangThai, final int loai) {
+        return trangThai == NewCharQuest.UN_RECEIVE && loai == 3;
+    }
+
+    /** 0.9.7.1: ly do khong tra duoc (nguoi choi thay), null = tra duoc. */
+    public static String lyDoKhongTra(final int trangThai, final int loai, final String ten) {
+        if (duocTraNhiemVu(trangThai, loai)) {
+            return null;
+        }
+        if (trangThai == NewCharQuest.DONE) {
+            return "Nhiệm vụ " + ten + " đã trả rồi.";
+        }
+        if (trangThai == NewCharQuest.UN_RECEIVE) {
+            return "Bạn chưa nhận nhiệm vụ " + ten + ".";
+        }
+        return "Chưa xong nhiệm vụ " + ten + ". Hoàn thành mục tiêu rồi quay lại trả nhé.";
+    }
+
+    /** 0.9.7.1: thuong nhiem vu cu co trang bi (idItemgift) ma hanh trang day -> khong tra (truoc day van them -> tran tui). */
+    public static boolean canOTrongDeTra(final short[] idItemgift) {
+        return idItemgift != null && idItemgift.length > 0 && idItemgift[0] < 32000;
+    }
+
+    public static final String TUI_DAY_NHIEM_VU = "Hành trang đã đầy. Hãy dọn bớt một ô để nhận thưởng nhiệm vụ.";
+
+    /** 0.9.7.1: bao ly do + gui lai ca 3 danh sach (client da tu danh dau xong / an nhiem vu truoc khi server tra loi). */
+    void tuChoiNhiemVu(final String lyDo) {
+        if (lyDo != null) {
+            this.sendMessage(MessageCreator.createServerAlertMessage(lyDo, ""));
+        }
+        this.sendInfoQuest();
+    }
+
+    /** Khoa xu ly goi nhiem vu -64 / 52 (goi doc tren luong phien, tien do tren luong ban do). */
+    private final Object khoaNhiemVu = new Object();
+
     /** 0.9.6: questID (main_sub) co trong danh sach nhiem vu dang moi nhan khong. */
     public static boolean coTrongDanhSachNhan(final java.util.List<NewCharQuest> ds, final short questID, final byte mainSub) {
         if (ds == null) {
@@ -12738,13 +12792,50 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return false;
     }
 
-    public void OnQuest(final byte type, final short questID, final byte main_sub) 
-    {              
+    public void OnQuest(final byte type, final short questID, final byte main_sub) {
+        synchronized (this.khoaNhiemVu) {
+            this.xuLyNhiemVu(type, questID, main_sub);
+        }
+    }
+
+    /**
+     * Nhan / tra chinh khi nghe het loi thoai nhiem vu noi chuyen (nhanVaTraNoiChuyen): kiem nhu nhan.
+     * @return true neu da nhan (state WORKING)
+     */
+    private boolean nhanNoiChuyenChinh(final InfoQuestTemplate info) {
+        if (info.pAvtive > this.pointActiveQuest) {
+            this.tuChoiNhiemVu("Bạn cần " + info.pAvtive + " điểm hoạt động mới có thể nhận nhiệm vụ này. Bạn còn " + this.pointActiveQuest + " điểm.");
+            return false;
+        }
+        final String chan = NhiemVuLauDaiGame.kiemNhanChinh(this, info);
+        if (chan != null) {
+            this.tuChoiNhiemVu(chan);
+            return false;
+        }
+        this.pointActiveQuest -= info.pAvtive;
+        this.mainQuest.state_quest = NewCharQuest.WORKING;
+        return true;
+    }
+
+    private void xuLyNhiemVu(final byte type, final short questID, final byte main_sub) {
         if (main_sub == 0) 
         {
             final InfoQuestTemplate info = this.mainQuest.getTemplate();
+            if (info == null) {
+                this.tuChoiNhiemVu(null);
+                return;
+            }
             if (type == 0) 
             {
+                // 0.9.7.1: nhan dung nhiem vu dang moi, mot lan. Truoc day khong kiem id lan trang thai: bam dup / ds cu
+                // cua client nhan lai nhiem vu DANG LAM (FINISH -> WORKING: da du quai van phai danh lai, tru diem lan 2)
+                // hoac nhan nham buoc moi.
+                if (questID != this.mainQuest.id_quest || this.mainQuest.state_quest != NewCharQuest.UN_RECEIVE) {
+                    this.tuChoiNhiemVu(questID == this.mainQuest.id_quest && this.mainQuest.state_quest != NewCharQuest.DONE
+                            ? "Bạn đang làm nhiệm vụ " + info.name + " rồi."
+                            : "Nhiệm vụ này không còn nhận được. Danh sách nhiệm vụ đã được làm mới.");
+                    return;
+                }
                 try {
                     if (info.pAvtive > this.pointActiveQuest) 
                     {
@@ -12779,7 +12870,23 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             } else if (type == 1) {
                 try {
-                    if (duocTraNhiemVu(this.mainQuest.state_quest, info.type)) {
+                    if (questID != this.mainQuest.id_quest) {
+                        this.tuChoiNhiemVu(null); // goi tra lap (bam dup) sau khi da sang buoc moi: chi dong bo
+                        return;
+                    }
+                    if (canOTrongDeTra(info.idItemgift) && this.isFullInventory() && this.mainQuest.state_quest != NewCharQuest.DONE) {
+                        this.tuChoiNhiemVu(TUI_DAY_NHIEM_VU);
+                        return;
+                    }
+                    if (nhanVaTraNoiChuyen(this.mainQuest.state_quest, info.type) && !this.nhanNoiChuyenChinh(info)) {
+                        return;
+                    }
+                    final String khongTra = lyDoKhongTra(this.mainQuest.state_quest, info.type, info.name);
+                    if (khongTra != null) {
+                        this.tuChoiNhiemVu(this.mainQuest.state_quest == NewCharQuest.DONE ? null : khongTra);
+                        return;
+                    }
+                    {
                         this.mainQuest.state_quest = NewCharQuest.DONE;
                         this.mainQuest.addGift(this);
                         NhiemVuEngine.khiXongChuoiCu(this, info.ma); // thuong_khac chuoi chinh (dai han, kiem_item_mo_coi)
@@ -12830,21 +12937,28 @@ public int applyRongLonReleaseTo(int baseDamage) {
         } else if (main_sub == 1) {
             InfoQuestTemplate info = null;
             if (type == 0) {
-                if (this.subQuest.id_quest > -1 && this.subQuest.id_quest != questID) {
+                // 0.9.7.1: moi lan tu choi deu co ly do + gui lai danh sach (truoc day return im lang: bam "Đồng ý" ma
+                // khong co gi xay ra, nhiem vu van nam trong "Có thể nhận" cua client).
+                if (this.subQuest.id_quest > -1) {
+                    final InfoQuestTemplate dang = this.subQuest.getTemplate();
+                    final String ten = dang == null ? "" : dang.name;
+                    this.tuChoiNhiemVu(this.subQuest.id_quest == questID ? "Bạn đang làm nhiệm vụ " + ten + " rồi."
+                            : "Bạn đang làm nhiệm vụ phụ " + ten + ". Hãy hoàn thành hoặc huỷ trước khi nhận nhiệm vụ phụ khác.");
                     return;
                 }
                 // 0.9.6: chi nhan nhiem vu phu NAM TRONG danh sach dang moi (getAllQuestCanReceive: ton tai, loc cap khi
                 // bat sv.lau_dai). Truoc day goi -64 voi questID bat ky la nhan duoc - ca id khong ton tai (info null ->
                 // NPE, subQuest ket o id rac) lan nhiem vu cap cao.
                 if (!coTrongDanhSachNhan(this.getAllQuestCanReceive(), questID, (byte) 1)) {
+                    this.tuChoiNhiemVu("Nhiệm vụ này không còn nhận được. Danh sách nhiệm vụ đã được làm mới.");
                     return;
                 }
                 this.subQuest = new NewCharQuest(questID, (byte) 1);
                 info = this.subQuest.getTemplate();
                 if (info.pAvtive > this.pointActiveQuest) {
-                    this.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần " + info.pAvtive + " điểm hoạt động mới có thể nhận nhiệm vụ này. Bạn còn " + this.pointActiveQuest + " điểm.", ""));
                     this.subQuest.reset();
                     this.subQuest.id_quest = -1;
+                    this.tuChoiNhiemVu("Bạn cần " + info.pAvtive + " điểm hoạt động mới có thể nhận nhiệm vụ này. Bạn còn " + this.pointActiveQuest + " điểm.");
                     return;
                 }
                 this.pointActiveQuest -= info.pAvtive;
@@ -12866,12 +12980,49 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     e.printStackTrace();
                 }
             } else if (type == 1) {
-                if (this.subQuest.id_quest > -1 && this.subQuest.id_quest != questID) {
+                if (this.subQuest.id_quest == -1) {
+                    // 0.9.7.1: nhiem vu phu noi chuyen chua nhan - client gui thang "tra" (xem nhanVaTraNoiChuyen). Truoc day
+                    // getTemplate() cua id -1 = null -> NPE moi lan, nhiem vu phu noi chuyen khong bao gio xong.
+                    final InfoQuestTemplate moi = Map.allSubQuest.get(questID);
+                    if (moi == null || !nhanVaTraNoiChuyen(NewCharQuest.UN_RECEIVE, moi.type)
+                            || !coTrongDanhSachNhan(this.getAllQuestCanReceive(), questID, (byte) 1)) {
+                        this.tuChoiNhiemVu(null);
+                        return;
+                    }
+                    if (moi.pAvtive > this.pointActiveQuest) {
+                        this.tuChoiNhiemVu("Bạn cần " + moi.pAvtive + " điểm hoạt động mới có thể nhận nhiệm vụ này. Bạn còn " + this.pointActiveQuest + " điểm.");
+                        return;
+                    }
+                    if (canOTrongDeTra(moi.idItemgift) && this.isFullInventory()) {
+                        this.tuChoiNhiemVu(TUI_DAY_NHIEM_VU);
+                        return;
+                    }
+                    this.pointActiveQuest -= moi.pAvtive;
+                    this.subQuest = new NewCharQuest(questID, (byte) 1);
+                    this.subQuest.state_quest = NewCharQuest.WORKING;
+                } else if (this.subQuest.id_quest != questID) {
+                    this.tuChoiNhiemVu(null); // goi tra lap / ds cu: chi dong bo
                     return;
                 }
                 info = this.subQuest.getTemplate();
+                if (info == null) {
+                    this.subQuest = new NewCharQuest(true);
+                    this.subQuest.id_quest = -1;
+                    this.tuChoiNhiemVu(null);
+                    return;
+                }
+                if (canOTrongDeTra(info.idItemgift) && this.isFullInventory() && this.subQuest.state_quest != NewCharQuest.DONE) {
+                    this.tuChoiNhiemVu(TUI_DAY_NHIEM_VU);
+                    return;
+                }
+                final String khongTraPhu = lyDoKhongTra(this.subQuest.state_quest, info.type, info.name);
+                if (khongTraPhu != null) {
+                    this.tuChoiNhiemVu(khongTraPhu);
+                    return;
+                }
                 if (duocTraNhiemVu(this.subQuest.state_quest, info.type)) {
                     this.subQuest.state_quest = NewCharQuest.DONE;
+                    NhiemVuEngine.ghiXongPhuCu(this, info.ma); // danh dau TRUOC khi trao thuong
                     this.subQuest.addGift(this);
                     boolean sendInfo = true;
                     if (info.type == 3) {
@@ -12905,10 +13056,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             } else if (type == 2) {
                 if (this.subQuest.id_quest > -1 && this.subQuest.id_quest != questID) {
+                    this.tuChoiNhiemVu(null); // huy theo ds cu: dong bo
                     return;
                 }
                 info = this.subQuest.getTemplate();
-                if (this.subQuest.state_quest == NewCharQuest.DONE) {
+                if (info == null || this.subQuest.state_quest == NewCharQuest.DONE) {
+                    this.tuChoiNhiemVu(null); // 0.9.7.1: huy khi chua nhan (id -1) truoc day NPE
                     return;
                 }
                 this.subQuest.reset();
@@ -12924,6 +13077,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
             {
                 if (this.clanQuestNew.id_quest > -1 && this.clanQuestNew.id_quest != questID) 
                 {
+                    this.tuChoiNhiemVu("Bạn đang làm một nhiệm vụ đội khác.");
+                    return;
+                }
+                if (Map.allClanQuest.get(questID) == null || this.clanQuestNew.id_quest == questID
+                        && this.clanQuestNew.state_quest != NewCharQuest.UN_RECEIVE) {
+                    this.tuChoiNhiemVu(null); // 0.9.7.1: id rac (NPE) / bam dup nhan lai (dat lai tien do)
                     return;
                 }
                 this.clanQuestNew = new NewCharQuest(questID, (byte) 2);
@@ -12957,6 +13116,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     return;
                 }
                 info = this.clanQuestNew.getTemplate();
+                if (info == null) {
+                    this.tuChoiNhiemVu(null); // 0.9.7.1: chua nhan nhiem vu doi (id -1) -> truoc day NPE
+                    return;
+                }
                 if (this.clanQuestNew.state_quest != NewCharQuest.DONE && (info.type == 3 || info.type == 1 || this.clanQuestNew.state_quest == NewCharQuest.FINISH)) {
                     this.clanQuestNew.state_quest = NewCharQuest.DONE;
                     this.clanQuestNew.addGiftClan(this);
@@ -12996,7 +13159,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     return;
                 }
                 info = this.clanQuestNew.getTemplate();
-                if (this.clanQuestNew.state_quest == NewCharQuest.DONE) {
+                if (info == null || this.clanQuestNew.state_quest == NewCharQuest.DONE) {
+                    this.tuChoiNhiemVu(null); // 0.9.7.1: huy khi chua nhan (id -1) truoc day NPE
                     return;
                 }
                 this.clanQuestNew.reset();

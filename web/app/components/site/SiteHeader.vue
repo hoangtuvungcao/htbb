@@ -28,7 +28,8 @@ const danhMuc = useDanhMucCamNang()
 
 function thanhMuc(l: MucMenu): NavigationMenuItem {
   const to = lienKetAnToan(l.to) || '/'
-  const item: NavigationMenuItem = { label: l.label, to, icon: l.icon || undefined, active: to !== '/' && route.path.startsWith(to) }
+  // Thanh menu chỉ có chữ (không icon) cho gọn kiểu trang game; menu điện thoại vẫn có icon.
+  const item: NavigationMenuItem = { label: l.label, to, icon: l.icon || undefined, active: to === '/' ? route.path === '/' : route.path.startsWith(to) }
   if (to === '/cam-nang') {
     item.children = [
       ...danhMuc.value.filter(p => ['he-khac-che', 'cap-do', 'tien-hoa', 'trang-bi', 'kinh-te', 'su-kien', 'nhiem-vu', 'ban-do'].includes(p.slug))
@@ -117,7 +118,7 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
     to="/"
     :title="`${tenSite} — Trang chủ`"
     :ui="{
-      root: 'bg-default/95 backdrop-blur border-b-4 border-pokered-500 shadow-[0_3px_0_var(--poke-outline)]',
+      root: 'vung-toi border-b-[3px] border-[#ffcb05] shadow-[0_3px_0_#06040e]',
       container: 'max-w-[96rem] gap-2 xl:gap-3',
       // Logo + cụm phải giữ nguyên cỡ; phần giữa co lại, mục thừa tự dồn vào Thêm (không đè logo).
       // KHÔNG đặt overflow-hidden ở đây: khung thả xuống (viewport) của UNavigationMenu nằm `top-full`,
@@ -144,11 +145,11 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
              Bọc trong lớp cắt riêng để hàng đo không bao giờ làm trang cuộn ngang. -->
         <div aria-hidden="true" class="pointer-events-none invisible absolute inset-0 overflow-hidden">
           <div ref="hangDo" class="absolute left-0 top-0 flex w-max whitespace-nowrap">
-            <span v-for="m in chia.chinh" :key="m.to" data-do="muc" class="inline-flex items-center gap-1.5 px-2 font-display text-[15px] font-bold">
-              <UIcon v-if="m.icon" :name="m.icon" class="size-4" />{{ m.label }}<UIcon v-if="m.to === '/cam-nang'" name="i-lucide-chevron-down" class="size-5" />
+            <span v-for="m in chia.chinh" :key="m.to" data-do="muc" class="inline-flex items-center gap-1.5 px-2.5 font-display text-[15px] font-bold uppercase tracking-wide">
+              {{ m.label }}<UIcon v-if="m.to === '/cam-nang'" name="i-lucide-chevron-down" class="size-5" />
             </span>
-            <span data-do="them" class="inline-flex items-center gap-1.5 px-2 font-display text-[15px] font-bold">
-              <UIcon name="i-lucide-ellipsis" class="size-4" />Thêm<UIcon name="i-lucide-chevron-down" class="size-5" />
+            <span data-do="them" class="inline-flex items-center gap-1.5 px-2.5 font-display text-[15px] font-bold uppercase tracking-wide">
+              Thêm<UIcon name="i-lucide-chevron-down" class="size-5" />
             </span>
           </div>
         </div>
@@ -160,8 +161,8 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
           class="min-w-0"
           :ui="{
             list: 'min-w-0 overflow-x-clip',
-            link: 'font-display font-bold text-[15px] px-2 whitespace-nowrap',
-            linkLeadingIcon: 'size-4',
+            link: 'font-display font-bold text-[15px] px-2.5 whitespace-nowrap uppercase tracking-wide text-[#e9e4f7] data-[active]:text-[#ffcb05]',
+            linkLeadingIcon: 'hidden',
             // Cẩm nang ▾: lưới 2 cột rộng 44rem, mô tả tối đa 2 dòng có dấu … (không bao giờ cắt giữa chữ).
             childList: 'grid-cols-[repeat(2,minmax(0,1fr))]',
             childLink: 'min-w-0',
@@ -180,9 +181,7 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
         v-if="nut"
         :to="nut.to"
         :icon="nut.icon"
-        color="primary"
-        variant="solid"
-        class="shrink-0 whitespace-nowrap font-display font-bold"
+        class="btn-pikachu shrink-0 whitespace-nowrap"
       >
         {{ nut.label }}
       </UButton>
@@ -202,11 +201,10 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
           </UButton>
         </UDropdownMenu>
         <template v-else>
-          <UButton to="/login" color="neutral" variant="ghost" class="hidden 2xl:inline-flex">
-            Đăng nhập
+          <UButton to="/login" color="neutral" variant="ghost" icon="i-lucide-user-round" class="whitespace-nowrap" aria-label="Đăng nhập">
+            <span class="hidden sm:inline">Đăng nhập</span>
           </UButton>
-          <UButton to="/register" color="warning" variant="solid" class="btn-pikachu whitespace-nowrap">
-            <UIcon name="i-lucide-sparkles" class="hidden size-4 sm:inline" />
+          <UButton to="/register" class="btn-game hidden whitespace-nowrap sm:inline-flex">
             Đăng ký
           </UButton>
         </template>
@@ -239,7 +237,7 @@ const menuNguoiDung = computed<DropdownMenuItem[][]>(() => {
           <UButton to="/login" color="neutral" variant="outline" block>
             Đăng nhập
           </UButton>
-          <UButton to="/register" color="warning" class="btn-pikachu" block>
+          <UButton to="/register" class="btn-game" block>
             Đăng ký
           </UButton>
         </div>

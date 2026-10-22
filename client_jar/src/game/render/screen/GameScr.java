@@ -8033,6 +8033,12 @@ public class GameScr extends Screen {
             if (type_Group_Quest == 0) {
                 allQuestCanReceive.removeAllElements();
             }
+            // 0.9.7.1: danh sách "xong" (1) / "đang làm" (2) là TRỌN VẸN - ô nhiệm vụ cùng nhóm không còn trong danh sách
+            // là đã trả / huỷ. Trước đây chỉ ghi đè ô có trong gói: trả / huỷ xong ô cũ vẫn nằm lại (sổ Nhiệm vụ còn
+            // "Đang làm" nhiệm vụ đã trả, NPC vẫn hiện "Trả ..."), đăng nhập lại còn ô của phiên trước.
+            mainQuest = boOCu(mainQuest, type_Group_Quest);
+            subQuest = boOCu(subQuest, type_Group_Quest);
+            clanQuest = boOCu(clanQuest, type_Group_Quest);
             for (int i = 0; i < size; i++) {
                 int idQuest = m.reader().readShort();
                 Quest q = new Quest(idQuest);
@@ -8111,9 +8117,39 @@ public class GameScr extends Screen {
                     clanQuest = q;
                 }
             }
+            if (type_Group_Quest == 0) {
+                // nhiệm vụ lại nằm trong "Có thể nhận" (đã huỷ / server từ chối) thì không còn là đang làm
+                mainQuest = boNeuCoTheNhan(mainQuest);
+                subQuest = boNeuCoTheNhan(subQuest);
+                clanQuest = boNeuCoTheNhan(clanQuest);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /** 0.9.7.1: ô nhiệm vụ còn giữ khi nhận danh sách nhóm {@code nhom} (0 có thể nhận, 1 xong, 2 đang làm)? */
+    public static Quest boOCu(Quest o, int nhom) {
+        if (o == null || o.stateQuest == 3) {
+            return null;   // 3 = client đã gửi trả, chờ máy chủ: danh sách mới quyết định
+        }
+        if (nhom == 1 && o.stateQuest == 1 || nhom == 2 && o.stateQuest == 2) {
+            return null;
+        }
+        return o;
+    }
+
+    static Quest boNeuCoTheNhan(Quest o) {
+        if (o == null) {
+            return null;
+        }
+        for (int i = 0; i < allQuestCanReceive.size(); i++) {
+            Quest q = (Quest) allQuestCanReceive.elementAt(i);
+            if (q.idQuest == o.idQuest && q.main_sub == o.main_sub) {
+                return null;
+            }
+        }
+        return o;
     }
 
     public void onFruit(Message msg) {

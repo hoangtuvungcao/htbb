@@ -31,7 +31,7 @@ const nhanh = [
     <SitePageBanner
       title="Cẩm nang cơ chế"
       eyebrow="Wiki"
-      :intro="`Mọi luật chơi của ${tenSite} — giải thích dễ hiểu, kèm bảng số liệu lấy thẳng từ dữ liệu game.`"
+      :intro="`Mọi luật chơi của ${tenSite} — giải thích dễ hiểu, kèm bảng số liệu chi tiết.`"
     />
     <UContainer class="max-w-7xl py-12 sm:py-16">
       <div class="rounded-3xl glass ring-gilded p-4 sm:p-6">

@@ -19,7 +19,7 @@ export interface SiteConfig {
 }
 
 export function useSite() {
-  return useFetch<SiteConfig>('/api/site', { key: 'htbb-site', dedupe: 'defer' })
+  return useFetch<SiteConfig>('/api/site', { key: 'htbb-site', dedupe: 'defer', timeout: 4000 })
 }
 
 /** Địa chỉ gốc của website (một nguồn: HTBB_SITE_URL qua /api/site; SSR và trình duyệt như nhau). */

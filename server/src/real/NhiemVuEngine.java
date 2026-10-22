@@ -110,6 +110,42 @@ public final class NhiemVuEngine {
         }
     }
 
+    /**
+     * 0.9.7.1: nhiem vu phu cu (goi -64, data_quest_moi mainsub 1) CUNG MA voi nhiem vu phu engine (P-xx). Da nhan / da
+     * xong o So tay, hoac da tra qua NPC (-64) -> khong nhan lai qua NPC (truoc day nhiem vu phu qua -64 lap vo han va
+     * lanh thuong hai lan: mot o NPC, mot o So tay).
+     */
+    public static boolean phuCuDaDung(final Char p, final String ma) {
+        if (!LauDai.bat() || p == null || ma == null || ma.isEmpty() || p.charDBID <= 0) {
+            return false;
+        }
+        try {
+            final ConcurrentHashMap<String, long[]> t = td(p);
+            return t != null && t.containsKey(ma);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    /** 0.9.7.1: tra nhiem vu phu cu (-64) xong -> ghi tien do engine "da nhan thuong" (khong lam lai o ca hai noi). */
+    public static void ghiXongPhuCu(final Char p, final String ma) {
+        if (!LauDai.bat() || p == null || ma == null || ma.isEmpty() || p.charDBID <= 0) {
+            return;
+        }
+        try {
+            final ConcurrentHashMap<String, long[]> t = td(p);
+            if (t == null) {
+                return;
+            }
+            final NhiemVuMau m = MAU.get(ma);
+            final long[] v = new long[]{m == null ? 1L : m.soLuong, 2L, 0L, com.htbb.pokemon.DongHo.bay()};
+            t.put(ma, v);
+            luu(p, ma, v);
+        } catch (final Exception e) {
+            System.out.println("NhiemVuEngine.ghiXongPhuCu: " + e);
+        }
+    }
+
     static boolean xongChuoiCu(final Char p, final String ma) {
         HashMap<String, Integer> m = MA_CHUOI_CU;
         if (m == null) {
@@ -570,6 +606,10 @@ public final class NhiemVuEngine {
         if (m.laNgay() && !bangNgay(p).contains(ma)) {
             return "Nhiệm vụ này không có trong bảng hằng ngày hôm nay."; // 0.9.6: menu cu / goi tu che
         }
+        if (p.subQuest != null && p.subQuest.id_quest >= 0 && p.subQuest.getTemplate() != null
+                && ma.equals(p.subQuest.getTemplate().ma)) {
+            return "Bạn đang làm nhiệm vụ này (nhận ở NPC)."; // 0.9.7.1: cung ma voi nhiem vu phu cu dang lam
+        }
         synchronized (t) {
             final String nhanLai = NhiemVuMau.chanNhanLai(m, t.get(ma), kyCua(m));
             if (nhanLai != null) {
@@ -710,6 +750,10 @@ public final class NhiemVuEngine {
                     return "Hôm nay đã nhận đủ " + NhiemVuMau.NGAY_THUONG + " phần thưởng nhiệm vụ hằng ngày.";
                 }
             }
+            // 0.9.7.1: thuong co vat pham ma tui day -> chua trao (truoc day vat pham bi bo im lang, nhiem vu van "đã nhận")
+            if (coThuongVatPham(m) && p.isFullInventory()) {
+                return Char.TUI_DAY_NHIEM_VU;
+            }
             v[1] = 2;
             luu(p, m.ma, v);
         }
@@ -767,7 +811,12 @@ public final class NhiemVuEngine {
                 + (m.luongKhoa > 0 ? ", " + so(m.luongKhoa) + " lượng khoá" : "") + ".";
     }
 
-    /** So kieu Viet: 15479 -> "15.479" (chu nguoi choi thay). */
+    /** Thuong co vat pham can o hanh trang (vat_pham, thuong_khac item:). */
+    static boolean coThuongVatPham(final NhiemVuMau m) {
+        return m.vatPham != null && m.vatPham.trim().length() > 0 || m.thuongKhac != null && m.thuongKhac.contains("item:");
+    }
+
+        /** So kieu Viet: 15479 -> "15.479" (chu nguoi choi thay). */
     private static String so(final long v) {
         return String.format(java.util.Locale.ROOT, "%,d", v).replace(',', '.');
     }

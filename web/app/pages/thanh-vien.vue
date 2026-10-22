@@ -118,7 +118,7 @@ onBeforeUnmount(() => { if (hen) clearTimeout(hen) })
 const faq = computed(() => [
   { q: 'Thành viên có làm Pokémon mạnh hơn không?', a: 'Không. Thành viên không cho chỉ số, EXP, lượng hay xu. Chỉ mở các tính năng cộng đồng để hạn chế tài khoản phụ / clone phá kinh tế.' },
   { q: 'Áp dụng cho Pokémon nào?', a: 'Cho TÀI KHOẢN — mọi Pokémon của tài khoản đều dùng được.' },
-  { q: 'Khi nào bắt buộc?', a: tt.value?.batBuoc ? 'Đang bắt buộc với các tính năng bên dưới.' : 'Trong giai đoạn thử nghiệm KHÔNG bắt buộc. Khi máy chủ mở chính thức, ban quản trị sẽ thông báo trước.' },
+  { q: 'Khi nào bắt buộc?', a: tt.value?.batBuoc ? 'Đang bắt buộc với các tính năng bên dưới.' : 'Hiện chưa bắt buộc. Khi áp dụng, ban quản trị sẽ thông báo trước.' },
   { q: 'Thanh toán thế nào?', a: 'Chuyển khoản VietQR đúng số tiền và nội dung (mã đơn). Tiền vào là kích hoạt ngay, không cần vào game.' },
   { q: 'Hoàn tiền?', a: 'Theo Chính sách hoàn tiền. Khi hoàn, quyền Thành viên của lần mua đó bị thu hồi.' },
   ...(tt.value?.mienCap ? [{ q: 'Người mới?', a: `Pokémon dưới cấp ${tt.value.mienCap} được dùng thử miễn phí mọi tính năng.` }] : []),
@@ -136,7 +136,7 @@ const faq = computed(() => [
       <ClientOnly>
         <NapDemoBanner v-if="napDemo.xem.value" :chi-admin="napDemo.info.value?.chiAdmin" />
       </ClientOnly>
-      <UAlert v-if="tt && !tt.batBuoc" class="mb-6" color="info" variant="subtle" icon="i-lucide-flask-conical" title="Đang thử nghiệm: Thành viên CHƯA bắt buộc" description="Mọi tính năng đang mở cho tất cả. Khi mở chính thức, các tính năng bên dưới sẽ cần Thành viên." />
+      <UAlert v-if="tt && !tt.batBuoc" class="mb-6" color="info" variant="subtle" icon="i-lucide-info" title="Thành viên hiện chưa bắt buộc" description="Mọi tính năng đang mở cho tất cả. Khi áp dụng, các tính năng bên dưới sẽ cần Thành viên." />
 
       <div class="grid gap-6 md:grid-cols-[1fr_22rem]">
         <UCard>
