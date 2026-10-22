@@ -164,6 +164,8 @@ public final class KiemDuLieuSql {
             final boolean hopLe = t.startsWith("CREATE TABLE IF NOT EXISTS") || t.startsWith("CREATE INDEX IF NOT EXISTS")
                     || t.startsWith("INSERT IGNORE INTO")
                     || t.startsWith("UPDATE `5h_systems` SET") // bang cau hinh he thong (he so nap), khong phai nguoi choi
+                    // dong bo 0.9.8: doi ten mon cua hang cu CHI khi con ten mac dinh cu (giu ten admin da sua)
+                    || t.startsWith("UPDATE `nap_cua_hang` SET `ten` = ") && t.matches("(?s).* WHERE `ma` = '[a-z_]+' AND `ten` = '[^']+'$")
                     // bang CONG TAC su kien (khong phai du lieu nguoi choi): lich su kien nam 0.9.5
                     || t.startsWith("UPDATE tob_su_kien SET mo_luc = NULL") || t.startsWith("DELETE FROM tob_su_kien WHERE ma IN")
                     || (t.startsWith("ALTER TABLE tob_su_kien") && t.contains("ADD COLUMN IF NOT EXISTS"))

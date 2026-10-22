@@ -100,9 +100,13 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
       dòng của khối kết đôi / thu phục);
     - `them_do_trang_phuc.sql` (do-trang-phuc, SINH bởi `tools/do_trang_phuc/sinh.py`: thay cả khối khi sinh lại): đồ họ mới
       `data_item` 1400..2027 (icon 15000..15688, `server/map/icon_do_moi/`), `data_trang_bi_ho*`, `data_trang_bi_moi`, tủ đồ
-      `data_trang_phuc_o` / `data_trang_phuc` (61 món), `tob_trang_phuc`, 15 món `nap_cua_hang` (INSERT IGNORE);
+      `data_trang_phuc_o` / `data_trang_phuc` (69 món: 61 + 8 món cửa hàng lượng cũ cùng mã), `tob_trang_phuc`, 15 món `nap_cua_hang` (INSERT IGNORE);
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
+    - `dong_bo_098.sql` (lượt đồng bộ trước open test, chạy CUỐI): một hệ trang trí (món Skin / Hào quang / Skin thú cũ của
+      cửa hàng lượng = món tủ đồ cùng mã; tên chỉ đổi ở dòng còn tên mặc định cũ), chuỗi phụ "Nói chuyện với X ở Y" theo nơi
+      NPC đứng thật (173 dòng → "ở làng" / nơi xa), chữ "X ở A ở B", bước chuỗi chính ghi bản đồ khoá cao hơn cấp bước, chữ
+      Sổ tay (`data_nhiem_vu_noi_dung.muc_tieu_text`) = chữ bước thật của chuỗi chính (gồm Gym "(đấu ở X)").
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở

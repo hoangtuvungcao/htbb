@@ -98,9 +98,11 @@ public final class KiemDatTenPet {
         final String nhan = doc("../client_jar/src/game/pokemon/NhanPet.java");
         Kiem.dung("client nhan pet = 'ten · chu', qua NhanTheGioi.pet", nhan.contains("append(\" · \")") && nhan.contains("NhanTheGioi.pet("));
         final String ntg = doc("../client_jar/src/game/pokemon/NhanTheGioi.java");
-        Kiem.dung("client NhanTheGioi: nhan pet nho hon (coPet < coNhan), mau diu, chong thi BO (khong ve mo)",
+        Kiem.dung("client NhanTheGioi: nhan pet nho hon (coPet < coNhan), chu mong, khong de hinh nhan vat, chong thi AN",
                 ntg.contains("static float coPet()") && ntg.contains("return ChuDe.dt() ? 6.2f : 5.6f;")
-                        && ntg.contains("if (LOAI[i] == PET || laQuai && p == 5) {"));
+                        && ntg.contains("int dam = CHON[i] ? 2 : LOAI[i] == PET ? 0 : 1;")
+                        && ntg.contains("boolean laQuai = LOAI[i] == QUAI || LOAI[i] == PET;")
+                        && ntg.contains("TT[i] = 0;"));
         Kiem.dung("client AnimalMove.paintName -> NhanPet (moi pet: minh + nguoi khac)",
                 doc("../client_jar/src/game/model/AnimalMove.java").contains("game.pokemon.NhanPet.ve(this);"));
     }

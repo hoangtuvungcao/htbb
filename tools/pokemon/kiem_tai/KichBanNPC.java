@@ -380,7 +380,8 @@ public class KichBanNPC {
             int m = b.moc();
             b.gui(23, (byte) 0);
             int n = b.doiMenu(m, 0, 0, 3000);
-            BotChucNang.ket("dich_vu.chansey.menu", n == 2 && b.timMuc("Hồi phục") == 0, b.chuTu(m));
+            // 0.9.8: + "Poké Ball & Hộp PC" (thu phuc)
+            BotChucNang.ket("dich_vu.chansey.menu", n == 3 && b.timMuc("Hồi phục") == 0 && b.timMuc("Hộp PC") >= 0, b.chuTu(m));
             m = b.moc();
             b.menu(0, 0, 0);
             String hp = b.doiChu(m, 2500, "hồi phục hoàn toàn", "khoẻ mạnh");
@@ -458,8 +459,14 @@ public class KichBanNPC {
             boolean toi = toiGan(b, 0, 6, 46);
             m = b.moc();
             b.gui(23, (byte) 9);
-            b.bom(1200);
-            BotChucNang.ket("dich_vu.kangaskhan.kho_ngoai_troi", doiGoi23(b, m) == 2, "toi=" + toi + " o " + b.px / 16 + "," + b.py / 16 + " " + b.chuTu(m));
+            // 0.9.8 (giao-dien-nro): Kangaskhan mo menu "Mở kho đồ / Mở rộng hành trang (+10 ô: xu)" -> chon Mo kho
+            int nk = b.doiMenu(m, 9, 0, 3000);
+            int mk = b.moc();
+            if (nk > 0 && b.timMuc("Mở kho") >= 0) {
+                b.menu(9, 0, b.timMuc("Mở kho"));
+                b.bom(1200);
+            }
+            BotChucNang.ket("dich_vu.kangaskhan.kho_ngoai_troi", nk == 2 && doiGoi23(b, mk) == 2, "toi=" + toi + " o " + b.px / 16 + "," + b.py / 16 + " " + b.chuTu(m));
             // --- Lapras (10) o Littleroot 43: mua ve + cho do sang ben khac
             b.den(43, 23, 23);
             m = b.moc();

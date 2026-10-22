@@ -26,7 +26,9 @@ export const LOAI_GOI = ['luong', 'the_thang', 've_mua', 'thanh_vien'] as const
 export type LoaiGoi = typeof LOAI_GOI[number]
 
 export const TRAO_HOP_LE = ['trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc', 'dat_ten_pet'] as const
-export const NHOM_CUA_HANG = ['skin', 'hao_quang', 'thu_cuoi', 'mau_ten', 'bieu_cam', 'nha', 'khung', 'tien_ich', 'tang_toc'] as const
+// = NapTienLogic.NHOM_CUA_HANG: 4 o tu do trang tri + tien ich + tang toc (dong bo 0.9.8, mot he trang tri)
+// 'skin' / 'thu_cuoi' = nhom cu (mon truoc 0.9.8), game hien trong o Trang phuc / Skin thu cuoi
+export const NHOM_CUA_HANG = ['trang_phuc', 'hao_quang', 'skin_thu', 'the_dong_hanh', 'tien_ich', 'tang_toc', 'skin', 'thu_cuoi'] as const
 
 /**
  * Tăng tốc luyện cấp (chỉ EXP — khớp com.htbb.pokemon.TangToc + NapTienLogic.kiemTangToc): danh sách CỐ ĐỊNH,

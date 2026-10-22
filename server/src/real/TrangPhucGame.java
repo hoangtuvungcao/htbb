@@ -805,9 +805,37 @@ public final class TrangPhucGame {
         }
     }
 
-    static String ten(final String ma) {
+    /** Ten mon tu do; null = khong co trong danh muc. */
+    public static String ten(final String ma) {
         final Mon m = DL.mon.get(ma);
-        return m == null ? ma : m.ten;
+        return m == null ? null : m.ten;
+    }
+
+    /** Client co man Tu do (Nhan vat &gt; Tu do, goi -116): mac / thao / doi dong chi so CHI o do (mot loi vao). */
+    public static boolean coManTuDo(final Char p) {
+        return bat() && coClient(p);
+    }
+
+    /**
+     * Tong phan nghin TRANG TRI dang tinh (danh hieu dang deo + cac o tu do) - DatTenPetGame dung lam "trang tri khac"
+     * de dong the ten pet chi lay phan con lai cua tran tong trang_tri.tran_tong_phan_nghin (5%, thiet_ke_can_bang 4.5).
+     */
+    public static int tongPhanNghin(final Char p) {
+        try {
+            if (p == null || p.isBot != -1 || !ChiSoTrangBiGame.bat()) {
+                return 0;
+            }
+            int tong = phanNghinDanhHieu(p);
+            final TT t = tt(p);
+            if (t != null && bat()) {
+                for (final int v : hieuLuc(p, t)) {
+                    tong += v;
+                }
+            }
+            return tong;
+        } catch (final Exception e) {
+            return 0;
+        }
     }
 
     static Message moi(final int kieu) throws java.io.IOException {
@@ -870,6 +898,7 @@ public final class TrangPhucGame {
                 x.moTa = m.moTa;
                 mon.add(x);
             }
+            tong += DatTenPetGame.hieuLucDangTheo(p); // the ten pet dang di theo: cung tran tong trang tri
             final Message m = moi(TrangPhucLogic.S_TU_DO);
             TrangPhucLogic.ghiTuDo(m.dos, oDs, tong, DanhHieuGame.tranTrangTri(), dh, mon);
             p.sendMessage(m);

@@ -163,7 +163,24 @@ TRANG_PHUC = [
      "Tai thỏ và khăn len - món chế đầu tiên cho người mới."),
     (32, "tp_hiep_khach", "Trang phục Huấn luyện viên Gym", [25, 46], 3, "che_tao", "nl:1036x4,1037x2;gio:5", 0,
      "Băng đô và áo choàng Gym - món chế cao cấp."),
+    # 0.9.8 đồng bộ: món "Skin" của cửa hàng lượng cũ (nap_cua_hang nhom skin) vào ô Trang phục, GIỮ mã cũ để
+    # nap_so_huu của người đã mua tự thành món tủ đồ (một hệ thống, một lối vào).
+    (33, "skin_mu_rom", "Trang phục Mũ rơm", [8], 1, "cua_hang", "", 600, "Mũ rơm đi biển."),
+    (34, "skin_khan_quang", "Trang phục Khăn quàng mùa đông", [31], 1, "cua_hang", "", 600, "Khăn len sọc ấm áp."),
+    (35, "skin_kinh_ram", "Trang phục Kính râm", [26], 2, "cua_hang", "", 600, "Kính râm đẩy lên trán."),
+    (36, "skin_no_xinh", "Trang phục Nơ xinh", [22, 33], 1, "cua_hang", "", 600, "Nơ tim trên đầu và nơ cổ."),
 ]
+
+# Mã món cửa hàng lượng CŨ (nap_cua_hang trước 0.9.8) cho món hào quang / skin thú vẽ ở hinh_trang_phuc: mã tủ đồ
+# giữ đúng mã cũ (người đã mua có ngay món trong tủ đồ). Món trang phục cũ ghi thẳng mã ở TRANG_PHUC (33..36).
+MA_CU = {
+    "hq_lua_thieng": "hao_quang_lua",
+    "hq_song_nuoc": "hao_quang_nuoc",
+    "st_yen_van_may": "thu_cuoi_van_may",
+    "st_yen_cau_vong_nhat": "thu_cuoi_cau_vong",
+}
+# Mã món cũ đã có dòng nap_cua_hang (INSERT IGNORE không ghi đè; nhóm cũ skin / thu_cuoi hiện theo ô - NapTienLogic.nhomHienThi).
+MON_CUA_HANG_CU = set(MA_CU.values()) | {"skin_mu_rom", "skin_khan_quang", "skin_kinh_ram", "skin_no_xinh"}
 
 # ================================================================ HÀO QUANG / SKIN THÚ / THẺ BẠN ĐỒNG HÀNH (nguồn)
 # (mã trong hinh_trang_phuc, độ hiếm, nguồn, tham số, giá lượng, mô tả)
@@ -181,6 +198,8 @@ NGUON_HAO_QUANG = {
     "cau_vong": (4, "thanh_tuu", "danh_hieu:dex_90", 0, "Người hoàn thiện Pokédex."),
     "anh_dao": (3, "su_kien", "lich:tet2017;quai:600", 0, "Hoa anh đào ngày Tết."),
     "sao_bang": (3, "su_kien", "lich:moi:shiny;quai:500", 0, "Sao băng Tuần Shiny."),
+    "lua_thieng": (2, "cua_hang", "", 400, "Ngọn lửa thiêng cháy quanh chân."),
+    "song_nuoc": (2, "cua_hang", "", 400, "Vòng sóng nước dâng quanh chân."),
 }
 NGUON_SKIN_THU = {
     "yen_co_ban": (0, "mien_phi", "cap:15", 0, "Yên cưỡi đầu tiên khi có thú cưỡi."),
@@ -191,6 +210,8 @@ NGUON_SKIN_THU = {
     "yen_lua": (3, "thanh_tuu", "danh_hieu:gym_16", 0, "Nhà vô địch hai vùng."),
     "yen_dem": (2, "cua_hang", "", 150, "Yên bóng đêm."),
     "yen_cau_vong": (4, "thanh_tuu", "danh_hieu:map_120", 0, "Người đi khắp thế gian."),
+    "yen_van_may": (2, "cua_hang", "", 500, "Yên trắng như mây trời."),
+    "yen_cau_vong_nhat": (2, "cua_hang", "", 500, "Yên sắc cầu vồng nhạt."),
 }
 NGUON_THE = {
     "the_co_ban": (0, "mien_phi", "cap:20", 0, "Thẻ tên cho bạn đồng hành đầu tiên."),

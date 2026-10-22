@@ -389,11 +389,26 @@ public final class NapTienLogic {
     public static final String MA_THE_DAT_TEN = "the_dat_ten_pet";
     public static final String[] TRAO_HOP_LE = {TRAO_TRANG_TRI, TRAO_MO_RONG_TUI, TRAO_DOI_TEN, TRAO_TANG_TOC, TRAO_DAT_TEN_PET};
 
-    /** Nhom hien thi. */
-    public static final String[] NHOM_CUA_HANG = {"skin", "hao_quang", "thu_cuoi", "mau_ten", "bieu_cam", "nha",
-        "khung", "tien_ich", "tang_toc"};
-    public static final String[] TEN_NHOM_CUA_HANG = {"Skin Pokémon", "Hào quang", "Skin thú cưỡi", "Màu tên",
-        "Biểu cảm", "Trang trí nhà", "Khung và danh hiệu", "Tiện ích", "Tăng tốc luyện cấp"};
+    /**
+     * Nhom hien thi = 4 o TU DO TRANG TRI (TrangPhucLogic.O, mot he trang tri - dong bo 0.9.8) + tien ich + tang toc. Mon
+     * cu nhom "skin" / "thu_cuoi" (truoc 0.9.8) hien trong o tuong ung ({@link #nhomHienThi}); mau ten / khung / bieu cam /
+     * trang tri nha khong he nao dung nen khong thuoc nhom nao o day (khong hien / khong ban), nguoi da co giu.
+     */
+    public static final String[] NHOM_CUA_HANG = {"trang_phuc", "hao_quang", "skin_thu", "the_dong_hanh", "tien_ich",
+        "tang_toc"};
+    public static final String[] TEN_NHOM_CUA_HANG = {"Trang phục", "Hào quang", "Skin thú cưỡi", "Thẻ bạn đồng hành",
+        "Tiện ích", "Tăng tốc luyện cấp"};
+
+    /** Nhom cua hang cu -> o tu do (skin -> trang_phuc, thu_cuoi -> skin_thu); nhom khac giu nguyen. */
+    public static String nhomHienThi(final String nhom) {
+        if ("skin".equals(nhom)) {
+            return "trang_phuc";
+        }
+        if ("thu_cuoi".equals(nhom)) {
+            return "skin_thu";
+        }
+        return nhom == null ? "" : nhom;
+    }
 
     /** Tu cam trong ten/mo ta mon ban bang luong - chan do suc manh lot vao (kem whitelist). */
     static final String[] TU_CAM = {"exp", "kinh nghiệm", "kinh nghiem", "x2", "x3", "tấn công", "tan cong",
@@ -452,17 +467,17 @@ public final class NapTienLogic {
         new Mon("mau_ten_vang", "Màu tên Vàng (30 ngày)", "mau_ten", TRAO_TRANG_TRI, 150, 30, 0, 0, false),
         new Mon("mau_ten_xanh", "Màu tên Xanh ngọc (30 ngày)", "mau_ten", TRAO_TRANG_TRI, 150, 30, 0, 0, false),
         new Mon("khung_ten_bac", "Khung tên Bạc", "khung", TRAO_TRANG_TRI, 200, 0, 1, 0, true),
-        new Mon("skin_mu_rom", "Skin: Mũ rơm", "skin", TRAO_TRANG_TRI, 600, 0, 1, 1, true),
-        new Mon("hao_quang_lua", "Hào quang Lửa", "hao_quang", TRAO_TRANG_TRI, 400, 0, 1, 1, true),
+        new Mon("skin_mu_rom", "Trang phục Mũ rơm", "skin", TRAO_TRANG_TRI, 600, 0, 1, 1, true),
+        new Mon("hao_quang_lua", "Hào quang Lửa thiêng", "hao_quang", TRAO_TRANG_TRI, 400, 0, 1, 1, true),
         new Mon("bieu_cam_vui", "Biểu cảm: Vui vẻ", "bieu_cam", TRAO_TRANG_TRI, 80, 0, 1, 1, true),
-        new Mon("skin_khan_quang", "Skin: Khăn quàng mùa đông", "skin", TRAO_TRANG_TRI, 600, 0, 1, 2, true),
-        new Mon("thu_cuoi_van_may", "Skin thú cưỡi: Vân mây", "thu_cuoi", TRAO_TRANG_TRI, 500, 0, 1, 2, true),
+        new Mon("skin_khan_quang", "Trang phục Khăn quàng mùa đông", "skin", TRAO_TRANG_TRI, 600, 0, 1, 2, true),
+        new Mon("thu_cuoi_van_may", "Yên vân mây", "thu_cuoi", TRAO_TRANG_TRI, 500, 0, 1, 2, true),
         new Mon("nha_den_long", "Trang trí nhà: Đèn lồng", "nha", TRAO_TRANG_TRI, 120, 0, 5, 2, true),
-        new Mon("skin_kinh_ram", "Skin: Kính râm", "skin", TRAO_TRANG_TRI, 600, 0, 1, 3, true),
-        new Mon("hao_quang_nuoc", "Hào quang Nước", "hao_quang", TRAO_TRANG_TRI, 400, 0, 1, 3, true),
+        new Mon("skin_kinh_ram", "Trang phục Kính râm", "skin", TRAO_TRANG_TRI, 600, 0, 1, 3, true),
+        new Mon("hao_quang_nuoc", "Hào quang Sóng nước", "hao_quang", TRAO_TRANG_TRI, 400, 0, 1, 3, true),
         new Mon("bieu_cam_ngu", "Biểu cảm: Buồn ngủ", "bieu_cam", TRAO_TRANG_TRI, 80, 0, 1, 3, true),
-        new Mon("skin_no_xinh", "Skin: Nơ xinh", "skin", TRAO_TRANG_TRI, 600, 0, 1, 4, true),
-        new Mon("thu_cuoi_cau_vong", "Skin thú cưỡi: Cầu vồng", "thu_cuoi", TRAO_TRANG_TRI, 500, 0, 1, 4, true),
+        new Mon("skin_no_xinh", "Trang phục Nơ xinh", "skin", TRAO_TRANG_TRI, 600, 0, 1, 4, true),
+        new Mon("thu_cuoi_cau_vong", "Yên cầu vồng nhạt", "thu_cuoi", TRAO_TRANG_TRI, 500, 0, 1, 4, true),
         new Mon("nha_cay_canh", "Trang trí nhà: Cây cảnh", "nha", TRAO_TRANG_TRI, 120, 0, 5, 4, true),
         // Tang toc (TangToc): gioi_han = lan mua / TUAN; han 0; khong giao dich; gia co dinh.
         new Mon("ve_exp_15", "Vé EXP x1,5 (30 phút)", "tang_toc", TRAO_TANG_TOC, 20, 0, 14, 0, false),

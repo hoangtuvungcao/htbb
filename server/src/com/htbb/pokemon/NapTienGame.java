@@ -716,7 +716,7 @@ public final class NapTienGame implements Runnable {
         for (int i = 0; i < NapTienLogic.NHOM_CUA_HANG.length; i++) {
             int dem = 0;
             for (final NapTienLogic.Mon m : ds) {
-                dem += m.nhom.equals(NapTienLogic.NHOM_CUA_HANG[i]) ? 1 : 0;
+                dem += NapTienLogic.nhomHienThi(m.nhom).equals(NapTienLogic.NHOM_CUA_HANG[i]) ? 1 : 0;
             }
             if (dem > 0) {
                 nhom.add(NapTienLogic.NHOM_CUA_HANG[i]);
@@ -745,7 +745,7 @@ public final class NapTienGame implements Runnable {
         final List<NapTienLogic.Mon> mon = new ArrayList<NapTienLogic.Mon>();
         final List<String> ten = new ArrayList<String>();
         for (final NapTienLogic.Mon m : dangBan()) {
-            if (m.nhom.equals(nhom.get(chon))) {
+            if (NapTienLogic.nhomHienThi(m.nhom).equals(nhom.get(chon))) {
                 mon.add(m);
                 ten.add(m.ten + " - " + giaThat(m) + " lượng" + (m.giaoDichDuoc ? " (giao dịch được)" : ""));
             }
@@ -916,6 +916,10 @@ public final class NapTienGame implements Runnable {
     // ================================================================== tu do
 
     static String tenMa(final String ma) {
+        final String tt = real.TrangPhucGame.ten(ma); // tu do trang tri (mot he, dong bo 0.9.8)
+        if (tt != null) {
+            return tt;
+        }
         try {
             for (final NapTienLogic.Mon m : NapTienDb.cuaHang()) {
                 if (m.ma.equals(ma)) {
@@ -923,6 +927,11 @@ public final class NapTienGame implements Runnable {
                 }
             }
         } catch (final SQLException ignored) {
+        }
+        for (final NapTienLogic.Mon m : NapTienLogic.MON_MAC_DINH) {
+            if (m.ma.equals(ma)) {
+                return m.ten;   // mon cu da ngung ban (khong con trong cuaHang())
+            }
         }
         return ma.replace('_', ' ');
     }
@@ -952,7 +961,9 @@ public final class NapTienGame implements Runnable {
         mot.add(s);
         NGU_CANH.put(p.charDBID, mot);
         final List<String> m = new ArrayList<String>();
-        m.add(s.dangDung ? "Bỏ dùng" : "Dùng");
+        // dong bo 0.9.8: mac / thao mon tu do CHI o Ho so > Tu do (client 908); mon cu khong con cong dung: Thong tin
+        m.add(!real.TrangPhucGame.laMa(s.ma) ? "Thông tin" : real.TrangPhucGame.coManTuDo(p) ? "Mặc ở Hồ sơ > Tủ đồ"
+                : s.dangDung ? "Bỏ dùng" : "Dùng");
         if (s.dangRao) {
             m.add("Huỷ rao bán");
         } else if (s.giaoDichDuoc && s.hetHanMs == 0) {
@@ -967,6 +978,18 @@ public final class NapTienGame implements Runnable {
             return;
         }
         final NapTienDb.SoHuu s = mot.get(0);
+        if (chon == 0 && real.TrangPhucGame.laMa(s.ma) && real.TrangPhucGame.coManTuDo(p)) {
+            NGU_CANH.remove(p.charDBID);
+            real.TrangPhucGame.guiTuDo(p);
+            bao(p, tenMa(s.ma) + " nằm trong Tủ đồ: mở Hồ sơ > Tủ đồ để mặc, tháo và chọn dòng chỉ số của ô.");
+            return;
+        }
+        if (chon == 0 && !real.TrangPhucGame.laMa(s.ma)) {
+            NGU_CANH.remove(p.charDBID);
+            bao(p, tenMa(s.ma) + ": món của cửa hàng cũ, nay không còn công dụng trong game (đã ngừng bán). Bạn vẫn giữ món"
+                    + (s.giaoDichDuoc && s.hetHanMs == 0 ? " và rao bán được trên Chợ trang trí." : "."));
+            return;
+        }
         if (chon == 0 && real.TrangPhucGame.laMa(s.ma)) {
             NGU_CANH.remove(p.charDBID);
             bao(p, real.TrangPhucGame.macTuMenu(p, s.ma, !s.dangDung)); // [trang-phuc] moi o mot mon + doi hinh / chi so

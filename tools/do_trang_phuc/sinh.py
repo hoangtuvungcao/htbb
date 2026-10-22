@@ -187,17 +187,18 @@ def danh_sach_trang_tri():
                        mo_ta=mo_ta, manh=manh))
     for (i, ma, ten, chinh, sang_) in HP.HAO_QUANG:
         hiem, nguon, ts, gia, mo_ta = DM.NGUON_HAO_QUANG[ma]
-        ds.append(dict(o="hao_quang", id=i, ma="hq_" + ma, ten=ten, do_hiem=hiem, nguon=nguon, tham_so=ts,
+        ds.append(dict(o="hao_quang", id=i, ma=DM.MA_CU.get("hq_" + ma, "hq_" + ma), ten=ten, do_hiem=hiem, nguon=nguon, tham_so=ts,
                        gia_luong=gia, mo_ta=mo_ta, manh=[]))
     for (i, ma, ten, yen, day, bang) in HP.SKIN_THU:
         hiem, nguon, ts, gia, mo_ta = DM.NGUON_SKIN_THU[ma]
-        ds.append(dict(o="skin_thu", id=i, ma="st_" + ma, ten=ten, do_hiem=hiem, nguon=nguon, tham_so=ts,
+        ds.append(dict(o="skin_thu", id=i, ma=DM.MA_CU.get("st_" + ma, "st_" + ma), ten=ten, do_hiem=hiem, nguon=nguon, tham_so=ts,
                        gia_luong=gia, mo_ta=mo_ta, manh=[]))
     for (i, ma, ten, manh, mau_ten) in HP.THE_DONG_HANH:
         hiem, nguon, ts, gia, mo_ta = DM.NGUON_THE[ma]
         ds.append(dict(o="the_dong_hanh", id=i, ma="th_" + ma, ten=ten, do_hiem=hiem, nguon=nguon, tham_so=ts,
                        gia_luong=gia, mo_ta=mo_ta, manh=[manh]))
-    return ds
+    # món cửa hàng cũ (0.9.8 đồng bộ) ĐỨNG CUỐI: icon / thứ tự của 61 món trước giữ nguyên số
+    return [t for t in ds if t["ma"] not in DM.MON_CUA_HANG_CU] + [t for t in ds if t["ma"] in DM.MON_CUA_HANG_CU]
 
 
 def icon_trang_phuc(t):
@@ -602,9 +603,9 @@ def main():
         if t["o"] == "trang_phuc":
             a = icon_trang_phuc(t)
         elif t["o"] == "hao_quang":
-            a = icon_hao_quang([h for h in HP.HAO_QUANG if "hq_" + h[1] == t["ma"]][0])
+            a = icon_hao_quang([h for h in HP.HAO_QUANG if DM.MA_CU.get("hq_" + h[1], "hq_" + h[1]) == t["ma"]][0])
         elif t["o"] == "skin_thu":
-            a = icon_yen([s for s in HP.SKIN_THU if "st_" + s[1] == t["ma"]][0])
+            a = icon_yen([s for s in HP.SKIN_THU if DM.MA_CU.get("st_" + s[1], "st_" + s[1]) == t["ma"]][0])
         else:
             a = icon_the([s for s in HP.THE_DONG_HANH if "th_" + s[1] == t["ma"]][0])
         anh_tt[t["ma"]] = a

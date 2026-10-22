@@ -239,6 +239,18 @@ public final class NhiemVuEngine {
         return t;
     }
 
+    /**
+     * Roi game (CharManager): bo bo nho dem tien do (moi thay doi da ghi CSDL ngay qua {@link #luu}). Truoc dong bo 0.9.8
+     * TD giu mai toi khi khoi dong lai: ro bo nho theo so nhan vat tung online, va CSDL sua trong luc offline (trang quan tri,
+     * bot kiem) khong duoc nap lai khi vao game.
+     */
+    public static void khiThoat(final Char p) {
+        if (p != null && p.charDBID > 0) {
+            TD.remove(Integer.valueOf(p.charDBID));
+            MENU.remove(Integer.valueOf(p.charDBID));
+        }
+    }
+
     static void luu(final Char p, final String ma, final long[] v) {
         DatabaseLauDai.luuNhiemVu(p.charDBID, ma, (int) v[0], (int) v[1], (int) v[2]);
     }

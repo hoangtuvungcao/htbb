@@ -176,6 +176,9 @@ public final class KiemSuaLogic096 {
         Kiem.sai("vao nhom: loi moi het han", Char.duocVaoNhom(12, t, 12, t + Char.HAN_LOI_MOI_NHOM_MS + 1L, 300, 2));
         Kiem.sai("vao nhom: nhom da du 5 (truoc: kiem nham nhom rong cua nguoi vao)", Char.duocVaoNhom(12, t, 12, t + 1000L, 300, 5));
         Kiem.sai("vao nhom: nguoi moi chua co nhom (partyID -1)", Char.duocVaoNhom(12, t, 12, t + 1000L, -1, 0));
+        Kiem.dung("vao nhom: id nhan vat AM (actor that -31941, nhom -31999) van vao duoc",
+                Char.duocVaoNhom(-31941, t, -31941, t + 1000L, -31999, 0));
+        Kiem.sai("vao nhom: id am nhung chua co loi moi (luc 0)", Char.duocVaoNhom(-31941, 0L, -31941, t, -31999, 0));
         final String c = doc("src/real/Char.java");
         Kiem.dung("giai tan nhom rong tra id ve kho (truoc: 48 + 50 lap lai can 32000 id)",
                 doan(c, "public void deleteParty()", 2500).contains("putID(this.partyID, 5, \"xoa party rong\")"));

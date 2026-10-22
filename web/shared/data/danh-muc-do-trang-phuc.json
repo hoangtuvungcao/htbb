@@ -9823,6 +9823,102 @@
    "thamSo": "",
    "giaLuong": 80,
    "moTa": "Tim hồng."
+  },
+  {
+   "ma": "skin_mu_rom",
+   "o": "trang_phuc",
+   "so": 33,
+   "ten": "Trang phục Mũ rơm",
+   "doHiem": 1,
+   "icon": 689,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 600,
+   "moTa": "Mũ rơm đi biển."
+  },
+  {
+   "ma": "skin_khan_quang",
+   "o": "trang_phuc",
+   "so": 34,
+   "ten": "Trang phục Khăn quàng mùa đông",
+   "doHiem": 1,
+   "icon": 690,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 600,
+   "moTa": "Khăn len sọc ấm áp."
+  },
+  {
+   "ma": "skin_kinh_ram",
+   "o": "trang_phuc",
+   "so": 35,
+   "ten": "Trang phục Kính râm",
+   "doHiem": 2,
+   "icon": 691,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 600,
+   "moTa": "Kính râm đẩy lên trán."
+  },
+  {
+   "ma": "skin_no_xinh",
+   "o": "trang_phuc",
+   "so": 36,
+   "ten": "Trang phục Nơ xinh",
+   "doHiem": 1,
+   "icon": 692,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 600,
+   "moTa": "Nơ tim trên đầu và nơ cổ."
+  },
+  {
+   "ma": "hao_quang_lua",
+   "o": "hao_quang",
+   "so": 14,
+   "ten": "Hào quang Lửa thiêng",
+   "doHiem": 2,
+   "icon": 693,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 400,
+   "moTa": "Ngọn lửa thiêng cháy quanh chân."
+  },
+  {
+   "ma": "hao_quang_nuoc",
+   "o": "hao_quang",
+   "so": 15,
+   "ten": "Hào quang Sóng nước",
+   "doHiem": 2,
+   "icon": 694,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 400,
+   "moTa": "Vòng sóng nước dâng quanh chân."
+  },
+  {
+   "ma": "thu_cuoi_van_may",
+   "o": "skin_thu",
+   "so": 9,
+   "ten": "Yên vân mây",
+   "doHiem": 2,
+   "icon": 695,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 500,
+   "moTa": "Yên trắng như mây trời."
+  },
+  {
+   "ma": "thu_cuoi_cau_vong",
+   "o": "skin_thu",
+   "so": 10,
+   "ten": "Yên cầu vồng nhạt",
+   "doHiem": 2,
+   "icon": 696,
+   "nguon": "cua_hang",
+   "thamSo": "",
+   "giaLuong": 500,
+   "moTa": "Yên sắc cầu vồng nhạt."
   }
  ]
 }

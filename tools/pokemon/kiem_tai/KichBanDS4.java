@@ -88,7 +88,8 @@ class KichBanDS4 {
             ket("chat.ban_do", t != null, t == null ? c.chuTu(m) : t);
             // tin rieng (-5): server giao cham theo nhip CharCapNhat
             m = c.moc();
-            a.gui(-5, c.ten, "tin rieng thu");
+            if (BotChucNang.BAN >= 908) a.gui(-124, (byte) 1, (byte) 4, c.ten, "tin rieng thu"); // client 0.9.8: kenh chat -124
+            else a.gui(-5, c.ten, "tin rieng thu");
             t = c.doiChu(m, 8000, "tin rieng thu");
             ket("chat.tin_rieng", t != null, t == null ? c.chuTu(m) : t);
             // loa the gioi: can vat pham 100
@@ -461,8 +462,16 @@ class KichBanDS4 {
     static void pvp() throws Exception {
         // B phai la nguoi thuong: GM (isAdmin) khong chet o map luyen (Char.isHieuUngCoLongDuongQua)
         try (BotChucNang.Bot a = botLang(30); BotChucNang.Bot c = thuongCungQuoc(a)) {
-            a.gm("slv " + c.ten + " 21 0", 800);
-            if (!KichBanDS2.raNgoai(c)) { ket("pvp", false, c.user + " khong ra duoc map ngoai lang"); return; }
+            a.gm("slv " + c.ten + " " + a.lv + " 0", 800); // cung dai 10 cap voi A: tran moi tinh Elo (PvP xep hang)
+            // ra dong Pallet (map 1, vung PK duoc) qua cong bac cua lang; cong khac cua lang dan toi ban sao lang / ben tau /
+            // khu mua ban (vung an toan: "Thi tran la vung an toan")
+            KichBanDS.veLang(c);
+            for (int t = 0; t < 3 && c.mapLoad != 1; t++) {
+                c.bom(800);
+                if (!KichBanHuongDan.quaCong(c, 0) && KichBanDS.laLang(c.mapId)) KichBanDS2.raNgoai(c);
+                if (c.mapLoad != 1 && !KichBanDS.laLang(c.mapId)) KichBanHuongDan.quaCong(c, 0); // Pallet 0 = ve lang
+            }
+            if (c.mapLoad != 1) { ket("pvp", false, c.user + " khong ra duoc dong Pallet (map " + c.mapId + ")"); return; }
             a.gm("mc " + c.ten, 1500);
             c.bom(500);
             int m = a.moc();
@@ -478,7 +487,14 @@ class KichBanDS4 {
             c.lamMoi();
             int lan = 0;
             for (; lan < 400; lan++) {
-                a.gui(6, (short) c.actor, (byte) 0);
+                if (BotChucNang.BAN >= 908) {
+                    // client 0.9.8: PvP la NGAM TAY (-113 loai 0: chieu 0, x, y, huong) - goi 6 nham muc tieu chi con o PvE
+                    int[] pa = KichBanNgamTay.viTri(a), pb = KichBanNgamTay.viTri(c);
+                    short[] h = KichBanNgamTay.huong(pa, pb, false);
+                    a.gui(-113, (byte) 0, (byte) 0, (short) pa[0], (short) pa[1], h[0], h[1]);
+                } else {
+                    a.gui(6, (short) c.actor, (byte) 0);
+                }
                 a.bom(450);
                 if (lan % 5 == 4) { c.lamMoi(); if (c.hp <= 0) break; }
             }
@@ -492,7 +508,10 @@ class KichBanDS4 {
             ms = a.moc();
             a.menu(-527, 0, 3);
             String st = a.doiChu(ms, 2000, "Elo");
-            ket("pvp.elo", st != null && (elo1 != null || st.matches("(?s).*Elo: 10[1-9][0-9].*")), "CSDL elo " + elo0 + " -> " + elo1 + "; So tay: " + st);
+            // 0.9.7+: Elo CHI tinh o tran xep hang ghep cap (KichBanXepHang xh_ghep); ha nguoi ngoai the gioi khong cong Elo
+            // (chong nuoi Elo bang nick phu) - So tay van hien Elo
+            ket("pvp.elo_khong_nuoi", st != null && st.contains("Elo") && java.util.Objects.equals(elo0, elo1),
+                    "CSDL elo " + elo0 + " -> " + elo1 + "; So tay: " + st);
         }
     }
 

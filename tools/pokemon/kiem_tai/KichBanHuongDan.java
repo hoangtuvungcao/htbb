@@ -167,6 +167,7 @@ class KichBanHuongDan {
     static boolean quaCong(BotChucNang.Bot b, int toM) throws IOException {
         BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
         int nhom = KichBanDS2.nhomCua(b, b.mapId);
+        if (nhom < 0) nhom = KichBanDS2.nhomCua(b, b.mapLoad); // ban sao lang (301 / 1701 / 1901) dung bang cong cua lang goc
         if (bd == null || nhom < 0 || b.viTriMap == null) return false;
         int truoc = b.mapId;
         for (int[] g : bd.cong) {

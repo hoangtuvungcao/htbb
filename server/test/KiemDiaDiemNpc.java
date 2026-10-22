@@ -136,8 +136,12 @@ final class KiemDiaDiemNpc {
         final List<String> loiNoi = new ArrayList<String>();
         final List<String> loiGym = new ArrayList<String>();
         int soBuoc = 0;
+        final List<String> loiNpcPhu = new ArrayList<String>();
+        final List<String> loiNoiPhu = new ArrayList<String>();
+        int soBuocPhu = 0;
         for (final Map<String, String> q : DayDu.dong("data_quest_moi")) {
-            if (!"0".equals(q.get("mainsub"))) {
+            final boolean phu = "1".equals(q.get("mainsub"));
+            if (!"0".equals(q.get("mainsub")) && !phu) {
                 continue;
             }
             final String inf = q.get("infogift") == null ? "" : q.get("infogift");
@@ -151,7 +155,11 @@ final class KiemDiaDiemNpc {
             if (npcChu.contains("→")) {
                 continue; // huong dan tan thu: "Xatu → Blaziken" (ca hai o lang, KiemHuongDanTanThu)
             }
-            soBuoc++;
+            if (phu) {
+                soBuocPhu++;
+            } else {
+                soBuoc++;
+            }
             final Set<Integer> mapDd = theoTen.get(dd);
             final int o = npcChu.indexOf(" (");
             final String ten = o > 0 ? npcChu.substring(0, o) : npcChu;
@@ -161,14 +169,14 @@ final class KiemDiaDiemNpc {
                 ok = npcChu.endsWith(")") && giao(noiNpc, theoTen.get(npcChu.substring(o + 2, npcChu.length() - 1).trim()));
             }
             if (!ok) {
-                loiNpc.add(q.get("id") + " NPC " + npcChu + " @ " + dd);
+                (phu ? loiNpcPhu : loiNpc).add(q.get("id") + " NPC " + npcChu + " @ " + dd);
             }
             final String sc = q.get("scontent") == null ? "" : q.get("scontent").trim();
             final Matcher m3 = pNoi.matcher(sc);
             if (m3.find()) {
                 final Set<Integer> x = npcO.get(m3.group(1));
                 if (x == null || !giao(x, theoTen.get(m3.group(2).trim()))) {
-                    loiNoi.add(q.get("id") + " " + sc);
+                    (phu ? loiNoiPhu : loiNoi).add(q.get("id") + " " + sc);
                 }
             }
             final Matcher mg = pGym.matcher(sc);
@@ -180,6 +188,10 @@ final class KiemDiaDiemNpc {
         Kiem.bang("chuoi chinh: NPC cua buoc co tren ban do Dia diem / o lang / o noi ghi ro", "[]", loiNpc.toString());
         Kiem.bang("chuoi chinh: 'Noi chuyen / mang / giao X o Y' - X co tren Y", "[]", loiNoi.toString());
         Kiem.bang("chuoi chinh: tran Gym ghi dung noi dau (= Dia diem)", "[]", loiGym.toString());
+        // dong bo 0.9.8: chuoi phu cung luat (truoc: 173 buoc "Nói chuyện với X ở Pallet / Viridian..." ma X chi o lang)
+        Kiem.dung("chuoi phu: co buoc de kiem (" + soBuocPhu + ")", soBuocPhu > 300);
+        Kiem.bang("chuoi phu: NPC cua buoc co tren ban do Dia diem / o lang / o noi ghi ro", "[]", loiNpcPhu.toString());
+        Kiem.bang("chuoi phu: 'Noi chuyen / mang / giao X o Y' - X co tren Y", "[]", loiNoiPhu.toString());
     }
 
     static boolean giao(final Set<Integer> a, final Set<Integer> b) {

@@ -329,6 +329,11 @@ public class CharManager {
                 KenhChatGame.khiThoat(p); // 0.9.8: bao ban be (client moi) offline
             } catch (Exception exChat) {
             }
+            try {
+                NhiemVuEngine.khiThoat(p); // dong bo 0.9.8: bo dem tien do nhiem vu (nap lai tu CSDL lan vao sau)
+                BoNgocGame.khiThoat(p);    // bo dem chi so bo / ngoc (tinh lai khi vao)
+            } catch (Exception exNv) {
+            }
 
             try {
                 if (p.map != null) {

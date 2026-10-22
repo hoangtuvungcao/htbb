@@ -99,12 +99,26 @@ public final class DatTenPetGame {
     }
 
     /**
-     * Phan nghin cac o trang tri KHAC dang chiem trong tran tong 5% (thiet_ke_can_bang 4.5: trang phuc 2%, danh hieu 1%,
-     * hao quang 1%, skin thu cuoi 1%). He o trang tri theo ngan sach chua chay tren may chu (cac mon cu van qua tran
-     * chung chi_so.tran_phan_tram_cong), nen hien la 0; khi he o len, tra tong o day va the ten tu bi kep.
+     * Phan nghin cac nguon trang tri KHAC dang chiem trong tran tong 5% (thiet_ke_can_bang 4.5): danh hieu dang deo + bon
+     * o tu do (TrangPhucGame). Dong the ten pet lay phan CON LAI (danh hieu, tu do uu tien; dong bo 0.9.8 - truoc do = 0
+     * nen danh hieu + tu do + the ten len toi 8% HP).
      */
     static int trangTriKhacPhanNghin(final Char p) {
-        return 0;
+        return TrangPhucGame.tongPhanNghin(p);
+    }
+
+    /** Phan nghin HIEU LUC dong the ten cua pet dang di theo (moi chi so; 0 = khong co) - de hien tong o Tu do. */
+    static int hieuLucDangTheo(final Char p) {
+        try {
+            final Pet pet = p == null ? null : p.petUsing;
+            final DatTenPet.TrangThai t = trangThai(pet);
+            if (t == null || t.ma == null || !ChiSoTrangBiGame.bat()) {
+                return 0;
+            }
+            return DatTenPet.phanNghin(t, t.ma, tranDong(), tranTrangTri(), trangTriKhacPhanNghin(p));
+        } catch (final Exception e) {
+            return 0;
+        }
     }
 
     // ================================================================== trang thai pet

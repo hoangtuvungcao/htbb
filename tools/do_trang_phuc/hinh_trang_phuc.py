@@ -277,6 +277,20 @@ kcbBkk
 .kkkkkkk.
 kkkkkkkkk
 """)
+manh(26, MU, "Kính râm trên trán", "k", """
+.kkkkkkk.
+kgkkkkkgk
+kkkkkkkkk
+.kk...kk.
+""", ngang="""
+.kkkk.
+kgkkkk
+kkkkkk
+.kk...
+""", sau="""
+.kkkkkkk.
+kkkkkkkkk
+""")
 manh(20, MU, "Mũ phi công", "N", """
 ..NNNNN..
 .NNNNNNN.
@@ -730,6 +744,8 @@ HAO_QUANG = [
     (11, "cau_vong", "Hào quang Cầu vồng", 0xE84040, 0xFFFFFF),
     (12, "anh_dao", "Hào quang Hoa anh đào", 0xF8A0C0, 0xFFFFFF),
     (13, "sao_bang", "Hào quang Sao băng", 0x3050B0, 0xFFF080),
+    (14, "lua_thieng", "Hào quang Lửa thiêng", 0xC82818, 0xFFF0A0),
+    (15, "song_nuoc", "Hào quang Sóng nước", 0x1E58B8, 0xA8F4FF),
 ]
 CAU_VONG = [0xFF5050, 0xFFA030, 0xFFE840, 0x58E070, 0x50B8FF, 0xC070FF]
 
@@ -778,6 +794,8 @@ SKIN_THU = [
     (6, "yen_lua", "Yên lửa nhà vô địch", 0xE85020, 0xFFD040, (-20, 125, 104, 0xFF6020, 25)),
     (7, "yen_dem", "Yên bóng đêm", 0x3A2A58, 0xB090D0, (0, 70, 80, 0x7038B0, 40)),
     (8, "yen_cau_vong", "Yên cầu vồng", 0xE84040, 0x50B8FF, (40, 120, 106, 0xFFFFFF, 10)),
+    (9, "yen_van_may", "Yên vân mây", 0xE8F0FF, 0x88B8FF, (0, 60, 112, 0xE0F0FF, 30)),
+    (10, "yen_cau_vong_nhat", "Yên cầu vồng nhạt", 0xF8B0D0, 0xB0E0FF, (25, 90, 110, 0xFFE8F8, 18)),
 ]
 
 # ================================================================ THẺ BẠN ĐỒNG HÀNH: mảnh nhỏ trên pet + màu nhãn tên

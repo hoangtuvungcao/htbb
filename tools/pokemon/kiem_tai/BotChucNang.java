@@ -325,6 +325,25 @@ public class BotChucNang {
                         }
                         break;
                     }
+                    case -124: { // 0.9.8 kenh chat (client >= 908): tin = byte 1
+                        int k = r.readByte();
+                        if (k == 1) {
+                            int kenh = r.readByte();
+                            r.readByte();
+                            r.readLong();
+                            r.readShort();
+                            String gui = r.readUTF();
+                            String doi = r.readUTF();
+                            String nd = r.readUTF();
+                            e.chu = (kenh == 4 ? "TIN RIENG tu " + gui + " (" + doi + "): " : "KENH" + kenh + " " + gui + ": ") + nd;
+                        } else if (k == 4) {
+                            int kenh = r.readByte();
+                            int ma = r.readByte();
+                            r.readShort();
+                            e.chu = "KENH KET QUA(" + kenh + "/" + ma + "): " + r.readUTF();
+                        }
+                        break;
+                    }
                     case -5: {
                         int a = r.readByte();
                         if (a == 1 && d.length > 3) {

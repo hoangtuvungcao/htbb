@@ -7910,9 +7910,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 mm.dos.writeByte(ch.charClass);
                             }
                         }
-                        fr.sendMessage(mm);
                     }
-                    fr.sendMessage(mm);
+                    fr.sendMessage(mm); // mot lan (truoc gui hai lan khi nhom da co thanh vien)
                     mm.cleanup();
                     return;
                 }
@@ -7938,6 +7937,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 return;
             }
             this.idNguoiMoiNhom = -1;
+            this.timeDuocMoiNhom = 0L;
             if (fr != null && this.partyID == -1) {
                 final int size = fr.party.userParty.size();
                 this.partyID = fr.partyID;
@@ -7980,7 +7980,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     /** 0.9.6: nhan loi moi vao nhom duoc khong (ham thuan). */
     public static boolean duocVaoNhom(final int idMoi, final long lucMoi, final int idInvite, final long bayGio,
             final int partyIdChuNhom, final int soThanhVien) {
-        if (idMoi < 0 || idMoi != idInvite || bayGio - lucMoi > HAN_LOI_MOI_NHOM_MS || bayGio < lucMoi) {
+        // id nhan vat (actor) la short AM (-32000...) nen "chua co loi moi" xet bang lucMoi = 0, khong bang idMoi < 0 (truoc
+        // 0.9.8 dong bo: moi loi moi that deu bi tu choi vi idMoi < 0 - khong ai vao nhom duoc).
+        if (lucMoi <= 0L || idMoi != idInvite || bayGio - lucMoi > HAN_LOI_MOI_NHOM_MS || bayGio < lucMoi) {
             return false;
         }
         return partyIdChuNhom != -1 && soThanhVien < Party.MAX_MEMBER;

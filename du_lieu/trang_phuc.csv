@@ -60,3 +60,11 @@ th_vuong_mien_nho,the_dong_hanh,5,Vương miện tí hon,3,15685,73,thanh_tuu,da
 th_hoa_cai_nho,the_dong_hanh,6,Hoa cài bạn đồng hành,2,15686,74,su_kien,"lich:quocte83,moi:2010;quai:200",0,Hoa cài ngày phụ nữ.
 th_ngoi_sao_nho,the_dong_hanh,7,Ngôi sao bạn đồng hành,2,15687,75,su_kien,lich:moi:shiny;quai:300,0,Ngôi sao Tuần Shiny.
 th_tim_hong_nho,the_dong_hanh,8,Tim hồng bạn đồng hành,2,15688,76,cua_hang,,80,Tim hồng.
+skin_mu_rom,trang_phuc,33,Trang phục Mũ rơm,1,15689,8,cua_hang,,600,Mũ rơm đi biển.
+skin_khan_quang,trang_phuc,34,Trang phục Khăn quàng mùa đông,1,15690,31,cua_hang,,600,Khăn len sọc ấm áp.
+skin_kinh_ram,trang_phuc,35,Trang phục Kính râm,2,15691,26,cua_hang,,600,Kính râm đẩy lên trán.
+skin_no_xinh,trang_phuc,36,Trang phục Nơ xinh,1,15692,22 33,cua_hang,,600,Nơ tim trên đầu và nơ cổ.
+hao_quang_lua,hao_quang,14,Hào quang Lửa thiêng,2,15693,,cua_hang,,400,Ngọn lửa thiêng cháy quanh chân.
+hao_quang_nuoc,hao_quang,15,Hào quang Sóng nước,2,15694,,cua_hang,,400,Vòng sóng nước dâng quanh chân.
+thu_cuoi_van_may,skin_thu,9,Yên vân mây,2,15695,,cua_hang,,500,Yên trắng như mây trời.
+thu_cuoi_cau_vong,skin_thu,10,Yên cầu vồng nhạt,2,15696,,cua_hang,,500,Yên sắc cầu vồng nhạt.
