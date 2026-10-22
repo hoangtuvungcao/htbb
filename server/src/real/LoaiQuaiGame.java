@@ -38,7 +38,62 @@ public final class LoaiQuaiGame {
     static final long CHU_KY_NAP_MS = 5L * 60 * 1000;
     static final ConcurrentHashMap<Integer, Long> LAN_BAO_MAP = new ConcurrentHashMap<Integer, Long>();
     static final long CACH_BAO_MAP_MS = 60L * 1000;
-    static final AtomicLong DEM_DOI = new AtomicLong(), DEM_HIEM = new AtomicLong();
+    static final AtomicLong DEM_DOI = new AtomicLong(), DEM_HIEM = new AtomicLong(), DEM_BIEN_MAT = new AtomicLong();
+    /**
+     * 0.9.8 (chu game): Pokemon HOANG DA = quai mang loai rieng (dexRieng &gt; 0) - CHI loai nay bat duoc. Con song + luc
+     * hien: de kep toi da moi ban do / khu ({@link ChonLoaiHoangDa.ThamSo#toiDaMap}) va cho bien mat khi khong ai giao
+     * chien ({@link ChonLoaiHoangDa.ThamSo#phutBienMat}).
+     */
+    public static final ConcurrentHashMap<Monster, Long> HOANG_DA = new ConcurrentHashMap<Monster, Long>();
+
+    /** Quai nay la Pokemon hoang da (bat duoc). */
+    public static boolean laHoangDa(final Monster m) {
+        return m != null && m.dexRieng > 0;
+    }
+
+    static String khoaKhu(final Monster m) {
+        return (m.map == null ? -1 : m.map.mapId) + ":" + m.region + ":" + m.inCountry;
+    }
+
+    /** So Pokemon hoang da con song cung ban do / khu voi {@code m} (khong tinh chinh m). */
+    static int demHoangDa(final Monster m) {
+        final String k = khoaKhu(m);
+        int n = 0;
+        for (final Monster x : HOANG_DA.keySet()) {
+            if (x == m) {
+                continue;
+            }
+            if (x.isDead || x.dexRieng <= 0) {
+                HOANG_DA.remove(x); // da chet / bi bat / bien mat
+                continue;
+            }
+            if (k.equals(khoaKhu(x))) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Monster.update (con song): Pokemon hoang da khong ai giao chien (HP day, khong muc tieu) qua phutBienMat thi bien mat
+     * (nhu bo chay - hoi sinh lai thanh quai thuong / luot chon moi).
+     */
+    public static void nhip(final Monster m) {
+        if (m.dexRieng <= 0 || m.isDead) {
+            return;
+        }
+        final Long t = HOANG_DA.get(m);
+        if (t == null) {
+            HOANG_DA.put(m, Long.valueOf(System.currentTimeMillis()));
+            return;
+        }
+        final long phut = Math.max(1, thamSo().phutBienMat);
+        if (System.currentTimeMillis() - t.longValue() > phut * 60000L && m.hp >= m.maxhp && m.target == null) {
+            HOANG_DA.remove(m);
+            DEM_BIEN_MAT.incrementAndGet();
+            m.actorDie();
+        }
+    }
 
     private LoaiQuaiGame() {
     }
@@ -171,18 +226,24 @@ public final class LoaiQuaiGame {
             final int mapId = m.map.mapId;
             final int gio = com.htbb.pokemon.DongHo.lich().get(Calendar.HOUR_OF_DAY);
             final int tt = HeSinhThaiGame.thoiTietMap(mapId);
-            final ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), HeSinhThaiGame.vung(mapId), m.level,
-                    gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), thamSo(), R);
+            HOANG_DA.remove(m);
+            final ChonLoaiHoangDa.ThamSo ts = thamSo();
+            ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), HeSinhThaiGame.vung(mapId), m.level,
+                    gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), ts, R);
+            if (kq.dex > 0 && demHoangDa(m) >= Math.max(0, ts.toiDaMap)) {
+                kq = ChonLoaiHoangDa.GIU; // da du Pokemon hoang da tren ban do / khu nay: hoi sinh thanh quai thuong
+            }
             m.dexRieng = kq.dex;
             m.bacRieng = kq.bac;
             if (kq.dex > 0) {
+                HOANG_DA.put(m, Long.valueOf(System.currentTimeMillis()));
                 m.daCoLoaiRieng = true;
                 DEM_DOI.incrementAndGet();
                 if (kq.bac >= LoaiDuLieu.T3) {
                     DEM_HIEM.incrementAndGet();
                 }
-                if (kq.bac >= LoaiDuLieu.T4) {
-                    bao(m, d, kq);
+                if (kq.bac >= LoaiDuLieu.T3) {
+                    bao(m, d, kq); // 0.9.8: T3 + T4 bao trong ban do, T5 them toan may chu
                 }
             }
             return cu != kq.dex;
@@ -192,7 +253,7 @@ public final class LoaiQuaiGame {
         }
     }
 
-    /** T4+ bao nguoi trong ban do (khong bao toan may chu de tranh don nguoi); T5 bao toan may chu (2.4). */
+    /** T3+ bao nguoi trong ban do (khong bao toan may chu de tranh don nguoi); T5 bao toan may chu (2.4). */
     static void bao(final Monster m, final LoaiDuLieu d, final ChonLoaiHoangDa.KetQua kq) {
         try {
             baoNgay(m, d, kq);
@@ -209,8 +270,8 @@ public final class LoaiQuaiGame {
             return;
         }
         LAN_BAO_MAP.put(Integer.valueOf(mapId), Long.valueOf(now));
-        final String tin = "Một " + d.ten(kq.dex) + " (" + LoaiDuLieu.TEN_BAC[kq.bac] + ") vừa xuất hiện ở "
-                + Map.getNameMap(mapId) + "!";
+        final String tin = "Một " + d.ten(kq.dex) + " hoang dã (" + LoaiDuLieu.TEN_BAC[kq.bac] + ") vừa xuất hiện ở "
+                + Map.getNameMap(mapId) + " - bắt được bằng Poké Ball!";
         try {
             final java.util.Vector<Char> ds = m.map.getAllPlayer(m.inCountry, m.region);
             if (ds != null) {
@@ -256,6 +317,7 @@ public final class LoaiQuaiGame {
     /** Thong ke cho log / quan tri. */
     public static String thongKe() {
         final LoaiDuLieu d = LoaiDuLieu.hien();
-        return "loai " + d.soLoai() + " (mo " + d.soLoaiDaMo() + "), doi loai " + DEM_DOI.get() + ", hiem T3+ " + DEM_HIEM.get();
+        return "loai " + d.soLoai() + " (mo " + d.soLoaiDaMo() + "), hoang da " + DEM_DOI.get() + ", hiem T3+ " + DEM_HIEM.get()
+                + ", bien mat " + DEM_BIEN_MAT.get() + ", dang co " + HOANG_DA.size();
     }
 }

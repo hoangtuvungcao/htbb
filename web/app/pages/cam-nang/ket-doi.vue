@@ -3,7 +3,7 @@
  * Lễ kết đôi (0.9.8, thay "đám cưới" của game gốc). Luật: com.htbb.pokemon.KetDoi + data_nhom_trung_ten (nhóm trứng);
  * số liệu shared/utils/heThong098.ts, đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts.
  */
-import { KET_DOI } from '../../../shared/utils/heThong098'
+import { KET_DOI } from '~~/shared/utils/heThong098'
 </script>
 
 <template>

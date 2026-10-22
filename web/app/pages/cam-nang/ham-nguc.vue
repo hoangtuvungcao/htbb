@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PHO_BAN } from '../../../shared/utils/heThong098'
+import { PHO_BAN } from '~~/shared/utils/heThong098'
 const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * Hầm Ngục Bí Ẩn — luật từ HamNgucGame.java / CuonHut.java (cam-nang-noi-dung.json); các chặng

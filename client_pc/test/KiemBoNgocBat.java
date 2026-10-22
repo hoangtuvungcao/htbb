@@ -166,6 +166,8 @@ public class KiemBoNgocBat {
     static game.model.Monster quai;
 
     /** Một Pokémon hoang dã (Rattata) cạnh nhân vật, làm mục tiêu; hp % theo tham số. */
+    static boolean hoangDa = true;
+
     static void datQuai(int phanTramHp) {
         game.render.screen.GameScr gs = game.render.Canvas.gameScr;
         game.model.MainChar mc = gs.mainChar;
@@ -178,6 +180,8 @@ public class KiemBoNgocBat {
             quai.maxhp = 400;
         }
         quai.hp = Math.max(1, 400 * phanTramHp / 100);
+        // 0.9.8: chỉ Pokémon HOANG DÃ (loài riêng -125, dấu Poké Ball + vòng bậc) bắt được; "nem_thuong" = quái thường
+        quai.datLoaiRieng(hoangDa ? 19 : 0, false, hoangDa ? 2 : 0);
         quai.x = (short) (mc.x + 40);
         quai.y = (short) (mc.y + 4);
         quai.xFirst = quai.x;
@@ -217,6 +221,7 @@ public class KiemBoNgocBat {
                         datTab(m, ten.equals("kham_tui") ? 1 : 0);
                     } else if (ten.startsWith("nem")) {
                         game.render.Canvas.gameScr.switchToMe();
+                        hoangDa = !ten.equals("nem_thuong");
                         datQuai(ten.equals("nem_khoe") ? 100 : 20);
                     } else if (ten.equals("pokedex_da_bat")) {
                         game.pokemon.BatPokemon.DEX.clear();
@@ -319,7 +324,7 @@ public class KiemBoNgocBat {
 
         int[][] co = {{2400, 1080, 420}, {1280, 720, 0}, {1920, 1080, 0}, {1024, 768, 0}};
         String[] tenCo = {"dt20x9", "pc720", "pc1080", "pc4x3"};
-        String[] man = {"che_tao", "che_tao_phien_da", "kham", "kham_chi_tiet", "kham_lo_trong", "kham_tui", "nem_yeu", "nem_khoe", "pokedex_da_bat", "chi_tiet_do"};
+        String[] man = {"che_tao", "che_tao_phien_da", "kham", "kham_chi_tiet", "kham_lo_trong", "kham_tui", "nem_yeu", "nem_khoe", "nem_thuong", "pokedex_da_bat", "chi_tiet_do"};
         for (int c = 0; c < co.length; c++) {
             final int W = co[c][0], H = co[c][1], dpi = co[c][2];
             NenPc.tinhKichThuoc(W, H);
@@ -432,6 +437,13 @@ public class KiemBoNgocBat {
             kiem(!ve && !coVung("nem-bong"), t + " Pokemon con khoe: KHONG co nut nem");
             return;
         }
+        if (man.equals("nem_thuong")) {
+            kiem(!ve && !coVung("nem-bong"), t + " quai thuong (khong hoang da) yeu: KHONG co nut nem");
+            kiem(game.pokemon.NhanQuai.bacBat(quai) == 0, t + " quai thuong: khong dau Poke Ball / vong bac");
+            hoangDa = true;
+            return;
+        }
+        kiem(game.pokemon.NhanQuai.bacBat(quai) == 2, t + " Pokemon hoang da: bac 2 (dau Poke Ball + vong mau bac)");
         kiem(ve && coVung("nem-bong"), t + " Pokemon yeu: co nut Nem bong");
         kiem(coVung("doi-bong"), t + " co nut doi loai bong");
         int[] v = vung("nem-bong");

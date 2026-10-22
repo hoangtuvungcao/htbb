@@ -89,10 +89,39 @@ public final class KiemLoaiQuaiGame {
                     }
                 }
             }
-            Kiem.dung("hoi sinh: co doi loai rieng (" + coRieng + "/3000)", coRieng > 300 && coRieng < 1500);
+            Kiem.dung("hoi sinh: co Pokemon hoang da (~5% + T3 1%: " + coRieng + "/3000)", coRieng > 60 && coRieng < 400);
             Kiem.bang("hoi sinh: loai rieng luon da mo, khong T6, khac loai mau", 0, sai);
             Kiem.dung("hoi sinh: bao doi loai khi loai rieng doi", doi > 0);
             Kiem.bang("hoi sinh: mau quai giu nguyen (cap, HP, TTK theo mau)", 251, m.idTemplate);
+
+            // 0.9.8: toi da 2 Pokemon hoang da cung ban do / khu - hai con khac dang hoang da thi con nay hoi sinh thuong
+            final Monster h1 = new Monster((byte) 1), h2 = new Monster((byte) 1);
+            for (final Monster h : new Monster[]{h1, h2}) {
+                h.map = map;
+                h.inCountry = 0;
+                h.dexRieng = 16;
+                h.bacRieng = 1;
+                LoaiQuaiGame.HOANG_DA.put(h, Long.valueOf(System.currentTimeMillis()));
+            }
+            int vuot = 0;
+            for (int i = 0; i < 1000; i++) {
+                LoaiQuaiGame.khiHoiSinh(m);
+                vuot += m.dexRieng > 0 ? 1 : 0;
+            }
+            Kiem.bang("toi da 2 Pokemon hoang da / ban do: con thu ba khong hien", 0, vuot);
+            Kiem.dung("laHoangDa: chi quai co loai rieng", LoaiQuaiGame.laHoangDa(h1) && !LoaiQuaiGame.laHoangDa(m));
+            h1.isDead = true;
+            int lai = 0;
+            for (int i = 0; i < 3000; i++) {
+                LoaiQuaiGame.khiHoiSinh(m);
+                lai += m.dexRieng > 0 ? 1 : 0;
+            }
+            Kiem.dung("mot con hoang da chet -> lai co cho (" + lai + "/3000)", lai > 0);
+            LoaiQuaiGame.HOANG_DA.clear();
+            final String bg = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/BatPokemonGame.java")),
+                    java.nio.charset.StandardCharsets.UTF_8);
+            Kiem.dung("nem bong: quai thuong (khong hoang da) bi tu choi ro rang", bg.contains("if (!LoaiQuaiGame.laHoangDa(m)) {")
+                    && bg.contains("đã thuần hoá, không thể bắt"));
 
             // ep mot loai rieng de kiem goi
             m.dexRieng = 16;

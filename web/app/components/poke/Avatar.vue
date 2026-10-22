@@ -11,11 +11,14 @@ const anh = computed(() => {
   const l = props.dex != null ? loaiTheoDex(props.dex) : undefined
   return (l ? anhLoaiDex(l) : (props.dex != null ? anhPokemon(props.dex) : '')) || (props.dex != null ? chanDungLoai(props.dex) : '')
 })
+// 0.9.8: tải trễ qua hàng đợi chung (vào khung nhìn, <= 6 ảnh cùng lúc, thử lại khi 429) - bảng xếp hạng / lưới nhiều ảnh
+const el = ref<HTMLElement>()
+const daTai = useAnhTre(el, () => anh.value)
 </script>
 
 <template>
-  <span class="inline-grid shrink-0 place-items-center overflow-hidden rounded-full bg-elevated ring-1 ring-[color-mix(in_oklab,var(--poke-outline)_25%,transparent)] ring-offset-1 ring-offset-[var(--poke-card)]">
-    <img v-if="anh" :src="anh" width="40" height="40" :alt="alt ?? ''" loading="lazy" decoding="async" class="pixelated size-full object-cover">
-    <PokeBall v-else class="size-3/5 opacity-40" />
+  <span ref="el" :data-anh="daTai ? 'da-tai' : 'cho'" class="inline-grid shrink-0 place-items-center overflow-hidden rounded-full bg-elevated ring-1 ring-[color-mix(in_oklab,var(--poke-outline)_25%,transparent)] ring-offset-1 ring-offset-[var(--poke-card)]">
+    <img v-if="anh && daTai" :src="anh" width="40" height="40" :alt="alt ?? ''" loading="lazy" decoding="async" class="pixelated size-full object-cover">
+    <PokeBall v-else class="size-3/5 opacity-40" :class="anh ? 'animate-pulse' : ''" />
   </span>
 </template>

@@ -8,7 +8,7 @@
  *
  * `size` = chiều cao khung (px); chiều rộng do class quyết định (mặc định bằng chiều cao).
  */
-const props = withDefaults(defineProps<{ dex: number, he?: readonly number[], size?: number, shiny?: boolean, label?: string, delay?: number }>(), { size: 150, delay: 0 })
+const props = withDefaults(defineProps<{ dex: number, he?: readonly number[], size?: number, shiny?: boolean, label?: string, delay?: number, tinh?: boolean }>(), { size: 150, delay: 0, tinh: false })
 
 /** Mặt đất (tâm bóng) nằm ở 84% chiều cao khung. */
 const MAT_DAT = 0.84
@@ -45,7 +45,7 @@ const anh = computed(() => {
   >
     <template v-if="viTri">
       <span class="absolute left-1/2 h-2 -translate-x-1/2 rounded-[50%] bg-[rgb(10_26_51/.2)] dark:bg-black/45" :style="viTri.bong" aria-hidden="true" />
-      <PokeSprite :dex="dex" :shiny="shiny" :scale="viTri.scale" :label="label" :delay="delay" class="!absolute" :style="viTri.style" />
+      <PokeSprite :dex="dex" :shiny="shiny" :scale="viTri.scale" :label="label" :delay="delay" :tinh="tinh" class="!absolute" :style="viTri.style" />
     </template>
     <span v-else class="absolute inset-0 grid place-items-center">
       <PokeAvatar :src="anh" :alt="label" class="size-[45%]" />

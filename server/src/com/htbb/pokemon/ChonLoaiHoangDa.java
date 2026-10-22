@@ -25,7 +25,12 @@ public final class ChonLoaiHoangDa {
 
     /** Tham so (khoa cau hinh loai.*). */
     public static final class ThamSo {
-        public int doiThuongPhanTram = 30;
+        /** 0.9.8 (chu game): 5% - chi Pokemon hoang da (loai rieng) bat duoc nen phai hiem; truoc 30%. */
+        public int doiThuongPhanTram = 5;
+        /** Toi da Pokemon hoang da (bat duoc) cung luc moi ban do / khu. */
+        public int toiDaMap = 2;
+        /** Pokemon hoang da khong ai giao chien qua so phut nay thi bien mat (cam giac su kien). */
+        public int phutBienMat = 4;
         public int gapT3 = 100;
         public int gapT4 = 600;
         public int gapT5 = 4000;

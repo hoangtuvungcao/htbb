@@ -3,14 +3,24 @@
  * Thu phục & Hộp PC (0.9.8). Số liệu: shared/utils/heThong098.ts (đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts):
  * data_bat_bong, data_bat_loai, data_bat_chuyen_doi, cấu hình bat.* và luật com.htbb.pokemon.BatPokemon.
  */
-import { BAC_LOAI, BAT, BONG, CHUYEN_DOI, phanTram098 } from '../../../shared/utils/heThong098'
+import { BAC_LOAI_BAT, BAT, BONG, CHUYEN_DOI, HOANG_DA, phanTram098 } from '~~/shared/utils/heThong098'
 
 const giaBong = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximumFractionDigits: 3 })} giờ thu nhập`
 </script>
 
 <template>
   <WikiShell slug="thu-phuc">
-    <WikiSection id="nem-bong" title="Ném bóng" :lead="`Đánh Pokémon hoang dã xuống còn ≤ ${BAT.nguongHpPhanTram}% HP thì nút Ném Poké Ball hiện trên màn hình. Bắt được: loài vào Pokédex “Đã bắt”, Hộp PC có thêm một con và bạn nhận Kẹo loài.`">
+    <WikiSection id="hoang-da" title="Pokémon hoang dã: chỉ chúng mới bắt được" lead="Quái thường trên bản đồ (quái cày, mục tiêu nhiệm vụ) đã thuần hoá, không bắt được. Thỉnh thoảng một con hồi sinh thành Pokémon HOANG DÃ của vùng — chỉ những con này ném bóng được.">
+      <ul class="cham">
+        <li>Nhận ra: dấu <strong>Poké Ball</strong> cạnh tên và <strong>vòng màu bậc</strong> dưới chân (Phổ biến / Không phổ biến lấp lánh nhẹ, Hiếm trở lên vòng đậm); khung mục tiêu ghi bậc và “Bắt được”.</li>
+        <li>Tần suất: Phổ biến / Không phổ biến khoảng {{ HOANG_DA.t12PhanTram }}% lần hồi sinh; Hiếm 1/{{ HOANG_DA.gapT3 }}, Rất hiếm 1/{{ HOANG_DA.gapT4 }}, Cực hiếm 1/{{ HOANG_DA.gapT5 }} (đúng giờ / thời tiết). Giờ ít người (0–5 giờ) loài hiếm gặp nhiều hơn.</li>
+        <li>Mỗi bản đồ (mỗi khu) tối đa {{ HOANG_DA.toiDaMap }} Pokémon hoang dã cùng lúc; con nào không ai giao chiến sau {{ HOANG_DA.phutBienMat }} phút sẽ biến mất.</li>
+        <li>Loài Hiếm trở lên được báo cho cả bản đồ; Cực hiếm báo toàn máy chủ.</li>
+        <li>Ném vào quái thường: “Pokémon này đã thuần hoá, không thể bắt”.</li>
+      </ul>
+    </WikiSection>
+
+    <WikiSection id="nem-bong" title="Ném bóng" :lead="`Đánh Pokémon hoang dã (dấu Poké Ball) xuống còn ≤ ${BAT.nguongHpPhanTram}% HP thì nút Ném Poké Ball hiện trên màn hình. Bắt được: loài vào Pokédex “Đã bắt”, Hộp PC có thêm một con và bạn nhận Kẹo loài.`">
       <div class="bang-cuon">
         <table class="bang-wiki">
           <thead>
@@ -68,7 +78,7 @@ const giaBong = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximum
 
     <WikiSection id="bac-hiem" title="Bậc hiếm loài" lead="Mỗi loài thuộc một bậc; bậc càng hiếm tỉ lệ gốc càng thấp (con số phổ biến nhất của bậc, vài loài khác một chút).">
       <ul class="grid gap-3 sm:grid-cols-4">
-        <li v-for="b in BAC_LOAI" :key="b.bac" class="the-so">
+        <li v-for="b in BAC_LOAI_BAT" :key="b.bac" class="the-so">
           <b>{{ phanTram098(b.tiLeGoc) }}%</b><span>{{ b.ten }}</span>
         </li>
       </ul>
@@ -95,7 +105,7 @@ const giaBong = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximum
           <tbody>
             <tr v-for="c in CHUYEN_DOI" :key="c.bac">
               <td class="font-semibold text-highlighted">
-                {{ BAC_LOAI[c.bac]?.ten }}
+                {{ BAC_LOAI_BAT[c.bac]?.ten }}
               </td>
               <td class="so">
                 {{ c.keo }}

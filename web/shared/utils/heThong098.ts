@@ -13,7 +13,7 @@ export const BONG = [
 ] as const
 
 /** Bậc hiếm loài (data_bat_loai.do_hiem) + tỉ lệ gốc phổ biến nhất của bậc (‰, data_bat_loai.ti_le_phan_nghin). */
-export const BAC_LOAI = [
+export const BAC_LOAI_BAT = [
   { bac: 0, ten: 'Thường', tiLeGoc: 400 },
   { bac: 1, ten: 'Ít gặp', tiLeGoc: 250 },
   { bac: 2, ten: 'Hiếm', tiLeGoc: 120 },
@@ -124,3 +124,9 @@ export const TAN_THU = [
 
 /** Phần nghìn -> "1,5" (phần trăm). */
 export const phanTram098 = (pn: number) => (pn / 10).toLocaleString('vi-VN', { maximumFractionDigits: 1 })
+
+/**
+ * Pokémon hoang dã (0.9.8, chủ game): chỉ quái mang loài riêng bắt được. cau_hinh_danh_muc loai.doi_thuong_phan_tram /
+ * loai.gap_t3..t5; toiDaMap / phutBienMat = com.htbb.pokemon.ChonLoaiHoangDa.ThamSo (hằng máy chủ).
+ */
+export const HOANG_DA = { t12PhanTram: 5, gapT3: 100, gapT4: 600, gapT5: 4000, toiDaMap: 2, phutBienMat: 4 } as const

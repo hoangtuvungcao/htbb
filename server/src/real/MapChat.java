@@ -1286,6 +1286,20 @@ class MapChat {
                                                 // Dong ho ao (chi may thu, sv.cho_phep_thu_nghiem=1) - xem com.htbb.pokemon.DongHo
                                                 player.sendMessage(MessageCreator.createServerAlertMessage(
                                                         com.htbb.pokemon.DongHo.tua(msgChat.length() > 3 ? msgChat.substring(4) : "", player.charname), ""));
+                                            } else if (msgChat.startsWith("hoangda ") && player.isAdmin) {
+                                                // 0.9.8 thu nghiem (GM): bien quai id thanh Pokemon hoang da loai dex bac b - "hoangda <id> <dex> [bac]"
+                                                try {
+                                                    String[] hd = Char.split(msgChat.substring(8).trim(), " ");
+                                                    Monster mq = map.getMonster(Short.parseShort(hd[0]), player.inCountry, player.region);
+                                                    if (mq != null && !mq.isDead) {
+                                                        mq.dexRieng = Integer.parseInt(hd[1]);
+                                                        mq.bacRieng = hd.length > 2 ? Integer.parseInt(hd[2]) : 1;
+                                                        mq.daCoLoaiRieng = true;
+                                                        LoaiQuaiGame.HOANG_DA.put(mq, Long.valueOf(System.currentTimeMillis()));
+                                                        mq.baoDoiLoai();
+                                                    }
+                                                } catch (Exception exHd) {
+                                                }
                                             } else if (msgChat.startsWith("mto")) {
                                                 if (player.isAdmin || TeamServer.isServerLocal()) {
                                                     String[] info = Char.split(msgChat.substring(4), " ");

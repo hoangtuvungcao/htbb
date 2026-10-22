@@ -3,7 +3,8 @@
  * Pokédex: toàn bộ 1.025 loài (bảng data_loai qua GET /api/pokedex), lọc theo tên/số, hệ, thế hệ, bậc, trạng thái
  * trong game và vai trò. Loài chưa mở trong game hiện "Chưa xuất hiện". CSDL chưa có dữ liệu đầy đủ thì rơi về
  * Pokédex tĩnh (shared/data/pokedex.json: các loài đang có trong game).
- * Bộ lọc ghi vào query (?q=&he=&gen=&bac=&tt=&vai=&xep=) để chia sẻ link được. Hiện theo trang 60 thẻ.
+ * Bộ lọc ghi vào query (?q=&he=&gen=&bac=&tt=&vai=&xep=) để chia sẻ link được. Hiện theo trang 60 thẻ (lọc / tìm trên cả
+ * danh sách). Ảnh thẻ: khung đầu đứng yên, tải trễ khi vào khung nhìn qua hàng đợi <= 6 ảnh (PokeSprite / useAnhTre).
  */
 import type { VaiTroLoai } from '~~/shared/utils/pokedex'
 import type { BoLocLoai, LoaiTomTat } from '~~/shared/utils/loai'
@@ -217,7 +218,7 @@ const dangLoc = computed(() => !!tim.value || [heChon, genChon, bacChon, ttChon,
               class="group flex h-full flex-col overflow-hidden rounded-2xl glass text-center transition hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--ui-primary)_55%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <span class="relative block" :class="l.bat ? '' : 'grayscale-[.7] opacity-75'">
-                <PokeSan :dex="l.dex" :he="l.he" :size="150" :delay="(i % 7) * 0.13" class="w-full" />
+                <PokeSan :dex="l.dex" :he="l.he" :size="150" :delay="(i % 7) * 0.13" tinh class="w-full" />
                 <span class="absolute left-2 top-2 rounded-full bg-white/85 px-1.5 py-1 font-pixel text-[9px] leading-none text-navy-800 shadow-sm dark:bg-navy-950/75 dark:text-navy-100">{{ soDex(l.dex) }}</span>
                 <span
                   v-if="l.bac"

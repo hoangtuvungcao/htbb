@@ -4229,6 +4229,22 @@ public class GameScr extends Screen {
                             game.pokemon.ChuDe.PHU, 0xF6E6C0, 1);
                     game.pokemon.ChuDe.chuGiua(g, game.pokemon.NhanTheGioi.lv(la.level), x0 + 5, yS, hS,
                             game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.VANG, 0);
+                    // 0.9.8: Pokémon hoang dã - bậc loài + "Bắt được" (màu bậc), giữa Lv và số HP
+                    int bacBat = la instanceof game.model.Monster ? game.pokemon.NhanQuai.bacBat((game.model.Monster) la) : 0;
+                    if (bacBat > 0) {
+                        String sb = new StringBuffer(game.pokemon.BangLoai.TEN_BAC[bacBat]).append(" · Bắt được").toString();
+                        int xL = x0 + 5 + game.pokemon.ChuDe.rong(game.pokemon.NhanTheGioi.lv(la.level), game.pokemon.ChuDe.PHU) + 4;
+                        int wL = x0 + W - 37 - game.pokemon.ChuDe.rong(game.pokemon.NhanTheGioi.hpMax(la.hp > 0 ? la.hp : 1, la.maxhp),
+                                game.pokemon.ChuDe.PHU) - 4 - xL;
+                        if (wL > hS + 10) {
+                            game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.POKEBALL, xL, yS + (hS - hS * 3 / 4) / 2, hS * 3 / 4, 0xE03C30, 0xFFFFFF);
+                            if (game.pokemon.ChuDe.rong(sb, game.pokemon.ChuDe.PHU) > wL - hS) {
+                                sb = "Bắt được";   // khung hẹp: chỉ "Bắt được" (màu vẫn theo bậc), không cắt "..."
+                            }
+                            game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(sb, game.pokemon.ChuDe.PHU, wL - hS), xL + hS, yS, hS,
+                                    game.pokemon.ChuDe.PHU, game.pokemon.BangLoai.mauBac(bacBat), 0);
+                        }
+                    }
                 } else {
                     String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
                     int wSo = Font.smallFont.getWidth(so) + 6;

@@ -626,8 +626,9 @@ public final class KiemLoaiDayDu {
         Kiem.dung("chon: T4 ~ 1/600 (0,10..0,24%) hoac khong co ung vien", (p4 > 0.0010 && p4 < 0.0024)
                 || ChonLoaiHoangDa.ungVien(d, "Kanto", 2, 20, false, 0, 4, 4).isEmpty());
         Kiem.bang("chon: T5 khong ra ban ngay quang dang", 0, dem[5]);
-        Kiem.dung("chon: doi T1-T2 ~ 30% (khong lam phong spawn: chi doi loai)", (dem[1] + dem[2]) / (double) N > 0.25
-                && (dem[1] + dem[2]) / (double) N < 0.33);
+        // 0.9.8 (chu game): chi Pokemon hoang da bat duoc -> T1-T2 hiem: ~5% (truoc 30%)
+        Kiem.dung("chon: Pokemon hoang da T1-T2 ~ 5% (khong lam phong spawn: chi doi loai)", (dem[1] + dem[2]) / (double) N > 0.03
+                && (dem[1] + dem[2]) / (double) N < 0.07);
         Kiem.bang("he so: gio it nguoi x1,5", 150, ChonLoaiHoangDa.heSoPhanTram(2, ts));
         Kiem.bang("he so: ban ngay x1", 100, ChonLoaiHoangDa.heSoPhanTram(14, ts));
         ts.heSoToiDaPhanTram = 120;

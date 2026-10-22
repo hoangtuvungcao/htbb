@@ -3,7 +3,7 @@
  * Danh hiệu (0.9.7 / 0.9.8). Số liệu: shared/utils/heThong098.ts (data_danh_hieu theo bậc, data_danh_hieu_do_hiem,
  * danh_hieu.tran_phan_nghin) — đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts.
  */
-import { DANH_HIEU, phanTram098 } from '../../../shared/utils/heThong098'
+import { DANH_HIEU, phanTram098 } from '~~/shared/utils/heThong098'
 
 const tong = DANH_HIEU.bac.reduce((s, b) => s + b.so, 0)
 </script>

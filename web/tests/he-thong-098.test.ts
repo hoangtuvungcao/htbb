@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { docBangSql } from '../shared/utils/sqlDump.ts'
 import {
-  BAC_LOAI, BAT, BONG, CHAT, CHO_POKEMON, CHUYEN_DOI, DANH_HIEU, KET_DOI, NGAM_TAY, NGAY_CONG_DONG, PHO_BAN, TAN_THU,
+  BAC_LOAI_BAT, BAT, BONG, CHAT, HOANG_DA, CHO_POKEMON, CHUYEN_DOI, DANH_HIEU, KET_DOI, NGAM_TAY, NGAY_CONG_DONG, PHO_BAN, TAN_THU,
   THOI_TIET, TRAO_DOI,
 } from '../shared/utils/heThong098.ts'
 import { DS_CAM_NANG } from '../shared/utils/danhMucCamNang.ts'
@@ -28,7 +28,7 @@ test('Poké Ball / Great / Ultra == data_bat_bong', () => {
 
 test('bậc loài: tên + tỉ lệ gốc phổ biến nhất == data_bat_loai', () => {
   const loai = bang('data_bat_loai').filter(r => Number(r.bat_duoc) === 1 && Number(r.ti_le_phan_nghin) > 0)
-  for (const b of BAC_LOAI) {
+  for (const b of BAC_LOAI_BAT) {
     const dem = new Map<number, number>()
     for (const r of loai.filter(r => Number(r.do_hiem) === b.bac)) dem.set(Number(r.ti_le_phan_nghin), (dem.get(Number(r.ti_le_phan_nghin)) ?? 0) + 1)
     const pho = [...dem.entries()].sort((x, y) => y[1] - x[1])[0]![0]
@@ -59,6 +59,8 @@ test('thu phục / trao đổi / chợ Pokémon / phó bản / chat / ngắm tay
     ['sv.chat.chanToiDa', CHAT.chanToiDa],
     ['pvp.ngam_tay.bu_tre_ms', NGAM_TAY.buTreMs], ['pvp.ngam_tay.giay_giao_chien', NGAM_TAY.giayGiaoChien],
     ['danh_hieu.tran_phan_nghin', DANH_HIEU.tranPhanNghin],
+    ['loai.doi_thuong_phan_tram', HOANG_DA.t12PhanTram], ['loai.gap_t3', HOANG_DA.gapT3], ['loai.gap_t4', HOANG_DA.gapT4],
+    ['loai.gap_t5', HOANG_DA.gapT5],
   ]
   for (const [k, v] of ds) assert.equal(ch(k), v, k)
 })

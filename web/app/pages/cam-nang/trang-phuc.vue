@@ -3,8 +3,8 @@
  * Trang phục & trang trí (0.9.8): ngân sách chỉ số theo ô + danh mục trang phục, hào quang, skin thú cưỡi, thẻ bạn
  * đồng hành. Dữ liệu: /api/do-trang-phuc (CSDL, rơi về shared/data/danh-muc-do-trang-phuc.json).
  */
-import macDinh from '../../../shared/data/danh-muc-do-trang-phuc.json'
-import { TEN_DO_HIEM, duongIcon, moTaNguon, phanTram, tongNganSach } from '../../../shared/utils/doTrangPhuc.mjs'
+import macDinh from '~~/shared/data/danh-muc-do-trang-phuc.json'
+import { TEN_DO_HIEM, duongIcon, moTaNguon, phanTram, tongNganSach } from '~~/shared/utils/doTrangPhuc.mjs'
 
 const { data } = await useFetch('/api/do-trang-phuc', { key: 'do-trang-phuc', default: () => macDinh })
 const dm = computed(() => data.value ?? macDinh)

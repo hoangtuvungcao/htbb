@@ -48,6 +48,8 @@ public final class NhanTheGioi {
     // xếp chỗ (toạ độ giao diện)
     private static final int[] X = new int[TOI_DA], Y = new int[TOI_DA], W = new int[TOI_DA], H = new int[TOI_DA];
     private static final int[] WTIEN = new int[TOI_DA];
+    /** 0.9.8: Pokémon hoang dã (bắt được): bậc 1..5 (0 = quái thường / người) - dấu Poké Ball PNG + tên màu bậc. */
+    private static final int[] BAT = new int[TOI_DA];
     /** 0 bỏ, 1 thường, 2 mờ */
     private static final int[] TT = new int[TOI_DA];
     private static final int[] THU = new int[TOI_DA];
@@ -91,6 +93,7 @@ public final class NhanTheGioi {
         CHON[i] = chon;
         NONG[i] = nong;
         DH[i] = null;
+        BAT[i] = loai == QUAI && ai instanceof game.model.Monster ? NhanQuai.bacBat((game.model.Monster) ai) : 0;
         if (loai != QUAI && ai instanceof game.model.Char) {
             game.model.Char c = (game.model.Char) ai;
             if (c.danhHieuTen != null && c.danhHieuTen.length() > 0) {
@@ -309,9 +312,13 @@ public final class NhanTheGioi {
                 wt = rong(TIEN[i], c, 2) + 3;
                 w += wt;
             }
+            int hh = CHON[i] ? hC : LOAI[i] == PET ? hP : h;
+            if (BAT[i] > 0) {
+                w += hh + 2;   // dấu Poké Ball trước tên
+                wt += hh + 2;
+            }
             WTIEN[i] = wt;
             WCHU[i] = w;
-            int hh = CHON[i] ? hC : LOAI[i] == PET ? hP : h;
             int day = sy(WY[i]);
             if (HP[i] >= 0) {
                 day -= 5;   // thanh HP dưới chữ
@@ -463,9 +470,17 @@ public final class NhanTheGioi {
         } else {
             mau = chon ? 0xFFFFFF : 0xEEF3FF;
         }
+        if (BAT[i] > 0) {
+            // 0.9.8: Pokémon hoang dã bắt được - Poké Ball (icon PNG) trước "Lv"; tên màu bậc loài
+            BieuTuong.ve(g, BieuTuong.POKEBALL, x, y, hh, 0xE03C30, 0xFFFFFF);
+            x += hh + 2;
+            if (!mo) {
+                mau = BangLoai.mauBac(BAT[i]);
+            }
+        }
         if (TIEN[i] != null) {
             chuVien(g, TIEN[i], x, y, co, 2, mo ? 0xB8B090 : 0xFFD54A, VIEN, 0);
-            x += WTIEN[i];
+            x += WTIEN[i] - (BAT[i] > 0 ? hh + 2 : 0);
         }
         chuVien(g, CHU[i], x, y, co, dam, mau, VIEN, 0);
         if (HP[i] >= 0) {

@@ -3,7 +3,7 @@
  * Trao đổi & chợ Pokémon (0.9.8). Số liệu: shared/utils/heThong098.ts (trao_doi.*, cho_pokemon.*, khung giá
  * com.htbb.pokemon.ChoPokemon) — đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts.
  */
-import { BAC_LOAI, CHO_POKEMON, TRAO_DOI, phanTram098 } from '../../../shared/utils/heThong098'
+import { BAC_LOAI_BAT, CHO_POKEMON, TRAO_DOI, phanTram098 } from '~~/shared/utils/heThong098'
 
 const gio = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} giờ`
 </script>
@@ -12,7 +12,7 @@ const gio = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximumFrac
   <WikiShell slug="trao-doi-cho">
     <WikiSection id="trao-doi" title="Trao đổi Pokémon" :lead="`Hai người chơi từ cấp ${TRAO_DOI.cap} đổi Pokémon trong Hộp PC: mỗi bên chọn con, khoá, rồi xác nhận lần hai. Đổi một lần cho cả hai bên — rớt mạng giữa chừng thì không ai mất gì.`">
       <ul class="cham">
-        <li>Người nhận trả phí mỗi con: <strong>{{ phanTram098(TRAO_DOI.phiPhanNghinGio) }}% giờ thu nhập</strong> ở cấp của mình × bậc hiếm (×1 / ×2 / ×4 / ×8 cho {{ BAC_LOAI.map(b => b.ten).join(' / ') }}), sắc màu ×4, 3 sao ×2; một con tối đa {{ gio(TRAO_DOI.phiTranPhanNghinGio) }} thu nhập. Phí bị đốt (hố hút xu).</li>
+        <li>Người nhận trả phí mỗi con: <strong>{{ phanTram098(TRAO_DOI.phiPhanNghinGio) }}% giờ thu nhập</strong> ở cấp của mình × bậc hiếm (×1 / ×2 / ×4 / ×8 cho {{ BAC_LOAI_BAT.map(b => b.ten).join(' / ') }}), sắc màu ×4, 3 sao ×2; một con tối đa {{ gio(TRAO_DOI.phiTranPhanNghinGio) }} thu nhập. Phí bị đốt (hố hút xu).</li>
         <li>Nhận tối đa <strong>{{ TRAO_DOI.tranNgay }} Pokémon / ngày</strong> qua trao đổi, mỗi lần đổi cách nhau {{ TRAO_DOI.cachGiay }} giây.</li>
         <li>Con vừa nhận phải chờ <strong>{{ TRAO_DOI.khoaGio }} giờ</strong> mới đổi tiếp được (chống chuyền tay).</li>
         <li>Vài loài tiến hoá khi được trao đổi, như Pokémon thật — xem <NuxtLink to="/cam-nang/thu-phuc#hop-pc" class="lien-ket">Hộp PC & tiến hoá</NuxtLink>.</li>
@@ -51,7 +51,7 @@ const gio = (pn: number) => `${(pn / 1000).toLocaleString('vi-VN', { maximumFrac
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(b, i) in BAC_LOAI" :key="b.bac">
+            <tr v-for="(b, i) in BAC_LOAI_BAT" :key="b.bac">
               <td class="font-semibold text-highlighted">
                 {{ b.ten }}
               </td>

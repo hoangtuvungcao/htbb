@@ -113,7 +113,7 @@ public final class KiemTienTe {
     /** dòng không phải giao diện (nhật ký, SQL, regex, thông số) */
     static final Pattern KHONG_UI = Pattern.compile("saveOrtherLog|System\\.out|System\\.err|Cout\\.|Nhat\\.|NhatKy|Log\\.[deiw]|console\\.|"
             + "executeQuery|executeUpdate|prepareStatement|SELECT |UPDATE |INSERT |DELETE |Pattern\\.|\\.matches\\(|replaceAll|\\.mau\\(|"
-            + "log\\(|logger|ghiLog|Database\\.instance\\.save|getProperty\\(");
+            + "log\\(|logger|ghiLog|Database\\.instance\\.save|getProperty\\(|case '");   // case '$': bang ky tu (DatTenPet chuan hoa ten)
 
     static final List<String> LOI = new ArrayList<String>();
 

@@ -58,7 +58,7 @@ const suKienShiny = CAM_NANG.suKien.filter(s => /shiny/i.test(`${s.ten1} ${s.coC
       <ul class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
         <li v-for="l in loaiShiny" :key="l.dex">
           <NuxtLink :to="`/pokedex/${l.dex}`" class="group block overflow-hidden rounded-2xl glass text-center transition hover:-translate-y-0.5">
-            <PokeSan :dex="l.dex" shiny :he="l.he" :size="96" class="w-full" />
+            <PokeSan :dex="l.dex" shiny :he="l.he" :size="96" tinh class="w-full" />
             <span class="block py-2 text-sm font-bold text-highlighted group-hover:text-primary">{{ l.ten }}</span>
           </NuxtLink>
         </li>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CUP, NGAM_TAY, XEP_HANG } from '../../../shared/utils/heThong098'
+import { CUP, NGAM_TAY, XEP_HANG } from '~~/shared/utils/heThong098'
 const { camNang: CAM_NANG } = await useCamNang() // số liệu CSDL game, dự phòng JSON
 /**
  * PvP xếp hạng mùa — luật thang từ ThangPvp.java / ThangPvpGame.java (cam-nang-noi-dung.json),

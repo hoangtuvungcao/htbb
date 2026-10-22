@@ -653,6 +653,12 @@ public class Monster extends LiveActor {
             }
             return;
         }
+        if (this.dexRieng > 0) {
+            LoaiQuaiGame.nhip(this); // 0.9.8: Pokemon hoang da khong ai giao chien -> bien mat
+            if (this.isDead) {
+                return;
+            }
+        }
         if (System.currentTimeMillis() - this.timeOutPoinson >= this.tDelay * 1000 && this.tDelay > 0) {
             this.getXpReceive(this.poinson);
             this.hp -= this.poinson;

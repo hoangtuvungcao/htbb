@@ -77,6 +77,8 @@ public final class BatPokemonGame {
     /** Npc ao (xem BoNgocGame.NPC_ID): menu bong, Hop PC, mot con, xac nhan tha. */
     public static final int NPC_BONG = -581, NPC_HOP = -582, NPC_CON = -583, NPC_THA = -584, NPC_TIEN_HOA = -585;
     public static final String TEN_MUC_CHANSEY = "Poké Ball & Hộp PC";
+    /** Nem vao quai thuong (khong phai Pokemon hoang da). */
+    public static final String KHONG_HOANG_DA = "Pokémon này đã thuần hoá, không thể bắt - hãy tìm Pokémon hoang dã (có dấu Poké Ball cạnh tên).";
     public static final String TEN_MUC_POKEDEX = "Hộp PC";
     /** So bong moi lan mua. */
     public static final int GOI_BONG = 5;
@@ -448,6 +450,11 @@ public final class BatPokemonGame {
         }
         if (Math.abs(m.x - p.x) > TAM_NEM || Math.abs(m.y - p.y) > TAM_NEM) {
             tuChoi(p, idQuai, thuTu, "Pokémon ở quá xa, hãy lại gần hơn.");
+            return;
+        }
+        if (!LoaiQuaiGame.laHoangDa(m)) {
+            // 0.9.8 (chu game): quai thuong (mau ban do, muc tieu nhiem vu, quai cay) KHONG bat duoc - chi Pokemon hoang da
+            tuChoi(p, idQuai, thuTu, KHONG_HOANG_DA);
             return;
         }
         final long[] g;

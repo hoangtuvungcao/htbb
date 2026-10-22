@@ -3,7 +3,7 @@
  * Kênh chat (0.9.8, client 908). Số liệu: shared/utils/heThong098.ts (sv.chat.* của cau_hinh_danh_muc; tên kênh
  * com.htbb.pokemon.KenhChatLogic.TEN_KENH) — đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts.
  */
-import { CHAT } from '../../../shared/utils/heThong098'
+import { CHAT } from '~~/shared/utils/heThong098'
 
 const KENH = [
   { ten: 'Bản đồ', mo: `Người ở gần bạn trên cùng bản đồ. Từ cấp ${CHAT.capGan}.` },

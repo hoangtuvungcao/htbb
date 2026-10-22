@@ -635,6 +635,9 @@ public final class BatPokemon {
         if (!MonsterTemplate.laPokemon(m.monster_type) || HePoke.laBoss(m.monster_type)) {
             return false;
         }
+        if (NhanQuai.bacBat(m) <= 0) {
+            return false;   // 0.9.8: chỉ Pokémon HOANG DÃ (dấu Poké Ball) bắt được; quái thường không hiện nút
+        }
         return (long) m.hp * 100L <= (long) m.maxhp * nguongHp;
     }
 
@@ -668,6 +671,10 @@ public final class BatPokemon {
         int x = x0 + W - w, y = H + 3;
         boolean an = Bang.dangAn(g, x, y, w - wDoi, h);
         GiaoDien.khoi(g, x, y + 1, w, h, h / 2, ChuDe.BONG);
+        if (con && (System.currentTimeMillis() / 400) % 2 == 0) {
+            // 0.9.8: nút nhấp nháy (HP đã dưới ngưỡng - ném ngay)
+            GiaoDien.khoi(g, x - 2, y - 2, w + 4, h + 4, h / 2 + 2, ChuDe.VANG);
+        }
         GiaoDien.khoiDoc(g, x, y, w, h, h / 2, con ? (an ? ChuDe.DO_TOI : 0xF7735F) : 0xCDD5DC, con ? ChuDe.DO : 0xC3CCD4);
         GiaoDien.pokeBall(g, x + 6 + r, y + h / 2, r, (int) ((System.currentTimeMillis() / 6) % 40) - 20);
         ChuDe.chuGiua(g, chu, x + 2 * r + 12, y, h, ChuDe.NHAN, 0xFFFFFF, 0);

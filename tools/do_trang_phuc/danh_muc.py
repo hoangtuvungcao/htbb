@@ -165,9 +165,9 @@ TRANG_PHUC = [
      "Băng đô và áo choàng Gym - món chế cao cấp."),
     # 0.9.8 đồng bộ: món "Skin" của cửa hàng lượng cũ (nap_cua_hang nhom skin) vào ô Trang phục, GIỮ mã cũ để
     # nap_so_huu của người đã mua tự thành món tủ đồ (một hệ thống, một lối vào).
-    (33, "skin_mu_rom", "Trang phục Mũ rơm", [8], 1, "cua_hang", "", 600, "Mũ rơm đi biển."),
+    (33, "skin_mu_rom", "Trang phục Mũ rơm", [8, 35], 1, "cua_hang", "", 600, "Mũ rơm và vòng hoa đi biển."),
     (34, "skin_khan_quang", "Trang phục Khăn quàng mùa đông", [31], 1, "cua_hang", "", 600, "Khăn len sọc ấm áp."),
-    (35, "skin_kinh_ram", "Trang phục Kính râm", [26], 2, "cua_hang", "", 600, "Kính râm đẩy lên trán."),
+    (35, "skin_kinh_ram", "Trang phục Kính râm", [26, 36], 2, "cua_hang", "", 600, "Kính râm đẩy lên trán và khăn rằn."),
     (36, "skin_no_xinh", "Trang phục Nơ xinh", [22, 33], 1, "cua_hang", "", 600, "Nơ tim trên đầu và nơ cổ."),
 ]
 

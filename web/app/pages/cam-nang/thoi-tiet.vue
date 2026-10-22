@@ -3,7 +3,7 @@
  * Thời tiết & ngày cộng đồng (0.9.8). Số liệu: shared/utils/heThong098.ts (data_thoi_tiet, data_ngay_cong_dong, hằng số
  * com.htbb.pokemon.ThoiTietLich / NgayCongDong) — đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts.
  */
-import { NGAY_CONG_DONG, THOI_TIET } from '../../../shared/utils/heThong098'
+import { NGAY_CONG_DONG, THOI_TIET } from '~~/shared/utils/heThong098'
 
 const khung = Array.from({ length: THOI_TIET.soKhung }, (_, i) => `${String(i * THOI_TIET.gioKhung).padStart(2, '0')}:00–${String((i + 1) * THOI_TIET.gioKhung).padStart(2, '0')}:00`)
 </script>

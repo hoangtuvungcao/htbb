@@ -3,8 +3,8 @@
  * Đồ họ & bộ trang bị (0.9.8): 18 bộ hệ + 3 bộ huy chương vùng. Dữ liệu: /api/do-trang-phuc (CSDL, rơi về
  * shared/data/danh-muc-do-trang-phuc.json) — sinh bởi tools/do_trang_phuc/sinh.py.
  */
-import macDinh from '../../../shared/data/danh-muc-do-trang-phuc.json'
-import { TEN_BAC, TEN_CHI_SO_BO, TEN_NGUON_DO, TEN_O, duongIcon, phanTram } from '../../../shared/utils/doTrangPhuc.mjs'
+import macDinh from '~~/shared/data/danh-muc-do-trang-phuc.json'
+import { TEN_BAC, TEN_CHI_SO_BO, TEN_NGUON_DO, TEN_O, duongIcon, phanTram } from '~~/shared/utils/doTrangPhuc.mjs'
 
 const { data } = await useFetch('/api/do-trang-phuc', { key: 'do-trang-phuc', default: () => macDinh })
 const dm = computed(() => data.value ?? macDinh)
