@@ -237,6 +237,7 @@ public final class NhiemVuEngine {
     /** Mot su kien {@code kieu} (tham so {@code thamSo}, so lan {@code n}) cua nhan vat. */
     public static void suKien(final Char p, final String kieu, final String thamSo, final int n) {
         DanhHieuGame.suKien(p, kieu, thamSo, n); // danh hieu (bo dem rieng, chay ca khi khong co nhiem vu kieu nay)
+        HuongDanTanThuGame.suKien(p, kieu, thamSo, n); // buoc huong dan tan thu (chuoi chinh HD.xx) + moi khi vao lang
         if (!LauDai.bat() || p == null || p.charDBID <= 0 || n <= 0) {
             return;
         }

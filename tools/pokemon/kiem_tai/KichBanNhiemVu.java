@@ -147,6 +147,18 @@ class KichBanNhiemVu {
             b.bom(1000);
             q = tim(ds(b, m, 0), 0);
         }
+        if (q != null && q.id < KichBanHuongDan.SO_BUOC && q.loai != 0) {
+            // huong dan tan thu (10 buoc dau, co buoc mang do / hanh dong): bo qua nhu nguoi choi da quen (menu moi + xac nhan)
+            int m0 = b.moc();
+            b.menu(KichBanHuongDan.NPC_SO_TAY, KichBanHuongDan.MENU_MOI, 1);
+            b.cho(x -> x.coLenh(m0, -32), 3000);
+            BotChucNang.SuKien p = b.layLenh(m0, -32);
+            int m1 = b.moc();
+            b.gui(-32, (short) (p == null ? b.actor : p.so[0]), (byte) KichBanHuongDan.POPUP_BO_QUA, "", (byte) 1);
+            b.bom(1500);
+            Nv sau = tim(ds(b, m1, 0), 0);
+            if (sau != null) q = sau;
+        }
         for (int i = 0; i < 6 && q != null && q.loai == 3; i++) {
             int m = b.moc();
             gui(b, 1, q.id, 0);

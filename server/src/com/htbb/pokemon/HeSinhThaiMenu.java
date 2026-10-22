@@ -496,6 +496,7 @@ public final class HeSinhThaiMenu {
             return;
         }
         HeSinhThaiGame.danhDau(p);
+        real.DiemMocNhiemVu.khiThaCau(p); // huong dan tan thu: buoc tha cau (khong doi ca can)
     }
 
     /** Lenh chat "keocan" (client moi): keo can. Dung khung -> tra ket qua; som / muon -> ca thoat. */

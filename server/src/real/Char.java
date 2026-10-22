@@ -1854,6 +1854,12 @@ public class Char extends LiveActor {
         return n >= this.MAX_INVENTORY * this.maxBag;
     }
 
+    /** So o hanh trang con trong (cung cong thuc isFullInventory) - huong dan tan thu: bo qua can du o cho thuong. */
+    public int soOTrongHanhTrang() {
+        final int n = this.iItems.size() + this.countPotion() + this.tItems.size() + this.rItems.size() + this.countGemLock() + this.countGem() + this.countSpecial();
+        return Math.max(0, this.MAX_INVENTORY * this.maxBag - n);
+    }
+
     public short countPotion() {
         short a = 0;
         for (int i = 1; i < this.potions.length; ++i) {
@@ -12778,6 +12784,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
     /** Khoa xu ly goi nhiem vu -64 / 52 (goi doc tren luong phien, tien do tren luong ban do). */
     private final Object khoaNhiemVu = new Object();
 
+    /** Khoa nhiem vu cua nhan vat (HuongDanTanThuGame.boQua doi chuoi chinh duoi cung khoa voi OnQuest). */
+    Object khoaNhiemVu() {
+        return this.khoaNhiemVu;
+    }
+
     /** 0.9.6: questID (main_sub) co trong danh sach nhiem vu dang moi nhan khong. */
     public static boolean coTrongDanhSachNhan(final java.util.List<NewCharQuest> ds, final short questID, final byte mainSub) {
         if (ds == null) {
@@ -12856,14 +12867,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         MessageCreator.createMsgCharQuest(this, 1);
                         this.sendMessage(MessageCreator.createCharInventoryMessage(this, 3));
                     } 
-                    else 
+                    else
                     {
                         MessageCreator.createMsgCharQuest(this, 2);
                     }
                     MessageCreator.createMsgCharQuest(this, 0);
                     this.sendMessage(MessageCreator.createServerAlertMessage("Đã nhận nhiệm vụ " + info.name, ""));
+                    HuongDanTanThuGame.khiNhan(this, info); // buoc huong dan da dat san (dang mac do, khong co he sinh thai)
                     Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
-                } catch (final Exception e) 
+                } catch (final Exception e)
                 {
                     e.printStackTrace();
                 }
