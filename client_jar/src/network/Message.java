@@ -50,6 +50,37 @@ public class Message {
         this.dis = new DataInputStream(this.is);
     }
 
+    /** 0.9.7.1: gói gom từ nhiều mảnh (Session_ME.nhanManh) - đọc qua LuongManh, không ghép thành một mảng. */
+    private LuongManh manh;
+
+    Message(byte command, LuongManh in) {
+        this.command = command;
+        this.manh = in;
+        this.dis = new DataInputStream(in);
+    }
+
+    /**
+     * Đưa luồng đọc về đầu gói (xử lý lại sau khi giải phóng bộ nhớ - Session_ME.xuLy). false = không làm được
+     * (gói đang ghi).
+     */
+    boolean tuDau() {
+        try {
+            if (this.manh != null) {
+                this.manh.reset();
+                this.dis = new DataInputStream(this.manh);
+                return true;
+            }
+            if (this.is != null) {
+                this.is.reset();
+                this.dis = new DataInputStream(this.is);
+                return true;
+            }
+        } catch (Throwable e) {
+            // không về đầu được
+        }
+        return false;
+    }
+
     public byte[] getData() {
         return this.os.toByteArray();
     }

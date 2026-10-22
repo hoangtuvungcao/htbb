@@ -833,6 +833,11 @@ public class TeamServer {
             io.GoiNen.BAT = parseIntDefault(p.getProperty("sv.nenGoi"), 1) != 0;
             io.GoiNen.NGUONG = Math.max(64, parseIntDefault(p.getProperty("sv.nenGoiTu"), 2048));
             System.out.println("NEN GOI -> " + (io.GoiNen.BAT ? "bat, goi >= " + io.GoiNen.NGUONG + " B (chi client co kha nang nen)" : "tat"));
+            // 0.9.7.1: chia goi lon thanh manh cho client J2ME tu bao gom duoc (io.GoiManh)
+            io.GoiManh.BAT = parseIntDefault(p.getProperty("sv.manhGoi"), 1) != 0;
+            io.GoiManh.NGUONG = Math.max(1024, parseIntDefault(p.getProperty("sv.manhGoiTu"), 16384));
+            io.GoiManh.CO_MANH = Math.max(256, Math.min(32000, parseIntDefault(p.getProperty("sv.coManhGoi"), 8192)));
+            System.out.println("MANH GOI -> " + (io.GoiManh.BAT ? "bat, goi >= " + io.GoiManh.NGUONG + " B, manh " + io.GoiManh.CO_MANH + " B (chi client co kha nang manh)" : "tat"));
             if (!io.BoDemGoiTin.MIEN_IP.isEmpty()) {
                 com.htbb.log.Nhat.canhBao("NGAP_GOI", "sv.tranGoiMienIp=" + io.BoDemGoiTin.MIEN_IP
                         + " - cac IP nay KHONG bi dem ngap goi (chi dung cho may chay bot tai)");

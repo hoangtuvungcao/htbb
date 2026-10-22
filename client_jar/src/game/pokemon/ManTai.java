@@ -99,9 +99,104 @@ public final class ManTai {
     public static void xong() {
         dangVao = false;
         phu = null;
+        loi = null;
         if (Canvas.currentDialog == HOP) {
             Canvas.endDlg();
         }
+        BoNho.vaoTheGioi();
+    }
+
+    // ------------------------------------------------------------------ 0.9.7.1: màn tải không bao giờ quay mãi
+    /**
+     * Lỗi đã báo của lần tải này (null = chưa). Trước 0.9.7.1 màn tải không có giới hạn: một gói bị bỏ (thiếu bộ nhớ
+     * trên máy J2ME heap nhỏ, giả lập iOS) hay máy chủ không trả lời là quay mãi, người chơi chỉ còn cách tắt game.
+     * Nay: gói hỏng lúc đang tải (Session_ME báo {@link #baoLoi}) hoặc màn tải đứng một bước quá lâu -> hộp lỗi có
+     * lý do + "Thử lại" (đăng nhập lại, vào đúng Pokémon) / "Thoát".
+     */
+    public static volatile String loi;
+    /** Bước đứng yên quá ĐỨNG_MS mà QUÁ IM_MS không nhận byte nào -> lỗi; quá ĐỨNG_TOI_DA_MS -> lỗi dù vẫn có byte. */
+    public static long DUNG_MS = 60000L, IM_MS = 20000L, DUNG_TOI_DA_MS = 180000L;
+    private static long tuNhanByte, tuDangMo;
+    private static int byteCu = -1, buocCu = -1;
+    private static boolean moCu;
+    /** số lần đã báo lỗi (kiểm thử) */
+    public static int soLanLoi;
+
+    /** Màn tải đang hiện (hộp chặn hoặc màn chuyển bản đồ). */
+    static boolean dangHien() {
+        return Canvas.currentDialog == HOP || Canvas.currentScreen instanceof game.render.screen.ChangScr;
+    }
+
+    /** Canvas.run mỗi nhịp: canh màn tải đứng yên. */
+    public static void tick() {
+        try {
+            long t = System.currentTimeMillis();
+            boolean mo = dangHien() && loi == null && !TuNoiLai.dangNoi;
+            int b = network.Session_ME.gI().recvByteCount;
+            if (b != byteCu) {
+                byteCu = b;
+                tuNhanByte = t;
+            }
+            if (!mo) {
+                moCu = false;
+                return;
+            }
+            if (!moCu || buoc != buocCu) {
+                moCu = true;
+                buocCu = buoc;
+                tuDangMo = t;
+                tuNhanByte = t;
+            }
+            long dung = t - tuDangMo;
+            if (dung > DUNG_MS && t - tuNhanByte > IM_MS || dung > DUNG_TOI_DA_MS) {
+                baoLoi("Máy chủ không gửi đủ dữ liệu (" + (dung / 1000) + " giây ở bước \"" + ten(buoc) + "\").");
+            }
+        } catch (Throwable e) {
+            // không bao giờ làm hỏng nhịp game
+        }
+    }
+
+    static String ten(int b) {
+        return b >= 0 && b < TEN.length ? TEN[b] : TEN[0];
+    }
+
+    /**
+     * Lần tải này hỏng (Session_ME: gói không cấp phát / không xử lý được vì thiếu bộ nhớ; tick: đứng quá lâu): hiện
+     * hộp lỗi thay màn tải. Chỉ khi đang tải (đường vào game / chuyển bản đồ); trong game thì chỉ ghi nhật ký.
+     */
+    public static void baoLoi(String lyDo) {
+        if (loi != null || !(dangVao || dangHien())) {
+            GiamSat.ghi("loi tai (bo qua, khong dang tai): " + lyDo);
+            return;
+        }
+        loi = lyDo;
+        soLanLoi++;
+        GiamSat.ghi("loi tai: " + lyDo);
+        network.Session_ME.baoLoiTai(lyDo);
+        final String tk = TuNoiLai.tk(Canvas.loginScr != null && Canvas.loginScr.tfUser != null ? Canvas.loginScr.tfUser.getText() : "");
+        final String mk = TuNoiLai.mk(Canvas.loginScr != null && Canvas.loginScr.tfPass != null ? Canvas.loginScr.tfPass.getText() : "");
+        String goiY = BoNho.soLanGiai > 0
+                ? " Máy / giả lập đang thiếu bộ nhớ: game đã chuyển sang chế độ tiết kiệm. Hãy đóng ứng dụng khác, tăng bộ nhớ Java (heap) trong cài đặt giả lập hoặc dùng bản nhẹ."
+                : " Kiểm tra mạng rồi thử lại.";
+        if (Canvas.currentDialog == HOP) {
+            Canvas.endDlg();
+        }
+        HopThongBao.mo("Không tải được dữ liệu", lyDo + goiY, HopThongBao.LOI, new String[]{"Thoát", "Thử lại"},
+                new int[]{Bang.PHU, Bang.CHINH}, new game.model.IAction[]{new game.model.IAction() {
+                    public void perform() {
+                        dangVao = false;
+                        Canvas.cmdNgatKetNoi.action.perform();
+                        moCu = false;
+                        loi = null;
+                    }
+                }, new game.model.IAction() {
+                    public void perform() {
+                        TuNoiLai.thuCong();
+                        game.render.screen.GameScr.noiLai(tk, mk);
+                        moCu = false;   // canh lại từ đầu cho lần tải mới
+                        loi = null;
+                    }
+                }}, null);
     }
 
     public static boolean dangMo() {
@@ -138,7 +233,8 @@ public final class ManTai {
         g.setClip(0, 0, w, h);
         boolean coBanner = false;
         try {
-            coBanner = Banner.ve(g, -1, b == KHOI_DONG);
+            // 0.9.7.1: J2ME đổi bản đồ trong game không nạp lại banner (~0,9 MB ARGB đã bỏ khi vào thế giới)
+            coBanner = (dangVao || b == KHOI_DONG || !BoNho.laJ2me) && Banner.ve(g, -1, b == KHOI_DONG);
         } catch (Throwable e) {
             // thiếu ảnh banner
         }

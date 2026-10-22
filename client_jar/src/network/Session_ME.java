@@ -48,9 +48,47 @@ public class Session_ME implements ISession {
         }
     }
 
+    /** Lệnh gói mảnh (server io.GoiManh.LENH_MANH): gói lớn chia nhiều gói nhỏ liên tiếp. Client -> server: báo lỗi tải. */
+    public static final byte GOI_MANH = -126;
+    /** Bit khả năng: gom được gói mảnh -126 (0.9.7.1, mọi bản - J2ME không có zip nên server chia mảnh thay vì nén). */
+    public static final int KHA_NANG_MANH = 2;
+
     /** Số nguyên khả năng gửi sau số bản ở gói đăng nhập (server LoginHandler -> Session.khaNang). */
     public static int khaNang() {
-        return giaiNen != null ? KHA_NANG_NEN : 0;
+        return (giaiNen != null ? KHA_NANG_NEN : 0) | KHA_NANG_MANH;
+    }
+
+    /** Gói đánh dấu (không phải gói thật): đã bỏ một gói không cấp phát được / đang gom mảnh. */
+    static final Message BO_QUA = new Message(), CHO_MANH = new Message();
+    /** số gói đã bỏ vì thiếu bộ nhớ / số gói mảnh đã gom (kiểm thử) */
+    public static int soGoiBo, soGoiManh;
+    /** đang gom mảnh: lệnh gốc, số byte còn thiếu, các mảnh */
+    private byte manhLenh;
+    private int manhCon = -1;
+    private Vector manh;
+    private Vector manhDau;
+
+    /**
+     * 0.9.7.1: báo lỗi tải về máy chủ (gói -126 client -> server: lý do, heap tổng / trống KB, bước màn tải, số lần
+     * thiếu bộ nhớ) - để nhật ký máy chủ thấy được client kẹt vì sao. Máy chủ cũ bỏ qua lệnh lạ.
+     */
+    public static void baoLoiTai(String lyDo) {
+        try {
+            if (!instance.connected || !instance.getKeyComplete) {
+                return;
+            }
+            Message m = new Message(GOI_MANH);
+            m.writer().writeUTF(lyDo == null ? "" : (lyDo.length() > 200 ? lyDo.substring(0, 200) : lyDo));
+            Runtime r = Runtime.getRuntime();
+            m.writer().writeInt((int) (r.totalMemory() >> 10));
+            m.writer().writeInt((int) (r.freeMemory() >> 10));
+            m.writer().writeByte(game.pokemon.ManTai.buoc);
+            m.writer().writeShort(game.pokemon.BoNho.soLanGiai);
+            m.writer().writeShort(soGoiBo);
+            instance.sendMessage(m);
+        } catch (Throwable e) {
+            // bỏ qua
+        }
     }
     int countMsg = 0;
 
@@ -260,18 +298,19 @@ public class Session_ME implements ISession {
                     if (message == null) {
                         break;
                     }
-                    try {
-                        if (message.command == -40) {
-                            getKey(message);
-                        } else {
-                            Session_ME.this.messageHandler.onMessage(message);
-                        }
-                    } catch (Throwable e) {
-                        // 0.9.4: lỗi một gói chỉ bỏ gói đó (ghi nhật ký kèm mã lệnh), luồng mạng chạy tiếp
-                        game.pokemon.GiamSat.loi("goi tin lenh " + message.command, e);
+                    if (message == CHO_MANH) {
+                        continue;
                     }
+                    if (message == BO_QUA) {
+                        game.pokemon.ManTai.baoLoi("Không đủ bộ nhớ để nhận dữ liệu từ máy chủ.");
+                        continue;
+                    }
+                    xuLy(message);
                 }
-            } catch (Exception e2) {
+            } catch (Throwable e2) {
+                // 0.9.7.1: bắt cả Error (OutOfMemoryError...) - trước chỉ bắt Exception: luồng mạng chết im lặng, không
+                // báo mất kết nối, màn tải quay mãi (gói giữ kết nối vẫn chạy nên máy chủ cũng không thấy gì)
+                game.pokemon.GiamSat.loi("luong mang", e2);
             }
             if (Session_ME.this.connected) {
                 Cout.println("dang ket noi ");
@@ -287,6 +326,114 @@ public class Session_ME implements ISession {
                 }
                 Session_ME.this.cleanNetwork();
             }
+        }
+
+        /**
+         * Xử lý một gói. 0.9.7.1: thiếu bộ nhớ khi xử lý -> giải phóng (BoNho.giai) rồi xử lý LẠI gói từ đầu một lần;
+         * vẫn hỏng thì báo lỗi tải (hộp lỗi + Thử lại) thay vì bỏ gói im lặng.
+         */
+        private void xuLy(Message message) {
+            for (int lan = 0; lan < 2; lan++) {
+                try {
+                    if (message.command == -40) {
+                        getKey(message);
+                    } else {
+                        Session_ME.this.messageHandler.onMessage(message);
+                    }
+                    return;
+                } catch (OutOfMemoryError e) {
+                    game.pokemon.GiamSat.loi("goi tin lenh " + message.command, e);
+                    if (lan == 0 && message.tuDau()) {
+                        game.pokemon.BoNho.giai("xu ly goi " + message.command);
+                        continue;
+                    }
+                    game.pokemon.ManTai.baoLoi("Không đủ bộ nhớ để xử lý dữ liệu (lệnh " + message.command + ").");
+                    return;
+                } catch (Throwable e) {
+                    // 0.9.4: lỗi một gói chỉ bỏ gói đó (ghi nhật ký kèm mã lệnh), luồng mạng chạy tiếp
+                    game.pokemon.GiamSat.loi("goi tin lenh " + message.command, e);
+                    return;
+                }
+            }
+        }
+
+        /** Cấp phát mảng gói n byte; thiếu bộ nhớ -> giải phóng rồi thử lại; vẫn không được -> null. */
+        private byte[] capPhat(int n) {
+            game.pokemon.BoNho.truocGoi(n);
+            try {
+                return new byte[n];
+            } catch (OutOfMemoryError e) {
+                game.pokemon.BoNho.giai("cap phat goi " + (n >> 10) + " KB");
+                try {
+                    return new byte[n];
+                } catch (OutOfMemoryError e2) {
+                    return null;
+                }
+            }
+        }
+
+        /** Đọc bỏ n byte dữ liệu gói (giữ đúng vị trí khoá XOR) - gói không cấp phát được. */
+        private void boQua(int n) throws IOException {
+            byte[] b = new byte[256];
+            int con = n;
+            while (con > 0) {
+                int k = Session_ME.this.dis.read(b, 0, con < b.length ? con : b.length);
+                if (k < 0) {
+                    throw new IOException("het du lieu");
+                }
+                if (Session_ME.this.getKeyComplete) {
+                    for (int i = 0; i < k; i++) {
+                        Session_ME.this.readKey(b[i]);
+                    }
+                }
+                con -= k;
+            }
+        }
+
+        /**
+         * Gói mảnh -126 (server io.GoiManh): mảnh đầu [0][lệnh gốc][int độ dài][dữ liệu], mảnh sau [1][dữ liệu].
+         * Giữ các mảnh riêng (không ghép thành một mảng lớn); đủ thì trả gói gốc đọc qua LuongManh.
+         */
+        private Message nhanManh(byte[] d) {
+            if (d.length >= 6 && d[0] == 0) {
+                if (Session_ME.this.manhCon > 0) {
+                    game.pokemon.GiamSat.ghi("goi manh: bo goi " + Session_ME.this.manhLenh + " chua du (con " + Session_ME.this.manhCon + " B)");
+                }
+                Session_ME.this.manhLenh = d[1];
+                int tong = ((d[2] & 255) << 24) | ((d[3] & 255) << 16) | ((d[4] & 255) << 8) | (d[5] & 255);
+                Session_ME.this.manh = new Vector();
+                Session_ME.this.manhDau = new Vector();
+                Session_ME.this.manh.addElement(d);
+                Session_ME.this.manhDau.addElement(new Integer(6));
+                Session_ME.this.manhCon = tong - (d.length - 6);
+            } else if (d.length >= 1 && d[0] == 1 && Session_ME.this.manhCon > 0) {
+                Session_ME.this.manh.addElement(d);
+                Session_ME.this.manhDau.addElement(new Integer(1));
+                Session_ME.this.manhCon -= d.length - 1;
+            } else {
+                game.pokemon.GiamSat.ghi("goi manh: manh le (" + d.length + " B)");
+                return CHO_MANH;
+            }
+            if (Session_ME.this.manhCon > 0) {
+                return CHO_MANH;
+            }
+            int n = Session_ME.this.manh.size();
+            byte[][] ds = new byte[n][];
+            int[] dau = new int[n];
+            for (int i = 0; i < n; i++) {
+                ds[i] = (byte[]) Session_ME.this.manh.elementAt(i);
+                dau[i] = ((Integer) Session_ME.this.manhDau.elementAt(i)).intValue();
+            }
+            boolean du = Session_ME.this.manhCon == 0;
+            Session_ME.this.manh = null;
+            Session_ME.this.manhDau = null;
+            Session_ME.this.manhCon = -1;
+            if (!du) {
+                game.pokemon.GiamSat.ghi("goi manh: thua du lieu, bo goi " + Session_ME.this.manhLenh);
+                return CHO_MANH;
+            }
+            soGoiManh++;
+            return new Message(Session_ME.this.manhLenh, new LuongManh(ds, dau));
         }
 
         private void getKey(Message message) throws IOException {
@@ -323,15 +470,24 @@ public class Session_ME implements ISession {
             } else {
                 size = Session_ME.this.dis.readUnsignedShort();
             }
-            byte[] data = new byte[size];
+            byte[] data = capPhat(size);
+            if (data == null) {
+                boQua(size);
+                soGoiBo++;
+                game.pokemon.GiamSat.ghi("bo goi lenh " + cmd + " (" + size + " B): khong du bo nho");
+                return BO_QUA;
+            }
             int len = 0;
             int byteRead = 0;
-            while (len != -1 && byteRead < size) {
+            Session_ME.this.recvByteCount += 3;
+            while (byteRead < size) {
                 len = Session_ME.this.dis.read(data, byteRead, size - byteRead);
-                if (len > 0) {
-                    byteRead += len;
-                    Session_ME.this.recvByteCount += 5 + byteRead;
+                if (len < 0) {
+                    // 0.9.7.1: hết luồng giữa gói - trước đây trả gói THIẾU dữ liệu cho bộ xử lý
+                    throw new IOException("ket noi dong giua goi");
                 }
+                byteRead += len;
+                Session_ME.this.recvByteCount += len;
             }
             if (Session_ME.this.getKeyComplete) {
                 for (int i = 0; i < data.length; i++) {
@@ -340,6 +496,9 @@ public class Session_ME implements ISession {
             }
             if (cmd == GOI_NEN && giaiNen != null) {
                 return moGoiNen(data);
+            }
+            if (cmd == GOI_MANH) {
+                return nhanManh(data);
             }
             Message msg = new Message(cmd, data);
             return msg;
@@ -376,6 +535,9 @@ public class Session_ME implements ISession {
         // nằm lại trong hàng, lần nối được thì gửi DỒN cả loạt (server thấy 4 lần đăng nhập -> đá phiên ->
         // "Không thể kết nối" ngay sau khi vào lại game).
         this.sender.sendingMessage.removeAllElements();
+        this.manh = null;
+        this.manhDau = null;
+        this.manhCon = -1;
         this.key = null;
         this.curR = (byte) 0;
         this.curW = (byte) 0;

@@ -91,11 +91,27 @@ public final class Banner {
         }
     }
 
+    /**
+     * 0.9.7.1: bỏ mọi ảnh banner (màn đăng nhập / màn tải). Ảnh dải 320 px giải nén ARGB ~0,9 MB - trước đây nằm lại
+     * cả phiên chơi. Gọi khi vào thế giới (ManTai.xong) và khi thiếu bộ nhớ (BoNho.giai); màn đăng nhập sau đó nạp lại
+     * - trừ khi đã thiếu bộ nhớ (BoNho.tietKiem): khi đó không nạp nữa, nơi gọi vẽ nền trời bằng code.
+     */
+    public static void giaiPhong() {
+        nui = rung = dat = khung = may = rong = quang = cot = null;
+        hdNen = hdMay = hdKhung = null;
+        logoHd = logoLon = logoNho = null;
+        rongTo = null;
+        daNap = false;
+    }
+
     private static void nap() {
         if (daNap) {
             return;
         }
         daNap = true;
+        if (BoNho.tietKiem) {
+            return;   // máy thiếu bộ nhớ: không banner (nền trời vẽ bằng code)
+        }
         {
             hdNen = anh("hd/nen");
             if (hdNen != null) {

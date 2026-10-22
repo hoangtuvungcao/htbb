@@ -37,5 +37,9 @@ Ra `client_jar/out/`: `HTBB-v<N>.jar`, `HTBB-v<N>-release.jar` (ProGuard, `mappi
 
 ```sh
 sh client_jar/tools/kiem_ve_map/chay.sh /tmp/kiem_ve_map      # client vẽ mọi bản đồ server/cMap (LOI phải 0)
+# 0.9.7.1: jar J2ME THẬT trong MicroEmulator, heap nhỏ + RMS giới hạn + socket trả từng mảnh nhỏ, cache rỗng, tự đăng
+# nhập -> tạo / chọn Pokémon -> vào thế giới (cần server dev; CAT_SAU=310000 MONG_LOI=1 DUNG_MS=8000 [THU_LAI=1]: máy
+# chủ "im" giữa chừng -> phải hiện hộp lỗi + Thử lại, không quay mãi). Đọc đầu tệp chay.sh.
+W=176 H=208 RMS=4096 RMS_BAN_GHI=1024 sh client_jar/tools/kiem_tai_j2me/chay.sh client_jar/out/HTBB-v<N>-thu.jar 19129 <tk> 7168
 # KiemPokeDuLieu: sprite/hiệu ứng/âm thanh jar khớp Unity + từ điển khớp server (xem đầu tệp tools/KiemPokeDuLieu.java)
 ```

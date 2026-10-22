@@ -211,10 +211,26 @@ public final class KieuO {
     /**
      * Ảnh phủ mờ đã tạo (khóa "rộng x cao x màu"). Dùng ảnh createRGBImage + drawImage thay vì
      * drawRGB vì vài máy / MicroEmulator vẽ drawRGB bỏ qua gốc tọa độ đã translate.
+     * 0.9.7.1 (máy J2ME heap nhỏ, giả lập iOS): ảnh KHÔNG lớn hơn TOI_DA x TOI_DA - vùng lớn hơn vẽ lát lặp lại (cùng
+     * một màu nên ghép lát không lộ mép). Trước đây mỗi cỡ vùng một ảnh đủ cỡ, tối đa 40 ảnh: phủ toàn màn 240x320
+     * là 300 KB / ảnh, đo được ~590 KB nằm lại trong bộ nhớ lúc vào thế giới (tới 12 MB nếu đủ 40 cỡ).
      */
     private static final java.util.Hashtable anhMo = new java.util.Hashtable();
+    static final int TOI_DA = 48;
+
+    /** Cạnh tối đa của ảnh phủ: màn điện thoại J2ME 48 px; màn lớn (PC / máy tính bảng) 256 px - ít lát hơn. */
+    static int toiDa() {
+        return game.render.Canvas.w * game.render.Canvas.h > 400000 ? 256 : TOI_DA;
+    }
 
     private static Image anhPhu(int w, int h, int argb) {
+        int m = toiDa();
+        if (w > m) {
+            w = m;
+        }
+        if (h > m) {
+            h = m;
+        }
         String k = new StringBuffer().append(w).append('x').append(h).append('x').append(argb).toString();
         Image a = (Image) anhMo.get(k);
         if (a == null) {
@@ -229,6 +245,11 @@ public final class KieuO {
             anhMo.put(k, a);
         }
         return a;
+    }
+
+    /** Giải phóng ảnh phủ đã tạo (BoNho.giai - thiếu bộ nhớ). */
+    public static void giaiPhong() {
+        anhMo.clear();
     }
 
     /** Phủ màu argb (có alpha) lên vùng w x h. */
@@ -251,7 +272,12 @@ public final class KieuO {
             int cw = g.getClipWidth();
             int ch = g.getClipHeight();
             g.clipRect(x, y, w, h);
-            g.drawImage(a, x, y, Graphics.TOP | Graphics.LEFT);
+            int aw = a.getWidth(), ah = a.getHeight();
+            for (int yy = y; yy < y + h; yy += ah) {
+                for (int xx = x; xx < x + w; xx += aw) {
+                    g.drawImage(a, xx, yy, Graphics.TOP | Graphics.LEFT);
+                }
+            }
             g.setClip(cx, cy, cw, ch);
         } catch (Throwable e) {
             // không tạo được ảnh alpha: tô sọc thưa thay mờ
