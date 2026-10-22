@@ -153,7 +153,7 @@ def main():
                 ly_do += ("; " if ly_do else "") + "loi dau cua %s, giao boi %s" % (noi, TEN_NPC[rcv])
                 ra.append("UPDATE `data_quest_lau_dai` SET `npc_giao` = %d, `ten_npc` = %s WHERE `id_so` = %d;" % (k, q(noi), id_))
         if ig_expr != "`infogift`":
-            cap_nhat.append("`infogift` = LEFT(%s, 200)" % ig_expr)  # cot varchar(200); duoi da bi cat san o vai dong
+            cap_nhat.append("`infogift` = LEFT(%s, 1000)" % ig_expr)  # cot varchar(1000) (sua-tuyen; cu 200 cat chu)
         if cap_nhat:
             ra.append("-- %d %s: %s" % (id_, ma, ly_do))
             ra.append("UPDATE `data_quest_moi` SET %s WHERE `id` = %d AND `mainsub` = 0;" % (", ".join(cap_nhat), id_))

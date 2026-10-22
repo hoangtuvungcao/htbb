@@ -586,9 +586,14 @@ public class BotChucNang {
 
         /** Tao nhan vat (neu chua co) va vao game. */
         String vaoGame(int lop) throws IOException {
+            return vaoGame(lop, 0);
+        }
+
+        /** Vao game; chua co nhan vat thi tao voi vung {@code vung} (0 Kanto, 1 Johto - client CreateCharScr "Vùng"). */
+        String vaoGame(int lop, int vung) throws IOException {
             if (dsNv.stream().noneMatch(v -> v[2] == 1)) {
                 int m = moc();
-                gui(14, user, (byte) lop, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
+                gui(14, user, (byte) lop, (byte) 0, (byte) 0, (byte) vung, (byte) 0); // ten, lop, kieu dau, gioi, vung, may chu
                 cho(b -> b.coLenh(m, 13) && b.dsNv.stream().anyMatch(v -> v[2] == 1) || b.doiChu(m, 0, "") != null, 6000);
                 if (dsNv.stream().noneMatch(v -> v[2] == 1)) return "tao nhan vat that bai: " + chuTu(m) + " lenh=" + demLenh + " ds=" + dsTen + " " + (dsNv.isEmpty() ? "" : Arrays.toString(dsNv.get(0)));
             }

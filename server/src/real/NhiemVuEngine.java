@@ -146,6 +146,35 @@ public final class NhiemVuEngine {
         }
     }
 
+    /**
+     * sua-tuyen: tra nhiem vu phu cu qua NPC (-64) -> thuong_khac cua mau engine cung ma (danh hieu, item:, thuoc:) nhu
+     * nhan o So tay. Truoc day duong -64 chi phat exp / xu / vat pham (addGift) - mat danh hieu ma chu thuong hua
+     * (ghiXongPhuCu khoa ca duong So tay nen khong bao gio nhan lai duoc).
+     */
+    public static void khiXongPhuCu(final Char p, final String ma) {
+        final String tk = thuongKhacCu(1, ma);
+        if (p == null || tk == null || tk.isEmpty()) {
+            return;
+        }
+        thuongKhac(p, tk, "phu cu " + ma);
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+    }
+
+    /** thuong_khac phat khi tra qua -64: chuoi chinh (THUONG_CU), phu (mau engine); null = khong. */
+    public static String thuongKhacCu(final int mainSub, final String ma) {
+        if (!LauDai.bat() || ma == null || ma.isEmpty()) {
+            return null;
+        }
+        if (mainSub == 0) {
+            return THUONG_CU.get(ma);
+        }
+        if (mainSub == 1) {
+            final NhiemVuMau m = MAU.get(ma);
+            return m == null ? null : m.thuongKhac;
+        }
+        return null;
+    }
+
     static boolean xongChuoiCu(final Char p, final String ma) {
         HashMap<String, Integer> m = MA_CHUOI_CU;
         if (m == null) {
@@ -395,6 +424,7 @@ public final class NhiemVuEngine {
         }
         final int oX = p.x / 16;
         final int oY = p.y / 16;
+        final int banDo = NpcTinhBanDo.banDoNap(p); // ban do nap (ban sao lang 301 = 0, trong nha = id nha)
         for (final Entry<String, long[]> e : t.entrySet()) {
             if (e.getValue()[1] != 0) {
                 continue;
@@ -403,8 +433,12 @@ public final class NhiemVuEngine {
             if (m == null) {
                 continue;
             }
-            if (("dung_toa_do".equals(m.kieu) || "tim_vat_an".equals(m.kieu) || "den_noi".equals(m.kieu))
-                    && m.trongToaDo(p.mapID, oX, oY)) {
+            if (!("dung_toa_do".equals(m.kieu) || "tim_vat_an".equals(m.kieu) || "den_noi".equals(m.kieu))) {
+                continue;
+            }
+            // sua-tuyen: vung dich chung voi chuoi -64 (data_nhiem_vu_khu_vuc, o di duoc da kiem) neu co, khong thi toa do cu
+            final java.util.List<com.htbb.pokemon.KhuVucNhiemVu.Vung> kv = KhuVucNhiemVuGame.KHU.get(m.ma);
+            if (kv != null ? com.htbb.pokemon.KhuVucNhiemVu.trong(kv, banDo, oX, oY) : m.trongToaDo(banDo, oX, oY)) {
                 suKien(p, m.kieu, m.mucTieuId, 1);
             }
         }

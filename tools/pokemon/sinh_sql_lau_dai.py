@@ -993,7 +993,9 @@ def ghi_sql(nv, sk, quai):
     # Khong dung CREATE TABLE ... LIKE (NovaDB khong ho tro): chep nguyen schema tu dump.
     goc = open(DUMP, encoding="utf-8").read()
     m = re.search(r"CREATE TABLE `data_quest` \((.*?)\n\)", goc, re.S)
-    o.append("DROP TABLE IF EXISTS `data_quest_moi`;\nCREATE TABLE `data_quest_moi` (" + m.group(1)
+    # sua-tuyen: infogift 200 -> 1000 (data_quest goc varchar(200) cat doan Phan thuong giua chu)
+    cot = m.group(1).replace("`infogift` varchar(200)", "`infogift` varchar(1000)")
+    o.append("DROP TABLE IF EXISTS `data_quest_moi`;\nCREATE TABLE `data_quest_moi` (" + cot
              + "\n) DEFAULT CHARSET=utf8;\n")
     rows = []
     for d in nv:

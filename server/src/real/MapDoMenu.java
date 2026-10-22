@@ -123,7 +123,7 @@ class MapDoMenu {
             long n = 0L;
             Map oldMap = player.map;
             int[] var10000 = new int[]{21, 721, 722, 723, 724};
-            int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+            int[][] mapstart = LangKhoiDau.bang(player);
             // Bang setting cua admin (npc ao -1000)
             if (AdminMenu.xuLyChon(player, idNpc, idMenu, idOptionMenu)) {
                 return;
@@ -1492,7 +1492,7 @@ class MapDoMenu {
                         player.myCountry = (byte) idOptionMenu;
                         player.inCountry = player.myCountry;
                         allUser[player.myCountry]++;
-                        player.sendMessage(MessageCreator.createMessageLocation(player.myCountry));
+                        player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.myCountry)));
                         int mapID = mapstart[player.myCountry][r.nextInt(2)];
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -1521,7 +1521,7 @@ class MapDoMenu {
                                     if (p != null) {
                                         p.map.playerExit(p);
                                         p.myCountry = player.myCountry;
-                                        p.sendMessage(MessageCreator.createMessageLocation(p.myCountry));
+                                        p.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(p, p.myCountry)));
                                         p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                                         map.move2Map(p, 16 + Database.r.nextInt() % 5, 24 + Database.r.nextInt(20), mapID, p.myCountry);
@@ -2615,7 +2615,7 @@ class MapDoMenu {
                                 player.myCountry = (byte) idOptionMenu;
                                 player.inCountry = player.myCountry;
                                 allUser[idOptionMenu]++;
-                                player.sendMessage(MessageCreator.createMessageLocation(player.myCountry));
+                                player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.myCountry)));
                                 int mapID = mapstart[idOptionMenu][r.nextInt(mapstart[idOptionMenu].length)];
                                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));
@@ -2654,7 +2654,7 @@ class MapDoMenu {
                                 if (p != null) {
                                     p.myCountry = cinfo.country;
                                     p.inCountry = p.myCountry;
-                                    p.sendMessage(MessageCreator.createMessageLocation(p.myCountry));
+                                    p.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(p, p.myCountry)));
                                     p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                                     p.sendToNearPlayer(MessageCreator.createCharInfo(p));
                                     map.move2Map(p, 16 + Database.r.nextInt() % 5, 24 + Database.r.nextInt(20), mapID, p.myCountry);
@@ -4217,7 +4217,7 @@ class MapDoMenu {
                                 player.myCountry = (byte) (player.myCountry != 1 ? 1 : 0);
                                 player.inCountry = player.myCountry;
                                 allUser[player.myCountry != 1 ? 1 : 0]++;
-                                player.sendMessage(MessageCreator.createMessageLocation(player.myCountry));
+                                player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.myCountry)));
                                 int mapID = mapstart[player.myCountry][r.nextInt(2)];
                                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -4382,7 +4382,7 @@ class MapDoMenu {
                         }
 
                         if (abs(player.x / 16 - 99) <= rangeNpc && abs(player.y / 16 - 54) <= rangeNpc) {
-                            int[][] vilage = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+                            int[][] vilage = LangKhoiDau.bang(player);
                             int[] tmap = vilage[player.inCountry];
                             if (idOptionMenu < 0 || idOptionMenu >= tmap.length) {
                                 return;

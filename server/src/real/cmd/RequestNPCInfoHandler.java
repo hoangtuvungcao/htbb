@@ -633,7 +633,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
                     // Thi tran nha cua vung (mapstart MapDoMenu: Blackthorn 70/1701, Pewter 0/301, Cianwood 80/1901).
-                    final int[][] lang = {{70, 1701}, {0, 301}, {80, 1901}};
+                    final int[][] lang = real.LangKhoiDau.bang(p);
                     menu = real.NpcDichVu.tenBanDo(lang[Math.max(0, Math.min(2, p.inCountry))]);
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
@@ -812,7 +812,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -9: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    final int[][] lang = {{70, 1701}, {0, 301}, {80, 1901}};
+                    final int[][] lang = real.LangKhoiDau.bang(p);
                     menu = real.NpcDichVu.tenBanDo(lang[Math.max(0, Math.min(2, p.inCountry))]);
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
