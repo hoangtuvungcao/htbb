@@ -238,6 +238,8 @@ public final class Kiem {
         KiemNgamTay.chay(); // 0.9.8 ngam tay PvP: khong tu dong / khong tu nham, ban theo huong (hinh hoc, tuong, bu tre, hoi chieu / PP, client cu)
         KiemChoPokemon.chay(); // cho Pokemon: khung gia, thue, ky quy, mua nguyen tu (bat-trade)
         KiemDatTenPet.chay(); // 0.9.6 the dat ten Pokemon: nhan pet, ten, mot dong chi so co tran, khong cong don, nhat ky
+        KiemLoaiDayDu.chay();
+        KiemLoaiQuaiGame.chay(); // loai rieng tung con quai: hoi sinh, -125 sau lenh 4 chi client >= 908, fallback client cu // loai day du: 1.025 loai, chuoi tien hoa, chieu, noi song, sprite, chon loai hoi sinh, goi -125/-126
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

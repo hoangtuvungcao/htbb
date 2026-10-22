@@ -62,7 +62,7 @@ final class RoiLauDai {
         if (h == null) {
             return;
         }
-        final int dex = PokedexPokemon.dexQuai(mt);
+        final int dex = PokedexPokemon.dexQuai(p, mt);
         if (dex <= 0) {
             return;
         }

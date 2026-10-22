@@ -305,6 +305,30 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 - 16 huy hiệu Gym là mốc cốt truyện, hiện trong hồ sơ.
 - Trang phục, danh hiệu, khung theo mùa: **0 chỉ số**. Danh hiệu nói chung không có chỉ số.
 
+### 2.6b Loài đầy đủ (1.025 loài, mở theo đợt)
+
+- **Một nguồn dữ liệu:** `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) (sinh bởi `tools/pokemon/loai/sinh_loai.py` từ PokeAPI ghim commit,
+  đối chiếu Showdown; chỉ sửa tay `tools/pokemon/loai/loai_duyet.json`). Bảng `data_loai`, `data_loai_tien_hoa`,
+  `data_chieu`, `data_loai_chieu`, `data_loai_vung`, `data_loai_sprite`. Tên loài giữ tên chính thức.
+- **Đợt A (Gen 1–2, 251 loài) đã mở** (`data_loai.bat = 1`); Gen 3–9 có trong Pokédex với nhãn "Chưa xuất hiện".
+- **Bậc loài T1–T6** (gốc bắt 400 / 250 / 120 / 60 / 25 ‰, T6 chỉ sau đột kích): luật tự động theo giai đoạn + tổng chỉ
+  số nền (giả huyền thoại, hoá thạch, Eevee, khởi đầu → T4; dạng cuối giả huyền thoại → T5; huyền thoại / huyền ảo / UB /
+  Nghịch lý → T6) rồi ghi đè tay.
+- **Loài riêng từng con quái:** khi quái thường hồi sinh, máy chủ có thể đổi **loài hiển thị** (mẫu quái — cấp, HP, TTK,
+  rơi đồ, nhiệm vụ giết theo mẫu — không đổi, nên không phồng spawn, không lệch cân bằng): T3 1/100, T4 1/600, T5 1/4.000
+  (chỉ đúng khung giờ hoặc đúng thời tiết), còn lại 30% đổi sang loài T1–T2 của vùng sinh thái, theo dải cấp
+  (`data_loai_vung`). Giờ ít người 0–5 giờ ×1,5 cho T3–T4, thời tiết hợp hệ ×1,5 trọng số, trần ×3. Loài T4+ báo cho
+  người trong bản đồ, T5 báo toàn máy chủ. Quái là mục tiêu nhiệm vụ chính, boss, quái hiếm / bùng phát của hệ sinh thái
+  không đổi. Khoá `loai.*` (docs/cau-hinh.md).
+- **Client cũ** (< bản 909) không nhận gói `-125` và thấy loài mặc định của mẫu; Pokédex của họ ghi đúng loài họ thấy.
+- **Chiêu bạn đồng hành:** mỗi loài 4 chiêu — 2 cùng hệ (STAB), 1 phủ hệ (hệ khắc các hệ khắc loài, ưu tiên hệ loài học
+  được thật), 1 hỗ trợ theo chỉ số nền cao nhất — từ 146 chiêu dùng chung (18 hệ × vai trò, dùng lại 47 hiệu ứng có sẵn,
+  đổi màu theo hệ) + 25 chiêu đặc trưng chỉ cho họ T4–T6 và dòng khởi đầu.
+- **Tiến hoá Hộp PC** theo chuỗi thật (`data_loai_tien_hoa`: cấp / đá / trao đổi → Dây Liên Kết hoặc sau khi được trao
+  đổi / thân thiết / Kẹo khi chưa có vật phẩm); chỉ tiến hoá sang loài đã mở (`LoaiDuLieu.tienHoaDuoc`).
+- **Hình:** loài không có trong jar tải theo nhu cầu (gói `-126`, `server/map/loai/<NNNN>.goi`, ≈ 10 KB / loài, PMDCollab
+  CC BY-NC 4.0, ghi công từng loài), client J2ME giữ tối đa 1 MB trong RMS (LRU).
+
 ### 2.7 Hiển thị Pokémon trên client
 
 - Sprite đóng gói sẵn trong client; server chỉ gửi `dex` + `shiny` qua các gói -90 (thân), -91 (bảng quái, ngay sau lệnh

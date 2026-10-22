@@ -123,7 +123,7 @@ public final class BoDemGoiTin {
      * Chung khong doi trang thai game nen dem rieng, han muc rong hon.
      */
     public static boolean laLenhTaiNguyen(final int command) {
-        return command == -47 || command == -48 || command == -49 || command == -51;
+        return command == -47 || command == -48 || command == -49 || command == -51 || command == -126;
     }
 
     /** Lenh tra cuu chi doc, re tien (xem GOI_TRA_CUU_TOI_DA). */

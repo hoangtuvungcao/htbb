@@ -346,6 +346,7 @@ public class Region {
                                         if (!UtilHTBB.coId(p.nearMons, mt.id)) {
                                             p.nearMons.add(mt.id);
                                             p.sendMessage(p.writeActorPos(new Message(4), (Actor)mt));
+                                            LoaiQuaiGame.sauThemQuai(p, mt); // -125 loai rieng (client >= 908)
                                         }
                                     } else {
                                         p.nearMons.add(mt.id);

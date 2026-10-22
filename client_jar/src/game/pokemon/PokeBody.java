@@ -2,7 +2,9 @@ package game.pokemon;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -190,6 +192,10 @@ public class PokeBody {
         } catch (Throwable e) {
             img = null;
         }
+        if (img == null) {
+            // 1.0: loai khong co trong jar -> anh trong goi da tai (KhoSprite), khong xin may chu o day
+            img = anhTuKho(ten);
+        }
         if (img != null && img.getWidth() <= 1 && img.getHeight() <= 1) {
             img = null;
         }
@@ -220,7 +226,11 @@ public class PokeBody {
     }
 
     private static PokeBody napTuKhoa(String khoa) {
-        PokeDuLieu dl = PokeDuLieu.doc(docTaiNguyen(THU_MUC + khoa + ".dl"));
+        byte[] b = docTaiNguyen(THU_MUC + khoa + ".dl");
+        if (b == null && khoa.length() == 4) {
+            b = KhoSprite.docTep(khoa, khoa + ".dl");   // 1.0: goi sprite tai theo nhu cau
+        }
+        PokeDuLieu dl = PokeDuLieu.doc(b);
         if (dl == null) {
             return null;
         }
@@ -235,23 +245,135 @@ public class PokeBody {
         if (dex <= 0) {
             return null;
         }
+        xuLyBoLoai();
         Integer k = new Integer(dex * 2 + (shiny ? 1 : 0));
         Object o = cacheDl.get(k);
         if (o == KHONG_CO) {
             return null;
         }
         if (o != null) {
-            return (PokeBody) o;
+            PokeBody pb = (PokeBody) o;
+            if (!shiny && pb.khoa == KHOA_BONG) {
+                KhoSprite.xin(dex);   // dang ve bong: nhac xin (no-op neu da xin / thieu / man Pokedex)
+            }
+            return pb;
         }
         PokeBody pb = napTuFile(dex, shiny);
         if (pb == null && shiny) {
             pb = lay(dex, false);
         }
         if (pb == null) {
+            if (!shiny) {
+                KhoSprite.xin(dex);   // 1.0: jar khong co loai nay -> xin may chu, tam ve bong den
+            }
             pb = layBong();
         }
         cacheDl.put(k, pb == null ? KHONG_CO : (Object) pb);
         return pb;
+    }
+
+    /** Anh trong goi sprite da tai ("/pk/0016_2.png" -> KhoSprite tep "0016_2.png"). */
+    private static Image anhTuKho(String ten) {
+        String khoa = GoiSprite.khoaTuDuongDan(ten);
+        if (khoa == null) {
+            return null;
+        }
+        byte[] b = KhoSprite.docTep(khoa, ten.substring(THU_MUC.length()));
+        if (b == null) {
+            return null;
+        }
+        try {
+            return Image.createImage(b, 0, b.length);
+        } catch (OutOfMemoryError e) {
+            xoaBoDem();
+            return null;
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    private static final Hashtable trongJar = new Hashtable();
+
+    /** Jar co sprite thuong cua loai nay (tep .dl). Nho ket qua. */
+    public static boolean coTrongJar(int dex) {
+        Integer k = new Integer(dex);
+        Object o = trongJar.get(k);
+        if (o == null) {
+            InputStream is = null;
+            try {
+                is = new PokeBody().getClass().getResourceAsStream(THU_MUC + tenKhoa(dex, false) + ".dl");
+            } catch (Throwable e) {
+                is = null;
+            }
+            o = is != null ? Boolean.TRUE : Boolean.FALSE;
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (Throwable e) {
+                // bo qua
+            }
+            trongJar.put(k, o);
+        }
+        return o == Boolean.TRUE;
+    }
+
+    /**
+     * Goi sprite loai {@code dex} vua tai xong (luong mang): xep hang de luong VE quen than / anh da ghim bong den
+     * hoac "khong co" (LRU anh chi sua tren luong ve).
+     */
+    public static void boLoai(int dex) {
+        synchronized (choBo) {
+            choBo.addElement(new Integer(dex));
+        }
+    }
+
+    private static final Vector choBo = new Vector();
+
+    /** Luong ve: ap cac loai vua tai xong (goi dau lay()). */
+    static void xuLyBoLoai() {
+        if (choBo.isEmpty()) {
+            return;
+        }
+        int[] ds;
+        synchronized (choBo) {
+            ds = new int[choBo.size()];
+            for (int i = 0; i < ds.length; i++) {
+                ds[i] = ((Integer) choBo.elementAt(i)).intValue();
+            }
+            choBo.removeAllElements();
+        }
+        for (int i = 0; i < ds.length; i++) {
+            boLoaiNgay(ds[i]);
+        }
+    }
+
+    static void boLoaiNgay(int dex) {
+        cacheDl.remove(new Integer(dex * 2));
+        cacheDl.remove(new Integer(dex * 2 + 1));
+        String khoa = tenKhoa(dex, false);
+        String p1 = THU_MUC + khoa;
+        String p2 = THU_MUC + khoa + "s";
+        String h1 = "hh/" + dex + "/";
+        String h2 = "hh/" + dex + "s/";
+        {
+            Vector bo = new Vector();
+            Enumeration e = cacheAnh.keys();
+            while (e.hasMoreElements()) {
+                String t = (String) e.nextElement();
+                if (t.startsWith(p1) || t.startsWith(p2) || t.startsWith(h1) || t.startsWith(h2)) {
+                    bo.addElement(t);
+                }
+            }
+            for (int i = 0; i < bo.size(); i++) {
+                Object o = cacheAnh.remove(bo.elementAt(i));
+                if (o instanceof Muc) {
+                    Muc m = (Muc) o;
+                    boKhoiLru(m);
+                    tongPixel -= m.px;
+                }
+            }
+        }
     }
 
     public static boolean coSprite(int dex, boolean shiny) {
@@ -496,6 +618,37 @@ public class PokeBody {
 
     public static boolean paint(Graphics g, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int tiLe) {
         return paint(g, dex, shiny, x, y, dir, dongTac, tick, tiLe, 0);
+    }
+
+    /** 1.0 Pokedex: than bong den ("Ai day?") cho loai chua gap / chua mo. false neu jar khong co bong. */
+    public static boolean paintBong(Graphics g, int x, int y, int dir, int tick, int tiLe) {
+        PokeBody pb = layBong();
+        return pb != null && pb.ve(g, x, y, dir, PokeDuLieu.DUNG, tick, tiLe, 0);
+    }
+
+    /** 1.0 Pokedex: chan dung bong den tam (xTam, yTam) canh {@code canh}. */
+    public static boolean paintChanDungBong(Graphics g, int xTam, int yTam, int canh) {
+        Image img = napAnh(THU_MUC + KHOA_BONG + "_c.png");
+        if (img == null) {
+            return false;
+        }
+        if (canh > 0 && img.getWidth() > 0 && canh != img.getWidth()) {
+            String ten = THU_MUC + KHOA_BONG + "_c.png#" + canh;
+            Object o = layDem(ten);
+            if (o instanceof Image) {
+                img = (Image) o;
+            } else {
+                try {
+                    Image nho = phongTo(img, img.getWidth(), img.getHeight(), 1, 1, canh * 100 / img.getWidth());
+                    datDem(ten, nho);
+                    img = nho;
+                } catch (Throwable e) {
+                    // co goc
+                }
+            }
+        }
+        g.drawImage(img, xTam, yTam, Graphics.HCENTER | Graphics.VCENTER);
+        return true;
     }
 
     public boolean ve(Graphics g, int x, int y, int dir, int dongTac, int tick, int tiLe, int doSang) {

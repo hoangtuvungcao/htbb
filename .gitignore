@@ -72,3 +72,8 @@ key.properties
 /tools/pokemon/pmd_raw_tile_moi/
 /tools/phat-hanh/may_chu.conf
 /tools/phat-hanh/tam/
+
+# ---- dữ liệu loài tải về (PokeAPI / Showdown / PMDCollab, ghim commit): chỉ commit LICENSE + nguon.txt ----
+/tools/pokemon/nguon_loai/*/*
+!/tools/pokemon/nguon_loai/*/LICENSE
+!/tools/pokemon/nguon_loai/*/LICENSE.md

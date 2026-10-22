@@ -25,7 +25,7 @@ public final class NhanQuai {
             return;
         }
         int t = m.monster_type;
-        boolean laPoke = MonsterTemplate.laPokemon(t);
+        boolean laPoke = m.laPokemonVe();
         boolean chon = Canvas.gameScr.focusedActor == m;
         int tuoi = m.pokeTrungLuc < 0 ? 9999 : Canvas.gameTick - m.pokeTrungLuc;
         if (tuoi < 0) {
@@ -39,8 +39,7 @@ public final class NhanQuai {
         // đỉnh hình THẬT (như Char.dyHangTen: PokeBody.caoHinh = nửa khung + lệch chân), không phải khung có lề trong suốt
         int cao = 0;
         if (laPoke) {
-            int tl = MonsterTemplate.pokeTiLe[t] <= 0 ? 100 : MonsterTemplate.pokeTiLe[t];
-            cao = PokeBody.caoHinh(MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t]) * tl / 100;
+            cao = PokeBody.caoHinh(m.dexVe(), m.shinyVe()) * m.tiLeVe() / 100;
         }
         if (cao <= 0) {
             cao = m.height < 16 ? 16 : m.height;

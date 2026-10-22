@@ -557,6 +557,9 @@ class MapXuLyLenh {
             case -111: // Danh hieu: xin bang / deo / thao / da xem (real.DanhHieuGame, com.htbb.pokemon.DanhHieuLogic)
                 DanhHieuGame.xuLy(player, message);
                 break;
+            case -126: // Loai day du: sprite theo nhu cau, bang loai, Pokedex 1.025 loai (real.LoaiMayChu)
+                LoaiMayChu.xuLy(player, message);
+                break;
             case -103: // Ngoai hinh trang bi: an/hien phu kien, trang phuc (com.htbb.pokemon.NgoaiHinh)
                 NgoaiHinhGame.xuLy(player, message);
                 break;

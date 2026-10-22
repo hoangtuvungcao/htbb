@@ -417,6 +417,26 @@ public final class HeSinhThaiGame {
     /** Bung phat dang mo: {mapId, idQuai, ngay, khung}; null = khong. */
     static volatile int[] bungPhat;
 
+    /** Mau quai la muc tieu nhiem vu chinh (khong bao gio doi loai) - dung chung voi real.LoaiQuaiGame. */
+    public static boolean laQuaiBaoVe(final int idTemplate) {
+        return quaiBaoVe.contains(Integer.valueOf(idTemplate));
+    }
+
+    /** Quai dang la loai hiem / bung phat cua he sinh thai (real.LoaiQuaiGame khong doi loai cua con nay). */
+    public static boolean laQuaiDacBiet(final Monster m) {
+        return m != null && DAC_BIET.containsKey(m);
+    }
+
+    /** Ban do he sinh thai khong dong vao (MAP_KHONG_DONG). */
+    public static boolean laMapKhongDong(final int mapId) {
+        for (final int k : MAP_KHONG_DONG) {
+            if (k == mapId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // he sinh thai: goi tu Monster.update ngay khi quai hoi sinh, TRUOC khi dat lai hp = maxhp.
     public static void khiHoiSinh(final Monster m) {
         if (!bat() || m == null) {

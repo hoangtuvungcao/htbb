@@ -11,6 +11,7 @@
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
     "sinh-anim-khoi-dau": "node scripts/sinh-anim-khoi-dau.mjs",
+    "dong-bo-du-lieu": "node scripts/sinh-du-lieu-pokemon.mjs && node scripts/sinh-anim-khoi-dau.mjs && node scripts/dong-bo-cam-nang.mjs && node scripts/sinh-chan-dung-loai.mjs",
     "sinh-anh-og": "node scripts/sinh-anh-og.mjs",
     "test": "node --test tests/*.test.ts",
     "sinh-quy-tac-dang-ky-java": "node scripts/sinh-quy-tac-dang-ky-java.mjs"

@@ -1,0 +1,326 @@
+{
+  "_ghiChu": "CHO DUY NHAT sua tay cua du lieu loai (he_thong_day_du.md 3.4). sinh_loai.py doc tep nay + du lieu PokeAPI ghim commit -> sql/nang_cap.sql (khoi them_loai_day_du.sql). Sua xong chay lai: python3 -I tools/pokemon/loai/sinh_loai.py",
+  "nguon": {
+    "pokeapi": {"repo": "PokeAPI/pokeapi", "commit": "2bf639e5572812a67d2b94903fdcb9d095f5aeb2", "giay_phep": "BSD-3-Clause"},
+    "showdown": {"repo": "smogon/pokemon-showdown", "commit": "d601443456c795f77c6e4f2b5b459167f2b10a3c", "giay_phep": "MIT"},
+    "pmdcollab": {"repo": "PMDCollab/SpriteCollab", "commit": "4702f10d888d19e804c5986a91170dfc92ae01b8", "giay_phep": "CC BY-NC 4.0"}
+  },
+  "dot_mo": {
+    "_ghiChu": "Dot mo loai theo the he (3.7). bat = 1: loai da mo (xuat hien ngoai troi, bat duoc). Mo dot moi = doi bat o day roi sinh lai.",
+    "the_he": {"1": 1, "2": 1, "3": 2, "4": 3, "5": 4, "6": 4, "7": 4, "8": 4, "9": 4},
+    "dang_mo": [1]
+  },
+  "bac": {
+    "goc_bat_phan_nghin": {"1": 400, "2": 250, "3": 120, "4": 60, "5": 25, "6": 30},
+    "gia_huyen_thoai_goc": [147, 246, 371, 374, 443, 633, 704, 782, 885, 996],
+    "gia_huyen_thoai_cuoi": [149, 248, 373, 376, 445, 635, 706, 784, 887, 998],
+    "hoa_thach_goc": [138, 140, 142, 345, 347, 408, 410, 564, 566, 696, 698, 880, 881, 882, 883],
+    "khoi_dau_goc": [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912],
+    "ho_t4": [133],
+    "ub": [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806],
+    "nghich_ly": [984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995, 1005, 1006, 1009, 1010, 1020, 1021, 1022, 1023],
+    "ghi_de": {
+      "_ghiChu": "dex -> bac (nguoi duyet chinh tay sau luat tu dong)",
+      "172": 2, "173": 2, "174": 2, "175": 2, "236": 2, "238": 2, "239": 2, "240": 2,
+      "123": 3, "127": 3, "128": 3, "214": 3, "227": 3, "241": 3, "115": 3, "222": 3
+    }
+  },
+  "vung": {
+    "_ghiChu": "moi_truong PokeAPI -> vung sinh thai HTBB (SinhThaiTheGioi.V_*): 0 thi tran,1 duong,2 dong co,3 rung,4 ho,5 bien,6 nui,7 tuyet,8 sa mac,9 hang,11 thanh. Danh sach = uu tien (chinh, phu, phu 2) voi trong so 100/40/20.",
+    "moi_truong": {
+      "cave": ["hang", [9, 6]],
+      "forest": ["rung", [3, 1]],
+      "grassland": ["dong_co", [2, 1]],
+      "mountain": ["nui", [6, 9]],
+      "rare": ["hiem", []],
+      "rough-terrain": ["go_ghe", [8, 6, 9]],
+      "sea": ["bien", [5, 4]],
+      "urban": ["do_thi", [1, 2, 11]],
+      "waters-edge": ["ven_nuoc", [4, 5]]
+    },
+    "theo_he": {
+      "_ghiChu": "loai khong co moi_truong (Gen 4+) hoac 'rare': lay theo he 1 (HePokemon 0..17)",
+      "0": [2, 1], "1": [6, 8], "2": [4, 5], "3": [2, 11], "4": [3, 2], "5": [7, 6, 5], "6": [6, 1], "7": [3, 9],
+      "8": [8, 9, 6], "9": [2, 6], "10": [11, 3], "11": [3, 2], "12": [9, 6], "13": [11, 9], "14": [6, 4], "15": [3, 9],
+      "16": [9, 6], "17": [3, 2]
+    },
+    "he_bang": 5, "vung_tuyet": 7,
+    "nha": {"1": "Kanto", "2": "Johto", "3": "Hoenn"},
+    "khu_phu": {"Kanto": "Johto", "Johto": "Kanto"},
+    "trong_so_nha": 100, "trong_so_khu_phu": 60,
+    "ngay_dem": {
+      "_ghiChu": "1 = chi ban ngay, 2 = chi ban dem (khung gio SinhThaiTheGioi.laDem)",
+      "dem": [41, 42, 43, 44, 92, 93, 163, 164, 167, 168, 198, 200, 215, 228, 229, 197],
+      "ngay": [165, 166, 161, 162, 196]
+    },
+    "gap_t5": {
+      "_ghiChu": "Loai goc ho gia huyen thoai gap o luot T5 (1/4.000) chi khi DUNG gio HOAC dung thoi tiet (2.4). thoi_tiet: 0 quang, 1 nang, 2 mua, 3 tuyet, 4 bao cat, 5 suong.",
+      "147": {"ngay_dem": 2, "thoi_tiet": 2},
+      "246": {"ngay_dem": 2, "thoi_tiet": 4}
+    },
+    "cap": {
+      "_ghiChu": "Dai cap quai (cap quai tren ban do HTBB, Kanto 1-70, Johto 30-84). he_so nhan cap tien hoa chinh ban.",
+      "he_so": 1.4, "goc_theo_bac": {"1": 1, "2": 8, "3": 18, "4": 30, "5": 40},
+      "tien_hoa_mac_dinh": {"2": 25, "3": 40}, "them_tren": 30, "toi_da": 100
+    }
+  },
+  "vat_pham_tien_hoa": {
+    "_ghiChu": "PokeAPI item -> [ten hien, id data_item HTBB (0 = chua co vat pham: tien hoa bang Keo)]",
+    "fire-stone": ["Đá Lửa", 962], "water-stone": ["Đá Nước", 960], "thunder-stone": ["Đá Sấm", 961],
+    "leaf-stone": ["Đá Lá", 965], "ice-stone": ["Đá Băng", 966], "moon-stone": ["Đá Mặt Trăng", 964],
+    "sun-stone": ["Đá Mặt Trời", 963], "shiny-stone": ["Đá Lấp Lánh", 0], "dusk-stone": ["Đá Hoàng Hôn", 0],
+    "dawn-stone": ["Đá Bình Minh", 0], "kings-rock": ["Vương Miện Đá", 0], "metal-coat": ["Áo Kim Loại", 0],
+    "dragon-scale": ["Vảy Rồng", 0], "up-grade": ["Bộ Nâng Cấp", 0], "dubious-disc": ["Đĩa Khả Nghi", 0],
+    "protector": ["Giáp Bảo Hộ", 0], "electirizer": ["Bộ Tích Điện", 0], "magmarizer": ["Bộ Tích Nhiệt", 0],
+    "reaper-cloth": ["Vải Tử Thần", 0], "razor-claw": ["Vuốt Sắc", 0], "razor-fang": ["Nanh Sắc", 0],
+    "oval-stone": ["Đá Bầu Dục", 0], "deep-sea-tooth": ["Răng Biển Sâu", 0], "deep-sea-scale": ["Vảy Biển Sâu", 0],
+    "prism-scale": ["Vảy Lăng Kính", 0], "sachet": ["Túi Thơm", 0], "whipped-dream": ["Kem Mơ Ước", 0],
+    "tart-apple": ["Táo Chua", 0], "sweet-apple": ["Táo Ngọt", 0], "cracked-pot": ["Ấm Nứt", 0],
+    "chipped-pot": ["Ấm Mẻ", 0], "galarica-cuff": ["Vòng Galarica", 0], "galarica-wreath": ["Vòng Hoa Galarica", 0],
+    "black-augurite": ["Đá Đen Augurite", 0], "peat-block": ["Khối Than Bùn", 0], "auspicious-armor": ["Giáp Cát Tường", 0],
+    "malicious-armor": ["Giáp Hung Ác", 0], "scroll-of-darkness": ["Cuộn Bóng Tối", 0], "scroll-of-waters": ["Cuộn Nước", 0],
+    "syrupy-apple": ["Táo Mật", 0], "unremarkable-teacup": ["Chén Trà Thường", 0], "masterpiece-teacup": ["Chén Trà Quý", 0],
+    "metal-alloy": ["Hợp Kim", 0], "linking-cord": ["Dây Liên Kết", 0], "leaders-crest": ["Huy Hiệu Thủ Lĩnh", 0],
+    "gimmighoul-coin": ["Đồng Xu Gimmighoul", 0]
+  },
+  "keo_tien_hoa": {"giai_1": 25, "giai_2": 50, "nhan_bac_tu_4": 2, "khong_co_vat_pham": 2},
+  "cap_khong_theo_cap": {"_ghiChu": "Cap HTBB cho tien hoa khong theo cap (da, than thiet, trao doi...)", "2": 20, "3": 36},
+  "chieu": {
+    "_ghiChu": "Danh muc chieu dung chung (4.2). vai_tro: thuong / tan_cong / nhieu_don / xa / vung / khong_che / buff / khien / toi_thuong. goc = id chieu PokeAPI dung de doi chieu learnset (chieu co trong learnset loai thi uu tien).",
+    "cap_hoc": [1, 12, 24, 36],
+    "mau_he": ["A8A77A", "EE8130", "6390F0", "F7D02C", "7AC74C", "96D9D6", "C22E28", "A33EA1", "E2BF65", "A98FF3", "F95587", "A6B91A", "B6A136", "735797", "6F35FC", "705746", "B7B7CE", "D685AD"],
+    "vai_tro": {
+      "thuong":     {"kieu": "", "pt": 100, "so_don": 1, "hoi_ms": 800, "pp": 0, "hinh": "tron", "tam": 40, "rong": 24, "hu": "hu_hit_neutral"},
+      "tan_cong":   {"kieu": "vat_ly", "pt": 160, "so_don": 1, "hoi_ms": 2000, "pp": 25, "hinh": "tron", "tam": 48, "rong": 32, "hu": "hu_hit_super_effective"},
+      "nhieu_don":  {"kieu": "vat_ly", "pt": 45, "so_don": 4, "hoi_ms": 3000, "pp": 15, "hinh": "non", "tam": 56, "rong": 48, "hu": "hu_scratch"},
+      "xa":         {"kieu": "dac_biet", "pt": 150, "so_don": 1, "hoi_ms": 2000, "pp": 25, "hinh": "thang", "tam": 160, "rong": 16, "hu": "hu_light_ball_yellow"},
+      "vung":       {"kieu": "dac_biet", "pt": 120, "so_don": 1, "hoi_ms": 4000, "pp": 15, "hinh": "vung", "tam": 96, "rong": 96, "hu": "hu_discharge"},
+      "khong_che":  {"kieu": "ho_tro", "pt": 60, "so_don": 1, "hoi_ms": 6000, "pp": 10, "hinh": "tron", "tam": 120, "rong": 32, "hu": "hu_smoke_black"},
+      "buff":       {"kieu": "ho_tro", "pt": 0, "so_don": 0, "hoi_ms": 15000, "pp": 5, "hinh": "than", "tam": 0, "rong": 0, "hu": "hu_stat_blue_ring"},
+      "khien":      {"kieu": "ho_tro", "pt": 0, "so_don": 0, "hoi_ms": 15000, "pp": 5, "hinh": "than", "tam": 0, "rong": 0, "hu": "hu_protect"},
+      "toi_thuong": {"kieu": "dac_biet", "pt": 260, "so_don": 1, "hoi_ms": 12000, "pp": 5, "hinh": "thang", "tam": 200, "rong": 40, "hu": "hu_last_resort_front"},
+      "dac_trung":  {"kieu": "", "pt": 200, "so_don": 1, "hoi_ms": 6000, "pp": 10, "hinh": "thang", "tam": 160, "rong": 32, "hu": "hu_charge_beam_glow"}
+    },
+    "trang_thai_he": ["ngu", "bong", "cham", "te", "ngu", "dong_bang", "choang", "doc", "mu", "day_lui", "lu_lan", "cham", "choang", "lu_lan", "so_hai", "so_hai", "giam_thu", "me_hoac"],
+    "chung": {
+      "0": {
+        "thuong": ["Húc", ["tackle", "scratch", "pound", "quick-attack"], "hu_hit_neutral"],
+        "tan_cong": ["Đè nặng", ["body-slam", "double-edge", "return", "facade", "take-down", "headbutt", "extreme-speed", "slam"], "hu_hit_super_effective"],
+        "nhieu_don": ["Đâm liên hoàn", ["fury-attack", "fury-swipes", "double-slap", "comet-punch", "tail-slap"], "hu_scratch"],
+        "xa": ["Sao băng", ["swift", "tri-attack", "round"], "hu_swift_star"],
+        "vung": ["Tiếng vang", ["hyper-voice", "boomburst", "uproar", "echoed-voice"], "hu_discharge"],
+        "khong_che": ["Hát ru", ["sing", "yawn", "glare", "supersonic"], "hu_sleep_z"],
+        "buff": ["Vũ điệu kiếm", ["swords-dance", "work-up", "howl", "focus-energy", "growth"], "hu_swords_dance"],
+        "khien": ["Tự vệ", ["protect", "recover", "soft-boiled", "milk-drink", "slack-off", "wish", "defense-curl", "harden"], "hu_protect"],
+        "toi_thuong": ["Tia phá hủy", ["hyper-beam", "giga-impact"], "hu_giga_impact_front"]
+      },
+      "1": {
+        "thuong": ["Than hồng", ["ember", "incinerate", "flame-charge"], "hu_ember"],
+        "tan_cong": ["Nanh lửa", ["fire-fang", "fire-punch", "flare-blitz", "flame-wheel", "blaze-kick"], "hu_fire_fang_fang"],
+        "nhieu_don": ["Xoáy lửa", ["fire-spin", "fire-lash"], "hu_fire_spin_front"],
+        "xa": ["Súng phun lửa", ["flamethrower", "mystical-fire", "flame-burst"], "hu_flamethrower"],
+        "vung": ["Sóng nhiệt", ["heat-wave", "eruption", "lava-plume"], "hu_fire_spin_front"],
+        "khong_che": ["Lửa ma trơi", ["will-o-wisp"], "hu_smoke_black"],
+        "buff": ["Nắng gắt", ["sunny-day"], "hu_stat_green_ring"],
+        "toi_thuong": ["Đại hỏa", ["fire-blast", "overheat"], "hu_fire_blast"]
+      },
+      "2": {
+        "thuong": ["Súng nước", ["water-gun", "aqua-jet"], "hu_hydro_pump_rse"],
+        "tan_cong": ["Đuôi nước", ["aqua-tail", "waterfall", "crabhammer", "liquidation", "razor-shell", "wave-crash", "dive"], "hu_aqua_tail_splash"],
+        "nhieu_don": ["Xoáy nước", ["whirlpool", "water-shuriken", "surging-strikes"], "hu_brine_splashes"],
+        "xa": ["Bơm nước", ["hydro-pump", "water-pulse", "scald", "brine"], "hu_water_column_ranger"],
+        "vung": ["Lướt sóng", ["surf", "muddy-water", "water-spout"], "hu_brine_splashes"],
+        "khong_che": ["Bong bóng", ["bubble", "bubble-beam", "octazooka"], "hu_bubbles_blue"],
+        "buff": ["Mưa rào", ["rain-dance"], "hu_stat_blue_ring"],
+        "khien": ["Rút vào mai", ["withdraw", "aqua-ring", "shell-smash"], "hu_withdraw"],
+        "toi_thuong": ["Thủy triều dâng", ["hydro-cannon", "origin-pulse"], "hu_hydro_cannon"]
+      },
+      "3": {
+        "thuong": ["Tia lửa điện", ["thunder-shock", "spark", "nuzzle"], "hu_spark"],
+        "tan_cong": ["Đấm sấm", ["thunder-punch", "wild-charge", "volt-tackle", "zing-zap", "supercell-slam"], "hu_spark"],
+        "nhieu_don": ["Nanh sét", ["thunder-fang", "double-shock"], "hu_thunder_fang_fang"],
+        "xa": ["Mười vạn vôn", ["thunderbolt", "electro-ball", "charge-beam", "shock-wave"], "hu_shock_wave"],
+        "vung": ["Phóng điện", ["discharge", "parabolic-charge", "electroweb"], "hu_discharge_hit"],
+        "khong_che": ["Sóng điện từ", ["thunder-wave"], "hu_light_ball_yellow"],
+        "buff": ["Nạp điện", ["charge", "electric-terrain", "magnet-rise"], "hu_charge_up"],
+        "toi_thuong": ["Sấm sét", ["thunder", "zap-cannon"], "hu_discharge"]
+      },
+      "4": {
+        "thuong": ["Roi dây leo", ["vine-whip", "absorb", "mega-drain"], "hu_vine_whip"],
+        "tan_cong": ["Bom hạt", ["seed-bomb", "leaf-blade", "wood-hammer", "power-whip", "horn-leech"], "hu_seed_bomb_blast"],
+        "nhieu_don": ["Lá dao", ["razor-leaf", "bullet-seed", "magical-leaf"], "hu_razor_leaf"],
+        "xa": ["Hút năng lượng", ["energy-ball", "giga-drain", "solar-beam"], "hu_charge_beam_hit"],
+        "vung": ["Bão lá", ["leaf-storm", "petal-dance", "petal-blizzard"], "hu_leaf_storm_hit"],
+        "khong_che": ["Bột ngủ", ["sleep-powder", "stun-spore", "spore", "leech-seed"], "hu_stat_green_ring"],
+        "buff": ["Sinh trưởng", ["growth", "cotton-guard"], "hu_stat_green_ring"],
+        "khien": ["Quang hợp", ["synthesis", "ingrain"], "hu_wish"],
+        "toi_thuong": ["Tia mặt trời", ["solar-beam", "frenzy-plant"], "hu_charge_beam_hit"]
+      },
+      "5": {
+        "thuong": ["Bột tuyết", ["powder-snow", "ice-shard", "frost-breath"], "hu_bubbles_blue"],
+        "tan_cong": ["Đấm băng", ["ice-punch", "ice-fang", "icicle-crash", "avalanche"], "hu_hit_super_effective"],
+        "nhieu_don": ["Mũi băng", ["icicle-spear"], "hu_razor_leaf"],
+        "xa": ["Tia băng", ["ice-beam", "aurora-beam", "freeze-dry"], "hu_charge_beam_glow"],
+        "vung": ["Gió băng", ["icy-wind", "glaciate"], "hu_brine_splashes"],
+        "khong_che": ["Màn sương", ["haze", "mist"], "hu_smoke_black"],
+        "buff": ["Mưa đá", ["hail", "snowscape"], "hu_stat_blue_ring"],
+        "khien": ["Màn cực quang", ["aurora-veil"], "hu_protect"],
+        "toi_thuong": ["Bão tuyết", ["blizzard", "sheer-cold"], "hu_discharge"]
+      },
+      "6": {
+        "thuong": ["Chặt karate", ["karate-chop", "rock-smash", "low-kick", "mach-punch"], "hu_hit_neutral"],
+        "tan_cong": ["Đấm thẳng", ["cross-chop", "close-combat", "dynamic-punch", "brick-break", "sky-uppercut", "high-jump-kick", "superpower"], "hu_hit_super_effective"],
+        "nhieu_don": ["Đá liên hoàn", ["double-kick", "triple-kick", "arm-thrust", "drain-punch"], "hu_scratch"],
+        "xa": ["Cầu khí", ["aura-sphere", "vacuum-wave"], "hu_light_ball_yellow"],
+        "khong_che": ["Quét chân", ["low-sweep", "submission"], "hu_hit_neutral"],
+        "buff": ["Thế võ", ["bulk-up", "coaching"], "hu_swords_dance"],
+        "khien": ["Phát hiện", ["detect", "quick-guard"], "hu_protect"],
+        "toi_thuong": ["Đấm tập trung", ["focus-punch", "focus-blast"], "hu_last_resort_front"]
+      },
+      "7": {
+        "thuong": ["Kim độc", ["poison-sting", "smog", "acid"], "hu_ember"],
+        "tan_cong": ["Đâm độc", ["poison-jab", "cross-poison"], "hu_hit_super_effective"],
+        "nhieu_don": ["Nanh độc", ["poison-fang", "poison-tail"], "hu_bite"],
+        "xa": ["Bom bùn", ["sludge-bomb", "sludge", "acid-spray"], "hu_mud_bomb_ball"],
+        "vung": ["Sóng bùn độc", ["sludge-wave", "venoshock"], "hu_brine_splashes"],
+        "khong_che": ["Phấn độc", ["poison-powder", "toxic", "poison-gas"], "hu_smoke_black"],
+        "khien": ["Giáp axit", ["acid-armor"], "hu_harden_rse"],
+        "toi_thuong": ["Pháo rác", ["gunk-shot", "belch"], "hu_mud_bomb_ball"]
+      },
+      "8": {
+        "thuong": ["Ném bùn", ["mud-slap", "mud-shot"], "hu_mud_bomb_ball"],
+        "tan_cong": ["Đào hầm", ["dig", "drill-run", "bone-club", "high-horsepower", "stomping-tantrum"], "hu_hit_super_effective"],
+        "nhieu_don": ["Boomerang xương", ["bonemerang", "bone-rush"], "hu_scratch"],
+        "xa": ["Năng lượng đất", ["earth-power", "mud-bomb"], "hu_mud_bomb_ball"],
+        "vung": ["Động đất", ["earthquake", "magnitude", "bulldoze"], "hu_discharge"],
+        "khong_che": ["Ném cát", ["sand-attack", "spikes"], "hu_smoke_black"],
+        "buff": ["Bão cát", ["sandstorm"], "hu_stat_green_ring"],
+        "toi_thuong": ["Khe nứt", ["fissure", "precipice-blades"], "hu_giga_impact_front"]
+      },
+      "9": {
+        "thuong": ["Mổ", ["peck", "gust", "wing-attack"], "hu_hit_neutral"],
+        "tan_cong": ["Mổ khoan", ["drill-peck", "brave-bird", "fly", "aerial-ace", "acrobatics"], "hu_hit_super_effective"],
+        "nhieu_don": ["Cánh kép", ["dual-wingbeat"], "hu_scratch"],
+        "xa": ["Lưỡi gió", ["air-slash", "air-cutter"], "hu_razor_leaf"],
+        "vung": ["Cuồng phong", ["hurricane", "bleakwind-storm"], "hu_brine_splashes"],
+        "khong_che": ["Gió xoáy", ["whirlwind", "defog", "feather-dance"], "hu_smoke_black"],
+        "buff": ["Gió thuận", ["tailwind"], "hu_stat_blue_ring"],
+        "khien": ["Đậu nghỉ", ["roost"], "hu_wish"],
+        "toi_thuong": ["Thần điểu kích", ["sky-attack"], "hu_last_resort_front"]
+      },
+      "10": {
+        "thuong": ["Lú lẫn", ["confusion"], "hu_light_ball_yellow"],
+        "tan_cong": ["Đầu tâm linh", ["zen-headbutt", "psycho-cut"], "hu_hit_super_effective"],
+        "xa": ["Siêu năng", ["psychic", "psybeam", "psyshock", "extrasensory"], "hu_charge_beam_glow"],
+        "vung": ["Sóng tâm linh", ["psywave", "expanding-force"], "hu_discharge"],
+        "khong_che": ["Thôi miên", ["hypnosis"], "hu_sleep_z"],
+        "buff": ["Tĩnh tâm", ["calm-mind", "amnesia", "agility"], "hu_stat_blue_ring"],
+        "khien": ["Tường ánh sáng", ["light-screen", "reflect", "barrier", "rest"], "hu_protect"],
+        "toi_thuong": ["Tiên tri", ["future-sight"], "hu_charge_beam_glow"]
+      },
+      "11": {
+        "thuong": ["Cắn bọ", ["bug-bite", "struggle-bug", "leech-life", "fury-cutter"], "hu_bite"],
+        "tan_cong": ["Chém chéo", ["x-scissor", "u-turn", "first-impression", "lunge"], "hu_shadow_claw"],
+        "nhieu_don": ["Kim đôi", ["twineedle", "pin-missile"], "hu_scratch"],
+        "xa": ["Tiếng bọ", ["bug-buzz", "signal-beam", "pollen-puff"], "hu_light_ball_yellow"],
+        "vung": ["Gió bạc", ["silver-wind"], "hu_brine_splashes"],
+        "khong_che": ["Tơ nhện", ["string-shot", "sticky-web", "spider-web"], "hu_smoke_black"],
+        "buff": ["Vũ điệu bướm", ["quiver-dance", "tail-glow"], "hu_stat_green_ring"],
+        "toi_thuong": ["Sừng lớn", ["megahorn"], "hu_giga_impact_front"]
+      },
+      "12": {
+        "thuong": ["Ném đá", ["rock-throw", "smack-down", "rollout"], "hu_mud_bomb_ball"],
+        "tan_cong": ["Đá sắc", ["stone-edge", "rock-tomb", "accelerock"], "hu_hit_super_effective"],
+        "nhieu_don": ["Pháo đá", ["rock-blast"], "hu_scratch"],
+        "xa": ["Ngọc đá", ["power-gem", "ancient-power", "meteor-beam"], "hu_light_ball_yellow"],
+        "vung": ["Lở đá", ["rock-slide"], "hu_discharge"],
+        "khong_che": ["Bẫy đá", ["stealth-rock"], "hu_smoke_black"],
+        "buff": ["Đánh bóng đá", ["rock-polish"], "hu_stat_blue_ring"],
+        "toi_thuong": ["Đầu đá", ["head-smash"], "hu_giga_impact_front"]
+      },
+      "13": {
+        "thuong": ["Liếm", ["lick", "astonish", "night-shade"], "hu_hit_neutral"],
+        "tan_cong": ["Vuốt bóng ma", ["shadow-claw", "shadow-punch", "shadow-sneak", "poltergeist"], "hu_shadow_claw"],
+        "xa": ["Cầu bóng ma", ["shadow-ball", "hex"], "hu_light_ball_yellow"],
+        "vung": ["Gió quỷ", ["ominous-wind"], "hu_brine_splashes"],
+        "khong_che": ["Ánh sáng mê hoặc", ["confuse-ray"], "hu_grudge_lights"],
+        "buff": ["Lời nguyền", ["curse"], "hu_grudge_lights"],
+        "khien": ["Oán hận", ["grudge", "destiny-bond", "spite"], "hu_grudge_lights"],
+        "toi_thuong": ["Đòn bóng tối", ["phantom-force", "shadow-force"], "hu_last_resort_front"]
+      },
+      "14": {
+        "thuong": ["Hơi thở rồng", ["dragon-breath", "dragon-rage", "twister"], "hu_ember"],
+        "tan_cong": ["Vuốt rồng", ["dragon-claw", "dragon-rush", "dragon-tail"], "hu_shadow_claw"],
+        "nhieu_don": ["Mũi tên rồng", ["dual-chop", "dragon-darts", "scale-shot"], "hu_scratch"],
+        "xa": ["Xung kích rồng", ["dragon-pulse"], "hu_charge_beam_glow"],
+        "vung": ["Lốc xoáy rồng", ["twister", "breaking-swipe"], "hu_brine_splashes"],
+        "buff": ["Vũ điệu rồng", ["dragon-dance"], "hu_swords_dance"],
+        "toi_thuong": ["Thịnh nộ", ["outrage", "draco-meteor"], "hu_last_resort_front"]
+      },
+      "15": {
+        "thuong": ["Cắn", ["bite", "pursuit", "thief", "snarl"], "hu_bite"],
+        "tan_cong": ["Nghiến", ["crunch", "night-slash", "knock-off", "foul-play", "sucker-punch", "throat-chop"], "hu_bite"],
+        "nhieu_don": ["Đánh hội đồng", ["beat-up"], "hu_scratch"],
+        "xa": ["Xung bóng tối", ["dark-pulse", "night-daze"], "hu_light_ball_yellow"],
+        "khong_che": ["Khiêu khích", ["taunt", "fake-tears", "torment"], "hu_smoke_black"],
+        "buff": ["Âm mưu", ["nasty-plot", "hone-claws"], "hu_stat_green_ring"],
+        "toi_thuong": ["Gian kế", ["foul-play", "fiery-wrath"], "hu_last_resort_front"]
+      },
+      "16": {
+        "thuong": ["Vuốt kim loại", ["metal-claw", "bullet-punch"], "hu_scratch"],
+        "tan_cong": ["Đầu sắt", ["iron-head", "iron-tail", "meteor-mash", "gyro-ball", "heavy-slam"], "hu_iron_head"],
+        "nhieu_don": ["Cánh thép", ["steel-wing", "double-iron-bash", "gear-grind"], "hu_hit_super_effective"],
+        "xa": ["Pháo ánh sáng", ["flash-cannon", "mirror-shot"], "hu_charge_beam_glow"],
+        "khong_che": ["Âm kim loại", ["metal-sound"], "hu_smoke_black"],
+        "buff": ["Tự rèn", ["autotomize", "shift-gear"], "hu_stat_blue_ring"],
+        "khien": ["Giáp sắt", ["iron-defense", "kings-shield"], "hu_harden_rse"],
+        "toi_thuong": ["Tia thép", ["steel-beam", "make-it-rain"], "hu_charge_beam_glow"]
+      },
+      "17": {
+        "thuong": ["Gió tiên", ["fairy-wind", "disarming-voice", "draining-kiss"], "hu_swift_star"],
+        "tan_cong": ["Đùa nghịch", ["play-rough", "spirit-break"], "hu_hit_super_effective"],
+        "xa": ["Sức mạnh mặt trăng", ["moonblast"], "hu_light_ball_yellow"],
+        "vung": ["Ánh sáng chói", ["dazzling-gleam"], "hu_discharge"],
+        "khong_che": ["Nụ hôn ngọt", ["sweet-kiss", "charm"], "hu_wish"],
+        "khien": ["Ánh trăng", ["moonlight", "misty-terrain"], "hu_wish"],
+        "toi_thuong": ["Ánh sáng hủy diệt", ["light-of-ruin"], "hu_charge_beam_glow"]
+      }
+    },
+    "dac_trung": {
+      "_ghiChu": "Chieu dac trung: CHI ho T4-T6 va dong khoi dau (4.2), moi ho 1 chieu. Khoa = dex goc cua ho. [ma, ten, he, kieu, hieu_ung, goc PokeAPI]",
+      "1": ["dt.cay_cuong_no", "Cây cuồng nộ", 4, "dac_biet", "hu_leaf_storm_hit", "frenzy-plant"],
+      "4": ["dt.hoa_thieu", "Hỏa thiêu", 1, "dac_biet", "hu_fire_blast", "blast-burn"],
+      "7": ["dt.dai_phao_nuoc", "Đại pháo nước", 2, "dac_biet", "hu_hydro_cannon", "hydro-cannon"],
+      "133": ["dt.but_pha", "Bứt phá cuối cùng", 0, "vat_ly", "hu_last_resort_front", "last-resort"],
+      "138": ["dt.xoay_vo_co_dai", "Xoáy vỏ cổ đại", 12, "dac_biet", "hu_brine_splashes", "ancient-power"],
+      "140": ["dt.luoi_hai_co_dai", "Lưỡi hái cổ đại", 12, "vat_ly", "hu_shadow_claw", "razor-shell"],
+      "142": ["dt.canh_da_tien_su", "Cánh đá tiền sử", 12, "vat_ly", "hu_giga_impact_front", "rock-slide"],
+      "131": ["dt.khuc_ca_bang_hai", "Khúc ca băng hải", 5, "dac_biet", "hu_bubbles_blue", "sparkling-aria"],
+      "446": ["dt.de_bep_khong_lo", "Đè bẹp khổng lồ", 0, "vat_ly", "hu_giga_impact_front", "body-slam"],
+      "147": ["dt.rong_than_no", "Rồng thần nộ", 14, "vat_ly", "hu_last_resort_front", "outrage"],
+      "144": ["dt.bang_gia_vinh_cuu", "Băng giá vĩnh cửu", 5, "dac_biet", "hu_charge_beam_glow", "freeze-dry"],
+      "145": ["dt.sam_than_dieu", "Sấm thần điểu", 3, "dac_biet", "hu_discharge", "thunder"],
+      "146": ["dt.lua_than_dieu", "Lửa thần điểu", 1, "dac_biet", "hu_fire_blast", "fire-blast"],
+      "150": ["dt.xung_kich_tam_linh", "Xung kích tâm linh", 10, "dac_biet", "hu_charge_beam_glow", "psystrike"],
+      "151": ["dt.ky_uc_nguyen_thuy", "Ký ức nguyên thủy", 10, "dac_biet", "hu_wish", "psychic"],
+      "152": ["dt.mua_canh_hoa", "Mưa cánh hoa", 4, "dac_biet", "hu_leaf_storm_hit", "petal-blizzard"],
+      "155": ["dt.phun_trao", "Phun trào", 1, "dac_biet", "hu_fire_spin_front", "eruption"],
+      "158": ["dt.ham_ca_sau", "Hàm cá sấu", 2, "vat_ly", "hu_bite", "liquidation"],
+      "243": ["dt.sam_troi", "Sấm trời", 3, "dac_biet", "hu_discharge_hit", "thunder"],
+      "244": ["dt.lua_nui_lua", "Lửa núi lửa", 1, "vat_ly", "hu_fire_blast", "sacred-fire"],
+      "245": ["dt.gio_bac_thanh_tay", "Gió bắc thanh tẩy", 2, "dac_biet", "hu_water_column_ranger", "hydro-pump"],
+      "246": ["dt.bao_cat_nghien", "Bão cát nghiền", 12, "vat_ly", "hu_discharge", "stone-edge"],
+      "249": ["dt.than_phong", "Thần phong", 9, "dac_biet", "hu_charge_beam_glow", "aeroblast"],
+      "250": ["dt.lua_thieng", "Lửa thiêng", 1, "vat_ly", "hu_fire_blast", "sacred-fire"],
+      "251": ["dt.la_thoi_gian", "Lá thời gian", 4, "dac_biet", "hu_wish", "leaf-storm"]
+    }
+  },
+  "doi_chieu_cho_phep": {
+    "_ghiChu": "Lech PokeAPI <-> Showdown da xem va chap nhan (giu PokeAPI)",
+    "774": "Minior: PokeAPI lay dang Sao bang (60/60/100/60/100/60), Showdown lay dang Loi",
+    "809": "Melmetal: Showdown khong ghi tien hoa tu Meltan (chi tien hoa bang Keo ngoai game chinh)",
+    "948": "Toedscool: nhom trung PokeAPI Thuc vat, Showdown Dong co",
+    "949": "Toedscruel: nhom trung PokeAPI Thuc vat, Showdown Dong co"
+  },
+  "ten_moi_truong": {"hang": "Hang động", "rung": "Rừng", "dong_co": "Đồng cỏ", "nui": "Núi", "hiem": "Hiếm gặp", "go_ghe": "Địa hình gồ ghề", "bien": "Biển", "do_thi": "Đô thị", "ven_nuoc": "Ven nước"}
+}

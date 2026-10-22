@@ -49,7 +49,7 @@ public final class HieuUngDanh {
         if (m == null) {
             return 0;
         }
-        return MonsterTemplate.layPokeDex(m.monster_type);
+        return m.dexVe();
     }
 
     public static int heQuai(Monster m) {
@@ -572,8 +572,8 @@ public final class HieuUngDanh {
                     if (!xSong[i]) {
                         xSong[i] = true;
                         xDex[i] = dex;
-                        xShiny[i] = MonsterTemplate.pokeShiny[t];
-                        xTiLe[i] = MonsterTemplate.pokeTiLe[t];
+                        xShiny[i] = m.shinyVe();
+                        xTiLe[i] = m.tiLeVe();
                         xX[i] = m.x;
                         xY[i] = m.y;
                         xHuong[i] = m.dir;

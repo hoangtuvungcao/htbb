@@ -88,6 +88,9 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
       `tob_log_dat_ten`, công dụng / 2 nguồn kiếm được / món cửa hàng lượng);
     - `pokemon_npc_sprite.sql`, `pokemon_thu_pokemon.sql` (p2-tainguyen): ảnh NPC = Pokémon (`data_npc.dex` / `sprite`,
       `data_npc_su_kien_sprite`), ánh xạ thú cưỡi / pet / skin → Pokémon (`data_thu_pokemon`);
+    - `them_loai_day_du.sql` (loai-day-du, tệp SINH bởi `tools/pokemon/loai/sinh_loai.py`: thay cả khối này khi sinh lại):
+      1.025 loài `data_loai*`, `data_chieu`, nơi sống, sprite; thêm dòng `data_nhom_trung` / `data_bat_loai` (INSERT IGNORE, giữ
+      dòng của khối kết đôi / thu phục);
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
 

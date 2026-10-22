@@ -11,7 +11,9 @@ export default defineEventHandler(async (event) => {
     ...DS_CAM_NANG.map(p => `/cam-nang/${p.slug}`),
     ...(await dsTinCongKhai()).map(t => `/news/${t.slug}`),
     ...(await dsTrangDb()).filter(t => t.hien && !t.coSan).map(t => `/cam-nang/${t.slug}`),
-    ...POKEDEX.loai.map(l => `/pokedex/${l.dex}`),
+    // Pokédex đầy đủ (data_loai) khi CSDL có; không thì các loài của Pokédex tĩnh
+    ...[...new Set([...POKEDEX.loai.map(l => l.dex), ...(await dsLoaiCoDem()).ds.map(l => l.dex)])]
+      .sort((a, b) => a - b).map(d => `/pokedex/${d}`),
   ]
   const uutien = (p: string) => (p === '/' ? '1.0' : p.startsWith('/pokedex/') || p.startsWith('/news/') ? '0.5' : '0.8')
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${

@@ -367,7 +367,7 @@ public final class NhiemVuEngine {
         }
         suKien(p, "thu_thap", id, 1); // thu thap: vat roi tu quai muc tieu (quai_roi) - dem theo lan ha
         suKien(p, "thu_thach_gio", id, 1);
-        final int dex = PokedexPokemon.dexQuai(mt);
+        final int dex = PokedexPokemon.dexQuai(p, mt);
         if (dex > 0) {
             suKien(p, "pokedex_ha", String.valueOf(dex), 1);
             suKien(p, "quan_sat", String.valueOf(dex), 1);

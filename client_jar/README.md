@@ -38,6 +38,8 @@ Ra `client_jar/out/`: `HTBB-v<N>.jar`, `HTBB-v<N>-release.jar` (ProGuard, `mappi
 ```sh
 sh client_jar/tools/kiem_ve_map/chay.sh /tmp/kiem_ve_map      # client vẽ mọi bản đồ server/cMap (LOI phải 0)
 # KiemPokeDuLieu: sprite/hiệu ứng/âm thanh jar khớp Unity + từ điển khớp server (xem đầu tệp tools/KiemPokeDuLieu.java)
+# KiemKhoSprite (1.0): -125 loài riêng từng quái, -126 bảng loài / Pokédex / sprite tải theo nhu cầu (kho RMS LRU 1 MB)
+#   chạy trên lớp bản PC: xem đầu tệp tools/KiemKhoSprite.java
 ```
 
 ## Giao diện kiểu NRO (0.9.7)

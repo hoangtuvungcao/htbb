@@ -19,6 +19,11 @@ public class Monster extends LiveActor {
     public long timeAddBuff;
     public static Random r;
     public int idTemplate;
+    /** Loai rieng cua con quai nay (0 = loai cua mau), bac luot gap; real.LoaiQuaiGame (goi -125). */
+    public int dexRieng;
+    public int bacRieng;
+    /** Da tung mang loai rieng (khi ve lai loai mau van gui -125 dex 0 de client xoa ghi de). */
+    public boolean daCoLoaiRieng;
     public int default_x;
     public int default_y;
     public int toX;
@@ -634,7 +639,9 @@ public class Monster extends LiveActor {
                 final int loaiCu = this.idTemplate;
                 com.htbb.pokemon.HeSinhThaiGame.khiHoiSinh(this);
                 NoiDungLauDai.khiHoiSinh(this); // GD2b: alpha 1/50, quai Hoenn nam 2 (tat co: khong lam gi)
-                if (this.idTemplate != loaiCu) {
+                // loai rieng tung con (6 bac, vung sinh thai + dai cap): giu mau, chi doi loai hien thi
+                final boolean doiLoaiRieng = LoaiQuaiGame.khiHoiSinh(this);
+                if (this.idTemplate != loaiCu || doiLoaiRieng) {
                     this.baoDoiLoai();
                 }
                 this.hp = this.maxhp;

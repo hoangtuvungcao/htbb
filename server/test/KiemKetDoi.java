@@ -70,16 +70,15 @@ public final class KiemKetDoi {
         final List<String[]> ra = new ArrayList<String[]>();
         final Matcher m = Pattern.compile("INSERT (?:IGNORE )?INTO `" + bang + "`[^;]*?VALUES\\s*(.*?);",
                 Pattern.DOTALL).matcher(sql);
-        if (!m.find()) {
-            return ra;
-        }
-        final Matcher r = Pattern.compile("\\(([^()]*)\\)").matcher(m.group(1));
-        while (r.find()) {
-            final String[] o = r.group(1).split(",");
-            for (int i = 0; i < o.length; i++) {
-                o[i] = o[i].trim().replaceAll("^'|'$", "");
+        while (m.find()) { // moi lenh INSERT (khoi loai-day-du chia nhieu lenh)
+            final Matcher r = Pattern.compile("\\(([^()]*)\\)").matcher(m.group(1));
+            while (r.find()) {
+                final String[] o = r.group(1).split(",");
+                for (int i = 0; i < o.length; i++) {
+                    o[i] = o[i].trim().replaceAll("^'|'$", "").replace("\\'", "'").replace("''", "'"); // Farfetch'd: dump \\' / sinh 
+                }
+                ra.add(o);
             }
-            ra.add(o);
         }
         return ra;
     }
@@ -140,8 +139,16 @@ public final class KiemKetDoi {
 
         // ---- htbb_day_du.sql chua dung du lieu nhu migration
         final String du = doc("../sql/htbb_day_du.sql");
-        Kiem.bang("htbb_day_du.sql: data_nhom_trung = migration", tapDong(dong(sql, "data_nhom_trung"), 4),
-                tapDong(dong(du, "data_nhom_trung"), 4));
+        // ban-098: khoi them_loai_day_du.sql (loai-day-du, cung luoc do, INSERT IGNORE) them dong cho loai khac;
+        // dump = hop hai khoi, dong ket-doi giu nguyen (khong bi ghi de)
+        final Set<String> nhomDump = tapDong(dong(du, "data_nhom_trung"), 4);
+        final Set<String> nhomKd = tapDong(dong(sql, "data_nhom_trung"), 4);
+        final Set<String> hop = new HashSet<String>(nhomKd);
+        hop.addAll(tapDong(dong(DayDu.phanNangCap("them_loai_day_du.sql"), "data_nhom_trung"), 4));
+        Kiem.dung("htbb_day_du.sql: data_nhom_trung chua moi dong ket-doi", nhomDump.containsAll(nhomKd));
+        Kiem.dung("htbb_day_du.sql: moi dong data_nhom_trung den tu ket-doi / loai-day-du", hop.containsAll(nhomDump));
+        Kiem.bang("htbb_day_du.sql: data_nhom_trung = ket-doi + loai-day-du (INSERT IGNORE, moi dex mot dong)",
+                tapDong(dong(du, "data_nhom_trung"), 1).size(), nhomDump.size());
         Kiem.bang("htbb_day_du.sql: data_nhom_trung_ten = migration", tapDong(dong(sql, "data_nhom_trung_ten"), 4),
                 tapDong(dong(du, "data_nhom_trung_ten"), 4));
 

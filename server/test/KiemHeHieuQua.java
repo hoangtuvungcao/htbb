@@ -175,7 +175,7 @@ public final class KiemHeHieuQua {
         Kiem.sai("doi loai: id bo khoi nearMons (vong Region gui lai lenh 4 voi type moi)", p.nearMons.contains(Short.valueOf((short) 33)));
         Kiem.dung("doi loai: quai khac giu nguyen trong nearMons", p.nearMons.contains(Short.valueOf((short) 34)));
         final String nguon = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/Monster.java")), "UTF-8");
-        Kiem.dung("Monster.update: doi loai luc hoi sinh -> baoDoiLoai", nguon.contains("if (this.idTemplate != loaiCu) {")
+        Kiem.dung("Monster.update: doi loai luc hoi sinh -> baoDoiLoai", nguon.contains("if (this.idTemplate != loaiCu || doiLoaiRieng) {")
                 && nguon.indexOf("loaiCu = this.idTemplate") < nguon.indexOf("HeSinhThaiGame.khiHoiSinh(this)"));
     }
 
