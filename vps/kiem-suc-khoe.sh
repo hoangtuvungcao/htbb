@@ -52,8 +52,10 @@ else
     ghi="$ghi nhip=?(chua co $TT - server cu hoac sv.chiSoMayChu=0)"
 fi
 
-# 3. Login server
-if timeout 3 bash -c "exec 3<>/dev/tcp/$HOST/$CONG_LOGIN" 2>/dev/null; then ghi="$ghi login=ok"; else ghi="$ghi login=HONG"; hong="$hong login"; fi
+# 3. Login server: chi xem cong co LISTEN (ss), KHONG mo ket noi TCP - CheckLoginSocket.jar
+#    sinh 1 luong moi cho moi ket noi va khong bao gio thu hoi, mo ket noi moi phut lam ro
+#    ~1440 luong/ngay (4536 luong sau 3 ngay, 22/10/2026).
+if ss -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$CONG_LOGIN\$"; then ghi="$ghi login=ok"; else ghi="$ghi login=HONG"; hong="$hong login"; fi
 
 # 4. CSDL
 if command -v ${MYSQL%% *} >/dev/null 2>&1; then
