@@ -157,6 +157,9 @@ public final class ChuDe {
             return;
         }
         Font f = fontAnh(vai, mau);
+        if (s.indexOf('\u00b7') >= 0) {
+            s = s.replace('\u00b7', '-');   // font ảnh J2ME không có "·" (vẽ thành "?")
+        }
         f.drawString(g, s, x, y, canh == 2 ? Font.CENTER : canh == 1 ? Font.RIGHT : Font.LEFT);
     }
 

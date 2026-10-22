@@ -181,11 +181,15 @@ public class KiemNhiemVu {
     }
 
     /** Thông báo server 37 trong game: máy chạm / chuột = biểu ngữ không chặn (0.9.5); J2ME phím = hộp MsgDlg. */
+    /**
+     * Thông báo 37 đã hiện: trong game (0.9.6.1 thong-bao, MỌI kiểu nhập kể cả J2ME chỉ phím) là THẺ NHANH không chặn
+     * (DungDo, tự tắt - không cần phím để đóng); ngoài game / tin nghiêm trọng là hộp MsgDlg.
+     */
     static boolean coThongBao37() {
-        if (game.pokemon.MenuNguCanh.bat()) {
-            return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
+        if (game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg) {
+            return true;
         }
-        return game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg;
+        return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
     }
 
     static boolean coLenhGui(int lenh, int byteDau) {
