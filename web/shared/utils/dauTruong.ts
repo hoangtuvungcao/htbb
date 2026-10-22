@@ -13,6 +13,8 @@ export const DAU_TRUONG = {
   luotNgay: 5,
   lamMoiNgay: 10,
   luongThang: 3,
+  thuongThangDau: 2,
+  capToc: [20, 40] as const,
   tranLuongTuan: 25,
   tranToiThieuMua: 10,
   giayLuot: 20,
@@ -22,12 +24,20 @@ export const DAU_TRUONG = {
   cuaSoDiem: [100, 400] as const,
   daiSucManh: [15, 50] as const,
   heSoLap: [100, 50, 25, 0] as const,
-  tenBac: ['Tập sự', 'Đồng', 'Bạc', 'Vàng', 'Bạch kim', 'Kim cương'] as const,
-  nguongBac: [900, 1100, 1250, 1400, 1550] as const,
+  tenBac: ['Tập sự', 'Đồng', 'Bạc', 'Vàng', 'Bạch kim', 'Kim cương', 'Huyền thoại'] as const,
+  nguongBac: [900, 1100, 1250, 1400, 1550, 1700] as const,
+  /** Sân đấu theo bậc (DauTruongLogic.TEN_SAN); mùa thứ 4 mỗi năm mọi trận ở sân đêm. */
+  tenSan: ['Sân cỏ Viridian', 'Sân đá Pewter', 'Hồ nước Cerulean', 'Gym điện Vermilion', 'Sân băng Mahogany', 'Núi lửa Cinnabar', 'Đỉnh rồng Blackthorn', 'Sân đêm Lavender'] as const,
   danhHieu: [
     { id: 9870, ten: 'Quán quân Đấu trường', dieuKien: 'Hạng 1 cuối mùa' },
     { id: 9871, ten: 'Tinh anh Đấu trường', dieuKien: 'Hạng 2–10 cuối mùa' },
     { id: 9872, ten: 'Đấu thủ Đấu trường', dieuKien: 'Hạng 11–100 hoặc từ 1.300 điểm' },
+    { id: 9873, ten: 'Đồng Đấu trường', dieuKien: 'Kết thúc mùa ở bậc Đồng' },
+    { id: 9874, ten: 'Bạc Đấu trường', dieuKien: 'Kết thúc mùa ở bậc Bạc' },
+    { id: 9875, ten: 'Vàng Đấu trường', dieuKien: 'Kết thúc mùa ở bậc Vàng' },
+    { id: 9876, ten: 'Bạch kim Đấu trường', dieuKien: 'Kết thúc mùa ở bậc Bạch kim' },
+    { id: 9877, ten: 'Kim cương Đấu trường', dieuKien: 'Kết thúc mùa ở bậc Kim cương' },
+    { id: 9878, ten: 'Huyền thoại Đấu trường', dieuKien: 'Kết thúc mùa ở bậc Huyền thoại' },
   ],
   /** Uy lực / chính xác / PP chuẩn hoá theo vai trò chiêu (DauTruongDuLieu). */
   vaiTro: [

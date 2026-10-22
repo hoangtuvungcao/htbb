@@ -1397,7 +1397,13 @@ ngoài thế giới không đổi. Vào ở NPC Đấu trường (-31) → "Đ�
   băng, lú lẫn, choáng, giảm chỉ số; miễn nhiễm chính bản. Người chơi có 20 giây mỗi lượt, hết giờ / Tự động / rời game thì
   máy chọn; tối đa 50 lượt (hết lượt: nhiều % HP hơn thắng, hoà = phòng thủ).
 - **Điểm mùa** (riêng, `tob_dau_truong_mua`, mùa 13 tuần như PvP): 1000 đầu mùa, Elo K 32, bên phòng thủ đổi 50 %, sàn
-  100; bậc Tập sự / Đồng 900 / Bạc 1100 / Vàng 1250 / Bạch kim 1400 / Kim cương 1550.
+  100; bậc Tập sự / Đồng 900 / Bạc 1100 / Vàng 1250 / Bạch kim 1400 / Kim cương 1550 / Huyền thoại 1700.
+- **Cảnh đấu** (client): sân riêng toàn màn, không rời bản đồ (đóng cảnh là về chỗ cũ). Sân mở theo bậc người tấn công:
+  Sân cỏ Viridian, Sân đá Pewter, Hồ nước Cerulean, Gym điện Vermilion, Sân băng Mahogany, Núi lửa Cinnabar, Đỉnh rồng
+  Blackthorn; mùa thứ 4 mỗi năm mọi trận ở Sân đêm Lavender (`DauTruongLogic.sanCho`; ảnh `tools/pokemon/sinh_anh_dau_truong.py`).
+  Pokémon đi lại tự do (chỉ hình), máy chủ gửi sự kiện từng lượt (`DauTruongTran.SK_*`: dùng chiêu, trúng + sát thương + chí
+  mạng / khắc hệ, trượt, trạng thái, bậc, hồi, ngã gục, ra sân) để client diễn: lao tới / bắn hiệu ứng, số bay, né, tia
+  đỏ thu bóng, ném bóng, bên kia loé sáng về chỗ xuất phát.
 - **Lượt / ghép:** 5 trận tấn công mỗi ngày (tính lúc vào trận), 10 lần làm mới; 3 đề xuất: điểm ±100 (+100 mỗi lần làm
   mới, tối đa 400), sức mạnh đội (tổng chỉ số cấp 50) ±15 % (+10 %, tối đa 50 %). Chống nick phụ: không cùng tài khoản /
   thiết bị / IP (`XepHangPvp.Cum`, danh tính lưu ở `tob_dau_truong_doi` để lọc cả đối thủ offline). Chống cày: cùng đối
@@ -1405,6 +1411,14 @@ ngoài thế giới không đổi. Vào ở NPC Đấu trường (-31) → "Đ�
 - **Thưởng:** thắng +3 lượng khoá × hệ số, trần 25 / tuần (tuần cúp, thứ Hai 04:00), thua 0, không xu. Cuối mùa (≥ 10 trận
   tấn công, nhận khi đăng nhập mùa sau, `tob_dau_truong_thuong` một lần): danh hiệu giữ một mùa — Quán quân (hạng 1, id
   9870), Tinh anh (2–10, 9871), Đấu thủ (11–100 hoặc ≥ 1300 điểm, 9872), chỉ số trong ngân sách ô danh hiệu.
+- **Lượt chơi:** mặc định máy tự đánh (AI máy chủ, nhịp 2,6 giây / lượt chia theo tốc độ ×1 / ×2 / ×3; ×2 từ cấp 20, ×3
+  từ cấp 40, khoá `dau_truong.cap_toc_2/3`, máy chủ tự kiểm cấp); bật "Tự chọn chiêu" (lưu máy) để chọn chiêu trong 20
+  giây. Mỗi lượt MỘT hành động (máy chủ bỏ gói bấm lại trong 1,2 giây); hồi chiêu: tối thượng 3 lượt, uy lực ≥ 100 /
+  đặc trưng 2 lượt; chiêu khống chế không dùng lên mục tiêu đã có trạng thái / miễn nhiễm (`DauTruongTran.lyDo`). Trận
+  trung bình ~8,4 lượt (500 trận mô phỏng) ≈ 50 giây xem ở ×1. Nút thoát = đầu hàng (thua, mất lượt); rớt mạng: máy chủ
+  đánh nốt. Thắng đầu ngày +2 lượng khoá (vẫn trong trần 25 / tuần); chuỗi thắng chỉ hiển thị; xem lại 5 trận gần nhất
+  (lưu đội + hạt + hành động); bảng tuần trong game (tab Tuần) và trên web. Cuối mùa: Quán quân / Tinh anh theo hạng,
+  danh hiệu bậc (Đồng 9873 .. Huyền thoại 9878; Bạch kim trở lên đẹp hơn Đấu thủ), Đấu thủ (11–100 / ≥ 1300).
 - **Kiểm:** `server/test/KiemDauTruong`, `client_pc/test/KiemDauTruong` (11 cỡ màn), bot
   `tools/pokemon/kiem_tai/KichBanDauTruong.java`, `web/tests/dau-truong.test.ts`.
 

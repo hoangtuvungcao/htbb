@@ -37,9 +37,16 @@ public final class DauTruongDuLieu {
         public final String trangThai;
         public final int tiLeTrangThai;
         public final int uyLuc, chinhXac, ppToiDa;
+        /** Hieu ung co san (data_chieu.hieu_ung, anh client res/pk/&lt;hieu_ung&gt;.png) - client dien hoat canh. */
+        public final String hieuUng;
 
         public Chieu(final String ma, final String ten, final int he, final String kieu, final String vaiTro, final int soDon,
                 final String trangThai, final int tiLePhanNghin) {
+            this(ma, ten, he, kieu, vaiTro, soDon, trangThai, tiLePhanNghin, "");
+        }
+
+        public Chieu(final String ma, final String ten, final int he, final String kieu, final String vaiTro, final int soDon,
+                final String trangThai, final int tiLePhanNghin, final String hieuUng) {
             this.ma = ma == null ? "" : ma;
             this.ten = ten == null || ten.isEmpty() ? this.ma : ten;
             this.he = HePokemon.hopLe(he) ? he : HePokemon.THUONG;
@@ -59,6 +66,7 @@ public final class DauTruongDuLieu {
             this.uyLuc = UY_LUC[v];
             this.chinhXac = CHINH_XAC[v];
             this.ppToiDa = PP[v];
+            this.hieuUng = hieuUng == null || hieuUng.isEmpty() ? "hu_hit_neutral" : hieuUng;
         }
 
         public boolean danh() {

@@ -41,7 +41,7 @@ public final class ManDauTruong extends ManBang {
 
     /** Chọn tab 0 Thách đấu / 1 Đội hình (lối vào từ ngoài màn, kiểm thử). */
     public void moTab(int t) {
-        chonTab(Math.max(0, Math.min(1, t)));
+        chonTab(Math.max(0, Math.min(3, t)));
     }
 
     /** Chép đội đã lưu trên máy chủ vào ô đang xếp. */
@@ -60,7 +60,7 @@ public final class ManDauTruong extends ManBang {
     }
 
     protected String[] tabs() {
-        return new String[]{"Thách đấu", "Đội hình"};
+        return new String[]{"Thách đấu", "Đội hình", "Lịch sử", "Tuần"};
     }
 
     protected int rongMuon() {
@@ -71,6 +71,9 @@ public final class ManDauTruong extends ManBang {
         super.chonTab(t);
         if (t == 0 && !DauTruong.coDoiThu && !DauTruong.choDoiThu && DauTruong.cong.length == 3) {
             DauTruong.tim(false);
+        }
+        if (t == 3 && !DauTruong.choTuan) {
+            DauTruong.xinTuan();
         }
     }
 
@@ -84,8 +87,12 @@ public final class ManDauTruong extends ManBang {
         }
         if (this.tab == 0) {
             veThachDau(g, x, y, w, h);
-        } else {
+        } else if (this.tab == 1) {
             veDoiHinh(g, x, y, w, h);
+        } else if (this.tab == 2) {
+            veLichSu(g, x, y, w, h);
+        } else {
+            veTuan(g, x, y, w, h);
         }
     }
 
@@ -106,7 +113,8 @@ public final class ManDauTruong extends ManBang {
                 ChuDe.PHU, ww), xx, yy, ChuDe.PHU, ChuDe.CHU, 0);
         yy += lp + 2;
         ChuDe.chu(g, ChuDe.cat("Lượt hôm nay " + DauTruong.luotCon + "/" + DauTruong.luotNgay + " · Lượng khoá tuần " + DauTruong.luongTuan + "/"
-                + DauTruong.tranLuongTuan, ChuDe.PHU, ww), xx, yy, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+                + DauTruong.tranLuongTuan + (DauTruong.chuoiThang > 1 ? " · Chuỗi thắng " + DauTruong.chuoiThang : ""), ChuDe.PHU, ww), xx, yy,
+                ChuDe.PHU, DauTruong.chuoiThang > 1 ? ChuDe.CHINH_TOI : ChuDe.CHU_PHU, 0);
         int yl = y + 2 + ht + k;
         if (DauTruong.cong.length != 3) {
             Bang.trong(g, x, yl, w, y + h - yl - Bang.co(30) - k, "Chưa có đội tấn công",
@@ -119,13 +127,20 @@ public final class ManDauTruong extends ManBang {
             return;
         }
         int hb = Bang.co(28);
-        int wb = (w - k) / 2;
+        int wb = (w - 2 * k) / 3;
+        // cài đặt (lưu máy): mặc định máy tự đánh; bật = tự chọn chiêu mỗi lượt
+        Bang.nut(g, x + 2 * (wb + k), yl, w - 2 * (wb + k), hb, DauTruong.tuChon() ? "Tự chọn chiêu: Bật" : "Tự chọn chiêu: Tắt",
+                DauTruong.tuChon() ? Bang.XAC_NHAN : Bang.GO, new IAction() {
+            public void perform() {
+                DauTruong.datTuChon(!DauTruong.tuChon());
+            }
+        }, "dt-tu-chon");
         Bang.nut(g, x, yl, wb, hb, DauTruong.choDoiThu ? "Đang tìm..." : "Tìm đối thủ", DauTruong.choDoiThu ? Bang.TAT : Bang.CHINH, new IAction() {
             public void perform() {
                 DauTruong.tim(false);
             }
         }, "dt-tim");
-        Bang.nut(g, x + wb + k, yl, w - wb - k, hb, "Làm mới (" + DauTruong.lamMoiCon + ")", DauTruong.lamMoiCon > 0 && !DauTruong.choDoiThu ? Bang.PHU : Bang.TAT,
+        Bang.nut(g, x + wb + k, yl, wb, hb, "Làm mới (" + DauTruong.lamMoiCon + ")", DauTruong.lamMoiCon > 0 && !DauTruong.choDoiThu ? Bang.PHU : Bang.TAT,
                 new IAction() {
                     public void perform() {
                         DauTruong.tim(true);
@@ -160,6 +175,77 @@ public final class ManDauTruong extends ManBang {
                         DauTruong.thach(d.id);
                     }
                 }, "dt-dau-" + i);
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------- tab Lịch sử (xem lại 5 trận gần nhất)
+
+    void veLichSu(Graphics g, int x, int y, int w, int h) {
+        final int[][] v = DauTruong.LICH_SU;
+        if (v.length == 0) {
+            Bang.trong(g, x, y, w, h, "Chưa có trận nào", "5 trận gần nhất của bạn sẽ ở đây để xem lại.");
+            return;
+        }
+        final int rh = Math.max(Bang.caoHang() + 8, ChuDe.cao(ChuDe.NHAN) + ChuDe.cao(ChuDe.PHU) + 16);
+        Bang.danhSach(g, this.ds, x, y + 2, w, h - 2, v.length, rh, new Bang.Hang() {
+            public void ve(Graphics g, int i, int x, int y, int w, int h) {
+                final int[] d = DauTruong.LICH_SU[i];
+                Bang.hang(g, x, y, w, h, i, false, null, null);
+                int wn = Math.max(Bang.co(80), ChuDe.rong("Xem lại", ChuDe.SO) + 24);
+                int hn = Math.min(h - 8, Bang.co(30));
+                int wt = w - wn - 30;
+                String kq = d[1] == 1 ? "Thắng" : "Thua";
+                GiaoDien.vien(g, x + 8, y + (h - ChuDe.cao(ChuDe.NHAN) - 6) / 2, ChuDe.rong("Thắng", ChuDe.NHAN) + 14, ChuDe.cao(ChuDe.NHAN) + 6,
+                        d[1] == 1 ? ChuDe.LA : ChuDe.DO, null);
+                int xk = x + 8 + (ChuDe.rong("Thắng", ChuDe.NHAN) + 14) / 2;
+                ChuDe.chuVienGiua(g, kq, xk, y + (h - ChuDe.cao(ChuDe.NHAN) - 6) / 2, ChuDe.cao(ChuDe.NHAN) + 6, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
+                int xt = x + 30 + ChuDe.rong("Thắng", ChuDe.NHAN);
+                String ten = i < DauTruong.LICH_SU_TEN.length ? DauTruong.LICH_SU_TEN[i] : "";
+                ChuDe.chu(g, ChuDe.cat("Gặp " + ten, ChuDe.NHAN, wt - xt + x), xt, y + 4, ChuDe.NHAN, ChuDe.CHU, 0);
+                ChuDe.chu(g, "Điểm " + (d[2] >= 0 ? "+" : "") + d[2], xt, y + 6 + ChuDe.cao(ChuDe.NHAN), ChuDe.PHU, ChuDe.CHU_PHU, 0);
+                Bang.nut(g, x + w - wn - 6, y + (h - hn) / 2, wn, hn, "Xem lại", Bang.PHU, new IAction() {
+                    public void perform() {
+                        DauTruong.xemLaiTran(d[0]);
+                    }
+                }, "dt-xem-" + i);
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------- tab Tuần (bảng tuần trong game)
+
+    void veTuan(Graphics g, int x, int y, int w, int h) {
+        if (!DauTruong.coTuan) {
+            Bang.trong(g, x, y, w, h, DauTruong.choTuan ? "Đang tải bảng tuần..." : "Chưa có dữ liệu", "Xếp theo điểm mùa kiếm được tuần này (thứ Hai 4 giờ đổi tuần).");
+            return;
+        }
+        int k = Bang.cach();
+        int rh = Math.max(Bang.caoHang(), ChuDe.cao(ChuDe.NHAN) + 12);
+        int[] toi = DauTruong.tuanToi;
+        Bang.the(g, x, y + 2, w, rh);
+        String chuToi = toi[0] > 0 ? "Bạn: hạng " + toi[0] + " · " + (toi[1] >= 0 ? "+" : "") + toi[1] + " điểm · thắng " + toi[2] + "/" + toi[3]
+                : "Bạn chưa đấu tuần này";
+        ChuDe.chuGiua(g, ChuDe.cat(chuToi, ChuDe.NHAN, w - 16), x + 8, y + 2, rh, ChuDe.NHAN, ChuDe.CHINH_TOI, 0);
+        final int[][] v = DauTruong.TUAN;
+        int yl = y + 2 + rh + k;
+        if (v.length == 0) {
+            Bang.trong(g, x, yl, w, y + h - yl, "Tuần này chưa có trận nào", null);
+            return;
+        }
+        Bang.danhSach(g, this.ds, x, yl, w, y + h - yl, v.length, rh, new Bang.Hang() {
+            public void ve(Graphics g, int i, int x, int y, int w, int h) {
+                int[] d = DauTruong.TUAN[i];
+                Bang.hang(g, x, y, w, h, i, false, null, null);
+                int r = h / 2 - 4;
+                int mau = i == 0 ? ChuDe.VANG : (i == 1 ? 0xC9D2DA : (i == 2 ? 0xE0A15E : 0x8E4A1E));
+                GiaoDien.khoiPixel(g, x + 5, y + 4, 2 * r, 2 * r, mau);
+                ChuDe.chuVienGiua(g, String.valueOf(d[0]), x + 5 + r, y + 4, 2 * r, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
+                String so = (d[1] >= 0 ? "+" : "") + d[1] + " · " + d[2] + "/" + d[3];
+                int ws = ChuDe.rong(so, ChuDe.NHAN);
+                ChuDe.chuGiua(g, ChuDe.cat(i < DauTruong.TUAN_TEN.length ? DauTruong.TUAN_TEN[i] : "", ChuDe.NHAN, w - ws - 2 * r - 30), x + 2 * r + 14, y, h,
+                        ChuDe.NHAN, ChuDe.CHU, 0);
+                ChuDe.chuGiua(g, so, x + w - 8, y, h, ChuDe.NHAN, ChuDe.CHU_PHU, 1);
             }
         });
     }

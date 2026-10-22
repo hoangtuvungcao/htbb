@@ -20692,7 +20692,8 @@ UPDATE `data_quest_moi` SET `scontent` = 'Đứng tại điểm đánh dấu tr�
 --   tob_dau_truong_mua     diem mua (mua = mua PvP 13 tuan), thang / thua tan cong, thang / thua phong thu
 --   tob_dau_truong_tran    moi tran: luot tinh luc bat dau, hat ngau nhien + hanh dong (phat lai), diem truoc / sau, luong
 --   tob_dau_truong_thuong  thuong cuoi mua da phat (khoa mua, id_char: khong phat hai lan)
---   data_danh_hieu 9870..9872  danh hieu mua (giu mot mua = 131040 phut), chi so trong ngan sach o danh hieu 1%
+--   data_danh_hieu 9870..9878  danh hieu mua theo hang (quan quan / tinh anh / dau thu) + theo bac (Dong .. Huyen thoai), giu
+--                       mot mua = 131040 phut, chi so trong ngan sach o danh hieu 1%
 -- =====================================================================================================================
 CREATE TABLE IF NOT EXISTS `tob_dau_truong_doi` (
   `id_char` INT NOT NULL,
@@ -20741,6 +20742,9 @@ CREATE TABLE IF NOT EXISTS `tob_dau_truong_tran` (
   `luong` SMALLINT NOT NULL DEFAULT 0 COMMENT 'luong khoa da phat (tran 25 / tuan)',
   `luot` SMALLINT NOT NULL DEFAULT 0,
   `hanh_dong` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'c0..c3 chieu / d0..d2 doi, cung hat = phat lai dung tran',
+  `cong_doi` VARCHAR(160) NOT NULL DEFAULT '' COMMENT 'doi tan cong luc danh (dex.shiny.iv.tinh_cach x 3) - xem lai',
+  `thu_doi` VARCHAR(160) NOT NULL DEFAULT '' COMMENT 'doi phong thu luc danh - xem lai',
+  `ten_thu` VARCHAR(32) NOT NULL DEFAULT '',
   `bat_dau` DATETIME NOT NULL,
   `luc` DATETIME NULL,
   PRIMARY KEY (`id`),
@@ -20764,7 +20768,13 @@ CREATE TABLE IF NOT EXISTS `tob_dau_truong_thuong` (
 INSERT INTO `data_danh_hieu` (`id`,`ma`,`ten`,`mo_ta`,`goi_y`,`do_hiem`,`hinh`,`chi_so`,`phan_nghin`,`dieu_kien`,`tham_so`,`so_luong`,`an`,`thoi_han_phut`,`nguon`,`thu_tu`,`bat`) VALUES
 (9870,'dau_truong_quan_quan','Quán quân Đấu trường','Thưởng cuối mùa: hạng 1 Đấu trường Bảo Bối (ít nhất 10 trận tấn công trong mùa). Giữ một mùa.','Đứng đầu Đấu trường Bảo Bối một mùa.',3,'mat_troi','chi_mang',10,'trao','',1,0,131040,'xep_hang',146,1),
 (9871,'dau_truong_tinh_anh','Tinh anh Đấu trường','Thưởng cuối mùa: hạng 2–10 Đấu trường Bảo Bối (ít nhất 10 trận tấn công trong mùa). Giữ một mùa.','Vào top 10 Đấu trường Bảo Bối.',2,'khien','khang_trang_thai',9,'trao','',1,0,131040,'xep_hang',147,1),
-(9872,'dau_truong_dau_thu','Đấu thủ Đấu trường','Thưởng cuối mùa: hạng 11–100 hoặc từ 1.300 điểm Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bảng Đấu trường Bảo Bối.',1,'khien','ne_tranh',7,'trao','',1,0,131040,'xep_hang',148,1)
+(9872,'dau_truong_dau_thu','Đấu thủ Đấu trường','Thưởng cuối mùa: hạng 11–100 hoặc từ 1.300 điểm Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bảng Đấu trường Bảo Bối.',1,'khien','ne_tranh',7,'trao','',1,0,131040,'xep_hang',148,1),
+(9873,'dau_truong_bac_dong','Đồng Đấu trường','Thưởng cuối mùa: kết thúc mùa Đấu trường Bảo Bối ở bậc Đồng (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bậc Đấu trường Bảo Bối.',0,'khien','hp',5,'trao','',1,0,131040,'xep_hang',149,1),
+(9874,'dau_truong_bac_bac','Bạc Đấu trường','Thưởng cuối mùa: bậc Bạc Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bậc Đấu trường Bảo Bối.',1,'khien','ne_tranh',6,'trao','',1,0,131040,'xep_hang',150,1),
+(9875,'dau_truong_bac_vang','Vàng Đấu trường','Thưởng cuối mùa: bậc Vàng Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bậc Đấu trường Bảo Bối.',1,'khien','chi_mang',7,'trao','',1,0,131040,'xep_hang',151,1),
+(9876,'dau_truong_bac_bach_kim','Bạch kim Đấu trường','Thưởng cuối mùa: bậc Bạch kim Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bậc Đấu trường Bảo Bối.',2,'sao','khang_trang_thai',8,'trao','',1,0,131040,'xep_hang',152,1),
+(9877,'dau_truong_bac_kim_cuong','Kim cương Đấu trường','Thưởng cuối mùa: bậc Kim cương Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo bậc Đấu trường Bảo Bối.',2,'sao','ne_tranh',9,'trao','',1,0,131040,'xep_hang',153,1),
+(9878,'dau_truong_bac_huyen_thoai','Huyền thoại Đấu trường','Thưởng cuối mùa: bậc Huyền thoại Đấu trường Bảo Bối (ít nhất 10 trận tấn công). Giữ một mùa.','Leo tới bậc cao nhất Đấu trường Bảo Bối.',3,'mat_troi','chi_mang',10,'trao','',1,0,131040,'xep_hang',154,1)
 ON DUPLICATE KEY UPDATE `ma`=VALUES(`ma`), `ten`=VALUES(`ten`), `mo_ta`=VALUES(`mo_ta`), `goi_y`=VALUES(`goi_y`),
   `do_hiem`=VALUES(`do_hiem`), `hinh`=VALUES(`hinh`), `chi_so`=VALUES(`chi_so`), `phan_nghin`=VALUES(`phan_nghin`),
   `dieu_kien`=VALUES(`dieu_kien`), `tham_so`=VALUES(`tham_so`), `so_luong`=VALUES(`so_luong`), `an`=VALUES(`an`),

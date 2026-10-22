@@ -15,12 +15,17 @@ test('hằng số khớp com.htbb.pokemon.DauTruongLogic', () => {
   assert.equal(DAU_TRUONG.luotNgay, hang(s, 'LUOT_NGAY'))
   assert.equal(DAU_TRUONG.lamMoiNgay, hang(s, 'LAM_MOI_NGAY'))
   assert.equal(DAU_TRUONG.luongThang, hang(s, 'LUONG_THANG'))
+  assert.equal(DAU_TRUONG.thuongThangDau, hang(s, 'THUONG_THANG_DAU'))
+  assert.equal(DAU_TRUONG.capToc[0], hang(s, 'CAP_TOC_2'))
+  assert.equal(DAU_TRUONG.capToc[1], hang(s, 'CAP_TOC_3'))
   assert.equal(DAU_TRUONG.tranLuongTuan, hang(s, 'TRAN_LUONG_TUAN'))
   assert.equal(DAU_TRUONG.tranToiThieuMua, hang(s, 'TRAN_TOI_THIEU_MUA'))
   assert.equal(DAU_TRUONG.giayLuot, hang(s, 'GIAY_LUOT'))
   assert.equal(DAU_TRUONG.phanTramThu, hang(s, 'PHAN_TRAM_THU'))
   assert.ok(s.includes(`NGUONG_BAC = {${DAU_TRUONG.nguongBac.join(', ')}}`))
-  for (const d of DAU_TRUONG.danhHieu) assert.ok(s.includes(String(d.id)), `danh hieu ${d.id}`)
+  for (const d of DAU_TRUONG.danhHieu.slice(0, 3)) assert.ok(s.includes(String(d.id)), `danh hieu ${d.id}`)
+  assert.ok(s.includes('DH_BAC = 9873'))
+  for (const t of DAU_TRUONG.tenSan) assert.ok(s.includes(`"${t}"`), `san ${t}`)
   const t = java('DauTruongTran.java')
   assert.equal(DAU_TRUONG.luotToiDa, hang(t, 'LUOT_TOI_DA'))
   assert.equal(DAU_TRUONG.capChuanHoa, hang(t, 'CAP'))
@@ -39,7 +44,7 @@ test('điểm Elo giống máy chủ (KiemDauTruong)', () => {
 })
 
 test('bậc theo điểm', () => {
-  assert.deepEqual([800, 950, 1150, 1300, 1450, 1600].map(bacDauTruong), [0, 1, 2, 3, 4, 5])
+  assert.deepEqual([800, 950, 1150, 1300, 1450, 1600, 1750].map(bacDauTruong), [0, 1, 2, 3, 4, 5, 6])
   assert.equal(tenBacDauTruong(1200), 'Bạc')
 })
 

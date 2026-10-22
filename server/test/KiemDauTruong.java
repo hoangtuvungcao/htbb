@@ -42,6 +42,8 @@ public final class KiemDauTruong {
             kiemDuLieuChieu();
             kiemTatDinh();
             kiemAi();
+            kiemSuKien();
+            kiemGioiHan();
             kiemTrangThai();
             kiemIvTinhCach();
             kiemDiem();
@@ -65,7 +67,7 @@ public final class KiemDauTruong {
         for (final Map<String, Object> r : b.get("data_chieu")) {
             chieu.put(KiemLoaiDayDu.chu(r, "ma"), new DauTruongDuLieu.Chieu(KiemLoaiDayDu.chu(r, "ma"), KiemLoaiDayDu.chu(r, "ten"),
                     KiemLoaiDayDu.so(r, "he"), KiemLoaiDayDu.chu(r, "kieu"), KiemLoaiDayDu.chu(r, "vai_tro"), KiemLoaiDayDu.so(r, "so_don"),
-                    KiemLoaiDayDu.chu(r, "trang_thai"), KiemLoaiDayDu.so(r, "ti_le_tt_phan_nghin")));
+                    KiemLoaiDayDu.chu(r, "trang_thai"), KiemLoaiDayDu.so(r, "ti_le_tt_phan_nghin"), KiemLoaiDayDu.chu(r, "hieu_ung")));
         }
         final Map<Integer, String[]> cl = new HashMap<Integer, String[]>();
         for (final Map<String, Object> r : b.get("data_loai_chieu")) {
@@ -287,6 +289,115 @@ public final class KiemDauTruong {
         Kiem.sai("chieu o 4 = khong hop le", t.hopLe(DauTruongTran.CONG, DauTruongTran.HanhDong.chieu(4)));
     }
 
+    static List<String> docDong(final String f) {
+        try {
+            return Files.readAllLines(Paths.get(f), StandardCharsets.UTF_8);
+        } catch (final java.io.IOException e) {
+            return new ArrayList<String>();
+        }
+    }
+
+    static void kiemSuKien() {
+        final java.util.Random r = new java.util.Random(99);
+        int dung = 0, trung = 0, truot = 0, guc = 0, raSan = 0, saiMau = 0, saiHu = 0, saiDong = 0;
+        final java.util.Set<String> hu = new java.util.HashSet<String>();
+        for (final String l : docDong("../du_lieu/bang_hieu_ung.csv")) {
+            final String[] c = l.split(",");
+            if (c.length > 4) {
+                hu.add(c[4].replace(".bytes", ""));
+            }
+        }
+        for (int n = 0; n < 200; n++) {
+            final DauTruongTran t = new DauTruongTran(r.nextLong(), doiNgau(r), doiNgau(r));
+            while (!t.xong()) {
+                final int[][] hp = new int[2][3];
+                for (int b = 0; b < 2; b++) {
+                    for (int i = 0; i < 3; i++) {
+                        hp[b][i] = t.doi[b][i].hp;
+                    }
+                }
+                final int[] ra = {t.dangRa[0], t.dangRa[1]};
+                final List<String> dong = t.choi(null);
+                saiDong += dong.size() == t.suKienLuot().size() ? 0 : 1;
+                // phat lai HP tu su kien = HP that (client dien thanh mau dung)
+                for (final DauTruongTran.SuKien e : t.suKienLuot()) {
+                    if (e.kieu == DauTruongTran.SK_RA_SAN) {
+                        ra[e.ben] = e.so;
+                        raSan++;
+                    } else if (e.kieu == DauTruongTran.SK_TRUNG) {
+                        hp[e.ben][ra[e.ben]] = Math.max(0, hp[e.ben][ra[e.ben]] - e.so);
+                        trung++;
+                    } else if (e.kieu == DauTruongTran.SK_MAT_MAU) {
+                        hp[e.ben][ra[e.ben]] = Math.max(0, hp[e.ben][ra[e.ben]] - e.so);
+                    } else if (e.kieu == DauTruongTran.SK_HOI) {
+                        hp[e.ben][ra[e.ben]] += e.so;
+                    } else if (e.kieu == DauTruongTran.SK_DUNG) {
+                        dung++;
+                        saiHu += e.hieuUng.isEmpty() || !hu.contains(e.hieuUng) ? 1 : 0;
+                    } else if (e.kieu == DauTruongTran.SK_TRUOT) {
+                        truot++;
+                    } else if (e.kieu == DauTruongTran.SK_GUC) {
+                        guc++;
+                    }
+                }
+                for (int b = 0; b < 2; b++) {
+                    for (int i = 0; i < 3; i++) {
+                        saiMau += hp[b][i] == t.doi[b][i].hp ? 0 : 1;
+                    }
+                    saiMau += ra[b] == t.dangRa[b] ? 0 : 1;
+                }
+            }
+        }
+        Kiem.bang("su kien: moi dong nhat ky la mot su kien", Integer.valueOf(0), Integer.valueOf(saiDong));
+        Kiem.bang("su kien: cong don TRUNG / MAT_MAU / HOI / RA_SAN = HP + con dang ra that (200 tran)", Integer.valueOf(0), Integer.valueOf(saiMau));
+        Kiem.dung("su kien: co dung chieu / trung / truot / guc / ra san (" + dung + "/" + trung + "/" + truot + "/" + guc + "/" + raSan + ")",
+                dung > 0 && trung > 0 && truot > 0 && guc > 0 && raSan > 0);
+        Kiem.bang("su kien DUNG: hieu ung co trong du_lieu/bang_hieu_ung.csv", Integer.valueOf(0), Integer.valueOf(saiHu));
+    }
+
+    static void kiemGioiHan() {
+        // chieu manh co hoi chieu (du lieu: toi thuong 3 luot, uy luc >= 100 / dac trung 2)
+        Kiem.bang("hoi chieu: thuong 0, tan cong 85 = 0, toi thuong 3, dac trung 2", "0,0,3,2",
+                DauTruongTran.hoiChieu(new DauTruongDuLieu.Chieu("a", "a", 0, "vat_ly", "thuong", 1, "", 0)) + ","
+                        + DauTruongTran.hoiChieu(new DauTruongDuLieu.Chieu("b", "b", 0, "vat_ly", "tan_cong", 1, "", 0)) + ","
+                        + DauTruongTran.hoiChieu(new DauTruongDuLieu.Chieu("c", "c", 0, "dac_biet", "toi_thuong", 1, "", 0)) + ","
+                        + DauTruongTran.hoiChieu(new DauTruongDuLieu.Chieu("d", "d", 0, "dac_biet", "dac_trung", 1, "", 0)));
+        int dexToi = -1, oToi = -1, dexKc = -1, oKc = -1;
+        for (int dex = 1; dex <= 251 && (dexToi < 0 || dexKc < 0); dex++) {
+            final DauTruongDuLieu.Chieu[] c = d.bonChieu(dex);
+            for (int o = 0; o < 4; o++) {
+                if (dexToi < 0 && c[o].vai == DauTruongDuLieu.V_TOI_THUONG) {
+                    dexToi = dex;
+                    oToi = o;
+                }
+                if (dexKc < 0 && c[o].vai == DauTruongDuLieu.V_KHONG_CHE && DauTruongTran.maTrangThai(c[o].trangThai) != DauTruongTran.TT_KHONG) {
+                    dexKc = dex;
+                    oKc = o;
+                }
+            }
+        }
+        Kiem.dung("co loai co chieu toi thuong + chieu khong che trang thai", dexToi > 0 && dexKc > 0);
+        final DauTruongTran t = new DauTruongTran(5L, new DauTruongTran.Con[]{con(dexToi, 31, 0), con(dexKc, 31, 0), con(7, 31, 0)},
+                new DauTruongTran.Con[]{con(143, 31, 0), con(143, 31, 0), con(143, 31, 0)});
+        t.aiDoi[DauTruongTran.THU] = false;
+        t.choi(DauTruongTran.HanhDong.chieu(oToi));
+        final boolean khoa1 = t.lyDo(DauTruongTran.CONG, oToi) == DauTruongTran.LD_HOI && !t.hopLe(DauTruongTran.CONG, DauTruongTran.HanhDong.chieu(oToi));
+        t.choi(DauTruongTran.HanhDong.chieu((oToi + 1) % 4));
+        t.choi(DauTruongTran.HanhDong.chieu((oToi + 1) % 4));
+        final boolean khoa3 = t.dangRa(0).hoi[oToi] > 0 || t.dangRa(0).hp <= 0;
+        t.choi(DauTruongTran.HanhDong.chieu((oToi + 1) % 4));
+        Kiem.dung("toi thuong: khoa 3 luot (may chu tu choi), luot 4 dung lai duoc", khoa1 && khoa3
+                && (t.dangRa(0).hp <= 0 || t.lyDo(DauTruongTran.CONG, oToi) != DauTruongTran.LD_HOI));
+        Kiem.dung("PP giam sau moi lan dung", t.doi[0][0].pp[oToi] == t.doi[0][0].chieu[oToi].ppToiDa - 1);
+        // chieu trang thai khong dung lai len muc tieu da co trang thai
+        final DauTruongTran u = new DauTruongTran(6L, new DauTruongTran.Con[]{con(dexKc, 31, 0), con(4, 31, 0), con(7, 31, 0)},
+                new DauTruongTran.Con[]{con(143, 31, 0), con(143, 31, 0), con(143, 31, 0)});
+        Kiem.bang("khong che: muc tieu chua co trang thai = dung duoc", Integer.valueOf(DauTruongTran.LD_OK), Integer.valueOf(u.lyDo(0, oKc)));
+        u.dangRa(1).trangThai = DauTruongTran.TT_DOC;
+        Kiem.bang("khong che: muc tieu da co trang thai = khoa (ly do 3)", Integer.valueOf(DauTruongTran.LD_DA_CO_TT), Integer.valueOf(u.lyDo(0, oKc)));
+        Kiem.sai("... va may chu tu choi hanh dong do", u.hopLe(0, DauTruongTran.HanhDong.chieu(oKc)));
+    }
+
     static void kiemTrangThai() {
         Kiem.dung("Lua mien bong", DauTruongTran.mienNhiem(con(4, 31, 0), DauTruongTran.TT_BONG));
         Kiem.dung("Doc / Thep mien doc", DauTruongTran.mienNhiem(con(1, 31, 0), DauTruongTran.TT_DOC)
@@ -341,6 +452,15 @@ public final class KiemDauTruong {
         Kiem.bang("phong thu giu duoc: 1000 -> 1008", Integer.valueOf(1008), Integer.valueOf(DauTruongLogic.diemThu(1000, 1000, 0, 1000)));
         Kiem.bang("he so lap 1000 / 500 / 250 / 0", "1000,500,250,0", DauTruongLogic.heSoLap(0) + "," + DauTruongLogic.heSoLap(1) + ","
                 + DauTruongLogic.heSoLap(2) + "," + DauTruongLogic.heSoLap(3));
+        Kiem.bang("bac 6 Huyen thoai tu 1700", Integer.valueOf(6), Integer.valueOf(DauTruongLogic.bac(1750)));
+        Kiem.bang("san theo bac (0..6), mua thu 4 = san dem", "0,2,6,6,7,7", DauTruongLogic.sanCho(0, 0) + "," + DauTruongLogic.sanCho(2, 1) + ","
+                + DauTruongLogic.sanCho(6, 2) + "," + DauTruongLogic.sanCho(9, 4) + "," + DauTruongLogic.sanCho(0, 3) + "," + DauTruongLogic.sanCho(4, 7));
+        final java.io.File thu = new java.io.File("../client_jar/res/ui");
+        int coAnh = 0;
+        for (int i = 0; i < DauTruongLogic.TEN_SAN.length; i++) {
+            coAnh += new java.io.File(thu, "dau_truong_san_" + i + ".png").isFile() ? 1 : 0;
+        }
+        Kiem.bang("moi san co anh client res/ui/dau_truong_san_<n>.png", Integer.valueOf(DauTruongLogic.TEN_SAN.length), Integer.valueOf(coAnh));
         Kiem.bang("bac theo diem", "0,1,2,3,4,5", DauTruongLogic.bac(800) + "," + DauTruongLogic.bac(950) + "," + DauTruongLogic.bac(1150) + ","
                 + DauTruongLogic.bac(1300) + "," + DauTruongLogic.bac(1450) + "," + DauTruongLogic.bac(1600));
         // 30 tran thang lien voi cung doi thu trong 24 gio chi cong 16 + 8 + 4 (khong cay duoc)
@@ -371,7 +491,23 @@ public final class KiemDauTruong {
         Kiem.bang("hang 2..10 = Tinh anh", Integer.valueOf(9871), Integer.valueOf(DauTruongLogic.danhHieuMua(10, 1300, 20)));
         Kiem.bang("hang 11..100 = Chien binh", Integer.valueOf(9872), Integer.valueOf(DauTruongLogic.danhHieuMua(100, 1000, 20)));
         Kiem.bang("hang 150 du 1300 diem = Chien binh", Integer.valueOf(9872), Integer.valueOf(DauTruongLogic.danhHieuMua(150, 1300, 20)));
-        Kiem.bang("hang 150 duoi 1300 = khong", Integer.valueOf(0), Integer.valueOf(DauTruongLogic.danhHieuMua(150, 1250, 20)));
+        Kiem.bang("hang 150 bac Vang (1250) = danh hieu bac Vang 9875", Integer.valueOf(9875), Integer.valueOf(DauTruongLogic.danhHieuMua(150, 1250, 20)));
+        Kiem.bang("hang 150 bac Tap su (850) = khong", Integer.valueOf(0), Integer.valueOf(DauTruongLogic.danhHieuMua(150, 850, 20)));
+        Kiem.bang("hang 40 bac Kim cuong (1600) = danh hieu bac Kim cuong (dep hon Dau thu)", Integer.valueOf(9877),
+                Integer.valueOf(DauTruongLogic.danhHieuMua(40, 1600, 20)));
+        Kiem.bang("ma danh hieu bac", "dau_truong_bac_huyen_thoai", DauTruongLogic.maDanhHieu(9878));
+        Kiem.bang("thang dau ngay: +2 luong khoa (3 + 2)", Integer.valueOf(5), Integer.valueOf(DauTruongLogic.luongTran(true, 1000, 0, true)));
+        Kiem.bang("thang dau ngay van trong tran tuan (da nhan 23 -> 2)", Integer.valueOf(2), Integer.valueOf(DauTruongLogic.luongTran(true, 1000, 23, true)));
+        Kiem.bang("thang dau ngay voi doi thu da gap 3 lan (he so 0) = 0", Integer.valueOf(0), Integer.valueOf(DauTruongLogic.luongTran(true, 0, 0, true)));
+        int tuan2 = 0;
+        for (int ngay = 0; ngay < 7; ngay++) {
+            for (int l = 0; l < DauTruongLogic.LUOT_NGAY; l++) {
+                tuan2 += DauTruongLogic.luongTran(true, 1000, tuan2, l == 0);
+            }
+        }
+        Kiem.bang("ca tuan thang het + thuong thang dau ngay: van dung tran 25", Integer.valueOf(25), Integer.valueOf(tuan2));
+        Kiem.bang("chuoi thang (chi hinh): 1,1,1,0,1 = 3; 0,.. = 0", "3,0", DauTruongLogic.chuoiThang(new int[]{1, 1, 1, 0, 1}) + ","
+                + DauTruongLogic.chuoiThang(new int[]{0, 1, 1}));
         Kiem.bang("ma danh hieu", "dau_truong_quan_quan", DauTruongLogic.maDanhHieu(9870));
     }
 
@@ -487,6 +623,9 @@ public final class KiemDauTruong {
         k.ten = "Pikachu";
         t.kho = new GoiDauTruong.KhoCon[]{k};
         t.ghiChu = "Đã lưu";
+        t.chuoiThang = 4;
+        t.lichSu = new int[][]{{55, 1, 16}};
+        t.lichSuTen = new String[]{"Lá"};
         final DataInputStream r = new DataInputStream(new ByteArrayInputStream(ghi(o -> GoiDauTruong.trangThai(o, t))));
         final StringBuilder s = new StringBuilder();
         s.append(r.readByte()).append('|').append(r.readByte()).append('|').append(r.readShort()).append('|').append(r.readShort()).append('|')
@@ -509,15 +648,21 @@ public final class KiemDauTruong {
                     .append(',').append(r.readByte()).append(',').append(r.readByte()).append(',').append(r.readUTF());
         }
         s.append('|').append(r.readUTF());
-        Kiem.bang("goi trang thai: dung thu tu truong", "0|1|2|40|1016|1|Đồng|7|3|1|4|5|9|25|10|20|1,2,3,|3,2,1,|2100|2100|1,25,30,0,2,70,495,3,-1,0,Pikachu|Đã lưu",
+        s.append('|').append(r.readShort());
+        final int nls = r.readByte();
+        for (int i = 0; i < nls; i++) {
+            s.append('|').append(r.readInt()).append(',').append(r.readUTF()).append(',').append(r.readByte()).append(',').append(r.readShort());
+        }
+        Kiem.bang("goi trang thai: dung thu tu truong", "0|1|2|40|1016|1|Đồng|7|3|1|4|5|9|25|10|20|1,2,3,|3,2,1,|2100|2100|1,25,30,0,2,70,495,3,-1,0,Pikachu|Đã lưu|4|55,Lá,1,16",
                 s.toString());
         Kiem.bang("goi trang thai: doc het, khong du byte", Integer.valueOf(0), Integer.valueOf(r.available()));
         // bat dau + luot + ket qua
         final DauTruongTran tr = tran(11L, 12L);
-        final byte[] bd = ghi(o -> GoiDauTruong.batDau(o, 77, "Mây Xanh", 1040, 20, tr, 20, false));
+        final byte[] bd = ghi(o -> GoiDauTruong.batDau(o, 77, "Mây Xanh", 1040, 20, tr, 20, false, 3));
         final DataInputStream q = new DataInputStream(new ByteArrayInputStream(bd));
-        Kiem.bang("bat dau: kieu 2 + id tran", "2,77,Mây Xanh,1040,20,50", q.readByte() + "," + q.readInt() + "," + q.readUTF() + "," + q.readShort()
-                + "," + q.readByte() + "," + q.readByte());
+        Kiem.bang("bat dau: kieu 2 + id tran + san + cap toc + xem lai", "2,77,Mây Xanh,1040,20,50,3,Gym điện Vermilion,20,40,0", q.readByte() + ","
+                + q.readInt() + "," + q.readUTF() + "," + q.readShort() + "," + q.readByte() + "," + q.readByte() + "," + q.readByte() + ","
+                + q.readUTF() + "," + q.readByte() + "," + q.readByte() + "," + q.readByte());
         int dexDung = 0;
         for (int ben = 0; ben < 2; ben++) {
             for (int i = 0; i < 3; i++) {
@@ -538,21 +683,28 @@ public final class KiemDauTruong {
                 q.readByte();
                 q.readByte();
                 q.readByte();
-                ppDung += q.readByte() == tr.doi[0][i].chieu[m].ppToiDa && ten.equals(tr.doi[0][i].chieu[m].ten) ? 1 : 0;
+                ppDung += q.readByte() == tr.doi[0][i].chieu[m].ppToiDa & q.readByte() == tr.doi[0][i].chieu[m].vai
+                        && ten.equals(tr.doi[0][i].chieu[m].ten) ? 1 : 0;
             }
         }
-        Kiem.bang("bat dau: 3 x 4 chieu cua minh (ten, PP toi da)", Integer.valueOf(12), Integer.valueOf(ppDung));
+        Kiem.bang("bat dau: 3 x 4 chieu cua minh (ten, PP toi da, vai tro)", Integer.valueOf(12), Integer.valueOf(ppDung));
         docKhoi(q, tr);
         Kiem.bang("bat dau: doc het", Integer.valueOf(0), Integer.valueOf(q.available()));
         final List<String> dong = tr.choi(null);
-        final DataInputStream l = new DataInputStream(new ByteArrayInputStream(ghi(o -> GoiDauTruong.luot(o, 77, tr, dong, 20, true))));
+        final List<DauTruongTran.SuKien> sk = tr.suKienLuot();
+        final DataInputStream l = new DataInputStream(new ByteArrayInputStream(ghi(o -> GoiDauTruong.luot(o, 77, tr, sk, 20, true))));
         Kiem.bang("luot: kieu 3, id, so luot", "3,77,1", l.readByte() + "," + l.readInt() + "," + l.readShort());
         final int nd = l.readByte();
         final List<String> doc = new ArrayList<String>();
+        int skDung = 0;
         for (int i = 0; i < nd; i++) {
             doc.add(l.readUTF());
+            final DauTruongTran.SuKien e = sk.get(i);
+            skDung += l.readByte() == e.kieu && l.readByte() == e.ben && l.readShort() == e.so && l.readByte() == e.he
+                    && l.readByte() == e.loai && l.readByte() == e.co && l.readUTF().equals(e.hieuUng) ? 1 : 0;
         }
         Kiem.dung("luot: cac dong nhat ky dung (" + nd + ")", doc.equals(dong));
+        Kiem.bang("luot: moi su kien (kieu, ben, so, he, loai, co, hieu ung) dung", Integer.valueOf(nd), Integer.valueOf(skDung));
         docKhoi(l, tr);
         Kiem.bang("luot: doc het", Integer.valueOf(0), Integer.valueOf(l.available()));
         final DataInputStream kq = new DataInputStream(new ByteArrayInputStream(ghi(o -> GoiDauTruong.ketQua(o, 77, true, 1000, 1016, -8, 3,
@@ -578,6 +730,43 @@ public final class KiemDauTruong {
         sd.append(',').append(dt.readByte()).append(',').append(dt.readUTF());
         Kiem.bang("doi thu: thu tu truong", "1,1,9,Lá,990,0,2050,0,1.0.0,4.0.0,7.0.0,8,", sd.toString());
         Kiem.bang("doi thu: doc het", Integer.valueOf(0), Integer.valueOf(dt.available()));
+        final List<GoiDauTruong.DongTuan> bt = new ArrayList<GoiDauTruong.DongTuan>();
+        final GoiDauTruong.DongTuan d1 = new GoiDauTruong.DongTuan();
+        d1.hang = 1;
+        d1.ten = "Mây";
+        d1.diemDoi = 48;
+        d1.thang = 3;
+        d1.tran = 3;
+        bt.add(d1);
+        final DataInputStream bq = new DataInputStream(new ByteArrayInputStream(ghi(o -> GoiDauTruong.bangTuan(o, bt, d1))));
+        Kiem.bang("bang tuan: kieu 6, n, dong (hang, ten, diem tuan, thang, tran) + dong cua minh", "6,1,1,Mây,48,3,3,1,Mây,48,3,3",
+                bq.readByte() + "," + bq.readByte() + "," + bq.readShort() + "," + bq.readUTF() + "," + bq.readShort() + "," + bq.readShort() + ","
+                        + bq.readShort() + "," + bq.readShort() + "," + bq.readUTF() + "," + bq.readShort() + "," + bq.readShort() + "," + bq.readShort());
+        // xem lai: doi luu (dex.shiny.iv.tinh cach) + hat + hanh dong -> cung tran
+        final DauTruongTran goc = tran(31L, 32L);
+        final String maC = DauTruongTran.maDoi(goc.doi[0]), maT = DauTruongTran.maDoi(goc.doi[1]);
+        goc.chayHet();
+        final DauTruongTran lai = new DauTruongTran(31L, DauTruongTran.giaiDoi(d, maC), DauTruongTran.giaiDoi(d, maT));
+        for (final String m : goc.hanhDongCong) {
+            lai.choi(DauTruongTran.HanhDong.tuMa(m));
+        }
+        Kiem.dung("xem lai tu doi luu + hat + hanh dong = dung tran (" + goc.luot + " luot)", lai.nhatKy.equals(goc.nhatKy) && lai.thang == goc.thang);
+        Kiem.dung("doi luu vua cot VARCHAR(160)", maC.length() <= 160 && maT.length() <= 160);
+        final DauTruongTran dh = tran(40L, 41L);
+        dh.choi(null);
+        dh.dauHang();
+        Kiem.dung("dau hang: ben tan cong thua ngay + su kien", dh.thang == DauTruongTran.THU && dh.suKienLuot().size() == 1);
+        // do dai tran: 500 tran may danh, uoc thoi gian xem x1 (client dien ~4,5 giay / luot)
+        final java.util.Random rr = new java.util.Random(77);
+        long tong = 0;
+        for (int n = 0; n < 500; n++) {
+            final DauTruongTran xt = new DauTruongTran(rr.nextLong(), doiNgau(rr), doiNgau(rr));
+            xt.chayHet();
+            tong += xt.luot;
+        }
+        final double tb = tong / 500.0;
+        System.out.println("        do dai tran trung binh: " + tb + " luot (~" + Math.round(tb * 6) + " giay xem x1)");
+        Kiem.dung("tran ngan: trung binh 8..20 luot (45..90 giay xem x1)", tb >= 8 && tb <= 20);
         // -109 chi mot noi xu ly o may chu, client co lop doc
         final String xl = new String(Files.readAllBytes(Paths.get("src/real/MapXuLyLenh.java")), StandardCharsets.UTF_8);
         Kiem.bang("MapXuLyLenh: dung mot case -109", Integer.valueOf(1), Integer.valueOf(xl.split("case -109:", -1).length - 1));
@@ -601,10 +790,18 @@ public final class KiemDauTruong {
                 ok += q.readByte() == tr.doi[0][i].pp[m] ? 1 : 0;
             }
         }
+        for (int i = 0; i < 3; i++) {
+            for (int m = 0; m < 4; m++) {
+                ok += q.readByte() == tr.doi[0][i].hoi[m] ? 1 : 0;
+            }
+        }
+        for (int m = 0; m < 4; m++) {
+            ok += q.readByte() == (tr.xong() ? 0 : tr.lyDo(DauTruongTran.CONG, m)) ? 1 : 0;
+        }
         q.readByte();
         q.readByte();
         q.readByte();
-        Kiem.bang("khoi trang thai: dang ra, HP, trang thai, PP", Integer.valueOf(2 + 12 + 12), Integer.valueOf(ok));
+        Kiem.bang("khoi trang thai: dang ra, HP, trang thai, PP, hoi chieu, ly do", Integer.valueOf(2 + 12 + 12 + 12 + 4), Integer.valueOf(ok));
     }
 
     // ------------------------------------------------------------------ SQL
@@ -620,14 +817,14 @@ public final class KiemDauTruong {
         Kiem.dung("khoi dau truong: luat bang nguoi choi (KiemDuLieuSql.khongPhaNguoiChoi)", KiemDuLieuSql.khongPhaNguoiChoi(s));
         final Map<String, List<Map<String, Object>>> b = KiemLoaiDayDu.docSql(s);
         final List<Map<String, Object>> dh = b.get("data_danh_hieu");
-        Kiem.bang("3 danh hieu mua 9870..9872", Integer.valueOf(3), Integer.valueOf(dh == null ? 0 : dh.size()));
+        Kiem.bang("9 danh hieu mua 9870..9878", Integer.valueOf(9), Integer.valueOf(dh == null ? 0 : dh.size()));
         int ok = 0;
         for (final Map<String, Object> r : dh) {
             final int id = KiemLoaiDayDu.so(r, "id");
             ok += KiemLoaiDayDu.chu(r, "ma").equals(DauTruongLogic.maDanhHieu(id)) && KiemLoaiDayDu.so(r, "thoi_han_phut") == 131040
                     && KiemLoaiDayDu.so(r, "phan_nghin") <= 10 && "trao".equals(KiemLoaiDayDu.chu(r, "dieu_kien")) ? 1 : 0;
         }
-        Kiem.bang("danh hieu mua: ma khop DauTruongLogic, co han 1 mua, chi so <= 1% (ngan sach o), dieu kien trao", Integer.valueOf(3),
+        Kiem.bang("danh hieu mua: ma khop DauTruongLogic, co han 1 mua, chi so <= 1% (ngan sach o), dieu kien trao", Integer.valueOf(9),
                 Integer.valueOf(ok));
         // DDL may chu tao (DauTruongGame.taoBang) cung cot voi SQL
         final String g = new String(Files.readAllBytes(Paths.get("src/real/DauTruongGame.java")), StandardCharsets.UTF_8);

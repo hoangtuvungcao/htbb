@@ -47,8 +47,25 @@ public final class DauTruongLogic {
     public static final int DH_QUAN_QUAN = 9870, DH_TINH_ANH = 9871, DH_DAU_THU = 9872;
     public static final int DIEM_DAU_THU = 1300;
     public static final String[] MA_DANH_HIEU = {"dau_truong_quan_quan", "dau_truong_tinh_anh", "dau_truong_dau_thu"};
-    public static final String[] TEN_BAC = {"Tập sự", "Đồng", "Bạc", "Vàng", "Bạch kim", "Kim cương"};
-    public static final int[] NGUONG_BAC = {900, 1100, 1250, 1400, 1550};
+    public static final String[] TEN_BAC = {"Tập sự", "Đồng", "Bạc", "Vàng", "Bạch kim", "Kim cương", "Huyền thoại"};
+    public static final int[] NGUONG_BAC = {900, 1100, 1250, 1400, 1550, 1700};
+    /**
+     * Sân đấu (ảnh client res/ui/dau_truong_san_&lt;n&gt;.png, tools/pokemon/sinh_anh_dau_truong.py): mở theo BẬC của người
+     * tấn công (leo bậc = sân đẹp hơn); mùa thứ 4 mỗi năm ({@link #sanCho}) mọi trận đấu ở sân đêm Ma (biến thể mùa).
+     */
+    public static final String[] TEN_SAN = {"Sân cỏ Viridian", "Sân đá Pewter", "Hồ nước Cerulean", "Gym điện Vermilion",
+        "Sân băng Mahogany", "Núi lửa Cinnabar", "Đỉnh rồng Blackthorn", "Sân đêm Lavender"};
+    public static final int SAN_DEM = 7;
+    /** Tốc độ diễn ×2 / ×3 mở theo cấp nhân vật (cấu hình dau_truong.cap_toc_2 / cap_toc_3 ghi đè). */
+    public static final int CAP_TOC_2 = 20, CAP_TOC_3 = 40;
+
+    /** Sân của trận: theo bậc người tấn công (0..6), mùa thứ 4 mỗi năm = sân đêm. */
+    public static int sanCho(final int bac, final int mua) {
+        if (Math.floorMod(mua, 4) == 3) {
+            return SAN_DEM;
+        }
+        return Math.max(0, Math.min(SAN_DEM - 1, bac));
+    }
 
     // ================================================================== doi hinh
 
@@ -171,12 +188,33 @@ public final class DauTruongLogic {
 
     /** Luong khoa cua mot tran (da kep tran tuan). */
     public static int luongTran(final boolean thang, final int heSo, final int daNhanTuan) {
+        return luongTran(thang, heSo, daNhanTuan, false);
+    }
+
+    /** Thang dau tien trong ngay: them {@link #THUONG_THANG_DAU} luong khoa (van trong tran tuan {@link #TRAN_LUONG_TUAN}). */
+    public static final int THUONG_THANG_DAU = 2;
+
+    public static int luongTran(final boolean thang, final int heSo, final int daNhanTuan, final boolean thangDauNgay) {
         if (!thang) {
             return 0;
         }
-        final int goc = LUONG_THANG * Math.max(0, Math.min(1000, heSo)) / 1000;
+        final int goc = LUONG_THANG * Math.max(0, Math.min(1000, heSo)) / 1000 + (thangDauNgay && heSo > 0 ? THUONG_THANG_DAU : 0);
         return Math.max(0, Math.min(goc, TRAN_LUONG_TUAN - Math.max(0, daNhanTuan)));
     }
+
+    /** Chuoi thang (chi hinh): so tran thang lien tiep gan nhat; ketQua moi nhat truoc (1 thang, 0 thua). */
+    public static int chuoiThang(final int[] ketQuaMoiTruoc) {
+        int n = 0;
+        for (int i = 0; ketQuaMoiTruoc != null && i < ketQuaMoiTruoc.length && ketQuaMoiTruoc[i] == 1; i++) {
+            n++;
+        }
+        return n;
+    }
+
+    /** Danh hieu bac cuoi mua (Dong .. Huyen thoai) = DH_BAC + bac - 1 (9873..9878). */
+    public static final int DH_BAC = 9873;
+    public static final String[] MA_DANH_HIEU_BAC = {"", "dau_truong_bac_dong", "dau_truong_bac_bac", "dau_truong_bac_vang",
+        "dau_truong_bac_bach_kim", "dau_truong_bac_kim_cuong", "dau_truong_bac_huyen_thoai"};
 
     /** Danh hieu cuoi mua: 0 = khong; con lai DH_*. */
     public static int danhHieuMua(final int hang, final int diem, final int soTran) {
@@ -189,13 +227,20 @@ public final class DauTruongLogic {
         if (hang <= 10) {
             return DH_TINH_ANH;
         }
+        final int bac = bac(diem);
+        if (bac >= 4) {
+            return DH_BAC + bac - 1;   // Bach kim / Kim cuong / Huyen thoai: danh hieu bac dep hon Dau thu
+        }
         if (hang <= 100 || diem >= DIEM_DAU_THU) {
             return DH_DAU_THU;
         }
-        return 0;
+        return bac >= 1 ? DH_BAC + bac - 1 : 0;
     }
 
     public static String maDanhHieu(final int id) {
+        if (id >= DH_BAC && id < DH_BAC + MA_DANH_HIEU_BAC.length - 1) {
+            return MA_DANH_HIEU_BAC[id - DH_BAC + 1];
+        }
         return id == DH_QUAN_QUAN ? MA_DANH_HIEU[0] : id == DH_TINH_ANH ? MA_DANH_HIEU[1] : id == DH_DAU_THU ? MA_DANH_HIEU[2] : "";
     }
 

@@ -81,6 +81,8 @@ public final class DauTruongTran {
         public int hp;
         public final DauTruongDuLieu.Chieu[] chieu;
         public final int[] pp = new int[4];
+        /** Luot hoi chieu con lai moi o (chieu manh: {@link #hoiChieu}). */
+        public final int[] hoi = new int[4];
         public int trangThai;
         int luotNgu, luotDong;
         int luLan;
@@ -240,11 +242,98 @@ public final class DauTruongTran {
     }
 
     void ghi(final String s) {
-        this.dongLuot.add(s);
-        this.nhatKy.add(s);
+        ev(SK_CHU, -1, 0, null, 0, s);
+    }
+
+    // ================================================================== su kien (client dung de dien hoat canh)
+
+    /** Kieu su kien: chi chu, ra san (so = o), dung chieu (so = o chieu), trung (so = sat thuong), truot, trang thai (so = ma
+     * TT_* / 6 lu lan), bac chi so (so = +-n, co = chi so), hoi mau (so), mat mau ngoai don (so, co = nguon: 1 bong 2 doc
+     * 3 phan luc 4 tu danh), nga guc, bi chan hanh dong (so = TT_* / 6 lu lan / 7 choang). */
+    public static final int SK_CHU = 0, SK_RA_SAN = 1, SK_DUNG = 2, SK_TRUNG = 3, SK_TRUOT = 4, SK_TRANG_THAI = 5, SK_BAC = 6,
+            SK_HOI = 7, SK_MAT_MAU = 8, SK_GUC = 9, SK_BI_CHAN = 10;
+    /** Co cua SK_TRUNG: chi mang, sieu hieu qua, khong hieu qua lam, mien nhiem; SK_RA_SAN: thay con guc. */
+    public static final int CO_CHI_MANG = 1, CO_SIEU = 2, CO_YEU = 4, CO_MIEN = 8, CO_THAY_GUC = 1;
+
+    /** Mot su kien trong luot (server quyet dinh ket qua, client chi dien). */
+    public static final class SuKien {
+        public final String chu, hieuUng;
+        public final int kieu, ben, so, he, loai, co;
+
+        SuKien(final int kieu, final int ben, final int so, final int he, final int loai, final int co, final String hieuUng,
+                final String chu) {
+            this.kieu = kieu;
+            this.ben = ben;
+            this.so = so;
+            this.he = he;
+            this.loai = loai;
+            this.co = co;
+            this.hieuUng = hieuUng == null ? "" : hieuUng;
+            this.chu = chu == null ? "" : chu;
+        }
+    }
+
+    public final List<SuKien> suKien = new ArrayList<SuKien>();
+    private List<SuKien> suKienLuot = new ArrayList<SuKien>();
+
+    /** Su kien cua luot vua choi. */
+    public List<SuKien> suKienLuot() {
+        return this.suKienLuot;
+    }
+
+    void ev(final int kieu, final int ben, final int so, final DauTruongDuLieu.Chieu c, final int co, final String chu) {
+        final SuKien e = new SuKien(kieu, ben, so, c == null ? -1 : c.he, c == null ? 0 : c.loai, co, c == null ? "" : c.hieuUng, chu);
+        this.suKien.add(e);
+        this.suKienLuot.add(e);
+        this.dongLuot.add(e.chu);
+        this.nhatKy.add(e.chu);
     }
 
     // ------------------------------------------------------------------ hop le
+
+    /** Ly do o chieu KHONG dung duoc: 0 dung duoc, 1 het PP, 2 dang hoi chieu, 3 muc tieu da co trang thai / mien nhiem. */
+    public static final int LD_OK = 0, LD_HET_PP = 1, LD_HOI = 2, LD_DA_CO_TT = 3;
+
+    /** So luot hoi chieu sau khi dung (du lieu chieu: toi thuong 3, uy luc >= 100 / dac trung 2, con lai 0). */
+    public static int hoiChieu(final DauTruongDuLieu.Chieu c) {
+        if (c.vai == DauTruongDuLieu.V_TOI_THUONG) {
+            return 3;
+        }
+        return c.uyLuc >= 100 || c.vai == DauTruongDuLieu.V_DAC_TRUNG ? 2 : 0;
+    }
+
+    public int lyDo(final int ben, final int o) {
+        final Con a = dangRa(ben);
+        if (o < 0 || o > 3 || a.pp[o] <= 0) {
+            return LD_HET_PP;
+        }
+        if (a.hoi[o] > 0) {
+            return LD_HOI;
+        }
+        final DauTruongDuLieu.Chieu c = a.chieu[o];
+        if (c.vai == DauTruongDuLieu.V_KHONG_CHE) {
+            final Con d = dangRa(1 - ben);
+            final String m = c.trangThai.isEmpty() ? "cham" : c.trangThai;
+            final int tt = maTrangThai(m);
+            if (tt != TT_KHONG && (d.trangThai != TT_KHONG || mienNhiem(d, tt))) {
+                return LD_DA_CO_TT;
+            }
+            if (("lu_lan".equals(m) || "me_hoac".equals(m)) && d.luLan > 0) {
+                return LD_DA_CO_TT;
+            }
+        }
+        return LD_OK;
+    }
+
+    /** Con dang ra co it nhat mot chieu dung duoc (khong thi "Vùng vẫy"). */
+    public boolean coChieuDung(final int ben) {
+        for (int o = 0; o < 4; o++) {
+            if (lyDo(ben, o) == LD_OK) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean hopLe(final int ben, final HanhDong h) {
         if (h == null || xong()) {
@@ -252,7 +341,7 @@ public final class DauTruongTran {
         }
         final Con a = dangRa(ben);
         if (h.loai == HanhDong.CHIEU) {
-            return h.chiSo >= 0 && h.chiSo < 4 && (a.pp[h.chiSo] > 0 || a.hetPp());
+            return h.chiSo >= 0 && h.chiSo < 4 && (lyDo(ben, h.chiSo) == LD_OK || !coChieuDung(ben));
         }
         if (h.loai == HanhDong.DOI) {
             return h.chiSo >= 0 && h.chiSo < this.doi[ben].length && h.chiSo != this.dangRa[ben] && this.doi[ben][h.chiSo].song();
@@ -265,6 +354,7 @@ public final class DauTruongTran {
     /** Choi mot luot: {@code hdCong} = hanh dong ben tan cong (null / khong hop le = may chon). Tra cac dong nhat ky luot nay. */
     public List<String> choi(final HanhDong hdCong) {
         this.dongLuot = new ArrayList<String>();
+        this.suKienLuot = new ArrayList<SuKien>();
         if (xong()) {
             return this.dongLuot;
         }
@@ -310,6 +400,11 @@ public final class DauTruongTran {
         }
         for (int ben = 0; ben < 2; ben++) {
             dangRa(ben).choang = false;
+            for (final Con c : this.doi[ben]) {
+                for (int o = 0; o < 4; o++) {
+                    c.hoi[o] = Math.max(0, c.hoi[o] - 1);
+                }
+            }
         }
         if (!xong() && this.luot >= LUOT_TOI_DA) {
             final int pa = tongPhanNghin(CONG), pb = tongPhanNghin(THU);
@@ -317,6 +412,44 @@ public final class DauTruongTran {
             ghi("Hết " + LUOT_TOI_DA + " lượt: " + (this.thang == CONG ? "bạn còn nhiều máu hơn." : "đối thủ còn nhiều máu hơn."));
         }
         return this.dongLuot;
+    }
+
+    /** Ben tan cong dau hang (nut thoat / roi tran): thua ngay, ghi su kien. */
+    public void dauHang() {
+        if (xong()) {
+            return;
+        }
+        this.suKienLuot = new ArrayList<SuKien>();
+        this.dongLuot = new ArrayList<String>();
+        this.thang = THU;
+        ghi("Bạn đã đầu hàng - trận tính là thua.");
+    }
+
+    /** Doi luu de xem lai: "dex.shiny.iv.tinhCach" x 3, cach dau phay. */
+    public static String maDoi(final Con[] doi) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < doi.length; i++) {
+            sb.append(i > 0 ? "," : "").append(doi[i].dex).append('.').append(doi[i].shiny ? 1 : 0).append('.').append(doi[i].iv).append('.')
+                    .append(doi[i].tinhCach);
+        }
+        return sb.toString();
+    }
+
+    public static Con[] giaiDoi(final DauTruongDuLieu d, final String s) {
+        if (s == null || s.isEmpty()) {
+            return null;
+        }
+        final String[] p = s.split(",");
+        final Con[] kq = new Con[p.length];
+        try {
+            for (int i = 0; i < p.length; i++) {
+                final String[] q = p[i].split("\\.");
+                kq[i] = taoCon(d, Integer.parseInt(q[0]), "1".equals(q[1]), Integer.parseInt(q[2]), Integer.parseInt(q[3]));
+            }
+        } catch (final RuntimeException e) {
+            return null;
+        }
+        return kq.length == SO_CON ? kq : null;
     }
 
     /** Ca hai ben may chon den het tran (ben tan cong roi tran / tu dong). */
@@ -363,9 +496,10 @@ public final class DauTruongTran {
         moi.raSan();
         this.lanDoi[ben] = this.luot;
         if (thayGuc) {
-            ghi((ben == THU ? "Đối thủ đưa " + moi.ten + " ra!" : "Tiến lên, " + moi.ten + "!"));
+            ev(SK_RA_SAN, ben, o, null, CO_THAY_GUC, ben == THU ? "Đối thủ đưa " + moi.ten + " ra!" : "Tiến lên, " + moi.ten + "!");
         } else {
-            ghi((ben == THU ? "Đối thủ thu " + cu.ten + " về, đưa " + moi.ten + " ra!" : cu.ten + ", quay về! Tiến lên, " + moi.ten + "!"));
+            ev(SK_RA_SAN, ben, o, null, 0, ben == THU ? "Đối thủ thu " + cu.ten + " về, đưa " + moi.ten + " ra!"
+                    : cu.ten + ", quay về! Tiến lên, " + moi.ten + "!");
         }
     }
 
@@ -380,7 +514,7 @@ public final class DauTruongTran {
                 ghi(ta + " tỉnh dậy!");
             } else {
                 a.luotNgu--;
-                ghi(ta + " đang ngủ say.");
+                ev(SK_BI_CHAN, ben, TT_NGU, null, 0, ta + " đang ngủ say.");
                 return;
             }
         }
@@ -390,16 +524,16 @@ public final class DauTruongTran {
                 a.trangThai = TT_KHONG;
                 ghi(ta + " đã tan băng!");
             } else {
-                ghi(ta + " bị đóng băng, không cử động được!");
+                ev(SK_BI_CHAN, ben, TT_DONG_BANG, null, 0, ta + " bị đóng băng, không cử động được!");
                 return;
             }
         }
         if (a.choang) {
-            ghi(ta + " bị choáng, không ra đòn được!");
+            ev(SK_BI_CHAN, ben, 7, null, 0, ta + " bị choáng, không ra đòn được!");
             return;
         }
         if (a.trangThai == TT_TE && this.rng.so(100) < 25) {
-            ghi(ta + " bị tê liệt, không cử động được!");
+            ev(SK_BI_CHAN, ben, TT_TE, null, 0, ta + " bị tê liệt, không cử động được!");
             return;
         }
         if (a.luLan > 0) {
@@ -410,26 +544,27 @@ public final class DauTruongTran {
                 final int st = satThuong(CAP, 40, chiSoDung(a, B_TC, false), chiSoDung(a, B_PT, false), false, 100, false,
                         85 + this.rng.so(16), a.trangThai == TT_BONG);
                 a.hp = Math.max(0, a.hp - st);
-                ghi(ta + " lú lẫn, tự đánh mình (-" + st + " HP).");
+                ev(SK_MAT_MAU, ben, st, null, 4, ta + " lú lẫn, tự đánh mình (-" + st + " HP).");
                 if (!a.song()) {
-                    ghi(ta + " ngã gục!");
+                    ev(SK_GUC, ben, 0, null, 0, ta + " ngã gục!");
                 }
                 return;
             }
         }
         DauTruongDuLieu.Chieu c;
-        if (a.hetPp()) {
+        if (o < 0 || o > 3 || a.pp[o] <= 0 || a.hoi[o] > 0) {
             c = DauTruongDuLieu.VUNG_VAY;
-            ghi(ta + " hết PP, đành Vùng vẫy!");
+            ev(SK_DUNG, ben, -1, c, 0, ta + " không còn chiêu dùng được, đành Vùng vẫy!");
         } else {
             c = a.chieu[o];
             a.pp[o] = Math.max(0, a.pp[o] - 1);
-            ghi(ta + " dùng " + c.ten + "!");
+            a.hoi[o] = hoiChieu(c) > 0 ? hoiChieu(c) + 1 : 0; // +1: luot nay cung tru o cuoi luot
+            ev(SK_DUNG, ben, o, c, 0, ta + " dùng " + c.ten + "!");
         }
         // chinh xac
         final int cx = c.chinhXac * heSoBacChinhXac(a.bac[B_CX]) / 100;
         if (c.vai != DauTruongDuLieu.V_BUFF && c.vai != DauTruongDuLieu.V_KHIEN && this.rng.so(100) >= cx) {
-            ghi("Nhưng đòn đánh trượt!");
+            ev(SK_TRUOT, 1 - ben, 0, c, 0, "Nhưng đòn đánh trượt!");
             return;
         }
         if (!c.danh()) {
@@ -438,7 +573,7 @@ public final class DauTruongTran {
         }
         final int heSo = HePokemon.heSoChinhXac(c.he, d.he1, d.he2);
         if (heSo == 0) {
-            ghi("Không có tác dụng với " + goi(1 - ben, d) + "...");
+            ev(SK_TRUNG, 1 - ben, 0, c, CO_MIEN, "Không có tác dụng với " + goi(1 - ben, d) + "...");
             return;
         }
         int tong = 0;
@@ -474,25 +609,26 @@ public final class DauTruongTran {
             s.append(" (trúng ").append(soDon).append(" lần)");
         }
         s.append('.');
-        ghi(s.toString());
+        ev(SK_TRUNG, 1 - ben, tong, c, (chiMangCo ? CO_CHI_MANG : 0) | (c != DauTruongDuLieu.VUNG_VAY && heSo > 100 ? CO_SIEU : 0)
+                | (c != DauTruongDuLieu.VUNG_VAY && heSo < 100 ? CO_YEU : 0), s.toString());
         if (c == DauTruongDuLieu.VUNG_VAY) {
             final int lui = Math.max(1, a.hpMax / 4);
             a.hp = Math.max(0, a.hp - lui);
-            ghi(ta + " bị phản lực (-" + lui + " HP).");
+            ev(SK_MAT_MAU, ben, lui, null, 3, ta + " bị phản lực (-" + lui + " HP).");
         }
         if (c.vai == DauTruongDuLieu.V_TOI_THUONG && a.song()) {
             final int iA = c.loai == DauTruongDuLieu.LOAI_VAT_LY ? B_TC : B_TCDB;
             if (doiBac(a, iA, -1)) {
-                ghi(ta + " hao lực: " + TEN_BAC[iA] + " giảm.");
+                ev(SK_BAC, ben, -1, null, iA, ta + " hao lực: " + TEN_BAC[iA] + " giảm.");
             }
         }
         if (!d.song()) {
-            ghi(goi(1 - ben, d) + " ngã gục!");
+            ev(SK_GUC, 1 - ben, 0, null, 0, goi(1 - ben, d) + " ngã gục!");
         } else if (c.tiLeTrangThai > 0 && this.rng.so(1000) < c.tiLeTrangThai) {
             gayTrangThai(1 - ben, d, c.trangThai, danhTruoc, false);
         }
         if (!a.song()) {
-            ghi(ta + " ngã gục!");
+            ev(SK_GUC, ben, 0, null, 0, ta + " ngã gục!");
         }
     }
 
@@ -501,7 +637,7 @@ public final class DauTruongTran {
         if (c.vai == DauTruongDuLieu.V_BUFF) {
             final boolean x = doiBac(a, B_TC, 1);
             final boolean y = doiBac(a, B_TCDB, 1);
-            ghi(x || y ? ta + " tăng Tấn công và Tấn công đặc biệt!" : "Chỉ số của " + ta + " không tăng được nữa!");
+            ev(SK_BAC, ben, x || y ? 1 : 0, c, B_TC, x || y ? ta + " tăng Tấn công và Tấn công đặc biệt!" : "Chỉ số của " + ta + " không tăng được nữa!");
             return;
         }
         if (c.vai == DauTruongDuLieu.V_KHIEN) {
@@ -511,7 +647,7 @@ public final class DauTruongTran {
             }
             final int hoi = Math.min(a.hpMax - a.hp, Math.max(1, a.hpMax / 2));
             a.hp += hoi;
-            ghi(ta + " hồi " + hoi + " HP.");
+            ev(SK_HOI, ben, hoi, c, 0, ta + " hồi " + hoi + " HP.");
             return;
         }
         // khong che
@@ -570,7 +706,7 @@ public final class DauTruongTran {
             }
             d.luotDong = 0;
             final String[] chu = {"", " bị bỏng!", " bị trúng độc!", " bị tê liệt!", " ngủ thiếp đi!", " bị đóng băng!"};
-            ghi(td + chu[tt]);
+            ev(SK_TRANG_THAI, ben, tt, null, 0, td + chu[tt]);
             return true;
         }
         if ("lu_lan".equals(ma) || "me_hoac".equals(ma)) {
@@ -578,7 +714,7 @@ public final class DauTruongTran {
                 return false;
             }
             d.luLan = 2 + this.rng.so(4);
-            ghi(td + ("me_hoac".equals(ma) ? " bị mê hoặc, lú lẫn!" : " bị lú lẫn!"));
+            ev(SK_TRANG_THAI, ben, 6, null, 0, td + ("me_hoac".equals(ma) ? " bị mê hoặc, lú lẫn!" : " bị lú lẫn!"));
             return true;
         }
         if ("choang".equals(ma) || "day_lui".equals(ma)) {
@@ -607,7 +743,7 @@ public final class DauTruongTran {
         if (!doiBac(d, i, n)) {
             return false;
         }
-        ghi(TEN_BAC[i] + " của " + goi(ben, d) + (n > 0 ? " tăng!" : " giảm!"));
+        ev(SK_BAC, ben, n, null, i, TEN_BAC[i] + " của " + goi(ben, d) + (n > 0 ? " tăng!" : " giảm!"));
         return true;
     }
 
@@ -662,9 +798,10 @@ public final class DauTruongTran {
             if (c.trangThai == TT_BONG || c.trangThai == TT_DOC) {
                 final int st = Math.max(1, c.hpMax / (c.trangThai == TT_BONG ? 16 : 8));
                 c.hp = Math.max(0, c.hp - st);
-                ghi(goi(ben, c) + (c.trangThai == TT_BONG ? " bị bỏng rát" : " bị độc ngấm") + " (-" + st + " HP).");
+                ev(SK_MAT_MAU, ben, st, null, c.trangThai == TT_BONG ? 1 : 2, goi(ben, c) + (c.trangThai == TT_BONG ? " bị bỏng rát" : " bị độc ngấm")
+                        + " (-" + st + " HP).");
                 if (!c.song()) {
-                    ghi(goi(ben, c) + " ngã gục!");
+                    ev(SK_GUC, ben, 0, null, 0, goi(ben, c) + " ngã gục!");
                 }
             }
         }
@@ -721,7 +858,7 @@ public final class DauTruongTran {
     }
 
     int diemChieu(final Con a, final Con d, final int o) {
-        if (a.pp[o] <= 0) {
+        if (a.pp[o] <= 0 || a.hoi[o] > 0 || a == dangRa(CONG) && lyDo(CONG, o) != LD_OK || a == dangRa(THU) && lyDo(THU, o) != LD_OK) {
             return Integer.MIN_VALUE;
         }
         final DauTruongDuLieu.Chieu c = a.chieu[o];
@@ -796,7 +933,7 @@ public final class DauTruongTran {
                 }
             }
         }
-        if (a.hetPp()) {
+        if (!coChieuDung(ben)) {
             return HanhDong.chieu(0);
         }
         int max = Integer.MIN_VALUE;

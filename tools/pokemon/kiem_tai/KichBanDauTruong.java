@@ -203,7 +203,7 @@ public final class KichBanDauTruong {
             // 4. thach dau
             m = a.moc();
             int lk0 = a.lk;
-            a.gui(-109, (byte) 3, dbB);
+            a.gui(-109, (byte) 3, dbB, (byte) 0); // 0 = tu chon chieu (mac dinh may danh)
             byte[] bd = cho(a, m, 2, 5000);
             int tranId = -1;
             if (bd != null) {
@@ -216,6 +216,7 @@ public final class KichBanDauTruong {
             // 5. ba luot tu chon chieu
             int luot = 0;
             for (int i = 0; i < 3; i++) {
+                a.bom(1600); // mot hanh dong moi luot: may chu bo goi bam trong 1,2 giay sau luot truoc
                 int mm = a.moc();
                 a.gui(-109, (byte) 4, tranId, (byte) 0, (byte) (i % 2));
                 byte[] l = cho(a, mm, 3, 5000);

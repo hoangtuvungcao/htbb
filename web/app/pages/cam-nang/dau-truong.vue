@@ -17,7 +17,9 @@ const BAC = D.tenBac.map((ten, i) => ({ ten, tu: i === 0 ? 0 : D.nguongBac[i - 1
         <li><strong>Đội tấn công</strong> và <strong>đội phòng thủ</strong> xếp riêng ở tab Đội hình: 3 con khác loài, không Huyền thoại (T6). Chính bạn (Pokémon khởi đầu) không vào đội — chỉ Pokémon đã thu phục.</li>
         <li>Đội phòng thủ đấu thay bạn cả khi bạn offline (máy chọn chiêu và đổi Pokémon cho đội phòng thủ).</li>
         <li>Mỗi ngày {{ D.luotNgay }} trận tấn công (tính lúc vào trận, rời trận không hoàn lượt), làm mới danh sách đối thủ {{ D.lamMoiNgay }} lần.</li>
-        <li>Mỗi lượt có {{ D.giayLuot }} giây chọn chiêu hoặc đổi Pokémon; hết giờ máy chọn giúp. Bật "Tự động" để máy đánh hết trận. Tối đa {{ D.luotToiDa }} lượt — hết lượt, bên còn nhiều % máu hơn thắng (bằng nhau: đội phòng thủ thắng).</li>
+        <li>Mặc định Pokémon <strong>tự đánh</strong> (máy chủ chọn chiêu), bạn xem trận diễn trên sân với nút tốc độ ×1 → ×2 (cấp {{ D.capToc[0] }}) → ×3 (cấp {{ D.capToc[1] }}). Muốn tự chọn chiêu thì bật "Tự chọn chiêu" ở màn Đấu trường: mỗi lượt {{ D.giayLuot }} giây, hết giờ máy chọn giúp.</li>
+        <li>Mỗi lượt một hành động. Chiêu mạnh có hồi chiêu (uy lực từ 100 hoặc chiêu đặc trưng: 2 lượt, tối thượng: 3 lượt); chiêu gây trạng thái không dùng lên đối thủ đã có trạng thái. Tối đa {{ D.luotToiDa }} lượt — hết lượt, bên còn nhiều % máu hơn thắng (bằng nhau: đội phòng thủ thắng). Một trận thường 8–20 lượt (khoảng 45–90 giây xem ở ×1).</li>
+        <li>Thoát trận giữa chừng (nút X) là <strong>đầu hàng</strong>: tính thua, mất lượt. Rớt mạng thì máy chủ đánh nốt và ghi kết quả. 5 trận gần nhất xem lại được ở tab Lịch sử.</li>
       </ul>
     </WikiSection>
 
@@ -68,6 +70,9 @@ const BAC = D.tenBac.map((ten, i) => ({ ten, tu: i === 0 ? 0 : D.nguongBac[i - 1
           {{ b.ten }} <span class="text-xs text-muted">từ {{ b.tu }}</span>
         </li>
       </ol>
+      <p class="van mt-4">
+        Sân đấu mở theo bậc của bạn: {{ D.tenSan.slice(0, 7).join(' → ') }}. Mùa thứ tư mỗi năm, mọi trận diễn ra ở {{ D.tenSan[7] }}.
+      </p>
       <ul class="cham mt-4">
         <li>Mọi người bắt đầu mùa với {{ D.diemBanDau }} điểm (mùa 13 tuần, cùng lịch mùa PvP nhưng điểm <strong>riêng</strong>). Kiểu Elo, tối đa ±{{ D.k }} mỗi trận; đội phòng thủ đổi {{ D.phanTramThu }}% mức đó. Sàn {{ D.diemSan }}.</li>
         <li>Máy chủ đề xuất 3 đối thủ: điểm lệch ≤ {{ D.cuaSoDiem[0] }} (nới tới {{ D.cuaSoDiem[1] }} khi làm mới), sức mạnh đội (tổng chỉ số cấp 50) lệch ≤ {{ D.daiSucManh[0] }}% (nới tới {{ D.daiSucManh[1] }}%).</li>
@@ -77,7 +82,7 @@ const BAC = D.tenBac.map((ten, i) => ({ ten, tu: i === 0 ? 0 : D.nguongBac[i - 1
 
     <WikiSection id="thuong" title="Phần thưởng">
       <ul class="cham">
-        <li>Mỗi trận thắng: +{{ D.luongThang }} lượng khoá (× hệ số gặp lại), tối đa <strong>{{ D.tranLuongTuan }} lượng khoá mỗi tuần</strong>. Thua: không mất gì ngoài điểm. Không có xu.</li>
+        <li>Mỗi trận thắng: +{{ D.luongThang }} lượng khoá (× hệ số gặp lại), trận thắng đầu tiên trong ngày thêm +{{ D.thuongThangDau }}; tổng tối đa <strong>{{ D.tranLuongTuan }} lượng khoá mỗi tuần</strong>. Thua: không mất gì ngoài điểm. Không có xu, không có sức mạnh mua được. Chuỗi thắng chỉ để khoe.</li>
         <li>Cuối mùa (đủ {{ D.tranToiThieuMua }} trận tấn công), nhận khi đăng nhập mùa sau, giữ một mùa:</li>
       </ul>
       <ul class="mt-3 grid gap-3 sm:grid-cols-3">

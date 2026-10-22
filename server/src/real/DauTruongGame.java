@@ -111,10 +111,10 @@ public final class DauTruongGame {
             conn = Database.instance.getConnection();
             st = conn.createStatement();
             final Map<String, DauTruongDuLieu.Chieu> chieu = new HashMap<String, DauTruongDuLieu.Chieu>();
-            rs = st.executeQuery("SELECT ma, ten, he, kieu, vai_tro, so_don, trang_thai, ti_le_tt_phan_nghin FROM data_chieu");
+            rs = st.executeQuery("SELECT ma, ten, he, kieu, vai_tro, so_don, trang_thai, ti_le_tt_phan_nghin, hieu_ung FROM data_chieu");
             while (rs.next()) {
                 chieu.put(rs.getString(1), new DauTruongDuLieu.Chieu(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4),
-                        rs.getString(5), rs.getInt(6), rs.getString(7), rs.getInt(8)));
+                        rs.getString(5), rs.getInt(6), rs.getString(7), rs.getInt(8), rs.getString(9)));
             }
             rs.close();
             final Map<Integer, String[]> cl = new HashMap<Integer, String[]>();
@@ -155,6 +155,7 @@ public final class DauTruongGame {
                 + " ket_qua TINYINT NOT NULL DEFAULT -1, diem_cong_truoc INT NOT NULL DEFAULT 0, diem_cong_sau INT NOT NULL DEFAULT 0,"
                 + " diem_thu_truoc INT NOT NULL DEFAULT 0, diem_thu_sau INT NOT NULL DEFAULT 0, he_so SMALLINT NOT NULL DEFAULT 0,"
                 + " luong SMALLINT NOT NULL DEFAULT 0, luot SMALLINT NOT NULL DEFAULT 0, hanh_dong VARCHAR(255) NOT NULL DEFAULT '',"
+                + " cong_doi VARCHAR(160) NOT NULL DEFAULT '', thu_doi VARCHAR(160) NOT NULL DEFAULT '', ten_thu VARCHAR(32) NOT NULL DEFAULT '',"
                 + " bat_dau DATETIME NOT NULL, luc DATETIME NULL, PRIMARY KEY (id), KEY idx_dtt_cong_ngay (cong, ngay),"
                 + " KEY idx_dtt_cong_tuan (cong, tuan), KEY idx_dtt_tuan (tuan), KEY idx_dtt_thu (thu)) DEFAULT CHARSET=utf8");
         DatabaseLauDai.ghiCong("CREATE TABLE IF NOT EXISTS tob_dau_truong_thuong (mua INT NOT NULL, id_char INT NOT NULL,"
@@ -217,14 +218,15 @@ public final class DauTruongGame {
     }
 
     static long chenTran(final int mua, final int tuan, final int ngay, final int cong, final int thu, final long hat, final int dCong,
-            final int dThu) {
+            final int dThu, final String congDoi, final String thuDoi, final String tenThu) {
         Connection conn = null;
         PreparedStatement pre = null;
         ResultSet rs = null;
         try {
             conn = Database.instance.getConnection();
             pre = conn.prepareStatement("INSERT INTO tob_dau_truong_tran (mua, tuan, ngay, cong, thu, hat, diem_cong_truoc,"
-                    + " diem_thu_truoc, bat_dau) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())", Statement.RETURN_GENERATED_KEYS);
+                    + " diem_thu_truoc, cong_doi, thu_doi, ten_thu, bat_dau) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+                    Statement.RETURN_GENERATED_KEYS);
             pre.setInt(1, mua);
             pre.setInt(2, tuan);
             pre.setInt(3, ngay);
@@ -233,6 +235,9 @@ public final class DauTruongGame {
             pre.setLong(6, hat);
             pre.setInt(7, dCong);
             pre.setInt(8, dThu);
+            pre.setString(9, congDoi);
+            pre.setString(10, thuDoi);
+            pre.setString(11, tenThu == null ? "" : tenThu);
             pre.executeUpdate();
             rs = pre.getGeneratedKeys();
             return rs.next() ? rs.getLong(1) : -1L;
@@ -357,8 +362,21 @@ public final class DauTruongGame {
                 case GoiDauTruong.C_TIM:
                     tim(p, msg.dis.readByte() != 0);
                     break;
-                case GoiDauTruong.C_THACH:
-                    thach(p, msg.dis.readInt());
+                case GoiDauTruong.C_THACH: {
+                    final int id = msg.dis.readInt();
+                    // 0.9.8: byte tu dong (thieu / 1 = may danh - mac dinh; 0 = nguoi choi tu chon chieu)
+                    final boolean tuDong = msg.dis.available() <= 0 || msg.dis.readByte() != 0;
+                    thach(p, id, tuDong);
+                    break;
+                }
+                case GoiDauTruong.C_BO_QUA:
+                    boQua(p, msg.dis.readInt());
+                    break;
+                case GoiDauTruong.C_XEM_LAI:
+                    xemLai(p, msg.dis.readInt());
+                    break;
+                case GoiDauTruong.C_BANG_TUAN:
+                    bangTuan(p);
                     break;
                 case GoiDauTruong.C_HANH_DONG: {
                     final int id = msg.dis.readInt();
@@ -369,7 +387,9 @@ public final class DauTruongGame {
                 }
                 case GoiDauTruong.C_TU_DONG: {
                     final int id = msg.dis.readInt();
-                    tuDong(p, id, msg.dis.readByte() != 0);
+                    final boolean bat = msg.dis.readByte() != 0;
+                    final int toc = msg.dis.available() > 0 ? msg.dis.readByte() : 1;
+                    tuDong(p, id, bat, toc);
                     break;
                 }
                 case GoiDauTruong.C_DAU_HANG:
@@ -460,6 +480,23 @@ public final class DauTruongGame {
         }
         t.kho = kho.toArray(new GoiDauTruong.KhoCon[0]);
         t.ghiChu = ghiChu == null ? "" : ghiChu;
+        final List<Integer> kq = new ArrayList<Integer>();
+        doc("SELECT ket_qua FROM tob_dau_truong_tran WHERE cong = ? AND ket_qua >= 0 ORDER BY id DESC LIMIT 50",
+                rs -> kq.add(Integer.valueOf(rs.getInt(1))), Integer.valueOf(id));
+        final int[] mang = new int[kq.size()];
+        for (int i = 0; i < mang.length; i++) {
+            mang[i] = kq.get(i).intValue();
+        }
+        t.chuoiThang = DauTruongLogic.chuoiThang(mang);
+        final List<int[]> ls = new ArrayList<int[]>();
+        final List<String> lt = new ArrayList<String>();
+        doc("SELECT id, ket_qua, diem_cong_sau - diem_cong_truoc, ten_thu FROM tob_dau_truong_tran WHERE cong = ? AND ket_qua >= 0"
+                + " AND cong_doi <> '' ORDER BY id DESC LIMIT 5", rs -> {
+                    ls.add(new int[]{rs.getInt(1), rs.getInt(2), rs.getInt(3)});
+                    lt.add(rs.getString(4));
+                }, Integer.valueOf(id));
+        t.lichSu = ls.toArray(new int[0][]);
+        t.lichSuTen = lt.toArray(new String[0]);
         gui(p, o -> GoiDauTruong.trangThai(o, t));
         // cap nhat danh tinh chong nick phu (doi thu offline van loc dung)
         if (!dh[0].isEmpty() || !dh[1].isEmpty()) {
@@ -615,6 +652,8 @@ public final class DauTruongGame {
         volatile boolean tuDong;
         volatile long tuDongSau;
         volatile boolean xong;
+        volatile long luotCuoi;
+        volatile int toc = 1;
 
         TranDang(final long id, final int cong, final int thu, final String tenThu, final int diemCong, final int diemThu, final int mua,
                 final int tuan, final int heSo, final DauTruongTran t) {
@@ -684,6 +723,10 @@ public final class DauTruongGame {
     }
 
     static void thach(final Char p, final int idThu) {
+        thach(p, idThu, true);
+    }
+
+    static void thach(final Char p, final int idThu, final boolean tuDong) {
         final int id = p.charDBID;
         if (TRAN.containsKey(Integer.valueOf(id))) {
             ThongBao.loi(p, "Bạn đang trong một trận Đấu trường.", null);
@@ -724,17 +767,22 @@ public final class DauTruongGame {
         final int heSo = DauTruongLogic.heSoLap(tran24h(id, idThu));
         final long hat = new java.security.SecureRandom().nextLong();
         final DauTruongTran t = new DauTruongTran(hat, taoDoi(d, cong, h), taoDoi(d, thu, hThu));
-        final long tranId = chenTran(mua, tuan(), homNay(), id, idThu, hat, diemCong, diemThu);
+        final long tranId = chenTran(mua, tuan(), homNay(), id, idThu, hat, diemCong, diemThu, DauTruongTran.maDoi(t.doi[DauTruongTran.CONG]),
+                DauTruongTran.maDoi(t.doi[DauTruongTran.THU]), tenThu[0]);
         if (tranId <= 0) {
             ThongBao.loi(p, "Chưa vào trận được, thử lại sau.", null);
             return;
         }
         final TranDang td = new TranDang(tranId, id, idThu, tenThu[0], diemCong, diemThu, mua, tuan(), heSo, t);
         td.han = System.currentTimeMillis() + DauTruongLogic.GIAY_LUOT * 1000L;
+        td.tuDong = tuDong;
+        td.tuDongSau = System.currentTimeMillis() + NHIP_TU_DONG_MS;
         dx.remove(Integer.valueOf(idThu));
         TRAN.put(Integer.valueOf(id), td);
         batHen();
-        gui(p, o -> GoiDauTruong.batDau(o, (int) tranId, tenThu[0], diemThu, DauTruongLogic.GIAY_LUOT, t, td.giayCon(), false));
+        final int san = DauTruongLogic.sanCho(DauTruongLogic.bac(diemCong), mua);
+        final int c2 = (int) so("dau_truong.cap_toc_2", DauTruongLogic.CAP_TOC_2), c3 = (int) so("dau_truong.cap_toc_3", DauTruongLogic.CAP_TOC_3);
+        gui(p, o -> GoiDauTruong.batDau(o, (int) tranId, tenThu[0], diemThu, DauTruongLogic.GIAY_LUOT, t, td.giayCon(), tuDong, san, c2, c3));
     }
 
     static TranDang tranCua(final Char p, final int tranId) {
@@ -751,21 +799,37 @@ public final class DauTruongGame {
             if (td.xong) {
                 return;
             }
+            if (System.currentTimeMillis() - td.luotCuoi < LUOT_TOI_THIEU_MS) {
+                return; // mot hanh dong moi luot: luot truoc vua choi (client con dien), bo goi bam don
+            }
             if (!td.t.hopLe(DauTruongTran.CONG, h)) {
-                ghiChu(p, h.loai == DauTruongTran.HanhDong.DOI ? "Không đổi sang Pokémon đó được." : "Chiêu này hết PP.");
+                final int ld = h.loai == DauTruongTran.HanhDong.CHIEU ? td.t.lyDo(DauTruongTran.CONG, h.chiSo) : -1;
+                ghiChu(p, ld < 0 ? "Không đổi sang Pokémon đó được." : ld == DauTruongTran.LD_HOI ? "Chiêu này đang hồi."
+                        : ld == DauTruongTran.LD_DA_CO_TT ? "Đối thủ đã có trạng thái, chiêu không có tác dụng." : "Chiêu này hết PP.");
                 return;
             }
             choiLuot(p, td, h);
         }
     }
 
-    static void tuDong(final Char p, final int tranId, final boolean bat) {
+    static void tuDong(final Char p, final int tranId, final boolean bat, final int toc) {
         final TranDang td = tranCua(p, tranId);
         if (td == null) {
             return;
         }
+        // toc x2 / x3 chi khi du cap (khong tin client)
+        final int cap = p.lvDetail == null ? 0 : p.lvDetail.lv;
+        int t = Math.max(1, Math.min(3, toc));
+        if (t >= 3 && cap < so("dau_truong.cap_toc_3", DauTruongLogic.CAP_TOC_3)) {
+            t = 2;
+        }
+        if (t >= 2 && cap < so("dau_truong.cap_toc_2", DauTruongLogic.CAP_TOC_2)) {
+            t = 1;
+        }
+        td.toc = t;
         td.tuDong = bat;
-        td.tuDongSau = System.currentTimeMillis() + 600L;
+        td.tuDongSau = System.currentTimeMillis() + NHIP_TU_DONG_MS;
+        td.han = System.currentTimeMillis() + DauTruongLogic.GIAY_LUOT * 1000L;
     }
 
     static void dauHang(final Char p, final int tranId) {
@@ -777,17 +841,41 @@ public final class DauTruongGame {
             if (td.xong) {
                 return;
             }
-            td.t.thang = DauTruongTran.THU;
-            td.t.nhatKy.add("Bạn đã đầu hàng.");
+            td.t.dauHang();
+            final List<DauTruongTran.SuKien> ds = new ArrayList<DauTruongTran.SuKien>(td.t.suKienLuot());
+            gui(p, o -> GoiDauTruong.luot(o, (int) td.id, td.t, ds, 0, true));
             ketThuc(p, td);
         }
     }
 
     /** Mot luot (trong khoa td). */
+    /** Tu dong: may choi mot luot moi {@link #NHIP_TU_DONG_MS}; tay: hai hanh dong cach nhau >= {@link #LUOT_TOI_THIEU_MS}. */
+    static final long NHIP_TU_DONG_MS = 2600L, LUOT_TOI_THIEU_MS = 1200L;
+
+    /** "Bỏ qua": may danh not den het tran, gui mot goi luot (trang thai cuoi) roi ket qua. */
+    static void boQua(final Char p, final int tranId) {
+        final TranDang td = tranCua(p, tranId);
+        if (td == null) {
+            return;
+        }
+        synchronized (td) {
+            if (td.xong) {
+                return;
+            }
+            final int tu = td.t.suKien.size();
+            td.t.chayHet();
+            final List<DauTruongTran.SuKien> ds = new ArrayList<DauTruongTran.SuKien>(td.t.suKien.subList(tu, td.t.suKien.size()));
+            gui(p, o -> GoiDauTruong.luot(o, (int) td.id, td.t, ds, 0, true));
+            ketThuc(p, td);
+        }
+    }
+
     static void choiLuot(final Char p, final TranDang td, final DauTruongTran.HanhDong h) {
-        final List<String> dong = td.t.choi(h);
+        td.luotCuoi = System.currentTimeMillis();
+        td.t.choi(h);
+        final List<DauTruongTran.SuKien> dong = td.t.suKienLuot();
         td.han = System.currentTimeMillis() + DauTruongLogic.GIAY_LUOT * 1000L;
-        td.tuDongSau = System.currentTimeMillis() + 1600L;
+        td.tuDongSau = System.currentTimeMillis() + NHIP_TU_DONG_MS / Math.max(1, td.toc);
         if (p != null) {
             gui(p, o -> GoiDauTruong.luot(o, (int) td.id, td.t, dong, td.giayCon(), td.tuDong));
         }
@@ -826,7 +914,9 @@ public final class DauTruongGame {
         final boolean thang = td.t.thang == DauTruongTran.CONG;
         final int diemSau = DauTruongLogic.diemCong(td.diemCong, td.diemThu, thang ? 1 : 0, td.heSo);
         final int thuSau = DauTruongLogic.diemThu(td.diemThu, td.diemCong, thang ? 1 : 0, td.heSo);
-        final int luong = DauTruongLogic.luongTran(thang, td.heSo, luongTuan(td.cong));
+        final boolean dauNgay = thang && soNguyen("SELECT COUNT(*) FROM tob_dau_truong_tran WHERE cong = ? AND ngay = ? AND ket_qua = 1", 1,
+                Integer.valueOf(td.cong), Integer.valueOf(homNay())) == 0;
+        final int luong = DauTruongLogic.luongTran(thang, td.heSo, luongTuan(td.cong), dauNgay);
         final StringBuilder hd = new StringBuilder();
         for (final String s : td.t.hanhDongCong) {
             if (hd.length() + s.length() + 1 > 250) {
@@ -879,6 +969,86 @@ public final class DauTruongGame {
                     + (thang ? " đã thắng đội phòng thủ của bạn" : " thua đội phòng thủ của bạn"),
                     "Điểm " + td.diemThu + " thành " + thuSau + ".", ThongBao.HINH_KHONG, 0);
         }
+    }
+
+    // ================================================================== xem lai / bang tuan
+
+    /** Phat lai mot trong 5 tran gan nhat cua minh: dung lai tu hat + doi luu + hanh dong (tat dinh), gui nhu tran that. */
+    static void xemLai(final Char p, final int tranId) {
+        if (TRAN.containsKey(Integer.valueOf(p.charDBID))) {
+            ThongBao.loi(p, "Đang trong trận, chưa xem lại được.", null);
+            return;
+        }
+        final Object[] r = new Object[14];
+        final boolean[] co = {false};
+        doc("SELECT hat, hanh_dong, cong_doi, thu_doi, ket_qua, diem_cong_truoc, diem_cong_sau, diem_thu_truoc, diem_thu_sau, luong, he_so,"
+                + " ten_thu, mua, luot FROM tob_dau_truong_tran WHERE id = ? AND cong = ? AND ket_qua >= 0", rs -> {
+                    for (int i = 0; i < 14; i++) {
+                        r[i] = rs.getObject(i + 1);
+                    }
+                    co[0] = true;
+                }, Integer.valueOf(tranId), Integer.valueOf(p.charDBID));
+        final DauTruongDuLieu d = duLieu();
+        final DauTruongTran.Con[] cong = co[0] ? DauTruongTran.giaiDoi(d, String.valueOf(r[2])) : null;
+        final DauTruongTran.Con[] thu = co[0] ? DauTruongTran.giaiDoi(d, String.valueOf(r[3])) : null;
+        if (cong == null || thu == null) {
+            ThongBao.loi(p, "Không còn dữ liệu xem lại trận này.", null);
+            return;
+        }
+        final long hat = ((Number) r[0]).longValue();
+        final DauTruongTran t = new DauTruongTran(hat, cong, thu);
+        final int dTruoc = ((Number) r[5]).intValue(), dSau = ((Number) r[6]).intValue();
+        final int san = DauTruongLogic.sanCho(DauTruongLogic.bac(dTruoc), ((Number) r[12]).intValue());
+        final String tenThu = String.valueOf(r[11]);
+        gui(p, o -> GoiDauTruong.batDau(o, tranId, tenThu, ((Number) r[7]).intValue(), DauTruongLogic.GIAY_LUOT, t, 0, true, san,
+                DauTruongLogic.CAP_TOC_2, DauTruongLogic.CAP_TOC_3, true));
+        final String[] hd = String.valueOf(r[1]).isEmpty() ? new String[0] : String.valueOf(r[1]).split(",");
+        for (final String m : hd) {
+            if (t.xong()) {
+                break;
+            }
+            t.choi(DauTruongTran.HanhDong.tuMa(m));
+            final List<DauTruongTran.SuKien> ds = new ArrayList<DauTruongTran.SuKien>(t.suKienLuot());
+            gui(p, o -> GoiDauTruong.luot(o, tranId, t, ds, 0, true));
+        }
+        if (!t.xong()) {
+            t.dauHang();
+            final List<DauTruongTran.SuKien> ds = new ArrayList<DauTruongTran.SuKien>(t.suKienLuot());
+            gui(p, o -> GoiDauTruong.luot(o, tranId, t, ds, 0, true));
+        }
+        final boolean thang = ((Number) r[4]).intValue() == 1;
+        gui(p, o -> GoiDauTruong.ketQua(o, tranId, thang, dTruoc, dSau, ((Number) r[8]).intValue() - ((Number) r[7]).intValue(),
+                ((Number) r[9]).intValue(), ((Number) r[10]).intValue(), DauTruongLogic.luotConLai(daDanhHomNay(p.charDBID)),
+                "Xem lại: " + (thang ? "thắng " : "thua ") + tenThu));
+    }
+
+    /** Bang tuan trong game: top 10 diem mua kiem duoc tuan nay + dong cua minh. */
+    static void bangTuan(final Char p) {
+        final List<GoiDauTruong.DongTuan> ds = new ArrayList<GoiDauTruong.DongTuan>();
+        final GoiDauTruong.DongTuan toi = new GoiDauTruong.DongTuan();
+        toi.ten = p.charname;
+        final int[] hang = {0};
+        doc("SELECT t.cong, MAX(d.ten), COUNT(*), SUM(t.ket_qua = 1), SUM(t.diem_cong_sau - t.diem_cong_truoc) AS dd FROM tob_dau_truong_tran t"
+                + " LEFT JOIN tob_dau_truong_doi d ON d.id_char = t.cong WHERE t.tuan = ? AND t.ket_qua >= 0 GROUP BY t.cong"
+                + " ORDER BY dd DESC, 4 DESC, 3, t.cong LIMIT 500", rs -> {
+                    hang[0]++;
+                    final GoiDauTruong.DongTuan x = new GoiDauTruong.DongTuan();
+                    x.hang = hang[0];
+                    x.ten = rs.getString(2) == null ? "#" + rs.getInt(1) : rs.getString(2);
+                    x.tran = rs.getInt(3);
+                    x.thang = rs.getInt(4);
+                    x.diemDoi = rs.getInt(5);
+                    if (rs.getInt(1) == p.charDBID) {
+                        toi.hang = x.hang;
+                        toi.tran = x.tran;
+                        toi.thang = x.thang;
+                        toi.diemDoi = x.diemDoi;
+                    }
+                    if (ds.size() < 10) {
+                        ds.add(x);
+                    }
+                }, Integer.valueOf(tuan()));
+        gui(p, o -> GoiDauTruong.bangTuan(o, ds, toi));
     }
 
     // ================================================================== thuong mua
