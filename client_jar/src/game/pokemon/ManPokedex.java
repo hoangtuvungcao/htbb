@@ -140,8 +140,18 @@ public final class ManPokedex extends ManBang {
         int yl = y + 2;
         yl += Bang.hangChip(g, x, yl, w, CHIP, this.loc, vl) + k;
         if (BatPokemon.coDex) {
-            ChuDe.chu(g, "Đã bắt: " + BatPokemon.soDaBat + " / " + dsLoai().size() + " loài", x + 4, yl, ChuDe.PHU, ChuDe.CHU_PHU, 0);
-            yl += ChuDe.cao(ChuDe.PHU) + 2;
+            int hb = Math.max(ChuDe.cao(ChuDe.PHU) + 4, Bang.co(22));
+            int wb = Math.max(Bang.co(70), ChuDe.rong("Hộp PC", ChuDe.NHAN) + 24);
+            ChuDe.chuGiua(g, "Đã bắt: " + BatPokemon.soDaBat + " / " + dsLoai().size() + " loài", x + 4, yl, hb, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+            if (BatPokemon.coTrangThai) {
+                Bang.nut(g, x + w - wb, yl, wb, hb, "Hộp PC", Bang.PHU, new IAction() {
+                    public void perform() {
+                        ManHopPc.mo(false);
+                        BatPokemon.xinHop();
+                    }
+                }, "mo-hop-pc");
+            }
+            yl += hb + 2;
         }
         if (v.size() == 0) {
             if (this.loc == CHIP.length - 1) {
@@ -176,8 +186,8 @@ public final class ManPokedex extends ManBang {
                     String ten = Res.monsterTemplates[lt[1]].name;
                     ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN, s - 6), xi + s / 2, y + 4 + hi, ChuDe.NHAN, ChuDe.CHU, 2);
                     ChuDe.chu(g, soDex(lt[0]), xi + s / 2, y + 4 + hi + lh1, ChuDe.PHU, ChuDe.CHU_PHU, 2);
-                    if (BatPokemon.daBat(lt[0])) {
-                        GiaoDien.pokeBall(g, xi + s - 10, y + 10, 6, 0);   // 0.9.8: đã bắt
+                    if (BatPokemon.daBat(lt[0]) && !IconBat.ve(g, IconBat.POKE, xi + s - 11, y + 11, Math.max(14, s / 6))) {
+                        GiaoDien.pokeBall(g, xi + s - 10, y + 10, 6, 0);   // 0.9.8: đã bắt (icon PNG; J2ME thiếu ảnh: vẽ cũ)
                     }
                     Bang.dangKy(g, xi, y, s, h, new IAction() {
                         public void perform() {
@@ -187,6 +197,94 @@ public final class ManPokedex extends ManBang {
                 }
             }
         });
+    }
+
+    /** dex đã xin thông tin loài (gói -121 kiểu 5) - xin một lần mỗi lần mở thẻ. */
+    int daXin = -1;
+
+    /**
+     * 0.9.8: thông tin loài từ máy chủ - bậc hiếm + trạng thái bắt (icon Poké Ball PNG), tỉ lệ gốc, dòng tiến hoá thật
+     * (cấp / khi trao đổi), nơi sống (bản đồ có Pokémon này), số đã bắt / đã hạ, chỉ số gốc. Chưa có: dòng chờ.
+     */
+    void veThongTinLoai(Graphics g, int dex, int x, int y, int w, int yMax) {
+        if (this.daXin != dex) {
+            this.daXin = dex;
+            BatPokemon.xinLoai(dex);
+        }
+        int lh = ChuDe.cao(ChuDe.PHU);
+        int is = lh + 2;
+        int co = BatPokemon.coDex ? BatPokemon.coDex(dex) : 0;
+        String tt = (co & 2) != 0 ? ((co & 4) != 0 ? "Đã bắt (có sắc màu)" : "Đã bắt") : (co & 1) != 0 ? "Đã gặp, chưa bắt" : "Chưa bắt";
+        IconBat.ve(g, (co & 2) != 0 ? IconBat.POKE : IconBat.SAO_RONG, x + is / 2, y + is / 2, is);
+        if ((co & 4) != 0) {
+            IconBat.ve(g, IconBat.SAC_MAU, x + is + 4 + is / 2, y + is / 2, is);
+        }
+        int xt = x + ((co & 4) != 0 ? 2 * is + 8 : is + 6);
+        BatPokemon.Loai l = BatPokemon.loai(dex);
+        ChuDe.chuGiua(g, ChuDe.cat(tt + (l != null && l.soBat > 0 ? " · " + l.soBat + " lần" : ""), ChuDe.NHAN, x + w - xt), xt, y, is, ChuDe.NHAN, ChuDe.CHU, 0);
+        y += is + 4;
+        if (l == null) {
+            Bang.doan(g, ChuDe.PHU, "Đang tải thông tin loài...", x, y, w, false, ChuDe.CHU_PHU);
+            return;
+        }
+        String[] dong = new String[5];
+        int n = 0;
+        dong[n++] = "Độ hiếm: " + l.tenDoHiem + (l.tiLe > 0 ? " · tỉ lệ gốc " + l.tiLe / 10 + (l.tiLe % 10 != 0 ? "," + l.tiLe % 10 : "") + "%" : "");
+        if (l.truoc > 0 || l.sau > 0) {
+            String th = "";
+            if (l.truoc > 0) {
+                th = "Tiến hoá từ " + (l.tenTruoc.length() > 0 ? l.tenTruoc : tenLoai(l.truoc));
+            }
+            if (l.sau > 0) {
+                th += (th.length() > 0 ? "; tiến hoá thành " : "Tiến hoá thành ") + (l.tenSau.length() > 0 ? l.tenSau : tenLoai(l.sau))
+                        + (l.tienHoaKhiDoi ? " khi được trao đổi (hoặc cấp " + l.capTienHoa + " + Kẹo)" : " ở cấp " + l.capTienHoa + " + Kẹo");
+            }
+            dong[n++] = th;
+        }
+        if (l.noiSong.length > 0) {
+            StringBuffer sb = new StringBuffer("Nơi sống: ");
+            for (int i = 0; i < l.noiSong.length; i++) {
+                sb.append(i > 0 ? ", " : "").append(l.noiSong[i]);
+            }
+            dong[n++] = sb.toString();
+        } else if (l.coDong) {
+            dong[n++] = "Nơi sống: chưa thấy trên bản đồ hiện tại.";
+        }
+        if (l.soHa > 0) {
+            dong[n++] = "Đã hạ " + l.soHa + " lần.";
+        }
+        for (int i = 0; i < n && y + lh <= yMax; i++) {
+            y = Bang.doan(g, ChuDe.PHU, dong[i], x, y, w, false, ChuDe.CHU_PHU) + 2;
+        }
+        if (l.goc != null && y + 3 * (lh + 2) <= yMax) {
+            int cot = w >= 280 ? 2 : 1;
+            int wc = (w - (cot - 1) * 10) / cot;
+            int wn = Math.min(wc / 2, ChuDe.rong("Phòng thủ ĐB", ChuDe.PHU) + 6);
+            for (int i = 0; i < 6; i++) {
+                int cx = x + (i % cot) * (wc + 10), cy = y + (i / cot) * (lh + 2);
+                if (cy + lh > yMax) {
+                    break;
+                }
+                ChuDe.chuGiua(g, BatPokemon.TEN_CHI_SO[i], cx, cy, lh, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+                Bang.thanh(g, cx + wn, cy + 1, wc - wn - 26, lh - 2, l.goc[i], 160, 1, null);
+                ChuDe.chuGiua(g, String.valueOf(l.goc[i]), cx + wc, cy, lh, ChuDe.SO, ChuDe.CHU, 1);
+            }
+        }
+    }
+
+    static String tenLoai(int dex) {
+        BatPokemon.Loai l = BatPokemon.loai(dex);
+        if (l != null && l.ten.length() > 0) {
+            return l.ten;
+        }
+        Vector v = dsLoai();
+        for (int i = 0; i < v.size(); i++) {
+            int[] lt = (int[]) v.elementAt(i);
+            if (lt[0] == dex) {
+                return Res.monsterTemplates[lt[1]].name;
+            }
+        }
+        return soDex(dex);
     }
 
     private void veChiTiet(Graphics g, int x, int y, int w, int h) {
@@ -232,18 +330,6 @@ public final class ManPokedex extends ManBang {
             KieuO.vienHe(g, xb, yy, h2);
         }
         yy += 22;
-        int hp = Res.monsterTemplates[lt[1]].maxhp;
-        if (hp > 0) {
-            Font.arialFont.drawString(g, "HP gốc: " + hp, xr + 10, yy, 0);
-            yy += Font.arialFont.getHeight() + 4;
-        }
-        if (BatPokemon.coDex) {
-            int co = BatPokemon.coDex(lt[0]);
-            String tt = (co & 2) != 0 ? ((co & 4) != 0 ? "Đã bắt (có sắc màu)" : "Đã bắt") : (co & 1) != 0 ? "Đã hạ, chưa bắt" : "Chưa bắt";
-            Font.blackFont.drawString(g, tt, xr + 10, yy, 0);
-            yy += Font.blackFont.getHeight() + 4;
-        }
-        Bang.doan(g, Font.arialFont, "Gặp ngoài bản đồ hoang dã. Làm Pokémon yếu đi (HP dưới " + BatPokemon.nguongHp
-                + "%) rồi ném Poké Ball để thu phục.", xr + 10, yy, wr - 20, false);
+        veThongTinLoai(g, lt[0], xr + 10, yy, wr - 20, y + h - 6);
     }
 }

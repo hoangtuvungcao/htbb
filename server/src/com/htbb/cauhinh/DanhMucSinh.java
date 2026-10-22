@@ -712,7 +712,7 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("bat.bat", "trang_bi", "co", "1", true, "cau_hinh")
                     .nhan("Bật thu phục Pokémon", "Làm Pokémon hoang dã yếu đi rồi ném bóng (Hộp PC, Kẹo loài, Pokédex “Đã bắt”). 0 = tạm khoá ném bóng / mua bóng.")
                     .lop("luon_bat"),
-            new DinhNghiaKhoa("bat.nguong_hp_phan_tram", "trang_bi", "so", "25", true, "cau_hinh")
+            new DinhNghiaKhoa("bat.nguong_hp_phan_tram", "trang_bi", "so", "35", true, "cau_hinh")
                     .nhan("Ngưỡng HP để ném bóng (%)", "Pokémon phải còn ≤ chừng này % HP.")
                     .khoang(1L, 100L)
                     .lop("co_dinh"),
@@ -728,8 +728,8 @@ final class DanhMucSinh {
                     .nhan("Nhịp ném tối thiểu (ms)", "Hai lần ném cách nhau ít nhất chừng này (gói đến sớm hơn bị bỏ qua).")
                     .khoang(300L, 60000L)
                     .lop("co_dinh"),
-            new DinhNghiaKhoa("bat.so_lan_bo_chay", "trang_bi", "so", "3", true, "cau_hinh")
-                    .nhan("Số lần trượt thì Pokémon bỏ chạy", "Mỗi lần trượt trên cùng một con: lần sau +5%; đến lần này thì nó bỏ chạy.")
+            new DinhNghiaKhoa("bat.so_lan_bo_chay", "trang_bi", "so", "4", true, "cau_hinh")
+                    .nhan("Số lần trượt thì Pokémon bỏ chạy", "Mỗi lần trượt trên cùng một con: lần sau cao hơn (+25% tỉ lệ, tối đa +5%); đến lần này thì nó bỏ chạy.")
                     .khoang(1L, 10L)
                     .lop("co_dinh"),
             new DinhNghiaKhoa("bat.su_kien", "trang_bi", "co", "0", true, "cau_hinh")
@@ -738,6 +738,45 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("bat.dong_hanh", "trang_bi", "co", "1", true, "cau_hinh")
                     .nhan("Bạn đồng hành đi theo (chỉ hình)", "Một Pokémon trong Hộp PC đi theo người chơi (0 chỉ số). 0 = ẩn.")
                     .lop("luon_bat"),
+            new DinhNghiaKhoa("bat.giu_moi_loai", "trang_bi", "so", "2", true, "cau_hinh")
+                    .nhan("Số con thường giữ mỗi loài", "Bắt thêm con thường khi Hộp PC đã có chừng này con cùng loài: con kém nhất (IV thấp) tự chuyển đổi thành Kẹo (+ xu nhỏ). Sắc màu không bao giờ tự chuyển. 0 = tắt.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.chuyen_doi.tran_xu_phan_nghin_gio", "trang_bi", "so", "300", true, "cau_hinh")
+                    .nhan("Trần xu chuyển đổi / ngày (‰ giờ thu nhập)", "Xu nhận từ Chuyển đổi con trùng loài mỗi ngày tối đa chừng này phần nghìn giờ thu nhập (vượt: chỉ ra Kẹo).")
+                    .khoang(0L, 5000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("bat.chuyen_doi.tran_luong_ngay", "trang_bi", "so", "1", true, "cau_hinh")
+                    .nhan("Trần lượng khoá chuyển đổi / ngày", "Lượng khoá tối đa mỗi ngày từ Chuyển đổi loài Rất hiếm.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trao_doi.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật trao đổi Pokémon", "Hai người chơi trao đổi Pokémon trong Hộp PC (khoá + xác nhận hai lần, đổi nguyên tử). 0 = tạm khoá.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("trao_doi.cap_toi_thieu", "trang_bi", "so", "10", true, "cau_hinh")
+                    .nhan("Cấp tối thiểu trao đổi Pokémon", "Cả hai bên phải đạt cấp này (ngoài cổng chống clone chung).")
+                    .khoang(1L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trao_doi.tran_ngay", "trang_bi", "so", "10", true, "cau_hinh")
+                    .nhan("Trần Pokémon nhận qua trao đổi / ngày", "Số Pokémon mỗi người chơi nhận tối đa mỗi ngày qua trao đổi.")
+                    .khoang(0L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trao_doi.khoa_gio", "trang_bi", "so", "24", true, "cau_hinh")
+                    .nhan("Khoá trao đổi lại (giờ)", "Pokémon vừa nhận qua trao đổi phải chờ chừng này giờ mới trao đổi tiếp (chống chuyền tay).")
+                    .khoang(0L, 720L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trao_doi.cach_giay", "trang_bi", "so", "60", true, "cau_hinh")
+                    .nhan("Nhịp giữa hai lần trao đổi (giây)", "Mỗi người chơi chỉ trao đổi xong một lần mỗi chừng này giây.")
+                    .khoang(0L, 86400L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trao_doi.phi_phan_nghin_gio", "trang_bi", "so", "50", true, "cau_hinh")
+                    .nhan("Phí trao đổi mỗi Pokémon (‰ giờ thu nhập)", "Người nhận trả cho mỗi con: chừng này phần nghìn giờ thu nhập ở cấp mình × bậc hiếm (1/2/4/8) × sắc màu 4 × 3 sao 2 (hố hút xu).")
+                    .khoang(0L, 5000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("trao_doi.phi_tran_phan_nghin_gio", "trang_bi", "so", "2000", true, "cau_hinh")
+                    .nhan("Trần phí trao đổi mỗi Pokémon (‰ giờ thu nhập)", "Phí một con không vượt chừng này phần nghìn giờ thu nhập.")
+                    .khoang(0L, 20000L)
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("pvp.tinh_diem.bat", "pvp", "co", "1", true, "cau_hinh")
                     .nhan("Tính điểm thang PvP", "0 = trận PvP không cộng/trừ điểm thang.")
                     .lop("luon_bat"),

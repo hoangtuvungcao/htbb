@@ -7773,7 +7773,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
         try {
             final int size = RealController.intance.idGen.getSize(5);
             if (this.partyID != -1 || size == 0) {
-                final Message m = MessageCreator.createServerAlertMessage("Không thể tạo thêm party", "");
+                final Message m = MessageCreator.createServerAlertMessage("Không thể tạo thêm nhóm", "");
                 this.sendMessage(m);
                 m.cleanup();
                 return;

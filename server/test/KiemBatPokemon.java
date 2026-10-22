@@ -70,29 +70,51 @@ public final class KiemBatPokemon {
         final BatPokemon.Bong great = b.get(1);
         final BatPokemon.Bong ultra = b.get(2);
         final BatPokemon.Loai l = thuong(19);
-        // loai thuong 450 x 0,833 = 374 phan nghin o 25% HP, cung cap, Poke Ball
-        Kiem.bang("Poke Ball, loai thuong, 25% HP, cung cap = 37,4%", Integer.valueOf(374),
-                Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, 0)));
-        Kiem.bang("Great Ball x1,5 = 56,1%", Integer.valueOf(561), Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 10, 10, false, great, 0)));
-        Kiem.bang("Ultra Ball x2 = 74,8%", Integer.valueOf(748), Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 10, 10, false, ultra, 0)));
+        // 0.9.8 trao doi: goc 55 / 25 / 9 / 3%, nguong 35% HP (he so 0,766), bo chay sau 4 lan truot
+        Kiem.bang("goc theo bac hiem 550/250/90/30, nguong 35%, bo chay 4", "550,250,90,30,35,4", BatPokemon.GOC_THEO_DO_HIEM[0] + ","
+                + BatPokemon.GOC_THEO_DO_HIEM[1] + "," + BatPokemon.GOC_THEO_DO_HIEM[2] + "," + BatPokemon.GOC_THEO_DO_HIEM[3] + ","
+                + BatPokemon.NGUONG_HP_PHAN_TRAM + "," + BatPokemon.SO_LAN_BO_CHAY);
+        Kiem.bang("he so HP o nguong 35%", Integer.valueOf(766), Integer.valueOf(BatPokemon.heSoHp(35, 100)));
+        // loai thuong 550 x 0,766 = 421 phan nghin o 35% HP, cung cap, Poke Ball
+        Kiem.bang("Poke Ball, loai thuong, 35% HP, cung cap = 42,1%", Integer.valueOf(421),
+                Integer.valueOf(BatPokemon.tiLe(l, 35, 100, 10, 10, false, poke, 0)));
+        Kiem.bang("Great Ball x1,5 = 63,1%", Integer.valueOf(631), Integer.valueOf(BatPokemon.tiLe(l, 35, 100, 10, 10, false, great, 0)));
+        Kiem.bang("Ultra Ball x2 = 84,2%", Integer.valueOf(842), Integer.valueOf(BatPokemon.tiLe(l, 35, 100, 10, 10, false, ultra, 0)));
+        Kiem.bang("loai thuong 25% HP: Poke 45,8% / Ultra kep 90%", "458,900", BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, 0) + ","
+                + BatPokemon.tiLe(l, 25, 100, 10, 10, false, ultra, 0));
+        final BatPokemon.Loai itGap = new BatPokemon.Loai(128, "Tauros", 1, 0, 0, 0, 0, true, false);
+        final BatPokemon.Loai hiem = new BatPokemon.Loai(123, "Scyther", 2, 0, 0, 0, 0, true, false);
+        final BatPokemon.Loai ratHiem = new BatPokemon.Loai(371, "Bagon", 3, 0, 0, 0, 0, true, false);
+        Kiem.bang("It gap 35% HP: Poke 19,1% / Great 28,6% / Ultra 38,2%", "191,286,382", BatPokemon.tiLe(itGap, 35, 100, 10, 10, false, poke, 0)
+                + "," + BatPokemon.tiLe(itGap, 35, 100, 10, 10, false, great, 0) + "," + BatPokemon.tiLe(itGap, 35, 100, 10, 10, false, ultra, 0));
+        Kiem.bang("Hiem 35% HP: Poke 6,8% / Great 10,2% / Ultra 13,6% (van HIEM)", "68,102,136", BatPokemon.tiLe(hiem, 35, 100, 10, 10, false, poke, 0)
+                + "," + BatPokemon.tiLe(hiem, 35, 100, 10, 10, false, great, 0) + "," + BatPokemon.tiLe(hiem, 35, 100, 10, 10, false, ultra, 0));
+        Kiem.bang("Rat hiem 35% HP: Poke 2,2% / Ultra 4,4%", "22,44", BatPokemon.tiLe(ratHiem, 35, 100, 10, 10, false, poke, 0) + ","
+                + BatPokemon.tiLe(ratHiem, 35, 100, 10, 10, false, ultra, 0));
+        Kiem.bang("Rat hiem 1 HP + Ultra: chi 5,8%", Integer.valueOf(58), Integer.valueOf(BatPokemon.tiLe(ratHiem, 1, 1000, 10, 10, false, ultra, 0)));
+        Kiem.bang("thuong truot tuong doi: Hiem +1,7% / lan (khong thanh de)", "85,102,119", BatPokemon.tiLe(hiem, 35, 100, 10, 10, false, poke, 1)
+                + "," + BatPokemon.tiLe(hiem, 35, 100, 10, 10, false, poke, 2) + "," + BatPokemon.tiLe(hiem, 35, 100, 10, 10, false, poke, 3));
+        Kiem.bang("ten bac hiem", "Thường,Ít gặp,Hiếm,Rất hiếm,Rất hiếm", BatPokemon.tenDoHiem(0) + "," + BatPokemon.tenDoHiem(1) + ","
+                + BatPokemon.tenDoHiem(2) + "," + BatPokemon.tenDoHiem(3) + "," + BatPokemon.tenDoHiem(9));
         Kiem.bang("1 HP + Ultra: kep tran Ultra 90%", Integer.valueOf(900), Integer.valueOf(BatPokemon.tiLe(l, 1, 1000, 10, 10, false, ultra, 2)));
         final BatPokemon.Loai de = new BatPokemon.Loai(19, "X", 0, 1000, 0, 0, 0, true, false);
         Kiem.bang("loai goc 100%, 1 HP + Poke: kep tran Poke 60%", Integer.valueOf(600), Integer.valueOf(BatPokemon.tiLe(de, 1, 1000, 10, 10, false, poke, 2)));
-        final BatPokemon.Loai hiem2 = new BatPokemon.Loai(376, "Metagross", 2, 0, 0, 0, 0, true, false);
-        Kiem.bang("rat hiem (8%) + 25% HP + Poke = 6,6%", Integer.valueOf(66), Integer.valueOf(BatPokemon.tiLe(hiem2, 25, 100, 10, 10, false, poke, 0)));
-        Kiem.bang("alpha x25%", Integer.valueOf(93), Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 10, 10, true, poke, 0)));
-        Kiem.bang("quai hon 6 cap x50%", Integer.valueOf(187), Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 16, 10, false, poke, 0)));
+        final BatPokemon.Loai hiem2 = new BatPokemon.Loai(376, "Metagross", 3, 0, 0, 0, 0, true, false);
+        Kiem.bang("rat hiem (3%) + 25% HP + Poke = 2,4%", Integer.valueOf(24), Integer.valueOf(BatPokemon.tiLe(hiem2, 25, 100, 10, 10, false, poke, 0)));
+        Kiem.bang("alpha x25%", Integer.valueOf(114), Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 10, 10, true, poke, 0)));
+        Kiem.bang("quai hon 6 cap x50%", Integer.valueOf(229), Integer.valueOf(BatPokemon.tiLe(l, 25, 100, 16, 10, false, poke, 0)));
         Kiem.bang("san 1%: rat hiem + alpha + lech cap", Integer.valueOf(BatPokemon.SAN_PHAN_NGHIN),
                 Integer.valueOf(BatPokemon.tiLe(hiem2, 25, 100, 20, 10, true, poke, 0)));
-        Kiem.bang("thuong truot: +5% moi lan, toi da 2 lan", "424,474,474", BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, 1) + ","
-                + BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, 2) + "," + BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, 5));
+        Kiem.bang("thuong truot loai thuong: +5% moi lan, toi da 3 lan", "471,521,571,571", BatPokemon.tiLe(l, 35, 100, 10, 10, false, poke, 1) + ","
+                + BatPokemon.tiLe(l, 35, 100, 10, 10, false, poke, 2) + "," + BatPokemon.tiLe(l, 35, 100, 10, 10, false, poke, 3) + ","
+                + BatPokemon.tiLe(l, 35, 100, 10, 10, false, poke, 5));
         Kiem.bang("qua manh: 0", Integer.valueOf(0), Integer.valueOf(BatPokemon.tiLe(l, 1, 100, 40, 10, false, ultra, 0)));
         // bong hong / CSDL sai: khong bong nao chac chan bat duoc
         final BatPokemon.Bong sai = new BatPokemon.Bong("x", "x", 9, 9999, 5000, 1, 1);
         Kiem.bang("bong cau hinh sai: he so <= 2,5, tran <= 95%", "250,950", sai.heSoPhanTram + "," + sai.tranPhanNghin);
         // RNG hat giong: tan suat thanh cong ~ ti le
         final Random r = new Random(20261020L);
-        final int tl = BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, 0);
+        final int tl = BatPokemon.tiLe(l, 35, 100, 10, 10, false, poke, 0);
         int duoc = 0;
         final int n = 200000;
         for (int i = 0; i < n; i++) {
@@ -101,24 +123,28 @@ public final class KiemBatPokemon {
             }
         }
         Kiem.dung("200.000 lan nem (hat giong): " + duoc * 100.0 / n + "% ~ " + tl / 10.0 + "%", Math.abs(duoc - (long) n * tl / 1000) < n / 200);
-        // ky vong: mot con loai thuong o 25% HP bang Poke Ball, toi da 3 lan (lan 3 truot thi bo chay)
-        final Random r2 = new Random(5L);
-        int batDuoc = 0;
-        int bong = 0;
-        for (int i = 0; i < 100000; i++) {
-            for (int lan = 0; lan < BatPokemon.SO_LAN_BO_CHAY; lan++) {
-                bong++;
-                if (BatPokemon.thanhCong(r2.nextInt(1000), BatPokemon.tiLe(l, 25, 100, 10, 10, false, poke, lan))) {
-                    batDuoc++;
-                    break;
+        // ky vong (hat giong 5) o nguong 35% HP bang Poke Ball, toi da 4 lan (lan 4 truot thi bo chay), theo bac hiem
+        final int[][] khoang = {{90000, 97000}, {65000, 76000}, {27000, 38000}, {8000, 15000}};
+        final BatPokemon.Loai[] bac = {l, itGap, hiem, ratHiem};
+        for (int k = 0; k < bac.length; k++) {
+            final Random r2 = new Random(5L);
+            int batDuoc = 0;
+            int bong = 0;
+            for (int i = 0; i < 100000; i++) {
+                for (int lan = 0; lan < BatPokemon.SO_LAN_BO_CHAY; lan++) {
+                    bong++;
+                    if (BatPokemon.thanhCong(r2.nextInt(1000), BatPokemon.tiLe(bac[k], 35, 100, 10, 10, false, poke, lan))) {
+                        batDuoc++;
+                        break;
+                    }
                 }
             }
+            Kiem.dung(BatPokemon.tenDoHiem(k) + ", Poke Ball 35% HP: bat duoc ~" + batDuoc / 1000 + "% truoc khi bo chay, ~"
+                    + Math.round(bong * 10.0 / Math.max(1, batDuoc)) / 10.0 + " bong / con", batDuoc > khoang[k][0] && batDuoc < khoang[k][1]);
         }
-        Kiem.dung("con thuong, Poke Ball: bat duoc ~" + batDuoc / 1000 + "% truoc khi bo chay, ~" + Math.round(bong * 10.0 / batDuoc) / 10.0
-                + " bong / con", batDuoc > 75000 && batDuoc < 87000);
         Kiem.bang("lac: bat duoc 3, truot sat 2, truot xa 0", "3,2,0", BatPokemon.soLanLac(10, 374, true) + ","
                 + BatPokemon.soLanLac(400, 374, false) + "," + BatPokemon.soLanLac(900, 374, false));
-        Kiem.dung("bo chay o lan truot thu 3", !BatPokemon.boChay(2, 3) && BatPokemon.boChay(3, 3));
+        Kiem.dung("bo chay o lan truot thu 4", !BatPokemon.boChay(3, BatPokemon.SO_LAN_BO_CHAY) && BatPokemon.boChay(4, BatPokemon.SO_LAN_BO_CHAY));
         Kiem.bang("keo khi bat: 3 (shiny 6), tha +1", "3,6,1", BatPokemon.keoKhiBat(false) + "," + BatPokemon.keoKhiBat(true) + ","
                 + BatPokemon.KEO_KHI_THA);
         Kiem.bang("gia bong: 2% / 5% / 12% gio thu nhap", "200,500,1200", BatPokemon.giaBong(poke, 10000) + ","

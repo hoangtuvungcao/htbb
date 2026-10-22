@@ -21,7 +21,7 @@ public final class DatabaseBoNgoc {
     /** Bang du lieu ma chu ky (CHECKSUM TABLE) quyet dinh nap lai. */
     public static final String[] BANG_DU_LIEU = {
         "data_noi_dung_bo", "data_noi_dung_ngoc_he", "data_noi_dung_che_tao", "data_ngoc_he_lo", "data_ngoc_he_khac",
-        "data_che_tao_bac", "data_nang_cap_moc", "data_bat_bong", "data_bat_loai",
+        "data_che_tao_bac", "data_nang_cap_moc", "data_bat_bong", "data_bat_loai", "data_bat_chi_so_loai", "data_bat_chuyen_doi",
     };
 
     /** Bang may chu tu tao neu thieu (RONG: du lieu mau o sql/them_bo_ngoc_che_tao_bat.sql; thieu thi dung mac dinh). */
@@ -46,6 +46,18 @@ public final class DatabaseBoNgoc {
             + " PRIMARY KEY (id_char)) DEFAULT CHARSET=utf8",
         "CREATE TABLE IF NOT EXISTS tob_hop_pc (id_char INT NOT NULL, du_lieu MEDIUMTEXT NULL, sua_luc DATETIME NULL,"
             + " PRIMARY KEY (id_char)) DEFAULT CHARSET=utf8",
+        // 0.9.8 trao doi Pokemon (sql/them_trade_pokemon.sql)
+        "ALTER TABLE data_bat_loai ADD COLUMN IF NOT EXISTS tien_hoa_trao_doi TINYINT NOT NULL DEFAULT 0",
+        "CREATE TABLE IF NOT EXISTS data_bat_chi_so_loai (dex SMALLINT NOT NULL, hp SMALLINT NOT NULL DEFAULT 60,"
+            + " tan_cong SMALLINT NOT NULL DEFAULT 60, phong_thu SMALLINT NOT NULL DEFAULT 60, tan_cong_db SMALLINT NOT NULL DEFAULT 60,"
+            + " phong_thu_db SMALLINT NOT NULL DEFAULT 60, toc_do SMALLINT NOT NULL DEFAULT 60, PRIMARY KEY (dex)) DEFAULT CHARSET=utf8",
+        "CREATE TABLE IF NOT EXISTS data_bat_chuyen_doi (do_hiem TINYINT NOT NULL, ten VARCHAR(32) NOT NULL DEFAULT '',"
+            + " keo SMALLINT NOT NULL DEFAULT 1, xu_phan_nghin_gio SMALLINT NOT NULL DEFAULT 0, luong_khoa SMALLINT NOT NULL DEFAULT 0,"
+            + " PRIMARY KEY (do_hiem)) DEFAULT CHARSET=utf8",
+        "CREATE TABLE IF NOT EXISTS tob_log_trao_doi_pokemon (id BIGINT NOT NULL AUTO_INCREMENT, luc DATETIME NOT NULL,"
+            + " id_a INT NOT NULL, ten_a VARCHAR(64) NOT NULL DEFAULT '', id_b INT NOT NULL, ten_b VARCHAR(64) NOT NULL DEFAULT '',"
+            + " a_dua VARCHAR(512) NOT NULL DEFAULT '', b_dua VARCHAR(512) NOT NULL DEFAULT '', phi_a BIGINT NOT NULL DEFAULT 0,"
+            + " phi_b BIGINT NOT NULL DEFAULT 0, PRIMARY KEY (id), KEY id_a (id_a, luc), KEY id_b (id_b, luc)) DEFAULT CHARSET=utf8",
     };
 
     /** TeamServer luc khoi dong (sau ket noi CSDL): tao bang thieu + cot moi cua data_noi_dung_che_tao. */
@@ -221,6 +233,69 @@ public final class DatabaseBoNgoc {
             System.out.println("[BO NGOC] LOI luu " + bang + " " + idChar + ": " + e);
             return false;
         } finally {
+            dong(null, pre, conn);
+        }
+    }
+
+    /** Nhat ky trao doi Pokemon (sql/them_trade_pokemon.sql). */
+    public static final String BANG_LOG_TRAO_DOI = "tob_log_trao_doi_pokemon";
+
+    /**
+     * TRAO DOI POKEMON: ghi CA HAI Hop PC + mot dong nhat ky trong MOT giao dich (autocommit tat). Loi bat ky =&gt;
+     * rollback, tra false (hai hop trong CSDL giu ban cu, noi goi khong ap thay doi vao bo nho).
+     */
+    public static boolean luuTraoDoi(final int idA, final String tenA, final String hopA, final int idB, final String tenB,
+            final String hopB, final String aDua, final String bDua, final long phiA, final long phiB) {
+        Connection conn = null;
+        PreparedStatement pre = null;
+        boolean tuDong = true;
+        try {
+            conn = Database.instance.getConnection();
+            tuDong = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            final Timestamp bay = new Timestamp(System.currentTimeMillis());
+            pre = conn.prepareStatement("INSERT INTO " + BANG_HOP_PC + " (id_char, du_lieu, sua_luc) VALUES (?, ?, ?)"
+                    + " ON DUPLICATE KEY UPDATE du_lieu = VALUES(du_lieu), sua_luc = VALUES(sua_luc)");
+            pre.setInt(1, idA);
+            pre.setString(2, hopA);
+            pre.setTimestamp(3, bay);
+            pre.addBatch();
+            pre.setInt(1, idB);
+            pre.setString(2, hopB);
+            pre.setTimestamp(3, bay);
+            pre.addBatch();
+            pre.executeBatch();
+            dongPre(pre);
+            pre = conn.prepareStatement("INSERT INTO " + BANG_LOG_TRAO_DOI + " (luc, id_a, ten_a, id_b, ten_b, a_dua, b_dua, phi_a, phi_b)"
+                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            pre.setTimestamp(1, bay);
+            pre.setInt(2, idA);
+            pre.setString(3, tenA == null ? "" : tenA);
+            pre.setInt(4, idB);
+            pre.setString(5, tenB == null ? "" : tenB);
+            pre.setString(6, aDua == null ? "" : aDua);
+            pre.setString(7, bDua == null ? "" : bDua);
+            pre.setLong(8, phiA);
+            pre.setLong(9, phiB);
+            pre.executeUpdate();
+            conn.commit();
+            return true;
+        } catch (final Exception e) {
+            System.out.println("[TRAO DOI POKEMON] LOI ghi " + idA + " <-> " + idB + ", rollback: " + e);
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (final Exception ignored) {
+            }
+            return false;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(tuDong);
+                }
+            } catch (final Exception ignored) {
+            }
             dong(null, pre, conn);
         }
     }

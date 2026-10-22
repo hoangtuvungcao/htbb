@@ -121,7 +121,7 @@ public final class BaiLuyenTap {
 
         if (Math.abs(player.lvDetail.lv - bai.levelDaiDien) > CHENH_LECH_LEVEL_TOI_DA) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Level của bạn chênh lệch quá " + CHENH_LECH_LEVEL_TOI_DA
+                    "Cấp của bạn chênh lệch quá " + CHENH_LECH_LEVEL_TOI_DA
                             + " so với " + bai.ten + ", không thể bay đến.", ""));
             return;
         }

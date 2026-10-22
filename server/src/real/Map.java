@@ -15354,7 +15354,7 @@ public class Map implements Runnable {
             Database.instance
                     .saveLogLearnSkill(
                             player.charname,
-                            "Học skill: " + Text.nameSkillLearn[charclass][skillSelectIndex] + " với giá: " + priceLearnSkill[charclass][skillSelectIndex] + " xu"
+                            "Học chiêu: " + Text.nameSkillLearn[charclass][skillSelectIndex] + " với giá: " + priceLearnSkill[charclass][skillSelectIndex] + " xu"
                     );
             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
             player.sendMessage(MessageCreator.createServerAlertMessage("Kỹ năng đã được học.", ""));

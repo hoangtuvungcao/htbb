@@ -325,13 +325,13 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **290 khoá** trong **18 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **300 khoá** trong **18 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 193 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 27 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 202 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 28 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
@@ -456,7 +456,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (220)
+### Khoá ẩn: cố định & luôn bật (230)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -714,13 +714,23 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `nang_cap.moc_neo` | Mốc neo nâng cấp | Luôn bật (ẩn) | `1` | ngay | game | Đã đạt +7 / +10 / +13 (data_nang_cap_moc) thì nâng hỏng không rơi dưới mốc. 0 = luật cũ (−1 từ +7). |
 | `nang_cap.he_so_xu_bac_cao` | Hệ số xu nâng +11..+15 (‰) | Cố định (ẩn) | `1060` | ngay | game | Bù phần kỳ vọng giảm do mốc neo (thiết kế: +6%). Chỉ áp khi bật mốc neo. |
 | `bat.bat` | Bật thu phục Pokémon | Luôn bật (ẩn) | `1` | ngay | game | Làm Pokémon hoang dã yếu đi rồi ném bóng (Hộp PC, Kẹo loài, Pokédex “Đã bắt”). 0 = tạm khoá ném bóng / mua bóng. |
-| `bat.nguong_hp_phan_tram` | Ngưỡng HP để ném bóng (%) | Cố định (ẩn) | `25` | ngay | game | Pokémon phải còn ≤ chừng này % HP. |
+| `bat.nguong_hp_phan_tram` | Ngưỡng HP để ném bóng (%) | Cố định (ẩn) | `35` | ngay | game | Pokémon phải còn ≤ chừng này % HP. |
 | `bat.tran_ngay` | Trần thu phục / ngày | Cố định (ẩn) | `30` | ngay | game | Số Pokémon bắt được tối đa mỗi người chơi mỗi ngày (chống bot). |
 | `bat.tran_nem_ngay` | Trần ném bóng / ngày | Cố định (ẩn) | `150` | ngay | game | Số lần ném tối đa mỗi ngày. |
 | `bat.cach_ms` | Nhịp ném tối thiểu (ms) | Cố định (ẩn) | `1500` | ngay | game | Hai lần ném cách nhau ít nhất chừng này (gói đến sớm hơn bị bỏ qua). |
-| `bat.so_lan_bo_chay` | Số lần trượt thì Pokémon bỏ chạy | Cố định (ẩn) | `3` | ngay | game | Mỗi lần trượt trên cùng một con: lần sau +5%; đến lần này thì nó bỏ chạy. |
+| `bat.so_lan_bo_chay` | Số lần trượt thì Pokémon bỏ chạy | Cố định (ẩn) | `4` | ngay | game | Mỗi lần trượt trên cùng một con: lần sau cao hơn (+25% tỉ lệ, tối đa +5%); đến lần này thì nó bỏ chạy. |
 | `bat.su_kien` | Mở loài chỉ bắt trong sự kiện | Cố định (ẩn) | `0` | ngay | game | 1 = cho bắt các loài data_bat_loai.chi_su_kien = 1 (bật trong thời gian sự kiện). |
 | `bat.dong_hanh` | Bạn đồng hành đi theo (chỉ hình) | Luôn bật (ẩn) | `1` | ngay | game | Một Pokémon trong Hộp PC đi theo người chơi (0 chỉ số). 0 = ẩn. |
+| `bat.giu_moi_loai` | Số con thường giữ mỗi loài | Cố định (ẩn) | `2` | ngay | game | Bắt thêm con thường khi Hộp PC đã có chừng này con cùng loài: con kém nhất (IV thấp) tự chuyển đổi thành Kẹo (+ xu nhỏ). Sắc màu không bao giờ tự chuyển. 0 = tắt. |
+| `bat.chuyen_doi.tran_xu_phan_nghin_gio` | Trần xu chuyển đổi / ngày (‰ giờ thu nhập) | Cố định (ẩn) | `300` | ngay | game | Xu nhận từ Chuyển đổi con trùng loài mỗi ngày tối đa chừng này phần nghìn giờ thu nhập (vượt: chỉ ra Kẹo). |
+| `bat.chuyen_doi.tran_luong_ngay` | Trần lượng khoá chuyển đổi / ngày | Cố định (ẩn) | `1` | ngay | game | Lượng khoá tối đa mỗi ngày từ Chuyển đổi loài Rất hiếm. |
+| `trao_doi.bat` | Bật trao đổi Pokémon | Luôn bật (ẩn) | `1` | ngay | game | Hai người chơi trao đổi Pokémon trong Hộp PC (khoá + xác nhận hai lần, đổi nguyên tử). 0 = tạm khoá. |
+| `trao_doi.cap_toi_thieu` | Cấp tối thiểu trao đổi Pokémon | Cố định (ẩn) | `10` | ngay | game | Cả hai bên phải đạt cấp này (ngoài cổng chống clone chung). |
+| `trao_doi.tran_ngay` | Trần Pokémon nhận qua trao đổi / ngày | Cố định (ẩn) | `10` | ngay | game | Số Pokémon mỗi người chơi nhận tối đa mỗi ngày qua trao đổi. |
+| `trao_doi.khoa_gio` | Khoá trao đổi lại (giờ) | Cố định (ẩn) | `24` | ngay | game | Pokémon vừa nhận qua trao đổi phải chờ chừng này giờ mới trao đổi tiếp (chống chuyền tay). |
+| `trao_doi.cach_giay` | Nhịp giữa hai lần trao đổi (giây) | Cố định (ẩn) | `60` | ngay | game | Mỗi người chơi chỉ trao đổi xong một lần mỗi chừng này giây. |
+| `trao_doi.phi_phan_nghin_gio` | Phí trao đổi mỗi Pokémon (‰ giờ thu nhập) | Cố định (ẩn) | `50` | ngay | game | Người nhận trả cho mỗi con: chừng này phần nghìn giờ thu nhập ở cấp mình × bậc hiếm (1/2/4/8) × sắc màu 4 × 3 sao 2 (hố hút xu). |
+| `trao_doi.phi_tran_phan_nghin_gio` | Trần phí trao đổi mỗi Pokémon (‰ giờ thu nhập) | Cố định (ẩn) | `2000` | ngay | game | Phí một con không vượt chừng này phần nghìn giờ thu nhập. |
 
 #### Hồi sinh — luật (cố định) (`hoi_sinh`)
 

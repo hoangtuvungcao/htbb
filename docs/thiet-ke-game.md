@@ -956,13 +956,24 @@ Người chơi **là** một Pokémon; quái là Pokémon hoang dã. Vòng thu p
 thô** (đề xuất 9 / S2 của rà soát lối chơi). Mã: lớp thuần `com.htbb.pokemon.BatPokemon` + `HopPc`, game `real.BatPokemonGame`,
 client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` ([sql/them_bo_ngoc_che_tao_bat.sql](../sql/them_bo_ngoc_che_tao_bat.sql)).
 
-- **Ném bóng**: đánh một Pokémon hoang dã xuống ≤ 25% HP (`bat.nguong_hp_phan_tram`) thì dưới khung mục tiêu hiện nút
+- **Ném bóng**: đánh một Pokémon hoang dã xuống ≤ 35% HP (`bat.nguong_hp_phan_tram`; trước 0.9.8 bản trao đổi: 25%) thì dưới khung mục tiêu hiện nút
   "Ném Poké Ball ×n" (chạm "Đổi" để đổi loại bóng). Bóng bay tới, Pokémon vào bóng, bóng lắc 0..3 lần rồi bắt được (sao
   vàng) / thoát (bóng bật mở) / bỏ chạy (khói). Máy chủ kiểm lại mọi điều kiện và quyết định kết quả.
-- **Tỉ lệ** (phần nghìn): `gốc loài × (3M − 2H)/3M × lệch cấp × (tinh anh ×25%) × hệ số bóng + 5% mỗi lần trượt trước`, kẹp
-  [1%, trần bóng]. Gốc theo độ hiếm loài: thường 45%, hiếm 20%, rất hiếm 8%. Lệch cấp (quái − người chơi): ≤ 0 ×100%,
-  1..5 ×80%, 6..10 ×50%, > 10 không ném được. Ví dụ loài thường ở 25% HP cùng cấp: Poké Ball 37,4%, Great 56,1%, Ultra
-  74,8%; trung bình ~2,4 bóng / con, ~81% bắt được trước khi nó bỏ chạy.
+- **Tỉ lệ** (phần nghìn): `gốc loài × (3M − 2H)/3M × lệch cấp × (tinh anh ×25%) × hệ số bóng + thưởng trượt`, kẹp
+  [1%, trần bóng]. Thưởng trượt **tương đối**: mỗi lần trượt trước trên cùng con + min(5%, 25% tỉ lệ hiện tại), nên loài
+  hiếm không thành dễ. Lệch cấp (quái − người chơi): ≤ 0 ×100%, 1..5 ×80%, 6..10 ×50%, > 10 không ném được.
+- **Bậc hiếm loài** (`data_bat_loai.do_hiem`, [sql/them_trade_pokemon.sql](../sql/them_trade_pokemon.sql)): loài hiếm phải giữ
+  giá trị nên tỉ lệ chia bậc rõ. Ví dụ ở ngưỡng 35% HP, cùng cấp:
+
+  | Bậc | Gốc | Poké / Great / Ultra mỗi lần ném | Bắt được trước khi bỏ chạy (Poké, 4 lần) | Loài |
+  |---|---|---|---|---|
+  | 0 Thường | 55% | 42,1 / 63,1 / 84,2% | ~93%, ~2,2 bóng / con | đa số |
+  | 1 Ít gặp | 25% | 19,1 / 28,6 / 38,2% | ~70% | Pinsir, Tauros, Altaria, Claydol, Cradily, Armaldo, Tropius, Glalie, Walrein, Trevenant |
+  | 2 Hiếm | 9% | 6,8 / 10,2 / 13,6% | ~32%, ~11 bóng / con | Scyther, Heracross, Sableye, Aggron, Flygon, Zangoose, Absol, Volcarona, Dhelmise |
+  | 3 Rất hiếm | 3% | 2,2 / 3,3 / 4,4% | ~11%, ~34 bóng / con | Bagon, Shelgon, Salamence, Metang, Metagross, Ursaluna |
+
+  Huyền thoại / boss: không có dòng (không bắt được). Không đổi bảng xuất hiện: loài hiếm vốn chỉ có ở bãi cấp cao /
+  tinh anh. Trước bản này: gốc 45 / 20 / 8%, ngưỡng 25%, bỏ chạy sau 3 lần, thưởng trượt +5% cố định.
 - **Bóng** (vật phẩm tiêu hao, mua ở Y tá Chansey theo gói 5, giá theo giờ thu nhập ở cấp người mua = hố hút xu nhỏ):
 
   | Bóng | Hệ số | Trần tỉ lệ | Giá / quả | Mở từ |
@@ -975,10 +986,10 @@ client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` (
 - **Không bắt được**: boss, boss thế giới, Gym, tinh anh cỡ boss (HP ≥ 10 triệu), quái vật thể / nguyên liệu, huyền thoại
   (mọi loài chỉ có ở boss không có dòng `data_bat_loai` hoặc `bat_duoc = 0`). Loài `chi_su_kien = 1` chỉ bắt được khi bật
   `bat.su_kien`.
-- **Bỏ chạy**: trượt 3 lần trên cùng một con (`bat.so_lan_bo_chay`) thì nó biến mất (hồi sinh như bình thường, không thưởng).
+- **Bỏ chạy**: trượt 4 lần trên cùng một con (`bat.so_lan_bo_chay`) thì nó biến mất (hồi sinh như bình thường, không thưởng).
 - **Bắt được**: Pokémon biến mất như bị hạ nhưng **không rơi đồ / xu / EXP thêm** (EXP đã nhận theo sát thương), Pokédex ghi
   "Đã bắt" (`tob_pokedex.so_bat`, `bat_shiny`), Hộp PC thêm một con (loài, cấp = min(cấp quái, cấp người chơi), sắc màu,
-  ngày, loại bóng), **+3 Kẹo loài** (sắc màu +6). Bắt Pokémon sắc màu báo toàn máy chủ. Sự kiện nhiệm vụ / danh hiệu:
+  ngày, loại bóng, **cá thể**), **+3 Kẹo loài** (sắc màu +6). Bắt Pokémon sắc màu báo toàn máy chủ. Sự kiện nhiệm vụ / danh hiệu:
   `NhiemVuEngine.suKien(p, "bat_pokemon", dex, 1)`.
 - **Chống bot**: Tự động đánh không bao giờ ném bóng (không có hành động đó); chỉ ném được Pokémon mà chính người đó vừa đánh
   trong 30 giây, cách ≤ 160 px; nhịp ném ≥ 1,5 giây (`bat.cach_ms`, gói sớm hơn bị bỏ qua); tối đa 150 lần ném và 30 con
@@ -988,9 +999,57 @@ client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` (
   kiểu 3, **0 chỉ số**), **Luyện cấp** (1 + cấp/10 Kẹo mỗi cấp, ≤ cấp người chơi), **Tiến hoá** (đủ cấp + 25 / 50 Kẹo, loài
   hiếm ×2; loài sau tiến hoá cũng ghi "Đã bắt"), **Thả về tự nhiên** (+1 Kẹo). Kẹo loài dùng chung cả họ tiến hoá
   (Torchic / Combusken / Blaziken cùng kẹo Torchic). Kẹo và bóng không bán, không giao dịch.
-- **Pokédex** client: dấu Poké Ball ở loài đã bắt, chip lọc "Đã bắt", số "Đã bắt: n / m loài".
+- **Cá thể** (`com.htbb.pokemon.CaThePokemon`): mỗi con bắt được có chỉ số cá thể (IV) 0..31 cho 6 chỉ số (HP, Tấn công,
+  Phòng thủ, Tấn công ĐB, Phòng thủ ĐB, Tốc độ) và một trong 25 tính cách (+10% / −10%, 5 tính cách trung tính) như game
+  chính bản. Đánh giá 0..3 sao theo % tổng IV (≥ 51 / 67 / 82%; 100% "Hoàn hảo"; 3 sao ~0,4% số con). "Sức mạnh" = tổng 6
+  chỉ số tính từ chỉ số gốc loài (`data_bat_chi_so_loai`, 117 loài) + IV + tính cách + cấp (công thức game chính bản, không
+  EV). Tiến hoá giữ nguyên cá thể. **Không cộng vào chỉ số người chơi** (bạn đồng hành vẫn 0 chỉ số, spec 4.6 "đồng điệu" để
+  bản 1.1); cá thể dùng để chọn con giữ / chuyển đổi, tăng phí trao đổi con 3 sao, hiện trong Hộp PC.
+- **Con trùng loài / Chuyển đổi**: giữ tối đa `bat.giu_moi_loai` (2) con THƯỜNG mỗi loài; bắt thêm thì con có IV thấp nhất
+  (con mới hoặc con cũ do chính mình bắt, không đang đi theo) tự chuyển đổi. Con trùng loài cũng chuyển đổi tay được ở Hộp PC.
+  Thưởng (`data_bat_chuyen_doi`): Thường 2 Kẹo + 1% giờ thu nhập, Ít gặp 3 Kẹo + 3%, Hiếm 5 Kẹo + 10%, Rất hiếm 8 Kẹo + 1
+  lượng khoá; sắc màu ×2 Kẹo và không bao giờ tự chuyển. Trần ngày: xu 30% giờ thu nhập (`bat.chuyen_doi.tran_xu_phan_nghin_gio`),
+  1 lượng khoá (`bat.chuyen_doi.tran_luong_ngay`); quá trần chỉ ra Kẹo. Con nhận qua trao đổi (hoặc từng trao đổi) chỉ ra
+  Kẹo, không xu / lượng (chặn nuôi clone bắt hộ rồi chuyển cho nick chính). Ngân sách: bắt đủ 30 con / ngày tốn ≥ 30 bóng
+  (≥ 60% giờ thu nhập) > trần xu chuyển đổi 30%, nên thu phục vẫn là hố hút xu ròng.
+- **Hộp PC** (client 0.9.8 `ManHopPc`, gói -121 kiểu 4): lưới thẻ hình Pokémon thật (PNG), cấp, % cá thể, sao (icon PNG
+  `res/pk/bat_16.png`, `bat_32.png` sinh bởi `tools/pokemon/sinh_icon_bat.py`), dấu sắc màu / khoá trao đổi / đi theo; chip lọc
+  Tất cả / Trùng loài / Sắc màu / 3 sao; thẻ chi tiết: Pokémon to, Sức mạnh, 6 thanh IV, tính cách, Kẹo, nút Đi theo /
+  Luyện / Tiến hoá / Chuyển đổi / Thả. Client cũ vẫn dùng menu chữ.
+- **Pokédex** client: dấu Poké Ball (icon PNG) ở loài đã bắt, chip lọc "Đã bắt", số "Đã bắt: n / m loài", nút "Hộp PC"; thẻ
+  chi tiết xin thông tin loài (gói -121 kiểu 5): độ hiếm + tỉ lệ gốc, dòng tiến hoá thật (cấp / khi trao đổi), nơi sống (bản
+  đồ đang có Pokémon đó), số lần bắt / hạ, chỉ số gốc. Dữ liệu chưa có chiều cao / cân nặng nên không hiện.
 - **Ngân sách**: thu phục không thêm sức mạnh cho người chơi (bạn đồng hành 0 chỉ số; thiết kế cân bằng 4.6 để "đồng điệu"
   +2..4% một chỉ số cho bản 1.1, chủ game quyết). Xu vào: không; xu ra: bóng + mở rộng Hộp PC.
+
+### 7.8 Trao đổi Pokémon (0.9.8)
+
+Hai người chơi đổi Pokémon trong Hộp PC (`com.htbb.pokemon.TraoDoiPokemon` thuần + `real.TraoDoiPokemonGame`, client
+`game.pokemon.ManTraoDoiPokemon`, gói -121 kiểu 6). Chạm người chơi → **Trao đổi Pokémon** (menu cũ "Trao đổi" nay là
+"Trao đổi vật phẩm").
+
+- **Luồng**: lời mời (30 giây) → người kia đồng ý → cửa sổ hai cột "Bạn đưa" / "&lt;tên&gt; đưa": mỗi bên chọn 1..3 con từ
+  Hộp PC → **Khoá** (xác nhận 1) → cả hai đã khoá → **Trao đổi** (xác nhận 2, hộp hỏi lại có phí). Đổi lựa chọn thì CẢ HAI mở
+  khoá. Phiên quá 5 phút, rời game (`CharManager.remove`), huỷ: không đổi gì.
+- **Cổng** (máy chủ kiểm lúc mời, mỗi bước và lại lúc chốt): cả hai client 0.9.8, cùng bản đồ / khu, cách ≤ 200 px, cấp ≥
+  `trao_doi.cap_toi_thieu` (10), không đang trao đổi vật phẩm; **chống clone hai chiều** `ChongClone.chanChuyen(a→b)` và
+  `(b→a)` (cấp, tuổi tài khoản, giờ chơi, giới hạn cùng thiết bị / IP mỗi người nhận mỗi ngày, kiểu `trao_doi_pokemon`);
+  con đang đi theo phải thôi theo trước; con vừa nhận qua trao đổi khoá `trao_doi.khoa_gio` (24 giờ) mới đổi tiếp; nhận tối
+  đa `trao_doi.tran_ngay` (10) con / ngày; nhịp `trao_doi.cach_giay` (60 giây) giữa hai lần; đủ chỗ trong Hộp PC; con còn
+  nguyên như lúc khoá (đổi cấp / loài / cá thể giữa chừng → huỷ). Con đang trong phiên không thả / chuyển đổi / tiến hoá /
+  luyện được.
+- **Phí** (hố hút xu, người nhận trả cho mỗi con nhận): `trao_doi.phi_phan_nghin_gio` (5%) giờ thu nhập ở cấp mình × bậc hiếm
+  1 / 2 / 4 / 8 × sắc màu 4 × 3 sao 2, trần `trao_doi.phi_tran_phan_nghin_gio` (2 giờ thu nhập) mỗi con. Hiện trước khi bấm.
+- **Đổi nguyên tử**: khoá hai Hộp PC theo thứ tự charDBID (không deadlock khi hai phiên chéo nhau), trừ phí, làm trên bản
+  sao, ghi CẢ HAI hộp + một dòng `tob_log_trao_doi_pokemon` trong **một giao dịch CSDL** (`DatabaseBoNgoc.luuTraoDoi`); chỉ
+  khi commit xong mới thay hộp trong bộ nhớ. Ghi hỏng / mất kết nối / sập trước commit: rollback, hoàn phí, không ai mất; sập
+  sau commit: CSDL đã có bản mới. Hai cuộc trao đổi tranh cùng một con: đúng một cuộc qua (test 200 vòng × 2 luồng).
+- **Giữ nguyên** loài, cấp, sắc màu, cá thể, ngày bắt, bóng, người bắt gốc; đánh dấu lần đổi. **Tiến hoá khi trao đổi** như
+  game chính bản: Haunter → Gengar, Dusclops → Dusknoir (`data_bat_loai.tien_hoa_trao_doi`). Người nhận được ghi Pokédex
+  "Đã bắt".
+- **Nhật ký**: `tob_log_trao_doi_pokemon` (cùng giao dịch), `tob_log_chuyen_gia_tri` (ChongClone, hai chiều), nhật ký khác
+  `traodoipokemon`.
+- **Chợ / sạp**: chưa bán Pokémon ở sạp người chơi (giá trị khó định, dễ thành kênh chuyển xu); chỉ trao đổi trực tiếp.
 
 ---
 
@@ -1371,7 +1430,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
 | -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 | -120 | `TRANG_BI` (0.9.8) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |
-| -121 | `THU_PHUC` (0.9.8) | hai chiều | C→S: xin trạng thái, ném bóng (idQuai, loại bóng), xin Pokédex; S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102) (mục 7.7) |
+| -121 | `THU_PHUC` (0.9.8) | hai chiều | C→S: xin trạng thái (+ byte "có màn Hộp PC"), ném bóng (idQuai, loại bóng), xin Pokédex, xin Hộp PC (3), hành động trên một con (4), xin thông tin loài (5), trao đổi (6: mời / trả lời / đặt / khoá / xác nhận / huỷ); S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102), Hộp PC (4), thông tin loài (5), trao đổi (6: đóng / lời mời / phiên / xong) - chỉ client ≥ 908 (mục 7.7, 7.8) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
 

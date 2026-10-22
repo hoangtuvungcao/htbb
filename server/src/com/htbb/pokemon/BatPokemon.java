@@ -18,7 +18,8 @@ import java.util.Map;
  *   tiLe = goc(loai) x heSoHp x heSoCap x (alpha ? 25% : 100%) x heSoBong + thuongTruot,  kep [SAN, tranBong]
  *   heSoHp  = (3M - 2H) / 3M            (Pokemon chinh ban: 25% HP -> 83%, 1 HP -> ~100%)
  *   heSoCap = quai - nguoi choi &lt;= 0: 100% ; 1..5: 80% ; 6..10: 50% ; &gt; 10: khong nem duoc
- *   thuongTruot = +5% moi lan truot truoc tren CUNG con (toi da 2 lan, lan truot thu 3 con quai bo chay)
+ *   thuongTruot = moi lan truot truoc tren CUNG con + min(5%, 25% ti le) (toi da 3 lan, lan truot thu 4 con quai bo chay)
+ *   goc theo bac hiem (0.9.8 ban trao doi): Thuong 55% / It gap 25% / Hiem 9% / Rat hiem 3% - loai hiem van HIEM
  * </pre>
  * Boss, boss the gioi, Gym, huyen thoai (bang data_bat_loai bat_duoc = 0) KHONG bat duoc; loai chi_su_kien chi bat duoc
  * khi su kien bat (co bat.su_kien).
@@ -26,19 +27,30 @@ import java.util.Map;
 public final class BatPokemon {
 
     /** Nguong HP (%) de nem duoc bong. */
-    public static final int NGUONG_HP_PHAN_TRAM = 25;
+    public static final int NGUONG_HP_PHAN_TRAM = 35;
     /** Ti le toi thieu (phan nghin). */
     public static final int SAN_PHAN_NGHIN = 10;
     /** He so quai tinh anh (alpha), phan nghin. */
     public static final int HE_SO_ALPHA = 250;
     /** Thuong moi lan truot truoc tren cung con (phan nghin). */
     public static final int THUONG_TRUOT = 50;
+    /** Thuong moi lan truot tinh theo ti le hien tai (phan nghin cua ti le): 250 = +25%, kep o THUONG_TRUOT. */
+    public static final int THUONG_TRUOT_TUONG_DOI = 250;
     /** So lan truot thi quai bo chay. */
-    public static final int SO_LAN_BO_CHAY = 3;
+    public static final int SO_LAN_BO_CHAY = 4;
     /** Lech cap toi da (quai cao hon nguoi choi). */
     public static final int LECH_CAP_TOI_DA = 10;
-    /** Goc theo do hiem loai (phan nghin): thuong / hiem / rat hiem. */
-    public static final int[] GOC_THEO_DO_HIEM = {450, 200, 80};
+    /**
+     * Goc theo bac hiem loai (phan nghin): 0 Thuong / 1 It gap / 2 Hiem / 3 Rat hiem (gia huyen thoai). Huyen thoai /
+     * boss: khong co dong data_bat_loai (khong bat duoc).
+     */
+    public static final int[] GOC_THEO_DO_HIEM = {550, 250, 90, 30};
+    /** Ten bac hiem (Pokedex, Hop PC). */
+    public static final String[] TEN_DO_HIEM = {"Thường", "Ít gặp", "Hiếm", "Rất hiếm"};
+
+    public static String tenDoHiem(final int doHiem) {
+        return TEN_DO_HIEM[Math.max(0, Math.min(TEN_DO_HIEM.length - 1, doHiem))];
+    }
 
     private BatPokemon() {
     }
@@ -86,9 +98,19 @@ public final class BatPokemon {
         public final int keoTienHoa;
         public final boolean batDuoc;
         public final boolean chiSuKien;
+        /** Tien hoa khi duoc trao doi (Haunter -&gt; Gengar, Dusclops -&gt; Dusknoir): khong can cap / keo. */
+        public final boolean tienHoaTraoDoi;
+        /** Chi so goc loai {HP, Tan cong, Phong thu, Tan cong dac biet, Phong thu dac biet, Toc do}; null = chua co. */
+        public final int[] chiSoGoc;
 
         public Loai(final int dex, final String ten, final int doHiem, final int tiLePhanNghin, final int tienHoaThanh,
                 final int capTienHoa, final int keoTienHoa, final boolean batDuoc, final boolean chiSuKien) {
+            this(dex, ten, doHiem, tiLePhanNghin, tienHoaThanh, capTienHoa, keoTienHoa, batDuoc, chiSuKien, false, null);
+        }
+
+        public Loai(final int dex, final String ten, final int doHiem, final int tiLePhanNghin, final int tienHoaThanh,
+                final int capTienHoa, final int keoTienHoa, final boolean batDuoc, final boolean chiSuKien,
+                final boolean tienHoaTraoDoi, final int[] chiSoGoc) {
             this.dex = dex;
             this.ten = ten == null ? "" : ten;
             this.doHiem = Math.max(0, Math.min(GOC_THEO_DO_HIEM.length - 1, doHiem));
@@ -98,6 +120,8 @@ public final class BatPokemon {
             this.keoTienHoa = Math.max(0, keoTienHoa);
             this.batDuoc = batDuoc;
             this.chiSuKien = chiSuKien;
+            this.tienHoaTraoDoi = tienHoaTraoDoi && tienHoaThanh > 0;
+            this.chiSoGoc = chiSoGoc != null && chiSoGoc.length == 6 ? chiSoGoc.clone() : null;
         }
     }
 
@@ -181,7 +205,7 @@ public final class BatPokemon {
     /**
      * Ti le bat (phan nghin) cho mot lan nem.
      *
-     * @param lanTruot so lan da nem truot vao CUNG con nay (0..2)
+     * @param lanTruot so lan da nem truot vao CUNG con nay (0..3)
      */
     public static int tiLe(final Loai loai, final long hp, final long maxhp, final int capQuai, final int capNv,
             final boolean alpha, final Bong bong, final int lanTruot) {
@@ -199,7 +223,9 @@ public final class BatPokemon {
             t = t * HE_SO_ALPHA / 1000L;
         }
         t = t * bong.heSoPhanTram / 100L;
-        t += (long) THUONG_TRUOT * Math.max(0, Math.min(SO_LAN_BO_CHAY - 1, lanTruot));
+        // thuong truot TUONG DOI: +25% ti le hien tai moi lan truot, toi da +5% tuyet doi - loai hiem khong thanh "de" vi thuong
+        final long moiLan = Math.min(THUONG_TRUOT, t * THUONG_TRUOT_TUONG_DOI / 1000L);
+        t += moiLan * Math.max(0, Math.min(SO_LAN_BO_CHAY - 1, lanTruot));
         return (int) Math.max(SAN_PHAN_NGHIN, Math.min(bong.tranPhanNghin, t));
     }
 

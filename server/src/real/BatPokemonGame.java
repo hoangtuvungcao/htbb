@@ -36,6 +36,17 @@ import java.util.concurrent.ConcurrentHashMap;
  *                short dex, byte shiny, short tiLePhanNghin, UTF chu   (gui ca nguoi gan: ho chi xem hieu ung)
  *   2 POKEDEX    short n, n x (short dex, byte co: bit0 da ha, bit1 da bat, bit2 bat shiny), short soDaBat
  *   3 DONG_HANH  short charId, short dex (0 = khong), byte shiny  (ban dong hanh di theo, chi de nhin)
+ *   4 HOP_PC     short soCon, short sucChua, int dangTheo, short giuMoiLoai, short n, n x (int id, short dex, byte cap,
+ *                byte shiny, byte sao, byte ivPhanTram, short sucManh, byte tinhCach, byte doHiem, short keo, short keoLuyen,
+ *                short dexSau, byte capTienHoa, short keoTienHoa, byte co, 6 x byte iv, UTF ten, UTF tinhCach, UTF tenKeo,
+ *                UTF thuongChuyenDoi)   co: bit0 trung loai, bit1 khoa trao doi, bit2 nhan qua trao doi, bit3 tien hoa khi
+ *                trao doi, bit4 dang theo
+ *   5 LOAI       short dex, UTF ten, byte coDong, byte doHiem, UTF tenDoHiem, short tiLeGoc, short dexTruoc, short dexSau,
+ *                byte capTienHoa, byte tienHoaTraoDoi, UTF tenTruoc, UTF tenSau, short soBat, short soHa, byte n, n x UTF
+ *                noiSong, byte 6|0, 6 x byte chiSoGoc
+ *   6 TRAO_DOI   (TraoDoiPokemonGame)
+ * C-&gt;S 0.9.8: 0 + byte 1 = client co man Hop PC; 3 xin Hop PC; 4 byte hanhDong (0 theo, 1 luyen, 2 tien hoa, 3 tha,
+ *   4 chuyen doi), int id; 5 short dex; 6 trao doi (TraoDoiPokemonGame)
  * </pre>
  * Menu: Y ta Chansey muc "Poké Ball &amp; Hộp PC" (mua bong theo goi 5, mo rong Hop PC bang xu), NPC Pokedex muc
  * "Hộp PC" (xem, cho di theo, luyen / tien hoa bang Keo loai, tha ve).
@@ -43,8 +54,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class BatPokemonGame {
 
     public static final int LENH = -121;
-    public static final byte C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2;
-    public static final byte S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3;
+    public static final byte C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2, C_XIN_HOP = 3, C_HANH_DONG = 4, C_XIN_LOAI = 5,
+            C_TRAO_DOI = 6;
+    public static final byte S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3, S_HOP_PC = 4, S_LOAI = 5,
+            S_TRAO_DOI = 6;
 
     public static final String K_BAT = "bat.bat";
     public static final String K_NGUONG_HP = "bat.nguong_hp_phan_tram";
@@ -54,6 +67,11 @@ public final class BatPokemonGame {
     public static final String K_SO_LAN_BO_CHAY = "bat.so_lan_bo_chay";
     public static final String K_SU_KIEN = "bat.su_kien";
     public static final String K_DONG_HANH = "bat.dong_hanh";
+    /** Giu toi da bao nhieu con THUONG moi loai khi bat; con thua tu chuyen doi (0 = tat). */
+    public static final String K_GIU_MOI_LOAI = "bat.giu_moi_loai";
+    /** Tran xu / ngay tu chuyen doi (phan nghin gio thu nhap) va tran luong khoa / ngay. */
+    public static final String K_CHUYEN_TRAN_XU = "bat.chuyen_doi.tran_xu_phan_nghin_gio";
+    public static final String K_CHUYEN_TRAN_LUONG = "bat.chuyen_doi.tran_luong_ngay";
 
     /** Npc ao (xem BoNgocGame.NPC_ID): menu bong, Hop PC, mot con, xac nhan tha. */
     public static final int NPC_BONG = -581, NPC_HOP = -582, NPC_CON = -583, NPC_THA = -584;
@@ -88,6 +106,8 @@ public final class BatPokemonGame {
 
     static volatile HashMap<Integer, BatPokemon.Loai> LOAI = new HashMap<Integer, BatPokemon.Loai>();
     static volatile List<BatPokemon.Bong> BONG = BatPokemon.bongMacDinh();
+    /** Thuong chuyen doi theo bac hiem 0..3 (data_bat_chuyen_doi). */
+    static volatile com.htbb.pokemon.TraoDoiPokemon.ThuongChuyen[] CHUYEN = com.htbb.pokemon.TraoDoiPokemon.chuyenMacDinh();
 
     /** BoNgocGame.nap goi (cung lan nap, cung luong theo doi chu ky). */
     static String nap() {
@@ -113,7 +133,45 @@ public final class BatPokemonGame {
                     m.put(Integer.valueOf(x.dex), x);
                 }
             }
+            // 0.9.8 trao doi (sql/them_trade_pokemon.sql): tien hoa khi trao doi + chi so goc loai. Bang / cot chua co: bo qua.
+            final java.util.Set<Integer> traoDoi = new java.util.HashSet<Integer>();
+            final List<Object[]> td = DatabaseBoNgoc.docBang("SELECT dex, tien_hoa_trao_doi FROM data_bat_loai WHERE tien_hoa_trao_doi = 1", 2);
+            if (td != null) {
+                for (final Object[] r : td) {
+                    traoDoi.add(Integer.valueOf(DatabaseBoNgoc.so(r[0])));
+                }
+            }
+            final HashMap<Integer, int[]> goc = new HashMap<Integer, int[]>();
+            final List<Object[]> cs = DatabaseBoNgoc.docBang("SELECT dex, hp, tan_cong, phong_thu, tan_cong_db, phong_thu_db, toc_do"
+                    + " FROM data_bat_chi_so_loai", 7);
+            if (cs != null) {
+                for (final Object[] r : cs) {
+                    goc.put(Integer.valueOf(DatabaseBoNgoc.so(r[0])), new int[]{DatabaseBoNgoc.so(r[1]), DatabaseBoNgoc.so(r[2]),
+                        DatabaseBoNgoc.so(r[3]), DatabaseBoNgoc.so(r[4]), DatabaseBoNgoc.so(r[5]), DatabaseBoNgoc.so(r[6])});
+                }
+            }
+            if (!traoDoi.isEmpty() || !goc.isEmpty()) {
+                for (final java.util.Map.Entry<Integer, BatPokemon.Loai> e : m.entrySet()) {
+                    final BatPokemon.Loai x = e.getValue();
+                    e.setValue(new BatPokemon.Loai(x.dex, x.ten, x.doHiem, x.tiLePhanNghin == BatPokemon.GOC_THEO_DO_HIEM[x.doHiem] ? 0
+                            : x.tiLePhanNghin, x.tienHoaThanh, x.capTienHoa, x.keoTienHoa, x.batDuoc, x.chiSuKien,
+                            traoDoi.contains(e.getKey()), goc.get(e.getKey())));
+                }
+            }
             LOAI = m;
+        }
+        final List<Object[]> cd = DatabaseBoNgoc.docBang("SELECT do_hiem, keo, xu_phan_nghin_gio, luong_khoa FROM data_bat_chuyen_doi"
+                + " ORDER BY do_hiem", 4);
+        if (cd != null && !cd.isEmpty()) {
+            final com.htbb.pokemon.TraoDoiPokemon.ThuongChuyen[] t = com.htbb.pokemon.TraoDoiPokemon.chuyenMacDinh();
+            for (final Object[] r : cd) {
+                final int h = DatabaseBoNgoc.so(r[0]);
+                if (h >= 0 && h < t.length) {
+                    t[h] = new com.htbb.pokemon.TraoDoiPokemon.ThuongChuyen(DatabaseBoNgoc.so(r[1]), DatabaseBoNgoc.so(r[2]),
+                            DatabaseBoNgoc.so(r[3]));
+                }
+            }
+            CHUYEN = t;
         }
         return BONG.size() + " loại bóng, " + LOAI.size() + " loài thu phục được";
     }
@@ -177,9 +235,15 @@ public final class BatPokemonGame {
         }
         final HopPc h = HOP.get(Integer.valueOf(p.charDBID));
         if (h != null && h.ban) {
-            h.ban = false;
-            if (!DatabaseBoNgoc.luuHoSo(DatabaseBoNgoc.BANG_HOP_PC, p.charDBID, h.maHoa())) {
-                h.ban = true;
+            // GIU KHOA hop qua ca ma hoa + ghi: trao doi (TraoDoiPokemon.thucHien) ghi CSDL trong cung khoa, nen mot lan luu
+            // nhan vat khong bao gio ghi de ban CU len ban da trao doi (chong nhan ban Pokemon).
+            synchronized (h) {
+                if (h.ban) {
+                    h.ban = false;
+                    if (!DatabaseBoNgoc.luuHoSo(DatabaseBoNgoc.BANG_HOP_PC, p.charDBID, h.maHoa())) {
+                        h.ban = true;
+                    }
+                }
             }
         }
     }
@@ -218,7 +282,21 @@ public final class BatPokemonGame {
         try {
             final byte kieu = msg.dis.readByte();
             if (kieu == C_TRANG_THAI) {
+                if (msg.dis.available() > 0 && msg.dis.readByte() >= 1 && p != null) {
+                    CO_UI.add(Integer.valueOf(p.charDBID)); // client 0.9.8 co man Hop PC / trao doi
+                }
                 guiTrangThai(p);
+            } else if (kieu == C_XIN_HOP) {
+                CO_UI.add(Integer.valueOf(p.charDBID));
+                guiHop(p);
+            } else if (kieu == C_HANH_DONG) {
+                final int hd = msg.dis.readByte();
+                final int id = msg.dis.readInt();
+                hanhDong(p, hd, id);
+            } else if (kieu == C_XIN_LOAI) {
+                guiLoai(p, msg.dis.readShort());
+            } else if (kieu == C_TRAO_DOI) {
+                TraoDoiPokemonGame.xuLy(p, msg);
             } else if (kieu == C_NEM) {
                 final short id = msg.dis.readShort();
                 final int thuTu = msg.dis.readByte();
@@ -354,10 +432,6 @@ public final class BatPokemonGame {
             tuChoi(p, idQuai, thuTu, "Hôm nay bạn đã thu phục đủ " + tranNgay() + " Pokémon.");
             return;
         }
-        if (h.day()) {
-            tuChoi(p, idQuai, thuTu, "Hộp PC đã đầy (" + h.sucChua() + " ô). Thả bớt hoặc mở rộng ở Chansey.");
-            return;
-        }
         final BatPokemon.Bong b = bong(thuTu);
         if (b == null || h.bong(b.ma) <= 0) {
             tuChoi(p, idQuai, thuTu, "Bạn không còn " + (b != null ? b.ten : "bóng") + ". Mua ở Y tá Chansey.");
@@ -386,6 +460,11 @@ public final class BatPokemonGame {
                 || (t != null && t.maxhp >= 10_000_000);
         final BatPokemon.Loai l = loai(dex);
         final int capNv = p.lvDetail != null ? p.lvDetail.lv : 1;
+        // Hop day: van bat duoc neu loai nay da du so con giu (con moi / con kem nhat se tu chuyen doi thanh Keo)
+        if (h.day() && (t != null && t.shiny != 0 || giuMoiLoai() <= 0 || h.soCungLoai(dex, true) < giuMoiLoai())) {
+            tuChoi(p, idQuai, thuTu, "Hộp PC đã đầy (" + h.sucChua() + " ô). Chuyển đổi, thả bớt hoặc mở rộng ở Chansey.");
+            return;
+        }
         final int ma = BatPokemon.kiem(l, laBoss, m.hp, m.maxhp, m.level, capNv, nguongHp(), LauDai.so(K_SU_KIEN, 0) != 0);
         if (ma != BatPokemon.OK) {
             tuChoi(p, idQuai, thuTu, BatPokemon.chuKiem(ma, nguongHp()));
@@ -407,11 +486,32 @@ public final class BatPokemonGame {
         final int lac = BatPokemon.soLanLac(roll, tiLe, duoc);
         final String tenLoai = ten(dex) + (shiny ? " sắc màu" : "");
         if (duoc) {
+            final int iv = com.htbb.pokemon.CaThePokemon.ivNgauNhien(Map.r);
+            final int tc = com.htbb.pokemon.CaThePokemon.tinhCachNgauNhien(Map.r);
+            String chuyen = "";
             synchronized (h) {
                 h.batNgay++;
                 h.tongBat++;
-                h.them(dex, Math.min(m.level, BatPokemon.capToiDa(capNv)), shiny, homNay(), b.ma);
                 h.themKeo(goc(dex), BatPokemon.keoKhiBat(shiny));
+                // con trung loai qua so giu: chuyen doi con kem nhat (con moi hoac con cu IV thap hon), giu con tot
+                final int idChuyen = com.htbb.pokemon.TraoDoiPokemon.chonChuyenKhiBat(h, dex, shiny, iv, giuMoiLoai(), p.charDBID);
+                final int cap = Math.min(m.level, BatPokemon.capToiDa(capNv));
+                if (idChuyen == 0) {
+                    final HopPc.Con tam = new HopPc.Con(0, dex, cap, false, homNay(), b.ma);
+                    tam.iv = iv;
+                    tam.tinhCach = tc;
+                    tam.chuGoc = p.charDBID;
+                    chuyen = chuyenDoi(p, h, tam, true);
+                } else {
+                    if (idChuyen > 0) {
+                        final HopPc.Con cu = h.lay(idChuyen);
+                        if (cu != null) {
+                            h.tha(idChuyen);
+                            chuyen = chuyenDoi(p, h, cu, true);
+                        }
+                    }
+                    h.them(dex, cap, shiny, homNay(), b.ma, iv, tc, p.charDBID);
+                }
             }
             m.actorDie(); // bien mat nhu bi ha, KHONG roi do / xu / EXP them (EXP da nhan theo sat thuong)
             synchronized (GIAO_CHIEN) {
@@ -423,7 +523,9 @@ public final class BatPokemonGame {
             final String chu = "Đã thu phục " + tenLoai + "!";
             com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.HIEM, chu,
                     (dau ? "Pokédex: loài mới đã bắt · " : "") + "+" + BatPokemon.keoKhiBat(shiny) + " Kẹo " + ten(goc(dex))
-                            + " · Hộp PC " + h.soCon() + "/" + h.sucChua(),
+                            + " · " + com.htbb.pokemon.CaThePokemon.chuDanhGia(iv) + " " + com.htbb.pokemon.CaThePokemon.phanTram(iv)
+                            + "% · " + com.htbb.pokemon.CaThePokemon.tenTinhCach(tc)
+                            + (chuyen.isEmpty() ? "" : " · " + chuyen) + " · Hộp PC " + h.soCon() + "/" + h.sucChua(),
                     com.htbb.thongbao.ThongBao.HINH_POKEMON, dex);
             ketQuaNem(p, idQuai, thuTu, 1, lac, dex, shiny, tiLe, chu, true);
             if (shiny) {
@@ -447,7 +549,7 @@ public final class BatPokemonGame {
             } else {
                 chu = tenLoai + " thoát khỏi bóng!";
                 com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.TIN, chu,
-                        "Tỉ lệ " + tiLe / 10 + "% · lần sau +" + BatPokemon.THUONG_TRUOT / 10 + "% · còn "
+                        "Tỉ lệ " + tiLe / 10 + "% · lần sau cao hơn · còn "
                                 + (Math.max(1, LauDai.so(K_SO_LAN_BO_CHAY, BatPokemon.SO_LAN_BO_CHAY)) - truotSau) + " lần trước khi nó bỏ chạy",
                         com.htbb.thongbao.ThongBao.HINH_POKEMON, dex);
             }
@@ -459,6 +561,41 @@ public final class BatPokemonGame {
                     + " hp " + m.hp + "/" + m.maxhp + " tl " + tiLe + " roll " + roll + (duoc ? " BAT" : " truot"), "batpokemon");
         } catch (final Exception ignored) {
         }
+    }
+
+    static int giuMoiLoai() {
+        return Math.max(0, LauDai.so(K_GIU_MOI_LOAI, 2));
+    }
+
+    static com.htbb.pokemon.TraoDoiPokemon.ThuongChuyen thuongChuyen(final int dex) {
+        final BatPokemon.Loai l = LOAI.get(Integer.valueOf(dex));
+        final com.htbb.pokemon.TraoDoiPokemon.ThuongChuyen[] t = CHUYEN;
+        return t[Math.max(0, Math.min(t.length - 1, l != null ? l.doHiem : 0))];
+    }
+
+    /**
+     * CHUYEN DOI mot con (da roi khoi hop hoac con tam vua bat): + Keo loai, + xu / luong khoa nho theo bac hiem (tran
+     * ngay; con nhan qua trao doi chi ra Keo). Goi trong khoa h. Tra chu tom tat.
+     */
+    static String chuyenDoi(final Char p, final HopPc h, final HopPc.Con c, final boolean tuDong) {
+        final com.htbb.pokemon.TraoDoiPokemon.DaChuyen d = com.htbb.pokemon.TraoDoiPokemon.tinhChuyen(h, c, p.charDBID,
+                thuongChuyen(c.dex), BoNgocGame.xuMoiGio(p), LauDai.so(K_CHUYEN_TRAN_XU, 300), LauDai.so(K_CHUYEN_TRAN_LUONG, 1), homNay());
+        h.themKeo(goc(c.dex), d.keo);
+        if (d.xu > 0) {
+            p.addXu(d.xu, "chuyen doi pokemon " + c.dex);
+            LauDai.ghiXuVao(d.xu);
+        }
+        if (d.luongKhoa > 0) {
+            p.addLuongLock(d.luongKhoa);
+        }
+        try {
+            data.Database.instance.saveOrtherLog("", p.charname, (tuDong ? "tu " : "") + "chuyen doi dex " + c.dex + " cap " + c.cap
+                    + " iv " + com.htbb.pokemon.CaThePokemon.phanTram(c.iv) + " keo " + d.keo + " xu " + d.xu + " luong " + d.luongKhoa,
+                    "batpokemon");
+        } catch (final Exception ignored) {
+        }
+        return (tuDong ? "Tự chuyển đổi " : "Chuyển đổi ") + ten(c.dex) + " (" + com.htbb.pokemon.CaThePokemon.phanTram(c.iv) + "%): +"
+                + d.keo + " Kẹo" + (d.xu > 0 ? ", +" + xu(d.xu) : "") + (d.luongKhoa > 0 ? ", +" + d.luongKhoa + " lượng khoá" : "");
     }
 
     // ================================================================== ban dong hanh (chi de nhin)
@@ -536,6 +673,10 @@ public final class BatPokemonGame {
             com.htbb.thongbao.ThongBao.loi(p, "Hộp PC tạm thời không mở được.", "");
             return;
         }
+        if (coUi(p)) {
+            guiHop(p); // client co man Hop PC (hinh Pokemon, sao danh gia, nut): mo man thay menu chu
+            return;
+        }
         final List<HopPc.Con> ds = h.danhSach();
         if (ds.isEmpty()) {
             com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.TIN, "Hộp PC đang trống.",
@@ -548,8 +689,8 @@ public final class BatPokemonGame {
         final List<String> m = new ArrayList<String>();
         for (int i = tr * MOI_TRANG; i < Math.min(ds.size(), (tr + 1) * MOI_TRANG); i++) {
             final HopPc.Con c = ds.get(i);
-            m.add(ten(c.dex) + (c.shiny ? " (sắc màu)" : "") + " Lv." + c.cap + (h.dangTheo == c.id ? " (đi theo)" : "")
-                    + " · Kẹo " + h.keo(goc(c.dex)));
+            m.add(ten(c.dex) + (c.shiny ? " (sắc màu)" : "") + " cấp " + c.cap + " " + com.htbb.pokemon.CaThePokemon.sao(c.iv) + " sao"
+                    + (h.dangTheo == c.id ? " (đi theo)" : "") + ", kẹo " + h.keo(goc(c.dex)));
         }
         if (tr + 1 < soTrang) {
             m.add("Trang sau (" + (tr + 2) + "/" + soTrang + ")");
@@ -566,15 +707,18 @@ public final class BatPokemonGame {
         m.add(h.dangTheo == c.id ? "Thôi đi theo" : "Cho đi theo (chỉ để ngắm)");
         final int keo = h.keo(goc(c.dex));
         final int capTd = BatPokemon.capToiDa(p.lvDetail != null ? p.lvDetail.lv : 1);
-        m.add(c.cap >= capTd ? "Luyện cấp (đã tối đa Lv." + capTd + ")"
-                : "Luyện cấp → Lv." + (c.cap + 1) + " (" + BatPokemon.keoLuyen(c.cap) + " kẹo, có " + keo + ")");
+        m.add(c.cap >= capTd ? "Luyện cấp (đã tối đa cấp " + capTd + ")"
+                : "Luyện lên cấp " + (c.cap + 1) + " (" + BatPokemon.keoLuyen(c.cap) + " kẹo, có " + keo + ")");
         final BatPokemon.Loai l = LOAI.get(Integer.valueOf(c.dex));
         if (l != null && l.tienHoaThanh > 0) {
-            m.add("Tiến hoá → " + ten(l.tienHoaThanh) + " (Lv." + l.capTienHoa + ", " + l.keoTienHoa + " kẹo)");
+            m.add("Tiến hoá thành " + ten(l.tienHoaThanh) + " (cấp " + l.capTienHoa + ", " + l.keoTienHoa + " kẹo)");
         } else {
             m.add("Không tiến hoá thêm");
         }
         m.add("Thả về tự nhiên (+" + BatPokemon.KEO_KHI_THA + " kẹo)");
+        if (trungLoai(h, c)) {
+            m.add("Chuyển đổi (trùng loài, " + thuongChuyen(c.dex).keo * (c.shiny ? 2 : 1) + " kẹo)");
+        }
         p.sendMessage(MessageCreator.createMsgMenu(m.toArray(new String[0]), NPC_CON, 0));
     }
 
@@ -616,12 +760,7 @@ public final class BatPokemonGame {
             } else {
                 final HopPc.Con c = h.lay(chon(p)[1]);
                 if (c != null && idOption == 0) {
-                    h.tha(c.id);
-                    h.themKeo(goc(c.dex), BatPokemon.KEO_KHI_THA);
-                    com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.KET_QUA, "Đã thả " + ten(c.dex) + " về tự nhiên.",
-                            "+" + BatPokemon.KEO_KHI_THA + " Kẹo " + ten(goc(c.dex)), com.htbb.thongbao.ThongBao.HINH_POKEMON, c.dex);
-                    guiDongHanh(p);
-                    guiTrangThai(p);
+                    lam(p, h, c, H_THA);
                 }
             }
         }
@@ -666,45 +805,84 @@ public final class BatPokemonGame {
     }
 
     static void menuCon(final Char p, final HopPc h, final HopPc.Con c, final int idOption) {
-        final int capNv = p.lvDetail != null ? p.lvDetail.lv : 1;
         switch (idOption) {
             case 0:
+                lam(p, h, c, H_THEO);
+                return;
+            case 1:
+                if (lam(p, h, c, H_LUYEN)) {
+                    moCon(p, h, c);
+                }
+                return;
+            case 2:
+                if (lam(p, h, c, H_TIEN_HOA)) {
+                    moCon(p, h, c);
+                }
+                return;
+            case 3:
+                p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Thả " + ten(c.dex) + " cấp " + c.cap, "Thôi"}, NPC_THA, 0));
+                return;
+            case 4:
+                lam(p, h, c, H_CHUYEN);
+                return;
+            default:
+                return;
+        }
+    }
+
+    /** Hanh dong tren mot con (goi -121 kieu 4 va menu NPC). */
+    public static final int H_THEO = 0, H_LUYEN = 1, H_TIEN_HOA = 2, H_THA = 3, H_CHUYEN = 4;
+
+    /** Con trung loai (chuyen doi duoc): hop con it nhat mot con khac cung loai. */
+    static boolean trungLoai(final HopPc h, final HopPc.Con c) {
+        return h.soCungLoai(c.dex, false) >= 2;
+    }
+
+    /** Lam mot hanh dong (trong khoa h). true = da doi. */
+    static boolean lam(final Char p, final HopPc h, final HopPc.Con c, final int hd) {
+        final int capNv = p.lvDetail != null ? p.lvDetail.lv : 1;
+        if (TraoDoiPokemonGame.dangDua(p, c.id)) {
+            com.htbb.thongbao.ThongBao.loi(p, ten(c.dex) + " đang nằm trong một cuộc trao đổi.", "Huỷ trao đổi trước.");
+            return false;
+        }
+        switch (hd) {
+            case H_THEO:
                 h.datTheo(h.dangTheo == c.id ? 0 : c.id);
                 com.htbb.thongbao.ThongBao.ketQua(p, h.dangTheo == c.id ? ten(c.dex) + " đi theo bạn." : "Không còn Pokémon đi theo.", "");
                 guiDongHanh(p);
-                return;
-            case 1: {
+                return true;
+            case H_LUYEN: {
                 if (c.cap >= BatPokemon.capToiDa(capNv)) {
-                    com.htbb.thongbao.ThongBao.loi(p, "Cấp tối đa bằng cấp của bạn (Lv." + BatPokemon.capToiDa(capNv) + ").", "");
-                    return;
+                    com.htbb.thongbao.ThongBao.loi(p, "Cấp tối đa bằng cấp của bạn (cấp " + BatPokemon.capToiDa(capNv) + ").", "");
+                    return false;
                 }
                 final int can = BatPokemon.keoLuyen(c.cap);
                 if (!h.truKeo(goc(c.dex), can)) {
                     com.htbb.thongbao.ThongBao.loi(p, "Cần " + can + " Kẹo " + ten(goc(c.dex)) + ".", "");
-                    return;
+                    return false;
                 }
                 c.cap++;
                 h.danhDau();
-                com.htbb.thongbao.ThongBao.ketQua(p, ten(c.dex) + " lên Lv." + c.cap + ".", "Còn " + h.keo(goc(c.dex)) + " kẹo");
-                moCon(p, h, c);
-                return;
+                com.htbb.thongbao.ThongBao.ketQua(p, ten(c.dex) + " lên cấp " + c.cap + ".", "Còn " + h.keo(goc(c.dex)) + " kẹo");
+                return true;
             }
-            case 2: {
+            case H_TIEN_HOA: {
                 final BatPokemon.Loai l = LOAI.get(Integer.valueOf(c.dex));
                 if (l == null || l.tienHoaThanh <= 0) {
                     com.htbb.thongbao.ThongBao.loi(p, ten(c.dex) + " không tiến hoá thêm.", "");
-                    return;
+                    return false;
                 }
                 if (c.cap < l.capTienHoa) {
-                    com.htbb.thongbao.ThongBao.loi(p, "Cần Lv." + l.capTienHoa + " để tiến hoá.", "");
-                    return;
+                    com.htbb.thongbao.ThongBao.loi(p, "Cần cấp " + l.capTienHoa + " để tiến hoá"
+                            + (l.tienHoaTraoDoi ? " (hoặc trao đổi cho người chơi khác)." : "."), "");
+                    return false;
                 }
                 if (!h.truKeo(goc(c.dex), l.keoTienHoa)) {
                     com.htbb.thongbao.ThongBao.loi(p, "Cần " + l.keoTienHoa + " Kẹo " + ten(goc(c.dex)) + ".", "");
-                    return;
+                    return false;
                 }
                 final int cu = c.dex;
-                c.dex = l.tienHoaThanh;
+                c.dex = l.tienHoaThanh; // ca the (IV, tinh cach) giu nguyen nhu game chinh ban
                 h.danhDau();
                 final Pokedex d = PokedexPokemon.lay(p);
                 if (d != null) {
@@ -715,22 +893,251 @@ public final class BatPokemonGame {
                 if (h.dangTheo == c.id) {
                     guiDongHanh(p);
                 }
-                moCon(p, h, c);
-                return;
+                return true;
             }
-            case 3:
-                p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Thả " + ten(c.dex) + " Lv." + c.cap, "Thôi"}, NPC_THA, 0));
-                return;
+            case H_THA:
+                h.tha(c.id);
+                h.themKeo(goc(c.dex), BatPokemon.KEO_KHI_THA);
+                com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.KET_QUA, "Đã thả " + ten(c.dex) + " về tự nhiên.",
+                        "+" + BatPokemon.KEO_KHI_THA + " Kẹo " + ten(goc(c.dex)), com.htbb.thongbao.ThongBao.HINH_POKEMON, c.dex);
+                guiDongHanh(p);
+                guiTrangThai(p);
+                return true;
+            case H_CHUYEN: {
+                if (!trungLoai(h, c)) {
+                    com.htbb.thongbao.ThongBao.loi(p, "Chỉ chuyển đổi được Pokémon trùng loài.", "Con duy nhất của loài: dùng Thả về tự nhiên.");
+                    return false;
+                }
+                if (h.dangTheo == c.id) {
+                    com.htbb.thongbao.ThongBao.loi(p, ten(c.dex) + " đang đi theo bạn.", "Chọn Thôi đi theo trước.");
+                    return false;
+                }
+                h.tha(c.id);
+                final String chu = chuyenDoi(p, h, c, false);
+                com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.KET_QUA, chu, "Kẹo dùng để luyện cấp và tiến hoá cả họ "
+                        + ten(goc(c.dex)), com.htbb.thongbao.ThongBao.HINH_POKEMON, c.dex);
+                guiTrangThai(p);
+                return true;
+            }
             default:
-                return;
+                return false;
+        }
+    }
+
+    // ================================================================== Hop PC / Pokedex chi tiet (goi -121 kieu 3..5)
+
+    /** Client da co man Hop PC moi (gui kem byte trong goi trang thai) - charDBID. */
+    static final java.util.Set<Integer> CO_UI = java.util.Collections.newSetFromMap(new ConcurrentHashMap<Integer, Boolean>());
+
+    static boolean coUi(final Char p) {
+        return p != null && CO_UI.contains(Integer.valueOf(p.charDBID)) && BoNgocGame.coClient(p);
+    }
+
+    /** S-&gt;C kieu 4: toan bo Hop PC (client ManHopPc). */
+    static void guiHop(final Char p) {
+        final HopPc h = hop(p);
+        if (h == null || !BoNgocGame.coClient(p)) {
+            return;
+        }
+        final int capNv = p.lvDetail != null ? p.lvDetail.lv : 1;
+        final long xmg = BoNgocGame.xuMoiGio(p);
+        final long bayGiay = System.currentTimeMillis() / 1000L;
+        try {
+            final Message m = moi(S_HOP_PC);
+            final DataOutputStream o = m.dos;
+            synchronized (h) {
+                h.doiNgay(homNay());
+                final List<HopPc.Con> ds = h.danhSach();
+                o.writeShort(h.soCon());
+                o.writeShort(h.sucChua());
+                o.writeInt(h.dangTheo);
+                o.writeShort(giuMoiLoai());
+                o.writeShort(ds.size());
+                for (final HopPc.Con c : ds) {
+                    final BatPokemon.Loai l = LOAI.get(Integer.valueOf(c.dex));
+                    o.writeInt(c.id);
+                    o.writeShort(c.dex);
+                    o.writeByte(c.cap);
+                    o.writeByte(c.shiny ? 1 : 0);
+                    o.writeByte(com.htbb.pokemon.CaThePokemon.sao(c.iv));
+                    o.writeByte(com.htbb.pokemon.CaThePokemon.phanTram(c.iv));
+                    o.writeShort(Math.min(Short.MAX_VALUE, com.htbb.pokemon.CaThePokemon.sucManh(l != null ? l.chiSoGoc : null, c.iv, c.tinhCach, c.cap)));
+                    o.writeByte(c.tinhCach);
+                    o.writeByte(l != null ? l.doHiem : 0);
+                    o.writeShort(Math.min(Short.MAX_VALUE, h.keo(goc(c.dex))));
+                    o.writeShort(c.cap >= BatPokemon.capToiDa(capNv) ? 0 : BatPokemon.keoLuyen(c.cap));
+                    o.writeShort(l != null ? l.tienHoaThanh : 0);
+                    o.writeByte(l != null ? l.capTienHoa : 0);
+                    o.writeShort(l != null ? l.keoTienHoa : 0);
+                    int co = 0;
+                    if (trungLoai(h, c)) {
+                        co |= 1;
+                    }
+                    if (c.doiLuc > 0 && bayGiay - c.doiLuc < TraoDoiPokemonGame.luat().khoaGiay) {
+                        co |= 2;
+                    }
+                    if (c.chuGoc != p.charDBID) {
+                        co |= 4;
+                    }
+                    if (l != null && l.tienHoaTraoDoi) {
+                        co |= 8;
+                    }
+                    if (h.dangTheo == c.id) {
+                        co |= 16;
+                    }
+                    o.writeByte(co);
+                    for (int i = 0; i < 6; i++) {
+                        o.writeByte(com.htbb.pokemon.CaThePokemon.iv(c.iv, i));
+                    }
+                    o.writeUTF(ten(c.dex));
+                    o.writeUTF(com.htbb.pokemon.CaThePokemon.chuTinhCach(c.tinhCach));
+                    o.writeUTF(ten(goc(c.dex)));
+                    final com.htbb.pokemon.TraoDoiPokemon.ThuongChuyen t = thuongChuyen(c.dex);
+                    final boolean caXu = c.chuGoc == p.charDBID && c.doiLuc == 0;
+                    final long xuC = caXu ? xmg * t.xuPhanNghinGio / 1000L : 0L;
+                    o.writeUTF("+" + t.keo * (c.shiny ? 2 : 1) + " Kẹo" + (xuC > 0 ? ", +" + xu(xuC) : "")
+                            + (caXu && t.luongKhoa > 0 ? ", +" + t.luongKhoa + " lượng khoá" : ""));
+                }
+            }
+            p.sendMessage(m);
+        } catch (final Exception ignored) {
+        }
+    }
+
+    /** C-&gt;S kieu 4: hanh dong tren con id. */
+    static void hanhDong(final Char p, final int hd, final int id) {
+        if (!bat()) {
+            return;
+        }
+        final HopPc h = hop(p);
+        if (h == null) {
+            return;
+        }
+        synchronized (h) {
+            final HopPc.Con c = h.lay(id);
+            if (c == null) {
+                com.htbb.thongbao.ThongBao.loi(p, "Pokémon đó không còn trong Hộp PC.", "");
+            } else {
+                lam(p, h, c, hd);
+            }
+        }
+        guiHop(p);
+    }
+
+    /** Ban do co Pokemon hoang da {@code dex} (Pokedex: noi song). Nho 10 phut. */
+    private static volatile java.util.Map<Integer, List<String>> NOI_SONG = new HashMap<Integer, List<String>>();
+    private static volatile long noiSongLuc;
+
+    static List<String> noiSong(final int dex) {
+        final long bay = System.currentTimeMillis();
+        if (bay - noiSongLuc > 600_000L) {
+            final HashMap<Integer, java.util.LinkedHashSet<String>> m = new HashMap<Integer, java.util.LinkedHashSet<String>>();
+            try {
+                for (final Map mp : RealController.mapList.values()) {
+                    final String tenMap = TenBanDoMayChu.tenDayDu(mp.mapId);
+                    if (tenMap.isEmpty() || mp.mapIDLoadMap != mp.mapId) {
+                        continue;
+                    }
+                    for (final int idT : dsMauQuai(mp)) {
+                        final MonsterTemplate t = Map.monsterTemplates.get(Integer.valueOf(idT));
+                        if (t != null && t.dex > 0) {
+                            m.computeIfAbsent(Integer.valueOf(t.dex), z -> new java.util.LinkedHashSet<String>()).add(tenMap);
+                        }
+                    }
+                }
+            } catch (final Throwable ignored) {
+            }
+            final HashMap<Integer, List<String>> v = new HashMap<Integer, List<String>>();
+            for (final java.util.Map.Entry<Integer, java.util.LinkedHashSet<String>> e : m.entrySet()) {
+                v.put(e.getKey(), new ArrayList<String>(e.getValue()));
+            }
+            NOI_SONG = v;
+            noiSongLuc = bay;
+        }
+        final List<String> d = NOI_SONG.get(Integer.valueOf(dex));
+        return d != null ? d : new ArrayList<String>();
+    }
+
+    /** Mau quai hoang da (khong boss) dang co tren ban do (khu 0 / vung 0). */
+    static java.util.Set<Integer> dsMauQuai(final Map mp) {
+        final java.util.Set<Integer> v = new java.util.HashSet<Integer>();
+        try {
+            final java.util.Vector<java.util.Hashtable<Short, Monster>> ds = mp.nRegion > 0 && !mp.ALL_REGION.isEmpty()
+                    ? mp.ALL_REGION.get(0).monsters : mp.monsters;
+            if (ds != null && !ds.isEmpty()) {
+                for (final Monster m : ds.get(0).values()) {
+                    if (m != null && !m.isBoss && !m.isBoss()) {
+                        v.add(Integer.valueOf(m.idTemplate));
+                    }
+                }
+            }
+        } catch (final Throwable ignored) {
+        }
+        return v;
+    }
+
+    /** S-&gt;C kieu 5: thong tin loai cho the Pokedex. */
+    static void guiLoai(final Char p, final int dex) {
+        if (!BoNgocGame.coClient(p) || dex <= 0) {
+            return;
+        }
+        final BatPokemon.Loai l = LOAI.get(Integer.valueOf(dex));
+        int truoc = 0;
+        for (final BatPokemon.Loai x : LOAI.values()) {
+            if (x.tienHoaThanh == dex) {
+                truoc = x.dex;
+            }
+        }
+        final Pokedex d = PokedexPokemon.lay(p);
+        try {
+            final Message m = moi(S_LOAI);
+            final DataOutputStream o = m.dos;
+            o.writeShort(dex);
+            o.writeUTF(ten(dex));
+            o.writeByte(l != null ? 1 : 0);
+            o.writeByte(l != null ? l.doHiem : 0);
+            o.writeUTF(l == null ? "Không thu phục được (boss / huyền thoại / chỉ có ở sự kiện)"
+                    : !l.batDuoc ? "Chỉ có được bằng tiến hoá" : l.chiSuKien ? "Chỉ thu phục trong sự kiện" : BatPokemon.tenDoHiem(l.doHiem));
+            o.writeShort(l != null && l.batDuoc ? l.tiLePhanNghin : 0);
+            o.writeShort(truoc);
+            o.writeShort(l != null ? l.tienHoaThanh : 0);
+            o.writeByte(l != null ? l.capTienHoa : 0);
+            o.writeByte(l != null && l.tienHoaTraoDoi ? 1 : 0);
+            o.writeUTF(truoc > 0 ? ten(truoc) : "");
+            o.writeUTF(l != null && l.tienHoaThanh > 0 ? ten(l.tienHoaThanh) : "");
+            o.writeShort(d != null ? Math.min(Short.MAX_VALUE, d.soBat(dex)) : 0);
+            o.writeShort(d != null ? Math.min(Short.MAX_VALUE, d.soHa(dex)) : 0);
+            final List<String> ns = noiSong(dex);
+            final int n = Math.min(4, ns.size());
+            o.writeByte(n);
+            for (int i = 0; i < n; i++) {
+                o.writeUTF(ns.get(i));
+            }
+            final int[] g = l != null && l.chiSoGoc != null ? l.chiSoGoc : null;
+            o.writeByte(g != null ? 6 : 0);
+            for (int i = 0; g != null && i < 6; i++) {
+                o.writeByte(Math.min(255, g[i]));
+            }
+            p.sendMessage(m);
+        } catch (final Exception ignored) {
         }
     }
 
     /** Thoat game: bo cache nhip. */
     public static void khiThoat(final Char p) {
+        try {
+            khiThoat0(p);
+        } catch (final Throwable ignored) {
+            // khong bao gio lam hong luong thoat game
+        }
+    }
+
+    static void khiThoat0(final Char p) {
         if (p != null && p.charDBID > 0) {
             NEM_CUOI.remove(Integer.valueOf(p.charDBID));
             CHON.remove(Integer.valueOf(p.charDBID));
+            CO_UI.remove(Integer.valueOf(p.charDBID));
+            TraoDoiPokemonGame.khiThoat(p);
         }
     }
 }

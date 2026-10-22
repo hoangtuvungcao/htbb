@@ -48,8 +48,9 @@ CAU_HINH_TT="pokemon_cau_hinh_trung_tam"
 # dong data_item da co) va SAU pokemon_doi_chu (ten moi thang). Idempotent.
 CHI_SO="pokemon_chi_so"
 # 0.9.8 bo trang bi / ngoc he / che tao / moc neo / thu phuc (docs/thiet-ke-game.md 4.2-4.3, 7.7): bang data_* moi + cot
-# moi cua data_noi_dung_che_tao / tob_pokedex. Chay SAU noi dung + chi so. Idempotent.
-BO_NGOC_BAT="them_bo_ngoc_che_tao_bat"
+# moi cua data_noi_dung_che_tao / tob_pokedex; them_trade_pokemon: bac hiem, chi so goc, chuyen doi, nhat ky trao doi
+# Pokemon (7.8). Chay SAU noi dung + chi so. Idempotent.
+BO_NGOC_BAT="them_bo_ngoc_che_tao_bat them_trade_pokemon"
 # Thuat ngu chuan (docs/thiet-ke-game.md, sinh boi tools/pokemon/sinh_sql_thuat_ngu.py): UPDATE doi thuat
 # ngu cu con sot trong du lieu goc. Chay CUOI CUNG. BO_THUAT_NGU=1 bo buoc nay (de sinh lai chinh file do).
 THUAT_NGU="pokemon_thuat_ngu"

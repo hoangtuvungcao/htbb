@@ -26,8 +26,12 @@ import network.Message;
  */
 public final class BatPokemon {
     public static final int LENH = -121;
-    public static final int C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2;
-    public static final int S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3;
+    public static final int C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2, C_XIN_HOP = 3, C_HANH_DONG = 4, C_XIN_LOAI = 5, C_TRAO_DOI = 6;
+    public static final int S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3, S_HOP_PC = 4, S_LOAI = 5, S_TRAO_DOI = 6;
+    /** Hành động trên một con (gói kiểu 4). */
+    public static final int H_THEO = 0, H_LUYEN = 1, H_TIEN_HOA = 2, H_THA = 3, H_CHUYEN = 4;
+    /** Trao đổi (gói kiểu 6): lệnh con. */
+    public static final int T_MOI = 0, T_TRA_LOI = 1, T_DAT = 2, T_KHOA = 3, T_XAC_NHAN = 4, T_HUY = 5, T_XIN = 6;
 
     private BatPokemon() {
     }
@@ -79,6 +83,8 @@ public final class BatPokemon {
             if (kieu == C_NEM) {
                 m.writer().writeShort(idQuai);
                 m.writer().writeByte(thuTu);
+            } else if (kieu == C_TRANG_THAI) {
+                m.writer().writeByte(1);   // 0.9.8: client có màn Hộp PC / trao đổi Pokémon
             }
             GameService.gI().session.sendMessage(m);
         } catch (Throwable e) {
@@ -260,6 +266,15 @@ public final class BatPokemon {
                     }
                     break;
                 }
+                case S_HOP_PC:
+                    docHop(r);
+                    break;
+                case S_LOAI:
+                    docLoai(r);
+                    break;
+                case S_TRAO_DOI:
+                    docTraoDoi(r);
+                    break;
                 default:
                     break;
             }
@@ -267,6 +282,286 @@ public final class BatPokemon {
             // gói hỏng: bỏ qua
         }
         return true;
+    }
+
+    // ---------------------------------------------------------------- 0.9.8 Hộp PC (gói kiểu 4)
+
+    /** Một Pokémon trong Hộp PC / trong trao đổi (máy chủ tính mọi số). */
+    public static final class Con {
+        public int id, dex, cap, sao, ivPt, sucManh, tinhCach, doHiem, keo, keoLuyen, dexSau, capTienHoa, keoTienHoa, co;
+        public boolean shiny;
+        public int[] iv = new int[6];
+        public String ten = "", chuTinhCach = "", tenKeo = "", chuChuyen = "";
+
+        public boolean trungLoai() {
+            return (co & 1) != 0;
+        }
+
+        public boolean khoaDoi() {
+            return (co & 2) != 0;
+        }
+
+        public boolean nhanQuaDoi() {
+            return (co & 4) != 0;
+        }
+
+        public boolean tienHoaKhiDoi() {
+            return (co & 8) != 0;
+        }
+
+        public boolean dangTheo() {
+            return (co & 16) != 0;
+        }
+    }
+
+    public static Vector HOP = new Vector();
+    public static int hopSoCon, hopSucChua, hopTheo, hopGiu;
+    public static boolean coHop;
+    static final String[] TEN_CHI_SO = {"HP", "Tấn công", "Phòng thủ", "Tấn công ĐB", "Phòng thủ ĐB", "Tốc độ"};
+    public static final String[] TEN_DO_HIEM = {"Thường", "Ít gặp", "Hiếm", "Rất hiếm"};
+
+    public static String tenDoHiem(int h) {
+        return TEN_DO_HIEM[Math.max(0, Math.min(3, h))];
+    }
+
+    static void docHop(DataInputStream r) throws java.io.IOException {
+        int soCon = r.readShort();
+        int suc = r.readShort();
+        int theo = r.readInt();
+        int giu = r.readShort();
+        int n = r.readShort();
+        Vector v = new Vector();
+        for (int i = 0; i < n; i++) {
+            Con c = new Con();
+            c.id = r.readInt();
+            c.dex = r.readShort();
+            c.cap = r.readUnsignedByte();
+            c.shiny = r.readByte() != 0;
+            c.sao = r.readUnsignedByte();
+            c.ivPt = r.readUnsignedByte();
+            c.sucManh = r.readShort();
+            c.tinhCach = r.readUnsignedByte();
+            c.doHiem = r.readUnsignedByte();
+            c.keo = r.readShort();
+            c.keoLuyen = r.readShort();
+            c.dexSau = r.readShort();
+            c.capTienHoa = r.readUnsignedByte();
+            c.keoTienHoa = r.readShort();
+            c.co = r.readUnsignedByte();
+            for (int k = 0; k < 6; k++) {
+                c.iv[k] = r.readUnsignedByte();
+            }
+            c.ten = r.readUTF();
+            c.chuTinhCach = r.readUTF();
+            c.tenKeo = r.readUTF();
+            c.chuChuyen = r.readUTF();
+            v.addElement(c);
+        }
+        datHop(soCon, suc, theo, giu, v);
+        if (Canvas.currentScreen != ManHopPc.me || ManHopPc.me == null) {
+            if (ManTraoDoiPokemon.me == null || Canvas.currentScreen != ManTraoDoiPokemon.me) {
+                ManHopPc.mo(false);
+            }
+        }
+    }
+
+    public static void datHop(int soCon, int suc, int theo, int giu, Vector v) {
+        HOP = v;
+        hopSoCon = soCon;
+        hopSucChua = suc;
+        hopTheo = theo;
+        hopGiu = giu;
+        BatPokemon.soCon = soCon;
+        BatPokemon.sucChua = suc;
+        coHop = true;
+    }
+
+    public static Con conHop(int id) {
+        for (int i = 0; i < HOP.size(); i++) {
+            Con c = (Con) HOP.elementAt(i);
+            if (c.id == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public static void xinHop() {
+        gui(C_XIN_HOP, -1, -1);
+    }
+
+    public static void hanhDong(int hd, int id) {
+        try {
+            Message m = new Message(LENH);
+            m.writer().writeByte(C_HANH_DONG);
+            m.writer().writeByte(hd);
+            m.writer().writeInt(id);
+            GameService.gI().session.sendMessage(m);
+        } catch (Throwable e) {
+            // mất kết nối
+        }
+    }
+
+    // ---------------------------------------------------------------- 0.9.8 thông tin loài (Pokédex, gói kiểu 5)
+
+    public static final class Loai {
+        public int dex, doHiem, tiLe, truoc, sau, capTienHoa, soBat, soHa;
+        public boolean coDong, tienHoaKhiDoi;
+        public String ten = "", tenDoHiem = "", tenTruoc = "", tenSau = "";
+        public String[] noiSong = new String[0];
+        public int[] goc;
+    }
+
+    public static final Hashtable LOAI = new Hashtable();
+
+    public static Loai loai(int dex) {
+        return (Loai) LOAI.get(new Integer(dex));
+    }
+
+    public static void xinLoai(int dex) {
+        try {
+            Message m = new Message(LENH);
+            m.writer().writeByte(C_XIN_LOAI);
+            m.writer().writeShort(dex);
+            GameService.gI().session.sendMessage(m);
+        } catch (Throwable e) {
+            // mất kết nối
+        }
+    }
+
+    static void docLoai(DataInputStream r) throws java.io.IOException {
+        Loai l = new Loai();
+        l.dex = r.readShort();
+        l.ten = r.readUTF();
+        l.coDong = r.readByte() != 0;
+        l.doHiem = r.readUnsignedByte();
+        l.tenDoHiem = r.readUTF();
+        l.tiLe = r.readShort();
+        l.truoc = r.readShort();
+        l.sau = r.readShort();
+        l.capTienHoa = r.readUnsignedByte();
+        l.tienHoaKhiDoi = r.readByte() != 0;
+        l.tenTruoc = r.readUTF();
+        l.tenSau = r.readUTF();
+        l.soBat = r.readShort();
+        l.soHa = r.readShort();
+        int n = r.readUnsignedByte();
+        l.noiSong = new String[n];
+        for (int i = 0; i < n; i++) {
+            l.noiSong[i] = r.readUTF();
+        }
+        int ng = r.readUnsignedByte();
+        if (ng == 6) {
+            l.goc = new int[6];
+            for (int i = 0; i < 6; i++) {
+                l.goc[i] = r.readUnsignedByte();
+            }
+        }
+        LOAI.put(new Integer(l.dex), l);
+    }
+
+    // ---------------------------------------------------------------- 0.9.8 trao đổi Pokémon (gói kiểu 6)
+
+    /** 0 không có, 2 đang trao đổi, 3 vừa xong. */
+    public static int tdTrangThai;
+    public static String tdDoiTen = "", tdGhiChu = "", tdXong = "";
+    public static int tdBuocToi, tdBuocDoi, tdPhi;
+    public static Vector tdToi = new Vector(), tdDoi = new Vector(), tdNhan = new Vector();
+
+    public static void traoDoi(int lenh, int[] so) {
+        try {
+            Message m = new Message(LENH);
+            m.writer().writeByte(C_TRAO_DOI);
+            m.writer().writeByte(lenh);
+            if (lenh == T_MOI) {
+                m.writer().writeShort(so[0]);
+            } else if (lenh == T_TRA_LOI) {
+                m.writer().writeByte(so[0]);
+            } else if (lenh == T_DAT) {
+                m.writer().writeByte(so.length);
+                for (int i = 0; i < so.length; i++) {
+                    m.writer().writeInt(so[i]);
+                }
+            }
+            GameService.gI().session.sendMessage(m);
+        } catch (Throwable e) {
+            // mất kết nối
+        }
+    }
+
+    /** Menu người chơi "Trao đổi Pokémon" (chỉ hiện khi máy chủ có thu phục: đã nhận trạng thái). */
+    public static boolean coTraoDoi() {
+        return coTrangThai;
+    }
+
+    public static void moiTraoDoi(short idNguoi) {
+        traoDoi(T_MOI, new int[]{idNguoi});
+    }
+
+    static Vector docDs(DataInputStream r) throws java.io.IOException {
+        int n = r.readUnsignedByte();
+        Vector v = new Vector();
+        for (int i = 0; i < n; i++) {
+            Con c = new Con();
+            c.id = r.readInt();
+            c.dex = r.readShort();
+            c.cap = r.readUnsignedByte();
+            c.shiny = r.readByte() != 0;
+            c.sao = r.readUnsignedByte();
+            c.ivPt = r.readUnsignedByte();
+            c.sucManh = r.readShort();
+            c.doHiem = r.readUnsignedByte();
+            c.co = r.readByte() != 0 ? 8 : 0;
+            c.ten = r.readUTF();
+            v.addElement(c);
+        }
+        return v;
+    }
+
+    static void docTraoDoi(DataInputStream r) throws java.io.IOException {
+        int tt = r.readUnsignedByte();
+        if (tt == 0) {
+            String lyDo = r.readUTF();
+            tdTrangThai = 0;
+            if (ManTraoDoiPokemon.me != null && Canvas.currentScreen == ManTraoDoiPokemon.me) {
+                ManTraoDoiPokemon.me.dongMan();
+            }
+            if (ManHopPc.me != null && ManHopPc.me.chonDoi) {
+                ManHopPc.me.chonDoi = false;
+            }
+            if (lyDo.length() > 0) {
+                ThongBao.hien(lyDo, ThongBao.LOI);
+            }
+        } else if (tt == 1) {
+            final short id = r.readShort();
+            String ten = r.readUTF();
+            r.readUnsignedByte();
+            HopXacNhan.hoi("Trao đổi Pokémon", ten + " muốn trao đổi Pokémon với bạn. Hai bên chọn Pokémon trong Hộp PC, khoá rồi xác nhận.",
+                    "Đồng ý", new IAction() {
+                public void perform() {
+                    traoDoi(T_TRA_LOI, new int[]{1});
+                }
+            }, new IAction() {
+                public void perform() {
+                    traoDoi(T_TRA_LOI, new int[]{0});
+                }
+            });
+        } else if (tt == 2) {
+            tdDoiTen = r.readUTF();
+            tdBuocToi = r.readUnsignedByte();
+            tdBuocDoi = r.readUnsignedByte();
+            tdToi = docDs(r);
+            tdDoi = docDs(r);
+            tdPhi = r.readInt();
+            tdGhiChu = r.readUTF();
+            tdTrangThai = 2;
+            ManTraoDoiPokemon.mo();
+        } else if (tt == 3) {
+            tdXong = r.readUTF();
+            tdNhan = docDs(r);
+            tdTrangThai = 3;
+            ManTraoDoiPokemon.mo();
+        }
     }
 
     static void datBong(int[] tt, String[] ten, int[] so) {
@@ -509,5 +804,6 @@ public final class BatPokemon {
     public static void doiMap() {
         NEM.removeAllElements();
         xinLuc = 0;
+        xinTrangThai();   // 0.9.8: báo máy chủ client có Hộp PC / trao đổi (menu người chơi hiện "Trao đổi Pokémon")
     }
 }
