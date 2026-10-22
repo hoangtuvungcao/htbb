@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   DS_NEN_TANG, MA_NEN_TANG, banTaiMacDinh, banTaiSanSang, boDongTepPhu, chuKyTepHopLe, chuanHoaBanTai, hrefCaiDat,
-  loiBanTai, nenTang, nenTangTheoUa, soBanHopLe, tenTepGameAnToan, urlTaiHopLe,
+  laThietBiIos, loiBanTai, nenTang, nenTangTheoUa, soBanHopLe, tenTepGameAnToan, urlTaiHopLe,
 } from '../shared/utils/taiGame.ts'
 
 test('chuẩn hoá: dữ liệu (không trangThai) -> đủ 5 nền tảng, giữ thứ tự đã lưu', () => {
@@ -135,6 +135,16 @@ test('nhận diện thiết bị', () => {
   assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; Linux x86_64)'), 'linux')
   assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; CrOS x86_64 14541.0.0)'), null)
   assert.equal(nenTangTheoUa('Nokia6300/2.0 Profile/MIDP-2.0'), 'jar')
+})
+
+test('nhận diện iOS (kể cả iPad ở chế độ máy tính)', () => {
+  const ipadDesktop = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15'
+  assert.equal(laThietBiIos('Mozilla/5.0 (iPhone; CPU iPhone OS 15_8 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'), true)
+  assert.equal(laThietBiIos('Mozilla/5.0 (iPad; CPU OS 16_7 like Mac OS X) AppleWebKit/605.1.15'), true)
+  assert.equal(laThietBiIos(ipadDesktop, 5), true)
+  assert.equal(laThietBiIos(ipadDesktop, 0), false) // Mac thật
+  assert.equal(laThietBiIos('Mozilla/5.0 (Linux; Android 13; SM-A505F)', 5), false)
+  assert.equal(laThietBiIos('Mozilla/5.0 (Windows NT 10.0; Win64; x64)'), false)
 })
 
 test('tên tệp + chữ ký byte', () => {

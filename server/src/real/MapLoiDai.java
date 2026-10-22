@@ -818,10 +818,10 @@ public class MapLoiDai extends Map {
          }
 
          if (mapID == 0 || mapID == 301 || mapID == 302 || mapID == 303 || mapID == 304 || mapID == 70 || mapID == 1701 || mapID == 1702 || mapID == 1703 || mapID == 1704) {
-            int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+            int[] pos = LangKhoiDau.viTri(mapID);
             int index = Map.r.nextInt(4);
-            x = pos[player.myCountry][index * 2] + Map.r.nextInt() % 3;
-            y = pos[player.myCountry][index * 2 + 1] + Map.r.nextInt() % 3;
+            x = pos[index * 2] + Map.r.nextInt() % 3;
+            y = pos[index * 2 + 1] + Map.r.nextInt() % 3;
          }
 
          player.nearChars.removeAllElements();
@@ -846,7 +846,7 @@ public class MapLoiDai extends Map {
          }
 
          if (toMap != null && (toMap.mapIDLoadMap == 80 || toMap.mapIDLoadMap == 70 || toMap.mapIDLoadMap == 0 || toMap.mapIDLoadMap == 1 || toMap.mapIDLoadMap == 2 || toMap.mapIDLoadMap == 12 || toMap.mapIDLoadMap == 106)) {
-            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+            player.sendMessage(MessageCreator.createMessageLocation(real.LangKhoiDau.oCong(player, player.inCountry)));
          }
 
          player.doFinishAutoInbue();

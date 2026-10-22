@@ -52,6 +52,7 @@ public final class NoiDungLauDai {
             GymLauDai.nap();
             ChieuLauDai.apDung();
             NhiemVuEngine.nap();
+            KhuVucNhiemVuGame.nap(); // sua-tuyen: vung dich buoc dia diem (data_nhiem_vu_khu_vuc)
             DanhHieuGame.nap(); // data_danh_hieu (mau danh hieu + dieu kien)
             LuatPkGame.nap(); // thi tran an toan (data_map_ten.loai = thi_tran)
             SuKienVatPham.nap(); // vat pham that cua tung su kien (data_su_kien_vat_pham)
