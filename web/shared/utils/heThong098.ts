@@ -91,10 +91,10 @@ export const NGAY_CONG_DONG = { gioBatDau: 14, soGio: 3, tiLePhanTram: 40, expPh
 export const DANH_HIEU = {
   tranPhanNghin: 10,
   bac: [
-    { ten: 'Thường', mau: '#5F6B7A', so: 253 },
-    { ten: 'Hiếm', mau: '#23803A', so: 125 },
-    { ten: 'Sử thi', mau: '#7B45D6', so: 33 },
-    { ten: 'Huyền thoại', mau: '#B95A0E', so: 9 },
+    { ten: 'Thường', mau: '#5F6B7A', so: 254 },
+    { ten: 'Hiếm', mau: '#23803A', so: 128 },
+    { ten: 'Sử thi', mau: '#7B45D6', so: 36 },
+    { ten: 'Huyền thoại', mau: '#B95A0E', so: 11 },
   ],
 } as const
 
