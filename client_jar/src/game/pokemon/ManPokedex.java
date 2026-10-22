@@ -275,6 +275,9 @@ public final class ManPokedex extends ManBang {
                     if ((BatPokemon.daBat(lt[0]) || lt[1] < 0 && (BangLoai.coPokedex(lt[0]) & BangLoai.DEX_BAT) != 0) && !IconBat.ve(g, IconBat.POKE, xi + s - 11, y + 11, Math.max(14, s / 6))) {
                         GiaoDien.pokeBall(g, xi + s - 10, y + 10, 6, 0);   // 0.9.8: đã bắt (icon PNG; J2ME thiếu ảnh: vẽ cũ)
                     }
+                    if (lt[1] < 0 && (BangLoai.coPokedex(lt[0]) & BangLoai.DEX_BAT_SHINY) != 0) {
+                        IconBat.ve(g, IconBat.SAC_MAU, xi + 11, y + 11, Math.max(14, s / 6));   // đã bắt bản sắc màu
+                    }
                     Bang.dangKy(g, xi, y, s, h, new IAction() {
                         public void perform() {
                             ManPokedex.this.chon = i;
@@ -313,8 +316,11 @@ public final class ManPokedex extends ManBang {
             Bang.doan(g, ChuDe.PHU, "Đang tải thông tin loài...", x, y, w, false, ChuDe.CHU_PHU);
             return;
         }
-        String[] dong = new String[5];
+        String[] dong = new String[7];
         int n = 0;
+        if (l.moTa.length() > 0) {
+            dong[n++] = l.moTa;   // mô tả Pokédex (data_loai.mo_ta)
+        }
         dong[n++] = "Độ hiếm: " + l.tenDoHiem + (l.tiLe > 0 ? " · tỉ lệ gốc " + l.tiLe / 10 + (l.tiLe % 10 != 0 ? "," + l.tiLe % 10 : "") + "%" : "");
         if (l.truoc > 0 || l.sau > 0) {
             String th = "";
@@ -338,6 +344,9 @@ public final class ManPokedex extends ManBang {
         }
         if (l.soHa > 0) {
             dong[n++] = "Đã hạ " + l.soHa + " lần.";
+        }
+        if (l.coShiny && (co & 4) == 0) {
+            dong[n++] = l.batShiny ? "Đã bắt bản sắc màu." : "Có bản sắc màu ngoài tự nhiên (rất hiếm).";
         }
         for (int i = 0; i < n && y + lh <= yMax; i++) {
             y = Bang.doan(g, ChuDe.PHU, dong[i], x, y, w, false, ChuDe.CHU_PHU) + 2;
@@ -446,8 +455,19 @@ public final class ManPokedex extends ManBang {
             yy += fh;
         }
         if (an != 0) {
-            Bang.doan(g, Font.arialFont, an == 2 ? "Chưa xuất hiện trong thế giới game: loài này sẽ mở ở đợt sau."
-                    : "Chưa gặp: loài này sống ngoài bản đồ hoang dã theo môi trường và cấp quái.", xr + 10, yy, wr - 20, false);
+            yy = Bang.doan(g, Font.arialFont, an == 2 ? "Chưa xuất hiện trong thế giới game: loài này sẽ mở ở đợt sau."
+                    : "Chưa gặp: loài này sống ngoài bản đồ hoang dã theo môi trường và cấp quái.", xr + 10, yy, wr - 20, false) + 4;
+            if (an == 2) {
+                // loài chưa mở: vẫn có mô tả Pokédex (xin thông tin loài một lần mỗi lần mở thẻ)
+                if (this.daXin != lt[0]) {
+                    this.daXin = lt[0];
+                    BatPokemon.xinLoai(lt[0]);
+                }
+                BatPokemon.Loai l = BatPokemon.loai(lt[0]);
+                if (l != null && l.moTa.length() > 0) {
+                    Bang.doan(g, ChuDe.PHU, l.moTa, xr + 10, yy, wr - 20, false, ChuDe.CHU_PHU);
+                }
+            }
             return;
         }
         veThongTinLoai(g, lt[0], xr + 10, yy, wr - 20, y + h - 6);

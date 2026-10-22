@@ -240,6 +240,7 @@ public final class Kiem {
         KiemChoPokemon.chay(); // cho Pokemon: khung gia, thue, ky quy, mua nguyen tu (bat-trade)
         KiemDatTenPet.chay(); // 0.9.6 the dat ten Pokemon: nhan pet, ten, mot dong chi so co tran, khong cong don, nhat ky
         KiemLoaiDayDu.chay();
+        KiemLoaiBoSung.chay(); // loai-bo-sung: mo ta 1.025 loai, shiny hoang da, neo phu kien goi tai, goi -125/-126 tuong thich
         KiemLoaiQuaiGame.chay(); // loai rieng tung con quai: hoi sinh, -125 sau lenh 4 chi client >= 908, fallback client cu // loai day du: 1.025 loai, chuoi tien hoa, chieu, noi song, sprite, chon loai hoi sinh, goi -125/-126
         KiemDoTrangPhuc.chay(); // do ho moi + tu do trang tri (do-trang-phuc)
         KiemDiaDiemNpc.chay(); // 0.9.8: buoc dia diem toi duoc (Arcanine gac cong), Dia diem / NPC chuoi chinh dung ban do

@@ -473,7 +473,9 @@ public final class BatPokemonGame {
         final BatPokemon.Loai l = loai(dex);
         final int capNv = p.lvDetail != null ? p.lvDetail.lv : 1;
         // Hop day: van bat duoc neu loai nay da du so con giu (con moi / con kem nhat se tu chuyen doi thanh Keo)
-        if (h.day() && (t != null && t.shiny != 0 || giuMoiLoai() <= 0 || h.soCungLoai(dex, true) < giuMoiLoai())) {
+        // shiny: mau shiny (template) HOAC con quai mang loai rieng sac mau ma nguoi nay thay (client moi, LoaiQuaiGame)
+        final boolean shiny = t != null && t.shiny != 0 || LoaiQuaiGame.shinyChoNguoi(p, m) && dex == m.dexRieng;
+        if (h.day() && (shiny || giuMoiLoai() <= 0 || h.soCungLoai(dex, true) < giuMoiLoai())) {
             tuChoi(p, idQuai, thuTu, "Hộp PC đã đầy (" + h.sucChua() + " ô). Chuyển đổi, thả bớt hoặc mở rộng ở Chansey.");
             return;
         }
@@ -483,7 +485,6 @@ public final class BatPokemonGame {
             return;
         }
         final boolean alpha = NoiDungLauDai.laAlpha(m);
-        final boolean shiny = t != null && t.shiny != 0;
         final int lanTruot = (int) g[2];
         final int tiLe = BatPokemon.tiLe(l, m.hp, m.maxhp, m.level, capNv, alpha, b, lanTruot);
         synchronized (h) {
@@ -1241,9 +1242,22 @@ public final class BatPokemonGame {
             for (int i = 0; g != null && i < 6; i++) {
                 o.writeByte(Math.min(255, g[i]));
             }
+            // DUOI (loai-bo-sung): UTF mo ta Pokedex (data_loai.mo_ta, tu viet), u8 co (bit0 loai co ban sac mau,
+            // bit1 da bat shiny). Client doc toi chi so goc roi dung duoc (doc duoi khi con byte) - client cu bo qua.
+            final com.htbb.pokemon.LoaiDuLieu ld = LoaiQuaiGame.bang();
+            o.writeUTF(catUtf(ld.moTa(dex), 600));
+            o.writeByte((ld.coShiny(dex) ? 1 : 0) | (d != null && d.batShiny(dex) ? 2 : 0));
             p.sendMessage(m);
         } catch (final Exception ignored) {
         }
+    }
+
+    /** Cat chuoi cho writeUTF (toi da {@code toiDa} ky tu, khong vuot 65535 byte). */
+    static String catUtf(final String s, final int toiDa) {
+        if (s == null) {
+            return "";
+        }
+        return s.length() <= toiDa ? s : s.substring(0, toiDa);
     }
 
     /** Thoat game: bo cache nhip. */

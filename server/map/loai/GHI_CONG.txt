@@ -6,10 +6,11 @@ Pokémon (c) Nintendo / Creatures / GAME FREAK / The Pokémon Company.
 PMDCollab SpriteCollab - https://github.com/PMDCollab/SpriteCollab (commit 4702f10d888d19e804c5986a91170dfc92ae01b8)
 Giấy phép CC BY-NC 4.0 (phải ghi công, không dùng cho mục đích thương mại): https://creativecommons.org/licenses/by-nc/4.0/
 Hình đã được thu nhỏ / cắt khung / đổi định dạng để chạy trên điện thoại.
+Bản sắc màu (shiny) là sprite sắc màu của chính PMDCollab, không tự đổi màu.
 Nhân vật dựa trên Pokémon Mystery Dungeon (Chunsoft / Spike Chunsoft).
 
-# Người vẽ (28)
-CHUNSOFT, 3P1C, anomalocaris, Anon, Audino, baronessfaron, bwappi, Caitemis, Deeshura, Discord 199989579682414592, dmDash, Emboarger, Emmuffin, FlowerSnek, G-, Ginnie, Grimlin, Hanbei, JFain, JustAGunk, Neat_Neato, Sceptile, SethY, Smalusion, Spikey-Valentine, Top_Kec, Uni, XModxGodX
+# Người vẽ (152)
+CHUNSOFT, 0palite, 3Monika4, 3P1C, <ElGian>, A_Lettuce, Adrian, Ajifer, anomalocaris, Anon, Anonymous, Ariakyu, Audino, Avery, Aviivix, Axcel, Azifel, baronessfaron, Blanca, Blanky, brookriver, bwappi, C_Pariah, Caitemis, CamusZekeSirius, CeleryGuy, Chesyon, Chi, chikorene, chime, Cloudy, Cocosquid., cyboy_bit, dariosparks, DasK, Davilos, Ddragon, dede6giu, Deeshura, Deleca7755, deltaflare, Discord 104090628937220096, Discord 195280695009083392, Discord 199989579682414592, Discord 215638650434617345, Discord 218959749276893184, Discord 225139021079117824, Discord 228201428177387523, Discord 237814999634935808, Discord 315528859921678336, Discord 319728945920475137, Discord 436940337865293834, Discord 479369543958003731, Discord 523152081805115403, Discord 557599571170033664, Discord 589906152708505648, Discord 666846584310464552, Discord 727245570191786085, Discord 776403448220483615, Discord 804879146731569213, Discord 828520880299966525, distress, dmDash, drawsstuff, Dutch-Spaniard, El_Pangoro_Parse, Emboarger, Emitone, Emmuffin, eon, EzerArt, Fable, Fearless-Quit, Fingernails, FlowerSnek, Fresco, Frostdrop1, frostibirb, G-, Gayschlatt, GenarftheUnfunny, Ginnie, Grimlin, gromchurch, Gust, Hanbei, HopeBurnsBright2008, Ichor, Jarleypeno, jelEmerald, Jelly, JFain, JkKU (Jenrikku), JustAGunk, lokatts, LornaWR, Lovi, Luca, Magu, Miju, MilesFarber, mixy:3, Mojo, MonochromeKirby, Moo, Morei, mucrush, namu, Neat_Neato, NeonCityRain, NeroIntruder, NikolaP, Noivern, NOLASMOR, Noo, Novie, Okami, Orange, Pencil, PhillipsYoung, Pokejavi., powercristal, Precascer, Prismatic, programmedsleepstate, RacieB, RaoKurai, Reimu\_needs\_$$$, RelicCipher, Reppamon, Rustnuttie, Sceptile, Scizivire, SethY, Sharpen, ShyStarryRain, SilverDeoxys563, SkeleSpider, Smalusion, smbmaster99, snarbs, Soulja, Spikey-Valentine, Tacocoa, Tainted#3886, TawnySoup, TaylorTrap622, Top_Kec, Uni, Waffluffe, XModxGodX, XxWindpawxX
 
 # Người vẽ theo từng loài (251 loài)
 #0001: CHUNSOFT
@@ -263,3 +264,909 @@ CHUNSOFT, 3P1C, anomalocaris, Anon, Audino, baronessfaron, bwappi, Caitemis, Dee
 #0249: CHUNSOFT
 #0250: CHUNSOFT
 #0251: CHUNSOFT, Smalusion, Emmuffin
+
+# Người vẽ bản sắc màu theo từng loài (240 loài)
+#0001s: ShyStarryRain
+#0002s: SilverDeoxys563
+#0003s: SilverDeoxys563
+#0004s: ShyStarryRain
+#0005s: ShyStarryRain, Emmuffin
+#0006s: SilverDeoxys563, Emboarger, Emmuffin
+#0007s: SilverDeoxys563, ShyStarryRain
+#0008s: Emmuffin
+#0009s: SilverDeoxys563
+#0010s: SilverDeoxys563
+#0011s: SilverDeoxys563
+#0012s: Emmuffin
+#0013s: ShyStarryRain
+#0014s: SilverDeoxys563
+#0015s: SilverDeoxys563
+#0017s: Moo, bwappi
+#0018s: SilverDeoxys563
+#0019s: ShyStarryRain
+#0020s: SilverDeoxys563, 3Monika4
+#0021s: SilverDeoxys563
+#0022s: SilverDeoxys563
+#0023s: Emmuffin
+#0024s: Morei, Moo
+#0025s: SilverDeoxys563
+#0027s: ShyStarryRain
+#0028s: SilverDeoxys563, XModxGodX, Emmuffin
+#0029s: lokatts
+#0030s: Audino, baronessfaron
+#0031s: Emmuffin
+#0032s: Tacocoa
+#0033s: Anonymous
+#0034s: Tacocoa
+#0035s: Tacocoa
+#0036s: Tacocoa
+#0037s: Lovi
+#0038s: Emmuffin
+#0039s: Emmuffin
+#0040s: Morei, Lovi
+#0041s: Tacocoa
+#0042s: Tacocoa
+#0043s: Tacocoa
+#0044s: Tacocoa
+#0045s: Tacocoa, Emmuffin
+#0046s: Tacocoa
+#0047s: ShyStarryRain
+#0048s: Tacocoa, Emmuffin
+#0049s: Anonymous
+#0050s: El_Pangoro_Parse, Audino
+#0051s: El_Pangoro_Parse, Audino
+#0052s: El_Pangoro_Parse
+#0053s: El_Pangoro_Parse
+#0054s: Discord 195280695009083392, ShyStarryRain
+#0055s: El_Pangoro_Parse
+#0056s: El_Pangoro_Parse
+#0057s: El_Pangoro_Parse, G-
+#0059s: Tacocoa, baronessfaron
+#0060s: El_Pangoro_Parse
+#0061s: El_Pangoro_Parse, 3Monika4
+#0062s: El_Pangoro_Parse
+#0063s: Tacocoa, 3Monika4, Emmuffin
+#0064s: El_Pangoro_Parse
+#0065s: Morei, Emmuffin
+#0066s: Tacocoa, Morei
+#0067s: Tacocoa
+#0068s: Tacocoa
+#0069s: Audino
+#0070s: Anonymous
+#0071s: Emmuffin
+#0072s: Tacocoa
+#0073s: Tacocoa
+#0074s: El_Pangoro_Parse
+#0075s: Emmuffin
+#0076s: El_Pangoro_Parse, Emmuffin
+#0077s: Tacocoa, Emmuffin
+#0078s: El_Pangoro_Parse, Noo
+#0079s: ShyStarryRain
+#0080s: Tacocoa
+#0081s: El_Pangoro_Parse
+#0082s: El_Pangoro_Parse
+#0083s: Lovi
+#0084s: Anonymous
+#0085s: Anonymous
+#0086s: Tacocoa
+#0087s: Tacocoa
+#0088s: Emmuffin
+#0089s: G-
+#0090s: El_Pangoro_Parse
+#0091s: El_Pangoro_Parse, Emmuffin
+#0092s: El_Pangoro_Parse, ShyStarryRain
+#0093s: Tacocoa
+#0094s: Tacocoa, Emboarger
+#0095s: El_Pangoro_Parse
+#0096s: El_Pangoro_Parse
+#0097s: Lovi
+#0098s: Tacocoa, G-
+#0099s: Tacocoa
+#0100s: Tacocoa, Emboarger, Emmuffin
+#0101s: Tacocoa, Noo
+#0102s: Prismatic, Noo
+#0103s: Audino, Noo
+#0104s: Emmuffin, Sceptile
+#0105s: El_Pangoro_Parse
+#0106s: Tacocoa
+#0107s: Tacocoa
+#0108s: Audino
+#0109s: Tacocoa
+#0110s: El_Pangoro_Parse
+#0111s: Tacocoa
+#0112s: Tacocoa
+#0113s: Tacocoa
+#0114s: Anonymous
+#0115s: Emmuffin
+#0116s: Reppamon
+#0117s: Tacocoa
+#0118s: Tacocoa
+#0119s: Tacocoa
+#0120s: Adrian
+#0121s: Anonymous, Noo
+#0122s: Lovi
+#0123s: Tacocoa
+#0124s: Audino, ShyStarryRain
+#0125s: Scizivire
+#0126s: Lovi
+#0127s: El_Pangoro_Parse
+#0128s: El_Pangoro_Parse
+#0129s: Scizivire, Noo
+#0130s: Noo, Emmuffin
+#0131s: RaoKurai
+#0132s: ShyStarryRain
+#0133s: Lovi, baronessfaron
+#0134s: Emmuffin
+#0135s: Lovi, Morei
+#0136s: Tacocoa, ShyStarryRain, FlowerSnek
+#0137s: Tacocoa
+#0138s: Tacocoa
+#0139s: Tacocoa
+#0140s: Emmuffin
+#0141s: Tacocoa
+#0142s: El_Pangoro_Parse
+#0143s: El_Pangoro_Parse
+#0144s: El_Pangoro_Parse, Emmuffin
+#0145s: Emmuffin
+#0146s: Emmuffin
+#0148s: Lovi
+#0149s: Deeshura
+#0150s: El_Pangoro_Parse, JFain
+#0151s: Anonymous, Emboarger
+#0152s: lokatts
+#0153s: Emmuffin
+#0154s: El_Pangoro_Parse, Deeshura
+#0155s: lokatts
+#0156s: lokatts, JFain
+#0157s: Discord 215638650434617345, Emmuffin
+#0158s: Moo
+#0159s: Audino
+#0160s: Audino
+#0163s: Lovi, Noo
+#0164s: Pencil, Noo, Emmuffin
+#0165s: Pokejavi.
+#0166s: Tacocoa
+#0167s: Emmuffin
+#0168s: Prismatic
+#0169s: Chi
+#0170s: Prismatic
+#0172s: Lovi, Spikey-Valentine
+#0173s: Anonymous
+#0174s: Anonymous
+#0175s: RaoKurai
+#0176s: Emmuffin
+#0177s: El_Pangoro_Parse, Hanbei
+#0178s: Morei
+#0179s: Anonymous, Emmuffin
+#0180s: Anonymous, Emmuffin
+#0181s: Anonymous, Noo
+#0182s: Morei
+#0183s: Tacocoa, JFain
+#0184s: Lovi, Noo
+#0185s: Prismatic, Noo
+#0186s: Tacocoa
+#0187s: Reppamon, bwappi
+#0188s: Anonymous, Morei
+#0189s: Anonymous
+#0190s: Prismatic, Noo, JFain
+#0192s: Tacocoa
+#0193s: Moo
+#0194s: Prismatic, Caitemis, Uni
+#0195s: Anonymous
+#0196s: Lovi, Noo, baronessfaron
+#0197s: Emmuffin
+#0198s: Scizivire, Smalusion, Caitemis
+#0199s: Lovi
+#0200s: Emmuffin
+#0201s: Tacocoa
+#0202s: Tacocoa, Noo
+#0204s: Tacocoa
+#0205s: Tacocoa, G-
+#0206s: Chi, G-
+#0207s: Prismatic, JFain
+#0208s: Lovi
+#0209s: Emmuffin
+#0210s: Chi
+#0211s: Prismatic
+#0212s: Anonymous
+#0213s: Anonymous, Noo
+#0214s: Prismatic
+#0216s: El_Pangoro_Parse, Emmuffin
+#0217s: El_Pangoro_Parse
+#0218s: Chi, ShyStarryRain
+#0219s: Lovi
+#0220s: Tacocoa, Caitemis
+#0221s: Scizivire
+#0222s: Discord 195280695009083392, Noo
+#0223s: Avery
+#0224s: Morei
+#0226s: Prismatic, Emmuffin
+#0227s: Morei
+#0228s: Anonymous, Morei
+#0229s: Anonymous, Morei
+#0230s: Chi
+#0231s: Prismatic, ShyStarryRain
+#0232s: Lovi, Emmuffin
+#0233s: Moo, bwappi
+#0234s: Emmuffin
+#0235s: Tacocoa, Emmuffin
+#0236s: Prismatic, Caitemis, Emmuffin
+#0237s: Prismatic
+#0238s: Lovi, baronessfaron
+#0239s: Scizivire, G-
+#0240s: Lovi, Emboarger
+#0241s: Lovi
+#0242s: Lovi
+#0243s: Emmuffin
+#0244s: El_Pangoro_Parse, Emmuffin
+#0245s: Lovi
+#0246s: Lovi, JFain
+#0247s: Tacocoa
+#0248s: Prismatic
+#0249s: Audino
+#0250s: El_Pangoro_Parse, Deeshura
+#0251s: Emmuffin, CHUNSOFT
+
+# Người vẽ chân dung Pokédex tĩnh (loài chưa có gói sprite, 662 loài; web/public/pokemon/loai)
+#0252: CHUNSOFT
+#0253: CHUNSOFT, Davilos, baronessfaron
+#0254: CHUNSOFT, 0palite, baronessfaron
+#0258: CHUNSOFT
+#0259: CHUNSOFT, C_Pariah
+#0260: CHUNSOFT, Emmuffin
+#0263: CHUNSOFT, DasK, G-
+#0264: CHUNSOFT
+#0265: CHUNSOFT, Novie
+#0266: CHUNSOFT, FlowerSnek
+#0267: CHUNSOFT, Caitemis
+#0268: CHUNSOFT
+#0271: CHUNSOFT, baronessfaron, Gust
+#0272: CHUNSOFT
+#0273: CHUNSOFT, Discord 589906152708505648
+#0274: CHUNSOFT, Emmuffin
+#0275: CHUNSOFT, Emboarger, Tainted#3886, Gust
+#0277: CHUNSOFT, Caitemis
+#0278: CHUNSOFT, snarbs
+#0280: CHUNSOFT, JFain, baronessfaron
+#0281: CHUNSOFT, JFain, PhillipsYoung
+#0283: CHUNSOFT, JFain, Fearless-Quit
+#0284: CHUNSOFT, baronessfaron
+#0285: CHUNSOFT, drawsstuff
+#0287: CHUNSOFT, Caitemis
+#0289: CHUNSOFT, Caitemis
+#0290: CHUNSOFT, Caitemis
+#0291: CHUNSOFT, baronessfaron
+#0292: CHUNSOFT, Novie
+#0293: CHUNSOFT, Blanky
+#0294: CHUNSOFT, Gust
+#0295: CHUNSOFT
+#0296: CHUNSOFT, baronessfaron
+#0298: CHUNSOFT, Fable
+#0299: CHUNSOFT, JFain
+#0300: CHUNSOFT
+#0301: CHUNSOFT, 0palite, baronessfaron
+#0303: CHUNSOFT, baronessfaron, Emmuffin
+#0307: CHUNSOFT
+#0308: CHUNSOFT, Gust
+#0311: CHUNSOFT, C_Pariah
+#0312: CHUNSOFT, C_Pariah
+#0313: CHUNSOFT, JFain, NOLASMOR
+#0314: CHUNSOFT, JFain
+#0315: CHUNSOFT, JFain, G-
+#0316: CHUNSOFT, Emmuffin
+#0317: CHUNSOFT, Caitemis
+#0320: CHUNSOFT, Noo, Caitemis
+#0325: CHUNSOFT, Emmuffin
+#0327: CHUNSOFT, Gust
+#0328: CHUNSOFT, JFain, Caitemis
+#0329: CHUNSOFT, Frostdrop1
+#0331: CHUNSOFT, Emboarger
+#0332: CHUNSOFT, baronessfaron, Noo
+#0338: CHUNSOFT
+#0339: CHUNSOFT, chikorene
+#0341: CHUNSOFT, baronessfaron, Gust
+#0345: CHUNSOFT, Aviivix, NOLASMOR
+#0347: CHUNSOFT, Frostdrop1
+#0349: CHUNSOFT, Discord 828520880299966525
+#0350: CHUNSOFT, Emmuffin
+#0351: CHUNSOFT, JFain, ShyStarryRain, bwappi
+#0358: CHUNSOFT, chime, baronessfaron
+#0360: CHUNSOFT, Gust, baronessfaron, Emmuffin
+#0364: CHUNSOFT, Emmuffin
+#0366: CHUNSOFT, baronessfaron, Magu
+#0367: CHUNSOFT, Emmuffin
+#0368: CHUNSOFT, Emmuffin
+#0369: CHUNSOFT, Emmuffin
+#0374: CHUNSOFT, Discord 589906152708505648
+#0377: CHUNSOFT, CamusZekeSirius
+#0378: CHUNSOFT, CamusZekeSirius
+#0379: CHUNSOFT, CamusZekeSirius
+#0380: CHUNSOFT, Sharpen, Emmuffin
+#0381: CHUNSOFT, Emmuffin
+#0386: CHUNSOFT, Discord 523152081805115403, Noo
+#0387: CHUNSOFT
+#0388: CHUNSOFT, Emboarger
+#0389: CHUNSOFT, JFain
+#0390: CHUNSOFT, Emmuffin
+#0391: CHUNSOFT, baronessfaron, Emmuffin
+#0392: CHUNSOFT, Emmuffin
+#0394: CHUNSOFT, Emboarger, Emmuffin
+#0395: CHUNSOFT, 0palite
+#0396: CHUNSOFT, CamusZekeSirius
+#0397: CHUNSOFT, CamusZekeSirius
+#0398: CHUNSOFT, CamusZekeSirius, ShyStarryRain, G-
+#0400: CHUNSOFT
+#0403: CHUNSOFT
+#0406: CHUNSOFT, Discord 237814999634935808, Deeshura
+#0407: CHUNSOFT, baronessfaron, G-
+#0408: CHUNSOFT, JFain
+#0409: CHUNSOFT, Noo, NikolaP
+#0410: CHUNSOFT, A_Lettuce
+#0411: CHUNSOFT, baronessfaron
+#0412: CHUNSOFT, snarbs
+#0413: CHUNSOFT, JFain
+#0414: CHUNSOFT, FlowerSnek
+#0415: CHUNSOFT, Morei
+#0416: CHUNSOFT, JFain, baronessfaron
+#0418: CHUNSOFT, C_Pariah
+#0419: CHUNSOFT, Caitemis
+#0420: CHUNSOFT, baronessfaron
+#0421: CHUNSOFT, Emmuffin, baronessfaron
+#0422: CHUNSOFT, chikorene
+#0424: CHUNSOFT, JFain
+#0425: CHUNSOFT, JFain, Deleca7755, Fearless-Quit
+#0426: CHUNSOFT, NOLASMOR
+#0427: CHUNSOFT, frostibirb, smbmaster99, Gust
+#0429: CHUNSOFT, baronessfaron
+#0430: CHUNSOFT, baronessfaron
+#0431: CHUNSOFT, JFain, ShyStarryRain
+#0432: CHUNSOFT, Emmuffin
+#0433: CHUNSOFT, chime
+#0434: CHUNSOFT, C_Pariah, Jarleypeno
+#0435: CHUNSOFT, drawsstuff, Gayschlatt, G-
+#0438: CHUNSOFT, Caitemis
+#0439: CHUNSOFT, Emitone, G-
+#0440: CHUNSOFT, Mojo
+#0441: CHUNSOFT, Gust, Gayschlatt
+#0442: CHUNSOFT, baronessfaron
+#0443: CHUNSOFT, JFain, G-
+#0444: CHUNSOFT, dmDash
+#0445: CHUNSOFT, Top_Kec, G-
+#0446: CHUNSOFT
+#0447: CHUNSOFT, Fearless-Quit
+#0449: CHUNSOFT, Emmuffin
+#0450: CHUNSOFT, baronessfaron
+#0452: CHUNSOFT
+#0455: CHUNSOFT, JFain
+#0456: CHUNSOFT, Discord 776403448220483615, JFain, Morei
+#0457: CHUNSOFT, Emboarger
+#0458: CHUNSOFT, Gust
+#0459: CHUNSOFT, Jarleypeno
+#0461: CHUNSOFT, JFain, PhillipsYoung, ShyStarryRain
+#0462: CHUNSOFT, baronessfaron
+#0463: CHUNSOFT, Emmuffin
+#0464: CHUNSOFT, G-
+#0465: CHUNSOFT
+#0466: CHUNSOFT, Emboarger, JustAGunk
+#0467: CHUNSOFT
+#0468: CHUNSOFT, Discord 436940337865293834
+#0469: CHUNSOFT, Top_Kec
+#0472: CHUNSOFT, Emmuffin
+#0474: CHUNSOFT, Fable, G-
+#0475: CHUNSOFT, JFain, baronessfaron
+#0476: CHUNSOFT, G-
+#0478: CHUNSOFT, JFain, baronessfaron
+#0479: CHUNSOFT, Orange
+#0480: CHUNSOFT, baronessfaron
+#0481: CHUNSOFT, Mojo, baronessfaron
+#0482: CHUNSOFT, baronessfaron
+#0483: CHUNSOFT, CamusZekeSirius, G-
+#0484: CHUNSOFT, CamusZekeSirius, TaylorTrap622, baronessfaron
+#0485: CHUNSOFT, G-
+#0486: CHUNSOFT, baronessfaron
+#0487: CHUNSOFT, CamusZekeSirius, G-
+#0488: CHUNSOFT, baronessfaron, Emmuffin
+#0489: CHUNSOFT, Emmuffin
+#0490: CHUNSOFT, Emmuffin
+#0492: CHUNSOFT, Mojo
+#0493: baronessfaron
+#0494: mucrush, MonochromeKirby, baronessfaron
+#0495: Emmuffin
+#0499: mucrush, Gust, baronessfaron
+#0500: mucrush, Emboarger, G-
+#0501: mucrush, Emmuffin
+#0502: mucrush, baronessfaron, JFain
+#0503: mucrush, Emmuffin
+#0504: mucrush, baronessfaron
+#0505: mucrush, baronessfaron, Discord 215638650434617345
+#0506: mucrush, baronessfaron, bwappi
+#0507: mucrush, baronessfaron, Caitemis
+#0508: Top_Kec, Emmuffin
+#0509: mucrush, baronessfaron
+#0511: Top_Kec
+#0512: G-
+#0513: mucrush, Discord 315528859921678336, Emmuffin, baronessfaron
+#0514: Emmuffin
+#0515: mucrush, Emmuffin, baronessfaron
+#0516: mucrush, NOLASMOR, Gust
+#0517: mucrush, chime, ShyStarryRain, baronessfaron
+#0518: mucrush, baronessfaron
+#0519: mucrush, TawnySoup
+#0520: mucrush, Gust
+#0521: Gust
+#0522: mucrush, Emmuffin
+#0523: mucrush, Gust
+#0524: mucrush, Gust
+#0525: mucrush, Emmuffin
+#0526: mucrush, G-
+#0527: mucrush, Emmuffin
+#0528: mucrush, Emmuffin
+#0529: mucrush, Gust, Top_Kec
+#0530: mucrush, baronessfaron
+#0531: mucrush, baronessfaron
+#0532: mucrush, G-, JustAGunk
+#0533: mucrush, G-
+#0534: mucrush, Gust
+#0535: G-, JustAGunk
+#0538: mucrush, G-
+#0539: mucrush, Caitemis, G-
+#0540: mucrush, Emmuffin
+#0541: mucrush, Emmuffin
+#0542: mucrush, baronessfaron
+#0546: mucrush, Emmuffin
+#0547: mucrush, baronessfaron
+#0548: mucrush, Ichor, Emmuffin
+#0549: Emmuffin
+#0550: mucrush, Emboarger, G-
+#0551: mucrush, Noivern
+#0553: mucrush, baronessfaron
+#0554: mucrush, Emmuffin
+#0555: mucrush, G-
+#0556: mucrush, baronessfaron
+#0557: mucrush, Emmuffin
+#0558: mucrush, Emmuffin
+#0561: mucrush, G-
+#0563: mucrush, Top_Kec
+#0564: mucrush, Noo
+#0565: G-
+#0566: Emmuffin
+#0567: Top_Kec
+#0568: mucrush, Noivern, cyboy_bit, powercristal, Noo
+#0569: mucrush, Emmuffin
+#0570: baronessfaron, MilesFarber
+#0571: 0palite, baronessfaron, Deeshura
+#0572: mucrush, baronessfaron
+#0573: Emmuffin
+#0574: mucrush, baronessfaron
+#0575: mucrush, JFain, baronessfaron
+#0576: mucrush, baronessfaron
+#0577: mucrush, Emmuffin, NOLASMOR
+#0578: Discord 215638650434617345, Magu
+#0579: mucrush, Emmuffin
+#0580: mucrush, Noo, Emboarger
+#0581: mucrush, Noo, G-
+#0582: mucrush, JFain, NOLASMOR
+#0583: mucrush, Precascer, Emboarger, Emmuffin
+#0584: G-
+#0586: baronessfaron
+#0587: mucrush, LornaWR, Emmuffin
+#0588: mucrush
+#0589: mucrush, JFain, baronessfaron, Top_Kec
+#0590: Gust
+#0591: mucrush, Top_Kec
+#0592: mucrush, Emmuffin
+#0593: mucrush, Emmuffin, Soulja
+#0594: mucrush, Gust, Soulja
+#0595: mucrush, JFain, Top_Kec
+#0597: mucrush, Fearless-Quit, G-
+#0598: mucrush, G-
+#0599: mucrush, Emmuffin
+#0600: mucrush, Emmuffin
+#0601: mucrush, Emmuffin
+#0602: mucrush, Emmuffin
+#0603: mucrush, Gust
+#0604: mucrush, Gust, CeleryGuy, Emmuffin
+#0605: mucrush, Noo, Soulja
+#0606: mucrush, Noo, G-
+#0608: mucrush, Emmuffin
+#0609: mucrush, Precascer, Emmuffin
+#0610: mucrush, Blanca, Top_Kec, G-
+#0611: mucrush, Deeshura
+#0612: mucrush, Emmuffin, Soulja
+#0613: Miju, G-
+#0614: mucrush, Gust
+#0616: mucrush, Gust
+#0617: mucrush, baronessfaron, Top_Kec
+#0618: mucrush, Emboarger, G-
+#0619: Fresco
+#0620: mucrush, Discord 104090628937220096, baronessfaron
+#0621: mucrush, Deeshura
+#0622: baronessfaron, Soulja
+#0623: baronessfaron
+#0624: mucrush, Noivern, baronessfaron
+#0625: mucrush, Emmuffin
+#0626: mucrush
+#0629: mucrush, Emmuffin
+#0630: mucrush, Emmuffin
+#0631: mucrush, baronessfaron
+#0632: mucrush, baronessfaron
+#0633: mucrush, Caitemis
+#0634: mucrush, Emmuffin
+#0635: mucrush, baronessfaron, JustAGunk
+#0636: mucrush, G-, baronessfaron
+#0638: mucrush, Noo, Deeshura
+#0639: mucrush, Noo, G-
+#0640: Discord 557599571170033664, baronessfaron
+#0641: G-
+#0642: G-
+#0643: mucrush, CamusZekeSirius, Emmuffin
+#0644: mucrush, CamusZekeSirius, baronessfaron
+#0645: G-
+#0646: Noo
+#0647: mucrush, Discord 557599571170033664, Ichor, Fingernails
+#0648: Morei, Deleca7755, Emboarger, SkeleSpider, Ariakyu
+#0649: mucrush, chime
+#0650: Noo, Emmuffin
+#0651: baronessfaron, JustAGunk
+#0652: Soulja
+#0653: Smalusion, G-, Deeshura
+#0654: Waffluffe, Emmuffin
+#0655: baronessfaron, Emmuffin
+#0656: C_Pariah, Emmuffin, G-, Cloudy, Discord 215638650434617345, baronessfaron
+#0657: baronessfaron, Discord 215638650434617345, NOLASMOR, JustAGunk
+#0658: Emmuffin
+#0659: baronessfaron
+#0660: Aviivix, Morei
+#0661: Emmuffin
+#0662: Aviivix, Chesyon, Soulja, Emmuffin
+#0663: G-
+#0664: Emboarger, G-
+#0665: Emmuffin
+#0666: Emboarger, Emmuffin
+#0668: G-
+#0669: baronessfaron
+#0670: baronessfaron
+#0671: baronessfaron, Emmuffin
+#0672: Emmuffin, TawnySoup
+#0673: G-
+#0674: Emmuffin
+#0675: Emmuffin, baronessfaron, Soulja
+#0676: Aviivix, deltaflare, Discord 215638650434617345, NeonCityRain
+#0677: baronessfaron
+#0678: NeroIntruder, Dutch-Spaniard, Emmuffin
+#0679: namu, Caitemis, G-, Emmuffin
+#0680: baronessfaron
+#0682: baronessfaron, Caitemis
+#0683: baronessfaron
+#0684: baronessfaron, mixy:3
+#0685: baronessfaron, mixy:3
+#0686: Aviivix, NOLASMOR
+#0687: baronessfaron
+#0688: baronessfaron
+#0689: G-, Soulja
+#0690: baronessfaron, brookriver
+#0691: baronessfaron
+#0692: baronessfaron
+#0693: baronessfaron, Discord 804879146731569213
+#0694: Noo
+#0695: Noo, Emmuffin
+#0696: NeroIntruder
+#0697: NeroIntruder, Soulja
+#0698: Emmuffin
+#0699: Emmuffin
+#0701: Soulja
+#0702: Emmuffin, Top_Kec
+#0703: baronessfaron, G-, Emmuffin, Luca
+#0704: RacieB
+#0705: baronessfaron
+#0706: baronessfaron
+#0707: baronessfaron, Discord 215638650434617345
+#0708: baronessfaron, Discord 218959749276893184
+#0710: baronessfaron, G-
+#0712: Noivern, <ElGian>
+#0713: Noivern
+#0714: Noivern, Azifel, Caitemis
+#0715: Noivern, TawnySoup, G-
+#0716: JkKU (Jenrikku), Emboarger, baronessfaron, Discord 215638650434617345
+#0717: Top_Kec
+#0718: Emboarger, Noo
+#0719: baronessfaron, Discord 666846584310464552
+#0720: programmedsleepstate
+#0721: Top_Kec
+#0722: Emmuffin
+#0723: Reimu\_needs\_$$$, Discord 215638650434617345, JustAGunk
+#0724: baronessfaron, Top_Kec
+#0725: Waffluffe, Caitemis, Top_Kec, Emmuffin
+#0726: baronessfaron
+#0727: baronessfaron
+#0728: Fable, Discord 215638650434617345, Emmuffin
+#0729: baronessfaron, Top_Kec
+#0730: Discord 225139021079117824, Emboarger, Discord 215638650434617345, baronessfaron
+#0731: Aviivix, Morei, NOLASMOR
+#0732: Emmuffin
+#0733: G-
+#0734: Emmuffin
+#0735: baronessfaron, Soulja
+#0736: JFain
+#0737: Deeshura
+#0738: baronessfaron
+#0740: Emmuffin, Soulja
+#0741: Emmuffin, Top_Kec
+#0742: baronessfaron, NOLASMOR
+#0743: Emmuffin
+#0744: XModxGodX, JFain, Emmuffin
+#0745: Fable, Emmuffin
+#0746: chime
+#0747: Aviivix, baronessfaron
+#0748: G-
+#0749: Emboarger, bwappi
+#0751: Soulja
+#0752: Soulja
+#0753: Aviivix, Emmuffin
+#0754: baronessfaron, Discord 228201428177387523, Emmuffin
+#0755: Emmuffin
+#0756: Emmuffin
+#0757: Top_Kec, baronessfaron
+#0758: JFain, baronessfaron
+#0759: baronessfaron, G-
+#0760: baronessfaron
+#0761: baronessfaron, NOLASMOR
+#0762: JFain, Morei, G-
+#0763: JFain, baronessfaron
+#0764: Emmuffin, baronessfaron, G-
+#0765: gromchurch, Top_Kec
+#0766: G-
+#0767: Aviivix, Emboarger, Soulja
+#0768: Deleca7755, Soulja
+#0769: JFain, Emmuffin
+#0770: Emmuffin
+#0771: Emmuffin, Soulja
+#0772: 0palite, Caitemis, baronessfaron
+#0773: 0palite, Emboarger, Caitemis, Emmuffin
+#0774: Waffluffe, baronessfaron
+#0775: Top_Kec
+#0776: Noo, TawnySoup
+#0777: Emmuffin
+#0778: JFain, Emmuffin
+#0779: baronessfaron
+#0780: baronessfaron, Soulja
+#0782: baronessfaron
+#0783: G-
+#0784: Emmuffin, Soulja
+#0785: XxWindpawxX, baronessfaron
+#0786: XxWindpawxX, baronessfaron
+#0787: XxWindpawxX, baronessfaron
+#0788: XxWindpawxX, baronessfaron
+#0789: XxWindpawxX, Emboarger, G-
+#0790: Emboarger
+#0791: 0palite, Emboarger, G-
+#0792: Deeshura
+#0793: gromchurch, Noivern, Emboarger
+#0794: Emboarger, Soulja
+#0795: JFain, baronessfaron
+#0796: Emmuffin, Top_Kec
+#0797: Emboarger, baronessfaron
+#0798: JFain, Emboarger
+#0799: Emboarger
+#0800: 0palite, Emboarger, baronessfaron
+#0801: baronessfaron
+#0802: Top_Kec
+#0803: XxWindpawxX, Emboarger
+#0804: Emboarger
+#0805: Emboarger, Top_Kec
+#0806: Emboarger
+#0807: Emmuffin, Top_Kec
+#0808: Discord 589906152708505648, dede6giu, dariosparks, G-
+#0809: G-
+#0810: EzerArt, G-, JustAGunk
+#0811: Emmuffin, JustAGunk
+#0812: G-, JustAGunk
+#0813: NeroIntruder, Emmuffin
+#0814: NeroIntruder, Emmuffin
+#0815: NeroIntruder, Emmuffin
+#0816: Emmuffin, G-
+#0817: Emmuffin
+#0818: Emmuffin, TawnySoup
+#0819: G-
+#0820: Emboarger, G-
+#0821: G-, Cloudy
+#0822: EzerArt, Emmuffin
+#0823: EzerArt, Soulja
+#0824: Emmuffin
+#0825: Emmuffin
+#0826: baronessfaron
+#0827: Ddragon, Waffluffe, EzerArt, Top_Kec
+#0828: Ddragon, Precascer, EzerArt, Emmuffin
+#0829: Emmuffin, baronessfaron
+#0830: EzerArt, Emmuffin, Soulja
+#0832: G-, Emmuffin
+#0833: EzerArt, Emmuffin
+#0834: Noivern, EzerArt, Emmuffin
+#0835: RelicCipher
+#0836: Emmuffin, Gust
+#0837: Discord 319728945920475137
+#0838: Emmuffin
+#0839: Emmuffin
+#0840: eon, Emmuffin
+#0841: EzerArt, Emboarger, HopeBurnsBright2008
+#0842: Emmuffin
+#0843: Jelly, NikolaP, NeonCityRain
+#0844: baronessfaron, Soulja
+#0845: G-
+#0846: Caitemis
+#0847: baronessfaron
+#0848: Waffluffe, Emboarger, EzerArt, Emmuffin
+#0849: Noo, Precascer, Emmuffin
+#0850: Emmuffin
+#0851: baronessfaron
+#0852: Emboarger, Emmuffin
+#0853: Soulja
+#0854: JFain, EzerArt, ShyStarryRain, baronessfaron
+#0855: Ddragon, EzerArt, Emmuffin
+#0856: Waffluffe, baronessfaron, EzerArt
+#0857: baronessfaron
+#0858: baronessfaron, JFain
+#0859: Emmuffin
+#0860: JFain, EzerArt, baronessfaron
+#0861: EzerArt, G-
+#0862: baronessfaron
+#0863: baronessfaron
+#0864: Emmuffin
+#0865: baronessfaron
+#0866: G-
+#0867: baronessfaron, Soulja
+#0868: EzerArt, mixy:3, Emmuffin
+#0869: Emmuffin
+#0870: EzerArt, Emmuffin
+#0871: Emmuffin
+#0872: JFain, Jelly, Discord 215638650434617345
+#0873: Emboarger, Emmuffin
+#0874: Emmuffin
+#0875: Emboarger, baronessfaron
+#0876: Emmuffin
+#0877: Emmuffin
+#0878: EzerArt, Gust
+#0879: EzerArt, Emboarger
+#0880: Emmuffin
+#0881: Discord 479369543958003731, Soulja
+#0882: 0palite, Emmuffin
+#0883: Soulja
+#0884: EzerArt, Emboarger, Soulja
+#0885: Emboarger, G-, Deeshura, NOLASMOR, Top_Kec
+#0886: Emmuffin
+#0887: EzerArt, Emmuffin
+#0888: Emmuffin, Soulja
+#0889: G-
+#0890: Soulja
+#0891: JustAGunk
+#0892: EzerArt, Emmuffin
+#0893: Emboarger, G-, Soulja
+#0894: EzerArt, CamusZekeSirius
+#0895: EzerArt, CamusZekeSirius
+#0898: EzerArt, Discord 215638650434617345, G-
+#0899: G-
+#0900: Noo, Soulja
+#0902: G-
+#0903: Emmuffin, baronessfaron
+#0904: Novie, G-
+#0905: JFain, Caitemis, baronessfaron
+#0906: Emmuffin, Discord 215638650434617345, Ichor
+#0907: Emmuffin, JustAGunk, G-
+#0908: baronessfaron, distress
+#0909: Emboarger, Emmuffin, G-
+#0910: Discord 215638650434617345, JustAGunk
+#0911: Noivern, Discord 215638650434617345
+#0912: Top_Kec, Emmuffin, Caitemis
+#0913: Discord 215638650434617345, JustAGunk
+#0914: Discord 215638650434617345, Top_Kec
+#0915: Emmuffin, NikolaP
+#0916: Emmuffin
+#0917: Emmuffin
+#0918: G-
+#0919: baronessfaron, Axcel
+#0920: G-
+#0921: Emmuffin, G-
+#0922: G-, Discord 215638650434617345
+#0923: Emmuffin
+#0924: G-
+#0925: G-
+#0926: Emmuffin, Axcel
+#0927: Emmuffin
+#0928: Emmuffin, Discord 215638650434617345, Ajifer
+#0929: Emmuffin
+#0930: Emmuffin, G-, jelEmerald
+#0931: Emmuffin
+#0932: Emmuffin
+#0933: G-
+#0934: G-
+#0935: Emmuffin
+#0936: G-
+#0937: Top_Kec, baronessfaron
+#0938: Discord 215638650434617345
+#0939: G-
+#0940: Aviivix, JustAGunk
+#0941: Aviivix, G-
+#0942: Emmuffin
+#0943: baronessfaron
+#0944: G-
+#0945: Emmuffin
+#0946: Emmuffin
+#0947: Emmuffin
+#0948: Okami
+#0949: G-
+#0950: Emmuffin
+#0951: G-
+#0952: G-
+#0953: Noivern
+#0954: G-
+#0955: Emmuffin
+#0956: baronessfaron
+#0957: Emmuffin
+#0958: Emmuffin, baronessfaron
+#0959: Emmuffin
+#0960: Emmuffin
+#0961: Emmuffin
+#0962: baronessfaron
+#0963: Emmuffin, Discord 215638650434617345
+#0964: Emmuffin, Discord 215638650434617345
+#0965: G-
+#0966: G-, Soulja
+#0967: Emmuffin, G-
+#0968: TawnySoup, Soulja
+#0969: G-, Deeshura
+#0970: G-
+#0971: Emmuffin, Discord 727245570191786085
+#0972: Emmuffin
+#0973: Top_Kec, jelEmerald
+#0974: Emboarger, Emmuffin
+#0975: Emmuffin
+#0976: G-
+#0977: baronessfaron
+#0978: Emboarger, Emmuffin
+#0979: baronessfaron, <ElGian>
+#0980: Emmuffin
+#0981: Emmuffin, baronessfaron
+#0982: Emmuffin
+#0983: baronessfaron, G-
+#0984: TawnySoup
+#0985: G-
+#0986: Emmuffin
+#0987: baronessfaron
+#0988: baronessfaron
+#0989: Emmuffin
+#0990: TawnySoup, Cocosquid.
+#0991: baronessfaron, ShyStarryRain, G-
+#0992: G-
+#0993: G-
+#0994: baronessfaron, G-
+#0995: G-
+#0996: G-
+#0997: Discord 215638650434617345
+#0998: G-
+#0999: Emmuffin
+#1000: G-, Emmuffin
+#1001: Emmuffin
+#1002: Emmuffin
+#1003: Emmuffin
+#1004: Emmuffin
+#1005: G-, distress
+#1006: baronessfaron, Emmuffin
+#1007: Top_Kec, Emmuffin
+#1008: Top_Kec, Emmuffin
+#1009: Emmuffin, G-, baronessfaron
+#1010: Emmuffin
+#1011: Emmuffin
+#1012: Emmuffin
+#1013: Emmuffin
+#1014: Emmuffin
+#1015: Emmuffin, Rustnuttie
+#1016: Emmuffin
+#1017: Discord 215638650434617345, baronessfaron
+#1018: Emmuffin
+#1019: Emmuffin, Soulja, GenarftheUnfunny
+#1020: G-
+#1021: Emmuffin
+#1022: G-
+#1023: G-, Top_Kec
+#1024: Emmuffin, Cloudy
+#1025: Emmuffin

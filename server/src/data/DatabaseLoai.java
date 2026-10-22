@@ -56,6 +56,23 @@ public final class DatabaseLoai {
             if (!ok || loai.isEmpty()) {
                 return null;
             }
+            // cot bo sung (khoi them_loai_shiny_neo_mo_ta.sql): CSDL cu chua co cot thi bo qua, giu mac dinh
+            final Map<Integer, LoaiDuLieu.Loai> theoDex = new HashMap<Integer, LoaiDuLieu.Loai>();
+            for (final LoaiDuLieu.Loai l : loai) {
+                theoDex.put(Integer.valueOf(l.dex), l);
+            }
+            doc(c, "SELECT dex, mo_ta FROM data_loai", (rs) -> {
+                final LoaiDuLieu.Loai l = theoDex.get(Integer.valueOf(rs.getInt(1)));
+                if (l != null && rs.getString(2) != null) {
+                    l.moTa = rs.getString(2);
+                }
+            });
+            doc(c, "SELECT dex, shiny FROM data_loai_sprite", (rs) -> {
+                final LoaiDuLieu.Loai l = theoDex.get(Integer.valueOf(rs.getInt(1)));
+                if (l != null) {
+                    l.coShiny = rs.getInt(2) != 0;
+                }
+            });
             final List<LoaiDuLieu.TienHoa> th = new ArrayList<LoaiDuLieu.TienHoa>();
             doc(c, "SELECT tu_dex, sang_dex, kieu, co_che, cap, ten_vat_pham, id_vat_pham, ngay_dem, than_thiet, keo, dieu_kien"
                     + " FROM data_loai_tien_hoa ORDER BY tu_dex, sang_dex", (rs) -> th.add(new LoaiDuLieu.TienHoa(rs.getInt(1),

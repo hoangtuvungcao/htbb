@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Lenh -126 POKE_LOAI (com.htbb.pokemon.GoiLoai): sprite tai theo nhu cau, bang loai day du, co Pokedex 1.025 loai.
  *
- * Sprite: goi server/map/loai/NNNN.goi (thu muc lam viec cua server: map/loai) gui theo khuc 4 KB, moi client toi da
+ * Sprite: goi server/map/loai/NNNN.goi (ban sac mau NNNNs.goi) (thu muc lam viec cua server: map/loai) gui theo khuc 4 KB, moi client toi da
  * loai.sprite_kb_giay KB/giay (thung token, mot luong nen chung), hang doi moi client toi da {@link #TOI_DA_HANG} loai
  * (trung loai bo qua). Lenh la "tai nguyen" cho bo dem chong spam (io.BoDemGoiTin). Kieu la thi bo qua, khong ngat.
  */
@@ -87,10 +87,11 @@ public final class LoaiMayChu {
         if (b == null) {
             b = new byte[0];
             try {
-                final File f = new File(thuMucGoi(), GoiLoai.tenGoi(dex));
-                if (shiny == 0 && f.isFile() && f.length() > 0 && f.length() <= TOI_DA_GOI_BYTE) {
+                // ban sac mau: <NNNN>s.goi (PMDCollab shiny); loai "chua co shiny" -> tong 0, client ve ban thuong
+                final File f = new File(thuMucGoi(), GoiLoai.tenGoi(dex, shiny != 0));
+                if (f.isFile() && f.length() > 0 && f.length() <= TOI_DA_GOI_BYTE) {
                     final byte[] du = Files.readAllBytes(f.toPath());
-                    if (GoiLoai.docGoi(du, dex) != null) {
+                    if (GoiLoai.docGoi(du, dex) != null && GoiLoai.shinyCuaGoi(du) == (shiny != 0 ? 1 : 0)) {
                         b = du;
                     } else {
                         System.out.println("[LOAI] goi hong: " + f);

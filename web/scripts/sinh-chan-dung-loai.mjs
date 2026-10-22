@@ -7,7 +7,8 @@
  * Nguồn (không tải mạng):
  *  1. gói sprite tải theo nhu cầu ../server/map/loai/<NNNN>.goi (HTPK v1, tools/pokemon/loai/DongGoiLoai.java):
  *     lấy tệp <NNNN>_c.png -> public/pokemon/loai/<dex>.png;
- *  2. loài khác: chân dung đã có public/pokemon/<dex>.png (sinh bởi sinh-du-lieu-pokemon.mjs).
+ *  2. loài khác: chân dung đã có public/pokemon/<dex>.png (sinh bởi sinh-du-lieu-pokemon.mjs);
+ *  3. còn lại: chân dung tĩnh public/pokemon/loai/<dex>.png (tools/pokemon/loai/tai_chan_dung_loai.py).
  * Ra shared/data/chan-dung-loai.json: { "<dex>": "<url>" } — loài không có chân dung không có khoá (trang vẽ bóng).
  * Sprite / chân dung: PMDCollab SpriteCollab, CC BY-NC 4.0 (ghi công: server/map/loai/GHI_CONG.txt, /giay-phep).
  */
@@ -52,7 +53,19 @@ for (const f of readdirSync(CU)) {
     tuCu++
   }
 }
+// 3. chân dung tĩnh PMDCollab của loài chưa có gói sprite (64 loài chưa vẽ sprite + loài chưa mở đợt):
+//    public/pokemon/loai/<dex>.png do tools/pokemon/loai/tai_chan_dung_loai.py tải (commit ghim, CC BY-NC 4.0).
+let tinh = 0
+for (const f of readdirSync(RA)) {
+  const m = /^(\d+)\.png$/.exec(f)
+  if (!m) continue
+  const dex = Number(m[1])
+  if (dex >= 1 && dex <= 1025 && !bang[dex]) {
+    bang[dex] = `/pokemon/loai/${dex}.png`
+    tinh++
+  }
+}
 const sx = Object.fromEntries(Object.entries(bang).sort((a, b) => Number(a[0]) - Number(b[0])))
 writeFileSync(JSON_RA, JSON.stringify(sx) + '\n')
-console.log(`Chân dung: ${tuGoi} từ gói máy chủ, ${tuCu} có sẵn, tổng ${Object.keys(sx).length} loài -> shared/data/chan-dung-loai.json`)
+console.log(`Chân dung: ${tuGoi} từ gói máy chủ, ${tuCu} có sẵn, ${tinh} chân dung tĩnh, tổng ${Object.keys(sx).length} loài -> shared/data/chan-dung-loai.json`)
 process.exit(loi ? 1 : 0)

@@ -221,14 +221,19 @@ public class PokeBody {
         return bong == KHONG_CO ? null : (PokeBody) bong;
     }
 
+    /** Than nay la ban sac mau that (khoa "<NNNN>s"), khong phai ban thuong ve thay. */
+    boolean laShiny() {
+        return this.khoa != null && this.khoa.length() == 5 && this.khoa.charAt(4) == 's';
+    }
+
     private static PokeBody napTuFile(int dex, boolean shiny) {
         return napTuKhoa(tenKhoa(dex, shiny));
     }
 
     private static PokeBody napTuKhoa(String khoa) {
         byte[] b = docTaiNguyen(THU_MUC + khoa + ".dl");
-        if (b == null && khoa.length() == 4) {
-            b = KhoSprite.docTep(khoa, khoa + ".dl");   // 1.0: goi sprite tai theo nhu cau
+        if (b == null && (khoa.length() == 4 || khoa.length() == 5 && khoa.charAt(4) == 's')) {
+            b = KhoSprite.docTep(khoa, khoa + ".dl");   // 1.0: goi sprite tai theo nhu cau (ca ban sac mau "0016s")
         }
         PokeDuLieu dl = PokeDuLieu.doc(b);
         if (dl == null) {
@@ -255,11 +260,15 @@ public class PokeBody {
             PokeBody pb = (PokeBody) o;
             if (!shiny && pb.khoa == KHOA_BONG) {
                 KhoSprite.xin(dex);   // dang ve bong: nhac xin (no-op neu da xin / thieu / man Pokedex)
+            } else if (shiny && !pb.laShiny()) {
+                KhoSprite.xin(dex, true);   // dang ve ban thuong thay cho shiny: nhac xin goi sac mau
             }
             return pb;
         }
         PokeBody pb = napTuFile(dex, shiny);
         if (pb == null && shiny) {
+            // jar / kho chua co ban sac mau: xin goi "<NNNN>s" (may chu bao thieu = loai chua co shiny), tam ve ban thuong
+            KhoSprite.xin(dex, true);
             pb = lay(dex, false);
         }
         if (pb == null) {
@@ -296,12 +305,17 @@ public class PokeBody {
 
     /** Jar co sprite thuong cua loai nay (tep .dl). Nho ket qua. */
     public static boolean coTrongJar(int dex) {
-        Integer k = new Integer(dex);
+        return coTrongJar(dex, false);
+    }
+
+    /** Jar co sprite ban thuong / ban sac mau ("<NNNN>s.dl") cua loai nay. Nho ket qua. */
+    public static boolean coTrongJar(int dex, boolean shiny) {
+        Integer k = new Integer(shiny ? -dex : dex);
         Object o = trongJar.get(k);
         if (o == null) {
             InputStream is = null;
             try {
-                is = new PokeBody().getClass().getResourceAsStream(THU_MUC + tenKhoa(dex, false) + ".dl");
+                is = new PokeBody().getClass().getResourceAsStream(THU_MUC + tenKhoa(dex, shiny) + ".dl");
             } catch (Throwable e) {
                 is = null;
             }
@@ -595,6 +609,16 @@ public class PokeBody {
             } catch (Throwable e) {
                 return false;
             }
+            if (pb.laShiny()) {
+                // loai-bo-sung: ban sac mau chi doi mau -> neo tinh tren diem anh BAN THUONG cung khung (do mat bang diem
+                // toi phu thuoc bang mau); khac khung (jar du khung / goi XA) hoac chua co ban thuong thi dung chinh no
+                int[] px0 = pixelCungBong(dex, dongTac, dir, tick, d, px);
+                if (px0 != null && neo(dex, false, dir, dongTac, tick, 100, NEO_TAM)) {
+                    px = px0;   // cung bong: ca diem anh lan hat giong PMD lay tu ban thuong
+                } else if (px0 != null) {
+                    neo(dex, shiny, dir, dongTac, tick, 100, NEO_TAM);
+                }
+            }
             v = new int[NeoTrangPhuc.SO];
             // diem chan trong khung: ve() dat goc khung o (x - w/2 - dxChan, y - h/2 - dyChan)
             NeoTrangPhuc.tinhLoai(dex, px, w, h, w / 2 + d.dxChan[dir], h / 2 + d.dyChan[dir], NEO_TAM, dir, v);
@@ -607,6 +631,143 @@ public class PokeBody {
             out[i] = v[i] == NeoTrangPhuc.KHONG ? NeoTrangPhuc.KHONG : v[i] * tiLe / 100;
         }
         return true;
+    }
+
+    /** Diem anh khung (cung tick) cua BAN THUONG neu cung co, cung diem chan va cung bong (alpha) voi px; null neu khong. */
+    static int[] pixelCungBong(int dex, int dongTac, int dir, int tick, PokeDongTac d, int[] px) {
+        PokeBody p0 = lay(dex, false);
+        if (p0 == null || p0.khoa == KHOA_BONG || p0.dl == null) {
+            return null;
+        }
+        PokeDongTac d0 = p0.dl.layDongTac(dongTac);
+        if (d0.rongKhung != d.rongKhung || d0.caoKhung != d.caoKhung
+                || d0.dxChan[dir] != d.dxChan[dir] || d0.dyChan[dir] != d.dyChan[dir]) {
+            return null;
+        }
+        Image a0 = p0.anhDongTac(dongTac, d0, 100);
+        int w = d.rongKhung, h = d.caoKhung;
+        int f0 = d0.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
+        int sx = d0.xAtlas + f0 * w, sy = d0.yAtlas + dir * h;
+        if (a0 == null || sx + w > a0.getWidth() || sy + h > a0.getHeight()) {
+            return null;
+        }
+        int[] q = new int[w * h];
+        try {
+            a0.getRGB(q, 0, w, sx, sy, w, h);
+        } catch (Throwable e) {
+            return null;
+        }
+        for (int i = 0; i < q.length; i++) {
+            if (((q[i] >>> 24) >= 128) != ((px[i] >>> 24) >= 128)) {
+                return null;
+            }
+        }
+        return q;
+    }
+
+    /** Neo the ban dong hanh da bam than (khoa loai + dong tac + huong + khung -> int[5]). */
+    private static final java.util.Hashtable NEO_THE = new java.util.Hashtable();
+    /** Ban kinh toi da (px goc) keo diem neo the vao than. */
+    public static final int BAM_THAN_TOI_DA = 4;
+
+    /**
+     * loai-bo-sung: neo THE BAN DONG HANH (o phu kien cua Pokemon di theo) cua khung dang ve, so voi diem chan, nhan
+     * tiLe: out = {dinhX, dinhY, coX, coY, coCo (1 = co diem co)}. Diem dinh dau PMD va diem co (giong TrangPhucVe.diemCo)
+     * duoc BAM vao diem anh dac gan nhat cua chinh khung (<= BAM_THAN_TOI_DA px): co dai / ran nhin ngang, diem co noi suy
+     * roi vao khoang trong giua dau va than -> the khong lo lung. Nho theo khung. false = khong co neo PMD.
+     */
+    public static boolean neoThe(int dex, boolean shiny, int dir, int dongTac, int tick, int tiLe, int[] out) {
+        PokeBody pb = lay(dex, shiny);
+        if (pb == null || pb.dl.neo == null) {
+            return false;
+        }
+        if (dir < 0 || dir > 3) {
+            dir = 0;
+        }
+        if (tiLe <= 0) {
+            tiLe = 100;
+        }
+        PokeDongTac d = pb.dl.layDongTac(dongTac);
+        Image anh = pb.anhDongTac(dongTac, d, 100);
+        if (anh == null && dongTac != PokeDuLieu.DUNG) {
+            dongTac = PokeDuLieu.DUNG;
+            d = pb.dl.layDongTac(dongTac);
+            anh = pb.anhDongTac(dongTac, d, 100);
+        }
+        if (anh == null) {
+            return false;
+        }
+        int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
+        String k = pb.khoa + "/" + dongTac + "/" + dir + "/" + f;
+        int[] v = (int[]) NEO_THE.get(k);
+        if (v == null) {
+            if (!neo(dex, shiny, dir, dongTac, tick, 100, NEO_TAM)) {
+                return false;
+            }
+            int w = d.rongKhung, h = d.caoKhung;
+            int sx = d.xAtlas + f * w, sy = d.yAtlas + dir * h;
+            v = new int[5];
+            v[0] = NEO_TAM[0];
+            v[1] = NEO_TAM[2];
+            int[] co = TrangPhucVe.diemCo(NEO_TAM, 1);
+            if (co != null) {
+                v[2] = co[0];
+                v[3] = co[1];
+                v[4] = 1;
+            }
+            if (sx + w <= anh.getWidth() && sy + h <= anh.getHeight()) {
+                int[] px = new int[w * h];
+                try {
+                    anh.getRGB(px, 0, w, sx, sy, w, h);
+                    int cx = w / 2 + d.dxChan[dir], cy = h / 2 + d.dyChan[dir];
+                    bamThan(px, w, h, cx, cy, v, 0);
+                    if (v[4] != 0) {
+                        bamThan(px, w, h, cx, cy, v, 2);
+                    }
+                } catch (Throwable e) {
+                    // khong doc duoc diem anh: giu neo PMD
+                }
+            }
+            if (NEO_THE.size() > 3000) {
+                NEO_THE.clear();
+            }
+            NEO_THE.put(k, v);
+        }
+        out[0] = v[0] * tiLe / 100;
+        out[1] = v[1] * tiLe / 100;
+        out[2] = v[2] * tiLe / 100;
+        out[3] = v[3] * tiLe / 100;
+        out[4] = v[4];
+        return true;
+    }
+
+    /** Keo diem (v[i], v[i+1]) (so voi chan) vao diem anh dac gan nhat trong BAM_THAN_TOI_DA px (vong vuong). */
+    static void bamThan(int[] px, int w, int h, int cx, int cy, int[] v, int i) {
+        int x0 = cx + v[i], y0 = cy + v[i + 1];
+        for (int r = 0; r <= BAM_THAN_TOI_DA; r++) {
+            int bx = 0, by = 0, tot = Integer.MAX_VALUE;
+            for (int dy = -r; dy <= r; dy++) {
+                for (int dx = -r; dx <= r; dx++) {
+                    if (dx != -r && dx != r && dy != -r && dy != r) {
+                        continue;
+                    }
+                    int x = x0 + dx, y = y0 + dy;
+                    if (x >= 0 && y >= 0 && x < w && y < h && (px[y * w + x] >>> 24) >= 128) {
+                        int dd = dx * dx + dy * dy;
+                        if (dd < tot) {
+                            tot = dd;
+                            bx = dx;
+                            by = dy;
+                        }
+                    }
+                }
+            }
+            if (tot != Integer.MAX_VALUE) {
+                v[i] += bx;
+                v[i + 1] += by;
+                return;
+            }
+        }
     }
 
     /** Anh khung dang ve (ARGB, test / cong cu): {w, h, cx, cy} + px vao out (cap phat moi). null = khong co. */

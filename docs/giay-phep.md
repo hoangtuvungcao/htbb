@@ -62,6 +62,7 @@ Sprite và chân dung PMDCollab theo [CC BY-NC 4.0](https://creativecommons.org/
 | `client_pc/res/phong/GIAY_PHEP.txt`, `OFL-NotoSans.txt`, `OFL-Baloo2.txt` | phông bản PC | — |
 | `client_pc/res/soundbank/GIAY_PHEP.txt`, `GPL-2.txt` | soundbank TimGM6mb | — |
 | `web/public/pokemon/GHI_CONG.txt` | bản sao cho trang `/giay-phep` (đọc lúc build) | chép từ tệp Unity khi đồng bộ dữ liệu web |
+| `server/map/loai/GHI_CONG.txt` | gói tải theo nhu cầu: người vẽ bản thường (251 loài), **bản sắc màu** PMDCollab (240 loài, `<NNNN>s.goi`) và **chân dung Pokédex tĩnh** (`web/public/pokemon/loai/<dex>.png`, loài chưa có gói) - cùng commit ghim `4702f10d`, CC BY-NC 4.0 | `tools/pokemon/loai/ghi_cong_loai.py` |
 
 Trong game: Menu màn đăng nhập → **Ghi công** (jar/APK), nút **Ghi công** dưới khung đăng nhập (Unity), F10 → **Giấy
 phép** (PC Java). Bản PC Windows đóng gói (`client_pc/dong_goi_windows.sh`) kèm `GHI_CONG.txt` cạnh `HTBB.exe` và thư

@@ -53,6 +53,26 @@ public final class NeoTrangPhuc {
         {3, 0, 11, 0, 14}, {3, 2, 3, 3, 9},
     };
 
+    /**
+     * GHI ĐÈ TAY (loai-bo-sung, client_pc/test/KiemNeoLoai): {dex, động tác, hướng} mà dò điểm ảnh + DAT_TAY KHÔNG tìm
+     * được đầu thật -> không vẽ MŨ ở khung đó (thà không vẽ còn hơn lệch). Bulbasaur / Ivysaur nhìn ngang lúc đánh xa
+     * (củ chĩa lên trước, mặt khuất dưới củ) và Ivysaur gục ngã nhìn trái (DAT_TAY lệch x của tư thế đứng đẩy mũ ra ngoài
+     * thân). Đồ cổ / lưng / cầm tay vẫn vẽ.
+     */
+    public static final int[][] AN_MU = {
+        {1, PokeDuLieu.DANH_XA, 2}, {1, PokeDuLieu.DANH_XA, 3},
+        {2, PokeDuLieu.DANH_XA, 2}, {2, PokeDuLieu.GUC_NGA, 2},
+    };
+
+    public static boolean anMu(int dex, int dongTac, int dir) {
+        for (int i = 0; i < AN_MU.length; i++) {
+            if (AN_MU[i][0] == dex && AN_MU[i][1] == dongTac && AN_MU[i][2] == dir) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static int pmdDex;
 
     static int[] datTay(int dex, int dir) {

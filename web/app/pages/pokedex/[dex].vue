@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * Chi tiết một loài. Hai nguồn:
- *  - CSDL (GET /api/pokedex/[dex], bảng data_loai* — đủ 1.025 loài): chỉ số nền, bậc, cả họ tiến hoá + điều kiện,
+ *  - CSDL (GET /api/pokedex/[dex], bảng data_loai* — đủ 1.025 loài): mô tả Pokédex (data_loai.mo_ta, tự viết),
+ *    chỉ số nền, bậc, cả họ tiến hoá + điều kiện,
  *    4 chiêu bạn đồng hành, nơi sống, nhóm trứng, trạng thái sprite + ghi công;
  *  - Pokédex tĩnh (shared/data/pokedex.json, loài đang có trong game): vai trò, nơi gặp quái / boss, chiêu dòng người
  *    chơi, thú cưỡi / pet / NPC.
@@ -37,6 +38,7 @@ useSeoMeta({
   title: () => `${ten.value} ${soDex(dex)} — Pokédex`,
   description: () => `${ten.value} (${he.value.map(tenHe).join(' / ')}) trong ${tenSite}: `
     + (d.value ? `bậc ${bacLoai(d.value.bac).ma} ${bacLoai(d.value.bac).ten.toLowerCase()}, thế hệ ${d.value.theHe}, tổng chỉ số ${d.value.tong}${d.value.bat ? '' : ', chưa xuất hiện trong game'}. ` : '')
+    + (d.value?.moTa ? `${d.value.moTa} ` : '')
     + 'Khắc hệ, tiến hoá, chiêu thức, nơi sống.',
 })
 
@@ -137,6 +139,9 @@ const moTaCach = (c: ChieuCuaLoai) => c.cach === 'cap'
           <h2 id="tong-quan" class="section-title text-2xl text-highlighted">
             Tổng quan
           </h2>
+          <p v-if="d?.moTa" class="mt-3 text-pretty leading-relaxed text-default" data-mo-ta>
+            {{ d.moTa }}
+          </p>
           <dl class="mt-5 grid gap-4 sm:grid-cols-2">
             <div>
               <dt class="text-sm text-muted">

@@ -289,6 +289,7 @@ public final class TrangPhucVe {
             return false;
         }
         int[] ds = manhCua(n.tpSo);
+        dongTacVe = dongTac;
         // thứ tự trong một lớp: lưng (áo choàng / cánh / ba lô) -> cổ (khăn nằm trên áo choàng) -> đồ cầm -> mũ cuối cùng
         for (int pass = 0; pass < THU_TU.length; pass++) {
             for (int i = 0; i < ds.length; i++) {
@@ -306,6 +307,9 @@ public final class TrangPhucVe {
             DEM_AN[lyDo][id & 255]++;
         }
     }
+
+    /** Động tác của lần veLop đang chạy (ghi đè tay NeoTrangPhuc.AN_MU). */
+    static int dongTacVe;
 
     /** Neo trang phục từ điểm ảnh khung (NeoTrangPhuc) của lần vẽ đang chạy. */
     private static final int[] NTP = new int[NeoTrangPhuc.SO];
@@ -362,6 +366,10 @@ public final class TrangPhucVe {
         boolean theoDay;
         switch (m.o) {
             case NgoaiHinhCua.MU: {
+                if (NeoTrangPhuc.anMu(dex, dongTacVe, dir)) {
+                    an(1, id);
+                    return;   // ghi đè tay: khung không thấy đầu thật
+                }
                 // hoa cài / nơ: phụ kiện nhỏ, tối đa nửa đầu; mũ: 60-100% bề ngang sọ, không quá đầu + 2
                 kk = m.dx != 0 ? heSoVua(bw, Math.max(bw, rongDau / 2)) : heSoVua(bw, rongDau);
                 // to hơn đầu ở cỡ lớn: lùi từng bậc nguyên (2 -> 1) đã gồm trong heSoVua
@@ -455,6 +463,9 @@ public final class TrangPhucVe {
     }
 
     /** Điểm cổ (giống NgoaiHinhVe.veO): null = loài quá thấp, không có cổ. */
+    /** Neo the ban dong hanh (PokeBody.neoThe) cua lan ve dang chay. */
+    private static final int[] NEO_THE = new int[5];
+
     static int[] diemCo(int[] neo, int k) {
         int px = neo[0] + (neo[5] - neo[0]) / 2;
         int py = (neo[1] + k + neo[2] / 2) / 2;
@@ -527,7 +538,7 @@ public final class TrangPhucVe {
     /** Mảnh thẻ bạn đồng hành trên Pokémon đi theo (tiLe % như lúc vẽ pet). */
     public static void veThe(Graphics g, int so, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int tiLe) {
         int[] t = the(so);
-        if (t == null || !PokeBody.neo(dex, shiny, dir, dongTac, tick, tiLe, NEO)) {
+        if (t == null || !PokeBody.neoThe(dex, shiny, dir, dongTac, tick, tiLe, NEO_THE)) {
             return;
         }
         int huong = dir == 0 ? 0 : dir == 1 ? 1 : 2;
@@ -539,17 +550,17 @@ public final class TrangPhucVe {
         if (m.lop != PhuKien.TRUOC && m.o != NgoaiHinhCua.MU) {
             return;   // khăn / chuông nhỏ khi quay lưng: khuất sau thân
         }
+        // loai-bo-sung: diem dinh dau / co da BAM vao than (PokeBody.neoThe) - the khong lo lung tren co dai, loai ran
         int px, py;
         if (m.neo == PhuKien.N_DINH) {
-            px = NEO[0];
-            py = NEO[2];
+            px = NEO_THE[0];
+            py = NEO_THE[1];
         } else {
-            int[] c = diemCo(NEO, 1);
-            if (c == null) {
+            if (NEO_THE[4] == 0) {
                 return;
             }
-            px = c[0];
-            py = c[1];
+            px = NEO_THE[2];
+            py = NEO_THE[3];
         }
         int ax = lat ? m.w - 1 - m.ax : m.ax;
         Image img = anh(m, lat, 1);

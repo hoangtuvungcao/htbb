@@ -24,6 +24,50 @@ java -Djava.awt.headless=true -cp $B DongGoiLoai 1 251     # đóng gói dải s
 java -Djava.awt.headless=true -cp $B DongGoiLoai --kiem     # kiểm mọi gói trong server/map/loai
 ```
 
+## Bổ sung (loai-bo-sung): bản sắc màu, neo phụ kiện, mô tả Pokédex, chân dung tĩnh
+
+| Bước | Lệnh | Ra |
+|---|---|---|
+| Tải bản sắc màu (shiny) ở commit ghim | `python3 -I tools/pokemon/loai/tai_sprite_loai.py --shiny 1 251` | `tools/pokemon/pmd_raw/<NNNN>s/` (không commit) |
+| Đóng gói thường + shiny (cả hai có khối neo) | `java … DongGoiLoai 1 251` rồi `java … DongGoiLoai --shiny 1 251` (thêm `tools/pokemon/TinhNeoPoke.java` vào lệnh `javac`) | `server/map/loai/<NNNN>.goi`, `<NNNN>s.goi` (commit) |
+| Ghi công | `python3 -I tools/pokemon/loai/ghi_cong_loai.py` | `GHI_CONG.txt`: người vẽ bản thường, bản sắc màu, chân dung tĩnh |
+| Chân dung Pokédex tĩnh (loài chưa có gói) | `python3 -I tools/pokemon/loai/tai_chan_dung_loai.py` (`--kiem`) | `web/public/pokemon/loai/<dex>.png` (40×40 PMDCollab, không đổi điểm ảnh) |
+| Khối SQL | `python3 -I tools/pokemon/loai/sinh_bo_sung_loai.py` (`--kiem`) | `sql/nang_cap.sql` khối `them_loai_bo_sung.sql` (ngay sau `them_loai_day_du.sql`) |
+| Kiểm neo + bảng soát | `client_pc/test/KiemNeoLoai.java` (lệnh ở đầu tệp) | `du_lieu/loai/neo_loai.csv`, ảnh soát `neo_<a>_<b>.png` |
+| Kiểm thẻ Pokédex có mô tả | `client_pc/test/KiemPokedexMoTa.java` (lệnh ở đầu tệp) | ảnh thẻ 4 cỡ màn hình |
+| Kiểm kho sprite + shiny + ngân sách | `client_jar/tools/KiemKhoSprite.java` | thoát 1 = hỏng |
+
+- **Shiny**: PMDCollab để bản sắc màu ở nhánh `0000/0001` của mỗi loài (tracker: `subgroups.0000.subgroups.0001`, tên
+  "Shiny"). Dùng được khi cùng luật bản thường (`sprite_complete ≥ 1`, có `Walk`). Gen 1–2: **240 / 251** loài có;
+  **11 loài "chưa có shiny"** (PMDCollab mới có bản tô màu nháp, chưa có sprite): #16 Pidgey, #26 Raichu, #58 Growlithe,
+  #147 Dratini, #161 Sentret, #162 Furret, #171 Lanturn, #191 Sunkern, #203 Girafarig, #215 Sneasel, #225 Delibird.
+  **Không** tự đổi bảng màu: không có nguồn bảng màu shiny chính thức nào có giấy phép, nên loài thiếu không bao giờ
+  được tung shiny ngoài trời (`data_loai_sprite.shiny = 0`) cho tới khi PMDCollab có sprite thật.
+  Toàn bộ 1.025 loài: PMDCollab có shiny dùng được cho 920 loài (đợt sau chạy cùng lệnh với dải mới).
+- **Neo phụ kiện**: `DongGoiLoai` gọi `TinhNeoPoke.tinh` (Offsets.png của PMDCollab: đầu / tay / tâm thân từng khung)
+  rồi `DongGoiPokeJ2me.themNeo` gắn khối `'N'` cuối `.dl`, chỉ các khung jar giữ lại (cấu hình `XA`). Client tính neo
+  trang phục từ chính điểm ảnh khung (`NeoTrangPhuc`) với điểm PMD làm hạt giống, nên thẻ bạn đồng hành / trang phục vẽ
+  được trên loài tải theo nhu cầu (bạn đồng hành hoang dã bắt được, Pokémon Hộp PC đi theo). `--kiem` từ chối gói thiếu neo.
+- **Mô tả Pokédex**: `mo_ta_loai.json` là nguồn duy nhất của `data_loai.mo_ta` (1.025 mô tả 1–2 câu, tự viết từ sự
+  kiện hệ / nơi sống / đặc điểm / tiến hoá, không chép hay dịch Pokédex chính thức, Bulbapedia, Serebii; không có từ
+  cấm của `ChuPokemon.TU_CAM`). Khối SQL chỉ ghi ô đang rỗng (giữ mô tả người vận hành đã sửa trên web).
+- **64 loài chưa có sprite PMDCollab dùng được** (4702f10d = commit mới nhất ngày 22/10/2026, không có loài nào được
+  thêm). #879 Copperajah có sprite nháp (Walk / Idle) đã đóng trong jar từ trước nên vẽ được; còn **63 loài** chỉ có chân
+  dung Pokédex tĩnh, trong game vẽ bóng: #514 Simisear, #516 Simipour, #520 Tranquill, #522 Blitzle, #523 Zebstrika,
+  #538 Throh, #558 Crustle, #564 Tirtouga, #565 Carracosta, #591 Amoonguss, #592 Frillish, #593 Jellicent, #616 Shelmet,
+  #618 Stunfisk, #626 Bouffalant, #668 Pyroar, #683 Aromatisse, #732 Trumbeak, #733 Toucannon, #735 Gumshoos,
+  #756 Shiinotic, #765 Oranguru, #837 Rolycoly, #838 Carkol, #839 Coalossal, #865 Sirfetch’d, #866 Mr. Rime,
+  #868 Milcery, #870 Falinks, #874 Stonjourner, #878 Cufant, #883 Arctovish, #893 Zarude, #917 Tarountula, #929 Dolliv,
+  #931 Squawkabilly, #942 Maschiff, #943 Mabosstiff, #944 Shroodle, #945 Grafaiai, #947 Brambleghast, #948 Toedscool,
+  #949 Toedscruel, #950 Klawf, #954 Rabsca, #956 Espathra, #962 Bombirdier, #968 Orthworm, #973 Flamigo,
+  #986 Brute Bonnet, #990 Iron Treads, #993 Iron Jugulis, #999 Gimmighoul, #1001 Wo-Chien, #1002 Chien-Pao,
+  #1003 Ting-Lu, #1008 Miraidon, #1014 Okidogi, #1020 Gouging Fire, #1021 Raging Bolt, #1022 Iron Boulder,
+  #1023 Iron Crown, #1025 Pecharunt. `ChonLoaiHoangDa` không bao giờ chọn loài `trang_thai = 0` (kể cả khi đợt của nó
+  mở), bộ sinh dừng nếu loài đợt đang mở thiếu hình; `trang_thai` chỉ = 1 khi PMDCollab `sprite_complete ≥ 1` + `Walk`
+  (sửa: trước đây bản nháp `sprite_complete = 0` có khoá Walk bị tính là dùng được - 10 loài, đều chưa mở).
+- Nguồn khác: không có kho sprite Pokémon nào khác có giấy phép tương thích CC BY-NC (sprite chính thức / bản rip game
+  và kho fan không ghi giấy phép đều không dùng được), nên không lấp bằng nguồn khác.
+
 ## Nguồn và giấy phép
 
 - Sprite: PMDCollab SpriteCollab, **ghim commit** `4702f10d888d19e804c5986a91170dfc92ae01b8`
@@ -56,7 +100,9 @@ Tên tệp và nội dung giống hệt `client_jar/res/pk`, nên `PokeBody` đ�
 
 ## Số liệu (22/10/2026, Gen 1–2)
 
-- 251 / 251 loài có gói; tổng ≈ 2,4 MB, trung bình ≈ 10 KB / loài (cấu hình `XA`).
+- 251 / 251 loài có gói; tổng ≈ 2,7 MB, trung bình ≈ 10,7 KB / loài (cấu hình `XA`, có khối neo phụ kiện).
+- 240 / 251 loài có gói sắc màu `<NNNN>s.goi`; tổng ≈ 2,6 MB, trung bình ≈ 10,8 KB. Gói lớn nhất 34 KB, cặp thường +
+  shiny lớn nhất 68 KB (< 1/4 ngân sách RMS 1 MB; `KiemKhoSprite` mô phỏng nạp cả 491 gói qua LRU, không lúc nào vượt).
 - Toàn bộ 1.025 loài: PMDCollab có sprite dùng được 961, đủ động tác 200, chân dung 1.025, thiếu 64
   (Gen 5: 15, Gen 6: 2, Gen 7: 5, Gen 8: 12, Gen 9: 30).
 - Đợt sau (Gen 3+): chạy lại bước 2–5 với dải số mới, ví dụ `tai_sprite_loai.py 252 386` và `DongGoiLoai 252 386`.

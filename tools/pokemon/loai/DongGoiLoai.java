@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
  *                                   --DongGoiPokeJ2me.dongGoi--> &lt;tam&gt;/pk/&lt;NNNN&gt;.dl + &lt;NNNN&gt;_&lt;a&gt;.png (dinh dang jar)
  *                                   --chanDung 40x40-->          &lt;tam&gt;/pk/&lt;NNNN&gt;_c.png
  *   roi gom cac tep jar cua loai vao MOT tep goi (big-endian, DataOutputStream):
- *     'H' 'T' 'P' 'K', u8 phienBan = 1, i16 dex, u8 shiny (0), u8 n,
+ *     'H' 'T' 'P' 'K', u8 phienBan = 1, i16 dex, u8 shiny (0 / 1), u8 n,
  *     n x (writeUTF tenTep vd "0016.dl" / "0016_0.png" / "0016_c.png", i32 len, len byte)
  *   Ten tep va noi dung GIONG HET client_jar/res/pk (PokeBody doc duoc nguyen ven).
  *
@@ -34,7 +34,9 @@ import javax.imageio.ImageIO;
  *       client_jar/src/game/pokemon/PokeDongTac.java client_jar/src/game/pokemon/HieuUngBang.java \
  *       client_jar/tools/DongGoiPokeJ2me.java tools/pokemon/DongGoiSprite.java tools/pokemon/loai/DongGoiLoai.java
  *   java -Djava.awt.headless=true -cp $B DongGoiLoai 1 251          # dong goi dai dex (mac dinh 1..251)
+ *   java -Djava.awt.headless=true -cp $B DongGoiLoai --shiny 1 251  # ban sac mau: pmd_raw/<NNNN>s -> <NNNN>s.goi
  *   java -Djava.awt.headless=true -cp $B DongGoiLoai --kiem          # kiem moi goi trong server/map/loai
+ * (them tools/pokemon/TinhNeoPoke.java vao lenh javac: moi goi co khoi neo phu kien PMD cuoi .dl)
  *
  * Cau hinh khung: DongGoiPokeJ2me.XA (loai chi la quai / ban dong hanh nhin xa: it khung hon, danh xa dung chung
  * anh danh gan) - giu goi nho (~ 30 KB / loai) vi J2ME tai qua mang + cache RMS 1 MB.
@@ -51,25 +53,33 @@ public final class DongGoiLoai {
         return String.format("%04d", dex);
     }
 
-    public static void main(final String[] a) throws Exception {
+    /** Khoa loai: "0016", ban sac mau "0016s" (giong PokeBody.tenKhoa). */
+    static String khoa(final int dex, final boolean shiny) {
+        return khoa(dex) + (shiny ? "s" : "");
+    }
+
+    public static void main(final String[] a0) throws Exception {
         final File goc = new File(".").getCanonicalFile();
         final File raw = new File(goc, "tools/pokemon/pmd_raw");
         final File ra = new File(goc, "server/map/loai");
-        if (a.length > 0 && a[0].equals("--kiem")) {
+        if (a0.length > 0 && a0[0].equals("--kiem")) {
             System.exit(kiemHet(ra) == 0 ? 0 : 1);
             return;
         }
-        final int tu = a.length > 0 ? Integer.parseInt(a[0]) : 1;
-        final int den = a.length > 1 ? Integer.parseInt(a[1]) : 251;
+        final boolean shiny = Arrays.asList(a0).contains("--shiny");
+        final List<String> a = new ArrayList<String>(Arrays.asList(a0));
+        a.remove("--shiny");
+        final int tu = a.size() > 0 ? Integer.parseInt(a.get(0)) : 1;
+        final int den = a.size() > 1 ? Integer.parseInt(a.get(1)) : 251;
         final File tam = Files.createTempDirectory("dg_loai").toFile();
         final File poke = new File(tam, "poke");
         poke.mkdirs();
         ra.mkdirs();
-        int so = 0, loi = 0;
+        int so = 0, loi = 0, khongNeo = 0;
         long tong = 0;
         final List<String> khongCo = new ArrayList<String>();
         for (int dex = tu; dex <= den; dex++) {
-            final String k = khoa(dex);
+            final String k = khoa(dex, shiny);
             final File tm = new File(raw, k);
             if (!new File(tm, "AnimData.xml").isFile()) {
                 khongCo.add(k);
@@ -79,12 +89,24 @@ public final class DongGoiLoai {
             pk.mkdirs();
             try {
                 DongGoiSprite.dongGoi(tm, k, poke);
+                // diem neo phu kien PMD (Offsets.png, TinhNeoPoke) -> khoi neo cuoi .dl: trang phuc / the ban dong hanh
+                // ve duoc tren loai tai theo nhu cau (NeoTrangPhuc tinh tiep tu diem anh khung luc ve).
+                // Shiny la ban doi mau cung khung: neo lay tu ban shiny neu co Offsets, khong thi tu ban thuong.
+                File nguonNeo = tm;
+                if (shiny && !coOffsets(tm)) {
+                    nguonNeo = new File(raw, khoa(dex, false));
+                }
+                Files.write(new File(poke, k + "_neo.bytes").toPath(), TinhNeoPoke.tinh(nguonNeo, new int[2]));
                 DongGoiPokeJ2me.cau = DongGoiPokeJ2me.XA;
                 DongGoiPokeJ2me.dongGoi(poke, pk, k, k, false);
                 DongGoiPokeJ2me.ghiAnh(DongGoiPokeJ2me.chanDung(ImageIO.read(new File(poke, k + "_cd.bytes")), false),
                         new File(pk, k + "_c.png"));
                 final Map<String, byte[]> tep = new LinkedHashMap<String, byte[]>();
                 tep.put(k + ".dl", Files.readAllBytes(new File(pk, k + ".dl").toPath()));
+                if (PokeDuLieu.doc(tep.get(k + ".dl")).neo == null) {
+                    khongNeo++;
+                    System.out.println("CANH BAO " + k + ": .dl khong co khoi neo");
+                }
                 final String[] ds = pk.list();
                 Arrays.sort(ds);
                 for (final String t : ds) {
@@ -92,7 +114,7 @@ public final class DongGoiLoai {
                         tep.put(t, Files.readAllBytes(new File(pk, t).toPath()));
                     }
                 }
-                final byte[] b = ghiGoi(dex, false, tep);
+                final byte[] b = ghiGoi(dex, shiny, tep);
                 Files.write(new File(ra, k + ".goi").toPath(), b);
                 tong += b.length;
                 so++;
@@ -101,9 +123,22 @@ public final class DongGoiLoai {
                 System.out.println("LOI " + k + ": " + e);
             }
         }
-        System.out.println("Da dong goi " + so + " loai -> " + ra + ", tong " + tong + " byte (trung binh "
-                + (so > 0 ? tong / so : 0) + " byte/loai), loi " + loi + ", khong co sprite: " + khongCo);
-        System.exit(loi == 0 && kiemHet(ra) == 0 ? 0 : 1);
+        System.out.println("Da dong goi " + so + (shiny ? " loai SHINY" : " loai") + " -> " + ra + ", tong " + tong
+                + " byte (trung binh " + (so > 0 ? tong / so : 0) + " byte/loai), loi " + loi + ", khong neo " + khongNeo
+                + ", khong co sprite: " + khongCo);
+        System.exit(loi == 0 && khongNeo == 0 && kiemHet(ra) == 0 ? 0 : 1);
+    }
+
+    static boolean coOffsets(final File tm) {
+        final String[] ds = tm.list();
+        if (ds != null) {
+            for (final String t : ds) {
+                if (t.endsWith("-Offsets.png")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     static byte[] ghiGoi(final int dex, final boolean shiny, final Map<String, byte[]> tep) throws IOException {
@@ -177,12 +212,15 @@ public final class DongGoiLoai {
                 tong += b.length;
                 final int[] ds2 = new int[2];
                 final Map<String, byte[]> tep = docGoi(b, ds2);
-                if (!khoa(ds2[0]).equals(k) || ds2[1] != 0) {
-                    throw new IOException("dex trong goi " + ds2[0] + " khac ten tep");
+                if (!khoa(ds2[0], ds2[1] != 0).equals(k)) {
+                    throw new IOException("dex / shiny trong goi " + ds2[0] + "/" + ds2[1] + " khac ten tep");
                 }
                 final PokeDuLieu dl = PokeDuLieu.doc(tep.get(k + ".dl"));
                 if (dl == null) {
                     throw new IOException(".dl khong doc duoc");
+                }
+                if (dl.neo == null) {
+                    throw new IOException(".dl thieu khoi neo phu kien (trang phuc / the ban dong hanh)");
                 }
                 for (int i = 0; i < PokeDuLieu.SO_DONG_TAC; i++) {
                     final String anh = k + "_" + dl.anhCua(i) + ".png";

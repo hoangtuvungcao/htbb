@@ -175,6 +175,17 @@ public final class GoiLoai {
         return "0000".substring(Math.min(4, s.length())) + s + ".goi";
     }
 
+    /** Ten tep goi theo sac mau: "0016.goi" / ban shiny "0016s.goi" (tools/pokemon/loai/DongGoiLoai --shiny). */
+    public static String tenGoi(final int dex, final boolean shiny) {
+        final String t = tenGoi(dex);
+        return shiny ? t.substring(0, t.length() - 4) + "s.goi" : t;
+    }
+
+    /** Co shiny ghi trong dau goi (byte 7); -1 neu hong. */
+    public static int shinyCuaGoi(final byte[] b) {
+        return b == null || b.length < 10 || b[0] != 'H' || b[1] != 'T' || b[2] != 'P' || b[3] != 'K' ? -1 : b[7] & 0xFF;
+    }
+
     // ------------------------------------------------------------------ gioi han bang thong
 
     /** Thung token theo byte: nap {@code byteGiay} moi giay, toi da 1 giay du tru. */
