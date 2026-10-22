@@ -229,19 +229,19 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
-### Danh sách kiểm triển khai 0.9.8 (`BAN=908`: học chiêu, bộ / ngọc / chế tạo / thu phục, phó bản + cúp, thời tiết, giao diện NRO, đồ khoá)
+### Danh sách kiểm triển khai 0.9.8 (`BAN=908`: học chiêu, bộ / ngọc / chế tạo / thu phục, phó bản + cúp, thời tiết, giao diện NRO, kênh chat, trao đổi Pokémon, đồ khoá)
 
 Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), khác:
 
-1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — cuối log có `== XONG` và `danh muc cau hinh: 306 khoa`. `nang_cap.sql`
+1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — cuối log có `== XONG` và `danh muc cau hinh: 326 khoa`. `nang_cap.sql`
    phần 11 tạo bảng / dữ liệu 0.9.8 (`sql/README.md`); chỉ thêm bảng / cột (`tob_pokedex.so_bat`, `bat_shiny`), không sửa
    dòng người chơi. Kiểm (22/10/2026): dump `main` 1e27bf2a + `nang_cap.sql` hai lần → không lỗi, bảng người chơi giữ số
    dòng + CHECKSUM, xuất lại = `htbb_day_du.sql`.
-2. Log máy chủ sau khi lên: `[CAU HINH] danh muc tu CSDL htbb_db: 306 khoa, 19 nhom`, `[KHOA BAN DO] da nap 142 luat`,
+2. Log máy chủ sau khi lên: `[CAU HINH] danh muc tu CSDL htbb_db: 326 khoa, 19 nhom`, `[KHOA BAN DO] da nap 142 luat`,
    `[HOC CHIEU] learnset 175 dong`, `[BO NGOC] 33 dòng bộ ... 117 loài thu phục được`, `PHONG RIENG -> pho ban 4381, san
    cup 4382`, `[DANH HIEU] 420 mau danh hieu`; không có `THIEU DU LIEU` / `Exception`.
 3. Nhân vật cũ: điểm tiềm năng → Điểm huấn luyện chuyển **trong game** lúc nạp nhân vật (một lần, dấu
-   `tob_chuyen_doi_can_bang`). Gói mới -107 / -112 / -118 / -120 / -121 / -122 / -108 (và phần nối thêm sức chứa túi của -105) chỉ gửi cho client `BAN >= 908`; client
+   `tob_chuyen_doi_can_bang`). Gói mới -107 / -108 / -112 / -118 / -120 / -121 / -122 / -124 (và phần nối thêm sức chứa túi của -105) chỉ gửi cho client `BAN >= 908`; client
    906 / 907 vẫn chơi được (không có màn mới).
 4. Đồ / nguyên liệu khoá bán NPC ở giá thấp (`chong_clone.ban_npc_khoa_phan_tram` = 25% = 1/4 giá NPC thường, trần 25%; tắt
    khẩn cấp: `chong_clone.ban_npc_khoa_phan_tram=0` trong `server.ini`), đồ khoá Huỷ được; nhật ký `KHOA_BAN_NPC` / `KHOA_HUY`.

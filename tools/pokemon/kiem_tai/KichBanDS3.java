@@ -261,7 +261,7 @@ class KichBanDS3 {
         b.bom(300);
         int m2 = b.moc();
         b.gui(77, (byte) 1);
-        String t = b.doiChu(m2, 3000, "NANG CAP", "cần", "can ", "+15");
+        String t = b.doiChu(m2, 3000, "NANG CAP", "cần", "can ", "Thành công", "Thất bại");
         b.lamMoi(); // 77 chi gui 21 + 16/0: lay lai tui (16/1) de thay +N moi
         return t == null ? "khong tra loi " + b.chuTu(m2) : t;
     }
@@ -304,6 +304,8 @@ class KichBanDS3 {
                     if (bua && plus2 < plus) { sai = true; lg.append("[co bua van rot +").append(plus).append("->").append(plus2).append("] "); }
                     if (!bua && plus >= 6 && plus2 >= plus) { /* +7 tro len khong bua phai rot */ }
                     if (lastK == plus + 1 && rate > lastRate && lastRate >= 0) pityTang = true;
+                } else if (plus2 == plus + 1) {
+                    tc++; // tin ket qua bi tin khac (vd "Danh hiệu mới: ... +15") chen truoc: mon da len cap = thanh cong
                 } else { loiCuoi = t; break; }
                 if (rate >= 0) { lastRate = rate; lastK = plus + 1; }
                 if (t.contains("Thành công")) lastK = -1;
@@ -313,9 +315,11 @@ class KichBanDS3 {
             ket("nang_cap.len_15", plusMax >= 15, "dat +" + plusMax + " sau " + lan + " lan (TC " + tc + ", TB " + tb + ")" + (loiCuoi != null ? " dung vi: " + loiCuoi : ""));
             ket("nang_cap.bua_bao_ho", !sai, sai ? lg.toString() : "co bua tu +7: khong rot cap; " + lg);
             ket("nang_cap.pity", tb == 0 || pityTang, "ti le tang sau that bai lien tiep: " + pityTang);
-            // khong bua tu +7: lan that bai phai rot 1 cap (thu tren mon moi +6 bang may man)
+            // khong bua tu +7: lan that bai phai rot 1 cap (thu tren mon moi +6 bang may man) - TRU moc neo 0.9.8
+            // (bo-ngoc-bat: da dat +7 / +10 / +13 thi that bai o dung moc khong rot duoi moc)
             int id2 = muaVuKhi(b, 79);
-            int lanRot = 0, lanTb = 0;
+            int lanRot = 0, lanTb = 0, lanNeo = 0;
+            boolean neoSai = false;
             for (int i = 0; i < 80 && id2 != KHONG; i++) {
                 int[] d = b.timDo(x -> x[0] == id2);
                 if (d == null) break;
@@ -323,10 +327,19 @@ class KichBanDS3 {
                 String t = moNangCap(b, id2, false);
                 b.bom(300);
                 int[] dd = b.timDo(x -> x[0] == id2);
-                if (t.contains("Thất bại") && d[2] >= 6) { lanTb++; if (dd != null && dd[2] == d[2] - 1) lanRot++; }
+                if (t.contains("Thất bại") && d[2] >= 6) {
+                    if (d[2] == 7 || d[2] == 10 || d[2] == 13) {
+                        lanNeo++;
+                        neoSai |= dd == null || dd[2] < d[2];
+                    } else {
+                        lanTb++;
+                        if (dd != null && dd[2] == d[2] - 1) lanRot++;
+                    }
+                }
                 if (!t.contains("Thành công") && !t.contains("Thất bại")) break;
             }
-            ket("nang_cap.rot_khong_bua", lanTb == 0 ? null : lanRot == lanTb, "that bai tu +7 khong bua: " + lanTb + " lan, rot cap " + lanRot + " lan");
+            ket("nang_cap.rot_khong_bua", lanTb == 0 && lanNeo == 0 ? null : lanRot == lanTb && !neoSai, "that bai tu +7 khong bua (ngoai moc neo): " + lanTb
+                    + " lan, rot cap " + lanRot + " lan; that bai o moc neo +7/+10/+13: " + lanNeo + " lan, " + (neoSai ? "ROT duoi moc" : "giu moc"));
             // het xu: thong bao yeu cau, khong tru gi
             b.gm("smn " + b.ten + " " + (-b.xu) + " 0 0", 800);
             b.lamMoi();
