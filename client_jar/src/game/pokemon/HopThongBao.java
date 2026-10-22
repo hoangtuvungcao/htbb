@@ -196,7 +196,32 @@ public final class HopThongBao extends Dialog {
             this.rongNgat = ww;
         }
         chonHuyHieu(this.tieuDe, this.noiDung, this.kieu);
-        ve(g, ww, this.tieuDe, mauKieu(this.kieu), this.dong0, null, this.nut, this.kieuNut, this.bam, this.dongHop, this.ngoaiDong, this.cuon, TEN_NUT);
+        // 0.9.7 NRO: hộp phần thưởng (quà, giftcode, lên cấp, tiến hoá, rương, nhiệm vụ...) = thêm hàng ô vật phẩm;
+        // chạm ô = thẻ vật phẩm chỉ xem, đóng thẻ thì hộp này hiện lại
+        int hp = laPhanThuong(this.tieuDe, this.noiDung) ? PhanThuong.cao(this.noiDung, ww - 2 * pad()) : 0;
+        int[] r = ve(g, ww, this.tieuDe, mauKieu(this.kieu), this.dong0, hp > 0 ? new int[]{hp + 4} : null, this.nut, this.kieuNut,
+                this.bam, this.dongHop, this.ngoaiDong, this.cuon, TEN_NUT);
+        int day = r[1] + r[3] - pad() - (this.nut == null || this.nut.length == 0 ? 0 : caoNut() + pad());
+        if (hp > 0 && r[4] + 4 + hp <= day) {
+            PhanThuong.ve(g, r[0] + pad(), r[4] + 4, ww - 2 * pad(), this.noiDung, new IAction() {
+                public void perform() {
+                    HopThongBao.this.show();
+                }
+            });
+        }
+    }
+
+    /** Tin nhiệm vụ đội (máy chủ, kiểu 2): hộp gỗ "Nhiệm vụ đội", phần thưởng thành ô chạm được. */
+    public static void tinNhiemVuBang(String noiDung) {
+        bao("Nhiệm vụ đội", noiDung);
+    }
+
+    /** Hộp có nội dung phần thưởng (theo tiêu đề / nội dung). */
+    static boolean laPhanThuong(String tieuDe, String noiDung) {
+        String t = ChuPokemon.thuong((tieuDe == null ? "" : tieuDe) + " " + (noiDung == null ? "" : noiDung));
+        return t.indexOf("thưởng") >= 0 || t.indexOf("quà") >= 0 || t.indexOf("giftcode") >= 0 || t.indexOf("nhận được") >= 0
+                || t.indexOf("lên cấp") >= 0 || t.indexOf("tiến hoá") >= 0 || t.indexOf("tiến hóa") >= 0 || t.indexOf("rương") >= 0
+                || t.indexOf("hoàn thành") >= 0;
     }
 
     /** Lề trong hộp (px logic): ~18 px thật ở PC 1080p, ~16 dp ở điện thoại. */

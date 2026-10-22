@@ -684,9 +684,9 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     } else if (type5 == 2) {
                         String content2 = msg.reader().readUTF();
                         Res.PORTION_ITEM_NAME_CLAN = msg.reader().readUTF();
-                        ViewInfoScr.gI().setInfo("NHIỆM VỤ", content2);
-                        ViewInfoScr.gI().switchToMe();
+                        // 0.9.7 NRO: tin nhiệm vụ đội = hộp gỗ (ô phần thưởng chạm được) thay cửa sổ chữ cũ ViewInfoScr
                         Canvas.endDlg();
+                        game.pokemon.HopThongBao.tinNhiemVuBang(content2);
                     }
                     break;
                 case -36:

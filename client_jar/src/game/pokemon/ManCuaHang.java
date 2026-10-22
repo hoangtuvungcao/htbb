@@ -17,8 +17,8 @@ import javax.microedition.lcdui.Graphics;
 
 /**
  * CỬA HÀNG (0.9.3, bảng chung Bang): tab Mua | Bán, chip lọc theo loại, hàng = ảnh + tên + giá (biểu tượng tiền
- * TienTe), chạm hàng = thẻ chi tiết bên phải (màn hẹp: thay danh sách) với bộ đếm số lượng − / + / Tối đa, tổng tiền
- * và nút to "Mua" (xác nhận HopXacNhan). Ba kiểu: THUỐC (Poké Mart, gói 33 NPC bán thuốc), ĐỒ (NPC bán trang bị) và
+ * TienTe); 0.9.7: chạm hàng = THẺ VẬT PHẨM kiểu NRO (TheVatPham.moMua: thông tin, chỉ số, mô tả, chọn số − / + /
+ * Tối đa, tổng tiền có biểu tượng, nút "Mua"). Ba kiểu: THUỐC (Poké Mart, gói 33 NPC bán thuốc), ĐỒ (NPC bán trang bị) và
  * ĐẶC BIỆT (cửa hàng lượng, Res.shopTemplate). Mua gửi NGAY (server trả túi / tiền / thông báo). "Bảng cũ" mở cửa sổ
  * cũ (WindowInfoScr) cùng dữ liệu - chỉ còn để dự phòng.
  */
@@ -272,32 +272,90 @@ public final class ManCuaHang extends Screen {
             veBan(g, x, y, w, h);   // 0.9.7: tab Bán = lưới hành trang NRO, chạm ô = thẻ vật phẩm (nút Bán)
             return;
         }
-        int k = Bang.cach();
-        boolean hai = w >= 400;
-        int wl = hai ? w * 54 / 100 : w;
-        if (!hai && this.chon != null) {
-            veChiTiet(g, x, y, w, h);
+        // 0.9.7 (NRO): danh sách hàng trọn bề ngang; chạm một món = THẺ VẬT PHẨM (thông tin + chọn số + giá + "Mua")
+        veDanhSach(g, x, y, w, h);
+        moTheMua();
+    }
+
+    /** món đã mở thẻ (không mở lại khi thẻ nhường chỗ hộp khác) */
+    private Object daMoChon;
+
+    /** Mở thẻ MUA cho món đang chọn (một lần mỗi món). */
+    void moTheMua() {
+        final Object o = this.chon;
+        if (o == null || o == this.daMoChon || TheVatPham.dangMo() || Canvas.currentDialog != null) {
             return;
         }
-        if (hai && this.chon == null) {
-            // 0.9.5: hai cột -> chọn sẵn món đầu (khung chi tiết + bộ chọn số lượng hiện ngay, không để trống)
-            Vector v = dsHang();
-            if (v.size() > 0) {
-                this.chon = v.elementAt(0);
-                this.soLuong = 1;
+        this.daMoChon = o;
+        IAction dong = new IAction() {
+            public void perform() {
+                ManCuaHang.this.chon = null;
+                ManCuaHang.this.daMoChon = null;
             }
+        };
+        if (o instanceof GemTemp) {
+            final GemTemp t = Res.getShopByID(((GemTemp) o).id) != null ? Res.getShopByID(((GemTemp) o).id) : (GemTemp) o;
+            final int loai = t.typeMoney == 0 ? TienTe.LUONG : TienTe.XU;
+            TheVatPham.moMua(t, t.price, loai, 1, new TheVatPham.ViecMua() {
+                public String khongMua(int so) {
+                    if (mc().isFullInventory()) {
+                        return "Hành trang đã đầy.";
+                    }
+                    long co = loai == TienTe.LUONG ? mc().luong : mc().charXu;
+                    return t.price > co ? "Không đủ " + TienTe.ten(loai) + "." : null;
+                }
+
+                public void mua(int so) {
+                    GameService.gI().buyItemShopSpecial(((GemTemp) o).id);
+                }
+            }, dong);
+            return;
         }
-        veDanhSach(g, x, y, wl, h);
-        if (hai) {
-            int xr = x + wl + k, wr = w - wl - k;
-            if (this.chon != null) {
-                veChiTiet(g, xr, y, wr, h);
-            } else {
-                Bang.the(g, xr, y, wr, h);
-                Bang.trong(g, xr, y, wr, h, this.tab == 0 ? "Chọn một món để xem" : "Chọn món muốn bán",
-                        this.tab == 0 ? "Chạm hàng bên trái: xem chi tiết, chọn số lượng rồi bấm Mua." : "Giá bán lại bằng 1/5 giá mua.");
+        final ItemInInventory it = (ItemInInventory) o;
+        if (this.kieu == THUOC) {
+            final int loai = it.potionType;
+            final int max = toiDaThuoc(loai);
+            TheVatPham.moMua(new Integer(loai), giaThuoc(loai), TienTe.XU, Math.max(1, max), new TheVatPham.ViecMua() {
+                public String khongMua(int so) {
+                    if (max < 1) {
+                        return (long) giaThuoc(loai) > mc().charXu ? "Không đủ xu." : "Không mua thêm được (tối đa 999 bình).";
+                    }
+                    return (long) so * giaThuoc(loai) > mc().charXu ? "Không đủ xu." : null;
+                }
+
+                public void mua(int so) {
+                    ItemInInventory m = new ItemInInventory();
+                    m.potionType = (byte) loai;
+                    m.number = (short) so;
+                    Vector v = new Vector();
+                    v.addElement(m);
+                    GameService.gI().buyPotion(v);
+                }
+            }, dong);
+            TheVatPham.gI().so = Math.max(1, Math.min(Math.max(1, max), this.soLuong));
+            return;
+        }
+        final ItemTemplate t = ManNhanVat.mau(it);
+        final boolean thue = t != null && t.ndayLoan != 0;
+        final int loai = thue ? TienTe.LUONG : TienTe.XU;
+        final long gia = t == null ? 0 : t.price;
+        TheVatPham.moMua(it, gia, loai, 1, new TheVatPham.ViecMua() {
+            public String khongMua(int so) {
+                if (mc().FullInventory() >= TrangThaiNguoiChoi.sucChua(mc())) {
+                    return "Hành trang đã đầy.";
+                }
+                if (!thue && gia > mc().charXu) {
+                    return "Không đủ " + TienTe.ten(TienTe.XU) + ".";
+                }
+                return null;
             }
-        }
+
+            public void mua(int so) {
+                Vector v = new Vector();
+                v.addElement(it);
+                GameService.gI().buyItem(v);
+            }
+        }, dong);
     }
 
     /** Tab Bán (0.9.7): lưới hành trang (LuoiTui, ngữ cảnh BÁN) - chạm ô = thẻ vật phẩm với nút Bán / lý do không bán được. */
@@ -429,184 +487,7 @@ public final class ManCuaHang extends Screen {
         return Math.max(0, Math.min(theoTien, Math.min(120, cho)));
     }
 
-    private void veChiTiet(Graphics g, int x, int y, int w, int h) {
-        final Object o = this.chon;
-        int k = Bang.cach();
-        Bang.the(g, x, y, w, h);
-        int hd = Bang.co(26);
-        Bang.nutLui(g, x + 4, y + 4, hd, new IAction() {
-            public void perform() {
-                ManCuaHang.this.chon = null;
-            }
-        });
-        int rh = Bang.caoHang();
-        // hàng đầu: như hàng danh sách (ảnh + tên + giá)
-        veHang(g, o, x + hd + 8, y + 2, w - hd - 12, rh);
-        int yy = y + 4 + Math.max(hd, rh) + k;
-        int nh = Bang.caoHang();
-        int yn = y + h - 6 - nh;
-        if (o instanceof GemTemp) {
-            final GemTemp t = Res.getShopByID(((GemTemp) o).id) != null ? Res.getShopByID(((GemTemp) o).id) : (GemTemp) o;
-            Bang.doan(g, Font.blackFont, t.decript, x + 10, yy, w - 20, false);
-            final int loai = t.typeMoney == 0 ? TienTe.LUONG : TienTe.XU;
-            Bang.nut(g, x + 6, yn, w - 12, nh, "Mua", Bang.XAC_NHAN, new IAction() {
-                public void perform() {
-                    if (mc().isFullInventory()) {
-                        DungDo.loi("Hành trang đã đầy.");
-                        return;
-                    }
-                    HopXacNhan.hoiGia("Mua vật phẩm", "Mua " + t.name + "?", "Mua", loai, t.price, new IAction() {
-                        public void perform() {
-                            GameService.gI().buyItemShopSpecial(((GemTemp) o).id);
-                        }
-                    });
-                }
-            }, "mua");
-            return;
-        }
-        final ItemInInventory it = (ItemInInventory) o;
-        if (this.kieu == THUOC && this.tab == 0) {
-            // bộ đếm số lượng − / + / Tối đa + tổng tiền
-            final int loai = it.potionType;
-            final int max = toiDaThuoc(loai);
-            if (this.soLuong > max) {
-                this.soLuong = Math.max(max, 1);
-            }
-            int sb = nh;
-            int wo = w - 20 - 3 * (sb + k);
-            Bang.nut(g, x + 10, yy, sb, sb, "", Bang.PHU, new IAction() {
-                public void perform() {
-                    ManCuaHang.this.soLuong = Math.max(1, ManCuaHang.this.soLuong - 1);
-                }
-            }, "sl-tru");
-            // 0.9.6: ô số trắng viền teal nhạt, số lớn đậm
-            // 0.9.7: ô số = giấy da lõm (mảnh THE)
-            if (!KhungNro.ve(g, KhungNroBang.THE, x + 10 + sb + k, yy, wo, sb)) {
-                GiaoDien.khoi(g, x + 10 + sb + k, yy, wo, sb, 2, ChuDe.NEN_DUOI);
-            }
-            ChuDe.chuGiua(g, String.valueOf(this.soLuong), x + 10 + sb + k + wo / 2, yy, sb, ChuDe.TIEU_DE, ChuDe.CHU, 2);
-            Bang.nut(g, x + 10 + sb + k + wo + k, yy, sb, sb, "", Bang.PHU, new IAction() {
-                public void perform() {
-                    ManCuaHang.this.soLuong = Math.min(Math.max(1, max), ManCuaHang.this.soLuong + 1);
-                }
-            }, "sl-cong");
-            Bang.nut(g, x + 10 + 2 * (sb + k) + wo + k - sb + sb, yy, sb, sb, "Max", Bang.TRUNG, new IAction() {
-                public void perform() {
-                    ManCuaHang.this.soLuong = Math.max(1, max);
-                }
-            }, "sl-max");
-            g.setColor(ChuDe.CHINH_TOI);
-            int cy = yy + sb / 2, a = sb / 4;
-            g.fillRect(x + 10 + sb / 2 - a, cy - 1, 2 * a, 3);
-            int cxp = x + 10 + sb + k + wo + k + sb / 2;
-            g.fillRect(cxp - a, cy - 1, 2 * a, 3);
-            g.fillRect(cxp - 1, cy - a, 3, 2 * a);
-            yy += sb + k;
-            final long tong = (long) this.soLuong * giaThuoc(loai);
-            Font.blackFont.drawString(g, "Tổng:", x + 10, yy + 2, 0);
-            TienTe.veGia(g, TienTe.XU, tong, x + 14 + Font.blackFont.getWidth("Tổng:"), yy + 2, Font.blackFont, false);
-            final int sl = this.soLuong;
-            boolean du = max >= 1 && tong <= mc().charXu;
-            Bang.nut(g, x + 6, yn, w - 12, nh, du ? "Mua " + sl : (max < 1 ? "Không mua thêm được" : "Không đủ xu"), du ? Bang.XAC_NHAN : Bang.TAT,
-                    new IAction() {
-                public void perform() {
-                    HopXacNhan.hoiGia("Mua thuốc", "Mua " + sl + " " + tenThuoc(loai) + "?", "Mua", TienTe.XU, tong, new IAction() {
-                        public void perform() {
-                            ItemInInventory mua = new ItemInInventory();
-                            mua.potionType = (byte) loai;
-                            mua.number = (short) sl;
-                            Vector v = new Vector();
-                            v.addElement(mua);
-                            GameService.gI().buyPotion(v);
-                        }
-                    });
-                }
-            }, "mua");
-            return;
-        }
-        final ItemTemplate t = ManNhanVat.mau(it);
-        // so sánh với món đang mặc cùng ô
-        int oSoSanh = -1;
-        for (int i = 0; t != null && i < ManNhanVat.LOAI_O.length; i++) {
-            if (ManNhanVat.hopLoai(i, t.type)) {
-                oSoSanh = i;
-                break;
-            }
-        }
-        ItemInInventory cu = this.tab == 0 && oSoSanh >= 0 ? ManNhanVat.dangMac(oSoSanh) : null;
-        yy = veSoSanh(g, it, cu, x + 10, yy, w - 20, yn - k);
-        if (this.tab == 1) {
-            final long gia = t == null ? 0 : t.price / 5 + t.plus * 1000;
-            Bang.nut(g, x + 6, yn, w - 12, nh, "Bán", Bang.CHINH, new IAction() {
-                public void perform() {
-                    HopXacNhan.hoiGia("Bán vật phẩm", "Bán " + (t == null ? "món này" : t.name) + "? Không lấy lại được.", "Bán", TienTe.XU, gia, new IAction() {
-                        public void perform() {
-                            GameService.gI().sellItem(it.itemID);
-                            ManCuaHang.this.chon = null;
-                        }
-                    });
-                    HopXacNhan.gI().nguyHiem = true;
-                }
-            }, "ban");
-            return;
-        }
-        final boolean thue = t != null && t.ndayLoan != 0;
-        final int loai = thue ? TienTe.LUONG : TienTe.XU;
-        final long gia = t == null ? 0 : t.price;
-        Bang.nut(g, x + 6, yn, w - 12, nh, thue ? "Thuê" : "Mua", Bang.XAC_NHAN, new IAction() {
-            public void perform() {
-                if (mc().FullInventory() >= TrangThaiNguoiChoi.sucChua(mc())) {
-                    DungDo.loi("Hành trang đã đầy.");
-                    return;
-                }
-                if (!thue && gia > mc().charXu) {
-                    DungDo.loi("Không đủ " + TienTe.ten(TienTe.XU) + ".");
-                    return;
-                }
-                HopXacNhan.hoiGia(thue ? "Thuê vật phẩm" : "Mua vật phẩm", (thue ? "Thuê " : "Mua ") + (t == null ? "món này" : t.name) + "?",
-                        thue ? "Thuê" : "Mua", loai, gia, new IAction() {
-                    public void perform() {
-                        Vector v = new Vector();
-                        v.addElement(it);
-                        GameService.gI().buyItem(v);
-                    }
-                });
-            }
-        }, "mua");
-    }
 
-    /** Bảng chỉ số món (so với món đang mặc: +xanh / -đỏ). Trả y sau bảng. */
-    static int veSoSanh(Graphics g, ItemInInventory it, ItemInInventory cu, int x, int y, int w, int day) {
-        Vector ids = new Vector();
-        ManNhanVat.themId(ids, it);
-        if (cu != null) {
-            ManNhanVat.themId(ids, cu);
-        }
-        int lh = Font.arialFont.getHeight() + 3;
-        if (ids.size() == 0) {
-            Font.arialFont.drawString(g, it.isEnoughData ? "Không có chỉ số cộng thêm." : "Đang tải thông tin...", x, y, 0);
-            return y + lh;
-        }
-        if (cu != null) {
-            Font.arialFont.drawString(g, "So với món đang mặc:", x, y, 0);
-            y += lh;
-        }
-        for (int i = 0; i < ids.size() && y + lh <= day; i++) {
-            int id = ((Integer) ids.elementAt(i)).intValue();
-            int moi = ManNhanVat.giaTri(it, id), cuGt = cu == null ? 0 : ManNhanVat.giaTri(cu, id);
-            Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, ManNhanVat.tenThuocTinh(it, cu, id), w / 2), x, y, 0);
-            int xv = x + w;
-            if (cu != null && moi != cuGt) {
-                int d = moi - cuGt;
-                String sd = (d > 0 ? "+" : "") + d;
-                int wd = Font.arialFont.getWidth(sd) + 8;
-                GiaoDien.khoi(g, xv - wd, y - 1, wd, lh - 1, 4, d > 0 ? Bang.TANG : Bang.GIAM);
-                Font.borderFont.drawString(g, sd, xv - wd / 2, y, Font.CENTER);
-                xv -= wd + 6;
-            }
-            Font.blackFont.drawString(g, String.valueOf(moi), xv, y, 1);
-            y += lh;
-        }
-        return y;
-    }
+
+
 }

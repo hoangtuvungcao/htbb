@@ -8,6 +8,9 @@ chiêu nhanh, gợi ý, bảng Tự động, cẩm nang web). Hiệu ứng chiê
 nguon.txt ghi URL ghim commit). MỖI CHIÊU MỘT HÌNH RIÊNG (CHIEU bên dưới); hai chiêu chung hình chỉ khi có lý do ghi trong
 CHUNG_HINH (vd "Húc" là cùng một chiêu ở ba dòng) - --kiem báo lỗi nếu trùng mà không có lý do.
 
+0.9.7 NRO: ô bo góc (chieu_*) đổi thành Ô VUÔNG vát góc pixel, viền tối cứng, gờ nổi sáng trên-trái / tối dưới-phải
+(như ô kỹ năng Ngọc Rồng / Ninja School), nền màu hệ phẳng; huy hiệu tròn (chieu_tron_*) giữ nguyên.
+
 Kiểu PIXEL-ART cho hợp sprite của game: huy hiệu = đĩa màu HỆ (Thường = kem, hình tối) viền tối 1-2 px, đổ bóng 2 tông
 (nửa dưới phải tối hơn), hình trắng viền tối; vẽ ở độ phân giải cao rồi thu BOX + cắt ngưỡng ở đúng cỡ 32 / 64 / 96 -> mép
 sắc như vẽ tay, không mờ vector, không ánh bóng kính. Góc phải trên: chấm LOẠI (vật lý = chớp nổ cam, đặc biệt = vòng xanh
@@ -145,9 +148,31 @@ def huy_hieu(he, hinh, loai, tron, s):
     cheo = Image.new("L", (s, s), 0)
     ImageDraw.Draw(cheo).polygon([(s, s * 0.35), (s, s), (s * 0.35, s)], fill=255)
     anh = Image.new("RGBA", (s, s), (0, 0, 0, 0))
-    anh.paste(toi + (255,), (0, 0), khoi)
-    anh.paste(mau + (255,), (0, 0), than_d)
-    anh.paste(toi2 + (255,), (0, 0), ImageChops.multiply(than_d, cheo))
+    if not tron:
+        # 0.9.7 NRO: Ô VUÔNG VÁT GÓC PIXEL + viền tối cứng + gờ nổi (sáng trên-trái, tối dưới-phải), nền màu hệ phẳng
+        g = vien   # bề dày gờ
+        khoi = Image.new("L", (s, s), 255)
+        dk2 = ImageDraw.Draw(khoi)
+        cat = 1 if s <= 32 else 2
+        for (cx, cy) in ((0, 0), (s - cat, 0), (0, s - cat), (s - cat, s - cat)):
+            dk2.rectangle([cx, cy, cx + cat - 1, cy + cat - 1], fill=0)
+        than_d = Image.new("L", (s, s), 0)
+        ImageDraw.Draw(than_d).rectangle([vien, vien, s - 1 - vien, s - 1 - vien], fill=255)
+        anh.paste((40, 26, 16, 255), (0, 0), khoi)
+        anh.paste(mau + (255,), (0, 0), than_d)
+        d2 = ImageDraw.Draw(anh)
+        sang = pha(mau, (255, 255, 255), 0.45)
+        sau = pha(mau, (0, 0, 0), 0.38)
+        a0, a1 = vien, s - 1 - vien
+        d2.rectangle([a0, a0, a1, a0 + g - 1], fill=sang + (255,))
+        d2.rectangle([a0, a0, a0 + g - 1, a1], fill=sang + (255,))
+        d2.rectangle([a0, a1 - g + 1, a1, a1], fill=sau + (255,))
+        d2.rectangle([a1 - g + 1, a0 + g, a1, a1], fill=sau + (255,))
+        toi = (40, 26, 16)
+    else:
+        anh.paste(toi + (255,), (0, 0), khoi)
+        anh.paste(mau + (255,), (0, 0), than_d)
+        anh.paste(toi2 + (255,), (0, 0), ImageChops.multiply(than_d, cheo))
     # hình: hộp 0.6 s (tròn: lệch lên chừa nhãn)
     ten, _, phu = hinh.partition("+")
     k = int(s * (0.56 if tron else 0.62))
@@ -162,8 +187,9 @@ def huy_hieu(he, hinh, loai, tron, s):
     oy = int(s * (0.12 if tron else 0.19))
     mk = Image.new("L", (s, s), 0)
     mk.paste(hk, (ox, oy))
-    mk = ImageChops.multiply(mk, than_d)
-    vk = ImageChops.multiply(gian(mk, vien), than_d)
+    trong = than_d if tron else nguong(than_d.filter(ImageFilter.MinFilter(2 * vien + 1)))
+    mk = ImageChops.multiply(mk, trong)
+    vk = ImageChops.multiply(gian(mk, vien), trong)
     mau_hinh = (58, 48, 32) if thuong else (255, 255, 255)
     vien_hinh = (255, 250, 236) if thuong else toi
     anh.paste(vien_hinh + (255,), (0, 0), vk)

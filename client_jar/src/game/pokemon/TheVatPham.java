@@ -25,7 +25,49 @@ import javax.microedition.lcdui.Graphics;
  * Chọn số lượng = chế độ thứ hai của cùng hộp (−, thanh trượt, +, Tất cả, tổng tiền, nút xác nhận).
  */
 public final class TheVatPham extends Dialog {
-    public static final int TUI = 0, BAN = 1;
+    /** TUI hành trang, BAN cửa hàng tab Bán, MUA cửa hàng tab Mua (số lượng + giá + "Mua"), XEM chỉ xem (phần thưởng: X) */
+    public static final int TUI = 0, BAN = 1, MUA = 2, XEM = 3;
+
+    /** Việc mua so chiếc (cửa hàng cung cấp: gửi gói mua + hỏi xác nhận). */
+    public interface ViecMua {
+        /** null = mua được; khác = lý do không mua (nút xám + lý do). */
+        String khongMua(int so);
+
+        void mua(int so);
+    }
+
+    long muaGia;
+    int muaTien = TienTe.XU, muaToiDa = 1;
+    ViecMua muaViec;
+    /** dòng phụ khi XEM (phần thưởng: số lượng / ghi chú) */
+    String xemPhu;
+
+    /** Mở thẻ MUA: gia mỗi chiếc theo loaiTien, mua tối đa toiDa chiếc (> 1 = có chọn số). */
+    public static void moMua(Object mon, long gia, int loaiTien, int toiDa, ViecMua v, IAction khiDong) {
+        mo(mon, MUA, false, khiDong);
+        TheVatPham t = gI();
+        t.muaGia = gia;
+        t.muaTien = loaiTien;
+        t.muaToiDa = Math.max(1, toiDa);
+        t.muaViec = v;
+        t.so = 1;
+    }
+
+    /** Mở thẻ CHỈ XEM (phần thưởng / quà): thông tin + X; phu = dòng ghi chú (vd "Phần thưởng nhiệm vụ x2"). */
+    public static void moXem(Object mon, String phu) {
+        moXem(mon, phu, null);
+    }
+
+    /** Như moXem; khiDong chạy khi thẻ đóng (vd mở lại hộp phần thưởng đang xem). */
+    public static void moXem(Object mon, String phu, IAction khiDong) {
+        mo(mon, XEM, false, khiDong);
+        gI().xemPhu = phu;
+    }
+
+    /** Số lượng đang chọn ở thẻ MUA (kiểm thử). */
+    public static int soMua() {
+        return me == null ? 0 : me.so;
+    }
 
     static TheVatPham me;
     Object mon;
@@ -64,6 +106,9 @@ public final class TheVatPham extends Dialog {
         t.chonSo = 0;
         t.so = 1;
         t.khiDong = khiDong;
+        t.xemPhu = null;
+        t.muaViec = null;
+        t.muaToiDa = 1;
         t.left = null;
         t.center = null;
         t.right = null;
@@ -113,6 +158,9 @@ public final class TheVatPham extends Dialog {
             GemTemp t = gem(o);
             return t == null ? "Nguyên liệu" : t.name;
         }
+        if (o instanceof GemTemp) {
+            return ((GemTemp) o).name;
+        }
         if (o instanceof int[]) {
             int id = ((int[]) o)[0];
             return id < game.model.ItemQuest.NAME_ITEM.length ? game.model.ItemQuest.NAME_ITEM[id] : "Vật phẩm nhiệm vụ";
@@ -138,6 +186,9 @@ public final class TheVatPham extends Dialog {
         if (o instanceof GemTemplate) {
             return LuoiTui.laDacBiet(o) ? "Vật phẩm đặc biệt" : "Nguyên liệu";
         }
+        if (o instanceof GemTemp) {
+            return "Vật phẩm đặc biệt";
+        }
         return "Vật phẩm nhiệm vụ";
     }
 
@@ -161,11 +212,17 @@ public final class TheVatPham extends Dialog {
 
     /** Có dòng "Số lượng" (chồng / bình / nguyên liệu; đồ lẻ thì không). */
     boolean coSoLuong() {
+        if (this.nguCanh == MUA || this.nguCanh == XEM || this.mon instanceof GemTemp) {
+            return false;
+        }
         return !(this.mon instanceof ItemInInventory) || soCo() > 1;
     }
 
     String moTa() {
         Object o = this.mon;
+        if (o instanceof GemTemp) {
+            return ((GemTemp) o).decript;
+        }
         if (o instanceof GemTemplate) {
             GemTemp t = gem(o);
             return t == null ? null : t.decript;
@@ -494,11 +551,14 @@ public final class TheVatPham extends Dialog {
         int lh = ChuDe.cao(ChuDe.THUONG) + 2, lp = ChuDe.cao(ChuDe.PHU);
         int hHang = Bang.co(ChuDe.dt() ? 30 : 26);
         long gb = giaBan();
-        boolean coGia = gb >= 0 && khongBan() == null;
+        boolean mua = this.nguCanh == MUA, xem = this.nguCanh == XEM;
+        boolean coGia = !mua && !xem && gb >= 0 && khongBan() == null;
+        int hChon = mua && this.muaToiDa > 1 ? hHang + k : 0;
         // 0.9.8: bộ cùng bậc đang mặc x/11 + lỗ ngọc hệ (máy chủ -120 kiểu 0, TrangBiThem)
         int idBo = this.mon instanceof ItemInInventory ? ((ItemInInventory) this.mon).itemID : -1;
         int hBo = idBo >= 0 ? TrangBiThem.caoDong(idBo, wNoi) : 0;
-        int hNoi = s + 6 + dong.size() * lh + (dmt.length > 0 ? dmt.length * lp + 6 : 0) + hBo + (coSoLuong() ? lh : 0) + (coGia ? lh : 0);
+        int hNoi = s + 6 + dong.size() * lh + (dmt.length > 0 ? dmt.length * lp + 6 : 0) + hBo + (coSoLuong() ? lh : 0) + (coGia ? lh : 0)
+                + (mua ? hChon + lh : 0) + (xem && this.xemPhu != null ? lh : 0);
         int h = 8 + hNoi + k + hHang + 10 + ChuDe.cao(ChuDe.PHU) + 4;   // + dòng lý do (nút xám) trên hàng nút
         int H = Bang.duoi() - Bang.tren();
         if (h > H) {
@@ -520,7 +580,10 @@ public final class TheVatPham extends Dialog {
         // đầu: ô icon + tên màu độ hiếm + loại / cấp
         int xi = x + pad, yi = y + 8;
         int hiem = this.mon instanceof ItemInInventory ? KieuO.mauHiem(((ItemInInventory) this.mon).colorName) : -1;
+        // thẻ XEM / MUA: không ghi số đang có trong túi trên ô (số nhận / số mua ghi riêng)
+        LuoiTui.boSo = this.nguCanh == XEM || this.nguCanh == MUA;
         LuoiTui.veO(g, this.mon, xi, yi, s, hiem >= 3, null, null);
+        LuoiTui.boSo = false;
         int xt = xi + s + 8, wt = x + w - pad - xt - Bang.co(22);
         ChuDe.chuVien(g, ChuDe.cat(ten(), ChuDe.TIEU_DE, wt), xt, yi, ChuDe.TIEU_DE, hiem >= 0 ? hiem : 0xFFFFFF, ChuDe.VIEN, 0);
         int yl = yi + ChuDe.cao(ChuDe.TIEU_DE) + 1;
@@ -596,8 +659,62 @@ public final class TheVatPham extends Dialog {
             TienTe.ve(g, TienTe.XU, xg, yy + (lh - co) / 2, co);
             ChuDe.chu(g, TienTe.so(gb), xg + co + 3, yy, ChuDe.SO, ChuDe.CHU, 0);
         }
+        if (xem && this.xemPhu != null && yy + lh <= day) {
+            ChuDe.chu(g, ChuDe.cat(this.xemPhu, ChuDe.THUONG, wNoi), x + pad, yy, ChuDe.THUONG, ChuDe.CHINH_TOI, 0);
+            yy += lh;
+        }
+        if (mua) {
+            yy = veMuaSo(g, x + pad, yy, wNoi, hHang, lh);
+        }
         // hàng nút đáy
         veNut(g, x + pad, y + h - 8 - hHang, wNoi, hHang);
+    }
+
+    /** Thẻ MUA: hàng chọn số (- n + Tối đa) khi mua được nhiều + hàng "Tổng: <tiền> N". Trả y sau. */
+    int veMuaSo(Graphics g, int x, int y, int w, int hn, int lh) {
+        final TheVatPham t = this;
+        int k = Bang.cach();
+        if (this.so > this.muaToiDa) {
+            this.so = this.muaToiDa;
+        }
+        if (this.so < 1) {
+            this.so = 1;
+        }
+        if (this.muaToiDa > 1) {
+            int sb = hn, wTat = ChuDe.rong("Tối đa", ChuDe.SO) + 20;
+            int wo = w - 2 * sb - wTat - 3 * k;
+            Bang.nut(g, x, y, sb, sb, "-", Bang.PHU, new IAction() {
+                public void perform() {
+                    t.so = Math.max(1, t.so - 1);
+                }
+            }, "sl-tru");
+            int xo = x + sb + k;
+            if (!KhungNro.ve(g, KhungNroBang.THE, xo, y, wo, sb)) {
+                GiaoDien.khoi(g, xo, y, wo, sb, 2, ChuDe.NEN_DUOI);
+            }
+            ChuDe.chuGiua(g, String.valueOf(this.so), xo + wo / 2, y, sb, ChuDe.TIEU_DE, ChuDe.CHU, 2);
+            Bang.nut(g, xo + wo + k, y, sb, sb, "+", Bang.PHU, new IAction() {
+                public void perform() {
+                    t.so = Math.min(t.muaToiDa, t.so + 1);
+                }
+            }, "sl-cong");
+            Bang.nut(g, xo + wo + sb + 2 * k, y, x + w - (xo + wo + sb + 2 * k), sb, "Tối đa", Bang.TRUNG, new IAction() {
+                public void perform() {
+                    t.so = t.muaToiDa;
+                }
+            }, "sl-max");
+            y += sb + k;
+        }
+        long tong = this.muaGia * this.so;
+        String c = this.muaToiDa > 1 ? "Tổng:" : "Giá:";
+        ChuDe.chu(g, c, x, y, ChuDe.THUONG, ChuDe.CHU, 0);
+        int xg = x + ChuDe.rong(c, ChuDe.THUONG) + 6;
+        int co = Math.min(12, lh - 2);
+        TienTe.ve(g, this.muaTien, xg, y + (lh - co) / 2, co);
+        MainChar m = mc();
+        long co0 = m == null ? 0 : this.muaTien == TienTe.LUONG ? m.luong : m.charXu;
+        ChuDe.chu(g, TienTe.so(tong), xg + co + 3, y, ChuDe.SO, tong > co0 ? ChuDe.DO : ChuDe.CHU, 0);
+        return y + lh;
     }
 
     static final IAction IAction_KHONG = new IAction() {
@@ -660,7 +777,25 @@ public final class TheVatPham extends Dialog {
         String[] ten = new String[4];
         int n = 0;
         final TheVatPham t = this;
-        if (this.nguCanh == BAN) {
+        if (this.nguCanh == MUA) {
+            String l = this.muaViec == null ? "Không mua được." : this.muaViec.khongMua(this.so);
+            final int sl = this.so;
+            chu[n] = l == null ? (this.muaToiDa > 1 ? "Mua " + sl : "Mua") : "Không mua được";
+            kieu[n] = l == null ? Bang.XAC_NHAN : Bang.TAT;
+            viec[n] = l == null ? new IAction() {
+                public void perform() {
+                    ViecMua v = t.muaViec;
+                    t.dong();
+                    v.mua(sl);
+                }
+            } : null;
+            ten[n++] = "tvp-mua";
+            if (l != null) {
+                lyDo = l;
+            }
+        } else if (this.nguCanh == XEM) {
+            // chỉ xem (phần thưởng / quà): không nút - đóng bằng X
+        } else if (this.nguCanh == BAN) {
             String l = khongBan();
             chu[n] = l == null ? (laKhoa() ? "Bán (giá thấp)" : "Bán") : "Không bán được";
             kieu[n] = l == null ? Bang.CHINH : Bang.TAT;
@@ -729,9 +864,7 @@ public final class TheVatPham extends Dialog {
                 lyDo = lyDoKhongBo();   // vật phẩm nhiệm vụ: không có nút bỏ, nói lý do
             }
         }
-        if (n == 0) {
-            lyDo = lyDo == null ? "Đóng thẻ bằng nút X." : lyDo;
-        }
+
         int wn = n == 0 ? w : (w - (n - 1) * k) / n;
         for (int i = 0; i < n; i++) {
             Bang.nut(g, x + i * (wn + k), y, i == n - 1 ? x + w - (x + i * (wn + k)) : wn, h, chu[i], kieu[i], viec[i], ten[i]);
