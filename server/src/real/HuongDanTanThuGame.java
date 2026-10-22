@@ -178,6 +178,10 @@ public final class HuongDanTanThuGame {
                     daDat = it != null && it.getTemplate() != null
                             && HuongDanTanThu.khop(m[0], m[1], m[0], String.valueOf(it.getTemplate().id));
                 }
+            } else if ("hoc_chieu".equals(m[0]) && HocChieuGame.batChieu() && !HocChieuGame.coTheCongDiem(p)) {
+                // 0.9.8 hoc-chieu: cap chieu theo cap Pokemon (chieu 1 len cap 2 can cap 12) - nguoi moi cap ~8 khong cong
+                // duoc diem nao: khong chan huong dan (truoc day ket o buoc 5)
+                daDat = true;
             } else if ("hoc_chieu".equals(m[0]) && p.skillpoint <= 0) {
                 // da cong het diem truoc khi nhan buoc nay (khong con diem de cong): da biet cach, khong bat cho len cap
                 int daCong = 0;

@@ -414,5 +414,15 @@ public final class KiemHuongDanTanThu {
             }
         }
         Kiem.dung("khoi sua chuoi chinh co (>= 150 lenh, moi lenh mot id chuoi chinh): " + capNhat, capNhat >= 150 && capNhat == coDieuKien);
+        // 0.9.8 (hoc-chieu): cong diem qua HocChieuGame bao diem moc "hoc_chieu"; khong cong duoc o cap thap -> buoc xong
+        try {
+            final String hc = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/HocChieuGame.java")), "UTF-8");
+            final String hdg = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/real/HuongDanTanThuGame.java")), "UTF-8");
+            Kiem.dung("HD.05: HocChieuGame.congDiemKyNang bao DiemMocNhiemVu.khiHocChieu", hc.contains("DiemMocNhiemVu.khiHocChieu(p, o);"));
+            Kiem.dung("HD.05: khong cong duoc diem (cap chieu theo cap Pokemon) -> khong ket huong dan",
+                    hdg.contains("HocChieuGame.batChieu() && !HocChieuGame.coTheCongDiem(p)"));
+        } catch (final java.io.IOException e) {
+            Kiem.dung("doc nguon HD.05: " + e, false);
+        }
     }
 }

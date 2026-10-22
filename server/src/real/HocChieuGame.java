@@ -591,6 +591,7 @@ public final class HocChieuGame {
         p.skillpoint--;
         p.skill[o]++;
         p.setTimeOutBuff();
+        DiemMocNhiemVu.khiHocChieu(p, o); // huong dan tan thu HD.05 / nhiem vu "hoc_chieu" (truoc day duong nay khong bao)
         try {
             final Message m = new Message(36);
             p.sendMessage(m);
@@ -598,6 +599,23 @@ public final class HocChieuGame {
         } catch (final Throwable ignored) {
         }
         guiThongTin(p);
+    }
+
+    /**
+     * Co the cong diem ky nang ngay bay gio khong (co diem, co chieu da hoc chua toi da va du cap len cap ke). Huong dan
+     * tan thu: khong cong duoc (vd Charmander cap 8: chieu 1 len cap 2 can cap 12) thi buoc "Cộng 1 điểm kỹ năng" tinh xong.
+     */
+    public static boolean coTheCongDiem(final Char p) {
+        if (p == null || p.skill == null || p.skillpoint <= 0) {
+            return false;
+        }
+        for (int o = 0; o < p.skill.length; o++) {
+            final int v = p.skill[o];
+            if (v > 0 && v < Learnset.CAP_CHIEU_TOI_DA && p.getLevel() >= CharManager.getLvAddSkill(p.charClass, o, v)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Char.resetKN (Keo ky nang) khi bat: chieu da hoc ve cap 1, tra lai toan bo diem. */
