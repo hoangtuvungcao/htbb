@@ -175,6 +175,15 @@ public class ChupThoiTiet {
             int wx0 = (int) (NenPc.hienX + 200 * s), wy0 = (int) (NenPc.hienY + 90 * s);
             int wx1 = (int) (NenPc.hienX + (NenPc.rong - 160) * s), wy1 = (int) (NenPc.hienY + (NenPc.cao - 90) * s);
             for (int tt = 0; tt < TEN_TT.length; tt++) {
+                // anh so sanh KHONG thoi tiet chup ngay truoc (hoat hinh / camera tren the HUD con troi so voi anh goc dau co)
+                dat(-1, 0, 0, game.pokemon.ThoiTiet.DAY_DU, true);
+                ChupTrongGame.chay(new Runnable() {
+                    public void run() {
+                        game.pokemon.ThoiTiet.co = false;
+                    }
+                });
+                ChupTrongGame.ve(W, H);
+                BufferedImage ref = ChupTrongGame.ve(W, H);
                 dat(tt, 0, 0, game.pokemon.ThoiTiet.DAY_DU, true);
                 ChupTrongGame.ve(W, H);
                 BufferedImage anh = ChupTrongGame.ve(W, H);
@@ -182,8 +191,9 @@ public class ChupThoiTiet {
                     ImageIO.write(anh, "png", new File(ra, "thoi_tiet_" + TEN_TT[tt] + "_" + co + ".png"));
                 }
                 kiemHud(co + " " + TEN_TT[tt], min, cach);
-                kiem(khac(goc, anh, (int) (NenPc.hienX + 6 * s), (int) (NenPc.hienY + 6 * s), cx1, cy1) < 1.5,
-                        co + " " + TEN_TT[tt] + ": the trang thai HUD khong bi phu (" + khac(goc, anh, (int) (NenPc.hienX + 6 * s), (int) (NenPc.hienY + 6 * s), cx1, cy1) + ")");
+                final int hx0 = (int) (NenPc.hienX + 6 * s), hy0 = (int) (NenPc.hienY + 6 * s);
+                final double kh = Math.min(khac(goc, anh, hx0, hy0, cx1, cy1), khac(ref, anh, hx0, hy0, cx1, cy1));
+                kiem(kh < 1.5, co + " " + TEN_TT[tt] + ": the trang thai HUD khong bi phu (" + kh + ")");
             }
             for (int m = 1; m < TEN_MAU.length; m++) {
                 // ảnh so sánh chụp NGAY trước (camera còn trôi sau khi vào map: ảnh gốc đầu cỡ không so được)
@@ -203,7 +213,9 @@ public class ChupThoiTiet {
                 double sm = sang(anh, wx0, wy0, wx1, wy1);
                 double lech = Math.abs(sm - sangRef) / Math.max(1, sangRef);
                 kiem(lech <= 0.16, co + " mua " + TEN_MAU[m] + ": do sang the gioi doi " + Math.round(lech * 100) + "% <= 16%");
-                kiem(khac(goc, anh, (int) (NenPc.hienX + 6 * s), (int) (NenPc.hienY + 6 * s), cx1, cy1) < 1.5, co + " mua " + TEN_MAU[m] + ": the HUD khong bi phu");
+                final double khm = Math.min(khac(goc, anh, (int) (NenPc.hienX + 6 * s), (int) (NenPc.hienY + 6 * s), cx1, cy1),
+                        khac(ref, anh, (int) (NenPc.hienX + 6 * s), (int) (NenPc.hienY + 6 * s), cx1, cy1));
+                kiem(khm < 1.5, co + " mua " + TEN_MAU[m] + ": the HUD khong bi phu (" + khm + ")");
                 // tắt màu mùa = như không phủ (thời tiết quang không hạt)
                 dat(0, m, 0, game.pokemon.ThoiTiet.DAY_DU, false);
                 ChupTrongGame.ve(W, H);

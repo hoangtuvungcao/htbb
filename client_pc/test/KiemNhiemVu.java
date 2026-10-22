@@ -185,7 +185,10 @@ public class KiemNhiemVu {
         if (game.pokemon.MenuNguCanh.bat()) {
             return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
         }
-        return game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg;
+        // J2ME chi phim: tin ngan trong game la the nhanh khong chan (game.pokemon.ThongBao, 0.9.6.1), tin nghiem trong /
+        // dai van la hop MsgDlg
+        return game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg
+                || game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
     }
 
     static boolean coLenhGui(int lenh, int byteDau) {
