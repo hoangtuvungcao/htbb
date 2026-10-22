@@ -43,9 +43,9 @@ public final class PhanThuong {
         Vector v = new Vector();
         String t = s;
         String th = ChuPokemon.thuong(t);
-        int pt = th.lastIndexOf("thưởng");
+        int pt = cuoi(th, "thưởng");
         if (pt < 0) {
-            pt = th.lastIndexOf("nhận được");
+            pt = cuoi(th, "nhận được");
             if (pt >= 0) {
                 pt += 3;
             }
@@ -125,7 +125,7 @@ public final class PhanThuong {
             ten = p.substring(i).trim();
         } else {
             // số cuối: "Khăn quàng x2", "Ether ×3"
-            int x = Math.max(p.lastIndexOf(" x"), p.lastIndexOf(" ×"));
+            int x = Math.max(cuoi(p, " x"), cuoi(p, " ×"));
             if (x > 0) {
                 long n = soCua(p.substring(x + 2).trim());
                 if (n > 0) {
@@ -274,5 +274,16 @@ public final class PhanThuong {
             }
         }
         return hang * (o + k) - k;
+    }
+
+    /** String.lastIndexOf(String) - CLDC 1.1 chi co lastIndexOf(char) (Down45 kiem API). */
+    static int cuoi(String s, String t) {
+        int kq = -1;
+        int i = s.indexOf(t);
+        while (i >= 0) {
+            kq = i;
+            i = s.indexOf(t, i + 1);
+        }
+        return kq;
     }
 }

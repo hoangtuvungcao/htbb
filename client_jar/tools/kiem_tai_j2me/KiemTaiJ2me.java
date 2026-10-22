@@ -239,6 +239,14 @@ public class KiemTaiJ2me {
         L = m.getClass().getClassLoader();
         for (int i = 0; i < 600 && (tinh("game.render.Canvas", "currentScreen") == null || Boolean.TRUE.equals(tinh("game.render.Canvas", "isLoad"))); i++) Thread.sleep(100);
         System.out.println("khoi dong xong t=" + (System.currentTimeMillis() - t0) + "ms heap=" + heapDung() + "KB " + trangThai());
+        try {
+            System.out.println("KhoiDong: " + goi(lop("game.pokemon.KhoiDong"), "dong") + " loi=" + tinh("game.pokemon.KhoiDong", "loi"));
+        } catch (Throwable e) {
+            // jar cũ (trước 0.9.7.2)
+        }
+        if (Boolean.getBoolean("chiKhoiDong")) {
+            System.exit(tinh("game.render.Canvas", "currentScreen") != null && !Boolean.TRUE.equals(tinh("game.render.Canvas", "isLoad")) ? 0 : 1);
+        }
         Object loginScr = tinh("game.render.Canvas", "loginScr");
         for (int i = 0; i < 100 && tinh("game.render.Canvas", "currentScreen") != loginScr; i++) {
             if (i == 20) goi(loginScr, "switchToMe");

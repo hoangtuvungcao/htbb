@@ -759,7 +759,7 @@ public final class ManNhanVat extends Screen {
             r[2] = t.substring(k + 3).trim();
             t = t.substring(0, k).trim();
         }
-        k = Math.max(t.lastIndexOf(" cấp "), Math.max(t.lastIndexOf(" Cấp "), t.lastIndexOf(" lv ")));
+        k = Math.max(cuoi(t, " cấp "), Math.max(cuoi(t, " Cấp "), cuoi(t, " lv ")));
         if (k > 0) {
             String so = t.substring(t.indexOf(' ', k + 1) + 1).trim();
             if (laSo(so)) {
@@ -1974,5 +1974,15 @@ public final class ManNhanVat extends Screen {
                 GiaoDien.vien(g, x + w - 6 - wv, y + (rh - 16) / 2, wv, 16, hien ? 0x48C058 : 0x8A94A6, hien ? "Hiện" : "Ẩn");
             }
         });
+    }
+
+    /** String.lastIndexOf(String) - CLDC 1.1 chỉ có lastIndexOf(char) (0.9.7.3). */
+    static int cuoi(String t, String x) {
+        int k = -1, i = t.indexOf(x);
+        while (i >= 0) {
+            k = i;
+            i = t.indexOf(x, i + 1);
+        }
+        return k;
     }
 }

@@ -92,34 +92,81 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     public static Position[] posCmd = new Position[3];
 
     public Canvas() {
+        // 0.9.7.2: mỗi bước khởi động trong try riêng (giả lập iOS kẹt "Đang tải dữ liệu game"): một bước hỏng
+        // (RMS, thuộc tính hệ thống, ảnh) chỉ ghi chẩn đoán (game.pokemon.KhoiDong) rồi đi tiếp
         isLoad = true;
         instance = this;
-        this.isClearAll = RMS.loadRMSInt("loadClearRMS");
-        if (this.isClearAll == -1) {
-            RMS.deleteAllRMS();
-            RMS.saveRMSInt("loadClearRMS", 1);
+        game.pokemon.KhoiDong.buoc("canvas rms");
+        try {
+            this.isClearAll = RMS.loadRMSInt("loadClearRMS");
+            if (this.isClearAll == -1) {
+                RMS.deleteAllRMS();
+                RMS.saveRMSInt("loadClearRMS", 1);
+            }
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("canvas rms", e);
         }
-        setFullScreenMode(true);
-        System.gc();
-        isMoto = getKeyCode(8) == -20;
+        game.pokemon.KhoiDong.buoc("canvas man hinh");
+        try {
+            setFullScreenMode(true);
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("fullscreen", e);
+        }
+        try {
+            isMoto = getKeyCode(8) == -20;
+        } catch (Throwable e) {
+            isMoto = false;
+        }
         loadSize();
-        new Thread(Res.load).start();
-        getLogo();
-        isBB = System.getProperty("microedition.platform").indexOf("RIM") == 0;
+        game.pokemon.KhoiDong.batCanh(this);
+        game.pokemon.KhoiDong.buoc("canvas luong nap");
+        try {
+            new Thread(Res.load).start();
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("luong nap", e);
+        }
+        game.pokemon.KhoiDong.buoc("canvas logo");
+        try {
+            getLogo();
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("logo", e);
+        }
+        try {
+            String pf = System.getProperty("microedition.platform");
+            isBB = pf != null && pf.indexOf("RIM") == 0;
+        } catch (Throwable e) {
+            isBB = false;
+        }
         if (isBB) {
             count0 = 5;
             setCommandListener(this);
             cmdMenu = new Command("Menu", 1, 1);
             addCommand(cmdMenu);
         }
-        autoTab = new BangAuto();
-        if (w * h >= 70400) {
-            isSmartPhone = hasPointerEvents();
+        game.pokemon.KhoiDong.buoc("canvas bang auto");
+        try {
+            autoTab = new BangAuto();
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("BangAuto", e);
+        }
+        try {
+            if (w * h >= 70400) {
+                isSmartPhone = hasPointerEvents();
+            }
+        } catch (Throwable e) {
+            isSmartPhone = false;
         }
         if (w < 200) {
             isSmallScreen = true;
         }
-        getTileFromRMS();
+        game.pokemon.KhoiDong.buoc("canvas tile rms");
+        try {
+            getTileFromRMS();
+        } catch (Throwable e) {
+            isLoadTileServer = true;
+            game.pokemon.KhoiDong.loi("tile rms", e);
+        }
+        game.pokemon.KhoiDong.buoc("cho nap (canvas xong)");
     }
 
     public void getTileFromRMS() {
@@ -229,6 +276,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         while (bRun) {
             try {
                 long l1 = System.currentTimeMillis();
+                game.pokemon.KhoiDong.pha = "NhipVe";
                 game.pokemon.NhipVe.batDau();
                 game.pokemon.NhipVe.dauNhip(l1);   // 0.9.5: ghi vị trí đầu nhịp (nội suy khi vẽ thêm khung)
                 gameTick++;
@@ -239,12 +287,18 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                     virKey.update();
                 }
                 // pokemon: cú chạm trúng điều khiển đã đăng ký lúc vẽ (VungCham) - chạy trước, nuốt cú chạm
+                game.pokemon.KhoiDong.pha = "VungCham";
                 game.pokemon.VungCham.xuLy();
+                game.pokemon.KhoiDong.pha = "TuNoiLai";
                 game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
+                game.pokemon.KhoiDong.pha = "ManTai";
                 game.pokemon.ManTai.tick();     // 0.9.7.1: màn tải đứng quá lâu -> hộp lỗi + Thử lại (không quay mãi)
+                game.pokemon.KhoiDong.pha = "GiamSat";
                 game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
+                game.pokemon.KhoiDong.pha = "CapNhat";
                 game.pokemon.CapNhat.tick();   // 0.9.7: hộp bắt buộc cập nhật luôn trên cùng, thẻ "Đã có bản mới" khi vào thế giới
                 game.pokemon.NhipVe.xong(game.pokemon.NhipVe.NHAP);
+                game.pokemon.KhoiDong.pha = "menu";
                 if (menu.showMenu) {
                     menu.updateMenuKey();
                     menu.updateMenu();
@@ -252,6 +306,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 if (currentDialog != null) {
                     currentDialog.update();
                 }
+                game.pokemon.KhoiDong.pha = "man";
                 if (currentScreen != null) {
                     currentScreen.update();
                     if (!menu.showMenu && currentDialog == null) {
@@ -264,9 +319,12 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                         timeoutDlg.show();
                     }
                 }
+                game.pokemon.KhoiDong.soNhip++;
+                game.pokemon.KhoiDong.nhipCuoi = System.currentTimeMillis();
                 clearKeyPressed();
                 game.pokemon.GiamSat.nhipOk();
                 game.pokemon.NhipVe.xong(game.pokemon.NhipVe.LOGIC);
+                game.pokemon.KhoiDong.pha = "ve";
                 repaint();
                 if (isBB) {
                     synchronized (LOCK) {
@@ -293,7 +351,19 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 }
             } catch (Throwable e3) {
                 // 0.9.4: mọi lỗi (cả Error) trong một nhịp chỉ bỏ nhịp đó, không giết vòng lặp game
-                game.pokemon.GiamSat.loiNhip(e3);
+                game.pokemon.KhoiDong.loi("nhip " + game.pokemon.KhoiDong.pha, e3);
+                try {
+                    game.pokemon.GiamSat.loiNhip(e3);
+                } catch (Throwable e5) {
+                    // bỏ qua
+                }
+                // 0.9.7.2: nhịp lỗi vẫn VẼ (trước: lỗi ở đầu nhịp mỗi lần = không bao giờ repaint, màn đứng hình)
+                try {
+                    repaint();
+                    serviceRepaints();
+                } catch (Throwable e6) {
+                    // bỏ qua
+                }
                 clearKeyPressed();
                 try {
                     Thread.sleep(40L);   // nhịp lỗi không được thành vòng quay bận (trước: bỏ qua sleep -> 100% CPU)
@@ -682,12 +752,29 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
 
     protected void paint(Graphics g) {
         game.render.screen.Font.nenSang = false;
-        game.pokemon.NhipVe.dauKhung();
+        try {
+            game.pokemon.NhipVe.dauKhung();
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("ve NhipVe", e);
+        }
         try {
             ve0(g);
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("ve", e);
         } finally {
-            game.pokemon.NhipVe.cuoiKhung();
+            try {
+                game.pokemon.NhipVe.cuoiKhung();
+            } catch (Throwable e) {
+                // bỏ qua
+            }
         }
+        // 0.9.7.2: dòng chẩn đoán khởi động (lỗi / quá 10 s) - phông hệ thống, luôn trên cùng
+        try {
+            resetTrans(g);
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        game.pokemon.KhoiDong.ve(g, w, h);
     }
 
     private void ve0(Graphics g) {

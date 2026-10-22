@@ -79,7 +79,10 @@ find src shared/mod "$B/gen" -name '*.java' > "$B/nguon.txt"
 "$J/javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/cls" \
     -cp "tools/midp.jar${S}tools/microemulator.jar${S}$B/api" @"$B/nguon.txt"
 
-"$J/java" -cp "$B/tool${S}tools/asm.jar" Down45 d "$B/cls" "$B/cls45"
+# 0.9.7.3: kiểm TRẮNG - mọi hàm / lớp java.* / javax.microedition.* phải có trong API chuẩn CLDC 1.1 + MIDP 2.0
+# (tools/cldcapi11.jar, tools/midpapi20.jar của MicroEmulator 2.0.4) + WMA khai báo ở api/ - không còn lọt
+# System.nanoTime() (CoffeeCat iOS: mọi nhịp game ném lỗi, kẹt "Đang tải dữ liệu game")
+"$J/java" -Dapi="tools/cldcapi11.jar${S}tools/midpapi20.jar${S}$B/api" -cp "$B/tool${S}tools/asm.jar" Down45 d "$B/cls" "$B/cls45"
 
 # Pokémon (Huyền Thoại Bảo Bối): sprite/tile/từ điển đóng gói sẵn trong res/pk, res/pt
 [ "$HTBB_ASSETS" = "pc" ] && HTBB_ASSETS=../client_pc_ios/Assets
