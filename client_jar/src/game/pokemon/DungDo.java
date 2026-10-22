@@ -167,6 +167,8 @@ public final class DungDo {
         /** dòng ý chính đã ngắt theo bề ngang (tính lúc vẽ) */
         String[] dong;
         int rongNgat;
+        /** 0.9.7: có mục phần thưởng nhận ra được (-1 chưa tính) -> nút "Xem" mở hộp phần thưởng có ô vật phẩm */
+        int coQua = -1;
 
         Tin(String s, int loai, int hinh, int id) {
             chu = s;
@@ -443,7 +445,7 @@ public final class DungDo {
                     Tin t = HIEN[k];
                     HIEN[k] = null;
                     if (t != null) {
-                        HopThongBao.bao(t.loai == LOI ? "Không thực hiện được" : "Thông báo", t.chu);
+                        HopThongBao.bao(t.loai == LOI ? "Không thực hiện được" : t.coQua == 1 ? "Phần thưởng" : "Thông báo", t.chu);
                     }
                 }
             };
@@ -559,7 +561,11 @@ public final class DungDo {
         int vai = t.phu != null ? ChuDe.NHAN : ChuDe.THUONG;
         int lh = ChuDe.cao(vai);
         String[] d = t.dong;
-        boolean xem = d.length > 2 && theGioi;
+        boolean dai = d.length > 2;
+        if (t.coQua < 0) {
+            t.coQua = HopThongBao.laPhanThuong(null, t.chu) && PhanThuong.tach(t.chu).size() > 0 ? 1 : 0;
+        }
+        boolean xem = (dai || t.coQua == 1) && theGioi;
         int soDong = Math.min(2, d.length);
         int wXem = xem ? ChuDe.rong("Xem", ChuDe.NHAN) + 14 : 0;
         String sl = t.dem > 1 ? "×" + t.dem : null;
@@ -605,7 +611,7 @@ public final class DungDo {
         int yt = yy + (cao - caoChu) / 2;
         int wd = rong - (xc - x) - 8 - wXem - wSl;
         for (int k = 0; k < soDong; k++) {
-            String dk = k == soDong - 1 && xem ? ChuDe.cat(d[k] + "…", vai, wd) : ChuDe.cat(d[k], vai, wd);
+            String dk = k == soDong - 1 && dai ? ChuDe.cat(d[k] + "…", vai, wd) : ChuDe.cat(d[k], vai, wd);
             ChuDe.chu(g, dk, xc, yt + k * lh, vai, mauChu, 0);
         }
         if (t.phu != null) {
@@ -625,7 +631,8 @@ public final class DungDo {
             veLapLanh(g, x, yy, rong, cao, now);
         }
         if (theGioi) {
-            VungCham.them(g, x, yy, rong - wXem, cao, BO_QUA[i], "thong-bao-" + i);
+            // cả thẻ = bỏ qua; nút Xem (nếu có) đăng ký SAU, nằm trong thẻ -> trúng trước
+            VungCham.them(g, x, yy, rong, cao, BO_QUA[i], "thong-bao-" + i);
         }
         if (xem) {
             int xx = x + rong - wXem - 4;

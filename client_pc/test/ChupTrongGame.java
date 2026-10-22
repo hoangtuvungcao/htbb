@@ -227,7 +227,9 @@ public class ChupTrongGame {
             "hst_tui_hanh_dong", "hst_ky_nang", "hst_tu_man", "hop_hst_ky_nang", "hop_hst_nghien_cuu", "hop_hst_the_gioi",
             "hop_cau_ket_qua", "cau_can",
             // 0.9.7
-            "danh_hieu", "danh_hieu_chua_co", "danh_hieu_an", "danh_hieu_chi_tiet"};
+            "danh_hieu", "danh_hieu_chua_co", "danh_hieu_an", "danh_hieu_chi_tiet", "hop_phan_thuong_xem", "the_phan_thuong",
+            // 0.9.7: tin nhiệm vụ đội (trước: cửa sổ chữ ViewInfoScr)
+            "hop_tin_bang"};
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -267,13 +269,22 @@ public class ChupTrongGame {
                     public void run() {
                         // hộp thoại mạng (không có máy chủ khi kiểm) đè lên màn đang kiểm: bỏ
                         Object d = game.render.Canvas.currentDialog;
-                        if (!ten.startsWith("hop_") && !ten.equals("xac_nhan") && !ten.equals("so_luong")
+                        if (!ten.startsWith("hop_") && !ten.equals("the_phan_thuong") && !ten.equals("xac_nhan") && !ten.equals("so_luong")
                                 && (d instanceof game.render.screen.MsgDlg || d instanceof game.pokemon.HopThongBao)) {
                             game.render.Canvas.endDlg();
                         }
                     }
                 });
                 ve(W, H);
+                if ("the_phan_thuong".equals(ten)) {
+                    // chạm ô phần thưởng (vật phẩm) trong hộp phần thưởng -> thẻ vật phẩm chỉ xem
+                    chay(new Runnable() {
+                        public void run() {
+                            chamVung("phan-thuong-");
+                        }
+                    });
+                    ve(W, H);
+                }
                 final int demTam0 = game.pokemon.Bang.demTam;
                 chay(new Runnable() {
                     public void run() {
@@ -495,7 +506,7 @@ public class ChupTrongGame {
         game.model.Quest q = new game.model.Quest(1);
         q.name = "Dẹp loạn Rattata";
         q.decript = "Rattata phá vườn của bà Hoa. Hạ 10 con rồi về báo lại.";
-        q.infoGift = "500 xu, 120 điểm kinh nghiệm";
+        q.infoGift = "500 xu, 120 điểm kinh nghiệm, 2 Thuốc hồi HP";
         q.stateQuest = 2;
         q.type = 0;
         q.idMonsKill = new short[]{0};
@@ -917,6 +928,10 @@ public class ChupTrongGame {
                     + "Bảng xếp hạng: xem tại menu Xếp hạng, cập nhật mỗi 10 phút.");
         } else if (ten.startsWith("hst_") || ten.startsWith("cau_") || ten.startsWith("hop_hst_") || ten.startsWith("hop_cau_")) {
             moSinhThai(ten);
+        } else if ("the_phan_thuong".equals(ten)) {
+            hopMau(ten);
+        } else if ("hop_tin_bang".equals(ten)) {
+            game.pokemon.HopThongBao.tinNhiemVuBang("Nhiệm vụ đội: hạ 30 Geodude ở Đường hầm đá. Phần thưởng: 2000 xu, 500 điểm cống hiến.");
         } else if (ten.startsWith("hop_") && hopMau(ten)) {
             // đã mở trong hopMau
         } else if ("so_luong".equals(ten)) {
@@ -1009,6 +1024,9 @@ public class ChupTrongGame {
             game.render.Canvas.startOKDlg("Charmander đang tiến hoá... Chúc mừng! Charmander đã tiến hoá thành Charmeleon.");
         } else if ("hop_phan_thuong".equals(ten)) {
             game.render.Canvas.startOKDlg("Hoàn thành nhiệm vụ Dẹp loạn Rattata: +500 xu, +120 điểm kinh nghiệm, +2 Thuốc hồi HP.");
+        } else if ("hop_phan_thuong_xem".equals(ten) || "the_phan_thuong".equals(ten)) {
+            // thẻ thông báo phần thưởng -> "Xem" -> hộp phần thưởng có hàng ô vật phẩm
+            game.pokemon.HopThongBao.bao("Phần thưởng", "Hoàn thành nhiệm vụ Dẹp loạn Rattata: +500 xu, +120 điểm kinh nghiệm, +2 Thuốc hồi HP, +1 Đá tiến hoá Lửa.");
         } else if ("hop_nhan_nhiem_vu".equals(ten)) {
             game.render.Canvas.startYesNoDlg("Nhận nhiệm vụ Dẹp loạn Rattata? Hạ 10 Rattata ở Tuyến đường 1 rồi báo lại Trưởng làng.", KHONG, KHONG);
         } else if ("hop_bao_tri".equals(ten)) {
@@ -1148,6 +1166,25 @@ public class ChupTrongGame {
         }
     }
 
+    /** Chạm (qua VungCham.xuLy như Canvas) tâm vùng đầu tiên có tiền tố t. */
+    static void chamVung(String t) {
+        for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
+            String n = game.pokemon.VungCham.ten(i);
+            if (n != null && n.startsWith(t)) {
+                int[] v = game.pokemon.VungCham.vungVe(i);
+                int cx = v[0] + v[2] / 2, cy = v[1] + v[3] / 2;
+                game.render.Canvas.px = cx;
+                game.render.Canvas.py = cy;
+                game.render.Canvas.pxLast = cx;
+                game.render.Canvas.pyLast = cy;
+                game.render.Canvas.isPointerClick = true;
+                game.pokemon.VungCham.xuLy();
+                game.render.Canvas.isPointerClick = false;
+                return;
+            }
+        }
+    }
+
     /** Tên vùng chạm đã đăng ký có tiền tố t (lớp nào cũng được). */
     static boolean coVung(String t) {
         for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
@@ -1168,6 +1205,18 @@ public class ChupTrongGame {
             if ("nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten)) {
                 kiem(game.pokemon.LuoiTui.soKhoaVe > 0, nhan + " luoi Tat ca co o khoa cuoi (mo rong) - " + game.pokemon.LuoiTui.soKhoaVe);
             }
+        }
+        if ("cua_hang_thuoc_chi_tiet".equals(ten) || "cua_hang_do_chi_tiet".equals(ten)) {
+            kiem(game.pokemon.TheVatPham.dangMo() && coVung("tvp-mua") && coVung("dong"), nhan + " cua hang: cham mon = the vat pham co nut Mua + X");
+            if ("cua_hang_thuoc_chi_tiet".equals(ten)) {
+                kiem(coVung("sl-cong") && coVung("sl-max") && game.pokemon.TheVatPham.soMua() == 12, nhan + " the Mua thuoc co chon so (12)");
+            }
+        }
+        if ("hop_phan_thuong_xem".equals(ten) || "nhiem_vu_chi_tiet".equals(ten)) {
+            kiem(coVung("phan-thuong-"), nhan + " phan thuong = hang o vat pham (cham duoc)");
+        }
+        if ("the_phan_thuong".equals(ten)) {
+            kiem(game.pokemon.TheVatPham.dangMo() && coVung("dong") && !coVung("tvp-"), nhan + " cham o phan thuong = the vat pham chi xem (chi X)");
         }
         if ("nv_chi_tiet".equals(ten)) {
             int[] r = game.pokemon.TheVatPham.VUA_VE;

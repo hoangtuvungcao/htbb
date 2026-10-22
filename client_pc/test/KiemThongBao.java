@@ -289,10 +289,13 @@ public class KiemThongBao {
                 ImageIO.write(anh, "png", new File(ra, "thong_bao_" + ten + "_" + co + ".png"));
                 java.util.List<int[]> the = new java.util.ArrayList<>(), hud = new java.util.ArrayList<>();
                 int n = game.pokemon.VungCham.dem();
+                int xem = 0;
                 for (int i = 0; i < n; i++) {
                     String t = game.pokemon.VungCham.ten(i);
                     if (t == null) continue;
-                    if (t.startsWith("thong-bao")) the.add(game.pokemon.VungCham.vungVe(i));
+                    // 0.9.7: "thong-bao-xem-N" = nút Xem NẰM TRONG thẻ (tin dài / thẻ phần thưởng) - không phải thẻ riêng
+                    if (t.startsWith("thong-bao-xem")) xem++;
+                    else if (t.startsWith("thong-bao")) the.add(game.pokemon.VungCham.vungVe(i));
                     else if (t.startsWith("hud-")) hud.add(game.pokemon.VungCham.vungVe(i));
                 }
                 String nhan = ten + " " + co;
@@ -303,6 +306,10 @@ public class KiemThongBao {
                 }
                 int mong = Math.min(3, soThe) + soBieu;
                 kiem(the.size() == mong, nhan + ": " + mong + " thẻ / biểu ngữ có vùng chạm (thấy " + the.size() + ")");
+                if ("chong".equals(ten)) {
+                    // "Nhận được 2 Ether lớn." = thẻ phần thưởng -> có nút Xem (mở hộp phần thưởng có ô vật phẩm)
+                    kiem(xem >= 1, nhan + ": thẻ phần thưởng có nút Xem (" + xem + ")");
+                }
                 int L = game.pokemon.Bang.trai(), T = game.pokemon.Bang.tren(), R = game.pokemon.Bang.phai(), B = game.pokemon.Bang.duoi();
                 for (int i = 0; i < the.size(); i++) {
                     int[] v = the.get(i);

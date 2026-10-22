@@ -314,6 +314,9 @@ public final class LuoiTui {
         game.render.screen.Font.nenSang = true;
     }
 
+    /** true = ô bình không ghi số trong túi (ô phần thưởng tự ghi số nhận). */
+    static boolean boSo;
+
     /** Một ô đồ: hộp gỗ, viền độ hiếm, icon thật, số lượng, +N, khoá. */
     public static void veO(Graphics g, Object o, int x, int y, int s, boolean chon, Object viec, String ten) {
         Bang.oDo(g, x, y, s, true, chon, viec, ten);
@@ -340,7 +343,9 @@ public final class LuoiTui {
             int loai = ((Integer) o).intValue();
             ManNhanVat.veThuoc(g, loai, cx, cy, ic);
             MainChar m = mc();
-            soLuong(g, x, y, s, m == null || m.potions == null ? 0 : m.potions[loai]);
+            if (!boSo) {
+                soLuong(g, x, y, s, m == null || m.potions == null ? 0 : m.potions[loai]);
+            }
         } else if (o instanceof GemTemplate) {
             GemTemplate gt = (GemTemplate) o;
             if (laDacBiet(o)) {
@@ -358,6 +363,9 @@ public final class LuoiTui {
                 }
             }
             soLuong(g, x, y, s, gt.number);
+        } else if (o instanceof GemTemp) {
+            // món cửa hàng đặc biệt (gói cửa hàng: dải ảnh 5500)
+            IconVatPham.ve(g, (short) (((GemTemp) o).idImage + 5500), cx, cy, ic, IconVatPham.DP_DO);
         } else if (o instanceof int[]) {
             int id = ((int[]) o)[0];
             if (id < game.model.ItemQuest.ICON_IMG.length) {

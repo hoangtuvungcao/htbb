@@ -311,22 +311,38 @@ public final class ManNhiemVu extends Screen {
         Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, (dangLam ? (xong(q) ? "Trả ở: " : "Báo lại: ") : "Nhận ở: ") + noiNpc(idNpc), w - 20),
                 x + 10, yy, 0);
         yy += Font.blackFont.getHeight() + 3;
+        // 0.9.7 NRO: chừa đáy cho HÀNG Ô PHẦN THƯỞNG (nhãn + ô cùng hàng) - mô tả / tiến độ cắt phía trên
+        int wNhan = Font.blackFont.getWidth("Phần thưởng:") + 8;
+        int hq2 = q.infoGift == null ? 0 : PhanThuong.cao(q.infoGift, w - 20 - wNhan);
+        int gh = hq2 > 0 ? yn - k - hq2 - 2 : yn - k;
+        g.setClip(x, yy, w, Math.max(0, gh - yy));
         yy = Bang.doan(g, Font.arialFont, q.decript, x + 10, yy, w - 20, false) + 2;
+        g.setClip(0, 0, Canvas.w, Canvas.h);
         // tiến độ từng mục tiêu
         try {
             if (q.stateQuest == 2 && q.type == Quest.TYPE_KILL_MONS && q.idMonsKill != null) {
-                for (int i = 0; i < q.idMonsKill.length && yy + 14 < yn - k; i++) {
+                for (int i = 0; i < q.idMonsKill.length && yy + 14 < gh; i++) {
                     yy = thanhMuc(g, x + 10, yy, w - 20, Res.monsterTemplates[q.idMonsKill[i]].name, q.allMonsKilled[i], q.totalMonskill[i]);
                 }
             } else if (q.stateQuest == 2 && q.type == Quest.TYPE_GET_ITEM && q.idItemGet != null) {
-                for (int i = 0; i < q.idItemGet.length && yy + 14 < yn - k; i++) {
+                for (int i = 0; i < q.idItemGet.length && yy + 14 < gh; i++) {
                     yy = thanhMuc(g, x + 10, yy, w - 20, ItemQuest.NAME_ITEM[q.idItemGet[i]], q.allItemGet[i], q.totalItemGet[i]);
                 }
             }
         } catch (Throwable e) {
             // thiếu dữ liệu quái / vật phẩm
         }
-        if (q.infoGift != null && q.infoGift.length() > 0 && yy + 14 < yn - k) {
+        if (hq2 > 0) {
+            // ô hộp gỗ (chạm = thẻ vật phẩm chỉ xem); chữ gốc (có cả mục không nhận ra) dưới hàng nếu còn chỗ
+            int yr = Math.min(yy + 2, gh + 2);
+            Font.blackFont.drawString(g, "Phần thưởng:", x + 10, yr + (Math.min(hq2, PhanThuong.coO()) - Font.blackFont.getHeight()) / 2, 0);
+            int yc = yr + PhanThuong.ve(g, x + 10 + wNhan, yr, w - 20 - wNhan, q.infoGift, null) + 2;
+            if (yc + Font.arialFont.getHeight() <= yn - k) {
+                g.setClip(x, yc, w, yn - k - yc);
+                Bang.doan(g, Font.arialFont, q.infoGift, x + 10, yc, w - 20, false);
+                g.setClip(0, 0, Canvas.w, Canvas.h);
+            }
+        } else if (q.infoGift != null && q.infoGift.length() > 0 && yy + 14 < yn - k) {
             Font.blackFont.drawString(g, "Phần thưởng:", x + 10, yy + 2, 0);
             Bang.doan(g, Font.arialFont, q.infoGift, x + 10, yy + 4 + Font.blackFont.getHeight(), w - 20, false);
         }
