@@ -189,31 +189,40 @@ public final class LoaiDuLieu {
     private volatile List<TuanXoay> lichXoay = Collections.emptyList();
     private volatile long ngayGocXoay;
     private volatile java.util.Set<Integer> banDoXoay = Collections.emptySet();
-    /** "chuKy|vung" -> dong (Vung.khuVuc = "#chuKy"). */
+    /** map_id -> nhom ban do (0 cap 52-84, 1 cap thap). */
+    private volatile Map<Integer, Integer> nhomBanDo = Collections.emptyMap();
+    /** "chuKy|nhom|vung" -> dong (Vung.khuVuc = "#chuKy/nhom"). */
     private volatile Map<String, List<Vung>> theoXoay = Collections.emptyMap();
 
     /**
      * Gan du lieu xoay vong (bo nap goi TRUOC dat(); sau do chi doc). ngayGoc = so ngay epoch cua thu Hai tuan 0;
-     * dong[] = {chuKy, dex, vung, capMin, capMax, trongSo, bacGap}.
+     * banDo: map_id -> nhom; dong[] = {chuKy, nhom, dex, vung, capMin, capMax, trongSo, bacGap}.
      */
-    public void datXoayVong(final List<TuanXoay> lich, final long ngayGoc, final java.util.Collection<Integer> banDo,
+    public void datXoayVong(final List<TuanXoay> lich, final long ngayGoc, final Map<Integer, Integer> banDo,
             final List<int[]> dong) {
         final List<TuanXoay> l = new ArrayList<TuanXoay>(lich);
         Collections.sort(l, (a, b) -> a.chuKy - b.chuKy);
         final Map<String, List<Vung>> m = new HashMap<String, List<Vung>>();
         for (final int[] d : dong) {
-            final String k = d[0] + "|" + d[2];
+            final String k = d[0] + "|" + d[1] + "|" + d[3];
             List<Vung> ds = m.get(k);
             if (ds == null) {
                 ds = new ArrayList<Vung>();
                 m.put(k, ds);
             }
-            ds.add(new Vung(d[1], "#" + d[0], d[2], d[3], d[4], d[5], 0, -1, d[6]));
+            ds.add(new Vung(d[2], "#" + d[0] + "/" + d[1], d[3], d[4], d[5], d[6], 0, -1, d[7]));
         }
         this.lichXoay = Collections.unmodifiableList(l);
         this.ngayGocXoay = ngayGoc;
-        this.banDoXoay = Collections.unmodifiableSet(new java.util.TreeSet<Integer>(banDo));
+        this.nhomBanDo = Collections.unmodifiableMap(new HashMap<Integer, Integer>(banDo));
+        this.banDoXoay = Collections.unmodifiableSet(new java.util.TreeSet<Integer>(banDo.keySet()));
         this.theoXoay = m;
+    }
+
+    /** Nhom ban do xoay vong cua map (-1 = khong xoay vong). */
+    public int nhomBanDoXoay(final int mapId) {
+        final Integer n = nhomBanDo.get(Integer.valueOf(mapId));
+        return n == null ? -1 : n.intValue();
     }
 
     /**
@@ -252,9 +261,9 @@ public final class LoaiDuLieu {
         return banDoXoay;
     }
 
-    /** Ung vien xoay vong cua chu ky + vung sinh thai (rong neu khong co). */
-    public List<Vung> xoayVong(final int chuKy, final int vung) {
-        final List<Vung> v = theoXoay.get(chuKy + "|" + vung);
+    /** Ung vien xoay vong cua chu ky + nhom ban do + vung sinh thai (rong neu khong co). */
+    public List<Vung> xoayVong(final int chuKy, final int nhom, final int vung) {
+        final List<Vung> v = theoXoay.get(chuKy + "|" + nhom + "|" + vung);
         return v == null ? Collections.<Vung>emptyList() : v;
     }
 

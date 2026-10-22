@@ -175,8 +175,10 @@ public final class LoaiQuaiGame {
             final int tt = HeSinhThaiGame.thoiTietMap(mapId);
             final int vungMap = HeSinhThaiGame.vung(mapId);
             // VUNG HOANG DA (loai-bo-sung): ban do xoay vong them loai Gen 4-9 cua chu ky tuan nay
-            final java.util.List<LoaiDuLieu.Vung> xoay = d.laBanDoXoay(mapId)
-                    ? d.xoayVong(chuKyHienTai(d), vungMap) : java.util.Collections.<LoaiDuLieu.Vung>emptyList();
+            kiemDoiTuan(d);
+            final int nhomXoay = d.nhomBanDoXoay(mapId);   // 0 ban do cap 52-84, 1 cap thap (dang dau T1-T3)
+            final java.util.List<LoaiDuLieu.Vung> xoay = nhomXoay >= 0
+                    ? d.xoayVong(chuKyHienTai(d), nhomXoay, vungMap) : java.util.Collections.<LoaiDuLieu.Vung>emptyList();
             final ChonLoaiHoangDa.KetQua kq = ChonLoaiHoangDa.chon(d, d.khuVuc(mapId), vungMap, m.level,
                     gio, SinhThaiTheGioi.laDem(gio), tt, dexMau(m), thamSo(), R, xoay);
             m.dexRieng = kq.dex;
@@ -239,6 +241,75 @@ public final class LoaiQuaiGame {
     /** Con quai {@code m} la shiny voi nguoi {@code p}: chi khi p thay dung loai rieng (client cu thay loai mau, khong shiny). */
     public static boolean shinyChoNguoi(final Char p, final Monster m) {
         return m != null && m.shinyRieng && m.dexRieng > 0 && thayLoaiRieng(p);
+    }
+
+    // ------------------------------------------------------------------ banner doi tuan Vung hoang da
+
+    /** charDBID -> so tuan (tinh tu ngay goc) da bao banner. Trong RAM: khoi dong lai thi bao lai mot lan (vo hai). */
+    static final ConcurrentHashMap<Integer, Long> DA_BAO_TUAN = new ConcurrentHashMap<Integer, Long>();
+    static volatile long tuanDaPhat = Long.MIN_VALUE;
+
+    /** So tuan hien tai tinh tu ngay goc lich (Long.MIN_VALUE neu chua co lich). */
+    static long tuanHienTai(final LoaiDuLieu d) {
+        if (d == null || d.lichXoay().isEmpty()) {
+            return Long.MIN_VALUE;
+        }
+        return Math.floorDiv(ngayHienTai() - d.ngayGocXoay(), 7L);
+    }
+
+    /** Chu banner (thuan, test): {chinh, phu}. */
+    public static String[] chuBanner(final LoaiDuLieu d, final int chuKy) {
+        if (d == null || chuKy < 0 || chuKy >= d.lichXoay().size()) {
+            return null;
+        }
+        final LoaiDuLieu.TuanXoay t = d.lichXoay().get(chuKy);
+        return new String[]{"Vùng hoang dã: " + t.ten, t.moTa + " " + d.dexXoay(chuKy).size()
+                + " loài, đổi vào thứ Hai hằng tuần. Độ hiếm không đổi."};
+    }
+
+    static void baoBanner(final Char p, final LoaiDuLieu d, final long tuan) {
+        if (p == null || p.isBot != -1 || tuan == Long.MIN_VALUE) {
+            return;
+        }
+        final Long cu = DA_BAO_TUAN.put(Integer.valueOf(p.charDBID), Long.valueOf(tuan));
+        if (cu != null && cu.longValue() == tuan) {
+            return;
+        }
+        final String[] b = chuBanner(d, d.chuKyNgay(ngayHienTai()));
+        if (b != null) {
+            com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.SU_KIEN, b[0], b[1],
+                    com.htbb.thongbao.ThongBao.HINH_BIEU_TUONG, com.htbb.thongbao.ThongBao.BT_SU_KIEN);
+        }
+    }
+
+    /** CharNapDuLieu: lan dang nhap DAU TIEN trong tuan -> banner Vung hoang da tuan nay. */
+    public static void khiDangNhap(final Char p) {
+        try {
+            final LoaiDuLieu d = bang();
+            baoBanner(p, d, tuanHienTai(d));
+        } catch (final Throwable e) {
+            System.out.println("[LOAI] banner dang nhap: " + e);
+        }
+    }
+
+    /** Goi tu khiHoiSinh (nhip quai): sang tuan moi (thu Hai 00:00) -> banner cho moi nguoi dang online. */
+    static void kiemDoiTuan(final LoaiDuLieu d) {
+        final long t = tuanHienTai(d);
+        if (t == Long.MIN_VALUE || t == tuanDaPhat) {
+            return;
+        }
+        final boolean dau = tuanDaPhat == Long.MIN_VALUE;
+        tuanDaPhat = t;
+        if (dau) {
+            return;   // vua khoi dong: nguoi online da / se nhan khi dang nhap
+        }
+        for (int i = 0; i < CharManager.instance.vChars.size(); i++) {
+            try {
+                baoBanner(CharManager.instance.vChars.elementAt(i), d, t);
+            } catch (final Exception e) {
+                break;
+            }
+        }
     }
 
     /** Ngay epoch theo gio may chu (DongHo) - cung mui gio voi lich tuan. */

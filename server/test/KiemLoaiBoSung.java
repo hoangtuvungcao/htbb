@@ -240,7 +240,7 @@ public final class KiemLoaiBoSung {
         Kiem.bang("data_loai_vung chi loai co sprite, da mo, khong T6", Integer.valueOf(0), Integer.valueOf(vungLoi));
         Kiem.dung("Hoenn co noi song Gen 3 (" + loaiHoenn.size() + " loai, " + hoenn + " dong)", loaiHoenn.size() >= 100);
         Kiem.bang("noi song Hoenn trong dai cap ban do Hoenn 83-100", Integer.valueOf(0), Integer.valueOf(hoennNgoaiDai));
-        int xvLoi = 0, xvCap = 0;
+        int xvLoi = 0, xvCap = 0, thapLoi = 0, soThap = 0;
         final Map<Integer, java.util.Set<Integer>> theoKy = new HashMap<Integer, java.util.Set<Integer>>();
         for (int r = 0; r < xv.soDong(); r++) {
             final int dex = xv.so(r, "dex"), ky = xv.so(r, "chu_ky");
@@ -251,25 +251,38 @@ public final class KiemLoaiBoSung {
                     || x[3] < 1 || x[4] != 1 || x[0] < 4 || x[0] != 4 + ky || xv.so(r, "bac_gap") != x[1]) {
                 xvLoi++;
             }
-            if (xv.so(r, "cap_min") < 50 || xv.so(r, "cap_max") > 85) {
+            if (xv.so(r, "nhom") == 0 && (xv.so(r, "cap_min") < 50 || xv.so(r, "cap_max") > 85)) {
                 xvCap++;
+            }
+            if (xv.so(r, "nhom") == 1) {
+                soThap++;
+                // cap thap: CHI dang dau (giai doan 1), T1-T3, dai cap 5-40
+                if (x == null || x[3] != 1 || x[1] > 3 || xv.so(r, "cap_min") < 5 || xv.so(r, "cap_max") > 40) {
+                    thapLoi++;
+                }
             }
         }
         Kiem.bang("xoay vong: chi loai co sprite, T1-T4, nhom 0 (khong huyen thoai / huyen ao / UB / Nghich ly), dung the he chu ky",
                 Integer.valueOf(0), Integer.valueOf(xvLoi));
         Kiem.bang("xoay vong: dai cap 50-85", Integer.valueOf(0), Integer.valueOf(xvCap));
+        Kiem.dung("xoay vong cap thap co dong (" + soThap + ")", soThap > 0);
+        Kiem.bang("xoay vong cap thap: chi dang dau, T1-T3, cap 5-40", Integer.valueOf(0), Integer.valueOf(thapLoi));
         Kiem.bang("lich xoay vong 6 tuan (Sinnoh .. Paldea)", Integer.valueOf(6), Integer.valueOf(lich.soDong()));
         Kiem.bang("moi chu ky deu co loai", Integer.valueOf(6), Integer.valueOf(theoKy.size()));
         final java.util.Set<Integer> mapHst = new java.util.HashSet<Integer>();
         for (int r = 0; hst != null && r < hst.soDong(); r++) {
             mapHst.add(hst.so(r, "map_id"));
         }
-        int mapLoi = 0;
+        int mapLoi = 0, mapThap = 0;
         for (int r = 0; r < bd.soDong(); r++) {
             if (!mapHst.contains(bd.so(r, "map_id")) || !new File("map/map" + bd.so(r, "map_id")).isFile()) {
                 mapLoi++;
             }
+            if (bd.so(r, "nhom") == 1) {
+                mapThap++;
+            }
         }
+        Kiem.dung("3-4 ban do xoay vong cap thap (" + mapThap + ")", mapThap >= 3 && mapThap <= 4);
         Kiem.dung("ban do xoay vong co that (map + vung sinh thai): " + bd.soDong(), bd.soDong() >= 4 && mapLoi == 0);
         // xac dinh: cung ngay -> cung chu ky; thu Hai doi chu ky; truoc ngay goc van hop le
         final long goc = java.time.LocalDate.parse(lich.chu(0, "ngay_goc")).toEpochDay();
@@ -291,22 +304,33 @@ public final class KiemLoaiBoSung {
         vg.add(new LoaiDuLieu.Vung(500, "Johto", 3, 1, 100, 100, 0, -1, 1));
         final LoaiDuLieu d = new LoaiDuLieu(ds, Collections.<LoaiDuLieu.TienHoa>emptyList(), vg, Collections.<Integer, String>emptyMap());
         final List<int[]> dong = new ArrayList<int[]>();
-        dong.add(new int[]{0, 501, 3, 50, 85, 100, 3});
-        dong.add(new int[]{0, 502, 3, 50, 85, 100, 4});
-        dong.add(new int[]{1, 503, 3, 50, 85, 100, 5});
+        dong.add(new int[]{0, 0, 501, 3, 50, 85, 100, 3});
+        dong.add(new int[]{0, 0, 502, 3, 50, 85, 100, 4});
+        dong.add(new int[]{1, 0, 503, 3, 50, 85, 100, 5});
+        dong.add(new int[]{0, 1, 501, 3, 5, 40, 100, 3});
         final List<LoaiDuLieu.TuanXoay> lt = new ArrayList<LoaiDuLieu.TuanXoay>();
         lt.add(new LoaiDuLieu.TuanXoay(0, "A", "", 4));
         lt.add(new LoaiDuLieu.TuanXoay(1, "B", "", 5));
-        d.datXoayVong(lt, goc, java.util.Arrays.asList(Integer.valueOf(20)), dong);
+        final Map<Integer, Integer> nhomBd = new HashMap<Integer, Integer>();
+        nhomBd.put(Integer.valueOf(20), Integer.valueOf(0));
+        nhomBd.put(Integer.valueOf(5), Integer.valueOf(1));
+        d.datXoayVong(lt, goc, nhomBd, dong);
         Kiem.dung("ban do 20 la ban do xoay vong", d.laBanDoXoay(20) && !d.laBanDoXoay(21));
-        Kiem.bang("chu ky 0 vung 3 co 2 loai", Integer.valueOf(2), Integer.valueOf(d.xoayVong(0, 3).size()));
+        Kiem.bang("nhom ban do: 20 -> 0, 5 -> 1, 21 -> -1", "0/1/-1", d.nhomBanDoXoay(20) + "/" + d.nhomBanDoXoay(5) + "/" + d.nhomBanDoXoay(21));
+        Kiem.bang("chu ky 0 nhom 0 vung 3 co 2 loai", Integer.valueOf(2), Integer.valueOf(d.xoayVong(0, 0, 3).size()));
+        Kiem.bang("chu ky 0 nhom 1 vung 3 co 1 loai", Integer.valueOf(1), Integer.valueOf(d.xoayVong(0, 1, 3).size()));
+        final String[] bn = real.LoaiQuaiGame.chuBanner(d, 0);
+        Kiem.dung("banner doi tuan: ten tuan + so loai", bn != null && "Vùng hoang dã: A".equals(bn[0]) && bn[1].contains("2 loài"));
+        Kiem.dung("banner: chu ky ngoai lich -> khong co", real.LoaiQuaiGame.chuBanner(d, 7) == null);
+        final String nap = new String(Files.readAllBytes(new File("src/real/CharNapDuLieu.java").toPath()), "UTF-8");
+        Kiem.dung("banner khi dang nhap dau tuan (CharNapDuLieu goi LoaiQuaiGame.khiDangNhap)", nap.contains("LoaiQuaiGame.khiDangNhap(self);"));
         final ChonLoaiHoangDa.ThamSo ts = new ChonLoaiHoangDa.ThamSo();
         final Random r1 = new Random(11), r2 = new Random(11);
         final int lan = 600_000;
         final int[] khong = new int[7], co = new int[7];
         for (int i = 0; i < lan; i++) {
             khong[ChonLoaiHoangDa.chon(d, "Johto", 3, 60, 12, false, -1, 0, ts, r1).bac]++;
-            co[ChonLoaiHoangDa.chon(d, "Johto", 3, 60, 12, false, -1, 0, ts, r2, d.xoayVong(0, 3)).bac]++;
+            co[ChonLoaiHoangDa.chon(d, "Johto", 3, 60, 12, false, -1, 0, ts, r2, d.xoayVong(0, 0, 3)).bac]++;
         }
         final double p3 = 1.0 / ts.gapT3, p4 = 1.0 / ts.gapT4;
         Kiem.dung("khong xoay vong: khong co T3/T4 (vung khong co ung vien)", khong[3] == 0 && khong[4] == 0);

@@ -6,7 +6,8 @@ export interface TuanXoay { chuKy: number, ten: string, moTa: string, theHe: num
 export interface LichVungHoangDa {
   ngayGoc: string
   tuan: TuanXoay[]
-  banDo: { id: number, ten: string, vung: number }[]
+  /** nhom 0: bản đồ cấp 52–84; 1: bản đồ cấp thấp (chỉ dạng đầu T1–T3) */
+  banDo: { id: number, ten: string, vung: number, nhom: number }[]
   soLoai: Record<number, number>
 }
 

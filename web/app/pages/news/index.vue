@@ -139,7 +139,8 @@ watch(lich, l => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 3, l) }
                 </li>
               </ul>
               <p class="px-4 pb-3 text-xs text-muted">
-                Bản đồ: {{ vhd.banDo.map(b => b.ten).join(', ') }}. Độ hiếm và số quái không đổi; huyền thoại không xuất hiện.
+                Bản đồ: {{ vhd.banDo.filter(b => b.nhom === 0).map(b => b.ten).join(', ') }}; cho người mới (chỉ dạng đầu):
+                {{ vhd.banDo.filter(b => b.nhom === 1).map(b => b.ten).join(', ') }}. Độ hiếm và số quái không đổi; huyền thoại không xuất hiện.
               </p>
             </div>
             <div class="border-t-2 border-[var(--ui-border-muted)] p-3">

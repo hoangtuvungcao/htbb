@@ -67,9 +67,10 @@ export async function taiChiTietLoai(truy: Truy, dex: number): Promise<ChiTietLo
   // Vùng hoang dã xoay vòng (loai-bo-sung): chu kỳ tuần loài này xuất hiện
   let xoayVong: ChiTietLoai['xoayVong'] = []
   try {
-    xoayVong = (await truy('SELECT DISTINCT x.chu_ky, l.ten, x.cap_min, x.cap_max FROM data_loai_xoay_vong x'
-      + ' JOIN data_loai_xoay_vong_lich l ON l.chu_ky = x.chu_ky WHERE x.dex = ? ORDER BY x.chu_ky', [dex])).map(r => ({
-      chuKy: n(r.chu_ky), ten: String(r.ten), capMin: n(r.cap_min), capMax: n(r.cap_max),
+    xoayVong = (await truy('SELECT x.chu_ky, l.ten, MIN(x.cap_min) AS cap_min, MAX(x.cap_max) AS cap_max, MAX(x.nhom) AS thap'
+      + ' FROM data_loai_xoay_vong x JOIN data_loai_xoay_vong_lich l ON l.chu_ky = x.chu_ky WHERE x.dex = ?'
+      + ' GROUP BY x.chu_ky, l.ten ORDER BY x.chu_ky', [dex])).map(r => ({
+      chuKy: n(r.chu_ky), ten: String(r.ten), capMin: n(r.cap_min), capMax: n(r.cap_max), thap: n(r.thap) === 1,
     }))
   }
   catch (e) {
