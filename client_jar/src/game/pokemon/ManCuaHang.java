@@ -24,7 +24,9 @@ import javax.microedition.lcdui.Graphics;
  */
 public final class ManCuaHang extends Screen {
     public static ManCuaHang me;
-    public static final int THUOC = 0, DO = 1, DAC_BIET = 2;
+    /** MAY_CHU (0.9.7): danh sách chọn vật phẩm máy chủ gửi (-76: shop đặc biệt / sự kiện, túi đồ lấy ra / bỏ vào, cải
+     * trang, bảo vật...) - trước là cửa sổ cũ ShopNew; động từ nút = ShopNew.text, tiêu đề = ShopNew.nameshop */
+    public static final int THUOC = 0, DO = 1, DAC_BIET = 2, MAY_CHU = 3, NGUYEN_LIEU = 4;
 
     int kieu;
     byte[] chiSoCu;
@@ -58,6 +60,44 @@ public final class ManCuaHang extends Screen {
         Canvas.endDlg();
         m.switchToMe();
         AmThanh.phat(AmThanh.MO);
+    }
+
+    /** Danh sách -76 (GameScr.onShopNew) / mục "Cửa hàng" tiện ích: mở (hoặc làm mới tại chỗ nếu đang mở). */
+    public static void moMayChu() {
+        ManCuaHang m = gI();
+        if (Canvas.currentScreen == m && m.kieu == MAY_CHU) {
+            m.chon = null;
+            m.daMoChon = null;
+            m.dsDem = null;
+            return;
+        }
+        mo(MAY_CHU, null);
+    }
+
+    /** Động từ nút của danh sách máy chủ (viết hoa chữ đầu; trống = "Chọn"). */
+    static String dongTu() {
+        String t = game.model.ShopNew.text;
+        if (t == null || t.trim().length() == 0) {
+            return "Chọn";
+        }
+        t = t.trim();
+        return ChuPokemon.hoa(t.charAt(0)) + t.substring(1);
+    }
+
+    /** Danh sách máy chủ là CỬA HÀNG (động từ "Mua"). */
+    static boolean laMua() {
+        return "mua".equals(ChuPokemon.thuong(dongTu()));
+    }
+
+    /** Giá trị thuộc tính id của món (0 = không có); máy chủ gửi giá lượng = 125, số lượng gói = 126 (ItemShop). */
+    static int thuocTinh(ItemInInventory it, int id) {
+        for (int i = 0; it != null && i < it.allAttribute.size(); i++) {
+            game.model.InfoAttributeItem a = (game.model.InfoAttributeItem) it.allAttribute.elementAt(i);
+            if (a.getID() == id) {
+                return a.getValueAtt();
+            }
+        }
+        return 0;
     }
 
     static MainChar mc() {
@@ -133,6 +173,7 @@ public final class ManCuaHang extends Screen {
         k = k * 31 + Bang.vanTay(Char.inventory);
         k = k * 31 + Bang.vanTay(Res.shopTemplate);
         k = k * 31 + Bang.vanTay(Canvas.gameScr == null ? null : Canvas.gameScr.shop);
+        k = k * 31 + (this.kieu == MAY_CHU ? Bang.vanTay(game.model.ShopNew.gI().ItemShopNew) : 0);
         if (this.dsDem != null && k == this.khoaDs) {
             return this.dsDem;
         }
@@ -149,6 +190,13 @@ public final class ManCuaHang extends Screen {
             }
             return v;
         }
+        if (this.kieu == MAY_CHU) {
+            Vector ds = game.model.ShopNew.gI().ItemShopNew;
+            for (int i = 0; ds != null && i < ds.size(); i++) {
+                v.addElement(ds.elementAt(i));
+            }
+            return v;
+        }
         if (this.kieu == DAC_BIET) {
             for (int i = 0; i < Res.shopTemplate.size(); i++) {
                 GemTemp g = (GemTemp) Res.shopTemplate.elementAt(i);
@@ -159,6 +207,14 @@ public final class ManCuaHang extends Screen {
             return v;
         }
         Vector shop = Canvas.gameScr.shop;
+        if (this.kieu == NGUYEN_LIEU) {
+            for (int i = 0; shop != null && i < shop.size(); i++) {
+                if (shop.elementAt(i) instanceof GemTemp) {
+                    v.addElement(shop.elementAt(i));
+                }
+            }
+            return v;
+        }
         Vector loai = this.kieu == DO ? loaiCo() : null;
         for (int i = 0; shop != null && i < shop.size(); i++) {
             ItemInInventory it = (ItemInInventory) shop.elementAt(i);
@@ -174,7 +230,7 @@ public final class ManCuaHang extends Screen {
     }
 
     String[] chips() {
-        if (this.tab == 1) {
+        if (this.tab == 1 || this.kieu == MAY_CHU) {
             return null;
         }
         if (this.kieu == DAC_BIET) {
@@ -212,7 +268,7 @@ public final class ManCuaHang extends Screen {
         if (Canvas.currentScreen != this || Canvas.currentDialog != null) {
             return;
         }
-        if (Canvas.isKeyPressed(4) || Canvas.isKeyPressed(6)) {
+        if (this.kieu != MAY_CHU && (Canvas.isKeyPressed(4) || Canvas.isKeyPressed(6))) {
             chonTab(1 - this.tab);
         }
         if (Canvas.isKeyPressed(2)) {
@@ -261,8 +317,14 @@ public final class ManCuaHang extends Screen {
                 ManCuaHang.this.chonTab(1);
             }
         }};
-        String ten = this.kieu == THUOC ? "Poké Mart" : (this.kieu == DAC_BIET ? "Cửa hàng đặc biệt" : "Cửa hàng");
-        int[] c = Bang.khung(g, ten, new String[]{"Mua", "Bán"}, this.tab, vt, new IAction() {
+        String ten = this.kieu == THUOC ? "Poké Mart" : (this.kieu == DAC_BIET ? "Cửa hàng đặc biệt"
+                : this.kieu == NGUYEN_LIEU ? "Cửa hàng nguyên liệu" : "Cửa hàng");
+        if (this.kieu == MAY_CHU) {
+            this.tab = 0;
+            String n = game.model.ShopNew.nameshop;
+            ten = n == null || n.trim().length() == 0 ? "Vật phẩm" : n.trim();
+        }
+        int[] c = Bang.khung(g, ten, this.kieu == MAY_CHU ? null : new String[]{"Mua", "Bán"}, this.tab, vt, new IAction() {
             public void perform() {
                 ManCuaHang.this.dong();
             }
@@ -293,6 +355,10 @@ public final class ManCuaHang extends Screen {
                 ManCuaHang.this.daMoChon = null;
             }
         };
+        if (o instanceof GemTemp && this.kieu == NGUYEN_LIEU) {
+            moTheNguyenLieu((GemTemp) o, dong);
+            return;
+        }
         if (o instanceof GemTemp) {
             final GemTemp t = Res.getShopByID(((GemTemp) o).id) != null ? Res.getShopByID(((GemTemp) o).id) : (GemTemp) o;
             final int loai = t.typeMoney == 0 ? TienTe.LUONG : TienTe.XU;
@@ -312,6 +378,10 @@ public final class ManCuaHang extends Screen {
             return;
         }
         final ItemInInventory it = (ItemInInventory) o;
+        if (this.kieu == MAY_CHU) {
+            moTheMayChu(it, dong);
+            return;
+        }
         if (this.kieu == THUOC) {
             final int loai = it.potionType;
             final int max = toiDaThuoc(loai);
@@ -354,6 +424,89 @@ public final class ManCuaHang extends Screen {
                 Vector v = new Vector();
                 v.addElement(it);
                 GameService.gI().buyItem(v);
+            }
+        }, dong);
+    }
+
+    /**
+     * Thẻ cho món của danh sách máy chủ: thông tin + nút động từ ("Mua" / "Lấy ra" / "Bỏ vào" / "Chọn"...). Cửa hàng
+     * ("Mua"): giá lượng (thuộc tính 125) trong thẻ + chọn số (mỗi chiếc một lệnh -76 như cửa sổ cũ).
+     */
+    void moTheMayChu(final ItemInInventory it, IAction dong) {
+        final int idx = game.model.ShopNew.gI().ItemShopNew.indexOf(it);
+        final short loaiDs = game.model.ShopNew.gI().typeshop;
+        final boolean mua = laMua();
+        final long gia = mua ? thuocTinh(it, 125) : 0;
+        int toiDa = 1;
+        if (mua) {
+            int cho = Math.max(0, TrangThaiNguoiChoi.sucChua(mc()) - mc().FullInventory());
+            int theoTien = gia > 0 ? (int) Math.min(10, mc().luong / gia) : 1;
+            toiDa = Math.max(1, Math.min(10, Math.min(cho, theoTien)));
+        }
+        TheVatPham.moMua(it, gia, TienTe.LUONG, toiDa, mua ? null : dongTu(), new TheVatPham.ViecMua() {
+            public String khongMua(int so) {
+                if (idx < 0) {
+                    return "Vật phẩm không còn trong danh sách.";
+                }
+                if (mua && mc().FullInventory() >= TrangThaiNguoiChoi.sucChua(mc())) {
+                    return "Hành trang đã đầy.";
+                }
+                if (mua && gia * so > mc().luong) {
+                    return "Không đủ " + TienTe.ten(TienTe.LUONG) + ".";
+                }
+                return null;
+            }
+
+            public void mua(int so) {
+                for (int i = 0; i < so; i++) {
+                    GameService.gI().buyItemShopnew((byte) idx, loaiDs);
+                }
+            }
+        }, dong);
+    }
+
+    /** Số nguyên liệu id đang có (túi thường + khoá). */
+    static int dangCoNguyenLieu(int id) {
+        int n = 0;
+        Vector[] ds = {MainChar.gemItem, MainChar.gemItemKhoa};
+        for (int k = 0; k < ds.length; k++) {
+            for (int i = 0; ds[k] != null && i < ds[k].size(); i++) {
+                game.model.GemTemplate g = (game.model.GemTemplate) ds[k].elementAt(i);
+                if (g.id == id) {
+                    n += g.number;
+                }
+            }
+        }
+        return n;
+    }
+
+    /** Thẻ mua nguyên liệu (NPC bán ngọc / nguyên liệu, lệnh 74): chọn số (tối đa 300 chiếc mỗi loại) + giá. */
+    void moTheNguyenLieu(final GemTemp g0, IAction dong) {
+        GemTemp t0 = Res.getGemByID(g0.id);
+        final GemTemp t = t0 != null ? t0 : g0;
+        final int loai = t.typeMoney == 0 ? TienTe.XU : TienTe.LUONG;   // như cửa sổ cũ: 0 = xu
+        final long co = loai == TienTe.XU ? mc().charXu : mc().luong;
+        final int con = Math.max(0, 300 - dangCoNguyenLieu(t.id));
+        int theoTien = t.price <= 0 ? con : (int) Math.min(con, co / t.price);
+        final int toiDa = Math.max(1, Math.min(con, Math.min(300, theoTien)));
+        game.model.GemTemplate mon = new game.model.GemTemplate();
+        mon.id = t.id;
+        TheVatPham.moMua(mon, t.price, loai, toiDa, new TheVatPham.ViecMua() {
+            public String khongMua(int so) {
+                if (con <= 0) {
+                    return "Đã có tối đa 300 chiếc.";
+                }
+                long tien = loai == TienTe.XU ? mc().charXu : mc().luong;
+                return (long) so * t.price > tien ? "Không đủ " + TienTe.ten(loai) + "." : null;
+            }
+
+            public void mua(int so) {
+                GemTemp ge = new GemTemp();
+                ge.id = t.id;
+                ge.number = (short) so;
+                Vector v = new Vector();
+                v.addElement(ge);
+                GameService.gI().buyGemItem(v);
             }
         }, dong);
     }
@@ -408,7 +561,8 @@ public final class ManCuaHang extends Screen {
         final Vector v = dsHang();
         int hl = y + h - 4 - yl;
         if (v.size() == 0) {
-            Bang.trong(g, x + 4, yl, w - 8, hl, this.tab == 0 ? "Cửa hàng chưa có hàng" : "Hành trang không có đồ để bán", null);
+            Bang.trong(g, x + 4, yl, w - 8, hl, this.kieu == MAY_CHU ? "Không có vật phẩm" : this.tab == 0 ? "Cửa hàng chưa có hàng"
+                    : "Hành trang không có đồ để bán", null);
             return;
         }
         // hàng gọn hơn (vẫn >= cỡ chạm tối thiểu) để thấy nhiều món hơn
@@ -434,7 +588,17 @@ public final class ManCuaHang extends Screen {
         String ten, phu;
         int loaiTien = TienTe.XU;
         long gia;
-        if (o instanceof GemTemp) {
+        if (o instanceof GemTemp && this.kieu == NGUYEN_LIEU) {
+            GemTemp t = Res.getGemByID(((GemTemp) o).id);
+            if (t == null) {
+                t = (GemTemp) o;
+            }
+            IconVatPham.ve(g, (short) (t.idImage + 6500), x + 3 + s / 2, y + 3 + s / 2, s, IconVatPham.DP_NGOC);
+            ten = t.name;
+            phu = "Đang có " + dangCoNguyenLieu(t.id);
+            gia = t.price;
+            loaiTien = t.typeMoney == 0 ? TienTe.XU : TienTe.LUONG;
+        } else if (o instanceof GemTemp) {
             GemTemp t = Res.getShopByID(((GemTemp) o).id);
             if (t == null) {
                 t = (GemTemp) o;
@@ -468,11 +632,23 @@ public final class ManCuaHang extends Screen {
                 if (t != null && t.ndayLoan != 0 && this.tab == 0) {
                     loaiTien = TienTe.LUONG;
                 }
+                if (this.kieu == MAY_CHU) {
+                    // máy chủ chỉ gửi giá lượng (thuộc tính 125) cho cửa hàng; danh sách khác: không giá
+                    gia = laMua() ? thuocTinh(it, 125) : 0;
+                    loaiTien = TienTe.LUONG;
+                    int goi = thuocTinh(it, 126);
+                    if (goi > 1) {
+                        ten = ten + " x" + goi;
+                    }
+                }
             }
         }
-        int wg = TienTe.rongGia(loaiTien, gia, Font.blackFont, true);
+        boolean coGia = !(this.kieu == MAY_CHU && gia <= 0);
+        int wg = coGia ? TienTe.rongGia(loaiTien, gia, Font.blackFont, true) : 0;
         Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, ten, w - s - 22 - wg), x + s + 9, y + 2, 0);
-        TienTe.veGia(g, loaiTien, gia, x + w - 8 - wg, y + 2, Font.blackFont, true);
+        if (coGia) {
+            TienTe.veGia(g, loaiTien, gia, x + w - 8 - wg, y + 2, Font.blackFont, true);
+        }
         if (phu != null) {
             Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, phu, w - s - 14), x + s + 9, y + 3 + Font.blackFont.getHeight(), 0);
         }

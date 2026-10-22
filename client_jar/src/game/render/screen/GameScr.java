@@ -3043,6 +3043,10 @@ public class GameScr extends Screen {
             menu.addElement(new Command("Học kỹ năng", new IAction() {
                 @Override
                 public void perform() {
+                    if (game.pokemon.MenuNguCanh.bat()) {
+                        game.pokemon.ManNhanVat.moHocChieu();   // 0.9.7 NRO
+                        return;
+                    }
                     GameScr.this.showWindow(0, true, new byte[]{7});
                 }
             }));
@@ -5355,6 +5359,11 @@ public class GameScr extends Screen {
     }
 
     public void onViewAnimalInfo(Char ch) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            Canvas.endDlg();
+            game.pokemon.ManXemTrangBi.mo(ch, true);   // 0.9.7 NRO: xem đồ thú người khác (chỉ xem)
+            return;
+        }
         WindowInfoScr.gI().setInfo(0, false, new byte[]{31});
         WindowInfoScr.charWearing = ch;
         WindowInfoScr.gI().switchToMe();
@@ -5635,6 +5644,10 @@ public class GameScr extends Screen {
 
     public void onNPCKeepItem(Vector itemBag) {
         Char.itembag = itemBag;
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManKhoDo.mo();   // 0.9.7 NRO: kho đồ hai lưới
+            return;
+        }
         showWindow(0, true, new byte[]{22});
     }
 
@@ -5675,6 +5688,10 @@ public class GameScr extends Screen {
             if (ge.isSell) {
                 this.shop.addElement(ge);
             }
+        }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManCuaHang.mo(game.pokemon.ManCuaHang.NGUYEN_LIEU, new byte[]{0, 10});   // 0.9.7 NRO
+            return;
         }
         showWindow(1, true, new byte[]{0, 10});
     }
@@ -6381,6 +6398,10 @@ public class GameScr extends Screen {
                 }
             }
         }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManLuyen.mo(game.pokemon.ManLuyen.LUYEN, priceImbue, vtam);   // 0.9.7 NRO: bàn luyện
+            return;
+        }
         for (int a = 0; a < vtam.size(); a++) {
             WindowInfoScr.gI().listTemp.addElement((GemTemplate) vtam.elementAt(a));
         }
@@ -6421,6 +6442,10 @@ public class GameScr extends Screen {
                     vtam.addElement(gk);
                 }
             }
+        }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.ManLuyen.mo(game.pokemon.ManLuyen.KHAM, price1, vtam);   // 0.9.7 NRO: bàn khảm
+            return;
         }
         int size0 = vtam.size();
         for (int a = 0; a < size0; a++) {
@@ -6486,6 +6511,11 @@ public class GameScr extends Screen {
     }
 
     public void onEpNgoc(short price) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            Canvas.endDlg();
+            game.pokemon.ManLuyen.moHop(price);   // 0.9.7 NRO: bàn hợp thành
+            return;
+        }
         WindowInfoScr.gI().prizeImbue = price;
         showWindow(0, false, new byte[]{26});
         WindowInfoScr.gI().name = "Hợp thành";
@@ -7111,6 +7141,11 @@ public class GameScr extends Screen {
             ch.pokeDex = goc.pokeDex;
             ch.pokeShiny = goc.pokeShiny;
             ch.ngoaiHinh = goc.ngoaiHinh;
+        }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            Canvas.endDlg();
+            game.pokemon.ManXemTrangBi.mo(ch, false);   // 0.9.7 NRO: xem trang bị người khác (chỉ xem)
+            return;
         }
         WindowInfoScr.gI().setInfo(0, false, new byte[]{1});
         WindowInfoScr.charWearing = ch;
@@ -7840,6 +7875,10 @@ public class GameScr extends Screen {
             ShopNew.text = msg.reader().readUTF();
             ShopNew.nameshop = msg.reader().readUTF();
             ShopNew.gI().ItemShopNew = items;
+            if (game.pokemon.MenuNguCanh.bat()) {
+                game.pokemon.ManCuaHang.moMayChu();   // 0.9.7 NRO: danh sách + thẻ vật phẩm (nút = động từ máy chủ)
+                return;
+            }
             PauseMenu.gI().showShopNew(0);
         } catch (Exception e) {
         }

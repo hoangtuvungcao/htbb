@@ -108,6 +108,12 @@ public final class ManNhanVat extends Screen {
         AmThanh.phat(AmThanh.MO);
     }
 
+    /** NPC dạy chiêu ("Học kỹ năng"): tab Kỹ năng, danh sách học mới (thay cửa sổ cũ WindowInfoScr tab 7). */
+    public static void moHocChieu() {
+        mo(TAB_KY_NANG);
+        gI().hocMoi = true;
+    }
+
     /** Mở thẳng hành trang (toàn bộ) ở tab Trang bị. */
     public static void moHanhTrang() {
         mo(TAB_TRANG_BI);

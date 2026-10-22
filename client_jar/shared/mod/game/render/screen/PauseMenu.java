@@ -409,6 +409,10 @@ extends Screen {
                         for (int i = 0; i < object.length; ++i) {
                             object[i] = 20;
                         }
+                        if (game.pokemon.MenuNguCanh.bat()) {
+                            game.pokemon.ManCuaHang.mo(game.pokemon.ManCuaHang.DAC_BIET, object);
+                            return;
+                        }
                         WindowInfoScr.gI().setInfo(0, true, object);
                         WindowInfoScr.gI().switchToMe();
                         return;
