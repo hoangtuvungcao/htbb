@@ -515,6 +515,9 @@ public final class HanhDong {
      * Không thứ gì CHỈ làm được bằng chuột phải: chuột trái làm được hết.
      */
     public static boolean chuotPhai(int x, int y) {
+        if (NgamTay.huy()) {
+            return true;   // 0.9.8: chuột phải khi đang ngắm = huỷ phát bắn
+        }
         // 0.9.7: chuột phải trên ô đồ của lưới hành trang = thao tác nhanh (mặc / dùng / bán)
         if (Canvas.currentDialog == null && LuoiTui.chuotPhai(x, y)) {
             return true;

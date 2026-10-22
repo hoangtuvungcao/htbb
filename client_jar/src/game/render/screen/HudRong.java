@@ -679,7 +679,7 @@ public final class HudRong {
     /** Nhấn giữ nút chiêu > 0,45 giây: thẻ tên, hệ, PP, hồi chiêu (thả ra không đánh). */
     static void veGoiYChieu(Graphics g, GameScr gs, QuickSlot[] bo) {
         int dang = -1;
-        if (Canvas.isPointerDown) {
+        if (Canvas.isPointerDown && !game.pokemon.NgamTay.dangGiu()) {
             for (int i = 0; i < 5; i++) {
                 int x = i < 4 ? xChieu(i) : xDanh(), y = i < 4 ? yChieu(i) : yDanh(), r = i < 4 ? R_CHIEU : R_DANH;
                 if (trongTron(Canvas.px, Canvas.py, x, y, r)) {
@@ -1159,6 +1159,27 @@ public final class HudRong {
             }
         }
         return -1;
+    }
+
+    /** 0.9.8 ngắm tay: nút chiêu / đánh tại (x, y) -> {phím, tâm x, tâm y, bán kính}; null = không phải. */
+    public static int[] oChieuTai(GameScr gs, int x, int y) {
+        if (banDoTo) {
+            return null;
+        }
+        int ma = trung(gs, x, y);
+        if (ma >= 20 && ma <= 23) {
+            return new int[]{PHIM_CHIEU[ma - 20], xChieu(ma - 20), yChieu(ma - 20), R_CHIEU};
+        }
+        if (ma == 24 && HanhDong.loaiNguCanh() != 1) {
+            return new int[]{5, xDanh(), yDanh(), R_DANH};
+        }
+        return null;
+    }
+
+    /** 0.9.8 ngắm tay: thả tay sau khi ngắm - bỏ cờ "nhấn giữ xem thông tin chiêu" (khỏi nuốt cú chạm sau). */
+    public static void boGiu() {
+        daGiu = false;
+        giuO = -1;
     }
 
     /** PC: con trỏ bàn tay (game.pokemon.HanhDong.laVungBam). */

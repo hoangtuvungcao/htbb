@@ -203,7 +203,7 @@ public class GameScr extends Screen {
     public boolean isAutoRangeWhenAuto;
     public static long timeDelayHpMp;
     Position posTo;
-    int[] SLOTINDEXOFKEY;
+    public int[] SLOTINDEXOFKEY;
     boolean first;
     public static int timeRemovePos;
     public int coutChangeFocusWhenDoing;
@@ -611,6 +611,25 @@ public class GameScr extends Screen {
     }
 
     /** pokemon: bước ngang 1 ô skill nhanh - lớn hơn trên màn rộng (240 / 320+ px). */
+    /** 0.9.8 ngắm tay: nút chiêu tại (x, y) màn hình -> {phím, tâm x, tâm y, bán kính}; null = không phải nút chiêu. */
+    public int[] oChieuTai(int x, int y) {
+        if (HudRong.bat()) {
+            return HudRong.oChieuTai(this, x, y);
+        }
+        int b = buocO();
+        int wSlot = b * 5;
+        int hSlot = caoThanhO();
+        int x0 = Canvas.hw - (wSlot / 2), y0 = (Canvas.h - hSlot) - 20;
+        if (x < x0 || x >= x0 + wSlot || y < y0 || y >= y0 + hSlot) {
+            return null;
+        }
+        int id = (x - x0) / b;
+        if (id > 4) {
+            id = 4;
+        }
+        return new int[]{1 + (id * 2), x0 + id * b + b / 2, y0 + hSlot / 2, Math.max(b, hSlot) / 2};
+    }
+
     public static int buocO() {
         int b = Res.wKhung;
         if (Canvas.w >= 320) {
@@ -1620,6 +1639,7 @@ public class GameScr extends Screen {
 
     @Override
     public void updateKey() {
+        game.pokemon.NgamTay.capNhat();   // 0.9.8 ngắm tay: PC giữ phím chiêu, thả = bắn theo con trỏ
         if (this.chatMode && Canvas.isPointerClick) {
             switch (Canvas.collisionCmdBar()) {
                 case 0:
@@ -2081,6 +2101,10 @@ public class GameScr extends Screen {
             }
         }
         QuickSlot qs = MainChar.quickSlot[index][this.SLOTINDEXOFKEY[key]];
+        // 0.9.8 ngắm tay: trận giữa người chơi / "Ngắm thủ công" -> chiêu tấn công thành phát bắn theo hướng (NgamTay)
+        if (qs != null && game.pokemon.NgamTay.chanDoFire(this, key, qs.getSkillType(), qs.quickslotType == QuickSlot.TYPE_SKILL, qs.isBuff)) {
+            return;
+        }
         if (qs.quickslotType != 2) {
             if (qs.isBuff && !(this.focusedActor instanceof NPC)) {
                 byte level = Char.skillLevelLearnt[qs.getSkillType()];
@@ -2420,6 +2444,10 @@ public class GameScr extends Screen {
     }
 
     public void doUseSkillToFocusActor(byte skillType) {
+        if (game.pokemon.NgamTay.dangNgam() && this.focusedActor != null && this.focusedActor.isPlayer()) {
+            this.duoiMucTieu = null;   // 0.9.8: không khoá mục tiêu / đuổi đánh người chơi - kéo chiêu để ngắm
+            return;
+        }
         this.mainChar.getSkillIDFromType(skillType);
         try {
             if (this.focusedActor != null) {
@@ -2746,7 +2774,7 @@ public class GameScr extends Screen {
     // dừng và đánh; quái chết / biến mất / đổi mục tiêu / bấm phím đi / chạm đất thì thôi đuổi.
 
     /** Mục tiêu đang đuổi theo lệnh bấm đánh tay (tới tầm thì đánh một đòn, như bấm lại). */
-    Actor duoiMucTieu;
+    public Actor duoiMucTieu;
     byte duoiChieu;
     private long duoiBatDau;
     private long duoiKe;
@@ -3686,6 +3714,7 @@ public class GameScr extends Screen {
             }
         }
         // pokemon (hệ sinh thái): phao câu, cờ mốc đua, điểm đào
+        game.pokemon.NgamTay.ve(g, this);   // 0.9.8: vạch ngắm + vệt đạn (toạ độ thế giới, trước khi SinhThai trả translate)
         game.pokemon.SinhThai.veTheGioi(g);
         if (effAnimate.size() > 0 && !Tilemap.isOfflineMap && effAnimate.size() > 0) {
             for (int i8 = 0; i8 < effAnimate.size(); i8++) {
@@ -7389,6 +7418,9 @@ public class GameScr extends Screen {
     }
 
     private void updatePoint() {
+        if (game.pokemon.NgamTay.chamNgam(this)) {
+            return;   // 0.9.8 ngắm tay: nhấn nút chiêu rồi kéo = ngắm, thả = bắn
+        }
         // 0.9.7: máy J2ME cảm ứng màn nhỏ (không HudRong): chạm thẻ trạng thái góc trái trên = hồ sơ nhân vật
         if (!HudRong.bat() && Canvas.isPointerClick && this.hideGUI != 2 && Canvas.currentDialog == null
                 && Canvas.isPointer(0, 0, rongKhungHp(), imgInfo != null ? imgInfo.getHeight() : 34)) {

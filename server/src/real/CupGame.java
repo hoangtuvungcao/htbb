@@ -407,6 +407,12 @@ public final class CupGame {
                 && !t.loai.contains(x) && !t.loai.contains(y);
     }
 
+    /** p dang thi dau trong mot tran cup chua ket thuc (ngu canh PvP ngam tay, PhongRiengGame.NGU_CANH_CUP). */
+    static boolean dangThiDau(final Char p) {
+        final Tran t = TRAN.get(Integer.valueOf(p.region));
+        return t != null && t.ketQua == 0 && t.coMat(p.charDBID);
+    }
+
     /** HOOK Region.doAttackPlayer: sat thuong chuan hoa cua loai cup tuan nay. {@code d} = sat thuong tho (truoc x0,30). */
     static int satThuong(final Char p, final Char c, final long d) {
         final Tuan t = HIEN;

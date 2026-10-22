@@ -167,11 +167,22 @@ public final class PhongRiengGame {
     private static volatile boolean dangChay;
 
     /** TeamServer: luong nhip 1 giay cho pho ban + cup (tach khoi vong bao tri). */
+    /** Ngu canh PvP cua tran cup (BanHuongGame): o san cup VA dang la nguoi thi dau cua mot tran chua ket thuc. */
+    public static final java.util.function.Predicate<Char> NGU_CANH_CUP = new java.util.function.Predicate<Char>() {
+        public boolean test(final Char p) {
+            return p != null && p.mapID == MAP_CUP && CupGame.dangThiDau(p);
+        }
+    };
+
     public static void khoiDong() {
         if (dangChay) {
             return;
         }
         dangChay = true;
+        // 0.9.8 (pvp-keo): tran Cup PvP tuan (san 4382, dang thi dau) la ngu canh PvP -> ngam tay, khong tu dong / tu nham.
+        // Sat thuong van chuan hoa theo loai cup (10..80 phan nghin HP) vi dan ngam tay di qua Map.doAttackPlayer ->
+        // Region.doAttackPlayer (nhanh cupTran -> CupGame.satThuong).
+        BanHuongGame.dangKyNguCanh(NGU_CANH_CUP);
         final Thread t = new Thread(new Runnable() {
             public void run() {
                 while (true) {

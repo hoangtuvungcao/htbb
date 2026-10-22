@@ -327,6 +327,7 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     public void ve(Graphics g) {
+        game.pokemon.NgamTay.HUD_RIENG = BAT;   // 0.9.8: HUD tự bắt kéo-ngắm ở nút chiêu
         long now = System.currentTimeMillis();
         float dt = tTruoc == 0 ? 0.016f : Math.min(0.1f, (now - tTruoc) / 1000f);
         tTruoc = now;
@@ -939,6 +940,19 @@ public final class Hud implements NenAndroid.LopPhu {
             nenNut(c, x, y, r, HdVe.pha(mau, 0xFFFFFFFF, 0.3f), HdVe.pha(mau, 0xFF000000, 0.35f), false);
             veO(g, c, qs, mc, x, y, r, now, false);
         }
+        // 0.9.8 ngắm tay: vòng quanh nút đang kéo (đỏ + "Huỷ" khi kéo về nút)
+        if (game.pokemon.NgamTay.dangGiu()) {
+            boolean huy = game.pokemon.NgamTay.vungHuy();
+            int[] cum = {N_DANH, N_C0, N_C1, N_C3, N_C4};
+            for (int k = 0; k < cum.length; k++) {
+                int n = cum[k];
+                if (!NGAM[n]) continue;
+                PV.setColor(huy ? 0xFF000000 | game.pokemon.ChuDe.DO : 0xFF000000 | game.pokemon.ChuDe.CHINH_SANG);
+                PV.setStrokeWidth(2.2f);
+                c.drawCircle(NX[n], NY[n], NR[n] + 4, PV);
+                if (huy) chu(c, "Huỷ", NX[n], NY[n] - NR[n] - 7, 8f, 0xFFFFFFFF, 0xC0000000, 2);
+            }
+        }
         veNutNho(c, N_DOI_BO, now);
         // 2 chấm bộ ô đang dùng cạnh nút đổi bộ
         for (int k = 0; k < 2; k++) {
@@ -1214,8 +1228,10 @@ public final class Hud implements NenAndroid.LopPhu {
 
     // ------------------------------------------------------------------ chỉnh bố cục
     static final String[] TEN_NHOM = {"Cần điều khiển", "Nút đánh + chiêu", "Ô thuốc", "Khung chat"};
-    static final RectF[] NUT_CS = {new RectF(), new RectF(), new RectF(), new RectF(), new RectF(), new RectF()};
-    static final String[] TEN_CS = {"−", "+", "Mặc định", "Hiệu ứng", "Rung", "Xong"};
+    static final RectF[] NUT_CS = {new RectF(), new RectF(), new RectF(), new RectF(), new RectF(), new RectF(), new RectF()};
+    static final String[] TEN_CS = {"−", "+", "Mặc định", "Hiệu ứng", "Rung", "Ngắm tay", "Xong"};
+    /** 0.9.8: chỉ số nút "Ngắm thủ công" / "Xong" trong bảng Chỉnh nút. */
+    static final int CS_NGAM = 5, CS_XONG = 6;
 
     static void veChinhSua(Canvas c) {
         // khung quanh từng nhóm
@@ -1242,13 +1258,14 @@ public final class Hud implements NenAndroid.LopPhu {
         for (int i = 0; i < NUT_CS.length; i++) {
             RectF r = NUT_CS[i];
             r.set(x0 + 7 + i * bw + 1.5f, y0 + 20, x0 + 7 + (i + 1) * bw - 1.5f, y0 + 47);
-            boolean bat = (i == 3 && hieuUngCao) || (i == 4 && rung);
-            HdVe.tronDoc(c, r.left, r.top, r.right, r.bottom, 8, i == 5 ? 0xFF60D070 : bat ? 0xFF6FA6EA : 0xFF2A4C80,
-                    i == 5 ? 0xFF2E8A3A : bat ? 0xFF3D7DCA : 0xFF15284A);
+            boolean bat = (i == 3 && hieuUngCao) || (i == 4 && rung) || (i == CS_NGAM && game.pokemon.NgamTay.thuCong());
+            HdVe.tronDoc(c, r.left, r.top, r.right, r.bottom, 8, i == CS_XONG ? 0xFF60D070 : bat ? 0xFF6FA6EA : 0xFF2A4C80,
+                    i == CS_XONG ? 0xFF2E8A3A : bat ? 0xFF3D7DCA : 0xFF15284A);
             HdVe.vienTron(c, r.left, r.top, r.right, r.bottom, 8, 0.7f, 0x80FFFFFF);
             String t = TEN_CS[i];
             if (i == 3) t = hieuUngCao ? "Hiệu ứng cao" : "Hiệu ứng thấp";
             if (i == 4) t = rung ? "Rung: bật" : "Rung: tắt";
+            if (i == CS_NGAM) t = game.pokemon.NgamTay.thuCong() ? "Ngắm: bật" : "Ngắm: tắt";
             float co = i < 2 ? 13f : 6.6f;
             chu(c, t, r.centerX(), r.centerY() + co * 0.36f, co, 0xFFFFFFFF, 0, 2);
         }
@@ -1381,6 +1398,10 @@ public final class Hud implements NenAndroid.LopPhu {
                 break;
             case 4:
                 rung = !rung;
+                break;
+            case CS_NGAM:
+                // 0.9.8 Ngắm thủ công: kéo chiêu để ngắm cả khi đánh Pokémon hoang dã (PvP luôn ngắm tay)
+                game.pokemon.NgamTay.datThuCong(!game.pokemon.NgamTay.thuCong());
                 break;
             default:
                 chinhSua = false;
@@ -1517,6 +1538,11 @@ public final class Hud implements NenAndroid.LopPhu {
                 capNhatCan(x, y);
                 return;
             }
+            int nk = PTR_NUT[id];
+            if (nk >= 0 && nk < SO_NUT && NGAM[nk]) {
+                game.pokemon.NgamTay.keo((int) x, (int) y);   // 0.9.8: kéo ngắm
+                return;
+            }
             if (id == gamePtr) chamGame(1, (int) x, (int) y);
             return;
         }
@@ -1645,7 +1671,11 @@ public final class Hud implements NenAndroid.LopPhu {
     /** Lần nhấn nút đánh hiện tại là câu cá (HanhDong.nutDanhLaCau lúc nhấn). */
     static boolean CAU_NHAN;
 
+    /** 0.9.8: nút chiêu đang kéo-ngắm (nhấn không gửi phím; thả = bắn / huỷ qua game.pokemon.NgamTay). */
+    static final boolean[] NGAM = new boolean[SO_NUT];
+
     static void batNut(int n, int id, long now) {
+        NGAM[n] = false;
         PTR_NUT[id] = n;
         NPTR[n] = id;
         NNHAN[n] = now;
@@ -1672,6 +1702,9 @@ public final class Hud implements NenAndroid.LopPhu {
                 if (MO_BANG[n]) return;
             }
         }
+        if (ma >= 49 && ma <= 57 && o >= 0 && batDauNgam(n, ma - 48, o)) {
+            return;   // 0.9.8 ngắm tay: nhấn = bắt đầu kéo, không đánh ngay
+        }
         if (ma != 0) {
             NenAndroid.phimNgay(0, ma);
             if (n == N_DANH) tLapDanh = now;
@@ -1688,7 +1721,32 @@ public final class Hud implements NenAndroid.LopPhu {
         }
     }
 
+    /** Nhấn nút chiêu khi đang ngắm tay (PvP / Ngắm thủ công): ô là chiêu tấn công -> bắt đầu kéo. */
+    static boolean batDauNgam(int n, int phim, int o) {
+        if (!game.pokemon.NgamTay.dangNgam() || MainChar.quickSlot == null) {
+            return false;
+        }
+        GameScr gs = game.render.Canvas.gameScr;
+        if (gs == null || (gs.focusedActor != null && gs.focusedActor.catagory == 2)) {
+            return false;   // đang nhắm NPC: nút đánh = nói chuyện
+        }
+        int sk = game.pokemon.NgamTay.skillCuaPhim(gs, phim);
+        if (sk < 0 || game.pokemon.NgamTay.thongSo(gs.mainChar.clazz, sk)[0] == game.pokemon.NgamTay.K_TU_THAN) {
+            return false;
+        }
+        NGAM[n] = true;
+        game.pokemon.NgamTay.batDauKeo(phim, (int) NX[n], (int) NY[n], (int) NR[n]);
+        return true;
+    }
+
     static void thaNut(int n, float x, float y, long now) {
+        if (NGAM[n]) {
+            NGAM[n] = false;
+            NPTR[n] = -1;
+            NNHAN[n] = now;
+            game.pokemon.NgamTay.tha((int) x, (int) y);   // 0.9.8: thả = bắn theo hướng kéo / kéo về nút = huỷ
+            return;
+        }
         long giu = now - NNHAN[n];
         NPTR[n] = -1;
         NNHAN[n] = now;
@@ -1797,6 +1855,8 @@ public final class Hud implements NenAndroid.LopPhu {
 
     /** HUD bị ẩn (mở menu / hộp thoại): thả mọi phím đang giữ. */
     static void thaHet() {
+        game.pokemon.NgamTay.huy();   // 0.9.8: HUD ẩn giữa lúc kéo ngắm = huỷ phát bắn
+        for (int k = 0; k < SO_NUT; k++) NGAM[k] = false;
         if (jHoatDong) thaCan();
         for (int i = 0; i < 16; i++) {
             if (PTR_CAN[i] != 0) PTR_CAN[i] = 0;

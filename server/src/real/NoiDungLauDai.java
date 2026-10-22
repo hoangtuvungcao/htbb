@@ -54,6 +54,7 @@ public final class NoiDungLauDai {
             NhiemVuEngine.nap();
             DanhHieuGame.nap(); // data_danh_hieu (mau danh hieu + dieu kien)
             LuatPkGame.nap(); // thi tran an toan (data_map_ten.loai = thi_tran)
+            BanHuongGame.nap(); // 0.9.8 ngam tay PvP: thong so ban cua chieu (data_chieu_ban)
             SuKienVatPham.nap(); // vat pham that cua tung su kien (data_su_kien_vat_pham)
             XepHangPvpGame.batDau(); // dau xep hang: lich su 24 gio + bo ghep 2 giay
             CuaHangLauDai.nap(); // cua hang & doi vat pham (So tay)

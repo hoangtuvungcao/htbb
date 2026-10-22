@@ -58,6 +58,7 @@ public final class KiemPhoBanCup {
         danhHieu();
         goi112VaKho();
         diemMoc();
+        ngamTayCup();
     }
 
     static final java.util.TimeZone VN = LichNam.MUI_GIO;
@@ -824,5 +825,26 @@ public final class KiemPhoBanCup {
         Kiem.dung("ban do phong rieng: khong nap quai tu tep (MapPhongRieng.loadMap)", doc("src/real/MapPhongRieng.java").contains("public void loadMap("));
         final String tl = doc("../docs/thiet-ke-game.md");
         Kiem.dung("tai lieu: thiet-ke-game co muc Cup PvP tuan + Pho ban", tl.contains("Cúp PvP tuần") && tl.contains("Phó bản Hầm ngục"));
+    }
+
+    /** 0.9.8 pvp-keo x cup: tran cup la ngu canh PvP ngam tay, sat thuong van chuan hoa qua Region.doAttackPlayer. */
+    static void ngamTayCup() {
+        try {
+            final String pr = doc("src/real/PhongRiengGame.java");
+            Kiem.dung("cup: PhongRiengGame.khoiDong dang ky ngu canh PvP ngam tay (BanHuongGame.dangKyNguCanh)",
+                    pr.contains("BanHuongGame.dangKyNguCanh(NGU_CANH_CUP);") && pr.contains("p.mapID == MAP_CUP && CupGame.dangThiDau(p)"));
+            final real.Char ngoai = new real.Char(null);
+            ngoai.mapID = (short) 1;
+            Kiem.sai("cup: nguoi ngoai san cup khong bi coi la trong tran", real.PhongRiengGame.NGU_CANH_CUP.test(ngoai));
+            final real.Char tren = new real.Char(null);
+            tren.mapID = (short) real.PhongRiengGame.MAP_CUP;
+            tren.region = 9999;
+            Kiem.sai("cup: o san cup nhung khong co tran dang dau -> khong phai PvP", real.PhongRiengGame.NGU_CANH_CUP.test(tren));
+            final String rg = doc("src/real/Region.java");
+            Kiem.dung("cup: sat thuong chuan hoa giu trong Region.doAttackPlayer (dan ngam tay goi Map.doAttackPlayer)",
+                    rg.contains("damage = CupGame.satThuong(p, c, d);") && doc("src/real/BanHuongGame.java").contains("ph.map.doAttackPlayer(p, goiDanh(LENH_DANH_NGUOI, c.id, chieu));"));
+        } catch (final Exception e) {
+            Kiem.dung("ngamTayCup: " + e, false);
+        }
     }
 }

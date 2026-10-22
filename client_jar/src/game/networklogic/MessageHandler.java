@@ -153,6 +153,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (game.pokemon.CapNhat.nhan(msg)) {
             return;
         }
+        // pokemon: lenh -113 ngam tay PvP (che do, bang chieu, dan bay cua nguoi khac) - NgamTay, 0.9.8
+        if (game.pokemon.NgamTay.nhan(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;

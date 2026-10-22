@@ -79,6 +79,7 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
     - `them_trade_pokemon.sql` (bat-trade, sau khối bộ / ngọc / thu phục): bậc hiếm loài, `data_bat_chi_so_loai`,
       `data_bat_chuyen_doi`, cột `data_bat_loai.tien_hoa_trao_doi`, nhật ký `tob_log_trao_doi_pokemon`;
     - `them_kenh_chat.sql` (kenh-chat): hộp thư tin riêng offline `tob_chat_cho`, danh sách chặn `tob_chat_chan`;
+    - `them_ngam_tay_pvp.sql` (pvp-keo): `data_chieu_ban` (kiểu bắn từng chiêu cho ngắm tay PvP, `INSERT IGNORE`);
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
 

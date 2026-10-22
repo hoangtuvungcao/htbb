@@ -1205,6 +1205,7 @@ class CharCapNhat {
                     self.x = x;
                     self.y = y;
                     self.timeMove = now;
+                    BanHuongGame.ghiViTri(self, now); // 0.9.8 ngam tay: lich su vi tri (bu tre 150 ms)
                     self.quyDiChuyen = distance >= 1000 ? -1L : quyMoi;
                     final Message j = new Message(4);
                     self.writeActorPos(j, self);

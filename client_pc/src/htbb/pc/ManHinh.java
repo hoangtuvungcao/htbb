@@ -822,6 +822,9 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
             LopPhu.chuot(1, chuotX, chuotY);
             return;
         }
+        if (NenPc.trongKhung(chuotX, chuotY)) {
+            game.pokemon.NgamTay.chuotDi(NenPc.logicX(chuotX), NenPc.logicY(chuotY));   // 0.9.8 ngắm theo con trỏ
+        }
         if (dangKeo) NenPc.cham(1, chuotX, chuotY);
     }
 
@@ -835,6 +838,9 @@ public final class ManHinh extends Canvas implements KeyListener, MouseListener,
             } catch (Throwable t) {
                 bam = false;
             }
+        }
+        if (NenPc.trongKhung(chuotX, chuotY)) {
+            game.pokemon.NgamTay.chuotDi(NenPc.logicX(chuotX), NenPc.logicY(chuotY));   // 0.9.8 ngắm theo con trỏ
         }
         Cursor c = bam ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor();
         if (getCursor() != c) setCursor(c);

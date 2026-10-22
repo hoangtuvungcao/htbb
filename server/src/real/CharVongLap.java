@@ -36,6 +36,7 @@ class CharVongLap {
             self.hp = 1;
             return;
         }
+        BanHuongGame.nhip(self); // 0.9.8 ngam tay: che do PvP (tat tu dong / tu nham) + bang chieu cho client
         // "Luyen do tu dong" (dap do tu dong): MapEpNgoc.doAutoImbue chi BAT co
         // startAutoImbue, con moi lan dap that su phai do vong lap map goi
         // Char.doAutoImbue(). Truoc day cho goi do CHI ton tai trong OfflineMap

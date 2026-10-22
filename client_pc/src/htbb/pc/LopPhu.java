@@ -558,6 +558,17 @@ public final class LopPhu {
                 });
     }
 
+    /** 0.9.8 Ngắm thủ công (PvE) - trong trận giữa người chơi luôn ngắm tay (game.pokemon.NgamTay). Thẻ Đổi phím. */
+    private static void veChienDau(Graphics2D g, float x, float y, float w, float hHang, float u) {
+        the(g, x, y, w, hHang, u);
+        hangCongTac(g, "Ngắm thủ công", "Giữ phím / nút chiêu, rê chuột để ngắm cả khi đánh Pokémon hoang dã (PvP luôn ngắm tay)",
+                x, y, w, hHang, u, game.pokemon.NgamTay.thuCong(), new Runnable() {
+                    public void run() {
+                        game.pokemon.NgamTay.datThuCong(!game.pokemon.NgamTay.thuCong());
+                    }
+                });
+    }
+
     /** Kéo thanh trượt: tỉ lệ theo x thật. */
     static final class KeoTheo implements Keo {
         final float x0, w;
@@ -641,7 +652,9 @@ public final class LopPhu {
         int cot = 2;
         int moiCot = (n + cot - 1) / cot;
         float pad = 8 * u;
-        float hang = Math.min(34 * u, (y0 + hMax - y - 2 * pad) / moiCot);
+        float hCd = 52 * u;   // 0.9.8: hàng "Ngắm thủ công" dưới bảng phím (cùng nhóm điều khiển chiêu)
+        float hang = Math.min(34 * u, (y0 + hMax - hCd - 10 * u - y - 2 * pad) / moiCot);
+        veChienDau(g, x, y + moiCot * hang + 2 * pad + 10 * u, w, hCd, u);
         the(g, x, y, w, moiCot * hang + 2 * pad, u);
         float gap = 20 * u;
         float cw = (w - gap) / cot;
@@ -696,7 +709,7 @@ public final class LopPhu {
             ds.add(new String[]{"@2", "Cuộn danh sách", null});
             ds.add(new String[]{null, "Chiến đấu"});
             ds.add(new String[]{ten(BanPhim.DANH), "Đánh thường", null});
-            ds.add(new String[]{chieu, "Dùng chiêu 1 – 5", null});
+            ds.add(new String[]{chieu, "Dùng chiêu 1 – 5", "PvP: giữ phím, rê chuột ngắm, thả để bắn"});
             ds.add(new String[]{ten(BanPhim.BINH_HP) + "|" + ten(BanPhim.BINH_MP), "Bình HP / Bình MP", null});
             ds.add(new String[]{ten(BanPhim.MUC_TIEU), "Đổi mục tiêu", null});
             ds.add(new String[]{"Shift+" + ten(BanPhim.MUC_TIEU), "Mục tiêu trước", null});

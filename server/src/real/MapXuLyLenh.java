@@ -459,6 +459,10 @@ class MapXuLyLenh {
         if (!TuDongGame.kiemLenh(player, message.command)) {
             return;
         }
+        // 0.9.8 ngam tay PvP: lenh ban theo huong (-113) + chan / doi danh khoa muc tieu vao nguoi choi (6). BanHuongGame.
+        if (BanHuongGame.xuLy(map, player, message)) {
+            return;
+        }
 
         switch (message.command) {
             case -76:
@@ -750,7 +754,9 @@ class MapXuLyLenh {
                 map.doRequestMonterInfo(player, message);
                 break;
             case 9:
-                map.doAttackMonster(player, message);
+                synchronized (BanHuongGame.khoa(player)) { // 0.9.8: khong chen giua luc dan ngam tay gay sat thuong
+                    map.doAttackMonster(player, message);
+                }
                 break;
             case 12:
                 doChangeMap(map, player, message);
@@ -898,7 +904,9 @@ class MapXuLyLenh {
                 player.config(message.dis.readByte());
                 break;
             case 106:
-                map.doAttackMultiTarget(player, message);
+                synchronized (BanHuongGame.khoa(player)) { // 0.9.8: nhu lenh 9
+                    map.doAttackMultiTarget(player, message);
+                }
                 break;
             case 107:
                 map.doNapSMS(player, message);

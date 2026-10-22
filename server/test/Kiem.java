@@ -228,6 +228,7 @@ public final class Kiem {
         KiemBanDoKhoa.chay(); // 0.9.8: do khoa ban NPC gia thap + Huy
         KiemBatPokemon.chay(); // thu phuc Pokemon, Hop PC, Keo loai, Pokedex "Da bat" (bo-ngoc-bat)
         KiemTraoDoiPokemon.chay(); // ca the IV / tinh cach, chuyen doi, trao doi Pokemon nguyen tu (bat-trade)
+        KiemNgamTay.chay(); // 0.9.8 ngam tay PvP: khong tu dong / khong tu nham, ban theo huong (hinh hoc, tuong, bu tre, hoi chieu / PP, client cu)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);
