@@ -250,6 +250,9 @@ Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), kh
    khẩn cấp: `chong_clone.ban_npc_khoa_phan_tram=0` trong `server.ini`), đồ khoá Huỷ được; nhật ký `KHOA_BAN_NPC` / `KHOA_HUY`.
    Danh hiệu: 9700…9745 (thành tựu), 9801…9817 (ngày cộng đồng), 9850…9855 (cúp tuần), 9860…9862 (phó bản).
 5. Client: tải gói 908 lên `/admin/tai-game` (Số bản = 908) sau khi máy chủ đã chạy jar mới.
+6. Bước địa điểm: Arcanine gác cổng ở làng dẫn tới Bảo tàng Pewter / Đường Victory / Núi Silver (khoá 41 / 42 cấp 80,
+   118 cấp 69 + CA-11.3); mọi dòng `data_nhiem_vu_khu_vuc` bật. Khối `sua_tuyen_nhiem_vu.sql` / `them_huong_dan_tan_thu.sql`
+   (production đã chạy) nằm trong `nang_cap.sql`, chạy lại vô hại. Gói -123 (mảnh gói J2ME, main) giữ nguyên.
 
 ### Danh sách kiểm triển khai bản có khoá bản đồ (một tệp SQL, khoá bản đồ, vòng quay, thách đấu cược, 0.9.7)
 
