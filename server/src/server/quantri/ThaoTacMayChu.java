@@ -54,7 +54,8 @@ public final class ThaoTacMayChu {
             "dau truong", "hoa tieu", "doi tieu", "tong tieu dau", "chuyenlanhtho", "xa phu", "ta pho thong",
             "ta thong linh", "huu thong linh", "tran thong linh", "hao duyen", "tho san", "le quan", "ky nang bang",
             "nguyet lao", "market", "dich tram", "nguyetlao", "quanly", "thoren", "trangbi", "cuahang", "nhaboss",
-            "nhapet", "nhathu", "nhacaythan", "xaphu", "lequan", "admin"}) {
+            "nhapet", "nhathu", "nhacaythan", "xaphu", "lequan", "admin",
+            "tổng tiêu đầu", "quầy đổi thưởng", "quản lý đấu trường"}) {   // 0.9.8: ten NPC co dau
             TEN_NPC.add(n);
         }
     }

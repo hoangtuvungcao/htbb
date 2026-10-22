@@ -830,7 +830,7 @@ class MapNapTaiNguyen {
         }
 
         bot = new Char(null);
-        bot.setInfoChar("tong tieu dau", -50, 2, 0, m, 800, 672, -3076, 269, 293, 317);
+        bot.setInfoChar("Tổng tiêu đầu", -50, 2, 0, m, 800, 672, -3076, 269, 293, 317);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         bot.posNPCInVilage = new short[][]{{400, 176}, {464, 320}, {320, 672}};
         Map.npcVilage.add(bot);
@@ -990,7 +990,7 @@ class MapNapTaiNguyen {
         // Toa do dat lech ben canh "tong quan" ~40px moi huong - CHUA kiem chung truc quan
         // trong game, can vao thu 3 lang xac nhan khong de chong len NPC khac roi chinh
         // lai x,y neu can (xem ghi chu build.bat / thong bao cua Claude khi giao viec nay).
-        bot.setInfoChar("doi thuong", -90, 2, 0, m, 440, 480, -2090, 277, 301, 325);
+        bot.setInfoChar("Quầy đổi thưởng", -90, 2, 0, m, 440, 480, -2090, 277, 301, 325);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         bot.posNPCInVilage = new short[][]{{456, 416}, {440, 480}, {776, 576}};
         Map.npcVilage.add(bot);
@@ -1014,7 +1014,7 @@ class MapNapTaiNguyen {
         Map.npcVilage.add(bot);
         CharManager.instance.put(bot);
         bot = new Char(null);
-        bot.setInfoChar("dau truong", -31, 2, 0, m, 640, 816, -3056, 269, 293, 317);
+        bot.setInfoChar("Quản lý Đấu trường", -31, 2, 0, m, 640, 816, -3056, 269, 293, 317);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         bot.posNPCInVilage = new short[][]{{800, 672}, {496, 816}, {496, 704}};
         Map.npcVilage.add(bot);
@@ -1125,7 +1125,7 @@ class MapNapTaiNguyen {
         CharManager.instance.put(bot);
 
         bot = new Char(null);
-        bot.setInfoChar("tong tieu dau", -50, 2, 0, m, 800, 672, -3076, 269, 293, 317);
+        bot.setInfoChar("Tổng tiêu đầu", -50, 2, 0, m, 800, 672, -3076, 269, 293, 317);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         bot.posNPCInVilage = new short[][]{{400, 176}, {464, 320}, {320, 672}};
         Map.npcVilage.add(bot);
