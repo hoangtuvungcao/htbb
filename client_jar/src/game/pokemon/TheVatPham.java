@@ -482,7 +482,10 @@ public final class TheVatPham extends Dialog {
         int hHang = Bang.co(ChuDe.dt() ? 30 : 26);
         long gb = giaBan();
         boolean coGia = gb >= 0 && khongBan() == null;
-        int hNoi = s + 6 + dong.size() * lh + (dmt.length > 0 ? dmt.length * lp + 6 : 0) + (coSoLuong() ? lh : 0) + (coGia ? lh : 0);
+        // 0.9.8: bộ cùng bậc đang mặc x/11 + lỗ ngọc hệ (máy chủ -120 kiểu 0, TrangBiThem)
+        int idBo = this.mon instanceof ItemInInventory ? ((ItemInInventory) this.mon).itemID : -1;
+        int hBo = idBo >= 0 ? TrangBiThem.caoDong(idBo, wNoi) : 0;
+        int hNoi = s + 6 + dong.size() * lh + (dmt.length > 0 ? dmt.length * lp + 6 : 0) + hBo + (coSoLuong() ? lh : 0) + (coGia ? lh : 0);
         int h = 8 + hNoi + k + hHang + 10 + ChuDe.cao(ChuDe.PHU) + 4;   // + dòng lý do (nút xám) trên hàng nút
         int H = Bang.duoi() - Bang.tren();
         if (h > H) {
@@ -564,6 +567,9 @@ public final class TheVatPham extends Dialog {
         }
         if (dmt.length > 0) {
             yy += 6;
+        }
+        if (hBo > 0) {
+            yy = TrangBiThem.veDong(g, idBo, x + pad, yy, wNoi, day) + 4;
         }
         // số lượng + giá bán
         if (coSoLuong() && yy + lh <= day) {

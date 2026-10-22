@@ -59,7 +59,7 @@ public final class KiemTrangThaiVatPham {
 
     static Char nhanVat() {
         final Char p = KiemDungVatPham.nhanVat();
-        p.getSession().banClient = HanhDongVatPham.BAN_TRANG_THAI;
+        p.getSession().banClient = real.MoRongTuiGame.BAN_CLIENT; // >= 908: co phan noi them -105
         return p;
     }
 

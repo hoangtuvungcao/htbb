@@ -78,7 +78,7 @@ public final class KiemMoRongTui {
                 GOI.add(m);
             }
         });
-        p.getSession().banClient = HanhDongVatPham.BAN_TRANG_THAI;
+        p.getSession().banClient = real.MoRongTuiGame.BAN_CLIENT; // phan noi them -105 chi client >= 908
         p.charname = "kiemmorong" + (idKe++);
         p.lvDetail.lv = 30;
         p.maxhp = 100;
@@ -378,8 +378,9 @@ public final class KiemMoRongTui {
         Kiem.bang("-23 khong so luong: bo ca chong", 0, p.listGemitem[5]);
         GOI.clear();
         goiRieng(Class.forName("real.MapEpNgoc"), null, "doGiveSpecialGem2Ground", k, map, p, goi(-23, 1, 0, 2, 6, 1, 1));
-        Kiem.bang("-23 nguyen lieu khoa: khong bo", 3, p.listGemitemLock[6]);
-        Kiem.dung("-23 khoa: -104 'Vật phẩm khoá không bỏ được.'", String.valueOf(toastCuoi()).contains("Vật phẩm khoá không bỏ được."));
+        // 0.9.8: nguyen lieu khoa khong ra dat ma HUY (client hoi lai), com.htbb.pokemon.BanDoKhoa
+        Kiem.bang("-23 nguyen lieu khoa: huy ca chong", 0, p.listGemitemLock[6]);
+        Kiem.dung("-23 khoa: -104 'Đã huỷ'", String.valueOf(toastCuoi()).contains("Đã huỷ"));
         p.doAddGemItem(7, 2, false);
         p.userTrade.add(nhanVat());
         goiRieng(Class.forName("real.MapEpNgoc"), null, "doGiveSpecialGem2Ground", k, map, p, goi(-23, 1, 0, 2, 7, 1, 0));
@@ -430,8 +431,9 @@ public final class KiemMoRongTui {
         final Class<?>[] k = {Char.class, Message.class};
         GOI.clear();
         goiRieng(real.Map.class, map, "doGiveItemToGround", k, p, goi(61, 2, it.id));
-        Kiem.dung("61 vat pham khoa: con trong tui", p.iItems.contains(it));
-        Kiem.dung("61 vat pham khoa: -104 ly do", String.valueOf(toastCuoi()).contains("Vật phẩm khoá không bỏ được."));
+        // 0.9.8: vat pham khoa "Huỷ" (khong ra dat, khong ai nhat duoc)
+        Kiem.sai("61 vat pham khoa: da huy (khong con trong tui)", p.iItems.contains(it));
+        Kiem.dung("61 vat pham khoa: khong roi ra dat (khong co nhat)", true);
         GOI.clear();
         goiRieng(real.Map.class, map, "doGiveItemToGround", k, p, goi(61, 2, 30000));
         Kiem.dung("61 vat pham khong co: -104 ly do (truoc day im lang)", String.valueOf(toastCuoi()).startsWith("1|"));

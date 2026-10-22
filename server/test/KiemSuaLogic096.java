@@ -56,7 +56,7 @@ public final class KiemSuaLogic096 {
         Kiem.dung("OfflineMap ban ngoc: ngoc khoa chan theo ChongClone.banNpcDoKhoa (truoc: chi Map co)",
                 banOff.contains("typeMaterial == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa()"));
         Kiem.dung("OfflineMap ban ngoc: gia tinh bang long", banOff.contains("Map.giaBanNgocNpc("));
-        final String banMap = doan(doc("src/real/Map.java"), "public void doSellGemItem(", 2500);
+        final String banMap = doan(doc("src/real/Map.java"), "public void doSellGemItem(", 3500);
         Kiem.dung("Map ban ngoc: loai khac 0/1 bi bo", banMap.contains("typeMaterial != 0 && typeMaterial != 1"));
         Kiem.dung("Map ban ngoc: gia tinh bang long", banMap.contains("giaBanNgocNpc("));
     }

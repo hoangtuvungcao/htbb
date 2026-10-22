@@ -76,6 +76,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
       `data_bac_trang_bi`, màu `data_danh_hieu_do_hiem` (khối `them_danh_hieu.sql` ở mục 10 dùng cùng màu);
     - `them_thoi_tiet_mua.sql`: thời tiết theo khung giờ + phủ màu mùa (`data_thoi_tiet`, `data_thoi_tiet_map`,
       `data_thoi_tiet_su_kien`), ngày cộng đồng hằng tháng (`data_ngay_cong_dong`), danh hiệu dòng 9801…9817.
+    - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
+      `ve_mo_rong_tui` của `nap_cua_hang`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục, không bị xoá hay sửa dòng. Không nằm trong script (quyết định
 của chủ game, production đã chạy): xoá quà tạo nhân vật chưa nhận (`board_created`) và khoá giftcode kiểu cũ — bản gốc ở

@@ -74,6 +74,20 @@ public final class TrangBiThem {
      * Thẻ chi tiết kiểu GO (ManNhanVat): vẽ dòng bộ / lỗ ngọc của món {@code itemID} từ y, tự xuống dòng trong bề ngang
      * w, không quá {@code day}. Trả y sau cùng.
      */
+    /** Chiều cao (px) các dòng bộ / lỗ ngọc của món itemID ở bề ngang w (0 nếu không có) - thẻ vật phẩm NRO (TheVatPham). */
+    public static int caoDong(int itemID, int w) {
+        Object o = MO_TA_THO.get(new Integer(itemID));
+        if (o == null) {
+            return 0;
+        }
+        String[] dong = (String[]) ((Object[]) o)[1];
+        int n = 0;
+        for (int i = 0; i < dong.length; i++) {
+            n += ChuDe.ngat(dong[i], ChuDe.PHU, w, 3).length;
+        }
+        return 2 + n * ChuDe.cao(ChuDe.PHU) + 4;
+    }
+
     public static int veDong(javax.microedition.lcdui.Graphics g, int itemID, int x, int y, int w, int day) {
         Object o = MO_TA_THO.get(new Integer(itemID));
         if (o == null) {

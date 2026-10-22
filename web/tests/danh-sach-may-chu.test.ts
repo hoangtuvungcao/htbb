@@ -82,7 +82,7 @@ test('danh mục sinh từ Java: đúng hình dạng mà server/utils/*.gen.ts v
   assert.equal(thu['5'], thu['28'], 'chỉ số 5 và 28 trùng tên thật trong Java')
 
   const ngoc = docJson('danh-muc-ngoc.json').ngoc as Record<string, { ten: string, ban: boolean, nhom: string }>
-  assert.equal(Object.keys(ngoc).length, 270)
+  assert.equal(Object.keys(ngoc).length, 271) // 270 = Vé mở rộng hành trang (giao-dien-nro)
   for (const v of Object.values(ngoc)) {
     assert.equal(typeof v.ten, 'string'); assert.equal(typeof v.ban, 'boolean'); assert.match(v.nhom, /^(|NL[SC]C[1-6])$/)
   }

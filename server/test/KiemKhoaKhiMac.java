@@ -275,7 +275,8 @@ public final class KiemKhoaKhiMac {
         Kiem.dung("gian hang / ky gui: chan do khoa (lock 1) truoc moi nhanh", off.contains("if (((Item)item).lock == 1) {")
                 && dem(off, "((Item)item).lock == 1") >= 3);
         final String datRa = doan(map, "void doGiveItemToGround(", 1500);
-        Kiem.dung("bo ra dat: chan do khoa", datRa.contains("if (item.lock != 0) {"));
+        Kiem.dung("bo ra dat: do khoa khong ra dat - chi Huy (0.9.8, BanDoKhoa)", datRa.contains("final boolean huyKhoa = item.lock != 0;")
+                && datRa.contains("BanDoKhoa.huyDuoc("));
         Kiem.sai("khong co duong thu / tang vat pham giua nguoi choi (mail)",
                 ch.contains("guiThuVatPham") || map.contains("guiThuVatPham"));
         // Ban NPC
