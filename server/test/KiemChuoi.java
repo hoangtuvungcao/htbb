@@ -15,15 +15,21 @@ public final class KiemChuoi {
         // nen KHONG dung ham nay de doc gia tien co dau phan cach.
         Kiem.bang("getNumberFromString '49.000d' -> '49000'", "49000", real.Map.getNumberFromString("49.000d"));
 
-        // replaceStringWithSpace: chi giu chu-so, chu Viet co dau, va @._+ - (khoang trang)
+        // replaceStringWithSpace (0.9.8): giu moi chu tieng Viet + dau cau; chi bo ky tu la / dau nhay / < > / gach cheo
         Kiem.bang("replaceStringWithSpace giu chu Viet",
                 "Nguyễn Văn A", real.Map.replaceStringWithSpace("Nguyễn Văn A"));
+        Kiem.bang("giu đ Đ í ì ỉ ĩ ị va dau cau", "Đi đâu? Ít thì ỉ ĩ ị, vui!",
+                real.Map.replaceStringWithSpace("Đi đâu? Ít thì ỉ ĩ ị, vui!"));
         Kiem.bang("replaceStringWithSpace bo ky tu la",
                 "abc", real.Map.replaceStringWithSpace("a<b>c"));
         Kiem.bang("replaceStringWithSpace giu email",
                 "a.b@c-d_e+f", real.Map.replaceStringWithSpace("a.b@c-d_e+f"));
-        Kiem.bang("replaceStringWithSpace bo dau nhay va dau bang, GIU khoang trang",
-                " OR 11", real.Map.replaceStringWithSpace("' OR 1=1"));
+        Kiem.bang("bo dau nhay, GIU khoang trang", " OR 1=1", real.Map.replaceStringWithSpace("' OR 1=1"));
+        real.Map.extend = new String[]{".com", ".vn"};
+        Kiem.bang("replaceExtendDomain giu hoa thuong, bo ten mien / so dien thoai / lien ket",
+                "Chào Bạn, ghé shopabc nhé *** hoặc ***", real.Map.replaceExtendDomain("Chào Bạn, ghé shopabc.COM nhé 0912 345 678 hoặc https://x.vn/a"));
+        Kiem.bang("replaceExtendDomain khong dung so tien", "Bán 100000 xu", real.Map.replaceExtendDomain("Bán 100000 xu"));
+        Kiem.bang("checkBadWord2 giu hoa thuong", "Xin Chào ĐỘI", real.BadWord.checkBadWord2("Xin  Chào ĐỘI"));
 
         Kiem.nhom("Constant.Checker");
         // resetMapId hien la ham dong nhat - toan bo switch da bi comment lai.

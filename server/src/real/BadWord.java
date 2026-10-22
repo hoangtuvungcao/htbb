@@ -1061,11 +1061,13 @@ public class BadWord {
     }
 
     public static String checkBadWord2(String info) {
-        info = replaceSpaceString(info.toLowerCase());
+        // 0.9.8: giu chu hoa / thuong cua nguoi choi; tu cam thay theo nghia den, khong phan biet hoa thuong (truoc: lowercase
+        // ca tin + regex - ".sc" khop moi "?sc")
+        info = replaceSpaceString(info);
 
         for (int i = 0; i < list2.length; i++) {
-            if (info.indexOf(list2[i]) > -1) {
-                info = info.replaceAll(list2[i], "@");
+            if (info.toLowerCase().indexOf(list2[i]) > -1) {
+                info = info.replaceAll("(?iu)" + java.util.regex.Pattern.quote(list2[i]), "@");
             }
         }
 

@@ -16503,10 +16503,11 @@ public class Map implements Runnable {
     }
 
     public static String checkBadWord(String info) {
+        // 0.9.8: thay tu cam KHONG phan biet hoa thuong, theo nghia den (truoc: replaceAll regex chi khop chu thuong)
         for (int i = 0; i < Database.badWord.size(); i++) {
             String st = ((String) Database.badWord.get(i)).toLowerCase();
-            if (info.toLowerCase().indexOf((String) Database.badWord.get(i)) != -1) {
-                info = info.replaceAll(st, "*");
+            if (!st.isEmpty() && info.toLowerCase().indexOf(st) != -1) {
+                info = info.replaceAll("(?iu)" + java.util.regex.Pattern.quote(st), "*");
             }
         }
 
@@ -16710,23 +16711,33 @@ public class Map implements Runnable {
      * chi lv >= 20 moi chat duoc, phat cho nguoi choi o gan.
      */
 
-    public static String replaceExtendDomain(String info) {
-        info = info.toLowerCase().replaceAll("\\s+", " ").trim();
+    /** Lien ket / ten mien / so dien thoai trong chat. */
+    static final java.util.regex.Pattern LIEN_KET = java.util.regex.Pattern.compile("(?i)(https?://|www\\.)\\S+");
+    static final java.util.regex.Pattern SO_DIEN_THOAI = java.util.regex.Pattern.compile("(?<![\\d])(\\+?84|0)([ .-]?\\d){8,10}(?![\\d])");
 
-        for (int i = 0; i < extend.length; i++) {
-            if (info.indexOf(extend[i].toLowerCase()) > -1) {
-                info = info.replaceAll(extend[i].toLowerCase(), "");
+    public static String replaceExtendDomain(String info) {
+        // 0.9.8: GIU chu hoa / thuong cua nguoi choi (truoc: lowercase moi tin); chi bo duoi ten mien (khong phan biet hoa
+        // thuong, theo nghia den), lien ket va so dien thoai
+        info = info.replaceAll("\\s+", " ").trim();
+        info = LIEN_KET.matcher(info).replaceAll("***");
+        info = SO_DIEN_THOAI.matcher(info).replaceAll("***");
+        for (int i = 0; extend != null && i < extend.length; i++) {
+            final String e = extend[i] == null ? "" : extend[i].toLowerCase();
+            if (!e.isEmpty() && info.toLowerCase().indexOf(e) > -1) {
+                info = info.replaceAll("(?iu)" + java.util.regex.Pattern.quote(e), "");
             }
         }
 
-        return info;
+        return info.trim();
     }
 
     public static String replaceStringWithSpace(String info) {
-        return info.replaceAll(
-                "[^a-zA-Z0-9áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ@._+ -]",
-                ""
-        );
+        // 0.9.8: giu MOI chu tieng Viet (ca đ / Đ, í ì ỉ ĩ ị...), so, dau cau thuong dung (. , ! ? : ; ( ) - _ + @ % / * & # ~ =);
+        // chi bo ky tu dieu khien / bieu tuong la (emoji khong co trong phong game), dau nhay / gach cheo / < > (an toan)
+        if (info == null) {
+            return "";
+        }
+        return info.replaceAll("[^\\p{L}\\p{M}\\p{N} .,!?:;()\\[\\]\\-_+@%/*&#~=×…–—]", "");
     }
 
     public static boolean isModelClothes(int id) {
