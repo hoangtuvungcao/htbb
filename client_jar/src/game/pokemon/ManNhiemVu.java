@@ -65,14 +65,15 @@ public final class ManNhiemVu extends Screen {
     }
 
     static Vector dangLam() {
+        // 0.9.7.1: ô đã gửi trả / huỷ (stateQuest 3, chờ máy chủ) ẩn ngay - máy chủ từ chối thì gửi lại danh sách
         Vector v = new Vector();
-        if (GameScr.mainQuest != null) {
+        if (GameScr.mainQuest != null && GameScr.mainQuest.stateQuest != 3) {
             v.addElement(GameScr.mainQuest);
         }
-        if (GameScr.subQuest != null) {
+        if (GameScr.subQuest != null && GameScr.subQuest.stateQuest != 3) {
             v.addElement(GameScr.subQuest);
         }
-        if (GameScr.clanQuest != null) {
+        if (GameScr.clanQuest != null && GameScr.clanQuest.stateQuest != 3) {
             v.addElement(GameScr.clanQuest);
         }
         return v;
@@ -245,6 +246,7 @@ public final class ManNhiemVu extends Screen {
         int x = c[0], y = c[1], w = c[2], h = c[3];
         int k = Bang.cach();
         final Vector v = this.tab == 0 ? dangLam() : GameScr.allQuestCanReceive;
+        this.chon = timLai(v, this.chon);   // 0.9.7.1: nhận / trả / huỷ xong thẻ chi tiết không còn giữ nhiệm vụ cũ
         boolean hai = w >= 400;
         int wl = hai ? w * 46 / 100 : w;
         if (!hai && this.chon != null) {
@@ -332,15 +334,16 @@ public final class ManNhiemVu extends Screen {
         }
         final Actor a = npc(idNpc);
         String tn = tenNpc(idNpc);
-        int wb = dangLam && q == GameScr.mainQuest ? (w - 12 - k) / 2 : w - 12;
-        if (dangLam && q == GameScr.mainQuest) {
+        boolean huyDuoc = dangLam && q.stateQuest != 3;
+        int wb = huyDuoc ? (w - 12 - k) / 2 : w - 12;
+        if (huyDuoc) {
             Bang.nut(g, x + 6, yn, wb, nh, "Huỷ nhiệm vụ", Bang.TRUNG, new IAction() {
                 public void perform() {
                     HopXacNhan.hoiNguyHiem("Huỷ nhiệm vụ", "Từ bỏ " + q.name + "? Tiến độ sẽ mất.", "Huỷ nhiệm vụ", new IAction() {
                         public void perform() {
-                            Canvas.gameScr.mainChar.resetQuest();
-                            Canvas.gameScr.dellPotionQuest();
-                            GameService.gI().receiveQuest(0, 0, 3);
+                            // 0.9.7.1: -64 huỷ (type 2) đúng nhiệm vụ. Trước đây gửi gói 52 của hệ nhiệm vụ cũ (máy chủ bỏ
+                            // qua) + xoá thuốc ô 10..13 cục bộ: bấm Huỷ không huỷ gì, vào lại nhiệm vụ vẫn còn.
+                            huy(q);
                             ManNhiemVu.this.chon = null;
                         }
                     });
@@ -358,6 +361,26 @@ public final class ManNhiemVu extends Screen {
                 }
             }
         }, "di-toi");
+    }
+
+    /** Gửi huỷ nhiệm vụ; ô sẽ được làm mới khi máy chủ trả danh sách (GameScr.onQuest). */
+    static void huy(Quest q) {
+        q.stateQuest = (byte) 3;   // ẩn nút Huỷ / Trả ngay, chờ máy chủ (chạm đúp không gửi hai lần)
+        GameService.gI().onSendInfoQuest(2, q.idQuest, q.main_sub);
+    }
+
+    /** Nhiệm vụ đang xem đã được thay bằng bản mới từ máy chủ (cùng id / tuyến) - giữ thẻ chi tiết đúng nhiệm vụ. */
+    static Quest timLai(Vector v, Quest c) {
+        if (c == null || v.contains(c)) {
+            return c;
+        }
+        for (int i = 0; i < v.size(); i++) {
+            Quest q = (Quest) v.elementAt(i);
+            if (q.idQuest == c.idQuest && q.main_sub == c.main_sub) {
+                return q;
+            }
+        }
+        return null;
     }
 
     static int thanhMuc(Graphics g, int x, int y, int w, String ten, int da, int can) {

@@ -25,7 +25,10 @@ import javax.microedition.midlet.MIDlet;
  *   6. thông báo server (lệnh 37) -> đóng bằng Esc / chạm ngoài;
  *   7. hộp xác nhận: chạm ngoài = Huỷ;
  *   8. giám sát: hội thoại mồ côi, hộp thoại vẽ lỗi, nhịp lỗi liên tục -> tự gỡ trong ~2 giây;
- *   9. gói tin lỗi không giết luồng / không treo.
+ *   9. gói tin lỗi không giết luồng / không treo;
+ *  10. (0.9.7.1) danh sách -64 luôn đồng bộ: trả / huỷ / vào lại không để ô nhiệm vụ cũ, máy chủ từ chối thì dựng lại;
+ *  11. chạm đúp "Đồng ý" / phím lặp chỉ gửi một gói -64;
+ *  12. sổ Nhiệm vụ: "Huỷ nhiệm vụ" gửi -64 huỷ (không phải gói 52 cũ máy chủ bỏ qua), ẩn ngay.
  *
  *   APP_IMAGE=0 sh client_pc/build.sh && javac -cp client_pc/out/build/cls -d $O client_pc/test/KiemNhiemVu.java \
  *     && java -Djava.awt.headless=true -cp client_pc/out/build/cls:client_pc/out/build/res:$O KiemNhiemVu
@@ -180,12 +183,13 @@ public class KiemNhiemVu {
         return d instanceof game.pokemon.HopXacNhan || d instanceof game.render.screen.MsgDlg || d instanceof game.pokemon.HopThongBao;
     }
 
-    /** Thông báo server 37 trong game: máy chạm / chuột = biểu ngữ không chặn (0.9.5); J2ME phím = hộp MsgDlg. */
+    /**
+     * Thông báo server 37 trong game: thẻ nhanh không chặn (0.9.6.1 game.pokemon.ThongBao - mọi máy, cả J2ME chỉ phím);
+     * câu cần đọc kỹ (loại HOP) vẫn là hộp MsgDlg.
+     */
     static boolean coThongBao37() {
-        if (game.pokemon.MenuNguCanh.bat()) {
-            return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien();
-        }
-        return game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg;
+        return game.render.Canvas.currentDialog == null && game.pokemon.DungDo.dangHien()
+                || game.render.Canvas.currentDialog instanceof game.render.screen.MsgDlg;
     }
 
     static boolean coLenhGui(int lenh, int byteDau) {
@@ -250,6 +254,51 @@ public class KiemNhiemVu {
         o.writeUTF("Đã xong");
         o.writeUTF("100 EXP");
         return b.toByteArray();
+    }
+
+    /** -64 kiểu 2: nhiệm vụ đang làm (đánh quái 1 loại: da/can). Rỗng = n 0. */
+    static byte[] goiDang(int n, int id, int mainSub, String ten, int da, int can) throws Exception {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream o = new DataOutputStream(b);
+        o.writeByte(2);
+        o.writeByte(n);
+        for (int i = 0; i < n; i++) {
+            o.writeShort(id);
+            o.writeByte(mainSub);
+            o.writeUTF(ten);
+            o.writeByte(0);          // đánh quái
+            o.writeUTF("Hạ " + can + " Caterpie");
+            o.writeByte(5);
+            o.writeByte(0);
+            o.writeUTF("100 EXP");
+            o.writeByte(1);
+            o.writeShort(0);
+            o.writeShort(da);
+            o.writeShort(can);
+        }
+        return b.toByteArray();
+    }
+
+    /** Danh sách rỗng kiểu {@code nhom}. */
+    static byte[] goiRong(int nhom) {
+        return new byte[]{(byte) nhom, 0};
+    }
+
+    static int demGui(int lenh, int byteDau) {
+        int n = 0;
+        synchronized (GUI) {
+            for (int i = 0; i < GUI.size(); i++) {
+                byte[] b = GUI.get(i);
+                if (GUI_LENH.get(i) == lenh && b.length > 0 && b[0] == byteDau) n++;
+            }
+        }
+        return n;
+    }
+
+    static int soDangLam() throws Exception {
+        Method m = game.pokemon.ManNhiemVu.class.getDeclaredMethod("dangLam");
+        m.setAccessible(true);
+        return ((Vector) m.invoke(null)).size();
     }
 
     static byte[] goi37(String s) throws Exception {
@@ -541,6 +590,95 @@ public class KiemNhiemVu {
         diDuoc("9");
     }
 
+    /** 0.9.7.1: danh sách nhiệm vụ luôn đồng bộ với máy chủ (không ô cũ), chạm đúp không gửi hai lần, Huỷ thật. */
+    static void kichBanDongBo() throws Exception {
+        // 10. nhận -> đang làm -> xong -> trả -> bước sau: ô cũ không nằm lại
+        nhan(-64, goiDang(1, 7, 0, "Thử sức ngoài đồng", 2, 5));
+        kiem(game.render.screen.GameScr.mainQuest != null && soDangLam() == 1, "10: nhan ds dang lam -> so Nhiem vu co 1 (" + soDangLam() + ")");
+        nhan(-64, goiTra(7, 0, "Thử sức ngoài đồng", 5, "1Xatu: Giỏi lắm!"));
+        kiem(game.render.screen.GameScr.mainQuest != null && game.render.screen.GameScr.mainQuest.stateQuest == 1, "10: xong -> o chinh chuyen sang cho tra");
+        game.render.screen.GameScr.mainQuest.stateQuest = 3;   // client vừa gửi trả (Quest.capNhat)
+        kiem(soDangLam() == 0, "10: vua gui tra -> an ngay khoi Dang lam (" + soDangLam() + ")");
+        nhan(-64, goiRong(1));
+        nhan(-64, goiNhan(8, 0, "Sổ tay Pokédex", 5, "1Xatu: Mỗi loài cháu gặp sẽ được ghi vào Pokédex.", 3));
+        kiem(game.render.screen.GameScr.mainQuest == null && soDangLam() == 0, "10: tra xong -> khong con o chinh cu " + game.render.screen.GameScr.mainQuest);
+        kiem(game.render.screen.GameScr.allQuestCanReceive.size() == 1, "10: co the nhan = buoc sau");
+        // huỷ: nhiệm vụ lại về "Có thể nhận" -> ô đang làm bỏ
+        nhan(-64, goiDang(1, 4, 1, "Lũ quái làm ồn", 0, 10));
+        kiem(game.render.screen.GameScr.subQuest != null, "10: nhan nhiem vu phu");
+        nhan(-64, goiNhan(4, 1, "Lũ quái làm ồn", 5, "1Xatu: Ồn quá.", 0));
+        kiem(game.render.screen.GameScr.subQuest == null, "10: huy -> o phu bo (lai trong Co the nhan)");
+        // đăng nhập lại: máy chủ gửi 0, 1, 2 - ô của phiên trước không còn
+        nhan(-64, goiDang(1, 7, 0, "Thử sức ngoài đồng", 2, 5));
+        nhan(-64, goiRong(0));
+        nhan(-64, goiRong(1));
+        nhan(-64, goiRong(2));
+        kiem(game.render.screen.GameScr.mainQuest == null && soDangLam() == 0, "10: vao lai -> ds rong, khong con o cu");
+        // server từ chối trả (gửi lại ds) -> ô được dựng lại
+        nhan(-64, goiDang(1, 7, 0, "Thử sức ngoài đồng", 2, 5));
+        game.render.screen.GameScr.mainQuest.stateQuest = 3;
+        nhan(-64, goiRong(0));
+        nhan(-64, goiRong(1));
+        nhan(-64, goiDang(1, 7, 0, "Thử sức ngoài đồng", 2, 5));
+        kiem(game.render.screen.GameScr.mainQuest != null && game.render.screen.GameScr.mainQuest.stateQuest == 2 && soDangLam() == 1,
+                "10: server tu choi tra -> o dang lam dung lai");
+
+        // 11. chạm đúp "Đồng ý" / phím lặp: một gói
+        sachGui();
+        chay(new Runnable() {
+            public void run() {
+                game.networklogic.GameService.gI().onSendInfoQuest(0, 9, 0);
+                game.networklogic.GameService.gI().onSendInfoQuest(0, 9, 0);
+            }
+        });
+        kiem(demGui(-64, 0) == 1, "11: cham dup nhan -> 1 goi (" + demGui(-64, 0) + ")");
+        ngu(game.networklogic.GameService.CHAN_TRUNG_QUEST_MS + 100);
+        chay(new Runnable() {
+            public void run() {
+                game.networklogic.GameService.gI().onSendInfoQuest(0, 9, 0);
+            }
+        });
+        kiem(demGui(-64, 0) == 2, "11: sau " + game.networklogic.GameService.CHAN_TRUNG_QUEST_MS + " ms gui lai duoc");
+
+        // 12. sổ Nhiệm vụ: Huỷ nhiệm vụ gửi -64 huỷ (type 2) đúng nhiệm vụ, ẩn ngay; máy chủ trả ds -> đồng bộ
+        sachGui();
+        chay(new Runnable() {
+            public void run() {
+                game.pokemon.ManNhiemVu.mo();
+            }
+        });
+        ngu(300);
+        final game.model.Quest dang = game.render.screen.GameScr.mainQuest;
+        java.lang.reflect.Field fc = game.pokemon.ManNhiemVu.class.getDeclaredField("chon");
+        fc.setAccessible(true);
+        fc.set(game.pokemon.ManNhiemVu.gI(), dang);
+        ve();
+        ngu(200);
+        boolean ui = !KIEU.equals("phim") && chamVung("huy-nv");
+        if (ui) {
+            ve();
+            ngu(200);
+            kiem(dongY(true), "12: hop xac nhan Huy " + trangThai());
+            ngu(300);
+        } else {
+            Method mh = game.pokemon.ManNhiemVu.class.getDeclaredMethod("huy", game.model.Quest.class);
+            mh.setAccessible(true);
+            mh.invoke(null, dang);
+        }
+        kiem(demGui(-64, 2) == 1 && !coLenhGui(52, -1000), "12: Huy gui -64 type 2 (khong gui goi 52 cu) " + GUI_LENH);
+        kiem(soDangLam() == 0, "12: an ngay khoi Dang lam");
+        nhan(-64, goiNhan(7, 0, "Thử sức ngoài đồng", 5, "1Xatu: Hạ 5 Caterpie.", 0));
+        nhan(-64, goiRong(2));
+        kiem(game.render.screen.GameScr.mainQuest == null && game.render.screen.GameScr.allQuestCanReceive.size() == 1, "12: may chu tra ds -> dong bo");
+        chay(new Runnable() {
+            public void run() {
+                game.render.Canvas.gameScr.switchToMe();
+            }
+        });
+        ngu(300);
+        diDuoc("12");
+    }
+
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
         File ra = new File(a.length > 0 ? a[0] : System.getProperty("java.io.tmpdir") + "/kiem_nhiem_vu");
@@ -613,6 +751,7 @@ public class KiemNhiemVu {
             ngu(800);
             int h0 = hong;
             kichBan();
+            kichBanDongBo();
             System.out.println("kieu " + KIEU + (Boolean.getBoolean("htbb.khongCham") ? " (J2ME chi phim)" : "") + ": " + (hong == h0 ? "DAT" : "HONG " + (hong - h0)));
         }
         System.out.println("KiemNhiemVu: " + dat + " dat / " + hong + " hong");
