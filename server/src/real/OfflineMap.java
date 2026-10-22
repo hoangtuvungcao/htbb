@@ -1275,6 +1275,13 @@ public class OfflineMap extends Map {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm khoá không bán được.", ""));
                         return;
                      }
+                     // do khoa gia 0 (vd The dat ten Pokemon, price 0): khong "ban" mat do lay 0 xu - dung Huy (kiem TRUOC khi xoa CSDL)
+                     if (giaThap && com.htbb.pokemon.BanDoKhoa.gia(com.htbb.pokemon.LauDai.bat()
+                           ? com.htbb.pokemon.KinhTeLauDai.giaBanNpc(item.getTemplate().price)
+                           : (long)(item.getTemplate().price / 5 + item.plus * 1000)) <= 0) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này không bán được - dùng Huỷ nếu không cần.", ""));
+                        return;
+                     }
 
                      if (item.dbid != 0) {
                         Database.instance.deleteItem(item.dbid);

@@ -57,6 +57,8 @@ final class KiemBanDoKhoa {
         final String om = doc("src/real/OfflineMap.java");
         Kiem.dung("OfflineMap.doSellItem: do khoa -> BanDoKhoa.gia (khong con chan cung)", om.contains("xu = com.htbb.pokemon.BanDoKhoa.gia(xu);")
                 && om.contains("giaThap && !com.htbb.pokemon.BanDoKhoa.bat()"));
+        Kiem.dung("OfflineMap: do khoa gia 0 (the dat ten) bi tu choi TRUOC khi xoa CSDL", om.indexOf("dùng Huỷ nếu không cần") > 0
+                && om.indexOf("dùng Huỷ nếu không cần") < om.indexOf("Database.instance.deleteItem(item.dbid);", om.indexOf("BanDoKhoa.bat()")));
         Kiem.dung("OfflineMap: do khoa vi da mac giu gia NPC thuong (laKhoaDoMac)", om.contains("!item.laKhoaDoMac() && item.lock == 1"));
         Kiem.dung("OfflineMap.doSellGemItem: nguyen lieu khoa gia thap + nhat ky", om.contains("price = com.htbb.pokemon.BanDoKhoa.gia(price);")
                 && om.contains("BanDoKhoa.LOG_BAN"));

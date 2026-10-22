@@ -279,7 +279,7 @@ public final class TheVatPham extends Dialog {
         if (this.dangMac) {
             return "Tháo ra trước khi bán.";
         }
-        return giaBan() < 0 ? "Vật phẩm này không bán được." : null;
+        return giaBan() < 0 || giaBan() == 0 && laKhoa() ? "Vật phẩm này không bán được." : null;
     }
 
     /** Vật phẩm khoá (không vứt ra đất được - chỉ Huỷ). */
