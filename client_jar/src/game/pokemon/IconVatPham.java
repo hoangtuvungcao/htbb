@@ -192,4 +192,89 @@ public final class IconVatPham {
         BieuTuong.ve(g, duPhong, cx - k / 2, cy - k / 2, k, ChuDe.CHU_NHAT, ChuDe.NEN_PHU);
         return false;
     }
+
+    // ------------------------------------------------------------------ 0.9.8 khung độ hiếm PNG (res/pk/khung_hiem.png)
+
+    /** Bậc khung: 0 Thường, 1 Hiếm, 2 Quý, 3 Sử thi, 4 Huyền thoại, 5 Trang trí. */
+    public static final int SO_KHUNG = 6;
+    private static boolean khungNap;
+    private static Image khungAnh;
+    private static final Image[] KHUNG = new Image[SO_KHUNG * 2 * 4];
+
+    /** colorName của đồ -> bậc khung (-1 = không khung): 0 Thường, 3 Hiếm, 2 Quý, 1 Sử thi, 6 Huyền thoại, 4/5 trang trí. */
+    public static int bacKhung(int colorName) {
+        switch (colorName) {
+            case 0:
+                return 0;
+            case 3:
+                return 1;
+            case 2:
+                return 2;
+            case 1:
+                return 3;
+            case 6:
+                return 4;
+            case 4:
+            case 5:
+                return 5;
+            default:
+                return -1;
+        }
+    }
+
+    static Image anhKhung(int bac, int f, int k) {
+        if (!khungNap) {
+            khungNap = true;
+            try {
+                byte[] b = PokeBody.docTaiNguyen(PokeBody.THU_MUC + "khung_hiem.png");
+                khungAnh = b == null ? null : Image.createImage(b, 0, b.length);
+            } catch (Throwable e) {
+                khungAnh = null;
+            }
+        }
+        if (khungAnh == null || bac < 0 || bac >= SO_KHUNG || khungAnh.getHeight() < (bac + 1) * 20) {
+            return null;
+        }
+        int i = (bac * 2 + f) * 4 + k - 1;
+        if (KHUNG[i] != null) {
+            return KHUNG[i];
+        }
+        int[] p = new int[400];
+        khungAnh.getRGB(p, 0, 20, f * 20, bac * 20, 20, 20);
+        int W = 20 * k;
+        int[] q = new int[W * W];
+        for (int y = 0; y < W; y++) {
+            for (int x = 0; x < W; x++) {
+                q[y * W + x] = p[(y / k) * 20 + x / k];
+            }
+        }
+        try {
+            KHUNG[i] = Image.createRGBImage(q, W, W, true);
+        } catch (Throwable e) {
+            return null;
+        }
+        return KHUNG[i];
+    }
+
+    /**
+     * Khung độ hiếm pixel quanh ô vật phẩm tâm (cx, cy) cạnh s (phóng nguyên lần, Sử thi trở lên lấp lánh 2 nhịp).
+     * false = không vẽ được (thiếu ảnh / ô quá nhỏ) - nơi gọi vẽ kiểu cũ.
+     */
+    public static boolean veKhungHiem(Graphics g, int colorName, int cx, int cy, int s) {
+        return veKhungHiemTheoBac(g, bacKhung(colorName), cx, cy, s);
+    }
+
+    public static boolean veKhungHiemTheoBac(Graphics g, int bac, int cx, int cy, int s) {
+        if (bac < 0 || s < 18) {
+            return false;
+        }
+        int k = Math.max(1, Math.min(4, (s + 4) / 20));
+        int f = bac >= 3 && ((Canvas.gameTick / 10) & 1) == 1 ? 1 : 0;
+        Image img = anhKhung(bac, f, k);
+        if (img == null) {
+            return false;
+        }
+        g.drawImage(img, cx - 10 * k, cy - 10 * k, Graphics.TOP | Graphics.LEFT);
+        return true;
+    }
 }

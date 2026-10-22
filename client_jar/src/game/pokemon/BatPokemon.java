@@ -800,6 +800,11 @@ public final class BatPokemon {
         boolean di = Math.abs(ox - c.banX) + Math.abs(oy - c.banY) > 1;
         g.drawImage(game.render.Res.imgShadowPet != null ? game.render.Res.imgShadowPet : game.render.Res.imgShadow, c.banX, c.banY, 3);
         PokeBody.paint(g, c.pokeBanDex, c.pokeBanShiny, c.banX, c.banY, c.dir, di ? PokeDuLieu.CHAY : PokeDuLieu.DUNG, tick, 60);
+        // 0.9.8: thẻ bạn đồng hành (nơ / chuông / vương miện nhỏ trên Pokémon đi theo, TrangPhucVe)
+        if (c.ngoaiHinh != null && c.ngoaiHinh.theBan > 0 && (NgoaiHinhVe.hien || c == game.render.Canvas.gameScr.mainChar)) {
+            TrangPhucVe.veThe(g, c.ngoaiHinh.theBan, c.pokeBanDex, c.pokeBanShiny, c.banX, c.banY, c.dir,
+                    di ? PokeDuLieu.CHAY : PokeDuLieu.DUNG, tick, 60);
+        }
     }
 
     /** Gọi khi vào bản đồ mới: xoá hiệu ứng cũ, xin lại trạng thái lần tới cần. */

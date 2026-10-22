@@ -156,6 +156,7 @@ def main():
     a("Nhóm phát triển Huyền Thoại Bảo Bối (HTBB). Chữ tiếng Việt, giao diện kiểu Pokémon: vẽ bằng code.")
     a("Biểu tượng, icon chiêu và nút giao diện (bản PC / Android): do dự án HTBB tự vẽ (tools/pokemon/sinh_icon_ui.py, sinh_icon_chieu.py), phát hành CC0 1.0 - không cần ghi công.")
     a("Logo và key art màn tải / đăng nhập: dựng bằng code (client_jar/tools/tao_logo.py, tao_banner.py) từ sprite PMDCollab (Charmander, Bulbasaur, Eevee, Squirtle, Pichu, Lapras, Butterfree, Mareep, Rayquaza - ghi công ở trên) và tile Ninja Adventure. Chữ logo: font Baloo 2 (Ek Type) - SIL Open Font License 1.1.")
+    a("Trang phục, hào quang, skin thú cưỡi, thẻ bạn đồng hành, icon đồ mới và khung độ hiếm (0.9.8): do dự án HTBB tự vẽ bằng lưới điểm ảnh (tools/do_trang_phuc/hinh_trang_bi.py, hinh_trang_phuc.py, sinh.py), phát hành CC0 1.0 - không dùng tài sản bên ngoài.")
     a("")
     a("Cảm ơn các hoạ sĩ PMDCollab và cộng đồng đã chia sẻ tác phẩm!")
     noi_dung = "\n".join(r) + "\n"

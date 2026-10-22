@@ -4229,6 +4229,7 @@ public class Map implements Runnable {
         if (Math.abs(p.lvDetail.lv - mt.getLevel()) > 10) {
             return;
         }
+        TrangPhucGame.khiHaQuai(p); // [trang-phuc] dem quai su kien (truoc tran diem ngay: khong bi chan boi tran nay)
         if (p.diemQuaiHomNay >= 1000) {
             return;
         }

@@ -1648,11 +1648,13 @@ public class Monster extends LiveActor {
                             if (!this.isBoss) {
                                 if (this.idTemplate != Map.idGhost) {
                                     item = Map.dropItem(this.getLevel(), this.inCountry);
+                                    DoMoiGame.thayKhiRoi(item, this, false); // [do-moi] thay mon goc bang mon ho (1:1)
                                 } else if (this.idTemplate == Map.idGhost) {
                                     Map.abs(p.lvDetail.lv - this.level);
                                 }
                             } else {
                                 item = Map.createItemBoss(p.lvDetail.lv, this);
+                                DoMoiGame.thayKhiRoi(item, this, true); // [do-moi]
                             }
                         }
                         if (item != null) {

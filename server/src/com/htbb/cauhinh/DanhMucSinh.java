@@ -777,6 +777,12 @@ final class DanhMucSinh {
                     .nhan("Trần phí trao đổi mỗi Pokémon (‰ giờ thu nhập)", "Phí một con không vượt chừng này phần nghìn giờ thu nhập.")
                     .khoang(0L, 20000L)
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("do_moi.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật đồ họ mới (bộ hệ / bộ vùng)", "Đồ họ (data_trang_bi_moi) thay món gốc khi rơi / chế tạo (cùng chỉ số, không thêm món) và thưởng bộ họ trong trần chung. 0 = không đổi món rơi, không thưởng bộ họ.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("trang_phuc.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật tủ đồ trang trí (trang phục, hào quang, skin thú, thẻ bạn đồng hành)", "Gói -116 + hình trên thân (-102) + chỉ số nhỏ theo ô (data_trang_phuc_o, tổng cùng danh hiệu ≤ trang_tri.tran_tong_phan_nghin). 0 = tạm khoá.")
+                    .lop("luon_bat"),
             new DinhNghiaKhoa("cho_pokemon.bat", "trang_bi", "co", "1", true, "cau_hinh")
                     .nhan("Bật chợ Pokémon", "Bán / mua Pokémon trong Hộp PC giữa người chơi (khung giá máy chủ, ký quỹ, mua nguyên tử). 0 = tạm khoá.")
                     .lop("luon_bat"),

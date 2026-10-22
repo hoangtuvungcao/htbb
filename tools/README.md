@@ -12,6 +12,15 @@ sửa nguồn (`du_lieu/*.csv`, `tools/cauhinh/danh_muc.json`…) rồi chạy l
 `web/shared/utils/cauHinhTrungTam.gen.ts` và bảng khoá trong [docs/cau-hinh.md](../docs/cau-hinh.md)
 (`--kiem` = chỉ kiểm lệch). `vi_du_kiem.tsv`: bộ ví dụ kiểm giá trị dùng chung cho test Java và web.
 
+## `do_trang_phuc/` — đồ họ mới và trang phục (0.9.8)
+
+`danh_muc.py` là nguồn duy nhất (18 bộ hệ, 3 bộ huy chương vùng, thưởng bộ, ngân sách ô trang trí, 61 món trang trí và
+nguồn của chúng); `hinh_trang_bi.py` / `hinh_trang_phuc.py` là hình vẽ tay bằng lưới ký tự (CC0). `sinh.py` ra
+`sql/them_do_trang_phuc.sql`, icon `server/map/icon_do_moi/` + `web/public/icon-do/`, atlas lớp phủ
+`client_jar/res/pk/trang_phuc.{png,bin}`, `khung_hiem.png`, `du_lieu/do_moi_*.csv`, `du_lieu/trang_phuc.csv`,
+`web/shared/data/danh-muc-do-trang-phuc.json` (`--xem <thư mục>` = bộ sưu tập ảnh phóng to). `kiem_ke.py` ra
+`du_lieu/KIEM_KE_TRANG_BI.md`.
+
 ## `pokemon/` — dữ liệu và tài nguyên Pokémon
 
 | Nhóm | Công cụ | Làm gì |

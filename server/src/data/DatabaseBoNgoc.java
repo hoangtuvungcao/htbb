@@ -22,6 +22,8 @@ public final class DatabaseBoNgoc {
     public static final String[] BANG_DU_LIEU = {
         "data_noi_dung_bo", "data_noi_dung_ngoc_he", "data_noi_dung_che_tao", "data_ngoc_he_lo", "data_ngoc_he_khac",
         "data_che_tao_bac", "data_nang_cap_moc", "data_bat_bong", "data_bat_loai", "data_bat_chi_so_loai", "data_bat_chuyen_doi",
+        // 0.9.8 do ho moi + trang phuc (sql/them_do_trang_phuc.sql, real.DoMoiGame / real.TrangPhucGame)
+        "data_trang_bi_ho", "data_trang_bi_ho_thuong", "data_trang_bi_moi", "data_trang_phuc_o", "data_trang_phuc",
     };
 
     /** Bang may chu tu tao neu thieu (RONG: du lieu mau o sql/them_bo_ngoc_che_tao_bat.sql; thieu thi dung mac dinh). */
@@ -66,7 +68,10 @@ public final class DatabaseBoNgoc {
         PreparedStatement pre = null;
         try {
             conn = Database.instance.getConnection();
-            for (final String sql : TAO_BANG) {
+            final List<String> tat = new ArrayList<String>(java.util.Arrays.asList(TAO_BANG));
+            tat.addAll(java.util.Arrays.asList(real.DoMoiGame.TAO_BANG)); // [do-moi]
+            tat.addAll(java.util.Arrays.asList(real.TrangPhucGame.TAO_BANG)); // [trang-phuc]
+            for (final String sql : tat) {
                 try {
                     pre = conn.prepareStatement(sql);
                     pre.executeUpdate();

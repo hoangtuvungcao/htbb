@@ -227,7 +227,9 @@ public class ChupTrongGame {
             "hst_tui_hanh_dong", "hst_ky_nang", "hst_tu_man", "hop_hst_ky_nang", "hop_hst_nghien_cuu", "hop_hst_the_gioi",
             "hop_cau_ket_qua", "cau_can",
             // 0.9.7
-            "danh_hieu", "danh_hieu_chua_co", "danh_hieu_an", "danh_hieu_chi_tiet"};
+            "danh_hieu", "danh_hieu_chua_co", "danh_hieu_an", "danh_hieu_chi_tiet",
+            // 0.9.8 tủ đồ trang trí (tab Ngoại hình)
+            "nv_tu_do", "nv_tu_do_thu", "nv_tu_do_hao_quang", "nv_tu_do_an"};
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -673,6 +675,59 @@ public class ChupTrongGame {
         }
     }
 
+    /** Gói -116 kiểu 0 giả (sau byte kiểu): 4 ô + vài món mỗi ô (màn tủ đồ). */
+    static byte[] goiTuDo() throws java.io.IOException {
+        java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+        java.io.DataOutputStream o = new java.io.DataOutputStream(bo);
+        String[][] oo = {{"trang_phuc", "Trang phục", "15"}, {"hao_quang", "Hào quang", "10"}, {"skin_thu", "Skin thú cưỡi", "5"},
+            {"the_dong_hanh", "Thẻ bạn đồng hành", "10"}};
+        o.writeByte(oo.length);
+        for (int i = 0; i < oo.length; i++) {
+            o.writeUTF(oo[i][0]);
+            o.writeUTF(oo[i][1]);
+            o.writeShort(Integer.parseInt(oo[i][2]));
+            o.writeShort(Integer.parseInt(oo[i][2]));
+            o.writeByte(2);
+            o.writeUTF("hp");
+            o.writeUTF("HP");
+            o.writeUTF("tan_cong");
+            o.writeUTF("Tấn công");
+            o.writeByte(0);
+            o.writeUTF(i == 0 ? "tp_tan_thu" : "");
+            o.writeInt(i == 0 ? 3600 : 0);
+        }
+        o.writeShort(35);
+        o.writeShort(50);
+        o.writeShort(10);
+        Object[][] mon = {
+            {"tp_tan_thu", 0, 1, "Áo huấn luyện viên tân thủ", 0, 15628, 3, "Miễn phí ở cấp 5", "", 0, "Mũ lưỡi trai đỏ và khăn trắng."},
+            {"tp_halloween", 0, 11, "Trang phục Halloween", 3, 15638, 0, "Sự kiện Halloween", "Hạ quái 120/500", 0, "Mũ phù thuỷ, áo choàng tím và đũa phép."},
+            {"tp_tham_tu", 0, 6, "Trang phục Thám tử", 2, 15633, 1, "Ngày cộng đồng", "Đủ 200/200", 1, "Mũ thám tử và kính lúp."},
+            {"tp_hiep_si", 0, 23, "Trang phục Hiệp sĩ", 3, 15650, 0, "Cửa hàng: 250 lượng", "", 3, "Mũ giáp lông đỏ và áo choàng."},
+            {"tp_tho_mo", 0, 29, "Trang phục Thợ mỏ", 1, 15656, 0, "Chế tạo ở Machamp", "10 Bụi sao, 4 Mảnh sao, 2 giờ xu", 2, "Mũ thợ mỏ có đèn."},
+            {"tp_nha_vo_dich", 0, 18, "Trang phục Nhà vô địch", 4, 15645, 2, "Thành tựu: Thập đại cao thủ", "", 0, "Vương miện và áo choàng đỏ."},
+            {"hq_tap_su", 1, 1, "Hào quang tập sự", 0, 15660, 3, "Miễn phí ở cấp 10", "", 0, "Vòng sáng đầu tiên."},
+            {"hq_lua", 1, 2, "Hào quang Lửa", 2, 15661, 0, "Chế tạo ở Machamp", "5 Mảnh sao, 2 giờ xu", 2, "Vòng lửa."},
+            {"hq_cau_vong", 1, 11, "Hào quang Cầu vồng", 4, 15670, 0, "Thành tựu: Người hoàn thiện Pokédex", "Pokédex 61/90", 0, "Cầu vồng."},
+        };
+        o.writeShort(mon.length);
+        for (int i = 0; i < mon.length; i++) {
+            Object[] m = mon[i];
+            o.writeUTF((String) m[0]);
+            o.writeByte((Integer) m[1]);
+            o.writeByte((Integer) m[2]);
+            o.writeUTF((String) m[3]);
+            o.writeByte((Integer) m[4]);
+            o.writeShort((Integer) m[5]);
+            o.writeByte((Integer) m[6]);
+            o.writeUTF((String) m[7]);
+            o.writeUTF((String) m[8]);
+            o.writeByte((Integer) m[9]);
+            o.writeUTF((String) m[10]);
+        }
+        return bo.toByteArray();
+    }
+
     static void moMan(String ten) {
         game.render.Canvas.isPointerDown = false;
         game.pokemon.DungDo.xoaHet();   // thông báo của màn trước không lọt sang màn này
@@ -745,6 +800,19 @@ public class ChupTrongGame {
             game.render.Util.quickSort(gs.actors);   // khung vẽ đi theo thứ tự y (GameScr.update sắp mỗi nhịp)
         } else if ("nv_ngoai_hinh".equals(ten)) {
             game.pokemon.ManNhanVat.mo(4);
+        } else if (ten.startsWith("nv_tu_do")) {
+            game.pokemon.ManNhanVat.mo(4);
+            try {
+                game.pokemon.ManTuDo.napThu(goiTuDo());
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            game.pokemon.ManTuDo.xinLuc = Long.MAX_VALUE / 2;   // không gửi xin (không máy chủ)
+            game.pokemon.ManTuDo.tab = ten.endsWith("_an") ? game.pokemon.ManTuDo.TAB_AN : ten.endsWith("hao_quang") ? 1 : 0;
+            game.pokemon.ManTuDo.boThu();
+            if (ten.endsWith("_thu")) {
+                game.pokemon.ManTuDo.thu((game.pokemon.ManTuDo.Mon) game.pokemon.ManTuDo.MON.elementAt(1));
+            }
         } else if ("menu_ngu_canh".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
             java.util.Vector v = new java.util.Vector();

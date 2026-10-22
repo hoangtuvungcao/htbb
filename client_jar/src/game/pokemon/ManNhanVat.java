@@ -89,6 +89,11 @@ public final class ManNhanVat extends Screen {
             return;
         }
         ManNhanVat m = gI();
+        if (t == TAB_NGOAI_HINH) {
+            ManTuDo.xinLuc = 0;
+            ManTuDo.xin();
+        }
+        ManTuDo.boThu();
         m.tab = t;
         m.o = -1;
         m.xem = null;
@@ -139,6 +144,13 @@ public final class ManNhanVat extends Screen {
     }
 
     void chonTab(int t) {
+        if (t == TAB_NGOAI_HINH && this.tab != t) {
+            ManTuDo.xinLuc = 0;
+            ManTuDo.xin();   // 0.9.8: tủ đồ mới nhất mỗi lần vào tab
+        }
+        if (t != TAB_NGOAI_HINH) {
+            ManTuDo.boThu();
+        }
         this.tab = t;
         this.o = -1;
         this.xem = null;
@@ -383,7 +395,7 @@ public final class ManNhanVat extends Screen {
             if (tong > 34) {
                 z = Math.max(z / 2, z * 34 / tong);
             }
-            vePoke(g, ch.pokeThuDex, ch.pokeThuShiny, cx, yChan, z, huong);
+            vePoke(g, ch.pokeThuDex, ch.pokeThuShiny, cx, yChan, z, huong, TrangPhucVe.tpThu(ch.ngoaiHinh));
             yChan -= (int) (caoThu * 55 / 100 * z);
         }
         if (PhongVe.co()) {
@@ -403,14 +415,19 @@ public final class ManNhanVat extends Screen {
 
     /** Một Pokémon (thú cưỡi / pet đi theo) đứng yên phóng z, chân ở (cx, yChan). */
     static void vePoke(Graphics g, int dex, boolean shiny, int cx, int yChan, float z, int huong) {
+        vePoke(g, dex, shiny, cx, yChan, z, huong, 0);
+    }
+
+    /** Như trên, tp = trang phục / skin thú cưỡi đổi màu (PhuKien.doiMauTrangPhuc; 0 = không). */
+    static void vePoke(Graphics g, int dex, boolean shiny, int cx, int yChan, float z, int huong, int tp) {
         if (PhongVe.co()) {
             int tx = g.getTranslateX(), ty = g.getTranslateY();
             PhongVe.bo.bat(g, z);
-            PokeBody.paint(g, dex, shiny, (int) ((cx + tx) / z), (int) ((yChan + ty) / z), huong, PokeDuLieu.DUNG, Canvas.gameTick, 100);
+            PokeBody.paint(g, dex, shiny, (int) ((cx + tx) / z), (int) ((yChan + ty) / z), huong, PokeDuLieu.DUNG, Canvas.gameTick, 100, 0, tp);
             PhongVe.bo.tat(g);
             g.translate(tx, ty);
         } else {
-            PokeBody.paint(g, dex, shiny, cx, yChan, huong, PokeDuLieu.DUNG, Canvas.gameTick, (int) (100 * z));
+            PokeBody.paint(g, dex, shiny, cx, yChan, huong, PokeDuLieu.DUNG, Canvas.gameTick, (int) (100 * z), 0, tp);
         }
     }
 
@@ -1183,7 +1200,7 @@ public final class ManNhanVat extends Screen {
         ItemTemplate t = mau(it);
         int s = oDau(g, x, y, h);
         int hiem = KieuO.mauHiem(it.colorName);
-        if (hiem >= 0) {
+        if (hiem >= 0 && !IconVatPham.veKhungHiem(g, it.colorName, x + 3 + s / 2, y + 3 + s / 2, s)) {
             KieuO.khungHiem(g, x + 3, y + 3, s, hiem);
         }
         if (t != null) {
@@ -1263,7 +1280,7 @@ public final class ManNhanVat extends Screen {
         int xi = x + hd + 10;
         KieuO.oDo(g, xi, y + 4, s, true, false);
         int hiem = KieuO.mauHiem(it.colorName);
-        if (hiem >= 0) {
+        if (hiem >= 0 && !IconVatPham.veKhungHiem(g, it.colorName, xi + s / 2, y + 4 + s / 2, s)) {
             KieuO.khungHiem(g, xi, y + 4, s, hiem);
         }
         if (t != null) {
@@ -1774,9 +1791,22 @@ public final class ManNhanVat extends Screen {
     private void veNgoaiHinh(Graphics g, int x, int y, int w, int h) {
         int k = Bang.cach();
         int lw = Math.min(w * 42 / 100, 240);
-        sanKhauNguoi(g, x, y, lw, h);
+        // 0.9.8: sân khấu mặc THỬ món đang chọn ở tủ đồ (bản sao ngoại hình, không gửi máy chủ)
+        MainChar m = mc();
+        ManTuDo.batThu(m);
+        try {
+            sanKhauNguoi(g, x, y, lw, h);
+        } finally {
+            ManTuDo.tatThu(m);
+        }
+        ManTuDo.veNhanThu(g, x, y, lw);
         int xr = x + lw + k, wr = w - lw - k;
         Bang.the(g, xr, y, wr, h);
+        ManTuDo.ve(g, xr, y, wr, h, this);
+    }
+
+    /** Hàng Hiện / ẩn từng phụ kiện + trang phục (gửi -103) - tab con "Hiện / ẩn" của tủ đồ. */
+    void veAnHien(Graphics g, int xr, int y, int wr, int h) {
         NgoaiHinhMenu.nap();
         final int an = NgoaiHinhMenu.anHienTai();
         int n = NgoaiHinhMenu.TEN_O.length + 1;

@@ -787,6 +787,23 @@ public final class NapTienGame implements Runnable {
         bao(p, mua(p, mot.get(0)));
     }
 
+    /**
+     * [trang-phuc] Mua mon cua hang theo ma (Tu do trang tri / goi -116 kieu 5): cung DUONG mua (so cai, khoan thu hoi,
+     * gioi han, hoan luong khi loi). Tra thong bao cho nguoi choi.
+     */
+    public static String muaTheoMa(final Char p, final String ma) {
+        try {
+            for (final NapTienLogic.Mon m : NapTienDb.cuaHang()) {
+                if (m.ma.equals(ma)) {
+                    return mua(p, m);
+                }
+            }
+            return "Món này không còn bán.";
+        } catch (final SQLException e) {
+            return "Cửa hàng tạm thời không mở được, thử lại sau.";
+        }
+    }
+
     /** Mua mot mon cua hang. Luong tru TRUOC (khoa tien), trao that bai thi hoan lai. */
     static String mua(final Char p, final NapTienLogic.Mon m) throws SQLException {
         if (NapTienLogic.kiemMon(m) != null) {
@@ -813,7 +830,8 @@ public final class NapTienGame implements Runnable {
         if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao) && p.maxBag >= Char.MAX_BAG_LIMIT) {
             return "Hành trang đã mở rộng tối đa.";
         }
-        if (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) && NapTienDb.soHuu(p.charDBID, System.currentTimeMillis()).size()
+        if (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) && !real.TrangPhucGame.laMa(m.ma)
+                && real.TrangPhucGame.demNgoaiDanhMuc(NapTienDb.soHuu(p.charDBID, System.currentTimeMillis()))
                 >= TU_DO_O + (coThe(p) ? 10 * NapTienLogic.THE_THANG_TRANG_TU_DO_THEM : 0)) {
             return "Tủ đồ trang trí đã đầy.";
         }
@@ -918,6 +936,11 @@ public final class NapTienGame implements Runnable {
             return;
         }
         final NapTienDb.SoHuu s = mot.get(0);
+        if (chon == 0 && real.TrangPhucGame.laMa(s.ma)) {
+            NGU_CANH.remove(p.charDBID);
+            bao(p, real.TrangPhucGame.macTuMenu(p, s.ma, !s.dangDung)); // [trang-phuc] moi o mot mon + doi hinh / chi so
+            return;
+        }
         if (chon == 0) {
             NGU_CANH.remove(p.charDBID);
             bao(p, NapTienDb.datDung(s.id, p.charDBID, !s.dangDung)

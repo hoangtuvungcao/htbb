@@ -117,6 +117,8 @@ class CharChiSo {
         self.maxmp += (int) (self.maxmp * pcUpmp / 100L);
         // Danh hieu dang deo: dong HP phan nghin - TRUOC kepPhanTram (trong chi_so.tran_phan_tram_cong).
         self.maxhp += (int) ((long) self.maxhp * DanhHieuGame.phanNghin(self, com.htbb.pokemon.DanhHieuLogic.HP) / 1000L);
+        // [trang-phuc] o trang tri dang chon dong HP (tong trang tri + danh hieu <= 5%), cung truoc kepPhanTram
+        self.maxhp += (int) ((long) self.maxhp * TrangPhucGame.phanNghin(self, "hp") / 1000L);
         int atkTubinh = 0;
         int atkTubinh2 = 0;
         for (int j = 0; j < self.tubinh.size(); ++j) {
@@ -173,6 +175,18 @@ class CharChiSo {
         }
         if (self.mp > self.maxmp) {
             self.mp = self.maxmp;
+        }
+    }
+
+    /** [trang-phuc] dong Phong thu / Phong thu dac biet cua o trang tri (phan nghin, tran tong trang tri 5%). */
+    static void capPhongThuTrangPhuc(final Char self) {
+        final int pt = TrangPhucGame.phanNghin(self, "phong_thu");
+        final int db = TrangPhucGame.phanNghin(self, "thu_dac_biet");
+        if (pt > 0) {
+            self.defend_physic += (int) ((long) self.defend_physic * pt / 1000L);
+        }
+        if (db > 0) {
+            self.defend_magic += (int) ((long) self.defend_magic * db / 1000L);
         }
     }
 
@@ -525,6 +539,7 @@ class CharChiSo {
                 self.defend_physic += self.defend_physic * ivThu / 1000;
                 self.defend_magic += self.defend_magic * ivThu / 1000;
             }
+            capPhongThuTrangPhuc(self); // [trang-phuc]
             upvP += self.wModel.getDefend() + upfullset + defPet;
             upmP += self.wModel.getDefend() + upfullset + defPet;
             self.baokich += (short) self.wModel.getbaoKich();
@@ -535,6 +550,7 @@ class CharChiSo {
         } else {
             self.defend_magic += self.defend_magic * (upfullset + defPet) / 100;
             self.defend_physic += self.defend_physic * (upfullset + defPet) / 100;
+            capPhongThuTrangPhuc(self); // [trang-phuc]
             upvP += upfullset + defPet;
             upmP += upfullset + defPet;
         }

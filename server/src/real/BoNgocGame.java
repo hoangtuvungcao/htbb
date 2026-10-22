@@ -235,7 +235,8 @@ public final class BoNgocGame {
         }
         DL = d;
         final String bat = BatPokemonGame.nap();
-        final String kq = "[BO NGOC] " + bao + "mốc neo " + java.util.Arrays.toString(d.mocNeo) + "; " + bat;
+        final String doMoi = DoMoiGame.nap() + "; " + TrangPhucGame.nap(); // [do-trang-phuc]
+        final String kq = "[BO NGOC] " + bao + "mốc neo " + java.util.Arrays.toString(d.mocNeo) + "; " + bat + "; " + doMoi;
         System.out.println(kq);
         return kq;
     }
@@ -392,7 +393,14 @@ public final class BoNgocGame {
                 final int tr = Math.max(0, Math.min(5, LauDai.so(K_BO_TRAN, 5))) * 10;
                 final int trCm = Math.max(0, Math.min(30, LauDai.so(K_BO_TRAN_CHI_MANG, 30)));
                 final int[] th = d.bo.thuong(dem, new int[]{tr, tr, trCm});
+                // [do-moi] bo huy chuong vung (HP / tan cong / chi mang) cong CHUNG tran bo voi bo bac
+                final com.htbb.pokemon.DoMoiLogic.KetQua ho = DoMoiGame.capNhat(p, ws);
+                th[BoTrangBi.HP] = Math.min(tr, th[BoTrangBi.HP] + ho.hp);
+                th[BoTrangBi.TAN_CONG] = Math.min(tr, th[BoTrangBi.TAN_CONG] + ho.tanCong);
+                th[BoTrangBi.CHI_MANG] = Math.min(trCm, th[BoTrangBi.CHI_MANG] + ho.chiMang);
                 System.arraycopy(th, 0, t.bo, 0, th.length);
+            } else {
+                DoMoiGame.capNhat(p, ws); // [do-moi] bo he (ST he / khang he) van tinh khi tat bo bac
             }
         } catch (final Exception e) {
             // du lieu mot mon hong: bo qua, khong lam hong tinh chi so
@@ -521,6 +529,7 @@ public final class BoNgocGame {
                 }
             }
         }
+        ds.addAll(DoMoiGame.dongMoTa(chu, it)); // [do-moi] bo ho
         // ---- lo ngoc
         if (ngocBat()) {
             final int n = soLo(it);

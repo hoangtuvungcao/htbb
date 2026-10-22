@@ -90,6 +90,12 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemBoNgocBat` (0.9.8): màn Chế tạo / Khảm ngọc hệ (tấm, vùng chạm, nút, tỉ lệ + pity), nút "Ném Poké Ball" (chỉ khi
   Pokémon hoang dã yếu, trong màn, không chồng HUD), hiệu ứng ném (bay / trong bóng / thoát / bắt được), Pokédex "Đã bắt",
   dòng bộ / lỗ ngọc trên thẻ chi tiết đồ, chữ nút "Đập" có tỉ lệ thật;
+- `KiemTrangPhuc` (0.9.8): trang phục / hào quang / skin thú / thẻ bạn đồng hành (game.pokemon.TrangPhucVe, atlas
+  `res/pk/trang_phuc.png` + `.bin` sinh bởi `tools/do_trang_phuc/sinh.py`) - dữ liệu atlas, đuôi gói -102, gói -116 tủ đồ,
+  thử đồ (bản sao), và KIỂM VẼ 5 dòng khởi đầu x 3 dạng x mọi trang phục x 4 hướng x 11 cỡ: mũ trên đỉnh đầu không che
+  mặt, đồ cổ giữa đầu và tâm thân, áo choàng / cánh bám cổ đúng lớp theo hướng, đồ cầm ở tay, trong hộp sprite; ghi tấm
+  xem `render_*.png` (chạy không cần ChupTrongGame: `javac -cp client_pc/out/build/cls -d $O client_pc/test/KiemTrangPhuc.java`);
+  `ChupTrongGame` có thêm màn `nv_tu_do`, `nv_tu_do_thu`, `nv_tu_do_hao_quang`, `nv_tu_do_an` (tab Ngoại hình = tủ đồ);
 - `KiemManTai`: màn tải duy nhất (đăng nhập → thế giới, đổi bản đồ, tự kết nối lại) - từng khung, luôn một lớp;
 - `KiemIconChieu`: mọi chiêu có icon PNG (res/ui/chieu_*.png, `tools/pokemon/sinh_icon_chieu.py`);
 - `ChupTrongGame` còn ghi `chuoi_da_ve.txt` (mọi chuỗi đã vẽ) cho `python3 -I tools/pokemon/kiem_chuoi_ui.py <tệp>`

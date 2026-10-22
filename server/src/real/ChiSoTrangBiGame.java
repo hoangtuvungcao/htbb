@@ -396,6 +396,7 @@ public final class ChiSoTrangBiGame {
         long tho = he >= 0 ? ChiSoTrangBi.khangHeTho(c.ldGiaTri, he) : gt(c, ChiSoTrangBi.ID_KHANG_MOI_HE);
         if (he >= 0) {
             tho -= BoNgocGame.khangTruPhanNghin(c, he); // [bo-ngoc] phan "hai" cua ngoc he (Ngoc Lua -> -khang Nuoc)
+            tho += DoMoiGame.khangHePhanNghin(c, he); // [do-moi] bo he 4 mon: khang he khac (tran 60% chung)
         }
         return giamDan(Math.max(0L, tho), GioiHanChiSo.KHANG_HE_GOI, GioiHanChiSo.KHANG_HE_TRAN, K_TRAN_KHANG_HE);
     }
@@ -425,7 +426,8 @@ public final class ChiSoTrangBiGame {
         }
         // [bo-ngoc] + ST he cua ngoc he khảm (n x 1,5 phan nghin) - cung tran 20%
         return (int) Math.min(ChiSoTrangBi.TRAN_DO_HE_PHAN_TRAM,
-                (ChiSoTrangBi.stHeTho(p.ldGiaTri, he) + BoNgocGame.stHePhanNghin(p, he)) / 10L);
+                (ChiSoTrangBi.stHeTho(p.ldGiaTri, he) + BoNgocGame.stHePhanNghin(p, he)
+                        + DoMoiGame.stHePhanNghin(p, he)) / 10L); // [do-moi] bo he 2 / 6 mon
     }
 
     // ------------------------------------------------------------------ trang thai tu do khảm (thay buffSkillKham)

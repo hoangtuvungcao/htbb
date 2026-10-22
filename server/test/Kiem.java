@@ -211,6 +211,7 @@ public final class Kiem {
         KiemBatPokemon.chay(); // thu phuc Pokemon, Hop PC, Keo loai, Pokedex "Da bat" (bo-ngoc-bat)
         KiemTraoDoiPokemon.chay(); // ca the IV / tinh cach, chuyen doi, trao doi Pokemon nguyen tu (bat-trade)
         KiemChoPokemon.chay(); // cho Pokemon: khung gia, thue, ky quy, mua nguyen tu (bat-trade)
+        KiemDoTrangPhuc.chay(); // do ho moi + tu do trang tri (do-trang-phuc)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

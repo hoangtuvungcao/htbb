@@ -10848,6 +10848,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (tat co sv.lau_dai: khong lam gi).
         real.BoNgocGame.luu(p); // [bo-ngoc] tui ngoc he + pity che tao (tob_ho_so_bo_ngoc)
         real.BatPokemonGame.luu(p); // [bat-pokemon] Hop PC, keo loai, bong (tob_hop_pc)
+        real.TrangPhucGame.luu(p); // [trang-phuc] dong chi so + bo dem quai su kien (tob_trang_phuc)
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveChar(this, p, admindExit);
         }
@@ -10863,6 +10864,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (cung ban sao voi saveChar).
         real.BoNgocGame.luu(p); // [bo-ngoc]
         real.BatPokemonGame.luu(p); // [bat-pokemon]
+        real.TrangPhucGame.luu(p); // [trang-phuc]
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveCharAuto(this, p);
         }

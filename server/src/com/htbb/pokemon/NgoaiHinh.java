@@ -27,6 +27,11 @@ import java.io.IOException;
  *   u8 an            bit o an + bit 7 = an trang phuc (de bang Cai dat cua chinh minh hien dung)
  * </pre>
  * Phien ban sau chi THEM truong o cuoi; client doc phien ban 1 bo qua phan thua.
+ * <pre>
+ *   0.9.8 DUOI TRANG TRI (chi goi -102, KHONG co trong khoi goi 13):
+ *   u8 'T' (0x54), u8 phienBanDuoi = 1, u8 trangPhuc, u8 haoQuang, u8 skinThu, u8 theDongHanh
+ *   (so hieu data_trang_phuc.so trong tung o, 0 = khong; an trang phuc -&gt; ca bon = 0). Client &lt; 908 bo qua.
+ * </pre>
  *
  * <h3>Khoi ngoai hinh cuoi goi 13 (danh sach nhan vat, man chon Pokemon)</h3>
  * Sau byte DataGame.version cuoi goi 13 (client cu khong doc toi day nen tuong thich nguoc):
@@ -173,6 +178,11 @@ public final class NgoaiHinh {
         public int boCungBac;
         public int trangPhuc;
         public int an;
+        /** 0.9.8 tu do trang tri (so hieu trong o, 0 = khong): trang phuc, hao quang, skin thu cuoi, the ban dong hanh. */
+        public int tpSo;
+        public int hqSo;
+        public int skinSo;
+        public int theSo;
 
         public int coO() {
             int m = 0;
@@ -192,6 +202,7 @@ public final class NgoaiHinh {
             }
             h = (h ^ (bacTot & 0xFF | congTot << 8 | boCungBac << 16 | (long) trangPhuc << 24 | (long) an << 32))
                     * 1099511628211L;
+            h = (h ^ (tpSo & 0xFF | (hqSo & 0xFF) << 8 | (skinSo & 0xFF) << 16 | (long) (theSo & 0xFF) << 24)) * 1099511628211L;
             return h;
         }
     }
@@ -323,10 +334,25 @@ public final class NgoaiHinh {
         return kq;
     }
 
-    /** Ghi noi dung goi -102. */
+    public static final int DUOI_TRANG_TRI = 0x54;
+    public static final int PHIEN_BAN_DUOI = 1;
+
+    /** Ghi noi dung goi -102 (+ duoi trang tri 0.9.8). */
     public static void ghi(final DataOutputStream dos, final int charId, final Du d) throws IOException {
         dos.writeShort(charId);
         ghiNoiDung(dos, d);
+        ghiDuoi(dos, d);
+    }
+
+    /** Duoi trang tri cua -102 (an trang phuc -&gt; 0 het). */
+    public static void ghiDuoi(final DataOutputStream dos, final Du d) throws IOException {
+        final boolean an = (d.an & AN_TRANG_PHUC) != 0;
+        dos.writeByte(DUOI_TRANG_TRI);
+        dos.writeByte(PHIEN_BAN_DUOI);
+        dos.writeByte(an ? 0 : d.tpSo & 0xFF);
+        dos.writeByte(an ? 0 : d.hqSo & 0xFF);
+        dos.writeByte(an ? 0 : d.skinSo & 0xFF);
+        dos.writeByte(an ? 0 : d.theSo & 0xFF);
     }
 
     /** Phan sau charId cua -102 (dung chung cho khoi ngoai hinh cua goi 13 danh sach nhan vat). */

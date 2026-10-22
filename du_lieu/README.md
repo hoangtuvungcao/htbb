@@ -50,9 +50,12 @@ quái mới / đại cấp / tinh anh / boss thế giới, Gym, cửa hàng, rơ
 | `KIEM_ITEM.md`, `kiem_item.csv` | `tools/pokemon/kiem_item_mo_coi.py` — mọi vật phẩm phải có chỗ dùng |
 | `danh_muc_item.md` | `tools/SinhDanhMucItem.java` — danh mục `data_item` từ `sql/gamedb7_clean.sql` |
 | `chi_so_trang_bi.csv` | `tools/pokemon/SinhSqlChiSo.java` (cùng `sql/pokemon_chi_so.sql`) |
+| `neo_trang_phuc.csv` | `client_pc/tools/XuatNeoTrangPhuc.java` — neo trang phục từng khung (đỉnh sọ, giữa sọ, mắt, cổ, lưng, eo) của 16 loài người chơi, cùng hàm client tính từ điểm ảnh (`game.pokemon.NeoTrangPhuc`) |
 | `kiem_ke_sprite.csv` | `tools/pokemon/tai_sprite_pmd.py` — kiểm kê động tác sprite |
 | `tu_cam_con_lai.csv` | `tools/pokemon/quet_tu_cam.py` — từ kiếm hiệp còn sót |
 | `mo_phong_kinh_te.csv`, `mo_phong_tom_tat.txt` (biểu đồ `mo_phong_*.png` sinh ra, không commit) | `tools/pokemon/MoPhongKinhTe.java` |
 | `mo_phong_chi_so.txt` | `tools/pokemon/MoPhongChiSo.java` |
+| `do_moi_trang_bi.csv`, `do_moi_bo.csv`, `trang_phuc.csv` | `tools/do_trang_phuc/sinh.py` — đồ họ mới (18 bộ hệ, 3 bộ vùng), thưởng bộ, trang trí (cùng `sql/them_do_trang_phuc.sql`) |
+| `KIEM_KE_TRANG_BI.md` | `tools/do_trang_phuc/kiem_ke.py` — kiểm kê ô × dải cấp × họ, icon trùng / dùng chung, trước và sau đồ họ mới |
 | `xem_truoc_*.png` | ảnh xem trước tile / icon (sinh ra, không commit) |
 | `web/*.csv` | `tools/pokemon/sinh_noi_dung.py` — bản rút gọn cho website (chỉ cột người chơi cần); `web/nhiem_vu_tom_tat.json` do `sinh_nhiem_vu.py` |

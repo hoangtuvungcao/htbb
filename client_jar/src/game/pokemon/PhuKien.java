@@ -330,10 +330,18 @@ public final class PhuKien {
      * Chi so nguyen + mot lan Math.cos/sin cho moi trang phuc.
      */
     public static void doiMauTrangPhuc(int[] px, int tp) {
-        if (!nap() || tp < 1 || tp > trangPhuc.length) {
-            return;
+        int[] t;
+        if (tp > 100) {
+            t = TrangPhucVe.skin(tp - 100);   // 0.9.8: skin thu cuoi (doi mau con thu dang cuoi)
+            if (t == null) {
+                return;
+            }
+        } else {
+            if (!nap() || tp < 1 || tp > trangPhuc.length) {
+                return;
+            }
+            t = trangPhuc[tp - 1];
         }
-        int[] t = trangPhuc[tp - 1];
         if (tpDangTinh != tp) {
             double rad = t[0] * Math.PI / 180.0;
             cosTp = (int) (Math.cos(rad) * 256);

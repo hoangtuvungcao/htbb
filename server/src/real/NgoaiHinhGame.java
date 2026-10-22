@@ -88,7 +88,13 @@ public final class NgoaiHinhGame {
             matNa = idTemplate(w.matNa);
             canh = idTemplate(w.CanhModel);
         }
-        return NgoaiHinh.tinh(type, cap, mau, plus, thoiTrang, mu, matNa, canh, an(ch));
+        final NgoaiHinh.Du d = NgoaiHinh.tinh(type, cap, mau, plus, thoiTrang, mu, matNa, canh, an(ch));
+        // [trang-phuc] tu do trang tri (duoi -102)
+        d.tpSo = TrangPhucGame.soDangMac(ch, com.htbb.pokemon.TrangPhucLogic.TRANG_PHUC);
+        d.hqSo = TrangPhucGame.soDangMac(ch, com.htbb.pokemon.TrangPhucLogic.HAO_QUANG);
+        d.skinSo = TrangPhucGame.soDangMac(ch, com.htbb.pokemon.TrangPhucLogic.SKIN_THU);
+        d.theSo = TrangPhucGame.soDangMac(ch, com.htbb.pokemon.TrangPhucLogic.THE_DONG_HANH);
+        return d;
     }
 
     /** -102 cua {@code ch}; null khi loi. */
