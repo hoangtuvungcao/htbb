@@ -263,6 +263,17 @@ public class KiemTrangPhuc {
     }
 
     static final int[] TP = new int[game.pokemon.NeoTrangPhuc.SO];
+    static final int[] AN_DT = new int[6];
+
+    static int tongAn() {
+        int t = 0;
+        for (int[] r : game.pokemon.TrangPhucVe.DEM_AN) {
+            for (int v : r) {
+                t += v;
+            }
+        }
+        return t;
+    }
     static final String[] TEN_DT = {"dung", "chay", "danh_gan", "danh_xa", "trung_don", "guc_nga"};
     /** Số đo lệch (cho báo cáo): [dòng][hướng] tổng |dx| , max |dx| , n. */
     static final double[][][] LECH = new double[5][4][3];
@@ -324,14 +335,16 @@ public class KiemTrangPhuc {
                                 n.tpSo = dsTp[t];
                                 game.pokemon.TrangPhucVe.soHopVe = 0;
                                 game.pokemon.TrangPhucVe.ghiHop = true;
+                                int anTruoc = tongAn();
                                 BufferedImage anh = ve(dex, n, dir, 1, dt, tick);
                                 game.pokemon.TrangPhucVe.ghiHop = false;
+                                AN_DT[dt] += tongAn() - anTruoc;
                                 int nVe = game.pokemon.TrangPhucVe.soHopVe;
                                 int[] ds = game.pokemon.TrangPhucVe.manhCua(dsTp[t]);
                                 soVe += nVe;
                                 soBo += ds.length - nVe;
                                 String ten = ten0 + " tp" + dsTp[t];
-                                kiem(nVe >= 1 || dt >= 2, ten + ": vẽ ít nhất 1 mảnh (đứng / chạy; khung đánh / ngã có thể ẩn mảnh không vừa)");
+                                kiem(nVe >= 1 || dt == 5, ten + ": vẽ ít nhất 1 mảnh (mọi khung trừ gục ngã)");
                                 for (int i = 0; i < nVe; i++) {
                                     int[] h = new int[7];
                                     System.arraycopy(game.pokemon.TrangPhucVe.hopVe, i * 7, h, 0, 7);
@@ -346,6 +359,23 @@ public class KiemTrangPhuc {
                 }
             }
         }
+        String[] lyDo = {"loài cấm ô", "to hơn đầu", "không vừa thân"};
+        for (int r = 0; r < 3; r++) {
+            StringBuilder b = new StringBuilder();
+            int tong = 0;
+            for (int i = 0; i < 256; i++) {
+                if (game.pokemon.TrangPhucVe.DEM_AN[r][i] > 0) {
+                    b.append(' ').append(i).append(':').append(game.pokemon.TrangPhucVe.DEM_AN[r][i]);
+                    tong += game.pokemon.TrangPhucVe.DEM_AN[r][i];
+                }
+            }
+            System.out.println("an (" + lyDo[r] + "): " + tong + " |" + b);
+        }
+        StringBuilder ad = new StringBuilder("ẩn theo động tác:");
+        for (int i = 0; i < 6; i++) {
+            ad.append(' ').append(TEN_DT[i]).append('=').append(AN_DT[i]);
+        }
+        System.out.println(ad);
         System.out.println("hình học: " + soKhung + " khung (5 dòng x 3 dạng x 6 động tác x mọi khung x 4 hướng), mảnh vẽ " + soVe
                 + ", bỏ (mũ to hơn đầu / loài cấm ô) " + soBo);
         for (int d = 0; d < 5; d++) {
@@ -528,7 +558,7 @@ public class KiemTrangPhuc {
         switch (o) {
             case 0: {
                 double c = x + neo[game.pokemon.NeoTrangPhuc.DAU_X] + 0.5;
-                boolean trangTri = id == 21 || id == 22;   // hoa cài / nơ tim: cố ý lệch một bên (dx)
+                boolean trangTri = id % 100 == 21 || id % 100 == 22;   // hoa cài / nơ tim: cố ý lệch một bên (dx)
                 if (!trangTri) {
                     double lech = Math.abs(giua - c);
                     LECH[dong][dir][0] += lech;
@@ -539,7 +569,7 @@ public class KiemTrangPhuc {
                     kiem(W <= rongDau + 2, t + ": rộng " + W + " <= đầu " + rongDau + " + 2");
                 }
                 int day = Y + H - 1;
-                if (id == 19 && matTren != game.pokemon.NeoTrangPhuc.KHONG) {
+                if (id % 100 == 19 && matTren != game.pokemon.NeoTrangPhuc.KHONG) {
                     kiem(day <= y + matTren - 1 && day >= y + matTren - 4, t + ": kính trán ngay trên mắt (đáy " + day + ", mắt " + (y + matTren) + ")");
                 } else {
                     kiem(day == dinh, t + ": đáy mũ " + day + " chạm đỉnh sọ " + dinh + " (chồng 1 hàng, không hở / lún)");
@@ -547,7 +577,7 @@ public class KiemTrangPhuc {
                 if (matTren != game.pokemon.NeoTrangPhuc.KHONG) {
                     kiem(day < y + matTren, t + ": không che mắt (đáy " + day + " < mắt " + (y + matTren) + ")");
                 }
-                kiem(lop == 1, t + ": mũ lớp trước");
+                kiem(lop == (neo[game.pokemon.NeoTrangPhuc.MU_SAU] != 0 ? 0 : 1), t + ": mũ lớp trước (sau thân khi đầu khuất sau củ)");
                 break;
             }
             case 1: {
