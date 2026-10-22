@@ -69,7 +69,7 @@ public class KichBanNPC {
         DS.add(new Npc("-16 Vật nuôi (201)", -16, 201, 25, 10));
         DS.add(new Npc("-25 Lễ quan (201)", -25, 201, 24, 15));
         DS.add(new Npc("-13 Kỹ năng đội (201)", -13, 201, 69, 13));
-        DS.add(new Npc("-27 Tiệc cưới (201)", -27, 201, 35, 10));
+        DS.add(new Npc("-27 Lễ kết đôi (201)", -27, 201, 35, 10));
         DS.add(new Npc("-31 Đấu trường (201)", -31, 201, 45, 10));
         DS.add(new Npc("-19 Hoa tiêu 114", -19, 114, 120, 119));
         DS.add(new Npc("-20 Hoa tiêu 21", -20, 21, 38, 3));

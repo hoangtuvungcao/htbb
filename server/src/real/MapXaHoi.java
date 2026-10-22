@@ -307,7 +307,7 @@ class MapXaHoi {
                     }
 
                     if (player.potions[92] <= 0) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã hết thiệp mời.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã hết Thiệp mời kết đôi.", ""));
                         return;
                     }
                 }
@@ -319,7 +319,7 @@ class MapXaHoi {
                 }
 
                 if (p.myCountry != player.myCountry) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ thể mới khách cũng vùng với bạn", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ mời được khách cùng vùng với bạn", ""));
                     return;
                 }
 
@@ -330,11 +330,11 @@ class MapXaHoi {
 
                 if (p.idWedding <= -1 && p.potions[92] <= 0) {
                     p.pInviteWedding = player.charname;
-                    p.sendMessage(MessageCreator.createMsgPopUp(p.id, 7, "Bạn có đồng ý tham gia tiệc cưới của " + player.charname + " không?"));
+                    p.sendMessage(MessageCreator.createMsgPopUp(p.id, 7, "Bạn có đồng ý dự Lễ kết đôi của " + player.charname + " không?"));
                     return;
                 }
 
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận lời tham gia tiệc cưới của người khác.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận lời dự một Lễ kết đôi khác.", ""));
                 return;
             }
         } catch (Exception var7) {

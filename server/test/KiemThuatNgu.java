@@ -48,6 +48,18 @@ public final class KiemThuatNgu {
         Kiem.dung("ngoai le khong bi bat (thành phố, tìm kiếm, Múa kiếm, BANG DIEU KHIEN)",
                 conTu("Hoàn thành nhiệm vụ ở thành phố, tìm kiếm Múa kiếm").isEmpty()
                         && conTu("BANG DIEU KHIEN - so lieu").isEmpty());
+        // Le ket doi (docs/thiet-ke-game.md 10.1): chu dam cuoi cu bi bat, chu moi + "thú cưỡi" (dau nga) thi khong.
+        for (final String cu : new String[]{"Mời đám cưới", "Vào tiệc cưới", "Thiệp cưới", "Chỉ người độc thân mới có thể kết hôn",
+                "Bạn và A đã ly dị.", "Bạn đời của bạn", "vợ chồng", "ly hôn", "hôn nhân"}) {
+            Kiem.dung("bat duoc chu dam cuoi cu: " + cu, !conTu(cu).isEmpty());
+        }
+        Kiem.dung("chu Le ket doi + thu cuoi khong bi bat",
+                conTu("Mời dự Lễ kết đôi, Thiệp mời kết đôi, Nhẫn kết đôi vàng, bạn kết đôi, cặp đôi, huỷ kết đôi, "
+                        + "Chưa kết đôi, cưỡi thú cưỡi, nụ cười, Lễ kết đôi 1").isEmpty());
+        Kiem.bang("tu dien doi: Đăng ký tiệc cưới", "Đăng ký Lễ kết đôi", ChuPokemon.doi("Đăng ký tiệc cưới"));
+        Kiem.bang("tu dien doi: Ly dị (150 lượng)", "Huỷ kết đôi (150 lượng)", ChuPokemon.doi("Ly dị (150 lượng)"));
+        Kiem.bang("tu dien doi: Độc thân", "Chưa kết đôi", ChuPokemon.doi("Độc thân"));
+        Kiem.bang("tu dien doi: Phù phu thê", "Vảy trái tim kết đôi", ChuPokemon.doi("Phù phu thê"));
 
         quet("src", "server Java", ".java", false);
         quet("../client_jar/src", "client J2ME", ".java", true);

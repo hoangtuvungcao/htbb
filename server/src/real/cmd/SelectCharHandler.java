@@ -186,7 +186,7 @@ public class SelectCharHandler implements ICommandHandler {
                 if (wd != null) {
                     wd.listMember.put(p.charDBID, p.userID);
                     if (wd.action == 1) {
-                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Đang diễn ra tiệc cưới mà bạn được mời tham dự. Hãy nhanh chân lên Cao nguyên Indigo để dự tiệc."));
+                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Lễ kết đôi bạn được mời đang diễn ra. Hãy nhanh chân lên Cao nguyên Indigo để dự lễ."));
                     }
                 } else {
                     p.idWedding = -1;

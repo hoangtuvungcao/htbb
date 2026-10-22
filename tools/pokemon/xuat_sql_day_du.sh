@@ -47,6 +47,9 @@ CAU_HINH_TT="pokemon_cau_hinh_trung_tam"
 # 198 dong data_attribute (giu id) + kep ngan sach data_item (LEAST, chi giam). Chay SAU noi dung + vat pham (moi
 # dong data_item da co) va SAU pokemon_doi_chu (ten moi thang). Idempotent.
 CHI_SO="pokemon_chi_so"
+# Le ket doi (docs/thiet-ke-game.md): bang nhom trung data_nhom_trung(_ten) + ten vat pham / ban do ket doi.
+# Chay SAU pokemon_doi_chu + noi dung (doi ten o con giu ten cu). Idempotent.
+KET_DOI="sua_ket_doi"
 # Thuat ngu chuan (docs/thiet-ke-game.md, sinh boi tools/pokemon/sinh_sql_thuat_ngu.py): UPDATE doi thuat
 # ngu cu con sot trong du lieu goc. Chay CUOI CUNG. BO_THUAT_NGU=1 bo buoc nay (de sinh lai chinh file do).
 THUAT_NGU="pokemon_thuat_ngu"
@@ -86,6 +89,9 @@ for f in $CAU_HINH_TT; do
     $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
 done
 for f in $CHI_SO; do
+    $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
+done
+for f in $KET_DOI; do
     $MYSQL --default-character-set=utf8 htbb_db < sql/$f.sql
 done
 for f in $THUAT_NGU; do

@@ -566,7 +566,7 @@ class MapDungThuoc {
                                     return;
                                 }
 
-                                String[] namnu = new String[]{"Bạn đời", "Bạn đời"};
+                                String[] namnu = new String[]{"Bạn kết đôi", "Bạn kết đôi"};
                                 if (p1 == null) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
                                     player.potions[potionType]++;
@@ -584,7 +584,7 @@ class MapDungThuoc {
                                 }
 
                                 if (p1.mapID == 225 || p1.mapID == 226) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn đang dự tiệc cưới.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn đang dự Lễ kết đôi.", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;

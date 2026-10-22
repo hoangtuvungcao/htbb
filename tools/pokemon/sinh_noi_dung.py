@@ -488,7 +488,7 @@ SK_CO_SAN = [
     ("Tết dương lịch", [("Kẹo", "thuoc:137"), ("Hộp quà", "thuoc:139")]),
     ("gói bánh", [("Lá dong", "thuoc:150"), ("Gạo nếp", "thuoc:148"), ("Bánh chưng", "thuoc:151")]),
     ("Tết Nguyên Đán", [("Bao lì xì", "thuoc:159"), ("Bánh tét", "thuoc:152"), ("Pháo hoa tết", "thuoc:155")]),
-    ("Valentine", [("Hoa hồng", "thuoc:58"), ("Vảy trái tim", "thuoc:98")]),
+    ("Valentine", [("Hoa hồng", "thuoc:58"), ("Vảy trái tim kết đôi", "thuoc:98")]),
     ("8/3", [("Nhánh hoa hồng", "thuoc:106"), ("Hoa hồng đỏ", "thuoc:107")]),
     ("Giỗ Tổ", [("Đậu xanh", "thuoc:122"), ("Pháo hoa", "thuoc:99")]),
     ("Hè", [("Dưa Hấu", "thuoc:145"), ("Kem", "thuoc:146")]),

@@ -2153,7 +2153,7 @@ public class WindowInfoScr extends Screen {
         this.charInfo[13] = new StringBuffer("Công trạng: ").append(c.congTrang).append(" điểm.").toString();
         this.charInfo[14] = new StringBuffer("Điểm hoạt động: ").append(c.hoatdong).append(" điểm.").toString();
         this.charInfo[15] = new StringBuffer("Điểm đấu trường: ").append(c.pArena).append(" điểm.").toString();
-        this.charInfo[16] = c.nameHusband_wife.equals("") ? "Độc thân" : c.nameHusband_wife;
+        this.charInfo[16] = c.nameHusband_wife.equals("") ? "Chưa kết đôi" : "Kết đôi: " + c.nameHusband_wife;
         int soHang = this.charInfo.length - 4 + (infoMainCharServer != null ? infoMainCharServer.length : 0);
         this.numH = (46 + soHang * 13 + 14) / Math.max(1, this.hSmall) + 1;   // pokemon: thẻ đầu + hàng chỉ số
         setLim();

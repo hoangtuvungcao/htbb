@@ -1911,7 +1911,7 @@ INSERT INTO `data_noi_dung_su_kien_vat_pham` (`stt`,`tuan`,`su_kien`,`su_kien_na
 (13,6,'Tết Nguyên Đán (theo âm lịch: tuần 4-7) (tuần 2/2)','Tết Nguyên Đán: Lân Litleo','le_vn','Pháo hoa tết','thuoc:155',20,0.05,3.0,25,1,1,'Áo Tết (không chỉ số), danh hiệu năm'),
 (14,7,'Tuần Shiny','Tuần Shiny: Johto','pokemon','Tem nghiên cứu','item:1054',20,0.05,1.0,25,1,1,'Huy hiệu shiny'),
 (15,8,'Valentine: Luvdisc','Valentine: Alomomola','le_vn','Hoa hồng','thuoc:58',20,0.025,1.0,25,1,1,'Khung đôi, hiệu ứng trái tim'),
-(16,8,'Valentine: Luvdisc','Valentine: Alomomola','le_vn','Vảy trái tim','thuoc:98',20,0.025,1.0,25,1,1,'Khung đôi, hiệu ứng trái tim'),
+(16,8,'Valentine: Luvdisc','Valentine: Alomomola','le_vn','Vảy trái tim kết đôi','thuoc:98',20,0.025,1.0,25,1,1,'Khung đôi, hiệu ứng trái tim'),
 (17,9,'Đột kích huyền thoại: Zapdos','Đột kích: Articuno','dot_kich','Lông vũ Zapdos','item:1040',20,0.075,1.5,25,1,1,'Lông vũ Zapdos (nguyên liệu khoá)'),
 (18,10,'Quốc tế Phụ nữ 8/3','8/3: Gardevoir','le_vn','Nhánh hoa hồng','thuoc:106',20,0.025,1.0,25,1,1,'Ruy băng trang trí'),
 (19,10,'Quốc tế Phụ nữ 8/3','8/3: Gardevoir','le_vn','Hoa hồng đỏ','thuoc:107',20,0.025,1.0,25,1,1,'Ruy băng trang trí'),

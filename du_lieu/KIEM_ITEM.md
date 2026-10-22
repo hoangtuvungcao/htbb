@@ -14,7 +14,7 @@ Tham chiếu treo: **0**. Quy tắc lỗi thời: **0**. Trùng tên: **0**. Tê
 
 Lỗi bị test chặn (cấu hình A + B): **0**.
 
-Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `c4167d0d13fe7c48305c23a9a94565062b4f3e52`
+Dấu vân tay đầu vào (SHA-1 của `sql/htbb_day_du.sql`, `sql/pokemon_noi_dung.sql`, `sql/pokemon_vat_pham_lau_dai.sql`, `sql/pokemon_lau_dai.sql`, `sql/pokemon_doi_chu.sql`, `sql/pokemon_nhiem_vu.sql`, `du_lieu/noi_dung_roi.csv`, `du_lieu/nhiem_vu_moi.csv`, bỏ `\r`): `0c39f37c0618c40360d0c820658bf73b792209a2`
 
 ## 1. Cấu hình A: `sv.lau_dai=1`, `sv.he_sinh_thai=0`
 
@@ -972,7 +972,7 @@ Không có: mọi quy tắc trong `QUY_TAC` còn khớp mã nguồn.
 | `thuoc:94` | Thuốc hồi máu 15k | ok | ok | new Potion; potions[N] = potions[N] + | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doMenuNpcNoel) …(+2) |
 | `thuoc:96` | Ether 15k | ok | ok | new Potion; potions[N] = potions[N] + | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doMenuNpcNoel) …(+2) |
 | `thuoc:97` | Thẻ đổi hàng | ok | ok | new Potion | dùng thuốc (doUsePotion) |
-| `thuoc:98` | Vảy trái tim | ok | ok | potions[N] = potions[N] + | dùng thuốc (doUsePotion) |
+| `thuoc:98` | Vảy trái tim kết đôi | ok | ok | potions[N] = potions[N] + | dùng thuốc (doUsePotion) |
 | `thuoc:100` | loa | ok | ok | cửa hàng data_shop slot 81; potions[N] = potions[N] + | dùng thuốc (doUsePotion); kiểm số thuốc (đổi / nộp) (doProcessInputText) …(+1) |
 | `thuoc:101` | Rương vàng | ok | ok | potions[N]+= | dùng thuốc (doUsePotion) |
 | `thuoc:102` | Rương bạc | ok | ok | potions[N]+= | dùng thuốc (doUsePotion) |

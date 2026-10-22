@@ -2304,7 +2304,7 @@ public class MenuWindows : MyScreen
 		charInfo[13] = "Công trạng: " + mainChar.congTrang + " điểm.";
 		charInfo[14] = "Điểm hoạt động: " + mainChar.hoatdong + " điểm.";
 		charInfo[15] = "Điểm đấu trường: " + mainChar.pArena + " điểm.";
-		charInfo[16] = ((!mainChar.nameHusband_wife.Equals(string.Empty)) ? mainChar.nameHusband_wife : "Độc thân");
+		charInfo[16] = ((!mainChar.nameHusband_wife.Equals(string.Empty)) ? ("Kết đôi: " + mainChar.nameHusband_wife) : "Chưa kết đôi");
 		numH = charInfo.Length + 1;
 		setLim();
 	}
