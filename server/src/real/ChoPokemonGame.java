@@ -387,6 +387,7 @@ public final class ChoPokemonGame {
             log(p.charname, "NGHI VAN cho pokemon: " + t.tenBan + " -> " + p.charname + " tin " + idTin + " gia " + gia + " tran " + k[1] + ": " + nghi);
         }
         ketQua(p, true, "Đã mua " + BatPokemonGame.ten(kq.con.dex) + " giá " + BatPokemonGame.xu(gia) + ". Pokémon đã vào Hộp PC.");
+        NhiemVuEngine.suKien(p, "cho_pokemon_mua", String.valueOf(kq.con.dex), 1); // 0.9.8 dong bo: diem moc nhiem vu / danh hieu
         final Char ban = CharManager.instance.getCharByCharDbID(t.idBan);
         if (ban != null) {
             nhanTien(ban); // nguoi ban online: nhan tien ngay; offline: nhan khi vao game

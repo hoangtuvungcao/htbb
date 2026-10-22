@@ -480,6 +480,9 @@ public final class TraoDoiPokemonGame {
         try {
             data.Database.instance.saveOrtherLog("", a.charname, "trao doi voi " + b.charname + ": " + ct, "traodoipokemon");
             data.Database.instance.saveOrtherLog("", b.charname, "trao doi voi " + a.charname + ": " + ct, "traodoipokemon");
+            // 0.9.8 dong bo: diem moc nhiem vu / danh hieu chung (kieu trao_doi_pokemon) cho ca hai ben
+            NhiemVuEngine.suKien(a, "trao_doi_pokemon", "", 1);
+            NhiemVuEngine.suKien(b, "trao_doi_pokemon", "", 1);
         } catch (final Exception ignored) {
         }
     }
