@@ -240,7 +240,7 @@ Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), kh
    dòng + CHECKSUM, xuất lại = `htbb_day_du.sql`.
 2. Log máy chủ sau khi lên: `[CAU HINH] danh muc tu CSDL htbb_db: 358 khoa, 21 nhom`, `[KHOA BAN DO] da nap 142 luat`,
    `[HOC CHIEU] learnset 175 dong`, `[BO NGOC] 33 dòng bộ ... 330 loài thu phục được; [DO MOI] 21 bộ, 628/628 món họ; [TRANG PHUC] 69 món trang trí`,
-   `ICON DO MOI -> 689 anh`, `[KET DOI] da nap 15 nhom trung, 1025 loai`, `[NGAM TAY] 50 dong`, `PHONG RIENG -> pho ban 4381, san
+   `ICON DO MOI -> 697 anh`, `[KET DOI] da nap 15 nhom trung, 1025 loai`, `[NGAM TAY] 50 dong`, `PHONG RIENG -> pho ban 4381, san
    cup 4382`, `[DANH HIEU] 420 mau danh hieu`, khi quái hồi sinh lần đầu `[LOAI] nap 1025 loai`; không có `THIEU DU LIEU` / `Exception`.
 3. Nhân vật cũ: điểm tiềm năng → Điểm huấn luyện chuyển **trong game** lúc nạp nhân vật (một lần, dấu
    `tob_chuyen_doi_can_bang`). Gói mới -106 / -107 / -108 / -112 / -113 / -116 / -118 / -120 / -121 / -122 / -124 / -125 / -126 (và phần nối thêm sức chứa túi của -105) chỉ gửi cho client `BAN >= 908`

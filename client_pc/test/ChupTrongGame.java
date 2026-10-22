@@ -36,6 +36,17 @@ public class ChupTrongGame {
         {2560, 1600, 320}, {2048, 1536, 320}, {1280, 720, 0}, {1920, 1080, 0}, {2560, 1080, 0}, {1920, 1200, 0}, {1024, 768, 0}};
     static final String[] TEN_CO = {"dt16x9", "dt19.5x9", "dt20x9", "dt21x9", "tablet16x10", "tablet4x3", "pc720", "pc1080", "pc21x9", "pc16x10", "pc4x3"};
 
+    /** htbb.pc.ChuHD.thayKyHieu (gói riêng): ký hiệu phông PC không có -> chữ thay, đúng như lúc vẽ. */
+    static String thayKyHieuHD(String s) {
+        try {
+            java.lang.reflect.Method m = htbb.pc.ChuHD.class.getDeclaredMethod("thayKyHieu", String.class);
+            m.setAccessible(true);
+            return (String) m.invoke(null, s);
+        } catch (Throwable e) {
+            return s;
+        }
+    }
+
     static void chay(final Runnable r) throws Exception {
         final Object k = new Object();
         final boolean[] xong = {false};
@@ -1255,8 +1266,9 @@ public class ChupTrongGame {
         for (int i = 0; i < n; i++) {
             String s = game.pokemon.GhiChu.CS[i];
             if (htbb.pc.ChuHD.bat) {
-                int u = phongKiem.canDisplayUpTo(s.replace('\u2026', '.'));
-                kiem(u < 0, nhan + " phong khong co ky tu '" + (u < 0 ? "" : s.substring(u, u + 1)) + "' trong \"" + s + "\"");
+                String sv = thayKyHieuHD(s).replace('\u2026', '.');   // ChuHD.thayKyHieu: → − ≥ ... vẽ bằng chữ thay (như lúc chạy)
+                int u = phongKiem.canDisplayUpTo(sv);
+                kiem(u < 0, nhan + " phong khong co ky tu '" + (u < 0 ? "" : sv.substring(u, u + 1)) + "' trong \"" + s + "\"");
             }
             // khung TRÊN CÙNG (vẽ gần nhất trước chữ) chứa điểm đầu dòng; bỏ rãnh / dải thanh / thanh cuộn (chữ số đè
             // thanh HP / PP là chủ ý)
