@@ -33,7 +33,8 @@ const viTri = computed(() => {
 })
 const anh = computed(() => {
   const l = loaiTheoDex(props.dex)
-  return l ? anhLoaiDex(l) : ''
+  // loài ngoài Pokédex tĩnh (Pokédex đầy đủ 1.025 loài): chân dung từ gói sprite máy chủ
+  return (l ? anhLoaiDex(l) : '') || chanDungLoai(props.dex)
 })
 </script>
 

@@ -9,7 +9,7 @@ const props = defineProps<{ dex?: number, src?: string, alt?: string }>()
 const anh = computed(() => {
   if (props.src) return props.src
   const l = props.dex != null ? loaiTheoDex(props.dex) : undefined
-  return l ? anhLoaiDex(l) : (props.dex != null ? anhPokemon(props.dex) : '')
+  return (l ? anhLoaiDex(l) : (props.dex != null ? anhPokemon(props.dex) : '')) || (props.dex != null ? chanDungLoai(props.dex) : '')
 })
 </script>
 
