@@ -1275,6 +1275,17 @@ public final class BatPokemonGame {
             CHON.remove(Integer.valueOf(p.charDBID));
             CO_UI.remove(Integer.valueOf(p.charDBID));
             TraoDoiPokemonGame.khiThoat(p);
+            // 0.9.8: ghi Hop PC roi bo khoi bo nho (truoc giu mai toi khi khoi dong lai: ton RAM theo moi nguoi tung vao,
+            // sua CSDL tay khong co tac dung). Con thay doi chua ghi duoc (CSDL loi) thi giu lai cho lan luu sau.
+            luu(p);
+            final HopPc h = HOP.get(Integer.valueOf(p.charDBID));
+            if (h != null) {
+                synchronized (h) {
+                    if (!h.ban) {
+                        HOP.remove(Integer.valueOf(p.charDBID), h);
+                    }
+                }
+            }
         }
     }
 }

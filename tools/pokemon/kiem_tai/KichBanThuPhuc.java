@@ -92,7 +92,7 @@ public class KichBanThuPhuc {
         int[] q = b.quai.get(id);
         if (q == null) return false;
         b.den(b.mapId, q[0] / 16, q[1] / 16);
-        for (int lan = 0; lan < 12; lan++) {
+        for (int lan = 0; lan < 40; lan++) {   // bot cap thap ~5% HP / don: toi 40 don moi xuong 35%
             b.gui(7, (short) id);
             b.bom(200);
             q = b.quai.get(id);
@@ -150,6 +150,8 @@ public class KichBanThuPhuc {
             Integer thuong = null;
             for (int id : ds) if (!b.hoangDa.containsKey(id)) { thuong = id; break; }
             if (thuong != null) {
+                int[] qt = b.quai.get(thuong);
+                if (qt != null) b.den(b.mapId, qt[0] / 16, qt[1] / 16);   // lai gan (khong thi may chu bao "qua xa" truoc)
                 int m = b.moc();
                 b.gui(-121, (byte) 1, (short) (int) thuong, (byte) 1);
                 String t = b.doiChu(m, 2500, "thuần hoá");
@@ -230,8 +232,9 @@ public class KichBanThuPhuc {
             a.bom(1500);
             a.lamMoi();
             long nhan = a.xu - xuA0;
-            long mong = giaMin - giaMin * 8L / 100L;
-            ket("tp.cho.thue", nhan > 0 && nhan <= mong && nhan >= mong - 2, "A nhan " + nhan + " (gia " + giaMin + " - thue 8% = " + mong
+            // xuA0 do TRUOC khi dang: nguoi ban da tra phi dang 1% (dot) luc dang, luc ban nhan gia - thue 8%
+            long mong = giaMin - giaMin * 8L / 100L - Math.max(1L, giaMin / 100L);
+            ket("tp.cho.thue", nhan > 0 && nhan <= mong && nhan >= mong - 2, "A nhan " + nhan + " (gia " + giaMin + " - thue 8% - phi dang 1% = " + mong
                     + ", phi dang 1% tru luc dang)");
         }
     }

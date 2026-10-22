@@ -183,6 +183,17 @@ public final class TheNhiemVu {
             muiTenBiThe = true;   // nhân vật sát góc trái trên: thẻ đã ghi NPC + nút Đi tới, không vẽ đè lên thẻ
             return;
         }
+        if (game.render.screen.HudRong.bat()) {
+            // 0.9.8: nhân vật sát mép (camera chạm biên bản đồ) - mũi tên không đè nút HUD; thẻ đã có nút Đi tới
+            Object[][] v = game.render.screen.HudRong.cacVung(gs);
+            for (int i = 0; v != null && i < v.length; i++) {
+                int[] o = (int[]) v[i][1];
+                if (px + r > o[0] && px - r < o[0] + o[2] && py + r > o[1] && py - r < o[1] + o[3]) {
+                    muiTenBiThe = true;
+                    return;
+                }
+            }
+        }
         GiaoDien.khoi(g, px - r - 1, py - r - 1, 2 * r + 2, 2 * r + 2, r + 1, GiaoDien.VIEN);
         GiaoDien.khoi(g, px - r, py - r, 2 * r, 2 * r, r, ChuDe.CHINH);
         // tam giác trắng hướng (dx, dy): đỉnh ở trước, đáy vuông góc
