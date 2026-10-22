@@ -248,6 +248,14 @@ public final class BanHuongGame {
         }
     }
 
+    /**
+     * Khoa theo nhan vat: phat ban (-113 / lenh 6 doi huong), lan gay sat thuong cua dan (luong hen) va lenh danh quai
+     * 9 / 106 (MapXuLyLenh) khong chen nhau - lan gay sat thuong tam dat lai moc hoi chieu / PP cua chieu.
+     */
+    public static Object khoa(final Char p) {
+        return tt(p);
+    }
+
     public static BanHuong.LichSu lichSu(final Char p) {
         return tt(p).ls;
     }
@@ -486,7 +494,9 @@ public final class BanHuongGame {
                     final int chieu = dis.readByte();
                     final int ox = dis.readShort(), oy = dis.readShort();
                     final int dx = dis.readShort(), dy = dis.readShort();
-                    ban(map, p, chieu, ox, oy, dx, dy, true);
+                    synchronized (khoa(p)) {
+                        ban(map, p, chieu, ox, oy, dx, dy, true);
+                    }
                 } else if (loai == BanHuong.C_NGAM_TAY) {
                     tt(p).ngamTayPve = dis.readByte() != 0;
                 }
@@ -529,7 +539,9 @@ public final class BanHuongGame {
             } else {
                 h = new int[]{t.ls.huongX * 1000, t.ls.huongY * 1000};
             }
-            ban(map, p, chieu, p.x, p.y, h[0], h[1], false);
+            synchronized (khoa(p)) {
+                ban(map, p, chieu, p.x, p.y, h[0], h[1], false);
+            }
         } catch (final Exception e) {
             // goi hong
         }
@@ -699,7 +711,9 @@ public final class BanHuongGame {
                 @Override
                 public void run() {
                     try {
-                        giaiQuyet(ph);
+                        synchronized (khoa(ph.p)) {
+                            giaiQuyet(ph);
+                        }
                     } catch (final Throwable e) {
                         // khong de luong hen chet
                     }

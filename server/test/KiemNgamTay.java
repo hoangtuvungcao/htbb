@@ -295,6 +295,8 @@ public final class KiemNgamTay {
         final int iBh = x.indexOf("BanHuongGame.xuLy(map, player, message)");
         final int iSw = x.indexOf("switch (message.command)");
         Kiem.dung("MapXuLyLenh: BanHuongGame.xuLy truoc switch (sau nhip tu dong)", iTd > 0 && iBh > iTd && iBh < iSw);
+        Kiem.bang("MapXuLyLenh: lenh danh quai 9 / 106 cung khoa nhan vat voi dan ngam tay", Integer.valueOf(2),
+                Integer.valueOf(x.split("synchronized \\(BanHuongGame.khoa\\(player\\)\\)", -1).length - 1));
         Kiem.dung("CharCapNhat: ghi lich su vi tri sau khi nhan vi tri", doc("src/real/CharCapNhat.java").contains("BanHuongGame.ghiViTri(self, now)"));
         Kiem.dung("CharVongLap.update: nhip che do PvP", doc("src/real/CharVongLap.java").contains("BanHuongGame.nhip(self)"));
         Kiem.dung("NoiDungLauDai: nap data_chieu_ban", doc("src/real/NoiDungLauDai.java").contains("BanHuongGame.nap()"));

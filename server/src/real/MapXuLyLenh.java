@@ -739,7 +739,9 @@ class MapXuLyLenh {
                 map.doRequestMonterInfo(player, message);
                 break;
             case 9:
-                map.doAttackMonster(player, message);
+                synchronized (BanHuongGame.khoa(player)) { // 0.9.8: khong chen giua luc dan ngam tay gay sat thuong
+                    map.doAttackMonster(player, message);
+                }
                 break;
             case 12:
                 doChangeMap(map, player, message);
@@ -887,7 +889,9 @@ class MapXuLyLenh {
                 player.config(message.dis.readByte());
                 break;
             case 106:
-                map.doAttackMultiTarget(player, message);
+                synchronized (BanHuongGame.khoa(player)) { // 0.9.8: nhu lenh 9
+                    map.doAttackMultiTarget(player, message);
+                }
                 break;
             case 107:
                 map.doNapSMS(player, message);
