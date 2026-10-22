@@ -3,8 +3,8 @@ package javax.microedition.lcdui;
 /**
  * Khung hình PHỦ KÍN màn (0.9.3, thay hộp 16:9 + viền của 0.9.2) mà vẫn CÔNG BẰNG (chống lợi thế màn to / màn dài):
  *
- * - Tham chiếu 16:9: giao diện logic 640x360, thế giới phóng THE_GIOI_Z = 2 -> vùng nhìn 320x180 px thế giới
- *   (20 x 11,25 ô 16 px).
+ * - Tham chiếu 16:9: giao diện logic 640x360, thế giới phóng THE_GIOI_Z = 2 / NHIN_THEM (0.9.7: NHIN_THEM = 1,15 -
+ *   camera "cao hơn", thấy thêm ~15% mỗi chiều) -> vùng nhìn ~368x207 px thế giới (~23 x 13 ô 16 px).
  * - Phóng PHỦ (cover) đều hai chiều: tiLe = max(w / 640, h / 360). Cỡ logic = ceil(w / tiLe) x ceil(h / tiLe), luôn
  *   <= 640 x 360 ở MỖI chiều -> không ai thấy nhiều thế giới hơn tham chiếu 16:9 theo bất kỳ chiều nào:
  *     20:9 (2400x1080)  -> tiLe 3,75, logic 640x288 (vùng nhìn 20 x 9 ô),
@@ -20,10 +20,16 @@ public final class KhungCoDinh {
     /** cỡ logic THAM CHIẾU (16:9) - trần mỗi chiều */
     public static final int LOGIC_W = 640;
     public static final int LOGIC_H = 360;
-    /** phóng thế giới so với giao diện logic: vùng nhìn tối đa = LOGIC / 2 = 320 x 180 px thế giới */
-    public static final int THE_GIOI_Z = 2;
-    public static final int NHIN_W = LOGIC_W / THE_GIOI_Z;
-    public static final int NHIN_H = LOGIC_H / THE_GIOI_Z;
+    /**
+     * HẰNG SỐ DUY NHẤT của camera (0.9.7): vùng nhìn thế giới lớn hơn mốc cũ (320 x 180) bao nhiêu lần mỗi chiều. 1,15 =
+     * thấy thêm ~15% bản đồ (chủ dự án: "nâng camera lên một chút"). Giao diện / vùng chạm không đổi.
+     */
+    public static final float NHIN_THEM = 1.15f;
+    /** phóng thế giới so với giao diện logic (float; vẽ láng giềng gần nhất như trước - tiLe x 2 vốn không nguyên) */
+    public static final float THE_GIOI_Z = 2f / NHIN_THEM;
+    /** vùng nhìn tối đa (px thế giới) ở logic 640 x 360 */
+    public static final int NHIN_W = nhinW(LOGIC_W);
+    public static final int NHIN_H = nhinH(LOGIC_H);
 
     /** hệ số màn thật / px logic (đều hai chiều) */
     public final float tiLe;
@@ -104,17 +110,17 @@ public final class KhungCoDinh {
         return v < 0 ? 0 : v >= max ? max - 1 : v;
     }
 
-    /** Vùng nhìn thế giới (px thế giới) cho bề rộng / cao giao diện logic: <= 320 x 180 (logic <= 640 x 360). */
+    /** Vùng nhìn thế giới (px thế giới) cho bề rộng / cao giao diện logic (logic <= 640 x 360 -> <= NHIN_W x NHIN_H). */
     public static int nhinW(int canvasW) {
-        return (canvasW + THE_GIOI_Z - 1) / THE_GIOI_Z;
+        return (int) Math.ceil(canvasW / THE_GIOI_Z - 1e-3f);
     }
 
     public static int nhinH(int canvasH) {
-        return (canvasH + THE_GIOI_Z - 1) / THE_GIOI_Z;
+        return (int) Math.ceil(canvasH / THE_GIOI_Z - 1e-3f);
     }
 
-    /** Toạ độ chạm logic -> lệch thế giới so với camera (cmx + theGioi(px)). */
+    /** Toạ độ chạm logic -> lệch thế giới so với camera (cmx + theGioi(px)), làm tròn xuống (cả số âm). */
     public static int theGioi(int p) {
-        return p >= 0 ? p / THE_GIOI_Z : -((-p + THE_GIOI_Z - 1) / THE_GIOI_Z);
+        return (int) Math.floor(p / THE_GIOI_Z);
     }
 }
