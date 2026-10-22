@@ -1587,8 +1587,25 @@ public class GameService extends Cmd_message {
         this.session.sendMessage(m);
     }
 
+    /** 0.9.7.1: gói -64 vừa gửi (khoá + lúc) - chặn gửi trùng khi chạm đúp / phím lặp. */
+    static int khoaQuestCuoi = -1;
+    static long lucQuestCuoi;
+    public static final int CHAN_TRUNG_QUEST_MS = 1500;
+
+    /** Gói nhiệm vụ trùng hệt gói trước trong {@link #CHAN_TRUNG_QUEST_MS} ms (hàm thuần, kiểm thử gọi). */
+    public static boolean trungQuest(int khoa, long bayGio) {
+        return khoa == khoaQuestCuoi && bayGio - lucQuestCuoi >= 0 && bayGio - lucQuestCuoi < CHAN_TRUNG_QUEST_MS;
+    }
+
     public void onSendInfoQuest(int type, int idQuest, int mainsub) {
         Cout.println("GUI THONG TIN NHIEM VU MOI onSendInfoQuest");
+        int khoa = (type & 3) << 20 | (idQuest & 0xFFFF) << 2 | (mainsub & 3);
+        long bay = System.currentTimeMillis();
+        if (trungQuest(khoa, bay)) {
+            return;
+        }
+        khoaQuestCuoi = khoa;
+        lucQuestCuoi = bay;
         Message m = new Message((byte) -64);
         try {
             m.writer().writeByte(type);

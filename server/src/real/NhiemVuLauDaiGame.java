@@ -121,7 +121,12 @@ public final class NhiemVuLauDaiGame {
             ds.add(p.mainQuest);
         }
         if (p.subQuest.id_quest == -1) {
-            final List<InfoQuestTemplate> phu = new ArrayList<InfoQuestTemplate>(Map.allSubQuest.values());
+            final List<InfoQuestTemplate> phu = new ArrayList<InfoQuestTemplate>();
+            for (final InfoQuestTemplate t : Map.allSubQuest.values()) {
+                if (!NhiemVuEngine.phuCuDaDung(p, t.ma)) {
+                    phu.add(t); // 0.9.7.1: da nhan / xong o So tay hoac da tra qua NPC -> khong moi lai
+                }
+            }
             final int[] lv = new int[phu.size()];
             for (int i = 0; i < lv.length; i++) {
                 lv[i] = phu.get(i).lv;
