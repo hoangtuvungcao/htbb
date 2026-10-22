@@ -33,8 +33,10 @@ public class RequestTemplateInfo implements ICommandHandler {
                 msg.dos.writeByte(mt.spalate);
                 msg.dos.writeByte(mt.isNewMonster);
                 if (mt.isNewMonster == 1) {
-                    msg.dos.writeShort(DataGame.dataBoss[mt.spalate].length);
-                    msg.dos.write(DataGame.dataBoss[mt.spalate]);
+                    final byte[] boss = DataGame.dataBoss != null && mt.spalate >= 0 && mt.spalate < DataGame.dataBoss.length
+                            && DataGame.dataBoss[mt.spalate] != null ? DataGame.dataBoss[mt.spalate] : new byte[0]; // P2: khong con hinh cu
+                    msg.dos.writeShort(boss.length);
+                    msg.dos.write(boss);
                 }
 
                 session.sendMessage(msg);

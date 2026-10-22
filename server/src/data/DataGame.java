@@ -216,6 +216,11 @@ public class DataGame {
 
             try {
                 for (j = 0; j < nMonster; ++j) {
+                    // P2 tai nguyen: hinh boss KPAH cu (map/boss) da xoa - client ve boss bang Pokemon theo dex; thieu tep = rong
+                    if (!new java.io.File("map/boss/" + j).isFile()) {
+                        dataBoss[j] = new byte[0];
+                        continue;
+                    }
                     fis = new FileInputStream("map/boss/" + j);
                     dis = new DataInputStream(fis);
                     dataBoss[j] = new byte[dis.available()];
