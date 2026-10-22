@@ -49,8 +49,8 @@ public class Session_ME implements ISession {
     }
 
     /** Lệnh gói mảnh (server io.GoiManh.LENH_MANH): gói lớn chia nhiều gói nhỏ liên tiếp. Client -> server: báo lỗi tải. */
-    public static final byte GOI_MANH = -126;
-    /** Bit khả năng: gom được gói mảnh -126 (0.9.7.1, mọi bản - J2ME không có zip nên server chia mảnh thay vì nén). */
+    public static final byte GOI_MANH = -123;
+    /** Bit khả năng: gom được gói mảnh -123 (0.9.7.1, mọi bản - J2ME không có zip nên server chia mảnh thay vì nén). */
     public static final int KHA_NANG_MANH = 2;
 
     /** Số nguyên khả năng gửi sau số bản ở gói đăng nhập (server LoginHandler -> Session.khaNang). */
@@ -69,7 +69,7 @@ public class Session_ME implements ISession {
     private Vector manhDau;
 
     /**
-     * 0.9.7.1: báo lỗi tải về máy chủ (gói -126 client -> server: lý do, heap tổng / trống KB, bước màn tải, số lần
+     * 0.9.7.1: báo lỗi tải về máy chủ (gói -123 client -> server: lý do, heap tổng / trống KB, bước màn tải, số lần
      * thiếu bộ nhớ) - để nhật ký máy chủ thấy được client kẹt vì sao. Máy chủ cũ bỏ qua lệnh lạ.
      */
     public static void baoLoiTai(String lyDo) {
@@ -391,7 +391,7 @@ public class Session_ME implements ISession {
         }
 
         /**
-         * Gói mảnh -126 (server io.GoiManh): mảnh đầu [0][lệnh gốc][int độ dài][dữ liệu], mảnh sau [1][dữ liệu].
+         * Gói mảnh -123 (server io.GoiManh): mảnh đầu [0][lệnh gốc][int độ dài][dữ liệu], mảnh sau [1][dữ liệu].
          * Giữ các mảnh riêng (không ghép thành một mảng lớn); đủ thì trả gói gốc đọc qua LuongManh.
          */
         private Message nhanManh(byte[] d) {

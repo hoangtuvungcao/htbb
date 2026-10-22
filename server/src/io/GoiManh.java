@@ -10,7 +10,7 @@ package io;
  * van song nho goi giu ket noi 30 s nen server khong thay gi.
  *
  * Client tu bao bit KHA_NANG_MANH (so nguyen kha nang sau so ban o goi dang nhap) thi server chia moi khung goi
- * >= NGUONG byte thanh cac goi lenh LENH_MANH (-126) lien tiep, moi goi <= CO_MANH byte du lieu:
+ * >= NGUONG byte thanh cac goi lenh LENH_MANH (-123) lien tiep, moi goi <= CO_MANH byte du lieu:
  *   manh dau : [0][lenh goc][do dai du lieu goc: int][phan dau du lieu]
  *   manh sau : [1][phan tiep theo cua du lieu]
  * Client gom cac manh (khong ghep thanh mot mang lon) roi xu ly goi goc qua mot luong doc chay qua cac manh. Cac
@@ -21,8 +21,8 @@ public final class GoiManh {
     private GoiManh() {
     }
 
-    /** Lenh goi manh (-127 la goi nen, -128 la tien to do dai 4 byte). */
-    public static final int LENH_MANH = -126;
+    /** Lenh goi manh (-127 la goi nen, -128 la tien to do dai 4 byte; -126 da dung cho bang loai 0.9.8). */
+    public static final int LENH_MANH = -123;
     /** Bit trong Session.khaNang: client gom duoc goi LENH_MANH. */
     public static final int KHA_NANG_MANH = 2;
     /** sv.manhGoi: 0 = tat han. */

@@ -290,7 +290,7 @@ public class Session extends Thread {
     private int soBaoLoiTai;
 
     /**
-     * Goi -126 tu client (0.9.7.1+): client bao man tai hong (thieu bo nho / dung qua lau) - ly do, heap tong / trong
+     * Goi -123 tu client (0.9.7.1+): client bao man tai hong (thieu bo nho / dung qua lau) - ly do, heap tong / trong
      * (KB), buoc man tai, so lan da giai phong bo nho, so goi da bo. Toi da 5 dong / phien.
      */
     void nhanBaoLoiTai(final Message m) {

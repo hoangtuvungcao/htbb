@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Kiem io.GoiManh (0.9.7.1, client J2ME ket man tai tren gia lap iOS): chia goi lon thanh manh -126 cho client tu
+ * Kiem io.GoiManh (0.9.7.1, client J2ME ket man tai tren gia lap iOS): chia goi lon thanh manh -123 cho client tu
  * bao KHA_NANG_MANH.
  *  - chia(): moi manh < 32768 byte, gom lai dung tung byte (cung thuat toan network.Session_ME.nhanManh), khung nho /
  *    -40 / goi nen khong chia, sv.manhGoi=0 tat;
@@ -79,7 +79,7 @@ public final class KiemGoiManh {
             for (int i = 0; m != null && i < m.length; i++) {
                 nho &= m[i].length <= 3 + GoiManh.CO_MANH && m[i][0] == GoiManh.LENH_MANH && m[i].length < 32768;
             }
-            Kiem.dung("moi manh la lenh -126, <= " + GoiManh.CO_MANH + " B du lieu, khung < 32768", nho);
+            Kiem.dung("moi manh la lenh -123, <= " + GoiManh.CO_MANH + " B du lieu, khung < 32768", nho);
             Gom g = new Gom();
             for (int i = 0; i < m.length; i++) {
                 gomTuKhung(g, m[i]);
@@ -114,7 +114,7 @@ public final class KiemGoiManh {
             // ---- qua socket that: Session + Sender, XOR bat, nhieu luong gui cung luc
             Object[] kq = quaSocket(GoiManh.KHA_NANG_MANH, d26, 97);
             Gom gs = (Gom) kq[0];
-            Kiem.dung("socket: co manh -126 (client bao bit 2)", gs.manh > 1);
+            Kiem.dung("socket: co manh -123 (client bao bit 2)", gs.manh > 1);
             Kiem.bang("socket: khong goi nao chen giua cac manh", Integer.valueOf(0), Integer.valueOf(gs.chenGiua));
             Kiem.dung("socket: goi 26 gom dung tung byte (XOR + doc tung mau <= 97 B)", Boolean.TRUE.equals(kq[1]));
             Kiem.bang("socket: du 4 x 200 goi nho", Integer.valueOf(800), kq[2]);
@@ -135,7 +135,7 @@ public final class KiemGoiManh {
 
             // ---- client
             final String sm = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("../client_jar/src/network/Session_ME.java")), "UTF-8");
-            Kiem.dung("client: lenh -126 + bit kha nang 2 luon bao", sm.contains("GOI_MANH = -126") && sm.contains("KHA_NANG_MANH = 2")
+            Kiem.dung("client: lenh -123 + bit kha nang 2 luon bao", sm.contains("GOI_MANH = -123") && sm.contains("KHA_NANG_MANH = 2")
                     && sm.contains("| KHA_NANG_MANH"));
             Kiem.dung("client: gom manh qua LuongManh (khong ghep mang lon)", sm.contains("new LuongManh(ds, dau)")
                     && new java.io.File("../client_jar/src/network/LuongManh.java").isFile());
