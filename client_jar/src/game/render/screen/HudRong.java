@@ -851,6 +851,9 @@ public final class HudRong {
         nen(g, x, y, rc, 0xFFFFFF, game.pokemon.ChuDe.NEN_PHU, false);
         int sc = rc * 6 / 5;
         game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.CHAT, x - sc / 2, y - sc / 2, sc, game.pokemon.ChuDe.XANH, 0xFFFFFF);
+        if (game.pokemon.ChamMoi.hudChat()) {
+            game.pokemon.ChuDe.cham(g, x + rc - 2, y - rc + 2);   // 0.9.8: tin riêng / bang hội / đội chưa đọc
+        }
         java.util.Vector ls = gs.chatHistory;
         int n = ls == null ? 0 : ls.size();
         if (n == 0) {
@@ -1229,10 +1232,7 @@ public final class HudRong {
                 BangTuDong.mo();
                 break;
             case 30:
-                GameScr.typechat = GameScr.CHAT_NORMAL;
-                gs.chatMode = true;
-                gs.tfChat.setIputType(0);
-                gs.tfChat.isFocus = true;
+                game.pokemon.ManChat.mo();   // 0.9.8: bảng chat nhiều kênh, mở lại tab dùng lần cuối
                 break;
             case 40: {
                 int[] kh = khungBanDoTo();

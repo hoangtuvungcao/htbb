@@ -323,6 +323,10 @@ public class CharManager {
             if (p.isBot != -1) {
                 return;
             }
+            try {
+                KenhChatGame.khiThoat(p); // 0.9.8: bao ban be (client moi) offline
+            } catch (Exception exChat) {
+            }
 
             try {
                 if (p.map != null) {

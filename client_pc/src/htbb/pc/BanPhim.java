@@ -194,7 +194,8 @@ public final class BanPhim {
             return;
         }
         if (theGioi && !lap && vk == KeyEvent.VK_SLASH && hd < 0) {
-            moChat();   // "/" mở chat (gõ lệnh)
+            moChat();   // "/" mở chat (gõ lệnh) - 0.9.8: tab Bản đồ (lệnh / đáp án đi kênh bản đồ)
+            game.pokemon.ManChat.moTab(game.pokemon.KenhChat.BAN_DO);
             return;
         }
         if (theGioi) {
@@ -269,10 +270,8 @@ public final class BanPhim {
 
     /** Mở ô chat (phím Chat - mặc định T - hoặc "/"); Enter gửi khi đang gõ chat. */
     static void moChat() {
-        GameScr.typechat = GameScr.CHAT_NORMAL;
-        Canvas.gameScr.chatMode = true;
-        Canvas.gameScr.tfChat.setIputType(0);
-        Canvas.gameScr.tfChat.isFocus = true;
+        // 0.9.8: bảng chat nhiều kênh (game.pokemon.ManChat), mở lại tab dùng lần cuối; Enter gửi, Esc đóng
+        game.pokemon.ManChat.mo();
         Canvas.clearKeyHold();
         BO_KY_TU_MO_CHAT[0] = true;   // ký tự của chính phím mở chat (t / /) không vào ô chat
     }

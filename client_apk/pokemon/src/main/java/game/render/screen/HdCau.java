@@ -23,6 +23,11 @@ public final class HdCau {
     public static void moChat() {
         GameScr gs = game.render.Canvas.gameScr;
         if (gs == null) return;
+        // 0.9.8: bảng chat nhiều kênh (game.pokemon.ManChat) thay ô chat một dòng
+        if (true) {
+            game.pokemon.ManChat.mo();
+            return;
+        }
         GameScr.typechat = GameScr.CHAT_NORMAL;
         gs.chatMode = true;
         gs.tfChat.setIputType(0);

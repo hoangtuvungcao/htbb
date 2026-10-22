@@ -542,6 +542,46 @@ final class DanhMucSinh {
                     .nhan("Thang cấm chat (giây)", "Các bậc cấm tăng dần, cách nhau dấu phẩy.")
                     .khoang(1L, 31536000L)
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.capGan", "chong_spam", "so", "5", true, "cau_hinh")
+                    .nhan("Chat bản đồ: cấp tối thiểu", "Dưới cấp này tin bản đồ không phát (người gửi được báo lý do). Trước 0.9.8 cố định 20 và bỏ im lặng.")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.capTheGioi", "chong_spam", "so", "10", true, "cau_hinh")
+                    .nhan("Chat thế giới: cấp tối thiểu", "Kênh Thế giới trong bảng chat (0.9.8). Loa vẫn theo luật loa cũ.")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.xuTheGioi", "chong_spam", "so", "100", true, "cau_hinh")
+                    .nhan("Chat thế giới: phí xu mỗi tin", "Hố hút xu nhỏ; 0 = miễn phí. Bị chặn (spam, cấp, giãn cách) thì không trừ.")
+                    .khoang(0L, 100000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.giayTheGioi", "chong_spam", "so", "30", true, "cau_hinh")
+                    .nhan("Chat thế giới: giãn cách (giây)", "Mỗi người một tin / N giây; client hiện đếm ngược. sv.spam.chat.theGioi vẫn áp.")
+                    .khoang(0L, 3600L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.capRieng", "chong_spam", "so", "3", true, "cau_hinh")
+                    .nhan("Nhắn riêng: cấp tối thiểu", "Chặn tài khoản rác mới tạo nhắn riêng hàng loạt.")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.doDai", "chong_spam", "so", "80", true, "cau_hinh")
+                    .nhan("Độ dài tối đa một tin (ký tự)", "Kênh thế giới / đội / nhóm / riêng của bảng chat 0.9.8.")
+                    .khoang(10L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.thuChoToiDa", "chong_spam", "so", "30", true, "cau_hinh")
+                    .nhan("Hộp thư offline: tối đa tin chờ / người", "Tin riêng gửi cho người offline (tob_chat_cho), giao khi họ vào game. 0 = tắt hộp thư.")
+                    .khoang(0L, 500L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.thuChoNgay", "chong_spam", "so", "7", true, "cau_hinh")
+                    .nhan("Hộp thư offline: giữ tối đa (ngày)", "Tin chờ quá hạn bị bỏ (xoá lúc khởi động).")
+                    .khoang(1L, 90L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.lichSu", "chong_spam", "so", "50", true, "cau_hinh")
+                    .nhan("Lịch sử kênh gửi khi vào game (dòng)", "Số dòng thế giới / đội gần nhất (trong bộ nhớ) gửi cho người vừa vào.")
+                    .khoang(0L, 200L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("sv.chat.chanToiDa", "chong_spam", "so", "100", true, "cau_hinh")
+                    .nhan("Danh sách chặn: tối đa tên / người", "tob_chat_chan.")
+                    .khoang(0L, 1000L)
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("sv.socketTimeout", "chong_spam", "so", "180", true, "cau_hinh")
                     .nhan("Hết hạn socket (giây)", "Áp dụng cho kết nối mới. 0 = tắt.")
                     .khoang(0L, 3600L)

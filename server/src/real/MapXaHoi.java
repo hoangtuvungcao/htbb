@@ -378,19 +378,17 @@ class MapXaHoi {
                 receiver = receiver.substring(0, receiver.indexOf("-")).trim();
             }
 
-            Char p = CharManager.instance.getCharByCharName(receiver);
-            if (p != null) {
-                if (p.allMsgChatRieng.size() < 10) {
-                    InfoChatRieng cr = new InfoChatRieng();
-                    cr.charChat = player.charname;
-                    cr.infoChat = info;
-                    p.allMsgChatRieng.add(cr);
-                }
-            } else {
-                CharInboxMessage newMsg = new CharInboxMessage();
-                newMsg.sender = player.charname;
-                newMsg.info = info.replace("'", " ");
+            // 0.9.8 (KenhChatGame): client cu tra loi trong the "Nhóm" = chat doi; con lai giao rieng chung voi
+            // client moi - nguoi nhan online nhan ngay (-124 / -5), OFFLINE vao hop thu tob_chat_cho (truoc: tin MAT),
+            // nguoi nhan da chan thi khong giao.
+            if (com.htbb.pokemon.KenhChatLogic.TEN_NHOM_CU.equals(receiver)) {
+                KenhChatGame.phatDoi(player, info);
+                return;
             }
+            if (receiver.length() == 0 || info.length() == 0) {
+                return;
+            }
+            KenhChatGame.giaoRieng(player, receiver, info);
         } catch (Exception var7) {
         }
     }
@@ -421,7 +419,13 @@ class MapXaHoi {
             return;
         }
         msgChat = BadWord.checkBadWord2(msgChat);
-        if (player.lvDetail.lv >= 20 && msgChat.length() >= 2) {
+        // 0.9.8: cap toi thieu chat ban do = sv.chat.capGan (truoc: cung 20 va bo IM LANG - nguoi moi tuong chat hong)
+        if (player.lvDetail.lv < com.htbb.pokemon.KenhChatLogic.capGan && !player.isAdmin) {
+            KenhChatGame.ketQua(player, com.htbb.pokemon.KenhChatLogic.BAN_DO, com.htbb.pokemon.KenhChatLogic.KQ_LOI, 0,
+                    "Cần cấp " + com.htbb.pokemon.KenhChatLogic.capGan + " để chat bản đồ.");
+            return;
+        }
+        if (msgChat.length() >= 2) {
             byte maxChar = 50;
             if (msgChat.length() > maxChar) {
                 msgChat = msgChat.substring(0, maxChar);

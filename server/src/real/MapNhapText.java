@@ -1401,6 +1401,7 @@ class MapNhapText {
                     }
 
                     Map.sendAllCharServer(-1, MessageCreator.createMsgSpeaker(player.charname + ": " + text));
+                    KenhChatGame.phatTheGioi(player, text, true); // 0.9.8: + the Thế giới (lich su) cho client moi
                     player.potions[100]--;
                     player.timeDungLoa = System.currentTimeMillis();
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));

@@ -278,6 +278,18 @@ Nhịp dạng `số/giây` (cửa sổ trượt). Admin được miễn. Kiểm 
 | `sv.spam.viPhamQuenGiay` | `600` | điểm vi phạm về 0 sau chừng này giây sạch |
 | `sv.spam.camGiay` | `60,300,1800,7200` | thời gian cấm tăng dần theo bậc |
 | `sv.spam.bacQuenGio` | `24` | bậc cấm hạ về 0 sau chừng này giờ |
+
+Kênh chat 0.9.8 (bảng chat nhiều kênh, `com.htbb.pokemon.KenhChatLogic`, lớp `co_dinh`): luật kênh chạy TRƯỚC chống spam ở trên.
+
+| Khoá | Mặc định | Nghĩa |
+|---|---|---|
+| `sv.chat.capGan` | `5` | cấp tối thiểu chat bản đồ (trước 0.9.8 cố định 20 và bỏ im lặng) |
+| `sv.chat.capTheGioi` / `sv.chat.xuTheGioi` / `sv.chat.giayTheGioi` | `10` / `100` / `30` | kênh Thế giới: cấp, phí xu mỗi tin (hố hút; bị chặn thì không trừ), giãn cách mỗi người (client đếm ngược) |
+| `sv.chat.capRieng` | `3` | cấp tối thiểu nhắn riêng |
+| `sv.chat.doDai` | `80` | độ dài tối đa một tin (thế giới / đội / nhóm / riêng) |
+| `sv.chat.thuChoToiDa` / `sv.chat.thuChoNgay` | `30` / `7` | hộp thư tin riêng offline (`tob_chat_cho`): số tin chờ mỗi người, số ngày giữ |
+| `sv.chat.lichSu` | `50` | số dòng Thế giới / Đội gần nhất gửi cho người vừa vào game |
+| `sv.chat.chanToiDa` | `100` | số tên tối đa trong danh sách chặn (`tob_chat_chan`) |
 | `sv.spam.baoCachGiay` | `5` | báo người bị chặn tối đa 1 lần / chừng này giây |
 
 Mỗi lần tự cấm ghi một dòng kiểm toán `CHONG_SPAM`.
@@ -325,12 +337,12 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **269 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **279 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 178 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 188 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -456,7 +468,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (199)
+### Khoá ẩn: cố định & luôn bật (209)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -653,6 +665,16 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `sv.spam.chanQuangCao` | Chặn quảng cáo / link | Cố định (ẩn) | `1` | ngay | game |  |
 | `sv.spam.viPhamCam` | Số vi phạm thì cấm chat | Cố định (ẩn) | `4` | ngay | game |  |
 | `sv.spam.camGiay` | Thang cấm chat (giây) | Cố định (ẩn) | `60,300,1800,7200` | ngay | game | Các bậc cấm tăng dần, cách nhau dấu phẩy. |
+| `sv.chat.capGan` | Chat bản đồ: cấp tối thiểu | Cố định (ẩn) | `5` | ngay | game | Dưới cấp này tin bản đồ không phát (người gửi được báo lý do). Trước 0.9.8 cố định 20 và bỏ im lặng. |
+| `sv.chat.capTheGioi` | Chat thế giới: cấp tối thiểu | Cố định (ẩn) | `10` | ngay | game | Kênh Thế giới trong bảng chat (0.9.8). Loa vẫn theo luật loa cũ. |
+| `sv.chat.xuTheGioi` | Chat thế giới: phí xu mỗi tin | Cố định (ẩn) | `100` | ngay | game | Hố hút xu nhỏ; 0 = miễn phí. Bị chặn (spam, cấp, giãn cách) thì không trừ. |
+| `sv.chat.giayTheGioi` | Chat thế giới: giãn cách (giây) | Cố định (ẩn) | `30` | ngay | game | Mỗi người một tin / N giây; client hiện đếm ngược. sv.spam.chat.theGioi vẫn áp. |
+| `sv.chat.capRieng` | Nhắn riêng: cấp tối thiểu | Cố định (ẩn) | `3` | ngay | game | Chặn tài khoản rác mới tạo nhắn riêng hàng loạt. |
+| `sv.chat.doDai` | Độ dài tối đa một tin (ký tự) | Cố định (ẩn) | `80` | ngay | game | Kênh thế giới / đội / nhóm / riêng của bảng chat 0.9.8. |
+| `sv.chat.thuChoToiDa` | Hộp thư offline: tối đa tin chờ / người | Cố định (ẩn) | `30` | ngay | game | Tin riêng gửi cho người offline (tob_chat_cho), giao khi họ vào game. 0 = tắt hộp thư. |
+| `sv.chat.thuChoNgay` | Hộp thư offline: giữ tối đa (ngày) | Cố định (ẩn) | `7` | ngay | game | Tin chờ quá hạn bị bỏ (xoá lúc khởi động). |
+| `sv.chat.lichSu` | Lịch sử kênh gửi khi vào game (dòng) | Cố định (ẩn) | `50` | ngay | game | Số dòng thế giới / đội gần nhất (trong bộ nhớ) gửi cho người vừa vào. |
+| `sv.chat.chanToiDa` | Danh sách chặn: tối đa tên / người | Cố định (ẩn) | `100` | ngay | game | tob_chat_chan. |
 | `sv.socketTimeout` | Hết hạn socket (giây) | Cố định (ẩn) | `180` | ngay | game | Áp dụng cho kết nối mới. 0 = tắt. |
 | `sv.maxConnPerIp` | Kết nối tối đa / IP | Cố định (ẩn) | `50` | ngay | game | 0 = tắt. |
 | `sv.connRateMax` | Số kết nối tối đa / cửa sổ | Cố định (ẩn) | `60` | ngay | game | 0 = tắt. |
