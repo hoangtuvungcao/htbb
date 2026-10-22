@@ -272,6 +272,16 @@ export function nenTangTheoUa(ua: string): MaNenTang | null {
   return null // macOS: chưa có bản riêng
 }
 
+/**
+ * Máy iPhone / iPad / iPod (cả iPadOS 13+ ở chế độ "trang cho máy tính": UA giống Mac nhưng có màn
+ * cảm ứng -> truyền navigator.maxTouchPoints). Dùng để KHÔNG mời tải .jar/.apk/.zip — iOS không chạy được.
+ */
+export function laThietBiIos(ua: string, maxTouchPoints = 0): boolean {
+  if (nenTangTheoUa(ua) === 'ios') return true
+  const s = ua.toLowerCase()
+  return s.includes('macintosh') && maxTouchPoints > 1
+}
+
 /** Tên tệp game được nhận khi tải lên kho /tai/: đuôi theo nền tảng. */
 export const DUOI_TEP_GAME = ['apk', 'zip', 'jar', 'jad', 'exe', 'gz', 'tgz', 'appimage', 'ipa', 'plist'] as const
 

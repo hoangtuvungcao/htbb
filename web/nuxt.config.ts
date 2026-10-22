@@ -25,6 +25,17 @@ export default defineNuxtConfig({
         { rel: 'alternate icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
       ],
+      script: [
+        {
+          // Tệp JS chính (entry/vendor) bị WAF trả 429/403 hay mạng rớt -> không dòng Nuxt nào chạy,
+          // trang đứng ở bản SSR (menu/form chết). Script inline nhỏ này (CSP cho 'unsafe-inline') tải
+          // lại trang một lần nếu sau 2.5 giây app vẫn chưa mount. Cùng khoá/giới hạn với
+          // app/plugins/tai-lai-khi-loi-chunk.client.ts (tối đa 2 lần / 5 phút / tab).
+          key: 'htbb-tai-lai-js',
+          tagPriority: 'critical',
+          innerHTML: `(function(){var K='htbb:tai-lai-chunk',hen=false;function mount(){var n=document.getElementById('__nuxt');return !!(n&&n.__vue_app__)}function thu(){if(mount())return;try{var a=JSON.parse(sessionStorage.getItem(K)||'[]').filter(function(t){return Date.now()-t<300000});if(a.length>=2)return;a.push(Date.now());sessionStorage.setItem(K,JSON.stringify(a))}catch(e){return}location.reload()}addEventListener('error',function(e){var t=e.target;if(hen||!t||!t.tagName)return;if((t.tagName==='SCRIPT'&&t.type==='module')||(t.tagName==='LINK'&&/modulepreload/.test(t.rel))){hen=true;setTimeout(thu,2500)}},true)})()`,
+        },
+      ],
     },
   },
 
@@ -94,6 +105,32 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
+  },
+
+  vite: {
+    $client: {
+      build: {
+        // iPhone/iPad đời cũ: mặc định Vite 8 nhắm Safari 16.4 (cú pháp mới + import map cho
+        // "#entry" -> iOS 15 / 16.0-16.3 không chạy được dòng JS nào, trang đứng ở bản SSR, menu/form
+        // không phản hồi). Hạ đích để rolldown dịch cú pháp; Nuxt tự tắt import map khi đích < 16.4.
+        // (CSS Tailwind v4 vẫn cần Safari 15.4+ cho @layer — iOS 15.4 là sàn thực tế.)
+        target: ['es2020', 'safari15', 'ios15', 'chrome100', 'edge100', 'firefox100'],
+        rolldownOptions: {
+          output: {
+            // Mặc định mỗi trang kéo ~80 chunk JS nhỏ trong <1 giây. WAF phía trước (giới hạn
+            // request/giây theo IP — mạng 4G dùng chung IP CGNAT) trả 429 cho một phần trong số đó ->
+            // "Importing a module script failed" -> trang lỗi "Có lỗi xảy ra". Gom thư viện
+            // (node_modules) và component dùng chung thành vài tệp lớn, cache 1 năm (tên có hash).
+            codeSplitting: {
+              groups: [
+                { name: 'vendor', test: /[\\/]node_modules[\\/]/, priority: 20 },
+                { name: 'app', test: /[\\/]app[\\/](components|composables|utils)[\\/]/, priority: 10, minShareCount: 2 },
+              ],
+            },
+          },
+        },
+      },
+    },
   },
 
   typescript: {
