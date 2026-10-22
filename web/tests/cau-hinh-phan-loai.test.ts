@@ -66,9 +66,9 @@ test('chỉnh trên web: những thứ người vận hành thật sự chỉnh 
   assert.equal(k('sv.tilePotion').macDinh, '14')
 })
 
-test('nhóm trên trang: 8 nhóm (thêm Chống clone 19/10/2026, Thẻ đặt tên Pokémon 0.9.6), không khoá ẩn; nhóm chỉ có khoá ẩn bị đánh dấu an', () => {
+test('nhóm trên trang: 7 nhóm (thêm Chống clone 19/10/2026; Thẻ đặt tên Pokémon 0.9.8 chỉ có khoá ẩn - giữ ≤ 70 khoá web), không khoá ẩn; nhóm chỉ có khoá ẩn bị đánh dấu an', () => {
   const trang = nhomTT()
-  assert.deepEqual(trang.map(n => n.ma), ['kinh_te', 'su_kien', 'nap_tien', 'thanh_vien', 'chong_clone', 'tu_dong', 'bao_tri', 'dat_ten_pet'])
+  assert.deepEqual(trang.map(n => n.ma), ['kinh_te', 'su_kien', 'nap_tien', 'thanh_vien', 'chong_clone', 'tu_dong', 'bao_tri'])
   for (const n of trang) for (const x of n.khoa) assert.ok(!anTT(x), x.khoa)
   for (const n of NHOM_TT) {
     const coHien = DANH_MUC_TT.some(x => x.nhom === n.ma && !anTT(x))
