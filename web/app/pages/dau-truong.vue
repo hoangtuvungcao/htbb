@@ -3,7 +3,7 @@
  * Đấu trường Bảo Bối 3v3 (D12): bảng TUẦN (điểm kiếm được tuần cúp này) + bảng MÙA (top 100). Dữ liệu: GET /api/dau-truong
  * (máy chủ game ghi tob_dau_truong_*). Luật chi tiết: /cam-nang/dau-truong. Logic thuần: shared/utils/dauTruong.ts.
  */
-import { DAU_TRUONG } from '../../shared/utils/dauTruong'
+import { DAU_TRUONG } from '~~/shared/utils/dauTruong'
 
 useSeoMeta({
   title: 'Đấu trường Bảo Bối',

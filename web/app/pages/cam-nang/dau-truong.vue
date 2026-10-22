@@ -3,7 +3,7 @@
  * Cẩm nang Đấu trường Bảo Bối 3v3 — số liệu từ shared/utils/dauTruong.ts (khớp com.htbb.pokemon.DauTruongLogic /
  * DauTruongTran / DauTruongDuLieu). Bảng xếp hạng: /dau-truong.
  */
-import { DAU_TRUONG } from '../../../shared/utils/dauTruong'
+import { DAU_TRUONG } from '~~/shared/utils/dauTruong'
 
 const D = DAU_TRUONG
 const BAC = D.tenBac.map((ten, i) => ({ ten, tu: i === 0 ? 0 : D.nguongBac[i - 1] }))
