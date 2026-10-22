@@ -1055,7 +1055,7 @@ class MapDoMenu {
                                         return;
                                     }
 
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Người chơi đang dự tiệc cưới.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Người chơi đang dự Lễ kết đôi.", ""));
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
                                 }
@@ -1962,7 +1962,7 @@ class MapDoMenu {
                     Wedding wdd = (Wedding) allWedding.get(player.idWedding);
                     if (wdd != null) {
                         if (wdd.idP1 != player.charDBID && wdd.idP2 != player.charDBID) {
-                            player.sendMessage(MessageCreator.createMsgChat(player.id, "Chỉ có chủ nhân tiệc cưới mới có thể gọi boss"));
+                            player.sendMessage(MessageCreator.createMsgChat(player.id, "Chỉ cặp đôi chủ lễ mới có thể gọi boss"));
                             return;
                         }
 
@@ -1981,96 +1981,99 @@ class MapDoMenu {
                             }
 
                             int[] price = new int[]{0, 500, 1000};
-                            if (player.married != 1) {
-                                if (player.gender == 2) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ người nam mới có thể đăng ký kết hôn", ""));
-                                    return;
-                                }
-
-                                if (player.party != null && (player.party == null || player.party.checkConditionMarry())) {
-                                    int priceXu = 20000000;
-                                    if (player.getxu() < (long) priceXu) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có " + priceXu + " xu để tổ chức đám cưới", ""));
-                                        return;
-                                    }
-
-                                    if (player.getLuong() < price[idOptionMenu]) {
-                                        player.sendMessage(
-                                                MessageCreator.createServerAlertMessage("Bạn phải có " + price[idOptionMenu] + " lượng để tổ chức đám cưới", "")
-                                        );
-                                        return;
-                                    }
-
-                                    Database.instance.saveLogThongKeChiTieu("Ket Hon", 0, 1, (long) price[idOptionMenu], "luong");
-                                    player.subXu((long) priceXu, true, "map 36");
-                                    player.subLuong((long) price[idOptionMenu]);
-                                    ((Char) player.party.userParty.get(0)).married = 1;
-                                    ((Char) player.party.userParty.get(1)).married = 1;
-                                    Wedding wd = new Wedding();
-                                    wd.idP1 = ((Char) player.party.userParty.get(0)).charDBID;
-                                    wd.idP2 = ((Char) player.party.userParty.get(1)).charDBID;
-                                    ((Char) player.party.userParty.get(0)).idWedding = player.charDBID;
-                                    ((Char) player.party.userParty.get(1)).idWedding = player.charDBID;
-                                    int[] weddingCard = new int[]{10, 15, 25};
-                                    ((Char) player.party.userParty.get(0)).potions[92] = weddingCard[idOptionMenu];
-                                    ((Char) player.party.userParty.get(1)).potions[92] = weddingCard[idOptionMenu];
-                                    ((Char) player.party.userParty.get(0)).nameHusband_wife = ((Char) player.party.userParty.get(1)).charname;
-                                    ((Char) player.party.userParty.get(1)).nameHusband_wife = ((Char) player.party.userParty.get(0)).charname;
-                                    wd.idParty = player.idWedding;
-                                    wd.action = 0;
-                                    wd.typeParty = (byte) idOptionMenu;
-                                    wd.dayParty = Char.getDayOpen(0L);
-                                    allWedding.put(wd.idParty, wd);
-                                    wd.listMember.put(((Char) player.party.userParty.get(0)).charDBID, ((Char) player.party.userParty.get(0)).userID);
-                                    wd.listMember.put(((Char) player.party.userParty.get(1)).charDBID, ((Char) player.party.userParty.get(1)).userID);
-                                    Database.instance
-                                            .saveWedding((Char) player.party.userParty.get(0), (Char) player.party.userParty.get(1), wd.time, wd.dayParty, wd.typeParty);
-                                    ((Char) player.party.userParty.get(0)).sendMessage(MessageCreator.createCharInventoryMessage((Char) player.party.userParty.get(0), 0));
-                                    ((Char) player.party.userParty.get(1)).sendMessage(MessageCreator.createCharInventoryMessage((Char) player.party.userParty.get(1), 0));
-                                    player.sendMessage(
-                                            MessageCreator.createServerAlertMessage(
-                                                    "Chúc mừng bạn đã đăng ký kết hôn thành công. Tiệc cưới sẽ diễn ra ngày " + wd.dayParty, ""
-                                            )
-                                    );
-                                    Database.instance
-                                            .saveOrtherLog(
-                                                    "",
-                                                    player.charname,
-                                                    ((Char) player.party.userParty.get(0)).charname
-                                                    + "_"
-                                                    + wd.idP1
-                                                    + "_"
-                                                    + ((Char) player.party.userParty.get(1)).charname
-                                                    + "_"
-                                                    + wd.idP2
-                                                    + "_loại: "
-                                                    + wd.typeParty
-                                                    + "_giờ: "
-                                                    + wd.time
-                                                    + "_ngày: "
-                                                    + wd.dayParty,
-                                                    "regWedding"
-                                            );
-                                    MapQuaTang.doAddGiftWedding(map, (Char) player.party.userParty.get(0), (Char) player.party.userParty.get(1), idOptionMenu);
-                                    sendAllCharServer(
-                                            17,
-                                            MessageCreator.createServerAlertAutoOffMessage(
-                                                    ((Char) player.party.userParty.get(0)).charname + " đã đăng ký kết hôn với " + ((Char) player.party.userParty.get(1)).charname
-                                            )
-                                    );
-                                    System.out.println("DANG KY DAM CUOI THANH CONG");
-                                    break;
-                                }
-
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điều kiện để đăng ký.", ""));
+                            if (idOptionMenu < 0 || idOptionMenu >= price.length) {
+                                return;
+                            }
+                            // Le ket doi: nhom 2 nguoi (dong y), duc + cai, chua ket doi, cap 40, CHUNG NHOM TRUNG
+                            // (com.htbb.pokemon.KetDoi) - xet LUC DANG KY, cap da ket doi khong xet lai.
+                            final String lyDoKetDoi = KetDoiGame.lyDoTuChoi(player);
+                            if (lyDoKetDoi != null) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(lyDoKetDoi, ""));
+                                return;
+                            }
+                            int priceXu = 20000000;
+                            if (player.getxu() < (long) priceXu) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có " + priceXu + " xu để tổ chức Lễ kết đôi", ""));
                                 return;
                             }
 
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ người độc thân mới có thể kết hôn", ""));
-                            return;
+                            if (player.getLuong() < price[idOptionMenu]) {
+                                player.sendMessage(
+                                        MessageCreator.createServerAlertMessage("Bạn phải có " + price[idOptionMenu] + " lượng để tổ chức Lễ kết đôi", "")
+                                );
+                                return;
+                            }
+
+                            final String nhomTrung = KetDoiGame.moTaNhomTrung(
+                                    (Char) player.party.userParty.get(0), (Char) player.party.userParty.get(1));
+                            Database.instance.saveLogThongKeChiTieu("Ket Doi", 0, 1, (long) price[idOptionMenu], "luong");
+                            player.subXu((long) priceXu, true, "map 36");
+                            player.subLuong((long) price[idOptionMenu]);
+                            ((Char) player.party.userParty.get(0)).married = 1;
+                            ((Char) player.party.userParty.get(1)).married = 1;
+                            Wedding wd = new Wedding();
+                            wd.idP1 = ((Char) player.party.userParty.get(0)).charDBID;
+                            wd.idP2 = ((Char) player.party.userParty.get(1)).charDBID;
+                            ((Char) player.party.userParty.get(0)).idWedding = player.charDBID;
+                            ((Char) player.party.userParty.get(1)).idWedding = player.charDBID;
+                            int[] weddingCard = new int[]{10, 15, 25};
+                            ((Char) player.party.userParty.get(0)).potions[92] = weddingCard[idOptionMenu];
+                            ((Char) player.party.userParty.get(1)).potions[92] = weddingCard[idOptionMenu];
+                            ((Char) player.party.userParty.get(0)).nameHusband_wife = ((Char) player.party.userParty.get(1)).charname;
+                            ((Char) player.party.userParty.get(1)).nameHusband_wife = ((Char) player.party.userParty.get(0)).charname;
+                            wd.idParty = player.idWedding;
+                            wd.action = 0;
+                            wd.typeParty = (byte) idOptionMenu;
+                            wd.dayParty = Char.getDayOpen(0L);
+                            allWedding.put(wd.idParty, wd);
+                            wd.listMember.put(((Char) player.party.userParty.get(0)).charDBID, ((Char) player.party.userParty.get(0)).userID);
+                            wd.listMember.put(((Char) player.party.userParty.get(1)).charDBID, ((Char) player.party.userParty.get(1)).userID);
+                            Database.instance
+                                    .saveWedding((Char) player.party.userParty.get(0), (Char) player.party.userParty.get(1), wd.time, wd.dayParty, wd.typeParty);
+                            ((Char) player.party.userParty.get(0)).sendMessage(MessageCreator.createCharInventoryMessage((Char) player.party.userParty.get(0), 0));
+                            ((Char) player.party.userParty.get(1)).sendMessage(MessageCreator.createCharInventoryMessage((Char) player.party.userParty.get(1), 0));
+                            final String chucMung = "Chúc mừng! " + nhomTrung + " Lễ kết đôi diễn ra ngày " + wd.dayParty
+                                    + ", hãy khai lễ trong hôm nay.";
+                            ((Char) player.party.userParty.get(0)).sendMessage(MessageCreator.createServerAlertMessage(chucMung, ""));
+                            ((Char) player.party.userParty.get(1)).sendMessage(MessageCreator.createServerAlertMessage(chucMung, ""));
+                            Database.instance
+                                    .saveOrtherLog(
+                                            "",
+                                            player.charname,
+                                            ((Char) player.party.userParty.get(0)).charname
+                                            + "_"
+                                            + wd.idP1
+                                            + "_"
+                                            + ((Char) player.party.userParty.get(1)).charname
+                                            + "_"
+                                            + wd.idP2
+                                            + "_loại: "
+                                            + wd.typeParty
+                                            + "_giờ: "
+                                            + wd.time
+                                            + "_ngày: "
+                                            + wd.dayParty,
+                                            "regWedding"
+                                    );
+                            MapQuaTang.doAddGiftWedding(map, (Char) player.party.userParty.get(0), (Char) player.party.userParty.get(1), idOptionMenu);
+                            sendAllCharServer(
+                                    17,
+                                    MessageCreator.createServerAlertAutoOffMessage(
+                                            ((Char) player.party.userParty.get(0)).charname + " và " + ((Char) player.party.userParty.get(1)).charname
+                                            + " đã đăng ký Lễ kết đôi"
+                                    )
+                            );
+                            System.out.println("DANG KY LE KET DOI THANH CONG");
+                            break;
                         }
 
                         if (idOptionMenu == 0) {
+                            // Xet truoc (chua tru tien) de bao ly do ngay, vd khong chung nhom trung.
+                            final String lyDo = KetDoiGame.lyDoTuChoi(player);
+                            if (lyDo != null) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(lyDo, ""));
+                                return;
+                            }
                             player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đơn giản", "Náo nhiệt (500 lượng)", "Hoành tráng (1000 lượng)"}, idNpc, 1));
                             break;
                         }
@@ -2079,7 +2082,7 @@ class MapDoMenu {
                             if (idOptionMenu == 2) {
                                 Wedding wd = (Wedding) allWedding.get(player.idWedding);
                                 if (wd == null || wd.action != 0) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa đăng ký tiệc cưới nào để khai tiệc.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa đăng ký Lễ kết đôi nào để khai lễ.", ""));
                                     return;
                                 }
                                 if (wd != null && wd.action == 0) {
@@ -2087,13 +2090,13 @@ class MapDoMenu {
                                         if (wd.idP1 == player.charDBID || wd.idP2 == player.charDBID) {
                                             map.startWedding(player.idWedding);
                                         } else {
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ đôi bạn tổ chức tiệc mới khai tiệc được.", ""));
+                                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ cặp đôi tổ chức mới khai lễ được.", ""));
                                         }
                                     } else {
                                         wd.action = 1;
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Tiệc cưới của bạn đã bị hủy", ""));
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Lễ kết đôi của bạn đã bị huỷ vì quá ngày khai lễ", ""));
                                         Database.instance.updateStatusWedding(wd.idParty, 1);
-                                        Database.instance.saveOrtherLog("", player.charname, "Huy tiec cuoi " + wd.dayParty, "delWed");
+                                        Database.instance.saveOrtherLog("", player.charname, "Huy le ket doi " + wd.dayParty, "delWed");
                                         allWedding.remove(wd.idParty);
                                     }
                                 }
@@ -2108,16 +2111,16 @@ class MapDoMenu {
                                 }
 
                                 if (player.getLuong() < 300) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 300 lượng mới có thể ly dị được.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 300 lượng mới có thể đơn phương huỷ kết đôi.", ""));
                                     return;
                                 }
 
-                                player.sendMessage(MessageCreator.createMsgPopUp(player.id, 9, "Bạn thật sự muốn ly dị với " + player.nameHusband_wife + " ?"));
+                                player.sendMessage(MessageCreator.createMsgPopUp(player.id, 9, "Bạn thật sự muốn huỷ kết đôi với " + player.nameHusband_wife + " ?"));
                                 break;
                             }
 
                             if (player.gender == 2) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bạn đời của bạn mới có thê chọn chức năng này.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Pokémon đực trong cặp đôi đứng ra huỷ kết đôi, hoặc chọn đơn phương huỷ kết đôi.", ""));
                                 return;
                             }
 
@@ -2134,25 +2137,25 @@ class MapDoMenu {
 
                                 Char p = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                                 if (p == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn hiện tại chưa online", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn kết đôi của bạn hiện chưa online", ""));
                                     return;
                                 }
 
                                 if (player.getLuong() < 150) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 150 lượng mới có thể ly dị được.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 150 lượng mới có thể huỷ kết đôi.", ""));
                                     return;
                                 }
 
                                 if (p.getLuong() < 150) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn phải có 150 lượng mới có thể ly dị được.", ""));
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn kết đôi của bạn phải có 150 lượng mới có thể huỷ kết đôi.", ""));
                                     return;
                                 }
 
-                                player.sendMessage(MessageCreator.createMsgPopUp(player.id, 8, "Bạn thật sự muốn ly dị với " + player.nameHusband_wife + " ?"));
+                                player.sendMessage(MessageCreator.createMsgPopUp(player.id, 8, "Bạn thật sự muốn huỷ kết đôi với " + player.nameHusband_wife + " ?"));
                                 break;
                             }
 
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điều kiện để ly dị.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Hãy lập nhóm hai người với bạn kết đôi để cùng huỷ kết đôi.", ""));
                             return;
                         }
 
@@ -2173,7 +2176,7 @@ class MapDoMenu {
                             break;
                         }
 
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy tiệc cưới", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy Lễ kết đôi nào bạn được mời", ""));
                         break;
                     }
 

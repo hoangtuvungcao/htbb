@@ -7,7 +7,7 @@ import { dangVaSapToi, msTuChuoi } from '#shared/utils/suKienNam'
 
 export function useSuKienNam(soNgaySapToi = 30) {
   const { data } = useFetch<{ bayGio: string | null, ds: SuKienLan[] }>('/api/su-kien', {
-    key: 'htbb-su-kien-nam', dedupe: 'defer', default: () => ({ bayGio: null, ds: [] }),
+    key: 'htbb-su-kien-nam', dedupe: 'defer', timeout: 4000, default: () => ({ bayGio: null, ds: [] }),
   })
   // Lệch giữa đồng hồ CSDL và máy người xem, để đếm ngược đúng giờ máy chủ.
   const lech = computed(() => {

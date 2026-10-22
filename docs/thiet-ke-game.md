@@ -1217,6 +1217,37 @@ Hai người chơi đổi Pokémon trong Hộp PC (`com.htbb.pokemon.TraoDoiPoke
   `traodoipokemon`.
 - **Chợ / sạp**: chưa bán Pokémon ở sạp người chơi (giá trị khó định, dễ thành kênh chuyển xu); chỉ trao đổi trực tiếp.
 
+### 7.9 Lễ kết đôi và nhóm trứng
+
+Thay hệ thống đám cưới của game gốc (NPC -27 ở Cao nguyên Indigo, bản đồ 225 / 226). Thuật ngữ: mục 10.1.
+
+- **Điều kiện** (`com.htbb.pokemon.KetDoi`, nối game ở `real.KetDoiGame`, xét ở NPC khi chọn "Đăng ký Lễ kết đôi" và lúc
+  chọn mức lễ): nhóm đúng 2 thành viên (cả hai vào chung nhóm = đồng ý), một Pokémon đực một Pokémon cái, Pokémon đực
+  đứng ra đăng ký, cả hai chưa kết đôi, cả hai từ cấp 40, và **loài hiện tại** của hai bên chung ít nhất một **nhóm
+  trứng** (Egg Group, dữ liệu gốc). Nhóm "Chưa khám phá" (Pichu) không kết đôi với ai. Không có luật Ditto. Phí giữ
+  nguyên: 20.000.000 xu + 0 / 500 / 1000 lượng (Đơn giản / Náo nhiệt / Hoành tráng).
+- **Lý do rõ ràng**: mọi lần từ chối nêu lý do; lỗi nhóm trứng nêu nhóm của từng bên, vd "Charmander (Quái vật, Rồng) và
+  Eevee (Đồng cỏ) không chung nhóm trứng nào - chưa thể kết đôi."; đăng ký thành công cũng báo nhóm chung cho cả hai
+  ("... cùng nhóm Quái vật - có thể kết đôi.").
+- **Chỉ xét lúc đăng ký**: tiến hoá đổi loài nhưng không xét lại; cặp đã kết đôi (kể cả cặp của hệ đám cưới cũ) giữ
+  nguyên nhẫn, chỉ số nhẫn, Vảy trái tim kết đôi. Trong 5 dòng, tiến hoá không làm mất nhóm (chỉ Pichu thành Pikachu
+  thì có thêm nhóm).
+- **Dữ liệu** (CSDL là nguồn; nâng cấp: `sql/nang_cap.sql` phần 11, khối `sua_ket_doi.sql`; có sẵn trong `htbb_day_du.sql`): `data_nhom_trung_ten` (15 nhóm,
+  `ket_doi_duoc` = 0 cho Chưa khám phá) và `data_nhom_trung` (21 loài người chơi):
+
+| Dòng | Loài | Nhóm trứng |
+|---|---|---|
+| Charmander | Charmander, Charmeleon, Charizard | Quái vật, Rồng |
+| Bulbasaur | Bulbasaur, Ivysaur, Venusaur | Quái vật, Thực vật |
+| Squirtle | Squirtle, Wartortle, Blastoise | Quái vật, Nước 1 |
+| Pichu | Pichu | Chưa khám phá |
+| Pichu | Pikachu, Raichu | Đồng cỏ, Tiên |
+| Eevee | Eevee và 8 nhánh | Đồng cỏ |
+
+Ma trận kết đôi (dạng sau tiến hoá đầu; Pichu không kết đôi với ai): Charmander / Bulbasaur / Squirtle kết đôi với nhau
+và cùng dòng (Quái vật); Pikachu / Raichu kết đôi với nhau và mọi loài dòng Eevee (Đồng cỏ); hai nhóm này không kết đôi
+chéo. `test/KiemKetDoi` kiểm cả 21 × 21 cặp loài.
+
 ---
 
 ## 8. Hồi sinh và Tự động đánh
@@ -1502,7 +1533,12 @@ nguồn đã mang thuật ngữ mới; từ điển lúc chạy vẫn giữ đ�
 | yêu ma, yêu quái, cương thi, ma đầu / sơn tặc, đạo tặc | Pokémon hung dữ, Pokémon ma, kẻ xấu / kẻ trộm | |
 | khách điếm, tửu lâu / ngân lượng, nguyên bảo | nhà trọ, quán ăn / xu, lượng | |
 | luyện công, bãi luyện công | luyện tập, bãi luyện tập | |
-| phu quân, phu nhân, phu thê | bạn đời | |
+| phu quân, phu nhân, phu thê, bạn đời, vợ, chồng | **bạn kết đôi** | mục 7.7 |
+| đám cưới, tiệc cưới, lễ cưới / kết hôn, hôn nhân / vợ chồng | **Lễ kết đôi** / kết đôi / cặp đôi | "Lễ kết đôi" viết hoa chữ Lễ |
+| ly dị, ly hôn / đơn phương ly dị / độc thân | huỷ kết đôi / đơn phương huỷ kết đôi / chưa kết đôi | |
+| thiệp cưới, nhẫn cưới (nhẫn trái tim), phù phu thê | Thiệp mời kết đôi, Nhẫn kết đôi đồng / bạc / vàng, Vảy trái tim kết đôi | Vảy trái tim kết đôi: dịch chuyển tới bạn kết đôi |
+| Mời đám cưới / khai tiệc / Lễ cưới 1, 2 | Mời dự Lễ kết đôi / khai lễ / Lễ kết đôi 1, 2 | bản đồ 225, 226 |
+| (nhóm trứng) Monster, Dragon, Grass, Water 1, Field, Fairy, Undiscovered | Quái vật, Rồng, Thực vật, Nước 1, Đồng cỏ, Tiên, Chưa khám phá | đủ 15 nhóm ở `data_nhom_trung_ten` |
 | chết (nhân vật) / về làng, hồi thành | **gục** / **về Trung tâm Pokémon** | quái thì "hạ" |
 | tiên đan / cỏ hồi sinh (khi gục); suy yếu sau khi chết | Thuốc hồi sinh, Thuốc hồi sinh tối đa; **Mệt mỏi** | |
 
@@ -1540,6 +1576,7 @@ hình; tài liệu thiết kế trong `docs/` (được nêu từ cũ).
 | `LanhTho`, `QuocGia` | `Vung` |
 | `XaPhu` | `PidgeotBay` |
 | `NhanVat` | giữ hoặc `Pokemon` (chữ hiện ra đã là "Pokémon") |
+| `Wedding`, `idWedding`, `nameHusband_wife`, `married` (Lễ kết đôi; bảng `tob_wedding` và gói tin giữ) | `LeKetDoi`, `idLeKetDoi`, `tenBanKetDoi`, `daKetDoi` (`KetDoi`, `KetDoiGame` đã có) |
 
 Lớp lõi cũ phục hồi từ `lib/htbb-core.jar` ở P3 (đầu tệp `PHUC HOI TU LOI CU`) giữ tên cũ tới P4/P5 rồi mới đổi.
 

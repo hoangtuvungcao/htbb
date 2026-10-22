@@ -27,7 +27,7 @@ public final class TenBanDoBang {
         "Đường Victory", "Hang trống", "Hang Granite", "Thác Meteor", "Hang dưới biển", "Hang Khởi Nguyên",
         "Tháp Trời", "Đường Victory Hoenn", "Cao nguyên Indigo", "Đấu trường", "Đấu trường La Mã", "Đấu trường 2",
         "Đấu trường 3", "Lãnh địa đội", "Lãnh địa đội 2", "Tháp luyện tập 5x", "Tháp luyện tập 6x", "Tháp luyện tập 7x",
-        "Lễ cưới 1", "Lễ cưới 2", "Sàn đấu", "Sảnh chờ", "Nhà (Indigo) 1", "Nhà (Indigo) 2",
+        "Lễ kết đôi 1", "Lễ kết đôi 2", "Sàn đấu", "Sảnh chờ", "Nhà (Indigo) 1", "Nhà (Indigo) 2",
         "Nhà (Indigo) 3", "Nhà (Indigo) 4", "Nhà (Indigo) 5", "Nhà (Indigo) 6", "Nhà (Indigo) 7", "Nhà (Indigo) 8",
         "Nhà (Indigo) 9", "Nhà (Indigo) 10", "Nhà (Indigo) 11", "Nhà (Indigo) 12", "Đỉnh Tháp Trời", "Liên minh Hoenn",
         "Sảnh Nhà vô địch", "Tổ Zapdos", "Phó bản Hầm ngục", "Sàn Cúp PvP"

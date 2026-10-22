@@ -6,6 +6,8 @@ export function useCongKhai() {
   const { data } = useFetch<CmsCongKhai>('/api/cong-khai', {
     key: 'htbb-cong-khai',
     dedupe: 'defer',
+    // CSDL chậm: không giữ trang quá 4 giây, dùng nội dung mặc định.
+    timeout: 4000,
     default: () => CMS_MAC_DINH,
   })
   return computed<CmsCongKhai>(() => data.value ?? CMS_MAC_DINH)
@@ -13,7 +15,7 @@ export function useCongKhai() {
 
 /** Trang cẩm nang trong CSDL (ghi đè + trang mới). */
 export function useTrangDb() {
-  const { data } = useFetch<TrangDbCongKhai[]>('/api/cam-nang-db', { key: 'htbb-trang-db', dedupe: 'defer', default: () => [] })
+  const { data } = useFetch<TrangDbCongKhai[]>('/api/cam-nang-db', { key: 'htbb-trang-db', dedupe: 'defer', timeout: 4000, default: () => [] })
   return computed<TrangDbCongKhai[]>(() => data.value ?? [])
 }
 

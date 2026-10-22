@@ -353,7 +353,7 @@ const DAU = [
   ['Hang trong', 'Hang trống'], ['Hang nho', 'Hang nhỏ'], ['Hang co', 'Hang cổ'], ['Nguc toi', 'Ngục tối'],
   ['Ho Phan No (hang)', 'Hồ Phẫn Nộ (hang)'], ['Duong Victory', 'Đường Victory'], ['Cao nguyen', 'Cao nguyên'],
   ['Dau truong La Ma', 'Đấu trường La Mã'], ['Dau truong', 'Đấu trường'], ['Lanh dia doi', 'Lãnh địa đội'],
-  ['Le cuoi', 'Lễ cưới'], ['Loi dai', 'Sàn đấu'], ['Sanh cho', 'Sảnh chờ'], ['Thap luyen tap', 'Tháp luyện tập'],
+  ['Le ket doi', 'Lễ kết đôi'], ['Loi dai', 'Sàn đấu'], ['Sanh cho', 'Sảnh chờ'], ['Thap luyen tap', 'Tháp luyện tập'],
   ['Khu mua ban', 'Khu mua bán'], ['Khu mo', 'Khu mỏ'], ['Nui Mat Trang', 'Núi Mặt Trăng'], ['Vung Safari', 'Vùng Safari'],
   ['Rung Viridian', 'Rừng Viridian'], ['Rung Co', 'Rừng Cổ'], ['Rung Ilex', 'Rừng Ilex'], ['Khoang rung nho', 'Khoảng rừng nhỏ'],
   ['Chien truong', 'Chiến trường'], ['Chan nui Silver', 'Chân núi Silver'], ['Nui Silver', 'Núi Silver'],

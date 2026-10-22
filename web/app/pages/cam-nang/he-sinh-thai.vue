@@ -27,8 +27,8 @@ const gioKhung = (g: number) => `${String(g).padStart(2, '0')}:00–${String(g +
 
 <template>
   <WikiShell slug="he-sinh-thai">
-    <WikiCallout kieu="sap-ra-mat" title="Đang thử nghiệm">
-      Hệ sinh thái đang được thử nghiệm và sẽ mở theo thông báo trong game. Số liệu dưới đây lấy từ bản đang thử, có thể còn điều chỉnh.
+    <WikiCallout kieu="sap-ra-mat" title="Sắp mở">
+      Hệ sinh thái sẽ mở theo thông báo trong game. Số liệu dưới đây có thể còn thay đổi trước khi mở.
     </WikiCallout>
 
     <WikiSection id="the-gioi" title="Thế giới sống: ngày đêm & thời tiết" lead="Mỗi vùng có thời tiết riêng, đổi 4 lần mỗi ngày và theo mùa. Thời tiết quyết định Pokémon hoang dã nào hay xuất hiện và chiêu hệ nào mạnh hơn.">

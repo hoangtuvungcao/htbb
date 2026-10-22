@@ -80,6 +80,8 @@ số khoá và cột phân loại `lop` của danh mục cấu hình. `nang_cap.
       `data_bat_chuyen_doi`, cột `data_bat_loai.tien_hoa_trao_doi`, nhật ký `tob_log_trao_doi_pokemon`;
     - `them_kenh_chat.sql` (kenh-chat): hộp thư tin riêng offline `tob_chat_cho`, danh sách chặn `tob_chat_chan`;
     - `them_ngam_tay_pvp.sql` (pvp-keo): `data_chieu_ban` (kiểu bắn từng chiêu cho ngắm tay PvP, `INSERT IGNORE`);
+    - `sua_ket_doi.sql` (ket-doi): Lễ kết đôi thay đám cưới - `data_nhom_trung_ten`, `data_nhom_trung` (nhóm trứng 21 loài),
+      đổi tên vật phẩm 88–92, 98, 751 và bản đồ 225 / 226 (chỉ ô còn tên cũ);
     - `them_ve_mo_rong.sql` (giao-dien-nro): cột `tob_char.o_mo_rong` (ô hành trang lẻ, `ADD COLUMN IF NOT EXISTS`) + món
       `ve_mo_rong_tui` của `nap_cua_hang`.
 

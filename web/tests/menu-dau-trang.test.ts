@@ -8,7 +8,8 @@ test('mặc định: tối đa 6–7 thứ hiện trên thanh (mục chính + Th
   const c = chiaDauTrang(chuanHoaDauTrang(CMS_MAC_DINH.menu.dauTrang))
   assert.ok(c.chinh.length + (c.them.length ? 1 : 0) + (c.nut ? 1 : 0) <= 7)
   assert.equal(c.nut?.to, '/download')
-  assert.deepEqual(c.them.map(m => m.to).sort(), ['/gioi-thieu', '/news'])
+  assert.deepEqual(c.chinh.map(m => m.to), ['/', '/news', '/cam-nang', '/pokedex', '/ranking'])
+  assert.deepEqual(c.them.map(m => m.to).sort(), ['/gioi-thieu', '/huong-dan'])
   // Mục tài khoản không nằm trong menu (chúng ở menu ảnh đại diện)
   for (const to of ['/naptien', '/thanh-vien', '/kichhoat', '/admin', '/logout']) {
     assert.ok(!CMS_MAC_DINH.menu.dauTrang.some(m => m.to === to), to)

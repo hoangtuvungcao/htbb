@@ -90,6 +90,12 @@ TEN_THUOC = {
     83: "Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.",
     84: "Thuốc X",
     86: "Sáo gọi Moltres",
+    # Le ket doi (thay dam cuoi cu): nhan thuong cap doi, thiep moi, vat pham dich chuyen toi ban ket doi.
+    88: "Nhẫn kết đôi đồng 2%pt",
+    89: "Nhẫn kết đôi bạc 4%pt",
+    90: "Nhẫn kết đôi vàng 7%pt",
+    92: "Thiệp mời kết đôi",
+    98: "Vảy trái tim kết đôi",
     93: "Thuốc hồi máu 7k",
     94: "Thuốc hồi máu 15k",
     95: "Ether 7k",

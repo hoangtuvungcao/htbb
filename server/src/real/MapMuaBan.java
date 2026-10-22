@@ -185,7 +185,7 @@ class MapMuaBan {
                         }
 
                         if (from == 1 && p.idWedding > -1) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Người bạn muốn mời đã đồng ý tham dự 1 tiệc cưới khác.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Người bạn muốn mời đã nhận lời dự một Lễ kết đôi khác.", ""));
                             return;
                         }
 

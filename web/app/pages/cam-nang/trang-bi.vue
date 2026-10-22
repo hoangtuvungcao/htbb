@@ -78,8 +78,8 @@ const giaNgoc = Array.from({ length: ngoc.capToiDa }, (_, i) => ({ cap: i + 1, g
       </WikiCallout>
     </WikiSection>
 
-    <WikiCallout kieu="sap-ra-mat" title="Sắp có (dự kiến 0.9.7): độ hiếm trang bị">
-      Bậc trang bị ở trên (theo cấp) giữ nguyên. Bản 0.9.7 dự kiến thêm <strong>độ hiếm</strong> 5 mức (Thường, Hiếm, Quý, Sử thi,
+    <WikiCallout kieu="sap-ra-mat" title="Sắp có: độ hiếm trang bị">
+      Bậc trang bị ở trên (theo cấp) giữ nguyên. Bản cập nhật tới sẽ thêm <strong>độ hiếm</strong> 5 mức (Thường, Hiếm, Quý, Sử thi,
       Huyền thoại) với dòng chỉ số hiếm có giới hạn — chưa có trong game hiện tại. Mọi trang bị đã có vẫn dùng bình thường.
     </WikiCallout>
 

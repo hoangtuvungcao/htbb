@@ -622,9 +622,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
                     p = CharManager.instance.getByUserID(session.userID);
-                    menu = new String[]{"Đăng ký tiệc cưới", "Vào tiệc cưới", "Khai tiệc"};
+                    menu = new String[]{"Đăng ký Lễ kết đôi", "Vào Lễ kết đôi", "Khai lễ"};
                     if (!p.nameHusband_wife.equals("")) {
-                        menu = new String[]{"Đăng ký tiệc cưới", "Vào tiệc cưới", "Khai tiệc", "Ly dị (150 lượng)", "Đơn phương ly dị (300 lượng)"};
+                        menu = new String[]{"Đăng ký Lễ kết đôi", "Vào Lễ kết đôi", "Khai lễ", "Huỷ kết đôi (150 lượng)", "Đơn phương huỷ (300 lượng)"};
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);

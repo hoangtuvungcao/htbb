@@ -2544,6 +2544,7 @@ public class Map implements Runnable {
         Map.npcReceiveCard.add(new Vector<>());
         Map.npcReceiveCard.add(new Vector<>());
         Map.allWedding = Database.instance.loadWedding();
+        com.htbb.pokemon.KetDoi.nap(); // nhom trung cho Le ket doi (sql/sua_ket_doi.sql)
         Map.potionTemplates2 = Database.instance.loadPotionTemplate();
         kiemTraSoDongPotion();
        loadShop();
@@ -10321,24 +10322,24 @@ public class Map implements Runnable {
                         p.potions[92]--;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                        p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã nhận lời tham gia tiệc cưới của bạn", ""));
+                        p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã nhận lời dự Lễ kết đôi của bạn", ""));
                         player.sendMessage(
                                 MessageCreator.createServerAlertMessage(
-                                        "Bạn đã nhận lời tham gia tiệc cưới của " + p.charname + ". Tiệc cưới sẽ diễn ra ngày " + wd.dayParty, ""
+                                        "Bạn đã nhận lời dự Lễ kết đôi của " + p.charname + ". Lễ diễn ra ngày " + wd.dayParty, ""
                                 )
                         );
-                        Database.instance.saveOrtherLog("", player.charname, "ok wedding " + p.charname, "okIVT");
+                        Database.instance.saveOrtherLog("", player.charname, "ok ket doi " + p.charname, "okIVT");
                         wd.listMember.put(player.charDBID, player.userID);
                         player.pInviteWedding = "";
                     }
                 } else if (idpopup == 8 && idActor == player.id) {
                     if (player.gender == 2) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có bạn đời của bạn mới có thể chọn chức năng này.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Pokémon đực trong cặp đôi đứng ra huỷ kết đôi, hoặc chọn đơn phương huỷ kết đôi.", ""));
                         return;
                     }
 
                     if (player.party == null || player.party != null && !player.party.checkConditionLydi()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điều kiện để ly dị.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Hãy lập nhóm hai người với bạn kết đôi để cùng huỷ kết đôi.", ""));
                         return;
                     }
 
@@ -10354,17 +10355,17 @@ public class Map implements Runnable {
 
                     Char p = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                     if (p == null) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn hiện tại chưa online", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn kết đôi của bạn hiện chưa online", ""));
                         return;
                     }
 
                     if (player.getLuong() < 150) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 150 lượng mới có thể ly dị được.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 150 lượng mới có thể huỷ kết đôi.", ""));
                         return;
                     }
 
                     if (p.getLuong() < 150) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đời của bạn phải có 150 lượng mới có thể ly dị được.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn kết đôi của bạn phải có 150 lượng mới có thể huỷ kết đôi.", ""));
                         return;
                     }
 
@@ -10379,7 +10380,7 @@ public class Map implements Runnable {
                     player.idWedding = -1;
                     player.subLuong(150L);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + p.charname + " đã ly dị.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + p.charname + " đã huỷ kết đôi.", ""));
                     p.nameHusband_wife = "";
                     p.married = 0;
                     p.potions[92] = 0;
@@ -10390,7 +10391,7 @@ public class Map implements Runnable {
                     p.idWedding = -1;
                     p.subLuong(150L);
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                    p.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + player.charname + " đã ly dị.", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + player.charname + " đã huỷ kết đôi.", ""));
                     Database.instance.saveOrtherLog("", player.charname, p.charname, "lydi");
                     p.calculateAttrib();
                     player.calculateAttrib();
@@ -10408,7 +10409,7 @@ public class Map implements Runnable {
                     }
 
                     if (player.getLuong() < 300) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 300 lượng mới có thể đơn phương ly dị được.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có 300 lượng mới có thể đơn phương huỷ kết đôi.", ""));
                         return;
                     }
 
@@ -10422,7 +10423,7 @@ public class Map implements Runnable {
                     player.idWedding = -1;
                     player.subLuong(300L);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + player.nameHusband_wife + " đã ly dị.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + player.nameHusband_wife + " đã huỷ kết đôi.", ""));
                     Char px = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                     if (px != null) {
                         px.nameHusband_wife = "";
@@ -10433,7 +10434,7 @@ public class Map implements Runnable {
                         px.potions[90] = 0;
                         px.potions[98] = 0;
                         px.idWedding = -1;
-                        px.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + player.charname + " đã ly dị.", ""));
+                        px.sendMessage(MessageCreator.createServerAlertMessage("Bạn và " + player.charname + " đã huỷ kết đôi.", ""));
                         px.sendMessage(MessageCreator.createCharInventoryMessage(px, 0));
                         px.calculateAttrib();
                         px.sendMessage(MessageCreator.createMainCharInfoMessage(px));
@@ -15506,11 +15507,11 @@ public class Map implements Runnable {
                     Wedding wd = (Wedding) allWedding.get(player.idWedding);
                     if (wd != null) {
                         if (wd.idP1 == player.charDBID || wd.idP2 == player.charDBID) {
-                            DungVatPham.loi(player, "Thiệp cưới của tiệc cưới bạn tổ chức không bỏ được.");
+                            DungVatPham.loi(player, "Thiệp mời kết đôi của Lễ kết đôi bạn tổ chức không bỏ được.");
                             return;
                         }
 
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Thiệp cưới đã bị hủy. Bạn có thể nhận lời mời tham gia tiệc cưới khác.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Thiệp mời kết đôi đã bị huỷ. Bạn có thể nhận lời mời dự Lễ kết đôi khác.", ""));
                     } else {
                         player.idWedding = -1;
                     }

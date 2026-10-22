@@ -27,6 +27,8 @@ function taoPool(dbName: string): Pool {
     charset: 'utf8mb4',
     waitForConnections: true,
     connectionLimit: 10,
+    // CSDL chậm / mất kết nối: báo lỗi sau 4 giây (mặc định 10 giây) để trang công khai rơi về nội dung mặc định nhanh.
+    connectTimeout: 4000,
     // Trả DATETIME dạng chuỗi 'YYYY-MM-DD HH:MM:SS' đúng như trong DB, tránh lệch
     // múi giờ khi driver tự đổi sang Date.
     dateStrings: true,

@@ -2309,7 +2309,7 @@ public class GameScr extends Screen {
                         }
                     }));
                 }
-                menuItems.addElement(new Command("Mời đám cưới", new IAction() {
+                menuItems.addElement(new Command("Mời dự Lễ kết đôi", new IAction() {
                     @Override
                     public void perform() {
                         GameScr.this.gameService.invite2Party(GameScr.this.focusedActor.ID, 3);

@@ -15,7 +15,7 @@ const soMapHoLon = C.ban.filter(b => b.hoLon > 0).length
 
 <template>
   <WikiShell slug="cau-ca">
-    <WikiCallout kieu="sap-ra-mat" title="Thuộc hệ sinh thái (đang thử nghiệm)">
+    <WikiCallout kieu="sap-ra-mat" title="Thuộc hệ sinh thái — sắp mở">
       Câu cá là một kỹ năng sống của <NuxtLink to="/cam-nang/he-sinh-thai" class="lien-ket">hệ sinh thái</NuxtLink>, mở theo thông báo trong game.
     </WikiCallout>
 

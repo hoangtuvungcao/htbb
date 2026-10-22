@@ -48,6 +48,18 @@ public final class KiemThuatNgu {
         Kiem.dung("ngoai le khong bi bat (thành phố, tìm kiếm, Múa kiếm, BANG DIEU KHIEN)",
                 conTu("Hoàn thành nhiệm vụ ở thành phố, tìm kiếm Múa kiếm").isEmpty()
                         && conTu("BANG DIEU KHIEN - so lieu").isEmpty());
+        // Le ket doi (docs/thiet-ke-game.md 10.1): chu dam cuoi cu bi bat, chu moi + "thú cưỡi" (dau nga) thi khong.
+        for (final String cu : new String[]{"Mời đám cưới", "Vào tiệc cưới", "Thiệp cưới", "Chỉ người độc thân mới có thể kết hôn",
+                "Bạn và A đã ly dị.", "Bạn đời của bạn", "vợ chồng", "ly hôn", "hôn nhân"}) {
+            Kiem.dung("bat duoc chu dam cuoi cu: " + cu, !conTu(cu).isEmpty());
+        }
+        Kiem.dung("chu Le ket doi + thu cuoi khong bi bat",
+                conTu("Mời dự Lễ kết đôi, Thiệp mời kết đôi, Nhẫn kết đôi vàng, bạn kết đôi, cặp đôi, huỷ kết đôi, "
+                        + "Chưa kết đôi, cưỡi thú cưỡi, nụ cười, Lễ kết đôi 1").isEmpty());
+        Kiem.bang("tu dien doi: Đăng ký tiệc cưới", "Đăng ký Lễ kết đôi", ChuPokemon.doi("Đăng ký tiệc cưới"));
+        Kiem.bang("tu dien doi: Ly dị (150 lượng)", "Huỷ kết đôi (150 lượng)", ChuPokemon.doi("Ly dị (150 lượng)"));
+        Kiem.bang("tu dien doi: Độc thân", "Chưa kết đôi", ChuPokemon.doi("Độc thân"));
+        Kiem.bang("tu dien doi: Phù phu thê", "Vảy trái tim kết đôi", ChuPokemon.doi("Phù phu thê"));
 
         quet("src", "server Java", ".java", false);
         quet("../client_jar/src", "client J2ME", ".java", true);
@@ -311,13 +323,26 @@ public final class KiemThuatNgu {
         }
     }
 
+    /** Xoa chu trong dieu kien WHERE cua cac lenh UPDATE (ten cu de doi ten), giu nguyen so dong. */
+    static String boWhereDoiTen(final String s) {
+        final StringBuilder b = new StringBuilder(s.length());
+        for (final String d : s.split("\n", -1)) {
+            final int w = d.indexOf("WHERE ");
+            b.append(w >= 0 && (d.trim().startsWith("WHERE ") || d.startsWith("UPDATE ")) ? d.substring(0, w) + d.substring(w).replaceAll("'[^']*'", "''") : d)
+                    .append('\n');
+        }
+        return b.toString();
+    }
+
     private static void quetSql() {
         // Du lieu game nam trong MOT tep day du (va tep nang cap) - quet chu nguoi choi thay o hai tep do.
         int n = 0;
         for (final File f : new File[]{new File("../sql/htbb_day_du.sql"), new File("../sql/nang_cap.sql")}) {
             if (f.isFile()) {
                 n++;
-                chuoiSql(f.getPath(), doc(f), false);
+                // Dieu kien WHERE cua lenh doi ten (khoi sua_ket_doi.sql: "... WHERE `name` IN ('ten cu')") la ten CU can
+                // tim de doi, khong phai chu nguoi choi thay: thay bang chuoi rong (giu so dong cho bao loi).
+                chuoiSql(f.getPath(), boWhereDoiTen(doc(f)), false);
             }
         }
         Kiem.bang("co sql/htbb_day_du.sql va sql/nang_cap.sql", 2, n);

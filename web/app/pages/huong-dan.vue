@@ -53,7 +53,7 @@ const DIEU_KHIEN = [
   { viec: 'Tự động đánh', dt: 'Phím # → Tự động đánh', cam: 'Viên AUTO bật / tắt; bánh răng cạnh AUTO (hoặc Menu → Tự động đánh) mở bảng cài đặt' },
   { viec: 'Mở menu', dt: 'Phím chọn trái', cam: 'Nút Poké Ball (Menu)' },
   { viec: 'Chat', dt: 'Phím # → Chat (menu nhanh)', cam: 'Nút chat (bong bóng)' },
-  { viec: 'Nhập giftcode', dt: 'Menu → Thư/Quà → Nhập giftcode (từ 0.9.6)', cam: 'Menu → Thư/Quà → Nhập giftcode (từ 0.9.6)' },
+  { viec: 'Nhập giftcode', dt: 'Menu → Thư/Quà → Nhập giftcode', cam: 'Menu → Thư/Quà → Nhập giftcode' },
   { viec: 'Tương tác người chơi', dt: 'Phím * (mời nhóm, giao dịch, kết bạn, xuống thú)', cam: 'Chạm vào người chơi' },
 ]
 /**

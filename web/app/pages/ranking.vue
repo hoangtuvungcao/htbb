@@ -71,7 +71,7 @@ const VUNG = ['Kanto', 'Johto', 'Hoenn']
 const rows = computed<RankRow[]>(() => dongTrang.value.map((d) => {
   const nhan: string[] = []
   if (d.vung >= 0 && d.vung <= 2) nhan.push(VUNG[d.vung]!)
-  if (d.shiny) nhan.push('✦ Shiny')
+  if (d.shiny) nhan.push('Shiny')
   if (d.bac) nhan.push(d.bac)
   // 0.9.7 danh hiệu đang đeo (data_danh_hieu): chip màu độ hiếm chung (cùng màu trong game)
   const bac = d.danhHieu?.ten ? bacDanhHieu(d.danhHieu.doHiem) : null
@@ -100,7 +100,7 @@ const luaBang = computed(() => dsBang.value.map(b => ({ label: b.ten, value: b.m
     <SitePageBanner
       title="Bảng xếp hạng"
       eyebrow="Bảng vàng Pokémon"
-      intro="Số liệu lấy thẳng từ máy chủ game — bảng nào có trong menu “Bảng Top” của game thì web xếp y hệt."
+      intro="Cùng các bảng với menu “Bảng Top” trong game, cập nhật liên tục."
     />
 
     <section class="relative py-12 sm:py-16" aria-labelledby="xh-tieu-de">

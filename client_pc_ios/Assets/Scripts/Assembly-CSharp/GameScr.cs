@@ -2964,7 +2964,7 @@ public class GameScr : MyScreen
 				};
 				command2.action = action2;
 				mVector2.addElement(command2);
-				Command command3 = new Command("Mời đám cưới");
+				Command command3 = new Command("Mời dự Lễ kết đôi");
 				ActionPerform action3 = () =>
 				{
 					gameService.invite2Party(focusedActor.ID, 3);
