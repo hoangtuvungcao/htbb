@@ -325,13 +325,13 @@ Phần dưới đây **sinh tự động** từ `tools/cauhinh/danh_muc.json`.
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->
 
-Tổng cộng **269 khoá** trong **17 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
+Tổng cộng **277 khoá** trong **18 nhóm**. Phân loại (trường `lop` trong `danh_muc.json`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 178 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
-| **Luôn bật** (`luon_bat`) | 21 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 185 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Luôn bật** (`luon_bat`) | 22 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
@@ -456,7 +456,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (199)
+### Khoá ẩn: cố định & luôn bật (207)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -743,5 +743,18 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `sv.choPhepTaoTenGM` | Cho tạo Pokémon tên GM | Cố định (ẩn) | `0` | ngay | game | Chỉ bật tạm thời. |
 | `sv.testMode` | Chế độ thử (testMode) | Cố định (ẩn) | `0` | ngay | game | Mã test cấp tài nguyên miễn phí. Khoá ở máy thật. (máy thật chỉ nhận mặc định) |
 | `sv.testCode` | Mã test | Cố định (ẩn) | *(trống)* | ngay | game | Chuỗi gõ trong game khi testMode=1. (máy thật chỉ nhận mặc định) |
+
+#### Loài Pokémon hoang dã (`loai`)
+
+| Khoá | Tên | Lớp | Giá trị | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|
+| `loai.bat` | Loài riêng từng con quái | Luôn bật (ẩn) | `1` | ngay | game | 1 = khi quái thường hồi sinh, máy chủ có thể đổi loài hiển thị theo vùng sinh thái + dải cấp + bậc hiếm (data_loai_vung). Cấp, HP, TTK của quái không đổi. 0 = mọi quái mang loài mặc định của mẫu. |
+| `loai.ban_client` | Bản client tối thiểu thấy loài riêng | Cố định (ẩn) | `909` | ngay | game | Client có số bản nhỏ hơn chỉ thấy loài mặc định của mẫu quái (gói -125 không gửi; Pokédex ghi loài mặc định). |
+| `loai.doi_thuong_phan_tram` | Quái thường đổi loài T1–T2 (%) | Cố định (ẩn) | `30` | ngay | game | % lần hồi sinh của quái thường được đổi sang một loài Phổ biến / Không phổ biến khác của vùng (quần thể vùng). 0 = chỉ còn lượt gặp loài hiếm. |
+| `loai.gap_t3` | Gặp loài T3: 1 / N lần hồi sinh | Cố định (ẩn) | `100` | ngay | game | Spec 2.4: 100. |
+| `loai.gap_t4` | Gặp loài T4: 1 / N lần hồi sinh | Cố định (ẩn) | `600` | ngay | game | Spec 2.4: 600. |
+| `loai.gap_t5` | Gặp loài T5: 1 / N lần hồi sinh | Cố định (ẩn) | `4000` | ngay | game | Spec 2.4: 4.000, và chỉ khi đúng khung giờ hoặc đúng thời tiết của loài. |
+| `loai.he_so_toi_da_phan_tram` | Trần hệ số gặp (%) | Cố định (ẩn) | `300` | ngay | game | Tích các hệ số (giờ ít người ×1,5, thời tiết hợp hệ ×1,5) bị kẹp ở mức này. Spec 2.4: ×3. |
+| `loai.sprite_kb_giay` | Tốc độ gửi hình theo nhu cầu (KB/giây/người) | Cố định (ẩn) | `64` | ngay | game | Trần băng thông gói -126 cho mỗi client (spec 3.5: 64). |
 
 <!-- SINH TU tools/cauhinh/danh_muc.json: KET THUC -->

@@ -181,9 +181,14 @@ biến thể của Java).
 | `-102` / `-103` | Ngoại hình | S→C / C→S | Phụ kiện hiển thị trên thân Pokémon và cài đặt ẩn/hiện ([NgoaiHinh.java](../server/src/com/htbb/pokemon/NgoaiHinh.java)) | |
 | `-104` | Kết quả dùng vật phẩm | S→C | `u8 loại (0 xong, 1 không dùng được, 2 tin), UTF nội dung` — thông báo nhanh sau lệnh `29` / `22` ([DungVatPham.java](../server/src/real/DungVatPham.java), client [DungDo.java](../client_jar/src/game/pokemon/DungDo.java)) | Chỉ gửi cho client bản ≥ 902; bản cũ / Unity nhận hộp thoại `37` |
 | `-110` / `-111` | Danh hiệu | S→C / C→S | `-110`: `u8 0` bảng danh hiệu của mình, `u8 1` nhãn danh hiệu đang đeo của một nhân vật (`i16 charId, i16 id, UTF tên, u8 độ hiếm`, kèm cuối chuỗi `-90 → … → -102`), `u8 2` số danh hiệu mới; `-111`: xin bảng / đeo / tháo / đã xem ([DanhHieuGame.java](../server/src/real/DanhHieuGame.java), [DanhHieuLogic.java](../server/src/com/htbb/pokemon/DanhHieuLogic.java), client [DanhHieuKho.java](../client_jar/src/game/pokemon/DanhHieuKho.java)) | Chỉ gửi cho client bản ≥ 907 (bản 906 đã phát hành không có bộ xử lý) |
+| `-125` | POKE_QUAI_CON | S→C | `u8 n`, n × (`i16 idQuai, i16 dex, u8 shiny, u8 bậc`); `dex = 0` = vẽ loài mặc định của mẫu | Ngay sau gói `4` thêm một quái đang mang loài riêng (hoặc vừa trả về loài mẫu). **Chỉ client ≥ `loai.ban_client` (909)**; client cũ thấy loài của mẫu ([LoaiQuaiGame.java](../server/src/real/LoaiQuaiGame.java), [GoiLoai.java](../server/src/com/htbb/pokemon/GoiLoai.java), client [LoaiMang.java](../client_jar/src/game/pokemon/LoaiMang.java)) |
+| `-126` | POKE_LOAI | C↔S | byte đầu = kiểu: `0` sprite theo nhu cầu (C→S `i16 dex, u8 shiny`; S→C `i16 dex, u8 shiny, i32 tổng, i32 vị trí, u16 len, byte` theo khúc 4 KB, `tổng = 0` = máy chủ không có), `1` bảng 1.025 loài (C→S `i32 băm`; S→C `i32 băm, u16 n, n × (i16 dex, UTF tên, i8 hệ1, i8 hệ2, u8 bậc, u8 thế hệ, u8 cờ)`), `2` bảng không đổi (`i32 băm`), `3` Pokédex (S→C `u16 n, n × (i16 dex, u8 cờ gặp / hạ / bắt)`) ([LoaiMayChu.java](../server/src/real/LoaiMayChu.java)) | Client hỏi khi cần; sprite tối đa `loai.sprite_kb_giay` (64 KB/s) mỗi client, gói nằm ở `server/map/loai/<NNNN>.goi` |
 
-Sprite Pokémon **đóng gói sẵn trong client**. Server chỉ gửi số `dex` và cờ `shiny`. Lý do: đường gửi ảnh cũ của server
-dùng toạ độ u8 và kích thước sbyte, không chứa nổi khung hình PMD.
+Sprite Pokémon của các loài có sẵn **đóng gói trong client**; server chỉ gửi số `dex` và cờ `shiny`. Lý do: đường gửi ảnh
+cũ của server dùng toạ độ u8 và kích thước sbyte, không chứa nổi khung hình PMD. Loài **không có trong jar** (Gen 1–2 đợt
+A trở đi) tải theo nhu cầu qua `-126`: gói `HTPK` một loài (`server/map/loai/<NNNN>.goi`, cùng định dạng `res/pk`), client
+J2ME lưu RMS mỗi loài một store, ngân sách 1 MB, xoá theo LRU ([KhoSprite.java](../client_jar/src/game/pokemon/KhoSprite.java));
+đang tải thì vẽ bóng đen. Template quái vẫn ≤ 255: loài là **dex gắn từng con quái** (`-125`), không thêm template.
 
 Giới hạn cứng phía client cần nhớ khi thêm dữ liệu:
 
@@ -286,6 +291,7 @@ che mật khẩu khỏi stdout. Web đọc thông số CSDL từ `server.ini` v�
 |---|---|---|---|
 | `data_*` template gốc | `data_item`, `data_monster`, `data_potion`, `data_shop`, `data_quest`, `data_attribute` | SQL sinh ra (`sql/pokemon_*.sql`) | Server nạp **một lần lúc khởi động** (`Database.startSaveChar` → `Map.loadAllTemplate`). Sửa xong phải khởi động lại |
 | `data_*` nội dung mới | `data_noi_dung_*`, `data_*_lau_dai`, `data_hst_*`, `data_nhiem_vu_*`, `data_su_kien_nam` | Bộ sinh `tools/pokemon/*` | Bảng "staging" cho nội dung dài hạn, hệ sinh thái, nhiệm vụ |
+| `data_loai*` loài đầy đủ | `data_loai` (1.025 loài), `data_loai_tien_hoa`, `data_chieu`, `data_loai_chieu`, `data_loai_vung`, `data_loai_sprite`, `data_loai_khu_vuc_map` (+ `data_nhom_trung*` của ket-doi, `data_bat_loai` / `data_bat_chi_so_loai` của bat-trade) | `sql/them_loai_day_du.sql` sinh bởi `tools/pokemon/loai/sinh_loai.py` (PokeAPI ghim commit) | Server nạp lúc cần và nạp lại mỗi 5 phút ([LoaiQuaiGame.java](../server/src/real/LoaiQuaiGame.java)); web `/pokedex` đọc thẳng. Mở đợt loài = bật `data_loai.bat` + thêm `data_loai_vung` |
 | `tob_*` dữ liệu người chơi | `tob_char` (cột `pInfo`, `equip`/`inven`/`bag` dạng chuỗi, `dex`, `shiny`), `tob_clan`, `tob_animal`, `tob_pet`, `tob_market`, `tob_friendlist`, `tob_pokedex*`, `tob_char_lau_dai`, `tob_hst_*` | Game server | Ghi đè bằng bản trong RAM khi lưu, nên **web không được ghi thẳng** vào nhân vật đang chơi (mục 5.1) |
 | Bật/tắt sự kiện | `tob_su_kien` | Web `/admin/sukien` | Game đọc lúc khởi động (`real.SuKien`) và theo lịch (`real.LichSuKien`) |
 | Cấu hình | `cau_hinh`, `cau_hinh_*`, `nap_cau_hinh` | Web, game | Mục 6 |

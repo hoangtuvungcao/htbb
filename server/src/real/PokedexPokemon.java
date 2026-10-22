@@ -63,6 +63,18 @@ public final class PokedexPokemon {
         return cu != null ? cu : d;
     }
 
+    /**
+     * Loai cua quai NGUOI CHOI {@code p} nhin thay: loai rieng tung con (real.LoaiQuaiGame, client >= loai.ban_client)
+     * hoac loai cua mau (client cu thay loai mau - Pokedex ghi dung thu ho thay).
+     */
+    static int dexQuai(final Char p, final LiveActor a) {
+        if (a instanceof Monster) {
+            return LoaiQuaiGame.dexChoNguoi(p, (Monster) a);
+        }
+        return 0;
+    }
+
+    /** Loai cua MAU quai (khong tinh loai rieng). */
     static int dexQuai(final LiveActor a) {
         if (!(a instanceof Monster)) {
             return 0;
@@ -78,7 +90,7 @@ public final class PokedexPokemon {
     /** Nhan vat danh trung mot quai: ghi "da gap". */
     public static void khiDanh(final Char p, final LiveActor actor) {
         try {
-            final int dex = dexQuai(actor);
+            final int dex = dexQuai(p, actor);
             if (dex <= 0) {
                 return;
             }
@@ -95,7 +107,7 @@ public final class PokedexPokemon {
     /** Quai chet, {@code p} nhan do: ghi "da ha". */
     public static void khiHaQuai(final Char p, final Monster quai) {
         try {
-            final int dex = dexQuai(quai);
+            final int dex = dexQuai(p, quai);
             if (dex <= 0) {
                 return;
             }
@@ -138,6 +150,9 @@ public final class PokedexPokemon {
 
     static String tenLoai(final int dex) {
         String ten = LoaiPokemon.ten(dex);
+        if (ten == null || ten.isEmpty()) {
+            ten = LoaiQuaiGame.bang().ten(dex);
+        }
         if (ten == null || ten.isEmpty()) {
             for (final MonsterTemplate t : Map.monsterTemplates.values()) {
                 if (t != null && t.dex == dex && t.name != null && !t.name.isEmpty()) {
@@ -188,6 +203,11 @@ public final class PokedexPokemon {
         final Pokedex d = lay(p);
         if (d == null) {
             baoLoi(p, "Pokédex tạm thời không đọc được, thử lại sau.");
+            return;
+        }
+        final com.htbb.pokemon.LoaiDuLieu bangLoai = LoaiQuaiGame.bang();
+        if (!bangLoai.rong()) {
+            baoLoi(p, com.htbb.pokemon.PokedexDayDu.tomTat(d, bangLoai));
             return;
         }
         final int tong = Pokedex.tongLoai(dexTemplate());

@@ -965,6 +965,24 @@ SET NAMES utf8;
     out.append(khoi_insert("data_loai_vung", cot, dong, ["`%s` = VALUES(`%s`)" % (c, c) for c in cot[3:]]))
     out.append("")
 
+    out.append("""-- Khu vuc dia ly cua ban do (ban sao du_lieu/vung_map.csv): may chu ghep voi data_hst_vung de chon loai.
+CREATE TABLE IF NOT EXISTS `data_loai_khu_vuc_map` (
+  `map_id` SMALLINT NOT NULL,
+  `khu_vuc` VARCHAR(8) NOT NULL,
+  PRIMARY KEY (`map_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+""")
+    km = []
+    with open(os.path.join(GOC, "du_lieu", "vung_map.csv"), encoding="utf8") as f:
+        for dong_ in f:
+            dong_ = dong_.strip()
+            if not dong_ or dong_.startswith("#") or dong_.startswith("id;"):
+                continue
+            a, b_ = dong_.split(";")
+            km.append([int(a), b_])
+    out.append(khoi_insert("data_loai_khu_vuc_map", ["map_id", "khu_vuc"], km, ["`khu_vuc` = VALUES(`khu_vuc`)"]))
+    out.append("")
+
     out.append("""CREATE TABLE IF NOT EXISTS `data_loai_sprite` (
   `dex` SMALLINT NOT NULL,
   `trang_thai` TINYINT NOT NULL DEFAULT 0 COMMENT '0 thieu (chi Pokedex), 1 dung duoc, 2 du dong tac',

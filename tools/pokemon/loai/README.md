@@ -60,3 +60,22 @@ Tên tệp và nội dung giống hệt `client_jar/res/pk`, nên `PokeBody` đ�
 - Toàn bộ 1.025 loài: PMDCollab có sprite dùng được 961, đủ động tác 200, chân dung 1.025, thiếu 64
   (Gen 5: 15, Gen 6: 2, Gen 7: 5, Gen 8: 12, Gen 9: 30).
 - Đợt sau (Gen 3+): chạy lại bước 2–5 với dải số mới, ví dụ `tai_sprite_loai.py 252 386` và `DongGoiLoai 252 386`.
+
+## Dữ liệu loài (một nguồn → SQL)
+
+| Bước | Lệnh | Ra |
+|---|---|---|
+| Tải nguồn ghim commit (một lần) | `python3 -I tools/pokemon/loai/sinh_loai.py --tai` | `tools/pokemon/nguon_loai/<nguồn>-<commit>/` (không commit, trừ LICENSE) + `nguon.txt` (URL, SHA-256) |
+| Sinh | `python3 -I tools/pokemon/loai/sinh_loai.py` | `sql/them_loai_day_du.sql` (nguồn sự thật khi triển khai), `du_lieu/loai/*.csv` (bản xem), `du_lieu/loai/doi_chieu.txt` |
+
+- Nguồn: PokeAPI `data/v2/csv` commit `2bf639e5572812a67d2b94903fdcb9d095f5aeb2` (BSD-3-Clause), đối chiếu chéo Pokémon
+  Showdown `data/pokedex.ts` commit `d601443456c795f77c6e4f2b5b459167f2b10a3c` (MIT), trạng thái sprite từ `tracker.json`
+  PMDCollab. Văn bản giấy phép: `docs/giay-phep.md` mục 8.
+- Chỗ **duy nhất** sửa tay: `loai_duyet.json` (đợt mở, luật bậc + ghi đè, môi trường → vùng sinh thái, dải cấp, vật phẩm
+  tiến hoá, danh mục chiêu dùng chung + chiêu đặc trưng, lệch Showdown đã chấp nhận). Sửa xong chạy lại bộ sinh và
+  `server/test` (`KiemLoaiDayDu`).
+- Bộ sinh dừng (mã 1) nếu: chuỗi tiến hoá thiếu / có vòng, hệ sai, loài thiếu chiêu hoặc trùng chiêu, chiêu đặc trưng
+  gán cho họ dưới T4, loài thuộc đợt đang mở mà không có hình, lệch Showdown ngoài danh sách cho phép.
+- **Mở đợt mới** (vd Gen 3): thêm số đợt vào `dot_mo.dang_mo`, tải + đóng gói sprite (bảng trên), thêm khu vực nhà
+  (`vung.nha`), chiêu đặc trưng cho họ T4–T6 / khởi đầu của thế hệ đó, chạy lại bộ sinh rồi chạy tệp SQL trên máy chủ
+  (máy chủ tự nạp lại bảng loài ≤ 5 phút).

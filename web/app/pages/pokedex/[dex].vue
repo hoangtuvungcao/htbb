@@ -271,7 +271,7 @@ const chanDung = computed(() => (l ? anhLoaiDex(l) : '') || chanDungLoai(dex))
         </h2>
         <p class="mt-2 text-sm text-muted">
           Chỉ số nền theo loài (dữ liệu chuẩn). Dùng cho Pokémon trong Hộp PC, bạn đồng hành và Đấu trường Bảo Bối —
-          không cộng vào chỉ số nhân vật.
+          không cộng vào chỉ số của người chơi.
         </p>
         <dl class="mt-5 space-y-2">
           <div v-for="c in TEN_CHI_SO" :key="c.ma" class="grid grid-cols-[7rem_3rem_1fr] items-center gap-3">

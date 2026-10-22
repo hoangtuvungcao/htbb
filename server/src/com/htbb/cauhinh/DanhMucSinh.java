@@ -28,6 +28,7 @@ final class DanhMucSinh {
         {"hoi_sinh", "Hồi sinh — luật (cố định)"},
         {"thong_bao", "Thông báo (cố định)"},
         {"quan_tri", "Quản trị & thử nghiệm (cố định)"},
+        {"loai", "Loài Pokémon hoang dã"},
     };
 
     static DinhNghiaKhoa[] tatCa() {
@@ -984,6 +985,37 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("cau_ca.trong_toi_da_phan_tram", "kinh_te", "so", "75", true, "cau_hinh")
                     .nhan("Câu cá: tỉ lệ không được gì tối đa (%)", "Trần của tỉ lệ không được gì sau khi cộng giảm theo giờ.")
                     .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.bat", "loai", "co", "1", true, "cau_hinh")
+                    .nhan("Loài riêng từng con quái", "1 = khi quái thường hồi sinh, máy chủ có thể đổi loài hiển thị theo vùng sinh thái + dải cấp + bậc hiếm (data_loai_vung). Cấp, HP, TTK của quái không đổi. 0 = mọi quái mang loài mặc định của mẫu.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("loai.ban_client", "loai", "so", "909", true, "cau_hinh")
+                    .nhan("Bản client tối thiểu thấy loài riêng", "Client có số bản nhỏ hơn chỉ thấy loài mặc định của mẫu quái (gói -125 không gửi; Pokédex ghi loài mặc định).")
+                    .khoang(0L, 99999L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.doi_thuong_phan_tram", "loai", "so", "30", true, "cau_hinh")
+                    .nhan("Quái thường đổi loài T1–T2 (%)", "% lần hồi sinh của quái thường được đổi sang một loài Phổ biến / Không phổ biến khác của vùng (quần thể vùng). 0 = chỉ còn lượt gặp loài hiếm.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.gap_t3", "loai", "so", "100", true, "cau_hinh")
+                    .nhan("Gặp loài T3: 1 / N lần hồi sinh", "Spec 2.4: 100.")
+                    .khoang(1L, 1000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.gap_t4", "loai", "so", "600", true, "cau_hinh")
+                    .nhan("Gặp loài T4: 1 / N lần hồi sinh", "Spec 2.4: 600.")
+                    .khoang(1L, 1000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.gap_t5", "loai", "so", "4000", true, "cau_hinh")
+                    .nhan("Gặp loài T5: 1 / N lần hồi sinh", "Spec 2.4: 4.000, và chỉ khi đúng khung giờ hoặc đúng thời tiết của loài.")
+                    .khoang(1L, 10000000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.he_so_toi_da_phan_tram", "loai", "so", "300", true, "cau_hinh")
+                    .nhan("Trần hệ số gặp (%)", "Tích các hệ số (giờ ít người ×1,5, thời tiết hợp hệ ×1,5) bị kẹp ở mức này. Spec 2.4: ×3.")
+                    .khoang(100L, 1000L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("loai.sprite_kb_giay", "loai", "so", "64", true, "cau_hinh")
+                    .nhan("Tốc độ gửi hình theo nhu cầu (KB/giây/người)", "Trần băng thông gói -126 cho mỗi client (spec 3.5: 64).")
+                    .khoang(4L, 4096L)
                     .lop("co_dinh"),
         };
     }
