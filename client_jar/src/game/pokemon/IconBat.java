@@ -90,6 +90,18 @@ public final class IconBat {
         return 3 * s + 2 * k;
     }
 
+    /** Icon xu PNG (/tien/xu_16|24|32.png, cùng ảnh bản J2ME) cạnh s, tâm (cx, cy); false = thiếu ảnh. */
+    public static boolean xu(Graphics g, int cx, int cy, int s) {
+        int co = s >= 28 ? 32 : s >= 20 ? 24 : 16;
+        Image img = PokeBody.napAnhChung("/tien/xu_" + co + ".png");
+        if (img == null) {
+            return false;
+        }
+        g.drawImage(img, cx, cy, Graphics.HCENTER | Graphics.VCENTER);
+        demVe++;
+        return true;
+    }
+
     /** Ô bóng theo thứ tự bóng máy chủ (1 Poké, 2 Great, 3 Ultra). */
     public static int oBong(int thuTu) {
         return thuTu == 2 ? GREAT : thuTu == 3 ? ULTRA : POKE;

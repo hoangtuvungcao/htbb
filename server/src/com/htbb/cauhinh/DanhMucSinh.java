@@ -777,6 +777,45 @@ final class DanhMucSinh {
                     .nhan("Trần phí trao đổi mỗi Pokémon (‰ giờ thu nhập)", "Phí một con không vượt chừng này phần nghìn giờ thu nhập.")
                     .khoang(0L, 20000L)
                     .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.bat", "trang_bi", "co", "1", true, "cau_hinh")
+                    .nhan("Bật chợ Pokémon", "Bán / mua Pokémon trong Hộp PC giữa người chơi (khung giá máy chủ, ký quỹ, mua nguyên tử). 0 = tạm khoá.")
+                    .lop("luon_bat"),
+            new DinhNghiaKhoa("cho_pokemon.thue_phan_tram", "trang_bi", "so", "8", true, "cau_hinh")
+                    .nhan("Thuế chợ Pokémon (%)", "Đốt khi bán được; luôn ≥ thuế chợ ký gửi (thue.cho).")
+                    .khoang(0L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.phi_dang_phan_tram", "trang_bi", "so", "1", true, "cau_hinh")
+                    .nhan("Phí đăng bán Pokémon (%)", "Đốt, không hoàn (huỷ / hết hạn cũng mất); tối thiểu 1 xu.")
+                    .khoang(0L, 20L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.cap_toi_thieu", "trang_bi", "so", "20", true, "cau_hinh")
+                    .nhan("Cấp tối thiểu chợ Pokémon", "Người bán và người mua phải đạt cấp này (ngoài cổng chống clone chung).")
+                    .khoang(1L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.toi_da_dang", "trang_bi", "so", "3", true, "cau_hinh")
+                    .nhan("Số tin bán Pokémon tối đa / người bán", "Số Pokémon đang bán cùng lúc tối đa.")
+                    .khoang(0L, 50L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.mua_ngay", "trang_bi", "so", "5", true, "cau_hinh")
+                    .nhan("Số Pokémon mua tối đa / ngày", "Mỗi người mua tối đa chừng này Pokémon ở chợ mỗi ngày.")
+                    .khoang(0L, 100L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.khoa_gio", "trang_bi", "so", "72", true, "cau_hinh")
+                    .nhan("Khoá bán lại (giờ)", "Pokémon nhận qua trao đổi / chợ phải chờ chừng này giờ mới bán được.")
+                    .khoang(0L, 720L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.han_gio", "trang_bi", "so", "48", true, "cau_hinh")
+                    .nhan("Hạn tin bán Pokémon (giờ)", "Hết hạn: Pokémon về Hộp PC người bán, phí đăng không hoàn.")
+                    .khoang(1L, 720L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.he_so_sac_mau", "trang_bi", "so", "3", true, "cau_hinh")
+                    .nhan("Hệ số khung giá sắc màu", "Nhân cả sàn lẫn trần khung giá cho Pokémon sắc màu.")
+                    .khoang(1L, 20L)
+                    .lop("co_dinh"),
+            new DinhNghiaKhoa("cho_pokemon.he_so_3_sao", "trang_bi", "so", "2", true, "cau_hinh")
+                    .nhan("Hệ số khung giá 3 sao", "Nhân cả sàn lẫn trần khung giá cho Pokémon cá thể 3 sao.")
+                    .khoang(1L, 20L)
+                    .lop("co_dinh"),
             new DinhNghiaKhoa("pvp.tinh_diem.bat", "pvp", "co", "1", true, "cau_hinh")
                     .nhan("Tính điểm thang PvP", "0 = trận PvP không cộng/trừ điểm thang.")
                     .lop("luon_bat"),

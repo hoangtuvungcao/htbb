@@ -1049,7 +1049,40 @@ Hai người chơi đổi Pokémon trong Hộp PC (`com.htbb.pokemon.TraoDoiPoke
   "Đã bắt".
 - **Nhật ký**: `tob_log_trao_doi_pokemon` (cùng giao dịch), `tob_log_chuyen_gia_tri` (ChongClone, hai chiều), nhật ký khác
   `traodoipokemon`.
-- **Chợ / sạp**: chưa bán Pokémon ở sạp người chơi (giá trị khó định, dễ thành kênh chuyển xu); chỉ trao đổi trực tiếp.
+- **Chợ**: bán / mua Pokémon qua Chợ Pokémon có khung giá (mục 7.9), không qua sạp tự do.
+
+### 7.9 Chợ Pokémon (0.9.8)
+
+Ký gửi Pokémon giữa người chơi, có kiểm soát để không lạm phát / rửa xu và loài hiếm giữ giá (`com.htbb.pokemon.ChoPokemon`
+thuần, `real.ChoPokemonGame`, CSDL `data.DatabaseChoPokemon`, client `game.pokemon.ManChoPokemon`, gói -121 kiểu 7). Mở từ
+Hộp PC (nút "Chợ Pokémon"; nút "Bán" ở thẻ một con).
+
+- **Khung giá do máy chủ tính** (`data_cho_pokemon_gia`, phần nghìn giờ thu nhập **ở cấp của con Pokémon**, không theo cấp
+  người bán): Thường 0,1–1 giờ, Ít gặp 0,3–3, Hiếm 1–10, Rất hiếm 3–30; sắc màu ×3 (`cho_pokemon.he_so_sac_mau`), 3 sao ×2
+  (`he_so_3_sao`) trên cả sàn lẫn trần. Ngoài khung: từ chối. Client hiện khung, thanh trượt chỉ chọn trong khung.
+- **Thuế** khi bán 8% (`cho_pokemon.thue_phan_tram`, luôn ≥ `thue.cho`), người bán chịu, **đốt**: người mua trả = người bán
+  nhận + thuế. **Phí đăng** 1% (tối thiểu 1 xu), đốt, không hoàn (huỷ / hết hạn cũng mất).
+- **Cổng**:
+  - chống clone cả hai bên: `ChongClone.chanMotBen` cho người bán lúc đăng và người mua; `chanChuyen(người mua → người
+    bán)` gồm giới hạn cùng thiết bị / IP mỗi ngày;
+  - người mua và người bán không được cùng tài khoản / thiết bị / IP (ghi vào tin lúc đăng);
+  - cấp ≥ 20 (`cho_pokemon.cap_toi_thieu`) cả hai bên;
+  - tối đa 3 tin đang bán / người bán, tối đa 5 lần mua / ngày / người mua;
+  - con nhận qua trao đổi / chợ trong 72 giờ (`cho_pokemon.khoa_gio`) không đăng được;
+  - huyền thoại / boss (không có dòng `data_bat_loai`) và loài chỉ sự kiện không bao giờ bán được;
+  - con đang đi theo / đang trong trao đổi không bán được.
+- **Ký quỹ**: đăng bán = một giao dịch CSDL bỏ con khỏi Hộp PC + thêm dòng `tob_cho_pokemon` (con nằm ở cột `du_lieu`). Huỷ
+  hoặc hết hạn 48 giờ (`cho_pokemon.han_gio`) = giao dịch CAS `trang_thai 0 → 3` + trả con về Hộp PC (kể cả khi hộp đầy);
+  tin hết hạn được thu hồi khi người bán vào game / mở chợ.
+- **Mua nguyên tử**: trừ xu người mua, rồi MỘT giao dịch: `UPDATE ... SET trang_thai = 1 WHERE id = ? AND trang_thai = 0 AND
+  het_han > ?` (phải đúng 1 dòng) + ghi Hộp PC người mua + nhật ký `tob_log_cho_pokemon` (giá, thuế, sát trần, nghi vấn). Hỏng /
+  người khác vừa mua: rollback, hoàn xu. Hai người mua cùng lúc: đúng một người được. Người bán nhận tiền (CAS `1 → 2`) ngay
+  nếu online, không thì khi vào game.
+- **Con mua ở chợ**: đánh dấu lần đổi (khoá trao đổi 24 giờ, bán lại 72 giờ), **chuyển đổi chỉ ra Kẹo**, giữ người bắt gốc,
+  Pokédex ghi "Đã bắt".
+- **Nghi vấn** (ghi nhật ký `chopokemon`, cột `nghi`, không chặn): cùng cặp mua–bán ≥ 3 lần / 7 ngày; người bán đặt giá ≥ 90%
+  trần lần thứ 3 trong 7 ngày.
+- Thưởng chỉ số "đồng điệu" từ cá thể cho bạn đồng hành: **0 tới bản 1.1** (chủ game đã duyệt).
 
 ---
 
@@ -1430,7 +1463,7 @@ Số lệnh âm do HTBB thêm (`Message.command`; grep cả server và client tr
 | -103 | Cài đặt ngoại hình | C→S | ẩn ô / trang phục (mục 4.6) |
 | -110 / -111 | Danh hiệu | hai chiều | bảng danh hiệu, nhãn trên đầu, số mới / xin, đeo, tháo, đã xem (mục "Danh hiệu" dưới) |
 | -120 | `TRANG_BI` (0.9.8) | hai chiều | S→C: dòng bộ / lỗ ngọc cho thẻ chi tiết (gửi trước gói 21), tỉ lệ + pity + mốc neo của lần nâng kế tiếp, danh sách / kết quả chế tạo, màn khảm ngọc, kết quả; C→S: xin / chế tạo, xin màn khảm, khảm / nâng / tháo / mài / phân rã ngọc (mục 4.2-4.3, `real.BoNgocGame`) |
-| -121 | `THU_PHUC` (0.9.8) | hai chiều | C→S: xin trạng thái (+ byte "có màn Hộp PC"), ném bóng (idQuai, loại bóng), xin Pokédex, xin Hộp PC (3), hành động trên một con (4), xin thông tin loài (5), trao đổi (6: mời / trả lời / đặt / khoá / xác nhận / huỷ); S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102), Hộp PC (4), thông tin loài (5), trao đổi (6: đóng / lời mời / phiên / xong) - chỉ client ≥ 908 (mục 7.7, 7.8) |
+| -121 | `THU_PHUC` (0.9.8) | hai chiều | C→S: xin trạng thái (+ byte "có màn Hộp PC"), ném bóng (idQuai, loại bóng), xin Pokédex, xin Hộp PC (3), hành động trên một con (4), xin thông tin loài (5), trao đổi (6: mời / trả lời / đặt / khoá / xác nhận / huỷ); S→C: trạng thái (bóng, bắt hôm nay, Hộp PC), kết quả ném (cả người gần thấy hiệu ứng), Pokédex "Đã bắt", bạn đồng hành đi theo (nối sau -102), Hộp PC (4), thông tin loài (5), trao đổi (6: đóng / lời mời / phiên / xong), chợ Pokémon (7: danh sách / khung giá / kết quả; C→S: xin / khung / đăng / mua / huỷ) - chỉ client ≥ 908 (mục 7.7, 7.8, 7.9) |
 
 Hiệu ứng thời tiết dùng lại gói cũ `-39` (mục 7.1).
 

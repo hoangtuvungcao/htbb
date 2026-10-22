@@ -88,6 +88,8 @@ public final class HopPc {
     /** Tong so lan trao doi / chuyen doi (thong ke). */
     public int tongDoi;
     public int tongChuyen;
+    /** Cho Pokemon: so con da MUA hom nay (cung ngay voi batNgay). */
+    public int muaNgay;
     /** Da doi tu lan luu cuoi. */
     public boolean ban;
 
@@ -161,6 +163,43 @@ public final class HopPc {
         return c;
     }
 
+    /** Tra mot con ve hop (cho Pokemon: huy / het han tin) - KHONG xet suc chua (con da o day truoc khi dang ban). */
+    public synchronized Con traVe(final Con mau) {
+        if (mau == null) {
+            return null;
+        }
+        final Con c = mau.saoVoiId(this.idKe++);
+        this.con.add(c);
+        this.ban = true;
+        return c;
+    }
+
+    /** Chuoi mot con (cung dinh dang muc "c" cua maHoa, khong id): dex.cap.shiny.ngay.bong.iv.tc.goc.doi. */
+    public static String maHoaCon(final Con c) {
+        return c.dex + "." + c.cap + "." + (c.shiny ? 1 : 0) + "." + c.ngay + "." + c.bong + "." + c.iv + "." + c.tinhCach + "."
+                + c.chuGoc + "." + c.doiLuc;
+    }
+
+    /** Nguoc lai {@link #maHoaCon} (id = 0); null neu hong. */
+    public static Con giaiMaCon(final String s) {
+        try {
+            final String[] p = s.split("\\.");
+            final Con c = new Con(0, Integer.parseInt(p[0]), Integer.parseInt(p[1]), "1".equals(p[2]), Integer.parseInt(p[3]),
+                    p.length > 4 ? p[4] : "");
+            if (p.length > 6) {
+                c.iv = Integer.parseInt(p[5]) & 0x3FFFFFFF;
+                c.tinhCach = Math.max(0, Math.min(CaThePokemon.SO_TINH_CACH - 1, Integer.parseInt(p[6])));
+            }
+            if (p.length > 8) {
+                c.chuGoc = Integer.parseInt(p[7]);
+                c.doiLuc = Math.max(0L, Long.parseLong(p[8]));
+            }
+            return c.dex > 0 ? c : null;
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
     /** So con cua loai {@code dex} (khongShiny: chi dem con thuong). */
     public synchronized int soCungLoai(final int dex, final boolean khongShiny) {
         int n = 0;
@@ -201,6 +240,7 @@ public final class HopPc {
             this.doiCuoi = o.doiCuoi;
             this.tongDoi = o.tongDoi;
             this.tongChuyen = o.tongChuyen;
+            this.muaNgay = o.muaNgay;
         }
     }
 
@@ -319,6 +359,7 @@ public final class HopPc {
             this.doiNgay = 0;
             this.chuyenXuNgay = 0;
             this.chuyenLuongNgay = 0;
+            this.muaNgay = 0;
             this.ban = true;
         }
     }
@@ -331,7 +372,7 @@ public final class HopPc {
                 .append(";ng=").append(this.ngay).append(";bn=").append(this.batNgay).append(";nn=").append(this.nemNgay)
                 .append(";tb=").append(this.tongBat).append(";dn=").append(this.doiNgay).append(";cx=").append(this.chuyenXuNgay)
                 .append(";cl=").append(this.chuyenLuongNgay).append(";dc=").append(this.doiCuoi).append(";td=").append(this.tongDoi)
-                .append(";tc=").append(this.tongChuyen);
+                .append(";tc=").append(this.tongChuyen).append(";mn=").append(this.muaNgay);
         for (final Map.Entry<Integer, Integer> e : this.keo.entrySet()) {
             sb.append(";k").append(e.getKey()).append('=').append(e.getValue());
         }
@@ -384,6 +425,8 @@ public final class HopPc {
                     h.doiCuoi = Math.max(0L, Long.parseLong(v));
                 } else if (k.equals("td")) {
                     h.tongDoi = Math.max(0, Integer.parseInt(v));
+                } else if (k.equals("mn")) {
+                    h.muaNgay = Math.max(0, Integer.parseInt(v));
                 } else if (k.equals("tc")) {
                     h.tongChuyen = Math.max(0, Integer.parseInt(v));
                 } else if (k.startsWith("b_")) {

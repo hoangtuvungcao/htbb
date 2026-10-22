@@ -152,6 +152,58 @@ public class KiemTraoDoiPokemon {
         });
     }
 
+    static byte[] goiCho(final int tab) throws Exception {
+        return goi(7, new Ghi() {
+            public void ghi(DataOutputStream o) throws Exception {
+                o.writeByte(0);
+                o.writeByte(tab);
+                int[] chiSo = tab == 0 ? new int[]{3, 2, 0, 6, 4} : new int[]{0};
+                int[] gia = {180000, 63000, 4200, 2600, 15000};
+                o.writeShort(chiSo.length);
+                for (int j = 0; j < chiSo.length; j++) {
+                    int[] c = HOP[chiSo[j]];
+                    o.writeLong(500 + j);
+                    o.writeShort(c[1]);
+                    o.writeByte(c[2]);
+                    o.writeByte(c[3]);
+                    o.writeByte(c[4]);
+                    o.writeByte(c[5]);
+                    o.writeShort(40 + c[2] * 6);
+                    o.writeByte(c[1] == 371 ? 3 : c[1] == 256 ? 2 : 0);
+                    o.writeInt(gia[j]);
+                    o.writeUTF(tab == 1 ? "Tôi" : "Người bán " + j);
+                    o.writeShort(2000 - j * 300);
+                    o.writeByte(tab == 1 ? 1 : 0);
+                    o.writeUTF(TEN[chiSo[j]]);
+                }
+                o.writeByte(1);
+                o.writeByte(3);
+                o.writeByte(8);
+                o.writeByte(1);
+                o.writeByte(5);
+            }
+        });
+    }
+
+    static byte[] goiKhung(final String lyDo) throws Exception {
+        return goi(7, new Ghi() {
+            public void ghi(DataOutputStream o) throws Exception {
+                o.writeByte(1);
+                o.writeInt(4);
+                o.writeUTF("Bagon");
+                o.writeShort(371);
+                o.writeByte(30);
+                o.writeByte(0);
+                o.writeByte(2);
+                o.writeInt(17700);
+                o.writeInt(177000);
+                o.writeByte(1);
+                o.writeByte(8);
+                o.writeUTF(lyDo);
+            }
+        });
+    }
+
     static void nap(final byte[] b) throws Exception {
         ChupTrongGame.chay(new Runnable() {
             public void run() {
@@ -194,6 +246,10 @@ public class KiemTraoDoiPokemon {
                                 ghiDs(o, new int[]{3});
                             }
                         }));
+                    } else if (ten.equals("cho") || ten.equals("cho_cua_toi")) {
+                        ChupTrongGame.goi(-121, goiCho(ten.equals("cho") ? 0 : 1));
+                    } else if (ten.equals("cho_dang") || ten.equals("cho_dang_loi")) {
+                        ChupTrongGame.goi(-121, goiKhung(ten.equals("cho_dang") ? "" : "Pokémon vừa nhận qua trao đổi / chợ, 40 giờ nữa mới bán được."));
                     } else if (ten.equals("pokedex_loai")) {
                         game.pokemon.BatPokemon.DEX.put(new Integer(dexDau()), new Integer(7));
                         game.pokemon.BatPokemon.coDex = true;
@@ -296,7 +352,7 @@ public class KiemTraoDoiPokemon {
 
         kiem(game.pokemon.IconBat.coAnh(), "co anh PNG /pk/bat_16.png + bat_32.png");
 
-        String[] man = {"hop_pc", "hop_pc_chi_tiet", "hop_pc_chon_doi", "trao_doi", "trao_doi_chon", "trao_doi_xong", "pokedex_loai"};
+        String[] man = {"hop_pc", "hop_pc_chi_tiet", "hop_pc_chon_doi", "trao_doi", "trao_doi_chon", "trao_doi_xong", "pokedex_loai", "cho", "cho_cua_toi", "cho_dang", "cho_dang_loi"};
         for (int c = 0; c < ChupTrongGame.CO.length; c++) {
             final int W = ChupTrongGame.CO[c][0], H = ChupTrongGame.CO[c][1], dpi = ChupTrongGame.CO[c][2];
             String tenCo = ChupTrongGame.TEN_CO[c];
@@ -339,7 +395,8 @@ public class KiemTraoDoiPokemon {
                     kiem(daVe("Torchic") && daVe("cấp 18"), t + " ten + cap tren the");
                 } else if (man[m].equals("hop_pc_chi_tiet")) {
                     kiem(coVung("hd-0") && coVung("hd-1") && coVung("hd-2"), t + " nut Di theo / Luyen / Tien hoa");
-                    kiem(!coVung("hd-3") && !coVung("hd-4") && daVe("Chuyển đổi") && daVe("Thả"), t + " con dang theo: Chuyen doi / Tha bi tat (khong cham)");
+                    kiem(!coVung("hd-3") && !coVung("hd-4") && !coVung("hd-5") && daVe("Chuyển đổi") && daVe("Thả") && daVe("Bán"),
+                            t + " con dang theo: Chuyen doi / Tha / Ban bi tat (khong cham)");
                     kiem(daVe("Combusken") && daVe("Sức mạnh"), t + " ten + Suc manh");
                     kiem(daVe("Kiên quyết") && daVe("HP") && daVe("Kẹo Torchic"), t + " tinh cach + chi so ca the + keo");
                     kiem(daVe("Thôi theo"), t + " con dang theo: nut Thoi theo");
@@ -358,6 +415,20 @@ public class KiemTraoDoiPokemon {
                 } else if (man[m].equals("trao_doi_xong")) {
                     kiem(coVung("td-dong") && coVung("td-hop"), t + " xong: Dong / Mo Hop PC");
                     kiem(daVe("tiến hoá thành Gengar"), t + " bao tien hoa khi trao doi");
+                } else if (man[m].equals("cho")) {
+                    kiem(game.render.Canvas.currentScreen == game.pokemon.ManChoPokemon.me, t + " goi danh sach mo man Cho Pokemon");
+                    kiem(coVung("tin-0") && coVung("tin-4"), t + " the tin ban cham duoc");
+                    kiem(daVe("180.000") && daVe("Rất hiếm") && daVe("Bagon"), t + " gia + do hiem + ten");
+                    kiem(daVe("đã mua 1/5") && daVe("Thuế 8%"), t + " thue + dem mua ngay");
+                    kiem(daVe("Của tôi (1/3)"), t + " tab Cua toi dem tin");
+                } else if (man[m].equals("cho_cua_toi")) {
+                    kiem(coVung("tin-0") && daVe("phí đăng không hoàn"), t + " tin cua toi + luu y huy");
+                } else if (man[m].equals("cho_dang")) {
+                    kiem(coVung("gia-giam") && coVung("gia-truot") && coVung("gia-tang") && coVung("dang-ban") && coVung("dang-thoi"), t + " thanh truot gia + nut");
+                    kiem(daVe("17.700 - 177.000"), t + " khung gia may chu");
+                    kiem(daVe("bạn nhận") && daVe("thuế 8%"), t + " so nguoi ban nhan + thue");
+                } else if (man[m].equals("cho_dang_loi")) {
+                    kiem(coVung("dang-lui") && !coVung("dang-ban") && daVe("40 giờ nữa"), t + " khong dang duoc: ly do + quay lai");
                 } else if (man[m].equals("pokedex_loai")) {
                     kiem(daVe("Độ hiếm: Ít gặp") && daVe("tỉ lệ gốc 25%"), t + " do hiem + ti le goc");
                     kiem(daVe("Rừng Viridian"), t + " noi song");
@@ -391,6 +462,9 @@ public class KiemTraoDoiPokemon {
         Thread.sleep(100);
         kiem(game.render.Canvas.currentScreen != game.pokemon.ManTraoDoiPokemon.me && game.pokemon.BatPokemon.tdTrangThai == 0,
                 "may chu dong phien: roi cua so trao doi");
+        // kiemTam / kiemCham của ChupTrongGame đếm vào bộ đếm riêng của nó: gộp vào kết quả
+        dat += ChupTrongGame.dat;
+        hong += ChupTrongGame.hong;
         System.out.println("KiemTraoDoiPokemon: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }

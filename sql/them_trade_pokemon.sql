@@ -192,3 +192,68 @@ CREATE TABLE IF NOT EXISTS `tob_log_trao_doi_pokemon` (
   KEY `id_a` (`id_a`, `luc`),
   KEY `id_b` (`id_b`, `luc`)
 ) DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------------------------------------- chợ Pokémon (mục 7.9)
+-- Khung giá theo bậc hiếm (phần nghìn giờ thu nhập Ở CẤP CỦA CON POKÉMON); sắc màu x3, 3 sao x2 ở cả sàn lẫn trần
+-- (cho_pokemon.he_so_sac_mau / he_so_3_sao). Ngoài khung: máy chủ từ chối.
+CREATE TABLE IF NOT EXISTS `data_cho_pokemon_gia` (
+  `do_hiem` TINYINT NOT NULL,
+  `ten` VARCHAR(32) NOT NULL DEFAULT '',
+  `san_phan_nghin_gio` INT NOT NULL DEFAULT 100,
+  `tran_phan_nghin_gio` INT NOT NULL DEFAULT 1000,
+  PRIMARY KEY (`do_hiem`)
+) DEFAULT CHARSET=utf8;
+INSERT INTO `data_cho_pokemon_gia` (`do_hiem`, `ten`, `san_phan_nghin_gio`, `tran_phan_nghin_gio`) VALUES
+(0, 'Thường', 100, 1000),
+(1, 'Ít gặp', 300, 3000),
+(2, 'Hiếm', 1000, 10000),
+(3, 'Rất hiếm', 3000, 30000)
+ON DUPLICATE KEY UPDATE `ten` = VALUES(`ten`), `san_phan_nghin_gio` = VALUES(`san_phan_nghin_gio`),
+  `tran_phan_nghin_gio` = VALUES(`tran_phan_nghin_gio`);
+
+-- Tin bán + KÝ QUỸ: con Pokémon nằm ở du_lieu (không còn trong Hộp PC) tới khi bán / huỷ / hết hạn.
+-- trang_thai: 0 đang bán, 1 đã bán (chờ người bán nhận tiền), 2 đã trả tiền, 3 đã thu hồi (huỷ / hết hạn).
+CREATE TABLE IF NOT EXISTS `tob_cho_pokemon` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `id_ban` INT NOT NULL,
+  `ten_ban` VARCHAR(64) NOT NULL DEFAULT '',
+  `user_ban` INT NOT NULL DEFAULT 0,
+  `may_ban` VARCHAR(64) NOT NULL DEFAULT '',
+  `ip_ban` VARCHAR(64) NOT NULL DEFAULT '',
+  `du_lieu` VARCHAR(200) NOT NULL DEFAULT '',
+  `dex` SMALLINT NOT NULL DEFAULT 0,
+  `cap` TINYINT NOT NULL DEFAULT 1,
+  `shiny` TINYINT NOT NULL DEFAULT 0,
+  `do_hiem` TINYINT NOT NULL DEFAULT 0,
+  `gia` BIGINT NOT NULL DEFAULT 0,
+  `phi_dang` BIGINT NOT NULL DEFAULT 0,
+  `dang_luc` BIGINT NOT NULL DEFAULT 0,
+  `het_han` BIGINT NOT NULL DEFAULT 0,
+  `trang_thai` TINYINT NOT NULL DEFAULT 0,
+  `id_mua` INT NOT NULL DEFAULT 0,
+  `ten_mua` VARCHAR(64) NOT NULL DEFAULT '',
+  `mua_luc` BIGINT NOT NULL DEFAULT 0,
+  `thue` BIGINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `trang_thai` (`trang_thai`, `het_han`),
+  KEY `id_ban` (`id_ban`, `trang_thai`)
+) DEFAULT CHARSET=utf8;
+
+-- Nhật ký mỗi lần bán (ghi CÙNG giao dịch với Hộp PC người mua): giá, thuế, giá sát trần, nghi vấn.
+CREATE TABLE IF NOT EXISTS `tob_log_cho_pokemon` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `luc` DATETIME NOT NULL,
+  `id_tin` BIGINT NOT NULL,
+  `id_ban` INT NOT NULL,
+  `ten_ban` VARCHAR(64) NOT NULL DEFAULT '',
+  `id_mua` INT NOT NULL,
+  `ten_mua` VARCHAR(64) NOT NULL DEFAULT '',
+  `con` VARCHAR(200) NOT NULL DEFAULT '',
+  `gia` BIGINT NOT NULL DEFAULT 0,
+  `thue` BIGINT NOT NULL DEFAULT 0,
+  `sat_tran` TINYINT NOT NULL DEFAULT 0,
+  `nghi` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `id_ban` (`id_ban`, `luc`),
+  KEY `id_mua` (`id_mua`, `luc`)
+) DEFAULT CHARSET=utf8;
