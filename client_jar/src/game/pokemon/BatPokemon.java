@@ -26,8 +26,8 @@ import network.Message;
  */
 public final class BatPokemon {
     public static final int LENH = -121;
-    public static final int C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2, C_XIN_HOP = 3, C_HANH_DONG = 4, C_XIN_LOAI = 5, C_TRAO_DOI = 6;
-    public static final int S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3, S_HOP_PC = 4, S_LOAI = 5, S_TRAO_DOI = 6;
+    public static final int C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2, C_XIN_HOP = 3, C_HANH_DONG = 4, C_XIN_LOAI = 5, C_TRAO_DOI = 6, C_CHO = 7;
+    public static final int S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3, S_HOP_PC = 4, S_LOAI = 5, S_TRAO_DOI = 6, S_CHO = 7;
     /** Hành động trên một con (gói kiểu 4). */
     public static final int H_THEO = 0, H_LUYEN = 1, H_TIEN_HOA = 2, H_THA = 3, H_CHUYEN = 4;
     /** Trao đổi (gói kiểu 6): lệnh con. */
@@ -275,6 +275,9 @@ public final class BatPokemon {
                 case S_TRAO_DOI:
                     docTraoDoi(r);
                     break;
+                case S_CHO:
+                    docCho(r);
+                    break;
                 default:
                     break;
             }
@@ -358,10 +361,9 @@ public final class BatPokemon {
             v.addElement(c);
         }
         datHop(soCon, suc, theo, giu, v);
-        if (Canvas.currentScreen != ManHopPc.me || ManHopPc.me == null) {
-            if (ManTraoDoiPokemon.me == null || Canvas.currentScreen != ManTraoDoiPokemon.me) {
-                ManHopPc.mo(false);
-            }
+        // chỉ tự mở từ màn chơi (NPC "Hộp PC"); đang ở Hộp PC / trao đổi / chợ thì chỉ cập nhật dữ liệu
+        if (Canvas.currentScreen == Canvas.gameScr && Canvas.currentDialog == null) {
+            ManHopPc.mo(false);
         }
     }
 
@@ -489,9 +491,9 @@ public final class BatPokemon {
         }
     }
 
-    /** Menu người chơi "Trao đổi Pokémon" (chỉ hiện khi máy chủ có thu phục: đã nhận trạng thái). */
+    /** Menu người chơi "Trao đổi Pokémon". */
     public static boolean coTraoDoi() {
-        return coTrangThai;
+        return true;   // máy chủ chưa có / client đối phương cũ: máy chủ trả lời lý do
     }
 
     public static void moiTraoDoi(short idNguoi) {
@@ -804,6 +806,102 @@ public final class BatPokemon {
     public static void doiMap() {
         NEM.removeAllElements();
         xinLuc = 0;
-        xinTrangThai();   // 0.9.8: báo máy chủ client có Hộp PC / trao đổi (menu người chơi hiện "Trao đổi Pokémon")
+    }
+
+    // ---------------------------------------------------------------- 0.9.8 chợ Pokémon (gói kiểu 7)
+
+    /** Một tin bán: Con (hình, cấp, sao...) + giá, người bán, phút còn lại. */
+    public static final class TinCho {
+        public long id;
+        public Con con = new Con();
+        public int gia, phutCon;
+        public String tenBan = "";
+        public boolean cuaToi;
+    }
+
+    public static Vector CHO = new Vector();
+    public static int choTab, choSoDang, choToiDa = 3, choThue = 8, choMuaHomNay, choMuaToiDa = 5;
+    public static boolean coCho;
+    /** Khung giá cho một con định bán (null tên = chưa có). */
+    public static int khungId, khungDex, khungCap, khungSao, khungSan, khungTran, khungPhi, khungThue;
+    public static boolean khungShiny, coKhung;
+    public static String khungTen = "", khungLyDo = "";
+
+    public static final int CHO_XIN = 0, CHO_KHUNG = 1, CHO_DANG = 2, CHO_MUA = 3, CHO_HUY = 4;
+
+    public static void cho(int lenh, long a, int b) {
+        try {
+            Message m = new Message(LENH);
+            m.writer().writeByte(C_CHO);
+            m.writer().writeByte(lenh);
+            if (lenh == CHO_XIN) {
+                m.writer().writeByte((int) a);
+            } else if (lenh == CHO_KHUNG) {
+                m.writer().writeInt((int) a);
+            } else if (lenh == CHO_DANG) {
+                m.writer().writeInt((int) a);
+                m.writer().writeInt(b);
+            } else {
+                m.writer().writeLong(a);
+            }
+            GameService.gI().session.sendMessage(m);
+        } catch (Throwable e) {
+            // mất kết nối
+        }
+    }
+
+    static void docCho(DataInputStream r) throws java.io.IOException {
+        int sub = r.readUnsignedByte();
+        if (sub == 0) {
+            int tab = r.readUnsignedByte();
+            int n = r.readShort();
+            Vector v = new Vector();
+            for (int i = 0; i < n; i++) {
+                TinCho t = new TinCho();
+                t.id = r.readLong();
+                t.con.dex = r.readShort();
+                t.con.cap = r.readUnsignedByte();
+                t.con.shiny = r.readByte() != 0;
+                t.con.sao = r.readUnsignedByte();
+                t.con.ivPt = r.readUnsignedByte();
+                t.con.sucManh = r.readShort();
+                t.con.doHiem = r.readUnsignedByte();
+                t.gia = r.readInt();
+                t.tenBan = r.readUTF();
+                t.phutCon = r.readShort();
+                t.cuaToi = r.readByte() != 0;
+                t.con.ten = r.readUTF();
+                v.addElement(t);
+            }
+            choSoDang = r.readUnsignedByte();
+            choToiDa = r.readUnsignedByte();
+            choThue = r.readUnsignedByte();
+            choMuaHomNay = r.readUnsignedByte();
+            choMuaToiDa = r.readUnsignedByte();
+            CHO = v;
+            choTab = tab;
+            coCho = true;
+            ManChoPokemon.moNeuChua(tab);
+        } else if (sub == 1) {
+            khungId = r.readInt();
+            khungTen = r.readUTF();
+            khungDex = r.readShort();
+            khungCap = r.readUnsignedByte();
+            khungShiny = r.readByte() != 0;
+            khungSao = r.readUnsignedByte();
+            khungSan = r.readInt();
+            khungTran = r.readInt();
+            khungPhi = r.readUnsignedByte();
+            khungThue = r.readUnsignedByte();
+            khungLyDo = r.readUTF();
+            coKhung = true;
+            ManChoPokemon.moDang();
+        } else if (sub == 2) {
+            boolean ok = r.readByte() != 0;
+            r.readUTF();
+            if (ok && ManChoPokemon.me != null) {
+                ManChoPokemon.me.sauKetQua();
+            }
+        }
     }
 }

@@ -143,15 +143,13 @@ public final class ManPokedex extends ManBang {
             int hb = Math.max(ChuDe.cao(ChuDe.PHU) + 4, Bang.co(22));
             int wb = Math.max(Bang.co(70), ChuDe.rong("Hộp PC", ChuDe.NHAN) + 24);
             ChuDe.chuGiua(g, "Đã bắt: " + BatPokemon.soDaBat + " / " + dsLoai().size() + " loài", x + 4, yl, hb, ChuDe.PHU, ChuDe.CHU_PHU, 0);
-            if (BatPokemon.coTrangThai) {
-                Bang.nut(g, x + w - wb, yl, wb, hb, "Hộp PC", Bang.PHU, new IAction() {
-                    public void perform() {
-                        ManHopPc.mo(false);
-                        BatPokemon.xinHop();
-                    }
-                }, "mo-hop-pc");
-            }
-            yl += hb + 2;
+            Bang.nut(g, x + w - wb, yl, wb, hb, "Hộp PC", Bang.PHU, new IAction() {
+                public void perform() {
+                    ManHopPc.mo(false);
+                    BatPokemon.xinHop();
+                }
+            }, "mo-hop-pc");
+            yl += hb + k;
         }
         if (v.size() == 0) {
             if (this.loc == CHIP.length - 1) {

@@ -160,8 +160,16 @@ public final class ManHopPc extends ManBang {
                 }
             }, "dua-trao-doi");
         } else {
-            ChuDe.chu(g, "Giữ tối đa " + BatPokemon.hopGiu + " con thường mỗi loài, con thừa tự chuyển thành Kẹo.", x + 4, yl, ChuDe.PHU, ChuDe.CHU_PHU, 0);
-            yl += ChuDe.cao(ChuDe.PHU) + 2;
+            int hb = Math.max(ChuDe.cao(ChuDe.PHU) + 4, Bang.co(22));
+            int wb = Math.max(Bang.co(70), ChuDe.rong("Chợ Pokémon", ChuDe.NHAN) + 24);
+            ChuDe.chuGiua(g, ChuDe.cat("Giữ tối đa " + BatPokemon.hopGiu + " con thường mỗi loài, con thừa tự chuyển thành Kẹo.", ChuDe.PHU,
+                    w - wb - 12), x + 4, yl, hb, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+            Bang.nut(g, x + w - wb, yl, wb, hb, "Chợ Pokémon", Bang.PHU, new IAction() {
+                public void perform() {
+                    ManChoPokemon.mo();
+                }
+            }, "mo-cho");
+            yl += hb + k;
         }
         if (v.size() == 0) {
             Bang.trong(g, x, yl, w, y + h - hDuoi - yl, this.loc == 0 ? "Hộp PC đang trống" : "Không có Pokémon nào ở mục này",
@@ -231,12 +239,12 @@ public final class ManHopPc extends ManBang {
         int k = Bang.cach();
         // hàng nút dưới cùng (cả bề ngang): Đi theo / Luyện / Tiến hoá / Chuyển đổi / Thả
         int hn = Bang.co(26);
-        int nb = 5;
+        int nb = 6;
         int wn = (w - (nb - 1) * k) / nb;
         int yb = y + h - hn;
         String[] chu = new String[nb];
         int[] kieu = new int[nb];
-        final int[] hd2 = {BatPokemon.H_THEO, BatPokemon.H_LUYEN, BatPokemon.H_TIEN_HOA, BatPokemon.H_CHUYEN, BatPokemon.H_THA};
+        final int[] hd2 = {BatPokemon.H_THEO, BatPokemon.H_LUYEN, BatPokemon.H_TIEN_HOA, BatPokemon.H_CHUYEN, BatPokemon.H_THA, H_BAN};
         chu[0] = c.dangTheo() ? "Thôi theo" : "Đi theo";
         kieu[0] = Bang.PHU;
         chu[1] = c.keoLuyen <= 0 ? "Cấp tối đa" : "Luyện " + c.keoLuyen + " kẹo";
@@ -247,6 +255,8 @@ public final class ManHopPc extends ManBang {
         kieu[3] = c.trungLoai() && !c.dangTheo() ? Bang.PHU : Bang.TAT;
         chu[4] = "Thả";
         kieu[4] = c.dangTheo() ? Bang.TAT : Bang.NGUY;
+        chu[5] = "Bán";
+        kieu[5] = c.dangTheo() || c.khoaDoi() ? Bang.TAT : Bang.PHU;
         for (int i = 0; i < nb; i++) {
             final int hi = hd2[i];
             Bang.nut(g, x + i * (wn + k), yb, wn, hn, ChuDe.cat(chu[i], ChuDe.NHAN, wn - 8), kieu[i], new IAction() {
@@ -312,7 +322,16 @@ public final class ManHopPc extends ManBang {
         }
     }
 
+    /** Nút "Bán" (chợ Pokémon) - không phải hành động máy chủ kiểu 4. */
+    static final int H_BAN = 99;
+
     void lam(final BatPokemon.Con c, final int hd) {
+        if (hd == H_BAN) {
+            if (!c.dangTheo() && !c.khoaDoi()) {
+                ManChoPokemon.dangBan(c.id);
+            }
+            return;
+        }
         if (hd == BatPokemon.H_THA) {
             if (c.dangTheo()) {
                 return;

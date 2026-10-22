@@ -92,6 +92,7 @@ public final class DatabaseBoNgoc {
         } finally {
             dong(null, pre, conn);
         }
+        DatabaseChoPokemon.taoBang(); // [cho-pokemon] tin ban + ky quy + nhat ky + khung gia
     }
 
     // ------------------------------------------------------------------ doc bang du lieu

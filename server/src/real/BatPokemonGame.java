@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *                byte capTienHoa, byte tienHoaTraoDoi, UTF tenTruoc, UTF tenSau, short soBat, short soHa, byte n, n x UTF
  *                noiSong, byte 6|0, 6 x byte chiSoGoc
  *   6 TRAO_DOI   (TraoDoiPokemonGame)
+ *   7 CHO        (ChoPokemonGame)
  * C-&gt;S 0.9.8: 0 + byte 1 = client co man Hop PC; 3 xin Hop PC; 4 byte hanhDong (0 theo, 1 luyen, 2 tien hoa, 3 tha,
  *   4 chuyen doi), int id; 5 short dex; 6 trao doi (TraoDoiPokemonGame)
  * </pre>
@@ -55,9 +56,9 @@ public final class BatPokemonGame {
 
     public static final int LENH = -121;
     public static final byte C_TRANG_THAI = 0, C_NEM = 1, C_POKEDEX = 2, C_XIN_HOP = 3, C_HANH_DONG = 4, C_XIN_LOAI = 5,
-            C_TRAO_DOI = 6;
+            C_TRAO_DOI = 6, C_CHO = 7;
     public static final byte S_TRANG_THAI = 0, S_KET_QUA = 1, S_POKEDEX = 2, S_DONG_HANH = 3, S_HOP_PC = 4, S_LOAI = 5,
-            S_TRAO_DOI = 6;
+            S_TRAO_DOI = 6, S_CHO = 7;
 
     public static final String K_BAT = "bat.bat";
     public static final String K_NGUONG_HP = "bat.nguong_hp_phan_tram";
@@ -297,6 +298,8 @@ public final class BatPokemonGame {
                 guiLoai(p, msg.dis.readShort());
             } else if (kieu == C_TRAO_DOI) {
                 TraoDoiPokemonGame.xuLy(p, msg);
+            } else if (kieu == C_CHO) {
+                ChoPokemonGame.xuLy(p, msg);
             } else if (kieu == C_NEM) {
                 final short id = msg.dis.readShort();
                 final int thuTu = msg.dis.readByte();
@@ -324,6 +327,7 @@ public final class BatPokemonGame {
             return;
         }
         h.doiNgay(homNay());
+        ChoPokemonGame.khiVao(p, false); // [cho-pokemon] tra con het han + nhan tien ban (nhip 60 giay)
         try {
             final Message m = moi(S_TRANG_THAI);
             final DataOutputStream o = m.dos;
@@ -929,8 +933,9 @@ public final class BatPokemonGame {
     /** Client da co man Hop PC moi (gui kem byte trong goi trang thai) - charDBID. */
     static final java.util.Set<Integer> CO_UI = java.util.Collections.newSetFromMap(new ConcurrentHashMap<Integer, Boolean>());
 
+    /** Client co man Hop PC / trao doi / cho: moi client &gt;= 908 (ban 908 phat hanh kem cac man nay). */
     static boolean coUi(final Char p) {
-        return p != null && CO_UI.contains(Integer.valueOf(p.charDBID)) && BoNgocGame.coClient(p);
+        return BoNgocGame.coClient(p);
     }
 
     /** S-&gt;C kieu 4: toan bo Hop PC (client ManHopPc). */
