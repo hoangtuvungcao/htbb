@@ -512,6 +512,9 @@ public final class HanhDong {
      * Không thứ gì CHỈ làm được bằng chuột phải: chuột trái làm được hết.
      */
     public static boolean chuotPhai(int x, int y) {
+        if (NgamTay.huy()) {
+            return true;   // 0.9.8: chuột phải khi đang ngắm = huỷ phát bắn
+        }
         GameScr g = gs();
         if (g == null || Canvas.currentDialog != null || Canvas.menu.showMenu || g.chatMode) {
             return false;

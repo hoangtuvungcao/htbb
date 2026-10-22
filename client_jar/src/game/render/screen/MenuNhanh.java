@@ -30,8 +30,10 @@ final class MenuNhanh {
     private static final int AM_LUONG = 11;
     /** 0.9.6: Tài khoản -> nhập giftcode (cùng hộp nhập của NPC quà tặng) */
     private static final int GIFTCODE = 12;
+    /** 0.9.8: ngắm tay cả khi đánh Pokémon hoang dã (PvP luôn ngắm tay - game.pokemon.NgamTay) */
+    private static final int NGAM_TAY = 13;
 
-    private static final String[] TEN = {"Tự động đánh", "", "", "", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode"};
+    private static final String[] TEN = {"Tự động đánh", "", "", "", "", "", "", "", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng", "Nhập giftcode", "Ngắm thủ công"};
 
     /** Tên mục (âm lượng kèm %). */
     private static String ten(int m) {
@@ -56,7 +58,7 @@ final class MenuNhanh {
         }
     }
 
-    private static final int[] DS = {TU_DONG, AN, NHAC, HIEU_UNG, AM_LUONG, GIFTCODE};
+    private static final int[] DS = {TU_DONG, AN, NGAM_TAY, NHAC, HIEU_UNG, AM_LUONG, GIFTCODE};
 
     private static int[] dsMuc() {
         return DS;
@@ -69,6 +71,8 @@ final class MenuNhanh {
                 return TuDong.dang ? 1 : 0;
             case AN:
                 return anKhiDanh ? 1 : 0;
+            case NGAM_TAY:
+                return game.pokemon.NgamTay.thuCong() ? 1 : 0;
             case NHAC:
                 game.model.Sound.me.napCaiDat();
                 return game.model.Sound.me.batNhac ? 1 : 0;
@@ -99,6 +103,10 @@ final class MenuNhanh {
             }
             case TU_DONG:
                 BangTuDong.mo();
+                break;
+            case NGAM_TAY:
+                game.pokemon.NgamTay.datThuCong(!game.pokemon.NgamTay.thuCong());
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.CLICK);
                 break;
             case GIFTCODE:
                 mo = false;
