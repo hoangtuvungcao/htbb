@@ -51,7 +51,7 @@ public final class NenPc {
     /**
      * Khung PHỦ KÍN cửa sổ W x H (0.9.3 - thay hộp 16:9 + viền của 0.9.2), cùng luật với APK (KhungCoDinh):
      * tỉ lệ s = max(W / 640, H / 360) đều hai chiều; cỡ logic = ceil(W / s) x ceil(H / s), luôn <= 640 x 360 mỗi chiều
-     * -> vùng nhìn thế giới <= ~368 x 207 px (Zoom.NHIN_THEM) (không ai thấy hơn tham chiếu 16:9: màn rộng cắt bớt chiều cao, màn cao /
+     * -> vùng nhìn thế giới <= ~432 x 243 px (Zoom.NHIN_THEM; 1080p 480 x 270 do làm tròn m nguyên) (không ai thấy hơn tham chiếu 16:9: màn rộng cắt bớt chiều cao, màn cao /
      * 16:10 / 4:3 cắt bớt chiều ngang). Không viền.
      *
      * Trả {k, hienX, hienY, hienW, hienH, logicW, logicH}: game vẽ vào bộ đệm logicW*k x logicH*k (k nguyên = ceil(s):

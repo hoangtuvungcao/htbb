@@ -3,8 +3,8 @@ package javax.microedition.lcdui;
 /**
  * Khung hình PHỦ KÍN màn (0.9.3, thay hộp 16:9 + viền của 0.9.2) mà vẫn CÔNG BẰNG (chống lợi thế màn to / màn dài):
  *
- * - Tham chiếu 16:9: giao diện logic 640x360, thế giới phóng THE_GIOI_Z = 2 / NHIN_THEM (0.9.7: NHIN_THEM = 1,15 -
- *   camera "cao hơn", thấy thêm ~15% mỗi chiều) -> vùng nhìn ~368x207 px thế giới (~23 x 13 ô 16 px).
+ * - Tham chiếu 16:9: giao diện logic 640x360, thế giới phóng THE_GIOI_Z = 2 / NHIN_THEM (0.9.7: NHIN_THEM = 1,35 -
+ *   camera "cao hơn", thấy thêm ~35% mỗi chiều) -> vùng nhìn 432x243 px thế giới (27 x ~15 ô 16 px).
  * - Phóng PHỦ (cover) đều hai chiều: tiLe = max(w / 640, h / 360). Cỡ logic = ceil(w / tiLe) x ceil(h / tiLe), luôn
  *   <= 640 x 360 ở MỖI chiều -> không ai thấy nhiều thế giới hơn tham chiếu 16:9 theo bất kỳ chiều nào:
  *     20:9 (2400x1080)  -> tiLe 3,75, logic 640x288 (vùng nhìn 20 x 9 ô),
@@ -22,9 +22,9 @@ public final class KhungCoDinh {
     public static final int LOGIC_H = 360;
     /**
      * HẰNG SỐ DUY NHẤT của camera (0.9.7): vùng nhìn thế giới lớn hơn mốc cũ (320 x 180) bao nhiêu lần mỗi chiều. 1,15 =
-     * thấy thêm ~15% bản đồ (chủ dự án: "nâng camera lên một chút"). Giao diện / vùng chạm không đổi.
+     * 0.9.7 lần 2: 1,35 = thấy thêm ~35% (chủ dự án: "nâng camera thêm, nhân vật / quái vẫn to") - vùng nhìn 432 x 243. Giao diện / vùng chạm không đổi.
      */
-    public static final float NHIN_THEM = 1.15f;
+    public static final float NHIN_THEM = 1.35f;
     /** phóng thế giới so với giao diện logic (float; vẽ láng giềng gần nhất như trước - tiLe x 2 vốn không nguyên) */
     public static final float THE_GIOI_Z = 2f / NHIN_THEM;
     /** vùng nhìn tối đa (px thế giới) ở logic 640 x 360 */

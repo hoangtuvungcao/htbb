@@ -6,7 +6,7 @@ import javax.microedition.lcdui.KhungCoDinh;
 
 /**
  * CAMERA CỐ ĐỊNH (quyết định chủ game - chống lợi thế màn to, giống bản PC): giao diện logic 640x360, thế giới
- * phóng KhungCoDinh.THE_GIOI_Z = 2 / NHIN_THEM (0.9.7: NHIN_THEM 1,15 -> vùng nhìn ~368x207 px thế giới, ~23 x 13
+ * phóng KhungCoDinh.THE_GIOI_Z = 2 / NHIN_THEM (0.9.7: NHIN_THEM 1,35 -> vùng nhìn 432x243 px thế giới, 27 x ~15
  * ô) trên mọi máy. Không thu phóng (bỏ tuỳ chọn "Phóng" và phóng theo cỡ bản đồ của bản cũ).
  *
  * port-j2me.py (vá BẮT BUỘC): GameScr.loadCamera đặt gsw / gsh = gsw(Canvas.w) / gsh(Canvas.h) để camera của game

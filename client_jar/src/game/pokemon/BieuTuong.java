@@ -210,6 +210,7 @@ public final class BieuTuong {
         if (h == null) {
             return;
         }
+        GhiChu.bieu(g, "bieu-tuong-" + id, x, y, s, s);   // 0.9.7 kiểm: biểu tượng trong màn / không bị chữ đè
         ChuUI b = ChuUI.bo;
         if (b != null && b.hinh(g, h, x, y, s, mau, nen)) {
             return;

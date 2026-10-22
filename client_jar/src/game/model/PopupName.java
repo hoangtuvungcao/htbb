@@ -36,6 +36,10 @@ public class PopupName extends Tree {
         if (imgArrow != null) {
             imgArrow.drawFrame(0, xa, (this.y - 10) + (this.num / 2), 0, 33, g);
         }
+        // 0.9.7: chữ biển = nhãn lớp giao diện (NhanTheGioi, ưu tiên thấp nhất: nhường chỗ tên người / NPC); J2ME vẽ ở đây
+        if (game.pokemon.NhanTheGioi.cua(this, this.name, this.x, this.y - 14)) {
+            return;
+        }
         Font.normalFontColor.drawString(g, this.name, xc, (this.y - 32) + (this.num / 2), 2);
     }
 

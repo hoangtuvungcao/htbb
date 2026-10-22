@@ -20,7 +20,12 @@ public final class NhanTheGioi {
     private NhanTheGioi() {
     }
 
-    public static final int QUAI = 0, NGUOI = 1, BAN_THAN = 2, TRUM = 3, KHAC_PHE = 4;
+    /** CUA (0.9.7): biển cổng "vào" - ưu tiên THẤP NHẤT, nhường chỗ (nhích / ẩn chữ) cho tên người / NPC / quái */
+    public static final int QUAI = 0, NGUOI = 1, BAN_THAN = 2, TRUM = 3, KHAC_PHE = 4, CUA = 5;
+    /** Kiểm thử: hộp nhãn ĐÃ VẼ khung vừa rồi (toạ độ giao diện) + chữ. */
+    public static int soDaVe;
+    public static final int[] DX = new int[48], DY = new int[48], DW = new int[48], DH_ = new int[48];
+    public static final String[] DS = new String[48];
 
     static final int TOI_DA = 48;
     private static final Object[] AI = new Object[TOI_DA];
@@ -109,6 +114,11 @@ public final class NhanTheGioi {
      */
     public static boolean nguoi(Object ai, String ten, int wx, int wyDay, int wyChan, int loai, boolean chon) {
         return ghi(ai, loai, null, ten, wx, wyDay, wyChan, -1, chon, false);
+    }
+
+    /** PopupName: biển cổng (chữ "vào"); wyDay = đáy chữ (thế giới). false = bản J2ME, tự vẽ trong thế giới. */
+    public static boolean cua(Object ai, String chu, int wx, int wyDay) {
+        return ghi(ai, CUA, null, chu, wx, wyDay, wyDay, -1, false, false);
     }
 
     /** NhanQuai: "Lv N" (tien) + tên; hp phần nghìn (-1 không thanh). */
@@ -223,6 +233,7 @@ public final class NhanTheGioi {
     // ------------------------------------------------------------------ vẽ
     /** GameScr.paintFocusActorInfo (lớp giao diện): vẽ hàng đợi nhãn + số bay; xoá hàng đợi. */
     public static void ve(Graphics g) {
+        soDaVe = 0;
         try {
             Canvas.resetTrans(g);
             tinhTiLe();
@@ -249,6 +260,9 @@ public final class NhanTheGioi {
         int l = LOAI[i];
         if (l == BAN_THAN) {
             return 1;
+        }
+        if (l == CUA) {
+            return 5;
         }
         if (l != QUAI) {
             return 2;
@@ -304,9 +318,17 @@ public final class NhanTheGioi {
                 by1 = sy(WCHAN[i]);
             }
         }
-        // thứ tự ưu tiên (đếm theo 5 bậc, không cấp phát)
+        // 0.9.7: kẹp trọn trong màn (tên / biển sát mép không bị cắt)
+        for (int i = 0; i < so; i++) {
+            if (TT[i] == 0) {
+                continue;
+            }
+            X[i] = Math.max(1, Math.min(Canvas.w - W[i] - 1, X[i]));
+            Y[i] = Math.max(1, Math.min(Canvas.h - H[i] - 1, Y[i]));
+        }
+        // thứ tự ưu tiên (đếm theo 6 bậc, không cấp phát)
         int n = 0;
-        for (int p = 0; p <= 4; p++) {
+        for (int p = 0; p <= 5; p++) {
             for (int i = 0; i < so; i++) {
                 if (TT[i] != 0 && uuTien(i) == p) {
                     THU[n++] = i;
@@ -324,17 +346,34 @@ public final class NhanTheGioi {
             if (!dung(i, k, laQuai, bx0, by0, bx1, by1)) {
                 continue;
             }
-            int y0 = Y[i];
-            Y[i] = y0 - H[i] - 1;
-            if (!dung(i, k, laQuai, bx0, by0, bx1, by1)) {
-                continue;   // nhích lên một hàng
+            // 0.9.7: KHÔNG BAO GIỜ chồng: thử lên 1 / 2 / 3 hàng, lệch trái / phải nửa nhãn; hết chỗ thì ẩn (biển cổng,
+            // quái trước; tên người cũng ẩn thay vì đè)
+            int x0 = X[i], y0 = Y[i];
+            int[] dy = {-(H[i] + 1), -2 * (H[i] + 1), -3 * (H[i] + 1), 0, 0, -(H[i] + 1), -(H[i] + 1)};
+            int[] dx = {0, 0, 0, -(W[i] / 2 + 3), W[i] / 2 + 3, -(W[i] / 2 + 3), W[i] / 2 + 3};
+            boolean ok = false;
+            for (int t = 0; t < dy.length && !ok; t++) {
+                X[i] = Math.max(1, Math.min(Canvas.w - W[i] - 1, x0 + dx[t]));
+                Y[i] = Math.max(1, Math.min(Canvas.h - H[i] - 1, y0 + dy[t]));
+                ok = !dung(i, k, laQuai, bx0, by0, bx1, by1);
             }
-            Y[i] = y0;
-            if (laQuai && p == 4) {
+            if (!ok) {
+                X[i] = x0;
+                Y[i] = y0;
                 TT[i] = 0;
                 THU[k] = -1;
-            } else {
-                TT[i] = 2;
+            }
+        }
+        soDaVe = 0;
+        for (int k = 0; k < n; k++) {
+            int i = THU[k];
+            if (i >= 0 && TT[i] != 0 && soDaVe < DX.length) {
+                DX[soDaVe] = X[i];
+                DY[soDaVe] = Y[i];
+                DW[soDaVe] = W[i];
+                DH_[soDaVe] = H[i];
+                DS[soDaVe] = CHU[i];
+                soDaVe++;
             }
         }
         // vẽ: ưu tiên thấp trước (người chơi trên quái, mục tiêu trên cùng)
@@ -389,6 +428,8 @@ public final class NhanTheGioi {
             mau = 0xFFB27A;
         } else if (l == KHAC_PHE) {
             mau = 0xFFA898;
+        } else if (l == CUA) {
+            mau = 0xFFE08A;
         } else if (l == QUAI) {
             mau = chon || NONG[i] ? 0xFFFFFF : 0xE6EAF2;
         } else {

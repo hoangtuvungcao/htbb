@@ -76,12 +76,12 @@ public final class KiemKhungCoDinh {
         heSo(2772, 1240, 4.331f, 640, 287);
         heSo(854, 480, 1.334f, 640, 360);
         heSo(640, 360, 1f, 640, 360);
-        // 0.9.7: camera "cao hơn" NHIN_THEM 1,15 -> vùng nhìn 368 x 207 px thế giới (23 x ~13 ô) thay 320 x 180
-        bang("vung nhin the gioi rong", Integer.valueOf(368), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
-        bang("vung nhin the gioi cao", Integer.valueOf(207), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
-        bang("23 o ngang", Integer.valueOf(23), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
-        bang("20:9 -> 10 o doc", Integer.valueOf(10), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
-        dung("thay them ~15% moi chieu", Math.abs(KhungCoDinh.NHIN_W / 320f - 1.15f) < 0.01f && Math.abs(KhungCoDinh.NHIN_H / 180f - 1.15f) < 0.01f);
+        // 0.9.7: camera "cao hơn" NHIN_THEM 1,35 -> vùng nhìn 432 x 243 px thế giới (27 x ~15 ô) thay 320 x 180
+        bang("vung nhin the gioi rong", Integer.valueOf(432), Integer.valueOf(KhungCoDinh.nhinW(KhungCoDinh.LOGIC_W)));
+        bang("vung nhin the gioi cao", Integer.valueOf(243), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.LOGIC_H)));
+        bang("27 o ngang", Integer.valueOf(27), Integer.valueOf(KhungCoDinh.NHIN_W / 16));
+        bang("20:9 -> 12 o doc", Integer.valueOf(12), Integer.valueOf(KhungCoDinh.nhinH(KhungCoDinh.tinh(2400, 1080).logicH) / 16));
+        dung("thay them ~35% moi chieu", Math.abs(KhungCoDinh.NHIN_W / 320f - 1.35f) < 0.01f && Math.abs(KhungCoDinh.NHIN_H / 180f - 1.35f) < 0.01f);
     }
 
     static void kiemCham() {
@@ -120,12 +120,12 @@ public final class KiemKhungCoDinh {
 
     static void kiemTheGioi() {
         bang("cham 0 -> 0", Integer.valueOf(0), Integer.valueOf(KhungCoDinh.theGioi(0)));
-        // chạm logic p -> thế giới floor(p / THE_GIOI_Z), THE_GIOI_Z = 2 / 1,15
-        bang("cham 639 -> 367", Integer.valueOf(367), Integer.valueOf(KhungCoDinh.theGioi(639)));
-        bang("cham 320 -> 184", Integer.valueOf(184), Integer.valueOf(KhungCoDinh.theGioi(320)));
+        // chạm logic p -> thế giới floor(p / THE_GIOI_Z), THE_GIOI_Z = 2 / 1,35
+        bang("cham 639 -> 431", Integer.valueOf(431), Integer.valueOf(KhungCoDinh.theGioi(639)));
+        bang("cham 320 -> 216", Integer.valueOf(216), Integer.valueOf(KhungCoDinh.theGioi(320)));
         // khứ hồi: điểm thế giới w vẽ ở logic w * Z -> chạm vào đó trả lại đúng w
         boolean kh = true;
-        for (int w = 0; w < 368; w++) {
+        for (int w = 0; w < 432; w++) {
             int p = (int) Math.floor((w + 0.5f) * KhungCoDinh.THE_GIOI_Z);
             if (KhungCoDinh.theGioi(p) != w && KhungCoDinh.theGioi(p) != w - 1) kh = false;
         }
