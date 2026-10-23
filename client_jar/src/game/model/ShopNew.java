@@ -288,8 +288,9 @@ public class ShopNew extends Screen {
                 if (!this.trans) {
                     this.pa = cmyText;
                     this.trans = true;
+                    game.pokemon.HopChiTiet.batDauKeo(cmyText);   // 0.9.11: nhấn lên thanh cuộn = kéo núm
                 }
-                cmtoYText = this.pa + (Canvas.pyLast - Canvas.py);
+                cmtoYText = game.pokemon.HopChiTiet.keoNum ? game.pokemon.HopChiTiet.cuonKeoNum() : this.pa + (Canvas.pyLast - Canvas.py);
                 if (cmtoYText < 0) {
                     cmtoYText = 0;
                 }

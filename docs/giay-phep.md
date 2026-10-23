@@ -24,7 +24,7 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 | Noto Sans (© Google), Baloo 2 (© The Baloo 2 Project Authors / Ek Type), Nunito, Press Start 2P | chữ bản PC, logo, website; chữ vẽ sẵn vào ảnh băng-rôn danh hiệu (Noto Sans Bold, P2 — không kèm tệp font) | SIL Open Font License 1.1 | giữ nguyên tệp giấy phép |
 | TimGM6mb.sf2 (Tim Brechbill, David Bolton) | soundbank MIDI của bản PC Java | GNU GPL v2 | giữ nguyên tệp + GPL-2 |
 | Eclipse Temurin JRE 21 | Java đi kèm bản PC Windows / Linux | GPL v2 + Classpath Exception | giữ tệp giấy phép của JRE |
-| Launch4j | `HTBB.exe` bọc jar | BSD-3 | chép `LICENSE.txt` |
+| mingw-w64 (CRT / thư viện liên kết tĩnh vào `HTBB.exe`, trình mở tự viết `client_pc/khoi_chay` từ 0.9.11; trước đó Launch4j BSD-3) | `HTBB.exe` bản PC Windows | mingw-w64 runtime: ZPL 2.1 / phạm vi công cộng; libgcc: GPL v3 + GCC Runtime Library Exception | không bắt buộc |
 | Lucide Icons | biểu tượng website | ISC | — |
 | [PokéAPI](https://github.com/PokeAPI/pokeapi) `data/v2/csv`, commit ghim `2bf639e5572812a67d2b94903fdcb9d095f5aeb2` | dữ kiện 1.025 loài (hệ, chỉ số nền, tiến hoá, nhóm trứng, môi trường sống, learnset để chọn chiêu) → `sql/htbb.sql` (khối `them_loai_day_du.sql`) | **BSD-3-Clause** (xem 8.1) | **Có** — giữ văn bản bản quyền + giấy phép |
 | [Pokémon Showdown](https://github.com/smogon/pokemon-showdown) `data/pokedex.ts`, commit ghim `d601443456c795f77c6e4f2b5b459167f2b10a3c` | chỉ **đối chiếu chéo** hệ / chỉ số / tiến hoá / nhóm trứng (không chép vào game) | **MIT** (xem 8.2) | giữ văn bản giấy phép |
@@ -68,7 +68,7 @@ Sprite và chân dung PMDCollab theo [CC BY-NC 4.0](https://creativecommons.org/
 
 Trong game: Menu màn đăng nhập → **Ghi công** (jar/APK), nút **Ghi công** dưới khung đăng nhập (Unity), F10 → **Giấy
 phép** (PC Java). Bản PC Windows đóng gói (`client_pc/dong_goi_windows.sh`) kèm `GHI_CONG.txt` cạnh `HTBB.exe` và thư
-mục `giay_phep/` (phông, Launch4j, âm thanh).
+mục `giay_phep/` (phông, âm thanh).
 
 ## 4. Icon giao diện PNG (0.9.5)
 

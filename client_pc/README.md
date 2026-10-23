@@ -26,7 +26,7 @@ Ra `client_pc/out/`: `HTBB-PC.jar` (fat jar), `HTBB.sh` / `HTBB.bat` / `HTBB.com
 
 | Tệp | Nội dung |
 |---|---|
-| `HTBB-PC-Setup-<ver>.exe` | bộ cài Inno Setup: `HTBB.exe` (Launch4j, jar game đã làm rối NHÚNG trong exe) + `runtime\` (jlink) + `am\` + giấy phép |
+| `HTBB-PC-Setup-<ver>.exe` | bộ cài Inno Setup: `HTBB.exe` (0.9.11: trình mở Unicode `khoi_chay/htbb_khoi_chay.c`, mingw-w64) + `HTBB-PC.jar` (đã làm rối) + `runtime\` (jlink) + `am\` + giấy phép |
 | `HTBB-PC-Windows-<ver>.zip` | cùng bố cục, chạy ngay |
 | `HTBB-PC-Linux-<ver>.AppImage` | một tệp: `AppRun` + `usr/lib/htbb/{runtime, htbb.jar, am}` trong squashfs (`chmod +x` rồi chạy) |
 | `HTBB-PC-Linux-<ver>.tar.gz` | `HTBB/HTBB` (trình chạy) + `runtime/` (jar game ở `runtime/lib/htbb/`) |
@@ -37,6 +37,14 @@ Ra `client_pc/out/`: `HTBB-PC.jar` (fat jar), `HTBB.sh` / `HTBB.bat` / `HTBB.com
   `javax.microedition.**` giữ tên (KiemPc chạy được trên bản làm rối).
 - Java đi kèm dựng bằng `jlink` từ jmods Temurin 21 (module theo `jdeps`), bỏ debug / header / man, nén zip-9:
   Windows ~48 MB, Linux ~59 MB (JRE đầy đủ cũ ~190 MB giải nén). jlink luôn sinh `runtime/lib/jrt-fs.jar` (của JDK).
+- 0.9.11: `HTBB.exe` là trình mở nhỏ tự viết (`khoi_chay/htbb_khoi_chay.c` + `khoi_chay/htbb.manifest`, biên dịch
+  bằng `gcc-mingw-w64-x86-64` + `binutils-mingw-w64-x86-64`): nạp `runtime\bin\server\jvm.dll` ngay trong tiến trình
+  (`JNI_CreateJavaVM`, tuỳ chọn JVM như Launch4j cũ) rồi gọi `htbb.pc.Chay.main` từ `HTBB-PC.jar` (thư mục làm việc =
+  thư mục game; tham số Unicode). Manifest đặt bảng mã ANSI của tiến trình = UTF-8 (`activeCodePage`) và trình mở dùng
+  tên ngắn 8.3 khi có, nên chạy được từ thư mục có dấu (cài riêng người dùng `C:\Users\Nguyễn ...`, zip giải nén ra
+  Desktop). Lỗi 0.9.10: Launch4j 3.50 (đầu ANSI) báo "This application requires a Java Runtime Environment"; chạy thẳng
+  `javaw.exe` từ thư mục có dấu cũng hỏng ("could not find java.dll"). Lối tắt bộ cài + mở lại sau cập nhật trong game
+  trỏ `HTBB.exe`. Gỡ lỗi: `HTBB.exe --htbb-go-loi` ghi `%TEMP%\htbb-khoi-chay.log`.
 - Kiểm: `runtime/bin/java --list-modules`, `runtime/release` (MODULES=), chạy AppImage / HTBB.exe (wine) tới màn đăng
   nhập (`--chup <tệp.png> <giây>`).
 
@@ -89,6 +97,10 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `KiemTruotDoiCo` (0.9.6.1): thanh trượt (Bang.thanhTruot - bảng Tự động đánh) theo ngón / chuột từng lần kéo, lưu khi
   thả (kể cả thả ngoài thanh); đổi cỡ cửa sổ nhỏ -> TO HƠN cỡ đầu -> phóng to / 21:9 / 4:3 / toàn màn: khung đúng cỡ mới,
   phủ kín, không đen (đường vẽ cửa sổ thật, bề mặt là ảnh) + luật tạo lại bề mặt trình bày (ManHinh.canTaoLai);
+- `KiemThanhCuon` (0.9.11): kéo NÚM thanh cuộn (game.pokemon.ThanhCuon / Cuon - tab Ngoại hình -> Hào quang, menu chữ,
+  màn ghi công) ở PC 1280x720, điện thoại 20:9 và đường vẽ J2ME, bằng chạm và chuột: núm theo con trỏ, nội dung theo tỉ
+  lệ cùng chiều (núm xuống = cuộn xuống), quá đáy / đỉnh kẹp, thả không chạm hàng và không trôi, chạm rãnh = nhảy tới;
+  kéo NỘI DUNG giữ chiều theo ngón (lệnh chạy như `KiemTruotDoiCo`);
 - `KiemPhongRieng` (0.9.7): thẻ phòng riêng (game.pokemon.PhongRieng - Phó bản Hầm ngục / trận Cúp PvP, gói -112): đọc gói,
   gói hỏng không vỡ, tự ẩn khi đổi bản đồ, vẽ ở 11 cỡ trong vùng an toàn, canh giữa, không chồng nút HUD, chạm >= cỡ tối thiểu;
 - `KiemKenhChat` (0.9.8): bảng chat nhiều kênh (game.pokemon.ManChat / KenhChat, gói -124 giả qua MessageHandler) ở 11 cỡ +

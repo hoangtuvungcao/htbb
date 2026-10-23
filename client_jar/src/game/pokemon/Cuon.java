@@ -7,6 +7,9 @@ import javax.microedition.lcdui.Graphics;
  * Cuộn danh sách bằng ngón / chuột có QUÁN TÍNH (0.9.3): kéo trong khung = cuộn theo ngón, thả = trôi tiếp rồi chậm dần;
  * kéo quá ngưỡng thì cú thả KHÔNG thành cú chạm vào hàng (huỷ điểm nhấn của VungCham). Phím lên / xuống cuộn từng hàng.
  * Gọi khung() + capNhat() mỗi khung vẽ, lech() = số px nội dung đã cuộn.
+ * 0.9.11: nhấn lên THANH CUỘN (veThanh) = kéo NÚM (ThanhCuon): núm theo con trỏ, nội dung theo tỉ lệ cùng chiều; chạm
+ * rãnh = nhảy tới chỗ chạm. Trước đây cú kéo trên thanh bị coi như kéo nội dung nên ngược chiều (kéo núm lên = cuộn
+ * xuống).
  */
 public final class Cuon {
     float y, v;
@@ -15,6 +18,11 @@ public final class Cuon {
     float yBatDau;
     int pyTruoc;
     int kx, ky, kw, kh;
+    /** 0.9.11: đang kéo NÚM thanh cuộn (không phải nội dung) - núm theo con trỏ, nội dung theo tỉ lệ */
+    boolean keoNum;
+    int pyNumDau, cuonNumDau;
+    /** thanh cuộn vẽ ở khung trước (toạ độ màn): cột tx..tx+tw, rãnh ty..ty+th, núm cao tn; th = 0 = không có */
+    int tx, tw, ty, th, tn;
 
     /** Khung nhìn (x, y, w, h theo toạ độ màn) + chiều cao nội dung. */
     public void khung(Graphics g, int x, int y, int w, int h, int noiDung) {
@@ -23,6 +31,9 @@ public final class Cuon {
         this.kw = w;
         this.kh = h;
         this.max = Math.max(0, noiDung - h);
+        if (this.max <= 0) {
+            this.th = 0;
+        }
         kep();
     }
 
@@ -41,8 +52,36 @@ public final class Cuon {
         return px >= this.kx && py >= this.ky && px < this.kx + this.kw && py < this.ky + this.kh;
     }
 
-    /** Mỗi khung: theo ngón khi đang kéo, quán tính khi đã thả. */
+    /** Mỗi khung: theo ngón khi đang kéo nội dung, theo núm khi kéo thanh cuộn, quán tính khi đã thả. */
     public void capNhat() {
+        if (this.keoNum) {
+            // kéo núm: theo dangGiu (bảng có thể xoá isPointerDown mỗi nhịp) - núm đi theo con trỏ, CÙNG chiều
+            if (Canvas.dangGiu || Canvas.isPointerDown) {
+                this.y = ThanhCuon.keo(this.cuonNumDau, this.pyNumDau, Canvas.py, this.th, this.tn, this.max);
+                this.v = 0;
+                Canvas.pxLast = -9999;   // cú thả không phải cú chạm vào hàng
+            } else {
+                this.keoNum = false;
+            }
+            kep();
+            return;
+        }
+        if ((Canvas.isPointerDown || Canvas.dangGiu) && !this.keo && this.th > 0 && this.max > 0
+                && ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, this.tx, this.tw, this.ty, this.th)) {
+            // nhấn lên thanh cuộn: trên núm = nắm núm; trên rãnh = nhảy để tâm núm tới chỗ nhấn rồi nắm núm
+            int c = (int) this.y;
+            if (!ThanhCuon.trenNum(Canvas.pyLast, this.ty, this.th, this.tn, c, this.max)) {
+                c = ThanhCuon.toi(Canvas.pyLast, this.ty, this.th, this.tn, this.max);
+            }
+            this.keoNum = true;
+            this.cuonNumDau = c;
+            this.pyNumDau = Canvas.pyLast;
+            this.y = ThanhCuon.keo(c, this.pyNumDau, Canvas.py, this.th, this.tn, this.max);
+            this.v = 0;
+            Canvas.pxLast = -9999;
+            kep();
+            return;
+        }
         if (Canvas.isPointerDown && (this.keo || trong(Canvas.pxLast, Canvas.pyLast))) {
             if (!this.keo) {
                 this.keo = true;
@@ -75,6 +114,19 @@ public final class Cuon {
         kep();
     }
 
+    /** Đang kéo núm thanh cuộn (kiểm thử). */
+    public boolean dangKeoNum() {
+        return this.keoNum;
+    }
+
+    /** Thanh cuộn vẽ lần cuối (toạ độ màn): {x, rộng, y rãnh, cao rãnh, cao núm, đỉnh núm}; null = không có thanh. */
+    public int[] thanh() {
+        if (this.th <= 0 || this.max <= 0) {
+            return null;
+        }
+        return new int[]{this.tx, this.tw, this.ty, this.th, this.tn, ThanhCuon.yNum(this.ty, this.th, this.tn, lech(), this.max)};
+    }
+
     public int lech() {
         return (int) this.y;
     }
@@ -97,12 +149,18 @@ public final class Cuon {
 
     public void veThanh(Graphics g, int x, int y, int h) {
         if (this.max <= 0) {
+            this.th = 0;
             return;
         }
         // 0.9.7: rãnh gỗ tối + núm đồng (mảnh CUON / CUON_NUM)
-        int tong = this.max + h;
-        int hb = Math.max(16, h * h / Math.max(1, tong));
-        int yb = y + (int) ((long) (h - hb) * this.lech() / Math.max(1, this.max));
+        int hb = ThanhCuon.caoNum(h, h, this.max + h, 16);
+        int yb = ThanhCuon.yNum(y, h, hb, this.lech(), this.max);
+        // 0.9.11: nhớ chỗ thanh (toạ độ màn) cho kéo núm ở capNhat khung sau
+        this.tx = x - 1 + g.getTranslateX();
+        this.tw = 6;
+        this.ty = y + g.getTranslateY();
+        this.th = h;
+        this.tn = hb;
         if (KhungNro.ve(g, KhungNroBang.CUON, x - 1, y, 6, h)) {
             KhungNro.ve(g, KhungNroBang.CUON_NUM, x - 1, yb, 6, hb);
             return;

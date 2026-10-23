@@ -130,13 +130,15 @@ java -jar client_pc/out/HTBB-PC.jar --may-chu host:cong        # chạy thử
 ```
 
 `dong_goi_windows.sh` (0.9.5) tải công cụ một lần vào `client_pc/out/cong_cu/` (ghim phiên bản, kiểm SHA-256, lệch là
-dừng: Launch4j 3.50, Temurin 21 JDK Windows + Linux để lấy jmods, appimagetool 1.9.1 + type2-runtime 20251108, Inno
+dừng: Temurin 21 JDK Windows + Linux để lấy jmods, appimagetool 1.9.1 + type2-runtime 20251108, Inno
 Setup 6.7.3 qua wine) rồi:
 
 - làm rối mã game bằng ProGuard (`client_pc/release-pc.pro`, bản đồ tên `out/goi/mapping-pc.txt` giữ riêng);
 - dựng Java TỐI GIẢN bằng `jlink` (module theo `jdeps`: java.base, java.desktop, jdk.management + jdk.crypto.ec,
   jdk.localedata en/vi; `--strip-debug --no-header-files --no-man-pages --compress=zip-9`), ~50-60 MB thay JRE đầy đủ;
-- Windows: `HTBB.exe` (Launch4j, jar game nhúng trong exe) + `runtime\` -> `HTBB-PC-Setup-<ver>.exe` (+ zip cùng bố cục);
+- Windows: `HTBB.exe` (0.9.11: trình mở tự viết `client_pc/khoi_chay/` - nạp jvm.dll trong tiến trình, bảng mã ANSI
+  UTF-8, biên dịch bằng mingw-w64 `x86_64-w64-mingw32-gcc` + `windres`; chạy được từ thư mục có dấu, thay Launch4j 3.50
+  đầu ANSI) + `HTBB-PC.jar` (đã làm rối) + `runtime\` -> `HTBB-PC-Setup-<ver>.exe` (+ zip cùng bố cục);
 - Linux: `HTBB-PC-Linux-<ver>.AppImage` một tệp (AppRun + runtime + jar trong squashfs), thêm tar.gz (`HTBB/HTBB` +
   `runtime/`, jar game ở `runtime/lib/htbb/`).
 
@@ -241,6 +243,28 @@ Tên tệp: `HTBB-<PHIEN_BAN>-android.apk`, `HTBB-<PHIEN_BAN>.jar`, `HTBB-<PHIEN
 Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ); `client_pc/test/KiemCapNhat` (máy chủ HTTP
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
+
+### Bản vá 0.9.11 (`BAN=911`: kéo núm thanh cuộn đúng chiều)
+
+Chỉ client (`client_jar/src` + `client_jar/shared/mod`, vào cả J2ME / APK / PC); SQL và `htbb-server.jar` KHÔNG đổi.
+`PHIEN_BAN=0.9.11-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 11`; `MIDlet-Version` 0.9.11).
+
+1. Thanh cuộn danh sách (lỗi 0.9.10, ví dụ Nhân vật -> Ngoại hình -> Hào quang): kéo núm LÊN thì danh sách cuộn XUỐNG và
+   ngược lại - `game.pokemon.Cuon` coi cú nhấn trên thanh như kéo nội dung (vuốt ngón). Nay nhấn lên thanh = nắm NÚM: núm
+   theo con trỏ, nội dung theo tỉ lệ cùng chiều (`game.pokemon.ThanhCuon`), chạm rãnh = nhảy tới chỗ chạm rồi kéo tiếp;
+   kéo trên nội dung giữ chiều theo ngón, lăn chuột không đổi. Áp cho mọi danh sách dùng `Cuon` (`Bang.danhSach`: hành
+   trang, cửa hàng, nhiệm vụ, kho đồ, Pokédex, xếp hạng, danh hiệu, tủ đồ Ngoại hình, luyện / hợp / khảm, giao dịch,
+   xem trang bị; hộp thông báo dài; chat) và các thanh cũ: menu chữ (`Menu`), menu tạm dừng (`PauseMenu`), bảng gán chiêu
+   (`ChonChieuNhanh`), thẻ chi tiết vật phẩm (`HopChiTiet` trong `ShopNew` / `WindowInfoScr`), lưới cũ `WindowInfoScr`,
+   màn ghi công (`GhiCongScr`).
+2. Bản PC Windows: `HTBB.exe` báo "This application requires a Java Runtime Environment" khi thư mục game có dấu (cài
+   riêng người dùng `C:\Users\Nguyễn ...`, zip giải nén ra Desktop) - Launch4j 3.50 đầu ANSI. Thay bằng trình mở tự viết
+   `client_pc/khoi_chay/` (jvm.dll trong tiến trình, bảng mã ANSI UTF-8, tên ngắn 8.3); jar game (đã làm rối) nằm cạnh:
+   `HTBB-PC.jar`. Bộ cài mặc định cài cho mọi người dùng (vẫn cho chọn riêng người dùng); lối tắt + mở lại sau cập nhật
+   trong game trỏ `HTBB.exe`. Đóng gói cần thêm `gcc-mingw-w64-x86-64` + `binutils-mingw-w64-x86-64`.
+3. Kiểm: `client_pc/test/KiemThanhCuon` (PC 1280x720, điện thoại 20:9, đường vẽ J2ME; chạm và chuột) - lệnh chạy như
+   `KiemTruotDoiCo` (client_pc/README.md).
+4. Tải gói 911 lên `/admin/tai-game` (Số bản = 911) cho từng nền tảng.
 
 ### Bản vá 0.9.10 (`BAN=910`: giao diện J2ME - `ChupTrongGame -Dchup.j2me` 35 lỗi -> 0)
 

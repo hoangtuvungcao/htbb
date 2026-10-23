@@ -27,6 +27,9 @@ public class GhiCongScr extends Screen {
     private boolean dangKeo;
     private int pyKeo;
     private int cmyKeo;
+    /** 0.9.11: kéo núm thanh cuộn (dangKeo + keoNum) - thanh vẽ ở khung trước: cột thX, rãnh thY..thY+thH, núm thN */
+    private boolean keoNum;
+    private int thX, thY, thH, thN;
 
     public static GhiCongScr gI() {
         if (me == null) {
@@ -216,6 +219,10 @@ public class GhiCongScr extends Screen {
                 tH = 10;
             }
             int tY = noiDungY + (noiDungH - tH) * this.cmy / this.cmyLim;
+            this.thX = x + w - 8;
+            this.thY = noiDungY;
+            this.thH = noiDungH;
+            this.thN = Math.min(tH, noiDungH);
             GiaoDien.khoi(g, x + w - 8, noiDungY, 3, noiDungH, 1, GiaoDien.XANH_NHAT);
             GiaoDien.khoi(g, x + w - 8, tY, 3, tH, 1, GiaoDien.XANH);
         }
@@ -243,11 +250,22 @@ public class GhiCongScr extends Screen {
                 this.dangKeo = true;
                 this.pyKeo = Canvas.py;
                 this.cmyKeo = this.cmy;
+                // 0.9.11: nhấn lên thanh cuộn = kéo NÚM (cùng chiều con trỏ, theo tỉ lệ); rãnh = nhảy tới chỗ nhấn
+                this.keoNum = this.cmyLim > 0 && this.thH > 0
+                        && game.pokemon.ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, this.thX, 3, this.thY, this.thH);
+                if (this.keoNum) {
+                    this.pyKeo = Canvas.pyLast;
+                    if (!game.pokemon.ThanhCuon.trenNum(Canvas.pyLast, this.thY, this.thH, this.thN, this.cmy, this.cmyLim)) {
+                        this.cmyKeo = game.pokemon.ThanhCuon.toi(Canvas.pyLast, this.thY, this.thH, this.thN, this.cmyLim);
+                    }
+                }
             }
-            this.cmtoY = this.cmyKeo + this.pyKeo - Canvas.py;
+            this.cmtoY = this.keoNum ? game.pokemon.ThanhCuon.keo(this.cmyKeo, this.pyKeo, Canvas.py, this.thH, this.thN, this.cmyLim)
+                    : this.cmyKeo + this.pyKeo - Canvas.py;
             this.cmy = this.cmtoY;
         } else {
             this.dangKeo = false;
+            this.keoNum = false;
         }
         if (this.cmtoY > this.cmyLim) {
             this.cmtoY = this.cmyLim;

@@ -41,6 +41,9 @@ extends Screen {
     public Command cmdTimban;
     boolean trans = false;
     int pa = 0;
+    /** 0.9.11: đang kéo núm thanh cuộn */
+    boolean keoNum;
+    int cuonNumDau, pyNumDau;
     byte frame;
     /** 0.9.6.1: dòng hiện thứ i -> chỉ số gốc (hàng đầu: name[g]; menu con: mục name[index][g + 1]). */
     int[] hien = new int[0];
@@ -310,7 +313,53 @@ extends Screen {
         }
     }
 
+    /** Thanh cuộn (như Nen.veKhungMenu -> KieuO.thanhCuon): {x, rộng, y rãnh, cao rãnh, cao núm}; null = không có. */
+    int[] thanh() {
+        int thay = this.h / Math.max(1, this.hText);
+        int hb = this.h - 4;
+        if (this.Limit <= thay || thay <= 0 || hb < 8 || this.cmyLim <= 0) {
+            return null;
+        }
+        int dai = Math.max(6, hb * thay / this.Limit);
+        return new int[]{this.x + this.w - 3, 3, this.y + 2, hb, Math.min(dai, hb)};
+    }
+
+    /**
+     * 0.9.11: kéo NÚM thanh cuộn - núm theo con trỏ, danh sách theo tỉ lệ cùng chiều (trước: kéo trên thanh = vuốt nội
+     * dung, ngược chiều, và nhấn còn chọn mục dưới thanh); chạm rãnh = nhảy tới chỗ chạm.
+     */
+    boolean keoThanh() {
+        int[] t = thanh();
+        if (this.keoNum) {
+            if (t != null && (Canvas.dangGiu || Canvas.isPointerDown)) {
+                this.cmtoY = this.cmy = game.pokemon.ThanhCuon.keo(this.cuonNumDau, this.pyNumDau, Canvas.py, t[3], t[4], this.cmyLim);
+                return true;
+            }
+            this.keoNum = false;
+            this.trans = false;
+            Canvas.isPointerClick = false;   // cú thả của lượt kéo núm: không chọn mục
+            return true;
+        }
+        if (t != null && (Canvas.dangGiu || Canvas.isPointerDown)
+                && game.pokemon.ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, t[0], t[1], t[2], t[3])) {
+            int c = Math.max(0, Math.min(this.cmyLim, this.cmy));
+            if (!game.pokemon.ThanhCuon.trenNum(Canvas.pyLast, t[2], t[3], t[4], c, this.cmyLim)) {
+                c = game.pokemon.ThanhCuon.toi(Canvas.pyLast, t[2], t[3], t[4], this.cmyLim);
+            }
+            this.keoNum = true;
+            this.cuonNumDau = c;
+            this.pyNumDau = Canvas.pyLast;
+            this.cmtoY = this.cmy = game.pokemon.ThanhCuon.keo(c, this.pyNumDau, Canvas.py, t[3], t[4], this.cmyLim);
+            return true;
+        }
+        return false;
+    }
+
     public void updateKey() {
+        if (keoThanh()) {
+            super.updateKey();
+            return;
+        }
         if (Canvas.isPointer(this.x, this.y, this.w, this.h)) {
             int n;
             int n2 = Canvas.pyLast - Canvas.py;
