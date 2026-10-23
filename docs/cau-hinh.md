@@ -94,6 +94,13 @@ Ghi chú cho vài khoá hay chỉnh:
   bật gì nữa. Mọi sự kiện khác tự bật / tắt theo lịch năm ([van-hanh.md](van-hanh.md) mục 7.1).
 - **Chống clone & chuyển xu** (`chong_clone.*`): cấp / tuổi tài khoản / giờ chơi tối thiểu để chuyển hay nhận xu, giới
   hạn Pokémon cùng thiết bị / IP gửi cho một người mỗi ngày, khoảng giá ký gửi ([thiet-ke-game.md](thiet-ke-game.md) mục 9.6).
+- **Hạn mức đăng ký** `dang_ky.toi_da_gio` / `dang_ky.toi_da_ngay` (nhóm Bảo trì): số tài khoản mới tối đa từ một IP
+  trong 1 giờ / 24 giờ gần nhất, đếm GỘP web (`dang_ky`) + trong game (`dang_ky_game`) ở bảng `web_chan_spam`; trong
+  game còn đếm thêm theo mã thiết bị với cùng hạn mức. Chỉ lượt tạo THÀNH CÔNG mới tính. Áp dụng ≤ 5 giây cho cả web
+  (`server/utils/dangKy.ts`) lẫn máy chủ game (`DangKyTrongGame`). Không có dòng / giá trị hỏng = `hanMuc` trong
+  `web/shared/data/quy-tac-dang-ky.json` (3 / 10). Mạng di động Việt Nam (CGNAT) cho nhiều người chung một IP, nên
+  **open test** đặt **6 / giờ, 30 / 24 giờ** (khối `-- >>> mo_han_muc_dang_ky.sql` của `sql/htbb.sql`, INSERT IGNORE —
+  không đè giá trị admin đã sửa). **Xem lại lúc khai trương chính thức** (cùng lúc hạ trần giftcode open test).
 
 ## 2. `server.ini`
 
@@ -338,17 +345,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **358 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **366 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 70 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 78 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 249 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (70)
+### Khoá chỉnh trên web (78)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -367,6 +374,12 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `roi.xu.phan_tram` | Tỉ lệ một quái rơi xu (%) — dài hạn | số | `30` | 0..100 | ngay | game | Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi. |
 | `roi.da_nang_cap.phan_nghin` | Tỉ lệ rơi đá nâng cấp (‰) | số | `15` | 0..200 | ngay | game | Phần nghìn mỗi quái khi lệch cấp ≤ 5. |
 | `exp.nang_luong_phut` | Phút năng lượng 100% / ngày | số | `90` | 0..1440 | ngay | game | Số phút EXP/rơi đầy đủ mỗi ngày. |
+| `thu.o_co_ban` | Ô thú cơ bản | số | `20` | 1..120 | ngay | game | Số ô thú (thú cưỡi + Pokémon đi theo, chung một danh sách) mỗi người chơi trước khi dùng Vé mở ô thú. Đầy ô: không nhận thêm thú; người chơi cũ đang vượt giữ nguyên, chỉ không nhận thêm. |
+| `thu.o_toi_da` | Ô thú tối đa | số | `60` | 1..120 | ngay | game | Trần ô thú mở bằng Vé mở ô thú (+1 ô mỗi vé). Dùng vé khi đã tối đa bị từ chối, không mất vé; cửa hàng không bán vé thừa. |
+| `thu.tha_xu_co_ban` | Thả thú: xu cơ bản | số | `20` | 0..1000 | ngay | game | Xu khi thả một thú VĨNH VIỄN về tự nhiên = (cơ bản + mỗi cấp × cấp) × bậc hiếm, không quá trần mỗi con. Thú có hạn: 0 xu. |
+| `thu.tha_xu_moi_cap` | Thả thú: xu mỗi cấp | số | `2` | 0..100 | ngay | game | Cộng thêm theo cấp của thú (cấp tính tối đa 100). |
+| `thu.tha_xu_toi_da` | Thả thú: trần xu mỗi con | số | `300` | 0..5000 | ngay | game | Trần xu nhận được khi thả một con (hút xu an toàn: giữ nhỏ so với giờ thu nhập). |
+| `thu.tha_xu_ngay` | Thả thú: trần xu mỗi ngày | số | `2000` | 0..1000000 | ngay | game | Xu tối đa một người chơi nhận được từ thả thú mỗi ngày (theo lịch máy chủ, lưu trong CSDL: đăng nhập lại / khởi động lại không đặt lại). Quá trần vẫn thả được nhưng 0 xu. |
 
 #### Sự kiện & giftcode (`su_kien`)
 
@@ -458,6 +471,8 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.dangKyTrongGame` | Đăng ký trong game | cờ 0/1 | `1` |  | ngay | game | 0 = nút Đăng ký trong game báo 'đăng ký trên web'. |
 | `sv.dangKyTuKichHoat` | Tự kích hoạt tài khoản đăng ký trong game | lựa chọn | `web` | `web`, `1`, `0` | ngay | game | web = theo cấu hình web (web.autoActivate). |
 | `dang_ky.web.bat` | Đăng ký trên web | cờ 0/1 | `1` |  | ngay | web | 0 = trang Đăng ký từ chối tài khoản mới. |
+| `dang_ky.toi_da_gio` | Đăng ký: tối đa tài khoản / mạng / giờ | số | `3` | 1..1000 | ngay | cả hai | Số tài khoản mới tối đa từ một địa chỉ IP (trong game: và một thiết bị) trong 1 giờ gần nhất, đếm gộp web + game. Mạng di động 4G dùng chung IP giữa nhiều người: đừng đặt quá thấp. Mặc định = shared/data/quy-tac-dang-ky.json (hanMuc.moiGio). |
+| `dang_ky.toi_da_ngay` | Đăng ký: tối đa tài khoản / mạng / 24 giờ | số | `10` | 1..10000 | ngay | cả hai | Như trên nhưng trong 24 giờ gần nhất. Mặc định = shared/data/quy-tac-dang-ky.json (hanMuc.moiNgay). |
 | `sv.maxCharPerAccount` | Số Pokémon tối đa / tài khoản | số | `3` | 1..3 | ngay | game | Client hỗ trợ tối đa 3. |
 | `bao_tri.bat` | Chế độ bảo trì đăng nhập | cờ 0/1 | `0` |  | ngay | game | 1 = từ chối đăng nhập mới (người đang chơi không bị đá). Tương đương tệp bao_tri.txt — bật một trong hai là bảo trì. |
 | `bao_tri.cau` | Câu thông báo bảo trì | chuỗi | *(trống)* | ≤ 200 ký tự | ngay | game | Trống = câu mặc định. |

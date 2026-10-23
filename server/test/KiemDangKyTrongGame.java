@@ -80,6 +80,57 @@ public final class KiemDangKyTrongGame {
         Kiem.bang("2 lan trong gio: con duoc", null, QuyTacDangKy.vuotHanMuc(2, 2, 0));
         Kiem.bang("3 lan trong gio: chan", "quaGio", QuyTacDangKy.vuotHanMuc(3, 3, 0));
         Kiem.bang("10 lan trong ngay: chan", "quaNgay", QuyTacDangKy.vuotHanMuc(0, 10, 0));
+        // ---- han muc chinh qua cau_hinh (dang_ky.toi_da_gio / toi_da_ngay), vang = JSON ----
+        Kiem.bang("hanMucHieuLuc: null -> JSON", 3, QuyTacDangKy.hanMucHieuLuc(null, 3));
+        Kiem.bang("hanMucHieuLuc: rong -> JSON", 10, QuyTacDangKy.hanMucHieuLuc("  ", 10));
+        Kiem.bang("hanMucHieuLuc: hong -> JSON", 3, QuyTacDangKy.hanMucHieuLuc("abc", 3));
+        Kiem.bang("hanMucHieuLuc: 0 -> JSON", 3, QuyTacDangKy.hanMucHieuLuc("0", 3));
+        Kiem.bang("hanMucHieuLuc: am -> JSON", 3, QuyTacDangKy.hanMucHieuLuc("-6", 3));
+        Kiem.bang("hanMucHieuLuc: ' 6 ' -> 6", 6, QuyTacDangKy.hanMucHieuLuc(" 6 ", 3));
+        Kiem.bang("vuotHanMuc 5 tham so: 9/ngay + 1 dang chay, tran 30 -> qua", null, QuyTacDangKy.vuotHanMuc(2, 9, 1, 6, 30));
+        Kiem.bang("vuotHanMuc 5 tham so: 6/gio -> quaGio", "quaGio", QuyTacDangKy.vuotHanMuc(6, 6, 0, 6, 30));
+        Kiem.bang("vuotHanMuc 5 tham so: 30/ngay -> quaNgay", "quaNgay", QuyTacDangKy.vuotHanMuc(0, 30, 0, 6, 30));
+        final com.htbb.cauhinh.DinhNghiaKhoa dkGio = com.htbb.cauhinh.CauHinhTrungTam.dinhNghia(QuyTacDangKy.KHOA_HAN_MUC_GIO);
+        final com.htbb.cauhinh.DinhNghiaKhoa dkNgay = com.htbb.cauhinh.CauHinhTrungTam.dinhNghia(QuyTacDangKy.KHOA_HAN_MUC_NGAY);
+        Kiem.dung("danh muc (sql/htbb.sql) co dang_ky.toi_da_gio / toi_da_ngay", dkGio != null && dkNgay != null);
+        if (dkGio != null && dkNgay != null) {
+            Kiem.bang("dang_ky.toi_da_gio mac dinh = JSON", String.valueOf(QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO), dkGio.macDinh);
+            Kiem.bang("dang_ky.toi_da_ngay mac dinh = JSON", String.valueOf(QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY), dkNgay.macDinh);
+            Kiem.dung("hai khoa hien tren web (khong an), nhom bao_tri", !dkGio.laAn() && !dkNgay.laAn()
+                    && "bao_tri".equals(dkGio.nhom) && "bao_tri".equals(dkNgay.nhom));
+            Kiem.dung("hai khoa ap dung ngay", dkGio.apDungNgay && dkNgay.apDungNgay);
+        }
+        final java.util.Map<String, String> dbHm = new java.util.HashMap<String, String>();
+        com.htbb.cauhinh.CauHinhTrungTam.datChoTest(null, dbHm, false);
+        Kiem.bang("vang dong cau_hinh: han muc gio = JSON", QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO, DangKyTrongGame.hanMucGio());
+        Kiem.bang("vang dong cau_hinh: han muc ngay = JSON", QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY, DangKyTrongGame.hanMucNgay());
+        Kiem.bang("vang dong: 9 / ngay + 0 -> con duoc", null, DangKyTrongGame.vuotHanMucHienTai(0, 9));
+        Kiem.bang("vang dong: 10 / ngay -> chan", "quaNgay", DangKyTrongGame.vuotHanMucHienTai(0, 10));
+        dbHm.put(QuyTacDangKy.KHOA_HAN_MUC_GIO, "6");
+        dbHm.put(QuyTacDangKy.KHOA_HAN_MUC_NGAY, "30");
+        final java.util.Set<String> doiHm = com.htbb.cauhinh.CauHinhTrungTam.napLaiChoTest(dbHm, 2L);
+        Kiem.dung("nap lai nong: thay 2 khoa doi", doiHm.contains(QuyTacDangKy.KHOA_HAN_MUC_GIO)
+                && doiHm.contains(QuyTacDangKy.KHOA_HAN_MUC_NGAY));
+        Kiem.bang("cau_hinh 6: han muc gio", 6, DangKyTrongGame.hanMucGio());
+        Kiem.bang("cau_hinh 30: han muc ngay", 30, DangKyTrongGame.hanMucNgay());
+        Kiem.bang("open test: 2 / gio, 10 / ngay -> con duoc (truoc bi chan)", null, DangKyTrongGame.vuotHanMucHienTai(2, 10));
+        Kiem.bang("open test: 6 / gio -> quaGio", "quaGio", DangKyTrongGame.vuotHanMucHienTai(6, 6));
+        Kiem.bang("open test: 30 / ngay -> quaNgay", "quaNgay", DangKyTrongGame.vuotHanMucHienTai(0, 30));
+        dbHm.put(QuyTacDangKy.KHOA_HAN_MUC_GIO, "0");
+        com.htbb.cauhinh.CauHinhTrungTam.napLaiChoTest(dbHm, 3L);
+        Kiem.bang("cau_hinh sai luat (0 < min 1): khong ve 0, van chan duoc", true, DangKyTrongGame.hanMucGio() >= 1);
+        com.htbb.cauhinh.CauHinhTrungTam.datChoTest(null, null, false);
+        Kiem.bang("xoa cau_hinh: ve JSON", QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO, DangKyTrongGame.hanMucGio());
+        // Chi tao THANH CONG moi ghi luot (ghiLuot nam sau taoTaiKhoan, trong nhanh khong trung ten); cau do / nhap sai /
+        // trung ten / loi CSDL deu return truoc - khong co cho giu RAM nhu web nen lan thu lai khong bi tinh.
+        final String xl = boChuThich(doc(F_HANDLER));
+        final int iTao = xl.indexOf("userId = taoTaiKhoan(");
+        final int iGhi = xl.indexOf("ghiLuot(session.ip, maMay, bay)");
+        Kiem.dung("ghiLuot chi sau taoTaiKhoan thanh cong", iTao > 0 && iGhi > iTao);
+        Kiem.dung("ghiLuot nam trong nhanh khong trung ten", iTao > 0 && iGhi > iTao && xl.substring(iTao, iGhi).contains("userId == -2")
+                && xl.substring(iTao, iGhi).contains("} else {"));
+        Kiem.dung("kiem han muc dung han muc dang ap dung", xl.contains("vuotHanMucHienTai(Math.max(demIp[0]"));
+
         DangKyTrongGame.xoaRam();
         final long bay = 10L * 24 * 3600 * 1000;
         DangKyTrongGame.ghiRam("ip|t", bay - 2L * 3600 * 1000);   // 2 gio truoc

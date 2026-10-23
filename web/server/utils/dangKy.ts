@@ -2,12 +2,17 @@
  * Đăng ký tài khoản — quy tắc nhập liệu và các câu SQL dùng chung.
  */
 import type { H3Event } from 'h3'
-import { QUY_TAC_DANG_KY, dangKyLoi, dangKyThongBao, dangKyVuotHanMuc } from '../../shared/utils/quyTacDangKy'
+import {
+  KHOA_HAN_MUC_GIO, KHOA_HAN_MUC_NGAY, QUY_TAC_DANG_KY, dangKyHanMucTu, dangKyLoi, dangKyThongBao, dangKyVuotHanMuc,
+  type HanMucDangKy,
+} from '../../shared/utils/quyTacDangKy'
 
 /**
- * Hạn mức tạo tài khoản theo IP — lấy từ shared/data/quy-tac-dang-ky.json (hanMuc), dùng CHUNG với
- * đăng ký trong game (HTBB/src/real/cmd/DangKyTrongGame.java). Người thật hiếm khi cần quá vài cái
- * (bạn bè chung nhà, chung quán net), còn script thì tạo hàng nghìn.
+ * Hạn mức tạo tài khoản theo IP — dùng CHUNG với đăng ký trong game (HTBB/src/real/cmd/DangKyTrongGame.java).
+ * Giá trị chỉnh trên trang Cấu hình hệ thống: khoá cau_hinh `dang_ky.toi_da_gio` / `dang_ky.toi_da_ngay` (nhóm Bảo
+ * trì, áp dụng ≤ 5 giây — chGiaTri nhớ 5 giây). Vắng dòng / giá trị hỏng / khoá chưa có trong danh mục CSDL / lỗi
+ * CSDL = hanMuc của shared/data/quy-tac-dang-ky.json (3 / giờ, 10 / ngày). Mạng di động VN (CGNAT) cho nhiều người
+ * chung một IP nên open test đặt rộng hơn (sql/htbb.sql khối mo_han_muc_dang_ky.sql) — script vẫn bị chặn.
  *
  * Đếm GỘP cả hai đường: hành động 'dang_ky' (web) và 'dang_ky_game' (game ghi vào cùng bảng
  * web_chan_spam) — không thì kẻ phá được gấp đôi hạn mức bằng cách dùng cả hai.
@@ -17,9 +22,25 @@ export const DANG_KY_TRONG_GIAY = 3600
 export const DANG_KY_TOI_DA_NGAY = QUY_TAC_DANG_KY.hanMuc.moiNgay
 export const DANG_KY_HANH_DONG = ['dang_ky', 'dang_ky_game'] as const
 
+/** Hạn mức đang áp dụng (cau_hinh > JSON). Không bao giờ ném lỗi. */
+export async function dangKyHanMuc(): Promise<HanMucDangKy> {
+  const doc = async (khoa: string) => {
+    try {
+      return await chGiaTri(khoa)
+    } catch {
+      return undefined // khoá chưa có trong danh mục (CSDL chưa nâng cấp) / lỗi CSDL -> JSON
+    }
+  }
+  return dangKyHanMucTu(await doc(KHOA_HAN_MUC_GIO), await doc(KHOA_HAN_MUC_NGAY))
+}
+
 /**
  * true/ mã lỗi = ĐANG BỊ CHẶN. Giữ chỗ (giuCho) trước mọi await như biChanSpam, rồi đếm số tài
  * khoản IP này đã tạo trong 1 giờ / 24 giờ qua ở cả web lẫn game. Lỗi DB thì cho qua (như biChanSpam).
+ *
+ * CHỖ GIỮ PHẢI ĐƯỢC TRẢ: lượt thành công trả qua ghiLanLam; mọi lượt KHÔNG tạo được tài khoản (bị chặn, trùng tên,
+ * lỗi CSDL…) phải gọi dangKyTraCho — không thì chỗ giữ đứng 5 giây và lần bấm lại ngay sau một lần lỗi bị tính
+ * như một tài khoản đang tạo (người gần chạm hạn mức nhận "đã tạo quá nhiều tài khoản" dù chưa tạo thêm cái nào).
  */
 export async function dangKyBiChan(event: H3Event): Promise<'quaGio' | 'quaNgay' | null> {
   const ip = ipKhach(event)
@@ -42,7 +63,12 @@ export async function dangKyBiChan(event: H3Event): Promise<'quaGio' | 'quaNgay'
   } catch {
     // Lỗi DB: vẫn còn chặn theo số lượt đang chạy / bộ nhớ
   }
-  return dangKyVuotHanMuc(gio, ngay, dangChay)
+  return dangKyVuotHanMuc(gio, ngay, dangChay, await dangKyHanMuc())
+}
+
+/** Trả chỗ giữ của dangKyBiChan khi lượt này KHÔNG tạo được tài khoản (xem dangKyBiChan). */
+export function dangKyTraCho(event: H3Event): void {
+  traCho(`dang_ky|${ipKhach(event)}`)
 }
 
 /** Câu báo khi vượt hạn mức (giờ / ngày). */

@@ -214,12 +214,34 @@ public final class QuyTacDangKy {
         return ds;
     }
 
-    /** "quaGio" | "quaNgay" | null - xem vuotHanMuc ben TS. Dem gop web + game cung IP. */
+    /** Khoa cau_hinh ghi de han muc (trang Cau hinh he thong, nhom bao_tri) - cung ten ben TS (KHOA_HAN_MUC_*). */
+    public static final String KHOA_HAN_MUC_GIO = "dang_ky.toi_da_gio";
+    public static final String KHOA_HAN_MUC_NGAY = "dang_ky.toi_da_ngay";
+
+    /**
+     * Gia tri cau_hinh tho -> han muc: so nguyen >= 1 (toi da 9 chu so), con lai (null, rong, hong, <= 0) -> macDinh
+     * (gia tri cua tep JSON). Xem hanMucHieuLuc ben TS.
+     */
+    public static int hanMucHieuLuc(final String giaTri, final int macDinh) {
+        final String t = giaTri == null ? "" : giaTri.trim();
+        if (!t.matches("\\d{1,9}")) {
+            return macDinh;
+        }
+        final int n = Integer.parseInt(t);
+        return n >= 1 ? n : macDinh;
+    }
+
+    /** "quaGio" | "quaNgay" | null - han muc cua tep JSON (QuyTacDangKyDuLieu). */
     public static String vuotHanMuc(final int demGio, final int demNgay, final int dangChay) {
-        if (demNgay + dangChay >= QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY) {
+        return vuotHanMuc(demGio, demNgay, dangChay, QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO, QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY);
+    }
+
+    /** "quaGio" | "quaNgay" | null - xem vuotHanMuc ben TS. Dem gop web + game cung IP; moiGio / moiNgay dang ap dung. */
+    public static String vuotHanMuc(final int demGio, final int demNgay, final int dangChay, final int moiGio, final int moiNgay) {
+        if (demNgay + dangChay >= moiNgay) {
             return "quaNgay";
         }
-        if (demGio + dangChay >= QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO) {
+        if (demGio + dangChay >= moiGio) {
             return "quaGio";
         }
         return null;

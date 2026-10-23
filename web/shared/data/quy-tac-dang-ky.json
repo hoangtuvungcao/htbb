@@ -26,8 +26,8 @@
     "emailThieu": "Vui lòng nhập email (dùng để lấy lại mật khẩu).",
     "emailSai": "Email không hợp lệ.",
     "trungTen": "Tên tài khoản đã tồn tại, vui lòng chọn tên khác.",
-    "quaGio": "Bạn đã tạo quá nhiều tài khoản từ địa chỉ này. Vui lòng thử lại sau một giờ.",
-    "quaNgay": "Bạn đã tạo quá nhiều tài khoản hôm nay từ địa chỉ này. Vui lòng thử lại vào ngày mai.",
+    "quaGio": "Mạng của bạn vừa tạo nhiều tài khoản trong một giờ qua (có thể do dùng chung mạng di động). Thử lại sau ít phút bằng Wi-Fi khác hoặc liên hệ hỗ trợ.",
+    "quaNgay": "Mạng của bạn đã tạo nhiều tài khoản hôm nay (có thể do dùng chung mạng di động). Thử lại sau ít phút bằng Wi-Fi khác hoặc liên hệ hỗ trợ.",
     "loiHeThong": "Hệ thống tạm thời chưa tạo được tài khoản. Vui lòng thử lại sau."
   },
   "thuNghiem": [

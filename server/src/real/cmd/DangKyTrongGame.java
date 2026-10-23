@@ -120,7 +120,9 @@ public final class DangKyTrongGame implements ICommandHandler {
             treMs = 800;
         }
         System.out.println("DANG KY TRONG GAME: " + (batDangKy ? "BAT" : "TAT") + ", tu kich hoat=" + cheDoKichHoat
-                + ", han muc " + data.QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO + "/gio " + data.QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY + "/ngay");
+                + ", han muc " + hanMucGio() + "/gio " + hanMucNgay() + "/ngay (cau_hinh " + QuyTacDangKy.KHOA_HAN_MUC_GIO
+                + " / " + QuyTacDangKy.KHOA_HAN_MUC_NGAY + ", mac dinh JSON " + data.QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO + "/"
+                + data.QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY + ")");
     }
 
     @Override
@@ -152,7 +154,7 @@ public final class DangKyTrongGame implements ICommandHandler {
                 return;
             }
             // Chong spam goi dang ky theo IP (sv.spam.hd.dangKy, mac dinh 5/60s) - TRUOC moi viec
-            // ton kem (cau do, CSDL, tre 800ms). Han muc 3/gio 10/ngay ben duoi van ap.
+            // ton kem (cau do, CSDL, tre 800ms). Han muc / gio / ngay ben duoi (cau_hinh dang_ky.toi_da_*) van ap.
             // Sau proxy tin cay (sv.proxyTinCay, WAF) moi nguoi chung IP: dem theo KET NOI thay vi IP.
             if (!com.htbb.chongspam.ChongSpam.choHanhDong(com.htbb.chongspam.ChongSpam.cua(khoaSpam(session.ip, session)),
                     com.htbb.chongspam.ChongSpam.HanhDong.DANG_KY, System.currentTimeMillis())) {
@@ -334,20 +336,43 @@ public final class DangKyTrongGame implements ICommandHandler {
         return com.htbb.mang.GioiHanIp.apDung(ip);
     }
 
-    /** "quaGio" | "quaNgay" | null. Lay MAX cua dem CSDL (gop web+game) va dem RAM. */
+    /**
+     * Han muc / gio dang ap dung: cau_hinh dang_ky.toi_da_gio (chinh tren web, CauHinhTrungTam nap lai <= 5 giay - chung
+     * khoa voi web server/utils/dangKy.ts). Vang dong / hong / khoa chua co trong danh muc -> hanMuc.moiGio cua JSON.
+     */
+    public static int hanMucGio() {
+        return QuyTacDangKy.hanMucHieuLuc(com.htbb.cauhinh.CauHinhTrungTam.chuoi(QuyTacDangKy.KHOA_HAN_MUC_GIO),
+                data.QuyTacDangKyDuLieu.HAN_MUC_MOI_GIO);
+    }
+
+    /** Nhu hanMucGio, cho 24 gio (dang_ky.toi_da_ngay, mac dinh hanMuc.moiNgay). */
+    public static int hanMucNgay() {
+        return QuyTacDangKy.hanMucHieuLuc(com.htbb.cauhinh.CauHinhTrungTam.chuoi(QuyTacDangKy.KHOA_HAN_MUC_NGAY),
+                data.QuyTacDangKyDuLieu.HAN_MUC_MOI_NGAY);
+    }
+
+    /** {gio, ngay} theo IP / may -> "quaGio" | "quaNgay" | null voi han muc dang ap dung (public cho kiem thu). */
+    public static String vuotHanMucHienTai(final int demGio, final int demNgay) {
+        return QuyTacDangKy.vuotHanMuc(demGio, demNgay, 0, hanMucGio(), hanMucNgay());
+    }
+
+    /**
+     * "quaGio" | "quaNgay" | null. Lay MAX cua dem CSDL (gop web+game) va dem RAM. Cac bo dem CHI tang khi tao
+     * THANH CONG (ghiLuot) - cau do sai, nhap sai, trung ten, loi CSDL khong tinh; RAM khong co cho giu nhu web.
+     */
     private static String kiemHanMuc(final String ip, final String maMay, final long bay) {
         String kq = null;
         if (demTheoIp(ip)) {
             final int[] demIp = demCsdl(ip, "'dang_ky','" + HANH_DONG_IP + "'");
             final int[] ramIp = demRam("ip|" + ip, bay);
-            kq = QuyTacDangKy.vuotHanMuc(Math.max(demIp[0], ramIp[0]), Math.max(demIp[1], ramIp[1]), 0);
+            kq = vuotHanMucHienTai(Math.max(demIp[0], ramIp[0]), Math.max(demIp[1], ramIp[1]));
         }
         if (kq != null || maMay.isEmpty()) {
             return kq;
         }
         final int[] demMay = demCsdl(khoaMay(maMay), "'" + HANH_DONG_MAY + "'");
         final int[] ramMay = demRam("may|" + maMay, bay);
-        return QuyTacDangKy.vuotHanMuc(Math.max(demMay[0], ramMay[0]), Math.max(demMay[1], ramMay[1]), 0);
+        return vuotHanMucHienTai(Math.max(demMay[0], ramMay[0]), Math.max(demMay[1], ramMay[1]));
     }
 
     public static int[] demRam(final String khoa, final long bay) {

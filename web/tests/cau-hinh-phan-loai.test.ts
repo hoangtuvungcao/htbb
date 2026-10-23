@@ -25,7 +25,9 @@ test('phân loại: ít khoá chỉnh trên web, phần lớn ẩn', () => {
   const d = demLopTT()
   assert.equal(d.chinh + d.co_dinh + d.luon_bat, DANH_MUC_TT.length)
   // <= 72: 0.9.6 thêm 3 khoá chỉnh của thẻ đặt tên Pokémon (giá + mức + trọng số mức)
-  assert.ok(d.chinh >= 40 && d.chinh <= 72, `chỉnh trên web: ${d.chinh}`)
+  // <= 78: quản lý thú thêm 6 khoá chỉnh (thu.*), open test thêm 2 khoá hạn mức đăng ký (dang_ky.toi_da_gio / _ngay —
+  // chủ game chỉnh trên web khi người chơi dùng chung mạng di động bị chặn). Cùng trần với server/test/KiemPhanLoaiCauHinh.java.
+  assert.ok(d.chinh >= 40 && d.chinh <= 78, `chỉnh trên web: ${d.chinh}`)
   assert.ok(d.co_dinh > 100, `cố định: ${d.co_dinh}`)
   assert.ok(d.luon_bat >= 15, `luôn bật: ${d.luon_bat}`)
 })

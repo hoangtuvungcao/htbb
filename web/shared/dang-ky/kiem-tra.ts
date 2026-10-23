@@ -152,13 +152,35 @@ export function kiemTraDangKy(qt: QuyTacDangKy, d: DuLieuDangKy, nguon: NguonDan
   return ma.map(m => ({ ma: m, loi: thongBaoDangKy(qt, m) }))
 }
 
+/** Khoá cau_hinh ghi đè hạn mức (trang Cấu hình hệ thống, nhóm Bảo trì) — cùng tên ở DangKyTrongGame / QuyTacDangKy.java. */
+export const KHOA_HAN_MUC_GIO = 'dang_ky.toi_da_gio'
+export const KHOA_HAN_MUC_NGAY = 'dang_ky.toi_da_ngay'
+
+export interface HanMucDangKy { moiGio: number, moiNgay: number }
+
+/**
+ * Hạn mức đang áp dụng: giá trị cau_hinh (chuỗi / số) nếu là số nguyên ≥ 1, còn lại (vắng dòng, rỗng, hỏng, ≤ 0)
+ * lùi về `qt.hanMuc` của tệp JSON. Bản Java: QuyTacDangKy.hanMuc.
+ */
+export function hanMucHieuLuc(qt: QuyTacDangKy, gio?: unknown, ngay?: unknown): HanMucDangKy {
+  const so = (v: unknown, macDinh: number) => {
+    const t = typeof v === 'number' ? String(v) : typeof v === 'string' ? v.trim() : ''
+    if (!/^\d{1,9}$/.test(t)) return macDinh
+    const n = Number(t)
+    return n >= 1 ? n : macDinh
+  }
+  return { moiGio: so(gio, qt.hanMuc.moiGio), moiNgay: so(ngay, qt.hanMuc.moiNgay) }
+}
+
 /**
  * HẠN MỨC (thuần, không đụng DB): đã tạo `demGio` tài khoản trong 1 giờ, `demNgay` trong 24 giờ
  * qua (tính GỘP cả web lẫn game cùng IP), cộng `dangChay` lượt đang xử lý song song.
+ * `hanMuc` = hạn mức đang áp dụng (hanMucHieuLuc, từ cau_hinh); vắng = `qt.hanMuc` của tệp JSON.
  * Trả mã lỗi 'quaGio' | 'quaNgay' hoặc null = còn được tạo.
  */
-export function vuotHanMuc(qt: QuyTacDangKy, demGio: number, demNgay: number, dangChay: number): 'quaGio' | 'quaNgay' | null {
-  if (demNgay + dangChay >= qt.hanMuc.moiNgay) return 'quaNgay'
-  if (demGio + dangChay >= qt.hanMuc.moiGio) return 'quaGio'
+export function vuotHanMuc(qt: QuyTacDangKy, demGio: number, demNgay: number, dangChay: number,
+  hanMuc: HanMucDangKy = qt.hanMuc): 'quaGio' | 'quaNgay' | null {
+  if (demNgay + dangChay >= hanMuc.moiNgay) return 'quaNgay'
+  if (demGio + dangChay >= hanMuc.moiGio) return 'quaGio'
   return null
 }

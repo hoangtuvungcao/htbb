@@ -244,6 +244,18 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Sửa nhanh 0.9.12: hạn mức đăng ký theo mạng (không đổi client)
+
+Người chơi mạng di động (CGNAT, chung IP) bị báo "đã tạo quá nhiều tài khoản". Thứ tự: SQL → jar → web.
+
+1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — danh mục thêm `dang_ky.toi_da_gio` / `dang_ky.toi_da_ngay` (nhóm Bảo trì,
+   chỉnh trên web; log máy chủ `danh muc cau hinh: 366 khoa`), khối `-- >>> mo_han_muc_dang_ky.sql` đặt giá trị open test
+   6 / giờ, 30 / 24 giờ (INSERT IGNORE). Web + jar cũ bỏ qua hai khoá (vẫn 3 / 10).
+2. Thay `htbb-server.jar`, khởi động lại: `DangKyTrongGame` đọc hai khoá (≤ 5 giây sau mỗi lần sửa).
+3. Deploy web: `register.post.ts` đọc hai khoá; kiểm nhập liệu trước hạn mức và trả chỗ giữ trong bộ nhớ khi lượt đăng ký
+   lỗi (trước đây bấm lại trong 5 giây sau một lần lỗi bị tính như đã tạo thêm một tài khoản); câu báo mới chỉ cách đổi
+   Wi-Fi / liên hệ hỗ trợ. Xem lại hai khoá lúc khai trương chính thức ([cau-hinh.md](cau-hinh.md)).
+
 ### Bản 0.9.12 (`BAN=912`: quản lý thú - ô thú, thả về tự nhiên, khoá, Vé mở ô thú)
 
 Client + máy chủ + SQL: `PHIEN_BAN=0.9.12-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 12`; `MIDlet-Version` 0.9.12).

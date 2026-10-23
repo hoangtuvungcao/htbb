@@ -73,7 +73,7 @@ const thaySo = Object.entries(Q.thayTheSo).map(([so, chu]) => `${so}→${chu}`).
               <th scope="row">
                 Giới hạn
               </th>
-              <td>Mỗi địa chỉ mạng tạo tối đa {{ Q.hanMuc.moiGio }} tài khoản mỗi giờ và {{ Q.hanMuc.moiNgay }} tài khoản mỗi ngày (tính chung web và game).</td>
+              <td>Mỗi địa chỉ mạng chỉ tạo được một số tài khoản mỗi giờ và mỗi ngày (tính chung web và game, chỉ tính lần tạo thành công). Dùng chung mạng di động mà bị báo giới hạn: thử lại sau ít phút bằng Wi-Fi khác hoặc liên hệ hỗ trợ.</td>
             </tr>
           </tbody>
         </table>

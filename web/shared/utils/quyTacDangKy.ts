@@ -5,11 +5,13 @@
  */
 import raw from '../data/quy-tac-dang-ky.json'
 import {
-  emailHopLe, kiemTraDangKy, matKhauHopLe, tenTaiKhoanDungDang, thongBaoDangKy, vuotHanMuc,
-  type DuLieuDangKy, type LoiDangKy, type NguonDangKy, type QuyTacDangKy,
+  emailHopLe, hanMucHieuLuc, kiemTraDangKy, matKhauHopLe, tenTaiKhoanDungDang, thongBaoDangKy, vuotHanMuc,
+  type DuLieuDangKy, type HanMucDangKy, type LoiDangKy, type NguonDangKy, type QuyTacDangKy,
 } from '../dang-ky/kiem-tra'
 
-export type { DuLieuDangKy, LoiDangKy, NguonDangKy, QuyTacDangKy }
+export type { DuLieuDangKy, HanMucDangKy, LoiDangKy, NguonDangKy, QuyTacDangKy }
+export { KHOA_HAN_MUC_GIO, KHOA_HAN_MUC_NGAY } from '../dang-ky/kiem-tra'
+
 
 export const QUY_TAC_DANG_KY = raw as unknown as QuyTacDangKy
 
@@ -21,8 +23,14 @@ export function dangKyThongBao(ma: string): string {
   return thongBaoDangKy(QUY_TAC_DANG_KY, ma)
 }
 
-export function dangKyVuotHanMuc(demGio: number, demNgay: number, dangChay: number): 'quaGio' | 'quaNgay' | null {
-  return vuotHanMuc(QUY_TAC_DANG_KY, demGio, demNgay, dangChay)
+export function dangKyVuotHanMuc(demGio: number, demNgay: number, dangChay: number,
+  hanMuc: HanMucDangKy = QUY_TAC_DANG_KY.hanMuc): 'quaGio' | 'quaNgay' | null {
+  return vuotHanMuc(QUY_TAC_DANG_KY, demGio, demNgay, dangChay, hanMuc)
+}
+
+/** Hạn mức từ giá trị cau_hinh thô (vắng / hỏng -> hanMuc của tệp JSON). */
+export function dangKyHanMucTu(gio?: unknown, ngay?: unknown): HanMucDangKy {
+  return hanMucHieuLuc(QUY_TAC_DANG_KY, gio, ngay)
 }
 
 export function dangKyTenDungDang(u: string): boolean {
