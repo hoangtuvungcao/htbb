@@ -30621,3 +30621,10 @@ UPDATE `data_item` SET `name`='Giáp cưỡi Level Ball' WHERE `id`=529 AND `nam
 UPDATE `data_item` SET `name`='Yên cương Level Ball' WHERE `id`=541 AND `name`='Yên cương Level';
 UPDATE `data_item` SET `name`='Bàn đạp Level Ball' WHERE `id`=553 AND `name`='Bàn đạp Level';
 UPDATE `data_item` SET `name`='Vòng chân Level Ball' WHERE `id`=565 AND `name`='Vòng chân Level';
+
+-- >>> them_co_bao_tri.sql
+-- 23/10/2026: CSDL production thieu dong 'baotri_thongbao' nen moi lan deploy "bao truoc 60 giay"
+-- (vps/deploy-auto.sh, Database.baoTriThongBaoCMD) khong bao gi hien cho nguoi choi. status 1 = nghi, 0 = bao ngay.
+INSERT IGNORE INTO `5h_systems` (`command`, `status`)
+SELECT 'baotri_thongbao', 1 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM `5h_systems` WHERE `command` = 'baotri_thongbao');
