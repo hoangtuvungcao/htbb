@@ -30630,7 +30630,7 @@ SELECT 'baotri_thongbao', 1 FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM `5h_systems` WHERE `command` = 'baotri_thongbao');
 
 -- >>> sua_muc_tieu_nhiem_vu.sql
--- ===========================================================================
+-- ==================================================================================
 --  MUC TIEU NHIEM VU KHOP VOI MAY CHU (23/10/2026, nhanh sua-tien-do-nv). Chay lai bao nhieu lan cung duoc: moi lenh
 --  UPDATE theo khoa chinh + GIA TRI CU (dong admin da sua tren web giu nguyen). Doi xong khoi dong lai server game.
 --  Kiem: server/test/KiemMucTieuNhiemVu (ap khoi nay len phan A, kiem lai moi nhiem vu voi luoi quai server/map/map<N>).
@@ -30981,7 +30981,6 @@ UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Tàu S.S. Anne' WHERE `ma` = 'TV-1
 UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Olivine' WHERE `ma` = 'TV-12.1' AND `dia_danh` = 'Blackthorn';
 UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Mahogany' WHERE `ma` = 'TV-12.2' AND `dia_danh` = 'Blackthorn';
 UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Mahogany' WHERE `ma` = 'TV-13.3' AND `dia_danh` = 'Núi Silver';
-=======
 -- >>> doi_ten_trang_bi_cap.sql
 -- ==================================================================================
 --  TEN TRANG BI THEO CAP (them 23/10/2026, de xuat QA #8, chu game duyet). Chay lai bao nhieu lan cung duoc (UPDATE
