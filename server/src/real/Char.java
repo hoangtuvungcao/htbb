@@ -1887,10 +1887,13 @@ public class Char extends LiveActor {
         return n >= this.sucChuaTui();
     }
 
-    /** So o hanh trang con trong (cung cong thuc isFullInventory) - huong dan tan thu: bo qua can du o cho thuong. */
+    /**
+     * So o hanh trang con trong (cung cong thuc isFullInventory, ke ca o mo rong oMoRong) - huong dan tan thu: bo qua
+     * can du o cho thuong. Truoc 23/10/2026 tinh MAX_INVENTORY * maxBag (bo o mo rong) nen nguoi da mo rong tui bi bao
+     * "tui day" khi con cho.
+     */
     public int soOTrongHanhTrang() {
-        final int n = this.iItems.size() + this.countPotion() + this.tItems.size() + this.rItems.size() + this.countGemLock() + this.countGem() + this.countSpecial();
-        return Math.max(0, this.MAX_INVENTORY * this.maxBag - n);
+        return Math.max(0, this.countSlotInventory());
     }
 
     public short countPotion() {

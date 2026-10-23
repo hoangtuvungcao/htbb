@@ -249,6 +249,7 @@ public final class Kiem {
         KiemParity.chay(); // 0.9.8: doi chieu 0.9.7 (du_lieu/parity_097.txt) - khong mat goi tin / menu / lenh GM / khoa / bang / HUD
         KiemDiaDiemNpc.chay(); // 0.9.8: buoc dia diem toi duoc (Arcanine gac cong), Dia diem / NPC chuoi chinh dung ban do
         KiemDauTruong.chay(); // Dau truong Bao Boi 3v3 (D12): sat thuong, tat dinh, AI, diem, ghep, thuong, goi -109, SQL
+        KiemQaToanGame.chay(); // vong QA toan game 23/10/2026: loi tim thay khi choi dau-cuoi bang bot (KichBanQaToanGame)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

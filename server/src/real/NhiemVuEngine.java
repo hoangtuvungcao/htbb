@@ -931,8 +931,11 @@ public final class NhiemVuEngine {
                 }
             }
             // 0.9.7.1: thuong co vat pham ma tui day -> chua trao (truoc day vat pham bi bo im lang, nhiem vu van "đã nhận")
-            if (coThuongVatPham(m) && p.isFullInventory()) {
-                return Char.TUI_DAY_NHIEM_VU;
+            // 23/10/2026: can DU o cho MOI mon (item:1039x3 = 3 o) - truoc chi kiem "con 1 o" nen thieu o thi mat phan con lai.
+            final int canO = soOThuong(m);
+            if (canO > 0 && p.countSlotInventory() < canO) {
+                return canO <= 1 ? Char.TUI_DAY_NHIEM_VU
+                        : "Hành trang không đủ chỗ. Hãy dọn bớt để còn " + canO + " ô trống rồi nhận thưởng nhiệm vụ.";
             }
             v[1] = 2;
             luu(p, m.ma, v);
@@ -992,6 +995,37 @@ public final class NhiemVuEngine {
         }
         return NhiemVuMau.hoiThoai(m.hoiThoaiXong, m.soLuong, m.soLuong) + "\n\nNhận thưởng: " + so(m.exp) + " EXP, " + so(m.xu) + " xu"
                 + (m.luongKhoa > 0 ? ", " + so(m.luongKhoa) + " lượng khoá" : "") + ".";
+    }
+
+    /**
+     * So o hanh trang can de nhan du vat pham thuong: moi id trong vat_pham 1 o, moi "item:&lt;id&gt;xN" cua thuong_khac
+     * N o (Char.createItemSoLuong tao N mon rieng).
+     */
+    static int soOThuong(final NhiemVuMau m) {
+        int o = 0;
+        if (m.vatPham != null) {
+            for (final String id : m.vatPham.split("[,;|]")) {
+                if (id.trim().length() > 0) {
+                    o++;
+                }
+            }
+        }
+        if (m.thuongKhac != null) {
+            for (final String phan : m.thuongKhac.split(";")) {
+                final String t = phan.trim();
+                if (!t.startsWith("item:")) {
+                    continue;
+                }
+                final String v = t.substring(5).trim();
+                final int x = v.indexOf('x');
+                try {
+                    o += x > 0 ? Math.max(0, Integer.parseInt(v.substring(x + 1).trim())) : 1;
+                } catch (final RuntimeException e) {
+                    o++;
+                }
+            }
+        }
+        return o;
     }
 
     /** Thuong co vat pham can o hanh trang (vat_pham, thuong_khac item:). */

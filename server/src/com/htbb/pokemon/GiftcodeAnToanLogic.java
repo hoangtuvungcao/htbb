@@ -84,6 +84,34 @@ public final class GiftcodeAnToanLogic {
         b.append(s);
     }
 
+    /**
+     * So o hanh trang TRONG can de nhan du phan thuong (chuoi DA chuan hoa): moi ITEM:id:n la n mon rieng (n o), moi
+     * GEM:id chua co trong tui la 1 o (da co thi cong don), LUONGKHOA khong can o. {@code daCoNgoc}: id ngoc -&gt; nguoi
+     * nhan da co loai ngoc khoa do chua. Server kiem TRUOC khi danh dau ma (tui day = khong tru luot, khong mat qua).
+     */
+    public static int soOCan(final String chuan, final java.util.function.IntPredicate daCoNgoc) {
+        if (chuan == null) {
+            return 0;
+        }
+        long o = 0L;
+        final java.util.Set<Integer> ngocMoi = new java.util.HashSet<Integer>();
+        for (final String phan : chuan.split(",")) {
+            final String[] t = phan.split(":");
+            try {
+                if (t[0].equals("ITEM")) {
+                    o += Math.max(0L, Long.parseLong(t[2]));
+                } else if (t[0].equals("GEM")) {
+                    final int id = Integer.parseInt(t[1]);
+                    if ((daCoNgoc == null || !daCoNgoc.test(id)) && ngocMoi.add(Integer.valueOf(id))) {
+                        o++;
+                    }
+                }
+            } catch (final RuntimeException ignored) {
+            }
+        }
+        return (int) Math.min(Integer.MAX_VALUE, o);
+    }
+
     /** Gia tri (don vi luong khoa) cua chuoi DA chuan hoa; -1 neu hong. */
     public static int giaTri(final String chuan) {
         if (chuan == null) {

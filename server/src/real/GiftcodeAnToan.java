@@ -112,6 +112,12 @@ public final class GiftcodeAnToan {
             bao(p, "Quà tặng tháng này đã hết, hẹn tháng sau.");
             return;
         }
+        // Tui khong du cho: bao ro, KHONG danh dau / tru luot (truoc day ma bi dung het luot ma vat pham roi mat).
+        final int canO = GiftcodeAnToanLogic.soOCan(thuong, id -> id >= 0 && id < p.listGemitemLock.length && p.listGemitemLock[id] > 0);
+        if (canO > 0 && p.countSlotInventory() < canO) {
+            bao(p, "Hành trang không đủ chỗ: cần " + canO + " ô trống để nhận quà của mã này. Dọn bớt rồi nhập lại (mã chưa bị dùng).");
+            return;
+        }
         // 6. danh dau truoc
         if (!DatabaseLauDai.ghiLogGiftcode(ma, p.userID, p.charDBID, p.charname, thuong, giaTri, thang)) {
             bao(p, "Tài khoản của bạn đã nhập mã quà tặng này rồi.");
