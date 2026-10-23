@@ -850,8 +850,17 @@ public final class NhiemVuEngine {
             SoTayLauDai.bao(p, traThuong(p, m, v));
             return;
         }
-        SoTayLauDai.bao(p, NhiemVuMau.hoiThoai(m.hoiThoaiDangLam.isEmpty() ? m.mucTieuText : m.hoiThoaiDangLam, (int) v[0], m.soLuong)
-                + "\n(" + v[0] + "/" + m.soLuong + ")");
+        SoTayLauDai.bao(p, chuDangLam(m, v[0]));
+    }
+
+    /**
+     * Chu "dang lam" (ra soat hien thi 10/2026): loi NPC thoi chua noi phai lam gi o dau ("Bạn chưa gặp Weedle vao
+     * buoi sang") - luon kem dong "Mục tiêu:" (muc_tieu_text) + tien do, nguoi choi khong phai nho lai loi giao.
+     */
+    public static String chuDangLam(final NhiemVuMau m, final long da) {
+        final String loi = NhiemVuMau.hoiThoai(m.hoiThoaiDangLam.isEmpty() ? m.mucTieuText : m.hoiThoaiDangLam, (int) da, m.soLuong);
+        final boolean kem = !m.hoiThoaiDangLam.isEmpty() && !m.mucTieuText.isEmpty() && !loi.contains(m.mucTieuText);
+        return loi + (kem ? "\nMục tiêu: " + m.mucTieuText : "") + "\n(" + da + "/" + m.soLuong + ")";
     }
 
     /** Chon nhanh "<ma>#<i>": ghi nhanh, hoan thanh, trao thuong nhanh. */

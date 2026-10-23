@@ -7812,7 +7812,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
         try {
             final int size = RealController.intance.idGen.getSize(5);
             if (this.partyID != -1 || size == 0) {
-                final Message m = MessageCreator.createServerAlertMessage("Không thể tạo thêm nhóm", "");
+                final Message m = MessageCreator.createServerAlertMessage(this.partyID != -1 ? "Bạn đang ở trong một nhóm. Rời nhóm hiện tại rồi tạo nhóm mới." : "Máy chủ đang đủ nhóm. Thử lại sau ít phút.", "");
                 this.sendMessage(m);
                 m.cleanup();
                 return;
@@ -8147,7 +8147,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public void receiveClanQuest() {
         try {
             if (this.rcvQuestClan) {
-                this.sendMessage(MessageCreator.createServerAlertMessage("Không thể nhận thêm khi đang làm nhiệm vụ", ""));
+                this.sendMessage(MessageCreator.createServerAlertMessage("Bạn đang làm một nhiệm vụ đội. Hoàn thành nhiệm vụ đó rồi nhận tiếp.", ""));
                 return;
             }
             final int index = Map.r.nextInt(10);

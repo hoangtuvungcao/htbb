@@ -69,7 +69,7 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 116,117,cap,cap,32,,0,0,25,Cấp 32
 118,119,cap,cap,33,,0,0,25,Cấp 33
 120,121,da,vat_pham,20,Đá Nước,960,0,25,Dùng Đá Nước
-439,122,khac,keo,20,,0,0,25,Cách gốc: biết chiêu mimic
+439,122,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Bắt chước
 238,124,cap,cap,30,,0,0,25,Cấp 30
 239,125,cap,cap,30,,0,0,25,Cấp 30
 240,126,cap,cap,30,,0,0,25,Cấp 30
@@ -101,7 +101,7 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 44,182,da,vat_pham,36,Đá Mặt Trời,963,0,50,Dùng Đá Mặt Trời
 298,183,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
 183,184,cap,cap,18,,0,0,25,Cấp 18
-438,185,khac,keo,20,,0,0,25,Cách gốc: biết chiêu mimic
+438,185,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Bắt chước
 61,186,trao_doi,trao_doi,36,Vương Miện Đá,0,0,50,Trao đổi khi giữ Vương Miện Đá; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
 187,188,cap,cap,18,,0,0,25,Cấp 18
 188,189,cap,cap,27,,0,0,50,Cấp 27
@@ -153,7 +153,7 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 287,288,cap,cap,18,,0,0,25,Cấp 18
 288,289,cap,cap,36,,0,0,50,Cấp 36
 290,291,cap,cap,20,,0,0,25,Cấp 20
-290,292,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (shed)
+290,292,khac,keo,20,,0,0,25,Cách gốc: tiến hoá thành Ninjask khi đội còn chỗ trống
 293,294,cap,cap,20,,0,0,25,Cấp 20
 294,295,cap,cap,40,,0,0,50,Cấp 40
 296,297,cap,cap,24,,0,0,25,Cấp 24
@@ -211,7 +211,7 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 418,419,cap,cap,26,,0,0,25,Cấp 26
 420,421,cap,cap,25,,0,0,25,Cấp 25
 422,423,cap,cap,30,,0,0,25,Cấp 30
-190,424,khac,keo,20,,0,0,25,Cách gốc: biết chiêu double-hit
+190,424,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Đánh đôi
 425,426,cap,cap,28,,0,0,25,Cấp 28
 427,428,than_thiet,than_thiet,20,,0,0,25,Thân thiết 160
 200,429,da,keo,20,Đá Hoàng Hôn,0,0,50,"Dùng Đá Hoàng Hôn; HTBB: chưa có vật phẩm, dùng Kẹo"
@@ -229,17 +229,17 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 459,460,cap,cap,40,,0,0,25,Cấp 40
 215,461,vat_pham,keo,20,Vuốt Sắc,0,2,50,"Lên cấp khi giữ Vuốt Sắc; ban đêm; HTBB: chưa có vật phẩm, dùng Kẹo"
 82,462,da,vat_pham,36,Đá Sấm,961,0,50,Dùng Đá Sấm
-108,463,khac,keo,20,,0,0,25,Cách gốc: biết chiêu rollout
+108,463,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Lăn tròn
 112,464,trao_doi,trao_doi,36,Giáp Bảo Hộ,0,0,50,Trao đổi khi giữ Giáp Bảo Hộ; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
-114,465,khac,keo,20,,0,0,25,Cách gốc: biết chiêu ancient-power
+114,465,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Sức mạnh cổ đại
 125,466,trao_doi,trao_doi,20,Bộ Tích Điện,0,0,25,Trao đổi khi giữ Bộ Tích Điện; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
 126,467,trao_doi,trao_doi,20,Bộ Tích Nhiệt,0,0,25,Trao đổi khi giữ Bộ Tích Nhiệt; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
 176,468,da,keo,20,Đá Lấp Lánh,0,0,50,"Dùng Đá Lấp Lánh; HTBB: chưa có vật phẩm, dùng Kẹo"
-193,469,khac,keo,20,,0,0,25,Cách gốc: biết chiêu ancient-power
+193,469,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Sức mạnh cổ đại
 133,470,da,vat_pham,20,Đá Lá,965,0,50,Dùng Đá Lá
 133,471,da,vat_pham,20,Đá Băng,966,0,50,Dùng Đá Băng
 207,472,vat_pham,keo,20,Nanh Sắc,0,2,50,"Lên cấp khi giữ Nanh Sắc; ban đêm; HTBB: chưa có vật phẩm, dùng Kẹo"
-221,473,khac,keo,36,,0,0,50,Cách gốc: biết chiêu ancient-power
+221,473,khac,keo,36,,0,0,50,Cách gốc: biết chiêu Sức mạnh cổ đại
 233,474,trao_doi,trao_doi,36,Đĩa Khả Nghi,0,0,50,Trao đổi khi giữ Đĩa Khả Nghi; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
 281,475,da,keo,36,Đá Bình Minh,0,0,100,"Dùng Đá Bình Minh; HTBB: chưa có vật phẩm, dùng Kẹo"
 299,476,da,vat_pham,20,Đá Sấm,961,0,25,Dùng Đá Sấm
@@ -334,13 +334,13 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 669,670,cap,cap,19,,0,0,25,Cấp 19
 670,671,da,keo,36,Đá Lấp Lánh,0,0,100,"Dùng Đá Lấp Lánh; HTBB: chưa có vật phẩm, dùng Kẹo"
 672,673,cap,cap,32,,0,0,25,Cấp 32
-674,675,khac,keo,32,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+674,675,khac,keo,32,,0,0,25,Cách gốc: lên cấp kèm điều kiện riêng của loài
 677,678,khac,keo,25,,0,0,25,Cách gốc: theo giới tính
 679,680,cap,cap,35,,0,0,25,Cấp 35
 680,681,da,keo,36,Đá Hoàng Hôn,0,0,100,"Dùng Đá Hoàng Hôn; HTBB: chưa có vật phẩm, dùng Kẹo"
 682,683,trao_doi,trao_doi,20,Túi Thơm,0,0,25,Trao đổi khi giữ Túi Thơm; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
 684,685,trao_doi,trao_doi,20,Kem Mơ Ước,0,0,25,Trao đổi khi giữ Kem Mơ Ước; hoặc dùng Dây Liên Kết / Kẹo sau khi được trao đổi
-686,687,khac,keo,30,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+686,687,khac,keo,30,,0,0,25,Cách gốc: lên cấp kèm điều kiện riêng của loài
 688,689,cap,cap,39,,0,0,25,Cấp 39
 690,691,cap,cap,48,,0,0,25,Cấp 48
 692,693,cap,cap,37,,0,0,25,Cấp 37
@@ -376,7 +376,7 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 757,758,khac,keo,33,,0,0,25,Cách gốc: theo giới tính
 759,760,cap,cap,27,,0,0,25,Cấp 27
 761,762,cap,cap,18,,0,0,25,Cấp 18
-762,763,khac,keo,36,,0,0,50,Cách gốc: biết chiêu stomp
+762,763,khac,keo,36,,0,0,50,Cách gốc: biết chiêu Dậm chân
 767,768,cap,cap,30,,0,0,25,Cấp 30
 769,770,cap,cap,42,,0,0,25,Cấp 42
 772,773,than_thiet,than_thiet,20,,0,0,50,Thân thiết 160
@@ -385,8 +385,8 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 789,790,cap,cap,43,,0,0,50,Cấp 43
 790,791,cap,cap,53,,0,0,100,Cấp 53
 790,792,cap,cap,53,,0,0,100,Cấp 53
-803,804,khac,keo,20,,0,0,50,Cách gốc: biết chiêu dragon-pulse
-808,809,khac,keo,20,,0,0,50,Cách gốc: điều kiện đặc biệt (meltan-candies)
+803,804,khac,keo,20,,0,0,50,Cách gốc: biết chiêu Sóng rồng
+808,809,khac,keo,20,,0,0,50,Cách gốc: dùng 400 Kẹo Meltan
 810,811,cap,cap,16,,0,0,50,Cấp 16
 811,812,cap,cap,35,,0,0,100,Cấp 35
 813,814,cap,cap,16,,0,0,50,Cấp 16
@@ -411,7 +411,7 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 846,847,cap,cap,26,,0,0,25,Cấp 26
 848,849,cap,cap,30,,0,0,25,Cấp 30
 850,851,cap,cap,28,,0,0,25,Cấp 28
-852,853,khac,keo,20,,0,0,25,Cách gốc: biết chiêu taunt
+852,853,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Khiêu khích
 854,855,da,keo,20,Ấm Nứt,0,0,50,"Dùng Ấm Nứt; HTBB: chưa có vật phẩm, dùng Kẹo"
 856,857,cap,cap,32,,0,0,25,Cấp 32
 857,858,cap,cap,42,,0,0,50,Cấp 42
@@ -420,21 +420,21 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 264,862,cap,cap,35,,0,2,50,Cấp 35; ban đêm
 52,863,cap,cap,28,,0,0,25,Cấp 28
 222,864,cap,cap,38,,0,0,25,Cấp 38
-83,865,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (three-critical-hits)
+83,865,khac,keo,20,,0,0,25,Cách gốc: đánh chí mạng 3 lần trong một trận
 122,866,cap,cap,42,,0,0,25,Cấp 42
 562,867,khac,keo,20,,0,0,25,Cách gốc: ở địa điểm đặc biệt
-868,869,vat_pham,keo,20,Vật phẩm tiến hoá (strawberry-sweet),0,1,50,"Lên cấp khi giữ Vật phẩm tiến hoá (strawberry-sweet); ban ngày; HTBB: chưa có vật phẩm, dùng Kẹo"
+868,869,vat_pham,keo,20,Kẹo ngọt dâu tây,0,1,50,"Lên cấp khi giữ Kẹo ngọt dâu tây; ban ngày; HTBB: chưa có vật phẩm, dùng Kẹo"
 872,873,than_thiet,than_thiet,20,,0,2,25,Thân thiết 160; ban đêm
 878,879,cap,cap,34,,0,0,25,Cấp 34
 885,886,cap,cap,50,,0,0,50,Cấp 50
 886,887,cap,cap,60,,0,0,100,Cấp 60
 891,892,da,keo,20,Cuộn Bóng Tối,0,0,100,"Dùng Cuộn Bóng Tối; HTBB: chưa có vật phẩm, dùng Kẹo"
-234,899,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (agile-style-move)
+234,899,khac,keo,20,,0,0,25,Cách gốc: dùng chiêu kiểu nhanh 20 lần
 123,900,da,keo,20,Đá Đen Augurite,0,0,50,"Dùng Đá Đen Augurite; HTBB: chưa có vật phẩm, dùng Kẹo"
 217,901,da,keo,36,Khối Than Bùn,0,0,100,"Dùng Khối Than Bùn; HTBB: chưa có vật phẩm, dùng Kẹo"
 550,902,khac,keo,20,,0,0,25,Cách gốc: theo giới tính
 215,903,vat_pham,keo,20,Vuốt Sắc,0,1,50,"Lên cấp khi giữ Vuốt Sắc; ban ngày; HTBB: chưa có vật phẩm, dùng Kẹo"
-211,904,khac,keo,20,,0,0,25,Cách gốc: biết chiêu barb-barrage
+211,904,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Mưa gai độc
 906,907,cap,cap,16,,0,0,50,Cấp 16
 907,908,cap,cap,36,,0,0,100,Cấp 36
 909,910,cap,cap,16,,0,0,50,Cấp 16
@@ -445,8 +445,8 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 917,918,cap,cap,15,,0,0,25,Cấp 15
 919,920,cap,cap,24,,0,0,25,Cấp 24
 921,922,cap,cap,18,,0,0,25,Cấp 18
-922,923,khac,keo,36,,0,0,50,Cách gốc: điều kiện đặc biệt (level-up)
-924,925,khac,keo,25,,0,0,25,Cách gốc: điều kiện đặc biệt (in-battle-level-up)
+922,923,khac,keo,36,,0,0,50,Cách gốc: lên cấp kèm điều kiện riêng của loài
+924,925,khac,keo,25,,0,0,25,Cách gốc: lên cấp ngay trong trận
 926,927,cap,cap,26,,0,0,25,Cấp 26
 928,929,cap,cap,25,,0,0,25,Cấp 25
 929,930,cap,cap,35,,0,0,50,Cấp 35
@@ -458,10 +458,10 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 940,941,cap,cap,25,,0,0,25,Cấp 25
 942,943,cap,cap,30,,0,0,25,Cấp 30
 944,945,cap,cap,28,,0,0,25,Cấp 28
-946,947,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+946,947,khac,keo,20,,0,0,25,Cách gốc: lên cấp kèm điều kiện riêng của loài
 948,949,cap,cap,30,,0,0,25,Cấp 30
 951,952,da,vat_pham,20,Đá Lửa,962,0,25,Dùng Đá Lửa
-953,954,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (level-up)
+953,954,khac,keo,20,,0,0,25,Cách gốc: lên cấp kèm điều kiện riêng của loài
 955,956,cap,cap,35,,0,0,25,Cấp 35
 957,958,cap,cap,24,,0,0,25,Cấp 24
 958,959,cap,cap,38,,0,0,50,Cấp 38
@@ -471,15 +471,15 @@ tu,sang,kieu,co_che,cap,vat_pham,id_vat_pham,ngay_dem,keo,dieu_kien
 969,970,cap,cap,35,,0,0,25,Cấp 35
 971,972,cap,cap,30,,0,2,25,Cấp 30; ban đêm
 974,975,da,vat_pham,20,Đá Băng,966,0,25,Dùng Đá Băng
-57,979,khac,keo,36,,0,0,50,Cách gốc: điều kiện đặc biệt (use-move)
+57,979,khac,keo,36,,0,0,50,Cách gốc: dùng chiêu đặc trưng 20 lần
 194,980,cap,cap,20,,0,0,25,Cấp 20
-203,981,khac,keo,20,,0,0,25,Cách gốc: biết chiêu twin-beam
-206,982,khac,keo,20,,0,0,25,Cách gốc: biết chiêu hyper-drill
-625,983,khac,keo,36,,0,0,50,Cách gốc: điều kiện đặc biệt (three-defeated-bisharp)
+203,981,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Tia song sinh
+206,982,khac,keo,20,,0,0,25,Cách gốc: biết chiêu Khoan siêu tốc
+625,983,khac,keo,36,,0,0,50,Cách gốc: hạ 3 Bisharp đầu đàn
 996,997,cap,cap,35,,0,0,50,Cấp 35
 997,998,cap,cap,54,,0,0,100,Cấp 54
-999,1000,khac,keo,20,,0,0,25,Cách gốc: điều kiện đặc biệt (gimmighoul-coins)
+999,1000,khac,keo,20,,0,0,25,Cách gốc: gom 999 đồng xu Gimmighoul
 840,1011,da,keo,20,Táo Mật,0,0,50,"Dùng Táo Mật; HTBB: chưa có vật phẩm, dùng Kẹo"
 1012,1013,da,keo,20,Chén Trà Thường,0,0,50,"Dùng Chén Trà Thường; HTBB: chưa có vật phẩm, dùng Kẹo"
 884,1018,da,keo,20,Hợp Kim,0,0,50,"Dùng Hợp Kim; HTBB: chưa có vật phẩm, dùng Kẹo"
-1011,1019,khac,keo,36,,0,0,50,Cách gốc: biết chiêu dragon-cheer
+1011,1019,khac,keo,36,,0,0,50,Cách gốc: biết chiêu Cổ vũ rồng

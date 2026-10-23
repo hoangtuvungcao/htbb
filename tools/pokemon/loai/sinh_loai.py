@@ -63,6 +63,31 @@ _NVE = {0: [12, 16], 1: [1, 2, 12, 14], 2: [2, 4, 14], 3: [3, 4, 14], 4: [1, 4, 
 _IMM = {0: [13], 3: [8], 6: [13], 7: [16], 8: [9], 10: [15], 13: [0], 14: [17]}
 
 
+
+CHU_TIEN_HOA_VI = {  # ra soat hien thi 10/2026: khong de ma PokeAPI tieng Anh lot ra Pokedex web
+ "biết chiêu ancient-power":"biết chiêu Sức mạnh cổ đại",
+ "biết chiêu barb-barrage":"biết chiêu Mưa gai độc",
+ "biết chiêu double-hit":"biết chiêu Đánh đôi",
+ "biết chiêu dragon-cheer":"biết chiêu Cổ vũ rồng",
+ "biết chiêu dragon-pulse":"biết chiêu Sóng rồng",
+ "biết chiêu hyper-drill":"biết chiêu Khoan siêu tốc",
+ "biết chiêu mimic":"biết chiêu Bắt chước",
+ "biết chiêu rollout":"biết chiêu Lăn tròn",
+ "biết chiêu stomp":"biết chiêu Dậm chân",
+ "biết chiêu taunt":"biết chiêu Khiêu khích",
+ "biết chiêu twin-beam":"biết chiêu Tia song sinh",
+ "điều kiện đặc biệt (agile-style-move)":"dùng chiêu kiểu nhanh 20 lần",
+ "điều kiện đặc biệt (gimmighoul-coins)":"gom 999 đồng xu Gimmighoul",
+ "điều kiện đặc biệt (in-battle-level-up)":"lên cấp ngay trong trận",
+ "điều kiện đặc biệt (level-up)":"lên cấp kèm điều kiện riêng của loài",
+ "điều kiện đặc biệt (meltan-candies)":"dùng 400 Kẹo Meltan",
+ "điều kiện đặc biệt (shed)":"tiến hoá thành Ninjask khi đội còn chỗ trống",
+ "điều kiện đặc biệt (three-critical-hits)":"đánh chí mạng 3 lần trong một trận",
+ "điều kiện đặc biệt (three-defeated-bisharp)":"hạ 3 Bisharp đầu đàn",
+ "điều kiện đặc biệt (use-move)":"dùng chiêu đặc trưng 20 lần",
+ "Vật phẩm tiến hoá (strawberry-sweet)":"Kẹo ngọt dâu tây",
+}
+
 def he_so(tc, pt):
     if pt in _IMM.get(tc, []):
         return 0.0
@@ -408,7 +433,7 @@ def main():
             mo.append("Cấp %d" % lv)
         elif t == "use-item" and it:
             ma_vp = it
-            ten_vp, id_vp = vp.get(it, ["Vật phẩm tiến hoá (%s)" % it, 0])
+            ten_vp, id_vp = vp.get(it, [CHU_TIEN_HOA_VI.get("Vật phẩm tiến hoá (%s)" % it, "Vật phẩm tiến hoá (%s)" % it), 0])
             kieu, cap = "da", cap_mac
             co_che = "vat_pham" if id_vp else "keo"
             mo.append("Dùng %s" % ten_vp)
@@ -417,7 +442,7 @@ def main():
             co_che = "trao_doi"
             if held:
                 ma_vp = held
-                ten_vp, id_vp = vp.get(held, ["Vật phẩm tiến hoá (%s)" % held, 0])
+                ten_vp, id_vp = vp.get(held, [CHU_TIEN_HOA_VI.get("Vật phẩm tiến hoá (%s)" % held, "Vật phẩm tiến hoá (%s)" % held), 0])
                 mo.append("Trao đổi khi giữ %s" % ten_vp)
             else:
                 mo.append("Trao đổi")
@@ -427,7 +452,7 @@ def main():
             mo.append("Thân thiết %d" % happy)
         elif held:
             ma_vp = held
-            ten_vp, id_vp = vp.get(held, ["Vật phẩm tiến hoá (%s)" % held, 0])
+            ten_vp, id_vp = vp.get(held, [CHU_TIEN_HOA_VI.get("Vật phẩm tiến hoá (%s)" % held, "Vật phẩm tiến hoá (%s)" % held), 0])
             kieu, cap = "vat_pham", lv or cap_mac
             co_che = "vat_pham" if id_vp else "keo"
             mo.append("Lên cấp khi giữ %s" % ten_vp)
@@ -448,7 +473,7 @@ def main():
                     mo.append(txt)
             if not mo:
                 mo.append("điều kiện đặc biệt (%s)" % t)
-            mo = ["Cách gốc: " + ", ".join(mo)]
+            mo = ["Cách gốc: " + ", ".join(CHU_TIEN_HOA_VI.get(x, x) for x in mo)]
         if ngay_dem:
             mo.append("ban ngày" if ngay_dem == 1 else "ban đêm")
         if co_che == "keo" and kieu != "khac":

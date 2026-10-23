@@ -2268,7 +2268,7 @@ class MapDoMenu {
                                         // Mon/Fri: lien dau. Tue/Sat: chiem thanh.
                                         boolean isDayx = nt.startsWith("Mon") || nt.startsWith("Fri") || nt.startsWith("Tue") || nt.startsWith("Sat");
                                         if (isDayx) {
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký trong ngày hôm nay.", ""));
+                                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký hôm nay: thứ Hai, Ba, Sáu, Bảy là ngày thi đấu. Hãy đăng ký vào ngày khác.", ""));
                                             return;
                                         }
                                     }
@@ -2372,7 +2372,7 @@ class MapDoMenu {
                                             // Mon/Fri: lien dau. Tue/Sat: chiem thanh.
                                             boolean isDayx = ntx.startsWith("Mon") || ntx.startsWith("Fri") || ntx.startsWith("Tue") || ntx.startsWith("Sat");
                                             if (isDayx) {
-                                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký trong ngày hôm nay.", ""));
+                                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký hôm nay: thứ Hai, Ba, Sáu, Bảy là ngày thi đấu. Hãy đăng ký vào ngày khác.", ""));
                                                 return;
                                             }
                                         }

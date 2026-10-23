@@ -1477,7 +1477,7 @@ class MapNhapText {
                     try {
                         moneyxxxx = Long.parseLong(text.trim().replace(".", "").replace(",", ""));
                     } catch (final Exception exSo) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thách đấu với số tiền này", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Số xu cược không hợp lệ: chỉ nhập số, ví dụ 100000.", ""));
                         return;
                     }
                     // 19/10/2026: muc cuoc theo dai cap (real.ThachDauCuoc), truoc 100.000 - 10.000.000 xu co dinh.
@@ -1488,7 +1488,7 @@ class MapNhapText {
                     }
 
                     if (moneyxxxx < 0) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thách đấu với số tiền này", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Số xu cược không hợp lệ: chỉ nhập số, ví dụ 100000.", ""));
                         return;
                     }
 

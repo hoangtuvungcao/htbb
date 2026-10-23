@@ -290,7 +290,7 @@ class MapXaHoi {
 
             if (value == 3) {
                 if (player.idWedding == -1) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không thể mời", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ người đã đăng ký Lễ kết đôi mới gửi được thiệp mời.", ""));
                     return;
                 }
 
@@ -302,7 +302,7 @@ class MapXaHoi {
 
                 if (wd != null) {
                     if (wd.idP1 != player.charDBID && wd.idP2 != player.charDBID) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không thể mời", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ hai người của Lễ kết đôi này mới gửi được thiệp mời.", ""));
                         return;
                     }
 

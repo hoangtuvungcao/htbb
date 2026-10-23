@@ -804,7 +804,7 @@ public class DatabaseGiftCode {
             if (daNap >= 1600000 && player.tichluy < 1600000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|1600000|PT:72:1:-1,DB:898:1:0,HOVELAN:882:1:43200,CHOI:618:1:0:0|1|mốc nạp 1 trieu 6 luong.";
+                respond = "1|0|0|1600000|PT:72:1:-1,DB:898:1:0,HOVELAN:882:1:43200,CHOI:618:1:0:0|1|mốc nạp 1.600.000 lượng.";
                 player.tichluy = 1600000;
                 stm.execute("update `tob_char` set tichluy = '1600000' where charname = '" + player.charname + "'");
                 stm.close();

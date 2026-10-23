@@ -2319,7 +2319,7 @@ public class Database {
             if (daNap >= 800000 && player.tichluy_bosung < 800000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|0|DH:8773:1:129600|1|mốc nạp bổ sung 800K luong.";
+                respond = "1|0|0|0|DH:8773:1:129600|1|mốc nạp bổ sung 800.000 lượng.";
                 player.tichluy_bosung = 800000;
                 stm.execute("update `tob_char` set tichluy_bosung = '800000' where charname = '" + player.charname + "'");
                 stm.close();

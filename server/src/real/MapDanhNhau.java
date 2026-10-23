@@ -136,7 +136,7 @@ class MapDanhNhau {
                     && !((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId)) {
                 Message m = new Message(27);
                 m.dos.writeShort(p.id);
-                m.dos.writeUTF("Không thể PK thêm ở bản đồ này.");
+                m.dos.writeUTF("Nghiệp quá nặng, không thể PK thêm. Online để nghiệp giảm dần.");
                 p.sendMessage(m);
                 m.cleanup();
                 return;

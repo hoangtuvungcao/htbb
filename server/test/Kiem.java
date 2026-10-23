@@ -99,6 +99,7 @@ public final class Kiem {
         KiemNpcSprite.chay(); // anh NPC = Pokemon: SQL pokemon_npc_sprite.sql = jar = Unity = csv, npc.sh khong con anh cu (P2)
         KiemLauDai.chay();
         KiemNhiemVu.chay();
+        KiemHienThiChu.chay(); // ra soat hien thi: chu nguoi choi thay (ten lop lot, thieu dau, ma loi) + chu nhiem vu khop du lieu
         KiemNovaDB.chay();
         KiemPhienBan.chay();
         KiemGoi26Test.chay();

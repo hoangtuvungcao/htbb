@@ -9123,7 +9123,7 @@ public class Map implements Runnable {
                 
                     // Thêm log xóa thú cưỡi - 16/09/2026: them so luong da tru + so du con lai
                     // (theo yeu cau "log chi tiet hon").
-                    String logInfo = String.format("Xóa thú cưỡi: %s (ID: %d) - tru 500 luong, con lai %d",
+                    String logInfo = String.format("Xóa thú cưỡi: %s (ID: %d) - trừ 500 lượng, còn lại %d",
                             targetAnimal.name, targetAnimal.dbid, player.getLuong());
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "XOATC");
                 
@@ -9191,7 +9191,7 @@ public class Map implements Runnable {
             
                     // Thêm log xóa pet - 16/09/2026: them so luong da tru + so du con lai
                     // (theo yeu cau "log chi tiet hon").
-                    String logInfo = String.format("Xóa pet: %s (ID: %d) - tru 500 luong, con lai %d",
+                    String logInfo = String.format("Xóa pet: %s (ID: %d) - trừ 500 lượng, còn lại %d",
                             targetPet.getName(), targetPet.idDB, player.getLuong());
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "XOAPET");
             
@@ -17887,7 +17887,7 @@ public class Map implements Runnable {
             }
 
             if (player.party.userParty.size() > 0 && player.party.idMaster != player.id) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chủ pt mới được phép mở cửa", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ trưởng nhóm mới mở được phó bản.", ""));
                 return;
             }
 
@@ -17899,13 +17899,13 @@ public class Map implements Runnable {
             if (player.party.userParty.size() <= 0) {
                 mapDUN = (Map) RealController.mapList.get(114);
                 if (((Vector) mapDUN.allPlayers.get(player.myCountry)).size() >= 100) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Dun đã đầy, vui lòng trở lại sau", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Phó bản đang đầy người. Thử lại sau ít phút.", ""));
                     return;
                 }
             } else {
                 mapDUN = (Map) RealController.mapList.get(114);
                 if (((Vector) mapDUN.allPlayers.get(player.myCountry)).size() >= 500) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Dun đã đầy, vui lòng trở lại sau", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Phó bản đang đầy người. Thử lại sau ít phút.", ""));
                     return;
                 }
 
