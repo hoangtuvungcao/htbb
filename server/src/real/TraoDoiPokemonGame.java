@@ -449,7 +449,7 @@ public final class TraoDoiPokemonGame {
             return;
         }
         if (!b.truNeuDu(() -> b.xu >= phiB, () -> b.subXu(phiB, true, "phi trao doi pokemon"))) {
-            a.addXu(phiA, "hoan phi trao doi pokemon");
+            a.addXu(phiA, "hoan phi trao doi pokemon", Char.XU_HOAN);
             moLai(f, b.charname + " không đủ xu phí.");
             return;
         }
@@ -464,12 +464,12 @@ public final class TraoDoiPokemonGame {
                 BatPokemonGame.homNay(), luat(), thd, (idA, sA, idB, sB, aDua, bDua) -> DatabaseBoNgoc.luuTraoDoi(idA, a.charname, sA,
                         idB, b.charname, sB, moTa(aDua), moTa(bDua), phiA, phiB));
         if (!kq.ok) {
-            a.addXu(phiA, "hoan phi trao doi pokemon");
-            b.addXu(phiB, "hoan phi trao doi pokemon");
+            a.addXu(phiA, "hoan phi trao doi pokemon", Char.XU_HOAN);
+            b.addXu(phiB, "hoan phi trao doi pokemon", Char.XU_HOAN);
             moLai(f, kq.loi);
             return;
         }
-        LauDai.ghiXuRa(phiA + phiB);
+        // phi hai ben: subXu da dem xu_ra
         PHIEN.remove(Integer.valueOf(a.charDBID), f);
         PHIEN.remove(Integer.valueOf(b.charDBID), f);
         xong(a, kq.aNhan, kq.tienHoa);

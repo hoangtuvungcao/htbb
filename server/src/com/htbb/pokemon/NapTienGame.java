@@ -328,7 +328,7 @@ public final class NapTienGame implements Runnable {
             }
             final long nhan = r[1] - r[2];
             if (nhan > 0L) {
-                p.addXu(nhan, "nap tien cho trang tri");
+                p.addXu(nhan, "nap tien cho trang tri", real.Char.XU_CHUYEN); // tien nguoi mua da tru thue
             }
             NapTienDb.ghiSoCai(p.userID, p.charDBID, "cho_ban", 0, 0, "", "chotra:" + r[0], "ban " + r[1] + " xu, thue " + r[2]);
             bao(p, "Chợ trang trí: đã bán, nhận " + nhan + " xu (thuế " + r[2] + " xu).");
@@ -1065,7 +1065,7 @@ public final class NapTienGame implements Runnable {
             return;
         }
         if (!NapTienDb.rao(s.id, p.charDBID, p.charname, s.ma, g, phi)) {
-            p.addXu(phi, "nap tien hoan phi dang");
+            p.addXu(phi, "nap tien hoan phi dang", real.Char.XU_HOAN);
             bao(p, "Món này không rao được.");
             return;
         }
@@ -1153,14 +1153,15 @@ public final class NapTienGame implements Runnable {
                 >= TU_DO_O + (coThe(p) ? 10 * NapTienLogic.THE_THANG_TRANG_TU_DO_THEM : 0)) {
             return "Tủ đồ trang trí đã đầy.";
         }
-        if (!p.truXuNeuDu(r.gia, false, "nap tien mua cho trang tri")) {
+        if (!p.truXuNeuDu(r.gia, false, "nap tien mua cho trang tri", real.Char.XU_CHUYEN)) {
             return "Không đủ " + r.gia + " xu.";
         }
         final long thue = NapTienLogic.thueBan(r.gia);
         if (!NapTienDb.chotMua(r.id, p.charDBID, thue)) {
-            p.addXu(r.gia, "nap tien hoan mua cho");
+            p.addXu(r.gia, "nap tien hoan mua cho", real.Char.XU_CHUYEN);
             return "Món đã có người mua trước.";
         }
+        LauDai.ghiXuRa(thue); // gia = nguoi ban nhan + thue; chi thue bi dot
         NapTienDb.chuyenSoHuu(r.soHuuId, p.charDBID);
         ChongClone.ghi(p, r.nguoiBan, r.tenNguoiBan, ChongClone.KIEU_CHO_TRANG_TRI, r.gia, "trang tri " + r.ma);
         NapTienDb.ghiSoCai(p.userID, p.charDBID, "cho_mua", 0, 0, "", "chomua:" + r.id, r.ma + " " + r.gia + " xu, thue " + thue);

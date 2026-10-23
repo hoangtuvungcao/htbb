@@ -297,7 +297,7 @@ public final class VongQuay {
                 return;
             }
             final boolean daTru = this.laLuong ? p.truLuongMoChuyen(so)
-                    : p.truXuNeuDu(so, false, "vong quay " + this.ma + " dat cuoc");
+                    : p.truXuNeuDu(so, false, "vong quay " + this.ma + " dat cuoc", Char.XU_CHUYEN);
             if (!daTru) {
                 bao(p, "Không đủ " + VongQuayLogic.so(so) + " " + donVi() + ".");
                 return;
@@ -430,6 +430,9 @@ public final class VongQuay {
             }
         } else {
             final VongQuayLogic.NguoiCuoc w = kq.nguoiThang;
+            if (!this.laLuong && kq.phi > 0L) {
+                com.htbb.pokemon.LauDai.ghiXuRa(kq.phi); // cuoc / tra la chuyen; phi hu bi dot
+            }
             tra(w, kq.tra, "thang " + this.ma + " hu " + kq.hu + " phi " + kq.phi);
             for (final VongQuayLogic.NguoiCuoc n : kq.nguoi) {
                 final Char c = online(n);
@@ -472,7 +475,7 @@ public final class VongQuay {
             if (this.laLuong) {
                 c.addLuong((int) Math.min(Integer.MAX_VALUE, so));
             } else {
-                c.addXu(so, "vong quay " + lyDo);
+                c.addXu(so, "vong quay " + lyDo, Char.XU_CHUYEN);
             }
             try {
                 c.sendMessage(MessageCreator.createCharInventoryMessage(c, 0));
@@ -554,7 +557,7 @@ public final class VongQuay {
                 return;
             }
             if (r[0] > 0L) {
-                p.addXu(r[0], "vong quay cho nhan");
+                p.addXu(r[0], "vong quay cho nhan", Char.XU_CHUYEN); // tien thang / hoan cuoc / hoan ky quy thach dau
             }
             if (r[1] > 0L) {
                 p.addLuong((int) Math.min(Integer.MAX_VALUE, r[1]));

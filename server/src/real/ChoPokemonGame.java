@@ -311,11 +311,11 @@ public final class ChoPokemonGame {
         final ChoPokemon.KetQua kq = ChoPokemon.dang(l, ben(p), h, idCon, gia, loai, xuMoiGioCap(c.cap), soDang,
                 System.currentTimeMillis() / 1000L, DatabaseChoPokemon.KHO);
         if (!kq.ok) {
-            p.addXu(phi, "hoan phi dang cho pokemon");
+            p.addXu(phi, "hoan phi dang cho pokemon", Char.XU_HOAN);
             ketQua(p, false, kq.loi);
             return;
         }
-        LauDai.ghiXuRa(phi);
+        // phi dang: subXu da dem xu_ra
         dsLuc = 0L;
         if (h.dangTheo == 0) {
             BatPokemonGame.guiDongHanh(p);
@@ -354,7 +354,7 @@ public final class ChoPokemonGame {
             return;
         }
         final long gia = t.gia;
-        if (!p.truNeuDu(() -> p.xu >= gia, () -> p.subXu(gia, true, "mua cho pokemon " + idTin))) {
+        if (!p.truNeuDu(() -> p.xu >= gia, () -> p.subXu(gia, true, "mua cho pokemon " + idTin, Char.XU_CHUYEN))) {
             ketQua(p, false, "Cần " + BatPokemonGame.xu(gia) + ".");
             return;
         }
@@ -369,7 +369,7 @@ public final class ChoPokemonGame {
             DatabaseChoPokemon.NGHI.remove();
         }
         if (!kq.ok) {
-            p.addXu(gia, "hoan mua cho pokemon " + idTin);
+            p.addXu(gia, "hoan mua cho pokemon " + idTin, Char.XU_CHUYEN);
             ketQua(p, false, kq.loi);
             dsLuc = 0L;
             return;
@@ -463,7 +463,7 @@ public final class ChoPokemonGame {
         for (final ChoPokemon.Tin t : v) {
             if (DatabaseChoPokemon.nhanTien(t.id, p.charDBID)) {
                 final long nhan = Math.max(0L, t.gia - t.thue);
-                p.addXu(nhan, "ban cho pokemon tin " + t.id);
+                p.addXu(nhan, "ban cho pokemon tin " + t.id, Char.XU_CHUYEN);
                 log(p.charname, "nhan tien tin " + t.id + " gia " + t.gia + " thue " + t.thue + " nhan " + nhan);
                 com.htbb.thongbao.ThongBao.ketQua(p, "Chợ Pokémon: " + t.tenMua + " đã mua " + BatPokemonGame.ten(t.con.dex) + ".",
                         "+" + BatPokemonGame.xu(nhan) + " (đã trừ thuế " + l.thuePhanTram + "%)");

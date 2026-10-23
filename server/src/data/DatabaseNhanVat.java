@@ -1348,6 +1348,7 @@ class DatabaseNhanVat {
             pre.setString(12, equip);
             pre.setInt(13, s.idServer);
             pre.execute();
+            com.htbb.pokemon.LauDai.ghiXuVao(xu); // von khoi dau = xu sinh ra (khong qua Char.addXu)
             // QUA TAO NHAN VAT DA BO (19/10/2026, chu game duyet "giam het di"): truoc day nhan vat
             // dau tien cua tai khoan nhan them 40.000.000 xu + 20.000 luong + 30.000 luong khoa
             // (+ 15 trung pet, 2 Huyet linh thao) qua hang doi board_created - so cua dot thu
@@ -1763,6 +1764,7 @@ class DatabaseNhanVat {
             pre.setInt(13, s.idServer);
             System.out.println(sql);
             System.out.println("THUC THI CAU LENH: " + pre.execute());
+            com.htbb.pokemon.LauDai.ghiXuVao(xu); // von khoi dau = xu sinh ra (khong qua Char.addXu)
             sql = "SELECT * FROM tob_char WHERE charname=?";
             try {
                 pre.close();

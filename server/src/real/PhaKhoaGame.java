@@ -253,7 +253,7 @@ public final class PhaKhoaGame {
             }
             if (!VatPhamDungLauDai.truItem(p, PhaKhoaLogic.ID_DA_PHA_KHOA, soDa)) {
                 // Khong the xay ra (da dem duoi cung khoa hanh trang) - tra lai xu cho chac.
-                p.addXu(gia, "hoan pha khoa trang bi");
+                p.addXu(gia, "hoan pha khoa trang bi", Char.XU_HOAN);
                 return "Không đủ Đá phá khoá.";
             }
             it.lock = 0;

@@ -10057,8 +10057,10 @@ public class Map implements Runnable {
                         long xuP = p.getxu();
                         long xuPL = player.getxu();
                         long moneytrade = (long) p.moneyTrade;
-                        p.addXu(moneytrade * 90L / 100L, "map 26");
-                        player.subXu(moneytrade, false, "map 27");
+                        // chuyen giua hai nguoi choi (khong dem), rieng 10% phi bi dot = xu ra
+                        p.addXu(moneytrade * 90L / 100L, "map 26", Char.XU_CHUYEN);
+                        player.subXu(moneytrade, false, "map 27", Char.XU_CHUYEN);
+                        com.htbb.pokemon.LauDai.ghiXuRa(moneytrade - moneytrade * 90L / 100L);
                         Database.instance.savePet(pet);
                         com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_THU_CUNG, moneytrade,
                                 "thu cung " + pet.getName());

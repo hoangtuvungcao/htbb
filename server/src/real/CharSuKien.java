@@ -1055,7 +1055,7 @@ class CharSuKien {
                 final ItemLuckyDraw item = Char.allItemLuckyDraw.get(idx);
                 if (item.cat == 4) {
                     if (item.id == 0) {
-                        self.xu += item.value;
+                        self.addXu(item.value, "vong quay may man"); // qua addXu: dem xu_vao
                         info = String.valueOf(info) + item.value + " xu,";
                     } else {
                         final int[] potions = self.potions;

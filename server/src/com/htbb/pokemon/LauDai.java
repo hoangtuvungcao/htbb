@@ -201,6 +201,16 @@ public final class LauDai {
         }
     }
 
+    /**
+     * Hoan mot khoan phi vua bi tru (da dem vao xu_ra) trong cung giao dich that bai: tru lai xu_ra, khong
+     * xuong duoi 0 (job dem vua lay bo dem giua luc tru va luc hoan thi chap nhan lech nho, khong ghi so am).
+     */
+    public static void hoanXuRa(final long xu) {
+        if (bat && xu > 0L) {
+            XU_RA.updateAndGet(v -> Math.max(0L, v - xu));
+        }
+    }
+
     /** Lay roi dat lai bo dem {vao, ra} (job dem). */
     public static long[] layVaDatLaiXu() {
         return new long[]{XU_VAO.getAndSet(0L), XU_RA.getAndSet(0L)};

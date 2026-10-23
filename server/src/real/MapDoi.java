@@ -1175,7 +1175,7 @@ class MapDoi {
             } else {
                 // addNewClan that bai SAU khi da tru xu (o tren) - hoan lai, khong de nguoi
                 // choi mat xu ma khong nhan duoc gi.
-                player.addXu((long) price, "map 79 hoan lai");
+                player.addXu((long) price, "map 79 hoan lai", Char.XU_HOAN);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Tạo đội thất bại. Xin thử lại", ""));
                 if (clan.id != -1) {
                     idIconClan.remove(new Integer(cID));

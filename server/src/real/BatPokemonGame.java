@@ -595,8 +595,7 @@ public final class BatPokemonGame {
                 thuongChuyen(c.dex), BoNgocGame.xuMoiGio(p), LauDai.so(K_CHUYEN_TRAN_XU, 300), LauDai.so(K_CHUYEN_TRAN_LUONG, 1), homNay());
         h.themKeo(goc(c.dex), d.keo);
         if (d.xu > 0) {
-            p.addXu(d.xu, "chuyen doi pokemon " + c.dex);
-            LauDai.ghiXuVao(d.xu);
+            p.addXu(d.xu, "chuyen doi pokemon " + c.dex); // addXu tu dem xu_vao
         }
         if (d.luongKhoa > 0) {
             p.addLuongLock(d.luongKhoa);

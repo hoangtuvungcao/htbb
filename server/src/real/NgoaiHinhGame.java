@@ -67,7 +67,7 @@ public final class NgoaiHinhGame {
             return;
         }
         if (!moTrangChieu(p)) {
-            p.addXu(gia, "hoan mo trang chieu");
+            p.addXu(gia, "hoan mo trang chieu", Char.XU_HOAN);
             return;
         }
         try {

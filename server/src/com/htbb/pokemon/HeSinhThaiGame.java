@@ -346,20 +346,32 @@ public final class HeSinhThaiGame {
         return Math.max(1L, xuGio(p) * phanNghin / 1000L);
     }
 
+    /** Tru xu xu dot (phi, mua NPC): dem xu_ra. */
     static boolean truXu(final Char p, final long xu, final String lyDo) {
+        return truXu(p, xu, lyDo, Char.XU_DEM);
+    }
+
+    /** {@code kieu}: Char.XU_DEM / XU_CHUYEN (mua cho, ky quy don - tien sang nguoi choi khac). */
+    static boolean truXu(final Char p, final long xu, final String lyDo, final int kieu) {
         if (xu <= 0) {
             return true;
         }
-        if (!p.truXuNeuDu(xu, false, "he sinh thai " + lyDo)) {
+        if (!p.truXuNeuDu(xu, false, "he sinh thai " + lyDo, kieu)) {
             return false;
         }
         capNhatTien(p);
         return true;
     }
 
+    /** Cong xu sinh ra (ban NPC, GM): dem xu_vao. */
     static void congXu(final Char p, final long xu, final String lyDo) {
+        congXu(p, xu, lyDo, Char.XU_DEM);
+    }
+
+    /** {@code kieu}: Char.XU_DEM / XU_CHUYEN (tien ban cho, hop thu, hoan ky quy) / XU_HOAN (hoan phi vua tru). */
+    static void congXu(final Char p, final long xu, final String lyDo, final int kieu) {
         if (xu > 0) {
-            p.addXu(xu, "he sinh thai " + lyDo);
+            p.addXu(xu, "he sinh thai " + lyDo, kieu);
             capNhatTien(p);
         }
     }

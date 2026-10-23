@@ -636,8 +636,7 @@ public final class HoiSinhGame {
             case HoiSinh.LC_XU: {
                 final long px = l.phi;
                 if (p.truXuNeuDu(px, false, "hoi sinh tai cho")) {
-                    XU_DOT.addAndGet(px);
-                    LauDai.ghiXuRa(px);
+                    XU_DOT.addAndGet(px); // xu_ra: truXuNeuDu -> subXu tu dem
                     try {
                         Database.instance.saveLogThongKeChiTieu("hoi sinh tai cho", 0, 1, px, "xu");
                     } catch (final Exception ignored) {
@@ -1103,7 +1102,7 @@ public final class HoiSinhGame {
             bao(p, "Không đủ " + HoiSinh.so(tong) + " xu.");
             return;
         }
-        LauDai.ghiXuRa(tong);
+        // xu_ra: subXu tu dem
         try {
             Database.instance.saveLogThongKeChiTieu("Thuoc hoi sinh", 0, n, tong, "xu");
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));

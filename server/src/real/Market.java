@@ -119,6 +119,7 @@ public class Market {
                 }
 
                 sell.addMoney(item.priceBid - tax);
+                com.htbb.pokemon.LauDai.ghiXuRa(tax); // ky quy dat gia da tru (chuyen), thue = xu ra
                 removeItemSell(item, item.charSell);
                 Database.instance
                     .saveOrtherLog(
@@ -229,7 +230,7 @@ public class Market {
 
                 item.charBid = player.charname;
                 item.priceBid = priceBid;
-                player.subXu(priceBid, false, "maket 1");
+                player.subXu(priceBid, false, "maket 1", Char.XU_CHUYEN); // ky quy dat gia, ve nguoi ban / hoan qua kho cho
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 if (!cs.hadBitItem(item)) {
                     cs.addItem(item);
@@ -285,7 +286,8 @@ public class Market {
                 Item it = item.item.cloneItem();
                 it.id = player.getIDItem();
                 player.iItems.add(it);
-                player.subXu(item.priceSell, false, "maket 2");
+                player.subXu(item.priceSell, false, "maket 2", Char.XU_CHUYEN);
+                com.htbb.pokemon.LauDai.ghiXuRa(tax); // nguoi ban nhan priceSell - tax (kho cho), thue = xu ra
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã mua được " + it.getName(), ""));

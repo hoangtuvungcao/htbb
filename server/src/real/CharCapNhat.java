@@ -1003,7 +1003,7 @@ class CharCapNhat {
                 if (!self.startAutoImbue) {
                     self.idGemLkd = -1;
                 }
-                self.xu -= 5000L;
+                self.subXu(5000L, true, "kham ngoc tu dong"); // qua subXu: chan 0 + dem xu_ra
                 self.sendMessage(MessageCreator.createCharInventoryMessage(self, 0));
                 if (self.startAutoImbue && (!self.enoughtLkd() || self.xu < 5000L)) {
                     self.idGemLkd = -1;

@@ -492,7 +492,7 @@ public final class HeSinhThaiMenu {
         }
         if (!h.truTheLuc(HeSinhThai.TL_CAU_CA)) {
             CauCaPhien.DANG.remove(p.charDBID, ph);
-            HeSinhThaiGame.congXu(p, moi, "hoan moi cau");
+            HeSinhThaiGame.congXu(p, moi, "hoan moi cau", Char.XU_HOAN);
             return;
         }
         HeSinhThaiGame.danhDau(p);
@@ -680,12 +680,12 @@ public final class HeSinhThaiMenu {
             return;
         }
         if (!h.truTheLuc(HeSinhThai.TL_DAO)) {
-            HeSinhThaiGame.congXu(p, xeng, "hoan xeng");
+            HeSinhThaiGame.congXu(p, xeng, "hoan xeng", Char.XU_HOAN);
             return;
         }
         synchronized (da) {
             if (da[i]) {
-                HeSinhThaiGame.congXu(p, xeng, "hoan xeng");
+                HeSinhThaiGame.congXu(p, xeng, "hoan xeng", Char.XU_HOAN);
                 h.congTheLuc(HeSinhThai.TL_DAO);
                 return;
             }
@@ -1050,14 +1050,14 @@ public final class HeSinhThaiMenu {
             return;
         }
         if (!h.bot(c.khoa, so)) {
-            HeSinhThaiGame.congXu(p, phi, "hoan phi dang");
+            HeSinhThaiGame.congXu(p, phi, "hoan phi dang", Char.XU_HOAN);
             return;
         }
         final int id = DuLieuHeSinhThai.themTinBan(p.charDBID, p.charname, c.khoa, so, gia, "",
                 com.htbb.pokemon.DongHo.bay() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
         if (id < 0) {
             h.them(c.khoa, so);
-            HeSinhThaiGame.congXu(p, phi, "hoan phi dang");
+            HeSinhThaiGame.congXu(p, phi, "hoan phi dang", Char.XU_HOAN);
             bao(p, "Chợ tạm thời lỗi, thử lại sau.");
             return;
         }
@@ -1333,7 +1333,7 @@ public final class HeSinhThaiMenu {
         }
         synchronized (h) {
             if (!h.trung.remove(t)) {
-                HeSinhThaiGame.congXu(p, phi, "hoan phi dang");
+                HeSinhThaiGame.congXu(p, phi, "hoan phi dang", Char.XU_HOAN);
                 return;
             }
         }
@@ -1343,7 +1343,7 @@ public final class HeSinhThaiMenu {
             synchronized (h) {
                 h.trung.add(t);
             }
-            HeSinhThaiGame.congXu(p, phi, "hoan phi dang");
+            HeSinhThaiGame.congXu(p, phi, "hoan phi dang", Char.XU_HOAN);
             bao(p, "Chợ tạm thời lỗi, thử lại sau.");
             return;
         }
@@ -1506,15 +1506,16 @@ public final class HeSinhThaiMenu {
         if (ChongClone.chanChuyen(p, t.idBan, t.tenBan, ChongClone.KIEU_CHO_SINH_THAI, tong)) {
             return;
         }
-        if (!HeSinhThaiGame.truXu(p, tong, "mua cho " + t.id)) {
+        if (!HeSinhThaiGame.truXu(p, tong, "mua cho " + t.id, Char.XU_CHUYEN)) {
             bao(p, "Không đủ " + tong + " xu.");
             return;
         }
         if (!DuLieuHeSinhThai.chotTinBan(t.id, 1, 0)) {
-            HeSinhThaiGame.congXu(p, tong, "hoan mua cho " + t.id);
+            HeSinhThaiGame.congXu(p, tong, "hoan mua cho " + t.id, Char.XU_CHUYEN);
             bao(p, "Người khác vừa mua mất tin này.");
             return;
         }
+        LauDai.ghiXuRa(tong - ChoSinhThai.nguoiBanNhan(tong)); // nguoi ban nhan tong - thue; thue bi dot
         nhanHang(h, t.khoaVat, t.soLuong, t.duLieu);
         traTienNguoiBan(t.idBan, ChoSinhThai.nguoiBanNhan(tong), "Bán " + VatLieuSinhThai.tenKhoa(t.khoaVat) + " x" + t.soLuong);
         ChongClone.ghi(p, t.idBan, t.tenBan, ChongClone.KIEU_CHO_SINH_THAI, tong, "sinh thai " + VatLieuSinhThai.tenKhoa(t.khoaVat) + " x" + t.soLuong);
@@ -1544,7 +1545,7 @@ public final class HeSinhThaiMenu {
     static void traTienNguoiBan(final int idBan, final long xu, final String ghiChu) {
         final Char ban = HeSinhThaiGame.timOnline(idBan);
         if (ban != null) {
-            HeSinhThaiGame.congXu(ban, xu, "ban cho sinh thai");
+            HeSinhThaiGame.congXu(ban, xu, "ban cho sinh thai", Char.XU_CHUYEN);
             real.DiemMocNhiemVu.khiBan(ban); // diem moc cho_ban (online: tinh ngay)
             bao(ban, "Chợ sinh thái: " + ghiChu + " +" + xu + " xu (đã trừ thuế).");
         } else {
@@ -1626,7 +1627,9 @@ public final class HeSinhThaiMenu {
             return;
         }
         final long tien = ChoSinhThai.nguoiBanNhan(don.giaMoi * so);
-        HeSinhThaiGame.congXu(p, tien, "giao don " + don.id);
+        // tien lay tu ky quy cua nguoi dat (chuyen); thue bi dot
+        HeSinhThaiGame.congXu(p, tien, "giao don " + don.id, Char.XU_CHUYEN);
+        LauDai.ghiXuRa(don.giaMoi * so - tien);
         ChongClone.ghiNhan(don.idMua, don.tenMua, p, ChongClone.KIEU_CHO_SINH_THAI, tien, "giao don " + don.id + " "
                 + VatLieuSinhThai.ten(don.maVat) + " x" + so);
         final Char mua = HeSinhThaiGame.timOnline(don.idMua);
@@ -1689,17 +1692,19 @@ public final class HeSinhThaiMenu {
         }
         final long gia = ChoSinhThai.giaTheoMuc(c.ma, VatLieuSinhThai.bacTheoCap(HeSinhThaiGame.cap(p)), op);
         final long kq = ChoSinhThai.kyQuy(gia, c.so);
-        if (!HeSinhThaiGame.truXu(p, kq, "ky quy don")) {
+        if (!HeSinhThaiGame.truXu(p, kq, "ky quy don", Char.XU_CHUYEN)) {
             bao(p, "Cần " + kq + " xu ký quỹ.");
             return;
         }
         final int id = DuLieuHeSinhThai.themDon(p.charDBID, p.charname, c.ma, c.so, gia,
                 com.htbb.pokemon.DongHo.bay() + HeSinhThai.HAN_CHO_NGAY * 86400000L);
         if (id < 0) {
-            HeSinhThaiGame.congXu(p, kq, "hoan ky quy");
+            HeSinhThaiGame.congXu(p, kq, "hoan ky quy", Char.XU_CHUYEN);
             bao(p, "Chợ tạm thời lỗi, thử lại sau.");
             return;
         }
+        // ky quy = gia x so (chuyen, ve nguoi giao / hoan) + phi dang (khong hoan, bi dot)
+        LauDai.ghiXuRa(kq - gia * Math.max(0, c.so));
         bao(p, "Đã tạo đơn: cần " + c.so + " " + VatLieuSinhThai.ten(c.ma) + " giá " + gia + " xu/cái. Hàng giao tới Túi sinh thái"
                 + " (hoặc hộp thư nếu bạn offline).");
     }
@@ -1726,7 +1731,7 @@ public final class HeSinhThaiMenu {
             return;
         }
         final long hoan = ChoSinhThai.hoanHuyDon(don.giaMoi, don.soCan, daGiao);
-        HeSinhThaiGame.congXu(p, hoan, "huy don " + id);
+        HeSinhThaiGame.congXu(p, hoan, "huy don " + id, Char.XU_CHUYEN);
         bao(p, "Đã huỷ đơn, hoàn " + hoan + " xu (phí đăng không hoàn).");
     }
 
@@ -1751,7 +1756,7 @@ public final class HeSinhThaiMenu {
             }
         }
         if (xu > 0) {
-            HeSinhThaiGame.congXu(p, xu, "hop thu");
+            HeSinhThaiGame.congXu(p, xu, "hop thu", Char.XU_CHUYEN); // hop thu chi chua tien ban cho / hoan ky quy don
         }
         bao(p, n == 0 ? "Hộp thư trống." : "Đã nhận " + n + " thư" + (xu > 0 ? ", " + xu + " xu" : "") + ".");
         if (n > 0) {

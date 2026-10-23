@@ -868,7 +868,7 @@ public class TongKimData extends Thread {
                 c1 = CharManager.instance.getCharByCharName(name);
 
                 try {
-                    c1.addXu(this.moneyThachdau / 2, "tongkimdata 1");
+                    c1.addXu(this.moneyThachdau / 2, "tongkimdata 1", Char.XU_CHUYEN);
                     c1.sendMessage(MessageCreator.createCharInventoryMessage(c1, 0));
                 } catch (Exception var11) {
                 }
@@ -882,7 +882,7 @@ public class TongKimData extends Thread {
                 c2 = CharManager.instance.getCharByCharName(name);
 
                 try {
-                    c2.addXu(this.moneyThachdau / 2, "tongkimdata 2");
+                    c2.addXu(this.moneyThachdau / 2, "tongkimdata 2", Char.XU_CHUYEN);
                     c2.sendMessage(MessageCreator.createCharInventoryMessage(c2, 0));
                 } catch (Exception var10) {
                 }
@@ -1619,7 +1619,7 @@ public class TongKimData extends Thread {
                         }
 
                         String info = p.charname + " chien thang " + pLose + " va nhan dc " + this.moneyThachdau + " xu";
-                        p.addXu(this.moneyThachdau, "tongkimdata 5");
+                        p.addXu(this.moneyThachdau, "tongkimdata 5", Char.XU_CHUYEN);
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                         Database.instance.saveOrtherLog("", name, info, "garena");
                     } else {

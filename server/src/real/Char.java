@@ -2684,10 +2684,7 @@ public class Char extends LiveActor {
                             return;
                         }
                         Database.instance.saveOrtherLog("tob_other_log", cBuff.charname, "hack hs " + cBuff.xu + "_1000000", "hhs");
-                        cBuff.xu -= 1000000L;
-                        if (cBuff.xu < 0L) {
-                            cBuff.xu = 0L;
-                        }
+                        cBuff.subXu(1000000L, false, "phat hoi sinh skill 27"); // chan 0 + dem xu_ra
                         cBuff.sendMessage(MessageCreator.createCharInventoryMessage(cBuff, 0));
                     }
                     cBuff.timeLastUseSkills[6] = System.currentTimeMillis();
@@ -11049,10 +11046,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doBuyNumber(final byte type, final byte number) {
-        if (this.xu < 1000000L) {
+        // kiem-va-tru mot buoc duoi KHOA_TIEN, dem xu_ra (ve so la xu bi dot)
+        if (!this.truXuNeuDu(1000000L, false, "mua ve so xu")) {
             return;
         }
-        this.xu -= 1000000L;
         final Vector<Veso> temp = this.vesoxu;
         if (this.dayOpenXoso.equals("")) {
             final int time = Calendar.getInstance().get(11);
@@ -11141,7 +11138,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         if (vs.number == Map.winNumber) {
                             long win = 70000000L * vs.soluong;
                             win -= win * 10L / 100L;
-                            this.xu += win;
+                            this.addXu(win, "trung ve so xu"); // xu sinh ra: dem xu_vao
                             this.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã mua " + vs.soluong + " số " + vs.number + " và trúng được " + win + " xu trong chương trình may mắn đầu năm. Thuế 10%", ""));
                             Database.instance.saveOrtherLog("", this.charname, String.valueOf(win) + "_" + this.xu + "_" + allNumber, "txs");
                             this.vesoxu.removeAllElements();
@@ -14863,11 +14860,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     /** Tru xu neu con du. @return false (khong doi gi) khi thieu hoac so am. */
     public boolean truXuNeuDu(final long xu, final boolean isCountTop, final String vitri) {
+        return this.truXuNeuDu(xu, isCountTop, vitri, XU_DEM);
+    }
+
+    /** Nhu truXuNeuDu(xu, isCountTop, vitri) nhung chon kieu dem kinh te (XU_DEM / XU_CHUYEN). */
+    public boolean truXuNeuDu(final long xu, final boolean isCountTop, final String vitri, final int kieu) {
         synchronized (KHOA_TIEN) {
             if (xu < 0L || this.xu < xu) {
                 return false;
             }
-            this.subXu(xu, isCountTop, vitri);
+            this.subXu(xu, isCountTop, vitri, kieu);
             return true;
         }
     }
@@ -15267,28 +15269,75 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return true;
     }
 
+    // ==================== DEM XU VAO / RA NEN KINH TE ====================
+    // tob_kinh_te_ngay.xu_vao / xu_ra (LauDai.ghiXuVao / ghiXuRa, chi khi sv.lau_dai bat) phai la xu
+    // SINH RA (quai roi, nhiem vu, ban NPC, thuong, giftcode, GM...) va xu BI DOT (mua NPC, sua do, phi,
+    // thue, dich chuyen, hoi sinh...). Truoc 23/10/2026 chi vai cho goi ghiXu* tay -> bang ghi 0 moi ngay.
+    // Nay addXu / subXu tu dem (so THAT da cong / tru sau chan), noi goi chi can chon kieu khi KHONG
+    // phai vao/ra nen kinh te:
+    //   XU_DEM    (mac dinh)  vao/ra that.
+    //   XU_CHUYEN chuyen giua nguoi choi / ky quy / tra tien ban cho / hop thu / hoan tien ky quy:
+    //             khong dem (phan thue, phi bi dot o giua noi goi tu ghiXuRa rieng).
+    //   XU_HOAN   hoan ngay mot khoan PHI vua bi tru (va da dem ra) trong cung giao dich hong: tru lai xu_ra.
+    // Quy / tien cua DOI (clan) nam NGOAI vi nguoi choi: gop quy = ra, phat luong / chia quy = vao.
+    // Kho xu (khoXu, gui / rut o NPC) KHONG qua day - cung la tien cua chinh nguoi choi.
+    public static final int XU_DEM = 0;
+    public static final int XU_CHUYEN = 1;
+    public static final int XU_HOAN = 2;
+
     public void addXu(final long xu, final String vitri) {
+        this.addXu(xu, vitri, XU_DEM);
+    }
+
+    public void subXu(final long xu, final boolean isCountTop, final String vitri) {
+        this.subXu(xu, isCountTop, vitri, XU_DEM);
+    }
+
+    /** Dem mot lan thay doi so du {@code doi} (= sau - truoc) theo kieu. */
+    static void demKinhTe(final long doi, final int kieu) {
+        if (doi == 0L || kieu == XU_CHUYEN) {
+            return;
+        }
+        if (kieu == XU_HOAN) {
+            if (doi > 0L) {
+                com.htbb.pokemon.LauDai.hoanXuRa(doi);
+            }
+            return;
+        }
+        if (doi > 0L) {
+            com.htbb.pokemon.LauDai.ghiXuVao(doi);
+        } else {
+            com.htbb.pokemon.LauDai.ghiXuRa(-doi);
+        }
+    }
+
+    public void addXu(final long xu, final String vitri, final int kieu) {
         // 16/09/2026: them so du TRUOC giao dich (truoc) theo yeu cau nguoi dung "log chi tiet
         // hon" - truoc day chi co so du SAU, muon biet truoc phai tu tinh nguoc (this.xu - xu),
         // khong an toan neu co nhieu luong cung cong/tru gan nhau (rang buoc chi trong KHOA_TIEN).
         final long truoc;
+        final long sau;
         synchronized (KHOA_TIEN) {
             truoc = this.xu;
             this.xu = congChanDai(this.xu, xu);
             this.xutim += xu;
+            sau = this.xu;
         }
+        // so du cu am (du lieu hong) khong tinh la xu sinh ra
+        demKinhTe(sau - Math.max(0L, truoc), kieu);
         if (xu != 0L) {
             Database.instance.saveOrtherLog("", this.charname,
                     truoc + " + " + xu + " = " + this.xu + " tu vi tri " + vitri, "nhanxu");
         }
     }
 
-    public void subXu(final long xu, final boolean isCountTop, final String vitri) {
+    public void subXu(final long xu, final boolean isCountTop, final String vitri, final int kieu) {
         if (xu < 0L) {
             return;
         }
         boolean thieu = false;
         final long truoc;
+        final long sau;
         synchronized (KHOA_TIEN) {
             truoc = this.xu;
             thieu = this.xu < xu;
@@ -15297,7 +15346,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (this.xu < 0L) {
                 this.xu = 0L;
             }
+            sau = this.xu;
         }
+        // chi dem so THAT bi tru (thieu tien -> chan ve 0 -> mat it hon xu)
+        demKinhTe(Math.min(0L, sau - Math.max(0L, truoc)), kieu == XU_HOAN ? XU_DEM : kieu);
         if (xu != 0L) {
             // 16/09/2026: them so du TRUOC (truoc), doi xung voi addXu - theo yeu cau nguoi
             // dung "log chi tiet hon" cho xu (nhan xu VA tru xu).

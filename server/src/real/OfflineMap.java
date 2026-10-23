@@ -405,7 +405,8 @@ public class OfflineMap extends Map {
                         money = 0L;
                      }
 
-                     p.addXu(player.sellerInfo.priceSell - money, "offline map 1");
+                     p.addXu(player.sellerInfo.priceSell - money, "offline map 1", Char.XU_CHUYEN);
+                     com.htbb.pokemon.LauDai.ghiXuRa(money); // thue (quy doi ngoai vi nguoi choi)
                      clan.addMoney2Clan(money - money * 20L / 100L);
                      clan.updateNewClandata2DB();
                      Database.instance.saveOrtherLog("tob_other_log", clan.name, String.valueOf(money - money * 20L / 100L), "tax");
@@ -418,10 +419,11 @@ public class OfflineMap extends Map {
                         money = 0L;
                      }
 
-                     p.addXu(player.sellerInfo.priceSell - money, "offline map 2");
+                     p.addXu(player.sellerInfo.priceSell - money, "offline map 2", Char.XU_CHUYEN);
+                     com.htbb.pokemon.LauDai.ghiXuRa(money); // thue cho bi dot
                   }
 
-                  player.subXu(player.sellerInfo.priceSell, false, "offline map 2");
+                  player.subXu(player.sellerInfo.priceSell, false, "offline map 2", Char.XU_CHUYEN);
                   com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_KY_GUI, player.sellerInfo.priceSell,
                      (type == 0 ? "vat pham " + ((Item)item).getTemplate().name : "ngoc " + ((GemSellEntry)item).idGemTemplate
                         + " x" + ((GemSellEntry)item).soLuong) + (item.getCharcanBuy().equals("") ? "" : " (dat rieng)"));

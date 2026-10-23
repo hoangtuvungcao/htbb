@@ -120,11 +120,11 @@ public final class ThachDauCuoc {
             if (DANG_GIU.containsKey(Integer.valueOf(idArena))) {
                 return "Trận đấu đã tồn tại.";
             }
-            if (!a.truXuNeuDu(cuoc, false, "thach dau ky quy")) {
+            if (!a.truXuNeuDu(cuoc, false, "thach dau ky quy", Char.XU_CHUYEN)) {
                 return a.charname + " không đủ " + VongQuayLogic.so(cuoc) + " xu, trận đấu đã huỷ.";
             }
-            if (!b.truXuNeuDu(cuoc, false, "thach dau ky quy")) {
-                a.addXu(cuoc, "thach dau hoan ky quy (doi thu thieu xu)");
+            if (!b.truXuNeuDu(cuoc, false, "thach dau ky quy", Char.XU_CHUYEN)) {
+                a.addXu(cuoc, "thach dau hoan ky quy (doi thu thieu xu)", Char.XU_CHUYEN);
                 return b.charname + " không đủ " + VongQuayLogic.so(cuoc) + " xu, trận đấu đã huỷ.";
             }
             DANG_GIU.put(Integer.valueOf(idArena), new KyQuy(idArena, loai, a.charname, a.charDBID, b.charname, b.charDBID, cuoc));
@@ -158,6 +158,10 @@ public final class ThachDauCuoc {
         tra(k.ten0, k.id0, ch.tra0, doiThang == 0 ? "thang thach dau" : "hoan thach dau (hoa)");
         tra(k.ten1, k.id1, ch.tra1, doiThang == 1 ? "thang thach dau" : "hoan thach dau (hoa)");
         DatabaseGioiHanQua.xoaKyQuy(idArena);
+        // ky quy / tra deu la chuyen (khong dem); phan phi bi dot = xu ra nen kinh te.
+        if (ch.phi > 0L) {
+            com.htbb.pokemon.LauDai.ghiXuRa(ch.phi);
+        }
         if (doiThang == 0 || doiThang == 1) {
             final Char thua = CharManager.instance.getCharByCharName(doiThang == 0 ? k.ten1 : k.ten0);
             if (thua != null) {
@@ -196,7 +200,7 @@ public final class ThachDauCuoc {
         }
         final Char c = CharManager.instance.getCharByCharName(ten);
         if (c != null && (id <= 0 || c.charDBID == id)) {
-            c.addXu(so, lyDo);
+            c.addXu(so, lyDo, Char.XU_CHUYEN); // tien ky quy cua nguoi choi, khong sinh xu
             try {
                 c.sendMessage(MessageCreator.createCharInventoryMessage(c, 0));
             } catch (final Exception ignored) {

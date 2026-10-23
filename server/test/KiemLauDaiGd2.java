@@ -39,6 +39,7 @@ public final class KiemLauDaiGd2 {
         final boolean cu = LauDai.bat();
         try {
             buoc0();
+            demXuKinhTe();
             buoc1();
             buoc2();
             buoc3();
@@ -52,6 +53,152 @@ public final class KiemLauDaiGd2 {
             LauDai.dat(cu);
             LauDai.apDungCauHinh(new Properties());
         }
+    }
+
+    // ------------------------------------------------------------------ dem xu vao / ra (tob_kinh_te_ngay)
+
+    private static String docNguon(final String f) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(f)), StandardCharsets.UTF_8);
+        } catch (final Exception e) {
+            return "";
+        }
+    }
+
+    private static real.Char nvXu(final String ten, final int dbid, final long xu) {
+        final real.Char p = new real.Char(null);
+        p.charname = ten;
+        p.isBot = -1;
+        p.id = (short) -dbid;
+        p.userID = -dbid;
+        p.charDBID = dbid;
+        p.setxu(xu);
+        return p;
+    }
+
+    /**
+     * 23/10/2026: tob_kinh_te_ngay.xu_vao = 0, xu_ra ~ 0 moi ngay tren may that vi addXu / subXu khong dem. Nay
+     * dem trong Char.addXu / subXu (so THAT sau chan), chuyen giua nguoi choi (XU_CHUYEN) khong dem, hoan phi
+     * (XU_HOAN) tru lai xu_ra.
+     */
+    static void demXuKinhTe() {
+        Kiem.nhom("Dem xu vao/ra nen kinh te qua Char.addXu/subXu (tob_kinh_te_ngay)");
+        final boolean cu = LauDai.bat();
+        real.Char a;
+        real.Char b;
+        try {
+            a = nvXu("kiem kt a", 932001, 1000L);
+            b = nvXu("kiem kt b", 932002, 1000L);
+        } catch (final Throwable t) {
+            Kiem.dung("tao duoc Char(null) (" + t + ")", false);
+            return;
+        }
+        try {
+            LauDai.dat(true);
+            LauDai.layVaDatLaiXu();
+            long[] v;
+
+            a.addXu(500L, "kiem quai roi xu");
+            v = LauDai.layVaDatLaiXu();
+            Kiem.bang("nguon xu (addXu): dem xu_vao dung mot lan", Long.valueOf(500L), Long.valueOf(v[0]));
+            Kiem.bang("nguon xu: khong dem xu_ra", Long.valueOf(0L), Long.valueOf(v[1]));
+
+            a.subXu(300L, true, "kiem mua npc");
+            Kiem.dung("ho hut (truXuNeuDu) tru duoc", a.truXuNeuDu(100L, true, "kiem phi"));
+            v = LauDai.layVaDatLaiXu();
+            Kiem.bang("ho hut (subXu + truXuNeuDu): xu_ra = 300 + 100, khong nhan doi", Long.valueOf(400L), Long.valueOf(v[1]));
+            Kiem.bang("ho hut: khong dem xu_vao", Long.valueOf(0L), Long.valueOf(v[0]));
+            Kiem.bang("so du sau nguon / ho hut", Long.valueOf(1100L), Long.valueOf(a.getxu()));
+
+            a.subXu(200L, false, "kiem chuyen di", real.Char.XU_CHUYEN);
+            b.addXu(200L, "kiem chuyen den", real.Char.XU_CHUYEN);
+            Kiem.dung("truXuNeuDu kieu chuyen tru duoc", a.truXuNeuDu(100L, false, "kiem ky quy", real.Char.XU_CHUYEN));
+            b.addXu(100L, "kiem tra ky quy", real.Char.XU_CHUYEN);
+            v = LauDai.layVaDatLaiXu();
+            Kiem.bang("chuyen giua nguoi choi: khong dem xu_vao", Long.valueOf(0L), Long.valueOf(v[0]));
+            Kiem.bang("chuyen giua nguoi choi: khong dem xu_ra", Long.valueOf(0L), Long.valueOf(v[1]));
+            Kiem.dung("chuyen: so du hai ben doi dung", a.getxu() == 800L && b.getxu() == 1300L);
+
+            Kiem.dung("phi tru duoc", a.truXuNeuDu(150L, true, "kiem phi dang"));
+            a.addXu(150L, "kiem hoan phi dang", real.Char.XU_HOAN);
+            v = LauDai.layVaDatLaiXu();
+            Kiem.bang("tru phi roi hoan (XU_HOAN): xu_ra bu tru ve 0", Long.valueOf(0L), Long.valueOf(v[1]));
+            Kiem.bang("hoan phi: khong tinh la xu sinh ra", Long.valueOf(0L), Long.valueOf(v[0]));
+            a.subXu(150L, true, "kiem phi");
+            a.addXu(50L, "kiem hoan mot phan", real.Char.XU_HOAN);
+            Kiem.bang("hoan mot phan: xu_ra = 150 - 50", Long.valueOf(100L), Long.valueOf(LauDai.layVaDatLaiXu()[1]));
+            a.addXu(70L, "kiem hoan sau khi job da lay", real.Char.XU_HOAN);
+            Kiem.bang("hoan khi bo dem da ve 0: khong ghi xu_ra am", Long.valueOf(0L), Long.valueOf(LauDai.layVaDatLaiXu()[1]));
+
+            a.setxu(300L);
+            a.subXu(1000L, true, "kiem tru qua so du");
+            v = LauDai.layVaDatLaiXu();
+            Kiem.bang("subXu thieu tien: chan ve 0", Long.valueOf(0L), Long.valueOf(a.getxu()));
+            Kiem.bang("subXu thieu tien: chi dem so THAT bi tru (300, khong phai 1000)", Long.valueOf(300L), Long.valueOf(v[1]));
+            Kiem.dung("truXuNeuDu thieu tien: khong tru", !a.truXuNeuDu(10L, true, "kiem thieu"));
+            Kiem.bang("truXuNeuDu thieu tien: khong dem", Long.valueOf(0L), Long.valueOf(LauDai.layVaDatLaiXu()[1]));
+
+            b.setxu(Long.MAX_VALUE - 10L);
+            b.addXu(100L, "kiem tran");
+            Kiem.bang("addXu cham tran long: chi dem 10 xu that su cong", Long.valueOf(10L), Long.valueOf(LauDai.layVaDatLaiXu()[0]));
+
+            LauDai.dat(false);
+            a.addXu(100L, "kiem tat co");
+            a.subXu(50L, true, "kiem tat co");
+            LauDai.dat(true);
+            v = LauDai.layVaDatLaiXu();
+            Kiem.dung("sv.lau_dai tat: khong dem gi", v[0] == 0L && v[1] == 0L);
+
+            // dau-cuoi: thach dau (ky quy / tra = chuyen) chi dem phan phi bi dot
+            a.setxu(50000L);
+            b.setxu(50000L);
+            real.CharManager.instance.put(a);
+            real.CharManager.instance.put(b);
+            try {
+                Kiem.bang("thach dau ky quy", null, real.ThachDauCuoc.kyQuy(a, b, 20000L, 3, 1900000101));
+                final com.htbb.pokemon.ThachDauLogic.Chia ch = real.ThachDauCuoc.ketThuc(1900000101, 0);
+                v = LauDai.layVaDatLaiXu();
+                Kiem.dung("thach dau: chia duoc", ch != null && ch.phi > 0L);
+                Kiem.bang("thach dau: khong dem xu_vao (tien nguoi choi)", Long.valueOf(0L), Long.valueOf(v[0]));
+                Kiem.bang("thach dau: xu_ra = phi bi dot", Long.valueOf(ch == null ? -1L : ch.phi), Long.valueOf(v[1]));
+                Kiem.bang("thach dau: tong xu giam dung bang xu_ra", Long.valueOf(100000L - v[1]), Long.valueOf(a.getxu() + b.getxu()));
+            } finally {
+                real.CharManager.instance.remove(a);
+                real.CharManager.instance.remove(b);
+            }
+        } finally {
+            LauDai.layVaDatLaiXu();
+            LauDai.dat(cu);
+        }
+
+        // ma nguon: khong con dem tay trung voi addXu / subXu, khong con sua Char.xu truc tiep o nguon / ho hut
+        final String bat = docNguon("src/real/BatPokemonGame.java");
+        final String hs = docNguon("src/real/HoiSinhGame.java");
+        final String td = docNguon("src/real/TraoDoiPokemonGame.java");
+        final String cho = docNguon("src/real/ChoPokemonGame.java");
+        Kiem.sai("BatPokemonGame: het ghiXuVao tay (addXu tu dem)", bat.contains("LauDai.ghiXuVao("));
+        Kiem.sai("HoiSinhGame: het ghiXuRa tay (subXu tu dem)", hs.contains("LauDai.ghiXuRa("));
+        Kiem.sai("TraoDoiPokemonGame: het ghiXuRa tay", td.contains("LauDai.ghiXuRa("));
+        Kiem.sai("ChoPokemonGame: het ghiXuRa(phi) tay", cho.contains("LauDai.ghiXuRa(phi)"));
+        Kiem.dung("ChoPokemonGame: mua / tra tien ban la chuyen, thue dem rieng",
+                cho.contains("\"mua cho pokemon \" + idTin, Char.XU_CHUYEN)") && cho.contains("LauDai.ghiXuRa(thue)")
+                        && cho.contains("\"ban cho pokemon tin \" + t.id, Char.XU_CHUYEN)"));
+        final String ch = docNguon("src/real/Char.java");
+        Kiem.sai("Char: het this.xu += win (trung ve so)", ch.contains("this.xu += win"));
+        Kiem.sai("Char: het this.xu -= 1000000L (mua ve so)", ch.contains("this.xu -= 1000000L"));
+        Kiem.sai("Char: het cBuff.xu -= (phat skill 27)", ch.contains("cBuff.xu -="));
+        Kiem.sai("CharCapNhat: het self.xu -= 5000L (kham tu dong)", docNguon("src/real/CharCapNhat.java").contains("self.xu -= 5000L"));
+        Kiem.sai("CharSuKien: het self.xu += item.value (vong quay may man)", docNguon("src/real/CharSuKien.java").contains("self.xu += item.value"));
+        Kiem.dung("kho xu (gui / rut) van sua truc tiep, khong qua addXu/subXu (khong dem)",
+                ch.contains("this.xu -= soXu;") && ch.contains("this.xu = congChanDai(this.xu, soXu);"));
+        final String vq = docNguon("src/real/VongQuay.java");
+        Kiem.dung("VongQuay: cuoc / tra la chuyen, phi hu dem rieng", vq.contains("\"vong quay \" + lyDo, Char.XU_CHUYEN)")
+                && vq.contains("LauDai.ghiXuRa(kq.phi)"));
+        final String mk = docNguon("src/real/Market.java");
+        Kiem.dung("Market: dat gia / mua la chuyen, thue dem rieng", mk.contains("\"maket 1\", Char.XU_CHUYEN)")
+                && mk.contains("\"maket 2\", Char.XU_CHUYEN)") && mk.contains("LauDai.ghiXuRa(tax)"));
+        Kiem.dung("CharSellItem: rut tien cho la chuyen", docNguon("src/real/CharSellItem.java").contains("Char.XU_CHUYEN"));
+        Kiem.dung("OfflineMap: ky gui la chuyen", docNguon("src/real/OfflineMap.java").contains("\"offline map 2\", Char.XU_CHUYEN)"));
     }
 
     // ------------------------------------------------------------------ buoc 0

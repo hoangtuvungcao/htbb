@@ -258,7 +258,7 @@ public class CharSellItem {
     }
 
     public void getMoney(Char p) {
-        p.addXu(this.money, "charsellitem getMoney");
+        p.addXu(this.money, "charsellitem getMoney", Char.XU_CHUYEN); // tien ban / hoan dat gia o cho, da tru thue
         this.money = 0L;
         Database.instance.saveAllCharSell(this);
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
