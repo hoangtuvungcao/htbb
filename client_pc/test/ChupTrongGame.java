@@ -828,7 +828,7 @@ public class ChupTrongGame {
                 java.io.DataOutputStream o = new java.io.DataOutputStream(bo);
                 o.writeByte(game.pokemon.MoTaVatPham.KIEU);
                 o.writeUTF("64\tVật phẩm gọi thú cưỡi\tDùng để nhận thú cưỡi Tauros vĩnh viễn (vào Ô thú, cấp 1).\t1\t\n"
-                        + "103\tNguyên liệu sự kiện\tLá vàng: nguyên liệu sự kiện.\t0\tKhông dùng trực tiếp từ túi: đổi ở NPC sự kiện khi sự kiện mở.");
+                        + "103\tNguyên liệu sự kiện\tLá vàng: nguyên liệu sự kiện.\t0\tĐổi ở NPC sự kiện khi sự kiện mở (không dùng trực tiếp từ túi).");
                 java.lang.reflect.Constructor<network.Message> k0 = network.Message.class.getDeclaredConstructor(byte.class, byte[].class);
                 k0.setAccessible(true);
                 game.pokemon.DungDo.nhan(k0.newInstance(Byte.valueOf((byte) -104), bo.toByteArray()));
@@ -1591,7 +1591,7 @@ public class ChupTrongGame {
         }
         if ("tui_nguyen_lieu_su_kien".equals(ten)) {
             kiem(game.pokemon.TheVatPham.dangMo() && coChu("Nguyên liệu sự kiện") && !coChu("Hồi HP"), nhan + " nguyen lieu: loai dung, khong chu HP");
-            kiem(coChu("Không dùng được") && coChu("đổi ở NPC sự kiện"), nhan + " nguyen lieu: nut xam + ly do");
+            kiem(coChu("Không dùng được") && coChu("Đổi ở NPC sự kiện"), nhan + " nguyen lieu: nut xam + ly do");
         }
         kiemCuaSoCu(ten, nhan);
         if ("nv_chi_tiet".equals(ten)) {
