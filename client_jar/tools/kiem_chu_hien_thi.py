@@ -127,11 +127,6 @@ CHO_PHEP = [
 
 # Còn lỗi nhưng thuộc phần VẬT PHẨM / CỬA HÀNG (việc khác đang giữ): in CANH BAO, không tính lỗi. Sửa xong thì xoá dòng.
 CHO_SUA = [
-    ("ShopOnline.java", "Level:", "chợ: bộ lọc \"Level:\" -> \"Cấp:\""),
-    ("ShopOnline.java", "Theo level", "chợ: sắp xếp -> \"Theo cấp\""),
-    ("ShopOnline.java", "Bid", "chợ: tab / nút \"Bid\" -> \"Đấu giá\""),
-    ("ShopOnline.java", "bid", "chợ: \"giá bid\" -> \"giá đặt\""),
-    ("ItemInInventory.java", "Giá bid", "mô tả vật phẩm chợ: \"Giá bid\" -> \"Giá đặt\""),
 ]
 
 # mẫu lỗi đã biết: kiểm phải bắt (tự thử)

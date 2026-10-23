@@ -63,7 +63,7 @@ public final class KiemNhiemVuOn {
         Kiem.dung("goi 52 type 3 (nut Huy cua client 0.9.7) huy that nhiem vu chinh", r.contains("this.OnQuest((byte) 2, this.mainQuest.id_quest, (byte) 0)"));
         final String e = KiemSuaLogic096.doc(ENGINE);
         Kiem.dung("So tay: tra thuong co vat pham khi tui day -> tu choi (truoc bo vat pham im lang)",
-                KiemSuaLogic096.doan(e, "static String traThuong(", 2000).contains("coThuongVatPham(m) && p.isFullInventory()"));
+                KiemSuaLogic096.doan(e, "static String traThuong(", 2000).contains("p.countSlotInventory() < canO")); // 23/10/2026: du o cho moi mon (soOThuong)
         Kiem.dung("So tay: khong nhan nhiem vu phu dang lam qua NPC", e.contains("Bạn đang làm nhiệm vụ này (nhận ở NPC)."));
         Kiem.dung("ds phu NPC bo nhiem vu da nhan / xong o So tay", KiemSuaLogic096.doc(LAU_DAI).contains("NhiemVuEngine.phuCuDaDung(p, t.ma)"));
     }
