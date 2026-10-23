@@ -1376,6 +1376,17 @@ public final class ManNhanVat extends Screen {
         }
     }
 
+    /** Như chuHang nhưng tên dài ngắt sang đầu dòng 2 (trước dòng phụ) thay vì cắt - hàng trang bị trong túi. */
+    static void chuHangNgat(Graphics g, int x, int y, int w, int h, int s, String ten, String so, String phu) {
+        int xt = x + s + 9;
+        int wso = so == null ? 0 : Font.blackFont.getWidth(so) + 10;
+        GiaoDien.tenHaiDong(g, Font.blackFont, Font.arialFont, ten, phu, xt, y + 2, w - s - 16 - wso, y + 3 + Font.blackFont.getHeight(),
+                w - s - 14);
+        if (so != null) {
+            Font.blackFont.drawString(g, so, x + w - 8, y + 2, 1);
+        }
+    }
+
     static void veHangNguyenLieu(Graphics g, int x, int y, int w, int h, int i, final game.model.GemTemplate gem, final boolean khoa) {
         final game.model.GemTemp t = Res.getGemByID(gem.id);
         final String ten = t == null ? "Nguyên liệu" : t.name;
@@ -1481,12 +1492,12 @@ public final class ManNhanVat extends Screen {
         if (t != null) {
             Bang.icon(g, t.idIcon, x + 3 + s / 2, y + 3 + s / 2, s >= 26 ? s / 22f : 1f);
         }
-        String ten = t == null ? "?" : t.name;
+        String ten = t == null ? "?" : ChuDe.boCap(t.name);   // cột bên đã ghi "Cấp N": tên bỏ " · Cấp N"
         if (it.plusTemplate > 0) {
             ten = ten + " +" + it.plusTemplate;
         }
         String loai = t == null ? null : BangTrangBi.tenLoai(t.type);
-        chuHang(g, x, y, w, h, s, ten, "Cấp " + capCan(it, t), (laMac ? "Đang mặc" + (loai != null ? " · " : "") : "") + (loai == null ? "" : loai));
+        chuHangNgat(g, x, y, w, h, s, ten, "Cấp " + capCan(it, t), (laMac ? "Đang mặc" + (loai != null ? " · " : "") : "") + (loai == null ? "" : loai));
     }
 
     /**
@@ -1762,10 +1773,11 @@ public final class ManNhanVat extends Screen {
             Bang.icon(g, t.idIcon, xi + s / 2, y + 4 + s / 2, s / 22f);
         }
         int xt = xi + s + 6, wt = x + w - 6 - xt;
-        String ten = (t == null ? "?" : t.name) + (it.plusTemplate > 0 ? " +" + it.plusTemplate : "");
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, ten, wt), xt, y + 5, 0);
+        // dòng phụ ghi "Yêu cầu cấp N": tên bỏ " · Cấp N"; tên dài ngắt sang dòng 2
+        String ten = (t == null ? "?" : ChuDe.boCap(t.name)) + (it.plusTemplate > 0 ? " +" + it.plusTemplate : "");
         String loai = t == null ? null : BangTrangBi.tenLoai(t.type);
-        Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, (loai == null ? "" : loai + " · ") + "Yêu cầu cấp " + capCan(it, t), wt), xt, y + 7 + Font.blackFont.getHeight(), 0);
+        GiaoDien.tenHaiDong(g, Font.blackFont, Font.arialFont, ten, (loai == null ? "" : loai + " · ") + "Yêu cầu cấp " + capCan(it, t),
+                xt, y + 5, wt, y + 7 + Font.blackFont.getHeight(), wt);
         int yy = y + 4 + s + k;
         // so sánh: món đang mặc ở ô tương ứng
         ItemInInventory cu = null;

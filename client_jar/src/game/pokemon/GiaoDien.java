@@ -335,10 +335,47 @@ public final class GiaoDien {
         g.fillTriangle(x + 2 * d, yTam, x + 8 * d, yTam - 4, x + 8 * d, yTam + 4);
     }
 
+    /**
+     * Hàng 2 dòng (tên / dòng phụ): tên không vừa dòng 1 thì ngắt ở dấu cách cuối cùng còn vừa, phần còn lại lên đầu
+     * dòng 2 trước dòng phụ ("Lông vũ tốc độ huyền" / "thoại · Cấp 12 - Lông vũ tốc độ") - tên không bị cắt; chỉ đuôi
+     * dòng phụ có thể bị cắt. Không có dấu cách vừa dòng 1: cắt như catChu.
+     */
+    public static void tenHaiDong(Graphics g, Font f1, Font f2, String ten, String phu, int x, int y1, int w1, int y2, int w2) {
+        String d1 = ten, d2 = phu;
+        if (ten != null && f1.getWidth(ten) > w1) {
+            int k = ten.length();
+            while ((k = ten.lastIndexOf(' ', k - 1)) > 0) {
+                if (f1.getWidth(ten.substring(0, k)) <= w1) {
+                    String con = ten.substring(k + 1);
+                    d1 = ten.substring(0, k);
+                    d2 = phu == null || phu.length() == 0 ? con : con + " · " + phu;
+                    break;
+                }
+            }
+        }
+        f1.drawString(g, catChu(f1, d1, w1), x, y1, 0);
+        if (d2 != null && d2.length() > 0) {
+            f2.drawString(g, catChu(f2, d2, w2), x, y2, 0);
+        }
+    }
+
     /** Cắt chuỗi cho vừa bề ngang w (thêm ".."), dùng cho dòng mô tả trên máy hẹp. */
     public static String catChu(Font f, String s, int w) {
         if (s == null || f == null || f.getWidth(s) <= w) {
             return s;
+        }
+        int p = ChuDe.viTriCap(s);
+        if (p > 0) {
+            // tên trang bị "<Tên> · Cấp N": giữ cấp ("<Tên> CN"), hết chỗ thì cắt phần tên (ChuDe.cat)
+            String goc = s.substring(0, p), duoi = ChuDe.duoiCap(s, p);
+            if (f.getWidth(goc + duoi) <= w) {
+                return goc + duoi;
+            }
+            int k = goc.length();
+            while (k > 1 && f.getWidth(goc.substring(0, k).trim() + ".." + duoi) > w) {
+                k--;
+            }
+            return goc.substring(0, k).trim() + ".." + duoi;
         }
         int n = s.length();
         while (n > 1 && f.getWidth(s.substring(0, n) + "..") > w) {

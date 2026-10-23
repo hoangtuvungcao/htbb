@@ -95,7 +95,8 @@ export function dmVatPhamTuDong(dong: DongDataItem[]): Map<number, MucDanhMucGif
     let ten = dmMotDong(d.name)
     if ((demTen.get(ten) ?? 0) > 1) {
       const level = Math.trunc(Number(d.level ?? 0))
-      ten += level > 0 ? ` (Lv ${level})` : ` (id ${id})`
+      // Tên đã mang cấp (doi_ten_trang_bi_cap.sql: "Băng đô bạc · Cấp 20") mà vẫn trùng = biến thể cùng cấp -> id.
+      ten += level > 0 && !/ · Cấp \d+$/.test(ten) ? ` (Lv ${level})` : ` (id ${id})`
     }
     const type = Math.trunc(Number(d.type))
     if (!ra.has(type)) ra.set(type, [])

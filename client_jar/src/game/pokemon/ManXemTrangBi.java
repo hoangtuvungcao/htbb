@@ -265,14 +265,15 @@ public final class ManXemTrangBi extends Screen {
         if (it.lock == 1) {
             LuoiTui.oKhoaNho(g, x + 3 + s - 9, y + 5);
         }
-        String ten = (t == null ? "?" : t.name) + (it.plusTemplate > 0 ? " +" + it.plusTemplate : "");
+        String ten = t == null ? "?" : t.name;
         game.render.screen.Font f = game.render.screen.Font.blackFont, f2 = game.render.screen.Font.arialFont;
-        f.drawString(g, GiaoDien.catChu(f, ten, w - s - 14), x + s + 9, y + 2, 0);
         if (phu == null) {
             String loai = t == null ? null : BangTrangBi.tenLoai(t.type);
             phu = "Cấp " + ManNhanVat.capCan(it, t) + (loai != null ? " - " + loai : "");
+            ten = ChuDe.boCap(ten);   // dòng phụ đã ghi cấp: tên bỏ " · Cấp N"
         }
-        f2.drawString(g, GiaoDien.catChu(f2, phu, w - s - 14), x + s + 9, y + 3 + f.getHeight(), 0);
+        ten = ten + (it.plusTemplate > 0 ? " +" + it.plusTemplate : "");
+        GiaoDien.tenHaiDong(g, f, f2, ten, phu, x + s + 9, y + 2, w - s - 14, y + 3 + f.getHeight(), w - s - 14);
     }
 
     /** Cao hàng món (đủ 2 dòng chữ, >= cỡ chạm). */

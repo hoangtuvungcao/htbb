@@ -625,7 +625,7 @@ public final class ManCuaHang extends Screen {
                 if (t != null) {
                     Bang.icon(g, t.idIcon, x + 3 + s / 2, y + 3 + s / 2, s >= 26 ? s / 22f : 1f);
                 }
-                ten = t == null ? "?" : t.name;
+                ten = t == null ? "?" : ChuDe.boCap(t.name);   // dòng phụ ghi "Cấp N": tên bỏ " · Cấp N"
                 String loai = t == null ? null : BangTrangBi.tenLoai(t.type);
                 phu = "Cấp " + ManNhanVat.capCan(it, t) + (loai != null ? " · " + loai : "");
                 gia = t == null ? 0 : (this.tab == 1 ? t.price / 5 + t.plus * 1000 : t.price);
@@ -645,12 +645,11 @@ public final class ManCuaHang extends Screen {
         }
         boolean coGia = !(this.kieu == MAY_CHU && gia <= 0);
         int wg = coGia ? TienTe.rongGia(loaiTien, gia, Font.blackFont, true) : 0;
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, ten, w - s - 22 - wg), x + s + 9, y + 2, 0);
+        // tên dài: ngắt sang dòng 2 (trước dòng phụ) thay vì cắt
+        GiaoDien.tenHaiDong(g, Font.blackFont, Font.arialFont, ten, phu, x + s + 9, y + 2, w - s - 22 - wg,
+                y + 3 + Font.blackFont.getHeight(), w - s - 14);
         if (coGia) {
             TienTe.veGia(g, loaiTien, gia, x + w - 8 - wg, y + 2, Font.blackFont, true);
-        }
-        if (phu != null) {
-            Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, phu, w - s - 14), x + s + 9, y + 3 + Font.blackFont.getHeight(), 0);
         }
     }
 

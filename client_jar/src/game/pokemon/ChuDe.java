@@ -202,15 +202,89 @@ public final class ChuDe {
             return CAT_KQ[vai];
         }
         String ba = ChuUI.bo != null ? "\u2026" : "..";
-        int n = s.length();
-        while (n > 1 && rong(s.substring(0, n) + ba, vai) > w) {
-            n--;
+        String r;
+        int p = viTriCap(s);
+        if (p > 0) {
+            // t\u00ean trang b\u1ecb "<T\u00ean> \u00b7 C\u1ea5p N" kh\u00f4ng v\u1eeba: gi\u1eef c\u1ea5p, g\u1ecdn th\u00e0nh "<T\u00ean> CN", h\u1ebft ch\u1ed7 th\u00ec c\u1eaft ph\u1ea7n t\u00ean
+            String goc = s.substring(0, p), duoi = duoiCap(s, p);
+            if (rong(goc + duoi, vai) <= w) {
+                r = goc + duoi;
+            } else {
+                int n = goc.length();
+                while (n > 1 && rong(goc.substring(0, n).trim() + ba + duoi, vai) > w) {
+                    n--;
+                }
+                r = goc.substring(0, n).trim() + ba + duoi;
+            }
+        } else {
+            int n = s.length();
+            while (n > 1 && rong(s.substring(0, n) + ba, vai) > w) {
+                n--;
+            }
+            r = s.substring(0, n).trim() + ba;
         }
-        String r = s.substring(0, n).trim() + ba;
         CAT_KHOA[vai] = s;
         CAT_W[vai] = w;
         CAT_KQ[vai] = r;
         return r;
+    }
+
+    /** Hậu tố cấp của tên trang bị (máy chủ: doi_ten_trang_bi_cap.sql, "Băng đô bạc · Cấp 24"). */
+    static final String CAP = " · Cấp ";
+
+    /** Vị trí " · Cấp N" (N là số, sau có thể còn " +5"...) trong tên, -1 nếu không có. */
+    public static int viTriCap(String s) {
+        int p = -1;
+        if (s != null) {
+            // CLDC 1.1 không có String.lastIndexOf(String): tìm lần xuất hiện cuối bằng indexOf
+            for (int i = s.indexOf(CAP); i >= 0; i = s.indexOf(CAP, i + 1)) {
+                p = i;
+            }
+        }
+        if (p <= 0) {
+            return -1;
+        }
+        int j = p + CAP.length();
+        if (j >= s.length() || s.charAt(j) < '0' || s.charAt(j) > '9') {
+            return -1;
+        }
+        while (j < s.length() && s.charAt(j) >= '0' && s.charAt(j) <= '9') {
+            j++;
+        }
+        // chỉ là HẬU TỐ tên: sau số chỉ được hết chuỗi hoặc " +5" / " x3" (không phải "Cấp 12 - Lông vũ" của dòng phụ)
+        if (j < s.length()) {
+            if (j + 2 > s.length() || s.charAt(j) != ' ' || (s.charAt(j + 1) != '+' && s.charAt(j + 1) != 'x')) {
+                return -1;
+            }
+            for (int k = j + 2; k < s.length(); k++) {
+                if (s.charAt(k) < '0' || s.charAt(k) > '9') {
+                    return -1;
+                }
+            }
+        }
+        return p;
+    }
+
+    /** Tên bỏ hậu tố " · Cấp N" (giữ phần sau như " +5") - cho hàng đã ghi "Cấp N" ở dòng phụ / cột bên. */
+    public static String boCap(String s) {
+        int p = viTriCap(s);
+        if (p < 0) {
+            return s;
+        }
+        int e = p + CAP.length();
+        while (e < s.length() && s.charAt(e) >= '0' && s.charAt(e) <= '9') {
+            e++;
+        }
+        return s.substring(0, p) + s.substring(e);
+    }
+
+    /** " CN" + phần sau số (vd " +5") của tên có hậu tố cấp ở vị trí p (viTriCap). */
+    public static String duoiCap(String s, int p) {
+        int j = p + CAP.length(), e = j;
+        while (e < s.length() && s.charAt(e) >= '0' && s.charAt(e) <= '9') {
+            e++;
+        }
+        return " C" + s.substring(j, e) + s.substring(e);
     }
 
     private static final String[] CAT_KHOA = new String[8];

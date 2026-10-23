@@ -22,6 +22,12 @@ import javax.microedition.midlet.MIDlet;
  */
 public class ChupTrongGame {
     static int dat, hong;
+    /** Tên mẫu trang bị có hậu tố " · Cấp N" (đặt khi dựng mẫu đồ): không màn nào được cắt chúng. */
+    static String[] TEN_DO_CAP = new String[0];
+    /** Mọi tên mẫu đồ (+ bản bỏ " · Cấp N"): ở màn danh sách / thẻ đồ (MAN_TEN_DU) không tên nào được cắt. */
+    static String[] TEN_DO = new String[0];
+    static final String[] MAN_TEN_DU = {"nv_hanh_trang", "nv_chi_tiet", "nv_trang_bi", "kho_do", "cua_hang_do", "cua_hang_ban",
+        "xem_trang_bi", "xem_do_thu", "hop_vat_pham", "hop_cho", "hop_mac_do"};
 
     static void kiem(boolean ok, String ten) {
         if (ok) dat++;
@@ -420,8 +426,25 @@ public class ChupTrongGame {
         game.render.screen.WindowInfoScr.infoMainCharServer = game.render.Util.split(
                 "Thông tin chiến trường:@Sát thương trụ: Lớp giáp: 20@Giáp quái: 10@Kháng Lửa: 12%@Hút máu: 3%@", "@");
         // mẫu đồ
+        // 23/10/2026: tên trang bị trùng nhau mang hậu tố cấp (doi_ten_trang_bi_cap.sql) - 3 mẫu dài nhất thật
+        // ("Lông vũ tốc độ huyền thoại · Cấp 80" = 35 ký tự): kiemChu báo hỏng nếu tên bị cắt ("…") ở bất kỳ màn nào.
         String[] tenDo = {"Than lửa hồng", "Khăn quàng đỏ", "Băng đô gió", "Đai sức mạnh", "Vòng cổ ngọc", "Huy hiệu Đá",
-            "Găng đấm thép", "Lông vũ tốc độ", "Phiến đá Lửa", "Ruy băng vàng", "Khăn quàng xanh", "Đai bạc", "Hạt giống thần"};
+            "Găng đấm thép", "Lông vũ tốc độ huyền thoại · Cấp 12", "Phiến đá Lửa", "Ruy băng vàng", "Khăn quàng xanh",
+            "Đai bạc · Cấp 40", "Hạt giống thần chuyên gia · Cấp 17"};
+        java.util.Vector capDo = new java.util.Vector();
+        for (int i = 0; i < tenDo.length; i++) {
+            if (tenDo[i].indexOf(" · Cấp ") > 0) capDo.addElement(tenDo[i]);
+        }
+        TEN_DO_CAP = new String[capDo.size()];
+        capDo.copyInto(TEN_DO_CAP);
+        java.util.Vector tatCa = new java.util.Vector();
+        for (int i = 0; i < tenDo.length; i++) {
+            tatCa.addElement(tenDo[i]);
+            String gon = game.pokemon.ChuDe.boCap(tenDo[i]);
+            if (!gon.equals(tenDo[i])) tatCa.addElement(gon);
+        }
+        TEN_DO = new String[tatCa.size()];
+        tatCa.copyInto(TEN_DO);
         int[] loai = {3, 0, 2, 1, 9, 8, 11, 10, 12, 19, 0, 1, 4};
         game.model.ItemTemplate[] mau = new game.model.ItemTemplate[tenDo.length];
         for (int i = 0; i < mau.length; i++) {
@@ -430,7 +453,7 @@ public class ChupTrongGame {
             t.name = tenDo[i];
             t.type = (short) loai[i];
             t.level = (short) (i == 11 ? 40 : 5 + i);
-            t.idIcon = (short) (14000 + ICON_PMD[i]);
+            t.idIcon = (short) com.htbb.pokemon.IconTrangBi.goc(loai[i]);   // icon thật của ô (như data_item.xstart sau doi_icon_trang_bi.sql)
             mau[i] = t;
         }
         game.render.Res.itemTemplates.removeAllElements();
@@ -677,8 +700,6 @@ public class ChupTrongGame {
     }
 
     static java.util.Vector TOP;
-    /** icon PMD (server map/icon_pokemon/n.png = id 14000+n) cho 13 món mẫu: khăn, đai, băng đô, đá, hạt, lụa, chai... */
-    static final int[] ICON_PMD = {7, 0, 2, 3, 4, 5, 6, 7, 16, 21, 13, 1, 4};
 
     /**
      * Giả MÁY CHỦ ẢNH (lệnh -51): ô icon đang chờ -> nạp đúng tệp server sẽ gửi (server/map/icon_pokemon theo
@@ -696,6 +717,8 @@ public class ChupTrongGame {
                 java.io.File t = null;
                 if (id >= 14000 && id < 15000) {
                     t = new java.io.File(goc, "map/icon_pokemon/" + (id - 14000) + ".png");
+                } else if (id >= 15000 && id < 16000) {
+                    t = new java.io.File(goc, "map/icon_do_moi/" + (id - 15000) + ".png");   // IconDoMoi (đồ họ / vùng)
                 } else {
                     int n = -1;
                     try {
@@ -1324,6 +1347,20 @@ public class ChupTrongGame {
         int[] khungCua = new int[n];
         for (int i = 0; i < n; i++) {
             String s = game.pokemon.GhiChu.CS[i];
+            String goc = s.endsWith("…") ? s.substring(0, s.length() - 1) : s.endsWith("..") ? s.substring(0, s.length() - 2) : null;
+            boolean du = false;
+            for (int j = 0; j < MAN_TEN_DU.length; j++) du |= nhan.startsWith(MAN_TEN_DU[j] + " ");
+            if (goc == null && du) {
+                // tên gọn "<Tên>.. C12" (ChuDe.cat giữ cấp): ở màn danh sách / thẻ đồ vẫn là bị cắt
+                int c = Math.max(s.lastIndexOf(".. C"), s.lastIndexOf("… C"));
+                if (c > 0) goc = s.substring(0, c);
+            }
+            if (goc != null && goc.trim().length() >= 4) {   // "Đ.." (Đang mặc / Đổi...) không phải tên đồ
+                String[] ds = du ? TEN_DO : TEN_DO_CAP;
+                for (int j = 0; j < ds.length; j++) {
+                    if (ds[j].startsWith(goc.trim())) kiem(false, nhan + " ten trang bi bi cat: '" + s + "' (" + ds[j] + ")");
+                }
+            }
             if (htbb.pc.ChuHD.bat) {
                 String sv = thayKyHieuHD(s).replace('\u2026', '.');   // ChuHD.thayKyHieu: → − ≥ ... vẽ bằng chữ thay (như lúc chạy)
                 int u = phongKiem.canDisplayUpTo(sv);
