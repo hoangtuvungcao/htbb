@@ -244,6 +244,28 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.14 (`BAN=914`: thẻ vật phẩm đúng loại / mô tả, chữ client, thẻ lý do 2 dòng, chợ đấu giá)
+
+Client + máy chủ + SQL: `PHIEN_BAN=0.9.14-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 14`; `MIDlet-Version`
+0.9.14). Thứ tự: `nang_cap_csdl.sh` (khối `sua_mo_ta_vat_pham.sql`, `sua_ten_qa_toan_game.sql`) -> jar máy chủ -> client.
+
+1. Thẻ vật phẩm dạng thuốc (rà soát vật phẩm, main 5302cebb): máy chủ gửi **bảng mô tả** gói `-104` kiểu 9
+   (`com.htbb.pokemon.MoTaVatPham`, `real.MoTaVatPhamGame`, nhiều gói <= 64 KB) cho client `BAN >= 914`: mỗi id thuốc có
+   loại thật ("Vật phẩm gọi thú cưỡi", "Nguyên liệu sự kiện"...), mô tả, dùng được từ túi hay không + lý do. Client
+   (`game.pokemon.MoTaVatPham`, `DungDo`) dùng bảng này cho thẻ (`TheVatPham`): không còn "Bình thuốc / Hồi HP" cho Sáo gọi
+   thú cưỡi, nút "Sử dụng" chỉ hiện khi dùng được, còn lại nút xám + lý do. Client cũ không nhận kiểu 9 (giữ như 0.9.13).
+   Máy chủ chặn (không trừ) vật phẩm không dùng từ túi ở mọi bản client; Sáo gọi / trứng thú cưỡi dùng được từ túi
+   (`real.ThuCuoiTuTui`); ô nhanh chỉ nhận bình HP / PP.
+2. Lý do "không dùng từ túi" đưa **bước tiếp lên trước** ("Đổi ở NPC sự kiện khi sự kiện mở (không dùng trực tiếp từ
+   túi).") và `TheVatPham` ngắt lý do / gợi ý tối đa **2 dòng** (chiều cao thẻ tính trước bằng lượt chạy khô `veNut`):
+   phông J2ME từng cắt mất phần bước tiếp ở 7 cỡ (`ChupTrongGame -Dchup.j2me` 7 lỗi -> 0).
+3. Chữ client (rà soát hiển thị, main 9ddb1e5f + QA toàn game): chợ "Bid / Giá bid / Đặt bid" -> "Đấu giá / Giá đặt / Đặt
+   giá", "Level: / Theo level" -> "Cấp: / Theo cấp", "áo" -> "Áo"; "Không thể cưỡi." -> nói phải xuống thú đang cưỡi; Dây
+   thoát hiểm trong làng nói bước tiếp; bỏ tên chiêu cũ "Bua 8x". Kiểm: `python3 -I client_jar/tools/kiem_chu_hien_thi.py`
+   (0 lỗi, `CHO_SUA` rỗng).
+4. Máy chủ (không cần chặn theo `BAN`): giftcode / thưởng nhiệm vụ kiểm đủ ô trống trước khi trao (không mất quà), đồ thú
+   cưỡi "… Level" -> "… Level Ball" (SQL), chữ quà giftcode cũ. Kiểm: `server/test/KiemQaToanGame`, `KiemMoTaVatPham`.
+
 ### Bản 0.9.13 (`BAN=913`: Trang bị › Thú cưỡi hiện thú đang cưỡi + pet đang đi theo)
 
 Client + máy chủ (SQL KHÔNG đổi): `PHIEN_BAN=0.9.13-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 13`;
