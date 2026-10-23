@@ -137,8 +137,8 @@ public class CreateCharScr extends Screen {
         this.center = new Command("Tạo", new IAction() {
             @Override
             public void perform() {
-                if (CreateCharScr.this.tfChat.getText().length() < 4 || CreateCharScr.this.tfChat.getText().length() > 15) {
-                    Canvas.startOKDlg("Tên Pokémon phải từ 4 đến 15 ký tự");
+                if (CreateCharScr.this.tfChat.getText().length() < 4 || CreateCharScr.this.tfChat.getText().length() > 10) {
+                    Canvas.startOKDlg("Tên Pokémon phải từ 4 đến 10 ký tự");
                 } else {
                     GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, 0, 0, CreateCharScr.selectNation);
                     Canvas.startWaitDlg("Xin chờ", true);
@@ -173,7 +173,7 @@ public class CreateCharScr extends Screen {
                 // pokemon: ký tự không nhận (dấu tiếng Việt, ký hiệu): báo rõ một lần thay vì nuốt im lặng
                 if (!this.daBaoKyTu && Canvas.currentDialog == null) {
                     this.daBaoKyTu = true;
-                    Canvas.startOKDlg("Tên chỉ gồm chữ cái KHÔNG DẤU (a-z, A-Z) và số 0-9, dài 4-15 ký tự.");
+                    Canvas.startOKDlg("Tên chỉ gồm chữ cái KHÔNG DẤU (a-z, A-Z) và số 0-9, dài 4-10 ký tự.");
                 }
                 return true;
             }

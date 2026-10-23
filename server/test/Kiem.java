@@ -253,6 +253,9 @@ public final class Kiem {
         KiemDauTruong.chay(); // Dau truong Bao Boi 3v3 (D12): sat thuong, tat dinh, AI, diem, ghep, thuong, goi -109, SQL
         KiemQaToanGame.chay(); // vong QA toan game 23/10/2026: loi tim thay khi choi dau-cuoi bang bot (KichBanQaToanGame)
         KiemThuongLenCap.chay(); // 23/10/2026 bao loi: len cap qua nhiem vu / goi qua / nhay nhieu cap khong co diem tiem nang
+        KiemLocTuCam.chay(); // de xuat QA #7: tu cam ngan chi khop ca tu (loc_tu_cam_ca_tu.sql)
+        KiemDoiTenTrangBi.chay(); // de xuat QA #8: trang bi trung ten -> "<Ten> · Cap N" (doi_ten_trang_bi_cap.sql)
+        KiemIconTrangBi.chay(); // icon trang bi dung do vat: moi o chi dung icon tap duyet (doi_icon_trang_bi.sql, IconTrangBi)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

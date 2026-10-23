@@ -370,15 +370,40 @@ public class Database {
     
     
 
-    public static boolean haveBadWord(String infoCheck) {
-        infoCheck = infoCheck.toLowerCase();
-        for (int i = 0; i < Database.badWord.size(); ++i) {
-            String st = Database.badWord.get(i);
-            if (infoCheck.indexOf(st) != -1) {
-                return true;
-            }
+    /** Kieu tung dong bad_word (cot kieu: "" tu dong / "tu" ca tu / "chuoi"), cung chi so voi badWord. */
+    public static Vector<String> badWordKieu = new Vector<>();
+    /** Loc tu cam cho CHAT (che "*"): bang bad_word. Xem com.htbb.pokemon.LocTuCam. */
+    public static volatile com.htbb.pokemon.LocTuCam locChat = new com.htbb.pokemon.LocTuCam();
+    /** Loc tu cam cho TEN (nhan vat, doi ten, ten doi): bad_word + tu cam dang ky tai khoan (QuyTacDangKyDuLieu.TU_CAM). */
+    public static volatile com.htbb.pokemon.LocTuCam locTen = taoLocTen(new Vector<String>(), new Vector<String>());
+
+    /** Dung lai hai bo loc tu danh sach bad_word (goi sau loadBadWords; test goi thang). */
+    public static void dungLoc(final java.util.List<String> tu, final java.util.List<String> kieu) {
+        final com.htbb.pokemon.LocTuCam chat = new com.htbb.pokemon.LocTuCam();
+        for (int i = 0; i < tu.size(); i++) {
+            chat.them(tu.get(i), kieu != null && i < kieu.size() ? kieu.get(i) : "");
         }
-        return false;
+        locChat = chat;
+        locTen = taoLocTen(tu, kieu);
+    }
+
+    static com.htbb.pokemon.LocTuCam taoLocTen(final java.util.List<String> tu, final java.util.List<String> kieu) {
+        final com.htbb.pokemon.LocTuCam l = new com.htbb.pokemon.LocTuCam();
+        for (int i = 0; i < tu.size(); i++) {
+            l.them(tu.get(i), kieu != null && i < kieu.size() ? kieu.get(i) : "");
+        }
+        l.them(QuyTacDangKyDuLieu.TU_CAM);
+        return l;
+    }
+
+    /** Phan cua ten chua tu cam (vd "Ngu" trong "ThangNgu"), null = sach. */
+    public static String tuCamTrongTen(final String ten) {
+        return ten == null ? null : locTen.tim(ten);
+    }
+
+    /** 0.9.14: tu ngan chi khop ca tu (truoc: chuoi con - chan Nguyenvu, Shadow, Tayson...). */
+    public static boolean haveBadWord(String infoCheck) {
+        return tuCamTrongTen(infoCheck) != null;
     }
 
     public boolean isFullConnection() {
@@ -964,9 +989,22 @@ public class Database {
             conn = this.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
+            final Vector<String> kieu = new Vector<>();
+            boolean coCotKieu = true;
             while (rs.next()) {
                 Database.badWord.add(rs.getString("word").toLowerCase());
+                String k = "";
+                if (coCotKieu) {
+                    try {
+                        k = rs.getString("kieu");
+                    } catch (Exception chuaCoCot) {
+                        coCotKieu = false; // CSDL chua nap khoi loc_tu_cam_ca_tu.sql: tu dong theo do dai
+                    }
+                }
+                kieu.add(k == null ? "" : k);
             }
+            Database.badWordKieu = kieu;
+            dungLoc(Database.badWord, kieu);
         } catch (Exception e) {
             System.out.println("KHONG TIM THAY DATABASE");
         } finally {

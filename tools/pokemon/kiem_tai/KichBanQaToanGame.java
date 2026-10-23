@@ -23,6 +23,205 @@ public class KichBanQaToanGame {
         BotChucNang.dk("qa_ten_pho_bien", false, KichBanQaToanGame::tenPhoBien);
         BotChucNang.dk("qa_khoi_dong_lai_ghi", true, KichBanQaToanGame::khoiDongLaiGhi);
         BotChucNang.dk("qa_khoi_dong_lai_kiem", false, KichBanQaToanGame::khoiDongLaiKiem);
+        BotChucNang.dk("qa_moba_chua_mo", true, KichBanQaToanGame::mobaChuaMo);
+        BotChucNang.dk("qa_khoa_popup", false, KichBanQaToanGame::khoaPopup);
+        BotChucNang.dk("qa_cap_nhat", false, KichBanQaToanGame::capNhat);
+    }
+
+    /** Dang nhap tai khoan thuong voi so ban client {@code ban}: {loai -115 (-1 = khong co), banMoi, banToiThieu, vao duoc (1/0)}. */
+    static int[] dangNhapBan(int ban) throws Exception {
+        try (BotChucNang.Bot b = new BotChucNang.Bot(BotChucNang.tkThuong())) {
+            b.ketNoi();
+            int m = b.moc();
+            b.gui(1, b.user, "123456", "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + b.user, ban);
+            b.cho(x -> x.coLenh(m, 13) || x.coLenh(m, -115) && x.coLenh(m, 2) || x.dut, 6000);
+            b.bom(800);
+            int[] kq = {-1, 0, 0, b.coLenh(m, 13) ? 1 : 0};
+            for (int i = m; i < b.su.size(); i++) {
+                BotChucNang.SuKien e = b.su.get(i);
+                if (e.cmd != -115 || e.d == null) continue;
+                java.io.DataInputStream r = new java.io.DataInputStream(new java.io.ByteArrayInputStream(e.d));
+                kq[0] = r.readByte();
+                kq[1] = r.readInt();
+                for (int k = 0; k < 6; k++) r.readUTF();
+                kq[2] = r.readInt();
+            }
+            return kq;
+        }
+    }
+
+    /** Dat cau_hinh roi doi may chu nap lai (<= 70 giay) toi khi dangNhapBan(ban) cho loai mong doi. */
+    static int[] doiCauHinh(int ban, int loai) throws Exception {
+        int[] kq = null;
+        for (int i = 0; i < 9; i++) {
+            kq = dangNhapBan(ban);
+            if (kq[0] == loai) return kq;
+            Thread.sleep(9000);
+        }
+        return kq;
+    }
+
+    /**
+     * Viec QA #6: hop cap nhat khi ban may chu &gt; ban client, dau-cuoi qua cau_hinh song (khong khoi dong lai):
+     * sv.banMoiNhat = 999 -&gt; client 913 nhan -115 NHAC (1) va VAN vao duoc; sv.banToiThieu = 950 -&gt; -115 BAT_BUOC (2),
+     * khong vao duoc; ban client 999 khong nhan gi. Tra lai cau hinh cu sau khi kiem.
+     */
+    static void capNhat() throws Exception {
+        if (BotChucNang.DB.isEmpty()) { BotChucNang.ket("qa_cap_nhat", null, "can -Ddb"); return; }
+        String cuMoi = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'sv.banMoiNhat'");
+        String cuToi = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'sv.banToiThieu'");
+        try {
+            BotChucNang.sql("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES ('sv.banMoiNhat', '999', 'qa', NOW()) ON DUPLICATE KEY UPDATE gia_tri = '999', sua_luc = NOW()");
+            int[] a = doiCauHinh(913, 1);
+            BotChucNang.ket("qa_cap_nhat.nhac", a[0] == 1 && a[1] == 999 && a[3] == 1, "loai " + a[0] + " ban moi " + a[1] + " vao " + a[3]);
+            int[] c = dangNhapBan(999);
+            BotChucNang.ket("qa_cap_nhat.ban_moi_khong_nhac", c[0] == -1 && c[3] == 1, "client 999: loai " + c[0] + " vao " + c[3]);
+            BotChucNang.sql("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES ('sv.banToiThieu', '950', 'qa', NOW()) ON DUPLICATE KEY UPDATE gia_tri = '950', sua_luc = NOW()");
+            int[] b = doiCauHinh(913, 2);
+            BotChucNang.ket("qa_cap_nhat.bat_buoc", b[0] == 2 && b[2] == 950 && b[3] == 0, "loai " + b[0] + " toi thieu " + b[2] + " vao " + b[3]);
+        } finally {
+            BotChucNang.sql(cuMoi == null || cuMoi.isEmpty() ? "DELETE FROM cau_hinh WHERE khoa = 'sv.banMoiNhat'"
+                    : "UPDATE cau_hinh SET gia_tri = '" + cuMoi + "' WHERE khoa = 'sv.banMoiNhat'");
+            BotChucNang.sql(cuToi == null || cuToi.isEmpty() ? "DELETE FROM cau_hinh WHERE khoa = 'sv.banToiThieu'"
+                    : "UPDATE cau_hinh SET gia_tri = '" + cuToi + "' WHERE khoa = 'sv.banToiThieu'");
+            int[] d = doiCauHinh(913, -1);
+            BotChucNang.ket("qa_cap_nhat.tra_lai", d[0] == -1 && d[3] == 1, "sau khi tra cau hinh: loai " + d[0] + " vao " + d[3]);
+        }
+    }
+
+    /** Goi -32 (popup) id {@code id} tu moc: {chu} hoac null. */
+    static String popup(BotChucNang.Bot b, int tu, int id) {
+        for (int i = tu; i < b.su.size(); i++) {
+            BotChucNang.SuKien e = b.su.get(i);
+            if (e.cmd != -32 || e.d == null) continue;
+            try {
+                java.io.DataInputStream r = new java.io.DataInputStream(new java.io.ByteArrayInputStream(e.d));
+                r.readShort();
+                if (r.readByte() == id) return r.readUTF();
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
+    /** Dich cua cong {@code g} cua ban do {@code mapId} theo bang 105 cua bot: {map, x, y} hoac null (nhu BotXuyenSuot.canh). */
+    static int[] dichCong(BotChucNang.Bot b, int mapId, int[] g) {
+        if (b.viTriMap == null || b.maIdNhom == null) return null;
+        for (int i = 0; i < b.maIdNhom.length; i++) {
+            for (int k = 0; k < b.maIdNhom[i].length; k++) {
+                if (b.maIdNhom[i][k] != mapId) continue;
+                int n = b.idArr[i];
+                if (n < 0 || n >= b.viTriMap.length || g[2] >= b.viTriMap[n].length) return null;
+                short[] loc = b.viTriMap[n][g[2]];
+                int kk = Math.min(k, loc.length / 3 - 1);
+                if (loc[kk * 3] < 0) kk = 0;
+                return loc[kk * 3] < 0 ? null : new int[]{loc[kk * 3], loc[kk * 3 + 1], loc[kk * 3 + 2]};
+            }
+        }
+        return null;
+    }
+
+    /** Di bo toi o truoc cong sang {@code toM} roi buoc qua (goi 12); {moc truoc goi 12, moc truoc -500} hoac null. */
+    static int[] quaCong(BotChucNang.Bot b, BotChucNang.BanDo bd, int toM) throws Exception {
+        for (int[] g : bd.cong) {
+            int[] d = dichCong(b, b.mapId, g);
+            if (d == null || d[0] != toM) continue;
+            int[] dung = bd.oTruocCong(g[0], g[1]);
+            if (dung == null || !b.diDuong(bd, dung[0], dung[1])) continue;
+            int m = b.moc();
+            b.gui(12, (short) d[0], (short) d[1], (short) d[2]);
+            b.cho(x -> x.coLenh(m, 12) || x.dut, 6000);
+            int m500 = b.moc();
+            b.gui(12, (short) -500, (short) 0, (short) 0);
+            b.bom(1500);
+            b.px = b.tx * 16 + 8;
+            b.py = b.ty * 16 + 8;
+            return new int[]{m, m500};
+        }
+        return null;
+    }
+
+    /**
+     * Viec QA #6 (chua kiem dau-cuoi): nhan vat THUONG (khong GM, khong duoc mien khoa) DI BO qua cong Pallet -&gt;
+     * Cerulean (khoa: cua ai CA-01.2 + cap 3). Mong doi: o lai Pallet; hop 95 "Nhận cửa ải ngay?" toi SAU khi client
+     * bao nap lai map (-500); "Đồng ý" nhan cua ai; buoc lai ngay trong 10 giay chi co the nhanh (khong hop moi); sau
+     * 10 giay hop hien lai ("Xem tiến độ?").
+     */
+    static void khoaPopup() throws Exception {
+        // tai khoan + nhan vat MOI (khong GM): roi san 105 ve Pewter, DI BO qua cong sang Pallet roi toi cong Cerulean
+        // cap 3 (dieu kien nhan cua ai CA-01.2 - cap 1 chi co the nhanh "Cần đạt cấp 3 để nhận", khong hop): mot bot GM
+        // KHAC dat cap cho nhan vat thu (chuan bi); nhan vat thu van la nguoi choi thuong, tu di bo, khong duoc mien khoa
+        BotChucNang.Bot dung = KichBanHuongDan.botMoiTinh("kp");
+        KichBanHuongDan.roiSan(dung);
+        try (BotChucNang.Bot gm = BotChucNang.botMoi(0)) {
+            gm.gm("slv " + dung.ten + " 5 0", 1500);
+        }
+        dung.bom(1500);
+        dung.lamMoi();
+        dung.px = dung.tx * 16 + 8;
+        dung.py = dung.ty * 16 + 8;
+        if (dung.lv < 3) { BotChucNang.ket("qa_khoa_popup.cap", false, "slv khong doi cap: lv " + dung.lv); dung.close(); return; }
+        try (BotChucNang.Bot b = dung) {
+            String da = "lv " + b.lv;
+            if (b.mapId != 1) {
+                BotChucNang.BanDo bd0 = BotChucNang.BanDo.nap(b.mapLoad);
+                int tu = b.mapId;
+                if (bd0 == null || quaCong(b, bd0, 1) == null || b.mapId != 1) {
+                    BotChucNang.ket("qa_khoa_popup.vao", false, "khong di bo tu map " + tu + " sang Pallet: map " + b.mapId);
+                    return;
+                }
+                b.px = b.tx * 16 + 8;
+                b.py = b.ty * 16 + 8;
+            }
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            b.bom(1000);
+            int[] m = quaCong(b, bd, 4);
+            if (m == null) { BotChucNang.ket("qa_khoa_popup.di_bo", false, "khong di bo toi cong sang Cerulean tu " + b.px / 16 + "," + b.py / 16); return; }
+            BotChucNang.ket("qa_khoa_popup.o_lai", b.mapId == 1, "sau khi buoc qua cong: map " + b.mapId);
+            // hop phai toi SAU khi client bao nap lai map xong (-500): GameScr.onMap dong moi hop dang mo
+            String hop = popup(b, m[1], 95);
+            boolean truoc500 = false;
+            for (int i = m[0]; i < m[1]; i++) if (b.su.get(i).cmd == -32) truoc500 = true;
+            BotChucNang.ket("qa_khoa_popup.hop_sau_500", hop != null && !truoc500, hop == null ? "khong co hop 95: " + b.chuTu(m[0]) : hop.replace('\n', ' '));
+            BotChucNang.ket("qa_khoa_popup.hoi_nhan", hop != null && hop.contains("Nhận cửa ải ngay"), String.valueOf(hop));
+            int md = b.moc();
+            b.gui(-32, (short) b.actor, (byte) 95, "", (byte) 1); // Đồng ý
+            b.bom(1500);
+            String c = b.chuTu(md);
+            BotChucNang.ket("qa_khoa_popup.dong_y", !c.isEmpty(), c);
+            // buoc lai ngay (trong 10 giay): khong hop moi
+            int[] m2 = quaCong(b, bd, 4);
+            String hop2 = m2 == null ? null : popup(b, m2[0], 95);
+            BotChucNang.ket("qa_khoa_popup.cho_10s", m2 != null && hop2 == null && b.mapId == 1, m2 == null ? "khong buoc lai duoc" : "hop2=" + hop2 + " | " + b.chuTu(m2[0]));
+            Thread.sleep(10500);
+            int[] m3 = quaCong(b, bd, 4);
+            String hop3 = m3 == null ? null : popup(b, m3[0], 95);
+            BotChucNang.ket("qa_khoa_popup.hien_lai", hop3 != null, "sau 10 giay: " + (hop3 == null ? (m3 == null ? "khong buoc lai duoc" : b.chuTu(m3[0])) : hop3.replace('\n', ' ')) + " (" + da + ")");
+        }
+    }
+
+    /**
+     * Bao cao QA #10: GM "mto" vao chien truong MOBA (map 40) khi chua co tran -&gt; truoc nem ArrayIndexOutOfBounds o
+     * MapChienTruongMoba.playerJoin (bot ket o ban do "ma"); nay may chu tu choi, bao ro, bot o lai ban do cu va van
+     * choi tiep duoc.
+     */
+    static void mobaChuaMo() throws Exception {
+        try (BotChucNang.Bot b = BotChucNang.botMoi(0)) {
+            KichBanDS.veLang(b);
+            int mapTruoc = b.mapId;
+            int m = b.moc();
+            b.gui(27, "mto 40 20 20");
+            b.bom(2500);
+            String c = b.chuTu(m);
+            BotChucNang.ket("qa_moba_chua_mo.bao", c.contains("Chiến trường chưa mở trận"), c);
+            b.lamMoi();
+            BotChucNang.ket("qa_moba_chua_mo.o_lai", b.mapId == mapTruoc, "map " + mapTruoc + " -> " + b.mapId);
+            String tep = System.getProperty("log", "");
+            String log = tep.isEmpty() || !new java.io.File(tep).isFile() ? "" : new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(tep)), java.nio.charset.StandardCharsets.UTF_8);
+            BotChucNang.ket("qa_moba_chua_mo.khong_loi", !log.contains("MapChienTruongMoba.playerJoin"), "log server khong co loi playerJoin");
+            boolean diDuoc = b.den(1, 30, 30);
+            BotChucNang.ket("qa_moba_chua_mo.di_tiep", diDuoc, "mto 1 30 30 sau do: map " + b.mapId);
+        }
     }
 
     /** So mon template {@code tpl} trong tui. */
@@ -411,26 +610,47 @@ public class KichBanQaToanGame {
     }
 
     /**
-     * Ten nhan vat pho bien bi bad_word chan theo CHUOI CON ("ngu" trong Nguyen, "phong", "ad" trong Shadow / Gyarados):
-     * ghi lai ket qua (de xuat cho chu game, KHONG phai FAIL cua kich ban).
+     * Ten nhan vat (de xuat QA #7, sua 0.9.14 - LocTuCam): ten that pho bien PHAI tao duoc (truoc bi bad_word chan theo
+     * CHUOI CON: "ngu" trong Nguyen, "phong", "tay", "ad" trong Shadow / Gyarados / Kadabra); ten tuc / bien the PHAI bi
+     * chan voi cau bao noi ro phan bi cam ("Tên có từ không phù hợp: «…». Hãy chọn tên khác.").
      */
     static void tenPhoBien() throws Exception {
         String tk = BotChucNang.tkThuong();
+        StringBuilder sb = new StringBuilder();
+        boolean hetOk = true;
+        for (String ten : new String[]{"Nguyenvu", "Phongvu", "Shadow", "Gyarados", "Kadabra", "Tayson", "Bichvan"}) {
+            String[] kq = taoTen(tk, ten);
+            boolean ok = kq[0] != null;
+            hetOk &= ok;
+            sb.append(ten).append(ok ? "=OK " : "=chan(" + kq[1] + ") ");
+        }
+        BotChucNang.ket("qa_ten_pho_bien.ten_that", hetOk, sb.toString());
+        sb.setLength(0);
+        boolean hetChan = true;
+        for (String ten : new String[]{"ThangNgu", "Ditme", "D1tme99", "Vcl2k", "Admin01"}) {
+            String[] kq = taoTen(tk, ten);
+            boolean chan = kq[0] == null && kq[1].contains("Tên có từ không phù hợp: «");
+            hetChan &= chan;
+            sb.append(ten).append(chan ? "=chan(" + kq[1] + ") " : "=LOT ");
+        }
+        BotChucNang.ket("qa_ten_pho_bien.ten_tuc", hetChan, sb.toString());
         BotChucNang.sql("DELETE c FROM tob_char c JOIN account.team_user u ON u.id = c.userId WHERE u.username = '" + tk + "'");
+    }
+
+    /** Tao nhan vat {@code ten} bang phien moi (tai khoan da xoa het nhan vat): {ten neu tao duoc, chu server bao}. */
+    static String[] taoTen(String tk, String ten) throws Exception {
+        BotChucNang.sql("DELETE c FROM tob_char c JOIN account.team_user u ON u.id = c.userId WHERE u.username = '" + tk + "'");
+        BotChucNang.sql("DELETE FROM tob_char WHERE charname = '" + ten.toLowerCase() + "'");
         try (BotChucNang.Bot b = new BotChucNang.Bot(tk)) {
             String l = b.dangNhap("123456");
-            if (l != null) { BotChucNang.ket("qa_ten_pho_bien", false, l); return; }
-            StringBuilder sb = new StringBuilder();
-            for (String ten : new String[]{"Nguyenvu", "Phongvu", "Shadow", "Gyarados", "Kadabra", "Tayson", "Bichvan"}) {
-                int m = b.moc();
-                b.gui(14, ten, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
-                b.cho(x -> x.coLenh(m, 13) || x.doiChu(m, 0, "") != null, 4000);
-                boolean ok = b.dsTen.contains(ten);
-                sb.append(ten).append(ok ? "=OK " : "=chan(" + b.chuTu(m).trim() + ") ");
-                if (ok) break;
-                Thread.sleep(1200);
-            }
-            BotChucNang.ket("qa_ten_pho_bien", null, sb.toString());
+            if (l != null) return new String[]{null, "dang nhap: " + l};
+            int m = b.moc();
+            b.gui(14, ten, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
+            b.cho(x -> x.coLenh(m, 13) || x.doiChu(m, 0, "") != null, 4000);
+            boolean ok = b.dsTen.stream().anyMatch(t -> t.equalsIgnoreCase(ten));
+            return new String[]{ok ? ten : null, b.chuTu(m).trim()};
+        } finally {
+            Thread.sleep(1200);
         }
     }
 }

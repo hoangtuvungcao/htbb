@@ -58,9 +58,10 @@ public class CreateCharHandler implements ICommandHandler {
             if (nation == 2) {
                 session.sendMessage(MessageCreator.createServerAlertMessage("Lãnh thổ Huyền Vũ đã đóng. Vui lòng chọn lãnh thổ Thanh Long hoặc Hắc Hổ.", ""));
             } else {
-                if (!checkInfo(charName) || Database.haveBadWord(charName) || charName.length() > 10 || charName.length() < 4) {
+                final String loiTen = loiTen(charName);
+                if (loiTen != null) {
                     try {
-                        session.sendMessage(MessageCreator.createServerAlertMessage("Tên nhân vật không hợp lệ", ""));
+                        session.sendMessage(MessageCreator.createServerAlertMessage(loiTen, ""));
                         return;
                     } catch (Exception var14) {
                     }
@@ -82,6 +83,21 @@ public class CreateCharHandler implements ICommandHandler {
                 }
             }
         }
+    }
+
+    /** Ly do ten Pokemon (nhan vat) khong dung duoc, null = dung duoc. Noi ro phan bi cam (0.9.14, QA #7). */
+    public static String loiTen(final String charName) {
+        if (charName == null || charName.length() < 4 || charName.length() > 10) {
+            return "Tên Pokémon phải từ 4 đến 10 ký tự.";
+        }
+        if (!checkInfo(charName)) {
+            return "Tên Pokémon chỉ gồm chữ cái không dấu (a-z) và số, không có dấu cách.";
+        }
+        final String cam = Database.tuCamTrongTen(charName);
+        if (cam != null) {
+            return com.htbb.pokemon.LocTuCam.cauBao(cam);
+        }
+        return null;
     }
 
     public static boolean checkInfo(String userName) {

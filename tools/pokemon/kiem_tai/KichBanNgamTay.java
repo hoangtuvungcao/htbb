@@ -12,6 +12,8 @@ import java.util.List;
  *   nt_khoa     A (908) gui lenh 6 khoa muc tieu -> bi tu choi (chu "Kéo chiêu"), B khong mat HP
  *   nt_cu       C (client 907) gui lenh 6 vao B dung huong ngang -> doi thanh ban 4 phia (trung) + nhac cap nhat 0.9.8;
  *               C khong nhan goi -113
+ *   nt_khoang_cach  B di bo (khong GM) toi 1..6 o quanh A, cung khu; trung khi va chi khi trong tam chieu (bang -113)
+ *   nt_an_toan  A dang PK vao thi tran -> tat ngam PvP + bao "Khu an toàn, không đánh người được."
  *   nt_tu_dong  A (dang PK) xin bat Tu dong danh -> bi tu choi ("Tự động đánh không dùng trong trận giữa người chơi")
  *   nt_pve      bot KHONG PK ("Ngam thu cong" o PvE): ban -113 vao Pokemon hoang da gan nhat -> trung (goi 9 / 90 / 30
  *               nhu duong khoa muc tieu cu; -Dnt.doiChieu=true in them phan hoi cua lenh 9 de so)
@@ -110,7 +112,10 @@ public final class KichBanNgamTay {
         A = botBan(2, 908);
         B = botBan(2, 908);
         A.den(MAP, TX, TY);
-        B.den(MAP, TX + 3, TY);
+        // cung ban do, cung khu: B dung CANH A (1 o = 16 px) - trong tam chieu 0 cua moi lop (tam goc 20..90 px + ban kinh
+        // than 10). Truoc day B cach 3 o (48 px) > tam chieu 0 cua lop nay (30 + 10): truot dung luat, khong phai loi game
+        // (bao cao QA #11). Khoang cach / goc khac: nt_khoang_cach.
+        B.den(MAP, TX + 1, TY);
         coPk(A, 14);
         coPk(B, 15);
         A.bom(800);
@@ -143,8 +148,16 @@ public final class KichBanNgamTay {
         b.close();
     }
 
+    /** B di bo ve CANH A (o ben phai) - cac kich ban dung chung A, B (nt_khoang_cach de B o xa). */
+    static void veCanh() throws Exception {
+        BotChucNang.BanDo bd = BotChucNang.BanDo.nap(B.mapLoad);
+        if (bd != null && (B.px / 16 != A.px / 16 + 1 || B.py / 16 != A.py / 16)) B.diDuong(bd, A.px / 16 + 1, A.py / 16);
+        B.bom(600);
+    }
+
     static void ban() throws Exception {
         chuanBi();
+        veCanh();
         A.bom(500);
         B.bom(500);
         int[] pa = viTri(A), pb = viTri(B);
@@ -170,6 +183,125 @@ public final class KichBanNgamTay {
         int dem = 0;
         for (int i = mb3; i < B.su.size(); i++) if (B.su.get(i).cmd == 6) dem++;
         BotChucNang.ket("nt.ban.hoi_chieu", dem <= 1, "hai phat lien nhau: " + dem + " lan trung (phat 2 con hoi chieu)");
+    }
+
+    /** Bang chieu (-113 loai 2) cua bot: chieu -> {kieu, tam, rong, tocDo, goc, toiDa}; rong = chua nhan. */
+    static java.util.Map<Integer, int[]> bangChieu(BotChucNang.Bot b) {
+        java.util.Map<Integer, int[]> m = new java.util.HashMap<>();
+        byte[] d = null;
+        for (int i = b.su.size() - 1; i >= 0 && d == null; i--) {
+            BotChucNang.SuKien e = b.su.get(i);
+            if (e.cmd == -113 && e.d != null && e.d.length > 1 && e.d[0] == 2) d = e.d;
+        }
+        if (d == null) return m;
+        try {
+            DataInputStream r = new DataInputStream(new ByteArrayInputStream(d));
+            r.readByte();
+            int n = r.readByte();
+            for (int i = 0; i < n; i++) {
+                int s = r.readByte(), kieu = r.readByte(), tam = r.readShort(), rong = r.readShort(), toc = r.readShort();
+                int goc = (r.readByte() & 255) * 3, toiDa = r.readByte();
+                m.put(s, new int[]{kieu, tam, rong, toc, goc, toiDa});
+            }
+        } catch (Exception ignored) {
+        }
+        return m;
+    }
+
+    /**
+     * nt_khoang_cach (bao cao QA #11): A dung yen, B DI BO (lenh 4, khong GM) toi cac o cach A 1..6 o theo 8 huong tren
+     * CUNG ban do / CUNG khu (A phai thay B di chuyen - goi 4); A keo ngam thang vao B (-113, chieu 0). Trung khi va chi
+     * khi khoang cach &lt;= tam + ban kinh than (BanHuong.BAN_KINH_THAN = 10), tam lay tu bang chieu may chu gui (-113
+     * loai 2) - dung vach ngam client ve. Diem sat bien (lech &lt;= 4 px) chi ghi lai.
+     */
+    static void khoangCach() throws Exception {
+        chuanBi();
+        A.bom(500);
+        int[] t0 = bangChieu(A).get(0);
+        if (t0 == null) {
+            BotChucNang.ket("nt.kc.bang_chieu", false, "khong nhan bang chieu -113 loai 2");
+            return;
+        }
+        int tam = t0[1], kieu = t0[0], goc = t0[4];
+        BotChucNang.ket("nt.kc.bang_chieu", tam > 0, "chieu 0: kieu " + kieu + " tam " + tam + " rong " + t0[2] + " goc " + goc);
+        BotChucNang.BanDo bd = BotChucNang.BanDo.nap(B.mapLoad);
+        int ax = A.px, ay = A.py;
+        // B buoc ra mot o truoc (A nhan goi 4 cua B - B moi den bang GM nen A chua chac co vi tri)
+        if (bd != null) {
+            for (int[] o : new int[][]{{0, 3}, {0, -3}, {-3, 0}, {3, 3}, {-3, -3}, {2, 0}}) {
+                if (bd.diDuoc(ax / 16 + o[0], ay / 16 + o[1]) && B.diDuong(bd, ax / 16 + o[0], ay / 16 + o[1])) break;
+            }
+            B.bom(600);
+        }
+        int[][] huong = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+        int dung = 0, sai = 0, sat = 0, khongThay = 0, boQua = 0;
+        StringBuilder loi = new StringBuilder(), ds = new StringBuilder();
+        long banCuoi = 0;
+        for (int k = 1; k <= 6; k++) {
+            for (int hi = 0; hi < huong.length; hi += (k <= 3 ? 1 : 2)) {
+                int tx = ax / 16 + huong[hi][0] * k, ty = ay / 16 + huong[hi][1] * k;
+                if (bd == null || !bd.diDuoc(tx, ty) || !B.diDuong(bd, tx, ty)) {
+                    boQua++;
+                    continue;
+                }
+                // A phai thay B o cho moi (cung khu): goi 4 cua B toi A
+                final int bx = tx * 16 + 8, by = ty * 16 + 8;
+                A.cho(x -> { int[] v = x.nguoi.get(B.actor); return v != null && Math.abs(v[0] - bx) <= 8 && Math.abs(v[1] - by) <= 8; }, 3000);
+                int[] v = A.nguoi.get(B.actor);
+                if (v == null || Math.abs(v[0] - bx) > 8 || Math.abs(v[1] - by) > 8) {
+                    khongThay++;
+                    loi.append(" khong_thay@").append(k).append('/').append(hi).append(" (B o ").append(B.px).append(',').append(B.py)
+                            .append(", A thay ").append(v == null ? "-" : v[0] + "," + v[1]).append(", mong ").append(bx).append(',').append(by).append(')');
+                    continue;
+                }
+                long cho = 2600 - (System.currentTimeMillis() - banCuoi);
+                if (cho > 0) A.bom((int) cho);
+                double kc = Math.sqrt((double) (v[0] - ax) * (v[0] - ax) + (double) (v[1] - ay) * (v[1] - ay));
+                boolean mong = kc <= tam + 10;
+                int mb = B.moc();
+                short[] h = huong(new int[]{ax, ay}, v, false);
+                A.gui(-113, (byte) 0, (byte) 0, (short) ax, (short) ay, h[0], h[1]);
+                banCuoi = System.currentTimeMillis();
+                B.bom(1300);
+                int[] t = goi6(B, mb, B.actor);
+                boolean trung = t != null && t[0] == A.actor;
+                ds.append(String.format(" %d/%d:%.0fpx=%s", k, hi, kc, trung ? "T" : "-"));
+                if (Math.abs(kc - (tam + 10)) <= 4) sat++;
+                else if (trung == mong) dung++;
+                else {
+                    sai++;
+                    loi.append(String.format(" SAI %d/%d %.0fpx %s", k, hi, kc, trung ? "trung" : "truot"));
+                }
+                if (t != null && t[4] <= 0) {
+                    BotChucNang.ket("nt.kc.b_guc", null, "B guc sau " + dung + " phat; dung lai");
+                    break;
+                }
+            }
+        }
+        BotChucNang.ket("nt.kc.cung_khu", khongThay == 0 && dung > 0, "A thay B di bo: " + (dung + sai + sat) + " vi tri, khong thay " + khongThay + ", bo qua (o chan) " + boQua + loi);
+        BotChucNang.ket("nt.kc.dung_tam", sai == 0 && dung >= 8, "dung luat " + dung + ", sai " + sai + ", sat bien " + sat + " (tam " + tam + "+10)" + ds);
+    }
+
+    /**
+     * nt_an_toan: A dang bat PK vao thi tran (Pewter, map 0 - data_map_ten.loai thi_tran): may chu tat che do ngam PvP
+     * (-113 loai 1 pvp=0) va bao "Khu an toàn, không đánh người được." (truoc: bao "Kéo chiêu để ngắm" roi ban khong trung
+     * ai - nguoi choi tuong PvP hong).
+     */
+    static void anToan() throws Exception {
+        chuanBi();
+        int m = A.moc();
+        A.den(0, 30, 30);
+        A.bom(2500);
+        String c = chu(A, m);
+        byte[] cd = null;
+        for (int i = A.su.size() - 1; i >= m && cd == null; i--) {
+            BotChucNang.SuKien e = A.su.get(i);
+            if (e.cmd == -113 && e.d != null && e.d.length > 1 && e.d[0] == 1) cd = e.d;
+        }
+        BotChucNang.ket("nt.an_toan.bao", c.contains("Khu an toàn, không đánh người được"), c);
+        BotChucNang.ket("nt.an_toan.tat_ngam", cd != null && cd[1] == 0, cd == null ? "khong co -113 loai 1" : "pvp=" + cd[1]);
+        A.den(MAP, TX, TY);
+        A.bom(1500);
     }
 
     static void khoa() throws Exception {
@@ -270,9 +402,11 @@ public final class KichBanNgamTay {
         BotChucNang.dk("nt_khoa", true, KichBanNgamTay::khoa);
         BotChucNang.dk("nt_cu", true, KichBanNgamTay::cu);
         BotChucNang.dk("nt_tu_dong", true, KichBanNgamTay::tuDong);
+        BotChucNang.dk("nt_khoang_cach", true, KichBanNgamTay::khoangCach);
+        BotChucNang.dk("nt_an_toan", true, KichBanNgamTay::anToan);
         List<String> chon = new ArrayList<>();
         for (int i = 3; i < a.length; i++) chon.add(a[i]);
-        if (chon.isEmpty()) chon.addAll(List.of("nt_che_do", "nt_ban", "nt_khoa", "nt_cu", "nt_tu_dong", "nt_pve"));
+        if (chon.isEmpty()) chon.addAll(List.of("nt_che_do", "nt_ban", "nt_khoang_cach", "nt_khoa", "nt_cu", "nt_tu_dong", "nt_an_toan", "nt_pve"));
         String[] b = new String[3 + chon.size()];
         b[0] = a[0];
         b[1] = a[1];

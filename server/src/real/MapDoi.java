@@ -1096,6 +1096,11 @@ class MapDoi {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Tên đội không hợp lệ.", ""));
                 return;
             }
+            final String camDoi = Database.tuCamTrongTen(clanName);
+            if (camDoi != null) {
+                player.sendMessage(MessageCreator.createServerAlertMessage(com.htbb.pokemon.LocTuCam.cauBao(camDoi), ""));
+                return;
+            }
 
             if (!Database.instance.checkClanName(clanName)) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Tên đội đã tồn tại. Xin chọn tên đội khác", ""));

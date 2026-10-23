@@ -1060,49 +1060,42 @@ public class BadWord {
         return info.trim().replaceAll("\\s+", " ");
     }
 
-    public static String checkBadWord2(String info) {
-        // 0.9.8: giu chu hoa / thuong cua nguoi choi; tu cam thay theo nghia den, khong phan biet hoa thuong (truoc: lowercase
-        // ca tin + regex - ".sc" khop moi "?sc")
-        info = replaceSpaceString(info);
+    // 0.9.14: so khop qua com.htbb.pokemon.LocTuCam - tu ngan (<= 3 chu co nguyen am, vd "dis", "chó", "vú") chi khop
+    // CA TU (truoc: chuoi con - "đi sớm" -> "disom" chua "dis" la chan ca tin, "chóng" chua "chó"); tu dai van chuoi con
+    // tren ban bo dau / bo ky tu (chong lach "d.i.t.m.e"). Bo loc dung lai khi mang list (DatabaseXepHang) doi.
+    private static String[] daDungList;
+    private static com.htbb.pokemon.LocTuCam locChan;
+    private static String[] daDungList2;
+    private static com.htbb.pokemon.LocTuCam locChe;
 
-        for (int i = 0; i < list2.length; i++) {
-            if (info.toLowerCase().indexOf(list2[i]) > -1) {
-                info = info.replaceAll("(?iu)" + java.util.regex.Pattern.quote(list2[i]), "@");
-            }
+    static synchronized com.htbb.pokemon.LocTuCam locChan() {
+        if (locChan == null || daDungList != list) {
+            daDungList = list;
+            locChan = new com.htbb.pokemon.LocTuCam().them(list).them(listvn);
         }
+        return locChan;
+    }
 
-        return info;
+    static synchronized com.htbb.pokemon.LocTuCam locChe() {
+        if (locChe == null || daDungList2 != list2) {
+            daDungList2 = list2;
+            locChe = new com.htbb.pokemon.LocTuCam().them(list2);
+        }
+        return locChe;
+    }
+
+    public static String checkBadWord2(String info) {
+        // 0.9.8: giu chu hoa / thuong cua nguoi choi; tu cam thay theo nghia den, khong phan biet hoa thuong
+        return locChe().che(replaceSpaceString(info), "@");
     }
 
     public static boolean ischeckBadWord2(String info) {
-        info = replaceSpaceString(info.toLowerCase());
-
-        for (int i = 0; i < list2.length; i++) {
-            if (info.indexOf(list2[i]) > -1) {
-                return true;
-            }
-        }
-
-        return false;
+        return locChe().co(replaceSpaceString(info));
     }
 
+    /** true = tin co tu tuc tiu (chan ca tin). */
     public static boolean checkBadWord(String info) {
-        String infoVN = info;
-        info = replaceString(removeAccent(info).toLowerCase());
-
-        for (int i = 0; i < list.length; i++) {
-            if (info.indexOf(list[i]) > -1) {
-                return true;
-            }
-        }
-
-        for (int ix = 0; ix < listvn.length; ix++) {
-            if (infoVN.indexOf(listvn[ix]) > -1) {
-                return true;
-            }
-        }
-
-        return false;
+        return info != null && locChan().co(info);
     }
 
     public static String removeAccent(String s) {

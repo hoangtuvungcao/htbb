@@ -66,6 +66,8 @@ public final class BanHuongGame {
     static final int LENH_DANH_QUAI = 9;
 
     public static final String BAO_KEO = "Trận đấu giữa người chơi: không tự nhắm. Kéo chiêu để ngắm, thả tay để bắn.";
+    /** Thi tran / lang (LuatPkGame.vungAnToan): khong danh nguoi duoc - khong vao che do ngam PvP (bao cao QA #11). */
+    public static final String BAO_AN_TOAN = "Khu an toàn, không đánh người được.";
     public static final String BAO_CAP_NHAT = "Bản 0.9.8 mới kéo chiêu ngắm được trong PvP. Bản cũ chỉ bắn thẳng theo hướng Pokémon đang quay - hãy cập nhật.";
 
     // ---- chi so (trang quan tri / log) ----
@@ -227,6 +229,8 @@ public final class BanHuongGame {
         volatile long baoCuLuc;
         volatile long nghiVanLuc;
         volatile boolean ngamTayPve;
+        /** Ban do da bao "Khu an toàn" (moi lan vao mot ban do an toan bao mot lan), -1 = chua. */
+        volatile int mapBaoAnToan = -1;
     }
 
     private static final WeakHashMap<Char, TrangThai> TT = new WeakHashMap<Char, TrangThai>();
@@ -319,6 +323,9 @@ public final class BanHuongGame {
         if (p == null || !bat()) {
             return null;
         }
+        if (khuAnToan(p)) {
+            return null; // thi tran / lang: khong ai danh duoc ai -> khong ngam PvP, khong cam Tu dong danh
+        }
         if (p.isKiller || p.pk != 0) {
             return "đang bật PK";
         }
@@ -338,6 +345,15 @@ public final class BanHuongGame {
             }
         }
         return null;
+    }
+
+    /** Dang dung trong thi tran / lang an toan (khong phai san PvP / chien thanh). */
+    static boolean khuAnToan(final Char p) {
+        try {
+            return p.map != null && LuatPkGame.vungAnToan(p.map) && !LuatPkGame.vungPvp(p.map, p);
+        } catch (final Exception e) {
+            return false;
+        }
     }
 
     public static boolean trongPvp(final Char p) {
@@ -462,6 +478,14 @@ public final class BanHuongGame {
                 bao(p, BAO_CAP_NHAT);
             }
             t.cheDoDaGui = cheDo;
+            // dang bat PK (hoac vua giao chien) ma vao thi tran: noi ro vi sao khong danh duoc ai (mot lan moi ban do)
+            final boolean anToan = (p.isKiller || p.pk != 0) && khuAnToan(p);
+            if (anToan && t.mapBaoAnToan != p.mapID) {
+                t.mapBaoAnToan = p.mapID;
+                bao(p, BAO_AN_TOAN);
+            } else if (!anToan && t.mapBaoAnToan != -1 && t.mapBaoAnToan != p.mapID) {
+                t.mapBaoAnToan = -1;
+            }
             if (cheDo == 1 && TuDongGame.dangTuDong(p)) {
                 TuDongGame.dungViPvp(p);
             }
@@ -516,6 +540,14 @@ public final class BanHuongGame {
             final int chieu = dis.readByte();
             final Char c = map.getChar(idMt);
             final TrangThai t = tt(p);
+            if (khuAnToan(p)) {
+                // thi tran: khong ai danh duoc ai - bao ro (khong ep vao che do ngam PvP)
+                if (bay - t.baoKeoLuc > 3000L) {
+                    t.baoKeoLuc = bay;
+                    bao(p, BAO_AN_TOAN);
+                }
+                return true;
+            }
             if (clientMoi(p)) {
                 SO_KHOA_MUC_TIEU_CHAN.incrementAndGet();
                 ghiGiaoChien(p, null, bay); // y dinh danh nguoi: vao che do ngam ngay
@@ -848,15 +880,33 @@ public final class BanHuongGame {
                 // do cho lan kiem roi tra lai (chi tra khi chua ai doi trong luc do)
                 final int cx = c.x, cy = c.y, px = p.x, py = p.y;
                 boolean doiC = false, doiP = false;
+                int datX = cx, datY = cy;
                 if (!Map.inRangeSkill(p, c, tam)) {
                     c.x = tr.x;
                     c.y = tr.y;
                     doiC = true;
+                    datX = c.x;
+                    datY = c.y;
                 }
                 if (!Map.inRangeSkill(p, c, tam)) {
                     p.x = (int) ph.ox;
                     p.y = (int) ph.oy;
                     doiP = true;
+                }
+                // mo phong tinh trung khi THAN muc tieu (ban kinh BAN_KINH_THAN) cham dau tam, con duong cu kiem hop vuong
+                // canh tam theo TAM nhan vat: muc tieu dung sat mep (vd cach 2 o = 32 px voi tam 30) trung tren vach ngam ma
+                // khong mat HP (bao cao QA #11). Dat tam muc tieu vao mep hop (lech toi da ban kinh than + nua be rong).
+                final int lechToiDa = BanHuong.BAN_KINH_THAN + ph.ts.rong / 2;
+                if (!Map.inRangeSkill(p, c, tam)) {
+                    final int ddx = c.x - p.x, ddy = c.y - p.y;
+                    final int vx = Math.max(-tam, Math.min(tam, ddx)), vy = Math.max(-tam, Math.min(tam, ddy));
+                    if (Math.abs(ddx - vx) <= lechToiDa && Math.abs(ddy - vy) <= lechToiDa) {
+                        doiC = true;
+                        c.x = p.x + vx;
+                        c.y = p.y + vy;
+                        datX = c.x;
+                        datY = c.y;
+                    }
                 }
                 final int gx = (int) ph.ox, gy = (int) ph.oy;
                 try {
@@ -865,7 +915,7 @@ public final class BanHuongGame {
                     ph.map.doAttackPlayer(p, goiDanh(LENH_DANH_NGUOI, c.id, chieu));
                     danh = p.timeLastUseSkills[chieu] != 0L && Map.inRangeSkill(p, c, tam);
                 } finally {
-                    if (doiC && c.x == tr.x && c.y == tr.y) {
+                    if (doiC && c.x == datX && c.y == datY) {
                         c.x = cx;
                         c.y = cy;
                     }

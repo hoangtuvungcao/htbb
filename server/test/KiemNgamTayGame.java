@@ -202,6 +202,9 @@ public final class KiemNgamTayGame {
             spam(nghiVan);
             tuDong();
             nguCanh();
+            khuAnToan();
+            mobaChuaMo();
+            mepTam();
             tatTinhNang();
         } finally {
             BanHuongGame.GIAI_NGAY = cuNgay;
@@ -272,6 +275,30 @@ public final class KiemNgamTayGame {
         BanHuongGame.xuLy(m, a, goiBan(4, 100, 100, 1000, 0));
         Kiem.bang("buff (chieu 4) khong ban duoc qua -113", Long.valueOf(0), Long.valueOf(a.timeLastUseSkills[4]));
         Kiem.dung("xem / cu chi la nguoi dung xem", xem != null && cu != null);
+    }
+
+    /**
+     * Bao cao QA #11 (bot KichBanNgamTay nt_khoang_cach): muc tieu sat mep tam (than cham dau vach ngam, vuot hop vuong
+     * canh tam cua duong danh cu &lt;= ban kinh than) truoc "trung" tren mo phong ma khong mat HP. Nay gay sat thuong;
+     * vi tri muc tieu tra lai nhu cu; xa hon tam + ban kinh than van truot.
+     */
+    static void mepTam() throws Exception {
+        final int tam = BanHuongGame.thongSo(2, 0).tam;
+        final MapGia m = new MapGia(20);
+        final Char a = nv(m, 908, 100, 100), b = nv(m, 908, 100 + tam + 6, 100);
+        BanHuongGame.xuLy(m, a, goiBan(0, 100, 100, 1000, 0));
+        Kiem.bang("mep tam (tam " + tam + " + 6 px): trung, mat HP", "[" + b.id + "@" + (100 + tam) + ",100]", m.danh.toString());
+        Kiem.bang("mep tam: vi tri muc tieu tra lai", Integer.valueOf(100 + tam + 6), Integer.valueOf(b.x));
+        hoiChieu(a);
+        m.danh.clear();
+        b.x = 100 + tam + BanHuong.BAN_KINH_THAN + 14;
+        BanHuongGame.xuLy(m, a, goiBan(0, 100, 100, 1000, 0));
+        Kiem.bang("ngoai tam + ban kinh than: truot", "[]", m.danh.toString());
+        hoiChieu(a);
+        m.danh.clear();
+        b.x = 100 + tam - 10;
+        BanHuongGame.xuLy(m, a, goiBan(0, 100, 100, 1000, 0));
+        Kiem.bang("trong tam: trung nguyen vi tri", "[" + b.id + "@" + (100 + tam - 10) + ",100]", m.danh.toString());
     }
 
     static void tuongRong() throws Exception {
@@ -395,6 +422,64 @@ public final class KiemNgamTayGame {
         final java.util.Map<String, String> r = new HashMap<String, String>();
         r.put(k, v);
         return r;
+    }
+
+    /** Bao cao QA #11: thi tran / lang = khu an toan - khong vao ngam PvP, bao ro "Khu an toàn, không đánh người được." */
+    static void khuAnToan() throws Exception {
+        final MapGia lang = new MapGia(0); // Pewter: mapIDLoadMap 0 = lang (Map.isMapLang)
+        final Char a = nv(lang, 908, 100, 100), b = nv(lang, 908, 116, 100);
+        a.pk = 14;
+        b.pk = 15;
+        Kiem.bang("lang + deo khan PK: khong ngu canh PvP", null, BanHuongGame.lyDoPvp(a, System.currentTimeMillis()));
+        Kiem.bang("lang: Tu dong danh khong bi cam vi PK", null, BanHuongGame.lyDoCamTuDong(a));
+        LENH.clear();
+        BanHuongGame.nhip(a);
+        Kiem.dung("lang + PK: nhip bao chu (27) Khu an toan", LENH.contains(Integer.valueOf(27)));
+        LENH.clear();
+        BanHuongGame.nhip(a);
+        Kiem.sai("lang + PK: chi bao mot lan moi ban do", LENH.contains(Integer.valueOf(27)));
+        // lenh 6 (bam chon nguoi) trong lang: khong danh, khong ep che do ngam, bao khu an toan
+        final int hp = b.hp;
+        LENH.clear();
+        final java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+        final java.io.DataOutputStream d = new java.io.DataOutputStream(bo);
+        d.writeShort(b.id);
+        d.writeByte(0);
+        Kiem.dung("lang: lenh 6 da xu ly", BanHuongGame.xuLy(lang, a, new Message(6, bo.toByteArray())));
+        Kiem.bang("lang: lenh 6 khong gay sat thuong", Integer.valueOf(hp), Integer.valueOf(b.hp));
+        Kiem.dung("lang: lenh 6 bao chu", LENH.contains(Integer.valueOf(27)));
+        Kiem.sai("lang: lenh 6 khong gui che do ngam -113", LENH.contains(Integer.valueOf(BanHuong.LENH)));
+        Kiem.bang("cau bao", "Khu an toàn, không đánh người được.", BanHuongGame.BAO_AN_TOAN);
+        // ra khoi lang (map thuong) van PK: vao lai PvP
+        final MapGia ngoai = new MapGia(20);
+        ngoai.them(a);
+        Kiem.dung("ra map thuong + PK: PvP", BanHuongGame.lyDoPvp(a, System.currentTimeMillis()) != null);
+        a.pk = 0;
+        b.pk = 0;
+    }
+
+    /** Bao cao QA #10: GM mto vao chien truong MOBA chua co tran -&gt; Map.move2Map tu choi, playerJoin khong nem loi. */
+    static void mobaChuaMo() throws Exception {
+        MapChienTruongMoba.ALL_REGION.removeAllElements();
+        Kiem.sai("MOBA: chua co khu -> coKhuMo false", MapChienTruongMoba.coKhuMo());
+        Kiem.sai("chanVao(null) false", MapChienTruongMoba.chanVao(null));
+        Kiem.sai("chanVao(map thuong) false", MapChienTruongMoba.chanVao(new MapGia(20)));
+        // tao doi tuong khong chay ham dung (ham dung MOBA mo luong + nap tru): Unsafe.allocateInstance qua phan chieu
+        final Class<?> lu = Class.forName("sun.misc.Unsafe");
+        final java.lang.reflect.Field f = lu.getDeclaredField("theUnsafe");
+        f.setAccessible(true);
+        final Object u = f.get(null);
+        final MapChienTruongMoba moba = (MapChienTruongMoba) lu.getMethod("allocateInstance", Class.class).invoke(u, MapChienTruongMoba.class);
+        Kiem.dung("chanVao(MOBA chua co tran) true", MapChienTruongMoba.chanVao(moba));
+        final Char p = nv(new MapGia(20), 908, 100, 100);
+        p.region = 3;
+        try {
+            moba.playerJoin(p);
+            Kiem.dung("MOBA playerJoin khi chua co khu: khong nem loi", true);
+        } catch (final Exception e) {
+            Kiem.dung("MOBA playerJoin khi chua co khu: khong nem loi (" + e + ")", false);
+        }
+        Kiem.dung("cau bao MOBA co chu", MapChienTruongMoba.CHU_CHUA_MO.contains("Chiến trường chưa mở trận"));
     }
 
     static void nguCanh() throws Exception {

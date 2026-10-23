@@ -51,6 +51,11 @@ public final class CharDoiTenNhanVat {
                     "Tên chứa ký tự không hợp lệ.", ""));
             return;
         }
+        final String cam = Database.tuCamTrongTen(tenMoiGoc.trim());
+        if (cam != null) {
+            player.sendMessage(MessageCreator.createServerAlertMessage(com.htbb.pokemon.LocTuCam.cauBao(cam), ""));
+            return;
+        }
         if (tenMoi.equalsIgnoreCase(tenCu)) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Tên mới trùng tên hiện tại.", ""));
             return;

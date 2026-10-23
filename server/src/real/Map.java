@@ -16544,15 +16544,9 @@ public class Map implements Runnable {
     }
 
     public static String checkBadWord(String info) {
-        // 0.9.8: thay tu cam KHONG phan biet hoa thuong, theo nghia den (truoc: replaceAll regex chi khop chu thuong)
-        for (int i = 0; i < Database.badWord.size(); i++) {
-            String st = ((String) Database.badWord.get(i)).toLowerCase();
-            if (!st.isEmpty() && info.toLowerCase().indexOf(st) != -1) {
-                info = info.replaceAll("(?iu)" + java.util.regex.Pattern.quote(st), "*");
-            }
-        }
-
-        return info;
+        // 0.9.14: bang bad_word qua LocTuCam - tu ngan chi che CA TU ("ngu" khong che "Nguyen"), tu dai / co dau che
+        // chuoi con, khong phan biet hoa thuong (0.9.8)
+        return Database.locChat.che(info, "*");
     }
 
     public void doAddDragonTower(int country) {
@@ -16798,6 +16792,15 @@ public class Map implements Runnable {
         this.checkTrade(player);
         // Khoa ban do (chot cuoi cho moi duong dich chuyen): chua du dieu kien -> o lai cho dang dung, nap lai map.
         if (mapID != player.mapID && KhoaBanDoGame.chanDiBo(player, mapID)) {
+            x = player.x / 16;
+            y = player.y / 16;
+            mapID = player.mapID;
+            country = player.inCountry;
+        }
+        // Chien truong MOBA chi vao duoc khi dang co tran (co khu chua ket thuc) - truoc day GM "mto" vao luc chua mo
+        // tran nem ArrayIndexOutOfBounds o MapChienTruongMoba.playerJoin (bao cao QA #10)
+        if (mapID != player.mapID && MapChienTruongMoba.chanVao(RealController.mapList.get(mapID))) {
+            player.sendMessage(MessageCreator.createServerAlertMessage(MapChienTruongMoba.CHU_CHUA_MO, ""));
             x = player.x / 16;
             y = player.y / 16;
             mapID = player.mapID;

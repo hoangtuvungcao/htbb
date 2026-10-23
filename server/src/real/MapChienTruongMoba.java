@@ -564,9 +564,32 @@ public class MapChienTruongMoba extends Map {
         return this.nRegion > 0 ? ((RegionMapMoba) ALL_REGION.get(region)).getAllPlayer(inCountry) : (Vector) this.allPlayers.get(inCountry);
     }
 
+    public static final String CHU_CHUA_MO = "Chiến trường chưa mở trận nào. Hãy đăng ký trận rồi vào khi trận bắt đầu.";
+
+    /** Con khu (tran) chua ket thuc de vao khong. */
+    public static boolean coKhuMo() {
+        for (int i = 0; i < ALL_REGION.size(); ++i) {
+            final RegionMapMoba rg = ALL_REGION.get(i);
+            if (rg != null && !rg.isEnd()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** true neu {@code m} la chien truong MOBA chua co tran nao mo (Map.move2Map tu choi, khong vao). */
+    public static boolean chanVao(final Object m) {
+        return m instanceof MapChienTruongMoba && !coKhuMo();
+    }
+
     public void playerJoin(Char player) {
         RegionMapMoba rg = null;
-        if (player.region >= ALL_REGION.size()) {
+        if (!coKhuMo()) {
+            // chot chan (Map.move2Map da tu choi): khong co khu nao -> khong nem loi chi so
+            System.out.println("[MOBA] " + (player == null ? "?" : player.charname) + " vao chien truong khi chua co khu - bo qua");
+            return;
+        }
+        if (player.region >= ALL_REGION.size() || player.region < 0) {
             player.region = 0;
         }
 
