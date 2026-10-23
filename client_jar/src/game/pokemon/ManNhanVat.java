@@ -891,27 +891,64 @@ public final class ManNhanVat extends Screen {
         return r;
     }
 
-    /** Hàng thú: tên đậm, "#id" nhỏ, viên "Cấp N" canh phải, dòng phụ. */
+    /**
+     * Hàng thú: tên đậm, "#id" nhỏ, viên "Cấp N" canh phải, dòng phụ. 0.9.13: TÊN ƯU TIÊN - chật thì bỏ "#id" trước,
+     * rồi đưa cấp xuống đầu dòng phụ ("Cấp 5 · Đang cưỡi") thay vì cắt tên thành "Rapida.."; dòng phụ chật thì bỏ dần
+     * đoạn cuối (" · chạm để chọn", " · hạn ...") trước khi cắt chữ.
+     */
     static void hangThu(Graphics g, int x, int y, int w, int h, int s, String ten, String cap, String id, String phu, boolean dangDung) {
         int xt = x + s + 9;
         int hv = Math.max(14, Font.borderFont.getHeight() + 2);
-        int wv = 0;
-        if (cap != null && cap.length() > 0) {
-            String c = "Cấp " + cap;
-            wv = Font.borderFont.getWidth(c) + 14;
-            GiaoDien.vien(g, x + w - 8 - wv, y + 3, wv, hv, dangDung ? ChuDe.LA : ChuDe.CHINH, c);
-            wv += 6;
-        }
+        int wTen = Math.max(20, w - s - 16);
+        int rTen = Font.blackFont.getWidth(ten);
+        String c = cap != null && cap.length() > 0 ? "Cấp " + cap : null;
+        int wv = c == null ? 0 : Font.borderFont.getWidth(c) + 14;
         String so = id != null && id.length() > 0 ? "#" + id : null;
         int wso = so == null ? 0 : ChuDe.rong(so, ChuDe.NHAN_NHO) + 6;
-        String t = GiaoDien.catChu(Font.blackFont, ten, Math.max(20, w - s - 16 - wv - wso));
+        boolean vien = c != null;
+        if (so != null && rTen + wso + (vien ? wv + 6 : 0) > wTen) {
+            so = null;
+            wso = 0;
+        }
+        if (vien && rTen + wv + 6 > wTen) {
+            vien = false;   // cấp xuống dòng phụ
+        }
+        if (vien) {
+            GiaoDien.vien(g, x + w - 8 - wv, y + 3, wv, hv, dangDung ? ChuDe.LA : ChuDe.CHINH, c);
+        }
+        String t = GiaoDien.catChu(Font.blackFont, ten, Math.max(20, wTen - (vien ? wv + 6 : 0) - wso));
         Font.blackFont.drawString(g, t, xt, y + 2, 0);
         if (so != null) {
             ChuDe.chu(g, so, xt + Font.blackFont.getWidth(t) + 5, y + 4, ChuDe.NHAN_NHO, ChuDe.CHU_NHAT, 0);
         }
-        if (phu != null) {
-            Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, phu, w - s - 14), xt, y + 3 + Font.blackFont.getHeight(), 0);
+        if (!vien && c != null) {
+            // cấp sau nhãn loại / trạng thái ("Đang đi theo · Cấp 3 · ..."): chật thì bỏ đoạn cuối, nhãn vẫn còn
+            if (phu == null) {
+                phu = c;
+            } else {
+                int k = phu.indexOf(" · ");
+                if (k >= 0 && phu.startsWith("Đã khoá · ")) {
+                    k = phu.indexOf(" · ", k + 3);
+                }
+                phu = k < 0 ? phu + " · " + c : phu.substring(0, k) + " · " + c + phu.substring(k);
+            }
         }
+        if (phu != null) {
+            int wp = w - s - 14;
+            while (Font.arialFont.getWidth(phu) > wp && doanCuoi(phu) > 0) {
+                phu = phu.substring(0, doanCuoi(phu));
+            }
+            Font.arialFont.drawString(g, GiaoDien.catChu(Font.arialFont, phu, wp), xt, y + 3 + Font.blackFont.getHeight(), 0);
+        }
+    }
+
+    /** Vị trí " · " cuối (CLDC 1.1 không có String.lastIndexOf(String)); -1 = không có. */
+    static int doanCuoi(String s) {
+        int r = -1;
+        for (int i = s.indexOf(" · "); i >= 0; i = s.indexOf(" · ", i + 1)) {
+            r = i;
+        }
+        return r;
     }
 
     /** Chạm thú trong danh sách: cưỡi / gọi pet; đang cưỡi thú khác thì hỏi đổi (xuống rồi cưỡi con mới). */

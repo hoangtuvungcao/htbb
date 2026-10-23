@@ -244,6 +244,29 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.13 (`BAN=913`: Trang bị › Thú cưỡi hiện thú đang cưỡi + pet đang đi theo)
+
+Client + máy chủ (SQL KHÔNG đổi): `PHIEN_BAN=0.9.13-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 13`;
+`MIDlet-Version` 0.9.13). Thứ tự: jar trước, client sau.
+
+1. Lỗi (chủ dự án, PC 0.9.12): đang cưỡi thú mà ô Thú cưỡi trống, sân khấu "Chưa cưỡi thú", danh sách chỉ có pet đi theo,
+   "Ô thú: 5/20" nhưng 4 hàng. Gói 16 loại 2 KHÔNG gửi con đang cưỡi (`place == 1`) và pet đang đi theo (`petUsing`)
+   trong khi "Ô thú" (`QuanLyThuGame.soThu`) đếm cả hai; client chỉ ĐOÁN "đang cưỡi" từ gói 15 / gói 3 / -93
+   (`ManNhanVat.dangCuoi`, có từ 0.9.5) và chưa từng hiện pet đang đi theo ở Trang bị › Thú cưỡi. Không phải lỗi mã
+   0.9.12 - 0.9.12 làm lộ ra vì thanh "Ô thú" đếm cả con bị giấu.
+2. Thay `htbb-server.jar`, khởi động lại: client `BAN >= 913` nhận thêm KHỐI ĐANG DÙNG sau phần nối thêm gói 16 loại 2
+   (`QuanLyThuGame.ghiDangDung`: thú đang cưỡi + con `place == 1`, pet đang đi theo, mỗi con kèm dòng khoá / xu / lý do;
+   cờ thú cưỡi cũ bằng thuốc - không chiếm ô). Client 912 trở về trước nhận gói y như cũ.
+3. Client: trạng thái cưỡi / đi theo theo máy chủ (không đoán); ô Thú cưỡi + sân khấu hiện thú đang cưỡi ("Đang cưỡi
+   Rapidash", cấp, pet đi theo kèm); danh sách: con đang dùng đứng đầu, nhãn "Đang cưỡi" / "Đang đi theo" / "Thú cưỡi" /
+   "Đi theo", số hàng = "Ô thú"; chọn con đang cưỡi: Xuống thú / Khoá (không nút Thả), pet đang đi theo: Khoá; Thả trùng chỉ
+   xét con trong túi. Trang bị › Thú cưỡi KHÔNG vẽ lưới đồ nhân vật / Tiềm năng / Danh hiệu nữa mà sân khấu + hai ô
+   "Thú cưỡi" / "Đi theo" (Trang bị thường giữ nguyên). Hàng thú: tên ưu tiên (chật thì bỏ "#id", cấp xuống dòng phụ,
+   dòng phụ bỏ đoạn cuối) - không còn "Rapida..", "Hoo..". Kiểm: `server/test/KiemQuanLyThu` (khối đang dùng 912 / 913),
+   `ChupTrongGame` màn `nv_thu_dang_dung`, `nv_thu_dang_dung_chon`, `nv_thu_di_theo_dang_dung`, `nv_thu_dang_dung_tab`
+   (không ô đồ nhân vật ở chế độ Thú cưỡi, tên thú không bị cắt, cả `-Dchup.j2me`).
+4. Tải gói 913 lên `/admin/tai-game` (Số bản = 913) cho từng nền tảng sau khi máy chủ chạy jar mới.
+
 ### Sửa nhanh 0.9.12: hạn mức đăng ký theo mạng (không đổi client)
 
 Người chơi mạng di động (CGNAT, chung IP) bị báo "đã tạo quá nhiều tài khoản". Thứ tự: SQL → jar → web.

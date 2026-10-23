@@ -1928,6 +1928,23 @@ public class ChupTrongGame {
             kiem(coVungDung("tiem-nang"), nhan + " Trang bi: thieu nut Tiem nang");
             kiem(!coVungDung("o-thu-cuoi") && !coVungDung("o-di-theo"), nhan + " Trang bi: lan o Thu cuoi / Di theo");
         }
+        if (thu) {
+            // 0.9.13: tên thú trong danh sách không bị cắt ("Rapida..", "Hoo..", "Dragon..") - cấp / #id nhường chỗ
+            String[] tenThu = {"Rapidash", "Hoothoot", "Dragonite", "Tauros", "Trứng Dratini"};
+            for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+                String c = game.pokemon.GhiChu.CS[i];
+                if (c == null || !c.endsWith("..")) continue;
+                String goc = c.substring(0, c.length() - 2);
+                for (int j = 0; j < tenThu.length; j++) {
+                    kiem(goc.length() == 0 || !tenThu[j].startsWith(goc), nhan + " ten thu bi cat: '" + c + "'");
+                }
+            }
+            if (ten.startsWith("nv_thu_dang_dung")) {
+                boolean co = false;
+                for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) co |= "Rapidash".equals(game.pokemon.GhiChu.CS[i]);
+                kiem(co, nhan + " hang Rapidash khong hien du ten");
+            }
+        }
         if (ten.indexOf("dang_dung") >= 0) {
             int soThu = game.pokemon.QuanLyThu.soThu;
             int hang = game.model.Char.animal.size() + game.pokemon.QuanLyThu.dung.size();
