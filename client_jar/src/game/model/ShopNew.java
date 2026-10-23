@@ -3800,7 +3800,7 @@ public class ShopNew extends Screen {
                     @Override
                     public void perform() {
                         if ((Canvas.gameScr.mainChar.useHorse > -1 || Canvas.gameScr.mainChar.idhorse > -1) && shop2.typeAnimal == 0) {
-                            Canvas.startOKDlg("Không thể cưỡi.");
+                            Canvas.startOKDlg("Bạn đang cưỡi một thú khác. Xuống thú đang cưỡi trước rồi mới cưỡi thú này.");
                         } else {
                             GameService.gI().doRideAnimal(shop2.id, shop2.typeAnimal);
                         }

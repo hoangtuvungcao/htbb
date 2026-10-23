@@ -245,10 +245,10 @@ public final class KiemChiemGymDoiDiemGiaoHang {
         Kiem.sai("da bo Phuong Hoang Lua khoi doi diem", thanMang.contains("Phượng Hoàng Lửa"));
         Kiem.sai("da bo Giap Rong khoi doi diem", thanMang.contains("Giáp Rồng"));
         Kiem.sai("da bo Ho ve lenh 4x khoi doi diem", thanMang.contains("Vé gọi Pokémon hỗ trợ 4x"));
-        Kiem.dung("con giu Ho ve lenh 5x", thanMang.contains("Vé gọi Pokémon hỗ trợ 5x random lv1-3, 7 ngày"));
-        Kiem.dung("con giu Ho ve lenh 6x", thanMang.contains("Vé gọi Pokémon hỗ trợ 6x random lv1-3, 7 ngày"));
-        Kiem.dung("Canh gop thanh 1 muc ngau nhien", thanMang.contains("Cánh ngẫu nhiên (hệ + chỉ số random) 7 ngày"));
-        Kiem.dung("Choi gop thanh 1 muc ngau nhien", thanMang.contains("Chổi ngẫu nhiên (hệ + chỉ số random) 7 ngày"));
+        Kiem.dung("con giu Ho ve lenh 5x", thanMang.contains("Vé gọi Pokémon hỗ trợ 5x (cấp 1-3 ngẫu nhiên) 7 ngày"));
+        Kiem.dung("con giu Ho ve lenh 6x", thanMang.contains("Vé gọi Pokémon hỗ trợ 6x (cấp 1-3 ngẫu nhiên) 7 ngày"));
+        Kiem.dung("Canh gop thanh 1 muc ngau nhien", thanMang.contains("Cánh ngẫu nhiên (hệ + chỉ số ngẫu nhiên) 7 ngày"));
+        Kiem.dung("Choi gop thanh 1 muc ngau nhien", thanMang.contains("Chổi ngẫu nhiên (hệ + chỉ số ngẫu nhiên) 7 ngày"));
         Kiem.dung("Skin linh thu doi sang 7 ngay (khong con vinh vien)",
                 thanMang.contains("Skin thú cưỡi Copperajah 7 ngày") && !thanMang.contains("\"Skin thú cưỡi Copperajah\","));
         // 17/09/2026: them Tu hon dan khoa x100 (1000 diem) - yeu cau nguoi dung.

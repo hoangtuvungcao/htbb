@@ -575,7 +575,13 @@ public final class TheVatPham extends Dialog {
         int hBo = idBo >= 0 ? TrangBiThem.caoDong(idBo, wNoi) : 0;
         int hNoi = s + 6 + dong.size() * lh + (dmt.length > 0 ? dmt.length * lp + 6 : 0) + hBo + (coSoLuong() ? lh : 0) + (coGia ? lh : 0)
                 + (mua ? hChon + lh : 0) + (xem && this.xemPhu != null ? lh : 0);
-        int h = 8 + hNoi + k + hHang + 10 + ChuDe.cao(ChuDe.PHU) + 4;   // + dòng lý do (nút xám) trên hàng nút
+        // dòng lý do / gợi ý trên hàng nút: tính trước (veNut chạy khô, g = null) - chữ dài (J2ME, cỡ hẹp) xuống 2 dòng
+        veNut(null, 0, 0, wNoi, hHang);
+        String ld = lyDo != null ? lyDo : goiY;
+        int soDongLd = ld == null ? 1 : Math.max(1, ChuDe.ngat(ld, ChuDe.PHU, wNoi, 2).length);
+        lyDo = null;
+        goiY = null;
+        int h = 8 + hNoi + k + hHang + 10 + soDongLd * ChuDe.cao(ChuDe.PHU) + 4;   // + dòng lý do (nút xám) trên hàng nút
         int H = Bang.duoi() - Bang.tren();
         if (h > H) {
             h = H;
@@ -895,19 +901,24 @@ public final class TheVatPham extends Dialog {
             }
         }
 
+        if (g == null) {
+            return; // chạy khô: chỉ tính lyDo / goiY cho chiều cao thẻ
+        }
         int wn = n == 0 ? w : (w - (n - 1) * k) / n;
         for (int i = 0; i < n; i++) {
             Bang.nut(g, x + i * (wn + k), y, i == n - 1 ? x + w - (x + i * (wn + k)) : wn, h, chu[i], kieu[i], viec[i], ten[i]);
         }
-        // lý do (nút xám) ngay trên hàng nút
-        if (lyDo != null) {
-            ChuDe.chu(g, ChuDe.cat(lyDo, ChuDe.PHU, w), x, y - ChuDe.cao(ChuDe.PHU) - 2, ChuDe.PHU, ChuDe.DO, 0);
-            lyDo = null;
-            goiY = null;
-        } else if (goiY != null) {
-            ChuDe.chu(g, ChuDe.cat(goiY, ChuDe.PHU, w), x, y - ChuDe.cao(ChuDe.PHU) - 2, ChuDe.PHU, ChuDe.CHU_PHU, 0);
-            goiY = null;
+        // lý do (nút xám) / gợi ý ngay trên hàng nút, tối đa 2 dòng (chiều cao đã chừa ở trên)
+        String ld = lyDo != null ? lyDo : goiY;
+        if (ld != null) {
+            String[] d = ChuDe.ngat(ld, ChuDe.PHU, w, 2);
+            int lp = ChuDe.cao(ChuDe.PHU);
+            for (int i = 0; i < d.length; i++) {
+                ChuDe.chu(g, d[i], x, y - (d.length - i) * lp - 2, ChuDe.PHU, lyDo != null ? ChuDe.DO : ChuDe.CHU_PHU, 0);
+            }
         }
+        lyDo = null;
+        goiY = null;
     }
 
     private String lyDo;

@@ -11281,7 +11281,7 @@ public class Map implements Runnable {
         player.sendMessage(MessageCreator.createCharGemItem(player));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
         player.sendMessage(
-                MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được nlsc, nlcc cấp 6 mỗi loại 2 viên, 1 áo thời trang có thời hạn 7 ngày", "")
+                MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được nguyên liệu sơ cấp và cao cấp bậc 6 (mỗi loại 2 viên), 1 áo thời trang hạn 7 ngày.", "")
         );
         Database.instance
                 .saveOrtherLog("", player.charname, code + " đã nhận được nlsc, nlcc cấp 6 mỗi loại 2 viên, 1 áo thời trang có thời hạn 7 ngày", "gcode");
@@ -11297,7 +11297,7 @@ public class Map implements Runnable {
 
         player.sendMessage(MessageCreator.createCharGemItem(player));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được nhận được 3 vé giờ vàng, nlsc, nlcc cấp 6 mỗi loại 2 viên", ""));
+        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được 3 vé giờ vàng, nguyên liệu sơ cấp và cao cấp bậc 6 (mỗi loại 2 viên).", ""));
         Database.instance.saveOrtherLog("", player.charname, code + " nhận được 3 vé giờ vàng, nlsc, nlcc cấp 6 mỗi loại 2 viên", "gcode");
     }
 
@@ -11493,24 +11493,24 @@ public class Map implements Runnable {
     // 31 vat pham co dinh, chia doi so trang tu dong (xem soMucMoiTrangDoiThuong).
     // Ten hien thi dung "diem" (khong con "sao vang").
     static final String[] TEN_DOI_THUONG = {
-            "Ruy băng Hoenn đặc biệt random kháng 7 ngày",
-            "Ruy băng Hoenn vật lý random kháng 7 ngày",
-            "Đồ cầm tay thời trang random chỉ số 7 ngày",
+            "Ruy băng Hoenn đặc biệt (kháng ngẫu nhiên) 7 ngày",
+            "Ruy băng Hoenn vật lý (kháng ngẫu nhiên) 7 ngày",
+            "Đồ cầm tay thời trang (chỉ số ngẫu nhiên) 7 ngày",
             "Nham thạch cấp 2 x20",
             "Milotic 7 ngày",
             "Blaziken 7 ngày",
-            "Gậy Ánh Trăng random chỉ số 7 ngày",
+            "Gậy Ánh Trăng (chỉ số ngẫu nhiên) 7 ngày",
             // Canh: random CA he (Bang/Set/Doc/Lua/EXP/bao kich...) LAN chi so, tru
             // tier cao nhat (tier cao nhat chi danh cho quay so may man). Xem
             // Item.createOptionCanhNgauNhien.
-            "Cánh ngẫu nhiên (hệ + chỉ số random) 7 ngày",
+            "Cánh ngẫu nhiên (hệ + chỉ số ngẫu nhiên) 7 ngày",
             "Mặt nạ Bí Ngô 7 ngày",
             "Mặt nạ Gengar 7 ngày",
             "Mặt nạ Yamask 7 ngày",
             "Mặt nạ Houndoom 7 ngày",
             // Choi: random CA he (Bang/Set/Doc/Lua) LAN chi so, tru tier cao nhat.
             // Xem Item.createAttChoiNgauNhien.
-            "Chổi ngẫu nhiên (hệ + chỉ số random) 7 ngày",
+            "Chổi ngẫu nhiên (hệ + chỉ số ngẫu nhiên) 7 ngày",
             "Đầu Bí Ngô 7 ngày",
             "Nón Phù Thủy 7 ngày",
             // 5 skin linh thu, 7 ngay. Xem real.SkinThuCuoi — skin chi doi hinh,
@@ -11522,8 +11522,8 @@ public class Map implements Runnable {
             "Skin thú cưỡi Camerupt 7 ngày",
             "Skin thú cưỡi Lycanroc 7 ngày",
             // Ho ve lenh: random lv1-lv3 CUNG mot cap (5x/6x), 7 ngay. Da bo han muc 4x.
-            "Vé gọi Pokémon hỗ trợ 5x random lv1-3, 7 ngày",
-            "Vé gọi Pokémon hỗ trợ 6x random lv1-3, 7 ngày",
+            "Vé gọi Pokémon hỗ trợ 5x (cấp 1-3 ngẫu nhiên) 7 ngày",
+            "Vé gọi Pokémon hỗ trợ 6x (cấp 1-3 ngẫu nhiên) 7 ngày",
             // Tu hon dan la Potion (TYPE_TU_HON_DAN_C1=83, data_potion isTrade=0 - da luon
             // KHONG giao dich duoc, khoa la ban chat san co chu khong phai lua chon rieng),
             // dem qua player.potions[83] nen xep chong duoc (khac Item id 714 dung khi cho
@@ -11890,7 +11890,7 @@ public class Map implements Runnable {
                     );
                     Database.instance
                             .saveOrtherLog(
-                                    "", p.charname, "nhan qua top 2: " + it.getName() + "_" + it.getInfoSave() + " và 1 trung hkl và ngl c6 khoa moi loai 10 vien", "quatop"
+                                    "", p.charname, "nhan qua top 2: " + it.getName() + "_" + it.getInfoSave() + " và 1 trứng Ponyta và nguyên liệu khoá bậc 6 mỗi loại 10 viên", "quatop"
                             );
                 } else if (indexTop == 2) {
                     p.canReceiveGiftOffline = -1;

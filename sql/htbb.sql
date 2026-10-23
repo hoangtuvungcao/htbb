@@ -30610,3 +30610,14 @@ UPDATE `data_shop` SET `decript`='Tăng 150% tấn công, phòng thủ, chính x
 UPDATE `data_shop` SET `name`='Bình tăng tốc bạc', `decript`='Giảm 20% thời gian chín của trái bạc (dùng khi chăm cây ở vườn).' WHERE `id`=108;
 UPDATE `data_shop` SET `name`='Bình tăng tốc vàng', `decript`='Giảm 20% thời gian chín của trái vàng (dùng khi chăm cây ở vườn).' WHERE `id`=109;
 UPDATE `data_shop` SET `name`='Vé giờ vàng 100% (khoá)\n - Tăng 100% kinh nghiệm đánh Pokémon hoang dã trong 60 phút chơi (chỉ đếm lúc online). Dùng vé khác sẽ thay vé đang chạy.' WHERE `id`=126;
+
+-- >>> sua_ten_qa_toan_game.sql
+-- ==================================================================================
+--  QA TOAN GAME (23/10/2026). Chay lai bao nhieu lan cung duoc (UPDATE theo khoa chinh + ten cu: giu ten admin da sua).
+--  Bo do thu cuoi bac 70 dat theo bong "Level Ball" nhung ten chi ghi "Level" -> nguoi choi doc thanh "cap" (tieng Anh).
+-- ==================================================================================
+UPDATE `data_item` SET `name`='Mũ cưỡi Level Ball' WHERE `id`=517 AND `name`='Mũ cưỡi Level';
+UPDATE `data_item` SET `name`='Giáp cưỡi Level Ball' WHERE `id`=529 AND `name`='Giáp cưỡi Level';
+UPDATE `data_item` SET `name`='Yên cương Level Ball' WHERE `id`=541 AND `name`='Yên cương Level';
+UPDATE `data_item` SET `name`='Bàn đạp Level Ball' WHERE `id`=553 AND `name`='Bàn đạp Level';
+UPDATE `data_item` SET `name`='Vòng chân Level Ball' WHERE `id`=565 AND `name`='Vòng chân Level';

@@ -40,7 +40,7 @@ public class ItemInInventory {
     public int prizeBet;
     public long timeEnd;
     private static int[] color;
-    private static String[][] groupKick = {new String[]{"Quần", "Nhẫn dưới"}, new String[]{"Ngọc", "Găng"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"áo", "Dây chuyền"}, new String[]{"Nón", "Đồ cầm tay", "Phiến đá hệ", "Găng"}, new String[]{"Nhẫn dưới", "Quần"}, new String[]{"Nón", "Đồ cầm tay"}, new String[]{"Giày", "Nhẫn trên"}, new String[]{"Giày", "Nhẫn trên"}};
+    private static String[][] groupKick = {new String[]{"Quần", "Nhẫn dưới"}, new String[]{"Ngọc", "Găng"}, new String[]{"Áo", "Dây chuyền"}, new String[]{"Áo", "Dây chuyền"}, new String[]{"Áo", "Dây chuyền"}, new String[]{"Áo", "Dây chuyền"}, new String[]{"Áo", "Dây chuyền"}, new String[]{"Áo", "Dây chuyền"}, new String[]{"Nón", "Đồ cầm tay", "Phiến đá hệ", "Găng"}, new String[]{"Nhẫn dưới", "Quần"}, new String[]{"Nón", "Đồ cầm tay"}, new String[]{"Giày", "Nhẫn trên"}, new String[]{"Giày", "Nhẫn trên"}};
     private static String[][] kickHe = {new String[]{"Thép"}, new String[]{"Nước"}, new String[]{"Cỏ"}, new String[]{"Lửa"}, new String[]{"Đất"}};
     private static String[][] groupKickAnimal = {new String[]{"Nón"}, new String[]{"Bàn đạp"}, new String[]{"Vòng chân"}, new String[]{"Yên cương"}, new String[]{"Giáp"}};
     public static final String[] attrName = {"Tấn công", "Phòng thủ", "Né tránh", "Chính xác", "Chí mạng", "HP", "Phòng thủ đặc biệt", "Mã hình 1", "Mã hình 2", "Đánh dấu thời trang"};
@@ -198,7 +198,7 @@ public class ItemInInventory {
             new StringBuffer(String.valueOf(plus)).append(" ").append(magic[this.magic_physic]).toString();
             s[0] = new StringBuffer(String.valueOf((int) this.colorName)).append(item.name).append(this.plusTemplate > 0 ? new StringBuffer(" +").append((int) this.plusTemplate).toString() : "").toString();
             s[1] = new StringBuffer("Giá bán: ").append(this.prize).append(" xu").toString();
-            s[2] = new StringBuffer("Giá bid: ").append(this.prizeBet).append(" xu").toString();
+            s[2] = new StringBuffer("Giá đặt: ").append(this.prizeBet).append(" xu").toString();
         }
         return s;
     }
@@ -288,7 +288,7 @@ public class ItemInInventory {
                 s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("\nThời gian còn lại: ").append(time / 60 > 0 ? new StringBuffer(String.valueOf(time / 60)).append("h ").toString() : "").append(time % 60 > 0 ? new StringBuffer(String.valueOf(time % 60)).append("p").toString() : "").toString(), "0")).toString();
             }
             if (this.timeEnd > 0) {
-                s = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(s)).append(setTemp(this.nameCharSell, "0")).toString())).append(setTemp(this.daySell, "0")).toString())).append(setTemp(new StringBuffer("Bid: ").append(this.prizeBet).append(" xu").toString(), "0")).toString())).append(setTemp(this.nameCharBet.equals("") ? "----" : new StringBuffer(String.valueOf(this.nameCharBet)).append(" bid").toString(), "0")).toString())).append(setTemp(getTimeSell(), "0")).toString();
+                s = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(s)).append(setTemp(this.nameCharSell, "0")).toString())).append(setTemp(this.daySell, "0")).toString())).append(setTemp(new StringBuffer("Đấu giá: ").append(this.prizeBet).append(" xu").toString(), "0")).toString())).append(setTemp(this.nameCharBet.equals("") ? "----" : new StringBuffer(String.valueOf(this.nameCharBet)).append(" đang đặt giá").toString(), "0")).toString())).append(setTemp(getTimeSell(), "0")).toString();
             }
         }
         return s;
@@ -390,7 +390,7 @@ public class ItemInInventory {
                 s = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer("\nThời gian còn lại: ").append(time / 60 > 0 ? new StringBuffer(String.valueOf(time / 60)).append("h ").toString() : "").append(time % 60 > 0 ? new StringBuffer(String.valueOf(time % 60)).append("p").toString() : "").toString(), "0")).toString();
             }
             if (this.timeEnd > 0) {
-                s = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(s)).append(setTemp(this.nameCharSell, "0")).toString())).append(setTemp(this.daySell, "0")).toString())).append(setTemp(new StringBuffer("Bid: ").append(this.prizeBet).append(" xu").toString(), "0")).toString())).append(setTemp(this.nameCharBet.equals("") ? "----" : new StringBuffer(String.valueOf(this.nameCharBet)).append(" bid").toString(), "0")).toString())).append(setTemp(getTimeSell(), "0")).toString();
+                s = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(s)).append(setTemp(this.nameCharSell, "0")).toString())).append(setTemp(this.daySell, "0")).toString())).append(setTemp(new StringBuffer("Đấu giá: ").append(this.prizeBet).append(" xu").toString(), "0")).toString())).append(setTemp(this.nameCharBet.equals("") ? "----" : new StringBuffer(String.valueOf(this.nameCharBet)).append(" đang đặt giá").toString(), "0")).toString())).append(setTemp(getTimeSell(), "0")).toString();
             }
         }
         return s;

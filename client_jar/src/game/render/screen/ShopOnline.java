@@ -45,11 +45,11 @@ public class ShopOnline extends Screen {
     private int xRunR;
     private byte[] arrayKhamNgoc;
     public static Vector ALL_ITEM = new Vector();
-    public static String[] tile = {"Chợ", "Tìm", "Đang bán", "Hành trang", "Kho", "Bid"};
+    public static String[] tile = {"Chợ", "Tìm", "Đang bán", "Hành trang", "Kho", "Đấu giá"};
     public static short[] nPage = new short[6];
     public static short[] indexPage = new short[6];
-    public static String[][] tileFind = {new String[]{"Loại:", "Level:", "Phẩm:", "Màu:", "Cộng:"}, new String[]{"N.vật"}, new String[0]};
-    public static String[] nameItem = {"áo", "Quần", "Nón", "Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Giáp thú cưỡi", "Vòng chân", "Nón thú cưỡi", "Bàn đạp", "Yên cương", "Ruy băng"};
+    public static String[][] tileFind = {new String[]{"Loại:", "Cấp:", "Phẩm:", "Màu:", "Cộng:"}, new String[]{"N.vật"}, new String[0]};
+    public static String[] nameItem = {"Áo", "Quần", "Nón", "Than lửa", "Hạt giống thần", "Bút", "Búa", "Cung", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Phiến đá hệ", "Giáp thú cưỡi", "Vòng chân", "Nón thú cưỡi", "Bàn đạp", "Yên cương", "Ruy băng"};
     public static byte[] ID_TYPE_ITEM = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19};
     public static String[] Pham = {"Hạng 1", "Hạng 2", "Hạng 3", "Hạng 4", "Khác"};
     public static String[] Color = {"Trắng", "Xanh", "Đỏ", "Hoàn mỹ"};
@@ -301,7 +301,7 @@ public class ShopOnline extends Screen {
             }
         });
         m.addElement(cmd);
-        new Command("Theo level", new IAction() {
+        new Command("Theo cấp", new IAction() {
             @Override
             public void perform() {
                 ShopOnline.this.doSortBuyLevel();
@@ -930,7 +930,7 @@ public class ShopOnline extends Screen {
                     }
                 }
             }));
-            menu.addElement(new Command("Bid", new AnonymousClass23(this)));
+            menu.addElement(new Command("Đấu giá", new AnonymousClass23(this)));
             Canvas.menu.startAt(menu, 0);
         }
     }
@@ -968,9 +968,9 @@ public class ShopOnline extends Screen {
                 final int price = Integer.parseInt(a);
                 Canvas.endDlg();
                 if (price < 0 || price <= this.val$item.prizeBet || price >= this.val$item.prize) {
-                    Canvas.startOKDlg(new StringBuffer("Giá bid phải lớn hơn ").append(this.val$item.prizeBet).append(" và nhỏ hơn ").append(this.val$item.prize).toString());
+                    Canvas.startOKDlg(new StringBuffer("Giá đặt phải lớn hơn ").append(this.val$item.prizeBet).append(" và nhỏ hơn ").append(this.val$item.prize).toString());
                 } else {
-                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn đặt bid cho ").append(this.val$item.getTemplate().name).append(" với giá ").append(price).append(" không?").toString(), new IAction() {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn đặt giá cho ").append(this.val$item.getTemplate().name).append(" với giá ").append(price).append(" không?").toString(), new IAction() {
                         @Override
                         public void perform() {
                             if (ShopOnline.this.select >= 0) {
@@ -1001,7 +1001,7 @@ public class ShopOnline extends Screen {
                     if (!item.isMyItem()) {
                         menu.addElement(new Command("Mua", new AnonymousClass27(this, item)));
                         if (ShopOnline.this.canBid()) {
-                            menu.addElement(new Command("Bid", new AnonymousClass29(this, item)));
+                            menu.addElement(new Command("Đấu giá", new AnonymousClass29(this, item)));
                         }
                     }
                 } else {
@@ -1124,9 +1124,9 @@ public class ShopOnline extends Screen {
                 final int price = Integer.parseInt(a);
                 Canvas.endDlg();
                 if (price < 0 || price <= this.val$item.prizeBet || price >= this.val$item.prize) {
-                    Canvas.startOKDlg(new StringBuffer("Giá bid phải lớn hơn ").append(this.val$item.prizeBet).append(" và nhỏ hơn ").append(this.val$item.prize).toString());
+                    Canvas.startOKDlg(new StringBuffer("Giá đặt phải lớn hơn ").append(this.val$item.prizeBet).append(" và nhỏ hơn ").append(this.val$item.prize).toString());
                 } else {
-                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn đặt bid cho ").append(this.val$item.getTemplate().name).append(" với giá ").append(price).append(" không?").toString(), new IAction() {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn đặt giá cho ").append(this.val$item.getTemplate().name).append(" với giá ").append(price).append(" không?").toString(), new IAction() {
                         @Override
                         public void perform() {
                             if (ShopOnline.this.select >= 0) {
@@ -1188,7 +1188,7 @@ public class ShopOnline extends Screen {
                     ShopOnline.this.doAcceptBuy(2, (ItemInInventory) ((Vector) ShopOnline.ALL_ITEM.elementAt(ShopOnline.this.indexMainTile)).elementAt(ShopOnline.this.select));
                 }
             }));
-            menu.addElement(new Command("Đặt bid", new AnonymousClass45(this)));
+            menu.addElement(new Command("Đặt giá", new AnonymousClass45(this)));
             Canvas.menu.startAt(menu, 0);
         }
     }
@@ -1224,9 +1224,9 @@ public class ShopOnline extends Screen {
                 final int price = Integer.parseInt(a);
                 Canvas.endDlg();
                 if (price < 0 || price <= this.val$item.prizeBet || price >= this.val$item.prize) {
-                    Canvas.startOKDlg(new StringBuffer("Giá bid phải lớn hơn ").append(this.val$item.prizeBet).append(" và nhỏ hơn ").append(this.val$item.prize).toString());
+                    Canvas.startOKDlg(new StringBuffer("Giá đặt phải lớn hơn ").append(this.val$item.prizeBet).append(" và nhỏ hơn ").append(this.val$item.prize).toString());
                 } else {
-                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn đặt bid cho ").append(this.val$item.getTemplate().name).append(" với giá ").append(price).append(" không?").toString(), new IAction() {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn đặt giá cho ").append(this.val$item.getTemplate().name).append(" với giá ").append(price).append(" không?").toString(), new IAction() {
                         @Override
                         public void perform() {
                             GameService.gI().doBid(ShopOnline.this.select, 2, price);
@@ -1257,7 +1257,7 @@ public class ShopOnline extends Screen {
                     final int price = Integer.parseInt(tfSeri.getText().trim());
                     final int priceBid = Integer.parseInt(tfMaso.getText().trim());
                     if (price < priceBid) {
-                        Canvas.startOKDlg("Giá bid phải nhỏ hơn giá bán");
+                        Canvas.startOKDlg("Giá đặt phải nhỏ hơn giá bán");
                         return;
                     }
                     String string = new StringBuffer("Bạn có muốn đặt bán vật phẩm này với giá ").append(tfSeri.getText().trim()).append("  không?").toString();
@@ -1302,7 +1302,7 @@ public class ShopOnline extends Screen {
             @Override
             public void paint(Graphics g, int x, int y) {
                 Font.borderFont.drawString(g, "Giá bán", 10, 26, 0);
-                Font.borderFont.drawString(g, "Giá bid", 10, 61, 0);
+                Font.borderFont.drawString(g, "Giá đặt", 10, 61, 0);
                 tfSeri.paint(g);
                 g.setClip(0, 0, 140, 100);
                 tfMaso.paint(g);

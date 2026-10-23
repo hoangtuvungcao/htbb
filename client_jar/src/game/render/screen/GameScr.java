@@ -2252,7 +2252,7 @@ public class GameScr extends Screen {
                 Canvas.gameScr.mainChar.comeHome = true;
                 Canvas.gameScr.mainChar.state = (byte) 4;
             } else {
-                Canvas.startOKDlg("Không thể sử dụng trong làng.");
+                Canvas.startOKDlg("Bạn đang ở làng rồi. Dây thoát hiểm chỉ dùng khi ở ngoài làng để quay về làng.");
                 return;
             }
         }

@@ -17,7 +17,8 @@ public class InfoAttributeItem {
 
     public String getName(int clazz) {
         String name = ((NameAttributeItem) ItemTemplate.ALL_NAME_ATTRIBUTE_ITEM.get(new StringBuffer(String.valueOf((int) this.id)).toString())).name;
-        if (this.id >= 43 && this.id <= 57) {
+        if (this.id >= 43 && this.id <= 57 && clazz >= 0 && clazz < SkillManager.SKILL_NAME.length
+                && this.id - 43 < SkillManager.SKILL_NAME[clazz].length) {
             name = SkillManager.SKILL_NAME[clazz][this.id - 43];
         }
         return new StringBuffer(String.valueOf(name)).append(": ").toString();
