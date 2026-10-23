@@ -37,6 +37,7 @@ Ra `client_jar/out/`: `HTBB-v<N>.jar`, `HTBB-v<N>-release.jar` (ProGuard, `mappi
 
 ```sh
 sh client_jar/tools/kiem_ve_map/chay.sh /tmp/kiem_ve_map      # client vẽ mọi bản đồ server/cMap (LOI phải 0)
+python3 -I client_jar/tools/kiem_chu_hien_thi.py              # chữ hiện ra: thiếu dấu / tiếng Anh sót / tên game cũ / chữ HOA có dấu (thoát 1 = lỗi)
 # 0.9.7.1: jar J2ME THẬT trong MicroEmulator, heap nhỏ + RMS giới hạn + socket trả từng mảnh nhỏ, cache rỗng, tự đăng
 # nhập -> tạo / chọn Pokémon -> vào thế giới (cần server dev; CAT_SAU=310000 MONG_LOI=1 DUNG_MS=8000 [THU_LAI=1]: máy
 # chủ "im" giữa chừng -> phải hiện hộp lỗi + Thử lại, không quay mãi). Đọc đầu tệp chay.sh.
